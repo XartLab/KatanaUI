@@ -1,0 +1,114 @@
+/* SPDX-License-Identifier: AGPL-3.0-only */
+/* 行内 AI 状态与状态图标里那几条匀速的循环动画（流光、起伏、绕圈、写线、抖、转圈）。弹簧管不了循环，这里是仅有的几处线性时间的动效，
+   都只在对应状态里跑；换状态靠 motion 的弹簧（katana/ai-status.tsx）。产品不跟系统的「减少动态效果」，所以不写 prefers-reduced-motion。 */
+
+/* 流光：高亮一段在文字上从左扫到右。底色 ink-300，高亮 ink-100，两个主题的 token 都跟着换。 */
+.k-ai-shimmer {
+  background-image: linear-gradient(90deg, var(--ink-300) 40%, var(--ink-100) 50%, var(--ink-300) 60%);
+  background-size: 250% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  animation: k-ai-shimmer 1.6s linear infinite;
+}
+@keyframes k-ai-shimmer {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: 0% 0;
+  }
+}
+
+/* 思考：三个方点依次升降。 */
+.k-ai-dot {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: k-ai-dot 0.9s ease-in-out infinite;
+}
+@keyframes k-ai-dot {
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.45;
+  }
+  40% {
+    transform: translateY(-4px);
+    opacity: 1;
+  }
+}
+
+/* 检索：放大镜绕一个小圈。 */
+.k-ai-orbit {
+  animation: k-ai-orbit 1.6s linear infinite;
+}
+@keyframes k-ai-orbit {
+  0% {
+    transform: translate(0, -2px);
+  }
+  25% {
+    transform: translate(2px, 0);
+  }
+  50% {
+    transform: translate(0, 2px);
+  }
+  75% {
+    transform: translate(-2px, 0);
+  }
+  100% {
+    transform: translate(0, -2px);
+  }
+}
+
+/* 编写：几行线被写出来，写完停一下再擦掉重来。 */
+.k-ai-write {
+  stroke-dasharray: 1;
+  animation: k-ai-write 2s ease-in-out infinite;
+}
+@keyframes k-ai-write {
+  0% {
+    stroke-dashoffset: 1;
+  }
+  70%,
+  90% {
+    stroke-dashoffset: 0;
+  }
+  100% {
+    stroke-dashoffset: -1;
+  }
+}
+
+/* 出错：叉出现时左右抖一下，不循环。 */
+.k-ai-shake {
+  animation: k-ai-shake 0.45s 0.1s ease-out both;
+}
+@keyframes k-ai-shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-3px);
+  }
+  40% {
+    transform: translateX(3px);
+  }
+  60% {
+    transform: translateX(-2px);
+  }
+  80% {
+    transform: translateX(2px);
+  }
+}
+
+/* 状态图标的「进行中」：一圈弧匀速转，一秒一圈（匀速转动没有弹簧可用；时长是读出来的观察值，只管展示）。 */
+.k-status-spin {
+  transform-box: view-box;
+  transform-origin: 50% 50%;
+  animation: k-status-spin 1s linear infinite;
+}
+@keyframes k-status-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

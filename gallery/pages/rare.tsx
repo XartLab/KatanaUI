@@ -1,0 +1,224 @@
+// SPDX-License-Identifier: AGPL-3.0-only
+import { useEffect, useState } from 'react'
+import {
+  AiStatus,
+  Button,
+  DeleteButton,
+  MatrixOrb,
+  NotificationBell,
+  PasswordInput,
+  StatusIcon,
+  type AiStatusState,
+  type OrbState,
+  type StatusIconStatus,
+} from '../../src/index'
+import { Cell, Row } from './parts'
+
+// #1861：学 rare-ui 的交互、本仓库重写的六件的演示。数据与文字都是演示用的。
+
+export function PasswordInputDemo() {
+  const [visible, setVisible] = useState(false)
+  return (
+    <>
+      <Row name="默认">
+        <div className="gal-wide">
+          <PasswordInput
+            toggleLabel="显示密钥"
+            defaultValue="demo-secret-0123456789"
+            aria-label="API 密钥"
+            onVisibleChange={setVisible}
+          />
+        </div>
+        <output data-gallery-visible>{visible ? '显示中' : '已遮住'}</output>
+      </Row>
+      <Row name="sm · 空">
+        <div className="gal-wide">
+          <PasswordInput toggleLabel="显示口令" size="sm" placeholder="代理口令" aria-label="代理口令" />
+        </div>
+      </Row>
+      <Row name="禁用">
+        <div className="gal-wide">
+          <PasswordInput toggleLabel="显示" disabled defaultValue="locked" aria-label="已锁定" />
+        </div>
+      </Row>
+      <p className="gal-note">点眼睛显示或遮住，输入框不丢焦点、选区还在；按钮的名字不变，状态看 aria-pressed。</p>
+    </>
+  )
+}
+
+export function DeleteButtonDemo() {
+  const [deleted, setDeleted] = useState(0)
+  const [kept, setKept] = useState(0)
+  return (
+    <>
+      <Row name="默认">
+        <DeleteButton
+          label="删除工作区"
+          confirmLabel="确认删除"
+          cancelLabel="取消"
+          doneLabel="已删除"
+          keptLabel="已取消"
+          onConfirm={() => setDeleted((n) => n + 1)}
+          onCancel={() => setKept((n) => n + 1)}
+        />
+        <output data-gallery-delete>
+          删除 {deleted} 次 · 取消 {kept} 次
+        </output>
+      </Row>
+      <Row name="禁用">
+        <DeleteButton label="删除（不可用）" confirmLabel="确认" cancelLabel="取消" disabled />
+      </Row>
+      <p className="gal-note">点一下只展开，不执行；展开后焦点在「取消」上，Esc 或点外面都是取消，点勾才执行。</p>
+    </>
+  )
+}
+
+export function NotificationBellDemo() {
+  const [count, setCount] = useState(0)
+  return (
+    <>
+      <Row name="数字">
+        <NotificationBell count={count} label={`提醒，${count} 条未读`} />
+        <output data-gallery-bell>{count}</output>
+      </Row>
+      <Row name="上限 9">
+        <NotificationBell count={count} max={9} label={`提醒，${count} 条未读`} />
+      </Row>
+      <Row name="圆点">
+        <NotificationBell count={count} variant="dot" label={`提醒，${count > 0 ? '有未读' : '没有未读'}`} />
+      </Row>
+      <Row>
+        <Button onClick={() => setCount((n) => n + 1)}>来 1 条</Button>
+        <Button onClick={() => setCount((n) => n + 5)}>来 5 条</Button>
+        <Button onClick={() => setCount((n) => Math.max(0, n - 1))}>读 1 条</Button>
+        <Button onClick={() => setCount(0)}>全部已读</Button>
+        <Button onClick={() => setCount(120)}>120 条</Button>
+      </Row>
+      <p className="gal-note">数变多铃摆一下，力度跟增量走；变少、清零不摆。数字按增减方向滚。</p>
+    </>
+  )
+}
+
+const STATUSES: readonly StatusIconStatus[] = ['success', 'error', 'warning', 'info', 'pending']
+
+export function StatusIconDemo() {
+  const [status, setStatus] = useState<StatusIconStatus>('pending')
+  return (
+    <>
+      <Row name="五种">
+        {STATUSES.map((item) => (
+          <Cell key={item} name={item}>
+            <StatusIcon status={item} label={`状态 ${item}`} />
+          </Cell>
+        ))}
+      </Row>
+      <Row name="换状态">
+        <div data-gallery-status>
+          <StatusIcon status={status} label={`当前 ${status}`} />
+        </div>
+        <Button onClick={() => setStatus('pending')}>进行中</Button>
+        <Button onClick={() => setStatus('success')}>成功</Button>
+        <Button onClick={() => setStatus('error')}>失败</Button>
+      </Row>
+      <p className="gal-note">对勾与叉一笔一笔画出来；进行中的弧先退出，结果图标再弹入。</p>
+    </>
+  )
+}
+
+const AI_STATES: readonly { state: AiStatusState; label: string }[] = [
+  { state: 'thinking', label: '思考中' },
+  { state: 'searching', label: '检索中' },
+  { state: 'writing', label: '编写中' },
+  { state: 'done', label: '完成' },
+  { state: 'error', label: '出错了' },
+]
+
+export function AiStatusDemo() {
+  const [state, setState] = useState<AiStatusState>('thinking')
+  const [elapsed, setElapsed] = useState(0)
+  const active = state === 'thinking' || state === 'searching' || state === 'writing'
+  useEffect(() => {
+    if (!active) return
+    const timer = setInterval(() => setElapsed((n) => n + 1), 1000)
+    return () => clearInterval(timer)
+  }, [active])
+  const current = AI_STATES.find((item) => item.state === state)!
+  return (
+    <>
+      <Row name="当前">
+        <AiStatus
+          state={state}
+          label={current.label}
+          detail={state === 'searching' ? 'docs/product/README.md' : undefined}
+          elapsed={elapsed}
+        />
+      </Row>
+      <Row name="切换">
+        {AI_STATES.map((item) => (
+          <Button
+            key={item.state}
+            onClick={() => {
+              setState(item.state)
+              if (item.state === 'thinking') setElapsed(0)
+            }}
+          >
+            {item.state}
+          </Button>
+        ))}
+      </Row>
+      <Row name="五种">
+        {AI_STATES.map((item) => (
+          <AiStatus key={item.state} state={item.state} label={item.label} />
+        ))}
+      </Row>
+      <p className="gal-note">进行中的文字有流光，结束就停；换状态时图标缩放着换、文字上下滑着换，整行宽度弹簧伸缩。</p>
+    </>
+  )
+}
+
+const ORB_STATES: readonly { state: OrbState; label: string }[] = [
+  { state: 'idle', label: '空闲' },
+  { state: 'listening', label: '聆听' },
+  { state: 'thinking', label: '思考' },
+]
+
+export function MatrixOrbDemo() {
+  const [state, setState] = useState<OrbState>('idle')
+  const [level, setLevel] = useState(0.6)
+  return (
+    <>
+      <Row name="可切换">
+        <div data-gallery-orb>
+          <MatrixOrb state={state} level={state === 'listening' ? level : undefined} label={`状态球：${state}`} />
+        </div>
+        {ORB_STATES.map((item) => (
+          <Button key={item.state} onClick={() => setState(item.state)}>
+            {item.state}
+          </Button>
+        ))}
+        <label>
+          音量{' '}
+          <input
+            type="range"
+            min={0}
+            max={1}
+            step={0.05}
+            value={level}
+            aria-label="音量"
+            onChange={(event) => setLevel(Number(event.target.value))}
+          />
+        </label>
+      </Row>
+      <Row name="三种">
+        {ORB_STATES.map((item) => (
+          <Cell key={item.state} name={item.state}>
+            <MatrixOrb state={item.state} label={`状态球：${item.label}`} cells={12} />
+          </Cell>
+        ))}
+      </Row>
+      <p className="gal-note">
+        方点排成圆：待命慢呼吸、聆听同心波跟音量走、思考几个热点绕着转；换状态时权重插值，整个球按弹簧缩放。
+      </p>
+    </>
+  )
+}

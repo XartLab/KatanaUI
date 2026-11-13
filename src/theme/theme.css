@@ -89,6 +89,9 @@
    我们不引 preflight（会动到全站），所以在组件自己带 data-slot 的元素里（按 slot 名的前缀认，只认本包件的名字，应用里别处的 data-slot 如 Markdown 的 k-md-slot 不受影响）补上它们要的那几条，写成 :where 不占优先级，类照样能盖。 */
 :where(
   :is(
+    [data-slot^='delete-button'],
+    [data-slot^='notification-bell'],
+    [data-slot^='password-input'],
     [data-slot^='accordion'],
     [data-slot^='button'],
     [data-slot^='checkbox'],
@@ -100,6 +103,9 @@
     [data-slot^='tooltip']
   ),
   :is(
+      [data-slot^='delete-button'],
+      [data-slot^='notification-bell'],
+      [data-slot^='password-input'],
       [data-slot^='accordion'],
       [data-slot^='button'],
       [data-slot^='checkbox'],
@@ -116,6 +122,9 @@
 }
 :where(
   button:is(
+    [data-slot^='delete-button'],
+    [data-slot^='notification-bell'],
+    [data-slot^='password-input'],
     [data-slot^='accordion'],
     [data-slot^='button'],
     [data-slot^='checkbox'],
@@ -127,6 +136,9 @@
     [data-slot^='tooltip']
   ),
   :is(
+      [data-slot^='delete-button'],
+      [data-slot^='notification-bell'],
+      [data-slot^='password-input'],
       [data-slot^='accordion'],
       [data-slot^='button'],
       [data-slot^='checkbox'],
@@ -149,6 +161,9 @@
 }
 :where(
   :is(
+      [data-slot^='delete-button'],
+      [data-slot^='notification-bell'],
+      [data-slot^='password-input'],
       [data-slot^='accordion'],
       [data-slot^='button'],
       [data-slot^='checkbox'],
@@ -161,6 +176,9 @@
     )
     h2,
   :is(
+      [data-slot^='delete-button'],
+      [data-slot^='notification-bell'],
+      [data-slot^='password-input'],
       [data-slot^='accordion'],
       [data-slot^='button'],
       [data-slot^='checkbox'],

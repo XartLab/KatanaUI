@@ -987,6 +987,166 @@ export const PAGES: readonly DocPage[] = [
     composition: 'Loading\n  LoadingWait（计时）\n    LoadingView\n      Led\n      Button（重试）\n      Skeleton',
     keys: [['Tab', '10 秒后的重试按钮可聚焦；Enter / Space 触发']],
   },
+  {
+    id: 'password-input',
+    group: 'forms',
+    title: 'PasswordInput 密钥输入',
+    summary:
+      '带眼睛按钮的输入框：默认遮住，点一下显示或遮住；上下眼睑用弹簧开合，输入框不丢焦点与选区。学自 rare-ui（不要强度条）。',
+    exports: ['PasswordInput'],
+    props: [
+      {
+        part: 'PasswordInput',
+        note: '其余属性透传给 Input（不含 type）；ref 指向里面的 input。自动填充、拼写检查、自动大写默认关。',
+        rows: [
+          {
+            name: 'toggleLabel',
+            type: 'string',
+            desc: '眼睛按钮的读屏名（必填）。名字不随状态变，当前是否显示由 aria-pressed 表达。',
+          },
+          { name: 'defaultVisible', type: 'boolean', default: 'false', desc: '一开始就显示明文。' },
+          { name: 'onVisibleChange', type: '(visible: boolean) => void', desc: '切换时回调。' },
+          { name: 'size', type: "'default' | 'sm'", default: "'default'", desc: '同 Input：30 高与 26 高。' },
+        ],
+      },
+    ],
+    composition: 'PasswordInput\n  Input\n  button（眼睛，aria-pressed）',
+    keys: [
+      ['Tab', '从输入框到眼睛按钮'],
+      ['Enter / Space', '显示或遮住（按钮上）'],
+    ],
+  },
+  {
+    id: 'delete-button',
+    group: 'forms',
+    title: 'DeleteButton 原地确认',
+    summary:
+      '危险操作不弹对话框：点一下按钮在原地展开出「确认」「取消」，垃圾桶的盖子掀开。Esc、点外面、Tab 走开都是取消。学自 rare-ui。',
+    exports: ['DeleteButton'],
+    props: [
+      {
+        part: 'DeleteButton',
+        rows: [
+          { name: 'label', type: 'string', desc: '原按钮的读屏名，如「删除工作区」（必填）。' },
+          { name: 'confirmLabel / cancelLabel', type: 'string', desc: '展开后两个小钮的读屏名（必填）。' },
+          { name: 'doneLabel / keptLabel', type: 'string', desc: '确认、取消之后读屏播报的话；不给就不播。' },
+          { name: 'onConfirm', type: '() => void', desc: '点了确认。第一次点原按钮不会触发它。' },
+          { name: 'onCancel', type: '() => void', desc: '取消（含 Esc、点外面、Tab 走开）。' },
+          { name: 'disabled', type: 'boolean', desc: '禁用原按钮。' },
+        ],
+      },
+    ],
+    composition: 'DeleteButton\n  button（垃圾桶，aria-expanded）\n  button（确认）\n  button（取消，展开后默认焦点）',
+    keys: [
+      ['Enter / Space', '展开；在确认或取消上则执行它'],
+      ['Esc', '取消并把焦点还给原按钮'],
+      ['Tab', '确认与取消之间移动；走出去算取消'],
+    ],
+  },
+  {
+    id: 'notification-bell',
+    group: 'readouts',
+    title: 'NotificationBell 提醒铃',
+    summary: '带未读数的铃：数变多时铃从顶端摆一下，角标弹出，数字按增减方向滚；0 时角标收起。学自 rare-ui。',
+    exports: ['NotificationBell'],
+    props: [
+      {
+        part: 'NotificationBell',
+        note: '其余属性透传给 button。角标对读屏隐藏，数变了由名字（label）播报。',
+        rows: [
+          { name: 'count', type: 'number', default: '0', desc: '未读数；不是有限数时当 0。' },
+          { name: 'max', type: 'number', default: '99', desc: '角标显示到几，超过写「<max>+」。' },
+          { name: 'variant', type: "'count' | 'dot'", default: "'count'", desc: 'count 画数字，dot 只画一个点。' },
+          { name: 'label', type: 'string', desc: '读屏名（必填），要带上未读数，数变了就换这个字符串。' },
+        ],
+      },
+    ],
+    composition: 'NotificationBell\n  svg（铃，转轴在上）\n  span（角标）\n  span（role=status 播报）',
+    keys: [['Enter / Space', '点击（按钮）']],
+  },
+  {
+    id: 'status-icon',
+    group: 'feedback',
+    title: 'StatusIcon 状态图标',
+    summary:
+      '提示条里的成功、失败、警告、说明、进行中：换状态时旧的缩小退出、新的弹入，对勾与叉一笔一笔画出来。学自 rare-ui 的 toast。',
+    exports: ['StatusIcon'],
+    props: [
+      {
+        part: 'StatusIcon',
+        note: '16 见方，role=img。应用的提示条（AlertToasts）用它表达成功与警告。',
+        rows: [
+          {
+            name: 'status',
+            type: "'success' | 'error' | 'warning' | 'info' | 'pending'",
+            desc: '状态；pending 是转动的弧。',
+          },
+          { name: 'label', type: 'string', desc: '读屏名（必填）：不单靠颜色与形状说话。' },
+        ],
+      },
+    ],
+    composition: 'StatusIcon\n  svg（按 status 换，笔画画出来）',
+    keys: [],
+  },
+  {
+    id: 'ai-status',
+    group: 'feedback',
+    title: 'AiStatus 行内 AI 状态',
+    summary:
+      '一行：随状态变的小图标加状态文字（进行中带流光），可带细节与耗时。换状态时图标缩放着换、文字上下滑着换、整行宽度弹簧伸缩。学自 rare-ui。',
+    exports: ['AiStatus'],
+    props: [
+      {
+        part: 'AiStatus',
+        note: '整行是 role=status，状态变了读屏播报。',
+        rows: [
+          {
+            name: 'state',
+            type: "'thinking' | 'searching' | 'writing' | 'done' | 'error'",
+            desc: '状态；前三个是进行中。',
+          },
+          { name: 'label', type: 'string', desc: '状态文字（必填），状态变了就换这个字符串。' },
+          { name: 'detail', type: 'string', desc: '文字后的灰色细节，如正在读哪个来源。' },
+          { name: 'elapsed', type: 'number', desc: '已进行的秒数；只在进行中显示，写成「12s」「1m 05s」。' },
+        ],
+      },
+    ],
+    composition: 'AiStatus\n  span（图标，按 state 换）\n  span（文字，按 label 换）\n  span（细节）\n  span（耗时）',
+    keys: [],
+  },
+  {
+    id: 'matrix-orb',
+    group: 'readouts',
+    title: 'MatrixOrb 点阵状态球',
+    summary:
+      '一盘方点排成圆：待命慢呼吸，聆听同心波跟音量走，思考几个热点绕着转。点阵签名件的动态版，用来表达 Agent 在做什么。学自 rare-ui。',
+    exports: ['MatrixOrb'],
+    props: [
+      {
+        part: 'MatrixOrb',
+        note: '画在 canvas 上，role=img；状态用文字另外读出。颜色取元素的 color，跟主题走。',
+        rows: [
+          {
+            name: 'state',
+            type: "'idle' | 'listening' | 'thinking'",
+            default: "'idle'",
+            desc: '状态；换状态时三种的权重插值过去，不跳。',
+          },
+          { name: 'level', type: 'number', desc: '聆听态的音量 0 到 1；不给用模拟包络。' },
+          { name: 'cells', type: 'number', default: '16', desc: '一边几个点；点距 6px，所以 16 是 96px 见方。' },
+          {
+            name: 'color',
+            type: 'string',
+            default: "'var(--signal-orange)'",
+            desc: '点的颜色，CSS 颜色或 var(--token)。',
+          },
+          { name: 'label', type: 'string', desc: '读屏名（必填）。' },
+        ],
+      },
+    ],
+    composition: 'MatrixOrb\n  canvas（requestAnimationFrame 循环）',
+    keys: [],
+  },
 ]
 
 export const pageById = (id: string): DocPage | undefined => PAGES.find((page) => page.id === id)

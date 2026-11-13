@@ -2,6 +2,14 @@
 import type { ComponentType } from 'react'
 import { DateTimeInputDemo, NumberInputDemo, SkeletonDemo } from './pages/fields'
 import { BadgeDemo, DotMatrixDemo, KbdDemo, LcdDemo, LedDemo, RollingTextDemo } from './pages/readouts'
+import {
+  AiStatusDemo,
+  DeleteButtonDemo,
+  MatrixOrbDemo,
+  NotificationBellDemo,
+  PasswordInputDemo,
+  StatusIconDemo,
+} from './pages/rare'
 import { AccordionDemo, TabsDemo } from './pages/layout'
 import { ContextMenuDemo, DialogDemo, DropdownMenuDemo, PopoverDemo, TooltipDemo } from './pages/overlays'
 import {
@@ -41,4 +49,10 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'number-input': NumberInputDemo,
   'date-time-input': DateTimeInputDemo,
   skeleton: SkeletonDemo,
+  'password-input': PasswordInputDemo,
+  'delete-button': DeleteButtonDemo,
+  'notification-bell': NotificationBellDemo,
+  'status-icon': StatusIconDemo,
+  'ai-status': AiStatusDemo,
+  'matrix-orb': MatrixOrbDemo,
 }

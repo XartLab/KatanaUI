@@ -100,3 +100,12 @@ export { Skeleton } from './katana/skeleton'
 export { Loading, LoadingBoundary } from './katana/loading'
 export { LoadingView, type LoadingTexts } from './katana/loading-view'
 export type { LoadingPhase } from './katana/loading-gate'
+
+// 学自 rare-ui 的交互、本仓库重写的件（#1861）：密钥输入、原地确认的危险按钮、带未读数的铃、状态图标、行内 AI 状态、点阵状态球。
+export { PasswordInput, type PasswordInputProps } from './katana/password-input'
+export { DeleteButton, type DeleteButtonProps } from './katana/delete-button'
+export { NotificationBell, type NotificationBellProps } from './katana/notification-bell'
+export { StatusIcon, type StatusIconStatus } from './katana/status-icon'
+export { AiStatus, type AiStatusProps, type AiStatusState } from './katana/ai-status'
+export { MatrixOrb, type MatrixOrbProps } from './katana/matrix-orb'
+export type { OrbState } from './katana/matrix-orb-model'
