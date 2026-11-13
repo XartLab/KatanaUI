@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: AGPL-3.0-only
+// SPDX-License-Identifier: MIT
 // 带 import 属性：e2e 在 Node 里经 workspace/model → styles/motion 载入这里，Node 不认没有属性的 JSON 导入
 import tokens from '../tokens/motion.tokens.json' with { type: 'json' }
 

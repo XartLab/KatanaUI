@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: AGPL-3.0-only
+// SPDX-License-Identifier: MIT
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vite-plus/test'
 import { Button, Checkbox, Switch, Tabs, TabsContent, TabsList, TabsTrigger, buttonVariants } from './index'

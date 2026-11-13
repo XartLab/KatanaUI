@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: AGPL-3.0-only
+// SPDX-License-Identifier: MIT
 // 分步进度条的纯逻辑（katana/step-player.tsx 的文件头写了出处）：走到一步的末尾时下一步是什么。
 
 export type StepArrival = { kind: 'advance'; index: number } | { kind: 'loop' } | { kind: 'finish' }

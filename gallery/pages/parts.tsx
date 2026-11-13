@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: AGPL-3.0-only
+// SPDX-License-Identifier: MIT
 import type { ReactNode } from 'react'
 
 // 文档页上摆状态用的两个小件：一行（带名字）与一格（带小标）。

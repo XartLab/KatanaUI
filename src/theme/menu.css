@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: AGPL-3.0-only */
+/* SPDX-License-Identifier: MIT */
 /* 菜单与菜单皮肤的弹层里几条 Tailwind 类写不顺的规则（决策记录 0049）：对齐列、行内图标、外链行。
    选择器用 primitives/menu-parts.tsx 里的钩子类（k-pop、k-pop-item、k-pop-check、k-pop-icon、k-pop-label）。
    原来在应用的 ui.css 与 base.css、panel.css、shell.css 里，#1797 换到 Radix 时随菜单皮肤一起搬进包里。 */

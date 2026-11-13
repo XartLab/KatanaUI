@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: AGPL-3.0-only
+// SPDX-License-Identifier: MIT
 // 组件卡 LCDReadout。读数窗：点阵小标签在上，LCD 数字在中，一行 10px 灰色小字（单位、对比、口径）在下。
 // 搬自 src/ui（#1860）：样子与行为没改，皮肤在 ../theme/lcd.css。
 // 数值颜色：中性、涨跌（涨跌用 pnl-up / pnl-down，组件卡 PerformanceReport 里只有收益与回撤用），以及组件卡给的当前关注（signal-orange）

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: AGPL-3.0-only
+// SPDX-License-Identifier: MIT
 import type { snappy } from './motion'
 
 // 三条弹簧的 restDelta 是 0.5（motion.tokens.json：给 px、度这类大数用）。动 scale、opacity、pathLength 这类 0 到 1 的量时，

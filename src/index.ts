@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: AGPL-3.0-only
+// SPDX-License-Identifier: MIT
 // @katanaview/ui 的出口：应用只从这里引（dependency-cruiser 的 ui-only-via-entry）。样式走 `@katanaview/ui/tokens.css` 与 `@katanaview/ui/ui.css`，
 // 动效参数走 `@katanaview/ui/motion`。
 

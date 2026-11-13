@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: AGPL-3.0-only
+// SPDX-License-Identifier: MIT
 import { parseDate, parseTime, type CalendarDate, type Time } from '@internationalized/date'
 
 // 日期时间输入（DateTimeInput）跟调用方之间的值：调用方一律用字符串（日期 YYYY-MM-DD、时刻 HH:mm 或 HH:mm:ss，空串是没填），

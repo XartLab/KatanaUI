@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: AGPL-3.0-only
+// SPDX-License-Identifier: MIT
 // 点阵状态球：一盘方点排成圆，亮度随状态起伏，用来表达 Agent 在做什么（空闲、聆听、思考）。方点、6px 点距、4px 点边照点阵签名件 DotMatrix。
 // 交互学自 rare-ui 的 matrix-orb（2026-11-14 读），实现为本仓库原创，未复制其代码。
 // 学到的事实（只取行为）：① 换状态时三种状态的权重插值过去，中途被打断也从当前画面接着变，不跳；② 整个球的缩放跟弹簧走，聆听最大；

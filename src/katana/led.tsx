@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: AGPL-3.0-only
+// SPDX-License-Identifier: MIT
 // 组件卡 StatusLED。LED 默认 off；只表达真实状态，必须配文字或 aria-label。
 // 搬自 src/ui（#1860）：样子与行为没改，皮肤在 ../theme/led.css。
 

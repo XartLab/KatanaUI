@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: AGPL-3.0-only
+// SPDX-License-Identifier: MIT
 import { useState } from 'react'
 import { BadgeGroup, DotMatrix, Kbd, Lcd, Led, LINK_GROUPS, RollingText, type LedState } from '../../src/index'
 import { Cell, Row } from './parts'

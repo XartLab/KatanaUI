@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: AGPL-3.0-only */
+/* SPDX-License-Identifier: MIT */
 /* 原样搬自 src/ui/ui.css（#1860，2026-11-14）：类名与规则都没改，应用里的件（src/ui/*.tsx）是这里的件外面包的一层。 */
 
 /* 加载中（Loading / LoadingBoundary）：骨架照 states.md 的加载态：bg-200 条、line-200 细边、点阵纹理，不脉冲不转圈。

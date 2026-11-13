@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: AGPL-3.0-only
+// SPDX-License-Identifier: MIT
 // 品种名后的上标徽标（板块、风险标记）：上标小字，颜色取次要文字色，不抢品种名；皮肤在 ../theme/badge.css。
 // 搬自 src/ui/Badges.tsx（#1860）：徽标有哪些、全称怎么写（含按界面语言翻）是应用的事（市场包的 badgesOf），这里只管画。
 // 一个徽标是一个 role=img，名字是全称，读屏读「科创板：涨跌幅 20%」而不是单字「科」。

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: AGPL-3.0-only
+// SPDX-License-Identifier: MIT
 // 每个菜单项的 onSelect 被调了几次：浏览器测试断言「选一次就是一次」（Radix 的 pointerup 选中加后到的 click 曾经会叫两次）。
 // 下拉菜单与右键菜单各一页，计数放在模块里，两页共用同一份。
 import { useSyncExternalStore } from 'react'

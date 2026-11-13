@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: AGPL-3.0-only
+// SPDX-License-Identifier: MIT
 import { Suspense, useState, type ReactNode } from 'react'
 import { LoadingWait } from './loading-wait'
 import type { LoadingTexts } from './loading-view'

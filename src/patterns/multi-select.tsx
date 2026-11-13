@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: AGPL-3.0-only
+// SPDX-License-Identifier: MIT
 import { useRef, type CSSProperties, type KeyboardEvent } from 'react'
 import { cn } from '../lib/cn'
 import { Popover, PopoverContent, PopoverTrigger } from '../primitives/popover'

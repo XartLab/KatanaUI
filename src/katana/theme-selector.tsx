@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: AGPL-3.0-only
+// SPDX-License-Identifier: MIT
 // 主题选择：每个主题一张缩略预览（一块迷你的控制台：侧栏、顶栏、面板、图表线），选中的那张加一圈环，环在选项之间用弹簧滑过去。
 // 用于设置里切 Console / Graphite。交互学自 rare-ui 的 theme-selector（2026-11-14 读），实现为本仓库原创，未复制其代码。
 // 学到的事实（只取行为）：① 整组是 radiogroup，每张缩略是一个 radio，tab 只停在选中那张（没有选中的时停在第一张）；

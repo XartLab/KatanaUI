@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: AGPL-3.0-only
+// SPDX-License-Identifier: MIT
 // 行内的 AI 状态：思考、检索、编写、完成、出错。左边一个随状态变的小图标，右边是状态文字（进行中带流光）、可选的细节与耗时。
 // 用于 Agent 面板、分析面板生成中。文字由调用方传（包里没有文案），状态只管图标与动效。
 // 交互学自 rare-ui 的 ai-status（2026-11-14 读），实现为本仓库原创，未复制其代码。

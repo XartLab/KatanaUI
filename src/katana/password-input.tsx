@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: AGPL-3.0-only
+// SPDX-License-Identifier: MIT
 // 密钥输入：框里的字默认遮住，右侧的眼睛按钮切换显示 / 隐藏。用于连接窗的 API key、secret 与代理密码。
 // 交互学自 rare-ui 的 password-input（2026-11-14 读），实现为本仓库原创，未复制其代码。
 // 学到的事实（只取行为）：① 切换按钮按下时不抢走输入框的焦点（pointerdown 里 preventDefault）；② 切换输入类型会让部分浏览器丢掉选区，

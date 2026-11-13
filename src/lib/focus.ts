@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: AGPL-3.0-only
+// SPDX-License-Identifier: MIT
 
 /**
  * 键盘焦点环：全局焦点环 token（--focus-ring），2px 实线，外移 2px（#471）。鼠标点击不画（focus-visible）。

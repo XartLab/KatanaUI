@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: AGPL-3.0-only */
+/* SPDX-License-Identifier: MIT */
 /* @katanaview/ui 的 Tailwind 主题（决策记录 0049，延续 #1774 的试做）。
    只引 Tailwind 的 theme 与 utilities，不引 preflight：全局重置仍是应用自己的 base.css，新旧样式并存，调用方一个一个换。
    颜色、字体、曲线都接到 token（tokens/tokens.css），不另起一套色板，两个主题都跟着走。 */

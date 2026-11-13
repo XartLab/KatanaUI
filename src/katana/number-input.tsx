@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: AGPL-3.0-only
+// SPDX-License-Identifier: MIT
 import { useRef, useState, type KeyboardEvent, type PointerEvent } from 'react'
 import { SCRUB_THRESHOLD_PX, nudged, scrubMode, scrubbed, typed, type ScrubMode } from './number-field-model'
 

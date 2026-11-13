@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: AGPL-3.0-only */
+/* SPDX-License-Identifier: MIT */
 /* 原样搬自 src/ui/ui.css（#1860，2026-11-14）：类名与规则都没改，应用里的件（src/ui/*.tsx）是这里的件外面包的一层。 */
 
 /* 数字框：外形照 OpenMarket custom-number-input（30 高 · 圆角 7 · 3% 白底 12% 白边；值 12.5px 500），去掉右侧 − / + 两个按钮（#352：

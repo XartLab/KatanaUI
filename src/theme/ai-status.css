@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: AGPL-3.0-only */
+/* SPDX-License-Identifier: MIT */
 /* 行内 AI 状态与状态图标里那几条匀速的循环动画（流光、起伏、绕圈、写线、抖、转圈）。弹簧管不了循环，这里是仅有的几处线性时间的动效，
    都只在对应状态里跑；换状态靠 motion 的弹簧（katana/ai-status.tsx）。产品不跟系统的「减少动态效果」，所以不写 prefers-reduced-motion。 */
 

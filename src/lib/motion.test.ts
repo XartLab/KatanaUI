@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: AGPL-3.0-only
+// SPDX-License-Identifier: MIT
 import { readFileSync } from 'node:fs'
 import { describe, expect, it } from 'vite-plus/test'
 import { gentle, settle, snappy } from './motion'

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: AGPL-3.0-only
+// SPDX-License-Identifier: MIT
 import { describe, expect, it } from 'vite-plus/test'
 import { fromCalendarDate, fromTime, toCalendarDate, toTime } from './date-time-model'
 

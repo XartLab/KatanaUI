@@ -1,7 +1,8 @@
 # @katanaview/ui
 
 KatanaConsole 自建的组件框架（决策记录 [0049](../../docs/architecture/adr/0049-self-built-ui-framework.md)）：Radix 做行为底座，shadcn 的代码做起步，Tailwind v4 写样式，颜色、字体、间距、动效全部取自 `tokens.json` 生成的 token。
-私有包，AGPL-3.0-only；`src/primitives/` 里的文件是 shadcn/ui 的衍生（MIT，文件头写着）；我们自己写的件在 `src/katana/`（AGPL）。不依赖应用代码，也不依赖别的 `@katanaview/*` 包。
+私有包（还没发 npm），许可证 **MIT**（用户 2026-11-14 定，#1876），好复用到别的量化项目，包括不是 AGPL 的项目；应用与别的 `@katanaview/*` 包仍是 AGPL-3.0。`src/primitives/` 里的文件是 shadcn/ui 的衍生（MIT，文件头写着出处），我们自己写的件在 `src/katana/`（也是 MIT）。
+不依赖应用代码，也不依赖别的 `@katanaview/*` 包，所以 MIT 的包里不会混进 AGPL 的代码（`.dependency-cruiser.cjs` 的 `ui-standalone` 守着）。包里每个源文件头写 `SPDX-License-Identifier: MIT`，`node scripts/check-license.mjs --fix` 会补上缺的、改掉写成 AGPL 的头。
 
 ## 分层
 

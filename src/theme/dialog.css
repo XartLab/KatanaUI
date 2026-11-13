@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: AGPL-3.0-only */
+/* SPDX-License-Identifier: MIT */
 /* 对话框里手写的头、身、脚：应用里几十个对话框内容用 `<div className="k-dlg-body ...">` 自己排版，不经 DialogBody / DialogFooter。
    这几条规则原来在应用的 ui.css 里（#1797 搬进包）。用 :where() 把优先级压到 0：包的 Tailwind 类不分层、排在应用样式后面，
    带优先级的规则会压过应用里 `.kc-xxx-form { padding: … }` 这类对本对话框的覆盖；零优先级则任何一条应用规则都能盖掉它。

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: AGPL-3.0-only
+// SPDX-License-Identifier: MIT
 import { useState, type CSSProperties } from 'react'
 // 搬自 src/ui（#1860），皮肤在 ../theme/rolling-text.css。
 // #1861 升级成里程表式：变了的那一位不再只是旧字滑出、新字滑入，而是像里程表一样把中间的数字依次转过去（7 到 9 会看到 8 一闪而过），

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: AGPL-3.0-only
+// SPDX-License-Identifier: MIT
 import { StrictMode, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import './gallery.css'

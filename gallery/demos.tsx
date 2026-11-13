@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: AGPL-3.0-only
+// SPDX-License-Identifier: MIT
 import type { ComponentType } from 'react'
 import { DateTimeInputDemo, NumberInputDemo, SkeletonDemo } from './pages/fields'
 import { BadgeDemo, DotMatrixDemo, KbdDemo, LcdDemo, LedDemo, RollingTextDemo } from './pages/readouts'

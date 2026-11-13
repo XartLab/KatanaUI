@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: AGPL-3.0-only
+// SPDX-License-Identifier: MIT
 
 // 「加载中」的闸门：开始等以后 500ms 内到了不出骨架（免得一闪），超过了才出；之后到 2s 改说「仍在加载」，到 10s 转成带重试的琥珀条（states.md 加载态）。
 // 参照 Kobra Skeleton（kobra.systems/components/skeleton，2026-10-26 读自其页面）：只取量（延迟之后出、出过才揭示），不搬代码。

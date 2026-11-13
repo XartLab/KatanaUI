@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: AGPL-3.0-only
+// SPDX-License-Identifier: MIT
 import { useEffect, useSyncExternalStore } from 'react'
 import { ToggleGroup, ToggleGroupItem } from '../src/index'
 import { DEMOS } from './demos'

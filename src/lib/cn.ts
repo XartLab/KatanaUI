@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: AGPL-3.0-only
+// SPDX-License-Identifier: MIT
 // 取自 shadcn/ui 的 lib/utils（https://ui.shadcn.com ，MIT，Copyright (c) 2023 shadcn）的 cn，加了我们自己的字号档类。
 import { clsx, type ClassValue } from 'clsx'
 import { extendTailwindMerge } from 'tailwind-merge'

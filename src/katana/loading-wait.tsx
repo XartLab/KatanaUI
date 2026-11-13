@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: AGPL-3.0-only
+// SPDX-License-Identifier: MIT
 import { useEffectEvent, useLayoutEffect, useState, type ReactNode } from 'react'
 import { LOADING_TIMING, skeletonRows, startLoadingGate, type LoadingPhase } from './loading-gate'
 import { LoadingView, type LoadingTexts } from './loading-view'

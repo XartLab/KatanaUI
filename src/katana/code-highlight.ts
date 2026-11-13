@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: AGPL-3.0-only
+// SPDX-License-Identifier: MIT
 // 代码块用的小型词法切分（katana/code-block.tsx 的文件头写了出处）：把一段源码按语言切成「类型 + 文字」，一行一组。
 // 不是完整的语法分析：只认注释、字符串、数字、关键字、函数调用、标点这几类，够脚本、Agent 定义、文档里的代码看。
 // 没有用 prism-react-renderer 之类的依赖：这几类用一条正则按次序切就够（2026-11-14 评估：加依赖要多一个包、多一份许可证审查，换来的只是更多语言）。

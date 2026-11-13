@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: AGPL-3.0-only */
+/* SPDX-License-Identifier: MIT */
 /* 原样搬自 src/ui/ui.css（#1860，2026-11-14）；#1861 起位上的动效改成里程表式转轮（见 katana/rolling-text.tsx 的文件头），类名没改。 */
 
 /* 数字逐位滚动（RollingText）：整串数字同时闪 150ms 涨色 / 跌色（照 OpenMarket）；每一位像里程表那样转。 */

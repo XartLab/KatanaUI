@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: AGPL-3.0-only */
+/* SPDX-License-Identifier: MIT */
 /* 原样搬自 src/ui/ui.css（#1860，2026-11-14）：类名与规则都没改，应用里的件（src/ui/*.tsx）是这里的件外面包的一层。 */
 
 /* 日期时间输入（#368，DateTimeInput）：外框照文本框 .k-in（30 高、4% 白底、8% 白边、圆角 6），里面是可以逐段打字的「年-月-日」与「时:分」；

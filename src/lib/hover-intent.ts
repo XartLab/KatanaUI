@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: AGPL-3.0-only
+// SPDX-License-Identifier: MIT
 // 悬停意图：指针停在上面一小会儿才算「想看」，路过不触发；离开也等一小会儿再收，给指针从触发处走到弹层上留时间。
 // 来源：rare-ui 的 web-search 的行内引用（2026-11-14 读）里学到的行为——停 300ms 开、离开 150ms 收、键盘聚焦立即开；实现为本仓库原创。
 import { useEffect, useRef, useState } from 'react'

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: AGPL-3.0-only
+// SPDX-License-Identifier: MIT
 // 数字框的取值规则（纯函数，组件与单测共用）。
 // 拖动改值的约定：按住数字框左右拖，向右变大、向左变小；Shift 粗调（一格 ×10），Alt 精调（一格 ×0.1）；方向键同理。
 // 出处：网页里拖数值的主流做法是 Figma 的（Alt / Option 拖动是更精细，Figma 论坛的官方答复，forum.figma.com 「option drag to change

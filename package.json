@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "description": "KATANAview 自己的组件框架：设计 token、Tailwind 主题、动效，以及 Radix 底座的基础件（起步代码取自 shadcn/ui）。不依赖应用与其他 @katanaview 包（决策记录 0049）。",
-  "license": "AGPL-3.0-only",
+  "license": "MIT",
   "files": [
     "src",
     "LICENSE",
