@@ -130,6 +130,7 @@ export { Tabs, TabsContent, TabsList, TabsTrigger, tabsListVariants } from './pr
 export { ToggleGroup, ToggleGroupItem, toggleGroupVariants, toggleItemVariants } from './primitives/toggle-group'
 export { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger, tooltipContentClass } from './primitives/tooltip'
 export { MultiSelect } from './patterns/multi-select'
+export { QuoteTable, type QuoteGroup, type QuoteRow, type QuoteTableProps } from './patterns/quote-table'
 export {
   Combobox,
   ComboboxContent,
@@ -198,3 +199,24 @@ export {
   type DurationValue,
 } from './katana/duration-picker'
 export { useHoverIntent } from './lib/hover-intent'
+
+// 报价与行情类的件（#1884）：迷你图、进度条、矩形树图（后三件从应用的分析视图提来）；行内价格标签、报价卡与一排、区间条、评级仪表是新做的。
+// 功能参照 TradingView 小组件，只取「给用户看什么、怎么交互」，不嵌、不抄（用户 2026-11-14 定：我们做自己的）。分组页签行情表在 patterns/。
+export { Sparkline, sparkPoints, sparkTone, type SparklineProps } from './katana/sparkline'
+export { GaugeBar, type GaugeBarClasses, type GaugeBarProps } from './katana/gauge-bar'
+export { Treemap, type TreemapClasses, type TreemapProps } from './katana/treemap'
+export {
+  colorStep,
+  layoutTreemap,
+  TREEMAP_H,
+  TREEMAP_W,
+  type TreemapBlock,
+  type TreemapCell,
+  type TreemapItem,
+} from './katana/treemap-model'
+export { PriceTag, type PriceTagProps } from './katana/price-tag'
+export { QuoteCard, QuoteStrip, type QuoteCardProps, type QuoteStripProps } from './katana/quote-card'
+export { RangeBar, rangeShare, type RangeBarProps } from './katana/range-bar'
+export { RatingGauge, type RatingGaugeProps } from './katana/rating-gauge'
+export { ratingAngle, ratingZone } from './katana/rating-gauge-model'
+export { quoteTone, type QuoteTone } from './katana/quote-tone'

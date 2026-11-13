@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: MIT
 import { existsSync, readFileSync } from 'node:fs'
+import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vite-plus/test'
 import { PAGES } from '../gallery/registry'
 import { buildRegistry, registryText } from './registry-json.mjs'
 
-const pkgDir = new URL('..', import.meta.url).pathname
+const pkgDir = fileURLToPath(new URL('..', import.meta.url))
 
 interface Item {
   name: string

@@ -1,12 +1,13 @@
 // SPDX-License-Identifier: MIT
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs'
 import { join } from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vite-plus/test'
 
 // 换皮不改组件（#1862）：组件只读语义 token，别的项目覆盖 tokens.css 里的变量就能换皮（docs/theming.md）。
 // 所以件里出现的每个 var(--x)（含 Tailwind 的 h-(--x) 简写）都得是 tokens.css 里声明过的名字；写了没声明的名字，换皮的人覆盖了也没用。
 // 三类不是 token：Radix 在打开的弹层上量好写进来的 --radix-*，动效入场用的 --k-in-*（带 fallback，由调用方覆盖），Tailwind 自己的 --tw-*。
-const SRC = new URL('.', import.meta.url).pathname
+const SRC = fileURLToPath(new URL('.', import.meta.url))
 const RUNTIME = [/^--radix-/, /^--k-in-/, /^--tw-/]
 
 const walk = (dir: string): string[] =>

@@ -93,6 +93,11 @@
           "target": "~/src/katana/ui/theme/number-input.css"
         },
         {
+          "path": "src/theme/quote.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/quote.css"
+        },
+        {
           "path": "src/theme/rolling-text.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/rolling-text.css"
@@ -912,6 +917,19 @@
       ]
     },
     {
+      "name": "gauge-bar",
+      "type": "registry:component",
+      "title": "Gauge Bar",
+      "description": "上面一行名字、数和档位词，中间一条进度条标出数的位置，下面一句说明数是怎么来的。取不到时不画填充，数那里写原因。从应用的分析视图提来。",
+      "files": [
+        {
+          "path": "src/katana/gauge-bar.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/katana/gauge-bar.tsx"
+        }
+      ]
+    },
+    {
       "name": "kbd",
       "type": "registry:component",
       "title": "Kbd",
@@ -1123,6 +1141,94 @@
       ]
     },
     {
+      "name": "price-tag",
+      "type": "registry:component",
+      "title": "Price Tag",
+      "description": "夹在一句话或一行里的「名字 价格 涨跌」，数字等宽对齐，涨跌带三角与颜色，跟着周围的字号走。",
+      "registryDependencies": [
+        "@katana/quote-tone"
+      ],
+      "files": [
+        {
+          "path": "src/katana/price-tag.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/katana/price-tag.tsx"
+        }
+      ]
+    },
+    {
+      "name": "quote-card",
+      "type": "registry:component",
+      "title": "Quote Card",
+      "description": "一只品种一张卡：名字与代码、最新价（大）、涨跌与涨跌幅、可选的迷你图与底部一行；QuoteStrip 是一排小号的卡，放不下横向滚动。",
+      "registryDependencies": [
+        "@katana/quote-tone",
+        "@katana/sparkline"
+      ],
+      "files": [
+        {
+          "path": "src/katana/quote-card.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/katana/quote-card.tsx"
+        }
+      ]
+    },
+    {
+      "name": "quote-tone",
+      "type": "registry:lib",
+      "title": "Quote Tone",
+      "description": "一列数从旧到新，整宽铺开、上下按这列的高低，一根线。线色按头尾涨跌（涨跌色跟涨跌配色走），没有数据只留「—」。从应用的分析视图提来。",
+      "files": [
+        {
+          "path": "src/katana/quote-tone.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/katana/quote-tone.ts"
+        }
+      ]
+    },
+    {
+      "name": "range-bar",
+      "type": "registry:component",
+      "title": "Range Bar",
+      "description": "一条横线从最低到最高，标记指着现价在区间里的位置，两端写最低与最高。用来看当日区间、52 周区间。",
+      "files": [
+        {
+          "path": "src/katana/range-bar.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/katana/range-bar.tsx"
+        }
+      ]
+    },
+    {
+      "name": "rating-gauge-model",
+      "type": "registry:lib",
+      "title": "Rating Gauge Model",
+      "description": "半圆分五段（强烈卖出到强烈买入），一根指针转到分数那一段，圆心下面写档位词，下面可再放卖出 / 中性 / 买入各几个。",
+      "files": [
+        {
+          "path": "src/katana/rating-gauge-model.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/katana/rating-gauge-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "rating-gauge",
+      "type": "registry:component",
+      "title": "Rating Gauge",
+      "description": "半圆分五段（强烈卖出到强烈买入），一根指针转到分数那一段，圆心下面写档位词，下面可再放卖出 / 中性 / 买入各几个。",
+      "registryDependencies": [
+        "@katana/rating-gauge-model"
+      ],
+      "files": [
+        {
+          "path": "src/katana/rating-gauge.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/katana/rating-gauge.tsx"
+        }
+      ]
+    },
+    {
       "name": "rolling-text",
       "type": "registry:component",
       "title": "Rolling Text",
@@ -1148,6 +1254,22 @@
           "path": "src/katana/skeleton.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/katana/skeleton.tsx"
+        }
+      ]
+    },
+    {
+      "name": "sparkline",
+      "type": "registry:component",
+      "title": "Sparkline",
+      "description": "一列数从旧到新，整宽铺开、上下按这列的高低，一根线。线色按头尾涨跌（涨跌色跟涨跌配色走），没有数据只留「—」。从应用的分析视图提来。",
+      "registryDependencies": [
+        "@katana/quote-tone"
+      ],
+      "files": [
+        {
+          "path": "src/katana/sparkline.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/katana/sparkline.tsx"
         }
       ]
     },
@@ -1272,6 +1394,38 @@
       ]
     },
     {
+      "name": "treemap-model",
+      "type": "registry:lib",
+      "title": "Treemap Model",
+      "description": "一格一项，面积按大小，颜色按涨跌分七档（跟涨跌配色走），格子够大才写名字和数；点组头下钻，底部是色例。排布用 d3-hierarchy 的 squarify。从应用的分析视图提来。",
+      "dependencies": [
+        "d3-hierarchy@3.1.3"
+      ],
+      "files": [
+        {
+          "path": "src/katana/treemap-model.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/katana/treemap-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "treemap",
+      "type": "registry:component",
+      "title": "Treemap",
+      "description": "一格一项，面积按大小，颜色按涨跌分七档（跟涨跌配色走），格子够大才写名字和数；点组头下钻，底部是色例。排布用 d3-hierarchy 的 squarify。从应用的分析视图提来。",
+      "registryDependencies": [
+        "@katana/treemap-model"
+      ],
+      "files": [
+        {
+          "path": "src/katana/treemap.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/katana/treemap.tsx"
+        }
+      ]
+    },
+    {
       "name": "web-search",
       "type": "registry:component",
       "title": "Web Search",
@@ -1328,6 +1482,24 @@
           "path": "src/patterns/multi-select.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/patterns/multi-select.tsx"
+        }
+      ]
+    },
+    {
+      "name": "quote-table",
+      "type": "registry:component",
+      "title": "Quote Table",
+      "description": "上面一排页签（指数、自选、热门……），下面是当前这组的行情表：名称与代码、迷你图、最新价、涨跌幅。由 Tabs 与 Sparkline 组出来。",
+      "registryDependencies": [
+        "@katana/quote-tone",
+        "@katana/sparkline",
+        "@katana/tabs"
+      ],
+      "files": [
+        {
+          "path": "src/patterns/quote-table.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/patterns/quote-table.tsx"
         }
       ]
     },

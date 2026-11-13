@@ -24,6 +24,16 @@ import {
   ThemeSelectorDemo,
   WebSearchDemo,
 } from './pages/rare2'
+import {
+  GaugeBarDemo,
+  PriceTagDemo,
+  QuoteCardDemo,
+  QuoteTableDemo,
+  RangeBarDemo,
+  RatingGaugeDemo,
+  SparklineDemo,
+  TreemapDemo,
+} from './pages/quotes'
 import { AccordionDemo, TabsDemo } from './pages/layout'
 import { ContextMenuDemo, DialogDemo, DropdownMenuDemo, PopoverDemo, TooltipDemo } from './pages/overlays'
 import {
@@ -92,6 +102,14 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'web-search': WebSearchDemo,
   'task-list': TaskListDemo,
   'duration-picker': DurationPickerDemo,
+  sparkline: SparklineDemo,
+  'gauge-bar': GaugeBarDemo,
+  treemap: TreemapDemo,
+  'price-tag': PriceTagDemo,
+  'quote-card': QuoteCardDemo,
+  'range-bar': RangeBarDemo,
+  'rating-gauge': RatingGaugeDemo,
+  'quote-table': QuoteTableDemo,
 }
 
 /**

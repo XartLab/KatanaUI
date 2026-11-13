@@ -1,0 +1,458 @@
+/* SPDX-License-Identifier: MIT */
+/* 报价与行情类的件（#1884）。迷你图、进度条、矩形树图的规则从应用的 src/styles/analysis.css 原样搬来（kc-an-* 改名 k-*，数值没动）；
+   其余是新做的。颜色只用 token（--pnl-up / --pnl-down 跟涨跌配色走）；数字一律等宽（tabular-nums）；动效只用三条弹簧的 CSS 形式（--dur-* / --ease-*）。 */
+
+/* —— 迷你图 —— */
+.k-spark {
+  display: block;
+  width: 100%;
+  height: 36px;
+  overflow: visible;
+}
+.k-spark polyline {
+  fill: none;
+  stroke: var(--ink-200);
+  stroke-width: 2;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+.k-spark.is-up polyline {
+  stroke: var(--pnl-up);
+}
+.k-spark.is-down polyline {
+  stroke: var(--pnl-down);
+}
+.k-spark-empty {
+  color: var(--ink-300);
+  font: var(--text-data) var(--font-sans);
+  font-weight: 400;
+  line-height: 36px;
+}
+
+/* —— 进度条加一句解释 —— */
+.k-gauge {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  min-width: 0;
+}
+.k-gauge-head {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.k-gauge-label {
+  color: var(--ink-300);
+  font: var(--text-data) var(--font-sans);
+}
+.k-gauge-value {
+  color: var(--ink-100);
+  font: var(--text-title) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+}
+.k-gauge-value.is-unavailable {
+  color: var(--ink-300);
+  font: var(--text-data) var(--font-sans);
+}
+.k-gauge-track {
+  position: relative;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--alpha-white-7);
+  overflow: hidden;
+}
+.k-gauge-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  border-radius: 3px;
+  background: var(--signal-orange);
+  transition: width var(--dur-snappy) var(--ease-snappy);
+}
+.k-gauge-note {
+  margin: 0;
+  color: var(--ink-300);
+  font: var(--text-caption) var(--font-sans);
+  line-height: 16px;
+}
+
+/* —— 矩形树图 —— */
+.k-treemap {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  min-width: 0;
+}
+.k-treemap-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+.k-treemap-plot {
+  position: relative;
+  height: 320px;
+  overflow: hidden;
+}
+.k-treemap-head {
+  position: absolute;
+  z-index: 1;
+  height: 16px;
+  padding: 0 4px;
+  overflow: hidden;
+  border: 0;
+  color: var(--ink-200);
+  background: transparent;
+  font: var(--text-caption) var(--font-sans);
+  font-weight: 600;
+  text-align: left;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.k-treemap-head:hover {
+  color: var(--ink-100);
+  text-decoration: underline;
+}
+.k-treemap-cell {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  color: var(--ink-100);
+  font: var(--text-caption) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+  line-height: 14px;
+  text-align: center;
+}
+.k-treemap-cell.is-link {
+  cursor: pointer;
+}
+.k-treemap-cell.is-link:hover {
+  outline: 1px solid var(--ink-100);
+  outline-offset: -1px;
+}
+.k-treemap-name {
+  max-width: 100%;
+  overflow: hidden;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.k-treemap-legend {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.k-treemap-legend li {
+  flex: 1 1 0;
+  height: 16px;
+  color: var(--ink-100);
+  font: var(--text-caption) var(--font-sans);
+  line-height: 16px;
+  text-align: center;
+}
+.k-treemap .is-step-3 {
+  background: color-mix(in srgb, var(--pnl-down) 100%, var(--bg-000));
+}
+.k-treemap .is-step-2 {
+  background: color-mix(in srgb, var(--pnl-down) 70%, var(--bg-000));
+}
+.k-treemap .is-step-1 {
+  background: color-mix(in srgb, var(--pnl-down) 42%, var(--bg-000));
+}
+.k-treemap .is-step0,
+.k-treemap .is-stepna {
+  background: color-mix(in srgb, var(--ink-300) 30%, var(--bg-000));
+}
+.k-treemap .is-step1 {
+  background: color-mix(in srgb, var(--pnl-up) 42%, var(--bg-000));
+}
+.k-treemap .is-step2 {
+  background: color-mix(in srgb, var(--pnl-up) 70%, var(--bg-000));
+}
+.k-treemap .is-step3 {
+  background: color-mix(in srgb, var(--pnl-up) 100%, var(--bg-000));
+}
+
+/* —— 行内价格标签 —— */
+.k-price-tag {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  color: var(--ink-100);
+  font: var(--text-data) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.k-price-tag-name {
+  color: var(--ink-300);
+}
+.k-price-tag-glyph {
+  margin-right: 2px;
+  font-size: 0.7em;
+}
+.k-price-tag.is-up .k-price-tag-change,
+.k-quote-card.is-up .k-quote-change,
+.k-quote-rows tr.is-up .k-quote-rows-change {
+  color: var(--pnl-up);
+}
+.k-price-tag.is-down .k-price-tag-change,
+.k-quote-card.is-down .k-quote-change,
+.k-quote-rows tr.is-down .k-quote-rows-change {
+  color: var(--pnl-down);
+}
+.k-price-tag.is-flat .k-price-tag-change,
+.k-quote-card.is-flat .k-quote-change,
+.k-quote-rows tr.is-flat .k-quote-rows-change {
+  color: var(--ink-300);
+}
+
+/* —— 报价卡与一排 —— */
+.k-quote-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  padding: 10px 12px;
+  border: 1px solid var(--line-100);
+  border-radius: var(--radius-control);
+  background: var(--bg-100);
+  color: var(--ink-100);
+  font: var(--text-data) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+  text-align: left;
+}
+button.k-quote-card.is-link {
+  cursor: pointer;
+  transition:
+    background-color var(--dur-snappy) var(--ease-snappy),
+    transform var(--dur-snappy) var(--ease-snappy);
+}
+button.k-quote-card.is-link:hover {
+  background: var(--bg-200);
+}
+button.k-quote-card.is-link:active {
+  transform: scale(0.98);
+}
+button.k-quote-card.is-link:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 1px;
+}
+.k-quote-head {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  min-width: 0;
+}
+.k-quote-name {
+  overflow: hidden;
+  color: var(--ink-200);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.k-quote-symbol {
+  color: var(--ink-300);
+  font: var(--text-caption) var(--font-sans);
+}
+.k-quote-price {
+  font: var(--text-title) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+}
+.k-quote-change {
+  display: flex;
+  gap: 8px;
+}
+.k-quote-spark {
+  height: 28px;
+}
+.k-quote-footer {
+  display: block;
+  margin-top: 2px;
+}
+.k-quote-card.is-sm {
+  flex: 0 0 auto;
+  width: 148px;
+}
+.k-quote-card.is-sm .k-quote-price {
+  font: var(--text-body) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+}
+.k-quote-strip {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+}
+.k-quote-strip-item {
+  display: flex;
+  flex: 0 0 auto;
+}
+
+/* —— 区间条 —— */
+.k-range {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  color: var(--ink-200);
+  font: var(--text-caption) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+}
+.k-range-end {
+  display: flex;
+  flex-direction: column;
+  flex: 0 0 auto;
+}
+.k-range-end.is-high {
+  align-items: flex-end;
+}
+.k-range-end small {
+  color: var(--ink-300);
+  font: var(--text-caption) var(--font-sans);
+}
+.k-range-track {
+  position: relative;
+  flex: 1 1 auto;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--alpha-white-7);
+}
+.k-range-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  border-radius: 2px;
+  background: var(--ink-300);
+  transition: width var(--dur-snappy) var(--ease-snappy);
+}
+.k-range-mark {
+  position: absolute;
+  top: 50%;
+  width: 4px;
+  height: 12px;
+  margin: -6px 0 0 -2px;
+  border-radius: 2px;
+  background: var(--ink-100);
+  transition: left var(--dur-snappy) var(--ease-snappy);
+}
+
+/* —— 评级仪表 —— */
+.k-rating {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+  max-width: 240px;
+  margin: 0;
+}
+.k-rating svg {
+  display: block;
+  width: 100%;
+  overflow: visible;
+}
+.k-rating-zone {
+  fill: none;
+  stroke-width: 12;
+  stroke-linecap: butt;
+  opacity: 0.35;
+  transition: opacity var(--dur-gentle) var(--ease-gentle);
+}
+.k-rating-zone.is-active {
+  opacity: 1;
+}
+.k-rating-zone.is-z0 {
+  stroke: var(--pnl-down);
+}
+.k-rating-zone.is-z1 {
+  stroke: color-mix(in srgb, var(--pnl-down) 55%, var(--ink-300));
+}
+.k-rating-zone.is-z2 {
+  stroke: var(--ink-300);
+}
+.k-rating-zone.is-z3 {
+  stroke: color-mix(in srgb, var(--pnl-up) 55%, var(--ink-300));
+}
+.k-rating-zone.is-z4 {
+  stroke: var(--pnl-up);
+}
+.k-rating-needle {
+  transform-origin: 100px 100px;
+  transition: transform var(--dur-gentle) var(--ease-gentle);
+  fill: var(--ink-100);
+}
+.k-rating-hub {
+  fill: var(--ink-100);
+}
+.k-rating-word {
+  color: var(--ink-100);
+  font: var(--text-title) var(--font-sans);
+}
+.k-rating-extra {
+  display: flex;
+  gap: 12px;
+  color: var(--ink-300);
+  font: var(--text-caption) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+}
+
+/* —— 分组页签行情表 —— */
+.k-quote-table {
+  min-width: 0;
+}
+.k-quote-table-empty {
+  margin: 0;
+  padding: 12px 0;
+  color: var(--ink-300);
+  font: var(--text-data) var(--font-sans);
+}
+.k-quote-rows {
+  width: 100%;
+  border-collapse: collapse;
+  font: var(--text-data) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+}
+.k-quote-rows th,
+.k-quote-rows td {
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--line-100);
+  font-weight: 400;
+  text-align: left;
+  vertical-align: middle;
+}
+.k-quote-rows thead th {
+  color: var(--ink-300);
+  font: var(--text-caption) var(--font-sans);
+}
+.k-quote-rows .is-num {
+  text-align: right;
+  white-space: nowrap;
+}
+.k-quote-rows-name {
+  color: var(--ink-100);
+}
+.k-quote-rows-name small {
+  margin-left: 6px;
+  color: var(--ink-300);
+  font: var(--text-caption) var(--font-sans);
+}
+.k-quote-rows-trend {
+  width: 96px;
+}
+.k-quote-rows-trend .k-spark {
+  height: 22px;
+}
+.k-quote-rows tr.is-link {
+  cursor: pointer;
+}
+.k-quote-rows tbody tr.is-link:hover {
+  background: var(--bg-200);
+}
+.k-quote-rows tbody tr.is-link:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: -2px;
+}

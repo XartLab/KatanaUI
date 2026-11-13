@@ -3,7 +3,7 @@
 // 版式照 kobra.systems/components/<件名> 的结构（2026-11-14 读）：左侧目录按类分组，右侧一个组件一页，页上依次是预览、属性、组成、键盘。
 // 属性表手写，跟组件的 TS 类型对：改了组件的属性要同步改这里（Radix 底座透传的属性不逐条列，每张表的说明里写透传给谁）。
 
-export type GroupId = 'forms' | 'overlays' | 'layout' | 'readouts' | 'feedback' | 'quant' | 'blocks'
+export type GroupId = 'forms' | 'overlays' | 'layout' | 'readouts' | 'feedback' | 'quotes' | 'quant' | 'blocks'
 
 export const GROUPS: readonly { id: GroupId; title: string }[] = [
   { id: 'forms', title: '表单控件' },
@@ -11,6 +11,7 @@ export const GROUPS: readonly { id: GroupId; title: string }[] = [
   { id: 'layout', title: '布局与导航' },
   { id: 'readouts', title: '读数与状态' },
   { id: 'feedback', title: '反馈' },
+  { id: 'quotes', title: '报价与行情' },
   { id: 'quant', title: '量化' },
   { id: 'blocks', title: '积木' },
 ]
@@ -2366,6 +2367,315 @@ export const PAGES: readonly DocPage[] = [
     donts: ['不要在精确值上挂估算标记。', '不要省略 title 里的依据。'],
     composition: 'EstimateBadge',
     keys: [],
+  },
+  {
+    id: 'sparkline',
+    group: 'quotes',
+    cardHeight: 60,
+    title: 'Sparkline 迷你图',
+    summary:
+      '一列数从旧到新，整宽铺开、上下按这列的高低，一根线。线色按头尾涨跌（涨跌色跟涨跌配色走），没有数据只留「—」。从应用的分析视图提来。',
+    exports: ['Sparkline', 'sparkPoints', 'sparkTone', 'quoteTone'],
+    props: [
+      {
+        part: 'Sparkline',
+        rows: [
+          { name: 'values', type: 'readonly number[]', desc: '从旧到新；少于两个数画「—」。' },
+          { name: 'label', type: 'string', desc: '读屏名（整句，含没有数据的说法），必填，由调用方按界面语言写。' },
+          { name: 'tone', type: "'up' | 'down' | 'flat'", desc: '不给就按头尾涨跌。' },
+          { name: 'className / emptyClassName', type: 'string', desc: '加在折线 svg 与空态「—」上。' },
+        ],
+      },
+      {
+        part: '纯函数',
+        note: 'sparkPoints(values, width, height) 给 polyline 的点；sparkTone(values) 取头尾三态；quoteTone(change) 由一个涨跌数取三态（报价类的件共用）。',
+        rows: [],
+      },
+    ],
+    states: [
+      '有数据：一根折线，线色按头尾涨跌（涨、跌、平）。',
+      '没有数据（少于两个数）：只留「—」，读屏名说清没有数据。',
+    ],
+    donts: [
+      '不要在折线上读具体数值：它只表达走势，要数请配价格文字。',
+      '不要把读屏名写死在包里，由调用方按界面语言传。',
+    ],
+    composition: 'Sparkline\n  svg role=img\n    polyline（vector-effect: non-scaling-stroke，线宽不随拉伸变）',
+    keys: [],
+  },
+  {
+    id: 'gauge-bar',
+    group: 'quotes',
+    cardHeight: 78,
+    title: 'GaugeBar 进度条',
+    summary:
+      '上面一行名字、数和档位词，中间一条进度条标出数的位置，下面一句说明数是怎么来的。取不到时不画填充，数那里写原因。从应用的分析视图提来。',
+    exports: ['GaugeBar'],
+    props: [
+      {
+        part: 'GaugeBar',
+        rows: [
+          { name: 'label', type: 'ReactNode', desc: '名字。' },
+          { name: 'value', type: 'ReactNode', desc: '已格式化好的数。' },
+          { name: 'unavailable', type: 'boolean', desc: '数取不到：换成弱色小字。' },
+          {
+            name: 'share',
+            type: 'number | null',
+            desc: '数在最小到最大之间的位置（0 到 1，越界按边画）；null 不画填充。填充宽度按 snappy 弹簧变。',
+          },
+          { name: 'level', type: 'ReactNode', desc: '档位词，常是一枚徽标。' },
+          { name: 'note', type: 'ReactNode', desc: '下面一句说明。' },
+          {
+            name: 'classes',
+            type: 'GaugeBarClasses',
+            desc: '每个部位（root、head、label、value、track、fill、note）额外加的类名，写在包里类名之后。',
+          },
+        ],
+      },
+    ],
+    states: [
+      '有位置：填充占轨道的 share，宽度按 snappy 弹簧变。',
+      '取不到（share 为 null）：不画填充，数换成弱色小字并写原因。',
+      '越界的 share 按边画。',
+    ],
+    donts: ['不要用它表达多段或多值：它只标一个数在区间里的位置。', '不要省掉说明一句：数怎么来的要写在 note 里。'],
+    composition: 'GaugeBar\n  figcaption（label · value · level）\n  div（轨道）\n    span（填充）\n  p（note）',
+    keys: [],
+  },
+  {
+    id: 'treemap',
+    group: 'quotes',
+    cardHeight: 400,
+    title: 'Treemap 矩形树图',
+    summary:
+      '一格一项，面积按大小，颜色按涨跌分七档（跟涨跌配色走），格子够大才写名字和数；点组头下钻，底部是色例。排布用 d3-hierarchy 的 squarify。从应用的分析视图提来。',
+    exports: ['Treemap', 'layoutTreemap', 'colorStep', 'TREEMAP_W', 'TREEMAP_H'],
+    props: [
+      {
+        part: 'Treemap',
+        note: '排布由调用方先用 layoutTreemap 算好再传 blocks；工具条（下拉、返回钮）从 toolbar 传。',
+        rows: [
+          { name: 'blocks', type: 'TreemapBlock<T>[]', desc: 'layoutTreemap 的结果。' },
+          { name: 'heads', type: 'boolean', default: 'false', desc: '画组头（可点下钻）；下钻之后传 false。' },
+          {
+            name: 'describe',
+            type: '(data: T) => { name, text, change }',
+            desc: '一格上写的名字与数，change 是颜色用的涨跌数（小数，null 是没有数）。',
+          },
+          {
+            name: 'limit',
+            type: 'number',
+            default: '0.03',
+            desc: '色例两端是多少（小数）：涨跌幅按 ±limit 切成 −3 到 +3 七档。',
+          },
+          { name: 'legendText', type: '(step: number) => string', desc: '色例上每一档写的字。' },
+          { name: 'toolbar', type: 'ReactNode', desc: '格子上面一行。' },
+          {
+            name: 'onGroup / onItem',
+            type: 'function',
+            desc: '点组头、点格子（给了 onItem 格子才是可聚焦的按钮，回车触发）。',
+          },
+          { name: 'classes', type: 'TreemapClasses', desc: '各部位额外的类名。' },
+        ],
+      },
+      {
+        part: 'layoutTreemap(items, grouped)',
+        note: 'items 是 { data, size, group }；size 不是正数的项不画；grouped 为 false 整张一块。colorStep(change, limit) 返回 −3 到 3 或 null。',
+        rows: [],
+      },
+    ],
+    states: [
+      '默认：一格一项，面积按大小，颜色七档。',
+      '分组下钻：点组头只剩那一组，工具条里自己放返回钮。',
+      '格子太小时只留色块，不写字。',
+      '没有涨跌数的格子用中性色。',
+    ],
+    donts: [
+      '不要用于项目数很多又没法下钻的场景，小格会糊成一片。',
+      '不要把排布放进渲染里重算：先用 layoutTreemap 排好再传 blocks。',
+    ],
+    composition:
+      'Treemap\n  div（工具条）\n  div（画布）\n    div（一组）\n      button（组头）\n      div（一格：名字 · 数）\n  ol（色例，七档）',
+    keys: [
+      ['Tab', '到可点的格子与组头'],
+      ['Enter', '点开格子（组头是原生按钮，Enter / Space 都行）'],
+    ],
+  },
+  {
+    id: 'price-tag',
+    group: 'quotes',
+    cardHeight: 48,
+    title: 'PriceTag 行内价格标签',
+    summary: '夹在一句话或一行里的「名字 价格 涨跌」，数字等宽对齐，涨跌带三角与颜色，跟着周围的字号走。',
+    exports: ['PriceTag'],
+    props: [
+      {
+        part: 'PriceTag',
+        rows: [
+          { name: 'name', type: 'string', desc: '品种名或代码；不给就只有价与涨跌。' },
+          { name: 'price', type: 'string', desc: '已格式化好的价。' },
+          { name: 'change', type: 'string', desc: '已格式化好的涨跌（带符号）。' },
+          {
+            name: 'tone',
+            type: "'up' | 'down' | 'flat'",
+            default: "'flat'",
+            desc: '涨跌三态：定颜色与三角（▲ ▼，平没有）。',
+          },
+          { name: 'label', type: 'string', desc: '读屏读的整句；不给就读可见的字。' },
+        ],
+      },
+    ],
+    states: ['涨、跌：涨跌文字带三角与对应颜色。', '平：没有三角，用弱色。', '只有价格：不写名字与涨跌。'],
+    donts: ['不要只靠颜色表达涨跌：三角与带符号的文字必须在。', '不要在包里格式化数字，价与涨跌由调用方传好。'],
+    composition: 'PriceTag\n  span（名字）\n  span（价）\n  span（三角 · 涨跌）',
+    keys: [],
+  },
+  {
+    id: 'quote-card',
+    group: 'quotes',
+    cardHeight: 300,
+    title: 'QuoteCard 报价卡',
+    summary:
+      '一只品种一张卡：名字与代码、最新价（大）、涨跌与涨跌幅、可选的迷你图与底部一行；QuoteStrip 是一排小号的卡，放不下横向滚动。',
+    exports: ['QuoteCard', 'QuoteStrip'],
+    props: [
+      {
+        part: 'QuoteCard',
+        rows: [
+          { name: 'name / symbol', type: 'string', desc: '名字与代码。' },
+          { name: 'price / change / percent', type: 'string', desc: '已格式化好的价、涨跌额、涨跌幅。' },
+          { name: 'tone', type: "'up' | 'down' | 'flat'", default: "'flat'", desc: '涨跌三态。' },
+          { name: 'spark / sparkLabel', type: 'number[] / string', desc: '迷你图的数与读屏名；不给 spark 就不画。' },
+          { name: 'footer', type: 'ReactNode', desc: '卡下面一行，常放 RangeBar。' },
+          { name: 'size', type: "'md' | 'sm'", default: "'md'", desc: 'sm 是 148 宽的小卡，QuoteStrip 里用。' },
+          { name: 'onSelect', type: '() => void', desc: '给了整张卡渲染成一个按钮（悬停提亮、按下缩到 0.98）。' },
+        ],
+      },
+      {
+        part: 'QuoteStrip',
+        rows: [
+          { name: 'label', type: 'string', desc: '读屏名，必填。' },
+          { name: 'items', type: '(QuoteCardProps & { id })[]', desc: '每张卡的属性加一个 id。' },
+        ],
+      },
+    ],
+    states: [
+      '默认：名字、价、涨跌；可带迷你图与底部一行。',
+      '可点：整张卡是按钮，悬停提亮、按下缩到 0.98、键盘焦点有环。',
+      '小号（QuoteStrip 里）：148 宽，放不下横向滚动。',
+    ],
+    donts: ['不要在卡里再放可点的子元素：给了 onSelect 整张卡已是按钮。', '不要把一排卡折行成网格：一排就是横向滚动。'],
+    composition:
+      'QuoteCard\n  span（名字 · 代码）\n  span（价）\n  span（三角 · 涨跌 · 涨跌幅）\n  Sparkline\n  span（footer）\nQuoteStrip\n  div role=list\n    div role=listitem\n      QuoteCard size=sm',
+    keys: [['Tab / Enter', '有 onSelect 时到卡上、触发']],
+  },
+  {
+    id: 'range-bar',
+    group: 'quotes',
+    cardHeight: 60,
+    title: 'RangeBar 区间条',
+    summary: '一条横线从最低到最高，标记指着现价在区间里的位置，两端写最低与最高。用来看当日区间、52 周区间。',
+    exports: ['RangeBar', 'rangeShare'],
+    props: [
+      {
+        part: 'RangeBar',
+        rows: [
+          {
+            name: 'low / high / value',
+            type: 'number',
+            desc: '最低、最高、现价。现价在区间外贴边；最高不大于最低时不画标记。',
+          },
+          { name: 'format', type: '(value: number) => string', desc: '数怎么写；不给最多两位小数。' },
+          { name: 'label', type: 'string', desc: '读屏名（role=meter），必填。' },
+          { name: 'lowLabel / highLabel', type: 'string', desc: '两端数上面的小标题。' },
+        ],
+      },
+      { part: 'rangeShare(low, high, value)', note: '现价在区间里的位置 0 到 1；算不出是 null。', rows: [] },
+    ],
+    states: [
+      '现价在区间内：标记停在对应位置，标记按弹簧滑动。',
+      '现价在区间外：标记贴边。',
+      '最高不大于最低或数不是有限数：不画标记，只留两端的数。',
+    ],
+    donts: ['不要拿它画没有上下界的量。', '不要省略 label：它是 role=meter，读屏要名字。'],
+    composition: 'RangeBar role=meter\n  span（最低）\n  span（轨道：填充 · 标记）\n  span（最高）',
+    keys: [],
+  },
+  {
+    id: 'rating-gauge',
+    group: 'quotes',
+    cardHeight: 190,
+    title: 'RatingGauge 评级仪表',
+    summary:
+      '半圆分五段（强烈卖出到强烈买入），一根指针转到分数那一段，圆心下面写档位词，下面可再放卖出 / 中性 / 买入各几个。',
+    exports: ['RatingGauge', 'ratingZone', 'ratingAngle'],
+    props: [
+      {
+        part: 'RatingGauge',
+        rows: [
+          {
+            name: 'score',
+            type: 'number',
+            desc: '−1（强烈卖出）到 +1（强烈买入），平分五段；越界夹到边，不是有限数当 0。',
+          },
+          { name: 'zones', type: '[string × 5]', desc: '五段的名字，从卖到买，档位词也取自这里。' },
+          { name: 'label', type: 'string', desc: '读屏名，必填。' },
+          { name: 'children', type: 'ReactNode', desc: '档位词下面再写点什么（个数统计）。' },
+        ],
+      },
+      {
+        part: 'ratingZone(score) / ratingAngle(score)',
+        note: '落在第几段（0 到 4）；指针转角（度，−90 到 +90）。',
+        rows: [],
+      },
+    ],
+    states: [
+      '五段之一高亮，其余淡显；指针用 gentle 弹簧转到分数。',
+      '分数越界夹到边，不是有限数当 0（中性）。',
+      '可在档位词下放个数统计。',
+    ],
+    donts: ['不要在包里决定评级怎么算：分数与五个档位名由调用方传。', '不要把中间一段当没有信号：中性是一个有效档位。'],
+    composition: 'RatingGauge\n  svg（五段弧 · 指针 · 圆心）\n  figcaption（档位词）\n  div（children）',
+    keys: [],
+  },
+  {
+    id: 'quote-table',
+    group: 'quotes',
+    cardHeight: 250,
+    title: 'QuoteTable 分组页签行情表',
+    summary:
+      '上面一排页签（指数、自选、热门……），下面是当前这组的行情表：名称与代码、迷你图、最新价、涨跌幅。由 Tabs 与 Sparkline 组出来。',
+    exports: ['QuoteTable'],
+    props: [
+      {
+        part: 'QuoteTable',
+        note: '页签值可受控（value / onValueChange）也可不受控（defaultValue，默认第一组）。',
+        rows: [
+          {
+            name: 'groups',
+            type: '{ id, label, rows: QuoteRow[] }[]',
+            desc: '每组一个页签；QuoteRow 是 { id, name, symbol?, price, percent?, tone?, spark?, sparkLabel? }。',
+          },
+          { name: 'columns', type: '{ name, trend, price, change }', desc: '表头四列的字。' },
+          { name: 'empty', type: 'string', desc: '这一组没有行时写的字。' },
+          { name: 'label', type: 'string', desc: '页签条的读屏名。' },
+          { name: 'onRow', type: '(row: QuoteRow) => void', desc: '给了行可点、可聚焦，回车触发。' },
+        ],
+      },
+    ],
+    states: [
+      '默认：第一组页签选中，下面是该组行情表。',
+      '行可点：悬停提亮，键盘 Tab 到行、Enter 触发。',
+      '空组：写调用方给的说明，不画表头。',
+      '没有迷你图数据的行：走势列留空。',
+    ],
+    donts: ['不要在包里写死列名与空态文案，由调用方传。', '不要把几十个品种塞进一组不分页：这是总览，不是完整自选表。'],
+    composition:
+      'QuoteTable\n  Tabs\n    TabsList > TabsTrigger（一组一个）\n    TabsContent\n      table（表头 · 行：名称 · Sparkline · 价 · 涨跌幅）',
+    keys: [
+      ['← →', '在页签间移动（Radix Tabs）'],
+      ['Tab / Enter', '到可点的行、触发'],
+    ],
   },
 ]
 
