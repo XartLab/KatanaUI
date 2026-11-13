@@ -1,0 +1,9 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "erasableSyntaxOnly": true,
+    "verbatimModuleSyntax": true
+  },
+  "include": ["src", "gallery"],
+  "exclude": ["src/**/*.test.ts", "src/**/*.test.tsx"]
+}

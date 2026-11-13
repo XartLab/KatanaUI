@@ -1,0 +1,95 @@
+/* SPDX-License-Identifier: AGPL-3.0-only */
+/* 展示页自己的版面（只在开发与测试服务器里有，不进正式构建）。件的样子全在包里，这里只管把它们摆开。
+   顺序：token → 这份版面 → 包的 ui.css（Tailwind 的类不分层，排最后才压得过这里没分层的规则）。 */
+@import '../src/tokens/tokens.css';
+
+html,
+body {
+  margin: 0;
+  background: var(--bg-000);
+  color: var(--ink-100);
+  font: var(--text-body) var(--font-sans);
+}
+.gal {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 24px 16px 32px;
+}
+.gal-head {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+.gal-head h1 {
+  margin: 0;
+  font: var(--text-title) var(--font-sans);
+}
+.gal-head p {
+  margin: 0;
+  color: var(--ink-300);
+  font: var(--text-caption) var(--font-sans);
+}
+.gal-sec {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  background: var(--bg-100);
+  border: 1px solid var(--line-100);
+  border-radius: var(--radius-overlay);
+}
+.gal-sec h2 {
+  margin: 0;
+  color: var(--ink-300);
+  font: var(--text-micro) var(--font-sans);
+  letter-spacing: var(--text-micro-tracking);
+  text-transform: uppercase;
+}
+.gal-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+.gal-cell {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 96px;
+}
+.gal-cell > small {
+  color: var(--ink-300);
+  font: var(--text-caption) var(--font-sans);
+}
+.gal-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font: var(--text-data) var(--font-sans);
+  color: var(--ink-200);
+}
+.gal-note {
+  margin: 0;
+  color: var(--ink-300);
+  font: var(--text-caption) var(--font-sans);
+}
+.gal-wide {
+  width: 100%;
+  max-width: 480px;
+}
+/* 不带 ?theme= 时并排放两个主题：每个主题一个 iframe（主题是根节点上的 data-theme，同一页放不下两套）。 */
+.gal-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  height: 100vh;
+}
+.gal-split iframe {
+  width: 100%;
+  height: 100%;
+  border: 1px solid var(--line-100);
+  background: var(--bg-000);
+}

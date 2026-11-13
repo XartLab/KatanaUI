@@ -1,0 +1,122 @@
+/* SPDX-License-Identifier: AGPL-3.0-only */
+/* 基础件的动效（决策记录 0049）。曲线与时长是 token 里的弹簧：--ease-snappy / --dur-snappy（菜单、提示、开关、页签的底块）、
+   --ease-gentle / --dur-gentle（对话框），由 scripts/sync-tokens.mjs 按 tokens/motion.tokens.json 算成 CSS linear()，与 motion/react 用同一份参数。
+   手感照 design/katana-console/project/motion.md：菜单从触发处轻升，对话框升起，页签的底块弹簧滑过去。
+   产品不跟系统的「减少动态效果」（AGENTS.md 的产品底线），所以这里不写 prefers-reduced-motion。
+   用单独的 scale、translate 属性，不用 transform：对话框靠 translate 居中，写 transform 会互相挤。 */
+
+@keyframes kc-pop-in {
+  from {
+    opacity: 0;
+    scale: 0.97;
+    translate: 0 4px;
+  }
+}
+@keyframes kc-pop-out {
+  to {
+    opacity: 0;
+    scale: 0.97;
+    translate: 0 4px;
+  }
+}
+@keyframes kc-dialog-in {
+  from {
+    opacity: 0;
+    scale: 0.96;
+    translate: -50% calc(-50% + 8px);
+  }
+}
+@keyframes kc-dialog-out {
+  to {
+    opacity: 0;
+    scale: 0.96;
+    translate: -50% calc(-50% + 8px);
+  }
+}
+@keyframes kc-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes kc-fade-out {
+  to {
+    opacity: 0;
+  }
+}
+@keyframes kc-accordion-down {
+  from {
+    height: 0;
+  }
+  to {
+    height: var(--radix-accordion-content-height);
+  }
+}
+@keyframes kc-accordion-up {
+  from {
+    height: var(--radix-accordion-content-height);
+  }
+  to {
+    height: 0;
+  }
+}
+
+/* 菜单、弹层、提示：从触发它的那一边长出来（Radix 给了 transform-origin）。入场走 snappy 弹簧，退场 120ms 直线淡出。 */
+[data-slot='dropdown-menu-content'],
+[data-slot='dropdown-menu-sub-content'] {
+  transform-origin: var(--radix-dropdown-menu-content-transform-origin);
+}
+[data-slot='popover-content'] {
+  transform-origin: var(--radix-popover-content-transform-origin);
+}
+[data-slot='tooltip-content'] {
+  transform-origin: var(--radix-tooltip-content-transform-origin);
+}
+[data-slot='dropdown-menu-content'][data-state='open'],
+[data-slot='dropdown-menu-sub-content'][data-state='open'],
+[data-slot='popover-content'][data-state='open'],
+[data-slot='tooltip-content'][data-state='delayed-open'],
+[data-slot='tooltip-content'][data-state='instant-open'] {
+  animation: kc-pop-in var(--dur-snappy) var(--ease-snappy) both;
+}
+[data-slot='dropdown-menu-content'][data-state='closed'],
+[data-slot='dropdown-menu-sub-content'][data-state='closed'],
+[data-slot='popover-content'][data-state='closed'],
+[data-slot='tooltip-content'][data-state='closed'] {
+  animation: kc-pop-out 120ms linear both;
+}
+/* 对话框：升起（gentle），背板淡入。 */
+[data-slot='dialog-content'][data-state='open'] {
+  animation: kc-dialog-in var(--dur-gentle) var(--ease-gentle) both;
+}
+[data-slot='dialog-content'][data-state='closed'] {
+  animation: kc-dialog-out 120ms linear both;
+}
+[data-slot='dialog-overlay'][data-state='open'] {
+  animation: kc-fade-in 120ms linear both;
+}
+[data-slot='dialog-overlay'][data-state='closed'] {
+  animation: kc-fade-out 120ms linear both;
+}
+/* 折叠：高度从 0 长到内容高度。 */
+[data-slot='accordion-content'][data-state='open'] {
+  animation: kc-accordion-down var(--dur-snappy) var(--ease-snappy);
+}
+[data-slot='accordion-content'][data-state='closed'] {
+  animation: kc-accordion-up 120ms linear;
+}
+/* 开关：圆钮滑过去走 snappy 弹簧（自带一点过冲）；按住时被压扁一点，像真的在推它。 */
+[data-slot='switch-thumb'] {
+  transition:
+    translate var(--dur-snappy) var(--ease-snappy),
+    scale 160ms var(--ease-snappy),
+    background-color 150ms linear;
+}
+[data-slot='switch']:active:not(:disabled) [data-slot='switch-thumb'] {
+  scale: 1.18 0.9;
+}
+/* 页签的底块：一块跟着当前页签滑的底（位置由 tabs.tsx 量出来写在行内）。 */
+[data-slot='tabs-pill'] {
+  transition:
+    translate var(--dur-snappy) var(--ease-snappy),
+    width var(--dur-snappy) var(--ease-snappy);
+}

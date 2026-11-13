@@ -1,0 +1,5 @@
+{
+  "snappy": { "stiffness": 520, "damping": 38, "mass": 0.8, "restDelta": 0.5 },
+  "gentle": { "stiffness": 260, "damping": 30, "mass": 1, "restDelta": 0.5 },
+  "settle": { "stiffness": 180, "damping": 28, "mass": 1, "restDelta": 0.5 }
+}
