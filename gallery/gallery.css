@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: AGPL-3.0-only */
-/* 展示页自己的版面（只在开发与测试服务器里有，不进正式构建）。件的样子全在包里，这里只管把它们摆开。
+/* 文档站自己的版面（只在开发与测试服务器里有，不进正式构建）。件的样子全在包里，这里只管把它们摆开。
    顺序：token → 这份版面 → 包的 ui.css（Tailwind 的类不分层，排最后才压得过这里没分层的规则）。 */
 @import '../src/tokens/tokens.css';
 
@@ -10,49 +10,150 @@ body {
   color: var(--ink-100);
   font: var(--text-body) var(--font-sans);
 }
-.gal {
+
+/* 外壳：左侧目录 + 右侧一页。窄屏时目录叠到上面。 */
+.gal-shell {
+  display: grid;
+  grid-template-columns: 224px minmax(0, 1fr);
+  min-height: 100vh;
+}
+.gal-nav {
+  position: sticky;
+  top: 0;
+  align-self: start;
   display: flex;
   flex-direction: column;
-  gap: 24px;
-  max-width: 960px;
-  margin: 0 auto;
-  padding: 24px 16px 32px;
-}
-.gal-head {
-  display: flex;
-  align-items: baseline;
-  gap: 12px;
-}
-.gal-head h1 {
-  margin: 0;
-  font: var(--text-title) var(--font-sans);
-}
-.gal-head p {
-  margin: 0;
-  color: var(--ink-300);
-  font: var(--text-caption) var(--font-sans);
-}
-.gal-sec {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  padding: 16px;
+  gap: 16px;
+  height: 100vh;
+  padding: 16px 12px 24px;
+  overflow-y: auto;
   background: var(--bg-100);
-  border: 1px solid var(--line-100);
-  border-radius: var(--radius-overlay);
+  border-right: 1px solid var(--line-100);
 }
-.gal-sec h2 {
-  margin: 0;
+.gal-brand {
+  color: var(--ink-100);
+  font: var(--text-title) var(--font-sans);
+  text-decoration: none;
+}
+.gal-nav h2 {
+  margin: 0 0 4px;
+  padding: 0 8px;
   color: var(--ink-300);
   font: var(--text-micro) var(--font-sans);
   letter-spacing: var(--text-micro-tracking);
   text-transform: uppercase;
+}
+.gal-nav ul {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.gal-nav li a {
+  display: block;
+  padding: 5px 8px;
+  border-radius: var(--radius-control);
+  color: var(--ink-200);
+  font: var(--text-data) var(--font-sans);
+  text-decoration: none;
+}
+.gal-nav li a:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--ink-100);
+}
+.gal-nav li a[aria-current='page'] {
+  background: color-mix(in srgb, var(--signal-orange) 14%, transparent);
+  color: var(--ink-100);
+}
+.gal-nav a:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: -2px;
+}
+
+.gal-main {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.gal-bar {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 24px;
+  background: var(--bg-000);
+  border-bottom: 1px solid var(--line-100);
+  color: var(--ink-300);
+  font: var(--text-caption) var(--font-sans);
+}
+.gal-main > main {
+  width: 100%;
+  max-width: 920px;
+  box-sizing: border-box;
+  padding: 24px 24px 64px;
+}
+.gal-missing {
+  color: var(--ink-300);
+}
+
+/* 一页 */
+.gal-doc {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+.gal-doc-head h1 {
+  margin: 0 0 6px;
+  font: var(--text-title) var(--font-sans);
+  font-size: 22px;
+}
+.gal-doc-head p {
+  margin: 0;
+  max-width: 62ch;
+  color: var(--ink-200);
+  font: var(--text-body) var(--font-sans);
+  line-height: 1.6;
+}
+.gal-doc h2 {
+  margin: 0 0 8px;
+  color: var(--ink-300);
+  font: var(--text-micro) var(--font-sans);
+  letter-spacing: var(--text-micro-tracking);
+  text-transform: uppercase;
+}
+.gal-doc h3 {
+  margin: 0;
+  color: var(--ink-100);
+  font: var(--text-data) var(--font-mono);
+  font-weight: 600;
+}
+
+/* 预览：一块底，里面摆各个状态。 */
+.gal-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 20px;
+  background: var(--bg-100);
+  border: 1px solid var(--line-100);
+  border-radius: var(--radius-overlay);
 }
 .gal-row {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 12px;
+}
+.gal-cap {
+  flex: none;
+  width: 84px;
+  color: var(--ink-300);
+  font: var(--text-caption) var(--font-mono);
 }
 .gal-cell {
   display: inline-flex;
@@ -75,32 +176,18 @@ body {
   margin: 0;
   color: var(--ink-300);
   font: var(--text-caption) var(--font-sans);
+  line-height: 1.5;
 }
 .gal-wide {
   width: 100%;
   max-width: 480px;
 }
-/* 不带 ?theme= 时并排放两个主题：每个主题一个 iframe（主题是根节点上的 data-theme，同一页放不下两套）。 */
-.gal-split {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  height: 100vh;
-}
-.gal-split iframe {
-  width: 100%;
-  height: 100%;
-  border: 1px solid var(--line-100);
-  background: var(--bg-000);
-}
-
 .gal-slider {
   display: flex;
   align-items: center;
   gap: 8px;
   width: 220px;
 }
-
 .gal-ctx {
   display: grid;
   place-items: center;
@@ -110,4 +197,77 @@ body {
   border-radius: 8px;
   color: var(--ink-200);
   user-select: none;
+}
+
+/* 属性表、组成、键盘 */
+.gal-prop {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 18px;
+}
+.gal-doc table {
+  width: 100%;
+  border-collapse: collapse;
+  font: var(--text-data) var(--font-sans);
+}
+.gal-doc th,
+.gal-doc td {
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--line-100);
+  text-align: left;
+  vertical-align: top;
+}
+.gal-doc thead th {
+  color: var(--ink-300);
+  font: var(--text-micro) var(--font-sans);
+  letter-spacing: var(--text-micro-tracking);
+}
+.gal-doc td {
+  color: var(--ink-200);
+}
+.gal-doc code {
+  color: var(--ink-100);
+  font: var(--text-caption) var(--font-mono);
+}
+.gal-keys th {
+  width: 220px;
+  font-weight: 400;
+}
+.gal-keys kbd {
+  padding: 1px 5px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 4px;
+  color: var(--ink-200);
+  font: var(--text-caption) var(--font-sans);
+}
+.gal-code {
+  margin: 0;
+  padding: 12px 14px;
+  overflow-x: auto;
+  background: var(--bg-000);
+  border: 1px solid var(--line-100);
+  border-radius: var(--radius-control);
+  color: var(--ink-200);
+  font: var(--text-data) var(--font-mono);
+  line-height: 1.6;
+}
+
+@media (max-width: 760px) {
+  .gal-shell {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .gal-nav {
+    position: static;
+    height: auto;
+    border-right: 0;
+    border-bottom: 1px solid var(--line-100);
+  }
+  .gal-bar {
+    position: static;
+  }
+  .gal-main > main {
+    padding: 16px 16px 48px;
+  }
 }

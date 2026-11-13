@@ -1,0 +1,23 @@
+/* SPDX-License-Identifier: AGPL-3.0-only */
+/* 原样搬自 src/ui/ui.css（#1860，2026-11-14）：类名与规则都没改，应用里的件（src/ui/*.tsx）是这里的件外面包的一层。 */
+
+.k-keys {
+  display: inline-flex;
+  gap: 4px;
+}
+/* 快捷键方块：照 OpenMarket tb-panels__key。20 高 · 圆角 4 · 6% 白底 12% 白边 · 10.5px 500 */
+.k-kbd {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 4px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 4px;
+  color: var(--ink-200);
+  font: var(--text-caption) var(--font-sans);
+  font-weight: 500;
+  line-height: 1;
+}

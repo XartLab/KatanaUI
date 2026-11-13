@@ -1,0 +1,159 @@
+// SPDX-License-Identifier: AGPL-3.0-only
+import { useRef, useState, type KeyboardEvent, type PointerEvent } from 'react'
+import { SCRUB_THRESHOLD_PX, nudged, scrubMode, scrubbed, typed, type ScrubMode } from './number-field-model'
+
+// 组件卡 Controls · 数字框。外观是卡上的皮肤（theme/number-input.css）。
+
+/**
+ * 数字框：一个框，值 + 可选的单位后缀，没有滑块、没有 −/+ 按钮。三种改法：
+ * 直接打字（越界夹进范围）、上下方向键（按步长，Shift 或 PageUp/PageDown 十档，Alt 精调）、按住左右拖（Shift 粗调、Alt 精调，规则见 number-field-model）。
+ * 角色是 spinbutton（WAI-ARIA 数字微调框模式）：带当前值、范围，有单位时带「值 + 单位」的文字。
+ * 只在值合法时回调，空串不回调；回调的值一定在 min / max 之内。
+ */
+export function NumberInput({
+  value,
+  onValue,
+  unit,
+  min,
+  max,
+  step = 1,
+  size,
+  width = 96,
+  label,
+  invalid,
+  disabled,
+  autoValue,
+  autoText,
+}: {
+  value: number
+  onValue: (value: number) => void
+  unit?: string
+  min?: number
+  max?: number
+  step?: number
+  size?: 'sm'
+  width?: number
+  label?: string
+  invalid?: boolean
+  /** 灰掉：不能打字、不能拖、方向键不动它。 */
+  disabled?: boolean
+  /** 哨兵值（例：-1、0 表示「自动」）：值等于它、又没在打字时，框里写 autoText，不把内部的数露给用户。 */
+  autoValue?: number
+  autoText?: string
+}) {
+  const autoShown = autoText !== undefined && value === autoValue
+  const [draft, setDraft] = useState<string | null>(null)
+  const [scrubbing, setScrubbing] = useState(false)
+  const input = useRef<HTMLInputElement>(null)
+  // 拖动：anchor 是「从哪个横坐标、哪个值算起」。中途换了修饰键（精细 ↔ 粗调）就把锚点挪到当前位置，值才不会跳。
+  const drag = useRef<{
+    pointer: number
+    startX: number
+    anchorX: number
+    anchorValue: number
+    mode: ScrubMode
+    last: number
+    moved: boolean
+  } | null>(null)
+  const range = { min, max, step }
+
+  const commit = (next: number) => {
+    if (next !== value) onValue(next)
+  }
+
+  const onPointerDown = (event: PointerEvent<HTMLSpanElement>) => {
+    // 正在打字（输入框有焦点）时按下去是选字，不拖；只响应主键。
+    if (disabled || event.button !== 0 || document.activeElement === input.current) return
+    drag.current = {
+      pointer: event.pointerId,
+      startX: event.clientX,
+      anchorX: event.clientX,
+      anchorValue: value,
+      mode: scrubMode({ shift: event.shiftKey, alt: event.altKey }),
+      last: value,
+      moved: false,
+    }
+  }
+  const onPointerMove = (event: PointerEvent<HTMLSpanElement>) => {
+    const state = drag.current
+    if (!state || state.pointer !== event.pointerId) return
+    if (!state.moved) {
+      if (Math.abs(event.clientX - state.startX) < SCRUB_THRESHOLD_PX) return
+      state.moved = true
+      event.currentTarget.setPointerCapture(event.pointerId)
+      // 按下时输入框已经拿到焦点了（点进去打字的默认行为）：拖起来就不是打字，放开焦点、清掉选区。
+      input.current?.blur()
+      window.getSelection()?.removeAllRanges()
+      setDraft(null)
+      setScrubbing(true)
+    }
+    const mode = scrubMode({ shift: event.shiftKey, alt: event.altKey })
+    if (mode !== state.mode) {
+      state.mode = mode
+      state.anchorX = event.clientX
+      state.anchorValue = state.last
+    }
+    const next = scrubbed(state.anchorValue, event.clientX - state.anchorX, mode, range)
+    if (next !== state.last) {
+      state.last = next
+      onValue(next)
+    }
+  }
+  const endDrag = (event: PointerEvent<HTMLSpanElement>) => {
+    if (drag.current?.pointer !== event.pointerId) return
+    if (drag.current.moved) event.currentTarget.releasePointerCapture(event.pointerId)
+    drag.current = null
+    setScrubbing(false)
+  }
+
+  const onKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+    const keys = { shift: event.shiftKey, alt: event.altKey }
+    let next: number | null = null
+    if (event.key === 'ArrowUp') next = nudged(value, 1, keys, range)
+    else if (event.key === 'ArrowDown') next = nudged(value, -1, keys, range)
+    else if (event.key === 'PageUp') next = nudged(value, 1, keys, range, true)
+    else if (event.key === 'PageDown') next = nudged(value, -1, keys, range, true)
+    else if (event.key === 'Home' && min !== undefined && event.ctrlKey) next = min
+    else if (event.key === 'End' && max !== undefined && event.ctrlKey) next = max
+    else if (event.key === 'Enter' || event.key === 'Escape') setDraft(null)
+    else return
+    if (next === null) return
+    event.preventDefault()
+    setDraft(null)
+    commit(next)
+  }
+
+  return (
+    <span
+      className={`k-num${size ? ` ${size}` : ''}${invalid ? ' err' : ''}${disabled ? ' dis' : ''}${scrubbing ? ' scrubbing' : ''}`}
+      style={{ width }}
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={endDrag}
+      onPointerCancel={endDrag}
+    >
+      <input
+        ref={input}
+        role="spinbutton"
+        inputMode="decimal"
+        aria-label={label}
+        aria-invalid={invalid ? true : undefined}
+        disabled={disabled}
+        aria-valuenow={value}
+        aria-valuemin={min}
+        aria-valuemax={max}
+        aria-valuetext={autoShown ? autoText : unit ? `${value} ${unit}` : undefined}
+        value={draft ?? (autoShown ? autoText : String(value))}
+        onChange={(event) => {
+          setDraft(event.target.value)
+          const next = typed(event.target.value, range)
+          if (next !== null) commit(next)
+        }}
+        onKeyDown={onKeyDown}
+        onFocus={autoShown ? (event) => event.target.select() : undefined}
+        onBlur={() => setDraft(null)}
+      />
+      {unit && <span className="k-unit">{unit}</span>}
+    </span>
+  )
+}

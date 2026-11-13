@@ -8,3 +8,11 @@
 @import './theme/menu.css';
 @import './theme/dialog.css';
 @import './theme/motion.css';
+@import './theme/led.css';
+@import './theme/lcd.css';
+@import './theme/kbd.css';
+@import './theme/badge.css';
+@import './theme/rolling-text.css';
+@import './theme/number-input.css';
+@import './theme/date-time.css';
+@import './theme/loading.css';

@@ -1,0 +1,71 @@
+/* SPDX-License-Identifier: AGPL-3.0-only */
+/* 原样搬自 src/ui/ui.css（#1860，2026-11-14）：类名与规则都没改，应用里的件（src/ui/*.tsx）是这里的件外面包的一层。 */
+
+/* LCDReadout */
+.k-lcd {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 2px;
+  background: var(--bg-000);
+  border: var(--hairline);
+  box-shadow: var(--recess);
+  padding: 6px 12px;
+  letter-spacing: var(--text-lcd-tracking);
+  font-family: var(--font-lcd);
+  font-variant-numeric: tabular-nums;
+}
+.k-lcd .t {
+  font-family: var(--font-dot);
+  font-size: var(--text-tag-size);
+  /* 点阵字不加字距（readability.md §3），也不继承 .k-lcd 给数字的字距 */
+  letter-spacing: 0;
+  color: var(--ink-300);
+}
+.k-lcd .v {
+  font-size: var(--text-lcd-size);
+  line-height: 20px;
+  font-weight: 500;
+  color: var(--ink-100);
+}
+.k-lcd .n {
+  font-family: var(--font-mono);
+  font-size: var(--text-micro-size);
+  line-height: 14px;
+  letter-spacing: 0;
+  color: var(--ink-300);
+  white-space: nowrap;
+}
+.k-lcd .v {
+  white-space: nowrap;
+}
+.k-lcd.tone-up .v {
+  color: var(--pnl-up);
+}
+.k-lcd.tone-down .v {
+  color: var(--pnl-down);
+}
+.k-lcd.tone-accent .v {
+  color: var(--signal-orange);
+}
+.k-lcd.tone-warn .v {
+  color: var(--signal-amber);
+}
+.k-lcd.is-empty .v {
+  color: var(--ink-300);
+}
+.k-lcd.fill {
+  display: flex;
+  min-width: 0;
+  padding: 6px 8px;
+  letter-spacing: 0.06em;
+}
+.k-lcd.inline {
+  flex-direction: row;
+  align-items: baseline;
+  gap: 6px;
+  padding: 2px 6px;
+}
+.k-lcd.inline .v {
+  font-size: var(--text-data-size);
+  line-height: 16px;
+}

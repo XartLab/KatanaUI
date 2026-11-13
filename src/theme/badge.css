@@ -1,0 +1,18 @@
+/* SPDX-License-Identifier: AGPL-3.0-only */
+/* 原样搬自 src/ui/ui.css（#1860，2026-11-14）：类名与规则都没改，应用里的件（src/ui/*.tsx）是这里的件外面包的一层。 */
+
+/* 品种名后的板块与风险徽标（Badges.tsx）：上标小字，颜色取次要文字色，不抢品种名。 */
+.k-badges {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: var(--space-1);
+  margin-left: var(--space-1);
+  flex: none;
+}
+.k-badge {
+  font: var(--text-micro) var(--font-sans);
+  letter-spacing: var(--text-micro-tracking);
+  color: var(--ink-300);
+  line-height: 1;
+  cursor: help;
+}

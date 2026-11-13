@@ -1,0 +1,60 @@
+/* SPDX-License-Identifier: AGPL-3.0-only */
+/* 原样搬自 src/ui/ui.css（#1860，2026-11-14）：类名与规则都没改，应用里的件（src/ui/*.tsx）是这里的件外面包的一层。 */
+
+/* StatusLED */
+.k-led {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  flex: none;
+  border-radius: var(--radius-pill);
+  background: var(--led-off);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.8);
+  transition:
+    background-color 60ms linear,
+    box-shadow 60ms linear;
+}
+.k-led.bare {
+  box-shadow: inset 0 0 0 1px var(--ink-300);
+}
+.k-led.on {
+  background: var(--signal-orange);
+  box-shadow: var(--glow-orange);
+}
+.k-led.ok {
+  background: var(--signal-green);
+  box-shadow: 0 0 6px var(--signal-green);
+}
+.k-led.warn {
+  background: var(--signal-amber);
+  box-shadow: 0 0 6px var(--signal-amber);
+}
+.k-led.danger {
+  background: var(--signal-red);
+  box-shadow: 0 0 6px var(--signal-red);
+}
+.k-led.link-a {
+  background: var(--link-a);
+  box-shadow: 0 0 6px var(--link-a);
+}
+.k-led.link-b {
+  background: var(--link-b);
+  box-shadow: 0 0 6px var(--link-b);
+}
+.k-led.link-c {
+  background: var(--link-c);
+  box-shadow: 0 0 6px var(--link-c);
+}
+.k-led.link-d {
+  background: var(--link-d);
+  box-shadow: 0 0 6px var(--link-d);
+}
+.k-led.sm {
+  width: 6px;
+  height: 6px;
+}
+.k-led.hollow {
+  background: transparent;
+  border: 1px solid var(--line-200);
+  box-shadow: none;
+}
