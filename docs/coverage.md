@@ -1,0 +1,130 @@
+<!-- SPDX-License-Identifier: AGPL-3.0-only -->
+<!-- 生成文件：pnpm --filter @katanaview/ui coverage。手写的是 coverage-map.json，不要改这份。 -->
+
+# 设计稿覆盖表
+
+设计稿存档 `design/katana-console/project/components/` 的 105 张组件卡，每张落到了哪里、做没做（#1870）。
+归属：基础件（`primitives/`）、自有件（`katana/`）、量化（`quant/`）、积木（`blocks/`，#1869）、面板（`src/panels` 与应用外壳）。
+状态：已做（卡的内容在包里或应用里做出来了，落点写在「落在哪里」）、部分（做了一块，缺什么写在备注）、没做。
+「计划」是已经定了名字、还没有的落点（积木层的 DataGrid、EmptyState、Toolbar，#1869），落地后挪进现有落点。
+
+## 汇总
+
+| 归属 | 已做 | 部分 | 没做 | 总数 | 已做 / 总数 |
+| --- | --- | --- | --- | --- | --- |
+| 基础件 | 3 | 1 | 0 | 4 | 3 / 4 |
+| 自有件 | 4 | 0 | 0 | 4 | 4 / 4 |
+| 量化 | 2 | 0 | 5 | 7 | 2 / 7 |
+| 积木 | 2 | 2 | 1 | 5 | 2 / 5 |
+| 面板 | 19 | 13 | 53 | 85 | 19 / 85 |
+| 合计 | | | | 105 | 30 / 105 |
+
+## 每张卡
+
+| 卡 | 分组 | 归属 | 落在哪里 | 状态 | 备注 |
+| --- | --- | --- | --- | --- | --- |
+| AccountMirror | 组合 | 面板 | — | 没做 | ATAS Following Manager 的对应，复制交易面板还没有这块界面 |
+| AccountRail | 组合 | 面板 | — | 没做 | 账户轨，账户面板是表，没有卡片轨与选中合计 |
+| AgentsStatus | 运行中心 | 面板 | `src/shell/AgentsPane.tsx` | 部分 | 有代理列表，没有可用灯、延迟、用量、费用与 MCP 一栏 |
+| AlertCenter | 发现 | 面板 | `src/panels/alerts` | 已做 |  |
+| AliceSessions | 运行中心 | 面板 | `src/panels/alice-session` | 已做 |  |
+| AlphaLedger | 决策 | 面板 | — | 没做 | 研究层，还没有对应面板 |
+| BondCalc | 固收 | 面板 | — | 没做 | 固收，还没有对应面板 |
+| BreakWorkbench | 对账 | 面板 | — | 没做 | 对账，还没有对应面板 |
+| BrinsonAttribution | 资产管理 | 面板 | — | 没做 | 资产管理，还没有对应面板 |
+| Calendar | 发现 | 面板 | `src/panels/journal/TradingCalendar.tsx` | 部分 | 交易日历有，发散热力底色与换手模式没有 |
+| CashLedger | 资产管理 | 面板 | — | 没做 | 资产管理，还没有对应面板 |
+| ChartTrader | 交易 | 面板 | `src/panels/chart/ChartTradeBar.tsx`、`src/panels/chart/TradeOverlay.tsx` | 部分 | 图上看单与下单有，拖动改价与止盈止损线没有 |
+| ClusterSearch | 订单流 | 面板 | — | 没做 | 足迹扫描器，还没有对应面板 |
+| CommandLine | 工作台 | 积木 | `Command`、`src/shell/QuickSearch.tsx` | 已做 | 命令面板用 Command，底栏常驻命令行（GO Bar）不是这一张的范围 |
+| ConsensusBlock | 交易 | 量化 | — | 没做 | 写命令提交前的必要条件块，还没有对应组件 |
+| Controls | 基元 | 基础件 | `Button`、`Input`、`Select`、`Slider`、`Checkbox`、`Switch`、`Tabs`、`ToggleGroup` | 已做 |  |
+| CorporateActions | 资产管理 | 面板 | — | 没做 | 资产管理，还没有对应面板 |
+| Cover | — | 自有件 | `packages/ui/design-system/components/Cover` | 已做 | 封面页，随设计系统带出 |
+| DOMHeatmap | 订单流 | 面板 | `src/panels/heatmap` | 部分 | 有热力图面板，盘口历史（时间 × 价格）一层没有 |
+| DOMLadder | 订单流 | 面板 | `src/panels/dom` | 已做 |  |
+| DataGrid | 数据 | 积木 | `DataGrid` | 已做 | #1869 把 DataTable 抽成积木 DataGrid；应用里 panels/kit/DataTable.tsx 是薄适配层 |
+| DataQuality | 研究 | 面板 | — | 没做 | 研究层，还没有对应面板 |
+| DataSources | 运行中心 | 面板 | `src/shell/ConnectionList.tsx` | 部分 | 连接列表有，延迟 LCD 与今日拉取量没有 |
+| DatasetCatalog | 研究 | 面板 | `src/shell/DatasetSourcesPane.tsx` | 部分 | 数据集来源有，字段数、频率、覆盖区间没有 |
+| DecisionJournal | 决策 | 面板 | — | 没做 | 决策层，还没有对应面板 |
+| DecisionQueue | 决策 | 面板 | — | 没做 | 决策层，还没有对应面板 |
+| DeploymentBoard | 研究 | 面板 | — | 没做 | 研究层，还没有对应面板 |
+| DotMatrix | 点阵 | 自有件 | `DotMatrix` | 已做 |  |
+| DrawingToolbar | 图表 | 面板 | `src/panels/chart/SelectedToolbar.tsx`、`src/panels/chart/FavoritesToolbar.tsx` | 已做 |  |
+| Entitlements | 运行中心 | 面板 | — | 没做 | 许可与权限，还没有对应面板 |
+| EquityCurve | 图表 | 量化 | `src/panels/kit/EquityCurve.tsx` | 已做 | 应用里有，还没抽进 quant 层 |
+| EventStudy | 研究 | 面板 | — | 没做 | 研究层，还没有对应面板 |
+| EventTimeline | 发现 | 面板 | — | 没做 | 发现，还没有对应面板 |
+| ExitStrategy | 交易 | 面板 | `src/panels/order-ticket` | 部分 | 下单面板里有止盈止损，自动退出两种模式没有 |
+| ExposureTimeline | 盈亏 | 面板 | — | 没做 | 盈亏，还没有对应面板 |
+| FactorDecay | 研究 | 面板 | — | 没做 | 研究层，还没有对应面板 |
+| FactorExposure | 资产管理 | 面板 | — | 没做 | 资产管理，还没有对应面板 |
+| FactorIC | 图表 | 面板 | — | 没做 | 研究层，还没有对应面板 |
+| FactorLibrary | 研究 | 面板 | — | 没做 | 研究层，还没有对应面板 |
+| FillLog | 组合 | 面板 | `src/panels/trades` | 已做 |  |
+| FlowGauges | 订单流 | 量化 | — | 没做 | 订单流四个仪表，还没有对应组件 |
+| Footprint | 图表 | 面板 | `src/panels/chart` | 部分 | 图表有，足迹层没有 |
+| Fundamentals | 资产管理 | 面板 | — | 没做 | 资产管理，还没有对应面板 |
+| GreeksBoard | 衍生品 | 面板 | — | 没做 | 衍生品，还没有对应面板 |
+| Heatmap | 图表 | 量化 | `src/panels/heatmap` | 已做 | 应用里有，还没抽进 quant 层 |
+| HypothesisLedger | 研究 | 面板 | — | 没做 | 研究层，还没有对应面板 |
+| IndicatorPanel | 图表 | 面板 | `src/panels/chart/IndicatorDialog.tsx` | 已做 |  |
+| IntradayPnL | 盈亏 | 面板 | — | 没做 | 盈亏，还没有对应面板 |
+| LCDReadout | 工作台 | 自有件 | `Lcd` | 已做 |  |
+| LiveDivergence | 研究 | 面板 | — | 没做 | 研究层，还没有对应面板 |
+| LossLimits | 盈亏 | 面板 | `src/panels/loss-limits` | 已做 |  |
+| MBOTrackers | 订单流 | 面板 | — | 没做 | 逐单订单簿，还没有对应面板 |
+| Meter | 工作台 | 量化 | — | 没做 | 限额板用的横向仪表，还没有对应组件 |
+| ModelCard | 研究 | 面板 | — | 没做 | 研究层，还没有对应面板 |
+| NewsFeed | 发现 | 面板 | `src/panels/alice-reports` | 部分 | 有报告流，公告、RSS、数据源事件的统一时间流没有 |
+| Notes | 工具 | 面板 | — | 没做 | Markdown 笔记，还没有对应面板 |
+| OptionsChain | 衍生品 | 面板 | — | 没做 | 衍生品，还没有对应面板 |
+| OptionsFlow | 衍生品 | 面板 | — | 没做 | 衍生品，还没有对应面板 |
+| OrderBasket | 资产管理 | 面板 | — | 没做 | 资产管理，还没有对应面板 |
+| OrderBlotter | 组合 | 面板 | `src/panels/orders` | 已做 |  |
+| OrderTicket | 交易 | 面板 | `src/panels/order-ticket` | 已做 |  |
+| Overlays | 基元 | 基础件 | `Dialog`、`Sheet`、`Popover`、`Tooltip`、`HoverCard`、`DropdownMenu`、`ContextMenu`、`Toast` | 已做 |  |
+| PanelFrame | 工作台 | 积木 | `src/workspace/PaneFrame.tsx`、`EmptyState`、`Toolbar`、计划：`PanelFrame` | 部分 | #1869 做了空态 EmptyState 与工具条 Toolbar；面板壳本身还在应用里 |
+| ParamScatter | 研究 | 面板 | — | 没做 | 研究层，还没有对应面板 |
+| PerformanceReport | 资产管理 | 面板 | — | 没做 | 资产管理，还没有对应面板 |
+| PnLAttribution | 组合 | 面板 | — | 没做 | 组合，还没有对应面板 |
+| PnLLedger | 盈亏 | 面板 | — | 没做 | 盈亏，还没有对应面板 |
+| PositionBook | 组合 | 面板 | `src/panels/positions` | 已做 |  |
+| PositionHistory | 盈亏 | 面板 | — | 没做 | 盈亏，还没有对应面板 |
+| Preferences | 工作台 | 面板 | `src/shell/AppSettingsDialog.tsx` | 已做 |  |
+| PriceChart | 图表 | 面板 | `src/panels/chart` | 已做 |  |
+| QuantileLayers | 图表 | 面板 | — | 没做 | 研究层，还没有对应面板 |
+| RebalanceDesk | 资产管理 | 面板 | `src/panels/rebalance` | 部分 | 有再平衡面板，目标组合与当前组合的差额表没有对齐设计稿 |
+| RegimeStrip | 研究 | 量化 | — | 没做 | 市场状态带，还没有对应组件 |
+| ReplayBar | 订单流 | 面板 | `src/panels/chart/ReplayBar.tsx` | 已做 |  |
+| ReportBuilder | 工具 | 面板 | — | 没做 | 报告装配，还没有对应面板 |
+| RiskBoard | 组合 | 面板 | `src/panels/risk-board` | 已做 |  |
+| RobustnessGate | 研究 | 面板 | — | 没做 | 研究层，还没有对应面板 |
+| RunInspector | 研究 | 面板 | — | 没做 | 研究层，还没有对应面板 |
+| RunLauncher | 研究 | 面板 | — | 没做 | 研究层，还没有对应面板 |
+| RunQueue | 运行中心 | 面板 | `src/panels/run-center` | 部分 | 运行中心有，队列与失败分栏没有 |
+| Screener | 发现 | 面板 | `src/panels/screener` | 已做 |  |
+| SeriesBrowser | 研究 | 面板 | — | 没做 | 研究层，还没有对应面板 |
+| SignalMonitor | 研究 | 面板 | — | 没做 | 研究层，还没有对应面板 |
+| SmartTape | 订单流 | 面板 | `src/panels/tape` | 已做 |  |
+| SparkTile | 图表 | 量化 | — | 没做 | 点阵标签 + LCD + 迷你折线的 KPI 瓦片，还没有对应组件 |
+| Splitter | 工作台 | 基础件 | `src/workspace/WorkspaceCanvas.tsx` | 部分 | 分割线在应用里自己做，没有抽进包里的 primitives |
+| StatusBar | 工作台 | 积木 | — | 没做 | 顶栏底栏的分段模型，还没有对应组件 |
+| StatusLED | 工作台 | 自有件 | `Led` | 已做 |  |
+| StrategyCompare | 研究 | 面板 | — | 没做 | 研究层，还没有对应面板 |
+| StressTest | 资产管理 | 面板 | — | 没做 | 资产管理，还没有对应面板 |
+| SymbolMap | 运行中心 | 面板 | — | 没做 | 代码映射，还没有对应面板 |
+| SystemHealth | 运行中心 | 面板 | `src/shell/LocalServiceStatus.tsx` | 部分 | 本地服务状态有，六块仪表没有 |
+| TCA | 资产管理 | 面板 | — | 没做 | 资产管理，还没有对应面板 |
+| Talk | 发现 | 面板 | — | 没做 | 交易聊天流，还没有对应面板 |
+| TaxLots | 盈亏 | 面板 | — | 没做 | 盈亏，还没有对应面板 |
+| Toggle | 工作台 | 基础件 | `Switch`、`ToggleGroup` | 已做 |  |
+| TradeStats | 资产管理 | 面板 | `src/panels/journal/StatsPage.tsx` | 已做 |  |
+| VolSurface | 衍生品 | 面板 | — | 没做 | 衍生品，还没有对应面板 |
+| VolumeProfile | 订单流 | 面板 | `src/panels/volume-stats` | 部分 | 有成交量统计，价位分布轮廓没有 |
+| WalkForward | 研究 | 面板 | — | 没做 | 研究层，还没有对应面板 |
+| Watchlist | 发现 | 面板 | `src/panels/watchlist` | 已做 |  |
+| WorkspaceTabs | 工作台 | 积木 | `src/shell/WorkspaceMenu.tsx` | 部分 | 工作区切换是菜单，不是顶层标签 |
+| Workspaces | 运行中心 | 面板 | `src/shell/WorkspaceManagerDialog.tsx` | 已做 |  |
+| YieldCurve | 固收 | 面板 | — | 没做 | 固收，还没有对应面板 |

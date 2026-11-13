@@ -1207,6 +1207,483 @@ export const PAGES: readonly DocPage[] = [
     keys: [],
   },
   {
+    id: 'toast',
+    group: 'feedback',
+    cardHeight: 135,
+    title: 'Toast 弹出提示',
+    summary:
+      '固定在窗口一角的弹出提示：只管样子与读屏语义（live region），条目表、定时、暂停由调用方管（应用里 AlertToasts 配 toast-queue.ts）。进出走 translate 与不透明度的过渡。',
+    exports: [
+      'TOAST_EXIT_MS',
+      'Toast',
+      'ToastClear',
+      'ToastClose',
+      'ToastContent',
+      'ToastDescription',
+      'ToastIcon',
+      'ToastText',
+      'ToastTitle',
+      'ToastViewport',
+    ],
+    props: [
+      {
+        part: 'ToastViewport',
+        note: '其余属性透传给 div。role=region、aria-live=assertive：新插进来的条目读屏马上读；aria-label 由调用方给。',
+        rows: [
+          {
+            name: 'position',
+            type: "'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'",
+            default: "'bottom-right'",
+            desc: '哪个角。下面两个角新的贴着窗口边往上叠，上面两个角往下叠。',
+          },
+        ],
+      },
+      {
+        part: 'Toast',
+        note: '其余属性透传给 div。过渡的起点与终点由 data-starting-style、data-ending-style 给（phase 换的）。',
+        rows: [
+          {
+            name: 'phase',
+            type: "'entering' | 'open' | 'closing'",
+            default: "'open'",
+            desc: 'entering 是刚插进来（画一帧再改成 open，过渡才有起点）；closing 是收起中，过了 TOAST_EXIT_MS 调用方再摘节点。',
+          },
+        ],
+      },
+      {
+        part: 'ToastClose',
+        note: '其余属性透传给 Button（icon 变体）。',
+        rows: [{ name: 'label', type: 'string', desc: '读屏名（必填，包里不放文案）。' }],
+      },
+      { part: 'ToastClear / ToastIcon / ToastText / ToastTitle / ToastDescription / ToastContent', rows: [] },
+    ],
+    states: [
+      '进入：从边上平移加淡入（phase=entering 画一帧再切 open）。',
+      '收起：反向平移淡出，播完（TOAST_EXIT_MS）调用方再摘节点。',
+      '多条：按位置叠，两条以上出「全部关掉」。',
+    ],
+    donts: [
+      '不要把需要用户处理的事只放在弹出提示里，它会自己消失。',
+      '不要在包里写死文案，关闭名与「全部关掉」都由调用方传。',
+      '不要自己再做一套计时与队列放进 Toast，那是调用方的事。',
+    ],
+    composition:
+      'ToastViewport\n  Toast\n    ToastContent\n      ToastIcon\n      ToastText\n        ToastTitle\n        ToastDescription\n      ToastClose\n  ToastClear',
+    keys: [
+      ['Tab', '走到关闭钮、「全部关掉」'],
+      ['Enter / Space', '关掉这一条或全部'],
+    ],
+  },
+  {
+    id: 'alert',
+    group: 'feedback',
+    cardHeight: 288,
+    title: 'Alert 行内提示',
+    summary: '嵌在页面里的一条说明（弹出的提示是 Toast）：左边一道 2px 色条标语气，第一个子元素是 svg 时当图标。',
+    exports: ['Alert', 'AlertDescription', 'AlertTitle', 'alertVariants'],
+    props: [
+      {
+        part: 'Alert',
+        note: '其余属性透传给 div。语气不能只靠颜色：标题或说明里要写字。',
+        rows: [
+          {
+            name: 'tone',
+            type: "'default' | 'ok' | 'warn' | 'danger'",
+            default: "'default'",
+            desc: '色条与图标的颜色。',
+          },
+          {
+            name: 'role',
+            type: 'string',
+            desc: '默认 warn 与 danger 是 alert（读屏马上读），default 与 ok 是 status；一直在页面里的可以传 note。',
+          },
+        ],
+      },
+      { part: 'AlertTitle / AlertDescription', note: '都是 div。', rows: [] },
+    ],
+    states: ['default、ok：role=status；warn、danger：role=alert。', '左边 2px 色条取语气的颜色。'],
+    donts: [
+      '不要用它代替弹出提示：Alert 是页面里一直在的说明。',
+      '不要给一直在页面里的 Alert 保留 role=alert，传 role=note。',
+      '不要只靠颜色区分语气，标题要写明。',
+    ],
+    composition: 'Alert\n  svg（图标，可选）\n  AlertTitle\n  AlertDescription',
+    keys: [],
+  },
+  {
+    id: 'progress',
+    group: 'feedback',
+    cardHeight: 126,
+    title: 'Progress 进度条',
+    summary: '4 高的细条，填充走 snappy 弹簧滑到新位置；不知道进度（不给 value）是一块来回滑的不确定条。',
+    exports: ['Progress'],
+    props: [
+      {
+        part: 'Progress',
+        note: RADIX('Progress.Root') + '读屏要一个名字：传 aria-label。',
+        rows: [
+          { name: 'value', type: 'number | null', desc: '0 到 max；不给或 null 是不确定态（没有 aria-valuenow）。' },
+          { name: 'max', type: 'number', default: '100', desc: '满格的值。' },
+          {
+            name: 'tone',
+            type: "'default' | 'ok' | 'warn' | 'danger'",
+            default: "'default'",
+            desc: '只改填充的颜色；状态别只靠颜色，旁边写字。',
+          },
+        ],
+      },
+    ],
+    states: [
+      '确定：按 value 填充，aria-valuenow 跟值。',
+      '不确定：value 缺省，来回滑动的条，不带 aria-valuenow。',
+      'tone：default、ok、warn、danger 换填充颜色。',
+    ],
+    donts: ['不要在不知道进度时传一个假的 value。', '不要用它表示库存或额度的满格，用 Meter。', '不要省掉可访问名。'],
+    composition: 'Progress\n  （内部：Progress.Indicator）',
+    keys: [],
+  },
+  {
+    id: 'sheet',
+    group: 'overlays',
+    cardHeight: 62,
+    title: 'Sheet 抽屉',
+    summary:
+      '贴着窗口一边滑出来的面板，行为同对话框（Radix Dialog）：Esc 关、焦点锁在里面、点背板关、关了焦点回打开前拿着它的元素。左右宽 360，上下最高半屏。',
+    exports: [
+      'Sheet',
+      'SheetBody',
+      'SheetClose',
+      'SheetContent',
+      'SheetDescription',
+      'SheetFooter',
+      'SheetHeader',
+      'SheetOverlay',
+      'SheetPortal',
+      'SheetTitle',
+      'SheetTrigger',
+      'sheetVariants',
+    ],
+    props: [
+      { part: 'Sheet', note: RADIX('Dialog.Root'), rows: [] },
+      {
+        part: 'SheetContent',
+        note: RADIX('Dialog.Content') + '要有 SheetTitle（读屏靠它报名字），不想显示就加 sr-only。',
+        rows: [
+          {
+            name: 'side',
+            type: "'right' | 'left' | 'top' | 'bottom'",
+            default: "'right'",
+            desc: '贴哪一边；入场从那一边滑进来。',
+          },
+          { name: 'closeLabel', type: 'string', desc: '给了就在右上角画关闭钮，读屏读这个名字。' },
+        ],
+      },
+      { part: 'SheetHeader / SheetBody / SheetFooter / SheetTitle / SheetDescription', rows: [] },
+    ],
+    states: [
+      '关闭、打开：从所在边滑入滑出，遮罩淡入淡出。',
+      'side：right、left 宽 360，top、bottom 最高半屏。',
+      '焦点锁在里面，关了回到打开前拿着焦点的元素。',
+    ],
+    donts: ['不要拿它当确认框，要用户裁决的事用 Dialog。', '不要不带标题与说明，读屏要用。', '不要在抽屉里再开抽屉。'],
+    composition:
+      'Sheet\n  SheetTrigger\n  SheetContent\n    SheetHeader\n      SheetTitle\n      SheetDescription\n    SheetBody\n    SheetFooter\n      SheetClose',
+    keys: [
+      ['Tab', '焦点在抽屉里走一圈，不会出去'],
+      ['Esc', '关闭，焦点回触发器'],
+    ],
+  },
+  {
+    id: 'hover-card',
+    group: 'overlays',
+    cardHeight: 50,
+    title: 'HoverCard 悬停卡',
+    summary:
+      '指针停在触发器上（或键盘焦点到了它）弹出的一小块补充信息，跟弹层同一块材质；延迟用 Radix 默认（700ms 开、300ms 关）。卡里不放必须操作的东西。',
+    exports: ['HoverCard', 'HoverCardContent', 'HoverCardTrigger'],
+    props: [
+      { part: 'HoverCard', note: RADIX('HoverCard.Root') + 'openDelay、closeDelay 在这里改。', rows: [] },
+      {
+        part: 'HoverCardContent',
+        note: RADIX('HoverCard.Content'),
+        rows: [
+          { name: 'align', type: "'start' | 'center' | 'end'", default: "'center'", desc: '对齐触发器的哪一边。' },
+          { name: 'sideOffset', type: 'number', default: '4', desc: '离触发器的距离。' },
+        ],
+      },
+    ],
+    states: ['悬停约 700ms 后出，移开约 300ms 后收；键盘焦点到触发器也出。', 'Esc 收起。'],
+    donts: [
+      '不要把必须读到的信息只放在悬停卡里，触屏没有悬停。',
+      '不要放可点的主要操作，用 Popover。',
+      '不要放太长的内容，它是补充。',
+    ],
+    composition: 'HoverCard\n  HoverCardTrigger\n  HoverCardContent',
+    keys: [
+      ['Tab', '焦点到触发器时卡也出来'],
+      ['Esc', '收起'],
+    ],
+  },
+  {
+    id: 'command',
+    group: 'overlays',
+    cardHeight: 375,
+    title: 'Command 命令面板',
+    summary:
+      '一个输入框加一串过滤出来的行：焦点一直在输入框里，↑↓ 移动高亮，回车选中。底座是 cmdk（过滤、键盘、分组）；自己排名的传 shouldFilter={false}。',
+    exports: [
+      'Command',
+      'CommandDialog',
+      'CommandEmpty',
+      'CommandGroup',
+      'CommandInput',
+      'CommandItem',
+      'CommandList',
+      'CommandSeparator',
+      'CommandShortcut',
+    ],
+    props: [
+      {
+        part: 'Command',
+        note: '其余属性透传给 cmdk 的 Command（shouldFilter、filter、loop、value、onValueChange）。',
+        rows: [],
+      },
+      {
+        part: 'CommandItem',
+        note: '其余属性透传给 cmdk 的 Item。aria-selected 说的是当前高亮，不是已选。',
+        rows: [
+          { name: 'value', type: 'string', desc: '过滤用的值，同一个 Command 里要唯一。' },
+          { name: 'keywords', type: 'string[]', desc: '额外的搜索词（别名、拼音、英文名）。' },
+          { name: 'onSelect', type: '(value: string) => void', desc: '回车或点击选中。' },
+          { name: 'disabled', type: 'boolean', desc: '不可选。' },
+        ],
+      },
+      {
+        part: 'CommandDialog',
+        note: '其余属性透传给 Dialog。',
+        rows: [
+          { name: 'title', type: 'string', desc: '读屏用的标题（不显示，必填）。' },
+          { name: 'description', type: 'string', desc: '读屏用的说明（不显示，必填）。' },
+          { name: 'commandProps', type: 'ComponentProps<typeof Command>', desc: '给里面的 Command。' },
+        ],
+      },
+      {
+        part: 'CommandInput / CommandList / CommandEmpty / CommandGroup / CommandSeparator / CommandShortcut',
+        rows: [],
+      },
+    ],
+    states: [
+      '有输入：按行的 value 与 keywords 过滤；没有匹配显示 CommandEmpty。',
+      '高亮行 data-selected，aria-selected 说的是高亮不是已选。',
+      'shouldFilter=false：由调用方自己排名，行序照传入的。',
+    ],
+    donts: [
+      '不要不传 label 或标题，输入框需要可访问名。',
+      '不要拿它当长表单的下拉，用 Combobox 或 Select。',
+      '不要在包里写占位与空态文字，由调用方传。',
+    ],
+    composition:
+      'Command\n  CommandInput\n  CommandList\n    CommandEmpty\n    CommandGroup\n      CommandItem\n        CommandShortcut\n    CommandSeparator',
+    keys: [
+      ['↑ ↓', '移动高亮（首尾相接）'],
+      ['Home / End', '跳到首项、末项'],
+      ['Enter', '执行高亮的那一行'],
+      ['打字', '过滤；没有匹配显示 CommandEmpty'],
+      ['Esc', '（在 CommandDialog 里）关闭，焦点回打开前拿着它的元素'],
+    ],
+  },
+  {
+    id: 'combobox',
+    group: 'forms',
+    cardHeight: 104,
+    title: 'Combobox 可搜索下拉',
+    summary:
+      'Popover 加 Command 拼出来：触发器跟单选下拉一个样，打开后焦点在搜索框，打字过滤，回车选中。单选选了就收（受控 open），多选不收；每行用 selected 画勾。',
+    exports: [
+      'Combobox',
+      'ComboboxContent',
+      'ComboboxEmpty',
+      'ComboboxGroup',
+      'ComboboxInput',
+      'ComboboxItem',
+      'ComboboxList',
+      'ComboboxTrigger',
+    ],
+    props: [
+      { part: 'Combobox', note: RADIX('Popover.Root') + 'open、onOpenChange 受控。', rows: [] },
+      {
+        part: 'ComboboxContent',
+        note: RADIX('Popover.Content') + '宽跟触发器一样（最窄 220）。',
+        rows: [
+          { name: 'label', type: 'string', desc: '搜索框与列表的读屏名（必填）。' },
+          {
+            name: 'commandProps',
+            type: 'ComponentProps<typeof Command>',
+            desc: '给里面的 Command（例：shouldFilter: false，自己排名）。',
+          },
+        ],
+      },
+      {
+        part: 'ComboboxItem',
+        note: '同 CommandItem。',
+        rows: [{ name: 'selected', type: 'boolean', default: 'false', desc: '已选：左边画勾，data-checked。' }],
+      },
+      { part: 'ComboboxTrigger / ComboboxInput / ComboboxList / ComboboxEmpty / ComboboxGroup', rows: [] },
+    ],
+    states: [
+      '关闭：触发器 role=combobox，aria-expanded=false。',
+      '打开：焦点在搜索框，列表可过滤。',
+      '单选：选中后收起；多选：点一项不收，触发器写已选个数。',
+      '已选的行 data-checked 且前面有勾。',
+    ],
+    donts: [
+      '不要少于十来项就用它，少的用 Select。',
+      '不要忘了给搜索框与列表传 label。',
+      '行的 aria-selected 是高亮不是已选，已选用 selected。',
+    ],
+    composition:
+      'Combobox\n  ComboboxTrigger\n  ComboboxContent\n    ComboboxInput\n    ComboboxList\n      ComboboxEmpty\n      ComboboxItem',
+    keys: [
+      ['Enter / Space / ↓', '在触发器上打开；焦点落在搜索框'],
+      ['打字', '过滤'],
+      ['↑ ↓', '移动高亮'],
+      ['Enter', '选中'],
+      ['Esc', '收起，焦点回触发器'],
+    ],
+  },
+  {
+    id: 'separator',
+    group: 'layout',
+    cardHeight: 117,
+    title: 'Separator 分隔线',
+    summary: '1px 的线，取 line 色（跟菜单里的分隔线一条白线）；默认只是装饰，读屏不报。',
+    exports: ['Separator'],
+    props: [
+      {
+        part: 'Separator',
+        note: RADIX('Separator.Root'),
+        rows: [
+          { name: 'orientation', type: "'horizontal' | 'vertical'", default: "'horizontal'", desc: '横或竖。' },
+          {
+            name: 'decorative',
+            type: 'boolean',
+            default: 'true',
+            desc: '真：只是画一道线；假：role=separator 与 aria-orientation，读屏知道这里分了区域。',
+          },
+        ],
+      },
+    ],
+    states: ['横：1px 高；竖：1px 宽，取 line 色。', 'decorative 默认真，读屏不报；decorative=false 才是 separator。'],
+    donts: ['不要用它占位留白，用间距。', '不要在读屏需要知道分组的地方用装饰分隔，改 decorative=false 或用分组标题。'],
+    composition: 'Separator',
+    keys: [],
+  },
+  {
+    id: 'scroll-area',
+    group: 'layout',
+    cardHeight: 181,
+    title: 'ScrollArea 滚动区',
+    summary:
+      'Radix 的自绘滚动条，4px 宽，平时不出现，指针到了这一块才出一条淡线（18% 墨色，指到滚动条上 32%）。调用方要给它一个确定的高。',
+    exports: ['ScrollArea', 'ScrollBar'],
+    props: [
+      {
+        part: 'ScrollArea',
+        note: RADIX('ScrollArea.Root') + '给 Root 一个确定的高（或 max-height），内容比它高才滚。',
+        rows: [
+          {
+            name: 'type',
+            type: "'hover' | 'always' | 'scroll' | 'auto'",
+            default: "'hover'",
+            desc: 'hover：指到才显示；always：一直；scroll：滚动时；auto：内容溢出就显示。',
+          },
+          { name: 'viewportClassName', type: 'string', desc: '给里面可滚动的 Viewport。' },
+        ],
+      },
+      { part: 'ScrollBar', note: '自己拼时用；orientation 默认 vertical。', rows: [] },
+    ],
+    states: ['平时没有滚动条；指到或滚动时出 4px 的线。', '悬停滚动条提亮；视口可键盘聚焦，方向键能滚。'],
+    donts: [
+      '不要给应用里已经靠全局原生滚动条的容器再套一层，两套并存会重复。',
+      '不要隐藏视口的键盘聚焦。',
+      '不要在需要原生滚动行为（回弹、系统设置）的地方用。',
+    ],
+    composition: 'ScrollArea\n  （内部：Viewport、ScrollBar 竖与横、Corner）',
+    keys: [
+      ['Tab', '聚焦滚动区'],
+      ['↑ ↓ PageUp PageDown Home End', '滚动'],
+    ],
+  },
+  {
+    id: 'field',
+    group: 'forms',
+    cardHeight: 326,
+    title: 'Field 表单字段',
+    summary:
+      '标签加控件加说明加错误排成一组，并把它们的 ARIA 关联好：标签点一下聚焦控件，说明与错误进控件的 aria-describedby，出错时 aria-invalid、错误条 role=alert。',
+    exports: [
+      'Field',
+      'FieldContent',
+      'FieldDescription',
+      'FieldError',
+      'FieldGroup',
+      'FieldLabel',
+      'FieldLegend',
+      'FieldSeparator',
+      'FieldSet',
+      'Label',
+      'useFieldControl',
+    ],
+    props: [
+      {
+        part: 'Field',
+        note: '其余属性透传给 div。控件调 useFieldControl() 拿 { id, aria-describedby, aria-invalid, disabled } 展开到自己身上。',
+        rows: [
+          {
+            name: 'orientation',
+            type: "'vertical' | 'horizontal'",
+            default: "'vertical'",
+            desc: '标签在上，或标签与说明在左、控件在右。',
+          },
+          {
+            name: 'invalid',
+            type: 'boolean',
+            default: 'false',
+            desc: '标签变危险色、控件 aria-invalid、FieldError 才显示。',
+          },
+          { name: 'disabled', type: 'boolean', default: 'false', desc: '标签降到 45%，控件 disabled。' },
+        ],
+      },
+      {
+        part: 'FieldError',
+        note: 'Field 的 invalid 为真才渲染；children 是调用方写的话。',
+        rows: [],
+      },
+      {
+        part: 'Label',
+        note: RADIX('Label.Root') + '不在 Field 里单独用也行。',
+        rows: [],
+      },
+      {
+        part: 'FieldLabel / FieldDescription / FieldContent / FieldGroup / FieldSet / FieldLegend / FieldSeparator',
+        rows: [],
+      },
+    ],
+    states: [
+      '默认：标签、控件、说明。',
+      'invalid：标签变危险色、控件 aria-invalid、FieldError 显示并进 aria-describedby。',
+      'disabled：控件禁用，标签降到禁用样式。',
+    ],
+    donts: [
+      '不要在 Field 外面调用 useFieldControl 还指望有关联。',
+      '不要只靠红色表示出错，要写错误文字。',
+      '不要把标签藏起来，要隐藏用 sr-only。',
+    ],
+    composition:
+      'FieldSet\n  FieldLegend\n  FieldGroup\n    Field\n      FieldLabel（或 FieldContent 里 FieldLabel + FieldDescription）\n      控件（useFieldControl）\n      FieldDescription\n      FieldError\n    FieldSeparator',
+    keys: [['Tab', '控件按自己的方式走；点标签聚焦控件']],
+  },
+  {
     id: 'password-input',
     group: 'forms',
     cardHeight: 171,

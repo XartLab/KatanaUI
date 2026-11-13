@@ -1,0 +1,610 @@
+{
+  "cards": {
+    "AccountMirror": {
+      "kind": "面板",
+      "status": "没做",
+      "at": [],
+      "note": "ATAS Following Manager 的对应，复制交易面板还没有这块界面"
+    },
+    "AccountRail": {
+      "kind": "面板",
+      "status": "没做",
+      "at": [],
+      "note": "账户轨，账户面板是表，没有卡片轨与选中合计"
+    },
+    "AgentsStatus": {
+      "kind": "面板",
+      "status": "部分",
+      "at": ["src/shell/AgentsPane.tsx"],
+      "note": "有代理列表，没有可用灯、延迟、用量、费用与 MCP 一栏"
+    },
+    "AlertCenter": {
+      "kind": "面板",
+      "status": "已做",
+      "at": ["src/panels/alerts"]
+    },
+    "AliceSessions": {
+      "kind": "面板",
+      "status": "已做",
+      "at": ["src/panels/alice-session"]
+    },
+    "AlphaLedger": {
+      "kind": "面板",
+      "status": "没做",
+      "at": [],
+      "note": "研究层，还没有对应面板"
+    },
+    "BondCalc": {
+      "kind": "面板",
+      "status": "没做",
+      "at": [],
+      "note": "固收，还没有对应面板"
+    },
+    "BreakWorkbench": {
+      "kind": "面板",
+      "status": "没做",
+      "at": [],
+      "note": "对账，还没有对应面板"
+    },
+    "BrinsonAttribution": {
+      "kind": "面板",
+      "status": "没做",
+      "at": [],
+      "note": "资产管理，还没有对应面板"
+    },
+    "Calendar": {
+      "kind": "面板",
+      "status": "部分",
+      "at": ["src/panels/journal/TradingCalendar.tsx"],
+      "note": "交易日历有，发散热力底色与换手模式没有"
+    },
+    "CashLedger": {
+      "kind": "面板",
+      "status": "没做",
+      "at": [],
+      "note": "资产管理，还没有对应面板"
+    },
+    "ChartTrader": {
+      "kind": "面板",
+      "status": "部分",
+      "at": ["src/panels/chart/ChartTradeBar.tsx", "src/panels/chart/TradeOverlay.tsx"],
+      "note": "图上看单与下单有，拖动改价与止盈止损线没有"
+    },
+    "ClusterSearch": {
+      "kind": "面板",
+      "status": "没做",
+      "at": [],
+      "note": "足迹扫描器，还没有对应面板"
+    },
+    "CommandLine": {
+      "kind": "积木",
+      "status": "已做",
+      "at": ["Command", "src/shell/QuickSearch.tsx"],
+      "note": "命令面板用 Command，底栏常驻命令行（GO Bar）不是这一张的范围"
+    },
+    "ConsensusBlock": {
+      "kind": "量化",
+      "status": "没做",
+      "at": [],
+      "note": "写命令提交前的必要条件块，还没有对应组件"
+    },
+    "Controls": {
+      "kind": "基础件",
+      "status": "已做",
+      "at": ["Button", "Input", "Select", "Slider", "Checkbox", "Switch", "Tabs", "ToggleGroup"]
+    },
+    "CorporateActions": {
+      "kind": "面板",
+      "status": "没做",
+      "at": [],
+      "note": "资产管理，还没有对应面板"
+    },
+    "Cover": {
+      "kind": "自有件",
+      "status": "已做",
+      "at": ["packages/ui/design-system/components/Cover"],
+      "note": "封面页，随设计系统带出"
+    },
+    "DOMHeatmap": {
+      "kind": "面板",
+      "status": "部分",
+      "at": ["src/panels/heatmap"],
+      "note": "有热力图面板，盘口历史（时间 × 价格）一层没有"
+    },
+    "DOMLadder": {
+      "kind": "面板",
+      "status": "已做",
+      "at": ["src/panels/dom"]
+    },
+    "DataGrid": {
+      "kind": "积木",
+      "status": "已做",
+      "at": ["DataGrid"],
+      "note": "#1869 把 DataTable 抽成积木 DataGrid；应用里 panels/kit/DataTable.tsx 是薄适配层"
+    },
+    "DataQuality": {
+      "kind": "面板",
+      "status": "没做",
+      "at": [],
+      "note": "研究层，还没有对应面板"
+    },
+    "DataSources": {
+      "kind": "面板",
+      "status": "部分",
+      "at": ["src/shell/ConnectionList.tsx"],
+      "note": "连接列表有，延迟 LCD 与今日拉取量没有"
+    },
+    "DatasetCatalog": {
+      "kind": "面板",
+      "status": "部分",
+      "at": ["src/shell/DatasetSourcesPane.tsx"],
+      "note": "数据集来源有，字段数、频率、覆盖区间没有"
+    },
+    "DecisionJournal": {
+      "kind": "面板",
+      "status": "没做",
+      "at": [],
+      "note": "决策层，还没有对应面板"
+    },
+    "DecisionQueue": {
+      "kind": "面板",
+      "status": "没做",
+      "at": [],
+      "note": "决策层，还没有对应面板"
+    },
+    "DeploymentBoard": {
+      "kind": "面板",
+      "status": "没做",
+      "at": [],
+      "note": "研究层，还没有对应面板"
+    },
+    "DotMatrix": {
+      "kind": "自有件",
+      "status": "已做",
+      "at": ["DotMatrix"]
+    },
+    "DrawingToolbar": {
+      "kind": "面板",
+      "status": "已做",
+      "at": ["src/panels/chart/SelectedToolbar.tsx", "src/panels/chart/FavoritesToolbar.tsx"]
+    },
+    "Entitlements": {
+      "kind": "面板",
+      "status": "没做",
+      "at": [],
+      "note": "许可与权限，还没有对应面板"
+    },
+    "EquityCurve": {
+      "kind": "量化",
+      "status": "已做",
+      "at": ["src/panels/kit/EquityCurve.tsx"],
+      "note": "应用里有，还没抽进 quant 层"
+    },
+    "EventStudy": {
+      "kind": "面板",
+      "status": "没做",
+      "at": [],
+      "note": "研究层，还没有对应面板"
+    },
+    "EventTimeline": {
+      "kind": "面板",
+      "status": "没做",
+      "at": [],
+      "note": "发现，还没有对应面板"
+    },
+    "ExitStrategy": {
+      "kind": "面板",
+      "status": "部分",
+      "at": ["src/panels/order-ticket"],
+      "note": "下单面板里有止盈止损，自动退出两种模式没有"
+    },
+    "ExposureTimeline": {
+      "kind": "面板",
+      "status": "没做",
+      "at": [],
+      "note": "盈亏，还没有对应面板"
+    },
+    "FactorDecay": {
+      "kind": "面板",
+      "status": "没做",
+      "at": [],
+      "note": "研究层，还没有对应面板"
+    },
+    "FactorExposure": {
+      "kind": "面板",
+      "status": "没做",
+      "at": [],
+      "note": "资产管理，还没有对应面板"
+    },
+    "FactorIC": {
+      "kind": "面板",
+      "status": "没做",
+      "at": [],
+      "note": "研究层，还没有对应面板"
+    },
+    "FactorLibrary": {
+      "kind": "面板",
+      "status": "没做",
+      "at": [],
+      "note": "研究层，还没有对应面板"
+    },
+    "FillLog": {
+      "kind": "面板",
+      "status": "已做",
+      "at": ["src/panels/trades"]
+    },
+    "FlowGauges": {
+      "kind": "量化",
+      "status": "没做",
+      "at": [],
+      "note": "订单流四个仪表，还没有对应组件"
+    },
+    "Footprint": {
+      "kind": "面板",
+      "status": "部分",
+      "at": ["src/panels/chart"],
+      "note": "图表有，足迹层没有"
+    },
+    "Fundamentals": {
+      "kind": "面板",
+      "status": "没做",
+      "at": [],
+      "note": "资产管理，还没有对应面板"
+    },
+    "GreeksBoard": {
+      "kind": "面板",
+      "status": "没做",
+      "at": [],
+      "note": "衍生品，还没有对应面板"
+    },
+    "Heatmap": {
+      "kind": "量化",
+      "status": "已做",
+      "at": ["src/panels/heatmap"],
+      "note": "应用里有，还没抽进 quant 层"
+    },
+    "HypothesisLedger": {
+      "kind": "面板",
+      "status": "没做",
+      "at": [],
+      "note": "研究层，还没有对应面板"
+    },
+    "IndicatorPanel": {
+      "kind": "面板",
+      "status": "已做",
+      "at": ["src/panels/chart/IndicatorDialog.tsx"]
+    },
+    "IntradayPnL": {
+      "kind": "面板",
+      "status": "没做",
+      "at": [],
+      "note": "盈亏，还没有对应面板"
+    },
+    "LCDReadout": {
+      "kind": "自有件",
+      "status": "已做",
+      "at": ["Lcd"]
+    },
+    "LiveDivergence": {
+      "kind": "面板",
+      "status": "没做",
+      "at": [],
+      "note": "研究层，还没有对应面板"
+    },
+    "LossLimits": {
+      "kind": "面板",
+      "status": "已做",
+      "at": ["src/panels/loss-limits"]
+    },
+    "MBOTrackers": {
+      "kind": "面板",
+      "status": "没做",
+      "at": [],
+      "note": "逐单订单簿，还没有对应面板"
+    },
+    "Meter": {
+      "kind": "量化",
+      "status": "没做",
+      "at": [],
+      "note": "限额板用的横向仪表，还没有对应组件"
+    },
+    "ModelCard": {
+      "kind": "面板",
+      "status": "没做",
+      "at": [],
+      "note": "研究层，还没有对应面板"
+    },
+    "NewsFeed": {
+      "kind": "面板",
+      "status": "部分",
+      "at": ["src/panels/alice-reports"],
+      "note": "有报告流，公告、RSS、数据源事件的统一时间流没有"
+    },
+    "Notes": {
+      "kind": "面板",
+      "status": "没做",
+      "at": [],
+      "note": "Markdown 笔记，还没有对应面板"
+    },
+    "OptionsChain": {
+      "kind": "面板",
+      "status": "没做",
+      "at": [],
+      "note": "衍生品，还没有对应面板"
+    },
+    "OptionsFlow": {
+      "kind": "面板",
+      "status": "没做",
+      "at": [],
+      "note": "衍生品，还没有对应面板"
+    },
+    "OrderBasket": {
+      "kind": "面板",
+      "status": "没做",
+      "at": [],
+      "note": "资产管理，还没有对应面板"
+    },
+    "OrderBlotter": {
+      "kind": "面板",
+      "status": "已做",
+      "at": ["src/panels/orders"]
+    },
+    "OrderTicket": {
+      "kind": "面板",
+      "status": "已做",
+      "at": ["src/panels/order-ticket"]
+    },
+    "Overlays": {
+      "kind": "基础件",
+      "status": "已做",
+      "at": ["Dialog", "Sheet", "Popover", "Tooltip", "HoverCard", "DropdownMenu", "ContextMenu", "Toast"]
+    },
+    "PanelFrame": {
+      "kind": "积木",
+      "status": "部分",
+      "at": ["src/workspace/PaneFrame.tsx", "EmptyState", "Toolbar"],
+      "planned": ["PanelFrame"],
+      "note": "#1869 做了空态 EmptyState 与工具条 Toolbar；面板壳本身还在应用里"
+    },
+    "ParamScatter": {
+      "kind": "面板",
+      "status": "没做",
+      "at": [],
+      "note": "研究层，还没有对应面板"
+    },
+    "PerformanceReport": {
+      "kind": "面板",
+      "status": "没做",
+      "at": [],
+      "note": "资产管理，还没有对应面板"
+    },
+    "PnLAttribution": {
+      "kind": "面板",
+      "status": "没做",
+      "at": [],
+      "note": "组合，还没有对应面板"
+    },
+    "PnLLedger": {
+      "kind": "面板",
+      "status": "没做",
+      "at": [],
+      "note": "盈亏，还没有对应面板"
+    },
+    "PositionBook": {
+      "kind": "面板",
+      "status": "已做",
+      "at": ["src/panels/positions"]
+    },
+    "PositionHistory": {
+      "kind": "面板",
+      "status": "没做",
+      "at": [],
+      "note": "盈亏，还没有对应面板"
+    },
+    "Preferences": {
+      "kind": "面板",
+      "status": "已做",
+      "at": ["src/shell/AppSettingsDialog.tsx"]
+    },
+    "PriceChart": {
+      "kind": "面板",
+      "status": "已做",
+      "at": ["src/panels/chart"]
+    },
+    "QuantileLayers": {
+      "kind": "面板",
+      "status": "没做",
+      "at": [],
+      "note": "研究层，还没有对应面板"
+    },
+    "RebalanceDesk": {
+      "kind": "面板",
+      "status": "部分",
+      "at": ["src/panels/rebalance"],
+      "note": "有再平衡面板，目标组合与当前组合的差额表没有对齐设计稿"
+    },
+    "RegimeStrip": {
+      "kind": "量化",
+      "status": "没做",
+      "at": [],
+      "note": "市场状态带，还没有对应组件"
+    },
+    "ReplayBar": {
+      "kind": "面板",
+      "status": "已做",
+      "at": ["src/panels/chart/ReplayBar.tsx"]
+    },
+    "ReportBuilder": {
+      "kind": "面板",
+      "status": "没做",
+      "at": [],
+      "note": "报告装配，还没有对应面板"
+    },
+    "RiskBoard": {
+      "kind": "面板",
+      "status": "已做",
+      "at": ["src/panels/risk-board"]
+    },
+    "RobustnessGate": {
+      "kind": "面板",
+      "status": "没做",
+      "at": [],
+      "note": "研究层，还没有对应面板"
+    },
+    "RunInspector": {
+      "kind": "面板",
+      "status": "没做",
+      "at": [],
+      "note": "研究层，还没有对应面板"
+    },
+    "RunLauncher": {
+      "kind": "面板",
+      "status": "没做",
+      "at": [],
+      "note": "研究层，还没有对应面板"
+    },
+    "RunQueue": {
+      "kind": "面板",
+      "status": "部分",
+      "at": ["src/panels/run-center"],
+      "note": "运行中心有，队列与失败分栏没有"
+    },
+    "Screener": {
+      "kind": "面板",
+      "status": "已做",
+      "at": ["src/panels/screener"]
+    },
+    "SeriesBrowser": {
+      "kind": "面板",
+      "status": "没做",
+      "at": [],
+      "note": "研究层，还没有对应面板"
+    },
+    "SignalMonitor": {
+      "kind": "面板",
+      "status": "没做",
+      "at": [],
+      "note": "研究层，还没有对应面板"
+    },
+    "SmartTape": {
+      "kind": "面板",
+      "status": "已做",
+      "at": ["src/panels/tape"]
+    },
+    "SparkTile": {
+      "kind": "量化",
+      "status": "没做",
+      "at": [],
+      "note": "点阵标签 + LCD + 迷你折线的 KPI 瓦片，还没有对应组件"
+    },
+    "Splitter": {
+      "kind": "基础件",
+      "status": "部分",
+      "at": ["src/workspace/WorkspaceCanvas.tsx"],
+      "note": "分割线在应用里自己做，没有抽进包里的 primitives"
+    },
+    "StatusBar": {
+      "kind": "积木",
+      "status": "没做",
+      "at": [],
+      "note": "顶栏底栏的分段模型，还没有对应组件"
+    },
+    "StatusLED": {
+      "kind": "自有件",
+      "status": "已做",
+      "at": ["Led"]
+    },
+    "StrategyCompare": {
+      "kind": "面板",
+      "status": "没做",
+      "at": [],
+      "note": "研究层，还没有对应面板"
+    },
+    "StressTest": {
+      "kind": "面板",
+      "status": "没做",
+      "at": [],
+      "note": "资产管理，还没有对应面板"
+    },
+    "SymbolMap": {
+      "kind": "面板",
+      "status": "没做",
+      "at": [],
+      "note": "代码映射，还没有对应面板"
+    },
+    "SystemHealth": {
+      "kind": "面板",
+      "status": "部分",
+      "at": ["src/shell/LocalServiceStatus.tsx"],
+      "note": "本地服务状态有，六块仪表没有"
+    },
+    "TCA": {
+      "kind": "面板",
+      "status": "没做",
+      "at": [],
+      "note": "资产管理，还没有对应面板"
+    },
+    "Talk": {
+      "kind": "面板",
+      "status": "没做",
+      "at": [],
+      "note": "交易聊天流，还没有对应面板"
+    },
+    "TaxLots": {
+      "kind": "面板",
+      "status": "没做",
+      "at": [],
+      "note": "盈亏，还没有对应面板"
+    },
+    "Toggle": {
+      "kind": "基础件",
+      "status": "已做",
+      "at": ["Switch", "ToggleGroup"]
+    },
+    "TradeStats": {
+      "kind": "面板",
+      "status": "已做",
+      "at": ["src/panels/journal/StatsPage.tsx"]
+    },
+    "VolSurface": {
+      "kind": "面板",
+      "status": "没做",
+      "at": [],
+      "note": "衍生品，还没有对应面板"
+    },
+    "VolumeProfile": {
+      "kind": "面板",
+      "status": "部分",
+      "at": ["src/panels/volume-stats"],
+      "note": "有成交量统计，价位分布轮廓没有"
+    },
+    "WalkForward": {
+      "kind": "面板",
+      "status": "没做",
+      "at": [],
+      "note": "研究层，还没有对应面板"
+    },
+    "Watchlist": {
+      "kind": "面板",
+      "status": "已做",
+      "at": ["src/panels/watchlist"]
+    },
+    "WorkspaceTabs": {
+      "kind": "积木",
+      "status": "部分",
+      "at": ["src/shell/WorkspaceMenu.tsx"],
+      "note": "工作区切换是菜单，不是顶层标签"
+    },
+    "Workspaces": {
+      "kind": "面板",
+      "status": "已做",
+      "at": ["src/shell/WorkspaceManagerDialog.tsx"]
+    },
+    "YieldCurve": {
+      "kind": "面板",
+      "status": "没做",
+      "at": [],
+      "note": "固收，还没有对应面板"
+    }
+  }
+}

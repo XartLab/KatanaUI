@@ -164,3 +164,110 @@
 [data-slot='select-content'][data-state='closed'] {
   animation: kc-pop-out 120ms linear both;
 }
+
+/* 悬停卡：跟弹层同一套入场（从触发处轻升，Radix HoverCard 给了 --radix-hover-card-content-transform-origin），退场 120ms 直线淡出。 */
+[data-slot='hover-card-content'] {
+  transform-origin: var(--radix-hover-card-content-transform-origin);
+}
+[data-slot='hover-card-content'][data-state='open'] {
+  animation: kc-pop-in var(--dur-snappy) var(--ease-snappy) both;
+}
+[data-slot='hover-card-content'][data-state='closed'] {
+  animation: kc-pop-out 120ms linear both;
+}
+
+/* 抽屉：从贴着的那一边滑进来（gentle 弹簧），退场 120ms 直线滑出；背板跟对话框一样淡入淡出。用 translate，不碰 inset。 */
+@keyframes kc-sheet-in-right {
+  from {
+    translate: 100% 0;
+  }
+}
+@keyframes kc-sheet-out-right {
+  to {
+    translate: 100% 0;
+  }
+}
+@keyframes kc-sheet-in-left {
+  from {
+    translate: -100% 0;
+  }
+}
+@keyframes kc-sheet-out-left {
+  to {
+    translate: -100% 0;
+  }
+}
+@keyframes kc-sheet-in-top {
+  from {
+    translate: 0 -100%;
+  }
+}
+@keyframes kc-sheet-out-top {
+  to {
+    translate: 0 -100%;
+  }
+}
+@keyframes kc-sheet-in-bottom {
+  from {
+    translate: 0 100%;
+  }
+}
+@keyframes kc-sheet-out-bottom {
+  to {
+    translate: 0 100%;
+  }
+}
+[data-slot='sheet-content'][data-state='open'][data-side='right'] {
+  animation: kc-sheet-in-right var(--dur-gentle) var(--ease-gentle) both;
+}
+[data-slot='sheet-content'][data-state='closed'][data-side='right'] {
+  animation: kc-sheet-out-right 120ms linear both;
+}
+[data-slot='sheet-content'][data-state='open'][data-side='left'] {
+  animation: kc-sheet-in-left var(--dur-gentle) var(--ease-gentle) both;
+}
+[data-slot='sheet-content'][data-state='closed'][data-side='left'] {
+  animation: kc-sheet-out-left 120ms linear both;
+}
+[data-slot='sheet-content'][data-state='open'][data-side='top'] {
+  animation: kc-sheet-in-top var(--dur-gentle) var(--ease-gentle) both;
+}
+[data-slot='sheet-content'][data-state='closed'][data-side='top'] {
+  animation: kc-sheet-out-top 120ms linear both;
+}
+[data-slot='sheet-content'][data-state='open'][data-side='bottom'] {
+  animation: kc-sheet-in-bottom var(--dur-gentle) var(--ease-gentle) both;
+}
+[data-slot='sheet-content'][data-state='closed'][data-side='bottom'] {
+  animation: kc-sheet-out-bottom 120ms linear both;
+}
+[data-slot='sheet-overlay'][data-state='open'] {
+  animation: kc-fade-in 120ms linear both;
+}
+[data-slot='sheet-overlay'][data-state='closed'] {
+  animation: kc-fade-out 120ms linear both;
+}
+
+/* 进度条：填充走 snappy 弹簧滑到新位置；不确定态是一块 40% 宽的条来回滑。 */
+@keyframes kc-progress-slide {
+  from {
+    translate: -100% 0;
+  }
+  to {
+    translate: 250% 0;
+  }
+}
+[data-slot='progress-indicator'] {
+  transition: translate var(--dur-snappy) var(--ease-snappy);
+}
+[data-slot='progress-indicator'][data-state='indeterminate'] {
+  width: 40%;
+  animation: kc-progress-slide var(--dur-settle) linear infinite;
+}
+
+/* 弹出提示：进出是 translate 与不透明度的过渡（Toast 的 phase 换 data-starting-style / data-ending-style 触发）。 */
+[data-slot='toast'] {
+  transition:
+    translate var(--dur-snappy) var(--ease-snappy),
+    opacity 120ms linear;
+}

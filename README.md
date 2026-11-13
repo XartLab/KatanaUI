@@ -17,9 +17,9 @@ tokens → theme → lib → primitives → katana → patterns → quant → bl
 | tokens | `src/tokens/` | `tokens.css`（`node scripts/sync-tokens.mjs` 从 `design/tokens.json` 生成，不手改）、`motion.tokens.json`（三条弹簧） |
 | theme | `src/theme/` | `theme.css`：Tailwind v4 的 `@theme inline` 把 token 接成工具类；`motion.css`：入场、退场的关键帧与 `data-state` 动效 |
 | lib | `src/lib/` | `cn`（`clsx` + `tailwind-merge`，认得 `k-text-*` 字号档）、`focus`（焦点环类）、`motion`（弹簧参数） |
-| primitives | `src/primitives/` | 无业务的基础件：button（含 `icon` 变体）、input、select、toggle-group、slider、checkbox、switch、tooltip、popover、dialog、dropdown-menu、context-menu、tabs、accordion |
-| katana | `src/katana/` | KATANA 自有的件（见下）：led、lcd、dot-matrix、rolling-text、badge、kbd、number-input、date-time-input、skeleton 与加载态、password-input、delete-button、notification-bell、status-icon、ai-status、matrix-orb、step-player、theme-selector、code-block、web-search、task-list、duration-picker（后十二件交互学自 rare-ui，实现原创，文件头写明）；可以用 primitives，不是 shadcn 的衍生，所以单放一处（`scripts/check-license.mjs` 把 `primitives/` 整个当 MIT） |
-| patterns | `src/patterns/` | 由基础件组出来的固定搭法：multi-select（弹层加勾选） |
+| primitives | `src/primitives/` | 无业务的基础件：button（含 `icon` 变体）、input、select、toggle-group、slider、checkbox、switch、tooltip、popover、dialog、dropdown-menu、context-menu、tabs、accordion、sheet、hover-card、command（`cmdk`）、scroll-area、separator、progress、alert、field、label；`lib/opener-focus` 是 dialog 与 sheet 共用的「关上时焦点回开启处」 |
+| katana | `src/katana/` | KATANA 自有的件（见下）：led、lcd、dot-matrix、rolling-text、badge、kbd、number-input、date-time-input、skeleton 与加载态、toast（弹出提示的外观，计时与队列在应用里）、password-input、delete-button、notification-bell、status-icon、ai-status、matrix-orb、step-player、theme-selector、code-block、web-search、task-list、duration-picker（后十二件交互学自 rare-ui，实现原创，文件头写明）；可以用 primitives，不是 shadcn 的衍生，所以单放一处（`scripts/check-license.mjs` 把 `primitives/` 整个当 MIT） |
+| patterns | `src/patterns/` | 由基础件组出来的固定搭法：multi-select（弹层加勾选）、combobox（弹层加 command：可搜索的单选或多选下拉） |
 | quant | `src/quant/` | 量化领域的件与格式化（出口 `@katanaview/ui/quant`）：`ChangeText`（涨跌幅）、`PnlText`（盈亏）、`format/`（价格按精度或 tick、涨跌幅、数量缩写；纯函数另有 `@katanaview/ui/quant/format` 出口，画布与 Worker 里用）。只依赖下面几层，不依赖行情、图表包与应用；品种、精度、单位由调用方传。有两个及以上调用方的才进 |
 | blocks | `src/blocks/` | 拼面板用的积木（出口 `@katanaview/ui/blocks`，#1869）：`DataGrid`（数据表：TanStack 行为、虚拟滚动、列排序 / 改宽 / 拖序 / 显隐、键盘选择，列声明类型 price / quantity / pnl / change / side / time / symbol / text / number）、`EmptyState`（空态）、`Toolbar` 零件与 `ToolButton`、`EstimateBadge`。可以用下面所有层，不依赖应用：快捷键表、文案、右键菜单怎么画、问 Agent 经 `DataGridHost`（`DataGridHostProvider`）注入，没提供时表照常能用（没有快捷键与标准右键项）。包里不带语言，文案都由调用方传 |
 
@@ -28,6 +28,19 @@ tokens → theme → lib → primitives → katana → patterns → quant → bl
 读数与状态灯这类件是我们自己的，不是 shadcn 起步的，原来在应用的 `src/ui/`：Led、Lcd、DotMatrix、RollingText、BadgeGroup、Kbd、NumberInput、DateTimeInput、Skeleton 与 Loading、LoadingBoundary、LoadingView。
 样子照组件卡，没改：规则是 `src/theme/` 下的普通 CSS（`led.css`、`lcd.css`、`kbd.css`、`badge.css`、`rolling-text.css`、`number-input.css`、`date-time.css`、`loading.css`），类名 `k-*` 原样保留，应用里按这些类写的覆盖规则照旧生效。
 文字一律由调用方传（`label`、`LoadingTexts`、`DateTimeLabels`），包里没有中文；跟应用耦合的部分（徽标从市场包来、快捷键按平台拆块、文字按界面语言翻）留在 `src/ui/` 的适配层，调用处不用改。
+
+### 设计稿覆盖（#1870）
+
+`docs/coverage-map.json` 是手写的：设计稿存档的每张组件卡（`design/katana-console/project/components/`）落在哪一类（基础件、自有件、量化、积木、面板）、落点、做没做。
+`pnpm --filter @katanaview/ui coverage` 生成 `docs/coverage.md`；`pnpm lint:ds` 跑 `coverage --check`：有卡没映射、映射的落点（包的出口名或仓库路径）不存在、`coverage.md` 不是最新，都红。文档站的「覆盖」页（`#/coverage`）显示每一类的「已做 / 总数」，数字与 `coverage.md` 用同一份汇总（`docs/coverage-core.ts`）。
+新增或改名一个件，同一个 PR 里更新映射；积木层（DataGrid、EmptyState、Toolbar，#1869）落地后，把 `planned` 里的名字挪进 `at`。
+
+### 应用里换了什么、没换什么（#1870）
+
+- **换了：** 告警弹出提示（`src/shell/AlertToasts.tsx`）的外观用包里的 `Toast*`（`katana/toast.tsx`）；队列、计时、悬停暂停、位置偏好仍是应用的（`toast-queue.ts`，决策记录 2026-11-13 #1797），`.kc-toast` 类名留着给 e2e 与 Graphite 的玻璃皮肤用。原来 shell.css 里那段 `.kc-toast*` 规则删了。
+- **没换：命令搜索（`QuickSearch.tsx`）→ `Command`。** 它自己排名、给「匹配 xx」的别名提示、分「最近」「命令」两段、回车避开输入法组字，用的是跟指标库、品种搜索共用的 `.kc-ib-*` 外框。换成 cmdk 要关掉它的过滤、重写这一整套外框，收益只是少一段键盘移动的代码，风险是动三处共用的样式。留给把 `.kc-ib-*` 整套收进包的那一次。
+- **没换：交易所多选（`SymbolSearch.tsx` 的 `VenueFilter`）→ `Combobox`。** 它是两列网格带 LOGO、状态灯和底部「全选 / 全部清除 / 完成」，行是 `role=checkbox`；`Combobox` 是单列的 listbox。要换得先给 `Combobox` 加两列与底栏，不然样子会变。现在包里的 `Combobox` 没有应用里的调用方，只在包与文档站里。
+- **没换：4px 滚动条（#1799）→ `ScrollArea`。** #1800 把滚动条做成了全局的原生 CSS（`scrollbar-width` 与 `::-webkit-scrollbar`），所有滚动容器自动带上；换成 `ScrollArea` 要给每个滚动容器套一层，还会带来自绘滚动条与原生滚动条并存的问题。`ScrollArea` 留给需要自绘滚动条的地方（比如要在滚动条上放标记）。
 
 ## 应用怎么用
 
@@ -58,7 +71,8 @@ pnpm --filter @katanaview/ui exec shadcn add <component>
 2. 尺寸、圆角、颜色、动效改成我们的：取 token，不写色值；字号用 `k-text-*`；焦点环用 `lib/focus`；动效写进 `theme/motion.css`，缓动取 `--ease-snappy` 等。
 3. 文案不写死在组件里（需要的文字由调用方传，比如 Dialog 的 `closeLabel`），包里不出现中文。
 4. 在 `src/index.ts` 导出；在文档站加它的页（见下一节）；在 `e2e/ui-gallery.spec.ts` 加断言用户看得见的行为。
-5. 文件名保持 shadcn 的短横线小写（`dropdown-menu.tsx`），这是 `scripts/check-components.mjs` 的例外：它只扫应用的 `src/`。
+5. 对应设计稿的卡，在 `docs/coverage-map.json` 里把状态与落点改过来，跑 `pnpm --filter @katanaview/ui coverage` 重新生成 `coverage.md`。
+6. 文件名保持 shadcn 的短横线小写（`dropdown-menu.tsx`），这是 `scripts/check-components.mjs` 的例外：它只扫应用的 `src/`。
 
 ## 文档站
 

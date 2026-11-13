@@ -118,7 +118,18 @@
     [data-slot^='popover'],
     [data-slot^='switch'],
     [data-slot^='tabs'],
-    [data-slot^='tooltip']
+    [data-slot^='tooltip'],
+    [data-slot^='alert'],
+    [data-slot^='combobox'],
+    [data-slot^='command'],
+    [data-slot^='field'],
+    [data-slot^='hover-card'],
+    [data-slot^='label'],
+    [data-slot^='progress'],
+    [data-slot^='scroll-area'],
+    [data-slot^='separator'],
+    [data-slot^='sheet'],
+    [data-slot^='toast']
   ),
   :is(
       [data-slot^='delete-button'],
@@ -132,7 +143,18 @@
       [data-slot^='popover'],
       [data-slot^='switch'],
       [data-slot^='tabs'],
-      [data-slot^='tooltip']
+      [data-slot^='tooltip'],
+      [data-slot^='alert'],
+      [data-slot^='combobox'],
+      [data-slot^='command'],
+      [data-slot^='field'],
+      [data-slot^='hover-card'],
+      [data-slot^='label'],
+      [data-slot^='progress'],
+      [data-slot^='scroll-area'],
+      [data-slot^='separator'],
+      [data-slot^='sheet'],
+      [data-slot^='toast']
     )
     *
 ) {
@@ -151,7 +173,18 @@
     [data-slot^='popover'],
     [data-slot^='switch'],
     [data-slot^='tabs'],
-    [data-slot^='tooltip']
+    [data-slot^='tooltip'],
+    [data-slot^='alert'],
+    [data-slot^='combobox'],
+    [data-slot^='command'],
+    [data-slot^='field'],
+    [data-slot^='hover-card'],
+    [data-slot^='label'],
+    [data-slot^='progress'],
+    [data-slot^='scroll-area'],
+    [data-slot^='separator'],
+    [data-slot^='sheet'],
+    [data-slot^='toast']
   ),
   :is(
       [data-slot^='delete-button'],
@@ -165,7 +198,18 @@
       [data-slot^='popover'],
       [data-slot^='switch'],
       [data-slot^='tabs'],
-      [data-slot^='tooltip']
+      [data-slot^='tooltip'],
+      [data-slot^='alert'],
+      [data-slot^='combobox'],
+      [data-slot^='command'],
+      [data-slot^='field'],
+      [data-slot^='hover-card'],
+      [data-slot^='label'],
+      [data-slot^='progress'],
+      [data-slot^='scroll-area'],
+      [data-slot^='separator'],
+      [data-slot^='sheet'],
+      [data-slot^='toast']
     )
     button
 ) {
@@ -190,7 +234,18 @@
       [data-slot^='popover'],
       [data-slot^='switch'],
       [data-slot^='tabs'],
-      [data-slot^='tooltip']
+      [data-slot^='tooltip'],
+      [data-slot^='alert'],
+      [data-slot^='combobox'],
+      [data-slot^='command'],
+      [data-slot^='field'],
+      [data-slot^='hover-card'],
+      [data-slot^='label'],
+      [data-slot^='progress'],
+      [data-slot^='scroll-area'],
+      [data-slot^='separator'],
+      [data-slot^='sheet'],
+      [data-slot^='toast']
     )
     h2,
   :is(
@@ -205,7 +260,18 @@
       [data-slot^='popover'],
       [data-slot^='switch'],
       [data-slot^='tabs'],
-      [data-slot^='tooltip']
+      [data-slot^='tooltip'],
+      [data-slot^='alert'],
+      [data-slot^='combobox'],
+      [data-slot^='command'],
+      [data-slot^='field'],
+      [data-slot^='hover-card'],
+      [data-slot^='label'],
+      [data-slot^='progress'],
+      [data-slot^='scroll-area'],
+      [data-slot^='separator'],
+      [data-slot^='sheet'],
+      [data-slot^='toast']
     )
     p
 ) {

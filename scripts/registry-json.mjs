@@ -38,6 +38,8 @@ const INTERNAL = {
   'date-time-model': 'DateTimeInput 的解析与格式化（纯函数）。',
   'number-field-model': 'NumberInput 的解析与取整（纯函数）。',
   'loading-gate': 'Loading 的计时与行数量取（纯函数）。',
+  'opener-focus': '对话框与抽屉共用：关闭后把焦点还给打开前拿着它的元素。',
+  label: 'Radix Label，Field 用它做标签（文档站在 field 页）。',
   'loading-wait': 'Loading 的计时外壳：500ms、2s、10s 三个阶段。',
 }
 

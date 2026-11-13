@@ -174,6 +174,19 @@
       ]
     },
     {
+      "name": "opener-focus",
+      "type": "registry:lib",
+      "title": "Opener Focus",
+      "description": "对话框与抽屉共用：关闭后把焦点还给打开前拿着它的元素。",
+      "files": [
+        {
+          "path": "src/lib/opener-focus.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/lib/opener-focus.ts"
+        }
+      ]
+    },
+    {
       "name": "overlay",
       "type": "registry:lib",
       "title": "Overlay",
@@ -224,6 +237,25 @@
       ]
     },
     {
+      "name": "alert",
+      "type": "registry:ui",
+      "title": "Alert",
+      "description": "嵌在页面里的一条说明（弹出的提示是 Toast）：左边一道 2px 色条标语气，第一个子元素是 svg 时当图标。",
+      "dependencies": [
+        "class-variance-authority@0.7.1"
+      ],
+      "registryDependencies": [
+        "@katana/cn"
+      ],
+      "files": [
+        {
+          "path": "src/primitives/alert.tsx",
+          "type": "registry:ui",
+          "target": "~/src/katana/ui/primitives/alert.tsx"
+        }
+      ]
+    },
+    {
       "name": "button",
       "type": "registry:ui",
       "title": "Button",
@@ -265,6 +297,28 @@
       ]
     },
     {
+      "name": "command",
+      "type": "registry:ui",
+      "title": "Command",
+      "description": "一个输入框加一串过滤出来的行：焦点一直在输入框里，↑↓ 移动高亮，回车选中。底座是 cmdk（过滤、键盘、分组）；自己排名的传 shouldFilter={false}。",
+      "dependencies": [
+        "cmdk@1.1.1",
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/dialog",
+        "@katana/menu-parts"
+      ],
+      "files": [
+        {
+          "path": "src/primitives/command.tsx",
+          "type": "registry:ui",
+          "target": "~/src/katana/ui/primitives/command.tsx"
+        }
+      ]
+    },
+    {
       "name": "context-menu",
       "type": "registry:ui",
       "title": "Context Menu",
@@ -298,6 +352,7 @@
       "registryDependencies": [
         "@katana/button",
         "@katana/cn",
+        "@katana/opener-focus",
         "@katana/overlay"
       ],
       "files": [
@@ -331,6 +386,47 @@
       ]
     },
     {
+      "name": "field",
+      "type": "registry:ui",
+      "title": "Field",
+      "description": "标签加控件加说明加错误排成一组，并把它们的 ARIA 关联好：标签点一下聚焦控件，说明与错误进控件的 aria-describedby，出错时 aria-invalid、错误条 role=alert。",
+      "dependencies": [
+        "class-variance-authority@0.7.1"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/label",
+        "@katana/separator"
+      ],
+      "files": [
+        {
+          "path": "src/primitives/field.tsx",
+          "type": "registry:ui",
+          "target": "~/src/katana/ui/primitives/field.tsx"
+        }
+      ]
+    },
+    {
+      "name": "hover-card",
+      "type": "registry:ui",
+      "title": "Hover Card",
+      "description": "指针停在触发器上（或键盘焦点到了它）弹出的一小块补充信息，跟弹层同一块材质；延迟用 Radix 默认（700ms 开、300ms 关）。卡里不放必须操作的东西。",
+      "dependencies": [
+        "radix-ui@1.8.1"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/overlay"
+      ],
+      "files": [
+        {
+          "path": "src/primitives/hover-card.tsx",
+          "type": "registry:ui",
+          "target": "~/src/katana/ui/primitives/hover-card.tsx"
+        }
+      ]
+    },
+    {
       "name": "input",
       "type": "registry:ui",
       "title": "Input",
@@ -347,6 +443,25 @@
           "path": "src/primitives/input.tsx",
           "type": "registry:ui",
           "target": "~/src/katana/ui/primitives/input.tsx"
+        }
+      ]
+    },
+    {
+      "name": "label",
+      "type": "registry:ui",
+      "title": "Label",
+      "description": "标签加控件加说明加错误排成一组，并把它们的 ARIA 关联好：标签点一下聚焦控件，说明与错误进控件的 aria-describedby，出错时 aria-invalid、错误条 role=alert。",
+      "dependencies": [
+        "radix-ui@1.8.1"
+      ],
+      "registryDependencies": [
+        "@katana/cn"
+      ],
+      "files": [
+        {
+          "path": "src/primitives/label.tsx",
+          "type": "registry:ui",
+          "target": "~/src/katana/ui/primitives/label.tsx"
         }
       ]
     },
@@ -423,6 +538,46 @@
       ]
     },
     {
+      "name": "progress",
+      "type": "registry:ui",
+      "title": "Progress",
+      "description": "4 高的细条，填充走 snappy 弹簧滑到新位置；不知道进度（不给 value）是一块来回滑的不确定条。",
+      "dependencies": [
+        "class-variance-authority@0.7.1",
+        "radix-ui@1.8.1"
+      ],
+      "registryDependencies": [
+        "@katana/cn"
+      ],
+      "files": [
+        {
+          "path": "src/primitives/progress.tsx",
+          "type": "registry:ui",
+          "target": "~/src/katana/ui/primitives/progress.tsx"
+        }
+      ]
+    },
+    {
+      "name": "scroll-area",
+      "type": "registry:ui",
+      "title": "Scroll Area",
+      "description": "Radix 的自绘滚动条，4px 宽，平时不出现，指针到了这一块才出一条淡线（18% 墨色，指到滚动条上 32%）。调用方要给它一个确定的高。",
+      "dependencies": [
+        "radix-ui@1.8.1"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/focus"
+      ],
+      "files": [
+        {
+          "path": "src/primitives/scroll-area.tsx",
+          "type": "registry:ui",
+          "target": "~/src/katana/ui/primitives/scroll-area.tsx"
+        }
+      ]
+    },
+    {
       "name": "select",
       "type": "registry:ui",
       "title": "Select",
@@ -442,6 +597,49 @@
           "path": "src/primitives/select.tsx",
           "type": "registry:ui",
           "target": "~/src/katana/ui/primitives/select.tsx"
+        }
+      ]
+    },
+    {
+      "name": "separator",
+      "type": "registry:ui",
+      "title": "Separator",
+      "description": "1px 的线，取 line 色（跟菜单里的分隔线一条白线）；默认只是装饰，读屏不报。",
+      "dependencies": [
+        "radix-ui@1.8.1"
+      ],
+      "registryDependencies": [
+        "@katana/cn"
+      ],
+      "files": [
+        {
+          "path": "src/primitives/separator.tsx",
+          "type": "registry:ui",
+          "target": "~/src/katana/ui/primitives/separator.tsx"
+        }
+      ]
+    },
+    {
+      "name": "sheet",
+      "type": "registry:ui",
+      "title": "Sheet",
+      "description": "贴着窗口一边滑出来的面板，行为同对话框（Radix Dialog）：Esc 关、焦点锁在里面、点背板关、关了焦点回打开前拿着它的元素。左右宽 360，上下最高半屏。",
+      "dependencies": [
+        "class-variance-authority@0.7.1",
+        "lucide-react@1.67.0",
+        "radix-ui@1.8.1"
+      ],
+      "registryDependencies": [
+        "@katana/button",
+        "@katana/cn",
+        "@katana/opener-focus",
+        "@katana/overlay"
+      ],
+      "files": [
+        {
+          "path": "src/primitives/sheet.tsx",
+          "type": "registry:ui",
+          "target": "~/src/katana/ui/primitives/sheet.tsx"
         }
       ]
     },
@@ -1054,6 +1252,26 @@
       ]
     },
     {
+      "name": "toast",
+      "type": "registry:component",
+      "title": "Toast",
+      "description": "固定在窗口一角的弹出提示：只管样子与读屏语义（live region），条目表、定时、暂停由调用方管（应用里 AlertToasts 配 toast-queue.ts）。进出走 translate 与不透明度的过渡。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/button",
+        "@katana/cn"
+      ],
+      "files": [
+        {
+          "path": "src/katana/toast.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/katana/toast.tsx"
+        }
+      ]
+    },
+    {
       "name": "web-search",
       "type": "registry:component",
       "title": "Web Search",
@@ -1073,6 +1291,25 @@
           "path": "src/katana/web-search.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/katana/web-search.tsx"
+        }
+      ]
+    },
+    {
+      "name": "combobox",
+      "type": "registry:component",
+      "title": "Combobox",
+      "description": "Popover 加 Command 拼出来：触发器跟单选下拉一个样，打开后焦点在搜索框，打字过滤，回车选中。单选选了就收（受控 open），多选不收；每行用 selected 画勾。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/command",
+        "@katana/popover",
+        "@katana/select"
+      ],
+      "files": [
+        {
+          "path": "src/patterns/combobox.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/patterns/combobox.tsx"
         }
       ]
     },

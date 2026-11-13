@@ -5,6 +5,9 @@ import { BadgeDemo, DotMatrixDemo, KbdDemo, LcdDemo, LedDemo, RollingTextDemo } 
 import { ContextMenuOpen, DialogOpen, DropdownMenuOpen, PopoverOpen, SelectOpen, TooltipOpen } from './pages/open'
 import { ChangeTextDemo, PnlTextDemo, QuantFormatDemo } from './pages/quant'
 import { DataGridDemo, EmptyStateDemo, EstimateBadgeDemo, ToolbarDemo } from './pages/blocks'
+import { AlertDemo, ProgressDemo, ToastDemo } from './pages/feedback'
+import { ComboboxDemo, CommandDemo } from './pages/pickers'
+import { FieldDemo, HoverCardDemo, ScrollAreaDemo, SeparatorDemo, SheetDemo } from './pages/structure'
 import {
   AiStatusDemo,
   DeleteButtonDemo,
@@ -60,6 +63,16 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'number-input': NumberInputDemo,
   'date-time-input': DateTimeInputDemo,
   skeleton: SkeletonDemo,
+  toast: ToastDemo,
+  alert: AlertDemo,
+  progress: ProgressDemo,
+  sheet: SheetDemo,
+  'hover-card': HoverCardDemo,
+  command: CommandDemo,
+  combobox: ComboboxDemo,
+  separator: SeparatorDemo,
+  'scroll-area': ScrollAreaDemo,
+  field: FieldDemo,
   'change-text': ChangeTextDemo,
   'pnl-text': PnlTextDemo,
   'quant-format': QuantFormatDemo,

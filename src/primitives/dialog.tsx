@@ -3,8 +3,9 @@
 // 拷进来以后归我们改：样子（尺寸、颜色、动效）按 OpenMarket 实测样式与我们的 token 重写（决策记录 0049）。
 import { XIcon } from 'lucide-react'
 import { Dialog as DialogPrimitive } from 'radix-ui'
-import { useRef, type ComponentProps } from 'react'
+import type { ComponentProps } from 'react'
 import { cn } from '../lib/cn'
+import { useOpenerFocus } from '../lib/opener-focus'
 import { OverlayPortal } from '../lib/overlay'
 import { Button } from './button'
 
@@ -54,9 +55,8 @@ function DialogContent({
   bare?: boolean
   overlayClassName?: string
 }) {
-  // Radix 的模态对话框关闭后只会聚焦 DialogTrigger；我们的对话框大多由代码打开、没有触发器，焦点就丢了（落到 body）。
-  // 所以挂载时记下打开前拿着焦点的元素，关闭时还给它（调用方的 onCloseAutoFocus 先走，它 preventDefault 就不管）。
-  const opener = useRef<HTMLElement | null>(null)
+  // Radix 的模态对话框关闭后只会聚焦 DialogTrigger；由代码打开的没有触发器，焦点还给打开前拿着它的元素（lib/opener-focus.ts）。
+  const focus = useOpenerFocus(props)
   return (
     <OverlayPortal portal={DialogPrimitive.Portal}>
       <DialogOverlay className={overlayClassName} />
@@ -74,19 +74,8 @@ function DialogContent({
           className,
         )}
         {...props}
-        onOpenAutoFocus={(event) => {
-          opener.current = document.activeElement instanceof HTMLElement ? document.activeElement : null
-          props.onOpenAutoFocus?.(event)
-        }}
-        onCloseAutoFocus={(event) => {
-          props.onCloseAutoFocus?.(event)
-          if (event.defaultPrevented) return
-          const target = opener.current
-          if (target?.isConnected) {
-            event.preventDefault()
-            target.focus({ preventScroll: true })
-          }
-        }}
+        onOpenAutoFocus={focus.onOpenAutoFocus}
+        onCloseAutoFocus={focus.onCloseAutoFocus}
       >
         {children}
         {closeLabel ? (

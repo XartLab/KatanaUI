@@ -1,12 +1,16 @@
 // SPDX-License-Identifier: MIT
 import { useEffect, useSyncExternalStore } from 'react'
 import { ToggleGroup, ToggleGroupItem } from '../src/index'
+import { CoveragePage } from './coverage'
 import { DEMOS } from './demos'
 import { GROUPS, PAGES, pageById, type DocPage, type PropTable } from './registry'
 
 // 组件文档站（#1860）：左侧目录按类分组，右侧一个组件一页，地址 `#/<件名>`，可直接打开、可前进后退。
 // 版式照 kobra.systems/components/<件名>（2026-11-14 读，只取结构）：标题与一句说明、实时预览、属性表、组成、键盘。
 // 预览默认 Console 主题，页头的切换看 Graphite（主题是根节点上的 data-theme）；?theme=graphite 直接以它打开。
+
+/** 「覆盖」页的地址 `#/coverage`：不是组件页，在目录里单列一组「总览」。 */
+export const COVERAGE_ID = 'coverage'
 
 export type ThemeName = 'console' | 'graphite'
 
@@ -134,6 +138,7 @@ export function Docs({ theme, onTheme }: { theme: ThemeName; onTheme: (theme: Th
     if (id === '') history.replaceState(null, '', `#/${PAGES[0].id}`)
   }, [id])
   const shown = page ?? (id === '' ? PAGES[0] : undefined)
+  const onCoverage = id === COVERAGE_ID
   return (
     <div className="gal-shell" data-gallery-theme={theme}>
       <nav className="gal-nav" aria-label="组件">
@@ -158,6 +163,16 @@ export function Docs({ theme, onTheme }: { theme: ThemeName; onTheme: (theme: Th
             </section>
           )
         })}
+        <section>
+          <h2>总览</h2>
+          <ul>
+            <li>
+              <a href={`#/${COVERAGE_ID}`} aria-current={onCoverage ? 'page' : undefined}>
+                {COVERAGE_ID}
+              </a>
+            </li>
+          </ul>
+        </section>
       </nav>
       <div className="gal-main">
         <div className="gal-bar">
@@ -176,7 +191,9 @@ export function Docs({ theme, onTheme }: { theme: ThemeName; onTheme: (theme: Th
           </ToggleGroup>
         </div>
         <main>
-          {shown ? (
+          {onCoverage ? (
+            <CoveragePage />
+          ) : shown ? (
             <DocBody key={shown.id} page={shown} />
           ) : (
             <p className="gal-missing" role="alert">

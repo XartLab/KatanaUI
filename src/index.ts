@@ -8,8 +8,20 @@ export { useHoverOpen } from './lib/hover-open'
 export { InlineOverlays } from './lib/overlay'
 
 export { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from './primitives/accordion'
+export { Alert, AlertDescription, AlertTitle, alertVariants } from './primitives/alert'
 export { Button, buttonVariants } from './primitives/button'
 export { Checkbox } from './primitives/checkbox'
+export {
+  Command,
+  CommandDialog,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+  CommandSeparator,
+  CommandShortcut,
+} from './primitives/command'
 export { menuContainerClass, menuRowClass, menuSeparatorClass } from './primitives/menu-parts'
 export {
   ContextMenu,
@@ -58,6 +70,20 @@ export {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from './primitives/dropdown-menu'
+export {
+  Field,
+  FieldContent,
+  FieldDescription,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+  FieldLegend,
+  FieldSeparator,
+  FieldSet,
+  useFieldControl,
+} from './primitives/field'
+export { HoverCard, HoverCardContent, HoverCardTrigger } from './primitives/hover-card'
+export { Label } from './primitives/label'
 export { useMenuParts } from './primitives/menu-any'
 export { MenuCheckColumn, MenuItemHint, MenuItemIcon, MenuItemLabel } from './primitives/menu-parts'
 export {
@@ -71,6 +97,23 @@ export {
   PopoverTrigger,
 } from './primitives/popover'
 export { Input, inputVariants } from './primitives/input'
+export { Progress } from './primitives/progress'
+export { ScrollArea, ScrollBar } from './primitives/scroll-area'
+export { Separator } from './primitives/separator'
+export {
+  Sheet,
+  SheetBody,
+  SheetClose,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetOverlay,
+  SheetPortal,
+  SheetTitle,
+  SheetTrigger,
+  sheetVariants,
+} from './primitives/sheet'
 export {
   Select,
   SelectArrow,
@@ -87,6 +130,16 @@ export { Tabs, TabsContent, TabsList, TabsTrigger, tabsListVariants } from './pr
 export { ToggleGroup, ToggleGroupItem, toggleGroupVariants, toggleItemVariants } from './primitives/toggle-group'
 export { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger, tooltipContentClass } from './primitives/tooltip'
 export { MultiSelect } from './patterns/multi-select'
+export {
+  Combobox,
+  ComboboxContent,
+  ComboboxEmpty,
+  ComboboxGroup,
+  ComboboxInput,
+  ComboboxItem,
+  ComboboxList,
+  ComboboxTrigger,
+} from './patterns/combobox'
 
 // KATANA 自有件（#1860 从 src/ui 搬来）：读数、状态灯、点阵、快捷键方块、徽标、滚动数字、数字框、日期时间框、加载骨架。
 export { DotMatrix, DOT_PITCH, DOT_SIZE } from './katana/dot-matrix'
@@ -98,6 +151,20 @@ export { RollingText, rollSlots, rollStrip } from './katana/rolling-text'
 export { NumberInput } from './katana/number-input'
 export { DateTimeInput, type DateTimeLabels } from './katana/date-time-input'
 export { Skeleton } from './katana/skeleton'
+export {
+  TOAST_EXIT_MS,
+  Toast,
+  ToastClear,
+  ToastClose,
+  ToastContent,
+  ToastDescription,
+  ToastIcon,
+  ToastText,
+  ToastTitle,
+  ToastViewport,
+  type ToastPhase,
+  type ToastPosition,
+} from './katana/toast'
 export { Loading, LoadingBoundary } from './katana/loading'
 export { LoadingView, type LoadingTexts } from './katana/loading-view'
 export type { LoadingPhase } from './katana/loading-gate'
