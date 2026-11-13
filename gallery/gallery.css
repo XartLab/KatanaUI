@@ -93,3 +93,10 @@ body {
   border: 1px solid var(--line-100);
   background: var(--bg-000);
 }
+
+.gal-slider {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 220px;
+}

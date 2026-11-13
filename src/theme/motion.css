@@ -120,3 +120,20 @@
     translate var(--dur-snappy) var(--ease-snappy),
     width var(--dur-snappy) var(--ease-snappy);
 }
+/* 滑块：松手后把手与填充走 settle 弹簧落到步进位置（slider.tsx 在松手后的一小段时间里挂 data-settling）；拖动中不带过渡，跟手。 */
+[data-slot='slider'][data-settling] [data-slot='slider-thumb'] {
+  transition: translate var(--dur-settle) var(--ease-settle);
+}
+[data-slot='slider'][data-settling] [data-slot='slider-fill'] {
+  transition: width var(--dur-settle) var(--ease-settle);
+}
+/* 下拉：跟菜单、弹层同一套入场。 */
+[data-slot='select-content'] {
+  transform-origin: var(--radix-select-content-transform-origin);
+}
+[data-slot='select-content'][data-state='open'] {
+  animation: kc-pop-in var(--dur-snappy) var(--ease-snappy) both;
+}
+[data-slot='select-content'][data-state='closed'] {
+  animation: kc-pop-out 120ms linear both;
+}

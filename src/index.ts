@@ -47,6 +47,20 @@ export {
   PopoverTitle,
   PopoverTrigger,
 } from './primitives/popover'
+export { Input, inputVariants } from './primitives/input'
+export {
+  Select,
+  SelectArrow,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  selectItemClass,
+  selectTriggerVariants,
+} from './primitives/select'
+export { Slider } from './primitives/slider'
 export { Switch } from './primitives/switch'
 export { Tabs, TabsContent, TabsList, TabsTrigger, tabsListVariants } from './primitives/tabs'
-export { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './primitives/tooltip'
+export { ToggleGroup, ToggleGroupItem, toggleGroupVariants, toggleItemVariants } from './primitives/toggle-group'
+export { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger, tooltipContentClass } from './primitives/tooltip'
+export { MultiSelect } from './patterns/multi-select'

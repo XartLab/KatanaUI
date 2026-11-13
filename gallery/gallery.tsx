@@ -36,11 +36,21 @@ import {
   PopoverHeader,
   PopoverTitle,
   PopoverTrigger,
+  Input,
+  MultiSelect,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  Slider,
   Switch,
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
+  ToggleGroup,
+  ToggleGroupItem,
   Tooltip,
   TooltipContent,
   TooltipProvider,
@@ -62,6 +72,17 @@ function Section({ id, title, note, children }: { id: string; title: string; not
 }
 
 const VARIANTS = ['default', 'primary', 'danger', 'ghost', 'link'] as const
+const TIMEFRAMES = [
+  ['d', '日'],
+  ['w', '周'],
+  ['m', '月'],
+] as const
+const COLUMNS = [
+  ['name', '名称'],
+  ['value', '值'],
+  ['line', '线形图'],
+  ['volume', 'Volume'],
+] as const
 
 function Buttons() {
   return (
@@ -84,6 +105,119 @@ function Buttons() {
           </Button>
         </div>
       ))}
+      <div className="gal-row">
+        <Button variant="icon" size="icon" aria-label="图标按钮">
+          <Plus />
+        </Button>
+        <Button variant="icon" size="icon" disabled aria-label="图标按钮 禁用">
+          <Plus />
+        </Button>
+        <Button>
+          <Plus />
+          带图标
+        </Button>
+      </div>
+    </Section>
+  )
+}
+
+function Fields() {
+  const [timeframe, setTimeframe] = useState<string | null>('d')
+  const [toolbar, setToolbar] = useState<string | null>('w')
+  const [volume, setVolume] = useState(40)
+  const [committed, setCommitted] = useState(40)
+  const [range, setRange] = useState([20, 70])
+  const [columns, setColumns] = useState<string[]>(['name'])
+  const [kind, setKind] = useState('line')
+  return (
+    <Section
+      id="fields"
+      title="Input 输入 · Select 下拉 · ToggleGroup 分段 · Slider 滑块 · MultiSelect 多选"
+      note="滑块：拖动跟手，松手 settle 弹簧吸附到步进；键盘 ← → 走一格。分段 sm 的选中块跟着滑。多选点一项只切这一项，列表不收。"
+    >
+      <div className="gal-row">
+        <Input aria-label="输入" placeholder="默认" style={{ width: 160 }} />
+        <Input aria-label="输入 sm" size="sm" placeholder="sm" style={{ width: 120 }} />
+        <Input aria-label="输入 禁用" disabled defaultValue="禁用" style={{ width: 120 }} />
+        <Input aria-label="输入 有值" defaultValue="1,234.50" style={{ width: 120 }} />
+      </div>
+      <div className="gal-row">
+        <Select value={kind} onValueChange={setKind}>
+          <SelectTrigger aria-label="图表类型" style={{ width: 160 }}>
+            <SelectValue>{{ line: '折线', candles: 'K 线', bars: '美国线' }[kind]}</SelectValue>
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="line">折线</SelectItem>
+            <SelectItem value="candles">K 线</SelectItem>
+            <SelectItem value="bars">美国线</SelectItem>
+          </SelectContent>
+        </Select>
+        <Select value="">
+          <SelectTrigger aria-label="还没选" style={{ width: 160 }}>
+            <SelectValue placeholder="还没选" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="a">甲</SelectItem>
+          </SelectContent>
+        </Select>
+        <Select value="a" disabled>
+          <SelectTrigger aria-label="禁用的下拉" style={{ width: 160 }}>
+            <SelectValue>甲</SelectValue>
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="a">甲</SelectItem>
+          </SelectContent>
+        </Select>
+        <MultiSelect
+          values={columns}
+          options={COLUMNS}
+          onValuesChange={setColumns}
+          empty="隐藏"
+          label="显示的列"
+          separator="、"
+          width={160}
+        />
+      </div>
+      <div className="gal-row">
+        <ToggleGroup value={timeframe} onValueChange={setTimeframe} aria-label="周期（设置页样式）">
+          {TIMEFRAMES.map(([id, text]) => (
+            <ToggleGroupItem key={id} value={id}>
+              {text}
+            </ToggleGroupItem>
+          ))}
+          <ToggleGroupItem value="off" disabled>
+            禁用
+          </ToggleGroupItem>
+        </ToggleGroup>
+        <ToggleGroup variant="sm" value={toolbar} onValueChange={setToolbar} aria-label="周期（工具条样式）">
+          {TIMEFRAMES.map(([id, text]) => (
+            <ToggleGroupItem key={id} value={id}>
+              {text}
+            </ToggleGroupItem>
+          ))}
+        </ToggleGroup>
+      </div>
+      <div className="gal-row">
+        <div className="gal-slider">
+          <Slider
+            value={[volume]}
+            min={0}
+            max={100}
+            step={10}
+            thumbLabels={['音量']}
+            onValueChange={(next) => setVolume(next[0])}
+            onValueCommit={(next) => setCommitted(next[0])}
+          />
+          <output data-testid="slider-value">{volume}</output>
+          <output data-testid="slider-committed">{committed}</output>
+        </div>
+        <div className="gal-slider">
+          <Slider value={range} min={0} max={100} thumbLabels={['起', '止']} onValueChange={(next) => setRange(next)} />
+        </div>
+        <div className="gal-slider">
+          <Slider value={[30]} disabled thumbLabels={['禁用的滑块']} onValueChange={() => {}} />
+        </div>
+      </div>
     </Section>
   )
 }
@@ -276,6 +410,7 @@ export function Gallery({ theme }: { theme: 'console' | 'graphite' }) {
         <p>组件框架展示页 · {theme === 'console' ? 'Console' : 'Graphite'} · 演示数据</p>
       </header>
       <Buttons />
+      <Fields />
       <Boxes />
       <Overlays />
       <Navigation />

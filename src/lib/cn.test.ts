@@ -35,3 +35,37 @@ describe('cn', () => {
     expect(cn('k-text-data leading-none', 'k-text-body')).toBe('k-text-body')
   })
 })
+
+describe('字号档类不被同串里的字号工具类吃掉（2026-11-13 独立审：input sm 的 text-[length:…] 删掉了 k-text-body）', () => {
+  it('cn 对 input 的 sm 变体保留档类，只改字号', async () => {
+    const { inputVariants } = await import('../primitives/input')
+    const out = cn(inputVariants({ size: 'sm' }))
+    expect(out).toContain('k-text-body')
+    expect(out).toContain('[font-size:var(--text-data-size)]')
+  })
+
+  it('源码里同一个字符串字面量不同时写档类和 text-[ / text-xs… 这类字号工具类', async () => {
+    const { readdirSync, readFileSync } = await import('node:fs')
+    const { join } = await import('node:path')
+    const root = join(import.meta.dirname, '..')
+    const walk = (dir: string): string[] =>
+      readdirSync(dir, { withFileTypes: true }).flatMap((e) =>
+        e.isDirectory()
+          ? walk(join(dir, e.name))
+          : /\.tsx?$/.test(e.name) && !/\.test\./.test(e.name)
+            ? [join(dir, e.name)]
+            : [],
+      )
+    const bad: string[] = []
+    for (const file of walk(root)) {
+      for (const literal of readFileSync(file, 'utf8').match(/'[^'\n]*'|`[^`\n]*`/g) ?? []) {
+        if (
+          /k-text-(title|body|data|caption|micro)/.test(literal) &&
+          /(^|[\s'`:])text-(\[|xs\b|sm\b|base\b|lg\b|xl\b|[2-9]xl\b)/.test(literal)
+        )
+          bad.push(`${file}: ${literal}`)
+      }
+    }
+    expect(bad).toEqual([])
+  })
+})
