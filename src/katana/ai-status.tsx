@@ -5,8 +5,8 @@
 // 学到的事实（只取行为）：① 状态变时图标缩放旋转着换、文字上下滑着换（旧的往上走、新的从下来），整行宽度跟着弹簧伸缩，不跳；
 // ② 进行中的文字有一道流光扫过，结束就停；③ 耗时只在进行中显示；④ 整行是 role=status，状态变了读屏播报。
 // 我们的图标自己画：思考是三个方点依次起伏（呼应点阵签名件），检索是放大镜绕圈，编写是几行线被写出来，完成是对勾，出错是叉。
-import { AnimatePresence, motion } from 'motion/react'
-import { useLayoutEffect, useRef, useState } from 'react'
+import { AnimatePresence, animate, motion, useMotionValue } from 'motion/react'
+import { useLayoutEffect, useRef } from 'react'
 import { cn } from '../lib/cn'
 import { snappy } from '../lib/motion'
 import { unit } from '../lib/spring'
@@ -103,16 +103,30 @@ export type AiStatusProps = {
 export function AiStatus({ state, label, detail, elapsed, className }: AiStatusProps) {
   const active = ACTIVE[state]
   const inner = useRef<HTMLDivElement>(null)
-  const [width, setWidth] = useState<number | null>(null)
+  // 外层宽度由一个动效值持有，始终写成具体像素：文字一换，里层先变到新宽，外层仍停在旧宽，再由弹簧走过去。
+  // （曾经外层不写宽度、跟着里层自动伸缩，换状态时宽度当帧跳变，弹簧从「当前值」走向同一个值，等于没动。）
+  const width = useMotionValue(0)
   useLayoutEffect(() => {
     const el = inner.current
     if (!el) return
-    const measure = () => setWidth(el.offsetWidth)
+    let first = true
+    let controls: ReturnType<typeof animate> | undefined
+    const measure = () => {
+      const next = el.offsetWidth
+      controls?.stop()
+      if (first) {
+        first = false
+        width.set(next)
+      } else controls = animate(width, next, snappy)
+    }
     measure()
     const observer = new ResizeObserver(measure)
     observer.observe(el)
-    return () => observer.disconnect()
-  }, [])
+    return () => {
+      observer.disconnect()
+      controls?.stop()
+    }
+  }, [width])
   return (
     <div
       role="status"
@@ -138,12 +152,7 @@ export function AiStatus({ state, label, detail, elapsed, className }: AiStatusP
           </motion.span>
         </AnimatePresence>
       </span>
-      <motion.div
-        className="relative overflow-x-clip"
-        initial={false}
-        animate={width === null ? undefined : { width }}
-        transition={snappy}
-      >
+      <motion.div className="relative overflow-x-clip" style={{ width }}>
         <div ref={inner} className="flex w-max items-center gap-1.5 whitespace-nowrap">
           <span className="relative inline-grid">
             <AnimatePresence initial={false} mode="popLayout">
