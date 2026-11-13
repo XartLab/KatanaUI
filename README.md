@@ -7,7 +7,7 @@ KatanaConsole 自建的组件框架（决策记录 [0049](../../docs/architectur
 ## 分层
 
 ```
-tokens → theme → lib → primitives → katana → patterns → quant
+tokens → theme → lib → primitives → katana → patterns → quant → blocks
 ```
 
 只许往左依赖（`.dependency-cruiser.cjs` 的 `ui-*` 规则）。
@@ -21,6 +21,7 @@ tokens → theme → lib → primitives → katana → patterns → quant
 | katana | `src/katana/` | KATANA 自有的件（见下）：led、lcd、dot-matrix、rolling-text、badge、kbd、number-input、date-time-input、skeleton 与加载态、password-input、delete-button、notification-bell、status-icon、ai-status、matrix-orb、step-player、theme-selector、code-block、web-search、task-list、duration-picker（后十二件交互学自 rare-ui，实现原创，文件头写明）；可以用 primitives，不是 shadcn 的衍生，所以单放一处（`scripts/check-license.mjs` 把 `primitives/` 整个当 MIT） |
 | patterns | `src/patterns/` | 由基础件组出来的固定搭法：multi-select（弹层加勾选） |
 | quant | `src/quant/` | 量化领域的件与格式化（出口 `@katanaview/ui/quant`）：`ChangeText`（涨跌幅）、`PnlText`（盈亏）、`format/`（价格按精度或 tick、涨跌幅、数量缩写；纯函数另有 `@katanaview/ui/quant/format` 出口，画布与 Worker 里用）。只依赖下面几层，不依赖行情、图表包与应用；品种、精度、单位由调用方传。有两个及以上调用方的才进 |
+| blocks | `src/blocks/` | 拼面板用的积木（出口 `@katanaview/ui/blocks`，#1869）：`DataGrid`（数据表：TanStack 行为、虚拟滚动、列排序 / 改宽 / 拖序 / 显隐、键盘选择，列声明类型 price / quantity / pnl / change / side / time / symbol / text / number）、`EmptyState`（空态）、`Toolbar` 零件与 `ToolButton`、`EstimateBadge`。可以用下面所有层，不依赖应用：快捷键表、文案、右键菜单怎么画、问 Agent 经 `DataGridHost`（`DataGridHostProvider`）注入，没提供时表照常能用（没有快捷键与标准右键项）。包里不带语言，文案都由调用方传 |
 
 ### KATANA 自有件（#1860）
 
@@ -38,6 +39,7 @@ import '@katanaview/ui/tokens.css' // token，先引
 import '@katanaview/ui/ui.css' // Tailwind 主题与动效，最后引
 import { snappy } from '@katanaview/ui/motion' // 弹簧参数（motion/react 用）
 import { ChangeText, formatPrice } from '@katanaview/ui/quant' // 量化层
+import { DataGrid, EmptyState } from '@katanaview/ui/blocks' // 积木层
 ```
 
 `ui.css` 要最后引：Tailwind 的工具类不放进 `@layer`，同样的选择器权重下靠引入次序压过应用里的旧样式。没有 preflight，不改应用已有的基础样式。
@@ -72,7 +74,7 @@ pnpm --filter @katanaview/ui exec shadcn add <component>
 `registry.json` 是 shadcn registry 的清单（shadcn 4.22.2 的 schema），由 `scripts/registry-json.mjs` 从源码生成，不手写；每个源文件一项，`registryDependencies` 与 npm 依赖从 import 里扫出来。
 `pnpm --filter @katanaview/ui registry:build` 先生成清单，再 `shadcn build` 出到 `packages/ui/r/`（在 `.gitignore` 里，发版时生成）。
 
-- **type 的分法：** `primitives/` 的件是 `registry:ui`；`lib/` 与 `quant/format/` 是 `registry:lib`；`patterns/` 与 `quant/` 的件是 `registry:component`；`style`（token、Tailwind 主题、动效，共六个 CSS）是 `registry:style`。
+- **type 的分法：** `primitives/` 的件是 `registry:ui`；`lib/` 与 `quant/format/` 是 `registry:lib`；`patterns/`、`quant/` 与 `blocks/` 的件是 `registry:component`；`style`（token、Tailwind 主题、动效，共六个 CSS）是 `registry:style`。
 - **命名：** `@katana/<文件名>`（`button`、`multi-select`、`change-text`）。每层的文件名要唯一，生成时查。
 - **落点：** 每个文件装到 `src/katana/ui/<层>/<文件>`，保持包内的相对结构，所以件之间的相对 import 与 `theme.css` 里 `@source` 的相对路径在别的项目里原样有效。
 

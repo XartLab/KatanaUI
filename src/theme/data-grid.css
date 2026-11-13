@@ -1,0 +1,209 @@
+/* SPDX-License-Identifier: MIT */
+/* DataGrid（blocks/data-grid）的皮肤（#1869）。规则从应用 styles/panel.css 的 .kc-dt-* 搬来，换成 .k-grid-*，值没改；
+   行高与表头高由组件按 density 写在行内样式上。颜色与字体都取 token，涨跌色读 --pnl-up / --pnl-down（根上 data-updown="cn" 互换）。 */
+.k-grid {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+}
+.k-grid.is-fit {
+  flex: none;
+}
+.k-grid-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+  outline: none;
+}
+.k-grid.is-fit .k-grid-body {
+  flex: none;
+}
+.k-grid-body:focus-visible {
+  box-shadow: inset 0 0 0 1px var(--line-200);
+}
+.k-grid-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+}
+.k-grid.is-fit .k-grid-scroll {
+  flex: none;
+}
+.k-grid-inner {
+  position: relative;
+}
+.k-grid-head,
+.k-grid-row {
+  display: grid;
+  align-items: center;
+}
+.k-grid-head {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  height: 26px;
+  border-bottom: 1px solid var(--line-100);
+  background: var(--bg-100);
+}
+.k-grid-col {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  align-self: stretch;
+  min-width: 0;
+}
+/* 固定列（GridColumnLayout.fixed）横向滚动时粘在左边，left 由 DataGrid 按前面固定列的宽度给。
+   滚开以后（.k-grid-scroll[data-scrolled]）粘住的格子要不透明，不然滚过去的列从后面透出来：数据格用面板底色（--bg-300）
+   再叠一层行的悬停 / 选中色（--dt-tint），最后一列右边画一道分隔线。没滚开时跟别的格子一样透明，外观不变。
+   表头本来就是不透明的底，始终粘住。 */
+.k-grid-col.is-fixed,
+.k-grid-cell.is-fixed {
+  position: sticky;
+  z-index: 1;
+}
+.k-grid-col.is-fixed {
+  background: var(--bg-100);
+}
+.k-grid-scroll[data-scrolled] .k-grid-cell.is-fixed {
+  background-color: var(--bg-300);
+  background-image: linear-gradient(var(--dt-tint), var(--dt-tint));
+}
+.k-grid-scroll[data-scrolled] .is-fixed-last::after {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--line-100);
+  content: '';
+}
+.k-grid-col button,
+.k-grid-head-text {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  padding: 0 8px;
+  overflow: hidden;
+  border: 0;
+  background: none;
+  color: var(--ink-300);
+  font: var(--text-data) var(--font-sans);
+  line-height: 1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.k-grid-col.is-end button,
+.k-grid-col.is-end .k-grid-head-text {
+  justify-content: flex-end;
+}
+.k-grid-col button:hover,
+.k-grid-col button.is-sorted {
+  color: var(--ink-100);
+}
+.k-grid-col button.is-sorted {
+  font-weight: 600;
+}
+/* 列头右缘的拖动把手：窄而可抓，悬停时亮出一道线。 */
+.k-grid-resize {
+  position: absolute;
+  top: 0;
+  right: -3px;
+  bottom: 0;
+  z-index: 1;
+  width: 7px;
+  cursor: col-resize;
+  touch-action: none;
+}
+.k-grid-resize:hover,
+.k-grid-resize:active {
+  background: linear-gradient(90deg, transparent 3px, var(--signal-orange) 3px 4px, transparent 4px);
+}
+.k-grid-rows {
+  position: relative;
+}
+.k-grid-row {
+  position: absolute;
+  inset-inline: 0;
+  color: var(--ink-100);
+  box-shadow: inset 2px 0 0 transparent;
+  scroll-margin-top: 27px;
+  --dt-tint: transparent;
+}
+.k-grid-row.is-interactive {
+  cursor: pointer;
+}
+.k-grid-row.is-interactive:hover {
+  --dt-tint: var(--alpha-white-2_5);
+  background: var(--dt-tint);
+}
+.k-grid-row.is-selected {
+  --dt-tint: var(--alpha-white-6_5);
+  background: var(--dt-tint);
+}
+.k-grid-row.is-opened {
+  box-shadow: inset 2px 0 0 var(--signal-orange);
+}
+/* 粘住的第一列盖住了行左边的强调色，自己再画一道。 */
+.k-grid-row.is-opened .k-grid-cell.is-fixed-first {
+  box-shadow: inset 2px 0 0 var(--signal-orange);
+}
+.k-grid-body:focus-visible .k-grid-row.is-cursor {
+  outline: 1px solid var(--line-200);
+  outline-offset: -1px;
+}
+.k-grid-cell {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  align-self: stretch;
+  min-width: 0;
+  padding: 0 8px;
+  overflow: hidden;
+  font: var(--text-data) var(--font-sans);
+  line-height: 24px;
+  font-variant-numeric: tabular-nums;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.k-grid-cell.is-end {
+  justify-content: flex-end;
+}
+.k-grid-cell.is-up {
+  color: var(--pnl-up);
+}
+.k-grid-cell.is-down {
+  color: var(--pnl-down);
+}
+.k-grid-cell.is-muted {
+  color: var(--ink-300);
+}
+.k-grid-cell.fill-up {
+  background: color-mix(in srgb, var(--pnl-up) 22%, transparent);
+  color: var(--pnl-up);
+}
+.k-grid-cell.fill-down {
+  background: color-mix(in srgb, var(--pnl-down) 22%, transparent);
+  color: var(--pnl-down);
+}
+.k-grid-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.k-grid-tag {
+  flex: none;
+  color: var(--ink-300);
+  font: var(--text-caption) var(--font-sans);
+  line-height: 1;
+}
+.k-grid-foot {
+  flex: none;
+  padding: 4px var(--inset-x);
+  border-top: 1px solid var(--line-100);
+  color: var(--ink-300);
+  font: var(--text-caption) var(--font-sans);
+}

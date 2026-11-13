@@ -38,6 +38,11 @@
           "target": "~/src/katana/ui/theme/badge.css"
         },
         {
+          "path": "src/theme/data-grid.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/data-grid.css"
+        },
+        {
           "path": "src/theme/date-time.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/date-time.css"
@@ -46,6 +51,11 @@
           "path": "src/theme/dialog.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/dialog.css"
+        },
+        {
+          "path": "src/theme/empty-state.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/empty-state.css"
         },
         {
           "path": "src/theme/kbd.css",
@@ -1160,6 +1170,100 @@
           "path": "src/quant/format/quantity.ts",
           "type": "registry:lib",
           "target": "~/src/katana/ui/quant/format/quantity.ts"
+        }
+      ]
+    },
+    {
+      "name": "data-grid",
+      "type": "registry:component",
+      "title": "Data Grid",
+      "description": "拼面板用的数据表：TanStack Table 管排序、列宽、顺序、显隐，虚拟滚动只画看得见的行；列声明一个类型（价格、数量、盈亏、涨跌幅、方向、时间、品种……），格式化、对齐、着色、排序由类型给。列的状态受控（调用方存）；应用的能力经 DataGridHost 注入。",
+      "dependencies": [
+        "@tanstack/react-table@9.3.1",
+        "@tanstack/react-virtual@3.14.25"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/context-menu",
+        "@katana/menu-any",
+        "@katana/menu-parts",
+        "@katana/quant-format",
+        "@katana/tone-text"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/data-grid/columns.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/data-grid/columns.ts"
+        },
+        {
+          "path": "src/blocks/data-grid/data-grid.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/data-grid/data-grid.tsx"
+        },
+        {
+          "path": "src/blocks/data-grid/host.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/data-grid/host.tsx"
+        },
+        {
+          "path": "src/blocks/data-grid/model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/data-grid/model.ts"
+        }
+      ]
+    },
+    {
+      "name": "toolbar",
+      "type": "registry:component",
+      "title": "Toolbar",
+      "description": "面板头的工具条零件：role=toolbar 的容器、左右两组、每个工具一个槽、图标或文字按钮。哪些放得下、收进「»」是宿主的事（要量宽度）。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/tooltip"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/toolbar/toolbar.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/toolbar/toolbar.tsx"
+        },
+        {
+          "path": "src/blocks/toolbar/use-roving-toolbar.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/toolbar/use-roving-toolbar.ts"
+        }
+      ]
+    },
+    {
+      "name": "empty-state",
+      "type": "registry:component",
+      "title": "Empty State",
+      "description": "面板的「空」态：点阵小标签、一行标题、说明与动作。没有连接、没选品种、没有数据时摆它，不画假数据。",
+      "registryDependencies": [
+        "@katana/cn"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/empty-state.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/empty-state.tsx"
+        }
+      ]
+    },
+    {
+      "name": "estimate-badge",
+      "type": "registry:component",
+      "title": "Estimate Badge",
+      "description": "琥珀色描边的小字标记（例如「按 K 线估算」），悬停写规则摘要；字与规则由调用方传。",
+      "registryDependencies": [
+        "@katana/cn"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/estimate-badge.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/estimate-badge.tsx"
         }
       ]
     }

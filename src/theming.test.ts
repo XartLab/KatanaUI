@@ -27,7 +27,7 @@ function referenced(text: string): string[] {
   return [...text.matchAll(/(?:var\(|[\w-]\()\s*(--[\w-]+)/g)].map((m) => m[1]).filter((name) => !own.has(name))
 }
 
-const files = ['primitives', 'katana', 'patterns', 'lib', 'quant']
+const files = ['primitives', 'katana', 'patterns', 'lib', 'quant', 'blocks']
   .flatMap((dir) => walk(join(SRC, dir)))
   .filter((f) => /\.tsx?$/.test(f) && !/\.test\./.test(f))
 
@@ -47,7 +47,7 @@ describe('组件只读 tokens.css 里的变量', () => {
   })
 })
 
-// 白色透明度层是一把刻度（--alpha-white-1…14，design/tokens.json），件与主题样式只读它：不写 bg-white/5、border-white/8，也不写 rgba(255, 255, 255, x)。
+// 白色透明度层是一把刻度（--alpha-white-1…14 加 2_5、6_5 两档半步，design/tokens.json），件与主题样式只读它：不写 bg-white/5、border-white/8，也不写 rgba(255, 255, 255, x)。
 const RAW_WHITE_ALPHA = /-white\/(?:\d|\[)|rgba\(\s*255\s*,\s*255\s*,\s*255\s*,/
 const themeCss = walk(join(SRC, 'theme')).filter((f) => f.endsWith('.css'))
 
@@ -59,9 +59,9 @@ describe('白色透明度只读刻度', () => {
     expect(bad).toEqual([])
   })
 
-  it('刻度 14 档都在 tokens.css 里，并接成了 Tailwind 的颜色（bg-alpha-white-N）', () => {
+  it('刻度 16 档（含 2_5、6_5 两档半步）都在 tokens.css 里，并接成了 Tailwind 的颜色（bg-alpha-white-N）', () => {
     const theme = readFileSync(join(SRC, 'theme/theme.css'), 'utf8')
-    for (let step = 1; step <= 14; step++) {
+    for (const step of [1, 2, '2_5', 3, 4, 5, 6, '6_5', 7, 8, 9, 10, 11, 12, 13, 14]) {
       expect(tokens.has(`--alpha-white-${step}`), `--alpha-white-${step}`).toBe(true)
       expect(theme).toContain(`--color-alpha-white-${step}: var(--alpha-white-${step});`)
     }

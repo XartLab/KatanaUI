@@ -1,0 +1,143 @@
+/* SPDX-License-Identifier: MIT */
+/* EmptyState、EstimateBadge、Toolbar 的皮肤（blocks，#1869）。规则从应用 styles/panel.css 的 .kc-panel-state*、.kc-rt-estimate、
+   .kc-toolbar*、.kc-tool* 搬来，换成 .k-*，值没改。 */
+.k-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  margin: auto;
+  padding: var(--space-6);
+  max-width: 440px;
+  text-align: center;
+}
+.k-empty-tag {
+  font: var(--text-tag-md) var(--font-dot);
+  font-weight: 400;
+  letter-spacing: var(--text-tag-md-tracking);
+  color: var(--ink-300);
+  text-transform: uppercase;
+}
+.k-empty-title {
+  margin: 0;
+  font: var(--text-body) var(--font-sans);
+  font-weight: 600;
+  line-height: 1.4;
+  text-wrap: balance;
+}
+.k-empty-text {
+  color: var(--ink-300);
+  font-size: var(--text-data-size);
+}
+.k-empty-text p {
+  margin: 0 0 var(--space-2);
+}
+.k-empty-actions {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-1);
+}
+/* 估算标记：琥珀色描边的小字，和警示文字同一种颜色 */
+.k-estimate {
+  display: inline-block;
+  padding: 0 6px;
+  color: var(--signal-amber);
+  border: 1px solid currentColor;
+  border-radius: var(--radius-sm);
+  font: var(--text-caption) var(--font-sans);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* 工具条：一行，左组 + 右组 */
+.k-toolbar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 100%;
+  overflow: hidden;
+}
+.k-toolbar-group {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  min-width: 0;
+  height: 100%;
+}
+.k-tool-slot {
+  display: flex;
+  align-items: center;
+  flex: none;
+  height: 100%;
+}
+/* 工具没有内容（行情块还没有数据）：不占位，连前面的分隔线也不画 */
+.k-tool-slot:empty {
+  display: none;
+}
+/* 放不下收进「»」的：藏起来但还在，宽度才量得到（脱离排版，不占位） */
+.k-tool-slot.is-folded {
+  position: absolute;
+  visibility: hidden;
+  pointer-events: none;
+}
+/* 用途分组之间的分隔线：1 像素线 + 两侧留白共 11 像素（宿主量宽度时要扣掉这 11 像素） */
+.k-tool-slot[data-sep]::before {
+  content: '';
+  flex: none;
+  width: 1px;
+  height: 16px;
+  margin: 0 6px 0 4px;
+  background: var(--alpha-white-9);
+}
+/* 工具按钮照 OpenMarket tb-rung：28 高 · 圆角 6 · 透明，悬停 5% 白，展开 8% 白，按下缩 .96 */
+.k-tool {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-width: 28px;
+  height: 28px;
+  padding: 0 6px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--ink-200);
+  font: var(--text-data) var(--font-sans);
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    color 0.2s,
+    background-color 0.15s,
+    transform 0.14s cubic-bezier(0.23, 1, 0.32, 1);
+}
+.k-tool:hover:not(:disabled) {
+  background: var(--alpha-white-4);
+  color: var(--ink-100);
+}
+.k-tool[aria-expanded='true'] {
+  background: var(--alpha-white-7);
+  color: var(--ink-100);
+}
+.k-tool:active:not(:disabled) {
+  transform: scale(0.96);
+}
+.k-tool:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.k-tool.is-on,
+.k-tool[aria-pressed='true'] {
+  color: var(--signal-orange);
+}
+.k-tool svg {
+  width: 16px;
+  height: 16px;
+}

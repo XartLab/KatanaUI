@@ -2,13 +2,14 @@
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vite-plus/test'
 import * as base from '../src/index'
+import * as blocks from '../src/blocks'
 import * as quant from '../src/quant'
 import { DEMOS } from './demos'
 import { GROUPS, NON_COMPONENT_EXPORTS, PAGES } from './registry'
 
 // 文档站与包的出口对账（#1860）：每个导出的件都有页，每页写的件都存在，每页都有预览。属性表是手写的，这里只能核对名字，核对不了类型。
 
-const exported = [...Object.keys(base), ...Object.keys(quant)]
+const exported = [...Object.keys(base), ...Object.keys(quant), ...Object.keys(blocks)]
 const documented = PAGES.flatMap((page) => page.exports)
 
 describe('组件文档站的目录', () => {

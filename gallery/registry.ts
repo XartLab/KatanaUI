@@ -3,7 +3,7 @@
 // 版式照 kobra.systems/components/<件名> 的结构（2026-11-14 读）：左侧目录按类分组，右侧一个组件一页，页上依次是预览、属性、组成、键盘。
 // 属性表手写，跟组件的 TS 类型对：改了组件的属性要同步改这里（Radix 底座透传的属性不逐条列，每张表的说明里写透传给谁）。
 
-export type GroupId = 'forms' | 'overlays' | 'layout' | 'readouts' | 'feedback' | 'quant'
+export type GroupId = 'forms' | 'overlays' | 'layout' | 'readouts' | 'feedback' | 'quant' | 'blocks'
 
 export const GROUPS: readonly { id: GroupId; title: string }[] = [
   { id: 'forms', title: '表单控件' },
@@ -12,6 +12,7 @@ export const GROUPS: readonly { id: GroupId; title: string }[] = [
   { id: 'readouts', title: '读数与状态' },
   { id: 'feedback', title: '反馈' },
   { id: 'quant', title: '量化' },
+  { id: 'blocks', title: '积木' },
 ]
 
 export type PropRow = { name: string; type: string; default?: string; desc: string }
@@ -1642,6 +1643,252 @@ export const PAGES: readonly DocPage[] = [
       ['Esc', '放弃这次编辑，回到编辑前的值'],
       ['↑ ↓', '当前字段加减 1'],
     ],
+  },
+  {
+    id: 'data-grid',
+    group: 'blocks',
+    cardHeight: 330,
+    title: 'DataGrid 数据表',
+    summary:
+      '拼面板用的数据表：TanStack Table 管排序、列宽、顺序、显隐，虚拟滚动只画看得见的行；列声明一个类型（价格、数量、盈亏、涨跌幅、方向、时间、品种……），格式化、对齐、着色、排序由类型给。列的状态受控（调用方存）；应用的能力经 DataGridHost 注入。',
+    exports: ['DataGrid', 'DataGridHostProvider', 'tableCsv'],
+    props: [
+      {
+        part: 'DataGrid',
+        note: '示例数据写死在页里，不是行情。行高档：compact 20、default 24、relaxed 32。没有 DataGridHost 时能点、能排序、能键盘选行，只是没有快捷键与标准右键项。',
+        rows: [
+          {
+            name: 'columns',
+            type: 'GridColumn<Row>[]',
+            desc: '列的定义，模块级常量：id、type、value、format、text、sort、tone、fill、render、csv。',
+          },
+          {
+            name: 'layout',
+            type: 'GridColumnLayout[]',
+            desc: '列怎么摆：次序就是显示次序，每项 id、label、width、visible、align、fixed。',
+          },
+          { name: 'rows / rowId', type: 'Row[] / (row) => string', desc: '行与稳定的行 id。' },
+          { name: 'label', type: 'string', desc: '屏幕阅读器念的表名。' },
+          {
+            name: 'sort / onSortChange',
+            type: 'SortSpec | null / (next) => void',
+            desc: '排序受控；点表头在升序、倒序、不排之间转。',
+          },
+          { name: 'sortRemovable', type: 'boolean', default: 'true', desc: 'false 时第三下回到升序。' },
+          {
+            name: 'onResize / onResetColumns',
+            type: 'function',
+            desc: '拖完列宽 / 重置列；没给就没有拖动把手与「重置列」。',
+          },
+          {
+            name: 'onOpen / restoreRow / isOpened',
+            type: 'function',
+            desc: '点一行、从详情返回时放回键盘所在行、正开着的行（左边强调色）。',
+          },
+          {
+            name: 'menu / panelMenu / menuTail / rowInfo / extrasFirst',
+            type: 'function',
+            desc: '右键菜单里标准项之外追加的项与次序。',
+          },
+          {
+            name: 'askText / onExport',
+            type: 'function',
+            desc: '问 Agent 的摘要文字（需宿主 askAgent）/ 导出 CSV 交给宿主存。',
+          },
+          { name: 'timeZone', type: "'local' | 'utc' | string", default: "'local'", desc: 'time 列的时区。' },
+          { name: 'density', type: "'compact' | 'default' | 'relaxed'", default: "'default'", desc: '行高档。' },
+          { name: 'hideHeader', type: 'boolean', default: 'false', desc: '不画表头。' },
+          {
+            name: 'interactive',
+            type: 'boolean',
+            default: 'true',
+            desc: 'false 是只读展示表（ARIA table），行不响应点击。',
+          },
+          {
+            name: 'fit / maxHeight',
+            type: 'boolean / number',
+            desc: '高度跟着内容走（对话框里的小表），maxHeight 像素以内不出滚动条。',
+          },
+          {
+            name: 'foot / presorted / rowTree / classNames',
+            type: 'various',
+            desc: '表下说明、调用方已排好、树形行、各部分额外类名。',
+          },
+        ],
+      },
+      {
+        part: '列类型 ColumnType',
+        note: '数字类默认靠右，用等宽数字；pnl、change、side 用 ToneText 跟 data-updown 着色（红涨绿跌时互换）。',
+        rows: [
+          { name: 'text', type: 'string', desc: '字符串，按字排序（自然序）。' },
+          {
+            name: 'number',
+            type: 'number | 十进制字符串',
+            desc: '数值排序（十进制字符串不转双精度）；format.digits 定小数位。',
+          },
+          { name: 'price', type: 'number', desc: 'formatPrice：format.precision 或 tick 定小数位。' },
+          { name: 'quantity', type: 'number', desc: 'formatQuantity：format.units（base | usd）与 size 缩写。' },
+          { name: 'pnl', type: 'number', desc: '带符号的盈亏，format.digits（默认 2）、suffix（单位），按方向着色。' },
+          { name: 'change', type: 'number（百分数）', desc: '+1.23% 写法，按方向着色。' },
+          { name: 'side', type: "'buy' | 'sell'", desc: '买卖文字加方向色；format.labels 传文案。' },
+          {
+            name: 'time',
+            type: '毫秒时间戳',
+            desc: 'YYYY-MM-DD HH:MM:SS，时区取 timeZone；format.timeStyle 可只写时间或日期。',
+          },
+          { name: 'symbol', type: 'string | { code, venue? }', desc: '代码加场所两段，场所写淡。' },
+        ],
+      },
+      {
+        part: 'DataGridHost（经 DataGridHostProvider 提供）',
+        note: '应用才有的能力；包里不带语言，文案都是宿主传的。',
+        rows: [
+          {
+            name: 'matchKey / keysOf',
+            type: 'function',
+            desc: '按键对应表的哪个动作（copy、save、resetColumns、contextMenu、askAgent）/ 动作的快捷键写法。',
+          },
+          {
+            name: 'texts',
+            type: 'Partial<DataGridTexts>',
+            desc: '菜单项与可访问名称的文案；copy、save、resetColumns 三项都给了菜单里才有标准项。',
+          },
+          {
+            name: 'renderMenu',
+            type: '(entries) => ReactNode',
+            desc: '宿主的菜单项比包里的多时自己画；省略时包里画 item / 二级 / 分隔线。',
+          },
+          {
+            name: 'askAgent',
+            type: '(text | null) => void',
+            desc: '问 Agent：给了它，又给了 askText，菜单多一项、表获得焦点时按键也一样。',
+          },
+        ],
+      },
+      {
+        part: 'tableCsv(header, rows)',
+        note: '导出的 CSV：含逗号、引号、换行的格子加引号，公式开头的补单引号。',
+        rows: [],
+      },
+    ],
+    states: [
+      '无行：显示 emptyText 或空白，表头仍在。',
+      '有选中行：一整行底色，Esc 清掉。',
+      '键盘所在行：焦点环；排序列：表头带升降箭头。',
+      '只读（interactive=false）：table 语义，表头不是按钮。',
+    ],
+    donts: [
+      '不要把例子里的数据当真实行情；调用方要传真实行。',
+      '不要给数值列自己写 text-align；列类型决定对齐。',
+      '不要靠颜色以外没有符号的方式表达涨跌。',
+    ],
+    composition:
+      'DataGrid\n  ContextMenu（行与空白处的右键菜单）\n  表头行（列头按钮、拖动把手）\n  虚拟滚动的行（单元格：文字 | ToneText | 品种两段 | 调用方 render）\n  foot',
+    keys: [
+      ['↑ / ↓', '移一行；Home / End 到头尾'],
+      ['Enter', '打开键盘所在的行（onOpen）'],
+      ['Shift / Ctrl 点击', '选一段 / 点选加减'],
+      ['Esc', '清掉选择（右键菜单开着时归菜单）'],
+      ['菜单键 / Shift+F10', '开右键菜单（宿主的 matchKey 提供）'],
+      ['Ctrl+C / Ctrl+S / Ctrl+R', '复制所选行 / 导出 CSV / 重置列（宿主的键位表）'],
+    ],
+  },
+  {
+    id: 'empty-state',
+    group: 'blocks',
+    cardHeight: 260,
+    title: 'EmptyState 空态',
+    summary: '面板的「空」态：点阵小标签、一行标题、说明与动作。没有连接、没选品种、没有数据时摆它，不画假数据。',
+    exports: ['EmptyState'],
+    props: [
+      {
+        part: 'EmptyState',
+        rows: [
+          { name: 'tag', type: 'string', desc: '点阵小标签；点阵字体没打包时回退到等宽字体。' },
+          { name: 'title', type: 'string', desc: '标题。' },
+          { name: 'children', type: 'ReactNode', desc: '标题下的说明。' },
+          { name: 'actions', type: 'ReactNode', desc: '动作区（按钮）。' },
+          {
+            name: 'classNames',
+            type: 'Partial<Record<root | tag | title | text | actions, string>>',
+            desc: '各部分额外类名。',
+          },
+        ],
+      },
+    ],
+    states: ['有操作：标题、说明下面带操作区。', '无操作：只有标题与说明。'],
+    donts: ['不要拿空态当加载中；加载用 Loading。', '不要写没有下一步的空态说明。'],
+    composition: 'EmptyState（role=status）\n  标签\n  标题（h3）\n  说明\n  动作',
+    keys: [],
+  },
+  {
+    id: 'toolbar',
+    group: 'blocks',
+    cardHeight: 150,
+    title: 'Toolbar 工具条',
+    summary:
+      '面板头的工具条零件：role=toolbar 的容器、左右两组、每个工具一个槽、图标或文字按钮。哪些放得下、收进「»」是宿主的事（要量宽度）。',
+    exports: ['Toolbar', 'ToolbarGroup', 'ToolSlot', 'ToolButton', 'useRovingToolbar'],
+    props: [
+      {
+        part: 'Toolbar',
+        note: '其余属性透传给 div；ref 给宿主量宽度、找子元素。',
+        rows: [{ name: 'label', type: 'string', desc: '工具条的名字（屏幕阅读器念）。' }],
+      },
+      { part: 'ToolbarGroup', rows: [{ name: 'side', type: "'left' | 'right'", desc: '左组或右组。' }] },
+      {
+        part: 'ToolSlot',
+        rows: [
+          { name: 'tool', type: 'string', desc: '工具 id，写成 data-tool，宿主据此量宽度。' },
+          { name: 'folded', type: 'boolean', desc: '收起：藏起来但不拆掉（量宽度还要用）。' },
+          { name: 'separator', type: 'boolean', desc: '前面画一道分隔线（相邻工具属于不同用途组）。' },
+        ],
+      },
+      {
+        part: 'ToolButton',
+        rows: [
+          { name: 'label', type: 'string', desc: '按钮的名字（aria-label，也是没有 title 时的悬停提示）。' },
+          { name: 'title', type: 'string', desc: '悬停提示（比名字多一句说明）。' },
+          { name: 'keys', type: 'ReactNode', desc: '提示里跟在后面的快捷键写法。' },
+          { name: 'pressed', type: 'boolean', desc: '开关类工具是否开着（aria-pressed，橙色）。' },
+          { name: 'renderTooltip', type: '(button) => ReactElement', desc: '宿主有自己的提示件时包按钮。' },
+        ],
+      },
+      {
+        part: 'useRovingToolbar(ref)',
+        note: 'Toolbar 内部用；自己拼工具条的也可以拿去。整条只占一个 Tab 站。',
+        rows: [],
+      },
+    ],
+    states: ['按下：pressed 为真时底色常亮。', '禁用：不可点。', '折叠：folded 的按钮收进溢出菜单。'],
+    donts: ['不要在工具条里放表单输入。', '图标按钮必须带 label。'],
+    composition: 'Toolbar\n  ToolbarGroup\n    ToolSlot\n      ToolButton',
+    keys: [
+      ['Tab', '整条工具条只占一个 Tab 站'],
+      ['← / →', '在项间移动（到头不环绕）'],
+      ['Home / End', '到第一项 / 最后一项'],
+    ],
+  },
+  {
+    id: 'estimate-badge',
+    group: 'blocks',
+    cardHeight: 90,
+    title: 'EstimateBadge 估算标记',
+    summary: '琥珀色描边的小字标记（例如「按 K 线估算」），悬停写规则摘要；字与规则由调用方传。',
+    exports: ['EstimateBadge'],
+    props: [
+      {
+        part: 'EstimateBadge',
+        rows: [
+          { name: 'label', type: 'string', desc: '标记上的字。' },
+          { name: 'title', type: 'string', desc: '悬停提示。' },
+        ],
+      },
+    ],
+    states: ['只有一种样子：小标，悬停给出估算依据。'],
+    donts: ['不要在精确值上挂估算标记。', '不要省略 title 里的依据。'],
+    composition: 'EstimateBadge',
+    keys: [],
   },
 ]
 

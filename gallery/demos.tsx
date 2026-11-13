@@ -4,6 +4,7 @@ import { DateTimeInputDemo, NumberInputDemo, SkeletonDemo } from './pages/fields
 import { BadgeDemo, DotMatrixDemo, KbdDemo, LcdDemo, LedDemo, RollingTextDemo } from './pages/readouts'
 import { ContextMenuOpen, DialogOpen, DropdownMenuOpen, PopoverOpen, SelectOpen, TooltipOpen } from './pages/open'
 import { ChangeTextDemo, PnlTextDemo, QuantFormatDemo } from './pages/quant'
+import { DataGridDemo, EmptyStateDemo, EstimateBadgeDemo, ToolbarDemo } from './pages/blocks'
 import {
   AiStatusDemo,
   DeleteButtonDemo,
@@ -62,6 +63,10 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'change-text': ChangeTextDemo,
   'pnl-text': PnlTextDemo,
   'quant-format': QuantFormatDemo,
+  'data-grid': DataGridDemo,
+  'empty-state': EmptyStateDemo,
+  toolbar: ToolbarDemo,
+  'estimate-badge': EstimateBadgeDemo,
   'password-input': PasswordInputDemo,
   'delete-button': DeleteButtonDemo,
   'notification-bell': NotificationBellDemo,
