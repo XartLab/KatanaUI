@@ -4,6 +4,6 @@
     "erasableSyntaxOnly": true,
     "verbatimModuleSyntax": true
   },
-  "include": ["src", "gallery"],
-  "exclude": ["src/**/*.test.ts", "src/**/*.test.tsx", "gallery/**/*.test.tsx"]
+  "include": ["src", "gallery", "ds"],
+  "exclude": ["src/**/*.test.ts", "src/**/*.test.tsx", "gallery/**/*.test.tsx", "ds/**/*.test.ts", "ds/**/*.test.tsx"]
 }

@@ -1,0 +1,89 @@
+/* SPDX-License-Identifier: MIT */
+/* 页上预览里摆件用的几个小版面类（行、格、小标、说明）：文档站（gallery.css 引入）与设计系统包的预览（ds-build.mjs 并进 bundle.css）共用，只用 token。 */
+.gal-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+.gal-cap {
+  flex: none;
+  width: 84px;
+  color: var(--ink-300);
+  font: var(--text-caption) var(--font-mono);
+}
+.gal-cell {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 96px;
+}
+.gal-cell > small {
+  color: var(--ink-300);
+  font: var(--text-caption) var(--font-sans);
+}
+.gal-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font: var(--text-data) var(--font-sans);
+  color: var(--ink-200);
+}
+.gal-note {
+  margin: 0;
+  color: var(--ink-300);
+  font: var(--text-caption) var(--font-sans);
+  line-height: 1.5;
+}
+.gal-wide {
+  width: 100%;
+  max-width: 480px;
+}
+.gal-slider {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 220px;
+}
+.gal-ctx {
+  display: grid;
+  place-items: center;
+  width: 140px;
+  height: 56px;
+  border: 1px dashed var(--ink-400);
+  border-radius: 8px;
+  color: var(--ink-200);
+  user-select: none;
+}
+
+/* 设计系统包预览里浮层「打开的样子」：内容不进 Portal（InlineOverlays），原地渲染。
+   transform 让这个盒子成为 position:fixed 后代的参照（对话框的遮罩与居中落在盒子里）；
+   Radix 的定位外壳在服务端渲染时是 fixed 加移出屏幕的 transform，这里改回文档流，摆在触发器下面。 */
+.ds-open {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  transform: translateZ(0);
+}
+.ds-open [data-radix-popper-content-wrapper] {
+  position: static !important;
+  transform: none !important;
+}
+
+/* 主题选择演示的两张缩略的颜色（ThemeSelector 的缩略色由调用方传，演示里取这两个主题当前的值；预览用，不是 token）。 */
+:root {
+  --demo-console-rail: #141311;
+  --demo-console-panel: #171511;
+  --demo-console-line: #2b2823;
+  --demo-console-strong: #ede6d6;
+  --demo-console-muted: #3a362f;
+  --demo-console-tile: #1d1b18;
+  --demo-graphite-rail: #070707;
+  --demo-graphite-panel: #0d0d0d;
+  --demo-graphite-line: #262626;
+  --demo-graphite-strong: #cdcdcd;
+  --demo-graphite-muted: #333333;
+  --demo-graphite-tile: #141414;
+}

@@ -19,11 +19,15 @@
     ".": "./src/index.ts",
     "./ui.css": "./src/ui.css",
     "./tokens.css": "./src/tokens/tokens.css",
-    "./motion": "./src/lib/motion.ts"
+    "./motion": "./src/lib/motion.ts",
+    "./quant": "./src/quant/index.ts",
+    "./quant/format": "./src/quant/format/index.ts"
   },
   "scripts": {
     "test": "vp test run",
-    "typecheck": "tsc -p tsconfig.json"
+    "typecheck": "tsc -p tsconfig.json",
+    "ds:build": "node scripts/ds-build.mjs",
+    "registry:build": "node scripts/registry-json.mjs && shadcn build -o r"
   },
   "dependencies": {
     "@internationalized/date": "3.12.4",

@@ -85,7 +85,7 @@ export function NotificationBell({
       aria-label={label}
       className={cn(
         'relative inline-grid size-7 flex-none cursor-pointer place-items-center rounded-[var(--radius-control)] border-0 bg-transparent p-0 text-ink-3',
-        'transition-[color,background-color] duration-[120ms] hover:bg-white/5 hover:text-ink [&_svg]:size-[15px]',
+        'transition-[color,background-color] duration-[120ms] hover:bg-alpha-white-4 hover:text-ink [&_svg]:size-[15px]',
         focusRing,
         className,
       )}

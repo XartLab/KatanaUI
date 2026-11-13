@@ -1,0 +1,58 @@
+# QuantFormat
+
+价格、涨跌幅、数量的写法（纯函数，不带 React；另有 @katanaview/ui/quant/format 出口给画布与 Worker）。小数位由调用方传，不在这里猜。
+
+## Provide
+
+### formatPrice(value, { precision, tick, fallback })
+
+千分位固定 en-US；不是有限数写 —。
+
+| 属性 | 类型 | 默认 | 说明 |
+| --- | --- | --- | --- |
+| `precision` | `number \| null` | — | 品种的价格精度；给了就恒写这么多位。 |
+| `tick` | `number` | — | 最小变动价位（A 股 0.01、期货 0.25、加密 1e-8）；没给 precision 时由它定小数位。 |
+| `fallback` | `{ maxFraction } \| { significant }` | — | 两个都没有时怎么写。 |
+
+### decimalsOfTick(tick)
+
+1e-8 在 String() 里是科学计数，拆开尾数与指数数位。
+
+| 属性 | 类型 | 默认 | 说明 |
+| --- | --- | --- | --- |
+| `tick` | `number` | — | 正数；否则抛 RangeError。 |
+
+### formatPercentChange(value, digits) / toneOf(value, digits)
+
+都先四舍五入再定符号与方向。
+
+| 属性 | 类型 | 默认 | 说明 |
+| --- | --- | --- | --- |
+| `digits` | `number` | `2 / 8` | 小数位。 |
+
+### formatQuantity / formatCount / formatCompact / compactParts / AUTO_SIZE
+
+数量的缩写（K / M / B）与千分位；单位 base 是币量、usd 带 $。
+
+## States
+
+- formatPrice：定了小数位就恒写这么多位；不是有限数写 —。
+- formatPercentChange 与 toneOf 先舍入再定符号与方向：舍入成 0 的小负数是「平」。
+
+## Don't
+
+- 不要在格式化函数里猜品种的精度，由调用方传 precision 或 tick。
+- 不要自己拼千分位。
+
+## Composition
+
+```
+formatPrice
+  decimalsOfTick
+formatPercentChange
+toneOf
+formatQuantity
+  formatCount
+formatCompact
+  compactParts
+```

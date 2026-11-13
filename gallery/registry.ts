@@ -3,7 +3,7 @@
 // 版式照 kobra.systems/components/<件名> 的结构（2026-11-14 读）：左侧目录按类分组，右侧一个组件一页，页上依次是预览、属性、组成、键盘。
 // 属性表手写，跟组件的 TS 类型对：改了组件的属性要同步改这里（Radix 底座透传的属性不逐条列，每张表的说明里写透传给谁）。
 
-export type GroupId = 'forms' | 'overlays' | 'layout' | 'readouts' | 'feedback'
+export type GroupId = 'forms' | 'overlays' | 'layout' | 'readouts' | 'feedback' | 'quant'
 
 export const GROUPS: readonly { id: GroupId; title: string }[] = [
   { id: 'forms', title: '表单控件' },
@@ -11,6 +11,7 @@ export const GROUPS: readonly { id: GroupId; title: string }[] = [
   { id: 'layout', title: '布局与导航' },
   { id: 'readouts', title: '读数与状态' },
   { id: 'feedback', title: '反馈' },
+  { id: 'quant', title: '量化' },
 ]
 
 export type PropRow = { name: string; type: string; default?: string; desc: string }
@@ -20,11 +21,17 @@ export type DocPage = {
   /** 地址 `#/<id>`，也是预览容器的 data-gallery。 */
   id: string
   group: GroupId
+  /** 设计系统包里预览卡的高度（px）：按预览摆出来的实际高度留，不留空白（ds-build 读；用 pnpm ds:build 后在卡里量）。 */
+  cardHeight: number
   title: string
   summary: string
-  /** 这一页覆盖的 `@katanaview/ui` 出口名（部件、变体函数、类名常量、钩子）。registry.test.ts 要求：出口与页一一对应。 */
+  /** 这一页覆盖的 `@katanaview/ui` 出口名（量化组的页是 `@katanaview/ui/quant` 的出口）（部件、变体函数、类名常量、钩子）。registry.test.ts 要求：出口与页一一对应。 */
   exports: readonly string[]
   props: readonly PropTable[]
+  /** 状态：每个状态一句，何时出现、长什么样（设计系统包的 README 与文档站都读它）。 */
+  states: readonly string[]
+  /** 不要怎么用：每条一句。 */
+  donts: readonly string[]
   /** 组成：由哪几个导出的部件拼出来，缩进表示嵌套。 */
   composition: string
   /** 键盘：[键, 做什么]；没有键盘交互的件留空。 */
@@ -32,7 +39,7 @@ export type DocPage = {
 }
 
 /** 不是组件的出口：样式合并与焦点环的类名工具，不单独成页。 */
-export const NON_COMPONENT_EXPORTS: readonly string[] = ['cn', 'focusRing', 'focusRingInset']
+export const NON_COMPONENT_EXPORTS: readonly string[] = ['cn', 'focusRing', 'focusRingInset', 'InlineOverlays']
 
 const RADIX = (name: string) => `其余属性透传给 Radix ${name}。`
 
@@ -40,6 +47,7 @@ export const PAGES: readonly DocPage[] = [
   {
     id: 'button',
     group: 'forms',
+    cardHeight: 270,
     title: 'Button 按钮',
     summary: '30 高的默认按钮，六种变体与三种尺寸；悬停提亮、按下缩到 0.97，禁用降到 45% 不透明度。',
     exports: ['Button', 'buttonVariants'],
@@ -77,6 +85,12 @@ export const PAGES: readonly DocPage[] = [
         ],
       },
     ],
+    states: [
+      '默认：4% 白底 8% 白边，悬停提亮，按下缩到 0.97。',
+      '禁用：45% 不透明度，不响应指针。',
+      '焦点：键盘 Tab 到时画 focus-ring 的外框。',
+    ],
+    donts: ['不要在一个区域放两个主要按钮。', '图标按钮必须带 aria-label。', '不要用颜色以外没有字的危险按钮。'],
     composition: 'Button',
     keys: [
       ['Tab', '聚焦，焦点环 2px'],
@@ -86,6 +100,7 @@ export const PAGES: readonly DocPage[] = [
   {
     id: 'input',
     group: 'forms',
+    cardHeight: 62,
     title: 'Input 输入框',
     summary: '单行文本框：30 高（sm 26 高），4% 白底 8% 白边；聚焦边变亮，禁用降到 45%。',
     exports: ['Input', 'inputVariants'],
@@ -111,12 +126,15 @@ export const PAGES: readonly DocPage[] = [
         ],
       },
     ],
+    states: ['默认、有值、禁用。', 'aria-invalid 时边框变危险色。', '焦点：边框提亮（focus-ring）。'],
+    donts: ['不要不带 label 就放出去。', '不要在占位符里放必须读的信息。'],
     composition: 'Input',
     keys: [['Tab', '聚焦；聚焦时边框提亮']],
   },
   {
     id: 'select',
     group: 'forms',
+    cardHeight: 234,
     title: 'Select 下拉',
     summary: '单选下拉：触发器 30 高，列表贴在触发器下面（不盖住当前项），当前项加粗。',
     exports: [
@@ -165,6 +183,8 @@ export const PAGES: readonly DocPage[] = [
         rows: [],
       },
     ],
+    states: ['默认、已选、未选（占位）、禁用。', '展开：列表项左侧留一列放勾；当前项加粗。'],
+    donts: ['不要把可以直接点的两三个选项藏进下拉。'],
     composition: 'Select\n  SelectTrigger\n    SelectValue\n    SelectArrow\n  SelectContent\n    SelectItem',
     keys: [
       ['Enter / Space / ↓', '在触发器上打开列表'],
@@ -177,6 +197,7 @@ export const PAGES: readonly DocPage[] = [
   {
     id: 'multi-select',
     group: 'forms',
+    cardHeight: 62,
     title: 'MultiSelect 多选下拉',
     summary: '触发器写已选项的名字，列表项前面一列勾；点一项只切这一项，列表不收。由 Popover 加勾选组出来。',
     exports: ['MultiSelect'],
@@ -203,6 +224,12 @@ export const PAGES: readonly DocPage[] = [
         ],
       },
     ],
+    states: [
+      '一个都没选：写 empty。',
+      '已选若干：按选项的顺序写名字，separator 隔开。',
+      '点一项只切这一项，列表不收。',
+    ],
+    donts: ['不要在包里写死分隔符与空态文案，由调用方传。'],
     composition: 'MultiSelect（内部：Popover + PopoverTrigger + PopoverContent，列表项为 role=option）',
     keys: [
       ['Enter / Space / ↓', '在触发器上打开；焦点落在第一个已选项'],
@@ -216,6 +243,7 @@ export const PAGES: readonly DocPage[] = [
   {
     id: 'checkbox',
     group: 'forms',
+    cardHeight: 48,
     title: 'Checkbox 勾选',
     summary: '14px 凹陷方框；选中后中心一块 6px 橙色发光方块（像一颗 LED），框换暗橙边、暗橙底，不画勾。',
     exports: ['Checkbox'],
@@ -232,6 +260,8 @@ export const PAGES: readonly DocPage[] = [
         ],
       },
     ],
+    states: ['未勾、已勾、禁用、禁用已勾、错误（aria-invalid）。'],
+    donts: ['不要让勾选框单独承载状态而不带文字。'],
     composition: 'Checkbox',
     keys: [
       ['Tab', '聚焦'],
@@ -241,6 +271,7 @@ export const PAGES: readonly DocPage[] = [
   {
     id: 'switch',
     group: 'forms',
+    cardHeight: 60,
     title: 'Switch 开关',
     summary: '34 × 18 的轨道画在 40 × 28 的布局盒里；开时轨道换强调色，圆钮挪过去。',
     exports: ['Switch'],
@@ -256,6 +287,8 @@ export const PAGES: readonly DocPage[] = [
         ],
       },
     ],
+    states: ['关、开、禁用关、禁用开。'],
+    donts: ['不要用开关做「提交」这类一次性动作。'],
     composition: 'Switch',
     keys: [
       ['Tab', '聚焦'],
@@ -265,6 +298,7 @@ export const PAGES: readonly DocPage[] = [
   {
     id: 'toggle-group',
     group: 'forms',
+    cardHeight: 66,
     title: 'ToggleGroup 分段',
     summary: '一组互斥的按钮，选中块是一块跟着滑的底（弹簧）。default 是设置页样式，sm 是工具条样式。',
     exports: ['ToggleGroup', 'ToggleGroupItem', 'toggleGroupVariants', 'toggleItemVariants'],
@@ -294,6 +328,8 @@ export const PAGES: readonly DocPage[] = [
       },
       { part: 'toggleGroupVariants / toggleItemVariants', note: '外壳与按钮的类名函数。', rows: [] },
     ],
+    states: ['选中、未选、禁用项。', '键盘 Tab 到每个按钮，Space 或 Enter 选中。'],
+    donts: ['超过五项换 Select。'],
     composition: 'ToggleGroup\n  ToggleGroupItem',
     keys: [
       ['Tab', '每个按钮都是停靠点（不是方向键走的一组）'],
@@ -303,6 +339,7 @@ export const PAGES: readonly DocPage[] = [
   {
     id: 'slider',
     group: 'forms',
+    cardHeight: 60,
     title: 'Slider 滑块',
     summary: '凹槽轨 + 点阵填充 + 发光圆把手；拖动跟手，松手 settle 弹簧吸附到步进；一个值或一段范围。',
     exports: ['Slider'],
@@ -328,6 +365,8 @@ export const PAGES: readonly DocPage[] = [
         ],
       },
     ],
+    states: ['单值、区间、禁用。', '键盘 ← → 走一格。'],
+    donts: ['滑钮必须有 thumbLabels。'],
     composition: 'Slider',
     keys: [
       ['← →', '走一个步进'],
@@ -338,6 +377,7 @@ export const PAGES: readonly DocPage[] = [
   {
     id: 'tooltip',
     group: 'overlays',
+    cardHeight: 152,
     title: 'Tooltip 提示',
     summary: '悬停或聚焦时出现的短说明，从触发处轻升；默认没有延迟。',
     exports: ['Tooltip', 'TooltipContent', 'TooltipProvider', 'TooltipTrigger', 'tooltipContentClass'],
@@ -360,6 +400,8 @@ export const PAGES: readonly DocPage[] = [
       },
       { part: 'tooltipContentClass', note: '提示的皮肤类名，应用里自己定位的提示（图表悬停）借它长一个样。', rows: [] },
     ],
+    states: ['触发器静止；悬停或聚焦后浮出提示（默认没有延迟）。'],
+    donts: ['提示里不放可点的东西，要放用 Popover。', '重要的信息不要只放在提示里。'],
     composition: 'TooltipProvider\n  Tooltip\n    TooltipTrigger\n    TooltipContent',
     keys: [
       ['Tab', '聚焦触发器时出现'],
@@ -369,6 +411,7 @@ export const PAGES: readonly DocPage[] = [
   {
     id: 'popover',
     group: 'overlays',
+    cardHeight: 234,
     title: 'Popover 弹层',
     summary:
       '点触发器打开的一块浮层，跟菜单同一块材质；三种皮肤：panel（带内边的面板）、menu（菜单容器）、bare（只给定位）。',
@@ -413,6 +456,8 @@ export const PAGES: readonly DocPage[] = [
         ],
       },
     ],
+    states: ['收起；打开后焦点落进去，Esc 收起并还回焦点。', '三种皮肤：panel、menu、bare。'],
+    donts: ['不要在弹层里再开弹层。'],
     composition:
       'Popover\n  PopoverTrigger\n  PopoverContent\n    PopoverHeader\n      PopoverTitle\n      PopoverDescription\n    PopoverClose',
     keys: [
@@ -424,6 +469,7 @@ export const PAGES: readonly DocPage[] = [
   {
     id: 'dialog',
     group: 'overlays',
+    cardHeight: 334,
     title: 'Dialog 对话框',
     summary: '模态对话框，560 宽，从下方升起。由代码打开（没有触发器）的对话框，关闭后焦点回到打开前的元素。',
     exports: [
@@ -476,6 +522,8 @@ export const PAGES: readonly DocPage[] = [
         rows: [],
       },
     ],
+    states: ['收起；打开后焦点圈在对话框里，Esc 关闭并还回焦点。'],
+    donts: ['不要用对话框放不重要的通知。', '对话框必须有标题。'],
     composition:
       'Dialog\n  DialogTrigger\n  DialogContent\n    DialogHeader\n      DialogTitle\n    DialogBody\n      DialogDescription\n    DialogFooter\n      DialogClose',
     keys: [
@@ -486,6 +534,7 @@ export const PAGES: readonly DocPage[] = [
   {
     id: 'dropdown-menu',
     group: 'overlays',
+    cardHeight: 314,
     title: 'DropdownMenu 下拉菜单',
     summary: '点触发器打开的菜单：普通项、勾选项、单选项、分组标题、分隔线、快捷键提示，二级菜单最多一层。',
     exports: [
@@ -554,6 +603,8 @@ export const PAGES: readonly DocPage[] = [
         rows: [],
       },
     ],
+    states: ['行：默认、悬停、禁用、危险。', '勾选行左侧占一列放勾。'],
+    donts: ['菜单项不超过一屏，更长的换命令面板。'],
     composition:
       'DropdownMenu\n  DropdownMenuTrigger\n  DropdownMenuContent\n    DropdownMenuLabel\n    DropdownMenuItem（含 DropdownMenuShortcut）\n    DropdownMenuSeparator\n    DropdownMenuCheckboxItem\n    DropdownMenuRadioGroup\n      DropdownMenuRadioItem\n    DropdownMenuSub\n      DropdownMenuSubTrigger\n      DropdownMenuSubContent',
     keys: [
@@ -568,6 +619,7 @@ export const PAGES: readonly DocPage[] = [
   {
     id: 'context-menu',
     group: 'overlays',
+    cardHeight: 322,
     title: 'ContextMenu 右键菜单',
     summary: '在区域上右键打开，行与皮肤同下拉菜单；Esc 只关最里面一层。',
     exports: [
@@ -603,6 +655,8 @@ export const PAGES: readonly DocPage[] = [
       },
       { part: '其余部件', note: '与 DropdownMenu 的同名部件一一对应，属性也相同。', rows: [] },
     ],
+    states: ['行：默认、悬停、禁用、危险。', '勾选行左侧占一列放勾。'],
+    donts: ['菜单项不超过一屏，更长的换命令面板。', '常用动作也要有按钮入口，不只放在右键里。'],
     composition:
       'ContextMenu\n  ContextMenuTrigger\n  ContextMenuContent\n    ContextMenuLabel\n    ContextMenuItem（含 ContextMenuShortcut）\n    ContextMenuSeparator\n    ContextMenuCheckboxItem\n    ContextMenuSub\n      ContextMenuSubTrigger\n      ContextMenuSubContent',
     keys: [
@@ -615,6 +669,7 @@ export const PAGES: readonly DocPage[] = [
   {
     id: 'tabs',
     group: 'layout',
+    cardHeight: 90,
     title: 'Tabs 页签',
     summary: '页签的选中块是一块跟着滑的底（弹簧）；default 是药丸底，line 是下划线。',
     exports: ['Tabs', 'TabsContent', 'TabsList', 'TabsTrigger', 'tabsListVariants'],
@@ -658,6 +713,8 @@ export const PAGES: readonly DocPage[] = [
         rows: [{ name: 'value', type: 'string', desc: '对应 TabsTrigger 的 value。' }],
       },
     ],
+    states: ['选中、未选、禁用页签。', '默认与 line 两种样式。'],
+    donts: ['页签名保持短，一行放得下。'],
     composition: 'Tabs\n  TabsList\n    TabsTrigger\n  TabsContent',
     keys: [
       ['← →', '在页签间走并选中'],
@@ -668,6 +725,7 @@ export const PAGES: readonly DocPage[] = [
   {
     id: 'accordion',
     group: 'layout',
+    cardHeight: 135,
     title: 'Accordion 折叠',
     summary: '一组可展开收起的标题与内容；展开时高度从 0 长出来。',
     exports: ['Accordion', 'AccordionContent', 'AccordionItem', 'AccordionTrigger'],
@@ -692,6 +750,8 @@ export const PAGES: readonly DocPage[] = [
         rows: [],
       },
     ],
+    states: ['展开、收起。', '键盘 ↑ ↓ 在标题间走，Enter 或 Space 展开。'],
+    donts: ['不要把用户必须读的内容收起来。'],
     composition: 'Accordion\n  AccordionItem\n    AccordionTrigger\n    AccordionContent',
     keys: [
       ['Enter / Space', '展开或收起'],
@@ -702,6 +762,7 @@ export const PAGES: readonly DocPage[] = [
   {
     id: 'led',
     group: 'readouts',
+    cardHeight: 142,
     title: 'Led 状态灯',
     summary: '8px 的 StatusLED：默认熄灭，只表达真实状态；必须配文字或读屏名，不单靠颜色说话。',
     exports: ['Led', 'LINK_GROUPS'],
@@ -737,12 +798,15 @@ export const PAGES: readonly DocPage[] = [
         rows: [],
       },
     ],
+    states: ['熄灭（默认）、on、ok、warn、danger；联动组按组色。', '空心、小号两种形态；无文字的灯必须带读屏名。'],
+    donts: ['不要拿它当装饰：只表达真实状态。', '不要单靠颜色说话，旁边要有文字或读屏名。'],
     composition: 'Led',
     keys: [],
   },
   {
     id: 'lcd',
     group: 'readouts',
+    cardHeight: 270,
     title: 'Lcd 读数窗',
     summary: '点阵小标签在上、LCD 数字在中、一行灰色小字在下的读数窗；没有数据显示「—」。',
     exports: ['Lcd'],
@@ -764,12 +828,19 @@ export const PAGES: readonly DocPage[] = [
         ],
       },
     ],
+    states: [
+      '有值：标签在上、数字在中、小字在下。',
+      '没有数据：数字位置写「—」，不写 0。',
+      '色调：up、down、accent、warn，或不着色。',
+    ],
+    donts: ['不要在没有数据时写 0。', '不要在件里写死币种与位数，由调用方传。'],
     composition: 'Lcd',
     keys: [],
   },
   {
     id: 'dot-matrix',
     group: 'readouts',
+    cardHeight: 104,
     title: 'DotMatrix 点阵纹理',
     summary: '4px 实、2px 空的方点，铺满一个面：本系统图表的签名，回撤面用它而不用实色。',
     exports: ['DotMatrix', 'DOT_PITCH', 'DOT_SIZE'],
@@ -788,12 +859,15 @@ export const PAGES: readonly DocPage[] = [
         rows: [],
       },
     ],
+    states: ['静态纹理：4px 实、2px 空；颜色默认取中性，可传 token。'],
+    donts: ['不要用它代替需要读数的实色块；它只给面（回撤面等）。'],
     composition: 'svg\n  defs\n    DotMatrix\n  rect (fill="url(#id)")',
     keys: [],
   },
   {
     id: 'rolling-text',
     group: 'readouts',
+    cardHeight: 116,
     title: 'RollingText 滚动数字',
     summary:
       '里程表式的数字滚动：变了的那几位像里程表一样把中间的数字依次转过去（7 到 9 会看到 8 掠过），涨往上、跌往下，整串闪一下涨色或跌色。转得越远用得越久，最远 300ms。',
@@ -823,12 +897,15 @@ export const PAGES: readonly DocPage[] = [
         rows: [],
       },
     ],
+    states: ['值没变：静止。', '值变了：变了的那几位滚动，涨往上、跌往下，整串闪一下涨色或跌色。'],
+    donts: ['值没变时不要滚；价格、盈亏的变化只用它给的一次闪，不再加别的动效。'],
     composition: 'RollingText',
     keys: [],
   },
   {
     id: 'badge',
     group: 'readouts',
+    cardHeight: 110,
     title: 'BadgeGroup 上标徽标',
     summary: '品种名后的上标小字（板块、风险标记）：次要文字色，不抢品种名；悬停写全称。',
     exports: ['BadgeGroup'],
@@ -845,12 +922,15 @@ export const PAGES: readonly DocPage[] = [
         ],
       },
     ],
+    states: ['次要文字色的上标小字；悬停写全称。'],
+    donts: ['不要用它放必须读的信息：它在品种名旁边，是次要的。'],
     composition: 'BadgeGroup',
     keys: [],
   },
   {
     id: 'kbd',
     group: 'readouts',
+    cardHeight: 88,
     title: 'Kbd 快捷键方块',
     summary: '把一个快捷键组合画成一串小方块：20 高、圆角 4、6% 白底 12% 白边。',
     exports: ['Kbd'],
@@ -864,12 +944,15 @@ export const PAGES: readonly DocPage[] = [
         ],
       },
     ],
+    states: ['一个组合画成一串小方块；单键与多键。'],
+    donts: ['不要把快捷键写成普通文字加方括号。'],
     composition: 'Kbd',
     keys: [],
   },
   {
     id: 'number-input',
     group: 'forms',
+    cardHeight: 221,
     title: 'NumberInput 数字框',
     summary: '一个框：值加可选的单位后缀，没有 −/+ 按钮；打字、方向键、按住左右拖三种改法。',
     exports: ['NumberInput'],
@@ -896,6 +979,8 @@ export const PAGES: readonly DocPage[] = [
         ],
       },
     ],
+    states: ['默认、聚焦、悬停、禁用、错误。', '可带单位后缀；打字、方向键、按住左右拖都能改值。'],
+    donts: ['不要加 −/+ 按钮：这个框没有。', '单位、小数位由调用方传，件里不猜。'],
     composition: 'NumberInput\n  input[role=spinbutton]\n  span.k-unit（有 unit 时）',
     keys: [
       ['↑ ↓', '按步长加减；Shift 十档，Alt 精调'],
@@ -908,6 +993,7 @@ export const PAGES: readonly DocPage[] = [
   {
     id: 'date-time-input',
     group: 'forms',
+    cardHeight: 148,
     title: 'DateTimeInput 日期时间框',
     summary: '可以逐段打字的「年-月-日」与「时:分」，日期框右边的日历按钮打开日历；不随浏览器语言变格式。',
     exports: ['DateTimeInput'],
@@ -932,6 +1018,8 @@ export const PAGES: readonly DocPage[] = [
         ],
       },
     ],
+    states: ['默认、聚焦、错误（日期或时间不合法）。', '日期框右边的日历按钮打开日历。'],
+    donts: ['不要依赖浏览器语言的日期格式：这个件不随它变。'],
     composition: 'DateTimeInput\n  DateField（年 月 日各一段）\n  Popover\n    Calendar\n  TimeField（时 分 [秒]）',
     keys: [
       ['0–9', '在当前段打字，满了跳到下一段'],
@@ -944,6 +1032,7 @@ export const PAGES: readonly DocPage[] = [
   {
     id: 'skeleton',
     group: 'feedback',
+    cardHeight: 554,
     title: 'Skeleton 加载骨架',
     summary:
       '等数据的那一块：500ms 内到了什么也不画；超过了出点阵骨架，2s 说「仍在加载」，10s 转琥珀条加重试。不脉冲、不转圈。',
@@ -990,12 +1079,136 @@ export const PAGES: readonly DocPage[] = [
         ],
       },
     ],
+    states: [
+      '500ms 内：什么也不画。',
+      '超过 500ms：点阵骨架；2s：说「仍在加载」；10s：琥珀条加重试。',
+      '数据到了：骨架出过的内容用 2px 模糊揭示，没出过的直接出现。',
+    ],
+    donts: ['不要脉冲、不要转圈。', '表头与外框已知时保留，骨架只占内容区。'],
     composition: 'Loading\n  LoadingWait（计时）\n    LoadingView\n      Led\n      Button（重试）\n      Skeleton',
     keys: [['Tab', '10 秒后的重试按钮可聚焦；Enter / Space 触发']],
   },
   {
+    id: 'change-text',
+    group: 'quant',
+    cardHeight: 122,
+    title: 'ChangeText 涨跌幅',
+    summary:
+      '百分数的涨跌幅文字，写成「+1.23%」；颜色只读 --pnl-up / --pnl-down，根上设 data-updown="cn" 就互换成红涨绿跌；零不着色。',
+    exports: ['ChangeText'],
+    props: [
+      {
+        part: 'ChangeText',
+        note: '其余属性透传给 span。四舍五入成 0 的小负数也按「平」处理，不带正负号。',
+        rows: [
+          { name: 'value', type: 'number', desc: '已经是百分数（1.5 就是 1.5%）。' },
+          { name: 'digits', type: 'number', default: '2', desc: '小数位。' },
+          { name: 'arrow', type: 'boolean', default: 'false', desc: '文字前加 ▲ / ▼（平不加）：方向不只靠颜色。' },
+        ],
+      },
+    ],
+    states: [
+      '涨：带 + 号，颜色取 pnl-up；跌：带 - 号，颜色取 pnl-down。',
+      '平：舍入到 digits 位后是 0 就不带号、不着色，继承周围的字色。',
+      '根元素设 data-updown="cn" 时 pnl-up 与 pnl-down 互换（红涨绿跌），件不用改。',
+    ],
+    donts: ['不要自己写 is-up、is-down 类去着色。', '不要把已经乘过 100 的值再乘一次。', '没有行情时不要传 0，写 — 。'],
+    composition: 'ChangeText（内部：ToneText）',
+    keys: [],
+  },
+  {
+    id: 'pnl-text',
+    group: 'quant',
+    cardHeight: 70,
+    title: 'PnlText 盈亏',
+    summary: '盈亏文字：字由调用方格式化好（币种、位数、符号都由调用方定），本件只按方向着色，颜色规则同 ChangeText。',
+    exports: ['PnlText'],
+    props: [
+      {
+        part: 'PnlText',
+        note: '其余属性透传给 span。',
+        rows: [
+          {
+            name: 'value',
+            type: 'number | string | null | undefined',
+            desc: '只用来定方向；0、空、解析不了的算「平」。',
+          },
+          {
+            name: 'tone',
+            type: "'up' | 'down' | 'flat'",
+            desc: '方向不是由 value 的符号推出来时（例：亏损额写成正数）盖掉。',
+          },
+          { name: 'arrow', type: 'boolean', default: 'false', desc: '文字前加 ▲ / ▼。' },
+          { name: 'as', type: "'span' | 'strong'", default: "'span'", desc: '渲染成哪个元素。' },
+        ],
+      },
+    ],
+    states: ['盈：pnl-up；亏：pnl-down；零或没有值：不着色。', '亏损额写成正数时传 tone="down"。'],
+    donts: ['不要在件里拼币种与位数，由调用方传。', '不要用颜色以外没有符号或箭头的写法表达盈亏。'],
+    composition: 'PnlText（内部：ToneText）',
+    keys: [],
+  },
+  {
+    id: 'quant-format',
+    group: 'quant',
+    cardHeight: 120,
+    title: 'format 格式化函数',
+    summary:
+      '价格、涨跌幅、数量的写法（纯函数，不带 React；另有 @katanaview/ui/quant/format 出口给画布与 Worker）。小数位由调用方传，不在这里猜。',
+    exports: [
+      'AUTO_SIZE',
+      'compactParts',
+      'decimalsOfTick',
+      'formatCompact',
+      'formatCount',
+      'formatPercentChange',
+      'formatPrice',
+      'formatQuantity',
+      'toneOf',
+    ],
+    props: [
+      {
+        part: 'formatPrice(value, { precision, tick, fallback })',
+        note: '千分位固定 en-US；不是有限数写 —。',
+        rows: [
+          { name: 'precision', type: 'number | null', desc: '品种的价格精度；给了就恒写这么多位。' },
+          {
+            name: 'tick',
+            type: 'number',
+            desc: '最小变动价位（A 股 0.01、期货 0.25、加密 1e-8）；没给 precision 时由它定小数位。',
+          },
+          { name: 'fallback', type: '{ maxFraction } | { significant }', desc: '两个都没有时怎么写。' },
+        ],
+      },
+      {
+        part: 'decimalsOfTick(tick)',
+        note: '1e-8 在 String() 里是科学计数，拆开尾数与指数数位。',
+        rows: [{ name: 'tick', type: 'number', desc: '正数；否则抛 RangeError。' }],
+      },
+      {
+        part: 'formatPercentChange(value, digits) / toneOf(value, digits)',
+        note: '都先四舍五入再定符号与方向。',
+        rows: [{ name: 'digits', type: 'number', default: '2 / 8', desc: '小数位。' }],
+      },
+      {
+        part: 'formatQuantity / formatCount / formatCompact / compactParts / AUTO_SIZE',
+        note: '数量的缩写（K / M / B）与千分位；单位 base 是币量、usd 带 $。',
+        rows: [],
+      },
+    ],
+    states: [
+      'formatPrice：定了小数位就恒写这么多位；不是有限数写 —。',
+      'formatPercentChange 与 toneOf 先舍入再定符号与方向：舍入成 0 的小负数是「平」。',
+    ],
+    donts: ['不要在格式化函数里猜品种的精度，由调用方传 precision 或 tick。', '不要自己拼千分位。'],
+    composition:
+      'formatPrice\n  decimalsOfTick\nformatPercentChange\ntoneOf\nformatQuantity\n  formatCount\nformatCompact\n  compactParts',
+    keys: [],
+  },
+  {
     id: 'password-input',
     group: 'forms',
+    cardHeight: 171,
     title: 'PasswordInput 密钥输入',
     summary:
       '带眼睛按钮的输入框：默认遮住，点一下显示或遮住；上下眼睑用弹簧开合，输入框不丢焦点与选区。学自 rare-ui（不要强度条）。',
@@ -1016,6 +1229,12 @@ export const PAGES: readonly DocPage[] = [
         ],
       },
     ],
+    states: [
+      '默认：内容遮住，眼睛是闭着的。',
+      '点眼睛：显示明文，输入框不丢焦点与选区，眼睑睁开；再点遮回去。',
+      '禁用：按钮不可点。',
+    ],
+    donts: ['眼睛按钮的读屏名 toggleLabel 必须传，包里不写文案。', '不要用它放不需要遮住的普通文本。'],
     composition: 'PasswordInput\n  Input\n  button（眼睛，aria-pressed）',
     keys: [
       ['Tab', '从输入框到眼睛按钮'],
@@ -1025,6 +1244,7 @@ export const PAGES: readonly DocPage[] = [
   {
     id: 'delete-button',
     group: 'forms',
+    cardHeight: 133,
     title: 'DeleteButton 原地确认',
     summary:
       '危险操作不弹对话框：点一下按钮在原地展开出「确认」「取消」，垃圾桶的盖子掀开。Esc、点外面、Tab 走开都是取消。学自 rare-ui。',
@@ -1042,6 +1262,13 @@ export const PAGES: readonly DocPage[] = [
         ],
       },
     ],
+    states: [
+      '静止：垃圾桶图标按钮。',
+      '展开：原地出现「确认」「取消」，垃圾桶的盖子掀开。',
+      'Esc、点外面、Tab 走开都算取消。',
+      '禁用：不响应。',
+    ],
+    donts: ['不要在它旁边再叠一个确认对话框。', '确认、取消与完成的文案由调用方传，包里不写。'],
     composition: 'DeleteButton\n  button（垃圾桶，aria-expanded）\n  button（确认）\n  button（取消，展开后默认焦点）',
     keys: [
       ['Enter / Space', '展开；在确认或取消上则执行它'],
@@ -1052,6 +1279,7 @@ export const PAGES: readonly DocPage[] = [
   {
     id: 'notification-bell',
     group: 'readouts',
+    cardHeight: 211,
     title: 'NotificationBell 提醒铃',
     summary: '带未读数的铃：数变多时铃从顶端摆一下，角标弹出，数字按增减方向滚；0 时角标收起。学自 rare-ui。',
     exports: ['NotificationBell'],
@@ -1067,12 +1295,15 @@ export const PAGES: readonly DocPage[] = [
         ],
       },
     ],
+    states: ['0：角标收起。', '有未读：角标弹出，数字按增减方向滚。', '数变多：铃从顶端摆一下。'],
+    donts: ['铃是图标，label 必须传（读屏名字）。'],
     composition: 'NotificationBell\n  svg（铃，转轴在上）\n  span（角标）\n  span（role=status 播报）',
     keys: [['Enter / Space', '点击（按钮）']],
   },
   {
     id: 'status-icon',
     group: 'feedback',
+    cardHeight: 139,
     title: 'StatusIcon 状态图标',
     summary:
       '提示条里的成功、失败、警告、说明、进行中：换状态时旧的缩小退出、新的弹入，对勾与叉一笔一笔画出来。学自 rare-ui 的 toast。',
@@ -1091,12 +1322,15 @@ export const PAGES: readonly DocPage[] = [
         ],
       },
     ],
+    states: ['成功、失败、警告、说明、进行中五种。', '换状态时旧的缩小退出、新的弹入，对勾与叉一笔一笔画出来。'],
+    donts: ['不要单靠图标说话：旁边要有文字。', 'label 必须传（读屏名字）。'],
     composition: 'StatusIcon\n  svg（按 status 换，笔画画出来）',
     keys: [],
   },
   {
     id: 'ai-status',
     group: 'feedback',
+    cardHeight: 171,
     title: 'AiStatus 行内 AI 状态',
     summary:
       '一行：随状态变的小图标加状态文字（进行中带流光），可带细节与耗时。换状态时图标缩放着换、文字上下滑着换、整行宽度弹簧伸缩。学自 rare-ui。',
@@ -1117,12 +1351,19 @@ export const PAGES: readonly DocPage[] = [
         ],
       },
     ],
+    states: [
+      '按 state 换图标与文字；进行中带流光。',
+      '可带 detail 与耗时 elapsed。',
+      '换状态时图标缩放、文字上下滑、整行宽度弹簧伸缩。',
+    ],
+    donts: ['没有真实进展时不要显示进行中。'],
     composition: 'AiStatus\n  span（图标，按 state 换）\n  span（文字，按 label 换）\n  span（细节）\n  span（耗时）',
     keys: [],
   },
   {
     id: 'matrix-orb',
     group: 'readouts',
+    cardHeight: 261,
     title: 'MatrixOrb 点阵状态球',
     summary:
       '一盘方点排成圆：待命慢呼吸，聆听同心波跟音量走，思考几个热点绕着转。点阵签名件的动态版，用来表达 Agent 在做什么。学自 rare-ui。',
@@ -1150,12 +1391,15 @@ export const PAGES: readonly DocPage[] = [
         ],
       },
     ],
+    states: ['待命：慢呼吸。', '聆听：同心波跟 level 音量走。', '思考：几个热点绕着转。'],
+    donts: ['只表达 Agent 真实在做的事，不当装饰。', 'label 要传（读屏名字）。'],
     composition: 'MatrixOrb\n  canvas（requestAnimationFrame 循环）',
     keys: [],
   },
   {
     id: 'step-player',
     group: 'readouts',
+    cardHeight: 155,
     title: 'StepPlayer 分步进度条',
     summary:
       '左边一个播放 / 暂停 / 重放钮，右边一排圆点：当前一步撑成长条、里面的填充随时间走，走完去下一步。可循环，可点圆点跳步。学自 rare-ui。',
@@ -1186,6 +1430,8 @@ export const PAGES: readonly DocPage[] = [
         ],
       },
     ],
+    states: ['播放中：当前一步撑成长条，里面的填充随时间走。', '暂停、重放；可循环。', 'seekable 时可点圆点跳步。'],
+    donts: ['它是按时间走的演示进度，不要拿它表示真实任务进度。'],
     composition:
       'StepPlayer\n  button（播放 / 暂停 / 重放，图标弹簧缩放着换）\n  div role=group（圆点条）\n    div（一步：长条 / 亮点 / 暗点）\n      button（可跳时的点击区）',
     keys: [
@@ -1196,6 +1442,7 @@ export const PAGES: readonly DocPage[] = [
   {
     id: 'theme-selector',
     group: 'forms',
+    cardHeight: 457,
     title: 'ThemeSelector 主题选择',
     summary:
       '每个主题一张缩略预览（迷你控制台），选中的那张加一圈环，环在选项之间用弹簧滑过去。缩略颜色由调用方传，所以能同时预览别的主题。学自 rare-ui。',
@@ -1217,6 +1464,8 @@ export const PAGES: readonly DocPage[] = [
         ],
       },
     ],
+    states: ['选中的那张加一圈环，环在选项之间用弹簧滑过去。', '禁用：不响应。'],
+    donts: ['缩略颜色由调用方传，不要在包里写死主题色。'],
     composition: 'ThemeSelector\n  button role=radio（缩略 SVG + 选中环）\n  span（名字）',
     keys: [
       ['Tab', '进入 / 离开整组（停在选中那张）'],
@@ -1227,6 +1476,7 @@ export const PAGES: readonly DocPage[] = [
   {
     id: 'code-block',
     group: 'readouts',
+    cardHeight: 565,
     title: 'CodeBlock 代码块',
     summary:
       '带文件名头、行号、一键复制的代码块；配色由一个强调色混出来（关键字取强调色，字符串、数字、函数是它与正文色的不同比例，注释灰），两个主题自动跟着换。词法切分是自己写的，不加依赖。学自 rare-ui。',
@@ -1251,6 +1501,8 @@ export const PAGES: readonly DocPage[] = [
         ],
       },
     ],
+    states: ['带文件名头、行号、复制钮；复制后钮上写 copiedLabel。', '可高亮指定的行。'],
+    donts: ['复制钮的文案由调用方传（copyLabel、copiedLabel）。'],
     composition:
       'CodeBlock\n  div（头：名字 + 复制钮）\n  div role=region（滚动区，可聚焦）\n    pre > 每行一个 div（行号 + token）',
     keys: [
@@ -1262,6 +1514,7 @@ export const PAGES: readonly DocPage[] = [
   {
     id: 'web-search',
     group: 'feedback',
+    cardHeight: 311,
     title: 'WebSearch 检索来源',
     summary:
       '联网检索的来源：一枚药丸（带进度环的地球、状态文字、叠起来的来源小标）点开是一排来源卡片；WebSearchCitation 是回答正文里的行内引用，悬停或键盘聚焦弹出预览。不存也不开 URL，来源小标是站名首字母。学自 rare-ui。',
@@ -1302,6 +1555,12 @@ export const PAGES: readonly DocPage[] = [
         rows: [],
       },
     ],
+    states: [
+      '药丸：进度环、状态文字、叠起来的来源小标。',
+      '点开是一排来源卡片；「还有 N 条」展开全部。',
+      '行内引用：悬停或键盘聚焦弹出预览。',
+    ],
+    donts: ['不存也不开 URL：要打开来源由调用方在 onOpen 里处理。'],
     composition:
       'WebSearch\n  button（药丸：地球 + 文字 + 小标 + 箭头）\n  ol（来源卡片 / 骨架 / 更多 / 收起）\nWebSearchCitation\n  button（行内小标）\n  span role=tooltip（预览）',
     keys: [
@@ -1312,6 +1571,7 @@ export const PAGES: readonly DocPage[] = [
   {
     id: 'task-list',
     group: 'forms',
+    cardHeight: 231,
     title: 'TaskList 任务清单',
     summary:
       '点一行打勾：圆圈填上强调色、对勾一笔画出来、文字被一道线划掉，划完这一行沉到底部，其余行弹簧补位；再点取消，回到原位。学自 rare-ui。',
@@ -1331,6 +1591,8 @@ export const PAGES: readonly DocPage[] = [
         ],
       },
     ],
+    states: ['未勾：空圈。', '已勾：圆圈填强调色、对勾画出、文字划掉，沉到底部。', '再点取消，回到原位。'],
+    donts: ['任务文案与标签由调用方传。'],
     composition:
       'TaskList\n  li（layout 动画）\n    button role=checkbox（圆圈 + 对勾 + 划线文字）\n  li role=status（播报）',
     keys: [
@@ -1341,6 +1603,7 @@ export const PAGES: readonly DocPage[] = [
   {
     id: 'duration-picker',
     group: 'forms',
+    cardHeight: 141,
     title: 'DurationPicker 时长选择',
     summary:
       '平时是连成一整条的药丸「2 时 30 分」加笔钮；点笔钮三段用弹簧分开、内侧圆角长出来，数字变成可输入的框，笔变对勾；点对勾确认。输入超上限夹住并抖一下。学自 rare-ui。',
@@ -1366,6 +1629,13 @@ export const PAGES: readonly DocPage[] = [
         ],
       },
     ],
+    states: [
+      '平时：连成一整条的药丸加笔钮。',
+      '编辑中：三段分开，数字变成输入框，笔变对勾。',
+      '输入超上限：夹住并抖一下。',
+      '禁用：笔点不动。',
+    ],
+    donts: ['上限 maxHours、maxMinutes 由调用方定，不要省略。'],
     composition: 'DurationPicker\n  div（时 + 数字框）\n  div（分 + 数字框）\n  button（笔 / 对勾）',
     keys: [
       ['Enter', '确认'],

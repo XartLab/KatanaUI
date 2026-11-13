@@ -12,9 +12,9 @@ import { focusRing } from '../lib/focus'
 const buttonVariants = cva(
   [
     'inline-flex shrink-0 cursor-pointer items-center justify-center gap-1.5 whitespace-nowrap select-none',
-    'k-text-data leading-none rounded-[var(--radius-control)] border border-white/8 bg-white/4 text-ink-2',
+    'k-text-data leading-none rounded-[var(--radius-control)] border border-alpha-white-7 bg-alpha-white-3 text-ink-2',
     'transition-[color,background-color,border-color,scale] duration-150 ease-out',
-    'not-disabled:hover:bg-white/7 not-disabled:hover:text-ink not-disabled:active:scale-[0.97] not-disabled:active:bg-white/10',
+    'not-disabled:hover:bg-alpha-white-6 not-disabled:hover:text-ink not-disabled:active:scale-[0.97] not-disabled:active:bg-alpha-white-9',
     'disabled:cursor-not-allowed disabled:opacity-45',
     '[&_svg]:pointer-events-none [&_svg]:size-[13px] [&_svg]:shrink-0',
     focusRing,
@@ -27,10 +27,10 @@ const buttonVariants = cva(
           'border-transparent bg-ink font-bold text-surface-1 not-disabled:hover:bg-white not-disabled:hover:text-surface-0 not-disabled:active:bg-ink-2',
         danger:
           'border-[color-mix(in_srgb,var(--signal-red)_30%,transparent)] text-danger not-disabled:hover:bg-[color-mix(in_srgb,var(--signal-red)_8%,transparent)] not-disabled:hover:text-danger not-disabled:active:bg-[color-mix(in_srgb,var(--signal-red)_14%,transparent)]',
-        ghost: 'border-transparent bg-transparent not-disabled:hover:bg-white/7',
+        ghost: 'border-transparent bg-transparent not-disabled:hover:bg-alpha-white-6',
         // 图标按钮（原 .k-icon-btn，照 OpenMarket asd-panel-close）：28 × 28 · 透明 · 无边 · 悬停 5% 白，按下不缩放、不再深一档（改前没有按下态，2026-11-13 独立审）；焦点环画在里面（贴边的小按钮，外移会被容器裁掉）。
-        icon: 'size-7 border-0 bg-transparent p-0 text-ink-3 transition-[color,background-color] duration-[120ms] not-disabled:hover:bg-white/5 not-disabled:hover:text-ink not-disabled:active:scale-100 not-disabled:active:bg-white/5 disabled:opacity-35 focus-visible:-outline-offset-2 [&_svg]:size-[15px]',
-        link: 'border-transparent bg-transparent font-normal text-ink-3 underline decoration-white/25 underline-offset-[3px] not-disabled:hover:bg-transparent not-disabled:hover:text-ink not-disabled:active:bg-transparent',
+        icon: 'size-7 border-0 bg-transparent p-0 text-ink-3 transition-[color,background-color] duration-[120ms] not-disabled:hover:bg-alpha-white-4 not-disabled:hover:text-ink not-disabled:active:scale-100 not-disabled:active:bg-alpha-white-4 disabled:opacity-35 focus-visible:-outline-offset-2 [&_svg]:size-[15px]',
+        link: 'border-transparent bg-transparent font-normal text-ink-3 underline decoration-alpha-white-13 underline-offset-[3px] not-disabled:hover:bg-transparent not-disabled:hover:text-ink not-disabled:active:bg-transparent',
       },
       size: {
         default: 'h-[30px] px-3',

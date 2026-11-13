@@ -16,8 +16,8 @@
   align-items: center;
   height: 30px;
   padding: 0 8px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--alpha-white-3);
+  border: 1px solid var(--alpha-white-7);
   border-radius: 6px;
   color: var(--ink-100);
   font: var(--text-body) var(--font-sans);
@@ -26,7 +26,7 @@
   transition: border-color 0.12s;
 }
 .k-dt-input[data-focus-within] {
-  border-color: rgba(255, 255, 255, 0.22);
+  border-color: var(--alpha-white-12);
 }
 .k-dt-input[data-invalid] {
   border-color: rgba(255, 90, 90, 0.55);
@@ -66,7 +66,7 @@
 }
 .k-dt-pick:hover,
 .k-dt-pick[aria-expanded='true'] {
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--alpha-white-5);
   color: var(--ink-100);
 }
 .k-pop.k-dt-pop {
@@ -99,7 +99,7 @@
   cursor: pointer;
 }
 .k-cal-nav[data-hovered] {
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--alpha-white-5);
   color: var(--ink-100);
 }
 .k-cal-grid {
@@ -130,7 +130,7 @@
   cursor: default;
 }
 .k-cal-cell[data-hovered]:not([data-disabled]) {
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--alpha-white-5);
 }
 .k-cal-cell[data-focus-visible] {
   box-shadow: inset 0 0 0 2px var(--signal-orange);

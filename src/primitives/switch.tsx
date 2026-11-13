@@ -26,8 +26,8 @@ function Switch({ className, ...props }: ComponentProps<typeof SwitchPrimitive.R
         aria-hidden
         className={cn(
           'pointer-events-none absolute inset-x-[3px] inset-y-[5px] rounded-full',
-          'bg-white/12 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.1)] transition-[background-color,box-shadow] duration-150',
-          'group-enabled:group-hover:bg-white/18 group-data-[state=checked]:bg-brand group-data-[state=checked]:shadow-none',
+          'bg-alpha-white-10 shadow-[inset_0_0_0_1px_var(--alpha-white-9)] transition-[background-color,box-shadow] duration-150',
+          'group-enabled:group-hover:bg-alpha-white-11 group-data-[state=checked]:bg-brand group-data-[state=checked]:shadow-none',
           'group-data-[state=checked]:group-enabled:group-hover:bg-[color-mix(in_srgb,var(--signal-orange)_85%,white)]',
         )}
       />

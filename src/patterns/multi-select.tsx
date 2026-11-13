@@ -108,7 +108,7 @@ export function MultiSelect({
           ;(all.find((row) => row.getAttribute('aria-selected') === 'true') ?? all[0])?.focus()
         }}
         className={cn(
-          'w-auto min-w-[var(--radix-popover-trigger-width)] max-h-[min(var(--radix-popover-content-available-height),calc(100dvh-16px))] overflow-auto rounded-[7px] border-white/9 p-1 shadow-[0_8px_24px_rgba(0,0,0,0.4)]',
+          'w-auto min-w-[var(--radix-popover-trigger-width)] max-h-[min(var(--radix-popover-content-available-height),calc(100dvh-16px))] overflow-auto rounded-[7px] border-alpha-white-8 p-1 shadow-[0_8px_24px_rgba(0,0,0,0.4)]',
           contentClassName,
         )}
       >
@@ -123,7 +123,10 @@ export function MultiSelect({
                 tabIndex={-1}
                 data-slot="multi-select-option"
                 data-state={selected ? 'checked' : 'unchecked'}
-                className={cn(selectItemClass, 'hover:data-[state=unchecked]:bg-white/5 focus-visible:bg-white/5')}
+                className={cn(
+                  selectItemClass,
+                  'hover:data-[state=unchecked]:bg-alpha-white-4 focus-visible:bg-alpha-white-4',
+                )}
                 onClick={() => toggle(key)}
                 onKeyDown={(event) => {
                   if (event.key === ' ' || event.key === 'Enter') {

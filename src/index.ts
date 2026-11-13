@@ -5,6 +5,7 @@
 export { cn } from './lib/cn'
 export { focusRing, focusRingInset } from './lib/focus'
 export { useHoverOpen } from './lib/hover-open'
+export { InlineOverlays } from './lib/overlay'
 
 export { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from './primitives/accordion'
 export { Button, buttonVariants } from './primitives/button'

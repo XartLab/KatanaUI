@@ -15,8 +15,8 @@ import { snappy } from '../lib/motion'
 const toggleGroupVariants = cva('inline-flex gap-0.5', {
   variants: {
     variant: {
-      default: 'box-border rounded-[var(--radius-control)] border border-white/10 bg-white/5 p-1',
-      sm: 'box-border rounded-[8px] bg-white/4 p-0.5',
+      default: 'box-border rounded-[var(--radius-control)] border border-alpha-white-9 bg-alpha-white-4 p-1',
+      sm: 'box-border rounded-[8px] bg-alpha-white-3 p-0.5',
     },
   },
   defaultVariants: { variant: 'default' },

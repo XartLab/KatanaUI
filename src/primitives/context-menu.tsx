@@ -5,6 +5,7 @@ import { ContextMenu as ContextMenuPrimitive } from 'radix-ui'
 import { useContext, type ComponentProps } from 'react'
 import { MenuKindContext } from './menu-kind'
 import { cn } from '../lib/cn'
+import { OverlayPortal } from '../lib/overlay'
 import {
   MenuCheckColumn,
   MenuShortcut,
@@ -39,7 +40,7 @@ function ContextMenuPortal({ ...props }: ComponentProps<typeof ContextMenuPrimit
 
 function ContextMenuContent({ className, ...props }: ComponentProps<typeof ContextMenuPrimitive.Content>) {
   return (
-    <ContextMenuPrimitive.Portal>
+    <OverlayPortal portal={ContextMenuPrimitive.Portal}>
       <MenuKindContext value="context">
         <ContextMenuPrimitive.Content
           data-slot="context-menu-content"
@@ -51,7 +52,7 @@ function ContextMenuContent({ className, ...props }: ComponentProps<typeof Conte
           onCloseAutoFocus={keepMovedFocus(props.onCloseAutoFocus)}
         />
       </MenuKindContext>
-    </ContextMenuPrimitive.Portal>
+    </OverlayPortal>
   )
 }
 
@@ -176,7 +177,7 @@ function ContextMenuSubTrigger({
   return (
     <ContextMenuPrimitive.SubTrigger
       data-slot="context-menu-sub-trigger"
-      className={cn(menuRowClass, 'data-[state=open]:bg-white/7 data-[state=open]:text-ink', className)}
+      className={cn(menuRowClass, 'data-[state=open]:bg-alpha-white-6 data-[state=open]:text-ink', className)}
       {...props}
       ref={sub?.setTrigger}
     >
@@ -195,7 +196,7 @@ function ContextMenuSubContent({
 }: ComponentProps<typeof ContextMenuPrimitive.SubContent>) {
   const sub = useContext(SubStateContext)
   return (
-    <ContextMenuPrimitive.Portal>
+    <OverlayPortal portal={ContextMenuPrimitive.Portal}>
       <ContextMenuPrimitive.SubContent
         data-slot="context-menu-sub-content"
         onEscapeKeyDown={(event) => {
@@ -210,7 +211,7 @@ function ContextMenuSubContent({
         {...(props.role === 'presentation' ? { 'aria-orientation': undefined } : {})}
         {...props}
       />
-    </ContextMenuPrimitive.Portal>
+    </OverlayPortal>
   )
 }
 

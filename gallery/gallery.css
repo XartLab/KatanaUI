@@ -2,6 +2,7 @@
 /* 文档站自己的版面（只在开发与测试服务器里有，不进正式构建）。件的样子全在包里，这里只管把它们摆开。
    顺序：token → 这份版面 → 包的 ui.css（Tailwind 的类不分层，排最后才压得过这里没分层的规则）。 */
 @import '../src/tokens/tokens.css';
+@import './preview.css';
 
 html,
 body {
@@ -60,7 +61,7 @@ body {
   text-decoration: none;
 }
 .gal-nav li a:hover {
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--alpha-white-4);
   color: var(--ink-100);
 }
 .gal-nav li a[aria-current='page'] {
@@ -143,62 +144,6 @@ body {
   border: 1px solid var(--line-100);
   border-radius: var(--radius-overlay);
 }
-.gal-row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 12px;
-}
-.gal-cap {
-  flex: none;
-  width: 84px;
-  color: var(--ink-300);
-  font: var(--text-caption) var(--font-mono);
-}
-.gal-cell {
-  display: inline-flex;
-  flex-direction: column;
-  gap: 4px;
-  min-width: 96px;
-}
-.gal-cell > small {
-  color: var(--ink-300);
-  font: var(--text-caption) var(--font-sans);
-}
-.gal-label {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font: var(--text-data) var(--font-sans);
-  color: var(--ink-200);
-}
-.gal-note {
-  margin: 0;
-  color: var(--ink-300);
-  font: var(--text-caption) var(--font-sans);
-  line-height: 1.5;
-}
-.gal-wide {
-  width: 100%;
-  max-width: 480px;
-}
-.gal-slider {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  width: 220px;
-}
-.gal-ctx {
-  display: grid;
-  place-items: center;
-  width: 140px;
-  height: 56px;
-  border: 1px dashed var(--ink-400, rgba(255, 255, 255, 0.25));
-  border-radius: 8px;
-  color: var(--ink-200);
-  user-select: none;
-}
-
 /* 属性表、组成、键盘 */
 .gal-prop {
   display: flex;
@@ -230,14 +175,21 @@ body {
   color: var(--ink-100);
   font: var(--text-caption) var(--font-mono);
 }
+.gal-list {
+  margin: 0;
+  padding-left: 20px;
+  color: var(--ink-200);
+  font: var(--text-data) var(--font-sans);
+  line-height: 1.6;
+}
 .gal-keys th {
   width: 220px;
   font-weight: 400;
 }
 .gal-keys kbd {
   padding: 1px 5px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: var(--alpha-white-5);
+  border: 1px solid var(--alpha-white-10);
   border-radius: 4px;
   color: var(--ink-200);
   font: var(--text-caption) var(--font-sans);

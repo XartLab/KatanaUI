@@ -11,6 +11,7 @@
 @source '../lib';
 @source '../patterns';
 @source '../katana';
+@source '../quant';
 
 /* shadcn 的组件里有 dark: 开头的类（`shadcn add` 新拷来的件会带）。Tailwind 默认按系统的深浅色决定它们生不生效，
    同一个产品在两台电脑上长得不一样；我们现有两个主题都是深色，所以 dark: 一直生效，做浅色主题（Paper）时再改成按 data-theme 判断。 */
@@ -37,6 +38,20 @@
   --color-brand-dim: var(--signal-orange-dim);
   --color-ok: var(--signal-green);
   --color-danger: var(--signal-red);
+  --color-alpha-white-1: var(--alpha-white-1);
+  --color-alpha-white-2: var(--alpha-white-2);
+  --color-alpha-white-3: var(--alpha-white-3);
+  --color-alpha-white-4: var(--alpha-white-4);
+  --color-alpha-white-5: var(--alpha-white-5);
+  --color-alpha-white-6: var(--alpha-white-6);
+  --color-alpha-white-7: var(--alpha-white-7);
+  --color-alpha-white-8: var(--alpha-white-8);
+  --color-alpha-white-9: var(--alpha-white-9);
+  --color-alpha-white-10: var(--alpha-white-10);
+  --color-alpha-white-11: var(--alpha-white-11);
+  --color-alpha-white-12: var(--alpha-white-12);
+  --color-alpha-white-13: var(--alpha-white-13);
+  --color-alpha-white-14: var(--alpha-white-14);
   /* shadcn 的组件认的那一套名字，接到我们的 token 上。shadcn 的 accent 是「悬停底色」，不是强调色；强调色是 primary。
      primary-foreground 是压在强调色上的字：两个主题的强调色都是暖的亮色，用近黑。 */
   --color-background: var(--bg-000);

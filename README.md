@@ -7,7 +7,7 @@ KatanaConsole 自建的组件框架（决策记录 [0049](../../docs/architectur
 ## 分层
 
 ```
-tokens → theme → lib → primitives → katana → patterns
+tokens → theme → lib → primitives → katana → patterns → quant
 ```
 
 只许往左依赖（`.dependency-cruiser.cjs` 的 `ui-*` 规则）。
@@ -20,6 +20,7 @@ tokens → theme → lib → primitives → katana → patterns
 | primitives | `src/primitives/` | 无业务的基础件：button（含 `icon` 变体）、input、select、toggle-group、slider、checkbox、switch、tooltip、popover、dialog、dropdown-menu、context-menu、tabs、accordion |
 | katana | `src/katana/` | KATANA 自有的件（见下）：led、lcd、dot-matrix、rolling-text、badge、kbd、number-input、date-time-input、skeleton 与加载态、password-input、delete-button、notification-bell、status-icon、ai-status、matrix-orb、step-player、theme-selector、code-block、web-search、task-list、duration-picker（后十二件交互学自 rare-ui，实现原创，文件头写明）；可以用 primitives，不是 shadcn 的衍生，所以单放一处（`scripts/check-license.mjs` 把 `primitives/` 整个当 MIT） |
 | patterns | `src/patterns/` | 由基础件组出来的固定搭法：multi-select（弹层加勾选） |
+| quant | `src/quant/` | 量化领域的件与格式化（出口 `@katanaview/ui/quant`）：`ChangeText`（涨跌幅）、`PnlText`（盈亏）、`format/`（价格按精度或 tick、涨跌幅、数量缩写；纯函数另有 `@katanaview/ui/quant/format` 出口，画布与 Worker 里用）。只依赖下面几层，不依赖行情、图表包与应用；品种、精度、单位由调用方传。有两个及以上调用方的才进 |
 
 ### KATANA 自有件（#1860）
 
@@ -29,13 +30,14 @@ tokens → theme → lib → primitives → katana → patterns
 
 ## 应用怎么用
 
-只从三个出口引：
+只从这几个出口引：
 
 ```ts
 import { Button, Switch } from '@katanaview/ui' // 组件
 import '@katanaview/ui/tokens.css' // token，先引
 import '@katanaview/ui/ui.css' // Tailwind 主题与动效，最后引
 import { snappy } from '@katanaview/ui/motion' // 弹簧参数（motion/react 用）
+import { ChangeText, formatPrice } from '@katanaview/ui/quant' // 量化层
 ```
 
 `ui.css` 要最后引：Tailwind 的工具类不放进 `@layer`，同样的选择器权重下靠引入次序压过应用里的旧样式。没有 preflight，不改应用已有的基础样式。
@@ -64,6 +66,48 @@ pnpm --filter @katanaview/ui exec shadcn add <component>
 
 加一个件的文档页：在 `gallery/registry.ts` 的 `PAGES` 里加一项（说明、覆盖的出口名、属性表、组成、键盘），在 `gallery/pages/` 写它的演示、在 `gallery/demos.tsx` 登记。
 `gallery/registry.test.tsx` 把页和 `src/index.ts` 的出口对账：每个导出的件都要有页，每页写的件都要存在。属性表是手写的，改了组件的属性要同步改它。
+
+## 给别的项目用：shadcn 注册表
+
+`registry.json` 是 shadcn registry 的清单（shadcn 4.22.2 的 schema），由 `scripts/registry-json.mjs` 从源码生成，不手写；每个源文件一项，`registryDependencies` 与 npm 依赖从 import 里扫出来。
+`pnpm --filter @katanaview/ui registry:build` 先生成清单，再 `shadcn build` 出到 `packages/ui/r/`（在 `.gitignore` 里，发版时生成）。
+
+- **type 的分法：** `primitives/` 的件是 `registry:ui`；`lib/` 与 `quant/format/` 是 `registry:lib`；`patterns/` 与 `quant/` 的件是 `registry:component`；`style`（token、Tailwind 主题、动效，共六个 CSS）是 `registry:style`。
+- **命名：** `@katana/<文件名>`（`button`、`multi-select`、`change-text`）。每层的文件名要唯一，生成时查。
+- **落点：** 每个文件装到 `src/katana/ui/<层>/<文件>`，保持包内的相对结构，所以件之间的相对 import 与 `theme.css` 里 `@source` 的相对路径在别的项目里原样有效。
+
+别的项目的 `components.json` 加命名空间注册表（仓库是私有的，`Authorization` 头读环境变量 `GITHUB_TOKEN`；`r/` 要放在这个项目能访问的地址，下面的地址是占位，换成实际托管处）：
+
+```json
+{
+  "registries": {
+    "@katana": {
+      "url": "https://<托管 r/ 的地址>/{name}.json",
+      "headers": { "Authorization": "Bearer ${GITHUB_TOKEN}" }
+    }
+  }
+}
+```
+
+装法（项目要用 Tailwind v4）：
+
+```
+npx shadcn add @katana/style @katana/button @katana/change-text
+```
+
+然后在入口样式里先引 `katana/ui/tokens/tokens.css`、最后引 `katana/ui/ui.css`（次序见上面「应用怎么用」）。换皮只覆盖哪些变量见 [theming.md](docs/theming.md)。
+
+## 许可证
+
+MIT（用户 2026-11-14 定，#1876），见本文开头。别的项目经注册表装进去的文件，文件头也是 MIT。
+
+## 设计系统包
+
+`design-system/` 是 design-pipeline（0.15.0-beta.1）格式的设计系统包，**由脚本从代码生成，不手写**：`pnpm --filter @katanaview/ui ds:build`。
+`tokens.json` 来自 `design/tokens.json`（只带实装了的 Console 与 Graphite，补 `contrast`；对不上比例的 token 保留原值，比值写在它的 usage 里），
+`README.md` 来自手写的 `ds/guidelines.md`，`components/bundle.css` 是 `tokens.css` 加 Tailwind 编出的 `ui.css`，
+每个件的 `README.md` 与 `preview.html` 读文档站的页数据（`gallery/registry.ts` 的 `PAGES`：说明、属性、组成、键盘；预览是 `gallery/demos.tsx` 经 `react-dom/server` 渲染的静态 HTML，预览里摆件的版面类在 `gallery/preview.css`），经 `ds/render.tsx` 生成，不另写一份。页就是件：加一页（含自有件、量化件）设计系统包就多一个件，注册表的 item 说明也读同一页；每页的 `cardHeight` 是预览卡的高度（生成后在卡里量）。
+门禁是 `pnpm lint:ds`，用法见 [测试](../../docs/contributing/testing.md)。
 
 ## 测试
 

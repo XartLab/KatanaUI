@@ -20,8 +20,8 @@ const tabsListVariants = cva('group/tabs-list relative', {
   variants: {
     variant: {
       default:
-        'inline-flex h-8 w-fit items-center justify-center gap-0.5 rounded-[var(--radius-control)] bg-white/4 p-0.5',
-      line: 'inline-flex h-8 w-fit items-center justify-center gap-1 border-b border-white/7',
+        'inline-flex h-8 w-fit items-center justify-center gap-0.5 rounded-[var(--radius-control)] bg-alpha-white-3 p-0.5',
+      line: 'inline-flex h-8 w-fit items-center justify-center gap-1 border-b border-alpha-white-6',
       // 不带皮肤，样子由调用方的类名给。
       bare: '',
     },

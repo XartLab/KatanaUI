@@ -20,7 +20,7 @@ type Phase = 'idle' | 'armed' | 'done' | 'kept'
 
 const iconButton = cn(
   'grid size-7 flex-none cursor-pointer place-items-center rounded-[var(--radius-control)] text-ink-3',
-  'transition-colors duration-[120ms] hover:bg-white/7 hover:text-ink disabled:cursor-not-allowed disabled:opacity-45',
+  'transition-colors duration-[120ms] hover:bg-alpha-white-6 hover:text-ink disabled:cursor-not-allowed disabled:opacity-45',
   '[&_svg]:size-[15px]',
   focusRingInset,
 )
@@ -151,7 +151,7 @@ export function DeleteButton({
         if (event.key === 'Tab' && leaving) resolve('kept', false)
       }}
       className={cn(
-        'box-border inline-flex h-[30px] flex-none items-center overflow-hidden rounded-[var(--radius-control)] border border-white/8 bg-white/4',
+        'box-border inline-flex h-[30px] flex-none items-center overflow-hidden rounded-[var(--radius-control)] border border-alpha-white-7 bg-alpha-white-3',
         phase === 'done' && 'text-danger',
         className,
       )}

@@ -5,6 +5,7 @@ import { DropdownMenu as DropdownMenuPrimitive } from 'radix-ui'
 import { useContext, type ComponentProps } from 'react'
 import { MenuKindContext } from './menu-kind'
 import { cn } from '../lib/cn'
+import { OverlayPortal } from '../lib/overlay'
 import {
   MENU_SIDE_OFFSET,
   MenuCheckColumn,
@@ -45,7 +46,7 @@ function DropdownMenuContent({
   ...props
 }: ComponentProps<typeof DropdownMenuPrimitive.Content>) {
   return (
-    <DropdownMenuPrimitive.Portal>
+    <OverlayPortal portal={DropdownMenuPrimitive.Portal}>
       <MenuKindContext value="dropdown">
         <DropdownMenuPrimitive.Content
           data-slot="dropdown-menu-content"
@@ -58,7 +59,7 @@ function DropdownMenuContent({
           onCloseAutoFocus={keepMovedFocus(props.onCloseAutoFocus)}
         />
       </MenuKindContext>
-    </DropdownMenuPrimitive.Portal>
+    </OverlayPortal>
   )
 }
 
@@ -185,7 +186,7 @@ function DropdownMenuSubTrigger({
   return (
     <DropdownMenuPrimitive.SubTrigger
       data-slot="dropdown-menu-sub-trigger"
-      className={cn(menuRowClass, 'data-[state=open]:bg-white/7 data-[state=open]:text-ink', className)}
+      className={cn(menuRowClass, 'data-[state=open]:bg-alpha-white-6 data-[state=open]:text-ink', className)}
       {...props}
       ref={sub?.setTrigger}
     >
@@ -204,7 +205,7 @@ function DropdownMenuSubContent({
 }: ComponentProps<typeof DropdownMenuPrimitive.SubContent>) {
   const sub = useContext(SubStateContext)
   return (
-    <DropdownMenuPrimitive.Portal>
+    <OverlayPortal portal={DropdownMenuPrimitive.Portal}>
       <DropdownMenuPrimitive.SubContent
         data-slot="dropdown-menu-sub-content"
         onEscapeKeyDown={(event) => {
@@ -219,7 +220,7 @@ function DropdownMenuSubContent({
         {...(props.role === 'presentation' ? { 'aria-orientation': undefined } : {})}
         {...props}
       />
-    </DropdownMenuPrimitive.Portal>
+    </OverlayPortal>
   )
 }
 

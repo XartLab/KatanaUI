@@ -85,6 +85,22 @@ function DocBody({ page }: { page: DocPage }) {
           <PropsTable key={table.part} table={table} />
         ))}
       </section>
+      <section aria-labelledby="gal-h-states">
+        <h2 id="gal-h-states">状态</h2>
+        <ul className="gal-list">
+          {page.states.map((state) => (
+            <li key={state}>{state}</li>
+          ))}
+        </ul>
+      </section>
+      <section aria-labelledby="gal-h-donts">
+        <h2 id="gal-h-donts">不要</h2>
+        <ul className="gal-list">
+          {page.donts.map((dont) => (
+            <li key={dont}>{dont}</li>
+          ))}
+        </ul>
+      </section>
       <section aria-labelledby="gal-h-parts">
         <h2 id="gal-h-parts">组成</h2>
         <pre className="gal-code">{page.composition}</pre>

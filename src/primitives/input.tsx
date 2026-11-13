@@ -11,8 +11,8 @@ import { focusRingInset } from '../lib/focus'
 // multiline：给 textarea 用，高度由 rows、min-height 与调用方的类定；竖向内边距为 0 是改前的样子（调用方各自按需要加）。
 const inputVariants = cva(
   [
-    'k-text-body box-border w-full py-0 rounded-[6px] border border-white/8 bg-white/4 text-ink tabular-nums',
-    'transition-[border-color] duration-[120ms] placeholder:text-ink-3 focus:border-white/22',
+    'k-text-body box-border w-full py-0 rounded-[6px] border border-alpha-white-7 bg-alpha-white-3 text-ink tabular-nums',
+    'transition-[border-color] duration-[120ms] placeholder:text-ink-3 focus:border-alpha-white-12',
     'disabled:cursor-not-allowed disabled:opacity-45',
     focusRingInset,
   ],

@@ -4,6 +4,7 @@
 import { Popover as PopoverPrimitive } from 'radix-ui'
 import type { ComponentProps } from 'react'
 import { cn } from '../lib/cn'
+import { OverlayPortal } from '../lib/overlay'
 import { menuContainerClass } from './menu-parts'
 
 // 弹层：跟菜单同一块材质（OpenMarket tb-interval-dropdown：圆角 overlay · 7% 白边 · 0 16 48 + 0 2 8 阴影）。三种皮肤，variant 选：
@@ -24,7 +25,7 @@ function PopoverClose({ ...props }: ComponentProps<typeof PopoverPrimitive.Close
 
 const skin = {
   panel:
-    'k-text-body z-50 w-72 rounded-[var(--radius-overlay)] border border-white/7 bg-surface-4 p-3 text-ink-2 outline-0 shadow-[0_16px_48px_rgba(0,0,0,0.55),0_2px_8px_rgba(0,0,0,0.3)]',
+    'k-text-body z-50 w-72 rounded-[var(--radius-overlay)] border border-alpha-white-6 bg-surface-4 p-3 text-ink-2 outline-0 shadow-[0_16px_48px_rgba(0,0,0,0.55),0_2px_8px_rgba(0,0,0,0.3)]',
   menu: menuContainerClass,
   bare: 'z-50 outline-0',
 } as const
@@ -37,7 +38,7 @@ function PopoverContent({
   ...props
 }: ComponentProps<typeof PopoverPrimitive.Content> & { variant?: keyof typeof skin }) {
   return (
-    <PopoverPrimitive.Portal>
+    <OverlayPortal portal={PopoverPrimitive.Portal}>
       <PopoverPrimitive.Content
         data-slot="popover-content"
         data-variant={variant}
@@ -46,7 +47,7 @@ function PopoverContent({
         className={cn(skin[variant], className)}
         {...props}
       />
-    </PopoverPrimitive.Portal>
+    </OverlayPortal>
   )
 }
 

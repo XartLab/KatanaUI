@@ -66,7 +66,7 @@ function CopyButton({
       onClick={copy}
       className={cn(
         'relative grid size-7 flex-none cursor-pointer place-items-center rounded-[var(--radius-control)] text-ink-3',
-        'transition-colors duration-[120ms] hover:bg-white/7 hover:text-ink active:scale-[0.92]',
+        'transition-colors duration-[120ms] hover:bg-alpha-white-6 hover:text-ink active:scale-[0.92]',
         copied && 'text-(--cb-accent) hover:text-(--cb-accent)',
         floating && 'absolute top-2 right-2 z-10 border border-line bg-surface-3',
         focusRing,

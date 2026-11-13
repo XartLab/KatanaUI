@@ -31,7 +31,7 @@ export type MatrixOrbProps = {
   cells?: number
   /** 读屏名（必填）：球本身不带字，状态用文字另外读出。 */
   label: string
-  /** 点的颜色，默认是主题的强调色；传 CSS 颜色或 var(--token)。 */
+  /** 点的颜色，默认是主题的强调色；传 CSS 颜色，或写成 var(token 名)。 */
   color?: string
   className?: string
 }

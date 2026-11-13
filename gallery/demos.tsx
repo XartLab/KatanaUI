@@ -2,6 +2,8 @@
 import type { ComponentType } from 'react'
 import { DateTimeInputDemo, NumberInputDemo, SkeletonDemo } from './pages/fields'
 import { BadgeDemo, DotMatrixDemo, KbdDemo, LcdDemo, LedDemo, RollingTextDemo } from './pages/readouts'
+import { ContextMenuOpen, DialogOpen, DropdownMenuOpen, PopoverOpen, SelectOpen, TooltipOpen } from './pages/open'
+import { ChangeTextDemo, PnlTextDemo, QuantFormatDemo } from './pages/quant'
 import {
   AiStatusDemo,
   DeleteButtonDemo,
@@ -57,6 +59,9 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'number-input': NumberInputDemo,
   'date-time-input': DateTimeInputDemo,
   skeleton: SkeletonDemo,
+  'change-text': ChangeTextDemo,
+  'pnl-text': PnlTextDemo,
+  'quant-format': QuantFormatDemo,
   'password-input': PasswordInputDemo,
   'delete-button': DeleteButtonDemo,
   'notification-bell': NotificationBellDemo,
@@ -69,4 +74,17 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'web-search': WebSearchDemo,
   'task-list': TaskListDemo,
   'duration-picker': DurationPickerDemo,
+}
+
+/**
+ * 浮层类页的「打开的样子」（设计系统包的预览在页上的预览后面再摆一份）：Radix 的 open 加不进 Portal，高度是摆出来后在浏览器里量的（卡片里留给打开内容的高度）。
+ * 页上的实时预览是触发器，打开靠点它；这里只给静态渲染用，所以不在 DEMOS 里（registry.test 的预览对账不看它）。
+ */
+export const OPEN_DEMOS: Readonly<Record<string, { Demo: ComponentType; height: number }>> = {
+  tooltip: { Demo: TooltipOpen, height: 80 },
+  popover: { Demo: PopoverOpen, height: 160 },
+  dialog: { Demo: DialogOpen, height: 260 },
+  'dropdown-menu': { Demo: DropdownMenuOpen, height: 240 },
+  'context-menu': { Demo: ContextMenuOpen, height: 220 },
+  select: { Demo: SelectOpen, height: 160 },
 }

@@ -5,6 +5,7 @@ import { XIcon } from 'lucide-react'
 import { Dialog as DialogPrimitive } from 'radix-ui'
 import { useRef, type ComponentProps } from 'react'
 import { cn } from '../lib/cn'
+import { OverlayPortal } from '../lib/overlay'
 import { Button } from './button'
 
 // 对话框：照 OpenMarket 高级设置。宽 560（窄屏留 12 边）· 圆角 14 · 9% 白边 · 0 2 4 + 0 24 70 阴影；
@@ -57,7 +58,7 @@ function DialogContent({
   // 所以挂载时记下打开前拿着焦点的元素，关闭时还给它（调用方的 onCloseAutoFocus 先走，它 preventDefault 就不管）。
   const opener = useRef<HTMLElement | null>(null)
   return (
-    <DialogPortal>
+    <OverlayPortal portal={DialogPrimitive.Portal}>
       <DialogOverlay className={overlayClassName} />
       <DialogPrimitive.Content
         data-slot="dialog-content"
@@ -67,7 +68,7 @@ function DialogContent({
             ? 'z-41 outline-0'
             : [
                 'k-dlg k-text-body fixed top-1/2 left-1/2 z-41 flex max-h-[calc(100dvh-24px)] w-[min(560px,calc(100vw-24px))] -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden',
-                'rounded-[14px] border border-white/9 bg-surface-3 leading-[1.45] text-ink outline-0',
+                'rounded-[14px] border border-alpha-white-8 bg-surface-3 leading-[1.45] text-ink outline-0',
                 'shadow-[0_2px_4px_rgba(0,0,0,0.5),0_24px_70px_rgba(0,0,0,0.45)]',
               ],
           className,
@@ -96,7 +97,7 @@ function DialogContent({
           </DialogPrimitive.Close>
         ) : null}
       </DialogPrimitive.Content>
-    </DialogPortal>
+    </OverlayPortal>
   )
 }
 
@@ -105,7 +106,7 @@ function DialogHeader({ className, ...props }: ComponentProps<'div'>) {
     <div
       data-slot="dialog-header"
       className={cn(
-        'k-dlg-head flex h-[50px] shrink-0 items-center gap-3 border-b border-white/6 pr-12 pl-4',
+        'k-dlg-head flex h-[50px] shrink-0 items-center gap-3 border-b border-alpha-white-5 pr-12 pl-4',
         className,
       )}
       {...props}
@@ -128,7 +129,7 @@ function DialogFooter({ className, ...props }: ComponentProps<'div'>) {
     <div
       data-slot="dialog-footer"
       className={cn(
-        'k-dlg-foot flex shrink-0 flex-wrap items-center justify-end gap-2 border-t border-white/6 px-4 py-3',
+        'k-dlg-foot flex shrink-0 flex-wrap items-center justify-end gap-2 border-t border-alpha-white-5 px-4 py-3',
         className,
       )}
       {...props}

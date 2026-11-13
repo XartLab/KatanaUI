@@ -25,11 +25,11 @@ export const SUBMENU_ALIGN_OFFSET = -7
 
 /** 可用高度取 Radix Popper 给的 --radix-popper-available-height（菜单、弹层内容都继承得到）。 */
 export const menuContainerClass =
-  'k-pop k-text-body z-50 max-h-[min(var(--radix-popper-available-height),calc(100dvh-16px))] min-w-[180px] overflow-x-hidden overflow-y-auto rounded-[var(--radius-overlay)] border border-white/7 bg-surface-4 p-1.5 leading-none text-ink-2 outline-0 shadow-[0_16px_48px_rgba(0,0,0,0.55),0_2px_8px_rgba(0,0,0,0.3)]'
+  'k-pop k-text-body z-50 max-h-[min(var(--radix-popper-available-height),calc(100dvh-16px))] min-w-[180px] overflow-x-hidden overflow-y-auto rounded-[var(--radius-overlay)] border border-alpha-white-6 bg-surface-4 p-1.5 leading-none text-ink-2 outline-0 shadow-[0_16px_48px_rgba(0,0,0,0.55),0_2px_8px_rgba(0,0,0,0.3)]'
 
 export const menuRowClass = cn(
   'k-pop-item relative flex h-[30px] cursor-pointer items-center justify-between gap-3 rounded-[6px] px-2 whitespace-nowrap text-ink-2 select-none',
-  'transition-[background-color,color] duration-100 data-[highlighted]:bg-white/4 data-[highlighted]:text-ink',
+  'transition-[background-color,color] duration-100 data-[highlighted]:bg-alpha-white-3 data-[highlighted]:text-ink',
   // 禁用的行仍收指针事件（它的 title 要能悬停出来），只是不高亮、不可选：Radix 自己不让禁用项取焦点。
   'data-[disabled]:cursor-default data-[disabled]:bg-transparent data-[disabled]:text-ink-3 data-[disabled]:opacity-60',
   '[&_svg]:shrink-0',
@@ -45,7 +45,7 @@ export const menuCheckRowClass = cn(
 /** 分组小标题：是文字，用 ink-200（10px 的 ink-300 落在弹层底 bg-400 上是 4.45:1，过不了 axe 的 4.5，#1832）。 */
 export const menuGroupLabelClass = 'k-pop-group k-text-micro px-2 pt-2 pb-1 leading-normal text-ink-2 uppercase'
 
-export const menuSeparatorClass = 'k-pop-sep -mx-1.5 my-1 h-px bg-white/7'
+export const menuSeparatorClass = 'k-pop-sep -mx-1.5 my-1 h-px bg-alpha-white-6'
 
 /** 行里的文字（带图标时图标在它前面）：占满剩下的宽，把快捷键、提示推到右端。 */
 export function MenuItemLabel({ className, ...props }: ComponentProps<'span'>) {
@@ -89,7 +89,7 @@ export function MenuShortcut({ className, ...props }: ComponentProps<'kbd'>) {
     <kbd
       data-slot="menu-shortcut"
       className={cn(
-        'k-kbd k-text-caption ml-auto inline-flex h-5 min-w-5 items-center justify-center rounded-[4px] border border-white/12 bg-white/6 px-1 leading-none font-medium text-ink-2',
+        'k-kbd k-text-caption ml-auto inline-flex h-5 min-w-5 items-center justify-center rounded-[4px] border border-alpha-white-10 bg-alpha-white-5 px-1 leading-none font-medium text-ink-2',
         className,
       )}
       {...props}
