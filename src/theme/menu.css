@@ -1,0 +1,34 @@
+/* SPDX-License-Identifier: AGPL-3.0-only */
+/* 菜单与菜单皮肤的弹层里几条 Tailwind 类写不顺的规则（决策记录 0049）：对齐列、行内图标、外链行。
+   选择器用 primitives/menu-parts.tsx 里的钩子类（k-pop、k-pop-item、k-pop-check、k-pop-icon、k-pop-label）。
+   原来在应用的 ui.css 与 base.css、panel.css、shell.css 里，#1797 换到 Radix 时随菜单皮肤一起搬进包里。 */
+
+/* 同一个弹层里有任一项带勾选或图标时，别的项的文字跟着对齐到同一列（#1832）：两条规则各出一个缩进量，label 把它们加起来。
+   勾选列 10px + 行内间距 12px；图标列 16px + 图标与文字的间距 8px。 */
+.k-pop:has(.k-pop-check) .k-pop-item:not(:has(.k-pop-check)) .k-pop-label {
+  --k-pop-pad-check: 22px;
+}
+.k-pop:has(.k-pop-icon) .k-pop-item:not(:has(.k-pop-icon)) .k-pop-label {
+  --k-pop-pad-icon: 24px;
+}
+.k-pop .k-pop-item .k-pop-label {
+  padding-left: calc(var(--k-pop-pad-check, 0px) + var(--k-pop-pad-icon, 0px));
+}
+/* 行内图标：14px，ink-300。 */
+.k-pop-label svg.lucide {
+  width: 14px;
+  height: 14px;
+  color: var(--ink-300);
+}
+.k-pop-item small {
+  color: var(--ink-300);
+  font-size: var(--text-caption-size);
+}
+/* 外链行是真的 <a>：颜色取菜单的，不带下划线（#397）。 */
+.k-pop a.k-pop-item {
+  color: inherit;
+  text-decoration: none;
+}
+.k-pop a.k-pop-item[data-highlighted] {
+  color: var(--ink-100);
+}

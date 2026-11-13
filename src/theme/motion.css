@@ -33,6 +33,18 @@
     translate: -50% calc(-50% + 8px);
   }
 }
+@keyframes kc-bare-in {
+  from {
+    opacity: 0;
+    transform: scale(var(--k-in-scale, 0.97)) translateY(var(--k-in-y, 4px));
+  }
+}
+@keyframes kc-bare-out {
+  to {
+    opacity: 0;
+    transform: scale(var(--k-in-scale, 0.97)) translateY(var(--k-in-y, 4px));
+  }
+}
 @keyframes kc-fade-in {
   from {
     opacity: 0;
@@ -60,19 +72,21 @@
   }
 }
 
-/* 菜单、弹层、提示：从触发它的那一边长出来（Radix 给了 transform-origin）。入场走 snappy 弹簧，退场 120ms 直线淡出。 */
+/* 菜单、右键菜单、弹层、提示：从触发它的那一边长出来（Radix Popper 给了 --radix-popper-transform-origin）。入场走 snappy 弹簧，退场 120ms 直线淡出。 */
 [data-slot='dropdown-menu-content'],
-[data-slot='dropdown-menu-sub-content'] {
-  transform-origin: var(--radix-dropdown-menu-content-transform-origin);
-}
+[data-slot='dropdown-menu-sub-content'],
+[data-slot='context-menu-content'],
+[data-slot='context-menu-sub-content'],
 [data-slot='popover-content'] {
-  transform-origin: var(--radix-popover-content-transform-origin);
+  transform-origin: var(--radix-popper-transform-origin);
 }
 [data-slot='tooltip-content'] {
   transform-origin: var(--radix-tooltip-content-transform-origin);
 }
 [data-slot='dropdown-menu-content'][data-state='open'],
 [data-slot='dropdown-menu-sub-content'][data-state='open'],
+[data-slot='context-menu-content'][data-state='open'],
+[data-slot='context-menu-sub-content'][data-state='open'],
 [data-slot='popover-content'][data-state='open'],
 [data-slot='tooltip-content'][data-state='delayed-open'],
 [data-slot='tooltip-content'][data-state='instant-open'] {
@@ -80,16 +94,29 @@
 }
 [data-slot='dropdown-menu-content'][data-state='closed'],
 [data-slot='dropdown-menu-sub-content'][data-state='closed'],
-[data-slot='popover-content'][data-state='closed'],
-[data-slot='tooltip-content'][data-state='closed'] {
+[data-slot='context-menu-content'][data-state='closed'],
+[data-slot='context-menu-sub-content'][data-state='closed'],
+[data-slot='popover-content'][data-state='closed'] {
   animation: kc-pop-out 120ms linear both;
 }
-/* 对话框：升起（gentle），背板淡入。 */
-[data-slot='dialog-content'][data-state='open'] {
+/* 提示没有退场动画：Radix 的 Presence 要等退场动画放完才卸载，期间它还是最上层的 DismissableLayer，会把这一下 Esc 吞掉，
+   提示后面的对话框就关不掉（#1849：指标窗里提示刚收起就按 Esc）。提示不可交互、只是个标注，直接消失。 */
+/* 对话框：升起（gentle），背板淡入。bare 的浮层（自带整套外观的命令搜索、指标库、品种搜索，popover 的 bare 变体）位置由调用方定，
+   入场按 transform 的缩放与竖移（不碰 translate，居中靠它），起点与曲线用变量配：--k-in-scale（默认 0.97）、--k-in-y（默认 4px）、
+   --k-in-dur / --k-in-ease（默认 gentle，弹层用 snappy 的调用方自己覆盖）。 */
+[data-slot='dialog-content']:not([data-bare])[data-state='open'] {
   animation: kc-dialog-in var(--dur-gentle) var(--ease-gentle) both;
 }
-[data-slot='dialog-content'][data-state='closed'] {
+[data-slot='dialog-content']:not([data-bare])[data-state='closed'] {
   animation: kc-dialog-out 120ms linear both;
+}
+[data-slot='dialog-content'][data-bare][data-state='open'],
+[data-slot='popover-content'][data-variant='bare'][data-state='open'] {
+  animation: kc-bare-in var(--k-in-dur, var(--dur-gentle)) var(--k-in-ease, var(--ease-gentle)) both;
+}
+[data-slot='dialog-content'][data-bare][data-state='closed'],
+[data-slot='popover-content'][data-variant='bare'][data-state='closed'] {
+  animation: kc-bare-out 120ms linear both;
 }
 [data-slot='dialog-overlay'][data-state='open'] {
   animation: kc-fade-in 120ms linear both;

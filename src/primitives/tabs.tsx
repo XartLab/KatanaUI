@@ -11,15 +11,19 @@ import { focusRingInset } from '../lib/focus'
 // 选中块是一块跟着当前页签滑的底（tabs-pill，位置量出来写在行内，弹簧走 --ease-snappy，见 theme/motion.css）。
 // 选中项的字用 --seg-on-ink（对容器底 ≥ 3:1，#477），未选中的用 ink-200（ink-300 压在 4–5% 白的底上只有 4.4:1，#473）。
 // line 变体没有底块，选中项底下一道强调色的线。只做横排。
-function Tabs({ className, ...props }: ComponentProps<typeof TabsPrimitive.Root>) {
-  return <TabsPrimitive.Root data-slot="tabs" className={cn('flex flex-col gap-2', className)} {...props} />
+/** bare：不带间距，样子全由调用方的类名给（应用里自带皮肤的页签条，#1797 把 Base UI 的 Tabs 换过来时外观原样保留）。 */
+function Tabs({ className, bare, ...props }: ComponentProps<typeof TabsPrimitive.Root> & { bare?: boolean }) {
+  return <TabsPrimitive.Root data-slot="tabs" className={cn(!bare && 'flex flex-col gap-2', className)} {...props} />
 }
 
-const tabsListVariants = cva('group/tabs-list relative inline-flex w-fit items-center justify-center', {
+const tabsListVariants = cva('group/tabs-list relative', {
   variants: {
     variant: {
-      default: 'h-8 gap-0.5 rounded-[var(--radius-control)] bg-white/4 p-0.5',
-      line: 'h-8 gap-1 border-b border-white/7',
+      default:
+        'inline-flex h-8 w-fit items-center justify-center gap-0.5 rounded-[var(--radius-control)] bg-white/4 p-0.5',
+      line: 'inline-flex h-8 w-fit items-center justify-center gap-1 border-b border-white/7',
+      // 不带皮肤，样子由调用方的类名给。
+      bare: '',
     },
   },
   defaultVariants: { variant: 'default' },
@@ -78,20 +82,22 @@ function TabsList({
   )
 }
 
-function TabsTrigger({ className, ...props }: ComponentProps<typeof TabsPrimitive.Trigger>) {
+function TabsTrigger({ className, bare, ...props }: ComponentProps<typeof TabsPrimitive.Trigger> & { bare?: boolean }) {
   return (
     <TabsPrimitive.Trigger
       data-slot="tabs-trigger"
       className={cn(
-        'k-text-data relative inline-flex h-7 cursor-pointer items-center justify-center gap-1.5 rounded-[6px] px-2 leading-none whitespace-nowrap text-ink-2',
-        'transition-[color,scale] duration-200 enabled:active:scale-[0.96] enabled:hover:text-ink',
-        'data-[state=active]:font-medium data-[state=active]:text-(--seg-on-ink)',
-        'group-data-[variant=line]/tabs-list:data-[state=active]:text-ink',
-        'disabled:cursor-not-allowed disabled:opacity-30',
-        '[&_svg]:pointer-events-none [&_svg]:size-[13px] [&_svg]:shrink-0',
-        // 线型的底线画在列表那道线上，向下压 1px 盖住它。
-        'after:absolute after:inset-x-0 after:-bottom-px after:h-0.5 after:bg-brand after:opacity-0 after:transition-opacity group-data-[variant=line]/tabs-list:data-[state=active]:after:opacity-100',
-        focusRingInset,
+        !bare && [
+          'k-text-data relative inline-flex h-7 cursor-pointer items-center justify-center gap-1.5 rounded-[6px] px-2 leading-none whitespace-nowrap text-ink-2',
+          'transition-[color,scale] duration-200 enabled:active:scale-[0.96] enabled:hover:text-ink',
+          'data-[state=active]:font-medium data-[state=active]:text-(--seg-on-ink)',
+          'group-data-[variant=line]/tabs-list:data-[state=active]:text-ink',
+          'disabled:cursor-not-allowed disabled:opacity-30',
+          '[&_svg]:pointer-events-none [&_svg]:size-[13px] [&_svg]:shrink-0',
+          // 线型的底线画在列表那道线上，向下压 1px 盖住它。
+          'after:absolute after:inset-x-0 after:-bottom-px after:h-0.5 after:bg-brand after:opacity-0 after:transition-opacity group-data-[variant=line]/tabs-list:data-[state=active]:after:opacity-100',
+          focusRingInset,
+        ],
         className,
       )}
       {...props}

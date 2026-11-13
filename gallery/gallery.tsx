@@ -17,6 +17,17 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  ContextMenu,
+  ContextMenuCheckboxItem,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuLabel,
+  ContextMenuSeparator,
+  ContextMenuShortcut,
+  ContextMenuSub,
+  ContextMenuSubContent,
+  ContextMenuSubTrigger,
+  ContextMenuTrigger,
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
@@ -271,10 +282,14 @@ function Boxes() {
 function Overlays() {
   const [grid, setGrid] = useState(true)
   const [mode, setMode] = useState('normal')
+  const [ctxGrid, setCtxGrid] = useState(true)
+  // 每个菜单项的 onSelect 被调了几次：浏览器测试断言「选一次就是一次」（Radix 的 pointerup 选中加后到的 click 曾经会叫两次）。
+  const [calls, setCalls] = useState<Record<string, number>>({})
+  const called = (name: string) => () => setCalls((all) => ({ ...all, [name]: (all[name] ?? 0) + 1 }))
   return (
     <Section
       id="overlays"
-      title="Tooltip 提示 · Popover 弹层 · Dialog 对话框 · DropdownMenu 菜单"
+      title="Tooltip 提示 · Popover 弹层 · Dialog 对话框 · DropdownMenu 菜单 · ContextMenu 右键菜单"
       note="菜单：↓ 走到「更多」按 → 开二级菜单、← 关；二级菜单最多一层。"
     >
       <TooltipProvider>
@@ -322,13 +337,15 @@ function Overlays() {
             </DialogContent>
           </Dialog>
 
+          <TriggerlessDialog />
+
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button>菜单</Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start">
               <DropdownMenuLabel>看板</DropdownMenuLabel>
-              <DropdownMenuItem>
+              <DropdownMenuItem onSelect={called('添加组件')}>
                 添加组件 <DropdownMenuShortcut>A</DropdownMenuShortcut>
               </DropdownMenuItem>
               <DropdownMenuItem>编辑布局</DropdownMenuItem>
@@ -352,6 +369,33 @@ function Overlays() {
               <DropdownMenuItem variant="danger">删除看板</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
+
+          <ContextMenu>
+            <ContextMenuTrigger asChild>
+              <div className="gal-ctx" data-gallery-ctx>
+                右键这里
+              </div>
+            </ContextMenuTrigger>
+            <ContextMenuContent aria-label="面板菜单">
+              <ContextMenuLabel>面板</ContextMenuLabel>
+              <ContextMenuItem onSelect={called('克隆面板')}>
+                克隆面板 <ContextMenuShortcut>C</ContextMenuShortcut>
+              </ContextMenuItem>
+              <ContextMenuItem disabled>已禁用的一项</ContextMenuItem>
+              <ContextMenuSeparator />
+              <ContextMenuCheckboxItem checked={ctxGrid} onCheckedChange={setCtxGrid}>
+                显示网格
+              </ContextMenuCheckboxItem>
+              <ContextMenuSub>
+                <ContextMenuSubTrigger>更多</ContextMenuSubTrigger>
+                <ContextMenuSubContent aria-label="更多">
+                  <ContextMenuItem onSelect={called('导出为图片（右键）')}>导出为图片</ContextMenuItem>
+                  <ContextMenuItem>导出为 CSV</ContextMenuItem>
+                </ContextMenuSubContent>
+              </ContextMenuSub>
+            </ContextMenuContent>
+          </ContextMenu>
+          <output data-gallery-calls>{JSON.stringify(calls)}</output>
         </div>
       </TooltipProvider>
     </Section>
@@ -415,5 +459,40 @@ export function Gallery({ theme }: { theme: 'console' | 'graphite' }) {
       <Overlays />
       <Navigation />
     </main>
+  )
+}
+
+/** 代码打开的对话框（没有 DialogTrigger）：应用里大多数对话框是这样开的，焦点回位靠 DialogContent 记下的打开前焦点。 */
+function TriggerlessDialog() {
+  const [open, setOpen] = useState(false)
+  return (
+    <>
+      <Button onClick={() => setOpen(true)}>代码开的对话框</Button>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent closeLabel="关闭">
+          <DialogHeader>
+            <DialogTitle>由代码打开</DialogTitle>
+          </DialogHeader>
+          <DialogBody>
+            <DialogDescription>没有触发器；关掉以后焦点回到打开前的按钮。</DialogDescription>
+            <input aria-label="示例输入" />
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button>带提示的按钮</Button>
+              </TooltipTrigger>
+              <TooltipContent>对话框里的提示</TooltipContent>
+            </Tooltip>
+          </DialogBody>
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button>取消</Button>
+            </DialogClose>
+            <DialogClose asChild>
+              <Button variant="primary">确定</Button>
+            </DialogClose>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   )
 }

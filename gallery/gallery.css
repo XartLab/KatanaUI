@@ -100,3 +100,14 @@ body {
   gap: 8px;
   width: 220px;
 }
+
+.gal-ctx {
+  display: grid;
+  place-items: center;
+  width: 140px;
+  height: 56px;
+  border: 1px dashed var(--ink-400, rgba(255, 255, 255, 0.25));
+  border-radius: 8px;
+  color: var(--ink-200);
+  user-select: none;
+}

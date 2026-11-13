@@ -16,7 +16,7 @@ tokens → theme → lib → primitives → patterns
 | tokens | `src/tokens/` | `tokens.css`（`node scripts/sync-tokens.mjs` 从 `design/tokens.json` 生成，不手改）、`motion.tokens.json`（三条弹簧） |
 | theme | `src/theme/` | `theme.css`：Tailwind v4 的 `@theme inline` 把 token 接成工具类；`motion.css`：入场、退场的关键帧与 `data-state` 动效 |
 | lib | `src/lib/` | `cn`（`clsx` + `tailwind-merge`，认得 `k-text-*` 字号档）、`focus`（焦点环类）、`motion`（弹簧参数） |
-| primitives | `src/primitives/` | 无业务的基础件：button（含 `icon` 变体）、input、select、toggle-group、slider、checkbox、switch、tooltip、popover、dialog、dropdown-menu、tabs、accordion |
+| primitives | `src/primitives/` | 无业务的基础件：button（含 `icon` 变体）、input、select、toggle-group、slider、checkbox、switch、tooltip、popover、dialog、dropdown-menu、context-menu、tabs、accordion |
 | patterns | `src/patterns/` | 由基础件组出来的固定搭法：multi-select（弹层加勾选） |
 
 ## 应用怎么用

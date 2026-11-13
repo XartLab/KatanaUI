@@ -4,10 +4,29 @@
 
 export { cn } from './lib/cn'
 export { focusRing, focusRingInset } from './lib/focus'
+export { useHoverOpen } from './lib/hover-open'
 
 export { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from './primitives/accordion'
 export { Button, buttonVariants } from './primitives/button'
 export { Checkbox } from './primitives/checkbox'
+export { menuContainerClass, menuRowClass, menuSeparatorClass } from './primitives/menu-parts'
+export {
+  ContextMenu,
+  ContextMenuCheckboxItem,
+  ContextMenuContent,
+  ContextMenuGroup,
+  ContextMenuItem,
+  ContextMenuLabel,
+  ContextMenuPortal,
+  ContextMenuRadioGroup,
+  ContextMenuRadioItem,
+  ContextMenuSeparator,
+  ContextMenuShortcut,
+  ContextMenuSub,
+  ContextMenuSubContent,
+  ContextMenuSubTrigger,
+  ContextMenuTrigger,
+} from './primitives/context-menu'
 export {
   Dialog,
   DialogBody,
@@ -38,9 +57,12 @@ export {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from './primitives/dropdown-menu'
+export { useMenuParts } from './primitives/menu-any'
+export { MenuCheckColumn, MenuItemHint, MenuItemIcon, MenuItemLabel } from './primitives/menu-parts'
 export {
   Popover,
   PopoverAnchor,
+  PopoverClose,
   PopoverContent,
   PopoverDescription,
   PopoverHeader,

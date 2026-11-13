@@ -1,0 +1,55 @@
+/* SPDX-License-Identifier: AGPL-3.0-only */
+/* 对话框里手写的头、身、脚：应用里几十个对话框内容用 `<div className="k-dlg-body ...">` 自己排版，不经 DialogBody / DialogFooter。
+   这几条规则原来在应用的 ui.css 里（#1797 搬进包）。用 :where() 把优先级压到 0：包的 Tailwind 类不分层、排在应用样式后面，
+   带优先级的规则会压过应用里 `.kc-xxx-form { padding: … }` 这类对本对话框的覆盖；零优先级则任何一条应用规则都能盖掉它。
+   值照 main 上 src/ui/ui.css 的 .k-dlg-head / -body / -foot（2026-11-13 读，OpenMarket 高级设置实测：标题栏 50 高、正文 16 24 24）。 */
+:where(.k-dlg-head) {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 0 0 50px;
+  height: 50px;
+  padding: 0 12px 0 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+:where(.k-dlg-head h2) {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--ink-100);
+  font: var(--text-title) var(--font-sans);
+  line-height: 1;
+}
+:where(.k-dlg-head .k-dlg-meta) {
+  color: var(--ink-300);
+  font: var(--text-data) var(--font-sans);
+  font-weight: 400;
+}
+:where(.k-dlg-body) {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: 16px 24px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+:where(.k-dlg-foot) {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  padding: 12px 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+:where(.k-dlg-foot .k-spacer) {
+  flex: 1;
+}
+/* 确认类对话框：边是强调色的暗档。 */
+.k-dlg.confirm {
+  border-color: var(--signal-orange-dim);
+}
