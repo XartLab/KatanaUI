@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // 从代码生成 design-pipeline 的设计系统包 packages/ui/design-system/（`pnpm --filter @katanaview/ui ds:build`）。
 // 包里的文件都不手写，跟代码不会有两份：
-//   tokens.json          ← design/tokens.json（ds-tokens.mjs：只留 Console 与 Graphite，补 contrast，过不了线的把比值写进 usage）
+//   tokens.json          ← src/tokens/tokens.json（design/tokens.json 的副本，由 KATANAview 根目录的 sync-tokens 写；ds-tokens.mjs：只留 Console 与 Graphite，补 contrast，过不了线的把比值写进 usage）
 //   README.md            ← ds/guidelines.md（手写的三节规则，原样复制，去掉开头的出处注释）
 //   components/bundle.css ← src/tokens/tokens.css 加上 Tailwind 编出来的 ui.css（预览与产品共用的同一份样式）
 //   components/<Comp>/   ← 文档站的页数据（gallery/registry.ts 的 PAGES：说明、属性、组成、键盘）与页上的预览（gallery/demos.tsx）经 ds/render.tsx 渲染出的 README.md 与静态 preview.html；
@@ -13,7 +13,6 @@ import { mkdirSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync }
 import { dirname, join, relative, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import tailwindcss from '@tailwindcss/vite'
-import react from '@vitejs/plugin-react'
 import { build, createServer } from 'vite-plus'
 import { renderCover } from './ds-cover.mjs'
 import { declaredVars, hoistRawColours, referencedVars, runtimeVarsBlock } from './ds-css.mjs'
@@ -21,7 +20,6 @@ import { buildDesignSystemTokens } from './ds-tokens.mjs'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const pkg = resolve(here, '..')
-const repo = resolve(pkg, '../..')
 const target = join(pkg, 'design-system')
 
 const SPDX = 'SPDX-License-Identifier: MIT'
@@ -49,15 +47,14 @@ async function compileUiCss() {
 /** 载入 ds/render.tsx（TSX、不带扩展名的引入，交给 vite 的 SSR 载入）。 */
 async function loadRender() {
   const server = await createServer({
-    root: repo,
+    root: pkg,
     configFile: false,
     logLevel: 'silent',
     appType: 'custom',
     server: { middlewareMode: true },
-    plugins: [react()],
   })
   try {
-    return await server.ssrLoadModule('/packages/ui/ds/render.tsx')
+    return await server.ssrLoadModule('/ds/render.tsx')
   } finally {
     await server.close()
   }
@@ -66,7 +63,7 @@ async function loadRender() {
 const compare = (a, b) => (a < b ? -1 : a > b ? 1 : 0)
 
 export async function generate() {
-  const source = JSON.parse(readFileSync(join(repo, 'design/tokens.json'), 'utf8'))
+  const source = JSON.parse(readFileSync(join(pkg, 'src/tokens/tokens.json'), 'utf8'))
   const files = new Map()
   files.set('tokens.json', json(buildDesignSystemTokens(source)))
 

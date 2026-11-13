@@ -1,0 +1,56 @@
+# SPDX-License-Identifier: MIT
+# KatanaUI 的文档站与 shadcn 注册表发布到 GitHub Pages（#1881）。
+# 这份文件放在 KATANAview 的 packages/ui/.github/ 里：GitHub 不读子目录的 .github，所以在 KATANAview 里不生效；
+# main 上 packages/ui 同步到 XartLab/KatanaUI（#1866）后它成了那个仓库的 .github/workflows/pages.yml，才开始跑。
+# 前提：KatanaUI 仓库的 Settings → Pages → Source 选 GitHub Actions。
+# 站点地址 https://xartlab.github.io/KatanaUI/，注册表 https://xartlab.github.io/KatanaUI/r/{name}.json。
+# Pages 三个动作的版本 2026-11-14 查过：configure-pages v5、upload-pages-artifact v5（v5.0.0 已发布）、deploy-pages v4；Node、pnpm 的写法照 KATANAview 的 CI。
+name: Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# 同时只发一个；正在发的不取消，让它发完，后面的排队（Pages 官方写法）。
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: pnpm
+      # 锁文件（pnpm-lock.yaml）由 KATANAview 的 packages/ui 生成并提交（根目录的 lint:ui-lock 查它与 package.json 同步）。
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm test
+      - run: pnpm typecheck
+      # 站点在 /KatanaUI/ 下；build:site 同时出文档站与 r/（shadcn 注册表）。
+      - run: pnpm build:site
+        env:
+          SITE_BASE: /KatanaUI/
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

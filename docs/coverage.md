@@ -1,5 +1,5 @@
 <!-- SPDX-License-Identifier: AGPL-3.0-only -->
-<!-- 生成文件：pnpm --filter @katanaview/ui coverage。手写的是 coverage-map.json，不要改这份。 -->
+<!-- 生成文件：pnpm ui:coverage。手写的是 coverage-map.json，不要改这份。 -->
 
 # 设计稿覆盖表
 

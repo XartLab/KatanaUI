@@ -1,9 +1,26 @@
 {
-  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "jsx": "react-jsx",
+    "strict": true,
+    "skipLibCheck": true,
+    "noEmit": true,
+    "allowImportingTsExtensions": true,
+    "isolatedModules": true,
+    "resolveJsonModule": true,
     "erasableSyntaxOnly": true,
     "verbatimModuleSyntax": true
   },
-  "include": ["src", "gallery", "ds"],
-  "exclude": ["src/**/*.test.ts", "src/**/*.test.tsx", "gallery/**/*.test.tsx", "ds/**/*.test.ts", "ds/**/*.test.tsx"]
+  "include": ["src", "gallery", "ds", "scripts", "vite.config.ts"],
+  "exclude": [
+    "src/**/*.test.ts",
+    "src/**/*.test.tsx",
+    "gallery/**/*.test.tsx",
+    "ds/**/*.test.ts",
+    "ds/**/*.test.tsx",
+    "scripts/**/*.test.ts"
+  ]
 }

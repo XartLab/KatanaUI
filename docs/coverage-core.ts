@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 // 设计稿覆盖表的纯逻辑（#1870）：手写映射 coverage-map.json 的类型、汇总、落点文字。
-// 脚本（scripts/coverage.mjs，用 Node 直接跑 .ts，所以只用可擦除的类型写法）与文档站的「覆盖」页（gallery）共用这一份，两边的数字不会各算各的。
+// 脚本（scripts/ui-coverage.mjs，用 Node 直接跑 .ts，所以只用可擦除的类型写法）与文档站的「覆盖」页（gallery）共用这一份，两边的数字不会各算各的。
 
 export const KINDS = ['基础件', '自有件', '量化', '积木', '面板'] as const
 export const STATUSES = ['已做', '部分', '没做'] as const
