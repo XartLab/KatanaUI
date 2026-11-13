@@ -38,9 +38,12 @@ export function stepPlan(mode: ScrubMode, step: number): { px: number; increment
   return { px: SCRUB_PX_PER_STEP, increment: step }
 }
 
-/** 夹进范围。 */
+/**
+ * 夹进范围。结果里的 -0 归一成 0：`Number((-1e-11).toFixed(10))` 与 `Number('-0')` 都得 -0，
+ * `Object.is` 与 `toLocaleString` 之类的格式化都会把它当成另一个值（显示成 "-0"）；`-0 + 0` 是 0。
+ */
 export const clampTo = (value: number, { min, max }: Pick<Range, 'min' | 'max'>): number =>
-  Math.min(max ?? Infinity, Math.max(min ?? -Infinity, value))
+  Math.min(max ?? Infinity, Math.max(min ?? -Infinity, value)) + 0
 
 /**
  * 夹进范围，只去掉浮点尾巴（0.1 + 0.2 之类）。不把结果拉回以 0 为原点的步长网格：步进以当前值为基准（0.1、步长 0.5，

@@ -41,6 +41,11 @@ describe('拖动改值', () => {
     expect(scrubbed(0.1, SCRUB_PX_PER_STEP * 2, 'normal', { min: 0, max: 1, step: 0.1 })).toBe(0.3)
     expect(tidy(0.30000000000000004, {})).toBe(0.3)
   })
+  it('没有负零：浮点尾巴收成 -0 要归一成 0（toFixed 把 -1e-11 写成 "-0.0000000000"）', () => {
+    expect(Object.is(tidy(-1e-11, {}), 0)).toBe(true)
+    expect(Object.is(typed('-0', {}), 0)).toBe(true)
+    expect(Object.is(typed('-0', { min: -5, max: 5 }), 0)).toBe(true)
+  })
   it('以当前值为基准：合法但没对齐步长的值照样按步长走（0.1 步长 0.5 → 0.6，不跳到 0.5）', () => {
     const coarse = { min: 0, max: 10, step: 0.5 }
     expect(scrubbed(0.1, SCRUB_PX_PER_STEP, 'normal', coarse)).toBe(0.6)
