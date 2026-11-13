@@ -94,9 +94,13 @@ export function RollingTextDemo() {
         <button type="button" onClick={() => setValue((v) => v - 8)}>
           跌 8
         </button>
+        <button type="button" onClick={() => setValue((v) => v + 0.2)}>
+          涨 0.2
+        </button>
       </Row>
       <p className="gal-note">
-        变了的那几位旧字滚出、新字滚入，涨往上、跌往下，整串闪一下涨色或跌色；距上次滚动不到 1 秒直接换字。
+        变了的那几位像里程表一样把中间的数字依次转过去，涨往上、跌往下，整串闪一下涨色或跌色；距上次滚动不到 1
+        秒直接换字。
       </p>
     </>
   )

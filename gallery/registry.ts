@@ -795,8 +795,9 @@ export const PAGES: readonly DocPage[] = [
     id: 'rolling-text',
     group: 'readouts',
     title: 'RollingText 滚动数字',
-    summary: '数字逐位滚动：变了的那几位旧字滚出、新字滚入，涨往上、跌往下，整串闪一下涨色或跌色。',
-    exports: ['RollingText', 'rollSlots'],
+    summary:
+      '里程表式的数字滚动：变了的那几位像里程表一样把中间的数字依次转过去（7 到 9 会看到 8 掠过），涨往上、跌往下，整串闪一下涨色或跌色。转得越远用得越久，最远 300ms。',
+    exports: ['RollingText', 'rollSlots', 'rollStrip'],
     props: [
       {
         part: 'RollingText',
@@ -814,6 +815,11 @@ export const PAGES: readonly DocPage[] = [
       {
         part: 'rollSlots',
         note: '纯函数 (text, from, rolling)：每一位的当前字，和滚出去的旧字。',
+        rows: [],
+      },
+      {
+        part: 'rollStrip',
+        note: '纯函数 (char, out, direction)：一位从旧字转到新字时转轮上经过的字（一行一个）与格数；9 到 0 走一格，不是数字的位只走一格。',
         rows: [],
       },
     ],
@@ -1146,6 +1152,226 @@ export const PAGES: readonly DocPage[] = [
     ],
     composition: 'MatrixOrb\n  canvas（requestAnimationFrame 循环）',
     keys: [],
+  },
+  {
+    id: 'step-player',
+    group: 'readouts',
+    title: 'StepPlayer 分步进度条',
+    summary:
+      '左边一个播放 / 暂停 / 重放钮，右边一排圆点：当前一步撑成长条、里面的填充随时间走，走完去下一步。可循环，可点圆点跳步。学自 rare-ui。',
+    exports: ['StepPlayer'],
+    props: [
+      {
+        part: 'StepPlayer',
+        note: '值与播放状态都可受控，也可不受控。文字全由 labels 给，包里没有文案。',
+        rows: [
+          {
+            name: 'steps',
+            type: 'number | { duration?, label? }[]',
+            default: '4',
+            desc: '步数，或每一步的描述（可自带时长）。',
+          },
+          { name: 'value / defaultValue / onValueChange', type: 'number', desc: '当前第几步（0 起）。' },
+          { name: 'playing / defaultPlaying / onPlayingChange', type: 'boolean', desc: '是否在放。' },
+          { name: 'duration', type: 'number', default: '4000', desc: '每步默认放多久（毫秒）。' },
+          { name: 'loop', type: 'boolean', default: 'false', desc: '最后一步放完回到第一步继续。' },
+          { name: 'onComplete', type: '() => void', desc: '最后一步放完触发一次（循环时也触发）。' },
+          { name: 'seekable', type: 'boolean', default: 'false', desc: '点圆点直接去那一步；点击区至少 44px 高。' },
+          { name: 'size', type: 'number', default: '32', desc: '钮与条的高（px）。' },
+          {
+            name: 'labels',
+            type: 'StepPlayerLabels',
+            desc: '{ play, pause, replay, group(index, count), step(index, count) }（必填）。',
+          },
+        ],
+      },
+    ],
+    composition:
+      'StepPlayer\n  button（播放 / 暂停 / 重放，图标弹簧缩放着换）\n  div role=group（圆点条）\n    div（一步：长条 / 亮点 / 暗点）\n      button（可跳时的点击区）',
+    keys: [
+      ['Tab', '到播放钮，可跳时再到每个圆点'],
+      ['Enter / Space', '播放、暂停、重放；在圆点上是跳到那一步'],
+    ],
+  },
+  {
+    id: 'theme-selector',
+    group: 'forms',
+    title: 'ThemeSelector 主题选择',
+    summary:
+      '每个主题一张缩略预览（迷你控制台），选中的那张加一圈环，环在选项之间用弹簧滑过去。缩略颜色由调用方传，所以能同时预览别的主题。学自 rare-ui。',
+    exports: ['ThemeSelector'],
+    props: [
+      {
+        part: 'ThemeSelector',
+        note: 'role=radiogroup；tab 只停在选中那张。value 传 null 表示受控但还没选。',
+        rows: [
+          {
+            name: 'themes',
+            type: 'ThemeOption[]',
+            desc: '{ value, label, colors: { rail, panel, line, strong, muted, tile } }（必填）。',
+          },
+          { name: 'value / defaultValue / onChange', type: 'string', desc: '当前主题。' },
+          { name: 'label', type: 'string', desc: '整组的读屏名（必填）。' },
+          { name: 'showLabels', type: 'boolean', default: 'true', desc: '缩略下面写不写名字（读屏名不受影响）。' },
+          { name: 'disabled', type: 'boolean', desc: '整组禁用。' },
+        ],
+      },
+    ],
+    composition: 'ThemeSelector\n  button role=radio（缩略 SVG + 选中环）\n  span（名字）',
+    keys: [
+      ['Tab', '进入 / 离开整组（停在选中那张）'],
+      ['← → ↑ ↓', '移到上一张 / 下一张并选中，到头循环'],
+      ['Home / End', '第一张 / 最后一张'],
+    ],
+  },
+  {
+    id: 'code-block',
+    group: 'readouts',
+    title: 'CodeBlock 代码块',
+    summary:
+      '带文件名头、行号、一键复制的代码块；配色由一个强调色混出来（关键字取强调色，字符串、数字、函数是它与正文色的不同比例，注释灰），两个主题自动跟着换。词法切分是自己写的，不加依赖。学自 rare-ui。',
+    exports: ['CodeBlock'],
+    props: [
+      {
+        part: 'CodeBlock',
+        note: '认得 ts / tsx / js / json / py / sh / css；别的语言当纯文本。开头的空行与结尾的空白会去掉。',
+        rows: [
+          { name: 'code', type: 'string', desc: '源码（必填）。' },
+          { name: 'language', type: 'string', default: "'plain'", desc: '语言。' },
+          { name: 'accent', type: 'string', default: "'var(--signal-orange)'", desc: '强调色，任何 CSS 颜色。' },
+          { name: 'filename', type: 'string', desc: '头里写的名字；不给写语言。' },
+          {
+            name: 'showHeader / showLineNumbers / showCopyButton',
+            type: 'boolean',
+            default: 'true',
+            desc: '关掉头时复制钮浮在右上角。',
+          },
+          { name: 'highlightLines', type: 'number[]', desc: '要高亮的行（1 起）。' },
+          { name: 'copyLabel / copiedLabel', type: 'string', desc: '复制钮的读屏名，与复制成功后的读屏名（必填）。' },
+        ],
+      },
+    ],
+    composition:
+      'CodeBlock\n  div（头：名字 + 复制钮）\n  div role=region（滚动区，可聚焦）\n    pre > 每行一个 div（行号 + token）',
+    keys: [
+      ['Tab', '复制钮、再到滚动区'],
+      ['方向键', '滚动区聚焦时滚动'],
+      ['Enter / Space', '复制'],
+    ],
+  },
+  {
+    id: 'web-search',
+    group: 'feedback',
+    title: 'WebSearch 检索来源',
+    summary:
+      '联网检索的来源：一枚药丸（带进度环的地球、状态文字、叠起来的来源小标）点开是一排来源卡片；WebSearchCitation 是回答正文里的行内引用，悬停或键盘聚焦弹出预览。不存也不开 URL，来源小标是站名首字母。学自 rare-ui。',
+    exports: ['WebSearch', 'WebSearchCitation', 'useHoverIntent'],
+    props: [
+      {
+        part: 'WebSearch',
+        note: '检索中的进度环每来一条结果补上剩下的 30%，不会自己走满；第四条起最后一格是「还有 N 条」。',
+        rows: [
+          { name: 'sources', type: 'WebSource[]', desc: '{ id, site, title, snippet? }（必填）。' },
+          {
+            name: 'status',
+            type: "'searching' | 'done'",
+            default: "'done'",
+            desc: '检索中带流光与进度环、没到的位置画空骨架。',
+          },
+          { name: 'label', type: 'string', desc: '药丸里的状态文字（必填）；换了字符串就上下滑着换。' },
+          {
+            name: 'moreLabel / lessLabel',
+            type: '(n) => string / string',
+            desc: '「还有 N 条」与「收起」卡片的文字（必填）。',
+          },
+          { name: 'open / defaultOpen / onOpenChange', type: 'boolean', default: 'true', desc: '来源区展开与否。' },
+          { name: 'onOpen', type: '(source) => void', desc: '给了，来源卡片才可点。' },
+        ],
+      },
+      {
+        part: 'WebSearchCitation',
+        note: '悬停停 300ms 才开、离开 150ms 才收；键盘聚焦立即开。',
+        rows: [
+          { name: 'source', type: 'WebSource', desc: '这条引用指向的来源。' },
+          { name: 'index', type: 'number', desc: '行内序号（1 起），不给不写。' },
+        ],
+      },
+      {
+        part: 'useHoverIntent',
+        note: '钩子 (openDelay = 300, closeDelay = 150)：返回 { active, set(next, delay), hover }，hover 展开到触发处与弹层上。触屏不处理。',
+        rows: [],
+      },
+    ],
+    composition:
+      'WebSearch\n  button（药丸：地球 + 文字 + 小标 + 箭头）\n  ol（来源卡片 / 骨架 / 更多 / 收起）\nWebSearchCitation\n  button（行内小标）\n  span role=tooltip（预览）',
+    keys: [
+      ['Enter / Space', '展开或收起来源区；在「还有 N 条」上展开全部'],
+      ['Tab', '药丸、卡片（给了 onOpen 时）、行内引用；聚焦行内引用立即弹出预览'],
+    ],
+  },
+  {
+    id: 'task-list',
+    group: 'forms',
+    title: 'TaskList 任务清单',
+    summary:
+      '点一行打勾：圆圈填上强调色、对勾一笔画出来、文字被一道线划掉，划完这一行沉到底部，其余行弹簧补位；再点取消，回到原位。学自 rare-ui。',
+    exports: ['TaskList'],
+    props: [
+      {
+        part: 'TaskList',
+        note: '每行是 role=checkbox 的按钮；屏外有 role=status 的区播报勾上与取消。',
+        rows: [
+          {
+            name: 'tasks / defaultTasks / onTasksChange',
+            type: 'Task[]',
+            desc: '{ id, label, done? }；可受控也可不受控。',
+          },
+          { name: 'labels', type: 'TaskListLabels', desc: '{ completed(label), reopened(label) }：播报的话（必填）。' },
+          { name: 'label', type: 'string', desc: '清单的读屏名。' },
+        ],
+      },
+    ],
+    composition:
+      'TaskList\n  li（layout 动画）\n    button role=checkbox（圆圈 + 对勾 + 划线文字）\n  li role=status（播报）',
+    keys: [
+      ['Tab', '在各行之间移动'],
+      ['Space / Enter', '勾上或取消'],
+    ],
+  },
+  {
+    id: 'duration-picker',
+    group: 'forms',
+    title: 'DurationPicker 时长选择',
+    summary:
+      '平时是连成一整条的药丸「2 时 30 分」加笔钮；点笔钮三段用弹簧分开、内侧圆角长出来，数字变成可输入的框，笔变对勾；点对勾确认。输入超上限夹住并抖一下。学自 rare-ui。',
+    exports: ['DurationPicker'],
+    props: [
+      {
+        part: 'DurationPicker',
+        rows: [
+          {
+            name: 'value / defaultValue / onChange',
+            type: '{ hours, minutes }',
+            desc: '当前时长；打字时即时回调（已夹进范围）。',
+          },
+          { name: 'onConfirm', type: '(value) => void', desc: '点对勾或 Enter 确认时触发。' },
+          { name: 'onEditingChange / defaultEditing', type: '(editing) => void / boolean', desc: '编辑状态。' },
+          { name: 'maxHours / maxMinutes', type: 'number', default: '24 / 59', desc: '上限；超过的输入夹到上限。' },
+          {
+            name: 'labels',
+            type: 'DurationPickerLabels',
+            desc: '{ hours, minutes, edit, save, hoursInput, minutesInput }（必填）。',
+          },
+          { name: 'disabled', type: 'boolean', desc: '禁用。' },
+        ],
+      },
+    ],
+    composition: 'DurationPicker\n  div（时 + 数字框）\n  div（分 + 数字框）\n  button（笔 / 对勾）',
+    keys: [
+      ['Enter', '确认'],
+      ['Esc', '放弃这次编辑，回到编辑前的值'],
+      ['↑ ↓', '当前字段加减 1'],
+    ],
   },
 ]
 

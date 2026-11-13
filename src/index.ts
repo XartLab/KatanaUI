@@ -93,7 +93,7 @@ export { Lcd, type LcdTone } from './katana/lcd'
 export { Led, LINK_GROUPS, type LedState, type LinkGroup } from './katana/led'
 export { Kbd } from './katana/kbd'
 export { BadgeGroup, type BadgeItem } from './katana/badge'
-export { RollingText, rollSlots } from './katana/rolling-text'
+export { RollingText, rollSlots, rollStrip } from './katana/rolling-text'
 export { NumberInput } from './katana/number-input'
 export { DateTimeInput, type DateTimeLabels } from './katana/date-time-input'
 export { Skeleton } from './katana/skeleton'
@@ -109,3 +109,24 @@ export { StatusIcon, type StatusIconStatus } from './katana/status-icon'
 export { AiStatus, type AiStatusProps, type AiStatusState } from './katana/ai-status'
 export { MatrixOrb, type MatrixOrbProps } from './katana/matrix-orb'
 export type { OrbState } from './katana/matrix-orb-model'
+
+// 第二批（#1861）：里程表式数字滚动（升级 RollingText，见上）、分步进度条、主题选择、代码块、联网检索来源、任务清单、时长选择。
+export { StepPlayer, type StepPlayerLabels, type StepPlayerProps, type StepPlayerStep } from './katana/step-player'
+export { ThemeSelector, type ThemeOption, type ThemePalette, type ThemeSelectorProps } from './katana/theme-selector'
+export { CodeBlock, type CodeBlockProps } from './katana/code-block'
+export {
+  WebSearch,
+  WebSearchCitation,
+  type WebSearchProps,
+  type WebSearchCitationProps,
+  type WebSearchStatus,
+  type WebSource,
+} from './katana/web-search'
+export { TaskList, type Task, type TaskListLabels, type TaskListProps } from './katana/task-list'
+export {
+  DurationPicker,
+  type DurationPickerLabels,
+  type DurationPickerProps,
+  type DurationValue,
+} from './katana/duration-picker'
+export { useHoverIntent } from './lib/hover-intent'

@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: AGPL-3.0-only */
-/* 原样搬自 src/ui/ui.css（#1860，2026-11-14）：类名与规则都没改，应用里的件（src/ui/*.tsx）是这里的件外面包的一层。 */
+/* 原样搬自 src/ui/ui.css（#1860，2026-11-14）；#1861 起位上的动效改成里程表式转轮（见 katana/rolling-text.tsx 的文件头），类名没改。 */
 
-/* 数字逐位滚动（RollingText）：照 OpenMarket，120ms ease-out；整串数字同时闪 150ms 涨色 / 跌色。 */
+/* 数字逐位滚动（RollingText）：整串数字同时闪 150ms 涨色 / 跌色（照 OpenMarket）；每一位像里程表那样转。 */
 .k-roll {
   /* inline-block 而不是 inline-flex：flex 容器里每一位是一个块，innerText 与复制会在每位之间插换行 */
   display: inline-block;
@@ -21,16 +21,25 @@
   vertical-align: bottom;
 }
 .k-roll-slot[data-from]::before {
-  content: attr(data-from);
+  /* 转轮：旧字与中间经过的字，一行一个（data-strip 里用换行隔开）；不在文本里。涨时旧字在最上、整条往上走，跌时旧字在最下、整条往下走。 */
+  content: attr(data-strip);
   position: absolute;
-  inset: 0;
+  inset-inline: 0;
+  white-space: pre;
   pointer-events: none;
+}
+.k-roll[data-direction='up'] .k-roll-slot[data-from]::before {
+  top: 0;
+}
+.k-roll[data-direction='down'] .k-roll-slot[data-from]::before {
+  bottom: 0;
 }
 .k-roll-in,
 .k-roll-slot[data-from]::before {
   display: inline-block;
-  animation-duration: 0.12s;
-  animation-timing-function: ease-out;
+  /* 弹簧缓动（tokens 里 snappy 的 linear() 曲线）；转 1 格 140ms，每多一格加 20ms，最远 9 格 300ms：行情密时不拖。 */
+  animation-duration: calc(120ms + 20ms * var(--roll-steps, 1));
+  animation-timing-function: var(--ease-snappy);
   animation-fill-mode: both;
 }
 .k-roll[data-direction='up'] .k-roll-in {
@@ -59,41 +68,33 @@
 }
 @keyframes k-roll-in-up {
   from {
-    opacity: 0;
-    transform: translateY(100%);
+    transform: translateY(calc(var(--roll-steps, 1) * 100%));
   }
   to {
-    opacity: 1;
     transform: none;
   }
 }
 @keyframes k-roll-out-up {
   from {
-    opacity: 1;
     transform: none;
   }
   to {
-    opacity: 0;
     transform: translateY(-100%);
   }
 }
 @keyframes k-roll-in-down {
   from {
-    opacity: 0;
-    transform: translateY(-100%);
+    transform: translateY(calc(var(--roll-steps, 1) * -100%));
   }
   to {
-    opacity: 1;
     transform: none;
   }
 }
 @keyframes k-roll-out-down {
   from {
-    opacity: 1;
     transform: none;
   }
   to {
-    opacity: 0;
     transform: translateY(100%);
   }
 }

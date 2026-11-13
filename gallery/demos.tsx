@@ -10,6 +10,14 @@ import {
   PasswordInputDemo,
   StatusIconDemo,
 } from './pages/rare'
+import {
+  CodeBlockDemo,
+  DurationPickerDemo,
+  StepPlayerDemo,
+  TaskListDemo,
+  ThemeSelectorDemo,
+  WebSearchDemo,
+} from './pages/rare2'
 import { AccordionDemo, TabsDemo } from './pages/layout'
 import { ContextMenuDemo, DialogDemo, DropdownMenuDemo, PopoverDemo, TooltipDemo } from './pages/overlays'
 import {
@@ -55,4 +63,10 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'status-icon': StatusIconDemo,
   'ai-status': AiStatusDemo,
   'matrix-orb': MatrixOrbDemo,
+  'step-player': StepPlayerDemo,
+  'theme-selector': ThemeSelectorDemo,
+  'code-block': CodeBlockDemo,
+  'web-search': WebSearchDemo,
+  'task-list': TaskListDemo,
+  'duration-picker': DurationPickerDemo,
 }
