@@ -149,6 +149,7 @@ export async function buildRegistry() {
   const out = items.map((item) => {
     const npm = new Set(item.extraDependencies ?? [])
     const deps = new Set()
+    const types = new Set()
     for (const file of item.files) {
       if (!/\.tsx?$/.test(file)) continue
       for (const [, spec] of read(file).matchAll(IMPORT)) {
@@ -165,6 +166,11 @@ export async function buildRegistry() {
           const version = pkg.dependencies[bare]
           if (!version) throw new Error(`registry：${file} 引入 ${bare}，但 package.json 的 dependencies 里没有`)
           npm.add(`${bare}@${version}`)
+          // 类型包（DefinitelyTyped：@scope/name → @types/scope__name）在 devDependencies 里就跟着写进 item，
+          // 否则别的项目装完件 tsc 找不到类型（#1890 treemap 的 d3-hierarchy）。
+          const typesName = `@types/${bare.startsWith('@') ? bare.slice(1).replace('/', '__') : bare}`
+          const typesVersion = pkg.devDependencies?.[typesName]
+          if (typesVersion) types.add(`${typesName}@${typesVersion}`)
         }
       }
     }
@@ -182,6 +188,7 @@ export async function buildRegistry() {
         .join(' '),
       description,
       ...(npm.size ? { dependencies: [...npm].sort(compare) } : {}),
+      ...(types.size ? { devDependencies: [...types].sort(compare) } : {}),
       ...(deps.size ? { registryDependencies: [...deps].sort(compare).map((n) => `@katana/${n}`) } : {}),
       files: item.files.map((path) => ({
         path,

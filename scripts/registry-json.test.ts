@@ -13,6 +13,7 @@ interface Item {
   description: string
   registryDependencies?: string[]
   dependencies?: string[]
+  devDependencies?: string[]
   files: { path: string; target: string; type: string }[]
 }
 
@@ -36,6 +37,36 @@ describe('shadcn 注册表清单', () => {
     for (const item of registry.items) {
       for (const dep of item.registryDependencies ?? []) expect(names.has(dep), `${item.name} → ${dep}`).toBe(true)
       for (const dep of item.dependencies ?? []) expect(dep, item.name).toMatch(/^(@[^@/]+\/)?[^@/]+@\d+\.\d+\.\d+$/)
+    }
+  })
+
+  it('用到的依赖在 devDependencies 里有类型包就写进 item 的 devDependencies；没有的不凭空加', () => {
+    const pkg = JSON.parse(readFileSync(`${pkgDir}package.json`, 'utf8')) as { devDependencies: Record<string, string> }
+    const treemap = registry.items.find((i) => i.name === 'treemap-model')!
+    expect(treemap.dependencies?.some((d) => d.startsWith('d3-hierarchy@'))).toBe(true)
+    expect(treemap.devDependencies).toContain(`@types/d3-hierarchy@${pkg.devDependencies['@types/d3-hierarchy']}`)
+    for (const item of registry.items) {
+      for (const dev of item.devDependencies ?? []) {
+        const name = dev.slice(0, dev.lastIndexOf('@'))
+        expect(name, item.name).toMatch(/^@types\//)
+        const runtime = name.slice('@types/'.length).replace('__', '/')
+        const runtimeName = runtime.includes('/') ? `@${runtime}` : runtime
+        expect(
+          item.dependencies?.some((d) => d.startsWith(`${runtimeName}@`)),
+          `${item.name} 的 ${dev} 没有对应的运行时依赖`,
+        ).toBe(true)
+      }
+      // 没有类型包的运行时依赖不带 devDependencies
+      for (const dep of item.dependencies ?? []) {
+        const bare = dep.slice(0, dep.lastIndexOf('@'))
+        const typesName = `@types/${bare.startsWith('@') ? bare.slice(1).replace('/', '__') : bare}`
+        if (!pkg.devDependencies[typesName]) {
+          expect(
+            item.devDependencies?.some((d) => d.startsWith(`${typesName}@`)) ?? false,
+            `${item.name} ${typesName}`,
+          ).toBe(false)
+        }
+      }
     }
   })
 
