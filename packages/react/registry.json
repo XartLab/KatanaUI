@@ -184,6 +184,11 @@
           "target": "~/src/katana/ui/theme/symbol-mark.css"
         },
         {
+          "path": "src/theme/technical-rating.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/technical-rating.css"
+        },
+        {
           "path": "src/theme/tree-view.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/tree-view.css"
@@ -2346,6 +2351,24 @@
           "path": "src/quant/spark-tile.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/quant/spark-tile.tsx"
+        }
+      ]
+    },
+    {
+      "name": "technical-rating",
+      "type": "registry:component",
+      "title": "Technical Rating",
+      "description": "照 TradingView 的 Technicals 仪表：三个半圆仪表（振荡指标、总评、均线，总评居中放大），五档刻度文字，指针按 −1…1 的分数转到所在档（分界 −0.5、−0.1、0.1、0.5），下面一行大字写档名，再一行「卖 n · 中性 n · 买 n」与指标总数；底下是指标明细表（名称、读数、单项结论胶囊），顶上是时间周期分段控件。组件只画不算：分数、个数、读数与结论都由调用方传；档名、列名、免责一句也由调用方传，件只留位置。颜色走涨跌语义色与中性灰，不用橙色。放在 PanelFrame 里用。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/rating-gauge-model",
+        "@katana/toggle-group"
+      ],
+      "files": [
+        {
+          "path": "src/quant/technical-rating.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/technical-rating.tsx"
         }
       ]
     },

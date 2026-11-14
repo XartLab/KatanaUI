@@ -159,7 +159,7 @@ npx shadcn add @katana/style @katana/button @katana/change-text
 
 **组件分两类（用户 2026-11-15 定，KATANAview decisions.md 2026-11-15、PR #1984）。** 样子照 TradingView 表格手感加 Arc 卡片结构；面板怎么平铺照 OpenBB Workspace 与彭博 Launchpad。A 股只单独做数据和少数专有组件，其余件跨市场共用：
 
-- **共用件：** 不认市场，数据与文字由调用方传（DataGrid、PanelFrame、SeriesExplorer、MarketHeatmap 等）。
+- **共用件：** 不认市场，数据与文字由调用方传（DataGrid、PanelFrame、SeriesExplorer、MarketHeatmap、TechnicalRating 等）。
 - **市场专有件：** 只对某个市场有意义，放 quant 层，文档页与 props 说明里标明属于哪个市场。目前 A 股有连板天梯（LimitLadder，已做）；题材热度矩阵、龙虎榜净买条待做。专有件也不依赖数据集：板位、状态这类词是它的接口，数据与文字仍由调用方传。
 
 样例（Graphite，文档站 `?theme=graphite` 截的）：
@@ -168,7 +168,7 @@ npx shadcn add @katana/style @katana/button @katana/change-text
 - AttributionBars 盈亏归因：[images/attribution-bars-graphite.png](images/attribution-bars-graphite.png)
 
 文档站浏览器测试 `e2e/precision-instrument.spec.ts` 是这套语言的正面证明：序列探索页的元信息行用 Doto、汉字落到方舟像素子集、编号是强调色；去掉 `--font-dot` 里的方舟像素，它就红。
-已套这层语言的件：SeriesExplorer、AttributionBars、LimitLadder（#12，按上面「校准」做的）、MarketHeatmap（#15，同上；色阶七档、档宽自动取好数，两项都是待定，见件文件头）；其余逐件铺开（DataGrid、ChartTable、EquityCurve、Meter、CalendarHeatmap、SymbolGalaxy），一件一个提交。
+已套这层语言的件：SeriesExplorer、AttributionBars、LimitLadder（#12，按上面「校准」做的）、MarketHeatmap（#15，同上；色阶七档、档宽自动取好数，两项都是待定，见件文件头）、TechnicalRating（#20，同上；复用 RatingGauge 的分档与几何）；其余逐件铺开（DataGrid、ChartTable、EquityCurve、Meter、CalendarHeatmap、SymbolGalaxy），一件一个提交。
 
 ## 许可证
 

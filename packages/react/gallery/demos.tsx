@@ -11,7 +11,14 @@ import {
   SymbolMarkDemo,
 } from './pages/readouts.tsx'
 import { ContextMenuOpen, DialogOpen, DropdownMenuOpen, PopoverOpen, SelectOpen, TooltipOpen } from './pages/open.tsx'
-import { ChangeTextDemo, LimitLadderDemo, MarketHeatmapDemo, PnlTextDemo, QuantFormatDemo } from './pages/quant.tsx'
+import {
+  ChangeTextDemo,
+  LimitLadderDemo,
+  MarketHeatmapDemo,
+  PnlTextDemo,
+  QuantFormatDemo,
+  TechnicalRatingDemo,
+} from './pages/quant.tsx'
 import { DataGridDemo, EmptyStateDemo, EstimateBadgeDemo, PanelFrameDemo, ToolbarDemo } from './pages/blocks.tsx'
 import { AlertDemo, ProgressDemo, ToastDemo } from './pages/feedback.tsx'
 import { ComboboxDemo, CommandDemo } from './pages/pickers.tsx'
@@ -130,6 +137,7 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'pnl-text': PnlTextDemo,
   'limit-ladder': LimitLadderDemo,
   'market-heatmap': MarketHeatmapDemo,
+  'technical-rating': TechnicalRatingDemo,
   'quant-format': QuantFormatDemo,
   'data-grid': DataGridDemo,
   'empty-state': EmptyStateDemo,

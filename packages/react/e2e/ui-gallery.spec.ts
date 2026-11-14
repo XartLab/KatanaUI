@@ -2054,6 +2054,79 @@ for (const theme of THEMES) {
       await expect(map.getByRole('button', { name: '市值' })).toBeVisible()
     })
 
+    test('量化：技术评级——指针角度对应分数，档名随分数跨档，个数文字正确，切周期仪表真的动', async ({ page }) => {
+      await open(page, theme, 'technical-rating')
+      const rating = section(page, 'technical-rating').locator('[data-slot="technical-rating"]')
+      const dials = rating.locator('[data-slot="rating-dial"]')
+      await expect(dials).toHaveCount(3)
+      await expect(rating.locator('[data-slot="rating-row"]')).toHaveCount(21)
+      // 免责一句与「演示数据」标识都在。
+      await expect(rating.locator('[data-slot="rating-disclaimer"]')).toHaveText(
+        '评级只是指标读数的汇总，不是买卖建议。',
+      )
+      const zoneOf = (v: number) => (v < -0.5 ? 0 : v < -0.1 ? 1 : v <= 0.1 ? 2 : v <= 0.5 ? 3 : 4)
+      const WORDS = ['强卖', '卖', '中性', '买', '强买']
+      // 每个仪表：个数文字里的卖 / 买算出分数，针的实际旋转（读算出来的 transform）等于 分数 × 90°，大字是所在档；总数与明细行数对得上。
+      const check = async () => {
+        for (let i = 0; i < 3; i += 1) {
+          const dial = dials.nth(i)
+          const text = (await dial.locator('[data-slot="rating-counts"]').textContent())!
+          const [sell, neutral, buy] = [...text.matchAll(/(\d+)/g)].map((m) => Number(m[1]))
+          const value = (buy! - sell!) / (sell! + neutral! + buy!)
+          await expect(dial.locator('[data-slot="rating-word"]')).toHaveText(WORDS[zoneOf(value)]!)
+          await expect(dial).toContainText(`共 ${sell! + neutral! + buy!} 项指标`)
+          await expect
+            .poll(async () =>
+              dial.locator('[data-slot="rating-needle"]').evaluate((node) => {
+                const m = new DOMMatrix(getComputedStyle(node).transform)
+                return (Math.atan2(m.b, m.a) * 180) / Math.PI
+              }),
+            )
+            .toBeCloseTo(value * 90, 0)
+        }
+      }
+      await check()
+      // 总评居中放大：宽度与大字都比小仪表大。
+      const widths = await dials.evaluateAll((nodes) => nodes.map((n) => n.getBoundingClientRect().width))
+      expect(widths[1]).toBeGreaterThan(widths[0]!)
+      const size = (i: number) =>
+        dials
+          .nth(i)
+          .locator('[data-slot="rating-word"]')
+          .evaluate((n) => parseFloat(getComputedStyle(n).fontSize))
+      expect(await size(1)).toBeGreaterThan(await size(0))
+      // 五档刻度字在总评上都看得见。
+      await expect(dials.nth(1).locator('[data-slot="rating-tick"]')).toHaveText(WORDS)
+      // 颜色：买档的大字是涨色、卖档是跌色，中性不是这两个色。
+      const up = await token(page, '--pnl-up')
+      const down = await token(page, '--pnl-down')
+      // 切周期：分段控件点一下，仪表读数跟着变（针与个数），再回来。
+      const before = await dials.nth(1).locator('[data-slot="rating-counts"]').textContent()
+      const seen = new Set<string>([before!])
+      for (const name of ['1 分', '1 月']) {
+        await rating.getByRole('button', { name }).click()
+        await expect(rating.getByRole('button', { name })).toHaveAttribute('aria-pressed', 'true')
+        await check()
+        seen.add((await dials.nth(1).locator('[data-slot="rating-counts"]').textContent())!)
+        for (let i = 0; i < 3; i += 1) {
+          const dial = dials.nth(i)
+          const z = Number(await dial.getAttribute('data-zone'))
+          const c = await colorAt(page, dial.locator('[data-slot="rating-word"]'), 'color')
+          if (z >= 3) expect(c).toEqual(await rgba(page, up))
+          if (z <= 1) expect(c).toEqual(await rgba(page, down))
+        }
+      }
+      expect(seen.size).toBeGreaterThan(1)
+      // 明细：结论胶囊的字色按结论取涨跌色；行悬停整行提亮。
+      const buyPill = rating.locator('[data-slot="rating-row"][data-verdict="buy"] .k-trating-verdict').first()
+      await expect(buyPill).toBeVisible()
+      expect(await colorAt(page, buyPill, 'color')).toEqual(await rgba(page, up))
+      const row = rating.locator('[data-slot="rating-row"]').first()
+      const idle = await bg(row)
+      await row.hover()
+      await expect.poll(() => bg(row)).not.toBe(idle)
+    })
+
     test('积木：空态、工具条按钮与估算标记', async ({ page }) => {
       await open(page, theme, 'empty-state')
       await expect(section(page, 'empty-state').getByRole('status')).toContainText('Nothing selected')

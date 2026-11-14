@@ -5,6 +5,7 @@ import {
   ChangeText,
   LimitLadder,
   MarketHeatmap,
+  TechnicalRating,
   PnlText,
   formatCompact,
   formatPercentChange,
@@ -18,6 +19,10 @@ import {
   type LadderLevel,
   type LimitLadderLabels,
   type MarketHeatmapLabels,
+  type RatingGroup,
+  type RatingRow,
+  type RatingVerdict,
+  type TechnicalRatingLabels,
 } from '../../src/quant'
 import { ToggleGroup, ToggleGroupItem } from '../../src/primitives/toggle-group'
 import { Cell, Row } from './parts'
@@ -400,6 +405,105 @@ export function MarketHeatmapDemo() {
           />
         </PanelFrame>
       </div>
+    </div>
+  )
+}
+
+// 技术评级仪表（#20）的演示：指标读数与结论都是编出来的，不是行情；分数与个数在这里按「买 − 卖」除以总数现算，真实调用方自己算。
+const RATING_TIMEFRAMES = [
+  { value: '1m', label: '1 分' },
+  { value: '15m', label: '15 分' },
+  { value: '1h', label: '1 小时' },
+  { value: '4h', label: '4 小时' },
+  { value: '1d', label: '1 日' },
+  { value: '1w', label: '1 周' },
+  { value: '1M', label: '1 月' },
+]
+const OSCILLATORS = [
+  'RSI (14)',
+  'Stochastic %K (14, 3, 3)',
+  'CCI (20)',
+  'ADX (14)',
+  'Awesome Oscillator',
+  'Momentum (10)',
+  'MACD (12, 26)',
+  'Stochastic RSI Fast (3, 3, 14, 14)',
+  'Williams %R (14)',
+]
+const AVERAGES = [5, 10, 20, 30, 50, 100].flatMap((n) => [`EMA (${n})`, `SMA (${n})`])
+const RATING_ZONES = ['强卖', '卖', '中性', '买', '强买'] as const
+const RATING_LABELS: TechnicalRatingLabels = {
+  zones: RATING_ZONES,
+  verdict: { sell: '卖', neutral: '中性', buy: '买' },
+  total: (n) => `共 ${n} 项指标`,
+  columns: { name: '指标', reading: '读数', verdict: '结论' },
+  timeframe: '时间周期',
+  list: '技术评级',
+  empty: '没有数据',
+}
+
+function makeRating(frame: number) {
+  const rand = seeded(20 + frame * 7)
+  // 周期越长，偏向买的越多一点，让切周期时仪表真的动起来（演示用）。
+  const lean = (frame - 3) * 0.12
+  const pick = (): RatingVerdict => {
+    const r = rand() + lean * 0.5
+    return r < 0.33 ? 'sell' : r < 0.55 ? 'neutral' : 'buy'
+  }
+  const rows: RatingRow[] = [
+    ...OSCILLATORS.map((name, i) => ({ key: `o${i}`, name, group: 'osc', verdict: pick() })),
+    ...AVERAGES.map((name, i) => ({ key: `m${i}`, name, group: 'ma', verdict: pick() })),
+  ].map((row) => ({ ...row, reading: (20 + rand() * 80).toFixed(2) }))
+  const tally = (list: readonly RatingRow[]) => ({
+    sell: list.filter((r) => r.verdict === 'sell').length,
+    neutral: list.filter((r) => r.verdict === 'neutral').length,
+    buy: list.filter((r) => r.verdict === 'buy').length,
+  })
+  const group = (key: string, label: string, list: readonly RatingRow[]): RatingGroup => {
+    const counts = tally(list)
+    return { key, label, counts, value: (counts.buy - counts.sell) / list.length }
+  }
+  const groups = [
+    group(
+      'osc',
+      '振荡指标',
+      rows.filter((r) => r.group === 'osc'),
+    ),
+    group('all', '总评', rows),
+    group(
+      'ma',
+      '均线',
+      rows.filter((r) => r.group === 'ma'),
+    ),
+  ]
+  return { rows, groups }
+}
+
+export function TechnicalRatingDemo() {
+  const [frame, setFrame] = useState('1d')
+  const { rows, groups } = makeRating(RATING_TIMEFRAMES.findIndex((tf) => tf.value === frame))
+  return (
+    <div style={{ width: '100%', maxWidth: 520, height: 760 }}>
+      <PanelFrame
+        index="04"
+        title="技术评级"
+        object="演示数据"
+        meta="DEMO"
+        source="SOURCE · 演示数据 · 非行情"
+        focused
+        labels={{ settings: '设置', maximize: '最大化', restore: '还原', close: '关闭' }}
+      >
+        <TechnicalRating
+          groups={groups}
+          rows={rows}
+          labels={RATING_LABELS}
+          primary="all"
+          timeframes={RATING_TIMEFRAMES}
+          timeframe={frame}
+          onTimeframeChange={setFrame}
+          disclaimer="评级只是指标读数的汇总，不是买卖建议。"
+        />
+      </PanelFrame>
     </div>
   )
 }
