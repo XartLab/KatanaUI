@@ -189,7 +189,7 @@ export {
 } from './katana/toast.tsx'
 export { Loading, LoadingBoundary } from './katana/loading.tsx'
 export { LoadingView, type LoadingTexts } from './katana/loading-view.tsx'
-export type { LoadingPhase } from './katana/loading-gate.ts'
+export { LOADING_TIMEOUT_MS, type LoadingPhase } from './katana/loading-gate.ts'
 
 // 学自 rare-ui 的交互、本仓库重写的件（#1861）：密钥输入、原地确认的危险按钮、带未读数的铃、状态图标、行内 AI 状态、点阵状态球。
 export { PasswordInput, type PasswordInputProps } from './katana/password-input.tsx'
