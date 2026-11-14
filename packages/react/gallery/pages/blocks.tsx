@@ -25,7 +25,7 @@ import {
   type WorkspaceTab,
 } from '../../src/blocks/index.ts'
 import { Button, Splitter, usePersistedState } from '../../src/index.ts'
-import { Row, SAMPLE_MARK_SRC } from './parts.tsx'
+import { ActionLog, Row, SAMPLE_MARK_SRC, demoSymbolActions } from './parts.tsx'
 
 // 积木层（@katana-ui/react/blocks，#1869）的演示。表里的数据都是写死的示例数据，不是行情。
 
@@ -197,10 +197,11 @@ function ColumnsDemo() {
 
 export function DataGridDemo() {
   const [sort, setSort] = useState<SortSpec | null>(null)
+  const [log, setLog] = useState('')
   return (
     <>
       <p className="gal-note">
-        示例数据：每种列类型一列；点表头排序，右键看菜单。品种列前是徽标：BTCUSDT
+        示例数据：每种列类型一列；点表头排序，右键看菜单；悬停或用上下键走到一行，右端浮出行快捷按钮（rowActions，#23）。品种列前是徽标：BTCUSDT
         用自绘的示意图标（不是真实标志），600519 是字母圆标。
       </p>
       <div data-testid="grid-demo" style={{ display: 'flex', height: 190, width: '100%', maxWidth: 780 }}>
@@ -217,9 +218,11 @@ export function DataGridDemo() {
             onExport={() => {}}
             exportName="example"
             timeZone="utc"
+            rowActions={(row) => demoSymbolActions(row.symbol.code, setLog)}
           />
         </DataGridHostProvider>
       </div>
+      <ActionLog text={log} />
       <ColumnsDemo />
       <p className="gal-note">无表头、只读、紧凑行高的变体：</p>
       <div style={{ width: 300 }}>

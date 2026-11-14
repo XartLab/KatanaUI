@@ -38,7 +38,9 @@ test('列头右键菜单：隐藏、左右移、固定、排序', async ({ page 
 
 test('拖动列头重排，刷新后还在', async ({ page }) => {
   const demo = await open(page)
-  await heads(demo).filter({ hasText: 'Qty' }).dragTo(heads(demo).filter({ hasText: 'Side' }))
+  await heads(demo)
+    .filter({ hasText: 'Qty' })
+    .dragTo(heads(demo).filter({ hasText: 'Side' }))
   expect((await names(demo)).slice(0, 4)).toEqual(['Symbol', 'Qty', 'Side', 'Price'])
   await page.reload()
   await demo.waitFor()
@@ -47,7 +49,9 @@ test('拖动列头重排，刷新后还在', async ({ page }) => {
 
 test('重置列回到默认次序', async ({ page }) => {
   const demo = await open(page)
-  await heads(demo).filter({ hasText: 'Qty' }).dragTo(heads(demo).filter({ hasText: 'Side' }))
+  await heads(demo)
+    .filter({ hasText: 'Qty' })
+    .dragTo(heads(demo).filter({ hasText: 'Side' }))
   await heads(demo).first().click({ button: 'right' })
   await page.getByRole('menuitem', { name: 'Reset columns' }).click()
   expect((await names(demo)).slice(0, 4)).toEqual(['Symbol', 'Side', 'Price', 'Qty'])

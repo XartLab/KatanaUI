@@ -1371,6 +1371,11 @@ export const PAGES: readonly DocPage[] = [
           },
           { name: 'selected', type: 'string | null', desc: '选中个股的代码；选中行左侧画 2px 强调条。' },
           { name: 'onSelect', type: '(code: string) => void', desc: '点击或 Enter / Space 选一行。' },
+          {
+            name: 'rowActions',
+            type: '(item: LadderItem) => RowAction[]',
+            desc: '行快捷操作（#23，一般传 symbolMenu(...)）：悬停或键盘落到这一行时右端浮出前三颗带图标的按钮，右键、菜单键、Shift+F10 出整份菜单。不传就没有。按钮条与菜单的读屏名取 labels.rowActions、labels.rowMenu（可选，省略用英文）。',
+          },
         ],
       },
     ],
@@ -1439,6 +1444,11 @@ export const PAGES: readonly DocPage[] = [
           { name: 'formatPrice', type: '(value: number) => string', desc: '悬停卡片上的价格写法；不给写 2 位小数。' },
           { name: 'selected', type: 'string | null', desc: '选中的代码；选中的格子画 2px 白色内圈。' },
           { name: 'onSelect', type: '(code: string) => void', desc: '点格子，或焦点在格子上按 Enter / Space。' },
+          {
+            name: 'cellActions',
+            type: '(item: HeatmapItem) => RowAction[]',
+            desc: '格子的右键菜单（#23，一般传 symbolMenu(...)）：右键、菜单键、Shift+F10 出同一份品种菜单。格子小，不画悬停按钮。读屏名取 labels.cellMenu（可选）。不传就没有。',
+          },
         ],
       },
     ],
@@ -3693,6 +3703,11 @@ export const PAGES: readonly DocPage[] = [
             desc: '问 Agent 的摘要文字（需宿主 askAgent）/ 导出 CSV 交给宿主存。',
           },
           { name: 'timeZone', type: "'local' | 'utc' | string", default: "'local'", desc: 'time 列的时区。' },
+          {
+            name: 'rowActions',
+            type: '(row) => RowAction[]',
+            desc: '行快捷操作（#23，一般传 symbolMenu(...)）：悬停或键盘落到这一行时右端浮出前三颗带图标的按钮（浮在行上，不挤列宽；按钮条名字取 texts.rowActions）；右键、菜单键、Shift+F10 开的菜单最前面是整份项，只在右键落在单独一行时出现。不传就没有。',
+          },
           { name: 'density', type: "'compact' | 'default' | 'relaxed'", default: "'default'", desc: '行高档。' },
           { name: 'hideHeader', type: 'boolean', default: 'false', desc: '不画表头。' },
           {
@@ -4517,6 +4532,106 @@ export const PAGES: readonly DocPage[] = [
     donts: ['不要在包里决定评级怎么算：分数与五个档位名由调用方传。', '不要把中间一段当没有信号：中性是一个有效档位。'],
     composition: 'RatingGauge\n  svg（五段弧 · 指针 · 圆心）\n  figcaption（档位词）\n  div（children）',
     keys: [],
+  },
+  {
+    id: 'row-actions',
+    group: 'quotes',
+    cardHeight: 330,
+    title: 'RowActions 行快捷操作与品种菜单',
+    summary:
+      '所有带品种的行（DataGrid、连板天梯、报价表）与格子（市场热力图）共用的一套：悬停或键盘落到一行时，行右端浮出前几颗无边框图标按钮，浮在行上、不挤列宽；右键（菜单键、Shift+F10）出同一份菜单。件不认识「图表」「自选」，只认 { key, label, icon?, shortcut?, onSelect }，文案与动作都由调用方传；symbolMenu 把标准四项（开图、加自选、新建告警、复制代码，固定次序）拼成这样的数组，调用方的项接在后面。DataGrid、LimitLadder、MarketHeatmap 各有一个可选 prop 接它，不传就没有，旧用法不变。功能参照 TradingView 品种搜索结果行的悬停操作，自选行的细节待核对。样子照连板天梯：按钮无边框、悬停灰底，不加橙色。',
+    exports: ['RowActions', 'RowActionMenuItems', 'RowContextMenu', 'symbolMenu'],
+    props: [
+      {
+        part: 'RowActions',
+        note: '按钮条绝对定位在宿主行右端，宿主行要 position: relative（单独用时给行加 k-row-host，悬停与焦点在行内都出现）。',
+        rows: [
+          {
+            name: 'items',
+            type: 'RowAction[]',
+            desc: '全部项；按钮条只画带 icon 的前 max 个，没有图标的项只在菜单里。',
+          },
+          { name: 'label', type: 'string', desc: '屏幕阅读器念的组名。' },
+          { name: 'max', type: 'number', default: '3', desc: '最多画几颗按钮。' },
+          {
+            name: 'focusable',
+            type: 'boolean',
+            default: 'true',
+            desc: '按钮能不能用 Tab 走到。行自己管键盘的表与列表（DataGrid、LimitLadder）传 false，用菜单键开完整菜单。',
+          },
+          { name: 'role', type: 'string', default: "'group'", desc: '宿主行是表里的一格时给 gridcell。' },
+          {
+            name: 'pointerOnly',
+            type: 'boolean',
+            desc: '按钮画成不可聚焦、对读屏隐藏的 span（宿主行是 option 这类里面不许有可聚焦子项的角色时用，连板天梯就是）；键盘与读屏走菜单键开的整份菜单。',
+          },
+        ],
+      },
+      {
+        part: 'RowAction',
+        rows: [
+          { name: 'key', type: 'string', desc: '稳定的名字（DOM 上是 data-action）。' },
+          { name: 'label', type: 'string', desc: '菜单文字，按钮的读屏名与悬停提示。' },
+          { name: 'icon', type: 'ReactNode', desc: '按钮图标；不给就只出现在菜单里。' },
+          { name: 'shortcut', type: 'string', desc: '快捷键的字（写好的）：菜单行尾显示，按钮悬停提示里跟在名字后。' },
+          { name: 'disabled', type: 'boolean', desc: '禁用。' },
+          { name: 'onSelect', type: '() => void', desc: '点按钮或选菜单项。' },
+        ],
+      },
+      {
+        part: 'symbolMenu(input)',
+        note: '纯函数，返回 RowAction[]。没传的标准项跳过；标准项没传 icon 用包里的默认图标。',
+        rows: [
+          {
+            name: 'openChart',
+            type: '{ label, onSelect, icon?, shortcut?, disabled? }',
+            desc: '打开图表（key open-chart）。',
+          },
+          { name: 'addToWatchlist', type: '同上', desc: '加入自选（add-to-watchlist）。' },
+          { name: 'newAlert', type: '同上', desc: '新建告警（new-alert）。' },
+          { name: 'copyCode', type: '同上', desc: '复制代码（copy-code）。' },
+          { name: 'extra', type: 'RowAction[]', desc: '调用方自己的项，排在标准四项后面。' },
+        ],
+      },
+      {
+        part: 'RowContextMenu',
+        note: '给一组行包上同一份右键菜单（连板天梯、热力图内部就用它）；自己不画盒子（display: contents）。',
+        rows: [
+          {
+            name: 'actionsFor',
+            type: '(key: string) => RowAction[]',
+            desc: '按行的键给这一行的项；空数组不出菜单；不传就原样画孩子。',
+          },
+          { name: 'label', type: 'string', desc: '菜单的读屏名。' },
+          { name: 'keyAttribute', type: 'string', default: "'data-code'", desc: '行元素上带键的属性名。' },
+        ],
+      },
+      {
+        part: 'RowActionMenuItems',
+        rows: [
+          {
+            name: 'items',
+            type: 'RowAction[]',
+            desc: '在当前菜单（右键或下拉）里画整份项：图标在名字前，快捷键在行尾。',
+          },
+        ],
+      },
+    ],
+    states: [
+      '默认：按钮条透明、不接指针。悬停宿主行、键盘落到这一行（DataGrid 的当前行、连板天梯的焦点行）、按钮自己聚焦时淡入。',
+      '按钮：无边框，悬停 10% 白底；禁用 40% 不透明度。',
+    ],
+    donts: [
+      '不要在件里写死「图表」「自选」的文案或动作：由调用方传。',
+      '不要在悬停按钮里放超过三颗：多的进右键菜单。',
+      '不要用橙色：橙色只给状态灯与选中条。',
+    ],
+    composition:
+      'RowActions\n  span（group）\n    button × 最多 3（图标）\nRowContextMenu\n  ContextMenu\n    RowActionMenuItems（图标 | 名字 | 快捷键）',
+    keys: [
+      ['菜单键 / Shift+F10', '在焦点所在的行或格子上开同一份菜单'],
+      ['↑ / ↓', '在行间移动（DataGrid、连板天梯），当前行的按钮条跟着出现'],
+    ],
   },
   {
     id: 'quote-table',

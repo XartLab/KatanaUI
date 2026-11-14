@@ -25,6 +25,7 @@
 | `menu / panelMenu / menuTail / rowInfo / extrasFirst` | `function` | — | 右键菜单里标准项之外追加的项与次序。 |
 | `askText / onExport` | `function` | — | 问 Agent 的摘要文字（需宿主 askAgent）/ 导出 CSV 交给宿主存。 |
 | `timeZone` | `'local' \| 'utc' \| string` | `'local'` | time 列的时区。 |
+| `rowActions` | `(row) => RowAction[]` | — | 行快捷操作（#23，一般传 symbolMenu(...)）：悬停或键盘落到这一行时右端浮出前三颗带图标的按钮（浮在行上，不挤列宽；按钮条名字取 texts.rowActions）；右键、菜单键、Shift+F10 开的菜单最前面是整份项，只在右键落在单独一行时出现。不传就没有。 |
 | `density` | `'compact' \| 'default' \| 'relaxed'` | `'default'` | 行高档。 |
 | `hideHeader` | `boolean` | `false` | 不画表头。 |
 | `autoRowHeight` | `boolean` | `false` | 行高跟着内容走：多行的格子、行里有按钮的表。density 的行高是最小高度，格子里的字可以折行。 |
