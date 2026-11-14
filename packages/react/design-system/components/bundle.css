@@ -3782,10 +3782,9 @@
 
 .k-tree {
   color: var(--ink-200);
-  font: var(--text-data) var(--font-sans);
+  font: var(--text-data) var(--font-mono);
   outline: 0;
   flex-direction: column;
-  gap: 1px;
   display: flex;
 }
 
@@ -3801,25 +3800,25 @@
 }
 
 .k-tree-row {
-  height: 28px;
+  height: var(--row-base);
   padding: 0 8px 0 calc(4px + var(--k-tree-level, 0) * 16px);
+  border-bottom: var(--hairline);
   -webkit-user-select: none;
   user-select: none;
-  border-radius: 6px;
   align-items: center;
   gap: 6px;
   display: flex;
 }
 
 .k-tree-item[data-hovered] .k-tree-row {
-  background: var(--alpha-white-5);
+  background: var(--bg-400);
   color: var(--ink-100);
 }
 
 .k-tree-item[data-selected] .k-tree-row {
-  background: var(--alpha-white-8);
+  background: var(--bg-000);
+  box-shadow: inset 2px 0 0 var(--signal-orange);
   color: var(--ink-100);
-  font-weight: 600;
 }
 
 .k-tree-item[data-focus-visible] .k-tree-row {
@@ -3877,10 +3876,11 @@
 }
 
 .k-json-search {
-  background: var(--alpha-white-3);
-  border: 1px solid var(--alpha-white-7);
-  border-radius: var(--radius-control);
-  height: 26px;
+  height: var(--control-h);
+  background: var(--bg-000);
+  border: 1px solid var(--line-100);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--recess);
   color: var(--ink-300);
   align-items: center;
   gap: 6px;
@@ -3889,13 +3889,13 @@
 }
 
 .k-json-search:focus-within {
-  border-color: var(--alpha-white-12);
+  border-color: var(--signal-orange-dim);
 }
 
 .k-json-input {
   min-width: 0;
   color: var(--ink-100);
-  font: var(--text-data) var(--font-sans);
+  font: var(--text-data) var(--font-mono);
   background: none;
   border: 0;
   outline: 0;
@@ -3927,17 +3927,17 @@
 }
 
 .k-json-row {
-  height: 22px;
+  height: var(--row-tight);
   padding: 0 6px 0 calc(2px + var(--k-json-level, 0) * 14px);
+  border-bottom: var(--hairline);
   white-space: nowrap;
-  border-radius: 4px;
   align-items: center;
   gap: 4px;
   display: flex;
 }
 
 .k-json-item[data-hovered] .k-json-row {
-  background: var(--alpha-white-4);
+  background: var(--bg-400);
 }
 
 .k-json-item[data-focus-visible] .k-json-row {
@@ -3967,7 +3967,7 @@
 }
 
 .k-json-key {
-  color: var(--ink-100);
+  color: var(--ink-200);
 }
 
 .k-json-colon, .k-json-summary, .k-json-more {
@@ -3979,15 +3979,16 @@
 }
 
 .k-json-row[data-kind="string"] .k-json-value {
-  color: var(--signal-amber);
+  color: var(--ink-200);
 }
 
 .k-json-row[data-kind="number"] .k-json-value {
-  color: var(--signal-blue);
+  color: var(--ink-100);
+  font-variant-numeric: tabular-nums;
 }
 
 .k-json-row[data-kind="boolean"] .k-json-value, .k-json-row[data-kind="null"] .k-json-value {
-  color: var(--signal-orange);
+  color: var(--ink-300);
 }
 
 .k-json-value {
@@ -4097,8 +4098,12 @@
 }
 
 .k-tl-body {
+  background: var(--bg-100);
+  border: 1px solid var(--line-100);
+  border-radius: var(--radius-sm);
   flex-direction: column;
   gap: 4px;
+  padding: 8px 4px;
   display: flex;
 }
 
@@ -4150,7 +4155,7 @@
 .k-tl-track {
   touch-action: none;
   height: 76px;
-  margin: 0 8px;
+  margin: 0 40px;
   position: relative;
 }
 

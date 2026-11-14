@@ -229,16 +229,16 @@ const JSON_LABELS: JsonViewerLabels = {
   more: (count) => `还有 ${count} 项`,
 }
 
-// 演示用的消息：字段是演示用的，不是真实的行情或订单。
+// 演示用的消息：照 EventTimeline 卡的场景（300750、账户 A）编的，不是真实的行情或订单。
 const JSON_SAMPLE = {
   type: 'order.update',
-  symbol: 'DEMO-PERP',
+  symbol: '300750',
   filled: true,
-  price: 101.5,
-  tags: ['demo', 'sample'],
+  price: 201.35,
+  tags: ['账户 A', '盘中'],
   orders: [
-    { id: 'a1', side: 'buy', price: 101.5, qty: 2 },
-    { id: 'a2', side: 'sell', price: 99, qty: 1 },
+    { id: 'FILL-0231', side: 'buy', price: 201.3, qty: 200 },
+    { id: 'FILL-0240', side: 'sell', price: 203.1, qty: 400 },
   ],
   error: null,
   history: Array.from({ length: 5 }, (_, i) => i * 10),

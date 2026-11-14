@@ -1,13 +1,13 @@
 /* SPDX-License-Identifier: MIT */
-/* TreeView：行 28 高（表格行的疏密档）；缩进按层级 16px 一档（--k-tree-level 由组件按 aria-level 写）；
-   选中是 8% 白底，悬停 5% 白；展开的箭头转 90 度（0.15s，同菜单）。RAC 在行上写 data-hovered / data-selected / data-focus-visible。 */
+/* TreeView：照设计稿 DataGrid 卡（2026-11-14 读）：行高 --row-base，等宽字（中英混排对得齐），数量是 tabular-nums；
+   悬停 --bg-400，选中 --bg-000 + 左 2px --signal-orange（选中不改字重，免得换行宽）；缩进按层级 16px 一档（--k-tree-level 由组件按 aria-level 写）；
+   展开的箭头转 90 度（0.15s，同菜单）。RAC 在行上写 data-hovered / data-selected / data-focus-visible。 */
 .k-tree {
   display: flex;
   flex-direction: column;
-  gap: 1px;
   outline: 0;
   color: var(--ink-200);
-  font: var(--text-data) var(--font-sans);
+  font: var(--text-data) var(--font-mono);
 }
 .k-tree-item {
   display: block;
@@ -22,19 +22,19 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  height: 28px;
+  height: var(--row-base);
   padding: 0 8px 0 calc(4px + var(--k-tree-level, 0) * 16px);
-  border-radius: 6px;
+  border-bottom: var(--hairline);
   user-select: none;
 }
 .k-tree-item[data-hovered] .k-tree-row {
-  background: var(--alpha-white-5);
+  background: var(--bg-400);
   color: var(--ink-100);
 }
 .k-tree-item[data-selected] .k-tree-row {
-  background: var(--alpha-white-8);
+  background: var(--bg-000);
+  box-shadow: inset 2px 0 0 var(--signal-orange);
   color: var(--ink-100);
-  font-weight: 600;
 }
 .k-tree-item[data-focus-visible] .k-tree-row {
   outline: 2px solid var(--focus-ring);
