@@ -18,3 +18,12 @@ export { EventTimeline, type EventTimelineLabels, type EventTimelineProps } from
 export type { EventKind, SessionMinutes, TimelineEvent } from './event-timeline-model.ts'
 export { Toolbar, ToolbarGroup, ToolButton, ToolSlot } from './toolbar/toolbar.tsx'
 export { useRovingToolbar } from './toolbar/use-roving-toolbar.ts'
+} from './data-grid/host'
+export { tableCsv, type SortSpec } from './data-grid/model'
+export { EmptyState, type EmptyStateSlot } from './empty-state'
+export { EstimateBadge } from './estimate-badge'
+export { Toolbar, ToolbarGroup, ToolButton, ToolSlot } from './toolbar/toolbar'
+export { useRovingToolbar } from './toolbar/use-roving-toolbar'
+
+// 时间序列与盈亏的积木（#1917）。功能参照 Arc（uiarc.dev，2026-11-14 读），只取功能，实现原创。
+export { SmallMultiples, type SmallMultiple, type SmallMultiplesProps } from './small-multiples'

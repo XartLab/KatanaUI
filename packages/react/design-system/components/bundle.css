@@ -6674,6 +6674,124 @@ button.k-quote-card.is-link:focus-visible {
   color: var(--pnl-down);
 }
 
+.k-sm {
+  min-width: 0;
+  color: var(--ink-200);
+  font: var(--text-caption) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  display: flex;
+}
+
+.k-sm-grid {
+  outline-offset: 2px;
+  gap: 8px;
+  display: grid;
+}
+
+.k-sm-grid:focus-visible {
+  outline: 1px solid var(--focus-ring);
+}
+
+.k-sm-cell {
+  border: 1px solid var(--line-100);
+  background: var(--bg-200);
+  border-radius: 4px;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  padding: 6px 8px;
+  display: flex;
+}
+
+.k-sm-head {
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  background: none;
+  border: 0;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  display: flex;
+}
+
+button.k-sm-head {
+  cursor: pointer;
+}
+
+button.k-sm-head:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.k-sm-label {
+  color: var(--ink-200);
+  font: var(--text-data) var(--font-sans);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.k-sm-value {
+  color: var(--ink-100);
+  font: var(--text-data) var(--font-mono);
+}
+
+.k-sm-value[data-tone="up"] {
+  color: var(--pnl-up);
+}
+
+.k-sm-value[data-tone="down"] {
+  color: var(--pnl-down);
+}
+
+.k-sm-plot {
+  touch-action: pan-y;
+  position: relative;
+}
+
+.k-sm-plot > svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: visible;
+}
+
+.k-sm-line {
+  fill: none;
+  stroke: var(--ink-200);
+  stroke-width: 1.5px;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.k-sm-cell[data-tone="up"] .k-sm-line {
+  stroke: var(--pnl-up);
+}
+
+.k-sm-cell[data-tone="down"] .k-sm-line {
+  stroke: var(--pnl-down);
+}
+
+.k-sm-cell[data-tone="up"] .k-sm-dot {
+  background: var(--pnl-up);
+}
+
+.k-sm-cell[data-tone="down"] .k-sm-dot {
+  background: var(--pnl-down);
+}
+
+.k-sm-dot {
+  width: 6px;
+  height: 6px;
+  margin: -3px 0 0 -3px;
+}
+
 @property --tw-translate-x {
   syntax: "*";
   inherits: false;

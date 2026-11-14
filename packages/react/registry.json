@@ -2138,6 +2138,21 @@
           "path": "src/blocks/event-timeline.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/blocks/event-timeline.tsx"
+      "name": "small-multiples",
+      "type": "registry:component",
+      "title": "Small Multiples",
+      "description": "自选、组合里多个品种并排各一张小折线，同一个十字线：指针在任一张上移动，所有张的竖线与读数一起走；每张标题写名字与那一格的值。功能参照 Arc 的 Small multiples。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/quote-tone",
+        "@katana/series-geometry",
+        "@katana/use-scrubber"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/small-multiples.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/small-multiples.tsx"
         }
       ]
     }

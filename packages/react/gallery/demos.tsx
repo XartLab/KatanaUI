@@ -39,6 +39,7 @@ import {
   BulletMeterDemo,
   CalendarHeatmapDemo,
   HorizonChartDemo,
+  SmallMultiplesDemo,
   UseScrubberDemo,
   WaterfallChartDemo,
 } from './pages/series'
@@ -134,6 +135,7 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'bullet-meter': BulletMeterDemo,
   'calendar-heatmap': CalendarHeatmapDemo,
   'horizon-chart': HorizonChartDemo,
+  'small-multiples': SmallMultiplesDemo,
   sparkline: SparklineDemo,
   'gauge-bar': GaugeBarDemo,
   treemap: TreemapDemo,
