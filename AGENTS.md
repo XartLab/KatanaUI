@@ -1,0 +1,41 @@
+# KatanaUI Agent 指南
+
+给在本仓库干活的 AI Agent（Claude Code、Codex 等）的规矩。跟用户说中文，先说结论。
+
+## 这是什么
+
+KatanaUI 是设计系统的**源头仓库**（2026-11-14 用户定，#2）：token、React 组件、文档站都在这里开发。
+以前它是 KATANAview `packages/ui` 的只读镜像，现在反过来，KATANAview 按 git 标签依赖这里发布的版本，不再带组件库源码。
+
+- 结构照 salt-ds：仓库根是 pnpm workspace，包在 `packages/`。现在有 `packages/react`（`@katana-ui/react`）；
+  `@katana-ui/tokens`（三层 token 与密度）按 #2 第 2 步拆出来。
+- 包内的分层、件的归属、文档站与设计系统产物的规矩见 [packages/react/docs/zh-CN.md](packages/react/docs/zh-CN.md)。
+- 许可证 MIT。每个源文件头写 `SPDX-License-Identifier: MIT`。不许引进 AGPL 的代码；取自别处的写明出处与许可证，记进包的 `NOTICE`。
+- 包不依赖任何应用。应用相关的事（行情、面板、文案语言）由调用方传。
+
+## 已定的设计决定（不要推翻，要改先问用户）
+
+- 默认主题 Graphite（中性色纯灰，信号色是油画颜料色）；Console 留作可切主题。不用 TradingView 蓝，不用暖白配高亮黄。
+- 组件的样子以 KATANAview 工作台现在的样式为准；Salt 学 token 结构（原值 → 调色 → 语义特征）、密度、文档组织，Salt 是 Apache-2.0，能照搬的实现可以照搬，写出处。
+- 包名 `@katana-ui/*`，不带 `katanaview`：要能用在别的量化项目里。
+
+## 门禁
+
+在仓库根目录跑，全部通过才算完成，CI（`.github/workflows/ci.yml`）跑同样几项：
+
+- `pnpm test`：`vp check`（格式与代码检查，有一条提示就不过）、token 生成物与源头一致、设计系统产物与代码一致、单测（含「包里没有越出包的路径」）。
+- `pnpm typecheck`
+- `pnpm build:site`
+
+改 token：改 `packages/react/src/tokens/tokens.json`，跑 `pnpm tokens:sync`；改了文档站的页数据或件，跑 `pnpm ds:build`。生成文件不手改。
+
+## 发版
+
+还没有 npm（仓库私有，见 #2「发布与消费」）。发版就是在 main 上打标签 `vX.Y.Z`，同时改 `packages/*/package.json` 的 version；
+消费方写 `git+https://github.com/XartLab/KatanaUI.git#vX.Y.Z&path:packages/react`。破坏性改动在 PR 正文写清怎么改。
+
+## 提交
+
+- 每件事先开 issue，每个改动走 PR（`Closes #N`），squash 合并；不直推 main。
+- `feat:` / `fix:` / `docs:` / `chore:` 前缀加中文主题；提交带 `Co-Authored-By` 与会话署名行，`git commit -s`。不替别人写作者行。
+- 内部文档、注释、提交说明用中文；README、CONTRIBUTING 用英文。

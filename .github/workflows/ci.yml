@@ -1,0 +1,31 @@
+# SPDX-License-Identifier: MIT
+# PR 与 main 上的门禁（#2）：跟本地的 pnpm test、pnpm typecheck、pnpm build:site 一样。
+# 用 GitHub 托管的 runner：本仓库小，一次几分钟。动作版本与 pages.yml 一致（2026-11-14 查过）。
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 26
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm test
+      - run: pnpm typecheck
+      - run: pnpm build:site

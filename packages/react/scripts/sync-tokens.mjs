@@ -1,0 +1,127 @@
+// SPDX-License-Identifier: MIT
+import { readFileSync, writeFileSync } from 'node:fs'
+import { fileURLToPath } from 'node:url'
+import { dirname, resolve } from 'node:path'
+
+// src/tokens/tokens.json + src/tokens/motion.tokens.json → src/tokens/tokens.css（本包的 token 层）。
+// 搬自 KATANAview 的 scripts/sync-tokens.mjs（2026-11-14，KatanaUI #2：设计系统独立成仓库，token 源头随包走）；原作者同为本项目，许可证改为 MIT。
+// token 名与组件卡、原型完全一致，卡里的 CSS 可以原样搬进来。
+// 主题：:root 是 Console；其余已实装的主题各出一块 :root[data-theme='…']，只写与 Console 不同的值（引用型 token 随被引用的值走，不用重写）。
+// 有 reduced 的 token（玻璃）在「减少透明度」时另出一块 :root[data-theme='…'][data-transparency='reduced']。
+// 用法：node scripts/sync-tokens.mjs 重新生成；加 --check 只比对，生成物与源头不一致就退出码 1（pnpm test 跑这个）。
+
+const pkg = resolve(dirname(fileURLToPath(import.meta.url)), '..')
+const check = process.argv.includes('--check')
+const tokens = JSON.parse(readFileSync(resolve(pkg, 'src/tokens/tokens.json'), 'utf8'))
+const motion = JSON.parse(readFileSync(resolve(pkg, 'src/tokens/motion.tokens.json'), 'utf8'))
+const target = resolve(pkg, 'src/tokens/tokens.css')
+
+const cssValue = (value) => String(value).replace(/\{([^}]+)\}/g, (_, name) => `var(--${name})`)
+
+/** 弹簧 → CSS linear() 缓动 + 时长（与 motion.ts 里 motion/react 用的是同一组参数）。 */
+function springEasing({ stiffness, damping, mass }) {
+  const dt = 1 / 600
+  const points = []
+  let x = 0
+  let v = 0
+  let t = 0
+  while (t < 2) {
+    const a = (-stiffness * (x - 1) - damping * v) / mass
+    v += a * dt
+    x += v * dt
+    t += dt
+    points.push([t, x])
+    if (t > 0.1 && Math.abs(x - 1) < 0.001 && Math.abs(v) < 0.01) break
+  }
+  const total = points[points.length - 1][0]
+  const samples = Array.from({ length: 25 }, (_, i) => {
+    if (i === 0) return 0
+    const at = (total * i) / 24
+    const nearest = points.reduce((best, point) => (Math.abs(point[0] - at) < Math.abs(best[0] - at) ? point : best))
+    return Math.round(nearest[1] * 1000) / 1000
+  })
+  return { easing: `linear(${samples.join(', ')})`, ms: Math.round(total * 1000) }
+}
+
+/** 已实装、要出样式块的主题（Console 在 :root，不在这里）。 */
+const THEMES = ['graphite']
+
+/**
+ * 「红涨绿跌」（#456、决策记录 0019）：data-updown="cn" 时互换的 token 对。每个主题各出一块（-100/-200 档是写死的色值，两个主题不一样），
+ * 内容是把一对的值对调；引用型的（pnl-up → signal-green）对调后仍是引用，Graphite 的绿红跟着 Graphite 走。
+ * 表示错误、危险的 signal-red 不在里面。
+ */
+const UPDOWN_SWAPS = [
+  ['pnl-up', 'pnl-down'],
+  ['pnl-up-area', 'pnl-down-area'],
+  ['div-neg-100', 'div-pos-100'],
+  ['div-neg-200', 'div-pos-200'],
+]
+
+const groups = [tokens.color, tokens.spacing, tokens.radius, tokens.shadow, tokens.border]
+const lines = []
+const themed = Object.fromEntries(THEMES.map((theme) => [theme, { values: [], reduced: [] }]))
+for (const group of groups) {
+  for (const token of group.tokens) {
+    const themedValue = token.value && typeof token.value === 'object'
+    const value = themedValue ? token.value.console : token.value
+    if (value !== undefined) lines.push(`  --${token.name}: ${cssValue(value)};`)
+    if (!themedValue) continue
+    for (const theme of THEMES) {
+      const other = token.value[theme]
+      if (other === undefined) throw new Error(`src/tokens/tokens.json：${token.name} 缺少 ${theme} 的值`)
+      if (cssValue(other) !== cssValue(value)) themed[theme].values.push(`  --${token.name}: ${cssValue(other)};`)
+      const reduced = token.reduced?.[theme]
+      if (reduced !== undefined) themed[theme].reduced.push(`  --${token.name}: ${cssValue(reduced)};`)
+    }
+  }
+}
+const colorValue = (name, theme) => {
+  const token = tokens.color.tokens.find((item) => item.name === name)
+  if (!token) throw new Error(`src/tokens/tokens.json：UPDOWN_SWAPS 里的 ${name} 不存在`)
+  return cssValue(token.value[theme])
+}
+const updown = Object.fromEntries(['console', ...THEMES].map((theme) => [theme, []]))
+for (const theme of Object.keys(updown)) {
+  for (const [a, b] of UPDOWN_SWAPS) {
+    const [va, vb] = [colorValue(a, theme), colorValue(b, theme)]
+    if (va === vb) continue
+    updown[theme].push(`  --${a}: ${vb};`, `  --${b}: ${va};`)
+  }
+}
+// 文字样式表：--text-<档> 是 font 简写的前三项（字重 字号/行高），组件写 font: var(--text-档) var(--font-角色)；
+// --text-<档>-size 给只要字号的地方（继承字重与行高的小件、画布取字号）；有字距的档另出 --text-<档>-tracking。
+for (const { name, weight, size, line, tracking } of tokens.type.scale.tokens) {
+  lines.push(`  --text-${name}: ${weight} ${size}/${line};`, `  --text-${name}-size: ${size};`)
+  if (tracking) lines.push(`  --text-${name}-tracking: ${tracking};`)
+}
+for (const [name, family] of Object.entries(tokens.type.families)) lines.push(`  --font-${name}: ${family.value};`)
+for (const name of ['snappy', 'gentle', 'settle']) {
+  const { easing, ms } = springEasing(motion[name])
+  lines.push(`  --ease-${name}: ${easing};`, `  --dur-${name}: ${ms}ms;`)
+}
+
+const blocks = [`:root {\n${lines.join('\n')}\n}`]
+for (const theme of THEMES) {
+  blocks.push(`:root[data-theme='${theme}'] {\n${themed[theme].values.join('\n')}\n}`)
+  if (themed[theme].reduced.length)
+    blocks.push(`:root[data-theme='${theme}'][data-transparency='reduced'] {\n${themed[theme].reduced.join('\n')}\n}`)
+}
+// 涨跌约定块放在主题块之后：选择器的权重相同，后写的赢。
+blocks.push(`:root[data-updown='cn'] {\n${updown.console.join('\n')}\n}`)
+for (const theme of THEMES)
+  blocks.push(`:root[data-theme='${theme}'][data-updown='cn'] {\n${updown[theme].join('\n')}\n}`)
+const generated = `/* Generated from src/tokens/tokens.json + src/tokens/motion.tokens.json by scripts/sync-tokens.mjs. Do not edit. */\n${blocks.join('\n')}\n`
+let current = ''
+try {
+  current = readFileSync(target, 'utf8')
+} catch {
+  /* first run */
+}
+if (current !== generated) {
+  if (check) {
+    console.error('src/tokens/tokens.css 与 token 源头不一致：跑 pnpm tokens:sync 重新生成并提交。')
+    process.exit(1)
+  }
+  writeFileSync(target, generated)
+}
