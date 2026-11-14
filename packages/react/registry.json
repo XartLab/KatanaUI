@@ -2036,6 +2036,29 @@
       ]
     },
     {
+      "name": "decimal-field",
+      "type": "registry:component",
+      "title": "Decimal Field",
+      "description": "价格、数量的输入框：值是十进制字符串（不经浮点），按品种的最小变动价位或最小下单量走一格；右边可选 − / + 两个图标按钮，↑ / ↓ 走一格、Shift 十格。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/button",
+        "@katana/cn",
+        "@katana/input",
+        "@katana/quant-format",
+        "@katana/tooltip"
+      ],
+      "files": [
+        {
+          "path": "src/quant/decimal-field.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/decimal-field.tsx"
+        }
+      ]
+    },
+    {
       "name": "equity-curve-model",
       "type": "registry:component",
       "title": "Equity Curve Model",
@@ -2379,11 +2402,19 @@
       "type": "registry:lib",
       "title": "Quant Format",
       "description": "价格、涨跌幅、数量的写法（纯函数，不带 React；另有 @katana-ui/react/quant/format 出口给画布与 Worker）。小数位由调用方传，不在这里猜。",
+      "dependencies": [
+        "bignumber.js@11.1.5"
+      ],
       "files": [
         {
           "path": "src/quant/format/change.ts",
           "type": "registry:lib",
           "target": "~/src/katana/ui/quant/format/change.ts"
+        },
+        {
+          "path": "src/quant/format/decimal-step.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/quant/format/decimal-step.ts"
         },
         {
           "path": "src/quant/format/index.ts",

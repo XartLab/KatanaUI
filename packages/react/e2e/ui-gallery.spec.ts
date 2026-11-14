@@ -1700,6 +1700,57 @@ for (const theme of THEMES) {
       await expect(format.getByTestId('quant-price-crypto')).toHaveText('0.00000123')
     })
 
+    test('十进制框：↑ 按 tick 走一格（先对齐），Shift 十格，只读与禁用不动；点 − / + 生效；warning 没有 aria-invalid', async ({
+      page,
+    }) => {
+      await open(page, theme, 'decimal-field')
+      const field = section(page, 'decimal-field')
+      const price = field.getByRole('textbox', { name: '价格', exact: true })
+      const priceOut = field.getByTestId('decimal-price-out')
+      // 67000.3 不在 0.5 的格上：↑ 先对齐到 67000.5，再 ↑ 到 67001。
+      await price.focus()
+      await page.keyboard.press('ArrowUp')
+      await expect(price).toHaveValue('67000.5')
+      await expect(priceOut).toHaveText('67000.5')
+      await page.keyboard.press('ArrowUp')
+      await expect(price).toHaveValue('67001')
+      await page.keyboard.press('ArrowDown')
+      await expect(price).toHaveValue('67000.5')
+      await page.keyboard.press('Shift+ArrowUp')
+      await expect(price).toHaveValue('67005.5')
+      // 点 − / +：生效，名字是调用方传的。
+      await field.getByRole('button', { name: '加一格' }).first().click()
+      await expect(price).toHaveValue('67006')
+      await field.getByRole('button', { name: '减一格' }).first().click()
+      await expect(price).toHaveValue('67005.5')
+      // 空框从 base（1）起，步长 0.001；框里右侧有单位。
+      const qty = field.getByRole('textbox', { name: '数量', exact: true })
+      await qty.focus()
+      await page.keyboard.press('ArrowDown')
+      await expect(qty).toHaveValue('0.999')
+      await expect(field.locator('[data-slot="decimal-field-unit"]')).toHaveText('BTC')
+      // 只读：方向键不改，按钮禁用，字还在。
+      const readOnly = field.getByRole('textbox', { name: '只读价格' })
+      await readOnly.focus()
+      await page.keyboard.press('ArrowUp')
+      await page.keyboard.press('Shift+ArrowUp')
+      await expect(readOnly).toHaveValue('100.5')
+      await expect(readOnly).toHaveAttribute('readonly', '')
+      const disabled = field.getByRole('textbox', { name: '禁用价格' })
+      await expect(disabled).toBeDisabled()
+      // 按钮依次是：价格、数量、只读、禁用；后两组的 + 都灰掉。
+      await expect(field.getByRole('button', { name: '加一格' }).nth(2)).toBeDisabled()
+      await expect(field.getByRole('button', { name: '加一格' }).nth(3)).toBeDisabled()
+      // error 报无效，warning 不报；两者边色都不是默认边色。
+      const borderOf = (locator: Locator) => locator.evaluate((element) => getComputedStyle(element).borderTopColor)
+      const plain = await borderOf(price)
+      await expect(field.getByRole('textbox', { name: '错误价格' })).toHaveAttribute('aria-invalid', 'true')
+      const warning = field.getByRole('textbox', { name: '警告价格' })
+      await expect(warning).not.toHaveAttribute('aria-invalid')
+      expect(await borderOf(warning)).not.toBe(plain)
+      expect(await borderOf(field.getByRole('textbox', { name: '错误价格' }))).not.toBe(plain)
+    })
+
     test('量化第二批：订单流仪表的条按读数画在中线两侧、不用涨跌色；N/A 不画条、估算灰显', async ({ page }) => {
       await open(page, theme, 'flow-gauges')
       const flow = section(page, 'flow-gauges').locator('.k-flow').first()

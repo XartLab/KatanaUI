@@ -177,6 +177,9 @@ importers:
       '@tanstack/react-virtual':
         specifier: 3.14.25
         version: 3.14.25(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+      bignumber.js:
+        specifier: 11.1.5
+        version: 11.1.5
       class-variance-authority:
         specifier: 0.7.1
         version: 0.7.1
@@ -2070,6 +2073,9 @@ packages:
     resolution: {integrity: sha512-QYph+vfurmaxhNwi9FprfmtkT5cx2Keg8FzZ0vnjO8ukscIybVyZGMFwdllKGlTI6qyU8ck43OM9UXh+IFJihQ==}
     engines: {node: '>=6.0.0'}
     hasBin: true
+
+  bignumber.js@11.1.5:
+    resolution: {integrity: sha512-6WmzCNtUnfKpbozq+hOgWaZMMzORmYBwF1xZScyoIX3QRYWeKTtxxwDOW5tIz7C9BdjkIYHGTcelCLkXg0mndw==}
 
   body-parser@2.4.0:
     resolution: {integrity: sha512-Ifk1KcLrxaGt1occQagQNFNNOqRt1LFuehEnHHzB8Z6cRgIxRU1TBaiIsUiCdA+gy5PL7Y1IX31DNKkRmxtXjQ==}
@@ -5203,6 +5209,8 @@ snapshots:
   base64-stream@1.0.0: {}
 
   baseline-browser-mapping@2.11.37: {}
+
+  bignumber.js@11.1.5: {}
 
   body-parser@2.4.0:
     dependencies:

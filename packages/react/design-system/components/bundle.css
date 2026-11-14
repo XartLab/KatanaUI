@@ -2733,6 +2733,10 @@
   background-color: var(--alpha-white-4);
 }
 
+.data-\[status\=warning\]\:border-\(--signal-amber\)[data-status="warning"] {
+  border-color: var(--signal-amber);
+}
+
 .data-\[tone\=down\]\:text-\(--pnl-down\)[data-tone="down"] {
   color: var(--pnl-down);
 }

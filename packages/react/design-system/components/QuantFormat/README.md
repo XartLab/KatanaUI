@@ -30,6 +30,16 @@
 | --- | --- | --- | --- |
 | `digits` | `number` | `2 / 8` | 小数位。 |
 
+### stepDecimal(value, base, step, direction, multiplier)
+
+十进制字符串走一格（bignumber.js，不经浮点）：空框从 base 起，不在格子上的先往走的方向对齐；结果小于等于 0、或不是十进制写法返回 null。
+
+| 属性 | 类型 | 默认 | 说明 |
+| --- | --- | --- | --- |
+| `step` | `string` | — | 一格有多大（最小变动价位或最小下单量）；0 按 1 走。 |
+| `direction` | `1 \| -1` | — | 加或减。 |
+| `multiplier` | `number` | `1` | 走几格（Shift 传 10）。 |
+
 ### formatQuantity / formatCount / formatCompact / compactParts / AUTO_SIZE
 
 数量的缩写（K / M / B）与千分位；单位 base 是币量、usd 带 $。

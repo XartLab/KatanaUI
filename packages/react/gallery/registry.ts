@@ -1375,6 +1375,72 @@ export const PAGES: readonly DocPage[] = [
     keys: [],
   },
   {
+    id: 'decimal-field',
+    group: 'quant',
+    cardHeight: 300,
+    title: 'DecimalField 十进制框',
+    summary:
+      '价格、数量的输入框：值是十进制字符串（不经浮点），按品种的最小变动价位或最小下单量走一格；右边可选 − / + 两个图标按钮，↑ / ↓ 走一格、Shift 十格。',
+    exports: ['DecimalField'],
+    props: [
+      {
+        part: 'DecimalField',
+        note: '其余属性透传给里面的 input（不含 type、step、size）；className 落在最外层。',
+        rows: [
+          { name: 'value', type: 'string', desc: '框里的字，十进制写法；打字自由，合不合法由调用方与 Gateway 判。' },
+          {
+            name: 'onValue',
+            type: '(value: string) => void',
+            desc: '打字与走格都回调；走格给的是 toFixed() 的规范字符串。',
+          },
+          {
+            name: 'step',
+            type: 'string',
+            desc: '一格有多大（最小变动价位或最小下单量）；"0" 按 1 走。不给用户设步长。',
+          },
+          {
+            name: 'base',
+            type: 'string | null',
+            default: 'null',
+            desc: '空框走格从哪起（例：最新价）；没有就空框不动。',
+          },
+          { name: 'label', type: 'string', desc: '读屏名（必填：包里没有文字）。' },
+          { name: 'unit', type: 'string', desc: '框里右侧的单位后缀，不可点。' },
+          { name: 'placeholder', type: 'string', desc: '空框时的占位字。' },
+          { name: 'disabled', type: 'boolean', default: 'false', desc: '灰掉：不能打字，方向键与按钮都不动它。' },
+          { name: 'readOnly', type: 'boolean', default: 'false', desc: '能选能复制，方向键与按钮都不改值。' },
+          {
+            name: 'status',
+            type: "'error' | 'warning'",
+            desc: 'error：aria-invalid 并换危险色边；warning：只换琥珀色边，不设 aria-invalid。',
+          },
+          {
+            name: 'buttons',
+            type: '{ decrease: string; increase: string }',
+            desc: '给了才显示 − / + 按钮；两个字符串是读屏名，也是悬停提示。包里不带语言。',
+          },
+        ],
+      },
+    ],
+    states: [
+      '默认：打字自由；↑ / ↓ 走一格，Shift 十格；空框从 base 起，不在格子上的第一格先往走的方向对齐。',
+      '走到 0 或以下、框里不是十进制写法：不动。',
+      '只读、禁用：方向键与 − / + 都不改值；禁用还不能打字。',
+      'error：aria-invalid=true；warning：只换边色，读屏不报无效。',
+    ],
+    donts: [
+      '不要把值转成 number 再传：价格与数量不经浮点。',
+      '不要在包里写按钮文字，buttons 由调用方传。',
+      '不要在这里校验价位：在不在格子上由调用方与 Gateway 判。',
+    ],
+    composition: 'DecimalField\n  Input\n  Button（icon，− / +，带悬停提示）\n  stepDecimal（format 子出口）',
+    keys: [
+      ['↑ / ↓', '加或减一格'],
+      ['Shift + ↑ / ↓', '十格'],
+      ['Tab', '从输入框到 − 再到 +；Enter / Space 触发按钮'],
+    ],
+  },
+  {
     id: 'quant-format',
     group: 'quant',
     cardHeight: 120,
@@ -1390,6 +1456,7 @@ export const PAGES: readonly DocPage[] = [
       'formatPercentChange',
       'formatPrice',
       'formatQuantity',
+      'stepDecimal',
       'toneOf',
     ],
     props: [
@@ -1415,6 +1482,15 @@ export const PAGES: readonly DocPage[] = [
         part: 'formatPercentChange(value, digits) / toneOf(value, digits)',
         note: '都先四舍五入再定符号与方向。',
         rows: [{ name: 'digits', type: 'number', default: '2 / 8', desc: '小数位。' }],
+      },
+      {
+        part: 'stepDecimal(value, base, step, direction, multiplier)',
+        note: '十进制字符串走一格（bignumber.js，不经浮点）：空框从 base 起，不在格子上的先往走的方向对齐；结果小于等于 0、或不是十进制写法返回 null。',
+        rows: [
+          { name: 'step', type: 'string', desc: '一格有多大（最小变动价位或最小下单量）；0 按 1 走。' },
+          { name: 'direction', type: '1 | -1', desc: '加或减。' },
+          { name: 'multiplier', type: 'number', default: '1', desc: '走几格（Shift 传 10）。' },
+        ],
       },
       {
         part: 'formatQuantity / formatCount / formatCompact / compactParts / AUTO_SIZE',
