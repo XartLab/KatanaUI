@@ -36,13 +36,13 @@ describe('盈亏归因', () => {
     expect(attributionBar(500, 100).width).toBe(0.5)
   })
 
-  it('渲染：编号强调色、点阵列头、已平仓行删除线加脚注、合计读数、SOURCE 行，表格视图按钮总有', () => {
-    const closed = items.map((item) => (item.key === 'c' ? { ...item, closed: 'C 于 09-18 平仓' } : item))
+  it('渲染：编号强调色、点阵列头、已平仓行删除线加行内小标签、汇总行、SOURCE 行，表格视图按钮总有', () => {
+    const closed = items.map((item) => (item.key === 'c' ? { ...item, closed: '已平 09-18' } : item))
     const html = renderToStaticMarkup(
       <AttributionBars
         items={closed}
         title="P&L ATTRIBUTION"
-        meta="归因 · 今日"
+        meta={(max) => `归因 · 刻度 ±${max}`}
         label="归因"
         formatValue={String}
         otherLabel={(n) => `其他 ×${n}`}
@@ -50,8 +50,8 @@ describe('盈亏归因', () => {
         shareLabel="占比"
         readouts={[{ key: 'sum', label: '合计', text: '+120', value: 120 }]}
         focusKey="a"
-        heads={{ index: 'IDX', item: '项', value: '值', share: '占比' }}
-        footer={{ count: '5 项', scale: (max) => `刻度 ±${max}`, source: 'SOURCE · 台账', note: '研究账本不计入' }}
+        heads={{ index: 'IDX', item: '项', value: '值', share: '占比 |贡献|', shareTitle: '占总贡献绝对值之和' }}
+        footer={{ count: '5 项', source: 'SOURCE · 台账', note: '研究账本不计入' }}
         actionLabels={{ group: '图工具', table: '表格视图', exportCsv: '导出', fullscreen: '全屏' }}
       />,
     )
@@ -59,9 +59,12 @@ describe('盈亏归因', () => {
     expect(html).toContain('k-dotfill')
     expect(html).toContain('data-focus="true"')
     expect(html).toContain('data-tone="down"')
-    expect(html).toContain('刻度 ±300')
+    expect(html).toContain('归因 · 刻度 ±300')
+    expect(html).toContain('5 项 · 研究账本不计入')
+    expect(html).toContain('title="占总贡献绝对值之和"')
     expect(html).toContain('data-closed="true"')
-    expect(html).toContain('02 C 于 09-18 平仓')
+    expect(html).toContain('已平 09-18')
+    expect(html).not.toContain('attribution-closed-note')
     expect(html).toContain('data-slot="attribution-readout"')
     expect(html).toContain('SOURCE · 台账')
     expect(html).toContain('P&amp;L ATTRIBUTION')

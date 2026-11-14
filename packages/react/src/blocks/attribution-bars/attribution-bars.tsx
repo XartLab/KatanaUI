@@ -2,7 +2,7 @@
 // 盈亏归因（组件卡 PnLAttribution，2026-11-14 读 design/katana-console/project/components/PnLAttribution；版式照 SeriesExplorer 的工作台加工业文档风，
 // 清单照参照图的 BILL OF MODULES）：今天（或选中区间）的钱从哪来。顶行是工作台的 Toolbar（标题、维度与区间的分段、表格 / 导出），
 // 标题下一行点阵元信息；清单：列头点阵小字加实线，每行编号（强调色点阵字）、标签、零轴横条（正在右、负在左，条是 ink-200 的纹理，焦点项强调色）、
-// 数值（无衬线 tabular 右对齐，只有数值用涨跌色）、占比；已平仓的行整行删除线降墨色，下面一行点阵脚注；右侧是左边 2px 强调色竖条的合计读数。
+// 数值（无衬线 tabular 右对齐，只有数值用涨跌色）、占比；已平仓的行整行删除线降墨色，名称后一个点阵小标签写平仓日；元信息行下面一行汇总：合计大号（左 2px 强调色竖条），正负贡献小一号跟在右边。
 // 排序按 |贡献| 降序、正负分组，超过 7 项折「其他 ×n」，费用·税永远在最底、不着色。点阵字只给装饰性的标签（pixel.md：整数字号、不加字距）。
 // 不用瀑布图（卡明写：阅读要跟踪累计基线，认知负荷高）。文字都从 props 来。切维度时按位置对应行，条长用 transition 过渡。
 import { DownloadIcon, ExpandIcon, TableIcon } from 'lucide-react'
@@ -26,8 +26,8 @@ export type AttributionBarsProps = {
   items: readonly AttributionItem[]
   /** 标题（英文部分宽体大写）。 */
   title: string
-  /** 标题下一行的元信息（点阵小字，例「归因 · 今日 · 账户 A B · CNY · 刻度 ±80 000」）；不给不画。 */
-  meta?: string
+  /** 标题下一行的元信息（点阵小字）；拿到对称刻度 ±max，刻度只在这一处写（例「归因 · 今日 · CNY · 刻度 ±80,000」）。 */
+  meta?: (scale: number) => string
   /** 整张图的读屏名。 */
   label: string
   /** 维度切换（品种 / 账户 / 策略 / 资产类别）；换维度由调用方换 items。 */
@@ -42,16 +42,16 @@ export type AttributionBarsProps = {
   formatShare: (share: number) => string
   /** tooltip 里占比那一行的标签。 */
   shareLabel: string
-  /** 右侧合计读数：每个一块，左边 2px 强调色竖条；value 决定数字的涨跌色。 */
+  /** 汇总行：第一个是合计（大号，左 2px 强调色竖条），其余（正贡献、负贡献）小一号跟在右边；value 决定数字的涨跌色。 */
   readouts?: readonly { key: string; label: string; text: string; value?: number }[]
   /** 当前联动的品种：它的条转强调色纹理。 */
   focusKey?: string
   /** 点击一行（写联动上下文）。 */
   onSelect?: (key: string) => void
-  /** 列头（点阵小字）：编号、项、贡献、占比；表格视图也用。 */
-  heads: { index: string; item: string; value: string; share: string }
-  /** 页脚：项数说明、刻度（拿到 ±max）、来源（点阵 SOURCE 行）与声明（例：研究账本不计入）。 */
-  footer: { count: string; scale: (max: number) => string; source?: string; note?: string }
+  /** 列头（点阵小字）：编号、项、贡献、占比；表格视图也用。shareTitle 是占比列头的悬停说明（写明分母）。 */
+  heads: { index: string; item: string; value: string; share: string; shareTitle?: string }
+  /** 页脚一行：左边点阵 SOURCE，右端「项数 · 声明」。 */
+  footer: { count: string; source?: string; note?: string }
   /** 右上角工具的读屏名；导出与全屏的回调不给就不画。表格视图总有。 */
   actionLabels: { group: string; table: string; exportCsv: string; fullscreen: string }
   onExport?: () => void
@@ -105,7 +105,6 @@ export function AttributionBars({
       ))}
     </ToggleGroup>
   )
-  const closedRows = rows.map((row, i) => ({ row, i })).filter(({ row }) => row.closed !== null)
 
   return (
     <figure className={cn('k-attr', className)} data-slot="attribution-bars" aria-label={label}>
@@ -137,8 +136,28 @@ export function AttributionBars({
       </div>
       {meta && (
         <p className="k-attr-meta" data-slot="attribution-meta">
-          {meta}
+          {meta(scale)}
         </p>
+      )}
+      {readouts && readouts.length > 0 && (
+        <div className="k-attr-summary" data-slot="attribution-readouts">
+          {readouts.map((readout, n) => (
+            <div
+              key={readout.key}
+              className="k-attr-readout"
+              data-slot="attribution-readout"
+              data-size={n === 0 ? 'main' : 'sub'}
+            >
+              <span className="k-attr-readout-label">{readout.label}</span>
+              <span
+                className="k-attr-readout-value"
+                data-tone={readout.value === undefined ? undefined : tone(readout.value)}
+              >
+                {readout.text}
+              </span>
+            </div>
+          ))}
+        </div>
       )}
       <div className="k-attr-body">
         <div className="k-attr-main">
@@ -149,7 +168,7 @@ export function AttributionBars({
                   <th>{heads.index}</th>
                   <th>{heads.item}</th>
                   <th>{heads.value}</th>
-                  <th>{heads.share}</th>
+                  <th title={heads.shareTitle}>{heads.share}</th>
                 </tr>
               </thead>
               <tbody>
@@ -170,7 +189,7 @@ export function AttributionBars({
                 <span>{heads.item}</span>
                 <span />
                 <span>{heads.value}</span>
-                <span>{heads.share}</span>
+                <span title={heads.shareTitle}>{heads.share}</span>
               </div>
               <ul className="k-attr-rows" role="list" aria-label={label} onPointerLeave={() => setActive(null)}>
                 {rows.map((row, i) => {
@@ -196,7 +215,14 @@ export function AttributionBars({
                       <span className="k-attr-index" data-slot="attribution-index">
                         {row.kind === 'fee' ? '–' : pad(i + 1)}
                       </span>
-                      <span className="k-attr-label">{text(row)}</span>
+                      <span className="k-attr-label">
+                        {text(row)}
+                        {row.closed !== null && (
+                          <span className="k-attr-closed" data-slot="attribution-closed">
+                            {row.closed}
+                          </span>
+                        )}
+                      </span>
                       <span className="k-attr-axis">
                         <i
                           className="k-attr-bar k-dotfill"
@@ -224,40 +250,18 @@ export function AttributionBars({
                   )
                 })}
               </ul>
-              {closedRows.map(({ row, i }) => (
-                <p key={row.key} className="k-attr-foot-note" data-slot="attribution-closed-note">
-                  {pad(i + 1)} {row.closed}
-                </p>
-              ))}
             </>
           )}
         </div>
-        {readouts && readouts.length > 0 && (
-          <aside className="k-attr-aside" data-slot="attribution-readouts">
-            {readouts.map((readout) => (
-              <div key={readout.key} className="k-attr-readout" data-slot="attribution-readout">
-                <span className="k-attr-readout-label">{readout.label}</span>
-                <span
-                  className="k-attr-readout-value"
-                  data-tone={readout.value === undefined ? undefined : tone(readout.value)}
-                >
-                  {readout.text}
-                </span>
-              </div>
-            ))}
-          </aside>
-        )}
       </div>
       <div className="k-attr-foot">
-        <span>{footer.count}</span>
-        <span data-slot="attribution-scale">{footer.scale(scale)}</span>
-        {footer.note && <span className="k-attr-note">{footer.note}</span>}
-      </div>
-      {footer.source && (
-        <p className="k-attr-source" data-slot="attribution-source">
+        <span className="k-attr-source" data-slot="attribution-source">
           {footer.source}
-        </p>
-      )}
+        </span>
+        <span className="k-attr-note" data-slot="attribution-note">
+          {[footer.count, footer.note].filter(Boolean).join(' · ')}
+        </span>
+      </div>
     </figure>
   )
 }

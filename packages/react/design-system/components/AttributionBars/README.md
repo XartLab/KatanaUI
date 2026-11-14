@@ -1,6 +1,6 @@
 # AttributionBars
 
-今天（或选中区间）的钱从哪来：工作台顶行（宽体标题、维度与区间分段、表格 / 导出），点阵元信息与列头，每行编号加零轴条形（正在右、负在左，条是点阵纹理不用红绿，只有数字用涨跌色），已平仓的行整行删除线，右侧合计读数左带 2px 强调竖条；按 |贡献| 正负分组降序，超过 7 项折「其他 ×n」，费用·税永远在最底。对设计稿的 PnLAttribution 卡（卡明写不用瀑布图），语言同 SeriesExplorer。
+今天（或选中区间）的钱从哪来：工作台顶行（宽体标题、维度与区间分段、表格 / 导出），点阵元信息与列头，每行编号加零轴条形（正在右、负在左，条是点阵纹理不用红绿，只有数字用涨跌色），已平仓的行整行删除线并在名称后挂点阵小标签，元信息行下面一行汇总（合计大号左带 2px 强调竖条，正负贡献小一号）；按 |贡献| 正负分组降序，超过 7 项折「其他 ×n」，费用·税永远在最底。对设计稿的 PnLAttribution 卡（卡明写不用瀑布图），语言同 SeriesExplorer。
 
 ## Provide
 
@@ -10,15 +10,15 @@
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `items` | `{ key, label, value, kind?, detail? }[]` | — | kind 为 fee 的是费用·税，永远单独一行放最底；closed 是平仓说明（整行删除线，下面写脚注）；detail 是 tooltip 里多写的几行。 |
+| `items` | `{ key, label, value, kind?, detail? }[]` | — | kind 为 fee 的是费用·税，永远单独一行放最底；closed 是名称后的点阵小标签（整行删除线）；detail 是 tooltip 里多写的几行。 |
 | `formatValue / formatShare` | `(n) => string` | — | 贡献与占比写成什么字。 |
 | `otherLabel / shareLabel` | `(n) => string / string` | — | 「其他 ×n」与占比那一行的标签。 |
-| `title / meta` | `string` | — | 标题（宽体大写英文）与下一行点阵元信息。 |
+| `title / meta` | `string / (scale) => string` | — | 标题（宽体大写英文）与下一行点阵元信息；刻度 ±max 只在元信息里写一次。 |
 | `dimensions / ranges` | `{ label, options, value, onChange }` | — | 顶行的两组分段；换了就换 items，同一位置的条长会过渡。 |
-| `readouts` | `{ key, label, text, value? }[]` | — | 右侧合计读数：左 2px 强调竖条，标签点阵小字，数值大号无衬线，value 决定涨跌色。 |
+| `readouts` | `{ key, label, text, value? }[]` | — | 汇总行：第一个是合计（大号，左 2px 强调竖条），其余小一号跟在右边；标签点阵小字，value 决定涨跌色。 |
 | `focusKey / onSelect` | `string / (key) => void` | — | 联动的品种：它的条转强调色纹理；点击或 Enter 写联动上下文。 |
-| `footer` | `{ count, scale, source?, note? }` | — | 页脚：项数说明、对称刻度（拿到 ±max）、点阵 SOURCE 行与声明（研究账本不计入）。 |
-| `actionLabels / heads` | `object` | — | 顶行按钮的读屏名与列头（编号、项、贡献、占比；点阵小字）；导出与全屏的回调不给就不画那个按钮，表格视图总有。 |
+| `footer` | `{ count, source?, note? }` | — | 页脚一行：左边点阵 SOURCE，右端「项数 · 声明」（研究账本不计入）。 |
+| `actionLabels / heads` | `object` | — | 顶行按钮的读屏名与列头（编号、项、贡献、占比，可带 shareTitle 写明分母；点阵小字）；导出与全屏的回调不给就不画那个按钮，表格视图总有。 |
 | `maxItems` | `number` | `7` | 超过几项折进「其他」（含「其他」这一行）。 |
 
 ## States
@@ -42,8 +42,9 @@
 AttributionBars
   Toolbar 顶行（标题 · 维度 / 区间分段 · 表格 / 导出 / 全屏）
   点阵元信息
-  列头 + ul 每行（编号 · 标签 · 零轴 + 条 · 数字 · 占比；悬停出 LCD tooltip）+ 平仓脚注 | 右侧合计读数
-  页脚（项数 · ±max 刻度 · 声明）+ SOURCE 行
+  汇总行（合计 · 正贡献 · 负贡献）
+  列头 + ul 每行（编号 · 标签 + 平仓小标签 · 零轴 + 条 · 数字 · 占比；悬停出 LCD tooltip）
+  页脚一行（SOURCE · 项数与声明）
 ```
 
 ## Keyboard

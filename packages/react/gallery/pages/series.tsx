@@ -110,7 +110,7 @@ const ATTR_SYMBOLS: AttributionItem[] = [
   },
   { key: '00700', label: '00700 腾讯控股', value: 14_300 },
   { key: '002475', label: '002475 立讯精密', value: 8_760 },
-  { key: '601012', label: '601012 隆基绿能', value: 1_640, closed: '601012 于 09-18 平仓' },
+  { key: '601012', label: '601012 隆基绿能', value: 1_640, closed: '已平 09-18' },
   { key: '002594', label: '002594 比亚迪', value: 920 },
   { key: '688981', label: '688981 中芯国际', value: 480 },
   { key: '000333', label: '000333 美的集团', value: 200 },
@@ -155,7 +155,7 @@ export function AttributionBarsDemo() {
         <AttributionBars
           items={items}
           title="P&L ATTRIBUTION"
-          meta="归因 · 今日 · 账户 A B · CNY · 刻度 ±80 000"
+          meta={(max) => `归因 · 今日 · 账户 A B · CNY · 刻度 ±${max.toLocaleString('en-US')}`}
           label="今日盈亏归因（示例）"
           dimensions={{
             label: '维度',
@@ -189,10 +189,9 @@ export function AttributionBarsDemo() {
           ]}
           focusKey={focus}
           onSelect={setFocus}
-          heads={{ index: 'IDX', item: '品种', value: '贡献', share: '占比' }}
+          heads={{ index: 'IDX', item: '品种', value: '贡献', share: '占比 |贡献|', shareTitle: '占总贡献绝对值之和' }}
           footer={{
-            count: `${items.length} 项 · 排序 |贡献|`,
-            scale: (max) => `刻度 ±${max.toLocaleString('en-US')}`,
+            count: `${items.length} 项`,
             source: 'SOURCE · 台账成交 + 行情估值 · 演示数据',
             note: '研究账本不计入',
           }}
@@ -203,7 +202,7 @@ export function AttributionBarsDemo() {
       <p className="gal-note">
         {DEMO_NOTE}场景照设计稿 PnLAttribution 卡：方向用位置（正在右、负在左），条是 ink-200
         点阵纹理，焦点品种的条是强调色纹理，只有数字用涨跌色。超过 7 项折进「其他
-        ×n」，费用·税永远在最底；已平仓的行整行删除线。
+        ×n」，费用·税永远在最底；已平仓的行整行删除线、名称后一个「已平 09-18」点阵小标签。
       </p>
     </>
   )
