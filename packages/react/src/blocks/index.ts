@@ -2,7 +2,7 @@
 // @katana-ui/react/blocks 的出口：拼面板用的积木（#1869）。包里最上一层，可以用下面所有层（lib、primitives、katana、patterns、quant），
 // 不依赖应用：应用才有的能力（快捷键表、文案、右键菜单怎么画、问 Agent）经 DataGridHost 这类 context 或 props 传进来，没提供时件照常能用。
 export { DataGrid } from './data-grid/data-grid.tsx'
-export type { DataGridProps, GridColumnLayout, GridDensity, GridSlot } from './data-grid/data-grid.tsx'
+export type { DataGridProps, GridColumnLayout, GridDensity, GridRowProps, GridSlot } from './data-grid/data-grid.tsx'
 export type { ColumnFormat, ColumnType, GridColumn, GridSide, GridTone, SymbolValue } from './data-grid/columns.ts'
 export {
   DataGridHostProvider,
@@ -13,7 +13,6 @@ export {
 } from './data-grid/host.tsx'
 export { tableCsv, type SortSpec } from './data-grid/model.ts'
 export { EmptyState, type EmptyStateSlot } from './empty-state.tsx'
-export { PanelFrame, type PanelFrameLabels, type PanelFrameProps } from './panel-frame.tsx'
 export { EstimateBadge } from './estimate-badge.tsx'
 export { EventTimeline, type EventTimelineLabels, type EventTimelineProps } from './event-timeline.tsx'
 export type { EventKind, SessionMinutes, TimelineEvent } from './event-timeline-model.ts'
@@ -49,3 +48,16 @@ export {
   type GalaxyNode,
   type GalaxyPlace,
 } from './symbol-galaxy/galaxy-model.ts'
+export {
+  PanelFrame,
+  PanelFrameBody,
+  PanelFrameHeader,
+  type PanelFrameBodyProps,
+  type PanelFrameHeaderProps,
+  type PanelFrameProps,
+  type PanelFrameSlot,
+  type PanelFrameState,
+} from './panel-frame/panel-frame.tsx'
+export { StatusBar, type StatusBarProps, type StatusItem } from './status-bar/status-bar.tsx'
+export { collapsedItems, type FitItem } from './status-bar/status-bar-model.ts'
+export { WorkspaceTabs, type WorkspaceTab, type WorkspaceTabsProps } from './workspace-tabs/workspace-tabs.tsx'

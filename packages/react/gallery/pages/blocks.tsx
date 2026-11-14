@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-import { Bell, Camera, Settings } from 'lucide-react'
+import { Bell, Camera, Maximize2, Settings, X } from 'lucide-react'
 import { useState } from 'react'
 import {
   DataGrid,
@@ -7,17 +7,23 @@ import {
   EmptyState,
   EstimateBadge,
   PanelFrame,
+  PanelFrameBody,
+  PanelFrameHeader,
+  StatusBar,
   ToolButton,
   Toolbar,
   ToolbarGroup,
   ToolSlot,
+  WorkspaceTabs,
   type DataGridHost,
   type GridColumn,
   type GridColumnLayout,
   type SortSpec,
-} from '../../src/blocks'
-import { Button } from '../../src'
-import { Row, SAMPLE_MARK_SRC } from './parts'
+  type StatusItem,
+  type WorkspaceTab,
+} from '../../src/blocks/index.ts'
+import { Button, Splitter } from '../../src/index.ts'
+import { Row, SAMPLE_MARK_SRC } from './parts.tsx'
 
 // 积木层（@katana-ui/react/blocks，#1869）的演示。表里的数据都是写死的示例数据，不是行情。
 
@@ -102,6 +108,32 @@ const LAYOUT: readonly GridColumnLayout[] = [
   { id: 'note', label: 'Note', width: 80, visible: true },
 ]
 
+// 自定义列与子行：fills 列画任意内容（标签加成交笔数、按钮），点不到整行；有成交的行按 → 展开成交明细（示例数据）。
+const DETAIL_COLUMNS: readonly GridColumn<Example>[] = [
+  { id: 'symbol', type: 'symbol', value: (row) => row.symbol },
+  { id: 'pnl', type: 'pnl', value: (row) => row.pnl, format: { suffix: 'USDT' } },
+  {
+    id: 'fills',
+    type: 'custom',
+    text: (row) => `${row.note} ${row.fills}`,
+    cell: (row) => (
+      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+        <b>{row.note}</b>
+        <span>{row.fills} fills</span>
+        <Button size="sm" aria-label={`Close ${row.symbol.code}`}>
+          Close
+        </Button>
+      </span>
+    ),
+  },
+]
+
+const DETAIL_LAYOUT: readonly GridColumnLayout[] = [
+  { id: 'symbol', label: 'Symbol', width: 140, visible: true },
+  { id: 'pnl', label: 'PnL', width: 130, visible: true },
+  { id: 'fills', label: 'Strategy', width: 260, visible: true },
+]
+
 const HOST: DataGridHost = {
   texts: { copy: 'Copy', save: 'Export CSV…', resetColumns: 'Reset columns' },
 }
@@ -144,6 +176,33 @@ export function DataGridDemo() {
           density="compact"
           hideHeader
           interactive={false}
+          fit
+        />
+      </div>
+      <p className="gal-note">
+        示例数据：custom 列（格子里放任意内容）、rowProps（给行加 data-* 与提示）、可展开的子行。点进表后 ↓ 选一行，→
+        展开、← 收起。
+      </p>
+      <div data-testid="grid-detail" style={{ width: '100%', maxWidth: 560 }}>
+        <DataGrid
+          columns={DETAIL_COLUMNS}
+          layout={DETAIL_LAYOUT}
+          rows={EXAMPLES}
+          rowId={(row) => row.id}
+          label="Example rows with detail"
+          rowProps={(row) => ({ 'data-example': row.id, title: row.symbol.code })}
+          renderSubRow={(row) =>
+            row.fills === '1' ? null : (
+              <div style={{ padding: '6px 8px 8px', color: 'var(--ink-300)' }}>
+                Fills detail for {row.symbol.code}: {row.fills} fills, last at 2026-11-14.
+              </div>
+            )
+          }
+          density="relaxed"
+          autoRowHeight
+          selectable={false}
+          ruled
+          stretch
           fit
         />
       </div>
@@ -196,59 +255,192 @@ export function EstimateBadgeDemo() {
   )
 }
 
-const FRAME_LABELS = { settings: 'Settings', maximize: 'Maximize', restore: 'Restore', close: 'Close' }
-
-// 三种状态并排：普通、聚焦（橙色角括号）、空态（未连接）。内容是写死的示例，不是行情。
 export function PanelFrameDemo() {
+  const [focused, setFocused] = useState(true)
   return (
-    <div
-      style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 12, width: '100%', height: 250 }}
-    >
-      <PanelFrame
-        index="01"
-        title="Watchlist"
-        object="Core"
-        linkGroup="A"
-        linkLabel="Link group A"
-        meta="1S"
-        source="SOURCE · SIM FEED"
-        labels={FRAME_LABELS}
-        onMaximize={() => {}}
-        onClose={() => {}}
+    <div className="gal-stack" style={{ width: '100%', maxWidth: 560 }}>
+      <p className="gal-note">焦点面板（带角括号）、折叠、固定联动、未连接与加载的内容区。点面板切换焦点。</p>
+      <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+        <div style={{ width: 270, height: 150 }} data-testid="frame-focus" onPointerDown={() => setFocused(!focused)}>
+          <PanelFrame focused={focused} brackets={focused} aria-label="Chart panel">
+            <PanelFrameHeader
+              heading="Chart"
+              object="· BTCUSDT · 1h"
+              linkGroup="A"
+              linkLabel="Link group A"
+              actions={
+                <>
+                  <Button variant="icon" aria-label="Maximize">
+                    <Maximize2 />
+                  </Button>
+                  <Button variant="icon" aria-label="Close">
+                    <X />
+                  </Button>
+                </>
+              }
+            />
+            <PanelFrameBody>
+              <p className="gal-note" style={{ padding: 8 }}>
+                Panel content decides its own density.
+              </p>
+            </PanelFrameBody>
+          </PanelFrame>
+        </div>
+        <div style={{ width: 270, height: 150 }}>
+          <PanelFrame aria-label="Collapsible panel">
+            <PanelFrameHeader
+              heading="Watchlist"
+              object="· Core · 24"
+              linkGroup="B"
+              linkLabel="Link group B, pinned"
+              pinned
+              collapsible
+              collapseLabel="Collapse"
+              expandLabel="Expand"
+            />
+            <PanelFrameBody>
+              <p className="gal-note" style={{ padding: 8 }}>
+                Collapse leaves only the title bar.
+              </p>
+            </PanelFrameBody>
+          </PanelFrame>
+        </div>
+        <div style={{ width: 270, height: 150 }}>
+          <PanelFrame aria-label="Orders panel">
+            <PanelFrameHeader heading="Orders" linkGroup={null} linkLabel="No link group" />
+            <PanelFrameBody
+              state="disconnected"
+              view={{ tag: 'OFFLINE', title: 'Not connected', description: 'Connect an account to see orders.' }}
+            />
+          </PanelFrame>
+        </div>
+        <div style={{ width: 270, height: 150 }}>
+          <PanelFrame aria-label="Trades panel">
+            <PanelFrameHeader heading="Trades" />
+            <PanelFrameBody state="loading" loadingLabel="Loading" />
+          </PanelFrame>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+const STATUS_ITEMS: readonly StatusItem[] = [
+  { id: 'quote', label: 'QUOTE', value: '42 ms', led: 'ok', ledLabel: 'OK', priority: 3, onClick: () => {} },
+  { id: 'exec', label: 'EXEC', value: '118 ms', led: 'warn', ledLabel: 'Slow', priority: 3, onClick: () => {} },
+  { id: 'live', label: 'LIVE', value: 'IBKR U123', live: true, led: 'on', ledLabel: 'Live account' },
+  { id: 'link', label: 'LINK', value: 'A · BTCUSDT', priority: 1, onClick: () => {} },
+  { id: 'mode', label: 'MODE', value: 'QUIET', priority: 0 },
+  { id: 'clock', value: '09:30:12', priority: 4 },
+]
+
+export function StatusBarDemo() {
+  const [width, setWidth] = useState(720)
+  const items = STATUS_ITEMS
+  return (
+    <div className="gal-stack" style={{ width: '100%', maxWidth: 760 }}>
+      <p className="gal-note">项由数据声明；条变窄时先收优先级低的进「…」，实盘（琥珀框）与 pinned 的项不收。</p>
+      <div style={{ width }} data-testid="status-demo">
+        <StatusBar
+          label="Status bar"
+          moreLabel="More status items"
+          left={items.slice(0, 3)}
+          center={items.slice(3, 5)}
+          right={items.slice(5)}
+        />
+      </div>
+      <Row name="宽度">
+        <Button onClick={() => setWidth(720)}>720</Button>
+        <Button onClick={() => setWidth(420)}>420</Button>
+        <Button onClick={() => setWidth(260)}>260</Button>
+      </Row>
+    </div>
+  )
+}
+
+export function SplitterDemo() {
+  const [ratio, setRatio] = useState(0.4)
+  return (
+    <div className="gal-stack" style={{ width: '100%', maxWidth: 560 }}>
+      <p className="gal-note">
+        拖动、方向键（8px，Shift 32px）、Home / End、双击或 Enter 复位到 50%；靠近 1/3、1/2、2/3 吸附。
+      </p>
+      <div
+        data-testid="splitter-demo"
+        style={{
+          display: 'grid',
+          gridTemplateColumns: `minmax(0, ${ratio}fr) 8px minmax(0, ${1 - ratio}fr)`,
+          height: 120,
+        }}
       >
-        <p style={{ margin: 12, color: 'var(--ink-300)', font: 'var(--text-data) var(--font-sans)' }}>Normal panel.</p>
-      </PanelFrame>
-      <PanelFrame
-        index="02"
-        title="Chart"
-        object="AAPL"
-        linkGroup="B"
-        linkLabel="Link group B"
-        meta="LIVE"
-        source="SOURCE · SIM FEED"
-        focused
-        labels={FRAME_LABELS}
-        onMaximize={() => {}}
-        onClose={() => {}}
-      >
-        <p style={{ margin: 12, color: 'var(--ink-300)', font: 'var(--text-data) var(--font-sans)' }}>
-          Focused panel: brighter title and orange corner brackets.
-        </p>
-      </PanelFrame>
-      <PanelFrame
-        index="03"
-        title="Order book"
-        linkLabel="Link group"
-        meta="OFFLINE"
-        source="SOURCE · NONE"
-        labels={FRAME_LABELS}
-        onSettings={() => {}}
-        onClose={() => {}}
-      >
-        <EmptyState tag="NOT CONNECTED" title="No data source">
-          <p>Connect a source to see the book.</p>
-        </EmptyState>
-      </PanelFrame>
+        <div style={{ background: 'var(--bg-200)', minWidth: 0 }}>
+          <p className="gal-note" style={{ padding: 8 }}>
+            {Math.round(ratio * 100)}%
+          </p>
+        </div>
+        <Splitter
+          axis="row"
+          ratio={ratio}
+          minFirst={80}
+          minSecond={80}
+          onPreview={() => {}}
+          onChange={setRatio}
+          label="Resize panes"
+          valueText={(value) => `First pane ${Math.round(value * 100)}%`}
+        />
+        <div style={{ background: 'var(--bg-200)', minWidth: 0 }}>
+          <p className="gal-note" style={{ padding: 8 }}>
+            {100 - Math.round(ratio * 100)}%
+          </p>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+const TABS: readonly WorkspaceTab[] = [
+  { id: 'overview', name: 'Overview', hotkey: '⌘1' },
+  { id: 'desk', name: 'Desk', hotkey: '⌘2' },
+  { id: 'lab', name: 'Lab', hotkey: '⌘3' },
+  { id: 'portfolio', name: 'Portfolio', hotkey: '⌘4' },
+  { id: 'runs', name: 'Runs', hotkey: '⌘5' },
+  { id: 'my-long-workspace-name', name: 'My very long workspace name' },
+]
+
+export function WorkspaceTabsDemo() {
+  const [tabs, setTabs] = useState(TABS)
+  const [active, setActive] = useState('desk')
+  const [renamed, setRenamed] = useState<string | null>(null)
+  return (
+    <div className="gal-stack" style={{ width: '100%', maxWidth: 640 }}>
+      <p className="gal-note">
+        点切换、拖或 Alt+← / → 排序、双击或 F2 改名、「+」新建；放不下的标签收进「…」下拉，当前标签始终可见。
+      </p>
+      <div style={{ width: 520 }} data-testid="tabs-demo">
+        <WorkspaceTabs
+          workspaces={tabs}
+          activeId={active}
+          label="Workspaces"
+          createLabel="New workspace"
+          moreLabel="More workspaces"
+          onSelect={setActive}
+          onRename={setRenamed}
+          onCreate={() => setTabs((prev) => [...prev, { id: `ws${prev.length}`, name: `Workspace ${prev.length}` }])}
+          onReorder={(id, target) =>
+            setTabs((prev) => {
+              const from = prev.findIndex((item) => item.id === id)
+              const to = prev.findIndex((item) => item.id === target)
+              if (from < 0 || to < 0) return prev
+              const next = [...prev]
+              next.splice(to, 0, ...next.splice(from, 1))
+              return next
+            })
+          }
+        />
+      </div>
+      <p className="gal-note" data-testid="tabs-rename">
+        {renamed ? `Rename requested: ${renamed}` : 'No rename requested'}
+      </p>
     </div>
   )
 }

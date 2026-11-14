@@ -143,98 +143,6 @@
   outline: 1px solid var(--focus-ring);
 }
 
-/* SparkTile */
-.k-spark-tile {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  min-width: 0;
-  padding: 8px 10px;
-  border: var(--hairline);
-  background: var(--bg-200);
-  color: var(--ink-100);
-  font-family: var(--chart-font-num, var(--font-lcd));
-  font-variant-numeric: tabular-nums;
-  text-align: left;
-}
-button.k-spark-tile {
-  cursor: pointer;
-}
-button.k-spark-tile:focus-visible {
-  outline: 1px solid var(--focus-ring);
-}
-.k-spark-tile[data-expanded='true'] {
-  border-color: var(--chart-accent, var(--signal-orange));
-}
-.k-spark-tile[data-near='true'] {
-  border-color: var(--chart-accent-dim, var(--signal-orange-dim));
-  animation: k-spark-pulse var(--dur-snappy) var(--ease-snappy) 1;
-}
-@keyframes k-spark-pulse {
-  50% {
-    box-shadow: 0 0 0 2px var(--chart-accent-dim, var(--signal-orange-dim));
-  }
-}
-.k-spark-tile-label {
-  color: var(--ink-300);
-  font: var(--text-tag) var(--font-dot);
-  letter-spacing: 0;
-}
-.k-spark-tile-value {
-  font: var(--text-lcd) var(--chart-font-num, var(--font-lcd));
-  letter-spacing: 0.06em;
-}
-.k-spark-tile-value[data-empty='true'] {
-  color: var(--ink-300);
-}
-.k-spark-tile-unit {
-  margin-left: 4px;
-  color: var(--ink-300);
-  font: var(--text-num-sm) var(--chart-font-num, var(--font-lcd));
-}
-.k-spark-tile-plot {
-  position: relative;
-  display: block;
-  height: var(--k-spark-h, 24px);
-}
-.k-spark-tile-plot > svg {
-  display: block;
-  width: 100%;
-  height: 100%;
-  overflow: visible;
-}
-.k-spark-tile-line {
-  fill: none;
-  stroke: var(--series-1);
-  stroke-width: 1.5;
-  stroke-linejoin: round;
-  filter: var(--chart-line-glow, none);
-  vector-effect: non-scaling-stroke;
-}
-.k-spark-tile-plot[data-trend='neutral'] .k-spark-tile-line {
-  stroke: var(--ink-300);
-}
-.k-spark-tile-threshold {
-  stroke: var(--signal-amber);
-  stroke-width: 1;
-  stroke-dasharray: 2 2;
-  vector-effect: non-scaling-stroke;
-}
-.k-spark-tile-delta {
-  min-height: 12px;
-  color: var(--ink-300);
-  font: var(--text-num-sm) var(--chart-font-num, var(--font-lcd));
-}
-.k-spark-tile-delta[data-tone='up'] {
-  color: var(--pnl-up);
-}
-.k-spark-tile-delta[data-tone='down'] {
-  color: var(--pnl-down);
-}
-.k-spark-tile-delta[data-tone='warn'] {
-  color: var(--signal-amber);
-}
-
 /* 面的纹理（SVG pattern 里两种形状都画，哪种显示由变量定） */
 .k-fill-dot {
   display: var(--chart-fill-dot, inline);
@@ -244,11 +152,6 @@ button.k-spark-tile:focus-visible {
   stroke-width: 1;
 }
 
-/* 瓦片编号：强调色等宽小字（参照图 BILL OF MODULES 的 01 02） */
-.k-spark-tile-index {
-  margin-right: 8px;
-  color: var(--chart-accent, var(--signal-orange));
-}
 /* 数值后的单位：小一档、次一级墨色（precision-instrument §2.2）。 */
 .k-ck-unit {
   color: var(--ink-300);

@@ -33,7 +33,6 @@ const INTERNAL = {
   'equity-curve-model': 'EquityCurve 的纯逻辑：按时刻摆的横轴、线性 / 对数纵轴、镜像回撤的纵轴、默认横轴刻度。',
   'chart-kit':
     '图表共用底座：配色分配（series / seq / div）、点阵纹理、LCD tooltip、末点、轴与网格、图右上三件（表格视图、导出、全屏）。',
-  'meter-model': 'Meter 的几何与状态（纯函数）：位置、达到软限与硬限的判定、刻度盘指针位置。',
   'market-heatmap-model':
     'MarketHeatmap 的纯函数：色阶七档的档宽取好数、值落在哪一档、图例的值边界、方向键找邻居的格子。',
   'calendar-model': 'CalendarHeatmap 的格子排布、档位与键盘（纯函数）：日历日按 UTC 算，一周一列。',
@@ -155,6 +154,13 @@ function collectItems() {
       'registry:component',
       codeIn('src/blocks/symbol-galaxy').map((f) => `src/blocks/symbol-galaxy/${f}`),
     )
+    // 面板壳、状态栏、工作区标签（#1901）：各一个子目录，文件合成一项（组件与它的纯函数一起装）。
+    for (const dir of ['panel-frame', 'status-bar', 'workspace-tabs'])
+      add(
+        dir,
+        'registry:component',
+        codeIn(`src/blocks/${dir}`).map((f) => `src/blocks/${dir}/${f}`),
+      )
     byFile('src/blocks', 'registry:component', (f) => isCode(f) && f !== 'index.ts')
   }
   return items

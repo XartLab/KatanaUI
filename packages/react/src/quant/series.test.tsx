@@ -12,8 +12,6 @@ import {
   monthGrid,
   parseDate,
 } from './calendar-model.ts'
-import { Meter } from './meter.tsx'
-import { meterModel } from './meter-model.ts'
 import { BrushChart } from './brush-chart.tsx'
 import { centerWindow, clampWindow, moveWindow, resizeWindow } from './brush-model.ts'
 import { HorizonChart } from './horizon-chart.tsx'
@@ -131,69 +129,6 @@ describe('BrushChart', () => {
     expect(html).toContain('aria-label="位置"')
     expect(html).toContain('aria-valuetext="d10 – d19"')
     expect(html).toContain('left:33.33333333333333%;width:33.33333333333333%')
-  })
-})
-
-describe('Meter 仪表', () => {
-  it('状态按「达到」算：已用 ≥ 软限是 warn，≥ 硬限是 breach；没给限就是 ok', () => {
-    expect(meterModel({ value: 79, soft: 80, hard: 100 }).state).toBe('ok')
-    expect(meterModel({ value: 80, soft: 80, hard: 100 }).state).toBe('warn')
-    expect(meterModel({ value: 100, soft: 80, hard: 100 }).state).toBe('breach')
-    expect(meterModel({ value: 5 }).state).toBe('ok')
-    expect(meterModel({ value: 90, hard: 100 }).state).toBe('ok')
-  })
-
-  it('位置：按满刻度，越界按边；满刻度没给取已用与两条限里最大的', () => {
-    const m = meterModel({ value: 50, max: 200, soft: 100, hard: 150 })
-    expect([m.value, m.soft, m.hard]).toEqual([0.25, 0.5, 0.75])
-    expect(meterModel({ value: 300, max: 200 }).value).toBe(1)
-    expect(meterModel({ value: -5, max: 200 }).value).toBe(0)
-    expect(meterModel({ value: 120, soft: 80, hard: 100 }).max).toBe(120)
-    expect(meterModel({ value: 0, max: 0 }).value).toBe(0)
-    expect(meterModel({ value: 10, max: 100 }).soft).toBeNull()
-  })
-
-  it('渲染：bar 带点阵填充与两根刻度，role=meter 有读屏句，状态词跟状态走；超限的 tone 换成 warn', () => {
-    const html = renderToStaticMarkup(
-      <Meter
-        value={82}
-        max={120}
-        soft={80}
-        hard={100}
-        tone="ok"
-        label="敞口"
-        valueText="已用 82"
-        formatValue={String}
-        stateLabels={{ warn: '接近' }}
-      />,
-    )
-    expect(html).toContain('role="meter"')
-    expect(html).toContain('aria-valuenow="82"')
-    expect(html).toContain('aria-valuetext="已用 82"')
-    expect(html).toContain('data-state="warn"')
-    expect(html).toContain('data-tone="warn"')
-    expect(html).toContain('k-dotfill')
-    expect(html).toContain('>接近<')
-    expect(html).toContain('is-soft')
-    expect(html).toContain('is-hard')
-  })
-
-  it('gauge：弱势转 weak、受锁转 locked，刻度 0 到 100；sync：分段齿条按比例点亮，评估点画刻度', () => {
-    const weak = renderToStaticMarkup(
-      <Meter display="gauge" value={27} weakBelow={30} label="军工" valueText="27" formatValue={String} />,
-    )
-    expect(weak).toContain('data-pin="weak"')
-    expect(weak).toContain('>100<')
-    const locked = renderToStaticMarkup(
-      <Meter display="gauge" value={60} locked label="x" valueText="60" formatValue={String} />,
-    )
-    expect(locked).toContain('data-pin="locked"')
-    const sync = renderToStaticMarkup(
-      <Meter display="sync" value={50} mark={80} label="p" valueText="50" formatValue={String} />,
-    )
-    expect(sync.match(/data-on="true"/g)).toHaveLength(10)
-    expect(sync).toContain('data-slot="meter-mark"')
-    expect(sync).toContain('data-slot="meter-big"')
   })
 })
 

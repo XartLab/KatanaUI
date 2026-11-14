@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vite-plus/test'
-import { ChangeText, PnlText } from './index.ts'
+import { ChangeText, DecimalField, PnlText } from './index.ts'
 
 // 件的结构：涨跌色在浏览器里读计算后的颜色（e2e/ui-gallery.spec.ts，含 data-updown="cn" 互换）；这里查服务端渲染出的标记与文字。
 
@@ -49,5 +49,33 @@ describe('PnlText', () => {
     )
     expect(html).toContain('data-tone="down"')
     expect(html.startsWith('<strong')).toBe(true)
+  })
+})
+
+describe('DecimalField', () => {
+  const base = { label: '价格', value: '100.5', onValue: () => {}, step: '0.5' }
+  it('十进制键盘，读屏名在输入框上；没给 buttons 就没有按钮', () => {
+    const html = renderToStaticMarkup(<DecimalField {...base} />)
+    expect(html).toContain('inputMode="decimal"')
+    expect(html).toContain('aria-label="价格"')
+    expect(html).not.toContain('<button')
+  })
+  it('给了 buttons 才有 − / +，名字由调用方传', () => {
+    const html = renderToStaticMarkup(<DecimalField {...base} buttons={{ decrease: '减', increase: '加' }} />)
+    expect(html).toContain('aria-label="减"')
+    expect(html).toContain('aria-label="加"')
+  })
+  it('error 设 aria-invalid，warning 不设', () => {
+    expect(renderToStaticMarkup(<DecimalField {...base} status="error" />)).toContain('aria-invalid="true"')
+    const warning = renderToStaticMarkup(<DecimalField {...base} status="warning" />)
+    expect(warning).not.toContain('aria-invalid=')
+    expect(warning).toContain('data-status="warning"')
+  })
+  it('只读与禁用：按钮禁用', () => {
+    const buttons = { decrease: '减', increase: '加' }
+    expect(
+      renderToStaticMarkup(<DecimalField {...base} readOnly buttons={buttons} />).match(/disabled=""/g),
+    ).toHaveLength(2)
+    expect(renderToStaticMarkup(<DecimalField {...base} buttons={buttons} />)).not.toContain('disabled=""')
   })
 })

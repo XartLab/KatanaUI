@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 import AxeBuilder from '@axe-core/playwright'
 import { expect, test, type Page } from '@playwright/test'
-import { PAGES } from '../gallery/registry'
+import { PAGES } from '../gallery/registry.ts'
 import known from './ui-gallery-a11y-known.json' with { type: 'json' }
 
 // 文档站每页在 Console 与 Graphite 下的 axe 与控制台检查（#1950）：违规数为 0、没有 pageerror 与 console.error。
