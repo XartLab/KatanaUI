@@ -135,7 +135,8 @@ export function layoutChain(
     let mid: { x: number; y: number }
     let chip: { x: number; y: number }
     if (options.direction === 'TB') {
-      const out = Math.max(...laidNodes.map((n) => n.x)) + NODE_WIDTH / 2 + 48 + lane * (LABEL_HEIGHT + 12)
+      // 标签压在曲线上，左缘比最右节点的右缘少进 12：节点下方的边标签比节点窄得多，不会碰到。
+      const out = Math.max(...laidNodes.map((n) => n.x)) + NODE_WIDTH / 2 + labelW / 2 - 12 + lane * (LABEL_HEIGHT + 12)
       mid = { x: out, y: (s.y + t.y) / 2 }
       points = [
         { x: s.x + NODE_WIDTH / 2, y: s.y },
@@ -144,8 +145,8 @@ export function layoutChain(
         { x: out, y: t.y },
         { x: t.x + NODE_WIDTH / 2, y: t.y },
       ]
-      chip = { x: out + labelW / 2 + 10, y: mid.y }
-      width = Math.max(width, out + labelW + 26)
+      chip = { x: out, y: mid.y }
+      width = Math.max(width, out + labelW / 2 + 16)
     } else {
       const out = Math.max(...laidNodes.map((n) => n.y)) + NODE_HEIGHT / 2 + 40 + lane * (LABEL_HEIGHT + 12)
       mid = { x: (s.x + t.x) / 2, y: out }
@@ -156,8 +157,8 @@ export function layoutChain(
         { x: t.x, y: out },
         { x: t.x, y: t.y + NODE_HEIGHT / 2 },
       ]
-      chip = { x: mid.x, y: out + LABEL_HEIGHT / 2 + 10 }
-      height = Math.max(height, out + LABEL_HEIGHT + 26)
+      chip = { x: mid.x, y: out }
+      height = Math.max(height, out + LABEL_HEIGHT / 2 + 16)
     }
     lane += 1
     laidEdges.push({

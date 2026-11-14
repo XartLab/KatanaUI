@@ -164,7 +164,7 @@ export function TransmissionChainDemo() {
         演示数据：环节是「地缘 → 规则 → 信用 → 用途 → 利润 →
         资产价格」这条研究框架，状态与证据条数是编的，不是研究结论。 资产价格到信用是反馈边。
       </p>
-      <div style={{ height: 700 }} data-testid="tc-frame">
+      <div style={{ height: 600 }} data-testid="tc-frame">
         <TransmissionChain nodes={NODES} edges={EDGES} labels={LABELS} />
       </div>
       <p className="gal-note">没有节点时：</p>
