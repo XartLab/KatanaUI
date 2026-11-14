@@ -132,6 +132,29 @@ npx shadcn add @katana/style @katana/button @katana/change-text
 
 然后在入口样式里先引 `katana/ui/tokens.css`、最后引 `katana/ui/ui.css`（次序见上面「应用怎么用」）。换皮只覆盖哪些变量见 [theming.md](theming.md)。
 
+## 精密仪器语言（#7）
+
+量化件与积木件的共同语言（用户 2026-11-14 认可「这个可以」，样例是 SeriesExplorer 与盈亏归因）。底是工作台现在的样式：黑面板、无衬线、白字、扁平工具条、分段选中灰底、图标按钮无边框，默认 Graphite；
+上面加一层「工业感」，只取感觉，不加示波器辉光和构成主义色块：
+
+- **编号** 01 / 02 / 03 用强调色（`--chart-accent`，缺省 `--signal-orange`），点阵字。
+- **点阵元信息行**：一行 `--font-dot` 的元信息 / 来源行，例「SOURCE · 台账成交 + 行情估值」。装饰性标签用点阵字，数值仍是无衬线等宽数字；字号 12px（`--text-tag-md`），不加字距、不斜体、不伪粗。
+  汉字落到随包发的方舟像素 12px 子集（`src/fonts/ark-pixel-12-zh-subset.woff2`，来由与许可见 `NOTICE`，生成办法见 `scripts/font/build-ark-pixel-subset.py`）；子集里没有的字再落到无衬线。
+- **宽体标题**：英文标题可用 `--font-wide`（Michroma，只用于标题，中文自动落到无衬线）。
+- **左侧 2px 强调条**：选中项与读数的左侧一条 2px 强调色竖线。
+- **尺寸标注与编号引线**：需要时（图上事件的引线、刻度标注）。
+- **浅网格**：12% 透明度、12px 间距，**待定**，没实测。
+- **键值对账行**：左键右值，一行一对（期初 / 期末 / 差额）。
+- 橙色只给状态灯和焦点角括号；不用 TradingView 蓝，不用暖白高亮黄。
+
+样例（Graphite，文档站 `?theme=graphite` 截的）：
+
+- SeriesExplorer：[images/series-explorer-graphite.png](images/series-explorer-graphite.png)
+- AttributionBars 盈亏归因：[images/attribution-bars-graphite.png](images/attribution-bars-graphite.png)
+
+文档站浏览器测试 `e2e/precision-instrument.spec.ts` 是这套语言的正面证明：序列探索页的元信息行用 Doto、汉字落到方舟像素子集、编号是强调色；去掉 `--font-dot` 里的方舟像素，它就红。
+已套这层语言的件：SeriesExplorer、AttributionBars；其余逐件铺开（DataGrid、ChartTable、EquityCurve、Meter、CalendarHeatmap、SymbolGalaxy），一件一个提交。
+
 ## 许可证
 
 MIT（用户 2026-11-14 定，#1876），见本文开头。别的项目经注册表装进去的文件，文件头也是 MIT。
