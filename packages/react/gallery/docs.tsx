@@ -141,7 +141,9 @@ function DocBody({ page }: { page: DocPage }) {
       </section>
       <section aria-labelledby="gal-h-parts">
         <h2 id="gal-h-parts">组成</h2>
-        <pre className="gal-code">{page.composition}</pre>
+        <pre className="gal-code" tabIndex={0}>
+          {page.composition}
+        </pre>
       </section>
       {page.keys.length > 0 ? (
         <section aria-labelledby="gal-h-keys">

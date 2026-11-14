@@ -5274,7 +5274,7 @@ button.k-sysmon-link-body:focus-visible {
 }
 
 .k-dq-count {
-  color: var(--ink-300);
+  color: var(--ink-200);
   font-variant-numeric: tabular-nums;
   margin-inline-start: 6px;
 }
@@ -5286,7 +5286,7 @@ button.k-sysmon-link-body:focus-visible {
 }
 
 .k-dq-empty {
-  color: var(--ink-300);
+  color: var(--ink-200);
   text-align: center;
   padding: 24px 12px;
 }
@@ -5311,7 +5311,7 @@ button.k-sysmon-link-body:focus-visible {
 }
 
 .k-dq-meta {
-  color: var(--ink-300);
+  color: var(--ink-200);
   align-items: center;
   gap: 8px;
   display: flex;
@@ -5333,7 +5333,7 @@ button.k-sysmon-link-body:focus-visible {
 .k-dq-snoozed {
   border: 1px solid var(--alpha-white-8);
   border-radius: var(--radius-pill);
-  color: var(--ink-300);
+  color: var(--ink-200);
   padding: 0 6px;
 }
 
@@ -5358,7 +5358,7 @@ button.k-sysmon-link-body:focus-visible {
   background: var(--alpha-white-3);
   border: 1px solid var(--alpha-white-8);
   border-radius: var(--radius-pill);
-  color: var(--ink-300);
+  color: var(--ink-200);
   font: var(--text-data) var(--font-mono);
   padding: 0 6px;
 }
@@ -5369,7 +5369,7 @@ button.k-sysmon-link-body:focus-visible {
 }
 
 .k-dq-evidence {
-  color: var(--ink-300);
+  color: var(--ink-200);
   flex-wrap: wrap;
   align-items: center;
   gap: 4px 16px;
@@ -5435,7 +5435,7 @@ button.k-sysmon-link-body:focus-visible {
 }
 
 .k-dq-more {
-  color: var(--ink-300);
+  color: var(--ink-200);
   font: inherit;
   cursor: pointer;
   background: none;
@@ -5470,7 +5470,7 @@ button.k-sysmon-link-body:focus-visible {
   border-bottom: 1px solid var(--alpha-white-6);
   width: 100%;
   min-height: 32px;
-  color: var(--ink-300);
+  color: var(--ink-200);
   font: inherit;
   text-align: left;
   cursor: pointer;
@@ -5525,7 +5525,7 @@ button.k-sysmon-link-body:focus-visible {
 }
 
 .k-hl-count {
-  color: var(--ink-300);
+  color: var(--ink-200);
   font-variant-numeric: tabular-nums;
   margin-inline-start: 6px;
 }
@@ -5537,7 +5537,7 @@ button.k-sysmon-link-body:focus-visible {
 }
 
 .k-hl-empty {
-  color: var(--ink-300);
+  color: var(--ink-200);
   text-align: center;
   padding: 24px 12px;
 }
@@ -5579,7 +5579,7 @@ button.k-sysmon-link-body:focus-visible {
 
 .k-hl-status {
   min-width: 44px;
-  color: var(--ink-300);
+  color: var(--ink-200);
   flex: none;
 }
 
@@ -5587,7 +5587,7 @@ button.k-sysmon-link-body:focus-visible {
   background: var(--alpha-white-3);
   border: 1px solid var(--alpha-white-8);
   border-radius: var(--radius-pill);
-  color: var(--ink-300);
+  color: var(--ink-200);
   white-space: nowrap;
   flex: none;
   padding: 0 6px;
@@ -5604,7 +5604,7 @@ button.k-sysmon-link-body:focus-visible {
 }
 
 .k-hl-tally, .k-hl-due {
-  color: var(--ink-300);
+  color: var(--ink-200);
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
   flex: none;
@@ -5643,7 +5643,7 @@ button.k-sysmon-link-body:focus-visible {
 }
 
 .k-hl-none {
-  color: var(--ink-300);
+  color: var(--ink-200);
   margin: 0;
 }
 
@@ -5686,7 +5686,7 @@ button.k-sysmon-link-body:focus-visible {
 }
 
 .k-hl-time {
-  color: var(--ink-300);
+  color: var(--ink-200);
   font-variant-numeric: tabular-nums;
 }
 
@@ -5740,7 +5740,7 @@ button.k-sysmon-link-body:focus-visible {
 }
 
 .k-hl-watch thead th {
-  color: var(--ink-300);
+  color: var(--ink-200);
   font-weight: 600;
 }
 

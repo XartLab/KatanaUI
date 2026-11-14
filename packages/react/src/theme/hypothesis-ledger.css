@@ -16,7 +16,7 @@
 }
 .k-hl-count {
   margin-inline-start: 6px;
-  color: var(--ink-300);
+  color: var(--ink-200);
   font-variant-numeric: tabular-nums;
 }
 .k-hl-scroll {
@@ -26,7 +26,7 @@
 }
 .k-hl-empty {
   padding: 24px 12px;
-  color: var(--ink-300);
+  color: var(--ink-200);
   text-align: center;
 }
 .k-hl-list {
@@ -62,7 +62,7 @@
 .k-hl-status {
   flex: none;
   min-width: 44px;
-  color: var(--ink-300);
+  color: var(--ink-200);
 }
 .k-hl-layer,
 .k-hl-tag,
@@ -72,7 +72,7 @@
   background: var(--alpha-white-3);
   border: 1px solid var(--alpha-white-8);
   border-radius: var(--radius-pill);
-  color: var(--ink-300);
+  color: var(--ink-200);
   white-space: nowrap;
 }
 .k-hl-claim {
@@ -87,7 +87,7 @@
 .k-hl-tally,
 .k-hl-due {
   flex: none;
-  color: var(--ink-300);
+  color: var(--ink-200);
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
@@ -121,7 +121,7 @@
 }
 .k-hl-none {
   margin: 0;
-  color: var(--ink-300);
+  color: var(--ink-200);
 }
 .k-hl-evidence {
   display: flex;
@@ -157,7 +157,7 @@
   background: var(--signal-red);
 }
 .k-hl-time {
-  color: var(--ink-300);
+  color: var(--ink-200);
   font-variant-numeric: tabular-nums;
 }
 .k-hl-source {
@@ -205,7 +205,7 @@
   vertical-align: top;
 }
 .k-hl-watch thead th {
-  color: var(--ink-300);
+  color: var(--ink-200);
   font-weight: 600;
 }
 .k-hl-watch tbody th {
