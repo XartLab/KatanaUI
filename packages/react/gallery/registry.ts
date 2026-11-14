@@ -3973,6 +3973,63 @@ export const PAGES: readonly DocPage[] = [
       ['Home / End', '跳到第一 / 最后一条'],
     ],
   },
+  {
+    id: 'slope-chart',
+    group: 'quant',
+    cardHeight: 640,
+    title: 'SlopeChart 斜率图',
+    summary:
+      '每项一条线连「前」「后」两列，看再平衡前后的权重、因子排名的变化。线按变化涂涨跌色（跟 data-updown 走），两侧写名字与数，标签互相不重叠；rank 模式纵轴是名次，涨跌看名次升降。悬停或聚焦一条，其余变暗。功能参照 Arc Slope chart，实现原创。',
+    exports: ['SlopeChart', 'slopeLayout', 'spreadLabels', 'ranks'],
+    props: [
+      {
+        part: 'SlopeChart',
+        note: '文字全由 props 传：列头在 columns、每一项的整句在 describe 里。图是一个 role=group，每项一个带整句名的 role=img。',
+        rows: [
+          { name: 'items', type: 'SlopeItem[]', desc: '{ id, label, before, after }。' },
+          { name: 'label', type: 'string', desc: '整张图的读屏名。' },
+          { name: 'columns', type: '{ before: string; after: string }', desc: '两列的列头。' },
+          {
+            name: 'describe',
+            type: '(item, change) => string',
+            desc: '一项的整句；change 在 value 模式是 after − before，rank 模式是名次升了几位。',
+          },
+          {
+            name: 'mode',
+            type: "'value' | 'rank'",
+            default: "'value'",
+            desc: 'value：纵轴是数值，值大在上；rank：纵轴是名次，第 1 名在上、等距。',
+          },
+          { name: 'formatValue', type: '(value: number) => string', default: 'String', desc: '两侧标签里的数怎么写。' },
+          { name: 'height', type: 'number', desc: '图高（viewBox 单位）；默认按条数每条 18 高、至少 160。' },
+          { name: 'onSelect', type: '(item) => void', desc: '给了才可点（Enter 也触发）。' },
+          { name: 'idle', type: 'ReactNode', desc: '没有悬停也没有聚焦时读数行写什么。' },
+        ],
+      },
+      {
+        part: 'slopeLayout(items, options) / spreadLabels(ys, gap, lo, hi) / ranks(values)',
+        note: 'spreadLabels 让标签保持上下次序、相邻至少隔 gap、整体落在 [lo, hi] 里；装不下时均匀铺满。ranks 值大的排前、从 1 起、相同按输入顺序。',
+        rows: [],
+      },
+    ],
+    states: [
+      '涨：value 模式 after 大于 before，rank 模式名次升；跌相反；相等用中性色。',
+      '悬停或聚焦一条：其余变暗，这一条加粗并画在最上面，读数行写它的整句。',
+      '点挨得很近时线重叠，但标签被推开，各自对着自己的端点；端点旁的数仍是真值。',
+    ],
+    donts: [
+      '不要放很多条（超过约二三十）：标签推开后离端点太远，读不出对应。',
+      '不要拿它画随时间的连续走势：那是折线图；斜率图只比两个时点。',
+      'rank 模式下不要再把数值当纵轴理解：线的斜率只表示名次变化。',
+    ],
+    composition:
+      'SlopeChart\n  svg role=group\n    text（两个列头）\n    g role=img（一项：命中线 · 线 · 两个端点 · 两侧标签）\n    g aria-hidden（当前项的副本，画在最上）\n  output（读数行）',
+    keys: [
+      ['↑ / ↓', '焦点按左侧端点从上到下在项间移动，到头不绕回'],
+      ['Home / End', '跳到最上 / 最下一项'],
+      ['Enter', '给了 onSelect 时选中当前项'],
+    ],
+  },
 ]
 
 export const pageById = (id: string): DocPage | undefined => PAGES.find((page) => page.id === id)

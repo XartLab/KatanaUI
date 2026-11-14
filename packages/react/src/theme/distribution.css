@@ -192,3 +192,78 @@
   font: var(--text-caption) var(--font-sans);
   font-variant-numeric: tabular-nums;
 }
+
+/* —— 斜率图 —— */
+.k-slope {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  min-width: 0;
+}
+.k-slope-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+.k-slope-head {
+  fill: var(--ink-300);
+  font: var(--text-micro) var(--font-sans);
+  letter-spacing: var(--text-micro-tracking);
+}
+.k-slope-item {
+  outline: none;
+  transition: opacity var(--dur-snappy) var(--ease-snappy);
+}
+.k-slope-item.is-link {
+  cursor: pointer;
+}
+.k-slope-item[data-dim='true'] {
+  opacity: 0.3;
+}
+.k-slope-hit {
+  stroke: transparent;
+  stroke-width: 10;
+}
+.k-slope-line {
+  stroke: var(--ink-300);
+  stroke-width: 1.5;
+}
+.k-slope-dot {
+  fill: var(--ink-300);
+}
+.k-slope-text {
+  fill: var(--ink-200);
+  font: var(--text-caption) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+}
+.k-slope-item[data-tone='up'] .k-slope-line {
+  stroke: var(--pnl-up);
+}
+.k-slope-item[data-tone='up'] .k-slope-dot {
+  fill: var(--pnl-up);
+}
+.k-slope-item[data-tone='down'] .k-slope-line {
+  stroke: var(--pnl-down);
+}
+.k-slope-item[data-tone='down'] .k-slope-dot {
+  fill: var(--pnl-down);
+}
+.k-slope-item:hover .k-slope-line,
+.k-slope-item:focus-visible .k-slope-line {
+  stroke-width: 3;
+}
+.k-slope-item:focus-visible .k-slope-text {
+  fill: var(--ink-100);
+  font-weight: 600;
+}
+.k-slope-readout {
+  min-height: 16px;
+  color: var(--ink-200);
+  font: var(--text-caption) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+}
+.k-slope-over {
+  pointer-events: none;
+}

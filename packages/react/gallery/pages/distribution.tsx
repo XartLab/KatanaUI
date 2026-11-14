@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 import { useMemo, useState } from 'react'
-import { Ridgeline } from '../../src/quant'
+import { Ridgeline, SlopeChart, type SlopeItem } from '../../src/quant'
 import {
   histogramBins,
   RangeHistogramSlider,
@@ -162,6 +162,64 @@ export function RidgelineDemo() {
             rowHeight={28}
             overlap={1.5}
             describe={(group, stats) => `${group.label}：中位数 ${stats.median.toFixed(2)}%`}
+          />
+        </div>
+      </Row>
+    </>
+  )
+}
+
+/** 8 个示例品种的再平衡前后权重（%）：写死的表，几项故意挨得很近（12.0 与 12.4、8.0 与 8.3），用来看标签防重叠。 */
+const WEIGHTS: readonly SlopeItem[] = [
+  { id: 'a', label: '示例 A', before: 24, after: 18 },
+  { id: 'b', label: '示例 B', before: 12, after: 15.5 },
+  { id: 'c', label: '示例 C', before: 12.4, after: 12.4 },
+  { id: 'd', label: '示例 D', before: 8, after: 10 },
+  { id: 'e', label: '示例 E', before: 8.3, after: 9.6 },
+  { id: 'f', label: '示例 F', before: 15, after: 14 },
+  { id: 'g', label: '示例 G', before: 10, after: 9.1 },
+  { id: 'h', label: '示例 H', before: 10.3, after: 11.4 },
+]
+
+/** 同 8 个示例品种的因子得分，按得分排名看升降。 */
+const SCORES: readonly SlopeItem[] = WEIGHTS.map((item, index) => ({
+  ...item,
+  before: [3.1, 2.4, 2.9, 0.5, 1.2, 1.8, -0.4, 0.9][index]!,
+  after: [3.2, 3.3, 2.5, 1.9, 0.2, 2.8, 1.1, 0.1][index]!,
+}))
+
+export function SlopeChartDemo() {
+  const [picked, setPicked] = useState('')
+  return (
+    <>
+      <p className="gal-note">演示数据：写死的示例权重与得分，不是持仓。</p>
+      <Row name="再平衡前后权重（%）">
+        <div className="gal-wide" data-gallery-slope="value">
+          <SlopeChart
+            items={WEIGHTS}
+            label="示例：再平衡前后权重"
+            columns={{ before: '调整前', after: '调整后' }}
+            formatValue={(value) => `${value}%`}
+            describe={(item, change) =>
+              `${item.label}：${item.before}% 到 ${item.after}%，${change > 0 ? '加仓' : change < 0 ? '减仓' : '不变'} ${Math.abs(change).toFixed(1)} 个百分点`
+            }
+            onSelect={(item) => setPicked(item.label)}
+            idle="悬停或用上下键选一项，Enter 选中"
+          />
+          <p data-gallery-slope-picked>{picked}</p>
+        </div>
+      </Row>
+      <Row name="因子排名变化（名次）">
+        <div className="gal-wide" data-gallery-slope="rank">
+          <SlopeChart
+            mode="rank"
+            items={SCORES}
+            label="示例：因子得分名次变化"
+            columns={{ before: '上月', after: '本月' }}
+            formatValue={(value) => value.toFixed(1)}
+            describe={(item, change) =>
+              `${item.label}：得分 ${item.before} 到 ${item.after}，名次${change > 0 ? `升 ${change} 位` : change < 0 ? `降 ${-change} 位` : '不变'}`
+            }
           />
         </div>
       </Row>
