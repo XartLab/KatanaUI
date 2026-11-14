@@ -8,8 +8,8 @@ import {
   Skeleton,
   type DateTimeLabels,
   type LoadingTexts,
-} from '../../src/index'
-import { Row } from './parts'
+} from '../../src/index.ts'
+import { Row } from './parts.tsx'
 
 // 数字框、日期时间框与加载骨架的演示（#1860 从 src/ui 搬进包）。这几件的文字都是调用方给的，这里给一份演示用的中文。
 

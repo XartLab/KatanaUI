@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 import { useCallback, useId, useRef, useState, type PointerEvent, type ReactNode } from 'react'
-import { cn } from '../lib/cn'
+import { cn } from '../lib/cn.ts'
 import {
   EVENT_KINDS,
   clock,
@@ -16,7 +16,7 @@ import {
   type EventKind,
   type SessionMinutes,
   type TimelineEvent,
-} from './event-timeline-model'
+} from './event-timeline-model.ts'
 
 // 照设计稿 EventTimeline 卡（design/katana-console/project/components/EventTimeline/README.md，2026-11-14 读）：
 // 一条 2px 的轴按交易时段排（午休压成短带），形状 + 状态色区分类别，同一分钟聚成带计数的标记，标签上下交错，

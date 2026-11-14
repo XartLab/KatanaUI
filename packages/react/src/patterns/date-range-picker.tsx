@@ -14,8 +14,8 @@ import {
   type DateSegmentProps,
 } from 'react-aria-components'
 import type { CalendarDate } from '@internationalized/date'
-import { cn } from '../lib/cn'
-import { Popover, PopoverContent, PopoverTrigger } from '../primitives/popover'
+import { cn } from '../lib/cn.ts'
+import { Popover, PopoverContent, PopoverTrigger } from '../primitives/popover.tsx'
 import {
   matchPreset,
   presetRange,
@@ -24,7 +24,7 @@ import {
   type DateRange,
   type RangePreset,
   type WeekStart,
-} from './date-range-model'
+} from './date-range-model.ts'
 
 // 功能参照 Arc Date range picker（uiarc.dev，2026-11-14 读：双月日历加预设），实现原创；样子沿用 DateTimeInput 的日历皮肤（theme/date-time.css 的 .k-cal*）加 theme/date-range.css。
 // 行为底座是 react-aria-components 的 DateField 与 RangeCalendar（键盘、读屏、日期运算都是它的）。没有用它的整件 DateRangePicker：

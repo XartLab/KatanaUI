@@ -6,7 +6,7 @@
 //   - `+10%`、`-10%`：当前值的百分比增减（`+10%` = ×1.1）；单独的 `50%` 是当前值的 50%；
 //   - 其余按完整算式算（`100*1.5`、`(2+3)*4`、`-5`）：+ - * / 括号与后缀 %（`%` = ÷100）；
 //   - 算不出（语法错、除以零）返回 null；结果夹进范围并去掉浮点尾巴（tidy）。
-import { tidy, typed, type Range } from './number-field-model'
+import { tidy, typed, type Range } from './number-field-model.ts'
 
 type Token = { kind: 'num'; value: number } | { kind: 'op'; value: string }
 

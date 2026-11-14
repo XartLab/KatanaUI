@@ -1,21 +1,21 @@
 // SPDX-License-Identifier: MIT
 import type { ComponentType } from 'react'
-import { DateTimeInputDemo, NumberInputDemo, SkeletonDemo } from './pages/fields'
-import { BadgeDemo, DotMatrixDemo, KbdDemo, LcdDemo, LedDemo, RollingTextDemo } from './pages/readouts'
-import { ContextMenuOpen, DialogOpen, DropdownMenuOpen, PopoverOpen, SelectOpen, TooltipOpen } from './pages/open'
-import { ChangeTextDemo, PnlTextDemo, QuantFormatDemo } from './pages/quant'
-import { DataGridDemo, EmptyStateDemo, EstimateBadgeDemo, ToolbarDemo } from './pages/blocks'
-import { AlertDemo, ProgressDemo, ToastDemo } from './pages/feedback'
-import { ComboboxDemo, CommandDemo } from './pages/pickers'
-import { EventTimelineDemo, JsonViewerDemo } from './pages/arc-controls'
+import { DateTimeInputDemo, NumberInputDemo, SkeletonDemo } from './pages/fields.tsx'
+import { BadgeDemo, DotMatrixDemo, KbdDemo, LcdDemo, LedDemo, RollingTextDemo } from './pages/readouts.tsx'
+import { ContextMenuOpen, DialogOpen, DropdownMenuOpen, PopoverOpen, SelectOpen, TooltipOpen } from './pages/open.tsx'
+import { ChangeTextDemo, PnlTextDemo, QuantFormatDemo } from './pages/quant.tsx'
+import { DataGridDemo, EmptyStateDemo, EstimateBadgeDemo, ToolbarDemo } from './pages/blocks.tsx'
+import { AlertDemo, ProgressDemo, ToastDemo } from './pages/feedback.tsx'
+import { ComboboxDemo, CommandDemo } from './pages/pickers.tsx'
+import { EventTimelineDemo, JsonViewerDemo } from './pages/arc-controls.tsx'
 import {
   ChipGroupDemo,
   DateRangePickerDemo,
   HoldToConfirmDemo,
   ShortcutRecorderDemo,
   TreeViewDemo,
-} from './pages/arc-controls'
-import { FieldDemo, HoverCardDemo, ScrollAreaDemo, SeparatorDemo, SheetDemo } from './pages/structure'
+} from './pages/arc-controls.tsx'
+import { FieldDemo, HoverCardDemo, ScrollAreaDemo, SeparatorDemo, SheetDemo } from './pages/structure.tsx'
 import {
   AiStatusDemo,
   ArcadePixelDemo,
@@ -24,7 +24,7 @@ import {
   NotificationBellDemo,
   PasswordInputDemo,
   StatusIconDemo,
-} from './pages/rare'
+} from './pages/rare.tsx'
 import {
   CodeBlockDemo,
   DurationPickerDemo,
@@ -32,7 +32,7 @@ import {
   TaskListDemo,
   ThemeSelectorDemo,
   WebSearchDemo,
-} from './pages/rare2'
+} from './pages/rare2.tsx'
 import {
   GaugeBarDemo,
   PriceTagDemo,
@@ -42,9 +42,9 @@ import {
   RatingGaugeDemo,
   SparklineDemo,
   TreemapDemo,
-} from './pages/quotes'
-import { AccordionDemo, TabsDemo } from './pages/layout'
-import { ContextMenuDemo, DialogDemo, DropdownMenuDemo, PopoverDemo, TooltipDemo } from './pages/overlays'
+} from './pages/quotes.tsx'
+import { AccordionDemo, TabsDemo } from './pages/layout.tsx'
+import { ContextMenuDemo, DialogDemo, DropdownMenuDemo, PopoverDemo, TooltipDemo } from './pages/overlays.tsx'
 import {
   ButtonDemo,
   CheckboxDemo,
@@ -54,7 +54,7 @@ import {
   SliderDemo,
   SwitchDemo,
   ToggleGroupDemo,
-} from './pages/forms'
+} from './pages/forms.tsx'
 
 /** 每一页的实时预览，键是 registry.ts 里的页 id（registry.test.ts 核对两边一一对应）。 */
 export const DEMOS: Readonly<Record<string, ComponentType>> = {

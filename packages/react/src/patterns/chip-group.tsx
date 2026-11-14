@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 import { X } from 'lucide-react'
 import { ToggleGroup as ToggleGroupPrimitive } from 'radix-ui'
-import { cn } from '../lib/cn'
+import { cn } from '../lib/cn.ts'
 
 // 功能参照 Arc Chip group（uiarc.dev，2026-11-14 读：分面筛选，一组可开关的小标签），实现原创；外观在 theme/chip-group.css。
 // 用途：筛选器、自选分组的快速过滤。每个芯片是 aria-pressed 的开关（同包里分段切换的约定），整组 role=group；

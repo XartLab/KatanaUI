@@ -9,7 +9,7 @@ import {
   TreeItemContent,
   type Selection,
 } from 'react-aria-components'
-import { cn } from '../lib/cn'
+import { cn } from '../lib/cn.ts'
 
 // 功能参照 Arc Tree view（uiarc.dev，2026-11-14 读：可展开收起的层级列表），实现原创；外观在 theme/tree-view.css。
 // 用途：数据集目录、品种分类树（DatasetCatalog 的缺口）。行为底座是 react-aria-components 的 Tree（treegrid 角色、方向键 ↑↓ 走、→ 展开 / 进子级、← 收起 / 回父级、

@@ -152,7 +152,11 @@ export { ARCADE_SPRITES, ArcadePixel, type ArcadePixelAnimate, type ArcadePixelP
 export { Lcd, type LcdTone } from './katana/lcd.tsx'
 export { Led, LINK_GROUPS, type LedState, type LinkGroup } from './katana/led.tsx'
 export { Kbd } from './katana/kbd.tsx'
-export { ShortcutRecorder, type ShortcutRecorderLabels, type ShortcutRecorderProps } from './katana/shortcut-recorder.tsx'
+export {
+  ShortcutRecorder,
+  type ShortcutRecorderLabels,
+  type ShortcutRecorderProps,
+} from './katana/shortcut-recorder.tsx'
 export { BadgeGroup, type BadgeItem } from './katana/badge.tsx'
 export { RollingText, rollSlots, rollStrip } from './katana/rolling-text.tsx'
 export { NumberInput } from './katana/number-input.tsx'
@@ -188,7 +192,12 @@ export type { OrbState } from './katana/matrix-orb-model.ts'
 
 // 第二批（#1861）：里程表式数字滚动（升级 RollingText，见上）、分步进度条、主题选择、代码块、联网检索来源、任务清单、时长选择。
 export { StepPlayer, type StepPlayerLabels, type StepPlayerProps, type StepPlayerStep } from './katana/step-player.tsx'
-export { ThemeSelector, type ThemeOption, type ThemePalette, type ThemeSelectorProps } from './katana/theme-selector.tsx'
+export {
+  ThemeSelector,
+  type ThemeOption,
+  type ThemePalette,
+  type ThemeSelectorProps,
+} from './katana/theme-selector.tsx'
 export { CodeBlock, type CodeBlockProps } from './katana/code-block.tsx'
 export { JsonViewer, type JsonViewerLabels, type JsonViewerProps } from './katana/json-viewer.tsx'
 export {

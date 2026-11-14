@@ -13,9 +13,14 @@ import {
   type JsonViewerLabels,
   type ShortcutRecorderLabels,
   type TreeNode,
-} from '../../src/index'
-import { EventTimeline, type EventTimelineLabels, type SessionMinutes, type TimelineEvent } from '../../src/blocks'
-import { Row } from './parts'
+} from '../../src/index.ts'
+import {
+  EventTimeline,
+  type EventTimelineLabels,
+  type SessionMinutes,
+  type TimelineEvent,
+} from '../../src/blocks/index.ts'
+import { Row } from './parts.tsx'
 
 // #1919 的操作与结构件的演示。数据都是演示用的（页上写明），不是行情。
 

@@ -14,7 +14,7 @@ import {
   placeLabels,
   type SessionMinutes,
   type TimelineEvent,
-} from './event-timeline-model'
+} from './event-timeline-model.ts'
 
 const at = (iso: string) => Date.parse(iso)
 const CN: SessionMinutes = [

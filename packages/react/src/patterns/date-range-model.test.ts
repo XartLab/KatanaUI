@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 import { describe, expect, it } from 'vite-plus/test'
-import { matchPreset, presetRange } from './date-range-model'
+import { matchPreset, presetRange } from './date-range-model.ts'
 
 describe('presetRange', () => {
   // 2026-11-14 是周六。

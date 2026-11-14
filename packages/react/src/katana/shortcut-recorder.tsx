@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 import { X } from 'lucide-react'
 import { useId, useState, type KeyboardEvent } from 'react'
-import { cn } from '../lib/cn'
-import { Kbd } from './kbd'
-import { comboFromEvent, comboParts, hasModifier, heldModifiers, isModifierCode } from './shortcut-model'
+import { cn } from '../lib/cn.ts'
+import { Kbd } from './kbd.tsx'
+import { comboFromEvent, comboParts, hasModifier, heldModifiers, isModifierCode } from './shortcut-model.ts'
 
 // 功能参照 Arc Shortcut recorder（uiarc.dev，2026-11-14 读：录键、冲突提示），实现原创；外观是我们的字段皮肤加 Kbd 方块（theme/shortcut-recorder.css）。
 // 用途：热键设置（ATAS 有整套热键）。冲突表由调用方传（组合串 → 占着它的动作名）；冲突时不写入，留在录键态让用户换一个。

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 import { describe, expect, it } from 'vite-plus/test'
-import { evaluateInput, parseExpression, typedLive } from './number-expression'
+import { evaluateInput, parseExpression, typedLive } from './number-expression.ts'
 
 const range = { min: 0, max: 1000 }
 const signed = { min: -100, max: 1000 }

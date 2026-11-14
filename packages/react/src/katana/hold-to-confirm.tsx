@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 import { useEffect, useId, useRef, useState, type KeyboardEvent, type PointerEvent, type ReactNode } from 'react'
-import { cn } from '../lib/cn'
-import { HOLD_MS, RELEASE_MS, stepProgress } from './hold-model'
+import { cn } from '../lib/cn.ts'
+import { HOLD_MS, RELEASE_MS, stepProgress } from './hold-model.ts'
 
 // 功能参照 Arc Hold to confirm / Confirm morph（uiarc.dev，2026-11-14 读），实现原创；外观照我们的按钮与 token（theme/hold-to-confirm.css）。
 // 不可撤的动作（全平、全撤、停策略）不弹确认框，按住按钮把底色填满才触发，松手往回退；键盘按住空格或回车同样。

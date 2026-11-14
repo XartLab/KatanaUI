@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 import { describe, expect, it } from 'vite-plus/test'
-import { HOLD_MS, RELEASE_MS, stepProgress } from './hold-model'
+import { HOLD_MS, RELEASE_MS, stepProgress } from './hold-model.ts'
 
 describe('stepProgress', () => {
   it('按着：按 holdMs 线性填满，封顶 1', () => {

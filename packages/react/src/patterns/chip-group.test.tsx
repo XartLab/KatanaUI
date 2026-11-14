@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vite-plus/test'
-import { ChipGroup } from './chip-group'
+import { ChipGroup } from './chip-group.tsx'
 
 const items = [
   { value: 'a', label: 'A 股', count: 3 },

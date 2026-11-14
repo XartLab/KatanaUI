@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 import { describe, expect, it } from 'vite-plus/test'
-import { buildNodes, expandedToDepth, findMatches, splitHits, summary } from './json-viewer-model'
+import { buildNodes, expandedToDepth, findMatches, splitHits, summary } from './json-viewer-model.ts'
 
 const sample = {
   symbol: 'BTCUSDT',

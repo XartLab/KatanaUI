@@ -7,7 +7,7 @@ import {
   heldModifiers,
   isModifierCode,
   type KeyEventLike,
-} from './shortcut-model'
+} from './shortcut-model.ts'
 
 const ev = (over: Partial<KeyEventLike>): KeyEventLike => ({
   code: 'KeyA',

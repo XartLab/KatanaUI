@@ -2,7 +2,7 @@
 import { ChevronRight, Search } from 'lucide-react'
 import { useId, useMemo, useState, type CSSProperties } from 'react'
 import { Button as AriaButton, Collection, Tree, TreeItem, TreeItemContent } from 'react-aria-components'
-import { cn } from '../lib/cn'
+import { cn } from '../lib/cn.ts'
 import {
   buildNodes,
   expandedToDepth,
@@ -11,7 +11,7 @@ import {
   splitHits,
   summary,
   type JsonNode,
-} from './json-viewer-model'
+} from './json-viewer-model.ts'
 
 // 功能参照 Arc JSON viewer（uiarc.dev，2026-11-14 读：折叠加搜索），实现原创；外观在 theme/json-viewer.css。
 // 用途：原始消息、Agent 调用结果、连接调试。行为底座是 react-aria-components 的 Tree（treegrid 角色，↑↓ 走，→ 展开，← 收起），
