@@ -39,6 +39,21 @@ export type {
 } from './decision-queue/decision-queue-model.ts'
 export { NewsFeed, type NewsFeedLabels, type NewsFeedProps } from './news-feed/news-feed.tsx'
 export type { NewsItem, NewsSymbol } from './news-feed/news-feed-model.ts'
+export {
+  SystemMonitor,
+  type SystemMonitorLabels,
+  type SystemMonitorMetric,
+  type SystemMonitorProps,
+} from './system-monitor/system-monitor.tsx'
+export type {
+  EventSeverity,
+  LinkState,
+  MonitorEvent,
+  MonitorLink,
+  MonitorStrategy,
+  StrategyAction,
+  StrategyStatus,
+} from './system-monitor/system-monitor-model.ts'
 export { Toolbar, ToolbarGroup, ToolButton, ToolSlot } from './toolbar/toolbar.tsx'
 export { useRovingToolbar } from './toolbar/use-roving-toolbar.ts'
 

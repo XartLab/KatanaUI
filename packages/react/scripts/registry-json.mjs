@@ -156,7 +156,7 @@ function collectItems() {
       codeIn('src/blocks/symbol-galaxy').map((f) => `src/blocks/symbol-galaxy/${f}`),
     )
     // 面板壳、状态栏、工作区标签（#1901）：各一个子目录，文件合成一项（组件与它的纯函数一起装）。
-    for (const dir of ['panel-frame', 'status-bar', 'workspace-tabs', 'news-feed', 'decision-queue'])
+    for (const dir of ['panel-frame', 'status-bar', 'workspace-tabs', 'news-feed', 'decision-queue', 'system-monitor'])
       add(
         dir,
         'registry:component',

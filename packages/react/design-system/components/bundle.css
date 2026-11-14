@@ -4569,6 +4569,279 @@ button.k-news-title:hover, a.k-news-title:hover {
   inset-inline-end: 4px;
 }
 
+.k-sysmon {
+  height: 100%;
+  min-height: 0;
+  color: var(--ink-200);
+  font: var(--text-data) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+  flex-direction: column;
+  display: flex;
+}
+
+.k-sysmon-head {
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  padding: 0 0 8px;
+  display: flex;
+}
+
+.k-sysmon-head h3 {
+  color: var(--ink-100);
+  font: inherit;
+  margin: 0;
+  font-weight: 700;
+}
+
+.k-sysmon-body {
+  flex-direction: column;
+  flex: auto;
+  gap: 12px;
+  min-height: 0;
+  display: flex;
+  overflow: auto;
+}
+
+.k-sysmon-empty {
+  color: var(--ink-300);
+  text-align: center;
+  border: var(--hairline);
+  background: var(--bg-200);
+  padding: 12px;
+}
+
+.k-sysmon-linklist {
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+}
+
+.k-sysmon-link {
+  background: var(--bg-200);
+  border: var(--hairline);
+  border-left: 3px solid var(--line-200);
+}
+
+.k-sysmon-link[data-state="error"] {
+  border-left-color: var(--signal-red);
+}
+
+.k-sysmon-link[data-state="offline"], .k-sysmon-link[data-state="degraded"] {
+  border-left-color: var(--signal-amber);
+}
+
+.k-sysmon-link-body {
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  background: none;
+  border: 0;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 10px;
+  display: flex;
+}
+
+button.k-sysmon-link-body {
+  cursor: pointer;
+}
+
+button.k-sysmon-link-body:hover {
+  background: var(--bg-300);
+}
+
+button.k-sysmon-link-body:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: -2px;
+}
+
+.k-sysmon-link-name {
+  color: var(--ink-100);
+  font-weight: 600;
+}
+
+.k-sysmon-link[data-state="error"] .k-sysmon-link-state {
+  color: var(--signal-red);
+}
+
+.k-sysmon-link[data-state="offline"] .k-sysmon-link-state, .k-sysmon-link[data-state="degraded"] .k-sysmon-link-state {
+  color: var(--signal-amber);
+}
+
+.k-sysmon-link-state, .k-sysmon-link-beat {
+  color: var(--ink-300);
+}
+
+.k-sysmon-metrics {
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 8px;
+  display: grid;
+}
+
+.k-sysmon-metrics .k-sysmon-empty {
+  grid-column: 1 / -1;
+}
+
+.k-sysmon-tablewrap {
+  border: var(--hairline);
+  overflow-x: auto;
+}
+
+.k-sysmon-table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.k-sysmon-table th, .k-sysmon-table td {
+  text-align: left;
+  white-space: nowrap;
+  border-bottom: var(--hairline);
+  padding: 6px 10px;
+}
+
+.k-sysmon-table thead th {
+  color: var(--ink-300);
+  background: var(--bg-200);
+  font-weight: 500;
+}
+
+.k-sysmon-table .num {
+  text-align: right;
+}
+
+.k-sysmon-row[data-status="error"] {
+  box-shadow: inset 3px 0 0 var(--signal-red);
+  background: var(--alpha-white-3);
+}
+
+.k-sysmon-name {
+  color: var(--ink-100);
+  font-weight: 600;
+}
+
+.k-sysmon-name-cell {
+  color: var(--ink-100);
+  flex-direction: column;
+  gap: 2px;
+  font-weight: 600;
+  display: flex;
+}
+
+.k-sysmon-error {
+  color: var(--signal-red);
+  font-weight: 400;
+}
+
+.k-sysmon-status {
+  align-items: center;
+  gap: 6px;
+  display: inline-flex;
+}
+
+.k-sysmon-row[data-status="error"] .k-sysmon-status {
+  color: var(--signal-red);
+}
+
+.k-sysmon-quota {
+  align-items: center;
+  gap: 6px;
+  display: inline-flex;
+}
+
+.k-sysmon-quota-track {
+  background: var(--bg-000);
+  width: 64px;
+  height: 6px;
+  box-shadow: var(--recess);
+  display: inline-block;
+}
+
+.k-sysmon-quota-track > span {
+  background: var(--signal-green);
+  height: 100%;
+  display: block;
+}
+
+.k-sysmon-quota[data-tone="warn"] .k-sysmon-quota-track > span {
+  background: var(--signal-amber);
+}
+
+.k-sysmon-quota[data-tone="danger"] .k-sysmon-quota-track > span {
+  background: var(--signal-red);
+}
+
+.k-sysmon-actions {
+  gap: 2px;
+  display: flex;
+}
+
+.k-sysmon-sr {
+  clip-path: inset(50%);
+  width: 1px;
+  height: 1px;
+  position: absolute;
+  overflow: hidden;
+}
+
+.k-sysmon-filters {
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 8px;
+  display: flex;
+}
+
+.k-sysmon-eventlist {
+  border: var(--hairline);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.k-sysmon-event {
+  border-bottom: var(--hairline);
+  border-left: 3px solid var(--ds-c-2xn4aw);
+  align-items: baseline;
+  gap: 8px;
+  padding: 5px 10px;
+  display: flex;
+}
+
+.k-sysmon-event .k-led {
+  align-self: center;
+}
+
+.k-sysmon-event[data-severity="warn"] {
+  border-left-color: var(--signal-amber);
+}
+
+.k-sysmon-event[data-severity="error"] {
+  border-left-color: var(--signal-red);
+}
+
+.k-sysmon-event-time {
+  min-width: 64px;
+  color: var(--ink-300);
+}
+
+.k-sysmon-event-kind {
+  min-width: 56px;
+  color: var(--ink-200);
+  font-weight: 600;
+}
+
+.k-sysmon-event[data-severity="error"] .k-sysmon-event-text {
+  color: var(--signal-red);
+}
+
+.k-sysmon-event-text {
+  color: var(--ink-100);
+}
+
 .k-dq {
   height: 100%;
   min-height: 0;
