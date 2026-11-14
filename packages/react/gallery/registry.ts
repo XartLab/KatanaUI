@@ -4432,6 +4432,67 @@ export const PAGES: readonly DocPage[] = [
     ],
   },
   {
+    id: 'transmission-chain',
+    group: 'blocks',
+    cardHeight: 860,
+    title: 'TransmissionChain 传导链图',
+    summary:
+      '研究「谁创造资金 → 谁先取得购买力 → 经过什么通道 → 用于什么 → 谁获得收入与利润 → 哪类资产拥有收益权」这类传导框架的有向图：节点是传导环节，边是传导关系，每条边有验证状态（未检验 / 有证据支持 / 证据反对 / 部分成立）与证据计数，边上的标签写状态图标与「支 n 反 n」。点边，右侧出这条判断的失败条件与证据列表（每条证据有立场，并标来源类别：学者观点 / 已发生的政策与资金变化 / 我们的假说）；点节点，列出它的上下游边，不挨着的边淡出。支持沿链回到上游的反馈边（如资产价格经抵押品与再融资回到信用）。布局用 dagre（MIT，一层一层排，环由它先反转再还原），滚轮缩放、拖动平移、一键适应。状态色：支持 = 涨色、反对 = 跌色、部分 = 琥珀点划线、未检验 = 灰虚线，状态另有图标与状态字，不只靠颜色；橙色不画数据，不用蓝。画法参照 TradingView 的缩放与平移手感；证据行是件自带的简版（包里还没有研究台账件，等它做了再合并）。演示数据（状态与证据条数）是编的，页上与证据行都写明。',
+    exports: ['TransmissionChain'],
+    props: [
+      {
+        part: 'TransmissionChain',
+        note: '件只画、只回调：节点、边、证据与全部文字由调用方传，件不认识任何应用或研究框架；高度由外层给。',
+        rows: [
+          {
+            name: 'nodes',
+            type: 'ChainNode[]',
+            desc: '{ id, label, note? }：传导环节。没有节点写 labels.notConnected，不补样本。',
+          },
+          {
+            name: 'edges',
+            type: 'ChainEdge[]',
+            desc: '{ id, from, to, status: untested | supported | contradicted | partial, label?, feedback?, failureCondition?, evidence?: { id, text, stance: support | against | neutral, kind?: view | fact | hypothesis, source? }[] }。证据计数由 evidence 数出来，不另传；指向不存在节点的边、自环与重复 id 被丢掉。',
+          },
+          {
+            name: 'labels',
+            type: 'TransmissionChainLabels',
+            desc: '全部文字（状态名、立场名、来源类别、各区标题、提示与 counts / edgeName 函数）。包里没有语言。',
+          },
+          {
+            name: 'direction',
+            type: "'LR' | 'TB'",
+            desc: '布局方向，默认从上到下（链长时横排会宽到缩得看不清）；LR 从左到右。',
+          },
+          {
+            name: 'defaultSelected / onSelect',
+            type: 'ChainSelection',
+            desc: '起始选中（{ kind: edge | node, id }）与选中变化的回调；选中的 id 不存在时当作没选。',
+          },
+        ],
+      },
+    ],
+    states: [
+      '没有节点：写 labels.notConnected。',
+      '边没有证据：右侧写 labels.noEvidence，标签上不写计数。',
+      '边没有失败条件：右侧写 labels.noFailureCondition（琥珀提示），不替调用方编。',
+      '选中节点：不挨着它的节点与边淡出到 30%。',
+      '反馈边：data-feedback，布局时权重很低，不参与定层，画出来绕回上游。',
+    ],
+    donts: [
+      '不要用橙色或蓝色画状态：状态用涨色、跌色、琥珀、灰加图标与文字。',
+      '不要把演示数据当研究结论。',
+      '不要在件里写文字或判断状态：状态由调用方按证据定，件只显示。',
+    ],
+    composition:
+      'TransmissionChain\n  画布：svg（dagre 布局）× 边（路径、箭头、标签）+ 节点；缩放 / 适应按钮；状态图例\n  详情：边（状态、失败条件、证据行）或节点（上下游边）',
+    keys: [
+      ['Tab', '在缩放按钮、边、节点间移动'],
+      ['Enter / Space', '选中当前的边或节点'],
+      ['滚轮 / 拖动', '缩放（以指针为中心）/ 平移'],
+    ],
+  },
+  {
     id: 'strategy-report',
     group: 'blocks',
     cardHeight: 720,

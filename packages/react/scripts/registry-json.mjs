@@ -164,6 +164,7 @@ function collectItems() {
       'decision-queue',
       'system-monitor',
       'strategy-report',
+      'transmission-chain',
     ])
       add(
         dir,

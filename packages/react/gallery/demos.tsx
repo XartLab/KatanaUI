@@ -28,6 +28,7 @@ import {
   TechnicalRatingDemo,
 } from './pages/quant.tsx'
 import { ParamScatterDemo, StrategyReportDemo } from './pages/strategy.tsx'
+import { TransmissionChainDemo } from './pages/research.tsx'
 import {
   DataGridDemo,
   DecisionQueueDemo,
@@ -175,6 +176,7 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'event-timeline': EventTimelineDemo,
   'news-feed': NewsFeedDemo,
   'strategy-report': StrategyReportDemo,
+  'transmission-chain': TransmissionChainDemo,
   'param-scatter': ParamScatterDemo,
   'system-monitor': SystemMonitorDemo,
   'decision-queue': DecisionQueueDemo,
