@@ -21,7 +21,7 @@ import {
   type CalendarEvent,
   type HorizonRow,
 } from '../../src/quant'
-import { Row } from './parts'
+import { Row, SAMPLE_MARK_SRC } from './parts'
 
 // #1917：时间序列与盈亏的件的演示。下面所有数据都是演示用的合成数据（在这个展示页里按固定种子生成，不是行情、不是账户），每页也写明了；应用里没有样本数据。
 
@@ -103,19 +103,21 @@ const ATTR_SYMBOLS: AttributionItem[] = [
     key: '300750',
     label: '300750 宁德时代',
     value: 73_920,
+    icon: {},
     detail: [
       { label: '持仓', value: '3' },
       { label: '账户', value: 'A B' },
     ],
   },
-  { key: '00700', label: '00700 腾讯控股', value: 14_300 },
-  { key: '002475', label: '002475 立讯精密', value: 8_760 },
-  { key: '601012', label: '601012 隆基绿能', value: 1_640, closed: '已平 09-18' },
-  { key: '002594', label: '002594 比亚迪', value: 920 },
-  { key: '688981', label: '688981 中芯国际', value: 480 },
-  { key: '000333', label: '000333 美的集团', value: 200 },
-  { key: '600519', label: '600519 贵州茅台', value: -11_200 },
-  { key: 'IF2510', label: 'IF2510 沪深300 期货', value: -32_580 },
+  { key: '00700', label: '00700 腾讯控股', value: 14_300, icon: {} },
+  { key: '002475', label: '002475 立讯精密', value: 8_760, icon: {}, closed: '已平 09-18' },
+  // 示意图标：自绘的 SVG，演示有图的样子。
+  { key: 'BTC', label: 'BTC 比特币', value: 3_100, icon: { src: SAMPLE_MARK_SRC } },
+  { key: '601012', label: '601012 隆基绿能', value: 1_640, icon: {} },
+  { key: '688981', label: '688981 中芯国际', value: 480, icon: {} },
+  { key: '000333', label: '000333 美的集团', value: 200, icon: {} },
+  { key: '600519', label: '600519 贵州茅台', value: -11_200, icon: {} },
+  { key: 'IF2510', label: 'IF2510 沪深300 期货', value: -32_580, icon: {} },
   { key: 'fee', label: '费用 · 税', value: -2_000, kind: 'fee' },
 ]
 const ATTR_ACCOUNTS: AttributionItem[] = [
@@ -202,7 +204,9 @@ export function AttributionBarsDemo() {
       <p className="gal-note">
         {DEMO_NOTE}场景照设计稿 PnLAttribution 卡：方向用位置（正在右、负在左），条是 ink-200
         点阵纹理，焦点品种的条是强调色纹理，只有数字用涨跌色。超过 7 项折进「其他
-        ×n」，费用·税永远在最底；已平仓的行整行删除线、名称后一个「已平 09-18」点阵小标签。
+        ×n」，费用·税永远在最底；已平仓的行整行删除线、名称后一个「已平
+        09-18」点阵小标签。品种前是徽标：股票用字母圆标，BTC
+        一行用自绘的示意图标演示有图的样子（示意图标，不是真实标志）。
       </p>
     </>
   )

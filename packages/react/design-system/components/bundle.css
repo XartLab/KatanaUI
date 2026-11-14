@@ -3457,6 +3457,56 @@
   padding: 0 12px;
   font-weight: 500;
   transition: color .15s, border-color .15s;
+.k-symbol-mark {
+  background: var(--bg-400);
+  color: var(--ink-200);
+  font-family: var(--font-dot);
+  letter-spacing: 0;
+  -webkit-font-smoothing: none;
+  font-smooth: never;
+  vertical-align: middle;
+  -webkit-user-select: none;
+  user-select: none;
+  border-radius: 50%;
+  flex: none;
+  justify-content: center;
+  align-items: center;
+  font-style: normal;
+  line-height: 1;
+  display: inline-flex;
+  overflow: hidden;
+}
+
+.k-symbol-mark[data-kind="image"] img {
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.k-arcade-scanlines {
+  background-image: repeating-linear-gradient(var(--ds-c-3uduzz) 0 1px, var(--ds-c-2xn4aw) 1px 3px);
+}
+
+.k-arcade-roll {
+  background-image: linear-gradient(to bottom, transparent 0%, var(--alpha-white-4) 50%, transparent 100%);
+}
+
+.k-arcade-aberration {
+  mix-blend-mode: screen;
+  background-image: linear-gradient(90deg, var(--ds-c-90z0xj) 0%, var(--ds-c-90z0u8) 13%, var(--ds-c-11a090b) 87%, var(--ds-c-11a093m) 100%);
+}
+
+.k-arcade-vignette {
+  background-image: radial-gradient(125% 125%, var(--ds-c-2xn4aw) 40%, var(--ds-c-3uduy7) 74%, var(--ds-c-3udw59) 100%);
+  box-shadow: inset 0 0 24px var(--ds-c-3udw2n);
+}
+
+.k-badges {
+  align-items: flex-start;
+  gap: var(--space-1);
+  margin-left: var(--space-1);
+  flex: none;
   display: inline-flex;
   position: relative;
   overflow: hidden;
@@ -6554,6 +6604,9 @@ button.k-spark-tile:focus-visible {
   color: var(--ink-100);
   text-overflow: ellipsis;
   white-space: nowrap;
+  align-items: center;
+  gap: 8px;
+  display: flex;
   overflow: hidden;
 }
 

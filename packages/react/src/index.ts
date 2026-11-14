@@ -162,6 +162,17 @@ export { RollingText, rollSlots, rollStrip } from './katana/rolling-text.tsx'
 export { NumberInput } from './katana/number-input.tsx'
 export { DateTimeInput, type DateTimeLabels } from './katana/date-time-input.tsx'
 export { Skeleton } from './katana/skeleton.tsx'
+export { DotMatrix, DOT_PITCH, DOT_SIZE } from './katana/dot-matrix'
+export { ARCADE_SPRITES, ArcadePixel, type ArcadePixelAnimate, type ArcadePixelProps } from './katana/arcade-pixel'
+export { Lcd, type LcdTone } from './katana/lcd'
+export { Led, LINK_GROUPS, type LedState, type LinkGroup } from './katana/led'
+export { Kbd } from './katana/kbd'
+export { SymbolMark, symbolMarkLetters, type SymbolMarkProps } from './katana/symbol-mark'
+export { BadgeGroup, type BadgeItem } from './katana/badge'
+export { RollingText, rollSlots, rollStrip } from './katana/rolling-text'
+export { NumberInput } from './katana/number-input'
+export { DateTimeInput, type DateTimeLabels } from './katana/date-time-input'
+export { Skeleton } from './katana/skeleton'
 export {
   TOAST_EXIT_MS,
   Toast,

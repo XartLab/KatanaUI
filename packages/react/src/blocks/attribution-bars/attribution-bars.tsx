@@ -9,6 +9,7 @@ import { DownloadIcon, ExpandIcon, TableIcon } from 'lucide-react'
 import { useState, type KeyboardEvent } from 'react'
 import { cn } from '../../lib/cn'
 import { ToggleGroup, ToggleGroupItem } from '../../primitives/toggle-group'
+import { SymbolMark } from '../../katana/symbol-mark'
 import { LcdTooltip } from '../../quant/chart-kit/lcd-tooltip'
 import { Toolbar, ToolbarGroup, ToolButton } from '../toolbar/toolbar'
 import {
@@ -216,6 +217,13 @@ export function AttributionBars({
                         {row.kind === 'fee' ? '–' : pad(i + 1)}
                       </span>
                       <span className="k-attr-label">
+                        {row.icon && (
+                          <SymbolMark
+                            code={row.label.split(/\s+/)[0] ?? row.label}
+                            name={row.label.split(/\s+/).slice(1).join(' ') || undefined}
+                            src={row.icon.src}
+                          />
+                        )}
                         {text(row)}
                         {row.closed !== null && (
                           <span className="k-attr-closed" data-slot="attribution-closed">

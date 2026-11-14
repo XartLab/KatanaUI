@@ -1061,6 +1061,40 @@ export const PAGES: readonly DocPage[] = [
       ['Backspace / Delete', '录键态下清除快捷键'],
       ['Tab', '移走焦点并退出录键态（不会把键盘用户困住）'],
     ],
+    id: 'symbol-mark',
+    group: 'readouts',
+    cardHeight: 220,
+    title: 'SymbolMark 品种徽标',
+    summary:
+      '品种名前的小圆标（学 TradingView 列表里企业 / 币种标志）：有图显示圆形裁切的图片，加载失败退回字母；没有图就是字母圆标，底 bg-400、字 ink-200，不按代码随机上色。尺寸默认 18（行高 28 的一行）。',
+    exports: ['SymbolMark', 'symbolMarkLetters'],
+    props: [
+      {
+        part: 'SymbolMark',
+        note: '图片从哪来由调用方给；件里不带任何企业或币种的标志（商标）。读屏名用 name，没有就用 code。',
+        rows: [
+          { name: 'code', type: 'string', desc: '品种代码；字母圆标取其中的拉丁字母前 2 个。' },
+          { name: 'name', type: 'string', desc: '名称：读屏名；代码里没有字母（600519、00700）时取名称首字。' },
+          { name: 'src', type: 'string', desc: '图片地址；不给或加载失败就画字母。' },
+          { name: 'size', type: 'number', default: '18', desc: '直径（像素）。' },
+        ],
+      },
+      {
+        part: 'symbolMarkLetters',
+        note: '字母圆标上写什么的纯函数。',
+        rows: [
+          {
+            name: '(code, name?)',
+            type: 'string',
+            desc: '代码里的拉丁字母前 2 个（大写）；没有就取名称首字，再没有取代码首字符。',
+          },
+        ],
+      },
+    ],
+    states: ['字母圆标；有图；图加载失败退回字母。'],
+    donts: ['不要按代码随机上色：颜色留给数据。', '不要在件里内置真实公司或币种的标志。'],
+    composition: 'SymbolMark\n  span[role=img][aria-label]\n    img（有图且没失败）| span 字母',
+    keys: [],
   },
   {
     id: 'number-input',

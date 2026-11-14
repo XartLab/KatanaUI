@@ -16,6 +16,14 @@ import {
   TreeViewDemo,
 } from './pages/arc-controls.tsx'
 import { FieldDemo, HoverCardDemo, ScrollAreaDemo, SeparatorDemo, SheetDemo } from './pages/structure.tsx'
+import { DateTimeInputDemo, NumberInputDemo, SkeletonDemo } from './pages/fields'
+import { BadgeDemo, DotMatrixDemo, KbdDemo, LcdDemo, LedDemo, RollingTextDemo, SymbolMarkDemo } from './pages/readouts'
+import { ContextMenuOpen, DialogOpen, DropdownMenuOpen, PopoverOpen, SelectOpen, TooltipOpen } from './pages/open'
+import { ChangeTextDemo, PnlTextDemo, QuantFormatDemo } from './pages/quant'
+import { DataGridDemo, EmptyStateDemo, EstimateBadgeDemo, ToolbarDemo } from './pages/blocks'
+import { AlertDemo, ProgressDemo, ToastDemo } from './pages/feedback'
+import { ComboboxDemo, CommandDemo } from './pages/pickers'
+import { FieldDemo, HoverCardDemo, ScrollAreaDemo, SeparatorDemo, SheetDemo } from './pages/structure'
 import {
   AiStatusDemo,
   ArcadePixelDemo,
@@ -95,6 +103,7 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   badge: BadgeDemo,
   kbd: KbdDemo,
   'shortcut-recorder': ShortcutRecorderDemo,
+  'symbol-mark': SymbolMarkDemo,
   'number-input': NumberInputDemo,
   'date-time-input': DateTimeInputDemo,
   'date-range-picker': DateRangePickerDemo,

@@ -13,6 +13,8 @@ export type AttributionItem = {
   kind?: 'item' | 'fee'
   /** 已平仓：名称后的点阵小标签文字（例「已平 09-18」），这一行整行删除线、降墨色。 */
   closed?: string
+  /** 品种徽标：有它，标签前画 SymbolMark（代码与名称取自 label 的第一个空格前后）；src 是图片地址，没有 src 画字母圆标。 */
+  icon?: { src?: string }
   /** 悬停 tooltip 里多写的几行（持仓数、所属账户……），文字由调用方给。 */
   detail?: readonly { label: string; value: string }[]
 }
@@ -25,6 +27,7 @@ export type AttributionRow = {
   /** other 行：被折进去的项数。 */
   folded: number
   closed: string | null
+  icon: { src?: string } | null
   detail: readonly { label: string; value: string }[]
 }
 
@@ -48,6 +51,7 @@ export function attributionRows(
     kind: 'item',
     folded: 0,
     closed: item.closed ?? null,
+    icon: item.icon ?? null,
     detail: item.detail ?? [],
   })
   const other: AttributionRow | null = fold
@@ -58,6 +62,7 @@ export function attributionRows(
         kind: 'other',
         folded: folded.length,
         closed: null,
+        icon: null,
         detail: [],
       }
     : null

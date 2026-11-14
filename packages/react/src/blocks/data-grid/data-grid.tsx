@@ -25,6 +25,7 @@ import {
   type ReactNode,
 } from 'react'
 import { cn } from '../../lib/cn.ts'
+import { SymbolMark } from '../../katana/symbol-mark.tsx'
 import { ContextMenu, ContextMenuContent, ContextMenuTrigger } from '../../primitives/context-menu.tsx'
 import { useMenuParts } from '../../primitives/menu-any.tsx'
 import { MenuItemHint, MenuItemLabel } from '../../primitives/menu-parts.tsx'
@@ -634,6 +635,14 @@ function CellBody({ resolved }: { resolved: ReturnType<typeof resolveCell> }) {
   if (resolved.symbol) {
     return (
       <>
+        {resolved.symbol.icon && (
+          <SymbolMark
+            code={resolved.symbol.code}
+            name={resolved.symbol.name}
+            src={resolved.symbol.icon.src}
+            size={16}
+          />
+        )}
         <span className="k-grid-name">{resolved.symbol.code}</span>
         {resolved.symbol.venue && <span className="k-grid-tag">{resolved.symbol.venue}</span>}
       </>

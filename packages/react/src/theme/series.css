@@ -256,6 +256,9 @@
   color: var(--ink-300);
 }
 .k-attr-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   overflow: hidden;
   color: var(--ink-100);
   text-overflow: ellipsis;

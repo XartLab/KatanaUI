@@ -156,6 +156,11 @@
           "path": "src/theme/series.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/series.css"
+        },
+        {
+          "path": "src/theme/symbol-mark.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/symbol-mark.css"
         }
       ]
     },
@@ -1530,6 +1535,22 @@
       ]
     },
     {
+      "name": "symbol-mark",
+      "type": "registry:component",
+      "title": "Symbol Mark",
+      "description": "品种名前的小圆标（学 TradingView 列表里企业 / 币种标志）：有图显示圆形裁切的图片，加载失败退回字母；没有图就是字母圆标，底 bg-400、字 ink-200，不按代码随机上色。尺寸默认 18（行高 28 的一行）。",
+      "registryDependencies": [
+        "@katana/cn"
+      ],
+      "files": [
+        {
+          "path": "src/katana/symbol-mark.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/katana/symbol-mark.tsx"
+        }
+      ]
+    },
+    {
       "name": "task-list",
       "type": "registry:component",
       "title": "Task List",
@@ -2118,6 +2139,7 @@
         "@katana/menu-any",
         "@katana/menu-parts",
         "@katana/quant-format",
+        "@katana/symbol-mark",
         "@katana/tone-text"
       ],
       "files": [
@@ -2210,6 +2232,7 @@
       "registryDependencies": [
         "@katana/chart-kit",
         "@katana/cn",
+        "@katana/symbol-mark",
         "@katana/toggle-group",
         "@katana/toolbar"
       ],
