@@ -415,191 +415,6 @@
   margin-left: auto;
 }
 
-/* —— Meter（bar / gauge / sync；组件卡 Meter）—— */
-.k-meter {
-  --k-tone: var(--chart-accent, var(--signal-orange));
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  min-width: 0;
-  font: var(--text-caption) var(--font-sans);
-  font-variant-numeric: tabular-nums;
-}
-.k-meter[data-tone='ok'] {
-  --k-tone: var(--signal-green);
-}
-.k-meter[data-tone='warn'] {
-  --k-tone: var(--signal-amber);
-}
-.k-meter[data-tone='off'] {
-  --k-tone: var(--line-200);
-}
-.k-meter[data-tone='ink'] {
-  --k-tone: var(--ink-200);
-}
-.k-meter-head {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 8px;
-}
-.k-meter-label {
-  color: var(--ink-300);
-  font: var(--text-data) var(--font-sans);
-}
-.k-meter-value {
-  color: var(--k-tone);
-  font: var(--text-data) var(--chart-font-axis, var(--font-mono));
-  text-align: right;
-}
-.k-meter[data-tone='ok'] .k-meter-value,
-.k-meter[data-tone='off'] .k-meter-value {
-  color: var(--ink-100);
-}
-.k-meter-state {
-  margin-left: 6px;
-  font-style: normal;
-  font-family: var(--font-sans);
-}
-.k-meter[data-state='warn'] .k-meter-state {
-  color: var(--signal-amber);
-}
-.k-meter[data-state='breach'] .k-meter-state {
-  color: var(--signal-red);
-}
-.k-meter-track {
-  position: relative;
-  height: 10px;
-  background: var(--bg-000);
-  border: var(--hairline);
-  box-shadow: var(--recess);
-}
-.k-meter-fill {
-  --k-dot: var(--k-tone);
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  transition: width var(--dur-snappy) var(--ease-snappy);
-}
-.k-meter[data-state='warn'] .k-meter-track,
-.k-meter[data-state='breach'] .k-meter-track {
-  animation: k-meter-pulse var(--dur-snappy) var(--ease-snappy) 1;
-}
-@keyframes k-meter-pulse {
-  50% {
-    box-shadow: 0 0 0 2px var(--k-tone);
-  }
-}
-.k-meter-tick {
-  position: absolute;
-  top: -1px;
-  bottom: -1px;
-  width: 2px;
-  margin-left: -1px;
-  background: var(--ink-300);
-}
-.k-meter-tick.is-soft {
-  background: var(--signal-amber);
-}
-.k-meter-tick.is-hard {
-  background: var(--signal-red);
-}
-.k-meter-ticks {
-  position: relative;
-  height: 14px;
-  color: var(--ink-300);
-}
-.k-meter-ticks > span {
-  position: absolute;
-  white-space: nowrap;
-  transform: translateX(-50%);
-}
-.k-meter-ticks > span[data-align='end'] {
-  transform: translateX(-100%);
-}
-/* Gauge */
-.k-meter-gauge-box {
-  position: relative;
-  height: 34px;
-  background: var(--bg-000);
-  border: var(--hairline);
-  box-shadow: var(--recess);
-}
-.k-meter-base {
-  position: absolute;
-  top: 50%;
-  right: 6px;
-  left: 6px;
-  height: 1px;
-  background: var(--line-100);
-}
-.k-meter-pin {
-  position: absolute;
-  top: 4px;
-  bottom: 4px;
-  left: calc(6px + var(--k-pin, 0) * (100% - 12px));
-  width: 2px;
-  margin-left: -1px;
-  background: var(--k-tone);
-  box-shadow: var(--chart-end-glow, var(--glow-orange));
-}
-.k-meter-gauge[data-pin='weak'] .k-meter-pin {
-  background: var(--signal-red);
-}
-.k-meter-gauge[data-pin='locked'] .k-meter-pin {
-  background: var(--signal-amber);
-}
-.k-meter-gauge-ticks {
-  position: absolute;
-  right: 6px;
-  bottom: 2px;
-  left: 6px;
-  display: flex;
-  justify-content: space-between;
-  color: var(--ink-300);
-  font: var(--text-num-sm) var(--chart-font-axis, var(--font-mono));
-}
-/* Sync：分段齿条 + amber 刻度 + 大百分比 */
-.k-meter-sync {
-  flex-direction: row;
-  align-items: flex-end;
-  gap: 12px;
-}
-.k-meter-sync-body {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  gap: 6px;
-  min-width: 0;
-}
-.k-meter-teeth {
-  position: relative;
-  display: flex;
-  gap: 2px;
-  height: 14px;
-}
-.k-meter-tooth {
-  flex: 1;
-  background: var(--bg-300);
-}
-.k-meter-tooth[data-on='true'] {
-  background: var(--k-tone);
-}
-.k-meter-mark {
-  position: absolute;
-  top: -3px;
-  bottom: -3px;
-  width: 2px;
-  margin-left: -1px;
-  background: var(--signal-amber);
-}
-.k-meter-big {
-  color: var(--ink-100);
-  font: var(--text-display-dense) var(--font-display);
-  letter-spacing: var(--text-display-dense-tracking);
-}
-
 /* —— Calendar（月历 / 年视图；组件卡 Calendar）—— */
 .k-heat {
   position: relative;
@@ -1038,8 +853,7 @@ button.k-sm-head:focus-visible {
 .k-sx-meta,
 .k-sx-source,
 .k-sx-evt-text,
-.k-sx-dim-label,
-.k-sx-kpis .k-spark-tile-index {
+.k-sx-dim-label {
   font: var(--text-tag-md) var(--font-dot);
   letter-spacing: 0;
   font-style: normal;
@@ -1077,7 +891,7 @@ button.k-sm-head:focus-visible {
 .k-sx-kpis .k-spark-tile[data-expanded='true'] {
   border-left-color: var(--chart-accent, var(--signal-orange));
 }
-.k-sx-kpis .k-spark-tile-label {
+.k-sx-kpis .k-spark-tile-tag {
   color: var(--ink-300);
   font: var(--text-num-sm) var(--font-mono);
   letter-spacing: 0.16em;

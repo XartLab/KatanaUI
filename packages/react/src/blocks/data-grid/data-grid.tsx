@@ -69,7 +69,32 @@ const HEAD_HEIGHTS: Readonly<Record<GridDensity, number>> = { compact: 22, defau
 const MIN_WIDTH = 24
 
 /** 外层各部分额外挂的类名（宿主给自己的样式与测试留钩子）。 */
-export type GridSlot = 'root' | 'grid' | 'scroll' | 'inner' | 'head' | 'col' | 'rows' | 'row' | 'cell' | 'foot'
+export type GridSlot =
+  | 'root'
+  | 'grid'
+  | 'scroll'
+  | 'inner'
+  | 'head'
+  | 'col'
+  | 'rows'
+  | 'row'
+  | 'cell'
+  | 'subrow'
+  | 'foot'
+
+/** `rowProps` 能给一行加的属性：类名、悬停提示、data-*（测试与样式的钩子）、aria-*。 */
+export type GridRowProps = {
+  className?: string
+  title?: string
+  [attribute: `data-${string}`]: string | number | boolean | undefined
+  [attribute: `aria-${string}`]: string | number | boolean | undefined
+}
+
+/** 子行没有内容的写法（null、undefined、false）：这一行不能展开。 */
+const hasContent = (node: ReactNode): boolean => node !== null && node !== undefined && node !== false
+
+/** 虚拟滚动给没量过的子行的估高（像素）；量到以后以真实高度为准。 */
+const SUBROW_ESTIMATE = 96
 
 const features = tableFeatures({
   rowSortingFeature,
@@ -88,8 +113,10 @@ export type DataGridProps<Row extends object> = {
   rowId: (row: Row) => string
   /** 屏幕阅读器念的表名。 */
   label: string
-  sort: SortSpec | null
-  onSortChange: (next: SortSpec | null) => void
+  /** 现在的排序；省略是不排。 */
+  sort?: SortSpec | null
+  /** 没给就不能排序：表头是普通的字，不是按钮。 */
+  onSortChange?: (next: SortSpec | null) => void
   /** 点到第三下回到不排；false 时回到正序（有默认排序的表不允许「不排」）。 */
   sortRemovable?: boolean
   /** 拖完列宽。 */
@@ -103,6 +130,18 @@ export type DataGridProps<Row extends object> = {
   /** 正开着的那一行（左边一道强调色）。 */
   isOpened?: (row: Row) => boolean
   rowClass?: (row: Row) => string | undefined
+  /** 给一行加属性（类名、悬停提示、data-*、aria-*）：状态、测试钩子这类行上的东西从这里来，不用包一层。 */
+  rowProps?: (row: Row) => GridRowProps | undefined
+  /**
+   * 可展开的子行（跨满整行宽，高度跟着内容走）：返回要画的内容；返回 null / undefined / false 是这一行没有子行。
+   * 表按 ARIA treegrid 读：有子行的行带 aria-expanded，键盘所在的行按 → 展开、← 收起（WAI-ARIA APG 的 Treegrid 键位）。
+   */
+  renderSubRow?: (row: Row) => ReactNode
+  /** 展开的行 id（受控）；给了它，展开收起只经 onExpandedChange 通知调用方，表自己不记。 */
+  expanded?: ReadonlySet<string>
+  onExpandedChange?: (id: string, expanded: boolean) => void
+  /** 不受控时，一行没被用户展开或收起过的话是不是展开（待生效的提示默认摊开）。省略是收起。 */
+  defaultExpanded?: (row: Row) => boolean
   /** 右键菜单里标准项之后追加的项，对选中的行生效。 */
   menu?: (rows: Row[]) => readonly GridMenuEntry[]
   /** 默认标准项（复制、导出、重置列）在前，menu 的项在后；设 true 反过来（照 TradingView：表自己的操作在前、表格工具垫底）。 */
@@ -132,6 +171,12 @@ export type DataGridProps<Row extends object> = {
   density?: GridDensity
   /** 不画表头（两列的指标表之类）。 */
   hideHeader?: boolean
+  /** 行高跟着内容走（多行的格子、行里有按钮）：density 的行高是最小高度，量到的真实高度为准；格子里的字可以折行。 */
+  autoRowHeight?: boolean
+  /** 行与行之间画一道细线。 */
+  ruled?: boolean
+  /** false：点行不选、不打开，没有悬停底色，只留键盘移动与展开（行里主要是按钮的表）。默认 true。 */
+  selectable?: boolean
   /**
    * 可交互（默认 true）：能点行、选行、键盘移动、右键菜单。false 是只读的展示表：语义是 ARIA table，行不响应点击。
    */
@@ -150,7 +195,7 @@ export function DataGrid<Row extends object>({
   rows,
   rowId,
   label,
-  sort,
+  sort = null,
   onSortChange,
   sortRemovable = true,
   onResize,
@@ -159,6 +204,11 @@ export function DataGrid<Row extends object>({
   restoreRow,
   isOpened,
   rowClass,
+  rowProps,
+  renderSubRow,
+  expanded,
+  onExpandedChange,
+  defaultExpanded,
   menu,
   extrasFirst,
   menuTail,
@@ -174,6 +224,9 @@ export function DataGrid<Row extends object>({
   sortLocale,
   density = 'default',
   hideHeader,
+  autoRowHeight,
+  ruled,
+  selectable = true,
   interactive = true,
   fit,
   stretch,
@@ -223,12 +276,28 @@ export function DataGrid<Row extends object>({
     manualSorting: presorted === true,
     onSortingChange: (updater) => {
       const next = typeof updater === 'function' ? updater(sorting) : updater
-      onSortChange(next[0] ? { id: next[0].id, desc: next[0].desc } : null)
+      onSortChange?.(next[0] ? { id: next[0].id, desc: next[0].desc } : null)
     },
   })
 
   const modelRows = table.getRowModel().rows
   const order = modelRows.map((row) => row.id)
+  // 展开：受控时听调用方，不然自己记「用户展开或收起过的行」，没动过的行看 defaultExpanded。
+  const [toggled, setToggled] = useState<ReadonlyMap<string, boolean>>(new Map())
+  const isExpanded = (rowKey: string, original: Row): boolean =>
+    expanded ? expanded.has(rowKey) : (toggled.get(rowKey) ?? defaultExpanded?.(original) ?? false)
+  const hasSubRow = (original: Row): boolean => renderSubRow !== undefined && hasContent(renderSubRow(original))
+  const setExpanded = (rowKey: string, next: boolean) => {
+    if (!expanded) setToggled(new Map(toggled).set(rowKey, next))
+    onExpandedChange?.(rowKey, next)
+  }
+  // 画出来的条目：每行一条，展开了的行后面跟它的子行。
+  const items: { row: (typeof modelRows)[number]; sub: boolean }[] = []
+  for (const row of modelRows) {
+    items.push({ row, sub: false })
+    if (isExpanded(row.id, row.original) && hasSubRow(row.original)) items.push({ row, sub: true })
+  }
+  const itemIndexOf = (rowKey: string) => items.findIndex((item) => item.row.id === rowKey && !item.sub)
   const [selection, setSelection] = useState<Selection>(() =>
     restoreRow != null && rows.some((row) => rowId(row) === restoreRow)
       ? { selected: new Set([restoreRow]), anchor: restoreRow, cursor: restoreRow }
@@ -244,12 +313,12 @@ export function DataGrid<Row extends object>({
   // initialRect：没量到滚动区之前（第一帧、服务端渲染）按 20 行高估，量到以后以真实高度为准。
   // 返回的函数不能被 React Compiler 记忆化，只在这个组件里用，不传给别的记忆化组件。
   const virtualizer = useVirtualizer({
-    count: modelRows.length,
+    count: items.length,
     getScrollElement: () => scroller.current,
-    estimateSize: () => rowHeight,
+    estimateSize: (index) => (items[index].sub ? SUBROW_ESTIMATE : rowHeight),
     overscan: 8,
     initialRect: { width: 0, height: maxHeight ?? rowHeight * 20 },
-    getItemKey: (index) => modelRows[index].id,
+    getItemKey: (index) => (items[index].sub ? `${items[index].row.id}\u0000sub` : items[index].row.id),
   })
 
   const visibleColumns = table.getVisibleLeafColumns()
@@ -331,8 +400,19 @@ export function DataGrid<Row extends object>({
       event.preventDefault()
       const next = moveCursor(order, cursor, step)
       if (next === null) return
-      setSelection({ selected: new Set([next]), anchor: next, cursor: next })
-      virtualizer.scrollToIndex(order.indexOf(next), { align: 'auto' })
+      setSelection({ selected: new Set(selectable ? [next] : []), anchor: next, cursor: next })
+      virtualizer.scrollToIndex(itemIndexOf(next), { align: 'auto' })
+      return
+    }
+    // treegrid 的键位：→ 展开键盘所在的行，← 收起它。
+    if ((event.key === 'ArrowRight' || event.key === 'ArrowLeft') && renderSubRow && cursor !== null) {
+      const row = modelRows.find((entry) => entry.id === cursor)
+      if (row && hasSubRow(row.original)) {
+        const open = isExpanded(row.id, row.original)
+        if (event.key === 'ArrowRight' && !open) setExpanded(row.id, true)
+        else if (event.key === 'ArrowLeft' && open) setExpanded(row.id, false)
+        event.preventDefault()
+      }
       return
     }
     if (event.key === 'Enter' && cursor !== null) {
@@ -363,7 +443,7 @@ export function DataGrid<Row extends object>({
     }
   }
   const onRowClick = (event: MouseEvent, row: { id: string; original: Row }) => {
-    if (!interactive) return
+    if (!interactive || !selectable) return
     const range = event.shiftKey
     const toggle = event.ctrlKey || event.metaKey
     setSelection(clickSelection(order, selection, row.id, { range, toggle }))
@@ -455,21 +535,21 @@ export function DataGrid<Row extends object>({
 
   // 第一次有行时不用滚；之后只在键盘所在的行变了才跟着，行情每秒重画不能把用户滚开的表拉回来。
   useEffect(() => {
-    if (cursor !== null) virtualizer.scrollToIndex(order.indexOf(cursor), { align: 'auto' })
+    if (cursor !== null) virtualizer.scrollToIndex(itemIndexOf(cursor), { align: 'auto' })
     // oxlint-disable-next-line react/exhaustive-deps
   }, [cursor])
 
   const menuEntries = interactive ? entries() : []
   const withMenu = interactive && (host !== undefined || menu !== undefined || panelMenu !== undefined)
-  const tabular = rowTree ? 'treegrid' : interactive ? 'grid' : 'table'
+  const tabular = rowTree || (renderSubRow && interactive) ? 'treegrid' : interactive ? 'grid' : 'table'
   const cellRole = interactive ? 'gridcell' : 'cell'
 
   const body = (
     <div
       tabIndex={interactive ? 0 : undefined}
       role={tabular}
-      aria-multiselectable={interactive ? 'true' : undefined}
-      aria-rowcount={modelRows.length + 1}
+      aria-multiselectable={interactive && selectable ? 'true' : undefined}
+      aria-rowcount={items.length + 1}
       aria-label={interactive ? texts.gridLabel(label) : label}
       aria-activedescendant={cursor !== null ? rowDomId(cursor) : undefined}
       data-slot="data-grid-body"
@@ -502,7 +582,9 @@ export function DataGrid<Row extends object>({
                     <div
                       key={head.id}
                       role="columnheader"
-                      aria-sort={state ? (state === 'desc' ? 'descending' : 'ascending') : 'none'}
+                      aria-sort={
+                        onSortChange ? (state ? (state === 'desc' ? 'descending' : 'ascending') : 'none') : undefined
+                      }
                       className={cn(
                         'k-grid-col',
                         alignOf(column.id) === 'end' && 'is-end',
@@ -511,7 +593,7 @@ export function DataGrid<Row extends object>({
                       )}
                       style={stickStyle(column.id)}
                     >
-                      {interactive ? (
+                      {interactive && onSortChange ? (
                         <button
                           type="button"
                           className={state ? 'is-sorted' : undefined}
@@ -548,29 +630,62 @@ export function DataGrid<Row extends object>({
             style={{ height: virtualizer.getTotalSize() }}
           >
             {virtualizer.getVirtualItems().map((item) => {
-              const row = modelRows[item.index]
-              const selected = selection.selected.has(row.id)
+              const { row, sub } = items[item.index]
               const tree = rowTree?.(row.original)
+              const level = tree?.level ?? 1
+              const measure = autoRowHeight || sub
+              if (sub)
+                return (
+                  <div
+                    key={`${row.id}-sub`}
+                    id={`${rowDomId(row.id)}-sub`}
+                    ref={virtualizer.measureElement}
+                    data-index={item.index}
+                    data-subrow={row.id}
+                    role="row"
+                    aria-rowindex={item.index + 2 - (hideHeader ? 1 : 0)}
+                    aria-level={level + 1}
+                    className={cn('k-grid-subrow', classNames.subrow)}
+                    style={{ top: item.start }}
+                  >
+                    <div role={cellRole} aria-colspan={visibleColumns.length} className="k-grid-subcell">
+                      {renderSubRow?.(row.original)}
+                    </div>
+                  </div>
+                )
+              const selected = selection.selected.has(row.id)
+              const extra = rowProps?.(row.original)
+              const { className: extraClass, ...attributes } = extra ?? {}
+              const expandable = renderSubRow !== undefined && hasSubRow(row.original)
               return (
                 <div
+                  {...attributes}
                   key={row.id}
                   id={rowDomId(row.id)}
+                  ref={measure ? virtualizer.measureElement : undefined}
+                  data-index={measure ? item.index : undefined}
                   data-row={row.id}
                   role="row"
                   aria-rowindex={item.index + 2 - (hideHeader ? 1 : 0)}
-                  aria-selected={interactive ? selected : undefined}
-                  aria-level={tree?.level}
-                  aria-expanded={tree?.expanded}
+                  aria-selected={interactive && selectable ? selected : undefined}
+                  aria-level={tree || renderSubRow ? level : undefined}
+                  aria-expanded={tree ? tree.expanded : expandable ? isExpanded(row.id, row.original) : undefined}
                   className={cn(
                     'k-grid-row',
-                    interactive && 'is-interactive',
+                    interactive && selectable && 'is-interactive',
+                    autoRowHeight && 'is-auto',
                     selected && 'is-selected',
                     row.id === cursor && 'is-cursor',
                     isOpened?.(row.original) && 'is-opened',
                     rowClass?.(row.original),
+                    extraClass,
                     classNames.row,
                   )}
-                  style={{ top: item.start, height: rowHeight, gridTemplateColumns: template }}
+                  style={{
+                    top: item.start,
+                    ...(autoRowHeight ? { minHeight: rowHeight } : { height: rowHeight }),
+                    gridTemplateColumns: template,
+                  }}
                   onClick={interactive ? (event) => onRowClick(event, row) : undefined}
                 >
                   {row.getVisibleCells().map((cell) => {
@@ -580,7 +695,7 @@ export function DataGrid<Row extends object>({
                     return (
                       <div
                         key={cell.id}
-                        role={cellRole}
+                        role={column.rowHeader ? 'rowheader' : cellRole}
                         data-col={column.id}
                         data-type={column.type ?? 'text'}
                         className={cn(
@@ -591,10 +706,19 @@ export function DataGrid<Row extends object>({
                           stickClass(column.id),
                           classNames.cell,
                         )}
-                        style={{ ...stickStyle(column.id), lineHeight: `${rowHeight}px` }}
+                        style={{
+                          ...stickStyle(column.id),
+                          ...(autoRowHeight ? undefined : { lineHeight: `${rowHeight}px` }),
+                        }}
                         title={column.title?.(row.original)}
                       >
-                        {column.render ? column.render(row.original) : <CellBody resolved={resolved} />}
+                        {column.cell ? (
+                          column.cell(row.original)
+                        ) : column.render ? (
+                          column.render(row.original)
+                        ) : (
+                          <CellBody resolved={resolved} />
+                        )}
                       </div>
                     )
                   })}
@@ -610,7 +734,7 @@ export function DataGrid<Row extends object>({
   return (
     <ContextMenu onOpenChange={setMenuOpen}>
       <div
-        className={cn('k-grid', fit && 'is-fit', classNames.root)}
+        className={cn('k-grid', fit && 'is-fit', ruled && 'is-ruled', autoRowHeight && 'is-auto', classNames.root)}
         data-slot="data-grid"
         data-density={density}
         data-interactive={interactive}

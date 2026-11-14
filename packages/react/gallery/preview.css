@@ -107,3 +107,17 @@
 .gal-scrub-bar[data-active='true'] {
   background: var(--series-1);
 }
+
+/* 量化件的预览版面（#1929）：一行五个瓦片、一摞仪表。 */
+.gal-grid-5 {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+  width: 620px;
+}
+.gal-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 320px;
+}

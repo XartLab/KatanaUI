@@ -1,12 +1,20 @@
 // SPDX-License-Identifier: MIT
 import { useEffect, useMemo, useState } from 'react'
-import { PanelFrame } from '../../src/blocks'
+import { PanelFrame, PanelFrameBody, PanelFrameHeader } from '../../src/blocks/index.ts'
 import {
   ChangeText,
+  ConsensusBlock,
+  countConsensus,
+  DecimalField,
+  FlowGauges,
   LimitLadder,
   MarketHeatmap,
-  TechnicalRating,
+  Meter,
   PnlText,
+  RegimeBand,
+  RegimeStrip,
+  SparkTile,
+  TechnicalRating,
   formatCompact,
   formatPercentChange,
   formatPrice,
@@ -23,11 +31,15 @@ import {
   type RatingRow,
   type RatingVerdict,
   type TechnicalRatingLabels,
-} from '../../src/quant'
-import { ToggleGroup, ToggleGroupItem } from '../../src/primitives/toggle-group'
-import { Cell, Row, SAMPLE_MARK_SRC } from './parts'
+  type ConsensusParty,
+  type FlowGaugeData,
+  type RegimeSegment,
+  type RegimeState,
+} from '../../src/quant/index.ts'
+import { ToggleGroup, ToggleGroupItem } from '../../src/primitives/toggle-group.tsx'
+import { Cell, Row, SAMPLE_MARK_SRC } from './parts.tsx'
 
-// 量化层（@katana-ui/react/quant，#1862）的演示。数值都是示例，不是行情。根元素设 data-updown="cn" 时涨跌色互换（红涨绿跌）。
+// 量化层（@katana-ui/react/quant，#1862、#1929）的演示。数值都是示例，不是行情，页上也写明。根元素设 data-updown="cn" 时涨跌色互换（红涨绿跌）。
 
 export function ChangeTextDemo() {
   return (
@@ -229,16 +241,11 @@ export function LimitLadderDemo() {
   const [selected, setSelected] = useState<string | null>('300004')
   return (
     <div style={{ width: '100%', maxWidth: 640, height: 660 }}>
-      <PanelFrame
-        index="02"
-        title="连板天梯"
-        object="演示数据"
-        meta="DEMO"
-        source="SOURCE · 演示数据 · 非行情"
-        focused
-        labels={{ settings: '设置', maximize: '最大化', restore: '还原', close: '关闭' }}
-      >
-        <LimitLadder levels={LADDER_LEVELS} labels={LADDER_LABELS} selected={selected} onSelect={setSelected} />
+      <PanelFrame focused aria-label="连板天梯">
+        <PanelFrameHeader heading="连板天梯" object="演示数据" />
+        <PanelFrameBody>
+          <LimitLadder levels={LADDER_LEVELS} labels={LADDER_LABELS} selected={selected} onSelect={setSelected} />
+        </PanelFrameBody>
       </PanelFrame>
     </div>
   )
@@ -435,25 +442,20 @@ export function MarketHeatmapDemo() {
       </p>
       <div style={{ overflow: 'auto' }}>
         <div style={{ height: wide ? 1080 : 620, width: wide ? 1920 : undefined }}>
-          <PanelFrame
-            index="03"
-            title={coins ? '加密热力图' : '股票热力图'}
-            object="演示数据"
-            meta="DEMO"
-            source="SOURCE · 演示数据 · 非行情"
-            focused
-            labels={{ settings: '设置', maximize: '最大化', restore: '还原', close: '关闭' }}
-          >
-            <MarketHeatmap
-              key={`${market}-${wide}`}
-              items={coins ? COINS : stocks}
-              sizeBy={HEAT_SIZE}
-              colorBy={HEAT_COLOR}
-              labels={{ ...HEAT_LABELS, group: '行业' }}
-              scheme={scheme}
-              selected={selected}
-              onSelect={setSelected}
-            />
+          <PanelFrame focused aria-label={coins ? '加密热力图' : '股票热力图'}>
+            <PanelFrameHeader heading={coins ? '加密热力图' : '股票热力图'} object="演示数据" />
+            <PanelFrameBody>
+              <MarketHeatmap
+                key={`${market}-${wide}`}
+                items={coins ? COINS : stocks}
+                sizeBy={HEAT_SIZE}
+                colorBy={HEAT_COLOR}
+                labels={{ ...HEAT_LABELS, group: '行业' }}
+                scheme={scheme}
+                selected={selected}
+                onSelect={setSelected}
+              />
+            </PanelFrameBody>
           </PanelFrame>
         </div>
       </div>
@@ -595,26 +597,365 @@ export function TechnicalRatingDemo() {
   const { rows, groups } = makeRating(RATING_TIMEFRAMES.findIndex((tf) => tf.value === frame))
   return (
     <div style={{ width: '100%', maxWidth: 520, height: 760 }}>
-      <PanelFrame
-        index="04"
-        title="技术评级"
-        object="演示数据"
-        meta="DEMO"
-        source="SOURCE · 演示数据 · 非行情"
-        focused
-        labels={{ settings: '设置', maximize: '最大化', restore: '还原', close: '关闭' }}
-      >
-        <TechnicalRating
-          groups={groups}
-          rows={rows}
-          labels={RATING_LABELS}
-          primary="all"
-          timeframes={RATING_TIMEFRAMES}
-          timeframe={frame}
-          onTimeframeChange={setFrame}
-          disclaimer="评级只是指标读数的汇总，不是买卖建议。"
-        />
+      <PanelFrame focused aria-label="技术评级">
+        <PanelFrameHeader heading="技术评级" object="演示数据" />
+        <PanelFrameBody>
+          <TechnicalRating
+            groups={groups}
+            rows={rows}
+            labels={RATING_LABELS}
+            primary="all"
+            timeframes={RATING_TIMEFRAMES}
+            timeframe={frame}
+            onTimeframeChange={setFrame}
+            disclaimer="评级只是指标读数的汇总，不是买卖建议。"
+          />
+        </PanelFrameBody>
       </PanelFrame>
     </div>
+  )
+}
+
+const SAMPLE = '示例数据，不是行情'
+const asset = [18, 16, 17, 12, 13, 9, 10, 6, 4]
+const drawdown = [4, 8, 6, 12, 10, 16, 12, 18, 14]
+const stable = [10, 12, 9, 14, 11, 13, 10, 12, 11]
+const exposure = [16, 14, 15, 10, 11, 8, 9, 5, 4]
+
+export function SparkTileDemo() {
+  const [clicks, setClicks] = useState(0)
+  return (
+    <>
+      <p className="gal-note">{SAMPLE}</p>
+      <Row name="一行 5 个">
+        <div className="gal-grid-5" data-testid="spark-row">
+          <SparkTile
+            label="NET ASSET"
+            value="2.42M"
+            series={asset.map((v) => 20 - v)}
+            sparkLabel="近 9 期净值走势"
+            delta={1.31}
+            note="今日"
+          />
+          <SparkTile
+            label="DRAWDOWN"
+            value="-3.1%"
+            series={drawdown}
+            sparkLabel="近 9 期回撤走势"
+            trendTone="neutral"
+            note="峰值 -6.8% · 02-14"
+          />
+          <SparkTile label="TURNOVER" value="0.62" unit="/月" series={stable} sparkLabel="近 9 期换手" note="稳定" />
+          <SparkTile
+            label="EXPOSURE"
+            value="131"
+            unit="/ 150%"
+            series={exposure.map((v) => 20 - v)}
+            sparkLabel="近 9 期敞口，虚线是上限"
+            threshold={19}
+            state="near"
+            note="接近上限"
+          />
+          <SparkTile label="SHARPE 60D" value={null} series={[]} sparkLabel="夏普：没有数据" note="等待数据" />
+        </div>
+      </Row>
+      <Row name="可点">
+        <div className="gal-grid-5">
+          <SparkTile
+            label="FILLS"
+            value={String(clicks)}
+            series={stable}
+            sparkLabel="近 9 期成交"
+            delta={-0.8}
+            note="点我 +1"
+            onClick={() => setClicks((n) => n + 1)}
+          />
+        </div>
+      </Row>
+    </>
+  )
+}
+
+export function MeterDemo() {
+  return (
+    <>
+      <p className="gal-note">{SAMPLE}</p>
+      <Row name="条（bar）">
+        <div className="gal-stack" data-testid="meter-bars">
+          <Meter label="LOAD · 敞口" value={72} tone="ok" />
+          <Meter label="LOAD · 受锁（超过 60% 上限）" value={38} tone="warn" mark={60} markLabel="上限" />
+          <Meter label="回测进度" value={61} />
+          <Meter label="OFF" value={0} tone="off" />
+        </div>
+      </Row>
+      <Row name="刻度（gauge）">
+        <div className="gal-stack" data-testid="meter-gauges">
+          <Meter label="RS-20 · 电子" value={94} display="gauge" />
+          <Meter label="RS-20 · 军工（弱势）" value={27} display="gauge" tone="danger" />
+        </div>
+      </Row>
+      <Row name="同步率条（sync）">
+        <div className="gal-stack" data-testid="meter-sync">
+          <Meter label="PAPER · 第 21 / 30 天" value={70} display="sync" mark={100} markLabel="评估点" />
+          <Meter label="容量使用" value={52} display="sync" tone="ok" mark={80} markLabel="容量上限" />
+        </div>
+      </Row>
+    </>
+  )
+}
+
+const flowGauges: readonly FlowGaugeData[] = [
+  {
+    kind: 'pressure',
+    id: 'mp',
+    title: 'MARKET PRESSURE · 1m',
+    value: 62,
+    valueText: '+62',
+    note: '买方 · 近 60s 逐笔',
+  },
+  { kind: 'priceChange', id: 'pc', title: 'PRICE CHANGE · 5m', value: -18, valueText: '−18', note: '−100 … +100' },
+  {
+    kind: 'dom',
+    id: 'dom',
+    title: 'DOM PRESSURE · 10 档',
+    bids: [60, 80, 100, 70],
+    asks: [40, 30, 50, 20],
+    summary: '前 10 档：买盘 71%，卖盘 29%',
+    note: 'Bid 71% · Ask 29%',
+  },
+  {
+    kind: 'divergence',
+    id: 'dd',
+    title: 'DELTA DIVERGENCE',
+    rows: [
+      { window: '5s', cells: ['off', 'off', 'ok', 'ok', 'on', 'on'], summary: '近期两格同向，其余无背离' },
+      { window: '1m', cells: ['off', 'ok', 'ok', 'ok', 'ok', 'warn'], summary: '末格背离预警' },
+      { window: '5m', cells: ['off', 'off', 'off', 'ok', 'ok', 'ok'], summary: '近三格同向' },
+      { window: '20m', cells: null, summary: '数据不足' },
+    ],
+    note: '20m · N/A（数据不足）',
+  },
+]
+
+export function FlowGaugesDemo() {
+  return (
+    <>
+      <p className="gal-note">{SAMPLE}。口径（怎么算）在调用方，这里只收算好的数。</p>
+      <Row name="四个仪表">
+        <div style={{ width: 620 }}>
+          <FlowGauges label="订单流仪表" gauges={flowGauges} />
+        </div>
+      </Row>
+      <Row name="缺数据">
+        <div style={{ width: 620 }}>
+          <FlowGauges
+            label="订单流仪表（缺数据）"
+            gauges={[
+              {
+                kind: 'pressure',
+                id: 'mp',
+                title: 'MARKET PRESSURE · 1m',
+                value: null,
+                valueText: '',
+                note: '窗口不足',
+              },
+              {
+                kind: 'priceChange',
+                id: 'pc',
+                title: 'PRICE CHANGE · 5m',
+                value: 24,
+                valueText: '+24',
+                estimated: true,
+                note: '无逐笔方向',
+              },
+            ]}
+            estimateText="估算"
+          />
+        </div>
+      </Row>
+    </>
+  )
+}
+
+const regimeStates: readonly RegimeState[] = [
+  { id: 'trend', name: '趋势上', color: 1, detail: '47%' },
+  { id: 'range', name: '震荡', color: 2, detail: '38%' },
+  { id: 'vol', name: '高波下行', color: 4, detail: '11%' },
+  { id: 'crisis', name: '危机', color: 7, detail: '4%' },
+]
+const regimeSegments: readonly RegimeSegment[] = [
+  { from: 0, to: 12, state: 'trend' },
+  { from: 12, to: 20, state: 'range' },
+  { from: 20, to: 26, state: 'vol' },
+  { from: 26, to: 40, state: 'trend' },
+  { from: 40, to: 50, state: 'range' },
+  { from: 50, to: 54, state: 'crisis' },
+  { from: 54, to: 66, state: 'range' },
+  { from: 66, to: 71, state: 'vol' },
+  { from: 71, to: 80, state: 'trend' },
+  { from: 80, to: 88, state: 'range' },
+  { from: 88, to: 100, state: 'trend', estimated: true },
+]
+
+export function RegimeStripDemo() {
+  const [active, setActive] = useState<string | null>(null)
+  return (
+    <>
+      <p className="gal-note">{SAMPLE}</p>
+      <Row name="带 + 图例">
+        <div style={{ width: 620 }} data-testid="regime-strip">
+          <RegimeStrip
+            title="RUN 3d07 · HMM 4 态 · 月频"
+            segments={regimeSegments}
+            states={regimeStates}
+            label="市场状态带：2019 到 2026，四种状态"
+            describe={(segment, state) =>
+              `${state.name} · ${segment.from}–${segment.to}${segment.estimated ? '（估）' : ''}`
+            }
+            current="trend"
+            currentText="当前"
+            estimateText="估（尚未确认）"
+            activeState={active}
+            onPickState={setActive}
+          />
+        </div>
+      </Row>
+      <Row name="只画带">
+        <div style={{ width: 620 }}>
+          <RegimeBand segments={regimeSegments} states={regimeStates} label="只有带" />
+        </div>
+      </Row>
+    </>
+  )
+}
+
+const stateText = {
+  pass: '通过',
+  warn: '接近',
+  blocked: '未过',
+  unknown: '未返回',
+  timeout: '超时',
+  stale: '需重检',
+  pending: '评估中',
+}
+const orderParties: readonly ConsensusParty[] = [
+  { key: 'gw', label: 'GATEWAY', state: 'pass', message: '可用 ✓ 整手 ✓' },
+  {
+    key: 'acct',
+    label: 'ACCOUNT',
+    state: 'warn',
+    message: '集中度 58 / 60',
+    detail: '单票集中度上限 60%，当前 58%；再买 2,000 股会到 61%（示例）。',
+  },
+  { key: 'rules', label: 'RULES', state: 'pass', message: '无规则命中' },
+]
+const promoteParties: readonly ConsensusParty[] = [
+  { key: 'gates', label: 'GATES', state: 'blocked', message: '偏离门未过 19.4%', detail: '偏离门要求 ≤ 15%（示例）。' },
+  { key: 'cap', label: 'CAPACITY', state: 'pass', message: '0.9 / 5 亿' },
+  { key: 'acct', label: 'ACCOUNT', state: 'unknown', message: '未指定' },
+]
+const countText = (parties: readonly ConsensusParty[]) => {
+  const n = countConsensus(parties)
+  return `${n.pass} 通过 · ${n.warn} 接近 · ${n.blocked} 未过 · ${n.open} 未填`
+}
+
+export function ConsensusBlockDemo() {
+  return (
+    <>
+      <p className="gal-note">{SAMPLE}。每一方的判定来自各自的权威，件只画不判。</p>
+      <Row name="可提交">
+        <div style={{ width: 340 }} data-testid="consensus-ok">
+          <ConsensusBlock
+            label="下单必要条件"
+            intent="下单 · 账户 A · 买 300750 × 2,000"
+            parties={orderParties}
+            verdict="warn"
+            verdictText="可提交"
+            summary={countText(orderParties)}
+            hash="7f3a"
+            onHashClick={() => {}}
+            stateLabels={stateText}
+          />
+        </div>
+      </Row>
+      <Row name="不可提交">
+        <div style={{ width: 340 }} data-testid="consensus-blocked">
+          <ConsensusBlock
+            label="推进必要条件"
+            intent="推进 · alice-rev → LIVE"
+            parties={promoteParties}
+            verdict="blocked"
+            verdictText="不可推进"
+            summary={countText(promoteParties)}
+            hash={null}
+            stateLabels={stateText}
+          />
+        </div>
+      </Row>
+      <Row name="超时 / 失效">
+        <div style={{ width: 340 }} data-testid="consensus-stale">
+          <ConsensusBlock
+            label="重检必要条件"
+            parties={[
+              { key: 'gw', label: 'GATEWAY', state: 'timeout', message: '超时' },
+              { key: 'acct', label: 'ACCOUNT', state: 'stale', message: '需重检' },
+              { key: 'rules', label: 'RULES', state: 'pending', message: '评估中' },
+            ]}
+            verdict="blocked"
+            verdictText="不可提交"
+            stateLabels={stateText}
+          />
+        </div>
+      </Row>
+    </>
+  )
+}
+
+const BUTTONS = { decrease: '减一格', increase: '加一格' }
+
+export function DecimalFieldDemo() {
+  const [price, setPrice] = useState('67000.3')
+  const [qty, setQty] = useState('')
+  // 只读与禁用也接真的 onValue：要是件在这两种状态下还会改值，演示页上就看得见。
+  const [locked, setLocked] = useState('100.5')
+  return (
+    <>
+      <Row name="价格（tick 0.5）">
+        <div className="gal-wide">
+          <DecimalField label="价格" value={price} onValue={setPrice} step="0.5" buttons={BUTTONS} />
+        </div>
+        <output data-testid="decimal-price-out">{price}</output>
+      </Row>
+      <Row name="数量（空框从 1 起，带单位）">
+        <div className="gal-wide">
+          <DecimalField
+            label="数量"
+            value={qty}
+            onValue={setQty}
+            step="0.001"
+            base="1"
+            unit="BTC"
+            placeholder="1"
+            buttons={BUTTONS}
+          />
+        </div>
+        <output data-testid="decimal-qty-out">{qty}</output>
+      </Row>
+      <Row name="状态">
+        <Cell name="只读">
+          <DecimalField label="只读价格" value={locked} onValue={setLocked} step="0.5" readOnly buttons={BUTTONS} />
+        </Cell>
+        <Cell name="禁用">
+          <DecimalField label="禁用价格" value={locked} onValue={setLocked} step="0.5" disabled buttons={BUTTONS} />
+        </Cell>
+        <Cell name="error">
+          <DecimalField label="错误价格" value="abc" onValue={() => {}} step="0.5" status="error" />
+        </Cell>
+        <Cell name="warning">
+          <DecimalField label="警告价格" value="100.3" onValue={() => {}} step="0.5" status="warning" />
+        </Cell>
+      </Row>
+      <p className="gal-note">↑ / ↓ 走一格，Shift 十格；打字自由，合不合法由调用方判。0.1 的格子加起来是精确的。</p>
+    </>
   )
 }

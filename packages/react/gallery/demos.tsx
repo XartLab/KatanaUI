@@ -13,13 +13,28 @@ import {
 import { ContextMenuOpen, DialogOpen, DropdownMenuOpen, PopoverOpen, SelectOpen, TooltipOpen } from './pages/open.tsx'
 import {
   ChangeTextDemo,
+  ConsensusBlockDemo,
+  DecimalFieldDemo,
+  FlowGaugesDemo,
   LimitLadderDemo,
   MarketHeatmapDemo,
+  MeterDemo,
   PnlTextDemo,
   QuantFormatDemo,
+  RegimeStripDemo,
+  SparkTileDemo,
   TechnicalRatingDemo,
 } from './pages/quant.tsx'
-import { DataGridDemo, EmptyStateDemo, EstimateBadgeDemo, PanelFrameDemo, ToolbarDemo } from './pages/blocks.tsx'
+import {
+  DataGridDemo,
+  EmptyStateDemo,
+  EstimateBadgeDemo,
+  PanelFrameDemo,
+  SplitterDemo,
+  StatusBarDemo,
+  ToolbarDemo,
+  WorkspaceTabsDemo,
+} from './pages/blocks.tsx'
 import { AlertDemo, ProgressDemo, ToastDemo } from './pages/feedback.tsx'
 import { ComboboxDemo, CommandDemo } from './pages/pickers.tsx'
 import { EventTimelineDemo, JsonViewerDemo } from './pages/arc-controls.tsx'
@@ -50,8 +65,6 @@ import {
 } from './pages/rare2.tsx'
 import {
   BrushChartDemo,
-  MeterDemo,
-  SparkTileDemo,
   CalendarHeatmapDemo,
   HorizonChartDemo,
   SeriesExplorerDemo,
@@ -138,7 +151,13 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'limit-ladder': LimitLadderDemo,
   'market-heatmap': MarketHeatmapDemo,
   'technical-rating': TechnicalRatingDemo,
+  'decimal-field': DecimalFieldDemo,
   'quant-format': QuantFormatDemo,
+  'spark-tile': SparkTileDemo,
+  meter: MeterDemo,
+  'flow-gauges': FlowGaugesDemo,
+  'regime-strip': RegimeStripDemo,
+  'consensus-block': ConsensusBlockDemo,
   'data-grid': DataGridDemo,
   'empty-state': EmptyStateDemo,
   'panel-frame': PanelFrameDemo,
@@ -164,8 +183,6 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'brush-chart': BrushChartDemo,
   'attribution-bars': AttributionBarsDemo,
   'equity-curve': EquityCurveDemo,
-  meter: MeterDemo,
-  'spark-tile': SparkTileDemo,
   'calendar-heatmap': CalendarHeatmapDemo,
   'horizon-chart': HorizonChartDemo,
   'small-multiples': SmallMultiplesDemo,
@@ -185,6 +202,9 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'slope-chart': SlopeChartDemo,
   'connected-scatter': ConnectedScatterDemo,
   'symbol-galaxy': SymbolGalaxyDemo,
+  'status-bar': StatusBarDemo,
+  splitter: SplitterDemo,
+  'workspace-tabs': WorkspaceTabsDemo,
 }
 
 /**

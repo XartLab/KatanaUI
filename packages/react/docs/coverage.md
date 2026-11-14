@@ -12,12 +12,12 @@
 
 | 归属 | 已做 | 部分 | 没做 | 总数 | 已做 / 总数 |
 | --- | --- | --- | --- | --- | --- |
-| 基础件 | 3 | 1 | 0 | 4 | 3 / 4 |
+| 基础件 | 4 | 0 | 0 | 4 | 4 / 4 |
 | 自有件 | 4 | 0 | 0 | 4 | 4 / 4 |
-| 量化 | 3 | 0 | 4 | 7 | 3 / 7 |
-| 积木 | 3 | 2 | 1 | 6 | 3 / 6 |
+| 量化 | 7 | 0 | 0 | 7 | 7 / 7 |
+| 积木 | 6 | 0 | 0 | 6 | 6 / 6 |
 | 面板 | 19 | 16 | 49 | 84 | 19 / 84 |
-| 合计 | | | | 105 | 32 / 105 |
+| 合计 | | | | 105 | 40 / 105 |
 
 ## 每张卡
 
@@ -37,7 +37,7 @@
 | ChartTrader | 交易 | 面板 | `src/panels/chart/ChartTradeBar.tsx`、`src/panels/chart/TradeOverlay.tsx` | 部分 | 图上看单与下单有，拖动改价与止盈止损线没有 |
 | ClusterSearch | 订单流 | 面板 | — | 没做 | 足迹扫描器，还没有对应面板 |
 | CommandLine | 工作台 | 积木 | `Command`、`src/shell/QuickSearch.tsx` | 已做 | 命令面板用 Command，底栏常驻命令行（GO Bar）不是这一张的范围 |
-| ConsensusBlock | 交易 | 量化 | — | 没做 | 写命令提交前的必要条件块，还没有对应组件 |
+| ConsensusBlock | 交易 | 量化 | `ConsensusBlock` | 已做 |  |
 | Controls | 基元 | 基础件 | `Button`、`Input`、`Select`、`Slider`、`Checkbox`、`Switch`、`Tabs`、`ToggleGroup` | 已做 |  |
 | CorporateActions | 资产管理 | 面板 | — | 没做 | 资产管理，还没有对应面板 |
 | Cover | — | 自有件 | `packages/react/design-system/components/Cover` | 已做 | 封面页，随设计系统带出 |
@@ -63,7 +63,7 @@
 | FactorIC | 图表 | 面板 | — | 没做 | 研究层，还没有对应面板 |
 | FactorLibrary | 研究 | 面板 | — | 没做 | 研究层，还没有对应面板 |
 | FillLog | 组合 | 面板 | `src/panels/trades` | 已做 |  |
-| FlowGauges | 订单流 | 量化 | — | 没做 | 订单流四个仪表，还没有对应组件 |
+| FlowGauges | 订单流 | 量化 | `FlowGauges` | 已做 |  |
 | Footprint | 图表 | 面板 | `src/panels/chart` | 部分 | 图表有，足迹层没有 |
 | Fundamentals | 资产管理 | 面板 | — | 没做 | 资产管理，还没有对应面板 |
 | GreeksBoard | 衍生品 | 面板 | — | 没做 | 衍生品，还没有对应面板 |
@@ -75,7 +75,7 @@
 | LiveDivergence | 研究 | 面板 | — | 没做 | 研究层，还没有对应面板 |
 | LossLimits | 盈亏 | 面板 | `src/panels/loss-limits` | 已做 |  |
 | MBOTrackers | 订单流 | 面板 | — | 没做 | 逐单订单簿，还没有对应面板 |
-| Meter | 工作台 | 量化 | `Meter` | 已做 | 条（点阵填充）、刻度盘、同步率三种形态；限额板传软限与硬限，达到软限接近、达到硬限越限；应用接线另开票 |
+| Meter | 工作台 | 量化 | `Meter` | 已做 |  |
 | ModelCard | 研究 | 面板 | — | 没做 | 研究层，还没有对应面板 |
 | NewsFeed | 发现 | 面板 | `src/panels/inbox` | 部分 | 有报告流，公告、RSS、数据源事件的统一时间流没有 |
 | Notes | 工具 | 面板 | — | 没做 | Markdown 笔记，还没有对应面板 |
@@ -85,7 +85,7 @@
 | OrderBlotter | 组合 | 面板 | `src/panels/orders` | 已做 |  |
 | OrderTicket | 交易 | 面板 | `src/panels/order-ticket` | 已做 |  |
 | Overlays | 基元 | 基础件 | `Dialog`、`Sheet`、`Popover`、`Tooltip`、`HoverCard`、`DropdownMenu`、`ContextMenu`、`Toast` | 已做 |  |
-| PanelFrame | 工作台 | 积木 | `PanelFrame`、`EmptyState`、`Toolbar` | 部分 | PanelFrame 已做（编号、标题、对象、联动灯、点阵元信息位、工具条、图标钮、来源行、焦点角括号）；卡上的拖动抬起、最大化动效、标题栏右键菜单、铆钉、密度档还没做 |
+| PanelFrame | 工作台 | 积木 | `PanelFrame`、`EmptyState`、`Toolbar`、`src/workspace/PaneFrame.tsx` | 已做 | #1901：PanelFrame 是壳（标题栏、联动色点、可折叠、焦点括号、状态内容区）；应用的 PaneFrame 是挂旧类名的薄适配层 |
 | ParamScatter | 研究 | 面板 | — | 没做 | 研究层，还没有对应面板 |
 | PerformanceReport | 资产管理 | 面板 | — | 没做 | 资产管理，还没有对应面板 |
 | PnLAttribution | 组合 | 面板 | `AttributionBars` | 部分 | 零轴条形归因（正负分组、折「其他」、费用·税在底）组件库有了；面板接线与维度切换的数据还没有 |
@@ -96,7 +96,7 @@
 | PriceChart | 图表 | 面板 | `src/panels/chart` | 已做 |  |
 | QuantileLayers | 图表 | 面板 | — | 没做 | 研究层，还没有对应面板；组件库已有 Ridgeline 山脊图（#1918）可画各层收益分布，面板里还没接 |
 | RebalanceDesk | 资产管理 | 面板 | `src/panels/rebalance` | 部分 | 有再平衡面板，目标组合与当前组合的差额表没有对齐设计稿；组件库已有 SlopeChart 斜率图（#1918）可画再平衡前后权重，面板里还没接 |
-| RegimeStrip | 研究 | 量化 | — | 没做 | 市场状态带，还没有对应组件 |
+| RegimeStrip | 研究 | 量化 | `RegimeStrip` | 已做 |  |
 | ReplayBar | 订单流 | 面板 | `src/panels/chart/ReplayBar.tsx` | 已做 |  |
 | ReportBuilder | 工具 | 面板 | — | 没做 | 报告装配，还没有对应面板 |
 | RiskBoard | 组合 | 面板 | `src/panels/risk-board` | 已做 |  |
@@ -108,9 +108,9 @@
 | SeriesBrowser | 研究 | 面板 | — | 没做 | 研究层，还没有对应面板 |
 | SignalMonitor | 研究 | 面板 | — | 没做 | 研究层，还没有对应面板 |
 | SmartTape | 订单流 | 面板 | `src/panels/tape` | 已做 |  |
-| SparkTile | 图表 | 量化 | — | 没做 | 点阵标签 + LCD + 迷你折线的 KPI 瓦片，还没有对应组件 |
-| Splitter | 工作台 | 基础件 | `src/workspace/WorkspaceCanvas.tsx` | 部分 | 分割线在应用里自己做，没有抽进包里的 primitives |
-| StatusBar | 工作台 | 积木 | — | 没做 | 顶栏底栏的分段模型，还没有对应组件 |
+| SparkTile | 图表 | 量化 | `SparkTile` | 已做 |  |
+| Splitter | 工作台 | 基础件 | `Splitter`、`src/workspace/WorkspaceCanvas.tsx` | 已做 | #1901：Splitter 在包的 primitives 里（自写，没用 react-resizable-panels）；工作区的格子分割线用它 |
+| StatusBar | 工作台 | 积木 | `StatusBar` | 已做 | #1901：包里有分段模型的 StatusBar；应用现在没有底部状态栏（顶栏右上的 LocalServiceStatus 另算），还没有调用方 |
 | StatusLED | 工作台 | 自有件 | `Led` | 已做 |  |
 | StrategyCompare | 研究 | 面板 | — | 没做 | 研究层，还没有对应面板；组件库已有 ConnectedScatter 连线散点图（#1918）可画波动与收益的月度轨迹，面板里还没接 |
 | StressTest | 资产管理 | 面板 | — | 没做 | 资产管理，还没有对应面板 |
@@ -125,6 +125,6 @@
 | VolumeProfile | 订单流 | 面板 | `src/panels/volume-stats` | 部分 | 有成交量统计，价位分布轮廓没有 |
 | WalkForward | 研究 | 面板 | — | 没做 | 研究层，还没有对应面板 |
 | Watchlist | 发现 | 面板 | `src/panels/watchlist` | 已做 |  |
-| WorkspaceTabs | 工作台 | 积木 | `src/shell/WorkspaceMenu.tsx` | 部分 | 工作区切换是菜单，不是顶层标签 |
+| WorkspaceTabs | 工作台 | 积木 | `WorkspaceTabs` | 已做 | #1901：包里有标签条；应用的工作区切换仍是菜单（src/shell/WorkspaceMenu.tsx），换不换是产品决定，等用户定 |
 | Workspaces | 运行中心 | 面板 | `src/shell/WorkspaceManagerDialog.tsx` | 已做 |  |
 | YieldCurve | 固收 | 面板 | — | 没做 | 固收，还没有对应面板 |
