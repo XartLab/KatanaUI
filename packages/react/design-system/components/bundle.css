@@ -10244,6 +10244,8 @@ button.k-sm-head:focus-visible {
   margin-top: auto;
   font-size: 11px;
   display: flex;
+}
+
 .k-row-actions {
   z-index: 1;
   background: linear-gradient(to right, transparent, var(--bg-300) 12px);
