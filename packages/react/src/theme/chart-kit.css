@@ -254,3 +254,13 @@ button.k-spark-tile:focus-visible {
   color: var(--ink-300);
   font-size: 0.85em;
 }
+
+/* 精密仪器语言（#7）：图的表格视图（ChartTable）列头用点阵字，表格左边 2px 强调条；单元格数字不动。 */
+.k-ck-table thead th {
+  font: var(--text-tag-md) var(--font-dot);
+  letter-spacing: 0;
+  -webkit-font-smoothing: none;
+}
+.k-ck-table {
+  border-left: 2px solid var(--chart-accent, var(--signal-orange));
+}
