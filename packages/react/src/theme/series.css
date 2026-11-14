@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: MIT */
-/* 时间序列与盈亏的件（#1917）：BrushChart、WaterfallChart、Meter、CalendarHeatmap、HorizonChart、SmallMultiples、SeriesExplorer。
+/* 时间序列与盈亏的件（#1917）：BrushChart、AttributionBars、Meter、CalendarHeatmap、HorizonChart、SmallMultiples、SeriesExplorer。
    颜色只用 token（涨跌用 --pnl-up / --pnl-down，跟涨跌配色走）；数字一律等宽；图都画在 viewBox 里、文字与十字线是叠在上面的 HTML。 */
 
 /* —— BrushChart —— */
@@ -157,96 +157,151 @@
   background: var(--ink-200);
 }
 
-/* —— WaterfallChart —— */
-.k-wf {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  margin: 0;
-  min-width: 0;
-  color: var(--ink-200);
-  font: var(--text-caption) var(--font-sans);
-  font-variant-numeric: tabular-nums;
-}
-.k-wf-plot {
-  position: relative;
-  /* 纵轴刻度字放在绘图区左侧的留白里（右对齐、贴着绘图区），不压到柱子上。 */
-  margin-left: var(--k-wf-gutter, 56px);
-  touch-action: pan-y;
-}
-.k-wf-plot:focus-visible {
-  outline: 1px solid var(--focus-ring);
-  outline-offset: 2px;
-}
-.k-wf-plot > svg {
-  display: block;
-  width: 100%;
-  height: 100%;
-  overflow: visible;
-}
-.k-wf-zero {
+/* 零线（SeriesExplorer 等共用） */
+.k-plot-zero {
   stroke: var(--line-200);
   stroke-width: 1;
   vector-effect: non-scaling-stroke;
 }
-.k-wf-link {
-  stroke: var(--ink-400);
-  stroke-width: 1;
-  stroke-dasharray: 3 3;
-  vector-effect: non-scaling-stroke;
+
+/* —— AttributionBars（组件卡 PnLAttribution）—— */
+.k-attr {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  min-width: 0;
+  padding: 8px 10px;
+  border: var(--hairline);
+  background: var(--bg-200);
+  color: var(--ink-200);
+  font: var(--text-data) var(--chart-font-axis, var(--font-mono));
+  font-variant-numeric: tabular-nums;
 }
-.k-wf-bar {
-  fill: var(--ink-300);
-  transition: fill-opacity var(--dur-snappy) var(--ease-snappy);
+.k-attr-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
 }
-.k-wf-bar[data-direction='up'] {
-  fill: var(--pnl-up);
-}
-.k-wf-bar[data-direction='down'] {
-  fill: var(--pnl-down);
-}
-.k-wf-bar[data-gap='true'] {
-  stroke: var(--ink-100);
-  stroke-width: 1;
-  stroke-dasharray: 4 2;
-  vector-effect: non-scaling-stroke;
-}
-.k-wf-plot:has([data-active='true']) .k-wf-bar:not([data-active='true']) {
-  fill-opacity: 0.45;
-}
-.k-wf-value {
-  position: absolute;
-  transform: translate(-50%, -100%);
-  padding-bottom: 2px;
+.k-attr-total {
   color: var(--ink-100);
-  font: var(--text-caption) var(--font-mono);
-  white-space: nowrap;
-  pointer-events: none;
+  font: var(--text-lcd) var(--chart-font-num, var(--font-lcd));
+  letter-spacing: 0.08em;
 }
-.k-wf-value[data-direction='up'] {
+.k-attr-total[data-tone='up'] {
   color: var(--pnl-up);
 }
-.k-wf-value[data-direction='down'] {
+.k-attr-total[data-tone='down'] {
   color: var(--pnl-down);
 }
-.k-wf-ytick {
-  right: 100%;
-  left: auto;
-  padding-right: 8px;
-  transform: translateY(-50%);
+.k-attr-total small {
+  margin-left: 6px;
+  color: var(--ink-300);
+  font: var(--text-tag) var(--font-dot);
+  letter-spacing: 0;
 }
-.k-wf-labels {
+.k-attr-top .k-ck-actions {
+  margin-left: auto;
+}
+.k-attr-rows {
   display: flex;
-  margin-left: var(--k-wf-gutter, 56px);
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
-.k-wf-labels > span {
-  flex: 1 1 0;
-  min-width: 0;
+.k-attr-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: 120px 1fr 84px;
+  gap: 12px;
+  align-items: center;
+  height: 22px;
+  outline: none;
+}
+.k-attr-row[data-active='true'],
+.k-attr-row:focus-visible {
+  background: color-mix(in srgb, var(--ink-100) 6%, transparent);
+}
+.k-attr-row[data-kind='other'] .k-attr-label,
+.k-attr-row[data-kind='fee'] .k-attr-label {
+  color: var(--ink-300);
+}
+.k-attr-label {
   overflow: hidden;
-  color: var(--chart-axis);
-  text-align: center;
+  color: var(--ink-200);
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+.k-attr-axis {
+  position: relative;
+  height: 12px;
+}
+.k-attr-axis::before {
+  content: '';
+  position: absolute;
+  top: -5px;
+  bottom: -5px;
+  left: 50%;
+  width: 1px;
+  background: var(--line-200);
+}
+.k-attr-bar {
+  --k-dot: var(--ink-200);
+  position: absolute;
+  top: 2px;
+  height: 8px;
+  opacity: 1;
+  transition:
+    left var(--dur-snappy) var(--ease-snappy),
+    width var(--dur-snappy) var(--ease-snappy);
+}
+.k-attr-bar[data-focus='true'] {
+  --k-dot: var(--chart-accent, var(--signal-orange));
+}
+.k-attr-value {
+  color: var(--ink-100);
+  text-align: right;
+}
+.k-attr-value[data-tone='up'] {
+  color: var(--pnl-up);
+}
+.k-attr-value[data-tone='down'] {
+  color: var(--pnl-down);
+}
+.k-attr-tip {
+  top: 100%;
+  left: 132px;
+}
+.k-attr-table {
+  border-collapse: collapse;
+  text-align: right;
+}
+.k-attr-table th:first-child,
+.k-attr-table td:first-child {
+  text-align: left;
+}
+.k-attr-table th {
+  color: var(--ink-300);
+  font-weight: 400;
+}
+.k-attr-table td,
+.k-attr-table th {
+  padding: 2px 8px;
+  border-bottom: var(--hairline);
+}
+.k-attr-foot {
+  display: flex;
+  gap: 16px;
+  margin-top: 2px;
+  padding-top: 6px;
+  border-top: var(--hairline);
+  color: var(--ink-300);
+}
+.k-attr-note {
+  margin-left: auto;
 }
 
 /* —— Meter（bar / gauge / sync；组件卡 Meter）—— */

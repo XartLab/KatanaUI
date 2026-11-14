@@ -8,10 +8,10 @@ import {
   CalendarHeatmap,
   HorizonChart,
   SparkTile,
-  WaterfallChart,
+  AttributionBars,
   type CalendarDay,
   type HorizonRow,
-  type WaterfallStep,
+  type AttributionItem,
 } from '../../src/quant'
 import { Row } from './parts'
 
@@ -88,47 +88,74 @@ export function BrushChartDemo() {
   )
 }
 
-const BRIDGE: readonly WaterfallStep[] = [
-  { key: 'open', label: '期初权益', value: 10_000, kind: 'total' },
-  { key: 'realized', label: '已实现', value: 1_250 },
-  { key: 'fee', label: '手续费', value: -180 },
-  { key: 'funding', label: '资金费', value: -95 },
-  { key: 'close', label: '期末权益', value: 10_975, kind: 'total' },
-]
-
 const money = (value: number) => `${value > 0 ? '+' : ''}${value.toLocaleString('en-US')}`
 
-export function WaterfallChartDemo() {
+const ATTR_SYMBOLS: AttributionItem[] = [
+  {
+    key: '300750',
+    label: '300750 宁德时代',
+    value: 73_920,
+    detail: [
+      { label: '持仓', value: '3' },
+      { label: '账户', value: 'A B' },
+    ],
+  },
+  { key: '00700', label: '00700 腾讯控股', value: 14_300 },
+  { key: '002475', label: '002475 立讯精密', value: 8_760 },
+  { key: '601012', label: '601012 隆基绿能', value: 1_640 },
+  { key: '002594', label: '002594 比亚迪', value: 920 },
+  { key: '688981', label: '688981 中芯国际', value: 480 },
+  { key: '000333', label: '000333 美的集团', value: 200 },
+  { key: '600519', label: '600519 贵州茅台', value: -11_200 },
+  { key: 'IF2510', label: 'IF2510 沪深300 期货', value: -32_580 },
+  { key: 'fee', label: '费用 · 税', value: -2_000, kind: 'fee' },
+]
+const ATTR_ACCOUNTS: AttributionItem[] = [
+  { key: 'A', label: 'A', value: 38_200 },
+  { key: 'B', label: 'B', value: 9_400 },
+  { key: 'F', label: 'F', value: -1_160 },
+  { key: 'fee', label: '费用 · 税', value: -2_000, kind: 'fee' },
+]
+
+export function AttributionBarsDemo() {
+  const [dim, setDim] = useState<'symbol' | 'account'>('symbol')
+  const [focus, setFocus] = useState<string | undefined>('300750')
+  const items = dim === 'symbol' ? ATTR_SYMBOLS : ATTR_ACCOUNTS
+  const total = items.reduce((sum, item) => sum + item.value, 0)
   return (
     <>
-      <div className="gal-wide" data-gallery-waterfall="ok" style={{ maxWidth: 560 }}>
-        <WaterfallChart
-          steps={BRIDGE}
-          label="示例盈亏桥：期初到期末"
-          formatValue={(v, bar) => (bar.kind === 'total' ? v.toLocaleString('en-US') : money(v))}
+      <div className="gal-wide" data-gallery-attribution style={{ maxWidth: 600 }}>
+        <div className="gal-row" role="group" aria-label="维度" style={{ marginBottom: 8 }}>
+          {(['symbol', 'account'] as const).map((d) => (
+            <button key={d} type="button" aria-pressed={dim === d} onClick={() => setDim(d)} data-dim={d}>
+              {d === 'symbol' ? '品种' : '账户'}
+            </button>
+          ))}
+        </div>
+        <AttributionBars
+          items={items}
+          label="今日盈亏归因（示例）"
+          formatValue={money}
+          otherLabel={(n) => `其他 ×${n}`}
+          formatShare={(x) => `${(x * 100).toFixed(1)}%`}
+          shareLabel="占比"
+          total={{ value: total, text: money(total), tag: 'EST' }}
+          focusKey={focus}
+          onSelect={setFocus}
+          footer={{
+            count: `${items.length} 项 · 排序 |贡献|`,
+            scale: (max) => `刻度 ±${max.toLocaleString('en-US')}`,
+            note: '研究账本不计入',
+          }}
+          actionLabels={{ group: '图工具', table: '表格视图', exportCsv: '导出 CSV', fullscreen: '全屏' }}
+          tableHeads={{ item: '项', value: '贡献', share: '占比' }}
+          onExport={() => {}}
         />
       </div>
-      <Row name="对不上">
-        <div className="gal-wide" data-gallery-waterfall="gap" style={{ maxWidth: 560 }}>
-          <WaterfallChart
-            steps={[...BRIDGE.slice(0, 4), { key: 'close', label: '期末权益', value: 11_100, kind: 'total' }]}
-            label="示例盈亏桥：期末与累计对不上"
-            formatValue={(v, bar) => (bar.kind === 'total' ? v.toLocaleString('en-US') : money(v))}
-            formatGap={(gap) => `未解释 ${money(gap)}`}
-          />
-        </div>
-      </Row>
-      <Row name="从 0 起">
-        <div className="gal-wide" data-gallery-waterfall="zero" style={{ maxWidth: 560 }}>
-          <WaterfallChart
-            steps={BRIDGE}
-            zeroBaseline
-            label="示例盈亏桥：纵轴从 0 起"
-            formatValue={(v, bar) => (bar.kind === 'total' ? v.toLocaleString('en-US') : money(v))}
-          />
-        </div>
-      </Row>
-      <p className="gal-note">{DEMO_NOTE}总计柱与前面累计对不上时画虚线框、读数写差额，不替它抹平。</p>
+      <p className="gal-note">
+        {DEMO_NOTE}场景照设计稿 PnLAttribution 卡：方向用位置（正在右、负在左），条是 ink-200
+        点阵纹理，焦点品种的条是强调色纹理，只有数字用涨跌色。超过 7 项折进「其他 ×n」，费用·税永远在最底。
+      </p>
     </>
   )
 }

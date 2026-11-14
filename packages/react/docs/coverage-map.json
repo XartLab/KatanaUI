@@ -381,8 +381,8 @@
     "PnLAttribution": {
       "kind": "面板",
       "status": "部分",
-      "at": ["WaterfallChart"],
-      "note": "盈亏桥（期初到期末的瀑布）组件库有了；归因的分组与面板接线还没有"
+      "at": ["AttributionBars"],
+      "note": "零轴条形归因（正负分组、折「其他」、费用·税在底）组件库有了；面板接线与维度切换的数据还没有"
     },
     "PnLLedger": {
       "kind": "面板",

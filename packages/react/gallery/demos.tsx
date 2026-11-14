@@ -43,7 +43,7 @@ import {
   SeriesExplorerDemo,
   SmallMultiplesDemo,
   UseScrubberDemo,
-  WaterfallChartDemo,
+  AttributionBarsDemo,
 } from './pages/series'
 import {
   GaugeBarDemo,
@@ -133,7 +133,7 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'duration-picker': DurationPickerDemo,
   'use-scrubber': UseScrubberDemo,
   'brush-chart': BrushChartDemo,
-  'waterfall-chart': WaterfallChartDemo,
+  'attribution-bars': AttributionBarsDemo,
   meter: MeterDemo,
   'spark-tile': SparkTileDemo,
   'calendar-heatmap': CalendarHeatmapDemo,

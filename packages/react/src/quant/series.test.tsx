@@ -9,8 +9,8 @@ import { BrushChart } from './brush-chart'
 import { centerWindow, clampWindow, moveWindow, resizeWindow } from './brush-model'
 import { HorizonChart } from './horizon-chart'
 import { horizonBands, horizonMax } from './horizon-model'
-import { WaterfallChart } from './waterfall-chart'
-import { waterfallBars, waterfallExtent } from './waterfall-model'
+import { AttributionBars } from './attribution-bars'
+import { attributionBar, attributionRows, attributionScale } from './attribution-model'
 import { areaPath, extent, linePath, makePlot, niceTicks, PLOT_W } from './series-geometry'
 
 // #1917：时间序列与盈亏的件的几何与结构（纯函数）。拖拽、悬停、键盘与画出来的像素在 e2e/ui-gallery.spec.ts 里用真浏览器验。
@@ -127,67 +127,60 @@ describe('BrushChart', () => {
   })
 })
 
-describe('瀑布累加', () => {
-  const steps = [
-    { key: 'open', label: '期初', value: 1000, kind: 'total' as const },
-    { key: 'real', label: '已实现', value: 250 },
-    { key: 'fee', label: '手续费', value: -40 },
-    { key: 'fund', label: '资金费', value: -10 },
-    { key: 'end', label: '期末', value: 1200, kind: 'total' as const },
+describe('盈亏归因', () => {
+  const items = [
+    { key: 'a', label: 'A', value: 100 },
+    { key: 'b', label: 'B', value: -300 },
+    { key: 'c', label: 'C', value: 50 },
+    { key: 'd', label: 'D', value: -20 },
+    { key: 'fee', label: '费用', value: -10, kind: 'fee' as const },
   ]
 
-  it('增减柱从上一步的累计走到加上它之后；总计柱从 0 起，累计重置成它自己', () => {
-    const bars = waterfallBars(steps)
-    expect(bars.map((bar) => [bar.from, bar.to, bar.end])).toEqual([
-      [0, 1000, 1000],
-      [1000, 1250, 1250],
-      [1250, 1210, 1210],
-      [1210, 1200, 1200],
-      [0, 1200, 1200],
-    ])
-    expect(bars.map((bar) => bar.direction)).toEqual(['total', 'up', 'down', 'down', 'total'])
+  it('正负分组、组内按 |贡献| 降序，费用·税永远在最底', () => {
+    expect(attributionRows(items).map((row) => row.key)).toEqual(['a', 'c', 'b', 'd', 'fee'])
+    expect(attributionRows(items).at(-1)!.kind).toBe('fee')
   })
 
-  it('总计柱对不上时差额原样给出，不抹平；对得上是 0', () => {
-    expect(waterfallBars(steps)[4]!.gap).toBe(0)
-    expect(waterfallBars(steps)[0]!.gap).toBe(0)
-    const off = waterfallBars([...steps.slice(0, 4), { key: 'end', label: '期末', value: 1230, kind: 'total' }])
-    expect(off[4]!.gap).toBe(30)
-    expect(off[4]!.to).toBe(1230)
+  it('超过 maxItems 折进「其他」：数是净和，放在自己符号那一组的最后，费用不参与折叠', () => {
+    const rows = attributionRows(items, 3)
+    // 保留 |值| 最大的两项（B、A），其余折成其他：50 - 20 = 30，放在正组最后。
+    expect(rows.map((row) => row.key)).toEqual(['a', '__other', 'b', 'fee'])
+    const other = rows.find((row) => row.kind === 'other')!
+    expect(other.value).toBe(30)
+    expect(other.folded).toBe(2)
+    expect(attributionRows(items, 4).some((row) => row.kind === 'other')).toBe(false)
   })
 
-  it('默认范围取累计值的最低到最高加余量，不含 0；zeroBaseline 包住 0', () => {
-    const [lo, hi] = waterfallExtent(waterfallBars(steps))
-    // 累计值：1000、1250、1210、1200 → [1000, 1250]，各加 10% 跨度。
-    expect(lo).toBeCloseTo(975, 6)
-    expect(hi).toBeCloseTo(1275, 6)
-    expect(waterfallExtent(waterfallBars(steps), true)).toEqual([0, 1250])
-    expect(
-      waterfallExtent(
-        waterfallBars([
-          { key: 'a', label: 'a', value: -5 },
-          { key: 'b', label: 'b', value: -5 },
-        ]),
-        true,
-      ),
-    ).toEqual([-10, 0])
-    expect(waterfallBars([{ key: 'a', label: 'a', value: 0 }])[0]!.direction).toBe('flat')
+  it('刻度对称：最大 |值| 向上取到一位有效数字；条从零轴往右（正）或往左（负）', () => {
+    expect(attributionScale(attributionRows([{ key: 'a', label: 'a', value: 73_920 }]))).toBe(80_000)
+    expect(attributionScale([])).toBe(1)
+    expect(attributionBar(50, 100)).toEqual({ left: 0.5, width: 0.25 })
+    expect(attributionBar(-50, 100)).toEqual({ left: 0.25, width: 0.25 })
+    expect(attributionBar(500, 100).width).toBe(0.5)
   })
 
-  it('渲染：每步一根柱，涨跌总计各带方向；对不上的总计柱带 data-gap；读屏列表写满每一步', () => {
+  it('渲染：每行一条点阵纹理的条，数字带正负方向，焦点项带 data-focus，页脚写刻度，表格视图按钮总有', () => {
     const html = renderToStaticMarkup(
-      <WaterfallChart
-        steps={[...steps.slice(0, 4), { key: 'end', label: '期末', value: 1230, kind: 'total' }]}
-        label="盈亏桥"
-        formatValue={(v) => String(v)}
-        formatGap={(g) => `差 ${g}`}
+      <AttributionBars
+        items={items}
+        label="归因"
+        formatValue={String}
+        otherLabel={(n) => `其他 ×${n}`}
+        formatShare={String}
+        shareLabel="占比"
+        focusKey="a"
+        footer={{ count: '5 项', scale: (max) => `刻度 ±${max}` }}
+        actionLabels={{ group: '图工具', table: '表格视图', exportCsv: '导出', fullscreen: '全屏' }}
+        tableHeads={{ item: '项', value: '值', share: '占比' }}
       />,
     )
-    expect(html.match(/data-slot="waterfall-bar"/g)).toHaveLength(5)
-    expect(html).toContain('data-key="fee" data-direction="down"')
-    expect(html).toContain('data-key="end" data-direction="total" data-truncated="true" data-gap="true"')
-    expect(html).toContain('<li>期末  1230  差 30</li>')
-    expect(html).toContain('data-key="open" data-direction="total" data-truncated="true"')
+    expect(html.match(/data-slot="attribution-bar"/g)).toHaveLength(5)
+    expect(html).toContain('k-dotfill')
+    expect(html).toContain('data-focus="true"')
+    expect(html).toContain('data-tone="down"')
+    expect(html).toContain('刻度 ±300')
+    expect(html).toContain('data-action="table"')
+    expect(html).not.toContain('data-action="export"')
   })
 })
 

@@ -245,7 +245,7 @@ export function SeriesExplorer({
           {plot.ticks.map((tick) => (
             <line key={tick.value} className="k-plot-grid" x1={0} x2={PLOT_W} y1={tick.y} y2={tick.y} />
           ))}
-          <line className="k-wf-zero" x1={0} x2={PLOT_W} y1={plot.yAt(0)} y2={plot.yAt(0)} />
+          <line className="k-plot-zero" x1={0} x2={PLOT_W} y1={plot.yAt(0)} y2={plot.yAt(0)} />
           {shown.map((point, i) =>
             stackPoint(point, barKeys).map((segment) => {
               const top = Math.min(plot.yAt(segment.from), plot.yAt(segment.to))

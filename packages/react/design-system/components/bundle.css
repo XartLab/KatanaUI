@@ -6423,110 +6423,174 @@ button.k-spark-tile:focus-visible {
   left: 5px;
 }
 
-.k-wf {
-  min-width: 0;
-  color: var(--ink-200);
-  font: var(--text-caption) var(--font-sans);
-  font-variant-numeric: tabular-nums;
-  flex-direction: column;
-  gap: 4px;
-  margin: 0;
-  display: flex;
-}
-
-.k-wf-plot {
-  margin-left: var(--k-wf-gutter, 56px);
-  touch-action: pan-y;
-  position: relative;
-}
-
-.k-wf-plot:focus-visible {
-  outline: 1px solid var(--focus-ring);
-  outline-offset: 2px;
-}
-
-.k-wf-plot > svg {
-  width: 100%;
-  height: 100%;
-  display: block;
-  overflow: visible;
-}
-
-.k-wf-zero {
+.k-plot-zero {
   stroke: var(--line-200);
   stroke-width: 1px;
   vector-effect: non-scaling-stroke;
 }
 
-.k-wf-link {
-  stroke: var(--ink-400);
-  stroke-width: 1px;
-  stroke-dasharray: 3 3;
-  vector-effect: non-scaling-stroke;
+.k-attr {
+  border: var(--hairline);
+  background: var(--bg-200);
+  min-width: 0;
+  color: var(--ink-200);
+  font: var(--text-data) var(--chart-font-axis, var(--font-mono));
+  font-variant-numeric: tabular-nums;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding: 8px 10px;
+  display: flex;
+  position: relative;
 }
 
-.k-wf-bar {
-  fill: var(--ink-300);
-  transition: fill-opacity var(--dur-snappy) var(--ease-snappy);
-}
-
-.k-wf-bar[data-direction="up"] {
-  fill: var(--pnl-up);
-}
-
-.k-wf-bar[data-direction="down"] {
-  fill: var(--pnl-down);
-}
-
-.k-wf-bar[data-gap="true"] {
-  stroke: var(--ink-100);
-  stroke-width: 1px;
-  stroke-dasharray: 4 2;
-  vector-effect: non-scaling-stroke;
-}
-
-.k-wf-plot:has([data-active="true"]) .k-wf-bar:not([data-active="true"]) {
-  fill-opacity: .45;
-}
-
-.k-wf-value {
-  color: var(--ink-100);
-  font: var(--text-caption) var(--font-mono);
-  white-space: nowrap;
-  pointer-events: none;
-  padding-bottom: 2px;
-  position: absolute;
-  transform: translate(-50%, -100%);
-}
-
-.k-wf-value[data-direction="up"] {
-  color: var(--pnl-up);
-}
-
-.k-wf-value[data-direction="down"] {
-  color: var(--pnl-down);
-}
-
-.k-wf-ytick {
-  padding-right: 8px;
-  left: auto;
-  right: 100%;
-  transform: translateY(-50%);
-}
-
-.k-wf-labels {
-  margin-left: var(--k-wf-gutter, 56px);
+.k-attr-top {
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
   display: flex;
 }
 
-.k-wf-labels > span {
-  min-width: 0;
-  color: var(--chart-axis);
-  text-align: center;
+.k-attr-total {
+  color: var(--ink-100);
+  font: var(--text-lcd) var(--chart-font-num, var(--font-lcd));
+  letter-spacing: .08em;
+}
+
+.k-attr-total[data-tone="up"] {
+  color: var(--pnl-up);
+}
+
+.k-attr-total[data-tone="down"] {
+  color: var(--pnl-down);
+}
+
+.k-attr-total small {
+  color: var(--ink-300);
+  font: var(--text-tag) var(--font-dot);
+  letter-spacing: 0;
+  margin-left: 6px;
+}
+
+.k-attr-top .k-ck-actions {
+  margin-left: auto;
+}
+
+.k-attr-rows {
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+}
+
+.k-attr-row {
+  outline: none;
+  grid-template-columns: 120px 1fr 84px;
+  align-items: center;
+  gap: 12px;
+  height: 22px;
+  display: grid;
+  position: relative;
+}
+
+.k-attr-row[data-active="true"], .k-attr-row:focus-visible {
+  background: var(--ink-100);
+}
+
+@supports (color: color-mix(in lab, red, red)) {
+  .k-attr-row[data-active="true"], .k-attr-row:focus-visible {
+    background: var(--ds-c-1liwpbi);
+  }
+}
+
+.k-attr-row[data-kind="other"] .k-attr-label, .k-attr-row[data-kind="fee"] .k-attr-label {
+  color: var(--ink-300);
+}
+
+.k-attr-label {
+  color: var(--ink-200);
   text-overflow: ellipsis;
   white-space: nowrap;
-  flex: 1 1 0;
   overflow: hidden;
+}
+
+.k-attr-axis {
+  height: 12px;
+  position: relative;
+}
+
+.k-attr-axis:before {
+  content: "";
+  background: var(--line-200);
+  width: 1px;
+  position: absolute;
+  top: -5px;
+  bottom: -5px;
+  left: 50%;
+}
+
+.k-attr-bar {
+  --k-dot: var(--ink-200);
+  opacity: 1;
+  height: 8px;
+  transition: left var(--dur-snappy) var(--ease-snappy), width var(--dur-snappy) var(--ease-snappy);
+  position: absolute;
+  top: 2px;
+}
+
+.k-attr-bar[data-focus="true"] {
+  --k-dot: var(--chart-accent, var(--signal-orange));
+}
+
+.k-attr-value {
+  color: var(--ink-100);
+  text-align: right;
+}
+
+.k-attr-value[data-tone="up"] {
+  color: var(--pnl-up);
+}
+
+.k-attr-value[data-tone="down"] {
+  color: var(--pnl-down);
+}
+
+.k-attr-tip {
+  top: 100%;
+  left: 132px;
+}
+
+.k-attr-table {
+  border-collapse: collapse;
+  text-align: right;
+}
+
+.k-attr-table th:first-child, .k-attr-table td:first-child {
+  text-align: left;
+}
+
+.k-attr-table th {
+  color: var(--ink-300);
+  font-weight: 400;
+}
+
+.k-attr-table td, .k-attr-table th {
+  border-bottom: var(--hairline);
+  padding: 2px 8px;
+}
+
+.k-attr-foot {
+  border-top: var(--hairline);
+  color: var(--ink-300);
+  gap: 16px;
+  margin-top: 2px;
+  padding-top: 6px;
+  display: flex;
+}
+
+.k-attr-note {
+  margin-left: auto;
 }
 
 .k-meter {
@@ -7800,6 +7864,7 @@ button.k-sm-head:focus-visible {
   --ds-c-nhksol: color-mix(in srgb, var(--pnl-down) 55%, var(--ink-300));
   --ds-c-1dit3qa: color-mix(in srgb, var(--pnl-up) 55%, var(--ink-300));
   --ds-c-1sas9o0: color-mix(in srgb, var(--ink-100) 8%, transparent);
+  --ds-c-1liwpbi: color-mix(in srgb, var(--ink-100) 6%, transparent);
   --ds-c-151q3s6: color-mix(in srgb, var(--pnl-up) 25%, var(--bg-300));
   --ds-c-nw78: color-mix(in srgb, var(--pnl-up) 50%, var(--bg-300));
   --ds-c-29ygob: color-mix(in srgb, var(--pnl-up) 75%, var(--bg-300));
@@ -7834,7 +7899,6 @@ button.k-sm-head:focus-visible {
   --k-pin: initial;
   --k-plot-gutter: initial;
   --k-spark-h: initial;
-  --k-wf-gutter: initial;
   --radix-accordion-content-height: initial;
   --radix-collapsible-content-height: initial;
   --radix-collapsible-content-width: initial;

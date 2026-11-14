@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// 序列图共用的几何（纯函数，不碰 DOM）：比例尺、好看的刻度、折线与面积的路径。BrushChart、WaterfallChart、HorizonChart、SmallMultiples、SeriesExplorer 都用它，
+// 序列图共用的几何（纯函数，不碰 DOM）：比例尺、好看的刻度、折线与面积的路径。BrushChart、HorizonChart、SmallMultiples、SeriesExplorer 都用它，
 // 比例尺不另加图表依赖（#1917：几十行自己写）。图画在 viewBox 里：横向宽度是抽象的 PLOT_W，竖向就是像素高度（元素高度固定、preserveAspectRatio="none"），
 // 所以不需要量尺寸；文字与十字线是叠在上面的 HTML，按百分比定位。
 

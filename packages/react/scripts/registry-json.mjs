@@ -26,9 +26,10 @@ const INTERNAL = {
   motion: '三条弹簧参数（snappy、gentle、settle），给 motion/react 用。',
   spring: '把三条弹簧的停止阈值收到 0.001，给 scale、opacity、pathLength 这类 0 到 1 的量用。',
   'series-geometry':
-    '序列图共用的几何（纯函数）：好看的刻度、比例尺、折线与面积路径，BrushChart、WaterfallChart、HorizonChart、SmallMultiples、SeriesExplorer 都用。',
+    '序列图共用的几何（纯函数）：好看的刻度、比例尺、折线与面积路径，BrushChart、HorizonChart、SmallMultiples、SeriesExplorer 都用。',
   'brush-model': 'BrushChart 的窗口几何（纯函数）：夹取、平移、缩放、居中。',
-  'waterfall-model': 'WaterfallChart 的累加（纯函数）：增减柱接着累计、总计柱重置累计并给出对不上的差额。',
+  'attribution-model':
+    'AttributionBars 的排序与折叠（纯函数）：正负分组降序、超 7 项折「其他 ×n」、费用·税放底、对称刻度。',
   'chart-kit':
     '图表共用底座：配色分配（series / seq / div）、点阵纹理、LCD tooltip、末点、轴与网格、图右上三件（表格视图、导出、全屏）。',
   'meter-model': 'Meter 的几何与状态（纯函数）：位置、达到软限与硬限的判定、刻度盘指针位置。',

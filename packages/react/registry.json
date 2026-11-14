@@ -1818,6 +1818,37 @@
       ]
     },
     {
+      "name": "attribution-bars",
+      "type": "registry:component",
+      "title": "Attribution Bars",
+      "description": "今天（或选中区间）的钱从哪来：零轴水平条形，正在右、负在左，条是点阵纹理不用红绿，只有数字用涨跌色；按 |贡献| 正负分组降序，超过 7 项折「其他 ×n」，费用·税永远在最底。对设计稿的 PnLAttribution 卡（卡明写不用瀑布图）。",
+      "registryDependencies": [
+        "@katana/attribution-model",
+        "@katana/chart-kit",
+        "@katana/cn"
+      ],
+      "files": [
+        {
+          "path": "src/quant/attribution-bars.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/attribution-bars.tsx"
+        }
+      ]
+    },
+    {
+      "name": "attribution-model",
+      "type": "registry:component",
+      "title": "Attribution Model",
+      "description": "AttributionBars 的排序与折叠（纯函数）：正负分组降序、超 7 项折「其他 ×n」、费用·税放底、对称刻度。",
+      "files": [
+        {
+          "path": "src/quant/attribution-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/attribution-model.ts"
+        }
+      ]
+    },
+    {
       "name": "brush-chart",
       "type": "registry:component",
       "title": "Brush Chart",
@@ -1981,7 +2012,7 @@
       "name": "series-geometry",
       "type": "registry:component",
       "title": "Series Geometry",
-      "description": "序列图共用的几何（纯函数）：好看的刻度、比例尺、折线与面积路径，BrushChart、WaterfallChart、HorizonChart、SmallMultiples、SeriesExplorer 都用。",
+      "description": "序列图共用的几何（纯函数）：好看的刻度、比例尺、折线与面积路径，BrushChart、HorizonChart、SmallMultiples、SeriesExplorer 都用。",
       "files": [
         {
           "path": "src/quant/series-geometry.ts",
@@ -2024,38 +2055,6 @@
           "path": "src/quant/tone-text.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/quant/tone-text.tsx"
-        }
-      ]
-    },
-    {
-      "name": "waterfall-chart",
-      "type": "registry:component",
-      "title": "Waterfall Chart",
-      "description": "期初权益到期末权益的桥：起点一根总计柱，中间每一步是一根浮动的增减柱（涨跌色跟涨跌配色走），末尾一根总计柱，相邻柱之间连水平线。指针或 ←→ 扫读。功能参照 Arc 的 MRR waterfall。",
-      "registryDependencies": [
-        "@katana/cn",
-        "@katana/series-geometry",
-        "@katana/use-scrubber",
-        "@katana/waterfall-model"
-      ],
-      "files": [
-        {
-          "path": "src/quant/waterfall-chart.tsx",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/quant/waterfall-chart.tsx"
-        }
-      ]
-    },
-    {
-      "name": "waterfall-model",
-      "type": "registry:component",
-      "title": "Waterfall Model",
-      "description": "WaterfallChart 的累加（纯函数）：增减柱接着累计、总计柱重置累计并给出对不上的差额。",
-      "files": [
-        {
-          "path": "src/quant/waterfall-model.ts",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/quant/waterfall-model.ts"
         }
       ]
     },

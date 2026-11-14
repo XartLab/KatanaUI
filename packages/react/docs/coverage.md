@@ -91,7 +91,7 @@
 | PanelFrame | 工作台 | 积木 | `src/workspace/PaneFrame.tsx`、`EmptyState`、`Toolbar`、计划：`PanelFrame` | 部分 | #1869 做了空态 EmptyState 与工具条 Toolbar；面板壳本身还在应用里 |
 | ParamScatter | 研究 | 面板 | — | 没做 | 研究层，还没有对应面板 |
 | PerformanceReport | 资产管理 | 面板 | — | 没做 | 资产管理，还没有对应面板 |
-| PnLAttribution | 组合 | 面板 | `WaterfallChart` | 部分 | 盈亏桥（期初到期末的瀑布）组件库有了；归因的分组与面板接线还没有 |
+| PnLAttribution | 组合 | 面板 | `AttributionBars` | 部分 | 零轴条形归因（正负分组、折「其他」、费用·税在底）组件库有了；面板接线与维度切换的数据还没有 |
 | PnLLedger | 盈亏 | 面板 | `SeriesExplorer` | 部分 | 按期明细表与堆叠柱在 SeriesExplorer 里有了；台账数据接线与面板还没有 |
 | PositionBook | 组合 | 面板 | `src/panels/positions` | 已做 |  |
 | PositionHistory | 盈亏 | 面板 | — | 没做 | 盈亏，还没有对应面板 |
