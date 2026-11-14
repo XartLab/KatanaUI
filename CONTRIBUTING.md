@@ -1,21 +1,17 @@
 # Contributing to KatanaUI
 
-This repository is a read-only mirror. The source of truth is the `packages/ui` directory of the private KATANAview
-repository (XartLab/KATANAview); every change to it on `main` is synced here. Pull requests opened against this
-repository cannot be merged as they are.
+This repository is the source of truth for Katana UI. Issues and pull requests are welcome here.
 
-## What to do instead
-
-- **Found a bug or want a component?** Open an issue here. Include the component name, what you expected, what you
-  got, and a minimal snippet or screenshot.
-- **Have a fix?** Open a pull request here anyway. A maintainer ports it into KATANAview by hand and credits you in
-  the commit; the mirror picks it up on the next sync.
-- **Design tokens** (colors, spacing, radii, shadows) are generated. Do not edit `src/tokens/tokens.css`; change
-  `design/tokens.json` in KATANAview instead.
+- **Found a bug or want a component?** Open an issue. Include the component name, what you expected, what you got,
+  and a minimal snippet or screenshot.
+- **Have a fix?** Open a pull request against `main`. CI runs the same checks as `pnpm test`, `pnpm typecheck` and
+  `pnpm build:site`.
+- **Design tokens** live in `packages/react/src/tokens/tokens.json`. Do not edit the generated `tokens.css`; change the
+  JSON and run `pnpm tokens:sync`.
 
 ## Working on the code locally
 
-You need Node 22.13 or newer and pnpm 11.
+You need Node 22.13 or newer and pnpm 12. Run commands from the repository root.
 
 ```sh
 pnpm install

@@ -1,0 +1,9 @@
+packages:
+  - packages/*
+
+# 包之间写确切版本（不写 workspace:），本地照样连到仓库里的那份：消费方用 git 标签加子目录装我们的包时，
+# pnpm 不认 workspace:（2026-11-14 用 pnpm 12 实测报 ERR_PNPM_WORKSPACE_PKG_NOT_FOUND，见 #2「发布与消费」）。
+linkWorkspacePackages: true
+
+# 不设冷却期，与 KATANAview 一致（Curry 2026-10-28）。出处：https://pnpm.io/settings#minimumreleaseage（2026-10-30 读）。
+minimumReleaseAge: 0
