@@ -192,11 +192,8 @@
 .k-tl-count {
   position: absolute;
   left: 50%;
-  max-width: 72px;
-  overflow: hidden;
   color: var(--ink-300);
   font: 9px var(--font-sans);
-  text-overflow: ellipsis;
   white-space: nowrap;
   transform: translateX(-50%);
   pointer-events: none;

@@ -4234,15 +4234,12 @@
 }
 
 .k-tl-label, .k-tl-count {
-  max-width: 72px;
   color: var(--ink-300);
   font: 9px var(--font-sans);
-  text-overflow: ellipsis;
   white-space: nowrap;
   pointer-events: none;
   position: absolute;
   left: 50%;
-  overflow: hidden;
   transform: translateX(-50%);
 }
 

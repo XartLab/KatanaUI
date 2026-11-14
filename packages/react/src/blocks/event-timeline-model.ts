@@ -163,3 +163,59 @@ export function clusterMarkers(
     }
   }
 }
+
+export type LabelSide = 'up' | 'down'
+
+export type LabelItem = {
+  key: string
+  /** 标记中心的横坐标（px，轴左端为 0）。 */
+  center: number
+  /** 标签的宽度（px）；聚合标记没有标签，给 0 并带 badge。 */
+  width: number
+  /** 聚合标记：计数徽标占上层的这么宽（px），标签避让要让开。 */
+  badge?: number
+}
+
+/** 标签之间留的空隙（px）。 */
+export const LABEL_GAP = 6
+
+/** 估计 9px 标签的宽度：汉字与全角 9px，其余按 6px（含数字、字母、空格的最宽情形，宁大勿小；实测核对见 e2e）。 */
+export function estimateLabelWidth(text: string): number {
+  let width = 0
+  for (const ch of text) width += /[⺀-鿿＀-￯]/.test(ch) ? 9 : 6
+  return width
+}
+
+/**
+ * 标签避让（一维，按 x 排序）：每个标签先试它的偏好层（交错），重叠就换另一层，两层都放不下就省略（返回 null，悬停看全文）。
+ * blocked 是不许压的区间（「现在」线与它的字、聚合徽标）；bounds 是标签能伸到的左右极限（px）。
+ */
+export function placeLabels(
+  items: readonly LabelItem[],
+  blocked: { up: readonly (readonly [number, number])[]; down: readonly (readonly [number, number])[] },
+  bounds: readonly [number, number],
+): Map<string, LabelSide | null> {
+  const taken: Record<LabelSide, [number, number][]> = {
+    up: blocked.up.map(([a, b]) => [a, b]),
+    down: blocked.down.map(([a, b]) => [a, b]),
+  }
+  for (const item of items) if (item.badge) taken.up.push([item.center - item.badge / 2, item.center + item.badge / 2])
+  const result = new Map<string, LabelSide | null>()
+  const sorted = [...items].filter((i) => i.width > 0).sort((a, b) => a.center - b.center)
+  let preferred: LabelSide = 'up'
+  for (const item of sorted) {
+    const span: [number, number] = [item.center - item.width / 2, item.center + item.width / 2]
+    const free = (side: LabelSide) =>
+      span[0] >= bounds[0] &&
+      span[1] <= bounds[1] &&
+      taken[side].every(([a, b]) => span[1] + LABEL_GAP <= a || span[0] - LABEL_GAP >= b)
+    const other: LabelSide = preferred === 'up' ? 'down' : 'up'
+    const side: LabelSide | null = free(preferred) ? preferred : free(other) ? other : null
+    result.set(item.key, side)
+    if (side) {
+      taken[side].push(span)
+      preferred = side === 'up' ? 'down' : 'up'
+    }
+  }
+  return result
+}

@@ -360,11 +360,14 @@ const TIMELINE_LABELS: EventTimelineLabels = {
 }
 
 export function EventTimelineDemo() {
-  const [picked, setPicked] = useState('无')
-  const [brushed, setBrushed] = useState('无')
+  const [picked, setPicked] = useState<string | null>(null)
+  const [brushed, setBrushed] = useState<string | null>(null)
   return (
     <>
-      <Row name="单日 · 现在 · 可点可拖选">
+      <Row>
+        <span className="gal-cap" style={{ width: '100%' }}>
+          单日 · 现在 · 可点可拖选
+        </span>
         <div style={{ width: 640 }}>
           <EventTimeline
             label="事件流"
@@ -380,10 +383,13 @@ export function EventTimelineDemo() {
             }
           />
         </div>
-        <output data-gallery-timeline>{picked}</output>
-        <output data-gallery-brush>{brushed}</output>
+        {picked && <output data-gallery-timeline>{picked}</output>}
+        {brushed && <output data-gallery-brush>{brushed}</output>}
       </Row>
-      <Row name="跨日 · 一天一行">
+      <Row>
+        <span className="gal-cap" style={{ width: '100%' }}>
+          跨日 · 一天一行
+        </span>
         <div style={{ width: 640 }}>
           <EventTimeline
             label="跨日事件流"
@@ -395,7 +401,10 @@ export function EventTimelineDemo() {
           />
         </div>
       </Row>
-      <Row name="空态">
+      <Row>
+        <span className="gal-cap" style={{ width: '100%' }}>
+          空态
+        </span>
         <div style={{ width: 640 }}>
           <EventTimeline
             label="空事件流"

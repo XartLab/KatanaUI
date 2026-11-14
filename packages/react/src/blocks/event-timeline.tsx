@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-import { useId, useRef, useState, type PointerEvent, type ReactNode } from 'react'
+import { useCallback, useId, useRef, useState, type PointerEvent, type ReactNode } from 'react'
 import { cn } from '../lib/cn'
 import {
   EVENT_KINDS,
@@ -7,10 +7,12 @@ import {
   clusterMarkers,
   dayKey,
   dayMinuteToTime,
+  estimateLabelWidth,
   fractionToMinute,
   gapBands,
   minuteOfDay,
   minuteToFraction,
+  placeLabels,
   type EventKind,
   type SessionMinutes,
   type TimelineEvent,
@@ -63,6 +65,9 @@ export type EventTimelineProps = {
   className?: string
 }
 
+/** 轴左右两侧留给边缘标签的空白（px），与 css 的 .k-tl-track 的 margin 一致。 */
+const TRACK_MARGIN = 40
+
 const SHAPES: Record<EventKind, ReactNode> = {
   anomaly: <circle cx="5" cy="5" r="4" />,
   notice: <rect x="1" y="1" width="8" height="8" />,
@@ -111,7 +116,17 @@ function Lane({
   )
   const [hover, setHover] = useState<string | null>(null)
   const [brush, setBrush] = useState<{ a: number; b: number } | null>(null)
-  const trackRef = useRef<HTMLDivElement>(null)
+  const trackRef = useRef<HTMLDivElement | null>(null)
+  const [trackWidth, setTrackWidth] = useState(600)
+  const observer = useRef<ResizeObserver | null>(null)
+  const setTrack = useCallback((el: HTMLDivElement | null) => {
+    trackRef.current = el
+    observer.current?.disconnect()
+    if (!el) return
+    setTrackWidth(el.clientWidth)
+    observer.current = new ResizeObserver(() => setTrackWidth(el.clientWidth))
+    observer.current.observe(el)
+  }, [])
   const nowX =
     now !== undefined && dayKey(now, timeZone) === day ? minuteToFraction(minuteOfDay(now, timeZone), session) : null
   const frac = (e: PointerEvent) => {
@@ -129,10 +144,24 @@ function Lane({
     setBrush(null)
   }
   const open = markers.find((m) => m.key === hover)
+  const nowPx = nowX === null ? null : nowX * trackWidth
+  const placement = placeLabels(
+    markers.map((m) => ({
+      key: m.key,
+      center: m.x * trackWidth,
+      width: m.events.length > 1 ? 0 : estimateLabelWidth(m.events[0]!.label),
+      badge: m.events.length > 1 ? 16 : undefined,
+    })),
+    {
+      up: nowPx === null ? [] : [[nowPx - 2, nowPx + 6 + estimateLabelWidth(labels.now)]],
+      down: nowPx === null ? [] : [[nowPx - 2, nowPx + 2]],
+    },
+    [-TRACK_MARGIN, trackWidth + TRACK_MARGIN],
+  )
   return (
     <div className="k-tl-lane" data-day={day}>
       <div
-        ref={trackRef}
+        ref={setTrack}
         className="k-tl-track"
         onPointerDown={(e) => {
           if (!onBrush || e.target !== e.currentTarget) return
@@ -164,7 +193,7 @@ function Lane({
             style={{ left: `${Math.min(brush.a, brush.b) * 100}%`, width: `${Math.abs(brush.a - brush.b) * 100}%` }}
           />
         )}
-        {markers.map((marker, index) => {
+        {markers.map((marker) => {
           const first = marker.events[0]!
           const many = marker.events.length > 1
           const name = many
@@ -176,7 +205,7 @@ function Lane({
               type="button"
               className="k-tl-marker"
               data-kind={marker.kind}
-              data-side={index % 2 === 0 ? 'up' : 'down'}
+              data-side={placement.get(marker.key) ?? undefined}
               style={{ left: `${marker.x * 100}%` }}
               aria-label={`${labels.kinds[marker.kind]} ${name}`}
               onPointerEnter={() => setHover(marker.key)}
@@ -188,11 +217,11 @@ function Lane({
               <Glyph kind={marker.kind} side={sideOf(marker.events)} />
               {many ? (
                 <span className="k-tl-count">{marker.events.length}</span>
-              ) : (
+              ) : placement.get(marker.key) ? (
                 <span className="k-tl-label" aria-hidden="true">
                   {first.label}
                 </span>
-              )}
+              ) : null}
             </button>
           )
         })}
@@ -200,7 +229,9 @@ function Lane({
           <div className="k-tl-tip" role="tooltip" style={{ left: `clamp(88px, ${open.x * 100}%, calc(100% - 88px))` }}>
             {open.events.slice(0, 6).map((e) => (
               <div key={e.id} className="k-tl-tip-row">
-                <span className="k-tl-tip-time">{clock(e.at, timeZone)}</span>
+                <span className="k-tl-tip-time">
+                  {dayKey(e.at, timeZone)} {clock(e.at, timeZone)}
+                </span>
                 <Glyph kind={e.kind} side={e.side} />
                 <span className="k-tl-tip-text">
                   {e.kind === 'fill' ? `${e.side === 'sell' ? labels.sell : labels.buy} ` : ''}
@@ -282,7 +313,7 @@ export function EventTimeline(props: EventTimelineProps) {
                 .map((e) => (
                   <tr key={e.id}>
                     <td className="k-tl-num">
-                      {dayKey(e.at, timeZone).slice(5)} {clock(e.at, timeZone)}
+                      {dayKey(e.at, timeZone)} {clock(e.at, timeZone)}
                     </td>
                     <td>{labels.kinds[e.kind]}</td>
                     <td>{e.label}</td>

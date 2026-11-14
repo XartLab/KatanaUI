@@ -9,7 +9,9 @@ import {
   fractionToMinute,
   gapBands,
   minuteOfDay,
+  estimateLabelWidth,
   minuteToFraction,
+  placeLabels,
   type SessionMinutes,
   type TimelineEvent,
 } from './event-timeline-model'
@@ -103,5 +105,53 @@ describe('clusterMarkers', () => {
       CN,
     ).map((m) => m.x)
     expect(xs[0]!).toBeLessThan(xs[1]!)
+  })
+})
+
+describe('placeLabels 标签避让', () => {
+  const none = { up: [], down: [] }
+  const wide: [number, number] = [-40, 700]
+  it('不重叠的交替上下；挨得近的换层', () => {
+    const out = placeLabels(
+      [
+        { key: 'a', center: 100, width: 60 },
+        { key: 'b', center: 110, width: 60 },
+        { key: 'c', center: 400, width: 60 },
+      ],
+      none,
+      wide,
+    )
+    expect(out.get('a')).toBe('up')
+    expect(out.get('b')).toBe('down')
+    expect(out.get('c')).toBe('up')
+  })
+  it('两层都放不下就省略；同层的框两两不相交', () => {
+    const items = [0, 5, 10, 15].map((c, i) => ({ key: `k${i}`, center: 200 + c, width: 60 }))
+    const out = placeLabels(items, none, wide)
+    expect([...out.values()].filter((v) => v === null).length).toBe(2)
+    for (const side of ['up', 'down'] as const) {
+      const spans = items.filter((i) => out.get(i.key) === side)
+      expect(spans.length).toBeLessThanOrEqual(1)
+    }
+  })
+  it('不压「现在」线与聚合徽标；伸出边界的省略', () => {
+    const out = placeLabels(
+      [
+        { key: 'x', center: 300, width: 80 },
+        { key: 'edge', center: -30, width: 80 },
+        { key: 'cl', center: 500, width: 0, badge: 16 },
+        { key: 'y', center: 505, width: 40 },
+      ],
+      { up: [[290, 330]], down: [[298, 302]] },
+      wide,
+    )
+    expect(out.get('x')).toBeNull()
+    expect(out.get('edge')).toBeNull()
+    expect(out.get('y')).toBe('down')
+    expect(out.has('cl')).toBe(false)
+  })
+  it('estimateLabelWidth：汉字 9、其余 6', () => {
+    expect(estimateLabelWidth('上破')).toBe(18)
+    expect(estimateLabelWidth('RUN 2e52')).toBe(48)
   })
 })
