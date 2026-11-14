@@ -69,6 +69,11 @@
           "target": "~/src/katana/ui/theme/date-time.css"
         },
         {
+          "path": "src/theme/decision-queue.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/decision-queue.css"
+        },
+        {
           "path": "src/theme/dialog.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/dialog.css"
@@ -227,6 +232,11 @@
           "path": "src/theme/symbol-mark.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/symbol-mark.css"
+        },
+        {
+          "path": "src/theme/system-monitor.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/system-monitor.css"
         },
         {
           "path": "src/theme/technical-rating.css",
@@ -2990,6 +3000,66 @@
           "path": "src/blocks/news-feed/news-feed.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/blocks/news-feed/news-feed.tsx"
+        }
+      ]
+    },
+    {
+      "name": "decision-queue",
+      "type": "registry:component",
+      "title": "Decision Queue",
+      "description": "产品底线「Agent 输出只是带来源的建议，人接受后才生效」的界面：每张卡写建议动作、对象、理由摘要、置信与依据、来源链接、生成时间、过期倒计时，按钮 接受 / 拒绝 / 稍后，回调由调用方给。接受用按住确认（HoldToConfirm），单击不触发。队列按 待处理 / 已接受 / 已拒绝 / 已过期 筛选；已处理的收成一行（结果、谁、何时），点开看全文。件不改状态：回调后由调用方把条目状态改了再传回来。卡片照 uiarc（待核对）、一行记录照 TradingView 告警列表的读法，实现原创。演示数据是虚构的。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/button",
+        "@katana/cn",
+        "@katana/hold-to-confirm",
+        "@katana/led",
+        "@katana/toggle-group"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/decision-queue/decision-queue-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/decision-queue/decision-queue-model.ts"
+        },
+        {
+          "path": "src/blocks/decision-queue/decision-queue.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/decision-queue/decision-queue.tsx"
+        }
+      ]
+    },
+    {
+      "name": "system-monitor",
+      "type": "registry:component",
+      "title": "System Monitor",
+      "description": "一眼看出交易系统是否正常：顶上连接状态条（每个连接 / 交易所 API / 行情源 / 引擎一盏灯 + 名称 + 状态字 + 延迟 + 最后心跳，异常的排前面）；延迟与错误率小图（SparkTile）；策略实例表（名称、账户、品种、状态、持仓、今日盈亏、额度占用条、最后一笔，行尾启停按钮由调用方回调）；事件流（按严重程度着色，可按类别与严重程度筛）。急停放面板头，按住确认。没有数据的块写「未连接」。功能参照 NinjaTrader 8 Control Center 的 Strategies 页签（2026-11-15 读到列与启停操作）与 Hummingbot 状态文档（2026-11-15 读到连接状态与错误信息；策略状态字段该页没写，待核对），实现原创。演示数据是虚构的。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/button",
+        "@katana/chip-group",
+        "@katana/cn",
+        "@katana/hold-to-confirm",
+        "@katana/led",
+        "@katana/meter",
+        "@katana/pnl-text",
+        "@katana/spark-tile",
+        "@katana/toggle-group"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/system-monitor/system-monitor-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/system-monitor/system-monitor-model.ts"
+        },
+        {
+          "path": "src/blocks/system-monitor/system-monitor.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/system-monitor/system-monitor.tsx"
         }
       ]
     },

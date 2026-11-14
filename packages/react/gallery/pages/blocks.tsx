@@ -5,9 +5,11 @@ import {
   ColumnPicker,
   DataGrid,
   DataGridHostProvider,
+  DecisionQueue,
   EmptyState,
   EstimateBadge,
   NewsFeed,
+  SystemMonitor,
   PanelFrame,
   PanelFrameBody,
   PanelFrameHeader,
@@ -19,14 +21,23 @@ import {
   WorkspaceTabs,
   type ColumnSet,
   type DataGridHost,
+  type DecisionItem,
+  type DecisionQueueLabels,
   type GridColumn,
   type GridColumnLayout,
   type NewsFeedLabels,
+  type MonitorEvent,
+  type MonitorLink,
+  type MonitorStrategy,
   type NewsItem,
+  type StrategyAction,
+  type SystemMonitorLabels,
+  type SystemMonitorMetric,
   type SortSpec,
   type StatusItem,
   type WorkspaceTab,
 } from '../../src/blocks/index.ts'
+import { ConsensusBlock } from '../../src/quant/index.ts'
 import { Button, Splitter, symbolMenu, usePersistedState } from '../../src/index.ts'
 import { ActionLog, Row, SAMPLE_MARK_SRC, demoSymbolActions } from './parts.tsx'
 
@@ -656,6 +667,371 @@ export function NewsFeedDemo() {
           now={NEWS_NOW}
           labels={NEWS_LABELS}
           defaultLayout="card"
+        />
+      </div>
+    </div>
+  )
+}
+
+// 建议队列的演示数据是虚构的（品种、策略、来源都不是真实的），时间固定在 DQ_NOW，靠「快进」按钮推进。
+const DQ_NOW = Date.UTC(2026, 10, 15, 9, 30, 0)
+const DQ_ITEMS: DecisionItem[] = [
+  {
+    id: 'd1',
+    action: '买入',
+    target: '星河锂业',
+    targetTag: '600001',
+    rationale: '产能爬坡超出指引，回测中同类事件后 20 日超额收益为正；仓位建议不超过组合的 3%。',
+    confidence: 0.72,
+    basis: '事件回测 2023-2026，样本 38 次，胜率 63%',
+    sources: [
+      { label: '演示通讯社 · 产能公告', href: 'https://example.com/demo/capacity' },
+      { label: '回测报告 #12', href: 'https://example.com/demo/backtest-12' },
+    ],
+    createdAt: DQ_NOW - 4 * 60_000,
+    expiresAt: DQ_NOW + 5 * 60_000,
+    status: 'pending',
+  },
+  {
+    id: 'd2',
+    action: '停策略',
+    target: '动量轮动 A',
+    targetTag: '策略',
+    rationale: '近 20 日回撤超过限额的 80%，且与大盘的相关性升到 0.9，已失去分散作用。',
+    confidence: 0.58,
+    basis: '风控监控，滚动 20 日',
+    sources: [{ label: '风控面板 · 回撤', href: 'https://example.com/demo/risk' }],
+    createdAt: DQ_NOW - 9 * 60_000,
+    expiresAt: DQ_NOW + 50_000,
+    status: 'pending',
+  },
+  {
+    id: 'd3',
+    action: '调参数',
+    target: '均值回归 B',
+    targetTag: '策略',
+    rationale: '入场阈值从 2.0 降到 1.6，样本外夏普由 0.8 升到 1.1；换手率增加约 15%。',
+    basis: '参数扫描 6 组，样本外 2025-2026',
+    sources: [{ label: '参数扫描结果', href: 'https://example.com/demo/sweep' }],
+    createdAt: DQ_NOW - 30 * 60_000,
+    status: 'snoozed',
+  },
+  {
+    id: 'd4',
+    action: '调仓',
+    target: '半导体篮子',
+    rationale: '把权重从 12% 降到 8%：行业拥挤度处于近三年高位。',
+    confidence: 0.64,
+    sources: [{ label: '拥挤度数据', href: 'https://example.com/demo/crowd' }],
+    createdAt: DQ_NOW - 2 * 3600_000,
+    expiresAt: DQ_NOW + 3600_000,
+    status: 'accepted',
+    resolvedBy: '演示用户',
+    resolvedAt: DQ_NOW - 3600_000,
+  },
+  {
+    id: 'd5',
+    action: '买入',
+    target: '云岭能源',
+    targetTag: '600004',
+    rationale: '回购公告后的短期反弹，但成交额不足以承接仓位。',
+    confidence: 0.41,
+    sources: [{ label: '演示通讯社 · 回购', href: 'https://example.com/demo/buyback' }],
+    createdAt: DQ_NOW - 5 * 3600_000,
+    status: 'rejected',
+    resolvedBy: '演示用户',
+    resolvedAt: DQ_NOW - 4 * 3600_000,
+  },
+  {
+    id: 'd6',
+    action: '卖出',
+    target: '海岚电子',
+    targetTag: '000003',
+    rationale: '触及止盈线；建议分两笔减仓。',
+    sources: [{ label: '持仓监控', href: 'https://example.com/demo/position' }],
+    createdAt: DQ_NOW - 8 * 3600_000,
+    expiresAt: DQ_NOW - 7 * 3600_000,
+    status: 'pending',
+  },
+]
+const DQ_LABELS: DecisionQueueLabels = {
+  queue: '建议队列',
+  filters: '状态筛选',
+  filter: { pending: '待处理', accepted: '已接受', rejected: '已拒绝', expired: '已过期' },
+  accept: '接受',
+  reject: '拒绝',
+  snooze: '稍后',
+  acceptHint: '按住 1 秒确认接受',
+  accepted: '已接受',
+  snoozed: '已推后',
+  status: { pending: '待处理', snoozed: '稍后', accepted: '已接受', rejected: '已拒绝', expired: '已过期' },
+  confidence: (p) => `置信 ${p}%`,
+  basis: '依据',
+  sources: '来源',
+  details: '执行前检查',
+  createdAgo: (s) => `生成于 ${s < 3600 ? `${Math.floor(s / 60)} 分钟` : `${Math.floor(s / 3600)} 小时`}前`,
+  expiresIn: (s) => `还剩 ${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`,
+  expired: '已过期',
+  resolvedBy: (by, ago) => `${by} · ${ago}`,
+  ago: (s) => (s < 3600 ? `${Math.floor(s / 60)} 分钟前` : `${Math.floor(s / 3600)} 小时前`),
+  absolute: (t) => new Date(t).toISOString().replace('T', ' ').slice(0, 16) + ' UTC',
+  empty: {
+    pending: '没有待处理的建议',
+    accepted: '还没有接受过的建议',
+    rejected: '还没有拒绝过的建议',
+    expired: '没有过期的建议',
+  },
+}
+
+export function DecisionQueueDemo() {
+  const [items, setItems] = useState(DQ_ITEMS)
+  const [now, setNow] = useState(DQ_NOW)
+  const [log, setLog] = useState('—')
+  const settle = (id: string, status: DecisionItem['status'], what: string) => {
+    setLog(`${what} ${id}`)
+    setItems((prev) =>
+      prev.map((i) =>
+        i.id === id
+          ? { ...i, status, ...(status === 'snoozed' ? {} : { resolvedBy: '演示用户', resolvedAt: now }) }
+          : i,
+      ),
+    )
+  }
+  return (
+    <div className="gal-stack" style={{ width: '100%' }}>
+      <p className="gal-note">
+        演示数据（品种、策略、来源都是虚构的，时间固定）。接受要按住 1 秒；点「快进 2
+        分钟」看倒计时与过期；最近一次回调：
+        <span data-testid="dq-log">{log}</span>
+      </p>
+      <Button data-testid="dq-ff" onClick={() => setNow((n) => n + 120_000)}>
+        快进 2 分钟
+      </Button>
+      <div style={{ height: 520 }} data-testid="dq-frame">
+        <PanelFrame aria-label="Decision panel">
+          <PanelFrameHeader heading="Decisions" object="· 演示数据" />
+          <PanelFrameBody>
+            <div style={{ height: '100%', padding: 8 }}>
+              <DecisionQueue
+                items={items}
+                now={now}
+                labels={DQ_LABELS}
+                holdMs={1000}
+                onAccept={(i) => settle(i.id, 'accepted', '接受')}
+                onReject={(i) => settle(i.id, 'rejected', '拒绝')}
+                onSnooze={(i) => settle(i.id, 'snoozed', '稍后')}
+                renderDetail={(i) =>
+                  i.id === 'd1' ? (
+                    <ConsensusBlock
+                      label="执行前检查"
+                      intent="买入 · 600001 × 2,000"
+                      parties={[
+                        { key: 'gw', label: 'GATEWAY', state: 'pass', message: '整手 ✓' },
+                        { key: 'risk', label: 'RISK', state: 'warn', message: '集中度 58 / 60' },
+                      ]}
+                      verdict="warn"
+                      verdictText="可提交"
+                    />
+                  ) : null
+                }
+              />
+            </div>
+          </PanelFrameBody>
+        </PanelFrame>
+      </div>
+    </div>
+  )
+}
+
+// 系统监控的演示数据是虚构的（连接、账户、策略名都不是真实的），时间固定在 MON_NOW。里面有一个出错连接与一个出错策略。
+const MON_NOW = Date.UTC(2026, 10, 15, 9, 30, 0)
+const SEC = 1000
+const MON_LINKS: MonitorLink[] = [
+  { id: 'l1', name: '演示交易所 A', group: '交易所 API', state: 'ok', latencyMs: 42, lastBeat: MON_NOW - 2 * SEC },
+  { id: 'l2', name: '演示行情源', group: '行情源', state: 'ok', latencyMs: 18, lastBeat: MON_NOW - 1 * SEC },
+  {
+    id: 'l3',
+    name: '演示交易所 B',
+    group: '交易所 API',
+    state: 'error',
+    latencyMs: null,
+    lastBeat: MON_NOW - 95 * SEC,
+    detail: '签名校验失败（演示）',
+  },
+  { id: 'l4', name: '策略引擎', group: '引擎', state: 'degraded', latencyMs: 310, lastBeat: MON_NOW - 6 * SEC },
+]
+const MON_STRATEGIES: MonitorStrategy[] = [
+  {
+    id: 's1',
+    name: '均值回归 · 演示',
+    account: '演示账户 1',
+    symbol: '600001',
+    status: 'running',
+    position: '+1,200 股',
+    pnl: 1830.5,
+    pnlText: '+1,830.50',
+    quota: 0.42,
+    quotaText: '42%',
+    lastTradeAt: MON_NOW - 48 * SEC,
+  },
+  {
+    id: 's2',
+    name: '突破跟随 · 演示',
+    account: '演示账户 2',
+    symbol: 'DEMO-PERP',
+    status: 'error',
+    position: '−0.8',
+    pnl: -420.1,
+    pnlText: '−420.10',
+    quota: 0.93,
+    quotaText: '93%',
+    lastTradeAt: MON_NOW - 12 * 60 * SEC,
+    error: '下单被拒：签名校验失败',
+  },
+  {
+    id: 's3',
+    name: '对冲篮子 · 演示',
+    account: '演示账户 1',
+    symbol: 'DEMOIDX',
+    status: 'paused',
+    position: '0',
+    pnl: 0,
+    pnlText: '0.00',
+    quota: 0.1,
+    quotaText: '10%',
+    lastTradeAt: null,
+  },
+  { id: 's4', name: '网格 · 演示', account: '演示账户 2', symbol: 'DEMO-SPOT', status: 'stopped', quota: null },
+]
+const MON_METRICS: SystemMonitorMetric[] = [
+  {
+    key: 'lat',
+    label: 'LATENCY',
+    value: '42',
+    unit: 'ms',
+    series: [38, 40, 39, 44, 41, 52, 47, 43, 42],
+    sparkLabel: '延迟走势，最近 9 次',
+    note: '近 9 次',
+  },
+  {
+    key: 'err',
+    label: 'ERROR RATE',
+    value: '2.4',
+    unit: '%',
+    series: [0, 0, 1, 0, 2, 3, 2, 4, 3, 2],
+    sparkLabel: '错误率走势，最近 10 次',
+    state: 'near',
+    threshold: 4,
+    note: '接近阈值（演示 4%）',
+  },
+]
+const MON_EVENTS: MonitorEvent[] = [
+  {
+    id: 'e1',
+    at: MON_NOW - 20 * SEC,
+    severity: 'error',
+    kind: 'reject',
+    text: '突破跟随 · 演示：委托被拒（签名校验失败）',
+  },
+  { id: 'e2', at: MON_NOW - 48 * SEC, severity: 'info', kind: 'fill', text: '均值回归 · 演示：成交 200 股 @ 演示价' },
+  { id: 'e3', at: MON_NOW - 95 * SEC, severity: 'error', kind: 'disconnect', text: '演示交易所 B：连接断开，心跳超时' },
+  { id: 'e4', at: MON_NOW - 6 * 60 * SEC, severity: 'warn', kind: 'risk', text: '演示账户 2：额度占用越过预警线' },
+  { id: 'e5', at: MON_NOW - 9 * 60 * SEC, severity: 'info', kind: 'order', text: '均值回归 · 演示：下单 200 股' },
+  { id: 'e6', at: MON_NOW - 14 * 60 * SEC, severity: 'info', kind: 'reconnect', text: '策略引擎：重连成功' },
+]
+const MON_KINDS = [
+  { value: 'order', label: '下单' },
+  { value: 'fill', label: '成交' },
+  { value: 'reject', label: '拒单' },
+  { value: 'disconnect', label: '断线' },
+  { value: 'reconnect', label: '重连' },
+  { value: 'risk', label: '风控' },
+]
+const MON_LABELS: SystemMonitorLabels = {
+  monitor: '交易系统监控',
+  heading: '系统监控',
+  notConnected: '未连接',
+  links: '连接状态',
+  strategies: '策略实例',
+  metrics: '延迟与错误率',
+  events: '事件流',
+  linkState: { ok: '正常', degraded: '变慢', error: '出错', offline: '断开' },
+  strategyStatus: { running: '运行', paused: '暂停', stopped: '停止', error: '出错' },
+  severity: { info: '信息', warn: '警告', error: '错误' },
+  ago: (s) => (s < 60 ? `${s} 秒前` : s < 3600 ? `${Math.floor(s / 60)} 分钟前` : `${Math.floor(s / 3600)} 小时前`),
+  latency: (ms) => `${ms} ms`,
+  heartbeat: '心跳',
+  noBeat: '无',
+  columns: {
+    name: '策略',
+    account: '账户',
+    symbol: '品种',
+    status: '状态',
+    position: '持仓',
+    pnl: '今日盈亏',
+    quota: '额度',
+    lastTrade: '最后一笔',
+    actions: '操作',
+  },
+  actions: { start: '启动', pause: '暂停', stop: '停止' },
+  emergencyStop: '急停',
+  emergencyHint: '按住 2 秒，停止全部策略',
+  emergencyDone: '已急停',
+  eventKinds: '事件类别',
+  eventSeverity: '严重程度',
+  all: '全部',
+  clearKinds: '清除类别筛选',
+  noEvents: '没有符合筛选的事件',
+  quotaUsed: (p) => `额度已用 ${p}%`,
+}
+
+export function SystemMonitorDemo() {
+  const [strategies, setStrategies] = useState(MON_STRATEGIES)
+  const [log, setLog] = useState('—')
+  const act = (s: MonitorStrategy, a: StrategyAction) => {
+    setLog(`${a} ${s.id}`)
+    const status = a === 'pause' ? 'paused' : a === 'stop' ? 'stopped' : 'running'
+    setStrategies((prev) => prev.map((x) => (x.id === s.id ? { ...x, status, error: undefined } : x)))
+  }
+  return (
+    <div className="gal-stack" style={{ width: '100%' }}>
+      <p className="gal-note">
+        演示数据（连接与策略都是虚构的，时间固定）：一个连接出错、一个策略出错。启停只回调，这里把状态改回去；急停要按住。最后一次操作：
+        <span data-testid="mon-log">{log}</span>
+      </p>
+      <div style={{ height: 760 }} data-testid="mon-frame">
+        <PanelFrame aria-label="System monitor panel">
+          <PanelFrameHeader heading="Monitor" object="· 演示数据" />
+          <PanelFrameBody>
+            <div style={{ height: '100%', padding: 8 }}>
+              <SystemMonitor
+                links={MON_LINKS}
+                strategies={strategies}
+                metrics={MON_METRICS}
+                events={MON_EVENTS}
+                eventKinds={MON_KINDS}
+                now={MON_NOW}
+                labels={MON_LABELS}
+                quotaWarnAt={0.9}
+                onStrategyAction={act}
+                onEmergencyStop={() => {
+                  setLog('急停')
+                  setStrategies((prev) => prev.map((x) => ({ ...x, status: 'stopped', error: undefined })))
+                }}
+              />
+            </div>
+          </PanelFrameBody>
+        </PanelFrame>
+      </div>
+      <div style={{ height: 200 }} data-testid="mon-empty">
+        <SystemMonitor
+          links={[]}
+          strategies={[]}
+          metrics={[]}
+          events={[]}
+          eventKinds={MON_KINDS}
+          now={MON_NOW}
+          labels={MON_LABELS}
         />
       </div>
     </div>

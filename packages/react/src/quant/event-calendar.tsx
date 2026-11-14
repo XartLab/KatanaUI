@@ -278,7 +278,7 @@ export function EventCalendar({
                         {event.previous ?? DASH}
                       </span>
                       {rowActions && (
-                        <RowActions items={rowActions(event)} label={labels.rowActions} focusable={false} />
+                        <RowActions items={rowActions(event)} label={labels.rowActions} role="cell" focusable={false} />
                       )}
                     </div>
                   )

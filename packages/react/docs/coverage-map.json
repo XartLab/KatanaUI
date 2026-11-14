@@ -147,9 +147,9 @@
     },
     "DecisionQueue": {
       "kind": "面板",
-      "status": "没做",
-      "at": [],
-      "note": "决策层，还没有对应面板"
+      "status": "已做",
+      "at": ["DecisionQueue"],
+      "note": "件已做（建议卡片、接受按住确认、状态筛选、已处理收成一行）；应用里接真实建议源另开票"
     },
     "DeploymentBoard": {
       "kind": "面板",
@@ -529,8 +529,8 @@
     "SystemHealth": {
       "kind": "面板",
       "status": "部分",
-      "at": ["src/shell/LocalServiceStatus.tsx"],
-      "note": "本地服务状态有，六块仪表没有；组件库已有 UptimeBars 逐格可用条（#1918）可补逐小时可用，面板里还没接"
+      "at": ["SystemMonitor"],
+      "note": "件已做（连接状态条、策略实例表、延迟与错误率小图、事件流、急停；#36）；应用里接真实连接与策略数据另开票，原六块仪表与逐小时可用（UptimeBars）还没接"
     },
     "TCA": {
       "kind": "面板",

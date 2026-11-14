@@ -30,9 +30,11 @@ import {
 import { ParamScatterDemo, StrategyReportDemo } from './pages/strategy.tsx'
 import {
   DataGridDemo,
+  DecisionQueueDemo,
   EmptyStateDemo,
   EstimateBadgeDemo,
   NewsFeedDemo,
+  SystemMonitorDemo,
   PanelFrameDemo,
   SplitterDemo,
   StatusBarDemo,
@@ -174,6 +176,8 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'news-feed': NewsFeedDemo,
   'strategy-report': StrategyReportDemo,
   'param-scatter': ParamScatterDemo,
+  'system-monitor': SystemMonitorDemo,
+  'decision-queue': DecisionQueueDemo,
   'password-input': PasswordInputDemo,
   'hold-to-confirm': HoldToConfirmDemo,
   'delete-button': DeleteButtonDemo,
