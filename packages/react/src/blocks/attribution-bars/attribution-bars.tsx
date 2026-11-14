@@ -87,6 +87,8 @@ export function AttributionBars({
 }: AttributionBarsProps) {
   const rows = attributionRows(items, maxItems)
   const scale = attributionScale(rows)
+  // 表里有一行带徽标，别的行（其他、费用）也留出同宽的位置，代码列的左边缘才对得齐。
+  const hasIcon = rows.some((row) => row.icon !== null)
   const sum = rows.reduce((s, row) => s + Math.abs(row.value), 0)
   const [active, setActive] = useState<string | null>(null)
   const [table, setTable] = useState(false)
@@ -217,6 +219,7 @@ export function AttributionBars({
                         {row.kind === 'fee' ? '–' : pad(i + 1)}
                       </span>
                       <span className="k-attr-label">
+                        {!row.icon && hasIcon && <span className="k-attr-mark-slot" aria-hidden="true" />}
                         {row.icon && (
                           <SymbolMark
                             code={row.label.split(/\s+/)[0] ?? row.label}

@@ -6600,6 +6600,12 @@ button.k-spark-tile:focus-visible {
   color: var(--ink-300);
 }
 
+.k-attr-mark-slot {
+  flex: none;
+  width: 18px;
+  height: 18px;
+}
+
 .k-attr-label {
   color: var(--ink-100);
   text-overflow: ellipsis;
