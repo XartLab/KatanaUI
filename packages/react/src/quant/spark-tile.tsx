@@ -41,6 +41,8 @@ export type SparkTileProps = {
   onOpen?: () => void
   /** 这张瓦片展开着一个图面板（aria-expanded）：边框转强调色。 */
   expanded?: boolean
+  /** 编号（01、02……）：强调色等宽小字，写在标签前。 */
+  index?: string
   /** 写在根上的 data-key，给父级的测试与联动认哪一张。 */
   dataKey?: string
   /** 迷你线的读屏名（整句）。 */
@@ -64,6 +66,7 @@ export function SparkTile({
   onOpen,
   expanded,
   dataKey,
+  index,
   seriesLabel,
   className,
 }: SparkTileProps) {
@@ -88,7 +91,10 @@ export function SparkTile({
       type={onOpen === undefined ? undefined : 'button'}
       onClick={onOpen}
     >
-      <span className="k-spark-tile-label">{label}</span>
+      <span className="k-spark-tile-label">
+        {index === undefined ? null : <em className="k-spark-tile-index">{index}</em>}
+        {label}
+      </span>
       <span className="k-spark-tile-value" data-empty={text === null ? 'true' : undefined}>
         {text === null || value === null ? '—' : <RollingText text={text} value={value} animate />}
         {unit === undefined ? null : <span className="k-spark-tile-unit">{unit}</span>}

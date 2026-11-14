@@ -102,6 +102,10 @@ export type SeriesExplorerProps = {
     openingEquity: number
     format: (value: number) => string
   }
+  /** 标题下一行的元信息（等宽大写小字，例「RUN 2C91 · 2025-01 → 2026-12 · CNY」）；不给不画。 */
+  meta?: string
+  /** 图上的事件点：按时间落在序列的点上，画编号引线（01、02……按给的次序编号）。 */
+  events?: readonly { at: number; label: string }[]
   /** 导出与全屏回调不给就不画那个按钮。 */
   onExport?: () => void
   onFullscreen?: () => void
@@ -129,6 +133,8 @@ export function SeriesExplorer({
   formatValue,
   formatChange,
   reconcile,
+  meta,
+  events,
   onExport,
   onFullscreen,
   defaultMetric,
@@ -266,9 +272,14 @@ export function SeriesExplorer({
           </ToolbarGroup>
         </Toolbar>
       </div>
+      {meta && (
+        <p className="k-sx-meta" data-slot="series-meta">
+          {meta}
+        </p>
+      )}
 
       <div className="k-sx-kpis" data-slot="series-kpis">
-        {kpis.map((item) => {
+        {kpis.map((item, itemIndex) => {
           const current = reduceWindow(points, window, item.series, item.reduce)
           const before = previous === null ? null : reduceWindow(points, previous, item.series, item.reduce)
           const ratio = changeRatio(current, before)
@@ -289,6 +300,7 @@ export function SeriesExplorer({
               expanded={metric === item.key}
               onOpen={() => setMetric(metric === item.key ? null : item.key)}
               dataKey={item.key}
+              index={String(itemIndex + 1).padStart(2, '0')}
             />
           )
         })}
@@ -297,13 +309,21 @@ export function SeriesExplorer({
       {recon && labels.reconcile && reconcile && (
         <div className="k-sx-recon" data-slot="series-reconcile" data-state={recon.diff === 0 ? 'ok' : 'warn'}>
           <span className="k-sx-recon-line" data-slot="series-reconcile-lcd">
-            {labels.reconcile.open} <b>{reconcile.format(recon.open)}</b>
-            {labels.reconcile.unit ? ` ${labels.reconcile.unit}` : ''} → {labels.reconcile.close}{' '}
-            <b>{reconcile.format(recon.close)}</b>
-            {labels.reconcile.unit ? ` ${labels.reconcile.unit}` : ''} ·{' '}
-            <span className="k-sx-recon-diff" data-slot="series-reconcile-diff">
-              {labels.reconcile.diff} <b>{reconcile.format(recon.diff)}</b>
-              {labels.reconcile.unit ? ` ${labels.reconcile.unit}` : ''}
+            <span className="k-sx-kv">
+              <small>{labels.reconcile.open}</small>
+              <b>{reconcile.format(recon.open)}</b>
+              {labels.reconcile.unit ? <i>{labels.reconcile.unit}</i> : null}
+            </span>
+            <em aria-hidden="true">→</em>
+            <span className="k-sx-kv">
+              <small>{labels.reconcile.close}</small>
+              <b>{reconcile.format(recon.close)}</b>
+              {labels.reconcile.unit ? <i>{labels.reconcile.unit}</i> : null}
+            </span>
+            <span className="k-sx-kv k-sx-recon-diff" data-slot="series-reconcile-diff">
+              <small>{labels.reconcile.diff}</small>
+              <b>{reconcile.format(recon.diff)}</b>
+              {labels.reconcile.unit ? <i>{labels.reconcile.unit}</i> : null}
             </span>
           </span>
           <span className="k-sx-recon-state">
@@ -464,6 +484,45 @@ export function SeriesExplorer({
                   )}
                 </svg>
                 <PlotYAxis plot={plot} format={formatValue} />
+                {kpi.limit !== undefined && plot.domain[0] <= 0 && plot.domain[1] >= 0 && (
+                  <span
+                    className="k-sx-dim"
+                    data-slot="series-dimension"
+                    style={{
+                      left: pct(PLOT_W * 0.96),
+                      top: Math.min(plot.yAt(0), plot.yAt(kpi.limit)),
+                      height: Math.abs(plot.yAt(0) - plot.yAt(kpi.limit)),
+                    }}
+                  >
+                    <span className="k-sx-dim-label">{formatValue(kpi.limit)}</span>
+                  </span>
+                )}
+                {def !== null &&
+                  (events ?? []).map((event, n) => {
+                    const i = shown.findIndex((point) => point.at === event.at)
+                    const value = i < 0 ? null : pointValue(shown[i]!, def.key)
+                    if (i < 0 || value === null) return null
+                    const x = plot.xAt(i)
+                    const y = plot.yAt(value)
+                    const up = y > 40
+                    const side = x > PLOT_W * 0.7 ? 'left' : 'right'
+                    return (
+                      <span
+                        key={event.at}
+                        className="k-sx-evt"
+                        data-slot="series-event"
+                        data-side={side}
+                        data-up={up ? 'true' : undefined}
+                        style={{ left: pct(x), top: y }}
+                      >
+                        <i className="k-sx-evt-dot" />
+                        <b className="k-sx-evt-lead" />
+                        <span className="k-sx-evt-text">
+                          <em>{String(n + 1).padStart(2, '0')}</em> {event.label}
+                        </span>
+                      </span>
+                    )
+                  })}
                 {def?.kind === 'line' && markValue !== null && lastValue !== null && (
                   <EndMarker
                     x={plot.xAt(markAt)}

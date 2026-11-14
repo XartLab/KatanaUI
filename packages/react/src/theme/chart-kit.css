@@ -243,3 +243,10 @@ button.k-spark-tile:focus-visible {
   display: var(--chart-fill-hatch, none);
   stroke-width: 1;
 }
+
+/* 瓦片编号：强调色等宽小字（参照图 BILL OF MODULES 的 01 02） */
+.k-spark-tile-index {
+  margin-right: 8px;
+  color: var(--chart-accent, var(--signal-orange));
+  font-style: normal;
+}

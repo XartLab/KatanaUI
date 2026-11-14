@@ -898,10 +898,25 @@ button.k-sm-head:focus-visible {
 .k-sx-head {
   height: 36px;
 }
+/* 标题：英文部分宽体大写小字（--font-wide 是 Michroma，只有拉丁；中文自动落到无衬线，不强行宽体）。 */
 .k-sx-title {
   margin: 0;
   color: var(--ink-100);
-  font: 600 14px/20px var(--font-sans);
+  font: 12px/20px var(--font-wide);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+/* 元信息行与来源行：等宽大写小字，字距 0.16em，ink-300（工业文档的页眉页脚感，只取感觉）。 */
+.k-sx-meta,
+.k-sx-source {
+  margin: 0;
+  color: var(--ink-300);
+  font: var(--text-num-sm) var(--font-mono);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+.k-sx-meta {
+  padding-bottom: 6px;
 }
 .k-sx-span {
   color: var(--ink-300);
@@ -915,42 +930,71 @@ button.k-sm-head:focus-visible {
   gap: 0 16px;
 }
 .k-sx-kpis .k-spark-tile {
-  padding: 8px 0 6px;
+  padding: 4px 0 4px 10px;
   border: 0;
-  border-top: 2px solid transparent;
+  border-left: 2px solid transparent;
   background: transparent;
   font-family: var(--font-sans);
 }
+/* 选中态：左侧 2px 强调色竖条（参照图 MASS / VOLUME 那种）。 */
 .k-sx-kpis .k-spark-tile[data-expanded='true'] {
-  border-top-color: var(--ink-100);
+  border-left-color: var(--chart-accent, var(--signal-orange));
 }
 .k-sx-kpis .k-spark-tile-label {
   color: var(--ink-300);
-  font: var(--text-caption) var(--font-sans);
-  letter-spacing: 0;
+  font: var(--text-num-sm) var(--font-mono);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
 }
 .k-sx-kpis .k-spark-tile-value {
   color: var(--ink-100);
-  font: 600 20px/26px var(--font-sans);
+  font: 600 22px/28px var(--font-sans);
   letter-spacing: 0;
 }
 .k-sx-kpis .k-spark-tile-delta {
   min-height: 0;
   font-family: var(--font-sans);
 }
-/* 对账：普通文字一行，灯与词在右端。 */
+/* 对账：键值式——标签等宽小号 ink-300，值无衬线；底下一条发丝线，灯 + 词在右。 */
 .k-sx-recon {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 4px 16px;
   padding: 6px 0;
+  border-bottom: var(--hairline);
   color: var(--ink-300);
   font: var(--text-data) var(--font-sans);
 }
-.k-sx-recon b {
+.k-sx-recon-line {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 12px;
+}
+.k-sx-kv {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+}
+.k-sx-kv small {
+  color: var(--ink-300);
+  font: var(--text-num-sm) var(--font-mono);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+.k-sx-kv b {
   color: var(--ink-100);
   font-weight: 500;
+}
+.k-sx-kv i {
+  color: var(--ink-300);
+  font: var(--text-num-sm) var(--font-mono);
+  font-style: normal;
+}
+.k-sx-recon em {
+  color: var(--ink-300);
+  font-style: normal;
 }
 .k-sx-recon[data-state='warn'] .k-sx-recon-diff b {
   color: var(--signal-amber);
@@ -1014,6 +1058,11 @@ button.k-sm-head:focus-visible {
 }
 .k-sx-chart {
   position: relative;
+  /* 很淡的细网格：12px 一格、ink-400 的 25%。12px 是目测的版面节奏（参照图的栅格约 12 至 16px），没有出处，待定。 */
+  background-image:
+    linear-gradient(to right, color-mix(in srgb, var(--ink-400) 25%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in srgb, var(--ink-400) 25%, transparent) 1px, transparent 1px);
+  background-size: 12px 12px;
   margin-left: var(--k-plot-gutter, 56px);
   touch-action: pan-y;
   outline-offset: 2px;
@@ -1103,8 +1152,91 @@ button.k-sm-head:focus-visible {
 .k-sx-table td[data-tone='down'] {
   color: var(--pnl-down);
 }
-.k-sx-source {
-  margin: 0;
-  color: var(--ink-300);
+
+/* 尺寸标注：限额线到零线之间一条竖线，两端短横，旁边写数值（参照图的 109.0 M / 73.0 M）。 */
+.k-sx-dim {
+  position: absolute;
+  width: 0;
+  border-left: 1px solid var(--ink-300);
+  pointer-events: none;
+}
+.k-sx-dim::before,
+.k-sx-dim::after {
+  content: '';
+  position: absolute;
+  left: -4px;
+  width: 8px;
+  border-top: 1px solid var(--ink-300);
+}
+.k-sx-dim::before {
+  top: 0;
+}
+.k-sx-dim::after {
+  bottom: 0;
+}
+.k-sx-dim-label {
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  transform: translateY(-50%);
+  color: var(--ink-200);
   font: var(--text-num-sm) var(--font-mono);
+  white-space: nowrap;
+}
+/* 事件点：点 + 斜引线 + 编号 + 短标签。编号强调色等宽小字，标签等宽 ink-200。 */
+.k-sx-evt {
+  position: absolute;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+.k-sx-evt-dot {
+  position: absolute;
+  left: -4px;
+  top: -4px;
+  width: 8px;
+  height: 8px;
+  border: 1px solid var(--ink-100);
+  border-radius: 50%;
+  background: var(--bg-000);
+}
+.k-sx-evt-lead {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 30px;
+  border-top: 1px solid var(--ink-300);
+  transform-origin: 0 0;
+  transform: rotate(-35deg);
+}
+.k-sx-evt[data-up='false'] .k-sx-evt-lead,
+.k-sx-evt:not([data-up]) .k-sx-evt-lead {
+  transform: rotate(35deg);
+}
+.k-sx-evt[data-side='left'] .k-sx-evt-lead {
+  transform-origin: 100% 0;
+  left: -30px;
+  transform: rotate(35deg);
+}
+.k-sx-evt[data-side='left']:not([data-up]) .k-sx-evt-lead {
+  transform: rotate(-35deg);
+}
+.k-sx-evt-text {
+  position: absolute;
+  left: 32px;
+  top: -26px;
+  color: var(--ink-200);
+  font: var(--text-num-sm) var(--font-mono);
+  white-space: nowrap;
+}
+.k-sx-evt:not([data-up]) .k-sx-evt-text {
+  top: 14px;
+}
+.k-sx-evt[data-side='left'] .k-sx-evt-text {
+  left: auto;
+  right: 32px;
+}
+.k-sx-evt-text em {
+  color: var(--chart-accent, var(--signal-orange));
+  font-style: normal;
 }
