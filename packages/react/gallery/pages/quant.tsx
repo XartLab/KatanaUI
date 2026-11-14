@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-import { useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { PanelFrame } from '../../src/blocks'
 import {
   ChangeText,
@@ -377,6 +377,23 @@ export function MarketHeatmapDemo() {
   const [scheme, setScheme] = useState<HeatmapScheme>('classic')
   const [market, setMarket] = useState('stocks')
   const [wide, setWide] = useState(false)
+  const [live, setLive] = useState(false)
+  const [tick, setTick] = useState(0)
+  // 模拟更新：每 1.5 秒让一部分格子的涨跌幅挪一点（演示颜色过渡与翻方向的边框闪烁）；演示数据，不是行情。
+  useEffect(() => {
+    if (!live) return
+    const timer = setInterval(() => setTick((n) => n + 1), 1500)
+    return () => clearInterval(timer)
+  }, [live])
+  const stocks = useMemo(() => {
+    if (tick === 0) return STOCKS
+    const rand = seeded(1000 + tick)
+    return STOCKS.map((item) =>
+      rand() < 0.3
+        ? { ...item, value: { ...item.value, day: Number((item.value.day! + (rand() - 0.5) * 3).toFixed(2)) } }
+        : item,
+    )
+  }, [tick])
   const coins = market === 'coins'
   return (
     <div style={{ display: 'grid', gap: 12, width: '100%', maxWidth: wide ? undefined : 760 }}>
@@ -398,6 +415,15 @@ export function MarketHeatmapDemo() {
           <ToggleGroupItem value="small">小屏</ToggleGroupItem>
           <ToggleGroupItem value="wide">大屏 1920×1080</ToggleGroupItem>
         </ToggleGroup>
+        <ToggleGroup
+          variant="sm"
+          aria-label="更新"
+          value={live ? 'live' : 'still'}
+          onValueChange={(v) => setLive(v === 'live')}
+        >
+          <ToggleGroupItem value="still">静止</ToggleGroupItem>
+          <ToggleGroupItem value="live">模拟更新</ToggleGroupItem>
+        </ToggleGroup>
       </div>
       <p className="gal-note">
         每个行业里市值最大的一只传了自绘的示意图标，演示有图的样子；示意图标，不是任何真实公司的标志。其余是字母圆标。格子按实际像素分档：大格子加大徽标、写公司名，组头写平均涨跌。
@@ -415,7 +441,7 @@ export function MarketHeatmapDemo() {
           >
             <MarketHeatmap
               key={`${market}-${wide}`}
-              items={coins ? COINS : STOCKS}
+              items={coins ? COINS : stocks}
               sizeBy={HEAT_SIZE}
               colorBy={HEAT_COLOR}
               labels={{ ...HEAT_LABELS, group: '行业' }}

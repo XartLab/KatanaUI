@@ -1864,6 +1864,7 @@ for (const theme of THEMES) {
       // 面积跟市值成正比：平铺（所有格子一个密度）后抽两格比；每格四周各让出 1px 缝，量到的宽高各补 2px 才是排布的那一格。
       await map.getByRole('button', { name: '平铺' }).click()
       await expect(map.locator('[data-slot="heatmap-group"]')).toHaveCount(0)
+      await map.evaluate((el) => Promise.all(el.getAnimations({ subtree: true }).map((a) => a.finished)))
       const area = (cell: Locator) => cell.boundingBox().then((b) => (b!.width + 2) * (b!.height + 2))
       const ranked = await cells.evaluateAll((nodes) =>
         nodes
@@ -1941,7 +1942,7 @@ for (const theme of THEMES) {
       await expect(card).toContainText(await big.getAttribute('data-code').then((c) => c!))
       for (const text of ['价格', '涨跌幅', '周表现', '市值', '行业']) await expect(card).toContainText(text)
       await page.mouse.move(0, 0)
-      await expect(card).toBeHidden()
+      await expect(card).not.toHaveAttribute('data-open', 'true')
       // 点图例一档：这一档的格子隐藏，别的不动；再点恢复。
       const stepCells = (step: number) => map.locator(`[data-slot="heatmap-cell"][data-step="${step}"]`)
       let picked = 0
@@ -1985,6 +1986,44 @@ for (const theme of THEMES) {
       await expect(cells).toHaveCount(60)
     })
 
+    test('量化：市场热力图——悬停卡片跟着鼠标、在相邻格子间不消失，悬停组头与图例有预览', async ({ page }) => {
+      await open(page, theme, 'market-heatmap')
+      const map = section(page, 'market-heatmap').locator('[data-slot="market-heatmap"]')
+      const cells = map.locator('[data-slot="heatmap-cell"]:visible')
+      const card = map.locator('[data-slot="heatmap-card"]')
+      const centre = async (code: string) => {
+        const box = (await map.locator(`[data-slot="heatmap-cell"][data-code="${code}"]`).boundingBox())!
+        return { x: box.x + box.width / 2, y: box.y + box.height / 2, box }
+      }
+      const first = (await cells.nth(0).getAttribute('data-code'))!
+      const a = await centre(first)
+      await page.mouse.move(a.x, a.y)
+      await expect(card).toHaveAttribute('data-open', 'true')
+      // 卡片出现在鼠标附近（右侧或翻到左侧，相距不超过一张卡片的宽加边距）。
+      await expect
+        .poll(async () => {
+          const c = (await card.boundingBox())!
+          return Math.min(Math.abs(c.x - a.x), Math.abs(c.x + c.width - a.x)) < 40 && Math.abs(c.y - a.y) < 400
+        })
+        .toBe(true)
+      // 在格子之间一路移到相邻格子：途中卡片一直开着，只换内容。
+      const nextCode = (await cells.nth(1).getAttribute('data-code'))!
+      const b = await centre(nextCode)
+      await page.mouse.move(b.x, b.y, { steps: 12 })
+      await expect(card).toHaveAttribute('data-open', 'true')
+      await expect(card).toContainText(nextCode)
+      // 悬停组头：整组描边出现，别的格子变暗；离开恢复。
+      await map.locator('[data-slot="heatmap-group"]').first().hover()
+      await expect(map.locator('[data-slot="heatmap-group-ring"]')).toHaveCount(1)
+      expect(await map.locator('[data-slot="heatmap-cell"][data-dim="group"]').count()).toBeGreaterThan(0)
+      await page.mouse.move(0, 0)
+      await expect(map.locator('[data-slot="heatmap-group-ring"]')).toHaveCount(0)
+      // 悬停图例一档：只有这一档的格子不变暗；没点就没隐藏。
+      await map.locator('[data-slot="heatmap-segment"]').nth(1).hover()
+      await expect(map.locator('[data-slot="heatmap-cell"][data-dim="legend"]').first()).toBeAttached()
+      expect(await map.locator('[data-slot="heatmap-cell"][data-hidden]').count()).toBe(0)
+    })
+
     test('量化：市场热力图——切大小与颜色、平铺、单色、不分组的加密，键盘在组间与组内走', async ({ page }) => {
       await open(page, theme, 'market-heatmap')
       const demo = section(page, 'market-heatmap')
@@ -2001,6 +2040,8 @@ for (const theme of THEMES) {
       await map.getByRole('button', { name: '平铺' }).click()
       await map.getByRole('button', { name: '等大' }).click()
       await expect(map.locator('[data-slot="heatmap-group"]')).toHaveCount(0)
+      // 位置与大小是过渡过去的：等动画走完再量。
+      await map.evaluate((el) => Promise.all(el.getAnimations({ subtree: true }).map((a) => a.finished)))
       const areas = await cells.evaluateAll((nodes) =>
         nodes.map((n) => {
           const r = n.getBoundingClientRect()
