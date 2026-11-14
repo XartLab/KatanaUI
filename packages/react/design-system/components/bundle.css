@@ -6131,8 +6131,8 @@ button.k-quote-card.is-link:focus-visible {
   height: var(--chart-end-size, 8px);
   margin: calc(var(--chart-end-size, 8px) / -2) 0 0 calc(var(--chart-end-size, 8px) / -2);
   border-radius: var(--chart-end-radius, 50%);
-  background: var(--chart-accent, var(--signal-orange));
-  box-shadow: var(--chart-end-glow, var(--glow-orange));
+  background: var(--chart-end, var(--ink-100));
+  box-shadow: var(--chart-end-glow, none);
 }
 
 .k-ck-end-value {
@@ -6255,7 +6255,7 @@ button.k-spark-tile:focus-visible {
 
 .k-spark-tile-line {
   fill: none;
-  stroke: var(--series-1);
+  stroke: var(--ink-100);
   stroke-width: 1.5px;
   stroke-linejoin: round;
   filter: var(--chart-line-glow, none);
@@ -6361,7 +6361,7 @@ button.k-spark-tile:focus-visible {
 
 .k-brush-line, .k-brush-strip-line {
   fill: none;
-  stroke: var(--series-1);
+  stroke: var(--ink-100);
   stroke-width: 2px;
   stroke-linejoin: round;
   vector-effect: non-scaling-stroke;
@@ -6394,7 +6394,7 @@ button.k-spark-tile:focus-visible {
 }
 
 .k-plot-dot {
-  background: var(--series-1);
+  background: var(--ink-100);
   width: 8px;
   height: 8px;
   box-shadow: 0 0 0 2px var(--bg-100);
@@ -6656,7 +6656,7 @@ button.k-spark-tile:focus-visible {
 }
 
 .k-attr-bar[data-focus="true"] {
-  --k-dot: var(--chart-accent, var(--signal-orange));
+  --k-dot: var(--ink-100);
 }
 
 .k-attr-row[data-closed="true"] .k-attr-bar {
@@ -6782,7 +6782,7 @@ button.k-spark-tile:focus-visible {
 }
 
 .k-meter {
-  --k-tone: var(--chart-accent, var(--signal-orange));
+  --k-tone: var(--ink-100);
   min-width: 0;
   font: var(--text-caption) var(--font-sans);
   font-variant-numeric: tabular-nums;
@@ -6926,7 +6926,7 @@ button.k-spark-tile:focus-visible {
   left: calc(6px + var(--k-pin, 0) * (100% - 12px));
   background: var(--k-tone);
   width: 2px;
-  box-shadow: var(--chart-end-glow, var(--glow-orange));
+  box-shadow: var(--chart-end-glow, none);
   margin-left: -1px;
   position: absolute;
 }
@@ -7453,7 +7453,7 @@ button.k-sm-head:focus-visible {
 
 .k-sm-line {
   fill: none;
-  stroke: var(--series-1);
+  stroke: var(--ink-100);
   stroke-width: 1.5px;
   stroke-linejoin: round;
   filter: var(--chart-line-glow, none);
@@ -7882,7 +7882,7 @@ button.k-sm-head:focus-visible {
   -webkit-font-smoothing: none;
 }
 
-.k-heat-head, .k-heat-wk {
+.k-heat-head {
   font: var(--text-tag-md) var(--font-dot);
   -webkit-font-smoothing: none;
 }
@@ -7922,7 +7922,7 @@ button.k-sm-head:focus-visible {
 }
 
 .k-eq-key-line, .k-eq-key-bench {
-  border-top: 2px solid var(--series-1);
+  border-top: 2px solid var(--ink-100);
   width: 12px;
   height: 0;
   display: inline-block;
@@ -7933,7 +7933,7 @@ button.k-sm-head:focus-visible {
 }
 
 .k-eq-key-dd {
-  background-image: var(--chart-fill-image, radial-gradient(circle, var(--seq-300) 0 1.2px, transparent 1.6px));
+  background-image: var(--chart-fill-image, radial-gradient(circle, var(--pnl-down-area) 0 1.2px, transparent 1.6px));
   background-size: 3px 3px;
   width: 12px;
   height: 6px;
@@ -7972,7 +7972,7 @@ button.k-sm-head:focus-visible {
 
 .k-eq-line {
   fill: none;
-  stroke: var(--series-1);
+  stroke: var(--ink-100);
   stroke-width: 2px;
   stroke-linejoin: round;
   vector-effect: non-scaling-stroke;
@@ -8444,8 +8444,7 @@ button.k-sm-head:focus-visible {
 }
 
 .k-scatter-dot[data-kind="end"] {
-  fill: var(--chart-accent, var(--signal-orange));
-  filter: drop-shadow(0 0 4px var(--chart-accent, var(--signal-orange)));
+  fill: var(--ink-100);
 }
 
 .k-scatter-dot[data-kind="start"] {
@@ -9316,6 +9315,7 @@ button.k-sm-head:focus-visible {
   --cb-accent: initial;
   --chart-accent: initial;
   --chart-accent-dim: initial;
+  --chart-end: initial;
   --chart-end-glow: initial;
   --chart-end-radius: initial;
   --chart-end-size: initial;
