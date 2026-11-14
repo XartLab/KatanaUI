@@ -4,9 +4,10 @@
 // 结构参照 uiarc 的 Metric explorer（uiarc.dev，2026-11-15 读，只取结构：标题加大数、变化行、走势线加分段、来源行），实现原创。
 // 走势线复用 katana/sparkline 的 Sparkline，分段控件复用 ToggleGroup，变化复用 ChangeText；组件只画不算，数据与文字都由调用方传，没有数据就是空态。
 // 颜色：涨跌色只给变化与走势线；阶段带是从跌色到涨色的渐变加中间灰（类别靠文字，不只靠颜色），不用橙色画数据，不用蓝。
-import { useState, type ReactNode } from 'react'
+import { createContext, useContext, useState, type ReactNode } from 'react'
 import { cn } from '../lib/cn.ts'
-import { Sparkline } from '../katana/sparkline.tsx'
+import { Sparkline, sparkTone } from '../katana/sparkline.tsx'
+import type { QuoteTone } from '../katana/quote-tone.ts'
 import { ToggleGroup, ToggleGroupItem } from '../primitives/toggle-group.tsx'
 import { ChangeText } from './change-text.tsx'
 
@@ -26,6 +27,18 @@ export type MetricRange = {
   values: readonly number[]
 }
 
+/** 走势线着色：direction 头尾涨跌（涨绿跌红）；neutral 中性灰白线（恐惧贪婪这类没有好坏方向的）；inverse 涨是坏（如 VIX），涨取跌色、跌取涨色。 */
+export type MetricTrendTone = 'direction' | 'neutral' | 'inverse'
+
+const FLIP: Record<QuoteTone, QuoteTone> = { up: 'down', down: 'up', flat: 'flat' }
+
+/** 走势线的三态色：按 trendTone 与这一段的头尾。纯函数。 */
+export function metricTrendTone(trend: MetricTrendTone, values: readonly number[]): QuoteTone {
+  if (trend === 'neutral') return 'flat'
+  const t = sparkTone(values)
+  return trend === 'inverse' ? FLIP[t] : t
+}
+
 export type MetricStage = {
   label: string
   /** 这一档的下界与上界（跟 current 同一个单位）；最后一档的上界算在内。 */
@@ -39,6 +52,9 @@ export function metricStageIndex(stages: readonly MetricStage[], value: number |
   const last = stages.length - 1
   return stages.findIndex((s, i) => value >= s.from && (value < s.to || (i === last && value <= s.to)))
 }
+
+type SharedRange = { range: string }
+const SharedRangeContext = createContext<SharedRange | null>(null)
 
 export type MetricCardProps = {
   title: string
@@ -54,6 +70,8 @@ export type MetricCardProps = {
   range?: string
   defaultRange?: string
   onRangeChange?: (key: string) => void
+  /** 走势线怎么着色，默认 direction。 */
+  trendTone?: MetricTrendTone
   /** 分段控件与走势线的读屏名（整句）。 */
   rangeLabel: string
   sparkLabel: string
@@ -112,6 +130,7 @@ export function MetricCard({
   range,
   defaultRange,
   onRangeChange,
+  trendTone = 'direction',
   rangeLabel,
   sparkLabel,
   stages,
@@ -121,13 +140,15 @@ export function MetricCard({
   className,
 }: MetricCardProps) {
   const [inner, setInner] = useState(defaultRange ?? ranges?.[0]?.key)
-  const key = range ?? inner
+  // 卡片墙给了共用区间：跟着它走，也不再自己画分段控件。
+  const shared = useContext(SharedRangeContext)
+  const key = shared?.range ?? range ?? inner
   const shown = ranges?.find((r) => r.key === key) ?? ranges?.[0]
   return (
     <article className={cn('k-metric', className)} data-slot="metric-card" aria-label={title}>
       <header className="k-metric-head">
         <h3 className="k-metric-title">{title}</h3>
-        {ranges && ranges.length > 1 ? (
+        {!shared && ranges && ranges.length > 1 ? (
           <ToggleGroup
             variant="sm"
             aria-label={rangeLabel}
@@ -162,7 +183,7 @@ export function MetricCard({
       ) : null}
       {shown ? (
         <div className="k-metric-spark" data-slot="metric-spark">
-          <Sparkline values={shown.values} label={sparkLabel} />
+          <Sparkline values={shown.values} label={sparkLabel} tone={metricTrendTone(trendTone, shown.values)} />
         </div>
       ) : null}
       {stages && stages.length > 0 ? <StageBand stages={stages} current={current} /> : null}
@@ -182,11 +203,30 @@ export type MetricCardGridProps = {
   minWidth?: number
   /** 整墙的读屏名。 */
   label: string
+  /** 共用的区间分段（放在墙顶上一次）：传了它，卡片不再各画各的分段控件，所有卡按它的 key 取自己 ranges 里同 key 的一段。 */
+  ranges?: readonly { key: string; label: string }[]
+  range?: string
+  defaultRange?: string
+  onRangeChange?: (key: string) => void
+  /** 共用分段控件的读屏名。 */
+  rangeLabel?: string
   className?: string
 }
 
-export function MetricCardGrid({ children, minWidth = 260, label, className }: MetricCardGridProps) {
-  return (
+export function MetricCardGrid({
+  children,
+  minWidth = 260,
+  label,
+  ranges,
+  range,
+  defaultRange,
+  onRangeChange,
+  rangeLabel,
+  className,
+}: MetricCardGridProps) {
+  const [inner, setInner] = useState(defaultRange ?? ranges?.[0]?.key)
+  const key = range ?? inner
+  const wall = (
     <div
       className={cn('k-metric-grid', className)}
       data-slot="metric-card-grid"
@@ -196,5 +236,31 @@ export function MetricCardGrid({ children, minWidth = 260, label, className }: M
     >
       {children}
     </div>
+  )
+  if (!ranges || ranges.length === 0 || key === undefined) return wall
+  return (
+    <SharedRangeContext.Provider value={{ range: key }}>
+      <div className="k-metric-wall" data-slot="metric-wall">
+        <div className="k-metric-wall-bar" data-slot="metric-wall-range">
+          <ToggleGroup
+            variant="sm"
+            aria-label={rangeLabel}
+            value={key}
+            onValueChange={(next) => {
+              if (!next) return
+              setInner(next)
+              onRangeChange?.(next)
+            }}
+          >
+            {ranges.map((r) => (
+              <ToggleGroupItem key={r.key} value={r.key}>
+                {r.label}
+              </ToggleGroupItem>
+            ))}
+          </ToggleGroup>
+        </div>
+        {wall}
+      </div>
+    </SharedRangeContext.Provider>
   )
 }

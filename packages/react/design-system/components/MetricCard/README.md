@@ -12,6 +12,7 @@
 | `changes` | `MetricChange[]` | — | { key, label, value（百分数，null 写 —） }，想放几个放几个，涨跌色带箭头。 |
 | `ranges` | `MetricRange[]` | — | { key, label, values }：每段的走势（从旧到新）；多于一段时出分段控件。 |
 | `range / defaultRange / onRangeChange` | `string / string / (key) => void` | — | 当前段；不给就内部管。 |
+| `trendTone` | `'direction' \| 'neutral' \| 'inverse'` | — | 走势线着色：direction 头尾涨跌（默认）；neutral 中性灰白（恐惧贪婪、情绪分这类没有好坏方向的）；inverse 涨是坏（如 VIX），涨取跌色。 |
 | `rangeLabel / sparkLabel` | `string` | — | 分段控件与走势线的读屏名（整句）。 |
 | `stages / current` | `MetricStage[] / number` | — | 阶段带：{ label, from, to } 从低到高，current 是当前值；所在档全亮、其余 35%，带上一根竖线标当前，下面写档名。 |
 | `source / updatedAt` | `ReactNode` | — | 来源与更新时间，底部一行。 |
@@ -21,6 +22,7 @@
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
 | `label` | `string` | — | 整墙的读屏名。 |
+| `ranges / range / defaultRange / onRangeChange / rangeLabel` | `{ key, label }[] / string / string / (key) => void / string` | — | 共用区间分段，放在墙顶一次；传了它卡片不再各画分段控件，都按这个 key 取自己 ranges 里同 key 的一段。 |
 | `minWidth` | `number` | — | 每张卡最小宽（px），默认 260；一行几张由容器宽决定。 |
 
 ## States

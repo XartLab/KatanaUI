@@ -2589,20 +2589,42 @@ for (const theme of THEMES) {
       const names = ['极度恐惧', '恐惧', '中性', '贪婪', '极度贪婪']
       const idx = n < 25 ? 0 : n < 45 ? 1 : n < 55 ? 2 : n < 75 ? 3 : 4
       await expect(fear.locator('[data-slot="metric-stage"]')).toHaveText(names[idx]!)
-      const opacities = await fear.locator('.k-metric-seg').evaluateAll((els) => els.map((e) => getComputedStyle(e).opacity))
-      expect(opacities.map(Number).map((o, i) => (o > 0.9 ? i : -1)).filter((i) => i >= 0)).toEqual([idx])
-      // 分段：1 月与 1 年的走势线点数不同，点按钮后 aria-pressed 跟着变。
-      const points = () => fear.locator('.k-spark polyline').getAttribute('points')
-      const year = (await points())!.split(' ').length
-      expect(year).toBe(21)
-      await fear.getByRole('button', { name: '1 年' }).click()
-      await expect(fear.getByRole('button', { name: '1 年' })).toHaveAttribute('aria-pressed', 'true')
-      await expect.poll(async () => (await points())!.split(' ').length).toBe(250)
-      // 走势线颜色是涨或跌色（头尾比），不是橙色。
-      const stroke = await fear.locator('.k-spark polyline').evaluate((e) => getComputedStyle(e).stroke)
+      const opacities = await fear
+        .locator('.k-metric-seg')
+        .evaluateAll((els) => els.map((e) => getComputedStyle(e).opacity))
+      expect(
+        opacities
+          .map(Number)
+          .map((o, i) => (o > 0.9 ? i : -1))
+          .filter((i) => i >= 0),
+      ).toEqual([idx])
+      // 共用分段：卡上不再有自己的分段控件；点墙顶的「1 年」，这面墙每张卡的走势线都变成 250 点，另一面墙不动。
+      await expect(fear.getByRole('button', { name: '1 年' })).toHaveCount(0)
+      const points = (card: Locator) => card.locator('.k-spark polyline').getAttribute('points')
+      expect((await points(fear))!.split(' ')).toHaveLength(21)
+      await global.getByRole('button', { name: '1 年' }).click()
+      await expect(global.getByRole('button', { name: '1 年' })).toHaveAttribute('aria-pressed', 'true')
+      for (const card of await global.locator('[data-slot="metric-card"]').all())
+        await expect.poll(async () => (await points(card))!.split(' ').length).toBe(250)
+      expect(
+        (await points(area.getByTestId('metric-ashare').locator('[data-slot="metric-card"]').first()))!.split(' '),
+      ).toHaveLength(21)
+      // 走势线色：neutral（恐惧贪婪）不是涨跌色；inverse（VIX）与头尾涨跌相反；单位是小号灰色无衬线。
+      const strokeOf = (card: Locator) => card.locator('.k-spark polyline').evaluate((e) => getComputedStyle(e).stroke)
       const up = await rgba(page, await token(page, '--pnl-up'))
       const down = await rgba(page, await token(page, '--pnl-down'))
-      expect([JSON.stringify(up), JSON.stringify(down)]).toContain(JSON.stringify(await rgba(page, stroke)))
+      const neutral = await rgba(page, await strokeOf(fear))
+      expect(neutral).not.toEqual(up)
+      expect(neutral).not.toEqual(down)
+      const vix = global.locator('[data-slot="metric-card"]').nth(1)
+      const vixPts = (await points(vix))!.split(' ').map((p) => Number(p.split(',')[1]))
+      // y 向下为大：末点 y 比首点小就是涨；inverse 下涨取跌色。
+      const rose = vixPts[vixPts.length - 1]! < vixPts[0]!
+      expect(await rgba(page, await strokeOf(vix))).toEqual(rose ? down : up)
+      const unit = area.getByTestId('metric-ashare').locator('[data-slot="metric-value"] small').first()
+      await expect(unit).toHaveText('只')
+      expect(await unit.evaluate((n) => getComputedStyle(n).fontSize)).toBe('12px')
+      expect(await unit.evaluate((n) => getComputedStyle(n).fontFamily)).not.toMatch(/dot/i)
       // 空态：数值、变化与走势线都写「—」，没有样本线。
       const empty = area.getByTestId('metric-empty').locator('[data-slot="metric-card"]')
       await expect(empty.locator('[data-slot="metric-value"]')).toHaveText('—')

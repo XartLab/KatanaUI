@@ -1034,13 +1034,33 @@ const CYCLE_STAGES: MetricStage[] = [
 ]
 
 const GLOBAL_DEMO = [
-  { title: '恐惧与贪婪指数', seed: 11, start: 48, step: 4, lo: 5, hi: 95, digits: 0, stages: FEAR_GREED_STAGES },
-  { title: 'VIX 波动率', seed: 23, start: 17, step: 1.2, lo: 10, hi: 45, digits: 2 },
+  {
+    title: '恐惧与贪婪指数',
+    trend: 'neutral' as const,
+    seed: 11,
+    start: 48,
+    step: 4,
+    lo: 5,
+    hi: 95,
+    digits: 0,
+    stages: FEAR_GREED_STAGES,
+  },
+  { title: 'VIX 波动率', trend: 'inverse' as const, seed: 23, start: 17, step: 1.2, lo: 10, hi: 45, digits: 2 },
   { title: '金油比', seed: 37, start: 24, step: 0.5, lo: 15, hi: 35, digits: 2 },
   { title: '美元指数', seed: 41, start: 102, step: 0.6, lo: 94, hi: 112, digits: 2 },
 ]
 const ASHARE_DEMO = [
-  { title: '情绪分', seed: 53, start: 52, step: 6, lo: 3, hi: 97, digits: 0, stages: CYCLE_STAGES },
+  {
+    title: '情绪分',
+    trend: 'neutral' as const,
+    seed: 53,
+    start: 52,
+    step: 6,
+    lo: 3,
+    hi: 97,
+    digits: 0,
+    stages: CYCLE_STAGES,
+  },
   { title: '涨停数', seed: 67, start: 60, step: 9, lo: 15, hi: 140, digits: 0, unit: '只' },
   { title: '连板高度', seed: 71, start: 4, step: 0.9, lo: 1, hi: 9, digits: 0, unit: '板' },
   { title: '封板率', seed: 83, start: 72, step: 3, lo: 40, hi: 95, digits: 1, unit: '%' },
@@ -1054,7 +1074,7 @@ function MetricWall({
   demo: readonly (typeof GLOBAL_DEMO)[number][] | typeof ASHARE_DEMO
 }) {
   return (
-    <MetricCardGrid label={name} minWidth={280}>
+    <MetricCardGrid label={name} minWidth={280} ranges={METRIC_RANGES} rangeLabel={`${name}走势区间`}>
       {demo.map((d) => {
         const values = walk(d.seed, d.start, d.step, d.lo, d.hi).map((v) => Number(v.toFixed(d.digits)))
         const last = values[values.length - 1]!
@@ -1065,6 +1085,7 @@ function MetricWall({
             value={last.toFixed(d.digits)}
             unit={'unit' in d ? d.unit : undefined}
             {...metricProps(values)}
+            trendTone={'trend' in d ? d.trend : 'direction'}
             rangeLabel={`${d.title}走势区间`}
             sparkLabel={`${d.title}走势`}
             stages={'stages' in d ? d.stages : undefined}

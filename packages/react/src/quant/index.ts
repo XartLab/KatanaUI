@@ -98,9 +98,11 @@ export {
   MetricCard,
   MetricCardGrid,
   metricStageIndex,
+  metricTrendTone,
   type MetricCardGridProps,
   type MetricCardProps,
   type MetricChange,
   type MetricRange,
   type MetricStage,
+  type MetricTrendTone,
 } from './metric-card.tsx'

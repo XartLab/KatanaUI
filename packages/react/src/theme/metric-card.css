@@ -6,6 +6,15 @@
   gap: var(--space-3);
   min-width: 0;
 }
+.k-metric-wall {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-width: 0;
+}
+.k-metric-wall-bar {
+  display: flex;
+}
 .k-metric {
   display: flex;
   flex-direction: column;
@@ -44,9 +53,9 @@
 .k-metric-value small {
   margin-left: 4px;
   color: var(--ink-300);
-  font-size: var(--text-data);
-  font-weight: 400;
+  font: 400 12px/1 var(--font-sans);
   letter-spacing: 0;
+  vertical-align: baseline;
 }
 .k-metric-value.is-empty {
   color: var(--ink-300);

@@ -2313,6 +2313,7 @@
       "registryDependencies": [
         "@katana/change-text",
         "@katana/cn",
+        "@katana/quote-tone",
         "@katana/sparkline",
         "@katana/toggle-group"
       ],

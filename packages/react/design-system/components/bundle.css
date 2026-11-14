@@ -10090,6 +10090,17 @@ button.k-sm-head:focus-visible {
   display: grid;
 }
 
+.k-metric-wall {
+  gap: var(--space-3);
+  flex-direction: column;
+  min-width: 0;
+  display: flex;
+}
+
+.k-metric-wall-bar {
+  display: flex;
+}
+
 .k-metric {
   gap: var(--space-2);
   min-width: 0;
@@ -10131,10 +10142,10 @@ button.k-sm-head:focus-visible {
 
 .k-metric-value small {
   color: var(--ink-300);
-  font-size: var(--text-data);
+  font: 400 12px/1 var(--font-sans);
   letter-spacing: 0;
+  vertical-align: baseline;
   margin-left: 4px;
-  font-weight: 400;
 }
 
 .k-metric-value.is-empty {

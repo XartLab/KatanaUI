@@ -1504,6 +1504,11 @@ export const PAGES: readonly DocPage[] = [
             type: 'string / string / (key) => void',
             desc: '当前段；不给就内部管。',
           },
+          {
+            name: 'trendTone',
+            type: "'direction' | 'neutral' | 'inverse'",
+            desc: '走势线着色：direction 头尾涨跌（默认）；neutral 中性灰白（恐惧贪婪、情绪分这类没有好坏方向的）；inverse 涨是坏（如 VIX），涨取跌色。',
+          },
           { name: 'rangeLabel / sparkLabel', type: 'string', desc: '分段控件与走势线的读屏名（整句）。' },
           {
             name: 'stages / current',
@@ -1517,6 +1522,11 @@ export const PAGES: readonly DocPage[] = [
         part: 'MetricCardGrid',
         rows: [
           { name: 'label', type: 'string', desc: '整墙的读屏名。' },
+          {
+            name: 'ranges / range / defaultRange / onRangeChange / rangeLabel',
+            type: '{ key, label }[] / string / string / (key) => void / string',
+            desc: '共用区间分段，放在墙顶一次；传了它卡片不再各画分段控件，都按这个 key 取自己 ranges 里同 key 的一段。',
+          },
           { name: 'minWidth', type: 'number', desc: '每张卡最小宽（px），默认 260；一行几张由容器宽决定。' },
         ],
       },
