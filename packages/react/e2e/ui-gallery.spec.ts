@@ -1722,7 +1722,7 @@ for (const theme of THEMES) {
       await expect
         .poll(() => line.evaluate((element) => getComputedStyle(element).stroke))
         .toBe(await token(page, '--series-1'))
-      await expect.poll(() => bg(first.locator('.k-spark-tile-end'))).toBe(await token(page, '--signal-orange'))
+      await expect.poll(() => bg(first.locator('.k-spark-tile-end'))).toBe(await token(page, '--series-1'))
       // 越低越好的指标：线用 ink-300。
       await expect
         .poll(() =>

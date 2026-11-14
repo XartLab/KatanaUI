@@ -54,7 +54,6 @@ export type MonitorEvent = {
 }
 
 const LINK_RANK: Record<LinkState, number> = { error: 0, offline: 1, degraded: 2, ok: 3 }
-const STRATEGY_RANK: Record<StrategyStatus, number> = { error: 0, running: 1, paused: 2, stopped: 3 }
 const SEVERITY_RANK: Record<EventSeverity, number> = { error: 2, warn: 1, info: 0 }
 
 /** 异常的排前面（出错、断开、变慢、正常），同级保持传入顺序。 */

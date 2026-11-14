@@ -115,7 +115,7 @@ export function BrushStrip({
     >
       <svg viewBox={`0 0 ${PLOT_W} ${height}`} preserveAspectRatio="none" aria-hidden="true">
         <defs>
-          <DotFill id={dotId} color="var(--seq-300)" />
+          <DotFill id={dotId} color="color-mix(in srgb, var(--ink-100) 45%, transparent)" />
         </defs>
         <path className="k-brush-strip-area" fill={`url(#${dotId})`} d={areaPath(values, plot, plot.domain[0])} />
         <path className="k-brush-strip-line" d={linePath(values, plot)} />

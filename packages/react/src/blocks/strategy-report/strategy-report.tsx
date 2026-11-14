@@ -63,7 +63,7 @@ export type MetricKey =
   | 'buyHold'
 
 type Kind = 'money' | 'percent' | 'count' | 'ratio' | 'duration'
-type Metric = { kind: Kind; get: (stats: ReportStats) => number | null; signed?: boolean }
+type Metric = { kind: Kind; get: (stats: ReportStats) => number | null; signed?: boolean; plain?: boolean }
 
 const METRICS: Record<Exclude<MetricKey, 'buyHold'>, Metric> = {
   netProfit: { kind: 'money', get: (s) => s.netProfit, signed: true },
@@ -73,7 +73,7 @@ const METRICS: Record<Exclude<MetricKey, 'buyHold'>, Metric> = {
   totalReturn: { kind: 'percent', get: (s) => s.totalReturn, signed: true },
   maxDrawdown: { kind: 'money', get: (s) => s.maxDrawdown, signed: true },
   maxDrawdownPct: { kind: 'percent', get: (s) => s.maxDrawdownPct, signed: true },
-  winRate: { kind: 'percent', get: (s) => s.winRate },
+  winRate: { kind: 'percent', get: (s) => s.winRate, plain: true },
   payoffRatio: { kind: 'ratio', get: (s) => s.payoffRatio },
   tradeCount: { kind: 'count', get: (s) => s.count },
   wins: { kind: 'count', get: (s) => s.wins },
@@ -280,6 +280,8 @@ function formatMetric(metric: Metric, value: number | null, format: StrategyRepo
 
 function Value({ metric, value, format }: { metric: Metric; value: number | null; format: StrategyReportFormat }) {
   const text = formatMetric(metric, value, format)
+  // 胜率这类不是盈亏的比例：不带正负号、不着涨跌色（percent 的写法由调用方定，带符号的写法在这里去掉）。
+  if (metric.plain) return <span>{text.replace(/^[+-]/, '')}</span>
   return metric.signed && value !== null ? <ToneText tone={toneOf(value)}>{text}</ToneText> : <span>{text}</span>
 }
 
