@@ -260,14 +260,14 @@
   --ink-400: #6e6e6e;
   --signal-orange: #d97757;
   --signal-orange-dim: #533429;
-  --signal-amber: #ffc23d;
-  --signal-green: #3fd6a0;
-  --signal-red: #ff4d70;
+  --signal-amber: #d6a548;
+  --signal-green: #5fae8c;
+  --signal-red: #f2607c;
   --signal-blue: #5aa9ff;
-  --div-neg-200: #b8465a;
-  --div-neg-100: #572a35;
-  --div-pos-100: #1f4639;
-  --div-pos-200: #2e8b68;
+  --div-neg-200: #a5464c;
+  --div-neg-100: #4d2629;
+  --div-pos-100: #1f3a30;
+  --div-pos-200: #3f7f66;
   --va: #1a1a1a;
   --chart-grid: #181818;
   --glass-bg: rgba(32,32,32,0.72);
@@ -311,10 +311,10 @@
   --pnl-down: var(--signal-green);
   --pnl-up-area: #cf4e5c;
   --pnl-down-area: #69aa77;
-  --div-neg-100: #1f4639;
-  --div-pos-100: #572a35;
-  --div-neg-200: #2e8b68;
-  --div-pos-200: #b8465a;
+  --div-neg-100: #1f3a30;
+  --div-pos-100: #4d2629;
+  --div-neg-200: #3f7f66;
+  --div-pos-200: #a5464c;
 }
 /*! tailwindcss v4.3.5 | MIT License | https://tailwindcss.com */
 @layer properties {
