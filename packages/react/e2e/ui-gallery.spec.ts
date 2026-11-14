@@ -13,7 +13,7 @@ test.use({ viewport: { width: 1100, height: 1500 } })
 
 const THEMES = ['console', 'graphite'] as const
 
-// 文档站（#1860）：一页一个组件，地址 #/<件名>，预览容器带 data-gallery=<件名>。?theme= 指定主题（不带是 Console）。
+// 文档站（#1860）：一页一个组件，地址 #/<件名>，预览容器带 data-gallery=<件名>。?theme= 指定主题（不带是 Graphite）。
 const open = async (page: Page, theme: (typeof THEMES)[number], id = 'button') => {
   await page.goto(`/?theme=${theme}#/${id}`)
   await page.locator(`[data-gallery="${id}"]`).waitFor()
@@ -3685,15 +3685,26 @@ test('密度演示里的主按钮：Graphite 的底是 Graphite 的 --ink-100，
   expect(colors[0]).not.toBe(colors[1])
 })
 
-test('不带 ?theme= 是 Console；页头切到 Graphite，主按钮底色跟着变，地址带上 theme=graphite', async ({ page }) => {
+test('不带 ?theme= 是 Graphite；页头切到 Console，主按钮底色跟着变，地址带上 theme=console', async ({ page }) => {
   await page.goto('/#/button')
-  await expect(page.locator('html')).toHaveAttribute('data-theme', 'console')
-  const primary = section(page, 'button').getByRole('button', { name: 'primary', exact: true })
-  const console = await bg(primary)
-  await page.getByRole('group', { name: '主题' }).getByRole('button', { name: 'Graphite' }).click()
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'graphite')
-  await expect.poll(() => bg(primary)).not.toBe(console)
-  await expect(page).toHaveURL(/theme=graphite/)
+  const primary = section(page, 'button').getByRole('button', { name: 'primary', exact: true })
+  const graphite = await bg(primary)
+  await page.getByRole('group', { name: '主题' }).getByRole('button', { name: 'Console' }).click()
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'console')
+  await expect.poll(() => bg(primary)).not.toBe(graphite)
+  await expect(page).toHaveURL(/theme=console/)
+})
+
+test('文档站默认就是 Graphite：不带 ?theme= 时页面底色与目录栏底色是 Graphite 的 bg-000 与 bg-100（#1775）', async ({
+  page,
+}) => {
+  await page.goto('/#/button')
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'graphite')
+  // Graphite 的 bg-000 = #000000、bg-100 = #070707；Console 的 bg-100 是 #141311，默认要是 Console 就会红。
+  await expect(page.locator('html')).toHaveCSS('background-color', 'rgb(0, 0, 0)')
+  await expect(page.getByRole('navigation', { name: '组件' })).toHaveCSS('background-color', 'rgb(7, 7, 7)')
+  expect(await token(page, '--bg-100')).toBe('rgb(7, 7, 7)')
 })
 
 test('目录：按类分组；直接打开 #/<件名>；点链接换页、后退回上一页；没有的页写原因', async ({ page }) => {
