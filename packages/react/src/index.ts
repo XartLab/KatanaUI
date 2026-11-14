@@ -148,6 +148,7 @@ export { ARCADE_SPRITES, ArcadePixel, type ArcadePixelAnimate, type ArcadePixelP
 export { Lcd, type LcdTone } from './katana/lcd.tsx'
 export { Led, LINK_GROUPS, type LedState, type LinkGroup } from './katana/led.tsx'
 export { Kbd } from './katana/kbd.tsx'
+export { ShortcutRecorder, type ShortcutRecorderLabels, type ShortcutRecorderProps } from './katana/shortcut-recorder.tsx'
 export { BadgeGroup, type BadgeItem } from './katana/badge.tsx'
 export { RollingText, rollSlots, rollStrip } from './katana/rolling-text.tsx'
 export { NumberInput } from './katana/number-input.tsx'

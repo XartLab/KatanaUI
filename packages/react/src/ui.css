@@ -12,6 +12,7 @@
 @import './theme/lcd.css';
 @import './theme/kbd.css';
 @import './theme/hold-to-confirm.css';
+@import './theme/shortcut-recorder.css';
 @import './theme/arcade-pixel.css';
 @import './theme/badge.css';
 @import './theme/rolling-text.css';

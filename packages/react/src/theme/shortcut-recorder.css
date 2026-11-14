@@ -1,0 +1,78 @@
+/* SPDX-License-Identifier: MIT */
+/* ShortcutRecorder：字段照数字框的皮肤（30 高 · 圆角 control · 3% 白底 12% 白边），里面是 Kbd 方块；
+   录键态边框用强调色，冲突态用红；清除钮在框外右侧，提示字在框下。 */
+.k-rec {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.k-rec-field {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 140px;
+  height: 30px;
+  padding: 0 10px;
+  background: var(--alpha-white-2);
+  border: 1px solid var(--alpha-white-10);
+  border-radius: var(--radius-control);
+  color: var(--ink-100);
+  cursor: pointer;
+  transition:
+    border-color 0.12s,
+    background-color 0.12s;
+}
+.k-rec-field:hover:not(:disabled) {
+  background: var(--alpha-white-4);
+}
+.k-rec-field:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+.k-rec-field:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.k-rec[data-state='recording'] .k-rec-field {
+  border-color: var(--signal-orange);
+  background: var(--alpha-white-4);
+}
+.k-rec[data-state='conflict'] .k-rec-field {
+  border-color: var(--signal-red);
+}
+.k-rec-hint {
+  color: var(--ink-300);
+  font: var(--text-caption) var(--font-sans);
+}
+.k-rec-clear {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
+  color: var(--ink-300);
+  cursor: pointer;
+}
+.k-rec-clear:hover {
+  background: var(--alpha-white-5);
+  color: var(--ink-100);
+}
+.k-rec-clear:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 1px;
+}
+.k-rec-msg {
+  flex-basis: 100%;
+  min-height: 0;
+  color: var(--signal-red);
+  font: var(--text-caption) var(--font-sans);
+}
+.k-rec-msg:empty {
+  display: none;
+}

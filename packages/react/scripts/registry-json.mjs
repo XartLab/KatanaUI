@@ -38,6 +38,7 @@ const INTERNAL = {
   'date-time-model': 'DateTimeInput 的解析与格式化（纯函数）。',
   'number-field-model': 'NumberInput 的解析与取整（纯函数）。',
   'number-expression': 'NumberInput 的算式输入：+10%、*2、100*1.5 按当前值算（纯函数，不用 eval）。',
+  'shortcut-model': 'ShortcutRecorder 的规则：一次按键变成规范组合串（修饰键次序、物理键）。',
   'hold-model': 'HoldToConfirm 的进度规则：按住填满、松手退回的时长与每帧推进（纯函数）。',
   'loading-gate': 'Loading 的计时与行数量取（纯函数）。',
   'opener-focus': '对话框与抽屉共用：关闭后把焦点还给打开前拿着它的元素。',

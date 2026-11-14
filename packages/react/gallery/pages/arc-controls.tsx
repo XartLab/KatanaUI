@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 import { useState } from 'react'
-import { HoldToConfirm } from '../../src/index'
+import { HoldToConfirm, ShortcutRecorder, type ShortcutRecorderLabels } from '../../src/index'
 import { Row } from './parts'
 
 // #1919 的操作与结构件的演示。数据都是演示用的（页上写明），不是行情。
@@ -33,6 +33,52 @@ export function HoldToConfirmDemo() {
         </HoldToConfirm>
       </Row>
       <p className="gal-note">演示：按钮不连任何账户，只计数。单击不会触发；按住不放，或键盘按住空格 / 回车。</p>
+    </>
+  )
+}
+
+const RECORDER_LABELS: ShortcutRecorderLabels = {
+  empty: '未设置',
+  recording: '按下新的快捷键',
+  clear: '清除快捷键',
+  conflict: (action) => `已被「${action}」使用`,
+  needModifier: '要带 Ctrl、Alt、Shift 或 Meta',
+}
+
+// 演示用的占用表：另外两个动作的快捷键。
+const TAKEN = { 'Ctrl+Shift+K': '全部撤单', 'Alt+B': '市价买入' }
+
+export function ShortcutRecorderDemo() {
+  const [flatten, setFlatten] = useState<string | null>('Ctrl+Shift+F')
+  const [bare, setBare] = useState<string | null>(null)
+  return (
+    <>
+      <Row name="平仓 · 有冲突表">
+        <ShortcutRecorder
+          label="全部平仓快捷键"
+          value={flatten}
+          onValue={setFlatten}
+          labels={RECORDER_LABELS}
+          conflicts={TAKEN}
+        />
+        <output data-gallery-recorder>{flatten ?? '未设置'}</output>
+      </Row>
+      <Row name="要求修饰键">
+        <ShortcutRecorder
+          label="切换品种快捷键"
+          value={bare}
+          onValue={setBare}
+          labels={RECORDER_LABELS}
+          requireModifier
+        />
+        <output data-gallery-recorder-mod>{bare ?? '未设置'}</output>
+      </Row>
+      <Row name="禁用">
+        <ShortcutRecorder label="只读快捷键" value="F5" onValue={() => {}} labels={RECORDER_LABELS} disabled />
+      </Row>
+      <p className="gal-note">
+        演示：占用表里是「全部撤单 = Ctrl+Shift+K」「市价买入 = Alt+B」，录到它们会提示冲突、不写入。
+      </p>
     </>
   )
 }
