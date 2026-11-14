@@ -1,0 +1,117 @@
+/* SPDX-License-Identifier: MIT */
+/* JsonViewer：等宽字（--font-mono）、行 22 高（比 TreeView 紧：一屏要看很多行）；缩进每层 14px；
+   叶子按类型上色：字符串琥珀、数字蓝、布尔与 null 橙、键名次要文字色；命中是强调色底的 mark。查找框照数字框皮肤（26 高）。 */
+.k-json {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+.k-json-search {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 26px;
+  padding: 0 8px;
+  background: var(--alpha-white-3);
+  border: 1px solid var(--alpha-white-7);
+  border-radius: var(--radius-control);
+  color: var(--ink-300);
+}
+.k-json-search:focus-within {
+  border-color: var(--alpha-white-12);
+}
+.k-json-input {
+  flex: 1;
+  min-width: 0;
+  background: transparent;
+  border: 0;
+  outline: 0;
+  color: var(--ink-100);
+  font: var(--text-data) var(--font-sans);
+}
+.k-json-input::placeholder {
+  color: var(--ink-300);
+}
+.k-json-count {
+  color: var(--ink-300);
+  font: var(--text-caption) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.k-json-tree {
+  display: flex;
+  flex-direction: column;
+  outline: 0;
+  font: var(--text-data) var(--font-mono);
+  color: var(--ink-200);
+}
+.k-json-item {
+  display: block;
+  outline: 0;
+}
+.k-json-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 22px;
+  padding: 0 6px 0 calc(2px + var(--k-json-level, 0) * 14px);
+  border-radius: 4px;
+  white-space: nowrap;
+}
+.k-json-item[data-hovered] .k-json-row {
+  background: var(--alpha-white-4);
+}
+.k-json-item[data-focus-visible] .k-json-row {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: -2px;
+}
+.k-json-chevron {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  color: var(--ink-300);
+  cursor: pointer;
+}
+.k-json-chevron svg {
+  transition: rotate 0.15s ease-out;
+}
+.k-json-row[data-expanded] .k-json-chevron svg {
+  rotate: 90deg;
+}
+.k-json-key {
+  color: var(--ink-100);
+}
+.k-json-colon,
+.k-json-summary,
+.k-json-more {
+  color: var(--ink-300);
+}
+.k-json-more {
+  font-style: italic;
+}
+.k-json-row[data-kind='string'] .k-json-value {
+  color: var(--signal-amber);
+}
+.k-json-row[data-kind='number'] .k-json-value {
+  color: var(--signal-blue);
+}
+.k-json-row[data-kind='boolean'] .k-json-value,
+.k-json-row[data-kind='null'] .k-json-value {
+  color: var(--signal-orange);
+}
+.k-json-value {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.k-json-hit {
+  background: color-mix(in srgb, var(--signal-orange) 40%, transparent);
+  border-radius: 2px;
+  color: inherit;
+}

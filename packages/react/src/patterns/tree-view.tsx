@@ -100,6 +100,7 @@ export function TreeView({
       aria-label={label}
       className={cn('k-tree', className)}
       items={items}
+      dependencies={[onAction]}
       selectionMode={selectionMode}
       selectionBehavior={onAction ? 'replace' : 'toggle'}
       selectedKeys={selectedKeys ? new Set(selectedKeys) : undefined}

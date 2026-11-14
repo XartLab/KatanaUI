@@ -4,11 +4,13 @@ import {
   ChipGroup,
   DateRangePicker,
   HoldToConfirm,
+  JsonViewer,
   ShortcutRecorder,
   TreeView,
   type ChipItem,
   type DateRange,
   type DateRangeLabels,
+  type JsonViewerLabels,
   type ShortcutRecorderLabels,
   type TreeNode,
 } from '../../src/index'
@@ -216,6 +218,53 @@ export function TreeViewDemo() {
         <output data-gallery-tree-open>{opened}</output>
       </Row>
       <p className="gal-note">演示：分类与数量是演示用的，不是真实的品种库。→ 展开、← 收起，↑↓ 走，Enter 激活。</p>
+    </>
+  )
+}
+
+const JSON_LABELS: JsonViewerLabels = {
+  search: '在 JSON 里查找',
+  matches: (count) => (count === 0 ? '没有命中' : `${count} 处命中`),
+  more: (count) => `还有 ${count} 项`,
+}
+
+// 演示用的消息：字段是演示用的，不是真实的行情或订单。
+const JSON_SAMPLE = {
+  type: 'order.update',
+  symbol: 'DEMO-PERP',
+  filled: true,
+  price: 101.5,
+  tags: ['demo', 'sample'],
+  orders: [
+    { id: 'a1', side: 'buy', price: 101.5, qty: 2 },
+    { id: 'a2', side: 'sell', price: 99, qty: 1 },
+  ],
+  error: null,
+  history: Array.from({ length: 5 }, (_, i) => i * 10),
+}
+
+export function JsonViewerDemo() {
+  return (
+    <>
+      <Row name="折叠 + 查找">
+        <div className="gal-json" style={{ width: 360 }}>
+          <JsonViewer label="消息" value={JSON_SAMPLE} labels={JSON_LABELS} />
+        </div>
+      </Row>
+      <Row name="展开两层 · 截断">
+        <div className="gal-json" style={{ width: 360 }}>
+          <JsonViewer
+            label="长数组"
+            value={{ rows: Array.from({ length: 12 }, (_, i) => ({ n: i })) }}
+            labels={JSON_LABELS}
+            defaultExpandDepth={2}
+            maxChildren={4}
+          />
+        </div>
+      </Row>
+      <p className="gal-note">
+        演示：消息是演示用的，不是真实的行情或订单。→ 展开、← 收起；查找会展开命中的祖先并高亮。
+      </p>
     </>
   )
 }

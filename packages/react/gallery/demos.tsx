@@ -7,6 +7,7 @@ import { ChangeTextDemo, PnlTextDemo, QuantFormatDemo } from './pages/quant'
 import { DataGridDemo, EmptyStateDemo, EstimateBadgeDemo, ToolbarDemo } from './pages/blocks'
 import { AlertDemo, ProgressDemo, ToastDemo } from './pages/feedback'
 import { ComboboxDemo, CommandDemo } from './pages/pickers'
+import { JsonViewerDemo } from './pages/arc-controls'
 import {
   ChipGroupDemo,
   DateRangePickerDemo,
@@ -113,6 +114,7 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'step-player': StepPlayerDemo,
   'theme-selector': ThemeSelectorDemo,
   'code-block': CodeBlockDemo,
+  'json-viewer': JsonViewerDemo,
   'web-search': WebSearchDemo,
   'task-list': TaskListDemo,
   'duration-picker': DurationPickerDemo,
