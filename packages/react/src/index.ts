@@ -133,6 +133,7 @@ export { MultiSelect } from './patterns/multi-select.tsx'
 export { ChipGroup, type ChipGroupProps, type ChipItem } from './patterns/chip-group.tsx'
 export { DateRangePicker, type DateRangeLabels, type DateRangePickerProps } from './patterns/date-range-picker.tsx'
 export type { DateRange, RangePreset, WeekStart } from './patterns/date-range-model.ts'
+export { TreeView, type TreeNode, type TreeViewProps } from './patterns/tree-view.tsx'
 export { QuoteTable, type QuoteGroup, type QuoteRow, type QuoteTableProps } from './patterns/quote-table.tsx'
 export {
   Combobox,

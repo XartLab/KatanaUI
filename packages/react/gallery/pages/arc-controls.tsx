@@ -5,10 +5,12 @@ import {
   DateRangePicker,
   HoldToConfirm,
   ShortcutRecorder,
+  TreeView,
   type ChipItem,
   type DateRange,
   type DateRangeLabels,
   type ShortcutRecorderLabels,
+  type TreeNode,
 } from '../../src/index'
 import { Row } from './parts'
 
@@ -158,6 +160,62 @@ export function DateRangePickerDemo() {
         />
       </Row>
       <p className="gal-note">演示：「今天」固定为 2026-11-14（周六）。预设都是截至今天；日历是双月，点两下选起止。</p>
+    </>
+  )
+}
+
+// 演示用的分类树（不是真实的品种库或数据集）。
+const TREE_ITEMS: readonly TreeNode[] = [
+  {
+    id: 'cn',
+    label: 'A 股',
+    count: 3,
+    children: [
+      {
+        id: 'cn-main',
+        label: '主板',
+        count: 2,
+        children: [
+          { id: 'cn-sh', label: '沪市' },
+          { id: 'cn-sz', label: '深市' },
+        ],
+      },
+      { id: 'cn-star', label: '科创板' },
+    ],
+  },
+  { id: 'hk', label: '港股', count: 1, children: [{ id: 'hk-main', label: '主板' }] },
+  {
+    id: 'crypto',
+    label: '加密',
+    count: 2,
+    children: [
+      { id: 'crypto-spot', label: '现货' },
+      { id: 'crypto-perp', label: '永续', disabled: true },
+    ],
+  },
+  { id: 'misc', label: '未分类' },
+]
+
+export function TreeViewDemo() {
+  const [selected, setSelected] = useState<string[]>(['cn-sh'])
+  const [opened, setOpened] = useState('无')
+  return (
+    <>
+      <Row name="单选 · 默认展开 A 股">
+        <div className="gal-tree" style={{ width: 240 }}>
+          <TreeView
+            label="品种分类"
+            items={TREE_ITEMS}
+            defaultExpandedKeys={['cn', 'cn-main']}
+            selectedKeys={selected}
+            onSelectionChange={setSelected}
+            onAction={setOpened}
+          />
+        </div>
+        <output data-gallery-tree>{selected.join(',') || '无'}</output>
+        <output data-gallery-tree-open>{opened}</output>
+      </Row>
+      <p className="gal-note">演示：分类与数量是演示用的，不是真实的品种库。→ 展开、← 收起，↑↓ 走，Enter 激活。</p>
     </>
   )
 }
