@@ -1714,15 +1714,15 @@ for (const theme of THEMES) {
       const delta = first.locator('[data-slot="change-text"]')
       await expect(delta).toHaveText('▲+1.31%')
       await expect.poll(() => color(delta)).toBe(await token(page, '--pnl-up'))
-      // 迷你线真的画出来：有尺寸，颜色是 series-1，末点是橙色。
+      // 迷你线真的画出来：有尺寸，颜色是 ink-100，末点跟线同色。
       const line = first.locator('polyline')
       const box = await line.boundingBox()
       expect(box!.width).toBeGreaterThan(40)
       expect(box!.height).toBeGreaterThan(8)
       await expect
         .poll(() => line.evaluate((element) => getComputedStyle(element).stroke))
-        .toBe(await token(page, '--series-1'))
-      await expect.poll(() => bg(first.locator('.k-spark-tile-end'))).toBe(await token(page, '--series-1'))
+        .toBe(await token(page, '--ink-100'))
+      await expect.poll(() => bg(first.locator('.k-spark-tile-end'))).toBe(await token(page, '--ink-100'))
       // 越低越好的指标：线用 ink-300。
       await expect
         .poll(() =>

@@ -11806,7 +11806,7 @@ button.k-spark-tile:focus-visible {
 
 .k-spark-tile-line {
   fill: none;
-  stroke: var(--series-1);
+  stroke: var(--k-spark-color, var(--ink-100));
   stroke-width: 1.5px;
   stroke-linejoin: round;
   vector-effect: non-scaling-stroke;
@@ -11825,7 +11825,7 @@ button.k-spark-tile:focus-visible {
 
 .k-spark-tile-end {
   border-radius: var(--radius-pill);
-  background: var(--series-1);
+  background: var(--k-spark-color, var(--ink-100));
   width: 5px;
   height: 5px;
   margin-top: -2.5px;
@@ -12947,6 +12947,7 @@ button.k-consensus-hash:focus-visible {
   --k-rise: initial;
   --k-run: initial;
   --k-scatter-color: initial;
+  --k-spark-color: initial;
   --k-sy: initial;
   --k-tree-level: initial;
   --line-300: initial;
