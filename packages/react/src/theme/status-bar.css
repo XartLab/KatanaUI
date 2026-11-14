@@ -57,7 +57,7 @@ button.k-status-item:hover {
   box-shadow: inset 0 0 0 1px var(--signal-amber);
 }
 .k-status-key {
-  color: var(--ink-300);
+  color: var(--ink-200);
   font: var(--text-tag-md) var(--font-dot);
   letter-spacing: var(--text-tag-md-tracking);
   text-transform: uppercase;

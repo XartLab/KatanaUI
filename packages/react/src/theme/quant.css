@@ -312,7 +312,7 @@ button.k-consensus-party:focus-visible {
 }
 /* 未返回：暗灯；超时：琥珀实心带暗圈，闪一次；失效：琥珀空心环；评估中：橙环 */
 .k-consensus-party[data-state='unknown'] .k-consensus-msg {
-  color: var(--ink-400);
+  color: var(--ink-300);
 }
 .k-consensus-party[data-state='timeout'] .k-consensus-lamp {
   background: var(--signal-amber);

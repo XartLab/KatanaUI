@@ -89,18 +89,16 @@ function Signed({ gauge, naText, estimateText }: { gauge: FlowSignedGauge; naTex
   const negative = gauge.value !== null && gauge.value < 0
   return (
     <>
-      <span className={`k-flow-value${span ? '' : ' is-na'}`}>
-        {span ? gauge.valueText : naText}
-        {span && gauge.estimated ? <small className="k-flow-est">{estimateText}</small> : null}
-      </span>
+      <span className={`k-flow-value${span ? '' : ' is-na'}`}>{span ? gauge.valueText : naText}</span>
+      {span && gauge.estimated ? <small className="k-flow-est">{estimateText}</small> : null}
       <span
         className="k-flow-zero"
-        role="meter"
-        aria-label={gauge.title}
-        aria-valuemin={-100}
-        aria-valuemax={100}
+        role={span ? 'meter' : 'img'}
+        aria-label={span ? gauge.title : `${gauge.title}: ${naText}`}
+        aria-valuemin={span ? -100 : undefined}
+        aria-valuemax={span ? 100 : undefined}
         aria-valuenow={span ? (gauge.value as number) : undefined}
-        aria-valuetext={span ? gauge.valueText : naText}
+        aria-valuetext={span ? gauge.valueText : undefined}
       >
         {span && (
           <i
