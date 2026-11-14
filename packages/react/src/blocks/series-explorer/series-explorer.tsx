@@ -8,19 +8,20 @@
 // 决定（Arc 的页面没写，照同类产品定）：默认展开第一个指标、默认区间是 ranges 里最后一个；拖刷选条改窗口后区间按钮不再亮，再点回到它；
 //   「对比上一期」画紧挨在窗口前面、一样长的那一段的同一序列，按下标对齐，灰色虚线（基准永远灰）；前面不够长就不画、开关禁用；
 //   KPI 变化 = (这期 − 上期) / |上期|，上期没有或为 0 写破折号。数值语法照 precision-instrument.md §2.2（等宽、右对齐、来源行）。
+import { DownloadIcon, ExpandIcon, TableIcon } from 'lucide-react'
 import { useState, type CSSProperties, type KeyboardEvent } from 'react'
 import { cn } from '../../lib/cn'
 import { useScrubber } from '../../lib/use-scrubber'
 import { Led } from '../../katana/led'
 import { Switch } from '../../primitives/switch'
+import { ToggleGroup, ToggleGroupItem } from '../../primitives/toggle-group'
+import { Toolbar, ToolbarGroup, ToolButton } from '../toolbar/toolbar'
 import { BrushStrip, type BrushLabels } from '../../quant/brush-chart'
 import { clampWindow, type BrushWindow } from '../../quant/brush-model'
-import { ChartActions, type ChartActionsLabels } from '../../quant/chart-kit/chart-actions'
-import { ChartValue } from '../../quant/chart-kit/chart-value'
+import type { ChartActionsLabels } from '../../quant/chart-kit/chart-actions'
 import { EndMarker } from '../../quant/chart-kit/end-marker'
 import { LcdTooltip } from '../../quant/chart-kit/lcd-tooltip'
 import { PlotGrid, PlotYAxis } from '../../quant/chart-kit/plot-axes'
-import { assignSeries } from '../../quant/chart-kit/series-colors'
 import { linePath, makePlot, pct, PLOT_W } from '../../quant/series-geometry'
 import { SparkTile } from '../../quant/spark-tile'
 import {
@@ -149,7 +150,6 @@ export function SeriesExplorer({
   const length = window[1] - window[0]
   const previous = previousWindow(window)
   const shown = points.slice(window[0], window[1])
-  const colors = assignSeries(series.map((item) => item.key))
 
   const kpi = kpis.find((item) => item.key === metric) ?? null
   const def = kpi === null ? null : (series.find((item) => item.key === kpi.series) ?? null)
@@ -179,9 +179,11 @@ export function SeriesExplorer({
   const color =
     def === null
       ? 'var(--ink-100)'
-      : def.cost || (def.kind === 'line' && def.color === undefined)
-        ? 'var(--ink-100)'
-        : (def.color ?? colors[def.key]!)
+      : def.kind === 'line'
+        ? (def.color ?? 'var(--ink-100)')
+        : def.cost
+          ? 'var(--ink-300)'
+          : (def.color ?? 'var(--ink-200)')
   const recon = reconcile ? reconcileWindow(points, window, reconcile, reconcile.openingEquity) : null
   // 明细表最新的在最上面。
   const rows = shown.map((point, i) => ({ point, i })).reverse()
@@ -197,6 +199,7 @@ export function SeriesExplorer({
       </div>
     )
 
+  // ← → Home End 在指标之间换（分段按钮本身不接方向键）。
   const tabKey = (event: KeyboardEvent<HTMLElement>) => {
     const dir = event.key === 'ArrowLeft' ? -1 : event.key === 'ArrowRight' ? 1 : 0
     const last = kpis.length - 1
@@ -211,7 +214,7 @@ export function SeriesExplorer({
     if (to === null) return
     event.preventDefault()
     setMetric(kpis[to]!.key)
-    event.currentTarget.parentElement?.querySelectorAll<HTMLElement>('[role="tab"]')[to]?.focus()
+    event.currentTarget.querySelectorAll<HTMLElement>('button')[to]?.focus()
   }
   const panelKey = (event: KeyboardEvent<HTMLElement>) => {
     // 扫读点有就由扫读先清（它拦了 Esc）；没有才收起面板。
@@ -221,29 +224,48 @@ export function SeriesExplorer({
 
   return (
     <div className={cn('k-sx', className)} data-slot="series-explorer" data-range={rangeKey}>
-      {recon && labels.reconcile && reconcile && (
-        <div className="k-sx-recon" data-slot="series-reconcile" data-state={recon.diff === 0 ? 'ok' : 'warn'}>
-          <span className="k-sx-recon-line" data-slot="series-reconcile-lcd">
-            <small>{labels.reconcile.open}</small>
-            <ChartValue text={reconcile.format(recon.open)} unit={labels.reconcile.unit} />
-            <em aria-hidden="true">→</em>
-            <small>{labels.reconcile.close}</small>
-            <ChartValue text={reconcile.format(recon.close)} unit={labels.reconcile.unit} />
-            <em aria-hidden="true">·</em>
-            <span className="k-sx-recon-diff" data-slot="series-reconcile-diff">
-              <small>{labels.reconcile.diff}</small>
-              <ChartValue text={reconcile.format(recon.diff)} unit={labels.reconcile.unit} />
+      <div className="k-sx-head" data-slot="series-head">
+        <Toolbar label={labels.actions.group}>
+          <ToolbarGroup side="left">
+            <h4 className="k-sx-title" data-slot="series-title">
+              {labels.chart}
+            </h4>
+            <span className="k-sx-span" data-slot="series-span">
+              {formatAt(shown[0]!.at)} – {formatAt(shown[length - 1]!.at)}
             </span>
-          </span>
-          <span className="k-sx-recon-state">
-            <Led
-              state={recon.diff === 0 ? 'ok' : 'warn'}
-              label={recon.diff === 0 ? labels.reconcile.ok : labels.reconcile.warn}
-            />
-            {recon.diff === 0 ? labels.reconcile.ok : labels.reconcile.warn}
-          </span>
-        </div>
-      )}
+          </ToolbarGroup>
+          <ToolbarGroup side="right">
+            <ToggleGroup
+              variant="sm"
+              aria-label={labels.ranges}
+              value={dragged !== null && dragged.range === rangeKey ? null : rangeKey}
+              onValueChange={(next) => {
+                setRangeKey(next)
+                setDragged(null)
+              }}
+            >
+              {ranges.map((item) => (
+                <ToggleGroupItem key={item.key} value={item.key}>
+                  {item.label}
+                </ToggleGroupItem>
+              ))}
+            </ToggleGroup>
+            <ToolButton label={labels.actions.table} pressed={table} onClick={() => setTable(!table)}>
+              <TableIcon size={16} aria-hidden="true" />
+            </ToolButton>
+            {onExport === undefined ? null : (
+              <ToolButton label={labels.actions.exportCsv} onClick={onExport}>
+                <DownloadIcon size={16} aria-hidden="true" />
+              </ToolButton>
+            )}
+            {onFullscreen === undefined ? null : (
+              <ToolButton label={labels.actions.fullscreen} onClick={onFullscreen}>
+                <ExpandIcon size={16} aria-hidden="true" />
+              </ToolButton>
+            )}
+          </ToolbarGroup>
+        </Toolbar>
+      </div>
 
       <div className="k-sx-kpis" data-slot="series-kpis">
         {kpis.map((item) => {
@@ -260,7 +282,7 @@ export function SeriesExplorer({
               value={current}
               series={spark}
               threshold={item.limit}
-              trendTone={item.lowerIsBetter ? 'neutral' : 'series'}
+              trendTone="neutral"
               delta={ratio === null ? undefined : formatChange(ratio)}
               deltaTone={itemDef?.cost || ratio === null || ratio === 0 ? 'muted' : ratio > 0 ? 'up' : 'down'}
               seriesLabel={labels.spark(item.label)}
@@ -272,57 +294,44 @@ export function SeriesExplorer({
         })}
       </div>
 
+      {recon && labels.reconcile && reconcile && (
+        <div className="k-sx-recon" data-slot="series-reconcile" data-state={recon.diff === 0 ? 'ok' : 'warn'}>
+          <span className="k-sx-recon-line" data-slot="series-reconcile-lcd">
+            {labels.reconcile.open} <b>{reconcile.format(recon.open)}</b>
+            {labels.reconcile.unit ? ` ${labels.reconcile.unit}` : ''} → {labels.reconcile.close}{' '}
+            <b>{reconcile.format(recon.close)}</b>
+            {labels.reconcile.unit ? ` ${labels.reconcile.unit}` : ''} ·{' '}
+            <span className="k-sx-recon-diff" data-slot="series-reconcile-diff">
+              {labels.reconcile.diff} <b>{reconcile.format(recon.diff)}</b>
+              {labels.reconcile.unit ? ` ${labels.reconcile.unit}` : ''}
+            </span>
+          </span>
+          <span className="k-sx-recon-state">
+            <Led
+              state={recon.diff === 0 ? 'ok' : 'warn'}
+              label={recon.diff === 0 ? labels.reconcile.ok : labels.reconcile.warn}
+            />
+            {recon.diff === 0 ? labels.reconcile.ok : labels.reconcile.warn}
+          </span>
+        </div>
+      )}
+
       {kpi !== null && (
         <div className="k-sx-panel" data-slot="series-panel" data-metric={kpi.key} onKeyDown={panelKey}>
-          <div className="k-sx-title" data-slot="series-title" aria-hidden="true">
-            {labels.chart}
-          </div>
           <div className="k-sx-bar">
-            <div
-              className="k-sx-tabs"
-              role="tablist"
+            <ToggleGroup
+              variant="sm"
               aria-label={labels.metrics}
-              style={{ '--k-i': metricIndex, '--k-n': kpis.length } as CSSProperties}
+              value={metric}
+              onValueChange={(next) => setMetric(next)}
+              onKeyDown={tabKey}
             >
-              <span className="k-sx-tab-ind" aria-hidden="true" />
               {kpis.map((item) => (
-                <button
-                  key={item.key}
-                  type="button"
-                  role="tab"
-                  className="k-sx-tab"
-                  data-slot="series-tab"
-                  data-key={item.key}
-                  aria-selected={item.key === metric}
-                  tabIndex={item.key === metric ? 0 : -1}
-                  onClick={() => setMetric(item.key)}
-                  onKeyDown={tabKey}
-                >
+                <ToggleGroupItem key={item.key} value={item.key} data-slot="series-tab" data-key={item.key}>
                   {item.label}
-                </button>
+                </ToggleGroupItem>
               ))}
-            </div>
-            <div className="k-sx-seg" role="group" aria-label={labels.ranges}>
-              {ranges.map((item) => {
-                const on = !(dragged !== null && dragged.range === rangeKey) && item.key === rangeKey
-                return (
-                  <button
-                    key={item.key}
-                    type="button"
-                    className="k-sx-seg-item"
-                    data-slot="series-range"
-                    aria-pressed={on}
-                    onClick={() => {
-                      if (on) return
-                      setRangeKey(item.key)
-                      setDragged(null)
-                    }}
-                  >
-                    {item.label}
-                  </button>
-                )
-              })}
-            </div>
+            </ToggleGroup>
             <label className="k-sx-compare">
               <Switch
                 checked={comparing}
@@ -332,13 +341,6 @@ export function SeriesExplorer({
               />
               <span>{labels.compare}</span>
             </label>
-            <ChartActions
-              labels={labels.actions}
-              tableView={table}
-              onTableView={setTable}
-              onExport={onExport}
-              onFullscreen={onFullscreen}
-            />
           </div>
 
           {table ? (

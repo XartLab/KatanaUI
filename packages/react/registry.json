@@ -95,11 +95,6 @@
           "target": "~/src/katana/ui/theme/equity-curve.css"
         },
         {
-          "path": "src/theme/fonts.css",
-          "type": "registry:file",
-          "target": "~/src/katana/ui/theme/fonts.css"
-        },
-        {
           "path": "src/theme/kbd.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/kbd.css"
@@ -1799,11 +1794,6 @@
           "target": "~/src/katana/ui/quant/chart-kit/chart-actions.tsx"
         },
         {
-          "path": "src/quant/chart-kit/chart-value.tsx",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/quant/chart-kit/chart-value.tsx"
-        },
-        {
           "path": "src/quant/chart-kit/dot-fill.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/quant/chart-kit/dot-fill.tsx"
@@ -2206,6 +2196,9 @@
       "type": "registry:component",
       "title": "Series Explorer",
       "description": "盈亏探索积木：一排 KPI 瓦片（SparkTile），点一张展开成下面的图面板；面板顶上是指标页签、区间切换、对比上一期、右上三件，图是该指标的序列（柱或线），下面是刷选条；顶行可以对账（期初到期末、差额、灯加词），页脚来源行。交互参照 Arc 的 Metric explorer，样子与内容照设计稿 IntradayPnL、PnLLedger、EquityCurve 三张卡。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
       "registryDependencies": [
         "@katana/brush-chart",
         "@katana/brush-model",
@@ -2215,6 +2208,8 @@
         "@katana/series-geometry",
         "@katana/spark-tile",
         "@katana/switch",
+        "@katana/toggle-group",
+        "@katana/toolbar",
         "@katana/use-scrubber"
       ],
       "files": [

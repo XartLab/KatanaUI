@@ -149,13 +149,14 @@ describe('SeriesExplorer 渲染', () => {
       />,
     )
 
-  it('默认展开第一个指标（甲：柱）：八个月八根柱，用 series-1 色；瓦片带 aria-expanded，页签选中', () => {
+  it('默认展开第一个指标（甲：柱）：八个月八根柱，中性灰 ink-200；瓦片带 aria-expanded，指标按钮选中', () => {
     const html = render()
     expect(html).toContain('data-range="all"')
     expect(html.match(/data-slot="series-bar"/g)).toHaveLength(8)
-    expect(html).toContain('fill:var(--series-1)')
+    expect(html).toContain('fill:var(--ink-200)')
     expect(html).toContain('aria-expanded="true"')
-    expect(html).toContain('role="tab"')
+    expect(html).toContain('data-slot="series-tab"')
+    expect(html).toContain('data-slot="toolbar"')
     expect(html).toContain('role="slider"')
     expect(html).not.toContain('data-slot="series-compare"')
     expect(html).toContain('来源 / 测试')
@@ -171,11 +172,11 @@ describe('SeriesExplorer 渲染', () => {
     expect(closed).toContain('aria-expanded="false"')
   })
 
-  it('成本类序列的柱用 ink-100，不着色', () => {
+  it('成本类序列的柱用更暗的 ink-300，不着色', () => {
     const html = render({
       kpis: [{ key: 'b', label: '乙', series: 'b', reduce: 'sum', format: String }],
     })
-    expect(html).toContain('fill:var(--ink-100)')
+    expect(html).toContain('fill:var(--ink-300)')
   })
 
   it('指定区间：3M 的瓦片值与变化相对上一期；上一期不够长（全部）没有变化数据，变化行不渲染', () => {

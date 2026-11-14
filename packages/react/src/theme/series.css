@@ -890,93 +890,83 @@ button.k-sm-head:focus-visible {
   margin: 0;
   color: var(--ink-300);
 }
-/* Precision Instrument UI 的版面（精密工程文档：宽体大写标题与分段按钮，等宽小号标签，发丝线分格；
-   design/katana-console/project/precision-instrument.md §2.2、samples/precision-instrument.html，2026-11-14 读）。颜色全走 token。 */
+/* 版式照工作台（Graphite）：纯黑面板、应用的界面字（sans）、数字 tabular-nums；控件是工作台已有的那几件
+   （Toolbar / ToolButton / ToggleGroup sm），不另写一套。橙色只给末点、限额线（红）、选中的刷选窗口，其余中性灰白。 */
+.k-sx {
+  font-variant-numeric: tabular-nums;
+}
+.k-sx-head {
+  height: 36px;
+}
+.k-sx-title {
+  margin: 0;
+  color: var(--ink-100);
+  font: 600 14px/20px var(--font-sans);
+}
+.k-sx-span {
+  color: var(--ink-300);
+  font: var(--text-caption) var(--font-sans);
+  white-space: nowrap;
+}
+/* KPI 一排平铺：没有边框与底色；选中的那一格顶上一条中性细线。 */
 .k-sx-kpis {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 0 16px;
 }
-/* 瓦片：没有边框与底色，三张之间一条竖发丝线；选中态是顶部 2px 强调色线。 */
 .k-sx-kpis .k-spark-tile {
-  padding: 8px 12px 6px;
+  padding: 8px 0 6px;
   border: 0;
   border-top: 2px solid transparent;
-  border-left: var(--hairline);
   background: transparent;
-}
-.k-sx-kpis .k-spark-tile:first-child {
-  border-left: 0;
-  padding-left: 0;
+  font-family: var(--font-sans);
 }
 .k-sx-kpis .k-spark-tile[data-expanded='true'] {
-  border-top-color: var(--chart-accent, var(--signal-orange));
+  border-top-color: var(--ink-100);
 }
 .k-sx-kpis .k-spark-tile-label {
-  color: var(--ink-200);
-  font: var(--text-num-sm) var(--font-mono);
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
+  color: var(--ink-300);
+  font: var(--text-caption) var(--font-sans);
+  letter-spacing: 0;
 }
 .k-sx-kpis .k-spark-tile-value {
   color: var(--ink-100);
-  font: 400 18px/24px var(--font-mono);
+  font: 600 20px/26px var(--font-sans);
   letter-spacing: 0;
-  font-variant-numeric: tabular-nums;
 }
 .k-sx-kpis .k-spark-tile-delta {
   min-height: 0;
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
 }
-/* 对账行：一行文字加下面一条发丝线，灯与词放右端。 */
+/* 对账：普通文字一行，灯与词在右端。 */
 .k-sx-recon {
   display: flex;
   flex-wrap: wrap;
-  align-items: baseline;
+  align-items: center;
   gap: 4px 16px;
   padding: 6px 0;
-  border-bottom: var(--hairline);
-}
-.k-sx-recon-line {
-  display: inline-flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 6px;
-}
-.k-sx-recon small {
-  color: var(--ink-200);
-  font: var(--text-num-sm) var(--font-mono);
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-}
-.k-sx-recon em {
-  margin: 0 4px;
   color: var(--ink-300);
-  font-style: normal;
+  font: var(--text-data) var(--font-sans);
 }
-.k-sx-recon-diff {
-  display: inline-flex;
-  align-items: baseline;
-  gap: 6px;
+.k-sx-recon b {
+  color: var(--ink-100);
+  font-weight: 500;
+}
+.k-sx-recon[data-state='warn'] .k-sx-recon-diff b {
+  color: var(--signal-amber);
 }
 .k-sx-recon-state {
   display: inline-flex;
   align-items: center;
   gap: 6px;
   margin-left: auto;
-  color: var(--ink-200);
-  font: var(--text-num-sm) var(--font-mono);
-  letter-spacing: 0.16em;
 }
-.k-sx-recon[data-state='warn'] .k-sx-recon-diff .k-ck-value-num {
-  color: var(--signal-amber);
-}
-/* 展开的图面板：从瓦片下方长出来（打开时一次 snappy 的升起，关闭直接收起） */
+/* 展开的图面板：打开时一次 snappy 的升起，关闭直接收起 */
 .k-sx-panel {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  padding: 8px 0;
-  border-top: var(--hairline);
+  padding: 4px 0 8px;
   animation: k-sx-open var(--dur-snappy) var(--ease-snappy) 1;
 }
 @keyframes k-sx-open {
@@ -991,81 +981,16 @@ button.k-sm-head:focus-visible {
   align-items: center;
   gap: 10px;
 }
-.k-sx-bar .k-ck-actions {
-  margin-left: auto;
-}
-/* 图标题：宽体大写加字距（参照图的 .h1）。 */
-.k-sx-title {
-  color: var(--ink-100);
-  font: 12px/16px var(--font-wide);
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-}
-/* 分段按钮（页签与区间）：宽体小号大写字距，未选中细边框，选中实色填充（参照图的 .seg）。 */
-.k-sx-tabs,
-.k-sx-seg {
-  position: relative;
-  display: flex;
-}
-.k-sx-tabs {
-  display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: minmax(64px, 1fr);
-}
-.k-sx-tab-ind {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  width: calc(100% / var(--k-n, 1));
-  transform: translateX(calc(var(--k-i, 0) * 100%));
-  background: var(--chart-accent, var(--signal-orange));
-  transition: transform var(--dur-snappy) var(--ease-snappy);
-}
-.k-sx-tab,
-.k-sx-seg-item {
-  position: relative;
-  margin-left: -1px;
-  padding: 5px 12px 4px;
-  border: 1px solid var(--ink-400);
-  background: transparent;
-  color: var(--ink-200);
-  font: 10px/1.2 var(--font-wide);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  white-space: nowrap;
-  cursor: pointer;
-}
-.k-sx-tab:first-of-type,
-.k-sx-seg-item:first-child {
-  margin-left: 0;
-}
-.k-sx-tab[aria-selected='true'] {
-  border-color: var(--chart-accent, var(--signal-orange));
-  color: var(--bg-000);
-}
-.k-sx-seg-item[aria-pressed='true'] {
-  border-color: var(--chart-accent, var(--signal-orange));
-  background: var(--chart-accent, var(--signal-orange));
-  color: var(--bg-000);
-}
-.k-sx-tab:focus-visible,
-.k-sx-seg-item:focus-visible {
-  z-index: 1;
-  outline: 1px solid var(--focus-ring);
-  outline-offset: 1px;
-}
 .k-sx-compare {
   display: inline-flex;
   align-items: center;
   gap: 6px;
   color: var(--ink-200);
-  font: var(--text-num-sm) var(--font-mono);
-  letter-spacing: 0.16em;
+  font: var(--text-data) var(--font-sans);
 }
-/* 概览刷选条减重：线 ink-300 1px，面是 ink-400 的 15% 淡填充（没有 --hatch 令牌，照任务单的退路），选区只描强调色细边。 */
+/* 概览刷选条：线 ink-300，面 ink-400 的淡填充，选区描强调色细边。 */
 .k-sx .k-brush-strip {
-  border-color: var(--ink-400);
+  border-color: var(--line-100);
   background: transparent;
 }
 .k-sx .k-brush-strip-line {

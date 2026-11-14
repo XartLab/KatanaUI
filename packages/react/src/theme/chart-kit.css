@@ -243,20 +243,3 @@ button.k-spark-tile:focus-visible {
   display: var(--chart-fill-hatch, none);
   stroke-width: 1;
 }
-
-/* 图旁数值：等宽 tabular 主墨色，单位小一档、次一级墨色（Precision Instrument UI §2.2） */
-.k-ck-value {
-  display: inline-flex;
-  align-items: baseline;
-  gap: 4px;
-  font-family: var(--font-mono);
-  font-variant-numeric: tabular-nums;
-}
-.k-ck-value-num {
-  color: var(--ink-100);
-  font-size: var(--text-data-size, 12px);
-}
-.k-ck-value-unit {
-  color: var(--ink-200);
-  font-size: 10px;
-}
