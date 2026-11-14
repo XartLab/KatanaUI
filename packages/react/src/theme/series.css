@@ -907,12 +907,22 @@ button.k-sm-head:focus-visible {
   text-transform: uppercase;
 }
 /* 元信息行与来源行：等宽大写小字，字距 0.16em，ink-300（工业文档的页眉页脚感，只取感觉）。 */
+/* 装饰性小标签用点阵字（pixel.md：整数字号 12、不加字距、不斜体不伪粗、关抗锯齿；中英各用各的字）；数值与主标签不用。 */
+.k-sx-meta,
+.k-sx-source,
+.k-sx-evt-text,
+.k-sx-dim-label,
+.k-sx-kpis .k-spark-tile-index {
+  font: var(--text-tag-md) var(--font-dot);
+  letter-spacing: 0;
+  font-style: normal;
+  -webkit-font-smoothing: none;
+  font-smooth: never;
+}
 .k-sx-meta,
 .k-sx-source {
   margin: 0;
   color: var(--ink-300);
-  font: var(--text-num-sm) var(--font-mono);
-  letter-spacing: 0.16em;
   text-transform: uppercase;
 }
 .k-sx-meta {
@@ -1058,10 +1068,10 @@ button.k-sm-head:focus-visible {
 }
 .k-sx-chart {
   position: relative;
-  /* 很淡的细网格：12px 一格、ink-400 的 25%。12px 是目测的版面节奏（参照图的栅格约 12 至 16px），没有出处，待定。 */
+  /* 很淡的细网格：12px 一格、ink-400 的 12%（v4 是 25%，压过数据线，用户要求再减半）。12px 与 12% 都是目测值，没有出处，待定。 */
   background-image:
-    linear-gradient(to right, color-mix(in srgb, var(--ink-400) 25%, transparent) 1px, transparent 1px),
-    linear-gradient(to bottom, color-mix(in srgb, var(--ink-400) 25%, transparent) 1px, transparent 1px);
+    linear-gradient(to right, color-mix(in srgb, var(--ink-400) 12%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in srgb, var(--ink-400) 12%, transparent) 1px, transparent 1px);
   background-size: 12px 12px;
   margin-left: var(--k-plot-gutter, 56px);
   touch-action: pan-y;
@@ -1180,7 +1190,6 @@ button.k-sm-head:focus-visible {
   right: 8px;
   transform: translateY(-50%);
   color: var(--ink-200);
-  font: var(--text-num-sm) var(--font-mono);
   white-space: nowrap;
 }
 /* 事件点：点 + 斜引线 + 编号 + 短标签。编号强调色等宽小字，标签等宽 ink-200。 */
@@ -1204,37 +1213,22 @@ button.k-sm-head:focus-visible {
   position: absolute;
   left: 0;
   top: 0;
-  width: 30px;
+  width: var(--k-len);
   border-top: 1px solid var(--ink-300);
   transform-origin: 0 0;
-  transform: rotate(-35deg);
+  transform: rotate(var(--k-deg));
 }
-.k-sx-evt[data-up='false'] .k-sx-evt-lead,
-.k-sx-evt:not([data-up]) .k-sx-evt-lead {
-  transform: rotate(35deg);
-}
-.k-sx-evt[data-side='left'] .k-sx-evt-lead {
-  transform-origin: 100% 0;
-  left: -30px;
-  transform: rotate(35deg);
-}
-.k-sx-evt[data-side='left']:not([data-up]) .k-sx-evt-lead {
-  transform: rotate(-35deg);
-}
+/* 标签落在引线终点：往右的左边贴终点，往左的右边贴终点；上下各让出半行。 */
 .k-sx-evt-text {
   position: absolute;
-  left: 32px;
-  top: -26px;
+  top: calc(var(--k-sy) * var(--k-rise) - 8px);
+  left: calc(var(--k-run) + 4px);
   color: var(--ink-200);
-  font: var(--text-num-sm) var(--font-mono);
   white-space: nowrap;
-}
-.k-sx-evt:not([data-up]) .k-sx-evt-text {
-  top: 14px;
 }
 .k-sx-evt[data-side='left'] .k-sx-evt-text {
   left: auto;
-  right: 32px;
+  right: calc(var(--k-run) + 4px);
 }
 .k-sx-evt-text em {
   color: var(--chart-accent, var(--signal-orange));

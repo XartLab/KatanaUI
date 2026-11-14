@@ -4,6 +4,15 @@
 @import '@katana-ui/tokens/tokens.css';
 @import './preview.css';
 
+/* 展示页自带 Doto（应用里的 @font-face 在 src/styles/base.css，包里不带字体）：ExtraBold 拉丁子集，同一份文件取自 design/fonts，OFL 见 gallery/fonts/doto-ofl.txt。
+   方舟像素没有放进来：展示页里点阵标签的汉字回退到无衬线。 */
+@font-face {
+  font-family: 'Doto';
+  font-weight: 800;
+  font-display: swap;
+  src: url('./fonts/doto-extrabold-latin.woff2') format('woff2');
+}
+
 html,
 body {
   margin: 0;

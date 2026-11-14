@@ -6262,7 +6262,6 @@ button.k-spark-tile:focus-visible {
 .k-spark-tile-index {
   color: var(--chart-accent, var(--signal-orange));
   margin-right: 8px;
-  font-style: normal;
 }
 
 .k-brush {
@@ -7315,10 +7314,16 @@ button.k-sm-head:focus-visible {
   margin: 0;
 }
 
+.k-sx-meta, .k-sx-source, .k-sx-evt-text, .k-sx-dim-label, .k-sx-kpis .k-spark-tile-index {
+  font: var(--text-tag-md) var(--font-dot);
+  letter-spacing: 0;
+  -webkit-font-smoothing: none;
+  font-smooth: never;
+  font-style: normal;
+}
+
 .k-sx-meta, .k-sx-source {
   color: var(--ink-300);
-  font: var(--text-num-sm) var(--font-mono);
-  letter-spacing: .16em;
   text-transform: uppercase;
   margin: 0;
 }
@@ -7493,7 +7498,7 @@ button.k-sm-head:focus-visible {
 
 @supports (color: color-mix(in lab, red, red)) {
   .k-sx-chart {
-    background-image: linear-gradient(to right, var(--ds-c-1d6xg4i) 1px, transparent 1px), linear-gradient(to bottom, var(--ds-c-1d6xg4i) 1px, transparent 1px);
+    background-image: linear-gradient(to right, var(--ds-c-1xbddtq) 1px, transparent 1px), linear-gradient(to bottom, var(--ds-c-1xbddtq) 1px, transparent 1px);
   }
 }
 
@@ -7636,7 +7641,6 @@ button.k-sm-head:focus-visible {
 
 .k-sx-dim-label {
   color: var(--ink-200);
-  font: var(--text-num-sm) var(--font-mono);
   white-space: nowrap;
   position: absolute;
   top: 50%;
@@ -7663,45 +7667,26 @@ button.k-sm-head:focus-visible {
 }
 
 .k-sx-evt-lead {
+  width: var(--k-len);
   border-top: 1px solid var(--ink-300);
   transform-origin: 0 0;
-  width: 30px;
+  transform: rotate(var(--k-deg));
   position: absolute;
   top: 0;
   left: 0;
-  transform: rotate(-35deg);
-}
-
-.k-sx-evt[data-up="false"] .k-sx-evt-lead, .k-sx-evt:not([data-up]) .k-sx-evt-lead {
-  transform: rotate(35deg);
-}
-
-.k-sx-evt[data-side="left"] .k-sx-evt-lead {
-  transform-origin: 100% 0;
-  left: -30px;
-  transform: rotate(35deg);
-}
-
-.k-sx-evt[data-side="left"]:not([data-up]) .k-sx-evt-lead {
-  transform: rotate(-35deg);
 }
 
 .k-sx-evt-text {
+  top: calc(var(--k-sy) * var(--k-rise) - 8px);
+  left: calc(var(--k-run) + 4px);
   color: var(--ink-200);
-  font: var(--text-num-sm) var(--font-mono);
   white-space: nowrap;
   position: absolute;
-  top: -26px;
-  left: 32px;
-}
-
-.k-sx-evt:not([data-up]) .k-sx-evt-text {
-  top: 14px;
 }
 
 .k-sx-evt[data-side="left"] .k-sx-evt-text {
   left: auto;
-  right: 32px;
+  right: calc(var(--k-run) + 4px);
 }
 
 .k-sx-evt-text em {
@@ -8281,7 +8266,7 @@ button.k-sm-head:focus-visible {
   --ds-c-1dit3qa: color-mix(in srgb, var(--pnl-up) 55%, var(--ink-300));
   --ds-c-1sas9o0: color-mix(in srgb, var(--ink-100) 8%, transparent);
   --ds-c-1liwpbi: color-mix(in srgb, var(--ink-100) 6%, transparent);
-  --ds-c-1d6xg4i: color-mix(in srgb, var(--ink-400) 25%, transparent);
+  --ds-c-1xbddtq: color-mix(in srgb, var(--ink-400) 12%, transparent);
   --ds-c-yj1s8q: #fff;
 }
 
@@ -8301,6 +8286,7 @@ button.k-sm-head:focus-visible {
   --chart-grid-color: initial;
   --chart-grid-dash: initial;
   --chart-line-glow: initial;
+  --k-deg: initial;
   --k-in-dur: initial;
   --k-in-ease: initial;
   --k-in-scale: initial;
@@ -8308,8 +8294,12 @@ button.k-sm-head:focus-visible {
   --k-json-level: initial;
   --k-tree-level: initial;
   --k-n: initial;
+  --k-len: initial;
   --k-pin: initial;
+  --k-rise: initial;
+  --k-run: initial;
   --k-spark-h: initial;
+  --k-sy: initial;
   --radix-accordion-content-height: initial;
   --radix-collapsible-content-height: initial;
   --radix-collapsible-content-width: initial;

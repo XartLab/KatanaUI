@@ -504,16 +504,56 @@ export function SeriesExplorer({
                     if (i < 0 || value === null) return null
                     const x = plot.xAt(i)
                     const y = plot.yAt(value)
-                    const up = y > 40
-                    const side = x > PLOT_W * 0.7 ? 'left' : 'right'
+                    // 引线与标签的避让（简单版）：四个方向（上 / 下 × 右 / 左）按「空间大的一侧、靠右的往左」排好先后，
+                    // 取第一个标签框不压数据线的；都压就用第一个。不量宽度，按 700px 估（1px ≈ PLOT_W / 700）；
+                    // 长度取到边缘留 16px 为止（标签半行高 8px 加余量）（10–28px）。
+                    const run = 28
+                    const pxToX = PLOT_W / 700
+                    const textW = (event.label.length * 7 + 22) * pxToX
+                    const prefTop = y > chartHeight / 2
+                    const prefRight = x <= PLOT_W * 0.65
+                    const choices = [
+                      [prefRight, prefTop],
+                      [prefRight, !prefTop],
+                      [!prefRight, prefTop],
+                      [!prefRight, !prefTop],
+                    ].map(([right, top]) => {
+                      const room = top ? y - 16 : chartHeight - y - 16
+                      const rise = Math.max(10, Math.min(28, room))
+                      const endY = top ? y - rise : y + rise
+                      const from = right ? x + run * pxToX : x - run * pxToX - textW
+                      const clash = shown.some((point, j) => {
+                        const v = pointValue(point, def.key)
+                        if (v === null || def.kind !== 'line') return false
+                        const px = plot.xAt(j)
+                        return px >= from && px <= from + textW && Math.abs(plot.yAt(v) - endY) < 10
+                      })
+                      const inside = from >= 0 && from + textW <= PLOT_W && endY >= 10 && endY <= chartHeight - 10
+                      return { right, top, rise, ok: inside && !clash }
+                    })
+                    const pick = choices.find((choice) => choice.ok) ?? choices[0]!
+                    const rise = pick.rise
+                    const sx = pick.right ? 1 : -1
+                    const sy = pick.top ? -1 : 1
                     return (
                       <span
                         key={event.at}
                         className="k-sx-evt"
                         data-slot="series-event"
-                        data-side={side}
-                        data-up={up ? 'true' : undefined}
-                        style={{ left: pct(x), top: y }}
+                        data-side={sx < 0 ? 'left' : 'right'}
+                        data-up={sy < 0 ? 'true' : undefined}
+                        style={
+                          {
+                            left: pct(x),
+                            top: y,
+                            '--k-run': `${run}px`,
+                            '--k-rise': `${rise}px`,
+                            '--k-sx': sx,
+                            '--k-sy': sy,
+                            '--k-len': `${Math.hypot(run, rise)}px`,
+                            '--k-deg': `${(Math.atan2(sy * rise, sx * run) * 180) / Math.PI}deg`,
+                          } as CSSProperties
+                        }
                       >
                         <i className="k-sx-evt-dot" />
                         <b className="k-sx-evt-lead" />

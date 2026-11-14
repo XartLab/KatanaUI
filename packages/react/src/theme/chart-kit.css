@@ -248,5 +248,4 @@ button.k-spark-tile:focus-visible {
 .k-spark-tile-index {
   margin-right: 8px;
   color: var(--chart-accent, var(--signal-orange));
-  font-style: normal;
 }

@@ -507,7 +507,7 @@ const SX_PROPS = {
     },
   ],
   labels: {
-    chart: '示例盈亏序列',
+    chart: 'P&L EXPLORER',
     ranges: '区间',
     metrics: '指标',
     compare: '对比上一期',
@@ -522,7 +522,7 @@ const SX_PROPS = {
     brush: { start: '窗口起点', end: '窗口终点', window: '窗口位置' },
     reconcile: { open: '期初', close: '期末', diff: '差额', ok: '对账一致', warn: '对账有差', unit: 'CNY' },
   },
-  meta: 'RUN 2C91 · 2025-01 → 2026-12 · CNY',
+  meta: '盈亏探索（演示）· RUN 2C91 · 2025-01 → 2026-12 · CNY',
   events: [
     { at: Date.UTC(2025, 5, 1), label: '费率上调' },
     { at: Date.UTC(2026, 1, 1), label: '换仓' },
