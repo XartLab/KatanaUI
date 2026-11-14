@@ -6,7 +6,6 @@
 
 export type KeyEventLike = Pick<KeyboardEvent, 'code' | 'key' | 'ctrlKey' | 'altKey' | 'shiftKey' | 'metaKey'>
 
-export const MODIFIER_ORDER = ['Ctrl', 'Alt', 'Shift', 'Meta'] as const
 const MODIFIER_CODES = /^(Control|Alt|Shift|Meta|OS)(Left|Right)?$/
 
 /** 这个键本身是不是修饰键（只按了修饰键还不成组合）。 */

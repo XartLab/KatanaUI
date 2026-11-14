@@ -55,7 +55,7 @@ describe('expandedToDepth', () => {
   it('1 只开根，2 连根的子容器一起开，空容器不算', () => {
     const root = buildNodes(sample)
     expect([...expandedToDepth(root, 1)]).toEqual(['$'])
-    expect([...expandedToDepth(root, 2)].toSorted()).toEqual(['$', '$/orders'])
+    expect([...expandedToDepth(root, 2)].sort()).toEqual(['$', '$/orders'])
     expect(expandedToDepth(root, 0).size).toBe(0)
     expect(expandedToDepth(buildNodes({ a: {} }), 3).has('$/a')).toBe(false)
   })
@@ -65,8 +65,8 @@ describe('findMatches', () => {
   it('键名与叶子的字都能命中，不分大小写；祖先都要展开', () => {
     const root = buildNodes(sample)
     const byKey = findMatches(root, 'PRICE')
-    expect([...byKey.hits].toSorted()).toEqual(['$/orders/0/price', '$/orders/1/price'])
-    expect([...byKey.ancestors].toSorted()).toEqual(['$', '$/orders', '$/orders/0', '$/orders/1'])
+    expect([...byKey.hits].sort()).toEqual(['$/orders/0/price', '$/orders/1/price'])
+    expect([...byKey.ancestors].sort()).toEqual(['$', '$/orders', '$/orders/0', '$/orders/1'])
     const byValue = findMatches(root, 'sell')
     expect([...byValue.hits]).toEqual(['$/orders/1/side'])
   })
