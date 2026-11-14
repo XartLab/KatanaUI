@@ -3,6 +3,14 @@
 // 品种、价格精度、小数位、单位由调用方传最小的普通类型。纯函数另有 `@katana-ui/react/quant/format` 出口（不带 React，画布与 Worker 里用）。
 export { ChangeText } from './change-text.tsx'
 export { PnlText } from './pnl-text.tsx'
+export {
+  LimitLadder,
+  type LadderItem,
+  type LadderLevel,
+  type LadderStatus,
+  type LimitLadderLabels,
+  type LimitLadderProps,
+} from './limit-ladder.tsx'
 export * from './format/index.ts'
 
 // 时间序列与盈亏的件（#1917）。功能参照 Arc（uiarc.dev，2026-11-14 读），只取功能，实现原创。

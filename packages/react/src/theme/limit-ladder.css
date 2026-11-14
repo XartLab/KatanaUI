@@ -1,0 +1,150 @@
+/* SPDX-License-Identifier: MIT */
+/* 连板天梯（LimitLadder，#12）。底是工作台的表与分组列表样式；精密仪器语言只加：层号点阵字、选中行左侧 2px 强调条。
+   状态色只走语义 token：封住 = 涨色 --pnl-up，炸板 = 琥珀，跌停 = 跌色 --pnl-down；橙色只给选中条，不画数据。 */
+.k-ladder {
+  --ladder-cols: minmax(110px, 1.6fr) 72px 56px 72px 40px minmax(60px, 1fr) 52px;
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+  font: var(--text-data) var(--font-sans);
+  color: var(--ink-100);
+}
+.k-ladder-list {
+  display: flex;
+  flex-direction: column;
+}
+.k-ladder-columns,
+.k-ladder-row {
+  display: grid;
+  grid-template-columns: var(--ladder-cols);
+  align-items: center;
+  column-gap: 8px;
+  padding: 0 var(--inset-x);
+}
+.k-ladder-columns {
+  height: 24px;
+  color: var(--ink-300);
+  font: var(--text-num-sm) var(--font-sans);
+  border-bottom: 1px solid var(--alpha-white-5);
+}
+.k-ladder-columns .is-num {
+  text-align: right;
+}
+.k-ladder-head {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  height: 32px;
+  padding: 0 var(--inset-x);
+  align-items: center;
+  background: var(--alpha-white-2_5);
+  border-bottom: 1px solid var(--alpha-white-5);
+}
+/* 层号：点阵字（精密仪器语言的编号位），不用橙色：它在这里是数据的一部分。 */
+.k-ladder-board {
+  font: 500 20px/22px var(--font-dot);
+  letter-spacing: 0;
+  color: var(--ink-100);
+  -webkit-font-smoothing: none;
+}
+.k-ladder-unit,
+.k-ladder-count {
+  color: var(--ink-300);
+  font: var(--text-data) var(--font-sans);
+}
+.k-ladder-promote {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+  color: var(--ink-300);
+  font: var(--text-num-sm) var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+.k-ladder-promote-bar {
+  position: relative;
+  width: 48px;
+  height: 3px;
+  background: var(--alpha-white-10);
+}
+.k-ladder-promote-bar i {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: var(--ink-100);
+}
+.k-ladder-row {
+  position: relative;
+  height: 28px;
+  cursor: pointer;
+  outline: none;
+}
+.k-ladder-row:hover {
+  background: var(--alpha-white-2_5);
+}
+.k-ladder-row.is-selected {
+  background: var(--alpha-white-6_5);
+  box-shadow: inset 2px 0 0 var(--signal-orange);
+}
+.k-ladder-row:focus-visible {
+  outline: 1px solid var(--line-200);
+  outline-offset: -1px;
+}
+/* 没接上的（炸板、跌停、没涨停）整行淡显；状态标签留着，是它们为什么淡的说明。 */
+.k-ladder-row:not([data-status='sealed']) {
+  opacity: 0.6;
+}
+.k-ladder-name {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  min-width: 0;
+}
+.k-ladder-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.k-ladder-code {
+  color: var(--ink-300);
+  font: var(--text-num-sm) var(--font-mono);
+}
+.k-ladder-num {
+  text-align: right;
+  font: var(--text-data) var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+.k-ladder-industry {
+  overflow: hidden;
+  color: var(--ink-300);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.k-ladder-status {
+  justify-self: end;
+  padding: 1px 6px;
+  border-radius: 3px;
+  font: var(--text-num-sm) var(--font-sans);
+  white-space: nowrap;
+  color: var(--ink-300);
+  background: var(--alpha-white-5);
+}
+.k-ladder-status[data-status='sealed'] {
+  color: var(--pnl-up);
+  background: color-mix(in srgb, var(--pnl-up) 14%, transparent);
+}
+.k-ladder-status[data-status='broken'] {
+  color: var(--signal-amber);
+  background: color-mix(in srgb, var(--signal-amber) 14%, transparent);
+}
+.k-ladder-status[data-status='down'] {
+  color: var(--pnl-down);
+  background: color-mix(in srgb, var(--pnl-down) 14%, transparent);
+}
+.k-ladder-empty {
+  margin: auto;
+  padding: var(--space-6);
+  color: var(--ink-300);
+}

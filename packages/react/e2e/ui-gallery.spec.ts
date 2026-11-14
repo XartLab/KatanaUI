@@ -1766,6 +1766,60 @@ for (const theme of THEMES) {
       await expect(frames.nth(2).getByRole('status')).toContainText('No data source')
     })
 
+    test('量化：连板天梯——层按板位从高到低，晋级率，炸板行淡显，选中行左侧有强调条', async ({ page }) => {
+      await open(page, theme, 'limit-ladder')
+      const ladder = section(page, 'limit-ladder').locator('[data-slot="limit-ladder"]')
+      await expect(ladder).toBeVisible()
+      const boards = await ladder.locator('[data-slot="ladder-board"]').allTextContents()
+      expect(boards).toEqual(['5', '4', '3', '1'])
+      await expect(ladder.locator('[data-board="4"] [data-slot="ladder-promote"]')).toContainText('晋级 1/2')
+      await expect(ladder.locator('[data-board="1"] [data-slot="ladder-promote"]')).toContainText('晋级 6/31')
+      // 晋级条的填充宽度按比例：1/2 约一半。
+      const fill = ladder.locator('[data-board="4"] .k-ladder-promote-bar i')
+      const [bar, filled] = await Promise.all([
+        ladder.locator('[data-board="4"] .k-ladder-promote-bar').boundingBox(),
+        fill.boundingBox(),
+      ])
+      expect(filled!.width / bar!.width).toBeCloseTo(0.5, 1)
+      // 炸板、跌停行淡显，封住行不淡。
+      const opacity = (code: string) =>
+        ladder.locator(`[data-code="${code}"]`).evaluate((el) => Number(getComputedStyle(el).opacity))
+      expect(await opacity('600002')).toBe(1)
+      expect(await opacity('000003')).toBeLessThan(1)
+      expect(await opacity('603007')).toBeLessThan(await opacity('600002'))
+      // 状态标签：封住取涨色，跌停取跌色，炸板是琥珀。
+      const labelColor = (code: string) =>
+        ladder.locator(`[data-code="${code}"] .k-ladder-status`).evaluate((el) => getComputedStyle(el).color)
+      const tokenColor = (name: string) =>
+        page.evaluate((variable) => {
+          const probe = document.createElement('i')
+          probe.style.color = `var(${variable})`
+          document.body.append(probe)
+          const color = getComputedStyle(probe).color
+          probe.remove()
+          return color
+        }, name)
+      expect(await labelColor('600002')).toBe(await tokenColor('--pnl-up'))
+      expect(await labelColor('603007')).toBe(await tokenColor('--pnl-down'))
+      expect(await labelColor('000003')).toBe(await tokenColor('--signal-amber'))
+      // 选中行左侧 2px 强调条；点另一行，条跟着走。
+      const shadow = (code: string) =>
+        ladder.locator(`[data-code="${code}"]`).evaluate((el) => getComputedStyle(el).boxShadow)
+      const orange = await tokenColor('--signal-orange')
+      await expect(ladder.locator('[data-code="300004"]')).toHaveAttribute('aria-selected', 'true')
+      expect(await shadow('300004')).toBe(`${orange} 2px 0px 0px 0px inset`)
+      expect(await shadow('002005')).toBe('none')
+      await ladder.locator('[data-code="002005"]').click()
+      await expect(ladder.locator('[data-code="002005"]')).toHaveAttribute('aria-selected', 'true')
+      expect(await shadow('002005')).toBe(`${orange} 2px 0px 0px 0px inset`)
+      expect(await shadow('300004')).toBe('none')
+      // 键盘：↓ 移到下一行，Enter 选中。
+      await ladder.locator('[data-code="002005"]').focus()
+      await page.keyboard.press('ArrowDown')
+      await page.keyboard.press('Enter')
+      await expect(ladder.locator('[data-code="601006"]')).toHaveAttribute('aria-selected', 'true')
+    })
+
     test('积木：空态、工具条按钮与估算标记', async ({ page }) => {
       await open(page, theme, 'empty-state')
       await expect(section(page, 'empty-state').getByRole('status')).toContainText('Nothing selected')

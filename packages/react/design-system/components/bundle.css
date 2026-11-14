@@ -8966,6 +8966,192 @@ button.k-sm-head:focus-visible {
   left: -1px;
 }
 
+.k-ladder {
+  --ladder-cols: minmax(110px, 1.6fr) 72px 56px 72px 40px minmax(60px, 1fr) 52px;
+  min-width: 0;
+  min-height: 0;
+  font: var(--text-data) var(--font-sans);
+  color: var(--ink-100);
+  flex-direction: column;
+  flex: auto;
+  display: flex;
+  overflow: auto;
+}
+
+.k-ladder-list {
+  flex-direction: column;
+  display: flex;
+}
+
+.k-ladder-columns, .k-ladder-row {
+  grid-template-columns: var(--ladder-cols);
+  padding: 0 var(--inset-x);
+  align-items: center;
+  column-gap: 8px;
+  display: grid;
+}
+
+.k-ladder-columns {
+  height: 24px;
+  color: var(--ink-300);
+  font: var(--text-num-sm) var(--font-sans);
+  border-bottom: 1px solid var(--alpha-white-5);
+}
+
+.k-ladder-columns .is-num {
+  text-align: right;
+}
+
+.k-ladder-head {
+  height: 32px;
+  padding: 0 var(--inset-x);
+  background: var(--alpha-white-2_5);
+  border-bottom: 1px solid var(--alpha-white-5);
+  align-items: center;
+  gap: 6px;
+  display: flex;
+}
+
+.k-ladder-board {
+  font: 500 20px/22px var(--font-dot);
+  letter-spacing: 0;
+  color: var(--ink-100);
+  -webkit-font-smoothing: none;
+}
+
+.k-ladder-unit, .k-ladder-count {
+  color: var(--ink-300);
+  font: var(--text-data) var(--font-sans);
+}
+
+.k-ladder-promote {
+  color: var(--ink-300);
+  font: var(--text-num-sm) var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+  display: inline-flex;
+}
+
+.k-ladder-promote-bar {
+  background: var(--alpha-white-10);
+  width: 48px;
+  height: 3px;
+  position: relative;
+}
+
+.k-ladder-promote-bar i {
+  background: var(--ink-100);
+  position: absolute;
+  inset: 0 auto 0 0;
+}
+
+.k-ladder-row {
+  cursor: pointer;
+  outline: none;
+  height: 28px;
+  position: relative;
+}
+
+.k-ladder-row:hover {
+  background: var(--alpha-white-2_5);
+}
+
+.k-ladder-row.is-selected {
+  background: var(--alpha-white-6_5);
+  box-shadow: inset 2px 0 0 var(--signal-orange);
+}
+
+.k-ladder-row:focus-visible {
+  outline: 1px solid var(--line-200);
+  outline-offset: -1px;
+}
+
+.k-ladder-row:not([data-status="sealed"]) {
+  opacity: .6;
+}
+
+.k-ladder-name {
+  align-items: baseline;
+  gap: 6px;
+  min-width: 0;
+  display: flex;
+}
+
+.k-ladder-title {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.k-ladder-code {
+  color: var(--ink-300);
+  font: var(--text-num-sm) var(--font-mono);
+}
+
+.k-ladder-num {
+  text-align: right;
+  font: var(--text-data) var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.k-ladder-industry {
+  color: var(--ink-300);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.k-ladder-status {
+  font: var(--text-num-sm) var(--font-sans);
+  white-space: nowrap;
+  color: var(--ink-300);
+  background: var(--alpha-white-5);
+  border-radius: 3px;
+  justify-self: end;
+  padding: 1px 6px;
+}
+
+.k-ladder-status[data-status="sealed"] {
+  color: var(--pnl-up);
+  background: var(--pnl-up);
+}
+
+@supports (color: color-mix(in lab, red, red)) {
+  .k-ladder-status[data-status="sealed"] {
+    background: var(--ds-c-mejly1);
+  }
+}
+
+.k-ladder-status[data-status="broken"] {
+  color: var(--signal-amber);
+  background: var(--signal-amber);
+}
+
+@supports (color: color-mix(in lab, red, red)) {
+  .k-ladder-status[data-status="broken"] {
+    background: var(--ds-c-x3q5fz);
+  }
+}
+
+.k-ladder-status[data-status="down"] {
+  color: var(--pnl-down);
+  background: var(--pnl-down);
+}
+
+@supports (color: color-mix(in lab, red, red)) {
+  .k-ladder-status[data-status="down"] {
+    background: var(--ds-c-qohyoc);
+  }
+}
+
+.k-ladder-empty {
+  padding: var(--space-6);
+  color: var(--ink-300);
+  margin: auto;
+}
+
 @property --tw-translate-x {
   syntax: "*";
   inherits: false;
@@ -9398,6 +9584,9 @@ button.k-sm-head:focus-visible {
   --ds-c-1xbddtq: color-mix(in srgb, var(--ink-400) 12%, transparent);
   --ds-c-1a6btok: color(from var(--div-pos-200) srgb clamp(0, calc((.43 - (.2126 * r + .7152 * g + .0722 * b)) * 1000), 1) clamp(0, calc((.43 - (.2126 * r + .7152 * g + .0722 * b)) * 1000), 1) clamp(0, calc((.43 - (.2126 * r + .7152 * g + .0722 * b)) * 1000), 1));
   --ds-c-1athvsc: color(from var(--div-neg-200) srgb clamp(0, calc((.43 - (.2126 * r + .7152 * g + .0722 * b)) * 1000), 1) clamp(0, calc((.43 - (.2126 * r + .7152 * g + .0722 * b)) * 1000), 1) clamp(0, calc((.43 - (.2126 * r + .7152 * g + .0722 * b)) * 1000), 1));
+  --ds-c-mejly1: color-mix(in srgb, var(--pnl-up) 14%, transparent);
+  --ds-c-x3q5fz: color-mix(in srgb, var(--signal-amber) 14%, transparent);
+  --ds-c-qohyoc: color-mix(in srgb, var(--pnl-down) 14%, transparent);
   --ds-c-yj1s8q: #fff;
 }
 
