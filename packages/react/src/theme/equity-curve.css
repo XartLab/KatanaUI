@@ -125,3 +125,19 @@
   color: var(--ink-300);
   font: var(--text-num-sm) var(--font-mono);
 }
+
+/* 精密仪器语言（#7）：标题宽体大写，图例、来源行、表格列头用点阵字，标题左边 2px 强调条；数值仍是等宽数字。 */
+.k-eq-title {
+  padding-left: 8px;
+  border-left: 2px solid var(--chart-accent, var(--signal-orange));
+  font: 12px/20px var(--font-wide);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.k-eq-key,
+.k-eq-source,
+.k-eq-table thead th {
+  font: var(--text-tag-md) var(--font-dot);
+  letter-spacing: 0;
+  -webkit-font-smoothing: none;
+}
