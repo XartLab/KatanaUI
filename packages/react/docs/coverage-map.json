@@ -313,9 +313,9 @@
     },
     "NewsFeed": {
       "kind": "面板",
-      "status": "部分",
-      "at": ["src/panels/inbox"],
-      "note": "有报告流，公告、RSS、数据源事件的统一时间流没有"
+      "status": "已做",
+      "at": ["NewsFeed"],
+      "note": "件已做（列表与卡片、频道、来源、搜索、暂停、新消息计数）；应用里接真实新闻源另开票"
     },
     "Notes": {
       "kind": "面板",

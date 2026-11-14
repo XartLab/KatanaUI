@@ -3926,4 +3926,72 @@ for (const theme of THEMES) {
     await page.keyboard.press('ArrowRight')
     await expect(tab('Workspace 8')).toBeFocused()
   })
+
+  test(`新闻流（${theme}）：两种排法、频道与来源与搜索筛选、相对与绝对时间、新消息先计数点了才插入、品种胶囊回调`, async ({
+    page,
+  }) => {
+    await open(page, theme, 'news-feed')
+    const doc = section(page, 'news-feed')
+    const frame = doc.getByTestId('news-frame')
+    const rows = frame.locator('.k-news-item')
+    // 列表：六条，新的在前；时间是相对的，悬停属性里是绝对时间；重要条目有琥珀标记。
+    await expect(rows).toHaveCount(6)
+    await expect(rows.first().locator('.k-news-title')).toContainText('星河锂业披露')
+    await expect(rows.first().locator('time')).toHaveText('3 分钟前')
+    await expect(rows.first().locator('time')).toHaveAttribute('title', '2026-11-15 09:27 UTC')
+    const flag = rows.first().locator('.k-news-flag')
+    await expect(flag).toBeVisible()
+    await expect.poll(() => bg(flag)).toBe(await token(page, '--signal-amber'))
+    await expect(rows.nth(1).locator('.k-news-flag')).toHaveCount(0)
+    // 列表里一行一条，行高小于 60；卡片里有摘要。
+    expect((await rows.first().boundingBox())!.height).toBeLessThan(60)
+    await expect(frame.locator('.k-news-summary')).toHaveCount(0)
+    const cards = doc.getByTestId('news-cards')
+    await expect(cards.locator('.k-news-summary').first()).toBeVisible()
+    await expect
+      .poll(() =>
+        cards
+          .locator('.k-news-summary')
+          .first()
+          .evaluate((n) => getComputedStyle(n).webkitLineClamp),
+      )
+      .toBe('2')
+    const first = (await cards.locator('.k-news-item').nth(0).boundingBox())!
+    const second = (await cards.locator('.k-news-item').nth(1).boundingBox())!
+    expect(Math.abs(first.y - second.y)).toBeLessThan(2) // 卡片并排
+    // 切排法：列表里点「卡片」出摘要。
+    await frame.getByRole('button', { name: '卡片' }).click()
+    await expect(frame.locator('.k-news-summary').first()).toBeVisible()
+    await frame.getByRole('button', { name: '列表' }).click()
+    // 频道、来源、搜索。
+    await frame.getByRole('button', { name: '要闻' }).click()
+    await expect(rows).toHaveCount(3)
+    await frame.getByRole('button', { name: '演示研究台' }).click()
+    await expect(rows).toHaveCount(1)
+    await frame.getByRole('button', { name: '清除来源筛选' }).click()
+    await frame.getByRole('button', { name: '全部' }).click()
+    await frame.getByRole('searchbox', { name: '搜索关键词' }).fill('海岚')
+    await expect(rows).toHaveCount(1)
+    await frame.getByRole('searchbox', { name: '搜索关键词' }).fill('不存在的词')
+    await expect(frame.locator('.k-news-empty')).toHaveText('没有符合筛选的新闻')
+    await frame.getByRole('searchbox', { name: '搜索关键词' }).fill('')
+    // 暂停后新消息只计数，点了才插入、在最前。
+    await frame.getByRole('button', { name: '暂停' }).click()
+    await expect(frame.getByRole('button', { name: '继续' })).toHaveAttribute('aria-pressed', 'true')
+    await doc.getByTestId('news-push').click()
+    await expect(frame.getByTestId('news-new')).toHaveText('1 条新消息')
+    await expect(rows).toHaveCount(6)
+    await frame.getByTestId('news-new').click()
+    await expect(rows).toHaveCount(7)
+    await expect(rows.first().locator('.k-news-title')).toContainText('演示快讯 7')
+    await expect(frame.getByTestId('news-new')).toHaveCount(0)
+    // 继续后在顶部，新条目直接插入。
+    await frame.getByRole('button', { name: '继续' }).click()
+    await doc.getByTestId('news-push').click()
+    await expect(rows).toHaveCount(8)
+    await expect(frame.getByTestId('news-new')).toHaveCount(0)
+    // 点品种胶囊回调。
+    await rows.nth(3).locator('.k-news-symbol').first().click()
+    await expect(doc).toContainText('点品种胶囊：600')
+  })
 }
