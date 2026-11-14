@@ -9,7 +9,7 @@
       "title": "Style",
       "description": "设计 token（Console 与 Graphite 两个主题、红涨绿跌切换）、Tailwind v4 主题与动效 CSS。ui.css 最后引。",
       "dependencies": [
-        "@katana-ui/tokens@0.1.0",
+        "@katana-ui/tokens@0.2.0",
         "tailwindcss@4.3.5"
       ],
       "files": [
@@ -144,6 +144,11 @@
           "target": "~/src/katana/ui/theme/menu.css"
         },
         {
+          "path": "src/theme/metric-card.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/metric-card.css"
+        },
+        {
           "path": "src/theme/motion.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/motion.css"
@@ -276,7 +281,7 @@
       "title": "Motion",
       "description": "三条弹簧参数（snappy、gentle、settle），给 motion/react 用。",
       "dependencies": [
-        "@katana-ui/tokens@0.1.0"
+        "@katana-ui/tokens@0.2.0"
       ],
       "files": [
         {
@@ -2268,6 +2273,25 @@
           "path": "src/quant/meter.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/quant/meter.tsx"
+        }
+      ]
+    },
+    {
+      "name": "metric-card",
+      "type": "registry:component",
+      "title": "Metric Card",
+      "description": "照 uiarc 的 Metric explorer 的结构：标题、大号当前值、较前日 / 周 / 月 / 年的变化（涨跌色）、迷你走势线（1 月 / 3 月 / 6 月 / 1 年分段）、可选阶段带（五档边界与文案由调用方给）、来源与更新时间一行；MetricCardGrid 把卡排成墙。组件只画不算，数据与文字都由调用方传，没有数据就是空态。",
+      "registryDependencies": [
+        "@katana/change-text",
+        "@katana/cn",
+        "@katana/sparkline",
+        "@katana/toggle-group"
+      ],
+      "files": [
+        {
+          "path": "src/quant/metric-card.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/metric-card.tsx"
         }
       ]
     },

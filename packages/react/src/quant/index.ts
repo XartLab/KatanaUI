@@ -94,3 +94,13 @@ export {
   type ConsensusState,
   type ConsensusVerdict,
 } from './consensus-block.tsx'
+export {
+  MetricCard,
+  MetricCardGrid,
+  metricStageIndex,
+  type MetricCardGridProps,
+  type MetricCardProps,
+  type MetricChange,
+  type MetricRange,
+  type MetricStage,
+} from './metric-card.tsx'
