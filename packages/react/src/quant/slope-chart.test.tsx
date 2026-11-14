@@ -28,7 +28,7 @@ describe('spreadLabels', () => {
     const out = spreadLabels([95, 96, 97, 98], 10, 0, 100)
     expect(Math.max(...out)).toBeLessThanOrEqual(100)
     expect(Math.min(...out)).toBeGreaterThanOrEqual(0)
-    const sorted = out.toSorted((a, b) => a - b)
+    const sorted = [...out].sort((a, b) => a - b)
     for (let i = 1; i < 4; i++) expect(sorted[i]! - sorted[i - 1]!).toBeGreaterThanOrEqual(10 - 1e-9)
   })
   it('装不下就均匀铺满', () => {

@@ -47,6 +47,8 @@
 | DataQuality | 研究 | 面板 | — | 没做 | 研究层，还没有对应面板 |
 | DataSources | 运行中心 | 面板 | `src/shell/ConnectionList.tsx` | 部分 | 连接列表有，延迟 LCD 与今日拉取量没有 |
 | DatasetCatalog | 研究 | 面板 | `src/shell/DatasetSourcesPane.tsx`、`TreeView` | 部分 | 数据集来源有，字段数、频率、覆盖区间没有；目录树的件（TreeView）已有，面板还没有接它 |
+| DataSources | 运行中心 | 面板 | `src/shell/ConnectionList.tsx` | 部分 | 连接列表有，延迟 LCD 与今日拉取量没有；组件库已有 UptimeBars 逐格可用条（#1918）可补逐日可用，面板里还没接 |
+| DatasetCatalog | 研究 | 面板 | `src/shell/DatasetSourcesPane.tsx` | 部分 | 数据集来源有，字段数、频率、覆盖区间没有 |
 | DecisionJournal | 决策 | 面板 | — | 没做 | 决策层，还没有对应面板 |
 | DecisionQueue | 决策 | 面板 | — | 没做 | 决策层，还没有对应面板 |
 | DeploymentBoard | 研究 | 面板 | — | 没做 | 研究层，还没有对应面板 |
@@ -94,8 +96,8 @@
 | PositionHistory | 盈亏 | 面板 | — | 没做 | 盈亏，还没有对应面板 |
 | Preferences | 工作台 | 面板 | `src/shell/AppSettingsDialog.tsx` | 已做 |  |
 | PriceChart | 图表 | 面板 | `src/panels/chart` | 已做 |  |
-| QuantileLayers | 图表 | 面板 | — | 没做 | 研究层，还没有对应面板 |
-| RebalanceDesk | 资产管理 | 面板 | `src/panels/rebalance` | 部分 | 有再平衡面板，目标组合与当前组合的差额表没有对齐设计稿 |
+| QuantileLayers | 图表 | 面板 | — | 没做 | 研究层，还没有对应面板；组件库已有 Ridgeline 山脊图（#1918）可画各层收益分布，面板里还没接 |
+| RebalanceDesk | 资产管理 | 面板 | `src/panels/rebalance` | 部分 | 有再平衡面板，目标组合与当前组合的差额表没有对齐设计稿；组件库已有 SlopeChart 斜率图（#1918）可画再平衡前后权重，面板里还没接 |
 | RegimeStrip | 研究 | 量化 | — | 没做 | 市场状态带，还没有对应组件 |
 | ReplayBar | 订单流 | 面板 | `src/panels/chart/ReplayBar.tsx` | 已做 |  |
 | ReportBuilder | 工具 | 面板 | — | 没做 | 报告装配，还没有对应面板 |
@@ -112,10 +114,10 @@
 | Splitter | 工作台 | 基础件 | `src/workspace/WorkspaceCanvas.tsx` | 部分 | 分割线在应用里自己做，没有抽进包里的 primitives |
 | StatusBar | 工作台 | 积木 | — | 没做 | 顶栏底栏的分段模型，还没有对应组件 |
 | StatusLED | 工作台 | 自有件 | `Led` | 已做 |  |
-| StrategyCompare | 研究 | 面板 | — | 没做 | 研究层，还没有对应面板 |
+| StrategyCompare | 研究 | 面板 | — | 没做 | 研究层，还没有对应面板；组件库已有 ConnectedScatter 连线散点图（#1918）可画波动与收益的月度轨迹，面板里还没接 |
 | StressTest | 资产管理 | 面板 | — | 没做 | 资产管理，还没有对应面板 |
 | SymbolMap | 运行中心 | 面板 | — | 没做 | 代码映射，还没有对应面板 |
-| SystemHealth | 运行中心 | 面板 | `src/shell/LocalServiceStatus.tsx` | 部分 | 本地服务状态有，六块仪表没有 |
+| SystemHealth | 运行中心 | 面板 | `src/shell/LocalServiceStatus.tsx` | 部分 | 本地服务状态有，六块仪表没有；组件库已有 UptimeBars 逐格可用条（#1918）可补逐小时可用，面板里还没接 |
 | TCA | 资产管理 | 面板 | — | 没做 | 资产管理，还没有对应面板 |
 | Talk | 发现 | 面板 | — | 没做 | 交易聊天流，还没有对应面板 |
 | TaxLots | 盈亏 | 面板 | — | 没做 | 盈亏，还没有对应面板 |

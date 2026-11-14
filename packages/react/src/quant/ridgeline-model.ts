@@ -10,7 +10,7 @@ const finite = (values: readonly number[]) => values.filter((value) => Number.is
 
 /** 一组数的个数、均值、中位数、范围（不是有限数的先丢掉）；空组的数都是 NaN。 */
 export function ridgeStats(values: readonly number[]): RidgeStats {
-  const sorted = finite(values).toSorted((a, b) => a - b)
+  const sorted = finite(values).sort((a, b) => a - b)
   if (sorted.length === 0) return { n: 0, mean: NaN, median: NaN, min: NaN, max: NaN }
   const mean = sorted.reduce((sum, value) => sum + value, 0) / sorted.length
   return { n: sorted.length, mean, median: quantileSorted(sorted, 0.5), min: sorted[0]!, max: sorted.at(-1)! }
@@ -21,7 +21,7 @@ export function ridgeStats(values: readonly number[]): RidgeStats {
  * σ 用样本标准差（n − 1），IQR 用 type 7 分位数。少于两个数或散布为 0（全相等）取不出来，返回 null，由调用方给兜底。
  */
 export function silvermanBandwidth(values: readonly number[]): number | null {
-  const sorted = finite(values).toSorted((a, b) => a - b)
+  const sorted = finite(values).sort((a, b) => a - b)
   const n = sorted.length
   if (n < 2) return null
   const mean = sorted.reduce((sum, value) => sum + value, 0) / n

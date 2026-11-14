@@ -18,7 +18,7 @@ describe('layoutGalaxy', () => {
   const layout = layoutGalaxy(nodes, 'sector', frame)
   it('同样的数据永远排出同样的位置，与输入顺序无关', () => {
     expect(layoutGalaxy(nodes, 'sector', frame)).toEqual(layout)
-    expect(layoutGalaxy(nodes.toReversed(), 'sector', frame)).toEqual(layout)
+    expect(layoutGalaxy([...nodes].reverse(), 'sector', frame)).toEqual(layout)
   })
   it('每个点都在自己那一团的圈里，团都在画面里，点与点不重叠', () => {
     const groups = new Map(layout.groups.map((group) => [group.key, group]))
@@ -48,7 +48,7 @@ describe('layoutGalaxy', () => {
     expect(
       layoutGalaxy(nodes, 'market', frame)
         .groups.map((group) => group.key)
-        .toSorted(),
+        .sort(),
     ).toEqual(['主板', '创业板'])
     const dirty = [
       ...nodes,
@@ -70,9 +70,9 @@ describe('hitNode 与 stepNode', () => {
   })
   it('方向键只往那一侧走：往右走到右边的点，那一侧没有点就留在原地，不是方向键 null', () => {
     const ids = [...layout.places].filter(([, p]) => p.group === place.group).map(([key]) => key)
-    const rightmost = ids.toSorted((a, b) => layout.places.get(b)!.x - layout.places.get(a)!.x)[0]!
+    const rightmost = [...ids].sort((a, b) => layout.places.get(b)!.x - layout.places.get(a)!.x)[0]!
     expect(stepNode(layout.places, ids, rightmost, 'ArrowRight')).toBe(rightmost)
-    const leftmost = ids.toSorted((a, b) => layout.places.get(a)!.x - layout.places.get(b)!.x)[0]!
+    const leftmost = [...ids].sort((a, b) => layout.places.get(a)!.x - layout.places.get(b)!.x)[0]!
     const next = stepNode(layout.places, ids, leftmost, 'ArrowRight')!
     expect(next).not.toBe(leftmost)
     expect(layout.places.get(next)!.x).toBeGreaterThan(layout.places.get(leftmost)!.x)

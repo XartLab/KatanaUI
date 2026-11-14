@@ -351,11 +351,14 @@ export function SymbolGalaxyDemo() {
           <p data-gallery-galaxy-picked>{picked ? picked.label : ''}</p>
         </div>
       </Row>
-      <Row name="2400 个示例品种（点数多，自动改画 canvas）">
-        <div className="gal-wide" data-gallery-galaxy="canvas">
-          <SymbolGalaxy {...shared} nodes={GALAXY_MANY} label="示例：品种星系（2400 个）" defaultGroupBy="market" />
-        </div>
-      </Row>
+      {/* canvas 是浏览器里画的，设计系统包的静态预览（服务端渲染）里画不出来，所以只在浏览器里摆这一行。 */}
+      {typeof document !== 'undefined' && (
+        <Row name="2400 个示例品种（点数多，自动改画 canvas）">
+          <div className="gal-wide" data-gallery-galaxy="canvas">
+            <SymbolGalaxy {...shared} nodes={GALAXY_MANY} label="示例：品种星系（2400 个）" defaultGroupBy="market" />
+          </div>
+        </Row>
+      )}
     </>
   )
 }

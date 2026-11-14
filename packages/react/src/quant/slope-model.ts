@@ -20,9 +20,7 @@ export type SlopeRow = {
 
 /** 名次：值大的排前，1 起；值相同按输入顺序（稳定）。 */
 export function ranks(values: readonly number[]): number[] {
-  const order = values
-    .map((value, index) => ({ value, index }))
-    .toSorted((a, b) => b.value - a.value || a.index - b.index)
+  const order = values.map((value, index) => ({ value, index })).sort((a, b) => b.value - a.value || a.index - b.index)
   const out = Array.from({ length: values.length }, () => 0)
   order.forEach((entry, position) => {
     out[entry.index] = position + 1
@@ -39,7 +37,7 @@ export function spreadLabels(ys: readonly number[], gap: number, lo: number, hi:
   if (n === 0) return []
   if (gap * (n - 1) > hi - lo)
     return ys.map((_, index, all) => (n === 1 ? (lo + hi) / 2 : lo + ((hi - lo) * rankOf(all, index)) / (n - 1)))
-  const order = ys.map((y, index) => ({ y, index })).toSorted((a, b) => a.y - b.y || a.index - b.index)
+  const order = ys.map((y, index) => ({ y, index })).sort((a, b) => a.y - b.y || a.index - b.index)
   const out = order.map((entry) => Math.min(hi, Math.max(lo, entry.y)))
   for (let i = 1; i < n; i++) out[i] = Math.max(out[i]!, out[i - 1]! + gap)
   out[n - 1] = Math.min(out[n - 1]!, hi)

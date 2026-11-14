@@ -3811,7 +3811,7 @@ export const PAGES: readonly DocPage[] = [
   {
     id: 'uptime-bars',
     group: 'readouts',
-    cardHeight: 200,
+    cardHeight: 184,
     title: 'UptimeBars 逐格可用条',
     summary:
       '一格一天或一小时的可用条，用于数据源与连接健康：颜色加高度一起表达状态（绿满格可用、琥珀半高降级、红满格中断、虚线底无数据）；悬停或聚焦一格，条下的读数行写那一格的整句（如断流次数）。功能参照 Arc Uptime status，实现原创。',
@@ -3854,7 +3854,7 @@ export const PAGES: readonly DocPage[] = [
   {
     id: 'range-histogram-slider',
     group: 'forms',
-    cardHeight: 300,
+    cardHeight: 162,
     title: 'RangeHistogramSlider 直方图区间滑块',
     summary:
       '一排柱子画出全体的分布，下面一条轨道两个把手：拖出来的区间里的柱子亮、区间外的暗。用在筛选器，在全市场分布上拖市值、涨幅、换手的区间。点柱子或轨道，最近的把手跳过去。功能参照 Arc Range histogram slider，实现原创。',
@@ -3910,7 +3910,7 @@ export const PAGES: readonly DocPage[] = [
   {
     id: 'ridgeline',
     group: 'quant',
-    cardHeight: 560,
+    cardHeight: 660,
     title: 'Ridgeline 山脊图',
     summary:
       '每组一条核密度曲线，上下叠着排，一眼比各组分布的位置、宽窄与形状（分位层、因子分组的收益分布）。带宽默认 Silverman 经验规则；给了基准线就按中位数在它上下涂涨跌色。悬停或聚焦一条，其余变暗。功能参照 Arc Ridgeline，实现原创。',
@@ -3976,7 +3976,7 @@ export const PAGES: readonly DocPage[] = [
   {
     id: 'slope-chart',
     group: 'quant',
-    cardHeight: 640,
+    cardHeight: 700,
     title: 'SlopeChart 斜率图',
     summary:
       '每项一条线连「前」「后」两列，看再平衡前后的权重、因子排名的变化。线按变化涂涨跌色（跟 data-updown 走），两侧写名字与数，标签互相不重叠；rank 模式纵轴是名次，涨跌看名次升降。悬停或聚焦一条，其余变暗。功能参照 Arc Slope chart，实现原创。',
@@ -4033,7 +4033,7 @@ export const PAGES: readonly DocPage[] = [
   {
     id: 'connected-scatter',
     group: 'quant',
-    cardHeight: 760,
+    cardHeight: 1146,
     title: 'ConnectedScatter 连线散点图',
     summary:
       '每个点是一个时刻的 (x, y)，按时间顺序连成轨迹，看一个对象在两个量之间怎么走（如策略的波动 vs 收益按月的路径、风格漂移）。时间方向不靠颜色：起点空心圈、终点实心圈加箭头、点越靠后越不透明。多条轨迹各取 series 色板的一个色。功能参照 Arc Connected scatter，实现原创。',
@@ -4082,7 +4082,7 @@ export const PAGES: readonly DocPage[] = [
   {
     id: 'symbol-galaxy',
     group: 'blocks',
-    cardHeight: 700,
+    cardHeight: 807,
     title: 'SymbolGalaxy 品种星系',
     summary:
       '持仓、自选、筛选结果按行业、市场、因子分位或状态聚成一团团的圆：面积是市值或仓位，颜色是涨跌（七档，跟涨跌配色走）。上面一排切换分组方式，点在团间平滑迁移；悬停读详情，点击选中；Tab 在团间走、方向键在团内走。点多时自动改画 canvas。布局用 d3-hierarchy 的 pack，同样的数据永远同样的位置。功能参照 Arc Customer galaxy，实现原创。',

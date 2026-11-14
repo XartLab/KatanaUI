@@ -132,7 +132,7 @@
       "kind": "面板",
       "status": "部分",
       "at": ["src/shell/ConnectionList.tsx"],
-      "note": "连接列表有，延迟 LCD 与今日拉取量没有"
+      "note": "连接列表有，延迟 LCD 与今日拉取量没有；组件库已有 UptimeBars 逐格可用条（#1918）可补逐日可用，面板里还没接"
     },
     "DatasetCatalog": {
       "kind": "面板",
@@ -415,13 +415,13 @@
       "kind": "面板",
       "status": "没做",
       "at": [],
-      "note": "研究层，还没有对应面板"
+      "note": "研究层，还没有对应面板；组件库已有 Ridgeline 山脊图（#1918）可画各层收益分布，面板里还没接"
     },
     "RebalanceDesk": {
       "kind": "面板",
       "status": "部分",
       "at": ["src/panels/rebalance"],
-      "note": "有再平衡面板，目标组合与当前组合的差额表没有对齐设计稿"
+      "note": "有再平衡面板，目标组合与当前组合的差额表没有对齐设计稿；组件库已有 SlopeChart 斜率图（#1918）可画再平衡前后权重，面板里还没接"
     },
     "RegimeStrip": {
       "kind": "量化",
@@ -518,7 +518,7 @@
       "kind": "面板",
       "status": "没做",
       "at": [],
-      "note": "研究层，还没有对应面板"
+      "note": "研究层，还没有对应面板；组件库已有 ConnectedScatter 连线散点图（#1918）可画波动与收益的月度轨迹，面板里还没接"
     },
     "StressTest": {
       "kind": "面板",
@@ -536,7 +536,7 @@
       "kind": "面板",
       "status": "部分",
       "at": ["src/shell/LocalServiceStatus.tsx"],
-      "note": "本地服务状态有，六块仪表没有"
+      "note": "本地服务状态有，六块仪表没有；组件库已有 UptimeBars 逐格可用条（#1918）可补逐小时可用，面板里还没接"
     },
     "TCA": {
       "kind": "面板",

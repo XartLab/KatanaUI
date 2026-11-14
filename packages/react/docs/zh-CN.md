@@ -31,6 +31,19 @@ tokens → theme → lib → primitives → katana → patterns → quant → bl
 样子照组件卡，没改：规则是 `src/theme/` 下的普通 CSS（`led.css`、`lcd.css`、`kbd.css`、`badge.css`、`rolling-text.css`、`number-input.css`、`date-time.css`、`loading.css`），类名 `k-*` 原样保留，应用里按这些类写的覆盖规则照旧生效。
 文字一律由调用方传（`label`、`LoadingTexts`、`DateTimeLabels`），包里没有中文；跟应用耦合的部分（徽标从市场包来、快捷键按平台拆块、文字按界面语言翻）留在 `src/ui/` 的适配层，调用处不用改。
 
+### 分布与关系类的件（#1918）
+
+功能参照 Arc（uiarc.dev，2026-11-14 读：目录页与件名；源码页要授权，没读），只学「有哪些部分、键盘怎么走、动效怎么表现」，实现原创，不装它的 registry、不抄代码；每个件的文件头写明出处。样式在 `src/theme/distribution.css`，颜色只用语义 token。
+
+| 件 | 层 | 用途 |
+| --- | --- | --- |
+| `UptimeBars` | katana | 数据源 / 连接健康的逐格可用条（一格一天或一小时） |
+| `RangeHistogramSlider` | patterns | 筛选器：在全体分布的直方图上拖区间（照 APG 多把手滑块） |
+| `Ridgeline`、`SlopeChart`、`ConnectedScatter` | quant（出口 `@katanaview/ui/quant`） | 各组收益分布叠画、前后对比、波动 vs 收益的月度轨迹；共用 `quant/chart-scale.ts`（比例尺、刻度、分位数） |
+| `SymbolGalaxy` | blocks（出口 `@katanaview/ui/blocks`） | 品种星系：按行业 / 市场 / 因子分位 / 状态聚团，面积是市值、颜色是涨跌，切分组时点平滑迁移 |
+
+这几件都有纯函数的模型文件（`*-model.ts`）与单测；文档站页上的演示数据用固定种子生成并在页上写明。应用里接真实数据另开票。
+
 ### 设计稿覆盖（#1870）
 
 `docs/coverage-map.json` 是手写的：设计稿存档的每张组件卡（`design/katana-console/project/components/`）落在哪一类（基础件、自有件、量化、积木、面板）、落点、做没做。

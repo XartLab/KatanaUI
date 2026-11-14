@@ -48,14 +48,14 @@ export function layoutGalaxy(
     .sort((a, b) => (b.value ?? 0) - (a.value ?? 0) || (a.data.id < b.data.id ? -1 : a.data.id > b.data.id ? 1 : 0))
   const w = frame.width - 2 * frame.pad
   const h = frame.height - 2 * frame.pad - frame.headroom
-  pack<Datum>()
+  const packed = pack<Datum>()
     .size([w, h])
     // pack 的 padding 按「父节点」取：根的是团与团之间的缝，团的是它里面点与点之间的缝。
     .padding((node) => (node.depth === 0 ? GROUP_GAP : NODE_GAP))(root)
   const dx = frame.pad
   const dy = frame.pad + frame.headroom
   const places = new Map<string, GalaxyPlace>()
-  const groups = (root.children ?? []).map((group) => {
+  const groups = (packed.children ?? []).map((group) => {
     for (const leaf of group.children ?? [])
       places.set(leaf.data.id, { x: leaf.x + dx, y: leaf.y + dy, r: leaf.r, group: group.data.key })
     return {

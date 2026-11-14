@@ -47,7 +47,7 @@ export function SlopeChart({
   const rows = slopeLayout(items, { mode, top: TOP, bottom: H - PAD, labelGap: GAP })
   const order = rows
     .map((row, index) => ({ index, y: row.y0 }))
-    .toSorted((a, b) => a.y - b.y || a.index - b.index)
+    .sort((a, b) => a.y - b.y || a.index - b.index)
     .map((entry) => entry.index)
   const [hover, setHover] = useState<number | null>(null)
   const [focus, setFocus] = useState<number | null>(null)
