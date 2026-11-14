@@ -4379,10 +4379,14 @@ for (const theme of THEMES) {
     const reval = chart.locator('[data-slot="flow-link"][data-kind="revaluation"]')
     await expect(flow).toHaveCount(24)
     await expect(reval).toHaveCount(2)
-    expect(await colorAt(page, flow.first(), 'stroke')).toEqual(await rgba(page, await token(page, '--ink-400')))
+    expect(await colorAt(page, flow.first(), 'stroke')).toEqual(await rgba(page, await token(page, '--ink-300')))
     expect(await reval.first().evaluate((e) => getComputedStyle(e).stroke)).toMatch(/^url\(/)
     expect(parseFloat(await flow.first().evaluate((e) => getComputedStyle(e).strokeWidth))).toBeGreaterThan(2)
     expect((await rect('assets').boundingBox())!.height).toBeGreaterThan(15)
+    // 开关是中性灰（按下是 bg-300），不是橙。
+    expect(await colorAt(page, chart.getByRole('button', { name: '显示价格重估' }), 'background-color')).toEqual(
+      await rgba(page, await token(page, '--bg-300')),
+    )
     await expect(chart.locator('[data-slot="flow-legend"]')).toContainText('交易流量')
     await expect(chart.locator('[data-slot="flow-legend"]')).toContainText('价格重估')
     await expect(chart.locator('.k-fsk-head')).toHaveText(['来源', '通道', '用途', '受益方'])
@@ -4395,6 +4399,15 @@ for (const theme of THEMES) {
     await expect(tip).toContainText('流入')
     await expect(tip).toContainText('170')
     await expect(tip).toContainText('23.3%')
+    // 读数不压住被悬停节点的标签。
+    const tipBox = (await tip.boundingBox())!
+    const labelBox = (await chart.locator('[data-slot="flow-node"][data-id="assets"] text').boundingBox())!
+    expect(
+      tipBox.x < labelBox.x + labelBox.width &&
+        labelBox.x < tipBox.x + tipBox.width &&
+        tipBox.y < labelBox.y + labelBox.height &&
+        labelBox.y < tipBox.y + tipBox.height,
+    ).toBe(false)
     await expect(tip).toContainText('重估（出）')
     await expect(rect('nonbank')).toHaveAttribute('data-lit', '')
     await expect(rect('foreign')).toHaveAttribute('data-lit', '')
@@ -4449,11 +4462,11 @@ for (const theme of THEMES) {
     await expect(chart.locator('[data-pinned]')).toHaveCount(0)
     // 开关：关掉价格重估，它整条不参与排布，图上与图例里都没有，节点高度回到只有交易流量。
     const before = (await rect('assets').boundingBox())!.height
-    await chart.getByRole('switch', { name: '显示价格重估' }).click()
+    await chart.getByRole('button', { name: '显示价格重估' }).click()
     await expect(reval).toHaveCount(0)
     await expect(chart.locator('[data-slot="flow-legend"]')).not.toContainText('价格重估')
     await expect.poll(async () => (await rect('assets').boundingBox())!.height).toBeLessThan(before)
-    await chart.getByRole('switch', { name: '显示价格重估' }).click()
+    await chart.getByRole('button', { name: '显示价格重估' }).click()
     await expect(reval).toHaveCount(2)
     // 表格视图：每条链路一行，重估单独标类型。
     await chart.getByRole('button', { name: '表格视图' }).click()
@@ -4494,6 +4507,8 @@ for (const theme of THEMES) {
     await expect(main.locator('[data-metric="bias"] dd')).toHaveText(/^[+-]\d\.\d\d$/)
     // 十字线读出这一期的全部发布史：键盘 Home 到第一期（有首次发布与年度基准修订），读数带修订幅度。
     const slider = main.locator('[data-slot="vintage-chart"]')
+    // 平时图区外面没有框。
+    expect(await slider.evaluate((e) => getComputedStyle(e).outlineStyle)).toBe('none')
     await slider.focus()
     await page.keyboard.press('Home')
     const tip = main.locator('[data-slot="lcd-tooltip"]')

@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: MIT
 import { useId, useRef, useState, type KeyboardEvent, type PointerEvent, type ReactNode } from 'react'
-import { Switch } from '../primitives/switch.tsx'
 import { ChartActions } from './chart-kit/chart-actions.tsx'
 import { ChartTable, type ChartViewProps } from './chart-kit/chart-table.tsx'
 import { LcdTooltip, type LcdTooltipRow } from './chart-kit/lcd-tooltip.tsx'
@@ -87,7 +86,7 @@ export function FlowSankey({
   const [showReval, setShowReval] = useState(true)
   const [hover, setHover] = useState<{ kind: 'node' | 'link'; id: string } | null>(null)
   const [pinned, setPinned] = useState<string | null>(null)
-  const [anchor, setAnchor] = useState<{ x: number; y: number; left: boolean } | null>(null)
+  const [anchor, setAnchor] = useState<{ x: number; y: number; left: boolean; above: boolean | null } | null>(null)
   const [tab, setTab] = useState<string | null>(null)
   const hasReval = links.some((link) => link.kind === 'revaluation' && link.value > 0)
   const laid = layoutFlow(nodes, links, {
@@ -121,16 +120,22 @@ export function FlowSankey({
     const box = stage.current?.getBoundingClientRect()
     if (box) {
       const x = event.clientX - box.left
-      setAnchor({ x, y: event.clientY - box.top, left: x > box.width / 2 })
+      setAnchor({ x, y: event.clientY - box.top, left: x > box.width / 2, above: null })
     }
   }
+  // 节点的读数放在节点上方（上面放不下放下方），横向贴着节点：标签在节点正右或正左、纵向居中，读数不压它。
   const placeNode = (id: string) => {
     const box = stage.current?.getBoundingClientRect()
     const rect = refs.current.get(id)?.getBoundingClientRect()
-    if (box && rect) {
-      const x = rect.right - box.left
-      setAnchor({ x, y: rect.top - box.top + rect.height / 2, left: x > box.width / 2 })
-    }
+    if (!box || !rect) return
+    const left = rect.left - box.left > box.width / 2
+    const above = rect.top - box.top > 130
+    setAnchor({
+      x: left ? rect.right - box.left : rect.left - box.left,
+      y: above ? rect.top - box.top : rect.bottom - box.top,
+      left,
+      above,
+    })
   }
   const share = (value: number | null) => (value === null ? '—' : formatShare(value))
   const nodeRows = (node: LaidNode): LcdTooltipRow[] => {
@@ -203,10 +208,15 @@ export function FlowSankey({
     <figure className={`k-fsk${className ? ` ${className}` : ''}`} data-slot="flow-sankey">
       <div className="k-dist-bar">
         {hasReval && (
-          <label className="k-fsk-toggle">
-            <Switch checked={showReval} onCheckedChange={setShowReval} aria-label={labels.showRevaluation} />
-            <span>{labels.showRevaluation}</span>
-          </label>
+          <button
+            type="button"
+            className="k-fsk-toggle"
+            aria-pressed={showReval}
+            onClick={() => setShowReval(!showReval)}
+          >
+            <i aria-hidden="true" />
+            {labels.showRevaluation}
+          </button>
         )}
         <ChartActions
           labels={actionLabels}
@@ -314,11 +324,10 @@ export function FlowSankey({
                       ...(node.flowOut > 0 ? [`${labels.outflow} ${formatValue(node.flowOut)}`] : []),
                     ].join(', ')}
                     tabIndex={stop === node.id ? 0 : -1}
-                    onPointerEnter={(event) => {
+                    onPointerEnter={() => {
                       setHover({ kind: 'node', id: node.id })
-                      place(event)
+                      placeNode(node.id)
                     }}
-                    onPointerMove={place}
                     onClick={() => setPinned(pinned === node.id ? null : node.id)}
                     onFocus={() => {
                       setTab(node.id)
@@ -352,7 +361,14 @@ export function FlowSankey({
         {tip !== null && anchor !== null && (
           <LcdTooltip
             className="k-fsk-tip"
-            style={{ left: anchor.x, top: anchor.y }}
+            style={{
+              left: anchor.x,
+              top: anchor.y,
+              transform:
+                anchor.above === null
+                  ? undefined
+                  : `translate(${anchor.left ? '-100%' : '0'}, ${anchor.above ? 'calc(-100% - 8px)' : '8px'})`,
+            }}
             side={anchor.left ? 'left' : 'right'}
             title={tip.title}
             rows={tip.rows}
