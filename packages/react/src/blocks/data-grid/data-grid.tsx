@@ -31,6 +31,7 @@ import { useMenuParts } from '../../primitives/menu-any.tsx'
 import { MenuItemHint, MenuItemLabel } from '../../primitives/menu-parts.tsx'
 import { ToneText } from '../../quant/tone-text.tsx'
 import { defaultAlign, resolveCell, sortComparator, type GridColumn } from './columns.ts'
+import { moveColumn, reorderColumn, setColumnFixed, setColumnVisible } from './layout-model.ts'
 import { DEFAULT_TEXTS, useDataGridHost, type GridMenuEntry } from './host.tsx'
 import {
   EMPTY_SELECTION,
@@ -119,6 +120,11 @@ export type DataGridProps<Row extends object> = {
   onSortChange?: (next: SortSpec | null) => void
   /** 点到第三下回到不排；false 时回到正序（有默认排序的表不允许「不排」）。 */
   sortRemovable?: boolean
+  /**
+   * 列摆法变了（列头菜单的固定 / 隐藏 / 左右移、拖动列头重排）：给出新的整份 layout，调用方存。
+   * 没给就没有这些菜单项，列头也不能拖。
+   */
+  onLayoutChange?: (next: GridColumnLayout[]) => void
   /** 拖完列宽。 */
   onResize?: (id: string, width: number) => void
   /** 重置列（菜单项与快捷键）：调用方把次序、显隐、宽度、排序放回默认。 */
@@ -198,6 +204,7 @@ export function DataGrid<Row extends object>({
   sort = null,
   onSortChange,
   sortRemovable = true,
+  onLayoutChange,
   onResize,
   onResetColumns,
   onOpen,
@@ -303,7 +310,12 @@ export function DataGrid<Row extends object>({
       ? { selected: new Set([restoreRow]), anchor: restoreRow, cursor: restoreRow }
       : EMPTY_SELECTION,
   )
-  const [menuOn, setMenuOn] = useState<'rows' | 'panel'>('panel')
+  const [menuOn, setMenuOn] = useState<'rows' | 'panel' | 'column'>('panel')
+  const [menuColumn, setMenuColumn] = useState<string | null>(null)
+  // 拖列头重排：dragFrom 是被拖的列，dropOn 是正悬在哪一列上；拖列宽时（resizing）不许起拖。
+  const [dragFrom, setDragFrom] = useState<string | null>(null)
+  const [dropOn, setDropOn] = useState<string | null>(null)
+  const resizing = useRef(false)
   const keyboardMenu = useRef(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const scroller = useRef<HTMLDivElement>(null)
@@ -452,8 +464,12 @@ export function DataGrid<Row extends object>({
   const onMenu = (event: MouseEvent<HTMLElement>) => {
     const fromKeyboard = keyboardMenu.current
     keyboardMenu.current = false
+    const colKey = (event.target as HTMLElement).closest<HTMLElement>('[data-col]')?.dataset.col
     const rowKey = (event.target as HTMLElement).closest<HTMLElement>('[data-row]')?.dataset.row
-    if (rowKey !== undefined) {
+    if (colKey !== undefined && (onLayoutChange || onSortChange)) {
+      setMenuOn('column')
+      setMenuColumn(colKey)
+    } else if (rowKey !== undefined) {
       setMenuOn('rows')
       if (!selection.selected.has(rowKey)) setSelection({ selected: new Set([rowKey]), anchor: rowKey, cursor: rowKey })
     } else setMenuOn(fromKeyboard && targetRows().length ? 'rows' : 'panel')
@@ -475,7 +491,73 @@ export function DataGrid<Row extends object>({
       ? [{ type: 'item', label: texts.askAgent, keys: host?.keysOf?.('askAgent'), onSelect: () => ask(target) }]
       : []
   const SEP = { type: 'separator' } as const
+  const columnEntries = (columnId: string): readonly GridMenuEntry[] => {
+    const t = texts.columnMenu
+    const at = layout.find((column) => column.id === columnId)
+    if (!at) return []
+    const sortable = onSortChange !== undefined
+    const shown = layout.filter((column) => column.visible)
+    const first = shown[0]?.id === columnId
+    const last = shown.at(-1)?.id === columnId
+    const sorted = sort?.id === columnId ? (sort.desc ? 'desc' : 'asc') : null
+    const reset: GridMenuEntry | undefined =
+      onResetColumns && texts.resetColumns !== undefined
+        ? { type: 'item', label: texts.resetColumns, keys: host?.keysOf?.('resetColumns'), onSelect: resetColumns }
+        : undefined
+    return [
+      ...(sortable
+        ? ([
+            {
+              type: 'item',
+              label: t.sortAsc,
+              checked: sorted === 'asc',
+              onSelect: () => onSortChange({ id: columnId, desc: false }),
+            },
+            {
+              type: 'item',
+              label: t.sortDesc,
+              checked: sorted === 'desc',
+              onSelect: () => onSortChange({ id: columnId, desc: true }),
+            },
+            ...(sorted && sortRemovable
+              ? [{ type: 'item', label: t.clearSort, onSelect: () => onSortChange(null) } as const]
+              : []),
+          ] as const)
+        : []),
+      ...(sortable && onLayoutChange ? [SEP] : []),
+      ...(onLayoutChange
+        ? ([
+            {
+              type: 'item',
+              label: at.fixed ? t.unpin : t.pin,
+              onSelect: () => onLayoutChange(setColumnFixed(layout, columnId, !at.fixed)),
+            },
+            {
+              type: 'item',
+              label: t.hide,
+              disabled: shown.length <= 1,
+              onSelect: () => onLayoutChange(setColumnVisible(layout, columnId, false)),
+            },
+            SEP,
+            {
+              type: 'item',
+              label: t.moveLeft,
+              disabled: first,
+              onSelect: () => onLayoutChange(moveColumn(layout, columnId, -1)),
+            },
+            {
+              type: 'item',
+              label: t.moveRight,
+              disabled: last,
+              onSelect: () => onLayoutChange(moveColumn(layout, columnId, 1)),
+            },
+          ] as const)
+        : []),
+      ...(reset ? [SEP, reset] : []),
+    ]
+  }
   const entries = (): readonly GridMenuEntry[] => {
+    if (menuOn === 'column' && menuColumn !== null) return columnEntries(menuColumn)
     const tail = extrasFirst ? (menuTail?.() ?? []) : []
     const withTail = (list: readonly GridMenuEntry[]): readonly GridMenuEntry[] => [
       ...list,
@@ -499,6 +581,7 @@ export function DataGrid<Row extends object>({
   const startResize = (event: PointerEvent<HTMLElement>, columnId: string, width: number) => {
     event.preventDefault()
     event.stopPropagation()
+    resizing.current = true
     const startX = event.clientX
     const target = event.currentTarget
     target.setPointerCapture(event.pointerId)
@@ -512,6 +595,7 @@ export function DataGrid<Row extends object>({
       target.removeEventListener('pointerup', finish)
       target.removeEventListener('pointercancel', finish)
       setDrag(null)
+      resizing.current = false
       if (latest !== width) onResize?.(columnId, latest)
     }
     target.addEventListener('pointermove', move)
@@ -540,7 +624,8 @@ export function DataGrid<Row extends object>({
   }, [cursor])
 
   const menuEntries = interactive ? entries() : []
-  const withMenu = interactive && (host !== undefined || menu !== undefined || panelMenu !== undefined)
+  const withMenu =
+    interactive && (host !== undefined || menu !== undefined || panelMenu !== undefined || onLayoutChange !== undefined)
   const tabular = rowTree || (renderSubRow && interactive) ? 'treegrid' : interactive ? 'grid' : 'table'
   const cellRole = interactive ? 'gridcell' : 'cell'
 
@@ -582,12 +667,38 @@ export function DataGrid<Row extends object>({
                     <div
                       key={head.id}
                       role="columnheader"
+                      data-col={column.id}
+                      draggable={interactive && onLayoutChange ? true : undefined}
+                      onDragStart={(event) => {
+                        if (resizing.current) return event.preventDefault()
+                        event.dataTransfer.effectAllowed = 'move'
+                        event.dataTransfer.setData('text/plain', column.id)
+                        setDragFrom(column.id)
+                      }}
+                      onDragOver={(event) => {
+                        if (dragFrom === null) return
+                        event.preventDefault()
+                        if (dropOn !== column.id) setDropOn(column.id)
+                      }}
+                      onDrop={(event) => {
+                        event.preventDefault()
+                        if (dragFrom !== null && dragFrom !== column.id)
+                          onLayoutChange?.(reorderColumn(layout, dragFrom, column.id))
+                        setDragFrom(null)
+                        setDropOn(null)
+                      }}
+                      onDragEnd={() => {
+                        setDragFrom(null)
+                        setDropOn(null)
+                      }}
                       aria-sort={
                         onSortChange ? (state ? (state === 'desc' ? 'descending' : 'ascending') : 'none') : undefined
                       }
                       className={cn(
                         'k-grid-col',
                         alignOf(column.id) === 'end' && 'is-end',
+                        dragFrom === column.id && 'is-dragging',
+                        dropOn === column.id && dragFrom !== null && dragFrom !== column.id && 'is-drop',
                         stickClass(column.id),
                         classNames.col,
                       )}
@@ -743,7 +854,13 @@ export function DataGrid<Row extends object>({
         {foot && <div className={cn('k-grid-foot', classNames.foot)}>{foot}</div>}
       </div>
       {withMenu && menuEntries.length > 0 && (
-        <ContextMenuContent aria-label={texts.menuLabel(label)}>
+        <ContextMenuContent
+          aria-label={
+            menuOn === 'column' && menuColumn !== null
+              ? texts.columnMenu.label({ id: menuColumn, label: labelOf(menuColumn) })
+              : texts.menuLabel(label)
+          }
+        >
           {host?.renderMenu ? host.renderMenu(menuEntries) : <DefaultMenu entries={menuEntries} />}
         </ContextMenuContent>
       )}

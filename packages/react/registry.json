@@ -9,7 +9,7 @@
       "title": "Style",
       "description": "设计 token（Console 与 Graphite 两个主题、红涨绿跌切换）、Tailwind v4 主题与动效 CSS。ui.css 最后引。",
       "dependencies": [
-        "@katana-ui/tokens@0.1.0",
+        "@katana-ui/tokens@0.2.0",
         "tailwindcss@4.3.5"
       ],
       "files": [
@@ -276,7 +276,7 @@
       "title": "Motion",
       "description": "三条弹簧参数（snappy、gentle、settle），给 motion/react 用。",
       "dependencies": [
-        "@katana-ui/tokens@0.1.0"
+        "@katana-ui/tokens@0.2.0"
       ],
       "files": [
         {
@@ -325,6 +325,35 @@
           "path": "src/lib/spring.ts",
           "type": "registry:lib",
           "target": "~/src/katana/ui/lib/spring.ts"
+        }
+      ]
+    },
+    {
+      "name": "use-persisted-state",
+      "type": "registry:lib",
+      "title": "Use Persisted State",
+      "description": "拼面板用的数据表：TanStack Table 管排序、列宽、顺序、显隐，虚拟滚动只画看得见的行；列声明一个类型（价格、数量、盈亏、涨跌幅、方向、时间、品种……），格式化、对齐、着色、排序由类型给。列的状态受控（调用方存）；应用的能力经 DataGridHost 注入。",
+      "files": [
+        {
+          "path": "src/lib/use-persisted-state.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/lib/use-persisted-state.ts"
+        }
+      ]
+    },
+    {
+      "name": "use-saved-views",
+      "type": "registry:lib",
+      "title": "Use Saved Views",
+      "description": "拼面板用的数据表：TanStack Table 管排序、列宽、顺序、显隐，虚拟滚动只画看得见的行；列声明一个类型（价格、数量、盈亏、涨跌幅、方向、时间、品种……），格式化、对齐、着色、排序由类型给。列的状态受控（调用方存）；应用的能力经 DataGridHost 注入。",
+      "registryDependencies": [
+        "@katana/use-persisted-state"
+      ],
+      "files": [
+        {
+          "path": "src/lib/use-saved-views.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/lib/use-saved-views.ts"
         }
       ]
     },
@@ -2554,18 +2583,28 @@
       "description": "拼面板用的数据表：TanStack Table 管排序、列宽、顺序、显隐，虚拟滚动只画看得见的行；列声明一个类型（价格、数量、盈亏、涨跌幅、方向、时间、品种……），格式化、对齐、着色、排序由类型给。列的状态受控（调用方存）；应用的能力经 DataGridHost 注入。",
       "dependencies": [
         "@tanstack/react-table@9.3.1",
-        "@tanstack/react-virtual@3.14.25"
+        "@tanstack/react-virtual@3.14.25",
+        "lucide-react@1.67.0"
       ],
       "registryDependencies": [
+        "@katana/button",
+        "@katana/checkbox",
+        "@katana/chip-group",
         "@katana/cn",
         "@katana/context-menu",
         "@katana/menu-any",
         "@katana/menu-parts",
+        "@katana/popover",
         "@katana/quant-format",
         "@katana/symbol-mark",
         "@katana/tone-text"
       ],
       "files": [
+        {
+          "path": "src/blocks/data-grid/column-picker.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/data-grid/column-picker.tsx"
+        },
         {
           "path": "src/blocks/data-grid/columns.ts",
           "type": "registry:component",
@@ -2580,6 +2619,11 @@
           "path": "src/blocks/data-grid/host.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/blocks/data-grid/host.tsx"
+        },
+        {
+          "path": "src/blocks/data-grid/layout-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/data-grid/layout-model.ts"
         },
         {
           "path": "src/blocks/data-grid/model.ts",

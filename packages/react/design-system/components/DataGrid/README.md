@@ -16,6 +16,7 @@
 | `label` | `string` | — | 屏幕阅读器念的表名。 |
 | `sort / onSortChange` | `SortSpec \| null / (next) => void` | — | 排序受控；点表头在升序、倒序、不排之间转。没给 onSortChange 就不能排序，表头是普通的字。 |
 | `sortRemovable` | `boolean` | `true` | false 时第三下回到升序。 |
+| `onLayoutChange` | `(next: GridColumnLayout[]) => void` | — | 列摆法变了（列头右键菜单的固定 / 隐藏 / 左右移、拖动列头重排）：给出整份新 layout，调用方存。没给就没有这些菜单项，列头不能拖。列头右键菜单的文案走 DataGridHost 的 texts.columnMenu。 |
 | `onResize / onResetColumns` | `function` | — | 拖完列宽 / 重置列；没给就没有拖动把手与「重置列」。 |
 | `onOpen / restoreRow / isOpened` | `function` | — | 点一行、从详情返回时放回键盘所在行、正开着的行（左边强调色）。 |
 | `rowProps` | `(row) => GridRowProps \| undefined` | — | 给一行加属性：className（并进行的类名）、title、data-*、aria-*。状态、测试钩子从这里来，不用在外面再包一层。 |
@@ -61,6 +62,24 @@
 | `renderMenu` | `(entries) => ReactNode` | — | 宿主的菜单项比包里的多时自己画；省略时包里画 item / 二级 / 分隔线。 |
 | `askAgent` | `(text \| null) => void` | — | 问 Agent：给了它，又给了 askText，菜单多一项、表获得焦点时按键也一样。 |
 
+### ColumnPicker
+
+触发按钮加弹层：上面列集芯片（整套列一键切换，亮着哪个由看得见的列恰好等于它的列推出来），下面逐列勾选。不存状态，layout 受控；最后一列看得见的不许藏。
+
+| 属性 | 类型 | 默认 | 说明 |
+| --- | --- | --- | --- |
+| `layout / onLayoutChange` | `GridColumnLayout[] / (next) => void` | — | 同 DataGrid 的 layout。 |
+| `sets` | `{ id, label, columns: string[] }[]` | — | 列集：集里的列显示并按集的次序排前面，其余藏起来。省略就只有勾选。 |
+| `labels` | `{ trigger, sets, columns }` | — | 文案由调用方传，包里没有语言。 |
+
+### usePersistedState(key, initial, { version, storage?, validate? })
+
+像 useState，值存进存储（默认 localStorage，读写包 try/catch）；版本不符、坏了、validate 不过都当没存过，不写迁移。返回 [值, 设值, 重置]。
+
+### useSavedViews({ key, version, storage?, recentLimit? })
+
+命名视图的快照仓库（值由调用方定，件只当不透明 JSON）：saveAs 另存、save 覆盖、remove、setDefault、use（记进最近并返回值）、recent、exportJson / importJson。
+
 ### tableCsv(header, rows)
 
 导出的 CSV：含逗号、引号、换行的格子加引号，公式开头的补单引号。
@@ -100,5 +119,7 @@ DataGrid
 - `→ / ←`：展开 / 收起键盘所在行的子行（renderSubRow）
 - `Shift / Ctrl 点击`：选一段 / 点选加减
 - `Esc`：清掉选择（右键菜单开着时归菜单）
+- `列头右键`：列头菜单：排序、固定、隐藏、左右移、重置列
+- `拖动列头`：重排列（放在目标列的位置）
 - `菜单键 / Shift+F10`：开右键菜单（宿主的 matchKey 提供）
 - `Ctrl+C / Ctrl+S / Ctrl+R`：复制所选行 / 导出 CSV / 重置列（宿主的键位表）
