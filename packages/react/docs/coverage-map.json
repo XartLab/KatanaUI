@@ -177,8 +177,8 @@
     "EquityCurve": {
       "kind": "量化",
       "status": "已做",
-      "at": ["src/panels/kit/EquityCurve.tsx", "BrushChart"],
-      "note": "应用里有，还没抽进 quant 层；BrushChart（概览刷选条加主图）是它以后的底座，接线另开票"
+      "at": ["EquityCurve"],
+      "note": "quant 层的 EquityCurve（时间轴、基准线、镜像回撤、对数轴、概览刷选条、表格视图）；应用的回放概览页已改用它（#1931）"
     },
     "EventStudy": {
       "kind": "面板",

@@ -30,6 +30,7 @@ const INTERNAL = {
   'brush-model': 'BrushChart 的窗口几何（纯函数）：夹取、平移、缩放、居中。',
   'attribution-model':
     'AttributionBars 的排序与折叠（纯函数）：正负分组降序、超 7 项折「其他 ×n」、费用·税放底、对称刻度。',
+  'equity-curve-model': 'EquityCurve 的纯逻辑：按时刻摆的横轴、线性 / 对数纵轴、镜像回撤的纵轴、默认横轴刻度。',
   'chart-kit':
     '图表共用底座：配色分配（series / seq / div）、点阵纹理、LCD tooltip、末点、轴与网格、图右上三件（表格视图、导出、全屏）。',
   'meter-model': 'Meter 的几何与状态（纯函数）：位置、达到软限与硬限的判定、刻度盘指针位置。',

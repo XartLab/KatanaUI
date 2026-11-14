@@ -44,6 +44,7 @@ import {
   SmallMultiplesDemo,
   UseScrubberDemo,
   AttributionBarsDemo,
+  EquityCurveDemo,
 } from './pages/series'
 import {
   GaugeBarDemo,
@@ -134,6 +135,7 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'use-scrubber': UseScrubberDemo,
   'brush-chart': BrushChartDemo,
   'attribution-bars': AttributionBarsDemo,
+  'equity-curve': EquityCurveDemo,
   meter: MeterDemo,
   'spark-tile': SparkTileDemo,
   'calendar-heatmap': CalendarHeatmapDemo,

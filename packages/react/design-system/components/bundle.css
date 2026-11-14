@@ -7521,6 +7521,149 @@ button.k-sm-head:focus-visible {
   margin: 0;
 }
 
+.k-eq {
+  gap: 6px;
+  min-width: 0;
+  margin: 0;
+  display: grid;
+  position: relative;
+}
+
+.k-eq-head {
+  align-items: center;
+  gap: var(--space-4);
+  color: var(--ink-200);
+  font: var(--text-caption) var(--font-sans);
+  flex-wrap: wrap;
+  display: flex;
+}
+
+.k-eq-title {
+  margin: 0 var(--space-2) 0 0;
+  color: var(--ink-100);
+  font: var(--text-data) var(--font-sans);
+}
+
+.k-eq-key {
+  align-items: center;
+  gap: 6px;
+  display: inline-flex;
+}
+
+.k-eq-key-line, .k-eq-key-bench {
+  border-top: 2px solid var(--series-1);
+  width: 12px;
+  height: 0;
+  display: inline-block;
+}
+
+.k-eq-key-bench {
+  border-top: 1px dashed var(--chart-bench);
+}
+
+.k-eq-key-dd {
+  background-image: var(--chart-fill-image, radial-gradient(circle, var(--seq-300) 0 1.2px, transparent 1.6px));
+  background-size: 3px 3px;
+  width: 12px;
+  height: 6px;
+  display: inline-block;
+}
+
+.k-eq-scale {
+  margin-left: auto;
+}
+
+.k-eq-body, .k-eq-xaxis {
+  --k-plot-gutter: 56px;
+}
+
+.k-eq-main, .k-eq-dd {
+  margin-left: var(--k-plot-gutter, 56px);
+  position: relative;
+}
+
+.k-eq-main {
+  outline-offset: 2px;
+  touch-action: pan-y;
+  cursor: crosshair;
+}
+
+.k-eq-main:focus-visible {
+  outline: 1px solid var(--focus-ring);
+}
+
+.k-eq-main > svg, .k-eq-dd > svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: visible;
+}
+
+.k-eq-line {
+  fill: none;
+  stroke: var(--series-1);
+  stroke-width: 2px;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+  filter: var(--chart-line-glow, none);
+}
+
+.k-eq-bench {
+  fill: none;
+  stroke: var(--chart-bench);
+  stroke-width: 1px;
+  stroke-dasharray: 4 3;
+  vector-effect: non-scaling-stroke;
+}
+
+.k-eq-xaxis {
+  margin-left: var(--k-plot-gutter, 56px);
+  margin-top: 4px;
+}
+
+.k-eq-table {
+  border: var(--hairline);
+  max-height: 260px;
+  overflow: auto;
+}
+
+.k-eq-table:focus-visible {
+  outline: 1px solid var(--focus-ring);
+}
+
+.k-eq-table table {
+  border-collapse: collapse;
+  width: 100%;
+  font: var(--text-data) var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.k-eq-table th, .k-eq-table td {
+  border-bottom: var(--hairline);
+  text-align: right;
+  padding: 3px 8px;
+}
+
+.k-eq-table th:first-child, .k-eq-table thead th {
+  background: var(--bg-300);
+  color: var(--ink-300);
+  font-weight: 400;
+}
+
+.k-eq-table th:first-child {
+  text-align: left;
+}
+
+.k-eq-table thead th {
+  position: sticky;
+  top: 0;
+}
+
+.k-eq-source {
+  color: var(--ink-300);
+  font: var(--text-num-sm) var(--font-mono);
+}
+
 @property --tw-translate-x {
   syntax: "*";
   inherits: false;
@@ -7978,7 +8121,6 @@ button.k-sm-head:focus-visible {
   --k-tree-level: initial;
   --k-n: initial;
   --k-pin: initial;
-  --k-plot-gutter: initial;
   --k-spark-h: initial;
   --radix-accordion-content-height: initial;
   --radix-collapsible-content-height: initial;

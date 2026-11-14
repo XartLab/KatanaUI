@@ -15,6 +15,7 @@ export { BrushChart, BrushStrip, type BrushChartProps, type BrushLabels, type Br
 export type { BrushWindow } from './brush-model'
 export { AttributionBars, type AttributionBarsProps } from './attribution-bars'
 export type { AttributionItem } from './attribution-model'
+export { EquityCurve, type EquityCurveLabels, type EquityCurvePoint, type EquityCurveProps } from './equity-curve'
 export { SparkTile, type SparkTileProps } from './spark-tile'
 export { Meter, type MeterProps } from './meter'
 export type { MeterState } from './meter-model'

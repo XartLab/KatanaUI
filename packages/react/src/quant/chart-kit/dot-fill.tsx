@@ -7,17 +7,6 @@ import { useId } from 'react'
 /** 调用方只传语义，不传颜色（Meter 卡：「调用方不传颜色，只传 tone」）。 */
 export type ChartTone = 'ink' | 'accent' | 'ok' | 'warn' | 'off' | 'orange-dim'
 
-const TONES: Record<ChartTone, string> = {
-  ink: 'var(--ink-200)',
-  accent: 'var(--signal-orange)',
-  ok: 'var(--signal-green)',
-  warn: 'var(--signal-amber)',
-  off: 'var(--line-200)',
-  'orange-dim': 'var(--signal-orange-dim)',
-}
-
-export const toneColor = (tone: ChartTone): string => TONES[tone]
-
 /** pattern 的 id：useId 里有冒号，换成下划线，免得 url(#…) 解析出错。 */
 export const useDotId = (name: string): string => `${name}-${useId().replaceAll(':', '_')}`
 

@@ -56,7 +56,7 @@
 | DotMatrix | 点阵 | 自有件 | `DotMatrix` | 已做 |  |
 | DrawingToolbar | 图表 | 面板 | `src/panels/chart/SelectedToolbar.tsx`、`src/panels/chart/FavoritesToolbar.tsx` | 已做 |  |
 | Entitlements | 运行中心 | 面板 | — | 没做 | 许可与权限，还没有对应面板 |
-| EquityCurve | 图表 | 量化 | `src/panels/kit/EquityCurve.tsx`、`BrushChart` | 已做 | 应用里有，还没抽进 quant 层；BrushChart（概览刷选条加主图）是它以后的底座，接线另开票 |
+| EquityCurve | 图表 | 量化 | `EquityCurve` | 已做 | quant 层的 EquityCurve（时间轴、基准线、镜像回撤、对数轴、概览刷选条、表格视图）；应用的回放概览页已改用它（#1931） |
 | EventStudy | 研究 | 面板 | — | 没做 | 研究层，还没有对应面板 |
 | EventTimeline | 发现 | 积木 | `EventTimeline` | 已做 | 件（按显示时区分天、新的在前）已做，发现区的面板还没有接它（#1919 不动 src/） |
 | ExitStrategy | 交易 | 面板 | `src/panels/order-ticket` | 部分 | 下单面板里有止盈止损，自动退出两种模式没有 |

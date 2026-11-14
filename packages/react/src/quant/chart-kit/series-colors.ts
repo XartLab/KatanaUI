@@ -14,7 +14,6 @@ const SERIES = [
 
 export const SERIES_OTHER = 'var(--series-other)'
 /** 有名字的序列最多这么多条；再多的折进「其他」（dataviz §2、EquityCurve 卡：超过 7 条折进「其他」或拆小多图）。 */
-export const SERIES_MAX = SERIES.length
 
 /**
  * 给一列序列的键分配颜色：按它们在**完整列表**里的次序取 series-1..7，第 8 个起一律 series-other。
