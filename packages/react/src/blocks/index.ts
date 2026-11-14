@@ -99,3 +99,24 @@ export {
 export { StatusBar, type StatusBarProps, type StatusItem } from './status-bar/status-bar.tsx'
 export { collapsedItems, type FitItem } from './status-bar/status-bar-model.ts'
 export { WorkspaceTabs, type WorkspaceTab, type WorkspaceTabsProps } from './workspace-tabs/workspace-tabs.tsx'
+export {
+  StrategyReport,
+  type MetricKey,
+  type StrategyReportFormat,
+  type StrategyReportLabels,
+  type StrategyReportProps,
+  type StrategyReportProperty,
+  type StrategyReportPropertyGroup,
+  type StrategyReportTab,
+} from './strategy-report/strategy-report.tsx'
+export {
+  computeReport,
+  filterTrades,
+  histogram,
+  type Histogram,
+  type ReportOptions,
+  type ReportSide,
+  type ReportStats,
+  type ReportTrade,
+  type SideFilter,
+} from './strategy-report/strategy-report-model.ts'

@@ -1,6 +1,9 @@
 /* SPDX-License-Identifier: MIT */
 /* 权益曲线（#1931）：颜色全走 token；涨跌色不用在面上（回撤面是纹理，色是 seq-300）。 */
+/* 橙色只给状态灯与焦点角括号：权益线与末点用 ink-100，末点不发光。 */
 .k-eq {
+  --chart-accent: var(--ink-100);
+  --chart-end-glow: none;
   position: relative;
   display: grid;
   gap: 6px;
@@ -30,7 +33,7 @@
   display: inline-block;
   width: 12px;
   height: 0;
-  border-top: 2px solid var(--series-1);
+  border-top: 2px solid var(--ink-100);
 }
 .k-eq-key-bench {
   border-top: 1px dashed var(--chart-bench);
@@ -39,7 +42,10 @@
   display: inline-block;
   width: 12px;
   height: 6px;
-  background-image: var(--chart-fill-image, radial-gradient(circle, var(--seq-300) 0 1.2px, transparent 1.6px));
+  background-image: var(
+    --chart-fill-image,
+    radial-gradient(circle, color-mix(in srgb, var(--pnl-down) 60%, transparent) 0 1.2px, transparent 1.6px)
+  );
   background-size: 3px 3px;
 }
 .k-eq-scale {
@@ -71,7 +77,7 @@
 }
 .k-eq-line {
   fill: none;
-  stroke: var(--series-1);
+  stroke: var(--ink-100);
   stroke-width: 2;
   stroke-linejoin: round;
   vector-effect: non-scaling-stroke;

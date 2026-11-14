@@ -31,11 +31,22 @@ const ev = (id: string, at: number, severity: MonitorEvent['severity'], kind = '
 
 describe('system-monitor-model', () => {
   it('连接：异常的排前面，同级保持顺序', () => {
-    const out = sortLinks([link('a', 'ok'), link('b', 'degraded'), link('c', 'error'), link('d', 'offline'), link('e', 'ok')])
+    const out = sortLinks([
+      link('a', 'ok'),
+      link('b', 'degraded'),
+      link('c', 'error'),
+      link('d', 'offline'),
+      link('e', 'ok'),
+    ])
     expect(out.map((l) => l.id)).toEqual(['c', 'd', 'b', 'a', 'e'])
   })
   it('策略：只把出错的提前，其余不动', () => {
-    const out = sortStrategies([strat('a', 'running'), strat('b', 'stopped'), strat('c', 'error'), strat('d', 'paused')])
+    const out = sortStrategies([
+      strat('a', 'running'),
+      strat('b', 'stopped'),
+      strat('c', 'error'),
+      strat('d', 'paused'),
+    ])
     expect(out.map((s) => s.id)).toEqual(['c', 'a', 'b', 'd'])
   })
   it('事件：新的在前，按严重程度与类别筛', () => {

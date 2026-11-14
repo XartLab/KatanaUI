@@ -27,6 +27,7 @@ import {
   SparkTileDemo,
   TechnicalRatingDemo,
 } from './pages/quant.tsx'
+import { ParamScatterDemo, StrategyReportDemo } from './pages/strategy.tsx'
 import {
   DataGridDemo,
   DecisionQueueDemo,
@@ -173,6 +174,8 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'estimate-badge': EstimateBadgeDemo,
   'event-timeline': EventTimelineDemo,
   'news-feed': NewsFeedDemo,
+  'strategy-report': StrategyReportDemo,
+  'param-scatter': ParamScatterDemo,
   'system-monitor': SystemMonitorDemo,
   'decision-queue': DecisionQueueDemo,
   'password-input': PasswordInputDemo,

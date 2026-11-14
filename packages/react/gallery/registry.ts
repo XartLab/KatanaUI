@@ -4432,6 +4432,82 @@ export const PAGES: readonly DocPage[] = [
     ],
   },
   {
+    id: 'strategy-report',
+    group: 'blocks',
+    cardHeight: 720,
+    title: 'StrategyReport 策略报告',
+    summary:
+      '回测结果的一整页，页签照 TradingView 策略测试器：概览（一排关键读数：净利润、总收益率、最大回撤、胜率、盈亏比、交易次数、夏普；下面是权益曲线与回撤，可叠同期买入持有）、绩效（全部 / 多 / 空三列的指标表）、交易分析（盈亏分布与持仓时长的直方图、连续盈亏条、读数清单）、风险比率（夏普、索提诺、卡玛、恢复因子、回撤与上冲）、交易列表（DataGrid，每笔进出场、数量、盈亏、累计、最大浮盈浮亏，行可展开看信号与持仓时长）、属性（参数与回测设置的分组键值）。顶上「全部 / 多 / 空」管概览、交易分析与交易列表；绩效与风险比率三列并排，当前那列加亮。指标全由逐笔平仓算，口径写在 strategy-report-model.ts 的注释里（夏普与索提诺按日收益年化，年化日数由 periodsPerYear 给）。结构参照 TradingView 策略测试器帮助页（2026-11-15 读到概览页；其余页签没读到页面，按需求稿的结构做，待核对）。演示数据是固定种子合成的，页上与小标都写明。',
+    exports: ['StrategyReport', 'computeReport', 'filterTrades', 'histogram'],
+    props: [
+      {
+        part: 'StrategyReport',
+        note: '页签与多空的状态在件内；数据、数字格式与全部文字由调用方传，件不认识任何应用或交易所，包里没有语言。高度由外层给（件撑满外层，每页自己滚；交易列表的表撑满页签区）。',
+        rows: [
+          {
+            name: 'trades',
+            type: 'ReportTrade[]',
+            desc: '{ id, side: long | short, entryTime, exitTime（毫秒）, entryPrice, exitPrice, quantity, pnl（已扣费）, maxRunup（≥ 0）, maxDrawdown（≤ 0）, entrySignal?, exitSignal? }。不用排序，件按平仓时间算。',
+          },
+          { name: 'initialCapital', type: 'number', desc: '初始资金：总收益率、回撤比例、年化收益按它算。' },
+          {
+            name: 'periodsPerYear / riskFree',
+            type: 'number',
+            default: '252 / 0',
+            desc: '夏普与索提诺的年化日数（A 股、美股 252，加密 365）与年化无风险利率（小数）。',
+          },
+          {
+            name: 'benchmark',
+            type: '{ name: string; at: (time: number) => number }',
+            desc: '同期买入持有：给一个时刻，返回那时的买入持有权益（起点是初始资金）。不给就不画虚线与概览里的买入持有读数。',
+          },
+          {
+            name: 'properties',
+            type: '{ id, title, rows: { label, value }[] }[]',
+            desc: '属性页：参数与回测设置，分组的键值，值已是写好的字。',
+          },
+          {
+            name: 'format',
+            type: 'StrategyReportFormat',
+            desc: 'money、percent（0.12 → 12%）、price、quantity、time、duration（毫秒）必填；ratio（默认两位小数）与 axisTime（图横轴的短时刻）可选。件不格式化数值。',
+          },
+          {
+            name: 'labels',
+            type: 'StrategyReportLabels',
+            desc: '全部文字：tabs、side、metrics（每个指标名）、equity（权益曲线的标题、线名、读屏名与图自带的文字）、analysis（直方图每根柱与连续条每一笔的整句）、list（列名、多空、展开行的字）、empty。',
+          },
+          { name: 'badge', type: 'string', desc: '页签行右端的小标，如「演示数据」。' },
+          { name: 'defaultTab / defaultSide', type: 'string', desc: '起始页签与多空，默认概览与全部。' },
+          { name: 'onTabChange / onSideChange', type: 'callback', desc: '页签或多空变了通知调用方（可选）。' },
+          { name: 'onExport', type: '(csv, fileName) => void', desc: '给了，交易列表的表头菜单里出「导出 CSV」。' },
+        ],
+      },
+      {
+        part: 'computeReport(trades, options)',
+        note: '逐笔平仓 → 全部读数与权益曲线的纯函数（净盈亏、盈亏因子、胜率、盈亏比、期望、连胜连亏、最大回撤与上冲、回撤段、夏普、索提诺、卡玛、年化、恢复因子）；没有亏损时盈亏因子、盈亏比是 null。件内部用它，调用方想在别处出同样的数也可以直接调。',
+        rows: [],
+      },
+    ],
+    states: [
+      '没有交易（或筛选后没有）：概览、交易分析、交易列表写 labels.empty；绩效与风险比率照常出表，数值为 0 或「—」。',
+      '读数算不出来（没有亏损的盈亏因子、日收益全相同的夏普）写「—」，不写 0。',
+      '涨跌色只给字；直方图与连续条的面用中档涨跌色（灰是持平），没有橙色与蓝色。',
+      '多空切换时，绩效与风险比率三列不变，当前那列加亮；别的页按所选的多空重算。',
+    ],
+    donts: [
+      '不要传已经汇总好的指标：件只收逐笔平仓，这样多空、绩效、分布的数永远对得上。',
+      '不要把演示数据当回测结果：真实回测的接入在应用里另做。',
+      '不要在件里写文字：指标名、列名、整句都由 labels 传。',
+    ],
+    composition:
+      'StrategyReport\n  Tabs\n    顶行：TabsList（line）· 小标 · ToggleGroup（全部 / 多 / 空）\n    概览：关键读数条 · EquityCurve（权益与回撤，可带买入持有）\n    绩效 / 风险比率：table（三列：全部、多、空）\n    交易分析：直方图 svg × 2 · 连续盈亏条 · dl\n    交易列表：DataGrid（renderSubRow 展开）\n    属性：分组 dl',
+    keys: [
+      ['← / →', '在页签间移动（Radix Tabs）'],
+      ['Tab', '页签行、多空切换、各页里的图与表之间移动'],
+      ['→ / ←', '交易列表里：焦点所在行展开 / 收起'],
+    ],
+  },
+  {
     id: 'decision-queue',
     group: 'blocks',
     cardHeight: 600,
@@ -4531,7 +4607,11 @@ export const PAGES: readonly DocPage[] = [
             type: 'MonitorEvent[] / { value, label }[]',
             desc: '事件 { id, at, severity: info | warn | error, kind, text }；类别（下单、成交、拒单、断线、重连、风控触发……）由调用方定。',
           },
-          { name: 'now', type: 'number', desc: '当前毫秒时间：「3 秒前」按它算，调用方定时更新（件不在渲染里取时间）。' },
+          {
+            name: 'now',
+            type: 'number',
+            desc: '当前毫秒时间：「3 秒前」按它算，调用方定时更新（件不在渲染里取时间）。',
+          },
           {
             name: 'labels',
             type: 'SystemMonitorLabels',
@@ -5362,6 +5442,80 @@ export const PAGES: readonly DocPage[] = [
       ['← / →', '沿时间在同一条轨迹的点上走，到头不绕回'],
       ['↑ / ↓', '去上一条 / 下一条轨迹的同一位置（不够长落在最后一个点）'],
       ['Home / End', '去这条轨迹的第一个 / 最后一个点'],
+    ],
+  },
+  {
+    id: 'param-scatter',
+    group: 'quant',
+    cardHeight: 800,
+    title: 'ParamScatter 参数优化散点图',
+    summary:
+      '参数扫描的结果图：两个参数为横纵轴，一个点是一组参数，颜色是目标值（夏普、净利润……），点选看这组参数的读数，最优点加琥珀环并有「跳到最优」。颜色：目标值跨过 0 用涨跌发散阶（中灰为中点，负跌色、正涨色），否则用暗灰到亮灰的单色阶，都不用橙与蓝。没有结果的点（如约束不成立）画空心灰点。TradingView 没有这张图，照通用的参数扫描做法；数据是固定种子合成的演示数据。',
+    exports: ['ParamScatter', 'valueRange', 'resolveRamp', 'rampPosition', 'rampColor', 'bestIndex', 'moveParam'],
+    props: [
+      {
+        part: 'ParamScatter',
+        note: '文字全由 props 传。每个点是 role=button 的圆，读屏名是整句（两个参数、目标值，最优再加一句）；图右上有表格视图、导出、全屏三件（表格视图总有）。',
+        rows: [
+          {
+            name: 'points',
+            type: 'ParamPoint[]',
+            desc: '{ id, x, y, value }；value 是目标值，没跑出结果传 null。',
+          },
+          { name: 'label', type: 'string', desc: '整张图的读屏名。' },
+          { name: 'axes', type: '{ x: string; y: string }', desc: '两个参数的名字。' },
+          { name: 'valueName', type: 'string', desc: '目标值叫什么（色条、读数）。' },
+          {
+            name: 'formatX / formatY / formatValue',
+            type: '(value: number) => string',
+            default: 'String',
+            desc: '刻度与读数怎么写。',
+          },
+          {
+            name: 'goal',
+            type: "'max' | 'min'",
+            default: 'max',
+            desc: '目标值越大越好还是越小越好，决定哪个点是最优。',
+          },
+          {
+            name: 'ramp',
+            type: "'auto' | 'sequential' | 'diverging'",
+            default: 'auto',
+            desc: '色阶；auto 在目标值跨过 0 时用发散阶。',
+          },
+          {
+            name: 'bestLabel / jumpLabel / noValue / idle',
+            type: 'string | ReactNode',
+            desc: '「最优」「跳到最优」「没有结果」与没选点时读数区的字。',
+          },
+          { name: 'selected / onSelect', type: 'string | null', desc: '选中点的 id；不给 selected 用内部状态。' },
+          { name: 'extra', type: '(point) => ReactNode', desc: '选中后读数里多加什么（这组参数的其他指标）。' },
+          {
+            name: 'actionLabels / tableLabel / tableHead / source / onExport / onFullscreen',
+            type: 'ChartViewProps',
+            desc: '同其他图：三个图工具的名字、表格视图的读屏名与表头、来源一行、导出与全屏的回调。',
+          },
+        ],
+      },
+    ],
+    states: [
+      '点按目标值着色；最优点琥珀环，选中点白环加粗，悬停与聚焦描白边。',
+      '点选后读数区写两个参数与目标值；选中的就是最优时再标「最优」。',
+      '没有选点时读数区写 idle；没有有效的目标值时不画色条。',
+    ],
+    donts: [
+      '不要只靠颜色分高低：读数区与表格视图里都有数。',
+      '不要把它当时间序列用：连线与时间顺序用 ConnectedScatter。',
+      '不要超过几千个点：每个点是一个 SVG 圆，更多的点请先在调用方聚合。',
+    ],
+    composition:
+      'ParamScatter\n  图右上三件（表格视图 · 导出 · 全屏）\n  svg role=group\n    g（刻度线与轴名）\n    circle role=button × 点\n  色条（目标值名 · 最小值 · 渐变 · 最大值）\n  output（选中点的读数）\n  「跳到最优」按钮',
+    keys: [
+      ['Tab', '进图，停在一个点上'],
+      ['方向键', '到该方向最近的点'],
+      ['Home / End', '到最左 / 最右的点'],
+      ['Enter / 空格', '选中当前点'],
+      ['Esc', '取消选中'],
     ],
   },
   {

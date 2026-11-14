@@ -926,7 +926,13 @@ const MON_METRICS: SystemMonitorMetric[] = [
   },
 ]
 const MON_EVENTS: MonitorEvent[] = [
-  { id: 'e1', at: MON_NOW - 20 * SEC, severity: 'error', kind: 'reject', text: '突破跟随 · 演示：委托被拒（签名校验失败）' },
+  {
+    id: 'e1',
+    at: MON_NOW - 20 * SEC,
+    severity: 'error',
+    kind: 'reject',
+    text: '突破跟随 · 演示：委托被拒（签名校验失败）',
+  },
   { id: 'e2', at: MON_NOW - 48 * SEC, severity: 'info', kind: 'fill', text: '均值回归 · 演示：成交 200 股 @ 演示价' },
   { id: 'e3', at: MON_NOW - 95 * SEC, severity: 'error', kind: 'disconnect', text: '演示交易所 B：连接断开，心跳超时' },
   { id: 'e4', at: MON_NOW - 6 * 60 * SEC, severity: 'warn', kind: 'risk', text: '演示账户 2：额度占用越过预警线' },

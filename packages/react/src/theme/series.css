@@ -42,7 +42,7 @@
 .k-brush-line,
 .k-brush-strip-line {
   fill: none;
-  stroke: var(--series-1);
+  stroke: var(--ink-100);
   stroke-width: 2;
   stroke-linejoin: round;
   vector-effect: non-scaling-stroke;

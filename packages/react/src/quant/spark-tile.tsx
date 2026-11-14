@@ -92,7 +92,7 @@ export function SparkTile({
             )}
             <polyline className={`k-spark-tile-line is-${trendTone}`} points={shape.points} />
           </svg>
-          <i className="k-spark-tile-end" style={{ top: `${(shape.endY / H) * 100}%` }} />
+          <i className={`k-spark-tile-end is-${trendTone}`} style={{ top: `${(shape.endY / H) * 100}%` }} />
         </span>
       ) : (
         <span className="k-spark-tile-chart is-empty" role="img" aria-label={sparkLabel}>

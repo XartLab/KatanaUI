@@ -281,7 +281,11 @@ export function SystemMonitor({
                 <ol className="k-sysmon-eventlist">
                   {shownEvents.map((e) => (
                     <li key={e.id} className="k-sysmon-event" data-severity={e.severity}>
-                      <Led state={SEVERITY_LED[e.severity]} label={labels.severity[e.severity]} bare={e.severity === 'info'} />
+                      <Led
+                        state={SEVERITY_LED[e.severity]}
+                        label={labels.severity[e.severity]}
+                        bare={e.severity === 'info'}
+                      />
                       <time className="k-sysmon-event-time" dateTime={new Date(e.at).toISOString()}>
                         {ago(labels, now, e.at)}
                       </time>
@@ -330,9 +334,7 @@ function StrategyRow({
         </span>
       </td>
       <td className="num">{s.position ?? '—'}</td>
-      <td className="num">
-        {s.pnl == null || s.pnlText == null ? '—' : <PnlText value={s.pnl}>{s.pnlText}</PnlText>}
-      </td>
+      <td className="num">{s.pnl == null || s.pnlText == null ? '—' : <PnlText value={s.pnl}>{s.pnlText}</PnlText>}</td>
       <td>
         {s.quota == null ? (
           '—'
