@@ -30,6 +30,8 @@ export { EmptyState, type EmptyStateSlot } from './empty-state.tsx'
 export { EstimateBadge } from './estimate-badge.tsx'
 export { EventTimeline, type EventTimelineLabels, type EventTimelineProps } from './event-timeline.tsx'
 export type { EventKind, SessionMinutes, TimelineEvent } from './event-timeline-model.ts'
+export { NewsFeed, type NewsFeedLabels, type NewsFeedProps } from './news-feed/news-feed.tsx'
+export type { NewsItem, NewsSymbol } from './news-feed/news-feed-model.ts'
 export { Toolbar, ToolbarGroup, ToolButton, ToolSlot } from './toolbar/toolbar.tsx'
 export { useRovingToolbar } from './toolbar/use-roving-toolbar.ts'
 
