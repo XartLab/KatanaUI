@@ -4569,6 +4569,251 @@ button.k-news-title:hover, a.k-news-title:hover {
   inset-inline-end: 4px;
 }
 
+.k-dq {
+  height: 100%;
+  min-height: 0;
+  color: var(--ink-200);
+  font: var(--text-data) var(--font-sans);
+  flex-direction: column;
+  gap: 8px;
+  display: flex;
+}
+
+.k-dq-count {
+  color: var(--ink-300);
+  font-variant-numeric: tabular-nums;
+  margin-inline-start: 6px;
+}
+
+.k-dq-scroll {
+  flex: auto;
+  min-height: 0;
+  overflow: auto;
+}
+
+.k-dq-empty {
+  color: var(--ink-300);
+  text-align: center;
+  padding: 24px 12px;
+}
+
+.k-dq-list {
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+}
+
+.k-dq-card {
+  background: var(--alpha-white-3);
+  border: 1px solid var(--alpha-white-8);
+  border-radius: 8px;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 12px;
+  display: flex;
+}
+
+.k-dq-meta {
+  color: var(--ink-300);
+  align-items: center;
+  gap: 8px;
+  display: flex;
+}
+
+.k-dq-time, .k-dq-left {
+  font-variant-numeric: tabular-nums;
+}
+
+.k-dq-left {
+  color: var(--ink-200);
+  margin-inline-start: auto;
+}
+
+.k-dq-left[data-urgent] {
+  color: var(--signal-amber);
+}
+
+.k-dq-snoozed {
+  border: 1px solid var(--alpha-white-8);
+  border-radius: var(--radius-pill);
+  color: var(--ink-300);
+  padding: 0 6px;
+}
+
+.k-dq-head {
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  display: flex;
+}
+
+.k-dq-action {
+  color: var(--ink-100);
+  font-weight: 700;
+}
+
+.k-dq-target {
+  color: var(--ink-100);
+  font-weight: 600;
+}
+
+.k-dq-tag {
+  background: var(--alpha-white-3);
+  border: 1px solid var(--alpha-white-8);
+  border-radius: var(--radius-pill);
+  color: var(--ink-300);
+  font: var(--text-data) var(--font-mono);
+  padding: 0 6px;
+}
+
+.k-dq-rationale {
+  color: var(--ink-200);
+  margin: 0;
+}
+
+.k-dq-evidence {
+  color: var(--ink-300);
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 16px;
+  display: flex;
+}
+
+.k-dq-conf {
+  font-variant-numeric: tabular-nums;
+  align-items: center;
+  gap: 8px;
+  display: inline-flex;
+}
+
+.k-dq-conf-bar {
+  background: var(--alpha-white-8);
+  border-radius: 2px;
+  width: 48px;
+  height: 4px;
+  overflow: hidden;
+}
+
+.k-dq-conf-bar i {
+  background: var(--ink-200);
+  height: 100%;
+  display: block;
+}
+
+.k-dq-basis-label {
+  color: var(--ink-200);
+  font-weight: 600;
+}
+
+.k-dq-sources {
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+}
+
+.k-dq-source {
+  background: var(--alpha-white-3);
+  border: 1px solid var(--alpha-white-8);
+  border-radius: var(--radius-pill);
+  height: 20px;
+  color: var(--ink-200);
+  align-items: center;
+  gap: 4px;
+  padding: 0 8px;
+  text-decoration: none;
+  display: inline-flex;
+}
+
+.k-dq-source:hover {
+  background: var(--alpha-white-6);
+  color: var(--ink-100);
+}
+
+.k-dq-source:focus-visible, .k-dq-more:focus-visible, .k-dq-row:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 1px;
+}
+
+.k-dq-more {
+  color: var(--ink-300);
+  font: inherit;
+  cursor: pointer;
+  background: none;
+  border: 0;
+  align-self: flex-start;
+  align-items: center;
+  gap: 4px;
+  padding: 0;
+  display: inline-flex;
+}
+
+.k-dq-more:hover {
+  color: var(--ink-100);
+}
+
+.k-dq-more[aria-expanded="true"] svg, .k-dq-row[aria-expanded="true"] .k-dq-chevron {
+  transform: rotate(90deg);
+}
+
+.k-dq-detail {
+  padding-top: 4px;
+}
+
+.k-dq-buttons {
+  flex-wrap: wrap;
+  gap: 8px;
+  display: flex;
+}
+
+.k-dq-row {
+  border: 0;
+  border-bottom: 1px solid var(--alpha-white-6);
+  width: 100%;
+  min-height: 32px;
+  color: var(--ink-300);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  background: none;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px;
+  display: flex;
+}
+
+.k-dq-row:hover {
+  background: var(--alpha-white-3);
+}
+
+.k-dq-result {
+  min-width: 48px;
+  color: var(--ink-200);
+}
+
+.k-dq-who {
+  font-variant-numeric: tabular-nums;
+  margin-inline-start: auto;
+}
+
+.k-dq-row .k-dq-action, .k-dq-row .k-dq-target {
+  color: var(--ink-200);
+  font-weight: 500;
+}
+
+.k-dq-done-body {
+  border-bottom: 1px solid var(--alpha-white-6);
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px 12px 12px 28px;
+  display: flex;
+}
+
 .k-symbol-mark {
   background: var(--bg-400);
   color: var(--ink-200);

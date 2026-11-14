@@ -1,0 +1,219 @@
+/* SPDX-License-Identifier: MIT */
+/* DecisionQueue：建议卡片队列。卡片照 uiarc（4% 白底、8% 白边、8px 圆角），已处理的收成告警列表式的一行。
+   状态靠灯 + 字，不单靠颜色；橙色不画数据；倒计时数字等宽，最后一分钟变琥珀。全用语义 token。 */
+.k-dq {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  height: 100%;
+  min-height: 0;
+  color: var(--ink-200);
+  font: var(--text-data) var(--font-sans);
+}
+.k-dq-count {
+  margin-inline-start: 6px;
+  color: var(--ink-300);
+  font-variant-numeric: tabular-nums;
+}
+.k-dq-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+}
+.k-dq-empty {
+  padding: 24px 12px;
+  color: var(--ink-300);
+  text-align: center;
+}
+.k-dq-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.k-dq-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 12px;
+  background: var(--alpha-white-3);
+  border: 1px solid var(--alpha-white-8);
+  border-radius: 8px;
+}
+.k-dq-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--ink-300);
+}
+.k-dq-time,
+.k-dq-left {
+  font-variant-numeric: tabular-nums;
+}
+.k-dq-left {
+  margin-inline-start: auto;
+  color: var(--ink-200);
+}
+.k-dq-left[data-urgent] {
+  color: var(--signal-amber);
+}
+.k-dq-snoozed {
+  padding: 0 6px;
+  border: 1px solid var(--alpha-white-8);
+  border-radius: var(--radius-pill);
+  color: var(--ink-300);
+}
+.k-dq-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.k-dq-action {
+  color: var(--ink-100);
+  font-weight: 700;
+}
+.k-dq-target {
+  color: var(--ink-100);
+  font-weight: 600;
+}
+.k-dq-tag {
+  padding: 0 6px;
+  background: var(--alpha-white-3);
+  border: 1px solid var(--alpha-white-8);
+  border-radius: var(--radius-pill);
+  color: var(--ink-300);
+  font: var(--text-data) var(--font-mono);
+}
+.k-dq-rationale {
+  margin: 0;
+  color: var(--ink-200);
+}
+.k-dq-evidence {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 16px;
+  color: var(--ink-300);
+}
+.k-dq-conf {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-variant-numeric: tabular-nums;
+}
+.k-dq-conf-bar {
+  width: 48px;
+  height: 4px;
+  background: var(--alpha-white-8);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.k-dq-conf-bar i {
+  display: block;
+  height: 100%;
+  background: var(--ink-200);
+}
+.k-dq-basis-label {
+  color: var(--ink-200);
+  font-weight: 600;
+}
+.k-dq-sources {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.k-dq-source {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 20px;
+  padding: 0 8px;
+  background: var(--alpha-white-3);
+  border: 1px solid var(--alpha-white-8);
+  border-radius: var(--radius-pill);
+  color: var(--ink-200);
+  text-decoration: none;
+}
+.k-dq-source:hover {
+  background: var(--alpha-white-6);
+  color: var(--ink-100);
+}
+.k-dq-source:focus-visible,
+.k-dq-more:focus-visible,
+.k-dq-row:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 1px;
+}
+.k-dq-more {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: 4px;
+  padding: 0;
+  background: none;
+  border: 0;
+  color: var(--ink-300);
+  font: inherit;
+  cursor: pointer;
+}
+.k-dq-more:hover {
+  color: var(--ink-100);
+}
+.k-dq-more[aria-expanded='true'] svg,
+.k-dq-row[aria-expanded='true'] .k-dq-chevron {
+  transform: rotate(90deg);
+}
+.k-dq-detail {
+  padding-top: 4px;
+}
+.k-dq-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* 已处理：一行记录，告警列表式。 */
+.k-dq-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 32px;
+  padding: 4px 8px;
+  background: none;
+  border: 0;
+  border-bottom: 1px solid var(--alpha-white-6);
+  color: var(--ink-300);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.k-dq-row:hover {
+  background: var(--alpha-white-3);
+}
+.k-dq-result {
+  min-width: 48px;
+  color: var(--ink-200);
+}
+.k-dq-who {
+  margin-inline-start: auto;
+  font-variant-numeric: tabular-nums;
+}
+.k-dq-row .k-dq-action,
+.k-dq-row .k-dq-target {
+  color: var(--ink-200);
+  font-weight: 500;
+}
+.k-dq-done-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px 12px 12px 28px;
+  border-bottom: 1px solid var(--alpha-white-6);
+}
