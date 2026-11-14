@@ -25,6 +25,10 @@
 | `ranges / range / defaultRange / onRangeChange / rangeLabel` | `{ key, label }[] / string / string / (key) => void / string` | — | 共用区间分段，放在墙顶一次；传了它卡片不再各画分段控件，都按这个 key 取自己 ranges 里同 key 的一段。 |
 | `minWidth` | `number` | — | 每张卡最小宽（px），默认 260；一行几张由容器宽决定。 |
 
+### metricTrendTone(trend, values) / metricStageIndex(stages, value)
+
+纯函数，跟件里用的同一份。metricTrendTone：按 trendTone 与走势线头尾给 up / down / flat（neutral 恒为 flat，inverse 涨跌色互换）。metricStageIndex：当前值落在第几档（最后一档含上界），没有值或落在所有档外返回 -1。
+
 ## States
 
 - 变化与走势线用涨跌色（跟 data-updown）；走势线颜色按所选区间的头尾涨跌。
