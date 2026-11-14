@@ -1879,6 +1879,38 @@
       ]
     },
     {
+      "name": "horizon-chart",
+      "type": "registry:component",
+      "title": "Horizon Chart",
+      "description": "十几个品种的日内收益叠成窄带，一屏看完：每行把正负值折成几条叠起来的带，颜色越深值越大，涨跌色跟涨跌配色走。所有行共用一个扫读位置。功能参照 Arc 的 Horizon chart。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/horizon-model",
+        "@katana/series-geometry",
+        "@katana/use-scrubber"
+      ],
+      "files": [
+        {
+          "path": "src/quant/horizon-chart.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/horizon-chart.tsx"
+        }
+      ]
+    },
+    {
+      "name": "horizon-model",
+      "type": "registry:component",
+      "title": "Horizon Model",
+      "description": "HorizonChart 的分带（纯函数）：把带正负的一列数折成几条叠起来的窄带。",
+      "files": [
+        {
+          "path": "src/quant/horizon-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/horizon-model.ts"
+        }
+      ]
+    },
+    {
       "name": "pnl-text",
       "type": "registry:component",
       "title": "Pnl Text",

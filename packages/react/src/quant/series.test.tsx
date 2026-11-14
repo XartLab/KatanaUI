@@ -7,6 +7,8 @@ import { BulletMeter } from './bullet-meter'
 import { bulletModel } from './bullet-model'
 import { BrushChart } from './brush-chart'
 import { centerWindow, clampWindow, moveWindow, resizeWindow } from './brush-model'
+import { HorizonChart } from './horizon-chart'
+import { horizonBands, horizonMax } from './horizon-model'
 import { WaterfallChart } from './waterfall-chart'
 import { waterfallBars, waterfallExtent } from './waterfall-model'
 import { areaPath, extent, linePath, makePlot, niceTicks, PLOT_W } from './series-geometry'
@@ -302,5 +304,44 @@ describe('日历热力图', () => {
     expect(html).toContain('data-date="2026-11-18" data-level="0"')
     expect(html).toContain('data-date="2026-11-19" data-level="none"')
     expect(html.match(/<i data-level/g)).toHaveLength(9)
+  })
+})
+
+describe('地平线图分带', () => {
+  it('每条带装自己那一截：2.5 在 unit 为 1 的三条带里是 [1, 1, 0.5]，负数镜像到负的一套', () => {
+    const out = horizonBands([2.5, -1.5, 0], 3, 3)
+    expect(out.positive.map((band) => band[0])).toEqual([1, 1, 0.5])
+    expect(out.negative.map((band) => band[1])).toEqual([1, 0.5, 0])
+    expect(out.positive.map((band) => band[1])).toEqual([0, 0, 0])
+    expect(out.negative.map((band) => band[0])).toEqual([0, 0, 0])
+  })
+
+  it('超过满刻度的按满高画，非有限数与 0 是空；满刻度为 0 全空', () => {
+    expect(horizonBands([10], 3, 3).positive.map((band) => band[0])).toEqual([1, 1, 1])
+    expect(horizonBands([Number.NaN, 0], 3, 3).positive.flat()).toEqual([0, 0, 0, 0, 0, 0])
+    expect(horizonBands([1, -1], 0, 3).negative.flat()).toEqual([0, 0, 0, 0, 0, 0])
+  })
+
+  it('共用的满刻度是所有行 |值| 的最大值', () => {
+    expect(
+      horizonMax([
+        [1, -4],
+        [2, Number.NaN],
+      ]),
+    ).toBe(4)
+    expect(horizonMax([])).toBe(0)
+  })
+
+  it('渲染：每行 2 乘 带数 条带路径，共用满刻度时小行的高带是空路径，各自满刻度时填满', () => {
+    const rows = [
+      { key: 'a', label: 'A', values: [0, 3, -3, 1] },
+      { key: 'b', label: 'B', values: [0, 1, -1, 0.5] },
+    ]
+    const shared = renderToStaticMarkup(<HorizonChart rows={rows} label="示例" formatValue={String} />)
+    expect(shared.match(/data-slot="horizon-band"/g)).toHaveLength(12)
+    expect(shared).toMatch(/data-row="b"[\s\S]*data-band="2" style="[^"]*" d=""/)
+    const own = renderToStaticMarkup(<HorizonChart rows={rows} label="示例" formatValue={String} scale="row" />)
+    expect(own.match(/ d=""/g)?.length ?? 0).toBeLessThan(shared.match(/ d=""/g)!.length)
+    expect(shared).toContain('data-tone="up"')
   })
 })

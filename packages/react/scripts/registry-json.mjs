@@ -31,6 +31,7 @@ const INTERNAL = {
   'waterfall-model': 'WaterfallChart 的累加（纯函数）：增减柱接着累计、总计柱重置累计并给出对不上的差额。',
   'bullet-model': 'BulletMeter 的几何与状态（纯函数）：位置、达到软限与硬限的判定。',
   'calendar-model': 'CalendarHeatmap 的格子排布、档位与键盘（纯函数）：日历日按 UTC 算，一周一列。',
+  'horizon-model': 'HorizonChart 的分带（纯函数）：把带正负的一列数折成几条叠起来的窄带。',
   'hover-intent': '悬停意图：停一会儿才开、离开等一会儿再收、键盘聚焦立即开的钩子。',
   'code-highlight': 'CodeBlock 用的小型词法切分：注释、字符串、数字、关键字、函数、标点（纯函数，不加依赖）。',
   'matrix-orb-model': 'MatrixOrb 的纯数学：某状态下圆盘上一点在某一时刻的亮度。',

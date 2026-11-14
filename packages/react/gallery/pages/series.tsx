@@ -4,8 +4,10 @@ import {
   BrushChart,
   BulletMeter,
   CalendarHeatmap,
+  HorizonChart,
   WaterfallChart,
   type CalendarDay,
+  type HorizonRow,
   type WaterfallStep,
 } from '../../src/quant'
 import { Row } from './parts'
@@ -194,6 +196,45 @@ export function CalendarHeatmapDemo() {
       </div>
       <p className="gal-note">
         {DEMO_NOTE}周末休市画成没数据（只有淡边）；颜色深浅按当天盈亏占全年最大绝对值的比例分四档。
+      </p>
+    </>
+  )
+}
+
+/** 演示用的日内收益（%）：四行各用一个闭式公式生成，一行 48 个点，页上写明是演示。 */
+const HZ_POINTS = 48
+const hz = (f: (i: number) => number) => Array.from({ length: HZ_POINTS }, (_, i) => +f(i).toFixed(3))
+export const HORIZON_DEMO_ROWS: readonly HorizonRow[] = [
+  { key: 'AAA', label: 'AAA', values: hz((i) => 3 * Math.sin(i / 3.8)) },
+  { key: 'BBB', label: 'BBB', values: hz((i) => 1.2 * Math.sin(i / 3.8 + 1)) },
+  { key: 'CCC', label: 'CCC', values: hz((i) => (i < HZ_POINTS / 2 ? 0.9 : -0.9)) },
+  { key: 'DDD', label: 'DDD', values: hz((i) => -2 * Math.cos(i / 5)) },
+]
+const pctText = (value: number) => `${value > 0 ? '+' : ''}${value.toFixed(2)}%`
+
+export function HorizonChartDemo() {
+  return (
+    <>
+      <div className="gal-wide" data-gallery-horizon="shared" style={{ maxWidth: 560 }}>
+        <HorizonChart
+          rows={HORIZON_DEMO_ROWS}
+          label="示例：四个品种的日内收益（共用刻度）"
+          formatValue={pctText}
+          formatX={(i) => `第 ${i + 1} 点`}
+        />
+      </div>
+      <Row name="各行各自的刻度">
+        <div className="gal-wide" data-gallery-horizon="row" style={{ maxWidth: 560 }}>
+          <HorizonChart
+            rows={HORIZON_DEMO_ROWS}
+            label="示例：四个品种的日内收益（各自刻度）"
+            formatValue={pctText}
+            scale="row"
+          />
+        </div>
+      </Row>
+      <p className="gal-note">
+        {DEMO_NOTE}三条带：颜色越深值越大，涨跌色跟涨跌配色走；共用刻度时行与行可比，各自刻度只看形状。
       </p>
     </>
   )
