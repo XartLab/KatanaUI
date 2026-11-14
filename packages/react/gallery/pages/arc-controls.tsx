@@ -14,7 +14,7 @@ import {
   type ShortcutRecorderLabels,
   type TreeNode,
 } from '../../src/index'
-import { EventTimeline, type TimelineEvent } from '../../src/blocks'
+import { EventTimeline, type EventTimelineLabels, type SessionMinutes, type TimelineEvent } from '../../src/blocks'
 import { Row } from './parts'
 
 // #1919 的操作与结构件的演示。数据都是演示用的（页上写明），不是行情。
@@ -270,78 +270,145 @@ export function JsonViewerDemo() {
   )
 }
 
-// 演示事件：时刻是演示用的（UTC 毫秒），内容是编的，不是真实的公告、告警或成交。显示时区取 Asia/Shanghai：
-// 11-13 17:30 UTC 在上海已经是 11-14 01:30，所以落进 11-14 那一天。
-const utc = (iso: string) => Date.parse(iso)
-const TIMELINE_EVENTS: readonly TimelineEvent[] = [
-  {
-    id: 'e1',
-    at: utc('2026-11-14T01:20:05Z'),
-    title: '价格告警触发',
-    detail: 'DEMO-PERP 上破 101.50',
-    source: '告警',
-    tone: 'warn',
-  },
-  {
-    id: 'e2',
-    at: utc('2026-11-14T01:20:05Z'),
-    title: '成交 2 手',
-    detail: '买入 @ 101.50',
-    source: '成交',
-    tone: 'up',
-  },
-  {
-    id: 'e3',
-    at: utc('2026-11-13T17:30:00Z'),
-    title: '数据源重连',
-    detail: '断开 12 秒后恢复，已补齐缺口',
-    source: '数据源',
-    tone: 'info',
-  },
-  {
-    id: 'e4',
-    at: utc('2026-11-13T06:02:31Z'),
-    title: '止损单触发',
-    detail: '卖出 1 手 @ 99.00',
-    source: '成交',
-    tone: 'down',
-  },
-  { id: 'e5', at: utc('2026-11-13T02:00:00Z'), title: '发布盘前公告', source: '公告' },
-  { id: 'e6', at: utc('2026-11-11T09:45:10Z'), title: '策略已停止', detail: '手动停止', source: '策略' },
+// 演示事件：照卡里的场景（A 股 300750、账户 A / B、run 2e52），时刻与内容都是编的演示数据，不是真实的公告、告警或成交。
+// 显示时区 Asia/Shanghai；A 股交易时段 09:30–11:30、13:00–15:00（午休压成短带）。
+const cst = (day: string, hhmm: string) => Date.parse(`${day}T${hhmm}:00+08:00`)
+const SESSION: SessionMinutes = [
+  [570, 690],
+  [780, 900],
 ]
+const D1 = '2026-11-13'
+const TIMELINE_EVENTS: readonly TimelineEvent[] = [
+  { id: 'n1', at: cst(D1, '09:25'), kind: 'notice', label: '回购进展公告', symbol: '300750', ref: 'NEWS-8841' },
+  { id: 'a1', at: cst(D1, '09:41'), kind: 'anomaly', label: '放量拉升', symbol: '300750', ref: '1m 量比 4.2' },
+  {
+    id: 'f1',
+    at: cst(D1, '09:43'),
+    kind: 'fill',
+    side: 'buy',
+    label: '买入 200 @ 201.30',
+    symbol: '300750',
+    account: 'A',
+    ref: 'FILL-0231',
+  },
+  {
+    id: 'f2',
+    at: cst(D1, '09:43'),
+    kind: 'fill',
+    side: 'buy',
+    label: '买入 300 @ 201.35',
+    symbol: '300750',
+    account: 'A',
+    ref: 'FILL-0232',
+  },
+  {
+    id: 'f3',
+    at: cst(D1, '09:43'),
+    kind: 'fill',
+    side: 'buy',
+    label: '买入 100 @ 201.40',
+    symbol: '300750',
+    account: 'B',
+    ref: 'FILL-0233',
+  },
+  { id: 'l1', at: cst(D1, '10:12'), kind: 'alert', label: '上破 202.00', symbol: '300750', ref: 'ALERT-17' },
+  { id: 'r1', at: cst(D1, '10:50'), kind: 'run', label: 'RUN 2e52 完成', ref: 'RUN 2e52' },
+  { id: 'a2', at: cst(D1, '13:08'), kind: 'anomaly', label: '大单扫货', symbol: '300750', ref: '委托 +1.8%' },
+  {
+    id: 'f4',
+    at: cst(D1, '13:31'),
+    kind: 'fill',
+    side: 'sell',
+    label: '卖出 400 @ 203.10',
+    symbol: '300750',
+    account: 'A',
+    ref: 'FILL-0240',
+  },
+  { id: 'n2', at: cst(D1, '14:20'), kind: 'notice', label: '董事会决议公告', symbol: '300750', ref: 'NEWS-8863' },
+  { id: 'l2', at: cst(D1, '14:42'), kind: 'alert', label: '跌破 202.50', symbol: '300750', ref: 'ALERT-17' },
+]
+const MULTI_DAY: readonly TimelineEvent[] = [
+  ...TIMELINE_EVENTS.slice(0, 6),
+  { id: 'm1', at: cst('2026-11-12', '09:48'), kind: 'anomaly', label: '快速回落', symbol: '300750', ref: '1m -1.1%' },
+  {
+    id: 'm2',
+    at: cst('2026-11-12', '10:05'),
+    kind: 'fill',
+    side: 'sell',
+    label: '卖出 500 @ 199.80',
+    symbol: '300750',
+    account: 'B',
+    ref: 'FILL-0221',
+  },
+  { id: 'm3', at: cst('2026-11-12', '14:10'), kind: 'run', label: 'RUN 1d07 完成', ref: 'RUN 1d07' },
+]
+const TIMELINE_LABELS: EventTimelineLabels = {
+  kinds: { anomaly: '异动', notice: '公告', fill: '成交', alert: '警报', run: 'run' },
+  now: '现在',
+  count: (n) => `${n} 条`,
+  cluster: (n) => `${n} 个事件`,
+  buy: '买入',
+  sell: '卖出',
+  time: '时间',
+  kind: '类别',
+  content: '内容',
+  ref: '关联',
+  showTable: '表格',
+  showTimeline: '时间线',
+  day: (day, count) => `${day.slice(5)} · ${count} 条`,
+  empty: '还没有事件',
+}
 
 export function EventTimelineDemo() {
   const [picked, setPicked] = useState('无')
+  const [brushed, setBrushed] = useState('无')
   return (
     <>
-      <Row name="按天分组 · 新的在前">
-        <div className="gal-timeline" style={{ width: 360 }}>
+      <Row name="单日 · 现在 · 可点可拖选">
+        <div style={{ width: 640 }}>
           <EventTimeline
             label="事件流"
             events={TIMELINE_EVENTS}
             timeZone="Asia/Shanghai"
-            dayLabel={(day, count) => `${day} · ${count} 条`}
-            emptyText="还没有事件"
+            session={SESSION}
+            now={cst(D1, '14:30')}
+            scope="300750 · 账户 A、B"
+            labels={TIMELINE_LABELS}
+            onPick={(event) => setPicked(event.id)}
+            onBrush={({ from, to }) =>
+              setBrushed(`${new Date(from).toISOString().slice(11, 16)}–${new Date(to).toISOString().slice(11, 16)}`)
+            }
           />
-        </div>
-      </Row>
-      <Row name="可点 · 空态">
-        <div className="gal-timeline" style={{ width: 360 }}>
-          <EventTimeline
-            label="可点的事件流"
-            events={TIMELINE_EVENTS.slice(0, 2)}
-            timeZone="UTC"
-            dayLabel={(day) => day}
-            emptyText="还没有事件"
-            onSelect={(event) => setPicked(event.id)}
-          />
-          <EventTimeline label="空事件流" events={[]} timeZone="UTC" dayLabel={(day) => day} emptyText="还没有事件" />
         </div>
         <output data-gallery-timeline>{picked}</output>
+        <output data-gallery-brush>{brushed}</output>
+      </Row>
+      <Row name="跨日 · 一天一行">
+        <div style={{ width: 640 }}>
+          <EventTimeline
+            label="跨日事件流"
+            events={MULTI_DAY}
+            timeZone="Asia/Shanghai"
+            session={SESSION}
+            scope="300750"
+            labels={TIMELINE_LABELS}
+          />
+        </div>
+      </Row>
+      <Row name="空态">
+        <div style={{ width: 640 }}>
+          <EventTimeline
+            label="空事件流"
+            events={[]}
+            timeZone="Asia/Shanghai"
+            session={SESSION}
+            labels={TIMELINE_LABELS}
+          />
+        </div>
       </Row>
       <p className="gal-note">
-        演示：事件是编的，不是真实的公告、告警或成交。显示时区 Asia/Shanghai；协调时 11-13 17:30 在这里已是 11-14
-        01:30。
+        演示数据：A 股代码、账户与 run 编号照设计稿的场景编的，不是真实的公告、告警或成交。形状加颜色区分类别（圆 =
+        异动，方 = 公告 / 警报，三角 = 成交，菱形 = run），发光只给异动。
       </p>
     </>
   )

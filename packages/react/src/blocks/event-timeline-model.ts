@@ -1,24 +1,36 @@
 // SPDX-License-Identifier: MIT
-// 事件时间线（EventTimeline）的分组规则（纯函数，组件与单测共用）：按显示时区的自然日分组，新的在前。
+// 事件时间线（EventTimeline）的排布规则（纯函数，组件与单测共用）。出处：设计稿 EventTimeline 卡（design/katana-console/project/components/EventTimeline/README.md）：
+// 轴按交易时段排，午休压成一小段（看的是顺序不是斜率）；同一分钟的事件聚成一个带计数的标记；可见标记 ≤ 60，更多先聚合；标签上下交错。
 // 时区由调用方传（应用的显示时区，IANA 名）：同一刻在上海与纽约可能落在不同的「天」，件里不猜、不读系统时区。
 
-export type TimelineTone = 'neutral' | 'up' | 'down' | 'warn' | 'info'
+/** 类别：异动 / 公告 / 成交 / 警报 / run；形状与状态色见 event-timeline.css。 */
+export type EventKind = 'anomaly' | 'notice' | 'fill' | 'alert' | 'run'
+
+export const EVENT_KINDS: readonly EventKind[] = ['anomaly', 'notice', 'fill', 'alert', 'run']
 
 export type TimelineEvent = {
   /** 稳定的 id（React key 与选中回调用）。 */
   id: string
   /** 事件发生的时刻（毫秒时间戳）。 */
   at: number
-  title: string
-  /** 标题下一行的说明。 */
-  detail?: string
-  /** 来源标签（公告、告警、成交、数据源……）：字由调用方给。 */
-  source?: string
-  /** 圆点的颜色：涨 / 跌 / 警示 / 信息，默认中性。 */
-  tone?: TimelineTone
+  kind: EventKind
+  /** 标记旁的短标签与 tooltip 的内容。 */
+  label: string
+  /** 成交的方向：买 = 向上三角（--bid），卖 = 向下三角（--ask）。 */
+  side?: 'buy' | 'sell'
+  /** 关联对象（FillLog 行、公告、RunInspector 的 run……）：tooltip 里显示。 */
+  ref?: string
+  symbol?: string
+  account?: string
 }
 
-export type DayGroup = { day: string; events: TimelineEvent[] }
+/** 交易时段：一天里的若干段，单位是该天零点起的分钟数（时区内），如 A 股 [[570, 690], [780, 900]]。 */
+export type SessionMinutes = readonly (readonly [number, number])[]
+
+/** 段与段之间的空档压成轴长的这一比例（午休「压缩成一段短带」；3% 是目测定的，待定）。 */
+export const GAP_FRACTION = 0.03
+/** 一条轴上最多画这么多标记（卡里的 ≤ 60）。 */
+export const MAX_MARKERS = 60
 
 const dayFormats = new Map<string, Intl.DateTimeFormat>()
 const clockFormats = new Map<string, Intl.DateTimeFormat>()
@@ -49,18 +61,105 @@ export function clock(at: number, timeZone: string): string {
   return format.format(at)
 }
 
-/** 按天分组：天与天之间新的在前，同一天里新的在前；同一刻的保持传入的先后。 */
-export function groupByDay(events: readonly TimelineEvent[], timeZone: string): DayGroup[] {
-  const sorted = events
-    .map((event, index) => ({ event, index }))
-    .sort((a, b) => b.event.at - a.event.at || a.index - b.index)
-    .map(({ event }) => event)
-  const groups: DayGroup[] = []
-  for (const event of sorted) {
-    const day = dayKey(event.at, timeZone)
-    const last = groups.at(-1)
-    if (last?.day === day) last.events.push(event)
-    else groups.push({ day, events: [event] })
+/** 某一刻在时区里是当天的第几分钟（含小数：秒折进去）。 */
+export function minuteOfDay(at: number, timeZone: string): number {
+  const [h, m, s] = clock(at, timeZone).split(':').map(Number) as [number, number, number]
+  return h * 60 + m + s / 60
+}
+
+/** 某一天（YYYY-MM-DD）的某一分钟在时区里是哪一刻。不处理夏令时切换日（A 股与大多数品种无夏令时，待核对）。 */
+export function dayMinuteToTime(day: string, minute: number, timeZone: string): number {
+  const noon = Date.parse(`${day}T12:00:00Z`)
+  let offset = minuteOfDay(noon, timeZone) - 720
+  if (offset > 720) offset -= 1440
+  if (offset < -720) offset += 1440
+  return Date.parse(`${day}T00:00:00Z`) + (minute - offset) * 60_000
+}
+
+/** 当天的分钟 → 轴上的位置 0..1；时段外的钳到最近的边，空档里按比例落在压缩带内。 */
+export function minuteToFraction(minute: number, session: SessionMinutes): number {
+  const gaps = session.length - 1
+  const gapTotal = gaps * GAP_FRACTION
+  const length = session.reduce((sum, [from, to]) => sum + (to - from), 0)
+  let x = 0
+  for (const [i, [from, to]] of session.entries()) {
+    const width = ((to - from) / length) * (1 - gapTotal)
+    if (minute <= from) return x
+    if (minute < to) return x + ((minute - from) / (to - from)) * width
+    x += width
+    const next = session[i + 1]
+    if (next) {
+      if (minute < next[0]) return x + ((minute - to) / (next[0] - to)) * GAP_FRACTION
+      x += GAP_FRACTION
+    }
   }
-  return groups
+  return 1
+}
+
+/** 轴上的位置 0..1 → 当天的分钟（拖选用；落在压缩带里取带的前一段末尾）。 */
+export function fractionToMinute(fraction: number, session: SessionMinutes): number {
+  const gaps = session.length - 1
+  const gapTotal = gaps * GAP_FRACTION
+  const length = session.reduce((sum, [from, to]) => sum + (to - from), 0)
+  const f = Math.min(1, Math.max(0, fraction))
+  let x = 0
+  for (const [i, [from, to]] of session.entries()) {
+    const width = ((to - from) / length) * (1 - gapTotal)
+    if (f <= x + width || i === session.length - 1) return from + Math.min(1, (f - x) / width) * (to - from)
+    x += width
+    if (f < x + GAP_FRACTION) return to
+    x += GAP_FRACTION
+  }
+  return session[0]?.[0] ?? 0
+}
+
+/** 空档在轴上的区间（画 bg-100 短带）。 */
+export function gapBands(session: SessionMinutes): { from: number; to: number }[] {
+  return session.slice(1).map(([from], i) => {
+    const prevEnd = session[i]![1]
+    const x = minuteToFraction(prevEnd, session)
+    return { from: x, to: minuteToFraction(from, session) }
+  })
+}
+
+export type Marker = {
+  key: string
+  /** 轴上的位置 0..1。 */
+  x: number
+  /** 标记的类别：一类就是它，混合时取优先级最高的（异动 > 警报 > 成交 > run > 公告）。 */
+  kind: EventKind
+  events: TimelineEvent[]
+}
+
+const PRIORITY: readonly EventKind[] = ['anomaly', 'alert', 'fill', 'run', 'notice']
+
+/** 把一天的事件聚成标记：同一分钟聚成一个；还多于 MAX_MARKERS 就把桶加倍再聚，直到放得下。 */
+export function clusterMarkers(
+  events: readonly TimelineEvent[],
+  timeZone: string,
+  session: SessionMinutes,
+  max = MAX_MARKERS,
+): Marker[] {
+  const sorted = [...events].sort((a, b) => a.at - b.at)
+  for (let bucket = 1; ; bucket *= 2) {
+    const buckets = new Map<number, TimelineEvent[]>()
+    for (const event of sorted) {
+      const slot = Math.floor(minuteOfDay(event.at, timeZone) / bucket)
+      const list = buckets.get(slot)
+      if (list) list.push(event)
+      else buckets.set(slot, [event])
+    }
+    if (buckets.size <= max || bucket > 1440) {
+      return [...buckets.entries()].map(([slot, list]) => {
+        const minutes = list.map((e) => minuteOfDay(e.at, timeZone))
+        const mean = minutes.reduce((a, b) => a + b, 0) / minutes.length
+        return {
+          key: `${bucket}:${slot}`,
+          x: minuteToFraction(mean, session),
+          kind: PRIORITY.find((k) => list.some((e) => e.kind === k)) ?? list[0]!.kind,
+          events: list,
+        }
+      })
+    }
+  }
 }
