@@ -124,6 +124,11 @@
           "target": "~/src/katana/ui/theme/led.css"
         },
         {
+          "path": "src/theme/limit-ladder.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/limit-ladder.css"
+        },
+        {
           "path": "src/theme/loading.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/loading.css"
@@ -2085,6 +2090,25 @@
           "path": "src/quant/horizon-model.ts",
           "type": "registry:component",
           "target": "~/src/katana/ui/quant/horizon-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "limit-ladder",
+      "type": "registry:component",
+      "title": "Limit Ladder",
+      "description": "A 股专有件（连板、涨停、炸板是 A 股的概念）。按板位从高到低分层的涨停梯队：顶上一行汇总读数（涨停只数、最高板、整体晋级率），下面按层：层头是粗体板位、只数与晋级率（加 2px 细进度条），层间留白；层里列个股：徽标、代码（主）、名称（次）。炸板、跌停、没涨停的文字淡显，状态胶囊保持全亮。数据与文字都由调用方传，件不认数据集。",
+      "registryDependencies": [
+        "@katana/change-text",
+        "@katana/cn",
+        "@katana/quant-format",
+        "@katana/symbol-mark"
+      ],
+      "files": [
+        {
+          "path": "src/quant/limit-ladder.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/limit-ladder.tsx"
         }
       ]
     },

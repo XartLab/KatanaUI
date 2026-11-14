@@ -1343,6 +1343,55 @@ export const PAGES: readonly DocPage[] = [
     keys: [],
   },
   {
+    id: 'limit-ladder',
+    group: 'quant',
+    cardHeight: 690,
+    title: 'LimitLadder 连板天梯（A 股专有）',
+    summary:
+      'A 股专有件（连板、涨停、炸板是 A 股的概念）。按板位从高到低分层的涨停梯队：顶上一行汇总读数（涨停只数、最高板、整体晋级率），下面按层：层头是粗体板位、只数与晋级率（加 2px 细进度条），层间留白；层里列个股：徽标、代码（主）、名称（次）。炸板、跌停、没涨停的文字淡显，状态胶囊保持全亮。数据与文字都由调用方传，件不认数据集。',
+    exports: ['LimitLadder'],
+    props: [
+      {
+        part: 'LimitLadder',
+        rows: [
+          {
+            name: 'levels',
+            type: 'LadderLevel[]',
+            desc: '{ board, promoted?: [已晋级, 候选], items }；件自己按 board 从高到低排。空数组画空态。',
+          },
+          {
+            name: 'levels[].items',
+            type: 'LadderItem[]',
+            desc: '{ code, name, change（百分数）, firstSeal?, sealAmount?（元，写成 520.00 M）, opens?, industry?, logo?, status }；没有的值写「—」。',
+          },
+          {
+            name: 'labels',
+            type: 'LimitLadderLabels',
+            desc: '板位单位、晋级率与只数文字、状态名、汇总读数名、列名、读屏名、空态文字，由调用方传。',
+          },
+          { name: 'selected', type: 'string | null', desc: '选中个股的代码；选中行左侧画 2px 强调条。' },
+          { name: 'onSelect', type: '(code: string) => void', desc: '点击或 Enter / Space 选一行。' },
+        ],
+      },
+    ],
+    states: [
+      '封住：状态标签取涨色（pnl-up，data-updown 互换时跟着换）。',
+      '炸板：文字 55% 不透明，胶囊琥珀、全亮。跌停：文字淡显，胶囊跌色。没涨停：文字淡显，胶囊灰。',
+      '选中：行底 6.5% 白，左侧 2px 强调条。',
+    ],
+    donts: [
+      '不要把橙色用在数据上，它只给选中条。',
+      '不要在件里写死中文或数据集字段；文字与数据由调用方传。',
+      '没有数据时不要放样本行，传空数组。',
+    ],
+    composition:
+      'LimitLadder\n  汇总读数（涨停 | 最高板 | 晋级率）\n  列头\n  listbox\n    层（group）：板位（粗体）| 单位 | 只数 | 晋级率 + 细条\n      行（option）：徽标 + 代码 + 名称 | 涨跌幅 | 首封 | 封单额 | 开板 | 行业 | 状态标签',
+    keys: [
+      ['↑ / ↓', '在行间移动焦点'],
+      ['Enter / Space', '选中当前行'],
+    ],
+  },
+  {
     id: 'pnl-text',
     group: 'quant',
     cardHeight: 70,
@@ -1390,6 +1439,7 @@ export const PAGES: readonly DocPage[] = [
       'formatPercentChange',
       'formatPrice',
       'formatQuantity',
+      'formatVolume',
       'toneOf',
     ],
     props: [
@@ -1421,6 +1471,11 @@ export const PAGES: readonly DocPage[] = [
         note: '数量的缩写（K / M / B）与千分位；单位 base 是币量、usd 带 $。',
         rows: [],
       },
+      {
+        part: 'formatVolume(value)',
+        note: '列表里的量与金额（照 TradingView 涨幅榜页，2026-11-15 读）：835.49 K、2.95 M、7.29 B，两位小数、数字与单位之间空一格；不到 1,000 取整；不带币种符号。',
+        rows: [],
+      },
     ],
     states: [
       'formatPrice：定了小数位就恒写这么多位；不是有限数写 —。',
@@ -1428,7 +1483,7 @@ export const PAGES: readonly DocPage[] = [
     ],
     donts: ['不要在格式化函数里猜品种的精度，由调用方传 precision 或 tick。', '不要自己拼千分位。'],
     composition:
-      'formatPrice\n  decimalsOfTick\nformatPercentChange\ntoneOf\nformatQuantity\n  formatCount\nformatCompact\n  compactParts',
+      'formatPrice\n  decimalsOfTick\nformatPercentChange\ntoneOf\nformatQuantity\n  formatCount\nformatCompact\n  compactParts\nformatVolume',
     keys: [],
   },
   {

@@ -147,13 +147,28 @@ npx shadcn add @katana/style @katana/button @katana/change-text
 - **键值对账行**：左键右值，一行一对（期初 / 期末 / 差额）。
 - 橙色只给状态灯和焦点角括号；不用 TradingView 蓝，不用暖白高亮黄。
 
+**校准（用户 2026-11-15 看 LimitLadder v1 后定：工业装饰太重）。** 底子是 TradingView 的组件手感加 Arc UI 的卡片结构，配色仍是 Graphite（不用 TradingView 蓝），工业感只做点缀。上面几条里点阵大字、层头底色块这类重的往回收，只留三处点缀：面板编号、底部一行点阵来源行、选中行左侧 2px 条。具体：
+
+- **表格手感取 TradingView**（列表与涨幅榜页，只看只量、不抄代码；2026-11-15 读自 tradingview.com/markets/stocks-usa/market-movers-gainers/，列：Symbol、Chg %、Price、Vol、Rel vol、Mkt cap…）：
+  数字用界面无衬线加 `tabular-nums`，不用等宽字体，右对齐；表头 11px 灰字、无点阵；行高 28–32px、行间只有极淡分隔线、悬停整行轻微提亮；
+  品种格是徽标（`SymbolMark`）加代码（主）加名称（次，更小更淡），跟 DataGrid 的品种列一致；
+  涨跌幅带正负号、两位小数（+10.00%），只给文字上色、不加底；量与金额数字后空一格再写单位缩写（835.49 K、2.95 M、7.29 B，用 `formatVolume`，不在件里手拼）；缺数据一律「—」；
+  状态 / 评级 TradingView 是纯文字，我们用低饱和底的小胶囊，**保持全亮**，不跟着整行淡显（淡显只作用在文字）。
+- **卡片结构取 Arc UI**（uiarc.dev 的 Revenue explorer、Metric explorer、Customer galaxy，2026-11-14 读：目录页与件名，没读源码）：
+  卡片顶部先给一行汇总读数（大号无衬线数字，小号灰字标签），下面再是明细；分组头左边是粗体名、右边数字加一根 2px 细进度条；组与组之间用留白分开，不用重底色块；留白与圆角克制。
+
+**组件分两类（用户 2026-11-15 定，KATANAview decisions.md 2026-11-15、PR #1984）。** 样子照 TradingView 表格手感加 Arc 卡片结构；面板怎么平铺照 OpenBB Workspace 与彭博 Launchpad。A 股只单独做数据和少数专有组件，其余件跨市场共用：
+
+- **共用件：** 不认市场，数据与文字由调用方传（DataGrid、PanelFrame、SeriesExplorer 等）。
+- **市场专有件：** 只对某个市场有意义，放 quant 层，文档页与 props 说明里标明属于哪个市场。目前 A 股有连板天梯（LimitLadder，已做）；题材热度矩阵、龙虎榜净买条待做。专有件也不依赖数据集：板位、状态这类词是它的接口，数据与文字仍由调用方传。
+
 样例（Graphite，文档站 `?theme=graphite` 截的）：
 
 - SeriesExplorer：[images/series-explorer-graphite.png](images/series-explorer-graphite.png)
 - AttributionBars 盈亏归因：[images/attribution-bars-graphite.png](images/attribution-bars-graphite.png)
 
 文档站浏览器测试 `e2e/precision-instrument.spec.ts` 是这套语言的正面证明：序列探索页的元信息行用 Doto、汉字落到方舟像素子集、编号是强调色；去掉 `--font-dot` 里的方舟像素，它就红。
-已套这层语言的件：SeriesExplorer、AttributionBars；其余逐件铺开（DataGrid、ChartTable、EquityCurve、Meter、CalendarHeatmap、SymbolGalaxy），一件一个提交。
+已套这层语言的件：SeriesExplorer、AttributionBars、LimitLadder（#12，按上面「校准」做的）；其余逐件铺开（DataGrid、ChartTable、EquityCurve、Meter、CalendarHeatmap、SymbolGalaxy），一件一个提交。
 
 ## 许可证
 
