@@ -1,4 +1,4 @@
-/* Generated from src/tokens/tokens.json + src/tokens/motion.tokens.json by scripts/sync-tokens.mjs. Do not edit. */
+/* Generated from src/tokens.json + src/motion.tokens.json by scripts/sync-tokens.mjs. Do not edit. */
 :root {
   --bg-000: #0b0b09;
   --bg-100: #141311;
@@ -180,6 +180,65 @@
   --dur-gentle: 497ms;
   --ease-settle: linear(0, 0.078, 0.22, 0.378, 0.513, 0.631, 0.724, 0.793, 0.847, 0.887, 0.917, 0.939, 0.956, 0.968, 0.976, 0.983, 0.987, 0.991, 0.993, 0.995, 0.996, 0.997, 0.998, 0.999, 0.999);
   --dur-settle: 783ms;
+  --k-color-white: #ffffff;
+  --k-actionable-background: var(--alpha-white-3);
+  --k-actionable-background-hover: var(--alpha-white-6);
+  --k-actionable-background-active: var(--alpha-white-9);
+  --k-actionable-borderColor: var(--alpha-white-7);
+  --k-actionable-foreground: var(--ink-200);
+  --k-actionable-foreground-hover: var(--ink-100);
+  --k-actionable-bold-background: var(--ink-100);
+  --k-actionable-bold-background-hover: var(--k-color-white);
+  --k-actionable-bold-background-active: var(--ink-200);
+  --k-actionable-bold-foreground: var(--bg-100);
+  --k-actionable-bold-foreground-hover: var(--bg-000);
+  --k-actionable-subtle-background-hover: var(--alpha-white-4);
+  --k-actionable-subtle-background-active: var(--alpha-white-4);
+  --k-actionable-subtle-foreground: var(--ink-300);
+  --k-actionable-subtle-foreground-hover: var(--ink-100);
+  --k-actionable-negative-background: var(--alpha-white-3);
+  --k-actionable-negative-borderColor: color-mix(in srgb, var(--signal-red) 30%, transparent);
+  --k-actionable-negative-background-hover: color-mix(in srgb, var(--signal-red) 8%, transparent);
+  --k-actionable-negative-background-active: color-mix(in srgb, var(--signal-red) 14%, transparent);
+  --k-actionable-negative-foreground: var(--signal-red);
+  --k-content-primary-foreground: var(--ink-100);
+  --k-content-secondary-foreground: var(--ink-300);
+  --k-separable-primary-borderColor: var(--alpha-white-13);
+  --k-separable-secondary-borderColor: var(--alpha-white-7);
+  --k-separable-tertiary-borderColor: var(--line-100);
+  --k-container-primary-background: var(--bg-300);
+  --k-container-secondary-background: var(--bg-200);
+  --k-container-borderColor: var(--line-100);
+  --k-focused-outlineColor: var(--focus-ring);
+  --k-focused-outlineWidth: 2px;
+  --k-focused-outlineOffset: 2px;
+}
+:root, [data-density='medium'] {
+  --k-size-base: 30px;
+  --k-size-row: 28px;
+  --k-spacing-50: 3px;
+  --k-spacing-100: 6px;
+  --k-spacing-150: 9px;
+  --k-spacing-200: 12px;
+  --k-spacing-300: 18px;
+}
+[data-density='high'] {
+  --k-size-base: 26px;
+  --k-size-row: 24px;
+  --k-spacing-50: 2px;
+  --k-spacing-100: 4px;
+  --k-spacing-150: 6px;
+  --k-spacing-200: 8px;
+  --k-spacing-300: 12px;
+}
+[data-density='low'] {
+  --k-size-base: 36px;
+  --k-size-row: 36px;
+  --k-spacing-50: 4px;
+  --k-spacing-100: 8px;
+  --k-spacing-150: 12px;
+  --k-spacing-200: 16px;
+  --k-spacing-300: 24px;
 }
 :root[data-theme='graphite'] {
   --bg-000: #000000;

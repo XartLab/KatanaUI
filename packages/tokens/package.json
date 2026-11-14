@@ -1,0 +1,40 @@
+{
+  "name": "@katana-ui/tokens",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Katana UI 的设计 token：三层（原值、调色、语义特征）、Console 与 Graphite 两套调色、密度三档、三条弹簧；源头是 JSON，生成 CSS 变量。不依赖任何应用与框架。",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/XartLab/KatanaUI.git",
+    "directory": "packages/tokens"
+  },
+  "files": [
+    "src",
+    "LICENSE",
+    "README.md"
+  ],
+  "type": "module",
+  "sideEffects": [
+    "*.css"
+  ],
+  "exports": {
+    "./tokens.css": "./src/tokens.css",
+    "./tokens.json": "./src/tokens.json",
+    "./motion.tokens.json": "./src/motion.tokens.json"
+  },
+  "scripts": {
+    "test": "node scripts/sync-tokens.mjs --check && vp test run",
+    "check": "vp check",
+    "tokens:sync": "node scripts/sync-tokens.mjs"
+  },
+  "devDependencies": {
+    "@types/node": "22.20.5",
+    "typescript": "7.0.2",
+    "vite": "npm:@voidzero-dev/vite-plus-core@1.4.0",
+    "vite-plus": "1.4.0"
+  },
+  "engines": {
+    "node": ">=22.13"
+  }
+}

@@ -64,17 +64,23 @@ function collectItems() {
     'registry:style',
     [
       'src/ui.css',
-      'src/tokens/tokens.css',
+      'src/tokens.css',
       'src/theme/theme.css',
       ...listDir('src/theme')
         .filter((f) => f.endsWith('.css') && f !== 'theme.css')
         .map((f) => `src/theme/${f}`),
     ],
-    { fileType: 'registry:file', extraDependencies: [`tailwindcss@${pkg.dependencies.tailwindcss}`] },
+    {
+      fileType: 'registry:file',
+      extraDependencies: [
+        `tailwindcss@${pkg.dependencies.tailwindcss}`,
+        `@katana-ui/tokens@${pkg.peerDependencies['@katana-ui/tokens']}`,
+      ],
+    },
   )
   for (const f of listDir('src/lib').filter((f) => /\.tsx?$/.test(f) && !/\.test\./.test(f))) {
     const name = f.replace(/\.tsx?$/, '')
-    add(name, 'registry:lib', [`src/lib/${f}`, ...(name === 'motion' ? ['src/tokens/motion.tokens.json'] : [])])
+    add(name, 'registry:lib', [`src/lib/${f}`])
   }
   byFile('src/primitives', 'registry:ui')
   // katana/ 自有的件：带 JSX 的是 component，纯函数（解析、计时）是 lib。
@@ -163,7 +169,8 @@ export async function buildRegistry() {
         } else if (!spec.startsWith('node:')) {
           const bare = spec.startsWith('@') ? spec.split('/').slice(0, 2).join('/') : spec.split('/')[0]
           if (bare === 'react' || bare === 'react-dom') continue
-          const version = pkg.dependencies[bare]
+          const version =
+            pkg.dependencies[bare] ?? (bare === '@katana-ui/tokens' ? pkg.peerDependencies[bare] : undefined)
           if (!version) throw new Error(`registry：${file} 引入 ${bare}，但 package.json 的 dependencies 里没有`)
           npm.add(`${bare}@${version}`)
           // 类型包（DefinitelyTyped：@scope/name → @types/scope__name）在 devDependencies 里就跟着写进 item，

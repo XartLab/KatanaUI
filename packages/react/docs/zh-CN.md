@@ -16,7 +16,7 @@ tokens → theme → lib → primitives → katana → patterns → quant → bl
 
 | 层 | 目录 | 放什么 |
 | --- | --- | --- |
-| tokens | `src/tokens/` | `tokens.json`（token 源头，手改这份）、`tokens.css`（`pnpm tokens:sync` 从 `tokens.json` 与 `motion.tokens.json` 生成，不手改）、`motion.tokens.json`（三条弹簧） |
+| tokens | 另一个包 `@katana-ui/tokens`（`packages/tokens/`） | `src/tokens.json`（token 源头，手改这份）、`src/tokens.css`（`pnpm tokens:sync` 从 `tokens.json` 与 `motion.tokens.json` 生成，不手改）、`src/motion.tokens.json`（三条弹簧）；本包的 `src/tokens.css` 与 `src/tokens-json.ts` 只是把 `./tokens.css`、`./tokens.json` 出口转发过去 |
 | theme | `src/theme/` | `theme.css`：Tailwind v4 的 `@theme inline` 把 token 接成工具类；`motion.css`：入场、退场的关键帧与 `data-state` 动效 |
 | lib | `src/lib/` | `cn`（`clsx` + `tailwind-merge`，认得 `k-text-*` 字号档）、`focus`（焦点环类）、`motion`（弹簧参数） |
 | primitives | `src/primitives/` | 无业务的基础件：button（含 `icon` 变体）、input、select、toggle-group、slider、checkbox、switch、tooltip、popover、dialog、dropdown-menu、context-menu、tabs、accordion、sheet、hover-card、command（`cmdk`）、scroll-area、separator、progress、alert、field、label；`lib/opener-focus` 是 dialog 与 sheet 共用的「关上时焦点回开启处」 |
@@ -43,6 +43,10 @@ tokens → theme → lib → primitives → katana → patterns → quant → bl
 - **没换：命令搜索（`QuickSearch.tsx`）→ `Command`。** 它自己排名、给「匹配 xx」的别名提示、分「最近」「命令」两段、回车避开输入法组字，用的是跟指标库、品种搜索共用的 `.kc-ib-*` 外框。换成 cmdk 要关掉它的过滤、重写这一整套外框，收益只是少一段键盘移动的代码，风险是动三处共用的样式。留给把 `.kc-ib-*` 整套收进包的那一次。
 - **没换：交易所多选（`SymbolSearch.tsx` 的 `VenueFilter`）→ `Combobox`。** 它是两列网格带 LOGO、状态灯和底部「全选 / 全部清除 / 完成」，行是 `role=checkbox`；`Combobox` 是单列的 listbox。要换得先给 `Combobox` 加两列与底栏，不然样子会变。现在包里的 `Combobox` 没有应用里的调用方，只在包与文档站里。
 - **没换：4px 滚动条（#1799）→ `ScrollArea`。** #1800 把滚动条做成了全局的原生 CSS（`scrollbar-width` 与 `::-webkit-scrollbar`），所有滚动容器自动带上；换成 `ScrollArea` 要给每个滚动容器套一层，还会带来自绘滚动条与原生滚动条并存的问题。`ScrollArea` 留给需要自绘滚动条的地方（比如要在滚动条上放标记）。
+
+## 三层 token 与密度（#1943）
+
+组件只读 characteristics（`--k-actionable-*`、`--k-focused-*` …）与密度变量（`--k-size-base`、`--k-spacing-*`），不读 palette（`ink-*`、`alpha-white-*` …）；高度与内距随容器上的 `data-density="high|medium|low"` 变，默认 medium。照 Salt 的 Foundation → Palette → Characteristics 分层，三层各是什么、密度表、命名规则见 [theming.md](theming.md#三层-token-与密度1943)。目前只有 Button 迁过来（`src/characteristics.test.ts` 守着），其余件后续逐个迁。
 
 ## 应用怎么用
 
@@ -113,7 +117,7 @@ pnpm --filter @katana-ui/react exec shadcn add <component>
 npx shadcn add @katana/style @katana/button @katana/change-text
 ```
 
-然后在入口样式里先引 `katana/ui/tokens/tokens.css`、最后引 `katana/ui/ui.css`（次序见上面「应用怎么用」）。换皮只覆盖哪些变量见 [theming.md](theming.md)。
+然后在入口样式里先引 `katana/ui/tokens.css`、最后引 `katana/ui/ui.css`（次序见上面「应用怎么用」）。换皮只覆盖哪些变量见 [theming.md](theming.md)。
 
 ## 许可证
 
@@ -122,7 +126,7 @@ MIT（用户 2026-11-14 定，#1876），见本文开头。别的项目经注册
 ## 设计系统包
 
 `design-system/` 是 design-pipeline（0.15.0-beta.1）格式的设计系统包，**由脚本从代码生成，不手写**：`pnpm --filter @katana-ui/react ds:build`。
-`tokens.json` 来自 `design/tokens.json`（只带实装了的 Console 与 Graphite，补 `contrast`；对不上比例的 token 保留原值，比值写在它的 usage 里），
+`tokens.json` 来自 `@katana-ui/tokens` 的 `src/tokens.json`（只带实装了的 Console 与 Graphite，补 `contrast`；对不上比例的 token 保留原值，比值写在它的 usage 里），
 `README.md` 来自手写的 `ds/guidelines.md`，`components/bundle.css` 是 `tokens.css` 加 Tailwind 编出的 `ui.css`，
 每个件的 `README.md` 与 `preview.html` 读文档站的页数据（`gallery/registry.ts` 的 `PAGES`：说明、属性、组成、键盘；预览是 `gallery/demos.tsx` 经 `react-dom/server` 渲染的静态 HTML，预览里摆件的版面类在 `gallery/preview.css`），经 `ds/render.tsx` 生成，不另写一份。页就是件：加一页（含自有件、量化件）设计系统包就多一个件，注册表的 item 说明也读同一页；每页的 `cardHeight` 是预览卡的高度（生成后在卡里量）。
 门禁是 `pnpm lint:ds`，用法见 测试（KATANAview 的 docs/contributing/testing.md）。
@@ -144,7 +148,7 @@ MIT（用户 2026-11-14 定，#1876），见本文开头。别的项目经注册
 - `scripts/standalone.test.ts`：扫本目录的源码、配置、文档，出现越出包的 `../` 路径就红。
 - `.github/workflows/pages.yml`：只在镜像仓库里生效（GitHub 不读子目录的 `.github`），push 到 main 时测试、构建并发布到 Pages。
 - `README.md`（英文，对外）、`CONTRIBUTING.md`（英文）、本文件（中文，内部）。
-- token：镜像仓库里 `src/tokens/tokens.css` 与 `src/tokens/tokens.json`（`design/tokens.json` 的原样副本，包里的 `ds-build`、`ds-tokens.test.ts` 只读它）都是生成物、只读；改 token 去 KATANAview 的 `design/tokens.json`，再 `node scripts/sync-tokens.mjs`（`pnpm lint:ds` 查副本与源一致）。
+- token：源头与生成器在 `packages/tokens`（`@katana-ui/tokens`，2026-11-14 #2 第 2 步拆出），包里的 `ds-build`、`ds-tokens.test.ts`、`theming.test.ts`、`motion.test.ts` 按包名读它的出口（本地靠 `linkWorkspacePackages` 连到仓库里那份）；改 token 在那个包里改 `src/tokens.json` 再 `pnpm tokens:sync`。
 - 设计稿覆盖表的脚本（`pnpm ui:coverage`）读仓库根的设计稿目录，所以放在 KATANAview 根目录的 `scripts/ui-coverage.mjs`，不在包里。
 - `pnpm-lock.yaml` 是本包自己的锁（镜像里 `pnpm install --frozen-lockfile` 读它）：改了 `package.json` 的依赖后，在本目录跑 `pnpm install --lockfile-only --ignore-workspace` 并提交；根目录的 `pnpm lint:ui-lock`（`pnpm test` 里有）查它与 `package.json` 同步。根目录的安装不读它。
 

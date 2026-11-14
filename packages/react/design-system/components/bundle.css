@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: MIT */
-/* 生成文件（pnpm --filter @katana-ui/react ds:build）：src/tokens/tokens.css、Tailwind 编出的 src/ui.css、预览的版面类（gallery/preview.css），以及两段补充（见各段的注释）。预览与产品共用这一份。 */
-/* Generated from src/tokens/tokens.json + src/tokens/motion.tokens.json by scripts/sync-tokens.mjs. Do not edit. */
+/* 生成文件（pnpm --filter @katana-ui/react ds:build）：@katana-ui/tokens 的 tokens.css、Tailwind 编出的 src/ui.css、预览的版面类（gallery/preview.css），以及两段补充（见各段的注释）。预览与产品共用这一份。 */
+/* Generated from src/tokens.json + src/motion.tokens.json by scripts/sync-tokens.mjs. Do not edit. */
 :root {
   --bg-000: #0b0b09;
   --bg-100: #141311;
@@ -182,6 +182,65 @@
   --dur-gentle: 497ms;
   --ease-settle: linear(0, 0.078, 0.22, 0.378, 0.513, 0.631, 0.724, 0.793, 0.847, 0.887, 0.917, 0.939, 0.956, 0.968, 0.976, 0.983, 0.987, 0.991, 0.993, 0.995, 0.996, 0.997, 0.998, 0.999, 0.999);
   --dur-settle: 783ms;
+  --k-color-white: #ffffff;
+  --k-actionable-background: var(--alpha-white-3);
+  --k-actionable-background-hover: var(--alpha-white-6);
+  --k-actionable-background-active: var(--alpha-white-9);
+  --k-actionable-borderColor: var(--alpha-white-7);
+  --k-actionable-foreground: var(--ink-200);
+  --k-actionable-foreground-hover: var(--ink-100);
+  --k-actionable-bold-background: var(--ink-100);
+  --k-actionable-bold-background-hover: var(--k-color-white);
+  --k-actionable-bold-background-active: var(--ink-200);
+  --k-actionable-bold-foreground: var(--bg-100);
+  --k-actionable-bold-foreground-hover: var(--bg-000);
+  --k-actionable-subtle-background-hover: var(--alpha-white-4);
+  --k-actionable-subtle-background-active: var(--alpha-white-4);
+  --k-actionable-subtle-foreground: var(--ink-300);
+  --k-actionable-subtle-foreground-hover: var(--ink-100);
+  --k-actionable-negative-background: var(--alpha-white-3);
+  --k-actionable-negative-borderColor: color-mix(in srgb, var(--signal-red) 30%, transparent);
+  --k-actionable-negative-background-hover: color-mix(in srgb, var(--signal-red) 8%, transparent);
+  --k-actionable-negative-background-active: color-mix(in srgb, var(--signal-red) 14%, transparent);
+  --k-actionable-negative-foreground: var(--signal-red);
+  --k-content-primary-foreground: var(--ink-100);
+  --k-content-secondary-foreground: var(--ink-300);
+  --k-separable-primary-borderColor: var(--alpha-white-13);
+  --k-separable-secondary-borderColor: var(--alpha-white-7);
+  --k-separable-tertiary-borderColor: var(--line-100);
+  --k-container-primary-background: var(--bg-300);
+  --k-container-secondary-background: var(--bg-200);
+  --k-container-borderColor: var(--line-100);
+  --k-focused-outlineColor: var(--focus-ring);
+  --k-focused-outlineWidth: 2px;
+  --k-focused-outlineOffset: 2px;
+}
+:root, [data-density='medium'] {
+  --k-size-base: 30px;
+  --k-size-row: 28px;
+  --k-spacing-50: 3px;
+  --k-spacing-100: 6px;
+  --k-spacing-150: 9px;
+  --k-spacing-200: 12px;
+  --k-spacing-300: 18px;
+}
+[data-density='high'] {
+  --k-size-base: 26px;
+  --k-size-row: 24px;
+  --k-spacing-50: 2px;
+  --k-spacing-100: 4px;
+  --k-spacing-150: 6px;
+  --k-spacing-200: 8px;
+  --k-spacing-300: 12px;
+}
+[data-density='low'] {
+  --k-size-base: 36px;
+  --k-size-row: 36px;
+  --k-spacing-50: 4px;
+  --k-spacing-100: 8px;
+  --k-spacing-150: 12px;
+  --k-spacing-200: 16px;
+  --k-spacing-300: 24px;
 }
 :root[data-theme='graphite'] {
   --bg-000: #000000;
@@ -630,6 +689,11 @@
   aspect-ratio: 4 / 3;
 }
 
+.size-\(--k-size-row\) {
+  width: var(--k-size-row);
+  height: var(--k-size-row);
+}
+
 .size-2 {
   width: 8px;
   height: 8px;
@@ -683,6 +747,10 @@
 .size-full {
   width: 100%;
   height: 100%;
+}
+
+.h-\(--k-size-base\) {
+  height: var(--k-size-base);
 }
 
 .h-\(--target-min\) {
@@ -1072,6 +1140,10 @@
   justify-content: flex-start;
 }
 
+.gap-\(--k-spacing-100\) {
+  gap: var(--k-spacing-100);
+}
+
 .gap-0\.5 {
   gap: 2px;
 }
@@ -1274,14 +1346,12 @@
   border-style: dashed;
 }
 
-.border-\[color-mix\(in_srgb\,var\(--signal-red\)_30\%\,transparent\)\] {
-  border-color: var(--signal-red);
+.border-\(color\:--k-actionable-borderColor\) {
+  border-color: var(--k-actionable-borderColor);
 }
 
-@supports (color: color-mix(in lab, red, red)) {
-  .border-\[color-mix\(in_srgb\,var\(--signal-red\)_30\%\,transparent\)\] {
-    border-color: var(--ds-c-1o9zdt);
-  }
+.border-\(color\:--k-actionable-negative-borderColor\) {
+  border-color: var(--k-actionable-negative-borderColor);
 }
 
 .border-alpha-white-5 {
@@ -1346,6 +1416,18 @@
 
 .border-l-ok {
   border-left-color: var(--signal-green);
+}
+
+.bg-\(--k-actionable-background\) {
+  background-color: var(--k-actionable-background);
+}
+
+.bg-\(--k-actionable-bold-background\) {
+  background-color: var(--k-actionable-bold-background);
+}
+
+.bg-\(--k-actionable-negative-background\) {
+  background-color: var(--k-actionable-negative-background);
 }
 
 .bg-\(--seg-on-bg\) {
@@ -1414,10 +1496,6 @@
 
 .bg-danger {
   background-color: var(--signal-red);
-}
-
-.bg-ink {
-  background-color: var(--ink-100);
 }
 
 .bg-ink-2 {
@@ -1504,6 +1582,10 @@
 
 .p-3 {
   padding: 12px;
+}
+
+.px-\(--k-spacing-200\) {
+  padding-inline: var(--k-spacing-200);
 }
 
 .px-0 {
@@ -1822,6 +1904,26 @@
   color: var(--signal-orange);
 }
 
+.text-\(color\:--k-actionable-bold-foreground\) {
+  color: var(--k-actionable-bold-foreground);
+}
+
+.text-\(color\:--k-actionable-foreground\) {
+  color: var(--k-actionable-foreground);
+}
+
+.text-\(color\:--k-actionable-negative-foreground\) {
+  color: var(--k-actionable-negative-foreground);
+}
+
+.text-\(color\:--k-actionable-subtle-foreground\) {
+  color: var(--k-actionable-subtle-foreground);
+}
+
+.text-\(color\:--k-content-secondary-foreground\) {
+  color: var(--k-content-secondary-foreground);
+}
+
 .text-\[color-mix\(in_srgb\,var\(--cb-accent\)_22\%\,var\(--ink-100\)\)\] {
   color: var(--cb-accent);
 }
@@ -1896,10 +1998,6 @@
   color: var(--bg-000);
 }
 
-.text-surface-1 {
-  color: var(--bg-100);
-}
-
 .uppercase {
   text-transform: uppercase;
 }
@@ -1917,10 +2015,10 @@
   text-decoration-line: underline;
 }
 
-.decoration-alpha-white-13 {
-  -webkit-text-decoration-color: var(--alpha-white-13);
-  -webkit-text-decoration-color: var(--alpha-white-13);
-  text-decoration-color: var(--alpha-white-13);
+.decoration-\(color\:--k-separable-primary-borderColor\) {
+  -webkit-text-decoration-color: var(--k-separable-primary-borderColor);
+  -webkit-text-decoration-color: var(--k-separable-primary-borderColor);
+  text-decoration-color: var(--k-separable-primary-borderColor);
 }
 
 .underline-offset-\[3px\] {
@@ -2258,22 +2356,20 @@
     color: var(--ink-100);
   }
 
-  .not-disabled\:hover\:bg-\[color-mix\(in_srgb\,var\(--signal-red\)_8\%\,transparent\)\]:not(:disabled):hover {
-    background-color: var(--signal-red);
+  .not-disabled\:hover\:bg-\(--k-actionable-background-hover\):not(:disabled):hover {
+    background-color: var(--k-actionable-background-hover);
   }
 
-  @supports (color: color-mix(in lab, red, red)) {
-    .not-disabled\:hover\:bg-\[color-mix\(in_srgb\,var\(--signal-red\)_8\%\,transparent\)\]:not(:disabled):hover {
-      background-color: var(--ds-c-1igqc0m);
-    }
+  .not-disabled\:hover\:bg-\(--k-actionable-bold-background-hover\):not(:disabled):hover {
+    background-color: var(--k-actionable-bold-background-hover);
   }
 
-  .not-disabled\:hover\:bg-alpha-white-4:not(:disabled):hover {
-    background-color: var(--alpha-white-4);
+  .not-disabled\:hover\:bg-\(--k-actionable-negative-background-hover\):not(:disabled):hover {
+    background-color: var(--k-actionable-negative-background-hover);
   }
 
-  .not-disabled\:hover\:bg-alpha-white-6:not(:disabled):hover {
-    background-color: var(--alpha-white-6);
+  .not-disabled\:hover\:bg-\(--k-actionable-subtle-background-hover\):not(:disabled):hover {
+    background-color: var(--k-actionable-subtle-background-hover);
   }
 
   .not-disabled\:hover\:bg-surface-4:not(:disabled):hover {
@@ -2284,20 +2380,28 @@
     background-color: var(--ds-c-2xn4aw);
   }
 
-  .not-disabled\:hover\:bg-white:not(:disabled):hover {
-    background-color: var(--color-white);
+  .not-disabled\:hover\:text-\(color\:--k-actionable-bold-foreground-hover\):not(:disabled):hover {
+    color: var(--k-actionable-bold-foreground-hover);
   }
 
-  .not-disabled\:hover\:text-danger:not(:disabled):hover {
-    color: var(--signal-red);
+  .not-disabled\:hover\:text-\(color\:--k-actionable-foreground-hover\):not(:disabled):hover {
+    color: var(--k-actionable-foreground-hover);
+  }
+
+  .not-disabled\:hover\:text-\(color\:--k-actionable-negative-foreground\):not(:disabled):hover {
+    color: var(--k-actionable-negative-foreground);
+  }
+
+  .not-disabled\:hover\:text-\(color\:--k-actionable-subtle-foreground-hover\):not(:disabled):hover {
+    color: var(--k-actionable-subtle-foreground-hover);
+  }
+
+  .not-disabled\:hover\:text-\(color\:--k-content-primary-foreground\):not(:disabled):hover {
+    color: var(--k-content-primary-foreground);
   }
 
   .not-disabled\:hover\:text-ink:not(:disabled):hover {
     color: var(--ink-100);
-  }
-
-  .not-disabled\:hover\:text-surface-0:not(:disabled):hover {
-    color: var(--bg-000);
   }
 }
 
@@ -2309,6 +2413,11 @@
   background-color: var(--alpha-white-4);
 }
 
+.focus-visible\:outline-\(length\:--k-focused-outlineWidth\):focus-visible {
+  outline-style: var(--tw-outline-style);
+  outline-width: var(--k-focused-outlineWidth);
+}
+
 .focus-visible\:outline-2:focus-visible {
   outline-style: var(--tw-outline-style);
   outline-width: 2px;
@@ -2318,12 +2427,16 @@
   outline-offset: calc(2px * -1);
 }
 
-.focus-visible\:outline-offset-2:focus-visible {
-  outline-offset: 2px;
+.focus-visible\:outline-offset-\(--k-focused-outlineOffset\):focus-visible {
+  outline-offset: var(--k-focused-outlineOffset);
 }
 
 .focus-visible\:outline-\(--focus-ring\):focus-visible {
   outline-color: var(--focus-ring);
+}
+
+.focus-visible\:outline-\(color\:--k-focused-outlineColor\):focus-visible {
+  outline-color: var(--k-focused-outlineColor);
 }
 
 .active\:scale-\[0\.92\]:active {
@@ -2349,26 +2462,20 @@
   scale: .97;
 }
 
-.not-disabled\:active\:bg-\[color-mix\(in_srgb\,var\(--signal-red\)_14\%\,transparent\)\]:not(:disabled):active {
-  background-color: var(--signal-red);
+.not-disabled\:active\:bg-\(--k-actionable-background-active\):not(:disabled):active {
+  background-color: var(--k-actionable-background-active);
 }
 
-@supports (color: color-mix(in lab, red, red)) {
-  .not-disabled\:active\:bg-\[color-mix\(in_srgb\,var\(--signal-red\)_14\%\,transparent\)\]:not(:disabled):active {
-    background-color: var(--ds-c-y1ywmb);
-  }
+.not-disabled\:active\:bg-\(--k-actionable-bold-background-active\):not(:disabled):active {
+  background-color: var(--k-actionable-bold-background-active);
 }
 
-.not-disabled\:active\:bg-alpha-white-4:not(:disabled):active {
-  background-color: var(--alpha-white-4);
+.not-disabled\:active\:bg-\(--k-actionable-negative-background-active\):not(:disabled):active {
+  background-color: var(--k-actionable-negative-background-active);
 }
 
-.not-disabled\:active\:bg-alpha-white-9:not(:disabled):active {
-  background-color: var(--alpha-white-9);
-}
-
-.not-disabled\:active\:bg-ink-2:not(:disabled):active {
-  background-color: var(--ink-200);
+.not-disabled\:active\:bg-\(--k-actionable-subtle-background-active\):not(:disabled):active {
+  background-color: var(--k-actionable-subtle-background-active);
 }
 
 .not-disabled\:active\:bg-transparent:not(:disabled):active {
@@ -5346,7 +5453,6 @@ button.k-quote-card.is-link:focus-visible {
 
 /* 组件里白色、黑色的透明度层：ui.css 的类里原来是裸色值，这里提成变量（值不变），换主题时从这里改。 */
 :root {
-  --ds-c-1o9zdt: color-mix(in srgb,var(--signal-red) 30%,transparent);
   --ds-c-2xn4aw: #0000;
   --ds-c-aih9sr: color-mix(in srgb,var(--cb-accent) 12%,transparent);
   --ds-c-3udv02: #00000073;
@@ -5358,7 +5464,6 @@ button.k-quote-card.is-link:focus-visible {
   --ds-c-1fmpdzv: color-mix(in srgb,var(--signal-orange) 85%,white);
   --ds-c-y1ywmb: color-mix(in srgb,var(--signal-red) 14%,transparent);
   --ds-c-30djeg: color-mix(in oklab, var(--ink-100) 32%, transparent);
-  --ds-c-1igqc0m: color-mix(in srgb,var(--signal-red) 8%,transparent);
   --ds-c-muqw4p: color-mix(in srgb,var(--signal-orange) 20%,var(--bg-000));
   --ds-c-2xn4cb: #000c;
   --ds-c-3uduzz: #00000070;

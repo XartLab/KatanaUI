@@ -9,12 +9,14 @@ import { focusRing } from '../lib/focus'
 
 // 按钮：照 OpenMarket action-btn / tsc-add（2026-10-05 实测，数值照抄，颜色落到 token）。30 高 · 圆角 control · 4% 白底 8% 白边 · 12px 500；
 // 主按钮实心浅色 + 深字 700；悬停提亮、按下再深一档并缩到 0.97（界面在听）。禁用不接指针事件之外的任何状态变化。
+// 颜色与尺寸只读 characteristics 与 density（--k-*，#1943，照 Salt 的分层）：不写 palette 名；高度与内距随 data-density 变，默认 medium 与改前一致。
+// Tailwind 的 (--x) 简写在颜色与长度之间有歧义的地方（border、text、decoration）写 (color:--x) 说明类型。
 const buttonVariants = cva(
   [
-    'inline-flex shrink-0 cursor-pointer items-center justify-center gap-1.5 whitespace-nowrap select-none',
-    'k-text-data leading-none rounded-[var(--radius-control)] border border-alpha-white-7 bg-alpha-white-3 text-ink-2',
+    'inline-flex shrink-0 cursor-pointer items-center justify-center gap-(--k-spacing-100) whitespace-nowrap select-none',
+    'k-text-data leading-none rounded-[var(--radius-control)] border border-(color:--k-actionable-borderColor) bg-(--k-actionable-background) text-(color:--k-actionable-foreground)',
     'transition-[color,background-color,border-color,scale] duration-150 ease-out',
-    'not-disabled:hover:bg-alpha-white-6 not-disabled:hover:text-ink not-disabled:active:scale-[0.97] not-disabled:active:bg-alpha-white-9',
+    'not-disabled:hover:bg-(--k-actionable-background-hover) not-disabled:hover:text-(color:--k-actionable-foreground-hover) not-disabled:active:scale-[0.97] not-disabled:active:bg-(--k-actionable-background-active)',
     'disabled:cursor-not-allowed disabled:opacity-45',
     '[&_svg]:pointer-events-none [&_svg]:size-[13px] [&_svg]:shrink-0',
     focusRing,
@@ -24,18 +26,18 @@ const buttonVariants = cva(
       variant: {
         default: '',
         primary:
-          'border-transparent bg-ink font-bold text-surface-1 not-disabled:hover:bg-white not-disabled:hover:text-surface-0 not-disabled:active:bg-ink-2',
+          'border-transparent bg-(--k-actionable-bold-background) font-bold text-(color:--k-actionable-bold-foreground) not-disabled:hover:bg-(--k-actionable-bold-background-hover) not-disabled:hover:text-(color:--k-actionable-bold-foreground-hover) not-disabled:active:bg-(--k-actionable-bold-background-active)',
         danger:
-          'border-[color-mix(in_srgb,var(--signal-red)_30%,transparent)] text-danger not-disabled:hover:bg-[color-mix(in_srgb,var(--signal-red)_8%,transparent)] not-disabled:hover:text-danger not-disabled:active:bg-[color-mix(in_srgb,var(--signal-red)_14%,transparent)]',
-        ghost: 'border-transparent bg-transparent not-disabled:hover:bg-alpha-white-6',
+          'border-(color:--k-actionable-negative-borderColor) bg-(--k-actionable-negative-background) text-(color:--k-actionable-negative-foreground) not-disabled:hover:bg-(--k-actionable-negative-background-hover) not-disabled:hover:text-(color:--k-actionable-negative-foreground) not-disabled:active:bg-(--k-actionable-negative-background-active)',
+        ghost: 'border-transparent bg-transparent not-disabled:hover:bg-(--k-actionable-background-hover)',
         // 图标按钮（原 .k-icon-btn，照 OpenMarket asd-panel-close）：28 × 28 · 透明 · 无边 · 悬停 5% 白，按下不缩放、不再深一档（改前没有按下态，2026-11-13 独立审）；焦点环画在里面（贴边的小按钮，外移会被容器裁掉）。
-        icon: 'size-7 border-0 bg-transparent p-0 text-ink-3 transition-[color,background-color] duration-[120ms] not-disabled:hover:bg-alpha-white-4 not-disabled:hover:text-ink not-disabled:active:scale-100 not-disabled:active:bg-alpha-white-4 disabled:opacity-35 focus-visible:-outline-offset-2 [&_svg]:size-[15px]',
-        link: 'border-transparent bg-transparent font-normal text-ink-3 underline decoration-alpha-white-13 underline-offset-[3px] not-disabled:hover:bg-transparent not-disabled:hover:text-ink not-disabled:active:bg-transparent',
+        icon: 'size-(--k-size-row) border-0 bg-transparent p-0 text-(color:--k-actionable-subtle-foreground) transition-[color,background-color] duration-[120ms] not-disabled:hover:bg-(--k-actionable-subtle-background-hover) not-disabled:hover:text-(color:--k-actionable-subtle-foreground-hover) not-disabled:active:scale-100 not-disabled:active:bg-(--k-actionable-subtle-background-active) disabled:opacity-35 focus-visible:-outline-offset-2 [&_svg]:size-[15px]',
+        link: 'border-transparent bg-transparent font-normal text-(color:--k-content-secondary-foreground) underline decoration-(color:--k-separable-primary-borderColor) underline-offset-[3px] not-disabled:hover:bg-transparent not-disabled:hover:text-(color:--k-content-primary-foreground) not-disabled:active:bg-transparent',
       },
       size: {
-        default: 'h-[30px] px-3',
+        default: 'h-(--k-size-base) px-(--k-spacing-200)',
         sm: 'k-text-caption h-[26px] rounded-[8px] px-2 font-semibold',
-        icon: 'size-7 p-0',
+        icon: 'size-(--k-size-row) p-0',
       },
     },
     // 链接按钮：高 auto · 内边 2px 4px（size 的类写在 variant 之后会盖掉它，所以单独列；改前 .k-btn.lnk，ui.css 52-62）。

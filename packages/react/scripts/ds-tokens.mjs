@@ -2,7 +2,7 @@
 // design/tokens.json → design-pipeline 设计系统包的 tokens.json（格式见 design-pipeline `skill/references/design-system-package.md`，2026-11-14 读，0.15.0-beta.1）。
 // 纯函数，不读写文件，单测在 ds-tokens.test.ts。数值原样搬，不凑整、不改色：对不上对比度的保留原值，把比值写进 usage（管线规矩：合规变体是另一个主题，不偷偷改色）。
 
-/** 设计系统包里出的主题：本包的 tokens.css 实装了的两个（Paper 在 src/tokens/tokens.json 里有值，但没有实装，不进包）。 */
+/** 设计系统包里出的主题：本包的 tokens.css 实装了的两个（Paper 在 @katana-ui/tokens 的 tokens.json 里有值，但没有实装，不进包）。 */
 export const THEMES = [
   { id: 'console', name: 'Console' },
   { id: 'graphite', name: 'Graphite' },

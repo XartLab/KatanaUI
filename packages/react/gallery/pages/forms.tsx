@@ -34,6 +34,14 @@ const COLUMNS = [
   ['volume', 'Volume'],
 ] as const
 
+// 主题 × 密度（#1943）：主题用页头切换，密度用 data-density 挂在容器上；同一组按钮读同一批 characteristics，高度与内距随档变。
+const DENSITY_VARIANTS = ['default', 'primary', 'ghost', 'danger', 'link'] as const
+const DENSITIES = [
+  ['high', '26'],
+  ['medium', '30'],
+  ['low', '36'],
+] as const
+
 export function ButtonDemo() {
   return (
     <>
@@ -50,6 +58,22 @@ export function ButtonDemo() {
             <Plus />
           </Button>
         </Row>
+      ))}
+      {DENSITIES.map(([density, height]) => (
+        <div key={density} className="gal-row" data-density={density}>
+          <span className="gal-cap">
+            {density} · {height}
+          </span>
+          {DENSITY_VARIANTS.map((variant) => (
+            // 可访问名带上档名（字在前，符合「标签含可见文字」）：免得与上面变体行里的同名按钮混成一个。
+            <Button key={variant} variant={variant} aria-label={`${variant} · ${density}`}>
+              {variant}
+            </Button>
+          ))}
+          <Button variant="icon" size="icon" aria-label={`icon · ${density}`}>
+            <Plus />
+          </Button>
+        </div>
       ))}
       <Row name="icon / 带图标">
         <Button variant="icon" size="icon" aria-label="图标按钮">

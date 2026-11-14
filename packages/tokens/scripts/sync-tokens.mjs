@@ -3,8 +3,8 @@ import { readFileSync, writeFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { dirname, resolve } from 'node:path'
 
-// src/tokens/tokens.json + src/tokens/motion.tokens.json → src/tokens/tokens.css（本包的 token 层）。
-// 搬自 KATANAview 的 scripts/sync-tokens.mjs（2026-11-14，KatanaUI #2：设计系统独立成仓库，token 源头随包走）；原作者同为本项目，许可证改为 MIT。
+// src/tokens.json + src/motion.tokens.json → src/tokens.css（本包的 token 层）。
+// 搬自 KATANAview 的 scripts/sync-tokens.mjs（2026-11-14，KatanaUI #2：设计系统独立成仓库，token 源头随包走），2026-11-14 从 @katana-ui/react 拆进 @katana-ui/tokens；原作者同为本项目，许可证改为 MIT。
 // token 名与组件卡、原型完全一致，卡里的 CSS 可以原样搬进来。
 // 主题：:root 是 Console；其余已实装的主题各出一块 :root[data-theme='…']，只写与 Console 不同的值（引用型 token 随被引用的值走，不用重写）。
 // 有 reduced 的 token（玻璃）在「减少透明度」时另出一块 :root[data-theme='…'][data-transparency='reduced']。
@@ -12,9 +12,9 @@ import { dirname, resolve } from 'node:path'
 
 const pkg = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const check = process.argv.includes('--check')
-const tokens = JSON.parse(readFileSync(resolve(pkg, 'src/tokens/tokens.json'), 'utf8'))
-const motion = JSON.parse(readFileSync(resolve(pkg, 'src/tokens/motion.tokens.json'), 'utf8'))
-const target = resolve(pkg, 'src/tokens/tokens.css')
+const tokens = JSON.parse(readFileSync(resolve(pkg, 'src/tokens.json'), 'utf8'))
+const motion = JSON.parse(readFileSync(resolve(pkg, 'src/motion.tokens.json'), 'utf8'))
+const target = resolve(pkg, 'src/tokens.css')
 
 const cssValue = (value) => String(value).replace(/\{([^}]+)\}/g, (_, name) => `var(--${name})`)
 
@@ -69,7 +69,7 @@ for (const group of groups) {
     if (!themedValue) continue
     for (const theme of THEMES) {
       const other = token.value[theme]
-      if (other === undefined) throw new Error(`src/tokens/tokens.json：${token.name} 缺少 ${theme} 的值`)
+      if (other === undefined) throw new Error(`src/tokens.json：${token.name} 缺少 ${theme} 的值`)
       if (cssValue(other) !== cssValue(value)) themed[theme].values.push(`  --${token.name}: ${cssValue(other)};`)
       const reduced = token.reduced?.[theme]
       if (reduced !== undefined) themed[theme].reduced.push(`  --${token.name}: ${cssValue(reduced)};`)
@@ -78,7 +78,7 @@ for (const group of groups) {
 }
 const colorValue = (name, theme) => {
   const token = tokens.color.tokens.find((item) => item.name === name)
-  if (!token) throw new Error(`src/tokens/tokens.json：UPDOWN_SWAPS 里的 ${name} 不存在`)
+  if (!token) throw new Error(`src/tokens.json：UPDOWN_SWAPS 里的 ${name} 不存在`)
   return cssValue(token.value[theme])
 }
 const updown = Object.fromEntries(['console', ...THEMES].map((theme) => [theme, []]))
@@ -101,7 +101,26 @@ for (const name of ['snappy', 'gentle', 'settle']) {
   lines.push(`  --ease-${name}: ${easing};`, `  --dur-${name}: ${ms}ms;`)
 }
 
-const blocks = [`:root {\n${lines.join('\n')}\n}`]
+// Foundation 与 characteristics（#1943，照 Salt 的三层）：不分主题，都生成在 :root；characteristics 只引用 palette 与 foundation。
+for (const group of [tokens.foundation, tokens.characteristics]) {
+  for (const token of group.tokens) {
+    if (typeof token.value !== 'string') throw new Error(`src/tokens.json：${token.name} 必须是不分主题的字符串`)
+    lines.push(`  --${token.name}: ${cssValue(token.value)};`)
+  }
+}
+
+// 密度：medium 在最前（同时挂 :root，没声明 data-density 的地方就是它），high、low 同权重、后写的赢。
+const densityBlock = (level) =>
+  tokens.density.tokens.map((token) => `  --${token.name}: ${cssValue(token.value[level])};`).join('\n')
+const densityBlocks = [
+  tokens.density.default,
+  ...tokens.density.levels.filter((l) => l !== tokens.density.default),
+].map((level, index) => {
+  const selector = index === 0 ? `:root, [data-density='${level}']` : `[data-density='${level}']`
+  return `${selector} {\n${densityBlock(level)}\n}`
+})
+
+const blocks = [`:root {\n${lines.join('\n')}\n}`, ...densityBlocks]
 for (const theme of THEMES) {
   blocks.push(`:root[data-theme='${theme}'] {\n${themed[theme].values.join('\n')}\n}`)
   if (themed[theme].reduced.length)
@@ -111,7 +130,7 @@ for (const theme of THEMES) {
 blocks.push(`:root[data-updown='cn'] {\n${updown.console.join('\n')}\n}`)
 for (const theme of THEMES)
   blocks.push(`:root[data-theme='${theme}'][data-updown='cn'] {\n${updown[theme].join('\n')}\n}`)
-const generated = `/* Generated from src/tokens/tokens.json + src/tokens/motion.tokens.json by scripts/sync-tokens.mjs. Do not edit. */\n${blocks.join('\n')}\n`
+const generated = `/* Generated from src/tokens.json + src/motion.tokens.json by scripts/sync-tokens.mjs. Do not edit. */\n${blocks.join('\n')}\n`
 let current = ''
 try {
   current = readFileSync(target, 'utf8')
@@ -120,7 +139,7 @@ try {
 }
 if (current !== generated) {
   if (check) {
-    console.error('src/tokens/tokens.css 与 token 源头不一致：跑 pnpm tokens:sync 重新生成并提交。')
+    console.error('src/tokens.css 与 token 源头不一致：跑 pnpm tokens:sync 重新生成并提交。')
     process.exit(1)
   }
   writeFileSync(target, generated)

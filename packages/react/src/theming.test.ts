@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs'
+import { createRequire } from 'node:module'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vite-plus/test'
@@ -19,7 +20,11 @@ const walk = (dir: string): string[] =>
     : []
 
 const tokens = new Set(
-  [...readFileSync(join(SRC, 'tokens/tokens.css'), 'utf8').matchAll(/^\s*(--[\w-]+)\s*:/gm)].map((m) => m[1]),
+  [
+    ...readFileSync(createRequire(import.meta.url).resolve('@katana-ui/tokens/tokens.css'), 'utf8').matchAll(
+      /^\s*(--[\w-]+)\s*:/gm,
+    ),
+  ].map((m) => m[1]),
 )
 
 /** 文件里引用的变量名：var(--x、h-(--x) 简写；文件自己声明的（[--x:…]、`--x:`、行内样式对象里的 '--x': …，例如 CodeBlock 的 --cb-accent）不算引用。 */
