@@ -3808,6 +3808,49 @@ export const PAGES: readonly DocPage[] = [
       ['Tab / Enter', '到可点的行、触发'],
     ],
   },
+  {
+    id: 'uptime-bars',
+    group: 'readouts',
+    cardHeight: 200,
+    title: 'UptimeBars 逐格可用条',
+    summary:
+      '一格一天或一小时的可用条，用于数据源与连接健康：颜色加高度一起表达状态（绿满格可用、琥珀半高降级、红满格中断、虚线底无数据）；悬停或聚焦一格，条下的读数行写那一格的整句（如断流次数）。功能参照 Arc Uptime status，实现原创。',
+    exports: ['UptimeBars', 'uptimeShare'],
+    props: [
+      {
+        part: 'UptimeBars',
+        note: '文字全由 props 传：每一格的整句在 cell.label 里，包里没有文案。组是一个 role=group，每格一个带名字的 role=img。',
+        rows: [
+          {
+            name: 'cells',
+            type: 'UptimeCell[]',
+            desc: '从旧到新；{ id, status: up | degraded | down | none, label }。',
+          },
+          { name: 'label', type: 'string', desc: '这一条的读屏名（整句）。' },
+          { name: 'idle', type: 'ReactNode', desc: '没有悬停也没有聚焦时读数行写什么，常是可用率。' },
+          { name: 'onSelect', type: '(cell) => void', desc: '给了格子才可点（Enter / Space 也触发）。' },
+          { name: 'className', type: 'string', desc: '加在最外层。' },
+        ],
+      },
+      {
+        part: 'uptimeShare(cells)',
+        note: '可用格（up）占有数据的格的比例；degraded 与 down 都不算可用，不另给权重；none 不进分母；全是 none 返回 null。',
+        rows: [],
+      },
+    ],
+    states: [
+      'up 满格绿、degraded 六成高琥珀、down 满格红、none 一条细虚底；状态靠颜色与高度两路表达。',
+      '悬停或聚焦一格：加描边，读数行换成那一格的整句；离开后回到 idle。',
+      '只有一格在 Tab 序里（默认最新一格），左右键在格间走。',
+    ],
+    donts: ['不要用它画连续的数值（延迟、用量）：它只有四种离散状态。', '不要省掉每格的 label：悬停读数与读屏都靠它。'],
+    composition: 'UptimeBars\n  div role=group\n    span role=img（一格，带 data-status）\n  output（读数行）',
+    keys: [
+      ['← / →', '焦点在格间移动，到头不绕回'],
+      ['Home / End', '跳到最早 / 最新一格'],
+      ['Enter / Space', '给了 onSelect 时选中当前格'],
+    ],
+  },
 ]
 
 export const pageById = (id: string): DocPage | undefined => PAGES.find((page) => page.id === id)

@@ -1,0 +1,77 @@
+// SPDX-License-Identifier: MIT
+// 逐格可用条：一格一天或一小时，颜色加高度一起表达状态（绿满格可用、琥珀半高降级、红满格中断、虚线底无数据），
+// 悬停或聚焦一格，条下面的读数行写那一格的整句；左右键在格间走。
+// 功能参照 Arc Uptime status（uiarc.dev/llms.txt 目录，2026-11-14 读，页面只写了「逐日可用条」），实现原创；
+// 用在数据源 / 连接健康（对 DataSources、SystemHealth 的缺口）。文字全由 props 传。
+import { useRef, useState, type ReactNode } from 'react'
+import { moveCell, type UptimeCell } from './uptime-bars-model'
+
+export type UptimeBarsProps = {
+  /** 从旧到新，一格一项。 */
+  cells: readonly UptimeCell[]
+  /** 这一条的读屏名（整句），如「行情源 A 近 30 天」。 */
+  label: string
+  /** 没有悬停也没有聚焦时读数行写什么（常是可用率）。 */
+  idle?: ReactNode
+  /** 点一格（给了才可点，格子上 cursor 变手形）。 */
+  onSelect?: (cell: UptimeCell) => void
+  className?: string
+}
+
+export function UptimeBars({ cells, label, idle, onSelect, className }: UptimeBarsProps) {
+  const [hover, setHover] = useState<number | null>(null)
+  const [focus, setFocus] = useState<number | null>(null)
+  const [tab, setTab] = useState(cells.length - 1)
+  const refs = useRef<(HTMLSpanElement | null)[]>([])
+  const stop = Math.min(Math.max(tab, 0), cells.length - 1)
+  const shown = hover ?? focus
+  return (
+    <div className={`k-uptime${className ? ` ${className}` : ''}`} data-slot="uptime-bars">
+      <div
+        className="k-uptime-bars"
+        role="group"
+        aria-label={label}
+        onMouseLeave={() => setHover(null)}
+        onKeyDown={(event) => {
+          const next = moveCell(stop, event.key, cells.length)
+          if (next === null) return
+          event.preventDefault()
+          setTab(next)
+          refs.current[next]?.focus()
+        }}
+      >
+        {cells.map((cell, index) => (
+          <span
+            key={cell.id}
+            ref={(node) => {
+              refs.current[index] = node
+            }}
+            className={`k-uptime-cell${onSelect ? ' is-link' : ''}`}
+            data-status={cell.status}
+            role="img"
+            aria-label={cell.label}
+            tabIndex={index === stop ? 0 : -1}
+            onMouseEnter={() => setHover(index)}
+            onFocus={() => {
+              setFocus(index)
+              setTab(index)
+            }}
+            onBlur={() => setFocus(null)}
+            onClick={onSelect ? () => onSelect(cell) : undefined}
+            onKeyDown={
+              onSelect
+                ? (event) => {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                      event.preventDefault()
+                      onSelect(cell)
+                    }
+                  }
+                : undefined
+            }
+          />
+        ))}
+      </div>
+      <output className="k-uptime-readout">{shown === null ? idle : cells[shown]?.label}</output>
+    </div>
+  )
+}

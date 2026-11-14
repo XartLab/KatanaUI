@@ -239,3 +239,14 @@ export { RangeBar, rangeShare, type RangeBarProps } from './katana/range-bar.tsx
 export { RatingGauge, type RatingGaugeProps } from './katana/rating-gauge.tsx'
 export { ratingAngle, ratingZone } from './katana/rating-gauge-model.ts'
 export { quoteTone, type QuoteTone } from './katana/quote-tone.ts'
+} from './katana/treemap-model'
+export { PriceTag, type PriceTagProps } from './katana/price-tag'
+export { QuoteCard, QuoteStrip, type QuoteCardProps, type QuoteStripProps } from './katana/quote-card'
+export { RangeBar, rangeShare, type RangeBarProps } from './katana/range-bar'
+export { RatingGauge, type RatingGaugeProps } from './katana/rating-gauge'
+export { ratingAngle, ratingZone } from './katana/rating-gauge-model'
+export { quoteTone, type QuoteTone } from './katana/quote-tone'
+
+// 分布与关系类的件（#1918）：功能参照 Arc（uiarc.dev，2026-11-14 读），实现原创。
+export { UptimeBars, type UptimeBarsProps } from './katana/uptime-bars'
+export { uptimeShare, type UptimeCell, type UptimeStatus } from './katana/uptime-bars-model'

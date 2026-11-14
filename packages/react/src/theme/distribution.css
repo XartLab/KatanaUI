@@ -1,0 +1,52 @@
+/* SPDX-License-Identifier: MIT */
+/* 分布与关系类的件（#1918）：UptimeBars、RangeHistogramSlider、Ridgeline、SlopeChart、ConnectedScatter、SymbolGalaxy。颜色只用语义 token。 */
+
+/* —— 逐格可用条 —— */
+.k-uptime {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+.k-uptime-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 28px;
+}
+.k-uptime-cell {
+  flex: 1 1 0;
+  min-width: 2px;
+  height: 100%;
+  border-radius: var(--radius-sm);
+  background: var(--signal-green);
+  outline: none;
+}
+.k-uptime-cell[data-status='degraded'] {
+  height: 60%;
+  background: var(--signal-amber);
+}
+.k-uptime-cell[data-status='down'] {
+  background: var(--signal-red);
+}
+.k-uptime-cell[data-status='none'] {
+  height: 3px;
+  background: var(--ink-400);
+}
+.k-uptime-cell.is-link {
+  cursor: pointer;
+}
+.k-uptime-cell:hover,
+.k-uptime-cell:focus-visible {
+  box-shadow: 0 0 0 1px var(--ink-100);
+}
+.k-uptime-cell:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 1px;
+}
+.k-uptime-readout {
+  min-height: 16px;
+  color: var(--ink-200);
+  font: var(--text-caption) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+}

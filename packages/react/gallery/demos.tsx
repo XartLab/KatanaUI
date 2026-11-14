@@ -65,6 +65,10 @@ import {
 } from './pages/quotes.tsx'
 import { AccordionDemo, TabsDemo } from './pages/layout.tsx'
 import { ContextMenuDemo, DialogDemo, DropdownMenuDemo, PopoverDemo, TooltipDemo } from './pages/overlays.tsx'
+} from './pages/quotes'
+import { UptimeBarsDemo } from './pages/distribution'
+import { AccordionDemo, TabsDemo } from './pages/layout'
+import { ContextMenuDemo, DialogDemo, DropdownMenuDemo, PopoverDemo, TooltipDemo } from './pages/overlays'
 import {
   ButtonDemo,
   CheckboxDemo,
@@ -158,6 +162,7 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'range-bar': RangeBarDemo,
   'rating-gauge': RatingGaugeDemo,
   'quote-table': QuoteTableDemo,
+  'uptime-bars': UptimeBarsDemo,
 }
 
 /**
