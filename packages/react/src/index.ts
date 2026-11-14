@@ -174,6 +174,7 @@ export type { LoadingPhase } from './katana/loading-gate.ts'
 // 学自 rare-ui 的交互、本仓库重写的件（#1861）：密钥输入、原地确认的危险按钮、带未读数的铃、状态图标、行内 AI 状态、点阵状态球。
 export { PasswordInput, type PasswordInputProps } from './katana/password-input.tsx'
 export { DeleteButton, type DeleteButtonProps } from './katana/delete-button.tsx'
+export { HoldToConfirm, type HoldToConfirmProps } from './katana/hold-to-confirm.tsx'
 export { NotificationBell, type NotificationBellProps } from './katana/notification-bell.tsx'
 export { StatusIcon, type StatusIconStatus } from './katana/status-icon.tsx'
 export { AiStatus, type AiStatusProps, type AiStatusState } from './katana/ai-status.tsx'

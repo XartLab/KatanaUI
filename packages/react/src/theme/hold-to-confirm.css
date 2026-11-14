@@ -1,0 +1,58 @@
+/* SPDX-License-Identifier: MIT */
+/* HoldToConfirm：照我们的按钮（30 高 · 圆角 control · 4% 白底 8% 白边 · 12px 500，见 primitives/button.tsx），
+   底下一层按进度从左往右填满（transform: scaleX，进度由组件逐帧写），字压在填充上。danger 填红，default 填 10% 白。 */
+.k-hold {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 30px;
+  min-width: 96px;
+  padding: 0 12px;
+  overflow: hidden;
+  background: var(--alpha-white-3);
+  border: 1px solid var(--alpha-white-7);
+  border-radius: var(--radius-control);
+  color: var(--ink-200);
+  font: var(--text-data) var(--font-sans);
+  font-weight: 500;
+  cursor: pointer;
+  user-select: none;
+  touch-action: none;
+  transition:
+    color 0.15s,
+    border-color 0.15s;
+}
+.k-hold:hover:not(:disabled) {
+  color: var(--ink-100);
+}
+.k-hold:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.k-hold:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+.k-hold[data-tone='danger'] {
+  border-color: color-mix(in srgb, var(--signal-red) 30%, transparent);
+  color: var(--signal-red);
+}
+.k-hold-fill {
+  position: absolute;
+  inset: 0;
+  background: var(--alpha-white-10);
+  transform: scaleX(0);
+  transform-origin: left center;
+  pointer-events: none;
+}
+.k-hold[data-tone='danger'] .k-hold-fill {
+  background: color-mix(in srgb, var(--signal-red) 38%, transparent);
+}
+.k-hold[data-phase='done'] {
+  color: var(--ink-100);
+}
+.k-hold-label {
+  position: relative;
+  white-space: nowrap;
+}

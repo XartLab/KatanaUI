@@ -7,6 +7,7 @@ import { ChangeTextDemo, PnlTextDemo, QuantFormatDemo } from './pages/quant'
 import { DataGridDemo, EmptyStateDemo, EstimateBadgeDemo, ToolbarDemo } from './pages/blocks'
 import { AlertDemo, ProgressDemo, ToastDemo } from './pages/feedback'
 import { ComboboxDemo, CommandDemo } from './pages/pickers'
+import { HoldToConfirmDemo } from './pages/arc-controls'
 import { FieldDemo, HoverCardDemo, ScrollAreaDemo, SeparatorDemo, SheetDemo } from './pages/structure'
 import {
   AiStatusDemo,
@@ -92,6 +93,7 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   toolbar: ToolbarDemo,
   'estimate-badge': EstimateBadgeDemo,
   'password-input': PasswordInputDemo,
+  'hold-to-confirm': HoldToConfirmDemo,
   'delete-button': DeleteButtonDemo,
   'notification-bell': NotificationBellDemo,
   'status-icon': StatusIconDemo,
