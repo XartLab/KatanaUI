@@ -2142,10 +2142,43 @@
           "path": "src/quant/series-geometry.ts",
           "type": "registry:component",
           "target": "~/src/katana/ui/quant/series-geometry.ts"
+      "name": "quantile-layers",
+      "type": "registry:component",
+      "title": "Quantile Layers",
+      "description": "因子分层累计收益（卡 QuantileLayers）：层号是序数，线色取 seq-200 到 seq-600（暗到亮，最高层最亮），不用类别色也不用涨跌色。多空差是点阵纹理面加 ink-100 细线，线尾标最高层与最低层，最高层末点是强调色。悬停一层其余变 40%，点击锁定；扫读出 LCD 提示；底部一行结论（单调性灯加词、各项统计、来源）。图右上三件，表格视图必有。",
+      "registryDependencies": [
+        "@katana/chart-kit",
+        "@katana/cn",
+        "@katana/quantile-model",
+        "@katana/series-geometry",
+        "@katana/use-scrubber"
+      ],
+      "files": [
+        {
+          "path": "src/quant/quantile-layers.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/quantile-layers.tsx"
+        }
+      ]
+    },
+    {
+      "name": "quantile-model",
+      "type": "registry:component",
+      "title": "Quantile Model",
+      "description": "因子分层累计收益（卡 QuantileLayers）：层号是序数，线色取 seq-200 到 seq-600（暗到亮，最高层最亮），不用类别色也不用涨跌色。多空差是点阵纹理面加 ink-100 细线，线尾标最高层与最低层，最高层末点是强调色。悬停一层其余变 40%，点击锁定；扫读出 LCD 提示；底部一行结论（单调性灯加词、各项统计、来源）。图右上三件，表格视图必有。",
+      "files": [
+        {
+          "path": "src/quant/quantile-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/quantile-model.ts"
+        }
+      ]
+    },
+    {
       "name": "ridgeline-model",
       "type": "registry:component",
       "title": "Ridgeline Model",
-      "description": "每组一条核密度曲线，上下叠着排，一眼比各组分布的位置、宽窄与形状（分位层、因子分组的收益分布）。带宽默认 Silverman 经验规则；给了基准线就按中位数在它上下涂涨跌色。悬停或聚焦一条，其余变暗。功能参照 Arc Ridgeline，实现原创。",
+      "description": "每组一条核密度曲线，上下叠着排，一眼比各组分布的位置、宽窄与形状（分位层、因子分组的收益分布）。带宽默认 Silverman 经验规则；给了基准线就画一条贯穿的虚线。分层是序数：线与点阵面取 seq 色阶（暗到亮），不用涨跌色。悬停或聚焦一条，其余变暗。功能参照 Arc Ridgeline，实现原创。",
       "registryDependencies": [
         "@katana/chart-scale"
       ],
@@ -2161,9 +2194,11 @@
       "name": "ridgeline",
       "type": "registry:component",
       "title": "Ridgeline",
-      "description": "每组一条核密度曲线，上下叠着排，一眼比各组分布的位置、宽窄与形状（分位层、因子分组的收益分布）。带宽默认 Silverman 经验规则；给了基准线就按中位数在它上下涂涨跌色。悬停或聚焦一条，其余变暗。功能参照 Arc Ridgeline，实现原创。",
+      "description": "每组一条核密度曲线，上下叠着排，一眼比各组分布的位置、宽窄与形状（分位层、因子分组的收益分布）。带宽默认 Silverman 经验规则；给了基准线就画一条贯穿的虚线。分层是序数：线与点阵面取 seq 色阶（暗到亮），不用涨跌色。悬停或聚焦一条，其余变暗。功能参照 Arc Ridgeline，实现原创。",
       "registryDependencies": [
+        "@katana/chart-kit",
         "@katana/chart-scale",
+        "@katana/quantile-model",
         "@katana/ridgeline-model"
       ],
       "files": [
@@ -2348,6 +2383,8 @@
       "type": "registry:component",
       "title": "Series Explorer",
       "description": "盈亏探索积木：一排 KPI 瓦片（SparkTile），点一张展开成下面的图面板；面板顶上是指标页签、区间切换、对比上一期、右上三件，图是该指标的序列（柱或线），下面是刷选条；顶行可以对账（期初到期末、差额、灯加词），页脚来源行。交互参照 Arc 的 Metric explorer，样子与内容照设计稿 IntradayPnL、PnLLedger、EquityCurve 三张卡。",
+      "title": "Symbol Galaxy",
+      "description": "持仓、自选、筛选结果按行业、市场、因子分位或状态聚成一团团的圆：面积是市值或仓位，圆面用发散色 div-*：正负各两档，-200 只给涨跌幅绝对值在前 20% 的点，中点灰，涨跌色不上面积；团名放在团的外接圆上方的留白里。上面一排切换分组方式，点在团间平滑迁移；悬停读详情，点击选中；Tab 在团间走、方向键在团内走。点多时自动改画 canvas。布局用 d3-hierarchy 的 pack，同样的数据永远同样的位置。功能参照 Arc Customer galaxy，实现原创。",
       "dependencies": [
         "lucide-react@1.67.0"
       ],

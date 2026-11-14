@@ -1,10 +1,14 @@
 // SPDX-License-Identifier: MIT
 // 山脊图：每组一条核密度曲线，上下叠着排，一眼比各组分布的位置、宽窄与形状（分位层、因子分组的收益分布）。
-// 每条画密度曲线与中位数的竖标；给了 baseline（如 0）就画一条贯穿的虚线，并按中位数在它上下涂涨跌色（颜色跟 data-updown 走）。
+// 每条画密度曲线与中位数的竖标；给了 baseline（如 0）就画一条贯穿的虚线。分层是序数：线与点阵面的颜色取 seq-200..600（暗到亮，按条的次序），
+// 不用涨跌色，涨跌色也不上面积（dataviz §2、卡 QuantileLayers）；面的纹理与强调色都读 chart-kit 的变量。
 // 悬停或聚焦一条，其余变暗，读数行写这一条的整句；上下键在条间走。带宽默认 Silverman 经验规则（见 ridgeline-model.ts）。
 // 功能参照 Arc Ridgeline（uiarc.dev，2026-11-14 读，页面只写了这个名字），实现原创。文字全由 props 传。
 import { useRef, useState, type KeyboardEvent, type ReactNode } from 'react'
 import { linearScale, niceTicks } from './chart-scale'
+import { DotFill, useDotId } from './chart-kit/dot-fill'
+import { seqColor } from './chart-kit/series-colors'
+import { layerLevel } from './quantile-model'
 import { gaussianKde, ridgelines, type RidgeGroup, type RidgeStats } from './ridgeline-model'
 
 const W = 640
@@ -20,7 +24,7 @@ export type RidgelineProps = {
   describe: (group: RidgeGroup, stats: RidgeStats) => string
   /** 数值怎么写（横轴刻度）。 */
   formatValue?: (value: number) => string
-  /** 参照线的位置（如 0）；给了就画虚线，并按中位数在它上下涂涨跌色。 */
+  /** 参照线的位置（如 0）；给了就画一条贯穿的虚线。 */
   baseline?: number
   /** 横轴范围；不给取全体数据加两头各 3 个带宽。 */
   domain?: readonly [number, number]
@@ -52,6 +56,7 @@ export function Ridgeline({
   const [focus, setFocus] = useState<number | null>(null)
   const [tab, setTab] = useState(0)
   const refs = useRef<(SVGGElement | null)[]>([])
+  const fillBase = useDotId('ridge-fill')
   const { domain: range, ridges, peak } = ridgelines(groups, { domain, bandwidth })
   const x = linearScale(range, [LEFT, W - RIGHT])
   const head = overlap * rowHeight
@@ -103,14 +108,8 @@ export function Ridgeline({
           const base = head + index * rowHeight
           const y = (density: number) => base - (peak > 0 ? density / peak : 0) * head
           const top = ridge.xs.map((value, i) => `${x(value).toFixed(2)},${y(ridge.density[i]!).toFixed(2)}`).join(' L')
-          const tone =
-            baseline === undefined || !Number.isFinite(ridge.stats.median)
-              ? 'flat'
-              : ridge.stats.median > baseline
-                ? 'up'
-                : ridge.stats.median < baseline
-                  ? 'down'
-                  : 'flat'
+          const color = seqColor(layerLevel(index, groups.length))
+          const fillId = `${fillBase}-${index}`
           const median = ridge.stats.median
           const medianTop = Number.isFinite(median) ? y(gaussianKde(group.values, [median], ridge.bandwidth)[0]!) : base
           const text = describe(group, ridge.stats)
@@ -122,7 +121,6 @@ export function Ridgeline({
               }}
               className="k-ridge-row"
               data-id={group.id}
-              data-tone={tone}
               data-dim={active !== null && active !== index ? 'true' : 'false'}
               role="img"
               aria-label={text}
@@ -134,15 +132,19 @@ export function Ridgeline({
               }}
               onBlur={() => setFocus(null)}
             >
+              <defs>
+                <DotFill id={fillId} color={color} />
+              </defs>
               <text className="k-ridge-name" x={LEFT - 8} y={base - 4} textAnchor="end">
                 {group.label}
               </text>
               <line className="k-ridge-base" x1={LEFT} x2={W - RIGHT} y1={base} y2={base} />
               <path
                 className="k-ridge-fill"
+                style={{ fill: `url(#${fillId})` }}
                 d={`M${x(ridge.xs[0]!).toFixed(2)},${base} L${top} L${x(ridge.xs.at(-1)!).toFixed(2)},${base} Z`}
               />
-              <path className="k-ridge-line" d={`M${top}`} />
+              <path className="k-ridge-line" d={`M${top}`} style={{ stroke: color }} />
               <line className="k-ridge-median" x1={x(median)} x2={x(median)} y1={base} y2={medianTop} />
             </g>
           )

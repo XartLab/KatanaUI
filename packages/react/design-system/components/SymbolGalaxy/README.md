@@ -1,6 +1,6 @@
 # SymbolGalaxy
 
-持仓、自选、筛选结果按行业、市场、因子分位或状态聚成一团团的圆：面积是市值或仓位，颜色是涨跌（七档，跟涨跌配色走）。上面一排切换分组方式，点在团间平滑迁移；悬停读详情，点击选中；Tab 在团间走、方向键在团内走。点多时自动改画 canvas。布局用 d3-hierarchy 的 pack，同样的数据永远同样的位置。功能参照 Arc Customer galaxy，实现原创。
+持仓、自选、筛选结果按行业、市场、因子分位或状态聚成一团团的圆：面积是市值或仓位，圆面用发散色 div-*：正负各两档，-200 只给涨跌幅绝对值在前 20% 的点，中点灰，涨跌色不上面积；团名放在团的外接圆上方的留白里。上面一排切换分组方式，点在团间平滑迁移；悬停读详情，点击选中；Tab 在团间走、方向键在团内走。点多时自动改画 canvas。布局用 d3-hierarchy 的 pack，同样的数据永远同样的位置。功能参照 Arc Customer galaxy，实现原创。
 
 ## Provide
 
@@ -16,8 +16,8 @@
 | `label / groupingLabel` | `string` | — | 整张图与分组开关的读屏名（必填）。 |
 | `describe` | `(node) => string` | — | 一个点的整句详情（读数行）。 |
 | `groupText` | `(group, count) => string` | — | 一团的读屏名，含个数。 |
-| `legendText` | `(step: number) => string` | — | 色例每一档（−3 到 +3）写的字。 |
-| `limit` | `number` | `0.03` | 色例两端的涨跌幅（小数），同 Treemap。 |
+| `legendText` | `(step: number) => string` | — | 色例每一档（-2 到 +2）写的字。 |
+| `tooltip` | `(node) => { title, rows }` | — | 悬停时的 LCD 提示（标题与「名字 / 数值」几行）；不给就只有读数行。涨跌色只许上数字。 |
 | `onSelect / selectedId` | `(node) => void / string \| null` | — | 点击或 Enter 选中；selectedId 画一圈强调色的标记。 |
 | `canvasFrom` | `number` | `2000` | 点数达到它就改画 canvas。2000 出自 issue #1918 的设想，没有实测依据，待测量（测量票 #1923）。 |
 | `idle` | `ReactNode` | — | 没有悬停也没有聚焦时读数行写什么。 |

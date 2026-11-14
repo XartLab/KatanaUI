@@ -38,3 +38,21 @@ export { SlopeChart, type SlopeChartProps } from './slope-chart'
 export { ranks, slopeLayout, spreadLabels, type SlopeItem, type SlopeMode, type SlopeRow } from './slope-model'
 export { ConnectedScatter, type ConnectedScatterProps } from './connected-scatter'
 export { scatterLayout, type ScatterPoint, type ScatterSeries } from './scatter-model'
+
+// 时间序列与盈亏的件（#1917）。功能参照 Arc（uiarc.dev，2026-11-14 读），只取功能，实现原创。
+export { BrushChart, BrushStrip, type BrushChartProps, type BrushLabels, type BrushStripProps } from './brush-chart'
+export type { BrushWindow } from './brush-model'
+export { WaterfallChart, type WaterfallChartProps } from './waterfall-chart'
+export type { WaterfallBar, WaterfallStep } from './waterfall-model'
+export { SparkTile, type SparkTileProps } from './spark-tile'
+export { BulletMeter, type BulletMeterProps } from './bullet-meter'
+export type { BulletState } from './bullet-model'
+export { CalendarHeatmap, type CalendarDay, type CalendarHeatmapProps } from './calendar-heatmap'
+export { HorizonChart, type HorizonChartProps, type HorizonRow } from './horizon-chart'
+export {
+  QuantileLayers,
+  type QuantileLayersLabels,
+  type QuantileLayersProps,
+  type QuantileStat,
+} from './quantile-layers'
+export { isMonotonic, lastFinite, layerLevel, quantileRange, sortLayers, type QuantileLayer } from './quantile-model'

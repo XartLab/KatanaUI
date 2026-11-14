@@ -3626,7 +3626,7 @@ export const PAGES: readonly DocPage[] = [
       '不要把排布放进渲染里重算：先用 layoutTreemap 排好再传 blocks。',
     ],
     composition:
-      'Treemap\n  div（工具条）\n  div（画布）\n    div（一组）\n      button（组头）\n      div（一格：名字 · 数）\n  ol（色例，七档）',
+      'Treemap\n  div（工具条）\n  div（画布）\n    div（一组）\n      button（组头）\n      div（一格：名字 · 数）\n  ol（色例，五档）',
     keys: [
       ['Tab', '到可点的格子与组头'],
       ['Enter', '点开格子（组头是原生按钮，Enter / Space 都行）'],
@@ -3913,7 +3913,7 @@ export const PAGES: readonly DocPage[] = [
     cardHeight: 660,
     title: 'Ridgeline 山脊图',
     summary:
-      '每组一条核密度曲线，上下叠着排，一眼比各组分布的位置、宽窄与形状（分位层、因子分组的收益分布）。带宽默认 Silverman 经验规则；给了基准线就按中位数在它上下涂涨跌色。悬停或聚焦一条，其余变暗。功能参照 Arc Ridgeline，实现原创。',
+      '每组一条核密度曲线，上下叠着排，一眼比各组分布的位置、宽窄与形状（分位层、因子分组的收益分布）。带宽默认 Silverman 经验规则；给了基准线就画一条贯穿的虚线。分层是序数：线与点阵面取 seq 色阶（暗到亮），不用涨跌色。悬停或聚焦一条，其余变暗。功能参照 Arc Ridgeline，实现原创。',
     exports: ['Ridgeline', 'ridgelines', 'ridgeStats', 'silvermanBandwidth', 'gaussianKde'],
     props: [
       {
@@ -3935,7 +3935,7 @@ export const PAGES: readonly DocPage[] = [
           {
             name: 'baseline',
             type: 'number',
-            desc: '参照线的位置（如 0）；给了画虚线，并按中位数涂 pnl-up / pnl-down。',
+            desc: '参照线的位置（如 0）；给了就画一条贯穿的虚线。',
           },
           { name: 'domain', type: '[number, number]', desc: '横轴范围；不给取全体数据加两头各 3 个带宽。' },
           { name: 'bandwidth', type: 'number', desc: '核密度的带宽；不给每组用 Silverman 规则。' },
@@ -3956,21 +3956,76 @@ export const PAGES: readonly DocPage[] = [
       },
     ],
     states: [
-      '默认：每条是填充加顶线，中位数一根竖标；没有基准线时用中性色。',
-      '给了 baseline：中位数在它之上用涨色、之下用跌色（跟 data-updown 走），平用中性色。',
+      '默认：每条是点阵纹理的面加顶线，中位数一根竖标；颜色按条的次序取 seq-200 到 seq-600。',
+      '给了 baseline：多一条贯穿的虚线；涨跌色不出现（也不跟 data-updown 变）。',
       '悬停或聚焦一条：其余变暗，读数行写这一条的整句。',
       '取不出带宽的组（少于两个数或全相等）画成一个窄峰。',
     ],
     donts: [
       '不要用它比样本很少的组：核密度在几个点上画出的形状不可信，describe 里把个数写出来。',
       '不要在数量级不同的组之间共用一条横轴：先标准化或分开画。',
-      '不要拿颜色单独表达涨跌：中位数竖标与读数行写出了数值。',
+      '不要拿颜色表达涨跌：颜色只是层的次序，中位数竖标与读数行写出了数值。',
     ],
     composition:
       'Ridgeline\n  svg role=group\n    g（刻度线与基准线）\n    g role=img（一条：标签 · 底线 · 填充 · 顶线 · 中位数竖标）\n  output（读数行）',
     keys: [
       ['↑ / ↓', '焦点在条间移动，到头不绕回'],
       ['Home / End', '跳到第一 / 最后一条'],
+    ],
+  },
+  {
+    id: 'quantile-layers',
+    group: 'quant',
+    cardHeight: 700,
+    title: 'QuantileLayers 因子分层',
+    summary:
+      '因子分层累计收益（卡 QuantileLayers）：层号是序数，线色取 seq-200 到 seq-600（暗到亮，最高层最亮），不用类别色也不用涨跌色。多空差是点阵纹理面加 ink-100 细线，线尾标最高层与最低层，最高层末点是强调色。悬停一层其余变 40%，点击锁定；扫读出 LCD 提示；底部一行结论（单调性灯加词、各项统计、来源）。图右上三件，表格视图必有。',
+    exports: ['QuantileLayers', 'isMonotonic', 'layerLevel', 'quantileRange', 'sortLayers', 'lastFinite'],
+    props: [
+      {
+        part: 'QuantileLayers',
+        note: '文字全由 props 传。分层多于 10 不画线，只给表格（卡写改热力图，热力图待做）。',
+        rows: [
+          {
+            name: 'layers',
+            type: 'QuantileLayer[]',
+            desc: '{ rank, label, points }；points 是累计收益，非有限数是缺口。',
+          },
+          { name: 'longShort', type: 'number[]', desc: '多空差序列（最高层减最低层）。' },
+          { name: 'longShortLabel', type: 'string', desc: '多空差的名字。' },
+          {
+            name: 'labels',
+            type: 'QuantileLayersLabels',
+            desc: '读屏名、表格表头、单调性两个词、分层太多的提示、图右上三件的名字。',
+          },
+          { name: 'formatValue / formatX', type: 'function', desc: '数值与横轴格怎么写（纵轴、提示、表格）。' },
+          { name: 'monotonic', type: 'boolean', desc: '单调性结论；不给就按期末累计收益是否随层号严格递增算。' },
+          {
+            name: 'stats',
+            type: '{ key, label, value }[]',
+            desc: '结论行的统计（多空年化、换手、样本……），口径由调用方写好。',
+          },
+          { name: 'source', type: 'ReactNode', desc: '来源一行。' },
+          { name: 'onExport / onFullscreen', type: '() => void', desc: '不给就不画那个按钮；表格视图总有。' },
+        ],
+      },
+    ],
+    states: [
+      '默认：每层一条 2px 线，多空差点阵面垫底，0 线 line-200，最高层末点强调色并标值。',
+      '悬停或聚焦一层按钮：其余层变 40%；点击锁定（再点解除）。',
+      '指针在图上移动或 ←→ 键：竖线加 LCD 提示，列各层与多空差的值。',
+      '单调性：灯加词，通过 / 不通过各一个词，不单靠颜色。',
+    ],
+    donts: [
+      '不要用类别色或涨跌色画分层：层号是序数。',
+      '不要给多空线单独上色：用 ink-100 细线或点阵面。',
+      '不要超过 10 层画线：线挤成一团，改看表格或热力图。',
+    ],
+    composition:
+      'QuantileLayers\n  ChartActions\n  图（svg：网格 · 点阵面 · 0 线 · 多空线 · 分层线 · 竖线）+ 纵轴刻度 + 线尾标 + 末点 + LcdTooltip\n  层按钮一排\n  结论行 · 来源',
+    keys: [
+      ['← / →', '扫读一格（Shift 三格），Home / End 到头尾，Esc 清掉'],
+      ['Tab / Enter', '层按钮：聚焦时淡出其余，Enter 锁定'],
     ],
   },
   {
@@ -4085,7 +4140,7 @@ export const PAGES: readonly DocPage[] = [
     cardHeight: 807,
     title: 'SymbolGalaxy 品种星系',
     summary:
-      '持仓、自选、筛选结果按行业、市场、因子分位或状态聚成一团团的圆：面积是市值或仓位，颜色是涨跌（七档，跟涨跌配色走）。上面一排切换分组方式，点在团间平滑迁移；悬停读详情，点击选中；Tab 在团间走、方向键在团内走。点多时自动改画 canvas。布局用 d3-hierarchy 的 pack，同样的数据永远同样的位置。功能参照 Arc Customer galaxy，实现原创。',
+      '持仓、自选、筛选结果按行业、市场、因子分位或状态聚成一团团的圆：面积是市值或仓位，圆面用发散色 div-*：正负各两档，-200 只给涨跌幅绝对值在前 20% 的点，中点灰，涨跌色不上面积；团名放在团的外接圆上方的留白里。上面一排切换分组方式，点在团间平滑迁移；悬停读详情，点击选中；Tab 在团间走、方向键在团内走。点多时自动改画 canvas。布局用 d3-hierarchy 的 pack，同样的数据永远同样的位置。功能参照 Arc Customer galaxy，实现原创。',
     exports: ['SymbolGalaxy', 'layoutGalaxy', 'hitNode', 'stepNode'],
     props: [
       {
@@ -4106,8 +4161,12 @@ export const PAGES: readonly DocPage[] = [
           { name: 'label / groupingLabel', type: 'string', desc: '整张图与分组开关的读屏名（必填）。' },
           { name: 'describe', type: '(node) => string', desc: '一个点的整句详情（读数行）。' },
           { name: 'groupText', type: '(group, count) => string', desc: '一团的读屏名，含个数。' },
-          { name: 'legendText', type: '(step: number) => string', desc: '色例每一档（−3 到 +3）写的字。' },
-          { name: 'limit', type: 'number', default: '0.03', desc: '色例两端的涨跌幅（小数），同 Treemap。' },
+          { name: 'legendText', type: '(step: number) => string', desc: '色例每一档（-2 到 +2）写的字。' },
+          {
+            name: 'tooltip',
+            type: '(node) => { title, rows }',
+            desc: '悬停时的 LCD 提示（标题与「名字 / 数值」几行）；不给就只有读数行。涨跌色只许上数字。',
+          },
           {
             name: 'onSelect / selectedId',
             type: '(node) => void / string | null',

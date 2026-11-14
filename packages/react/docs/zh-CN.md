@@ -39,7 +39,7 @@ tokens → theme → lib → primitives → katana → patterns → quant → bl
 | --- | --- | --- |
 | `UptimeBars` | katana | 数据源 / 连接健康的逐格可用条（一格一天或一小时） |
 | `RangeHistogramSlider` | patterns | 筛选器：在全体分布的直方图上拖区间（照 APG 多把手滑块） |
-| `Ridgeline`、`SlopeChart`、`ConnectedScatter` | quant（出口 `@katanaview/ui/quant`） | 各组收益分布叠画、前后对比、波动 vs 收益的月度轨迹；共用 `quant/chart-scale.ts`（比例尺、刻度、分位数） |
+| `Ridgeline`、`QuantileLayers`、`SlopeChart`、`ConnectedScatter` | quant（出口 `@katanaview/ui/quant`） | 各组收益分布叠画、前后对比、波动 vs 收益的月度轨迹；共用 `quant/chart-scale.ts`（比例尺、刻度、分位数） |
 | `SymbolGalaxy` | blocks（出口 `@katanaview/ui/blocks`） | 品种星系：按行业 / 市场 / 因子分位 / 状态聚团，面积是市值、颜色是涨跌，切分组时点平滑迁移 |
 
 这几件都有纯函数的模型文件（`*-model.ts`）与单测；文档站页上的演示数据用固定种子生成并在页上写明。应用里接真实数据另开票。

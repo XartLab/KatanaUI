@@ -1,7 +1,14 @@
 // SPDX-License-Identifier: MIT
 import { useMemo, useState } from 'react'
 import { SymbolGalaxy, type GalaxyNode } from '../../src/blocks'
-import { ConnectedScatter, Ridgeline, SlopeChart, type ScatterSeries, type SlopeItem } from '../../src/quant'
+import {
+  ConnectedScatter,
+  QuantileLayers,
+  Ridgeline,
+  SlopeChart,
+  type ScatterSeries,
+  type SlopeItem,
+} from '../../src/quant'
 import {
   histogramBins,
   RangeHistogramSlider,
@@ -374,6 +381,67 @@ export function SymbolGalaxyDemo() {
           </div>
         </Row>
       )}
+    </>
+  )
+}
+
+/** 5 层各 60 个交易日的示例累计收益（%）：日均值随层号升高，第 3 层故意压低一点，让「单调」有通过与不通过两种。 */
+function layerSeries(monotone: boolean) {
+  return [-0.5, -0.15, monotone ? 0.2 : -0.8, 0.6, 1.1].map((drift, i) => {
+    let sum = 0
+    const days = gaussians(200 + i, 60, drift * 0.2, 0.15)
+    return { rank: i + 1, label: `Q${i + 1}`, points: days.map((day) => (sum += day)) }
+  })
+}
+
+function QuantileCase({ monotone, id }: { monotone: boolean; id: string }) {
+  const layers = layerSeries(monotone)
+  const longShort = layers[4]!.points.map((value, i) => value - layers[0]!.points[i]!)
+  const x = (i: number) => `2026-0${1 + Math.floor(i / 22)}-${String(1 + (i % 22)).padStart(2, '0')}`
+  const labels = {
+    chart: '示例：因子分层累计收益',
+    actions: { group: '图的操作', table: '表格视图', exportCsv: '导出 CSV', fullscreen: '全屏' },
+    x: '日期',
+    layers: '分层',
+    table: '分层累计收益表',
+    monotonicPass: '通过',
+    monotonicFail: '未通过',
+    monotonic: '单调性',
+    tooMany: '分层多于 10，不画线。',
+  }
+  const stats = [
+    { key: 'ls', label: '多空年化', value: `${((longShort.at(-1)! * 252) / 60).toFixed(1)} %` },
+    { key: 'turn', label: '换手', value: '0.62 /月' },
+    { key: 'n', label: '样本', value: '60 期 · 4 280 只' },
+  ]
+  return (
+    <div className="gal-wide" data-gallery-quantile={id}>
+      <QuantileLayers
+        layers={layers}
+        longShort={longShort}
+        title="MOM_RS_V3 · 5 分层累计超额"
+        longShortLabel="多空 Q5−Q1"
+        labels={labels}
+        formatValue={(value) => `${value.toFixed(1)} %`}
+        formatX={x}
+        stats={stats}
+        source="来源 / 演示数据 · 固定种子合成 · 非回测"
+        onExport={() => {}}
+      />
+    </div>
+  )
+}
+
+export function QuantileLayersDemo() {
+  return (
+    <>
+      <p className="gal-note">演示数据：固定种子生成的示例累计收益（因子 F-07），不是回测结果。</p>
+      <Row name="5 分层，单调通过">
+        <QuantileCase monotone id="pass" />
+      </Row>
+      <Row name="第 3 层压低，单调未通过">
+        <QuantileCase monotone={false} id="fail" />
+      </Row>
     </>
   )
 }

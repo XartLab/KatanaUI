@@ -7073,6 +7073,15 @@ button.k-spark-tile:focus-visible {
 rect.k-heat-cell {
   fill: var(--k-cell);
   stroke: var(--ds-c-2xn4aw);
+.k-ridge-line {
+  fill: none;
+  stroke: var(--ink-200);
+  stroke-width: 1.5px;
+  stroke-linejoin: round;
+}
+
+.k-ridge-median {
+  stroke: var(--ink-100);
   stroke-width: 1.5px;
 }
 
@@ -7436,6 +7445,226 @@ button.k-sm-head:focus-visible {
 
 .k-sm-value[data-tone="up"] {
   color: var(--pnl-up);
+.k-galaxy-readout {
+  min-height: 16px;
+  color: var(--ink-200);
+  font: var(--text-caption) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+}
+
+.k-ql {
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  margin: 0;
+  display: flex;
+}
+
+.k-ql-head {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+  display: flex;
+}
+
+.k-ql-title {
+  color: var(--ink-100);
+  font: var(--text-data) var(--font-sans);
+  margin-right: auto;
+  font-weight: 600;
+}
+
+.k-ql-xaxis {
+  color: var(--chart-axis);
+  font: var(--text-num-sm) var(--chart-font-axis, var(--font-mono));
+  justify-content: space-between;
+  padding-top: 4px;
+  display: flex;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+}
+
+.k-ql-note {
+  color: var(--ink-300);
+  font: var(--text-caption) var(--font-sans);
+  margin: 0;
+}
+
+.k-ql-plot {
+  outline: none;
+  margin: 0 48px 24px 60px;
+  position: relative;
+}
+
+.k-ql-plot:focus-visible {
+  outline: 1px solid var(--focus-ring);
+}
+
+.k-ql-plot > svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: visible;
+}
+
+.k-ql-fill {
+  fill-opacity: .4;
+}
+
+.k-ql-zero {
+  stroke: var(--line-200);
+  stroke-width: 1px;
+  vector-effect: non-scaling-stroke;
+}
+
+.k-ql-ls {
+  fill: none;
+  stroke: var(--ink-100);
+  stroke-width: 1px;
+  vector-effect: non-scaling-stroke;
+}
+
+.k-ql-line {
+  fill: none;
+  stroke-width: 2px;
+  vector-effect: non-scaling-stroke;
+  transition: opacity var(--dur-snappy) var(--ease-snappy);
+}
+
+.k-ql-line[data-dim="true"] {
+  opacity: .4;
+}
+
+.k-ql-cursor {
+  stroke: var(--ink-300);
+  stroke-width: 1px;
+  vector-effect: non-scaling-stroke;
+}
+
+.k-ql-tail {
+  color: var(--ink-200);
+  font: var(--text-num-sm) var(--chart-font-axis, var(--font-mono));
+  pointer-events: none;
+  white-space: nowrap;
+  position: absolute;
+  transform: translate(8px, -50%);
+}
+
+.k-ql-legend {
+  flex-wrap: wrap;
+  gap: 4px;
+  display: flex;
+}
+
+.k-ql-layer {
+  border: var(--hairline);
+  height: 22px;
+  color: var(--ink-200);
+  font: var(--text-num-sm) var(--chart-font-axis, var(--font-mono));
+  cursor: pointer;
+  background: none;
+  border-radius: 4px;
+  align-items: center;
+  gap: 6px;
+  padding: 0 8px;
+  display: inline-flex;
+}
+
+.k-ql-layer[aria-pressed="true"] {
+  border-color: var(--chart-accent, var(--signal-orange));
+  color: var(--ink-100);
+}
+
+.k-ql-layer:focus-visible {
+  outline: 1px solid var(--focus-ring);
+}
+
+.k-ql-swatch {
+  width: 12px;
+  height: 2px;
+}
+
+.k-ql-summary {
+  border-top: var(--hairline);
+  color: var(--ink-200);
+  font: var(--text-caption) var(--font-sans);
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 16px;
+  margin: 0;
+  padding-top: 6px;
+  display: flex;
+}
+
+.k-ql-verdict {
+  color: var(--ink-100);
+  align-items: center;
+  gap: 6px;
+  display: inline-flex;
+}
+
+.k-ql-lamp {
+  background: var(--signal-amber);
+  border-radius: 50%;
+  width: 8px;
+  height: 8px;
+}
+
+.k-ql-verdict[data-ok="true"] .k-ql-lamp {
+  background: var(--signal-green);
+}
+
+.k-ql-stat-label {
+  color: var(--ink-300);
+}
+
+.k-ql-stat-value {
+  color: var(--ink-100);
+  font: var(--text-num-sm) var(--chart-font-num, var(--font-lcd));
+  font-variant-numeric: tabular-nums;
+}
+
+.k-ql-source {
+  color: var(--ink-300);
+  font: var(--text-caption) var(--font-sans);
+  margin: 0;
+}
+
+.k-ck-grid {
+  stroke: var(--chart-grid-color, var(--chart-grid));
+  stroke-dasharray: var(--chart-grid-dash, none);
+  stroke-width: 1px;
+  vector-effect: non-scaling-stroke;
+}
+
+.k-ck-ytick {
+  color: var(--chart-axis);
+  font: var(--text-num-sm) var(--chart-font-axis, var(--font-mono));
+  pointer-events: none;
+  white-space: nowrap;
+  padding-right: 8px;
+  position: absolute;
+  right: 100%;
+  transform: translateY(-50%);
+}
+
+.k-ck-tip {
+  z-index: 2;
+  background: var(--lcd-bg);
+  border: var(--hairline);
+  min-width: 96px;
+  box-shadow: var(--recess);
+  color: var(--lcd-fg);
+  font-family: var(--chart-font-num, var(--font-lcd));
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+  white-space: nowrap;
+  padding: 6px 10px;
+  position: absolute;
+  transform: translateX(10px);
 }
 
 .k-sm-value[data-tone="down"] {
@@ -9108,6 +9337,14 @@ button.k-sm-head:focus-visible {
   --ds-c-1wkxzd0: color-mix(in srgb, var(--ink-300) 55%, transparent);
   --ds-c-1yiu82i: color-mix(in srgb, var(--pnl-up) 60%, transparent);
   --ds-c-3roitp: color-mix(in srgb, var(--pnl-down) 60%, transparent);
+  --ds-c-1cp2jaz: color-mix(in srgb, var(--signal-amber) 24%, var(--bg-300));
+  --ds-c-16w4yab: color-mix(in srgb, var(--signal-red) 28%, var(--bg-300));
+  --ds-c-151q3s6: color-mix(in srgb, var(--pnl-up) 25%, var(--bg-300));
+  --ds-c-nw78: color-mix(in srgb, var(--pnl-up) 50%, var(--bg-300));
+  --ds-c-29ygob: color-mix(in srgb, var(--pnl-up) 75%, var(--bg-300));
+  --ds-c-a4hl5l: color-mix(in srgb, var(--pnl-down) 25%, var(--bg-300));
+  --ds-c-144jfjr: color-mix(in srgb, var(--pnl-down) 50%, var(--bg-300));
+  --ds-c-16du00u: color-mix(in srgb, var(--pnl-down) 75%, var(--bg-300));
   --ds-c-yj1s8q: #fff;
 }
 

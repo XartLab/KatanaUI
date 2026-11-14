@@ -96,12 +96,14 @@ describe('Ridgeline', () => {
       baseline={0}
     />,
   )
-  it('每组一个带整句名的图形，只有一个在 Tab 序里，涨跌色按中位数在基准线上下', () => {
+  it('每组一个带整句名的图形，只有一个在 Tab 序里，颜色按条的次序取 seq 色阶、不用涨跌色', () => {
     expect(html.match(/role="img"/g)).toHaveLength(2)
     expect(html).toContain('aria-label="第 1 层：中位数 -2"')
     expect(html.match(/tabindex="0"/g)).toHaveLength(1)
-    expect(html).toContain('data-tone="down"')
-    expect(html).toContain('data-tone="up"')
+    expect(html).toContain('stroke:var(--seq-200)')
+    expect(html).toContain('stroke:var(--seq-600)')
+    expect(html).not.toContain('pnl-')
+    expect(html).not.toContain('data-tone')
     expect(html).toContain('k-ridge-baseline')
   })
 })
