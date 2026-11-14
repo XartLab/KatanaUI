@@ -4,14 +4,28 @@
 
 ## Provide
 
+`*` marks a required prop.
+
 ### StatusIcon
 
 16 见方，role=img。应用的提示条（AlertToasts）用它表达成功与警告。
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `status` | `'success' \| 'error' \| 'warning' \| 'info' \| 'pending'` | — | 状态；pending 是转动的弧。 |
-| `label` | `string` | — | 读屏名（必填）：不单靠颜色与形状说话。 |
+| `status` * | `StatusIconStatus` | — | The status; pending is a spinning arc. |
+| `label` * | `string` | — | Accessible name (required): color and shape alone are not enough. |
+| `className` | `string` | — | Extra class name on the icon. |
+
+## Usage
+
+```tsx
+// SPDX-License-Identifier: MIT
+import { StatusIcon } from '@katana-ui/react'
+
+export function StatusIconUsage() {
+  return <StatusIcon status="pending" label="Syncing" />
+}
+```
 
 ## States
 

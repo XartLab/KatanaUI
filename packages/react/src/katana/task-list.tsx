@@ -119,12 +119,20 @@ function TaskRow({
 }
 
 export type TaskListProps = {
+  /** The tasks, each with id, label and optional done; controlled. */
   tasks?: readonly Task[]
+  /** Initial tasks when uncontrolled. */
   defaultTasks?: readonly Task[]
+  /** Called with the new task list. */
   onTasksChange?: (tasks: Task[]) => void
+  /** Announcement texts: completed(label) and reopened(label) (required). */
   labels: TaskListLabels
-  /** 清单的读屏名。 */
+  /**
+   * Accessible name of the list.
+   * 清单的读屏名。
+   */
   label?: string
+  /** Extra class name on the root. */
   className?: string
 }
 

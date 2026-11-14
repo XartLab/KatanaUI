@@ -4,13 +4,11 @@
 
 ## Provide
 
+`*` marks a required prop.
+
 ### Popover
 
 其余属性透传给 Radix Popover.Root。
-
-| 属性 | 类型 | 默认 | 说明 |
-| --- | --- | --- | --- |
-| `open / onOpenChange` | `boolean / (open: boolean) => void` | — | 受控的开合。 |
 
 ### PopoverContent
 
@@ -18,9 +16,7 @@
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `variant` | `'panel' \| 'menu' \| 'bare'` | `'panel'` | 皮肤。 |
-| `align` | `'start' \| 'center' \| 'end'` | `'center'` | 对齐触发器的哪一边。 |
-| `sideOffset` | `number` | `4` | 离触发器的距离。 |
+| `variant` | `keyof typeof skin` | `'panel'` | Skin of the popup. |
 
 ### PopoverTrigger / PopoverAnchor / PopoverClose
 
@@ -36,8 +32,26 @@ Radix 没有悬停打开，这个钩子补上：返回 open、setOpen 与挂在�
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `openDelay` | `number` | — | 停在触发器上多少毫秒后开。 |
-| `closeDelay` | `number` | — | 离开触发器与弹层多少毫秒后收。 |
+| `openDelay` * | `number` | — | Milliseconds the pointer must rest on the trigger before it opens. |
+| `closeDelay` * | `number` | — | Milliseconds after the pointer leaves the trigger and content before it closes. |
+
+## Usage
+
+```tsx
+// SPDX-License-Identifier: MIT
+import { Button, Popover, PopoverContent, PopoverTrigger } from '@katana-ui/react'
+
+export function PopoverUsage() {
+  return (
+    <Popover>
+      <PopoverTrigger asChild>
+        <Button>Details</Button>
+      </PopoverTrigger>
+      <PopoverContent>The default trading day is the latest one.</PopoverContent>
+    </Popover>
+  )
+}
+```
 
 ## States
 

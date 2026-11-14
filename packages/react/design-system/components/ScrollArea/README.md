@@ -4,18 +4,36 @@ Radix 的自绘滚动条，4px 宽，平时不出现，指针到了这一块才�
 
 ## Provide
 
+`*` marks a required prop.
+
 ### ScrollArea
 
 其余属性透传给 Radix ScrollArea.Root。给 Root 一个确定的高（或 max-height），内容比它高才滚。
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `type` | `'hover' \| 'always' \| 'scroll' \| 'auto'` | `'hover'` | hover：指到才显示；always：一直；scroll：滚动时；auto：内容溢出就显示。 |
-| `viewportClassName` | `string` | — | 给里面可滚动的 Viewport。 |
+| `viewportClassName` | `string` | — | Extra class name on the scrolling viewport inside. |
 
 ### ScrollBar
 
 自己拼时用；orientation 默认 vertical。
+
+## Usage
+
+```tsx
+// SPDX-License-Identifier: MIT
+import { ScrollArea } from '@katana-ui/react'
+
+export function ScrollAreaUsage() {
+  return (
+    <ScrollArea style={{ height: 120, width: 200 }}>
+      {Array.from({ length: 30 }, (_, index) => (
+        <div key={index}>{`Row ${index + 1}`}</div>
+      ))}
+    </ScrollArea>
+  )
+}
+```
 
 ## States
 

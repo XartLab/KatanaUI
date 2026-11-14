@@ -260,14 +260,14 @@
   --ink-400: #6e6e6e;
   --signal-orange: #d97757;
   --signal-orange-dim: #533429;
-  --signal-amber: #ffc23d;
-  --signal-green: #3fd6a0;
-  --signal-red: #ff4d70;
+  --signal-amber: #d6a548;
+  --signal-green: #5fae8c;
+  --signal-red: #f2607c;
   --signal-blue: #5aa9ff;
-  --div-neg-200: #b8465a;
-  --div-neg-100: #572a35;
-  --div-pos-100: #1f4639;
-  --div-pos-200: #2e8b68;
+  --div-neg-200: #a5464c;
+  --div-neg-100: #4d2629;
+  --div-pos-100: #1f3a30;
+  --div-pos-200: #3f7f66;
   --va: #1a1a1a;
   --chart-grid: #181818;
   --glass-bg: rgba(32,32,32,0.72);
@@ -311,10 +311,10 @@
   --pnl-down: var(--signal-green);
   --pnl-up-area: #cf4e5c;
   --pnl-down-area: #69aa77;
-  --div-neg-100: #1f4639;
-  --div-pos-100: #572a35;
-  --div-neg-200: #2e8b68;
-  --div-pos-200: #b8465a;
+  --div-neg-100: #1f3a30;
+  --div-pos-100: #4d2629;
+  --div-neg-200: #3f7f66;
+  --div-pos-200: #a5464c;
 }
 /*! tailwindcss v4.3.5 | MIT License | https://tailwindcss.com */
 @layer properties {
@@ -403,6 +403,10 @@
 
 .pointer-events-none {
   pointer-events: none;
+}
+
+.collapse {
+  visibility: collapse;
 }
 
 .visible {
@@ -5270,7 +5274,7 @@ button.k-sysmon-link-body:focus-visible {
 }
 
 .k-dq-count {
-  color: var(--ink-300);
+  color: var(--ink-200);
   font-variant-numeric: tabular-nums;
   margin-inline-start: 6px;
 }
@@ -5282,7 +5286,7 @@ button.k-sysmon-link-body:focus-visible {
 }
 
 .k-dq-empty {
-  color: var(--ink-300);
+  color: var(--ink-200);
   text-align: center;
   padding: 24px 12px;
 }
@@ -5307,7 +5311,7 @@ button.k-sysmon-link-body:focus-visible {
 }
 
 .k-dq-meta {
-  color: var(--ink-300);
+  color: var(--ink-200);
   align-items: center;
   gap: 8px;
   display: flex;
@@ -5329,7 +5333,7 @@ button.k-sysmon-link-body:focus-visible {
 .k-dq-snoozed {
   border: 1px solid var(--alpha-white-8);
   border-radius: var(--radius-pill);
-  color: var(--ink-300);
+  color: var(--ink-200);
   padding: 0 6px;
 }
 
@@ -5354,7 +5358,7 @@ button.k-sysmon-link-body:focus-visible {
   background: var(--alpha-white-3);
   border: 1px solid var(--alpha-white-8);
   border-radius: var(--radius-pill);
-  color: var(--ink-300);
+  color: var(--ink-200);
   font: var(--text-data) var(--font-mono);
   padding: 0 6px;
 }
@@ -5365,7 +5369,7 @@ button.k-sysmon-link-body:focus-visible {
 }
 
 .k-dq-evidence {
-  color: var(--ink-300);
+  color: var(--ink-200);
   flex-wrap: wrap;
   align-items: center;
   gap: 4px 16px;
@@ -5431,7 +5435,7 @@ button.k-sysmon-link-body:focus-visible {
 }
 
 .k-dq-more {
-  color: var(--ink-300);
+  color: var(--ink-200);
   font: inherit;
   cursor: pointer;
   background: none;
@@ -5466,7 +5470,7 @@ button.k-sysmon-link-body:focus-visible {
   border-bottom: 1px solid var(--alpha-white-6);
   width: 100%;
   min-height: 32px;
-  color: var(--ink-300);
+  color: var(--ink-200);
   font: inherit;
   text-align: left;
   cursor: pointer;
@@ -5521,7 +5525,7 @@ button.k-sysmon-link-body:focus-visible {
 }
 
 .k-hl-count {
-  color: var(--ink-300);
+  color: var(--ink-200);
   font-variant-numeric: tabular-nums;
   margin-inline-start: 6px;
 }
@@ -5533,7 +5537,7 @@ button.k-sysmon-link-body:focus-visible {
 }
 
 .k-hl-empty {
-  color: var(--ink-300);
+  color: var(--ink-200);
   text-align: center;
   padding: 24px 12px;
 }
@@ -5575,7 +5579,7 @@ button.k-sysmon-link-body:focus-visible {
 
 .k-hl-status {
   min-width: 44px;
-  color: var(--ink-300);
+  color: var(--ink-200);
   flex: none;
 }
 
@@ -5583,7 +5587,7 @@ button.k-sysmon-link-body:focus-visible {
   background: var(--alpha-white-3);
   border: 1px solid var(--alpha-white-8);
   border-radius: var(--radius-pill);
-  color: var(--ink-300);
+  color: var(--ink-200);
   white-space: nowrap;
   flex: none;
   padding: 0 6px;
@@ -5600,7 +5604,7 @@ button.k-sysmon-link-body:focus-visible {
 }
 
 .k-hl-tally, .k-hl-due {
-  color: var(--ink-300);
+  color: var(--ink-200);
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
   flex: none;
@@ -5639,7 +5643,7 @@ button.k-sysmon-link-body:focus-visible {
 }
 
 .k-hl-none {
-  color: var(--ink-300);
+  color: var(--ink-200);
   margin: 0;
 }
 
@@ -5682,7 +5686,7 @@ button.k-sysmon-link-body:focus-visible {
 }
 
 .k-hl-time {
-  color: var(--ink-300);
+  color: var(--ink-200);
   font-variant-numeric: tabular-nums;
 }
 
@@ -5736,7 +5740,7 @@ button.k-sysmon-link-body:focus-visible {
 }
 
 .k-hl-watch thead th {
-  color: var(--ink-300);
+  color: var(--ink-200);
   font-weight: 600;
 }
 
@@ -8777,9 +8781,9 @@ button.k-heat-cell {
 }
 
 .k-heat-cell[data-tone="pos2"], .k-heat-cell[data-tone="neg2"] {
-  --k-on: color(from var(--k-cell) srgb clamp(0, calc((.43 - (.2126 * r + .7152 * g + .0722 * b)) * 1000), 1)
-      clamp(0, calc((.43 - (.2126 * r + .7152 * g + .0722 * b)) * 1000), 1)
-      clamp(0, calc((.43 - (.2126 * r + .7152 * g + .0722 * b)) * 1000), 1));
+  --k-on: color(from var(--k-cell) srgb clamp(0, calc((.44 - (.2126 * r + .7152 * g + .0722 * b)) * 1000), 1)
+      clamp(0, calc((.44 - (.2126 * r + .7152 * g + .0722 * b)) * 1000), 1)
+      clamp(0, calc((.44 - (.2126 * r + .7152 * g + .0722 * b)) * 1000), 1));
 }
 
 .k-heat-cell[data-tone="pos2"] .k-heat-date, .k-heat-cell[data-tone="pos2"] .k-heat-num, .k-heat-cell[data-tone="neg2"] .k-heat-date, .k-heat-cell[data-tone="neg2"] .k-heat-num {
@@ -10189,11 +10193,11 @@ button.k-sm-head:focus-visible {
 }
 
 .k-galaxy-legend .is-step-2, .k-galaxy-legend .is-step2 {
-  color: var(--ds-c-1a6btok);
+  color: var(--ds-c-uumw93);
 }
 
 .k-galaxy-legend .is-step-2 {
-  color: var(--ds-c-1athvsc);
+  color: var(--ds-c-vhsycv);
 }
 
 .k-galaxy-tip {
@@ -13156,8 +13160,8 @@ button.k-consensus-hash:focus-visible {
   --ds-c-1liwpbi: color-mix(in srgb, var(--ink-100) 6%, transparent);
   --ds-c-1xbddtq: color-mix(in srgb, var(--ink-400) 12%, transparent);
   --ds-c-3roitp: color-mix(in srgb, var(--pnl-down) 60%, transparent);
-  --ds-c-1a6btok: color(from var(--div-pos-200) srgb clamp(0, calc((.43 - (.2126 * r + .7152 * g + .0722 * b)) * 1000), 1) clamp(0, calc((.43 - (.2126 * r + .7152 * g + .0722 * b)) * 1000), 1) clamp(0, calc((.43 - (.2126 * r + .7152 * g + .0722 * b)) * 1000), 1));
-  --ds-c-1athvsc: color(from var(--div-neg-200) srgb clamp(0, calc((.43 - (.2126 * r + .7152 * g + .0722 * b)) * 1000), 1) clamp(0, calc((.43 - (.2126 * r + .7152 * g + .0722 * b)) * 1000), 1) clamp(0, calc((.43 - (.2126 * r + .7152 * g + .0722 * b)) * 1000), 1));
+  --ds-c-uumw93: color(from var(--div-pos-200) srgb clamp(0, calc((.44 - (.2126 * r + .7152 * g + .0722 * b)) * 1000), 1) clamp(0, calc((.44 - (.2126 * r + .7152 * g + .0722 * b)) * 1000), 1) clamp(0, calc((.44 - (.2126 * r + .7152 * g + .0722 * b)) * 1000), 1));
+  --ds-c-vhsycv: color(from var(--div-neg-200) srgb clamp(0, calc((.44 - (.2126 * r + .7152 * g + .0722 * b)) * 1000), 1) clamp(0, calc((.44 - (.2126 * r + .7152 * g + .0722 * b)) * 1000), 1) clamp(0, calc((.44 - (.2126 * r + .7152 * g + .0722 * b)) * 1000), 1));
   --ds-c-fmo1lj: color-mix(in srgb, var(--pnl-up) 12%, transparent);
   --ds-c-qbul3h: color-mix(in srgb, var(--signal-amber) 12%, transparent);
   --ds-c-jwmebu: color-mix(in srgb, var(--pnl-down) 12%, transparent);

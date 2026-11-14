@@ -4,25 +4,42 @@
 
 ## Provide
 
+`*` marks a required prop.
+
 ### NumberInput
 
 角色是 spinbutton，带当前值与范围；只在值合法时回调，回调的值一定在 min / max 之内。
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `value` | `number` | — | 当前值。 |
-| `onValue` | `(value: number) => void` | — | 值变了。空串、非数字不回调。 |
-| `unit` | `string` | — | 单位后缀；给了读屏读「值 + 单位」。 |
-| `min / max` | `number` | — | 范围；越界夹进去。 |
-| `step` | `number` | `1` | 步长。 |
-| `size` | `'sm'` | — | 26 高；默认 30 高。 |
-| `width` | `number` | `96` | 框宽（像素）。 |
-| `label` | `string` | — | 读屏名。 |
-| `invalid` | `boolean` | — | 红边。 |
-| `disabled` | `boolean` | — | 灰掉：不能打字、不能拖、方向键不动它。 |
-| `autoValue / autoText` | `number / string` | — | 哨兵值：值等于 autoValue 又没在打字时，框里写 autoText，不把内部的数露给用户。 |
-| `expression` | `boolean` | `false` | 框里可以写算式，回车或离开时按当前值算：+10、*2、/4、+10%（×1.1）、100*1.5；Esc 放弃，写不成算式的字标红。 |
-| `caption` | `string` | — | 框内左边的文字标签；拖它与拖整个框一样改值。 |
+| `value` * | `number` | — | The current value. |
+| `onValue` * | `(value: number) => void` | — | Called when the value changes; empty or non-numeric input does not call it. |
+| `unit` | `string` | — | Unit suffix; when given, screen readers read the value together with the unit. |
+| `min` | `number` | — | Lower bound; values below it are clamped. |
+| `max` | `number` | — | Upper bound; values above it are clamped. |
+| `step` | `number` | `1` | Step size. |
+| `size` | `'sm'` | — | sm is 26px high; the default is 30px. |
+| `width` | `number` | `96` | Width of the box in px. |
+| `label` | `string` | — | Accessible name. |
+| `invalid` | `boolean` | — | Show the red border. |
+| `disabled` | `boolean` | — | Greyed out: cannot type, drag, or step with the arrow keys. |
+| `autoValue` | `number` | — | Sentinel value (for example -1 or 0 meaning automatic): while the value equals it and the user is not typing, the box shows autoText. |
+| `autoText` | `string` | — | Text shown in place of the sentinel value. |
+| `expression` | `boolean` | — | Allow typing an expression, evaluated on Enter or blur (Esc discards); text that is not an expression turns red. |
+| `caption` | `string` | — | Text label inside the box on the left (dragging it changes the value like dragging the box); the accessible name still comes from label. |
+
+## Usage
+
+```tsx
+// SPDX-License-Identifier: MIT
+import { useState } from 'react'
+import { NumberInput } from '@katana-ui/react'
+
+export function NumberInputUsage() {
+  const [width, setWidth] = useState(14)
+  return <NumberInput label="Line width" value={width} onValue={setWidth} min={1} max={40} unit="px" />
+}
+```
 
 ## States
 

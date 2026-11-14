@@ -4,19 +4,44 @@
 
 ## Provide
 
+`*` marks a required prop.
+
 ### CodeBlock
 
 认得 ts / tsx / js / json / py / sh / css；别的语言当纯文本。开头的空行与结尾的空白会去掉。
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `code` | `string` | — | 源码（必填）。 |
-| `language` | `string` | `'plain'` | 语言。 |
-| `accent` | `string` | `'var(--signal-orange)'` | 强调色，任何 CSS 颜色。 |
-| `filename` | `string` | — | 头里写的名字；不给写语言。 |
-| `showHeader / showLineNumbers / showCopyButton` | `boolean` | `true` | 关掉头时复制钮浮在右上角。 |
-| `highlightLines` | `number[]` | — | 要高亮的行（1 起）。 |
-| `copyLabel / copiedLabel` | `string` | — | 复制钮的读屏名，与复制成功后的读屏名（必填）。 |
+| `code` * | `string` | — | The source code (required). |
+| `language` | `string` | `'plain'` | Language: ts, tsx, js, json, py, sh, css and so on; unknown ones are plain text. |
+| `accent` | `string` | `'var(--signal-orange)'` | Accent color, any CSS color; the whole palette is mixed from it. |
+| `filename` | `string` | — | Name written in the header; the language is written when omitted. |
+| `showHeader` | `boolean` | `true` | Whether to draw the header; without it the copy button floats at the top right. |
+| `showLineNumbers` | `boolean` | `true` | Whether to draw line numbers. |
+| `showCopyButton` | `boolean` | `true` | Whether to draw the copy button. |
+| `highlightLines` | `readonly number[]` | — | Lines to highlight (1-based). |
+| `copyLabel` * | `string` | — | Accessible name of the copy button (required). |
+| `copiedLabel` * | `string` | — | Accessible name of the copy button after a successful copy (required). |
+| `className` | `string` | — | Extra class name on the root. |
+
+## Usage
+
+```tsx
+// SPDX-License-Identifier: MIT
+import { CodeBlock } from '@katana-ui/react'
+
+export function CodeBlockUsage() {
+  return (
+    <CodeBlock
+      code={`export const answer = 42`}
+      language="ts"
+      filename="answer.ts"
+      copyLabel="Copy code"
+      copiedLabel="Copied"
+    />
+  )
+}
+```
 
 ## States
 

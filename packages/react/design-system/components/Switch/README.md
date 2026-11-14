@@ -4,16 +4,24 @@
 
 ## Provide
 
+`*` marks a required prop.
+
 ### Switch
 
 其余属性透传给 Radix Switch.Root。
 
-| 属性 | 类型 | 默认 | 说明 |
-| --- | --- | --- | --- |
-| `checked` | `boolean` | — | 受控的开关状态。 |
-| `defaultChecked` | `boolean` | — | 不受控的初值。 |
-| `onCheckedChange` | `(checked: boolean) => void` | — | 拨了一下。 |
-| `disabled` | `boolean` | — | 灰掉，不响应。 |
+## Usage
+
+```tsx
+// SPDX-License-Identifier: MIT
+import { useState } from 'react'
+import { Switch } from '@katana-ui/react'
+
+export function SwitchUsage() {
+  const [on, setOn] = useState(true)
+  return <Switch aria-label="Show grid" checked={on} onCheckedChange={setOn} />
+}
+```
 
 ## States
 

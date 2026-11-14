@@ -4,17 +4,30 @@
 
 ## Provide
 
+`*` marks a required prop.
+
 ### GaugeBar
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `label` | `ReactNode` | — | 名字。 |
-| `value` | `ReactNode` | — | 已格式化好的数。 |
-| `unavailable` | `boolean` | — | 数取不到：换成弱色小字。 |
-| `share` | `number \| null` | — | 数在最小到最大之间的位置（0 到 1，越界按边画）；null 不画填充。填充宽度按 snappy 弹簧变。 |
-| `level` | `ReactNode` | — | 档位词，常是一枚徽标。 |
-| `note` | `ReactNode` | — | 下面一句说明。 |
-| `classes` | `GaugeBarClasses` | — | 每个部位（root、head、label、value、track、fill、note）额外加的类名，写在包里类名之后。 |
+| `label` * | `ReactNode` | — | The name. |
+| `value` * | `ReactNode` | — | The already formatted number. |
+| `unavailable` | `boolean` | — | The number could not be fetched: write the reason where the number goes, in a muted color. |
+| `share` * | `number \| null` | — | Position of the number between the minimum and maximum (0 to 1, clamped to the ends); null draws no fill. |
+| `level` | `ReactNode` | — | The level word (a whole node supplied by the caller, often a badge). |
+| `note` | `ReactNode` | — | A line of explanation underneath. |
+| `classes` | `GaugeBarClasses` | `{}` | Extra class names per part, written after the package ones. |
+
+## Usage
+
+```tsx
+// SPDX-License-Identifier: MIT
+import { GaugeBar } from '@katana-ui/react'
+
+export function GaugeBarUsage() {
+  return <GaugeBar label="Ratio" value="72.00%" share={0.72} level="Hot" note="a / (a + b)" />
+}
+```
 
 ## States
 

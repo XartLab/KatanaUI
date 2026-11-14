@@ -4,12 +4,26 @@
 
 ## Provide
 
+`*` marks a required prop.
+
 ### EstimateBadge
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `label` | `string` | — | 标记上的字。 |
-| `title` | `string` | — | 悬停提示。 |
+| `label` * | `string` | — | Text on the badge. |
+| `title` | `string` | — | Hover hint. |
+| `className` | `string` | — | Extra class name on the badge. |
+
+## Usage
+
+```tsx
+// SPDX-License-Identifier: MIT
+import { EstimateBadge } from '@katana-ui/react/blocks'
+
+export function EstimateBadgeUsage() {
+  return <EstimateBadge label="Estimated" title="Fills are estimated from closed 1-minute bars." />
+}
+```
 
 ## States
 

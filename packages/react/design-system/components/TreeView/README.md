@@ -4,6 +4,8 @@
 
 ## Provide
 
+`*` marks a required prop.
+
 ### TreeView
 
 底座是 react-aria-components 的 Tree（角色 treegrid）：焦点、键盘、选中、展开都是它的。树数据用 items 传，一层层 children。
@@ -18,6 +20,66 @@
 | `expandedKeys / defaultExpandedKeys` | `string[]` | — | 展开的 id，受控 / 非受控。 |
 | `onExpandedChange` | `(keys: string[]) => void` | — | 展开变了。 |
 | `onAction` | `(id: string) => void` | — | 激活一行（Enter 或双击）：打开这个数据集之类。给了它，点行是「选中这一行」（多选按 Ctrl / Shift 加减），方向键走到哪选到哪；不给，点行是切换选中，方向键只移焦点。 |
+
+## Usage
+
+```tsx
+// SPDX-License-Identifier: MIT
+import { useState } from 'react'
+import { TreeView, type TreeNode } from '@katana-ui/react'
+
+const TREE_ITEMS: readonly TreeNode[] = [
+  {
+    id: 'cn',
+    label: 'A 股',
+    count: 3,
+    children: [
+      {
+        id: 'cn-main',
+        label: '主板',
+        count: 2,
+        children: [
+          { id: 'cn-sh', label: '沪市' },
+          { id: 'cn-sz', label: '深市' },
+        ],
+      },
+      { id: 'cn-star', label: '科创板' },
+    ],
+  },
+  { id: 'hk', label: '港股', count: 1, children: [{ id: 'hk-main', label: '主板' }] },
+  {
+    id: 'crypto',
+    label: '加密',
+    count: 2,
+    children: [
+      { id: 'crypto-spot', label: '现货' },
+      { id: 'crypto-perp', label: '永续', disabled: true },
+    ],
+  },
+  { id: 'misc', label: '未分类' },
+]
+
+export function TreeViewUsage() {
+  const [selected, setSelected] = useState<string[]>(['cn-sh'])
+  const [opened, setOpened] = useState('无')
+  return (
+    <>
+      <div className="gal-tree" style={{ width: 240 }}>
+        <TreeView
+          label="品种分类"
+          items={TREE_ITEMS}
+          defaultExpandedKeys={['cn', 'cn-main']}
+          selectedKeys={selected}
+          onSelectionChange={setSelected}
+          onAction={setOpened}
+        />
+      </div>
+      <output data-gallery-tree>{selected.join(',') || '无'}</output>
+      <output data-gallery-tree-open>{opened}</output>
+    </>
+  )
+}
+```
 
 ## States
 
