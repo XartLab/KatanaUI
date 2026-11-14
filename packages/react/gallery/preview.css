@@ -87,3 +87,23 @@
   --demo-graphite-muted: #333333;
   --demo-graphite-tile: #141414;
 }
+.gal-scrub {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  height: 96px;
+  padding: 4px;
+  border: 1px solid var(--line-100);
+  border-radius: 6px;
+  touch-action: pan-y;
+}
+.gal-scrub:focus-visible {
+  outline: 2px solid var(--focus-ring);
+}
+.gal-scrub-bar {
+  width: 16px;
+  background: var(--ink-400);
+}
+.gal-scrub-bar[data-active='true'] {
+  background: var(--series-1);
+}

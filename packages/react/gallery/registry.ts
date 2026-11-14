@@ -2264,6 +2264,27 @@ export const PAGES: readonly DocPage[] = [
             default: '200',
             desc: '一个容器最多画多少个子项，多出的折成一行「还有 N 项」。200 没有出处，是让一次展开最多出几百行的估计，待定。',
           },
+    id: 'use-scrubber',
+    group: 'quant',
+    cardHeight: 200,
+    title: 'useScrubber 序列扫读',
+    summary:
+      '序列图共用的扫读钩子：指针在图上移动或键盘走，选中一格。←→ 一格，Shift+←→ 三格，Home / End 到头尾，Esc 清掉。可受控，几张图共用一个选中格。功能参照 Arc 的 Revenue explorer。',
+    exports: ['useScrubber'],
+    props: [
+      {
+        part: 'useScrubber(options)',
+        note: '返回 { index, set, pointer, keys, props }：props 是 pointer 与 keys 的合并，整个摊在图的容器上；几张图共用时把 pointer 摊在每张上、keys 摊在外层。',
+        rows: [
+          { name: 'count', type: 'number', desc: '一共几格。格数变少时越界的选中格当作没选中。' },
+          {
+            name: 'mode',
+            type: "'point' | 'band'",
+            default: "'point'",
+            desc: 'point：格是点（折线），指针落到最近的点；band：格是带（柱），落在哪条带里。',
+          },
+          { name: 'index', type: 'number | null', desc: '受控的选中格；不给就钩子自己管。' },
+          { name: 'onIndexChange', type: '(index: number | null) => void', desc: '选中格变了（含清掉，null）。' },
         ],
       },
     ],
@@ -2285,6 +2306,22 @@ export const PAGES: readonly DocPage[] = [
       ['→ / ←', '展开 / 收起，或进子级 / 回父级'],
       ['Home / End', '第一行 / 最后一行'],
       ['打字', '在树里：跳到以它开头的键名；在查找框里：查找'],
+      '没选中：index 为 null，图上不画十字线。',
+      '没选中时按 ←→：先落到最新一格（最后一格）。',
+      '指针离开或失焦：清掉。',
+      'Esc：清掉；已经没选中时不拦截，Esc 照常往外冒（关对话框）。',
+    ],
+    donts: [
+      '不要把 pointer 摊在比图大的元素上：横坐标按那个元素的宽换成格号。',
+      '不要用它做一段区间的刷选：那是 BrushChart。',
+      '组合键（Ctrl、Alt、Meta）不拦截，留给浏览器与应用快捷键。',
+    ],
+    composition: 'useScrubber\n  scrubKey（键位表，纯函数）\n  scrubIndexAt（横坐标到格号，纯函数）',
+    keys: [
+      ['← →', '选中格前后一格；没选中时先落到最新一格'],
+      ['Shift + ← →', '一次三格（待定：没有出处）'],
+      ['Home / End', '第一格 / 最后一格'],
+      ['Esc', '清掉选中'],
     ],
   },
   {

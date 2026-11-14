@@ -33,6 +33,8 @@ import {
   ThemeSelectorDemo,
   WebSearchDemo,
 } from './pages/rare2.tsx'
+} from './pages/rare2'
+import { UseScrubberDemo } from './pages/series'
 import {
   GaugeBarDemo,
   PriceTagDemo,
@@ -119,6 +121,7 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'web-search': WebSearchDemo,
   'task-list': TaskListDemo,
   'duration-picker': DurationPickerDemo,
+  'use-scrubber': UseScrubberDemo,
   sparkline: SparklineDemo,
   'gauge-bar': GaugeBarDemo,
   treemap: TreemapDemo,
