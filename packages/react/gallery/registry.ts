@@ -1530,7 +1530,7 @@ export const PAGES: readonly DocPage[] = [
     title: 'MetricCard 指标卡与卡片墙（跨市场共用）',
     summary:
       '照 uiarc 的 Metric explorer 的结构：标题、大号当前值、较前日 / 周 / 月 / 年的变化（涨跌色）、迷你走势线（1 月 / 3 月 / 6 月 / 1 年分段）、可选阶段带（五档边界与文案由调用方给）、来源与更新时间一行；MetricCardGrid 把卡排成墙。组件只画不算，数据与文字都由调用方传，没有数据就是空态。',
-    exports: ['MetricCard', 'MetricCardGrid'],
+    exports: ['MetricCard', 'MetricCardGrid', 'metricTrendTone', 'metricStageIndex'],
     props: [
       {
         part: 'MetricCard',
@@ -1580,6 +1580,11 @@ export const PAGES: readonly DocPage[] = [
           },
           { name: 'minWidth', type: 'number', desc: '每张卡最小宽（px），默认 260；一行几张由容器宽决定。' },
         ],
+      },
+      {
+        part: 'metricTrendTone(trend, values) / metricStageIndex(stages, value)',
+        note: '纯函数，跟件里用的同一份。metricTrendTone：按 trendTone 与走势线头尾给 up / down / flat（neutral 恒为 flat，inverse 涨跌色互换）。metricStageIndex：当前值落在第几档（最后一档含上界），没有值或落在所有档外返回 -1。',
+        rows: [],
       },
     ],
     states: [
@@ -3762,7 +3767,21 @@ export const PAGES: readonly DocPage[] = [
     title: 'DataGrid 数据表',
     summary:
       '拼面板用的数据表：TanStack Table 管排序、列宽、顺序、显隐，虚拟滚动只画看得见的行；列声明一个类型（价格、数量、盈亏、涨跌幅、方向、时间、品种……），格式化、对齐、着色、排序由类型给。列的状态受控（调用方存）；应用的能力经 DataGridHost 注入。',
-    exports: ['DataGrid', 'DataGridHostProvider', 'tableCsv', 'ColumnPicker', 'usePersistedState', 'useSavedViews'],
+    exports: [
+      'DataGrid',
+      'DataGridHostProvider',
+      'tableCsv',
+      'ColumnPicker',
+      'usePersistedState',
+      'readPersisted',
+      'useSavedViews',
+      'reorderColumn',
+      'moveColumn',
+      'setColumnVisible',
+      'setColumnFixed',
+      'applyColumnSet',
+      'activeColumnSet',
+    ],
     props: [
       {
         part: 'DataGrid',
@@ -3942,8 +3961,18 @@ export const PAGES: readonly DocPage[] = [
         rows: [],
       },
       {
+        part: 'readPersisted(key, { version, storage?, validate? })',
+        note: '读 usePersistedState 存的值；没有、坏了、版本不符、validate 不过都返回 undefined。',
+        rows: [],
+      },
+      {
         part: 'useSavedViews({ key, version, storage?, recentLimit? })',
         note: '命名视图的快照仓库（值由调用方定，件只当不透明 JSON）：saveAs 另存、save 覆盖、remove、setDefault、use（记进最近并返回值）、recent、exportJson / importJson。',
+        rows: [],
+      },
+      {
+        part: 'reorderColumn / moveColumn / setColumnVisible / setColumnFixed / applyColumnSet / activeColumnSet',
+        note: '列摆法（layout）的纯函数，列头菜单、拖动重排与 ColumnPicker 用的同一份，都返回新数组。reorderColumn(layout, from, to) 拖到目标位置；moveColumn(layout, id, ±1) 跳过藏起来的列移一格；setColumnVisible 不许藏最后一列；setColumnFixed 固定的列挨着排在最前；applyColumnSet(layout, columns) 套列集；activeColumnSet(layout, sets) 返回看得见的列恰好等于的那个列集 id。',
         rows: [],
       },
       {

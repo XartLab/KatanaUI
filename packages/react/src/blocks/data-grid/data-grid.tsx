@@ -482,7 +482,8 @@ export function DataGrid<Row extends object>({
   const onMenu = (event: MouseEvent<HTMLElement>) => {
     const fromKeyboard = keyboardMenu.current
     keyboardMenu.current = false
-    const colKey = (event.target as HTMLElement).closest<HTMLElement>('[data-col]')?.dataset.col
+    // 只有表头出列菜单：表体的格子也带 data-col（给样式与测试用），不能算。
+    const colKey = (event.target as HTMLElement).closest<HTMLElement>('[role="columnheader"][data-col]')?.dataset.col
     const rowKey = (event.target as HTMLElement).closest<HTMLElement>('[data-row]')?.dataset.row
     if (colKey !== undefined && (onLayoutChange || onSortChange)) {
       setMenuOn('column')

@@ -77,9 +77,17 @@
 
 像 useState，值存进存储（默认 localStorage，读写包 try/catch）；版本不符、坏了、validate 不过都当没存过，不写迁移。返回 [值, 设值, 重置]。
 
+### readPersisted(key, { version, storage?, validate? })
+
+读 usePersistedState 存的值；没有、坏了、版本不符、validate 不过都返回 undefined。
+
 ### useSavedViews({ key, version, storage?, recentLimit? })
 
 命名视图的快照仓库（值由调用方定，件只当不透明 JSON）：saveAs 另存、save 覆盖、remove、setDefault、use（记进最近并返回值）、recent、exportJson / importJson。
+
+### reorderColumn / moveColumn / setColumnVisible / setColumnFixed / applyColumnSet / activeColumnSet
+
+列摆法（layout）的纯函数，列头菜单、拖动重排与 ColumnPicker 用的同一份，都返回新数组。reorderColumn(layout, from, to) 拖到目标位置；moveColumn(layout, id, ±1) 跳过藏起来的列移一格；setColumnVisible 不许藏最后一列；setColumnFixed 固定的列挨着排在最前；applyColumnSet(layout, columns) 套列集；activeColumnSet(layout, sets) 返回看得见的列恰好等于的那个列集 id。
 
 ### tableCsv(header, rows)
 
