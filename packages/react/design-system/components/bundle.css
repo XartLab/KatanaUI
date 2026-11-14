@@ -7934,7 +7934,7 @@ button.k-quote-card.is-link:focus-visible {
 
 .k-brush-line, .k-brush-strip-line {
   fill: none;
-  stroke: var(--series-1);
+  stroke: var(--ink-100);
   stroke-width: 2px;
   stroke-linejoin: round;
   vector-effect: non-scaling-stroke;
@@ -9231,6 +9231,8 @@ button.k-sm-head:focus-visible {
 }
 
 .k-eq {
+  --chart-accent: var(--ink-100);
+  --chart-end-glow: none;
   gap: 6px;
   min-width: 0;
   margin: 0;
@@ -9260,7 +9262,7 @@ button.k-sm-head:focus-visible {
 }
 
 .k-eq-key-line, .k-eq-key-bench {
-  border-top: 2px solid var(--series-1);
+  border-top: 2px solid var(--ink-100);
   width: 12px;
   height: 0;
   display: inline-block;
@@ -9271,11 +9273,20 @@ button.k-sm-head:focus-visible {
 }
 
 .k-eq-key-dd {
-  background-image: var(--chart-fill-image, radial-gradient(circle, var(--seq-300) 0 1.2px, transparent 1.6px));
-  background-size: 3px 3px;
+  background-image: var(--chart-fill-image, radial-gradient(circle, var(--pnl-down) 0 1.2px, transparent 1.6px));
   width: 12px;
   height: 6px;
   display: inline-block;
+}
+
+@supports (color: color-mix(in lab, red, red)) {
+  .k-eq-key-dd {
+    background-image: var(--chart-fill-image, radial-gradient(circle, var(--ds-c-3roitp) 0 1.2px, transparent 1.6px));
+  }
+}
+
+.k-eq-key-dd {
+  background-size: 3px 3px;
 }
 
 .k-eq-scale {
@@ -9310,7 +9321,7 @@ button.k-sm-head:focus-visible {
 
 .k-eq-line {
   fill: none;
-  stroke: var(--series-1);
+  stroke: var(--ink-100);
   stroke-width: 2px;
   stroke-linejoin: round;
   vector-effect: non-scaling-stroke;
@@ -11814,12 +11825,16 @@ button.k-spark-tile:focus-visible {
 
 .k-spark-tile-end {
   border-radius: var(--radius-pill);
-  background: var(--signal-orange);
+  background: var(--series-1);
   width: 5px;
   height: 5px;
   margin-top: -2.5px;
   position: absolute;
   right: 0;
+}
+
+.k-spark-tile-end.is-neutral {
+  background: var(--ink-300);
 }
 
 .k-spark-tile-delta {
@@ -12897,6 +12912,7 @@ button.k-consensus-hash:focus-visible {
   --ds-c-1sas9o0: color-mix(in srgb, var(--ink-100) 8%, transparent);
   --ds-c-1liwpbi: color-mix(in srgb, var(--ink-100) 6%, transparent);
   --ds-c-1xbddtq: color-mix(in srgb, var(--ink-400) 12%, transparent);
+  --ds-c-3roitp: color-mix(in srgb, var(--pnl-down) 60%, transparent);
   --ds-c-1a6btok: color(from var(--div-pos-200) srgb clamp(0, calc((.43 - (.2126 * r + .7152 * g + .0722 * b)) * 1000), 1) clamp(0, calc((.43 - (.2126 * r + .7152 * g + .0722 * b)) * 1000), 1) clamp(0, calc((.43 - (.2126 * r + .7152 * g + .0722 * b)) * 1000), 1));
   --ds-c-1athvsc: color(from var(--div-neg-200) srgb clamp(0, calc((.43 - (.2126 * r + .7152 * g + .0722 * b)) * 1000), 1) clamp(0, calc((.43 - (.2126 * r + .7152 * g + .0722 * b)) * 1000), 1) clamp(0, calc((.43 - (.2126 * r + .7152 * g + .0722 * b)) * 1000), 1));
   --ds-c-fmo1lj: color-mix(in srgb, var(--pnl-up) 12%, transparent);
@@ -12910,8 +12926,6 @@ button.k-consensus-hash:focus-visible {
 /* 运行时才有值的变量：声明成 initial 等于没声明，带 fallback 的 var() 照常走 fallback；声明它们只是让设计系统的检查认得。 */
 :root {
   --cb-accent: initial;
-  --chart-accent: initial;
-  --chart-end-glow: initial;
   --chart-end-radius: initial;
   --chart-end-size: initial;
   --chart-fill-dot: initial;
