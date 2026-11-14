@@ -29,6 +29,7 @@ import { SymbolMark } from '../../katana/symbol-mark.tsx'
 import { ContextMenu, ContextMenuContent, ContextMenuTrigger } from '../../primitives/context-menu.tsx'
 import { useMenuParts } from '../../primitives/menu-any.tsx'
 import { MenuItemHint, MenuItemLabel } from '../../primitives/menu-parts.tsx'
+import { RowActions, type RowAction } from '../../patterns/row-actions.tsx'
 import { ToneText } from '../../quant/tone-text.tsx'
 import { defaultAlign, resolveCell, sortComparator, type GridColumn } from './columns.ts'
 import { DEFAULT_TEXTS, useDataGridHost, type GridMenuEntry } from './host.tsx'
@@ -130,6 +131,11 @@ export type DataGridProps<Row extends object> = {
   /** 正开着的那一行（左边一道强调色）。 */
   isOpened?: (row: Row) => boolean
   rowClass?: (row: Row) => string | undefined
+  /**
+   * 行快捷操作（#23，一般传 symbolMenu(...) 的结果）：悬停这一行或键盘落到这一行时，行右端浮出前几颗带图标的按钮，浮在行上、不挤列宽；
+   * 右键（菜单键、Shift+F10）整份进菜单最前面，只在右键落在单独一行时出现（多行选中时动作对谁没有定论，不画）。
+   */
+  rowActions?: (row: Row) => readonly RowAction[]
   /** 给一行加属性（类名、悬停提示、data-*、aria-*）：状态、测试钩子这类行上的东西从这里来，不用包一层。 */
   rowProps?: (row: Row) => GridRowProps | undefined
   /**
@@ -189,6 +195,14 @@ export type DataGridProps<Row extends object> = {
   classNames?: Partial<Record<GridSlot, string>>
 }
 
+/** 行快捷按钮条贴在行尾；表横向滚开时行尾在可视区外，把滚出去的那段宽度写成变量让条往里挪（theme/row-actions.css 读它）。 */
+function keepActionsInView(scroll: HTMLElement) {
+  scroll.style.setProperty(
+    '--k-grid-hidden-right',
+    `${Math.max(0, scroll.scrollWidth - scroll.clientWidth - scroll.scrollLeft)}px`,
+  )
+}
+
 export function DataGrid<Row extends object>({
   columns,
   layout,
@@ -210,6 +224,7 @@ export function DataGrid<Row extends object>({
   onExpandedChange,
   defaultExpanded,
   menu,
+  rowActions,
   extrasFirst,
   menuTail,
   panelMenu,
@@ -377,7 +392,10 @@ export function DataGrid<Row extends object>({
   const canAsk = askText !== undefined && host?.askAgent !== undefined
   const onKeyDown = (event: KeyboardEvent<HTMLElement>) => {
     if (!interactive || event.target !== event.currentTarget) return
-    const action = host?.matchKey?.(event) ?? null
+    // 宿主没给键位表时，菜单键与 Shift+F10 也开右键菜单（这是系统通用的键，不属于宿主的键位表）。
+    const action =
+      host?.matchKey?.(event) ??
+      (event.key === 'ContextMenu' || (event.key === 'F10' && event.shiftKey) ? 'contextMenu' : null)
     if (action === 'askAgent') {
       if (!canAsk) return
       event.preventDefault()
@@ -487,13 +505,31 @@ export function DataGrid<Row extends object>({
       return [...standard(false), ...(extra.length ? [SEP, ...extra] : [])]
     }
     const target = targetRows()
+    const lead: GridMenuEntry[] =
+      rowActions && target.length === 1
+        ? rowActions(target[0]).flatMap((action): GridMenuEntry[] => [
+            {
+              type: 'item',
+              label: action.label,
+              icon: action.icon,
+              keys: action.shortcut,
+              disabled: action.disabled,
+              onSelect: action.onSelect,
+            },
+          ])
+        : []
     const extra = [...(menu?.(target) ?? []), ...askEntry(target)]
     const info = target.length === 1 ? rowInfo?.(target[0]) : undefined
     const base = standard(true)
     const body: readonly GridMenuEntry[] = extrasFirst
       ? withTail([...extra, ...(extra.length && base.length ? [SEP] : []), ...base])
       : [...base, ...(extra.length && base.length ? [SEP] : []), ...extra]
-    return [...body, ...(info ? [SEP, { type: 'item', label: info, disabled: true, onSelect: () => {} } as const] : [])]
+    return [
+      ...lead,
+      ...(lead.length && body.length ? [SEP] : []),
+      ...body,
+      ...(info ? [SEP, { type: 'item', label: info, disabled: true, onSelect: () => {} } as const] : []),
+    ]
   }
 
   const startResize = (event: PointerEvent<HTMLElement>, columnId: string, width: number) => {
@@ -527,6 +563,16 @@ export function DataGrid<Row extends object>({
       selected: new Set([...selection.selected].filter((key) => present.has(key))),
     })
 
+  const hasRowActions = rowActions !== undefined
+  useEffect(() => {
+    const node = scroller.current
+    if (!node || !hasRowActions) return
+    keepActionsInView(node)
+    const watch = new ResizeObserver(() => keepActionsInView(node))
+    watch.observe(node)
+    return () => watch.disconnect()
+  }, [hasRowActions, totalWidth])
+
   useEffect(() => {
     if (restoreRow != null && cursor === restoreRow) scroller.current?.parentElement?.focus({ preventScroll: true })
     // 只在挂上来时：之后键盘和鼠标自己带着焦点走
@@ -540,7 +586,8 @@ export function DataGrid<Row extends object>({
   }, [cursor])
 
   const menuEntries = interactive ? entries() : []
-  const withMenu = interactive && (host !== undefined || menu !== undefined || panelMenu !== undefined)
+  const withMenu =
+    interactive && (host !== undefined || menu !== undefined || panelMenu !== undefined || rowActions !== undefined)
   const tabular = rowTree || (renderSubRow && interactive) ? 'treegrid' : interactive ? 'grid' : 'table'
   const cellRole = interactive ? 'gridcell' : 'cell'
 
@@ -562,7 +609,10 @@ export function DataGrid<Row extends object>({
         className={cn('k-grid-scroll', classNames.scroll)}
         style={fit && maxHeight !== undefined ? { maxHeight } : undefined}
         // 横向滚开了才给固定列不透明的底和右边的分隔线（样式在 data-grid.css）；直接改属性，不为它重画整张表。
-        onScroll={(event) => event.currentTarget.toggleAttribute('data-scrolled', event.currentTarget.scrollLeft > 0)}
+        onScroll={(event) => {
+          event.currentTarget.toggleAttribute('data-scrolled', event.currentTarget.scrollLeft > 0)
+          keepActionsInView(event.currentTarget)
+        }}
       >
         <div className={cn('k-grid-inner', classNames.inner)} style={{ width: totalWidth, minWidth: '100%' }}>
           {!hideHeader &&
@@ -722,6 +772,14 @@ export function DataGrid<Row extends object>({
                       </div>
                     )
                   })}
+                  {rowActions && interactive && (
+                    <RowActions
+                      items={rowActions(row.original)}
+                      label={texts.rowActions}
+                      role={cellRole}
+                      focusable={false}
+                    />
+                  )}
                 </div>
               )
             })}
@@ -809,7 +867,10 @@ function DefaultMenu({ entries }: { entries: readonly GridMenuEntry[] }) {
           )
         return (
           <Menu.Item key={index} disabled={entry.disabled} onSelect={entry.onSelect}>
-            <MenuItemLabel>{entry.label}</MenuItemLabel>
+            <MenuItemLabel>
+              {entry.icon}
+              {entry.label}
+            </MenuItemLabel>
             {(entry.hint ?? entry.keys) && <MenuItemHint>{entry.hint ?? entry.keys}</MenuItemHint>}
           </Menu.Item>
         )
