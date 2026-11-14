@@ -187,3 +187,20 @@ a.k-news-title:hover {
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+
+/* 快捷操作：条浮在条目上（条目是定位父级），悬停或聚焦时出现；卡片里挪到右上角、不要渐变遮罩。 */
+.k-news-item {
+  position: relative;
+}
+.k-news-item:hover > .k-row-actions,
+.k-news-item:focus-within > .k-row-actions {
+  opacity: 1;
+  pointer-events: auto;
+}
+.k-news[data-layout='card'] .k-row-actions {
+  inset-block: 4px auto;
+  inset-inline-end: 4px;
+  padding-inline: 2px;
+  background: var(--bg-300);
+  border-radius: 6px;
+}

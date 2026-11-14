@@ -4552,6 +4552,23 @@ button.k-news-title:hover, a.k-news-title:hover {
   overflow: hidden;
 }
 
+.k-news-item {
+  position: relative;
+}
+
+.k-news-item:hover > .k-row-actions, .k-news-item:focus-within > .k-row-actions {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.k-news[data-layout="card"] .k-row-actions {
+  background: var(--bg-300);
+  border-radius: 6px;
+  padding-inline: 2px;
+  inset-block: 4px auto;
+  inset-inline-end: 4px;
+}
+
 .k-symbol-mark {
   background: var(--bg-400);
   color: var(--ink-200);

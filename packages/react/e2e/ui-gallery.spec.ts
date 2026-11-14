@@ -4150,6 +4150,18 @@ for (const theme of THEMES) {
     await doc.getByTestId('news-push').click()
     await expect(rows).toHaveCount(8)
     await expect(frame.getByTestId('news-new')).toHaveCount(0)
+    // 快捷操作：悬停出按钮，点「打开图表」回调；右键出同一份菜单；没有品种的条目没有按钮。
+    const withSymbol = rows.nth(3)
+    await withSymbol.hover()
+    const bar = withSymbol.locator('.k-row-actions')
+    await expect.poll(() => bar.evaluate((n) => getComputedStyle(n).opacity)).toBe('1')
+    await bar.getByRole('button', { name: '打开图表' }).click()
+    await expect(doc).toContainText('点品种胶囊：图表 ')
+    await withSymbol.click({ button: 'right' })
+    await expect(page.getByRole('menuitem', { name: '复制代码' })).toBeVisible()
+    await page.getByRole('menuitem', { name: '复制代码' }).click()
+    await expect(doc).toContainText('点品种胶囊：复制 ')
+    await expect(frame.locator('.k-news-item:not(:has(.k-news-symbol)) .k-row-actions')).toHaveCount(0)
     // 点品种胶囊回调。
     await rows.nth(3).locator('.k-news-symbol').first().click()
     await expect(doc).toContainText('点品种胶囊：600')

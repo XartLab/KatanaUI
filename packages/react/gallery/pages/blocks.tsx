@@ -25,7 +25,7 @@ import {
   type StatusItem,
   type WorkspaceTab,
 } from '../../src/blocks/index.ts'
-import { Button, Splitter } from '../../src/index.ts'
+import { Button, Splitter, symbolMenu } from '../../src/index.ts'
 import { ActionLog, Row, SAMPLE_MARK_SRC, demoSymbolActions } from './parts.tsx'
 
 // 积木层（@katana-ui/react/blocks，#1869）的演示。表里的数据都是写死的示例数据，不是行情。
@@ -576,6 +576,15 @@ export function NewsFeedDemo() {
                 now={NEWS_NOW}
                 labels={NEWS_LABELS}
                 onSymbolPick={(s) => setPicked(s.code)}
+                itemActionsLabel="新闻操作"
+                itemActions={(item) =>
+                  item.symbols?.length
+                    ? symbolMenu({
+                        openChart: { label: '打开图表', onSelect: () => setPicked(`图表 ${item.symbols![0]!.code}`) },
+                        copyCode: { label: '复制代码', onSelect: () => setPicked(`复制 ${item.symbols![0]!.code}`) },
+                      })
+                    : []
+                }
               />
             </div>
           </PanelFrameBody>

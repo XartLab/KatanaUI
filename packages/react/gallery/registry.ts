@@ -4255,7 +4255,7 @@ export const PAGES: readonly DocPage[] = [
     cardHeight: 560,
     title: 'NewsFeed 新闻流',
     summary:
-      '快讯与要闻的流：列表（时间、来源、标题、相关品种胶囊、重要标记）与卡片网格（来源 + 时间、标题、两行摘要、胶囊）两种排法；顶上频道分段、来源多选、关键词搜索、暂停。新到的不打断阅读：在顶部且没暂停时淡入插入，否则出「n 条新消息」，点了才插入。功能照 TradingView 帮助文档的新闻流与 uiarc.dev 的卡片结构（2026-11-15，细节待核对），实现原创。演示数据是虚构的。',
+      '快讯与要闻的流：列表（时间、来源、标题、相关品种胶囊、重要标记）与卡片网格（来源 + 时间、标题、两行摘要、胶囊）两种排法；顶上频道分段、来源多选、关键词搜索、暂停。新到的不打断阅读：在顶部且没暂停时淡入插入，否则出「n 条新消息」，点了才插入。功能参照 TradingView News Flow 帮助页（只读到：新闻集中在一处、可设多种过滤）与 uiarc.dev 的卡片结构（待核对），实现原创。演示数据是虚构的。',
     exports: ['NewsFeed'],
     props: [
       {
@@ -4285,6 +4285,11 @@ export const PAGES: readonly DocPage[] = [
           },
           { name: 'defaultLayout', type: "'list' | 'card'", desc: '起始排法，默认 list。' },
           { name: 'onSymbolPick', type: '(symbol, item) => void', desc: '点品种胶囊。' },
+          {
+            name: 'itemActions',
+            type: '(item) => RowAction[]',
+            desc: '每条的快捷操作：悬停出前几颗图标按钮，右键出同一份菜单；配 itemActionsLabel（读屏名）。',
+          },
           { name: 'onOpen', type: '(item) => void', desc: '给了，标题是按钮；没给而条目有 href，标题是新窗口链接。' },
           {
             name: 'onChannelChange / onSourcesChange / onPausedChange',
