@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vite-plus/test'
 import { hitNode, layoutGalaxy, stepNode, type GalaxyNode } from './galaxy-model'
 import { SymbolGalaxy } from './symbol-galaxy'
 
-const frame = { width: 800, height: 520, pad: 8, headroom: 16 }
+const frame = { width: 800, height: 520, pad: 8, headroom: 20 }
 const sectors = ['金融', '科技', '消费']
 const nodes: GalaxyNode[] = Array.from({ length: 30 }, (_, i) => ({
   id: `n${i}`,
@@ -19,6 +19,23 @@ describe('layoutGalaxy', () => {
   it('同样的数据永远排出同样的位置，与输入顺序无关', () => {
     expect(layoutGalaxy(nodes, 'sector', frame)).toEqual(layout)
     expect(layoutGalaxy([...nodes].reverse(), 'sector', frame)).toEqual(layout)
+  })
+  it('团名的框不碰任何别的团的圈，也不出画面', () => {
+    for (const mode of ['sector', 'market']) {
+      const { groups } = layoutGalaxy(nodes, mode, frame)
+      for (const group of groups) {
+        const b = group.label
+        expect(b.x0 >= 0 && b.y0 >= 0 && b.x1 <= frame.width && b.y1 <= frame.height, group.key).toBe(true)
+        for (const other of groups) {
+          if (other === group) continue
+          const d = Math.hypot(
+            Math.min(Math.max(other.x, b.x0), b.x1) - other.x,
+            Math.min(Math.max(other.y, b.y0), b.y1) - other.y,
+          )
+          expect(d, `${group.key} 压着 ${other.key}`).toBeGreaterThanOrEqual(other.r)
+        }
+      }
+    }
   })
   it('每个点都在自己那一团的圈里，团都在画面里，点与点不重叠', () => {
     const groups = new Map(layout.groups.map((group) => [group.key, group]))

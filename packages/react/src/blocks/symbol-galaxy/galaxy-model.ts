@@ -14,21 +14,84 @@ export type GalaxyNode = {
   groups: Readonly<Record<string, string>>
 }
 
-export type GalaxyGroup = { key: string; count: number; total: number; x: number; y: number; r: number }
+export type LabelBox = { x0: number; y0: number; x1: number; y1: number }
+export type GalaxyGroup = {
+  key: string
+  count: number
+  total: number
+  x: number
+  y: number
+  r: number
+  /** 团名的框（布局单位）：默认在外接圆正上方；上方被邻团占了就放下方或左右挪开。 */
+  label: LabelBox
+}
 export type GalaxyPlace = { x: number; y: number; r: number; group: string }
 export type GalaxyLayout = { groups: GalaxyGroup[]; places: Map<string, GalaxyPlace> }
 
 type Datum = { id: string; key: string; size: number; children?: Datum[] }
 
 /** 团与团之间、团内点与点之间留的缝（布局单位，画布宽 800）。点多时点很小，缝大了就吃掉大半面积，所以团内取小。视觉取值，待定。 */
-const GROUP_GAP = 6
 const NODE_GAP = 1
+/** 团名一行的高度：11px 字（--text-caption）的行高，画布宽 800 时布局单位约等于像素。 */
+export const LABEL_H = 16
+/** 团名与它的圈之间的空；团与团之间的缝 = 一行团名 + 这个空 + 余量 2，这样团名放在圈上方的留白里不会碰到邻团。视觉取值，待定。 */
+const LABEL_GAP = 2
+const GROUP_GAP = LABEL_H + LABEL_GAP + 2
+/** 团名宽度的估计：中日韩字一格 11，其余 6.5，两端各留 4。字体度量要到浏览器里才有，布局是纯函数，只能估；偏差靠 GROUP_GAP 的余量吸收。 */
+function labelWidth(text: string): number {
+  let w = 8
+  for (const ch of text) w += /[\u2e80-\u9fff\uff00-\uffef]/.test(ch) ? 11 : 6.5
+  return w
+}
+/** 图实际画多宽决定团名占多少布局单位：团名是真实像素的字，图缩到 0.6 倍时它在布局里就是 1/0.6 倍大。 */
+const MIN_SCALE = 0.3
+
+function hitsCircle(box: LabelBox, cx: number, cy: number, r: number): boolean {
+  const nx = Math.min(Math.max(cx, box.x0), box.x1)
+  const ny = Math.min(Math.max(cy, box.y0), box.y1)
+  return Math.hypot(nx - cx, ny - cy) < r
+}
+
+function hitsBox(a: LabelBox, b: LabelBox): boolean {
+  return a.x0 < b.x1 && b.x0 < a.x1 && a.y0 < b.y1 && b.y0 < a.y1
+}
+
+type Circle = { key: string; x: number; y: number; r: number }
+
+/** 给每个团挑团名的框：先试正上方，再试正下方，再沿上下沿左右挪开；挑第一个不碰别团的圈、不碰已放的团名、不出画布的；都不行用正上方。 */
+function placeLabels(
+  circles: readonly Circle[],
+  frame: { width: number; height: number },
+  unit: number,
+): Map<string, LabelBox> {
+  const out = new Map<string, LabelBox>()
+  for (const c of [...circles].sort((a, b) => b.r - a.r)) {
+    const w = labelWidth(c.key) * unit
+    const lh = LABEL_H * unit
+    const above = c.y - c.r - LABEL_GAP * unit - lh
+    const below = c.y + c.r + LABEL_GAP * unit
+    // 候选：正上、正下，再沿圈的上沿与下沿左右挪开几档。
+    const tries: [number, number][] = []
+    for (const y of [above, below]) for (const f of [0.5, 0.25, 0.75, 0, 1, -0.1, 1.1]) tries.push([c.x - w * f, y])
+    const boxes = tries.map(([x0, y0]) => ({ x0, y0, x1: x0 + w, y1: y0 + lh }))
+    const ok = (box: LabelBox) =>
+      box.x0 >= 0 &&
+      box.y0 >= 0 &&
+      box.x1 <= frame.width &&
+      box.y1 <= frame.height &&
+      circles.every((o) => o.key === c.key || !hitsCircle(box, o.x, o.y, o.r)) &&
+      [...out.values()].every((placed) => !hitsBox(box, placed))
+    out.set(c.key, boxes.find(ok) ?? boxes[0]!)
+  }
+  return out
+}
 
 export function layoutGalaxy(
   nodes: readonly GalaxyNode[],
   groupBy: string,
-  frame: { width: number; height: number; pad: number; headroom: number },
+  frame: { width: number; height: number; pad: number; headroom: number; scale?: number },
 ): GalaxyLayout {
+  const unit = 1 / Math.max(MIN_SCALE, frame.scale ?? 1)
   const buckets = new Map<string, Datum[]>()
   for (const node of nodes) {
     if (!(node.size > 0) || !Number.isFinite(node.size)) continue
@@ -51,22 +114,25 @@ export function layoutGalaxy(
   const packed = pack<Datum>()
     .size([w, h])
     // pack 的 padding 按「父节点」取：根的是团与团之间的缝，团的是它里面点与点之间的缝。
-    .padding((node) => (node.depth === 0 ? GROUP_GAP : NODE_GAP))(root)
+    .padding((node) => (node.depth === 0 ? GROUP_GAP * unit : NODE_GAP))(root)
   const dx = frame.pad
   const dy = frame.pad + frame.headroom
   const places = new Map<string, GalaxyPlace>()
-  const groups = (packed.children ?? []).map((group) => {
+  const circles = (packed.children ?? []).map((group) => {
     for (const leaf of group.children ?? [])
       places.set(leaf.data.id, { x: leaf.x + dx, y: leaf.y + dy, r: leaf.r, group: group.data.key })
-    return {
-      key: group.data.key,
-      count: group.children?.length ?? 0,
-      total: group.value ?? 0,
-      x: group.x + dx,
-      y: group.y + dy,
-      r: group.r,
-    }
+    return { key: group.data.key, x: group.x + dx, y: group.y + dy, r: group.r }
   })
+  const labels = placeLabels(circles, frame, unit)
+  const groups = (packed.children ?? []).map((group, i) => ({
+    key: group.data.key,
+    count: group.children?.length ?? 0,
+    total: group.value ?? 0,
+    x: circles[i]!.x,
+    y: circles[i]!.y,
+    r: group.r,
+    label: labels.get(group.data.key)!,
+  }))
   return { groups, places }
 }
 

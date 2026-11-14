@@ -376,8 +376,7 @@
 }
 .k-galaxy-node,
 .k-galaxy-ring,
-.k-galaxy-mark,
-.k-galaxy-name {
+.k-galaxy-mark {
   transition:
     transform var(--dur-snappy) var(--ease-snappy),
     r var(--dur-snappy) var(--ease-snappy);
@@ -398,10 +397,17 @@
   stroke-dasharray: none;
 }
 .k-galaxy-name {
-  fill: var(--ink-200);
+  position: absolute;
+  transform: translate(-50%, -50%);
+  white-space: nowrap;
+  color: var(--ink-200);
   font: var(--text-caption) var(--font-sans);
   font-weight: 600;
+  line-height: 16px;
   pointer-events: none;
+  transition:
+    left var(--dur-snappy) var(--ease-snappy),
+    top var(--dur-snappy) var(--ease-snappy);
 }
 .k-galaxy-mark {
   fill: none;

@@ -11,9 +11,7 @@ import { hitNode, layoutGalaxy, stepNode, type GalaxyNode, type GalaxyPlace } fr
 
 export const GALAXY_W = 800
 export const GALAXY_H = 520
-const FRAME = { width: GALAXY_W, height: GALAXY_H, pad: 8, headroom: 16 }
-/** 团的圈半径小于它就不写团名：一行 11px 字的行高 16 的一半（再小写了也盖在邻团上）。 */
-const MIN_LABEL_R = 8
+const FRAME = { width: GALAXY_W, height: GALAXY_H, pad: 8, headroom: 20 }
 /** 迁移动画的时长（毫秒）：与 --dur-snappy 同为 333ms；canvas 里没法用 CSS 过渡，自己插值。 */
 const MOVE_MS = 333
 const STEPS = [-3, -2, -1, 0, 1, 2, 3]
@@ -70,7 +68,24 @@ export function SymbolGalaxy({
 }: SymbolGalaxyProps) {
   const [inner, setInner] = useState(defaultGroupBy ?? groupings[0]?.id ?? '')
   const mode = groupBy ?? inner
-  const layout = useMemo(() => layoutGalaxy(nodes, mode, FRAME), [nodes, mode])
+  const [scale, setScale] = useState(1)
+  const layout = useMemo(
+    () => layoutGalaxy(nodes, mode, { ...FRAME, headroom: Math.ceil(FRAME.headroom / scale), scale }),
+    [nodes, mode, scale],
+  )
+  useEffect(() => {
+    const el = svg.current
+    if (!el) return
+    // 量到的宽取到 0.05 一档，免得拖动改宽时每个像素都重排。
+    const read = () => {
+      const width = el.getBoundingClientRect().width
+      if (width > 0) setScale(Math.max(0.3, Math.round((width / GALAXY_W) * 20) / 20))
+    }
+    read()
+    const observer = new ResizeObserver(read)
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
   const byId = useMemo(() => new Map(nodes.map((node) => [node.id, node])), [nodes])
   const members = useMemo(() => {
     const out = new Map<string, string[]>()
@@ -272,24 +287,27 @@ export function SymbolGalaxy({
                 cy={0}
                 style={{ transform: `translate(${group.x}px, ${group.y}px)`, r: group.r }}
               />
-              {group.r >= MIN_LABEL_R && (
-                <text
-                  className="k-galaxy-name"
-                  x={0}
-                  y={0}
-                  textAnchor="middle"
-                  aria-hidden="true"
-                  style={{ transform: `translate(${group.x}px, ${group.y - group.r - 4}px)` }}
-                >
-                  {group.key}
-                </text>
-              )}
             </g>
           ))}
           {mark(selectedId, 'selected')}
           {mark(focusGroup === null ? null : activeOf(focusGroup), 'active')}
           {mark(hover, 'hover')}
         </svg>
+        {/* 团名用 HTML 叠在图上：SVG 里的字跟着 viewBox 缩，图一缩就小得读不了；这里是真实像素的字号。 */}
+        {layout.groups.map((group) => (
+          <span
+            key={group.key}
+            className="k-galaxy-name"
+            aria-hidden="true"
+            data-group-name={group.key}
+            style={{
+              left: `${((group.label.x0 + group.label.x1) / 2 / GALAXY_W) * 100}%`,
+              top: `${((group.label.y0 + group.label.y1) / 2 / GALAXY_H) * 100}%`,
+            }}
+          >
+            {group.key}
+          </span>
+        ))}
       </div>
       <ol ref={legend} className="k-galaxy-legend" aria-hidden="true">
         {STEPS.map((step) => (
