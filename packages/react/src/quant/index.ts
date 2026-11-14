@@ -119,3 +119,38 @@ export {
   type ParamPoint,
   type ParamRamp,
 } from './param-scatter-model.ts'
+
+// 资金流向桑基图与按发布时间画的宏观序列（#45）。
+export { FlowSankey, type FlowSankeyLabels, type FlowSankeyProps } from './flow-sankey.tsx'
+export {
+  layoutFlow,
+  linkEnds,
+  moveNode,
+  neighborhood,
+  type FlowKind,
+  type FlowLayout,
+  type FlowLayoutFailure,
+  type FlowLayoutOptions,
+  type FlowLink,
+  type FlowNode,
+  type LaidLink,
+  type LaidNode,
+} from './flow-sankey-model.ts'
+export {
+  VintageSeries,
+  type VintageMode,
+  type VintageSeriesLabels,
+  type VintageSeriesProps,
+} from './vintage-series.tsx'
+export {
+  knownAt,
+  knownValue,
+  normalizeVintages,
+  revisionStats,
+  vintageExtent,
+  type RevisionStats,
+  type VintageObservation,
+  type VintageRelease,
+  type VintageRow,
+  type VintageStep,
+} from './vintage-series-model.ts'

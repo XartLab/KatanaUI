@@ -4986,6 +4986,372 @@ button.k-news-title:hover, a.k-news-title:hover {
   display: none;
 }
 
+.k-fsk {
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  margin: 0;
+  display: flex;
+}
+
+.k-fsk-stage {
+  position: relative;
+}
+
+.k-fsk-stage[hidden] {
+  display: none !important;
+}
+
+.k-fsk-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  overflow: visible;
+}
+
+.k-fsk-link {
+  fill: none;
+  stroke: var(--ink-400);
+  stroke-opacity: .4;
+  transition: stroke-opacity var(--dur-snappy) var(--ease-snappy);
+}
+
+.k-fsk-link[data-kind="revaluation"] {
+  stroke-opacity: .75;
+}
+
+.k-fsk-link[data-lit][data-kind="flow"] {
+  stroke: var(--ink-200);
+  stroke-opacity: .65;
+}
+
+.k-fsk-link[data-lit][data-kind="revaluation"] {
+  stroke-opacity: 1;
+}
+
+.k-fsk-link[data-dim] {
+  stroke-opacity: .08;
+}
+
+.k-fsk-rect {
+  fill: var(--ink-300);
+  cursor: pointer;
+  transition: opacity var(--dur-snappy) var(--ease-snappy);
+  outline: none;
+}
+
+.k-fsk-rect[data-lit], .k-fsk-rect[data-pinned] {
+  fill: var(--ink-100);
+}
+
+.k-fsk-rect[data-dim] {
+  opacity: .35;
+}
+
+.k-fsk-rect:focus-visible {
+  stroke: var(--focus-ring);
+  stroke-width: 2px;
+}
+
+.k-fsk-label {
+  fill: var(--ink-100);
+  font: var(--text-caption) var(--font-sans);
+  paint-order: stroke;
+  stroke: var(--bg-100);
+  stroke-width: 3px;
+  stroke-linejoin: round;
+  pointer-events: none;
+  font-size: 12px;
+}
+
+.k-fsk-label[data-dim] {
+  fill: var(--ink-300);
+}
+
+.k-fsk-amount {
+  fill: var(--ink-300);
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.k-fsk-head {
+  fill: var(--ink-300);
+  font: var(--text-caption) var(--font-sans);
+  pointer-events: none;
+  font-size: 11px;
+}
+
+.k-fsk-tip {
+  transform: translate(10px, -50%);
+}
+
+.k-fsk-tip[data-side="left"] {
+  transform: translate(calc(-100% - 10px), -50%);
+}
+
+.k-fsk-toggle {
+  color: var(--ink-200);
+  font: var(--text-caption) var(--font-sans);
+  align-items: center;
+  gap: 6px;
+  margin-right: auto;
+  display: inline-flex;
+}
+
+.k-fsk-legend {
+  color: var(--ink-300);
+  font: var(--text-caption) var(--font-sans);
+  align-items: center;
+  gap: 14px;
+  display: flex;
+}
+
+.k-fsk-legend[hidden] {
+  display: none !important;
+}
+
+.k-fsk-key {
+  align-items: center;
+  gap: 6px;
+  display: inline-flex;
+}
+
+.k-fsk-key i {
+  background: var(--ink-400);
+  width: 18px;
+  height: 8px;
+  display: inline-block;
+}
+
+@supports (color: color-mix(in lab, red, red)) {
+  .k-fsk-key i {
+    background: var(--ds-c-td9nfp);
+  }
+}
+
+.k-fsk-key[data-kind="revaluation"] i {
+  background: repeating-linear-gradient(135deg, var(--ink-200) 0 2px, transparent 2px 5px);
+}
+
+.k-fsk-badge {
+  border: var(--hairline);
+  color: var(--ink-300);
+  margin-left: auto;
+  padding: 0 6px;
+}
+
+.k-fsk-empty {
+  color: var(--ink-300);
+  font: var(--text-body) var(--font-sans);
+  text-align: center;
+  margin: 0;
+  padding: 24px 0;
+}
+
+.k-vs {
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  margin: 0;
+  display: flex;
+}
+
+.k-vs-bar {
+  align-items: center;
+  gap: 8px;
+  display: flex;
+}
+
+.k-vs-bar .k-ck-actions {
+  margin-left: auto;
+}
+
+.k-vs-badge {
+  border: var(--hairline);
+  color: var(--ink-300);
+  font: var(--text-caption) var(--font-sans);
+  padding: 0 6px;
+}
+
+.k-vs-stats {
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 4px 16px;
+  margin: 0;
+  display: grid;
+}
+
+.k-vs-stats dt {
+  color: var(--ink-300);
+  font: var(--text-caption) var(--font-sans);
+}
+
+.k-vs-stats dd {
+  color: var(--ink-100);
+  font: var(--text-data) var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  margin: 0;
+}
+
+.k-vs-body[hidden], .k-vs-legend [hidden] {
+  display: none !important;
+}
+
+.k-vs-plots {
+  margin-left: var(--k-plot-gutter, 56px);
+  touch-action: pan-y;
+  outline-offset: 2px;
+  position: relative;
+}
+
+.k-vs-plots:focus-visible {
+  outline: 1px solid var(--focus-ring);
+}
+
+.k-vs-main {
+  background-image: linear-gradient(to right, var(--ink-400) 1px, transparent 1px), linear-gradient(to bottom, var(--ink-400) 1px, transparent 1px);
+  position: relative;
+}
+
+@supports (color: color-mix(in lab, red, red)) {
+  .k-vs-main {
+    background-image: linear-gradient(to right, var(--ds-c-1xbddtq) 1px, transparent 1px), linear-gradient(to bottom, var(--ds-c-1xbddtq) 1px, transparent 1px);
+  }
+}
+
+.k-vs-main {
+  background-size: 12px 12px;
+}
+
+.k-vs-main > svg, .k-vs-strip > svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: visible;
+}
+
+.k-vs-known, .k-vs-latest {
+  fill: none;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+  transition: d var(--dur-snappy) var(--ease-snappy);
+}
+
+.k-vs-known {
+  stroke: var(--ink-100);
+  stroke-width: 2px;
+}
+
+.k-vs-latest {
+  stroke: var(--chart-bench);
+  stroke-width: 2px;
+  stroke-dasharray: 5 3;
+}
+
+.k-vs-span {
+  stroke: var(--ink-400);
+  stroke-width: 1px;
+  vector-effect: non-scaling-stroke;
+}
+
+.k-vs-dot {
+  box-sizing: border-box;
+  pointer-events: none;
+  border-radius: 50%;
+  width: 7px;
+  height: 7px;
+  margin: -3.5px 0 0 -3.5px;
+  position: absolute;
+}
+
+.k-vs-dot[data-role="known"] {
+  border: 1.5px solid var(--ink-100);
+  background: var(--bg-100);
+}
+
+.k-vs-dot[data-role="latest"] {
+  background: var(--ink-300);
+}
+
+.k-vs-dot[data-role="mid"] {
+  background: var(--ink-400);
+  width: 4px;
+  height: 4px;
+  margin: -2px 0 0 -2px;
+}
+
+.k-vs-dot[data-active="true"] {
+  outline: 2px solid var(--ink-100);
+  outline-offset: 1px;
+}
+
+.k-vs-strip {
+  border-top: 1px solid var(--line-100);
+  position: relative;
+}
+
+.k-vs-strip-title {
+  color: var(--ink-300);
+  font: var(--text-caption) var(--font-sans);
+  pointer-events: none;
+  position: absolute;
+  top: 2px;
+  left: 4px;
+}
+
+.k-vs-rev {
+  fill: var(--ink-300);
+}
+
+.k-vs-rev[data-tone="up"] {
+  fill: var(--div-pos-200);
+}
+
+.k-vs-rev[data-tone="down"] {
+  fill: var(--div-neg-200);
+}
+
+.k-vs-rev[data-active="true"] {
+  fill-opacity: 1;
+  stroke: var(--ink-100);
+}
+
+.k-vs-xaxis {
+  margin-left: var(--k-plot-gutter, 56px);
+}
+
+.k-vs-legend {
+  color: var(--ink-300);
+  font: var(--text-caption) var(--font-sans);
+  gap: 16px;
+  margin-top: 6px;
+  display: flex;
+}
+
+.k-vs-key {
+  align-items: center;
+  gap: 6px;
+  display: inline-flex;
+}
+
+.k-vs-key i {
+  border-top: 2px solid var(--ink-100);
+  width: 18px;
+  height: 0;
+  display: inline-block;
+}
+
+.k-vs-key[data-role="latest"] i {
+  border-top: 2px dashed var(--chart-bench);
+}
+
+.k-vs-empty {
+  color: var(--ink-300);
+  font: var(--text-body) var(--font-sans);
+  text-align: center;
+  margin: 0;
+  padding: 24px 0;
+}
+
 .k-sysmon {
   height: 100%;
   min-height: 0;
@@ -12885,6 +13251,8 @@ button.k-consensus-hash:focus-visible {
   --ds-c-y8385f: color-mix(in srgb, var(--signal-orange) 22%, transparent);
   --ds-c-11wt5c3: color-mix(in srgb, var(--signal-orange) 40%, transparent);
   --ds-c-70zl3a: color-mix(in srgb, var(--signal-orange) 16%, transparent);
+  --ds-c-td9nfp: color-mix(in srgb, var(--ink-400) 55%, transparent);
+  --ds-c-1xbddtq: color-mix(in srgb, var(--ink-400) 12%, transparent);
   --ds-c-3uduzz: #00000070;
   --ds-c-90z0xj: #ff00482e;
   --ds-c-90z0u8: #ff004800;
@@ -12911,7 +13279,6 @@ button.k-consensus-hash:focus-visible {
   --ds-c-1dit3qa: color-mix(in srgb, var(--pnl-up) 55%, var(--ink-300));
   --ds-c-1sas9o0: color-mix(in srgb, var(--ink-100) 8%, transparent);
   --ds-c-1liwpbi: color-mix(in srgb, var(--ink-100) 6%, transparent);
-  --ds-c-1xbddtq: color-mix(in srgb, var(--ink-400) 12%, transparent);
   --ds-c-3roitp: color-mix(in srgb, var(--pnl-down) 60%, transparent);
   --ds-c-1a6btok: color(from var(--div-pos-200) srgb clamp(0, calc((.43 - (.2126 * r + .7152 * g + .0722 * b)) * 1000), 1) clamp(0, calc((.43 - (.2126 * r + .7152 * g + .0722 * b)) * 1000), 1) clamp(0, calc((.43 - (.2126 * r + .7152 * g + .0722 * b)) * 1000), 1));
   --ds-c-1athvsc: color(from var(--div-neg-200) srgb clamp(0, calc((.43 - (.2126 * r + .7152 * g + .0722 * b)) * 1000), 1) clamp(0, calc((.43 - (.2126 * r + .7152 * g + .0722 * b)) * 1000), 1) clamp(0, calc((.43 - (.2126 * r + .7152 * g + .0722 * b)) * 1000), 1));

@@ -1,0 +1,169 @@
+/* SPDX-License-Identifier: MIT */
+/* VintageSeries：当时已知值 ink-100 实线、最新修订值灰虚线；发布点是 HTML 小点，修订竖线与修订小图用中性灰与涨跌发散阶，没有橙与蓝。 */
+.k-vs {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  min-width: 0;
+}
+.k-vs-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.k-vs-bar .k-ck-actions {
+  margin-left: auto;
+}
+.k-vs-badge {
+  padding: 0 6px;
+  border: var(--hairline);
+  color: var(--ink-300);
+  font: var(--text-caption) var(--font-sans);
+}
+.k-vs-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 4px 16px;
+  margin: 0;
+}
+.k-vs-stats dt {
+  color: var(--ink-300);
+  font: var(--text-caption) var(--font-sans);
+}
+.k-vs-stats dd {
+  margin: 0;
+  color: var(--ink-100);
+  font: var(--text-data) var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+.k-vs-body[hidden],
+.k-vs-legend [hidden] {
+  display: none !important;
+}
+.k-vs-plots {
+  position: relative;
+  margin-left: var(--k-plot-gutter, 56px);
+  touch-action: pan-y;
+  outline-offset: 2px;
+}
+.k-vs-plots:focus-visible {
+  outline: 1px solid var(--focus-ring);
+}
+.k-vs-main {
+  position: relative;
+  background-image:
+    linear-gradient(to right, color-mix(in srgb, var(--ink-400) 12%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in srgb, var(--ink-400) 12%, transparent) 1px, transparent 1px);
+  background-size: 12px 12px;
+}
+.k-vs-main > svg,
+.k-vs-strip > svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.k-vs-known,
+.k-vs-latest {
+  fill: none;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+  transition: d var(--dur-snappy) var(--ease-snappy);
+}
+.k-vs-known {
+  stroke: var(--ink-100);
+  stroke-width: 2;
+}
+.k-vs-latest {
+  stroke: var(--chart-bench);
+  stroke-width: 2;
+  stroke-dasharray: 5 3;
+}
+.k-vs-span {
+  stroke: var(--ink-400);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+.k-vs-dot {
+  position: absolute;
+  box-sizing: border-box;
+  width: 7px;
+  height: 7px;
+  margin: -3.5px 0 0 -3.5px;
+  border-radius: 50%;
+  pointer-events: none;
+}
+.k-vs-dot[data-role='known'] {
+  border: 1.5px solid var(--ink-100);
+  background: var(--bg-100);
+}
+.k-vs-dot[data-role='latest'] {
+  background: var(--ink-300);
+}
+.k-vs-dot[data-role='mid'] {
+  width: 4px;
+  height: 4px;
+  margin: -2px 0 0 -2px;
+  background: var(--ink-400);
+}
+.k-vs-dot[data-active='true'] {
+  outline: 2px solid var(--ink-100);
+  outline-offset: 1px;
+}
+.k-vs-strip {
+  position: relative;
+  border-top: 1px solid var(--line-100);
+}
+.k-vs-strip-title {
+  position: absolute;
+  top: 2px;
+  left: 4px;
+  color: var(--ink-300);
+  font: var(--text-caption) var(--font-sans);
+  pointer-events: none;
+}
+.k-vs-rev {
+  fill: var(--ink-300);
+}
+.k-vs-rev[data-tone='up'] {
+  fill: var(--div-pos-200);
+}
+.k-vs-rev[data-tone='down'] {
+  fill: var(--div-neg-200);
+}
+.k-vs-rev[data-active='true'] {
+  fill-opacity: 1;
+  stroke: var(--ink-100);
+}
+.k-vs-xaxis {
+  margin-left: var(--k-plot-gutter, 56px);
+}
+.k-vs-legend {
+  display: flex;
+  gap: 16px;
+  margin-top: 6px;
+  color: var(--ink-300);
+  font: var(--text-caption) var(--font-sans);
+}
+.k-vs-key {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.k-vs-key i {
+  display: inline-block;
+  width: 18px;
+  height: 0;
+  border-top: 2px solid var(--ink-100);
+}
+.k-vs-key[data-role='latest'] i {
+  border-top: 2px dashed var(--chart-bench);
+}
+.k-vs-empty {
+  margin: 0;
+  padding: 24px 0;
+  color: var(--ink-300);
+  font: var(--text-body) var(--font-sans);
+  text-align: center;
+}

@@ -1,0 +1,132 @@
+/* SPDX-License-Identifier: MIT */
+/* FlowSankey：链路与节点全是中性灰；交易流量是实色带，价格重估是斜纹带（图案由组件在 svg 里定义）。亮 / 暗只改透明度与墨色，不换色相。 */
+.k-fsk {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  min-width: 0;
+}
+.k-fsk-stage {
+  position: relative;
+}
+.k-fsk-stage[hidden] {
+  display: none !important;
+}
+.k-fsk-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+.k-fsk-link {
+  fill: none;
+  stroke: var(--ink-400);
+  stroke-opacity: 0.4;
+  transition: stroke-opacity var(--dur-snappy) var(--ease-snappy);
+}
+.k-fsk-link[data-kind='revaluation'] {
+  stroke-opacity: 0.75;
+}
+.k-fsk-link[data-lit][data-kind='flow'] {
+  stroke: var(--ink-200);
+  stroke-opacity: 0.65;
+}
+.k-fsk-link[data-lit][data-kind='revaluation'] {
+  stroke-opacity: 1;
+}
+.k-fsk-link[data-dim] {
+  stroke-opacity: 0.08;
+}
+.k-fsk-rect {
+  fill: var(--ink-300);
+  cursor: pointer;
+  outline: none;
+  transition: opacity var(--dur-snappy) var(--ease-snappy);
+}
+.k-fsk-rect[data-lit],
+.k-fsk-rect[data-pinned] {
+  fill: var(--ink-100);
+}
+.k-fsk-rect[data-dim] {
+  opacity: 0.35;
+}
+.k-fsk-rect:focus-visible {
+  stroke: var(--focus-ring);
+  stroke-width: 2;
+}
+.k-fsk-label {
+  fill: var(--ink-100);
+  font: var(--text-caption) var(--font-sans);
+  font-size: 12px;
+  paint-order: stroke;
+  stroke: var(--bg-100);
+  stroke-width: 3px;
+  stroke-linejoin: round;
+  pointer-events: none;
+}
+.k-fsk-label[data-dim] {
+  fill: var(--ink-300);
+}
+.k-fsk-amount {
+  fill: var(--ink-300);
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+.k-fsk-head {
+  fill: var(--ink-300);
+  font: var(--text-caption) var(--font-sans);
+  font-size: 11px;
+  pointer-events: none;
+}
+.k-fsk-tip {
+  transform: translate(10px, -50%);
+}
+.k-fsk-tip[data-side='left'] {
+  transform: translate(calc(-100% - 10px), -50%);
+}
+.k-fsk-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-right: auto;
+  color: var(--ink-200);
+  font: var(--text-caption) var(--font-sans);
+}
+.k-fsk-legend {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  color: var(--ink-300);
+  font: var(--text-caption) var(--font-sans);
+}
+.k-fsk-legend[hidden] {
+  display: none !important;
+}
+.k-fsk-key {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.k-fsk-key i {
+  display: inline-block;
+  width: 18px;
+  height: 8px;
+  background: color-mix(in srgb, var(--ink-400) 55%, transparent);
+}
+.k-fsk-key[data-kind='revaluation'] i {
+  background: repeating-linear-gradient(135deg, var(--ink-200) 0 2px, transparent 2px 5px);
+}
+.k-fsk-badge {
+  margin-left: auto;
+  padding: 0 6px;
+  border: var(--hairline);
+  color: var(--ink-300);
+}
+.k-fsk-empty {
+  margin: 0;
+  padding: 24px 0;
+  color: var(--ink-300);
+  font: var(--text-body) var(--font-sans);
+  text-align: center;
+}

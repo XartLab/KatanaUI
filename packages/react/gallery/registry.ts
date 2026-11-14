@@ -5519,6 +5519,151 @@ export const PAGES: readonly DocPage[] = [
     ],
   },
   {
+    id: 'flow-sankey',
+    group: 'quant',
+    cardHeight: 640,
+    title: 'FlowSankey 资金流向桑基图',
+    summary:
+      '资金从来源（央行、银行信贷、财政、海外……）经通道到用途（偿债、消费、投资、资产配置）再到受益方的桑基图，节点与流量由调用方给，列由节点的 column 定。悬停节点或链路出 LCD 读数：金额、占来源流出、占总量；点节点（或聚焦后 Enter / 空格）钉住它的全部上游与下游，其余压暗，再点或 Esc 取消。「交易流量」与「价格重估」分开：交易流量是实色带，价格重估（估值变了、没有资金移动）是斜纹带，占比与总量只算交易流量，右上有开关可以把重估整条拿掉；图例分开写。链路与节点是中性灰，不用橙与蓝，节点想着色由调用方给 color。排布用 d3-sankey 0.12.3（BSD-3-Clause，见 NOTICE），有环时不画、写 labels.cycle（先把回流拆成另一个节点）。需求稿是 issue #45，没有读到可对照的参照产品页面，待核对；演示数据全部虚构。',
+    exports: ['FlowSankey', 'layoutFlow', 'linkEnds', 'moveNode', 'neighborhood'],
+    props: [
+      {
+        part: 'FlowSankey',
+        note: '文字全由 props 传。图是 viewBox 960 宽的 svg，随容器缩放；每个节点是 role=button 的矩形，读屏名带流入与流出；图右上有表格视图、导出、全屏三件（表格视图总有，表里每条链路一行）。',
+        rows: [
+          {
+            name: 'nodes',
+            type: 'FlowNode[]',
+            desc: '{ id, label, column?, color? }。column 全给才按它分列（从 0 起），否则由链路深度定；没有任何链路的节点不画。',
+          },
+          {
+            name: 'links',
+            type: 'FlowLink[]',
+            desc: '{ id?, source, target, value, kind?: flow | revaluation, note? }。value 不是正数或指向不存在节点的链路丢掉。kind 默认 flow。',
+          },
+          {
+            name: 'labels',
+            type: 'FlowSankeyLabels',
+            desc: '全部文字：读屏名、两种链路的名字、读数行名、开关、空态与有环的提示。',
+          },
+          { name: 'columnLabels', type: 'string[]', desc: '每一列顶上的标题；不给不画。' },
+          {
+            name: 'formatValue / formatShare',
+            type: '(number) => string',
+            desc: '金额（含单位）与占比（0.25）怎么写；占比默认一位小数的百分数。',
+          },
+          { name: 'height', type: 'number', default: '420', desc: '图高（viewBox 单位）。' },
+          { name: 'badge', type: 'ReactNode', desc: '图例行右端的小标，如「演示数据」。' },
+          {
+            name: 'actionLabels / tableLabel / tableHead / source / onExport / onFullscreen',
+            type: 'ChartViewProps',
+            desc: '同其他图：三个图工具的名字、表格视图的读屏名与表头（五列：链路、类型、金额、占来源流出、占总量）、来源一行、导出与全屏的回调。',
+          },
+        ],
+      },
+      {
+        part: 'layoutFlow(nodes, links, options)',
+        note: '节点与链路 → 排布、占比、总量的纯函数（总量是没有交易流入的节点的交易流出之和）；返回 { ok: true, nodes, links, total, dropped, columns } 或 { ok: false, reason: empty | cycle }。',
+        rows: [],
+      },
+    ],
+    states: [
+      '没有选中：全部链路与节点正常亮度；悬停节点时它的上下游亮、其余压暗；悬停链路时只亮它与两端。',
+      '钉住节点后离开也保持高亮，直到再点同一个节点、点空白或按 Esc。',
+      '价格重估链路是斜纹，不进占比与总量；关掉开关后它整条不参与排布，图上只剩交易流量。',
+      '没有可画的链路写 labels.empty；有环写 labels.cycle，不抛错。',
+    ],
+    donts: [
+      '不要把价格重估写成 kind: flow：它没有资金移动，会混进占比。',
+      '不要传环（A→B→A）：资金回流请记成另一个节点（例如「回流」）。',
+      '不要在件里写文字、也不要把演示数据当真实资金流向。',
+    ],
+    composition:
+      'FlowSankey\n  Switch（显示价格重估）· 图右上三件（表格视图 · 导出 · 全屏）\n  svg role=group\n    pattern（斜纹）\n    path × 链路\n    rect role=button × 节点 · text 标签\n  LcdTooltip（悬停读数）\n  图例（交易流量 · 价格重估 · 小标）',
+    keys: [
+      ['Tab', '进图，停在一个节点上'],
+      ['↑ / ↓', '同一列里上一个 / 下一个节点'],
+      ['← / →', '去连着的上一列 / 下一列里纵向最近的节点'],
+      ['Home / End', '第一个 / 最后一个节点'],
+      ['Enter / 空格', '钉住或取消钉住这个节点的上下游'],
+      ['Esc', '取消钉住'],
+    ],
+  },
+  {
+    id: 'vintage-series',
+    group: 'quant',
+    cardHeight: 760,
+    title: 'VintageSeries 按发布时间的宏观序列',
+    summary:
+      '宏观序列按发布时间（point-in-time）画，避免把后来修订的数当成当时已知（框架第十节的要求）。横轴是统计期，同一期有一串发布值（首次发布、每次修订）：一条实线是「当时已知值」（默认每期的首次发布值；给 asOf 就是截至那一刻已知的最后一次发布，那时还没发布的期不画），一条灰虚线是「最新修订值」，上面一排分段按钮切「当时已知值 / 最新修订值 / 两条都看」。每次发布画一个点（空心是当时已知，灰点是最新，更小的是中间的修订），同一期的点之间连细竖线，线长就是修订幅度；下面一条小图画每期修订了多少（最新 − 首次，涨跌发散阶，没修订过的期不画）。顶上四个读数：修订过的期数、平均绝对修订、平均修订方向（正是后来普遍上修）、最大一次。坐标、网格、十字线与 LCD 读数复用 SeriesExplorer 的那套，键位同它。演示数据是固定种子合成的虚构月度同比，页上与小标都写明。',
+    exports: ['VintageSeries', 'normalizeVintages', 'knownAt', 'knownValue', 'revisionStats', 'vintageExtent'],
+    props: [
+      {
+        part: 'VintageSeries',
+        note: '文字与格式全由 props 传，件不认识任何统计口径。主图高 chartHeight，下面修订小图固定 64px；统计期不超过 72 个时才画发布点，更多只留线与修订竖线。',
+        rows: [
+          {
+            name: 'observations',
+            type: 'VintageObservation[]',
+            desc: '{ period, releases: { at, value, note? }[] }。period 是统计期（毫秒，UTC），at 是这个值发布的时刻；不用排序，件整理（同一期给两次会合并，非有限数丢掉）。',
+          },
+          {
+            name: 'labels',
+            type: 'VintageSeriesLabels',
+            desc: '全部文字：读屏名、三个切换项、修订小图名、读数行名、四个读数名、空态。',
+          },
+          {
+            name: 'formatPeriod / formatAt',
+            type: '(ms) => string',
+            desc: '统计期与发布时刻怎么写；时区与语言由调用方定。',
+          },
+          { name: 'formatValue / formatDelta', type: '(number) => string', desc: '值与带正负号的变化怎么写。' },
+          {
+            name: 'asOf',
+            type: 'number',
+            desc: '「当时已知」取截至这一刻的最后一次发布；不给取每期首次发布值。「最新修订值」不受它影响（它就是事后看到的）。',
+          },
+          { name: 'defaultMode', type: "'known' | 'latest' | 'both'", default: 'both', desc: '起始看哪条线。' },
+          {
+            name: 'chartHeight / badge',
+            type: 'number / string',
+            default: '220',
+            desc: '主图高（px）；右上小标，如「演示数据」。',
+          },
+          {
+            name: 'actionLabels / tableLabel / tableHead / source / onExport / onFullscreen',
+            type: 'ChartViewProps',
+            desc: '同其他图；表格视图每次发布一行（五列：统计期、发布时刻、值、较上次、较首次）。',
+          },
+        ],
+      },
+      {
+        part: 'normalizeVintages / knownAt / knownValue / revisionStats',
+        note: '整理发布值、取某一刻已知的值、统计修订的纯函数；调用方想在别处出同样的数可以直接调。只发布过一次的期修订是 null，不写成 0。',
+        rows: [],
+      },
+    ],
+    states: [
+      '只发布过一次的期：只有一个点，没有修订竖线，修订小图里没有它的柱。',
+      '给了 asOf：那一刻还没发布的期，「当时已知」线在那里断开，读数里写 labels.notYet。',
+      '修订小图：最新高于首次是涨色柱、低于是跌色柱，零线以上以下对称不拉伸；没有任何修订时是一条零线。',
+      '没有数据写 labels.empty。',
+    ],
+    donts: [
+      '不要把「最新修订值」当成当时已知拿去回测或写成当时的判断：那是偷看未来。',
+      '不要只传最新值：件要的是每次发布的值与发布时刻。',
+      '不要把演示数据当真实统计。',
+    ],
+    composition:
+      'VintageSeries\n  ToggleGroup（当时已知值 / 最新修订值 / 两条都看）· 小标 · 图右上三件\n  dl（四个修订读数）\n  role=slider 的图\n    主图 svg（网格 · 修订竖线 · 两条线）· 纵轴刻度 · 发布点（HTML 小点）· 十字线 · LcdTooltip\n    修订小图 svg（零线 · 柱）\n  横轴 · 图例',
+    keys: [
+      ['← / →', '逐期走，十字线与读数跟着'],
+      ['Shift + ← / →', '一次走三期'],
+      ['Home / End', '第一期 / 最后一期'],
+      ['Esc', '清掉十字线'],
+    ],
+  },
+  {
     id: 'symbol-galaxy',
     group: 'blocks',
     cardHeight: 807,
