@@ -66,17 +66,27 @@ const days = (hourly = false): UptimeCell[] => {
   })
 }
 
+const STATUS_WORDS = { up: '正常', degraded: '降级', down: '断开', none: '无数据' } as const
+
 export function UptimeBarsDemo() {
   const daily = days()
   const hourly = days(true)
   const [picked, setPicked] = useState('')
+  const pct = (cells: UptimeCell[]) => `${((uptimeShare(cells) ?? 0) * 100).toFixed(1)} %`
   const share = (cells: UptimeCell[]) => `近 ${cells.length} 格可用率 ${((uptimeShare(cells) ?? 0) * 100).toFixed(1)}%`
   return (
     <>
       <p className="gal-note">{NOTE}</p>
       <Row name="逐日（30 天）">
         <div className="gal-wide" data-gallery-uptime="daily">
-          <UptimeBars cells={daily} label="示例行情源 近 30 天" idle={share(daily)} />
+          <UptimeBars
+            cells={daily}
+            label="示例行情源 QUOTE HUB · WS 近 30 天"
+            statusLabels={STATUS_WORDS}
+            availability={pct(daily)}
+            range={['2026-10-16', '2026-11-14']}
+            idle={share(daily)}
+          />
         </div>
       </Row>
       <Row name="逐小时（48 小时），可点">
@@ -84,6 +94,9 @@ export function UptimeBarsDemo() {
           <UptimeBars
             cells={hourly}
             label="示例连接 近 48 小时"
+            statusLabels={STATUS_WORDS}
+            availability={pct(hourly)}
+            range={['2026-11-12 15:00', '2026-11-14 14:00']}
             idle={share(hourly)}
             onSelect={(cell) => setPicked(cell.label)}
           />

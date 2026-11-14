@@ -4,7 +4,7 @@
 // 功能参照 Arc Uptime status（uiarc.dev/llms.txt 目录，2026-11-14 读，页面只写了「逐日可用条」），实现原创；
 // 用在数据源 / 连接健康（对 DataSources、SystemHealth 的缺口）。文字全由 props 传。
 import { useRef, useState, type ReactNode } from 'react'
-import { moveCell, type UptimeCell } from './uptime-bars-model'
+import { countStatuses, moveCell, type UptimeCell, type UptimeStatus } from './uptime-bars-model'
 
 export type UptimeBarsProps = {
   /** 从旧到新，一格一项。 */
@@ -13,20 +13,51 @@ export type UptimeBarsProps = {
   label: string
   /** 没有悬停也没有聚焦时读数行写什么（常是可用率）。 */
   idle?: ReactNode
+  /** 四种状态各一个词（灯加词，状态永不单靠颜色，precision-instrument §2.2、§2.5）；给了就在条上面画一行「灯 词 格数」。 */
+  statusLabels?: Readonly<Record<UptimeStatus, string>>
+  /** 条上面一行右边的可用率读数（LCD 数字，口径由调用方写好，如「99.1 %」）。 */
+  availability?: ReactNode
+  /** 条两端的时间（ISO 次序，precision-instrument §2.2），如 ['2026-10-16', '2026-11-14']。 */
+  range?: readonly [string, string]
   /** 点一格（给了才可点，格子上 cursor 变手形）。 */
   onSelect?: (cell: UptimeCell) => void
   className?: string
 }
 
-export function UptimeBars({ cells, label, idle, onSelect, className }: UptimeBarsProps) {
+export function UptimeBars({
+  cells,
+  label,
+  statusLabels,
+  availability,
+  range,
+  idle,
+  onSelect,
+  className,
+}: UptimeBarsProps) {
   const [hover, setHover] = useState<number | null>(null)
   const [focus, setFocus] = useState<number | null>(null)
   const [tab, setTab] = useState(cells.length - 1)
   const refs = useRef<(HTMLSpanElement | null)[]>([])
   const stop = Math.min(Math.max(tab, 0), cells.length - 1)
   const shown = hover ?? focus
+  const counts = countStatuses(cells)
   return (
     <div className={`k-uptime${className ? ` ${className}` : ''}`} data-slot="uptime-bars">
+      {(statusLabels || availability !== undefined) && (
+        <div className="k-uptime-head">
+          {statusLabels && (
+            <ul className="k-uptime-legend" aria-hidden="true">
+              {(['up', 'degraded', 'down', 'none'] as const).map((status) => (
+                <li key={status} data-legend={status}>
+                  <i className="k-uptime-lamp" />
+                  {statusLabels[status]} <span className="k-uptime-count">{counts[status]}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+          {availability === undefined ? null : <span className="k-uptime-avail">{availability}</span>}
+        </div>
+      )}
       <div
         className="k-uptime-bars"
         role="group"
@@ -71,6 +102,12 @@ export function UptimeBars({ cells, label, idle, onSelect, className }: UptimeBa
           />
         ))}
       </div>
+      {range && (
+        <div className="k-uptime-range" aria-hidden="true">
+          <span>{range[0]}</span>
+          <span>{range[1]}</span>
+        </div>
+      )}
       <output className="k-uptime-readout">{shown === null ? idle : cells[shown]?.label}</output>
     </div>
   )

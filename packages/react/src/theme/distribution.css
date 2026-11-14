@@ -44,6 +44,58 @@
   outline: 2px solid var(--focus-ring);
   outline-offset: 1px;
 }
+.k-uptime-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.k-uptime-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--ink-200);
+  font: var(--text-caption) var(--font-sans);
+}
+.k-uptime-legend li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+/* 状态灯：颜色只用 signal-*，并且总带词（图例）；格子再用高度区分降级与无数据，不单靠颜色。 */
+.k-uptime-lamp {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--signal-green);
+}
+.k-uptime-legend [data-legend='degraded'] .k-uptime-lamp {
+  background: var(--signal-amber);
+}
+.k-uptime-legend [data-legend='down'] .k-uptime-lamp {
+  background: var(--signal-red);
+}
+.k-uptime-legend [data-legend='none'] .k-uptime-lamp {
+  background: var(--ink-400);
+}
+.k-uptime-count,
+.k-uptime-avail {
+  color: var(--ink-100);
+  font: var(--text-num-sm) var(--chart-font-num, var(--font-lcd));
+  font-variant-numeric: tabular-nums;
+}
+.k-uptime-avail {
+  font: var(--text-lcd) var(--chart-font-num, var(--font-lcd));
+}
+.k-uptime-range {
+  display: flex;
+  justify-content: space-between;
+  color: var(--chart-axis);
+  font: var(--text-num-sm) var(--chart-font-axis, var(--font-mono));
+}
 .k-uptime-readout {
   min-height: 16px;
   color: var(--ink-200);

@@ -2,7 +2,7 @@
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vite-plus/test'
 import { UptimeBars } from './uptime-bars'
-import { moveCell, uptimeShare, type UptimeCell } from './uptime-bars-model'
+import { countStatuses, moveCell, uptimeShare, type UptimeCell } from './uptime-bars-model'
 
 const cells: UptimeCell[] = [
   { id: '1', status: 'up', label: '11-12 正常' },
@@ -45,5 +45,29 @@ describe('UptimeBars', () => {
   })
   it('没有悬停时读数行写 idle', () => {
     expect(html).toContain('可用率 33%')
+  })
+})
+
+describe('状态灯加词', () => {
+  const words = { up: '正常', degraded: '降级', down: '断开', none: '无数据' }
+  it('countStatuses 数每种状态的格数', () => {
+    expect(countStatuses(cells)).toEqual({ up: 1, degraded: 1, down: 1, none: 1 })
+    expect(countStatuses([])).toEqual({ up: 0, degraded: 0, down: 0, none: 0 })
+  })
+  it('给了 statusLabels 就画四行「灯 词 格数」，条两端写时间；不给就没有', () => {
+    const html = renderToStaticMarkup(
+      <UptimeBars
+        cells={cells}
+        label="x"
+        statusLabels={words}
+        availability="33.3 %"
+        range={['2026-11-12', '2026-11-15']}
+      />,
+    )
+    for (const word of Object.values(words)) expect(html).toContain(word)
+    expect(html.match(/data-legend=/g)).toHaveLength(4)
+    expect(html).toContain('33.3 %')
+    expect(html).toContain('2026-11-15')
+    expect(renderToStaticMarkup(<UptimeBars cells={cells} label="x" />)).not.toContain('data-legend')
   })
 })

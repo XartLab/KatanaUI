@@ -8296,6 +8296,66 @@ button.k-sm-head:focus-visible {
   outline-offset: 1px;
 }
 
+.k-uptime-head {
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  display: flex;
+}
+
+.k-uptime-legend {
+  color: var(--ink-200);
+  font: var(--text-caption) var(--font-sans);
+  flex-wrap: wrap;
+  gap: 2px 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+}
+
+.k-uptime-legend li {
+  align-items: center;
+  gap: 6px;
+  display: inline-flex;
+}
+
+.k-uptime-lamp {
+  background: var(--signal-green);
+  border-radius: 50%;
+  width: 8px;
+  height: 8px;
+}
+
+.k-uptime-legend [data-legend="degraded"] .k-uptime-lamp {
+  background: var(--signal-amber);
+}
+
+.k-uptime-legend [data-legend="down"] .k-uptime-lamp {
+  background: var(--signal-red);
+}
+
+.k-uptime-legend [data-legend="none"] .k-uptime-lamp {
+  background: var(--ink-400);
+}
+
+.k-uptime-count, .k-uptime-avail {
+  color: var(--ink-100);
+  font: var(--text-num-sm) var(--chart-font-num, var(--font-lcd));
+  font-variant-numeric: tabular-nums;
+}
+
+.k-uptime-avail {
+  font: var(--text-lcd) var(--chart-font-num, var(--font-lcd));
+}
+
+.k-uptime-range {
+  color: var(--chart-axis);
+  font: var(--text-num-sm) var(--chart-font-axis, var(--font-mono));
+  justify-content: space-between;
+  display: flex;
+}
+
 .k-uptime-readout {
   min-height: 16px;
   color: var(--ink-200);

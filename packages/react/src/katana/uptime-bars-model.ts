@@ -22,6 +22,13 @@ export function uptimeShare(cells: readonly UptimeCell[]): number | null {
   return known === 0 ? null : up / known
 }
 
+/** 每种状态有几格（给状态灯加词那一行写个数）。 */
+export function countStatuses(cells: readonly UptimeCell[]): Record<UptimeStatus, number> {
+  const out: Record<UptimeStatus, number> = { up: 0, degraded: 0, down: 0, none: 0 }
+  for (const cell of cells) out[cell.status]++
+  return out
+}
+
 /** 左右键、Home、End 之后焦点去哪一格；到头不绕回（同 APG 的 listbox 习惯）；其他键返回 null。 */
 export function moveCell(index: number, key: string, count: number): number | null {
   if (count <= 0) return null
