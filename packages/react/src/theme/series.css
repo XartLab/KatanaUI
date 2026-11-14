@@ -1373,3 +1373,14 @@ button.k-sm-head:focus-visible {
   letter-spacing: 0;
   -webkit-font-smoothing: none;
 }
+
+/* 精密仪器语言（#7）：日历热力图的星期头、周号用点阵字，合计读数左边 2px 强调条；格内数字仍是等宽数字。 */
+.k-heat-head,
+.k-heat-wk {
+  font: var(--text-tag-md) var(--font-dot);
+  -webkit-font-smoothing: none;
+}
+.k-heat-total {
+  padding-left: 8px;
+  border-left: 2px solid var(--chart-accent, var(--signal-orange));
+}
