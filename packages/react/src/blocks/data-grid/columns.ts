@@ -15,7 +15,17 @@ import { compareDecimal } from './model.ts'
 // 参照：AG Grid 的 column types（columnTypes 里挂一组默认的列属性，列用 `type` 引用，2026-11-14 读文档，只取这个概念，没有抄代码）、
 // FINOS Perspective 的按列类型选格式。商业产品只读不抄。
 
-export type ColumnType = 'text' | 'number' | 'price' | 'quantity' | 'pnl' | 'change' | 'side' | 'time' | 'symbol'
+export type ColumnType =
+  | 'text'
+  | 'number'
+  | 'price'
+  | 'quantity'
+  | 'pnl'
+  | 'change'
+  | 'side'
+  | 'time'
+  | 'symbol'
+  | 'custom'
 
 /** 字的颜色：涨 / 跌（跟 data-updown，红涨绿跌时互换）、次要灰。 */
 export type GridTone = 'up' | 'down' | 'muted'
@@ -52,7 +62,7 @@ export type GridColumn<Row> = {
   type?: ColumnType
   /**
    * 原始值，由类型决定怎么读：price / quantity / pnl / change / number 是数字或十进制字符串（空、不是数写 —）；
-   * time 是毫秒时间戳；side 是 'buy' | 'sell'；symbol 是 SymbolValue；text 是字符串。
+   * time 是毫秒时间戳；side 是 'buy' | 'sell'；symbol 是 SymbolValue；text 是字符串；custom 不读（内容全由 `cell` 画，要排序、复制就给 `text` 与 `sort`）。
    */
   value?: (row: Row) => unknown
   /** 格式选项，可以随行变（价格精度是品种的）。 */
@@ -66,11 +76,18 @@ export type GridColumn<Row> = {
   /** 整格的底色（ATAS 的盈亏是整格绿底 / 红底）。 */
   fill?: (row: Row) => 'up' | 'down' | undefined
   title?: (row: Row) => string | undefined
+  /**
+   * custom 列的内容：这一格画什么都行（多行的字、使用度条、按钮）。按钮之类要点的东西放在里面，表不把它当整行的点击。
+   * 复制、导出与排序用 `text` 与 `sort`，没给就是空字。
+   */
+  cell?: (row: Row) => ReactNode
   /** 代替文字的内容（状态灯、置灰的入口）；复制与导出仍用屏幕上的字。 */
   render?: (row: Row) => ReactNode
   /** 导出 CSV 用的格与表头（原始数值、带单位的表头）；省略时导出屏幕上的字与列名。复制仍是屏幕上的字。 */
   csv?: (row: Row) => string
   csvHeader?: () => string
+  /** 这一列是行的标题（指标表的第一列）：这一格读作 rowheader，屏幕阅读器念「指标名：值」。 */
+  rowHeader?: boolean
 }
 
 export type CellEnv = {

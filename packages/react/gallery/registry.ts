@@ -3207,7 +3207,7 @@ export const PAGES: readonly DocPage[] = [
   {
     id: 'data-grid',
     group: 'blocks',
-    cardHeight: 330,
+    cardHeight: 520,
     title: 'DataGrid 数据表',
     summary:
       '拼面板用的数据表：TanStack Table 管排序、列宽、顺序、显隐，虚拟滚动只画看得见的行；列声明一个类型（价格、数量、盈亏、涨跌幅、方向、时间、品种……），格式化、对齐、着色、排序由类型给。列的状态受控（调用方存）；应用的能力经 DataGridHost 注入。',
@@ -3220,7 +3220,7 @@ export const PAGES: readonly DocPage[] = [
           {
             name: 'columns',
             type: 'GridColumn<Row>[]',
-            desc: '列的定义，模块级常量：id、type、value、format、text、sort、tone、fill、render、csv。',
+            desc: '列的定义：id、type、value、format、text、sort、tone、fill、cell（custom 列的内容）、render、csv、rowHeader。列对象要稳定，别每次渲染新建。',
           },
           {
             name: 'layout',
@@ -3232,7 +3232,7 @@ export const PAGES: readonly DocPage[] = [
           {
             name: 'sort / onSortChange',
             type: 'SortSpec | null / (next) => void',
-            desc: '排序受控；点表头在升序、倒序、不排之间转。',
+            desc: '排序受控；点表头在升序、倒序、不排之间转。没给 onSortChange 就不能排序，表头是普通的字。',
           },
           { name: 'sortRemovable', type: 'boolean', default: 'true', desc: 'false 时第三下回到升序。' },
           {
@@ -3244,6 +3244,21 @@ export const PAGES: readonly DocPage[] = [
             name: 'onOpen / restoreRow / isOpened',
             type: 'function',
             desc: '点一行、从详情返回时放回键盘所在行、正开着的行（左边强调色）。',
+          },
+          {
+            name: 'rowProps',
+            type: '(row) => GridRowProps | undefined',
+            desc: '给一行加属性：className（并进行的类名）、title、data-*、aria-*。状态、测试钩子从这里来，不用在外面再包一层。',
+          },
+          {
+            name: 'renderSubRow',
+            type: '(row) => ReactNode',
+            desc: '可展开的子行，跨满整行宽、高度跟着内容走；返回 null / undefined / false 是这一行没有子行。表按 treegrid 读，有子行的行带 aria-expanded。',
+          },
+          {
+            name: 'expanded / onExpandedChange / defaultExpanded',
+            type: 'Set<string> / (id, expanded) => void / (row) => boolean',
+            desc: '展开状态：给了 expanded 就受控（展开收起只通知 onExpandedChange）；不给时表自己记，没动过的行看 defaultExpanded（省略是收起）。',
           },
           {
             name: 'menu / panelMenu / menuTail / rowInfo / extrasFirst',
@@ -3259,6 +3274,19 @@ export const PAGES: readonly DocPage[] = [
           { name: 'density', type: "'compact' | 'default' | 'relaxed'", default: "'default'", desc: '行高档。' },
           { name: 'hideHeader', type: 'boolean', default: 'false', desc: '不画表头。' },
           {
+            name: 'autoRowHeight',
+            type: 'boolean',
+            default: 'false',
+            desc: '行高跟着内容走：多行的格子、行里有按钮的表。density 的行高是最小高度，格子里的字可以折行。',
+          },
+          { name: 'ruled', type: 'boolean', default: 'false', desc: '行与行之间画一道细线。' },
+          {
+            name: 'selectable',
+            type: 'boolean',
+            default: 'true',
+            desc: 'false：点行不选、不打开，没有悬停底色，只留键盘移动与展开（行里主要是按钮的表）。',
+          },
+          {
             name: 'interactive',
             type: 'boolean',
             default: 'true',
@@ -3272,7 +3300,7 @@ export const PAGES: readonly DocPage[] = [
           {
             name: 'foot / presorted / rowTree / classNames',
             type: 'various',
-            desc: '表下说明、调用方已排好、树形行、各部分额外类名。',
+            desc: '表下说明、调用方已排好、树形行、各部分额外类名（含 subrow）。',
           },
         ],
       },
@@ -3297,6 +3325,11 @@ export const PAGES: readonly DocPage[] = [
             desc: 'YYYY-MM-DD HH:MM:SS，时区取 timeZone；format.timeStyle 可只写时间或日期。',
           },
           { name: 'symbol', type: 'string | { code, venue? }', desc: '代码加场所两段，场所写淡。' },
+          {
+            name: 'custom',
+            type: 'cell(row) => ReactNode',
+            desc: '格子里画什么都行（多行的字、使用度条、按钮）；复制、导出与排序用 text 与 sort。放在里面的按钮自己管点击。',
+          },
         ],
       },
       {
@@ -3336,17 +3369,22 @@ export const PAGES: readonly DocPage[] = [
       '有选中行：一整行底色，Esc 清掉。',
       '键盘所在行：焦点环；排序列：表头带升降箭头。',
       '只读（interactive=false）：table 语义，表头不是按钮。',
+      '子行：有子行的行带 aria-expanded（true 摊开、false 收起）；没有子行的行没有这个属性，按 → 没反应。',
+      'custom 列没有 text 时复制与导出是空字；有按钮的格子别指望整行点击。',
     ],
     donts: [
       '不要把例子里的数据当真实行情；调用方要传真实行。',
       '不要给数值列自己写 text-align；列类型决定对齐。',
       '不要靠颜色以外没有符号的方式表达涨跌。',
+      '不要在 custom 列里重画 price、pnl 这类有类型的格子；有类型的用类型，custom 留给类型表达不了的。',
+      '不要把整张子表塞进子行；子行放一两段说明或一个表单，更多的另开页面。',
     ],
     composition:
-      'DataGrid\n  ContextMenu（行与空白处的右键菜单）\n  表头行（列头按钮、拖动把手）\n  虚拟滚动的行（单元格：文字 | ToneText | 品种两段 | 调用方 render）\n  foot',
+      'DataGrid\n  ContextMenu（行与空白处的右键菜单）\n  表头行（列头按钮、拖动把手）\n  虚拟滚动的行（单元格：文字 | ToneText | 品种两段 | 调用方 render / cell）\n  子行（renderSubRow，展开的行后面）\n  foot',
     keys: [
       ['↑ / ↓', '移一行；Home / End 到头尾'],
       ['Enter', '打开键盘所在的行（onOpen）'],
+      ['→ / ←', '展开 / 收起键盘所在行的子行（renderSubRow）'],
       ['Shift / Ctrl 点击', '选一段 / 点选加减'],
       ['Esc', '清掉选择（右键菜单开着时归菜单）'],
       ['菜单键 / Shift+F10', '开右键菜单（宿主的 matchKey 提供）'],

@@ -1759,6 +1759,45 @@ for (const theme of THEMES) {
       await expect(frames.nth(2).getByRole('status')).toContainText('No data source')
     })
 
+    test('积木：数据表的子行与自定义列：↓ 选一行、→ 展开、← 收起（aria-expanded 跟着变），没有子行的行按 → 没反应，行属性写到行上', async ({
+      page,
+    }) => {
+      await open(page, theme, 'data-grid')
+      const detail = section(page, 'data-grid').getByTestId('grid-detail')
+      const grid = detail.getByRole('treegrid', { name: 'Example rows with detail' })
+      const btc = detail.locator('[data-example="a"]')
+      const es = detail.locator('[data-example="c"]')
+      // 自定义列画出按钮；行属性：data-example 与悬停提示。
+      await expect(btc.getByRole('button', { name: 'Close BTCUSDT' })).toBeVisible()
+      await expect(btc).toHaveAttribute('title', 'BTCUSDT')
+      await expect(btc).toHaveAttribute('aria-expanded', 'false')
+      await expect(es).not.toHaveAttribute('aria-expanded')
+      await expect(detail.getByText('Fills detail for BTCUSDT')).toHaveCount(0)
+      await grid.focus()
+      await page.keyboard.press('ArrowDown')
+      await page.keyboard.press('ArrowRight')
+      await expect(btc).toHaveAttribute('aria-expanded', 'true')
+      const note = detail.getByText('Fills detail for BTCUSDT: 3 fills')
+      await expect(note).toBeVisible()
+      // 子行在这一行下面、跨满整行宽、有高度。
+      const [rowBox, noteBox, nextBox] = await Promise.all([
+        btc.boundingBox(),
+        note.boundingBox(),
+        detail.locator('[data-example="b"]').boundingBox(),
+      ])
+      expect(noteBox!.y).toBeGreaterThanOrEqual(rowBox!.y + rowBox!.height - 1)
+      expect(nextBox!.y).toBeGreaterThanOrEqual(noteBox!.y + noteBox!.height - 1)
+      expect(noteBox!.height).toBeGreaterThan(10)
+      await page.keyboard.press('ArrowLeft')
+      await expect(btc).toHaveAttribute('aria-expanded', 'false')
+      await expect(note).toHaveCount(0)
+      // 没有子行的行（ES）：按 → 没反应。
+      await page.keyboard.press('End')
+      await page.keyboard.press('ArrowRight')
+      await expect(es).not.toHaveAttribute('aria-expanded')
+      await expect(detail.getByText('Fills detail for')).toHaveCount(0)
+    })
+
     test('积木：空态、工具条按钮与估算标记', async ({ page }) => {
       await open(page, theme, 'empty-state')
       await expect(section(page, 'empty-state').getByRole('status')).toContainText('Nothing selected')

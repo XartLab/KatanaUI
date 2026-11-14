@@ -102,6 +102,32 @@ const LAYOUT: readonly GridColumnLayout[] = [
   { id: 'note', label: 'Note', width: 80, visible: true },
 ]
 
+// 自定义列与子行：fills 列画任意内容（标签加成交笔数、按钮），点不到整行；有成交的行按 → 展开成交明细（示例数据）。
+const DETAIL_COLUMNS: readonly GridColumn<Example>[] = [
+  { id: 'symbol', type: 'symbol', value: (row) => row.symbol },
+  { id: 'pnl', type: 'pnl', value: (row) => row.pnl, format: { suffix: 'USDT' } },
+  {
+    id: 'fills',
+    type: 'custom',
+    text: (row) => `${row.note} ${row.fills}`,
+    cell: (row) => (
+      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+        <b>{row.note}</b>
+        <span>{row.fills} fills</span>
+        <Button size="sm" aria-label={`Close ${row.symbol.code}`}>
+          Close
+        </Button>
+      </span>
+    ),
+  },
+]
+
+const DETAIL_LAYOUT: readonly GridColumnLayout[] = [
+  { id: 'symbol', label: 'Symbol', width: 140, visible: true },
+  { id: 'pnl', label: 'PnL', width: 130, visible: true },
+  { id: 'fills', label: 'Strategy', width: 260, visible: true },
+]
+
 const HOST: DataGridHost = {
   texts: { copy: 'Copy', save: 'Export CSV…', resetColumns: 'Reset columns' },
 }
@@ -144,6 +170,33 @@ export function DataGridDemo() {
           density="compact"
           hideHeader
           interactive={false}
+          fit
+        />
+      </div>
+      <p className="gal-note">
+        示例数据：custom 列（格子里放任意内容）、rowProps（给行加 data-* 与提示）、可展开的子行。点进表后 ↓ 选一行，→
+        展开、← 收起。
+      </p>
+      <div data-testid="grid-detail" style={{ width: '100%', maxWidth: 560 }}>
+        <DataGrid
+          columns={DETAIL_COLUMNS}
+          layout={DETAIL_LAYOUT}
+          rows={EXAMPLES}
+          rowId={(row) => row.id}
+          label="Example rows with detail"
+          rowProps={(row) => ({ 'data-example': row.id, title: row.symbol.code })}
+          renderSubRow={(row) =>
+            row.fills === '1' ? null : (
+              <div style={{ padding: '6px 8px 8px', color: 'var(--ink-300)' }}>
+                Fills detail for {row.symbol.code}: {row.fills} fills, last at 2026-11-14.
+              </div>
+            )
+          }
+          density="relaxed"
+          autoRowHeight
+          selectable={false}
+          ruled
+          stretch
           fit
         />
       </div>
