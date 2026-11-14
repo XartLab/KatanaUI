@@ -228,6 +228,13 @@ export {
 } from './katana/duration-picker.tsx'
 export { useHoverIntent } from './lib/hover-intent.ts'
 export { useScrubber, type UseScrubberOptions } from './lib/use-scrubber.ts'
+export {
+  usePersistedState,
+  readPersisted,
+  type PersistedStateOptions,
+  type StorageLike,
+} from './lib/use-persisted-state.ts'
+export { useSavedViews, type SavedView, type UseSavedViewsOptions } from './lib/use-saved-views.ts'
 
 // 分割线（#1901）：一条 role=separator 的线，键盘、拖动、吸附、双击复位；工作区的格子分割线用它。
 export { Splitter, type SplitterProps } from './primitives/splitter.tsx'

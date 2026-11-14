@@ -2,6 +2,7 @@
 import { Bell, Camera, Maximize2, Settings, X } from 'lucide-react'
 import { useState } from 'react'
 import {
+  ColumnPicker,
   DataGrid,
   DataGridHostProvider,
   EmptyState,
@@ -15,6 +16,7 @@ import {
   ToolbarGroup,
   ToolSlot,
   WorkspaceTabs,
+  type ColumnSet,
   type DataGridHost,
   type GridColumn,
   type GridColumnLayout,
@@ -22,7 +24,7 @@ import {
   type StatusItem,
   type WorkspaceTab,
 } from '../../src/blocks/index.ts'
-import { Button, Splitter } from '../../src/index.ts'
+import { Button, Splitter, usePersistedState } from '../../src/index.ts'
 import { ActionLog, Row, SAMPLE_MARK_SRC, demoSymbolActions } from './parts.tsx'
 
 // 积木层（@katana-ui/react/blocks，#1869）的演示。表里的数据都是写死的示例数据，不是行情。
@@ -138,6 +140,61 @@ const HOST: DataGridHost = {
   texts: { copy: 'Copy', save: 'Export CSV…', resetColumns: 'Reset columns' },
 }
 
+const COLUMN_SETS: readonly ColumnSet[] = [
+  { id: 'overview', label: 'Overview', columns: ['symbol', 'side', 'price', 'pnl', 'change'] },
+  { id: 'execution', label: 'Execution', columns: ['symbol', 'side', 'qty', 'at', 'fills'] },
+  { id: 'all', label: 'All', columns: LAYOUT.map((column) => column.id) },
+]
+
+// 列头右键菜单、拖动重排、ColumnPicker（#27）：layout 经 usePersistedState 存进 localStorage（示例的 key 与版本写在这里，换版本就丢旧存档）。
+function ColumnsDemo() {
+  const [sort, setSort] = useState<SortSpec | null>(null)
+  const [layout, setLayout, resetLayout] = usePersistedState<GridColumnLayout[]>(
+    'katana-ui-gallery:grid-columns',
+    [...LAYOUT],
+    {
+      version: 1,
+    },
+  )
+  return (
+    <>
+      <p className="gal-note">
+        列头右键：排序、固定、隐藏、左右移、重置；拖动列头换位置；右上角「Columns」勾选列或整套切换列集。列摆法存在
+        localStorage。
+      </p>
+      <div data-testid="grid-columns" style={{ width: '100%', maxWidth: 780 }}>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', paddingBottom: 6 }}>
+          <ColumnPicker
+            layout={layout}
+            onLayoutChange={setLayout}
+            sets={COLUMN_SETS}
+            labels={{ trigger: 'Columns', sets: 'Column sets', columns: 'Columns' }}
+          />
+        </div>
+        <div style={{ display: 'flex', height: 150 }}>
+          <DataGridHostProvider value={HOST}>
+            <DataGrid
+              columns={COLUMNS}
+              layout={layout}
+              onLayoutChange={setLayout}
+              rows={EXAMPLES}
+              rowId={(row) => row.id}
+              label="Example columns"
+              sort={sort}
+              onSortChange={setSort}
+              onResetColumns={() => {
+                setSort(null)
+                resetLayout()
+              }}
+              timeZone="utc"
+            />
+          </DataGridHostProvider>
+        </div>
+      </div>
+    </>
+  )
+}
+
 export function DataGridDemo() {
   const [sort, setSort] = useState<SortSpec | null>(null)
   const [log, setLog] = useState('')
@@ -166,6 +223,7 @@ export function DataGridDemo() {
         </DataGridHostProvider>
       </div>
       <ActionLog text={log} />
+      <ColumnsDemo />
       <p className="gal-note">无表头、只读、紧凑行高的变体：</p>
       <div style={{ width: 300 }}>
         <DataGrid

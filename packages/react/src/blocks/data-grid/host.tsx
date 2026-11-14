@@ -48,6 +48,19 @@ export type DataGridTexts = {
   resizeLabel: (column: { id: string; label: string }) => string
   /** 选了几行（多于一行时读出来）；给对象而不是数，宿主的复数写法好跟原来的文案对上。 */
   selectedRows: (selected: { size: number }) => string
+  /** 列头右键菜单的项（#27）。 */
+  columnMenu: {
+    sortAsc: string
+    sortDesc: string
+    clearSort: string
+    pin: string
+    unpin: string
+    hide: string
+    moveLeft: string
+    moveRight: string
+    /** 菜单的读屏名。 */
+    label: (column: { id: string; label: string }) => string
+  }
 }
 
 export type DataGridHost = {
@@ -76,4 +89,15 @@ export const DEFAULT_TEXTS: Omit<DataGridTexts, 'copy' | 'save' | 'resetColumns'
   sortTitle: (column) => `${column.label}: click to sort, again to reverse`,
   resizeLabel: (column) => `Resize column ${column.label}`,
   selectedRows: (selected) => `${selected.size} rows selected`,
+  columnMenu: {
+    sortAsc: 'Sort ascending',
+    sortDesc: 'Sort descending',
+    clearSort: 'Clear sort',
+    pin: 'Pin to left',
+    unpin: 'Unpin',
+    hide: 'Hide column',
+    moveLeft: 'Move left',
+    moveRight: 'Move right',
+    label: (column) => `${column.label} column menu`,
+  },
 }
