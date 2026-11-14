@@ -345,3 +345,123 @@
   font: var(--text-caption) var(--font-sans);
   font-variant-numeric: tabular-nums;
 }
+
+/* —— 品种星系 —— */
+.k-galaxy {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  min-width: 0;
+}
+.k-galaxy-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+.k-galaxy-plot {
+  position: relative;
+  aspect-ratio: 800 / 520;
+}
+.k-galaxy-canvas,
+.k-galaxy-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.k-galaxy-svg {
+  overflow: visible;
+}
+.k-galaxy-node,
+.k-galaxy-ring,
+.k-galaxy-mark,
+.k-galaxy-name {
+  transition:
+    transform var(--dur-snappy) var(--ease-snappy),
+    r var(--dur-snappy) var(--ease-snappy);
+}
+.k-galaxy-ring {
+  fill: none;
+  stroke: var(--line-200);
+  stroke-width: 1;
+  stroke-dasharray: 2 3;
+  pointer-events: none;
+}
+.k-galaxy-group {
+  outline: none;
+}
+.k-galaxy-group:focus-visible .k-galaxy-ring {
+  stroke: var(--focus-ring);
+  stroke-width: 2;
+  stroke-dasharray: none;
+}
+.k-galaxy-name {
+  fill: var(--ink-200);
+  font: var(--text-caption) var(--font-sans);
+  font-weight: 600;
+  pointer-events: none;
+}
+.k-galaxy-mark {
+  fill: none;
+  stroke: var(--ink-100);
+  stroke-width: 1.5;
+  pointer-events: none;
+}
+.k-galaxy-mark.is-selected {
+  stroke: var(--signal-orange);
+  stroke-width: 2;
+}
+.k-galaxy-mark.is-hover {
+  stroke-width: 2;
+}
+.k-galaxy-legend {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.k-galaxy-legend li {
+  flex: 1 1 0;
+  height: 16px;
+  color: var(--ink-100);
+  font: var(--text-caption) var(--font-sans);
+  line-height: 16px;
+  text-align: center;
+}
+.k-galaxy .is-step-3 {
+  background: color-mix(in srgb, var(--pnl-down) 100%, var(--bg-000));
+  fill: color-mix(in srgb, var(--pnl-down) 100%, var(--bg-000));
+}
+.k-galaxy .is-step-2 {
+  background: color-mix(in srgb, var(--pnl-down) 70%, var(--bg-000));
+  fill: color-mix(in srgb, var(--pnl-down) 70%, var(--bg-000));
+}
+.k-galaxy .is-step-1 {
+  background: color-mix(in srgb, var(--pnl-down) 42%, var(--bg-000));
+  fill: color-mix(in srgb, var(--pnl-down) 42%, var(--bg-000));
+}
+.k-galaxy .is-step0,
+.k-galaxy .is-stepna {
+  background: color-mix(in srgb, var(--ink-300) 30%, var(--bg-000));
+  fill: color-mix(in srgb, var(--ink-300) 30%, var(--bg-000));
+}
+.k-galaxy .is-step1 {
+  background: color-mix(in srgb, var(--pnl-up) 42%, var(--bg-000));
+  fill: color-mix(in srgb, var(--pnl-up) 42%, var(--bg-000));
+}
+.k-galaxy .is-step2 {
+  background: color-mix(in srgb, var(--pnl-up) 70%, var(--bg-000));
+  fill: color-mix(in srgb, var(--pnl-up) 70%, var(--bg-000));
+}
+.k-galaxy .is-step3 {
+  background: color-mix(in srgb, var(--pnl-up) 100%, var(--bg-000));
+  fill: color-mix(in srgb, var(--pnl-up) 100%, var(--bg-000));
+}
+.k-galaxy-readout {
+  min-height: 16px;
+  color: var(--ink-200);
+  font: var(--text-caption) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+}

@@ -36,3 +36,21 @@ export {
   type AttributionChoice,
 } from './attribution-bars/attribution-bars.tsx'
 export type { AttributionItem } from './attribution-bars/attribution-model.ts'
+} from './data-grid/host'
+export { tableCsv, type SortSpec } from './data-grid/model'
+export { EmptyState, type EmptyStateSlot } from './empty-state'
+export { EstimateBadge } from './estimate-badge'
+export { Toolbar, ToolbarGroup, ToolButton, ToolSlot } from './toolbar/toolbar'
+export { useRovingToolbar } from './toolbar/use-roving-toolbar'
+
+// 分布与关系类的件（#1918）：功能参照 Arc Customer galaxy（uiarc.dev，2026-11-14 读），实现原创。
+export { SymbolGalaxy, type GalaxyGrouping, type SymbolGalaxyProps } from './symbol-galaxy/symbol-galaxy'
+export {
+  hitNode,
+  layoutGalaxy,
+  stepNode,
+  type GalaxyGroup,
+  type GalaxyLayout,
+  type GalaxyNode,
+  type GalaxyPlace,
+} from './symbol-galaxy/galaxy-model'

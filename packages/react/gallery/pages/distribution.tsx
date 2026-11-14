@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 import { useMemo, useState } from 'react'
+import { SymbolGalaxy, type GalaxyNode } from '../../src/blocks'
 import { ConnectedScatter, Ridgeline, SlopeChart, type ScatterSeries, type SlopeItem } from '../../src/quant'
 import {
   histogramBins,
@@ -285,6 +286,74 @@ export function ConnectedScatterDemo() {
             label="示例：策略甲的轨迹"
             axes={{ x: '年化波动（%）', y: '年化收益（%）' }}
           />
+        </div>
+      </Row>
+    </>
+  )
+}
+
+const SECTORS = ['金融', '科技', '消费', '能源', '医药']
+const MARKETS = ['主板', '创业板', '科创板']
+const STATES = ['持仓', '自选']
+
+/** 示例品种：大小取对数正态（均值 3、标准差 0.9，再取指数，单位「亿」，只为画出有大有小），涨跌取正态（均值 0、标准差 2.5%）；行业、市场、因子分位、状态由序号与种子定。 */
+function galaxyNodes(count: number, seed: number): GalaxyNode[] {
+  const next = seeded(seed)
+  const sizes = gaussians(seed + 1, count, 3, 0.9)
+  const changes = gaussians(seed + 2, count, 0, 0.025)
+  return Array.from({ length: count }, (_, i) => ({
+    id: `s${String(i).padStart(4, '0')}`,
+    label: `示例 ${String(i + 1).padStart(4, '0')}`,
+    size: Math.exp(sizes[i]!),
+    change: changes[i]!,
+    groups: {
+      sector: SECTORS[Math.floor(next() * SECTORS.length)]!,
+      market: MARKETS[Math.floor(next() * MARKETS.length)]!,
+      quantile: `第 ${1 + Math.floor(next() * 5)} 层`,
+      state: STATES[next() < 0.3 ? 0 : 1]!,
+    },
+  }))
+}
+
+const GALAXY_NODES = galaxyNodes(48, 7)
+const GALAXY_MANY = galaxyNodes(2400, 9)
+const GROUPINGS = [
+  { id: 'sector', label: '行业' },
+  { id: 'market', label: '市场' },
+  { id: 'quantile', label: '因子分位' },
+  { id: 'state', label: '状态' },
+]
+
+export function SymbolGalaxyDemo() {
+  const [picked, setPicked] = useState<GalaxyNode | null>(null)
+  const shared = {
+    groupings: GROUPINGS,
+    groupingLabel: '分组方式',
+    describe: (node: GalaxyNode) =>
+      `${node.label}：市值 ${node.size.toFixed(1)} 亿，涨跌 ${node.change === null ? '—' : `${(node.change * 100).toFixed(2)}%`}`,
+    groupText: (group: string, count: number) => `${group}，${count} 只`,
+    legendText: (step: number) => (step === 0 ? '0' : `${step > 0 ? '+' : '−'}${(Math.abs(step) * 1).toFixed(0)}`),
+    limit: 0.03,
+  }
+  return (
+    <>
+      <p className="gal-note">演示数据：固定种子生成的示例品种（市值与涨跌都是随机数），不是行情，也不是持仓。</p>
+      <Row name="48 个示例品种（SVG），点选中">
+        <div className="gal-wide" data-gallery-galaxy="svg">
+          <SymbolGalaxy
+            {...shared}
+            nodes={GALAXY_NODES}
+            label="示例：品种星系"
+            onSelect={setPicked}
+            selectedId={picked?.id ?? null}
+            idle="悬停看详情，点一个点选中；Tab 在团间走，方向键在团内走"
+          />
+          <p data-gallery-galaxy-picked>{picked ? picked.label : ''}</p>
+        </div>
+      </Row>
+      <Row name="2400 个示例品种（点数多，自动改画 canvas）">
+        <div className="gal-wide" data-gallery-galaxy="canvas">
+          <SymbolGalaxy {...shared} nodes={GALAXY_MANY} label="示例：品种星系（2400 个）" defaultGroupBy="market" />
         </div>
       </Row>
     </>

@@ -148,6 +148,11 @@ function collectItems() {
       'registry:component',
       codeIn('src/blocks/attribution-bars').map((f) => `src/blocks/attribution-bars/${f}`),
     )
+    add(
+      'symbol-galaxy',
+      'registry:component',
+      codeIn('src/blocks/symbol-galaxy').map((f) => `src/blocks/symbol-galaxy/${f}`),
+    )
     byFile('src/blocks', 'registry:component', (f) => isCode(f) && f !== 'index.ts')
   }
   return items

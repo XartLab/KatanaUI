@@ -68,6 +68,7 @@ import { ContextMenuDemo, DialogDemo, DropdownMenuDemo, PopoverDemo, TooltipDemo
 } from './pages/quotes'
 import {
   ConnectedScatterDemo,
+  SymbolGalaxyDemo,
   RangeHistogramSliderDemo,
   RidgelineDemo,
   SlopeChartDemo,
@@ -173,6 +174,7 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   ridgeline: RidgelineDemo,
   'slope-chart': SlopeChartDemo,
   'connected-scatter': ConnectedScatterDemo,
+  'symbol-galaxy': SymbolGalaxyDemo,
 }
 
 /**
