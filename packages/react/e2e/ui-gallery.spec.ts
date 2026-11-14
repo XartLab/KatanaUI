@@ -273,7 +273,7 @@ for (const theme of THEMES) {
       await expect(check).toHaveAttribute('aria-checked', 'true')
       await settled(page)
       expect(await bg(check)).not.toBe(checkRest)
-      // 组件卡的样子：勾上后中心一块 6 × 6 的强调色发光方块（LED），框是暗橙边、暗橙底，不是勾。
+      // 组件卡的样子：勾上后中心一块 6 × 6 的强调色方块，框是暗橙边、暗橙底，不是勾。
       const led = check.locator('[data-slot="checkbox-indicator"]')
       const ledBox = (await led.boundingBox())!
       const checkBox = (await check.boundingBox())!
@@ -282,16 +282,8 @@ for (const theme of THEMES) {
       expect(Math.abs(ledBox.x + 3 - (checkBox.x + 7))).toBeLessThanOrEqual(0.5)
       expect(Math.abs(ledBox.y + 3 - (checkBox.y + 7))).toBeLessThanOrEqual(0.5)
       expect(await bg(led)).toBe(await token(page, '--signal-orange'))
-      const glow = await page.evaluate(() => {
-        const probe = document.createElement('i')
-        probe.style.boxShadow = 'var(--glow-orange)'
-        document.body.append(probe)
-        const shadow = getComputedStyle(probe).boxShadow
-        probe.remove()
-        return shadow
-      })
-      // Tailwind 的 shadow 工具类前面垫着四层透明占位，发光是最后两层。
-      expect((await led.evaluate((el) => getComputedStyle(el).boxShadow)).endsWith(glow)).toBe(true)
+      // 发光只给状态灯（Precision Instrument §9）：勾选的方块是控件的「选中」，不发光。
+      await expect(led).toHaveCSS('box-shadow', 'none')
       expect(await check.evaluate((el) => getComputedStyle(el).borderTopColor)).toBe(
         await page.evaluate(() => {
           const probe = document.createElement('i')
@@ -1255,8 +1247,9 @@ for (const theme of THEMES) {
       const fields = section(page, 'slider')
       const root = fields.locator('[data-slot="slider"]').first()
       const thumb = root.locator('[data-slot="slider-thumb"]')
-      // 组件卡 Controls「Slider」：把手 14 · 强调色 · glow；轨 6 高 · 凹槽阴影；填充是竖纹点阵。
+      // 组件卡 Controls「Slider」：把手 14 · 强调色（不发光，发光只给状态灯）；轨 6 高 · 凹槽阴影；填充是竖纹点阵。
       expect(await bg(thumb)).toBe(await token(page, '--signal-orange'))
+      await expect(thumb).toHaveCSS('box-shadow', 'none')
       await expect(thumb).toHaveCSS('width', '14px')
       expect(await thumb.evaluate((n) => parseFloat(getComputedStyle(n).borderTopLeftRadius))).toBeGreaterThanOrEqual(7)
       await expect(root.locator('[data-slot="slider-track"]')).toHaveCSS('height', '6px')
@@ -1707,6 +1700,291 @@ for (const theme of THEMES) {
       await expect(format.getByTestId('quant-price-crypto')).toHaveText('0.00000123')
     })
 
+    test('量化第二批：KPI 瓦片的颜色读 token、涨跌随 data-updown、没数据是空态；阈值虚线与接近上限的边框', async ({
+      page,
+    }) => {
+      await open(page, theme, 'spark-tile')
+      const row = section(page, 'spark-tile').getByTestId('spark-row')
+      const tiles = row.locator('.k-spark-tile')
+      await expect(tiles).toHaveCount(5)
+      const first = tiles.nth(0)
+      await expect(first.locator('.k-spark-tile-tag')).toHaveText('NET ASSET')
+      await expect(first.locator('.k-spark-tile-value')).toHaveText('2.42M')
+      const color = (locator: Locator) => locator.evaluate((element) => getComputedStyle(element).color)
+      const delta = first.locator('[data-slot="change-text"]')
+      await expect(delta).toHaveText('▲+1.31%')
+      await expect.poll(() => color(delta)).toBe(await token(page, '--pnl-up'))
+      // 迷你线真的画出来：有尺寸，颜色是 series-1，末点是橙色。
+      const line = first.locator('polyline')
+      const box = await line.boundingBox()
+      expect(box!.width).toBeGreaterThan(40)
+      expect(box!.height).toBeGreaterThan(8)
+      await expect
+        .poll(() => line.evaluate((element) => getComputedStyle(element).stroke))
+        .toBe(await token(page, '--series-1'))
+      await expect.poll(() => bg(first.locator('.k-spark-tile-end'))).toBe(await token(page, '--signal-orange'))
+      // 越低越好的指标：线用 ink-300。
+      await expect
+        .poll(() =>
+          tiles
+            .nth(1)
+            .locator('polyline')
+            .evaluate((element) => getComputedStyle(element).stroke),
+        )
+        .toBe(await token(page, '--ink-300'))
+      // 接近上限：边框是暗橙，说明写着字且转琥珀，阈值虚线在线的上面。
+      const near = tiles.nth(3)
+      await expect
+        .poll(() => near.evaluate((element) => getComputedStyle(element).borderTopColor))
+        .toBe(await token(page, '--signal-orange-dim'))
+      await expect(near.locator('.k-spark-tile-note')).toHaveText('接近上限')
+      await expect.poll(() => color(near.locator('.k-spark-tile-note'))).toBe(await token(page, '--signal-amber'))
+      const limit = await near.locator('.k-spark-tile-limit').boundingBox()
+      const nearLine = await near.locator('polyline').boundingBox()
+      expect(limit!.width).toBeGreaterThan(40)
+      expect(limit!.y).toBeLessThan(nearLine!.y + nearLine!.height)
+      // 没有数据：数值写 —，不画折线、不画样本。
+      const empty = tiles.nth(4)
+      await expect(empty.locator('.k-spark-tile-value')).toHaveText('—')
+      await expect(empty.locator('polyline')).toHaveCount(0)
+      // 红涨绿跌：涨幅的颜色换成原来跌的颜色。
+      const down = await token(page, '--pnl-down')
+      await page.evaluate(() => document.documentElement.setAttribute('data-updown', 'cn'))
+      await expect.poll(() => color(delta)).toBe(down)
+      await page.evaluate(() => document.documentElement.removeAttribute('data-updown'))
+      // 可点：点一下数值加一。
+      const clickable = section(page, 'spark-tile').locator('button.k-spark-tile')
+      await clickable.click()
+      await expect(clickable.locator('.k-spark-tile-value')).toHaveText('1')
+    })
+
+    test('量化第二批：仪表的填充长度与读数一致、warn 转琥珀、刻度与 sync 大百分比', async ({ page }) => {
+      await open(page, theme, 'meter')
+      const meters = section(page, 'meter')
+      const bars = meters.getByTestId('meter-bars').locator('.k-meter')
+      const fill = async (meter: Locator) => {
+        const track = (await meter.locator('.k-meter-track').boundingBox())!
+        const filled = (await meter.locator('.k-meter-fill').boundingBox())!
+        return filled.width / (track.width - 2)
+      }
+      // 长度编码量：72% 就是约 72% 的槽宽。弹簧还在走时等它停。
+      await expect.poll(async () => Math.round((await fill(bars.nth(0))) * 100)).toBe(72)
+      await expect.poll(async () => Math.round((await fill(bars.nth(1))) * 100)).toBe(38)
+      await expect(bars.nth(0).locator('.k-meter-value')).toHaveText('72%')
+      // warn：数转琥珀、名字里写着原因；上限刻度在 60% 的位置。
+      const warn = bars.nth(1)
+      await expect
+        .poll(() => warn.locator('.k-meter-value').evaluate((element) => getComputedStyle(element).color))
+        .toBe(await token(page, '--signal-amber'))
+      await expect(warn.locator('.k-meter-label')).toContainText('超过 60% 上限')
+      const track = (await warn.locator('.k-meter-track').boundingBox())!
+      const mark = (await warn.locator('.k-meter-mark').boundingBox())!
+      expect((mark.x - track.x) / track.width).toBeGreaterThan(0.55)
+      expect((mark.x - track.x) / track.width).toBeLessThan(0.65)
+      await expect.poll(() => bg(warn.locator('.k-meter-mark'))).toBe(await token(page, '--signal-amber'))
+      // 读屏：role=meter 带当前值。
+      await expect(bars.nth(0).getByRole('meter')).toHaveAttribute('aria-valuenow', '72')
+      // 刻度：五个刻度字，弱势的指针是红色。
+      const gauges = meters.getByTestId('meter-gauges').locator('.k-meter')
+      await expect(gauges.nth(0).locator('.k-meter-ticks span')).toHaveText(['0', '25', '50', '75', '100'])
+      await expect.poll(() => bg(gauges.nth(1).locator('.k-meter-pin'))).toBe(await token(page, '--signal-red'))
+      await expect.poll(() => bg(gauges.nth(0).locator('.k-meter-pin'))).toBe(await token(page, '--signal-orange'))
+      // sync：右侧大百分比，字比条上的数大得多；评估点刻度画在最右。
+      const sync = meters.getByTestId('meter-sync').locator('.k-meter').first()
+      await expect(sync.locator('.k-meter-big')).toHaveText('70%')
+      const big = await sync
+        .locator('.k-meter-big')
+        .evaluate((element) => parseFloat(getComputedStyle(element).fontSize))
+      expect(big).toBeGreaterThan(20)
+      const syncTrack = (await sync.locator('.k-meter-track').boundingBox())!
+      const syncMark = (await sync.locator('.k-meter-mark').boundingBox())!
+      expect(syncMark.x - syncTrack.x).toBeGreaterThan(syncTrack.width - 6)
+    })
+
+    test('量化第二批：订单流仪表的条按读数画在中线两侧、不用涨跌色；N/A 不画条、估算灰显', async ({ page }) => {
+      await open(page, theme, 'flow-gauges')
+      const flow = section(page, 'flow-gauges').locator('.k-flow').first()
+      const boxes = flow.locator('.k-flow-cell-box')
+      await expect(boxes).toHaveCount(4)
+      const pressure = boxes.nth(0)
+      await expect(pressure.locator('.k-flow-value')).toHaveText('+62')
+      const zero = (await pressure.locator('.k-flow-zero').boundingBox())!
+      const bar = (await pressure.locator('.k-flow-zero i').boundingBox())!
+      // +62：从中线往右、占半宽的 62%（31% 的槽宽）。
+      expect(bar.x).toBeGreaterThan(zero.x + zero.width / 2 - 3)
+      expect(bar.width / zero.width).toBeGreaterThan(0.29)
+      expect(bar.width / zero.width).toBeLessThan(0.33)
+      await expect.poll(() => bg(pressure.locator('.k-flow-zero i'))).toBe(await token(page, '--series-1'))
+      // −18：在中线左边，颜色是 series-2，不是跌的红。
+      const change = boxes.nth(1)
+      const negZero = (await change.locator('.k-flow-zero').boundingBox())!
+      const neg = (await change.locator('.k-flow-zero i').boundingBox())!
+      expect(neg.x + neg.width).toBeLessThan(negZero.x + negZero.width / 2 + 3)
+      await expect.poll(() => bg(change.locator('.k-flow-zero i'))).toBe(await token(page, '--series-2'))
+      await page.evaluate(() => document.documentElement.setAttribute('data-updown', 'cn'))
+      await expect.poll(() => bg(change.locator('.k-flow-zero i'))).toBe(await token(page, '--series-2'))
+      await page.evaluate(() => document.documentElement.removeAttribute('data-updown'))
+      // 挂单柱：十档里最高的一档占满。矩阵：四个周期各一行，最后一行写 N/A、没有 LED。
+      const bars = boxes.nth(2).locator('.k-flow-depth i')
+      await expect(bars).toHaveCount(8)
+      await expect(boxes.nth(2).locator('.k-flow-note')).toHaveText('Bid 71% · Ask 29%')
+      const rows = boxes.nth(3).locator('.k-flow-matrix-row')
+      await expect(rows).toHaveCount(4)
+      await expect(rows.nth(3)).toContainText('N/A')
+      await expect(rows.nth(3).locator('.k-flow-led')).toHaveCount(0)
+      await expect(rows.nth(0).locator('.k-flow-led')).toHaveCount(6)
+      // 窗口不足：写 N/A、不画条；估算：写估算字、整格变淡。
+      const lacking = section(page, 'flow-gauges').locator('.k-flow').nth(1).locator('.k-flow-cell-box')
+      await expect(lacking.nth(0).locator('.k-flow-value')).toHaveText('N/A')
+      await expect(lacking.nth(0).locator('.k-flow-zero i')).toHaveCount(0)
+      await expect(lacking.nth(1).locator('.k-flow-est')).toHaveText('估算')
+      await expect
+        .poll(() =>
+          lacking
+            .nth(1)
+            .locator('.k-flow-zero')
+            .evaluate((element) => getComputedStyle(element).opacity),
+        )
+        .toBe('0.55')
+    })
+
+    test('量化第二批：状态带的段色读 series token、宽度按时间；点图例高亮一个状态；估算段带斜纹', async ({ page }) => {
+      await open(page, theme, 'regime-strip')
+      const strip = section(page, 'regime-strip').getByTestId('regime-strip')
+      const band = (await strip.locator('.k-regime-band').boundingBox())!
+      const first = strip.locator('.k-regime-band i').first()
+      await expect.poll(() => bg(first)).toBe(await token(page, '--series-1'))
+      const firstBox = (await first.boundingBox())!
+      // 第一段占 12/100 的带宽，从最左边起。
+      expect(firstBox.x).toBeLessThan(band.x + 2)
+      expect(firstBox.width / band.width).toBeGreaterThan(0.11)
+      expect(firstBox.width / band.width).toBeLessThan(0.13)
+      await expect
+        .poll(() => bg(strip.locator('.k-regime-band i[data-state="crisis"]')))
+        .toBe(await token(page, '--series-7'))
+      // 图例：名字都写着，色块跟带上同色。
+      const legend = strip.locator('.k-regime-legend')
+      await expect(legend).toContainText('趋势上')
+      await expect(legend).toContainText('危机')
+      await expect
+        .poll(() => bg(legend.locator('li[data-state="vol"] .k-regime-swatch')))
+        .toBe(await token(page, '--series-4'))
+      await expect(legend.locator('li[data-current]')).toContainText('当前')
+      // 估算段：斜纹是背景图，不是换色。
+      const estimated = strip.locator('.k-regime-band i[data-estimated]')
+      await expect
+        .poll(() => estimated.evaluate((element) => getComputedStyle(element).backgroundImage))
+        .toContain('repeating-linear-gradient')
+      await expect.poll(() => first.evaluate((element) => getComputedStyle(element).backgroundImage)).toBe('none')
+      await expect(legend).toContainText('估（尚未确认）')
+      // 点「危机」：别的状态变淡，危机还在；再点取消。
+      const crisis = legend.getByRole('button', { name: /危机/ })
+      await crisis.click()
+      await expect(crisis).toHaveAttribute('aria-pressed', 'true')
+      await expect.poll(() => first.evaluate((element) => getComputedStyle(element).opacity)).toBe('0.25')
+      await expect
+        .poll(() =>
+          strip
+            .locator('.k-regime-band i[data-state="crisis"]')
+            .evaluate((element) => getComputedStyle(element).opacity),
+        )
+        .toBe('1')
+      await crisis.click()
+      await expect.poll(() => first.evaluate((element) => getComputedStyle(element).opacity)).toBe('1')
+    })
+
+    test('量化第二批：必要条件块的阻止项有文字、每格有状态字、不可提交的结论是红的、点开看详情', async ({ page }) => {
+      await open(page, theme, 'consensus-block')
+      const doc = section(page, 'consensus-block')
+      const color = (locator: Locator) => locator.evaluate((element) => getComputedStyle(element).color)
+      // 不可推进：未过那一格写着「未过」与原因，结论是红色的「不可推进」，hash 写 —。
+      const blocked = doc.getByTestId('consensus-blocked')
+      const gate = blocked.locator('.k-consensus-party[data-state="blocked"]')
+      await expect(gate).toContainText('未过')
+      await expect(gate).toContainText('偏离门未过 19.4%')
+      await expect(gate.locator('.k-consensus-lamp')).toBeVisible()
+      const verdict = blocked.locator('.k-consensus-verdict')
+      await expect(verdict).toHaveText('不可推进')
+      await expect.poll(() => color(verdict)).toBe(await token(page, '--signal-red'))
+      await expect(blocked.locator('.k-consensus-summary')).toContainText('1 通过 · 0 接近 · 1 未过 · 1 未填')
+      await expect(blocked.locator('.k-consensus-hash')).toHaveText('—')
+      await expect(blocked.locator('.k-consensus-party[data-state="unknown"]')).toContainText('未返回')
+      // 超时、失效、评估中：各有自己的字，没有一格只剩一个灯。
+      const stale = doc.getByTestId('consensus-stale')
+      await expect(stale.locator('.k-consensus-party[data-state="timeout"]')).toContainText('超时')
+      await expect(stale.locator('.k-consensus-party[data-state="stale"]')).toContainText('需重检')
+      await expect(stale.locator('.k-consensus-party[data-state="pending"]')).toContainText('评估中')
+      for (const party of await stale.locator('.k-consensus-party').all()) {
+        expect(((await party.locator('.k-consensus-state').textContent()) ?? '').trim().length).toBeGreaterThan(0)
+      }
+      // 可提交：接近那一格是琥珀字；点开才看到详情；点 hash 是按钮。
+      const ok = doc.getByTestId('consensus-ok')
+      const near = ok.locator('.k-consensus-party[data-state="warn"]')
+      await expect.poll(() => color(near.locator('.k-consensus-msg'))).toBe(await token(page, '--signal-amber'))
+      await expect(ok.locator('.k-consensus-detail')).toHaveCount(0)
+      await near.click()
+      await expect(near).toHaveAttribute('aria-expanded', 'true')
+      await expect(ok.locator('.k-consensus-detail')).toContainText('单票集中度上限 60%')
+      await near.click()
+      await expect(ok.locator('.k-consensus-detail')).toHaveCount(0)
+      await expect(ok.getByRole('button', { name: '7f3a' })).toBeVisible()
+      // 斜切壳：clip-path 是有值的多边形。
+      await expect
+        .poll(() => ok.locator('.k-consensus-shell').evaluate((element) => getComputedStyle(element).clipPath))
+        .toContain('polygon')
+    })
+
+    test('十进制框：↑ 按 tick 走一格（先对齐），Shift 十格，只读与禁用不动；点 − / + 生效；warning 没有 aria-invalid', async ({
+      page,
+    }) => {
+      await open(page, theme, 'decimal-field')
+      const field = section(page, 'decimal-field')
+      const price = field.getByRole('textbox', { name: '价格', exact: true })
+      const priceOut = field.getByTestId('decimal-price-out')
+      // 67000.3 不在 0.5 的格上：↑ 先对齐到 67000.5，再 ↑ 到 67001。
+      await price.focus()
+      await page.keyboard.press('ArrowUp')
+      await expect(price).toHaveValue('67000.5')
+      await expect(priceOut).toHaveText('67000.5')
+      await page.keyboard.press('ArrowUp')
+      await expect(price).toHaveValue('67001')
+      await page.keyboard.press('ArrowDown')
+      await expect(price).toHaveValue('67000.5')
+      await page.keyboard.press('Shift+ArrowUp')
+      await expect(price).toHaveValue('67005.5')
+      // 点 − / +：生效，名字是调用方传的。
+      await field.getByRole('button', { name: '加一格' }).first().click()
+      await expect(price).toHaveValue('67006')
+      await field.getByRole('button', { name: '减一格' }).first().click()
+      await expect(price).toHaveValue('67005.5')
+      // 空框从 base（1）起，步长 0.001；框里右侧有单位。
+      const qty = field.getByRole('textbox', { name: '数量', exact: true })
+      await qty.focus()
+      await page.keyboard.press('ArrowDown')
+      await expect(qty).toHaveValue('0.999')
+      await expect(field.locator('[data-slot="decimal-field-unit"]')).toHaveText('BTC')
+      // 只读：方向键不改，按钮禁用，字还在。
+      const readOnly = field.getByRole('textbox', { name: '只读价格' })
+      await readOnly.focus()
+      await page.keyboard.press('ArrowUp')
+      await page.keyboard.press('Shift+ArrowUp')
+      await expect(readOnly).toHaveValue('100.5')
+      await expect(readOnly).toHaveAttribute('readonly', '')
+      const disabled = field.getByRole('textbox', { name: '禁用价格' })
+      await expect(disabled).toBeDisabled()
+      // 按钮依次是：价格、数量、只读、禁用；后两组的 + 都灰掉。
+      await expect(field.getByRole('button', { name: '加一格' }).nth(2)).toBeDisabled()
+      await expect(field.getByRole('button', { name: '加一格' }).nth(3)).toBeDisabled()
+      // error 报无效，warning 不报；两者边色都不是默认边色。
+      const borderOf = (locator: Locator) => locator.evaluate((element) => getComputedStyle(element).borderTopColor)
+      const plain = await borderOf(price)
+      await expect(field.getByRole('textbox', { name: '错误价格' })).toHaveAttribute('aria-invalid', 'true')
+      const warning = field.getByRole('textbox', { name: '警告价格' })
+      await expect(warning).not.toHaveAttribute('aria-invalid')
+      expect(await borderOf(warning)).not.toBe(plain)
+      expect(await borderOf(field.getByRole('textbox', { name: '错误价格' }))).not.toBe(plain)
+    })
+
     test('积木：数据表每种列类型一列，数字右对齐，盈亏与涨跌幅的颜色读 pnl-up / pnl-down 并在 data-updown="cn" 下互换，点表头排序', async ({
       page,
     }) => {
@@ -1839,30 +2117,6 @@ for (const theme of THEMES) {
       await expect(heat.getByTestId('row-action-log')).toHaveText(`Last action: Open chart · ${code}`)
     })
 
-    test('积木：面板外壳——聚焦的画橙色角括号，普通的没有，空态在壳里', async ({ page }) => {
-      await open(page, theme, 'panel-frame')
-      const frames = section(page, 'panel-frame').locator('[data-slot="panel-frame"]')
-      await expect(frames).toHaveCount(3)
-      const brackets = frames.nth(1).locator('[data-slot="panel-brackets"] i').first()
-      await expect(brackets).toBeVisible()
-      const box = await brackets.boundingBox()
-      expect(box?.width).toBeGreaterThan(5)
-      expect(await brackets.evaluate((el) => getComputedStyle(el).borderTopColor)).not.toBe('rgba(0, 0, 0, 0)')
-      await expect(frames.nth(0).locator('[data-slot="panel-brackets"]')).toHaveCount(0)
-      const title = (i: number) =>
-        frames
-          .nth(i)
-          .locator('[data-slot="panel-title"]')
-          .evaluate((el) => getComputedStyle(el).color)
-      expect(await title(1)).not.toBe(await title(0))
-      // 联动灯四组都取自信号色（赭、粉红、绿、琥珀），没有蓝：B 组是粉红，不是 signal-blue。
-      const groupB = frames.nth(1).getByRole('img', { name: 'Link group B' })
-      await expect(groupB).toHaveCSS('background-color', await token(page, '--signal-red'))
-      expect(await token(page, '--link-b')).not.toBe(await token(page, '--signal-blue'))
-      await expect(frames.nth(0).getByRole('button', { name: 'Maximize' })).toBeVisible()
-      await expect(frames.nth(2).getByRole('status')).toContainText('No data source')
-    })
-
     test('量化：连板天梯——层按板位从高到低，晋级率，炸板行文字淡显，选中行左侧有强调条', async ({ page }) => {
       await open(page, theme, 'limit-ladder')
       const ladder = section(page, 'limit-ladder').locator('[data-slot="limit-ladder"]')
@@ -1880,18 +2134,24 @@ for (const theme of THEMES) {
         fill.boundingBox(),
       ])
       expect(filled!.width / bar!.width).toBeCloseTo(0.5, 1)
-      // 炸板、跌停行淡显，封住行不淡。
-      const opacity = (code: string, part: string) =>
+      // 炸板、跌停行的代码退到 ink-300，封住行是 ink-100；不用透明度（透明度会把对比度压到 4.5:1 以下）。
+      const colorOf = (code: string, part: string) =>
         ladder
           .locator(`[data-code="${code}"] ${part}`)
           .first()
-          .evaluate((el) => Number(getComputedStyle(el).opacity))
-      expect(await opacity('600002', '.k-ladder-symbol')).toBe(1)
-      expect(await opacity('000003', '.k-ladder-symbol')).toBeLessThan(1)
-      expect(await opacity('000003', '.k-ladder-num')).toBeLessThan(1)
-      expect(await opacity('603007', '.k-ladder-symbol')).toBeLessThan(await opacity('600002', '.k-ladder-symbol'))
-      // 淡显只作用在文字：状态胶囊全亮。
-      for (const code of ['000003', '603007', '600010']) expect(await opacity(code, '.k-ladder-status')).toBe(1)
+          .evaluate((el) => getComputedStyle(el).color)
+      const ink = async (name: string) =>
+        page.evaluate((v) => {
+          const probe = document.createElement('i')
+          probe.style.color = `var(${v})`
+          document.body.append(probe)
+          const color = getComputedStyle(probe).color
+          probe.remove()
+          return color
+        }, name)
+      expect(await colorOf('600002', '.k-ladder-symbol')).toBe(await ink('--ink-100'))
+      expect(await colorOf('000003', '.k-ladder-symbol')).toBe(await ink('--ink-300'))
+      expect(await colorOf('603007', '.k-ladder-symbol')).toBe(await ink('--ink-300'))
       // 数值列是界面无衬线加等宽数字，不是等宽字体族。
       // 品种格：代码是主、名称是次（名称更淡更小）；封单额写成「520.00 M」，缺数据写「—」。
       const sym = ladder.locator('[data-code="600002"]')
@@ -2074,8 +2334,7 @@ for (const theme of THEMES) {
       await expect(map.locator('[data-slot="heatmap-group"]')).toHaveCount(0)
       await expect(map.locator('[data-slot="heatmap-crumb"]')).toContainText(name)
       await expect(map.getByRole('button', { name: '市值' })).toHaveAttribute('aria-pressed', 'true')
-      const bigger = await area(cells.first())
-      expect(bigger).toBeGreaterThan(before)
+      await expect.poll(() => area(cells.first())).toBeGreaterThan(before)
       await map.locator('[data-slot="heatmap-crumb"]').getByRole('button', { name: '全部' }).click()
       await expect(cells).toHaveCount(60)
       await map.locator('[data-slot="heatmap-group"]').first().click()
@@ -2270,6 +2529,45 @@ for (const theme of THEMES) {
       const idle = await bg(row)
       await row.hover()
       await expect.poll(() => bg(row)).not.toBe(idle)
+    })
+
+    test('积木：数据表的子行与自定义列：↓ 选一行、→ 展开、← 收起（aria-expanded 跟着变），没有子行的行按 → 没反应，行属性写到行上', async ({
+      page,
+    }) => {
+      await open(page, theme, 'data-grid')
+      const detail = section(page, 'data-grid').getByTestId('grid-detail')
+      const grid = detail.getByRole('treegrid', { name: 'Example rows with detail' })
+      const btc = detail.locator('[data-example="a"]')
+      const es = detail.locator('[data-example="c"]')
+      // 自定义列画出按钮；行属性：data-example 与悬停提示。
+      await expect(btc.getByRole('button', { name: 'Close BTCUSDT' })).toBeVisible()
+      await expect(btc).toHaveAttribute('title', 'BTCUSDT')
+      await expect(btc).toHaveAttribute('aria-expanded', 'false')
+      await expect(es).not.toHaveAttribute('aria-expanded')
+      await expect(detail.getByText('Fills detail for BTCUSDT')).toHaveCount(0)
+      await grid.focus()
+      await page.keyboard.press('ArrowDown')
+      await page.keyboard.press('ArrowRight')
+      await expect(btc).toHaveAttribute('aria-expanded', 'true')
+      const note = detail.getByText('Fills detail for BTCUSDT: 3 fills')
+      await expect(note).toBeVisible()
+      // 子行在这一行下面、跨满整行宽、有高度。
+      const [rowBox, noteBox, nextBox] = await Promise.all([
+        btc.boundingBox(),
+        note.boundingBox(),
+        detail.locator('[data-example="b"]').boundingBox(),
+      ])
+      expect(noteBox!.y).toBeGreaterThanOrEqual(rowBox!.y + rowBox!.height - 1)
+      expect(nextBox!.y).toBeGreaterThanOrEqual(noteBox!.y + noteBox!.height - 1)
+      expect(noteBox!.height).toBeGreaterThan(10)
+      await page.keyboard.press('ArrowLeft')
+      await expect(btc).toHaveAttribute('aria-expanded', 'false')
+      await expect(note).toHaveCount(0)
+      // 没有子行的行（ES）：按 → 没反应。
+      await page.keyboard.press('End')
+      await page.keyboard.press('ArrowRight')
+      await expect(es).not.toHaveAttribute('aria-expanded')
+      await expect(detail.getByText('Fills detail for')).toHaveCount(0)
     })
 
     test('积木：空态、工具条按钮与估算标记', async ({ page }) => {
@@ -3546,12 +3844,183 @@ for (const theme of THEMES) {
     const total = Object.keys(map.cards).length
     await expect(page.locator('[data-card]')).toHaveCount(total)
     // 一张具体的卡：落点、状态、备注都写在行里；部分的卡写着缺什么。
-    // 原来用 DataGrid；#1869 之后它是「已做」，改用仍是「部分」的 PanelFrame（落点是包的出口，备注写还缺什么）。
-    const row = page.locator('[data-card="PanelFrame"]')
-    await expect(row).toHaveAttribute('data-status', '部分')
-    await expect(row).toContainText('拖动抬起')
+    // 部分的卡写着缺什么：取第一张状态是「部分」的卡（数据表、面板壳先后做完过，不写死哪一张）。
+    const row = page.locator('[data-card][data-status="部分"]').first()
+    await expect(row).toContainText(/\S/)
     await expect(row).toBeVisible()
     await page.getByRole('link', { name: 'button', exact: true }).click()
     await expect(section(page, 'button')).toBeVisible()
+  })
+}
+
+// 面板壳、状态栏、分割线、工作区标签（#1901）。
+for (const theme of THEMES) {
+  test(`PanelFrame（${theme}）：焦点面板有四角括号且标题提亮；折叠只剩标题栏；未连接与加载的内容区不画假数据`, async ({
+    page,
+  }) => {
+    await open(page, theme, 'panel-frame')
+    const area = section(page, 'panel-frame')
+    const chart = area.getByRole('region', { name: 'Chart panel' })
+    await expect(chart.locator('.k-panel-brackets i')).toHaveCount(4)
+    for (const corner of await chart.locator('.k-panel-brackets i').all()) await expect(corner).toBeVisible()
+    await expect(chart.getByRole('heading', { name: 'Chart' })).toHaveCSS('color', await token(page, '--ink-100'))
+    await expect(chart.getByRole('img', { name: 'Link group A' })).toBeVisible()
+    // 点一下切走焦点：括号没了，标题退后
+    await area.getByTestId('frame-focus').click({ position: { x: 100, y: 120 } })
+    await expect(chart.locator('.k-panel-brackets')).toHaveCount(0)
+    await expect(chart.getByRole('heading', { name: 'Chart' })).toHaveCSS('color', await token(page, '--ink-300'))
+    // 折叠
+    const watch = area.getByRole('region', { name: 'Collapsible panel' })
+    const body = watch.getByText('Collapse leaves only the title bar.')
+    await expect(body).toBeVisible()
+    const full = (await watch.boundingBox())!.height
+    await watch.getByRole('button', { name: 'Collapse' }).click()
+    await expect(body).toBeHidden()
+    await expect(watch.getByRole('button', { name: 'Expand' })).toHaveAttribute('aria-expanded', 'false')
+    expect((await watch.boundingBox())!.height).toBeLessThan(full / 2)
+    await watch.getByRole('button', { name: 'Expand' }).click()
+    await expect(body).toBeVisible()
+    // 状态：未连接是空态，加载是骨架
+    await expect(area.getByRole('region', { name: 'Orders panel' }).getByText('Not connected')).toBeVisible()
+    await expect(area.getByRole('region', { name: 'Trades panel' }).getByRole('status')).toHaveAttribute(
+      'aria-busy',
+      'true',
+    )
+  })
+
+  test(`StatusBar（${theme}）：项由数据声明；变窄时先收优先级低的进「…」，实盘项不收；可点的项触发`, async ({
+    page,
+  }) => {
+    await open(page, theme, 'status-bar')
+    const area = section(page, 'status-bar')
+    const bar = area.getByRole('group', { name: 'Status bar' })
+    const item = (name: string) => bar.locator(`.k-status-item:not(.k-status-ruler *)`).filter({ hasText: name })
+    for (const name of ['QUOTE', 'EXEC', 'LIVE', 'LINK', 'MODE']) await expect(item(name)).toBeVisible()
+    await expect(bar.getByRole('button', { name: 'More status items' })).toHaveCount(0)
+    expect((await item('LIVE').boundingBox())!.height).toBe(28)
+    await expect(item('LIVE')).toHaveCSS('box-shadow', new RegExp(`inset`))
+    await area.getByRole('button', { name: '260', exact: true }).click()
+    const more = bar.getByRole('button', { name: 'More status items' })
+    await expect(more).toBeVisible()
+    await expect(item('MODE')).toHaveCount(0)
+    await expect(item('LIVE')).toBeVisible()
+    await more.click()
+    await expect(page.locator('.k-status-pop').getByText('QUIET')).toBeVisible()
+    await page.keyboard.press('Escape')
+    // 条里放得下的项都没溢出条
+    const box = (await bar.boundingBox())!
+    for (const shown of await bar.locator('.k-status-item:not(.k-status-ruler *)').all()) {
+      const rect = (await shown.boundingBox())!
+      expect(rect.x + rect.width).toBeLessThanOrEqual(box.x + box.width + 1)
+    }
+  })
+
+  test(`Splitter（${theme}）：方向键挪、Shift 加速、Home / End 到两端、Enter 与双击复位、拖动改比例`, async ({
+    page,
+  }) => {
+    await open(page, theme, 'splitter')
+    const area = section(page, 'splitter')
+    const line = area.getByRole('separator', { name: 'Resize panes' })
+    const now = async () => Number(await line.getAttribute('aria-valuenow'))
+    await expect(line).toHaveAttribute('aria-orientation', 'vertical')
+    await expect(line).toHaveAttribute('aria-valuetext', 'First pane 40%')
+    await expect(line).toHaveCSS('cursor', 'col-resize')
+    await line.focus()
+    const start = await now()
+    await page.keyboard.press('ArrowRight')
+    await expect.poll(now).toBeGreaterThan(start)
+    const one = await now()
+    await page.keyboard.press('Shift+ArrowRight')
+    await expect.poll(now).toBeGreaterThan(one + 3)
+    await page.keyboard.press('ArrowLeft')
+    await page.keyboard.press('Home')
+    await expect.poll(now).toBe(Number(await line.getAttribute('aria-valuemin')))
+    await expect.poll(now).toBeLessThan(20)
+    await page.keyboard.press('End')
+    await expect.poll(now).toBe(Number(await line.getAttribute('aria-valuemax')))
+    await expect.poll(now).toBeGreaterThan(80)
+    await page.keyboard.press('Enter')
+    await expect.poll(now).toBe(50)
+    // 第一块的像素宽度跟着比例走
+    const grid = area.getByTestId('splitter-demo')
+    const first = grid.locator('> div').first()
+    const total = (await grid.boundingBox())!.width - 8
+    expect((await first.boundingBox())!.width).toBeCloseTo(total / 2, 0)
+    // 拖动：线挪到别处，松手提交
+    const box = (await line.boundingBox())!
+    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2)
+    await page.mouse.down()
+    await expect(line).toHaveAttribute('data-dragging', '')
+    await expect(line).toHaveCSS('cursor', 'col-resize')
+    await page.mouse.move(box.x - 100, box.y + 20, { steps: 6 })
+    await page.mouse.up()
+    await expect(line).not.toHaveAttribute('data-dragging', '')
+    await expect.poll(now).toBeLessThan(40)
+    await expect.poll(now).toBeGreaterThan(20)
+    await line.dblclick()
+    await expect.poll(now).toBe(50)
+  })
+
+  test(`WorkspaceTabs（${theme}）：点击切换、橙线跟着当前标签、方向键只移焦点、Alt+方向键排序、F2 改名、放不下的收进「…」且当前标签可见`, async ({
+    page,
+  }) => {
+    await open(page, theme, 'workspace-tabs')
+    const area = section(page, 'workspace-tabs')
+    const bar = area.getByRole('tablist', { name: 'Workspaces' })
+    const tab = (name: string) => bar.getByRole('tab', { name })
+    const mark = bar.locator('.k-wtabs-mark')
+    await expect(tab('Desk')).toHaveAttribute('aria-selected', 'true')
+    await expect(tab('Desk')).toHaveCSS('background-color', await token(page, '--bg-000'))
+    await expect(mark).toHaveCSS('background-color', await token(page, '--signal-orange'))
+    const under = async (name: string) => {
+      const [m, t] = await Promise.all([mark.boundingBox(), tab(name).boundingBox()])
+      return Math.abs(m!.x - t!.x) < 1 && Math.abs(m!.width - t!.width) < 1
+    }
+    await expect.poll(() => under('Desk')).toBe(true)
+    await tab('Lab').click()
+    await expect(tab('Lab')).toHaveAttribute('aria-selected', 'true')
+    await expect.poll(() => under('Lab')).toBe(true)
+    // 键盘：箭头移焦点不切换，Enter 才切换
+    await page.keyboard.press('ArrowLeft')
+    await expect(tab('Desk')).toBeFocused()
+    await expect(tab('Lab')).toHaveAttribute('aria-selected', 'true')
+    await page.keyboard.press('Enter')
+    await expect(tab('Desk')).toHaveAttribute('aria-selected', 'true')
+    await page.keyboard.press('Home')
+    await expect(tab('Overview')).toBeFocused()
+    // 排序：Alt+→ 把 Overview 挪到 Desk 后面
+    await page.keyboard.press('Alt+ArrowRight')
+    const names = async () =>
+      await bar
+        .getByRole('tab')
+        .evaluateAll((nodes) => nodes.map((node) => node.querySelector('.k-wtab-name')!.textContent))
+    await expect.poll(async () => (await names()).slice(0, 2)).toEqual(['Desk', 'Overview'])
+    await expect(tab('Overview')).toBeFocused()
+    // 改名入口
+    await page.keyboard.press('F2')
+    await expect(area.getByTestId('tabs-rename')).toHaveText('Rename requested: overview')
+    // 溢出：条放不下的标签收进「…」下拉，当前标签始终可见，不横向滚动
+    const more = area.getByRole('button', { name: 'More workspaces' })
+    await expect(more).toBeVisible()
+    await expect.poll(() => bar.evaluate((node) => node.scrollWidth <= node.clientWidth)).toBe(true)
+    const create = area.getByRole('button', { name: 'New workspace' })
+    for (let i = 0; i < 3; i++) await create.click()
+    // 点下拉里的项：它切成当前，并且进到条上（与最后一个可见的换位）
+    await more.click()
+    const item = page.getByRole('menuitem', { name: 'Workspace 8' })
+    await expect(item).toBeVisible()
+    await item.click()
+    await expect(tab('Workspace 8')).toHaveAttribute('aria-selected', 'true')
+    await expect(tab('Workspace 8')).toBeInViewport()
+    // 条上的标签不超出条的右边界，「…」与「+」都在条内
+    const box = (await bar.boundingBox())!
+    for (const shown of await bar.getByRole('tab').all()) {
+      const rect = (await shown.boundingBox())!
+      expect(rect.x + rect.width).toBeLessThanOrEqual(box.x + box.width + 1)
+    }
+    // ← → 只在可见标签间走
+    await tab('Workspace 8').focus()
+    await page.keyboard.press('ArrowRight')
+    await expect(tab('Workspace 8')).toBeFocused()
   })
 }

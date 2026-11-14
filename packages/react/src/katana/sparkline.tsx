@@ -7,17 +7,26 @@ import { quoteTone, type QuoteTone } from './quote-tone.ts'
 const W = 200
 const H = 36
 
-/** 折线的点（SVG polyline 的 points）：x 铺满整宽，y 按这列的最低到最高，上下各留 2。少于两个数返回空串。纯函数。 */
-export function sparkPoints(values: readonly number[], width = W, height = H): string {
+/** 某个值在 [lo, hi] 里的纵坐标：最高在顶、最低在底，上下各留 2。hi 等于 lo 时按 1 的跨度算（一条平线落在底边）。纯函数。 */
+export function sparkY(value: number, lo: number, hi: number, height = H): number {
+  return height - 2 - ((value - lo) / (hi - lo || 1)) * (height - 4)
+}
+
+/**
+ * 折线的点（SVG polyline 的 points）：x 铺满整宽，y 按这列的最低到最高，上下各留 2。少于两个数返回空串。纯函数。
+ * extent：给了就按它的 [最低, 最高] 排，不按这列自己的（图里还要画阈值线、要它也落在图里时用，#1929）。
+ */
+export function sparkPoints(
+  values: readonly number[],
+  width = W,
+  height = H,
+  extent?: readonly [number, number],
+): string {
   if (values.length < 2) return ''
-  const lo = Math.min(...values)
-  const hi = Math.max(...values)
-  const span = hi - lo || 1
+  const lo = extent ? extent[0] : Math.min(...values)
+  const hi = extent ? extent[1] : Math.max(...values)
   return values
-    .map(
-      (value, i) =>
-        `${((i / (values.length - 1)) * width).toFixed(2)},${(height - 2 - ((value - lo) / span) * (height - 4)).toFixed(2)}`,
-    )
+    .map((value, i) => `${((i / (values.length - 1)) * width).toFixed(2)},${sparkY(value, lo, hi, height).toFixed(2)}`)
     .join(' ')
 }
 

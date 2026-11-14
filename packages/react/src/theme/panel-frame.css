@@ -1,7 +1,8 @@
 /* SPDX-License-Identifier: MIT */
-/* 面板外壳（PanelFrame，#7）。底是工作台的面板头（shell.css 的 .kc-panel*：40 高薄头、hairline、plate 阴影）；
-   精密仪器语言只加：编号强调色、点阵元信息位与来源行、聚焦时的橙色角括号。橙色只给角括号与状态灯。 */
-.k-panel {
+/* PanelFrame 的皮肤（#1901）：规则从应用 styles/shell.css 的 .kc-panel*、.kc-pane-* 搬来，换成 .k-panel*。
+   全部包在 :where() 里（优先级 0）：应用给它挂了旧类名（.kc-panel 等），应用自己的规则要能压过这里（应用的标题栏 40 高是照 OpenMarket 的图表工具条量的）；
+   单独用时这里就是全部样子，标题栏 32 高照组件卡 PanelFrame。普通面板只有 1px 高光与阴影，不斜切；四角括号只给焦点面板。 */
+:where(.k-panel) {
   position: relative;
   display: flex;
   flex-direction: column;
@@ -14,31 +15,26 @@
   background: var(--bg-300);
   box-shadow: var(--plate);
 }
-.k-panel-head {
+:where(.k-panel[data-collapsed]) {
+  height: auto;
+}
+:where(.k-panel-header) {
   display: flex;
   align-items: center;
   gap: 4px;
-  flex: 0 0 40px;
+  flex: 0 0 32px;
   min-width: 0;
-  height: 40px;
+  height: 32px;
   padding: 0 var(--inset-x);
   border-bottom: 1px solid var(--alpha-white-5);
   background: var(--bg-300);
   cursor: default;
 }
-/* 编号：强调色点阵字（工业文档的页码感）。 */
-.k-panel-index {
-  margin-right: 4px;
-  color: var(--chart-accent, var(--signal-orange));
-  font: var(--text-tag-md) var(--font-dot);
-  letter-spacing: 0;
-  -webkit-font-smoothing: none;
+:where(.k-panel[data-collapsed] .k-panel-header) {
+  border-bottom: 0;
 }
-.k-panel .k-panel-title {
-  flex: 0 0 auto;
-  max-width: 60%;
-  letter-spacing: normal;
-  text-transform: none;
+:where(.k-panel-header > h2) {
+  flex: 0 1 auto;
   min-width: 0;
   margin: 0 4px;
   overflow: hidden;
@@ -49,49 +45,57 @@
   font-weight: 600;
   line-height: 1.3;
 }
-.k-panel.is-focused .k-panel-title {
+:where(.k-panel-header.has-toolbar > h2) {
+  flex: 0 1 120px;
+}
+:where(.k-panel.is-focused .k-panel-header > h2) {
   color: var(--ink-100);
 }
-.k-panel-object {
-  flex: 0 100 auto;
+:where(.k-panel-object) {
+  flex: 0 1 auto;
   min-width: 0;
   overflow: hidden;
   color: var(--ink-300);
   text-overflow: ellipsis;
   white-space: nowrap;
-  font: var(--text-num-sm) var(--font-mono);
-  letter-spacing: 0.06em;
+  font: 11px/16px var(--font-mono);
 }
-.k-panel-toolbar {
-  display: flex;
-  flex: 0 1 auto;
-  align-items: center;
-  min-width: 0;
-  margin-left: 8px;
-}
-.k-panel-meta {
+:where(.k-panel-link) {
+  display: inline-flex;
   flex: 0 0 auto;
-  margin-left: auto;
-  padding-right: 6px;
-  color: var(--ink-300);
-  font: var(--text-tag-md) var(--font-dot);
-  letter-spacing: 0;
-  text-transform: uppercase;
-  white-space: nowrap;
-  -webkit-font-smoothing: none;
 }
-.k-panel-actions {
+:where(.k-panel-actions) {
   display: flex;
-  flex: 0 0 auto;
   gap: 2px;
-}
-.k-panel-actions:first-child,
-.k-panel-toolbar + .k-panel-actions,
-.k-panel-object + .k-panel-actions,
-.k-panel-title + .k-panel-actions {
+  flex: 0 0 auto;
   margin-left: auto;
 }
-.k-panel-body {
+:where(.k-panel-collapse) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 22px;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ink-300);
+  cursor: pointer;
+}
+:where(.k-panel-collapse:hover) {
+  background: var(--bg-400);
+  color: var(--ink-100);
+}
+:where(.k-panel-collapse svg) {
+  width: 14px;
+  height: 14px;
+  transition: transform var(--dur-snappy, 333ms) var(--ease-snappy);
+}
+:where(.k-panel[data-collapsed] .k-panel-collapse svg) {
+  transform: rotate(-90deg);
+}
+:where(.k-panel-body) {
   display: flex;
   flex: 1 1 auto;
   flex-direction: column;
@@ -99,50 +103,37 @@
   min-height: 0;
   overflow: hidden;
 }
-/* 来源行位：底部一行点阵字，hairline 隔开。 */
-.k-panel-source {
-  display: flex;
-  flex: 0 0 24px;
-  align-items: center;
-  gap: 8px;
-  padding: 0 var(--inset-x);
-  border-top: 1px solid var(--alpha-white-5);
-  color: var(--ink-300);
-  font: var(--text-tag-md) var(--font-dot);
-  letter-spacing: 0;
-  text-transform: uppercase;
-  white-space: nowrap;
-  overflow: hidden;
-  -webkit-font-smoothing: none;
+:where(.k-panel-body[hidden]) {
+  display: none;
 }
-/* 聚焦：四角 1px 橙色 L 形括号（signature.md：大屏模式的焦点面板，一屏一组）。 */
-.k-panel-brackets {
+:where(.k-panel-brackets) {
   position: absolute;
   inset: 0;
   pointer-events: none;
 }
-.k-panel-brackets i {
+:where(.k-panel-brackets i) {
   position: absolute;
   width: 10px;
   height: 10px;
-  border: 0 solid var(--signal-orange);
+  border-color: var(--signal-orange);
+  border-style: solid;
 }
-.k-panel-brackets i:nth-child(1) {
+:where(.k-panel-brackets i:nth-child(1)) {
   top: -1px;
   left: -1px;
   border-width: 1px 0 0 1px;
 }
-.k-panel-brackets i:nth-child(2) {
+:where(.k-panel-brackets i:nth-child(2)) {
   top: -1px;
   right: -1px;
   border-width: 1px 1px 0 0;
 }
-.k-panel-brackets i:nth-child(3) {
-  right: -1px;
+:where(.k-panel-brackets i:nth-child(3)) {
   bottom: -1px;
+  right: -1px;
   border-width: 0 1px 1px 0;
 }
-.k-panel-brackets i:nth-child(4) {
+:where(.k-panel-brackets i:nth-child(4)) {
   bottom: -1px;
   left: -1px;
   border-width: 0 0 1px 1px;

@@ -27,6 +27,10 @@
 @import './theme/loading.css';
 @import './theme/data-grid.css';
 @import './theme/empty-state.css';
+@import './theme/splitter.css';
+@import './theme/panel-frame.css';
+@import './theme/status-bar.css';
+@import './theme/workspace-tabs.css';
 @import './theme/ai-status.css';
 @import './theme/quote.css';
 @import './theme/fonts.css';
@@ -34,8 +38,8 @@
 @import './theme/series.css';
 @import './theme/equity-curve.css';
 @import './theme/distribution.css';
-@import './theme/panel-frame.css';
 @import './theme/limit-ladder.css';
 @import './theme/market-heatmap.css';
 @import './theme/technical-rating.css';
 @import './theme/row-actions.css';
+@import './theme/quant.css';

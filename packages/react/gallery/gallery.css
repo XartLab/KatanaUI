@@ -120,7 +120,7 @@ body {
   font: var(--text-body) var(--font-sans);
   line-height: 1.6;
 }
-.gal-doc h2 {
+.gal-doc h2[id^='gal-h-'] {
   margin: 0 0 8px;
   color: var(--ink-300);
   font: var(--text-micro) var(--font-sans);

@@ -117,9 +117,9 @@
   outline: 1px solid var(--line-200);
   outline-offset: -1px;
 }
-/* 没接上的（炸板、跌停、没涨停）只淡文字；状态胶囊是它们为什么淡的说明，保持全亮。 */
-.k-ladder-row:not([data-status='sealed']) :is(.k-ladder-symbol, .k-ladder-sub, .k-ladder-num, .k-ladder-industry) {
-  opacity: 0.55;
+/* 没接上的（炸板、跌停、没涨停）只淡代码与图标（代码换 ink-300，不用透明度：透明度压低对比度，实测过不了 4.5:1）；状态胶囊是它们为什么淡的说明，保持全亮。 */
+.k-ladder-row:not([data-status='sealed']) .k-ladder-symbol {
+  color: var(--ink-300);
 }
 .k-ladder-row:not([data-status='sealed']) .k-symbol-mark {
   opacity: 0.55;
@@ -182,4 +182,11 @@
   margin: auto;
   padding: var(--space-6);
   color: var(--ink-300);
+}
+
+/* 选中行与「没涨停」胶囊的底比 ink-300 亮，console 主题下 ink-300 字压不过 4.5:1，这两处字取 ink-200。 */
+.k-ladder-row.is-selected :is(.k-ladder-sub, .k-ladder-industry),
+.k-ladder-status:not([data-status]),
+.k-ladder-status[data-status='none'] {
+  color: var(--ink-200);
 }
