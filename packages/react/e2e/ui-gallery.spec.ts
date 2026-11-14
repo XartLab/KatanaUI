@@ -4220,6 +4220,82 @@ for (const theme of THEMES) {
     await rows.nth(3).locator('.k-news-symbol').first().click()
     await expect(doc).toContainText('点品种胶囊：600')
   })
+  test(`建议队列（${theme}）：卡片内容与来源链接、倒计时与过期、接受要按住、拒绝与稍后回调、筛选与一行记录`, async ({
+    page,
+  }) => {
+    await open(page, theme, 'decision-queue')
+    const doc = section(page, 'decision-queue')
+    const frame = doc.getByTestId('dq-frame')
+    const cards = frame.locator('.k-dq-card')
+    const log = doc.getByTestId('dq-log')
+    // 待处理页：三张（含一张稍后），过期的那张不在；计数对得上；快过期的在前。
+    await expect(cards).toHaveCount(3)
+    await expect(frame.getByTestId('dq-count-pending')).toHaveText('3')
+    await expect(frame.getByTestId('dq-count-expired')).toHaveText('1')
+    await expect(cards.first().locator('.k-dq-action')).toHaveText('停策略')
+    // 内容：动作与对象、理由、置信、依据、来源链接点得回出处、倒计时。
+    const buy = cards.filter({ hasText: '星河锂业' })
+    await expect(buy.locator('.k-dq-action')).toHaveText('买入')
+    await expect(buy.locator('.k-dq-rationale')).toContainText('产能爬坡')
+    await expect(buy.getByTestId('dq-confidence')).toContainText('置信 72%')
+    const link = buy.getByRole('link', { name: '演示通讯社 · 产能公告' })
+    await expect(link).toHaveAttribute('href', 'https://example.com/demo/capacity')
+    await expect(link).toHaveAttribute('target', '_blank')
+    await expect(buy.getByTestId('dq-left')).toHaveText('还剩 5:00')
+    const urgent = cards.filter({ hasText: '动量轮动 A' }).getByTestId('dq-left')
+    await expect(urgent).toHaveText('还剩 0:50')
+    // 最后一分钟倒计时是琥珀色，其余不是。
+    const amber = await token(page, '--signal-amber')
+    await expect.poll(() => urgent.evaluate((n) => getComputedStyle(n).color)).toBe(amber)
+    expect(await buy.getByTestId('dq-left').evaluate((n) => getComputedStyle(n).color)).not.toBe(amber)
+    // 稍后的卡带标记、没有「稍后」按钮；详情里放 ConsensusBlock。
+    const snoozed = cards.filter({ hasText: '均值回归 B' })
+    await expect(snoozed.locator('.k-dq-snoozed')).toHaveText('已推后')
+    await expect(snoozed.getByRole('button', { name: '稍后' })).toHaveCount(0)
+    await buy.getByRole('button', { name: '执行前检查' }).click()
+    await expect(buy.locator('.k-consensus')).toBeVisible()
+    // 稍后回调：卡带上「已推后」标记，仍在待处理页。
+    const quick = cards.filter({ hasText: '动量轮动 A' })
+    await quick.getByRole('button', { name: '稍后' }).click()
+    await expect(log).toHaveText('稍后 d2')
+    await expect(quick.locator('.k-dq-snoozed')).toHaveText('已推后')
+    await expect(cards).toHaveCount(3)
+    // 快进 2 分钟：剩 0:50 的那张（连同已推后）过了有效期，不在待处理页，进已过期页；剩 5:00 的变 3:00。
+    await doc.getByTestId('dq-ff').click()
+    await expect(cards).toHaveCount(2)
+    await expect(frame.getByTestId('dq-count-pending')).toHaveText('2')
+    await expect(frame.getByTestId('dq-count-expired')).toHaveText('2')
+    await expect(buy.getByTestId('dq-left')).toHaveText('还剩 3:00')
+    // 接受是按住：单击不触发；按住到填满才回调，并且只回调一次。
+    const accept = buy.locator('.k-hold')
+    await accept.click()
+    await expect(log).toHaveText('稍后 d2')
+    const box = (await accept.boundingBox())!
+    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2)
+    await page.mouse.down()
+    await expect(log).toHaveText('接受 d1', { timeout: 3000 })
+    await page.mouse.up()
+    await expect(cards).toHaveCount(1)
+    // 拒绝回调；待处理页清空后出空态。
+    await snoozed.getByRole('button', { name: '拒绝' }).click()
+    await expect(log).toHaveText('拒绝 d3')
+    await expect(frame.locator('.k-dq-empty')).toHaveText('没有待处理的建议')
+    // 已接受页：旧的一条加刚接受的一条，都是一行；一行里有结果、谁、何时；点开才看理由。
+    await frame.getByRole('button', { name: /已接受/ }).click()
+    const rows = frame.locator('.k-dq-row')
+    await expect(rows).toHaveCount(2)
+    expect((await rows.first().boundingBox())!.height).toBeLessThan(44)
+    await expect(rows.filter({ hasText: '半导体篮子' })).toContainText('演示用户 · 1 小时前')
+    await expect(frame.locator('.k-dq-rationale')).toHaveCount(0)
+    await rows.filter({ hasText: '半导体篮子' }).click()
+    await expect(frame.locator('.k-dq-rationale')).toContainText('拥挤度')
+    // 已拒绝页两条；已过期页两条（原有的与刚过期的），过期的没有按钮。
+    await frame.getByRole('button', { name: /已拒绝/ }).click()
+    await expect(rows).toHaveCount(2)
+    await frame.getByRole('button', { name: /已过期/ }).click()
+    await expect(rows).toHaveCount(2)
+    await expect(frame.getByRole('button', { name: '接受', exact: true })).toHaveCount(0)
+  })
 
   test(`系统监控（${theme}）：异常连接排前面、出错策略红边、启停回调、额度条、事件筛选、急停按住才触发、无数据写未连接`, async ({
     page,

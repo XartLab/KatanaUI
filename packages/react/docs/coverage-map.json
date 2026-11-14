@@ -147,9 +147,9 @@
     },
     "DecisionQueue": {
       "kind": "面板",
-      "status": "没做",
-      "at": [],
-      "note": "决策层，还没有对应面板"
+      "status": "已做",
+      "at": ["DecisionQueue"],
+      "note": "件已做（建议卡片、接受按住确认、状态筛选、已处理收成一行）；应用里接真实建议源另开票"
     },
     "DeploymentBoard": {
       "kind": "面板",

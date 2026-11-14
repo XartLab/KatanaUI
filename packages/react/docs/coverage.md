@@ -16,8 +16,8 @@
 | 自有件 | 4 | 0 | 0 | 4 | 4 / 4 |
 | 量化 | 7 | 0 | 0 | 7 | 7 / 7 |
 | 积木 | 6 | 0 | 0 | 6 | 6 / 6 |
-| 面板 | 20 | 15 | 49 | 84 | 20 / 84 |
-| 合计 | | | | 105 | 41 / 105 |
+| 面板 | 21 | 15 | 48 | 84 | 21 / 84 |
+| 合计 | | | | 105 | 42 / 105 |
 
 ## 每张卡
 
@@ -48,7 +48,7 @@
 | DataSources | 运行中心 | 面板 | `src/shell/ConnectionList.tsx` | 部分 | 连接列表有，延迟 LCD 与今日拉取量没有；组件库已有 UptimeBars 逐格可用条（#1918）可补逐日可用，面板里还没接 |
 | DatasetCatalog | 研究 | 面板 | `src/shell/DatasetSourcesPane.tsx`、`TreeView` | 部分 | 数据集来源有，字段数、频率、覆盖区间没有；目录树的件（TreeView）已有，面板还没有接它 |
 | DecisionJournal | 决策 | 面板 | — | 没做 | 决策层，还没有对应面板 |
-| DecisionQueue | 决策 | 面板 | — | 没做 | 决策层，还没有对应面板 |
+| DecisionQueue | 决策 | 面板 | `DecisionQueue` | 已做 | 件已做（建议卡片、接受按住确认、状态筛选、已处理收成一行）；应用里接真实建议源另开票 |
 | DeploymentBoard | 研究 | 面板 | — | 没做 | 研究层，还没有对应面板 |
 | DotMatrix | 点阵 | 自有件 | `DotMatrix` | 已做 |  |
 | DrawingToolbar | 图表 | 面板 | `src/panels/chart/SelectedToolbar.tsx`、`src/panels/chart/FavoritesToolbar.tsx` | 已做 |  |

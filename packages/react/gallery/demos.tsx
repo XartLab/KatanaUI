@@ -29,6 +29,7 @@ import {
 } from './pages/quant.tsx'
 import {
   DataGridDemo,
+  DecisionQueueDemo,
   EmptyStateDemo,
   EstimateBadgeDemo,
   NewsFeedDemo,
@@ -173,6 +174,7 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'event-timeline': EventTimelineDemo,
   'news-feed': NewsFeedDemo,
   'system-monitor': SystemMonitorDemo,
+  'decision-queue': DecisionQueueDemo,
   'password-input': PasswordInputDemo,
   'hold-to-confirm': HoldToConfirmDemo,
   'delete-button': DeleteButtonDemo,
