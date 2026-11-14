@@ -342,10 +342,9 @@
   fill: var(--k-dot, var(--k-scatter-color));
   outline: none;
 }
-/* 末点是强调色（dataviz §3：末点 / 当前点 + 辉光）；中间的点按时间取 seq，越新越亮。 */
+/* 末点是 ink-100（橙色只给状态灯与焦点，不画数据）；中间的点按时间取 seq，越新越亮。 */
 .k-scatter-dot[data-kind='end'] {
-  fill: var(--chart-accent, var(--signal-orange));
-  filter: drop-shadow(0 0 4px var(--chart-accent, var(--signal-orange)));
+  fill: var(--ink-100);
 }
 .k-scatter-dot[data-kind='start'] {
   fill: var(--bg-000);

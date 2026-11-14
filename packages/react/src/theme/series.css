@@ -42,7 +42,7 @@
 .k-brush-line,
 .k-brush-strip-line {
   fill: none;
-  stroke: var(--series-1);
+  stroke: var(--ink-100);
   stroke-width: 2;
   stroke-linejoin: round;
   vector-effect: non-scaling-stroke;
@@ -76,7 +76,7 @@
   height: 8px;
   margin: -4px 0 0 -4px;
   border-radius: 50%;
-  background: var(--series-1);
+  background: var(--ink-100);
   box-shadow: 0 0 0 2px var(--bg-100);
   pointer-events: none;
 }
@@ -307,7 +307,7 @@
     width var(--dur-snappy) var(--ease-snappy);
 }
 .k-attr-bar[data-focus='true'] {
-  --k-dot: var(--chart-accent, var(--signal-orange));
+  --k-dot: var(--ink-100);
 }
 .k-attr-row[data-closed='true'] .k-attr-bar {
   --k-dot: var(--ink-300);
@@ -417,7 +417,7 @@
 
 /* —— Meter（bar / gauge / sync；组件卡 Meter）—— */
 .k-meter {
-  --k-tone: var(--chart-accent, var(--signal-orange));
+  --k-tone: var(--ink-100);
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -542,7 +542,7 @@
   width: 2px;
   margin-left: -1px;
   background: var(--k-tone);
-  box-shadow: var(--chart-end-glow, var(--glow-orange));
+  box-shadow: var(--chart-end-glow, none);
 }
 .k-meter-gauge[data-pin='weak'] .k-meter-pin {
   background: var(--signal-red);
@@ -996,7 +996,7 @@ button.k-sm-head:focus-visible {
 }
 .k-sm-line {
   fill: none;
-  stroke: var(--series-1);
+  stroke: var(--ink-100);
   stroke-width: 1.5;
   stroke-linejoin: round;
   filter: var(--chart-line-glow, none);
@@ -1375,11 +1375,11 @@ button.k-sm-head:focus-visible {
 }
 
 /* 精密仪器语言（#7）：日历热力图的星期头、周号用点阵字，合计读数左边 2px 强调条；格内数字仍是等宽数字。 */
-.k-heat-head,
-.k-heat-wk {
+.k-heat-head {
   font: var(--text-tag-md) var(--font-dot);
   -webkit-font-smoothing: none;
 }
+/* 周号带数字：Doto 的 0 是带菱形点的点阵零（W40 看着像「W4◇」），数字不用点阵字，留等宽。 */
 .k-heat-total {
   padding-left: 8px;
   border-left: 2px solid var(--chart-accent, var(--signal-orange));
