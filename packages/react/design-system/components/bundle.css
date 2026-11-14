@@ -9969,6 +9969,11 @@ button.k-sm-head:focus-visible {
   }
 }
 
+.k-trating-table tbody:first-of-type .k-trating-section th {
+  height: 24px;
+  padding-top: 0;
+}
+
 @property --tw-translate-x {
   syntax: "*";
   inherits: false;

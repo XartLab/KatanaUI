@@ -214,3 +214,8 @@
     max-width: 300px;
   }
 }
+/* 第一节紧贴列头，不留空白；后面的节之间才留。 */
+.k-trating-table tbody:first-of-type .k-trating-section th {
+  height: 24px;
+  padding-top: 0;
+}

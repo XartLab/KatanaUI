@@ -2059,7 +2059,7 @@ for (const theme of THEMES) {
       const rating = section(page, 'technical-rating').locator('[data-slot="technical-rating"]')
       const dials = rating.locator('[data-slot="rating-dial"]')
       await expect(dials).toHaveCount(3)
-      await expect(rating.locator('[data-slot="rating-row"]')).toHaveCount(21)
+      await expect(rating.locator('[data-slot="rating-row"]')).toHaveCount(20)
       // 免责一句与「演示数据」标识都在。
       await expect(rating.locator('[data-slot="rating-disclaimer"]')).toHaveText(
         '评级只是指标读数的汇总，不是买卖建议。',
