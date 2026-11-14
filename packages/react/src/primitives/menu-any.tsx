@@ -9,7 +9,7 @@ import {
   ContextMenuSub,
   ContextMenuSubContent,
   ContextMenuSubTrigger,
-} from './context-menu'
+} from './context-menu.tsx'
 import {
   DropdownMenuCheckboxItem,
   DropdownMenuGroup,
@@ -19,8 +19,8 @@ import {
   DropdownMenuSub,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
-} from './dropdown-menu'
-import { MenuKindContext } from './menu-kind'
+} from './dropdown-menu.tsx'
+import { MenuKindContext } from './menu-kind.ts'
 
 const dropdown = {
   Item: DropdownMenuItem,

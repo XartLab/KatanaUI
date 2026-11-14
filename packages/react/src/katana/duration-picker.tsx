@@ -7,10 +7,10 @@
 // 我们另加的：Enter 确认、Esc 放弃这次编辑回到编辑前的值、上下键加减 1；不用 figma-squircle 的平滑圆角（要加依赖），用普通圆角。
 import { motion, useAnimationControls } from 'motion/react'
 import { useEffect, useRef, useState, type ChangeEvent, type KeyboardEvent, type Ref } from 'react'
-import { cn } from '../lib/cn'
-import { focusRing } from '../lib/focus'
-import { snappy } from '../lib/motion'
-import { unit } from '../lib/spring'
+import { cn } from '../lib/cn.ts'
+import { focusRing } from '../lib/focus.ts'
+import { snappy } from '../lib/motion.ts'
+import { unit } from '../lib/spring.ts'
 
 export type DurationValue = { hours: number; minutes: number }
 

@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vite-plus/test'
-import { AiStatus, DeleteButton, MatrixOrb, NotificationBell, PasswordInput, StatusIcon } from '../index'
-import { formatElapsed } from './ai-status'
-import { orbIntensity, ORB_SCALE, simulatedLevel } from './matrix-orb-model'
-import { badgeText, swingImpulse } from './notification-bell'
-import { eyePath } from './password-input'
+import { AiStatus, DeleteButton, MatrixOrb, NotificationBell, PasswordInput, StatusIcon } from '../index.ts'
+import { formatElapsed } from './ai-status.tsx'
+import { orbIntensity, ORB_SCALE, simulatedLevel } from './matrix-orb-model.ts'
+import { badgeText, swingImpulse } from './notification-bell.tsx'
+import { eyePath } from './password-input.tsx'
 
 // #1861 六件的纯逻辑与结构。动效、焦点、键盘在 e2e/ui-gallery.spec.ts 里用真浏览器逐帧采样。
 

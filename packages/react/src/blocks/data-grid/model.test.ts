@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 import { describe, expect, it } from 'vite-plus/test'
-import { EMPTY_SELECTION, clickSelection, compareDecimal, moveCursor, tableCsv, tableTsv } from './model'
+import { EMPTY_SELECTION, clickSelection, compareDecimal, moveCursor, tableCsv, tableTsv } from './model.ts'
 
 const ORDER = ['a', 'b', 'c', 'd']
 

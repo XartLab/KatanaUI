@@ -3,8 +3,8 @@
 // 拷进来以后归我们改：尺寸、颜色、动效按我们的 token 重写（决策记录 0049）。
 import { HoverCard as HoverCardPrimitive } from 'radix-ui'
 import type { ComponentProps } from 'react'
-import { cn } from '../lib/cn'
-import { OverlayPortal } from '../lib/overlay'
+import { cn } from '../lib/cn.ts'
+import { OverlayPortal } from '../lib/overlay.tsx'
 
 // 悬停卡：指针停在触发器上（或键盘焦点到了它）弹出的一小块补充信息，跟弹层同一块材质；入场跟弹层一样从触发处轻升（theme/motion.css）。
 // 延迟用 Radix 的默认（openDelay 700ms、closeDelay 300ms，radix-ui 1.8.1 的 HoverCard 默认值）：它是补充，不是主要路径，别急着弹。

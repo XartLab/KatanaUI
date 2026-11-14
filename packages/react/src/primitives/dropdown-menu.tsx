@@ -3,9 +3,9 @@
 // 拷进来以后归我们改：样子（尺寸、颜色、动效）按 OpenMarket 实测样式与我们的 token 重写（决策记录 0049）。
 import { DropdownMenu as DropdownMenuPrimitive } from 'radix-ui'
 import { useContext, type ComponentProps } from 'react'
-import { MenuKindContext } from './menu-kind'
-import { cn } from '../lib/cn'
-import { OverlayPortal } from '../lib/overlay'
+import { MenuKindContext } from './menu-kind.ts'
+import { cn } from '../lib/cn.ts'
+import { OverlayPortal } from '../lib/overlay.tsx'
 import {
   MENU_SIDE_OFFSET,
   MenuCheckColumn,
@@ -22,7 +22,7 @@ import {
   menuGroupLabelClass,
   menuRowClass,
   menuSeparatorClass,
-} from './menu-parts'
+} from './menu-parts.tsx'
 
 // 下拉菜单的样子与二级菜单的规矩（#1832）都在 menu-parts.tsx，下拉菜单与右键菜单共用一份。
 // 菜单名：调用方给了 aria-label 就用它。Radix 默认给内容挂 aria-labelledby 指向触发器，而 aria-labelledby 压过 aria-label，

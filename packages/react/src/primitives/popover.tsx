@@ -3,9 +3,9 @@
 // 拷进来以后归我们改：样子（尺寸、颜色、动效）按 OpenMarket 实测样式与我们的 token 重写（决策记录 0049）。
 import { Popover as PopoverPrimitive } from 'radix-ui'
 import type { ComponentProps } from 'react'
-import { cn } from '../lib/cn'
-import { OverlayPortal } from '../lib/overlay'
-import { menuContainerClass } from './menu-parts'
+import { cn } from '../lib/cn.ts'
+import { OverlayPortal } from '../lib/overlay.tsx'
+import { menuContainerClass } from './menu-parts.tsx'
 
 // 弹层：跟菜单同一块材质（OpenMarket tb-interval-dropdown：圆角 overlay · 7% 白边 · 0 16 48 + 0 2 8 阴影）。三种皮肤，variant 选：
 //   panel（默认）：宽 288 · 内边 12，放一小段说明、一组控件。

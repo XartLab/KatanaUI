@@ -3,8 +3,8 @@
 // 拷进来以后归我们改：样子照组件卡（决策记录 0049），拖动跟手与松手吸附是我们加的。
 import { Slider as SliderPrimitive } from 'radix-ui'
 import { useEffect, useRef, useState, type ComponentProps, type PointerEvent } from 'react'
-import { cn } from '../lib/cn'
-import { focusRing } from '../lib/focus'
+import { cn } from '../lib/cn.ts'
+import { focusRing } from '../lib/focus.ts'
 
 // 滑块：KATANA 自有件，照组件卡（design/katana-console/project/components/Controls/README.md「Slider」）：
 // 凹槽轨（6 高 · 最深底 · 1px 线 · recess）+ 点阵填充（3px 亮 2px 暗的竖纹）+ 发光圆把手（14 · 强调色 · glow）；拖动跟手，松手 settle 弹簧吸附到步进；键盘 ← →。

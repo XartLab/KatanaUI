@@ -6,10 +6,10 @@
 // 我们的取舍：包里的三条弹簧都是近临界阻尼（不过冲），所以「摆」做成给 settle 弹簧一个初速度：一个来回，不连续震荡。
 import { AnimatePresence, animate, motion, useMotionValue } from 'motion/react'
 import { useEffect, useRef, useState, type ComponentProps } from 'react'
-import { cn } from '../lib/cn'
-import { focusRing } from '../lib/focus'
-import { settle, snappy } from '../lib/motion'
-import { unit } from '../lib/spring'
+import { cn } from '../lib/cn.ts'
+import { focusRing } from '../lib/focus.ts'
+import { settle, snappy } from '../lib/motion.ts'
+import { unit } from '../lib/spring.ts'
 
 /** 角标上的字：0 不画；超过上限写「<上限>+」。数不是有限的整数时当 0。 */
 export function badgeText(count: number, max: number): string {

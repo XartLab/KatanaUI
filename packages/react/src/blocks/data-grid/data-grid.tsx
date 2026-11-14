@@ -24,14 +24,22 @@ import {
   type PointerEvent,
   type ReactNode,
 } from 'react'
-import { cn } from '../../lib/cn'
-import { ContextMenu, ContextMenuContent, ContextMenuTrigger } from '../../primitives/context-menu'
-import { useMenuParts } from '../../primitives/menu-any'
-import { MenuItemHint, MenuItemLabel } from '../../primitives/menu-parts'
-import { ToneText } from '../../quant/tone-text'
-import { defaultAlign, resolveCell, sortComparator, type GridColumn } from './columns'
-import { DEFAULT_TEXTS, useDataGridHost, type GridMenuEntry } from './host'
-import { EMPTY_SELECTION, clickSelection, moveCursor, tableCsv, tableTsv, type Selection, type SortSpec } from './model'
+import { cn } from '../../lib/cn.ts'
+import { ContextMenu, ContextMenuContent, ContextMenuTrigger } from '../../primitives/context-menu.tsx'
+import { useMenuParts } from '../../primitives/menu-any.tsx'
+import { MenuItemHint, MenuItemLabel } from '../../primitives/menu-parts.tsx'
+import { ToneText } from '../../quant/tone-text.tsx'
+import { defaultAlign, resolveCell, sortComparator, type GridColumn } from './columns.ts'
+import { DEFAULT_TEXTS, useDataGridHost, type GridMenuEntry } from './host.tsx'
+import {
+  EMPTY_SELECTION,
+  clickSelection,
+  moveCursor,
+  tableCsv,
+  tableTsv,
+  type Selection,
+  type SortSpec,
+} from './model.ts'
 
 // 数据表：账户、仓位、订单、交易这几张表共用的表格，从应用的 panels/kit/DataTable 拆出（#1869）。包里这一份不认识应用：
 // 列的排序、显隐、宽度、顺序是受控的（调用方存），行为交给 @tanstack/react-table（v9 的 headless 表），行多时只画看得见的那一段

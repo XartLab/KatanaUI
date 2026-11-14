@@ -6,11 +6,11 @@
 // 不学它的强度条：控制台里填的是交易所发的密钥，强度没有意义。
 import { animate, motion, useMotionValue, useTransform } from 'motion/react'
 import { useEffect, useRef, useState, type ComponentProps } from 'react'
-import { cn } from '../lib/cn'
-import { focusRingInset } from '../lib/focus'
-import { snappy } from '../lib/motion'
-import { unit } from '../lib/spring'
-import { Input } from '../primitives/input'
+import { cn } from '../lib/cn.ts'
+import { focusRingInset } from '../lib/focus.ts'
+import { snappy } from '../lib/motion.ts'
+import { unit } from '../lib/spring.ts'
+import { Input } from '../primitives/input.tsx'
 
 /** 眼睛的轮廓：open 为 1 是睁开的杏仁形，为 0 是压平的一条线（眼睑合上）。 */
 export function eyePath(open: number): string {

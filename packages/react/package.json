@@ -11,6 +11,7 @@
   },
   "files": [
     "src",
+    "lib",
     "LICENSE",
     "NOTICE",
     "README.md"
@@ -21,14 +22,38 @@
     "./gallery/main.tsx"
   ],
   "exports": {
-    ".": "./src/index.ts",
+    ".": {
+      "types": "./lib/index.d.ts",
+      "source": "./src/index.ts",
+      "default": "./lib/index.js"
+    },
     "./ui.css": "./src/ui.css",
     "./tokens.css": "./src/tokens.css",
-    "./motion": "./src/lib/motion.ts",
-    "./quant": "./src/quant/index.ts",
-    "./quant/format": "./src/quant/format/index.ts",
-    "./blocks": "./src/blocks/index.ts",
-    "./tokens.json": "./src/tokens-json.ts"
+    "./motion": {
+      "types": "./lib/lib/motion.d.ts",
+      "source": "./src/lib/motion.ts",
+      "default": "./lib/lib/motion.js"
+    },
+    "./quant": {
+      "types": "./lib/quant/index.d.ts",
+      "source": "./src/quant/index.ts",
+      "default": "./lib/quant/index.js"
+    },
+    "./quant/format": {
+      "types": "./lib/quant/format/index.d.ts",
+      "source": "./src/quant/format/index.ts",
+      "default": "./lib/quant/format/index.js"
+    },
+    "./blocks": {
+      "types": "./lib/blocks/index.d.ts",
+      "source": "./src/blocks/index.ts",
+      "default": "./lib/blocks/index.js"
+    },
+    "./tokens.json": {
+      "types": "./lib/tokens-json.d.ts",
+      "source": "./src/tokens-json.ts",
+      "default": "./lib/tokens-json.js"
+    }
   },
   "scripts": {
     "dev": "pnpm --filter @katana-ui/tokens run tokens:sync && vp dev",
@@ -39,7 +64,9 @@
     "ds:build": "pnpm --filter @katana-ui/tokens run tokens:sync && node scripts/ds-build.mjs",
     "registry:build": "node scripts/registry-json.mjs && shadcn build -o r",
     "test:e2e": "playwright test",
-    "test:happo": "E2E_HAPPO=1 happo -- playwright test"
+    "test:happo": "E2E_HAPPO=1 happo -- playwright test",
+    "build": "tsc -p tsconfig.build.json",
+    "prepare": "pnpm run build"
   },
   "dependencies": {
     "@internationalized/date": "3.12.4",

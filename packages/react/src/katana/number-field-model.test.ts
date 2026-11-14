@@ -9,7 +9,7 @@ import {
   scrubbed,
   tidy,
   typed,
-} from './number-field-model'
+} from './number-field-model.ts'
 
 const range = { min: 0, max: 100, step: 1 }
 const none = { shift: false, alt: false }

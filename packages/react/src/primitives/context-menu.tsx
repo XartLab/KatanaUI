@@ -3,9 +3,9 @@
 // 拷进来以后归我们改：皮肤和二级菜单的规矩与下拉菜单共用一份（menu-parts.tsx），这里只接 Radix 的右键菜单（决策记录 0049）。
 import { ContextMenu as ContextMenuPrimitive } from 'radix-ui'
 import { useContext, type ComponentProps } from 'react'
-import { MenuKindContext } from './menu-kind'
-import { cn } from '../lib/cn'
-import { OverlayPortal } from '../lib/overlay'
+import { MenuKindContext } from './menu-kind.ts'
+import { cn } from '../lib/cn.ts'
+import { OverlayPortal } from '../lib/overlay.tsx'
 import {
   MenuCheckColumn,
   MenuShortcut,
@@ -21,7 +21,7 @@ import {
   menuGroupLabelClass,
   menuRowClass,
   menuSeparatorClass,
-} from './menu-parts'
+} from './menu-parts.tsx'
 
 // 右键菜单开在指针处：Radix 固定 side=right、align=start，放不下自动翻面；不是 Base UI 那样贴着指针的左上角，差 sideOffset 2。
 // 菜单名的处理同下拉菜单：给了 aria-label 就不要 aria-labelledby。

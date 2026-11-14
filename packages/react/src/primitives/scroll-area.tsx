@@ -3,8 +3,8 @@
 // 拷进来以后归我们改：尺寸、颜色、动效按我们的 token 重写（决策记录 0049）。
 import { ScrollArea as ScrollAreaPrimitive } from 'radix-ui'
 import type { ComponentProps } from 'react'
-import { cn } from '../lib/cn'
-import { focusRingInset } from '../lib/focus'
+import { cn } from '../lib/cn.ts'
+import { focusRingInset } from '../lib/focus.ts'
 
 // 滚动区：Radix 的自绘滚动条，4px 宽，平时不出现，指针到了这一块才出一条淡线（18% 墨色，指到滚动条上 32%），跟全应用原生滚动条的写法同一个样（#1799）。
 // 调用方要给 Root 一个确定的高（或 max-height）：内容比它高才滚。键盘：Viewport 可聚焦（tabIndex 0），内容里没有可聚焦的东西时方向键、PageDown 也能滚。

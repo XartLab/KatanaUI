@@ -26,6 +26,7 @@ export default defineConfig({
       'design-system/**',
       'registry.json',
       'dist/**',
+      'lib/**',
       'r/**',
     ],
   },
@@ -33,7 +34,7 @@ export default defineConfig({
   lint: {
     plugins: ['eslint', 'typescript', 'unicorn', 'oxc', 'react'],
     options: { typeAware: true, denyWarnings: true, reportUnusedDisableDirectives: 'deny' },
-    ignorePatterns: ['dist/**', 'r/**'],
+    ignorePatterns: ['dist/**', 'lib/**', 'r/**'],
     rules: {
       'typescript/unbound-method': 'off',
       'unicorn/no-new-array': 'off',

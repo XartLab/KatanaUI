@@ -3,7 +3,7 @@
 // 拷进来以后归我们改：尺寸、颜色、动效按我们的 token 重写（决策记录 0049）。
 import { Separator as SeparatorPrimitive } from 'radix-ui'
 import type { ComponentProps } from 'react'
-import { cn } from '../lib/cn'
+import { cn } from '../lib/cn.ts'
 
 // 分隔线：1px，取 line 色（跟菜单里的分隔线同一条白线）。decorative 默认为真：只是画一道线，读屏不报；
 // 真的把两块内容分成两个区域、要读屏知道的传 decorative={false}（Radix 会给 role=separator 与 aria-orientation）。

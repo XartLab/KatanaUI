@@ -14,8 +14,8 @@ import {
   TimeField,
   type DateSegmentProps,
 } from 'react-aria-components'
-import { fromCalendarDate, fromTime, toCalendarDate, toTime } from './date-time-model'
-import { Popover, PopoverContent, PopoverTrigger } from '../primitives/popover'
+import { fromCalendarDate, fromTime, toCalendarDate, toTime } from './date-time-model.ts'
+import { Popover, PopoverContent, PopoverTrigger } from '../primitives/popover.tsx'
 
 // 搬自 src/ui/DateTimeInput.tsx（#1860）：样子与行为没改，皮肤在 ../theme/date-time.css；包里不带文字，各段的读屏名由 labels 给，语言由 locale 给。
 // 日期时间输入（#368）：回放起点、转到日期、自定义区间、日志过滤、补录成交共用这一个，换掉浏览器自带的 date / time 框

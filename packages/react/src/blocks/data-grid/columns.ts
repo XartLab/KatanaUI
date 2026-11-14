@@ -8,8 +8,8 @@ import {
   type PriceFallback,
   type QuantityUnits,
   type SizeFormat,
-} from '../../quant/format'
-import { compareDecimal } from './model'
+} from '../../quant/format/index.ts'
+import { compareDecimal } from './model.ts'
 
 // 列类型（#1869）：列声明一个类型，格式化、对齐、着色、排序由类型给，不每列手写。
 // 参照：AG Grid 的 column types（columnTypes 里挂一组默认的列属性，列用 `type` 引用，2026-11-14 读文档，只取这个概念，没有抄代码）、

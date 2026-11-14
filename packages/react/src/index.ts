@@ -2,15 +2,15 @@
 // @katana-ui/react 的出口：应用只从这里引（dependency-cruiser 的 ui-only-via-entry）。样式走 `@katana-ui/react/tokens.css` 与 `@katana-ui/react/ui.css`，
 // 动效参数走 `@katana-ui/react/motion`。
 
-export { cn } from './lib/cn'
-export { focusRing, focusRingInset } from './lib/focus'
-export { useHoverOpen } from './lib/hover-open'
-export { InlineOverlays } from './lib/overlay'
+export { cn } from './lib/cn.ts'
+export { focusRing, focusRingInset } from './lib/focus.ts'
+export { useHoverOpen } from './lib/hover-open.ts'
+export { InlineOverlays } from './lib/overlay.tsx'
 
-export { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from './primitives/accordion'
-export { Alert, AlertDescription, AlertTitle, alertVariants } from './primitives/alert'
-export { Button, buttonVariants } from './primitives/button'
-export { Checkbox } from './primitives/checkbox'
+export { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from './primitives/accordion.tsx'
+export { Alert, AlertDescription, AlertTitle, alertVariants } from './primitives/alert.tsx'
+export { Button, buttonVariants } from './primitives/button.tsx'
+export { Checkbox } from './primitives/checkbox.tsx'
 export {
   Command,
   CommandDialog,
@@ -21,8 +21,8 @@ export {
   CommandList,
   CommandSeparator,
   CommandShortcut,
-} from './primitives/command'
-export { menuContainerClass, menuRowClass, menuSeparatorClass } from './primitives/menu-parts'
+} from './primitives/command.tsx'
+export { menuContainerClass, menuRowClass, menuSeparatorClass } from './primitives/menu-parts.tsx'
 export {
   ContextMenu,
   ContextMenuCheckboxItem,
@@ -39,7 +39,7 @@ export {
   ContextMenuSubContent,
   ContextMenuSubTrigger,
   ContextMenuTrigger,
-} from './primitives/context-menu'
+} from './primitives/context-menu.tsx'
 export {
   Dialog,
   DialogBody,
@@ -52,7 +52,7 @@ export {
   DialogPortal,
   DialogTitle,
   DialogTrigger,
-} from './primitives/dialog'
+} from './primitives/dialog.tsx'
 export {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -69,7 +69,7 @@ export {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
-} from './primitives/dropdown-menu'
+} from './primitives/dropdown-menu.tsx'
 export {
   Field,
   FieldContent,
@@ -81,11 +81,11 @@ export {
   FieldSeparator,
   FieldSet,
   useFieldControl,
-} from './primitives/field'
-export { HoverCard, HoverCardContent, HoverCardTrigger } from './primitives/hover-card'
-export { Label } from './primitives/label'
-export { useMenuParts } from './primitives/menu-any'
-export { MenuCheckColumn, MenuItemHint, MenuItemIcon, MenuItemLabel } from './primitives/menu-parts'
+} from './primitives/field.tsx'
+export { HoverCard, HoverCardContent, HoverCardTrigger } from './primitives/hover-card.tsx'
+export { Label } from './primitives/label.tsx'
+export { useMenuParts } from './primitives/menu-any.tsx'
+export { MenuCheckColumn, MenuItemHint, MenuItemIcon, MenuItemLabel } from './primitives/menu-parts.tsx'
 export {
   Popover,
   PopoverAnchor,
@@ -95,11 +95,11 @@ export {
   PopoverHeader,
   PopoverTitle,
   PopoverTrigger,
-} from './primitives/popover'
-export { Input, inputVariants } from './primitives/input'
-export { Progress } from './primitives/progress'
-export { ScrollArea, ScrollBar } from './primitives/scroll-area'
-export { Separator } from './primitives/separator'
+} from './primitives/popover.tsx'
+export { Input, inputVariants } from './primitives/input.tsx'
+export { Progress } from './primitives/progress.tsx'
+export { ScrollArea, ScrollBar } from './primitives/scroll-area.tsx'
+export { Separator } from './primitives/separator.tsx'
 export {
   Sheet,
   SheetBody,
@@ -113,7 +113,7 @@ export {
   SheetTitle,
   SheetTrigger,
   sheetVariants,
-} from './primitives/sheet'
+} from './primitives/sheet.tsx'
 export {
   Select,
   SelectArrow,
@@ -123,14 +123,14 @@ export {
   SelectValue,
   selectItemClass,
   selectTriggerVariants,
-} from './primitives/select'
-export { Slider } from './primitives/slider'
-export { Switch } from './primitives/switch'
-export { Tabs, TabsContent, TabsList, TabsTrigger, tabsListVariants } from './primitives/tabs'
-export { ToggleGroup, ToggleGroupItem, toggleGroupVariants, toggleItemVariants } from './primitives/toggle-group'
-export { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger, tooltipContentClass } from './primitives/tooltip'
-export { MultiSelect } from './patterns/multi-select'
-export { QuoteTable, type QuoteGroup, type QuoteRow, type QuoteTableProps } from './patterns/quote-table'
+} from './primitives/select.tsx'
+export { Slider } from './primitives/slider.tsx'
+export { Switch } from './primitives/switch.tsx'
+export { Tabs, TabsContent, TabsList, TabsTrigger, tabsListVariants } from './primitives/tabs.tsx'
+export { ToggleGroup, ToggleGroupItem, toggleGroupVariants, toggleItemVariants } from './primitives/toggle-group.tsx'
+export { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger, tooltipContentClass } from './primitives/tooltip.tsx'
+export { MultiSelect } from './patterns/multi-select.tsx'
+export { QuoteTable, type QuoteGroup, type QuoteRow, type QuoteTableProps } from './patterns/quote-table.tsx'
 export {
   Combobox,
   ComboboxContent,
@@ -140,19 +140,19 @@ export {
   ComboboxItem,
   ComboboxList,
   ComboboxTrigger,
-} from './patterns/combobox'
+} from './patterns/combobox.tsx'
 
 // KATANA 自有件（#1860 从 src/ui 搬来）：读数、状态灯、点阵、快捷键方块、徽标、滚动数字、数字框、日期时间框、加载骨架。
-export { DotMatrix, DOT_PITCH, DOT_SIZE } from './katana/dot-matrix'
-export { ARCADE_SPRITES, ArcadePixel, type ArcadePixelAnimate, type ArcadePixelProps } from './katana/arcade-pixel'
-export { Lcd, type LcdTone } from './katana/lcd'
-export { Led, LINK_GROUPS, type LedState, type LinkGroup } from './katana/led'
-export { Kbd } from './katana/kbd'
-export { BadgeGroup, type BadgeItem } from './katana/badge'
-export { RollingText, rollSlots, rollStrip } from './katana/rolling-text'
-export { NumberInput } from './katana/number-input'
-export { DateTimeInput, type DateTimeLabels } from './katana/date-time-input'
-export { Skeleton } from './katana/skeleton'
+export { DotMatrix, DOT_PITCH, DOT_SIZE } from './katana/dot-matrix.tsx'
+export { ARCADE_SPRITES, ArcadePixel, type ArcadePixelAnimate, type ArcadePixelProps } from './katana/arcade-pixel.tsx'
+export { Lcd, type LcdTone } from './katana/lcd.tsx'
+export { Led, LINK_GROUPS, type LedState, type LinkGroup } from './katana/led.tsx'
+export { Kbd } from './katana/kbd.tsx'
+export { BadgeGroup, type BadgeItem } from './katana/badge.tsx'
+export { RollingText, rollSlots, rollStrip } from './katana/rolling-text.tsx'
+export { NumberInput } from './katana/number-input.tsx'
+export { DateTimeInput, type DateTimeLabels } from './katana/date-time-input.tsx'
+export { Skeleton } from './katana/skeleton.tsx'
 export {
   TOAST_EXIT_MS,
   Toast,
@@ -166,24 +166,29 @@ export {
   ToastViewport,
   type ToastPhase,
   type ToastPosition,
-} from './katana/toast'
-export { Loading, LoadingBoundary } from './katana/loading'
-export { LoadingView, type LoadingTexts } from './katana/loading-view'
-export type { LoadingPhase } from './katana/loading-gate'
+} from './katana/toast.tsx'
+export { Loading, LoadingBoundary } from './katana/loading.tsx'
+export { LoadingView, type LoadingTexts } from './katana/loading-view.tsx'
+export type { LoadingPhase } from './katana/loading-gate.ts'
 
 // 学自 rare-ui 的交互、本仓库重写的件（#1861）：密钥输入、原地确认的危险按钮、带未读数的铃、状态图标、行内 AI 状态、点阵状态球。
-export { PasswordInput, type PasswordInputProps } from './katana/password-input'
-export { DeleteButton, type DeleteButtonProps } from './katana/delete-button'
-export { NotificationBell, type NotificationBellProps } from './katana/notification-bell'
-export { StatusIcon, type StatusIconStatus } from './katana/status-icon'
-export { AiStatus, type AiStatusProps, type AiStatusState } from './katana/ai-status'
-export { MatrixOrb, type MatrixOrbProps } from './katana/matrix-orb'
-export type { OrbState } from './katana/matrix-orb-model'
+export { PasswordInput, type PasswordInputProps } from './katana/password-input.tsx'
+export { DeleteButton, type DeleteButtonProps } from './katana/delete-button.tsx'
+export { NotificationBell, type NotificationBellProps } from './katana/notification-bell.tsx'
+export { StatusIcon, type StatusIconStatus } from './katana/status-icon.tsx'
+export { AiStatus, type AiStatusProps, type AiStatusState } from './katana/ai-status.tsx'
+export { MatrixOrb, type MatrixOrbProps } from './katana/matrix-orb.tsx'
+export type { OrbState } from './katana/matrix-orb-model.ts'
 
 // 第二批（#1861）：里程表式数字滚动（升级 RollingText，见上）、分步进度条、主题选择、代码块、联网检索来源、任务清单、时长选择。
-export { StepPlayer, type StepPlayerLabels, type StepPlayerProps, type StepPlayerStep } from './katana/step-player'
-export { ThemeSelector, type ThemeOption, type ThemePalette, type ThemeSelectorProps } from './katana/theme-selector'
-export { CodeBlock, type CodeBlockProps } from './katana/code-block'
+export { StepPlayer, type StepPlayerLabels, type StepPlayerProps, type StepPlayerStep } from './katana/step-player.tsx'
+export {
+  ThemeSelector,
+  type ThemeOption,
+  type ThemePalette,
+  type ThemeSelectorProps,
+} from './katana/theme-selector.tsx'
+export { CodeBlock, type CodeBlockProps } from './katana/code-block.tsx'
 export {
   WebSearch,
   WebSearchCitation,
@@ -191,21 +196,21 @@ export {
   type WebSearchCitationProps,
   type WebSearchStatus,
   type WebSource,
-} from './katana/web-search'
-export { TaskList, type Task, type TaskListLabels, type TaskListProps } from './katana/task-list'
+} from './katana/web-search.tsx'
+export { TaskList, type Task, type TaskListLabels, type TaskListProps } from './katana/task-list.tsx'
 export {
   DurationPicker,
   type DurationPickerLabels,
   type DurationPickerProps,
   type DurationValue,
-} from './katana/duration-picker'
-export { useHoverIntent } from './lib/hover-intent'
+} from './katana/duration-picker.tsx'
+export { useHoverIntent } from './lib/hover-intent.ts'
 
 // 报价与行情类的件（#1884）：迷你图、进度条、矩形树图（后三件从应用的分析视图提来）；行内价格标签、报价卡与一排、区间条、评级仪表是新做的。
 // 功能参照 TradingView 小组件，只取「给用户看什么、怎么交互」，不嵌、不抄（用户 2026-11-14 定：我们做自己的）。分组页签行情表在 patterns/。
-export { Sparkline, sparkPoints, sparkTone, type SparklineProps } from './katana/sparkline'
-export { GaugeBar, type GaugeBarClasses, type GaugeBarProps } from './katana/gauge-bar'
-export { Treemap, type TreemapClasses, type TreemapProps } from './katana/treemap'
+export { Sparkline, sparkPoints, sparkTone, type SparklineProps } from './katana/sparkline.tsx'
+export { GaugeBar, type GaugeBarClasses, type GaugeBarProps } from './katana/gauge-bar.tsx'
+export { Treemap, type TreemapClasses, type TreemapProps } from './katana/treemap.tsx'
 export {
   colorStep,
   layoutTreemap,
@@ -214,10 +219,10 @@ export {
   type TreemapBlock,
   type TreemapCell,
   type TreemapItem,
-} from './katana/treemap-model'
-export { PriceTag, type PriceTagProps } from './katana/price-tag'
-export { QuoteCard, QuoteStrip, type QuoteCardProps, type QuoteStripProps } from './katana/quote-card'
-export { RangeBar, rangeShare, type RangeBarProps } from './katana/range-bar'
-export { RatingGauge, type RatingGaugeProps } from './katana/rating-gauge'
-export { ratingAngle, ratingZone } from './katana/rating-gauge-model'
-export { quoteTone, type QuoteTone } from './katana/quote-tone'
+} from './katana/treemap-model.ts'
+export { PriceTag, type PriceTagProps } from './katana/price-tag.tsx'
+export { QuoteCard, QuoteStrip, type QuoteCardProps, type QuoteStripProps } from './katana/quote-card.tsx'
+export { RangeBar, rangeShare, type RangeBarProps } from './katana/range-bar.tsx'
+export { RatingGauge, type RatingGaugeProps } from './katana/rating-gauge.tsx'
+export { ratingAngle, ratingZone } from './katana/rating-gauge-model.ts'
+export { quoteTone, type QuoteTone } from './katana/quote-tone.ts'

@@ -1,15 +1,15 @@
 // SPDX-License-Identifier: MIT
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vite-plus/test'
-import { CodeBlock, DurationPicker, StepPlayer, TaskList, ThemeSelector, WebSearch } from '../index'
-import { highlight } from './code-highlight'
-import { gutterWidth, trimCode } from './code-block'
-import { fieldText, parseField } from './duration-picker'
-import { rollSlots, rollStrip } from './rolling-text'
-import { arrive, clampStep, stepDuration } from './step-player-model'
-import { orderTasks } from './task-list'
-import { nextThemeIndex } from './theme-selector'
-import { searchProgress, siteInitial } from './web-search'
+import { CodeBlock, DurationPicker, StepPlayer, TaskList, ThemeSelector, WebSearch } from '../index.ts'
+import { highlight } from './code-highlight.ts'
+import { gutterWidth, trimCode } from './code-block.tsx'
+import { fieldText, parseField } from './duration-picker.tsx'
+import { rollSlots, rollStrip } from './rolling-text.tsx'
+import { arrive, clampStep, stepDuration } from './step-player-model.ts'
+import { orderTasks } from './task-list.tsx'
+import { nextThemeIndex } from './theme-selector.tsx'
+import { searchProgress, siteInitial } from './web-search.tsx'
 
 // #1861 第二批的纯逻辑与结构。动效、焦点、键盘在 e2e/ui-gallery.spec.ts 里用真浏览器验。
 

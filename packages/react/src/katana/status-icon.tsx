@@ -5,9 +5,9 @@
 // ③ 失败、警告的图标不靠颜色单独表达，形状也不同。
 // 不学：它的 squircle 外框与 sonner 依赖（提示条的外壳是应用自己的 AlertToasts）。
 import { AnimatePresence, motion } from 'motion/react'
-import { cn } from '../lib/cn'
-import { snappy } from '../lib/motion'
-import { unit } from '../lib/spring'
+import { cn } from '../lib/cn.ts'
+import { snappy } from '../lib/motion.ts'
+import { unit } from '../lib/spring.ts'
 
 export type StatusIconStatus = 'success' | 'error' | 'warning' | 'info' | 'pending'
 

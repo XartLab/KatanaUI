@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 import { BellRing, XIcon } from 'lucide-react'
 import type { ComponentProps } from 'react'
-import { cn } from '../lib/cn'
-import { Button } from '../primitives/button'
+import { cn } from '../lib/cn.ts'
+import { Button } from '../primitives/button.tsx'
 
 // 弹出提示（toast）的画法：只管样子与读屏语义，不管条目表、定时、暂停——这些在调用方（应用里 AlertToasts 自己管条目表，toast-queue.ts 算去留，#1797、#747）。
 // 不用 Radix Toast：它自带的定时与滑动手势我们用不上，条目表由调用方持有才能让超出条数的最旧一条先收、暂停时续上剩下的时间。

@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 import { useRef, type CSSProperties, type KeyboardEvent } from 'react'
-import { cn } from '../lib/cn'
-import { Popover, PopoverContent, PopoverTrigger } from '../primitives/popover'
-import { SelectArrow, selectItemClass, selectTriggerVariants } from '../primitives/select'
+import { cn } from '../lib/cn.ts'
+import { Popover, PopoverContent, PopoverTrigger } from '../primitives/popover.tsx'
+import { SelectArrow, selectItemClass, selectTriggerVariants } from '../primitives/select.tsx'
 
 // 多选下拉：弹层（Popover）组出来的。触发器跟单选下拉一个样（selectTriggerVariants），写已选项的名字（按选项的顺序，separator 隔开），一个都没选写 empty；
 // 列表项前面留一列勾（没选的也占位，文字才对得齐），点一项只切这一项、列表不收。

@@ -6,10 +6,10 @@
 // ⑤ 小到不足半个设备像素的点不画（会变成一层雾）；⑥ 状态用文字另外读出。我们用方点不用圆点，颜色从 token 取（跟主题走）。
 // 循环由 requestAnimationFrame 驱动，状态变了只改目标不重启；缩放用 settle 弹簧的刚度与阻尼自己积分（画布上没有 motion 的值可用）。
 import { useEffect, useRef, useSyncExternalStore } from 'react'
-import { cn } from '../lib/cn'
-import { settle } from '../lib/motion'
-import { DOT_PITCH, DOT_SIZE } from './dot-matrix'
-import { ORB_SCALE, ORB_STATES, orbIntensity, simulatedLevel, type OrbState } from './matrix-orb-model'
+import { cn } from '../lib/cn.ts'
+import { settle } from '../lib/motion.ts'
+import { DOT_PITCH, DOT_SIZE } from './dot-matrix.tsx'
+import { ORB_SCALE, ORB_STATES, orbIntensity, simulatedLevel, type OrbState } from './matrix-orb-model.ts'
 
 /** 状态权重每 1/60 秒向目标靠近的比例（0.16：约 0.4 秒换完）。 */
 const BLEND = 0.16

@@ -5,10 +5,10 @@ import { cva, type VariantProps } from 'class-variance-authority'
 import { XIcon } from 'lucide-react'
 import { Dialog as SheetPrimitive } from 'radix-ui'
 import type { ComponentProps } from 'react'
-import { cn } from '../lib/cn'
-import { useOpenerFocus } from '../lib/opener-focus'
-import { OverlayPortal } from '../lib/overlay'
-import { Button } from './button'
+import { cn } from '../lib/cn.ts'
+import { useOpenerFocus } from '../lib/opener-focus.ts'
+import { OverlayPortal } from '../lib/overlay.tsx'
+import { Button } from './button.tsx'
 
 // 抽屉：贴着窗口一边滑出来的面板，行为同对话框（Radix Dialog：Esc 关、焦点锁在里面、背板点一下关、关了焦点回打开前拿着它的元素）。
 // 皮肤跟对话框同一块材质（9% 白边、surface-3、同一组阴影）；左右两边宽 360（窄屏留 12 边），上下两边最高半屏。

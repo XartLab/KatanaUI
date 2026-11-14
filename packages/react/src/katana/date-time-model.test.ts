@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 import { describe, expect, it } from 'vite-plus/test'
-import { fromCalendarDate, fromTime, toCalendarDate, toTime } from './date-time-model'
+import { fromCalendarDate, fromTime, toCalendarDate, toTime } from './date-time-model.ts'
 
 describe('日期时间输入的值', () => {
   it('日期：YYYY-MM-DD 来回不变，空串和不合法是 null', () => {

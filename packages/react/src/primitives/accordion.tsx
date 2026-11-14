@@ -4,8 +4,8 @@
 import { ChevronDownIcon } from 'lucide-react'
 import { Accordion as AccordionPrimitive } from 'radix-ui'
 import type { ComponentProps } from 'react'
-import { cn } from '../lib/cn'
-import { focusRingInset } from '../lib/focus'
+import { cn } from '../lib/cn.ts'
+import { focusRingInset } from '../lib/focus.ts'
 
 // 折叠：每项底下一道细线，标题行 36 高，箭头在展开时翻过来；内容的高度从 0 长到内容高度（keyframes 在 theme/motion.css，高度变量来自 Radix）。
 function Accordion({ ...props }: ComponentProps<typeof AccordionPrimitive.Root>) {

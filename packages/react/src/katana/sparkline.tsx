@@ -2,7 +2,7 @@
 // 迷你图：一列数从旧到新，整宽铺开、上下按这列的高低，一根线。线色按头尾涨跌（涨绿跌红，跟涨跌配色走）。
 // 画法从应用的分析视图 SparklineView 提来（#1884，调用方零改动）；功能参照 TradingView 小组件 Mini Chart / Symbol Overview
 //（tradingview.com/widget-docs，2026-11-14 读：页面只列出组件名，没写交互，所以只取「一眼看走势」这一条），不嵌、不抄其代码与样式。
-import { quoteTone, type QuoteTone } from './quote-tone'
+import { quoteTone, type QuoteTone } from './quote-tone.ts'
 
 const W = 200
 const H = 36

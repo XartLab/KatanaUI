@@ -7,9 +7,9 @@
 // 我们的画法：缩略画成 SVG（随宽度等比缩放），环用 motion 的 layoutId 在选项之间滑，弹簧取包里的 snappy。
 import { motion } from 'motion/react'
 import { useId, useRef, useState, type KeyboardEvent } from 'react'
-import { cn } from '../lib/cn'
-import { focusRing } from '../lib/focus'
-import { snappy } from '../lib/motion'
+import { cn } from '../lib/cn.ts'
+import { focusRing } from '../lib/focus.ts'
+import { snappy } from '../lib/motion.ts'
 
 /** 缩略里用到的六个颜色（任何 CSS 颜色写法）。 */
 export type ThemePalette = {

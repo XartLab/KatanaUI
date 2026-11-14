@@ -5,9 +5,9 @@ import { cva } from 'class-variance-authority'
 import { motion } from 'motion/react'
 import { ToggleGroup as ToggleGroupPrimitive } from 'radix-ui'
 import { createContext, useContext, useId, type ComponentProps } from 'react'
-import { cn } from '../lib/cn'
-import { focusRingInset } from '../lib/focus'
-import { snappy } from '../lib/motion'
+import { cn } from '../lib/cn.ts'
+import { focusRingInset } from '../lib/focus.ts'
+import { snappy } from '../lib/motion.ts'
 
 // 分段切换：照 OpenMarket。默认（设置页 segmented-control）：4px 内边 · 圆角 control · 5% 白底 10% 白边，按钮 24 高 · 圆角 inner，选中 700；
 // sm（工具条 pill-container）：2px 内边 · 圆角 8 · 4% 白底，选中块圆角 6，跟着选中项滑动（snappy 弹簧）；按下缩到 .96。

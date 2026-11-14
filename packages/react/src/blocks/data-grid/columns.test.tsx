@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vite-plus/test'
-import { defaultAlign, formatTimestamp, resolveCell, sortComparator, type GridColumn } from './columns'
-import { DataGrid } from './data-grid'
-import { DataGridHostProvider } from './host'
+import { defaultAlign, formatTimestamp, resolveCell, sortComparator, type GridColumn } from './columns.ts'
+import { DataGrid } from './data-grid.tsx'
+import { DataGridHostProvider } from './host.tsx'
 
 // 列类型（#1869）：每种类型的格式化、对齐、着色、排序。
 

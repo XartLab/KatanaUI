@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 import type { ReactNode, Ref } from 'react'
-import { Button } from '../primitives/button'
-import { Led } from './led'
-import type { LoadingPhase } from './loading-gate'
-import { Skeleton } from './skeleton'
+import { Button } from '../primitives/button.tsx'
+import { Led } from './led.tsx'
+import type { LoadingPhase } from './loading-gate.ts'
+import { Skeleton } from './skeleton.tsx'
 
 /**
  * 加载态的文字：包里不带文字，调用方按界面语言给。带来源的几句，source 没有时传 null。

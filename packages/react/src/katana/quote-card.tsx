@@ -3,8 +3,8 @@
 // 功能参照 TradingView 小组件 Single Ticker / Ticker Tape / Symbol Info（tradingview.com/widget-docs，2026-11-14 读：卡上有价与涨跌幅，条带是一排卡；
 // 页面没写版式与交互，看不到的部分我们自己定：给了 onSelect 整张卡就是一个按钮，键盘可达；价格跳动的动效由调用方用 RollingText 自己加）。不嵌、不抄其代码与样式。
 import type { ReactNode } from 'react'
-import { Sparkline } from './sparkline'
-import { TONE_GLYPH, type QuoteTone } from './quote-tone'
+import { Sparkline } from './sparkline.tsx'
+import { TONE_GLYPH, type QuoteTone } from './quote-tone.ts'
 
 export type QuoteCardProps = {
   name: string

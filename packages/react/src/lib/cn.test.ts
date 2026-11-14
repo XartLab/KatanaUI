@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 import { describe, expect, it } from 'vite-plus/test'
-import { cn } from './cn'
+import { cn } from './cn.ts'
 
 describe('cn', () => {
   it('拼类名，假值丢掉', () => {
@@ -38,7 +38,7 @@ describe('cn', () => {
 
 describe('字号档类不被同串里的字号工具类吃掉（2026-11-13 独立审：input sm 的 text-[length:…] 删掉了 k-text-body）', () => {
   it('cn 对 input 的 sm 变体保留档类，只改字号', async () => {
-    const { inputVariants } = await import('../primitives/input')
+    const { inputVariants } = await import('../primitives/input.tsx')
     const out = cn(inputVariants({ size: 'sm' }))
     expect(out).toContain('k-text-body')
     expect(out).toContain('[font-size:var(--text-data-size)]')

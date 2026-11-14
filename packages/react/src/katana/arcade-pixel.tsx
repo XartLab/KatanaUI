@@ -6,7 +6,7 @@
 // ④ 屏外与标签页隐藏时暂停动画保留（那是性能，不是减少动态）；画布 aria-hidden、文字另放 sr-only 保留；⑤ 内部工具函数不再导出。
 // 字体只有 5x7 拉丁字母、数字与 - , : ! ? . * 空格，没有中日韩字；不认识的字符画成空格。
 
-import { cn } from '../lib/cn'
+import { cn } from '../lib/cn.ts'
 import { motion } from 'motion/react'
 import { useEffect, useMemo, useRef } from 'react'
 

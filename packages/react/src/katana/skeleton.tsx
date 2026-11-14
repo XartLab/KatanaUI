@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-import { skeletonWidths } from './loading-gate'
+import { skeletonWidths } from './loading-gate.ts'
 
 /**
  * 骨架本身：bg-200 的点阵圆角条，不脉冲（安静）；读屏读 label（调用方传，包里不带文字）。出现的时机由 LoadingWait 管。

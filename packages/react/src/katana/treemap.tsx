@@ -3,7 +3,7 @@
 // 画法从应用的分析视图 TreemapView 提来（#1884，调用方零改动；原来照 TradingView 股票市场热图，#443）。
 // 工具条（大小、颜色、分组的下拉、返回钮）是应用的事，从 toolbar 传进来；排布在 treemap-model.ts，调用方先排好再传 blocks。
 import type { ReactNode } from 'react'
-import { colorStep, TREEMAP_H, TREEMAP_W, type TreemapBlock } from './treemap-model'
+import { colorStep, TREEMAP_H, TREEMAP_W, type TreemapBlock } from './treemap-model.ts'
 
 /** 格子多小就不写字（排布单位的宽、高）。 */
 const MIN_TEXT_W = 48

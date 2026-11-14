@@ -4,10 +4,10 @@
 import { XIcon } from 'lucide-react'
 import { Dialog as DialogPrimitive } from 'radix-ui'
 import type { ComponentProps } from 'react'
-import { cn } from '../lib/cn'
-import { useOpenerFocus } from '../lib/opener-focus'
-import { OverlayPortal } from '../lib/overlay'
-import { Button } from './button'
+import { cn } from '../lib/cn.ts'
+import { useOpenerFocus } from '../lib/opener-focus.ts'
+import { OverlayPortal } from '../lib/overlay.tsx'
+import { Button } from './button.tsx'
 
 // 对话框：照 OpenMarket 高级设置。宽 560（窄屏留 12 边）· 圆角 14 · 9% 白边 · 0 2 4 + 0 24 70 阴影；
 // 标题栏 50 高、底下一道 6% 白线；正文 16 24 24；脚栏 12 16、顶上一道线。Esc 关、焦点锁在里面、关了回到触发处都是 Radix 做的。
