@@ -19,6 +19,7 @@ import { DateRangePicker, type DateRangeLabels } from '../patterns/date-range-pi
 import { formatVolume } from './format/index.ts'
 import {
   dayKeyOf,
+  eventTone,
   filterEvents,
   groupByDay,
   minutesUntil,
@@ -142,6 +143,13 @@ export type EventCalendarProps = {
 }
 
 const DASH = '—'
+// 表头排序（TradingView 财报、分红页：点指标列头排序）：只给有数字的列；在每一天内排，缺值排最后；点一次降序、再点升序、第三次回到按时间。
+type SortKey = 'marketCap' | 'yield' | 'amount'
+const SORT_VALUE: Record<SortKey, (item: CalendarItem) => number | undefined> = {
+  marketCap: (item) => (item as EarningsEvent).marketCap,
+  yield: (item) => (item as DividendEvent).yield,
+  amount: (item) => (item as DividendEvent).amount,
+}
 const EMPTY: readonly CalendarItem[] = []
 const LEVELS: readonly EconomicImportance[] = [1, 2, 3]
 const RANGES = ['yesterday', 'today', 'tomorrow', 'week', 'next', 'custom'] as const
@@ -194,6 +202,7 @@ export function EventCalendar({
   const [regions, setRegions] = useState<string[]>([])
   const [regionsOpen, setRegionsOpen] = useState(false)
   const [openId, setOpenId] = useState<string | null>(null)
+  const [sort, setSort] = useState<{ key: SortKey; dir: 'desc' | 'asc' } | null>(null)
 
   const sources: Record<CalendarCategory, readonly CalendarItem[] | undefined> = {
     economic: events,
@@ -221,7 +230,20 @@ export function EventCalendar({
     () => filterEvents(items, { range, importance, regions, timeZone }),
     [items, range, importance, regions, timeZone],
   )
-  const groups = groupByDay(visible, timeZone)
+  const groups = useMemo(() => {
+    const days = groupByDay(visible, timeZone)
+    if (!sort) return days
+    const value = SORT_VALUE[sort.key]
+    const sign = sort.dir === 'desc' ? -1 : 1
+    return days.map((day) => ({
+      ...day,
+      events: [...day.events].sort((a, b) => {
+        const [x, y] = [value(a), value(b)]
+        if (x === undefined || y === undefined) return x === y ? 0 : x === undefined ? 1 : -1
+        return (x - y) * sign
+      }),
+    }))
+  }, [visible, timeZone, sort])
   const actionsFor = rowActions
     ? (id: string) => {
         const event = items.find((item) => item.id === id)
@@ -257,7 +279,7 @@ export function EventCalendar({
   )
 
   const timed = active === 'economic' || active === 'earnings'
-  const columns = (() => {
+  const columns: readonly (readonly [string, boolean, SortKey?])[] = (() => {
     if (active === 'economic') {
       const c = labels.columns
       return [
@@ -279,15 +301,15 @@ export function EventCalendar({
         [c.epsForecast, true],
         [c.revenueActual, true],
         [c.revenueForecast, true],
-        [c.marketCap, true],
+        [c.marketCap, true, 'marketCap'],
       ] as const
     }
     if (active === 'dividends') {
       const c = labels.dividendColumns
       return [
         [c.company, false],
-        [c.amount, true],
-        [c.yield, true],
+        [c.amount, true, 'amount'],
+        [c.yield, true, 'yield'],
         [c.payDate, true],
       ] as const
     }
@@ -320,6 +342,7 @@ export function EventCalendar({
     if (active === 'economic') {
       const event = item as EconomicEvent
       const wait = event.actual === undefined ? minutesUntil(event.at, now) : null
+      const tone = eventTone(event)
       return (
         <>
           <span role="cell" className="k-ecal-time">
@@ -350,7 +373,7 @@ export function EventCalendar({
           <span role="cell">
             <LevelBars level={event.importance} label={labels.importance(event.importance)} />
           </span>
-          <span role="cell" className="k-ecal-num k-ecal-actual" data-tone={event.tone}>
+          <span role="cell" className="k-ecal-num k-ecal-actual" data-tone={tone}>
             {event.actual ?? DASH}
             {wait !== null && <small className="k-ecal-wait">{labels.countdown(wait)}</small>}
           </span>
@@ -515,6 +538,7 @@ export function EventCalendar({
         setCategory(next as CalendarCategory)
         setRegions([])
         setOpenId(null)
+        setSort(null)
       }}
       className={cn('k-ecal', className)}
       data-slot="event-calendar"
@@ -600,12 +624,34 @@ export function EventCalendar({
       </div>
 
       <TabsContent value={active} className="k-ecal-panel">
-        <div className="k-ecal-columns" aria-hidden="true">
-          {columns.map(([text, numeric]) => (
-            <span key={text} className={numeric ? 'is-num' : undefined}>
-              {text}
-            </span>
-          ))}
+        <div className="k-ecal-columns" data-slot="ecal-columns">
+          {columns.map(([text, numeric, sortKey]) =>
+            sortKey ? (
+              <button
+                key={text}
+                type="button"
+                className="k-ecal-sort is-num"
+                data-sort={sortKey}
+                aria-sort={sort?.key === sortKey ? (sort.dir === 'desc' ? 'descending' : 'ascending') : undefined}
+                onClick={() =>
+                  setSort((prev) =>
+                    prev?.key !== sortKey
+                      ? { key: sortKey, dir: 'desc' }
+                      : prev.dir === 'desc'
+                        ? { key: sortKey, dir: 'asc' }
+                        : null,
+                  )
+                }
+              >
+                {text}
+                <span aria-hidden="true">{sort?.key === sortKey ? (sort.dir === 'desc' ? '↓' : '↑') : ''}</span>
+              </button>
+            ) : (
+              <span key={text} className={numeric ? 'is-num' : undefined} aria-hidden="true">
+                {text}
+              </span>
+            ),
+          )}
           <span />
         </div>
 

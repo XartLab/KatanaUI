@@ -11045,6 +11045,28 @@ button.k-sm-head:focus-visible {
   overflow: hidden;
 }
 
+.k-ecal-sort {
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  background: none;
+  border: 0;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 2px;
+  padding: 0;
+  display: inline-flex;
+}
+
+.k-ecal-sort:hover, .k-ecal-sort[aria-sort] {
+  color: var(--ink-100);
+}
+
+.k-ecal-sort:focus-visible {
+  outline: 1px solid var(--line-200);
+  outline-offset: 2px;
+}
+
 .k-mheat {
   --mheat-gap: 2px;
   gap: var(--space-3);

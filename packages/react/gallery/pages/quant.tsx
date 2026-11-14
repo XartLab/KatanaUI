@@ -999,7 +999,7 @@ const CAL_EVENTS: EconomicEvent[] = [
     actual: '0.4%',
     forecast: '0.3%',
     previous: '0.3%',
-    tone: 'down',
+    higherIsBetter: false,
     description: '衡量一篮子消费品与服务的价格相对去年同期的变化，是央行判断通胀压力的主要依据之一（演示文字）。',
     source: '示例统计局',
     history: [0.1, 0.2, 0.2, 0.1, 0.3, 0.3, 0.4],
@@ -1015,7 +1015,6 @@ const CAL_EVENTS: EconomicEvent[] = [
     actual: '0.2%',
     forecast: '0.4%',
     previous: '0.6%',
-    tone: 'down',
   },
   {
     id: 'b1',
@@ -1027,7 +1026,6 @@ const CAL_EVENTS: EconomicEvent[] = [
     actual: '5.1%',
     forecast: '4.9%',
     previous: '4.8%',
-    tone: 'up',
     description: '规模以上工业企业增加值的同比增速（演示文字）。',
     source: '示例统计局',
     history: [4.2, 4.5, 4.4, 4.7, 4.8, 5.1],
@@ -1043,7 +1041,6 @@ const CAL_EVENTS: EconomicEvent[] = [
     actual: '-0.2万亿',
     forecast: '-0.3万亿',
     previous: '-0.4万亿',
-    tone: 'up',
   },
   {
     id: 'b3',

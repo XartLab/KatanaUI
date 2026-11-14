@@ -1357,7 +1357,7 @@ export const PAGES: readonly DocPage[] = [
           {
             name: 'events',
             type: 'EconomicEvent[]',
-            desc: '经济事件：{ id, at（毫秒）, region, regionName, flag?, name, importance（1–3）, actual?, forecast?, previous?（格式化好的文字）, tone?（up / down / flat：实际对预期的好坏）, description?, source?, history?（数字，从旧到新）, nextAt? }。给了说明 / 来源 / 历史值 / 下次发布任一项，这一行才能点开。',
+            desc: '经济事件：{ id, at（毫秒）, region, regionName, flag?, name, importance（1–3）, actual?, forecast?, previous?（格式化好的文字）, actualValue?, forecastValue?（比大小用，不给取文字开头的数）, higherIsBetter?（默认 true；越低越好的事件传 false）, description?, source?, history?（数字，从旧到新）, nextAt? }。给了说明 / 来源 / 历史值 / 下次发布任一项，这一行才能点开。',
           },
           {
             name: 'earnings / dividends / ipos',
@@ -1394,7 +1394,7 @@ export const PAGES: readonly DocPage[] = [
       },
     ],
     states: [
-      '涨色 / 跌色：经济事件的实际值按 tone 上色，不给 tone 不上色；财报 EPS 与营收高于预期涨色、低于预期跌色。',
+      '涨色 / 跌色：经济事件的实际值高于预期用涨色、低于用跌色（higherIsBetter 为 false 时反过来），没有预期不上色；财报 EPS 与营收高于预期涨色、低于预期跌色。',
       '已发布：时间与事件名退一档；未发布：实际写「—」，还没到点的在下面写倒计时（「45 分后」）。',
       '现在线：只在今天那天的经济 / 财报页出现，插在已过与未到的行之间。',
       '行展开：点一行或在行上按 Enter / 空格，详情行在它下面；再点收起。',

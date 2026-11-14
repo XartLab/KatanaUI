@@ -24,8 +24,11 @@ export type EconomicEvent = {
   actual?: string
   forecast?: string
   previous?: string
-  /** 实际值相对预期的好坏方向，由调用方按事件给（CPI 高是坏、非农高是好）；不给就不上色。 */
-  tone?: EconomicTone
+  /** 实际 / 预期的数值，用来比大小上色；不给就取文字开头的数（「-0.2万亿」取 -0.2，「0.4%」取 0.4），两边单位要一致。 */
+  actualValue?: number
+  forecastValue?: number
+  /** 默认 true：实际高于预期用涨色、低于用跌色。CPI、失业率这类「越低越好」的事件传 false，颜色反过来。 */
+  higherIsBetter?: boolean
   /** 详情：事件说明、数据来源（调用方写好的文字）。 */
   description?: string
   source?: string
@@ -79,6 +82,25 @@ export type IpoEvent = Located & {
 export function surpriseTone(actual: number | undefined, forecast: number | undefined): EconomicTone {
   if (actual === undefined || forecast === undefined || actual === forecast) return 'flat'
   return actual > forecast ? 'up' : 'down'
+}
+
+/** 文字开头的数（支持负号与 U+2212）；取不到返回 undefined。 */
+export function leadingNumber(text: string | undefined): number | undefined {
+  const match = text
+    ?.trim()
+    .replace('−', '-')
+    .match(/^[-+]?\d+(?:\.\d+)?/)
+  return match ? Number(match[0]) : undefined
+}
+
+/** 经济事件实际对预期的颜色方向：高于预期为 up（higherIsBetter 为 false 时反过来）；缺实际或预期、相等都是 flat（不上色）。 */
+export function eventTone(event: EconomicEvent): EconomicTone {
+  const tone = surpriseTone(
+    event.actualValue ?? leadingNumber(event.actual),
+    event.forecastValue ?? leadingNumber(event.forecast),
+  )
+  if (event.higherIsBetter === false) return tone === 'up' ? 'down' : tone === 'down' ? 'up' : 'flat'
+  return tone
 }
 
 /** 这一行相对「现在」的状态：已发布（有实际值）、待发布（还没到点）、已到点未出数。 */

@@ -330,3 +330,24 @@
   white-space: nowrap;
   cursor: pointer;
 }
+/* 可排序的列头：像文字，悬停提亮，当前排序列后面跟箭头。 */
+.k-ecal-sort {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 2px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+.k-ecal-sort:hover,
+.k-ecal-sort[aria-sort] {
+  color: var(--ink-100);
+}
+.k-ecal-sort:focus-visible {
+  outline: 1px solid var(--line-200);
+  outline-offset: 2px;
+}
