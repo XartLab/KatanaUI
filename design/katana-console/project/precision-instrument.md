@@ -1,6 +1,6 @@
 # Precision Instrument UI：精密仪器式信息界面
 
-KATANAview 设计系统的根定义（2026-11-14 用户定，见 [decisions.md](../../../docs/decisions.md) 同日一条）。本页高于 README 的「原则」与其余各页；各页跟本页冲突时以本页为准，冲突处在本页 §9 列出并逐页改掉。
+KATANAview 设计系统的根定义（2026-11-14 用户定；2026-11-15 起源头在 XartLab/KatanaUI，本页随设计稿存档搬来，见 [KATANAview 的 decisions.md](https://github.com/XartLab/KATANAview/blob/main/docs/decisions.md) 同日一条）。本页高于 README 的「原则」与其余各页；各页跟本页冲突时以本页为准，冲突处在本页 §9 列出并逐页改掉。
 
 > 这不是一个装了很多图表的网站，而是一台经过精密设计、可以信赖的专业分析仪器。
 
@@ -44,7 +44,7 @@ KATANAview 设计系统的根定义（2026-11-14 用户定，见 [decisions.md](
 | **状态** | 灯 + 词，永不单靠颜色；词是固定词表（连接中 / 已连接 / 断开 / 受锁 / 估算 / 过期……），一个状态一个词 | `● 已连接`、`EST` |
 | **来源** | 每个数字能回答「从哪来、什么时候」：面板页脚一行来源；估算值标 `EST`；模拟与回放常驻标识；研究账本不计入要写出 | `来源 / 本机回测 · akshare 日线 · 09-30 收盘` |
 
-- 检查：数值组件只能用 `@katanaview/ui/quant/format` 的格式化（已有）；新增 lint：组件里出现数字文本却没走格式化与 `tabular-nums` 的，报错（要做，见 §10）。
+- 检查：数值组件只能用 `@katana-ui/react/quant/format` 的格式化（已有）；新增 lint：组件里出现数字文本却没走格式化与 `tabular-nums` 的，报错（要做，见 §10）。
 
 ### 2.3 密度可控
 
@@ -121,7 +121,7 @@ KATANAview 设计系统的根定义（2026-11-14 用户定，见 [decisions.md](
 
 ## 6. 组件的样子：参照图 + TradingView 的组件（2026-11-14 用户定）
 
-- 用户：「按照参考图还有 TradingView 的组件去做」。**信息语法**照参照图（本页 §5）；**组件的形态**（控件尺寸、密度、交互形态）参照 TradingView 的组件。商业产品只读、量、记出处，不抄代码（AGENTS.md）。
+- 用户：「按照参考图还有 TradingView 的组件去做」。**信息语法**照参照图（本页 §5）；**组件的形态**（控件尺寸、密度、交互形态）参照 TradingView 的组件。商业产品只读、量、记出处，不抄代码（[KATANAview 的 AGENTS.md](https://github.com/XartLab/KATANAview/blob/main/AGENTS.md)）。
 - **配色不跟 TradingView**：用户同日定「我们之前配色都搞定了」——颜色一律用现有 token（Console / Graphite 两套深色主题与它们的信号色、涨跌色），强调色仍是现有的 `signal-orange`（各主题自己的值）；不引入 TradingView 的色值。
 - 尺寸与密度（控件高、圆角、字号、行高）参照 TradingView 实测；没实测的沿用 OpenMarket 已有的实测值，测到后替换并记出处。
 
@@ -146,7 +146,7 @@ KATANAview 设计系统的根定义（2026-11-14 用户定，见 [decisions.md](
 | 点阵 / LED 字体作标签 | 降为品牌层：只在开机、大屏、时钟；面板标签用等宽小号大写 |
 | 图表面的点阵纹理 | 换成斜线排线（工程图的剖面线语法），由 token 决定 |
 | signature.md 的斜切、警示条纹、六角格、扫描线、波形带、密排大字 | 斜切与警示条纹删；扫描线删；六角格、波形带、密排大字只在大屏；三方表决（ConsensusBlock）与同步率条保留（它们是操作与状态语义） |
-| README §1 第 7 条「`prefers-reduced-motion` 时弹簧退化」 | 已跟 AGENTS.md 冲突（项目不跟系统设置）；以本页 §2.4 为准：动效本来就只有三类原因 |
+| README §1 第 7 条「`prefers-reduced-motion` 时弹簧退化」 | 已跟 [KATANAview 的 AGENTS.md](https://github.com/XartLab/KATANAview/blob/main/AGENTS.md) 冲突（项目不跟系统设置）；以本页 §2.4 为准：动效本来就只有三类原因 |
 | dataviz.md | 颜色四种工作、标记规范保留并按 §2.5 改名；面用排线；交互与联动按 §3 补 |
 
 ## 10. 落地次序
@@ -156,3 +156,41 @@ KATANAview 设计系统的根定义（2026-11-14 用户定，见 [decisions.md](
 3. 各页按 §9 改；组件卡金样例按本页重画。
 4. 门禁：§2.2 的数字格式 lint、§2.5 的原始色值 lint、§3 的布局稳定 e2e（行情表、盘口、自选三处先做）。
 5. 组件库正在返工的件（#1931）只按 token 取样子，token 改完自动跟上。
+
+## 11. 在组件库里的落地：视觉语言（#7，从 `@katana-ui/react` 的文档并入）
+
+量化件与积木件的共同语言（用户 2026-11-14 认可「这个可以」，样例是 SeriesExplorer 与盈亏归因）。底是工作台现在的样式：黑面板、无衬线、白字、扁平工具条、分段选中灰底、图标按钮无边框，默认 Graphite；
+上面加一层「工业感」，只取感觉，不加示波器辉光和构成主义色块：
+
+- **编号** 01 / 02 / 03 用强调色（`--chart-accent`，缺省 `--signal-orange`），点阵字。
+- **点阵元信息行**：一行 `--font-dot` 的元信息 / 来源行，例「SOURCE · 台账成交 + 行情估值」。装饰性标签用点阵字，数值仍是无衬线等宽数字；字号 12px（`--text-tag-md`），不加字距、不斜体、不伪粗。
+  汉字落到随包发的方舟像素 12px 子集（`packages/react/src/fonts/ark-pixel-12-zh-subset.woff2`，来由与许可见 `packages/react/NOTICE`，生成办法见 `packages/react/scripts/font/build-ark-pixel-subset.py`）；子集里没有的字再落到无衬线。
+- **宽体标题**：英文标题可用 `--font-wide`（Michroma，只用于标题，中文自动落到无衬线）。
+- **左侧 2px 强调条**：选中项与读数的左侧一条 2px 强调色竖线。
+- **尺寸标注与编号引线**：需要时（图上事件的引线、刻度标注）。
+- **浅网格**：12% 透明度、12px 间距，**待定**，没实测。
+- **键值对账行**：左键右值，一行一对（期初 / 期末 / 差额）。
+- 橙色只给状态灯和焦点角括号；不用 TradingView 蓝，不用暖白高亮黄。
+
+**校准（用户 2026-11-15 看 LimitLadder v1 后定：工业装饰太重）。** 底子是 TradingView 的组件手感加 Arc UI 的卡片结构，配色仍是 Graphite（不用 TradingView 蓝），工业感只做点缀。上面几条里点阵大字、层头底色块这类重的往回收，只留三处点缀：面板编号、底部一行点阵来源行、选中行左侧 2px 条。具体：
+
+- **表格手感取 TradingView**（列表与涨幅榜页，只看只量、不抄代码；2026-11-15 读自 tradingview.com/markets/stocks-usa/market-movers-gainers/，列：Symbol、Chg %、Price、Vol、Rel vol、Mkt cap…）：
+  数字用界面无衬线加 `tabular-nums`，不用等宽字体，右对齐；表头 11px 灰字、无点阵；行高 28–32px、行间只有极淡分隔线、悬停整行轻微提亮；
+  品种格是徽标（`SymbolMark`）加代码（主）加名称（次，更小更淡），跟 DataGrid 的品种列一致；
+  涨跌幅带正负号、两位小数（+10.00%），只给文字上色、不加底；量与金额数字后空一格再写单位缩写（835.49 K、2.95 M、7.29 B，用 `formatVolume`，不在件里手拼）；缺数据一律「—」；
+  状态 / 评级 TradingView 是纯文字，我们用低饱和底的小胶囊，**保持全亮**，不跟着整行淡显（淡显只作用在文字）。
+- **卡片结构取 Arc UI**（uiarc.dev 的 Revenue explorer、Metric explorer、Customer galaxy，2026-11-14 读：目录页与件名，没读源码）：
+  卡片顶部先给一行汇总读数（大号无衬线数字，小号灰字标签），下面再是明细；分组头左边是粗体名、右边数字加一根 2px 细进度条；组与组之间用留白分开，不用重底色块；留白与圆角克制。
+
+**组件分两类（用户 2026-11-15 定，KATANAview decisions.md 2026-11-15、PR #1984）。** 样子照 TradingView 表格手感加 Arc 卡片结构；面板怎么平铺照 OpenBB Workspace 与彭博 Launchpad。A 股只单独做数据和少数专有组件，其余件跨市场共用：
+
+- **共用件：** 不认市场，数据与文字由调用方传（DataGrid、PanelFrame、SeriesExplorer 等）。
+- **市场专有件：** 只对某个市场有意义，放 quant 层，文档页与 props 说明里标明属于哪个市场。目前 A 股有连板天梯（LimitLadder，已做）；题材热度矩阵、龙虎榜净买条待做。专有件也不依赖数据集：板位、状态这类词是它的接口，数据与文字仍由调用方传。
+
+样例（Graphite，文档站 `?theme=graphite` 截的）：
+
+- SeriesExplorer：[../../../packages/react/docs/images/series-explorer-graphite.png](../../../packages/react/docs/images/series-explorer-graphite.png)
+- AttributionBars 盈亏归因：[../../../packages/react/docs/images/attribution-bars-graphite.png](../../../packages/react/docs/images/attribution-bars-graphite.png)
+
+文档站浏览器测试 `packages/react/e2e/precision-instrument.spec.ts` 是这套语言的正面证明：序列探索页的元信息行用 Doto、汉字落到方舟像素子集、编号是强调色；去掉 `--font-dot` 里的方舟像素，它就红。
+已套这层语言的件：SeriesExplorer、AttributionBars、LimitLadder（#12，按上面「校准」做的）；其余逐件铺开（DataGrid、ChartTable、EquityCurve、Meter、CalendarHeatmap、SymbolGalaxy），一件一个提交。
