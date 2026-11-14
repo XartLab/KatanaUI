@@ -144,6 +144,11 @@
           "target": "~/src/katana/ui/theme/menu.css"
         },
         {
+          "path": "src/theme/metric-card.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/metric-card.css"
+        },
+        {
           "path": "src/theme/motion.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/motion.css"
@@ -2297,6 +2302,26 @@
           "path": "src/quant/meter.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/quant/meter.tsx"
+        }
+      ]
+    },
+    {
+      "name": "metric-card",
+      "type": "registry:component",
+      "title": "Metric Card",
+      "description": "照 uiarc 的 Metric explorer 的结构：标题、大号当前值、较前日 / 周 / 月 / 年的变化（涨跌色）、迷你走势线（1 月 / 3 月 / 6 月 / 1 年分段）、可选阶段带（五档边界与文案由调用方给）、来源与更新时间一行；MetricCardGrid 把卡排成墙。组件只画不算，数据与文字都由调用方传，没有数据就是空态。",
+      "registryDependencies": [
+        "@katana/change-text",
+        "@katana/cn",
+        "@katana/quote-tone",
+        "@katana/sparkline",
+        "@katana/toggle-group"
+      ],
+      "files": [
+        {
+          "path": "src/quant/metric-card.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/metric-card.tsx"
         }
       ]
     },
