@@ -1,0 +1,135 @@
+/* SPDX-License-Identifier: MIT */
+/* EventTimeline：一天一段，日标题粘在滚动容器顶上；每个事件三列——钟点（等宽数字）、圆点（竖线穿过）、正文。
+   圆点按 tone 上色：涨 / 跌用 --pnl-up / --pnl-down（跟红涨绿跌设置走），警示 --signal-amber，信息 --signal-blue，默认 --ink-400。 */
+.k-tl {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font: var(--text-data) var(--font-sans);
+  color: var(--ink-200);
+}
+.k-tl-head {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  margin: 0;
+  padding: 6px 0 4px;
+  background: var(--bg-100);
+  color: var(--ink-300);
+  font: var(--text-caption) var(--font-sans);
+  font-weight: 600;
+}
+.k-tl-list {
+  position: relative;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.k-tl-item {
+  --tone: var(--ink-400);
+  position: relative;
+  display: grid;
+  grid-template-columns: 64px 12px minmax(0, 1fr);
+  align-items: start;
+  column-gap: 8px;
+  padding: 4px 0;
+}
+.k-tl-item[data-tone='up'] {
+  --tone: var(--pnl-up);
+}
+.k-tl-item[data-tone='down'] {
+  --tone: var(--pnl-down);
+}
+.k-tl-item[data-tone='warn'] {
+  --tone: var(--signal-amber);
+}
+.k-tl-item[data-tone='info'] {
+  --tone: var(--signal-blue);
+}
+/* 竖线：每个事件画自己这一格的上下半截，连起来穿过所有圆点；日里第一个只画下半、最后一个只画上半 */
+.k-tl-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc(64px + 8px + 5.5px);
+  width: 1px;
+  background: var(--alpha-white-8);
+}
+.k-tl-item:first-child::before {
+  top: 12px;
+}
+.k-tl-item:last-child::before {
+  bottom: calc(100% - 12px);
+}
+.k-tl-item:only-child::before {
+  display: none;
+}
+.k-tl-time {
+  padding-top: 1px;
+  color: var(--ink-300);
+  font-family: var(--font-mono);
+  font-size: var(--text-caption-size);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+.k-tl-dot {
+  position: relative;
+  width: 8px;
+  height: 8px;
+  margin: 4px 2px 0;
+  border-radius: 50%;
+  background: var(--tone);
+  box-shadow: 0 0 0 3px var(--bg-100);
+}
+.k-tl-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+}
+.k-tl-action {
+  margin: -2px -6px;
+  padding: 2px 6px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.k-tl-action:hover {
+  background: var(--alpha-white-5);
+}
+.k-tl-action:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 0;
+}
+.k-tl-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--ink-100);
+  font-weight: 500;
+}
+.k-tl-source {
+  padding: 0 6px;
+  border: 1px solid var(--alpha-white-8);
+  border-radius: var(--radius-pill);
+  color: var(--ink-300);
+  font: var(--text-caption) var(--font-sans);
+  line-height: 16px;
+  white-space: nowrap;
+}
+.k-tl-detail {
+  color: var(--ink-300);
+}
+.k-tl-empty {
+  margin: 0;
+  padding: 16px 0;
+  color: var(--ink-300);
+  font: var(--text-data) var(--font-sans);
+  text-align: center;
+}

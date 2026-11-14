@@ -14,6 +14,7 @@ import {
   type ShortcutRecorderLabels,
   type TreeNode,
 } from '../../src/index'
+import { EventTimeline, type TimelineEvent } from '../../src/blocks'
 import { Row } from './parts'
 
 // #1919 的操作与结构件的演示。数据都是演示用的（页上写明），不是行情。
@@ -264,6 +265,83 @@ export function JsonViewerDemo() {
       </Row>
       <p className="gal-note">
         演示：消息是演示用的，不是真实的行情或订单。→ 展开、← 收起；查找会展开命中的祖先并高亮。
+      </p>
+    </>
+  )
+}
+
+// 演示事件：时刻是演示用的（UTC 毫秒），内容是编的，不是真实的公告、告警或成交。显示时区取 Asia/Shanghai：
+// 11-13 17:30 UTC 在上海已经是 11-14 01:30，所以落进 11-14 那一天。
+const utc = (iso: string) => Date.parse(iso)
+const TIMELINE_EVENTS: readonly TimelineEvent[] = [
+  {
+    id: 'e1',
+    at: utc('2026-11-14T01:20:05Z'),
+    title: '价格告警触发',
+    detail: 'DEMO-PERP 上破 101.50',
+    source: '告警',
+    tone: 'warn',
+  },
+  {
+    id: 'e2',
+    at: utc('2026-11-14T01:20:05Z'),
+    title: '成交 2 手',
+    detail: '买入 @ 101.50',
+    source: '成交',
+    tone: 'up',
+  },
+  {
+    id: 'e3',
+    at: utc('2026-11-13T17:30:00Z'),
+    title: '数据源重连',
+    detail: '断开 12 秒后恢复，已补齐缺口',
+    source: '数据源',
+    tone: 'info',
+  },
+  {
+    id: 'e4',
+    at: utc('2026-11-13T06:02:31Z'),
+    title: '止损单触发',
+    detail: '卖出 1 手 @ 99.00',
+    source: '成交',
+    tone: 'down',
+  },
+  { id: 'e5', at: utc('2026-11-13T02:00:00Z'), title: '发布盘前公告', source: '公告' },
+  { id: 'e6', at: utc('2026-11-11T09:45:10Z'), title: '策略已停止', detail: '手动停止', source: '策略' },
+]
+
+export function EventTimelineDemo() {
+  const [picked, setPicked] = useState('无')
+  return (
+    <>
+      <Row name="按天分组 · 新的在前">
+        <div className="gal-timeline" style={{ width: 360 }}>
+          <EventTimeline
+            label="事件流"
+            events={TIMELINE_EVENTS}
+            timeZone="Asia/Shanghai"
+            dayLabel={(day, count) => `${day} · ${count} 条`}
+            emptyText="还没有事件"
+          />
+        </div>
+      </Row>
+      <Row name="可点 · 空态">
+        <div className="gal-timeline" style={{ width: 360 }}>
+          <EventTimeline
+            label="可点的事件流"
+            events={TIMELINE_EVENTS.slice(0, 2)}
+            timeZone="UTC"
+            dayLabel={(day) => day}
+            emptyText="还没有事件"
+            onSelect={(event) => setPicked(event.id)}
+          />
+          <EventTimeline label="空事件流" events={[]} timeZone="UTC" dayLabel={(day) => day} emptyText="还没有事件" />
+        </div>
+        <output data-gallery-timeline>{picked}</output>
+      </Row>
+      <p className="gal-note">
+        演示：事件是编的，不是真实的公告、告警或成交。显示时区 Asia/Shanghai；协调时 11-13 17:30 在这里已是 11-14
+        01:30。
       </p>
     </>
   )
