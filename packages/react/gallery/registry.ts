@@ -1432,6 +1432,191 @@ export const PAGES: readonly DocPage[] = [
     keys: [],
   },
   {
+    id: 'flow-gauges',
+    group: 'quant',
+    cardHeight: 390,
+    title: 'FlowGauges 订单流仪表行',
+    summary:
+      '订单流四个仪表一行：Market Pressure、Price Change（零轴居中，−100…+100）、DOM Pressure（前 N 档买卖挂单柱）、Delta Divergence（多周期 LED 矩阵）；只收算好的数，窗口不足写 N/A。',
+    exports: ['FlowGauges'],
+    props: [
+      {
+        part: 'FlowGauges',
+        note: '口径（窗口、逐笔方向、档位怎么算）不在包里，由调用方（应用的 Worker）算好传入。一屏最多放一行（仪器预算）。不做声音、不做闪烁。',
+        rows: [
+          {
+            name: 'gauges',
+            type: 'readonly FlowGaugeData[]',
+            desc: '每格一个，kind 是 pressure | priceChange | dom | divergence。',
+          },
+          { name: 'label', type: 'string', desc: '整行的读屏名。' },
+          { name: 'naText', type: 'string', default: "'N/A'", desc: '没有数的位置写什么。' },
+          { name: 'estimateText', type: 'string', default: "'est.'", desc: '估算标记的字。' },
+        ],
+      },
+      {
+        part: 'pressure / priceChange 格',
+        rows: [
+          { name: 'value', type: 'number | null', desc: '−100 到 +100；窗口不足传 null，不填零。' },
+          { name: 'valueText', type: 'string', desc: '已格式化的带符号数。' },
+          { name: 'estimated', type: 'boolean', desc: '无逐笔方向、数是估的：灰显并标估算。' },
+          { name: 'title / note', type: 'string / ReactNode', desc: '点阵小标题（含周期）与一行说明。' },
+        ],
+      },
+      {
+        part: 'dom 格',
+        rows: [
+          { name: 'bids / asks', type: 'readonly number[]', desc: '各档的量，从最优价往外；两边都空是 N/A。' },
+          { name: 'summary', type: 'string', desc: '读屏用的整句，柱子本身对读屏是空的。' },
+        ],
+      },
+      {
+        part: 'divergence 格',
+        rows: [
+          {
+            name: 'rows',
+            type: '{ window, cells, summary }[]',
+            desc: 'cells 是 off | on | ok | warn 的一行 LED；null 是 N/A（数据不足）；summary 是读屏整句。',
+          },
+        ],
+      },
+    ],
+    states: [
+      '正常：压力条从中线往右（series-1）或往左（series-2），数字带符号。',
+      '窗口不足：写 N/A，条不画，不填零。',
+      '估算：数与条灰显，旁边写估算字。',
+      '压力不是盈亏：不用涨跌色，data-updown 对它不起作用。',
+    ],
+    donts: [
+      '不要把算法放进组件，传算好的数。',
+      '窗口不足不要传 0。',
+      '不要加声音或闪烁；告警走告警中心。',
+      '一屏不要放两行。',
+    ],
+    composition: 'FlowGauges\n  每格 section（点阵标题、读数、一行说明）',
+    keys: [],
+  },
+  {
+    id: 'regime-strip',
+    group: 'quant',
+    cardHeight: 219,
+    title: 'RegimeStrip 市场状态带',
+    summary:
+      '市场状态带：状态模型把历史分成几种状态，画成无缝色带叠在任何时间轴下，配图例；颜色是类别（series-1…7）不是好坏；RegimeBand 只画带。',
+    exports: ['RegimeBand', 'RegimeStrip'],
+    props: [
+      {
+        part: 'RegimeStrip',
+        note: '带加图例；RegimeBand 的属性全部适用。分状态收益表不在本件里，由调用方用表格摆在下面。',
+        rows: [
+          { name: 'title', type: 'ReactNode', desc: '图例上方的标题行。' },
+          { name: 'current', type: 'string', desc: '当前所处状态的 id。' },
+          { name: 'currentText', type: 'string', desc: '「当前」的字；给了 current 就要给。' },
+          { name: 'estimateText', type: 'string', default: "'est.'", desc: '有估算段时图例末尾的字。' },
+          {
+            name: 'onPickState',
+            type: '(id: string | null) => void',
+            desc: '给了图例每项就是按钮：点选高亮，再点取消（传 null）。',
+          },
+        ],
+      },
+      {
+        part: 'RegimeBand',
+        note: '只画带。宽度与时间的对应由调用方传 scale，把它放在跟上面时间轴同宽的容器里。',
+        rows: [
+          {
+            name: 'segments',
+            type: 'readonly { from, to, state, estimated? }[]',
+            desc: '状态段；时间单位由调用方定，跟 scale 一致。',
+          },
+          {
+            name: 'states',
+            type: 'readonly { id, name, color, detail? }[]',
+            desc: 'color 是 1 到 7（series-N）；≤ 6 态，挑色距大的（1、2、4、7）。',
+          },
+          {
+            name: 'scale',
+            type: '(time: number) => number',
+            desc: '时间到 0–1 的位置；不给就在最早与最晚之间线性排。',
+          },
+          { name: 'activeState', type: 'string | null', desc: '高亮某状态，其余变淡到 25%。' },
+          { name: 'describe', type: '(segment, state) => string', desc: '每段的悬停与读屏文字；不给只写状态名。' },
+          { name: 'label', type: 'string', desc: '整条带的读屏名。' },
+        ],
+      },
+    ],
+    states: [
+      '平常：14px 无缝色带，图例里每个状态一个色块加名字。',
+      '高亮：选中的状态保持，其余变淡。',
+      '估算段（样本外最后一段常见）：带上叠斜纹，图例末尾写估算字。',
+      '当前状态：图例里它后面写「当前」。',
+    ],
+    donts: [
+      '不要用涨跌色或 signal 色：危机也是 series 色，颜色是类别不是好坏。',
+      '不要超过 6 个状态。',
+      '不要只靠颜色认状态，图例里一定有名字。',
+    ],
+    composition: 'RegimeStrip\n  RegimeBand\n  图例（色块 + 名字 + 小字）',
+    keys: [['Enter / Space', '给了 onPickState 时，图例项点选或取消高亮']],
+  },
+  {
+    id: 'consensus-block',
+    group: 'quant',
+    cardHeight: 473,
+    title: 'ConsensusBlock 必要条件块',
+    summary:
+      '写命令提交前的必要条件块：当前意图、各必要条件的满足或阻止、结论与参数 hash；不是投票，任一方未过、未返回、超时、失效都不可提交，裁决永远在执行网关与账户服务。',
+    exports: ['ConsensusBlock', 'countConsensus'],
+    props: [
+      {
+        part: 'ConsensusBlock',
+        note: '各方的判定来自各自的权威，件只画不判，不合成第四种判断。一个表单只放一个。结构不皮肤化。',
+        rows: [
+          { name: 'label', type: 'string', desc: '整块的读屏名。' },
+          { name: 'intent', type: 'ReactNode', desc: '当前意图（下单 · 账户 A · 买 300750 × 2,000）。' },
+          {
+            name: 'parties',
+            type: 'readonly ConsensusParty[]',
+            desc: '各方：key、label、state、message、detail?；detail 有就整格是按钮，点开才看。',
+          },
+          {
+            name: 'verdict',
+            type: "'ok' | 'warn' | 'blocked'",
+            desc: '结论，由调用方给；warn 可提交但确认框要列出警告。',
+          },
+          { name: 'verdictText', type: 'string', desc: '结论的字（可提交 / 不可提交）。' },
+          { name: 'summary', type: 'ReactNode', desc: '结论行左边的计数句，用 countConsensus 的结果拼。' },
+          { name: 'hash', type: 'string | null', desc: '参数 hash；未就绪传 null，显示 —。' },
+          { name: 'onHashClick', type: '() => void', desc: '给了 hash 就是按钮（复制）。' },
+          { name: 'stateLabels', type: 'Partial<Record<ConsensusState, string>>', desc: '各状态的字，缺省是英文。' },
+        ],
+      },
+      {
+        part: 'countConsensus(parties)',
+        note: '数各状态的个数，给计数句用：unknown、timeout、stale、pending 都归 open，不算通过。',
+        rows: [{ name: 'parties', type: 'readonly ConsensusParty[]', desc: '返回 { pass, warn, blocked, open }。' }],
+      },
+    ],
+    states: [
+      'pass 满足；warn 接近（不阻止）；blocked 未过（红菱形，抖一次）。',
+      'unknown 未返回（暗灯）；timeout 超时（琥珀灯闪一次）；stale 已失效（琥珀空心环，需重检）。',
+      'pending 评估中（橙环，句子写评估中）。',
+      '每一格都有状态字与一句话：状态不只靠灯的颜色。',
+    ],
+    donts: [
+      '不要把它当投票：多方同意不等于授权。',
+      '不要在前端合成第四种判断，verdict 由权威给。',
+      '研究类命令不要用它。',
+      '一个表单不要放两个。',
+    ],
+    composition:
+      'ConsensusBlock\n  各方的格（点阵名、灯 + 状态字、一句话）\n  详情（点开）\n  结论行（计数、结论、hash）',
+    keys: [
+      ['Tab', '在有详情的格与 hash 之间移动'],
+      ['Enter / Space', '展开或收起该方的详情；点 hash'],
+    ],
+  },
+  {
     id: 'toast',
     group: 'feedback',
     cardHeight: 135,

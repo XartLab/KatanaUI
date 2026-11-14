@@ -41,3 +41,31 @@ export {
   type QuantileStat,
 } from './quantile-layers.tsx'
 export { isMonotonic, lastFinite, layerLevel, quantileRange, sortLayers, type QuantileLayer } from './quantile-model.ts'
+
+// 第二批（#1929）：订单流仪表行、状态带、必要条件块。SparkTile 与 Meter 用上面 #1917 的那两件。
+export {
+  FlowGauges,
+  type FlowCellState,
+  type FlowDivergenceGauge,
+  type FlowDomGauge,
+  type FlowGaugeData,
+  type FlowGaugesProps,
+  type FlowSignedGauge,
+} from './flow-gauges.tsx'
+export {
+  RegimeBand,
+  RegimeStrip,
+  type RegimeBandProps,
+  type RegimeColor,
+  type RegimeSegment,
+  type RegimeState,
+  type RegimeStripProps,
+} from './regime-strip.tsx'
+export {
+  ConsensusBlock,
+  countConsensus,
+  type ConsensusBlockProps,
+  type ConsensusParty,
+  type ConsensusState,
+  type ConsensusVerdict,
+} from './consensus-block.tsx'

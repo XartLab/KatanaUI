@@ -14,10 +14,10 @@
 | --- | --- | --- | --- | --- | --- |
 | 基础件 | 3 | 1 | 0 | 4 | 3 / 4 |
 | 自有件 | 4 | 0 | 0 | 4 | 4 / 4 |
-| 量化 | 3 | 0 | 4 | 7 | 3 / 7 |
+| 量化 | 7 | 0 | 0 | 7 | 7 / 7 |
 | 积木 | 3 | 2 | 1 | 6 | 3 / 6 |
 | 面板 | 19 | 16 | 49 | 84 | 19 / 84 |
-| 合计 | | | | 105 | 32 / 105 |
+| 合计 | | | | 105 | 36 / 105 |
 
 ## 每张卡
 
@@ -37,7 +37,7 @@
 | ChartTrader | 交易 | 面板 | `src/panels/chart/ChartTradeBar.tsx`、`src/panels/chart/TradeOverlay.tsx` | 部分 | 图上看单与下单有，拖动改价与止盈止损线没有 |
 | ClusterSearch | 订单流 | 面板 | — | 没做 | 足迹扫描器，还没有对应面板 |
 | CommandLine | 工作台 | 积木 | `Command`、`src/shell/QuickSearch.tsx` | 已做 | 命令面板用 Command，底栏常驻命令行（GO Bar）不是这一张的范围 |
-| ConsensusBlock | 交易 | 量化 | — | 没做 | 写命令提交前的必要条件块，还没有对应组件 |
+| ConsensusBlock | 交易 | 量化 | `ConsensusBlock` | 已做 |  |
 | Controls | 基元 | 基础件 | `Button`、`Input`、`Select`、`Slider`、`Checkbox`、`Switch`、`Tabs`、`ToggleGroup` | 已做 |  |
 | CorporateActions | 资产管理 | 面板 | — | 没做 | 资产管理，还没有对应面板 |
 | Cover | — | 自有件 | `packages/ui/design-system/components/Cover` | 已做 | 封面页，随设计系统带出 |
@@ -65,7 +65,7 @@
 | FactorIC | 图表 | 面板 | — | 没做 | 研究层，还没有对应面板 |
 | FactorLibrary | 研究 | 面板 | — | 没做 | 研究层，还没有对应面板 |
 | FillLog | 组合 | 面板 | `src/panels/trades` | 已做 |  |
-| FlowGauges | 订单流 | 量化 | — | 没做 | 订单流四个仪表，还没有对应组件 |
+| FlowGauges | 订单流 | 量化 | `FlowGauges` | 已做 |  |
 | Footprint | 图表 | 面板 | `src/panels/chart` | 部分 | 图表有，足迹层没有 |
 | Fundamentals | 资产管理 | 面板 | — | 没做 | 资产管理，还没有对应面板 |
 | GreeksBoard | 衍生品 | 面板 | — | 没做 | 衍生品，还没有对应面板 |
@@ -98,7 +98,7 @@
 | PriceChart | 图表 | 面板 | `src/panels/chart` | 已做 |  |
 | QuantileLayers | 图表 | 面板 | — | 没做 | 研究层，还没有对应面板；组件库已有 Ridgeline 山脊图（#1918）可画各层收益分布，面板里还没接 |
 | RebalanceDesk | 资产管理 | 面板 | `src/panels/rebalance` | 部分 | 有再平衡面板，目标组合与当前组合的差额表没有对齐设计稿；组件库已有 SlopeChart 斜率图（#1918）可画再平衡前后权重，面板里还没接 |
-| RegimeStrip | 研究 | 量化 | — | 没做 | 市场状态带，还没有对应组件 |
+| RegimeStrip | 研究 | 量化 | `RegimeStrip` | 已做 |  |
 | ReplayBar | 订单流 | 面板 | `src/panels/chart/ReplayBar.tsx` | 已做 |  |
 | ReportBuilder | 工具 | 面板 | — | 没做 | 报告装配，还没有对应面板 |
 | RiskBoard | 组合 | 面板 | `src/panels/risk-board` | 已做 |  |
@@ -110,7 +110,7 @@
 | SeriesBrowser | 研究 | 面板 | — | 没做 | 研究层，还没有对应面板 |
 | SignalMonitor | 研究 | 面板 | — | 没做 | 研究层，还没有对应面板 |
 | SmartTape | 订单流 | 面板 | `src/panels/tape` | 已做 |  |
-| SparkTile | 图表 | 量化 | — | 没做 | 点阵标签 + LCD + 迷你折线的 KPI 瓦片，还没有对应组件 |
+| SparkTile | 图表 | 量化 | `SparkTile` | 已做 |  |
 | Splitter | 工作台 | 基础件 | `src/workspace/WorkspaceCanvas.tsx` | 部分 | 分割线在应用里自己做，没有抽进包里的 primitives |
 | StatusBar | 工作台 | 积木 | — | 没做 | 顶栏底栏的分段模型，还没有对应组件 |
 | StatusLED | 工作台 | 自有件 | `Led` | 已做 |  |

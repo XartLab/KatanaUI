@@ -149,6 +149,11 @@
           "target": "~/src/katana/ui/theme/panel-frame.css"
         },
         {
+          "path": "src/theme/quant.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/quant.css"
+        },
+        {
           "path": "src/theme/quote.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/quote.css"
@@ -2018,6 +2023,19 @@
       ]
     },
     {
+      "name": "consensus-block",
+      "type": "registry:component",
+      "title": "Consensus Block",
+      "description": "写命令提交前的必要条件块：当前意图、各必要条件的满足或阻止、结论与参数 hash；不是投票，任一方未过、未返回、超时、失效都不可提交，裁决永远在执行网关与账户服务。",
+      "files": [
+        {
+          "path": "src/quant/consensus-block.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/consensus-block.tsx"
+        }
+      ]
+    },
+    {
       "name": "equity-curve-model",
       "type": "registry:component",
       "title": "Equity Curve Model",
@@ -2053,6 +2071,19 @@
           "path": "src/quant/equity-curve.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/quant/equity-curve.tsx"
+        }
+      ]
+    },
+    {
+      "name": "flow-gauges",
+      "type": "registry:component",
+      "title": "Flow Gauges",
+      "description": "订单流四个仪表一行：Market Pressure、Price Change（零轴居中，−100…+100）、DOM Pressure（前 N 档买卖挂单柱）、Delta Divergence（多周期 LED 矩阵）；只收算好的数，窗口不足写 N/A。",
+      "files": [
+        {
+          "path": "src/quant/flow-gauges.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/flow-gauges.tsx"
         }
       ]
     },
@@ -2166,6 +2197,19 @@
           "path": "src/quant/quantile-model.ts",
           "type": "registry:component",
           "target": "~/src/katana/ui/quant/quantile-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "regime-strip",
+      "type": "registry:component",
+      "title": "Regime Strip",
+      "description": "市场状态带：状态模型把历史分成几种状态，画成无缝色带叠在任何时间轴下，配图例；颜色是类别（series-1…7）不是好坏；RegimeBand 只画带。",
+      "files": [
+        {
+          "path": "src/quant/regime-strip.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/regime-strip.tsx"
         }
       ]
     },

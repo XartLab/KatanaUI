@@ -11,7 +11,14 @@ import {
   SymbolMarkDemo,
 } from './pages/readouts.tsx'
 import { ContextMenuOpen, DialogOpen, DropdownMenuOpen, PopoverOpen, SelectOpen, TooltipOpen } from './pages/open.tsx'
-import { ChangeTextDemo, PnlTextDemo, QuantFormatDemo } from './pages/quant.tsx'
+import {
+  ChangeTextDemo,
+  ConsensusBlockDemo,
+  FlowGaugesDemo,
+  PnlTextDemo,
+  QuantFormatDemo,
+  RegimeStripDemo,
+} from './pages/quant.tsx'
 import { DataGridDemo, EmptyStateDemo, EstimateBadgeDemo, PanelFrameDemo, ToolbarDemo } from './pages/blocks.tsx'
 import { AlertDemo, ProgressDemo, ToastDemo } from './pages/feedback.tsx'
 import { ComboboxDemo, CommandDemo } from './pages/pickers.tsx'
@@ -128,6 +135,9 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   field: FieldDemo,
   'change-text': ChangeTextDemo,
   'pnl-text': PnlTextDemo,
+  'flow-gauges': FlowGaugesDemo,
+  'regime-strip': RegimeStripDemo,
+  'consensus-block': ConsensusBlockDemo,
   'quant-format': QuantFormatDemo,
   'data-grid': DataGridDemo,
   'empty-state': EmptyStateDemo,

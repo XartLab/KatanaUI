@@ -1700,6 +1700,139 @@ for (const theme of THEMES) {
       await expect(format.getByTestId('quant-price-crypto')).toHaveText('0.00000123')
     })
 
+    test('量化第二批：订单流仪表的条按读数画在中线两侧、不用涨跌色；N/A 不画条、估算灰显', async ({ page }) => {
+      await open(page, theme, 'flow-gauges')
+      const flow = section(page, 'flow-gauges').locator('.k-flow').first()
+      const boxes = flow.locator('.k-flow-cell-box')
+      await expect(boxes).toHaveCount(4)
+      const pressure = boxes.nth(0)
+      await expect(pressure.locator('.k-flow-value')).toHaveText('+62')
+      const zero = (await pressure.locator('.k-flow-zero').boundingBox())!
+      const bar = (await pressure.locator('.k-flow-zero i').boundingBox())!
+      // +62：从中线往右、占半宽的 62%（31% 的槽宽）。
+      expect(bar.x).toBeGreaterThan(zero.x + zero.width / 2 - 3)
+      expect(bar.width / zero.width).toBeGreaterThan(0.29)
+      expect(bar.width / zero.width).toBeLessThan(0.33)
+      await expect.poll(() => bg(pressure.locator('.k-flow-zero i'))).toBe(await token(page, '--series-1'))
+      // −18：在中线左边，颜色是 series-2，不是跌的红。
+      const change = boxes.nth(1)
+      const negZero = (await change.locator('.k-flow-zero').boundingBox())!
+      const neg = (await change.locator('.k-flow-zero i').boundingBox())!
+      expect(neg.x + neg.width).toBeLessThan(negZero.x + negZero.width / 2 + 3)
+      await expect.poll(() => bg(change.locator('.k-flow-zero i'))).toBe(await token(page, '--series-2'))
+      await page.evaluate(() => document.documentElement.setAttribute('data-updown', 'cn'))
+      await expect.poll(() => bg(change.locator('.k-flow-zero i'))).toBe(await token(page, '--series-2'))
+      await page.evaluate(() => document.documentElement.removeAttribute('data-updown'))
+      // 挂单柱：十档里最高的一档占满。矩阵：四个周期各一行，最后一行写 N/A、没有 LED。
+      const bars = boxes.nth(2).locator('.k-flow-depth i')
+      await expect(bars).toHaveCount(8)
+      await expect(boxes.nth(2).locator('.k-flow-note')).toHaveText('Bid 71% · Ask 29%')
+      const rows = boxes.nth(3).locator('.k-flow-matrix-row')
+      await expect(rows).toHaveCount(4)
+      await expect(rows.nth(3)).toContainText('N/A')
+      await expect(rows.nth(3).locator('.k-flow-led')).toHaveCount(0)
+      await expect(rows.nth(0).locator('.k-flow-led')).toHaveCount(6)
+      // 窗口不足：写 N/A、不画条；估算：写估算字、整格变淡。
+      const lacking = section(page, 'flow-gauges').locator('.k-flow').nth(1).locator('.k-flow-cell-box')
+      await expect(lacking.nth(0).locator('.k-flow-value')).toHaveText('N/A')
+      await expect(lacking.nth(0).locator('.k-flow-zero i')).toHaveCount(0)
+      await expect(lacking.nth(1).locator('.k-flow-est')).toHaveText('估算')
+      await expect
+        .poll(() =>
+          lacking
+            .nth(1)
+            .locator('.k-flow-value')
+            .evaluate((element) => getComputedStyle(element).opacity),
+        )
+        .toBe('0.55')
+    })
+
+    test('量化第二批：状态带的段色读 series token、宽度按时间；点图例高亮一个状态；估算段带斜纹', async ({ page }) => {
+      await open(page, theme, 'regime-strip')
+      const strip = section(page, 'regime-strip').getByTestId('regime-strip')
+      const band = (await strip.locator('.k-regime-band').boundingBox())!
+      const first = strip.locator('.k-regime-band i').first()
+      await expect.poll(() => bg(first)).toBe(await token(page, '--series-1'))
+      const firstBox = (await first.boundingBox())!
+      // 第一段占 12/100 的带宽，从最左边起。
+      expect(firstBox.x).toBeLessThan(band.x + 2)
+      expect(firstBox.width / band.width).toBeGreaterThan(0.11)
+      expect(firstBox.width / band.width).toBeLessThan(0.13)
+      await expect
+        .poll(() => bg(strip.locator('.k-regime-band i[data-state="crisis"]')))
+        .toBe(await token(page, '--series-7'))
+      // 图例：名字都写着，色块跟带上同色。
+      const legend = strip.locator('.k-regime-legend')
+      await expect(legend).toContainText('趋势上')
+      await expect(legend).toContainText('危机')
+      await expect
+        .poll(() => bg(legend.locator('li[data-state="vol"] .k-regime-swatch')))
+        .toBe(await token(page, '--series-4'))
+      await expect(legend.locator('li[data-current]')).toContainText('当前')
+      // 估算段：斜纹是背景图，不是换色。
+      const estimated = strip.locator('.k-regime-band i[data-estimated]')
+      await expect
+        .poll(() => estimated.evaluate((element) => getComputedStyle(element).backgroundImage))
+        .toContain('repeating-linear-gradient')
+      await expect.poll(() => first.evaluate((element) => getComputedStyle(element).backgroundImage)).toBe('none')
+      await expect(legend).toContainText('估（尚未确认）')
+      // 点「危机」：别的状态变淡，危机还在；再点取消。
+      const crisis = legend.getByRole('button', { name: /危机/ })
+      await crisis.click()
+      await expect(crisis).toHaveAttribute('aria-pressed', 'true')
+      await expect.poll(() => first.evaluate((element) => getComputedStyle(element).opacity)).toBe('0.25')
+      await expect
+        .poll(() =>
+          strip
+            .locator('.k-regime-band i[data-state="crisis"]')
+            .evaluate((element) => getComputedStyle(element).opacity),
+        )
+        .toBe('1')
+      await crisis.click()
+      await expect.poll(() => first.evaluate((element) => getComputedStyle(element).opacity)).toBe('1')
+    })
+
+    test('量化第二批：必要条件块的阻止项有文字、每格有状态字、不可提交的结论是红的、点开看详情', async ({ page }) => {
+      await open(page, theme, 'consensus-block')
+      const doc = section(page, 'consensus-block')
+      const color = (locator: Locator) => locator.evaluate((element) => getComputedStyle(element).color)
+      // 不可推进：未过那一格写着「未过」与原因，结论是红色的「不可推进」，hash 写 —。
+      const blocked = doc.getByTestId('consensus-blocked')
+      const gate = blocked.locator('.k-consensus-party[data-state="blocked"]')
+      await expect(gate).toContainText('未过')
+      await expect(gate).toContainText('偏离门未过 19.4%')
+      await expect(gate.locator('.k-consensus-lamp')).toBeVisible()
+      const verdict = blocked.locator('.k-consensus-verdict')
+      await expect(verdict).toHaveText('不可推进')
+      await expect.poll(() => color(verdict)).toBe(await token(page, '--signal-red'))
+      await expect(blocked.locator('.k-consensus-summary')).toContainText('1 通过 · 0 接近 · 1 未过 · 1 未填')
+      await expect(blocked.locator('.k-consensus-hash')).toHaveText('—')
+      await expect(blocked.locator('.k-consensus-party[data-state="unknown"]')).toContainText('未返回')
+      // 超时、失效、评估中：各有自己的字，没有一格只剩一个灯。
+      const stale = doc.getByTestId('consensus-stale')
+      await expect(stale.locator('.k-consensus-party[data-state="timeout"]')).toContainText('超时')
+      await expect(stale.locator('.k-consensus-party[data-state="stale"]')).toContainText('需重检')
+      await expect(stale.locator('.k-consensus-party[data-state="pending"]')).toContainText('评估中')
+      for (const party of await stale.locator('.k-consensus-party').all()) {
+        expect(((await party.locator('.k-consensus-state').textContent()) ?? '').trim().length).toBeGreaterThan(0)
+      }
+      // 可提交：接近那一格是琥珀字；点开才看到详情；点 hash 是按钮。
+      const ok = doc.getByTestId('consensus-ok')
+      const near = ok.locator('.k-consensus-party[data-state="warn"]')
+      await expect.poll(() => color(near.locator('.k-consensus-msg'))).toBe(await token(page, '--signal-amber'))
+      await expect(ok.locator('.k-consensus-detail')).toHaveCount(0)
+      await near.click()
+      await expect(near).toHaveAttribute('aria-expanded', 'true')
+      await expect(ok.locator('.k-consensus-detail')).toContainText('单票集中度上限 60%')
+      await near.click()
+      await expect(ok.locator('.k-consensus-detail')).toHaveCount(0)
+      await expect(ok.getByRole('button', { name: '7f3a' })).toBeVisible()
+      // 斜切壳：clip-path 是有值的多边形。
+      await expect
+        .poll(() => ok.locator('.k-consensus-shell').evaluate((element) => getComputedStyle(element).clipPath))
+        .toContain('polygon')
+    })
+
     test('积木：数据表每种列类型一列，数字右对齐，盈亏与涨跌幅的颜色读 pnl-up / pnl-down 并在 data-updown="cn" 下互换，点表头排序', async ({
       page,
     }) => {

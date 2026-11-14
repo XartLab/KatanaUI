@@ -84,9 +84,8 @@
     },
     "ConsensusBlock": {
       "kind": "量化",
-      "status": "没做",
-      "at": [],
-      "note": "写命令提交前的必要条件块，还没有对应组件"
+      "status": "已做",
+      "at": ["ConsensusBlock"]
     },
     "Controls": {
       "kind": "基础件",
@@ -235,9 +234,8 @@
     },
     "FlowGauges": {
       "kind": "量化",
-      "status": "没做",
-      "at": [],
-      "note": "订单流四个仪表，还没有对应组件"
+      "status": "已做",
+      "at": ["FlowGauges"]
     },
     "Footprint": {
       "kind": "面板",
@@ -424,9 +422,8 @@
     },
     "RegimeStrip": {
       "kind": "量化",
-      "status": "没做",
-      "at": [],
-      "note": "市场状态带，还没有对应组件"
+      "status": "已做",
+      "at": ["RegimeStrip"]
     },
     "ReplayBar": {
       "kind": "面板",
@@ -492,9 +489,8 @@
     },
     "SparkTile": {
       "kind": "量化",
-      "status": "没做",
-      "at": [],
-      "note": "点阵标签 + LCD + 迷你折线的 KPI 瓦片，还没有对应组件"
+      "status": "已做",
+      "at": ["SparkTile"]
     },
     "Splitter": {
       "kind": "基础件",
