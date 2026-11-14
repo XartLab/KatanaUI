@@ -47,7 +47,7 @@ tokens → theme → lib → primitives → katana → patterns → quant → bl
 ### 设计稿覆盖（#1870）
 
 `docs/coverage-map.json` 是手写的：设计稿存档的每张组件卡（`design/katana-console/project/components/`）落在哪一类（基础件、自有件、量化、积木、面板）、落点、做没做。
-`pnpm ui:coverage` 生成 `docs/coverage.md`；`pnpm lint:ds` 跑 `coverage --check`：有卡没映射、映射的落点（包的出口名或仓库路径）不存在、`coverage.md` 不是最新，都红。文档站的「覆盖」页（`#/coverage`）显示每一类的「已做 / 总数」，数字与 `coverage.md` 用同一份汇总（`docs/coverage-core.ts`）。
+`pnpm ui:coverage`（`scripts/ui-coverage.mjs`，2026-11-15 #14 从 KATANAview 搬回）生成 `docs/coverage.md`；`pnpm test` 先跑它的 `--check`：有卡没映射、映射的落点（包的出口名或仓库路径）不存在、`coverage.md` 不是最新，都红。落点写 `src/` 开头的是 KATANAview 应用里的文件（本仓库里没有），不核对；本仓库里的文件写 `packages/react/...` 或 `design/...`，照常核对。文档站的「覆盖」页（`#/coverage`）显示每一类的「已做 / 总数」，数字与 `coverage.md` 用同一份汇总（`docs/coverage-core.ts`）。
 新增或改名一个件，同一个 PR 里更新映射；积木层（DataGrid、EmptyState、Toolbar，#1869）落地后，把 `planned` 里的名字挪进 `at`。
 
 ### 应用里换了什么、没换什么（#1870）
@@ -169,7 +169,7 @@ MIT（用户 2026-11-14 定，#1876），见本文开头。别的项目经注册
 - `.github/workflows/pages.yml`：只在镜像仓库里生效（GitHub 不读子目录的 `.github`），push 到 main 时测试、构建并发布到 Pages。
 - `README.md`（英文，对外）、`CONTRIBUTING.md`（英文）、本文件（中文，内部）。
 - token：源头与生成器在 `packages/tokens`（`@katana-ui/tokens`，2026-11-14 #2 第 2 步拆出），包里的 `ds-build`、`ds-tokens.test.ts`、`theming.test.ts`、`motion.test.ts` 按包名读它的出口（本地靠 `linkWorkspacePackages` 连到仓库里那份）；改 token 在那个包里改 `src/tokens.json` 再 `pnpm tokens:sync`。
-- 设计稿覆盖表的脚本（`pnpm ui:coverage`）已随 KATANAview #1972 删除，待在本仓库重建。
+- 设计稿覆盖表的脚本（`pnpm ui:coverage`）已在本仓库重建（`scripts/ui-coverage.mjs`，#14）。
 - `pnpm-lock.yaml` 是本包自己的锁（镜像里 `pnpm install --frozen-lockfile` 读它）：改了 `package.json` 的依赖后，在本目录跑 `pnpm install --lockfile-only --ignore-workspace` 并提交；根目录的 `pnpm lint:ui-lock`（`pnpm test` 里有）查它与 `package.json` 同步。根目录的安装不读它。
 
 在 KATANAview 里改了 `package.json` 的依赖，要与根目录的版本保持一致；根目录的 `pnpm install` 照旧装这个包。

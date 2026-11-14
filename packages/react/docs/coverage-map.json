@@ -102,7 +102,7 @@
     "Cover": {
       "kind": "自有件",
       "status": "已做",
-      "at": ["packages/ui/design-system/components/Cover"],
+      "at": ["packages/react/design-system/components/Cover"],
       "note": "封面页，随设计系统带出"
     },
     "DOMHeatmap": {
@@ -317,7 +317,7 @@
     "NewsFeed": {
       "kind": "面板",
       "status": "部分",
-      "at": ["src/panels/alice-reports"],
+      "at": ["src/panels/inbox"],
       "note": "有报告流，公告、RSS、数据源事件的统一时间流没有"
     },
     "Notes": {
