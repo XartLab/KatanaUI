@@ -1,0 +1,10 @@
+<!-- @dsCard group="Forms" height=195 -->
+<!-- SPDX-License-Identifier: MIT -->
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>HoldToConfirm</title></head>
+<body style="margin:0;padding:var(--space-4);background:var(--bg-100);color:var(--ink-200);font:var(--text-body) var(--font-sans);display:flex;flex-direction:column;gap:var(--space-3)">
+<div class="gal-row"><span class="gal-cap">danger · 默认 2 秒</span><button type="button" class="k-hold" data-tone="danger" data-phase="idle" data-progress="0.000" aria-describedby="_R_1h_" title="按住 2 秒，全部平仓"><span class="k-hold-fill" aria-hidden="true"></span><span class="k-hold-label">全部平仓</span></button><span id="_R_1h_" class="sr-only">按住 2 秒，全部平仓</span><output data-gallery-hold="true">已触发 0 次</output></div><div class="gal-row"><span class="gal-cap">default · 1 秒</span><button type="button" class="k-hold" data-tone="default" data-phase="idle" data-progress="0.000" aria-describedby="_R_1i_" title="按住 1 秒，停止策略"><span class="k-hold-fill" aria-hidden="true"></span><span class="k-hold-label">停止策略</span></button><span id="_R_1i_" class="sr-only">按住 1 秒，停止策略</span><output data-gallery-hold-fast="true">已触发 0 次</output></div><div class="gal-row"><span class="gal-cap">禁用</span><button type="button" class="k-hold" data-tone="danger" data-phase="idle" data-progress="0.000" disabled="" aria-describedby="_R_j_" title="按住 2 秒，全部撤单"><span class="k-hold-fill" aria-hidden="true"></span><span class="k-hold-label">全部撤单</span></button><span id="_R_j_" class="sr-only">按住 2 秒，全部撤单</span></div><p class="gal-note">演示：按钮不连任何账户，只计数。单击不会触发；按住不放，或键盘按住空格 / 回车。</p>
+
+</body>
+</html>

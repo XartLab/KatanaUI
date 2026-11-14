@@ -1,0 +1,10 @@
+<!-- @dsCard group="Forms" height=193 -->
+<!-- SPDX-License-Identifier: MIT -->
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>ShortcutRecorder</title></head>
+<body style="margin:0;padding:var(--space-4);background:var(--bg-100);color:var(--ink-200);font:var(--text-body) var(--font-sans);display:flex;flex-direction:column;gap:var(--space-3)">
+<div class="gal-row"><span class="gal-cap">平仓 · 有冲突表</span><span class="k-rec" data-state="idle"><button type="button" class="k-rec-field" aria-label="全部平仓快捷键" aria-describedby="_R_1h_"><span class="k-keys" aria-label="Ctrl+Shift+F"><kbd class="k-kbd">Ctrl</kbd><kbd class="k-kbd">Shift</kbd><kbd class="k-kbd">F</kbd></span></button><span id="_R_1h_" class="sr-only">Ctrl+Shift+F</span><button type="button" class="k-rec-clear" aria-label="清除快捷键"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x" aria-hidden="true"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></button><span class="k-rec-msg" role="status"></span></span><output data-gallery-recorder="true">Ctrl+Shift+F</output></div><div class="gal-row"><span class="gal-cap">要求修饰键</span><span class="k-rec" data-state="idle"><button type="button" class="k-rec-field" aria-label="切换品种快捷键" aria-describedby="_R_1i_"><span class="k-rec-hint">未设置</span></button><span id="_R_1i_" class="sr-only">未设置</span><span class="k-rec-msg" role="status"></span></span><output data-gallery-recorder-mod="true">未设置</output></div><div class="gal-row"><span class="gal-cap">禁用</span><span class="k-rec" data-state="idle"><button type="button" class="k-rec-field" aria-label="只读快捷键" aria-describedby="_R_j_" disabled=""><span class="k-keys" aria-label="F5"><kbd class="k-kbd">F5</kbd></span></button><span id="_R_j_" class="sr-only">F5</span><span class="k-rec-msg" role="status"></span></span></div><p class="gal-note">演示：占用表里是「全部撤单 = Ctrl+Shift+K」「市价买入 = Alt+B」，录到它们会提示冲突、不写入。</p>
+
+</body>
+</html>

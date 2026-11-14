@@ -15,9 +15,9 @@
 | 基础件 | 3 | 1 | 0 | 4 | 3 / 4 |
 | 自有件 | 4 | 0 | 0 | 4 | 4 / 4 |
 | 量化 | 2 | 0 | 5 | 7 | 2 / 7 |
-| 积木 | 2 | 2 | 1 | 5 | 2 / 5 |
-| 面板 | 19 | 13 | 53 | 85 | 19 / 85 |
-| 合计 | | | | 105 | 30 / 105 |
+| 积木 | 3 | 2 | 1 | 6 | 3 / 6 |
+| 面板 | 19 | 13 | 52 | 84 | 19 / 84 |
+| 合计 | | | | 105 | 31 / 105 |
 
 ## 每张卡
 
@@ -46,7 +46,7 @@
 | DataGrid | 数据 | 积木 | `DataGrid` | 已做 | #1869 把 DataTable 抽成积木 DataGrid；应用里 panels/kit/DataTable.tsx 是薄适配层 |
 | DataQuality | 研究 | 面板 | — | 没做 | 研究层，还没有对应面板 |
 | DataSources | 运行中心 | 面板 | `src/shell/ConnectionList.tsx` | 部分 | 连接列表有，延迟 LCD 与今日拉取量没有 |
-| DatasetCatalog | 研究 | 面板 | `src/shell/DatasetSourcesPane.tsx` | 部分 | 数据集来源有，字段数、频率、覆盖区间没有 |
+| DatasetCatalog | 研究 | 面板 | `src/shell/DatasetSourcesPane.tsx`、`TreeView` | 部分 | 数据集来源有，字段数、频率、覆盖区间没有；目录树的件（TreeView）已有，面板还没有接它 |
 | DecisionJournal | 决策 | 面板 | — | 没做 | 决策层，还没有对应面板 |
 | DecisionQueue | 决策 | 面板 | — | 没做 | 决策层，还没有对应面板 |
 | DeploymentBoard | 研究 | 面板 | — | 没做 | 研究层，还没有对应面板 |
@@ -55,7 +55,7 @@
 | Entitlements | 运行中心 | 面板 | — | 没做 | 许可与权限，还没有对应面板 |
 | EquityCurve | 图表 | 量化 | `src/panels/kit/EquityCurve.tsx` | 已做 | 应用里有，还没抽进 quant 层 |
 | EventStudy | 研究 | 面板 | — | 没做 | 研究层，还没有对应面板 |
-| EventTimeline | 发现 | 面板 | — | 没做 | 发现，还没有对应面板 |
+| EventTimeline | 发现 | 积木 | `EventTimeline` | 已做 | 件（按显示时区分天、新的在前）已做，发现区的面板还没有接它（#1919 不动 src/） |
 | ExitStrategy | 交易 | 面板 | `src/panels/order-ticket` | 部分 | 下单面板里有止盈止损，自动退出两种模式没有 |
 | ExposureTimeline | 盈亏 | 面板 | — | 没做 | 盈亏，还没有对应面板 |
 | FactorDecay | 研究 | 面板 | — | 没做 | 研究层，还没有对应面板 |

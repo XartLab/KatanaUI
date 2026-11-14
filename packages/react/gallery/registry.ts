@@ -342,7 +342,7 @@ export const PAGES: readonly DocPage[] = [
   {
     id: 'chip-group',
     group: 'forms',
-    cardHeight: 190,
+    cardHeight: 135,
     title: 'ChipGroup 芯片组',
     summary:
       '分面筛选用的一排可开关小标签：多选或单选，可带命中数与清除钮。筛选器、自选分组的快速过滤用它。功能参照 Arc，实现原创。',
@@ -1004,7 +1004,7 @@ export const PAGES: readonly DocPage[] = [
   {
     id: 'shortcut-recorder',
     group: 'forms',
-    cardHeight: 260,
+    cardHeight: 193,
     title: 'ShortcutRecorder 快捷键录入',
     summary:
       '热键设置用的录键框：点一下进入录键态，按下组合键就记下来；冲突由调用方传的占用表判断，冲突时不写入并说占着的是谁。功能参照 Arc，实现原创。',
@@ -1065,7 +1065,7 @@ export const PAGES: readonly DocPage[] = [
   {
     id: 'number-input',
     group: 'forms',
-    cardHeight: 221,
+    cardHeight: 301,
     title: 'NumberInput 数字框',
     summary: '一个框：值加可选的单位后缀，没有 −/+ 按钮；打字、方向键、按住左右拖三种改法，可选框内标签与算式输入。',
     exports: ['NumberInput'],
@@ -1157,7 +1157,7 @@ export const PAGES: readonly DocPage[] = [
   {
     id: 'date-range-picker',
     group: 'forms',
-    cardHeight: 170,
+    cardHeight: 151,
     title: 'DateRangePicker 日期区间',
     summary:
       '起点—终点两个可逐段打字的日期框，右边的日历按钮打开双月日历，左边一列预设：今天、本周、本月、年初至今，不在预设里的显示「自定义」。回放、台账、报告的区间用它。功能参照 Arc，实现原创。',
@@ -1802,7 +1802,7 @@ export const PAGES: readonly DocPage[] = [
   {
     id: 'tree-view',
     group: 'layout',
-    cardHeight: 330,
+    cardHeight: 304,
     title: 'TreeView 树',
     summary:
       '可展开收起的层级列表：数据集目录、品种分类树用它。方向键走、→ 展开、← 收起，单选或多选，展开与选中都可受控。功能参照 Arc，实现原创。',
@@ -1929,7 +1929,7 @@ export const PAGES: readonly DocPage[] = [
   {
     id: 'hold-to-confirm',
     group: 'forms',
-    cardHeight: 230,
+    cardHeight: 195,
     title: 'HoldToConfirm 按住确认',
     summary:
       '不可撤的动作（全平、全撤、停策略）用的按钮：按住把底色从左填满才触发，松手往回退；键盘按住空格或回车同样。单击不触发。功能参照 Arc，实现原创。',
@@ -2235,7 +2235,7 @@ export const PAGES: readonly DocPage[] = [
   {
     id: 'json-viewer',
     group: 'readouts',
-    cardHeight: 520,
+    cardHeight: 511,
     title: 'JsonViewer JSON 查看器',
     summary:
       '只读的 JSON 树：对象与数组可折叠，叶子按类型上色，上面一个查找框，命中的键名与值高亮、祖先自动展开。原始消息、Agent 调用结果、连接调试用它。功能参照 Arc，实现原创。',
@@ -2783,7 +2783,7 @@ export const PAGES: readonly DocPage[] = [
   {
     id: 'event-timeline',
     group: 'blocks',
-    cardHeight: 700,
+    cardHeight: 597,
     title: 'EventTimeline 事件时间线',
     summary:
       '发现区的统一事件流（公告、告警、成交、数据源事件）：按显示时区的自然日分组，新的在前，每条一个钟点、一个按类型上色的圆点、标题加来源标签与说明。对设计稿的 EventTimeline 卡。功能参照 Arc，实现原创。',

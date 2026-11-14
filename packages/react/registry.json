@@ -44,9 +44,19 @@
           "target": "~/src/katana/ui/theme/badge.css"
         },
         {
+          "path": "src/theme/chip-group.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/chip-group.css"
+        },
+        {
           "path": "src/theme/data-grid.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/data-grid.css"
+        },
+        {
+          "path": "src/theme/date-range.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/date-range.css"
         },
         {
           "path": "src/theme/date-time.css",
@@ -62,6 +72,21 @@
           "path": "src/theme/empty-state.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/empty-state.css"
+        },
+        {
+          "path": "src/theme/event-timeline.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/event-timeline.css"
+        },
+        {
+          "path": "src/theme/hold-to-confirm.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/hold-to-confirm.css"
+        },
+        {
+          "path": "src/theme/json-viewer.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/json-viewer.css"
         },
         {
           "path": "src/theme/kbd.css",
@@ -107,6 +132,16 @@
           "path": "src/theme/rolling-text.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/rolling-text.css"
+        },
+        {
+          "path": "src/theme/shortcut-recorder.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/shortcut-recorder.css"
+        },
+        {
+          "path": "src/theme/tree-view.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/tree-view.css"
         }
       ]
     },
@@ -952,6 +987,70 @@
       ]
     },
     {
+      "name": "hold-model",
+      "type": "registry:lib",
+      "title": "Hold Model",
+      "description": "HoldToConfirm 的进度规则：按住填满、松手退回的时长与每帧推进（纯函数）。",
+      "files": [
+        {
+          "path": "src/katana/hold-model.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/katana/hold-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "hold-to-confirm",
+      "type": "registry:component",
+      "title": "Hold To Confirm",
+      "description": "不可撤的动作（全平、全撤、停策略）用的按钮：按住把底色从左填满才触发，松手往回退；键盘按住空格或回车同样。单击不触发。功能参照 Arc，实现原创。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/hold-model"
+      ],
+      "files": [
+        {
+          "path": "src/katana/hold-to-confirm.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/katana/hold-to-confirm.tsx"
+        }
+      ]
+    },
+    {
+      "name": "json-viewer-model",
+      "type": "registry:lib",
+      "title": "Json Viewer Model",
+      "description": "JsonViewer 的数据模型：把任意值建成带稳定 id 的节点树，查找命中与要展开的祖先（纯函数）。",
+      "files": [
+        {
+          "path": "src/katana/json-viewer-model.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/katana/json-viewer-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "json-viewer",
+      "type": "registry:component",
+      "title": "Json Viewer",
+      "description": "只读的 JSON 树：对象与数组可折叠，叶子按类型上色，上面一个查找框，命中的键名与值高亮、祖先自动展开。原始消息、Agent 调用结果、连接调试用它。功能参照 Arc，实现原创。",
+      "dependencies": [
+        "lucide-react@1.67.0",
+        "react-aria-components@1.22.1"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/json-viewer-model"
+      ],
+      "files": [
+        {
+          "path": "src/katana/json-viewer.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/katana/json-viewer.tsx"
+        }
+      ]
+    },
+    {
       "name": "kbd",
       "type": "registry:component",
       "title": "Kbd",
@@ -1111,6 +1210,22 @@
       ]
     },
     {
+      "name": "number-expression",
+      "type": "registry:lib",
+      "title": "Number Expression",
+      "description": "NumberInput 的算式输入：+10%、*2、100*1.5 按当前值算（纯函数，不用 eval）。",
+      "registryDependencies": [
+        "@katana/number-field-model"
+      ],
+      "files": [
+        {
+          "path": "src/katana/number-expression.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/katana/number-expression.ts"
+        }
+      ]
+    },
+    {
       "name": "number-field-model",
       "type": "registry:lib",
       "title": "Number Field Model",
@@ -1127,8 +1242,9 @@
       "name": "number-input",
       "type": "registry:component",
       "title": "Number Input",
-      "description": "一个框：值加可选的单位后缀，没有 −/+ 按钮；打字、方向键、按住左右拖三种改法。",
+      "description": "一个框：值加可选的单位后缀，没有 −/+ 按钮；打字、方向键、按住左右拖三种改法，可选框内标签与算式输入。",
       "registryDependencies": [
+        "@katana/number-expression",
         "@katana/number-field-model"
       ],
       "files": [
@@ -1260,6 +1376,40 @@
           "path": "src/katana/rolling-text.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/katana/rolling-text.tsx"
+        }
+      ]
+    },
+    {
+      "name": "shortcut-model",
+      "type": "registry:lib",
+      "title": "Shortcut Model",
+      "description": "ShortcutRecorder 的规则：一次按键变成规范组合串（修饰键次序、物理键）。",
+      "files": [
+        {
+          "path": "src/katana/shortcut-model.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/katana/shortcut-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "shortcut-recorder",
+      "type": "registry:component",
+      "title": "Shortcut Recorder",
+      "description": "热键设置用的录键框：点一下进入录键态，按下组合键就记下来；冲突由调用方传的占用表判断，冲突时不写入并说占着的是谁。功能参照 Arc，实现原创。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/kbd",
+        "@katana/shortcut-model"
+      ],
+      "files": [
+        {
+          "path": "src/katana/shortcut-recorder.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/katana/shortcut-recorder.tsx"
         }
       ]
     },
@@ -1474,6 +1624,26 @@
       ]
     },
     {
+      "name": "chip-group",
+      "type": "registry:component",
+      "title": "Chip Group",
+      "description": "分面筛选用的一排可开关小标签：多选或单选，可带命中数与清除钮。筛选器、自选分组的快速过滤用它。功能参照 Arc，实现原创。",
+      "dependencies": [
+        "lucide-react@1.67.0",
+        "radix-ui@1.8.1"
+      ],
+      "registryDependencies": [
+        "@katana/cn"
+      ],
+      "files": [
+        {
+          "path": "src/patterns/chip-group.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/patterns/chip-group.tsx"
+        }
+      ]
+    },
+    {
       "name": "combobox",
       "type": "registry:component",
       "title": "Combobox",
@@ -1489,6 +1659,45 @@
           "path": "src/patterns/combobox.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/patterns/combobox.tsx"
+        }
+      ]
+    },
+    {
+      "name": "date-range-model",
+      "type": "registry:component",
+      "title": "Date Range Model",
+      "description": "DateRangePicker 的预设规则：今天、本周、本月、年初至今（截至今天）与区间认预设（纯函数）。",
+      "dependencies": [
+        "@internationalized/date@3.12.4"
+      ],
+      "files": [
+        {
+          "path": "src/patterns/date-range-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/patterns/date-range-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "date-range-picker",
+      "type": "registry:component",
+      "title": "Date Range Picker",
+      "description": "起点—终点两个可逐段打字的日期框，右边的日历按钮打开双月日历，左边一列预设：今天、本周、本月、年初至今，不在预设里的显示「自定义」。回放、台账、报告的区间用它。功能参照 Arc，实现原创。",
+      "dependencies": [
+        "@internationalized/date@3.12.4",
+        "lucide-react@1.67.0",
+        "react-aria-components@1.22.1"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/date-range-model",
+        "@katana/popover"
+      ],
+      "files": [
+        {
+          "path": "src/patterns/date-range-picker.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/patterns/date-range-picker.tsx"
         }
       ]
     },
@@ -1525,6 +1734,26 @@
           "path": "src/patterns/quote-table.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/patterns/quote-table.tsx"
+        }
+      ]
+    },
+    {
+      "name": "tree-view",
+      "type": "registry:component",
+      "title": "Tree View",
+      "description": "可展开收起的层级列表：数据集目录、品种分类树用它。方向键走、→ 展开、← 收起，单选或多选，展开与选中都可受控。功能参照 Arc，实现原创。",
+      "dependencies": [
+        "lucide-react@1.67.0",
+        "react-aria-components@1.22.1"
+      ],
+      "registryDependencies": [
+        "@katana/cn"
+      ],
+      "files": [
+        {
+          "path": "src/patterns/tree-view.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/patterns/tree-view.tsx"
         }
       ]
     },
@@ -1698,6 +1927,36 @@
           "path": "src/blocks/estimate-badge.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/blocks/estimate-badge.tsx"
+        }
+      ]
+    },
+    {
+      "name": "event-timeline-model",
+      "type": "registry:component",
+      "title": "Event Timeline Model",
+      "description": "EventTimeline 的分组规则：按显示时区的自然日分组、新的在前，钟点格式（纯函数）。",
+      "files": [
+        {
+          "path": "src/blocks/event-timeline-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/event-timeline-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "event-timeline",
+      "type": "registry:component",
+      "title": "Event Timeline",
+      "description": "发现区的统一事件流（公告、告警、成交、数据源事件）：按显示时区的自然日分组，新的在前，每条一个钟点、一个按类型上色的圆点、标题加来源标签与说明。对设计稿的 EventTimeline 卡。功能参照 Arc，实现原创。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/event-timeline-model"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/event-timeline.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/event-timeline.tsx"
         }
       ]
     }

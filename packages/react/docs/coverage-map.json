@@ -137,8 +137,8 @@
     "DatasetCatalog": {
       "kind": "面板",
       "status": "部分",
-      "at": ["src/shell/DatasetSourcesPane.tsx"],
-      "note": "数据集来源有，字段数、频率、覆盖区间没有"
+      "at": ["src/shell/DatasetSourcesPane.tsx", "TreeView"],
+      "note": "数据集来源有，字段数、频率、覆盖区间没有；目录树的件（TreeView）已有，面板还没有接它"
     },
     "DecisionJournal": {
       "kind": "面板",
@@ -187,10 +187,10 @@
       "note": "研究层，还没有对应面板"
     },
     "EventTimeline": {
-      "kind": "面板",
-      "status": "没做",
-      "at": [],
-      "note": "发现，还没有对应面板"
+      "kind": "积木",
+      "status": "已做",
+      "at": ["EventTimeline"],
+      "note": "件（按显示时区分天、新的在前）已做，发现区的面板还没有接它（#1919 不动 src/）"
     },
     "ExitStrategy": {
       "kind": "面板",
