@@ -7318,9 +7318,9 @@ button.k-heat-cell {
 }
 
 .k-heat-cell[data-tone="pos2"], .k-heat-cell[data-tone="neg2"] {
-  --k-on: color(from var(--k-cell) srgb clamp(0, calc((.43 - (.2126 * r + .7152 * g + .0722 * b)) * 1000), 1)
-      clamp(0, calc((.43 - (.2126 * r + .7152 * g + .0722 * b)) * 1000), 1)
-      clamp(0, calc((.43 - (.2126 * r + .7152 * g + .0722 * b)) * 1000), 1));
+  --k-on: color(from var(--k-cell) srgb clamp(0, calc((.44 - (.2126 * r + .7152 * g + .0722 * b)) * 1000), 1)
+      clamp(0, calc((.44 - (.2126 * r + .7152 * g + .0722 * b)) * 1000), 1)
+      clamp(0, calc((.44 - (.2126 * r + .7152 * g + .0722 * b)) * 1000), 1));
 }
 
 .k-heat-cell[data-tone="pos2"] .k-heat-date, .k-heat-cell[data-tone="pos2"] .k-heat-num, .k-heat-cell[data-tone="neg2"] .k-heat-date, .k-heat-cell[data-tone="neg2"] .k-heat-num {
@@ -8719,11 +8719,11 @@ button.k-sm-head:focus-visible {
 }
 
 .k-galaxy-legend .is-step-2, .k-galaxy-legend .is-step2 {
-  color: var(--ds-c-1a6btok);
+  color: var(--ds-c-uumw93);
 }
 
 .k-galaxy-legend .is-step-2 {
-  color: var(--ds-c-1athvsc);
+  color: var(--ds-c-vhsycv);
 }
 
 .k-galaxy-tip {
@@ -11264,8 +11264,8 @@ button.k-consensus-hash:focus-visible {
   --ds-c-1sas9o0: color-mix(in srgb, var(--ink-100) 8%, transparent);
   --ds-c-1liwpbi: color-mix(in srgb, var(--ink-100) 6%, transparent);
   --ds-c-1xbddtq: color-mix(in srgb, var(--ink-400) 12%, transparent);
-  --ds-c-1a6btok: color(from var(--div-pos-200) srgb clamp(0, calc((.43 - (.2126 * r + .7152 * g + .0722 * b)) * 1000), 1) clamp(0, calc((.43 - (.2126 * r + .7152 * g + .0722 * b)) * 1000), 1) clamp(0, calc((.43 - (.2126 * r + .7152 * g + .0722 * b)) * 1000), 1));
-  --ds-c-1athvsc: color(from var(--div-neg-200) srgb clamp(0, calc((.43 - (.2126 * r + .7152 * g + .0722 * b)) * 1000), 1) clamp(0, calc((.43 - (.2126 * r + .7152 * g + .0722 * b)) * 1000), 1) clamp(0, calc((.43 - (.2126 * r + .7152 * g + .0722 * b)) * 1000), 1));
+  --ds-c-uumw93: color(from var(--div-pos-200) srgb clamp(0, calc((.44 - (.2126 * r + .7152 * g + .0722 * b)) * 1000), 1) clamp(0, calc((.44 - (.2126 * r + .7152 * g + .0722 * b)) * 1000), 1) clamp(0, calc((.44 - (.2126 * r + .7152 * g + .0722 * b)) * 1000), 1));
+  --ds-c-vhsycv: color(from var(--div-neg-200) srgb clamp(0, calc((.44 - (.2126 * r + .7152 * g + .0722 * b)) * 1000), 1) clamp(0, calc((.44 - (.2126 * r + .7152 * g + .0722 * b)) * 1000), 1) clamp(0, calc((.44 - (.2126 * r + .7152 * g + .0722 * b)) * 1000), 1));
   --ds-c-fmo1lj: color-mix(in srgb, var(--pnl-up) 12%, transparent);
   --ds-c-qbul3h: color-mix(in srgb, var(--signal-amber) 12%, transparent);
   --ds-c-jwmebu: color-mix(in srgb, var(--pnl-down) 12%, transparent);
