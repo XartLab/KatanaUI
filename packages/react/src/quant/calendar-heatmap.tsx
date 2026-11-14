@@ -51,7 +51,7 @@ export function CalendarHeatmap({
   onSelect,
   className,
 }: CalendarHeatmapProps) {
-  const dates = days.map((day) => day.date).toSorted()
+  const dates = days.map((day) => day.date).sort()
   const start = from ?? dates[0] ?? ''
   const end = to ?? dates[dates.length - 1] ?? ''
   const grid = calendarGrid(start, end, weekStart)

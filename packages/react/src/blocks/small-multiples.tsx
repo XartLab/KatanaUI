@@ -63,7 +63,7 @@ export function SmallMultiples({
             exact: true,
           })
           const first = item.values.find((value) => Number.isFinite(value))
-          const last = item.values.findLast((value) => Number.isFinite(value))
+          const last = [...item.values].reverse().find((value) => Number.isFinite(value))
           const tone = quoteTone(first === undefined || last === undefined ? null : last - first)
           const at = active === null ? item.values.length - 1 : Math.min(active, item.values.length - 1)
           const value = item.values[at]
