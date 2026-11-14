@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 import { useState } from 'react'
-import { HoldToConfirm, ShortcutRecorder, type ShortcutRecorderLabels } from '../../src/index'
+import { ChipGroup, HoldToConfirm, ShortcutRecorder, type ChipItem, type ShortcutRecorderLabels } from '../../src/index'
 import { Row } from './parts'
 
 // #1919 的操作与结构件的演示。数据都是演示用的（页上写明），不是行情。
@@ -79,6 +79,39 @@ export function ShortcutRecorderDemo() {
       <p className="gal-note">
         演示：占用表里是「全部撤单 = Ctrl+Shift+K」「市价买入 = Alt+B」，录到它们会提示冲突、不写入。
       </p>
+    </>
+  )
+}
+
+// 演示用的筛选项与命中数（不是行情）。
+const CHIP_ITEMS: readonly ChipItem[] = [
+  { value: 'cn', label: 'A 股', count: 38 },
+  { value: 'hk', label: '港股', count: 12 },
+  { value: 'us', label: '美股', count: 9 },
+  { value: 'fut', label: '期货', count: 0, disabled: true },
+  { value: 'crypto', label: '加密', count: 21 },
+]
+
+export function ChipGroupDemo() {
+  const [markets, setMarkets] = useState<string[]>(['cn', 'crypto'])
+  const [one, setOne] = useState<string[]>(['hk'])
+  return (
+    <>
+      <Row name="多选 · 带清除">
+        <ChipGroup label="市场" items={CHIP_ITEMS} value={markets} onValueChange={setMarkets} clearLabel="清除筛选" />
+        <output data-gallery-chips>{markets.join(',') || '无'}</output>
+      </Row>
+      <Row name="单选">
+        <ChipGroup
+          label="市场（单选）"
+          selection="single"
+          items={CHIP_ITEMS.slice(0, 3)}
+          value={one}
+          onValueChange={setOne}
+        />
+        <output data-gallery-chips-one>{one.join(',') || '无'}</output>
+      </Row>
+      <p className="gal-note">演示：芯片与命中数是演示用的，不是行情。单选点已选的取消；有选中项时末尾出现清除钮。</p>
     </>
   )
 }

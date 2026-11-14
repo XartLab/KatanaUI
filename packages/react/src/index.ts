@@ -130,6 +130,7 @@ export { Tabs, TabsContent, TabsList, TabsTrigger, tabsListVariants } from './pr
 export { ToggleGroup, ToggleGroupItem, toggleGroupVariants, toggleItemVariants } from './primitives/toggle-group.tsx'
 export { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger, tooltipContentClass } from './primitives/tooltip.tsx'
 export { MultiSelect } from './patterns/multi-select.tsx'
+export { ChipGroup, type ChipGroupProps, type ChipItem } from './patterns/chip-group.tsx'
 export { QuoteTable, type QuoteGroup, type QuoteRow, type QuoteTableProps } from './patterns/quote-table.tsx'
 export {
   Combobox,

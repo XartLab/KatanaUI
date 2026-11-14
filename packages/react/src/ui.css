@@ -13,6 +13,7 @@
 @import './theme/kbd.css';
 @import './theme/hold-to-confirm.css';
 @import './theme/shortcut-recorder.css';
+@import './theme/chip-group.css';
 @import './theme/arcade-pixel.css';
 @import './theme/badge.css';
 @import './theme/rolling-text.css';

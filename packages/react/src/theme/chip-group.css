@@ -1,0 +1,74 @@
+/* SPDX-License-Identifier: MIT */
+/* ChipGroup：芯片 24 高 · 圆角 pill · 4% 白底 8% 白边 · 12px；选中用 --seg-on-bg / --seg-on-ink（分段切换同一对，对底 ≥ 3:1，#477）；
+   数量是等宽数字，选中时随字色。 */
+.k-chips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+.k-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 24px;
+  padding: 0 10px;
+  background: var(--alpha-white-3);
+  border: 1px solid var(--alpha-white-8);
+  border-radius: var(--radius-pill);
+  color: var(--ink-200);
+  font: var(--text-data) var(--font-sans);
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    color 0.12s,
+    background-color 0.12s,
+    border-color 0.12s,
+    scale 0.15s;
+}
+.k-chip:hover:not(:disabled) {
+  background: var(--alpha-white-6);
+  color: var(--ink-100);
+}
+.k-chip:active:not(:disabled) {
+  scale: 0.96;
+}
+.k-chip[data-state='on'] {
+  background: var(--seg-on-bg);
+  border-color: transparent;
+  color: var(--seg-on-ink);
+  font-weight: 700;
+}
+.k-chip:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+.k-chip:focus-visible,
+.k-chip-clear:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+.k-chip-count {
+  font-variant-numeric: tabular-nums;
+  font-weight: 400;
+  opacity: 0.7;
+}
+.k-chip-clear {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-pill);
+  color: var(--ink-300);
+  cursor: pointer;
+}
+.k-chip-clear:hover {
+  background: var(--alpha-white-5);
+  color: var(--ink-100);
+}
