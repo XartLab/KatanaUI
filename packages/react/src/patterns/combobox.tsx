@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 import type { ComponentProps } from 'react'
-import { cn } from '../lib/cn'
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '../primitives/command'
-import { Popover, PopoverContent, PopoverTrigger } from '../primitives/popover'
-import { SelectArrow, selectTriggerVariants } from '../primitives/select'
+import { cn } from '../lib/cn.ts'
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '../primitives/command.tsx'
+import { Popover, PopoverContent, PopoverTrigger } from '../primitives/popover.tsx'
+import { SelectArrow, selectTriggerVariants } from '../primitives/select.tsx'
 
 // 可搜索下拉：Popover（弹层、焦点圈住与归还）加 Command（cmdk 的搜索过滤与键盘）拼出来，是 shadcn 文档里 combobox 的老写法
 // （shadcn 4.22.2 的 combobox 底座是 Base UI，我们已经去掉了它，#1797，所以不用）。

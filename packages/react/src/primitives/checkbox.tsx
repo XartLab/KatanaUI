@@ -3,8 +3,8 @@
 // 拷进来以后归我们改：样子（尺寸、颜色、动效）按 OpenMarket 实测样式与我们的 token 重写（决策记录 0049）。
 import { Checkbox as CheckboxPrimitive } from 'radix-ui'
 import type { ComponentProps } from 'react'
-import { cn } from '../lib/cn'
-import { focusRing } from '../lib/focus'
+import { cn } from '../lib/cn.ts'
+import { focusRing } from '../lib/focus.ts'
 
 // 勾选方块：照组件卡（design/katana-console/project/components/Controls/README.md「Checkbox」）：14 × 14 凹陷方框（圆角 2 · 1px 线 · recess），
 // 选中后中心一块 6 × 6 的强调色发光方块，像一颗 LED；选中的框是暗橙边加暗橙底。数值照旧皮肤（#1777 之前的 .k-ck-box）。

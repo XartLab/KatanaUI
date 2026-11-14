@@ -11,12 +11,12 @@ import {
   RatingGauge,
   Sparkline,
   Treemap,
-} from '../index'
-import { rangeShare } from './range-bar'
-import { ratingAngle, ratingZone, zoneArc } from './rating-gauge-model'
-import { sparkPoints, sparkTone } from './sparkline'
-import { quoteTone } from './quote-tone'
-import { colorStep, layoutTreemap, TREEMAP_H, TREEMAP_W } from './treemap-model'
+} from '../index.ts'
+import { rangeShare } from './range-bar.tsx'
+import { ratingAngle, ratingZone, zoneArc } from './rating-gauge-model.ts'
+import { sparkPoints, sparkTone } from './sparkline.tsx'
+import { quoteTone } from './quote-tone.ts'
+import { colorStep, layoutTreemap, TREEMAP_H, TREEMAP_W } from './treemap-model.ts'
 
 // #1884：报价与行情类的件的纯逻辑与结构。动效、悬停、键盘在 e2e/ui-gallery.spec.ts 里用真浏览器验。
 

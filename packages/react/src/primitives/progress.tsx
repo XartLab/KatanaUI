@@ -4,7 +4,7 @@
 import { cva, type VariantProps } from 'class-variance-authority'
 import { Progress as ProgressPrimitive } from 'radix-ui'
 import type { ComponentProps } from 'react'
-import { cn } from '../lib/cn'
+import { cn } from '../lib/cn.ts'
 
 // 进度条：4 高的细条，底是 8% 白，填充走 snappy 弹簧（theme/motion.css）。不知道进度（value 不给或 null）是不确定态：一块来回滑的条。
 // tone 只改填充的颜色：默认强调色，ok 绿，warn 琥珀，danger 红；颜色之外要让人知道状态时旁边写字。读屏要一个名字：调用方传 aria-label。

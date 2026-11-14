@@ -3,8 +3,8 @@
 // 拷进来以后归我们改：样子（尺寸、颜色、动效）按 OpenMarket 实测样式与我们的 token 重写（决策记录 0049）。
 import { Tooltip as TooltipPrimitive } from 'radix-ui'
 import type { ComponentProps } from 'react'
-import { cn } from '../lib/cn'
-import { OverlayPortal } from '../lib/overlay'
+import { cn } from '../lib/cn.ts'
+import { OverlayPortal } from '../lib/overlay.tsx'
 
 // 提示：照 OpenMarket q-tooltip。6px 8px 内边 · 圆角 6 · 最深底 + 细边 · 0 2 10 阴影；没有小箭头。
 // 内容里有快捷键键帽（.k-kbd）时压成浅色块：照 OpenMarket 提示里的 kbd。

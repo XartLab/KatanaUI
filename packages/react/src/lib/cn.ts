@@ -3,12 +3,13 @@
 // 引擎用 shadcn-ui/cn（https://github.com/shadcn-ui/cn ，MIT），替掉 clsx + tailwind-merge：同样的接口与输出
 // （其 README 称有 35.6 万条差分测试对齐 tailwind-merge），合并更快；2026-11-14 读自其 README。
 import { createCn } from 'cn/config'
+import type { CnFunction } from 'cn'
 
 /** 字号档类（theme/theme.css 的 @utility k-text-*）：`font` 简写，一个类同时定字重、字号、行高、字体族。 */
 const TEXT_TIERS = ['title', 'body', 'data', 'caption', 'micro']
 
 /** 拼类名，后写的 Tailwind 类盖住前面冲突的（调用方传 className 能改样式）。 */
-export const cn = createCn({
+export const cn: CnFunction = createCn({
   extend: {
     classGroups: { 'text-tier': [{ 'k-text': TEXT_TIERS }] },
     // 档类是 font 简写：后写的档类盖掉前面的字号、字重、行高、字距（tailwind-merge 从右往左处理，冲突只对「前面的」生效）。

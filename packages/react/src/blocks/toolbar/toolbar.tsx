@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 import { useRef, type ComponentProps, type ReactElement, type ReactNode, type Ref } from 'react'
-import { cn } from '../../lib/cn'
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../../primitives/tooltip'
-import { useRovingToolbar } from './use-roving-toolbar'
+import { cn } from '../../lib/cn.ts'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../../primitives/tooltip.tsx'
+import { useRovingToolbar } from './use-roving-toolbar.ts'
 
 // 面板头的工具条零件（#1869，原应用 panels/kit/PanelToolbar 的展示部分）：一条 role=toolbar 的容器（整条只占一个 Tab 站，← → Home End 在项间移动，
 // 见 use-roving-toolbar）、左右两组、每个工具一个槽、图标或文字按钮。哪些工具放得下、收进「»」是宿主的事（要读 PanelContext 与量宽度），不在这里。

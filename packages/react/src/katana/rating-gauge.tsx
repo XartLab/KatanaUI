@@ -4,7 +4,7 @@
 // 「便于查看的评级」，一个仪表盘，另有一个显示信号个数的统计视图；页面没写交互）。我们做的：五段颜色走涨跌 token，指针用 gentle 弹簧
 //（CSS 的 --ease-gentle）转过去；档位词与三类个数由调用方传（children），所以评级从哪来（均线、振荡指标、分析师）是调用方的事。不嵌、不抄其代码与样式。
 import type { CSSProperties, ReactNode } from 'react'
-import { ratingAngle, ratingZone, zoneArc, GAUGE_CX, GAUGE_CY, RATING_ZONES } from './rating-gauge-model'
+import { ratingAngle, ratingZone, zoneArc, GAUGE_CX, GAUGE_CY, RATING_ZONES } from './rating-gauge-model.ts'
 
 export type RatingGaugeProps = {
   /** −1（强烈卖出）到 +1（强烈买入）。 */

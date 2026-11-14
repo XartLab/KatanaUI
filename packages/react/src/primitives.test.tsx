@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vite-plus/test'
-import { Button, Checkbox, Switch, Tabs, TabsContent, TabsList, TabsTrigger, buttonVariants } from './index'
+import { Button, Checkbox, Switch, Tabs, TabsContent, TabsList, TabsTrigger, buttonVariants } from './index.ts'
 
 // 件的结构：用 react-dom/server 渲染成字符串，断言用户和读屏器碰到的东西（role、aria、type、变体标记）。
 // 看得见的样子（尺寸、悬停、动效）在 e2e/ui-gallery.spec.ts 里用真浏览器量。

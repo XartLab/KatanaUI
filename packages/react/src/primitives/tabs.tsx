@@ -4,8 +4,8 @@
 import { cva, type VariantProps } from 'class-variance-authority'
 import { Tabs as TabsPrimitive } from 'radix-ui'
 import { useLayoutEffect, useRef, useState, type ComponentProps } from 'react'
-import { cn } from '../lib/cn'
-import { focusRingInset } from '../lib/focus'
+import { cn } from '../lib/cn.ts'
+import { focusRingInset } from '../lib/focus.ts'
 
 // 页签：外观照现有的小号分段（OpenMarket pill-container：2px 内边 · 圆角 8 · 4% 白底，选中块圆角 6），
 // 选中块是一块跟着当前页签滑的底（tabs-pill，位置量出来写在行内，弹簧走 --ease-snappy，见 theme/motion.css）。

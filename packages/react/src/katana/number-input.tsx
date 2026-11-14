@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 import { useRef, useState, type KeyboardEvent, type PointerEvent } from 'react'
-import { SCRUB_THRESHOLD_PX, nudged, scrubMode, scrubbed, typed, type ScrubMode } from './number-field-model'
+import { SCRUB_THRESHOLD_PX, nudged, scrubMode, scrubbed, typed, type ScrubMode } from './number-field-model.ts'
 
 // 组件卡 Controls · 数字框。外观是卡上的皮肤（theme/number-input.css）。
 

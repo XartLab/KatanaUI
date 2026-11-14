@@ -4,8 +4,8 @@
 import { cva, type VariantProps } from 'class-variance-authority'
 import { Slot } from 'radix-ui'
 import type { ComponentProps } from 'react'
-import { cn } from '../lib/cn'
-import { focusRing } from '../lib/focus'
+import { cn } from '../lib/cn.ts'
+import { focusRing } from '../lib/focus.ts'
 
 // 按钮：照 OpenMarket action-btn / tsc-add（2026-10-05 实测，数值照抄，颜色落到 token）。30 高 · 圆角 control · 4% 白底 8% 白边 · 12px 500；
 // 主按钮实心浅色 + 深字 700；悬停提亮、按下再深一档并缩到 0.97（界面在听）。禁用不接指针事件之外的任何状态变化。

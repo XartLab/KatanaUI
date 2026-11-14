@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 import { useEffectEvent, useLayoutEffect, useState, type ReactNode } from 'react'
-import { LOADING_TIMING, skeletonRows, startLoadingGate, type LoadingPhase } from './loading-gate'
-import { LoadingView, type LoadingTexts } from './loading-view'
+import { LOADING_TIMING, skeletonRows, startLoadingGate, type LoadingPhase } from './loading-gate.ts'
+import { LoadingView, type LoadingTexts } from './loading-view.tsx'
 
 // 搬自 src/ui/LoadingWait.tsx（#1860），文字改由 texts 给。
 // 「在等」的那一段：挂上去就开始计时，500ms 之后才画骨架，之前什么也不画；2s 起 caption 改说「仍在加载」，10s 转成琥珀条加「重试」

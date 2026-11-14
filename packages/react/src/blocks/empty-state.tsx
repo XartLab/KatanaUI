@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 import type { ReactNode } from 'react'
-import { cn } from '../lib/cn'
+import { cn } from '../lib/cn.ts'
 
 // 面板的「空」态（#1869，原应用 panels/kit/PanelState）：点阵标签 + 一行标题 + 说明 + 动作。不画假数据：没有连接、没选品种、没有数据时
 // 摆它，而不是样本数据。点阵字体（Doto / Ark Pixel）没打包时按 tokens 的字体栈回退到等宽字体。

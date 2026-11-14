@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vite-plus/test'
-import { ChangeText, PnlText } from './index'
+import { ChangeText, PnlText } from './index.ts'
 
 // 件的结构：涨跌色在浏览器里读计算后的颜色（e2e/ui-gallery.spec.ts，含 data-updown="cn" 互换）；这里查服务端渲染出的标记与文字。
 

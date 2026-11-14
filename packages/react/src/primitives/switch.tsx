@@ -3,8 +3,8 @@
 // 拷进来以后归我们改：样子（尺寸、颜色、动效）按 OpenMarket 实测样式与我们的 token 重写（决策记录 0049）。
 import { Switch as SwitchPrimitive } from 'radix-ui'
 import type { ComponentProps } from 'react'
-import { cn } from '../lib/cn'
-import { focusRing } from '../lib/focus'
+import { cn } from '../lib/cn.ts'
+import { focusRing } from '../lib/focus.ts'
 
 // 拨动开关（#352）：外层盒 40 × 28（--target-min，行高、右对齐位置、焦点环都按它），里面可见的轨道 34 × 18（switch-track）· 圆钮 14。
 // 开时轨道用强调色、圆钮换成最深的底色滑到右边：状态对相邻颜色要 3:1（WCAG 1.4.11，#477，用户 2026-10-21 定：静止边框照 OpenMarket 不动，只把状态做到 3:1）。

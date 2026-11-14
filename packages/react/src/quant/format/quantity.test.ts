@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 import { describe, expect, it } from 'vite-plus/test'
-import { compactParts, formatCompact, formatCount, formatQuantity } from './quantity'
+import { compactParts, formatCompact, formatCount, formatQuantity } from './quantity.ts'
 
 describe('表格面板的数量写法', () => {
   it('自动：K 留 1 位、M 留 2 位；美元从 1,000 起缩写，币从 10,000 起', () => {

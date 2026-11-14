@@ -2,7 +2,7 @@
 import { readFileSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import { describe, expect, it } from 'vite-plus/test'
-import { gentle, settle, snappy } from './motion'
+import { gentle, settle, snappy } from './motion.ts'
 
 const tokensCss = readFileSync(createRequire(import.meta.url).resolve('@katana-ui/tokens/tokens.css'), 'utf8')
 

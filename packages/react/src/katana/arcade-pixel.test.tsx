@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vite-plus/test'
-import { ARCADE_SPRITES, ArcadePixel } from './arcade-pixel'
+import { ARCADE_SPRITES, ArcadePixel } from './arcade-pixel.tsx'
 
 describe('ArcadePixel', () => {
   it('画布装饰（aria-hidden），文字另放 sr-only 给读屏', () => {

@@ -7,10 +7,10 @@
 // 我们的做法：划线与对勾用 motion 的弹簧，沉底用 layout 动画；没有它那套逐段的阶段状态机，只记「划完了」这一件事。
 import { motion } from 'motion/react'
 import { useState } from 'react'
-import { cn } from '../lib/cn'
-import { focusRing } from '../lib/focus'
-import { snappy } from '../lib/motion'
-import { unit } from '../lib/spring'
+import { cn } from '../lib/cn.ts'
+import { focusRing } from '../lib/focus.ts'
+import { snappy } from '../lib/motion.ts'
+import { unit } from '../lib/spring.ts'
 
 export type Task = {
   id: string

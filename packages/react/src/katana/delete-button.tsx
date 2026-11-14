@@ -6,10 +6,10 @@
 // 我们另加的：展开后焦点落在「取消」上（危险操作的默认项是不做）；点按钮外面、Tab 走出两端也算取消（不靠失焦判断：Safari 点按钮不聚焦）。
 import { AnimatePresence, motion, useMotionValue, animate } from 'motion/react'
 import { useEffect, useEffectEvent, useRef, useState } from 'react'
-import { cn } from '../lib/cn'
-import { focusRingInset } from '../lib/focus'
-import { snappy } from '../lib/motion'
-import { unit } from '../lib/spring'
+import { cn } from '../lib/cn.ts'
+import { focusRingInset } from '../lib/focus.ts'
+import { snappy } from '../lib/motion.ts'
+import { unit } from '../lib/spring.ts'
 
 /** 容器宽：一个钮 28 加 1px 边框的两侧；展开后多两个钮。高 30 与 Button 默认一致。 */
 const IDLE_WIDTH = 30

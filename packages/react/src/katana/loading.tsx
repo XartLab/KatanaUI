@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 import { Suspense, useState, type ReactNode } from 'react'
-import { LoadingWait } from './loading-wait'
-import type { LoadingTexts } from './loading-view'
+import { LoadingWait } from './loading-wait.tsx'
+import type { LoadingTexts } from './loading-view.tsx'
 
 // 搬自 src/ui/Loading.tsx 与 LoadingBoundary.tsx（#1860）：文字改由 texts 给（见 LoadingTexts），其余没改。
 

@@ -8,7 +8,7 @@ import {
   skeletonRows,
   skeletonWidths,
   startLoadingGate,
-} from './loading-gate'
+} from './loading-gate.ts'
 
 // 骨架的延迟与揭示规则（#1221）、2s / 10s 两个阈值与撑满时的行数（#1234）：500ms 内到了不出骨架；超过才出；出过骨架的才揭示（stop() 为真），没出过的内容直接出现。
 

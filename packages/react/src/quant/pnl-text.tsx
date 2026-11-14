@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 import type { ComponentProps, ReactNode } from 'react'
-import { toneOf, type Tone } from './format'
-import { ToneText } from './tone-text'
+import { toneOf, type Tone } from './format/index.ts'
+import { ToneText } from './tone-text.tsx'
 
 /**
  * 盈亏文字：children 是调用方格式化好的字（币种、位数、符号都由调用方定），value 只用来定方向。

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 import { describe, expect, it } from 'vite-plus/test'
-import { decimalsOfTick, formatPercentChange, formatPrice, toneOf } from './index'
+import { decimalsOfTick, formatPercentChange, formatPrice, toneOf } from './index.ts'
 
 describe('formatPrice：三类市场', () => {
   it('A 股（tick 0.01）：恒两位小数，千分位', () => {

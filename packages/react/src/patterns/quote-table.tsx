@@ -3,9 +3,9 @@
 // 功能参照 TradingView 小组件 Market Overview / Market Quotes（tradingview.com/widget-docs/widgets/watchlists，2026-11-14 读：
 // 「适合首页的市场总览」，分组页签加报价行；页面没写列与交互，我们自己定：页签用包里的 Tabs，行可点，表头与行对齐、数字等宽）。不嵌、不抄其代码与样式。
 // 由 Tabs 与 Sparkline 组出来，文字全由调用方传，包里没有文案。
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../primitives/tabs'
-import { Sparkline } from '../katana/sparkline'
-import { TONE_GLYPH, type QuoteTone } from '../katana/quote-tone'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../primitives/tabs.tsx'
+import { Sparkline } from '../katana/sparkline.tsx'
+import { TONE_GLYPH, type QuoteTone } from '../katana/quote-tone.ts'
 
 export type QuoteRow = {
   id: string

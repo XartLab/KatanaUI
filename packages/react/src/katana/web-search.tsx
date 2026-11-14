@@ -9,11 +9,11 @@
 // 给了 onOpen 卡片才可点。文字全由调用方传。
 import { AnimatePresence, motion } from 'motion/react'
 import { useLayoutEffect, useRef, useState, type ReactNode } from 'react'
-import { cn } from '../lib/cn'
-import { focusRing } from '../lib/focus'
-import { useHoverIntent } from '../lib/hover-intent'
-import { snappy } from '../lib/motion'
-import { unit } from '../lib/spring'
+import { cn } from '../lib/cn.ts'
+import { focusRing } from '../lib/focus.ts'
+import { useHoverIntent } from '../lib/hover-intent.ts'
+import { snappy } from '../lib/motion.ts'
+import { unit } from '../lib/spring.ts'
 
 export type WebSource = {
   id: string

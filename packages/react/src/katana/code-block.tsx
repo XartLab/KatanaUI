@@ -8,11 +8,11 @@
 // 词法切分是自己写的小切分器（code-highlight.ts），没有加 prism 之类的依赖。
 import { AnimatePresence, motion } from 'motion/react'
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
-import { cn } from '../lib/cn'
-import { focusRing } from '../lib/focus'
-import { snappy } from '../lib/motion'
-import { unit } from '../lib/spring'
-import { highlight } from './code-highlight'
+import { cn } from '../lib/cn.ts'
+import { focusRing } from '../lib/focus.ts'
+import { snappy } from '../lib/motion.ts'
+import { unit } from '../lib/spring.ts'
+import { highlight } from './code-highlight.ts'
 
 const COPIED_MS = 1800
 /** 字体族写成行内样式：k-text-* 是 font 简写，会带上无衬线体，类名里的 font-* 排不过它。 */

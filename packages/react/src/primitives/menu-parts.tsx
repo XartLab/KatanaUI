@@ -3,8 +3,8 @@
 // 拷进来以后归我们改：下拉菜单与右键菜单共用的皮肤和零件在这里，两个文件各管自己的 Radix 底座（决策记录 0049）。
 import { ChevronRightIcon } from 'lucide-react'
 import { createContext, useState, type ComponentProps, type ReactNode } from 'react'
-import { cn } from '../lib/cn'
-import { focusRingInset } from '../lib/focus'
+import { cn } from '../lib/cn.ts'
+import { focusRingInset } from '../lib/focus.ts'
 
 // 菜单的样子：照 OpenMarket tb-interval-dropdown / tb-panels（2026-10-05 实测）。容器圆角 overlay · 6px 内边 · 7% 白边 · 0 16 48 + 0 2 8 阴影；
 // 行 30 高 · 圆角 6 · 12.5px，悬停 4% 白，子菜单展开 7% 白；分组小标题 10px 大写字距；快捷键是 kbd 方块。动效是我们的：从触发处轻升（theme/motion.css）。

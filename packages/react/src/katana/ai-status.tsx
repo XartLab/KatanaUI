@@ -7,9 +7,9 @@
 // 我们的图标自己画：思考是三个方点依次起伏（呼应点阵签名件），检索是放大镜绕圈，编写是几行线被写出来，完成是对勾，出错是叉。
 import { AnimatePresence, animate, motion, useMotionValue } from 'motion/react'
 import { useLayoutEffect, useRef } from 'react'
-import { cn } from '../lib/cn'
-import { snappy } from '../lib/motion'
-import { unit } from '../lib/spring'
+import { cn } from '../lib/cn.ts'
+import { snappy } from '../lib/motion.ts'
+import { unit } from '../lib/spring.ts'
 
 export type AiStatusState = 'thinking' | 'searching' | 'writing' | 'done' | 'error'
 

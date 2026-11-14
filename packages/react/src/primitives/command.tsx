@@ -5,9 +5,9 @@
 import { Command as CommandPrimitive } from 'cmdk'
 import { SearchIcon } from 'lucide-react'
 import type { ComponentProps } from 'react'
-import { cn } from '../lib/cn'
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from './dialog'
-import { menuRowClass } from './menu-parts'
+import { cn } from '../lib/cn.ts'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from './dialog.tsx'
+import { menuRowClass } from './menu-parts.tsx'
 
 // 命令面板与可搜索列表的底座：一个输入框加一串过滤出来的行，焦点一直在输入框里，↑↓ 移动高亮（data-selected），回车选中。
 // 过滤是 cmdk 的（按行的 value 与 keywords 模糊匹配）；自己排名的（应用里的命令搜索）传 shouldFilter={false}，行的先后照传进来的。

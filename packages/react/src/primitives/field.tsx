@@ -12,9 +12,9 @@ import {
   useState,
   type ComponentProps,
 } from 'react'
-import { cn } from '../lib/cn'
-import { Label } from './label'
-import { Separator } from './separator'
+import { cn } from '../lib/cn.ts'
+import { Label } from './label.tsx'
+import { Separator } from './separator.tsx'
 
 // 表单字段：标签 + 控件 + 说明 + 错误排成一组。Field 是一组的根，发一个控件 id 与说明、错误的 id：
 //   - FieldLabel 的 htmlFor 指向控件；FieldDescription、FieldError 带上自己的 id；

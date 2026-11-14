@@ -7,11 +7,11 @@
 // 不学它的：用 flubber 把播放与暂停的路径变形（要加依赖）——我们让三个图标用弹簧缩放着换，不加依赖。
 import { AnimatePresence, motion, useMotionValue, useTransform } from 'motion/react'
 import { useEffect, useEffectEvent, useMemo, useState } from 'react'
-import { cn } from '../lib/cn'
-import { focusRing } from '../lib/focus'
-import { snappy } from '../lib/motion'
-import { unit } from '../lib/spring'
-import { arrive, clampStep, stepDuration } from './step-player-model'
+import { cn } from '../lib/cn.ts'
+import { focusRing } from '../lib/focus.ts'
+import { snappy } from '../lib/motion.ts'
+import { unit } from '../lib/spring.ts'
+import { arrive, clampStep, stepDuration } from './step-player-model.ts'
 
 export type StepPlayerStep = {
   /** 这一步放多久（毫秒）；不写用整体的 duration。 */

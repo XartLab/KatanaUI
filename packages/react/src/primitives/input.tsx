@@ -3,8 +3,8 @@
 // 拷进来以后归我们改：样子照改前的皮肤（OpenMarket 实测，数值取自改前 src/ui/ui.css 的 .k-in）与我们的 token 重写（决策记录 0049）。
 import { cva, type VariantProps } from 'class-variance-authority'
 import type { ComponentProps } from 'react'
-import { cn } from '../lib/cn'
-import { focusRingInset } from '../lib/focus'
+import { cn } from '../lib/cn.ts'
+import { focusRingInset } from '../lib/focus.ts'
 
 // 文本框：照 OpenMarket frame-margin-input（2026-10-05 实测）。30 高 · 圆角 6 · 4% 白底 8% 白边 · 13px · 数字等宽；
 // 聚焦边框提亮到 22% 白，焦点环画在里面（全局焦点环的画法，#471）。sm 是 26 高、字 12px。

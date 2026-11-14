@@ -5,9 +5,9 @@ import { cva } from 'class-variance-authority'
 import { ChevronDown } from 'lucide-react'
 import { Select as SelectPrimitive } from 'radix-ui'
 import type { ComponentProps, ReactNode } from 'react'
-import { cn } from '../lib/cn'
-import { OverlayPortal } from '../lib/overlay'
-import { focusRing } from '../lib/focus'
+import { cn } from '../lib/cn.ts'
+import { OverlayPortal } from '../lib/overlay.tsx'
+import { focusRing } from '../lib/focus.ts'
 
 // 下拉：照 OpenMarket combo-box（2026-10-05 实测）。
 // 触发 30 高 · 圆角 control · 2.4% 白底 · 9% 白边 · 字 12px 500 · 10px 箭头开时翻转；
