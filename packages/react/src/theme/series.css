@@ -1361,3 +1361,15 @@ button.k-sm-head:focus-visible {
   color: var(--chart-accent, var(--signal-orange));
   font-style: normal;
 }
+
+/* 精密仪器语言（#7）：Meter 的名称与状态词用点阵字，头部左边 2px 色条取当前档位的色（--k-tone）；读数仍是等宽数字。 */
+.k-meter-head {
+  padding-left: 8px;
+  border-left: 2px solid var(--k-tone);
+}
+.k-meter-label,
+.k-meter-state {
+  font: var(--text-tag-md) var(--font-dot);
+  letter-spacing: 0;
+  -webkit-font-smoothing: none;
+}
