@@ -16,8 +16,8 @@ describe('Button', () => {
   })
 
   it('变体：primary 是实心浅色，danger 的字是危险色；调用方的 className 排在最后', () => {
-    expect(buttonVariants({ variant: 'primary' })).toContain('bg-ink')
-    expect(buttonVariants({ variant: 'danger' })).toContain('text-danger')
+    expect(buttonVariants({ variant: 'primary' })).toContain('bg-(--k-actionable-bold-background)')
+    expect(buttonVariants({ variant: 'danger' })).toContain('text-(color:--k-actionable-negative-foreground)')
     expect(renderToStaticMarkup(<Button className="w-full">x</Button>)).toMatch(/class="[^"]*w-full"/)
   })
 

@@ -101,7 +101,26 @@ for (const name of ['snappy', 'gentle', 'settle']) {
   lines.push(`  --ease-${name}: ${easing};`, `  --dur-${name}: ${ms}ms;`)
 }
 
-const blocks = [`:root {\n${lines.join('\n')}\n}`]
+// Foundation 与 characteristics（#1943，照 Salt 的三层）：不分主题，都生成在 :root；characteristics 只引用 palette 与 foundation。
+for (const group of [tokens.foundation, tokens.characteristics]) {
+  for (const token of group.tokens) {
+    if (typeof token.value !== 'string') throw new Error(`src/tokens.json：${token.name} 必须是不分主题的字符串`)
+    lines.push(`  --${token.name}: ${cssValue(token.value)};`)
+  }
+}
+
+// 密度：medium 在最前（同时挂 :root，没声明 data-density 的地方就是它），high、low 同权重、后写的赢。
+const densityBlock = (level) =>
+  tokens.density.tokens.map((token) => `  --${token.name}: ${cssValue(token.value[level])};`).join('\n')
+const densityBlocks = [
+  tokens.density.default,
+  ...tokens.density.levels.filter((l) => l !== tokens.density.default),
+].map((level, index) => {
+  const selector = index === 0 ? `:root, [data-density='${level}']` : `[data-density='${level}']`
+  return `${selector} {\n${densityBlock(level)}\n}`
+})
+
+const blocks = [`:root {\n${lines.join('\n')}\n}`, ...densityBlocks]
 for (const theme of THEMES) {
   blocks.push(`:root[data-theme='${theme}'] {\n${themed[theme].values.join('\n')}\n}`)
   if (themed[theme].reduced.length)

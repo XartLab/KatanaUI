@@ -44,6 +44,10 @@ tokens → theme → lib → primitives → katana → patterns → quant → bl
 - **没换：交易所多选（`SymbolSearch.tsx` 的 `VenueFilter`）→ `Combobox`。** 它是两列网格带 LOGO、状态灯和底部「全选 / 全部清除 / 完成」，行是 `role=checkbox`；`Combobox` 是单列的 listbox。要换得先给 `Combobox` 加两列与底栏，不然样子会变。现在包里的 `Combobox` 没有应用里的调用方，只在包与文档站里。
 - **没换：4px 滚动条（#1799）→ `ScrollArea`。** #1800 把滚动条做成了全局的原生 CSS（`scrollbar-width` 与 `::-webkit-scrollbar`），所有滚动容器自动带上；换成 `ScrollArea` 要给每个滚动容器套一层，还会带来自绘滚动条与原生滚动条并存的问题。`ScrollArea` 留给需要自绘滚动条的地方（比如要在滚动条上放标记）。
 
+## 三层 token 与密度（#1943）
+
+组件只读 characteristics（`--k-actionable-*`、`--k-focused-*` …）与密度变量（`--k-size-base`、`--k-spacing-*`），不读 palette（`ink-*`、`alpha-white-*` …）；高度与内距随容器上的 `data-density="high|medium|low"` 变，默认 medium。照 Salt 的 Foundation → Palette → Characteristics 分层，三层各是什么、密度表、命名规则见 [theming.md](theming.md#三层-token-与密度1943)。目前只有 Button 迁过来（`src/characteristics.test.ts` 守着），其余件后续逐个迁。
+
 ## 应用怎么用
 
 只从这几个出口引：
@@ -122,7 +126,7 @@ MIT（用户 2026-11-14 定，#1876），见本文开头。别的项目经注册
 ## 设计系统包
 
 `design-system/` 是 design-pipeline（0.15.0-beta.1）格式的设计系统包，**由脚本从代码生成，不手写**：`pnpm --filter @katana-ui/react ds:build`。
-`tokens.json` 来自 `design/tokens.json`（只带实装了的 Console 与 Graphite，补 `contrast`；对不上比例的 token 保留原值，比值写在它的 usage 里），
+`tokens.json` 来自 `@katana-ui/tokens` 的 `src/tokens.json`（只带实装了的 Console 与 Graphite，补 `contrast`；对不上比例的 token 保留原值，比值写在它的 usage 里），
 `README.md` 来自手写的 `ds/guidelines.md`，`components/bundle.css` 是 `tokens.css` 加 Tailwind 编出的 `ui.css`，
 每个件的 `README.md` 与 `preview.html` 读文档站的页数据（`gallery/registry.ts` 的 `PAGES`：说明、属性、组成、键盘；预览是 `gallery/demos.tsx` 经 `react-dom/server` 渲染的静态 HTML，预览里摆件的版面类在 `gallery/preview.css`），经 `ds/render.tsx` 生成，不另写一份。页就是件：加一页（含自有件、量化件）设计系统包就多一个件，注册表的 item 说明也读同一页；每页的 `cardHeight` 是预览卡的高度（生成后在卡里量）。
 门禁是 `pnpm lint:ds`，用法见 测试（KATANAview 的 docs/contributing/testing.md）。
