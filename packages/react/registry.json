@@ -179,6 +179,11 @@
           "target": "~/src/katana/ui/theme/rolling-text.css"
         },
         {
+          "path": "src/theme/row-actions.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/row-actions.css"
+        },
+        {
           "path": "src/theme/series.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/series.css"
@@ -1901,6 +1906,28 @@
       ]
     },
     {
+      "name": "row-actions",
+      "type": "registry:component",
+      "title": "Row Actions",
+      "description": "所有带品种的行（DataGrid、连板天梯、报价表）与格子（市场热力图）共用的一套：悬停或键盘落到一行时，行右端浮出前几颗无边框图标按钮，浮在行上、不挤列宽；右键（菜单键、Shift+F10）出同一份菜单。件不认识「图表」「自选」，只认 { key, label, icon?, shortcut?, onSelect }，文案与动作都由调用方传；symbolMenu 把标准四项（开图、加自选、新建告警、复制代码，固定次序）拼成这样的数组，调用方的项接在后面。DataGrid、LimitLadder、MarketHeatmap 各有一个可选 prop 接它，不传就没有，旧用法不变。功能参照 TradingView 品种搜索结果行的悬停操作，自选行的细节待核对。样子照连板天梯：按钮无边框、悬停灰底，不加橙色。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/context-menu",
+        "@katana/menu-any",
+        "@katana/menu-parts"
+      ],
+      "files": [
+        {
+          "path": "src/patterns/row-actions.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/patterns/row-actions.tsx"
+        }
+      ]
+    },
+    {
       "name": "tree-view",
       "type": "registry:component",
       "title": "Tree View",
@@ -2216,6 +2243,7 @@
         "@katana/change-text",
         "@katana/cn",
         "@katana/quant-format",
+        "@katana/row-actions",
         "@katana/symbol-mark"
       ],
       "files": [
@@ -2251,6 +2279,7 @@
         "@katana/cn",
         "@katana/market-heatmap-model",
         "@katana/quant-format",
+        "@katana/row-actions",
         "@katana/symbol-mark",
         "@katana/toggle-group",
         "@katana/treemap-model"
@@ -2586,6 +2615,7 @@
         "@katana/menu-any",
         "@katana/menu-parts",
         "@katana/quant-format",
+        "@katana/row-actions",
         "@katana/symbol-mark",
         "@katana/tone-text"
       ],

@@ -134,6 +134,16 @@ export { ChipGroup, type ChipGroupProps, type ChipItem } from './patterns/chip-g
 export { DateRangePicker, type DateRangeLabels, type DateRangePickerProps } from './patterns/date-range-picker.tsx'
 export type { DateRange, RangePreset, WeekStart } from './patterns/date-range-model.ts'
 export { TreeView, type TreeNode, type TreeViewProps } from './patterns/tree-view.tsx'
+export {
+  RowActionMenuItems,
+  RowActions,
+  RowContextMenu,
+  symbolMenu,
+  type RowAction,
+  type RowActionsProps,
+  type RowContextMenuProps,
+  type SymbolMenuInput,
+} from './patterns/row-actions.tsx'
 export { QuoteTable, type QuoteGroup, type QuoteRow, type QuoteTableProps } from './patterns/quote-table.tsx'
 export {
   Combobox,

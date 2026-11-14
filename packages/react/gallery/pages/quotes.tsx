@@ -10,12 +10,13 @@ import {
   QuoteTable,
   RangeBar,
   RatingGauge,
+  RowActions,
   Sparkline,
   Treemap,
   type QuoteTone,
   type TreemapItem,
 } from '../../src/index'
-import { Row } from './parts'
+import { ActionLog, Row, demoSymbolActions } from './parts'
 
 // #1884：报价与行情类的件的演示。下面所有数据都是演示用的示例（在这个展示页里构造，不是行情），页上也写明了；应用里没有样本数据。
 
@@ -296,5 +297,27 @@ export function QuoteTableDemo() {
       <output data-gallery-opened>点开：{opened}</output>
       <p className="gal-note">{SAMPLE}。页签切组；行可点（回车也行）。</p>
     </>
+  )
+}
+
+// 行快捷操作（#23）的单独演示：三行普通列表，悬停或 Tab 进去按钮条浮出；代码是示例，不是行情。
+export function RowActionsDemo() {
+  const [log, setLog] = useState('')
+  return (
+    <div className="gal-wide" style={{ maxWidth: 420 }}>
+      <ul style={{ margin: 0, padding: 0, listStyle: 'none' }} data-testid="row-actions-list">
+        {['ALFA', 'BRAV', 'CHAR'].map((code) => (
+          <li
+            key={code}
+            className="k-row-host"
+            style={{ display: 'flex', alignItems: 'center', height: 30, padding: '0 8px', fontSize: 12 }}
+          >
+            <span>{code}</span>
+            <RowActions items={demoSymbolActions(code, setLog)} label={`${code} actions`} />
+          </li>
+        ))}
+      </ul>
+      <ActionLog text={log} />
+    </div>
   )
 }
