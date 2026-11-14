@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // 图的 tooltip（dataviz.md §4）：一个 LCD 窗——bg-000 底、recess 凹陷、数值等宽（num）。叠在图上，位置由调用方定（left 百分比、top 像素）。
 import type { CSSProperties, ReactNode } from 'react'
-import { cn } from '../../lib/cn'
+import { cn } from '../../lib/cn.ts'
 
 export type LcdTooltipRow = {
   key: string

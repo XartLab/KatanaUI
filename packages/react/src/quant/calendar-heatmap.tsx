@@ -7,11 +7,11 @@
 // 交互：指针悬停或键盘选中一天，LCD tooltip 列这一天的数值与事件；点或 Enter 触发 onSelect（写联动 range）。键盘：←→ 前后一天、↑↓ 前后一周、Home / End、Esc。
 // 右上角三件：表格视图（总有）、导出与全屏（回调由调用方给）。文字（休、周标、月份、数值）都从 props 来。
 import { useState, type KeyboardEvent, type ReactNode } from 'react'
-import { cn } from '../lib/cn'
-import { calendarGrid, calendarKey, calendarTone, monthGrid, type CalendarTone } from './calendar-model'
-import { ChartActions, type ChartActionsLabels } from './chart-kit/chart-actions'
-import { LcdTooltip } from './chart-kit/lcd-tooltip'
-import { divHotThreshold } from './chart-kit/series-colors'
+import { cn } from '../lib/cn.ts'
+import { calendarGrid, calendarKey, calendarTone, monthGrid, type CalendarTone } from './calendar-model.ts'
+import { ChartActions, type ChartActionsLabels } from './chart-kit/chart-actions.tsx'
+import { LcdTooltip } from './chart-kit/lcd-tooltip.tsx'
+import { divHotThreshold } from './chart-kit/series-colors.ts'
 
 export type CalendarEvent = {
   label: string
@@ -228,12 +228,14 @@ export function CalendarHeatmap({
         onBlur={() => setActive(null)}
         onPointerLeave={() => setActive(null)}
       >
-        <span className="k-heat-corner" />
-        {order.map((weekday) => (
-          <span key={weekday} className="k-heat-head" role="columnheader">
-            {weekdayLabels[weekday]}
-          </span>
-        ))}
+        <div className="k-heat-week" role="row">
+          <span className="k-heat-corner" role="presentation" />
+          {order.map((weekday) => (
+            <span key={weekday} className="k-heat-head" role="columnheader">
+              {weekdayLabels[weekday]}
+            </span>
+          ))}
+        </div>
         {weeks.map((week) => (
           <div key={week.days[0]!.date} className="k-heat-week" role="row">
             <span className="k-heat-wk">{weekLabel(week.week)}</span>

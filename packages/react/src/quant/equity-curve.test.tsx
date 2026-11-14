@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vite-plus/test'
-import { EquityCurve, type EquityCurvePoint } from './equity-curve'
-import { canLog, defaultTimeTicks, drawdownY, equityPlot, timeX } from './equity-curve-model'
-import { PLOT_W } from './series-geometry'
+import { EquityCurve, type EquityCurvePoint } from './equity-curve.tsx'
+import { canLog, defaultTimeTicks, drawdownY, equityPlot, timeX } from './equity-curve-model.ts'
+import { PLOT_W } from './series-geometry.ts'
 
 const T0 = Date.UTC(2026, 9, 8, 3)
 const point = (equity: number, drawdown: number, index: number): EquityCurvePoint => ({

@@ -4,18 +4,18 @@
 // 末点 signal-orange 旁标最终值；线性 / 对数纵轴；底下一条概览刷选条，拖窗口只看一段；右上三件（表格视图、导出、全屏）。
 // 横轴是时间（照 TradingView 策略测试器的权益曲线）：点按自己的时刻摆。包里不带语言，文字与数值格式都由调用方传。
 import { useState, type PointerEvent } from 'react'
-import { cn } from '../lib/cn'
-import { useScrubber } from '../lib/use-scrubber'
-import { ToggleGroup, ToggleGroupItem } from '../primitives/toggle-group'
-import { BrushStrip, type BrushLabels } from './brush-chart'
-import { clampWindow, type BrushWindow } from './brush-model'
-import { ChartActions, type ChartActionsLabels } from './chart-kit/chart-actions'
-import { DotFill, useDotId } from './chart-kit/dot-fill'
-import { EndMarker } from './chart-kit/end-marker'
-import { LcdTooltip } from './chart-kit/lcd-tooltip'
-import { PlotGrid, PlotYAxis } from './chart-kit/plot-axes'
-import { canLog, defaultTimeTicks, drawdownY, equityPlot, timeX, type EquityScale } from './equity-curve-model'
-import { linePath, pct, PLOT_W } from './series-geometry'
+import { cn } from '../lib/cn.ts'
+import { useScrubber } from '../lib/use-scrubber.ts'
+import { ToggleGroup, ToggleGroupItem } from '../primitives/toggle-group.tsx'
+import { BrushStrip, type BrushLabels } from './brush-chart.tsx'
+import { clampWindow, type BrushWindow } from './brush-model.ts'
+import { ChartActions, type ChartActionsLabels } from './chart-kit/chart-actions.tsx'
+import { DotFill, useDotId } from './chart-kit/dot-fill.tsx'
+import { EndMarker } from './chart-kit/end-marker.tsx'
+import { LcdTooltip } from './chart-kit/lcd-tooltip.tsx'
+import { PlotGrid, PlotYAxis } from './chart-kit/plot-axes.tsx'
+import { canLog, defaultTimeTicks, drawdownY, equityPlot, timeX, type EquityScale } from './equity-curve-model.ts'
+import { linePath, pct, PLOT_W } from './series-geometry.ts'
 
 export type EquityCurvePoint = {
   /** 这一点的时刻（毫秒）：横轴按它摆。 */

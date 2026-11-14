@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vite-plus/test'
-import { CalendarHeatmap } from './calendar-heatmap'
+import { CalendarHeatmap } from './calendar-heatmap.tsx'
 import {
   addDays,
   calendarGrid,
@@ -11,14 +11,14 @@ import {
   isoWeek,
   monthGrid,
   parseDate,
-} from './calendar-model'
-import { Meter } from './meter'
-import { meterModel } from './meter-model'
-import { BrushChart } from './brush-chart'
-import { centerWindow, clampWindow, moveWindow, resizeWindow } from './brush-model'
-import { HorizonChart } from './horizon-chart'
-import { horizonBands, horizonMax } from './horizon-model'
-import { areaPath, extent, linePath, makePlot, niceTicks, PLOT_W } from './series-geometry'
+} from './calendar-model.ts'
+import { Meter } from './meter.tsx'
+import { meterModel } from './meter-model.ts'
+import { BrushChart } from './brush-chart.tsx'
+import { centerWindow, clampWindow, moveWindow, resizeWindow } from './brush-model.ts'
+import { HorizonChart } from './horizon-chart.tsx'
+import { horizonBands, horizonMax } from './horizon-model.ts'
+import { areaPath, extent, linePath, makePlot, niceTicks, PLOT_W } from './series-geometry.ts'
 
 // #1917：时间序列与盈亏的件的几何与结构（纯函数）。拖拽、悬停、键盘与画出来的像素在 e2e/ui-gallery.spec.ts 里用真浏览器验。
 

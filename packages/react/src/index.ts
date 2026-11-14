@@ -157,22 +157,12 @@ export {
   type ShortcutRecorderLabels,
   type ShortcutRecorderProps,
 } from './katana/shortcut-recorder.tsx'
+export { SymbolMark, symbolMarkLetters, type SymbolMarkProps } from './katana/symbol-mark.tsx'
 export { BadgeGroup, type BadgeItem } from './katana/badge.tsx'
 export { RollingText, rollSlots, rollStrip } from './katana/rolling-text.tsx'
 export { NumberInput } from './katana/number-input.tsx'
 export { DateTimeInput, type DateTimeLabels } from './katana/date-time-input.tsx'
 export { Skeleton } from './katana/skeleton.tsx'
-export { DotMatrix, DOT_PITCH, DOT_SIZE } from './katana/dot-matrix'
-export { ARCADE_SPRITES, ArcadePixel, type ArcadePixelAnimate, type ArcadePixelProps } from './katana/arcade-pixel'
-export { Lcd, type LcdTone } from './katana/lcd'
-export { Led, LINK_GROUPS, type LedState, type LinkGroup } from './katana/led'
-export { Kbd } from './katana/kbd'
-export { SymbolMark, symbolMarkLetters, type SymbolMarkProps } from './katana/symbol-mark'
-export { BadgeGroup, type BadgeItem } from './katana/badge'
-export { RollingText, rollSlots, rollStrip } from './katana/rolling-text'
-export { NumberInput } from './katana/number-input'
-export { DateTimeInput, type DateTimeLabels } from './katana/date-time-input'
-export { Skeleton } from './katana/skeleton'
 export {
   TOAST_EXIT_MS,
   Toast,
@@ -227,9 +217,7 @@ export {
   type DurationValue,
 } from './katana/duration-picker.tsx'
 export { useHoverIntent } from './lib/hover-intent.ts'
-} from './katana/duration-picker'
-export { useHoverIntent } from './lib/hover-intent'
-export { useScrubber, type UseScrubberOptions } from './lib/use-scrubber'
+export { useScrubber, type UseScrubberOptions } from './lib/use-scrubber.ts'
 
 // 报价与行情类的件（#1884）：迷你图、进度条、矩形树图（后三件从应用的分析视图提来）；行内价格标签、报价卡与一排、区间条、评级仪表是新做的。
 // 功能参照 TradingView 小组件，只取「给用户看什么、怎么交互」，不嵌、不抄（用户 2026-11-14 定：我们做自己的）。分组页签行情表在 patterns/。

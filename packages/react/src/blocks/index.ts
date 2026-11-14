@@ -18,23 +18,21 @@ export { EventTimeline, type EventTimelineLabels, type EventTimelineProps } from
 export type { EventKind, SessionMinutes, TimelineEvent } from './event-timeline-model.ts'
 export { Toolbar, ToolbarGroup, ToolButton, ToolSlot } from './toolbar/toolbar.tsx'
 export { useRovingToolbar } from './toolbar/use-roving-toolbar.ts'
-} from './data-grid/host'
-export { tableCsv, type SortSpec } from './data-grid/model'
-export { EmptyState, type EmptyStateSlot } from './empty-state'
-export { EstimateBadge } from './estimate-badge'
-export { Toolbar, ToolbarGroup, ToolButton, ToolSlot } from './toolbar/toolbar'
-export { useRovingToolbar } from './toolbar/use-roving-toolbar'
 
 // 时间序列与盈亏的积木（#1917）。功能参照 Arc（uiarc.dev，2026-11-14 读），只取功能，实现原创。
-export { SmallMultiples, type SmallMultiple, type SmallMultiplesProps } from './small-multiples'
+export { SmallMultiples, type SmallMultiple, type SmallMultiplesProps } from './small-multiples.tsx'
 export {
   SeriesExplorer,
   type SeriesExplorerColumn,
   type SeriesExplorerLabels,
   type SeriesExplorerProps,
-} from './series-explorer/series-explorer'
-export type { KpiDef, RangeDef, SeriesDef, SeriesPoint } from './series-explorer/series-explorer-model'
+} from './series-explorer/series-explorer.tsx'
+export type { KpiDef, RangeDef, SeriesDef, SeriesPoint } from './series-explorer/series-explorer-model.ts'
 
 // 盈亏归因（#1917，#1931 从 quant 挪到这里：顶行用了 blocks 的 Toolbar）。
-export { AttributionBars, type AttributionBarsProps, type AttributionChoice } from './attribution-bars/attribution-bars'
-export type { AttributionItem } from './attribution-bars/attribution-model'
+export {
+  AttributionBars,
+  type AttributionBarsProps,
+  type AttributionChoice,
+} from './attribution-bars/attribution-bars.tsx'
+export type { AttributionItem } from './attribution-bars/attribution-model.ts'

@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vite-plus/test'
-import { SparkTile } from '../spark-tile'
-import { DotFill } from './dot-fill'
-import { ChartActions } from './chart-actions'
-import { EndMarker } from './end-marker'
-import { LcdTooltip } from './lcd-tooltip'
-import { assignSeries, divColor, divHotThreshold, quantile, seqColor } from './series-colors'
+import { SparkTile } from '../spark-tile.tsx'
+import { DotFill } from './dot-fill.tsx'
+import { ChartActions } from './chart-actions.tsx'
+import { EndMarker } from './end-marker.tsx'
+import { LcdTooltip } from './lcd-tooltip.tsx'
+import { assignSeries, divColor, divHotThreshold, quantile, seqColor } from './series-colors.ts'
 
 describe('图表配色', () => {
   const keys = Array.from({ length: 9 }, (_, i) => `s${i + 1}`)

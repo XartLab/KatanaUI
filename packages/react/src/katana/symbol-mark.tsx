@@ -5,7 +5,7 @@
 // 字母用点阵字（--font-dot：Doto，中文落到方舟像素），整数字号 12（直径 28 以上 16）、不加字距，跟装饰标签同一套（pixel.md）。
 // 字母规则：代码里的拉丁字母取前 2 个（大写）；代码里没有字母（A 股的 600519、港股的 00700）取名称首字；都没有取代码首字符。
 import { useState } from 'react'
-import { cn } from '../lib/cn'
+import { cn } from '../lib/cn.ts'
 
 export type SymbolMarkProps = {
   /** 品种代码（BTCUSDT、600519）。 */

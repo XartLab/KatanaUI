@@ -4,12 +4,12 @@
 // 有阈值画 1px signal-amber 虚线；接近阈值（near）边框转 signal-orange-dim、变化行转 amber，并脉冲一次。迷你线不画轴、不画网格、不标数值。
 // 悬停迷你线出 LCD tooltip（时间、值）；一行最多 5 个由调用方的布局定。数值变化用数字滚动（RollingText）。
 import type { CSSProperties } from 'react'
-import { cn } from '../lib/cn'
-import { useScrubber } from '../lib/use-scrubber'
-import { RollingText } from '../katana/rolling-text'
-import { EndMarker } from './chart-kit/end-marker'
-import { LcdTooltip } from './chart-kit/lcd-tooltip'
-import { linePath, makePlot, pct, PLOT_W } from './series-geometry'
+import { cn } from '../lib/cn.ts'
+import { useScrubber } from '../lib/use-scrubber.ts'
+import { RollingText } from '../katana/rolling-text.tsx'
+import { EndMarker } from './chart-kit/end-marker.tsx'
+import { LcdTooltip } from './chart-kit/lcd-tooltip.tsx'
+import { linePath, makePlot, pct, PLOT_W } from './series-geometry.ts'
 
 const SPARK_H = 24
 

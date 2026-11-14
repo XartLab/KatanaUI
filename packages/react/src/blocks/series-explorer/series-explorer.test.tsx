@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vite-plus/test'
-import { SeriesExplorer } from './series-explorer'
+import { SeriesExplorer } from './series-explorer.tsx'
 import {
   changeRatio,
   chartExtent,
@@ -11,7 +11,7 @@ import {
   reduceWindow,
   stackPoint,
   type SeriesPoint,
-} from './series-explorer-model'
+} from './series-explorer-model.ts'
 
 // #1917：SeriesExplorer 的纯逻辑与结构。区间切换、开关、扫读、刷选联动在 e2e/ui-gallery.spec.ts 里用真浏览器验。
 

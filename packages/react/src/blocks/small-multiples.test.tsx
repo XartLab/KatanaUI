@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vite-plus/test'
-import { SmallMultiples } from './small-multiples'
+import { SmallMultiples } from './small-multiples.tsx'
 
 // #1917：SmallMultiples 的结构。扫读同步（指针与键盘）在 e2e/ui-gallery.spec.ts 里用真浏览器验。
 

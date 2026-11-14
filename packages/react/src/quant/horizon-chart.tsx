@@ -3,10 +3,10 @@
 // 功能参照 Arc 的 Horizon chart（uiarc.dev/components/charts，2026-11-14 读，只取功能），实现原创。
 // 交互：所有行共用一个扫读位置（指针在任一行上移动，或键盘 ←→），每行画同一根竖线，右边一列写这一格各行的值（不选中时写最新值）。
 import { useState } from 'react'
-import { cn } from '../lib/cn'
-import { useScrubber } from '../lib/use-scrubber'
-import { horizonBands, horizonMax, HORIZON_BANDS } from './horizon-model'
-import { makePlot, pct, PLOT_W } from './series-geometry'
+import { cn } from '../lib/cn.ts'
+import { useScrubber } from '../lib/use-scrubber.ts'
+import { horizonBands, horizonMax, HORIZON_BANDS } from './horizon-model.ts'
+import { makePlot, pct, PLOT_W } from './series-geometry.ts'
 
 export type HorizonRow = { key: string; label: string; values: readonly number[] }
 

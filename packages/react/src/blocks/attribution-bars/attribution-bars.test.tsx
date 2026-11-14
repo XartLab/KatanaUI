@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vite-plus/test'
-import { AttributionBars } from './attribution-bars'
-import { attributionBar, attributionRows, attributionScale } from './attribution-model'
+import { AttributionBars } from './attribution-bars.tsx'
+import { attributionBar, attributionRows, attributionScale } from './attribution-model.ts'
 
 describe('盈亏归因', () => {
   const items = [

@@ -7,11 +7,11 @@
 // 不用瀑布图（卡明写：阅读要跟踪累计基线，认知负荷高）。文字都从 props 来。切维度时按位置对应行，条长用 transition 过渡。
 import { DownloadIcon, ExpandIcon, TableIcon } from 'lucide-react'
 import { useState, type KeyboardEvent } from 'react'
-import { cn } from '../../lib/cn'
-import { ToggleGroup, ToggleGroupItem } from '../../primitives/toggle-group'
-import { SymbolMark } from '../../katana/symbol-mark'
-import { LcdTooltip } from '../../quant/chart-kit/lcd-tooltip'
-import { Toolbar, ToolbarGroup, ToolButton } from '../toolbar/toolbar'
+import { cn } from '../../lib/cn.ts'
+import { ToggleGroup, ToggleGroupItem } from '../../primitives/toggle-group.tsx'
+import { SymbolMark } from '../../katana/symbol-mark.tsx'
+import { LcdTooltip } from '../../quant/chart-kit/lcd-tooltip.tsx'
+import { Toolbar, ToolbarGroup, ToolButton } from '../toolbar/toolbar.tsx'
 import {
   ATTRIBUTION_MAX_ITEMS,
   attributionBar,
@@ -19,7 +19,7 @@ import {
   attributionScale,
   type AttributionItem,
   type AttributionRow,
-} from './attribution-model'
+} from './attribution-model.ts'
 
 export type AttributionChoice = { key: string; label: string }
 

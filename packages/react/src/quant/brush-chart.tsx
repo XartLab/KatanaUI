@@ -5,8 +5,8 @@
 //   拖窗口中间平移、拖两端缩放、点窗口外的地方把窗口移到那里居中；三处都是 role="slider"，←→ 一点、Shift+←→ 三点、Home / End 到头尾。
 //   主图上指针或 ←→ 扫读，十字线与读数跟着走（useScrubber）。
 import { useState, type KeyboardEvent, type PointerEvent } from 'react'
-import { cn } from '../lib/cn'
-import { SCRUB_BIG_STEP, useScrubber } from '../lib/use-scrubber'
+import { cn } from '../lib/cn.ts'
+import { SCRUB_BIG_STEP, useScrubber } from '../lib/use-scrubber.ts'
 import {
   BRUSH_MIN_SPAN,
   brushIndexAt,
@@ -15,12 +15,12 @@ import {
   moveWindow,
   resizeWindow,
   type BrushWindow,
-} from './brush-model'
-import { DotFill, useDotId } from './chart-kit/dot-fill'
-import { EndMarker } from './chart-kit/end-marker'
-import { LcdTooltip } from './chart-kit/lcd-tooltip'
-import { PlotGrid, PlotYAxis } from './chart-kit/plot-axes'
-import { areaPath, extent, linePath, makePlot, pct, PLOT_W } from './series-geometry'
+} from './brush-model.ts'
+import { DotFill, useDotId } from './chart-kit/dot-fill.tsx'
+import { EndMarker } from './chart-kit/end-marker.tsx'
+import { LcdTooltip } from './chart-kit/lcd-tooltip.tsx'
+import { PlotGrid, PlotYAxis } from './chart-kit/plot-axes.tsx'
+import { areaPath, extent, linePath, makePlot, pct, PLOT_W } from './series-geometry.ts'
 
 export type BrushLabels = {
   /** 窗口左端手柄的读屏名。 */

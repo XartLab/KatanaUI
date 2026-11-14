@@ -44,12 +44,14 @@
           "target": "~/src/katana/ui/theme/badge.css"
         },
         {
-          "path": "src/theme/chip-group.css",
-          "type": "registry:file",
-          "target": "~/src/katana/ui/theme/chip-group.css"
           "path": "src/theme/chart-kit.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/chart-kit.css"
+        },
+        {
+          "path": "src/theme/chip-group.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/chip-group.css"
         },
         {
           "path": "src/theme/data-grid.css",
@@ -77,9 +79,19 @@
           "target": "~/src/katana/ui/theme/empty-state.css"
         },
         {
+          "path": "src/theme/equity-curve.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/equity-curve.css"
+        },
+        {
           "path": "src/theme/event-timeline.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/event-timeline.css"
+        },
+        {
+          "path": "src/theme/fonts.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/fonts.css"
         },
         {
           "path": "src/theme/hold-to-confirm.css",
@@ -90,14 +102,6 @@
           "path": "src/theme/json-viewer.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/json-viewer.css"
-          "path": "src/theme/equity-curve.css",
-          "type": "registry:file",
-          "target": "~/src/katana/ui/theme/equity-curve.css"
-        },
-        {
-          "path": "src/theme/fonts.css",
-          "type": "registry:file",
-          "target": "~/src/katana/ui/theme/fonts.css"
         },
         {
           "path": "src/theme/kbd.css",
@@ -145,22 +149,24 @@
           "target": "~/src/katana/ui/theme/rolling-text.css"
         },
         {
-          "path": "src/theme/shortcut-recorder.css",
-          "type": "registry:file",
-          "target": "~/src/katana/ui/theme/shortcut-recorder.css"
-        },
-        {
-          "path": "src/theme/tree-view.css",
-          "type": "registry:file",
-          "target": "~/src/katana/ui/theme/tree-view.css"
           "path": "src/theme/series.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/series.css"
         },
         {
+          "path": "src/theme/shortcut-recorder.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/shortcut-recorder.css"
+        },
+        {
           "path": "src/theme/symbol-mark.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/symbol-mark.css"
+        },
+        {
+          "path": "src/theme/tree-view.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/tree-view.css"
         }
       ]
     },
@@ -1802,6 +1808,10 @@
           "path": "src/patterns/tree-view.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/patterns/tree-view.tsx"
+        }
+      ]
+    },
+    {
       "name": "chart-kit",
       "type": "registry:component",
       "title": "Chart Kit",
@@ -2308,6 +2318,10 @@
           "path": "src/blocks/event-timeline.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/blocks/event-timeline.tsx"
+        }
+      ]
+    },
+    {
       "name": "small-multiples",
       "type": "registry:component",
       "title": "Small Multiples",

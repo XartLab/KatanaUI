@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vite-plus/test'
-import { SCRUB_BIG_STEP, scrubIndexAt, scrubKey, useScrubber } from './use-scrubber'
+import { SCRUB_BIG_STEP, scrubIndexAt, scrubKey, useScrubber } from './use-scrubber.ts'
 
 describe('扫读的键位', () => {
   it('←→ 一格，Shift 三格，到头停住', () => {

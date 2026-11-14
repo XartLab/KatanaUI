@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 import { useState } from 'react'
-import { useScrubber } from '../../src/index'
+import { useScrubber } from '../../src/index.ts'
 import {
   AttributionBars,
   SeriesExplorer,
@@ -8,7 +8,7 @@ import {
   type AttributionItem,
   type SeriesPoint,
   type SmallMultiple,
-} from '../../src/blocks'
+} from '../../src/blocks/index.ts'
 import {
   BrushChart,
   Meter,
@@ -20,8 +20,8 @@ import {
   type CalendarDay,
   type CalendarEvent,
   type HorizonRow,
-} from '../../src/quant'
-import { Row, SAMPLE_MARK_SRC } from './parts'
+} from '../../src/quant/index.ts'
+import { Row, SAMPLE_MARK_SRC } from './parts.tsx'
 
 // #1917：时间序列与盈亏的件的演示。下面所有数据都是演示用的合成数据（在这个展示页里按固定种子生成，不是行情、不是账户），每页也写明了；应用里没有样本数据。
 

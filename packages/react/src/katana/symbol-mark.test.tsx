@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vite-plus/test'
-import { SymbolMark, symbolMarkLetters } from './symbol-mark'
+import { SymbolMark, symbolMarkLetters } from './symbol-mark.tsx'
 
 describe('品种徽标', () => {
   it('字母：代码里的拉丁字母前 2 个；没有字母取名称首字，再没有取代码首字符', () => {

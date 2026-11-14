@@ -1,7 +1,15 @@
 // SPDX-License-Identifier: MIT
 import type { ComponentType } from 'react'
 import { DateTimeInputDemo, NumberInputDemo, SkeletonDemo } from './pages/fields.tsx'
-import { BadgeDemo, DotMatrixDemo, KbdDemo, LcdDemo, LedDemo, RollingTextDemo } from './pages/readouts.tsx'
+import {
+  BadgeDemo,
+  DotMatrixDemo,
+  KbdDemo,
+  LcdDemo,
+  LedDemo,
+  RollingTextDemo,
+  SymbolMarkDemo,
+} from './pages/readouts.tsx'
 import { ContextMenuOpen, DialogOpen, DropdownMenuOpen, PopoverOpen, SelectOpen, TooltipOpen } from './pages/open.tsx'
 import { ChangeTextDemo, PnlTextDemo, QuantFormatDemo } from './pages/quant.tsx'
 import { DataGridDemo, EmptyStateDemo, EstimateBadgeDemo, ToolbarDemo } from './pages/blocks.tsx'
@@ -16,14 +24,6 @@ import {
   TreeViewDemo,
 } from './pages/arc-controls.tsx'
 import { FieldDemo, HoverCardDemo, ScrollAreaDemo, SeparatorDemo, SheetDemo } from './pages/structure.tsx'
-import { DateTimeInputDemo, NumberInputDemo, SkeletonDemo } from './pages/fields'
-import { BadgeDemo, DotMatrixDemo, KbdDemo, LcdDemo, LedDemo, RollingTextDemo, SymbolMarkDemo } from './pages/readouts'
-import { ContextMenuOpen, DialogOpen, DropdownMenuOpen, PopoverOpen, SelectOpen, TooltipOpen } from './pages/open'
-import { ChangeTextDemo, PnlTextDemo, QuantFormatDemo } from './pages/quant'
-import { DataGridDemo, EmptyStateDemo, EstimateBadgeDemo, ToolbarDemo } from './pages/blocks'
-import { AlertDemo, ProgressDemo, ToastDemo } from './pages/feedback'
-import { ComboboxDemo, CommandDemo } from './pages/pickers'
-import { FieldDemo, HoverCardDemo, ScrollAreaDemo, SeparatorDemo, SheetDemo } from './pages/structure'
 import {
   AiStatusDemo,
   ArcadePixelDemo,
@@ -41,7 +41,6 @@ import {
   ThemeSelectorDemo,
   WebSearchDemo,
 } from './pages/rare2.tsx'
-} from './pages/rare2'
 import {
   BrushChartDemo,
   MeterDemo,
@@ -53,7 +52,7 @@ import {
   UseScrubberDemo,
   AttributionBarsDemo,
   EquityCurveDemo,
-} from './pages/series'
+} from './pages/series.tsx'
 import {
   GaugeBarDemo,
   PriceTagDemo,

@@ -3,12 +3,12 @@
 // 功能参照 Arc 的 Small multiples（同步十字线的小图阵列，uiarc.dev/components/charts，2026-11-14 读，只取功能），实现原创。
 // 扫读用 useScrubber（受控，位置存在这里，所有张共用）；比例尺与路径用 quant 的 series-geometry。
 import { useState } from 'react'
-import { cn } from '../lib/cn'
-import { useScrubber } from '../lib/use-scrubber'
-import { quoteTone } from '../katana/quote-tone'
-import { EndMarker } from '../quant/chart-kit/end-marker'
-import { LcdTooltip } from '../quant/chart-kit/lcd-tooltip'
-import { extent, linePath, makePlot, pct, PLOT_W } from '../quant/series-geometry'
+import { cn } from '../lib/cn.ts'
+import { useScrubber } from '../lib/use-scrubber.ts'
+import { quoteTone } from '../katana/quote-tone.ts'
+import { EndMarker } from '../quant/chart-kit/end-marker.tsx'
+import { LcdTooltip } from '../quant/chart-kit/lcd-tooltip.tsx'
+import { extent, linePath, makePlot, pct, PLOT_W } from '../quant/series-geometry.ts'
 
 export type SmallMultiple = { key: string; label: string; values: readonly number[] }
 

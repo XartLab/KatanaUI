@@ -557,7 +557,7 @@
   left: 6px;
   display: flex;
   justify-content: space-between;
-  color: var(--ink-400);
+  color: var(--ink-300);
   font: var(--text-num-sm) var(--chart-font-axis, var(--font-mono));
 }
 /* Sync：分段齿条 + amber 刻度 + 大百分比 */
@@ -720,7 +720,7 @@ rect.k-heat-cell[data-active='true'] {
 .k-heat-wk {
   display: flex;
   align-items: center;
-  color: var(--ink-400);
+  color: var(--ink-300);
   font: var(--text-num-sm) var(--chart-font-axis, var(--font-mono));
 }
 button.k-heat-cell {
@@ -740,7 +740,7 @@ button.k-heat-cell {
   position: absolute;
   top: 3px;
   left: 4px;
-  color: var(--ink-300);
+  color: var(--ink-200);
   font: var(--text-num-sm) var(--chart-font-axis, var(--font-mono));
 }
 .k-heat-num {
@@ -749,8 +749,24 @@ button.k-heat-cell {
   bottom: 3px;
   font: var(--text-num-sm) var(--chart-font-axis, var(--font-mono));
 }
+/* 中档涨跌色（div-pos-200 / div-neg-200）上的字：绿涨红跌与红涨绿跌两套配色的亮度不同，白字或黑字谁过 4.5:1 随格色变，
+   所以按格色的亮度现算：伽马编码后的加权亮度高于 0.43 用黑字，否则白字（0.43 是这两档在 Console / Graphite 两个主题里实测分得开的位置，2026-11-14 axe 实测）。 */
+.k-heat-cell[data-tone='pos2'],
+.k-heat-cell[data-tone='neg2'] {
+  --k-on: color(
+    from var(--k-cell) srgb clamp(0, calc((0.43 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) * 1000), 1)
+      clamp(0, calc((0.43 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) * 1000), 1)
+      clamp(0, calc((0.43 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) * 1000), 1)
+  );
+}
+.k-heat-cell[data-tone='pos2'] .k-heat-date,
+.k-heat-cell[data-tone='pos2'] .k-heat-num,
+.k-heat-cell[data-tone='neg2'] .k-heat-date,
+.k-heat-cell[data-tone='neg2'] .k-heat-num {
+  color: var(--k-on);
+}
 .k-heat-cell[data-closed='true'] .k-heat-num {
-  color: var(--ink-400);
+  color: var(--ink-300);
 }
 .k-heat-cell[data-today='true'] {
   box-shadow: inset 0 0 0 1px var(--chart-accent, var(--signal-orange));

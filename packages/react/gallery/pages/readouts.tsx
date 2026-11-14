@@ -10,8 +10,8 @@ import {
   RollingText,
   SymbolMark,
   type LedState,
-} from '../../src/index'
-import { Cell, Row, SAMPLE_MARK_SRC } from './parts'
+} from '../../src/index.ts'
+import { Cell, Row, SAMPLE_MARK_SRC } from './parts.tsx'
 
 // KATANA 自有的读数件的演示（#1860 从 src/ui 搬进包）：状态灯、LCD 读数、点阵、滚动数字、徽标、快捷键方块。数据和文案都是演示用的。
 

@@ -10,20 +10,20 @@
 //   KPI 变化 = (这期 − 上期) / |上期|，上期没有或为 0 写破折号。数值语法照 precision-instrument.md §2.2（等宽、右对齐、来源行）。
 import { DownloadIcon, ExpandIcon, TableIcon } from 'lucide-react'
 import { useState, type CSSProperties, type KeyboardEvent } from 'react'
-import { cn } from '../../lib/cn'
-import { useScrubber } from '../../lib/use-scrubber'
-import { Led } from '../../katana/led'
-import { Switch } from '../../primitives/switch'
-import { ToggleGroup, ToggleGroupItem } from '../../primitives/toggle-group'
-import { Toolbar, ToolbarGroup, ToolButton } from '../toolbar/toolbar'
-import { BrushStrip, type BrushLabels } from '../../quant/brush-chart'
-import { clampWindow, type BrushWindow } from '../../quant/brush-model'
-import type { ChartActionsLabels } from '../../quant/chart-kit/chart-actions'
-import { EndMarker } from '../../quant/chart-kit/end-marker'
-import { LcdTooltip } from '../../quant/chart-kit/lcd-tooltip'
-import { PlotGrid, PlotYAxis } from '../../quant/chart-kit/plot-axes'
-import { linePath, makePlot, pct, PLOT_W } from '../../quant/series-geometry'
-import { SparkTile } from '../../quant/spark-tile'
+import { cn } from '../../lib/cn.ts'
+import { useScrubber } from '../../lib/use-scrubber.ts'
+import { Led } from '../../katana/led.tsx'
+import { Switch } from '../../primitives/switch.tsx'
+import { ToggleGroup, ToggleGroupItem } from '../../primitives/toggle-group.tsx'
+import { Toolbar, ToolbarGroup, ToolButton } from '../toolbar/toolbar.tsx'
+import { BrushStrip, type BrushLabels } from '../../quant/brush-chart.tsx'
+import { clampWindow, type BrushWindow } from '../../quant/brush-model.ts'
+import type { ChartActionsLabels } from '../../quant/chart-kit/chart-actions.tsx'
+import { EndMarker } from '../../quant/chart-kit/end-marker.tsx'
+import { LcdTooltip } from '../../quant/chart-kit/lcd-tooltip.tsx'
+import { PlotGrid, PlotYAxis } from '../../quant/chart-kit/plot-axes.tsx'
+import { linePath, makePlot, pct, PLOT_W } from '../../quant/series-geometry.ts'
+import { SparkTile } from '../../quant/spark-tile.tsx'
 import {
   changeRatio,
   chartExtent,
@@ -37,7 +37,7 @@ import {
   type RangeDef,
   type SeriesDef,
   type SeriesPoint,
-} from './series-explorer-model'
+} from './series-explorer-model.ts'
 
 export type SeriesExplorerColumn = {
   key: string

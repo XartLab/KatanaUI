@@ -8,9 +8,9 @@
 // 根上带 data-state，右上角可写状态词（stateLabels），读屏有 role="meter" 与 valueText。越过阈值时条体脉冲一次（CSS 动画只在状态变成 warn / breach 时播）。
 // 外观（点阵纹理、强调色、数字字体）读 theme/chart-kit.css 里的变量。
 import type { CSSProperties } from 'react'
-import { cn } from '../lib/cn'
-import { gaugeShare, meterModel, type MeterState } from './meter-model'
-import type { ChartTone } from './chart-kit/dot-fill'
+import { cn } from '../lib/cn.ts'
+import { gaugeShare, meterModel, type MeterState } from './meter-model.ts'
+import type { ChartTone } from './chart-kit/dot-fill.tsx'
 
 export type MeterProps = {
   /** 已用 / 读数（和 max 同一把尺）。 */
