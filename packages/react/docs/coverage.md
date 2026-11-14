@@ -78,7 +78,7 @@
 | LiveDivergence | 研究 | 面板 | — | 没做 | 研究层，还没有对应面板 |
 | LossLimits | 盈亏 | 面板 | `src/panels/loss-limits` | 已做 |  |
 | MBOTrackers | 订单流 | 面板 | — | 没做 | 逐单订单簿，还没有对应面板 |
-| Meter | 工作台 | 量化 | `BulletMeter` | 已做 | 子弹图：已用条、正常 / 接近 / 越限三段底、软限与硬限刻度；限额板的应用接线另开票 |
+| Meter | 工作台 | 量化 | `Meter` | 已做 | 条（点阵填充）、刻度盘、同步率三种形态；限额板传软限与硬限，达到软限接近、达到硬限越限；应用接线另开票 |
 | ModelCard | 研究 | 面板 | — | 没做 | 研究层，还没有对应面板 |
 | NewsFeed | 发现 | 面板 | `src/panels/alice-reports` | 部分 | 有报告流，公告、RSS、数据源事件的统一时间流没有 |
 | Notes | 工具 | 面板 | — | 没做 | Markdown 笔记，还没有对应面板 |

@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: MIT */
-/* 时间序列与盈亏的件（#1917）：BrushChart、WaterfallChart、BulletMeter、CalendarHeatmap、HorizonChart、SmallMultiples、SeriesExplorer。
+/* 时间序列与盈亏的件（#1917）：BrushChart、WaterfallChart、Meter、CalendarHeatmap、HorizonChart、SmallMultiples、SeriesExplorer。
    颜色只用 token（涨跌用 --pnl-up / --pnl-down，跟涨跌配色走）；数字一律等宽；图都画在 viewBox 里、文字与十字线是叠在上面的 HTML。 */
 
 /* —— BrushChart —— */
@@ -249,8 +249,9 @@
   white-space: nowrap;
 }
 
-/* —— BulletMeter —— */
-.k-bullet {
+/* —— Meter（bar / gauge / sync；组件卡 Meter）—— */
+.k-meter {
+  --k-tone: var(--chart-accent, var(--signal-orange));
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -258,93 +259,179 @@
   font: var(--text-caption) var(--font-sans);
   font-variant-numeric: tabular-nums;
 }
-.k-bullet-head {
+.k-meter[data-tone='ok'] {
+  --k-tone: var(--signal-green);
+}
+.k-meter[data-tone='warn'] {
+  --k-tone: var(--signal-amber);
+}
+.k-meter[data-tone='off'] {
+  --k-tone: var(--line-200);
+}
+.k-meter[data-tone='ink'] {
+  --k-tone: var(--ink-200);
+}
+.k-meter-head {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
   gap: 8px;
 }
-.k-bullet-label {
+.k-meter-label {
   color: var(--ink-300);
   font: var(--text-data) var(--font-sans);
 }
-.k-bullet-value {
-  color: var(--ink-100);
-  font: var(--text-data) var(--font-mono);
+.k-meter-value {
+  color: var(--k-tone);
+  font: var(--text-data) var(--chart-font-axis, var(--font-mono));
+  text-align: right;
 }
-.k-bullet-state {
+.k-meter[data-tone='ok'] .k-meter-value,
+.k-meter[data-tone='off'] .k-meter-value {
+  color: var(--ink-100);
+}
+.k-meter-state {
   margin-left: 6px;
   font-style: normal;
   font-family: var(--font-sans);
 }
-.k-bullet[data-state='warn'] .k-bullet-state {
+.k-meter[data-state='warn'] .k-meter-state {
   color: var(--signal-amber);
 }
-.k-bullet[data-state='breach'] .k-bullet-state {
+.k-meter[data-state='breach'] .k-meter-state {
   color: var(--signal-red);
 }
-.k-bullet-track {
+.k-meter-track {
   position: relative;
-  height: 14px;
-  border-radius: 2px;
-  background: var(--bg-300);
-  overflow: hidden;
+  height: 10px;
+  background: var(--bg-000);
+  border: var(--hairline);
+  box-shadow: var(--recess);
 }
-.k-bullet-zone {
+.k-meter-fill {
+  --k-dot: var(--k-tone);
   position: absolute;
   top: 0;
   bottom: 0;
-}
-.k-bullet-zone.is-ok {
-  background: var(--bg-300);
-}
-.k-bullet-zone.is-warn {
-  background: color-mix(in srgb, var(--signal-amber) 24%, var(--bg-300));
-}
-.k-bullet-zone.is-breach {
-  background: color-mix(in srgb, var(--signal-red) 28%, var(--bg-300));
-}
-.k-bullet-fill {
-  position: absolute;
-  top: 4px;
-  bottom: 4px;
   left: 0;
-  border-radius: 1px;
-  background: var(--ink-100);
   transition: width var(--dur-snappy) var(--ease-snappy);
 }
-.k-bullet[data-state='warn'] .k-bullet-fill {
-  background: var(--signal-amber);
+.k-meter[data-state='warn'] .k-meter-track,
+.k-meter[data-state='breach'] .k-meter-track {
+  animation: k-meter-pulse var(--dur-snappy) var(--ease-snappy) 1;
 }
-.k-bullet[data-state='breach'] .k-bullet-fill {
-  background: var(--signal-red);
+@keyframes k-meter-pulse {
+  50% {
+    box-shadow: 0 0 0 2px var(--k-tone);
+  }
 }
-.k-bullet-tick {
+.k-meter-tick {
   position: absolute;
-  top: 0;
-  bottom: 0;
+  top: -1px;
+  bottom: -1px;
   width: 2px;
   margin-left: -1px;
   background: var(--ink-300);
 }
-.k-bullet-tick.is-hard {
-  background: var(--signal-red);
-}
-.k-bullet-tick.is-soft {
+.k-meter-tick.is-soft {
   background: var(--signal-amber);
 }
-.k-bullet-ticks {
+.k-meter-tick.is-hard {
+  background: var(--signal-red);
+}
+.k-meter-ticks {
   position: relative;
   height: 14px;
   color: var(--ink-300);
 }
-.k-bullet-ticks > span {
+.k-meter-ticks > span {
   position: absolute;
   white-space: nowrap;
   transform: translateX(-50%);
 }
-.k-bullet-ticks > span[data-align='end'] {
+.k-meter-ticks > span[data-align='end'] {
   transform: translateX(-100%);
+}
+/* Gauge */
+.k-meter-gauge-box {
+  position: relative;
+  height: 34px;
+  background: var(--bg-000);
+  border: var(--hairline);
+  box-shadow: var(--recess);
+}
+.k-meter-base {
+  position: absolute;
+  top: 50%;
+  right: 6px;
+  left: 6px;
+  height: 1px;
+  background: var(--line-100);
+}
+.k-meter-pin {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  left: calc(6px + var(--k-pin, 0) * (100% - 12px));
+  width: 2px;
+  margin-left: -1px;
+  background: var(--k-tone);
+  box-shadow: var(--chart-end-glow, var(--glow-orange));
+}
+.k-meter-gauge[data-pin='weak'] .k-meter-pin {
+  background: var(--signal-red);
+}
+.k-meter-gauge[data-pin='locked'] .k-meter-pin {
+  background: var(--signal-amber);
+}
+.k-meter-gauge-ticks {
+  position: absolute;
+  right: 6px;
+  bottom: 2px;
+  left: 6px;
+  display: flex;
+  justify-content: space-between;
+  color: var(--ink-400);
+  font: var(--text-num-sm) var(--chart-font-axis, var(--font-mono));
+}
+/* Sync：分段齿条 + amber 刻度 + 大百分比 */
+.k-meter-sync {
+  flex-direction: row;
+  align-items: flex-end;
+  gap: 12px;
+}
+.k-meter-sync-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+.k-meter-teeth {
+  position: relative;
+  display: flex;
+  gap: 2px;
+  height: 14px;
+}
+.k-meter-tooth {
+  flex: 1;
+  background: var(--bg-300);
+}
+.k-meter-tooth[data-on='true'] {
+  background: var(--k-tone);
+}
+.k-meter-mark {
+  position: absolute;
+  top: -3px;
+  bottom: -3px;
+  width: 2px;
+  margin-left: -1px;
+  background: var(--signal-amber);
+}
+.k-meter-big {
+  color: var(--ink-100);
+  font: var(--text-display-dense) var(--font-display);
+  letter-spacing: var(--text-display-dense-tracking);
 }
 
 /* —— CalendarHeatmap —— */

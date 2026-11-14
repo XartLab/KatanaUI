@@ -36,7 +36,7 @@ import {
 } from './pages/rare2'
 import {
   BrushChartDemo,
-  BulletMeterDemo,
+  MeterDemo,
   SparkTileDemo,
   CalendarHeatmapDemo,
   HorizonChartDemo,
@@ -134,7 +134,7 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'use-scrubber': UseScrubberDemo,
   'brush-chart': BrushChartDemo,
   'waterfall-chart': WaterfallChartDemo,
-  'bullet-meter': BulletMeterDemo,
+  meter: MeterDemo,
   'spark-tile': SparkTileDemo,
   'calendar-heatmap': CalendarHeatmapDemo,
   'horizon-chart': HorizonChartDemo,

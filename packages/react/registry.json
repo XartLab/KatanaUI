@@ -1851,36 +1851,6 @@
       ]
     },
     {
-      "name": "bullet-meter",
-      "type": "registry:component",
-      "title": "Bullet Meter",
-      "description": "限额板用的横向仪表：一根条是已用，底上三段是正常、接近、越限，两根刻度是软限与硬限，右上角写已用与状态词。对设计稿的 Meter 卡。功能参照 Arc 的 Budget variance。",
-      "registryDependencies": [
-        "@katana/bullet-model",
-        "@katana/cn"
-      ],
-      "files": [
-        {
-          "path": "src/quant/bullet-meter.tsx",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/quant/bullet-meter.tsx"
-        }
-      ]
-    },
-    {
-      "name": "bullet-model",
-      "type": "registry:component",
-      "title": "Bullet Model",
-      "description": "BulletMeter 的几何与状态（纯函数）：位置、达到软限与硬限的判定。",
-      "files": [
-        {
-          "path": "src/quant/bullet-model.ts",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/quant/bullet-model.ts"
-        }
-      ]
-    },
-    {
       "name": "calendar-heatmap",
       "type": "registry:component",
       "title": "Calendar Heatmap",
@@ -1956,6 +1926,37 @@
           "path": "src/quant/horizon-model.ts",
           "type": "registry:component",
           "target": "~/src/katana/ui/quant/horizon-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "meter-model",
+      "type": "registry:component",
+      "title": "Meter Model",
+      "description": "Meter 的几何与状态（纯函数）：位置、达到软限与硬限的判定、刻度盘指针位置。",
+      "files": [
+        {
+          "path": "src/quant/meter-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/meter-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "meter",
+      "type": "registry:component",
+      "title": "Meter",
+      "description": "仪表的三种形态：条（进度、负载、敞口，点阵填充）、刻度盘（0 到 100 的读数带指针）、同步率（分段齿条加评估点刻度加大百分比）。限额板传软限与硬限，达到软限算接近、达到硬限算越限。对设计稿的 Meter 卡；功能参照 Arc 的 Budget variance。",
+      "registryDependencies": [
+        "@katana/chart-kit",
+        "@katana/cn",
+        "@katana/meter-model"
+      ],
+      "files": [
+        {
+          "path": "src/quant/meter.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/meter.tsx"
         }
       ]
     },

@@ -6529,7 +6529,8 @@ button.k-spark-tile:focus-visible {
   overflow: hidden;
 }
 
-.k-bullet {
+.k-meter {
+  --k-tone: var(--chart-accent, var(--signal-orange));
   min-width: 0;
   font: var(--text-caption) var(--font-sans);
   font-variant-numeric: tabular-nums;
@@ -6538,124 +6539,208 @@ button.k-spark-tile:focus-visible {
   display: flex;
 }
 
-.k-bullet-head {
+.k-meter[data-tone="ok"] {
+  --k-tone: var(--signal-green);
+}
+
+.k-meter[data-tone="warn"] {
+  --k-tone: var(--signal-amber);
+}
+
+.k-meter[data-tone="off"] {
+  --k-tone: var(--line-200);
+}
+
+.k-meter[data-tone="ink"] {
+  --k-tone: var(--ink-200);
+}
+
+.k-meter-head {
   justify-content: space-between;
   align-items: baseline;
   gap: 8px;
   display: flex;
 }
 
-.k-bullet-label {
+.k-meter-label {
   color: var(--ink-300);
   font: var(--text-data) var(--font-sans);
 }
 
-.k-bullet-value {
-  color: var(--ink-100);
-  font: var(--text-data) var(--font-mono);
+.k-meter-value {
+  color: var(--k-tone);
+  font: var(--text-data) var(--chart-font-axis, var(--font-mono));
+  text-align: right;
 }
 
-.k-bullet-state {
+.k-meter[data-tone="ok"] .k-meter-value, .k-meter[data-tone="off"] .k-meter-value {
+  color: var(--ink-100);
+}
+
+.k-meter-state {
   font-style: normal;
   font-family: var(--font-sans);
   margin-left: 6px;
 }
 
-.k-bullet[data-state="warn"] .k-bullet-state {
+.k-meter[data-state="warn"] .k-meter-state {
   color: var(--signal-amber);
 }
 
-.k-bullet[data-state="breach"] .k-bullet-state {
+.k-meter[data-state="breach"] .k-meter-state {
   color: var(--signal-red);
 }
 
-.k-bullet-track {
-  background: var(--bg-300);
-  border-radius: 2px;
-  height: 14px;
+.k-meter-track {
+  background: var(--bg-000);
+  border: var(--hairline);
+  height: 10px;
+  box-shadow: var(--recess);
   position: relative;
-  overflow: hidden;
 }
 
-.k-bullet-zone {
+.k-meter-fill {
+  --k-dot: var(--k-tone);
+  transition: width var(--dur-snappy) var(--ease-snappy);
   position: absolute;
   top: 0;
   bottom: 0;
-}
-
-.k-bullet-zone.is-ok {
-  background: var(--bg-300);
-}
-
-.k-bullet-zone.is-warn {
-  background: var(--signal-amber);
-}
-
-@supports (color: color-mix(in lab, red, red)) {
-  .k-bullet-zone.is-warn {
-    background: var(--ds-c-1cp2jaz);
-  }
-}
-
-.k-bullet-zone.is-breach {
-  background: var(--signal-red);
-}
-
-@supports (color: color-mix(in lab, red, red)) {
-  .k-bullet-zone.is-breach {
-    background: var(--ds-c-16w4yab);
-  }
-}
-
-.k-bullet-fill {
-  background: var(--ink-100);
-  transition: width var(--dur-snappy) var(--ease-snappy);
-  border-radius: 1px;
-  position: absolute;
-  top: 4px;
-  bottom: 4px;
   left: 0;
 }
 
-.k-bullet[data-state="warn"] .k-bullet-fill {
-  background: var(--signal-amber);
+.k-meter[data-state="warn"] .k-meter-track, .k-meter[data-state="breach"] .k-meter-track {
+  animation: k-meter-pulse var(--dur-snappy) var(--ease-snappy) 1;
 }
 
-.k-bullet[data-state="breach"] .k-bullet-fill {
-  background: var(--signal-red);
+@keyframes k-meter-pulse {
+  50% {
+    box-shadow: 0 0 0 2px var(--k-tone);
+  }
 }
 
-.k-bullet-tick {
+.k-meter-tick {
   background: var(--ink-300);
   width: 2px;
   margin-left: -1px;
   position: absolute;
-  top: 0;
-  bottom: 0;
+  top: -1px;
+  bottom: -1px;
 }
 
-.k-bullet-tick.is-hard {
-  background: var(--signal-red);
-}
-
-.k-bullet-tick.is-soft {
+.k-meter-tick.is-soft {
   background: var(--signal-amber);
 }
 
-.k-bullet-ticks {
+.k-meter-tick.is-hard {
+  background: var(--signal-red);
+}
+
+.k-meter-ticks {
   height: 14px;
   color: var(--ink-300);
   position: relative;
 }
 
-.k-bullet-ticks > span {
+.k-meter-ticks > span {
   white-space: nowrap;
   position: absolute;
   transform: translateX(-50%);
 }
 
-.k-bullet-ticks > span[data-align="end"] {
+.k-meter-ticks > span[data-align="end"] {
   transform: translateX(-100%);
+}
+
+.k-meter-gauge-box {
+  background: var(--bg-000);
+  border: var(--hairline);
+  height: 34px;
+  box-shadow: var(--recess);
+  position: relative;
+}
+
+.k-meter-base {
+  background: var(--line-100);
+  height: 1px;
+  position: absolute;
+  top: 50%;
+  left: 6px;
+  right: 6px;
+}
+
+.k-meter-pin {
+  top: 4px;
+  bottom: 4px;
+  left: calc(6px + var(--k-pin, 0) * (100% - 12px));
+  background: var(--k-tone);
+  width: 2px;
+  box-shadow: var(--chart-end-glow, var(--glow-orange));
+  margin-left: -1px;
+  position: absolute;
+}
+
+.k-meter-gauge[data-pin="weak"] .k-meter-pin {
+  background: var(--signal-red);
+}
+
+.k-meter-gauge[data-pin="locked"] .k-meter-pin {
+  background: var(--signal-amber);
+}
+
+.k-meter-gauge-ticks {
+  color: var(--ink-400);
+  font: var(--text-num-sm) var(--chart-font-axis, var(--font-mono));
+  justify-content: space-between;
+  display: flex;
+  position: absolute;
+  bottom: 2px;
+  left: 6px;
+  right: 6px;
+}
+
+.k-meter-sync {
+  flex-direction: row;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+.k-meter-sync-body {
+  flex-direction: column;
+  flex: 1;
+  gap: 6px;
+  min-width: 0;
+  display: flex;
+}
+
+.k-meter-teeth {
+  gap: 2px;
+  height: 14px;
+  display: flex;
+  position: relative;
+}
+
+.k-meter-tooth {
+  background: var(--bg-300);
+  flex: 1;
+}
+
+.k-meter-tooth[data-on="true"] {
+  background: var(--k-tone);
+}
+
+.k-meter-mark {
+  background: var(--signal-amber);
+  width: 2px;
+  margin-left: -1px;
+  position: absolute;
+  top: -3px;
+  bottom: -3px;
+}
+
+.k-meter-big {
+  color: var(--ink-100);
+  font: var(--text-display-dense) var(--font-display);
+  letter-spacing: var(--text-display-dense-tracking);
 }
 
 .k-heat {
@@ -7715,8 +7800,6 @@ button.k-sm-head:focus-visible {
   --ds-c-nhksol: color-mix(in srgb, var(--pnl-down) 55%, var(--ink-300));
   --ds-c-1dit3qa: color-mix(in srgb, var(--pnl-up) 55%, var(--ink-300));
   --ds-c-1sas9o0: color-mix(in srgb, var(--ink-100) 8%, transparent);
-  --ds-c-1cp2jaz: color-mix(in srgb, var(--signal-amber) 24%, var(--bg-300));
-  --ds-c-16w4yab: color-mix(in srgb, var(--signal-red) 28%, var(--bg-300));
   --ds-c-151q3s6: color-mix(in srgb, var(--pnl-up) 25%, var(--bg-300));
   --ds-c-nw78: color-mix(in srgb, var(--pnl-up) 50%, var(--bg-300));
   --ds-c-29ygob: color-mix(in srgb, var(--pnl-up) 75%, var(--bg-300));
@@ -7742,13 +7825,13 @@ button.k-sm-head:focus-visible {
   --chart-grid-color: initial;
   --chart-grid-dash: initial;
   --chart-line-glow: initial;
-  --k-dot: initial;
   --k-in-dur: initial;
   --k-in-ease: initial;
   --k-in-scale: initial;
   --k-in-y: initial;
   --k-json-level: initial;
   --k-tree-level: initial;
+  --k-pin: initial;
   --k-plot-gutter: initial;
   --k-spark-h: initial;
   --k-wf-gutter: initial;

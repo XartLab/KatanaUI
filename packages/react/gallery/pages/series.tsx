@@ -4,7 +4,7 @@ import { useScrubber } from '../../src/index'
 import { SeriesExplorer, SmallMultiples, type SeriesPoint, type SmallMultiple } from '../../src/blocks'
 import {
   BrushChart,
-  BulletMeter,
+  Meter,
   CalendarHeatmap,
   HorizonChart,
   SparkTile,
@@ -133,47 +133,102 @@ export function WaterfallChartDemo() {
   )
 }
 
-export function BulletMeterDemo() {
+export function MeterDemo() {
   const state = { ok: '正常', warn: '接近', breach: '越限' }
   const ticks = { soft: '软限 80', hard: '硬限 100' }
+  const pctText = (v: number) => `${v}%`
   return (
     <>
-      <div className="gal-wide" data-gallery-bullet style={{ maxWidth: 420, display: 'grid', gap: 14 }}>
-        <BulletMeter
-          label="总敞口（示例）"
-          value={40}
-          max={120}
-          soft={80}
-          hard={100}
-          valueText="已用 40，软限 80，硬限 100，满刻度 120"
-          formatValue={(v) => `${v}%`}
-          stateLabels={state}
-          tickLabels={ticks}
-        />
-        <BulletMeter
-          label="单日亏损（示例）"
-          value={85}
-          max={120}
-          soft={80}
-          hard={100}
-          valueText="已用 85，软限 80，硬限 100，满刻度 120"
-          formatValue={(v) => `${v}%`}
-          stateLabels={state}
-          tickLabels={ticks}
-        />
-        <BulletMeter
-          label="连亏笔数（示例）"
-          value={130}
-          max={120}
-          soft={80}
-          hard={100}
-          valueText="已用 130，超过满刻度 120，硬限 100"
-          formatValue={(v) => `${v}%`}
-          stateLabels={state}
-          tickLabels={ticks}
-        />
+      <div className="gal-wide" data-gallery-meter="bar" style={{ maxWidth: 360, display: 'grid', gap: 10 }}>
+        <Meter label="LOAD · 敞口" value={72} tone="ok" valueText="敞口 72%" formatValue={pctText} />
+        <Meter label="LOAD · 受锁" value={38} tone="warn" valueText="受锁 38%" formatValue={pctText} />
+        <Meter label="回测进度" value={61} tone="accent" valueText="回测进度 61%" formatValue={pctText} />
+        <Meter label="OFF" value={0} tone="off" valueText="停用 0%" formatValue={pctText} />
       </div>
-      <p className="gal-note">{DEMO_NOTE}达到软限算接近，达到硬限算越限；超出满刻度的条画满。</p>
+      <Row name="限额（软限与硬限）">
+        <div className="gal-wide" data-gallery-meter="limits" style={{ maxWidth: 420, display: 'grid', gap: 14 }}>
+          <Meter
+            label="总敞口"
+            value={40}
+            max={120}
+            soft={80}
+            hard={100}
+            tone="ok"
+            valueText="已用 40，软限 80，硬限 100，满刻度 120"
+            formatValue={pctText}
+            stateLabels={state}
+            tickLabels={ticks}
+          />
+          <Meter
+            label="单日亏损"
+            value={85}
+            max={120}
+            soft={80}
+            hard={100}
+            tone="ok"
+            valueText="已用 85，软限 80，硬限 100，满刻度 120"
+            formatValue={pctText}
+            stateLabels={state}
+            tickLabels={ticks}
+          />
+          <Meter
+            label="连亏笔数"
+            value={130}
+            max={120}
+            soft={80}
+            hard={100}
+            tone="ok"
+            valueText="已用 130，超过满刻度 120，硬限 100"
+            formatValue={pctText}
+            stateLabels={state}
+            tickLabels={ticks}
+          />
+        </div>
+      </Row>
+      <Row name="Gauge">
+        <div className="gal-wide" data-gallery-meter="gauge" style={{ maxWidth: 360, display: 'grid', gap: 10 }}>
+          <Meter
+            display="gauge"
+            label="RS-20 · 电子"
+            value={94}
+            weakBelow={30}
+            valueText="RS-20 电子 94"
+            formatValue={String}
+          />
+          <Meter
+            display="gauge"
+            label="RS-20 · 军工"
+            value={27}
+            weakBelow={30}
+            valueText="RS-20 军工 27"
+            formatValue={String}
+          />
+          <Meter
+            display="gauge"
+            label="RS-20 · 受锁"
+            value={60}
+            locked
+            valueText="RS-20 受锁 60"
+            formatValue={String}
+          />
+        </div>
+      </Row>
+      <Row name="Sync">
+        <div className="gal-wide" data-gallery-meter="sync" style={{ maxWidth: 360 }}>
+          <Meter
+            display="sync"
+            label="PAPER 进度"
+            value={64}
+            mark={80}
+            valueText="paper 进度 64%，评估点 80%"
+            formatValue={pctText}
+          />
+        </div>
+      </Row>
+      <p className="gal-note">
+        {DEMO_NOTE}调用方只传 tone（accent / ok / warn /
+        off），不传颜色。限额板传软限与硬限：达到软限算接近、达到硬限算越限，越过时条体脉冲一次；超出满刻度的条画满。
+      </p>
     </>
   )
 }
