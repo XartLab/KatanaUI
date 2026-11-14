@@ -1822,6 +1822,7 @@
       "title": "Chart Kit",
       "description": "图表共用底座：配色分配（series / seq / div）、点阵纹理、LCD tooltip、末点、轴与网格、图右上三件（表格视图、导出、全屏）。",
       "dependencies": [
+        "@tanstack/react-virtual@3.14.25",
         "lucide-react@1.67.0"
       ],
       "registryDependencies": [

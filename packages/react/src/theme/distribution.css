@@ -704,3 +704,14 @@
 .k-galaxy-bar {
   justify-content: space-between;
 }
+
+/* 虚拟滚动：行高固定，单元格不换行（行高要等于 chart-table.tsx 的 ROW_H）。 */
+.k-ck-table[data-virtual='true'] tbody tr {
+  height: 28px;
+}
+.k-ck-table[data-virtual='true'] th,
+.k-ck-table[data-virtual='true'] td {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
