@@ -5193,6 +5193,12 @@
   flex: none;
 }
 
+.k-grid-col button, .k-grid-head-text {
+  font: var(--text-tag-md) var(--font-dot);
+  letter-spacing: 0;
+  -webkit-font-smoothing: none;
+}
+
 .k-empty {
   justify-content: center;
   align-items: center;
@@ -6302,6 +6308,16 @@ button.k-spark-tile:focus-visible {
 .k-ck-unit {
   color: var(--ink-300);
   font-size: .85em;
+}
+
+.k-ck-table thead th {
+  font: var(--text-tag-md) var(--font-dot);
+  letter-spacing: 0;
+  -webkit-font-smoothing: none;
+}
+
+.k-ck-table {
+  border-left: 2px solid var(--chart-accent, var(--signal-orange));
 }
 
 .k-brush {
@@ -7855,6 +7871,27 @@ button.k-sm-head:focus-visible {
   font-style: normal;
 }
 
+.k-meter-head {
+  border-left: 2px solid var(--k-tone);
+  padding-left: 8px;
+}
+
+.k-meter-label, .k-meter-state {
+  font: var(--text-tag-md) var(--font-dot);
+  letter-spacing: 0;
+  -webkit-font-smoothing: none;
+}
+
+.k-heat-head, .k-heat-wk {
+  font: var(--text-tag-md) var(--font-dot);
+  -webkit-font-smoothing: none;
+}
+
+.k-heat-total {
+  border-left: 2px solid var(--chart-accent, var(--signal-orange));
+  padding-left: 8px;
+}
+
 .k-eq {
   gap: 6px;
   min-width: 0;
@@ -7996,6 +8033,20 @@ button.k-sm-head:focus-visible {
 .k-eq-source {
   color: var(--ink-300);
   font: var(--text-num-sm) var(--font-mono);
+}
+
+.k-eq-title {
+  border-left: 2px solid var(--chart-accent, var(--signal-orange));
+  font: 12px/20px var(--font-wide);
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  padding-left: 8px;
+}
+
+.k-eq-key, .k-eq-source, .k-eq-table thead th {
+  font: var(--text-tag-md) var(--font-dot);
+  letter-spacing: 0;
+  -webkit-font-smoothing: none;
 }
 
 .k-uptime {
@@ -8806,6 +8857,23 @@ button.k-sm-head:focus-visible {
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
+}
+
+.k-galaxy-name {
+  font: var(--text-tag-md) var(--font-dot);
+  -webkit-font-smoothing: none;
+  font-weight: 400;
+}
+
+.k-galaxy-readout {
+  border-left: 2px solid var(--chart-accent, var(--signal-orange));
+  font: var(--text-tag-md) var(--font-dot);
+  -webkit-font-smoothing: none;
+  padding-left: 8px;
+}
+
+.k-galaxy-readout:empty {
+  border-left-color: var(--ds-c-2xn4aw);
 }
 
 @property --tw-translate-x {
