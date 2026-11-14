@@ -133,6 +133,13 @@ npx shadcn add @katana/style @katana/button @katana/change-text
 
 然后在入口样式里先引 `katana/ui/tokens.css`、最后引 `katana/ui/ui.css`（次序见上面「应用怎么用」）。换皮只覆盖哪些变量见 [theming.md](theming.md)。
 
+### 行快捷操作与品种菜单（#23，TradingView 便利交互 #22 第 1 条）
+
+`patterns/row-actions.tsx`：`RowActions`（行右端浮出的图标按钮条，浮在行上不挤列宽）、`symbolMenu`（标准品种菜单段：开图、加自选、新建告警、复制代码，固定次序；调用方的项接在后面）、`RowContextMenu`（给一组行或格子包上同一份右键菜单，菜单键与 Shift+F10 也开）、`RowActionMenuItems`。
+件只认 `{ key, label, icon?, shortcut?, onSelect }`，文案与动作都由调用方传。三处套用，各加一个可选 prop，不传就没有：`DataGrid.rowActions(row)`、`LimitLadder.rowActions(item)`、`MarketHeatmap.cellActions(item)`（格子小，只有右键菜单）。
+连板天梯的行是 `role=option`，里面不许有可聚焦子项（axe nested-interactive），所以它的按钮是 `pointerOnly` 的 span，键盘走菜单键。DataGrid 没有宿主键位表时，菜单键与 Shift+F10 也开右键菜单。
+出处：TradingView 品种搜索结果行悬停出开图与概览（帮助中心 Symbol search tips，2026-11-15 读）；自选行悬停显示哪些按钮与右键菜单的项，页面没写，待核对。
+
 ## 精密仪器语言（#7）
 
 根定义在设计稿存档的 `design/katana-console/project/precision-instrument.md`（Precision Instrument UI）（含组件库里的视觉语言，§11）；本包不另存一份。

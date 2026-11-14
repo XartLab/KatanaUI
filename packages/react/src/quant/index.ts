@@ -4,6 +4,8 @@
 export { ChangeText } from './change-text.tsx'
 export { DecimalField, type DecimalFieldProps } from './decimal-field.tsx'
 export { PnlText } from './pnl-text.tsx'
+export { EventCalendar, type EventCalendarLabels, type EventCalendarProps } from './event-calendar.tsx'
+export type { EconomicEvent, EconomicImportance, EconomicRangeKey, EconomicTone } from './event-calendar-model.ts'
 export {
   LimitLadder,
   type LadderItem,
@@ -94,3 +96,26 @@ export {
   type ConsensusState,
   type ConsensusVerdict,
 } from './consensus-block.tsx'
+export {
+  MetricCard,
+  MetricCardGrid,
+  metricStageIndex,
+  metricTrendTone,
+  type MetricCardGridProps,
+  type MetricCardProps,
+  type MetricChange,
+  type MetricRange,
+  type MetricStage,
+  type MetricTrendTone,
+} from './metric-card.tsx'
+export { ParamScatter, type ParamScatterProps } from './param-scatter.tsx'
+export {
+  bestIndex,
+  moveParam,
+  rampColor,
+  rampPosition,
+  resolveRamp,
+  valueRange,
+  type ParamPoint,
+  type ParamRamp,
+} from './param-scatter-model.ts'

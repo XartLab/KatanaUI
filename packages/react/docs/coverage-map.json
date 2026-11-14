@@ -147,9 +147,9 @@
     },
     "DecisionQueue": {
       "kind": "面板",
-      "status": "没做",
-      "at": [],
-      "note": "决策层，还没有对应面板"
+      "status": "已做",
+      "at": ["DecisionQueue"],
+      "note": "件已做（建议卡片、接受按住确认、状态筛选、已处理收成一行）；应用里接真实建议源另开票"
     },
     "DeploymentBoard": {
       "kind": "面板",
@@ -263,9 +263,9 @@
     },
     "HypothesisLedger": {
       "kind": "面板",
-      "status": "没做",
-      "at": [],
-      "note": "研究层，还没有对应面板"
+      "status": "已做",
+      "at": ["HypothesisLedger"],
+      "note": "件已做（假说一行一条可展开：命题、传导层、状态、失败条件与期限倒计时、证据、关联资产；按层与状态筛选；观察表视图）；字段按用户 2026-11-15 的框架，不照设计稿的 HYPO 假设账；应用里接真实数据另开票"
     },
     "IndicatorPanel": {
       "kind": "面板",
@@ -313,9 +313,9 @@
     },
     "NewsFeed": {
       "kind": "面板",
-      "status": "部分",
-      "at": ["src/panels/inbox"],
-      "note": "有报告流，公告、RSS、数据源事件的统一时间流没有"
+      "status": "已做",
+      "at": ["NewsFeed"],
+      "note": "件已做（列表与卡片、频道、来源、搜索、暂停、新消息计数）；应用里接真实新闻源另开票"
     },
     "Notes": {
       "kind": "面板",
@@ -529,8 +529,8 @@
     "SystemHealth": {
       "kind": "面板",
       "status": "部分",
-      "at": ["src/shell/LocalServiceStatus.tsx"],
-      "note": "本地服务状态有，六块仪表没有；组件库已有 UptimeBars 逐格可用条（#1918）可补逐小时可用，面板里还没接"
+      "at": ["SystemMonitor"],
+      "note": "件已做（连接状态条、策略实例表、延迟与错误率小图、事件流、急停；#36）；应用里接真实连接与策略数据另开票，原六块仪表与逐小时可用（UptimeBars）还没接"
     },
     "TCA": {
       "kind": "面板",

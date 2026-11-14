@@ -69,6 +69,11 @@
           "target": "~/src/katana/ui/theme/date-time.css"
         },
         {
+          "path": "src/theme/decision-queue.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/decision-queue.css"
+        },
+        {
           "path": "src/theme/dialog.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/dialog.css"
@@ -89,6 +94,11 @@
           "target": "~/src/katana/ui/theme/equity-curve.css"
         },
         {
+          "path": "src/theme/event-calendar.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/event-calendar.css"
+        },
+        {
           "path": "src/theme/event-timeline.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/event-timeline.css"
@@ -102,6 +112,11 @@
           "path": "src/theme/hold-to-confirm.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/hold-to-confirm.css"
+        },
+        {
+          "path": "src/theme/hypothesis-ledger.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/hypothesis-ledger.css"
         },
         {
           "path": "src/theme/json-viewer.css",
@@ -144,9 +159,19 @@
           "target": "~/src/katana/ui/theme/menu.css"
         },
         {
+          "path": "src/theme/metric-card.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/metric-card.css"
+        },
+        {
           "path": "src/theme/motion.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/motion.css"
+        },
+        {
+          "path": "src/theme/news-feed.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/news-feed.css"
         },
         {
           "path": "src/theme/number-input.css",
@@ -157,6 +182,11 @@
           "path": "src/theme/panel-frame.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/panel-frame.css"
+        },
+        {
+          "path": "src/theme/param-scatter.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/param-scatter.css"
         },
         {
           "path": "src/theme/quant.css",
@@ -172,6 +202,11 @@
           "path": "src/theme/rolling-text.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/rolling-text.css"
+        },
+        {
+          "path": "src/theme/row-actions.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/row-actions.css"
         },
         {
           "path": "src/theme/series.css",
@@ -194,9 +229,19 @@
           "target": "~/src/katana/ui/theme/status-bar.css"
         },
         {
+          "path": "src/theme/strategy-report.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/strategy-report.css"
+        },
+        {
           "path": "src/theme/symbol-mark.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/symbol-mark.css"
+        },
+        {
+          "path": "src/theme/system-monitor.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/system-monitor.css"
         },
         {
           "path": "src/theme/technical-rating.css",
@@ -325,6 +370,35 @@
           "path": "src/lib/spring.ts",
           "type": "registry:lib",
           "target": "~/src/katana/ui/lib/spring.ts"
+        }
+      ]
+    },
+    {
+      "name": "use-persisted-state",
+      "type": "registry:lib",
+      "title": "Use Persisted State",
+      "description": "拼面板用的数据表：TanStack Table 管排序、列宽、顺序、显隐，虚拟滚动只画看得见的行；列声明一个类型（价格、数量、盈亏、涨跌幅、方向、时间、品种……），格式化、对齐、着色、排序由类型给。列的状态受控（调用方存）；应用的能力经 DataGridHost 注入。",
+      "files": [
+        {
+          "path": "src/lib/use-persisted-state.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/lib/use-persisted-state.ts"
+        }
+      ]
+    },
+    {
+      "name": "use-saved-views",
+      "type": "registry:lib",
+      "title": "Use Saved Views",
+      "description": "拼面板用的数据表：TanStack Table 管排序、列宽、顺序、显隐，虚拟滚动只画看得见的行；列声明一个类型（价格、数量、盈亏、涨跌幅、方向、时间、品种……），格式化、对齐、着色、排序由类型给。列的状态受控（调用方存）；应用的能力经 DataGridHost 注入。",
+      "registryDependencies": [
+        "@katana/use-persisted-state"
+      ],
+      "files": [
+        {
+          "path": "src/lib/use-saved-views.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/lib/use-saved-views.ts"
         }
       ]
     },
@@ -1896,6 +1970,28 @@
       ]
     },
     {
+      "name": "row-actions",
+      "type": "registry:component",
+      "title": "Row Actions",
+      "description": "所有带品种的行（DataGrid、连板天梯、报价表）与格子（市场热力图）共用的一套：悬停或键盘落到一行时，行右端浮出前几颗无边框图标按钮，浮在行上、不挤列宽；右键（菜单键、Shift+F10）出同一份菜单。件不认识「图表」「自选」，只认 { key, label, icon?, shortcut?, onSelect }，文案与动作都由调用方传；symbolMenu 把标准四项（开图、加自选、新建告警、复制代码，固定次序）拼成这样的数组，调用方的项接在后面。DataGrid、LimitLadder、MarketHeatmap 各有一个可选 prop 接它，不传就没有，旧用法不变。功能参照 TradingView 品种搜索结果行的悬停操作，自选行的细节待核对。样子照连板天梯：按钮无边框、悬停灰底，不加橙色。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/context-menu",
+        "@katana/menu-any",
+        "@katana/menu-parts"
+      ],
+      "files": [
+        {
+          "path": "src/patterns/row-actions.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/patterns/row-actions.tsx"
+        }
+      ]
+    },
+    {
       "name": "tree-view",
       "type": "registry:component",
       "title": "Tree View",
@@ -2158,6 +2254,43 @@
       ]
     },
     {
+      "name": "event-calendar-model",
+      "type": "registry:component",
+      "title": "Event Calendar Model",
+      "description": "EventCalendar 的纯函数：按显示时区分天、今天 / 本周 / 下周区间、筛选、倒计时分钟。",
+      "files": [
+        {
+          "path": "src/quant/event-calendar-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/event-calendar-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "event-calendar",
+      "type": "registry:component",
+      "title": "Event Calendar",
+      "description": "按日分组的事件表：时间、国家 / 地区（旗帜图或字母圆标）、事件名、重要程度（1–3 格亮度条）、实际 / 预期 / 前值。实际值好于预期用涨色、差于预期用跌色，好坏方向由调用方按事件给；未公布写「—」，还没到点的写倒计时。顶上：今天 / 本周 / 下周 / 自定义区间，重要程度芯片，国家多选，「只看高重要」开关。数据、现在、时区、文字都由调用方传。",
+      "registryDependencies": [
+        "@katana/chip-group",
+        "@katana/cn",
+        "@katana/combobox",
+        "@katana/date-range-picker",
+        "@katana/event-calendar-model",
+        "@katana/row-actions",
+        "@katana/switch",
+        "@katana/symbol-mark",
+        "@katana/toggle-group"
+      ],
+      "files": [
+        {
+          "path": "src/quant/event-calendar.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/event-calendar.tsx"
+        }
+      ]
+    },
+    {
       "name": "flow-gauges",
       "type": "registry:component",
       "title": "Flow Gauges",
@@ -2211,6 +2344,7 @@
         "@katana/change-text",
         "@katana/cn",
         "@katana/quant-format",
+        "@katana/row-actions",
         "@katana/symbol-mark"
       ],
       "files": [
@@ -2246,6 +2380,7 @@
         "@katana/cn",
         "@katana/market-heatmap-model",
         "@katana/quant-format",
+        "@katana/row-actions",
         "@katana/symbol-mark",
         "@katana/toggle-group",
         "@katana/treemap-model"
@@ -2268,6 +2403,60 @@
           "path": "src/quant/meter.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/quant/meter.tsx"
+        }
+      ]
+    },
+    {
+      "name": "metric-card",
+      "type": "registry:component",
+      "title": "Metric Card",
+      "description": "照 uiarc 的 Metric explorer 的结构：标题、大号当前值、较前日 / 周 / 月 / 年的变化（涨跌色）、迷你走势线（1 月 / 3 月 / 6 月 / 1 年分段）、可选阶段带（五档边界与文案由调用方给）、来源与更新时间一行；MetricCardGrid 把卡排成墙。组件只画不算，数据与文字都由调用方传，没有数据就是空态。",
+      "registryDependencies": [
+        "@katana/change-text",
+        "@katana/cn",
+        "@katana/quote-tone",
+        "@katana/sparkline",
+        "@katana/toggle-group"
+      ],
+      "files": [
+        {
+          "path": "src/quant/metric-card.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/metric-card.tsx"
+        }
+      ]
+    },
+    {
+      "name": "param-scatter-model",
+      "type": "registry:component",
+      "title": "Param Scatter Model",
+      "description": "参数扫描的结果图：两个参数为横纵轴，一个点是一组参数，颜色是目标值（夏普、净利润……），点选看这组参数的读数，最优点加琥珀环并有「跳到最优」。颜色：目标值跨过 0 用涨跌发散阶（中灰为中点，负跌色、正涨色），否则用暗灰到亮灰的单色阶，都不用橙与蓝。没有结果的点（如约束不成立）画空心灰点。TradingView 没有这张图，照通用的参数扫描做法；数据是固定种子合成的演示数据。",
+      "registryDependencies": [
+        "@katana/scatter-model"
+      ],
+      "files": [
+        {
+          "path": "src/quant/param-scatter-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/param-scatter-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "param-scatter",
+      "type": "registry:component",
+      "title": "Param Scatter",
+      "description": "参数扫描的结果图：两个参数为横纵轴，一个点是一组参数，颜色是目标值（夏普、净利润……），点选看这组参数的读数，最优点加琥珀环并有「跳到最优」。颜色：目标值跨过 0 用涨跌发散阶（中灰为中点，负跌色、正涨色），否则用暗灰到亮灰的单色阶，都不用橙与蓝。没有结果的点（如约束不成立）画空心灰点。TradingView 没有这张图，照通用的参数扫描做法；数据是固定种子合成的演示数据。",
+      "registryDependencies": [
+        "@katana/chart-kit",
+        "@katana/param-scatter-model",
+        "@katana/scatter-model"
+      ],
+      "files": [
+        {
+          "path": "src/quant/param-scatter.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/param-scatter.tsx"
         }
       ]
     },
@@ -2554,18 +2743,29 @@
       "description": "拼面板用的数据表：TanStack Table 管排序、列宽、顺序、显隐，虚拟滚动只画看得见的行；列声明一个类型（价格、数量、盈亏、涨跌幅、方向、时间、品种……），格式化、对齐、着色、排序由类型给。列的状态受控（调用方存）；应用的能力经 DataGridHost 注入。",
       "dependencies": [
         "@tanstack/react-table@9.3.1",
-        "@tanstack/react-virtual@3.14.25"
+        "@tanstack/react-virtual@3.14.25",
+        "lucide-react@1.67.0"
       ],
       "registryDependencies": [
+        "@katana/button",
+        "@katana/checkbox",
+        "@katana/chip-group",
         "@katana/cn",
         "@katana/context-menu",
         "@katana/menu-any",
         "@katana/menu-parts",
+        "@katana/popover",
         "@katana/quant-format",
+        "@katana/row-actions",
         "@katana/symbol-mark",
         "@katana/tone-text"
       ],
       "files": [
+        {
+          "path": "src/blocks/data-grid/column-picker.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/data-grid/column-picker.tsx"
+        },
         {
           "path": "src/blocks/data-grid/columns.ts",
           "type": "registry:component",
@@ -2580,6 +2780,11 @@
           "path": "src/blocks/data-grid/host.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/blocks/data-grid/host.tsx"
+        },
+        {
+          "path": "src/blocks/data-grid/layout-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/data-grid/layout-model.ts"
         },
         {
           "path": "src/blocks/data-grid/model.ts",
@@ -2770,6 +2975,151 @@
           "path": "src/blocks/workspace-tabs/workspace-tabs.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/blocks/workspace-tabs/workspace-tabs.tsx"
+        }
+      ]
+    },
+    {
+      "name": "news-feed",
+      "type": "registry:component",
+      "title": "News Feed",
+      "description": "快讯与要闻的流：列表（时间、来源、标题、相关品种胶囊、重要标记）与卡片网格（来源 + 时间、标题、两行摘要、胶囊）两种排法；顶上频道分段、来源多选、关键词搜索、暂停。新到的不打断阅读：在顶部且没暂停时淡入插入，否则出「n 条新消息」，点了才插入。功能参照 TradingView News Flow 帮助页（只读到：新闻集中在一处、可设多种过滤）与 uiarc.dev 的卡片结构（待核对），实现原创。演示数据是虚构的。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/button",
+        "@katana/chip-group",
+        "@katana/cn",
+        "@katana/input",
+        "@katana/row-actions",
+        "@katana/symbol-mark",
+        "@katana/toggle-group"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/news-feed/news-feed-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/news-feed/news-feed-model.ts"
+        },
+        {
+          "path": "src/blocks/news-feed/news-feed.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/news-feed/news-feed.tsx"
+        }
+      ]
+    },
+    {
+      "name": "decision-queue",
+      "type": "registry:component",
+      "title": "Decision Queue",
+      "description": "产品底线「Agent 输出只是带来源的建议，人接受后才生效」的界面：每张卡写建议动作、对象、理由摘要、置信与依据、来源链接、生成时间、过期倒计时，按钮 接受 / 拒绝 / 稍后，回调由调用方给。接受用按住确认（HoldToConfirm），单击不触发。队列按 待处理 / 已接受 / 已拒绝 / 已过期 筛选；已处理的收成一行（结果、谁、何时），点开看全文。件不改状态：回调后由调用方把条目状态改了再传回来。卡片照 uiarc（待核对）、一行记录照 TradingView 告警列表的读法，实现原创。演示数据是虚构的。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/button",
+        "@katana/cn",
+        "@katana/hold-to-confirm",
+        "@katana/led",
+        "@katana/toggle-group"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/decision-queue/decision-queue-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/decision-queue/decision-queue-model.ts"
+        },
+        {
+          "path": "src/blocks/decision-queue/decision-queue.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/decision-queue/decision-queue.tsx"
+        }
+      ]
+    },
+    {
+      "name": "hypothesis-ledger",
+      "type": "registry:component",
+      "title": "Hypothesis Ledger",
+      "description": "研究「地缘与国内利益结构 → 货币与信用流向 → 购买力与利润再分配 → 资产定价」这类框架用的面板。每条假说一行、可展开：命题、所属传导层（国家战略 / 信用供给 / 财政分配 / 跨境流动 / 产业承接 / 利润归属 / 资产配置 / 避险）、状态（待验证 / 有支持 / 被否定 / 过期）、提前写好的失败条件与检验期限（到期倒计时，过了期限的待验证项自动标过期）、证据列表（学者观点 / 政策原文 / 数据 / 财报，各带发布时间、来源链接、支持或反对）、关联品种或资产。顶上按层与状态筛选；同一面板可切「观察表」：传导层 × 核心证据 × 最容易混淆的地方。学者观点、已发生的政策与资金变化、我们的假说分开放，不混排。件不改状态，由调用方写回。字段按用户 2026-11-15 给的框架，对设计稿 HypothesisLedger 卡的功能（假设账、证据与反例）重写；样子照 TradingView 告警列表的读法，实现原创。演示数据是虚构的。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/chip-group",
+        "@katana/cn",
+        "@katana/led",
+        "@katana/toggle-group"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/hypothesis-ledger/hypothesis-ledger-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/hypothesis-ledger/hypothesis-ledger-model.ts"
+        },
+        {
+          "path": "src/blocks/hypothesis-ledger/hypothesis-ledger.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/hypothesis-ledger/hypothesis-ledger.tsx"
+        }
+      ]
+    },
+    {
+      "name": "system-monitor",
+      "type": "registry:component",
+      "title": "System Monitor",
+      "description": "一眼看出交易系统是否正常：顶上连接状态条（每个连接 / 交易所 API / 行情源 / 引擎一盏灯 + 名称 + 状态字 + 延迟 + 最后心跳，异常的排前面）；延迟与错误率小图（SparkTile）；策略实例表（名称、账户、品种、状态、持仓、今日盈亏、额度占用条、最后一笔，行尾启停按钮由调用方回调）；事件流（按严重程度着色，可按类别与严重程度筛）。急停放面板头，按住确认。没有数据的块写「未连接」。功能参照 NinjaTrader 8 Control Center 的 Strategies 页签（2026-11-15 读到列与启停操作）与 Hummingbot 状态文档（2026-11-15 读到连接状态与错误信息；策略状态字段该页没写，待核对），实现原创。演示数据是虚构的。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/button",
+        "@katana/chip-group",
+        "@katana/cn",
+        "@katana/hold-to-confirm",
+        "@katana/led",
+        "@katana/meter",
+        "@katana/pnl-text",
+        "@katana/spark-tile",
+        "@katana/toggle-group"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/system-monitor/system-monitor-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/system-monitor/system-monitor-model.ts"
+        },
+        {
+          "path": "src/blocks/system-monitor/system-monitor.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/system-monitor/system-monitor.tsx"
+        }
+      ]
+    },
+    {
+      "name": "strategy-report",
+      "type": "registry:component",
+      "title": "Strategy Report",
+      "description": "回测结果的一整页，页签照 TradingView 策略测试器：概览（一排关键读数：净利润、总收益率、最大回撤、胜率、盈亏比、交易次数、夏普；下面是权益曲线与回撤，可叠同期买入持有）、绩效（全部 / 多 / 空三列的指标表）、交易分析（盈亏分布与持仓时长的直方图、连续盈亏条、读数清单）、风险比率（夏普、索提诺、卡玛、恢复因子、回撤与上冲）、交易列表（DataGrid，每笔进出场、数量、盈亏、累计、最大浮盈浮亏，行可展开看信号与持仓时长）、属性（参数与回测设置的分组键值）。顶上「全部 / 多 / 空」管概览、交易分析与交易列表；绩效与风险比率三列并排，当前那列加亮。指标全由逐笔平仓算，口径写在 strategy-report-model.ts 的注释里（夏普与索提诺按日收益年化，年化日数由 periodsPerYear 给）。结构参照 TradingView 策略测试器帮助页（2026-11-15 读到概览页；其余页签没读到页面，按需求稿的结构做，待核对）。演示数据是固定种子合成的，页上与小标都写明。",
+      "registryDependencies": [
+        "@katana/chart-scale",
+        "@katana/cn",
+        "@katana/data-grid",
+        "@katana/equity-curve",
+        "@katana/quant-format",
+        "@katana/tabs",
+        "@katana/toggle-group",
+        "@katana/tone-text"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/strategy-report/strategy-report-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/strategy-report/strategy-report-model.ts"
+        },
+        {
+          "path": "src/blocks/strategy-report/strategy-report.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/strategy-report/strategy-report.tsx"
         }
       ]
     },

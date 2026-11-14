@@ -20,12 +20,14 @@
 | `sort` | `SortSpec \| null` | `null` | Current sort; omit for unsorted. |
 | `onSortChange` | `(next: SortSpec \| null) => void` | — | Without it sorting is off and headers are plain text, not buttons. |
 | `sortRemovable` | `boolean` | `true` | When false the third click goes back to ascending (a table with a default sort cannot be unsorted). |
+| `onLayoutChange` | `(next: GridColumnLayout[]) => void` | — | Layout changed (column menu pin / hide / move, header drag reorder): gets the whole new layout; the caller stores it. |
 | `onResize` | `(id: string, width: number) => void` | — | Called after a column width drag; without it there are no drag handles and no reset-columns item. |
 | `onResetColumns` | `() => void` | — | Reset columns (menu item and shortcut): the caller puts order, visibility, width and sort back to defaults. |
 | `onOpen` | `(row: Row) => void` | — | What a plain click on a row does. |
 | `restoreRow` | `string \| null` | — | Row to put keyboard focus back on when returning from a detail view (WCAG 2.4.3); only works at mount. |
 | `isOpened` | `(row: Row) => boolean` | — | Whether a row is the one currently open (an accent stripe on its left). |
 | `rowClass` | `(row: Row) => string \| undefined` | — | Extra class name for a row. |
+| `rowActions` | `(row: Row) => readonly RowAction[]` | — | Row quick actions (usually the result of symbolMenu(...)): hovering or keyboard-focusing a row floats the first few icon buttons at its right end; the whole list also leads the context menu when it opens on a single row. |
 | `rowProps` | `(row: Row) => GridRowProps \| undefined` | — | Extra attributes for a row (class name, tooltip, data-*, aria-*), so state and test hooks need no wrapper. |
 | `renderSubRow` | `(row: Row) => ReactNode` | — | Expandable detail row spanning the full width; return null, undefined or false for a row without one. |
 | `expanded` | `ReadonlySet<string>` | — | Expanded row ids (controlled); when given, expanding and collapsing only notify through onExpandedChange. |
@@ -70,6 +72,34 @@
 | `texts` | `Partial<DataGridTexts>` | — | Texts of the menu items and accessible names; the standard menu items appear only when copy, save and resetColumns are all given. |
 | `renderMenu` | `(entries: readonly GridMenuEntry[]) => ReactNode` | — | What to draw in the menu: use it when the host's items go beyond GridMenuEntry; by default the package draws item, submenu and separator. |
 | `askAgent` | `(text: string \| null) => void` | — | Ask the agent: when given together with askText, rows get a context menu item and the key works while the table is focused. |
+
+### ColumnPicker
+
+触发按钮加弹层：上面列集芯片（整套列一键切换，亮着哪个由看得见的列恰好等于它的列推出来），下面逐列勾选。不存状态，layout 受控；最后一列看得见的不许藏。
+
+| 属性 | 类型 | 默认 | 说明 |
+| --- | --- | --- | --- |
+| `layout` * | `readonly GridColumnLayout[]` | — | The same layout as DataGrid's. |
+| `onLayoutChange` * | `(next: GridColumnLayout[]) => void` | — | Called with the whole new layout after a column set is chosen or a column is toggled. |
+| `sets` | `readonly ColumnSet[]` | `[]` | Column sets; omit or leave empty for ticks only. |
+| `labels` * | `ColumnPickerLabels` | — | Copy for the trigger and the two group headings (the package carries no language). |
+| `className` | `string` | — | Extra class name on the root. |
+
+### usePersistedState(key, initial, { version, storage?, validate? })
+
+像 useState，值存进存储（默认 localStorage，读写包 try/catch）；版本不符、坏了、validate 不过都当没存过，不写迁移。返回 [值, 设值, 重置]。
+
+### readPersisted(key, { version, storage?, validate? })
+
+读 usePersistedState 存的值；没有、坏了、版本不符、validate 不过都返回 undefined。
+
+### useSavedViews({ key, version, storage?, recentLimit? })
+
+命名视图的快照仓库（值由调用方定，件只当不透明 JSON）：saveAs 另存、save 覆盖、remove、setDefault、use（记进最近并返回值）、recent、exportJson / importJson。
+
+### reorderColumn / moveColumn / setColumnVisible / setColumnFixed / applyColumnSet / activeColumnSet
+
+列摆法（layout）的纯函数，列头菜单、拖动重排与 ColumnPicker 用的同一份，都返回新数组。reorderColumn(layout, from, to) 拖到目标位置；moveColumn(layout, id, ±1) 跳过藏起来的列移一格；setColumnVisible 不许藏最后一列；setColumnFixed 固定的列挨着排在最前；applyColumnSet(layout, columns) 套列集；activeColumnSet(layout, sets) 返回看得见的列恰好等于的那个列集 id。
 
 ### tableCsv(header, rows)
 
@@ -148,5 +178,7 @@ DataGrid
 - `→ / ←`：展开 / 收起键盘所在行的子行（renderSubRow）
 - `Shift / Ctrl 点击`：选一段 / 点选加减
 - `Esc`：清掉选择（右键菜单开着时归菜单）
+- `列头右键`：列头菜单：排序、固定、隐藏、左右移、重置列
+- `拖动列头`：重排列（放在目标列的位置）
 - `菜单键 / Shift+F10`：开右键菜单（宿主的 matchKey 提供）
 - `Ctrl+C / Ctrl+S / Ctrl+R`：复制所选行 / 导出 CSV / 重置列（宿主的键位表）

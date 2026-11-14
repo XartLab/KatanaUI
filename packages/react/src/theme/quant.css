@@ -72,7 +72,7 @@ button.k-spark-tile:focus-visible {
 }
 .k-spark-tile-line {
   fill: none;
-  stroke: var(--series-1);
+  stroke: var(--k-spark-color, var(--ink-100));
   stroke-width: 1.5;
   stroke-linejoin: round;
   vector-effect: non-scaling-stroke;
@@ -93,7 +93,10 @@ button.k-spark-tile:focus-visible {
   height: 5px;
   margin-top: -2.5px;
   border-radius: var(--radius-pill);
-  background: var(--signal-orange);
+  background: var(--k-spark-color, var(--ink-100));
+}
+.k-spark-tile-end.is-neutral {
+  background: var(--ink-300);
 }
 .k-spark-tile-delta {
   display: flex;

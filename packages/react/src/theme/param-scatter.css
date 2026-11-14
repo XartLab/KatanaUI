@@ -1,0 +1,100 @@
+/* SPDX-License-Identifier: MIT */
+/* ParamScatter：点的颜色是目标值（灰阶或涨跌发散阶），最优点加环，选中点加粗白环。轴与网格沿用 .k-scatter-tick。 */
+.k-pscatter {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  min-width: 0;
+}
+.k-pscatter-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+.k-pscatter-dot {
+  fill: var(--k-dot, var(--ink-400));
+  cursor: pointer;
+  outline: none;
+  transition: r var(--dur-snappy) var(--ease-snappy);
+}
+.k-pscatter-dot[data-empty] {
+  fill: none;
+  stroke: var(--ink-400);
+  stroke-width: 1;
+}
+.k-pscatter-dot[data-best] {
+  stroke: var(--signal-amber);
+  stroke-width: 2;
+}
+.k-pscatter-dot:hover,
+.k-pscatter-dot:focus-visible,
+.k-pscatter-dot[data-selected] {
+  stroke: var(--ink-100);
+  stroke-width: 2;
+}
+.k-pscatter-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--ink-300);
+  font: var(--text-caption) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+}
+.k-pscatter-ramp {
+  display: inline-block;
+  width: 140px;
+  height: 8px;
+  border-radius: 2px;
+}
+.k-pscatter-readout {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 16px;
+  min-height: 20px;
+  color: var(--ink-200);
+  font: var(--text-caption) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+}
+.k-pscatter-readout dl {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  margin: 0;
+}
+.k-pscatter-readout dl > div {
+  display: flex;
+  gap: 6px;
+}
+.k-pscatter-readout dt {
+  color: var(--ink-300);
+}
+.k-pscatter-readout dd {
+  margin: 0;
+  color: var(--ink-100);
+}
+.k-pscatter-best {
+  padding: 0 6px;
+  border: 1px solid var(--signal-amber);
+  border-radius: var(--radius-pill);
+  color: var(--signal-amber);
+}
+.k-pscatter-jump {
+  align-self: flex-start;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ink-200);
+  font: var(--text-caption) var(--font-sans);
+  text-decoration: underline;
+  cursor: pointer;
+}
+.k-pscatter-jump:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+.k-pscatter [hidden] {
+  display: none;
+}

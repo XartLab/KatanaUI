@@ -1715,6 +1715,127 @@
         }
       ]
     },
+    "ColumnPicker": {
+      "kind": "component",
+      "source": "src/blocks/data-grid/column-picker.tsx",
+      "props": [
+        {
+          "name": "layout",
+          "type": "readonly GridColumnLayout[]",
+          "required": true,
+          "description": "The same layout as DataGrid's."
+        },
+        {
+          "name": "onLayoutChange",
+          "type": "(next: GridColumnLayout[]) => void",
+          "required": true,
+          "description": "Called with the whole new layout after a column set is chosen or a column is toggled."
+        },
+        {
+          "name": "sets",
+          "type": "readonly ColumnSet[]",
+          "required": false,
+          "default": "[]",
+          "description": "Column sets; omit or leave empty for ticks only."
+        },
+        {
+          "name": "labels",
+          "type": "ColumnPickerLabels",
+          "required": true,
+          "description": "Copy for the trigger and the two group headings (the package carries no language)."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "ColumnPickerLabels": {
+      "kind": "type",
+      "source": "src/blocks/data-grid/column-picker.tsx",
+      "props": [
+        {
+          "name": "trigger",
+          "type": "string",
+          "required": true,
+          "description": "触发按钮上的字与读屏名。"
+        },
+        {
+          "name": "sets",
+          "type": "string",
+          "required": true,
+          "description": "列集那一组的名字（芯片组的读屏名与小标题）。"
+        },
+        {
+          "name": "columns",
+          "type": "string",
+          "required": true,
+          "description": "勾选那一组的小标题。"
+        }
+      ]
+    },
+    "ColumnPickerProps": {
+      "kind": "type",
+      "source": "src/blocks/data-grid/column-picker.tsx",
+      "props": [
+        {
+          "name": "layout",
+          "type": "readonly GridColumnLayout[]",
+          "required": true,
+          "description": "The same layout as DataGrid's."
+        },
+        {
+          "name": "onLayoutChange",
+          "type": "(next: GridColumnLayout[]) => void",
+          "required": true,
+          "description": "Called with the whole new layout after a column set is chosen or a column is toggled."
+        },
+        {
+          "name": "sets",
+          "type": "readonly ColumnSet[]",
+          "required": false,
+          "description": "Column sets; omit or leave empty for ticks only."
+        },
+        {
+          "name": "labels",
+          "type": "ColumnPickerLabels",
+          "required": true,
+          "description": "Copy for the trigger and the two group headings (the package carries no language)."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "ColumnSet": {
+      "kind": "type",
+      "source": "src/blocks/data-grid/column-picker.tsx",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "columns",
+          "type": "readonly string[]",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
     "ColumnType": {
       "kind": "type",
       "source": "src/blocks/data-grid/columns.ts",
@@ -2395,6 +2516,12 @@
           "description": "When false the third click goes back to ascending (a table with a default sort cannot be unsorted)."
         },
         {
+          "name": "onLayoutChange",
+          "type": "(next: GridColumnLayout[]) => void",
+          "required": false,
+          "description": "Layout changed (column menu pin / hide / move, header drag reorder): gets the whole new layout; the caller stores it."
+        },
+        {
           "name": "onResize",
           "type": "(id: string, width: number) => void",
           "required": false,
@@ -2429,6 +2556,12 @@
           "type": "(row: Row) => string | undefined",
           "required": false,
           "description": "Extra class name for a row."
+        },
+        {
+          "name": "rowActions",
+          "type": "(row: Row) => readonly RowAction[]",
+          "required": false,
+          "description": "Row quick actions (usually the result of symbolMenu(...)): hovering or keyboard-focusing a row floats the first few icon buttons at its right end; the whole list also leads the context menu when it opens on a single row."
         },
         {
           "name": "rowProps",
@@ -2699,6 +2832,12 @@
           "description": "When false the third click goes back to ascending (a table with a default sort cannot be unsorted)."
         },
         {
+          "name": "onLayoutChange",
+          "type": "(next: GridColumnLayout[]) => void",
+          "required": false,
+          "description": "Layout changed (column menu pin / hide / move, header drag reorder): gets the whole new layout; the caller stores it."
+        },
+        {
           "name": "onResize",
           "type": "(id: string, width: number) => void",
           "required": false,
@@ -2733,6 +2872,12 @@
           "type": "(row: Row) => string | undefined",
           "required": false,
           "description": "Extra class name for a row."
+        },
+        {
+          "name": "rowActions",
+          "type": "(row: Row) => readonly RowAction[]",
+          "required": false,
+          "description": "Row quick actions (usually the result of symbolMenu(...)): hovering or keyboard-focusing a row floats the first few icon buttons at its right end; the whole list also leads the context menu when it opens on a single row."
         },
         {
           "name": "rowProps",
@@ -2945,6 +3090,12 @@
           "description": ""
         },
         {
+          "name": "rowActions",
+          "type": "string",
+          "required": true,
+          "description": "行快捷操作按钮条的名字（屏幕阅读器念）。"
+        },
+        {
           "name": "sortTitle",
           "type": "(column: { id: string; label: string }) => string",
           "required": true,
@@ -2961,6 +3112,12 @@
           "type": "(selected: { size: number }) => string",
           "required": true,
           "description": "选了几行（多于一行时读出来）；给对象而不是数，宿主的复数写法好跟原来的文案对上。"
+        },
+        {
+          "name": "columnMenu",
+          "type": "{ sortAsc: string sortDesc: string clearSort: string pin: string unpin: string hide: string moveLeft: string moveRight: string /** 菜单的读屏名。 */ label: (column: { id: string; label: string }) => string }",
+          "required": true,
+          "description": "列头右键菜单的项（#27）。"
         }
       ]
     },
@@ -3446,6 +3603,407 @@
           "description": ""
         }
       ]
+    },
+    "DecisionFilter": {
+      "kind": "type",
+      "source": "src/blocks/decision-queue/decision-queue-model.ts",
+      "props": []
+    },
+    "DecisionItem": {
+      "kind": "type",
+      "source": "src/blocks/decision-queue/decision-queue-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "action",
+          "type": "string",
+          "required": true,
+          "description": "建议动作的字（买入 / 调仓 / 停策略 / 调参数），调用方按界面语言写。"
+        },
+        {
+          "name": "target",
+          "type": "string",
+          "required": true,
+          "description": "对象：品种或策略的名字。"
+        },
+        {
+          "name": "targetTag",
+          "type": "string",
+          "required": false,
+          "description": "对象旁的小标（如品种代码、「策略」），可省。"
+        },
+        {
+          "name": "rationale",
+          "type": "string",
+          "required": true,
+          "description": "理由摘要。"
+        },
+        {
+          "name": "confidence",
+          "type": "number",
+          "required": false,
+          "description": "置信，0 到 1；没有就不画。"
+        },
+        {
+          "name": "basis",
+          "type": "string",
+          "required": false,
+          "description": "依据的一句话（如「回测 2023-2026，夏普 1.4」）。"
+        },
+        {
+          "name": "sources",
+          "type": "readonly DecisionSource[]",
+          "required": true,
+          "description": "来源链接：点得回出处。"
+        },
+        {
+          "name": "createdAt",
+          "type": "number",
+          "required": true,
+          "description": "生成时间、有效期截止（毫秒）；没有 expiresAt 就不过期。"
+        },
+        {
+          "name": "expiresAt",
+          "type": "number",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "status",
+          "type": "DecisionStatus",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "resolvedBy",
+          "type": "string",
+          "required": false,
+          "description": "已处理（接受、拒绝）时：谁、何时。过期的没有。"
+        },
+        {
+          "name": "resolvedAt",
+          "type": "number",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "DecisionQueue": {
+      "kind": "component",
+      "source": "src/blocks/decision-queue/decision-queue.tsx",
+      "props": [
+        {
+          "name": "items",
+          "type": "readonly DecisionItem[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "now",
+          "type": "number",
+          "required": true,
+          "description": "当前时间（毫秒）：倒计时、过期都按它算，调用方每秒更新；件不在渲染里取时间。"
+        },
+        {
+          "name": "labels",
+          "type": "DecisionQueueLabels",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "onAccept",
+          "type": "(item: DecisionItem) => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "onReject",
+          "type": "(item: DecisionItem) => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "onSnooze",
+          "type": "(item: DecisionItem) => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "renderDetail",
+          "type": "(item: DecisionItem) => ReactNode",
+          "required": false,
+          "description": "卡上「详情」展开的内容（如 ConsensusBlock）；返回空就没有详情按钮。"
+        },
+        {
+          "name": "renderTarget",
+          "type": "(item: DecisionItem) => ReactNode",
+          "required": false,
+          "description": "对象旁的内容（如品种徽标），可省。"
+        },
+        {
+          "name": "defaultFilter",
+          "type": "DecisionFilter",
+          "required": false,
+          "default": "'pending'",
+          "description": ""
+        },
+        {
+          "name": "onFilterChange",
+          "type": "(filter: DecisionFilter) => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "holdMs",
+          "type": "number",
+          "required": false,
+          "description": "按住多久才算接受（毫秒），传给 HoldToConfirm。"
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "DecisionQueueLabels": {
+      "kind": "type",
+      "source": "src/blocks/decision-queue/decision-queue.tsx",
+      "props": [
+        {
+          "name": "queue",
+          "type": "string",
+          "required": true,
+          "description": "整个件、筛选分段、列表的读屏名。"
+        },
+        {
+          "name": "filters",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "filter",
+          "type": "Record<DecisionFilter, string>",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "accept",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "reject",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "snooze",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "acceptHint",
+          "type": "string",
+          "required": true,
+          "description": "接受按钮的读屏与悬停提示：「按住 2 秒确认接受」。"
+        },
+        {
+          "name": "accepted",
+          "type": "string",
+          "required": true,
+          "description": "接受填满后按钮上换的字（已提交）。"
+        },
+        {
+          "name": "snoozed",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "status",
+          "type": "Record<DecisionStatus, string>",
+          "required": true,
+          "description": "各状态在一行记录与读屏里的字。"
+        },
+        {
+          "name": "confidence",
+          "type": "(percent: number) => string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "basis",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "sources",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "details",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "createdAgo",
+          "type": "(seconds: number) => string",
+          "required": true,
+          "description": "「生成于 3 分钟前」"
+        },
+        {
+          "name": "expiresIn",
+          "type": "(seconds: number) => string",
+          "required": true,
+          "description": "倒计时：「还剩 4:32」，传入剩余秒数。"
+        },
+        {
+          "name": "expired",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "resolvedBy",
+          "type": "(by: string, ago: string) => string",
+          "required": true,
+          "description": "已处理的一行：「张三 · 3 分钟前」"
+        },
+        {
+          "name": "ago",
+          "type": "(seconds: number) => string",
+          "required": true,
+          "description": "相对时间：已过去的秒数。"
+        },
+        {
+          "name": "absolute",
+          "type": "(time: number) => string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "empty",
+          "type": "Record<DecisionFilter, ReactNode>",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "DecisionQueueProps": {
+      "kind": "type",
+      "source": "src/blocks/decision-queue/decision-queue.tsx",
+      "props": [
+        {
+          "name": "items",
+          "type": "readonly DecisionItem[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "now",
+          "type": "number",
+          "required": true,
+          "description": "当前时间（毫秒）：倒计时、过期都按它算，调用方每秒更新；件不在渲染里取时间。"
+        },
+        {
+          "name": "labels",
+          "type": "DecisionQueueLabels",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "onAccept",
+          "type": "(item: DecisionItem) => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "onReject",
+          "type": "(item: DecisionItem) => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "onSnooze",
+          "type": "(item: DecisionItem) => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "renderDetail",
+          "type": "(item: DecisionItem) => ReactNode",
+          "required": false,
+          "description": "卡上「详情」展开的内容（如 ConsensusBlock）；返回空就没有详情按钮。"
+        },
+        {
+          "name": "renderTarget",
+          "type": "(item: DecisionItem) => ReactNode",
+          "required": false,
+          "description": "对象旁的内容（如品种徽标），可省。"
+        },
+        {
+          "name": "defaultFilter",
+          "type": "DecisionFilter",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "onFilterChange",
+          "type": "(filter: DecisionFilter) => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "holdMs",
+          "type": "number",
+          "required": false,
+          "description": "按住多久才算接受（毫秒），传给 HoldToConfirm。"
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "DecisionSource": {
+      "kind": "type",
+      "source": "src/blocks/decision-queue/decision-queue-model.ts",
+      "props": [
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "href",
+          "type": "string",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "DecisionStatus": {
+      "kind": "type",
+      "source": "src/blocks/decision-queue/decision-queue-model.ts",
+      "props": []
     },
     "DeleteButton": {
       "kind": "component",
@@ -3977,6 +4535,93 @@
         }
       ]
     },
+    "EconomicEvent": {
+      "kind": "type",
+      "source": "src/quant/event-calendar-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "at",
+          "type": "number",
+          "required": true,
+          "description": "发生时刻（毫秒时间戳）。"
+        },
+        {
+          "name": "region",
+          "type": "string",
+          "required": true,
+          "description": "国家 / 地区代码（US、CN）。"
+        },
+        {
+          "name": "regionName",
+          "type": "string",
+          "required": true,
+          "description": "国家 / 地区名：国家多选里写它。"
+        },
+        {
+          "name": "flag",
+          "type": "string",
+          "required": false,
+          "description": "旗帜图片地址；不给就画字母圆标。"
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "importance",
+          "type": "EconomicImportance",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "actual",
+          "type": "string",
+          "required": false,
+          "description": "实际 / 预期 / 前值：调用方格式化好的文字；没有就不给（画「—」）。"
+        },
+        {
+          "name": "forecast",
+          "type": "string",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "previous",
+          "type": "string",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "tone",
+          "type": "EconomicTone",
+          "required": false,
+          "description": "实际值相对预期的好坏方向，由调用方按事件给（CPI 高是坏、非农高是好）；不给就不上色。"
+        }
+      ]
+    },
+    "EconomicImportance": {
+      "kind": "type",
+      "source": "src/quant/event-calendar-model.ts",
+      "props": []
+    },
+    "EconomicRangeKey": {
+      "kind": "type",
+      "source": "src/quant/event-calendar-model.ts",
+      "props": []
+    },
+    "EconomicTone": {
+      "kind": "type",
+      "source": "src/quant/event-calendar-model.ts",
+      "props": []
+    },
     "EmptyState": {
       "kind": "component",
       "source": "src/blocks/empty-state.tsx",
@@ -4313,9 +4958,249 @@
         }
       ]
     },
+    "EventCalendar": {
+      "kind": "component",
+      "source": "src/quant/event-calendar.tsx",
+      "props": [
+        {
+          "name": "events",
+          "type": "readonly EconomicEvent[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "labels",
+          "type": "EventCalendarLabels",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "now",
+          "type": "number",
+          "required": true,
+          "description": "现在（毫秒时间戳）：今天 / 本周 / 下周与倒计时从它算；要倒计时走动，调用方定时更新它。"
+        },
+        {
+          "name": "timeZone",
+          "type": "string",
+          "required": true,
+          "description": "显示时区（IANA）。"
+        },
+        {
+          "name": "locale",
+          "type": "string",
+          "required": true,
+          "description": "给时间格式与日期选择的语言（zh-CN）。"
+        },
+        {
+          "name": "defaultRange",
+          "type": "Exclude<EconomicRangeKey, 'custom'>",
+          "required": false,
+          "default": "'week'",
+          "description": ""
+        },
+        {
+          "name": "rowActions",
+          "type": "(event: EconomicEvent) => readonly RowAction[]",
+          "required": false,
+          "description": "悬停（或键盘聚焦）一行时在行尾浮出的图标按钮（RowActions，#25），项与动作由调用方给。"
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "EventCalendarLabels": {
+      "kind": "type",
+      "source": "src/quant/event-calendar.tsx",
+      "props": [
+        {
+          "name": "list",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "empty",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "range",
+          "type": "Record<EconomicRangeKey, string>",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "rangeGroup",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "importanceGroup",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "importanceClear",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "importance",
+          "type": "(level: EconomicImportance) => string",
+          "required": true,
+          "description": "重要程度芯片与格条读屏名，例「重要程度 2」。"
+        },
+        {
+          "name": "regionsAll",
+          "type": "string",
+          "required": true,
+          "description": "国家多选：触发器没选时的字、搜索占位、没有结果、全部清除。"
+        },
+        {
+          "name": "regionsPlaceholder",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "regionsEmpty",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "regionsCount",
+          "type": "(n: number) => string",
+          "required": true,
+          "description": "触发器选了几个时的字，例「2 个国家」。"
+        },
+        {
+          "name": "onlyHigh",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "today",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "columns",
+          "type": "{ time: string region: string event: string importance: string actual: string forecast: string previous: string }",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "countdown",
+          "type": "(minutes: number) => string",
+          "required": true,
+          "description": "倒计时文字，例「45 分后」；参数是剩余分钟。"
+        },
+        {
+          "name": "dateRange",
+          "type": "DateRangeLabels",
+          "required": true,
+          "description": "自定义区间用的日期区间选择文案。"
+        },
+        {
+          "name": "dayTitle",
+          "type": "(day: string) => string",
+          "required": true,
+          "description": "一天的标题（「11月17日 周二」），由调用方按语言格式化。"
+        },
+        {
+          "name": "count",
+          "type": "(n: number) => string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "rowActions",
+          "type": "string",
+          "required": true,
+          "description": "行悬停按钮条与右键菜单的读屏名。"
+        },
+        {
+          "name": "rowMenu",
+          "type": "string",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "EventCalendarProps": {
+      "kind": "type",
+      "source": "src/quant/event-calendar.tsx",
+      "props": [
+        {
+          "name": "events",
+          "type": "readonly EconomicEvent[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "labels",
+          "type": "EventCalendarLabels",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "now",
+          "type": "number",
+          "required": true,
+          "description": "现在（毫秒时间戳）：今天 / 本周 / 下周与倒计时从它算；要倒计时走动，调用方定时更新它。"
+        },
+        {
+          "name": "timeZone",
+          "type": "string",
+          "required": true,
+          "description": "显示时区（IANA）。"
+        },
+        {
+          "name": "locale",
+          "type": "string",
+          "required": true,
+          "description": "给时间格式与日期选择的语言（zh-CN）。"
+        },
+        {
+          "name": "defaultRange",
+          "type": "Exclude<EconomicRangeKey, 'custom'>",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "rowActions",
+          "type": "(event: EconomicEvent) => readonly RowAction[]",
+          "required": false,
+          "description": "悬停（或键盘聚焦）一行时在行尾浮出的图标按钮（RowActions，#25），项与动作由调用方给。"
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
     "EventKind": {
       "kind": "type",
       "source": "src/blocks/event-timeline-model.ts",
+      "props": []
+    },
+    "EventSeverity": {
+      "kind": "type",
+      "source": "src/blocks/system-monitor/system-monitor-model.ts",
       "props": []
     },
     "EventTimeline": {
@@ -4539,6 +5424,11 @@
           "description": ""
         }
       ]
+    },
+    "EvidenceKind": {
+      "kind": "type",
+      "source": "src/blocks/hypothesis-ledger/hypothesis-ledger-model.ts",
+      "props": []
     },
     "Field": {
       "kind": "component",
@@ -5409,6 +6299,24 @@
         }
       ]
     },
+    "Histogram": {
+      "kind": "type",
+      "source": "src/blocks/strategy-report/strategy-report-model.ts",
+      "props": [
+        {
+          "name": "edges",
+          "type": "number[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "counts",
+          "type": "number[]",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
     "HoldToConfirm": {
       "kind": "component",
       "source": "src/katana/hold-to-confirm.tsx",
@@ -5692,6 +6600,383 @@
     "HoverCardTrigger": {
       "kind": "component",
       "source": "src/primitives/hover-card.tsx",
+      "props": []
+    },
+    "Hypothesis": {
+      "kind": "type",
+      "source": "src/blocks/hypothesis-ledger/hypothesis-ledger-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "claim",
+          "type": "string",
+          "required": true,
+          "description": "命题：一句话，写成能被证伪的样子。"
+        },
+        {
+          "name": "layer",
+          "type": "HypothesisLayer",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "status",
+          "type": "HypothesisStatus",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "failure",
+          "type": "string",
+          "required": true,
+          "description": "提前写好的失败条件：出现什么就认为命题不成立。"
+        },
+        {
+          "name": "deadline",
+          "type": "number",
+          "required": true,
+          "description": "检验期限（毫秒）：到期倒计时；过了还是待验证的自动标「过期」。"
+        },
+        {
+          "name": "evidence",
+          "type": "readonly HypothesisEvidence[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "assets",
+          "type": "readonly HypothesisAsset[]",
+          "required": false,
+          "description": "关联品种或资产。"
+        }
+      ]
+    },
+    "HypothesisAsset": {
+      "kind": "type",
+      "source": "src/blocks/hypothesis-ledger/hypothesis-ledger-model.ts",
+      "props": [
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "tag",
+          "type": "string",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "HypothesisEvidence": {
+      "kind": "type",
+      "source": "src/blocks/hypothesis-ledger/hypothesis-ledger-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "kind",
+          "type": "EvidenceKind",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "source",
+          "type": "string",
+          "required": true,
+          "description": "来源名与链接：点得回出处。"
+        },
+        {
+          "name": "href",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "publishedAt",
+          "type": "number",
+          "required": true,
+          "description": "发布时间（毫秒）。"
+        },
+        {
+          "name": "summary",
+          "type": "string",
+          "required": true,
+          "description": "一句话说这条证据讲了什么。"
+        },
+        {
+          "name": "stance",
+          "type": "'support' | 'oppose'",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "HypothesisLayer": {
+      "kind": "type",
+      "source": "src/blocks/hypothesis-ledger/hypothesis-ledger-model.ts",
+      "props": []
+    },
+    "HypothesisLedger": {
+      "kind": "component",
+      "source": "src/blocks/hypothesis-ledger/hypothesis-ledger.tsx",
+      "props": [
+        {
+          "name": "items",
+          "type": "readonly Hypothesis[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "watch",
+          "type": "readonly WatchRow[]",
+          "required": false,
+          "description": "观察表的行；不给就没有「观察表」视图。"
+        },
+        {
+          "name": "now",
+          "type": "number",
+          "required": true,
+          "description": "当前时间（毫秒）：倒计时、过期都按它算；件不在渲染里取时间。"
+        },
+        {
+          "name": "labels",
+          "type": "HypothesisLedgerLabels",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "renderAsset",
+          "type": "(asset: { label: string; tag?: string }) => ReactNode",
+          "required": false,
+          "description": "关联资产旁的内容（如品种徽标），可省。"
+        },
+        {
+          "name": "defaultView",
+          "type": "'ledger' | 'watch'",
+          "required": false,
+          "default": "'ledger'",
+          "description": ""
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "HypothesisLedgerLabels": {
+      "kind": "type",
+      "source": "src/blocks/hypothesis-ledger/hypothesis-ledger.tsx",
+      "props": [
+        {
+          "name": "ledger",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "views",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "viewLedger",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "viewWatch",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "statusFilter",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "layerFilter",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "clearLayers",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "all",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "layer",
+          "type": "Record<HypothesisLayer, string>",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "status",
+          "type": "Record<HypothesisStatus, string>",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "kind",
+          "type": "Record<EvidenceKind, string>",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "stance",
+          "type": "{ support: string; oppose: string }",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "failure",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "evidence",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "assets",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "noEvidence",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "tally",
+          "type": "(support: number, oppose: number) => string",
+          "required": true,
+          "description": "一行上的证据对比：「2 支持 · 1 反对」。"
+        },
+        {
+          "name": "deadlineIn",
+          "type": "(days: number) => string",
+          "required": true,
+          "description": "倒计时：传入剩余整天数（0 表示今天到期）。"
+        },
+        {
+          "name": "overdueBy",
+          "type": "(days: number) => string",
+          "required": true,
+          "description": "过期：传入已过去的整天数。"
+        },
+        {
+          "name": "date",
+          "type": "(time: number) => string",
+          "required": true,
+          "description": "日期的显示，如「2026-11-01」。"
+        },
+        {
+          "name": "empty",
+          "type": "ReactNode",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "watchLayer",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "watchEvidence",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "watchConfusion",
+          "type": "string",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "HypothesisLedgerProps": {
+      "kind": "type",
+      "source": "src/blocks/hypothesis-ledger/hypothesis-ledger.tsx",
+      "props": [
+        {
+          "name": "items",
+          "type": "readonly Hypothesis[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "watch",
+          "type": "readonly WatchRow[]",
+          "required": false,
+          "description": "观察表的行；不给就没有「观察表」视图。"
+        },
+        {
+          "name": "now",
+          "type": "number",
+          "required": true,
+          "description": "当前时间（毫秒）：倒计时、过期都按它算；件不在渲染里取时间。"
+        },
+        {
+          "name": "labels",
+          "type": "HypothesisLedgerLabels",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "renderAsset",
+          "type": "(asset: { label: string; tag?: string }) => ReactNode",
+          "required": false,
+          "description": "关联资产旁的内容（如品种徽标），可省。"
+        },
+        {
+          "name": "defaultView",
+          "type": "'ledger' | 'watch'",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "HypothesisStatus": {
+      "kind": "type",
+      "source": "src/blocks/hypothesis-ledger/hypothesis-ledger-model.ts",
       "props": []
     },
     "InlineOverlays": {
@@ -6119,6 +7404,12 @@
           "description": ""
         },
         {
+          "name": "rowActions",
+          "type": "(item: LadderItem) => readonly RowAction[]",
+          "required": false,
+          "description": "行快捷操作（#23，一般传 symbolMenu(...)）：悬停或键盘落到这一行时右端浮出前几颗带图标的按钮，右键（菜单键、Shift+F10）出整份菜单；不传就没有。"
+        },
+        {
           "name": "className",
           "type": "string",
           "required": false,
@@ -6177,6 +7468,18 @@
           "type": "string",
           "required": true,
           "description": ""
+        },
+        {
+          "name": "rowActions",
+          "type": "string",
+          "required": false,
+          "description": "行快捷操作按钮条与右键菜单的读屏名；省略时用英文。"
+        },
+        {
+          "name": "rowMenu",
+          "type": "string",
+          "required": false,
+          "description": ""
         }
       ]
     },
@@ -6209,6 +7512,12 @@
           "description": ""
         },
         {
+          "name": "rowActions",
+          "type": "(item: LadderItem) => readonly RowAction[]",
+          "required": false,
+          "description": "行快捷操作（#23，一般传 symbolMenu(...)）：悬停或键盘落到这一行时右端浮出前几颗带图标的按钮，右键（菜单键、Shift+F10）出整份菜单；不传就没有。"
+        },
+        {
           "name": "className",
           "type": "string",
           "required": false,
@@ -6219,6 +7528,11 @@
     "LinkGroup": {
       "kind": "type",
       "source": "src/katana/led.tsx",
+      "props": []
+    },
+    "LinkState": {
+      "kind": "type",
+      "source": "src/blocks/system-monitor/system-monitor-model.ts",
       "props": []
     },
     "Loading": {
@@ -6545,6 +7859,12 @@
           "description": ""
         },
         {
+          "name": "cellActions",
+          "type": "(item: HeatmapItem) => readonly RowAction[]",
+          "required": false,
+          "description": "格子的右键菜单（#23，一般传 symbolMenu(...)）：右键、菜单键、Shift+F10 出同一份品种菜单；不传就没有。格子小，不画悬停按钮。"
+        },
+        {
           "name": "className",
           "type": "string",
           "required": false,
@@ -6633,6 +7953,12 @@
           "type": "string",
           "required": true,
           "description": ""
+        },
+        {
+          "name": "cellMenu",
+          "type": "string",
+          "required": false,
+          "description": "格子右键菜单的读屏名（传了 cellActions 才用）；省略时用英文。"
         }
       ]
     },
@@ -6705,6 +8031,12 @@
           "type": "(code: string) => void",
           "required": false,
           "description": ""
+        },
+        {
+          "name": "cellActions",
+          "type": "(item: HeatmapItem) => readonly RowAction[]",
+          "required": false,
+          "description": "格子的右键菜单（#23，一般传 symbolMenu(...)）：右键、菜单键、Shift+F10 出同一份品种菜单；不传就没有。格子小，不画悬停按钮。"
         },
         {
           "name": "className",
@@ -6961,6 +8293,576 @@
       "source": "src/quant/meter.tsx",
       "props": []
     },
+    "MetricCard": {
+      "kind": "component",
+      "source": "src/quant/metric-card.tsx",
+      "props": [
+        {
+          "name": "title",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "value",
+          "type": "string | null",
+          "required": true,
+          "description": "已格式化的当前值；没有数据传 null。"
+        },
+        {
+          "name": "unit",
+          "type": "string",
+          "required": false,
+          "description": "数值后面的小字。"
+        },
+        {
+          "name": "changes",
+          "type": "readonly MetricChange[]",
+          "required": false,
+          "description": "较前日 / 周 / 月 / 年，想放几个放几个。"
+        },
+        {
+          "name": "ranges",
+          "type": "readonly MetricRange[]",
+          "required": false,
+          "description": "走势分段（1 月 / 3 月 / 6 月 / 1 年）；只给一段就不画分段控件。"
+        },
+        {
+          "name": "range",
+          "type": "string",
+          "required": false,
+          "description": "当前段的 key；不给用 defaultRange，再不给取第一段。给了就由调用方控制。"
+        },
+        {
+          "name": "defaultRange",
+          "type": "string",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "onRangeChange",
+          "type": "(key: string) => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "trendTone",
+          "type": "MetricTrendTone",
+          "required": false,
+          "default": "'direction'",
+          "description": "走势线怎么着色，默认 direction。"
+        },
+        {
+          "name": "rangeLabel",
+          "type": "string",
+          "required": true,
+          "description": "分段控件与走势线的读屏名（整句）。"
+        },
+        {
+          "name": "sparkLabel",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "stages",
+          "type": "readonly MetricStage[]",
+          "required": false,
+          "description": "阶段带：从低到高的档；current 是当前值（原始数，跟 from / to 同一单位）。"
+        },
+        {
+          "name": "current",
+          "type": "number",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "source",
+          "type": "ReactNode",
+          "required": false,
+          "description": "来源与更新时间，各一段文字，由调用方写。"
+        },
+        {
+          "name": "updatedAt",
+          "type": "ReactNode",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "MetricCardGrid": {
+      "kind": "component",
+      "source": "src/quant/metric-card.tsx",
+      "props": [
+        {
+          "name": "children",
+          "type": "ReactNode",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "minWidth",
+          "type": "number",
+          "required": false,
+          "default": "260",
+          "description": "每张卡的最小宽（px），一行放几张由容器宽决定。"
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "整墙的读屏名。"
+        },
+        {
+          "name": "ranges",
+          "type": "readonly { key: string; label: string }[]",
+          "required": false,
+          "description": "共用的区间分段（放在墙顶上一次）：传了它，卡片不再各画各的分段控件，所有卡按它的 key 取自己 ranges 里同 key 的一段。"
+        },
+        {
+          "name": "range",
+          "type": "string",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "defaultRange",
+          "type": "string",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "onRangeChange",
+          "type": "(key: string) => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "rangeLabel",
+          "type": "string",
+          "required": false,
+          "description": "共用分段控件的读屏名。"
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "MetricCardGridProps": {
+      "kind": "type",
+      "source": "src/quant/metric-card.tsx",
+      "props": [
+        {
+          "name": "children",
+          "type": "ReactNode",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "minWidth",
+          "type": "number",
+          "required": false,
+          "description": "每张卡的最小宽（px），一行放几张由容器宽决定。"
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "整墙的读屏名。"
+        },
+        {
+          "name": "ranges",
+          "type": "readonly { key: string; label: string }[]",
+          "required": false,
+          "description": "共用的区间分段（放在墙顶上一次）：传了它，卡片不再各画各的分段控件，所有卡按它的 key 取自己 ranges 里同 key 的一段。"
+        },
+        {
+          "name": "range",
+          "type": "string",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "defaultRange",
+          "type": "string",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "onRangeChange",
+          "type": "(key: string) => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "rangeLabel",
+          "type": "string",
+          "required": false,
+          "description": "共用分段控件的读屏名。"
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "MetricCardProps": {
+      "kind": "type",
+      "source": "src/quant/metric-card.tsx",
+      "props": [
+        {
+          "name": "title",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "value",
+          "type": "string | null",
+          "required": true,
+          "description": "已格式化的当前值；没有数据传 null。"
+        },
+        {
+          "name": "unit",
+          "type": "string",
+          "required": false,
+          "description": "数值后面的小字。"
+        },
+        {
+          "name": "changes",
+          "type": "readonly MetricChange[]",
+          "required": false,
+          "description": "较前日 / 周 / 月 / 年，想放几个放几个。"
+        },
+        {
+          "name": "ranges",
+          "type": "readonly MetricRange[]",
+          "required": false,
+          "description": "走势分段（1 月 / 3 月 / 6 月 / 1 年）；只给一段就不画分段控件。"
+        },
+        {
+          "name": "range",
+          "type": "string",
+          "required": false,
+          "description": "当前段的 key；不给用 defaultRange，再不给取第一段。给了就由调用方控制。"
+        },
+        {
+          "name": "defaultRange",
+          "type": "string",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "onRangeChange",
+          "type": "(key: string) => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "trendTone",
+          "type": "MetricTrendTone",
+          "required": false,
+          "description": "走势线怎么着色，默认 direction。"
+        },
+        {
+          "name": "rangeLabel",
+          "type": "string",
+          "required": true,
+          "description": "分段控件与走势线的读屏名（整句）。"
+        },
+        {
+          "name": "sparkLabel",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "stages",
+          "type": "readonly MetricStage[]",
+          "required": false,
+          "description": "阶段带：从低到高的档；current 是当前值（原始数，跟 from / to 同一单位）。"
+        },
+        {
+          "name": "current",
+          "type": "number",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "source",
+          "type": "ReactNode",
+          "required": false,
+          "description": "来源与更新时间，各一段文字，由调用方写。"
+        },
+        {
+          "name": "updatedAt",
+          "type": "ReactNode",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "MetricChange": {
+      "kind": "type",
+      "source": "src/quant/metric-card.tsx",
+      "props": [
+        {
+          "name": "key",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "「较前日」之类，由调用方写。"
+        },
+        {
+          "name": "value",
+          "type": "number | null",
+          "required": true,
+          "description": "变化百分数（1.5 就是 1.5%）；没有数据传 null，写「—」。"
+        }
+      ]
+    },
+    "MetricKey": {
+      "kind": "type",
+      "source": "src/blocks/strategy-report/strategy-report.tsx",
+      "props": []
+    },
+    "MetricRange": {
+      "kind": "type",
+      "source": "src/quant/metric-card.tsx",
+      "props": [
+        {
+          "name": "key",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "分段按钮上的字（1 月）。"
+        },
+        {
+          "name": "values",
+          "type": "readonly number[]",
+          "required": true,
+          "description": "这一段的走势，从旧到新；少于两个数画不出线，写「—」。"
+        }
+      ]
+    },
+    "MetricStage": {
+      "kind": "type",
+      "source": "src/quant/metric-card.tsx",
+      "props": [
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "from",
+          "type": "number",
+          "required": true,
+          "description": "这一档的下界与上界（跟 current 同一个单位）；最后一档的上界算在内。"
+        },
+        {
+          "name": "to",
+          "type": "number",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "MetricTrendTone": {
+      "kind": "type",
+      "source": "src/quant/metric-card.tsx",
+      "props": []
+    },
+    "MonitorEvent": {
+      "kind": "type",
+      "source": "src/blocks/system-monitor/system-monitor-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "at",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "severity",
+          "type": "EventSeverity",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "kind",
+          "type": "string",
+          "required": true,
+          "description": "类别的 value（对应 SystemMonitorProps.eventKinds）：下单、成交、拒单、断线、重连、风控触发……由调用方定。"
+        },
+        {
+          "name": "text",
+          "type": "string",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "MonitorLink": {
+      "kind": "type",
+      "source": "src/blocks/system-monitor/system-monitor-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "group",
+          "type": "string",
+          "required": false,
+          "description": "分组名（交易所 API / 行情源 / 引擎……）：只写在悬停提示里，件不认识任何一种。"
+        },
+        {
+          "name": "state",
+          "type": "LinkState",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "latencyMs",
+          "type": "number | null",
+          "required": false,
+          "description": "往返延迟（毫秒）；没有测到传 null。"
+        },
+        {
+          "name": "lastBeat",
+          "type": "number | null",
+          "required": false,
+          "description": "最后一次心跳的毫秒时间戳；没收到过传 null。"
+        },
+        {
+          "name": "detail",
+          "type": "string",
+          "required": false,
+          "description": "出错时的说明（悬停与读屏用）。"
+        }
+      ]
+    },
+    "MonitorStrategy": {
+      "kind": "type",
+      "source": "src/blocks/system-monitor/system-monitor-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "account",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "symbol",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "status",
+          "type": "StrategyStatus",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "position",
+          "type": "string | null",
+          "required": false,
+          "description": "持仓，已格式化（含方向与单位）；没有传 null。"
+        },
+        {
+          "name": "pnl",
+          "type": "number | null",
+          "required": false,
+          "description": "今日盈亏：pnl 只定方向（涨跌色），pnlText 是调用方格式化好的字。"
+        },
+        {
+          "name": "pnlText",
+          "type": "string | null",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "quota",
+          "type": "number | null",
+          "required": false,
+          "description": "额度占用，0 到 1（超过 1 算越界，条贴边）；没有额度限制传 null。"
+        },
+        {
+          "name": "quotaText",
+          "type": "string | null",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "lastTradeAt",
+          "type": "number | null",
+          "required": false,
+          "description": "最后一笔成交 / 下单的毫秒时间戳；今天没有传 null。"
+        },
+        {
+          "name": "error",
+          "type": "string",
+          "required": false,
+          "description": "出错说明。"
+        }
+      ]
+    },
     "MultiSelect": {
       "kind": "component",
       "source": "src/patterns/multi-select.tsx",
@@ -7018,6 +8920,368 @@
           "type": "string",
           "required": false,
           "description": "Extra class name on the popup, for app styles and tests to find it."
+        }
+      ]
+    },
+    "NewsFeed": {
+      "kind": "component",
+      "source": "src/blocks/news-feed/news-feed.tsx",
+      "props": [
+        {
+          "name": "items",
+          "type": "readonly NewsItem[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "channels",
+          "type": "readonly { value: string; label: string }[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "sources",
+          "type": "readonly { value: string; label: string }[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "now",
+          "type": "number",
+          "required": true,
+          "description": "当前时间（毫秒）：相对时间按它算；调用方定时更新它。"
+        },
+        {
+          "name": "labels",
+          "type": "NewsFeedLabels",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "defaultLayout",
+          "type": "'list' | 'card'",
+          "required": false,
+          "default": "'list'",
+          "description": ""
+        },
+        {
+          "name": "onSymbolPick",
+          "type": "(symbol: NewsSymbol, item: NewsItem) => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "itemActions",
+          "type": "(item: NewsItem) => readonly RowAction[]",
+          "required": false,
+          "description": "每条的快捷操作：悬停出前几颗图标按钮，右键出同一份菜单（RowActions / RowContextMenu）；返回空数组就没有。"
+        },
+        {
+          "name": "itemActionsLabel",
+          "type": "string",
+          "required": false,
+          "default": "''",
+          "description": "快捷操作的读屏名与右键菜单名。"
+        },
+        {
+          "name": "onOpen",
+          "type": "(item: NewsItem) => void",
+          "required": false,
+          "description": "给了，标题是按钮，点击回调；没给且条目有 href 时标题是链接。"
+        },
+        {
+          "name": "onChannelChange",
+          "type": "(channel: string) => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "onSourcesChange",
+          "type": "(sources: string[]) => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "onPausedChange",
+          "type": "(paused: boolean) => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "NewsFeedLabels": {
+      "kind": "type",
+      "source": "src/blocks/news-feed/news-feed.tsx",
+      "props": [
+        {
+          "name": "all",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "feed",
+          "type": "string",
+          "required": true,
+          "description": "整个件、频道分段、来源芯片组、搜索框、排法分段的读屏名。"
+        },
+        {
+          "name": "channels",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "sources",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "clearSources",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "search",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "layout",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "layoutList",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "layoutCard",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "pause",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "resume",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "newItems",
+          "type": "(n: number) => string",
+          "required": true,
+          "description": "「3 条新消息」。"
+        },
+        {
+          "name": "ago",
+          "type": "(seconds: number) => string",
+          "required": true,
+          "description": "相对时间：传入已过去的秒数，如「3 分钟前」。"
+        },
+        {
+          "name": "absolute",
+          "type": "(time: number) => string",
+          "required": true,
+          "description": "悬停时出的绝对时间。"
+        },
+        {
+          "name": "important",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "empty",
+          "type": "ReactNode",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "NewsFeedProps": {
+      "kind": "type",
+      "source": "src/blocks/news-feed/news-feed.tsx",
+      "props": [
+        {
+          "name": "items",
+          "type": "readonly NewsItem[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "channels",
+          "type": "readonly { value: string; label: string }[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "sources",
+          "type": "readonly { value: string; label: string }[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "now",
+          "type": "number",
+          "required": true,
+          "description": "当前时间（毫秒）：相对时间按它算；调用方定时更新它。"
+        },
+        {
+          "name": "labels",
+          "type": "NewsFeedLabels",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "defaultLayout",
+          "type": "'list' | 'card'",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "onSymbolPick",
+          "type": "(symbol: NewsSymbol, item: NewsItem) => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "itemActions",
+          "type": "(item: NewsItem) => readonly RowAction[]",
+          "required": false,
+          "description": "每条的快捷操作：悬停出前几颗图标按钮，右键出同一份菜单（RowActions / RowContextMenu）；返回空数组就没有。"
+        },
+        {
+          "name": "itemActionsLabel",
+          "type": "string",
+          "required": false,
+          "description": "快捷操作的读屏名与右键菜单名。"
+        },
+        {
+          "name": "onOpen",
+          "type": "(item: NewsItem) => void",
+          "required": false,
+          "description": "给了，标题是按钮，点击回调；没给且条目有 href 时标题是链接。"
+        },
+        {
+          "name": "onChannelChange",
+          "type": "(channel: string) => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "onSourcesChange",
+          "type": "(sources: string[]) => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "onPausedChange",
+          "type": "(paused: boolean) => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "NewsItem": {
+      "kind": "type",
+      "source": "src/blocks/news-feed/news-feed-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "time",
+          "type": "number",
+          "required": true,
+          "description": "毫秒时间戳。"
+        },
+        {
+          "name": "channel",
+          "type": "string",
+          "required": true,
+          "description": "频道的 value（对应 NewsFeedProps.channels）。"
+        },
+        {
+          "name": "source",
+          "type": "string",
+          "required": true,
+          "description": "来源的 value（对应 NewsFeedProps.sources）。"
+        },
+        {
+          "name": "title",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "summary",
+          "type": "string",
+          "required": false,
+          "description": "摘要：卡片排法里显示两行。"
+        },
+        {
+          "name": "symbols",
+          "type": "readonly NewsSymbol[]",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "important",
+          "type": "boolean",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "href",
+          "type": "string",
+          "required": false,
+          "description": "有链接就把标题渲染成链接（新窗口打开）。"
+        }
+      ]
+    },
+    "NewsSymbol": {
+      "kind": "type",
+      "source": "src/blocks/news-feed/news-feed-model.ts",
+      "props": [
+        {
+          "name": "code",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "description": ""
         }
       ]
     },
@@ -7496,6 +9760,334 @@
       "source": "src/blocks/panel-frame/panel-frame.tsx",
       "props": []
     },
+    "ParamPoint": {
+      "kind": "type",
+      "source": "src/quant/param-scatter-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "x",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "y",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "value",
+          "type": "number | null",
+          "required": true,
+          "description": "目标值（夏普、净利润……）；没跑出结果是 null，画成空心灰点。"
+        }
+      ]
+    },
+    "ParamRamp": {
+      "kind": "type",
+      "source": "src/quant/param-scatter-model.ts",
+      "props": []
+    },
+    "ParamScatter": {
+      "kind": "component",
+      "source": "src/quant/param-scatter.tsx",
+      "props": [
+        {
+          "name": "actionLabels",
+          "type": "ChartActionsLabels",
+          "required": true,
+          "description": "图右上三个按钮的名字。"
+        },
+        {
+          "name": "tableLabel",
+          "type": "string",
+          "required": true,
+          "description": "表格视图的读屏名。"
+        },
+        {
+          "name": "tableHead",
+          "type": "readonly string[]",
+          "required": true,
+          "description": "表头（第一项是行头那一列）。"
+        },
+        {
+          "name": "source",
+          "type": "ReactNode",
+          "required": false,
+          "description": "来源一行：每个数字能回答从哪来、什么时候（§2.2）。"
+        },
+        {
+          "name": "onExport",
+          "type": "() => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "onFullscreen",
+          "type": "() => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "points",
+          "type": "readonly ParamPoint[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "整张图的读屏名。"
+        },
+        {
+          "name": "axes",
+          "type": "{ x: string; y: string }",
+          "required": true,
+          "description": "两根参数轴的名字。"
+        },
+        {
+          "name": "valueName",
+          "type": "string",
+          "required": true,
+          "description": "目标值叫什么（色条标题、读数）。"
+        },
+        {
+          "name": "formatX",
+          "type": "(value: number) => string",
+          "required": false,
+          "default": "String",
+          "description": ""
+        },
+        {
+          "name": "formatY",
+          "type": "(value: number) => string",
+          "required": false,
+          "default": "String",
+          "description": ""
+        },
+        {
+          "name": "formatValue",
+          "type": "(value: number) => string",
+          "required": false,
+          "default": "String",
+          "description": ""
+        },
+        {
+          "name": "goal",
+          "type": "'max' | 'min'",
+          "required": false,
+          "default": "'max'",
+          "description": "目标值越大越好还是越小越好，默认 max。"
+        },
+        {
+          "name": "ramp",
+          "type": "ParamRamp",
+          "required": false,
+          "default": "'auto'",
+          "description": ""
+        },
+        {
+          "name": "bestLabel",
+          "type": "string",
+          "required": true,
+          "description": "「最优」的字，读屏名与读数里用。"
+        },
+        {
+          "name": "jumpLabel",
+          "type": "string",
+          "required": true,
+          "description": "「跳到最优」按钮的字。"
+        },
+        {
+          "name": "noValue",
+          "type": "string",
+          "required": true,
+          "description": "没有结果的点（value 为 null）在读数里写什么。"
+        },
+        {
+          "name": "idle",
+          "type": "ReactNode",
+          "required": true,
+          "description": "没选点时读数区写什么。"
+        },
+        {
+          "name": "selected",
+          "type": "string | null",
+          "required": false,
+          "description": "受控的选中点 id；不给用内部状态。"
+        },
+        {
+          "name": "onSelect",
+          "type": "(id: string | null) => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "extra",
+          "type": "(point: ParamPoint) => ReactNode",
+          "required": false,
+          "description": "选中点的读数多加什么（该组参数的其他指标）。"
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "ParamScatterProps": {
+      "kind": "type",
+      "source": "src/quant/param-scatter.tsx",
+      "props": [
+        {
+          "name": "actionLabels",
+          "type": "ChartActionsLabels",
+          "required": true,
+          "description": "图右上三个按钮的名字。"
+        },
+        {
+          "name": "tableLabel",
+          "type": "string",
+          "required": true,
+          "description": "表格视图的读屏名。"
+        },
+        {
+          "name": "tableHead",
+          "type": "readonly string[]",
+          "required": true,
+          "description": "表头（第一项是行头那一列）。"
+        },
+        {
+          "name": "source",
+          "type": "ReactNode",
+          "required": false,
+          "description": "来源一行：每个数字能回答从哪来、什么时候（§2.2）。"
+        },
+        {
+          "name": "onExport",
+          "type": "() => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "onFullscreen",
+          "type": "() => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "points",
+          "type": "readonly ParamPoint[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "整张图的读屏名。"
+        },
+        {
+          "name": "axes",
+          "type": "{ x: string; y: string }",
+          "required": true,
+          "description": "两根参数轴的名字。"
+        },
+        {
+          "name": "valueName",
+          "type": "string",
+          "required": true,
+          "description": "目标值叫什么（色条标题、读数）。"
+        },
+        {
+          "name": "formatX",
+          "type": "(value: number) => string",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "formatY",
+          "type": "(value: number) => string",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "formatValue",
+          "type": "(value: number) => string",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "goal",
+          "type": "'max' | 'min'",
+          "required": false,
+          "description": "目标值越大越好还是越小越好，默认 max。"
+        },
+        {
+          "name": "ramp",
+          "type": "ParamRamp",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "bestLabel",
+          "type": "string",
+          "required": true,
+          "description": "「最优」的字，读屏名与读数里用。"
+        },
+        {
+          "name": "jumpLabel",
+          "type": "string",
+          "required": true,
+          "description": "「跳到最优」按钮的字。"
+        },
+        {
+          "name": "noValue",
+          "type": "string",
+          "required": true,
+          "description": "没有结果的点（value 为 null）在读数里写什么。"
+        },
+        {
+          "name": "idle",
+          "type": "ReactNode",
+          "required": true,
+          "description": "没选点时读数区写什么。"
+        },
+        {
+          "name": "selected",
+          "type": "string | null",
+          "required": false,
+          "description": "受控的选中点 id；不给用内部状态。"
+        },
+        {
+          "name": "onSelect",
+          "type": "(id: string | null) => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "extra",
+          "type": "(point: ParamPoint) => ReactNode",
+          "required": false,
+          "description": "选中点的读数多加什么（该组参数的其他指标）。"
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
     "PasswordInput": {
       "kind": "component",
       "source": "src/katana/password-input.tsx",
@@ -7554,6 +10146,30 @@
           "type": "'default' | 'sm'",
           "required": false,
           "description": "Same as Input: 30px and 26px."
+        }
+      ]
+    },
+    "PersistedStateOptions": {
+      "kind": "type",
+      "source": "src/lib/use-persisted-state.ts",
+      "props": [
+        {
+          "name": "version",
+          "type": "number",
+          "required": true,
+          "description": "存档版本；改了就丢掉旧存档。"
+        },
+        {
+          "name": "storage",
+          "type": "StorageLike",
+          "required": false,
+          "description": "存储；省略用 localStorage（拿不到时只在内存里）。"
+        },
+        {
+          "name": "validate",
+          "type": "(value: unknown) => value is T",
+          "required": false,
+          "description": "读出来的值形状不对就返回 false，当没存过。"
         }
       ]
     },
@@ -9232,6 +11848,323 @@
         }
       ]
     },
+    "ReportOptions": {
+      "kind": "type",
+      "source": "src/blocks/strategy-report/strategy-report-model.ts",
+      "props": [
+        {
+          "name": "initialCapital",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "periodsPerYear",
+          "type": "number",
+          "required": false,
+          "description": "一年有几个交易日：A 股与美股 252，加密 365。夏普与索提诺按它年化。默认 252。"
+        },
+        {
+          "name": "riskFree",
+          "type": "number",
+          "required": false,
+          "description": "年化无风险利率（小数），默认 0。"
+        }
+      ]
+    },
+    "ReportSide": {
+      "kind": "type",
+      "source": "src/blocks/strategy-report/strategy-report-model.ts",
+      "props": []
+    },
+    "ReportStats": {
+      "kind": "type",
+      "source": "src/blocks/strategy-report/strategy-report-model.ts",
+      "props": [
+        {
+          "name": "count",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "wins",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "losses",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "breakeven",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "netProfit",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "grossProfit",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "grossLoss",
+          "type": "number",
+          "required": true,
+          "description": "≤ 0。"
+        },
+        {
+          "name": "profitFactor",
+          "type": "number | null",
+          "required": true,
+          "description": "总盈利 / |总亏损|；没有亏损是 null。"
+        },
+        {
+          "name": "totalReturn",
+          "type": "number",
+          "required": true,
+          "description": "净盈亏 / 初始资金。"
+        },
+        {
+          "name": "winRate",
+          "type": "number",
+          "required": true,
+          "description": "盈利笔数 / 总笔数，没有交易是 0。"
+        },
+        {
+          "name": "avgWin",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "avgLoss",
+          "type": "number",
+          "required": true,
+          "description": "≤ 0。"
+        },
+        {
+          "name": "payoffRatio",
+          "type": "number | null",
+          "required": true,
+          "description": "平均盈利 / |平均亏损|；没有亏损笔是 null。"
+        },
+        {
+          "name": "expectancy",
+          "type": "number",
+          "required": true,
+          "description": "每笔平均净盈亏。"
+        },
+        {
+          "name": "largestWin",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "largestLoss",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "avgDuration",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "avgWinDuration",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "avgLossDuration",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "maxConsecWins",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "maxConsecLosses",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "currentStreak",
+          "type": "{ kind: 'win' | 'loss'; count: number } | null",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "finalEquity",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "maxDrawdown",
+          "type": "number",
+          "required": true,
+          "description": "≤ 0，权益从前高回落的最大金额与占前高的比例。"
+        },
+        {
+          "name": "maxDrawdownPct",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "maxRunup",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "avgDrawdown",
+          "type": "number",
+          "required": true,
+          "description": "每段回撤（从前高到收复前高，没收复的算到末笔）的平均深度，≤ 0。"
+        },
+        {
+          "name": "longestDrawdown",
+          "type": "number",
+          "required": true,
+          "description": "最长一段回撤的时长（毫秒）。"
+        },
+        {
+          "name": "sharpe",
+          "type": "number | null",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "sortino",
+          "type": "number | null",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "calmar",
+          "type": "number | null",
+          "required": true,
+          "description": "年化收益 / |最大回撤比例|。"
+        },
+        {
+          "name": "cagr",
+          "type": "number | null",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "recoveryFactor",
+          "type": "number | null",
+          "required": true,
+          "description": "净盈亏 / |最大回撤|。"
+        },
+        {
+          "name": "curve",
+          "type": "CurvePoint[]",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "ReportTrade": {
+      "kind": "type",
+      "source": "src/blocks/strategy-report/strategy-report-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "side",
+          "type": "ReportSide",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "entryTime",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "exitTime",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "entryPrice",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "exitPrice",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "quantity",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "pnl",
+          "type": "number",
+          "required": true,
+          "description": "这笔的净盈亏（已扣手续费），账户币种。"
+        },
+        {
+          "name": "maxRunup",
+          "type": "number",
+          "required": true,
+          "description": "持仓期间的最大浮盈（≥ 0）与最大浮亏（≤ 0），账户币种。"
+        },
+        {
+          "name": "maxDrawdown",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "entrySignal",
+          "type": "string",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "exitSignal",
+          "type": "string",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
     "RidgeGroup": {
       "kind": "type",
       "source": "src/quant/ridgeline-model.ts",
@@ -9532,6 +12465,243 @@
           "type": "boolean",
           "required": true,
           "description": "When false the text is replaced without rolling."
+        }
+      ]
+    },
+    "RowAction": {
+      "kind": "type",
+      "source": "src/patterns/row-actions.tsx",
+      "props": [
+        {
+          "name": "key",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "icon",
+          "type": "ReactNode",
+          "required": false,
+          "description": "悬停按钮用它；没有图标的项只出现在菜单里。"
+        },
+        {
+          "name": "shortcut",
+          "type": "string",
+          "required": false,
+          "description": "快捷键的字（已经写好的，例：Alt+W）：菜单里画在行尾，按钮的悬停提示里跟在名字后面。"
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "onSelect",
+          "type": "() => void",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "RowActionMenuItems": {
+      "kind": "component",
+      "source": "src/patterns/row-actions.tsx",
+      "props": [
+        {
+          "name": "items",
+          "type": "readonly RowAction[]",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "RowActions": {
+      "kind": "component",
+      "source": "src/patterns/row-actions.tsx",
+      "props": [
+        {
+          "name": "items",
+          "type": "readonly RowAction[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "屏幕阅读器念的组名。"
+        },
+        {
+          "name": "max",
+          "type": "number",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "focusable",
+          "type": "boolean",
+          "required": false,
+          "default": "true",
+          "description": "按钮能不能用 Tab 走到；行自己管键盘的表与列表（行内用上下键）传 false，菜单键开完整的菜单。默认 true。"
+        },
+        {
+          "name": "role",
+          "type": "string",
+          "required": false,
+          "default": "'group'",
+          "description": "宿主行是表里的一格时给 gridcell 这类角色；默认 group。"
+        },
+        {
+          "name": "pointerOnly",
+          "type": "boolean",
+          "required": false,
+          "description": "只给指针用：按钮画成不可聚焦、对读屏隐藏的 span，不是 button。宿主行本身是 option 这类「里面不许有可聚焦子项」的角色时用 （连板天梯：axe 的 nested-interactive）；键盘与读屏用户走菜单键开的整份菜单。"
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "RowActionsProps": {
+      "kind": "type",
+      "source": "src/patterns/row-actions.tsx",
+      "props": [
+        {
+          "name": "items",
+          "type": "readonly RowAction[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "屏幕阅读器念的组名。"
+        },
+        {
+          "name": "max",
+          "type": "number",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "focusable",
+          "type": "boolean",
+          "required": false,
+          "description": "按钮能不能用 Tab 走到；行自己管键盘的表与列表（行内用上下键）传 false，菜单键开完整的菜单。默认 true。"
+        },
+        {
+          "name": "role",
+          "type": "string",
+          "required": false,
+          "description": "宿主行是表里的一格时给 gridcell 这类角色；默认 group。"
+        },
+        {
+          "name": "pointerOnly",
+          "type": "boolean",
+          "required": false,
+          "description": "只给指针用：按钮画成不可聚焦、对读屏隐藏的 span，不是 button。宿主行本身是 option 这类「里面不许有可聚焦子项」的角色时用 （连板天梯：axe 的 nested-interactive）；键盘与读屏用户走菜单键开的整份菜单。"
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "RowContextMenu": {
+      "kind": "component",
+      "source": "src/patterns/row-actions.tsx",
+      "props": [
+        {
+          "name": "actionsFor",
+          "type": "(key: string) => readonly RowAction[]",
+          "required": false,
+          "description": "按行的键（data-code 的值）给这一行的项；空数组不出菜单；不传就什么都不包（调用方没打开这个功能时原样画孩子）。"
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "屏幕阅读器念的菜单名。"
+        },
+        {
+          "name": "keyAttribute",
+          "type": "string",
+          "required": false,
+          "default": "'data-code'",
+          "description": "行（或格子）元素上带键的属性名，默认 data-code。"
+        },
+        {
+          "name": "children",
+          "type": "ReactNode",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "RowContextMenuProps": {
+      "kind": "type",
+      "source": "src/patterns/row-actions.tsx",
+      "props": [
+        {
+          "name": "actionsFor",
+          "type": "(key: string) => readonly RowAction[]",
+          "required": false,
+          "description": "按行的键（data-code 的值）给这一行的项；空数组不出菜单；不传就什么都不包（调用方没打开这个功能时原样画孩子）。"
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "屏幕阅读器念的菜单名。"
+        },
+        {
+          "name": "keyAttribute",
+          "type": "string",
+          "required": false,
+          "description": "行（或格子）元素上带键的属性名，默认 data-code。"
+        },
+        {
+          "name": "children",
+          "type": "ReactNode",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "SavedView": {
+      "kind": "type",
+      "source": "src/lib/use-saved-views.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "value",
+          "type": "T",
+          "required": true,
+          "description": ""
         }
       ]
     },
@@ -10281,6 +13451,11 @@
           "description": ""
         }
       ]
+    },
+    "SideFilter": {
+      "kind": "type",
+      "source": "src/blocks/strategy-report/strategy-report-model.ts",
+      "props": []
     },
     "SizeFormat": {
       "kind": "type",
@@ -11695,6 +14870,370 @@
         }
       ]
     },
+    "StorageLike": {
+      "kind": "type",
+      "source": "src/lib/use-persisted-state.ts",
+      "props": []
+    },
+    "StrategyAction": {
+      "kind": "type",
+      "source": "src/blocks/system-monitor/system-monitor-model.ts",
+      "props": []
+    },
+    "StrategyReport": {
+      "kind": "component",
+      "source": "src/blocks/strategy-report/strategy-report.tsx",
+      "props": [
+        {
+          "name": "trades",
+          "type": "readonly ReportTrade[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "initialCapital",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "periodsPerYear",
+          "type": "number",
+          "required": false,
+          "description": "一年几个交易日，夏普与索提诺按它年化。A 股、美股 252，加密 365；默认 252。"
+        },
+        {
+          "name": "riskFree",
+          "type": "number",
+          "required": false,
+          "description": "年化无风险利率（小数），默认 0。"
+        },
+        {
+          "name": "benchmark",
+          "type": "{ name: string; at: (time: number) => number }",
+          "required": false,
+          "description": "同期买入持有：给一个时刻，返回那时的买入持有权益（起点是初始资金）。不给就不画那条线与那行读数。"
+        },
+        {
+          "name": "properties",
+          "type": "readonly StrategyReportPropertyGroup[]",
+          "required": true,
+          "description": "属性页：参数与回测设置，分组的键值。"
+        },
+        {
+          "name": "format",
+          "type": "StrategyReportFormat",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "labels",
+          "type": "StrategyReportLabels",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "badge",
+          "type": "string",
+          "required": false,
+          "description": "标在页签行右端的小标（如「演示数据」）。"
+        },
+        {
+          "name": "defaultTab",
+          "type": "StrategyReportTab",
+          "required": false,
+          "default": "'overview'",
+          "description": ""
+        },
+        {
+          "name": "defaultSide",
+          "type": "SideFilter",
+          "required": false,
+          "default": "'all'",
+          "description": ""
+        },
+        {
+          "name": "onTabChange",
+          "type": "(tab: StrategyReportTab) => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "onSideChange",
+          "type": "(side: SideFilter) => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "onExport",
+          "type": "(csv: string, fileName: string) => void",
+          "required": false,
+          "description": "给了，交易列表的行右键与表头菜单里出「导出 CSV」；回调收到文本与文件名。"
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "StrategyReportFormat": {
+      "kind": "type",
+      "source": "src/blocks/strategy-report/strategy-report.tsx",
+      "props": [
+        {
+          "name": "money",
+          "type": "(value: number) => string",
+          "required": true,
+          "description": "账户币种的金额，带符号与单位由调用方定（如 +1,234.50）。"
+        },
+        {
+          "name": "percent",
+          "type": "(value: number) => string",
+          "required": true,
+          "description": "小数的百分数：0.123 → 12.30%。"
+        },
+        {
+          "name": "price",
+          "type": "(value: number) => string",
+          "required": true,
+          "description": "成交价。"
+        },
+        {
+          "name": "quantity",
+          "type": "(value: number) => string",
+          "required": true,
+          "description": "数量。"
+        },
+        {
+          "name": "time",
+          "type": "(value: number) => string",
+          "required": true,
+          "description": "时刻（毫秒）。"
+        },
+        {
+          "name": "duration",
+          "type": "(value: number) => string",
+          "required": true,
+          "description": "时长（毫秒）。"
+        },
+        {
+          "name": "ratio",
+          "type": "(value: number) => string",
+          "required": false,
+          "description": "比率；不给写两位小数。"
+        },
+        {
+          "name": "axisTime",
+          "type": "(value: number) => string",
+          "required": false,
+          "description": "图表横轴刻度的短时刻；不给用 time。"
+        }
+      ]
+    },
+    "StrategyReportLabels": {
+      "kind": "type",
+      "source": "src/blocks/strategy-report/strategy-report.tsx",
+      "props": [
+        {
+          "name": "report",
+          "type": "string",
+          "required": true,
+          "description": "整个件的读屏名。"
+        },
+        {
+          "name": "tabs",
+          "type": "{ group: string overview: string performance: string analysis: string ratios: string trades: string properties: string }",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "side",
+          "type": "{ group: string; all: string; long: string; short: string }",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "metrics",
+          "type": "Record<MetricKey, string>",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "equity",
+          "type": "EquityCurveLabels & { title: string; hint?: string; name: string; label: string; axisName: string }",
+          "required": true,
+          "description": "权益曲线：标题、口径、线名、读屏名与图自带的文字。"
+        },
+        {
+          "name": "analysis",
+          "type": "{ pnlDistribution: string durationDistribution: string streaks: string win: string loss: string flat: string /** 直方图每根柱的整句，如「-100 到 0：12 笔」。 */ bar: (from: string, to: string, count: number) => string /** 连续盈亏条里一笔的整句，如「第 5 笔：盈利」。 */ streakItem: (index: number, result: 'win' | 'loss' | 'flat') => string facts: string }",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "list",
+          "type": "{ label: string columns: { index: string side: string entryTime: string exitTime: string entryPrice: string exitPrice: string quantity: string pnl: string cumulative: string runup: string drawdown: string } sides: { long: string; short: string } detail: { entrySignal: string; exitSignal: string; duration: string; return: string } resetColumns?: string }",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "empty",
+          "type": "ReactNode",
+          "required": true,
+          "description": "没有交易（或筛选后没有）。"
+        }
+      ]
+    },
+    "StrategyReportProperty": {
+      "kind": "type",
+      "source": "src/blocks/strategy-report/strategy-report.tsx",
+      "props": [
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "value",
+          "type": "string",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "StrategyReportPropertyGroup": {
+      "kind": "type",
+      "source": "src/blocks/strategy-report/strategy-report.tsx",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "title",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "rows",
+          "type": "readonly StrategyReportProperty[]",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "StrategyReportProps": {
+      "kind": "type",
+      "source": "src/blocks/strategy-report/strategy-report.tsx",
+      "props": [
+        {
+          "name": "trades",
+          "type": "readonly ReportTrade[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "initialCapital",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "periodsPerYear",
+          "type": "number",
+          "required": false,
+          "description": "一年几个交易日，夏普与索提诺按它年化。A 股、美股 252，加密 365；默认 252。"
+        },
+        {
+          "name": "riskFree",
+          "type": "number",
+          "required": false,
+          "description": "年化无风险利率（小数），默认 0。"
+        },
+        {
+          "name": "benchmark",
+          "type": "{ name: string; at: (time: number) => number }",
+          "required": false,
+          "description": "同期买入持有：给一个时刻，返回那时的买入持有权益（起点是初始资金）。不给就不画那条线与那行读数。"
+        },
+        {
+          "name": "properties",
+          "type": "readonly StrategyReportPropertyGroup[]",
+          "required": true,
+          "description": "属性页：参数与回测设置，分组的键值。"
+        },
+        {
+          "name": "format",
+          "type": "StrategyReportFormat",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "labels",
+          "type": "StrategyReportLabels",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "badge",
+          "type": "string",
+          "required": false,
+          "description": "标在页签行右端的小标（如「演示数据」）。"
+        },
+        {
+          "name": "defaultTab",
+          "type": "StrategyReportTab",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "defaultSide",
+          "type": "SideFilter",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "onTabChange",
+          "type": "(tab: StrategyReportTab) => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "onSideChange",
+          "type": "(side: SideFilter) => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "onExport",
+          "type": "(csv: string, fileName: string) => void",
+          "required": false,
+          "description": "给了，交易列表的行右键与表头菜单里出「导出 CSV」；回调收到文本与文件名。"
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "StrategyReportTab": {
+      "kind": "type",
+      "source": "src/blocks/strategy-report/strategy-report.tsx",
+      "props": []
+    },
+    "StrategyStatus": {
+      "kind": "type",
+      "source": "src/blocks/system-monitor/system-monitor-model.ts",
+      "props": []
+    },
     "Switch": {
       "kind": "component",
       "source": "src/primitives/switch.tsx",
@@ -12051,10 +15590,424 @@
         }
       ]
     },
+    "SymbolMenuInput": {
+      "kind": "type",
+      "source": "src/patterns/row-actions.tsx",
+      "props": [
+        {
+          "name": "openChart",
+          "type": "SymbolSlot",
+          "required": false,
+          "description": "打开图表。"
+        },
+        {
+          "name": "addToWatchlist",
+          "type": "SymbolSlot",
+          "required": false,
+          "description": "加入自选。"
+        },
+        {
+          "name": "newAlert",
+          "type": "SymbolSlot",
+          "required": false,
+          "description": "新建告警。"
+        },
+        {
+          "name": "copyCode",
+          "type": "SymbolSlot",
+          "required": false,
+          "description": "复制代码。"
+        },
+        {
+          "name": "extra",
+          "type": "readonly RowAction[]",
+          "required": false,
+          "description": "调用方自己的项，排在标准四项后面。"
+        }
+      ]
+    },
     "SymbolValue": {
       "kind": "type",
       "source": "src/blocks/data-grid/columns.ts",
       "props": []
+    },
+    "SystemMonitor": {
+      "kind": "component",
+      "source": "src/blocks/system-monitor/system-monitor.tsx",
+      "props": [
+        {
+          "name": "links",
+          "type": "readonly MonitorLink[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "strategies",
+          "type": "readonly MonitorStrategy[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "metrics",
+          "type": "readonly SystemMonitorMetric[]",
+          "required": true,
+          "description": "延迟、错误率等小图；一个都没有就写 notConnected。"
+        },
+        {
+          "name": "events",
+          "type": "readonly MonitorEvent[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "eventKinds",
+          "type": "readonly { value: string; label: string }[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "now",
+          "type": "number",
+          "required": true,
+          "description": "当前毫秒时间：「3 秒前」按它算，调用方定时更新（件不在渲染里取时间）。"
+        },
+        {
+          "name": "labels",
+          "type": "SystemMonitorLabels",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "onStrategyAction",
+          "type": "(strategy: MonitorStrategy, action: StrategyAction) => void",
+          "required": false,
+          "description": "启停回调：件只发请求，状态变化由调用方改数据回传。"
+        },
+        {
+          "name": "onEmergencyStop",
+          "type": "() => void",
+          "required": false,
+          "description": "急停：按住确认后回调。不给就没有急停按钮。"
+        },
+        {
+          "name": "quotaWarnAt",
+          "type": "number",
+          "required": false,
+          "description": "额度条转琥珀的占用比（0 到 1）；不给不预警，越界（≥ 1）总是红。预警线属于账户风控，由调用方给。"
+        },
+        {
+          "name": "onLinkPick",
+          "type": "(link: MonitorLink) => void",
+          "required": false,
+          "description": "连接条上点一个连接。"
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "SystemMonitorLabels": {
+      "kind": "type",
+      "source": "src/blocks/system-monitor/system-monitor.tsx",
+      "props": [
+        {
+          "name": "monitor",
+          "type": "string",
+          "required": true,
+          "description": "整个件的读屏名。"
+        },
+        {
+          "name": "heading",
+          "type": "string",
+          "required": true,
+          "description": "面板头标题。"
+        },
+        {
+          "name": "notConnected",
+          "type": "string",
+          "required": true,
+          "description": "没有连接 / 没有数据时每块写的字。"
+        },
+        {
+          "name": "links",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "strategies",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "metrics",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "events",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "linkState",
+          "type": "Record<LinkState, string>",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "strategyStatus",
+          "type": "Record<StrategyStatus, string>",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "severity",
+          "type": "Record<EventSeverity, string>",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "ago",
+          "type": "(seconds: number) => string",
+          "required": true,
+          "description": "「3 秒前」：传入已过去的秒数。"
+        },
+        {
+          "name": "latency",
+          "type": "(ms: number) => string",
+          "required": true,
+          "description": "「42 ms」。"
+        },
+        {
+          "name": "heartbeat",
+          "type": "string",
+          "required": true,
+          "description": "最后心跳那一段的前缀，如「心跳」，没收到过写 noBeat。"
+        },
+        {
+          "name": "noBeat",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "columns",
+          "type": "{ name: string account: string symbol: string status: string position: string pnl: string quota: string lastTrade: string actions: string }",
+          "required": true,
+          "description": "策略表列名。"
+        },
+        {
+          "name": "actions",
+          "type": "Record<StrategyAction, string>",
+          "required": true,
+          "description": "启停按钮的名字（读屏与悬停）。"
+        },
+        {
+          "name": "emergencyStop",
+          "type": "string",
+          "required": true,
+          "description": "急停按钮上的字、按住提示（「按住 2 秒，停止全部策略」）、填满后的字。"
+        },
+        {
+          "name": "emergencyHint",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "emergencyDone",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "eventKinds",
+          "type": "string",
+          "required": true,
+          "description": "事件筛选：类别芯片组与严重程度分段的读屏名、「全部」「清除」、没有命中。"
+        },
+        {
+          "name": "eventSeverity",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "all",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "clearKinds",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "noEvents",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "quotaUsed",
+          "type": "(percent: number) => string",
+          "required": true,
+          "description": "额度条读屏：「额度已用 80%」。"
+        }
+      ]
+    },
+    "SystemMonitorMetric": {
+      "kind": "type",
+      "source": "src/blocks/system-monitor/system-monitor.tsx",
+      "props": [
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "点阵小标签（如 NET ASSET）。"
+        },
+        {
+          "name": "note",
+          "type": "ReactNode",
+          "required": false,
+          "description": "变化行的小字说明（如「今日」「接近上限」）：状态不只靠颜色，near 与 over 时这里要写字。"
+        },
+        {
+          "name": "value",
+          "type": "string | null",
+          "required": true,
+          "description": "已经格式化好的数值；没有数据传 null。"
+        },
+        {
+          "name": "unit",
+          "type": "string",
+          "required": false,
+          "description": "数值后面的小字（如「/月」「/ 150%」）。"
+        },
+        {
+          "name": "series",
+          "type": "readonly number[]",
+          "required": true,
+          "description": "迷你线的数，从旧到新；少于两个数画不出线，写「—」。"
+        },
+        {
+          "name": "sparkLabel",
+          "type": "string",
+          "required": true,
+          "description": "读屏名（整句，含「没有数据」的说法）。"
+        },
+        {
+          "name": "threshold",
+          "type": "number",
+          "required": false,
+          "description": "阈值（跟 series 同一个单位）：画一条琥珀虚线。"
+        },
+        {
+          "name": "state",
+          "type": "SparkTileState",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "trendTone",
+          "type": "'series' | 'neutral'",
+          "required": false,
+          "description": "series 是常态的线色（series-1）；neutral 是「越低越好」的指标（ink-300）。"
+        },
+        {
+          "name": "key",
+          "type": "string",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "SystemMonitorProps": {
+      "kind": "type",
+      "source": "src/blocks/system-monitor/system-monitor.tsx",
+      "props": [
+        {
+          "name": "links",
+          "type": "readonly MonitorLink[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "strategies",
+          "type": "readonly MonitorStrategy[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "metrics",
+          "type": "readonly SystemMonitorMetric[]",
+          "required": true,
+          "description": "延迟、错误率等小图；一个都没有就写 notConnected。"
+        },
+        {
+          "name": "events",
+          "type": "readonly MonitorEvent[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "eventKinds",
+          "type": "readonly { value: string; label: string }[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "now",
+          "type": "number",
+          "required": true,
+          "description": "当前毫秒时间：「3 秒前」按它算，调用方定时更新（件不在渲染里取时间）。"
+        },
+        {
+          "name": "labels",
+          "type": "SystemMonitorLabels",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "onStrategyAction",
+          "type": "(strategy: MonitorStrategy, action: StrategyAction) => void",
+          "required": false,
+          "description": "启停回调：件只发请求，状态变化由调用方改数据回传。"
+        },
+        {
+          "name": "onEmergencyStop",
+          "type": "() => void",
+          "required": false,
+          "description": "急停：按住确认后回调。不给就没有急停按钮。"
+        },
+        {
+          "name": "quotaWarnAt",
+          "type": "number",
+          "required": false,
+          "description": "额度条转琥珀的占用比（0 到 1）；不给不预警，越界（≥ 1）总是红。预警线属于账户风控，由调用方给。"
+        },
+        {
+          "name": "onLinkPick",
+          "type": "(link: MonitorLink) => void",
+          "required": false,
+          "description": "连接条上点一个连接。"
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": ""
+        }
+      ]
     },
     "TOAST_EXIT_MS": {
       "kind": "value",
@@ -13590,6 +17543,36 @@
       "source": "src/quant/uptime-bars-model.ts",
       "props": []
     },
+    "UseSavedViewsOptions": {
+      "kind": "type",
+      "source": "src/lib/use-saved-views.ts",
+      "props": [
+        {
+          "name": "key",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "version",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "storage",
+          "type": "StorageLike",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "recentLimit",
+          "type": "number",
+          "required": false,
+          "description": "「最近」留几个，默认 5。"
+        }
+      ]
+    },
     "UseScrubberOptions": {
       "kind": "type",
       "source": "src/lib/use-scrubber.ts",
@@ -13616,6 +17599,30 @@
           "name": "onIndexChange",
           "type": "(index: number | null) => void",
           "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "WatchRow": {
+      "kind": "type",
+      "source": "src/blocks/hypothesis-ledger/hypothesis-ledger-model.ts",
+      "props": [
+        {
+          "name": "layer",
+          "type": "HypothesisLayer",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "evidence",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "confusion",
+          "type": "string",
+          "required": true,
           "description": ""
         }
       ]
@@ -14012,9 +18019,24 @@
         }
       ]
     },
+    "activeColumnSet": {
+      "kind": "function",
+      "source": "src/blocks/data-grid/layout-model.ts",
+      "props": []
+    },
     "alertVariants": {
       "kind": "function",
       "source": "src/primitives/alert.tsx",
+      "props": []
+    },
+    "applyColumnSet": {
+      "kind": "function",
+      "source": "src/blocks/data-grid/layout-model.ts",
+      "props": []
+    },
+    "bestIndex": {
+      "kind": "function",
+      "source": "src/quant/param-scatter-model.ts",
       "props": []
     },
     "buttonVariants": {
@@ -14047,6 +18069,30 @@
       "source": "src/quant/format/quantity.ts",
       "props": []
     },
+    "computeReport": {
+      "kind": "function",
+      "source": "src/blocks/strategy-report/strategy-report-model.ts",
+      "props": [
+        {
+          "name": "initialCapital",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "periodsPerYear",
+          "type": "number",
+          "required": false,
+          "description": "一年有几个交易日：A 股与美股 252，加密 365。夏普与索提诺按它年化。默认 252。"
+        },
+        {
+          "name": "riskFree",
+          "type": "number",
+          "required": false,
+          "description": "年化无风险利率（小数），默认 0。"
+        }
+      ]
+    },
     "countConsensus": {
       "kind": "function",
       "source": "src/quant/consensus-block.tsx",
@@ -14055,6 +18101,11 @@
     "decimalsOfTick": {
       "kind": "function",
       "source": "src/quant/format/price.ts",
+      "props": []
+    },
+    "filterTrades": {
+      "kind": "function",
+      "source": "src/blocks/strategy-report/strategy-report-model.ts",
       "props": []
     },
     "focusRing": {
@@ -14132,6 +18183,11 @@
     "gaussianKde": {
       "kind": "function",
       "source": "src/quant/ridgeline-model.ts",
+      "props": []
+    },
+    "histogram": {
+      "kind": "function",
+      "source": "src/blocks/strategy-report/strategy-report-model.ts",
       "props": []
     },
     "histogramBins": {
@@ -14239,6 +18295,26 @@
       "source": "src/primitives/menu-parts.tsx",
       "props": []
     },
+    "metricStageIndex": {
+      "kind": "function",
+      "source": "src/quant/metric-card.tsx",
+      "props": []
+    },
+    "metricTrendTone": {
+      "kind": "function",
+      "source": "src/quant/metric-card.tsx",
+      "props": []
+    },
+    "moveColumn": {
+      "kind": "function",
+      "source": "src/blocks/data-grid/layout-model.ts",
+      "props": []
+    },
+    "moveParam": {
+      "kind": "function",
+      "source": "src/quant/param-scatter-model.ts",
+      "props": []
+    },
     "quantileRange": {
       "kind": "function",
       "source": "src/quant/quantile-model.ts",
@@ -14248,6 +18324,29 @@
       "kind": "function",
       "source": "src/katana/quote-tone.ts",
       "props": []
+    },
+    "rampColor": {
+      "kind": "function",
+      "source": "src/quant/param-scatter-model.ts",
+      "props": []
+    },
+    "rampPosition": {
+      "kind": "function",
+      "source": "src/quant/param-scatter-model.ts",
+      "props": [
+        {
+          "name": "min",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "max",
+          "type": "number",
+          "required": true,
+          "description": ""
+        }
+      ]
     },
     "rangeShare": {
       "kind": "function",
@@ -14267,6 +18366,40 @@
     "ratingZone": {
       "kind": "function",
       "source": "src/katana/rating-gauge-model.ts",
+      "props": []
+    },
+    "readPersisted": {
+      "kind": "function",
+      "source": "src/lib/use-persisted-state.ts",
+      "props": [
+        {
+          "name": "version",
+          "type": "number",
+          "required": true,
+          "description": "存档版本；改了就丢掉旧存档。"
+        },
+        {
+          "name": "storage",
+          "type": "StorageLike",
+          "required": false,
+          "description": "存储；省略用 localStorage（拿不到时只在内存里）。"
+        },
+        {
+          "name": "validate",
+          "type": "(value: unknown) => value is T",
+          "required": false,
+          "description": "读出来的值形状不对就返回 false，当没存过。"
+        }
+      ]
+    },
+    "reorderColumn": {
+      "kind": "function",
+      "source": "src/blocks/data-grid/layout-model.ts",
+      "props": []
+    },
+    "resolveRamp": {
+      "kind": "function",
+      "source": "src/quant/param-scatter-model.ts",
       "props": []
     },
     "ridgeStats": {
@@ -14376,6 +18509,16 @@
     "selectTriggerVariants": {
       "kind": "function",
       "source": "src/primitives/select.tsx",
+      "props": []
+    },
+    "setColumnFixed": {
+      "kind": "function",
+      "source": "src/blocks/data-grid/layout-model.ts",
+      "props": []
+    },
+    "setColumnVisible": {
+      "kind": "function",
+      "source": "src/blocks/data-grid/layout-model.ts",
       "props": []
     },
     "sheetVariants": {
@@ -14506,6 +18649,42 @@
       "source": "src/katana/symbol-mark.tsx",
       "props": []
     },
+    "symbolMenu": {
+      "kind": "function",
+      "source": "src/patterns/row-actions.tsx",
+      "props": [
+        {
+          "name": "openChart",
+          "type": "SymbolSlot",
+          "required": false,
+          "description": "打开图表。"
+        },
+        {
+          "name": "addToWatchlist",
+          "type": "SymbolSlot",
+          "required": false,
+          "description": "加入自选。"
+        },
+        {
+          "name": "newAlert",
+          "type": "SymbolSlot",
+          "required": false,
+          "description": "新建告警。"
+        },
+        {
+          "name": "copyCode",
+          "type": "SymbolSlot",
+          "required": false,
+          "description": "复制代码。"
+        },
+        {
+          "name": "extra",
+          "type": "readonly RowAction[]",
+          "required": false,
+          "description": "调用方自己的项，排在标准四项后面。"
+        }
+      ]
+    },
     "tableCsv": {
       "kind": "function",
       "source": "src/blocks/data-grid/model.ts",
@@ -14574,10 +18753,65 @@
       "source": "src/primitives/menu-any.tsx",
       "props": []
     },
+    "usePersistedState": {
+      "kind": "function",
+      "source": "src/lib/use-persisted-state.ts",
+      "props": [
+        {
+          "name": "version",
+          "type": "number",
+          "required": true,
+          "description": "存档版本；改了就丢掉旧存档。"
+        },
+        {
+          "name": "storage",
+          "type": "StorageLike",
+          "required": false,
+          "description": "存储；省略用 localStorage（拿不到时只在内存里）。"
+        },
+        {
+          "name": "validate",
+          "type": "(value: unknown) => value is T",
+          "required": false,
+          "description": "读出来的值形状不对就返回 false，当没存过。"
+        }
+      ]
+    },
     "useRovingToolbar": {
       "kind": "function",
       "source": "src/blocks/toolbar/use-roving-toolbar.ts",
       "props": []
+    },
+    "useSavedViews": {
+      "kind": "function",
+      "source": "src/lib/use-saved-views.ts",
+      "props": [
+        {
+          "name": "key",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "version",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "storage",
+          "type": "StorageLike",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "recentLimit",
+          "type": "number",
+          "required": false,
+          "default": "5",
+          "description": "「最近」留几个，默认 5。"
+        }
+      ]
     },
     "useScrubber": {
       "kind": "function",
@@ -14609,6 +18843,11 @@
           "description": ""
         }
       ]
+    },
+    "valueRange": {
+      "kind": "function",
+      "source": "src/quant/param-scatter-model.ts",
+      "props": []
     }
   }
 }

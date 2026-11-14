@@ -248,7 +248,7 @@ export function EquityCurve({
           <div className="k-eq-dd" style={{ height: DRAWDOWN_H }} data-slot="equity-drawdown" aria-hidden="true">
             <svg viewBox={`0 0 ${PLOT_W} ${DRAWDOWN_H}`} preserveAspectRatio="none">
               <defs>
-                <DotFill id={dotId} color="var(--seq-300)" />
+                <DotFill id={dotId} color="color-mix(in srgb, var(--pnl-down) 60%, transparent)" />
               </defs>
               <line className="k-ck-grid" x1={0} x2={PLOT_W} y1={zeroY} y2={zeroY} />
               {ddArea && (

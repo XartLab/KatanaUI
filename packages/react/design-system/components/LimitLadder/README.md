@@ -15,6 +15,7 @@ A 股专有件（连板、涨停、炸板是 A 股的概念）。按板位从高
 | `labels` | `LimitLadderLabels` | — | 板位单位、晋级率与只数文字、状态名、汇总读数名、列名、读屏名、空态文字，由调用方传。 |
 | `selected` | `string \| null` | — | 选中个股的代码；选中行左侧画 2px 强调条。 |
 | `onSelect` | `(code: string) => void` | — | 点击或 Enter / Space 选一行。 |
+| `rowActions` | `(item: LadderItem) => RowAction[]` | — | 行快捷操作（#23，一般传 symbolMenu(...)）：悬停或键盘落到这一行时右端浮出前三颗带图标的按钮，右键、菜单键、Shift+F10 出整份菜单。不传就没有。按钮条与菜单的读屏名取 labels.rowActions、labels.rowMenu（可选，省略用英文）。 |
 
 ## Usage
 

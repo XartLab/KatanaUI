@@ -22,6 +22,7 @@
 | `formatPrice` | `(value: number) => string` | — | 悬停卡片上的价格写法；不给写 2 位小数。 |
 | `selected` | `string \| null` | — | 选中的代码；选中的格子画 2px 白色内圈。 |
 | `onSelect` | `(code: string) => void` | — | 点格子，或焦点在格子上按 Enter / Space。 |
+| `cellActions` | `(item: HeatmapItem) => RowAction[]` | — | 格子的右键菜单（#23，一般传 symbolMenu(...)）：右键、菜单键、Shift+F10 出同一份品种菜单。格子小，不画悬停按钮。读屏名取 labels.cellMenu（可选）。不传就没有。 |
 
 ## Usage
 

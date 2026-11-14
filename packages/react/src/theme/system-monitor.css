@@ -1,0 +1,232 @@
+/* SPDX-License-Identifier: MIT */
+/* SystemMonitor：连接状态条、策略表、小图、事件流。全用语义 token；异常用红 / 琥珀 + 文字 + 边线，橙色不画数据，不用蓝。数字等宽。 */
+.k-sysmon {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  height: 100%;
+  color: var(--ink-200);
+  font: var(--text-data) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+}
+.k-sysmon-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 0 0 8px;
+}
+.k-sysmon-head h3 {
+  margin: 0;
+  color: var(--ink-100);
+  font: inherit;
+  font-weight: 700;
+}
+.k-sysmon-body {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 0;
+  overflow: auto;
+}
+.k-sysmon-empty {
+  padding: 12px;
+  color: var(--ink-300);
+  text-align: center;
+  border: var(--hairline);
+  background: var(--bg-200);
+}
+.k-sysmon-linklist {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.k-sysmon-link {
+  background: var(--bg-200);
+  border: var(--hairline);
+  border-left: 3px solid var(--line-200);
+}
+.k-sysmon-link[data-state='error'] {
+  border-left-color: var(--signal-red);
+}
+.k-sysmon-link[data-state='offline'],
+.k-sysmon-link[data-state='degraded'] {
+  border-left-color: var(--signal-amber);
+}
+.k-sysmon-link-body {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 10px;
+  background: none;
+  border: 0;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+}
+button.k-sysmon-link-body {
+  cursor: pointer;
+}
+button.k-sysmon-link-body:hover {
+  background: var(--bg-300);
+}
+button.k-sysmon-link-body:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: -2px;
+}
+.k-sysmon-link-name {
+  color: var(--ink-100);
+  font-weight: 600;
+}
+.k-sysmon-link[data-state='error'] .k-sysmon-link-state {
+  color: var(--signal-red);
+}
+.k-sysmon-link[data-state='offline'] .k-sysmon-link-state,
+.k-sysmon-link[data-state='degraded'] .k-sysmon-link-state {
+  color: var(--signal-amber);
+}
+.k-sysmon-link-state,
+.k-sysmon-link-beat {
+  color: var(--ink-300);
+}
+.k-sysmon-metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 8px;
+}
+.k-sysmon-metrics .k-sysmon-empty {
+  grid-column: 1 / -1;
+}
+.k-sysmon-tablewrap {
+  overflow-x: auto;
+  border: var(--hairline);
+}
+.k-sysmon-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.k-sysmon-table th,
+.k-sysmon-table td {
+  padding: 6px 10px;
+  text-align: left;
+  white-space: nowrap;
+  border-bottom: var(--hairline);
+}
+.k-sysmon-table thead th {
+  color: var(--ink-300);
+  font-weight: 500;
+  background: var(--bg-200);
+}
+.k-sysmon-table .num {
+  text-align: right;
+}
+.k-sysmon-row[data-status='error'] {
+  box-shadow: inset 3px 0 0 var(--signal-red);
+  background: var(--alpha-white-3);
+}
+.k-sysmon-name {
+  color: var(--ink-100);
+  font-weight: 600;
+}
+.k-sysmon-name-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  color: var(--ink-100);
+  font-weight: 600;
+}
+.k-sysmon-error {
+  color: var(--signal-red);
+  font-weight: 400;
+}
+.k-sysmon-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.k-sysmon-row[data-status='error'] .k-sysmon-status {
+  color: var(--signal-red);
+}
+.k-sysmon-quota {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.k-sysmon-quota-track {
+  display: inline-block;
+  width: 64px;
+  height: 6px;
+  background: var(--bg-000);
+  box-shadow: var(--recess);
+}
+.k-sysmon-quota-track > span {
+  display: block;
+  height: 100%;
+  background: var(--signal-green);
+}
+.k-sysmon-quota[data-tone='warn'] .k-sysmon-quota-track > span {
+  background: var(--signal-amber);
+}
+.k-sysmon-quota[data-tone='danger'] .k-sysmon-quota-track > span {
+  background: var(--signal-red);
+}
+.k-sysmon-actions {
+  display: flex;
+  gap: 2px;
+}
+.k-sysmon-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+.k-sysmon-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 8px;
+}
+.k-sysmon-eventlist {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border: var(--hairline);
+}
+.k-sysmon-event {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 5px 10px;
+  border-bottom: var(--hairline);
+  border-left: 3px solid transparent;
+}
+.k-sysmon-event .k-led {
+  align-self: center;
+}
+.k-sysmon-event[data-severity='warn'] {
+  border-left-color: var(--signal-amber);
+}
+.k-sysmon-event[data-severity='error'] {
+  border-left-color: var(--signal-red);
+}
+.k-sysmon-event-time {
+  min-width: 64px;
+  color: var(--ink-300);
+}
+.k-sysmon-event-kind {
+  min-width: 56px;
+  color: var(--ink-200);
+  font-weight: 600;
+}
+.k-sysmon-event[data-severity='error'] .k-sysmon-event-text {
+  color: var(--signal-red);
+}
+.k-sysmon-event-text {
+  color: var(--ink-100);
+}

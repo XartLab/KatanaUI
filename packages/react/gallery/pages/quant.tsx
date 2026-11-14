@@ -6,9 +6,12 @@ import {
   ConsensusBlock,
   countConsensus,
   DecimalField,
+  EventCalendar,
   FlowGauges,
   LimitLadder,
   MarketHeatmap,
+  MetricCard,
+  MetricCardGrid,
   Meter,
   PnlText,
   RegimeBand,
@@ -20,6 +23,8 @@ import {
   formatPrice,
   formatQuantity,
   formatVolume,
+  type EconomicEvent,
+  type EventCalendarLabels,
   type HeatmapColorBy,
   type HeatmapItem,
   type HeatmapScheme,
@@ -27,6 +32,9 @@ import {
   type LadderLevel,
   type LimitLadderLabels,
   type MarketHeatmapLabels,
+  type MetricChange,
+  type MetricRange,
+  type MetricStage,
   type RatingGroup,
   type RatingRow,
   type RatingVerdict,
@@ -36,8 +44,9 @@ import {
   type RegimeSegment,
   type RegimeState,
 } from '../../src/quant/index.ts'
+import { symbolMenu } from '../../src/patterns/row-actions.tsx'
 import { ToggleGroup, ToggleGroupItem } from '../../src/primitives/toggle-group.tsx'
-import { Cell, Row, SAMPLE_MARK_SRC } from './parts.tsx'
+import { ActionLog, Cell, Row, SAMPLE_MARK_SRC, demoSymbolActions } from './parts.tsx'
 
 // 量化层（@katana-ui/react/quant，#1862、#1929）的演示。数值都是示例，不是行情，页上也写明。根元素设 data-updown="cn" 时涨跌色互换（红涨绿跌）。
 
@@ -239,14 +248,24 @@ const LADDER_LABELS: LimitLadderLabels = {
 
 export function LimitLadderDemo() {
   const [selected, setSelected] = useState<string | null>('300004')
+  const [log, setLog] = useState('')
   return (
-    <div style={{ width: '100%', maxWidth: 640, height: 660 }}>
-      <PanelFrame focused aria-label="连板天梯">
-        <PanelFrameHeader heading="连板天梯" object="演示数据" />
-        <PanelFrameBody>
-          <LimitLadder levels={LADDER_LEVELS} labels={LADDER_LABELS} selected={selected} onSelect={setSelected} />
-        </PanelFrameBody>
-      </PanelFrame>
+    <div style={{ width: '100%', maxWidth: 640 }}>
+      <div style={{ height: 660 }}>
+        <PanelFrame focused aria-label="连板天梯">
+          <PanelFrameHeader heading="连板天梯" object="演示数据" />
+          <PanelFrameBody>
+            <LimitLadder
+              levels={LADDER_LEVELS}
+              labels={LADDER_LABELS}
+              selected={selected}
+              onSelect={setSelected}
+              rowActions={(item) => demoSymbolActions(item.code, setLog)}
+            />
+          </PanelFrameBody>
+        </PanelFrame>
+      </div>
+      <ActionLog text={log} />
     </div>
   )
 }
@@ -386,6 +405,7 @@ const HEAT_LABELS: MarketHeatmapLabels = {
 
 export function MarketHeatmapDemo() {
   const [selected, setSelected] = useState<string | null>(null)
+  const [log, setLog] = useState('')
   const [scheme, setScheme] = useState<HeatmapScheme>('classic')
   const [market, setMarket] = useState('stocks')
   const [wide, setWide] = useState(false)
@@ -454,11 +474,13 @@ export function MarketHeatmapDemo() {
                 scheme={scheme}
                 selected={selected}
                 onSelect={setSelected}
+                cellActions={(item) => demoSymbolActions(item.code, setLog)}
               />
             </PanelFrameBody>
           </PanelFrame>
         </div>
       </div>
+      <ActionLog text={log} />
     </div>
   )
 }
@@ -957,5 +979,376 @@ export function DecimalFieldDemo() {
       </Row>
       <p className="gal-note">↑ / ↓ 走一格，Shift 十格；打字自由，合不合法由调用方判。0.1 的格子加起来是精确的。</p>
     </>
+  )
+}
+
+// 经济日历（#28）的演示数据：事件名、国家名、数值全是编出来的，不是真实数据。固定「现在」= 2026-11-17 周二 08:00（上海），截图与断言不随真实日期变。
+const CAL_NOW = Date.UTC(2026, 10, 17, 0, 0)
+const calAt = (day: number, hour: number, minute = 0) => Date.UTC(2026, 10, day, hour - 8, minute)
+const CAL_EVENTS: EconomicEvent[] = [
+  {
+    id: 'a1',
+    at: calAt(16, 9, 30),
+    region: 'CN',
+    regionName: '甲国',
+    name: '示例消费者物价指数 同比',
+    importance: 3,
+    actual: '0.4%',
+    forecast: '0.3%',
+    previous: '0.3%',
+    tone: 'down',
+  },
+  {
+    id: 'a2',
+    at: calAt(16, 22, 0),
+    region: 'US',
+    regionName: '乙国',
+    name: '示例零售销售 环比',
+    importance: 2,
+    actual: '0.2%',
+    forecast: '0.4%',
+    previous: '0.6%',
+    tone: 'down',
+  },
+  {
+    id: 'b1',
+    at: calAt(17, 9, 0),
+    region: 'CN',
+    regionName: '甲国',
+    name: '示例工业增加值 同比',
+    importance: 2,
+    actual: '5.1%',
+    forecast: '4.9%',
+    previous: '4.8%',
+    tone: 'up',
+  },
+  {
+    id: 'b2',
+    at: calAt(17, 8, 45),
+    region: 'JP',
+    regionName: '丙国',
+    name: '示例贸易帐',
+    importance: 1,
+    actual: '-0.2万亿',
+    forecast: '-0.3万亿',
+    previous: '-0.4万亿',
+    tone: 'up',
+  },
+  {
+    id: 'b3',
+    at: calAt(17, 17, 0),
+    region: 'EU',
+    regionName: '丁区',
+    name: '示例经济景气指数',
+    importance: 2,
+    forecast: '98.5',
+    previous: '97.9',
+  },
+  {
+    id: 'b4',
+    at: calAt(17, 21, 30),
+    region: 'US',
+    regionName: '乙国',
+    name: '示例新屋开工',
+    importance: 1,
+    forecast: '1.32M',
+    previous: '1.35M',
+  },
+  {
+    id: 'c1',
+    at: calAt(18, 10, 0),
+    region: 'GB',
+    regionName: '戊国',
+    name: '示例失业率',
+    importance: 2,
+    forecast: '4.3%',
+    previous: '4.2%',
+  },
+  {
+    id: 'c2',
+    at: calAt(18, 21, 30),
+    region: 'US',
+    regionName: '乙国',
+    name: '示例非农就业人数',
+    importance: 3,
+    forecast: '18.5万',
+    previous: '22.8万',
+  },
+  {
+    id: 'c3',
+    at: calAt(18, 23, 0),
+    region: 'US',
+    regionName: '乙国',
+    name: '示例央行官员讲话',
+    importance: 3,
+    previous: '—',
+  },
+  {
+    id: 'd1',
+    at: calAt(20, 15, 0),
+    region: 'EU',
+    regionName: '丁区',
+    name: '示例央行利率决议',
+    importance: 3,
+    forecast: '2.25%',
+    previous: '2.25%',
+  },
+  {
+    id: 'd2',
+    at: calAt(20, 20, 30),
+    region: 'US',
+    regionName: '乙国',
+    name: '示例初请失业金人数',
+    importance: 2,
+    forecast: '22.0万',
+    previous: '21.8万',
+  },
+  {
+    id: 'n1',
+    at: calAt(24, 9, 30),
+    region: 'CN',
+    regionName: '甲国',
+    name: '示例制造业采购经理指数',
+    importance: 3,
+    forecast: '50.2',
+    previous: '49.8',
+  },
+  {
+    id: 'n2',
+    at: calAt(25, 10, 0),
+    region: 'GB',
+    regionName: '戊国',
+    name: '示例工业产出',
+    importance: 1,
+    forecast: '0.1%',
+    previous: '0.0%',
+  },
+]
+
+const CAL_LABELS: EventCalendarLabels = {
+  list: '经济日历',
+  empty: '这段时间没有符合条件的事件',
+  range: { today: '今天', week: '本周', next: '下周', custom: '自定义' },
+  rangeGroup: '日期范围',
+  importanceGroup: '重要程度',
+  importanceClear: '清除重要程度筛选',
+  importance: (level) => `重要程度 ${level}`,
+  regionsAll: '全部国家',
+  regionsPlaceholder: '搜索国家 / 地区',
+  regionsEmpty: '没有这个国家',
+  regionsCount: (n) => `${n} 个国家`,
+  onlyHigh: '只看高重要',
+  today: '今天',
+  columns: {
+    time: '时间',
+    region: '国家',
+    event: '事件',
+    importance: '重要',
+    actual: '实际',
+    forecast: '预期',
+    previous: '前值',
+  },
+  countdown: (m) => (m >= 60 ? `${Math.floor(m / 60)} 小时 ${m % 60} 分后` : `${m} 分后`),
+  dateRange: {
+    start: '起点',
+    end: '终点',
+    pickRange: '选择区间',
+    calendar: '区间日历',
+    previousMonth: '上个月',
+    nextMonth: '下个月',
+    presets: '常用区间',
+    preset: { today: '今天', week: '本周', month: '本月', ytd: '年初至今' },
+    custom: '自定义',
+  },
+  dayTitle: (day) => {
+    const [y, m, d] = day.split('-').map(Number)
+    const week = '日一二三四五六'[new Date(Date.UTC(y!, m! - 1, d!)).getUTCDay()]
+    return `${m} 月 ${d} 日 周${week}`
+  },
+  count: (n) => `${n} 条`,
+  rowActions: '事件操作',
+  rowMenu: '事件菜单',
+}
+
+export function EventCalendarDemo() {
+  return (
+    <div style={{ width: '100%', maxWidth: 820, height: 640 }}>
+      <PanelFrame focused aria-label="经济日历">
+        <PanelFrameHeader heading="经济日历" object="演示数据" />
+        <PanelFrameBody>
+          <EventCalendar
+            events={CAL_EVENTS}
+            labels={CAL_LABELS}
+            now={CAL_NOW}
+            timeZone="Asia/Shanghai"
+            locale="zh-CN"
+            defaultRange="week"
+            rowActions={(event) =>
+              symbolMenu({
+                newAlert: { label: '设提醒', onSelect: () => undefined },
+                copyCode: { label: `复制 ${event.id}`, onSelect: () => undefined },
+              })
+            }
+          />
+        </PanelFrameBody>
+      </PanelFrame>
+    </div>
+  )
+}
+
+// 指标卡演示（#30）：序列由固定种子的随机游走编出来（演示数据，不是行情），两组各一面卡片墙。
+function walk(seed: number, start: number, step: number, lo: number, hi: number, n = 250): number[] {
+  let state = seed
+  const rand = () => {
+    state = (state * 1664525 + 1013904223) % 4294967296
+    return state / 4294967296
+  }
+  const out: number[] = []
+  let v = start
+  for (let i = 0; i < n; i += 1) {
+    v = Math.min(hi, Math.max(lo, v + (rand() - 0.5) * 2 * step))
+    out.push(Number(v.toFixed(2)))
+  }
+  return out
+}
+
+const METRIC_RANGES = [
+  { key: '1m', label: '1 月', n: 21 },
+  { key: '3m', label: '3 月', n: 63 },
+  { key: '6m', label: '6 月', n: 126 },
+  { key: '1y', label: '1 年', n: 250 },
+] as const
+
+function metricProps(values: readonly number[]): { ranges: MetricRange[]; changes: MetricChange[] } {
+  const last = values[values.length - 1]!
+  const since = (back: number): number | null => {
+    const base = values[values.length - 1 - back]
+    return base === undefined || base === 0 ? null : ((last - base) / Math.abs(base)) * 100
+  }
+  return {
+    ranges: METRIC_RANGES.map((r) => ({ key: r.key, label: r.label, values: values.slice(-r.n) })),
+    changes: [
+      { key: 'd', label: '较前日', value: since(1) },
+      { key: 'w', label: '较前周', value: since(5) },
+      { key: 'm', label: '较前月', value: since(21) },
+      { key: 'y', label: '较前年', value: since(249) },
+    ],
+  }
+}
+
+const FEAR_GREED_STAGES: MetricStage[] = [
+  { label: '极度恐惧', from: 0, to: 25 },
+  { label: '恐惧', from: 25, to: 45 },
+  { label: '中性', from: 45, to: 55 },
+  { label: '贪婪', from: 55, to: 75 },
+  { label: '极度贪婪', from: 75, to: 100 },
+]
+const CYCLE_STAGES: MetricStage[] = [
+  { label: '冰点', from: 0, to: 20 },
+  { label: '低迷', from: 20, to: 40 },
+  { label: '平稳', from: 40, to: 60 },
+  { label: '活跃', from: 60, to: 80 },
+  { label: '亢奋', from: 80, to: 100 },
+]
+
+const GLOBAL_DEMO = [
+  {
+    title: '恐惧与贪婪指数',
+    trend: 'neutral' as const,
+    seed: 11,
+    start: 48,
+    step: 4,
+    lo: 5,
+    hi: 95,
+    digits: 0,
+    stages: FEAR_GREED_STAGES,
+  },
+  { title: 'VIX 波动率', trend: 'inverse' as const, seed: 23, start: 17, step: 1.2, lo: 10, hi: 45, digits: 2 },
+  { title: '金油比', seed: 37, start: 24, step: 0.5, lo: 15, hi: 35, digits: 2 },
+  { title: '美元指数', seed: 41, start: 102, step: 0.6, lo: 94, hi: 112, digits: 2 },
+]
+const ASHARE_DEMO = [
+  {
+    title: '情绪分',
+    trend: 'neutral' as const,
+    seed: 53,
+    start: 52,
+    step: 6,
+    lo: 3,
+    hi: 97,
+    digits: 0,
+    stages: CYCLE_STAGES,
+  },
+  { title: '涨停数', seed: 67, start: 60, step: 9, lo: 15, hi: 140, digits: 0, unit: '只' },
+  { title: '连板高度', seed: 71, start: 4, step: 0.9, lo: 1, hi: 9, digits: 0, unit: '板' },
+  { title: '封板率', seed: 83, start: 72, step: 3, lo: 40, hi: 95, digits: 1, unit: '%' },
+]
+
+function MetricWall({
+  name,
+  demo,
+}: {
+  name: string
+  demo: readonly (typeof GLOBAL_DEMO)[number][] | typeof ASHARE_DEMO
+}) {
+  return (
+    <MetricCardGrid label={name} minWidth={280} ranges={METRIC_RANGES} rangeLabel={`${name}走势区间`}>
+      {demo.map((d) => {
+        const values = walk(d.seed, d.start, d.step, d.lo, d.hi).map((v) => Number(v.toFixed(d.digits)))
+        const last = values[values.length - 1]!
+        return (
+          <MetricCard
+            key={d.title}
+            title={d.title}
+            value={last.toFixed(d.digits)}
+            unit={'unit' in d ? d.unit : undefined}
+            {...metricProps(values)}
+            trendTone={'trend' in d ? d.trend : 'direction'}
+            rangeLabel={`${d.title}走势区间`}
+            sparkLabel={`${d.title}走势`}
+            stages={'stages' in d ? d.stages : undefined}
+            current={last}
+            source="演示数据，不是行情"
+            updatedAt="更新 2026-11-15 15:00"
+          />
+        )
+      })}
+    </MetricCardGrid>
+  )
+}
+
+export function MetricCardDemo() {
+  return (
+    <div style={{ width: '100%', maxWidth: 1080, height: 780 }}>
+      <PanelFrame focused aria-label="指标卡">
+        <PanelFrameHeader heading="指标卡" object="演示数据" />
+        <PanelFrameBody>
+          <div className="gal-metric-wall" style={{ overflow: 'auto', padding: 12, display: 'grid', gap: 16 }}>
+            <section data-testid="metric-global">
+              <p className="gal-note">全球情绪</p>
+              <MetricWall name="全球情绪" demo={GLOBAL_DEMO} />
+            </section>
+            <section data-testid="metric-ashare">
+              <p className="gal-note">A 股情绪周期</p>
+              <MetricWall name="A 股情绪周期" demo={ASHARE_DEMO} />
+            </section>
+            <section data-testid="metric-empty">
+              <p className="gal-note">没有数据</p>
+              <MetricCardGrid label="空态" minWidth={280}>
+                <MetricCard
+                  title="未接入的指标"
+                  value={null}
+                  changes={[{ key: 'd', label: '较前日', value: null }]}
+                  ranges={[{ key: '1m', label: '1 月', values: [] }]}
+                  rangeLabel="走势区间"
+                  sparkLabel="没有数据"
+                  source="未连接"
+                />
+              </MetricCardGrid>
+            </section>
+          </div>
+        </PanelFrameBody>
+      </PanelFrame>
+    </div>
   )
 }

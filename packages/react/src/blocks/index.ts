@@ -12,10 +12,62 @@ export {
   type GridMenuEntry,
 } from './data-grid/host.tsx'
 export { tableCsv, type SortSpec } from './data-grid/model.ts'
+export {
+  ColumnPicker,
+  type ColumnPickerLabels,
+  type ColumnPickerProps,
+  type ColumnSet,
+} from './data-grid/column-picker.tsx'
+export {
+  activeColumnSet,
+  applyColumnSet,
+  moveColumn,
+  reorderColumn,
+  setColumnFixed,
+  setColumnVisible,
+} from './data-grid/layout-model.ts'
 export { EmptyState, type EmptyStateSlot } from './empty-state.tsx'
 export { EstimateBadge } from './estimate-badge.tsx'
 export { EventTimeline, type EventTimelineLabels, type EventTimelineProps } from './event-timeline.tsx'
 export type { EventKind, SessionMinutes, TimelineEvent } from './event-timeline-model.ts'
+export { DecisionQueue, type DecisionQueueLabels, type DecisionQueueProps } from './decision-queue/decision-queue.tsx'
+export type {
+  DecisionFilter,
+  DecisionItem,
+  DecisionSource,
+  DecisionStatus,
+} from './decision-queue/decision-queue-model.ts'
+export {
+  HypothesisLedger,
+  type HypothesisLedgerLabels,
+  type HypothesisLedgerProps,
+} from './hypothesis-ledger/hypothesis-ledger.tsx'
+export type {
+  EvidenceKind,
+  Hypothesis,
+  HypothesisAsset,
+  HypothesisEvidence,
+  HypothesisLayer,
+  HypothesisStatus,
+  WatchRow,
+} from './hypothesis-ledger/hypothesis-ledger-model.ts'
+export { NewsFeed, type NewsFeedLabels, type NewsFeedProps } from './news-feed/news-feed.tsx'
+export type { NewsItem, NewsSymbol } from './news-feed/news-feed-model.ts'
+export {
+  SystemMonitor,
+  type SystemMonitorLabels,
+  type SystemMonitorMetric,
+  type SystemMonitorProps,
+} from './system-monitor/system-monitor.tsx'
+export type {
+  EventSeverity,
+  LinkState,
+  MonitorEvent,
+  MonitorLink,
+  MonitorStrategy,
+  StrategyAction,
+  StrategyStatus,
+} from './system-monitor/system-monitor-model.ts'
 export { Toolbar, ToolbarGroup, ToolButton, ToolSlot } from './toolbar/toolbar.tsx'
 export { useRovingToolbar } from './toolbar/use-roving-toolbar.ts'
 
@@ -61,3 +113,24 @@ export {
 export { StatusBar, type StatusBarProps, type StatusItem } from './status-bar/status-bar.tsx'
 export { collapsedItems, type FitItem } from './status-bar/status-bar-model.ts'
 export { WorkspaceTabs, type WorkspaceTab, type WorkspaceTabsProps } from './workspace-tabs/workspace-tabs.tsx'
+export {
+  StrategyReport,
+  type MetricKey,
+  type StrategyReportFormat,
+  type StrategyReportLabels,
+  type StrategyReportProps,
+  type StrategyReportProperty,
+  type StrategyReportPropertyGroup,
+  type StrategyReportTab,
+} from './strategy-report/strategy-report.tsx'
+export {
+  computeReport,
+  filterTrades,
+  histogram,
+  type Histogram,
+  type ReportOptions,
+  type ReportSide,
+  type ReportStats,
+  type ReportTrade,
+  type SideFilter,
+} from './strategy-report/strategy-report-model.ts'
