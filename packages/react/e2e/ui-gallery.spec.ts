@@ -1758,6 +1758,10 @@ for (const theme of THEMES) {
           .locator('[data-slot="panel-title"]')
           .evaluate((el) => getComputedStyle(el).color)
       expect(await title(1)).not.toBe(await title(0))
+      // 联动灯四组都取自信号色（赭、粉红、绿、琥珀），没有蓝：B 组是粉红，不是 signal-blue。
+      const groupB = frames.nth(1).getByRole('img', { name: 'Link group B' })
+      await expect(groupB).toHaveCSS('background-color', await token(page, '--signal-red'))
+      expect(await token(page, '--link-b')).not.toBe(await token(page, '--signal-blue'))
       await expect(frames.nth(0).getByRole('button', { name: 'Maximize' })).toBeVisible()
       await expect(frames.nth(2).getByRole('status')).toContainText('No data source')
     })

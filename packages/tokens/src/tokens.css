@@ -18,7 +18,7 @@
   --signal-red: #ff5a5a;
   --signal-blue: #4fa3ff;
   --link-a: var(--signal-orange);
-  --link-b: var(--signal-blue);
+  --link-b: var(--signal-red);
   --link-c: var(--signal-green);
   --link-d: var(--signal-amber);
   --pnl-up: var(--signal-green);

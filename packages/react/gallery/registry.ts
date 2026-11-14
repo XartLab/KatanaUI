@@ -851,7 +851,11 @@ export const PAGES: readonly DocPage[] = [
       },
     ],
     states: ['熄灭（默认）、on、ok、warn、danger；联动组按组色。', '空心、小号两种形态；无文字的灯必须带读屏名。'],
-    donts: ['不要拿它当装饰：只表达真实状态。', '不要单靠颜色说话，旁边要有文字或读屏名。'],
+    donts: [
+      '不要拿它当装饰：只表达真实状态。',
+      '不要单靠颜色说话，旁边要有文字或读屏名。',
+      '联动组 A-D 的颜色取自 Graphite 信号色（赭、粉红、绿、琥珀），不含蓝：设计决定不用 TradingView 蓝。',
+    ],
     composition: 'Led',
     keys: [],
   },
