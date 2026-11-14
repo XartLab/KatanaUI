@@ -187,3 +187,14 @@ export function stepNode(
   }
   return best
 }
+
+/**
+ * 一个点的颜色档（-2..2，null 是没有数）：正负各两档，只有 |涨跌幅| 达到 hotAt（调用方取 |值| 的 80 分位，dataviz §2）的才用 ±2（div-*-200），
+ * 其余 ±1（div-*-100），0 是中点灰；全饱和的涨跌色不上面积。
+ */
+export function galaxyStep(change: number | null | undefined, hotAt: number): -2 | -1 | 0 | 1 | 2 | null {
+  if (change === null || change === undefined || !Number.isFinite(change)) return null
+  if (change === 0) return 0
+  const hot = Math.abs(change) >= hotAt
+  return change > 0 ? (hot ? 2 : 1) : hot ? -2 : -1
+}

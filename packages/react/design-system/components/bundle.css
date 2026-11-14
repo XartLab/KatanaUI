@@ -7216,6 +7216,9 @@ button.k-heat-cell[data-active="true"] {
   border-radius: 2px;
   width: 12px;
   height: 12px;
+.k-galaxy-mark.is-selected, .k-galaxy-mark.is-active {
+  stroke: var(--chart-accent, var(--signal-orange));
+  stroke-width: 2px;
 }
 
 .k-heat-legend i[data-tone="pos1"] {
@@ -7400,6 +7403,35 @@ button.k-sm-head:focus-visible {
 .k-sm-value {
   color: var(--ink-100);
   font: var(--text-data) var(--font-mono);
+.k-galaxy .is-step-2 {
+  background: var(--div-neg-200);
+  fill: var(--div-neg-200);
+}
+
+.k-galaxy .is-step-1 {
+  background: var(--div-neg-100);
+  fill: var(--div-neg-100);
+}
+
+.k-galaxy .is-step0, .k-galaxy .is-stepna {
+  background: var(--div-mid);
+  fill: var(--div-mid);
+}
+
+.k-galaxy .is-step1 {
+  background: var(--div-pos-100);
+  fill: var(--div-pos-100);
+}
+
+.k-galaxy .is-step2 {
+  background: var(--div-pos-200);
+  fill: var(--div-pos-200);
+}
+
+.k-galaxy-tip {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
 }
 
 .k-sm-value[data-tone="up"] {

@@ -2363,6 +2363,8 @@
         "@katana/toggle-group",
         "@katana/toolbar",
         "@katana/use-scrubber"
+        "@katana/chart-kit",
+        "@katana/toggle-group"
       ],
       "files": [
         {

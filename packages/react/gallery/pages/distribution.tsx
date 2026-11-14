@@ -332,8 +332,23 @@ export function SymbolGalaxyDemo() {
     describe: (node: GalaxyNode) =>
       `${node.label}：市值 ${node.size.toFixed(1)} 亿，涨跌 ${node.change === null ? '—' : `${(node.change * 100).toFixed(2)}%`}`,
     groupText: (group: string, count: number) => `${group}，${count} 只`,
-    legendText: (step: number) => (step === 0 ? '0' : `${step > 0 ? '+' : '−'}${(Math.abs(step) * 1).toFixed(0)}`),
-    limit: 0.03,
+    legendText: (step: number) => ['大跌', '跌', '平', '涨', '大涨'][step + 2] ?? '',
+    tooltip: (node: GalaxyNode) => ({
+      title: node.label,
+      rows: [
+        { key: 'size', label: '市值', value: `${node.size.toFixed(1)} 亿` },
+        {
+          key: 'change',
+          label: '涨跌',
+          // 涨跌色只上数字（dataviz §2）。
+          value: (
+            <span style={{ color: (node.change ?? 0) >= 0 ? 'var(--pnl-up)' : 'var(--pnl-down)' }}>
+              {node.change === null ? '—' : `${(node.change * 100).toFixed(2)} %`}
+            </span>
+          ),
+        },
+      ],
+    }),
   }
   return (
     <>

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vite-plus/test'
-import { hitNode, layoutGalaxy, stepNode, type GalaxyNode } from './galaxy-model'
+import { galaxyStep, hitNode, layoutGalaxy, stepNode, type GalaxyNode } from './galaxy-model'
 import { SymbolGalaxy } from './symbol-galaxy'
 
 const frame = { width: 800, height: 520, pad: 8, headroom: 20 }
@@ -132,5 +132,17 @@ describe('SymbolGalaxy', () => {
     const html = renderToStaticMarkup(<SymbolGalaxy {...props} groupBy="market" />)
     expect(html).toContain('aria-label="主板，15 只"')
     expect(html.match(/tabindex="0"/g)).toHaveLength(2)
+  })
+})
+
+describe('galaxyStep', () => {
+  it('正负各两档，只有绝对值达到 hotAt 的才是 ±2，0 与没有数各归其位', () => {
+    expect(galaxyStep(0.01, 0.03)).toBe(1)
+    expect(galaxyStep(0.03, 0.03)).toBe(2)
+    expect(galaxyStep(-0.01, 0.03)).toBe(-1)
+    expect(galaxyStep(-0.05, 0.03)).toBe(-2)
+    expect(galaxyStep(0, 0.03)).toBe(0)
+    expect(galaxyStep(null, 0.03)).toBeNull()
+    expect(galaxyStep(Number.NaN, 0.03)).toBeNull()
   })
 })

@@ -415,8 +415,9 @@
   stroke-width: 1.5;
   pointer-events: none;
 }
-.k-galaxy-mark.is-selected {
-  stroke: var(--signal-orange);
+.k-galaxy-mark.is-selected,
+.k-galaxy-mark.is-active {
+  stroke: var(--chart-accent, var(--signal-orange));
   stroke-width: 2;
 }
 .k-galaxy-mark.is-hover {
@@ -436,34 +437,32 @@
   line-height: 16px;
   text-align: center;
 }
-.k-galaxy .is-step-3 {
-  background: color-mix(in srgb, var(--pnl-down) 100%, var(--bg-000));
-  fill: color-mix(in srgb, var(--pnl-down) 100%, var(--bg-000));
-}
+/* 圆面用发散色：正负各两档，-200 只给涨跌幅绝对值在前 20% 的点（dataviz §2）；涨跌色（--pnl-*）不上面积。 */
 .k-galaxy .is-step-2 {
-  background: color-mix(in srgb, var(--pnl-down) 70%, var(--bg-000));
-  fill: color-mix(in srgb, var(--pnl-down) 70%, var(--bg-000));
+  background: var(--div-neg-200);
+  fill: var(--div-neg-200);
 }
 .k-galaxy .is-step-1 {
-  background: color-mix(in srgb, var(--pnl-down) 42%, var(--bg-000));
-  fill: color-mix(in srgb, var(--pnl-down) 42%, var(--bg-000));
+  background: var(--div-neg-100);
+  fill: var(--div-neg-100);
 }
 .k-galaxy .is-step0,
 .k-galaxy .is-stepna {
-  background: color-mix(in srgb, var(--ink-300) 30%, var(--bg-000));
-  fill: color-mix(in srgb, var(--ink-300) 30%, var(--bg-000));
+  background: var(--div-mid);
+  fill: var(--div-mid);
 }
 .k-galaxy .is-step1 {
-  background: color-mix(in srgb, var(--pnl-up) 42%, var(--bg-000));
-  fill: color-mix(in srgb, var(--pnl-up) 42%, var(--bg-000));
+  background: var(--div-pos-100);
+  fill: var(--div-pos-100);
 }
 .k-galaxy .is-step2 {
-  background: color-mix(in srgb, var(--pnl-up) 70%, var(--bg-000));
-  fill: color-mix(in srgb, var(--pnl-up) 70%, var(--bg-000));
+  background: var(--div-pos-200);
+  fill: var(--div-pos-200);
 }
-.k-galaxy .is-step3 {
-  background: color-mix(in srgb, var(--pnl-up) 100%, var(--bg-000));
-  fill: color-mix(in srgb, var(--pnl-up) 100%, var(--bg-000));
+.k-galaxy-tip {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
 }
 .k-galaxy-readout {
   min-height: 16px;

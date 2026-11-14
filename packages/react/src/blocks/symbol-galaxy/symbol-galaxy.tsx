@@ -5,16 +5,17 @@
 // 点不多时每个点一个 SVG 圆；多时（>= canvasFrom）改画 canvas，团的圈与标签、悬停与选中的标记仍是 SVG（所以键盘与读屏两种画法一样）。
 // 文字全由 props 传，包里没有文案。
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type ReactNode } from 'react'
-import { colorStep } from '../../katana/treemap-model'
+import { divHotThreshold } from '../../quant/chart-kit/series-colors'
+import { LcdTooltip, type LcdTooltipRow } from '../../quant/chart-kit/lcd-tooltip'
 import { ToggleGroup, ToggleGroupItem } from '../../primitives/toggle-group'
-import { hitNode, layoutGalaxy, stepNode, type GalaxyNode, type GalaxyPlace } from './galaxy-model'
+import { galaxyStep, hitNode, layoutGalaxy, stepNode, type GalaxyNode, type GalaxyPlace } from './galaxy-model'
 
 export const GALAXY_W = 800
 export const GALAXY_H = 520
 const FRAME = { width: GALAXY_W, height: GALAXY_H, pad: 8, headroom: 20 }
 /** 迁移动画的时长（毫秒）：与 --dur-snappy 同为 333ms；canvas 里没法用 CSS 过渡，自己插值。 */
 const MOVE_MS = 333
-const STEPS = [-3, -2, -1, 0, 1, 2, 3]
+const STEPS = [-2, -1, 0, 1, 2]
 
 export type GalaxyGrouping = { id: string; label: string }
 
@@ -33,10 +34,10 @@ export type SymbolGalaxyProps = {
   describe: (node: GalaxyNode) => string
   /** 一团的读屏名（整句，含个数），如「金融，12 只」。 */
   groupText: (group: string, count: number) => string
-  /** 色例每一档写的字（−3 到 +3）。 */
+  /** 色例每一档写的字（-2 到 +2：±2 只给涨跌幅绝对值在前 20% 的点）。 */
   legendText: (step: number) => string
-  /** 色例两端的涨跌幅（小数）；同 Treemap。 */
-  limit?: number
+  /** 悬停时的 LCD 提示：标题与几行「名字 / 数值」；不给就只有读数行。 */
+  tooltip?: (node: GalaxyNode) => { title: ReactNode; rows: readonly LcdTooltipRow[] }
   onSelect?: (node: GalaxyNode) => void
   selectedId?: string | null
   /** 点数达到它就改画 canvas。默认 2000（出自 issue #1918 的设想，待测量，测量票 #1923：没有实测的依据）。 */
@@ -59,7 +60,7 @@ export function SymbolGalaxy({
   describe,
   groupText,
   legendText,
-  limit = 0.03,
+  tooltip,
   onSelect,
   selectedId = null,
   canvasFrom = 2000,
@@ -68,6 +69,7 @@ export function SymbolGalaxy({
 }: SymbolGalaxyProps) {
   const [inner, setInner] = useState(defaultGroupBy ?? groupings[0]?.id ?? '')
   const mode = groupBy ?? inner
+  const hotAt = useMemo(() => divHotThreshold(nodes.map((node) => node.change ?? Number.NaN)), [nodes])
   const [scale, setScale] = useState(1)
   const layout = useMemo(
     () => layoutGalaxy(nodes, mode, { ...FRAME, headroom: Math.ceil(FRAME.headroom / scale), scale }),
@@ -110,6 +112,7 @@ export function SymbolGalaxy({
   }
   const shown = hover ?? (focusGroup === null ? null : activeOf(focusGroup))
   const shownNode = shown === null ? undefined : byId.get(shown)
+  const shownPlace = shown === null ? undefined : layout.places.get(shown)
 
   const toView = (event: { clientX: number; clientY: number }) => {
     const box = svg.current!.getBoundingClientRect()
@@ -152,7 +155,7 @@ export function SymbolGalaxy({
     const context = el.getContext('2d')
     if (!context) return
     const colors = [...(legend.current?.children ?? [])].map((item) => getComputedStyle(item).backgroundColor)
-    const neutral = colors[3] ?? 'gray'
+    const neutral = colors[2] ?? 'gray'
     const from = painted.current
     const to = layout.places
     const start = performance.now()
@@ -173,8 +176,8 @@ export function SymbolGalaxy({
         const x = origin ? origin.x + (place.x - origin.x) * t : place.x
         const y = origin ? origin.y + (place.y - origin.y) * t : place.y
         const r = origin ? origin.r + (place.r - origin.r) * t : place.r
-        const step = colorStep(byId.get(id)?.change, limit)
-        context.fillStyle = step === null ? neutral : (colors[step + 3] ?? neutral)
+        const step = galaxyStep(byId.get(id)?.change, hotAt)
+        context.fillStyle = step === null ? neutral : (colors[step + 2] ?? neutral)
         context.beginPath()
         context.arc(x, y, Math.max(0, r), 0, Math.PI * 2)
         context.fill()
@@ -193,7 +196,7 @@ export function SymbolGalaxy({
       cancelAnimationFrame(frame)
       resize.disconnect()
     }
-  }, [canvas, layout, byId, limit, theme])
+  }, [canvas, layout, byId, hotAt, theme])
 
   const mark = (id: string | null, kind: string) => {
     const place = id === null ? undefined : layout.places.get(id)
@@ -256,7 +259,7 @@ export function SymbolGalaxy({
             nodes.map((node) => {
               const place = layout.places.get(node.id)
               if (!place) return null
-              const step = colorStep(node.change, limit)
+              const step = galaxyStep(node.change, hotAt)
               return (
                 <circle
                   key={node.id}
@@ -308,6 +311,15 @@ export function SymbolGalaxy({
             {group.key}
           </span>
         ))}
+        {shownNode && tooltip && shownPlace && (
+          <div className="k-galaxy-tip" aria-hidden="true">
+            <LcdTooltip
+              {...tooltip(shownNode)}
+              side={shownPlace.x > GALAXY_W * 0.6 ? 'left' : 'right'}
+              style={{ left: `${(shownPlace.x / GALAXY_W) * 100}%`, top: `${(shownPlace.y / GALAXY_H) * 100}%` }}
+            />
+          </div>
+        )}
       </div>
       <ol ref={legend} className="k-galaxy-legend" aria-hidden="true">
         {STEPS.map((step) => (
