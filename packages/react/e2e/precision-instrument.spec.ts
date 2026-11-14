@@ -19,8 +19,11 @@ test('序列探索：元信息行是点阵字，汉字用随包的方舟像素�
     return document.fonts.check('12px "Ark Pixel 12 zh_cn Subset"', '演示数据')
   })
   expect(loaded).toBe(true)
-  const faces = await page.evaluate(() =>
-    [...document.fonts].filter((face) => face.family.includes('Ark Pixel 12 zh_cn Subset') && face.status === 'loaded').length,
+  const faces = await page.evaluate(
+    () =>
+      [...document.fonts].filter(
+        (face) => face.family.includes('Ark Pixel 12 zh_cn Subset') && face.status === 'loaded',
+      ).length,
   )
   expect(faces).toBe(1)
 
