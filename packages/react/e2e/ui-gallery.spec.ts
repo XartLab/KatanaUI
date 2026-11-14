@@ -4220,4 +4220,147 @@ for (const theme of THEMES) {
     await rows.nth(3).locator('.k-news-symbol').first().click()
     await expect(doc).toContainText('点品种胶囊：600')
   })
+
+  test(`策略报告（${theme}）：页签、关键读数、多空切换、三列指标表、分布与连续条、交易列表展开、属性、空态`, async ({
+    page,
+  }) => {
+    await open(page, theme, 'strategy-report')
+    const doc = section(page, 'strategy-report')
+    const frame = doc.getByTestId('report-frame')
+    const report = frame.locator('.k-sr')
+    // 概览：七个读数都有值，净利润带符号，买入持有那行在净利润下面，权益曲线画出来。
+    const kpis = frame.locator('.k-sr-kpi')
+    await expect(kpis).toHaveCount(7)
+    for (const key of ['netProfit', 'totalReturn', 'maxDrawdown', 'winRate', 'payoffRatio', 'tradeCount', 'sharpe'])
+      await expect(frame.locator(`.k-sr-kpi[data-metric="${key}"] .k-sr-kpi-value`)).not.toHaveText(/^\s*—?\s*$/)
+    await expect(frame.locator('.k-sr-kpi[data-metric="tradeCount"] .k-sr-kpi-value')).toHaveText('140')
+    await expect(frame.locator('[data-slot="strategy-report-buyhold"]')).toContainText('买入持有')
+    await expect(frame.locator('[data-slot="equity-curve"]')).toBeVisible()
+    expect((await frame.locator('[data-slot="equity-curve"]').boundingBox())!.height).toBeGreaterThan(180)
+    // 页签行与小标。
+    await expect(frame.getByRole('tab', { name: '概览' })).toHaveAttribute('data-state', 'active')
+    await expect(frame.locator('.k-sr-badge')).toHaveText('演示数据')
+    // 多空切换：交易次数变，读数跟着。
+    const all = Number(await frame.locator('.k-sr-kpi[data-metric="tradeCount"] .k-sr-kpi-value').innerText())
+    await frame.getByRole('group', { name: '多空' }).getByRole('button', { name: '多', exact: true }).click()
+    await expect(report).toHaveAttribute('data-side', 'long')
+    await expect
+      .poll(async () => Number(await frame.locator('.k-sr-kpi[data-metric="tradeCount"] .k-sr-kpi-value').innerText()))
+      .toBeLessThan(all)
+    const long = Number(await frame.locator('.k-sr-kpi[data-metric="tradeCount"] .k-sr-kpi-value').innerText())
+    await frame.getByRole('group', { name: '多空' }).getByRole('button', { name: '空', exact: true }).click()
+    await expect
+      .poll(async () => Number(await frame.locator('.k-sr-kpi[data-metric="tradeCount"] .k-sr-kpi-value').innerText()))
+      .toBe(all - long)
+    await frame.getByRole('group', { name: '多空' }).getByRole('button', { name: '全部' }).click()
+    // 绩效：三列并排，多 + 空 = 全部；当前列加亮；净利润的字带涨跌色。
+    await frame.getByRole('tab', { name: '绩效' }).click()
+    const row = (key: string) => frame.locator(`.k-sr-table tr[data-metric="${key}"]`)
+    const cell = (key: string, side: string) => row(key).locator(`td[data-side="${side}"]`)
+    await expect(frame.locator('.k-sr-table thead th[data-side]')).toHaveText(['全部', '多', '空'])
+    const n = async (side: string) => Number(await cell('tradeCount', side).innerText())
+    expect((await n('long')) + (await n('short'))).toBe(await n('all'))
+    await expect(cell('tradeCount', 'all')).toHaveAttribute('data-active', '')
+    await expect(cell('tradeCount', 'long')).not.toHaveAttribute('data-active', '')
+    await expect(row('winRate')).toBeVisible()
+    await expect(cell('netProfit', 'all').locator('[data-tone]')).toHaveCSS('color', await token(page, '--pnl-up'))
+    // 风险比率：夏普有值，最大回撤是负的。
+    await frame.getByRole('tab', { name: '风险比率' }).click()
+    await expect(row('sharpe').locator('td[data-side="all"]')).not.toHaveText('—')
+    await expect(row('maxDrawdown').locator('td[data-side="all"]')).toHaveText(/^-/)
+    // 交易分析：两张直方图的柱数合计 = 笔数，连续条一笔一格，盈亏分布里涨跌两色的面。
+    await frame.getByRole('tab', { name: '交易分析' }).click()
+    const counts = async (slot: string) =>
+      (
+        await frame
+          .locator(`[data-slot="${slot}"] .k-sr-bar`)
+          .evaluateAll((els) => els.map((e) => Number(e.getAttribute('data-count'))))
+      ).reduce((a, b) => a + b, 0)
+    expect(await counts('strategy-report-pnl-hist')).toBe(all)
+    expect(await counts('strategy-report-duration-hist')).toBe(all)
+    await expect(frame.locator('.k-sr-streak')).toHaveCount(all)
+    const upBar = frame.locator('[data-slot="strategy-report-pnl-hist"] .k-sr-bar[data-tone="up"]').first()
+    const downBar = frame.locator('[data-slot="strategy-report-pnl-hist"] .k-sr-bar[data-tone="down"]').first()
+    expect(await upBar.evaluate((e) => getComputedStyle(e).fill)).toBe(await token(page, '--div-pos-200'))
+    expect(await downBar.evaluate((e) => getComputedStyle(e).fill)).toBe(await token(page, '--div-neg-200'))
+    await expect(frame.locator('.k-sr-facts [data-metric="maxConsecLosses"] dd')).not.toHaveText('0')
+    // 交易列表：140 行（虚拟滚动只画一部分），点行前先展开，展开出进出场信号与收益率。
+    await frame.getByRole('tab', { name: '交易列表' }).click()
+    const grid = frame.getByRole('treegrid', { name: '交易列表' })
+    await expect(grid).toBeVisible()
+    await expect(grid.getByRole('columnheader', { name: '累计盈亏' })).toBeVisible()
+    const first = grid.getByRole('row').nth(1)
+    await expect(first).toContainText('140')
+    await expect(first).toHaveAttribute('aria-expanded', 'false')
+    await first.click()
+    await expect(first).toHaveAttribute('aria-expanded', 'true')
+    await expect(frame.locator('[data-slot="strategy-report-detail"]').first()).toContainText('进场信号')
+    await expect(frame.locator('[data-slot="strategy-report-detail"]').first()).toContainText('持仓时长')
+    await first.click()
+    await expect(first).toHaveAttribute('aria-expanded', 'false')
+    await expect(frame.locator('[data-slot="strategy-report-detail"]')).toHaveCount(0)
+    // 属性：两组键值。
+    await frame.getByRole('tab', { name: '属性' }).click()
+    await expect(frame.locator('.k-sr-prop-group')).toHaveCount(2)
+    await expect(frame.locator('.k-sr-prop-group dt', { hasText: '初始资金' })).toBeVisible()
+    // 空态。
+    await expect(doc.getByTestId('report-empty').locator('.k-sr-empty')).toHaveText('没有交易')
+  })
+
+  test(`参数优化散点图（${theme}）：色阶按目标值、最优点标环、点选读数、键盘走点、跳到最优、表格视图`, async ({
+    page,
+  }) => {
+    await open(page, theme, 'param-scatter')
+    const chart = section(page, 'param-scatter').locator('[data-gallery-pscatter="main"]')
+    const dots = chart.locator('.k-pscatter-dot')
+    await expect(dots).toHaveCount(120)
+    // 目标值跨过 0：发散阶，正侧偏绿、负侧偏红，中间灰；没有结果的点是空心。
+    await expect(chart.locator('.k-pscatter')).toHaveAttribute('data-ramp', 'diverging')
+    const fills = await dots.evaluateAll((els) =>
+      els.map((e) => ({
+        id: e.getAttribute('data-id'),
+        empty: e.hasAttribute('data-empty'),
+        fill: getComputedStyle(e).fill,
+      })),
+    )
+    expect(fills.some((f) => f.empty)).toBe(true)
+    expect(new Set(fills.filter((f) => !f.empty).map((f) => f.fill)).size).toBeGreaterThan(8)
+    expect(await dots.first().evaluate((e) => getComputedStyle(e).fill)).not.toBe('none')
+    // 最优点：琥珀环，只有一个，读屏名里有「最优」。
+    const best = chart.locator('.k-pscatter-dot[data-best]')
+    await expect(best).toHaveCount(1)
+    await expect(best).toHaveAttribute('aria-label', /最优/)
+    expect(await best.evaluate((e) => getComputedStyle(e).stroke)).toBe(await token(page, '--signal-amber'))
+    // 色条与读数区。
+    await expect(chart.locator('[data-slot="param-scatter-legend"]')).toContainText('夏普比率')
+    await expect(chart.locator('[data-slot="param-scatter-readout"]')).toHaveText('点一个点，看这组参数')
+    // 点选：读数写两个参数与目标值，选中的点白环。
+    const pick = chart.locator('.k-pscatter-dot[data-id="f24-s80"]')
+    await pick.click()
+    await expect(pick).toHaveAttribute('data-selected', '')
+    const readout = chart.locator('[data-slot="param-scatter-readout"]')
+    await expect(readout).toContainText('快线周期')
+    await expect(readout).toContainText('24')
+    await expect(readout).toContainText('80')
+    await expect(readout).toContainText('夏普比率')
+    // 键盘：聚焦后右键走到右边相邻的点，Enter 选中。
+    await pick.focus()
+    const before = await pick.evaluate((e) => Number(e.getAttribute('cx')))
+    await page.keyboard.press('ArrowRight')
+    const focused = page.locator('.k-pscatter-dot:focus')
+    await expect(focused).toHaveCount(1)
+    expect(await focused.evaluate((e) => Number(e.getAttribute('cx')))).toBeGreaterThan(before)
+    await page.keyboard.press('Enter')
+    await expect(focused).toHaveAttribute('data-selected', '')
+    // 跳到最优。
+    await chart.getByRole('button', { name: '跳到最优' }).click()
+    await expect(best).toHaveAttribute('data-selected', '')
+    await expect(readout).toContainText('最优')
+    await expect(chart.getByRole('button', { name: '跳到最优' })).toHaveCount(0)
+    // 表格视图：同一份数据写成表，最优标在第一列。
+    await chart.getByRole('button', { name: '表格视图' }).click()
+    await expect(chart.locator('[data-slot="param-scatter-table"]')).toBeVisible()
+    await expect(chart.locator('[data-slot="param-scatter-table"]')).toHaveAttribute('data-rows', '120')
+    await expect(chart.locator('[data-slot="param-scatter-table"]')).toContainText('f8-s40')
+  })
 }

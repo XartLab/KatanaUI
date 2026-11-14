@@ -108,3 +108,14 @@ export {
   type MetricStage,
   type MetricTrendTone,
 } from './metric-card.tsx'
+export { ParamScatter, type ParamScatterProps } from './param-scatter.tsx'
+export {
+  bestIndex,
+  moveParam,
+  rampColor,
+  rampPosition,
+  resolveRamp,
+  valueRange,
+  type ParamPoint,
+  type ParamRamp,
+} from './param-scatter-model.ts'
