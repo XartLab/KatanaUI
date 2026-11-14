@@ -3711,7 +3711,7 @@ export const PAGES: readonly DocPage[] = [
     title: 'DataGrid 数据表',
     summary:
       '拼面板用的数据表：TanStack Table 管排序、列宽、顺序、显隐，虚拟滚动只画看得见的行；列声明一个类型（价格、数量、盈亏、涨跌幅、方向、时间、品种……），格式化、对齐、着色、排序由类型给。列的状态受控（调用方存）；应用的能力经 DataGridHost 注入。',
-    exports: ['DataGrid', 'DataGridHostProvider', 'tableCsv'],
+    exports: ['DataGrid', 'DataGridHostProvider', 'tableCsv', 'ColumnPicker', 'usePersistedState', 'useSavedViews'],
     props: [
       {
         part: 'DataGrid',
@@ -3735,6 +3735,11 @@ export const PAGES: readonly DocPage[] = [
             desc: '排序受控；点表头在升序、倒序、不排之间转。没给 onSortChange 就不能排序，表头是普通的字。',
           },
           { name: 'sortRemovable', type: 'boolean', default: 'true', desc: 'false 时第三下回到升序。' },
+          {
+            name: 'onLayoutChange',
+            type: '(next: GridColumnLayout[]) => void',
+            desc: '列摆法变了（列头右键菜单的固定 / 隐藏 / 左右移、拖动列头重排）：给出整份新 layout，调用方存。没给就没有这些菜单项，列头不能拖。列头右键菜单的文案走 DataGridHost 的 texts.columnMenu。',
+          },
           {
             name: 'onResize / onResetColumns',
             type: 'function',
@@ -3864,6 +3869,33 @@ export const PAGES: readonly DocPage[] = [
         ],
       },
       {
+        part: 'ColumnPicker',
+        note: '触发按钮加弹层：上面列集芯片（整套列一键切换，亮着哪个由看得见的列恰好等于它的列推出来），下面逐列勾选。不存状态，layout 受控；最后一列看得见的不许藏。',
+        rows: [
+          {
+            name: 'layout / onLayoutChange',
+            type: 'GridColumnLayout[] / (next) => void',
+            desc: '同 DataGrid 的 layout。',
+          },
+          {
+            name: 'sets',
+            type: '{ id, label, columns: string[] }[]',
+            desc: '列集：集里的列显示并按集的次序排前面，其余藏起来。省略就只有勾选。',
+          },
+          { name: 'labels', type: '{ trigger, sets, columns }', desc: '文案由调用方传，包里没有语言。' },
+        ],
+      },
+      {
+        part: 'usePersistedState(key, initial, { version, storage?, validate? })',
+        note: '像 useState，值存进存储（默认 localStorage，读写包 try/catch）；版本不符、坏了、validate 不过都当没存过，不写迁移。返回 [值, 设值, 重置]。',
+        rows: [],
+      },
+      {
+        part: 'useSavedViews({ key, version, storage?, recentLimit? })',
+        note: '命名视图的快照仓库（值由调用方定，件只当不透明 JSON）：saveAs 另存、save 覆盖、remove、setDefault、use（记进最近并返回值）、recent、exportJson / importJson。',
+        rows: [],
+      },
+      {
         part: 'tableCsv(header, rows)',
         note: '导出的 CSV：含逗号、引号、换行的格子加引号，公式开头的补单引号。',
         rows: [],
@@ -3892,6 +3924,8 @@ export const PAGES: readonly DocPage[] = [
       ['→ / ←', '展开 / 收起键盘所在行的子行（renderSubRow）'],
       ['Shift / Ctrl 点击', '选一段 / 点选加减'],
       ['Esc', '清掉选择（右键菜单开着时归菜单）'],
+      ['列头右键', '列头菜单：排序、固定、隐藏、左右移、重置列'],
+      ['拖动列头', '重排列（放在目标列的位置）'],
       ['菜单键 / Shift+F10', '开右键菜单（宿主的 matchKey 提供）'],
       ['Ctrl+C / Ctrl+S / Ctrl+R', '复制所选行 / 导出 CSV / 重置列（宿主的键位表）'],
     ],
