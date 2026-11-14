@@ -119,6 +119,14 @@ const CODE_CHAR_W = 7.4
 const CODE_PAD_W = 10
 const MIN_CODE_H = 24
 const MIN_VALUE_H = 40
+/** 徽标分三档（按格子实际像素，同一个件不分小屏大屏）：徽标直径、需要的最小宽高；公司名要更大的格子。待定（#15）：像素阈值没实测，照 1920×1080 与 760 宽两种面板目测取的。 */
+const LOGO_TIERS = [
+  { size: 32, w: 110, h: 120 },
+  { size: 24, w: 72, h: 80 },
+  { size: 16, w: 44, h: 56 },
+] as const
+const NAME_W = 120
+const NAME_H = 110
 const HEAD_H = 22
 const CARD_W = 200
 /** 悬停卡片的高（估算）：标题与内距 67，每行 18；只用来别让卡片伸出图的下沿。 */
@@ -179,7 +187,7 @@ export function MarketHeatmap({
       const name = left.current
       left.current = null
       ;[...root.querySelectorAll<HTMLElement>('[data-slot="heatmap-group"]')]
-        .find((el) => el.textContent === name)
+        .find((el) => el.dataset.group === name)
         ?.focus()
     }
   }, [drill])
@@ -339,19 +347,13 @@ export function MarketHeatmap({
             </div>
           ))}
         </dl>
-        {showGroups ? (
+        {showGroups && drill !== null ? (
           <nav className="k-mheat-crumb" data-slot="heatmap-crumb" aria-label={labels.group}>
-            {drill === null ? (
-              <span aria-current="page">{labels.all}</span>
-            ) : (
-              <>
-                <button type="button" onClick={() => setDrill(null)}>
-                  {labels.all}
-                </button>
-                <span aria-hidden="true">›</span>
-                <span aria-current="page">{drill}</span>
-              </>
-            )}
+            <button type="button" onClick={() => setDrill(null)}>
+              {labels.all}
+            </button>
+            <span aria-hidden="true">›</span>
+            <span aria-current="page">{drill}</span>
           </nav>
         ) : null}
       </div>
@@ -414,6 +416,12 @@ export function MarketHeatmap({
           const tabbable =
             visible.find((cell) => cell.data.code === rove[block.name])?.data.code ?? visible[0]?.data.code
           const headingId = `${uid}-${block.name}`
+          // 组头右边的平均涨跌：这一组着色指标的简单平均（没有数的格子不算）。
+          const nums = block.cells.flatMap((cell) => {
+            const v = cell.data.value[color.key]
+            return typeof v === 'number' && Number.isFinite(v) ? [v] : []
+          })
+          const mean = nums.length ? nums.reduce((a, b) => a + b, 0) / nums.length : null
           return (
             <div
               key={block.name}
@@ -428,13 +436,22 @@ export function MarketHeatmap({
                   id={headingId}
                   className="k-mheat-head"
                   data-slot="heatmap-group"
+                  data-group={block.name}
                   style={{ left: block.x0, top: block.y0, width: block.x1 - block.x0, height: HEAD_H }}
                   onClick={() => {
                     setDrill(block.name)
                     setHover(null)
                   }}
                 >
-                  {block.name}
+                  <span className="k-mheat-head-name">{block.name}</span>
+                  {mean === null ? null : (
+                    <span
+                      className={cn('k-mheat-head-avg', mean > 0 && 'is-up', mean < 0 && 'is-down')}
+                      data-slot="heatmap-group-avg"
+                    >
+                      {formatMetric(mean, color)}
+                    </span>
+                  )}
                 </button>
               ) : null}
               {block.cells.map((cell) => {
@@ -446,6 +463,8 @@ export function MarketHeatmap({
                 const showCode =
                   w >= Math.max(MIN_CODE_W, item.code.length * CODE_CHAR_W + CODE_PAD_W) && h >= MIN_CODE_H
                 const showValue = showCode && h >= MIN_VALUE_H
+                const logo = showCode ? LOGO_TIERS.find((tier) => w >= tier.w && h >= tier.h) : undefined
+                const showName = logo !== undefined && logo.size >= 24 && w >= NAME_W && h >= NAME_H
                 const text = formatMetric(item.value[color.key], color)
                 return (
                   <div
@@ -463,6 +482,7 @@ export function MarketHeatmap({
                     data-hidden={hidden || undefined}
                     data-selected={item.code === selected || undefined}
                     data-labelled={showCode}
+                    data-logo={logo?.size}
                     style={{ left: cell.x0, top: cell.y0, width: w, height: h } satisfies CSSProperties}
                     onClick={() => onSelect?.(item.code)}
                     onKeyDown={(event) => move(event, block, item.code)}
@@ -477,7 +497,17 @@ export function MarketHeatmap({
                   >
                     {showCode ? (
                       <>
+                        {logo ? (
+                          <SymbolMark
+                            className="k-mheat-logo"
+                            code={item.code}
+                            name={item.name}
+                            src={item.logo}
+                            size={logo.size}
+                          />
+                        ) : null}
                         <span className="k-mheat-code">{item.code}</span>
+                        {showName ? <span className="k-mheat-name">{item.name}</span> : null}
                         {showValue ? <span className="k-mheat-value">{text}</span> : null}
                       </>
                     ) : null}

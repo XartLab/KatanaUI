@@ -161,11 +161,30 @@
   border: 0;
   color: var(--ink-200);
   background: transparent;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
   font: 600 11px/22px var(--font-sans);
   text-align: left;
-  text-overflow: ellipsis;
   white-space: nowrap;
   cursor: pointer;
+}
+.k-mheat-head-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.k-mheat-head-avg {
+  flex: none;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+.k-mheat-head-avg.is-up {
+  color: var(--pnl-up);
+}
+.k-mheat-head-avg.is-down {
+  color: var(--pnl-down);
 }
 .k-mheat-head:hover {
   color: var(--ink-100);
@@ -209,6 +228,31 @@
   font-weight: 600;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+.k-mheat-logo {
+  flex: none;
+  margin-bottom: 4px;
+}
+.k-mheat-name {
+  max-width: 100%;
+  padding: 0 4px;
+  overflow: hidden;
+  font: 400 11px/14px var(--font-sans);
+  opacity: 0.8;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.k-mheat-cell[data-logo='24'] .k-mheat-code {
+  font-size: 13px;
+  line-height: 16px;
+}
+.k-mheat-cell[data-logo='32'] .k-mheat-code {
+  font-size: 15px;
+  line-height: 18px;
+}
+.k-mheat-cell[data-logo='32'] .k-mheat-value {
+  font-size: 13px;
+  line-height: 16px;
 }
 .k-mheat-value {
   max-width: 100%;

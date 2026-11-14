@@ -9509,14 +9509,37 @@ button.k-sm-head:focus-visible {
   color: var(--ink-200);
   font: 600 11px/22px var(--font-sans);
   text-align: left;
-  text-overflow: ellipsis;
   white-space: nowrap;
   cursor: pointer;
   background: none;
   border: 0;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
   padding: 0 2px;
+  display: flex;
   position: absolute;
   overflow: hidden;
+}
+
+.k-mheat-head-name {
+  text-overflow: ellipsis;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.k-mheat-head-avg {
+  font-variant-numeric: tabular-nums;
+  flex: none;
+  font-weight: 500;
+}
+
+.k-mheat-head-avg.is-up {
+  color: var(--pnl-up);
+}
+
+.k-mheat-head-avg.is-down {
+  color: var(--pnl-down);
 }
 
 .k-mheat-head:hover {
@@ -9565,6 +9588,36 @@ button.k-sm-head:focus-visible {
   padding: 0 3px;
   font-weight: 600;
   overflow: hidden;
+}
+
+.k-mheat-logo {
+  flex: none;
+  margin-bottom: 4px;
+}
+
+.k-mheat-name {
+  max-width: 100%;
+  font: 400 11px/14px var(--font-sans);
+  opacity: .8;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 0 4px;
+  overflow: hidden;
+}
+
+.k-mheat-cell[data-logo="24"] .k-mheat-code {
+  font-size: 13px;
+  line-height: 16px;
+}
+
+.k-mheat-cell[data-logo="32"] .k-mheat-code {
+  font-size: 15px;
+  line-height: 18px;
+}
+
+.k-mheat-cell[data-logo="32"] .k-mheat-value {
+  font-size: 13px;
+  line-height: 16px;
 }
 
 .k-mheat-value {

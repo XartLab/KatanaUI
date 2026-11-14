@@ -1961,8 +1961,13 @@ for (const theme of THEMES) {
       await expect(stepCells(picked).first()).toBeVisible()
       expect(await map.locator('[data-slot="heatmap-cell"]:visible').count()).toBe(60)
       // 点组名放大：只剩这一组，面包屑出现，大小与颜色设置保留；面包屑的「全部」回来。
+      // 没放大时没有面包屑；组头带平均涨跌；够大的格子画徽标，传了图的格子里是图片。
+      await expect(map.locator('[data-slot="heatmap-crumb"]')).toHaveCount(0)
+      await expect(map.locator('[data-slot="heatmap-group-avg"]').first()).toHaveText(/^[+-]?\d+\.\d{2}%$/)
+      expect(await map.locator('[data-slot="heatmap-cell"] [data-slot="symbol-mark"]').count()).toBeGreaterThan(0)
+      expect(await map.locator('[data-slot="symbol-mark"][data-kind="image"]').count()).toBeGreaterThan(0)
       const head = map.locator('[data-slot="heatmap-group"]').first()
-      const name = (await head.textContent())!
+      const name = (await head.getAttribute('data-group'))!
       const before = await area(cells.first())
       await head.click()
       const inGroup = await cells.count()
@@ -2045,7 +2050,9 @@ for (const theme of THEMES) {
       await expect(page.locator(':focus')).toHaveAttribute('aria-pressed', 'true')
       await page.keyboard.press('Tab')
       await expect(page.locator(':focus')).toHaveAttribute('data-slot', 'heatmap-group')
-      expect(await page.locator(':focus').textContent()).not.toBe(await firstHead.textContent())
+      expect(await page.locator(':focus').getAttribute('data-group')).not.toBe(
+        await firstHead.getAttribute('data-group'),
+      )
       // 不分组的加密：没有组名，也没有视图切换，三十格。
       await demo.getByRole('button', { name: '不分组的加密' }).click()
       await expect(cells).toHaveCount(30)

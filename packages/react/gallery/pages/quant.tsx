@@ -20,7 +20,7 @@ import {
   type MarketHeatmapLabels,
 } from '../../src/quant'
 import { ToggleGroup, ToggleGroupItem } from '../../src/primitives/toggle-group'
-import { Cell, Row } from './parts'
+import { Cell, Row, SAMPLE_MARK_SRC } from './parts'
 
 // 量化层（@katana-ui/react/quant，#1862）的演示。数值都是示例，不是行情。根元素设 data-updown="cn" 时涨跌色互换（红涨绿跌）。
 
@@ -332,7 +332,18 @@ function makeCoins(): HeatmapItem[] {
   })
 }
 
-const STOCKS = makeStocks()
+// 示意图标：每个行业里市值最大的那只（共 4 只）传自绘的 SVG，演示「有图」的样子；其余是字母圆标。不是任何真实公司的标志。
+function withSampleLogos(items: HeatmapItem[]): HeatmapItem[] {
+  const top = new Map<string, HeatmapItem>()
+  for (const item of items) {
+    const old = top.get(item.group ?? '')
+    if (!old || item.size.cap! > old.size.cap!) top.set(item.group ?? '', item)
+  }
+  const picked = new Set([...top.values()].sort((a, b) => b.size.cap! - a.size.cap!).slice(0, 4))
+  return items.map((item) => (picked.has(item) ? { ...item, logo: SAMPLE_MARK_SRC } : item))
+}
+
+const STOCKS = withSampleLogos(makeStocks())
 const COINS = makeCoins()
 
 const HEAT_SIZE: HeatmapSizeBy[] = [
@@ -365,9 +376,10 @@ export function MarketHeatmapDemo() {
   const [selected, setSelected] = useState<string | null>(null)
   const [scheme, setScheme] = useState<HeatmapScheme>('classic')
   const [market, setMarket] = useState('stocks')
+  const [wide, setWide] = useState(false)
   const coins = market === 'coins'
   return (
-    <div style={{ display: 'grid', gap: 12, width: '100%', maxWidth: 760 }}>
+    <div style={{ display: 'grid', gap: 12, width: '100%', maxWidth: wide ? undefined : 760 }}>
       <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
         <ToggleGroup variant="sm" aria-label="数据" value={market} onValueChange={setMarket}>
           <ToggleGroupItem value="stocks">分行业的股票</ToggleGroupItem>
@@ -377,28 +389,42 @@ export function MarketHeatmapDemo() {
           <ToggleGroupItem value="classic">经典</ToggleGroupItem>
           <ToggleGroupItem value="mono">单色</ToggleGroupItem>
         </ToggleGroup>
-      </div>
-      <div style={{ height: 620 }}>
-        <PanelFrame
-          index="03"
-          title={coins ? '加密热力图' : '股票热力图'}
-          object="演示数据"
-          meta="DEMO"
-          source="SOURCE · 演示数据 · 非行情"
-          focused
-          labels={{ settings: '设置', maximize: '最大化', restore: '还原', close: '关闭' }}
+        <ToggleGroup
+          variant="sm"
+          aria-label="屏幕"
+          value={wide ? 'wide' : 'small'}
+          onValueChange={(v) => setWide(v === 'wide')}
         >
-          <MarketHeatmap
-            key={market}
-            items={coins ? COINS : STOCKS}
-            sizeBy={HEAT_SIZE}
-            colorBy={HEAT_COLOR}
-            labels={{ ...HEAT_LABELS, group: '行业' }}
-            scheme={scheme}
-            selected={selected}
-            onSelect={setSelected}
-          />
-        </PanelFrame>
+          <ToggleGroupItem value="small">小屏</ToggleGroupItem>
+          <ToggleGroupItem value="wide">大屏 1920×1080</ToggleGroupItem>
+        </ToggleGroup>
+      </div>
+      <p className="gal-note">
+        每个行业里市值最大的一只传了自绘的示意图标，演示有图的样子；示意图标，不是任何真实公司的标志。其余是字母圆标。格子按实际像素分档：大格子加大徽标、写公司名，组头写平均涨跌。
+      </p>
+      <div style={{ overflow: 'auto' }}>
+        <div style={{ height: wide ? 1080 : 620, width: wide ? 1920 : undefined }}>
+          <PanelFrame
+            index="03"
+            title={coins ? '加密热力图' : '股票热力图'}
+            object="演示数据"
+            meta="DEMO"
+            source="SOURCE · 演示数据 · 非行情"
+            focused
+            labels={{ settings: '设置', maximize: '最大化', restore: '还原', close: '关闭' }}
+          >
+            <MarketHeatmap
+              key={`${market}-${wide}`}
+              items={coins ? COINS : STOCKS}
+              sizeBy={HEAT_SIZE}
+              colorBy={HEAT_COLOR}
+              labels={{ ...HEAT_LABELS, group: '行业' }}
+              scheme={scheme}
+              selected={selected}
+              onSelect={setSelected}
+            />
+          </PanelFrame>
+        </div>
       </div>
     </div>
   )
