@@ -19,7 +19,7 @@
 | `legendText` | `(step: number) => string` | — | 色例每一档（−3 到 +3）写的字。 |
 | `limit` | `number` | `0.03` | 色例两端的涨跌幅（小数），同 Treemap。 |
 | `onSelect / selectedId` | `(node) => void / string \| null` | — | 点击或 Enter 选中；selectedId 画一圈强调色的标记。 |
-| `canvasFrom` | `number` | `2000` | 点数达到它就改画 canvas。2000 出自 issue #1918 的设想，没有实测依据，待测量。 |
+| `canvasFrom` | `number` | `2000` | 点数达到它就改画 canvas。2000 出自 issue #1918 的设想，没有实测依据，待测量（测量票 #1923）。 |
 | `idle` | `ReactNode` | — | 没有悬停也没有聚焦时读数行写什么。 |
 
 ### layoutGalaxy(nodes, groupBy, frame) / hitNode / stepNode

@@ -4117,7 +4117,7 @@ export const PAGES: readonly DocPage[] = [
             name: 'canvasFrom',
             type: 'number',
             default: '2000',
-            desc: '点数达到它就改画 canvas。2000 出自 issue #1918 的设想，没有实测依据，待测量。',
+            desc: '点数达到它就改画 canvas。2000 出自 issue #1918 的设想，没有实测依据，待测量（测量票 #1923）。',
           },
           { name: 'idle', type: 'ReactNode', desc: '没有悬停也没有聚焦时读数行写什么。' },
         ],

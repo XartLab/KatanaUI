@@ -41,7 +41,7 @@ export type SymbolGalaxyProps = {
   limit?: number
   onSelect?: (node: GalaxyNode) => void
   selectedId?: string | null
-  /** 点数达到它就改画 canvas。默认 2000（出自 issue #1918 的设想，待测量：没有实测的依据）。 */
+  /** 点数达到它就改画 canvas。默认 2000（出自 issue #1918 的设想，待测量，测量票 #1923：没有实测的依据）。 */
   canvasFrom?: number
   /** 没有悬停也没有聚焦时读数行写什么。 */
   idle?: ReactNode
