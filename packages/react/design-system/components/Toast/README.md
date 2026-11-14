@@ -4,13 +4,15 @@
 
 ## Provide
 
+`*` marks a required prop.
+
 ### ToastViewport
 
 其余属性透传给 div。role=region、aria-live=assertive：新插进来的条目读屏马上读；aria-label 由调用方给。
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `position` | `'top-left' \| 'top-right' \| 'bottom-left' \| 'bottom-right'` | `'bottom-right'` | 哪个角。下面两个角新的贴着窗口边往上叠，上面两个角往下叠。 |
+| `position` | `ToastPosition` | `'bottom-right'` | Which corner: at the bottom corners new toasts stack upward from the window edge, at the top corners downward. |
 
 ### Toast
 
@@ -18,7 +20,7 @@
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `phase` | `'entering' \| 'open' \| 'closing'` | `'open'` | entering 是刚插进来（画一帧再改成 open，过渡才有起点）；closing 是收起中，过了 TOAST_EXIT_MS 调用方再摘节点。 |
+| `phase` | `ToastPhase` | `'open'` | entering is just inserted (draw one frame, then switch to open so the transition has a start); closing is leaving, and the caller removes the node after TOAST_EXIT_MS. |
 
 ### ToastClose
 
@@ -26,9 +28,34 @@
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `label` | `string` | — | 读屏名（必填，包里不放文案）。 |
+| `asChild` | `boolean` | — | Render the child element itself (a link, a menu trigger) instead of wrapping it in a button. |
+| `variant` | `"link" \| "default" \| "danger" \| "primary" \| "ghost" \| "icon"` | — | Visual style: primary is the solid light button, danger uses the danger text color, icon is a borderless 28px icon button. |
+| `size` | `"default" \| "icon" \| "sm"` | — | Height: default is 30px, sm is 26px with an 8px radius, icon is a 28px square. |
+| `label` * | `string` | — | Accessible name (required; the package ships no text). |
 
 ### ToastClear / ToastIcon / ToastText / ToastTitle / ToastDescription / ToastContent
+
+## Usage
+
+```tsx
+// SPDX-License-Identifier: MIT
+import { Toast, ToastContent, ToastClose, ToastDescription, ToastIcon, ToastText, ToastTitle } from '@katana-ui/react'
+
+export function ToastUsage() {
+  return (
+    <Toast>
+      <ToastContent>
+        <ToastIcon />
+        <ToastText>
+          <ToastTitle>BTCUSDT crossed 106,000</ToastTitle>
+          <ToastDescription>Trigger price 106,012.4</ToastDescription>
+        </ToastText>
+        <ToastClose label="Dismiss" />
+      </ToastContent>
+    </Toast>
+  )
+}
+```
 
 ## States
 

@@ -44,12 +44,22 @@ function BellIcon({ swing }: { swing: ReturnType<typeof useMotionValue<number>> 
 }
 
 export type NotificationBellProps = Omit<ComponentProps<'button'>, 'children' | 'aria-label'> & {
+  /** Unread count; a non-finite number counts as 0. */
   count?: number
-  /** 角标显示到几；超过写「<max>+」。 */
+  /**
+   * Highest number the badge shows; above it writes "<max>+".
+   * 角标显示到几；超过写「<max>+」。
+   */
   max?: number
-  /** count 画数字，dot 只画一个点（不要数的场合）。 */
+  /**
+   * count draws the number, dot draws only a dot.
+   * count 画数字，dot 只画一个点（不要数的场合）。
+   */
   variant?: 'count' | 'dot'
-  /** 读屏名（必填），要带上未读数，如「提醒，3 条未读」：数变了就换这个字符串。 */
+  /**
+   * Accessible name (required); include the unread count, for example "Alerts, 3 unread", and change the string when the count changes.
+   * 读屏名（必填），要带上未读数，如「提醒，3 条未读」：数变了就换这个字符串。
+   */
   label: string
 }
 

@@ -12,7 +12,12 @@ export type BadgeItem = {
 }
 
 /** 一排上标徽标；没有徽标时什么都不画。 */
-export function BadgeGroup({ items }: { items: readonly BadgeItem[] }) {
+export function BadgeGroup({
+  items,
+}: {
+  /** The badges: label is the one-character mark, text is the full name (accessible name and hover hint). */
+  items: readonly BadgeItem[]
+}) {
   if (items.length === 0) return null
   return (
     <span className="k-badges">

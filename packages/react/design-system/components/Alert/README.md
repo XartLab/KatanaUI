@@ -4,18 +4,35 @@
 
 ## Provide
 
+`*` marks a required prop.
+
 ### Alert
 
 其余属性透传给 div。语气不能只靠颜色：标题或说明里要写字。
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `tone` | `'default' \| 'ok' \| 'warn' \| 'danger'` | `'default'` | 色条与图标的颜色。 |
-| `role` | `string` | — | 默认 warn 与 danger 是 alert（读屏马上读），default 与 ok 是 status；一直在页面里的可以传 note。 |
+| `tone` | `"default" \| "ok" \| "warn" \| "danger"` | — | Color of the stripe and the icon. |
 
 ### AlertTitle / AlertDescription
 
 都是 div。
+
+## Usage
+
+```tsx
+// SPDX-License-Identifier: MIT
+import { Alert, AlertDescription, AlertTitle } from '@katana-ui/react'
+
+export function AlertUsage() {
+  return (
+    <Alert tone="warn">
+      <AlertTitle>Close to the daily loss limit</AlertTitle>
+      <AlertDescription>80% used; trading locks at 100%.</AlertDescription>
+    </Alert>
+  )
+}
+```
 
 ## States
 

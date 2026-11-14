@@ -4,16 +4,29 @@
 
 ## Provide
 
+`*` marks a required prop.
+
 ### NotificationBell
 
 其余属性透传给 button。角标对读屏隐藏，数变了由名字（label）播报。
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `count` | `number` | `0` | 未读数；不是有限数时当 0。 |
-| `max` | `number` | `99` | 角标显示到几，超过写「<max>+」。 |
-| `variant` | `'count' \| 'dot'` | `'count'` | count 画数字，dot 只画一个点。 |
-| `label` | `string` | — | 读屏名（必填），要带上未读数，数变了就换这个字符串。 |
+| `count` | `number` | `0` | Unread count; a non-finite number counts as 0. |
+| `max` | `number` | `99` | Highest number the badge shows; above it writes "<max>+". |
+| `variant` | `'count' \| 'dot'` | `'count'` | count draws the number, dot draws only a dot. |
+| `label` * | `string` | — | Accessible name (required); include the unread count, for example "Alerts, 3 unread", and change the string when the count changes. |
+
+## Usage
+
+```tsx
+// SPDX-License-Identifier: MIT
+import { NotificationBell } from '@katana-ui/react'
+
+export function NotificationBellUsage() {
+  return <NotificationBell count={3} label="Alerts, 3 unread" />
+}
+```
 
 ## States
 

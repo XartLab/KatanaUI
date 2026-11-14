@@ -65,12 +65,21 @@ function ToggleGroup({
   children,
   ...props
 }: Omit<ComponentProps<typeof ToggleGroupPrimitive.Root>, 'type' | 'value' | 'defaultValue' | 'onValueChange'> & {
+  /** Skin: default is the bordered settings style, sm is the 26px toolbar style. */
   variant?: Variant
-  /** 选中块、文字外壳上额外挂的类（应用里的样式与测试按这两个类找它们）。 */
+  /**
+   * Extra class name on the selected pill.
+   * 选中块、文字外壳上额外挂的类（应用里的样式与测试按这两个类找它们）。
+   */
   pillClassName?: string
+  /** Extra class name on the text wrapper. */
   textClassName?: string
-  /** null：一个都没选。 */
+  /**
+   * The selected item; null means none is selected.
+   * null：一个都没选。
+   */
   value: string | null
+  /** Called with the newly selected value. */
   onValueChange: (value: string) => void
 }) {
   const layoutId = useId()
@@ -99,7 +108,10 @@ function ToggleGroupItem({
   children,
   value,
   ...props
-}: Omit<ComponentProps<typeof ToggleGroupPrimitive.Item>, 'value'> & { value: string }) {
+}: Omit<ComponentProps<typeof ToggleGroupPrimitive.Item>, 'value'> & {
+  /** The value of this item. */
+  value: string
+}) {
   const group = useContext(Context)
   return (
     <ToggleGroupPrimitive.Item

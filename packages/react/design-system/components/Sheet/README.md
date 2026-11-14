@@ -4,6 +4,8 @@
 
 ## Provide
 
+`*` marks a required prop.
+
 ### Sheet
 
 其余属性透传给 Radix Dialog.Root。
@@ -14,10 +16,43 @@
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `side` | `'right' \| 'left' \| 'top' \| 'bottom'` | `'right'` | 贴哪一边；入场从那一边滑进来。 |
-| `closeLabel` | `string` | — | 给了就在右上角画关闭钮，读屏读这个名字。 |
+| `side` | `"right" \| "left" \| "top" \| "bottom"` | `'right'` | Which edge the sheet sticks to; it slides in from that edge. |
+| `closeLabel` | `string` | — | When given, draws a close button at the top right and uses this as its accessible name. |
 
 ### SheetHeader / SheetBody / SheetFooter / SheetTitle / SheetDescription
+
+## Usage
+
+```tsx
+// SPDX-License-Identifier: MIT
+import {
+  Button,
+  Sheet,
+  SheetBody,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from '@katana-ui/react'
+
+export function SheetUsage() {
+  return (
+    <Sheet>
+      <SheetTrigger asChild>
+        <Button>Open drawer</Button>
+      </SheetTrigger>
+      <SheetContent side="right" closeLabel="Close">
+        <SheetHeader>
+          <SheetTitle>Symbol details</SheetTitle>
+          <SheetDescription>Details of the selected symbol.</SheetDescription>
+        </SheetHeader>
+        <SheetBody>Body</SheetBody>
+      </SheetContent>
+    </Sheet>
+  )
+}
+```
 
 ## States
 

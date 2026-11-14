@@ -9,7 +9,10 @@ import { useRovingToolbar } from './use-roving-toolbar.ts'
 // 照 ATAS X 图表头：左组（品种、周期、绘图……）+ 右组（比例、截图、设置……）；组间用 data-sep 画分隔线。
 
 export type ToolbarProps = Omit<ComponentProps<'div'>, 'role' | 'aria-label'> & {
-  /** 工具条的名字（屏幕阅读器念）。 */
+  /**
+   * Name of the toolbar (read by screen readers).
+   * 工具条的名字（屏幕阅读器念）。
+   */
   label: string
   /** 宿主要自己量宽度、找子元素时拿到容器。 */
   ref?: Ref<HTMLDivElement>
@@ -41,7 +44,14 @@ export function Toolbar({ label, className, ref, onKeyDown, children, ...rest }:
 }
 
 /** 一组工具（左组或右组）。 */
-export function ToolbarGroup({ side, className, ...rest }: ComponentProps<'div'> & { side: 'left' | 'right' }) {
+export function ToolbarGroup({
+  side,
+  className,
+  ...rest
+}: ComponentProps<'div'> & {
+  /** Left group or right group. */
+  side: 'left' | 'right'
+}) {
   return <div {...rest} data-slot="toolbar-group" className={cn('k-toolbar-group', `is-${side}`, className)} />
 }
 
@@ -55,7 +65,14 @@ export function ToolSlot({
   separator,
   className,
   ...rest
-}: ComponentProps<'span'> & { tool: string; folded?: boolean; separator?: boolean }) {
+}: ComponentProps<'span'> & {
+  /** Tool id, written as data-tool so the host can measure widths. */
+  tool: string
+  /** Folded: hidden but not removed (it is still measured). */
+  folded?: boolean
+  /** Draw a divider before it (neighbouring tools belong to different groups). */
+  separator?: boolean
+}) {
   return (
     <span
       {...rest}
@@ -81,19 +98,38 @@ export function ToolButton({
   renderTooltip,
   children,
 }: {
-  /** 按钮的名字：屏幕阅读器念它，没有 title 时也是悬停提示。 */
+  /**
+   * Name of the button: read by screen readers, and the hover hint when there is no title.
+   * 按钮的名字：屏幕阅读器念它，没有 title 时也是悬停提示。
+   */
   label: string
-  /** 悬停提示（比名字多一句说明）。 */
+  /**
+   * Hover hint (one more sentence than the name).
+   * 悬停提示（比名字多一句说明）。
+   */
   title?: string
-  /** 悬停提示里跟在后面的快捷键写法（宿主按键位表写好）。 */
+  /**
+   * Shortcut written after the hint (the host writes it from its key map).
+   * 悬停提示里跟在后面的快捷键写法（宿主按键位表写好）。
+   */
   keys?: ReactNode
-  /** 开关类工具（绘制对象、交易面板）是否开着。 */
+  /**
+   * Whether a toggle tool is on (aria-pressed, orange).
+   * 开关类工具（绘制对象、交易面板）是否开着。
+   */
   pressed?: boolean
+  /** Disable the button. */
   disabled?: boolean
+  /** Called when clicked. */
   onClick: () => void
+  /** Extra class name on the button. */
   className?: string
-  /** 宿主有自己的提示件时用它包按钮（拿到的是按钮元素）；省略时用包里的提示。 */
+  /**
+   * Wrap the button in the host's own tooltip component; the package tooltip is used when omitted.
+   * 宿主有自己的提示件时用它包按钮（拿到的是按钮元素）；省略时用包里的提示。
+   */
   renderTooltip?: (button: ReactElement) => ReactElement
+  /** The icon. */
   children: ReactNode
 }) {
   const button = (

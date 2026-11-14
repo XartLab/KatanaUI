@@ -4,6 +4,8 @@
 
 ## Provide
 
+`*` marks a required prop.
+
 ### ContextMenu / ContextMenuTrigger / ContextMenuContent
 
 其余属性透传给 Radix ContextMenu 的同名部件。触发器常用 asChild 套在要响应右键的元素上。
@@ -14,12 +16,33 @@
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `variant` | `'default' \| 'danger'` | `'default'` | danger 字色走危险色。 |
-| `onSelect` | `(event: Event) => void` | — | 选中（一次点击只叫一次）。 |
+| `variant` | `'default' \| 'danger'` | `'default'` | Style of the row: danger uses the danger text color. |
+| `bare` | `boolean` | — | Skip the row skin. |
 
 ### 其余部件
 
 与 DropdownMenu 的同名部件一一对应，属性也相同。
+
+## Usage
+
+```tsx
+// SPDX-License-Identifier: MIT
+import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from '@katana-ui/react'
+
+export function ContextMenuUsage() {
+  return (
+    <ContextMenu>
+      <ContextMenuTrigger asChild>
+        <div>Right-click here</div>
+      </ContextMenuTrigger>
+      <ContextMenuContent aria-label="Panel menu">
+        <ContextMenuItem>Clone panel</ContextMenuItem>
+        <ContextMenuItem>Close panel</ContextMenuItem>
+      </ContextMenuContent>
+    </ContextMenu>
+  )
+}
+```
 
 ## States
 
