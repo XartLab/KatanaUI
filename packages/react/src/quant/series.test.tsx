@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vite-plus/test'
+import { CalendarHeatmap } from './calendar-heatmap'
+import { addDays, calendarGrid, calendarKey, calendarLevel, formatDate, parseDate } from './calendar-model'
 import { BulletMeter } from './bullet-meter'
 import { bulletModel } from './bullet-model'
 import { BrushChart } from './brush-chart'
@@ -218,5 +220,87 @@ describe('子弹图仪表', () => {
     expect(html).toContain('>接近<')
     expect(html).toContain('class="k-bullet-zone is-warn"')
     expect(html).toContain('class="k-bullet-zone is-breach"')
+  })
+})
+
+describe('日历热力图', () => {
+  it('日期按 UTC 日历日算：往返不变，写错的日期是 NaN', () => {
+    expect(formatDate(parseDate('2026-02-28'))).toBe('2026-02-28')
+    expect(addDays('2026-02-28', 1)).toBe('2026-03-01')
+    expect(addDays('2024-02-28', 1)).toBe('2024-02-29')
+    expect(parseDate('2026-02-30')).toBeNaN()
+    expect(parseDate('abc')).toBeNaN()
+  })
+
+  it('排布：一周一列、一天一格；周一起头时周一在第 0 行；第一列开头的空位不画', () => {
+    // 2026-11-14 是周六。
+    const grid = calendarGrid('2026-11-14', '2026-11-23', 1)
+    expect(grid.cells.map((c) => [c.date, c.col, c.row]).slice(0, 3)).toEqual([
+      ['2026-11-14', 0, 5],
+      ['2026-11-15', 0, 6],
+      ['2026-11-16', 1, 0],
+    ])
+    expect(grid.cols).toBe(3)
+    expect(calendarGrid('2026-11-14', '2026-11-14', 0).cells[0]!.row).toBe(6)
+    expect(calendarGrid('2026-11-14', '2026-11-01').cells).toEqual([])
+  })
+
+  it('月份标签落在每个月第一天所在的列，区间起点那一列也有', () => {
+    const grid = calendarGrid('2026-11-14', '2026-12-10', 1)
+    expect(grid.months).toEqual([
+      { col: 0, month: 10 },
+      { col: 3, month: 11 },
+    ])
+  })
+
+  it('档位：按 |值| 占最大值的比例分 4 档，0 单独一档，涨跌符号分开；最大值是 0 时全是 0 档', () => {
+    expect(calendarLevel(100, 100)).toBe(4)
+    expect(calendarLevel(-100, 100)).toBe(-4)
+    expect(calendarLevel(25, 100)).toBe(1)
+    expect(calendarLevel(26, 100)).toBe(2)
+    expect(calendarLevel(0.001, 100)).toBe(1)
+    expect(calendarLevel(0, 100)).toBe(0)
+    expect(calendarLevel(5, 0)).toBe(0)
+    expect(calendarLevel(Number.NaN, 100)).toBe(0)
+  })
+
+  it('键盘：←→ 一周、↑↓ 一天、Home / End 头尾，夹在区间里；没选中先落到最后一天；Esc 清掉', () => {
+    const [from, to] = ['2026-01-01', '2026-12-31']
+    expect(calendarKey('2026-06-10', 'ArrowRight', from, to)).toBe('2026-06-17')
+    expect(calendarKey('2026-06-10', 'ArrowLeft', from, to)).toBe('2026-06-03')
+    expect(calendarKey('2026-06-10', 'ArrowDown', from, to)).toBe('2026-06-11')
+    expect(calendarKey('2026-06-10', 'ArrowUp', from, to)).toBe('2026-06-09')
+    expect(calendarKey('2026-01-03', 'ArrowLeft', from, to)).toBe(from)
+    expect(calendarKey('2026-12-30', 'ArrowDown', from, to)).toBe(to)
+    expect(calendarKey('2026-06-10', 'Home', from, to)).toBe(from)
+    expect(calendarKey(null, 'ArrowLeft', from, to)).toBe(to)
+    expect(calendarKey('2026-06-10', 'Escape', from, to)).toBeNull()
+    expect(calendarKey(null, 'Escape', from, to)).toBeUndefined()
+    expect(calendarKey('2026-06-10', 'x', from, to)).toBeUndefined()
+  })
+
+  it('渲染：每天一格带档位，没数据的日子是 none；色例有 9 格', () => {
+    const html = renderToStaticMarkup(
+      <CalendarHeatmap
+        days={[
+          { date: '2026-11-16', value: 100 },
+          { date: '2026-11-17', value: -30 },
+          { date: '2026-11-18', value: 0 },
+        ]}
+        from="2026-11-16"
+        to="2026-11-19"
+        weekdayLabels={['日', '一', '二', '三', '四', '五', '六']}
+        monthLabels={Array.from({ length: 12 }, (_, i) => `${i + 1}月`)}
+        describe={(date, value) => `${date} ${value}`}
+        label="示例"
+        legend={{ down: '亏', up: '盈' }}
+      />,
+    )
+    expect(html.match(/data-slot="calendar-cell"/g)).toHaveLength(4)
+    expect(html).toContain('data-date="2026-11-16" data-level="4"')
+    expect(html).toContain('data-date="2026-11-17" data-level="-2"')
+    expect(html).toContain('data-date="2026-11-18" data-level="0"')
+    expect(html).toContain('data-date="2026-11-19" data-level="none"')
+    expect(html.match(/<i data-level/g)).toHaveLength(9)
   })
 })

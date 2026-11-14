@@ -1,6 +1,13 @@
 // SPDX-License-Identifier: MIT
 import { useScrubber } from '../../src/index'
-import { BrushChart, BulletMeter, WaterfallChart, type WaterfallStep } from '../../src/quant'
+import {
+  BrushChart,
+  BulletMeter,
+  CalendarHeatmap,
+  WaterfallChart,
+  type CalendarDay,
+  type WaterfallStep,
+} from '../../src/quant'
 import { Row } from './parts'
 
 // #1917：时间序列与盈亏的件的演示。下面所有数据都是演示用的合成数据（在这个展示页里按固定种子生成，不是行情、不是账户），每页也写明了；应用里没有样本数据。
@@ -152,6 +159,42 @@ export function BulletMeterDemo() {
         />
       </div>
       <p className="gal-note">{DEMO_NOTE}达到软限算接近，达到硬限算越限；超出满刻度的条画满。</p>
+    </>
+  )
+}
+
+/** 演示用的一年每日盈亏：2025-11-15 到 2026-11-14，只有工作日有数（周末休市，画成没数据）。 */
+const CAL_FROM = '2025-11-15'
+const CAL_TO = '2026-11-14'
+const CAL_DAYS: CalendarDay[] = (() => {
+  const next = seeded(7)
+  const out: CalendarDay[] = []
+  for (let ms = Date.UTC(2025, 10, 15); ms <= Date.UTC(2026, 10, 14); ms += 86_400_000) {
+    const weekday = new Date(ms).getUTCDay()
+    if (weekday === 0 || weekday === 6) continue
+    out.push({ date: new Date(ms).toISOString().slice(0, 10), value: Math.round((next() - 0.46) * 2000) })
+  }
+  return out
+})()
+
+export function CalendarHeatmapDemo() {
+  return (
+    <>
+      <div className="gal-wide" data-gallery-calendar style={{ maxWidth: 860 }}>
+        <CalendarHeatmap
+          days={CAL_DAYS}
+          from={CAL_FROM}
+          to={CAL_TO}
+          weekdayLabels={['日', '一', '二', '三', '四', '五', '六']}
+          monthLabels={Array.from({ length: 12 }, (_, i) => `${i + 1}月`)}
+          describe={(date, value) => `${date}  ${value === null ? '休市' : (value > 0 ? '+' : '') + value}`}
+          label="示例：一年的每日盈亏"
+          legend={{ down: '亏', up: '盈' }}
+        />
+      </div>
+      <p className="gal-note">
+        {DEMO_NOTE}周末休市画成没数据（只有淡边）；颜色深浅按当天盈亏占全年最大绝对值的比例分四档。
+      </p>
     </>
   )
 }

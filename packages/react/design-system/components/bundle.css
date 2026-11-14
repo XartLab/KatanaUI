@@ -6403,6 +6403,204 @@ button.k-quote-card.is-link:focus-visible {
   transform: translateX(-100%);
 }
 
+.k-heat {
+  min-width: 0;
+  color: var(--ink-200);
+  font: var(--text-caption) var(--font-sans);
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  display: flex;
+}
+
+.k-heat-svg {
+  outline-offset: 2px;
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.k-heat-svg:focus-visible {
+  outline: 1px solid var(--focus-ring);
+}
+
+.k-heat-text {
+  fill: var(--chart-axis);
+  font: var(--text-caption-size) var(--font-sans);
+}
+
+.k-heat-cell {
+  fill: var(--bg-400);
+  stroke: var(--ds-c-2xn4aw);
+  stroke-width: 1.5px;
+  transition: fill var(--dur-snappy) var(--ease-snappy);
+}
+
+.k-heat-cell[data-level="none"] {
+  fill: var(--ds-c-2xn4aw);
+  stroke: var(--line-100);
+  stroke-width: 1px;
+}
+
+.k-heat-cell[data-level="1"] {
+  fill: var(--pnl-up);
+}
+
+@supports (color: color-mix(in lab, red, red)) {
+  .k-heat-cell[data-level="1"] {
+    fill: var(--ds-c-151q3s6);
+  }
+}
+
+.k-heat-cell[data-level="2"] {
+  fill: var(--pnl-up);
+}
+
+@supports (color: color-mix(in lab, red, red)) {
+  .k-heat-cell[data-level="2"] {
+    fill: var(--ds-c-nw78);
+  }
+}
+
+.k-heat-cell[data-level="3"] {
+  fill: var(--pnl-up);
+}
+
+@supports (color: color-mix(in lab, red, red)) {
+  .k-heat-cell[data-level="3"] {
+    fill: var(--ds-c-29ygob);
+  }
+}
+
+.k-heat-cell[data-level="4"] {
+  fill: var(--pnl-up);
+}
+
+.k-heat-cell[data-level="-1"] {
+  fill: var(--pnl-down);
+}
+
+@supports (color: color-mix(in lab, red, red)) {
+  .k-heat-cell[data-level="-1"] {
+    fill: var(--ds-c-a4hl5l);
+  }
+}
+
+.k-heat-cell[data-level="-2"] {
+  fill: var(--pnl-down);
+}
+
+@supports (color: color-mix(in lab, red, red)) {
+  .k-heat-cell[data-level="-2"] {
+    fill: var(--ds-c-144jfjr);
+  }
+}
+
+.k-heat-cell[data-level="-3"] {
+  fill: var(--pnl-down);
+}
+
+@supports (color: color-mix(in lab, red, red)) {
+  .k-heat-cell[data-level="-3"] {
+    fill: var(--ds-c-16du00u);
+  }
+}
+
+.k-heat-cell[data-level="-4"] {
+  fill: var(--pnl-down);
+}
+
+.k-heat-cell[data-active="true"] {
+  stroke: var(--ink-100);
+}
+
+.k-heat-legend {
+  color: var(--ink-300);
+  align-items: center;
+  gap: 3px;
+  display: flex;
+}
+
+.k-heat-legend > span {
+  margin-inline: 4px;
+}
+
+.k-heat-legend > i {
+  background: var(--bg-400);
+  border-radius: 2px;
+  width: 12px;
+  height: 12px;
+  display: block;
+}
+
+.k-heat-legend > i[data-level="1"] {
+  background: var(--pnl-up);
+}
+
+@supports (color: color-mix(in lab, red, red)) {
+  .k-heat-legend > i[data-level="1"] {
+    background: var(--ds-c-151q3s6);
+  }
+}
+
+.k-heat-legend > i[data-level="2"] {
+  background: var(--pnl-up);
+}
+
+@supports (color: color-mix(in lab, red, red)) {
+  .k-heat-legend > i[data-level="2"] {
+    background: var(--ds-c-nw78);
+  }
+}
+
+.k-heat-legend > i[data-level="3"] {
+  background: var(--pnl-up);
+}
+
+@supports (color: color-mix(in lab, red, red)) {
+  .k-heat-legend > i[data-level="3"] {
+    background: var(--ds-c-29ygob);
+  }
+}
+
+.k-heat-legend > i[data-level="4"] {
+  background: var(--pnl-up);
+}
+
+.k-heat-legend > i[data-level="-1"] {
+  background: var(--pnl-down);
+}
+
+@supports (color: color-mix(in lab, red, red)) {
+  .k-heat-legend > i[data-level="-1"] {
+    background: var(--ds-c-a4hl5l);
+  }
+}
+
+.k-heat-legend > i[data-level="-2"] {
+  background: var(--pnl-down);
+}
+
+@supports (color: color-mix(in lab, red, red)) {
+  .k-heat-legend > i[data-level="-2"] {
+    background: var(--ds-c-144jfjr);
+  }
+}
+
+.k-heat-legend > i[data-level="-3"] {
+  background: var(--pnl-down);
+}
+
+@supports (color: color-mix(in lab, red, red)) {
+  .k-heat-legend > i[data-level="-3"] {
+    background: var(--ds-c-16du00u);
+  }
+}
+
+.k-heat-legend > i[data-level="-4"] {
+  background: var(--pnl-down);
+}
+
 @property --tw-translate-x {
   syntax: "*";
   inherits: false;
@@ -6833,6 +7031,12 @@ button.k-quote-card.is-link:focus-visible {
   --ds-c-1sas9o0: color-mix(in srgb, var(--ink-100) 8%, transparent);
   --ds-c-1cp2jaz: color-mix(in srgb, var(--signal-amber) 24%, var(--bg-300));
   --ds-c-16w4yab: color-mix(in srgb, var(--signal-red) 28%, var(--bg-300));
+  --ds-c-151q3s6: color-mix(in srgb, var(--pnl-up) 25%, var(--bg-300));
+  --ds-c-nw78: color-mix(in srgb, var(--pnl-up) 50%, var(--bg-300));
+  --ds-c-29ygob: color-mix(in srgb, var(--pnl-up) 75%, var(--bg-300));
+  --ds-c-a4hl5l: color-mix(in srgb, var(--pnl-down) 25%, var(--bg-300));
+  --ds-c-144jfjr: color-mix(in srgb, var(--pnl-down) 50%, var(--bg-300));
+  --ds-c-16du00u: color-mix(in srgb, var(--pnl-down) 75%, var(--bg-300));
   --ds-c-yj1s8q: #fff;
 }
 

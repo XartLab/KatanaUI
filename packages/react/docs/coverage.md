@@ -35,7 +35,7 @@
 | BondCalc | 固收 | 面板 | — | 没做 | 固收，还没有对应面板 |
 | BreakWorkbench | 对账 | 面板 | — | 没做 | 对账，还没有对应面板 |
 | BrinsonAttribution | 资产管理 | 面板 | — | 没做 | 资产管理，还没有对应面板 |
-| Calendar | 发现 | 面板 | `src/panels/journal/TradingCalendar.tsx` | 部分 | 交易日历有，发散热力底色与换手模式没有 |
+| Calendar | 发现 | 面板 | `src/panels/journal/TradingCalendar.tsx`、`CalendarHeatmap` | 部分 | 交易日历有；发散热力底色在组件库有了（CalendarHeatmap，一年的日盈亏），还没接进交易日历，换手模式没有 |
 | CashLedger | 资产管理 | 面板 | — | 没做 | 资产管理，还没有对应面板 |
 | ChartTrader | 交易 | 面板 | `src/panels/chart/ChartTradeBar.tsx`、`src/panels/chart/TradeOverlay.tsx` | 部分 | 图上看单与下单有，拖动改价与止盈止损线没有 |
 | ClusterSearch | 订单流 | 面板 | — | 没做 | 足迹扫描器，还没有对应面板 |

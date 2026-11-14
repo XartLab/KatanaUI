@@ -55,8 +55,8 @@
     "Calendar": {
       "kind": "面板",
       "status": "部分",
-      "at": ["src/panels/journal/TradingCalendar.tsx"],
-      "note": "交易日历有，发散热力底色与换手模式没有"
+      "at": ["src/panels/journal/TradingCalendar.tsx", "CalendarHeatmap"],
+      "note": "交易日历有；发散热力底色在组件库有了（CalendarHeatmap，一年的日盈亏），还没接进交易日历，换手模式没有"
     },
     "CashLedger": {
       "kind": "面板",
