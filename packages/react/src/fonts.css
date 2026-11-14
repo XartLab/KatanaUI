@@ -1,0 +1,68 @@
+/* SPDX-License-Identifier: MIT */
+/* 随包的全部字体声明（出口 `@katana-ui/react/fonts.css`）。字体都是 SIL OFL 1.1，许可全文在 src/fonts/*OFL.txt，出处见 NOTICE。
+   搬自 KATANAview 的 src/styles/base.css（2026-11-15，提交 3c5897fb），字体文件原在它的 design/fonts/。
+   拉丁字体随包；汉字走 tokens 里字体栈的回退，只有点阵字的汉字落到方舟像素子集（本文件最后一段）。
+   声明只在这一份里写一次（ui.css 不再引字体）：用字体的应用在 tokens.css 与 ui.css 之外再引 `@katana-ui/react/fonts.css`。
+   `--font-wide`（宽体的字体栈）在 theme/fonts.css，跟着 ui.css 走。 */
+
+/* Barlow Condensed：数字与标题的窄体（600、700）。 */
+@font-face {
+  font-family: 'Barlow Condensed';
+  src: url('./fonts/barlow-semibold-full.woff2') format('woff2');
+  font-weight: 600;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Barlow Condensed';
+  src: url('./fonts/barlow-bold-full.woff2') format('woff2');
+  font-weight: 700;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'DM Mono';
+  src: url('./fonts/dm-regular-full.woff2') format('woff2');
+  font-weight: 400;
+  font-display: swap;
+}
+/* 点阵标签（LCD 读数窗的小标签、tag）。Doto ExtraBold（800）的拉丁子集（含数字与常用符号，取自 @fontsource/doto 5.3.0）；
+   点阵标签只写英文和数字，所以没有中文字形，汉字走点阵字体变量后面的回退。
+   用 800 不用 Medium：9px 下 Medium 的点不到 1px，被抗锯齿冲淡。声明成 500 是因为 LCD 与点阵标签请求的就是 500。 */
+@font-face {
+  font-family: 'Doto';
+  src: url('./fonts/doto-extrabold-latin.woff2') format('woff2');
+  font-weight: 500;
+  font-display: swap;
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+20AC, U+2122, U+2212, U+2215;
+}
+@font-face {
+  font-family: 'Maple Mono NF CN';
+  src: url('./fonts/maple-medium-latin.woff2') format('woff2');
+  font-weight: 500;
+  font-display: swap;
+  unicode-range: U+0000-024F;
+}
+
+/* 宽体：图与面板的大写标题、分段按钮（Precision Instrument UI，参照图用的就是它）。
+   Michroma，SIL OFL 1.1，© 2011 The Michroma Project Authors（https://github.com/googlefonts/Michroma-font），
+   2026-11-14 取自 Google Fonts（fonts.gstatic.com/s/michroma/v21），子集到拉丁 + 常用标点后转 woff，许可全文见 src/fonts/michroma-ofl.txt。
+   只有拉丁大写，汉字回退到无衬线。--font-wide 暂定义在这里；要进设计令牌时由令牌线程搬进 design/tokens.json（#1934）。 */
+@font-face {
+  font-family: 'Michroma';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('./fonts/michroma-regular.woff') format('woff');
+}
+
+/* 点阵字的中文回落：方舟像素 12px 的中文子集（GB 2312 一级汉字加符号与全角形式，约 4100 字，woff2 约 130KB）。
+   字形取自 Ark Pixel Font（https://github.com/TakWolf/ark-pixel-font ，SIL OFL 1.1，© 2021 TakWolf，2026-11-14 读，
+   仓库提交 5e0b8d6），用 scripts/font/build-ark-pixel-subset.py 从它的点阵 PNG 生成，许可全文见 src/fonts/ark-pixel-ofl.txt。
+   12px（text-tag-md）与它的整数倍才锐利；9px 的 text-tag 档上汉字会糊，点阵汉字用 text-tag-md。 */
+@font-face {
+  font-family: 'Ark Pixel 12 zh_cn Subset';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('./fonts/ark-pixel-12-zh-subset.woff2') format('woff2');
+}
