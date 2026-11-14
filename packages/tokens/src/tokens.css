@@ -171,7 +171,7 @@
   --font-mono: "JetBrains Mono", "Maple Mono NF CN", "Sarasa Mono SC", "PingFang SC", "Microsoft YaHei UI", "Noto Sans SC", monospace;
   --font-display: "Barlow Condensed", "Smiley Sans", "Noto Sans SC", "Microsoft YaHei UI", sans-serif;
   --font-lcd: "DM Mono", "Maple Mono NF CN", "Maple Mono", "Noto Sans SC", "Microsoft YaHei UI", monospace;
-  --font-dot: "Doto", "Ark Pixel 12px Proportional zh_cn", "Fusion Pixel 12px Proportional zh_hans", "Noto Sans SC", "Microsoft YaHei UI", monospace;
+  --font-dot: "Doto", "Ark Pixel 12 zh_cn Subset", "Ark Pixel 12px Proportional zh_cn", "Fusion Pixel 12px Proportional zh_hans", "Noto Sans SC", "Microsoft YaHei UI", monospace;
   --font-seg: "DSEG7 Classic", "DM Mono", monospace;
   --font-led: "Sixtyfour", "DSEG14 Classic", "DM Mono", monospace;
   --ease-snappy: linear(0, 0.054, 0.18, 0.311, 0.438, 0.567, 0.663, 0.742, 0.813, 0.861, 0.898, 0.929, 0.949, 0.964, 0.976, 0.983, 0.989, 0.993, 0.995, 0.997, 0.998, 0.999, 0.999, 1, 1);

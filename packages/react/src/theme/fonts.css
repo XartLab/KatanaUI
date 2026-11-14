@@ -13,3 +13,15 @@
 :root {
   --font-wide: 'Michroma', 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei UI', sans-serif;
 }
+
+/* 点阵字的中文回落：方舟像素 12px 的中文子集（GB 2312 一级汉字加符号与全角形式，约 4100 字，woff2 约 130KB）。
+   字形取自 Ark Pixel Font（https://github.com/TakWolf/ark-pixel-font ，SIL OFL 1.1，© 2021 TakWolf，2026-11-14 读，
+   仓库提交 5e0b8d6），用 scripts/font/build-ark-pixel-subset.py 从它的点阵 PNG 生成，许可全文见 src/fonts/ark-pixel-ofl.txt。
+   12px（text-tag-md）与它的整数倍才锐利；9px 的 text-tag 档上汉字会糊，点阵汉字用 text-tag-md。 */
+@font-face {
+  font-family: 'Ark Pixel 12 zh_cn Subset';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('../fonts/ark-pixel-12-zh-subset.woff2') format('woff2');
+}
