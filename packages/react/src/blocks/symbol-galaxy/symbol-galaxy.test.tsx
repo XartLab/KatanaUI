@@ -109,6 +109,9 @@ describe('SymbolGalaxy', () => {
     describe: (node: GalaxyNode) => `${node.label}：${node.size}`,
     groupText: (group: string, count: number) => `${group}，${count} 只`,
     legendText: (step: number) => String(step),
+    actionLabels: { group: '操作', table: '表格视图', exportCsv: '导出', fullscreen: '全屏' },
+    tableLabel: '表',
+    tableHead: ['名称', '分组', '详情'],
   }
   it('点不多画 SVG：每个点一个圆，每团一个 Tab 停靠点带整句名，分组开关标出当前', () => {
     const html = renderToStaticMarkup(<SymbolGalaxy {...props} />)
@@ -117,7 +120,8 @@ describe('SymbolGalaxy', () => {
     expect(html.match(/tabindex="0"/g)).toHaveLength(3)
     expect(html).toContain('aria-label="金融，10 只"')
     expect(html.match(/aria-pressed="true"/g)).toHaveLength(1)
-    expect(html.match(/aria-pressed="false"/g)).toHaveLength(1)
+    // 另一个 aria-pressed=false 是图右上的「表格视图」按钮。
+    expect(html.match(/aria-pressed="false"/g)).toHaveLength(2)
     expect(html).toContain('行业')
     expect(html).not.toContain('<canvas')
   })

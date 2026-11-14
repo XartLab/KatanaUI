@@ -6,6 +6,8 @@
 // 功能参照 Arc Ridgeline（uiarc.dev，2026-11-14 读，页面只写了这个名字），实现原创。文字全由 props 传。
 import { useRef, useState, type KeyboardEvent, type ReactNode } from 'react'
 import { linearScale, niceTicks } from './chart-scale'
+import { ChartActions } from './chart-kit/chart-actions'
+import { ChartTable, type ChartViewProps } from './chart-kit/chart-table'
 import { DotFill, useDotId } from './chart-kit/dot-fill'
 import { seqColor } from './chart-kit/series-colors'
 import { layerLevel } from './quantile-model'
@@ -16,7 +18,7 @@ const LEFT = 104
 const RIGHT = 12
 const AXIS = 28
 
-export type RidgelineProps = {
+export type RidgelineProps = ChartViewProps & {
   groups: readonly RidgeGroup[]
   /** 整张图的读屏名。 */
   label: string
@@ -51,7 +53,14 @@ export function Ridgeline({
   overlap = 2,
   idle,
   className,
+  actionLabels,
+  tableLabel,
+  tableHead,
+  onExport,
+  onFullscreen,
+  source,
 }: RidgelineProps) {
+  const [tableView, setTableView] = useState(false)
   const [hover, setHover] = useState<number | null>(null)
   const [focus, setFocus] = useState<number | null>(null)
   const [tab, setTab] = useState(0)
@@ -84,7 +93,25 @@ export function Ridgeline({
 
   return (
     <figure className={`k-ridge${className ? ` ${className}` : ''}`} data-slot="ridgeline">
+      <div className="k-dist-bar">
+        <ChartActions
+          labels={actionLabels}
+          tableView={tableView}
+          onTableView={setTableView}
+          onExport={onExport}
+          onFullscreen={onFullscreen}
+        />
+      </div>
+      {tableView && (
+        <ChartTable
+          slot="ridgeline-table"
+          label={tableLabel}
+          head={tableHead}
+          rows={groups.map((group, i) => ({ key: group.id, cells: [group.label, describe(group, ridges[i]!.stats)] }))}
+        />
+      )}
       <svg
+        style={tableView ? { display: 'none' } : undefined}
         className="k-ridge-svg"
         viewBox={`0 0 ${W} ${height}`}
         role="group"
@@ -150,9 +177,10 @@ export function Ridgeline({
           )
         })}
       </svg>
-      <output className="k-ridge-readout">
+      <output className="k-ridge-readout" hidden={tableView}>
         {active === null ? idle : describe(groups[active]!, ridges[active]!.stats)}
       </output>
+      {source === undefined ? null : <p className="k-dist-source">{source}</p>}
     </figure>
   )
 }

@@ -4,6 +4,12 @@ import { describe, expect, it } from 'vite-plus/test'
 import { UptimeBars } from './uptime-bars'
 import { countStatuses, moveCell, uptimeShare, type UptimeCell } from './uptime-bars-model'
 
+const view = {
+  actionLabels: { group: '操作', table: '表格视图', exportCsv: '导出', fullscreen: '全屏' },
+  tableLabel: '表',
+  tableHead: ['名称', '值'],
+}
+
 const cells: UptimeCell[] = [
   { id: '1', status: 'up', label: '11-12 正常' },
   { id: '2', status: 'down', label: '11-13 断流 3 次' },
@@ -33,7 +39,7 @@ describe('moveCell', () => {
 })
 
 describe('UptimeBars', () => {
-  const html = renderToStaticMarkup(<UptimeBars cells={cells} label="行情源 近 4 天" idle="可用率 33%" />)
+  const html = renderToStaticMarkup(<UptimeBars {...view} cells={cells} label="行情源 近 4 天" idle="可用率 33%" />)
   it('一格一个带整句名的图形，状态写在 data-status，只有最新一格在 Tab 序里', () => {
     expect(html).toContain('role="group"')
     expect(html).toContain('aria-label="行情源 近 4 天"')
@@ -48,6 +54,18 @@ describe('UptimeBars', () => {
   })
 })
 
+describe('图右上三件', () => {
+  it('表格视图按钮总有；导出与全屏的回调不给就没有那两个按钮', () => {
+    const html = renderToStaticMarkup(<UptimeBars {...view} cells={cells} label="x" />)
+    expect(html).toContain('data-action="table"')
+    expect(html).not.toContain('data-action="export"')
+    expect(html).not.toContain('data-action="fullscreen"')
+    expect(renderToStaticMarkup(<UptimeBars {...view} cells={cells} label="x" onExport={() => {}} />)).toContain(
+      'data-action="export"',
+    )
+  })
+})
+
 describe('状态灯加词', () => {
   const words = { up: '正常', degraded: '降级', down: '断开', none: '无数据' }
   it('countStatuses 数每种状态的格数', () => {
@@ -57,6 +75,7 @@ describe('状态灯加词', () => {
   it('给了 statusLabels 就画四行「灯 词 格数」，条两端写时间；不给就没有', () => {
     const html = renderToStaticMarkup(
       <UptimeBars
+        {...view}
         cells={cells}
         label="x"
         statusLabels={words}
@@ -68,6 +87,6 @@ describe('状态灯加词', () => {
     expect(html.match(/data-legend=/g)).toHaveLength(4)
     expect(html).toContain('33.3 %')
     expect(html).toContain('2026-11-15')
-    expect(renderToStaticMarkup(<UptimeBars cells={cells} label="x" />)).not.toContain('data-legend')
+    expect(renderToStaticMarkup(<UptimeBars {...view} cells={cells} label="x" />)).not.toContain('data-legend')
   })
 })

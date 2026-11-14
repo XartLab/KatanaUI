@@ -5,6 +5,8 @@
 // 点不多时每个点一个 SVG 圆；多时（>= canvasFrom）改画 canvas，团的圈与标签、悬停与选中的标记仍是 SVG（所以键盘与读屏两种画法一样）。
 // 文字全由 props 传，包里没有文案。
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type ReactNode } from 'react'
+import { ChartActions } from '../../quant/chart-kit/chart-actions'
+import { ChartTable, type ChartViewProps } from '../../quant/chart-kit/chart-table'
 import { divHotThreshold } from '../../quant/chart-kit/series-colors'
 import { LcdTooltip, type LcdTooltipRow } from '../../quant/chart-kit/lcd-tooltip'
 import { ToggleGroup, ToggleGroupItem } from '../../primitives/toggle-group'
@@ -19,7 +21,7 @@ const STEPS = [-2, -1, 0, 1, 2]
 
 export type GalaxyGrouping = { id: string; label: string }
 
-export type SymbolGalaxyProps = {
+export type SymbolGalaxyProps = ChartViewProps & {
   nodes: readonly GalaxyNode[]
   /** 可切换的分组方式；每个点的 groups 里要有这些 id。 */
   groupings: readonly GalaxyGrouping[]
@@ -66,7 +68,14 @@ export function SymbolGalaxy({
   canvasFrom = 2000,
   idle,
   className,
+  actionLabels,
+  tableLabel,
+  tableHead,
+  onExport,
+  onFullscreen,
+  source,
 }: SymbolGalaxyProps) {
+  const [tableView, setTableView] = useState(false)
   const [inner, setInner] = useState(defaultGroupBy ?? groupings[0]?.id ?? '')
   const mode = groupBy ?? inner
   const hotAt = useMemo(() => divHotThreshold(nodes.map((node) => node.change ?? Number.NaN)), [nodes])
@@ -233,8 +242,23 @@ export function SymbolGalaxy({
             </ToggleGroupItem>
           ))}
         </ToggleGroup>
+        <ChartActions
+          labels={actionLabels}
+          tableView={tableView}
+          onTableView={setTableView}
+          onExport={onExport}
+          onFullscreen={onFullscreen}
+        />
       </div>
-      <div className="k-galaxy-plot">
+      {tableView && (
+        <ChartTable
+          slot="galaxy-table"
+          label={tableLabel}
+          head={tableHead}
+          rows={nodes.map((node) => ({ key: node.id, cells: [node.label, node.groups[mode] ?? '', describe(node)] }))}
+        />
+      )}
+      <div className="k-galaxy-plot" hidden={tableView}>
         {canvas && <canvas ref={surface} className="k-galaxy-canvas" aria-hidden="true" />}
         <svg
           ref={svg}
@@ -321,14 +345,17 @@ export function SymbolGalaxy({
           </div>
         )}
       </div>
-      <ol ref={legend} className="k-galaxy-legend" aria-hidden="true">
+      <ol ref={legend} className="k-galaxy-legend" aria-hidden="true" hidden={tableView}>
         {STEPS.map((step) => (
           <li key={step} className={`is-step${step}`}>
             {legendText(step)}
           </li>
         ))}
       </ol>
-      <output className="k-galaxy-readout">{shownNode ? describe(shownNode) : idle}</output>
+      <output className="k-galaxy-readout" hidden={tableView}>
+        {shownNode ? describe(shownNode) : idle}
+      </output>
+      {source === undefined ? null : <p className="k-dist-source">{source}</p>}
     </figure>
   )
 }

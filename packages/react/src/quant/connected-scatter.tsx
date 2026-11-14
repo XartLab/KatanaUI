@@ -3,6 +3,8 @@
 // 时间方向三路表达，不靠颜色：起点是空心圈、终点是实心圈加箭头，点越靠后越不透明。多条轨迹各取 series 色板里的一个色，悬停或聚焦一个点其余轨迹变暗。
 // 功能参照 Arc Connected scatter（uiarc.dev，2026-11-14 读，范例是 CAC vs LTV 随时间的路径），实现原创。文字全由 props 传。
 import { useRef, useState, type CSSProperties, type KeyboardEvent, type ReactNode } from 'react'
+import { ChartActions } from './chart-kit/chart-actions'
+import { ChartTable, type ChartViewProps } from './chart-kit/chart-table'
 import { seqColor } from './chart-kit/series-colors'
 import { moveScatter, scatterLayout, type ScatterFrame, type ScatterSeries } from './scatter-model'
 
@@ -12,7 +14,7 @@ const PALETTE = ['--series-1', '--series-2', '--series-3', '--series-4', '--seri
 const colorOf = (index: number): CSSProperties =>
   ({ '--k-scatter-color': `var(${PALETTE[index % PALETTE.length]})` }) as CSSProperties
 
-export type ConnectedScatterProps = {
+export type ConnectedScatterProps = ChartViewProps & {
   series: readonly ScatterSeries[]
   /** 整张图的读屏名。 */
   label: string
@@ -38,7 +40,14 @@ export function ConnectedScatter({
   yDomain,
   idle,
   className,
+  actionLabels,
+  tableLabel,
+  tableHead,
+  onExport,
+  onFullscreen,
+  source,
 }: ConnectedScatterProps) {
+  const [tableView, setTableView] = useState(false)
   const layout = scatterLayout(series, FRAME, { xDomain, yDomain })
   const counts = series.map((item) => item.points.length)
   const [hover, setHover] = useState<[number, number] | null>(null)
@@ -58,7 +67,31 @@ export function ConnectedScatter({
 
   return (
     <figure className={`k-scatter${className ? ` ${className}` : ''}`} data-slot="connected-scatter">
+      <div className="k-dist-bar">
+        <ChartActions
+          labels={actionLabels}
+          tableView={tableView}
+          onTableView={setTableView}
+          onExport={onExport}
+          onFullscreen={onFullscreen}
+        />
+      </div>
+      {tableView && (
+        <ChartTable
+          slot="scatter-table"
+          numeric={[2, 3]}
+          label={tableLabel}
+          head={tableHead}
+          rows={series.flatMap((item) =>
+            item.points.map((point, i) => ({
+              key: `${item.id}:${i}`,
+              cells: [item.label, point.label, formatX(point.x), formatY(point.y)],
+            })),
+          )}
+        />
+      )}
       <svg
+        style={tableView ? { display: 'none' } : undefined}
         className="k-scatter-svg"
         viewBox={`0 0 ${FRAME.width} ${FRAME.height}`}
         role="group"
@@ -152,9 +185,10 @@ export function ConnectedScatter({
           </li>
         ))}
       </ul>
-      <output className="k-scatter-readout">
+      <output className="k-scatter-readout" hidden={tableView}>
         {active === null ? idle : series[active[0]]?.points[active[1]]?.label}
       </output>
+      {source === undefined ? null : <p className="k-dist-source">{source}</p>}
     </figure>
   )
 }

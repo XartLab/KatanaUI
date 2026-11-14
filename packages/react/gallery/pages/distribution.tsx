@@ -19,6 +19,17 @@ import {
 } from '../../src/index'
 import { Row } from './parts'
 
+/** 图右上三件的演示 props；导出与全屏的回调留空（演示页没有可导出的东西）。 */
+const ACTIONS = { group: '图的操作', table: '表格视图', exportCsv: '导出 CSV', fullscreen: '全屏' }
+const view = (tableHead: string[], tableLabel: string) => ({
+  actionLabels: ACTIONS,
+  tableLabel,
+  tableHead,
+  onExport: () => {},
+  onFullscreen: () => {},
+  source: '来源 / 演示数据 · 固定种子合成 · 非行情',
+})
+
 // #1918：分布与关系类的件的演示。下面所有数据都是演示用的示例（在这个展示页里写死或用固定种子构造，不是行情，也不是真实的连接状态），页上也写明了；应用里没有样本数据。
 
 /** 固定种子的伪随机（mulberry32）：同样的种子永远同样的演示数据，e2e 的几何断言才稳。 */
@@ -80,6 +91,7 @@ export function UptimeBarsDemo() {
       <Row name="逐日（30 天）">
         <div className="gal-wide" data-gallery-uptime="daily">
           <UptimeBars
+            {...view(['时间', '状态'], '逐格可用表')}
             cells={daily}
             label="示例行情源 QUOTE HUB · WS 近 30 天"
             statusLabels={STATUS_WORDS}
@@ -92,6 +104,7 @@ export function UptimeBarsDemo() {
       <Row name="逐小时（48 小时），可点">
         <div className="gal-wide" data-gallery-uptime="hourly">
           <UptimeBars
+            {...view(['时间', '状态'], '逐格可用表')}
             cells={hourly}
             label="示例连接 近 48 小时"
             statusLabels={STATUS_WORDS}
@@ -164,12 +177,13 @@ export function RidgelineDemo() {
       <Row name="分层收益分布，0 为基准线">
         <div className="gal-wide" data-gallery-ridge="layers">
           <Ridgeline
+            {...view(['分层', '说明'], '分层收益分布表')}
             groups={LAYERS}
             label="示例：因子分层的日收益分布"
             baseline={0}
-            formatValue={(value) => `${value}%`}
+            formatValue={(value) => `${value} %`}
             describe={(group, stats) =>
-              `${group.label}：中位数 ${stats.median.toFixed(2)}%，均值 ${stats.mean.toFixed(2)}%，${stats.n} 个`
+              `${group.label}：中位数 ${stats.median.toFixed(2)} %，均值 ${stats.mean.toFixed(2)} %，${stats.n} 个`
             }
             idle="悬停或用上下键选一层"
           />
@@ -178,11 +192,12 @@ export function RidgelineDemo() {
       <Row name="没有基准线，窄一点">
         <div className="gal-wide" data-gallery-ridge="plain">
           <Ridgeline
+            {...view(['分层', '说明'], '分层收益分布表')}
             groups={LAYERS.slice(0, 3)}
             label="示例：前三层（无基准线）"
             rowHeight={28}
             overlap={1.5}
-            describe={(group, stats) => `${group.label}：中位数 ${stats.median.toFixed(2)}%`}
+            describe={(group, stats) => `${group.label}：中位数 ${stats.median.toFixed(2)} %`}
           />
         </div>
       </Row>
@@ -217,10 +232,11 @@ export function SlopeChartDemo() {
       <Row name="再平衡前后权重（%）">
         <div className="gal-wide" data-gallery-slope="value">
           <SlopeChart
+            {...view(['名称', '前', '后', '说明'], '前后对比表')}
             items={WEIGHTS}
             label="示例：再平衡前后权重"
             columns={{ before: '调整前', after: '调整后' }}
-            formatValue={(value) => `${value}%`}
+            formatValue={(value) => `${value} %`}
             describe={(item, change) =>
               `${item.label}：${item.before}% 到 ${item.after}%，${change > 0 ? '加仓' : change < 0 ? '减仓' : '不变'} ${Math.abs(change).toFixed(1)} 个百分点`
             }
@@ -233,6 +249,7 @@ export function SlopeChartDemo() {
       <Row name="因子排名变化（名次）">
         <div className="gal-wide" data-gallery-slope="rank">
           <SlopeChart
+            {...view(['名称', '前', '后', '说明'], '前后对比表')}
             mode="rank"
             items={SCORES}
             label="示例：因子得分名次变化"
@@ -251,7 +268,7 @@ export function SlopeChartDemo() {
 /** 两个示例策略各 8 个月的 (波动 %, 收益 %)：写死的数。甲一路往高波动高收益漂，乙往低波动漂。 */
 const MONTHS = ['01', '02', '03', '04', '05', '06', '07', '08']
 const path = (name: string, points: readonly (readonly [number, number])[]) =>
-  points.map(([x, y], i) => ({ x, y, label: `${name} 2026-${MONTHS[i]}：波动 ${x}%，收益 ${y}%` }))
+  points.map(([x, y], i) => ({ x, y, label: `${name} 2026-${MONTHS[i]}：波动 ${x} %，收益 ${y} %` }))
 const STRATEGIES: readonly ScatterSeries[] = [
   {
     id: 'a',
@@ -290,11 +307,12 @@ export function ConnectedScatterDemo() {
       <Row name="波动 vs 收益，按月连成轨迹">
         <div className="gal-wide" data-gallery-scatter="two">
           <ConnectedScatter
+            {...view(['轨迹', '时间点', '波动', '收益'], '轨迹点表')}
             series={STRATEGIES}
             label="示例：两个策略的波动与收益按月的轨迹"
             axes={{ x: '年化波动（%）', y: '年化收益（%）' }}
-            formatX={(value) => `${value}%`}
-            formatY={(value) => `${value}%`}
+            formatX={(value) => `${value} %`}
+            formatY={(value) => `${value} %`}
             idle="悬停或用方向键选一个月"
           />
         </div>
@@ -302,6 +320,7 @@ export function ConnectedScatterDemo() {
       <Row name="单条轨迹">
         <div className="gal-wide" data-gallery-scatter="one">
           <ConnectedScatter
+            {...view(['轨迹', '时间点', '波动', '收益'], '轨迹点表')}
             series={STRATEGIES.slice(0, 1)}
             label="示例：策略甲的轨迹"
             axes={{ x: '年化波动（%）', y: '年化收益（%）' }}
@@ -349,8 +368,9 @@ export function SymbolGalaxyDemo() {
   const shared = {
     groupings: GROUPINGS,
     groupingLabel: '分组方式',
+    ...view(['名称', '分组', '详情'], '品种表'),
     describe: (node: GalaxyNode) =>
-      `${node.label}：市值 ${node.size.toFixed(1)} 亿，涨跌 ${node.change === null ? '—' : `${(node.change * 100).toFixed(2)}%`}`,
+      `${node.label}：市值 ${node.size.toFixed(1)} 亿，涨跌 ${node.change === null ? '—' : `${(node.change * 100).toFixed(2)} %`}`,
     groupText: (group: string, count: number) => `${group}，${count} 只`,
     legendText: (step: number) => ['大跌', '跌', '平', '涨', '大涨'][step + 2] ?? '',
     tooltip: (node: GalaxyNode) => ({
@@ -398,19 +418,19 @@ export function SymbolGalaxyDemo() {
   )
 }
 
-/** 5 层各 60 个交易日的示例累计收益（%）：日均值随层号升高，第 3 层故意压低一点，让「单调」有通过与不通过两种。 */
+/** 5 层 31 期（2024-01 到 2026-07，每月一期）的示例累计超额收益（%）：期末值照卡 QuantileLayers 的量级（最高层约 +32、最低层约 -22）；第三层在「未通过」那一行故意压低到第二层之下。 */
 function layerSeries(monotone: boolean) {
-  return [-0.5, -0.15, monotone ? 0.2 : -0.8, 0.6, 1.1].map((drift, i) => {
+  return [-22.5, -8, monotone ? 1 : -12, 11, 32].map((final, i) => {
     let sum = 0
-    const days = gaussians(200 + i, 60, drift * 0.2, 0.15)
-    return { rank: i + 1, label: `Q${i + 1}`, points: days.map((day) => (sum += day)) }
+    const months = gaussians(200 + i, 31, final / 31, 0.8)
+    return { rank: i + 1, label: `Q${i + 1}`, points: months.map((month) => (sum += month)) }
   })
 }
 
 function QuantileCase({ monotone, id }: { monotone: boolean; id: string }) {
   const layers = layerSeries(monotone)
   const longShort = layers[4]!.points.map((value, i) => value - layers[0]!.points[i]!)
-  const x = (i: number) => `2026-0${1 + Math.floor(i / 22)}-${String(1 + (i % 22)).padStart(2, '0')}`
+  const x = (i: number) => `${2024 + Math.floor(i / 12)}-${String(1 + (i % 12)).padStart(2, '0')}`
   const labels = {
     chart: '示例：因子分层累计收益',
     actions: { group: '图的操作', table: '表格视图', exportCsv: '导出 CSV', fullscreen: '全屏' },
@@ -423,9 +443,14 @@ function QuantileCase({ monotone, id }: { monotone: boolean; id: string }) {
     tooMany: '分层多于 10，不画线。',
   }
   const stats = [
-    { key: 'ls', label: '多空年化', value: `${((longShort.at(-1)! * 252) / 60).toFixed(1)} %` },
+    // 多空年化 = 多空差期末累计（%）按 31 个月折成年的复合收益。
+    {
+      key: 'ls',
+      label: '多空年化',
+      value: `${((Math.pow(1 + longShort.at(-1)! / 100, 12 / 31) - 1) * 100).toFixed(1)} %`,
+    },
     { key: 'turn', label: '换手', value: '0.62 /月' },
-    { key: 'n', label: '样本', value: '60 期 · 4 280 只' },
+    { key: 'n', label: '样本', value: '31 期 · 4 280 只' },
   ]
   return (
     <div className="gal-wide" data-gallery-quantile={id}>
@@ -433,7 +458,7 @@ function QuantileCase({ monotone, id }: { monotone: boolean; id: string }) {
         layers={layers}
         longShort={longShort}
         title="MOM_RS_V3 · 5 分层累计超额"
-        longShortLabel="多空 Q5−Q1"
+        longShortLabel="Q5−Q1"
         labels={labels}
         formatValue={(value) => `${value.toFixed(1)} %`}
         formatX={x}
@@ -448,7 +473,9 @@ function QuantileCase({ monotone, id }: { monotone: boolean; id: string }) {
 export function QuantileLayersDemo() {
   return (
     <>
-      <p className="gal-note">演示数据：固定种子生成的示例累计收益（因子 F-07），不是回测结果。</p>
+      <p className="gal-note">
+        演示数据：固定种子生成的示例累计超额收益（因子 MOM_RS_V3，2024-01 到 2026-07），不是回测结果。
+      </p>
       <Row name="5 分层，单调通过">
         <QuantileCase monotone id="pass" />
       </Row>

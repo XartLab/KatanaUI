@@ -5,6 +5,12 @@ import { linearScale, niceTicks, quantileSorted } from './chart-scale'
 import { Ridgeline } from './ridgeline'
 import { gaussianKde, ridgelines, ridgeStats, silvermanBandwidth } from './ridgeline-model'
 
+const view = {
+  actionLabels: { group: '操作', table: '表格视图', exportCsv: '导出', fullscreen: '全屏' },
+  tableLabel: '表',
+  tableHead: ['名称', '值'],
+}
+
 describe('chart-scale', () => {
   it('quantileSorted 线性插值（type 7）', () => {
     expect(quantileSorted([1, 2, 3, 4], 0.5)).toBe(2.5)
@@ -87,6 +93,7 @@ describe('ridgelines', () => {
 describe('Ridgeline', () => {
   const html = renderToStaticMarkup(
     <Ridgeline
+      {...view}
       label="分层收益分布"
       groups={[
         { id: 'lo', label: '第 1 层', values: [-3, -2, -1, -2, -1] },

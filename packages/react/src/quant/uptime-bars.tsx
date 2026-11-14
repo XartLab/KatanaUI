@@ -4,9 +4,11 @@
 // 功能参照 Arc Uptime status（uiarc.dev/llms.txt 目录，2026-11-14 读，页面只写了「逐日可用条」），实现原创；
 // 用在数据源 / 连接健康（对 DataSources、SystemHealth 的缺口）。文字全由 props 传。
 import { useRef, useState, type ReactNode } from 'react'
+import { ChartActions } from './chart-kit/chart-actions'
+import { ChartTable, type ChartViewProps } from './chart-kit/chart-table'
 import { countStatuses, moveCell, type UptimeCell, type UptimeStatus } from './uptime-bars-model'
 
-export type UptimeBarsProps = {
+export type UptimeBarsProps = ChartViewProps & {
   /** 从旧到新，一格一项。 */
   cells: readonly UptimeCell[]
   /** 这一条的读屏名（整句），如「行情源 A 近 30 天」。 */
@@ -29,6 +31,12 @@ export function UptimeBars({
   label,
   statusLabels,
   availability,
+  actionLabels,
+  tableLabel,
+  tableHead,
+  onExport,
+  onFullscreen,
+  source,
   range,
   idle,
   onSelect,
@@ -37,6 +45,7 @@ export function UptimeBars({
   const [hover, setHover] = useState<number | null>(null)
   const [focus, setFocus] = useState<number | null>(null)
   const [tab, setTab] = useState(cells.length - 1)
+  const [tableView, setTableView] = useState(false)
   const refs = useRef<(HTMLSpanElement | null)[]>([])
   const stop = Math.min(Math.max(tab, 0), cells.length - 1)
   const shown = hover ?? focus
@@ -58,7 +67,28 @@ export function UptimeBars({
           {availability === undefined ? null : <span className="k-uptime-avail">{availability}</span>}
         </div>
       )}
+      <div className="k-dist-bar">
+        <ChartActions
+          labels={actionLabels}
+          tableView={tableView}
+          onTableView={setTableView}
+          onExport={onExport}
+          onFullscreen={onFullscreen}
+        />
+      </div>
+      {tableView && (
+        <ChartTable
+          slot="uptime-table"
+          label={tableLabel}
+          head={tableHead}
+          rows={cells.map((cell) => ({
+            key: cell.id,
+            cells: [cell.label, statusLabels?.[cell.status] ?? cell.status],
+          }))}
+        />
+      )}
       <div
+        hidden={tableView}
         className="k-uptime-bars"
         role="group"
         aria-label={label}
@@ -102,13 +132,16 @@ export function UptimeBars({
           />
         ))}
       </div>
-      {range && (
+      {range && !tableView && (
         <div className="k-uptime-range" aria-hidden="true">
           <span>{range[0]}</span>
           <span>{range[1]}</span>
         </div>
       )}
-      <output className="k-uptime-readout">{shown === null ? idle : cells[shown]?.label}</output>
+      <output className="k-uptime-readout" hidden={tableView}>
+        {shown === null ? idle : cells[shown]?.label}
+      </output>
+      {source === undefined ? null : <p className="k-dist-source">{source}</p>}
     </div>
   )
 }

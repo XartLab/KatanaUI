@@ -1660,35 +1660,6 @@
       ]
     },
     {
-      "name": "uptime-bars-model",
-      "type": "registry:lib",
-      "title": "Uptime Bars Model",
-      "description": "一格一天或一小时的可用条，用于数据源与连接健康：颜色加高度一起表达状态（绿满格可用、琥珀半高降级、红满格中断、虚线底无数据）；悬停或聚焦一格，条下的读数行写那一格的整句（如断流次数）。功能参照 Arc Uptime status，实现原创。",
-      "files": [
-        {
-          "path": "src/katana/uptime-bars-model.ts",
-          "type": "registry:lib",
-          "target": "~/src/katana/ui/katana/uptime-bars-model.ts"
-        }
-      ]
-    },
-    {
-      "name": "uptime-bars",
-      "type": "registry:component",
-      "title": "Uptime Bars",
-      "description": "一格一天或一小时的可用条，用于数据源与连接健康：颜色加高度一起表达状态（绿满格可用、琥珀半高降级、红满格中断、虚线底无数据）；悬停或聚焦一格，条下的读数行写那一格的整句（如断流次数）。功能参照 Arc Uptime status，实现原创。",
-      "registryDependencies": [
-        "@katana/uptime-bars-model"
-      ],
-      "files": [
-        {
-          "path": "src/katana/uptime-bars.tsx",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/katana/uptime-bars.tsx"
-        }
-      ]
-    },
-    {
       "name": "web-search",
       "type": "registry:component",
       "title": "Web Search",
@@ -1862,6 +1833,11 @@
           "path": "src/quant/chart-kit/chart-actions.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/quant/chart-kit/chart-actions.tsx"
+        },
+        {
+          "path": "src/quant/chart-kit/chart-table.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/chart-kit/chart-table.tsx"
         },
         {
           "path": "src/quant/chart-kit/dot-fill.tsx",
@@ -2248,6 +2224,7 @@
       "title": "Slope Chart",
       "description": "每项一条线连「前」「后」两列，看再平衡前后的权重、因子排名的变化。线与点是中性墨色，涨跌色只上变化后的那个数字（跟 data-updown 走），悬停与聚焦的线用强调色，两侧写名字与数，标签互相不重叠；rank 模式纵轴是名次，涨跌看名次升降。悬停或聚焦一条，其余变暗。功能参照 Arc Slope chart，实现原创。",
       "registryDependencies": [
+        "@katana/chart-kit",
         "@katana/slope-model"
       ],
       "files": [
@@ -2285,6 +2262,68 @@
           "path": "src/quant/tone-text.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/quant/tone-text.tsx"
+        }
+      ]
+    },
+    {
+      "name": "uptime-bars-model",
+      "type": "registry:component",
+      "title": "Uptime Bars Model",
+      "description": "一格一天或一小时的可用条，用于数据源与连接健康：颜色加高度一起表达状态（绿满格可用、琥珀半高降级、红满格中断、虚线底无数据）；悬停或聚焦一格，条下的读数行写那一格的整句（如断流次数）。功能参照 Arc Uptime status，实现原创。",
+      "files": [
+        {
+          "path": "src/quant/uptime-bars-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/uptime-bars-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "uptime-bars",
+      "type": "registry:component",
+      "title": "Uptime Bars",
+      "description": "一格一天或一小时的可用条，用于数据源与连接健康：颜色加高度一起表达状态（绿满格可用、琥珀半高降级、红满格中断、虚线底无数据）；悬停或聚焦一格，条下的读数行写那一格的整句（如断流次数）。功能参照 Arc Uptime status，实现原创。",
+      "registryDependencies": [
+        "@katana/chart-kit",
+        "@katana/uptime-bars-model"
+      ],
+      "files": [
+        {
+          "path": "src/quant/uptime-bars.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/uptime-bars.tsx"
+        }
+      ]
+    },
+    {
+      "name": "waterfall-chart",
+      "type": "registry:component",
+      "title": "Waterfall Chart",
+      "description": "期初权益到期末权益的桥：起点一根总计柱，中间每一步是一根浮动的增减柱（涨跌色跟涨跌配色走），末尾一根总计柱，相邻柱之间连水平线。指针或 ←→ 扫读。功能参照 Arc 的 MRR waterfall。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/series-geometry",
+        "@katana/use-scrubber",
+        "@katana/waterfall-model"
+      ],
+      "files": [
+        {
+          "path": "src/quant/waterfall-chart.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/waterfall-chart.tsx"
+        }
+      ]
+    },
+    {
+      "name": "waterfall-model",
+      "type": "registry:component",
+      "title": "Waterfall Model",
+      "description": "WaterfallChart 的累加（纯函数）：增减柱接着累计、总计柱重置累计并给出对不上的差额。",
+      "files": [
+        {
+          "path": "src/quant/waterfall-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/waterfall-model.ts"
         }
       ]
     },

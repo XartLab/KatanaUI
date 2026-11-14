@@ -1,8 +1,10 @@
 // SPDX-License-Identifier: MIT
-// 斜率图：每项一条线连「前」「后」两列，看再平衡前后的权重、因子排名的变化。线按变化涂涨跌色（颜色跟 data-updown 走），
+// 斜率图：每项一条线连「前」「后」两列，看再平衡前后的权重、因子排名的变化。线与点是中性墨色、涨跌色只上变化后的数字（跟 data-updown 走），
 // 两侧写名字与数，标签互相不重叠；rank 模式不看数值、只看名次的升降。悬停或聚焦一条，其余变暗，读数行写整句；上下键在条间走，Enter 选中。
 // 功能参照 Arc Slope chart（uiarc.dev，2026-11-14 读，页面只写了这个名字），实现原创；用在 RebalanceDesk 的差额。文字全由 props 传。
 import { useRef, useState, type KeyboardEvent, type ReactNode } from 'react'
+import { ChartActions } from './chart-kit/chart-actions'
+import { ChartTable, type ChartViewProps } from './chart-kit/chart-table'
 import { slopeLayout, type SlopeItem, type SlopeMode } from './slope-model'
 
 const W = 560
@@ -12,7 +14,7 @@ const LABEL = 150
 /** 标签行距（viewBox 单位）：一行字 11px 的行高 16，留 2 的空隙。 */
 const GAP = 18
 
-export type SlopeChartProps = {
+export type SlopeChartProps = ChartViewProps & {
   items: readonly SlopeItem[]
   /** 整张图的读屏名。 */
   label: string
@@ -42,7 +44,14 @@ export function SlopeChart({
   onSelect,
   idle,
   className,
+  actionLabels,
+  tableLabel,
+  tableHead,
+  onExport,
+  onFullscreen,
+  source,
 }: SlopeChartProps) {
+  const [tableView, setTableView] = useState(false)
   const H = height ?? Math.max(160, TOP + items.length * GAP + PAD)
   const rows = slopeLayout(items, { mode, top: TOP, bottom: H - PAD, labelGap: GAP })
   const order = rows
@@ -94,7 +103,29 @@ export function SlopeChart({
 
   return (
     <figure className={`k-slope${className ? ` ${className}` : ''}`} data-slot="slope-chart">
+      <div className="k-dist-bar">
+        <ChartActions
+          labels={actionLabels}
+          tableView={tableView}
+          onTableView={setTableView}
+          onExport={onExport}
+          onFullscreen={onFullscreen}
+        />
+      </div>
+      {tableView && (
+        <ChartTable
+          slot="slope-table"
+          numeric={[1, 2]}
+          label={tableLabel}
+          head={tableHead}
+          rows={items.map((item, i) => ({
+            key: item.id,
+            cells: [item.label, formatValue(item.before), formatValue(item.after), describe(item, rows[i]!.change)],
+          }))}
+        />
+      )}
       <svg
+        style={tableView ? { display: 'none' } : undefined}
         className="k-slope-svg"
         viewBox={`0 0 ${W} ${H}`}
         role="group"
@@ -150,9 +181,10 @@ export function SlopeChart({
           </g>
         )}
       </svg>
-      <output className="k-slope-readout">
+      <output className="k-slope-readout" hidden={tableView}>
         {active === null ? idle : describe(items[active]!, rows[active]!.change)}
       </output>
+      {source === undefined ? null : <p className="k-dist-source">{source}</p>}
     </figure>
   )
 }

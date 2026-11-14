@@ -548,7 +548,7 @@
 }
 .k-ql-plot {
   position: relative;
-  margin: 0 48px 24px 60px;
+  margin: 0 104px 24px 60px;
   outline: none;
 }
 .k-ql-plot:focus-visible {
@@ -595,6 +595,10 @@
   font: var(--text-num-sm) var(--chart-font-axis, var(--font-mono));
   pointer-events: none;
   white-space: nowrap;
+}
+.k-ql-tail-value {
+  color: var(--ink-100);
+  font-family: var(--chart-font-num, var(--font-lcd));
 }
 .k-ql-legend {
   display: flex;
@@ -664,4 +668,39 @@
   margin: 0;
   color: var(--ink-300);
   font: var(--text-caption) var(--font-sans);
+}
+
+/* 图右上三件所在的一行（表格视图 / 导出 / 全屏）。 */
+.k-dist-bar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+.k-ck-table th:not(:first-child),
+.k-ck-table td {
+  text-align: left;
+  white-space: normal;
+}
+.k-ck-table [data-num='true'] {
+  text-align: right;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.k-dist-source {
+  margin: 0;
+  color: var(--ink-300);
+  font: var(--text-caption) var(--font-sans);
+}
+
+/* 表格视图打开时，图与读数用 hidden 收起：作者样式里的 display 会盖过 hidden，这里压回去。 */
+.k-ridge [hidden],
+.k-scatter [hidden],
+.k-slope [hidden],
+.k-uptime [hidden],
+.k-galaxy [hidden] {
+  display: none !important;
+}
+.k-galaxy-bar {
+  justify-content: space-between;
 }

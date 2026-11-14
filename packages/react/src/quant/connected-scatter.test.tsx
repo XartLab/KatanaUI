@@ -4,6 +4,12 @@ import { describe, expect, it } from 'vite-plus/test'
 import { ConnectedScatter } from './connected-scatter'
 import { arrowHead, moveScatter, scatterLayout, type ScatterSeries } from './scatter-model'
 
+const view = {
+  actionLabels: { group: '操作', table: '表格视图', exportCsv: '导出', fullscreen: '全屏' },
+  tableLabel: '表',
+  tableHead: ['名称', '值'],
+}
+
 const frame = { width: 200, height: 100, left: 20, top: 10, right: 20, bottom: 20 }
 const series: ScatterSeries[] = [
   {
@@ -70,7 +76,7 @@ describe('moveScatter', () => {
 
 describe('ConnectedScatter', () => {
   const html = renderToStaticMarkup(
-    <ConnectedScatter series={series} label="波动与收益" axes={{ x: '波动', y: '收益' }} />,
+    <ConnectedScatter {...view} series={series} label="波动与收益" axes={{ x: '波动', y: '收益' }} />,
   )
   it('每个点一个带整句名的图形，只有一个在 Tab 序里（默认第一条的最后一个点），起点终点有标记', () => {
     expect(html.match(/role="img"/g)).toHaveLength(4)

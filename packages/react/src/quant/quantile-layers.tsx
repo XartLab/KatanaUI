@@ -159,27 +159,27 @@ export function QuantileLayers({
             {at !== null && <line className="k-ql-cursor" x1={plot.xAt(at)} x2={plot.xAt(at)} y1={0} y2={height} />}
           </svg>
           <PlotYAxis plot={plot} format={formatValue} />
-          {[0, top].map((index) => {
-            const layer = sorted[index]
-            if (!layer || (index === 0 && top === 0)) return null
-            const y = plot.yAt(lastFinite(layer.points))
+          {/* 线尾直接标「名字 数值」：最低层、最高层、多空差各一个；最高层的末点是强调色圆点（数值写在尾标里，不再另标一个）。 */}
+          {[
+            ...(sorted.length > 1 ? [sorted[0]!] : []),
+            ...(sorted.length > 0 ? [sorted[top]!] : []),
+            { rank: -1, label: longShortLabel, points: longShort },
+          ].map((layer) => {
+            const end = lastFinite(layer.points)
+            if (!Number.isFinite(end)) return null
             return (
               <span
                 key={layer.rank}
                 className="k-ql-tail"
                 data-slot="quantile-tail"
-                style={{ left: '100%', top: Number.isFinite(y) ? y : zeroY }}
+                style={{ left: '100%', top: plot.yAt(end) }}
               >
-                {layer.label}
+                {layer.label} <span className="k-ql-tail-value">{formatValue(end)}</span>
               </span>
             )
           })}
           {sorted[top] && Number.isFinite(lastFinite(sorted[top].points)) && (
-            <EndMarker
-              x={plot.xAt(sorted[top].points.length - 1)}
-              y={plot.yAt(lastFinite(sorted[top].points))}
-              value={formatValue(lastFinite(sorted[top].points))}
-            />
+            <EndMarker x={plot.xAt(sorted[top].points.length - 1)} y={plot.yAt(lastFinite(sorted[top].points))} />
           )}
           {at !== null && (
             <LcdTooltip

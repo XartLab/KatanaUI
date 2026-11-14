@@ -4,6 +4,12 @@ import { describe, expect, it } from 'vite-plus/test'
 import { SlopeChart } from './slope-chart'
 import { ranks, slopeLayout, spreadLabels } from './slope-model'
 
+const view = {
+  actionLabels: { group: '操作', table: '表格视图', exportCsv: '导出', fullscreen: '全屏' },
+  tableLabel: '表',
+  tableHead: ['名称', '值'],
+}
+
 describe('ranks', () => {
   it('值大的排前，从 1 起；相同按输入顺序', () => {
     expect(ranks([10, 30, 20])).toEqual([3, 1, 2])
@@ -78,6 +84,7 @@ describe('slopeLayout', () => {
 describe('SlopeChart', () => {
   const html = renderToStaticMarkup(
     <SlopeChart
+      {...view}
       label="再平衡前后权重"
       columns={{ before: '调整前', after: '调整后' }}
       items={[
