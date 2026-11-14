@@ -3036,10 +3036,10 @@ for (const theme of THEMES) {
     const total = Object.keys(map.cards).length
     await expect(page.locator('[data-card]')).toHaveCount(total)
     // 一张具体的卡：落点、状态、备注都写在行里；部分的卡写着缺什么。
-    // 原来用 DataGrid；#1869 之后它是「已做」，改用仍是「部分」且带计划落点的 PanelFrame。
+    // 原来用 DataGrid；#1869 之后它是「已做」，改用仍是「部分」的 PanelFrame（落点是包的出口，备注写还缺什么）。
     const row = page.locator('[data-card="PanelFrame"]')
     await expect(row).toHaveAttribute('data-status', '部分')
-    await expect(row).toContainText('PanelFrame（计划）')
+    await expect(row).toContainText('拖动抬起')
     await expect(row).toBeVisible()
     await page.getByRole('link', { name: 'button', exact: true }).click()
     await expect(section(page, 'button')).toBeVisible()
