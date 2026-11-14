@@ -8827,7 +8827,7 @@ button.k-sm-head:focus-visible {
   height: 40px;
   padding: 0 var(--inset-x);
   border-bottom: 1px solid var(--alpha-white-5);
-  background: var(--glass-bg, var(--bg-300));
+  background: var(--bg-300);
   cursor: default;
   flex: 0 0 40px;
   align-items: center;
