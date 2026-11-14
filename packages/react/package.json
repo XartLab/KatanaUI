@@ -29,6 +29,7 @@
     },
     "./ui.css": "./src/ui.css",
     "./tokens.css": "./src/tokens.css",
+    "./fonts.css": "./src/fonts.css",
     "./motion": {
       "types": "./lib/lib/motion.d.ts",
       "source": "./src/lib/motion.ts",

@@ -6027,24 +6027,8 @@ button.k-quote-card.is-link:focus-visible {
   outline-offset: -2px;
 }
 
-@font-face {
-  font-family: Michroma;
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url("/assets/michroma-regular-DqO2XpcF.woff") format("woff");
-}
-
 :root {
   --font-wide: "Michroma", "Noto Sans SC", "PingFang SC", "Microsoft YaHei UI", sans-serif;
-}
-
-@font-face {
-  font-family: "Ark Pixel 12 zh_cn Subset";
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url("/assets/ark-pixel-12-zh-subset-cvhhlh69.woff2") format("woff2");
 }
 
 .k-ck-grid {

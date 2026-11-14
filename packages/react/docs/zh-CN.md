@@ -68,6 +68,7 @@ tokens → theme → lib → primitives → katana → patterns → quant → bl
 ```ts
 import { Button, Switch } from '@katana-ui/react' // 组件
 import '@katana-ui/react/tokens.css' // token，先引
+import '@katana-ui/react/fonts.css' // 随包的字体声明（Barlow、DM Mono、Doto、Maple、Michroma、方舟像素），用到字体就引
 import '@katana-ui/react/ui.css' // Tailwind 主题与动效，最后引
 import { snappy } from '@katana-ui/react/motion' // 弹簧参数（motion/react 用）
 import { ChangeText, formatPrice } from '@katana-ui/react/quant' // 量化层
