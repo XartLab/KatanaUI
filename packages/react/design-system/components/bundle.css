@@ -10669,16 +10669,35 @@ button.k-sm-head:focus-visible {
 }
 
 .k-ecal {
-  --ecal-cols: 48px 36px minmax(160px, 1fr) 44px 84px 64px 64px;
+  --ecal-cols: 76px 36px minmax(160px, 1fr) 44px 84px 64px 64px;
   gap: var(--space-3);
   min-width: 0;
   min-height: 0;
-  padding: var(--space-3) 0;
+  padding: var(--space-3) 0 0;
   font: var(--text-data) var(--font-sans);
   color: var(--ink-100);
   flex-direction: column;
   flex: auto;
   display: flex;
+  overflow: hidden;
+}
+
+.k-ecal-tabs {
+  margin: 0 var(--inset-x);
+  align-self: flex-start;
+}
+
+.k-ecal-panel {
+  gap: var(--space-2);
+  flex-direction: column;
+  flex: auto;
+  min-height: 0;
+  display: flex;
+}
+
+.k-ecal-scroll {
+  flex: auto;
+  min-height: 0;
   overflow: auto;
 }
 
@@ -10692,14 +10711,6 @@ button.k-sm-head:focus-visible {
 
 .k-ecal-regions {
   min-width: 112px;
-}
-
-.k-ecal-only {
-  color: var(--ink-200);
-  font: 500 12px/16px var(--font-sans);
-  align-items: center;
-  gap: 4px;
-  display: inline-flex;
 }
 
 .k-ecal-count {
@@ -10729,17 +10740,23 @@ button.k-sm-head:focus-visible {
 
 .k-ecal-list {
   gap: var(--space-3);
+  padding-bottom: var(--space-3);
   flex-direction: column;
   display: flex;
 }
 
 .k-ecal-day-head {
+  z-index: 2;
   height: 28px;
   padding: 0 var(--inset-x);
+  border-bottom: 1px solid var(--line-100);
+  background: var(--bg-100);
   font: 700 13px/18px var(--font-sans);
   align-items: center;
   gap: 8px;
   display: flex;
+  position: sticky;
+  top: 0;
 }
 
 .k-ecal-today {
@@ -10822,6 +10839,167 @@ button.k-sm-head:focus-visible {
   background: var(--ink-100);
 }
 
+.k-ecal-imp {
+  background: var(--alpha-white-3);
+  border-radius: 8px;
+  gap: 2px;
+  padding: 2px;
+  display: inline-flex;
+}
+
+.k-ecal-imp-btn {
+  cursor: pointer;
+  background: none;
+  border: 0;
+  border-radius: 6px;
+  justify-content: center;
+  align-items: center;
+  width: 28px;
+  height: 24px;
+  display: inline-flex;
+}
+
+.k-ecal-imp-btn:hover {
+  background: var(--alpha-white-5);
+}
+
+.k-ecal-imp-btn[aria-pressed="true"] {
+  background: var(--alpha-white-10);
+}
+
+.k-ecal-imp-btn:focus-visible {
+  outline: 1px solid var(--line-200);
+  outline-offset: -1px;
+}
+
+.k-ecal-imp-btn .k-ecal-level i {
+  background: var(--alpha-white-11);
+}
+
+.k-ecal-imp-btn .k-ecal-level i.is-on {
+  background: var(--ink-100);
+}
+
+.k-ecal-row[data-state="released"] .k-ecal-time, .k-ecal-row[data-state="released"] .k-ecal-name {
+  color: var(--ink-200);
+}
+
+.k-ecal-row[data-state="overdue"] .k-ecal-actual {
+  color: var(--ink-300);
+}
+
+.k-ecal-row[data-expandable] {
+  cursor: pointer;
+}
+
+.k-ecal-company {
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  display: flex;
+}
+
+.k-ecal-code {
+  font-weight: 600;
+}
+
+.k-ecal-sub, .k-ecal-sub-cell, .k-ecal-status {
+  color: var(--ink-300);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 11px;
+  overflow: hidden;
+}
+
+.k-ecal-sub-cell, .k-ecal-status {
+  color: var(--ink-200);
+}
+
+.k-ecal-now {
+  height: 16px;
+  padding: 0 var(--inset-x);
+  color: var(--ink-200);
+  font: 500 10px/12px var(--font-sans);
+  font-variant-numeric: tabular-nums;
+  align-items: center;
+  display: flex;
+  position: relative;
+}
+
+.k-ecal-now:before {
+  content: "";
+  inset: 50% var(--inset-x) auto;
+  background: var(--ink-300);
+  height: 1px;
+  position: absolute;
+}
+
+.k-ecal-now > span {
+  background: var(--bg-100);
+  padding: 0 6px 0 0;
+  position: relative;
+}
+
+.k-ecal-detail {
+  padding: 6px var(--inset-x) 10px calc(var(--inset-x) + 128px);
+  border-top: 1px solid var(--alpha-white-2_5);
+  background: var(--alpha-white-2_5);
+  color: var(--ink-200);
+  font: 400 12px/18px var(--font-sans);
+  display: block;
+}
+
+.k-ecal-detail-body {
+  flex-direction: column;
+  gap: 6px;
+  display: flex;
+}
+
+.k-ecal-detail p {
+  margin: 0;
+}
+
+.k-ecal-detail b {
+  color: var(--ink-300);
+  margin-right: 8px;
+  font-weight: 500;
+}
+
+.k-ecal-detail dl {
+  flex-wrap: wrap;
+  gap: 4px 24px;
+  margin: 0;
+  display: flex;
+}
+
+.k-ecal-detail dl > div {
+  gap: 8px;
+  display: flex;
+}
+
+.k-ecal-detail dt {
+  color: var(--ink-300);
+}
+
+.k-ecal-detail dd {
+  margin: 0;
+}
+
+.k-ecal-next {
+  font-variant-numeric: tabular-nums;
+}
+
+.k-ecal-history {
+  align-items: center;
+  gap: 8px;
+  display: flex;
+}
+
+.k-ecal-spark {
+  width: 160px;
+  height: 28px;
+}
+
 .k-ecal-num {
   text-align: right;
   flex-direction: column;
@@ -10851,6 +11029,20 @@ button.k-sm-head:focus-visible {
   padding: var(--space-6);
   color: var(--ink-300);
   margin: auto;
+}
+
+.k-ecal-name-btn {
+  max-width: 100%;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+  background: none;
+  border: 0;
+  padding: 0;
+  overflow: hidden;
 }
 
 .k-mheat {

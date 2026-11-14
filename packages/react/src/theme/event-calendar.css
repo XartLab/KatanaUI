@@ -2,17 +2,33 @@
 /* 经济日历（EventCalendar，#28）。表格手感同连板天梯：无衬线加 tabular-nums、右对齐数字、紧凑行、极淡分隔线、悬停整行提亮。
    重要程度是 3 格亮度条（不上色）；实际值上涨 / 下跌色走 pnl token（data-updown 互换时跟着换）；橙色不画数据。 */
 .k-ecal {
-  --ecal-cols: 48px 36px minmax(160px, 1fr) 44px 84px 64px 64px;
+  --ecal-cols: 76px 36px minmax(160px, 1fr) 44px 84px 64px 64px;
   display: flex;
   flex: 1 1 auto;
   flex-direction: column;
   gap: var(--space-3);
   min-width: 0;
   min-height: 0;
-  overflow: auto;
-  padding: var(--space-3) 0;
+  overflow: hidden;
+  padding: var(--space-3) 0 0;
   font: var(--text-data) var(--font-sans);
   color: var(--ink-100);
+}
+.k-ecal-tabs {
+  align-self: flex-start;
+  margin: 0 var(--inset-x);
+}
+.k-ecal-panel {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-height: 0;
+}
+.k-ecal-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
 }
 .k-ecal-bar {
   display: flex;
@@ -23,13 +39,6 @@
 }
 .k-ecal-regions {
   min-width: 112px;
-}
-.k-ecal-only {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  color: var(--ink-200);
-  font: 500 12px/16px var(--font-sans);
 }
 .k-ecal-count {
   margin-left: auto;
@@ -57,13 +66,20 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
+  padding-bottom: var(--space-3);
 }
+/* 日期分隔行粘在滚动容器顶，同一天的行滚完它才被下一天顶走。底色同面板，不透明才盖得住下面的行。 */
 .k-ecal-day-head {
+  position: sticky;
+  top: 0;
+  z-index: 2;
   display: flex;
   align-items: center;
   gap: 8px;
   height: 28px;
   padding: 0 var(--inset-x);
+  border-bottom: 1px solid var(--line-100);
+  background: var(--bg-100);
   font: 700 13px/18px var(--font-sans);
 }
 .k-ecal-today {
@@ -133,6 +149,148 @@
 .k-ecal-level i.is-on {
   background: var(--ink-100);
 }
+/* 重要程度筛选：三个按钮各画一档格条，亮着的是选中；按下是灰底，不上色。 */
+.k-ecal-imp {
+  display: inline-flex;
+  gap: 2px;
+  padding: 2px;
+  border-radius: 8px;
+  background: var(--alpha-white-3);
+}
+.k-ecal-imp-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 24px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  cursor: pointer;
+}
+.k-ecal-imp-btn:hover {
+  background: var(--alpha-white-5);
+}
+.k-ecal-imp-btn[aria-pressed='true'] {
+  background: var(--alpha-white-10);
+}
+.k-ecal-imp-btn:focus-visible {
+  outline: 1px solid var(--line-200);
+  outline-offset: -1px;
+}
+.k-ecal-imp-btn .k-ecal-level i {
+  background: var(--alpha-white-11);
+}
+.k-ecal-imp-btn .k-ecal-level i.is-on {
+  background: var(--ink-100);
+}
+/* 已发布与未发布：已出数的行时间与事件名退一档，等着出数的保持全亮。 */
+.k-ecal-row[data-state='released'] .k-ecal-time,
+.k-ecal-row[data-state='released'] .k-ecal-name {
+  color: var(--ink-200);
+}
+.k-ecal-row[data-state='overdue'] .k-ecal-actual {
+  color: var(--ink-300);
+}
+.k-ecal-row[data-expandable] {
+  cursor: pointer;
+}
+/* 财报 / 分红 / IPO 的品种格：徽标、代码（主）、名称（次，更小更淡）。 */
+.k-ecal-company {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.k-ecal-code {
+  font-weight: 600;
+}
+.k-ecal-sub,
+.k-ecal-sub-cell,
+.k-ecal-status {
+  overflow: hidden;
+  color: var(--ink-300);
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.k-ecal-sub-cell,
+.k-ecal-status {
+  color: var(--ink-200);
+}
+/* 「现在」线：一条 1px 细线加一个读数标签，线用强调色以外的中性亮线（橙色不画数据）。 */
+.k-ecal-now {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 16px;
+  padding: 0 var(--inset-x);
+  color: var(--ink-200);
+  font: 500 10px/12px var(--font-sans);
+  font-variant-numeric: tabular-nums;
+}
+.k-ecal-now::before {
+  content: '';
+  position: absolute;
+  inset: 50% var(--inset-x) auto;
+  height: 1px;
+  background: var(--ink-300);
+}
+.k-ecal-now > span {
+  position: relative;
+  padding: 0 6px 0 0;
+  background: var(--bg-100);
+}
+/* 行详情：说明、来源、下次发布、历史值小图，缩进到事件名那一列。 */
+.k-ecal-detail {
+  display: block;
+  padding: 6px var(--inset-x) 10px calc(var(--inset-x) + 128px);
+  border-top: 1px solid var(--alpha-white-2_5);
+  background: var(--alpha-white-2_5);
+  color: var(--ink-200);
+  font: 400 12px/18px var(--font-sans);
+}
+.k-ecal-detail-body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.k-ecal-detail p {
+  margin: 0;
+}
+.k-ecal-detail b {
+  margin-right: 8px;
+  color: var(--ink-300);
+  font-weight: 500;
+}
+.k-ecal-detail dl {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 24px;
+  margin: 0;
+}
+.k-ecal-detail dl > div {
+  display: flex;
+  gap: 8px;
+}
+.k-ecal-detail dt {
+  color: var(--ink-300);
+}
+.k-ecal-detail dd {
+  margin: 0;
+}
+.k-ecal-next {
+  font-variant-numeric: tabular-nums;
+}
+.k-ecal-history {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.k-ecal-spark {
+  width: 160px;
+  height: 28px;
+}
 .k-ecal-num {
   display: flex;
   flex-direction: column;
@@ -157,4 +315,18 @@
   margin: auto;
   padding: var(--space-6);
   color: var(--ink-300);
+}
+/* 名字里的展开按钮：看起来就是文字，整行都能点。 */
+.k-ecal-name-btn {
+  max-width: 100%;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
 }

@@ -23,7 +23,10 @@ import {
   formatPrice,
   formatQuantity,
   formatVolume,
+  type DividendEvent,
+  type EarningsEvent,
   type EconomicEvent,
+  type IpoEvent,
   type EventCalendarLabels,
   type HeatmapColorBy,
   type HeatmapItem,
@@ -982,8 +985,8 @@ export function DecimalFieldDemo() {
   )
 }
 
-// 经济日历（#28）的演示数据：事件名、国家名、数值全是编出来的，不是真实数据。固定「现在」= 2026-11-17 周二 08:00（上海），截图与断言不随真实日期变。
-const CAL_NOW = Date.UTC(2026, 10, 17, 0, 0)
+// 经济日历（#28）的演示数据：事件名、国家名、数值全是编出来的，不是真实数据。固定「现在」= 2026-11-17 周二 09:30（上海），截图与断言不随真实日期变。
+const CAL_NOW = Date.UTC(2026, 10, 17, 1, 30)
 const calAt = (day: number, hour: number, minute = 0) => Date.UTC(2026, 10, day, hour - 8, minute)
 const CAL_EVENTS: EconomicEvent[] = [
   {
@@ -997,6 +1000,10 @@ const CAL_EVENTS: EconomicEvent[] = [
     forecast: '0.3%',
     previous: '0.3%',
     tone: 'down',
+    description: '衡量一篮子消费品与服务的价格相对去年同期的变化，是央行判断通胀压力的主要依据之一（演示文字）。',
+    source: '示例统计局',
+    history: [0.1, 0.2, 0.2, 0.1, 0.3, 0.3, 0.4],
+    nextAt: calAt(30, 9, 30),
   },
   {
     id: 'a2',
@@ -1021,6 +1028,10 @@ const CAL_EVENTS: EconomicEvent[] = [
     forecast: '4.9%',
     previous: '4.8%',
     tone: 'up',
+    description: '规模以上工业企业增加值的同比增速（演示文字）。',
+    source: '示例统计局',
+    history: [4.2, 4.5, 4.4, 4.7, 4.8, 5.1],
+    nextAt: calAt(30, 10, 0),
   },
   {
     id: 'b2',
@@ -1073,6 +1084,10 @@ const CAL_EVENTS: EconomicEvent[] = [
     importance: 3,
     forecast: '18.5万',
     previous: '22.8万',
+    description: '非农部门当月新增就业人数，是判断劳动力市场与政策走向的关键数据（演示文字）。',
+    source: '示例劳工部',
+    history: [18.1, 20.4, 25.3, 19.8, 22.8],
+    nextAt: calAt(25, 21, 30),
   },
   {
     id: 'c3',
@@ -1125,20 +1140,154 @@ const CAL_EVENTS: EconomicEvent[] = [
   },
 ]
 
+const CAL_EARNINGS: EarningsEvent[] = [
+  {
+    id: 'e1',
+    at: calAt(17, 7, 0),
+    region: 'US',
+    regionName: '乙国',
+    code: 'ALFA',
+    name: '示例阿尔法科技',
+    session: 'before',
+    epsActual: 1.42,
+    epsForecast: 1.31,
+    revenueActual: 18.4e9,
+    revenueForecast: 17.9e9,
+    marketCap: 612e9,
+  },
+  {
+    id: 'e2',
+    at: calAt(17, 20, 0),
+    region: 'US',
+    regionName: '乙国',
+    code: 'BETA',
+    name: '示例贝塔零售',
+    session: 'before',
+    epsActual: 0.88,
+    epsForecast: 0.95,
+    revenueActual: 52.1e9,
+    revenueForecast: 52.6e9,
+    marketCap: 240e9,
+  },
+  {
+    id: 'e3',
+    at: calAt(17, 22, 0),
+    region: 'US',
+    regionName: '乙国',
+    code: 'GAMA',
+    name: '示例伽马半导体',
+    session: 'after',
+    epsForecast: 2.05,
+    revenueForecast: 9.8e9,
+    marketCap: 1.1e12,
+  },
+  {
+    id: 'e4',
+    at: calAt(18, 16, 0),
+    region: 'CN',
+    regionName: '甲国',
+    code: '600001',
+    name: '示例德尔塔能源',
+    epsForecast: 0.62,
+    revenueForecast: 31.2e9,
+    marketCap: 88e9,
+  },
+  {
+    id: 'e5',
+    at: calAt(19, 7, 0),
+    region: 'EU',
+    regionName: '丁区',
+    code: 'EPSI',
+    name: '示例艾普西隆汽车',
+    session: 'before',
+    epsForecast: 1.7,
+    revenueForecast: 40.3e9,
+    marketCap: 56e9,
+  },
+]
+const CAL_DIVIDENDS: DividendEvent[] = [
+  {
+    id: 'd-1',
+    at: calAt(17, 0),
+    region: 'US',
+    regionName: '乙国',
+    code: 'ALFA',
+    name: '示例阿尔法科技',
+    currency: '$',
+    amount: 0.25,
+    yield: 0.62,
+    payAt: calAt(28, 0),
+  },
+  {
+    id: 'd-2',
+    at: calAt(18, 0),
+    region: 'CN',
+    regionName: '甲国',
+    code: '600001',
+    name: '示例德尔塔能源',
+    currency: '¥',
+    amount: 0.8,
+    yield: 3.41,
+    payAt: calAt(26, 0),
+  },
+  {
+    id: 'd-3',
+    at: calAt(20, 0),
+    region: 'GB',
+    regionName: '戊国',
+    code: 'ZETA',
+    name: '示例泽塔矿业',
+    currency: '£',
+    amount: 0.46,
+    yield: 5.12,
+    payAt: calAt(30, 0),
+  },
+]
+const CAL_IPOS: IpoEvent[] = [
+  {
+    id: 'i-1',
+    at: calAt(18, 0),
+    region: 'US',
+    regionName: '乙国',
+    code: 'ETAX',
+    name: '示例伊塔生物',
+    exchange: 'NASDAQ',
+    priceLow: 14,
+    priceHigh: 16,
+    shares: 8.5e6,
+    dealSize: 127.5e6,
+    status: '已定价',
+  },
+  {
+    id: 'i-2',
+    at: calAt(19, 0),
+    region: 'CN',
+    regionName: '甲国',
+    name: '示例西塔机器人',
+    exchange: 'SSE',
+    priceLow: 36.4,
+    priceHigh: 36.4,
+    shares: 62e6,
+    dealSize: 2.26e9,
+    status: '待上市',
+  },
+]
+
 const CAL_LABELS: EventCalendarLabels = {
   list: '经济日历',
   empty: '这段时间没有符合条件的事件',
-  range: { today: '今天', week: '本周', next: '下周', custom: '自定义' },
+  range: { yesterday: '昨天', today: '今天', tomorrow: '明天', week: '本周', next: '下周', custom: '自定义' },
   rangeGroup: '日期范围',
+  categoryGroup: '日历类别',
+  category: { economic: '经济', earnings: '财报', dividends: '分红', ipo: 'IPO' },
   importanceGroup: '重要程度',
-  importanceClear: '清除重要程度筛选',
   importance: (level) => `重要程度 ${level}`,
   regionsAll: '全部国家',
   regionsPlaceholder: '搜索国家 / 地区',
   regionsEmpty: '没有这个国家',
   regionsCount: (n) => `${n} 个国家`,
-  onlyHigh: '只看高重要',
   today: '今天',
+  now: '现在',
   columns: {
     time: '时间',
     region: '国家',
@@ -1148,6 +1297,25 @@ const CAL_LABELS: EventCalendarLabels = {
     forecast: '预期',
     previous: '前值',
   },
+  earningsColumns: {
+    time: '时段',
+    company: '公司',
+    epsActual: 'EPS 实际',
+    epsForecast: 'EPS 预期',
+    revenueActual: '营收实际',
+    revenueForecast: '营收预期',
+    marketCap: '市值',
+  },
+  dividendColumns: { company: '公司', amount: '每股分红', yield: '股息率', payDate: '派息日' },
+  ipoColumns: {
+    company: '公司',
+    exchange: '交易所',
+    priceRange: '发行价',
+    shares: '股数',
+    dealSize: '募资额',
+    status: '状态',
+  },
+  session: { before: '盘前', during: '盘中', after: '盘后' },
   countdown: (m) => (m >= 60 ? `${Math.floor(m / 60)} 小时 ${m % 60} 分后` : `${m} 分后`),
   dateRange: {
     start: '起点',
@@ -1166,6 +1334,13 @@ const CAL_LABELS: EventCalendarLabels = {
     return `${m} 月 ${d} 日 周${week}`
   },
   count: (n) => `${n} 条`,
+  detail: {
+    description: '说明',
+    source: '来源',
+    history: '历史值',
+    historyLabel: (n) => `最近 ${n} 期历史值`,
+    nextRelease: '下次发布',
+  },
   rowActions: '事件操作',
   rowMenu: '事件菜单',
 }
@@ -1178,6 +1353,9 @@ export function EventCalendarDemo() {
         <PanelFrameBody>
           <EventCalendar
             events={CAL_EVENTS}
+            earnings={CAL_EARNINGS}
+            dividends={CAL_DIVIDENDS}
+            ipos={CAL_IPOS}
             labels={CAL_LABELS}
             now={CAL_NOW}
             timeZone="Asia/Shanghai"
