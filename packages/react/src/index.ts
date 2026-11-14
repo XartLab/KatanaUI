@@ -236,6 +236,7 @@ export {
   type TreemapBlock,
   type TreemapCell,
   type TreemapItem,
+  type TreemapLayoutOptions,
 } from './katana/treemap-model.ts'
 export { PriceTag, type PriceTagProps } from './katana/price-tag.tsx'
 export { QuoteCard, QuoteStrip, type QuoteCardProps, type QuoteStripProps } from './katana/quote-card.tsx'

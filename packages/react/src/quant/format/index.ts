@@ -9,6 +9,7 @@ export {
   formatCompact,
   formatCount,
   formatQuantity,
+  formatVolume,
   type QuantityUnits,
   type SizeFormat,
 } from './quantity.ts'

@@ -1,10 +1,10 @@
-<!-- SPDX-License-Identifier: AGPL-3.0-only -->
+<!-- SPDX-License-Identifier: MIT -->
 <!-- 生成文件：pnpm ui:coverage。手写的是 coverage-map.json，不要改这份。 -->
 
 # 设计稿覆盖表
 
 设计稿存档 `design/katana-console/project/components/` 的 105 张组件卡，每张落到了哪里、做没做（#1870）。
-归属：基础件（`primitives/`）、自有件（`katana/`）、量化（`quant/`）、积木（`blocks/`，#1869）、面板（`src/panels` 与应用外壳）。
+归属：基础件（`primitives/`）、自有件（`katana/`）、量化（`quant/`）、积木（`blocks/`，#1869）、面板（KATANAview 应用的 `src/panels` 与外壳）。
 状态：已做（卡的内容在包里或应用里做出来了，落点写在「落在哪里」）、部分（做了一块，缺什么写在备注）、没做。
 「计划」是已经定了名字、还没有的落点（积木层的 DataGrid、EmptyState、Toolbar，#1869），落地后挪进现有落点。
 
@@ -40,15 +40,13 @@
 | ConsensusBlock | 交易 | 量化 | `ConsensusBlock` | 已做 |  |
 | Controls | 基元 | 基础件 | `Button`、`Input`、`Select`、`Slider`、`Checkbox`、`Switch`、`Tabs`、`ToggleGroup` | 已做 |  |
 | CorporateActions | 资产管理 | 面板 | — | 没做 | 资产管理，还没有对应面板 |
-| Cover | — | 自有件 | `packages/ui/design-system/components/Cover` | 已做 | 封面页，随设计系统带出 |
+| Cover | — | 自有件 | `packages/react/design-system/components/Cover` | 已做 | 封面页，随设计系统带出 |
 | DOMHeatmap | 订单流 | 面板 | `src/panels/heatmap` | 部分 | 有热力图面板，盘口历史（时间 × 价格）一层没有 |
 | DOMLadder | 订单流 | 面板 | `src/panels/dom` | 已做 |  |
 | DataGrid | 数据 | 积木 | `DataGrid` | 已做 | #1869 把 DataTable 抽成积木 DataGrid；应用里 panels/kit/DataTable.tsx 是薄适配层 |
 | DataQuality | 研究 | 面板 | — | 没做 | 研究层，还没有对应面板 |
-| DataSources | 运行中心 | 面板 | `src/shell/ConnectionList.tsx` | 部分 | 连接列表有，延迟 LCD 与今日拉取量没有 |
-| DatasetCatalog | 研究 | 面板 | `src/shell/DatasetSourcesPane.tsx`、`TreeView` | 部分 | 数据集来源有，字段数、频率、覆盖区间没有；目录树的件（TreeView）已有，面板还没有接它 |
 | DataSources | 运行中心 | 面板 | `src/shell/ConnectionList.tsx` | 部分 | 连接列表有，延迟 LCD 与今日拉取量没有；组件库已有 UptimeBars 逐格可用条（#1918）可补逐日可用，面板里还没接 |
-| DatasetCatalog | 研究 | 面板 | `src/shell/DatasetSourcesPane.tsx` | 部分 | 数据集来源有，字段数、频率、覆盖区间没有 |
+| DatasetCatalog | 研究 | 面板 | `src/shell/DatasetSourcesPane.tsx`、`TreeView` | 部分 | 数据集来源有，字段数、频率、覆盖区间没有；目录树的件（TreeView）已有，面板还没有接它 |
 | DecisionJournal | 决策 | 面板 | — | 没做 | 决策层，还没有对应面板 |
 | DecisionQueue | 决策 | 面板 | — | 没做 | 决策层，还没有对应面板 |
 | DeploymentBoard | 研究 | 面板 | — | 没做 | 研究层，还没有对应面板 |
@@ -79,7 +77,7 @@
 | MBOTrackers | 订单流 | 面板 | — | 没做 | 逐单订单簿，还没有对应面板 |
 | Meter | 工作台 | 量化 | `Meter` | 已做 | 条（点阵填充）、刻度盘、同步率三种形态；限额板传软限与硬限，达到软限接近、达到硬限越限；应用接线另开票 |
 | ModelCard | 研究 | 面板 | — | 没做 | 研究层，还没有对应面板 |
-| NewsFeed | 发现 | 面板 | `src/panels/alice-reports` | 部分 | 有报告流，公告、RSS、数据源事件的统一时间流没有 |
+| NewsFeed | 发现 | 面板 | `src/panels/inbox` | 部分 | 有报告流，公告、RSS、数据源事件的统一时间流没有 |
 | Notes | 工具 | 面板 | — | 没做 | Markdown 笔记，还没有对应面板 |
 | OptionsChain | 衍生品 | 面板 | — | 没做 | 衍生品，还没有对应面板 |
 | OptionsFlow | 衍生品 | 面板 | — | 没做 | 衍生品，还没有对应面板 |

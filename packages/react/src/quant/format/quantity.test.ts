@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 import { describe, expect, it } from 'vite-plus/test'
-import { compactParts, formatCompact, formatCount, formatQuantity } from './quantity.ts'
+import { compactParts, formatCompact, formatCount, formatQuantity, formatVolume } from './quantity.ts'
 
 describe('表格面板的数量写法', () => {
   it('自动：K 留 1 位、M 留 2 位；美元从 1,000 起缩写，币从 10,000 起', () => {
@@ -32,5 +32,20 @@ describe('表格面板的数量写法', () => {
     expect(compactParts(512.34)).toEqual({ number: '$512.3', suffix: '' })
     expect(compactParts(-2_500_000, 'base')).toEqual({ number: '-2.5', suffix: 'M' })
     expect(formatCompact(415_130_000)).toBe('$415.1M')
+  })
+})
+
+describe('列表里的量与金额（TradingView 涨幅榜的写法）', () => {
+  it('K / M / B 两位小数，数字与单位之间空一格；小数不进位到下一档之外', () => {
+    expect(formatVolume(835_490)).toBe('835.49 K')
+    expect(formatVolume(2_950_000)).toBe('2.95 M')
+    expect(formatVolume(7_290_000_000)).toBe('7.29 B')
+    expect(formatVolume(520_000_000)).toBe('520.00 M')
+  })
+
+  it('不到 1,000 取整照写，负数前加负号', () => {
+    expect(formatVolume(0)).toBe('0')
+    expect(formatVolume(412.6)).toBe('413')
+    expect(formatVolume(-2_950_000)).toBe('-2.95 M')
   })
 })

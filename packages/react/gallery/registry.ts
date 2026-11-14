@@ -923,6 +923,126 @@ export const PAGES: readonly DocPage[] = [
     keys: [],
   },
   {
+    id: 'limit-ladder',
+    group: 'quant',
+    cardHeight: 690,
+    title: 'LimitLadder 连板天梯（A 股专有）',
+    summary:
+      'A 股专有件（连板、涨停、炸板是 A 股的概念）。按板位从高到低分层的涨停梯队：顶上一行汇总读数（涨停只数、最高板、整体晋级率），下面按层：层头是粗体板位、只数与晋级率（加 2px 细进度条），层间留白；层里列个股：徽标、代码（主）、名称（次）。炸板、跌停、没涨停的文字淡显，状态胶囊保持全亮。数据与文字都由调用方传，件不认数据集。',
+    exports: ['LimitLadder'],
+    props: [
+      {
+        part: 'LimitLadder',
+        rows: [
+          {
+            name: 'levels',
+            type: 'LadderLevel[]',
+            desc: '{ board, promoted?: [已晋级, 候选], items }；件自己按 board 从高到低排。空数组画空态。',
+          },
+          {
+            name: 'levels[].items',
+            type: 'LadderItem[]',
+            desc: '{ code, name, change（百分数）, firstSeal?, sealAmount?（元，写成 520.00 M）, opens?, industry?, logo?, status }；没有的值写「—」。',
+          },
+          {
+            name: 'labels',
+            type: 'LimitLadderLabels',
+            desc: '板位单位、晋级率与只数文字、状态名、汇总读数名、列名、读屏名、空态文字，由调用方传。',
+          },
+          { name: 'selected', type: 'string | null', desc: '选中个股的代码；选中行左侧画 2px 强调条。' },
+          { name: 'onSelect', type: '(code: string) => void', desc: '点击或 Enter / Space 选一行。' },
+        ],
+      },
+    ],
+    states: [
+      '封住：状态标签取涨色（pnl-up，data-updown 互换时跟着换）。',
+      '炸板：文字 55% 不透明，胶囊琥珀、全亮。跌停：文字淡显，胶囊跌色。没涨停：文字淡显，胶囊灰。',
+      '选中：行底 6.5% 白，左侧 2px 强调条。',
+    ],
+    donts: [
+      '不要把橙色用在数据上，它只给选中条。',
+      '不要在件里写死中文或数据集字段；文字与数据由调用方传。',
+      '没有数据时不要放样本行，传空数组。',
+    ],
+    composition:
+      'LimitLadder\n  汇总读数（涨停 | 最高板 | 晋级率）\n  列头\n  listbox\n    层（group）：板位（粗体）| 单位 | 只数 | 晋级率 + 细条\n      行（option）：徽标 + 代码 + 名称 | 涨跌幅 | 首封 | 封单额 | 开板 | 行业 | 状态标签',
+    keys: [
+      ['↑ / ↓', '在行间移动焦点'],
+      ['Enter / Space', '选中当前行'],
+    ],
+  },
+  {
+    id: 'market-heatmap',
+    group: 'quant',
+    cardHeight: 700,
+    title: 'MarketHeatmap 市场热力图（跨市场共用）',
+    summary:
+      '照 TradingView 的股票热力图：格子面积是所选的大小指标（市值、成交额或等大），颜色是所选指标落在七档色阶的哪一档，按行业分组或平铺。顶上一行汇总读数（只数、上涨、下跌），工具条用分段控件切大小、颜色、视图；点组名放大到只看这一组（面包屑返回，Esc 也行）；悬停出这只票的价格与各项读数；底部图例写出每一档的值边界，点一档就隐藏这一档的格子。A 股、港股、美股、加密共用，只换数据与分组；不认数据集，品种、指标、文字都由调用方传。排布与着色档用包里矩形树图的 layoutTreemap、colorStep。',
+    exports: ['MarketHeatmap'],
+    props: [
+      {
+        part: 'MarketHeatmap',
+        note: '放在 PanelFrame 里用，件自己撑满容器的高度（排布按真实像素算，随容器改变重排）。',
+        rows: [
+          {
+            name: 'items',
+            type: 'HeatmapItem[]',
+            desc: '{ code, name, group?, logo?, price?, size: Record<键, number>, value: Record<键, number | null> }。size 里不是正数的格子不画；value 是 null 画成灰（没有数）；没有 group 的品种归到 labels.other，所有品种都没有 group 就不分组、也不出视图切换。',
+          },
+          {
+            name: 'sizeBy',
+            type: 'HeatmapSizeBy[]',
+            desc: '大小指标：{ key, label, equal?, format? }。key 对 item.size 的键；equal 为真是等大，不读 size；format 不给用 formatVolume。',
+          },
+          {
+            name: 'colorBy',
+            type: 'HeatmapColorBy[]',
+            desc: '着色指标：{ key, label, unit?, digits?, format?, step? }。key 对 item.value 的键。step 是一档的宽（指标的单位），不给就按这批值的最大绝对值除以 3 再向上取到好数，载入与切指标时重算；写 1 就是 ±3%。',
+          },
+          {
+            name: 'labels',
+            type: 'MarketHeatmapLabels',
+            desc: '工具条、面包屑、汇总读数、悬停卡片、图例读屏名、空态的文字，由调用方传。',
+          },
+          {
+            name: 'defaultSizeBy / defaultColorBy',
+            type: 'string',
+            desc: '一开始用哪个大小、着色指标；默认各自的第一个。',
+          },
+          { name: 'defaultGrouped', type: 'boolean', default: 'true', desc: '一开始分不分组（有分组数据时）。' },
+          {
+            name: 'scheme',
+            type: "'classic' | 'mono'",
+            default: "'classic'",
+            desc: '配色。classic 涨跌色（跟 data-updown 互换）加中性灰；mono 同一灰阶从暗到亮。色盲友好第二步做。',
+          },
+          { name: 'formatPrice', type: '(value: number) => string', desc: '悬停卡片上的价格写法；不给写 2 位小数。' },
+          { name: 'selected', type: 'string | null', desc: '选中的代码；选中的格子画 2px 白色内圈。' },
+          { name: 'onSelect', type: '(code: string) => void', desc: '点格子，或焦点在格子上按 Enter / Space。' },
+        ],
+      },
+    ],
+    states: [
+      '色阶七档（−3…+3）：档 0 是以零为中心的中性灰，边界在 (k ± 0.5) × 档宽；最外两档一头开口。',
+      '格子够大才写字：宽 ≥ 40、高 ≥ 24 写代码，高 ≥ 40 再写一行读数；更小的靠悬停。字色按底色亮度现算黑白。',
+      '图例点一档：这一档的格子隐藏（位置保留，不重排），色块变淡、边界值划线；再点恢复。切着色指标时全部恢复。',
+      '放大：只剩这一组，大小与颜色设置保留；面包屑的「全部」或 Esc 返回。',
+    ],
+    donts: [
+      '不要在件里写死中文、币种或数据集字段；指标、单位、文字都由调用方传。',
+      '没有数据时传空数组，件画空态，不要放样本格子。',
+      '不要用橙色表示数据；这件里没有橙色。',
+    ],
+    composition:
+      'MarketHeatmap（figure）\n  汇总读数（只数 | 上涨 | 下跌）+ 面包屑\n  工具条（大小 | 颜色 | 视图，分段控件）\n  图（group）\n    组块（组名按钮）\n      格子（button：代码 + 读数）\n    悬停卡片（徽标 + 代码 + 名称；价格、各着色指标、大小指标、分组）\n  图例（七个按钮：色块 + 档中心值）',
+    keys: [
+      ['Tab', '在组之间走（每组一个停靠点，组名按钮也是）'],
+      ['← → ↑ ↓', '在组内的格子间走，焦点所在格子出悬停卡片'],
+      ['Enter / Space', '选中当前格子'],
+      ['Esc', '放大状态下返回全部'],
+    ],
+  },
+  {
     id: 'pnl-text',
     group: 'quant',
     cardHeight: 70,
@@ -1018,6 +1138,7 @@ export const PAGES: readonly DocPage[] = [
       'formatPrice',
       'formatQuantity',
       'stepDecimal',
+      'formatVolume',
       'toneOf',
     ],
     propParts: [
@@ -1041,6 +1162,10 @@ export const PAGES: readonly DocPage[] = [
         symbol: 'formatQuantity',
         note: '数量的缩写（K / M / B）与千分位；单位 base 是币量、usd 带 $。',
       },
+      {
+        part: 'formatVolume(value)',
+        note: '列表里的量与金额（照 TradingView 涨幅榜页，2026-11-15 读）：835.49 K、2.95 M、7.29 B，两位小数、数字与单位之间空一格；不到 1,000 取整；不带币种符号。',
+      },
     ],
     states: [
       'formatPrice：定了小数位就恒写这么多位；不是有限数写 —。',
@@ -1048,7 +1173,7 @@ export const PAGES: readonly DocPage[] = [
     ],
     donts: ['不要在格式化函数里猜品种的精度，由调用方传 precision 或 tick。', '不要自己拼千分位。'],
     composition:
-      'formatPrice\n  decimalsOfTick\nformatPercentChange\ntoneOf\nformatQuantity\n  formatCount\nformatCompact\n  compactParts',
+      'formatPrice\n  decimalsOfTick\nformatPercentChange\ntoneOf\nformatQuantity\n  formatCount\nformatCompact\n  compactParts\nformatVolume',
     keys: [],
   },
   {

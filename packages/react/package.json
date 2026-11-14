@@ -29,6 +29,7 @@
     },
     "./ui.css": "./src/ui.css",
     "./tokens.css": "./src/tokens.css",
+    "./fonts.css": "./src/fonts.css",
     "./motion": {
       "types": "./lib/lib/motion.d.ts",
       "source": "./src/lib/motion.ts",
@@ -58,11 +59,12 @@
   "scripts": {
     "dev": "pnpm --filter @katana-ui/tokens run tokens:sync && vp dev",
     "build:site": "node scripts/build-site.mjs",
-    "test": "node scripts/docs-props.mjs --check && node scripts/ds-build.mjs --check && vp test run",
+    "test": "node scripts/ui-coverage.mjs --check && node scripts/docs-props.mjs --check && node scripts/ds-build.mjs --check && vp test run",
     "typecheck": "tsc -p tsconfig.json",
     "check": "vp check",
     "docs:props": "node scripts/docs-props.mjs",
     "ds:build": "pnpm --filter @katana-ui/tokens run tokens:sync && node scripts/ds-build.mjs",
+    "ui:coverage": "node scripts/ui-coverage.mjs",
     "registry:build": "node scripts/registry-json.mjs && shadcn build -o r",
     "test:e2e": "playwright test",
     "test:happo": "E2E_HAPPO=1 happo -- playwright test",

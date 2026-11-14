@@ -5284,6 +5284,131 @@
       "source": "src/blocks/data-grid/columns.ts",
       "props": []
     },
+    "HeatmapColorBy": {
+      "kind": "type",
+      "source": "src/quant/market-heatmap.tsx",
+      "props": [
+        {
+          "name": "key",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "unit",
+          "type": "string",
+          "required": false,
+          "description": "单位，接在数后面（「%」）。"
+        },
+        {
+          "name": "digits",
+          "type": "number",
+          "required": false,
+          "description": "小数位，默认 2。"
+        },
+        {
+          "name": "format",
+          "type": "(value: number) => string",
+          "required": false,
+          "description": "整个写法自己定（覆盖 unit 与 digits）。"
+        },
+        {
+          "name": "step",
+          "type": "number",
+          "required": false,
+          "description": "一档的宽（指标的单位）。不给就按这批值的最大绝对值自动取好数（载入或切指标时重算）；固定写成 1 就是 TradingView 的 ±3%。"
+        }
+      ]
+    },
+    "HeatmapItem": {
+      "kind": "type",
+      "source": "src/quant/market-heatmap.tsx",
+      "props": [
+        {
+          "name": "code",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "group",
+          "type": "string",
+          "required": false,
+          "description": "分组（行业）；不给的归到 labels.other。"
+        },
+        {
+          "name": "logo",
+          "type": "string",
+          "required": false,
+          "description": "品种徽标的图片地址；不给就画字母圆标。"
+        },
+        {
+          "name": "price",
+          "type": "number",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "size",
+          "type": "Record<string, number>",
+          "required": true,
+          "description": "各个大小指标的值，键是 HeatmapSizeBy.key。不是正数的格子不画。"
+        },
+        {
+          "name": "value",
+          "type": "Record<string, number | null>",
+          "required": true,
+          "description": "各个着色指标的值，键是 HeatmapColorBy.key。null 是没有数（画中性灰）。"
+        }
+      ]
+    },
+    "HeatmapScheme": {
+      "kind": "type",
+      "source": "src/quant/market-heatmap.tsx",
+      "props": []
+    },
+    "HeatmapSizeBy": {
+      "kind": "type",
+      "source": "src/quant/market-heatmap.tsx",
+      "props": [
+        {
+          "name": "key",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "equal",
+          "type": "boolean",
+          "required": false,
+          "description": "等大：每格一样大，不读 size。"
+        },
+        {
+          "name": "format",
+          "type": "(value: number) => string",
+          "required": false,
+          "description": "大小写成什么样；不给用 formatVolume（835.49 K、2.95 M、7.29 B）。"
+        }
+      ]
+    },
     "HoldToConfirm": {
       "kind": "component",
       "source": "src/katana/hold-to-confirm.tsx",
@@ -5779,6 +5904,95 @@
       "source": "src/primitives/label.tsx",
       "props": []
     },
+    "LadderItem": {
+      "kind": "type",
+      "source": "src/quant/limit-ladder.tsx",
+      "props": [
+        {
+          "name": "code",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "change",
+          "type": "number",
+          "required": true,
+          "description": "涨跌幅，已经是百分数（10 就是 +10%）。"
+        },
+        {
+          "name": "firstSeal",
+          "type": "string",
+          "required": false,
+          "description": "首次封板的时刻，调用方写好（「09:31」）；没封过不给。"
+        },
+        {
+          "name": "sealAmount",
+          "type": "number",
+          "required": false,
+          "description": "封单额（元）。"
+        },
+        {
+          "name": "opens",
+          "type": "number",
+          "required": false,
+          "description": "开板次数。"
+        },
+        {
+          "name": "industry",
+          "type": "string",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "logo",
+          "type": "string",
+          "required": false,
+          "description": "品种徽标的图片地址；不给就画字母圆标。"
+        },
+        {
+          "name": "status",
+          "type": "LadderStatus",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "LadderLevel": {
+      "kind": "type",
+      "source": "src/quant/limit-ladder.tsx",
+      "props": [
+        {
+          "name": "board",
+          "type": "number",
+          "required": true,
+          "description": "板位：几连板。"
+        },
+        {
+          "name": "promoted",
+          "type": "[number, number]",
+          "required": false,
+          "description": "晋级 [已晋级只数, 候选只数]：昨天低一档的票里今天封到这一档的。不给就不画晋级率。"
+        },
+        {
+          "name": "items",
+          "type": "readonly LadderItem[]",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "LadderStatus": {
+      "kind": "type",
+      "source": "src/quant/limit-ladder.tsx",
+      "props": []
+    },
     "Lcd": {
       "kind": "component",
       "source": "src/katana/lcd.tsx",
@@ -5874,6 +6088,133 @@
       "kind": "type",
       "source": "src/katana/led.tsx",
       "props": []
+    },
+    "LimitLadder": {
+      "kind": "component",
+      "source": "src/quant/limit-ladder.tsx",
+      "props": [
+        {
+          "name": "levels",
+          "type": "readonly LadderLevel[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "labels",
+          "type": "LimitLadderLabels",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "selected",
+          "type": "string | null",
+          "required": false,
+          "default": "null",
+          "description": "选中的个股代码。"
+        },
+        {
+          "name": "onSelect",
+          "type": "(code: string) => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "LimitLadderLabels": {
+      "kind": "type",
+      "source": "src/quant/limit-ladder.tsx",
+      "props": [
+        {
+          "name": "board",
+          "type": "string",
+          "required": true,
+          "description": "层号旁的单位（「板」）。"
+        },
+        {
+          "name": "promoted",
+          "type": "(done: number, total: number) => string",
+          "required": true,
+          "description": "层头的晋级率文字，例「晋级 1/3」。"
+        },
+        {
+          "name": "count",
+          "type": "(n: number) => string",
+          "required": true,
+          "description": "层头的只数文字，例「3 只」。"
+        },
+        {
+          "name": "status",
+          "type": "Record<LadderStatus, string>",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "columns",
+          "type": "{ name: string; change: string; firstSeal: string; sealAmount: string; opens: string; industry: string }",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "summary",
+          "type": "{ sealed: string; highest: string; promoteRate: string }",
+          "required": true,
+          "description": "顶部汇总读数的名字：涨停只数、最高板、整体晋级率。"
+        },
+        {
+          "name": "list",
+          "type": "string",
+          "required": true,
+          "description": "整张天梯的读屏名。"
+        },
+        {
+          "name": "empty",
+          "type": "string",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "LimitLadderProps": {
+      "kind": "type",
+      "source": "src/quant/limit-ladder.tsx",
+      "props": [
+        {
+          "name": "levels",
+          "type": "readonly LadderLevel[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "labels",
+          "type": "LimitLadderLabels",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "selected",
+          "type": "string | null",
+          "required": false,
+          "description": "选中的个股代码。"
+        },
+        {
+          "name": "onSelect",
+          "type": "(code: string) => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": ""
+        }
+      ]
     },
     "LinkGroup": {
       "kind": "type",
@@ -6126,6 +6467,250 @@
           "type": "() => void",
           "required": false,
           "description": "When given, the amber bar offers a retry button."
+        }
+      ]
+    },
+    "MarketHeatmap": {
+      "kind": "component",
+      "source": "src/quant/market-heatmap.tsx",
+      "props": [
+        {
+          "name": "items",
+          "type": "readonly HeatmapItem[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "sizeBy",
+          "type": "readonly HeatmapSizeBy[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "colorBy",
+          "type": "readonly HeatmapColorBy[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "labels",
+          "type": "MarketHeatmapLabels",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "defaultSizeBy",
+          "type": "string",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "defaultColorBy",
+          "type": "string",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "defaultGrouped",
+          "type": "boolean",
+          "required": false,
+          "default": "true",
+          "description": "一开始分不分组（有分组数据时）；默认分组。"
+        },
+        {
+          "name": "scheme",
+          "type": "HeatmapScheme",
+          "required": false,
+          "default": "'classic'",
+          "description": "配色：classic 涨跌色（跟 data-updown）、mono 单色灰阶。色盲友好第二步做。"
+        },
+        {
+          "name": "formatPrice",
+          "type": "(value: number) => string",
+          "required": false,
+          "default": "(value) => formatPrice(value, { precision: 2 })",
+          "description": "价格怎么写；不给按 2 位小数。"
+        },
+        {
+          "name": "selected",
+          "type": "string | null",
+          "required": false,
+          "default": "null",
+          "description": ""
+        },
+        {
+          "name": "onSelect",
+          "type": "(code: string) => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "MarketHeatmapLabels": {
+      "kind": "type",
+      "source": "src/quant/market-heatmap.tsx",
+      "props": [
+        {
+          "name": "sizeBy",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "colorBy",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "view",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "grouped",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "flat",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "all",
+          "type": "string",
+          "required": true,
+          "description": "面包屑的根（放大前是「全部」）。"
+        },
+        {
+          "name": "other",
+          "type": "string",
+          "required": true,
+          "description": "没有分组的品种归到这个名字下。"
+        },
+        {
+          "name": "price",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "group",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "summary",
+          "type": "{ count: string; up: string; down: string }",
+          "required": true,
+          "description": "顶上汇总读数的名字：只数、上涨、下跌。"
+        },
+        {
+          "name": "segment",
+          "type": "(range: string) => string",
+          "required": true,
+          "description": "图例一档的读屏名，range 是写好的值边界，例「隐藏 -2.5% ~ -1.5% 的格子」。"
+        },
+        {
+          "name": "list",
+          "type": "string",
+          "required": true,
+          "description": "整张图的读屏名。"
+        },
+        {
+          "name": "empty",
+          "type": "string",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "MarketHeatmapProps": {
+      "kind": "type",
+      "source": "src/quant/market-heatmap.tsx",
+      "props": [
+        {
+          "name": "items",
+          "type": "readonly HeatmapItem[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "sizeBy",
+          "type": "readonly HeatmapSizeBy[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "colorBy",
+          "type": "readonly HeatmapColorBy[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "labels",
+          "type": "MarketHeatmapLabels",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "defaultSizeBy",
+          "type": "string",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "defaultColorBy",
+          "type": "string",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "defaultGrouped",
+          "type": "boolean",
+          "required": false,
+          "description": "一开始分不分组（有分组数据时）；默认分组。"
+        },
+        {
+          "name": "scheme",
+          "type": "HeatmapScheme",
+          "required": false,
+          "description": "配色：classic 涨跌色（跟 data-updown）、mono 单色灰阶。色盲友好第二步做。"
+        },
+        {
+          "name": "formatPrice",
+          "type": "(value: number) => string",
+          "required": false,
+          "description": "价格怎么写；不给按 2 位小数。"
+        },
+        {
+          "name": "selected",
+          "type": "string | null",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "onSelect",
+          "type": "(code: string) => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": ""
         }
       ]
     },
@@ -12533,6 +13118,30 @@
         }
       ]
     },
+    "TreemapLayoutOptions": {
+      "kind": "type",
+      "source": "src/katana/treemap-model.ts",
+      "props": [
+        {
+          "name": "width",
+          "type": "number",
+          "required": false,
+          "description": "Width of the layout box."
+        },
+        {
+          "name": "height",
+          "type": "number",
+          "required": false,
+          "description": "Height of the layout box."
+        },
+        {
+          "name": "head",
+          "type": "number",
+          "required": false,
+          "description": "Height reserved for each group header."
+        }
+      ]
+    },
     "TreemapProps": {
       "kind": "type",
       "source": "src/katana/treemap.tsx",
@@ -13336,6 +13945,11 @@
         }
       ]
     },
+    "formatVolume": {
+      "kind": "function",
+      "source": "src/quant/format/quantity.ts",
+      "props": []
+    },
     "gaussianKde": {
       "kind": "function",
       "source": "src/quant/ridgeline-model.ts",
@@ -13410,7 +14024,26 @@
     "layoutTreemap": {
       "kind": "function",
       "source": "src/katana/treemap-model.ts",
-      "props": []
+      "props": [
+        {
+          "name": "width",
+          "type": "number",
+          "required": false,
+          "description": "Width of the layout box."
+        },
+        {
+          "name": "height",
+          "type": "number",
+          "required": false,
+          "description": "Height of the layout box."
+        },
+        {
+          "name": "head",
+          "type": "number",
+          "required": false,
+          "description": "Height reserved for each group header."
+        }
+      ]
     },
     "menuContainerClass": {
       "kind": "value",

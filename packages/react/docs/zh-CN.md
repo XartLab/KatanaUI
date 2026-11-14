@@ -22,7 +22,7 @@ tokens → theme → lib → primitives → katana → patterns → quant → bl
 | primitives | `src/primitives/` | 无业务的基础件：button（含 `icon` 变体）、input、select、toggle-group、slider、checkbox、switch、tooltip、popover、dialog、dropdown-menu、context-menu、tabs、accordion、sheet、hover-card、command（`cmdk`）、scroll-area、separator、progress、alert、field、label；`lib/opener-focus` 是 dialog 与 sheet 共用的「关上时焦点回开启处」 |
 | katana | `src/katana/` | KATANA 自有的件（见下）：led、lcd、dot-matrix、rolling-text、badge、kbd、number-input、date-time-input、skeleton 与加载态、toast（弹出提示的外观，计时与队列在应用里）、password-input、delete-button、notification-bell、status-icon、ai-status、matrix-orb、arcade-pixel（取自 SmoothUI，MIT）、step-player、theme-selector、code-block、web-search、task-list、duration-picker（后十二件交互学自 rare-ui，实现原创，文件头写明）、sparkline、gauge-bar、treemap（后三件从应用的分析视图提来，#1884）、price-tag、quote-card、range-bar、rating-gauge（功能参照 TradingView 小组件，只取给用户看什么、怎么交互，不嵌不抄）；hold-to-confirm、shortcut-recorder、json-viewer（#1919：功能参照 Arc，只取公开页面写出的功能与交互，实现原创；number-input 同批加了算式输入与框内标签）；可以用 primitives，不是 shadcn 的衍生，所以单放一处（`scripts/check-license.mjs` 把 `primitives/` 整个当 MIT） |
 | patterns | `src/patterns/` | 由基础件组出来的固定搭法：multi-select（弹层加勾选）、combobox（弹层加 command：可搜索的单选或多选下拉）、quote-table（分组页签行情表：Tabs 加迷你图的行情行）、chip-group（分面筛选芯片组）、date-range-picker（双月日历加预设）、tree-view（react-aria 的 Tree，数据驱动）（后三件 #1919） |
-| quant | `src/quant/` | 量化领域的件与格式化（出口 `@katana-ui/react/quant`）：`ChangeText`（涨跌幅）、`PnlText`（盈亏）、`format/`（价格按精度或 tick、涨跌幅、数量缩写；纯函数另有 `@katana-ui/react/quant/format` 出口，画布与 Worker 里用）。只依赖下面几层，不依赖行情、图表包与应用；品种、精度、单位由调用方传。有两个及以上调用方的才进；时间序列与盈亏（#1917，图都画在 viewBox 里、文字与十字线叠成 HTML，比例尺与路径在 `series-geometry`，几何都是纯函数）：`BrushChart` 与 `BrushStrip`（概览刷选条加主图）、`SparkTile`（KPI 瓦片）、`chart-kit/`（图表共用底座）、`Meter`（条、刻度盘、同步率三种仪表，限额板用软限与硬限）、`CalendarHeatmap`（一年的日盈亏，涨跌发散色）、`HorizonChart`（地平线图） |
+| quant | `src/quant/` | 量化领域的件与格式化（出口 `@katana-ui/react/quant`）：`ChangeText`（涨跌幅）、`PnlText`（盈亏）、`format/`（价格按精度或 tick、涨跌幅、数量缩写；纯函数另有 `@katana-ui/react/quant/format` 出口，画布与 Worker 里用）。只依赖下面几层，不依赖行情、图表包与应用；品种、精度、单位由调用方传。有两个及以上调用方的才进；时间序列与盈亏（#1917，图都画在 viewBox 里、文字与十字线叠成 HTML，比例尺与路径在 `series-geometry`，几何都是纯函数）：`BrushChart` 与 `BrushStrip`（概览刷选条加主图）、`SparkTile`（KPI 瓦片）、`chart-kit/`（图表共用底座）、`Meter`（条、刻度盘、同步率三种仪表，限额板用软限与硬限）、`CalendarHeatmap`（一年的日盈亏，涨跌发散色）、`HorizonChart`（地平线图）；`MarketHeatmap`（市场热力图，跨市场共用，#15：照 TradingView 股票热力图，排布用 `katana/treemap-model` 的 `layoutTreemap`，格子里的徽标是 `SymbolMark`，工具条是 `ToggleGroup`） |
 | blocks | `src/blocks/` | 拼面板用的积木（出口 `@katana-ui/react/blocks`，#1869）：`DataGrid`（数据表：TanStack 行为、虚拟滚动、列排序 / 改宽 / 拖序 / 显隐、键盘选择，列声明类型 price / quantity / pnl / change / side / time / symbol / text / number）、`EmptyState`（空态）、`Toolbar` 零件与 `ToolButton`、`EstimateBadge`、`EventTimeline`（#1919：按显示时区分天的事件流，对设计稿 EventTimeline 卡）、`SmallMultiples`（同步十字线的小图阵列）、`SeriesExplorer`（KPI 瓦片点开成图面板、对账、刷选条、表格视图的盈亏探索，#1917、#1931）、`AttributionBars`（盈亏归因：Toolbar 顶行、编号清单、零轴条形、合计读数）。可以用下面所有层，不依赖应用：快捷键表、文案、右键菜单怎么画、问 Agent 经 `DataGridHost`（`DataGridHostProvider`）注入，没提供时表照常能用（没有快捷键与标准右键项）。包里不带语言，文案都由调用方传 |
 
 ### KATANA 自有件（#1860）
@@ -47,7 +47,7 @@ tokens → theme → lib → primitives → katana → patterns → quant → bl
 ### 设计稿覆盖（#1870）
 
 `docs/coverage-map.json` 是手写的：设计稿存档的每张组件卡（`design/katana-console/project/components/`）落在哪一类（基础件、自有件、量化、积木、面板）、落点、做没做。
-`pnpm ui:coverage` 生成 `docs/coverage.md`；`pnpm lint:ds` 跑 `coverage --check`：有卡没映射、映射的落点（包的出口名或仓库路径）不存在、`coverage.md` 不是最新，都红。文档站的「覆盖」页（`#/coverage`）显示每一类的「已做 / 总数」，数字与 `coverage.md` 用同一份汇总（`docs/coverage-core.ts`）。
+`pnpm ui:coverage`（`scripts/ui-coverage.mjs`，2026-11-15 #14 从 KATANAview 搬回）生成 `docs/coverage.md`；`pnpm test` 先跑它的 `--check`：有卡没映射、映射的落点（包的出口名或仓库路径）不存在、`coverage.md` 不是最新，都红。落点写 `src/` 开头的是 KATANAview 应用里的文件（本仓库里没有），不核对；本仓库里的文件写 `packages/react/...` 或 `design/...`，照常核对。文档站的「覆盖」页（`#/coverage`）显示每一类的「已做 / 总数」，数字与 `coverage.md` 用同一份汇总（`docs/coverage-core.ts`）。
 新增或改名一个件，同一个 PR 里更新映射；积木层（DataGrid、EmptyState、Toolbar，#1869）落地后，把 `planned` 里的名字挪进 `at`。
 
 ### 应用里换了什么、没换什么（#1870）
@@ -68,6 +68,7 @@ tokens → theme → lib → primitives → katana → patterns → quant → bl
 ```ts
 import { Button, Switch } from '@katana-ui/react' // 组件
 import '@katana-ui/react/tokens.css' // token，先引
+import '@katana-ui/react/fonts.css' // 随包的字体声明（Barlow、DM Mono、Doto、Maple、Michroma、方舟像素），用到字体就引
 import '@katana-ui/react/ui.css' // Tailwind 主题与动效，最后引
 import { snappy } from '@katana-ui/react/motion' // 弹簧参数（motion/react 用）
 import { ChangeText, formatPrice } from '@katana-ui/react/quant' // 量化层
@@ -134,26 +135,7 @@ npx shadcn add @katana/style @katana/button @katana/change-text
 
 ## 精密仪器语言（#7）
 
-量化件与积木件的共同语言（用户 2026-11-14 认可「这个可以」，样例是 SeriesExplorer 与盈亏归因）。底是工作台现在的样式：黑面板、无衬线、白字、扁平工具条、分段选中灰底、图标按钮无边框，默认 Graphite；
-上面加一层「工业感」，只取感觉，不加示波器辉光和构成主义色块：
-
-- **编号** 01 / 02 / 03 用强调色（`--chart-accent`，缺省 `--signal-orange`），点阵字。
-- **点阵元信息行**：一行 `--font-dot` 的元信息 / 来源行，例「SOURCE · 台账成交 + 行情估值」。装饰性标签用点阵字，数值仍是无衬线等宽数字；字号 12px（`--text-tag-md`），不加字距、不斜体、不伪粗。
-  汉字落到随包发的方舟像素 12px 子集（`src/fonts/ark-pixel-12-zh-subset.woff2`，来由与许可见 `NOTICE`，生成办法见 `scripts/font/build-ark-pixel-subset.py`）；子集里没有的字再落到无衬线。
-- **宽体标题**：英文标题可用 `--font-wide`（Michroma，只用于标题，中文自动落到无衬线）。
-- **左侧 2px 强调条**：选中项与读数的左侧一条 2px 强调色竖线。
-- **尺寸标注与编号引线**：需要时（图上事件的引线、刻度标注）。
-- **浅网格**：12% 透明度、12px 间距，**待定**，没实测。
-- **键值对账行**：左键右值，一行一对（期初 / 期末 / 差额）。
-- 橙色只给状态灯和焦点角括号；不用 TradingView 蓝，不用暖白高亮黄。
-
-样例（Graphite，文档站 `?theme=graphite` 截的）：
-
-- SeriesExplorer：[images/series-explorer-graphite.png](images/series-explorer-graphite.png)
-- AttributionBars 盈亏归因：[images/attribution-bars-graphite.png](images/attribution-bars-graphite.png)
-
-文档站浏览器测试 `e2e/precision-instrument.spec.ts` 是这套语言的正面证明：序列探索页的元信息行用 Doto、汉字落到方舟像素子集、编号是强调色；去掉 `--font-dot` 里的方舟像素，它就红。
-已套这层语言的件：SeriesExplorer、AttributionBars；其余逐件铺开（DataGrid、ChartTable、EquityCurve、Meter、CalendarHeatmap、SymbolGalaxy），一件一个提交。
+根定义在设计稿存档的 `design/katana-console/project/precision-instrument.md`（Precision Instrument UI）（含组件库里的视觉语言，§11）；本包不另存一份。
 
 ## 许可证
 
@@ -187,7 +169,7 @@ MIT（用户 2026-11-14 定，#1876），见本文开头。别的项目经注册
 - `.github/workflows/pages.yml`：只在镜像仓库里生效（GitHub 不读子目录的 `.github`），push 到 main 时测试、构建并发布到 Pages。
 - `README.md`（英文，对外）、`CONTRIBUTING.md`（英文）、本文件（中文，内部）。
 - token：源头与生成器在 `packages/tokens`（`@katana-ui/tokens`，2026-11-14 #2 第 2 步拆出），包里的 `ds-build`、`ds-tokens.test.ts`、`theming.test.ts`、`motion.test.ts` 按包名读它的出口（本地靠 `linkWorkspacePackages` 连到仓库里那份）；改 token 在那个包里改 `src/tokens.json` 再 `pnpm tokens:sync`。
-- 设计稿覆盖表的脚本（`pnpm ui:coverage`）已随 KATANAview #1972 删除，待在本仓库重建。
+- 设计稿覆盖表的脚本（`pnpm ui:coverage`）已在本仓库重建（`scripts/ui-coverage.mjs`，#14）。
 - `pnpm-lock.yaml` 是本包自己的锁（镜像里 `pnpm install --frozen-lockfile` 读它）：改了 `package.json` 的依赖后，在本目录跑 `pnpm install --lockfile-only --ignore-workspace` 并提交；根目录的 `pnpm lint:ui-lock`（`pnpm test` 里有）查它与 `package.json` 同步。根目录的安装不读它。
 
 在 KATANAview 里改了 `package.json` 的依赖，要与根目录的版本保持一致；根目录的 `pnpm install` 照旧装这个包。
