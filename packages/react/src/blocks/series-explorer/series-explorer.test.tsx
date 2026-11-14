@@ -178,13 +178,13 @@ describe('SeriesExplorer 渲染', () => {
     expect(html).toContain('fill:var(--ink-100)')
   })
 
-  it('指定区间：3M 的瓦片值与变化相对上一期；上一期不够长（全部）写破折号', () => {
+  it('指定区间：3M 的瓦片值与变化相对上一期；上一期不够长（全部）没有变化数据，变化行不渲染', () => {
     const three = render({ defaultRange: '3m', defaultMetric: null })
     // 甲：最近三月 60+70+80 = 210，前三月 30+40+50 = 120，涨 75%。
     expect(three).toContain('data-key="a"')
     expect(three).toContain('data-tone="up">75%<')
     const all = render({ defaultMetric: null })
-    expect(all).toMatch(/k-spark-tile-delta" data-tone="muted">—</)
+    expect(all).not.toContain('k-spark-tile-delta')
   })
 
   it('没有点：只写空态', () => {

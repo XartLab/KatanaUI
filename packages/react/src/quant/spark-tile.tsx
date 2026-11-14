@@ -27,7 +27,7 @@ export type SparkTileProps = {
   pointLabels?: readonly string[]
   /** tooltip 里值的写法；不给用 text 的格式不可得，所以由调用方给。 */
   formatPoint?: (value: number) => string
-  /** 变化行文字。 */
+  /** 变化行文字；没有变化数据就不给，这一行不渲染（不留一行空的「—」）。 */
   delta?: string
   /** 变化行颜色：up / down 用 pnl 色（只给数字），muted 是 ink-300，warn 是 amber。 */
   deltaTone?: 'up' | 'down' | 'muted' | 'warn'
@@ -127,9 +127,11 @@ export function SparkTile({
       ) : (
         <span className="k-spark-tile-plot" aria-hidden="true" />
       )}
-      <span className="k-spark-tile-delta" data-tone={near ? 'warn' : deltaTone}>
-        {delta ?? ' '}
-      </span>
+      {delta === undefined ? null : (
+        <span className="k-spark-tile-delta" data-tone={near ? 'warn' : deltaTone}>
+          {delta}
+        </span>
+      )}
     </Tile>
   )
 }

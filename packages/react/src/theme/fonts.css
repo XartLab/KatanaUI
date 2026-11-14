@@ -1,0 +1,15 @@
+/* SPDX-License-Identifier: MIT */
+/* 宽体：图与面板的大写标题、分段按钮（Precision Instrument UI，参照图用的就是它）。
+   Michroma，SIL OFL 1.1，© 2011 The Michroma Project Authors（https://github.com/googlefonts/Michroma-font），
+   2026-11-14 取自 Google Fonts（fonts.gstatic.com/s/michroma/v21），子集到拉丁 + 常用标点后转 woff，许可全文见 src/fonts/michroma-ofl.txt。
+   只有拉丁大写，汉字回退到无衬线。--font-wide 暂定义在这里；要进设计令牌时由令牌线程搬进 design/tokens.json（#1934）。 */
+@font-face {
+  font-family: 'Michroma';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('../fonts/michroma-regular.woff') format('woff');
+}
+:root {
+  --font-wide: 'Michroma', 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei UI', sans-serif;
+}

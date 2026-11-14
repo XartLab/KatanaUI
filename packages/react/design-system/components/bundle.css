@@ -6000,6 +6000,18 @@ button.k-quote-card.is-link:focus-visible {
   outline-offset: -2px;
 }
 
+@font-face {
+  font-family: Michroma;
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/assets/michroma-regular-DqO2XpcF.woff") format("woff");
+}
+
+:root {
+  --font-wide: "Michroma", "Noto Sans SC", "PingFang SC", "Microsoft YaHei UI", sans-serif;
+}
+
 .k-ck-grid {
   stroke: var(--chart-grid-color, var(--chart-grid));
   stroke-dasharray: var(--chart-grid-dash, none);
@@ -6245,6 +6257,24 @@ button.k-spark-tile:focus-visible {
 .k-fill-hatch {
   display: var(--chart-fill-hatch, none);
   stroke-width: 1px;
+}
+
+.k-ck-value {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  align-items: baseline;
+  gap: 4px;
+  display: inline-flex;
+}
+
+.k-ck-value-num {
+  color: var(--ink-100);
+  font-size: var(--text-data-size, 12px);
+}
+
+.k-ck-value-unit {
+  color: var(--ink-200);
+  font-size: 10px;
 }
 
 .k-brush {
@@ -7283,56 +7313,100 @@ button.k-sm-head:focus-visible {
 
 .k-sx-kpis {
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 8px;
   display: grid;
 }
 
+.k-sx-kpis .k-spark-tile {
+  border: 0;
+  border-top: 2px solid var(--ds-c-2xn4aw);
+  border-left: var(--hairline);
+  background: none;
+  padding: 8px 12px 6px;
+}
+
+.k-sx-kpis .k-spark-tile:first-child {
+  border-left: 0;
+  padding-left: 0;
+}
+
+.k-sx-kpis .k-spark-tile[data-expanded="true"] {
+  border-top-color: var(--chart-accent, var(--signal-orange));
+}
+
+.k-sx-kpis .k-spark-tile-label {
+  color: var(--ink-200);
+  font: var(--text-num-sm) var(--font-mono);
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+
+.k-sx-kpis .k-spark-tile-value {
+  color: var(--ink-100);
+  font: 400 18px/24px var(--font-mono);
+  letter-spacing: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.k-sx-kpis .k-spark-tile-delta {
+  min-height: 0;
+  font-family: var(--font-mono);
+}
+
 .k-sx-recon {
-  background: var(--lcd-bg);
-  border: var(--hairline);
-  box-shadow: var(--recess);
-  font: var(--text-lcd) var(--chart-font-num, var(--font-lcd));
-  letter-spacing: .06em;
+  border-bottom: var(--hairline);
   flex-wrap: wrap;
-  align-items: center;
-  gap: 16px;
-  padding: 6px 10px;
+  align-items: baseline;
+  gap: 4px 16px;
+  padding: 6px 0;
   display: flex;
 }
 
+.k-sx-recon-line {
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px;
+  display: inline-flex;
+}
+
 .k-sx-recon small {
-  color: var(--ink-300);
-  font: var(--text-tag) var(--font-dot);
-  letter-spacing: 0;
-  margin-right: 6px;
+  color: var(--ink-200);
+  font: var(--text-num-sm) var(--font-mono);
+  letter-spacing: .16em;
+  text-transform: uppercase;
 }
 
 .k-sx-recon em {
   color: var(--ink-300);
-  margin: 0 8px;
+  margin: 0 4px;
   font-style: normal;
 }
 
+.k-sx-recon-diff {
+  align-items: baseline;
+  gap: 6px;
+  display: inline-flex;
+}
+
 .k-sx-recon-state {
-  font: var(--text-data) var(--font-sans);
-  letter-spacing: 0;
+  color: var(--ink-200);
+  font: var(--text-num-sm) var(--font-mono);
+  letter-spacing: .16em;
   align-items: center;
   gap: 6px;
   margin-left: auto;
   display: inline-flex;
 }
 
-.k-sx-recon[data-state="warn"] .k-sx-recon-diff {
+.k-sx-recon[data-state="warn"] .k-sx-recon-diff .k-ck-value-num {
   color: var(--signal-amber);
 }
 
 .k-sx-panel {
-  border: var(--hairline);
-  background: var(--bg-200);
+  border-top: var(--hairline);
   animation: k-sx-open var(--dur-snappy) var(--ease-snappy) 1;
   flex-direction: column;
   gap: 8px;
-  padding: 8px 10px;
+  padding: 8px 0;
   display: flex;
 }
 
@@ -7354,51 +7428,106 @@ button.k-sm-head:focus-visible {
   margin-left: auto;
 }
 
+.k-sx-title {
+  color: var(--ink-100);
+  font: 12px/16px var(--font-wide);
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+
+.k-sx-tabs, .k-sx-seg {
+  display: flex;
+  position: relative;
+}
+
 .k-sx-tabs {
-  background: var(--bg-000);
-  box-shadow: var(--recess);
   grid-auto-columns: minmax(64px, 1fr);
   grid-auto-flow: column;
-  padding: 2px;
   display: grid;
-  position: relative;
 }
 
 .k-sx-tab-ind {
-  width: calc((100% - 4px) / var(--k-n, 1));
+  width: calc(100% / var(--k-n, 1));
   transform: translateX(calc(var(--k-i, 0) * 100%));
-  background: var(--bg-400);
+  background: var(--chart-accent, var(--signal-orange));
   transition: transform var(--dur-snappy) var(--ease-snappy);
   position: absolute;
-  top: 2px;
-  bottom: 2px;
-  left: 2px;
+  top: 0;
+  bottom: 0;
+  left: 0;
 }
 
-.k-sx-tab {
-  color: var(--ink-300);
-  font: var(--text-data) var(--font-sans);
+.k-sx-tab, .k-sx-seg-item {
+  border: 1px solid var(--ink-400);
+  color: var(--ink-200);
+  font: 10px/1.2 var(--font-wide);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  white-space: nowrap;
   cursor: pointer;
   background: none;
-  border: 0;
-  padding: 3px 10px;
+  margin-left: -1px;
+  padding: 5px 12px 4px;
   position: relative;
 }
 
-.k-sx-tab[aria-selected="true"] {
-  color: var(--ink-100);
+.k-sx-tab:first-of-type, .k-sx-seg-item:first-child {
+  margin-left: 0;
 }
 
-.k-sx-tab:focus-visible {
+.k-sx-tab[aria-selected="true"] {
+  border-color: var(--chart-accent, var(--signal-orange));
+  color: var(--bg-000);
+}
+
+.k-sx-seg-item[aria-pressed="true"] {
+  border-color: var(--chart-accent, var(--signal-orange));
+  background: var(--chart-accent, var(--signal-orange));
+  color: var(--bg-000);
+}
+
+.k-sx-tab:focus-visible, .k-sx-seg-item:focus-visible {
+  z-index: 1;
   outline: 1px solid var(--focus-ring);
-  outline-offset: -1px;
+  outline-offset: 1px;
 }
 
 .k-sx-compare {
   color: var(--ink-200);
+  font: var(--text-num-sm) var(--font-mono);
+  letter-spacing: .16em;
   align-items: center;
   gap: 6px;
   display: inline-flex;
+}
+
+.k-sx .k-brush-strip {
+  border-color: var(--ink-400);
+  background: none;
+}
+
+.k-sx .k-brush-strip-line {
+  stroke: var(--ink-300);
+  stroke-width: 1px;
+}
+
+.k-sx .k-brush-strip-area {
+  fill: var(--ink-400);
+  fill-opacity: .15;
+}
+
+.k-sx .k-brush-dim {
+  background: var(--bg-000);
+  opacity: .5;
+}
+
+.k-sx .k-brush-window {
+  border: 1px solid var(--chart-accent, var(--signal-orange));
+  background: none;
+}
+
+.k-sx .k-brush-handle:after {
+  background: var(--chart-accent, var(--signal-orange));
 }
 
 .k-sx-chart {

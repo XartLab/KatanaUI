@@ -520,7 +520,7 @@ const SX_PROPS = {
     source: '来源 / 演示数据（固定种子合成）· 2026-12 收盘',
     actions: { group: '图工具', table: '表格视图', exportCsv: '导出 CSV', fullscreen: '全屏' },
     brush: { start: '窗口起点', end: '窗口终点', window: '窗口位置' },
-    reconcile: { open: '期初', close: '期末', diff: '差额', ok: '对账一致', warn: '对账有差' },
+    reconcile: { open: '期初', close: '期末', diff: '差额', ok: '对账一致', warn: '对账有差', unit: 'CNY' },
   },
   formatAt: monthText,
   formatValue: (v: number) => v.toLocaleString('en-US'),

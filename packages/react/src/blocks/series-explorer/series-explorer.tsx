@@ -13,10 +13,10 @@ import { cn } from '../../lib/cn'
 import { useScrubber } from '../../lib/use-scrubber'
 import { Led } from '../../katana/led'
 import { Switch } from '../../primitives/switch'
-import { ToggleGroup, ToggleGroupItem } from '../../primitives/toggle-group'
 import { BrushStrip, type BrushLabels } from '../../quant/brush-chart'
 import { clampWindow, type BrushWindow } from '../../quant/brush-model'
 import { ChartActions, type ChartActionsLabels } from '../../quant/chart-kit/chart-actions'
+import { ChartValue } from '../../quant/chart-kit/chart-value'
 import { EndMarker } from '../../quant/chart-kit/end-marker'
 import { LcdTooltip } from '../../quant/chart-kit/lcd-tooltip'
 import { PlotGrid, PlotYAxis } from '../../quant/chart-kit/plot-axes'
@@ -74,7 +74,7 @@ export type SeriesExplorerLabels = {
   actions: ChartActionsLabels
   brush: BrushLabels
   /** 对账顶行的字；不给 reconcile 时用不到。 */
-  reconcile?: { open: string; close: string; diff: string; ok: string; warn: string }
+  reconcile?: { open: string; close: string; diff: string; ok: string; warn: string; unit?: string }
 }
 
 export type SeriesExplorerProps = {
@@ -175,7 +175,13 @@ export function SeriesExplorer({
   const lastValue = kpi && shown.length > 0 ? pointValue(shown[shown.length - 1]!, kpi.series) : null
   const markAt = active ?? length - 1
   const markValue = kpi && shown[markAt] ? pointValue(shown[markAt]!, kpi.series) : null
-  const color = def === null ? 'var(--series-1)' : def.cost ? 'var(--ink-100)' : (def.color ?? colors[def.key]!)
+  // 线（净盈亏）用中性墨色：它是一条读数线，不是类别，也不用涨跌色（IntradayPnL 卡）；柱按序列配色，成本柱灰。
+  const color =
+    def === null
+      ? 'var(--ink-100)'
+      : def.cost || (def.kind === 'line' && def.color === undefined)
+        ? 'var(--ink-100)'
+        : (def.color ?? colors[def.key]!)
   const recon = reconcile ? reconcileWindow(points, window, reconcile, reconcile.openingEquity) : null
   // 明细表最新的在最上面。
   const rows = shown.map((point, i) => ({ point, i })).reverse()
@@ -217,16 +223,17 @@ export function SeriesExplorer({
     <div className={cn('k-sx', className)} data-slot="series-explorer" data-range={rangeKey}>
       {recon && labels.reconcile && reconcile && (
         <div className="k-sx-recon" data-slot="series-reconcile" data-state={recon.diff === 0 ? 'ok' : 'warn'}>
-          <span className="k-sx-recon-lcd" data-slot="series-reconcile-lcd">
+          <span className="k-sx-recon-line" data-slot="series-reconcile-lcd">
             <small>{labels.reconcile.open}</small>
-            {reconcile.format(recon.open)}
+            <ChartValue text={reconcile.format(recon.open)} unit={labels.reconcile.unit} />
             <em aria-hidden="true">→</em>
             <small>{labels.reconcile.close}</small>
-            {reconcile.format(recon.close)}
-          </span>
-          <span className="k-sx-recon-diff" data-slot="series-reconcile-diff">
-            <small>{labels.reconcile.diff}</small>
-            {reconcile.format(recon.diff)}
+            <ChartValue text={reconcile.format(recon.close)} unit={labels.reconcile.unit} />
+            <em aria-hidden="true">·</em>
+            <span className="k-sx-recon-diff" data-slot="series-reconcile-diff">
+              <small>{labels.reconcile.diff}</small>
+              <ChartValue text={reconcile.format(recon.diff)} unit={labels.reconcile.unit} />
+            </span>
           </span>
           <span className="k-sx-recon-state">
             <Led
@@ -254,7 +261,7 @@ export function SeriesExplorer({
               series={spark}
               threshold={item.limit}
               trendTone={item.lowerIsBetter ? 'neutral' : 'series'}
-              delta={ratio === null ? '—' : formatChange(ratio)}
+              delta={ratio === null ? undefined : formatChange(ratio)}
               deltaTone={itemDef?.cost || ratio === null || ratio === 0 ? 'muted' : ratio > 0 ? 'up' : 'down'}
               seriesLabel={labels.spark(item.label)}
               expanded={metric === item.key}
@@ -267,6 +274,9 @@ export function SeriesExplorer({
 
       {kpi !== null && (
         <div className="k-sx-panel" data-slot="series-panel" data-metric={kpi.key} onKeyDown={panelKey}>
+          <div className="k-sx-title" data-slot="series-title" aria-hidden="true">
+            {labels.chart}
+          </div>
           <div className="k-sx-bar">
             <div
               className="k-sx-tabs"
@@ -292,21 +302,27 @@ export function SeriesExplorer({
                 </button>
               ))}
             </div>
-            <ToggleGroup
-              variant="sm"
-              aria-label={labels.ranges}
-              value={dragged !== null && dragged.range === rangeKey ? null : rangeKey}
-              onValueChange={(next) => {
-                setRangeKey(next)
-                setDragged(null)
-              }}
-            >
-              {ranges.map((item) => (
-                <ToggleGroupItem key={item.key} value={item.key}>
-                  {item.label}
-                </ToggleGroupItem>
-              ))}
-            </ToggleGroup>
+            <div className="k-sx-seg" role="group" aria-label={labels.ranges}>
+              {ranges.map((item) => {
+                const on = !(dragged !== null && dragged.range === rangeKey) && item.key === rangeKey
+                return (
+                  <button
+                    key={item.key}
+                    type="button"
+                    className="k-sx-seg-item"
+                    data-slot="series-range"
+                    aria-pressed={on}
+                    onClick={() => {
+                      if (on) return
+                      setRangeKey(item.key)
+                      setDragged(null)
+                    }}
+                  >
+                    {item.label}
+                  </button>
+                )
+              })}
+            </div>
             <label className="k-sx-compare">
               <Switch
                 checked={comparing}
