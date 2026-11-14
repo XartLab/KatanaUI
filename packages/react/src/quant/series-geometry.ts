@@ -29,7 +29,7 @@ const niceNum = (range: number, round: boolean): number => {
   return nice * 10 ** exp
 }
 
-/** 把 [lo, hi] 扩成整齐步长的区间，并给出刻度（Heckbert 的 nice numbers）。lo === hi 时上下各留 1。 */
+/** 把 [lo, hi] 扩成整齐步长的区间，并给出刻度（Heckbert 的 nice numbers：步长取 (hi-lo)/(count-1) 就近的 1、2、5×10ⁿ；先把 range 取整再除会让步长偏大一档，区间被撑得对称而空一半）。lo === hi 时上下各留 1。 */
 export function niceTicks(
   lo: number,
   hi: number,
@@ -39,7 +39,7 @@ export function niceTicks(
     lo = lo - 1
     hi = hi + 1
   }
-  const step = niceNum(niceNum(hi - lo, false) / Math.max(1, count - 1), true)
+  const step = niceNum((hi - lo) / Math.max(1, count - 1), true)
   const from = Math.floor(lo / step) * step
   const to = Math.ceil(hi / step) * step
   const ticks: number[] = []

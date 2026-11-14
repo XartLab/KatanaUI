@@ -2319,7 +2319,7 @@ export const PAGES: readonly DocPage[] = [
     composition: 'useScrubber\n  scrubKey（键位表，纯函数）\n  scrubIndexAt（横坐标到格号，纯函数）',
     keys: [
       ['← →', '选中格前后一格；没选中时先落到最新一格'],
-      ['Shift + ← →', '一次三格（待定：没有出处）'],
+      ['Shift + ← →', '一次三格（Arc Revenue explorer 页面写明 Shift+arrow 走三个月，2026-11-14 读）'],
       ['Home / End', '第一格 / 最后一格'],
       ['Esc', '清掉选中'],
     ],
@@ -2407,6 +2407,12 @@ export const PAGES: readonly DocPage[] = [
             desc: '柱上与读数里的数怎么写：增减柱传这一步的值，总计柱传累计，纵轴刻度也走它（当作总计）。正负号与单位由调用方定。',
           },
           { name: 'formatGap', type: '(gap: number) => string', desc: '总计柱对不上时读数里补的那句；不给就不提。' },
+          {
+            name: 'zeroBaseline',
+            type: 'boolean',
+            default: 'false',
+            desc: '纵轴从 0 起、总计柱从 0 画。默认不从 0 起：纵轴取累计值的最低到最高再加 10% 余量（待定），总计柱是从轴底起的截断柱，期初是大数时增减才看得清。',
+          },
           { name: 'height', type: 'number', default: '200', desc: '图高（px）。' },
         ],
       },

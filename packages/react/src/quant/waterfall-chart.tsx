@@ -29,15 +29,27 @@ export type WaterfallChartProps = {
   formatValue: (value: number, bar: WaterfallBar) => string
   /** 总计柱与前面累计对不上时，读数里补的那句（拿到差额）；不给就不提。 */
   formatGap?: (gap: number) => string
+  /** 纵轴从 0 起、总计柱从 0 画（默认 false：纵轴取数据范围加余量，总计柱是从轴底起的截断柱，增减看得清）。 */
+  zeroBaseline?: boolean
   height?: number
   className?: string
 }
 
-export function WaterfallChart({ steps, label, formatValue, formatGap, height = 200, className }: WaterfallChartProps) {
+export function WaterfallChart({
+  steps,
+  label,
+  formatValue,
+  formatGap,
+  zeroBaseline = false,
+  height = 200,
+  className,
+}: WaterfallChartProps) {
   const bars = waterfallBars(steps)
   const scrub = useScrubber({ count: bars.length, mode: 'band' })
-  const plot = makePlot(bars.length, waterfallExtent(bars), { height, band: true, padTop: 16 })
+  const plot = makePlot(bars.length, waterfallExtent(bars, zeroBaseline), { height, band: true, padTop: 16 })
   const barWidth = plot.step * BAR_SHARE
+  const [floor] = plot.domain
+  const hasZero = plot.domain[0] <= 0 && plot.domain[1] >= 0
   const active = scrub.index === null ? null : bars[scrub.index]!
   const text = (bar: WaterfallBar) => formatValue(bar.kind === 'total' ? bar.end : bar.gap, bar)
   const readout = (bar: WaterfallBar) =>
@@ -50,7 +62,7 @@ export function WaterfallChart({ steps, label, formatValue, formatGap, height = 
           {plot.ticks.map((tick) => (
             <line key={tick.value} className="k-plot-grid" x1={0} x2={PLOT_W} y1={tick.y} y2={tick.y} />
           ))}
-          <line className="k-wf-zero" x1={0} x2={PLOT_W} y1={plot.yAt(0)} y2={plot.yAt(0)} />
+          {hasZero ? <line className="k-wf-zero" x1={0} x2={PLOT_W} y1={plot.yAt(0)} y2={plot.yAt(0)} /> : null}
           {bars.slice(1).map((bar, i) => {
             const prev = bars[i]!
             const y = plot.yAt(prev.end)
@@ -66,8 +78,9 @@ export function WaterfallChart({ steps, label, formatValue, formatGap, height = 
             )
           })}
           {bars.map((bar, i) => {
-            const top = Math.min(plot.yAt(bar.from), plot.yAt(bar.to))
-            const bottom = Math.max(plot.yAt(bar.from), plot.yAt(bar.to))
+            const from = bar.kind === 'total' && !zeroBaseline ? floor : bar.from
+            const top = Math.min(plot.yAt(from), plot.yAt(bar.to))
+            const bottom = Math.max(plot.yAt(from), plot.yAt(bar.to))
             return (
               <rect
                 key={bar.key}
@@ -75,6 +88,7 @@ export function WaterfallChart({ steps, label, formatValue, formatGap, height = 
                 data-slot="waterfall-bar"
                 data-key={bar.key}
                 data-direction={bar.direction}
+                data-truncated={bar.kind === 'total' && !zeroBaseline ? 'true' : undefined}
                 data-gap={bar.kind === 'total' && bar.gap !== 0 ? 'true' : undefined}
                 data-active={scrub.index === i ? 'true' : undefined}
                 x={plot.xAt(i) - barWidth / 2}
@@ -86,7 +100,7 @@ export function WaterfallChart({ steps, label, formatValue, formatGap, height = 
           })}
         </svg>
         {plot.ticks.map((tick) => (
-          <span key={tick.value} className="k-plot-ytick" style={{ top: tick.y }}>
+          <span key={tick.value} className="k-plot-ytick k-wf-ytick" style={{ top: tick.y }}>
             {formatValue(tick.value, tickBar(tick.value))}
           </span>
         ))}
@@ -95,7 +109,10 @@ export function WaterfallChart({ steps, label, formatValue, formatGap, height = 
             key={bar.key}
             className="k-wf-value"
             data-direction={bar.direction}
-            style={{ left: pct(plot.xAt(i)), top: Math.min(plot.yAt(bar.from), plot.yAt(bar.to)) }}
+            style={{
+              left: pct(plot.xAt(i)),
+              top: Math.min(plot.yAt(bar.kind === 'total' && !zeroBaseline ? floor : bar.from), plot.yAt(bar.to)),
+            }}
           >
             {text(bar)}
           </span>

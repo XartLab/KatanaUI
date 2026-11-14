@@ -6189,6 +6189,7 @@ button.k-quote-card.is-link:focus-visible {
 }
 
 .k-wf-plot {
+  margin-left: var(--k-wf-gutter, 56px);
   touch-action: pan-y;
   position: relative;
 }
@@ -6260,7 +6261,15 @@ button.k-quote-card.is-link:focus-visible {
   color: var(--pnl-down);
 }
 
+.k-wf-ytick {
+  padding-right: 8px;
+  left: auto;
+  right: 100%;
+  transform: translateY(-50%);
+}
+
 .k-wf-labels {
+  margin-left: var(--k-wf-gutter, 56px);
   display: flex;
 }
 
@@ -7493,6 +7502,7 @@ button.k-sm-head:focus-visible {
   --k-in-y: initial;
   --k-json-level: initial;
   --k-tree-level: initial;
+  --k-wf-gutter: initial;
   --radix-accordion-content-height: initial;
   --radix-collapsible-content-height: initial;
   --radix-collapsible-content-width: initial;

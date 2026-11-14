@@ -39,6 +39,6 @@ useScrubber
 ## Keyboard
 
 - `← →`：选中格前后一格；没选中时先落到最新一格
-- `Shift + ← →`：一次三格（待定：没有出处）
+- `Shift + ← →`：一次三格（Arc Revenue explorer 页面写明 Shift+arrow 走三个月，2026-11-14 读）
 - `Home / End`：第一格 / 最后一格
 - `Esc`：清掉选中

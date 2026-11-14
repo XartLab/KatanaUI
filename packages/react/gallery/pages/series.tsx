@@ -117,6 +117,16 @@ export function WaterfallChartDemo() {
           />
         </div>
       </Row>
+      <Row name="从 0 起">
+        <div className="gal-wide" data-gallery-waterfall="zero" style={{ maxWidth: 560 }}>
+          <WaterfallChart
+            steps={BRIDGE}
+            zeroBaseline
+            label="示例盈亏桥：纵轴从 0 起"
+            formatValue={(v, bar) => (bar.kind === 'total' ? v.toLocaleString('en-US') : money(v))}
+          />
+        </div>
+      </Row>
       <p className="gal-note">{DEMO_NOTE}总计柱与前面累计对不上时画虚线框、读数写差额，不替它抹平。</p>
     </>
   )

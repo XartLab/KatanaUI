@@ -167,6 +167,8 @@
 }
 .k-wf-plot {
   position: relative;
+  /* 纵轴刻度字放在绘图区左侧的留白里（右对齐、贴着绘图区），不压到柱子上。 */
+  margin-left: var(--k-wf-gutter, 56px);
   touch-action: pan-y;
 }
 .k-wf-plot:focus-visible {
@@ -224,8 +226,15 @@
 .k-wf-value[data-direction='down'] {
   color: var(--pnl-down);
 }
+.k-wf-ytick {
+  right: 100%;
+  left: auto;
+  padding-right: 8px;
+  transform: translateY(-50%);
+}
 .k-wf-labels {
   display: flex;
+  margin-left: var(--k-wf-gutter, 56px);
 }
 .k-wf-labels > span {
   flex: 1 1 0;

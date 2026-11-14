@@ -58,13 +58,28 @@ export function waterfallBars(steps: readonly WaterfallStep[]): WaterfallBar[] {
   })
 }
 
-/** 画布要包住的数值范围：所有柱的两端，加上 0（总计柱从 0 起）。 */
-export function waterfallExtent(bars: readonly WaterfallBar[]): readonly [number, number] {
-  let lo = 0
-  let hi = 0
+/** 默认画法下纵轴上下各留的余量占数据跨度的比例：0.1 是取个让柱顶数字与轴底有地方放的值（待定：没有出处，看过几组数据再调）。 */
+export const WATERFALL_PAD = 0.1
+
+/**
+ * 画布要包住的数值范围。
+ * 默认（zeroBaseline 为 false）：所有累计值（每一步的两端）的最低到最高，上下各加 WATERFALL_PAD 的余量，不强行包 0；
+ * 总计柱画成从轴底起的截断柱。照常见的盈亏桥（Excel / Power BI 的瀑布图、财经媒体的 EBITDA 桥）：期初是个大数时，从 0 起会把增减压成看不见的细条。
+ * zeroBaseline 为 true：包住 0，总计柱从 0 起。
+ */
+export function waterfallExtent(bars: readonly WaterfallBar[], zeroBaseline = false): readonly [number, number] {
+  let lo = zeroBaseline ? 0 : Infinity
+  let hi = zeroBaseline ? 0 : -Infinity
   for (const bar of bars) {
-    lo = Math.min(lo, bar.from, bar.to)
-    hi = Math.max(hi, bar.from, bar.to)
+    // 总计柱的 from 是 0（只在 zeroBaseline 下才算它的起点）；不从 0 起时它只贡献 to。
+    const ends = bar.kind === 'total' && !zeroBaseline ? [bar.to] : [bar.from, bar.to]
+    for (const value of ends) {
+      lo = Math.min(lo, value)
+      hi = Math.max(hi, value)
+    }
   }
-  return [lo, hi]
+  if (lo > hi) return [0, 1]
+  if (zeroBaseline) return [lo, hi]
+  const pad = (hi - lo) * WATERFALL_PAD
+  return [lo - pad, hi + pad]
 }

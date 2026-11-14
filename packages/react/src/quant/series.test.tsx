@@ -21,7 +21,9 @@ describe('序列几何', () => {
     expect(step).toBe(20)
     expect(domain).toEqual([0, 100])
     expect(ticks).toEqual([0, 20, 40, 60, 80, 100])
-    expect(niceTicks(-0.12, 0.31, 4).ticks).toEqual([-0.2, 0, 0.2, 0.4])
+    expect(niceTicks(-0.12, 0.31, 4).ticks).toEqual([-0.2, -0.1, 0, 0.1, 0.2, 0.3, 0.4])
+    // 数据 -800 ~ 4300：区间贴着数据，不撑成对称的 ±5000。
+    expect(niceTicks(-800, 4300, 4).domain).toEqual([-2000, 6000])
   })
 
   it('一个值也有区间：上下各留 1', () => {
@@ -154,14 +156,19 @@ describe('瀑布累加', () => {
     expect(off[4]!.to).toBe(1230)
   })
 
-  it('范围包住所有柱的两端和 0；一步为 0 是 flat', () => {
-    expect(waterfallExtent(waterfallBars(steps))).toEqual([0, 1250])
+  it('默认范围取累计值的最低到最高加余量，不含 0；zeroBaseline 包住 0', () => {
+    const [lo, hi] = waterfallExtent(waterfallBars(steps))
+    // 累计值：1000、1250、1210、1200 → [1000, 1250]，各加 10% 跨度。
+    expect(lo).toBeCloseTo(975, 6)
+    expect(hi).toBeCloseTo(1275, 6)
+    expect(waterfallExtent(waterfallBars(steps), true)).toEqual([0, 1250])
     expect(
       waterfallExtent(
         waterfallBars([
           { key: 'a', label: 'a', value: -5 },
           { key: 'b', label: 'b', value: -5 },
         ]),
+        true,
       ),
     ).toEqual([-10, 0])
     expect(waterfallBars([{ key: 'a', label: 'a', value: 0 }])[0]!.direction).toBe('flat')
@@ -178,8 +185,9 @@ describe('瀑布累加', () => {
     )
     expect(html.match(/data-slot="waterfall-bar"/g)).toHaveLength(5)
     expect(html).toContain('data-key="fee" data-direction="down"')
-    expect(html).toContain('data-key="end" data-direction="total" data-gap="true"')
+    expect(html).toContain('data-key="end" data-direction="total" data-truncated="true" data-gap="true"')
     expect(html).toContain('<li>期末  1230  差 30</li>')
+    expect(html).toContain('data-key="open" data-direction="total" data-truncated="true"')
   })
 })
 

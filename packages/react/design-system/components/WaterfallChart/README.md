@@ -14,6 +14,7 @@
 | `label` | `string` | — | 整张图的读屏名（必填）。 |
 | `formatValue` | `(value: number, bar: WaterfallBar) => string` | — | 柱上与读数里的数怎么写：增减柱传这一步的值，总计柱传累计，纵轴刻度也走它（当作总计）。正负号与单位由调用方定。 |
 | `formatGap` | `(gap: number) => string` | — | 总计柱对不上时读数里补的那句；不给就不提。 |
+| `zeroBaseline` | `boolean` | `false` | 纵轴从 0 起、总计柱从 0 画。默认不从 0 起：纵轴取累计值的最低到最高再加 10% 余量（待定），总计柱是从轴底起的截断柱，期初是大数时增减才看得清。 |
 | `height` | `number` | `200` | 图高（px）。 |
 
 ## States

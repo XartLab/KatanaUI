@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // 序列图共用的扫读：指针在图上移动，或键盘走，选中一格。功能参照 Arc 的 Revenue explorer 的 hover scrubber（uiarc.dev/components/blocks/revenue-explorer，
 // 2026-11-14 读，只取功能），键位照 #1917 定的：←→ 一格，Shift+←→ 三格，Home / End 到头尾，Esc 清掉；实现原创。
-// 一格走几格的 3：来自票里的定的数（待定：没有出处，等有用户反馈再调）。没选中时按 ←→ 先落到最新一格（图表的习惯是从右边最新处读起）。
+// Shift 一次走 3 格：Arc 的 Revenue explorer 页面写明 Shift+arrow 一次走三个月（2026-11-14 读自 uiarc.dev）。没选中时按 ←→ 先落到最新一格（图表的习惯是从右边最新处读起）。
 import { useState, type KeyboardEvent, type PointerEvent } from 'react'
 
 export const SCRUB_BIG_STEP = 3
