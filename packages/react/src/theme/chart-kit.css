@@ -163,6 +163,9 @@ button.k-spark-tile {
 button.k-spark-tile:focus-visible {
   outline: 1px solid var(--focus-ring);
 }
+.k-spark-tile[data-expanded='true'] {
+  border-color: var(--chart-accent, var(--signal-orange));
+}
 .k-spark-tile[data-near='true'] {
   border-color: var(--chart-accent-dim, var(--signal-orange-dim));
   animation: k-spark-pulse var(--dur-snappy) var(--ease-snappy) 1;

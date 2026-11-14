@@ -7,6 +7,7 @@ import {
   chartExtent,
   previousWindow,
   rangeWindow,
+  reconcileWindow,
   reduceWindow,
   stackPoint,
   type SeriesPoint,
@@ -79,17 +80,48 @@ describe('堆叠', () => {
   })
 })
 
+describe('对账', () => {
+  const ledger: SeriesPoint[] = [
+    { at: 1, values: { net: 100, eq: 1100 } },
+    { at: 2, values: { net: -30, eq: 1070 } },
+    { at: 3, values: { net: 50, eq: 1620, cash: 500 } },
+  ]
+  const keys = { net: 'net', equity: 'eq', cashflow: 'cash' }
+
+  it('期末 − 期初 = Σ净盈亏 + 出入金：对得上差额是 0；窗口从第一个点起用期初权益', () => {
+    expect(reconcileWindow(ledger, [0, 3], keys, 1000)).toEqual({
+      open: 1000,
+      close: 1620,
+      net: 120,
+      cashflow: 500,
+      diff: 0,
+    })
+    // 窗口 [1, 3)：期初是第一个点的权益 1100。
+    expect(reconcileWindow(ledger, [1, 3], keys, 1000)!.diff).toBe(0)
+  })
+
+  it('没记的入金让差额不是 0；没有出入金序列就当 0', () => {
+    expect(reconcileWindow(ledger, [0, 3], { net: 'net', equity: 'eq' }, 1000)!.diff).toBe(500)
+    expect(reconcileWindow(ledger, [2, 2], keys, 1000)).toBeNull()
+  })
+})
+
 describe('SeriesExplorer 渲染', () => {
   const labels = {
     chart: '图',
     ranges: '区间',
-    series: '序列',
+    metrics: '指标',
     compare: '对比上一期',
     previous: '上一期',
     table: '明细',
     time: '月份',
     empty: '没有数据',
+    spark: (metric: string) => `${metric}走势`,
+    limit: '限额',
+    actions: { group: '图工具', table: '表格视图', exportCsv: '导出', fullscreen: '全屏' },
     brush: { start: '起', end: '止', window: '窗' },
+    reconcile: { open: '期初', close: '期末', diff: '差额', ok: '一致', warn: '有差' },
+    source: '来源 / 测试',
   }
   const render = (extra: Partial<Parameters<typeof SeriesExplorer>[0]> = {}) =>
     renderToStaticMarkup(
@@ -97,7 +129,7 @@ describe('SeriesExplorer 渲染', () => {
         points={points}
         series={[
           { key: 'a', label: '甲', kind: 'bar' },
-          { key: 'b', label: '乙', kind: 'bar' },
+          { key: 'b', label: '乙', kind: 'bar', cost: true },
           { key: 'eq', label: '权益', kind: 'line' },
         ]}
         ranges={[
@@ -106,7 +138,7 @@ describe('SeriesExplorer 渲染', () => {
         ]}
         kpis={[
           { key: 'a', label: '甲合计', series: 'a', reduce: 'sum', format: String },
-          { key: 'net', label: '净', series: 'net', reduce: 'sum', format: String },
+          { key: 'eq', label: '权益', series: 'eq', reduce: 'last', format: String, limit: 900 },
         ]}
         columns={[{ key: 'a', label: '甲', text: (p) => String(p.values.a) }]}
         labels={labels}
@@ -117,29 +149,42 @@ describe('SeriesExplorer 渲染', () => {
       />,
     )
 
-  it('默认取最后一个区间（全部）：八个月的明细、每个月两根柱段、一条权益线', () => {
+  it('默认展开第一个指标（甲：柱）：八个月八根柱，用 series-1 色；瓦片带 aria-expanded，页签选中', () => {
     const html = render()
     expect(html).toContain('data-range="all"')
-    expect(html.match(/<tr/g)).toHaveLength(8 + 1)
-    expect(html.match(/data-slot="series-bar"/g)).toHaveLength(16)
-    expect(html.match(/data-slot="series-line"/g)).toHaveLength(1)
+    expect(html.match(/data-slot="series-bar"/g)).toHaveLength(8)
+    expect(html).toContain('fill:var(--series-1)')
+    expect(html).toContain('aria-expanded="true"')
+    expect(html).toContain('role="tab"')
+    expect(html).toContain('role="slider"')
     expect(html).not.toContain('data-slot="series-compare"')
+    expect(html).toContain('来源 / 测试')
   })
 
-  it('指定区间：3M 只有三个月；明细表最新的在最上面', () => {
-    const html = render({ defaultRange: '3m' })
-    expect(html.match(/<tr/g)).toHaveLength(3 + 1)
-    const body = html.slice(html.indexOf('<tbody>'))
-    expect(body.indexOf('2026-08')).toBeLessThan(body.indexOf('2026-07'))
+  it('线类指标：一条线、末点、限额红虚线；收起时没有面板', () => {
+    const html = render({ defaultMetric: 'eq' })
+    expect(html.match(/data-slot="series-line"/g)).toHaveLength(1)
+    expect(html).toContain('data-slot="series-limit"')
+    expect(html).toContain('data-slot="end-marker"')
+    const closed = render({ defaultMetric: null })
+    expect(closed).not.toContain('data-slot="series-panel"')
+    expect(closed).toContain('aria-expanded="false"')
   })
 
-  it('KPI：值写好格式，变化相对上一期；上一期不够长（全部）写破折号', () => {
-    const three = render({ defaultRange: '3m' })
+  it('成本类序列的柱用 ink-100，不着色', () => {
+    const html = render({
+      kpis: [{ key: 'b', label: '乙', series: 'b', reduce: 'sum', format: String }],
+    })
+    expect(html).toContain('fill:var(--ink-100)')
+  })
+
+  it('指定区间：3M 的瓦片值与变化相对上一期；上一期不够长（全部）写破折号', () => {
+    const three = render({ defaultRange: '3m', defaultMetric: null })
     // 甲：最近三月 60+70+80 = 210，前三月 30+40+50 = 120，涨 75%。
     expect(three).toContain('data-key="a"')
     expect(three).toContain('data-tone="up">75%<')
-    const all = render()
-    expect(all).toMatch(/data-slot="series-kpi-change" data-tone="flat">—</)
+    const all = render({ defaultMetric: null })
+    expect(all).toMatch(/k-spark-tile-delta" data-tone="muted">—</)
   })
 
   it('没有点：只写空态', () => {

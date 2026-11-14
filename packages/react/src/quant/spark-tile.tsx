@@ -39,6 +39,10 @@ export type SparkTileProps = {
   trendTone?: 'series' | 'neutral'
   /** 点击瓦片（打开该指标的完整图）；给了就渲染成按钮。 */
   onOpen?: () => void
+  /** 这张瓦片展开着一个图面板（aria-expanded）：边框转强调色。 */
+  expanded?: boolean
+  /** 写在根上的 data-key，给父级的测试与联动认哪一张。 */
+  dataKey?: string
   /** 迷你线的读屏名（整句）。 */
   seriesLabel: string
   className?: string
@@ -58,6 +62,8 @@ export function SparkTile({
   near = false,
   trendTone = 'series',
   onOpen,
+  expanded,
+  dataKey,
   seriesLabel,
   className,
 }: SparkTileProps) {
@@ -76,6 +82,9 @@ export function SparkTile({
       className={cn('k-spark-tile', className)}
       data-slot="spark-tile"
       data-near={near ? 'true' : undefined}
+      data-key={dataKey}
+      data-expanded={expanded ? 'true' : undefined}
+      aria-expanded={onOpen === undefined ? undefined : (expanded ?? false)}
       type={onOpen === undefined ? undefined : 'button'}
       onClick={onOpen}
     >

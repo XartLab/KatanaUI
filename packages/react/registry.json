@@ -2153,13 +2153,15 @@
       "name": "series-explorer",
       "type": "registry:component",
       "title": "Series Explorer",
-      "description": "盈亏探索积木：区间按钮（3M / 6M / 12M / 全部）、KPI 卡（值加相对上一期的变化，数字滚动）、序列开关、「对比上一期」开关、堆叠柱加净盈亏线、下面的刷选条、明细表。功能参照 Arc 的 Revenue explorer。",
+      "description": "盈亏探索积木：一排 KPI 瓦片（SparkTile），点一张展开成下面的图面板；面板顶上是指标页签、区间切换、对比上一期、右上三件，图是该指标的序列（柱或线），下面是刷选条；顶行可以对账（期初到期末、差额、灯加词），页脚来源行。交互参照 Arc 的 Metric explorer，样子与内容照设计稿 IntradayPnL、PnLLedger、EquityCurve 三张卡。",
       "registryDependencies": [
         "@katana/brush-chart",
         "@katana/brush-model",
+        "@katana/chart-kit",
         "@katana/cn",
-        "@katana/rolling-text",
+        "@katana/led",
         "@katana/series-geometry",
+        "@katana/spark-tile",
         "@katana/switch",
         "@katana/toggle-group",
         "@katana/use-scrubber"

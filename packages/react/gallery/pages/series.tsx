@@ -447,73 +447,104 @@ export function SmallMultiplesDemo() {
 
 /** 演示用的 24 个月的盈亏：2025-01 到 2026-12，一月一个点，闭式公式生成（已实现、手续费、资金费、净盈亏）。 */
 const SX_MONTHS = 24
-const SX_POINTS: SeriesPoint[] = Array.from({ length: SX_MONTHS }, (_, m) => {
-  const realized = Math.round(2400 * Math.sin(m / 2.5) + 400 + 60 * m)
-  const fee = -(120 + 10 * (m % 5))
-  const funding = m % 3 === 0 ? -60 : 45
-  const net = realized + fee + funding
-  return { at: Date.UTC(2025, m, 1), values: { realized, fee, funding, net } }
-})
+const SX_OPENING = 50_000
+const sxPoints = (deposit: number): SeriesPoint[] => {
+  let equity = SX_OPENING
+  return Array.from({ length: SX_MONTHS }, (_, m) => {
+    const closed = m === 9
+    const realized = closed ? 0 : Math.round(2400 * Math.sin(m / 2.5) + 400 + 60 * m)
+    const fee = closed ? 0 : -(120 + 10 * (m % 5))
+    const funding = closed ? 0 : m % 3 === 0 ? -60 : 45
+    const net = realized + fee + funding
+    equity += net + (m === 18 ? deposit : 0)
+    return { at: Date.UTC(2025, m, 1), closed, values: { realized, fee, funding, net, equity } }
+  })
+}
+const SX_POINTS = sxPoints(0)
+const SX_POINTS_UNRECORDED = sxPoints(500)
 const signed = (value: number) => `${value > 0 ? '+' : ''}${value.toLocaleString('en-US')}`
 const monthText = (at: number) => new Date(at).toISOString().slice(0, 7)
+
+const SX_PROPS = {
+  series: [
+    { key: 'realized', label: '已实现', kind: 'bar' },
+    { key: 'fee', label: '费税', kind: 'bar', cost: true },
+    { key: 'funding', label: '资金费', kind: 'bar' },
+    { key: 'net', label: '净盈亏', kind: 'line' },
+  ],
+  ranges: [
+    { key: '3m', label: '3M', months: 3 },
+    { key: '6m', label: '6M', months: 6 },
+    { key: '12m', label: '12M', months: 12 },
+    { key: 'all', label: '全部', months: null },
+  ],
+  kpis: [
+    { key: 'net', label: '净盈亏', series: 'net', reduce: 'sum', format: signed, limit: -1500 },
+    { key: 'realized', label: '已实现', series: 'realized', reduce: 'sum', format: signed },
+    { key: 'fee', label: '费税', series: 'fee', reduce: 'sum', format: signed, lowerIsBetter: true },
+  ],
+  columns: [
+    {
+      key: 'realized',
+      label: '已实现',
+      text: (p: SeriesPoint) => signed(p.values.realized!),
+      tone: (p: SeriesPoint) => p.values.realized ?? null,
+    },
+    { key: 'fee', label: '费税', text: (p: SeriesPoint) => signed(p.values.fee!) },
+    {
+      key: 'funding',
+      label: '资金费',
+      text: (p: SeriesPoint) => signed(p.values.funding!),
+      tone: (p: SeriesPoint) => p.values.funding ?? null,
+    },
+    {
+      key: 'net',
+      label: '净盈亏',
+      text: (p: SeriesPoint) => signed(p.values.net!),
+      tone: (p: SeriesPoint) => p.values.net ?? null,
+    },
+  ],
+  labels: {
+    chart: '示例盈亏序列',
+    ranges: '区间',
+    metrics: '指标',
+    compare: '对比上一期',
+    previous: '上一期',
+    table: '示例盈亏明细',
+    time: '月份',
+    empty: '没有数据',
+    spark: (metric: string) => `${metric}走势（演示）`,
+    limit: '月亏损限额',
+    source: '来源 / 演示数据（固定种子合成）· 2026-12 收盘',
+    actions: { group: '图工具', table: '表格视图', exportCsv: '导出 CSV', fullscreen: '全屏' },
+    brush: { start: '窗口起点', end: '窗口终点', window: '窗口位置' },
+    reconcile: { open: '期初', close: '期末', diff: '差额', ok: '对账一致', warn: '对账有差' },
+  },
+  formatAt: monthText,
+  formatValue: (v: number) => v.toLocaleString('en-US'),
+  formatChange: (r: number) => `${r > 0 ? '+' : ''}${(r * 100).toFixed(1)}%`,
+  reconcile: {
+    net: 'net',
+    equity: 'equity',
+    openingEquity: SX_OPENING,
+    format: (v: number) => v.toLocaleString('en-US'),
+  },
+} as const
 
 export function SeriesExplorerDemo() {
   return (
     <>
-      <div className="gal-wide" data-gallery-explorer style={{ maxWidth: 760 }}>
-        <SeriesExplorer
-          points={SX_POINTS}
-          series={[
-            { key: 'realized', label: '已实现', kind: 'bar', color: 'var(--series-2)' },
-            { key: 'fee', label: '手续费', kind: 'bar', color: 'var(--series-5)' },
-            { key: 'funding', label: '资金费', kind: 'bar', color: 'var(--series-4)' },
-            { key: 'net', label: '净盈亏', kind: 'line', color: 'var(--series-1)' },
-          ]}
-          ranges={[
-            { key: '3m', label: '3M', months: 3 },
-            { key: '6m', label: '6M', months: 6 },
-            { key: '12m', label: '12M', months: 12 },
-            { key: 'all', label: '全部', months: null },
-          ]}
-          kpis={[
-            { key: 'realized', label: '已实现', series: 'realized', reduce: 'sum', format: signed },
-            { key: 'fee', label: '手续费', series: 'fee', reduce: 'sum', format: signed },
-            { key: 'net', label: '净盈亏', series: 'net', reduce: 'sum', format: signed },
-          ]}
-          columns={[
-            {
-              key: 'realized',
-              label: '已实现',
-              text: (p) => signed(p.values.realized!),
-              tone: (p) => p.values.realized ?? null,
-            },
-            { key: 'fee', label: '手续费', text: (p) => signed(p.values.fee!), tone: (p) => p.values.fee ?? null },
-            {
-              key: 'funding',
-              label: '资金费',
-              text: (p) => signed(p.values.funding!),
-              tone: (p) => p.values.funding ?? null,
-            },
-            { key: 'net', label: '净盈亏', text: (p) => signed(p.values.net!), tone: (p) => p.values.net ?? null },
-          ]}
-          labels={{
-            chart: '示例盈亏：按月堆叠柱加净盈亏线',
-            ranges: '区间',
-            series: '序列',
-            compare: '对比上一期',
-            previous: '上一期净盈亏',
-            table: '示例盈亏明细',
-            time: '月份',
-            empty: '没有数据',
-            brush: { start: '窗口起点', end: '窗口终点', window: '窗口位置' },
-          }}
-          formatAt={monthText}
-          formatValue={(v) => v.toLocaleString('en-US')}
-          formatChange={(r) => `${r > 0 ? '+' : ''}${(r * 100).toFixed(1)}%`}
-        />
+      <div className="gal-wide" data-gallery-explorer="ok" style={{ maxWidth: 760 }}>
+        <SeriesExplorer {...SX_PROPS} points={SX_POINTS} onExport={() => {}} />
       </div>
+      <Row name="对账对不上">
+        <div className="gal-wide" data-gallery-explorer="mismatch" style={{ maxWidth: 760 }}>
+          <SeriesExplorer {...SX_PROPS} points={SX_POINTS_UNRECORDED} defaultMetric={null} />
+        </div>
+      </Row>
       <p className="gal-note">
-        {DEMO_NOTE}按月 24 个点；KPI 的变化是相对紧挨在前面、一样长的上一期；全部区间前面没有上一期，写破折号。
+        {DEMO_NOTE}按月 24 个点（第 10 个月休市，画灰色竖带）；点瓦片展开图面板。第二个例子的第 19 个月有一笔没记的入金
+        500，窗口包含它时对账亮琥珀灯并写差额。
       </p>
     </>
   )

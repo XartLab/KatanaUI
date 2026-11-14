@@ -7,6 +7,8 @@ export type SeriesPoint = {
   at: number
   /** 每个序列在这一点的值，键是序列的 key；缺的当作没有。 */
   values: Readonly<Record<string, number>>
+  /** 休市（午休、夜盘间隙、节假日）：图上画 bg-100 竖带，时间轴不压缩（压缩会让斜率失真）。 */
+  closed?: boolean
 }
 
 export type SeriesDef = {
@@ -16,6 +18,8 @@ export type SeriesDef = {
   kind: 'bar' | 'line'
   /** 柱或线的颜色，CSS 颜色或设计 token 的变量；不给按下标取序列色（--series-1 到 --series-7 轮着用）。 */
   color?: string
+  /** 成本类（费税）：柱用 ink-100，不着色（成本不是亏损）。 */
+  cost?: boolean
 }
 
 export type RangeDef = {
@@ -33,6 +37,10 @@ export type KpiDef = {
   /** sum：区间内求和；last：区间最后一点；avg：区间内平均。 */
   reduce: 'sum' | 'last' | 'avg'
   format: (value: number) => string
+  /** 越低越好的指标：迷你线用 ink-300（SparkTile 的 trendTone）。 */
+  lowerIsBetter?: boolean
+  /** 限额线（数值）：图上画 signal-red 虚线，迷你线画琥珀虚线，纵轴把它包进来。 */
+  limit?: number
 }
 
 export type Window = readonly [start: number, end: number]
@@ -134,3 +142,24 @@ export function chartExtent(
 }
 
 export { valueOf as pointValue }
+
+export type Reconcile = { open: number; close: number; net: number; cashflow: number; diff: number }
+
+/**
+ * 对账（PnLLedger 顶行）：期末 − 期初 应等于 区间内净盈亏之和 + 出入金；差额 diff 不为 0 就是对不上。
+ * 期初是窗口前一个点的权益（窗口从第一个点起用 openingEquity）。权益、净盈亏、出入金是三个序列的键，权益不画在图上。
+ */
+export function reconcileWindow(
+  points: readonly SeriesPoint[],
+  window: Window,
+  keys: { net: string; equity: string; cashflow?: string },
+  openingEquity: number,
+): Reconcile | null {
+  if (window[1] <= window[0]) return null
+  const close = valueOf(points[window[1] - 1]!, keys.equity)
+  const open = window[0] === 0 ? openingEquity : valueOf(points[window[0] - 1]!, keys.equity)
+  if (close === null || open === null) return null
+  const net = reduceWindow(points, window, keys.net, 'sum') ?? 0
+  const cashflow = keys.cashflow === undefined ? 0 : (reduceWindow(points, window, keys.cashflow, 'sum') ?? 0)
+  return { open, close, net, cashflow, diff: close - open - net - cashflow }
+}

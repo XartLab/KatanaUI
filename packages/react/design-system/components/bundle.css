@@ -6151,6 +6151,10 @@ button.k-spark-tile:focus-visible {
   outline: 1px solid var(--focus-ring);
 }
 
+.k-spark-tile[data-expanded="true"] {
+  border-color: var(--chart-accent, var(--signal-orange));
+}
+
 .k-spark-tile[data-near="true"] {
   border-color: var(--chart-accent-dim, var(--signal-orange-dim));
   animation: k-spark-pulse var(--dur-snappy) var(--ease-snappy) 1;
@@ -7274,113 +7278,138 @@ button.k-sm-head:focus-visible {
 
 .k-sx-empty {
   color: var(--ink-300);
-  text-align: center;
   margin: 0;
-  padding: 24px;
-}
-
-.k-sx-bar {
-  flex-wrap: wrap;
-  justify-content: space-between;
-  align-items: center;
-  gap: 8px;
-  display: flex;
-}
-
-.k-sx-compare {
-  color: var(--ink-200);
-  font: var(--text-data) var(--font-sans);
-  align-items: center;
-  gap: 4px;
-  display: inline-flex;
 }
 
 .k-sx-kpis {
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: 8px;
   display: grid;
 }
 
-.k-sx-kpi {
-  border: 1px solid var(--line-100);
+.k-sx-recon {
+  background: var(--lcd-bg);
+  border: var(--hairline);
+  box-shadow: var(--recess);
+  font: var(--text-lcd) var(--chart-font-num, var(--font-lcd));
+  letter-spacing: .06em;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+  padding: 6px 10px;
+  display: flex;
+}
+
+.k-sx-recon small {
+  color: var(--ink-300);
+  font: var(--text-tag) var(--font-dot);
+  letter-spacing: 0;
+  margin-right: 6px;
+}
+
+.k-sx-recon em {
+  color: var(--ink-300);
+  margin: 0 8px;
+  font-style: normal;
+}
+
+.k-sx-recon-state {
+  font: var(--text-data) var(--font-sans);
+  letter-spacing: 0;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+  display: inline-flex;
+}
+
+.k-sx-recon[data-state="warn"] .k-sx-recon-diff {
+  color: var(--signal-amber);
+}
+
+.k-sx-panel {
+  border: var(--hairline);
   background: var(--bg-200);
-  border-radius: 4px;
+  animation: k-sx-open var(--dur-snappy) var(--ease-snappy) 1;
   flex-direction: column;
-  gap: 2px;
+  gap: 8px;
   padding: 8px 10px;
   display: flex;
 }
 
-.k-sx-kpi-label {
-  color: var(--ink-300);
+@keyframes k-sx-open {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
 }
 
-.k-sx-kpi-value {
-  color: var(--ink-100);
-  font: var(--text-title) var(--font-mono);
-}
-
-.k-sx-kpi-change {
-  color: var(--ink-300);
-  font: var(--text-data) var(--font-mono);
-}
-
-.k-sx-kpi-change[data-tone="up"] {
-  color: var(--pnl-up);
-}
-
-.k-sx-kpi-change[data-tone="down"] {
-  color: var(--pnl-down);
-}
-
-.k-sx-chips {
+.k-sx-bar {
   flex-wrap: wrap;
-  gap: 6px;
+  align-items: center;
+  gap: 10px;
   display: flex;
 }
 
-.k-sx-chip {
-  border: 1px solid var(--line-200);
-  height: 24px;
-  color: var(--ink-200);
+.k-sx-bar .k-ck-actions {
+  margin-left: auto;
+}
+
+.k-sx-tabs {
+  background: var(--bg-000);
+  box-shadow: var(--recess);
+  grid-auto-columns: minmax(64px, 1fr);
+  grid-auto-flow: column;
+  padding: 2px;
+  display: grid;
+  position: relative;
+}
+
+.k-sx-tab-ind {
+  width: calc((100% - 4px) / var(--k-n, 1));
+  transform: translateX(calc(var(--k-i, 0) * 100%));
+  background: var(--bg-400);
+  transition: transform var(--dur-snappy) var(--ease-snappy);
+  position: absolute;
+  top: 2px;
+  bottom: 2px;
+  left: 2px;
+}
+
+.k-sx-tab {
+  color: var(--ink-300);
   font: var(--text-data) var(--font-sans);
   cursor: pointer;
   background: none;
-  border-radius: 12px;
+  border: 0;
+  padding: 3px 10px;
+  position: relative;
+}
+
+.k-sx-tab[aria-selected="true"] {
+  color: var(--ink-100);
+}
+
+.k-sx-tab:focus-visible {
+  outline: 1px solid var(--focus-ring);
+  outline-offset: -1px;
+}
+
+.k-sx-compare {
+  color: var(--ink-200);
   align-items: center;
   gap: 6px;
-  padding: 0 8px;
   display: inline-flex;
 }
 
-.k-sx-chip > i {
-  border-radius: 2px;
-  width: 8px;
-  height: 8px;
-}
-
-.k-sx-chip[aria-pressed="false"] {
-  color: var(--ink-400);
-  text-decoration: line-through;
-}
-
-.k-sx-chip[aria-pressed="false"] > i {
-  opacity: .35;
-}
-
-.k-sx-chip:focus-visible {
-  outline: 2px solid var(--focus-ring);
-  outline-offset: 2px;
-}
-
 .k-sx-chart {
+  margin-left: var(--k-plot-gutter, 56px);
   touch-action: pan-y;
+  outline-offset: 2px;
   position: relative;
 }
 
 .k-sx-chart:focus-visible {
   outline: 1px solid var(--focus-ring);
-  outline-offset: 2px;
 }
 
 .k-sx-chart > svg {
@@ -7390,82 +7419,50 @@ button.k-sm-head:focus-visible {
   overflow: visible;
 }
 
-.k-sx-bar-rect {
-  transition: fill-opacity var(--dur-snappy) var(--ease-snappy);
+.k-sx-xaxis {
+  margin-left: var(--k-plot-gutter, 56px);
 }
 
-.k-sx-chart:has([data-active="true"]) .k-sx-bar-rect:not([data-active="true"]) {
-  fill-opacity: .5;
+.k-sx-closed {
+  fill: var(--bg-100);
 }
 
 .k-sx-line {
   fill: none;
   stroke-width: 2px;
   stroke-linejoin: round;
+  filter: var(--chart-line-glow, none);
+  transition: d var(--dur-snappy) var(--ease-snappy);
   vector-effect: non-scaling-stroke;
 }
 
 .k-sx-ghost {
   fill: none;
-  stroke: var(--ink-300);
-  stroke-width: 1.5px;
+  stroke: var(--chart-bench);
+  stroke-width: 1px;
+  stroke-dasharray: 4 3;
+  transition: d var(--dur-snappy) var(--ease-snappy);
+  vector-effect: non-scaling-stroke;
+}
+
+.k-sx-limit {
+  stroke: var(--signal-red);
+  stroke-width: 1px;
   stroke-dasharray: 4 3;
   vector-effect: non-scaling-stroke;
 }
 
-.k-sx-tip {
-  z-index: 1;
-  border: 1px solid var(--glass-edge);
-  background: var(--glass-bg);
-  min-width: 140px;
-  color: var(--ink-200);
-  pointer-events: none;
-  border-radius: 4px;
-  flex-direction: column;
-  gap: 2px;
-  padding: 6px 8px;
-  display: flex;
-  position: absolute;
-  top: 4px;
+.k-sx-bar-rect {
+  transition: fill-opacity var(--dur-snappy) var(--ease-snappy);
 }
 
-.k-sx-tip[data-side="right"] {
-  margin-left: 10px;
-}
-
-.k-sx-tip[data-side="left"] {
-  margin-left: -10px;
-  transform: translateX(-100%);
-}
-
-.k-sx-tip > strong {
-  color: var(--ink-100);
-  font: var(--text-data) var(--font-mono);
-}
-
-.k-sx-tip-row {
-  align-items: center;
-  gap: 6px;
-  display: flex;
-}
-
-.k-sx-tip-row > i {
-  border-radius: 2px;
-  width: 8px;
-  height: 8px;
-}
-
-.k-sx-tip-row > b {
-  color: var(--ink-100);
-  font: var(--text-data) var(--font-mono);
-  margin-left: auto;
-  padding-left: 12px;
+.k-sx-chart:has([data-active="true"]) .k-sx-bar-rect:not([data-active="true"]) {
+  fill-opacity: .45;
 }
 
 .k-sx-table {
-  border: 1px solid var(--line-100);
-  border-radius: 4px;
-  max-height: 240px;
+  border: var(--hairline);
+  max-height: 260px;
   overflow: auto;
 }
 
@@ -7476,31 +7473,38 @@ button.k-sm-head:focus-visible {
 .k-sx-table table {
   border-collapse: collapse;
   width: 100%;
+  font: var(--text-data) var(--font-mono);
 }
 
 .k-sx-table th, .k-sx-table td {
-  border-bottom: 1px solid var(--line-100);
-  font: var(--text-data) var(--font-mono);
+  border-bottom: var(--hairline);
   text-align: right;
-  white-space: nowrap;
-  padding: 4px 10px;
+  padding: 3px 8px;
 }
 
-.k-sx-table thead th {
-  background: var(--bg-200);
+.k-sx-table th:first-child, .k-sx-table thead th {
+  background: var(--bg-300);
   color: var(--ink-300);
-  font-family: var(--font-sans);
-  position: sticky;
-  top: 0;
+  font-weight: 400;
 }
 
 .k-sx-table th:first-child {
   text-align: left;
 }
 
-.k-sx-table tbody th {
-  color: var(--ink-200);
-  font-weight: 400;
+.k-sx-table thead th {
+  position: sticky;
+  top: 0;
+}
+
+.k-sx-table tr[data-active="true"] td, .k-sx-table tr[data-active="true"] th {
+  background: var(--ink-100);
+}
+
+@supports (color: color-mix(in lab, red, red)) {
+  .k-sx-table tr[data-active="true"] td, .k-sx-table tr[data-active="true"] th {
+    background: var(--ds-c-1sas9o0);
+  }
 }
 
 .k-sx-table td[data-tone="up"] {
@@ -7511,8 +7515,10 @@ button.k-sm-head:focus-visible {
   color: var(--pnl-down);
 }
 
-.k-sx-table tr[data-active="true"] > * {
-  background: var(--bg-400);
+.k-sx-source {
+  color: var(--ink-300);
+  font: var(--text-num-sm) var(--font-mono);
+  margin: 0;
 }
 
 @property --tw-translate-x {
@@ -7963,12 +7969,14 @@ button.k-sm-head:focus-visible {
   --chart-grid-color: initial;
   --chart-grid-dash: initial;
   --chart-line-glow: initial;
+  --k-i: initial;
   --k-in-dur: initial;
   --k-in-ease: initial;
   --k-in-scale: initial;
   --k-in-y: initial;
   --k-json-level: initial;
   --k-tree-level: initial;
+  --k-n: initial;
   --k-pin: initial;
   --k-plot-gutter: initial;
   --k-spark-h: initial;
