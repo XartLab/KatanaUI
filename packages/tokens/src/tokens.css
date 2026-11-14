@@ -52,7 +52,7 @@
   --div-neg-200: #a5464c;
   --div-neg-100: #4d2629;
   --div-pos-100: #1f3a30;
-  --div-pos-200: #3f7f66;
+  --div-pos-200: #418269;
   --poc: var(--signal-orange);
   --va: #1a1a1a;
   --trade-between: var(--signal-blue);
@@ -301,7 +301,7 @@
   --pnl-down-area: #69aa77;
   --div-neg-100: #1f3a30;
   --div-pos-100: #4d2629;
-  --div-neg-200: #3f7f66;
+  --div-neg-200: #418269;
   --div-pos-200: #a5464c;
 }
 :root[data-theme='console'][data-updown='cn'] {
