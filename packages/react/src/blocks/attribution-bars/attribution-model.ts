@@ -11,6 +11,8 @@ export type AttributionItem = {
   value: number
   /** fee：费用·税，永远单独一行放最底，不参与折叠。 */
   kind?: 'item' | 'fee'
+  /** 已平仓：写平仓说明（不含编号，例「601012 于 09-18 平仓」），这一行整行删除线、降墨色，下面一行脚注写这句。 */
+  closed?: string
   /** 悬停 tooltip 里多写的几行（持仓数、所属账户……），文字由调用方给。 */
   detail?: readonly { label: string; value: string }[]
 }
@@ -22,6 +24,7 @@ export type AttributionRow = {
   kind: 'item' | 'other' | 'fee'
   /** other 行：被折进去的项数。 */
   folded: number
+  closed: string | null
   detail: readonly { label: string; value: string }[]
 }
 
@@ -44,6 +47,7 @@ export function attributionRows(
     value: item.value,
     kind: 'item',
     folded: 0,
+    closed: item.closed ?? null,
     detail: item.detail ?? [],
   })
   const other: AttributionRow | null = fold
@@ -53,6 +57,7 @@ export function attributionRows(
         value: folded.reduce((sum, item) => sum + item.value, 0),
         kind: 'other',
         folded: folded.length,
+        closed: null,
         detail: [],
       }
     : null

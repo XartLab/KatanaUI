@@ -141,6 +141,11 @@ function collectItems() {
       'registry:component',
       codeIn('src/blocks/series-explorer').map((f) => `src/blocks/series-explorer/${f}`),
     )
+    add(
+      'attribution-bars',
+      'registry:component',
+      codeIn('src/blocks/attribution-bars').map((f) => `src/blocks/attribution-bars/${f}`),
+    )
     byFile('src/blocks', 'registry:component', (f) => isCode(f) && f !== 'index.ts')
   }
   return items

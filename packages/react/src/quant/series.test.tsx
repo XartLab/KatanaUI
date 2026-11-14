@@ -18,8 +18,6 @@ import { BrushChart } from './brush-chart'
 import { centerWindow, clampWindow, moveWindow, resizeWindow } from './brush-model'
 import { HorizonChart } from './horizon-chart'
 import { horizonBands, horizonMax } from './horizon-model'
-import { AttributionBars } from './attribution-bars'
-import { attributionBar, attributionRows, attributionScale } from './attribution-model'
 import { areaPath, extent, linePath, makePlot, niceTicks, PLOT_W } from './series-geometry'
 
 // #1917：时间序列与盈亏的件的几何与结构（纯函数）。拖拽、悬停、键盘与画出来的像素在 e2e/ui-gallery.spec.ts 里用真浏览器验。
@@ -133,63 +131,6 @@ describe('BrushChart', () => {
     expect(html).toContain('aria-label="位置"')
     expect(html).toContain('aria-valuetext="d10 – d19"')
     expect(html).toContain('left:33.33333333333333%;width:33.33333333333333%')
-  })
-})
-
-describe('盈亏归因', () => {
-  const items = [
-    { key: 'a', label: 'A', value: 100 },
-    { key: 'b', label: 'B', value: -300 },
-    { key: 'c', label: 'C', value: 50 },
-    { key: 'd', label: 'D', value: -20 },
-    { key: 'fee', label: '费用', value: -10, kind: 'fee' as const },
-  ]
-
-  it('正负分组、组内按 |贡献| 降序，费用·税永远在最底', () => {
-    expect(attributionRows(items).map((row) => row.key)).toEqual(['a', 'c', 'b', 'd', 'fee'])
-    expect(attributionRows(items).at(-1)!.kind).toBe('fee')
-  })
-
-  it('超过 maxItems 折进「其他」：数是净和，放在自己符号那一组的最后，费用不参与折叠', () => {
-    const rows = attributionRows(items, 3)
-    // 保留 |值| 最大的两项（B、A），其余折成其他：50 - 20 = 30，放在正组最后。
-    expect(rows.map((row) => row.key)).toEqual(['a', '__other', 'b', 'fee'])
-    const other = rows.find((row) => row.kind === 'other')!
-    expect(other.value).toBe(30)
-    expect(other.folded).toBe(2)
-    expect(attributionRows(items, 4).some((row) => row.kind === 'other')).toBe(false)
-  })
-
-  it('刻度对称：最大 |值| 向上取到一位有效数字；条从零轴往右（正）或往左（负）', () => {
-    expect(attributionScale(attributionRows([{ key: 'a', label: 'a', value: 73_920 }]))).toBe(80_000)
-    expect(attributionScale([])).toBe(1)
-    expect(attributionBar(50, 100)).toEqual({ left: 0.5, width: 0.25 })
-    expect(attributionBar(-50, 100)).toEqual({ left: 0.25, width: 0.25 })
-    expect(attributionBar(500, 100).width).toBe(0.5)
-  })
-
-  it('渲染：每行一条点阵纹理的条，数字带正负方向，焦点项带 data-focus，页脚写刻度，表格视图按钮总有', () => {
-    const html = renderToStaticMarkup(
-      <AttributionBars
-        items={items}
-        label="归因"
-        formatValue={String}
-        otherLabel={(n) => `其他 ×${n}`}
-        formatShare={String}
-        shareLabel="占比"
-        focusKey="a"
-        footer={{ count: '5 项', scale: (max) => `刻度 ±${max}` }}
-        actionLabels={{ group: '图工具', table: '表格视图', exportCsv: '导出', fullscreen: '全屏' }}
-        tableHeads={{ item: '项', value: '值', share: '占比' }}
-      />,
-    )
-    expect(html.match(/data-slot="attribution-bar"/g)).toHaveLength(5)
-    expect(html).toContain('k-dotfill')
-    expect(html).toContain('data-focus="true"')
-    expect(html).toContain('data-tone="down"')
-    expect(html).toContain('刻度 ±300')
-    expect(html).toContain('data-action="table"')
-    expect(html).not.toContain('data-action="export"')
   })
 })
 

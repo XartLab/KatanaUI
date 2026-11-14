@@ -13,8 +13,6 @@ export * from './format'
 // 时间序列与盈亏的件（#1917）。功能参照 Arc（uiarc.dev，2026-11-14 读），只取功能，实现原创。
 export { BrushChart, BrushStrip, type BrushChartProps, type BrushLabels, type BrushStripProps } from './brush-chart'
 export type { BrushWindow } from './brush-model'
-export { AttributionBars, type AttributionBarsProps } from './attribution-bars'
-export type { AttributionItem } from './attribution-model'
 export { EquityCurve, type EquityCurveLabels, type EquityCurvePoint, type EquityCurveProps } from './equity-curve'
 export { SparkTile, type SparkTileProps } from './spark-tile'
 export { Meter, type MeterProps } from './meter'

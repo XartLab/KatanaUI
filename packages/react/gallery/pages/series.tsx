@@ -1,20 +1,25 @@
 // SPDX-License-Identifier: MIT
 import { useState } from 'react'
 import { useScrubber } from '../../src/index'
-import { SeriesExplorer, SmallMultiples, type SeriesPoint, type SmallMultiple } from '../../src/blocks'
+import {
+  AttributionBars,
+  SeriesExplorer,
+  SmallMultiples,
+  type AttributionItem,
+  type SeriesPoint,
+  type SmallMultiple,
+} from '../../src/blocks'
 import {
   BrushChart,
   Meter,
   CalendarHeatmap,
   HorizonChart,
   SparkTile,
-  AttributionBars,
   EquityCurve,
   type EquityCurvePoint,
   type CalendarDay,
   type CalendarEvent,
   type HorizonRow,
-  type AttributionItem,
 } from '../../src/quant'
 import { Row } from './parts'
 
@@ -105,7 +110,7 @@ const ATTR_SYMBOLS: AttributionItem[] = [
   },
   { key: '00700', label: '00700 腾讯控股', value: 14_300 },
   { key: '002475', label: '002475 立讯精密', value: 8_760 },
-  { key: '601012', label: '601012 隆基绿能', value: 1_640 },
+  { key: '601012', label: '601012 隆基绿能', value: 1_640, closed: '601012 于 09-18 平仓' },
   { key: '002594', label: '002594 比亚迪', value: 920 },
   { key: '688981', label: '688981 中芯国际', value: 480 },
   { key: '000333', label: '000333 美的集团', value: 200 },
@@ -114,50 +119,91 @@ const ATTR_SYMBOLS: AttributionItem[] = [
   { key: 'fee', label: '费用 · 税', value: -2_000, kind: 'fee' },
 ]
 const ATTR_ACCOUNTS: AttributionItem[] = [
-  { key: 'A', label: 'A', value: 38_200 },
-  { key: 'B', label: 'B', value: 9_400 },
-  { key: 'F', label: 'F', value: -1_160 },
+  { key: 'A', label: '账户 A', value: 38_200 },
+  { key: 'B', label: '账户 B', value: 9_400 },
+  { key: 'F', label: '账户 F', value: -1_160 },
   { key: 'fee', label: '费用 · 税', value: -2_000, kind: 'fee' },
 ]
+const ATTR_STRATEGIES: AttributionItem[] = [
+  { key: 'trend', label: '趋势跟随', value: 52_300 },
+  { key: 'mean', label: '均值回归', value: 4_200 },
+  { key: 'hedge', label: '对冲', value: -9_600 },
+  { key: 'fee', label: '费用 · 税', value: -2_000, kind: 'fee' },
+]
+const ATTR_CLASSES: AttributionItem[] = [
+  { key: 'stock', label: '股票', value: 63_400 },
+  { key: 'future', label: '期货', value: -17_000 },
+  { key: 'fee', label: '费用 · 税', value: -2_000, kind: 'fee' },
+]
+const ATTR_BY_DIM: Record<string, AttributionItem[]> = {
+  symbol: ATTR_SYMBOLS,
+  account: ATTR_ACCOUNTS,
+  strategy: ATTR_STRATEGIES,
+  asset: ATTR_CLASSES,
+}
 
 export function AttributionBarsDemo() {
-  const [dim, setDim] = useState<'symbol' | 'account'>('symbol')
+  const [dim, setDim] = useState('symbol')
+  const [range, setRange] = useState('today')
   const [focus, setFocus] = useState<string | undefined>('300750')
-  const items = dim === 'symbol' ? ATTR_SYMBOLS : ATTR_ACCOUNTS
-  const total = items.reduce((sum, item) => sum + item.value, 0)
+  const items = ATTR_BY_DIM[dim] ?? ATTR_SYMBOLS
+  const pos = items.reduce((sum, item) => sum + Math.max(0, item.value), 0)
+  const neg = items.reduce((sum, item) => sum + Math.min(0, item.value), 0)
   return (
     <>
-      <div className="gal-wide" data-gallery-attribution style={{ maxWidth: 600 }}>
-        <div className="gal-row" role="group" aria-label="维度" style={{ marginBottom: 8 }}>
-          {(['symbol', 'account'] as const).map((d) => (
-            <button key={d} type="button" aria-pressed={dim === d} onClick={() => setDim(d)} data-dim={d}>
-              {d === 'symbol' ? '品种' : '账户'}
-            </button>
-          ))}
-        </div>
+      <div className="gal-wide" data-gallery-attribution style={{ maxWidth: 760 }}>
         <AttributionBars
           items={items}
+          title="P&L ATTRIBUTION"
+          meta="归因 · 今日 · 账户 A B · CNY · 刻度 ±80 000"
           label="今日盈亏归因（示例）"
+          dimensions={{
+            label: '维度',
+            value: dim,
+            onChange: (key) => key && setDim(key),
+            options: [
+              { key: 'symbol', label: '品种' },
+              { key: 'account', label: '账户' },
+              { key: 'strategy', label: '策略' },
+              { key: 'asset', label: '资产类别' },
+            ],
+          }}
+          ranges={{
+            label: '区间',
+            value: range,
+            onChange: (key) => key && setRange(key),
+            options: [
+              { key: 'today', label: '今日' },
+              { key: 'week', label: '本周' },
+              { key: 'month', label: '本月' },
+            ],
+          }}
           formatValue={money}
           otherLabel={(n) => `其他 ×${n}`}
           formatShare={(x) => `${(x * 100).toFixed(1)}%`}
           shareLabel="占比"
-          total={{ value: total, text: money(total), tag: 'EST' }}
+          readouts={[
+            { key: 'sum', label: '今日合计', text: money(pos + neg), value: pos + neg },
+            { key: 'pos', label: '正贡献', text: money(pos), value: pos },
+            { key: 'neg', label: '负贡献', text: money(neg), value: neg },
+          ]}
           focusKey={focus}
           onSelect={setFocus}
+          heads={{ index: 'IDX', item: '品种', value: '贡献', share: '占比' }}
           footer={{
             count: `${items.length} 项 · 排序 |贡献|`,
             scale: (max) => `刻度 ±${max.toLocaleString('en-US')}`,
+            source: 'SOURCE · 台账成交 + 行情估值 · 演示数据',
             note: '研究账本不计入',
           }}
           actionLabels={{ group: '图工具', table: '表格视图', exportCsv: '导出 CSV', fullscreen: '全屏' }}
-          tableHeads={{ item: '项', value: '贡献', share: '占比' }}
           onExport={() => {}}
         />
       </div>
       <p className="gal-note">
         {DEMO_NOTE}场景照设计稿 PnLAttribution 卡：方向用位置（正在右、负在左），条是 ink-200
-        点阵纹理，焦点品种的条是强调色纹理，只有数字用涨跌色。超过 7 项折进「其他 ×n」，费用·税永远在最底。
+        点阵纹理，焦点品种的条是强调色纹理，只有数字用涨跌色。超过 7 项折进「其他
+        ×n」，费用·税永远在最底；已平仓的行整行删除线。
       </p>
     </>
   )

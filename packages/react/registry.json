@@ -1826,37 +1826,6 @@
       ]
     },
     {
-      "name": "attribution-bars",
-      "type": "registry:component",
-      "title": "Attribution Bars",
-      "description": "今天（或选中区间）的钱从哪来：零轴水平条形，正在右、负在左，条是点阵纹理不用红绿，只有数字用涨跌色；按 |贡献| 正负分组降序，超过 7 项折「其他 ×n」，费用·税永远在最底。对设计稿的 PnLAttribution 卡（卡明写不用瀑布图）。",
-      "registryDependencies": [
-        "@katana/attribution-model",
-        "@katana/chart-kit",
-        "@katana/cn"
-      ],
-      "files": [
-        {
-          "path": "src/quant/attribution-bars.tsx",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/quant/attribution-bars.tsx"
-        }
-      ]
-    },
-    {
-      "name": "attribution-model",
-      "type": "registry:component",
-      "title": "Attribution Model",
-      "description": "AttributionBars 的排序与折叠（纯函数）：正负分组降序、超 7 项折「其他 ×n」、费用·税放底、对称刻度。",
-      "files": [
-        {
-          "path": "src/quant/attribution-model.ts",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/quant/attribution-model.ts"
-        }
-      ]
-    },
-    {
       "name": "brush-chart",
       "type": "registry:component",
       "title": "Brush Chart",
@@ -2227,6 +2196,33 @@
           "path": "src/blocks/series-explorer/series-explorer.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/blocks/series-explorer/series-explorer.tsx"
+        }
+      ]
+    },
+    {
+      "name": "attribution-bars",
+      "type": "registry:component",
+      "title": "Attribution Bars",
+      "description": "今天（或选中区间）的钱从哪来：工作台顶行（宽体标题、维度与区间分段、表格 / 导出），点阵元信息与列头，每行编号加零轴条形（正在右、负在左，条是点阵纹理不用红绿，只有数字用涨跌色），已平仓的行整行删除线，右侧合计读数左带 2px 强调竖条；按 |贡献| 正负分组降序，超过 7 项折「其他 ×n」，费用·税永远在最底。对设计稿的 PnLAttribution 卡（卡明写不用瀑布图），语言同 SeriesExplorer。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/chart-kit",
+        "@katana/cn",
+        "@katana/toggle-group",
+        "@katana/toolbar"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/attribution-bars/attribution-bars.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/attribution-bars/attribution-bars.tsx"
+        },
+        {
+          "path": "src/blocks/attribution-bars/attribution-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/attribution-bars/attribution-model.ts"
         }
       ]
     },
