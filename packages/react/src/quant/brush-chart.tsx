@@ -16,6 +16,10 @@ import {
   resizeWindow,
   type BrushWindow,
 } from './brush-model'
+import { DotFill, useDotId } from './chart-kit/dot-fill'
+import { EndMarker } from './chart-kit/end-marker'
+import { LcdTooltip } from './chart-kit/lcd-tooltip'
+import { PlotGrid, PlotYAxis } from './chart-kit/plot-axes'
 import { areaPath, extent, linePath, makePlot, pct, PLOT_W } from './series-geometry'
 
 export type BrushLabels = {
@@ -54,6 +58,7 @@ export function BrushStrip({
   const count = values.length
   const [drag, setDrag] = useState<Drag | null>(null)
   const plot = makePlot(count, extent(values), { height, padTop: 4, padBottom: 4, exact: true })
+  const dotId = useDotId('brush-strip')
   const [start, end] = window
 
   const begin = (mode: Drag['mode']) => (event: PointerEvent<HTMLElement>) => {
@@ -109,7 +114,10 @@ export function BrushStrip({
       onPointerDown={jump}
     >
       <svg viewBox={`0 0 ${PLOT_W} ${height}`} preserveAspectRatio="none" aria-hidden="true">
-        <path className="k-brush-strip-area" d={areaPath(values, plot, plot.domain[0])} />
+        <defs>
+          <DotFill id={dotId} color="var(--seq-300)" />
+        </defs>
+        <path className="k-brush-strip-area" fill={`url(#${dotId})`} d={areaPath(values, plot, plot.domain[0])} />
         <path className="k-brush-strip-line" d={linePath(values, plot)} />
       </svg>
       <div className="k-brush-dim" style={{ left: 0, width: `${left}%` }} />
@@ -217,6 +225,7 @@ export function BrushChart({
   const slice = values.slice(window[0], window[1])
   const scrub = useScrubber({ count: slice.length })
   const plot = makePlot(slice.length, extent(slice), { height })
+  const dotId = useDotId('brush-main')
   const active = scrub.index
   const value = active === null ? null : slice[active]!
   const lastTick = Math.max(0, slice.length - 1)
@@ -233,21 +242,30 @@ export function BrushChart({
         role="group"
       >
         <svg viewBox={`0 0 ${PLOT_W} ${height}`} preserveAspectRatio="none" aria-hidden="true">
-          {plot.ticks.map((tick) => (
-            <line key={tick.value} className="k-plot-grid" x1={0} x2={PLOT_W} y1={tick.y} y2={tick.y} />
-          ))}
-          <path className="k-brush-area" d={areaPath(slice, plot, plot.domain[0])} />
+          <defs>
+            <DotFill id={dotId} color="var(--seq-300)" />
+          </defs>
+          <PlotGrid plot={plot} />
+          <path className="k-brush-area" fill={`url(#${dotId})`} d={areaPath(slice, plot, plot.domain[0])} />
           <path className="k-brush-line" data-slot="brush-line" d={linePath(slice, plot)} />
         </svg>
-        {plot.ticks.map((tick) => (
-          <span key={tick.value} className="k-plot-ytick" style={{ top: tick.y }}>
-            {formatValue(tick.value)}
-          </span>
-        ))}
+        <PlotYAxis plot={plot} format={formatValue} />
+        {slice.length > 0 && (
+          <EndMarker
+            x={plot.xAt(active ?? lastTick)}
+            y={plot.yAt(slice[active ?? lastTick]!)}
+            value={active === null ? formatValue(slice[lastTick]!) : undefined}
+          />
+        )}
         {active !== null && value !== null && (
           <>
             <span className="k-plot-cross" data-slot="brush-cross" style={{ left: pct(plot.xAt(active)) }} />
-            <span className="k-plot-dot" style={{ left: pct(plot.xAt(active)), top: plot.yAt(value) }} />
+            <LcdTooltip
+              style={{ left: pct(plot.xAt(active)), top: 0 }}
+              side={active > lastTick / 2 ? 'left' : 'right'}
+              title={formatX(window[0] + active)}
+              rows={[{ key: 'v', label, value: formatValue(value) }]}
+            />
           </>
         )}
       </div>

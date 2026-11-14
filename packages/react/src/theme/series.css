@@ -20,6 +20,8 @@
   touch-action: pan-y;
 }
 .k-brush-main {
+  /* 纵轴刻度字放在绘图区左侧留白里，不压到线上。 */
+  margin-left: var(--k-plot-gutter, 56px);
   outline-offset: 2px;
 }
 .k-brush-main:focus-visible {
@@ -50,8 +52,6 @@
 }
 .k-brush-area,
 .k-brush-strip-area {
-  fill: var(--series-1);
-  fill-opacity: 0.12;
   stroke: none;
 }
 .k-plot-ytick {
@@ -100,6 +100,9 @@
   min-height: 16px;
   color: var(--ink-100);
   font: var(--text-data) var(--font-mono);
+}
+.k-brush .k-plot-xaxis {
+  margin-left: var(--k-plot-gutter, 56px);
 }
 .k-brush-strip {
   border: 1px solid var(--line-100);

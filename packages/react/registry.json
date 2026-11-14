@@ -1824,6 +1824,7 @@
       "description": "一条整段序列的概览条，上面套一个可拖的窗口，主图只画窗口里的那一段：拖中间平移、拖两端缩放、点窗口外的地方把窗口移过去。主图上指针或 ←→ 扫读。可作 EquityCurve 的底座。功能参照 Arc 的 Brush chart。",
       "registryDependencies": [
         "@katana/brush-model",
+        "@katana/chart-kit",
         "@katana/cn",
         "@katana/series-geometry",
         "@katana/use-scrubber"

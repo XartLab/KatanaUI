@@ -6261,6 +6261,7 @@ button.k-spark-tile:focus-visible {
 }
 
 .k-brush-main {
+  margin-left: var(--k-plot-gutter, 56px);
   outline-offset: 2px;
 }
 
@@ -6294,8 +6295,6 @@ button.k-spark-tile:focus-visible {
 }
 
 .k-brush-area, .k-brush-strip-area {
-  fill: var(--series-1);
-  fill-opacity: .12;
   stroke: none;
 }
 
@@ -6352,6 +6351,10 @@ button.k-spark-tile:focus-visible {
   min-height: 16px;
   color: var(--ink-100);
   font: var(--text-data) var(--font-mono);
+}
+
+.k-brush .k-plot-xaxis {
+  margin-left: var(--k-plot-gutter, 56px);
 }
 
 .k-brush-strip {
@@ -7759,6 +7762,7 @@ button.k-sm-head:focus-visible {
   --k-in-y: initial;
   --k-json-level: initial;
   --k-tree-level: initial;
+  --k-plot-gutter: initial;
   --k-spark-h: initial;
   --k-wf-gutter: initial;
   --radix-accordion-content-height: initial;
