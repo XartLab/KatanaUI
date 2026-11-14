@@ -250,3 +250,5 @@ export { quoteTone, type QuoteTone } from './katana/quote-tone'
 // 分布与关系类的件（#1918）：功能参照 Arc（uiarc.dev，2026-11-14 读），实现原创。
 export { UptimeBars, type UptimeBarsProps } from './katana/uptime-bars'
 export { uptimeShare, type UptimeCell, type UptimeStatus } from './katana/uptime-bars-model'
+export { RangeHistogramSlider, type RangeHistogramSliderProps } from './patterns/range-histogram-slider'
+export { histogramBins } from './patterns/range-histogram-model'

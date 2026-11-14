@@ -3851,6 +3851,62 @@ export const PAGES: readonly DocPage[] = [
       ['Enter / Space', '给了 onSelect 时选中当前格'],
     ],
   },
+  {
+    id: 'range-histogram-slider',
+    group: 'forms',
+    cardHeight: 300,
+    title: 'RangeHistogramSlider 直方图区间滑块',
+    summary:
+      '一排柱子画出全体的分布，下面一条轨道两个把手：拖出来的区间里的柱子亮、区间外的暗。用在筛选器，在全市场分布上拖市值、涨幅、换手的区间。点柱子或轨道，最近的把手跳过去。功能参照 Arc Range histogram slider，实现原创。',
+    exports: ['RangeHistogramSlider', 'histogramBins'],
+    props: [
+      {
+        part: 'RangeHistogramSlider',
+        note: '角色照 WAI-ARIA APG 的 Multi-Thumb Slider：两个 role=slider，各自带 aria-valuemin / max / now / valuetext；两个把手不交叉。值可受控也可不受控；文字全由 props 传。',
+        rows: [
+          { name: 'counts', type: 'number[]', desc: '每一箱的个数，等宽分箱铺满 [min, max]；用 histogramBins 算。' },
+          { name: 'min / max', type: 'number', desc: '分布的范围。' },
+          { name: 'step', type: 'number', default: '(max - min) / 箱数', desc: '步长，拖动与键盘都取整到它。' },
+          {
+            name: 'value / defaultValue / onValueChange',
+            type: '[number, number]',
+            desc: '当前区间；不给 value 就是不受控。',
+          },
+          {
+            name: 'formatValue',
+            type: '(value: number) => string',
+            default: 'String',
+            desc: '数值怎么写（读数行与 aria-valuetext）。',
+          },
+          { name: 'labels', type: '{ low: string; high: string }', desc: '两个把手的读屏名（必填）。' },
+          { name: 'label', type: 'string', desc: '整条的读屏名（必填）。' },
+          { name: 'describe', type: '(range) => ReactNode', desc: '读数行；不给写「下限 – 上限」。' },
+        ],
+      },
+      {
+        part: 'histogramBins(values, min, max, bins)',
+        note: '把一列数分进等宽的箱，最后一箱含 max；范围外与非有限数丢掉。',
+        rows: [],
+      },
+    ],
+    states: [
+      '区间内的柱子用强调色，区间外的用暗色；区间那一段轨道也用强调色。',
+      '两个把手叠在一起时，按指针往哪边拖决定动哪个，不会互相夹死。',
+      '键盘聚焦的把手有焦点环。',
+    ],
+    donts: [
+      '不要拿它选单个值：单值用 Slider。',
+      '不要把原始数据传进来：先用 histogramBins 分箱，箱数也别太多（柱子细到看不清就没有意义）。',
+    ],
+    composition:
+      'RangeHistogramSlider\n  div role=group\n    div（柱子，一箱一根）\n    div（轨道与选中段）\n    div role=slider × 2（把手）\n  output（读数行）',
+    keys: [
+      ['← / ↓', '当前把手减一个步长'],
+      ['→ / ↑', '当前把手加一个步长'],
+      ['PageDown / PageUp', '减 / 加十个步长'],
+      ['Home / End', '去最小 / 最大（不越过另一个把手）'],
+    ],
+  },
 ]
 
 export const pageById = (id: string): DocPage | undefined => PAGES.find((page) => page.id === id)
