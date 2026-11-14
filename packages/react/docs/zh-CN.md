@@ -151,7 +151,7 @@ MIT（用户 2026-11-14 定，#1876），见本文开头。别的项目经注册
 - `.github/workflows/pages.yml`：只在镜像仓库里生效（GitHub 不读子目录的 `.github`），push 到 main 时测试、构建并发布到 Pages。
 - `README.md`（英文，对外）、`CONTRIBUTING.md`（英文）、本文件（中文，内部）。
 - token：源头与生成器在 `packages/tokens`（`@katana-ui/tokens`，2026-11-14 #2 第 2 步拆出），包里的 `ds-build`、`ds-tokens.test.ts`、`theming.test.ts`、`motion.test.ts` 按包名读它的出口（本地靠 `linkWorkspacePackages` 连到仓库里那份）；改 token 在那个包里改 `src/tokens.json` 再 `pnpm tokens:sync`。
-- 设计稿覆盖表的脚本（`pnpm ui:coverage`）读仓库根的设计稿目录，所以放在 KATANAview 根目录的 `scripts/ui-coverage.mjs`，不在包里。
+- 设计稿覆盖表的脚本（`pnpm ui:coverage`）已随 KATANAview #1972 删除，待在本仓库重建。
 - `pnpm-lock.yaml` 是本包自己的锁（镜像里 `pnpm install --frozen-lockfile` 读它）：改了 `package.json` 的依赖后，在本目录跑 `pnpm install --lockfile-only --ignore-workspace` 并提交；根目录的 `pnpm lint:ui-lock`（`pnpm test` 里有）查它与 `package.json` 同步。根目录的安装不读它。
 
 在 KATANAview 里改了 `package.json` 的依赖，要与根目录的版本保持一致；根目录的 `pnpm install` 照旧装这个包。
