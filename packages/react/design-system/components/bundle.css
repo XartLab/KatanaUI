@@ -9189,6 +9189,515 @@ button.k-sm-head:focus-visible {
   margin: auto;
 }
 
+.k-mheat {
+  --mheat-gap: 2px;
+  gap: var(--space-3);
+  min-width: 0;
+  min-height: 0;
+  padding: var(--space-3) var(--inset-x);
+  font: var(--text-data) var(--font-sans);
+  color: var(--ink-100);
+  flex-direction: column;
+  flex: auto;
+  margin: 0;
+  display: flex;
+}
+
+.k-mheat[data-scheme="classic"] {
+  --mheat-0: var(--pnl-down);
+}
+
+@supports (color: color-mix(in lab, red, red)) {
+  .k-mheat[data-scheme="classic"] {
+    --mheat-0: color-mix(in srgb, var(--pnl-down) 100%, var(--bg-000));
+  }
+}
+
+.k-mheat[data-scheme="classic"] {
+  --mheat-1: var(--pnl-down);
+}
+
+@supports (color: color-mix(in lab, red, red)) {
+  .k-mheat[data-scheme="classic"] {
+    --mheat-1: color-mix(in srgb, var(--pnl-down) 70%, var(--bg-000));
+  }
+}
+
+.k-mheat[data-scheme="classic"] {
+  --mheat-2: var(--pnl-down);
+}
+
+@supports (color: color-mix(in lab, red, red)) {
+  .k-mheat[data-scheme="classic"] {
+    --mheat-2: color-mix(in srgb, var(--pnl-down) 42%, var(--bg-000));
+  }
+}
+
+.k-mheat[data-scheme="classic"] {
+  --mheat-3: var(--ink-300);
+}
+
+@supports (color: color-mix(in lab, red, red)) {
+  .k-mheat[data-scheme="classic"] {
+    --mheat-3: color-mix(in srgb, var(--ink-300) 30%, var(--bg-000));
+  }
+}
+
+.k-mheat[data-scheme="classic"] {
+  --mheat-4: var(--pnl-up);
+}
+
+@supports (color: color-mix(in lab, red, red)) {
+  .k-mheat[data-scheme="classic"] {
+    --mheat-4: color-mix(in srgb, var(--pnl-up) 42%, var(--bg-000));
+  }
+}
+
+.k-mheat[data-scheme="classic"] {
+  --mheat-5: var(--pnl-up);
+}
+
+@supports (color: color-mix(in lab, red, red)) {
+  .k-mheat[data-scheme="classic"] {
+    --mheat-5: color-mix(in srgb, var(--pnl-up) 70%, var(--bg-000));
+  }
+}
+
+.k-mheat[data-scheme="classic"] {
+  --mheat-6: var(--pnl-up);
+}
+
+@supports (color: color-mix(in lab, red, red)) {
+  .k-mheat[data-scheme="classic"] {
+    --mheat-6: color-mix(in srgb, var(--pnl-up) 100%, var(--bg-000));
+  }
+}
+
+.k-mheat[data-scheme="classic"] {
+  --mheat-na: var(--ink-300);
+}
+
+@supports (color: color-mix(in lab, red, red)) {
+  .k-mheat[data-scheme="classic"] {
+    --mheat-na: color-mix(in srgb, var(--ink-300) 12%, var(--bg-000));
+  }
+}
+
+.k-mheat[data-scheme="mono"] {
+  --mheat-0: var(--ink-200);
+}
+
+@supports (color: color-mix(in lab, red, red)) {
+  .k-mheat[data-scheme="mono"] {
+    --mheat-0: color-mix(in srgb, var(--ink-200) 8%, var(--bg-000));
+  }
+}
+
+.k-mheat[data-scheme="mono"] {
+  --mheat-1: var(--ink-200);
+}
+
+@supports (color: color-mix(in lab, red, red)) {
+  .k-mheat[data-scheme="mono"] {
+    --mheat-1: color-mix(in srgb, var(--ink-200) 18%, var(--bg-000));
+  }
+}
+
+.k-mheat[data-scheme="mono"] {
+  --mheat-2: var(--ink-200);
+}
+
+@supports (color: color-mix(in lab, red, red)) {
+  .k-mheat[data-scheme="mono"] {
+    --mheat-2: color-mix(in srgb, var(--ink-200) 30%, var(--bg-000));
+  }
+}
+
+.k-mheat[data-scheme="mono"] {
+  --mheat-3: var(--ink-200);
+}
+
+@supports (color: color-mix(in lab, red, red)) {
+  .k-mheat[data-scheme="mono"] {
+    --mheat-3: color-mix(in srgb, var(--ink-200) 44%, var(--bg-000));
+  }
+}
+
+.k-mheat[data-scheme="mono"] {
+  --mheat-4: var(--ink-200);
+}
+
+@supports (color: color-mix(in lab, red, red)) {
+  .k-mheat[data-scheme="mono"] {
+    --mheat-4: color-mix(in srgb, var(--ink-200) 58%, var(--bg-000));
+  }
+}
+
+.k-mheat[data-scheme="mono"] {
+  --mheat-5: var(--ink-200);
+}
+
+@supports (color: color-mix(in lab, red, red)) {
+  .k-mheat[data-scheme="mono"] {
+    --mheat-5: color-mix(in srgb, var(--ink-200) 72%, var(--bg-000));
+  }
+}
+
+.k-mheat[data-scheme="mono"] {
+  --mheat-6: var(--ink-200);
+}
+
+@supports (color: color-mix(in lab, red, red)) {
+  .k-mheat[data-scheme="mono"] {
+    --mheat-6: color-mix(in srgb, var(--ink-200) 88%, var(--bg-000));
+  }
+}
+
+.k-mheat[data-scheme="mono"] {
+  --mheat-na: var(--ink-200);
+}
+
+@supports (color: color-mix(in lab, red, red)) {
+  .k-mheat[data-scheme="mono"] {
+    --mheat-na: color-mix(in srgb, var(--ink-200) 4%, var(--bg-000));
+  }
+}
+
+.k-mheat [data-step="-3"] {
+  --mheat-bg: var(--mheat-0);
+  --mheat-fg: var(--mheat-ink-0, var(--ink-100));
+}
+
+.k-mheat [data-step="-2"] {
+  --mheat-bg: var(--mheat-1);
+  --mheat-fg: var(--mheat-ink-1, var(--ink-100));
+}
+
+.k-mheat [data-step="-1"] {
+  --mheat-bg: var(--mheat-2);
+  --mheat-fg: var(--mheat-ink-2, var(--ink-100));
+}
+
+.k-mheat [data-step="0"] {
+  --mheat-bg: var(--mheat-3);
+  --mheat-fg: var(--mheat-ink-3, var(--ink-100));
+}
+
+.k-mheat [data-step="1"] {
+  --mheat-bg: var(--mheat-4);
+  --mheat-fg: var(--mheat-ink-4, var(--ink-100));
+}
+
+.k-mheat [data-step="2"] {
+  --mheat-bg: var(--mheat-5);
+  --mheat-fg: var(--mheat-ink-5, var(--ink-100));
+}
+
+.k-mheat [data-step="3"] {
+  --mheat-bg: var(--mheat-6);
+  --mheat-fg: var(--mheat-ink-6, var(--ink-100));
+}
+
+.k-mheat [data-step="na"] {
+  --mheat-bg: var(--mheat-na);
+  --mheat-fg: var(--ink-300);
+}
+
+.k-mheat-summary {
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: var(--space-6);
+  display: flex;
+}
+
+.k-mheat-reads {
+  gap: var(--space-6);
+  margin: 0;
+  display: flex;
+}
+
+.k-mheat-read {
+  flex-direction: column;
+  gap: 2px;
+  display: flex;
+}
+
+.k-mheat-read dt {
+  color: var(--ink-300);
+  font: 500 11px/14px var(--font-sans);
+}
+
+.k-mheat-read dd {
+  font: 600 22px/26px var(--font-sans);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -.01em;
+  margin: 0;
+}
+
+.k-mheat-read dd.is-up {
+  color: var(--pnl-up);
+}
+
+.k-mheat-read dd.is-down {
+  color: var(--pnl-down);
+}
+
+.k-mheat-crumb {
+  color: var(--ink-300);
+  font: 500 12px/16px var(--font-sans);
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+  display: inline-flex;
+}
+
+.k-mheat-crumb [aria-current="page"] {
+  color: var(--ink-100);
+  font-weight: 600;
+}
+
+.k-mheat-crumb button {
+  color: var(--ink-300);
+  font: inherit;
+  cursor: pointer;
+  background: none;
+  border: 0;
+  padding: 0;
+}
+
+.k-mheat-crumb button:hover {
+  color: var(--ink-100);
+}
+
+.k-mheat-bar {
+  align-items: center;
+  gap: var(--space-2) var(--space-4);
+  flex-wrap: wrap;
+  display: flex;
+}
+
+.k-mheat-field {
+  align-items: center;
+  gap: 8px;
+  display: inline-flex;
+}
+
+.k-mheat-field-label {
+  color: var(--ink-300);
+  font: 500 11px/14px var(--font-sans);
+}
+
+.k-mheat-plot {
+  flex: auto;
+  min-height: 240px;
+  position: relative;
+  overflow: hidden;
+}
+
+.k-mheat-group {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+}
+
+.k-mheat-group > * {
+  pointer-events: auto;
+}
+
+.k-mheat-head {
+  z-index: 1;
+  color: var(--ink-200);
+  font: 600 11px/22px var(--font-sans);
+  text-align: left;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+  background: none;
+  border: 0;
+  padding: 0 2px;
+  position: absolute;
+  overflow: hidden;
+}
+
+.k-mheat-head:hover {
+  color: var(--ink-100);
+}
+
+.k-mheat-head:focus-visible, .k-mheat-cell:focus-visible, .k-mheat-segment:focus-visible {
+  outline: 1px solid var(--ink-100);
+  outline-offset: 1px;
+}
+
+.k-mheat-cell {
+  color: var(--mheat-fg);
+  background: var(--mheat-bg);
+  font: 500 12px/14px var(--font-sans);
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  cursor: pointer;
+  border-radius: 2px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  position: absolute;
+  overflow: hidden;
+}
+
+.k-mheat-cell:hover {
+  outline: 1px solid var(--ink-100);
+  outline-offset: -1px;
+}
+
+.k-mheat-cell[data-selected] {
+  outline: 2px solid var(--ink-100);
+  outline-offset: -2px;
+}
+
+.k-mheat-cell[data-hidden] {
+  visibility: hidden;
+}
+
+.k-mheat-code {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+  padding: 0 3px;
+  font-weight: 600;
+  overflow: hidden;
+}
+
+.k-mheat-value {
+  max-width: 100%;
+  font: 400 11px/14px var(--font-sans);
+  opacity: .85;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.k-mheat-card {
+  z-index: 2;
+  box-sizing: border-box;
+  padding: var(--space-2) var(--space-3);
+  border: var(--hairline);
+  border-radius: var(--radius-overlay);
+  background: var(--bg-400);
+  box-shadow: var(--lift);
+  pointer-events: none;
+  position: absolute;
+}
+
+.k-mheat-card-title {
+  min-width: 0;
+  padding-bottom: var(--space-2);
+  border-bottom: 1px solid var(--alpha-white-5);
+  align-items: center;
+  gap: 8px;
+  display: flex;
+}
+
+.k-mheat-card-code {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+.k-mheat-card-name {
+  min-width: 0;
+  color: var(--ink-300);
+  font: 400 11px/14px var(--font-sans);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.k-mheat-card-rows {
+  margin: var(--space-2) 0 0;
+  flex-direction: column;
+  gap: 2px;
+  display: flex;
+}
+
+.k-mheat-card-rows > div {
+  justify-content: space-between;
+  gap: var(--space-3);
+  display: flex;
+}
+
+.k-mheat-card-rows dt {
+  color: var(--ink-300);
+  font: 400 11px/16px var(--font-sans);
+}
+
+.k-mheat-card-rows dd {
+  font-variant-numeric: tabular-nums;
+  margin: 0;
+}
+
+.k-mheat-card-rows [data-active] dt {
+  color: var(--ink-100);
+}
+
+.k-mheat-card-rows dd.is-up {
+  color: var(--pnl-up);
+}
+
+.k-mheat-card-rows dd.is-down {
+  color: var(--pnl-down);
+}
+
+.k-mheat-legend {
+  gap: var(--mheat-gap);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+}
+
+.k-mheat-legend li {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.k-mheat-segment {
+  width: 100%;
+  color: var(--ink-300);
+  font: 500 11px/14px var(--font-sans);
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  background: none;
+  border: 0;
+  flex-direction: column;
+  gap: 4px;
+  padding: 0;
+  display: flex;
+}
+
+.k-mheat-segment:hover {
+  color: var(--ink-100);
+}
+
+.k-mheat-swatch {
+  background: var(--mheat-bg);
+  border-radius: 2px;
+  height: 10px;
+  display: block;
+}
+
+.k-mheat-swatch[data-off] {
+  opacity: .25;
+}
+
+.k-mheat-segment[aria-pressed="true"] span {
+  text-decoration: line-through;
+}
+
+.k-mheat-empty {
+  padding: var(--space-6);
+  color: var(--ink-300);
+  margin: auto;
+}
+
 @property --tw-translate-x {
   syntax: "*";
   inherits: false;
@@ -9658,6 +10167,13 @@ button.k-sm-head:focus-visible {
   --k-sy: initial;
   --k-tree-level: initial;
   --line-300: initial;
+  --mheat-ink-0: initial;
+  --mheat-ink-1: initial;
+  --mheat-ink-2: initial;
+  --mheat-ink-3: initial;
+  --mheat-ink-4: initial;
+  --mheat-ink-5: initial;
+  --mheat-ink-6: initial;
   --radix-accordion-content-height: initial;
   --radix-collapsible-content-height: initial;
   --radix-collapsible-content-width: initial;
