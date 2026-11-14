@@ -731,3 +731,19 @@
   white-space: nowrap;
   text-overflow: ellipsis;
 }
+
+/* 精密仪器语言（#7）：星团名与悬停读数行用点阵字（团名在圆外留白里，取整数字号 12px），读数行左边 2px 强调条；图例上的数字不动。 */
+.k-galaxy-name {
+  font: var(--text-tag-md) var(--font-dot);
+  font-weight: 400;
+  -webkit-font-smoothing: none;
+}
+.k-galaxy-readout {
+  padding-left: 8px;
+  border-left: 2px solid var(--chart-accent, var(--signal-orange));
+  font: var(--text-tag-md) var(--font-dot);
+  -webkit-font-smoothing: none;
+}
+.k-galaxy-readout:empty {
+  border-left-color: transparent;
+}
