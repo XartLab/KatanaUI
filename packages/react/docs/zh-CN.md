@@ -22,7 +22,7 @@ tokens → theme → lib → primitives → katana → patterns → quant → bl
 | primitives | `src/primitives/` | 无业务的基础件：button（含 `icon` 变体）、input、select、toggle-group、slider、checkbox、switch、tooltip、popover、dialog、dropdown-menu、context-menu、tabs、accordion、sheet、hover-card、command（`cmdk`）、scroll-area、separator、progress、alert、field、label；`lib/opener-focus` 是 dialog 与 sheet 共用的「关上时焦点回开启处」 |
 | katana | `src/katana/` | KATANA 自有的件（见下）：led、lcd、dot-matrix、rolling-text、badge、kbd、number-input、date-time-input、skeleton 与加载态、toast（弹出提示的外观，计时与队列在应用里）、password-input、delete-button、notification-bell、status-icon、ai-status、matrix-orb、arcade-pixel（取自 SmoothUI，MIT）、step-player、theme-selector、code-block、web-search、task-list、duration-picker（后十二件交互学自 rare-ui，实现原创，文件头写明）、sparkline、gauge-bar、treemap（后三件从应用的分析视图提来，#1884）、price-tag、quote-card、range-bar、rating-gauge（功能参照 TradingView 小组件，只取给用户看什么、怎么交互，不嵌不抄）；hold-to-confirm、shortcut-recorder、json-viewer（#1919：功能参照 Arc，只取公开页面写出的功能与交互，实现原创；number-input 同批加了算式输入与框内标签）；可以用 primitives，不是 shadcn 的衍生，所以单放一处（`scripts/check-license.mjs` 把 `primitives/` 整个当 MIT） |
 | patterns | `src/patterns/` | 由基础件组出来的固定搭法：multi-select（弹层加勾选）、combobox（弹层加 command：可搜索的单选或多选下拉）、quote-table（分组页签行情表：Tabs 加迷你图的行情行）、chip-group（分面筛选芯片组）、date-range-picker（双月日历加预设）、tree-view（react-aria 的 Tree，数据驱动）（后三件 #1919） |
-| quant | `src/quant/` | 量化领域的件与格式化（出口 `@katana-ui/react/quant`）：`ChangeText`（涨跌幅）、`PnlText`（盈亏）、`format/`（价格按精度或 tick、涨跌幅、数量缩写；纯函数另有 `@katana-ui/react/quant/format` 出口，画布与 Worker 里用）。只依赖下面几层，不依赖行情、图表包与应用；品种、精度、单位由调用方传。有两个及以上调用方的才进；时间序列与盈亏（#1917，图都画在 viewBox 里、文字与十字线叠成 HTML，比例尺与路径在 `series-geometry`，几何都是纯函数）：`BrushChart` 与 `BrushStrip`（概览刷选条加主图）、`SparkTile`（KPI 瓦片）、`chart-kit/`（图表共用底座）、`Meter`（条、刻度盘、同步率三种仪表，限额板用软限与硬限）、`CalendarHeatmap`（一年的日盈亏，涨跌发散色）、`HorizonChart`（地平线图） |
+| quant | `src/quant/` | 量化领域的件与格式化（出口 `@katana-ui/react/quant`）：`ChangeText`（涨跌幅）、`PnlText`（盈亏）、`format/`（价格按精度或 tick、涨跌幅、数量缩写；纯函数另有 `@katana-ui/react/quant/format` 出口，画布与 Worker 里用）。只依赖下面几层，不依赖行情、图表包与应用；品种、精度、单位由调用方传。有两个及以上调用方的才进；时间序列与盈亏（#1917，图都画在 viewBox 里、文字与十字线叠成 HTML，比例尺与路径在 `series-geometry`，几何都是纯函数）：`BrushChart` 与 `BrushStrip`（概览刷选条加主图）、`SparkTile`（KPI 瓦片）、`chart-kit/`（图表共用底座）、`Meter`（条、刻度盘、同步率三种仪表，限额板用软限与硬限）、`CalendarHeatmap`（一年的日盈亏，涨跌发散色）、`HorizonChart`（地平线图）；`MarketHeatmap`（市场热力图，跨市场共用，#15：照 TradingView 股票热力图，排布用 `katana/treemap-model` 的 `layoutTreemap`，格子里的徽标是 `SymbolMark`，工具条是 `ToggleGroup`） |
 | blocks | `src/blocks/` | 拼面板用的积木（出口 `@katana-ui/react/blocks`，#1869）：`DataGrid`（数据表：TanStack 行为、虚拟滚动、列排序 / 改宽 / 拖序 / 显隐、键盘选择，列声明类型 price / quantity / pnl / change / side / time / symbol / text / number）、`EmptyState`（空态）、`Toolbar` 零件与 `ToolButton`、`EstimateBadge`、`EventTimeline`（#1919：按显示时区分天的事件流，对设计稿 EventTimeline 卡）、`SmallMultiples`（同步十字线的小图阵列）、`SeriesExplorer`（KPI 瓦片点开成图面板、对账、刷选条、表格视图的盈亏探索，#1917、#1931）、`AttributionBars`（盈亏归因：Toolbar 顶行、编号清单、零轴条形、合计读数）。可以用下面所有层，不依赖应用：快捷键表、文案、右键菜单怎么画、问 Agent 经 `DataGridHost`（`DataGridHostProvider`）注入，没提供时表照常能用（没有快捷键与标准右键项）。包里不带语言，文案都由调用方传 |
 
 ### KATANA 自有件（#1860）
@@ -159,7 +159,7 @@ npx shadcn add @katana/style @katana/button @katana/change-text
 
 **组件分两类（用户 2026-11-15 定，KATANAview decisions.md 2026-11-15、PR #1984）。** 样子照 TradingView 表格手感加 Arc 卡片结构；面板怎么平铺照 OpenBB Workspace 与彭博 Launchpad。A 股只单独做数据和少数专有组件，其余件跨市场共用：
 
-- **共用件：** 不认市场，数据与文字由调用方传（DataGrid、PanelFrame、SeriesExplorer 等）。
+- **共用件：** 不认市场，数据与文字由调用方传（DataGrid、PanelFrame、SeriesExplorer、MarketHeatmap 等）。
 - **市场专有件：** 只对某个市场有意义，放 quant 层，文档页与 props 说明里标明属于哪个市场。目前 A 股有连板天梯（LimitLadder，已做）；题材热度矩阵、龙虎榜净买条待做。专有件也不依赖数据集：板位、状态这类词是它的接口，数据与文字仍由调用方传。
 
 样例（Graphite，文档站 `?theme=graphite` 截的）：
@@ -168,7 +168,7 @@ npx shadcn add @katana/style @katana/button @katana/change-text
 - AttributionBars 盈亏归因：[images/attribution-bars-graphite.png](images/attribution-bars-graphite.png)
 
 文档站浏览器测试 `e2e/precision-instrument.spec.ts` 是这套语言的正面证明：序列探索页的元信息行用 Doto、汉字落到方舟像素子集、编号是强调色；去掉 `--font-dot` 里的方舟像素，它就红。
-已套这层语言的件：SeriesExplorer、AttributionBars、LimitLadder（#12，按上面「校准」做的）；其余逐件铺开（DataGrid、ChartTable、EquityCurve、Meter、CalendarHeatmap、SymbolGalaxy），一件一个提交。
+已套这层语言的件：SeriesExplorer、AttributionBars、LimitLadder（#12，按上面「校准」做的）、MarketHeatmap（#15，同上；色阶七档、档宽自动取好数，两项都是待定，见件文件头）；其余逐件铺开（DataGrid、ChartTable、EquityCurve、Meter、CalendarHeatmap、SymbolGalaxy），一件一个提交。
 
 ## 许可证
 

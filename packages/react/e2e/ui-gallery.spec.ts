@@ -1852,6 +1852,208 @@ for (const theme of THEMES) {
       await expect(ladder.locator('[data-code="601006"]')).toHaveAttribute('aria-selected', 'true')
     })
 
+    test('量化：市场热力图——面积跟大小成正比，颜色落在对应档，点组名放大，图例点一档隐藏，小格子不写字', async ({
+      page,
+    }) => {
+      await open(page, theme, 'market-heatmap')
+      const map = section(page, 'market-heatmap').locator('[data-slot="market-heatmap"]')
+      const cells = map.locator('[data-slot="heatmap-cell"]')
+      await expect(cells).toHaveCount(60)
+      await expect(map.locator('[data-slot="heatmap-group"]')).toHaveCount(8)
+      const sizeOf = (cell: Locator) => cell.getAttribute('data-size').then(Number)
+      // 面积跟市值成正比：平铺（所有格子一个密度）后抽两格比；每格四周各让出 1px 缝，量到的宽高各补 2px 才是排布的那一格。
+      await map.getByRole('button', { name: '平铺' }).click()
+      await expect(map.locator('[data-slot="heatmap-group"]')).toHaveCount(0)
+      const area = (cell: Locator) => cell.boundingBox().then((b) => (b!.width + 2) * (b!.height + 2))
+      const ranked = await cells.evaluateAll((nodes) =>
+        nodes
+          .map((n) => ({ code: (n as HTMLElement).dataset.code!, size: Number((n as HTMLElement).dataset.size) }))
+          .sort((a, b) => b.size - a.size),
+      )
+      const bigCode = ranked[0]!.code
+      const big = map.locator(`[data-slot="heatmap-cell"][data-code="${bigCode}"]`)
+      const mid = map.locator(`[data-slot="heatmap-cell"][data-code="${ranked[5]!.code}"]`)
+      const bigFlat = await area(big)
+      const ratio = bigFlat / (await area(mid))
+      const expected = (await sizeOf(big)) / (await sizeOf(mid))
+      expect(ratio / expected).toBeGreaterThan(0.96)
+      expect(ratio / expected).toBeLessThan(1.04)
+      await map.getByRole('button', { name: '分组' }).click()
+      await expect(map.locator('[data-slot="heatmap-group"]')).toHaveCount(8)
+      // 颜色落在对应档：格子的涨跌幅（固定一档 1%）算出档号，底色等于图例里那一档的色块。
+      const swatch = (step: number) => map.locator(`[data-slot="heatmap-swatch"][data-step="${step}"]`)
+      for (const index of [0, 7, 19, 33, 50]) {
+        const cell = cells.nth(index)
+        const change = Number(/([+-]?\d+\.\d+)%$/.exec((await cell.getAttribute('aria-label')) ?? '')![1])
+        const step = Math.max(-3, Math.min(3, Math.round(change)))
+        await expect(cell).toHaveAttribute('data-step', String(step))
+        expect(await colorAt(page, cell, 'background-color')).toEqual(
+          await colorAt(page, swatch(step), 'background-color'),
+        )
+      }
+      // 涨跌两端不同色（涨的是 pnl-up、跌的是 pnl-down 与底色的混合，不是同一个灰）。
+      expect(await bg(swatch(3))).not.toBe(await bg(swatch(-3)))
+      expect(await bg(swatch(0))).not.toBe(await bg(swatch(3)))
+      // 字色按底色亮度算：有字的格子，字与底的对比（Graphite 不低于 4.5）。
+      const contrast = await cells.evaluateAll((nodes) => {
+        const ctx = document.createElement('canvas').getContext('2d', { willReadFrequently: true })!
+        ctx.canvas.width = ctx.canvas.height = 1
+        const lum = (css: string) => {
+          ctx.clearRect(0, 0, 1, 1)
+          ctx.fillStyle = css
+          ctx.fillRect(0, 0, 1, 1)
+          const [r, g, b] = Array.from(ctx.getImageData(0, 0, 1, 1).data).map((c) => {
+            const v = c / 255
+            return v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4
+          })
+          return 0.2126 * r! + 0.7152 * g! + 0.0722 * b!
+        }
+        return nodes
+          .filter((n) => (n as HTMLElement).dataset.labelled === 'true' && (n as HTMLElement).dataset.step !== 'na')
+          .map((n) => {
+            const style = getComputedStyle(n)
+            const [a, b] = [lum(style.color), lum(style.backgroundColor)].sort((x, y) => y - x)
+            return (a! + 0.05) / (b! + 0.05)
+          })
+      })
+      expect(contrast.length).toBeGreaterThan(10)
+      // 件在深字（bg-000）与浅字（ink-100）里挑对比度高的；Console 的两端是暖色近黑与米白，最差的一档到不了 4.5，所以它只要 4。
+      expect(Math.min(...contrast)).toBeGreaterThanOrEqual(theme === 'graphite' ? 4.5 : 4)
+      // 小格子不写字，大格子写代码；有字的格子不小于阈值。
+      const sizes = await cells.evaluateAll((nodes) =>
+        nodes.map((n) => {
+          const r = n.getBoundingClientRect()
+          return { w: r.width, h: r.height, text: n.querySelector('.k-mheat-code')?.textContent ?? '' }
+        }),
+      )
+      const small = sizes.filter((c) => c.w < 40 || c.h < 24)
+      const large = sizes.filter((c) => c.w >= 70 && c.h >= 24)
+      expect(small.length).toBeGreaterThan(0)
+      expect(large.length).toBeGreaterThan(0)
+      expect(small.every((c) => c.text === '')).toBe(true)
+      expect(large.every((c) => c.text !== '')).toBe(true)
+      // 写出来的代码不被截断：有字的格子都放得下它。
+      expect(sizes.filter((c) => c.text !== '').every((c) => c.w >= c.text.length * 7 + 8)).toBe(true)
+      // 悬停出卡片：代码、价格、两个着色指标、大小指标。
+      await big.hover()
+      const card = map.locator('[data-slot="heatmap-card"]')
+      await expect(card).toBeVisible()
+      await expect(card).toContainText(await big.getAttribute('data-code').then((c) => c!))
+      for (const text of ['价格', '涨跌幅', '周表现', '市值', '行业']) await expect(card).toContainText(text)
+      await page.mouse.move(0, 0)
+      await expect(card).toBeHidden()
+      // 点图例一档：这一档的格子隐藏，别的不动；再点恢复。
+      const stepCells = (step: number) => map.locator(`[data-slot="heatmap-cell"][data-step="${step}"]`)
+      let picked = 0
+      for (const step of [1, 0, -1, 2, -2]) {
+        if ((await stepCells(step).count()) > 0) {
+          picked = step
+          break
+        }
+      }
+      const inStep = await stepCells(picked).count()
+      const segment = map.locator(`[data-slot="heatmap-segment"][data-step="${picked}"]`)
+      await segment.click()
+      await expect(segment).toHaveAttribute('aria-pressed', 'true')
+      await expect(stepCells(picked).first()).toBeHidden()
+      expect(await map.locator('[data-slot="heatmap-cell"]:visible').count()).toBe(60 - inStep)
+      await segment.click()
+      await expect(stepCells(picked).first()).toBeVisible()
+      expect(await map.locator('[data-slot="heatmap-cell"]:visible').count()).toBe(60)
+      // 点组名放大：只剩这一组，面包屑出现，大小与颜色设置保留；面包屑的「全部」回来。
+      const head = map.locator('[data-slot="heatmap-group"]').first()
+      const name = (await head.textContent())!
+      const before = await area(cells.first())
+      await head.click()
+      const inGroup = await cells.count()
+      expect(inGroup).toBeLessThan(60)
+      expect(inGroup).toBeGreaterThanOrEqual(7)
+      await expect(map.locator('[data-slot="heatmap-group"]')).toHaveCount(0)
+      await expect(map.locator('[data-slot="heatmap-crumb"]')).toContainText(name)
+      await expect(map.getByRole('button', { name: '市值' })).toHaveAttribute('aria-pressed', 'true')
+      const bigger = await area(cells.first())
+      expect(bigger).toBeGreaterThan(before)
+      await map.locator('[data-slot="heatmap-crumb"]').getByRole('button', { name: '全部' }).click()
+      await expect(cells).toHaveCount(60)
+      await map.locator('[data-slot="heatmap-group"]').first().click()
+      await page.keyboard.press('Escape')
+      await expect(cells).toHaveCount(60)
+    })
+
+    test('量化：市场热力图——切大小与颜色、平铺、单色、不分组的加密，键盘在组间与组内走', async ({ page }) => {
+      await open(page, theme, 'market-heatmap')
+      const demo = section(page, 'market-heatmap')
+      const map = demo.locator('[data-slot="market-heatmap"]')
+      const cells = map.locator('[data-slot="heatmap-cell"]')
+      // 汇总读数：只数 60，上涨加下跌不超过 60。
+      const reads = map.locator('[data-slot="heatmap-summary"] dd')
+      await expect(reads.nth(0)).toHaveText('60')
+      const [up, down] = [Number(await reads.nth(1).textContent()), Number(await reads.nth(2).textContent())]
+      expect(up + down).toBeLessThanOrEqual(60)
+      expect(up).toBeGreaterThan(0)
+      expect(down).toBeGreaterThan(0)
+      // 等大：每格差不多大（组块内的格子面积相同，跨组块可能略有差别，所以平铺后再比）。
+      await map.getByRole('button', { name: '平铺' }).click()
+      await map.getByRole('button', { name: '等大' }).click()
+      await expect(map.locator('[data-slot="heatmap-group"]')).toHaveCount(0)
+      const areas = await cells.evaluateAll((nodes) =>
+        nodes.map((n) => {
+          const r = n.getBoundingClientRect()
+          return r.width * r.height
+        }),
+      )
+      expect(Math.max(...areas) / Math.min(...areas)).toBeLessThan(1.6)
+      // 周表现：档宽自动取好数，图例的数跟着变（涨跌幅固定 1%，周表现不是）。
+      const legend = map.locator('[data-slot="heatmap-legend"]')
+      await expect(legend).not.toContainText('+9%')
+      await map.getByRole('button', { name: '周表现' }).click()
+      await expect(legend).toContainText('+9%')
+      await expect(map.getByRole('button', { name: '周表现' })).toHaveAttribute('aria-pressed', 'true')
+      // 单色：格子的底色是灰（红绿蓝相等），不带涨跌色。
+      await demo.getByRole('button', { name: '单色' }).click()
+      await expect(map).toHaveAttribute('data-scheme', 'mono')
+      for (const step of [-3, 0, 3]) {
+        const [r, g, b] = await colorAt(
+          page,
+          map.locator(`[data-slot="heatmap-swatch"][data-step="${step}"]`),
+          'background-color',
+        )
+        expect(Math.abs(r! - g!)).toBeLessThanOrEqual(20)
+        expect(Math.abs(g! - b!)).toBeLessThanOrEqual(20)
+      }
+      await demo.getByRole('button', { name: '经典' }).click()
+      // 键盘：先分组；Tab 进某组的格子，方向键在组内走（落点还在同一组），再 Tab 到下一个组名。
+      await map.getByRole('button', { name: '分组' }).click()
+      const firstHead = map.locator('[data-slot="heatmap-group"]').first()
+      await firstHead.focus()
+      await page.keyboard.press('Tab')
+      const first = page.locator(':focus')
+      await expect(first).toHaveAttribute('data-slot', 'heatmap-cell')
+      const block = map.locator('[data-slot="heatmap-group-block"]').first()
+      const firstCode = await first.getAttribute('data-code')
+      let moved = firstCode
+      for (const key of ['ArrowRight', 'ArrowDown', 'ArrowLeft', 'ArrowUp']) {
+        await page.keyboard.press(key)
+        const now = await page.locator(':focus').getAttribute('data-code')
+        if (now !== firstCode) moved = now
+      }
+      expect(moved).not.toBe(firstCode)
+      expect(await block.locator(`[data-code="${moved}"]`).count()).toBe(1)
+      // 焦点所在格子出悬停卡片，Enter 选中。
+      await expect(map.locator('[data-slot="heatmap-card"]')).toBeVisible()
+      await page.keyboard.press('Enter')
+      await expect(page.locator(':focus')).toHaveAttribute('aria-pressed', 'true')
+      await page.keyboard.press('Tab')
+      await expect(page.locator(':focus')).toHaveAttribute('data-slot', 'heatmap-group')
+      expect(await page.locator(':focus').textContent()).not.toBe(await firstHead.textContent())
+      // 不分组的加密：没有组名，也没有视图切换，三十格。
+      await demo.getByRole('button', { name: '不分组的加密' }).click()
+      await expect(cells).toHaveCount(30)
+      await expect(map.locator('[data-slot="heatmap-group"]')).toHaveCount(0)
+      await expect(map.getByRole('group', { name: '视图' })).toHaveCount(0)
+      await expect(map.getByRole('button', { name: '市值' })).toBeVisible()
+    })
+
     test('积木：空态、工具条按钮与估算标记', async ({ page }) => {
       await open(page, theme, 'empty-state')
       await expect(section(page, 'empty-state').getByRole('status')).toContainText('Nothing selected')

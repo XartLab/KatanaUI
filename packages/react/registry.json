@@ -134,6 +134,11 @@
           "target": "~/src/katana/ui/theme/loading.css"
         },
         {
+          "path": "src/theme/market-heatmap.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/market-heatmap.css"
+        },
+        {
           "path": "src/theme/menu.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/menu.css"
@@ -2109,6 +2114,43 @@
           "path": "src/quant/limit-ladder.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/quant/limit-ladder.tsx"
+        }
+      ]
+    },
+    {
+      "name": "market-heatmap-model",
+      "type": "registry:component",
+      "title": "Market Heatmap Model",
+      "description": "MarketHeatmap 的纯函数：色阶七档的档宽取好数、值落在哪一档、图例的值边界、方向键找邻居的格子。",
+      "registryDependencies": [
+        "@katana/treemap-model"
+      ],
+      "files": [
+        {
+          "path": "src/quant/market-heatmap-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/market-heatmap-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "market-heatmap",
+      "type": "registry:component",
+      "title": "Market Heatmap",
+      "description": "照 TradingView 的股票热力图：格子面积是所选的大小指标（市值、成交额或等大），颜色是所选指标落在七档色阶的哪一档，按行业分组或平铺。顶上一行汇总读数（只数、上涨、下跌），工具条用分段控件切大小、颜色、视图；点组名放大到只看这一组（面包屑返回，Esc 也行）；悬停出这只票的价格与各项读数；底部图例写出每一档的值边界，点一档就隐藏这一档的格子。A 股、港股、美股、加密共用，只换数据与分组；不认数据集，品种、指标、文字都由调用方传。排布与着色档用包里矩形树图的 layoutTreemap、colorStep。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/market-heatmap-model",
+        "@katana/quant-format",
+        "@katana/symbol-mark",
+        "@katana/toggle-group",
+        "@katana/treemap-model"
+      ],
+      "files": [
+        {
+          "path": "src/quant/market-heatmap.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/market-heatmap.tsx"
         }
       ]
     },

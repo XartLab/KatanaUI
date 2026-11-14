@@ -4,15 +4,22 @@ import { PanelFrame } from '../../src/blocks'
 import {
   ChangeText,
   LimitLadder,
+  MarketHeatmap,
   PnlText,
   formatCompact,
   formatPercentChange,
   formatPrice,
   formatQuantity,
   formatVolume,
+  type HeatmapColorBy,
+  type HeatmapItem,
+  type HeatmapScheme,
+  type HeatmapSizeBy,
   type LadderLevel,
   type LimitLadderLabels,
+  type MarketHeatmapLabels,
 } from '../../src/quant'
+import { ToggleGroup, ToggleGroupItem } from '../../src/primitives/toggle-group'
 import { Cell, Row } from './parts'
 
 // 量化层（@katana-ui/react/quant，#1862）的演示。数值都是示例，不是行情。根元素设 data-updown="cn" 时涨跌色互换（红涨绿跌）。
@@ -228,6 +235,171 @@ export function LimitLadderDemo() {
       >
         <LimitLadder levels={LADDER_LEVELS} labels={LADDER_LABELS} selected={selected} onSelect={setSelected} />
       </PanelFrame>
+    </div>
+  )
+}
+
+// 市场热力图（#15）的演示数据：全是编出来的，不是真实品种，也不是行情。固定种子，每次打开一样。
+function seeded(seed: number) {
+  let state = seed >>> 0
+  return () => {
+    state = (Math.imul(state, 1664525) + 1013904223) >>> 0
+    return state / 2 ** 32
+  }
+}
+
+const HEAT_INDUSTRIES: [string, string][] = [
+  ['半导体', '芯'],
+  ['白酒', '酿'],
+  ['银行', '银'],
+  ['新能源', '能'],
+  ['医药', '药'],
+  ['券商', '券'],
+  ['军工', '工'],
+  ['软件', '软'],
+]
+const HEAT_ORDINALS = '甲乙丙丁戊己庚辛'
+
+function makeStocks(): HeatmapItem[] {
+  const rand = seeded(15)
+  const out: HeatmapItem[] = []
+  let n = 0
+  HEAT_INDUSTRIES.forEach(([industry, mark], g) => {
+    const count = g < 4 ? 8 : 7
+    const tilt = (rand() - 0.5) * 3
+    for (let i = 0; i < count; i += 1) {
+      n += 1
+      const cap = 1.2e10 * Math.exp(rand() * 3.6) * (g === 2 ? 3 : 1)
+      const day = tilt + (rand() + rand() + rand() - 1.5) * 4
+      out.push({
+        code: String(600000 + n * 7).padStart(6, '0'),
+        name: `示例${mark}${HEAT_ORDINALS[i]}`,
+        group: industry,
+        price: 4 + rand() * 180,
+        size: { cap, turnover: cap * (0.004 + rand() * 0.03) },
+        value: { day: Number(day.toFixed(2)), week: Number((day * 1.4 + (rand() - 0.5) * 6).toFixed(2)) },
+      })
+    }
+  })
+  return out
+}
+
+const CRYPTO_NAMES = [
+  'ALFA',
+  'BRAV',
+  'CHAR',
+  'DELT',
+  'ECHO',
+  'FOXT',
+  'GOLF',
+  'HOTL',
+  'INDI',
+  'JULI',
+  'KILO',
+  'LIMA',
+  'MIKE',
+  'NOVE',
+  'OSCA',
+  'PAPA',
+  'QUEB',
+  'ROME',
+  'SIER',
+  'TANG',
+  'UNIF',
+  'VICT',
+  'WHIS',
+  'XRAY',
+  'YANK',
+  'ZULU',
+  'ARBO',
+  'BOLT',
+  'CEDA',
+  'DUNE',
+]
+
+function makeCoins(): HeatmapItem[] {
+  const rand = seeded(30)
+  return CRYPTO_NAMES.map((code, i) => {
+    const cap = 6e11 * Math.exp(-i * 0.28) * (0.7 + rand() * 0.6)
+    const day = (rand() + rand() + rand() - 1.5) * 7
+    return {
+      code,
+      name: `示例币 ${String(i + 1).padStart(2, '0')}`,
+      price: 0.02 + rand() * 4000,
+      size: { cap, turnover: cap * (0.02 + rand() * 0.12) },
+      value: { day: Number(day.toFixed(2)), week: Number((day * 1.6 + (rand() - 0.5) * 12).toFixed(2)) },
+    }
+  })
+}
+
+const STOCKS = makeStocks()
+const COINS = makeCoins()
+
+const HEAT_SIZE: HeatmapSizeBy[] = [
+  { key: 'cap', label: '市值' },
+  { key: 'turnover', label: '成交额' },
+  { key: 'equal', label: '等大', equal: true },
+]
+// 涨跌幅固定一档 1%（±3%，TradingView 的做法）；周表现不给档宽，按这批值自动取。
+const HEAT_COLOR: HeatmapColorBy[] = [
+  { key: 'day', label: '涨跌幅', unit: '%', step: 1 },
+  { key: 'week', label: '周表现', unit: '%' },
+]
+const HEAT_LABELS: MarketHeatmapLabels = {
+  sizeBy: '大小',
+  colorBy: '颜色',
+  view: '视图',
+  grouped: '分组',
+  flat: '平铺',
+  all: '全部',
+  other: '其他',
+  price: '价格',
+  group: '行业',
+  summary: { count: '只数', up: '上涨', down: '下跌' },
+  segment: (range) => `隐藏或显示 ${range} 的格子`,
+  list: '市场热力图',
+  empty: '没有数据',
+}
+
+export function MarketHeatmapDemo() {
+  const [selected, setSelected] = useState<string | null>(null)
+  const [scheme, setScheme] = useState<HeatmapScheme>('classic')
+  const [market, setMarket] = useState('stocks')
+  const coins = market === 'coins'
+  return (
+    <div style={{ display: 'grid', gap: 12, width: '100%', maxWidth: 760 }}>
+      <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+        <ToggleGroup variant="sm" aria-label="数据" value={market} onValueChange={setMarket}>
+          <ToggleGroupItem value="stocks">分行业的股票</ToggleGroupItem>
+          <ToggleGroupItem value="coins">不分组的加密</ToggleGroupItem>
+        </ToggleGroup>
+        <ToggleGroup variant="sm" aria-label="配色" value={scheme} onValueChange={(v) => setScheme(v as HeatmapScheme)}>
+          <ToggleGroupItem value="classic">经典</ToggleGroupItem>
+          <ToggleGroupItem value="mono">单色</ToggleGroupItem>
+        </ToggleGroup>
+      </div>
+      <div style={{ height: 620 }}>
+        <PanelFrame
+          index="03"
+          title={coins ? '加密热力图' : '股票热力图'}
+          object="演示数据"
+          meta="DEMO"
+          source="SOURCE · 演示数据 · 非行情"
+          focused
+          labels={{ settings: '设置', maximize: '最大化', restore: '还原', close: '关闭' }}
+        >
+          <MarketHeatmap
+            key={market}
+            items={coins ? COINS : STOCKS}
+            sizeBy={HEAT_SIZE}
+            colorBy={HEAT_COLOR}
+            labels={{ ...HEAT_LABELS, group: '行业' }}
+            scheme={scheme}
+            selected={selected}
+            onSelect={setSelected}
+          />
+        </PanelFrame>
+      </div>
     </div>
   )
 }

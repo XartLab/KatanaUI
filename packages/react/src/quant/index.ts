@@ -11,6 +11,15 @@ export {
   type LimitLadderLabels,
   type LimitLadderProps,
 } from './limit-ladder.tsx'
+export {
+  MarketHeatmap,
+  type HeatmapColorBy,
+  type HeatmapItem,
+  type HeatmapScheme,
+  type HeatmapSizeBy,
+  type MarketHeatmapLabels,
+  type MarketHeatmapProps,
+} from './market-heatmap.tsx'
 export * from './format/index.ts'
 
 // 时间序列与盈亏的件（#1917）。功能参照 Arc（uiarc.dev，2026-11-14 读），只取功能，实现原创。
