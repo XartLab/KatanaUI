@@ -169,7 +169,7 @@ export function HoverCardDemo() {
     <Row name="悬停">
       <HoverCard>
         <HoverCardTrigger asChild>
-          <a href="#/hover-card" data-testid="hover-trigger">
+          <a href="#/hover-card" data-testid="hover-trigger" className="text-ink underline">
             BTCUSDT.P
           </a>
         </HoverCardTrigger>

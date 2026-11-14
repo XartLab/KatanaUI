@@ -10,7 +10,7 @@ export default defineConfig({
   // 样式用 Tailwind v4（决策记录 0049）。JSX 由 tsconfig 的 jsx: react-jsx 交给 Vite+ 自带的转换，不用 React 插件。
   plugins: [tailwindcss()],
   build: { outDir: 'dist', emptyOutDir: true },
-  // 单测：Node 环境；组件用 react-dom/server 渲染成字符串测结构。浏览器里的行为在 KATANAview 的 e2e/ui-gallery.spec.ts。
+  // 单测：Node 环境；组件用 react-dom/server 渲染成字符串测结构。浏览器里的行为在 e2e/（`pnpm test:e2e`，Playwright）。
   test: {
     environment: 'node',
     include: ['src/**/*.test.{ts,tsx}', 'gallery/**/*.test.{ts,tsx}', 'scripts/**/*.test.ts', 'ds/**/*.test.{ts,tsx}'],

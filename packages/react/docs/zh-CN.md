@@ -76,7 +76,7 @@ pnpm --filter @katana-ui/react exec shadcn add <component>
 1. 文件头补上 MIT 与出处，格式照现有文件（`scripts/check-license.mjs` 查）。
 2. 尺寸、圆角、颜色、动效改成我们的：取 token，不写色值；字号用 `k-text-*`；焦点环用 `lib/focus`；动效写进 `theme/motion.css`，缓动取 `--ease-snappy` 等。
 3. 文案不写死在组件里（需要的文字由调用方传，比如 Dialog 的 `closeLabel`），包里不出现中文。
-4. 在 `src/index.ts` 导出；在文档站加它的页（见下一节）；在 `e2e/ui-gallery.spec.ts` 加断言用户看得见的行为。
+4. 在 `src/index.ts` 导出；在文档站加它的页（见下一节）；在 `e2e/ui-gallery.spec.ts`（本包内）加断言用户看得见的行为。
 5. 对应设计稿的卡，在 `docs/coverage-map.json` 里把状态与落点改过来，跑 `pnpm ui:coverage` 重新生成 `coverage.md`。
 6. 文件名保持 shadcn 的短横线小写（`dropdown-menu.tsx`），这是 `scripts/check-components.mjs` 的例外：它只扫应用的 `src/`。
 
@@ -135,7 +135,9 @@ MIT（用户 2026-11-14 定，#1876），见本文开头。别的项目经注册
 
 - `pnpm --filter @katana-ui/react test`：纯逻辑（`cn`、弹簧参数）与基础件的服务端渲染结构。根目录的 `pnpm test` 包含它。
 - `pnpm --filter @katana-ui/react typecheck`：根目录的 `pnpm typecheck` 包含它。
-- 浏览器行为：`E2E_GROUP=panel E2E_DEV=1 pnpm exec playwright test e2e/ui-gallery.spec.ts --project dpr-1`。
+- 浏览器行为（#2 第 4 步从 KATANAview 搬来）：`pnpm test:e2e`（根目录或本包都行）。`playwright.config.ts` 先 `vp build` 打包文档站、再 `vp preview` 给页面，只跑 dpr-1 一个项目。`e2e/ui-gallery.spec.ts` 量计算样式、键盘、动效、像素，`e2e/ui-gallery-a11y.spec.ts` 每页在两个主题下跑 axe 与控制台检查（当场修不了的违规列在 `e2e/ui-gallery-a11y-known.json`，只许减）。同一份断言不为过关而放松：跑红了先查是这边缺东西还是测试过期。
+- Playwright 要的 Chromium 跟机器上预装的版本不一致时，用 `PLAYWRIGHT_BROWSERS_PATH` 指到一个放软链的目录（目录名按 Playwright 要的版本号，如 `chromium-1194`，指向预装的那份），或 `pnpm exec playwright install chromium`。
+- Happo 视觉回归（要云端账号，不进门禁）：`pnpm --filter @katana-ui/react test:happo`，用 `e2e/ui-gallery-happo.spec.ts`。
 
 ## 单独成仓库（#1881）
 

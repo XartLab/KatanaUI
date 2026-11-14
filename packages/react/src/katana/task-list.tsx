@@ -159,8 +159,11 @@ export function TaskList({ tasks, defaultTasks = [], onTasksChange, labels, labe
           />
         </motion.li>
       ))}
-      <li role="status" aria-live="polite" className="sr-only">
-        {announcement}
+      {/* li 的角色改成 status 会让 ul 的子元素不是 listitem（axe list 规则）：li 留着，播报放进里面的 span。 */}
+      <li className="sr-only">
+        <span role="status" aria-live="polite">
+          {announcement}
+        </span>
       </li>
     </ul>
   )
