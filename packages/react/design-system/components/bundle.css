@@ -9199,7 +9199,7 @@ button.k-sm-head:focus-visible {
 }
 
 .k-ecal {
-  --ecal-cols: 48px 64px minmax(160px, 1fr) 44px 84px 64px 64px;
+  --ecal-cols: 48px 36px minmax(160px, 1fr) 44px 84px 64px 64px;
   gap: var(--space-3);
   min-width: 0;
   min-height: 0;

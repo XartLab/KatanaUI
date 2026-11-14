@@ -2,7 +2,7 @@
 /* 经济日历（EventCalendar，#28）。表格手感同连板天梯：无衬线加 tabular-nums、右对齐数字、紧凑行、极淡分隔线、悬停整行提亮。
    重要程度是 3 格亮度条（不上色）；实际值上涨 / 下跌色走 pnl token（data-updown 互换时跟着换）；橙色不画数据。 */
 .k-ecal {
-  --ecal-cols: 48px 64px minmax(160px, 1fr) 44px 84px 64px 64px;
+  --ecal-cols: 48px 36px minmax(160px, 1fr) 44px 84px 64px 64px;
   display: flex;
   flex: 1 1 auto;
   flex-direction: column;

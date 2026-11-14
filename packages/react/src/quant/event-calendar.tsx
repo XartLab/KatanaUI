@@ -4,7 +4,7 @@ import { cn } from '../lib/cn.ts'
 import { SymbolMark } from '../katana/symbol-mark.tsx'
 import { Switch } from '../primitives/switch.tsx'
 import { ToggleGroup, ToggleGroupItem } from '../primitives/toggle-group.tsx'
-import { RowActions, type RowAction } from '../patterns/row-actions.tsx'
+import { RowActions, RowContextMenu, type RowAction } from '../patterns/row-actions.tsx'
 import { ChipGroup } from '../patterns/chip-group.tsx'
 import {
   Combobox,
@@ -68,8 +68,9 @@ export type EventCalendarLabels = {
   /** 一天的标题（「11月17日 周二」），由调用方按语言格式化。 */
   dayTitle: (day: string) => string
   count: (n: number) => string
-  /** 行悬停按钮条的读屏名。 */
+  /** 行悬停按钮条与右键菜单的读屏名。 */
   rowActions: string
+  rowMenu: string
 }
 
 export type EventCalendarProps = {
@@ -128,6 +129,12 @@ export function EventCalendar({
     [events, range, importance, regions, onlyHigh, timeZone],
   )
   const groups = groupByDay(visible, timeZone)
+  const actionsFor = rowActions
+    ? (id: string) => {
+        const event = events.find((item) => item.id === id)
+        return event ? rowActions(event) : []
+      }
+    : undefined
   const clock = useMemo(
     () => new Intl.DateTimeFormat(locale, { timeZone, hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }),
     [locale, timeZone],
@@ -217,65 +224,69 @@ export function EventCalendar({
           {labels.empty}
         </p>
       ) : (
-        <div className="k-ecal-list" role="table" aria-label={labels.list}>
-          {groups.map((group) => (
-            <div key={group.day} role="rowgroup" className="k-ecal-day" data-day={group.day}>
-              <div className="k-ecal-day-head" role="row" data-slot="ecal-day-head">
-                <span role="columnheader">
-                  {labels.dayTitle(group.day)}
-                  {group.day === today && <span className="k-ecal-today">{labels.today}</span>}
-                </span>
-              </div>
-              {group.events.map((event) => {
-                const wait = event.actual === undefined ? minutesUntil(event.at, now) : null
-                return (
-                  <div
-                    key={event.id}
-                    role="row"
-                    tabIndex={0}
-                    className="k-ecal-row k-row-host"
-                    data-slot="ecal-row"
-                    data-id={event.id}
-                    data-importance={event.importance}
-                  >
-                    <span role="cell" className="k-ecal-time">
-                      {clock.format(event.at)}
-                    </span>
-                    <span role="cell" className="k-ecal-region">
-                      <SymbolMark code={event.region} name={event.regionName} src={event.flag} size={16} />
-                      <span>{event.region}</span>
-                    </span>
-                    <span role="cell" className="k-ecal-name">
-                      {event.name}
-                    </span>
-                    <span
-                      role="cell"
-                      className="k-ecal-level"
-                      data-slot="ecal-level"
-                      data-level={event.importance}
-                      aria-label={labels.importance(event.importance)}
+        <RowContextMenu actionsFor={actionsFor} label={labels.rowMenu}>
+          <div className="k-ecal-list" role="table" aria-label={labels.list}>
+            {groups.map((group) => (
+              <div key={group.day} role="rowgroup" className="k-ecal-day" data-day={group.day}>
+                <div className="k-ecal-day-head" role="row" data-slot="ecal-day-head">
+                  <span role="columnheader">
+                    {labels.dayTitle(group.day)}
+                    {group.day === today && <span className="k-ecal-today">{labels.today}</span>}
+                  </span>
+                </div>
+                {group.events.map((event) => {
+                  const wait = event.actual === undefined ? minutesUntil(event.at, now) : null
+                  return (
+                    <div
+                      key={event.id}
+                      role="row"
+                      tabIndex={0}
+                      className="k-ecal-row k-row-host"
+                      data-slot="ecal-row"
+                      data-id={event.id}
+                      data-code={event.id}
+                      data-importance={event.importance}
                     >
-                      {LEVELS.map((level) => (
-                        <i key={level} className={level <= event.importance ? 'is-on' : undefined} />
-                      ))}
-                    </span>
-                    <span role="cell" className="k-ecal-num k-ecal-actual" data-tone={event.tone}>
-                      {event.actual ?? DASH}
-                      {wait !== null && <small className="k-ecal-wait">{labels.countdown(wait)}</small>}
-                    </span>
-                    <span role="cell" className="k-ecal-num">
-                      {event.forecast ?? DASH}
-                    </span>
-                    <span role="cell" className="k-ecal-num">
-                      {event.previous ?? DASH}
-                    </span>
-                    {rowActions && <RowActions items={rowActions(event)} label={labels.rowActions} focusable={false} />}
-                  </div>
-                )
-              })}
-            </div>
-          ))}
-        </div>
+                      <span role="cell" className="k-ecal-time">
+                        {clock.format(event.at)}
+                      </span>
+                      <span role="cell" className="k-ecal-region" title={event.regionName}>
+                        <SymbolMark code={event.region} name={event.regionName} src={event.flag} size={16} />
+                      </span>
+                      <span role="cell" className="k-ecal-name">
+                        {event.name}
+                      </span>
+                      <span
+                        role="cell"
+                        className="k-ecal-level"
+                        data-slot="ecal-level"
+                        data-level={event.importance}
+                        aria-label={labels.importance(event.importance)}
+                      >
+                        {LEVELS.map((level) => (
+                          <i key={level} className={level <= event.importance ? 'is-on' : undefined} />
+                        ))}
+                      </span>
+                      <span role="cell" className="k-ecal-num k-ecal-actual" data-tone={event.tone}>
+                        {event.actual ?? DASH}
+                        {wait !== null && <small className="k-ecal-wait">{labels.countdown(wait)}</small>}
+                      </span>
+                      <span role="cell" className="k-ecal-num">
+                        {event.forecast ?? DASH}
+                      </span>
+                      <span role="cell" className="k-ecal-num">
+                        {event.previous ?? DASH}
+                      </span>
+                      {rowActions && (
+                        <RowActions items={rowActions(event)} label={labels.rowActions} focusable={false} />
+                      )}
+                    </div>
+                  )
+                })}
+              </div>
+            ))}
+          </div>
+        </RowContextMenu>
       )}
     </div>
   )

@@ -2060,6 +2060,12 @@ for (const theme of THEMES) {
       expect(levels.length).toBeGreaterThan(0)
       expect(new Set(levels)).toEqual(new Set(['3']))
       await cal.getByRole('switch', { name: '只看高重要' }).click()
+      // 国家列只有旗帜位（字母圆标），全名在悬停提示与读屏名里；右键出与悬停按钮同一份项。
+      await expect(cal.locator('[data-id="b2"] .k-ecal-region')).toHaveAttribute('title', '丙国')
+      await expect(cal.locator('[data-id="b2"] .k-ecal-region > *')).toHaveCount(1)
+      await cal.locator('[data-id="b2"]').click({ button: 'right' })
+      await expect(page.getByRole('menuitem')).toHaveCount(2)
+      await page.keyboard.press('Escape')
       // 国家多选：只选 JP，只剩一行。
       await cal.getByRole('combobox', { name: '全部国家' }).click()
       await page.getByRole('option', { name: /丙国/ }).click()

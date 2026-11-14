@@ -1162,6 +1162,7 @@ const CAL_LABELS: EventCalendarLabels = {
   },
   count: (n) => `${n} 条`,
   rowActions: '事件操作',
+  rowMenu: '事件菜单',
 }
 
 export function EventCalendarDemo() {
