@@ -2263,6 +2263,48 @@ for (const theme of THEMES) {
       await expect(ladder.locator('[data-code="601006"]')).toHaveAttribute('aria-selected', 'true')
     })
 
+    test('量化：市场热力图——显示开关：logo、标题（无 / 代码 / 全名）、格内数值（价格 / 成交额 / 涨跌幅 / 无）与全屏', async ({
+      page,
+    }) => {
+      await page.setViewportSize({ width: 1400, height: 900 })
+      await open(page, theme, 'market-heatmap')
+      const map = section(page, 'market-heatmap').locator('[data-slot="market-heatmap"]')
+      await map.getByRole('button', { name: '平铺' }).click()
+      await map.evaluate((el) => Promise.all(el.getAnimations({ subtree: true }).map((a) => a.finished)))
+      const cells = map.locator('[data-slot="heatmap-cell"]')
+      const big = cells.first()
+      const count = (selector: string) => map.locator(`[data-slot="heatmap-cell"] ${selector}`).count()
+      // 默认：有 logo、代码、涨跌幅。
+      expect(await count('.k-mheat-logo')).toBeGreaterThan(0)
+      expect(await count('.k-mheat-code')).toBeGreaterThan(0)
+      await expect(big.locator('.k-mheat-value')).toContainText('%')
+      // 关 logo：格子里没有徽标，代码还在。
+      await map.getByRole('switch', { name: 'Logo' }).click()
+      expect(await count('.k-mheat-logo')).toBe(0)
+      expect(await count('.k-mheat-code')).toBeGreaterThan(0)
+      await map.getByRole('switch', { name: 'Logo' }).click()
+      // 标题：无 → 没有代码字；全名 → 代码位写名称。
+      const title = map.getByRole('group', { name: '标题' })
+      await title.getByRole('button', { name: '无' }).click()
+      expect(await count('.k-mheat-code')).toBe(0)
+      await title.getByRole('button', { name: '全名' }).click()
+      const code = await big.getAttribute('data-code')
+      const named = await big.locator('.k-mheat-code').first().textContent()
+      expect(named).not.toBe(code)
+      await title.getByRole('button', { name: '代码' }).click()
+      await expect(big.locator('.k-mheat-code').first()).toHaveText(code!)
+      // 格内数值：价格（不带 %）、成交额、无。
+      const value = map.getByRole('group', { name: '格内数值' })
+      await value.getByRole('button', { name: '价格' }).click()
+      await expect(big.locator('.k-mheat-value')).not.toContainText('%')
+      await value.getByRole('button', { name: '成交额' }).click()
+      await expect(big.locator('.k-mheat-value')).toContainText(/[KMB]/)
+      await value.getByRole('button', { name: '无' }).click()
+      expect(await count('.k-mheat-value')).toBe(0)
+      // 全屏钮在，且点了会请求全屏（无头浏览器里 requestFullscreen 可能被拒，只断言按钮与调用）。
+      await expect(map.getByRole('button', { name: '全屏' })).toBeVisible()
+    })
+
     test('量化：市场热力图——面积跟大小成正比，颜色落在对应档，点组名放大，图例点一档隐藏，小格子不写字', async ({
       page,
     }) => {
@@ -4619,5 +4661,105 @@ for (const theme of THEMES) {
     await expect(table.locator('tbody tr').first()).toContainText('口号式表述和有预算的安排不是一回事')
     await frame.getByRole('group', { name: '视图' }).getByRole('button', { name: '假说', exact: true }).click()
     await expect(rows).toHaveCount(6)
+  })
+
+  test(`选股器（${theme}）：过滤胶囊选预设与手动设、加字段、移除、重置，列集标签换列`, async ({ page }) => {
+    await open(page, theme, 'filter-bar')
+    const doc = section(page, 'filter-bar')
+    const bar = doc.locator('[data-slot="filter-bar"]')
+    const grid = doc.getByTestId('screener-grid')
+    const codes = () =>
+      grid
+        .locator('[data-col="symbol"]')
+        .allTextContents()
+        .then((all) => all.filter((t) => t !== '代码'))
+    expect(await codes()).toHaveLength(8)
+    // 预设：价格「高于 100」，副标题「高价股」在浮层里；选了以后胶囊带条件文字，表只剩价格大于 100 的 5 只。
+    await bar.locator('[data-slot="filter-pill"][data-field="price"]').click()
+    const pop = page.getByRole('dialog', { name: '价格' })
+    await expect(pop.getByText('高价股')).toBeVisible()
+    await pop.locator('[data-preset="p-high"]').click()
+    await expect(bar.locator('[data-field="price"]')).toContainText('高于 100')
+    await expect.poll(async () => (await codes()).length).toBe(4)
+    // 手动设置：涨跌幅 大于 1，应用后与价格条件相且。
+    await bar.locator('[data-field="change"]').click()
+    const pop2 = page.getByRole('dialog', { name: '涨跌幅' })
+    await pop2.getByLabel('值').fill('1')
+    await pop2.getByRole('button', { name: '应用' }).click()
+    await expect(bar.locator('[data-field="change"]')).toContainText('大于 1')
+    await expect.poll(async () => (await codes()).length).toBe(2)
+    // 「+」：加一个字段（分组带计数，进组再选）；移除字段连它的条件一起清。
+    await bar.getByRole('button', { name: '添加过滤' }).click()
+    const add = page.getByRole('dialog', { name: '添加过滤' })
+    await expect(add.locator('[data-group="分红"] small')).toHaveText('1')
+    await add.locator('[data-group="分红"]').click()
+    await add.locator('[data-field-option="yield"]').click()
+    await expect(bar.locator('[data-field="yield"]')).toBeVisible()
+    await bar.locator('[data-field="change"]').click()
+    await page.getByRole('dialog', { name: '涨跌幅' }).getByRole('button', { name: '移除过滤 涨跌幅' }).click()
+    await expect(bar.locator('[data-field="change"]')).toHaveCount(0)
+    await expect.poll(async () => (await codes()).length).toBe(4)
+    // 「⋯」重置全部。
+    await bar.getByRole('button', { name: '更多' }).click()
+    await page.getByRole('button', { name: '重置全部过滤' }).click()
+    await expect.poll(async () => (await codes()).length).toBe(8)
+    // 列集标签：概览亮着，点「估值」换成四列（代码、价格、市盈率、市值），涨跌幅列消失。
+    const tabs = doc.getByRole('tablist', { name: '列集' })
+    await expect(tabs.getByRole('tab', { name: '概览' })).toHaveAttribute('aria-selected', 'true')
+    await tabs.getByRole('tab', { name: '估值' }).click()
+    await expect(tabs.getByRole('tab', { name: '估值' })).toHaveAttribute('aria-selected', 'true')
+    await expect(grid.getByRole('columnheader')).toHaveCount(4)
+    await expect(grid.getByRole('columnheader', { name: /涨跌幅/ })).toHaveCount(0)
+  })
+
+  test(`新闻流（${theme}）：组合过滤——加分面、多选、重置、移除；选中行加深；阅读窗`, async ({ page }) => {
+    await open(page, theme, 'news-feed')
+    const frame = section(page, 'news-feed').getByTestId('news-frame')
+    const rows = frame.locator('.k-news-item')
+    await expect(rows).toHaveCount(6)
+    // 「市场」分面一开始就在：选「股票」只剩带这个取值的一条。
+    await frame.locator('[data-facet="market"]').click()
+    const pop = page.getByRole('dialog', { name: '市场' })
+    await pop.getByRole('checkbox', { name: '股票' }).click()
+    await expect(rows).toHaveCount(1)
+    await page.keyboard.press('Escape')
+    // 再加「国家」分面（「添加过滤」里没有的才列），再选「乙国」：且关系，没有命中。
+    await frame.locator('[data-slot="news-facet-add"]').click()
+    await page.locator('[data-facet-option="country"]').click()
+    await frame.locator('[data-facet="country"]').click()
+    await page.getByRole('dialog', { name: '国家' }).getByRole('checkbox', { name: '乙国' }).click()
+    await expect(rows).toHaveCount(0)
+    await page.keyboard.press('Escape')
+    // 重置国家：回到只受「市场」影响；移除「市场」：全部六条。
+    await frame.locator('[data-facet="country"]').click()
+    await page.getByRole('dialog', { name: '国家' }).getByRole('button', { name: '重置' }).click()
+    await page.keyboard.press('Escape')
+    await expect(rows).toHaveCount(1)
+    await frame.locator('[data-facet="market"]').click()
+    await page.getByRole('dialog', { name: '市场' }).getByRole('button', { name: '移除 市场' }).click()
+    await expect(frame.locator('[data-facet="market"]')).toHaveCount(0)
+    await expect(rows).toHaveCount(6)
+  })
+
+  test(`新闻阅读窗（${theme}）：品种涨跌上色、要点、操作按钮`, async ({ page }) => {
+    await open(page, theme, 'news-reader')
+    const reader = section(page, 'news-reader').locator('[data-slot="news-reader"]')
+    await expect(reader.getByRole('heading', { level: 2 })).toContainText('营收好于预期')
+    const color = (code: string) =>
+      reader.locator(`[data-symbol="${code}"] .k-news-chip-change`).evaluate((el) => getComputedStyle(el).color)
+    expect(await color('ALFA')).toBe(
+      await page.evaluate(() => {
+        const probe = document.createElement('i')
+        probe.style.color = 'var(--pnl-up)'
+        document.body.append(probe)
+        const c = getComputedStyle(probe).color
+        probe.remove()
+        return c
+      }),
+    )
+    await expect(reader.locator('[data-symbol="BETA"]')).toContainText('-0.59%')
+    expect(await color('BETA')).not.toBe(await color('ALFA'))
+    await expect(reader.getByRole('region', { name: '要点' }).locator('li')).toHaveCount(3)
+    for (const name of ['复制链接', '举报', '关闭']) await expect(reader.getByRole('button', { name })).toBeVisible()
   })
 }

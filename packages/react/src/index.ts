@@ -131,6 +131,16 @@ export { ToggleGroup, ToggleGroupItem, toggleGroupVariants, toggleItemVariants }
 export { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger, tooltipContentClass } from './primitives/tooltip.tsx'
 export { MultiSelect } from './patterns/multi-select.tsx'
 export { ChipGroup, type ChipGroupProps, type ChipItem } from './patterns/chip-group.tsx'
+export { FilterBar, type FilterBarLabels, type FilterBarProps } from './patterns/filter-bar.tsx'
+export {
+  applyFilters,
+  conditionText,
+  matchCondition,
+  type FilterCondition,
+  type FilterField,
+  type FilterOperator,
+  type FilterPreset,
+} from './patterns/filter-bar-model.ts'
 export { DateRangePicker, type DateRangeLabels, type DateRangePickerProps } from './patterns/date-range-picker.tsx'
 export type { DateRange, RangePreset, WeekStart } from './patterns/date-range-model.ts'
 export { TreeView, type TreeNode, type TreeViewProps } from './patterns/tree-view.tsx'

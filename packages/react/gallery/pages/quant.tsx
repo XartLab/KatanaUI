@@ -401,6 +401,12 @@ const HEAT_LABELS: MarketHeatmapLabels = {
   segment: (range) => `隐藏或显示 ${range} 的格子`,
   list: '市场热力图',
   empty: '没有数据',
+  fullscreen: '全屏',
+  display: {
+    logo: 'Logo',
+    title: { label: '标题', none: '无', code: '代码', name: '全名' },
+    value: { label: '格内数值', none: '无', price: '价格', size: '成交额', change: '涨跌幅' },
+  },
 }
 
 export function MarketHeatmapDemo() {

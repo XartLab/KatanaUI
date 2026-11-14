@@ -33,6 +33,7 @@ import {
   type MonitorEvent,
   type MonitorLink,
   type MonitorStrategy,
+  type NewsFacet,
   type NewsItem,
   type StrategyAction,
   type SystemMonitorLabels,
@@ -546,6 +547,7 @@ const NEWS_ITEMS: NewsItem[] = [
     summary: '公司称新产线良率已升至 92%，二季度有望满产；管理层同时提示原料价格波动风险。',
     symbols: [{ code: '600001', name: '星河锂业' }],
     important: true,
+    facets: { market: ['stocks'], activity: ['notice'], country: ['cn'] },
   },
   {
     id: 'n2',
@@ -612,7 +614,36 @@ const NEWS_LABELS: NewsFeedLabels = {
   absolute: (t) => new Date(t).toISOString().replace('T', ' ').slice(0, 16) + ' UTC',
   important: '重要',
   empty: '没有符合筛选的新闻',
+  facets: { group: '组合过滤', add: '添加过滤', reset: '重置', remove: '移除', none: '无' },
 }
+
+const NEWS_FACETS: readonly NewsFacet[] = [
+  {
+    key: 'market',
+    label: '市场',
+    shown: true,
+    options: [
+      { value: 'stocks', label: '股票' },
+      { value: 'crypto', label: '加密' },
+    ],
+  },
+  {
+    key: 'activity',
+    label: '公司事件',
+    options: [
+      { value: 'earnings', label: '财报' },
+      { value: 'notice', label: '公告' },
+    ],
+  },
+  {
+    key: 'country',
+    label: '国家',
+    options: [
+      { value: 'cn', label: '甲国' },
+      { value: 'us', label: '乙国' },
+    ],
+  },
+]
 
 export function NewsFeedDemo() {
   const [items, setItems] = useState(NEWS_ITEMS)
@@ -648,6 +679,7 @@ export function NewsFeedDemo() {
                 sources={NEWS_SOURCES}
                 now={NEWS_NOW}
                 labels={NEWS_LABELS}
+                facets={NEWS_FACETS}
                 onSymbolPick={(s) => setPicked(s.code)}
                 itemActionsLabel="新闻操作"
                 itemActions={(item) =>

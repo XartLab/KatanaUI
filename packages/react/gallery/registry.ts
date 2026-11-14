@@ -1500,6 +1500,16 @@ export const PAGES: readonly DocPage[] = [
             type: '(item: HeatmapItem) => RowAction[]',
             desc: '格子的右键菜单（#23，一般传 symbolMenu(...)）：右键、菜单键、Shift+F10 出同一份品种菜单。格子小，不画悬停按钮。读屏名取 labels.cellMenu（可选）。不传就没有。',
           },
+          {
+            name: 'labels.display',
+            type: 'HeatmapDisplayLabels',
+            desc: '给了，工具条多三个显示开关（照 TradingView 热图，主会话 2026-11-15 实测）：Logo 开关、标题（无 / 代码 / 全名）、格内数值（无 / 价格 / 当前大小指标的值 / 着色指标的读数）。不给格子照旧。',
+          },
+          {
+            name: 'labels.fullscreen',
+            type: 'string',
+            desc: '给了，工具条最右出全屏钮（容器 requestFullscreen），字是读屏名与提示。',
+          },
         ],
       },
     ],
@@ -4364,6 +4374,127 @@ export const PAGES: readonly DocPage[] = [
     keys: [],
   },
   {
+    id: 'filter-bar',
+    group: 'forms',
+    cardHeight: 520,
+    title: 'FilterBar 过滤条',
+    summary:
+      '选股器的顶部过滤行：一行可换行的胶囊，每个胶囊是一个字段；点开浮层有标题与垃圾桶（把这个过滤从条上拿掉）、搜索框、预设条件列表（主文字加灰色副标题）、底部「手动设置」（运算符加值）。最后是「+」（按分组列出所有字段，进组再选）与「⋯」（重置全部条件）。照 TradingView 选股器（主会话 2026-11-15 登录态实测），实现原创。字段、运算符、预设与文字都由调用方定义；条件受控，件不过滤数据，调用方用 applyFilters 或自己的方式过滤。',
+    exports: ['FilterBar', 'applyFilters', 'conditionText', 'matchCondition'],
+    props: [
+      {
+        part: 'FilterBar',
+        rows: [
+          {
+            name: 'fields',
+            type: 'FilterField[]',
+            desc: '{ key, label, group?, input?（number / text）, operators: {value,label}[], presets?: {key,label,hint?,op,value}[], shown? }。',
+          },
+          {
+            name: 'value',
+            type: 'FilterCondition[]',
+            desc: '{ id, field, op, value, label? }；同一字段只留最后设的一条。',
+          },
+          {
+            name: 'onChange',
+            type: '(next: FilterCondition[]) => void',
+            desc: '条件变了（设、清除、移除字段、重置）。',
+          },
+          { name: 'labels', type: 'FilterBarLabels', desc: '全部文字，由调用方传。' },
+          {
+            name: 'defaultShown',
+            type: 'string[]',
+            desc: '条上一开始有哪些字段；不给取 shown 为真的，再没有取前 6 个。',
+          },
+        ],
+      },
+      {
+        part: 'applyFilters / matchCondition',
+        note: '纯函数；约定的运算符名：gt、gte、lt、lte、eq、neq、between（值写成「下限..上限」）、contains、in（逗号分隔）。别的运算符名调用方自己匹配。',
+        rows: [
+          {
+            name: 'applyFilters(rows, conditions, getCell)',
+            type: 'Row[]',
+            desc: '所有条件都满足（且）；getCell 按字段键取这一行的值。',
+          },
+        ],
+      },
+    ],
+    states: ['设了条件的胶囊：底色加深，字提亮并带条件文字。', '字段被移除：从条上拿掉，它的条件一并清除。'],
+    donts: ['不要把过滤逻辑写进件：件只出条件，数据由调用方过滤。', '字段很多时别全摆在条上：用「+」加。'],
+    composition:
+      'FilterBar\n  胶囊 × n（Popover：标题 + 垃圾桶、搜索、预设列表、手动设置）\n  「+」（Popover：搜索、分组列表带计数）\n  「⋯」（重置）',
+    keys: [
+      ['Tab', '在胶囊、「+」、「⋯」间移动'],
+      ['Enter', '打开浮层或选中预设'],
+    ],
+  },
+  {
+    id: 'column-set-tabs',
+    group: 'blocks',
+    cardHeight: 520,
+    title: 'ColumnSetTabs 列集标签行',
+    summary:
+      '表上方的一行页签（概览、估值、分红…），点一个就把 DataGrid 的列换成这一套。照 TradingView 选股器的列组标签（主会话 2026-11-15 实测）；与 ColumnPicker 里的列集芯片是同一份数据与同一个纯函数。不存状态：哪个亮着由看得见的列恰好等于它的列推出来，手动改过列之后没有页签亮着。',
+    exports: ['ColumnSetTabs'],
+    props: [
+      {
+        part: 'ColumnSetTabs',
+        rows: [
+          { name: 'layout / onLayoutChange', type: 'GridColumnLayout[]', desc: 'DataGrid 的列摆法，受控。' },
+          { name: 'sets', type: 'ColumnSet[]', desc: '{ id, label, columns: 列 id[] }。' },
+          { name: 'label', type: 'string', desc: '整行的读屏名。' },
+          { name: 'children', type: 'ReactNode', desc: '右侧按钮位（刷新、全屏）。' },
+        ],
+      },
+    ],
+    states: ['选中：白底黑字小胶囊。', '手动改过列：没有页签选中。'],
+    donts: ['不要自己存「当前列集」：它由列推出来。'],
+    composition: 'ColumnSetTabs\n  tablist\n    tab × n\n  右侧按钮位',
+    keys: [
+      ['Tab', '在页签间移动'],
+      ['Enter', '套用这一套列'],
+    ],
+  },
+  {
+    id: 'news-reader',
+    group: 'blocks',
+    cardHeight: 520,
+    title: 'NewsReader 新闻阅读窗',
+    summary:
+      'NewsFeed 点开一条后的阅读窗：来源与操作（复制链接、举报、关闭）、标题、元信息、品种胶囊带涨跌、「要点」列表（闪电图标）、正文。照 TradingView 新闻流的阅读窗（主会话 2026-11-15 实测）。件不取数：标题、元信息、要点、正文都由调用方传；正文里的品种胶囊用 NewsSymbolChip 内联。',
+    exports: ['NewsReader', 'NewsSymbolChip'],
+    props: [
+      {
+        part: 'NewsReader',
+        rows: [
+          {
+            name: 'title / source / sourceLogo / meta',
+            type: 'string',
+            desc: '标题、来源、来源徽标、写好的元信息一行。',
+          },
+          {
+            name: 'symbols',
+            type: 'NewsReaderSymbol[]',
+            desc: '{ code, name?, logo?, change?（涨跌幅百分数） }；涨跌色走 pnl token。',
+          },
+          { name: 'keyPoints', type: 'string[]', desc: '要点；空数组不画这一块。' },
+          { name: 'children', type: 'ReactNode', desc: '正文。' },
+          { name: 'labels', type: 'NewsReaderLabels', desc: '读屏名与「要点」「关闭」「举报」「复制链接」。' },
+          {
+            name: 'onClose / onReport / onCopyLink / onSymbolPick',
+            type: 'function',
+            desc: '给了才画对应的按钮；点品种胶囊回调。',
+          },
+        ],
+      },
+    ],
+    states: ['品种涨跌：正涨色、负跌色，0 不上色。'],
+    donts: ['不要在件里取数或翻译：文字由调用方传。'],
+    composition: 'NewsReader（article）\n  header：来源 + 操作\n  标题、元信息\n  品种胶囊\n  要点\n  正文',
+    keys: [['Tab', '在操作与品种胶囊间移动']],
+  },
+  {
     id: 'news-feed',
     group: 'blocks',
     cardHeight: 560,
@@ -4398,6 +4529,12 @@ export const PAGES: readonly DocPage[] = [
             desc: '全部文字：all、feed、channels、sources、clearSources、search、layout、layoutList、layoutCard、pause、resume、important、empty，以及 newItems(n)、ago(秒)、absolute(时间)。包里没有语言。',
           },
           { name: 'defaultLayout', type: "'list' | 'card'", desc: '起始排法，默认 list。' },
+          {
+            name: 'facets',
+            type: 'NewsFacet[]',
+            desc: '组合过滤（照 TradingView News Flow，主会话 2026-11-15 实测）：{ key, label, options, single?, shown? }；条目用 NewsItem.facets 带取值。每个分面一个胶囊，浮层里复选、可重置、可移除，「+ 添加过滤」再加；取值之间「或」，分面之间「且」。需要 labels.facets 的文字。',
+          },
+          { name: 'selected', type: 'string | null', desc: '阅读窗开着的那条：行底色加深。' },
           { name: 'onSymbolPick', type: '(symbol, item) => void', desc: '点品种胶囊。' },
           {
             name: 'itemActions',

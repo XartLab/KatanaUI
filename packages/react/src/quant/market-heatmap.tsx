@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MIT
+import { MaximizeIcon } from 'lucide-react'
 import {
   useCallback,
   useId,
@@ -15,6 +16,7 @@ import { cn } from '../lib/cn.ts'
 import { RowContextMenu, type RowAction } from '../patterns/row-actions.tsx'
 import { SymbolMark } from '../katana/symbol-mark.tsx'
 import { layoutTreemap, type TreemapBlock } from '../katana/treemap-model.ts'
+import { Switch } from '../primitives/switch.tsx'
 import { ToggleGroup, ToggleGroupItem } from '../primitives/toggle-group.tsx'
 import { formatPrice, formatVolume } from './format/index.ts'
 import {
@@ -96,7 +98,29 @@ export type MarketHeatmapLabels = {
   empty: string
   /** 格子右键菜单的读屏名（传了 cellActions 才用）；省略时用英文。 */
   cellMenu?: string
+  /**
+   * 显示开关的文字（照 TradingView 热图的 logo、标题、格内数值三个开关，帮助中心「TradingView heatmaps」2026-11-15 读）；
+   * 不传就没有这一组开关，格子照旧（徽标 + 代码 + 着色指标的读数）。
+   */
+  display?: HeatmapDisplayLabels
+  /** 全屏按钮的读屏名与提示（容器 requestFullscreen，TradingView 热图有全屏）；不传就没有这个按钮。 */
+  fullscreen?: string
 }
+
+export type HeatmapDisplayLabels = {
+  logo: string
+  /** 标题：无 / 代码 / 全名。 */
+  title: { label: string; none: string; code: string; name: string }
+  /** 格内数值：无 / 价格 / 当前大小指标的值（成交量、成交额…，等大时没有这项）/ 着色指标的读数（涨跌幅）。 */
+  value: { label: string; none: string; price: string; size: string; change: string }
+}
+
+export type HeatmapTitleMode = 'none' | 'code' | 'name'
+export type HeatmapValueMode = 'none' | 'price' | 'size' | 'change'
+
+/** 一行字估多宽（像素，12px 半粗体）：汉字 12，其余 7.4。 */
+const textWidth = (text: string) =>
+  Array.from(text).reduce((sum, ch) => sum + (/[\u2e80-\u9fff\uff00-\uffef]/.test(ch) ? 12 : CODE_CHAR_W), 0)
 
 export type MarketHeatmapProps = {
   items: readonly HeatmapItem[]
@@ -177,6 +201,7 @@ export function MarketHeatmap({
   cellActions,
   className,
 }: MarketHeatmapProps) {
+  const display = labels.display
   const uid = useId()
   const figure = useRef<HTMLElement>(null)
   const plot = useRef<HTMLDivElement>(null)
@@ -184,6 +209,9 @@ export function MarketHeatmap({
   const [colorKey, setColorKey] = useState(defaultColorBy ?? colorBy[0]?.key ?? '')
   const [grouped, setGrouped] = useState(defaultGrouped)
   const [drill, setDrill] = useState<string | null>(null)
+  const [showLogo, setShowLogo] = useState(true)
+  const [titleMode, setTitleMode] = useState<HeatmapTitleMode>('code')
+  const [valueMode, setValueMode] = useState<HeatmapValueMode>('change')
   const [hiddenSteps, setHiddenSteps] = useState<ReadonlySet<number>>(new Set())
   const [hover, setHover] = useState<Hover | null>(null)
   const [hoverGroup, setHoverGroup] = useState<string | null>(null)
@@ -502,6 +530,58 @@ export function MarketHeatmap({
             </ToggleGroup>
           </div>
         ) : null}
+        {labels.fullscreen ? (
+          <button
+            type="button"
+            className="k-mheat-fullscreen"
+            data-slot="heatmap-fullscreen"
+            aria-label={labels.fullscreen}
+            title={labels.fullscreen}
+            onClick={() => {
+              const root = figure.current
+              if (!root) return
+              if (document.fullscreenElement === root) void document.exitFullscreen()
+              else void root.requestFullscreen?.()
+            }}
+          >
+            <MaximizeIcon size={14} aria-hidden="true" />
+          </button>
+        ) : null}
+        {display ? (
+          <>
+            <div className="k-mheat-field">
+              <span className="k-mheat-field-label">{display.logo}</span>
+              <Switch checked={showLogo} onCheckedChange={setShowLogo} aria-label={display.logo} />
+            </div>
+            <div className="k-mheat-field">
+              <span className="k-mheat-field-label">{display.title.label}</span>
+              <ToggleGroup
+                variant="sm"
+                aria-label={display.title.label}
+                value={titleMode}
+                onValueChange={(next) => setTitleMode(next as HeatmapTitleMode)}
+              >
+                <ToggleGroupItem value="none">{display.title.none}</ToggleGroupItem>
+                <ToggleGroupItem value="code">{display.title.code}</ToggleGroupItem>
+                <ToggleGroupItem value="name">{display.title.name}</ToggleGroupItem>
+              </ToggleGroup>
+            </div>
+            <div className="k-mheat-field">
+              <span className="k-mheat-field-label">{display.value.label}</span>
+              <ToggleGroup
+                variant="sm"
+                aria-label={display.value.label}
+                value={valueMode}
+                onValueChange={(next) => setValueMode(next as HeatmapValueMode)}
+              >
+                <ToggleGroupItem value="none">{display.value.none}</ToggleGroupItem>
+                <ToggleGroupItem value="price">{display.value.price}</ToggleGroupItem>
+                {size.equal ? null : <ToggleGroupItem value="size">{display.value.size}</ToggleGroupItem>}
+                <ToggleGroupItem value="change">{display.value.change}</ToggleGroupItem>
+              </ToggleGroup>
+            </div>
+          </>
+        ) : null}
       </div>
       <RowContextMenu
         actionsFor={
@@ -587,11 +667,21 @@ export function MarketHeatmap({
                   const w = cell.x1 - cell.x0
                   const h = cell.y1 - cell.y0
                   const showCode =
-                    w >= Math.max(MIN_CODE_W, item.code.length * CODE_CHAR_W + CODE_PAD_W) && h >= MIN_CODE_H
+                    w >= Math.max(MIN_CODE_W, textWidth(titleMode === 'name' ? item.name : item.code) + CODE_PAD_W) &&
+                    h >= MIN_CODE_H
                   const showValue = showCode && h >= MIN_VALUE_H
-                  const logo = showCode ? LOGO_TIERS.find((tier) => w >= tier.w && h >= tier.h) : undefined
-                  const showName = logo !== undefined && logo.size >= 24 && w >= NAME_W && h >= NAME_H
+                  const logo = showCode && showLogo ? LOGO_TIERS.find((tier) => w >= tier.w && h >= tier.h) : undefined
+                  const showName =
+                    titleMode === 'code' && logo !== undefined && logo.size >= 24 && w >= NAME_W && h >= NAME_H
                   const text = formatMetric(item.value[color.key], color)
+                  const cellValue =
+                    valueMode === 'price'
+                      ? item.price === undefined
+                        ? '—'
+                        : priceText(item.price)
+                      : valueMode === 'size'
+                        ? (size.format ?? formatVolume)(item.size[size.key] ?? 0)
+                        : text
                   return (
                     <div
                       key={item.code}
@@ -646,9 +736,13 @@ export function MarketHeatmap({
                               size={logo.size}
                             />
                           ) : null}
-                          <span className="k-mheat-code">{item.code}</span>
+                          {titleMode === 'none' ? null : (
+                            <span className="k-mheat-code">{titleMode === 'name' ? item.name : item.code}</span>
+                          )}
                           {showName ? <span className="k-mheat-name">{item.name}</span> : null}
-                          {showValue ? <span className="k-mheat-value">{text}</span> : null}
+                          {showValue && valueMode !== 'none' ? (
+                            <span className="k-mheat-value">{cellValue}</span>
+                          ) : null}
                         </>
                       ) : null}
                     </div>

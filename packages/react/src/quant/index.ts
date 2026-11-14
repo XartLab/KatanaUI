@@ -17,6 +17,9 @@ export {
 export {
   MarketHeatmap,
   type HeatmapColorBy,
+  type HeatmapDisplayLabels,
+  type HeatmapTitleMode,
+  type HeatmapValueMode,
   type HeatmapItem,
   type HeatmapScheme,
   type HeatmapSizeBy,

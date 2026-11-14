@@ -16,6 +16,8 @@
 | `now` | `number` | — | 当前毫秒时间：相对时间按它算，调用方定时更新（件不在渲染里取时间）。 |
 | `labels` | `NewsFeedLabels` | — | 全部文字：all、feed、channels、sources、clearSources、search、layout、layoutList、layoutCard、pause、resume、important、empty，以及 newItems(n)、ago(秒)、absolute(时间)。包里没有语言。 |
 | `defaultLayout` | `'list' \| 'card'` | — | 起始排法，默认 list。 |
+| `facets` | `NewsFacet[]` | — | 组合过滤（照 TradingView News Flow，主会话 2026-11-15 实测）：{ key, label, options, single?, shown? }；条目用 NewsItem.facets 带取值。每个分面一个胶囊，浮层里复选、可重置、可移除，「+ 添加过滤」再加；取值之间「或」，分面之间「且」。需要 labels.facets 的文字。 |
+| `selected` | `string \| null` | — | 阅读窗开着的那条：行底色加深。 |
 | `onSymbolPick` | `(symbol, item) => void` | — | 点品种胶囊。 |
 | `itemActions` | `(item) => RowAction[]` | — | 每条的快捷操作：悬停出前几颗图标按钮，右键出同一份菜单；配 itemActionsLabel（读屏名）。 |
 | `onOpen` | `(item) => void` | — | 给了，标题是按钮；没给而条目有 href，标题是新窗口链接。 |

@@ -419,3 +419,29 @@
   padding: var(--space-6);
   color: var(--ink-300);
 }
+/* 全屏钮：工具条最右，无边框图标按钮（TradingView 热图右上有全屏）。 */
+.k-mheat-fullscreen {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  margin-left: auto;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--ink-200);
+  cursor: pointer;
+}
+.k-mheat-fullscreen:hover {
+  background: var(--alpha-white-5);
+  color: var(--ink-100);
+}
+.k-mheat-fullscreen:focus-visible {
+  outline: 1px solid var(--line-200);
+  outline-offset: -1px;
+}
+.k-mheat:fullscreen {
+  padding: var(--space-4);
+  background: var(--bg-100);
+}
