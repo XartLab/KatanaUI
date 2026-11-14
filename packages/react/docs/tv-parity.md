@@ -4,28 +4,25 @@
 出处都是 TradingView 帮助中心、产品页与嵌入组件文档，2026-11-15 读；只取功能与信息结构，不抄代码。读不到的标「待核对」，不编。
 我们不用 TradingView 蓝，不照搬动效；「有 / 没有」只比功能与信息结构。
 
-## 一、日历（本 PR 已改）
+## 一、日历（#52 已改）
 
-出处：
+出处（**主会话 2026-11-15 登录态实测**，tradingview.com/economic-calendar/ 与 /earnings-calendar/，深色；帮助中心「Economic Calendar」同日读，分红、IPO 页只读到公开页面文字）：
 
-- 帮助中心「Economic Calendar: track all major market events」（tradingview.com/support/solutions/43000759911）：列是时间、国家、重要程度条、事件、Actual / Forecast / Prior；筛选有国家（可多选或全球）、高重要性开关、时间段（昨天 / 今天 / 明天 / 本周 / 即将发生）、类别（利率、通胀、债券……）、时区；
-- 日历页 tradingview.com/economic-calendar/：页签 Economic / Earnings / Dividends / IPO；每个事件带简短说明与专家预期；
-- 财报页 tradingview.com/earnings-calendar/ 与帮助中心「What are Earnings and Revenue calendars」（43000759912）：列是 报告时间与公司名、预期 EPS / 营收、实际 EPS / 营收、意外（%）、市值；点指标列头排序；国家与时区选择；
-- 分红页 tradingview.com/dividend-calendar/：公司、每股分红、除权日、派息日、股息率（TTM）；筛选是时间段、国家、时区；
-- IPO 页 tradingview.com/ipo-calendar/：交易所、发行日与价格、状态、发行股数、募资额；上面是日期选择；
-- 嵌入组件文档（tradingview.com/widget-docs/widgets/calendars/economic-calendar/）只写了「按事件重要程度与受影响货币设过滤」，**`importanceFilter`、`countryFilter` 这些参数名与取值没读到**（页面渲染后才有，待核对）。
+- 布局自上而下：标题；导航行（今天按钮、选日期、‹ › 按周翻、范围文字「Nov 9 — Nov 15, 2026」，右侧重要性、国家、时区「06:45 (UTC+8)」）；周条（周一到周日七张日卡，每张列出当天 Economic / Earnings / Dividends / IPO 各几条，为 0 的不显示，选中卡加深，今天日期下划线）；类别药丸（选中白底黑字）+ 重要性单开关（按下只看高重要）+ 「All categories」下拉（Bonds、Business、Consumer、GDP、Government、Health、Housing、Labor、Money、Prices、Trade、Taxes，单选）；
+- 国家是模态框「Select countries」：搜索、预设「Entire world」「Top 20 economies」、按地区分组两列带旗帜复选、Cancel / Apply；
+- 经济表：日期分隔行右侧写 Actual / Forecast / Prior；同一时间同一国家的事件合并（时间与国家只在组首行）；列是时间、国旗 + 国名、重要性小柱、事件名、Actual（加粗）、Forecast、Prior；**Actual 不上涨跌色**；点行无变化；
+- 财报表：时段图标（太阳盘前、月亮盘后）+ 时间、徽标、代码胶囊、公司名；列 Estimate EPS、Actual EPS、EPS surprise、Estimate revenue、Actual revenue、Revenue surprise、Market cap；只有两个 surprise 列上色；数值带币种小字；行下有「Earnings materials」「Earnings call」两个小按钮；
+- 嵌入组件文档（tradingview.com/widget-docs/widgets/calendars/economic-calendar/）只写了「按事件重要程度与受影响货币设过滤」，`importanceFilter`、`countryFilter` 参数名没读到（我们不做嵌入组件，不影响）。
 
-| TV 有什么 | 我们有没有 | 建议 |
-| --- | --- | --- |
-| 昨天 / 今天 / 明天 / 本周 / 下周区间 | 已做，另加自定义区间 | 默认区间对齐 TV 页头的「今天」。 |
-| 重要程度三档；高重要性开关 | 已做：三个格条按钮可多选（只点最高一档等于 TV 的开关）；去掉了「只看高重要」开关 | 无。 |
-| 国家多选、时区 | 国家多选已做；时区由调用方传 `timeZone`，时间列头带时区缩写 | TV 页内有时区选择器；件不读用户设置，选择器留给调用方的外层。 |
-| 类别页签 经济 / 财报 / 分红 / IPO | 已做（同一件，按类别换列集） | 「更多」里的其余类别没读到，待核对。 |
-| 按类别过滤（利率、通胀…） | **没有** | 等拿到 TV 的类别清单再加；现在调用方可自己在传入前过滤。 |
-| 财报「意外 %」列 | 没有单独的列；实际对预期用涨 / 跌文字色表示 | 要加就给 `EarningsEvent` 补 `surprise` 列；已记入待办，没读到 TV 对它的着色规则（待核对）。 |
-| 点列头排序（财报、分红） | 已做：财报市值、分红每股金额与股息率，每天内排序，降序 / 升序 / 回到按时间 | 无。 |
-| 事件说明与专家预期 | 行点开详情：说明、来源、历史值小图、下次发布 | TV 的详情位置没读到（待核对），我们先行内展开。 |
-| 「现在」分隔线、粘顶日期头 | 已做（TV 这两点没读到，是我们的取舍） | 无。 |
+| TV 有什么 | 我们有没有 |
+| --- | --- |
+| 导航行、周条、类别药丸 | 已做（选日期用原生日期框，国旗用国家代码徽标） |
+| 重要性单开关、12 类下拉、国家模态框（预设、分组、取消 / 应用） | 已做；「前 20 大经济体」预设的国家列表由调用方传（`topRegions`） |
+| 同时同国合并、Actual 加粗不上色、缺值「—」 | 已做 |
+| 财报：时段图标、意外两列上色、币种小字、财报材料 / 电话会 | 已做；两个按钮是可选的行动作插槽（调用方给链接才显示） |
+| 点行无展开 | 我们保留详情展开（说明、来源、历史值小图、下次发布），算比 TV 好的部分 |
+| 财报 / 分红按列头排序 | 已做（每天内排序）；TV 的排序行为没实测，待核对 |
+| 分红、IPO 的列与筛选 | 照公开页面文字做，没登录实测，待核对 |
 
 ## 二、其他件对 TradingView 的差距（只列）
 
@@ -90,6 +87,6 @@
 
 1. **DataGrid 没有过滤条**（Screener 的核心）：可增删的条件芯片 + 列集合页签。
 2. **NewsFeed 的过滤结构**：TV 是七个可组合、可重置 / 可移除的多选过滤，我们只有频道、来源、关键词。
-3. **日历没有「类别」过滤（利率、通胀……）与财报「意外 %」列**：TV 类别清单与意外列的着色规则没读到，待核对后补。
+3. （原第 3 条日历类别过滤与意外列已在 #52 做完，已删。）
 4. **MarketHeatmap 缺显示开关**：LOGO、标题（无 / 代码 / 全名）、格内数值（价格 / 成交量 / 表现 / 无）。
-5. **日历的列头排序**（财报按市值、分红按股息率）与详情位置（TV 的详情怎么开没读到）。
+5. （原第 5 条日历列头排序已在 #52 做完。）

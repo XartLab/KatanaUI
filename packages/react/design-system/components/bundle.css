@@ -10669,7 +10669,7 @@ button.k-sm-head:focus-visible {
 }
 
 .k-ecal {
-  --ecal-cols: 76px 36px minmax(160px, 1fr) 44px 84px 64px 64px;
+  --ecal-cols: 76px 150px 28px minmax(160px, 1fr) 84px 72px 72px;
   gap: var(--space-3);
   min-width: 0;
   min-height: 0;
@@ -10720,7 +10720,7 @@ button.k-sm-head:focus-visible {
   margin-left: auto;
 }
 
-.k-ecal-columns, .k-ecal-row {
+.k-ecal-day-head, .k-ecal-row {
   grid-template-columns: var(--ecal-cols);
   padding: 0 var(--inset-x);
   align-items: center;
@@ -10747,14 +10747,15 @@ button.k-sm-head:focus-visible {
 
 .k-ecal-day-head {
   z-index: 2;
+  grid-template-columns: var(--ecal-cols);
   height: 28px;
   padding: 0 var(--inset-x);
   border-bottom: 1px solid var(--line-100);
   background: var(--bg-100);
   font: 700 13px/18px var(--font-sans);
   align-items: center;
-  gap: 8px;
-  display: flex;
+  column-gap: 8px;
+  display: grid;
   position: sticky;
   top: 0;
 }
@@ -10878,10 +10879,6 @@ button.k-sm-head:focus-visible {
 
 .k-ecal-imp-btn .k-ecal-level i.is-on {
   background: var(--ink-100);
-}
-
-.k-ecal-row[data-state="released"] .k-ecal-time, .k-ecal-row[data-state="released"] .k-ecal-name {
-  color: var(--ink-200);
 }
 
 .k-ecal-row[data-state="overdue"] .k-ecal-actual {
@@ -11008,10 +11005,6 @@ button.k-sm-head:focus-visible {
   display: flex;
 }
 
-.k-ecal-actual {
-  font-weight: 600;
-}
-
 .k-ecal-actual[data-tone="up"] {
   color: var(--pnl-up);
 }
@@ -11065,6 +11058,261 @@ button.k-sm-head:focus-visible {
 .k-ecal-sort:focus-visible {
   outline: 1px solid var(--line-200);
   outline-offset: 2px;
+}
+
+.k-ecal-nav {
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0 var(--inset-x);
+  flex-wrap: wrap;
+  display: flex;
+}
+
+.k-ecal-date {
+  border: 1px solid var(--alpha-white-9);
+  border-radius: var(--radius-control);
+  background: var(--alpha-white-4);
+  height: 28px;
+  color: var(--ink-100);
+  font: 500 12px/16px var(--font-sans);
+  color-scheme: dark;
+  padding: 0 6px;
+}
+
+.k-ecal-range {
+  font: 600 13px/18px var(--font-sans);
+}
+
+.k-ecal-tz {
+  color: var(--ink-300);
+  font: 500 12px/16px var(--font-sans);
+  font-variant-numeric: tabular-nums;
+  margin-left: auto;
+}
+
+.k-ecal-week {
+  padding: 0 var(--inset-x);
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 6px;
+  display: grid;
+}
+
+.k-ecal-daycard {
+  background: var(--alpha-white-3);
+  min-height: 64px;
+  color: var(--ink-200);
+  font: 400 11px/15px var(--font-sans);
+  text-align: left;
+  cursor: pointer;
+  border: 0;
+  border-radius: 8px;
+  flex-direction: column;
+  gap: 2px;
+  padding: 6px 8px;
+  display: flex;
+}
+
+.k-ecal-daycard:hover {
+  background: var(--alpha-white-5);
+}
+
+.k-ecal-daycard[aria-pressed="true"] {
+  background: var(--alpha-white-10);
+  color: var(--ink-100);
+}
+
+.k-ecal-daycard:focus-visible {
+  outline: 1px solid var(--line-200);
+  outline-offset: -1px;
+}
+
+.k-ecal-daycard-head {
+  align-items: baseline;
+  gap: 6px;
+  font-size: 12px;
+  display: flex;
+}
+
+.k-ecal-daycard-head b {
+  color: var(--ink-100);
+  font-weight: 700;
+}
+
+.k-ecal-daycard[data-today] .k-ecal-daycard-head b {
+  text-underline-offset: 3px;
+  text-decoration: underline;
+}
+
+.k-ecal-daycard-line b {
+  color: var(--ink-100);
+  font-variant-numeric: tabular-nums;
+}
+
+.k-ecal-pills {
+  gap: 6px;
+  display: inline-flex;
+}
+
+.k-ecal-pill {
+  background: var(--alpha-white-4);
+  height: 28px;
+  color: var(--ink-200);
+  font: 500 12px/16px var(--font-sans);
+  cursor: pointer;
+  border: 0;
+  border-radius: 9999px;
+  padding: 0 12px;
+}
+
+.k-ecal-pill:hover {
+  background: var(--alpha-white-8);
+}
+
+.k-ecal-pill[aria-selected="true"] {
+  background: var(--ink-100);
+  color: var(--bg-000);
+}
+
+.k-ecal-pill:focus-visible {
+  outline: 2px solid var(--line-200);
+  outline-offset: 1px;
+}
+
+.k-ecal-bar-gap {
+  flex: 1 1 0;
+}
+
+.k-ecal-high {
+  width: 28px;
+  height: 28px;
+  color: var(--ink-200);
+  cursor: pointer;
+  background: none;
+  border: 0;
+  border-radius: 6px;
+  justify-content: center;
+  align-items: center;
+  display: inline-flex;
+}
+
+.k-ecal-high:hover {
+  background: var(--alpha-white-5);
+}
+
+.k-ecal-high[aria-pressed="true"] {
+  background: var(--alpha-white-10);
+  color: var(--ink-100);
+}
+
+.k-ecal-count {
+  margin-left: 0;
+}
+
+.k-ecal-row[data-group-start] {
+  border-top-color: var(--alpha-white-5);
+}
+
+.k-ecal-row[data-repeat] {
+  border-top-color: var(--ds-c-2xn4aw);
+}
+
+.k-ecal-row[data-state="released"] .k-ecal-time, .k-ecal-row[data-state="released"] .k-ecal-name {
+  color: var(--ink-100);
+}
+
+.k-ecal-actual {
+  font-weight: 700;
+}
+
+.k-ecal-num[data-tone="up"] {
+  color: var(--pnl-up);
+}
+
+.k-ecal-num[data-tone="down"] {
+  color: var(--pnl-down);
+}
+
+.k-ecal-unit {
+  color: var(--ink-300);
+  font-size: 10px;
+}
+
+.k-ecal-session {
+  color: var(--ink-300);
+  display: inline-flex;
+}
+
+.k-ecal-code {
+  background: var(--alpha-white-5);
+  border-radius: 4px;
+  padding: 0 6px;
+  font-weight: 600;
+}
+
+.k-ecal-links {
+  padding: 0 var(--inset-x) 6px 100px;
+  display: block;
+}
+
+.k-ecal-link {
+  border: 1px solid var(--alpha-white-9);
+  color: var(--ink-200);
+  font: 500 11px/16px var(--font-sans);
+  cursor: pointer;
+  background: none;
+  border-radius: 6px;
+  margin-right: 6px;
+  padding: 2px 8px;
+  text-decoration: none;
+}
+
+.k-ecal-link:hover {
+  background: var(--alpha-white-5);
+  color: var(--ink-100);
+}
+
+.k-ecal-presets {
+  gap: 6px;
+  display: flex;
+}
+
+.k-ecal-region-group {
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.k-ecal-region-group legend {
+  color: var(--ink-300);
+  font: 600 11px/14px var(--font-sans);
+  letter-spacing: .04em;
+  padding: 8px 0 4px;
+}
+
+.k-ecal-region-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px 16px;
+  display: grid;
+}
+
+.k-ecal-region-item {
+  min-height: 28px;
+  color: var(--ink-100);
+  font: 400 13px/18px var(--font-sans);
+  align-items: center;
+  gap: 8px;
+  display: flex;
+}
+
+.k-ecal-day-head [role="columnheader"]:not(:first-child) {
+  color: var(--ink-300);
+  font: 500 11px/14px var(--font-sans);
+  white-space: nowrap;
+}
+
+.k-ecal-day-head .is-num {
+  text-align: right;
+  justify-self: end;
 }
 
 .k-mheat {

@@ -2270,18 +2270,22 @@
       "name": "event-calendar",
       "type": "registry:component",
       "title": "Event Calendar",
-      "description": "照 TradingView 日历的用法：顶上是类别页签（经济 / 财报 / 分红 / IPO，同一件、不同列集，给了哪类数据才有哪个页签），区间分段（昨天 / 今天 / 明天 / 本周 / 下周 / 自定义），重要程度三档格条按钮，国家多选。表按日分组，日期分隔行粘顶，今天那天插「现在」线。经济：时间（带时区）、国家、事件、重要程度条、实际 / 预期 / 前值，实际好于预期涨色、差于预期跌色，已发布的行退一档、未发布的写倒计时；点开一行看说明、来源、历史值小图、下次发布。财报：时段（盘前 / 盘后）、公司、EPS 与营收的实际 / 预期、市值。分红：每股金额、股息率、派息日。IPO：交易所、发行价区间、股数、募资额、状态。数据、现在、时区、文字都由调用方传。",
+      "description": "照 TradingView 日历的布局（主会话 2026-11-15 登录态实测）：导航行（今天、选日期、按周翻页、范围文字、时区读数），周条（周一到周日七张日卡，列出当天各类别条数，点卡选日），类别药丸（经济 / 财报 / 分红 / IPO，给了哪类数据才有哪个），重要性单开关（只看高重要）、经济类别下拉（12 类，单选）、国家选择框（模态：搜索、全球与前 20 预设、按地区分组两列复选、取消 / 应用）。经济表：日期分隔行粘顶、数字列名写在它右侧；同一时间同一国家的事件合并；实际值加粗不上涨跌色；点开一行看说明、来源、历史值小图、下次发布（比 TradingView 多的部分）。财报表：时段图标 + 时间、徽标、代码、公司名，预期 / 实际 EPS 与营收，EPS 意外与营收意外（只有这两列上涨跌色），市值，币种小字，行下可选「财报材料 / 电话会」。分红、IPO 各有自己的列。数据、现在、时区、文字都由调用方传。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
       "registryDependencies": [
+        "@katana/button",
+        "@katana/checkbox",
         "@katana/cn",
-        "@katana/combobox",
-        "@katana/date-range-picker",
+        "@katana/dialog",
         "@katana/event-calendar-model",
+        "@katana/input",
         "@katana/quant-format",
         "@katana/row-actions",
+        "@katana/select",
         "@katana/sparkline",
-        "@katana/symbol-mark",
-        "@katana/tabs",
-        "@katana/toggle-group"
+        "@katana/symbol-mark"
       ],
       "files": [
         {

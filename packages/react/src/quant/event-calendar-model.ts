@@ -1,10 +1,37 @@
 // SPDX-License-Identifier: MIT
-// 经济日历（EventCalendar）的纯函数：按显示时区分天、区间预设、筛选、倒计时。件里不读时钟，「现在」由调用方传。
-// 周从周一起（口径同 date-range-model，主会话定，没有出处）；今天 / 本周 / 下周按「现在」所在的显示时区算。
+// 日历（EventCalendar）的纯函数：按显示时区分天、周条的七天、筛选、倒计时、财报意外百分比。件里不读时钟，「现在」由调用方传。
+// 周从周一起（TradingView 日历的周条是周一到周日，主会话 2026-11-15 实测）；今天按「现在」所在的显示时区算。
 
 export type EconomicImportance = 1 | 2 | 3
 export type EconomicTone = 'up' | 'down' | 'flat'
-export type EconomicRangeKey = 'yesterday' | 'today' | 'tomorrow' | 'week' | 'next' | 'custom'
+/** 经济事件的类别（TradingView「All categories」下拉的 12 项，主会话 2026-11-15 实测）。 */
+export type EconomicCategory =
+  | 'bonds'
+  | 'business'
+  | 'consumer'
+  | 'gdp'
+  | 'government'
+  | 'health'
+  | 'housing'
+  | 'labor'
+  | 'money'
+  | 'prices'
+  | 'trade'
+  | 'taxes'
+export const ECONOMIC_CATEGORIES: readonly EconomicCategory[] = [
+  'bonds',
+  'business',
+  'consumer',
+  'gdp',
+  'government',
+  'health',
+  'housing',
+  'labor',
+  'money',
+  'prices',
+  'trade',
+  'taxes',
+]
 export type CalendarCategory = 'economic' | 'earnings' | 'dividends' | 'ipo'
 export type EarningsSession = 'before' | 'during' | 'after'
 
@@ -20,15 +47,13 @@ export type EconomicEvent = {
   flag?: string
   name: string
   importance: EconomicImportance
-  /** 实际 / 预期 / 前值：调用方格式化好的文字；没有就不给（画「—」）。 */
+  /** 实际 / 预期 / 前值：调用方格式化好的文字（带单位后缀）；没有就不给（画「—」）。实际值只加粗，不上涨跌色（TradingView 经济页如此）。 */
   actual?: string
   forecast?: string
   previous?: string
-  /** 实际 / 预期的数值，用来比大小上色；不给就取文字开头的数（「-0.2万亿」取 -0.2，「0.4%」取 0.4），两边单位要一致。 */
-  actualValue?: number
-  forecastValue?: number
-  /** 默认 true：实际高于预期用涨色、低于用跌色。CPI、失业率这类「越低越好」的事件传 false，颜色反过来。 */
-  higherIsBetter?: boolean
+  category?: EconomicCategory
+  /** 国家选择框里的地区分组（NORTH AMERICA、EUROPE…），由调用方写好。 */
+  regionGroup?: string
   /** 详情：事件说明、数据来源（调用方写好的文字）。 */
   description?: string
   source?: string
@@ -38,7 +63,15 @@ export type EconomicEvent = {
   nextAt?: number
 }
 
-type Located = { id: string; at: number; region: string; regionName: string; flag?: string }
+type Located = {
+  id: string
+  at: number
+  region: string
+  regionName: string
+  flag?: string
+  /** 国家选择框里的地区分组（NORTH AMERICA、EUROPE…），由调用方写好；不给归到末尾一组。 */
+  regionGroup?: string
+}
 
 /** 财报：at 是披露时刻（只知道盘前 / 盘后时给当天开盘前或收盘后的约数，由调用方定）；数字都是原值，件按 formatVolume 写。 */
 export type EarningsEvent = Located & {
@@ -51,6 +84,11 @@ export type EarningsEvent = Located & {
   revenueActual?: number
   revenueForecast?: number
   marketCap?: number
+  /** 币种小字（USD），写在营收与市值后面。 */
+  currency?: string
+  /** 意外百分比：不给就按 (实际 − 预期) / |预期| × 100 算。 */
+  epsSurprise?: number
+  revenueSurprise?: number
 }
 
 /** 分红：at 是除权除息日（取当天，件按日显示、不写钟点）；payAt 是派息日。amount 与 yield（百分数）是原值。 */
@@ -78,30 +116,14 @@ export type IpoEvent = Located & {
   status?: string
 }
 
-/** 实际对预期：数字比较，高于预期为 up（财报、营收越高越好）；缺一个或相等是 flat。 */
-export function surpriseTone(actual: number | undefined, forecast: number | undefined): EconomicTone {
-  if (actual === undefined || forecast === undefined || actual === forecast) return 'flat'
-  return actual > forecast ? 'up' : 'down'
+/** 意外百分比：(实际 − 预期) / |预期| × 100；缺一个或预期为 0 返回 undefined。 */
+export function surprisePercent(actual: number | undefined, estimate: number | undefined): number | undefined {
+  if (actual === undefined || estimate === undefined || estimate === 0) return undefined
+  return ((actual - estimate) / Math.abs(estimate)) * 100
 }
 
-/** 文字开头的数（支持负号与 U+2212）；取不到返回 undefined。 */
-export function leadingNumber(text: string | undefined): number | undefined {
-  const match = text
-    ?.trim()
-    .replace('−', '-')
-    .match(/^[-+]?\d+(?:\.\d+)?/)
-  return match ? Number(match[0]) : undefined
-}
-
-/** 经济事件实际对预期的颜色方向：高于预期为 up（higherIsBetter 为 false 时反过来）；缺实际或预期、相等都是 flat（不上色）。 */
-export function eventTone(event: EconomicEvent): EconomicTone {
-  const tone = surpriseTone(
-    event.actualValue ?? leadingNumber(event.actual),
-    event.forecastValue ?? leadingNumber(event.forecast),
-  )
-  if (event.higherIsBetter === false) return tone === 'up' ? 'down' : tone === 'down' ? 'up' : 'flat'
-  return tone
-}
+export const toneOfSign = (value: number | undefined): EconomicTone =>
+  value === undefined || Number(value.toFixed(2)) === 0 ? 'flat' : value > 0 ? 'up' : 'down'
 
 /** 这一行相对「现在」的状态：已发布（有实际值）、待发布（还没到点）、已到点未出数。 */
 export type ReleaseState = 'released' | 'upcoming' | 'overdue'
@@ -129,34 +151,41 @@ export function weekStartOf(key: string): string {
 
 export type DayRange = { start: string; end: string }
 
-/** 昨天 / 今天 / 明天 / 本周 / 下周对应的日期区间（含两端）；custom 返回 null，由调用方给的区间决定。 */
-export function presetRange(key: Exclude<EconomicRangeKey, 'custom'>, today: string): DayRange {
-  if (key === 'today') return { start: today, end: today }
-  if (key === 'yesterday') return { start: addDays(today, -1), end: addDays(today, -1) }
-  if (key === 'tomorrow') return { start: addDays(today, 1), end: addDays(today, 1) }
-  const monday = weekStartOf(today)
-  const start = key === 'week' ? monday : addDays(monday, 7)
-  return { start, end: addDays(start, 6) }
+/** 这天所在周的周一到周日。 */
+export function weekDays(key: string): string[] {
+  const monday = weekStartOf(key)
+  return Array.from({ length: 7 }, (_, i) => addDays(monday, i))
 }
 
 export type EconomicFilter = {
   range: DayRange
-  importance: readonly EconomicImportance[]
+  /** 只看最高一档（TradingView 的重要性是一个开关）。 */
+  highOnly: boolean
+  /** 空 = 全部类别。 */
+  category: EconomicCategory | ''
+  /** 空 = 全部国家。 */
   regions: readonly string[]
   timeZone: string
 }
 
-type Filterable = { id: string; at: number; region: string; importance?: EconomicImportance }
+type Filterable = {
+  id: string
+  at: number
+  region: string
+  importance?: EconomicImportance
+  category?: EconomicCategory
+}
 
-/** 筛选并按时间排序。importance、regions 为空表示不筛；没有 importance 字段的事件（财报、分红、新股）不受重要程度筛选。 */
+/** 筛选并按时间排序。regions 为空表示不筛；重要程度与类别只管经济事件（财报、分红、新股没有这两个字段，不受影响）。 */
 export function filterEvents<T extends Filterable>(events: readonly T[], filter: EconomicFilter): T[] {
   return events
     .filter((event) => {
       const day = dayKeyOf(event.at, filter.timeZone)
       if (day < filter.range.start || day > filter.range.end) return false
       if (filter.regions.length > 0 && !filter.regions.includes(event.region)) return false
-      if (event.importance === undefined || filter.importance.length === 0) return true
-      return filter.importance.includes(event.importance)
+      if (filter.highOnly && event.importance !== undefined && event.importance !== 3) return false
+      if (filter.category !== '' && event.importance !== undefined && event.category !== filter.category) return false
+      return true
     })
     .sort((a, b) => a.at - b.at || a.id.localeCompare(b.id))
 }

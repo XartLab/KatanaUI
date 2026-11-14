@@ -7,6 +7,7 @@ export { PnlText } from './pnl-text.tsx'
 export {
   EventCalendar,
   type CalendarItem,
+  type EarningsLink,
   type EventCalendarLabels,
   type EventCalendarProps,
 } from './event-calendar.tsx'
@@ -17,8 +18,7 @@ export type {
   EarningsSession,
   EconomicEvent,
   EconomicImportance,
-  EconomicRangeKey,
-  EconomicTone,
+  EconomicCategory,
   IpoEvent,
 } from './event-calendar-model.ts'
 export {
