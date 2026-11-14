@@ -38,6 +38,20 @@ dependency of the react package: pnpm 12 rejects a git-sourced dependency of a d
 and reads `overrides` only from `pnpm-workspace.yaml`, not from a `pnpm.overrides` field in `package.json`. Once the
 packages are on npm, both lines become plain semver ranges.
 
+The package ships compiled JavaScript and type declarations (built into `lib/` by its `prepare` script when pnpm
+installs it from git), so plain Node and `tsc` can load it as well as bundlers. pnpm only runs that script if you
+allow it, with the full dependency address as the key, in your `pnpm-workspace.yaml` (checked with pnpm 12.18.0;
+a bare package name does not work). The address is the one pnpm prints in the error when the entry is missing; for
+a commit or tag it has this form:
+
+```yaml
+allowBuilds:
+  '@katana-ui/react@https://codeload.github.com/XartLab/KatanaUI/tar.gz/<commit or tag>#path:packages/react': true
+```
+
+Update the key whenever you change the pinned commit or tag. You do not need `@types/d3-hierarchy` or any other
+`@types/*` package besides `@types/react`.
+
 ```ts
 import '@katana-ui/react/tokens.css' // tokens first
 import '@katana-ui/react/ui.css' // Tailwind theme and motion, last
@@ -46,7 +60,7 @@ import { Button } from '@katana-ui/react'
 ```
 
 `@katana-ui/react/tokens.css` and `@katana-ui/react/tokens.json` forward to `@katana-ui/tokens`, so the import lines do
-not change. The package ships TypeScript source, so your bundler (Vite, for example) compiles it.
+not change. The package exports also have a `source` condition that points at the TypeScript source in `src/`.
 
 ## Install with shadcn
 
