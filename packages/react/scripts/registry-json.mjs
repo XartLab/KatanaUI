@@ -125,6 +125,11 @@ function collectItems() {
       'registry:component',
       codeIn('src/blocks/toolbar').map((f) => `src/blocks/toolbar/${f}`),
     )
+    add(
+      'series-explorer',
+      'registry:component',
+      codeIn('src/blocks/series-explorer').map((f) => `src/blocks/series-explorer/${f}`),
+    )
     byFile('src/blocks', 'registry:component', (f) => isCode(f) && f !== 'index.ts')
   }
   return items

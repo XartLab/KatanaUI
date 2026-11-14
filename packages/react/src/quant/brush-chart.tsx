@@ -251,7 +251,7 @@ export function BrushChart({
           </>
         )}
       </div>
-      <div className="k-brush-xaxis" aria-hidden="true">
+      <div className="k-plot-xaxis" aria-hidden="true">
         {Array.from({ length: xTicks }, (_, i) => {
           const at = xTicks === 1 ? 0 : Math.round((i / (xTicks - 1)) * lastTick)
           return (

@@ -27,3 +27,10 @@ export { useRovingToolbar } from './toolbar/use-roving-toolbar'
 
 // 时间序列与盈亏的积木（#1917）。功能参照 Arc（uiarc.dev，2026-11-14 读），只取功能，实现原创。
 export { SmallMultiples, type SmallMultiple, type SmallMultiplesProps } from './small-multiples'
+export {
+  SeriesExplorer,
+  type SeriesExplorerColumn,
+  type SeriesExplorerLabels,
+  type SeriesExplorerProps,
+} from './series-explorer/series-explorer'
+export type { KpiDef, RangeDef, SeriesDef, SeriesPoint } from './series-explorer/series-explorer-model'

@@ -19,7 +19,7 @@
 | 面板 | 19 | 13 | 52 | 84 | 19 / 84 |
 | 量化 | 3 | 0 | 4 | 7 | 3 / 7 |
 | 积木 | 2 | 2 | 1 | 5 | 2 / 5 |
-| 面板 | 19 | 13 | 53 | 85 | 19 / 85 |
+| 面板 | 19 | 16 | 50 | 85 | 19 / 85 |
 | 合计 | | | | 105 | 31 / 105 |
 
 ## 每张卡
@@ -56,7 +56,7 @@
 | DotMatrix | 点阵 | 自有件 | `DotMatrix` | 已做 |  |
 | DrawingToolbar | 图表 | 面板 | `src/panels/chart/SelectedToolbar.tsx`、`src/panels/chart/FavoritesToolbar.tsx` | 已做 |  |
 | Entitlements | 运行中心 | 面板 | — | 没做 | 许可与权限，还没有对应面板 |
-| EquityCurve | 图表 | 量化 | `src/panels/kit/EquityCurve.tsx` | 已做 | 应用里有，还没抽进 quant 层 |
+| EquityCurve | 图表 | 量化 | `src/panels/kit/EquityCurve.tsx`、`BrushChart` | 已做 | 应用里有，还没抽进 quant 层；BrushChart（概览刷选条加主图）是它以后的底座，接线另开票 |
 | EventStudy | 研究 | 面板 | — | 没做 | 研究层，还没有对应面板 |
 | EventTimeline | 发现 | 积木 | `EventTimeline` | 已做 | 件（按显示时区分天、新的在前）已做，发现区的面板还没有接它（#1919 不动 src/） |
 | ExitStrategy | 交易 | 面板 | `src/panels/order-ticket` | 部分 | 下单面板里有止盈止损，自动退出两种模式没有 |
@@ -73,7 +73,7 @@
 | Heatmap | 图表 | 量化 | `src/panels/heatmap` | 已做 | 应用里有，还没抽进 quant 层 |
 | HypothesisLedger | 研究 | 面板 | — | 没做 | 研究层，还没有对应面板 |
 | IndicatorPanel | 图表 | 面板 | `src/panels/chart/IndicatorDialog.tsx` | 已做 |  |
-| IntradayPnL | 盈亏 | 面板 | — | 没做 | 盈亏，还没有对应面板 |
+| IntradayPnL | 盈亏 | 面板 | `SeriesExplorer`、`HorizonChart` | 部分 | 盈亏探索（区间、KPI、堆叠柱加线、明细）与多品种日内窄带在组件库有了；面板与数据接线还没有 |
 | LCDReadout | 工作台 | 自有件 | `Lcd` | 已做 |  |
 | LiveDivergence | 研究 | 面板 | — | 没做 | 研究层，还没有对应面板 |
 | LossLimits | 盈亏 | 面板 | `src/panels/loss-limits` | 已做 |  |
@@ -91,8 +91,8 @@
 | PanelFrame | 工作台 | 积木 | `src/workspace/PaneFrame.tsx`、`EmptyState`、`Toolbar`、计划：`PanelFrame` | 部分 | #1869 做了空态 EmptyState 与工具条 Toolbar；面板壳本身还在应用里 |
 | ParamScatter | 研究 | 面板 | — | 没做 | 研究层，还没有对应面板 |
 | PerformanceReport | 资产管理 | 面板 | — | 没做 | 资产管理，还没有对应面板 |
-| PnLAttribution | 组合 | 面板 | — | 没做 | 组合，还没有对应面板 |
-| PnLLedger | 盈亏 | 面板 | — | 没做 | 盈亏，还没有对应面板 |
+| PnLAttribution | 组合 | 面板 | `WaterfallChart` | 部分 | 盈亏桥（期初到期末的瀑布）组件库有了；归因的分组与面板接线还没有 |
+| PnLLedger | 盈亏 | 面板 | `SeriesExplorer` | 部分 | 按期明细表与堆叠柱在 SeriesExplorer 里有了；台账数据接线与面板还没有 |
 | PositionBook | 组合 | 面板 | `src/panels/positions` | 已做 |  |
 | PositionHistory | 盈亏 | 面板 | — | 没做 | 盈亏，还没有对应面板 |
 | Preferences | 工作台 | 面板 | `src/shell/AppSettingsDialog.tsx` | 已做 |  |

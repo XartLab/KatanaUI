@@ -2080,6 +2080,34 @@
       ]
     },
     {
+      "name": "series-explorer",
+      "type": "registry:component",
+      "title": "Series Explorer",
+      "description": "盈亏探索积木：区间按钮（3M / 6M / 12M / 全部）、KPI 卡（值加相对上一期的变化，数字滚动）、序列开关、「对比上一期」开关、堆叠柱加净盈亏线、下面的刷选条、明细表。功能参照 Arc 的 Revenue explorer。",
+      "registryDependencies": [
+        "@katana/brush-chart",
+        "@katana/brush-model",
+        "@katana/cn",
+        "@katana/rolling-text",
+        "@katana/series-geometry",
+        "@katana/switch",
+        "@katana/toggle-group",
+        "@katana/use-scrubber"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/series-explorer/series-explorer-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/series-explorer/series-explorer-model.ts"
+        },
+        {
+          "path": "src/blocks/series-explorer/series-explorer.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/series-explorer/series-explorer.tsx"
+        }
+      ]
+    },
+    {
       "name": "empty-state",
       "type": "registry:component",
       "title": "Empty State",

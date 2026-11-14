@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 import { useState } from 'react'
 import { useScrubber } from '../../src/index'
-import { SmallMultiples, type SmallMultiple } from '../../src/blocks'
+import { SeriesExplorer, SmallMultiples, type SeriesPoint, type SmallMultiple } from '../../src/blocks'
 import {
   BrushChart,
   BulletMeter,
@@ -281,6 +281,80 @@ export function SmallMultiplesDemo() {
         </div>
       </Row>
       <p className="gal-note">{DEMO_NOTE}线色按头尾比，涨跌色跟涨跌配色走；each 看形状，shared 看高低。</p>
+    </>
+  )
+}
+
+/** 演示用的 24 个月的盈亏：2025-01 到 2026-12，一月一个点，闭式公式生成（已实现、手续费、资金费、净盈亏）。 */
+const SX_MONTHS = 24
+const SX_POINTS: SeriesPoint[] = Array.from({ length: SX_MONTHS }, (_, m) => {
+  const realized = Math.round(2400 * Math.sin(m / 2.5) + 400 + 60 * m)
+  const fee = -(120 + 10 * (m % 5))
+  const funding = m % 3 === 0 ? -60 : 45
+  const net = realized + fee + funding
+  return { at: Date.UTC(2025, m, 1), values: { realized, fee, funding, net } }
+})
+const signed = (value: number) => `${value > 0 ? '+' : ''}${value.toLocaleString('en-US')}`
+const monthText = (at: number) => new Date(at).toISOString().slice(0, 7)
+
+export function SeriesExplorerDemo() {
+  return (
+    <>
+      <div className="gal-wide" data-gallery-explorer style={{ maxWidth: 760 }}>
+        <SeriesExplorer
+          points={SX_POINTS}
+          series={[
+            { key: 'realized', label: '已实现', kind: 'bar', color: 'var(--series-2)' },
+            { key: 'fee', label: '手续费', kind: 'bar', color: 'var(--series-5)' },
+            { key: 'funding', label: '资金费', kind: 'bar', color: 'var(--series-4)' },
+            { key: 'net', label: '净盈亏', kind: 'line', color: 'var(--series-1)' },
+          ]}
+          ranges={[
+            { key: '3m', label: '3M', months: 3 },
+            { key: '6m', label: '6M', months: 6 },
+            { key: '12m', label: '12M', months: 12 },
+            { key: 'all', label: '全部', months: null },
+          ]}
+          kpis={[
+            { key: 'realized', label: '已实现', series: 'realized', reduce: 'sum', format: signed },
+            { key: 'fee', label: '手续费', series: 'fee', reduce: 'sum', format: signed },
+            { key: 'net', label: '净盈亏', series: 'net', reduce: 'sum', format: signed },
+          ]}
+          columns={[
+            {
+              key: 'realized',
+              label: '已实现',
+              text: (p) => signed(p.values.realized!),
+              tone: (p) => p.values.realized ?? null,
+            },
+            { key: 'fee', label: '手续费', text: (p) => signed(p.values.fee!), tone: (p) => p.values.fee ?? null },
+            {
+              key: 'funding',
+              label: '资金费',
+              text: (p) => signed(p.values.funding!),
+              tone: (p) => p.values.funding ?? null,
+            },
+            { key: 'net', label: '净盈亏', text: (p) => signed(p.values.net!), tone: (p) => p.values.net ?? null },
+          ]}
+          labels={{
+            chart: '示例盈亏：按月堆叠柱加净盈亏线',
+            ranges: '区间',
+            series: '序列',
+            compare: '对比上一期',
+            previous: '上一期净盈亏',
+            table: '示例盈亏明细',
+            time: '月份',
+            empty: '没有数据',
+            brush: { start: '窗口起点', end: '窗口终点', window: '窗口位置' },
+          }}
+          formatAt={monthText}
+          formatValue={(v) => v.toLocaleString('en-US')}
+          formatChange={(r) => `${r > 0 ? '+' : ''}${(r * 100).toFixed(1)}%`}
+        />
+      </div>
+      <p className="gal-note">
+        {DEMO_NOTE}按月 24 个点；KPI 的变化是相对紧挨在前面、一样长的上一期；全部区间前面没有上一期，写破折号。
+      </p>
     </>
   )
 }

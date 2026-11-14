@@ -177,8 +177,8 @@
     "EquityCurve": {
       "kind": "量化",
       "status": "已做",
-      "at": ["src/panels/kit/EquityCurve.tsx"],
-      "note": "应用里有，还没抽进 quant 层"
+      "at": ["src/panels/kit/EquityCurve.tsx", "BrushChart"],
+      "note": "应用里有，还没抽进 quant 层；BrushChart（概览刷选条加主图）是它以后的底座，接线另开票"
     },
     "EventStudy": {
       "kind": "面板",
@@ -276,9 +276,9 @@
     },
     "IntradayPnL": {
       "kind": "面板",
-      "status": "没做",
-      "at": [],
-      "note": "盈亏，还没有对应面板"
+      "status": "部分",
+      "at": ["SeriesExplorer", "HorizonChart"],
+      "note": "盈亏探索（区间、KPI、堆叠柱加线、明细）与多品种日内窄带在组件库有了；面板与数据接线还没有"
     },
     "LCDReadout": {
       "kind": "自有件",
@@ -380,15 +380,15 @@
     },
     "PnLAttribution": {
       "kind": "面板",
-      "status": "没做",
-      "at": [],
-      "note": "组合，还没有对应面板"
+      "status": "部分",
+      "at": ["WaterfallChart"],
+      "note": "盈亏桥（期初到期末的瀑布）组件库有了；归因的分组与面板接线还没有"
     },
     "PnLLedger": {
       "kind": "面板",
-      "status": "没做",
-      "at": [],
-      "note": "盈亏，还没有对应面板"
+      "status": "部分",
+      "at": ["SeriesExplorer"],
+      "note": "按期明细表与堆叠柱在 SeriesExplorer 里有了；台账数据接线与面板还没有"
     },
     "PositionBook": {
       "kind": "面板",
