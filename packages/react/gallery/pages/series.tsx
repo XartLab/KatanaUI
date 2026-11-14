@@ -7,6 +7,7 @@ import {
   BulletMeter,
   CalendarHeatmap,
   HorizonChart,
+  SparkTile,
   WaterfallChart,
   type CalendarDay,
   type HorizonRow,
@@ -365,6 +366,80 @@ export function SeriesExplorerDemo() {
       <p className="gal-note">
         {DEMO_NOTE}按月 24 个点；KPI 的变化是相对紧挨在前面、一样长的上一期；全部区间前面没有上一期，写破折号。
       </p>
+    </>
+  )
+}
+
+const spark = (seed: number, base: number, drift: number, spread: number) =>
+  walk(seed, 24, base, spread).map((v, i) => v + i * drift)
+
+export function SparkTileDemo() {
+  const days = Array.from({ length: 24 }, (_, i) => `D-${24 - i}`)
+  const fmt = (v: number) => v.toFixed(2)
+  return (
+    <>
+      <div
+        className="gal-wide"
+        data-gallery-spark
+        style={{ display: 'grid', gridTemplateColumns: 'repeat(5, minmax(0, 1fr))', gap: 8 }}
+      >
+        <SparkTile
+          label="NET ASSET"
+          text="¥ 2.42M"
+          value={2.42}
+          series={spark(21, 100, 0.6, 2)}
+          pointLabels={days}
+          formatPoint={fmt}
+          seriesLabel="净值走势（演示）"
+          delta="+1.31% 今日"
+          deltaTone="up"
+        />
+        <SparkTile
+          label="DRAWDOWN"
+          text="-3.1%"
+          value={-3.1}
+          series={spark(22, 10, -0.3, 1.5)}
+          pointLabels={days}
+          formatPoint={fmt}
+          seriesLabel="回撤走势（演示）"
+          trendTone="neutral"
+          delta="峰值 -6.8% · 02-14"
+        />
+        <SparkTile
+          label="SHARPE 60D"
+          text="1.84"
+          value={1.84}
+          series={spark(23, 14, 0.1, 1.2)}
+          pointLabels={days}
+          formatPoint={fmt}
+          seriesLabel="夏普走势（演示）"
+          delta="区间 1.2–2.1"
+        />
+        <SparkTile
+          label="TURNOVER"
+          text="0.62"
+          value={0.62}
+          unit="/月"
+          series={spark(24, 10, 0, 1.4)}
+          pointLabels={days}
+          formatPoint={fmt}
+          seriesLabel="换手走势（演示）"
+          delta="稳定"
+        />
+        <SparkTile
+          label="EXPOSURE"
+          text="131"
+          value={131}
+          unit="/ 150%"
+          series={[110, 112, 111, 118, 117, 124, 122, 128, 131]}
+          threshold={150}
+          near
+          formatPoint={fmt}
+          seriesLabel="敞口走势（演示）"
+          delta="接近上限"
+        />
+      </div>
+      <p className="gal-note">{DEMO_NOTE}数字是演示用的，场景照设计稿 SparkTile 卡。</p>
     </>
   )
 }

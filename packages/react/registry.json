@@ -47,6 +47,9 @@
           "path": "src/theme/chip-group.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/chip-group.css"
+          "path": "src/theme/chart-kit.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/chart-kit.css"
         },
         {
           "path": "src/theme/data-grid.css",
@@ -1770,6 +1773,51 @@
           "path": "src/patterns/tree-view.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/patterns/tree-view.tsx"
+      "name": "chart-kit",
+      "type": "registry:component",
+      "title": "Chart Kit",
+      "description": "图表共用底座：配色分配（series / seq / div）、点阵纹理、LCD tooltip、末点、轴与网格、图右上三件（表格视图、导出、全屏）。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/series-geometry"
+      ],
+      "files": [
+        {
+          "path": "src/quant/chart-kit/chart-actions.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/chart-kit/chart-actions.tsx"
+        },
+        {
+          "path": "src/quant/chart-kit/dot-fill.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/chart-kit/dot-fill.tsx"
+        },
+        {
+          "path": "src/quant/chart-kit/end-marker.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/chart-kit/end-marker.tsx"
+        },
+        {
+          "path": "src/quant/chart-kit/lcd-tooltip.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/chart-kit/lcd-tooltip.tsx"
+        },
+        {
+          "path": "src/quant/chart-kit/plot-axes.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/chart-kit/plot-axes.tsx"
+        },
+        {
+          "path": "src/quant/chart-kit/series-colors.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/chart-kit/series-colors.ts"
+        }
+      ]
+    },
+    {
       "name": "brush-chart",
       "type": "registry:component",
       "title": "Brush Chart",
@@ -1937,6 +1985,26 @@
           "path": "src/quant/series-geometry.ts",
           "type": "registry:component",
           "target": "~/src/katana/ui/quant/series-geometry.ts"
+        }
+      ]
+    },
+    {
+      "name": "spark-tile",
+      "type": "registry:component",
+      "title": "Spark Tile",
+      "description": "KPI 行的瓦片：点阵标签、LCD 数值、24px 迷你折线（末点橙）、一行变化说明；有阈值画琥珀虚线，接近阈值边框转暗橙并脉冲一次。对设计稿的 SparkTile 卡。",
+      "registryDependencies": [
+        "@katana/chart-kit",
+        "@katana/cn",
+        "@katana/rolling-text",
+        "@katana/series-geometry",
+        "@katana/use-scrubber"
+      ],
+      "files": [
+        {
+          "path": "src/quant/spark-tile.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/spark-tile.tsx"
         }
       ]
     },

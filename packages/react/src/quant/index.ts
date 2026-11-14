@@ -15,6 +15,7 @@ export { BrushChart, BrushStrip, type BrushChartProps, type BrushLabels, type Br
 export type { BrushWindow } from './brush-model'
 export { WaterfallChart, type WaterfallChartProps } from './waterfall-chart'
 export type { WaterfallBar, WaterfallStep } from './waterfall-model'
+export { SparkTile, type SparkTileProps } from './spark-tile'
 export { BulletMeter, type BulletMeterProps } from './bullet-meter'
 export type { BulletState } from './bullet-model'
 export { CalendarHeatmap, type CalendarDay, type CalendarHeatmapProps } from './calendar-heatmap'

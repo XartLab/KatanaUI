@@ -37,6 +37,7 @@ import {
 import {
   BrushChartDemo,
   BulletMeterDemo,
+  SparkTileDemo,
   CalendarHeatmapDemo,
   HorizonChartDemo,
   SeriesExplorerDemo,
@@ -134,6 +135,7 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'brush-chart': BrushChartDemo,
   'waterfall-chart': WaterfallChartDemo,
   'bullet-meter': BulletMeterDemo,
+  'spark-tile': SparkTileDemo,
   'calendar-heatmap': CalendarHeatmapDemo,
   'horizon-chart': HorizonChartDemo,
   'small-multiples': SmallMultiplesDemo,
