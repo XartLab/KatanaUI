@@ -14,5 +14,37 @@ export {
 export { tableCsv, type SortSpec } from './data-grid/model.ts'
 export { EmptyState, type EmptyStateSlot } from './empty-state.tsx'
 export { EstimateBadge } from './estimate-badge.tsx'
+export { EventTimeline, type EventTimelineLabels, type EventTimelineProps } from './event-timeline.tsx'
+export type { EventKind, SessionMinutes, TimelineEvent } from './event-timeline-model.ts'
 export { Toolbar, ToolbarGroup, ToolButton, ToolSlot } from './toolbar/toolbar.tsx'
 export { useRovingToolbar } from './toolbar/use-roving-toolbar.ts'
+
+// 时间序列与盈亏的积木（#1917）。功能参照 Arc（uiarc.dev，2026-11-14 读），只取功能，实现原创。
+export { SmallMultiples, type SmallMultiple, type SmallMultiplesProps } from './small-multiples.tsx'
+export {
+  SeriesExplorer,
+  type SeriesExplorerColumn,
+  type SeriesExplorerLabels,
+  type SeriesExplorerProps,
+} from './series-explorer/series-explorer.tsx'
+export type { KpiDef, RangeDef, SeriesDef, SeriesPoint } from './series-explorer/series-explorer-model.ts'
+
+// 盈亏归因（#1917，#1931 从 quant 挪到这里：顶行用了 blocks 的 Toolbar）。
+export {
+  AttributionBars,
+  type AttributionBarsProps,
+  type AttributionChoice,
+} from './attribution-bars/attribution-bars.tsx'
+export type { AttributionItem } from './attribution-bars/attribution-model.ts'
+
+// 分布与关系类的件（#1918）：功能参照 Arc Customer galaxy（uiarc.dev，2026-11-14 读），实现原创。
+export { SymbolGalaxy, type GalaxyGrouping, type SymbolGalaxyProps } from './symbol-galaxy/symbol-galaxy.tsx'
+export {
+  hitNode,
+  layoutGalaxy,
+  stepNode,
+  type GalaxyGroup,
+  type GalaxyLayout,
+  type GalaxyNode,
+  type GalaxyPlace,
+} from './symbol-galaxy/galaxy-model.ts'

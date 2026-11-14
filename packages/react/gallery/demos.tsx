@@ -1,13 +1,29 @@
 // SPDX-License-Identifier: MIT
 import type { ComponentType } from 'react'
-import { DateTimeInputDemo, NumberInputDemo, SkeletonDemo } from './pages/fields'
-import { BadgeDemo, DotMatrixDemo, KbdDemo, LcdDemo, LedDemo, RollingTextDemo } from './pages/readouts'
-import { ContextMenuOpen, DialogOpen, DropdownMenuOpen, PopoverOpen, SelectOpen, TooltipOpen } from './pages/open'
-import { ChangeTextDemo, PnlTextDemo, QuantFormatDemo } from './pages/quant'
-import { DataGridDemo, EmptyStateDemo, EstimateBadgeDemo, ToolbarDemo } from './pages/blocks'
-import { AlertDemo, ProgressDemo, ToastDemo } from './pages/feedback'
-import { ComboboxDemo, CommandDemo } from './pages/pickers'
-import { FieldDemo, HoverCardDemo, ScrollAreaDemo, SeparatorDemo, SheetDemo } from './pages/structure'
+import { DateTimeInputDemo, NumberInputDemo, SkeletonDemo } from './pages/fields.tsx'
+import {
+  BadgeDemo,
+  DotMatrixDemo,
+  KbdDemo,
+  LcdDemo,
+  LedDemo,
+  RollingTextDemo,
+  SymbolMarkDemo,
+} from './pages/readouts.tsx'
+import { ContextMenuOpen, DialogOpen, DropdownMenuOpen, PopoverOpen, SelectOpen, TooltipOpen } from './pages/open.tsx'
+import { ChangeTextDemo, PnlTextDemo, QuantFormatDemo } from './pages/quant.tsx'
+import { DataGridDemo, EmptyStateDemo, EstimateBadgeDemo, ToolbarDemo } from './pages/blocks.tsx'
+import { AlertDemo, ProgressDemo, ToastDemo } from './pages/feedback.tsx'
+import { ComboboxDemo, CommandDemo } from './pages/pickers.tsx'
+import { EventTimelineDemo, JsonViewerDemo } from './pages/arc-controls.tsx'
+import {
+  ChipGroupDemo,
+  DateRangePickerDemo,
+  HoldToConfirmDemo,
+  ShortcutRecorderDemo,
+  TreeViewDemo,
+} from './pages/arc-controls.tsx'
+import { FieldDemo, HoverCardDemo, ScrollAreaDemo, SeparatorDemo, SheetDemo } from './pages/structure.tsx'
 import {
   AiStatusDemo,
   ArcadePixelDemo,
@@ -16,7 +32,7 @@ import {
   NotificationBellDemo,
   PasswordInputDemo,
   StatusIconDemo,
-} from './pages/rare'
+} from './pages/rare.tsx'
 import {
   CodeBlockDemo,
   DurationPickerDemo,
@@ -24,7 +40,19 @@ import {
   TaskListDemo,
   ThemeSelectorDemo,
   WebSearchDemo,
-} from './pages/rare2'
+} from './pages/rare2.tsx'
+import {
+  BrushChartDemo,
+  MeterDemo,
+  SparkTileDemo,
+  CalendarHeatmapDemo,
+  HorizonChartDemo,
+  SeriesExplorerDemo,
+  SmallMultiplesDemo,
+  UseScrubberDemo,
+  AttributionBarsDemo,
+  EquityCurveDemo,
+} from './pages/series.tsx'
 import {
   GaugeBarDemo,
   PriceTagDemo,
@@ -34,9 +62,18 @@ import {
   RatingGaugeDemo,
   SparklineDemo,
   TreemapDemo,
-} from './pages/quotes'
-import { AccordionDemo, TabsDemo } from './pages/layout'
-import { ContextMenuDemo, DialogDemo, DropdownMenuDemo, PopoverDemo, TooltipDemo } from './pages/overlays'
+} from './pages/quotes.tsx'
+import {
+  ConnectedScatterDemo,
+  SymbolGalaxyDemo,
+  RangeHistogramSliderDemo,
+  QuantileLayersDemo,
+  RidgelineDemo,
+  SlopeChartDemo,
+  UptimeBarsDemo,
+} from './pages/distribution.tsx'
+import { AccordionDemo, TabsDemo } from './pages/layout.tsx'
+import { ContextMenuDemo, DialogDemo, DropdownMenuDemo, PopoverDemo, TooltipDemo } from './pages/overlays.tsx'
 import {
   ButtonDemo,
   CheckboxDemo,
@@ -46,7 +83,7 @@ import {
   SliderDemo,
   SwitchDemo,
   ToggleGroupDemo,
-} from './pages/forms'
+} from './pages/forms.tsx'
 
 /** 每一页的实时预览，键是 registry.ts 里的页 id（registry.test.ts 核对两边一一对应）。 */
 export const DEMOS: Readonly<Record<string, ComponentType>> = {
@@ -54,6 +91,7 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   input: InputDemo,
   select: SelectDemo,
   'multi-select': MultiSelectDemo,
+  'chip-group': ChipGroupDemo,
   checkbox: CheckboxDemo,
   switch: SwitchDemo,
   'toggle-group': ToggleGroupDemo,
@@ -65,14 +103,18 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'context-menu': ContextMenuDemo,
   tabs: TabsDemo,
   accordion: AccordionDemo,
+  'tree-view': TreeViewDemo,
   led: LedDemo,
   lcd: LcdDemo,
   'dot-matrix': DotMatrixDemo,
   'rolling-text': RollingTextDemo,
   badge: BadgeDemo,
   kbd: KbdDemo,
+  'shortcut-recorder': ShortcutRecorderDemo,
+  'symbol-mark': SymbolMarkDemo,
   'number-input': NumberInputDemo,
   'date-time-input': DateTimeInputDemo,
+  'date-range-picker': DateRangePickerDemo,
   skeleton: SkeletonDemo,
   toast: ToastDemo,
   alert: AlertDemo,
@@ -91,7 +133,9 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'empty-state': EmptyStateDemo,
   toolbar: ToolbarDemo,
   'estimate-badge': EstimateBadgeDemo,
+  'event-timeline': EventTimelineDemo,
   'password-input': PasswordInputDemo,
+  'hold-to-confirm': HoldToConfirmDemo,
   'delete-button': DeleteButtonDemo,
   'notification-bell': NotificationBellDemo,
   'status-icon': StatusIconDemo,
@@ -101,9 +145,20 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'step-player': StepPlayerDemo,
   'theme-selector': ThemeSelectorDemo,
   'code-block': CodeBlockDemo,
+  'json-viewer': JsonViewerDemo,
   'web-search': WebSearchDemo,
   'task-list': TaskListDemo,
   'duration-picker': DurationPickerDemo,
+  'use-scrubber': UseScrubberDemo,
+  'brush-chart': BrushChartDemo,
+  'attribution-bars': AttributionBarsDemo,
+  'equity-curve': EquityCurveDemo,
+  meter: MeterDemo,
+  'spark-tile': SparkTileDemo,
+  'calendar-heatmap': CalendarHeatmapDemo,
+  'horizon-chart': HorizonChartDemo,
+  'small-multiples': SmallMultiplesDemo,
+  'series-explorer': SeriesExplorerDemo,
   sparkline: SparklineDemo,
   'gauge-bar': GaugeBarDemo,
   treemap: TreemapDemo,
@@ -112,6 +167,13 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'range-bar': RangeBarDemo,
   'rating-gauge': RatingGaugeDemo,
   'quote-table': QuoteTableDemo,
+  'uptime-bars': UptimeBarsDemo,
+  'range-histogram-slider': RangeHistogramSliderDemo,
+  ridgeline: RidgelineDemo,
+  'quantile-layers': QuantileLayersDemo,
+  'slope-chart': SlopeChartDemo,
+  'connected-scatter': ConnectedScatterDemo,
+  'symbol-galaxy': SymbolGalaxyDemo,
 }
 
 /**

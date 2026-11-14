@@ -25,6 +25,17 @@ const INTERNAL = {
   focus: '各控件共用的焦点环类名。',
   motion: '三条弹簧参数（snappy、gentle、settle），给 motion/react 用。',
   spring: '把三条弹簧的停止阈值收到 0.001，给 scale、opacity、pathLength 这类 0 到 1 的量用。',
+  'series-geometry':
+    '序列图共用的几何（纯函数）：好看的刻度、比例尺、折线与面积路径，BrushChart、HorizonChart、SmallMultiples、SeriesExplorer 都用。',
+  'brush-model': 'BrushChart 的窗口几何（纯函数）：夹取、平移、缩放、居中。',
+  'attribution-model':
+    'AttributionBars 的排序与折叠（纯函数）：正负分组降序、超 7 项折「其他 ×n」、费用·税放底、对称刻度。',
+  'equity-curve-model': 'EquityCurve 的纯逻辑：按时刻摆的横轴、线性 / 对数纵轴、镜像回撤的纵轴、默认横轴刻度。',
+  'chart-kit':
+    '图表共用底座：配色分配（series / seq / div）、点阵纹理、LCD tooltip、末点、轴与网格、图右上三件（表格视图、导出、全屏）。',
+  'meter-model': 'Meter 的几何与状态（纯函数）：位置、达到软限与硬限的判定、刻度盘指针位置。',
+  'calendar-model': 'CalendarHeatmap 的格子排布、档位与键盘（纯函数）：日历日按 UTC 算，一周一列。',
+  'horizon-model': 'HorizonChart 的分带（纯函数）：把带正负的一列数折成几条叠起来的窄带。',
   'hover-intent': '悬停意图：停一会儿才开、离开等一会儿再收、键盘聚焦立即开的钩子。',
   'code-highlight': 'CodeBlock 用的小型词法切分：注释、字符串、数字、关键字、函数、标点（纯函数，不加依赖）。',
   'matrix-orb-model': 'MatrixOrb 的纯数学：某状态下圆盘上一点在某一时刻的亮度。',
@@ -37,9 +48,17 @@ const INTERNAL = {
   'tone-text': 'ChangeText 与 PnlText 共用的底：方向到颜色与箭头。',
   'date-time-model': 'DateTimeInput 的解析与格式化（纯函数）。',
   'number-field-model': 'NumberInput 的解析与取整（纯函数）。',
+  'number-expression': 'NumberInput 的算式输入：+10%、*2、100*1.5 按当前值算（纯函数，不用 eval）。',
+  'shortcut-model': 'ShortcutRecorder 的规则：一次按键变成规范组合串（修饰键次序、物理键）。',
+  'date-range-model': 'DateRangePicker 的预设规则：今天、本周、本月、年初至今（截至今天）与区间认预设（纯函数）。',
+  'json-viewer-model': 'JsonViewer 的数据模型：把任意值建成带稳定 id 的节点树，查找命中与要展开的祖先（纯函数）。',
+  'event-timeline-model': 'EventTimeline 的分组规则：按显示时区的自然日分组、新的在前，钟点格式（纯函数）。',
+  'hold-model': 'HoldToConfirm 的进度规则：按住填满、松手退回的时长与每帧推进（纯函数）。',
   'loading-gate': 'Loading 的计时与行数量取（纯函数）。',
   'opener-focus': '对话框与抽屉共用：关闭后把焦点还给打开前拿着它的元素。',
   label: 'Radix Label，Field 用它做标签（文档站在 field 页）。',
+  'chart-scale':
+    '分布与关系类的图（Ridgeline、SlopeChart、ConnectedScatter）共用的纯函数：线性比例尺、好看的刻度、分位数。',
   'loading-wait': 'Loading 的计时外壳：500ms、2s、10s 三个阶段。',
 }
 
@@ -89,6 +108,13 @@ function collectItems() {
   }
   byFile('src/patterns', 'registry:component')
   if (existsSync(join(pkgDir, 'src/quant'))) {
+    add(
+      'chart-kit',
+      'registry:component',
+      listDir('src/quant/chart-kit')
+        .filter((f) => /\.tsx?$/.test(f) && !/\.test\./.test(f))
+        .map((f) => `src/quant/chart-kit/${f}`),
+    )
     byFile('src/quant', 'registry:component', (f) => isCode(f) && f !== 'index.ts')
     // 格式化函数：src/quant/format/*.ts 合成一项，件依赖它。
     const format = listDir('src/quant/format').filter((f) => f.endsWith('.ts') && !/\.test\./.test(f))
@@ -111,6 +137,21 @@ function collectItems() {
       'toolbar',
       'registry:component',
       codeIn('src/blocks/toolbar').map((f) => `src/blocks/toolbar/${f}`),
+    )
+    add(
+      'series-explorer',
+      'registry:component',
+      codeIn('src/blocks/series-explorer').map((f) => `src/blocks/series-explorer/${f}`),
+    )
+    add(
+      'attribution-bars',
+      'registry:component',
+      codeIn('src/blocks/attribution-bars').map((f) => `src/blocks/attribution-bars/${f}`),
+    )
+    add(
+      'symbol-galaxy',
+      'registry:component',
+      codeIn('src/blocks/symbol-galaxy').map((f) => `src/blocks/symbol-galaxy/${f}`),
     )
     byFile('src/blocks', 'registry:component', (f) => isCode(f) && f !== 'index.ts')
   }

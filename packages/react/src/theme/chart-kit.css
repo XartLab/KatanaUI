@@ -1,0 +1,256 @@
+/* SPDX-License-Identifier: MIT */
+/* 图表共用底座（#1931，quant/chart-kit）：LCD tooltip、末点、轴与网格、点阵纹理（HTML 条）、图右上三件、SparkTile。
+   颜色只用 token；涨跌色（--pnl-up / --pnl-down）只给文字，不给面（dataviz.md §2、readability.md §14）。 */
+
+/* 视觉开关（样子全由变量决定，件里不写死；默认是现在的样子，照 dataviz.md。将来的方言——示波器屏、工业文档感——只覆盖这些变量，
+   或在祖先上写 data-dialect 再覆盖）。每个都带默认值，不用在 :root 里定义：
+   --chart-accent       强调色（末点、当前点、焦点）。默认 var(--signal-orange)
+   --chart-accent-dim   强调色的暗档（接近阈值的边框）。默认 var(--signal-orange-dim)
+   --chart-end-glow     末点的辉光（box-shadow）。默认 var(--glow-orange)；方块点可以设成 none
+   --chart-end-radius   末点形状：50% 是圆，0 是方块。默认 50%
+   --chart-end-size     末点边长。默认 8px
+   --chart-fill-dot     面的纹理里点阵的 display。默认 inline
+   --chart-fill-hatch   面的纹理里斜线排线的 display。默认 none（换成 inline、把 dot 设成 none 就是斜线排线）
+   --chart-fill-image   HTML 条的填充（background-image）。默认点阵渐变
+   --chart-line-glow    数据线的辉光（filter）。默认 none
+   --chart-grid-dash    网格线的虚线（stroke-dasharray）。默认 none；「分度」网格可以在这里加刻度齿
+   --chart-grid-color   网格线颜色。默认 var(--chart-grid)
+   --chart-font-num     数字字体（tooltip、数值、瓦片；LCD 或宽体）。默认 var(--font-lcd)
+   --chart-font-axis    轴与标注的数字字体。默认 var(--font-mono) */
+
+/* 轴与网格 */
+.k-ck-grid {
+  stroke: var(--chart-grid-color, var(--chart-grid));
+  stroke-dasharray: var(--chart-grid-dash, none);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+.k-ck-ytick {
+  position: absolute;
+  right: 100%;
+  padding-right: 8px;
+  transform: translateY(-50%);
+  color: var(--chart-axis);
+  font: var(--text-num-sm) var(--chart-font-axis, var(--font-mono));
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+/* LCD tooltip */
+.k-ck-tip {
+  position: absolute;
+  z-index: 2;
+  min-width: 96px;
+  padding: 6px 10px;
+  transform: translateX(10px);
+  background: var(--lcd-bg);
+  border: var(--hairline);
+  box-shadow: var(--recess);
+  color: var(--lcd-fg);
+  font-family: var(--chart-font-num, var(--font-lcd));
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+  white-space: nowrap;
+}
+.k-ck-tip[data-side='left'] {
+  transform: translateX(calc(-100% - 10px));
+}
+.k-ck-tip-title {
+  margin-bottom: 2px;
+  color: var(--ink-300);
+  font: var(--text-num-sm) var(--chart-font-axis, var(--font-mono));
+}
+.k-ck-tip-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font: var(--text-caption) var(--chart-font-num, var(--font-lcd));
+}
+.k-ck-tip-swatch {
+  width: 8px;
+  height: 2px;
+}
+.k-ck-tip-label {
+  flex: 1;
+  color: var(--ink-300);
+}
+.k-ck-tip-value {
+  color: var(--ink-100);
+  letter-spacing: 0.04em;
+}
+
+/* 末点 */
+.k-ck-end {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  pointer-events: none;
+}
+.k-ck-end-dot {
+  width: var(--chart-end-size, 8px);
+  height: var(--chart-end-size, 8px);
+  margin: calc(var(--chart-end-size, 8px) / -2) 0 0 calc(var(--chart-end-size, 8px) / -2);
+  border-radius: var(--chart-end-radius, 50%);
+  background: var(--chart-accent, var(--signal-orange));
+  box-shadow: var(--chart-end-glow, var(--glow-orange));
+}
+.k-ck-end-value {
+  position: absolute;
+  top: 0;
+  right: 10px;
+  transform: translateY(-50%);
+  color: var(--ink-100);
+  font: var(--text-num-sm) var(--chart-font-num, var(--font-lcd));
+  white-space: nowrap;
+}
+.k-ck-end[data-side='right'] .k-ck-end-value {
+  right: auto;
+  left: 10px;
+}
+
+/* 点阵纹理（HTML 条）：4px 实 2px 空，Meter 的填充用；颜色由 --k-dot 给 */
+.k-dotfill {
+  background: var(
+    --chart-fill-image,
+    repeating-linear-gradient(90deg, var(--k-dot, var(--chart-accent, var(--signal-orange))) 0 4px, transparent 4px 6px)
+  );
+  opacity: 0.6;
+}
+
+/* 图右上三件 */
+.k-ck-actions {
+  display: inline-flex;
+  gap: 2px;
+}
+.k-ck-action {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--ink-300);
+  cursor: pointer;
+}
+.k-ck-action:hover,
+.k-ck-action[aria-pressed='true'] {
+  background: var(--bg-300);
+  color: var(--ink-100);
+}
+.k-ck-action:focus-visible {
+  outline: 1px solid var(--focus-ring);
+}
+
+/* SparkTile */
+.k-spark-tile {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  padding: 8px 10px;
+  border: var(--hairline);
+  background: var(--bg-200);
+  color: var(--ink-100);
+  font-family: var(--chart-font-num, var(--font-lcd));
+  font-variant-numeric: tabular-nums;
+  text-align: left;
+}
+button.k-spark-tile {
+  cursor: pointer;
+}
+button.k-spark-tile:focus-visible {
+  outline: 1px solid var(--focus-ring);
+}
+.k-spark-tile[data-expanded='true'] {
+  border-color: var(--chart-accent, var(--signal-orange));
+}
+.k-spark-tile[data-near='true'] {
+  border-color: var(--chart-accent-dim, var(--signal-orange-dim));
+  animation: k-spark-pulse var(--dur-snappy) var(--ease-snappy) 1;
+}
+@keyframes k-spark-pulse {
+  50% {
+    box-shadow: 0 0 0 2px var(--chart-accent-dim, var(--signal-orange-dim));
+  }
+}
+.k-spark-tile-label {
+  color: var(--ink-300);
+  font: var(--text-tag) var(--font-dot);
+  letter-spacing: 0;
+}
+.k-spark-tile-value {
+  font: var(--text-lcd) var(--chart-font-num, var(--font-lcd));
+  letter-spacing: 0.06em;
+}
+.k-spark-tile-value[data-empty='true'] {
+  color: var(--ink-300);
+}
+.k-spark-tile-unit {
+  margin-left: 4px;
+  color: var(--ink-300);
+  font: var(--text-num-sm) var(--chart-font-num, var(--font-lcd));
+}
+.k-spark-tile-plot {
+  position: relative;
+  display: block;
+  height: var(--k-spark-h, 24px);
+}
+.k-spark-tile-plot > svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.k-spark-tile-line {
+  fill: none;
+  stroke: var(--series-1);
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+  filter: var(--chart-line-glow, none);
+  vector-effect: non-scaling-stroke;
+}
+.k-spark-tile-plot[data-trend='neutral'] .k-spark-tile-line {
+  stroke: var(--ink-300);
+}
+.k-spark-tile-threshold {
+  stroke: var(--signal-amber);
+  stroke-width: 1;
+  stroke-dasharray: 2 2;
+  vector-effect: non-scaling-stroke;
+}
+.k-spark-tile-delta {
+  min-height: 12px;
+  color: var(--ink-300);
+  font: var(--text-num-sm) var(--chart-font-num, var(--font-lcd));
+}
+.k-spark-tile-delta[data-tone='up'] {
+  color: var(--pnl-up);
+}
+.k-spark-tile-delta[data-tone='down'] {
+  color: var(--pnl-down);
+}
+.k-spark-tile-delta[data-tone='warn'] {
+  color: var(--signal-amber);
+}
+
+/* 面的纹理（SVG pattern 里两种形状都画，哪种显示由变量定） */
+.k-fill-dot {
+  display: var(--chart-fill-dot, inline);
+}
+.k-fill-hatch {
+  display: var(--chart-fill-hatch, none);
+  stroke-width: 1;
+}
+
+/* 瓦片编号：强调色等宽小字（参照图 BILL OF MODULES 的 01 02） */
+.k-spark-tile-index {
+  margin-right: 8px;
+  color: var(--chart-accent, var(--signal-orange));
+}
+/* 数值后的单位：小一档、次一级墨色（precision-instrument §2.2）。 */
+.k-ck-unit {
+  color: var(--ink-300);
+  font-size: 0.85em;
+}

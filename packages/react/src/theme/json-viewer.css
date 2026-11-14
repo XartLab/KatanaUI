@@ -1,0 +1,121 @@
+/* SPDX-License-Identifier: MIT */
+/* JsonViewer：照设计稿 DataGrid 卡的密度与字体角色（2026-11-14 读）：等宽字（--font-mono，中英混排才对得齐）、行高 --row-tight、
+   行间 --hairline、无斑马纹无竖线；数值 --ink-100、文字（键、字符串）--ink-200、布尔与 null 是「无数值」的 --ink-300；
+   不按类型上状态色（signal 色在系统里表示状态）。悬停 --bg-400；命中是强调色底的 mark。查找框照 Controls 卡的 Input：
+   --bg-000 凹陷 + --recess，--control-h 高。 */
+.k-json {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+.k-json-search {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: var(--control-h);
+  padding: 0 8px;
+  background: var(--bg-000);
+  border: 1px solid var(--line-100);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--recess);
+  color: var(--ink-300);
+}
+.k-json-search:focus-within {
+  border-color: var(--signal-orange-dim);
+}
+.k-json-input {
+  flex: 1;
+  min-width: 0;
+  background: transparent;
+  border: 0;
+  outline: 0;
+  color: var(--ink-100);
+  font: var(--text-data) var(--font-mono);
+}
+.k-json-input::placeholder {
+  color: var(--ink-300);
+}
+.k-json-count {
+  color: var(--ink-300);
+  font: var(--text-caption) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.k-json-tree {
+  display: flex;
+  flex-direction: column;
+  outline: 0;
+  font: var(--text-data) var(--font-mono);
+  color: var(--ink-200);
+}
+.k-json-item {
+  display: block;
+  outline: 0;
+}
+.k-json-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: var(--row-tight);
+  padding: 0 6px 0 calc(2px + var(--k-json-level, 0) * 14px);
+  border-bottom: var(--hairline);
+  white-space: nowrap;
+}
+.k-json-item[data-hovered] .k-json-row {
+  background: var(--bg-400);
+}
+.k-json-item[data-focus-visible] .k-json-row {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: -2px;
+}
+.k-json-chevron {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  color: var(--ink-300);
+  cursor: pointer;
+}
+.k-json-chevron svg {
+  transition: rotate 0.15s ease-out;
+}
+.k-json-row[data-expanded] .k-json-chevron svg {
+  rotate: 90deg;
+}
+.k-json-key {
+  color: var(--ink-200);
+}
+.k-json-colon,
+.k-json-summary,
+.k-json-more {
+  color: var(--ink-300);
+}
+.k-json-more {
+  font-style: italic;
+}
+.k-json-row[data-kind='string'] .k-json-value {
+  color: var(--ink-200);
+}
+.k-json-row[data-kind='number'] .k-json-value {
+  color: var(--ink-100);
+  font-variant-numeric: tabular-nums;
+}
+.k-json-row[data-kind='boolean'] .k-json-value,
+.k-json-row[data-kind='null'] .k-json-value {
+  color: var(--ink-300);
+}
+.k-json-value {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.k-json-hit {
+  background: color-mix(in srgb, var(--signal-orange) 40%, transparent);
+  border-radius: 2px;
+  color: inherit;
+}

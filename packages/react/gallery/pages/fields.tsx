@@ -8,8 +8,8 @@ import {
   Skeleton,
   type DateTimeLabels,
   type LoadingTexts,
-} from '../../src/index'
-import { Row } from './parts'
+} from '../../src/index.ts'
+import { Row } from './parts.tsx'
 
 // 数字框、日期时间框与加载骨架的演示（#1860 从 src/ui 搬进包）。这几件的文字都是调用方给的，这里给一份演示用的中文。
 
@@ -17,6 +17,7 @@ export function NumberInputDemo() {
   const [size, setSize] = useState(14)
   const [price, setPrice] = useState(0.5)
   const [auto, setAuto] = useState(0)
+  const [qty, setQty] = useState(100)
   return (
     <>
       <Row name="默认">
@@ -29,11 +30,28 @@ export function NumberInputDemo() {
       <Row name="自动">
         <NumberInput label="根数" value={auto} onValue={setAuto} min={0} max={500} autoValue={0} autoText="自动" />
       </Row>
+      <Row name="标签 · 算式">
+        <NumberInput
+          label="数量"
+          caption="数量"
+          value={qty}
+          onValue={setQty}
+          min={0}
+          max={100000}
+          step={10}
+          width={140}
+          expression
+        />
+        <output data-gallery-qty>{qty}</output>
+      </Row>
       <Row name="禁用 · 非法">
         <NumberInput label="禁用" value={3} onValue={() => {}} disabled />
         <NumberInput label="非法" value={3} onValue={() => {}} invalid />
       </Row>
-      <p className="gal-note">打字、↑↓、按住左右拖（Shift 粗调、Alt 精调）都能改值；越界夹进范围。</p>
+      <p className="gal-note">
+        打字、↑↓、按住左右拖（Shift 粗调、Alt 精调）都能改值；越界夹进范围。「标签 · 算式」那个框还能写
+        +10%、*2、/4、100*1.5，回车算。
+      </p>
     </>
   )
 }

@@ -130,6 +130,10 @@ export { Tabs, TabsContent, TabsList, TabsTrigger, tabsListVariants } from './pr
 export { ToggleGroup, ToggleGroupItem, toggleGroupVariants, toggleItemVariants } from './primitives/toggle-group.tsx'
 export { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger, tooltipContentClass } from './primitives/tooltip.tsx'
 export { MultiSelect } from './patterns/multi-select.tsx'
+export { ChipGroup, type ChipGroupProps, type ChipItem } from './patterns/chip-group.tsx'
+export { DateRangePicker, type DateRangeLabels, type DateRangePickerProps } from './patterns/date-range-picker.tsx'
+export type { DateRange, RangePreset, WeekStart } from './patterns/date-range-model.ts'
+export { TreeView, type TreeNode, type TreeViewProps } from './patterns/tree-view.tsx'
 export { QuoteTable, type QuoteGroup, type QuoteRow, type QuoteTableProps } from './patterns/quote-table.tsx'
 export {
   Combobox,
@@ -148,6 +152,12 @@ export { ARCADE_SPRITES, ArcadePixel, type ArcadePixelAnimate, type ArcadePixelP
 export { Lcd, type LcdTone } from './katana/lcd.tsx'
 export { Led, LINK_GROUPS, type LedState, type LinkGroup } from './katana/led.tsx'
 export { Kbd } from './katana/kbd.tsx'
+export {
+  ShortcutRecorder,
+  type ShortcutRecorderLabels,
+  type ShortcutRecorderProps,
+} from './katana/shortcut-recorder.tsx'
+export { SymbolMark, symbolMarkLetters, type SymbolMarkProps } from './katana/symbol-mark.tsx'
 export { BadgeGroup, type BadgeItem } from './katana/badge.tsx'
 export { RollingText, rollSlots, rollStrip } from './katana/rolling-text.tsx'
 export { NumberInput } from './katana/number-input.tsx'
@@ -174,6 +184,7 @@ export type { LoadingPhase } from './katana/loading-gate.ts'
 // 学自 rare-ui 的交互、本仓库重写的件（#1861）：密钥输入、原地确认的危险按钮、带未读数的铃、状态图标、行内 AI 状态、点阵状态球。
 export { PasswordInput, type PasswordInputProps } from './katana/password-input.tsx'
 export { DeleteButton, type DeleteButtonProps } from './katana/delete-button.tsx'
+export { HoldToConfirm, type HoldToConfirmProps } from './katana/hold-to-confirm.tsx'
 export { NotificationBell, type NotificationBellProps } from './katana/notification-bell.tsx'
 export { StatusIcon, type StatusIconStatus } from './katana/status-icon.tsx'
 export { AiStatus, type AiStatusProps, type AiStatusState } from './katana/ai-status.tsx'
@@ -189,6 +200,7 @@ export {
   type ThemeSelectorProps,
 } from './katana/theme-selector.tsx'
 export { CodeBlock, type CodeBlockProps } from './katana/code-block.tsx'
+export { JsonViewer, type JsonViewerLabels, type JsonViewerProps } from './katana/json-viewer.tsx'
 export {
   WebSearch,
   WebSearchCitation,
@@ -205,6 +217,7 @@ export {
   type DurationValue,
 } from './katana/duration-picker.tsx'
 export { useHoverIntent } from './lib/hover-intent.ts'
+export { useScrubber, type UseScrubberOptions } from './lib/use-scrubber.ts'
 
 // 报价与行情类的件（#1884）：迷你图、进度条、矩形树图（后三件从应用的分析视图提来）；行内价格标签、报价卡与一排、区间条、评级仪表是新做的。
 // 功能参照 TradingView 小组件，只取「给用户看什么、怎么交互」，不嵌、不抄（用户 2026-11-14 定：我们做自己的）。分组页签行情表在 patterns/。
@@ -226,3 +239,9 @@ export { RangeBar, rangeShare, type RangeBarProps } from './katana/range-bar.tsx
 export { RatingGauge, type RatingGaugeProps } from './katana/rating-gauge.tsx'
 export { ratingAngle, ratingZone } from './katana/rating-gauge-model.ts'
 export { quoteTone, type QuoteTone } from './katana/quote-tone.ts'
+
+// 分布与关系类的件（#1918）：功能参照 Arc（uiarc.dev，2026-11-14 读），实现原创。
+export { UptimeBars, type UptimeBarsProps } from './quant/uptime-bars.tsx'
+export { uptimeShare, type UptimeCell, type UptimeStatus } from './quant/uptime-bars-model.ts'
+export { RangeHistogramSlider, type RangeHistogramSliderProps } from './patterns/range-histogram-slider.tsx'
+export { histogramBins } from './patterns/range-histogram-model.ts'

@@ -14,10 +14,10 @@
 | --- | --- | --- | --- | --- | --- |
 | 基础件 | 3 | 1 | 0 | 4 | 3 / 4 |
 | 自有件 | 4 | 0 | 0 | 4 | 4 / 4 |
-| 量化 | 2 | 0 | 5 | 7 | 2 / 7 |
-| 积木 | 2 | 2 | 1 | 5 | 2 / 5 |
-| 面板 | 19 | 13 | 53 | 85 | 19 / 85 |
-| 合计 | | | | 105 | 30 / 105 |
+| 量化 | 3 | 0 | 4 | 7 | 3 / 7 |
+| 积木 | 3 | 2 | 1 | 6 | 3 / 6 |
+| 面板 | 19 | 16 | 49 | 84 | 19 / 84 |
+| 合计 | | | | 105 | 32 / 105 |
 
 ## 每张卡
 
@@ -32,7 +32,7 @@
 | BondCalc | 固收 | 面板 | — | 没做 | 固收，还没有对应面板 |
 | BreakWorkbench | 对账 | 面板 | — | 没做 | 对账，还没有对应面板 |
 | BrinsonAttribution | 资产管理 | 面板 | — | 没做 | 资产管理，还没有对应面板 |
-| Calendar | 发现 | 面板 | `src/panels/journal/TradingCalendar.tsx` | 部分 | 交易日历有，发散热力底色与换手模式没有 |
+| Calendar | 发现 | 面板 | `src/panels/journal/TradingCalendar.tsx`、`CalendarHeatmap` | 部分 | 交易日历有；发散热力底色在组件库有了（CalendarHeatmap，一年的日盈亏），还没接进交易日历，换手模式没有 |
 | CashLedger | 资产管理 | 面板 | — | 没做 | 资产管理，还没有对应面板 |
 | ChartTrader | 交易 | 面板 | `src/panels/chart/ChartTradeBar.tsx`、`src/panels/chart/TradeOverlay.tsx` | 部分 | 图上看单与下单有，拖动改价与止盈止损线没有 |
 | ClusterSearch | 订单流 | 面板 | — | 没做 | 足迹扫描器，还没有对应面板 |
@@ -46,6 +46,8 @@
 | DataGrid | 数据 | 积木 | `DataGrid` | 已做 | #1869 把 DataTable 抽成积木 DataGrid；应用里 panels/kit/DataTable.tsx 是薄适配层 |
 | DataQuality | 研究 | 面板 | — | 没做 | 研究层，还没有对应面板 |
 | DataSources | 运行中心 | 面板 | `src/shell/ConnectionList.tsx` | 部分 | 连接列表有，延迟 LCD 与今日拉取量没有 |
+| DatasetCatalog | 研究 | 面板 | `src/shell/DatasetSourcesPane.tsx`、`TreeView` | 部分 | 数据集来源有，字段数、频率、覆盖区间没有；目录树的件（TreeView）已有，面板还没有接它 |
+| DataSources | 运行中心 | 面板 | `src/shell/ConnectionList.tsx` | 部分 | 连接列表有，延迟 LCD 与今日拉取量没有；组件库已有 UptimeBars 逐格可用条（#1918）可补逐日可用，面板里还没接 |
 | DatasetCatalog | 研究 | 面板 | `src/shell/DatasetSourcesPane.tsx` | 部分 | 数据集来源有，字段数、频率、覆盖区间没有 |
 | DecisionJournal | 决策 | 面板 | — | 没做 | 决策层，还没有对应面板 |
 | DecisionQueue | 决策 | 面板 | — | 没做 | 决策层，还没有对应面板 |
@@ -53,9 +55,9 @@
 | DotMatrix | 点阵 | 自有件 | `DotMatrix` | 已做 |  |
 | DrawingToolbar | 图表 | 面板 | `src/panels/chart/SelectedToolbar.tsx`、`src/panels/chart/FavoritesToolbar.tsx` | 已做 |  |
 | Entitlements | 运行中心 | 面板 | — | 没做 | 许可与权限，还没有对应面板 |
-| EquityCurve | 图表 | 量化 | `src/panels/kit/EquityCurve.tsx` | 已做 | 应用里有，还没抽进 quant 层 |
+| EquityCurve | 图表 | 量化 | `EquityCurve` | 已做 | quant 层的 EquityCurve（时间轴、基准线、镜像回撤、对数轴、概览刷选条、表格视图）；应用的回放概览页已改用它（#1931） |
 | EventStudy | 研究 | 面板 | — | 没做 | 研究层，还没有对应面板 |
-| EventTimeline | 发现 | 面板 | — | 没做 | 发现，还没有对应面板 |
+| EventTimeline | 发现 | 积木 | `EventTimeline` | 已做 | 件（按显示时区分天、新的在前）已做，发现区的面板还没有接它（#1919 不动 src/） |
 | ExitStrategy | 交易 | 面板 | `src/panels/order-ticket` | 部分 | 下单面板里有止盈止损，自动退出两种模式没有 |
 | ExposureTimeline | 盈亏 | 面板 | — | 没做 | 盈亏，还没有对应面板 |
 | FactorDecay | 研究 | 面板 | — | 没做 | 研究层，还没有对应面板 |
@@ -70,12 +72,12 @@
 | Heatmap | 图表 | 量化 | `src/panels/heatmap` | 已做 | 应用里有，还没抽进 quant 层 |
 | HypothesisLedger | 研究 | 面板 | — | 没做 | 研究层，还没有对应面板 |
 | IndicatorPanel | 图表 | 面板 | `src/panels/chart/IndicatorDialog.tsx` | 已做 |  |
-| IntradayPnL | 盈亏 | 面板 | — | 没做 | 盈亏，还没有对应面板 |
+| IntradayPnL | 盈亏 | 面板 | `SeriesExplorer`、`HorizonChart` | 部分 | 盈亏探索（区间、KPI、堆叠柱加线、明细）与多品种日内窄带在组件库有了；面板与数据接线还没有 |
 | LCDReadout | 工作台 | 自有件 | `Lcd` | 已做 |  |
 | LiveDivergence | 研究 | 面板 | — | 没做 | 研究层，还没有对应面板 |
 | LossLimits | 盈亏 | 面板 | `src/panels/loss-limits` | 已做 |  |
 | MBOTrackers | 订单流 | 面板 | — | 没做 | 逐单订单簿，还没有对应面板 |
-| Meter | 工作台 | 量化 | — | 没做 | 限额板用的横向仪表，还没有对应组件 |
+| Meter | 工作台 | 量化 | `Meter` | 已做 | 条（点阵填充）、刻度盘、同步率三种形态；限额板传软限与硬限，达到软限接近、达到硬限越限；应用接线另开票 |
 | ModelCard | 研究 | 面板 | — | 没做 | 研究层，还没有对应面板 |
 | NewsFeed | 发现 | 面板 | `src/panels/alice-reports` | 部分 | 有报告流，公告、RSS、数据源事件的统一时间流没有 |
 | Notes | 工具 | 面板 | — | 没做 | Markdown 笔记，还没有对应面板 |
@@ -88,14 +90,14 @@
 | PanelFrame | 工作台 | 积木 | `src/workspace/PaneFrame.tsx`、`EmptyState`、`Toolbar`、计划：`PanelFrame` | 部分 | #1869 做了空态 EmptyState 与工具条 Toolbar；面板壳本身还在应用里 |
 | ParamScatter | 研究 | 面板 | — | 没做 | 研究层，还没有对应面板 |
 | PerformanceReport | 资产管理 | 面板 | — | 没做 | 资产管理，还没有对应面板 |
-| PnLAttribution | 组合 | 面板 | — | 没做 | 组合，还没有对应面板 |
-| PnLLedger | 盈亏 | 面板 | — | 没做 | 盈亏，还没有对应面板 |
+| PnLAttribution | 组合 | 面板 | `AttributionBars` | 部分 | 零轴条形归因（正负分组、折「其他」、费用·税在底）组件库有了；面板接线与维度切换的数据还没有 |
+| PnLLedger | 盈亏 | 面板 | `SeriesExplorer` | 部分 | 按期明细表与堆叠柱在 SeriesExplorer 里有了；台账数据接线与面板还没有 |
 | PositionBook | 组合 | 面板 | `src/panels/positions` | 已做 |  |
 | PositionHistory | 盈亏 | 面板 | — | 没做 | 盈亏，还没有对应面板 |
 | Preferences | 工作台 | 面板 | `src/shell/AppSettingsDialog.tsx` | 已做 |  |
 | PriceChart | 图表 | 面板 | `src/panels/chart` | 已做 |  |
-| QuantileLayers | 图表 | 面板 | — | 没做 | 研究层，还没有对应面板 |
-| RebalanceDesk | 资产管理 | 面板 | `src/panels/rebalance` | 部分 | 有再平衡面板，目标组合与当前组合的差额表没有对齐设计稿 |
+| QuantileLayers | 图表 | 面板 | — | 没做 | 研究层，还没有对应面板；组件库已有 Ridgeline 山脊图（#1918）可画各层收益分布，面板里还没接 |
+| RebalanceDesk | 资产管理 | 面板 | `src/panels/rebalance` | 部分 | 有再平衡面板，目标组合与当前组合的差额表没有对齐设计稿；组件库已有 SlopeChart 斜率图（#1918）可画再平衡前后权重，面板里还没接 |
 | RegimeStrip | 研究 | 量化 | — | 没做 | 市场状态带，还没有对应组件 |
 | ReplayBar | 订单流 | 面板 | `src/panels/chart/ReplayBar.tsx` | 已做 |  |
 | ReportBuilder | 工具 | 面板 | — | 没做 | 报告装配，还没有对应面板 |
@@ -112,10 +114,10 @@
 | Splitter | 工作台 | 基础件 | `src/workspace/WorkspaceCanvas.tsx` | 部分 | 分割线在应用里自己做，没有抽进包里的 primitives |
 | StatusBar | 工作台 | 积木 | — | 没做 | 顶栏底栏的分段模型，还没有对应组件 |
 | StatusLED | 工作台 | 自有件 | `Led` | 已做 |  |
-| StrategyCompare | 研究 | 面板 | — | 没做 | 研究层，还没有对应面板 |
+| StrategyCompare | 研究 | 面板 | — | 没做 | 研究层，还没有对应面板；组件库已有 ConnectedScatter 连线散点图（#1918）可画波动与收益的月度轨迹，面板里还没接 |
 | StressTest | 资产管理 | 面板 | — | 没做 | 资产管理，还没有对应面板 |
 | SymbolMap | 运行中心 | 面板 | — | 没做 | 代码映射，还没有对应面板 |
-| SystemHealth | 运行中心 | 面板 | `src/shell/LocalServiceStatus.tsx` | 部分 | 本地服务状态有，六块仪表没有 |
+| SystemHealth | 运行中心 | 面板 | `src/shell/LocalServiceStatus.tsx` | 部分 | 本地服务状态有，六块仪表没有；组件库已有 UptimeBars 逐格可用条（#1918）可补逐小时可用，面板里还没接 |
 | TCA | 资产管理 | 面板 | — | 没做 | 资产管理，还没有对应面板 |
 | Talk | 发现 | 面板 | — | 没做 | 交易聊天流，还没有对应面板 |
 | TaxLots | 盈亏 | 面板 | — | 没做 | 盈亏，还没有对应面板 |

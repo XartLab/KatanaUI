@@ -24,7 +24,8 @@ export type GridTone = 'up' | 'down' | 'muted'
 export type GridSide = 'buy' | 'sell'
 
 /** 品种：代码加场所（BTCUSDT + BINANCE）；只有一段字时当代码。 */
-export type SymbolValue = string | { code: string; venue?: string }
+/** 品种：代码、场所，可选名称与徽标（icon 有就在代码前画 SymbolMark，icon.src 是图片地址，没有 src 画字母圆标）。 */
+export type SymbolValue = string | { code: string; venue?: string; name?: string; icon?: { src?: string } }
 
 /** 各类型的格式选项；用不到的字段被忽略。 */
 export type ColumnFormat = {
@@ -86,7 +87,9 @@ export type ResolvedCell = {
   /** 类型决定的方向（pnl / change / side），渲染时用 ToneText；没有方向是 undefined。 */
   direction: 'up' | 'down' | 'flat' | undefined
   /** symbol 列拆好的两段。 */
-  symbol: { code: string; venue: string | undefined } | undefined
+  symbol:
+    | { code: string; venue: string | undefined; name: string | undefined; icon: { src?: string } | undefined }
+    | undefined
 }
 
 const NUMERIC: ReadonlySet<ColumnType> = new Set(['number', 'price', 'quantity', 'pnl', 'change'])
@@ -213,7 +216,8 @@ export function resolveCell<Row>(column: GridColumn<Row>, row: Row, env: CellEnv
       const value = raw as SymbolValue | null | undefined
       const code = typeof value === 'string' ? value : (value?.code ?? '')
       const venue = typeof value === 'object' && value !== null ? value.venue : undefined
-      symbol = code === '' ? undefined : { code, venue }
+      const obj = typeof value === 'object' && value !== null ? value : undefined
+      symbol = code === '' ? undefined : { code, venue, name: obj?.name, icon: obj?.icon }
       text = code === '' ? DASH : venue ? `${code}.${venue}` : code
       sort = code === '' ? undefined : text
       break

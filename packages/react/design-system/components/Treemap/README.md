@@ -44,7 +44,7 @@ Treemap
     div（一组）
       button（组头）
       div（一格：名字 · 数）
-  ol（色例，七档）
+  ol（色例，五档）
 ```
 
 ## Keyboard

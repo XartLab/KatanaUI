@@ -102,3 +102,16 @@
   font: var(--text-caption) var(--font-sans);
   color: var(--ink-300);
 }
+
+/* 框内左边的文字标签：和框一起是拖动区；有标签时输入框左内边收窄，值紧贴标签 */
+.k-num .k-cap {
+  align-self: center;
+  padding-left: 10px;
+  color: var(--ink-300);
+  font: var(--text-caption) var(--font-sans);
+  user-select: none;
+  white-space: nowrap;
+}
+.k-num .k-cap + input {
+  padding-left: 6px;
+}

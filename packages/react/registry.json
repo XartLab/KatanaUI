@@ -44,9 +44,24 @@
           "target": "~/src/katana/ui/theme/badge.css"
         },
         {
+          "path": "src/theme/chart-kit.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/chart-kit.css"
+        },
+        {
+          "path": "src/theme/chip-group.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/chip-group.css"
+        },
+        {
           "path": "src/theme/data-grid.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/data-grid.css"
+        },
+        {
+          "path": "src/theme/date-range.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/date-range.css"
         },
         {
           "path": "src/theme/date-time.css",
@@ -59,9 +74,39 @@
           "target": "~/src/katana/ui/theme/dialog.css"
         },
         {
+          "path": "src/theme/distribution.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/distribution.css"
+        },
+        {
           "path": "src/theme/empty-state.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/empty-state.css"
+        },
+        {
+          "path": "src/theme/equity-curve.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/equity-curve.css"
+        },
+        {
+          "path": "src/theme/event-timeline.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/event-timeline.css"
+        },
+        {
+          "path": "src/theme/fonts.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/fonts.css"
+        },
+        {
+          "path": "src/theme/hold-to-confirm.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/hold-to-confirm.css"
+        },
+        {
+          "path": "src/theme/json-viewer.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/json-viewer.css"
         },
         {
           "path": "src/theme/kbd.css",
@@ -107,6 +152,26 @@
           "path": "src/theme/rolling-text.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/rolling-text.css"
+        },
+        {
+          "path": "src/theme/series.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/series.css"
+        },
+        {
+          "path": "src/theme/shortcut-recorder.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/shortcut-recorder.css"
+        },
+        {
+          "path": "src/theme/symbol-mark.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/symbol-mark.css"
+        },
+        {
+          "path": "src/theme/tree-view.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/tree-view.css"
         }
       ]
     },
@@ -220,6 +285,19 @@
           "path": "src/lib/spring.ts",
           "type": "registry:lib",
           "target": "~/src/katana/ui/lib/spring.ts"
+        }
+      ]
+    },
+    {
+      "name": "use-scrubber",
+      "type": "registry:lib",
+      "title": "Use Scrubber",
+      "description": "序列图共用的扫读钩子：指针在图上移动或键盘走，选中一格。←→ 一格，Shift+←→ 三格，Home / End 到头尾，Esc 清掉。可受控，几张图共用一个选中格。功能参照 Arc 的 Revenue explorer。",
+      "files": [
+        {
+          "path": "src/lib/use-scrubber.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/lib/use-scrubber.ts"
         }
       ]
     },
@@ -952,6 +1030,70 @@
       ]
     },
     {
+      "name": "hold-model",
+      "type": "registry:lib",
+      "title": "Hold Model",
+      "description": "HoldToConfirm 的进度规则：按住填满、松手退回的时长与每帧推进（纯函数）。",
+      "files": [
+        {
+          "path": "src/katana/hold-model.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/katana/hold-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "hold-to-confirm",
+      "type": "registry:component",
+      "title": "Hold To Confirm",
+      "description": "不可撤的动作（全平、全撤、停策略）用的按钮：按住把底色从左填满才触发，松手往回退；键盘按住空格或回车同样。单击不触发。功能参照 Arc，实现原创。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/hold-model"
+      ],
+      "files": [
+        {
+          "path": "src/katana/hold-to-confirm.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/katana/hold-to-confirm.tsx"
+        }
+      ]
+    },
+    {
+      "name": "json-viewer-model",
+      "type": "registry:lib",
+      "title": "Json Viewer Model",
+      "description": "JsonViewer 的数据模型：把任意值建成带稳定 id 的节点树，查找命中与要展开的祖先（纯函数）。",
+      "files": [
+        {
+          "path": "src/katana/json-viewer-model.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/katana/json-viewer-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "json-viewer",
+      "type": "registry:component",
+      "title": "Json Viewer",
+      "description": "只读的 JSON 树：对象与数组可折叠，叶子按类型上色，上面一个查找框，命中的键名与值高亮、祖先自动展开。原始消息、Agent 调用结果、连接调试用它。功能参照 Arc，实现原创。",
+      "dependencies": [
+        "lucide-react@1.67.0",
+        "react-aria-components@1.22.1"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/json-viewer-model"
+      ],
+      "files": [
+        {
+          "path": "src/katana/json-viewer.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/katana/json-viewer.tsx"
+        }
+      ]
+    },
+    {
       "name": "kbd",
       "type": "registry:component",
       "title": "Kbd",
@@ -1111,6 +1253,22 @@
       ]
     },
     {
+      "name": "number-expression",
+      "type": "registry:lib",
+      "title": "Number Expression",
+      "description": "NumberInput 的算式输入：+10%、*2、100*1.5 按当前值算（纯函数，不用 eval）。",
+      "registryDependencies": [
+        "@katana/number-field-model"
+      ],
+      "files": [
+        {
+          "path": "src/katana/number-expression.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/katana/number-expression.ts"
+        }
+      ]
+    },
+    {
       "name": "number-field-model",
       "type": "registry:lib",
       "title": "Number Field Model",
@@ -1127,8 +1285,9 @@
       "name": "number-input",
       "type": "registry:component",
       "title": "Number Input",
-      "description": "一个框：值加可选的单位后缀，没有 −/+ 按钮；打字、方向键、按住左右拖三种改法。",
+      "description": "一个框：值加可选的单位后缀，没有 −/+ 按钮；打字、方向键、按住左右拖三种改法，可选框内标签与算式输入。",
       "registryDependencies": [
+        "@katana/number-expression",
         "@katana/number-field-model"
       ],
       "files": [
@@ -1264,6 +1423,40 @@
       ]
     },
     {
+      "name": "shortcut-model",
+      "type": "registry:lib",
+      "title": "Shortcut Model",
+      "description": "ShortcutRecorder 的规则：一次按键变成规范组合串（修饰键次序、物理键）。",
+      "files": [
+        {
+          "path": "src/katana/shortcut-model.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/katana/shortcut-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "shortcut-recorder",
+      "type": "registry:component",
+      "title": "Shortcut Recorder",
+      "description": "热键设置用的录键框：点一下进入录键态，按下组合键就记下来；冲突由调用方传的占用表判断，冲突时不写入并说占着的是谁。功能参照 Arc，实现原创。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/kbd",
+        "@katana/shortcut-model"
+      ],
+      "files": [
+        {
+          "path": "src/katana/shortcut-recorder.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/katana/shortcut-recorder.tsx"
+        }
+      ]
+    },
+    {
       "name": "skeleton",
       "type": "registry:component",
       "title": "Skeleton",
@@ -1349,6 +1542,22 @@
           "path": "src/katana/step-player.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/katana/step-player.tsx"
+        }
+      ]
+    },
+    {
+      "name": "symbol-mark",
+      "type": "registry:component",
+      "title": "Symbol Mark",
+      "description": "品种名前的小圆标（学 TradingView 列表里企业 / 币种标志）：有图显示圆形裁切的图片，加载失败退回字母；没有图就是字母圆标，底 bg-400、字 ink-200，不按代码随机上色。尺寸默认 18（行高 28 的一行）。",
+      "registryDependencies": [
+        "@katana/cn"
+      ],
+      "files": [
+        {
+          "path": "src/katana/symbol-mark.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/katana/symbol-mark.tsx"
         }
       ]
     },
@@ -1474,6 +1683,26 @@
       ]
     },
     {
+      "name": "chip-group",
+      "type": "registry:component",
+      "title": "Chip Group",
+      "description": "分面筛选用的一排可开关小标签：多选或单选，可带命中数与清除钮。筛选器、自选分组的快速过滤用它。功能参照 Arc，实现原创。",
+      "dependencies": [
+        "lucide-react@1.67.0",
+        "radix-ui@1.8.1"
+      ],
+      "registryDependencies": [
+        "@katana/cn"
+      ],
+      "files": [
+        {
+          "path": "src/patterns/chip-group.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/patterns/chip-group.tsx"
+        }
+      ]
+    },
+    {
       "name": "combobox",
       "type": "registry:component",
       "title": "Combobox",
@@ -1489,6 +1718,45 @@
           "path": "src/patterns/combobox.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/patterns/combobox.tsx"
+        }
+      ]
+    },
+    {
+      "name": "date-range-model",
+      "type": "registry:component",
+      "title": "Date Range Model",
+      "description": "DateRangePicker 的预设规则：今天、本周、本月、年初至今（截至今天）与区间认预设（纯函数）。",
+      "dependencies": [
+        "@internationalized/date@3.12.4"
+      ],
+      "files": [
+        {
+          "path": "src/patterns/date-range-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/patterns/date-range-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "date-range-picker",
+      "type": "registry:component",
+      "title": "Date Range Picker",
+      "description": "起点—终点两个可逐段打字的日期框，右边的日历按钮打开双月日历，左边一列预设：今天、本周、本月、年初至今，不在预设里的显示「自定义」。回放、台账、报告的区间用它。功能参照 Arc，实现原创。",
+      "dependencies": [
+        "@internationalized/date@3.12.4",
+        "lucide-react@1.67.0",
+        "react-aria-components@1.22.1"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/date-range-model",
+        "@katana/popover"
+      ],
+      "files": [
+        {
+          "path": "src/patterns/date-range-picker.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/patterns/date-range-picker.tsx"
         }
       ]
     },
@@ -1529,6 +1797,175 @@
       ]
     },
     {
+      "name": "range-histogram-model",
+      "type": "registry:component",
+      "title": "Range Histogram Model",
+      "description": "一排柱子画出全体的分布，下面一条轨道两个把手：拖出来的区间里的柱子亮、区间外的暗；柱色取 seq 顺序色阶（越高越亮）。用在筛选器，在全市场分布上拖市值、涨幅、换手的区间。点柱子或轨道，最近的把手跳过去。功能参照 Arc Range histogram slider，实现原创。",
+      "files": [
+        {
+          "path": "src/patterns/range-histogram-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/patterns/range-histogram-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "range-histogram-slider",
+      "type": "registry:component",
+      "title": "Range Histogram Slider",
+      "description": "一排柱子画出全体的分布，下面一条轨道两个把手：拖出来的区间里的柱子亮、区间外的暗；柱色取 seq 顺序色阶（越高越亮）。用在筛选器，在全市场分布上拖市值、涨幅、换手的区间。点柱子或轨道，最近的把手跳过去。功能参照 Arc Range histogram slider，实现原创。",
+      "registryDependencies": [
+        "@katana/range-histogram-model"
+      ],
+      "files": [
+        {
+          "path": "src/patterns/range-histogram-slider.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/patterns/range-histogram-slider.tsx"
+        }
+      ]
+    },
+    {
+      "name": "tree-view",
+      "type": "registry:component",
+      "title": "Tree View",
+      "description": "可展开收起的层级列表：数据集目录、品种分类树用它。方向键走、→ 展开、← 收起，单选或多选，展开与选中都可受控。功能参照 Arc，实现原创。",
+      "dependencies": [
+        "lucide-react@1.67.0",
+        "react-aria-components@1.22.1"
+      ],
+      "registryDependencies": [
+        "@katana/cn"
+      ],
+      "files": [
+        {
+          "path": "src/patterns/tree-view.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/patterns/tree-view.tsx"
+        }
+      ]
+    },
+    {
+      "name": "chart-kit",
+      "type": "registry:component",
+      "title": "Chart Kit",
+      "description": "图表共用底座：配色分配（series / seq / div）、点阵纹理、LCD tooltip、末点、轴与网格、图右上三件（表格视图、导出、全屏）。",
+      "dependencies": [
+        "@tanstack/react-virtual@3.14.25",
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/series-geometry"
+      ],
+      "files": [
+        {
+          "path": "src/quant/chart-kit/chart-actions.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/chart-kit/chart-actions.tsx"
+        },
+        {
+          "path": "src/quant/chart-kit/chart-table.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/chart-kit/chart-table.tsx"
+        },
+        {
+          "path": "src/quant/chart-kit/chart-value.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/chart-kit/chart-value.tsx"
+        },
+        {
+          "path": "src/quant/chart-kit/dot-fill.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/chart-kit/dot-fill.tsx"
+        },
+        {
+          "path": "src/quant/chart-kit/end-marker.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/chart-kit/end-marker.tsx"
+        },
+        {
+          "path": "src/quant/chart-kit/lcd-tooltip.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/chart-kit/lcd-tooltip.tsx"
+        },
+        {
+          "path": "src/quant/chart-kit/plot-axes.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/chart-kit/plot-axes.tsx"
+        },
+        {
+          "path": "src/quant/chart-kit/series-colors.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/chart-kit/series-colors.ts"
+        }
+      ]
+    },
+    {
+      "name": "brush-chart",
+      "type": "registry:component",
+      "title": "Brush Chart",
+      "description": "一条整段序列的概览条，上面套一个可拖的窗口，主图只画窗口里的那一段：拖中间平移、拖两端缩放、点窗口外的地方把窗口移过去。主图上指针或 ←→ 扫读。可作 EquityCurve 的底座。功能参照 Arc 的 Brush chart。",
+      "registryDependencies": [
+        "@katana/brush-model",
+        "@katana/chart-kit",
+        "@katana/cn",
+        "@katana/series-geometry",
+        "@katana/use-scrubber"
+      ],
+      "files": [
+        {
+          "path": "src/quant/brush-chart.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/brush-chart.tsx"
+        }
+      ]
+    },
+    {
+      "name": "brush-model",
+      "type": "registry:component",
+      "title": "Brush Model",
+      "description": "BrushChart 的窗口几何（纯函数）：夹取、平移、缩放、居中。",
+      "files": [
+        {
+          "path": "src/quant/brush-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/brush-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "calendar-heatmap",
+      "type": "registry:component",
+      "title": "Calendar Heatmap",
+      "description": "月历格：底色是收益（或换手）的低饱和发散热力，格内日期左上、数值右下，左下点阵事件点（最多 3 个，更多写 +n）；休市日灰底写「休」，今天强调色描边，周标 W40。切「事件」视图时格子不着色。mode 为 year 是整年的格子。对设计稿的 Calendar 卡；功能参照 Arc 的 Activity heatmap。",
+      "registryDependencies": [
+        "@katana/calendar-model",
+        "@katana/chart-kit",
+        "@katana/cn"
+      ],
+      "files": [
+        {
+          "path": "src/quant/calendar-heatmap.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/calendar-heatmap.tsx"
+        }
+      ]
+    },
+    {
+      "name": "calendar-model",
+      "type": "registry:component",
+      "title": "Calendar Model",
+      "description": "CalendarHeatmap 的格子排布、档位与键盘（纯函数）：日历日按 UTC 算，一周一列。",
+      "files": [
+        {
+          "path": "src/quant/calendar-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/calendar-model.ts"
+        }
+      ]
+    },
+    {
       "name": "change-text",
       "type": "registry:component",
       "title": "Change Text",
@@ -1542,6 +1979,138 @@
           "path": "src/quant/change-text.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/quant/change-text.tsx"
+        }
+      ]
+    },
+    {
+      "name": "chart-scale",
+      "type": "registry:component",
+      "title": "Chart Scale",
+      "description": "分布与关系类的图（Ridgeline、SlopeChart、ConnectedScatter）共用的纯函数：线性比例尺、好看的刻度、分位数。",
+      "files": [
+        {
+          "path": "src/quant/chart-scale.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/chart-scale.ts"
+        }
+      ]
+    },
+    {
+      "name": "connected-scatter",
+      "type": "registry:component",
+      "title": "Connected Scatter",
+      "description": "每个点是一个时刻的 (x, y)，按时间顺序连成轨迹，看一个对象在两个量之间怎么走（如策略的波动 vs 收益按月的路径、风格漂移）。时间方向不单靠颜色：起点空心圈、终点强调色实心圈加箭头、中间的点按时间取 seq 色阶（越晚越亮）。多条轨迹各取 series 色板的一个色。功能参照 Arc Connected scatter，实现原创。",
+      "registryDependencies": [
+        "@katana/chart-kit",
+        "@katana/scatter-model"
+      ],
+      "files": [
+        {
+          "path": "src/quant/connected-scatter.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/connected-scatter.tsx"
+        }
+      ]
+    },
+    {
+      "name": "equity-curve-model",
+      "type": "registry:component",
+      "title": "Equity Curve Model",
+      "description": "EquityCurve 的纯逻辑：按时刻摆的横轴、线性 / 对数纵轴、镜像回撤的纵轴、默认横轴刻度。",
+      "registryDependencies": [
+        "@katana/series-geometry"
+      ],
+      "files": [
+        {
+          "path": "src/quant/equity-curve-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/equity-curve-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "equity-curve",
+      "type": "registry:component",
+      "title": "Equity Curve",
+      "description": "权益线加镜像回撤：上区 2px 权益线（series-1）、可选 1px 灰虚线基准，下区回撤面用点阵 / 斜线纹理，末点橙色旁标最终值；线性 / 对数纵轴、底下概览刷选条、表格视图。横轴按点的时刻摆。对设计稿的 EquityCurve 卡。",
+      "registryDependencies": [
+        "@katana/brush-chart",
+        "@katana/brush-model",
+        "@katana/chart-kit",
+        "@katana/cn",
+        "@katana/equity-curve-model",
+        "@katana/series-geometry",
+        "@katana/toggle-group",
+        "@katana/use-scrubber"
+      ],
+      "files": [
+        {
+          "path": "src/quant/equity-curve.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/equity-curve.tsx"
+        }
+      ]
+    },
+    {
+      "name": "horizon-chart",
+      "type": "registry:component",
+      "title": "Horizon Chart",
+      "description": "十几个品种的日内收益叠成窄带，一屏看完：每行把正负值折成几条叠起来的带，颜色越深值越大，涨跌色跟涨跌配色走。所有行共用一个扫读位置。功能参照 Arc 的 Horizon chart。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/horizon-model",
+        "@katana/series-geometry",
+        "@katana/use-scrubber"
+      ],
+      "files": [
+        {
+          "path": "src/quant/horizon-chart.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/horizon-chart.tsx"
+        }
+      ]
+    },
+    {
+      "name": "horizon-model",
+      "type": "registry:component",
+      "title": "Horizon Model",
+      "description": "HorizonChart 的分带（纯函数）：把带正负的一列数折成几条叠起来的窄带。",
+      "files": [
+        {
+          "path": "src/quant/horizon-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/horizon-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "meter-model",
+      "type": "registry:component",
+      "title": "Meter Model",
+      "description": "Meter 的几何与状态（纯函数）：位置、达到软限与硬限的判定、刻度盘指针位置。",
+      "files": [
+        {
+          "path": "src/quant/meter-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/meter-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "meter",
+      "type": "registry:component",
+      "title": "Meter",
+      "description": "仪表的三种形态：条（进度、负载、敞口，点阵填充）、刻度盘（0 到 100 的读数带指针）、同步率（分段齿条加评估点刻度加大百分比）。限额板传软限与硬限，达到软限算接近、达到硬限算越限。对设计稿的 Meter 卡；功能参照 Arc 的 Budget variance。",
+      "registryDependencies": [
+        "@katana/chart-kit",
+        "@katana/cn",
+        "@katana/meter-model"
+      ],
+      "files": [
+        {
+          "path": "src/quant/meter.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/meter.tsx"
         }
       ]
     },
@@ -1563,6 +2132,153 @@
       ]
     },
     {
+      "name": "quantile-layers",
+      "type": "registry:component",
+      "title": "Quantile Layers",
+      "description": "因子分层累计收益（卡 QuantileLayers）：层号是序数，线色取 seq-200 到 seq-600（暗到亮，最高层最亮），不用类别色也不用涨跌色。多空差是点阵纹理面加 ink-100 细线，线尾标最高层与最低层，最高层末点是强调色。悬停一层其余变 40%，点击锁定；扫读出 LCD 提示；底部一行结论（单调性灯加词、各项统计、来源）。图右上三件，表格视图必有。",
+      "registryDependencies": [
+        "@katana/chart-kit",
+        "@katana/cn",
+        "@katana/quantile-model",
+        "@katana/series-geometry",
+        "@katana/use-scrubber"
+      ],
+      "files": [
+        {
+          "path": "src/quant/quantile-layers.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/quantile-layers.tsx"
+        }
+      ]
+    },
+    {
+      "name": "quantile-model",
+      "type": "registry:component",
+      "title": "Quantile Model",
+      "description": "因子分层累计收益（卡 QuantileLayers）：层号是序数，线色取 seq-200 到 seq-600（暗到亮，最高层最亮），不用类别色也不用涨跌色。多空差是点阵纹理面加 ink-100 细线，线尾标最高层与最低层，最高层末点是强调色。悬停一层其余变 40%，点击锁定；扫读出 LCD 提示；底部一行结论（单调性灯加词、各项统计、来源）。图右上三件，表格视图必有。",
+      "files": [
+        {
+          "path": "src/quant/quantile-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/quantile-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "ridgeline-model",
+      "type": "registry:component",
+      "title": "Ridgeline Model",
+      "description": "每组一条核密度曲线，上下叠着排，一眼比各组分布的位置、宽窄与形状（分位层、因子分组的收益分布）。带宽默认 Silverman 经验规则；给了基准线就画一条贯穿的虚线。分层是序数：线与点阵面取 seq 色阶（暗到亮），不用涨跌色。悬停或聚焦一条，其余变暗。功能参照 Arc Ridgeline，实现原创。",
+      "registryDependencies": [
+        "@katana/chart-scale"
+      ],
+      "files": [
+        {
+          "path": "src/quant/ridgeline-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/ridgeline-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "ridgeline",
+      "type": "registry:component",
+      "title": "Ridgeline",
+      "description": "每组一条核密度曲线，上下叠着排，一眼比各组分布的位置、宽窄与形状（分位层、因子分组的收益分布）。带宽默认 Silverman 经验规则；给了基准线就画一条贯穿的虚线。分层是序数：线与点阵面取 seq 色阶（暗到亮），不用涨跌色。悬停或聚焦一条，其余变暗。功能参照 Arc Ridgeline，实现原创。",
+      "registryDependencies": [
+        "@katana/chart-kit",
+        "@katana/chart-scale",
+        "@katana/quantile-model",
+        "@katana/ridgeline-model"
+      ],
+      "files": [
+        {
+          "path": "src/quant/ridgeline.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/ridgeline.tsx"
+        }
+      ]
+    },
+    {
+      "name": "scatter-model",
+      "type": "registry:component",
+      "title": "Scatter Model",
+      "description": "每个点是一个时刻的 (x, y)，按时间顺序连成轨迹，看一个对象在两个量之间怎么走（如策略的波动 vs 收益按月的路径、风格漂移）。时间方向不单靠颜色：起点空心圈、终点强调色实心圈加箭头、中间的点按时间取 seq 色阶（越晚越亮）。多条轨迹各取 series 色板的一个色。功能参照 Arc Connected scatter，实现原创。",
+      "registryDependencies": [
+        "@katana/chart-scale"
+      ],
+      "files": [
+        {
+          "path": "src/quant/scatter-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/scatter-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "series-geometry",
+      "type": "registry:component",
+      "title": "Series Geometry",
+      "description": "序列图共用的几何（纯函数）：好看的刻度、比例尺、折线与面积路径，BrushChart、HorizonChart、SmallMultiples、SeriesExplorer 都用。",
+      "files": [
+        {
+          "path": "src/quant/series-geometry.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/series-geometry.ts"
+        }
+      ]
+    },
+    {
+      "name": "slope-chart",
+      "type": "registry:component",
+      "title": "Slope Chart",
+      "description": "每项一条线连「前」「后」两列，看再平衡前后的权重、因子排名的变化。线与点是中性墨色，涨跌色只上变化后的那个数字（跟 data-updown 走），悬停与聚焦的线用强调色，两侧写名字与数，标签互相不重叠；rank 模式纵轴是名次，涨跌看名次升降。悬停或聚焦一条，其余变暗。功能参照 Arc Slope chart，实现原创。",
+      "registryDependencies": [
+        "@katana/chart-kit",
+        "@katana/slope-model"
+      ],
+      "files": [
+        {
+          "path": "src/quant/slope-chart.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/slope-chart.tsx"
+        }
+      ]
+    },
+    {
+      "name": "slope-model",
+      "type": "registry:component",
+      "title": "Slope Model",
+      "description": "每项一条线连「前」「后」两列，看再平衡前后的权重、因子排名的变化。线与点是中性墨色，涨跌色只上变化后的那个数字（跟 data-updown 走），悬停与聚焦的线用强调色，两侧写名字与数，标签互相不重叠；rank 模式纵轴是名次，涨跌看名次升降。悬停或聚焦一条，其余变暗。功能参照 Arc Slope chart，实现原创。",
+      "files": [
+        {
+          "path": "src/quant/slope-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/slope-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "spark-tile",
+      "type": "registry:component",
+      "title": "Spark Tile",
+      "description": "KPI 行的瓦片：点阵标签、LCD 数值、24px 迷你折线（末点橙）、一行变化说明；有阈值画琥珀虚线，接近阈值边框转暗橙并脉冲一次。对设计稿的 SparkTile 卡。",
+      "registryDependencies": [
+        "@katana/chart-kit",
+        "@katana/cn",
+        "@katana/rolling-text",
+        "@katana/series-geometry",
+        "@katana/use-scrubber"
+      ],
+      "files": [
+        {
+          "path": "src/quant/spark-tile.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/spark-tile.tsx"
+        }
+      ]
+    },
+    {
       "name": "tone-text",
       "type": "registry:component",
       "title": "Tone Text",
@@ -1576,6 +2292,36 @@
           "path": "src/quant/tone-text.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/quant/tone-text.tsx"
+        }
+      ]
+    },
+    {
+      "name": "uptime-bars-model",
+      "type": "registry:component",
+      "title": "Uptime Bars Model",
+      "description": "一格一天或一小时的可用条，用于数据源与连接健康：颜色加高度一起表达状态（绿满格可用、琥珀半高降级、红满格中断、虚线底无数据）；悬停或聚焦一格，条下的读数行写那一格的整句（如断流次数）。功能参照 Arc Uptime status，实现原创。",
+      "files": [
+        {
+          "path": "src/quant/uptime-bars-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/uptime-bars-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "uptime-bars",
+      "type": "registry:component",
+      "title": "Uptime Bars",
+      "description": "一格一天或一小时的可用条，用于数据源与连接健康：颜色加高度一起表达状态（绿满格可用、琥珀半高降级、红满格中断、虚线底无数据）；悬停或聚焦一格，条下的读数行写那一格的整句（如断流次数）。功能参照 Arc Uptime status，实现原创。",
+      "registryDependencies": [
+        "@katana/chart-kit",
+        "@katana/uptime-bars-model"
+      ],
+      "files": [
+        {
+          "path": "src/quant/uptime-bars.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/uptime-bars.tsx"
         }
       ]
     },
@@ -1622,6 +2368,7 @@
         "@katana/menu-any",
         "@katana/menu-parts",
         "@katana/quant-format",
+        "@katana/symbol-mark",
         "@katana/tone-text"
       ],
       "files": [
@@ -1670,6 +2417,96 @@
       ]
     },
     {
+      "name": "series-explorer",
+      "type": "registry:component",
+      "title": "Series Explorer",
+      "description": "盈亏探索积木：一排 KPI 瓦片（SparkTile），点一张展开成下面的图面板；面板顶上是指标页签、区间切换、对比上一期、右上三件，图是该指标的序列（柱或线），下面是刷选条；顶行可以对账（期初到期末、差额、灯加词），页脚来源行。交互参照 Arc 的 Metric explorer，样子与内容照设计稿 IntradayPnL、PnLLedger、EquityCurve 三张卡。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/brush-chart",
+        "@katana/brush-model",
+        "@katana/chart-kit",
+        "@katana/cn",
+        "@katana/led",
+        "@katana/series-geometry",
+        "@katana/spark-tile",
+        "@katana/switch",
+        "@katana/toggle-group",
+        "@katana/toolbar",
+        "@katana/use-scrubber"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/series-explorer/series-explorer-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/series-explorer/series-explorer-model.ts"
+        },
+        {
+          "path": "src/blocks/series-explorer/series-explorer.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/series-explorer/series-explorer.tsx"
+        }
+      ]
+    },
+    {
+      "name": "attribution-bars",
+      "type": "registry:component",
+      "title": "Attribution Bars",
+      "description": "今天（或选中区间）的钱从哪来：工作台顶行（宽体标题、维度与区间分段、表格 / 导出），点阵元信息与列头，每行编号加零轴条形（正在右、负在左，条是点阵纹理不用红绿，只有数字用涨跌色），已平仓的行整行删除线并在名称后挂点阵小标签，元信息行下面一行汇总（合计大号左带 2px 强调竖条，正负贡献小一号）；按 |贡献| 正负分组降序，超过 7 项折「其他 ×n」，费用·税永远在最底。对设计稿的 PnLAttribution 卡（卡明写不用瀑布图），语言同 SeriesExplorer。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/chart-kit",
+        "@katana/cn",
+        "@katana/symbol-mark",
+        "@katana/toggle-group",
+        "@katana/toolbar"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/attribution-bars/attribution-bars.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/attribution-bars/attribution-bars.tsx"
+        },
+        {
+          "path": "src/blocks/attribution-bars/attribution-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/attribution-bars/attribution-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "symbol-galaxy",
+      "type": "registry:component",
+      "title": "Symbol Galaxy",
+      "description": "持仓、自选、筛选结果按行业、市场、因子分位或状态聚成一团团的圆：面积是市值或仓位，圆面用发散色 div-*：正负各两档，-200 只给涨跌幅绝对值在前 20% 的点，中点灰，涨跌色不上面积；团名放在团的外接圆上方的留白里。上面一排切换分组方式，点在团间平滑迁移；悬停读详情，点击选中；Tab 在团间走、方向键在团内走。点多时自动改画 canvas。布局用 d3-hierarchy 的 pack，同样的数据永远同样的位置。功能参照 Arc Customer galaxy，实现原创。",
+      "dependencies": [
+        "d3-hierarchy@3.1.3"
+      ],
+      "devDependencies": [
+        "@types/d3-hierarchy@3.1.7"
+      ],
+      "registryDependencies": [
+        "@katana/chart-kit",
+        "@katana/toggle-group"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/symbol-galaxy/galaxy-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/symbol-galaxy/galaxy-model.ts"
+        },
+        {
+          "path": "src/blocks/symbol-galaxy/symbol-galaxy.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/symbol-galaxy/symbol-galaxy.tsx"
+        }
+      ]
+    },
+    {
       "name": "empty-state",
       "type": "registry:component",
       "title": "Empty State",
@@ -1698,6 +2535,56 @@
           "path": "src/blocks/estimate-badge.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/blocks/estimate-badge.tsx"
+        }
+      ]
+    },
+    {
+      "name": "event-timeline-model",
+      "type": "registry:component",
+      "title": "Event Timeline Model",
+      "description": "EventTimeline 的分组规则：按显示时区的自然日分组、新的在前，钟点格式（纯函数）。",
+      "files": [
+        {
+          "path": "src/blocks/event-timeline-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/event-timeline-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "event-timeline",
+      "type": "registry:component",
+      "title": "Event Timeline",
+      "description": "发现区的统一事件流（公告、告警、成交、数据源事件）：按显示时区的自然日分组，新的在前，每条一个钟点、一个按类型上色的圆点、标题加来源标签与说明。对设计稿的 EventTimeline 卡。功能参照 Arc，实现原创。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/event-timeline-model"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/event-timeline.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/event-timeline.tsx"
+        }
+      ]
+    },
+    {
+      "name": "small-multiples",
+      "type": "registry:component",
+      "title": "Small Multiples",
+      "description": "自选、组合里多个品种并排各一张小折线，同一个十字线：指针在任一张上移动，所有张的竖线与读数一起走；每张标题写名字与那一格的值。功能参照 Arc 的 Small multiples。",
+      "registryDependencies": [
+        "@katana/chart-kit",
+        "@katana/cn",
+        "@katana/quote-tone",
+        "@katana/series-geometry",
+        "@katana/use-scrubber"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/small-multiples.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/small-multiples.tsx"
         }
       ]
     }

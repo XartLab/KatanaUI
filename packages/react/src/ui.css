@@ -11,6 +11,14 @@
 @import './theme/led.css';
 @import './theme/lcd.css';
 @import './theme/kbd.css';
+@import './theme/hold-to-confirm.css';
+@import './theme/shortcut-recorder.css';
+@import './theme/chip-group.css';
+@import './theme/date-range.css';
+@import './theme/tree-view.css';
+@import './theme/json-viewer.css';
+@import './theme/event-timeline.css';
+@import './theme/symbol-mark.css';
 @import './theme/arcade-pixel.css';
 @import './theme/badge.css';
 @import './theme/rolling-text.css';
@@ -21,3 +29,8 @@
 @import './theme/empty-state.css';
 @import './theme/ai-status.css';
 @import './theme/quote.css';
+@import './theme/fonts.css';
+@import './theme/chart-kit.css';
+@import './theme/series.css';
+@import './theme/equity-curve.css';
+@import './theme/distribution.css';

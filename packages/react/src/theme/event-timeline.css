@@ -1,0 +1,287 @@
+/* SPDX-License-Identifier: MIT */
+/* EventTimeline：照设计稿 EventTimeline 卡。2px --line-200 轴，8px 形状标记（圆 = 异动 --signal-orange，方 = 公告 --signal-blue，
+   三角 = 成交 --bid / --ask，方 = 警报 --signal-amber，菱形 = run --signal-green）；发光只给异动；盈亏色不用在标记上。
+   标签 9px --ink-300 上下交错；tooltip 是 LCD 风（--bg-000 + --recess）；类别开关照 Segmented：选中 --bg-000 凹陷 + 底 2px 橙。 */
+.k-tl {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: var(--ink-200);
+  font: var(--text-data) var(--font-sans);
+}
+.k-tl-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+}
+.k-tl-scope {
+  color: var(--ink-200);
+  font-family: var(--font-mono);
+  font-size: var(--text-caption-size);
+}
+.k-tl-kinds {
+  display: inline-flex;
+  border: 1px solid var(--line-200);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+.k-tl-kind {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 26px;
+  padding: 0 10px;
+  background: transparent;
+  border: 0;
+  border-right: 1px solid var(--line-200);
+  color: var(--ink-300);
+  font: 600 12px var(--font-sans);
+  letter-spacing: 0.04em;
+  cursor: pointer;
+}
+.k-tl-kind:last-child {
+  border-right: 0;
+}
+.k-tl-kind:hover {
+  background: var(--bg-400);
+}
+.k-tl-kind[aria-pressed='true'] {
+  background: var(--bg-000);
+  color: var(--ink-100);
+  box-shadow: inset 0 -2px 0 var(--signal-orange);
+}
+.k-tl-kind:focus-visible,
+.k-tl-view:focus-visible,
+.k-tl-marker:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 1px;
+}
+.k-tl-total {
+  margin-left: auto;
+  color: var(--ink-300);
+  font-family: var(--font-mono);
+  font-size: var(--text-caption-size);
+  font-variant-numeric: tabular-nums;
+}
+.k-tl-view {
+  height: 24px;
+  padding: 0 8px;
+  background: var(--bg-200);
+  border: 1px solid var(--line-200);
+  border-radius: var(--radius-sm);
+  color: var(--ink-200);
+  font: 600 12px var(--font-sans);
+  cursor: pointer;
+}
+.k-tl-view:hover {
+  background: var(--bg-400);
+}
+.k-tl-body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px 4px;
+  background: var(--bg-100);
+  border: 1px solid var(--line-100);
+  border-radius: var(--radius-sm);
+}
+.k-tl-head {
+  margin: 0;
+  color: var(--ink-300);
+  font: 600 11px var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+/* 形状与状态色 */
+.k-tl-glyph {
+  flex: none;
+  fill: var(--k-tl-color, var(--ink-300));
+}
+[data-kind='anomaly'] {
+  --k-tl-color: var(--signal-orange);
+}
+[data-kind='notice'] {
+  --k-tl-color: var(--signal-blue);
+}
+[data-kind='alert'] {
+  --k-tl-color: var(--signal-amber);
+}
+[data-kind='run'] {
+  --k-tl-color: var(--signal-green);
+}
+.k-tl-glyph[data-kind='fill'] {
+  fill: var(--bid);
+}
+.k-tl-glyph[data-kind='fill'][data-side='sell'] {
+  fill: var(--ask);
+  transform: scaleY(-1);
+}
+.k-tl-glyph[data-kind='fill']:not([data-side]) {
+  fill: var(--ink-200);
+}
+.k-tl-glyph[data-kind='anomaly'] {
+  filter: drop-shadow(0 0 3px var(--signal-orange));
+}
+
+/* 轴 */
+.k-tl-track {
+  position: relative;
+  height: 76px;
+  margin: 0 40px;
+  touch-action: none;
+}
+.k-tl-axis {
+  position: absolute;
+  top: 37px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--line-200);
+}
+.k-tl-gap {
+  position: absolute;
+  top: 28px;
+  height: 20px;
+  background: var(--bg-100);
+  border-inline: 1px solid var(--line-100);
+}
+.k-tl-now {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  width: 1px;
+  background: var(--signal-orange);
+}
+.k-tl-now span {
+  position: absolute;
+  top: -2px;
+  left: 4px;
+  color: var(--signal-orange);
+  font: 600 9px var(--font-mono);
+  white-space: nowrap;
+}
+.k-tl-brush {
+  position: absolute;
+  top: 8px;
+  bottom: 8px;
+  background: color-mix(in srgb, var(--signal-orange) 16%, transparent);
+  border-inline: 1px solid var(--signal-orange-dim);
+}
+.k-tl-marker {
+  position: absolute;
+  top: 29px;
+  width: 16px;
+  height: 18px;
+  margin-left: -8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+.k-tl-marker:hover .k-tl-glyph {
+  transform: scale(1.25);
+}
+.k-tl-marker:hover .k-tl-glyph[data-side='sell'] {
+  transform: scale(1.25) scaleY(-1);
+}
+.k-tl-label,
+.k-tl-count {
+  position: absolute;
+  left: 50%;
+  color: var(--ink-300);
+  font: 9px var(--font-sans);
+  white-space: nowrap;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+.k-tl-marker[data-side='up'] .k-tl-label {
+  bottom: 22px;
+}
+.k-tl-marker[data-side='down'] .k-tl-label {
+  top: 22px;
+}
+.k-tl-count {
+  top: -9px;
+  min-width: 12px;
+  padding: 0 3px;
+  background: var(--bg-000);
+  border: 1px solid var(--line-200);
+  border-radius: var(--radius-pill);
+  color: var(--ink-100);
+  font: 600 9px var(--font-mono);
+  line-height: 12px;
+  text-align: center;
+}
+
+/* LCD 风 tooltip */
+.k-tl-tip {
+  position: absolute;
+  top: 56px;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 150px;
+  max-width: 260px;
+  padding: 6px 8px;
+  background: var(--bg-000);
+  border: 1px solid var(--line-100);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--recess);
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+.k-tl-tip-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--text-caption-size);
+}
+.k-tl-tip-time {
+  color: var(--ink-100);
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+.k-tl-tip-text {
+  color: var(--ink-100);
+}
+.k-tl-tip-ref,
+.k-tl-tip-more {
+  width: 100%;
+  color: var(--ink-300);
+  font-family: var(--font-mono);
+  font-size: 10px;
+}
+
+/* 表格视图 */
+.k-tl-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-caption-size);
+}
+.k-tl-table th {
+  padding: 4px 8px;
+  border-bottom: 1px solid var(--line-200);
+  color: var(--ink-300);
+  font-weight: 600;
+  text-align: left;
+}
+.k-tl-table td {
+  padding: 3px 8px;
+  border-bottom: 1px solid var(--line-100);
+}
+.k-tl-num {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+.k-tl-empty {
+  margin: 0;
+  padding: 16px 0;
+  color: var(--ink-300);
+  text-align: center;
+}

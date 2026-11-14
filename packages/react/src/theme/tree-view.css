@@ -1,0 +1,78 @@
+/* SPDX-License-Identifier: MIT */
+/* TreeView：照设计稿 DataGrid 卡（2026-11-14 读）：行高 --row-base，等宽字（中英混排对得齐），数量是 tabular-nums；
+   悬停 --bg-400，选中 --bg-000 + 左 2px --signal-orange（选中不改字重，免得换行宽）；缩进按层级 16px 一档（--k-tree-level 由组件按 aria-level 写）；
+   展开的箭头转 90 度（0.15s，同菜单）。RAC 在行上写 data-hovered / data-selected / data-focus-visible。 */
+.k-tree {
+  display: flex;
+  flex-direction: column;
+  outline: 0;
+  color: var(--ink-200);
+  font: var(--text-data) var(--font-mono);
+}
+.k-tree-item {
+  display: block;
+  outline: 0;
+  cursor: pointer;
+}
+.k-tree-item[data-disabled] {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.k-tree-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: var(--row-base);
+  padding: 0 8px 0 calc(4px + var(--k-tree-level, 0) * 16px);
+  border-bottom: var(--hairline);
+  user-select: none;
+}
+.k-tree-item[data-hovered] .k-tree-row {
+  background: var(--bg-400);
+  color: var(--ink-100);
+}
+.k-tree-item[data-selected] .k-tree-row {
+  background: var(--bg-000);
+  box-shadow: inset 2px 0 0 var(--signal-orange);
+  color: var(--ink-100);
+}
+.k-tree-item[data-focus-visible] .k-tree-row {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: -2px;
+}
+.k-tree-chevron {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 4px;
+  color: var(--ink-300);
+  cursor: pointer;
+}
+.k-tree-chevron svg {
+  transition: rotate 0.15s ease-out;
+}
+.k-tree-row[data-expanded] .k-tree-chevron svg {
+  rotate: 90deg;
+}
+.k-tree-icon {
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  color: var(--ink-300);
+}
+.k-tree-label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.k-tree-count {
+  color: var(--ink-300);
+  font-variant-numeric: tabular-nums;
+}

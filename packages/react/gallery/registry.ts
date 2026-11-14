@@ -340,6 +340,55 @@ export const PAGES: readonly DocPage[] = [
     ],
   },
   {
+    id: 'chip-group',
+    group: 'forms',
+    cardHeight: 135,
+    title: 'ChipGroup 芯片组',
+    summary:
+      '分面筛选用的一排可开关小标签：多选或单选，可带命中数与清除钮。筛选器、自选分组的快速过滤用它。功能参照 Arc，实现原创。',
+    exports: ['ChipGroup'],
+    props: [
+      {
+        part: 'ChipGroup',
+        note: '每个芯片是 aria-pressed 的开关，整组 role=group；底座是 Radix ToggleGroup。受控：value 与 onValueChange。',
+        rows: [
+          {
+            name: 'items',
+            type: '{ value: string; label: string; count?: number; disabled?: boolean }[]',
+            desc: '芯片：count 是命中数，写在字右边（等宽数字），由调用方算好。',
+          },
+          { name: 'value', type: 'string[]', desc: '选中的 value。' },
+          { name: 'onValueChange', type: '(value: string[]) => void', desc: '选中项变了。' },
+          { name: 'label', type: 'string', desc: '整组的读屏名。' },
+          {
+            name: 'selection',
+            type: "'multiple' | 'single'",
+            default: "'multiple'",
+            desc: 'single 最多选一个，点已选的就取消（取消 = 不筛）。',
+          },
+          { name: 'clearLabel', type: 'string', desc: '给了，有选中项时末尾出现清除钮，读屏名与提示用它。' },
+        ],
+      },
+    ],
+    states: [
+      '未选：4% 白底。',
+      '选中：实心浅底深字（同分段切换）。',
+      '禁用：降到 35% 不透明度。',
+      '有选中项且给了 clearLabel：末尾出现 ×。',
+    ],
+    donts: [
+      '不要拿它当导航：它筛数据，不换页面。',
+      '选项很多（几十个）时用 MultiSelect 或 Combobox，别摆成一面芯片墙。',
+      '命中数由调用方算：件不碰数据。',
+    ],
+    composition: 'ChipGroup\n  ToggleGroup（Radix，type=multiple）\n    Item × n（字 + 命中数）\n  button.k-chip-clear',
+    keys: [
+      ['← →', '在芯片间移动焦点'],
+      ['Space / Enter', '切换焦点所在的芯片'],
+      ['Tab', '进出整组（组内只停一个）'],
+    ],
+  },
+  {
     id: 'slider',
     group: 'forms',
     cardHeight: 60,
@@ -953,11 +1002,108 @@ export const PAGES: readonly DocPage[] = [
     keys: [],
   },
   {
+    id: 'symbol-mark',
+    group: 'readouts',
+    cardHeight: 220,
+    title: 'SymbolMark 品种徽标',
+    summary:
+      '品种名前的小圆标（学 TradingView 列表里企业 / 币种标志）：有图显示圆形裁切的图片，加载失败退回字母；没有图就是字母圆标，底 bg-400、字 ink-200，不按代码随机上色。尺寸默认 18（行高 28 的一行）。',
+    exports: ['SymbolMark', 'symbolMarkLetters'],
+    props: [
+      {
+        part: 'SymbolMark',
+        note: '图片从哪来由调用方给；件里不带任何企业或币种的标志（商标）。读屏名用 name，没有就用 code。',
+        rows: [
+          { name: 'code', type: 'string', desc: '品种代码；字母圆标取其中的拉丁字母前 2 个。' },
+          { name: 'name', type: 'string', desc: '名称：读屏名；代码里没有字母（600519、00700）时取名称首字。' },
+          { name: 'src', type: 'string', desc: '图片地址；不给或加载失败就画字母。' },
+          { name: 'size', type: 'number', default: '18', desc: '直径（像素）。' },
+        ],
+      },
+      {
+        part: 'symbolMarkLetters',
+        note: '字母圆标上写什么的纯函数。',
+        rows: [
+          {
+            name: '(code, name?)',
+            type: 'string',
+            desc: '代码里的拉丁字母前 2 个（大写）；没有就取名称首字，再没有取代码首字符。',
+          },
+        ],
+      },
+    ],
+    states: ['字母圆标；有图；图加载失败退回字母。'],
+    donts: ['不要按代码随机上色：颜色留给数据。', '不要在件里内置真实公司或币种的标志。'],
+    composition: 'SymbolMark\n  span[role=img][aria-label]\n    img（有图且没失败）| span 字母',
+    keys: [],
+  },
+  {
+    id: 'shortcut-recorder',
+    group: 'forms',
+    cardHeight: 193,
+    title: 'ShortcutRecorder 快捷键录入',
+    summary:
+      '热键设置用的录键框：点一下进入录键态，按下组合键就记下来；冲突由调用方传的占用表判断，冲突时不写入并说占着的是谁。功能参照 Arc，实现原创。',
+    exports: ['ShortcutRecorder'],
+    props: [
+      {
+        part: 'ShortcutRecorder',
+        note: '值是规范串：修饰键按 Ctrl、Alt、Shift、Meta 的次序再加主键，如 Ctrl+Shift+K；主键取物理键（event.code），Mac 的 Option 变形不影响。',
+        rows: [
+          { name: 'value', type: 'string | null', desc: '当前快捷键（规范串）；null 是没设。' },
+          { name: 'onValue', type: '(next: string | null) => void', desc: '录到新的或清除。冲突与不合规的不回调。' },
+          { name: 'label', type: 'string', desc: '读屏名：哪个动作的快捷键。' },
+          {
+            name: 'labels',
+            type: 'ShortcutRecorderLabels',
+            desc: '文字：empty、recording、clear、conflict(action)、needModifier；包里不带语言。',
+          },
+          {
+            name: 'conflicts',
+            type: 'Record<string, string>',
+            desc: '已被占用的组合：组合串 → 占着它的动作名。自己当前的值不算冲突。',
+          },
+          {
+            name: 'partLabel',
+            type: '(part: string) => string',
+            desc: '规范串里一块怎么写（Meta → ⌘ 之类）；不给原样写。',
+          },
+          {
+            name: 'requireModifier',
+            type: 'boolean',
+            default: 'false',
+            desc: '要求至少带一个修饰键（单个字母键会和打字撞）。',
+          },
+          { name: 'disabled', type: 'boolean', desc: '灰掉，点不动。' },
+        ],
+      },
+    ],
+    states: [
+      '空闲：显示当前快捷键的方块，没有就写「未设置」；右边有清除钮。',
+      '录键：边框强调色，框里实时显示按着的修饰键；按下主键即记下并退出。',
+      '冲突：边框红，框下说「已被 xx 使用」，不写入，留在录键态等下一次按键。',
+    ],
+    donts: [
+      '不要在包里判断冲突：占用表由应用（热键表）给，件只比对。',
+      '不要用它录文字：它只认一次按键组合。',
+      '浏览器自己拦的组合（Ctrl+W、Ctrl+T 之类）网页收不到，录不到是预期。',
+    ],
+    composition:
+      'ShortcutRecorder\n  button.k-rec-field\n    Kbd（当前值或按着的修饰键）\n  button.k-rec-clear\n  span[role=status]（冲突与提示）',
+    keys: [
+      ['Enter / 空格', '聚焦时进入录键态'],
+      ['任意组合键', '录键态下记下；带冲突则提示不写入'],
+      ['Esc', '退出录键态，不改值'],
+      ['Backspace / Delete', '录键态下清除快捷键'],
+      ['Tab', '移走焦点并退出录键态（不会把键盘用户困住）'],
+    ],
+  },
+  {
     id: 'number-input',
     group: 'forms',
-    cardHeight: 221,
+    cardHeight: 301,
     title: 'NumberInput 数字框',
-    summary: '一个框：值加可选的单位后缀，没有 −/+ 按钮；打字、方向键、按住左右拖三种改法。',
+    summary: '一个框：值加可选的单位后缀，没有 −/+ 按钮；打字、方向键、按住左右拖三种改法，可选框内标签与算式输入。',
     exports: ['NumberInput'],
     props: [
       {
@@ -979,17 +1125,29 @@ export const PAGES: readonly DocPage[] = [
             type: 'number / string',
             desc: '哨兵值：值等于 autoValue 又没在打字时，框里写 autoText，不把内部的数露给用户。',
           },
+          {
+            name: 'expression',
+            type: 'boolean',
+            default: 'false',
+            desc: '框里可以写算式，回车或离开时按当前值算：+10、*2、/4、+10%（×1.1）、100*1.5；Esc 放弃，写不成算式的字标红。',
+          },
+          { name: 'caption', type: 'string', desc: '框内左边的文字标签；拖它与拖整个框一样改值。' },
         ],
       },
     ],
-    states: ['默认、聚焦、悬停、禁用、错误。', '可带单位后缀；打字、方向键、按住左右拖都能改值。'],
+    states: [
+      '默认、聚焦、悬停、禁用、错误。',
+      '可带单位后缀；打字、方向键、按住左右拖都能改值。',
+      'expression 打开时，写 +10%、*2 这类算式；写到一半（如 +1）不会先被当成 1 写进去，回车才算。',
+    ],
     donts: ['不要加 −/+ 按钮：这个框没有。', '单位、小数位由调用方传，件里不猜。'],
     composition: 'NumberInput\n  input[role=spinbutton]\n  span.k-unit（有 unit 时）',
     keys: [
       ['↑ ↓', '按步长加减；Shift 十档，Alt 精调'],
       ['PageUp / PageDown', '十档'],
       ['Ctrl + Home / End', '跳到 min / max'],
-      ['Enter / Esc', '放弃正在打的字'],
+      ['Enter', 'expression 打开时按当前值算算式；否则收起正在打的字'],
+      ['Esc', '放弃正在打的字'],
       ['拖动', '按住左右拖：向右变大；Shift 粗调、Alt 精调'],
     ],
   },
@@ -1030,6 +1188,67 @@ export const PAGES: readonly DocPage[] = [
       ['↑ ↓', '当前段加减'],
       ['Backspace', '清空当前段'],
       ['Enter（日历按钮上）', '打开日历；日历里方向键选日'],
+    ],
+  },
+  {
+    id: 'date-range-picker',
+    group: 'forms',
+    cardHeight: 151,
+    title: 'DateRangePicker 日期区间',
+    summary:
+      '起点—终点两个可逐段打字的日期框，右边的日历按钮打开双月日历，左边一列预设：今天、本周、本月、年初至今，不在预设里的显示「自定义」。回放、台账、报告的区间用它。功能参照 Arc，实现原创。',
+    exports: ['DateRangePicker'],
+    props: [
+      {
+        part: 'DateRangePicker',
+        note: '值是 { start, end } 一对 YYYY-MM-DD（含两头），按哪个时区解读由调用方定。底座是 react-aria 的 DateField 与 RangeCalendar；浮层用我们的 Popover。',
+        rows: [
+          { name: 'value', type: '{ start: string; end: string } | null', desc: '当前区间；null 是没选。' },
+          {
+            name: 'onValue',
+            type: '(range: DateRange) => void',
+            desc: '凑成合法区间（起点不晚于终点）才回调；只填了一头不回调。',
+          },
+          {
+            name: 'today',
+            type: 'string',
+            desc: '今天（YYYY-MM-DD），预设从它算。由调用方按显示时区算好传进来，件里不读时钟。',
+          },
+          {
+            name: 'weekStart',
+            type: "'mon' | 'sun'",
+            default: "'mon'",
+            desc: '一周从哪天起；「本周」是它到今天。A 股与国际交易所都是周一。',
+          },
+          { name: 'min / max', type: 'string', desc: '能选的最早、最晚日期。' },
+          {
+            name: 'labels',
+            type: 'DateRangeLabels',
+            desc: '文字：start、end、pickRange、calendar、previousMonth、nextMonth、presets、preset（今天 / 本周 / 本月 / 年初至今）、custom；包里不带语言。',
+          },
+          { name: 'locale', type: 'string', desc: '给 react-aria 的语言：中文界面 zh-CN，英文界面 en-CA。' },
+        ],
+      },
+    ],
+    states: [
+      '框内：起点、终点各一个分段输入；终点早于起点标红，不上报。',
+      '预设：口径是截至今天（本周 = 周起始日到今天，本月 = 1 号到今天，年初至今 = 1 月 1 日到今天）；当前区间正好是某个预设时它高亮。',
+      '区间不在预设里：预设列末尾显示「自定义」。',
+      '日历：双月；点两下选起止，起止之间的日子是淡底；选完自动收起。',
+    ],
+    donts: [
+      '不要在件里取「今天」：时区是应用的事，由 today 传进来。',
+      '预设是截至今天，不含未来的日子；要未来区间（日历、事件预告）另做，别改这组预设的口径。',
+      '单日选择用 DateTimeInput，别拿起止同一天凑。',
+    ],
+    composition:
+      'DateRangePicker\n  DateField（起点）\n  DateField（终点）\n  Popover\n    预设按钮 × 4 + 自定义\n    RangeCalendar（两个 CalendarGrid）',
+    keys: [
+      ['← → / Tab', '在日期框的年、月、日各段间走；数字直接打，↑↓ 加减'],
+      ['日历按钮 Enter / 空格', '打开日历，焦点进日历'],
+      ['方向键 / PageUp / PageDown', '日历里移动日期、翻月'],
+      ['Enter / 空格', '日历里选起点，再选终点；选完收起'],
+      ['Esc', '收起日历，焦点回到按钮'],
     ],
   },
   {
@@ -1617,6 +1836,64 @@ export const PAGES: readonly DocPage[] = [
     ],
   },
   {
+    id: 'tree-view',
+    group: 'layout',
+    cardHeight: 304,
+    title: 'TreeView 树',
+    summary:
+      '可展开收起的层级列表：数据集目录、品种分类树用它。方向键走、→ 展开、← 收起，单选或多选，展开与选中都可受控。功能参照 Arc，实现原创。',
+    exports: ['TreeView'],
+    props: [
+      {
+        part: 'TreeView',
+        note: '底座是 react-aria-components 的 Tree（角色 treegrid）：焦点、键盘、选中、展开都是它的。树数据用 items 传，一层层 children。',
+        rows: [
+          {
+            name: 'items',
+            type: '{ id: string; label: string; icon?: ReactNode; count?: number; disabled?: boolean; children?: TreeNode[] }[]',
+            desc: '树。id 在整棵树里唯一；有 children 才能展开；count 写在字后。',
+          },
+          { name: 'label', type: 'string', desc: '整棵树的读屏名。' },
+          {
+            name: 'selectionMode',
+            type: "'none' | 'single' | 'multiple'",
+            default: "'single'",
+            desc: 'none 只展开收起，点行不选。',
+          },
+          { name: 'selectedKeys / defaultSelectedKeys', type: 'string[]', desc: '选中的 id，受控 / 非受控。' },
+          { name: 'onSelectionChange', type: '(keys: string[]) => void', desc: '选中变了。' },
+          { name: 'expandedKeys / defaultExpandedKeys', type: 'string[]', desc: '展开的 id，受控 / 非受控。' },
+          { name: 'onExpandedChange', type: '(keys: string[]) => void', desc: '展开变了。' },
+          {
+            name: 'onAction',
+            type: '(id: string) => void',
+            desc: '激活一行（Enter 或双击）：打开这个数据集之类。给了它，点行是「选中这一行」（多选按 Ctrl / Shift 加减），方向键走到哪选到哪；不给，点行是切换选中，方向键只移焦点。',
+          },
+        ],
+      },
+    ],
+    states: [
+      '默认、悬停、选中（8% 白底）、键盘焦点（焦点环画在行内）、禁用（40% 不透明度）。',
+      '展开的行箭头转 90 度。',
+      '缩进按层级 16px 一档。',
+    ],
+    donts: [
+      '不要拿它画很深很大的树（几千个节点）：它不做虚拟滚动。大目录先在数据层折叠。',
+      '不要在包里放图标集：图标由调用方传 icon。',
+      '不要拿它当导航菜单：菜单用 DropdownMenu 或工具条。',
+    ],
+    composition: 'TreeView\n  Tree（react-aria）\n    TreeItem × n（递归）\n      行：箭头按钮、图标、字、数量',
+    keys: [
+      ['↑ ↓', '上下走一行'],
+      ['→', '收起的行展开；已展开则进第一个子项'],
+      ['← ', '展开的行收起；否则回父级'],
+      ['Home / End', '第一行 / 最后一行'],
+      ['空格', '选中（单选换掉，多选切换）'],
+      ['Enter', '激活（onAction）'],
+      ['打字', '跳到以它开头的行'],
+    ],
+  },
+  {
     id: 'field',
     group: 'forms',
     cardHeight: 326,
@@ -1684,6 +1961,57 @@ export const PAGES: readonly DocPage[] = [
     composition:
       'FieldSet\n  FieldLegend\n  FieldGroup\n    Field\n      FieldLabel（或 FieldContent 里 FieldLabel + FieldDescription）\n      控件（useFieldControl）\n      FieldDescription\n      FieldError\n    FieldSeparator',
     keys: [['Tab', '控件按自己的方式走；点标签聚焦控件']],
+  },
+  {
+    id: 'hold-to-confirm',
+    group: 'forms',
+    cardHeight: 195,
+    title: 'HoldToConfirm 按住确认',
+    summary:
+      '不可撤的动作（全平、全撤、停策略）用的按钮：按住把底色从左填满才触发，松手往回退；键盘按住空格或回车同样。单击不触发。功能参照 Arc，实现原创。',
+    exports: ['HoldToConfirm'],
+    props: [
+      {
+        part: 'HoldToConfirm',
+        note: '原生 button；进度逐帧直接写样式，不为每一帧重渲染。data-phase（idle / holding / done）与 data-progress（0 到 1）给样式与测试用。',
+        rows: [
+          { name: 'children', type: 'ReactNode', desc: '按钮上的字。' },
+          { name: 'onConfirm', type: '() => void', desc: '填满时回调，一次按住只一次；松手再按才能再触发。' },
+          {
+            name: 'hint',
+            type: 'string',
+            desc: '读屏与悬停提示，如「按住 2 秒，全部平仓」。必填：没有它读屏用户不知道要按住。',
+          },
+          {
+            name: 'holdMs',
+            type: 'number',
+            default: '2000',
+            desc: '按住多久填满。2000 取自 Emil Kowalski 的 hold-to-delete 写法（2026-11-14 读），对交易动作是否合适没有实测，默认值待定；越不可撤越长。',
+          },
+          { name: 'releaseMs', type: 'number', default: '200', desc: '松手后从满格退回空格要多久（同一出处）。' },
+          { name: 'confirmedLabel', type: 'ReactNode', desc: '填满后的字，原地换掉 children，直到松手退完。' },
+          { name: 'tone', type: "'danger' | 'default'", default: "'danger'", desc: '填充色：红，或中性。' },
+          { name: 'disabled', type: 'boolean', desc: '灰掉，按不动。' },
+        ],
+      },
+    ],
+    states: [
+      '空闲：和普通按钮一样。',
+      '按住：填充从左往右走；到 holdMs 填满并触发，字换成 confirmedLabel。',
+      '松手：填充在 releaseMs 内退回；填满后手还按着，填充停在满格，松手才退。',
+      '焦点移走或指针被抢走：按松手处理，退回。',
+    ],
+    donts: [
+      '不要拿它做可撤销的动作：那些直接用 Button，确认框和按住都是摩擦。',
+      '不要缩短 holdMs 到几百毫秒：那和单击没有区别。',
+      'hint 要写清按多久、做什么，读屏用户靠它。',
+    ],
+    composition:
+      'HoldToConfirm\n  button\n    span.k-hold-fill（scaleX 填充）\n    span.k-hold-label\n    span.sr-only（hint）',
+    keys: [
+      ['空格 / Enter（按住）', '开始填充；松开退回；填满触发。长按产生的连发只算第一下'],
+      ['Tab', '焦点移走即当作松手'],
+    ],
   },
   {
     id: 'password-input',
@@ -1939,6 +2267,691 @@ export const PAGES: readonly DocPage[] = [
     ],
     composition: 'ArcadePixel\n  canvas（aria-hidden）\n  CRT 叠层（扫描线、暗角、色散、闪烁）\n  span.sr-only',
     keys: [],
+  },
+  {
+    id: 'use-scrubber',
+    group: 'quant',
+    cardHeight: 200,
+    title: 'useScrubber 序列扫读',
+    summary:
+      '序列图共用的扫读钩子：指针在图上移动或键盘走，选中一格。←→ 一格，Shift+←→ 三格，Home / End 到头尾，Esc 清掉。可受控，几张图共用一个选中格。功能参照 Arc 的 Revenue explorer。',
+    exports: ['useScrubber'],
+    props: [
+      {
+        part: 'useScrubber(options)',
+        note: '返回 { index, set, pointer, keys, props }：props 是 pointer 与 keys 的合并，整个摊在图的容器上；几张图共用时把 pointer 摊在每张上、keys 摊在外层。',
+        rows: [
+          { name: 'count', type: 'number', desc: '一共几格。格数变少时越界的选中格当作没选中。' },
+          {
+            name: 'mode',
+            type: "'point' | 'band'",
+            default: "'point'",
+            desc: 'point：格是点（折线），指针落到最近的点；band：格是带（柱），落在哪条带里。',
+          },
+          { name: 'index', type: 'number | null', desc: '受控的选中格；不给就钩子自己管。' },
+          { name: 'onIndexChange', type: '(index: number | null) => void', desc: '选中格变了（含清掉，null）。' },
+        ],
+      },
+    ],
+    states: [
+      '没选中：index 为 null，图上不画十字线。',
+      '没选中时按 ←→：先落到最新一格（最后一格）。',
+      '指针离开或失焦：清掉。',
+      'Esc：清掉；已经没选中时不拦截，Esc 照常往外冒（关对话框）。',
+    ],
+    donts: [
+      '不要把 pointer 摊在比图大的元素上：横坐标按那个元素的宽换成格号。',
+      '不要用它做一段区间的刷选：那是 BrushChart。',
+      '组合键（Ctrl、Alt、Meta）不拦截，留给浏览器与应用快捷键。',
+    ],
+    composition: 'useScrubber\n  scrubKey（键位表，纯函数）\n  scrubIndexAt（横坐标到格号，纯函数）',
+    keys: [
+      ['← →', '选中格前后一格；没选中时先落到最新一格'],
+      ['Shift + ← →', '一次三格（Arc Revenue explorer 页面写明 Shift+arrow 走三个月，2026-11-14 读）'],
+      ['Home / End', '第一格 / 最后一格'],
+      ['Esc', '清掉选中'],
+    ],
+  },
+  {
+    id: 'brush-chart',
+    group: 'quant',
+    cardHeight: 330,
+    title: 'BrushChart 刷选条与主图联动',
+    summary:
+      '一条整段序列的概览条，上面套一个可拖的窗口，主图只画窗口里的那一段：拖中间平移、拖两端缩放、点窗口外的地方把窗口移过去。主图上指针或 ←→ 扫读。可作 EquityCurve 的底座。功能参照 Arc 的 Brush chart。',
+    exports: ['BrushChart', 'BrushStrip'],
+    props: [
+      {
+        part: 'BrushChart',
+        note: '图画在 viewBox 里（竖向就是像素），文字与十字线是叠在上面的 HTML，不用量尺寸。窗口是 [start, end)：含起点、不含终点，单位是点的下标。',
+        rows: [
+          { name: 'values', type: 'number[]', desc: '整段序列，从旧到新。主图画窗口里的，概览条画全部。' },
+          { name: 'label', type: 'string', desc: '整张图的读屏名（必填，包里没有文案）。' },
+          {
+            name: 'formatX',
+            type: '(index: number) => string',
+            desc: '第几个点写成什么：时间轴刻度、读数、手柄的读屏值都用它。',
+          },
+          { name: 'formatValue', type: '(value: number) => string', desc: '数值写成什么：纵轴刻度与读数。' },
+          { name: 'labels', type: '{ start, end, window }', desc: '三个手柄的读屏名（起点、终点、整个窗口）。' },
+          { name: 'window / defaultWindow', type: '[number, number]', desc: '受控 / 不受控的窗口，默认整段。' },
+          {
+            name: 'onWindowChange',
+            type: '(window: [number, number]) => void',
+            desc: '窗口变了（拖、键盘、点概览条）。',
+          },
+          { name: 'minSpan', type: 'number', default: '2', desc: '窗口最少几个点：折线至少两个点才画得出来。' },
+          { name: 'height / brushHeight', type: 'number', default: '160 / 40', desc: '主图与概览条的高（px）。' },
+        ],
+      },
+      {
+        part: 'BrushStrip',
+        note: '只有概览条（SeriesExplorer 这类自己画主图的件用它）。属性是 values、window、onWindowChange、formatX、labels、minSpan、height。',
+        rows: [{ name: 'window / onWindowChange', type: '[number, number]', desc: '必填：窗口由上层持有。' }],
+      },
+    ],
+    states: [
+      '默认：窗口整段（或 defaultWindow），概览条上窗口外变暗。',
+      '拖动中：窗口换成抓取手形，主图同步变。',
+      '扫读：主图上出现竖线与点，下面一行写时间与值。',
+      '窗口到了最小（minSpan）：继续缩小被夹住，不再变。',
+    ],
+    donts: [
+      '不要用它画多条序列：它是单条权益线这类的概览加细看，多条走 SeriesExplorer 或 SmallMultiples。',
+      '不要在包里写时间格式：用 formatX 传，时区与语言是调用方的事。',
+      'values 里不要夹 NaN 想表示断点：窗口与概览条按下标走，断开会让下标对不上；先补好再传。',
+    ],
+    composition:
+      'BrushChart\n  div[role=group]（主图：svg 折线与面积 · 纵轴刻度 · 十字线与点）\n  横轴刻度 · 读数行（aria-live）\n  BrushStrip\n    svg 概览线\n    窗口（slider）· 起点手柄（slider）· 终点手柄（slider）',
+    keys: [
+      ['← →', '主图上：扫读前后一格；手柄上：窗口或该端移一点'],
+      ['Shift + ← →', '一次三点'],
+      ['Home / End', '主图上：第一格 / 最后一格；手柄上：窗口或该端到头尾'],
+      ['Esc', '主图上：清掉选中'],
+    ],
+  },
+  {
+    id: 'attribution-bars',
+    group: 'blocks',
+    cardHeight: 560,
+    title: 'AttributionBars 盈亏归因',
+    summary:
+      '今天（或选中区间）的钱从哪来：工作台顶行（宽体标题、维度与区间分段、表格 / 导出），点阵元信息与列头，每行编号加零轴条形（正在右、负在左，条是点阵纹理不用红绿，只有数字用涨跌色），已平仓的行整行删除线并在名称后挂点阵小标签，元信息行下面一行汇总（合计大号左带 2px 强调竖条，正负贡献小一号）；按 |贡献| 正负分组降序，超过 7 项折「其他 ×n」，费用·税永远在最底。对设计稿的 PnLAttribution 卡（卡明写不用瀑布图），语言同 SeriesExplorer。',
+    exports: ['AttributionBars'],
+    props: [
+      {
+        part: 'AttributionBars',
+        note: '数据只有 items；维度与区间切换由调用方做（换 items），组件只画分段并上报。文字全从 props 来。外观读 CSS 变量，见 theme/chart-kit.css 开头。',
+        rows: [
+          {
+            name: 'items',
+            type: '{ key, label, value, kind?, detail? }[]',
+            desc: 'kind 为 fee 的是费用·税，永远单独一行放最底；closed 是名称后的点阵小标签（整行删除线）；detail 是 tooltip 里多写的几行。',
+          },
+          { name: 'formatValue / formatShare', type: '(n) => string', desc: '贡献与占比写成什么字。' },
+          { name: 'otherLabel / shareLabel', type: '(n) => string / string', desc: '「其他 ×n」与占比那一行的标签。' },
+          {
+            name: 'title / meta',
+            type: 'string / (scale) => string',
+            desc: '标题（宽体大写英文）与下一行点阵元信息；刻度 ±max 只在元信息里写一次。',
+          },
+          {
+            name: 'dimensions / ranges',
+            type: '{ label, options, value, onChange }',
+            desc: '顶行的两组分段；换了就换 items，同一位置的条长会过渡。',
+          },
+          {
+            name: 'readouts',
+            type: '{ key, label, text, value? }[]',
+            desc: '汇总行：第一个是合计（大号，左 2px 强调竖条），其余小一号跟在右边；标签点阵小字，value 决定涨跌色。',
+          },
+          {
+            name: 'focusKey / onSelect',
+            type: 'string / (key) => void',
+            desc: '联动的品种：它的条转强调色纹理；点击或 Enter 写联动上下文。',
+          },
+          {
+            name: 'footer',
+            type: '{ count, source?, note? }',
+            desc: '页脚一行：左边点阵 SOURCE，右端「项数 · 声明」（研究账本不计入）。',
+          },
+          {
+            name: 'actionLabels / heads',
+            type: 'object',
+            desc: '顶行按钮的读屏名与列头（编号、项、贡献、占比，可带 shareTitle 写明分母；点阵小字）；导出与全屏的回调不给就不画那个按钮，表格视图总有。',
+          },
+          { name: 'maxItems', type: 'number', default: '7', desc: '超过几项折进「其他」（含「其他」这一行）。' },
+        ],
+      },
+    ],
+    states: [
+      '默认：正组在上、负组在下，各按 |贡献| 降序；刻度 ±max 写在页脚。',
+      '焦点：focusKey 对应的条转强调色纹理。',
+      '悬停或聚焦一行：LCD tooltip 写数值、占比与明细。',
+      '表格视图：右上角第一个按钮切到表格，键盘可达（无障碍兜底）。',
+    ],
+    donts: [
+      '不要用瀑布图：阅读要跟踪累计基线，认知负荷高。',
+      '不要用颜色区分账户或策略：标签说清楚就够。',
+      '不要在条上用涨跌色：涨跌色不上面积，只有右侧数字用。',
+      '不要在这里拆已实现 / 未实现：这里只回答「谁贡献了多少」。',
+      '不要做庆祝性反馈（实时更新只让数字滚动、条跟随）。',
+    ],
+    composition:
+      'AttributionBars\n  Toolbar 顶行（标题 · 维度 / 区间分段 · 表格 / 导出 / 全屏）\n  点阵元信息\n  汇总行（合计 · 正贡献 · 负贡献）\n  列头 + ul 每行（编号 · 标签 + 平仓小标签 · 零轴 + 条 · 数字 · 占比；悬停出 LCD tooltip）\n  页脚一行（SOURCE · 项数与声明）',
+    keys: [
+      ['Enter', '点击当前行（写联动）'],
+      ['Esc', '收起 tooltip'],
+    ],
+  },
+  {
+    id: 'equity-curve',
+    group: 'quant',
+    cardHeight: 460,
+    title: 'EquityCurve 权益曲线',
+    summary:
+      '权益线加镜像回撤：上区 2px 权益线（series-1）、可选 1px 灰虚线基准，下区回撤面用点阵 / 斜线纹理，末点橙色旁标最终值；线性 / 对数纵轴、底下概览刷选条、表格视图。横轴按点的时刻摆。对设计稿的 EquityCurve 卡。',
+    exports: ['EquityCurve'],
+    props: [
+      {
+        part: 'EquityCurve',
+        note: '包里不带语言：标题、图例、数值与时间的写法都由调用方传。外观读 CSS 变量，见 theme/chart-kit.css 开头。',
+        rows: [
+          {
+            name: 'points',
+            type: '{ time, equity, drawdown, title, equityText, drawdownText }[]',
+            desc: '一点一笔；time 是毫秒时刻，横轴按它摆；文字已按币种位数格式化。',
+          },
+          { name: 'benchmark', type: '{ name, values }', desc: '与 points 一一对应的基准数值；不给就不画。' },
+          { name: 'axis / formatTime', type: '(n) => string', desc: '纵轴刻度与基准读数、横轴默认刻度的写法。' },
+          {
+            name: 'xTicks',
+            type: '(start, end) => { time, label }[]',
+            desc: '宿主自己给整点 / 整日刻度（按显示时区）；不给就在窗口里均分 5 个。',
+          },
+          { name: 'labels', type: 'object', desc: '回撤、时刻列头、线性 / 对数、概览条三个手柄、右上三件的文字。' },
+          { name: 'onWindowChange', type: '(window) => void', desc: '拖概览条改窗口后回调，宿主可把别的表跟着筛。' },
+          { name: 'onExport / onFullscreen', type: '() => void', desc: '不给就不画那个按钮；表格视图总有。' },
+        ],
+      },
+    ],
+    states: [
+      '默认：全段，线性轴，末点标最终值。',
+      '悬停或聚焦后 ←→：十字线与 LCD tooltip 写序号时刻、权益、基准、回撤。',
+      '对数轴：权益与基准都大于 0 才能切；有 ≤ 0 的值时按钮禁用。',
+      '没有回撤（一直创新高）：下区只留 0 线。',
+    ],
+    donts: ['不要把回撤画成实色面：用纹理。', '不要在线与面上用涨跌色：涨跌色只给文字。', '不要标除末点以外的数值。'],
+    composition:
+      'EquityCurve\n  头（标题 · 图例 · 线性/对数 · 表格视图/导出/全屏）\n  上区（网格 · 基准 · 权益线 · 末点 · 十字线与 LCD tooltip）\n  下区（镜像回撤纹理）\n  横轴 · 概览刷选条 · 来源行',
+    keys: [
+      ['← →', '在图上扫读一点（Shift 三点）'],
+      ['Home / End', '扫读到头 / 尾'],
+      ['Esc', '清除扫读点'],
+    ],
+  },
+  {
+    id: 'spark-tile',
+    group: 'quant',
+    cardHeight: 200,
+    title: 'SparkTile KPI 瓦片',
+    summary:
+      'KPI 行的瓦片：点阵标签、LCD 数值、24px 迷你折线（末点橙）、一行变化说明；有阈值画琥珀虚线，接近阈值边框转暗橙并脉冲一次。对设计稿的 SparkTile 卡。',
+    exports: ['SparkTile'],
+    props: [
+      {
+        part: 'SparkTile',
+        note: '一行最多 5 个，由调用方的布局定。迷你线不画轴、不画网格、不标数值；悬停出 LCD tooltip。给 onOpen 就渲染成按钮（点开该指标的完整图）。',
+        rows: [
+          { name: 'label', type: 'string', desc: '点阵标签（大写短码）。' },
+          {
+            name: 'text / value',
+            type: 'string | null / number | null',
+            desc: '数值的显示文字与数；没有数据两个都传 null，显示「—」。数变化时逐位滚动。',
+          },
+          { name: 'unit', type: 'string', desc: '数值后的小字单位。' },
+          { name: 'series', type: 'number[]', desc: '迷你线的数，从旧到新；少于两个数不画。' },
+          {
+            name: 'pointLabels / formatPoint',
+            type: 'string[] / (v) => string',
+            desc: '悬停 tooltip 的时间标签与值的写法。',
+          },
+          {
+            name: 'delta / deltaTone',
+            type: 'string / up | down | muted | warn',
+            desc: '变化行。up、down 用涨跌色（只给这行数字）。',
+          },
+          { name: 'threshold', type: 'number', desc: '上限或下限：画 1px 琥珀虚线，迷你线的范围把它包进来。' },
+          {
+            name: 'near',
+            type: 'boolean',
+            desc: '接近阈值：边框转暗橙、变化行转琥珀、脉冲一次。是否接近由调用方判（比例没有通用的出处）。',
+          },
+          {
+            name: 'trendTone',
+            type: 'series | neutral',
+            default: 'series',
+            desc: 'neutral 用灰线，表示「越低越好」的指标。',
+          },
+          { name: 'seriesLabel', type: 'string', desc: '迷你线的读屏名。' },
+        ],
+      },
+    ],
+    states: [
+      '默认：迷你线 series-1，末点橙。',
+      '越低越好：trendTone 为 neutral，线用 ink-300。',
+      '有阈值：琥珀虚线；near 时边框转暗橙。',
+      '没有数据：数值写「—」，不画迷你线。',
+    ],
+    donts: [
+      '不要用颜色区分瓦片类型：只用标签。',
+      '不要在迷你线上画轴、网格或数值。',
+      '一行不超过 5 个：更多拆两行或进表格。',
+    ],
+    composition:
+      'SparkTile\n  点阵标签\n  LCD 数值（RollingText）\n  迷你线（svg + 末点 + 阈值虚线 + LCD tooltip）\n  变化行',
+    keys: [],
+  },
+  {
+    id: 'meter',
+    group: 'quant',
+    cardHeight: 520,
+    title: 'Meter 仪表（条 / 刻度盘 / 同步率）',
+    summary:
+      '仪表的三种形态：条（进度、负载、敞口，点阵填充）、刻度盘（0 到 100 的读数带指针）、同步率（分段齿条加评估点刻度加大百分比）。限额板传软限与硬限，达到软限算接近、达到硬限算越限。对设计稿的 Meter 卡；功能参照 Arc 的 Budget variance。',
+    exports: ['Meter'],
+    props: [
+      {
+        part: 'Meter',
+        note: '角色是 meter。调用方只传 tone，不传颜色。外观读 CSS 变量（点阵纹理、强调色、数字字体），见 theme/chart-kit.css 开头。',
+        rows: [
+          {
+            name: 'value / max',
+            type: 'number',
+            desc: '读数与满刻度（max 默认 100；gauge 与 sync 固定按 0 到 100 读）。超出满刻度的条画满。',
+          },
+          {
+            name: 'display',
+            type: 'bar | gauge | sync',
+            default: 'bar',
+            desc: '形态。sync 只给 paper 进度、容量使用、偏离门距离、回放进度。',
+          },
+          {
+            name: 'tone',
+            type: 'accent | ok | warn | off | ink',
+            default: 'accent',
+            desc: '进行中 / 健康 / 受限或越界 / 停用。有软限或硬限且已达到时自动换成 warn。',
+          },
+          {
+            name: 'soft / hard',
+            type: 'number',
+            desc: '软限（接近，琥珀刻度）与硬限（越限，红刻度）；都可以不给。状态按「达到」算。',
+          },
+          { name: 'label', type: 'string', desc: '量的是什么：左上角的字，也是读屏名。' },
+          { name: 'valueText', type: 'string', desc: '读屏整句，调用方按界面语言写。' },
+          { name: 'formatValue', type: '(value: number) => string', desc: '读数写成什么字（sync 是右侧大百分比）。' },
+          {
+            name: 'stateLabels',
+            type: '{ ok?, warn?, breach? }',
+            desc: '三种状态的词，写在读数后面；不给就不写。状态不单靠颜色。',
+          },
+          { name: 'tickLabels', type: '{ soft?, hard? }', desc: 'bar 里刻度下面的小字。' },
+          {
+            name: 'weakBelow / locked',
+            type: 'number / boolean',
+            desc: 'gauge：读数低于 weakBelow 指针转红（Meter 卡写 30）；locked 转琥珀。',
+          },
+          { name: 'mark', type: 'number', desc: 'sync：评估点（0 到 100），画琥珀刻度。' },
+        ],
+      },
+    ],
+    states: [
+      '健康 / 进行中 / 停用：tone 决定点阵填充的颜色。',
+      '接近（已用 ≥ 软限）：tone 转 warn，状态词转琥珀，条体脉冲一次。',
+      '越限（已用 ≥ 硬限）：tone 仍是 warn，状态词转红，硬限刻度红。',
+      '刻度盘弱势 / 受锁：指针转红 / 琥珀。',
+    ],
+    donts: [
+      '不要传颜色：只传 tone。',
+      '不要做「只有一根条」：条永远有标签和读数。',
+      '不要做环形仪表（第一版不做）。',
+      '不要在包里决定软限、硬限是多少：限额由风控设置传进来。',
+    ],
+    composition:
+      'Meter\n  标题行（label · 读数 · 状态词）\n  bar：div[role=meter]（点阵填充 · 软限刻度 · 硬限刻度）+ 刻度小字\n  gauge：div[role=meter]（中线 · 指针 · 0/25/50/75/100）\n  sync：标签 + 分段齿条（评估点刻度）+ 大百分比',
+    keys: [],
+  },
+  {
+    id: 'calendar-heatmap',
+    group: 'quant',
+    cardHeight: 560,
+    title: 'CalendarHeatmap 日历',
+    summary:
+      '月历格：底色是收益（或换手）的低饱和发散热力，格内日期左上、数值右下，左下点阵事件点（最多 3 个，更多写 +n）；休市日灰底写「休」，今天强调色描边，周标 W40。切「事件」视图时格子不着色。mode 为 year 是整年的格子。对设计稿的 Calendar 卡；功能参照 Arc 的 Activity heatmap。',
+    exports: ['CalendarHeatmap'],
+    props: [
+      {
+        part: 'CalendarHeatmap',
+        note: '日期是不带时区的日历日 YYYY-MM-DD，按 UTC 零点算。外观读 CSS 变量，见 theme/chart-kit.css 开头。年视图用的是整年的格子（一周一列），不是 12 个缩小月历（待定：第一版先做整年格子）。',
+        rows: [
+          {
+            name: 'days',
+            type: '{ date, value, open?, events? }[]',
+            desc: 'value 没有数据传 null（与 0 持平分开）；open 为 false 是休市日；events 是事件点（tone 为 holding / high 的画琥珀点）。',
+          },
+          {
+            name: 'mode / month',
+            type: 'month | year / YYYY-MM',
+            default: 'month',
+            desc: '月历显示哪个月（不给取最晚那天所在的月）；year 用 from / to。',
+          },
+          {
+            name: 'view',
+            type: 'pnl | turnover | events',
+            default: 'pnl',
+            desc: '收益用发散色；换手用序数色 seq；事件视图格子不着色、列事件文字。',
+          },
+          { name: 'today', type: 'string', desc: '今天：强调色描边；晚于今天的日子不着色、只有事件点。' },
+          { name: 'weekStart', type: '0 | 1', default: '1', desc: '一周从周日（0）还是周一（1）起。' },
+          {
+            name: 'weekdayLabels / monthLabels / weekLabel / closedLabel',
+            type: 'strings',
+            desc: '星期、月份、周标（W40）与「休」，文字由调用方按界面语言传。',
+          },
+          {
+            name: 'formatValue / describe',
+            type: 'functions',
+            desc: '格里的数值怎么写；选中的一天读成一句（读数行与读屏）。',
+          },
+          {
+            name: 'total / toolbar',
+            type: '{ text, value } / ReactNode',
+            desc: '顶行右侧的月合计（按正负用涨跌色）；左边放视图切换与月份说明。',
+          },
+          {
+            name: 'actionLabels / tableHeads',
+            type: 'object',
+            desc: '右上角三件与表格视图的文字；导出与全屏回调不给就不画，表格视图总有。',
+          },
+          { name: 'onSelect', type: '(date: string) => void', desc: '点一天或选中后按 Enter（写联动 range）。' },
+        ],
+      },
+    ],
+    states: [
+      '默认：开市日按收益着色，休市日灰底写「休」，今天描边。',
+      '格色：发散色浅档是大多数，深档只给超月内 80 分位的格；全饱和不出现。',
+      '换手视图：序数色，格从暗到亮。',
+      '事件视图：格子不着色，每格最多列两条事件文字。',
+      '没有数据的日子：只有日期与「·」，与持平（中点灰）不同。',
+    ],
+    donts: [
+      '不要用涨跌色填格：涨跌色不上面积，只有月合计的数字用。',
+      '不要拿颜色深浅读精确值：数在格子右下，颜色只给方向与大概多大。',
+      '不要做 streak、「连胜」计数。',
+      '不要传带时区的时间戳：传日历日字符串，休市与否由调用方（交易日历）定。',
+    ],
+    composition:
+      'CalendarHeatmap\n  顶行（toolbar · 月合计 · 表格视图 / 导出 / 全屏）\n  月历 div[role=grid]（周标 · 每天一个 button：日期 · 数值 · 事件点）或 年视图 svg\n  LCD tooltip · 读数行（aria-live）· 色例',
+    keys: [
+      ['← →', '前后一天；没选中时先落到最后一天'],
+      ['↑ ↓', '前后一周'],
+      ['Home / End', '区间第一天 / 最后一天'],
+      ['Enter', '触发 onSelect'],
+      ['Esc', '清掉选中'],
+    ],
+  },
+  {
+    id: 'horizon-chart',
+    group: 'quant',
+    cardHeight: 360,
+    title: 'HorizonChart 地平线图',
+    summary:
+      '十几个品种的日内收益叠成窄带，一屏看完：每行把正负值折成几条叠起来的带，颜色越深值越大，涨跌色跟涨跌配色走。所有行共用一个扫读位置。功能参照 Arc 的 Horizon chart。',
+    exports: ['HorizonChart'],
+    props: [
+      {
+        part: 'HorizonChart',
+        note: '每行一个 svg（viewBox，竖向是像素），右边一列写值：没选中写最新值，选中后写那一格。各行点数应当相同，短的行末尾当没有值。',
+        rows: [
+          { name: 'rows', type: '{ key, label, values }[]', desc: '每行一个品种：名字与从旧到新的值（带正负）。' },
+          { name: 'label', type: 'string', desc: '整张图的读屏名（必填）。' },
+          {
+            name: 'formatValue',
+            type: '(value: number) => string',
+            desc: '右边一列的值写成什么字，正负号由调用方定。',
+          },
+          { name: 'formatX', type: '(index: number) => string', desc: '读数行写第几个点是什么时间；不给没有读数行。' },
+          {
+            name: 'bands',
+            type: 'number',
+            default: '3',
+            desc: '几条带（待核对：Heer 等《Sizing the Horizon》比较过 2 到 4 带，没读到原文结论）。',
+          },
+          {
+            name: 'scale',
+            type: "'shared' | 'row'",
+            default: "'shared'",
+            desc: 'shared：所有行同一把满刻度，行与行可比；row：每行各用自己的最大值，只看形状。',
+          },
+          { name: 'max', type: 'number', desc: '固定满刻度；不给按数据算。' },
+          { name: 'rowHeight', type: 'number', default: '24', desc: '一行高（px）。' },
+        ],
+      },
+    ],
+    states: [
+      '默认：每行涨色带在基线上方叠起、跌色带同一基线叠起，右边写最新值。',
+      '扫读：每行同一根竖线，右边一列写那一格的值，读数行写时间。',
+      '共用刻度：小行只有浅带；各自刻度：每行都填满。',
+      '一行全是 0 或没数据：画成空行，值写「—」或 0。',
+    ],
+    donts: [
+      '不要拿它读精确值：颜色深浅只是量级，精确值在右边一列与读数里。',
+      '不要在 scale 为 row 时比较不同行的高低：每行的满刻度不一样。',
+      '不要超过十来行：行高 24px，几十行用 SmallMultiples 或表。',
+    ],
+    composition:
+      'HorizonChart\n  div[role=group]\n    每行：名字 · 窄带 svg（正、负各 bands 条 path）· 值\n  读数行（aria-live）',
+    keys: [
+      ['← →', '选中前后一格；没选中时先落到最新一格'],
+      ['Shift + ← →', '一次三格'],
+      ['Home / End', '第一格 / 最后一格'],
+      ['Esc', '清掉选中'],
+    ],
+  },
+  {
+    id: 'small-multiples',
+    group: 'blocks',
+    cardHeight: 600,
+    title: 'SmallMultiples 小图阵列',
+    summary:
+      '自选、组合里多个品种并排各一张小折线，同一个十字线：指针在任一张上移动，所有张的竖线与读数一起走；每张标题写名字与那一格的值。功能参照 Arc 的 Small multiples。',
+    exports: ['SmallMultiples'],
+    props: [
+      {
+        part: 'SmallMultiples',
+        note: '一行放几张由容器宽与 minWidth 定。各张点数应当相同，短的张在超出的格上不画竖线。',
+        rows: [
+          { name: 'items', type: '{ key, label, values }[]', desc: '每张一个品种：名字与从旧到新的值。' },
+          { name: 'label', type: 'string', desc: '整个阵列的读屏名（必填）。' },
+          {
+            name: 'formatValue',
+            type: '(value: number) => string',
+            desc: '标题右边的值写成什么字：没选中写最新值，选中后写那一格。',
+          },
+          { name: 'formatX', type: '(index: number) => string', desc: '读数行写第几个点是什么时间；不给没有读数行。' },
+          {
+            name: 'yScale',
+            type: "'each' | 'shared'",
+            default: "'each'",
+            desc: 'each：每张用自己的上下范围（看形状）；shared：所有张同一把（可比）。',
+          },
+          { name: 'minWidth', type: 'number', default: '160', desc: '每张的最小宽（px）。' },
+          { name: 'height', type: 'number', default: '56', desc: '折线区高（px）。' },
+          {
+            name: 'onSelect',
+            type: '(key: string) => void',
+            desc: '给了标题就是按钮（可聚焦），点了拿到这一张的 key。',
+          },
+        ],
+      },
+    ],
+    states: [
+      '默认：每张画一条线，线色按头尾比（涨跌色跟涨跌配色走，持平中性色），标题写最新值。',
+      '扫读：所有张同一格画竖线与点，标题的值换成那一格。',
+      '某张没数据：线不画，值写「—」。',
+    ],
+    donts: [
+      '不要在 each 时比较不同张的高低：每张的上下范围不一样，要比用 shared。',
+      '不要放几十张：每张都是一个 svg，量大用 HorizonChart 或表格里的迷你图。',
+      '不要在包里写品种名或单位：名字与值的写法都由调用方传。',
+    ],
+    composition:
+      'SmallMultiples\n  div[role=group]（网格）\n    每张：标题（名字 · 值；可点时是 button）· 折线区（svg 折线 · 竖线与点）\n  读数行（aria-live）',
+    keys: [
+      ['← →', '选中前后一格；没选中时先落到最新一格'],
+      ['Shift + ← →', '一次三格'],
+      ['Home / End', '第一格 / 最后一格'],
+      ['Esc', '清掉选中'],
+      ['Tab / Enter', '可点时到标题、触发 onSelect'],
+    ],
+  },
+  {
+    id: 'series-explorer',
+    group: 'blocks',
+    cardHeight: 1100,
+    title: 'SeriesExplorer 序列探索',
+    summary:
+      '盈亏探索积木：一排 KPI 瓦片（SparkTile），点一张展开成下面的图面板；面板顶上是指标页签、区间切换、对比上一期、右上三件，图是该指标的序列（柱或线），下面是刷选条；顶行可以对账（期初到期末、差额、灯加词），页脚来源行。交互参照 Arc 的 Metric explorer，样子与内容照设计稿 IntradayPnL、PnLLedger、EquityCurve 三张卡。',
+    exports: ['SeriesExplorer'],
+    props: [
+      {
+        part: 'SeriesExplorer',
+        note: '序列、区间、指标、明细表的列都由调用方传，包里没有文案。点按时间从旧到新，at 是毫秒时间戳（UTC）；区间是最近 N 个日历月。',
+        rows: [
+          {
+            name: 'points',
+            type: '{ at, values, closed? }[]',
+            desc: '每个点一个时间戳与各序列的值（指标用到的、不画的值——权益、出入金——也放在这里）。closed 是休市：图上画灰色竖带，时间轴不压缩。',
+          },
+          {
+            name: 'series',
+            type: '{ key, label, kind: "bar" | "line", color?, cost? }[]',
+            desc: 'bar 柱；line 折线（2px，不填面，不用涨跌色）。颜色按在完整列表里的次序取 series-1..7，筛选不重新上色；cost 是成本类（费税），柱用 ink-100 不着色。',
+          },
+          {
+            name: 'kpis',
+            type: '{ key, label, series, reduce, format, lowerIsBetter?, limit? }[]',
+            desc: '每个指标一张瓦片、一个页签。limit 是限额线：图上红虚线、瓦片上琥珀虚线；lowerIsBetter 用灰色迷你线。',
+          },
+          {
+            name: 'ranges / defaultRange',
+            type: '{ key, label, months: number | null }[]',
+            desc: '区间按钮；months 是最近几个日历月，null 是全部；默认选最后一个。',
+          },
+          {
+            name: 'reconcile',
+            type: '{ net, equity, cashflow?, openingEquity, format }',
+            desc: '对账：期末 − 期初 应等于 Σ净盈亏 + 出入金；对得上亮 ok 灯，否则 warn 灯并写差额。三个键指向 points 里的序列。',
+          },
+          {
+            name: 'columns / labels',
+            type: 'object',
+            desc: '明细表的列（表格视图里）；所有说明文字（读屏名、开关字、来源行、对账的词、右上三件的名字、刷选条手柄名）。',
+          },
+          {
+            name: 'formatAt / formatValue / formatChange',
+            type: 'functions',
+            desc: '时间（ISO 次序）、图上的数、相对上一期的变化各写成什么。',
+          },
+          {
+            name: 'onExport / onFullscreen / defaultMetric',
+            type: 'callbacks / string | null',
+            desc: '导出与全屏回调不给就不画按钮；初始展开哪个指标，null 是收起。',
+          },
+          { name: 'chartHeight', type: 'number', default: '220', desc: '图高（px）。' },
+        ],
+      },
+    ],
+    states: [
+      '默认：展开第一个指标，最后一个区间，对比关。',
+      '点瓦片：展开那个指标的面板；再点同一张收起；Esc 先清扫读点、再收起。',
+      '切指标或区间：线平滑变形（Chromium），页签高亮滑过去。',
+      '拖刷选条：窗口改了，区间按钮都不亮；点区间按钮回到那个区间。',
+      '对比上一期：窗口前面够长才可开，画同一序列的上一期（灰色虚线，按下标对齐）；不够长开关禁用。',
+      '对账对不上：灯转琥珀，差额写在后面。',
+      '表格视图：右上角第一个按钮切到明细表（键盘可达）。',
+    ],
+    donts: [
+      '不要在包里算盈亏：已实现、手续费、净值都由调用方在 points 里给好。',
+      '不要给线填面或用涨跌色：涨跌色只上数字（明细表的盈亏列、瓦片的变化行）。',
+      '不要给费税着色：成本不是亏损，柱用 ink-100。',
+      '不要用它画不按时间排的数据：点必须按时间从旧到新。',
+      '上一期没有或为 0 时变化写破折号，不要自己补一个百分比。',
+    ],
+    composition:
+      'SeriesExplorer\n  对账顶行（LCD：期初 → 期末 · 差额 · 灯 + 词）\n  SparkTile × n\n  面板（页签 · 区间 · 对比 · ChartActions）\n    图（div[role=slider]：svg 柱或线 · 休市带 · 限额线 · 末点 · LCD tooltip）或 表格视图\n    BrushStrip\n  来源行',
+    keys: [
+      ['← →', '页签上：切指标；图上：扫读前后一点（没选中时先落到最新一点）'],
+      ['Shift + ← →', '图上一次三点'],
+      ['Home / End', '页签：第一个 / 最后一个指标；图：第一点 / 最后一点'],
+      ['Esc', '先清扫读点，再收起面板'],
+      ['Enter / Space', '瓦片：展开或收起'],
+    ],
+  },
+  {
+    id: 'json-viewer',
+    group: 'readouts',
+    cardHeight: 511,
+    title: 'JsonViewer JSON 查看器',
+    summary:
+      '只读的 JSON 树：对象与数组可折叠，叶子按类型上色，上面一个查找框，命中的键名与值高亮、祖先自动展开。原始消息、Agent 调用结果、连接调试用它。功能参照 Arc，实现原创。',
+    exports: ['JsonViewer'],
+    props: [
+      {
+        part: 'JsonViewer',
+        note: '底座是 react-aria-components 的 Tree（角色 treegrid）。value 换了，展开状态重来。不是 JSON 的值（undefined、日期、bigint、循环引用）不抛错：画成看得见的字。',
+        rows: [
+          { name: 'value', type: 'unknown', desc: '要看的值，通常是 JSON.parse 的结果。' },
+          { name: 'label', type: 'string', desc: '整棵树的读屏名。' },
+          {
+            name: 'labels',
+            type: 'JsonViewerLabels',
+            desc: '文字：search（查找框的读屏名与占位）、matches(n)（命中数）、more(n)（被截掉的子项）；包里不带语言。',
+          },
+          {
+            name: 'defaultExpandDepth',
+            type: 'number',
+            default: '1',
+            desc: '一开始展开几层：1 只开根，2 连根的子容器。',
+          },
+          {
+            name: 'maxChildren',
+            type: 'number',
+            default: '200',
+            desc: '一个容器最多画多少个子项，多出的折成一行「还有 N 项」。200 没有出处，是让一次展开最多出几百行的估计，待定。',
+          },
+        ],
+      },
+    ],
+    states: [
+      '折叠的容器写概要：对象 {3}，数组 [5]；展开的箭头转 90 度。',
+      '叶子按类型上色：字符串琥珀、数字蓝、布尔与 null 橙。',
+      '查找：键名或叶子的字含查询词（不分大小写）就高亮，命中的祖先自动展开且查找期间收不掉；清空后回到你自己展开的样子。',
+      '超出 maxChildren：末尾一行「还有 N 项」。',
+    ],
+    donts: [
+      '不要用它编辑或复制：它只读；要复制用 CodeBlock。',
+      '不要喂几十万行的值：它不做虚拟滚动，超大的先在数据层裁一刀，或调小 maxChildren。',
+      '不要拿它显示业务表格：规整的行列用 DataGrid。',
+    ],
+    composition:
+      'JsonViewer\n  label > input[type=search] + span[role=status]\n  Tree（react-aria）\n    TreeItem × n（递归）：箭头、键名、概要或值',
+    keys: [
+      ['↑ ↓', '上下走一行'],
+      ['→ / ←', '展开 / 收起，或进子级 / 回父级'],
+      ['Home / End', '第一行 / 最后一行'],
+      ['打字', '在树里：跳到以它开头的键名；在查找框里：查找'],
+    ],
   },
   {
     id: 'step-player',
@@ -2434,6 +3447,59 @@ export const PAGES: readonly DocPage[] = [
     keys: [],
   },
   {
+    id: 'event-timeline',
+    group: 'blocks',
+    cardHeight: 597,
+    title: 'EventTimeline 事件时间线',
+    summary:
+      '发现区的统一事件流（公告、告警、成交、数据源事件）：按显示时区的自然日分组，新的在前，每条一个钟点、一个按类型上色的圆点、标题加来源标签与说明。对设计稿的 EventTimeline 卡。功能参照 Arc，实现原创。',
+    exports: ['EventTimeline'],
+    props: [
+      {
+        part: 'EventTimeline',
+        note: '件只管分组与排版：事件从哪来、怎么翻页由应用定。region 角色；每天一段 section，日标题是 h3，事件是有序列表里的 li，钟点是 time。',
+        rows: [
+          {
+            name: 'events',
+            type: '{ id: string; at: number; title: string; detail?: string; source?: string; tone?: TimelineTone }[]',
+            desc: '事件。at 是毫秒时间戳；tone 是圆点颜色：neutral（默认）、up、down、warn、info。传进来的顺序不用排，件自己排；同一刻保持传入的先后。',
+          },
+          {
+            name: 'timeZone',
+            type: 'string',
+            desc: '显示时区（IANA 名）：决定事件落在哪一天、钟点写几点。必填：件不读系统时区。',
+          },
+          { name: 'label', type: 'string', desc: '整条时间线的读屏名。' },
+          {
+            name: 'dayLabel',
+            type: '(day: string, count: number) => ReactNode',
+            desc: '一天的标题：day 是 YYYY-MM-DD，count 是这天的事件数；今天 / 昨天怎么写由调用方定。',
+          },
+          { name: 'emptyText', type: 'ReactNode', desc: '没有事件时写的字。' },
+          {
+            name: 'onSelect',
+            type: '(event: TimelineEvent) => void',
+            desc: '给了，每条事件变成按钮；不给就是纯展示。',
+          },
+        ],
+      },
+    ],
+    states: [
+      '有事件：每天一段，日标题粘在滚动容器顶上；竖线穿过当天的圆点。',
+      '圆点颜色：up / down 跟红涨绿跌设置走，warn 琥珀，info 蓝，neutral 灰。',
+      '可点（给了 onSelect）：悬停有底色，键盘焦点有环。',
+      '空：只写 emptyText。',
+    ],
+    donts: [
+      '不要在件里取今天、昨天：日标题的字由 dayLabel 给，「今天」是应用知道的。',
+      '不要一次传几万条：它不做虚拟滚动，翻页或分段加载由应用管。',
+      '不要拿它画行情或逐笔成交：那些用 DataGrid。',
+    ],
+    composition:
+      'EventTimeline\n  section × 天\n    h3 日标题\n    ol\n      li × 事件：time、圆点、正文（标题 + 来源标签、说明；可点时是 button）',
+    keys: [['Tab（可点时）', '在事件间走；Enter / 空格选中']],
+  },
+  {
     id: 'sparkline',
     group: 'quotes',
     cardHeight: 60,
@@ -2560,7 +3626,7 @@ export const PAGES: readonly DocPage[] = [
       '不要把排布放进渲染里重算：先用 layoutTreemap 排好再传 blocks。',
     ],
     composition:
-      'Treemap\n  div（工具条）\n  div（画布）\n    div（一组）\n      button（组头）\n      div（一格：名字 · 数）\n  ol（色例，七档）',
+      'Treemap\n  div（工具条）\n  div（画布）\n    div（一组）\n      button（组头）\n      div（一格：名字 · 数）\n  ol（色例，五档）',
     keys: [
       ['Tab', '到可点的格子与组头'],
       ['Enter', '点开格子（组头是原生按钮，Enter / Space 都行）'],
@@ -2740,6 +3806,405 @@ export const PAGES: readonly DocPage[] = [
     keys: [
       ['← →', '在页签间移动（Radix Tabs）'],
       ['Tab / Enter', '到可点的行、触发'],
+    ],
+  },
+  {
+    id: 'uptime-bars',
+    group: 'readouts',
+    cardHeight: 184,
+    title: 'UptimeBars 逐格可用条',
+    summary:
+      '一格一天或一小时的可用条，用于数据源与连接健康：颜色加高度一起表达状态（绿满格可用、琥珀半高降级、红满格中断、虚线底无数据）；悬停或聚焦一格，条下的读数行写那一格的整句（如断流次数）。功能参照 Arc Uptime status，实现原创。',
+    exports: ['UptimeBars', 'uptimeShare'],
+    props: [
+      {
+        part: 'UptimeBars',
+        note: '文字全由 props 传：每一格的整句在 cell.label 里，包里没有文案。组是一个 role=group，每格一个带名字的 role=img。',
+        rows: [
+          {
+            name: 'cells',
+            type: 'UptimeCell[]',
+            desc: '从旧到新；{ id, status: up | degraded | down | none, label }。',
+          },
+          { name: 'label', type: 'string', desc: '这一条的读屏名（整句）。' },
+          { name: 'idle', type: 'ReactNode', desc: '没有悬停也没有聚焦时读数行写什么，常是可用率。' },
+          { name: 'onSelect', type: '(cell) => void', desc: '给了格子才可点（Enter / Space 也触发）。' },
+          { name: 'className', type: 'string', desc: '加在最外层。' },
+        ],
+      },
+      {
+        part: 'uptimeShare(cells)',
+        note: '可用格（up）占有数据的格的比例；degraded 与 down 都不算可用，不另给权重；none 不进分母；全是 none 返回 null。',
+        rows: [],
+      },
+    ],
+    states: [
+      'up 满格绿、degraded 六成高琥珀、down 满格红、none 一条细虚底；状态靠颜色与高度两路表达。',
+      '悬停或聚焦一格：加描边，读数行换成那一格的整句；离开后回到 idle。',
+      '只有一格在 Tab 序里（默认最新一格），左右键在格间走。',
+    ],
+    donts: ['不要用它画连续的数值（延迟、用量）：它只有四种离散状态。', '不要省掉每格的 label：悬停读数与读屏都靠它。'],
+    composition: 'UptimeBars\n  div role=group\n    span role=img（一格，带 data-status）\n  output（读数行）',
+    keys: [
+      ['← / →', '焦点在格间移动，到头不绕回'],
+      ['Home / End', '跳到最早 / 最新一格'],
+      ['Enter / Space', '给了 onSelect 时选中当前格'],
+    ],
+  },
+  {
+    id: 'range-histogram-slider',
+    group: 'forms',
+    cardHeight: 162,
+    title: 'RangeHistogramSlider 直方图区间滑块',
+    summary:
+      '一排柱子画出全体的分布，下面一条轨道两个把手：拖出来的区间里的柱子亮、区间外的暗；柱色取 seq 顺序色阶（越高越亮）。用在筛选器，在全市场分布上拖市值、涨幅、换手的区间。点柱子或轨道，最近的把手跳过去。功能参照 Arc Range histogram slider，实现原创。',
+    exports: ['RangeHistogramSlider', 'histogramBins'],
+    props: [
+      {
+        part: 'RangeHistogramSlider',
+        note: '角色照 WAI-ARIA APG 的 Multi-Thumb Slider：两个 role=slider，各自带 aria-valuemin / max / now / valuetext；两个把手不交叉。值可受控也可不受控；文字全由 props 传。',
+        rows: [
+          { name: 'counts', type: 'number[]', desc: '每一箱的个数，等宽分箱铺满 [min, max]；用 histogramBins 算。' },
+          { name: 'min / max', type: 'number', desc: '分布的范围。' },
+          { name: 'step', type: 'number', default: '(max - min) / 箱数', desc: '步长，拖动与键盘都取整到它。' },
+          {
+            name: 'value / defaultValue / onValueChange',
+            type: '[number, number]',
+            desc: '当前区间；不给 value 就是不受控。',
+          },
+          {
+            name: 'formatValue',
+            type: '(value: number) => string',
+            default: 'String',
+            desc: '数值怎么写（读数行与 aria-valuetext）。',
+          },
+          { name: 'labels', type: '{ low: string; high: string }', desc: '两个把手的读屏名（必填）。' },
+          { name: 'label', type: 'string', desc: '整条的读屏名（必填）。' },
+          { name: 'describe', type: '(range) => ReactNode', desc: '读数行；不给写「下限 – 上限」。' },
+        ],
+      },
+      {
+        part: 'histogramBins(values, min, max, bins)',
+        note: '把一列数分进等宽的箱，最后一箱含 max；范围外与非有限数丢掉。',
+        rows: [],
+      },
+    ],
+    states: [
+      '区间内的柱子不透明、区间外 35%，柱色按高度取 seq-200 到 seq-600；区间那一段轨道用强调色。',
+      '两个把手叠在一起时，按指针往哪边拖决定动哪个，不会互相夹死。',
+      '键盘聚焦的把手有焦点环。',
+    ],
+    donts: [
+      '不要拿它选单个值：单值用 Slider。',
+      '不要把原始数据传进来：先用 histogramBins 分箱，箱数也别太多（柱子细到看不清就没有意义）。',
+    ],
+    composition:
+      'RangeHistogramSlider\n  div role=group\n    div（柱子，一箱一根）\n    div（轨道与选中段）\n    div role=slider × 2（把手）\n  output（读数行）',
+    keys: [
+      ['← / ↓', '当前把手减一个步长'],
+      ['→ / ↑', '当前把手加一个步长'],
+      ['PageDown / PageUp', '减 / 加十个步长'],
+      ['Home / End', '去最小 / 最大（不越过另一个把手）'],
+    ],
+  },
+  {
+    id: 'ridgeline',
+    group: 'quant',
+    cardHeight: 660,
+    title: 'Ridgeline 山脊图',
+    summary:
+      '每组一条核密度曲线，上下叠着排，一眼比各组分布的位置、宽窄与形状（分位层、因子分组的收益分布）。带宽默认 Silverman 经验规则；给了基准线就画一条贯穿的虚线。分层是序数：线与点阵面取 seq 色阶（暗到亮），不用涨跌色。悬停或聚焦一条，其余变暗。功能参照 Arc Ridgeline，实现原创。',
+    exports: ['Ridgeline', 'ridgelines', 'ridgeStats', 'silvermanBandwidth', 'gaussianKde'],
+    props: [
+      {
+        part: 'Ridgeline',
+        note: '文字全由 props 传：每一条的整句在 describe 里。图是一个 role=group，每条一个带整句名的 role=img。',
+        rows: [
+          {
+            name: 'groups',
+            type: 'RidgeGroup[]',
+            desc: '{ id, label, values: number[] }，从上到下排；不是有限数的值丢掉。',
+          },
+          { name: 'label', type: 'string', desc: '整张图的读屏名。' },
+          {
+            name: 'describe',
+            type: '(group, stats) => string',
+            desc: '一条的整句（读屏名与读数行）；stats 有 n、mean、median、min、max。',
+          },
+          { name: 'formatValue', type: '(value: number) => string', default: 'String', desc: '横轴刻度怎么写。' },
+          {
+            name: 'baseline',
+            type: 'number',
+            desc: '参照线的位置（如 0）；给了就画一条贯穿的虚线。',
+          },
+          { name: 'domain', type: '[number, number]', desc: '横轴范围；不给取全体数据加两头各 3 个带宽。' },
+          { name: 'bandwidth', type: 'number', desc: '核密度的带宽；不给每组用 Silverman 规则。' },
+          { name: 'rowHeight', type: 'number', default: '40', desc: '一行的高（viewBox 单位）。' },
+          {
+            name: 'overlap',
+            type: 'number',
+            default: '2',
+            desc: '最高的山峰是一行高的几倍；大于 1 山脊叠进上一行。视觉取值，待定。',
+          },
+          { name: 'idle', type: 'ReactNode', desc: '没有悬停也没有聚焦时读数行写什么。' },
+        ],
+      },
+      {
+        part: 'ridgelines(groups, options) / silvermanBandwidth(values)',
+        note: 'silvermanBandwidth 是 h = 0.9 · min(σ, IQR / 1.34) · n^(−1/5)（Silverman 1986 式 3.31）；少于两个数或全相等返回 null，ridgelines 用范围的 1/50 兜底（待定）。gaussianKde(values, xs, h) 是高斯核密度，积分为 1。',
+        rows: [],
+      },
+    ],
+    states: [
+      '默认：每条是点阵纹理的面加顶线，中位数一根竖标；颜色按条的次序取 seq-200 到 seq-600。',
+      '给了 baseline：多一条贯穿的虚线；涨跌色不出现（也不跟 data-updown 变）。',
+      '悬停或聚焦一条：其余变暗，读数行写这一条的整句。',
+      '取不出带宽的组（少于两个数或全相等）画成一个窄峰。',
+    ],
+    donts: [
+      '不要用它比样本很少的组：核密度在几个点上画出的形状不可信，describe 里把个数写出来。',
+      '不要在数量级不同的组之间共用一条横轴：先标准化或分开画。',
+      '不要拿颜色表达涨跌：颜色只是层的次序，中位数竖标与读数行写出了数值。',
+    ],
+    composition:
+      'Ridgeline\n  svg role=group\n    g（刻度线与基准线）\n    g role=img（一条：标签 · 底线 · 填充 · 顶线 · 中位数竖标）\n  output（读数行）',
+    keys: [
+      ['↑ / ↓', '焦点在条间移动，到头不绕回'],
+      ['Home / End', '跳到第一 / 最后一条'],
+    ],
+  },
+  {
+    id: 'quantile-layers',
+    group: 'quant',
+    cardHeight: 700,
+    title: 'QuantileLayers 因子分层',
+    summary:
+      '因子分层累计收益（卡 QuantileLayers）：层号是序数，线色取 seq-200 到 seq-600（暗到亮，最高层最亮），不用类别色也不用涨跌色。多空差是点阵纹理面加 ink-100 细线，线尾标最高层与最低层，最高层末点是强调色。悬停一层其余变 40%，点击锁定；扫读出 LCD 提示；底部一行结论（单调性灯加词、各项统计、来源）。图右上三件，表格视图必有。',
+    exports: ['QuantileLayers', 'isMonotonic', 'layerLevel', 'quantileRange', 'sortLayers', 'lastFinite'],
+    props: [
+      {
+        part: 'QuantileLayers',
+        note: '文字全由 props 传。分层多于 10 不画线，只给表格（卡写改热力图，热力图待做）。',
+        rows: [
+          {
+            name: 'layers',
+            type: 'QuantileLayer[]',
+            desc: '{ rank, label, points }；points 是累计收益，非有限数是缺口。',
+          },
+          { name: 'longShort', type: 'number[]', desc: '多空差序列（最高层减最低层）。' },
+          { name: 'longShortLabel', type: 'string', desc: '多空差的名字。' },
+          {
+            name: 'labels',
+            type: 'QuantileLayersLabels',
+            desc: '读屏名、表格表头、单调性两个词、分层太多的提示、图右上三件的名字。',
+          },
+          { name: 'formatValue / formatX', type: 'function', desc: '数值与横轴格怎么写（纵轴、提示、表格）。' },
+          { name: 'monotonic', type: 'boolean', desc: '单调性结论；不给就按期末累计收益是否随层号严格递增算。' },
+          {
+            name: 'stats',
+            type: '{ key, label, value }[]',
+            desc: '结论行的统计（多空年化、换手、样本……），口径由调用方写好。',
+          },
+          { name: 'source', type: 'ReactNode', desc: '来源一行。' },
+          { name: 'onExport / onFullscreen', type: '() => void', desc: '不给就不画那个按钮；表格视图总有。' },
+        ],
+      },
+    ],
+    states: [
+      '默认：每层一条 2px 线，多空差点阵面垫底，0 线 line-200，最高层末点强调色并标值。',
+      '悬停或聚焦一层按钮：其余层变 40%；点击锁定（再点解除）。',
+      '指针在图上移动或 ←→ 键：竖线加 LCD 提示，列各层与多空差的值。',
+      '单调性：灯加词，通过 / 不通过各一个词，不单靠颜色。',
+    ],
+    donts: [
+      '不要用类别色或涨跌色画分层：层号是序数。',
+      '不要给多空线单独上色：用 ink-100 细线或点阵面。',
+      '不要超过 10 层画线：线挤成一团，改看表格或热力图。',
+    ],
+    composition:
+      'QuantileLayers\n  ChartActions\n  图（svg：网格 · 点阵面 · 0 线 · 多空线 · 分层线 · 竖线）+ 纵轴刻度 + 线尾标 + 末点 + LcdTooltip\n  层按钮一排\n  结论行 · 来源',
+    keys: [
+      ['← / →', '扫读一格（Shift 三格），Home / End 到头尾，Esc 清掉'],
+      ['Tab / Enter', '层按钮：聚焦时淡出其余，Enter 锁定'],
+    ],
+  },
+  {
+    id: 'slope-chart',
+    group: 'quant',
+    cardHeight: 700,
+    title: 'SlopeChart 斜率图',
+    summary:
+      '每项一条线连「前」「后」两列，看再平衡前后的权重、因子排名的变化。线与点是中性墨色，涨跌色只上变化后的那个数字（跟 data-updown 走），悬停与聚焦的线用强调色，两侧写名字与数，标签互相不重叠；rank 模式纵轴是名次，涨跌看名次升降。悬停或聚焦一条，其余变暗。功能参照 Arc Slope chart，实现原创。',
+    exports: ['SlopeChart', 'slopeLayout', 'spreadLabels', 'ranks'],
+    props: [
+      {
+        part: 'SlopeChart',
+        note: '文字全由 props 传：列头在 columns、每一项的整句在 describe 里。图是一个 role=group，每项一个带整句名的 role=img。',
+        rows: [
+          { name: 'items', type: 'SlopeItem[]', desc: '{ id, label, before, after }。' },
+          { name: 'label', type: 'string', desc: '整张图的读屏名。' },
+          { name: 'columns', type: '{ before: string; after: string }', desc: '两列的列头。' },
+          {
+            name: 'describe',
+            type: '(item, change) => string',
+            desc: '一项的整句；change 在 value 模式是 after − before，rank 模式是名次升了几位。',
+          },
+          {
+            name: 'mode',
+            type: "'value' | 'rank'",
+            default: "'value'",
+            desc: 'value：纵轴是数值，值大在上；rank：纵轴是名次，第 1 名在上、等距。',
+          },
+          { name: 'formatValue', type: '(value: number) => string', default: 'String', desc: '两侧标签里的数怎么写。' },
+          { name: 'height', type: 'number', desc: '图高（viewBox 单位）；默认按条数每条 18 高、至少 160。' },
+          { name: 'onSelect', type: '(item) => void', desc: '给了才可点（Enter 也触发）。' },
+          { name: 'idle', type: 'ReactNode', desc: '没有悬停也没有聚焦时读数行写什么。' },
+        ],
+      },
+      {
+        part: 'slopeLayout(items, options) / spreadLabels(ys, gap, lo, hi) / ranks(values)',
+        note: 'spreadLabels 让标签保持上下次序、相邻至少隔 gap、整体落在 [lo, hi] 里；装不下时均匀铺满。ranks 值大的排前、从 1 起、相同按输入顺序。',
+        rows: [],
+      },
+    ],
+    states: [
+      '涨：value 模式 after 大于 before，rank 模式名次升；跌相反；相等用中性色。',
+      '悬停或聚焦一条：其余变暗，这一条加粗并画在最上面，读数行写它的整句。',
+      '点挨得很近时线重叠，但标签被推开，各自对着自己的端点；端点旁的数仍是真值。',
+    ],
+    donts: [
+      '不要放很多条（超过约二三十）：标签推开后离端点太远，读不出对应。',
+      '不要拿它画随时间的连续走势：那是折线图；斜率图只比两个时点。',
+      'rank 模式下不要再把数值当纵轴理解：线的斜率只表示名次变化。',
+    ],
+    composition:
+      'SlopeChart\n  svg role=group\n    text（两个列头）\n    g role=img（一项：命中线 · 线 · 两个端点 · 两侧标签）\n    g aria-hidden（当前项的副本，画在最上）\n  output（读数行）',
+    keys: [
+      ['↑ / ↓', '焦点按左侧端点从上到下在项间移动，到头不绕回'],
+      ['Home / End', '跳到最上 / 最下一项'],
+      ['Enter', '给了 onSelect 时选中当前项'],
+    ],
+  },
+  {
+    id: 'connected-scatter',
+    group: 'quant',
+    cardHeight: 1146,
+    title: 'ConnectedScatter 连线散点图',
+    summary:
+      '每个点是一个时刻的 (x, y)，按时间顺序连成轨迹，看一个对象在两个量之间怎么走（如策略的波动 vs 收益按月的路径、风格漂移）。时间方向不单靠颜色：起点空心圈、终点强调色实心圈加箭头、中间的点按时间取 seq 色阶（越晚越亮）。多条轨迹各取 series 色板的一个色。功能参照 Arc Connected scatter，实现原创。',
+    exports: ['ConnectedScatter', 'scatterLayout'],
+    props: [
+      {
+        part: 'ConnectedScatter',
+        note: '文字全由 props 传：每个点的整句在 point.label 里，轴名在 axes。图是一个 role=group，每条轨迹一个 role=group，每个点一个带整句名的 role=img。',
+        rows: [
+          {
+            name: 'series',
+            type: 'ScatterSeries[]',
+            desc: '{ id, label, points: { x, y, label }[] }；点按时间从早到晚排。',
+          },
+          { name: 'label', type: 'string', desc: '整张图的读屏名。' },
+          { name: 'axes', type: '{ x: string; y: string }', desc: '两根轴的名字。' },
+          { name: 'formatX / formatY', type: '(value: number) => string', default: 'String', desc: '刻度怎么写。' },
+          { name: 'xDomain / yDomain', type: '[number, number]', desc: '轴范围；不给取全体数据放宽 5%。' },
+          { name: 'idle', type: 'ReactNode', desc: '没有悬停也没有聚焦时读数行写什么。' },
+        ],
+      },
+      {
+        part: 'scatterLayout(series, frame, options)',
+        note: '点到像素的纯函数：返回刻度位置、每个点的像素坐标与终点箭头的三个顶点。',
+        rows: [],
+      },
+    ],
+    states: [
+      '起点空心圈、中间小点、终点大实心圈加箭头；中间的点取 seq-200 到 seq-600（按时间分档），终点用强调色加辉光。',
+      '悬停或聚焦一个点：该点描白边，别的轨迹变暗，读数行写这个点的整句。',
+      '单点的轨迹只画一个点，没有连线与箭头。',
+    ],
+    donts: [
+      '不要在没有时间顺序的数据上用它：连线表示先后。',
+      '不要放太多条轨迹（超过七条色板就循环、颜色重复）：轨迹交叠时看不清。',
+      '不要只靠颜色认哪条是哪条：图例与每个点的整句里都写了名字。',
+    ],
+    composition:
+      'ConnectedScatter\n  svg role=group\n    g（刻度线与轴名）\n    g role=group（一条轨迹：折线 · 终点箭头 · 各点 circle role=img）\n  ul（图例）\n  output（读数行）',
+    keys: [
+      ['← / →', '沿时间在同一条轨迹的点上走，到头不绕回'],
+      ['↑ / ↓', '去上一条 / 下一条轨迹的同一位置（不够长落在最后一个点）'],
+      ['Home / End', '去这条轨迹的第一个 / 最后一个点'],
+    ],
+  },
+  {
+    id: 'symbol-galaxy',
+    group: 'blocks',
+    cardHeight: 807,
+    title: 'SymbolGalaxy 品种星系',
+    summary:
+      '持仓、自选、筛选结果按行业、市场、因子分位或状态聚成一团团的圆：面积是市值或仓位，圆面用发散色 div-*：正负各两档，-200 只给涨跌幅绝对值在前 20% 的点，中点灰，涨跌色不上面积；团名放在团的外接圆上方的留白里。上面一排切换分组方式，点在团间平滑迁移；悬停读详情，点击选中；Tab 在团间走、方向键在团内走。点多时自动改画 canvas。布局用 d3-hierarchy 的 pack，同样的数据永远同样的位置。功能参照 Arc Customer galaxy，实现原创。',
+    exports: ['SymbolGalaxy', 'layoutGalaxy', 'hitNode', 'stepNode'],
+    props: [
+      {
+        part: 'SymbolGalaxy',
+        note: '文字全由 props 传：团名取自每个点 groups 里的值，一个点与一团的整句在 describe 与 groupText 里，包里没有文案。每团是一个 Tab 停靠点（role=group）；SVG 与 canvas 两种画法的键盘与读屏一样（团的圈、标签与标记都是 SVG）。',
+        rows: [
+          {
+            name: 'nodes',
+            type: 'GalaxyNode[]',
+            desc: '{ id, label, size, change, groups: { 分组方式 id: 团名 } }；size 不是正的有限数的点不画；change 是涨跌幅（小数），null 用中性色。',
+          },
+          { name: 'groupings', type: '{ id, label }[]', desc: '可切换的分组方式，每个点的 groups 里要有这些 id。' },
+          {
+            name: 'groupBy / defaultGroupBy / onGroupByChange',
+            type: 'string',
+            desc: '当前分组方式；不给 groupBy 就是不受控。',
+          },
+          { name: 'label / groupingLabel', type: 'string', desc: '整张图与分组开关的读屏名（必填）。' },
+          { name: 'describe', type: '(node) => string', desc: '一个点的整句详情（读数行）。' },
+          { name: 'groupText', type: '(group, count) => string', desc: '一团的读屏名，含个数。' },
+          { name: 'legendText', type: '(step: number) => string', desc: '色例每一档（-2 到 +2）写的字。' },
+          {
+            name: 'tooltip',
+            type: '(node) => { title, rows }',
+            desc: '悬停时的 LCD 提示（标题与「名字 / 数值」几行）；不给就只有读数行。涨跌色只许上数字。',
+          },
+          {
+            name: 'onSelect / selectedId',
+            type: '(node) => void / string | null',
+            desc: '点击或 Enter 选中；selectedId 画一圈强调色的标记。',
+          },
+          {
+            name: 'canvasFrom',
+            type: 'number',
+            default: '2000',
+            desc: '点数达到它就改画 canvas。2000 出自 issue #1918 的设想，没有实测依据，待测量（测量票 #1923）。',
+          },
+          { name: 'idle', type: 'ReactNode', desc: '没有悬停也没有聚焦时读数行写什么。' },
+        ],
+      },
+      {
+        part: 'layoutGalaxy(nodes, groupBy, frame) / hitNode / stepNode',
+        note: '布局：先按团做圆堆积、团内的点也按大小做圆堆积（输入按大小与 id 定序，不用随机），返回各团的圆与每个点的位置；hitNode 找包含某个坐标的最小的圆；stepNode 在一团里按方向键挑最近的点。',
+        rows: [],
+      },
+    ],
+    states: [
+      '默认：一团一个虚线圈，圈上方写团名，圈里是各点的圆，面积跟大小成正比。',
+      '悬停一个点：描一圈，读数行写它的详情；点击选中后留一圈强调色。',
+      '切换分组方式：点在团间平滑迁移（SVG 用 CSS 过渡，canvas 自己插值，时长同 --dur-snappy）。',
+      '点数达到 canvasFrom：点改画在 canvas 上，团的圈、标签与标记仍是 SVG。',
+      '键盘聚焦一团：圈加粗成焦点环，团内当前点描一圈，读数行写它的详情。',
+    ],
+    donts: [
+      '不要拿它比精确的数：面积与位置只给一个大概，要读数看读数行或表格。',
+      '不要放没有分组意义的数据：分组方式切到只有一团时它就是一个普通的圆堆。',
+      '不要把 canvasFrom 调得很大还指望流畅：SVG 每点一个节点，点多了迁移会卡。',
+    ],
+    composition:
+      'SymbolGalaxy\n  ToggleGroup（分组方式）\n  div\n    canvas（点多时，aria-hidden）\n    svg role=group\n      circle（一个点，SVG 画法）\n      g role=group tabindex=0（一团：圈 · 团名）\n      circle（选中 / 键盘 / 悬停的标记）\n  ol（色例，七档）\n  output（读数行）',
+    keys: [
+      ['Tab', '在团间走（每团一个停靠点）'],
+      ['← ↑ ↓ →', '在团内跳到那个方向最近的点，那一侧没有点就不动'],
+      ['Enter / Space', '给了 onSelect 时选中团内当前点'],
     ],
   },
 ]

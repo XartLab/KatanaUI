@@ -1,0 +1,27 @@
+/* SPDX-License-Identifier: MIT */
+/* 宽体：图与面板的大写标题、分段按钮（Precision Instrument UI，参照图用的就是它）。
+   Michroma，SIL OFL 1.1，© 2011 The Michroma Project Authors（https://github.com/googlefonts/Michroma-font），
+   2026-11-14 取自 Google Fonts（fonts.gstatic.com/s/michroma/v21），子集到拉丁 + 常用标点后转 woff，许可全文见 src/fonts/michroma-ofl.txt。
+   只有拉丁大写，汉字回退到无衬线。--font-wide 暂定义在这里；要进设计令牌时由令牌线程搬进 design/tokens.json（#1934）。 */
+@font-face {
+  font-family: 'Michroma';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('../fonts/michroma-regular.woff') format('woff');
+}
+:root {
+  --font-wide: 'Michroma', 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei UI', sans-serif;
+}
+
+/* 点阵字的中文回落：方舟像素 12px 的中文子集（GB 2312 一级汉字加符号与全角形式，约 4100 字，woff2 约 130KB）。
+   字形取自 Ark Pixel Font（https://github.com/TakWolf/ark-pixel-font ，SIL OFL 1.1，© 2021 TakWolf，2026-11-14 读，
+   仓库提交 5e0b8d6），用 scripts/font/build-ark-pixel-subset.py 从它的点阵 PNG 生成，许可全文见 src/fonts/ark-pixel-ofl.txt。
+   12px（text-tag-md）与它的整数倍才锐利；9px 的 text-tag 档上汉字会糊，点阵汉字用 text-tag-md。 */
+@font-face {
+  font-family: 'Ark Pixel 12 zh_cn Subset';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('../fonts/ark-pixel-12-zh-subset.woff2') format('woff2');
+}

@@ -1,7 +1,17 @@
 // SPDX-License-Identifier: MIT
 import { useState } from 'react'
-import { BadgeGroup, DotMatrix, Kbd, Lcd, Led, LINK_GROUPS, RollingText, type LedState } from '../../src/index'
-import { Cell, Row } from './parts'
+import {
+  BadgeGroup,
+  DotMatrix,
+  Kbd,
+  Lcd,
+  Led,
+  LINK_GROUPS,
+  RollingText,
+  SymbolMark,
+  type LedState,
+} from '../../src/index.ts'
+import { Cell, Row, SAMPLE_MARK_SRC } from './parts.tsx'
 
 // KATANA 自有的读数件的演示（#1860 从 src/ui 搬进包）：状态灯、LCD 读数、点阵、滚动数字、徽标、快捷键方块。数据和文案都是演示用的。
 
@@ -147,6 +157,27 @@ export function KbdDemo() {
         <Kbd parts={['Esc']} label="Esc" />
         <Kbd parts={['+']} label="+" />
       </Row>
+    </>
+  )
+}
+
+export function SymbolMarkDemo() {
+  return (
+    <>
+      <Row name="字母">
+        <SymbolMark code="AAPL" name="Apple" />
+        <SymbolMark code="600519" name="贵州茅台" />
+        <SymbolMark code="00700" name="腾讯控股" />
+        <SymbolMark code="BTCUSDT" name="Bitcoin" />
+      </Row>
+      <Row name="有图">
+        <SymbolMark code="BTC" name="Bitcoin" src={SAMPLE_MARK_SRC} />
+        <SymbolMark code="BTC" name="Bitcoin" src={SAMPLE_MARK_SRC} size={28} />
+      </Row>
+      <Row name="加载失败">
+        <SymbolMark code="ETH" name="Ethereum" src="data:image/png;base64,broken" />
+      </Row>
+      <p className="gal-note">示意图标：自绘的 SVG，演示有图的样子；不是任何真实币种或公司的标志。</p>
     </>
   )
 }

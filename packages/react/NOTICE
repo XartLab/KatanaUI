@@ -35,3 +35,14 @@ This package is licensed under the MIT License (see LICENSE).
    它的版权声明随它自己的包走。
    Radix UI is the behavioural base of `src/primitives/`; it is a runtime dependency installed from npm and is not
    redistributed in this package.
+
+3. Ark Pixel Font / 方舟像素字体（https://github.com/TakWolf/ark-pixel-font ，字体部分 SIL Open Font License 1.1，
+   Copyright (c) 2021, TakWolf (https://takwolf.com)，仓库的代码部分另是 MIT，我们没用；2026-11-14 核对 LICENSE-OFL 与 LICENSE-MIT）
+   `src/fonts/ark-pixel-12-zh-subset.woff2` 是它 12px 点阵字形的中文子集（GB 2312 一级汉字里有字形的、符号区与全角形式，约 4100 字），
+   由 `scripts/font/build-ark-pixel-subset.py` 读它仓库 `assets/glyphs/12/` 的点阵 PNG 生成（没有跑它的构建脚本）。
+   许可证全文在 `src/fonts/ark-pixel-ofl.txt`，随字体文件一起分发。OFL 1.1 允许修改与再分发，条件是带着版权声明与许可全文、
+   不单独卖字体、衍生版不用声明过的保留字体名；它的 LICENSE-OFL 没有声明保留字体名，我们的子集仍改名为「Ark Pixel 12 zh_cn Subset」。
+   The 12px Chinese subset font is a derivative of Ark Pixel Font (SIL OFL 1.1); the licence text ships next to it.
+
+4. Michroma（https://github.com/googlefonts/Michroma-font ，SIL OFL 1.1，© 2011 The Michroma Project Authors）
+   `src/fonts/michroma-regular.woff` 是它的拉丁子集，许可全文在 `src/fonts/michroma-ofl.txt`。

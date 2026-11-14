@@ -16,13 +16,13 @@ import {
   type SortSpec,
 } from '../../src/blocks'
 import { Button } from '../../src'
-import { Row } from './parts'
+import { Row, SAMPLE_MARK_SRC } from './parts'
 
 // 积木层（@katana-ui/react/blocks，#1869）的演示。表里的数据都是写死的示例数据，不是行情。
 
 type Example = {
   id: string
-  symbol: { code: string; venue: string }
+  symbol: { code: string; venue: string; name?: string; icon?: { src?: string } }
   side: 'buy' | 'sell'
   price: number
   qty: number
@@ -36,7 +36,7 @@ type Example = {
 const EXAMPLES: readonly Example[] = [
   {
     id: 'a',
-    symbol: { code: 'BTCUSDT', venue: 'BINANCE' },
+    symbol: { code: 'BTCUSDT', venue: 'BINANCE', name: 'Bitcoin', icon: { src: SAMPLE_MARK_SRC } },
     side: 'buy',
     price: 64250.5,
     qty: 0.25,
@@ -48,7 +48,7 @@ const EXAMPLES: readonly Example[] = [
   },
   {
     id: 'b',
-    symbol: { code: '600519', venue: 'SSE' },
+    symbol: { code: '600519', venue: 'SSE', name: '贵州茅台', icon: {} },
     side: 'sell',
     price: 1688,
     qty: 1200,
@@ -90,7 +90,7 @@ const COLUMNS: readonly GridColumn<Example>[] = [
 ]
 
 const LAYOUT: readonly GridColumnLayout[] = [
-  { id: 'symbol', label: 'Symbol', width: 130, visible: true },
+  { id: 'symbol', label: 'Symbol', width: 190, visible: true },
   { id: 'side', label: 'Side', width: 60, visible: true },
   { id: 'price', label: 'Price', width: 100, visible: true },
   { id: 'qty', label: 'Qty', width: 80, visible: true },
@@ -109,7 +109,10 @@ export function DataGridDemo() {
   const [sort, setSort] = useState<SortSpec | null>(null)
   return (
     <>
-      <p className="gal-note">示例数据：每种列类型一列；点表头排序，右键看菜单。</p>
+      <p className="gal-note">
+        示例数据：每种列类型一列；点表头排序，右键看菜单。品种列前是徽标：BTCUSDT
+        用自绘的示意图标（不是真实标志），600519 是字母圆标。
+      </p>
       <div data-testid="grid-demo" style={{ display: 'flex', height: 190, width: '100%', maxWidth: 780 }}>
         <DataGridHostProvider value={HOST}>
           <DataGrid
