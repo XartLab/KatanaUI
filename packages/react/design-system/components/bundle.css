@@ -7939,6 +7939,20 @@ button.k-sm-head:focus-visible {
 
 .k-sx-chart {
   background-image: linear-gradient(to right, var(--ink-400) 1px, transparent 1px), linear-gradient(to bottom, var(--ink-400) 1px, transparent 1px);
+.k-ck-unit {
+  color: var(--ink-300);
+  font-size: .85em;
+}
+
+.k-brush {
+  min-width: 0;
+  color: var(--ink-200);
+  font: var(--text-caption) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  display: flex;
   position: relative;
 }
 

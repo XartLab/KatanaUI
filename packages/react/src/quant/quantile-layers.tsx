@@ -7,6 +7,7 @@ import { useState, type ReactNode } from 'react'
 import { cn } from '../lib/cn'
 import { useScrubber } from '../lib/use-scrubber'
 import { ChartActions, type ChartActionsLabels } from './chart-kit/chart-actions'
+import { ChartValue, type ChartValueText } from './chart-kit/chart-value'
 import { DotFill, useDotId } from './chart-kit/dot-fill'
 import { EndMarker } from './chart-kit/end-marker'
 import { LcdTooltip } from './chart-kit/lcd-tooltip'
@@ -51,7 +52,8 @@ export type QuantileLayersProps = {
   longShortLabel: string
   labels: QuantileLayersLabels
   /** 数值怎么写（纵轴、提示、表格）。 */
-  formatValue: (value: number) => string
+  /** 返回字符串原样写；返回 { value, unit } 时单位用次一级墨色渲染（§2.2）。 */
+  formatValue: (value: number) => ChartValueText
   /** 第几格写成什么（提示标题、表格行头）。 */
   formatX: (index: number) => string
   /** 不给就按期末累计收益是否随层号严格递增算。 */
@@ -174,7 +176,10 @@ export function QuantileLayers({
                 data-slot="quantile-tail"
                 style={{ left: '100%', top: plot.yAt(end) }}
               >
-                {layer.label} <span className="k-ql-tail-value">{formatValue(end)}</span>
+                {layer.label}{' '}
+                <span className="k-ql-tail-value">
+                  <ChartValue text={formatValue(end)} />
+                </span>
               </span>
             )
           })}
@@ -190,13 +195,13 @@ export function QuantileLayers({
                 ...[...sorted].reverse().map((layer) => ({
                   key: String(layer.rank),
                   label: layer.label,
-                  value: Number.isFinite(layer.points[at]) ? formatValue(layer.points[at]!) : '—',
+                  value: Number.isFinite(layer.points[at]) ? <ChartValue text={formatValue(layer.points[at]!)} /> : '—',
                   swatch: seqColor(layerLevel(sorted.indexOf(layer), sorted.length)),
                 })),
                 {
                   key: 'ls',
                   label: longShortLabel,
-                  value: Number.isFinite(longShort[at]) ? formatValue(longShort[at]!) : '—',
+                  value: Number.isFinite(longShort[at]) ? <ChartValue text={formatValue(longShort[at]!)} /> : '—',
                 },
               ]}
             />
@@ -232,9 +237,11 @@ export function QuantileLayers({
                 <tr key={i}>
                   <th scope="row">{formatX(i)}</th>
                   {sorted.map((layer) => (
-                    <td key={layer.rank}>{Number.isFinite(layer.points[i]) ? formatValue(layer.points[i]!) : '—'}</td>
+                    <td key={layer.rank}>
+                      {Number.isFinite(layer.points[i]) ? <ChartValue text={formatValue(layer.points[i]!)} /> : '—'}
+                    </td>
                   ))}
-                  <td>{Number.isFinite(longShort[i]) ? formatValue(longShort[i]!) : '—'}</td>
+                  <td>{Number.isFinite(longShort[i]) ? <ChartValue text={formatValue(longShort[i]!)} /> : '—'}</td>
                 </tr>
               ))}
             </tbody>

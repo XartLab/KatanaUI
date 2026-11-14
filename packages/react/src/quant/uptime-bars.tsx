@@ -5,6 +5,7 @@
 // 用在数据源 / 连接健康（对 DataSources、SystemHealth 的缺口）。文字全由 props 传。
 import { useRef, useState, type ReactNode } from 'react'
 import { ChartActions } from './chart-kit/chart-actions'
+import { ChartValue, type ChartValueText } from './chart-kit/chart-value'
 import { ChartTable, type ChartViewProps } from './chart-kit/chart-table'
 import { countStatuses, moveCell, type UptimeCell, type UptimeStatus } from './uptime-bars-model'
 
@@ -18,7 +19,7 @@ export type UptimeBarsProps = ChartViewProps & {
   /** 四种状态各一个词（灯加词，状态永不单靠颜色，precision-instrument §2.2、§2.5）；给了就在条上面画一行「灯 词 格数」。 */
   statusLabels?: Readonly<Record<UptimeStatus, string>>
   /** 条上面一行右边的可用率读数（LCD 数字，口径由调用方写好，如「99.1 %」）。 */
-  availability?: ReactNode
+  availability?: ChartValueText
   /** 条两端的时间（ISO 次序，precision-instrument §2.2），如 ['2026-10-16', '2026-11-14']。 */
   range?: readonly [string, string]
   /** 点一格（给了才可点，格子上 cursor 变手形）。 */
@@ -64,7 +65,11 @@ export function UptimeBars({
               ))}
             </ul>
           )}
-          {availability === undefined ? null : <span className="k-uptime-avail">{availability}</span>}
+          {availability === undefined ? null : (
+            <span className="k-uptime-avail">
+              <ChartValue text={availability} />
+            </span>
+          )}
         </div>
       )}
       <div className="k-dist-bar">

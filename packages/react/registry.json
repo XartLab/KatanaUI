@@ -1840,6 +1840,11 @@
           "target": "~/src/katana/ui/quant/chart-kit/chart-table.tsx"
         },
         {
+          "path": "src/quant/chart-kit/chart-value.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/chart-kit/chart-value.tsx"
+        },
+        {
           "path": "src/quant/chart-kit/dot-fill.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/quant/chart-kit/dot-fill.tsx"

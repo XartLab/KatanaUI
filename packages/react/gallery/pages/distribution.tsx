@@ -83,7 +83,8 @@ export function UptimeBarsDemo() {
   const daily = days()
   const hourly = days(true)
   const [picked, setPicked] = useState('')
-  const pct = (cells: UptimeCell[]) => `${((uptimeShare(cells) ?? 0) * 100).toFixed(1)} %`
+  // 对象写法：单位 % 用次一级墨色单独渲染（precision-instrument §2.2）。
+  const pctValue = (cells: UptimeCell[]) => ({ value: ((uptimeShare(cells) ?? 0) * 100).toFixed(1), unit: '%' })
   const share = (cells: UptimeCell[]) => `近 ${cells.length} 格可用率 ${((uptimeShare(cells) ?? 0) * 100).toFixed(1)}%`
   return (
     <>
@@ -95,7 +96,7 @@ export function UptimeBarsDemo() {
             cells={daily}
             label="示例行情源 QUOTE HUB · WS 近 30 天"
             statusLabels={STATUS_WORDS}
-            availability={pct(daily)}
+            availability={pctValue(daily)}
             range={['2026-10-16', '2026-11-14']}
             idle={share(daily)}
           />
@@ -108,7 +109,7 @@ export function UptimeBarsDemo() {
             cells={hourly}
             label="示例连接 近 48 小时"
             statusLabels={STATUS_WORDS}
-            availability={pct(hourly)}
+            availability={pctValue(hourly)}
             range={['2026-11-12 15:00', '2026-11-14 14:00']}
             idle={share(hourly)}
             onSelect={(cell) => setPicked(cell.label)}
@@ -460,7 +461,7 @@ function QuantileCase({ monotone, id }: { monotone: boolean; id: string }) {
         title="MOM_RS_V3 · 5 分层累计超额"
         longShortLabel="Q5−Q1"
         labels={labels}
-        formatValue={(value) => `${value.toFixed(1)} %`}
+        formatValue={(value) => ({ value: value.toFixed(1), unit: '%' })}
         formatX={x}
         stats={stats}
         source="来源 / 演示数据 · 固定种子合成 · 非回测"

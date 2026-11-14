@@ -4,6 +4,7 @@ import { describe, expect, it } from 'vite-plus/test'
 import { SparkTile } from '../spark-tile.tsx'
 import { DotFill } from './dot-fill.tsx'
 import { ChartActions } from './chart-actions.tsx'
+import { ChartValue } from './chart-value.ts'
 import { EndMarker } from './end-marker.tsx'
 import { LcdTooltip } from './lcd-tooltip.tsx'
 import { assignSeries, divColor, divHotThreshold, quantile, seqColor } from './series-colors.ts'
@@ -104,5 +105,14 @@ describe('图表底座的结构', () => {
     const empty = renderToStaticMarkup(<SparkTile label="X" text={null} value={null} seriesLabel="无" />)
     expect(empty).toContain('—')
     expect(empty).not.toContain('k-spark-tile-line')
+  })
+})
+
+describe('ChartValue', () => {
+  it('字符串原样写；{ value, unit } 把单位放进次一级墨色的 span，中间一个空格', () => {
+    expect(renderToStaticMarkup(<ChartValue text="12.0 %" />)).toBe('12.0 %')
+    expect(renderToStaticMarkup(<ChartValue text={{ value: '12.0', unit: '%' }} />)).toBe(
+      '12.0 <span class="k-ck-unit">%</span>',
+    )
   })
 })

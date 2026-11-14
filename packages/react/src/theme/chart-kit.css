@@ -249,3 +249,8 @@ button.k-spark-tile:focus-visible {
   margin-right: 8px;
   color: var(--chart-accent, var(--signal-orange));
 }
+/* 数值后的单位：小一档、次一级墨色（precision-instrument §2.2）。 */
+.k-ck-unit {
+  color: var(--ink-300);
+  font-size: 0.85em;
+}

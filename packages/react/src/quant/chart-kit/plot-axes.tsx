@@ -2,6 +2,7 @@
 // 坐标轴与网格（dataviz.md §3）：网格 chart-grid，比分隔线暗；轴文字 chart-axis、num-sm；图没有外边框（靠 PanelFrame）。
 // 网格画在 svg 里（跟着 viewBox），纵轴刻度字是 HTML，放在绘图区左侧的留白里（右对齐、贴着绘图区），不压到数据上。
 import { PLOT_W, type Plot } from '../series-geometry.ts'
+import { ChartValue, type ChartValueText } from './chart-value.ts'
 
 export function PlotGrid({ plot }: { plot: Plot }) {
   return (
@@ -13,12 +14,12 @@ export function PlotGrid({ plot }: { plot: Plot }) {
   )
 }
 
-export function PlotYAxis({ plot, format }: { plot: Plot; format: (value: number) => string }) {
+export function PlotYAxis({ plot, format }: { plot: Plot; format: (value: number) => ChartValueText }) {
   return (
     <>
       {plot.ticks.map((tick) => (
         <span key={tick.value} className="k-ck-ytick" data-slot="plot-ytick" style={{ top: tick.y }}>
-          {format(tick.value)}
+          <ChartValue text={format(tick.value)} />
         </span>
       ))}
     </>
