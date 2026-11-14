@@ -21,6 +21,7 @@ import {
   PnlTextDemo,
   QuantFormatDemo,
   RegimeStripDemo,
+  TechnicalRatingDemo,
 } from './pages/quant.tsx'
 import {
   DataGridDemo,
@@ -156,6 +157,7 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'consensus-block': ConsensusBlockDemo,
   'limit-ladder': LimitLadderDemo,
   'market-heatmap': MarketHeatmapDemo,
+  'technical-rating': TechnicalRatingDemo,
   'quant-format': QuantFormatDemo,
   'data-grid': DataGridDemo,
   'empty-state': EmptyStateDemo,

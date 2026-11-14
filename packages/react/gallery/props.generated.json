@@ -8865,6 +8865,77 @@
         }
       ]
     },
+    "RatingGroup": {
+      "kind": "type",
+      "source": "src/quant/technical-rating.tsx",
+      "props": [
+        {
+          "name": "key",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "value",
+          "type": "number",
+          "required": true,
+          "description": "−1（强卖）到 1（强买）。"
+        },
+        {
+          "name": "counts",
+          "type": "Record<RatingVerdict, number>",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "RatingRow": {
+      "kind": "type",
+      "source": "src/quant/technical-rating.tsx",
+      "props": [
+        {
+          "name": "key",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "group",
+          "type": "string",
+          "required": false,
+          "description": "属于哪一组（RatingGroup.key）；明细按组分节。不给的归到最后一节、不写节名。"
+        },
+        {
+          "name": "reading",
+          "type": "string",
+          "required": false,
+          "description": "读数，调用方写好的文字（「54.20」）；没有写「—」。"
+        },
+        {
+          "name": "verdict",
+          "type": "RatingVerdict",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "RatingVerdict": {
+      "kind": "type",
+      "source": "src/quant/technical-rating.tsx",
+      "props": []
+    },
     "RegimeBand": {
       "kind": "component",
       "source": "src/quant/regime-strip.tsx",
@@ -12245,6 +12316,193 @@
           "type": "string",
           "required": false,
           "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "TechnicalRating": {
+      "kind": "component",
+      "source": "src/quant/technical-rating.tsx",
+      "props": [
+        {
+          "name": "groups",
+          "type": "readonly RatingGroup[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "rows",
+          "type": "readonly RatingRow[]",
+          "required": false,
+          "default": "[]",
+          "description": "指标明细，不给就只画仪表。"
+        },
+        {
+          "name": "labels",
+          "type": "TechnicalRatingLabels",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "primary",
+          "type": "string",
+          "required": false,
+          "description": "放大居中的那一组（总评）的 key；不给取中间那一组。"
+        },
+        {
+          "name": "timeframes",
+          "type": "readonly TechnicalRatingTimeframe[]",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "timeframe",
+          "type": "string",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "onTimeframeChange",
+          "type": "(value: string) => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "disclaimer",
+          "type": "ReactNode",
+          "required": false,
+          "description": "免责一句，由调用方写；件只留位置。"
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "TechnicalRatingLabels": {
+      "kind": "type",
+      "source": "src/quant/technical-rating.tsx",
+      "props": [
+        {
+          "name": "zones",
+          "type": "readonly [string, string, string, string, string]",
+          "required": true,
+          "description": "五档的名字，从卖到买（强卖、卖、中性、买、强买）：刻度文字与仪表下的大字都用它。"
+        },
+        {
+          "name": "verdict",
+          "type": "Record<RatingVerdict, string>",
+          "required": true,
+          "description": "卖 / 中性 / 买：个数行与明细里的单项结论。"
+        },
+        {
+          "name": "total",
+          "type": "(n: number) => string",
+          "required": true,
+          "description": "仪表下的指标总数，例「共 26 项指标」。"
+        },
+        {
+          "name": "columns",
+          "type": "{ name: string; reading: string; verdict: string }",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "timeframe",
+          "type": "string",
+          "required": true,
+          "description": "时间周期分段控件的读屏名。"
+        },
+        {
+          "name": "list",
+          "type": "string",
+          "required": true,
+          "description": "整件的读屏名。"
+        },
+        {
+          "name": "empty",
+          "type": "string",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "TechnicalRatingProps": {
+      "kind": "type",
+      "source": "src/quant/technical-rating.tsx",
+      "props": [
+        {
+          "name": "groups",
+          "type": "readonly RatingGroup[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "rows",
+          "type": "readonly RatingRow[]",
+          "required": false,
+          "description": "指标明细，不给就只画仪表。"
+        },
+        {
+          "name": "labels",
+          "type": "TechnicalRatingLabels",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "primary",
+          "type": "string",
+          "required": false,
+          "description": "放大居中的那一组（总评）的 key；不给取中间那一组。"
+        },
+        {
+          "name": "timeframes",
+          "type": "readonly TechnicalRatingTimeframe[]",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "timeframe",
+          "type": "string",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "onTimeframeChange",
+          "type": "(value: string) => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "disclaimer",
+          "type": "ReactNode",
+          "required": false,
+          "description": "免责一句，由调用方写；件只留位置。"
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "TechnicalRatingTimeframe": {
+      "kind": "type",
+      "source": "src/quant/technical-rating.tsx",
+      "props": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": ""
         }
       ]
     },

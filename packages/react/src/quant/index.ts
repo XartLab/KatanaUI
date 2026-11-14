@@ -21,6 +21,15 @@ export {
   type MarketHeatmapLabels,
   type MarketHeatmapProps,
 } from './market-heatmap.tsx'
+export {
+  TechnicalRating,
+  type RatingGroup,
+  type RatingRow,
+  type RatingVerdict,
+  type TechnicalRatingLabels,
+  type TechnicalRatingProps,
+  type TechnicalRatingTimeframe,
+} from './technical-rating.tsx'
 export * from './format/index.ts'
 
 // 时间序列与盈亏的件（#1917）。功能参照 Arc（uiarc.dev，2026-11-14 读），只取功能，实现原创。
