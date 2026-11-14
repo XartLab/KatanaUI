@@ -8,14 +8,14 @@ KatanaUI 是设计系统的**源头仓库**（2026-11-14 用户定，#2）：tok
 以前它是 KATANAview `packages/ui` 的只读镜像，现在反过来，KATANAview 按 git 标签依赖这里发布的版本，不再带组件库源码。
 
 - 结构照 salt-ds：仓库根是 pnpm workspace，包在 `packages/`。现在有 `packages/react`（`@katana-ui/react`）；
-  `packages/tokens`（`@katana-ui/tokens`：三层 token 与密度、弹簧，生成 `tokens.css`）。`@katana-ui/react` 依赖它，写确切版本、不写 `workspace:`。
+  `packages/tokens`（`@katana-ui/tokens`：三层 token 与密度、弹簧，生成 `tokens.css`）。`@katana-ui/react` 依赖它，在 package.json 里写确切版本、不写 `workspace:`，放 `peerDependencies` 并同版本写进 `devDependencies`。
 - 包内的分层、件的归属、文档站与设计系统产物的规矩见 [packages/react/docs/zh-CN.md](packages/react/docs/zh-CN.md)。
 - 许可证 MIT。每个源文件头写 `SPDX-License-Identifier: MIT`。不许引进 AGPL 的代码；取自别处的写明出处与许可证，记进包的 `NOTICE`。
 - 包不依赖任何应用。应用相关的事（行情、面板、文案语言）由调用方传。
 
 ## 已定的设计决定（不要推翻，要改先问用户）
 
-- 默认主题 Graphite（中性色纯灰，信号色是油画颜料色）；Console 留作可切主题。不用 TradingView 蓝，不用暖白配高亮黄。
+- 默认主题定为 Graphite（KATANAview #1776，还没合；合入后随 #2 第 3 步的同步带过来，在那之前代码里 `:root` 仍是 Console）。Graphite 是中性色纯灰，信号色是油画颜料色；Console 留作可切主题。不用 TradingView 蓝，不用暖白配高亮黄。
 - 组件的样子以 KATANAview 工作台现在的样式为准；Salt 学 token 结构（原值 → 调色 → 语义特征）、密度、文档组织，Salt 是 Apache-2.0，能照搬的实现可以照搬，写出处。
 - 包名 `@katana-ui/*`，不带 `katanaview`：要能用在别的量化项目里。
 

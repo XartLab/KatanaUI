@@ -171,9 +171,6 @@ importers:
       '@internationalized/date':
         specifier: 3.12.4
         version: 3.12.4
-      '@katana-ui/tokens':
-        specifier: 0.1.0
-        version: link:../tokens
       '@tanstack/react-table':
         specifier: 9.3.1
         version: 9.3.1(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
@@ -208,6 +205,9 @@ importers:
         specifier: 4.3.5
         version: 4.3.5
     devDependencies:
+      '@katana-ui/tokens':
+        specifier: 0.1.0
+        version: link:../tokens
       '@tailwindcss/vite':
         specifier: 4.3.5
         version: 4.3.5(@voidzero-dev/vite-plus-core@1.4.0(@types/node@22.20.5)(jiti@2.7.0)(typescript@7.0.2))
