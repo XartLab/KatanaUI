@@ -12,12 +12,20 @@ import { focusRingInset } from '../lib/focus.ts'
 // 选中项的字用 --seg-on-ink（对容器底 ≥ 3:1，#477），未选中的用 ink-200（ink-300 压在 4–5% 白的底上只有 4.4:1，#473）。
 // line 变体没有底块，选中项底下一道强调色的线。只做横排。
 /** bare：不带间距，样子全由调用方的类名给（应用里自带皮肤的页签条，#1797 把 Base UI 的 Tabs 换过来时外观原样保留）。 */
-function Tabs({ className, bare, ...props }: ComponentProps<typeof TabsPrimitive.Root> & { bare?: boolean }) {
+function Tabs({
+  className,
+  bare,
+  ...props
+}: ComponentProps<typeof TabsPrimitive.Root> & {
+  /** Skip the skin. */
+  bare?: boolean
+}) {
   return <TabsPrimitive.Root data-slot="tabs" className={cn(!bare && 'flex flex-col gap-2', className)} {...props} />
 }
 
 const tabsListVariants = cva('group/tabs-list relative', {
   variants: {
+    /** Skin: line, default, or bare (no skin, the caller's class names style it). */
     variant: {
       default:
         'inline-flex h-8 w-fit items-center justify-center gap-0.5 rounded-[var(--radius-control)] bg-alpha-white-3 p-0.5',
@@ -82,7 +90,14 @@ function TabsList({
   )
 }
 
-function TabsTrigger({ className, bare, ...props }: ComponentProps<typeof TabsPrimitive.Trigger> & { bare?: boolean }) {
+function TabsTrigger({
+  className,
+  bare,
+  ...props
+}: ComponentProps<typeof TabsPrimitive.Trigger> & {
+  /** Skip the skin. */
+  bare?: boolean
+}) {
   return (
     <TabsPrimitive.Trigger
       data-slot="tabs-trigger"

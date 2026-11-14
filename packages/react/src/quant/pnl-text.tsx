@@ -15,10 +15,17 @@ export function PnlText({
   children,
   ...rest
 }: {
+  /** Only decides the direction; 0, empty and unparseable values count as flat. */
   value: number | string | null | undefined
+  /**
+   * Overrides the direction when it is not given by the sign of value (a loss written as a positive number, say).
+   */
   tone?: Tone
+  /** Put an up or down triangle before the text. */
   arrow?: boolean
+  /** Which element to render. */
   as?: 'span' | 'strong'
+  /** The text to show. */
   children: ReactNode
 } & Omit<ComponentProps<'span'>, 'children'>) {
   return (

@@ -8,7 +8,12 @@ export type QuantityUnits = 'base' | 'usd'
  * - abbreviate：大数写成 K / M（美元从 1,000 起，币从 10,000 起，小一点的币量照写）；
  * - digits：小数位，null 按大小自动（K 留 1 位、M 留 2 位，币量不到 1 留 3 位有效数字）。
  */
-export type SizeFormat = { abbreviate: boolean; digits: number | null }
+export type SizeFormat = {
+  /** Abbreviate large numbers with K, M or B. */
+  abbreviate: boolean
+  /** Decimal places of the abbreviated number. */
+  digits: number | null
+}
 export const AUTO_SIZE: SizeFormat = { abbreviate: true, digits: null }
 
 function scale(value: number, units: QuantityUnits): [number, string] {

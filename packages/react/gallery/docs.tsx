@@ -1,9 +1,12 @@
 // SPDX-License-Identifier: MIT
 import { useEffect, useSyncExternalStore } from 'react'
-import { ToggleGroup, ToggleGroupItem } from '../src/index'
+import { CodeBlock, ToggleGroup, ToggleGroupItem } from '../src/index'
+import { CopyButton } from './CopyButton'
 import { CoveragePage } from './coverage'
 import { DEMOS } from './demos'
-import { GROUPS, PAGES, pageById, type DocPage, type PropTable } from './registry'
+import { resolveParts, type ResolvedPart } from './props'
+import { GROUPS, PAGES, pageById, type DocPage } from './registry'
+import { usageName, usageOf } from './usage'
 
 // 组件文档站（#1860）：左侧目录按类分组，右侧一个组件一页，地址 `#/<件名>`，可直接打开、可前进后退。
 // 版式照 kobra.systems/components/<件名>（2026-11-14 读，只取结构）：标题与一句说明、实时预览、属性表、组成、键盘。
@@ -37,7 +40,7 @@ export function applyTheme(theme: ThemeName) {
   history.replaceState(null, '', url)
 }
 
-function PropsTable({ table }: { table: PropTable }) {
+function PropsTable({ table }: { table: ResolvedPart }) {
   return (
     <div className="gal-prop" data-part={table.part}>
       <h3>{table.part}</h3>
@@ -57,18 +60,48 @@ function PropsTable({ table }: { table: PropTable }) {
               <tr key={row.name}>
                 <td>
                   <code>{row.name}</code>
+                  {row.required ? <abbr title="必填">*</abbr> : null}
                 </td>
                 <td>
                   <code>{row.type}</code>
                 </td>
                 <td>{row.default ? <code>{row.default}</code> : '—'}</td>
-                <td>{row.desc}</td>
+                <td>{row.description}</td>
               </tr>
             ))}
           </tbody>
         </table>
       ) : null}
     </div>
+  )
+}
+
+/** 「用法」：最小例子（usage/ 里的真实组件）渲染出来，下面是它的源码，可复制。 */
+function UsageSection({ page }: { page: DocPage }) {
+  const usage = usageOf(page.id)
+  if (!usage) return null
+  const { Usage, source } = usage
+  return (
+    <section aria-labelledby="gal-h-usage" className="gal-usage" data-usage>
+      <div className="gal-usage-head">
+        <h2 id="gal-h-usage">用法</h2>
+        <CopyButton text={source} label="复制用法代码" />
+      </div>
+      <div className="gal-usage-live" data-usage-live>
+        <Usage />
+      </div>
+      <div data-usage-code>
+        <CodeBlock
+          code={source}
+          language="tsx"
+          filename={`usage/${usageName(page.id)}.tsx`}
+          showHeader={false}
+          showCopyButton={false}
+          copyLabel="复制"
+          copiedLabel="已复制"
+        />
+      </div>
+    </section>
   )
 }
 
@@ -83,9 +116,10 @@ function DocBody({ page }: { page: DocPage }) {
       <section className="gal-preview" data-gallery={page.id} aria-label="预览">
         {Demo ? <Demo /> : null}
       </section>
+      <UsageSection page={page} />
       <section aria-labelledby="gal-h-props">
         <h2 id="gal-h-props">属性</h2>
-        {page.props.map((table) => (
+        {resolveParts(page).map((table) => (
           <PropsTable key={table.part} table={table} />
         ))}
       </section>

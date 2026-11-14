@@ -4,18 +4,29 @@
 
 ## Provide
 
+`*` marks a required prop.
+
 ### Slider
 
 其余属性透传给 Radix Slider.Root。只做横向，受控。
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `value` | `readonly number[]` | — | 每个把手一个值；两个值是范围。 |
-| `onValueChange` | `(value: number[]) => void` | — | 拖动时每一步都调。 |
-| `onValueCommit` | `(value: number[]) => void` | — | 松手或键盘改完一步时调，存东西放这里。 |
-| `min / max / step` | `number` | `0 / 100 / 1` | 范围与步进。 |
-| `thumbLabels` | `readonly string[]` | — | 每个把手的读屏名字（名字只放在真正的 slider 上）。 |
-| `disabled` | `boolean` | — | 灰掉，不能拖。 |
+| `value` * | `readonly number[]` | — | One value per thumb; two values make a range. |
+| `thumbLabels` | `readonly string[]` | — | Accessible name of each thumb (the name goes on the real slider element, not on the Root). |
+
+## Usage
+
+```tsx
+// SPDX-License-Identifier: MIT
+import { useState } from 'react'
+import { Slider } from '@katana-ui/react'
+
+export function SliderUsage() {
+  const [value, setValue] = useState([40])
+  return <Slider aria-label="Opacity" value={value} onValueChange={setValue} min={0} max={100} />
+}
+```
 
 ## States
 

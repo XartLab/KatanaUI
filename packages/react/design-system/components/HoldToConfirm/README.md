@@ -4,6 +4,8 @@
 
 ## Provide
 
+`*` marks a required prop.
+
 ### HoldToConfirm
 
 原生 button；进度逐帧直接写样式，不为每一帧重渲染。data-phase（idle / holding / done）与 data-progress（0 到 1）给样式与测试用。
@@ -18,6 +20,36 @@
 | `confirmedLabel` | `ReactNode` | — | 填满后的字，原地换掉 children，直到松手退完。 |
 | `tone` | `'danger' \| 'default'` | `'danger'` | 填充色：红，或中性。 |
 | `disabled` | `boolean` | — | 灰掉，按不动。 |
+
+## Usage
+
+```tsx
+// SPDX-License-Identifier: MIT
+import { useState } from 'react'
+import { HoldToConfirm } from '@katana-ui/react'
+
+export function HoldToConfirmUsage() {
+  const [flattened, setFlattened] = useState(0)
+  const [stopped, setStopped] = useState(0)
+  return (
+    <>
+      <HoldToConfirm hint="按住 2 秒，全部平仓" confirmedLabel="已平仓" onConfirm={() => setFlattened((n) => n + 1)}>
+        全部平仓
+      </HoldToConfirm>
+      <output data-gallery-hold>已触发 {flattened} 次</output>
+
+      <HoldToConfirm tone="default" holdMs={1000} hint="按住 1 秒，停止策略" onConfirm={() => setStopped((n) => n + 1)}>
+        停止策略
+      </HoldToConfirm>
+      <output data-gallery-hold-fast>已触发 {stopped} 次</output>
+
+      <HoldToConfirm disabled hint="按住 2 秒，全部撤单" onConfirm={() => {}}>
+        全部撤单
+      </HoldToConfirm>
+    </>
+  )
+}
+```
 
 ## States
 

@@ -58,9 +58,10 @@
   "scripts": {
     "dev": "pnpm --filter @katana-ui/tokens run tokens:sync && vp dev",
     "build:site": "node scripts/build-site.mjs",
-    "test": "node scripts/ds-build.mjs --check && vp test run",
+    "test": "node scripts/docs-props.mjs --check && node scripts/ds-build.mjs --check && vp test run",
     "typecheck": "tsc -p tsconfig.json",
     "check": "vp check",
+    "docs:props": "node scripts/docs-props.mjs",
     "ds:build": "pnpm --filter @katana-ui/tokens run tokens:sync && node scripts/ds-build.mjs",
     "registry:build": "node scripts/registry-json.mjs && shadcn build -o r",
     "test:e2e": "playwright test",
@@ -97,6 +98,7 @@
     "react-dom": "19.3.1",
     "shadcn": "4.22.2",
     "typescript": "7.0.2",
+    "typescript-classic": "npm:typescript@6.0.3",
     "vite": "npm:@voidzero-dev/vite-plus-core@1.4.0",
     "vite-plus": "1.4.0"
   },

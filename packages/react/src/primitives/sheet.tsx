@@ -20,6 +20,7 @@ const sheetVariants = cva(
   ],
   {
     variants: {
+      /** Which edge the sheet sticks to; it slides in from that edge. */
       side: {
         right: 'inset-y-0 right-0 w-[min(360px,calc(100vw-24px))] rounded-l-[14px] border-r-0',
         left: 'inset-y-0 left-0 w-[min(360px,calc(100vw-24px))] rounded-r-[14px] border-l-0',
@@ -64,7 +65,11 @@ function SheetContent({
   side = 'right',
   closeLabel,
   ...props
-}: ComponentProps<typeof SheetPrimitive.Content> & VariantProps<typeof sheetVariants> & { closeLabel?: string }) {
+}: ComponentProps<typeof SheetPrimitive.Content> &
+  VariantProps<typeof sheetVariants> & {
+    /** When given, draws a close button at the top right and uses this as its accessible name. */
+    closeLabel?: string
+  }) {
   const focus = useOpenerFocus(props)
   return (
     <OverlayPortal portal={SheetPrimitive.Portal}>

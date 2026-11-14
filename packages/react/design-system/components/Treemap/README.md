@@ -4,24 +4,52 @@
 
 ## Provide
 
+`*` marks a required prop.
+
 ### Treemap
 
 排布由调用方先用 layoutTreemap 算好再传 blocks；工具条（下拉、返回钮）从 toolbar 传。
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `blocks` | `TreemapBlock<T>[]` | — | layoutTreemap 的结果。 |
-| `heads` | `boolean` | `false` | 画组头（可点下钻）；下钻之后传 false。 |
-| `describe` | `(data: T) => { name, text, change }` | — | 一格上写的名字与数，change 是颜色用的涨跌数（小数，null 是没有数）。 |
-| `limit` | `number` | `0.03` | 色例两端是多少（小数）：涨跌幅按 ±limit 切成 −3 到 +3 七档。 |
-| `legendText` | `(step: number) => string` | — | 色例上每一档写的字。 |
-| `toolbar` | `ReactNode` | — | 格子上面一行。 |
-| `onGroup / onItem` | `function` | — | 点组头、点格子（给了 onItem 格子才是可聚焦的按钮，回车触发）。 |
-| `classes` | `TreemapClasses` | — | 各部位额外的类名。 |
+| `blocks` * | `readonly TreemapBlock<T>[]` | — | The result of layoutTreemap. |
+| `heads` | `boolean` | `false` | Draw group headers (clickable to drill down); pass false after drilling down. |
+| `describe` * | `(data: T) => { name: string; text: string; change: number \| null }` | — | What to write on a cell: the name, the text of the number, and the change used for color (null means none). |
+| `limit` | `number` | `0.03` | Where the color scale ends (as a decimal); changes are cut at plus or minus limit into seven steps from -3 to +3. |
+| `legendText` * | `(step: number) => string` | — | Text for each step of the color scale (-3 to +3). |
+| `toolbar` | `ReactNode` | — | A row above the cells. |
+| `onGroup` | `(name: string) => void` | — | Called when a group header is clicked. |
+| `onItem` | `(data: T) => void` | — | Called when a cell is clicked; when given, cells are focusable buttons that trigger on Enter. |
+| `classes` | `TreemapClasses` | `{}` | Extra class names per part. |
 
 ### layoutTreemap(items, grouped)
 
 items 是 { data, size, group }；size 不是正数的项不画；grouped 为 false 整张一块。colorStep(change, limit) 返回 −3 到 3 或 null。
+
+## Usage
+
+```tsx
+// SPDX-License-Identifier: MIT
+import { Treemap, layoutTreemap, type TreemapItem } from '@katana-ui/react'
+
+type Tile = { name: string; change: number }
+const ITEMS: readonly TreemapItem<Tile>[] = [
+  { group: 'Sector 1', size: 600, data: { name: 'A', change: 0.031 } },
+  { group: 'Sector 1', size: 300, data: { name: 'B', change: -0.012 } },
+  { group: 'Sector 2', size: 220, data: { name: 'C', change: 0 } },
+]
+
+export function TreemapUsage() {
+  return (
+    <Treemap
+      blocks={layoutTreemap(ITEMS, true)}
+      heads
+      describe={(item) => ({ name: item.name, text: `${(item.change * 100).toFixed(2)}%`, change: item.change })}
+      legendText={(step) => `${step}%`}
+    />
+  )
+}
+```
 
 ## States
 

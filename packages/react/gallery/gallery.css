@@ -153,6 +153,40 @@ body {
   border: 1px solid var(--line-100);
   border-radius: var(--radius-overlay);
 }
+/* 用法：真实例子渲染在一块底上，下面是源码与复制钮。 */
+.gal-usage {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.gal-usage-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.gal-usage-live {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  padding: 20px;
+  background: var(--bg-100);
+  border: 1px solid var(--line-100);
+  border-radius: var(--radius-overlay);
+}
+.gal-doc abbr {
+  margin-left: 2px;
+  color: var(--signal-orange);
+  text-decoration: none;
+}
+.gal-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
 /* 属性表、组成、键盘 */
 .gal-prop {
   display: flex;

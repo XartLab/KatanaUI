@@ -26,15 +26,30 @@ export const sparkTone = (values: readonly number[]): QuoteTone =>
   values.length > 1 ? quoteTone(values[values.length - 1]! - values[0]!) : 'flat'
 
 export type SparklineProps = {
-  /** 从旧到新。 */
+  /**
+   * The values from oldest to newest; fewer than two draws a dash.
+   * 从旧到新。
+   */
   values: readonly number[]
-  /** 读屏名（整句，含「没有数据」的说法）：由调用方按界面语言写。 */
+  /**
+   * Accessible name as a whole sentence, including how "no data" is said; written by the caller in the UI language (required).
+   * 读屏名（整句，含「没有数据」的说法）：由调用方按界面语言写。
+   */
   label: string
-  /** 不给就按头尾涨跌。 */
+  /**
+   * Color tone; follows the first-to-last change when omitted.
+   * 不给就按头尾涨跌。
+   */
   tone?: QuoteTone
-  /** 加在 svg 上，写在 is-<tone> 之前。 */
+  /**
+   * Extra class name on the svg, written before is-<tone>.
+   * 加在 svg 上，写在 is-<tone> 之前。
+   */
   className?: string
-  /** 没数据时那个「—」的额外类名。 */
+  /**
+   * Extra class name on the dash shown when there is no data.
+   * 没数据时那个「—」的额外类名。
+   */
   emptyClassName?: string
 }
 
