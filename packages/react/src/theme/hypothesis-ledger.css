@@ -1,0 +1,216 @@
+/* SPDX-License-Identifier: MIT */
+/* HypothesisLedger：假说账。一行一条、状态靠灯加字；证据类型与支持 / 反对靠字，不单靠颜色；橙色不画数据。全用语义 token。 */
+.k-hl {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  height: 100%;
+  min-height: 0;
+  color: var(--ink-200);
+  font: var(--text-data) var(--font-sans);
+}
+.k-hl-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.k-hl-count {
+  margin-inline-start: 6px;
+  color: var(--ink-300);
+  font-variant-numeric: tabular-nums;
+}
+.k-hl-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+}
+.k-hl-empty {
+  padding: 24px 12px;
+  color: var(--ink-300);
+  text-align: center;
+}
+.k-hl-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.k-hl-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 36px;
+  padding: 4px 8px;
+  background: none;
+  border: 0;
+  border-bottom: 1px solid var(--alpha-white-6);
+  color: var(--ink-200);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.k-hl-row:hover {
+  background: var(--alpha-white-3);
+}
+.k-hl-row:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: -2px;
+}
+.k-hl-row[aria-expanded='true'] .k-hl-chevron {
+  transform: rotate(90deg);
+}
+.k-hl-status {
+  flex: none;
+  min-width: 44px;
+  color: var(--ink-300);
+}
+.k-hl-layer,
+.k-hl-tag,
+.k-hl-kind {
+  flex: none;
+  padding: 0 6px;
+  background: var(--alpha-white-3);
+  border: 1px solid var(--alpha-white-8);
+  border-radius: var(--radius-pill);
+  color: var(--ink-300);
+  white-space: nowrap;
+}
+.k-hl-claim {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  color: var(--ink-100);
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.k-hl-tally,
+.k-hl-due {
+  flex: none;
+  color: var(--ink-300);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.k-hl-due {
+  min-width: 64px;
+  color: var(--ink-200);
+  text-align: right;
+}
+.k-hl-due[data-urgent],
+.k-hl-row-wrap[data-status='expired'] .k-hl-due {
+  color: var(--signal-amber);
+}
+.k-hl-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 12px 12px 28px;
+  background: var(--alpha-white-3);
+  border-bottom: 1px solid var(--alpha-white-6);
+}
+.k-hl-label {
+  color: var(--ink-200);
+  font-weight: 600;
+}
+.k-hl-failure {
+  margin: 0;
+  padding: 6px 8px;
+  border: 1px solid var(--alpha-white-8);
+  border-radius: 6px;
+  color: var(--ink-100);
+}
+.k-hl-none {
+  margin: 0;
+  color: var(--ink-300);
+}
+.k-hl-evidence {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.k-hl-ev {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+  padding: 6px 8px;
+  background: var(--alpha-white-3);
+  border: 1px solid var(--alpha-white-8);
+  border-radius: 8px;
+}
+.k-hl-stance {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--ink-100);
+}
+.k-hl-stance i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--signal-green);
+}
+.k-hl-ev[data-stance='oppose'] .k-hl-stance i {
+  background: var(--signal-red);
+}
+.k-hl-time {
+  color: var(--ink-300);
+  font-variant-numeric: tabular-nums;
+}
+.k-hl-source {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--ink-200);
+  text-decoration: none;
+}
+.k-hl-source:hover {
+  color: var(--ink-100);
+  text-decoration: underline;
+}
+.k-hl-source:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 1px;
+}
+.k-hl-summary {
+  flex-basis: 100%;
+  color: var(--ink-200);
+}
+.k-hl-assets {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+.k-hl-asset {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--ink-100);
+}
+
+/* 观察表：传导层 × 核心证据 × 最容易混淆的地方。 */
+.k-hl-watch {
+  width: 100%;
+  border-collapse: collapse;
+}
+.k-hl-watch th,
+.k-hl-watch td {
+  padding: 8px;
+  border-bottom: 1px solid var(--alpha-white-6);
+  text-align: left;
+  vertical-align: top;
+}
+.k-hl-watch thead th {
+  color: var(--ink-300);
+  font-weight: 600;
+}
+.k-hl-watch tbody th {
+  width: 88px;
+  color: var(--ink-100);
+  font-weight: 600;
+  white-space: nowrap;
+}

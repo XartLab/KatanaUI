@@ -162,6 +162,7 @@ function collectItems() {
       'workspace-tabs',
       'news-feed',
       'decision-queue',
+      'hypothesis-ledger',
       'system-monitor',
       'strategy-report',
     ])
