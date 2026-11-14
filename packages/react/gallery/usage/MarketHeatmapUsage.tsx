@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 import { useEffect, useMemo, useState } from 'react'
-import { PanelFrame } from '../../src/blocks'
+import { PanelFrame, PanelFrameBody, PanelFrameHeader } from '../../src/blocks'
 import {
   MarketHeatmap,
   type HeatmapColorBy,
@@ -207,28 +207,25 @@ export function MarketHeatmapUsage() {
       </div>
       <div style={{ overflow: 'auto' }}>
         <div style={{ height: wide ? 1080 : 620, width: wide ? 1920 : undefined }}>
-          <PanelFrame
-            index="03"
-            title={coins ? '加密热力图' : '股票热力图'}
-            object="演示数据"
-            meta="DEMO"
-            source="SOURCE · 演示数据 · 非行情"
-            focused
-            labels={{ settings: '设置', maximize: '最大化', restore: '还原', close: '关闭' }}
-          >
-            <MarketHeatmap
-              key={`${market}-${wide}`}
-              items={coins ? COINS : stocks}
-              sizeBy={HEAT_SIZE}
-              colorBy={HEAT_COLOR}
-              labels={{ ...HEAT_LABELS, group: '行业' }}
-              scheme={scheme}
-              selected={selected}
-              onSelect={setSelected}
-            />
+          <PanelFrame focused aria-label={coins ? '加密热力图' : '股票热力图'}>
+            <PanelFrameHeader heading={coins ? '加密热力图' : '股票热力图'} object="演示数据" />
+            <PanelFrameBody>
+              <MarketHeatmap
+                key={`${market}-${wide}`}
+                items={coins ? COINS : stocks}
+                sizeBy={HEAT_SIZE}
+                colorBy={HEAT_COLOR}
+                labels={{ ...HEAT_LABELS, group: '行业' }}
+                scheme={scheme}
+                selected={selected}
+                onSelect={setSelected}
+              />
+            </PanelFrameBody>
           </PanelFrame>
         </div>
       </div>
     </div>
   )
 }
+
+// 技术评级仪表（#20）的演示：读数与结论从合成价格算出来，不是行情；分数与个数在这里按「买 − 卖」除以总数现算，真实调用方自己算。

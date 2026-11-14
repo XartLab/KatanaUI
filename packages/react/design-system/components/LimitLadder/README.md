@@ -21,7 +21,7 @@ A 股专有件（连板、涨停、炸板是 A 股的概念）。按板位从高
 ```tsx
 // SPDX-License-Identifier: MIT
 import { useState } from 'react'
-import { PanelFrame } from '@katana-ui/react/blocks'
+import { PanelFrame, PanelFrameBody, PanelFrameHeader } from '@katana-ui/react/blocks'
 import { LimitLadder, type LadderLevel, type LimitLadderLabels } from '@katana-ui/react/quant'
 
 const LADDER_LEVELS: readonly LadderLevel[] = [
@@ -148,16 +148,11 @@ export function LimitLadderUsage() {
   const [selected, setSelected] = useState<string | null>('300004')
   return (
     <div style={{ width: '100%', maxWidth: 640, height: 660 }}>
-      <PanelFrame
-        index="02"
-        title="连板天梯"
-        object="演示数据"
-        meta="DEMO"
-        source="SOURCE · 演示数据 · 非行情"
-        focused
-        labels={{ settings: '设置', maximize: '最大化', restore: '还原', close: '关闭' }}
-      >
-        <LimitLadder levels={LADDER_LEVELS} labels={LADDER_LABELS} selected={selected} onSelect={setSelected} />
+      <PanelFrame focused aria-label="连板天梯">
+        <PanelFrameHeader heading="连板天梯" object="演示数据" />
+        <PanelFrameBody>
+          <LimitLadder levels={LADDER_LEVELS} labels={LADDER_LABELS} selected={selected} onSelect={setSelected} />
+        </PanelFrameBody>
       </PanelFrame>
     </div>
   )

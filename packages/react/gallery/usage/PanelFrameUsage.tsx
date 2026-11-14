@@ -1,60 +1,74 @@
 // SPDX-License-Identifier: MIT
-import { EmptyState, PanelFrame } from '../../src/blocks'
-
-const FRAME_LABELS = { settings: 'Settings', maximize: 'Maximize', restore: 'Restore', close: 'Close' }
-
-// 三种状态并排：普通、聚焦（橙色角括号）、空态（未连接）。内容是写死的示例，不是行情。
+import { Maximize2, X } from 'lucide-react'
+import { useState } from 'react'
+import { PanelFrame, PanelFrameBody, PanelFrameHeader } from '../../src/blocks'
+import { Button } from '../../src/index'
 
 export function PanelFrameUsage() {
+  const [focused, setFocused] = useState(true)
   return (
-    <div
-      style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 12, width: '100%', height: 250 }}
-    >
-      <PanelFrame
-        index="01"
-        title="Watchlist"
-        object="Core"
-        linkGroup="A"
-        linkLabel="Link group A"
-        meta="1S"
-        source="SOURCE · SIM FEED"
-        labels={FRAME_LABELS}
-        onMaximize={() => {}}
-        onClose={() => {}}
-      >
-        <p style={{ margin: 12, color: 'var(--ink-300)', font: 'var(--text-data) var(--font-sans)' }}>Normal panel.</p>
-      </PanelFrame>
-      <PanelFrame
-        index="02"
-        title="Chart"
-        object="AAPL"
-        linkGroup="B"
-        linkLabel="Link group B"
-        meta="LIVE"
-        source="SOURCE · SIM FEED"
-        focused
-        labels={FRAME_LABELS}
-        onMaximize={() => {}}
-        onClose={() => {}}
-      >
-        <p style={{ margin: 12, color: 'var(--ink-300)', font: 'var(--text-data) var(--font-sans)' }}>
-          Focused panel: brighter title and orange corner brackets.
-        </p>
-      </PanelFrame>
-      <PanelFrame
-        index="03"
-        title="Order book"
-        linkLabel="Link group"
-        meta="OFFLINE"
-        source="SOURCE · NONE"
-        labels={FRAME_LABELS}
-        onSettings={() => {}}
-        onClose={() => {}}
-      >
-        <EmptyState tag="NOT CONNECTED" title="No data source">
-          <p>Connect a source to see the book.</p>
-        </EmptyState>
-      </PanelFrame>
+    <div className="gal-stack" style={{ width: '100%', maxWidth: 560 }}>
+      <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+        <div style={{ width: 270, height: 150 }} data-testid="frame-focus" onPointerDown={() => setFocused(!focused)}>
+          <PanelFrame focused={focused} brackets={focused} aria-label="Chart panel">
+            <PanelFrameHeader
+              heading="Chart"
+              object="· BTCUSDT · 1h"
+              linkGroup="A"
+              linkLabel="Link group A"
+              actions={
+                <>
+                  <Button variant="icon" aria-label="Maximize">
+                    <Maximize2 />
+                  </Button>
+                  <Button variant="icon" aria-label="Close">
+                    <X />
+                  </Button>
+                </>
+              }
+            />
+            <PanelFrameBody>
+              <p className="gal-note" style={{ padding: 8 }}>
+                Panel content decides its own density.
+              </p>
+            </PanelFrameBody>
+          </PanelFrame>
+        </div>
+        <div style={{ width: 270, height: 150 }}>
+          <PanelFrame aria-label="Collapsible panel">
+            <PanelFrameHeader
+              heading="Watchlist"
+              object="· Core · 24"
+              linkGroup="B"
+              linkLabel="Link group B, pinned"
+              pinned
+              collapsible
+              collapseLabel="Collapse"
+              expandLabel="Expand"
+            />
+            <PanelFrameBody>
+              <p className="gal-note" style={{ padding: 8 }}>
+                Collapse leaves only the title bar.
+              </p>
+            </PanelFrameBody>
+          </PanelFrame>
+        </div>
+        <div style={{ width: 270, height: 150 }}>
+          <PanelFrame aria-label="Orders panel">
+            <PanelFrameHeader heading="Orders" linkGroup={null} linkLabel="No link group" />
+            <PanelFrameBody
+              state="disconnected"
+              view={{ tag: 'OFFLINE', title: 'Not connected', description: 'Connect an account to see orders.' }}
+            />
+          </PanelFrame>
+        </div>
+        <div style={{ width: 270, height: 150 }}>
+          <PanelFrame aria-label="Trades panel">
+            <PanelFrameHeader heading="Trades" />
+            <PanelFrameBody state="loading" loadingLabel="Loading" />
+          </PanelFrame>
+        </div>
+      </div>
     </div>
   )
 }

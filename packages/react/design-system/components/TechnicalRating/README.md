@@ -22,7 +22,7 @@
 ```tsx
 // SPDX-License-Identifier: MIT
 import { useState } from 'react'
-import { PanelFrame } from '@katana-ui/react/blocks'
+import { PanelFrame, PanelFrameBody, PanelFrameHeader } from '@katana-ui/react/blocks'
 import {
   TechnicalRating,
   type RatingGroup,
@@ -39,7 +39,6 @@ function seeded(seed: number) {
   }
 }
 
-// 技术评级仪表（#20）的演示：读数与结论从合成价格算出来，不是行情；分数与个数在这里按「买 − 卖」除以总数现算，真实调用方自己算。
 const RATING_TIMEFRAMES = [
   { value: '1m', label: '1 分' },
   { value: '15m', label: '15 分' },
@@ -49,7 +48,9 @@ const RATING_TIMEFRAMES = [
   { value: '1w', label: '1 周' },
   { value: '1M', label: '1 月' },
 ]
+
 const RATING_ZONES = ['强卖', '卖', '中性', '买', '强买'] as const
+
 const RATING_LABELS: TechnicalRatingLabels = {
   zones: RATING_ZONES,
   verdict: { sell: '卖', neutral: '中性', buy: '买' },
@@ -63,14 +64,18 @@ const RATING_LABELS: TechnicalRatingLabels = {
 // 演示价格：每个周期一条固定种子的合成收盘价（随机游走加慢波），读数与结论都从它算出来，规则照 TradingView 的技术评级
 //（tradingview.com/support/solutions/43000614331，2026-11-15 读）：RSI 30 以下买、70 以上卖；随机指标 20 / 80；CCI ±100；Williams %R −80 / −20；
 // 动量、ROC、AO 看正负；MACD 线在信号线上为买；均线是价格在均线上为买。只用收盘价合成（真实调用方用 K 线），所以是演示，不是行情。
+
 const sma = (xs: readonly number[], n: number) => xs.slice(-n).reduce((a, b) => a + b, 0) / n
+
 const emaSeries = (xs: readonly number[], n: number) => {
   const k = 2 / (n + 1)
   const out: number[] = []
   xs.forEach((x, i) => out.push(i === 0 ? x : x * k + out[i - 1]! * (1 - k)))
   return out
 }
+
 const smaSeries = (xs: readonly number[], n: number) => xs.map((_, i) => (i + 1 < n ? NaN : sma(xs.slice(0, i + 1), n)))
+
 function indicators(close: readonly number[]) {
   const last = close.at(-1)!
   const gains = close.slice(1).map((c, i) => Math.max(0, c - close[i]!))
@@ -173,25 +178,20 @@ export function TechnicalRatingUsage() {
   const { rows, groups } = makeRating(RATING_TIMEFRAMES.findIndex((tf) => tf.value === frame))
   return (
     <div style={{ width: '100%', maxWidth: 520, height: 760 }}>
-      <PanelFrame
-        index="04"
-        title="技术评级"
-        object="演示数据"
-        meta="DEMO"
-        source="SOURCE · 演示数据 · 非行情"
-        focused
-        labels={{ settings: '设置', maximize: '最大化', restore: '还原', close: '关闭' }}
-      >
-        <TechnicalRating
-          groups={groups}
-          rows={rows}
-          labels={RATING_LABELS}
-          primary="all"
-          timeframes={RATING_TIMEFRAMES}
-          timeframe={frame}
-          onTimeframeChange={setFrame}
-          disclaimer="评级只是指标读数的汇总，不是买卖建议。"
-        />
+      <PanelFrame focused aria-label="技术评级">
+        <PanelFrameHeader heading="技术评级" object="演示数据" />
+        <PanelFrameBody>
+          <TechnicalRating
+            groups={groups}
+            rows={rows}
+            labels={RATING_LABELS}
+            primary="all"
+            timeframes={RATING_TIMEFRAMES}
+            timeframe={frame}
+            onTimeframeChange={setFrame}
+            disclaimer="评级只是指标读数的汇总，不是买卖建议。"
+          />
+        </PanelFrameBody>
       </PanelFrame>
     </div>
   )

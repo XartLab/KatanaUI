@@ -28,9 +28,9 @@ items 是 { data, size, group }；size 不是正数的项不画；grouped 为 fa
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `width` | `number` | — |  |
-| `height` | `number` | — |  |
-| `head` | `number` | — |  |
+| `width` | `number` | — | Width of the layout box. |
+| `height` | `number` | — | Height of the layout box. |
+| `head` | `number` | — | Height reserved for each group header. |
 
 ## Usage
 
