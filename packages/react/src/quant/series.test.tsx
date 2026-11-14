@@ -2,7 +2,16 @@
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vite-plus/test'
 import { CalendarHeatmap } from './calendar-heatmap'
-import { addDays, calendarGrid, calendarKey, calendarLevel, formatDate, parseDate } from './calendar-model'
+import {
+  addDays,
+  calendarGrid,
+  calendarKey,
+  calendarTone,
+  formatDate,
+  isoWeek,
+  monthGrid,
+  parseDate,
+} from './calendar-model'
 import { Meter } from './meter'
 import { meterModel } from './meter-model'
 import { BrushChart } from './brush-chart'
@@ -277,24 +286,47 @@ describe('日历热力图', () => {
     ])
   })
 
-  it('档位：按 |值| 占最大值的比例分 4 档，0 单独一档，涨跌符号分开；最大值是 0 时全是 0 档', () => {
-    expect(calendarLevel(100, 100)).toBe(4)
-    expect(calendarLevel(-100, 100)).toBe(-4)
-    expect(calendarLevel(25, 100)).toBe(1)
-    expect(calendarLevel(26, 100)).toBe(2)
-    expect(calendarLevel(0.001, 100)).toBe(1)
-    expect(calendarLevel(0, 100)).toBe(0)
-    expect(calendarLevel(5, 0)).toBe(0)
-    expect(calendarLevel(Number.NaN, 100)).toBe(0)
+  it('格色：正负各两档，深档只给超过阈值的；0 持平、没数据 none；阈值是 0 时没有深档', () => {
+    expect(calendarTone(10, 50)).toBe('pos1')
+    expect(calendarTone(51, 50)).toBe('pos2')
+    expect(calendarTone(50, 50)).toBe('pos1')
+    expect(calendarTone(-51, 50)).toBe('neg2')
+    expect(calendarTone(-5, 50)).toBe('neg1')
+    expect(calendarTone(0, 50)).toBe('flat')
+    expect(calendarTone(null, 50)).toBe('none')
+    expect(calendarTone(Number.NaN, 50)).toBe('none')
+    expect(calendarTone(99, 0)).toBe('pos1')
   })
 
-  it('键盘：←→ 一周、↑↓ 一天、Home / End 头尾，夹在区间里；没选中先落到最后一天；Esc 清掉', () => {
+  it('ISO 周序号与月历：2026-10-01（周四）在第 40 周；一个月补满整周；周日起头时周标按周一算', () => {
+    expect(isoWeek('2026-10-01')).toBe(40)
+    expect(isoWeek('2026-01-01')).toBe(1)
+    expect(isoWeek('2027-01-01')).toBe(53)
+    const weeks = monthGrid('2026-10', 1)
+    expect(weeks).toHaveLength(5)
+    expect(weeks[0]!.week).toBe(40)
+    expect(weeks[0]!.days.map((d) => d.date)).toEqual([
+      '2026-09-28',
+      '2026-09-29',
+      '2026-09-30',
+      '2026-10-01',
+      '2026-10-02',
+      '2026-10-03',
+      '2026-10-04',
+    ])
+    expect(weeks[0]!.days.filter((d) => d.inMonth)).toHaveLength(4)
+    expect(weeks.flatMap((w) => w.days).filter((d) => d.inMonth)).toHaveLength(31)
+    expect(monthGrid('坏', 1)).toEqual([])
+  })
+
+  it('键盘：←→ 一天、↑↓ 一周、Home / End 头尾，夹在区间里；没选中先落到最后一天；Esc 清掉', () => {
     const [from, to] = ['2026-01-01', '2026-12-31']
-    expect(calendarKey('2026-06-10', 'ArrowRight', from, to)).toBe('2026-06-17')
-    expect(calendarKey('2026-06-10', 'ArrowLeft', from, to)).toBe('2026-06-03')
-    expect(calendarKey('2026-06-10', 'ArrowDown', from, to)).toBe('2026-06-11')
-    expect(calendarKey('2026-06-10', 'ArrowUp', from, to)).toBe('2026-06-09')
-    expect(calendarKey('2026-01-03', 'ArrowLeft', from, to)).toBe(from)
+    expect(calendarKey('2026-06-10', 'ArrowDown', from, to)).toBe('2026-06-17')
+    expect(calendarKey('2026-06-10', 'ArrowUp', from, to)).toBe('2026-06-03')
+    expect(calendarKey('2026-06-10', 'ArrowRight', from, to)).toBe('2026-06-11')
+    expect(calendarKey('2026-06-10', 'ArrowLeft', from, to)).toBe('2026-06-09')
+    expect(calendarKey('2026-01-01', 'ArrowLeft', from, to)).toBe(from)
+    expect(calendarKey('2026-12-30', 'ArrowRight', from, to)).toBe('2026-12-31')
     expect(calendarKey('2026-12-30', 'ArrowDown', from, to)).toBe(to)
     expect(calendarKey('2026-06-10', 'Home', from, to)).toBe(from)
     expect(calendarKey(null, 'ArrowLeft', from, to)).toBe(to)
@@ -303,29 +335,69 @@ describe('日历热力图', () => {
     expect(calendarKey('2026-06-10', 'x', from, to)).toBeUndefined()
   })
 
-  it('渲染：每天一格带档位，没数据的日子是 none；色例有 9 格', () => {
+  it('渲染：月历每天一格，休市日灰底写休，事件点最多 3 个更多写 +n，今天带标记，格色是发散色档', () => {
+    const base = {
+      weekdayLabels: ['日', '一', '二', '三', '四', '五', '六'],
+      monthLabels: Array.from({ length: 12 }, (_, i) => `${i + 1}月`),
+      weekLabel: (w: number) => `W${w}`,
+      closedLabel: '休',
+      formatValue: (v: number) => String(v),
+      describe: (date: string, value: number | null) => `${date} ${value}`,
+      label: '示例',
+      actionLabels: { group: '图工具', table: '表格视图', exportCsv: '导出', fullscreen: '全屏' },
+      tableHeads: { date: '日期', value: '值' },
+    }
+    const ev = (n: number) => Array.from({ length: n }, (_, i) => ({ label: `e${i}` }))
     const html = renderToStaticMarkup(
       <CalendarHeatmap
+        {...base}
+        month="2026-10"
+        today="2026-10-04"
         days={[
-          { date: '2026-11-16', value: 100 },
-          { date: '2026-11-17', value: -30 },
-          { date: '2026-11-18', value: 0 },
+          { date: '2026-10-01', value: 100, events: ev(5) },
+          { date: '2026-10-02', value: -30 },
+          { date: '2026-10-03', value: null, open: false },
+          { date: '2026-10-04', value: 0 },
         ]}
-        from="2026-11-16"
-        to="2026-11-19"
-        weekdayLabels={['日', '一', '二', '三', '四', '五', '六']}
-        monthLabels={Array.from({ length: 12 }, (_, i) => `${i + 1}月`)}
-        describe={(date, value) => `${date} ${value}`}
-        label="示例"
         legend={{ down: '亏', up: '盈' }}
       />,
     )
-    expect(html.match(/data-slot="calendar-cell"/g)).toHaveLength(4)
-    expect(html).toContain('data-date="2026-11-16" data-level="4"')
-    expect(html).toContain('data-date="2026-11-17" data-level="-2"')
-    expect(html).toContain('data-date="2026-11-18" data-level="0"')
-    expect(html).toContain('data-date="2026-11-19" data-level="none"')
-    expect(html.match(/<i data-level/g)).toHaveLength(9)
+    expect(html.match(/data-slot="calendar-cell"/g)).toHaveLength(31)
+    expect(html).toContain('W40')
+    expect(html).toMatch(/data-date="2026-10-01" data-tone="pos2"/)
+    expect(html).toMatch(/data-date="2026-10-02" data-tone="neg1"/)
+    expect(html).toMatch(/data-date="2026-10-03" data-tone="none" data-closed="true"/)
+    expect(html).toMatch(/data-date="2026-10-04" data-tone="flat"/)
+    expect(html).toContain('data-today="true"')
+    expect(html).toContain('>休<')
+    expect(html).toContain('<b>+2</b>')
+    expect(html.match(/<i data-tone="normal">/g)).toHaveLength(3)
+    expect(html).toContain('data-action="table"')
+    expect(html.match(/<i data-tone="(?:pos|neg|flat)/g)).toHaveLength(5)
+  })
+
+  it('渲染：年视图每天一格，周末休市不着色；事件视图格子不着色', () => {
+    const props = {
+      weekdayLabels: ['日', '一', '二', '三', '四', '五', '六'],
+      monthLabels: Array.from({ length: 12 }, (_, i) => `${i + 1}月`),
+      weekLabel: (w: number) => `W${w}`,
+      closedLabel: '休',
+      formatValue: (v: number) => String(v),
+      describe: (date: string) => date,
+      label: '示例',
+      actionLabels: { group: '图工具', table: '表格视图', exportCsv: '导出', fullscreen: '全屏' },
+      tableHeads: { date: '日期', value: '值' },
+      days: [
+        { date: '2026-11-16', value: 100 },
+        { date: '2026-11-21', value: null, open: false },
+      ],
+    }
+    const year = renderToStaticMarkup(<CalendarHeatmap {...props} mode="year" from="2026-11-16" to="2026-11-22" />)
+    expect(year.match(/data-slot="calendar-cell"/g)).toHaveLength(7)
+    expect(year).toContain('data-date="2026-11-16" data-tone="pos1"')
+    expect(year).toContain('data-date="2026-11-21" data-tone="none" data-closed="true"')
+    const events = renderToStaticMarkup(<CalendarHeatmap {...props} month="2026-11" view="events" />)
+    expect(events).not.toContain('data-tone="pos')
   })
 })
 

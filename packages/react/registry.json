@@ -1885,9 +1885,10 @@
       "name": "calendar-heatmap",
       "type": "registry:component",
       "title": "Calendar Heatmap",
-      "description": "一年的每日盈亏：一周一列、一天一格，涨跌两套发散色（跟涨跌配色走），深浅按 |值| 占最大 |值| 的比例分四档。补设计稿 Calendar 卡缺的发散热力底色。功能参照 Arc 的 Activity heatmap。",
+      "description": "月历格：底色是收益（或换手）的低饱和发散热力，格内日期左上、数值右下，左下点阵事件点（最多 3 个，更多写 +n）；休市日灰底写「休」，今天强调色描边，周标 W40。切「事件」视图时格子不着色。mode 为 year 是整年的格子。对设计稿的 Calendar 卡；功能参照 Arc 的 Activity heatmap。",
       "registryDependencies": [
         "@katana/calendar-model",
+        "@katana/chart-kit",
         "@katana/cn"
       ],
       "files": [

@@ -1,12 +1,10 @@
 // SPDX-License-Identifier: MIT
 // 日历热力图的格子排布、档位与键盘（纯函数）。日期都是不带时区的日历日 YYYY-MM-DD，内部按 UTC 零点算，不碰本地时区与夏令时。
 // 列是周、行是星期；weekStart 决定一周从哪天起（0 周日、1 周一）。第一列开头与最后一列结尾不在区间里的格子不画。
-// 档位：按 |值| 占最大 |值| 的比例分 4 档（1 到 4），0 单独一档，涨跌各一套。4 档是照 GitHub 贡献图的惯例（待定：没有针对盈亏数据的出处，等看过真实分布再调）。
+// 格色：正负各两档（div-*-100 与 -200，-200 只给超 80 分位的格），不再按比例分四档。
 
 const DAY = 86_400_000
 const DATE = /^(\d{4})-(\d{2})-(\d{2})$/
-
-export const CALENDAR_LEVELS = 4
 
 export function parseDate(text: string): number {
   const match = DATE.exec(text)
@@ -52,15 +50,53 @@ export function calendarGrid(from: string, to: string, weekStart: 0 | 1 = 1): Ca
   return { cols: cells[cells.length - 1]!.col + 1, cells, months }
 }
 
-/** 值的档位：-4 到 4，0 是持平；max 是整张图 |值| 的最大值（0 或没有时全部 0 档）。 */
-export function calendarLevel(value: number, max: number): number {
-  if (!Number.isFinite(value) || value === 0 || !(max > 0)) return 0
-  const level = Math.min(CALENDAR_LEVELS, Math.max(1, Math.ceil((Math.abs(value) / max) * CALENDAR_LEVELS)))
-  return value > 0 ? level : -level
+export type CalendarTone = 'pos1' | 'pos2' | 'neg1' | 'neg2' | 'flat' | 'none'
+
+/**
+ * 格色档：没数据 none、0 是 flat；正负各两档，-100 是大多数，-200 只给 |值| 超过 hotAbove 的格（Calendar 卡：超月内 80 分位；全饱和不出现）。
+ * hotAbove 由调用方按月内的 |值| 算（divHotThreshold）；它是 0 时没有 hot 格。
+ */
+export function calendarTone(value: number | null, hotAbove: number): CalendarTone {
+  if (value === null || !Number.isFinite(value)) return 'none'
+  if (value === 0) return 'flat'
+  const hot = hotAbove > 0 && Math.abs(value) > hotAbove
+  return value > 0 ? (hot ? 'pos2' : 'pos1') : hot ? 'neg2' : 'neg1'
+}
+
+/** ISO 8601 周序号（周四所在的那一周算本年，1 到 53）。 */
+export function isoWeek(date: string): number {
+  const ms = parseDate(date)
+  const weekday = (new Date(ms).getUTCDay() + 6) % 7
+  const thursday = ms + (3 - weekday) * DAY
+  const year = new Date(thursday).getUTCFullYear()
+  const first = Date.UTC(year, 0, 4)
+  const firstThursday = first + (3 - ((new Date(first).getUTCDay() + 6) % 7)) * DAY
+  return 1 + Math.round((thursday - firstThursday) / (7 * DAY))
+}
+
+export type MonthWeek = { week: number; days: readonly { date: string; inMonth: boolean }[] }
+
+/** 一个月的月历：每行一周、每周 7 格，前后补上相邻月的日子（inMonth 为 false）。month 写 YYYY-MM；写错返回空。 */
+export function monthGrid(month: string, weekStart: 0 | 1 = 1): MonthWeek[] {
+  const first = `${month}-01`
+  const ms = parseDate(first)
+  if (Number.isNaN(ms)) return []
+  const last = new Date(Date.UTC(new Date(ms).getUTCFullYear(), new Date(ms).getUTCMonth() + 1, 0)).getTime()
+  const lead = (new Date(ms).getUTCDay() - weekStart + 7) % 7
+  const total = Math.ceil((lead + (last - ms) / DAY + 1) / 7) * 7
+  const weeks: MonthWeek[] = []
+  for (let i = 0; i < total; i += 7) {
+    const days = Array.from({ length: 7 }, (_, k) => {
+      const date = formatDate(ms + (i + k - lead) * DAY)
+      return { date, inMonth: date.startsWith(month) }
+    })
+    weeks.push({ week: isoWeek(days[weekStart === 1 ? 0 : 1]!.date), days })
+  }
+  return weeks
 }
 
 /**
- * 键盘走一步：←→ 前后一周（同一行换列），↑↓ 前后一天，Home / End 区间头尾，都夹在 [from, to]；Esc 清掉（null）；别的键返回 undefined。
+ * 键盘走一步：←→ 前后一天，↑↓ 前后一周（月历每行一周），Home / End 区间头尾，都夹在 [from, to]；Esc 清掉（null）；别的键返回 undefined。
  * 没选中时任一方向键先落到最后一天（最新）。
  */
 export function calendarKey(date: string | null, key: string, from: string, to: string): string | null | undefined {
@@ -68,7 +104,7 @@ export function calendarKey(date: string | null, key: string, from: string, to: 
   if (key === 'Home') return from
   if (key === 'End') return to
   const step =
-    key === 'ArrowLeft' ? -7 : key === 'ArrowRight' ? 7 : key === 'ArrowUp' ? -1 : key === 'ArrowDown' ? 1 : 0
+    key === 'ArrowLeft' ? -1 : key === 'ArrowRight' ? 1 : key === 'ArrowUp' ? -7 : key === 'ArrowDown' ? 7 : 0
   if (step === 0) return undefined
   if (date === null) return to
   const next = addDays(date, step)
