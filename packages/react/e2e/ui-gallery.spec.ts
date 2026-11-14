@@ -1742,6 +1742,103 @@ for (const theme of THEMES) {
       await expect(grid.getByRole('row').nth(1).locator('[data-col="symbol"]')).toContainText('600519')
     })
 
+    test('行快捷操作（#23）：DataGrid 悬停出按钮且列宽不变，右键出同一份菜单，点「Copy code」回调收到这一行，键盘落到行上按钮可见、菜单键与 Shift+F10 开菜单', async ({
+      page,
+    }) => {
+      await open(page, theme, 'data-grid')
+      const grid = section(page, 'data-grid').getByTestId('grid-demo')
+      const log = section(page, 'data-grid').getByTestId('row-action-log')
+      const first = grid.getByRole('row').nth(1)
+      const strip = first.locator('[data-slot="row-actions"]')
+      const opacity = (locator: Locator) => locator.evaluate((el) => Number(getComputedStyle(el).opacity))
+      const widths = () =>
+        grid.getByRole('columnheader').evaluateAll((heads) => heads.map((head) => head.getBoundingClientRect().width))
+      const before = await widths()
+      // 没悬停：透明；悬停：出现，最多三颗按钮，都有名字。
+      await page.mouse.move(0, 0)
+      expect(await opacity(strip)).toBe(0)
+      await first.hover()
+      await expect.poll(() => opacity(strip)).toBe(1)
+      await expect(strip.getByRole('button')).toHaveCount(3)
+      await expect(strip.getByRole('button', { name: 'Open chart' })).toBeVisible()
+      expect(await widths()).toEqual(before)
+      // 按钮浮在行内右端，没有伸出行。
+      const [rowBox, stripBox] = [await first.boundingBox(), await strip.boundingBox()]
+      expect(stripBox!.width).toBeGreaterThan(40)
+      expect(stripBox!.x + stripBox!.width).toBeLessThanOrEqual(rowBox!.x + rowBox!.width + 1)
+      // 表比容器宽、横向滚着时，按钮条也在可视区里（不是在滚出去的行尾）。
+      const viewport = await grid.locator('.k-grid-scroll').boundingBox()
+      expect(stripBox!.x + stripBox!.width).toBeLessThanOrEqual(viewport!.x + viewport!.width + 1)
+      expect(stripBox!.x).toBeGreaterThanOrEqual(viewport!.x)
+      // 点按钮：回调收到这一行，且没有把行点成「打开」。
+      await strip.getByRole('button', { name: 'Open chart' }).click()
+      await expect(log).toHaveText('Last action: Open chart · BTCUSDT')
+      // 右键：整份菜单在最前，点 Copy code 回调收到右键的那一行。
+      const second = grid.getByRole('row').nth(2)
+      await second.click({ button: 'right' })
+      const menu = page.getByRole('menu', { name: 'Example rows menu' })
+      await expect(menu.getByRole('menuitem').nth(0)).toHaveText(/Open chart/)
+      await expect(menu.getByRole('menuitem', { name: /Add to watchlist/ })).toContainText('Alt+W')
+      await menu.getByRole('menuitem', { name: 'Copy code' }).click()
+      await expect(log).toHaveText('Last action: Copy code · 600519')
+      // 键盘：焦点到表上，↓ 走到一行，那一行的按钮可见；Shift+F10 开菜单，Esc 关。
+      await page.mouse.move(0, 0)
+      // 键盘走进去（脚本 focus() 沿用上一次鼠标的来由，不算 :focus-visible）。
+      await grid.getByRole('grid').focus()
+      await page.keyboard.press('Shift+Tab')
+      await page.keyboard.press('Tab')
+      await expect(grid.getByRole('grid')).toBeFocused()
+      await page.keyboard.press('ArrowDown')
+      await expect.poll(() => opacity(grid.locator('.k-grid-row.is-cursor [data-slot="row-actions"]'))).toBe(1)
+      await page.keyboard.press('Shift+F10')
+      await expect(menu.getByRole('menuitem', { name: 'Add to watchlist' })).toBeVisible()
+      await page.keyboard.press('Escape')
+      await expect(menu).toHaveCount(0)
+      await page.keyboard.press('ContextMenu')
+      await expect(menu.getByRole('menuitem', { name: 'New alert' })).toBeVisible()
+      await page.keyboard.press('Escape')
+    })
+
+    test('行快捷操作（#23）：连板天梯悬停出按钮、右键出菜单，热力图格子右键出同一份菜单，传了才有', async ({
+      page,
+    }) => {
+      await open(page, theme, 'limit-ladder')
+      const ladder = section(page, 'limit-ladder')
+      const log = ladder.getByTestId('row-action-log')
+      const row = ladder.locator('[data-slot="ladder-row"]').first()
+      const strip = row.locator('[data-slot="row-actions"]')
+      const opacity = (locator: Locator) => locator.evaluate((el) => Number(getComputedStyle(el).opacity))
+      await page.mouse.move(0, 0)
+      expect(await opacity(strip)).toBe(0)
+      await row.hover()
+      await expect.poll(() => opacity(strip)).toBe(1)
+      await strip.locator('[data-action="add-to-watchlist"]').click()
+      await expect(log).toContainText('Add to watchlist · ')
+      await row.click({ button: 'right' })
+      await page.getByRole('menuitem', { name: 'Copy code' }).click()
+      await expect(log).toContainText('Copy code · ')
+      // 焦点在行上：按钮可见；菜单键开菜单。
+      await page.mouse.move(0, 0)
+      const tabbable = ladder.locator('[data-slot="ladder-row"][tabindex="0"]')
+      await tabbable.focus()
+      await page.keyboard.press('Shift+Tab')
+      await page.keyboard.press('Tab')
+      await expect(tabbable).toBeFocused()
+      await expect.poll(() => opacity(tabbable.locator('[data-slot="row-actions"]'))).toBe(1)
+      await page.keyboard.press('Shift+F10')
+      await expect(page.getByRole('menuitem', { name: 'New alert' })).toBeVisible()
+      await page.keyboard.press('Escape')
+
+      await show(page, 'market-heatmap')
+      const heat = section(page, 'market-heatmap')
+      const cell = heat.locator('[data-slot="heatmap-cell"]').first()
+      const code = await cell.getAttribute('data-code')
+      await cell.click({ button: 'right' })
+      await expect(page.getByRole('menuitem')).toHaveCount(4)
+      await page.getByRole('menuitem', { name: 'Open chart' }).click()
+      await expect(heat.getByTestId('row-action-log')).toHaveText(`Last action: Open chart · ${code}`)
+    })
+
     test('积木：面板外壳——聚焦的画橙色角括号，普通的没有，空态在壳里', async ({ page }) => {
       await open(page, theme, 'panel-frame')
       const frames = section(page, 'panel-frame').locator('[data-slot="panel-frame"]')

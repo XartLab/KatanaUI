@@ -25,7 +25,7 @@ import {
   type TechnicalRatingLabels,
 } from '../../src/quant'
 import { ToggleGroup, ToggleGroupItem } from '../../src/primitives/toggle-group'
-import { Cell, Row, SAMPLE_MARK_SRC } from './parts'
+import { ActionLog, Cell, Row, SAMPLE_MARK_SRC, demoSymbolActions } from './parts'
 
 // 量化层（@katana-ui/react/quant，#1862）的演示。数值都是示例，不是行情。根元素设 data-updown="cn" 时涨跌色互换（红涨绿跌）。
 
@@ -227,19 +227,29 @@ const LADDER_LABELS: LimitLadderLabels = {
 
 export function LimitLadderDemo() {
   const [selected, setSelected] = useState<string | null>('300004')
+  const [log, setLog] = useState('')
   return (
-    <div style={{ width: '100%', maxWidth: 640, height: 660 }}>
-      <PanelFrame
-        index="02"
-        title="连板天梯"
-        object="演示数据"
-        meta="DEMO"
-        source="SOURCE · 演示数据 · 非行情"
-        focused
-        labels={{ settings: '设置', maximize: '最大化', restore: '还原', close: '关闭' }}
-      >
-        <LimitLadder levels={LADDER_LEVELS} labels={LADDER_LABELS} selected={selected} onSelect={setSelected} />
-      </PanelFrame>
+    <div style={{ width: '100%', maxWidth: 640 }}>
+      <div style={{ height: 660 }}>
+        <PanelFrame
+          index="02"
+          title="连板天梯"
+          object="演示数据"
+          meta="DEMO"
+          source="SOURCE · 演示数据 · 非行情"
+          focused
+          labels={{ settings: '设置', maximize: '最大化', restore: '还原', close: '关闭' }}
+        >
+          <LimitLadder
+            levels={LADDER_LEVELS}
+            labels={LADDER_LABELS}
+            selected={selected}
+            onSelect={setSelected}
+            rowActions={(item) => demoSymbolActions(item.code, setLog)}
+          />
+        </PanelFrame>
+      </div>
+      <ActionLog text={log} />
     </div>
   )
 }
@@ -379,6 +389,7 @@ const HEAT_LABELS: MarketHeatmapLabels = {
 
 export function MarketHeatmapDemo() {
   const [selected, setSelected] = useState<string | null>(null)
+  const [log, setLog] = useState('')
   const [scheme, setScheme] = useState<HeatmapScheme>('classic')
   const [market, setMarket] = useState('stocks')
   const [wide, setWide] = useState(false)
@@ -453,10 +464,12 @@ export function MarketHeatmapDemo() {
               scheme={scheme}
               selected={selected}
               onSelect={setSelected}
+              cellActions={(item) => demoSymbolActions(item.code, setLog)}
             />
           </PanelFrame>
         </div>
       </div>
+      <ActionLog text={log} />
     </div>
   )
 }

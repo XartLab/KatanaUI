@@ -1,0 +1,64 @@
+/* SPDX-License-Identifier: MIT */
+/* 行快捷操作（patterns/row-actions，#23）：行右端浮出的无边框图标按钮，悬停灰底，不加橙色（照连板天梯那套）。
+   条浮在宿主行上、不占列宽；底是一段从透明渐变到面板色的遮罩，盖住它下面的数字不让字叠在按钮上。
+   出现的时机由宿主行定：悬停、键盘焦点在这一行（DataGrid 是 .is-cursor 且表获得焦点、连板天梯是行的 :focus-visible），条自己的按钮聚焦时也出现。 */
+.k-row-actions {
+  position: absolute;
+  inset-block: 0;
+  /* DataGrid 横向滚开时把条挪回可视区右缘（--k-grid-hidden-right 由它写），别处没有这个变量就是 0 */
+  inset-inline-end: var(--k-grid-hidden-right, 0px);
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding-inline: 14px 6px;
+  background: linear-gradient(to right, transparent, var(--bg-300) 12px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 100ms var(--ease-snappy, ease-out);
+}
+.k-grid-row:hover > .k-row-actions,
+.k-grid-body:focus-visible .k-grid-row.is-cursor > .k-row-actions,
+.k-ladder-row:hover > .k-row-actions,
+.k-ladder-row:focus-visible > .k-row-actions,
+.k-row-actions:focus-within {
+  opacity: 1;
+  pointer-events: auto;
+}
+.k-row-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--ink-200);
+  cursor: pointer;
+  transition:
+    background-color 100ms,
+    color 100ms;
+}
+.k-row-action:hover:not(:disabled) {
+  background: var(--alpha-white-9);
+  color: var(--ink-100);
+}
+.k-row-action:focus-visible {
+  outline: 1px solid var(--line-200);
+  outline-offset: -1px;
+}
+.k-row-action:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+/* 单独用（报价表、搜索结果行）：宿主行带 k-row-host，悬停与焦点在行内都出现。 */
+.k-row-host {
+  position: relative;
+}
+.k-row-host:hover > .k-row-actions,
+.k-row-host:focus-within > .k-row-actions {
+  opacity: 1;
+  pointer-events: auto;
+}

@@ -12,6 +12,7 @@ import {
   type PointerEvent,
 } from 'react'
 import { cn } from '../lib/cn.ts'
+import { RowContextMenu, type RowAction } from '../patterns/row-actions.tsx'
 import { SymbolMark } from '../katana/symbol-mark.tsx'
 import { layoutTreemap, type TreemapBlock } from '../katana/treemap-model.ts'
 import { ToggleGroup, ToggleGroupItem } from '../primitives/toggle-group.tsx'
@@ -93,6 +94,8 @@ export type MarketHeatmapLabels = {
   /** 整张图的读屏名。 */
   list: string
   empty: string
+  /** 格子右键菜单的读屏名（传了 cellActions 才用）；省略时用英文。 */
+  cellMenu?: string
 }
 
 export type MarketHeatmapProps = {
@@ -110,6 +113,8 @@ export type MarketHeatmapProps = {
   formatPrice?: (value: number) => string
   selected?: string | null
   onSelect?: (code: string) => void
+  /** 格子的右键菜单（#23，一般传 symbolMenu(...)）：右键、菜单键、Shift+F10 出同一份品种菜单；不传就没有。格子小，不画悬停按钮。 */
+  cellActions?: (item: HeatmapItem) => readonly RowAction[]
   className?: string
 }
 
@@ -169,6 +174,7 @@ export function MarketHeatmap({
   formatPrice: priceText = (value) => formatPrice(value, { precision: 2 }),
   selected = null,
   onSelect,
+  cellActions,
   className,
 }: MarketHeatmapProps) {
   const uid = useId()
@@ -497,200 +503,212 @@ export function MarketHeatmap({
           </div>
         ) : null}
       </div>
-      <div
-        className="k-mheat-plot"
-        ref={plot}
-        role="group"
-        aria-label={labels.list}
-        onPointerMove={trackPointer}
-        onPointerLeave={() => {
-          setHover((old) => (old ? { ...old, open: false } : old))
-          setHoverGroup(null)
-        }}
+      <RowContextMenu
+        actionsFor={
+          cellActions
+            ? (code) => {
+                const item = items.find((entry) => entry.code === code)
+                return item ? cellActions(item) : []
+              }
+            : undefined
+        }
+        label={labels.cellMenu ?? 'Cell menu'}
       >
-        {blocks.map((block) => {
-          const visible = block.cells.filter((cell) => !hiddenOf(cell.data))
-          const tabbable =
-            visible.find((cell) => cell.data.code === rove[block.name])?.data.code ?? visible[0]?.data.code
-          const headingId = `${uid}-${block.name}`
-          // 组头右边的平均涨跌：这一组着色指标的简单平均（没有数的格子不算）。
-          const nums = block.cells.flatMap((cell) => {
-            const v = cell.data.value[color.key]
-            return typeof v === 'number' && Number.isFinite(v) ? [v] : []
-          })
-          const mean = nums.length ? nums.reduce((a, b) => a + b, 0) / nums.length : null
-          return (
-            <div
-              key={block.name}
-              className="k-mheat-group"
-              data-slot="heatmap-group-block"
-              role="group"
-              aria-labelledby={block.name ? headingId : undefined}
-            >
-              {showGroups && drill === null ? (
-                <button
-                  type="button"
-                  id={headingId}
-                  className="k-mheat-head"
-                  data-slot="heatmap-group"
-                  data-group={block.name}
-                  style={{ left: block.x0, top: block.y0, width: block.x1 - block.x0, height: HEAD_H }}
-                  onPointerEnter={() => setHoverGroup(block.name)}
-                  onPointerLeave={() => setHoverGroup(null)}
-                  onFocus={() => setHoverGroup(block.name)}
-                  onBlur={() => setHoverGroup(null)}
-                  onClick={() => {
-                    setDrill(block.name)
-                    setHover(null)
-                    setHoverGroup(null)
-                  }}
-                >
-                  <span className="k-mheat-head-name">{block.name}</span>
-                  {mean === null ? null : (
-                    <span
-                      className={cn('k-mheat-head-avg', mean > 0 && 'is-up', mean < 0 && 'is-down')}
-                      data-slot="heatmap-group-avg"
-                    >
-                      {formatMetric(mean, color)}
-                    </span>
-                  )}
-                </button>
-              ) : null}
-              {showGroups && drill === null && hoverGroup === block.name ? (
-                <span
-                  className="k-mheat-ring"
-                  data-slot="heatmap-group-ring"
-                  style={{ left: block.x0, top: block.y0, width: block.x1 - block.x0, height: block.y1 - block.y0 }}
-                />
-              ) : null}
-              {block.cells.map((cell) => {
-                const item = cell.data
-                const step = stepFor(item)
-                const hidden = hiddenOf(item)
-                const w = cell.x1 - cell.x0
-                const h = cell.y1 - cell.y0
-                const showCode =
-                  w >= Math.max(MIN_CODE_W, item.code.length * CODE_CHAR_W + CODE_PAD_W) && h >= MIN_CODE_H
-                const showValue = showCode && h >= MIN_VALUE_H
-                const logo = showCode ? LOGO_TIERS.find((tier) => w >= tier.w && h >= tier.h) : undefined
-                const showName = logo !== undefined && logo.size >= 24 && w >= NAME_W && h >= NAME_H
-                const text = formatMetric(item.value[color.key], color)
-                return (
-                  <div
-                    key={item.code}
-                    role="button"
-                    tabIndex={hidden ? -1 : item.code === tabbable ? 0 : -1}
-                    aria-label={`${item.name} ${item.code} ${text}`}
-                    aria-pressed={item.code === selected}
-                    aria-hidden={hidden || undefined}
-                    className="k-mheat-cell"
-                    data-slot="heatmap-cell"
-                    data-code={item.code}
-                    data-size={size.equal ? 1 : (item.size[size.key] ?? 0)}
-                    data-step={step ?? 'na'}
-                    data-hidden={hidden || undefined}
-                    data-dim={
-                      previewStep !== null && step !== previewStep
-                        ? 'legend'
-                        : hoverGroup !== null && hoverGroup !== block.name
-                          ? 'group'
-                          : undefined
-                    }
-                    data-flash={flashing.has(item.code) || undefined}
-                    data-selected={item.code === selected || undefined}
-                    data-labelled={showCode}
-                    data-logo={logo?.size}
-                    style={{ left: cell.x0, top: cell.y0, width: w, height: h } satisfies CSSProperties}
-                    onClick={() => onSelect?.(item.code)}
-                    onKeyDown={(event) => move(event, block, item.code)}
-                    onFocus={(event) => {
-                      setRove((old) => ({ ...old, [block.name]: item.code }))
-                      const rect = plot.current?.getBoundingClientRect()
-                      const own = event.currentTarget.getBoundingClientRect()
-                      if (rect)
-                        setHover({
-                          code: item.code,
-                          x: own.right - rect.left - 24,
-                          y: own.top - rect.top + 8,
-                          open: true,
-                          snap: true,
-                        })
+        <div
+          className="k-mheat-plot"
+          ref={plot}
+          role="group"
+          aria-label={labels.list}
+          onPointerMove={trackPointer}
+          onPointerLeave={() => {
+            setHover((old) => (old ? { ...old, open: false } : old))
+            setHoverGroup(null)
+          }}
+        >
+          {blocks.map((block) => {
+            const visible = block.cells.filter((cell) => !hiddenOf(cell.data))
+            const tabbable =
+              visible.find((cell) => cell.data.code === rove[block.name])?.data.code ?? visible[0]?.data.code
+            const headingId = `${uid}-${block.name}`
+            // 组头右边的平均涨跌：这一组着色指标的简单平均（没有数的格子不算）。
+            const nums = block.cells.flatMap((cell) => {
+              const v = cell.data.value[color.key]
+              return typeof v === 'number' && Number.isFinite(v) ? [v] : []
+            })
+            const mean = nums.length ? nums.reduce((a, b) => a + b, 0) / nums.length : null
+            return (
+              <div
+                key={block.name}
+                className="k-mheat-group"
+                data-slot="heatmap-group-block"
+                role="group"
+                aria-labelledby={block.name ? headingId : undefined}
+              >
+                {showGroups && drill === null ? (
+                  <button
+                    type="button"
+                    id={headingId}
+                    className="k-mheat-head"
+                    data-slot="heatmap-group"
+                    data-group={block.name}
+                    style={{ left: block.x0, top: block.y0, width: block.x1 - block.x0, height: HEAD_H }}
+                    onPointerEnter={() => setHoverGroup(block.name)}
+                    onPointerLeave={() => setHoverGroup(null)}
+                    onFocus={() => setHoverGroup(block.name)}
+                    onBlur={() => setHoverGroup(null)}
+                    onClick={() => {
+                      setDrill(block.name)
+                      setHover(null)
+                      setHoverGroup(null)
                     }}
-                    onBlur={() => setHover((old) => (old ? { ...old, open: false } : old))}
                   >
-                    {showCode ? (
-                      <>
-                        {logo ? (
-                          <SymbolMark
-                            className="k-mheat-logo"
-                            code={item.code}
-                            name={item.name}
-                            src={item.logo}
-                            size={logo.size}
-                          />
-                        ) : null}
-                        <span className="k-mheat-code">{item.code}</span>
-                        {showName ? <span className="k-mheat-name">{item.name}</span> : null}
-                        {showValue ? <span className="k-mheat-value">{text}</span> : null}
-                      </>
-                    ) : null}
-                  </div>
-                )
-              })}
-            </div>
-          )
-        })}
-        {hovered && hover ? (
-          <div
-            className="k-mheat-card"
-            data-slot="heatmap-card"
-            data-open={hover.open || undefined}
-            data-snap={hover.snap || undefined}
-            aria-hidden={hover.open ? undefined : true}
-            role="tooltip"
-            style={{ left: cardLeft, top: cardTop, width: CARD_W }}
-          >
-            <div className="k-mheat-card-title">
-              <SymbolMark code={hovered.code} name={hovered.name} src={hovered.logo} size={18} />
-              <span className="k-mheat-card-code">{hovered.code}</span>
-              <span className="k-mheat-card-name">{hovered.name}</span>
-            </div>
-            <dl className="k-mheat-card-rows">
-              {hovered.price === undefined ? null : (
-                <div>
-                  <dt>{labels.price}</dt>
-                  <dd>{priceText(hovered.price)}</dd>
-                </div>
-              )}
-              {colorBy.map((option) => (
-                <div key={option.key} data-active={option.key === color.key || undefined}>
-                  <dt>{option.label}</dt>
-                  <dd
-                    className={cn(
-                      (hovered.value[option.key] ?? 0) > 0 && 'is-up',
-                      (hovered.value[option.key] ?? 0) < 0 && 'is-down',
+                    <span className="k-mheat-head-name">{block.name}</span>
+                    {mean === null ? null : (
+                      <span
+                        className={cn('k-mheat-head-avg', mean > 0 && 'is-up', mean < 0 && 'is-down')}
+                        data-slot="heatmap-group-avg"
+                      >
+                        {formatMetric(mean, color)}
+                      </span>
                     )}
-                  >
-                    {formatMetric(hovered.value[option.key], option)}
-                  </dd>
-                </div>
-              ))}
-              {size.equal ? null : (
-                <div>
-                  <dt>{size.label}</dt>
-                  <dd>{(size.format ?? formatVolume)(hovered.size[size.key] ?? 0)}</dd>
-                </div>
-              )}
-              {showGroups && hovered.group ? (
-                <div>
-                  <dt>{labels.group}</dt>
-                  <dd>{hovered.group}</dd>
-                </div>
-              ) : null}
-            </dl>
-          </div>
-        ) : null}
-      </div>
+                  </button>
+                ) : null}
+                {showGroups && drill === null && hoverGroup === block.name ? (
+                  <span
+                    className="k-mheat-ring"
+                    data-slot="heatmap-group-ring"
+                    style={{ left: block.x0, top: block.y0, width: block.x1 - block.x0, height: block.y1 - block.y0 }}
+                  />
+                ) : null}
+                {block.cells.map((cell) => {
+                  const item = cell.data
+                  const step = stepFor(item)
+                  const hidden = hiddenOf(item)
+                  const w = cell.x1 - cell.x0
+                  const h = cell.y1 - cell.y0
+                  const showCode =
+                    w >= Math.max(MIN_CODE_W, item.code.length * CODE_CHAR_W + CODE_PAD_W) && h >= MIN_CODE_H
+                  const showValue = showCode && h >= MIN_VALUE_H
+                  const logo = showCode ? LOGO_TIERS.find((tier) => w >= tier.w && h >= tier.h) : undefined
+                  const showName = logo !== undefined && logo.size >= 24 && w >= NAME_W && h >= NAME_H
+                  const text = formatMetric(item.value[color.key], color)
+                  return (
+                    <div
+                      key={item.code}
+                      role="button"
+                      tabIndex={hidden ? -1 : item.code === tabbable ? 0 : -1}
+                      aria-label={`${item.name} ${item.code} ${text}`}
+                      aria-pressed={item.code === selected}
+                      aria-hidden={hidden || undefined}
+                      className="k-mheat-cell"
+                      data-slot="heatmap-cell"
+                      data-code={item.code}
+                      data-size={size.equal ? 1 : (item.size[size.key] ?? 0)}
+                      data-step={step ?? 'na'}
+                      data-hidden={hidden || undefined}
+                      data-dim={
+                        previewStep !== null && step !== previewStep
+                          ? 'legend'
+                          : hoverGroup !== null && hoverGroup !== block.name
+                            ? 'group'
+                            : undefined
+                      }
+                      data-flash={flashing.has(item.code) || undefined}
+                      data-selected={item.code === selected || undefined}
+                      data-labelled={showCode}
+                      data-logo={logo?.size}
+                      style={{ left: cell.x0, top: cell.y0, width: w, height: h } satisfies CSSProperties}
+                      onClick={() => onSelect?.(item.code)}
+                      onKeyDown={(event) => move(event, block, item.code)}
+                      onFocus={(event) => {
+                        setRove((old) => ({ ...old, [block.name]: item.code }))
+                        const rect = plot.current?.getBoundingClientRect()
+                        const own = event.currentTarget.getBoundingClientRect()
+                        if (rect)
+                          setHover({
+                            code: item.code,
+                            x: own.right - rect.left - 24,
+                            y: own.top - rect.top + 8,
+                            open: true,
+                            snap: true,
+                          })
+                      }}
+                      onBlur={() => setHover((old) => (old ? { ...old, open: false } : old))}
+                    >
+                      {showCode ? (
+                        <>
+                          {logo ? (
+                            <SymbolMark
+                              className="k-mheat-logo"
+                              code={item.code}
+                              name={item.name}
+                              src={item.logo}
+                              size={logo.size}
+                            />
+                          ) : null}
+                          <span className="k-mheat-code">{item.code}</span>
+                          {showName ? <span className="k-mheat-name">{item.name}</span> : null}
+                          {showValue ? <span className="k-mheat-value">{text}</span> : null}
+                        </>
+                      ) : null}
+                    </div>
+                  )
+                })}
+              </div>
+            )
+          })}
+          {hovered && hover ? (
+            <div
+              className="k-mheat-card"
+              data-slot="heatmap-card"
+              data-open={hover.open || undefined}
+              data-snap={hover.snap || undefined}
+              aria-hidden={hover.open ? undefined : true}
+              role="tooltip"
+              style={{ left: cardLeft, top: cardTop, width: CARD_W }}
+            >
+              <div className="k-mheat-card-title">
+                <SymbolMark code={hovered.code} name={hovered.name} src={hovered.logo} size={18} />
+                <span className="k-mheat-card-code">{hovered.code}</span>
+                <span className="k-mheat-card-name">{hovered.name}</span>
+              </div>
+              <dl className="k-mheat-card-rows">
+                {hovered.price === undefined ? null : (
+                  <div>
+                    <dt>{labels.price}</dt>
+                    <dd>{priceText(hovered.price)}</dd>
+                  </div>
+                )}
+                {colorBy.map((option) => (
+                  <div key={option.key} data-active={option.key === color.key || undefined}>
+                    <dt>{option.label}</dt>
+                    <dd
+                      className={cn(
+                        (hovered.value[option.key] ?? 0) > 0 && 'is-up',
+                        (hovered.value[option.key] ?? 0) < 0 && 'is-down',
+                      )}
+                    >
+                      {formatMetric(hovered.value[option.key], option)}
+                    </dd>
+                  </div>
+                ))}
+                {size.equal ? null : (
+                  <div>
+                    <dt>{size.label}</dt>
+                    <dd>{(size.format ?? formatVolume)(hovered.size[size.key] ?? 0)}</dd>
+                  </div>
+                )}
+                {showGroups && hovered.group ? (
+                  <div>
+                    <dt>{labels.group}</dt>
+                    <dd>{hovered.group}</dd>
+                  </div>
+                ) : null}
+              </dl>
+            </div>
+          ) : null}
+        </div>
+      </RowContextMenu>
       <ol className="k-mheat-legend" data-slot="heatmap-legend" aria-label={color.label}>
         {HEAT_STEPS.map((step: HeatStep) => {
           const off = hiddenSteps.has(step)
