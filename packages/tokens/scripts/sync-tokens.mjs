@@ -6,8 +6,8 @@ import { dirname, resolve } from 'node:path'
 // src/tokens.json + src/motion.tokens.json → src/tokens.css（本包的 token 层）。
 // 搬自 KATANAview 的 scripts/sync-tokens.mjs（2026-11-14，KatanaUI #2：设计系统独立成仓库，token 源头随包走），2026-11-14 从 @katana-ui/react 拆进 @katana-ui/tokens；原作者同为本项目，许可证改为 MIT。
 // token 名与组件卡、原型完全一致，卡里的 CSS 可以原样搬进来。
-// 主题：:root 是 Console；其余已实装的主题各出一块 :root[data-theme='…']，只写与 Console 不同的值（引用型 token 随被引用的值走，不用重写）。
-// 有 reduced 的 token（玻璃）在「减少透明度」时另出一块 :root[data-theme='…'][data-transparency='reduced']。
+// 主题：:root 是默认主题 Graphite（用户 2026-11-14 定，KATANAview #1775）；其余已实装的主题（Console）各出一块 :root[data-theme='…']，只写与 Graphite 不同的值（引用型 token 随被引用的值走，不用重写）。
+// 有 reduced 的 token（玻璃）在「减少透明度」时另出一块 :root:not([data-theme='…'])[data-transparency='reduced']（默认主题的，不影响别的主题）。
 // 用法：node scripts/sync-tokens.mjs 重新生成；加 --check 只比对，生成物与源头不一致就退出码 1（pnpm test 跑这个）。
 
 const pkg = resolve(dirname(fileURLToPath(import.meta.url)), '..')
@@ -43,8 +43,10 @@ function springEasing({ stiffness, damping, mass }) {
   return { easing: `linear(${samples.join(', ')})`, ms: Math.round(total * 1000) }
 }
 
-/** 已实装、要出样式块的主题（Console 在 :root，不在这里）。 */
-const THEMES = ['graphite']
+/** 默认主题：它的值在 :root，没写 data-theme 的地方就是它。 */
+const DEFAULT_THEME = 'graphite'
+/** 已实装、要出样式块的非默认主题。 */
+const THEMES = ['console']
 
 /**
  * 「红涨绿跌」（#456、决策记录 0019）：data-updown="cn" 时互换的 token 对。每个主题各出一块（-100/-200 档是写死的色值，两个主题不一样），
@@ -60,11 +62,12 @@ const UPDOWN_SWAPS = [
 
 const groups = [tokens.color, tokens.spacing, tokens.radius, tokens.shadow, tokens.border]
 const lines = []
+const defaultReducedLines = []
 const themed = Object.fromEntries(THEMES.map((theme) => [theme, { values: [], reduced: [] }]))
 for (const group of groups) {
   for (const token of group.tokens) {
     const themedValue = token.value && typeof token.value === 'object'
-    const value = themedValue ? token.value.console : token.value
+    const value = themedValue ? token.value[DEFAULT_THEME] : token.value
     if (value !== undefined) lines.push(`  --${token.name}: ${cssValue(value)};`)
     if (!themedValue) continue
     for (const theme of THEMES) {
@@ -74,6 +77,8 @@ for (const group of groups) {
       const reduced = token.reduced?.[theme]
       if (reduced !== undefined) themed[theme].reduced.push(`  --${token.name}: ${cssValue(reduced)};`)
     }
+    const defaultReduced = token.reduced?.[DEFAULT_THEME]
+    if (defaultReduced !== undefined) defaultReducedLines.push(`  --${token.name}: ${cssValue(defaultReduced)};`)
   }
 }
 const colorValue = (name, theme) => {
@@ -81,7 +86,7 @@ const colorValue = (name, theme) => {
   if (!token) throw new Error(`src/tokens.json：UPDOWN_SWAPS 里的 ${name} 不存在`)
   return cssValue(token.value[theme])
 }
-const updown = Object.fromEntries(['console', ...THEMES].map((theme) => [theme, []]))
+const updown = Object.fromEntries([DEFAULT_THEME, ...THEMES].map((theme) => [theme, []]))
 for (const theme of Object.keys(updown)) {
   for (const [a, b] of UPDOWN_SWAPS) {
     const [va, vb] = [colorValue(a, theme), colorValue(b, theme)]
@@ -121,13 +126,18 @@ const densityBlocks = [
 })
 
 const blocks = [`:root {\n${lines.join('\n')}\n}`, ...densityBlocks]
+// 默认主题的「减少透明度」块写在主题块之前：Console 没有 reduced 值，不该被它改到，所以用 :not 排除。
+if (defaultReducedLines.length) {
+  const others = THEMES.map((theme) => `:not([data-theme='${theme}'])`).join('')
+  blocks.push(`:root${others}[data-transparency='reduced'] {\n${defaultReducedLines.join('\n')}\n}`)
+}
 for (const theme of THEMES) {
   blocks.push(`:root[data-theme='${theme}'] {\n${themed[theme].values.join('\n')}\n}`)
   if (themed[theme].reduced.length)
     blocks.push(`:root[data-theme='${theme}'][data-transparency='reduced'] {\n${themed[theme].reduced.join('\n')}\n}`)
 }
 // 涨跌约定块放在主题块之后：选择器的权重相同，后写的赢。
-blocks.push(`:root[data-updown='cn'] {\n${updown.console.join('\n')}\n}`)
+blocks.push(`:root[data-updown='cn'] {\n${updown[DEFAULT_THEME].join('\n')}\n}`)
 for (const theme of THEMES)
   blocks.push(`:root[data-theme='${theme}'][data-updown='cn'] {\n${updown[theme].join('\n')}\n}`)
 const generated = `/* Generated from src/tokens.json + src/motion.tokens.json by scripts/sync-tokens.mjs. Do not edit. */\n${blocks.join('\n')}\n`

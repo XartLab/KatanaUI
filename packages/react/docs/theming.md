@@ -21,7 +21,7 @@
 }
 ```
 
-没覆盖的变量保持 Console 的值。根元素上设 `data-theme="acme"` 即生效；`data-updown="cn"` 照常互换涨跌色（它只换 `pnl-up` 与 `pnl-down` 一对，见 `tokens.css` 末尾）。
+没覆盖的变量保持默认主题 Graphite 的值。根元素上设 `data-theme="acme"` 即生效；`data-updown="cn"` 照常互换涨跌色（它只换 `pnl-up` 与 `pnl-down` 一对，见 `tokens.css` 末尾）。
 
 ## 最小可用的一组（15 个）
 

@@ -2,24 +2,24 @@
 /* 生成文件（pnpm --filter @katana-ui/react ds:build）：@katana-ui/tokens 的 tokens.css、Tailwind 编出的 src/ui.css、预览的版面类（gallery/preview.css），以及两段补充（见各段的注释）。预览与产品共用这一份。 */
 /* Generated from src/tokens.json + src/motion.tokens.json by scripts/sync-tokens.mjs. Do not edit. */
 :root {
-  --bg-000: #0b0b09;
-  --bg-100: #141311;
-  --bg-200: #171511;
-  --bg-300: #1d1b18;
-  --bg-400: #26231e;
-  --line-100: #2b2823;
-  --line-200: #3a362f;
-  --ink-100: #ede6d6;
-  --ink-200: #b8b0a0;
-  --ink-300: #8f887a;
-  --ink-400: #4a453c;
-  --signal-orange: #ff6a1f;
-  --signal-orange-dim: #5c2e12;
+  --bg-000: #000000;
+  --bg-100: #070707;
+  --bg-200: #0d0d0d;
+  --bg-300: #141414;
+  --bg-400: #202020;
+  --line-100: #262626;
+  --line-200: #333333;
+  --ink-100: #ffffff;
+  --ink-200: #cdcdcd;
+  --ink-300: #a0a0a0;
+  --ink-400: #6e6e6e;
+  --signal-orange: #d97757;
+  --signal-orange-dim: #533429;
   --accent: var(--signal-orange);
-  --signal-amber: #ffc03a;
-  --signal-green: #5bd36b;
-  --signal-red: #ff5a5a;
-  --signal-blue: #4fa3ff;
+  --signal-amber: #d6a548;
+  --signal-green: #5fae8c;
+  --signal-red: #f2607c;
+  --signal-blue: #5aa9ff;
   --link-a: var(--signal-orange);
   --link-b: var(--signal-red);
   --link-c: var(--signal-green);
@@ -51,12 +51,12 @@
   --div-pos: var(--pnl-up);
   --div-neg-safe: #3c86d8;
   --div-pos-safe: #e85a12;
-  --div-neg-200: #b84646;
-  --div-neg-100: #5a2b2b;
-  --div-pos-100: #2a4a30;
-  --div-pos-200: #3b8a48;
+  --div-neg-200: #a5464c;
+  --div-neg-100: #4d2629;
+  --div-pos-100: #1f3a30;
+  --div-pos-200: #3f7f66;
   --poc: var(--signal-orange);
-  --va: #2a2521;
+  --va: #1a1a1a;
   --trade-between: var(--signal-blue);
   --trade-outside: var(--signal-amber);
   --order-own: var(--signal-amber);
@@ -75,16 +75,16 @@
   --dom-ocean-300: #21918c;
   --dom-ocean-400: #5ec962;
   --dom-ocean-500: #fde725;
-  --chart-grid: #221f1b;
+  --chart-grid: #181818;
   --chart-axis: var(--ink-300);
   --chart-crosshair: var(--ink-200);
   --chart-bench: var(--ink-300);
   --lcd-bg: var(--bg-000);
   --lcd-fg: var(--ink-100);
-  --glass-bg: var(--bg-400);
-  --glass-edge: var(--line-100);
-  --glass-highlight: rgba(255,255,255,0);
-  --group-bg: rgba(255,255,255,0);
+  --glass-bg: rgba(32,32,32,0.72);
+  --glass-edge: rgba(255,255,255,0.10);
+  --glass-highlight: rgba(255,255,255,0.16);
+  --group-bg: rgba(255,255,255,0.05);
   --alpha-white-1: rgba(255, 255, 255, 0.024);
   --alpha-white-2: rgba(255, 255, 255, 0.03);
   --alpha-white-2_5: rgba(255, 255, 255, 0.035);
@@ -122,29 +122,29 @@
   --space-hair: 2px;
   --space-dense: 6px;
   --space-5: 20px;
-  --inset-x: 8px;
+  --inset-x: 12px;
   --radius-0: 0px;
   --radius-sm: 2px;
   --radius-md: 4px;
   --radius-pill: 9999px;
   --radius-panel: 0px;
-  --radius-overlay: 10px;
-  --radius-control: 7px;
-  --radius-inner: 5px;
-  --plate: inset 0 1px 0 rgba(255,255,255,0.05), inset 0 -1px 0 rgba(0,0,0,0.5);
-  --recess: inset 0 2px 6px rgba(0,0,0,0.8);
-  --glow-orange: 0 0 6px #ff6a1f, inset 0 0 2px rgba(255,255,255,0.4);
-  --lift: 0 8px 24px rgba(0,0,0,0.6), 0 2px 0 #0d0c0a;
+  --radius-overlay: 8px;
+  --radius-control: 6px;
+  --radius-inner: 4px;
+  --plate: inset 0 1px 0 rgba(255,255,255,0.07), 0 1px 2px rgba(0,0,0,0.4), 0 8px 24px rgba(0,0,0,0.28);
+  --recess: inset 0 1px 3px rgba(0,0,0,0.7);
+  --glow-orange: 0 0 6px #d97757, inset 0 0 2px rgba(255,255,255,0.4);
+  --lift: 0 12px 32px rgba(0,0,0,0.55), 0 2px 8px rgba(0,0,0,0.35);
   --hatch: repeating-linear-gradient(45deg, var(--line-100) 0 1px, transparent 1px 6px);
-  --hazard: repeating-linear-gradient(45deg, #ffc03a 0 6px, #0b0b09 6px 12px);
+  --hazard: repeating-linear-gradient(45deg, #ffc23d 0 6px, #000000 6px 12px);
   --scanline: repeating-linear-gradient(0deg, rgba(255,255,255,0.02) 0 1px, transparent 1px 3px);
-  --glass-blur: none;
-  --glass-shadow: 0 16px 48px rgba(0,0,0,0.55), 0 2px 8px rgba(0,0,0,0.3);
-  --hairline: 1px solid #2b2823;
-  --accent-edge: 1px solid #5c2e12;
-  --warn-edge: 1px solid #5c2e12;
+  --glass-blur: blur(24px) saturate(1.7);
+  --glass-shadow: 0 18px 48px rgba(0,0,0,0.5), 0 2px 10px rgba(0,0,0,0.35);
+  --hairline: 1px solid var(--line-100);
+  --accent-edge: 1px solid var(--signal-orange-dim);
+  --warn-edge: 1px solid var(--signal-orange-dim);
   --chamfer-8: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
-  --bracket: linear-gradient(#ede6d6,#ede6d6) 0 0/10px 1px no-repeat, linear-gradient(#ede6d6,#ede6d6) 0 0/1px 10px no-repeat, linear-gradient(#ede6d6,#ede6d6) 100% 0/10px 1px no-repeat, linear-gradient(#ede6d6,#ede6d6) 100% 0/1px 10px no-repeat, linear-gradient(#ede6d6,#ede6d6) 0 100%/10px 1px no-repeat, linear-gradient(#ede6d6,#ede6d6) 0 100%/1px 10px no-repeat, linear-gradient(#ede6d6,#ede6d6) 100% 100%/10px 1px no-repeat, linear-gradient(#ede6d6,#ede6d6) 100% 100%/1px 10px no-repeat;
+  --bracket: linear-gradient(#ffffff,#ffffff) 0 0/10px 1px no-repeat, linear-gradient(#ffffff,#ffffff) 0 0/1px 10px no-repeat, linear-gradient(#ffffff,#ffffff) 100% 0/10px 1px no-repeat, linear-gradient(#ffffff,#ffffff) 100% 0/1px 10px no-repeat, linear-gradient(#ffffff,#ffffff) 0 100%/10px 1px no-repeat, linear-gradient(#ffffff,#ffffff) 0 100%/1px 10px no-repeat, linear-gradient(#ffffff,#ffffff) 100% 100%/10px 1px no-repeat, linear-gradient(#ffffff,#ffffff) 100% 100%/1px 10px no-repeat;
   --text-display: 400 28px/32px;
   --text-display-size: 28px;
   --text-display-tracking: -0.01em;
@@ -246,57 +246,67 @@
   --k-spacing-200: 16px;
   --k-spacing-300: 24px;
 }
-:root[data-theme='graphite'] {
-  --bg-000: #000000;
-  --bg-100: #070707;
-  --bg-200: #0d0d0d;
-  --bg-300: #141414;
-  --bg-400: #202020;
-  --line-100: #262626;
-  --line-200: #333333;
-  --ink-100: #ffffff;
-  --ink-200: #cdcdcd;
-  --ink-300: #a0a0a0;
-  --ink-400: #6e6e6e;
-  --signal-orange: #d97757;
-  --signal-orange-dim: #533429;
-  --signal-amber: #ffc23d;
-  --signal-green: #3fd6a0;
-  --signal-red: #ff4d70;
-  --signal-blue: #5aa9ff;
-  --div-neg-200: #b8465a;
-  --div-neg-100: #572a35;
-  --div-pos-100: #1f4639;
-  --div-pos-200: #2e8b68;
-  --va: #1a1a1a;
-  --chart-grid: #181818;
-  --glass-bg: rgba(32,32,32,0.72);
-  --glass-edge: rgba(255,255,255,0.10);
-  --glass-highlight: rgba(255,255,255,0.16);
-  --group-bg: rgba(255,255,255,0.05);
-  --inset-x: 12px;
-  --radius-overlay: 8px;
-  --radius-control: 6px;
-  --radius-inner: 4px;
-  --plate: inset 0 1px 0 rgba(255,255,255,0.07), 0 1px 2px rgba(0,0,0,0.4), 0 8px 24px rgba(0,0,0,0.28);
-  --recess: inset 0 1px 3px rgba(0,0,0,0.7);
-  --glow-orange: 0 0 6px #d97757, inset 0 0 2px rgba(255,255,255,0.4);
-  --lift: 0 12px 32px rgba(0,0,0,0.55), 0 2px 8px rgba(0,0,0,0.35);
-  --hazard: repeating-linear-gradient(45deg, #ffc23d 0 6px, #000000 6px 12px);
-  --glass-blur: blur(24px) saturate(1.7);
-  --glass-shadow: 0 18px 48px rgba(0,0,0,0.5), 0 2px 10px rgba(0,0,0,0.35);
-  --hairline: 1px solid var(--line-100);
-  --accent-edge: 1px solid var(--signal-orange-dim);
-  --warn-edge: 1px solid var(--signal-orange-dim);
-  --bracket: linear-gradient(#ffffff,#ffffff) 0 0/10px 1px no-repeat, linear-gradient(#ffffff,#ffffff) 0 0/1px 10px no-repeat, linear-gradient(#ffffff,#ffffff) 100% 0/10px 1px no-repeat, linear-gradient(#ffffff,#ffffff) 100% 0/1px 10px no-repeat, linear-gradient(#ffffff,#ffffff) 0 100%/10px 1px no-repeat, linear-gradient(#ffffff,#ffffff) 0 100%/1px 10px no-repeat, linear-gradient(#ffffff,#ffffff) 100% 100%/10px 1px no-repeat, linear-gradient(#ffffff,#ffffff) 100% 100%/1px 10px no-repeat;
-}
-:root[data-theme='graphite'][data-transparency='reduced'] {
+:root:not([data-theme='console'])[data-transparency='reduced'] {
   --glass-bg: var(--bg-400);
   --glass-edge: var(--line-100);
   --glass-highlight: rgba(255,255,255,0.06);
   --glass-blur: none;
 }
+:root[data-theme='console'] {
+  --bg-000: #0b0b09;
+  --bg-100: #141311;
+  --bg-200: #171511;
+  --bg-300: #1d1b18;
+  --bg-400: #26231e;
+  --line-100: #2b2823;
+  --line-200: #3a362f;
+  --ink-100: #ede6d6;
+  --ink-200: #b8b0a0;
+  --ink-300: #8f887a;
+  --ink-400: #4a453c;
+  --signal-orange: #ff6a1f;
+  --signal-orange-dim: #5c2e12;
+  --signal-amber: #ffc03a;
+  --signal-green: #5bd36b;
+  --signal-red: #ff5a5a;
+  --signal-blue: #4fa3ff;
+  --div-neg-200: #b84646;
+  --div-neg-100: #5a2b2b;
+  --div-pos-100: #2a4a30;
+  --div-pos-200: #3b8a48;
+  --va: #2a2521;
+  --chart-grid: #221f1b;
+  --glass-bg: var(--bg-400);
+  --glass-edge: var(--line-100);
+  --glass-highlight: rgba(255,255,255,0);
+  --group-bg: rgba(255,255,255,0);
+  --inset-x: 8px;
+  --radius-overlay: 10px;
+  --radius-control: 7px;
+  --radius-inner: 5px;
+  --plate: inset 0 1px 0 rgba(255,255,255,0.05), inset 0 -1px 0 rgba(0,0,0,0.5);
+  --recess: inset 0 2px 6px rgba(0,0,0,0.8);
+  --glow-orange: 0 0 6px #ff6a1f, inset 0 0 2px rgba(255,255,255,0.4);
+  --lift: 0 8px 24px rgba(0,0,0,0.6), 0 2px 0 #0d0c0a;
+  --hazard: repeating-linear-gradient(45deg, #ffc03a 0 6px, #0b0b09 6px 12px);
+  --glass-blur: none;
+  --glass-shadow: 0 16px 48px rgba(0,0,0,0.55), 0 2px 8px rgba(0,0,0,0.3);
+  --hairline: 1px solid #2b2823;
+  --accent-edge: 1px solid #5c2e12;
+  --warn-edge: 1px solid #5c2e12;
+  --bracket: linear-gradient(#ede6d6,#ede6d6) 0 0/10px 1px no-repeat, linear-gradient(#ede6d6,#ede6d6) 0 0/1px 10px no-repeat, linear-gradient(#ede6d6,#ede6d6) 100% 0/10px 1px no-repeat, linear-gradient(#ede6d6,#ede6d6) 100% 0/1px 10px no-repeat, linear-gradient(#ede6d6,#ede6d6) 0 100%/10px 1px no-repeat, linear-gradient(#ede6d6,#ede6d6) 0 100%/1px 10px no-repeat, linear-gradient(#ede6d6,#ede6d6) 100% 100%/10px 1px no-repeat, linear-gradient(#ede6d6,#ede6d6) 100% 100%/1px 10px no-repeat;
+}
 :root[data-updown='cn'] {
+  --pnl-up: var(--signal-red);
+  --pnl-down: var(--signal-green);
+  --pnl-up-area: #cf4e5c;
+  --pnl-down-area: #69aa77;
+  --div-neg-100: #1f3a30;
+  --div-pos-100: #4d2629;
+  --div-neg-200: #3f7f66;
+  --div-pos-200: #a5464c;
+}
+:root[data-theme='console'][data-updown='cn'] {
   --pnl-up: var(--signal-red);
   --pnl-down: var(--signal-green);
   --pnl-up-area: #cf4e5c;
@@ -305,16 +315,6 @@
   --div-pos-100: #5a2b2b;
   --div-neg-200: #3b8a48;
   --div-pos-200: #b84646;
-}
-:root[data-theme='graphite'][data-updown='cn'] {
-  --pnl-up: var(--signal-red);
-  --pnl-down: var(--signal-green);
-  --pnl-up-area: #cf4e5c;
-  --pnl-down-area: #69aa77;
-  --div-neg-100: #1f4639;
-  --div-pos-100: #572a35;
-  --div-neg-200: #2e8b68;
-  --div-pos-200: #b8465a;
 }
 /*! tailwindcss v4.3.5 | MIT License | https://tailwindcss.com */
 @layer properties {
