@@ -273,7 +273,7 @@ for (const theme of THEMES) {
       await expect(check).toHaveAttribute('aria-checked', 'true')
       await settled(page)
       expect(await bg(check)).not.toBe(checkRest)
-      // 组件卡的样子：勾上后中心一块 6 × 6 的强调色发光方块（LED），框是暗橙边、暗橙底，不是勾。
+      // 组件卡的样子：勾上后中心一块 6 × 6 的强调色方块，框是暗橙边、暗橙底，不是勾。
       const led = check.locator('[data-slot="checkbox-indicator"]')
       const ledBox = (await led.boundingBox())!
       const checkBox = (await check.boundingBox())!
@@ -282,16 +282,8 @@ for (const theme of THEMES) {
       expect(Math.abs(ledBox.x + 3 - (checkBox.x + 7))).toBeLessThanOrEqual(0.5)
       expect(Math.abs(ledBox.y + 3 - (checkBox.y + 7))).toBeLessThanOrEqual(0.5)
       expect(await bg(led)).toBe(await token(page, '--signal-orange'))
-      const glow = await page.evaluate(() => {
-        const probe = document.createElement('i')
-        probe.style.boxShadow = 'var(--glow-orange)'
-        document.body.append(probe)
-        const shadow = getComputedStyle(probe).boxShadow
-        probe.remove()
-        return shadow
-      })
-      // Tailwind 的 shadow 工具类前面垫着四层透明占位，发光是最后两层。
-      expect((await led.evaluate((el) => getComputedStyle(el).boxShadow)).endsWith(glow)).toBe(true)
+      // 发光只给状态灯（Precision Instrument §9）：勾选的方块是控件的「选中」，不发光。
+      await expect(led).toHaveCSS('box-shadow', 'none')
       expect(await check.evaluate((el) => getComputedStyle(el).borderTopColor)).toBe(
         await page.evaluate(() => {
           const probe = document.createElement('i')
@@ -1255,8 +1247,9 @@ for (const theme of THEMES) {
       const fields = section(page, 'slider')
       const root = fields.locator('[data-slot="slider"]').first()
       const thumb = root.locator('[data-slot="slider-thumb"]')
-      // 组件卡 Controls「Slider」：把手 14 · 强调色 · glow；轨 6 高 · 凹槽阴影；填充是竖纹点阵。
+      // 组件卡 Controls「Slider」：把手 14 · 强调色（不发光，发光只给状态灯）；轨 6 高 · 凹槽阴影；填充是竖纹点阵。
       expect(await bg(thumb)).toBe(await token(page, '--signal-orange'))
+      await expect(thumb).toHaveCSS('box-shadow', 'none')
       await expect(thumb).toHaveCSS('width', '14px')
       expect(await thumb.evaluate((n) => parseFloat(getComputedStyle(n).borderTopLeftRadius))).toBeGreaterThanOrEqual(7)
       await expect(root.locator('[data-slot="slider-track"]')).toHaveCSS('height', '6px')

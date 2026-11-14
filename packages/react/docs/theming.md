@@ -55,7 +55,8 @@
 - `--ink-400`：刻度与占位，不是文字。
 - `--signal-green`、`--signal-amber`、`--signal-blue`、`--signal-orange-dim`：状态色与强调色的暗档。
 - `--radius-control`、`--radius-overlay`、`--radius-inner`：圆角，Graphite 就是靠它们与阴影变得更圆。
-- `--plate`、`--recess`、`--lift`、`--glow-orange`：阴影，表达材质。
+- `--plate`、`--recess`、`--lift`：阴影，表达结构（哪层在上）；`--glow-orange` 只给状态灯。
+- `--accent`（= `--signal-orange`）、`--side-buy` / `--side-sell`（= `--fill-buy` / `--fill-sell`）：语义别名，新写的样式取别名；换皮改 `--signal-orange` 即可，别名跟着走。`--hatch`：图表面的排线纹理。
 
 ## 三层 token 与密度（#1943）
 

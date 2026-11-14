@@ -7,7 +7,7 @@ import { cn } from '../lib/cn.ts'
 import { focusRing } from '../lib/focus.ts'
 
 // 滑块：KATANA 自有件，照组件卡（design/katana-console/project/components/Controls/README.md「Slider」）：
-// 凹槽轨（6 高 · 最深底 · 1px 线 · recess）+ 点阵填充（3px 亮 2px 暗的竖纹）+ 发光圆把手（14 · 强调色 · glow）；拖动跟手，松手 settle 弹簧吸附到步进；键盘 ← →。
+// 凹槽轨（6 高 · 最深底 · 1px 线 · recess）+ 点阵填充（3px 亮 2px 暗的竖纹）+ 圆把手（14 · 强调色，不发光）；拖动跟手，松手 settle 弹簧吸附到步进；键盘 ← →。
 // 跟手：Radix 只给步进后的值，把手会一格一格跳。单个把手时这里另外量指针在轨上的位置（手的位置），把手与填充画在手的位置上，
 // 值仍是步进的（onValueChange 照给）；松手后把手与填充走 settle 弹簧（theme/motion.css 的 slider-thumb、slider-fill）落到步进位置。
 // 两个把手（范围）不做跟手，把手按步进走，填充用 Radix 的 Range。
@@ -126,7 +126,7 @@ function Slider({
           data-slot="slider-thumb"
           aria-label={thumbLabels?.[index]}
           className={cn(
-            'box-border block size-[14px] shrink-0 cursor-grab rounded-full border-2 border-surface-3 bg-(--signal-orange) shadow-[var(--glow-orange)]',
+            'box-border block size-[14px] shrink-0 cursor-grab rounded-full border-2 border-surface-3 bg-(--accent)',
             'active:cursor-grabbing',
             focusRing,
           )}
