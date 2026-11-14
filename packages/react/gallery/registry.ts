@@ -4437,7 +4437,7 @@ export const PAGES: readonly DocPage[] = [
     cardHeight: 860,
     title: 'TransmissionChain 传导链图',
     summary:
-      '研究「谁创造资金 → 谁先取得购买力 → 经过什么通道 → 用于什么 → 谁获得收入与利润 → 哪类资产拥有收益权」这类传导框架的有向图：节点是传导环节，边是传导关系，每条边有验证状态（未检验 / 有证据支持 / 证据反对 / 部分成立）与证据计数，边上的标签写状态图标与「支 n 反 n」。点边，右侧出这条判断的失败条件与证据列表（每条证据有立场，并标来源类别：学者观点 / 已发生的政策与资金变化 / 我们的假说）；点节点，列出它的上下游边，不挨着的边淡出。支持沿链回到上游的反馈边（如资产价格经抵押品与再融资回到信用）。布局用 dagre（MIT，一层一层排，环由它先反转再还原），滚轮缩放、拖动平移、一键适应。状态色：支持 = 涨色、反对 = 跌色、部分 = 琥珀点划线、未检验 = 灰虚线，状态另有图标与状态字，不只靠颜色；橙色不画数据，不用蓝。画法参照 TradingView 的缩放与平移手感；证据行是件自带的简版（包里还没有研究台账件，等它做了再合并）。演示数据（状态与证据条数）是编的，页上与证据行都写明。',
+      '研究「谁创造资金 → 谁先取得购买力 → 经过什么通道 → 用于什么 → 谁获得收入与利润 → 哪类资产拥有收益权」这类传导框架的有向图：节点是传导环节，边是传导关系，每条边有验证状态（未检验 / 有证据支持 / 证据反对 / 部分成立）与证据计数，边上的标签写状态图标与「支 n 反 n」。点边，右侧出这条判断的失败条件与证据列表（每条证据有立场，并标来源类别：学者观点 / 政策与资金变化 / 数据 / 财报）；点节点，列出它的上下游边，不挨着的边淡出。支持沿链回到上游的反馈边（如资产价格经抵押品与再融资回到信用）。布局用 dagre（MIT，一层一层排，环由它先反转再还原），滚轮缩放、拖动平移、一键适应。状态色：支持 = 涨色、反对 = 跌色、部分 = 琥珀点划线、未检验 = 灰虚线，状态另有图标与状态字，不只靠颜色；橙色不画数据，不用蓝。画法参照 TradingView 的缩放与平移手感；证据行与数据类型同 HypothesisLedger（HypothesisEvidence，样式用它的 k-hl-ev）。演示数据（状态与证据条数）是编的，页上与证据行都写明。',
     exports: ['TransmissionChain'],
     props: [
       {
@@ -4452,7 +4452,7 @@ export const PAGES: readonly DocPage[] = [
           {
             name: 'edges',
             type: 'ChainEdge[]',
-            desc: '{ id, from, to, status: untested | supported | contradicted | partial, label?, feedback?, failureCondition?, evidence?: { id, text, stance: support | against | neutral, kind?: view | fact | hypothesis, source? }[] }。证据计数由 evidence 数出来，不另传；指向不存在节点的边、自环与重复 id 被丢掉。',
+            desc: '{ id, from, to, status: untested | supported | contradicted | partial, label?, feedback?, failureCondition?, evidence?: HypothesisEvidence[]（kind、source、href、publishedAt、summary、stance: support | oppose） }。证据计数由 evidence 数出来，不另传；指向不存在节点的边、自环与重复 id 被丢掉。',
           },
           {
             name: 'labels',
@@ -4566,6 +4566,63 @@ export const PAGES: readonly DocPage[] = [
       ['← / →', '在页签间移动（Radix Tabs）'],
       ['Tab', '页签行、多空切换、各页里的图与表之间移动'],
       ['→ / ←', '交易列表里：焦点所在行展开 / 收起'],
+    ],
+  },
+  {
+    id: 'hypothesis-ledger',
+    group: 'blocks',
+    cardHeight: 640,
+    title: 'HypothesisLedger 假说账',
+    summary:
+      '研究「地缘与国内利益结构 → 货币与信用流向 → 购买力与利润再分配 → 资产定价」这类框架用的面板。每条假说一行、可展开：命题、所属传导层（国家战略 / 信用供给 / 财政分配 / 跨境流动 / 产业承接 / 利润归属 / 资产配置 / 避险）、状态（待验证 / 有支持 / 被否定 / 过期）、提前写好的失败条件与检验期限（到期倒计时，过了期限的待验证项自动标过期）、证据列表（学者观点 / 政策原文 / 数据 / 财报，各带发布时间、来源链接、支持或反对）、关联品种或资产。顶上按层与状态筛选；同一面板可切「观察表」：传导层 × 核心证据 × 最容易混淆的地方。学者观点、已发生的政策与资金变化、我们的假说分开放，不混排。件不改状态，由调用方写回。字段按用户 2026-11-15 给的框架，对设计稿 HypothesisLedger 卡的功能（假设账、证据与反例）重写；样子照 TradingView 告警列表的读法，实现原创。演示数据是虚构的。',
+    exports: ['HypothesisLedger'],
+    props: [
+      {
+        part: 'HypothesisLedger',
+        note: '筛选、视图与展开状态在件内；数据、文字、当前时间都由调用方传，件不认识任何应用或交易所。高度由外层给（列表自己滚）。',
+        rows: [
+          {
+            name: 'items',
+            type: 'Hypothesis[]',
+            desc: '{ id, claim, layer, status, failure, deadline, evidence[], assets? }。evidence 每条 { id, kind: scholar / policy / data / filing, source, href, publishedAt, summary, stance: support / oppose }。status 是 pending / supported / refuted / expired。',
+          },
+          {
+            name: 'watch',
+            type: 'WatchRow[]',
+            desc: '观察表的行 { layer, evidence, confusion }；不给就没有「观察表」视图。',
+          },
+          {
+            name: 'now',
+            type: 'number',
+            desc: '当前毫秒时间：倒计时与过期都按它算，调用方更新它（件不在渲染里取时间）。',
+          },
+          {
+            name: 'labels',
+            type: 'HypothesisLedgerLabels',
+            desc: '全部文字，包括八层、四个状态、四类证据、支持 / 反对、倒计时 deadlineIn(天)、过期 overdueBy(天)、日期 date(毫秒) 与观察表三列。包里没有语言。',
+          },
+          { name: 'renderAsset', type: '(asset) => ReactNode', desc: '关联资产旁的内容，如品种徽标。' },
+          { name: 'defaultView', type: "'ledger' | 'watch'", default: 'ledger', desc: '起始视图。' },
+        ],
+      },
+    ],
+    states: [
+      '待验证：灯亮、有倒计时；14 天内到期的倒计时变琥珀；快到期的排在前。',
+      '过了检验期限还没结论：自动按「过期」画（调用方不必先改状态），倒计时换成已过期天数。',
+      '有支持 / 被否定：人下了结论，行上显示期限日期；一行上的「n 支持 · m 反对」是证据对比。',
+      '筛选：状态与传导层叠加，两边的计数各自不被对方的筛选影响；没有结果出空态。',
+    ],
+    donts: [
+      '不要把学者观点当成已发生的事实：证据按类型打标，假说自己永远是命题。',
+      '不要在件里取当前时间：传 now。',
+      '不要让件自己改状态：判定是人的动作，由调用方写回。',
+    ],
+    composition:
+      'HypothesisLedger\n  视图 ToggleGroup（假说 / 观察表）、状态 ToggleGroup（带计数）\n  传导层 ChipGroup\n  ol\n    li × 假说：一行按钮（灯、状态、传导层、命题、证据对比、倒计时），展开后失败条件、证据列表（类型、支持或反对、时间、来源链接、摘要）、关联资产\n  观察表：table（传导层、核心证据、最容易混淆的地方）',
+    keys: [
+      ['Tab', '在视图、状态、传导层芯片、每行、证据来源链接间移动'],
+      ['Enter / Space', '展开或收起一行；切换视图与筛选'],
+      ['← / →', '在状态分段与传导层芯片间移动'],
     ],
   },
   {

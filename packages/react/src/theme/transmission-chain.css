@@ -243,7 +243,6 @@
 .k-tc-missing {
   font-style: italic;
 }
-.k-tc-evidence,
 .k-tc-links {
   display: flex;
   flex-direction: column;
@@ -251,34 +250,6 @@
   margin: 0;
   padding: 0;
   list-style: none;
-}
-.k-tc-ev {
-  padding: 6px 8px;
-  border: var(--hairline);
-  border-left: 3px solid var(--line-200);
-  background: var(--bg-200);
-}
-.k-tc-ev[data-stance='support'] {
-  border-left-color: var(--pnl-up);
-}
-.k-tc-ev[data-stance='against'] {
-  border-left-color: var(--pnl-down);
-}
-.k-tc-ev p {
-  margin: 2px 0 4px;
-  color: var(--ink-100);
-}
-.k-tc-ev-stance {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  color: var(--ink-300);
-  font: var(--text-caption) var(--font-sans);
-}
-.k-tc-ev small {
-  display: block;
-  color: var(--ink-300);
-  font: var(--text-caption) var(--font-sans);
 }
 .k-tc-link {
   display: flex;

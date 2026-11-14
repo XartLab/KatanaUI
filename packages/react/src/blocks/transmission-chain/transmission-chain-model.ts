@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 import { Graph, layout } from '@dagrejs/dagre'
+import type { HypothesisEvidence } from '../hypothesis-ledger/hypothesis-ledger-model.ts'
 
 // 传导链图的纯函数：布局（dagre，MIT，https://github.com/dagrejs/dagre ，2026-11-15 读其类型定义：Graph 支持多重边与 acyclicer，
 // 布局结果给出节点中心与边的折点、边标签的中心）、边的曲线路径、缩放与适应视图。不带 React 与 DOM。
@@ -7,21 +8,7 @@ import { Graph, layout } from '@dagrejs/dagre'
 /** 边的验证状态：未检验 / 有证据支持 / 证据反对 / 部分（有支持也有反对，或只在部分条件下成立）。 */
 export type ChainStatus = 'untested' | 'supported' | 'contradicted' | 'partial'
 
-/** 证据立场：支持、反对、中性（只是背景）。 */
-export type EvidenceStance = 'support' | 'against' | 'neutral'
-
-/** 证据来源类别：学者观点 / 已发生的政策与资金变化 / 我们的假说。名字由调用方给。 */
-export type EvidenceKind = 'view' | 'fact' | 'hypothesis'
-
-export type ChainEvidence = {
-  id: string
-  text: string
-  stance: EvidenceStance
-  kind?: EvidenceKind
-  /** 出处与日期，原样显示。 */
-  source?: string
-}
-
+// 证据行沿用假说账的 HypothesisEvidence（来源类别、立场、出处链接、时间、一句话摘要），两个件的证据是同一种数据。
 export type ChainNode = {
   id: string
   label: string
@@ -40,7 +27,7 @@ export type ChainEdge = {
   feedback?: boolean
   /** 这条判断怎样算错：写不出失败条件的判断不算判断。 */
   failureCondition?: string
-  evidence?: readonly ChainEvidence[]
+  evidence?: readonly HypothesisEvidence[]
 }
 
 export type ChainDirection = 'LR' | 'TB'
@@ -60,10 +47,10 @@ export type LaidEdge = {
 }
 export type ChainLayout = { nodes: readonly LaidNode[]; edges: readonly LaidEdge[]; width: number; height: number }
 
-export type EvidenceCounts = { support: number; against: number; neutral: number }
+export type EvidenceCounts = { support: number; oppose: number }
 
 export function evidenceCounts(edge: Pick<ChainEdge, 'evidence'>): EvidenceCounts {
-  const counts = { support: 0, against: 0, neutral: 0 }
+  const counts = { support: 0, oppose: 0 }
   for (const item of edge.evidence ?? []) counts[item.stance] += 1
   return counts
 }

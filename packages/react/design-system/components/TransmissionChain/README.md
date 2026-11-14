@@ -1,6 +1,6 @@
 # TransmissionChain
 
-研究「谁创造资金 → 谁先取得购买力 → 经过什么通道 → 用于什么 → 谁获得收入与利润 → 哪类资产拥有收益权」这类传导框架的有向图：节点是传导环节，边是传导关系，每条边有验证状态（未检验 / 有证据支持 / 证据反对 / 部分成立）与证据计数，边上的标签写状态图标与「支 n 反 n」。点边，右侧出这条判断的失败条件与证据列表（每条证据有立场，并标来源类别：学者观点 / 已发生的政策与资金变化 / 我们的假说）；点节点，列出它的上下游边，不挨着的边淡出。支持沿链回到上游的反馈边（如资产价格经抵押品与再融资回到信用）。布局用 dagre（MIT，一层一层排，环由它先反转再还原），滚轮缩放、拖动平移、一键适应。状态色：支持 = 涨色、反对 = 跌色、部分 = 琥珀点划线、未检验 = 灰虚线，状态另有图标与状态字，不只靠颜色；橙色不画数据，不用蓝。画法参照 TradingView 的缩放与平移手感；证据行是件自带的简版（包里还没有研究台账件，等它做了再合并）。演示数据（状态与证据条数）是编的，页上与证据行都写明。
+研究「谁创造资金 → 谁先取得购买力 → 经过什么通道 → 用于什么 → 谁获得收入与利润 → 哪类资产拥有收益权」这类传导框架的有向图：节点是传导环节，边是传导关系，每条边有验证状态（未检验 / 有证据支持 / 证据反对 / 部分成立）与证据计数，边上的标签写状态图标与「支 n 反 n」。点边，右侧出这条判断的失败条件与证据列表（每条证据有立场，并标来源类别：学者观点 / 政策与资金变化 / 数据 / 财报）；点节点，列出它的上下游边，不挨着的边淡出。支持沿链回到上游的反馈边（如资产价格经抵押品与再融资回到信用）。布局用 dagre（MIT，一层一层排，环由它先反转再还原），滚轮缩放、拖动平移、一键适应。状态色：支持 = 涨色、反对 = 跌色、部分 = 琥珀点划线、未检验 = 灰虚线，状态另有图标与状态字，不只靠颜色；橙色不画数据，不用蓝。画法参照 TradingView 的缩放与平移手感；证据行与数据类型同 HypothesisLedger（HypothesisEvidence，样式用它的 k-hl-ev）。演示数据（状态与证据条数）是编的，页上与证据行都写明。
 
 ## Provide
 
@@ -11,7 +11,7 @@
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
 | `nodes` | `ChainNode[]` | — | { id, label, note? }：传导环节。没有节点写 labels.notConnected，不补样本。 |
-| `edges` | `ChainEdge[]` | — | { id, from, to, status: untested | supported | contradicted | partial, label?, feedback?, failureCondition?, evidence?: { id, text, stance: support | against | neutral, kind?: view | fact | hypothesis, source? }[] }。证据计数由 evidence 数出来，不另传；指向不存在节点的边、自环与重复 id 被丢掉。 |
+| `edges` | `ChainEdge[]` | — | { id, from, to, status: untested | supported | contradicted | partial, label?, feedback?, failureCondition?, evidence?: HypothesisEvidence[]（kind、source、href、publishedAt、summary、stance: support | oppose） }。证据计数由 evidence 数出来，不另传；指向不存在节点的边、自环与重复 id 被丢掉。 |
 | `labels` | `TransmissionChainLabels` | — | 全部文字（状态名、立场名、来源类别、各区标题、提示与 counts / edgeName 函数）。包里没有语言。 |
 | `direction` | `'LR' \| 'TB'` | — | 布局方向，默认从上到下（链长时横排会宽到缩得看不清）；LR 从左到右。 |
 | `defaultSelected / onSelect` | `ChainSelection` | — | 起始选中（{ kind: edge | node, id }）与选中变化的回调；选中的 id 不存在时当作没选。 |

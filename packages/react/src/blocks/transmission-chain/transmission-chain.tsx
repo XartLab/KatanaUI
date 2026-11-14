@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-import { Check, CircleDashed, Contrast, Maximize, Minus, Plus, X } from 'lucide-react'
+import { Check, CircleDashed, Contrast, ExternalLink, Maximize, Minus, Plus, X } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type PointerEvent, type ReactNode } from 'react'
 import { cn } from '../../lib/cn.ts'
 import { Button } from '../../primitives/button.tsx'
@@ -16,13 +16,11 @@ import {
   zoomAt,
   type ChainDirection,
   type ChainEdge,
-  type ChainEvidence,
   type ChainNode,
   type ChainStatus,
-  type EvidenceKind,
-  type EvidenceStance,
   type View,
 } from './transmission-chain-model.ts'
+import type { EvidenceKind, HypothesisEvidence } from '../hypothesis-ledger/hypothesis-ledger-model.ts'
 
 // 传导链图（#44）：有向图，节点是传导环节，边是传导关系；每条边有验证状态（未检验 / 有证据支持 / 证据反对 / 部分）和证据计数，
 // 点边在右侧出证据列表与失败条件，点节点列出它的上下游边；支持沿链回到上游的反馈边。布局用 dagre（MIT），可缩放平移。
@@ -36,7 +34,7 @@ export type TransmissionChainLabels = {
   /** 没有节点时写的字。 */
   notConnected: string
   status: Record<ChainStatus, string>
-  stance: Record<EvidenceStance, string>
+  stance: Record<HypothesisEvidence['stance'], string>
   kind: Record<EvidenceKind, string>
   /** 图例标题与右侧各区标题。 */
   legend: string
@@ -52,7 +50,9 @@ export type TransmissionChainLabels = {
   /** 右侧什么都没选时的提示。 */
   pickHint: string
   /** 证据计数写在边的标签上：「支 3 反 1」。 */
-  counts: (support: number, against: number) => string
+  counts: (support: number, oppose: number) => string
+  /** 证据发布时间的写法。 */
+  date: (at: number) => string
   /** 边的读屏名：「A 到 B」。 */
   edgeName: (from: string, to: string) => string
   zoomIn: string
@@ -80,13 +80,12 @@ const STATUS_ICON: Record<ChainStatus, typeof Check> = {
   untested: CircleDashed,
 }
 const STATUS_ORDER: readonly ChainStatus[] = ['supported', 'partial', 'contradicted', 'untested']
-const STANCE_ICON: Record<EvidenceStance, typeof Check> = { support: Check, against: X, neutral: Minus }
 const ICON_SIZE = 14
 const CHIP_PAD = 10
 
 const chipText = (edge: ChainEdge, labels: TransmissionChainLabels) => {
   const c = evidenceCounts(edge)
-  return [edge.label, edge.evidence?.length ? labels.counts(c.support, c.against) : ''].filter(Boolean).join(' ')
+  return [edge.label, edge.evidence?.length ? labels.counts(c.support, c.oppose) : ''].filter(Boolean).join(' ')
 }
 const chipWidth = (edge: ChainEdge, labels: TransmissionChainLabels) =>
   CHIP_PAD * 2 + ICON_SIZE + 4 + textWidth(chipText(edge, labels))
@@ -246,7 +245,7 @@ export function TransmissionChain({
                     role="button"
                     tabIndex={0}
                     aria-pressed={isSel}
-                    aria-label={`${labels.edgeName(nodeLabel(edge.from), nodeLabel(edge.to))}，${labels.status[edge.status]}，${labels.counts(c.support, c.against)}${edge.label ? `，${edge.label}` : ''}`}
+                    aria-label={`${labels.edgeName(nodeLabel(edge.from), nodeLabel(edge.to))}，${labels.status[edge.status]}，${labels.counts(c.support, c.oppose)}${edge.label ? `，${edge.label}` : ''}`}
                     onClick={() => select({ kind: 'edge', id: edge.id })}
                     onKeyDown={(event) => activate(event, { kind: 'edge', id: edge.id })}
                   >
@@ -381,7 +380,7 @@ function EdgeDetail({
         <StatusBadge status={edge.status} labels={labels} />
         {edge.feedback ? <span className="k-tc-tag">{labels.feedback}</span> : null}
         {edge.label ? <span className="k-tc-tag">{edge.label}</span> : null}
-        <span className="k-tc-count">{labels.counts(c.support, c.against)}</span>
+        <span className="k-tc-count">{labels.counts(c.support, c.oppose)}</span>
       </div>
       <Section title={labels.failureCondition}>
         {edge.failureCondition ? (
@@ -392,11 +391,11 @@ function EdgeDetail({
       </Section>
       <Section title={labels.evidence}>
         {edge.evidence?.length ? (
-          <ol className="k-tc-evidence">
+          <ul className="k-hl-evidence" aria-label={labels.evidence}>
             {edge.evidence.map((item) => (
               <EvidenceRow key={item.id} item={item} labels={labels} />
             ))}
-          </ol>
+          </ul>
         ) : (
           <p className="k-tc-missing">{labels.noEvidence}</p>
         )}
@@ -405,21 +404,25 @@ function EdgeDetail({
   )
 }
 
-function EvidenceRow({ item, labels }: { item: ChainEvidence; labels: TransmissionChainLabels }) {
-  const Icon = STANCE_ICON[item.stance]
+function EvidenceRow({ item, labels }: { item: HypothesisEvidence; labels: TransmissionChainLabels }) {
+  // 标记与类名同假说账的证据行（k-hl-ev），样式不另写一份。
   return (
-    <li className="k-tc-ev" data-stance={item.stance}>
-      <span className="k-tc-ev-stance">
-        <Icon aria-hidden width={12} height={12} />
+    <li className="k-hl-ev" data-stance={item.stance}>
+      <span className="k-hl-kind" data-kind={item.kind}>
+        {labels.kind[item.kind]}
+      </span>
+      <span className="k-hl-stance">
+        <i aria-hidden="true" />
         {labels.stance[item.stance]}
       </span>
-      <p>{item.text}</p>
-      {item.kind || item.source ? (
-        <small>
-          {item.kind ? <span className="k-tc-tag">{labels.kind[item.kind]}</span> : null}
-          {item.source}
-        </small>
-      ) : null}
+      <time className="k-hl-time" dateTime={new Date(item.publishedAt).toISOString()}>
+        {labels.date(item.publishedAt)}
+      </time>
+      <a className="k-hl-source" href={item.href} target="_blank" rel="noreferrer">
+        <ExternalLink size={11} aria-hidden />
+        {item.source}
+      </a>
+      <span className="k-hl-summary">{item.summary}</span>
     </li>
   )
 }

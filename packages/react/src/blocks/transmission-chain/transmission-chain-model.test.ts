@@ -12,6 +12,7 @@ import {
 } from './transmission-chain-model.ts'
 
 const nodes: ChainNode[] = ['a', 'b', 'c'].map((id) => ({ id, label: id }))
+const ev = { kind: 'data' as const, source: 's', href: 'https://example.com', publishedAt: 0, summary: '' }
 const edge = (id: string, from: string, to: string, extra: Partial<ChainEdge> = {}): ChainEdge => ({
   id,
   from,
@@ -29,12 +30,12 @@ describe('传导链模型', () => {
   it('证据计数从证据行数出来', () => {
     const e = edge('1', 'a', 'b', {
       evidence: [
-        { id: 'x', text: '', stance: 'support' },
-        { id: 'y', text: '', stance: 'support' },
-        { id: 'z', text: '', stance: 'against' },
+        { ...ev, id: 'x', stance: 'support' },
+        { ...ev, id: 'y', stance: 'support' },
+        { ...ev, id: 'z', stance: 'oppose' },
       ],
     })
-    expect(evidenceCounts(e)).toEqual({ support: 2, against: 1, neutral: 0 })
+    expect(evidenceCounts(e)).toEqual({ support: 2, oppose: 1 })
     expect(statusTotals([e, edge('2', 'b', 'c', { status: 'partial' })]).partial).toBe(1)
   })
 

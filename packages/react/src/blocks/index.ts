@@ -37,6 +37,20 @@ export type {
   DecisionSource,
   DecisionStatus,
 } from './decision-queue/decision-queue-model.ts'
+export {
+  HypothesisLedger,
+  type HypothesisLedgerLabels,
+  type HypothesisLedgerProps,
+} from './hypothesis-ledger/hypothesis-ledger.tsx'
+export type {
+  EvidenceKind,
+  Hypothesis,
+  HypothesisAsset,
+  HypothesisEvidence,
+  HypothesisLayer,
+  HypothesisStatus,
+  WatchRow,
+} from './hypothesis-ledger/hypothesis-ledger-model.ts'
 export { NewsFeed, type NewsFeedLabels, type NewsFeedProps } from './news-feed/news-feed.tsx'
 export type { NewsItem, NewsSymbol } from './news-feed/news-feed-model.ts'
 export {
@@ -63,11 +77,8 @@ export {
 export type {
   ChainDirection,
   ChainEdge,
-  ChainEvidence,
   ChainNode,
   ChainStatus,
-  EvidenceKind,
-  EvidenceStance,
 } from './transmission-chain/transmission-chain-model.ts'
 export { Toolbar, ToolbarGroup, ToolButton, ToolSlot } from './toolbar/toolbar.tsx'
 export { useRovingToolbar } from './toolbar/use-roving-toolbar.ts'
