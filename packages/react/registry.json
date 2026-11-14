@@ -239,6 +239,11 @@
           "target": "~/src/katana/ui/theme/symbol-mark.css"
         },
         {
+          "path": "src/theme/symbol-overview.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/symbol-overview.css"
+        },
+        {
           "path": "src/theme/system-monitor.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/system-monitor.css"
@@ -2336,6 +2341,22 @@
       ]
     },
     {
+      "name": "key-stats",
+      "type": "registry:component",
+      "title": "Key Stats",
+      "description": "照 TradingView 品种页的 Key stats（2026-11-15 实测）：标题带「›」，三列网格，每项一个灰色小标签（带「›」，给了 onItem 就可点）、一个大号数值（带单位小字）、可选徽标（中性灰胶囊，不用 TV 的紫色）。数值与文字由调用方传。",
+      "registryDependencies": [
+        "@katana/cn"
+      ],
+      "files": [
+        {
+          "path": "src/quant/key-stats.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/key-stats.tsx"
+        }
+      ]
+    },
+    {
       "name": "limit-ladder",
       "type": "registry:component",
       "title": "Limit Ladder",
@@ -2457,6 +2478,41 @@
           "path": "src/quant/param-scatter.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/quant/param-scatter.tsx"
+        }
+      ]
+    },
+    {
+      "name": "peer-cards",
+      "type": "registry:component",
+      "title": "Peer Cards",
+      "description": "照 TradingView 品种页的 Peers（2026-11-15 实测）：横向卡片带，左右翻页箭头（到头变灰）；每卡一个字母圆徽标、代码、名称（过长截断）、右上「+」、价格（带单位小字）与涨跌幅（涨跌色）；右上角整组一个「Select to compare」按钮。数、价格与文字都由调用方传，不放真实公司标志。",
+      "registryDependencies": [
+        "@katana/change-text",
+        "@katana/cn",
+        "@katana/symbol-mark"
+      ],
+      "files": [
+        {
+          "path": "src/quant/peer-cards.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/peer-cards.tsx"
+        }
+      ]
+    },
+    {
+      "name": "performance-strip",
+      "type": "registry:component",
+      "title": "Performance Strip",
+      "description": "照 TradingView 品种页的 Performance 一行（2026-11-15 实测）：一排等宽格，上行周期（1 day … All time）、下行涨跌幅（涨跌色，过千写成 K%、M%）；点一格选中（灰底，aria-pressed）并回调，由调用方去切图表区间。数与周期名都由调用方传，件不算涨跌幅。选中用中性灰，不用 TV 的蓝。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/quant-format"
+      ],
+      "files": [
+        {
+          "path": "src/quant/performance-strip.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/performance-strip.tsx"
         }
       ]
     },
@@ -2639,7 +2695,7 @@
       "name": "technical-rating",
       "type": "registry:component",
       "title": "Technical Rating",
-      "description": "照 TradingView 的 Technicals 仪表：三个半圆仪表（振荡指标、总评、均线，总评居中放大），五档刻度文字，指针按 −1…1 的分数转到所在档（分界 −0.5、−0.1、0.1、0.5），下面一行大字写档名，再一行「卖 n · 中性 n · 买 n」与指标总数；底下是指标明细表（名称、读数、单项结论胶囊），顶上是时间周期分段控件。组件只画不算：分数、个数、读数与结论都由调用方传；档名、列名、免责一句也由调用方传，件只留位置。颜色走涨跌语义色与中性灰，不用橙色。放在 PanelFrame 里用。",
+      "description": "照 TradingView 技术页（2026-11-15 实测）：顶上十个时间周期（选中是灰底胶囊），三个半圆仪表（振荡指标、总评、均线，总评居中放大；弧两端取涨跌色、中段灰；刻度字只写中间三档），指针按 −1…1 的分数转到所在档（分界 −0.5、−0.1、0.1、0.5），下面是档名大字、圆角三列「卖 / 中性 / 买」计数框与指标总数；再下面每组一张并排明细表（名称、读数、结论，标题带「›」），最底下是整宽的 Pivots 表（R3…S3 × Classic、Fibonacci、Camarilla、Woodie、DM，缺值「—」）。组件只画不算：分数、个数、读数与结论都由调用方传；档名、列名、免责一句也由调用方传，件只留位置。颜色走涨跌语义色与中性灰，不用橙色。放在 PanelFrame 里用。",
       "registryDependencies": [
         "@katana/cn",
         "@katana/rating-gauge-model",
@@ -2697,6 +2753,39 @@
           "path": "src/quant/uptime-bars.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/quant/uptime-bars.tsx"
+        }
+      ]
+    },
+    {
+      "name": "watchlist-model",
+      "type": "registry:component",
+      "title": "Watchlist Model",
+      "description": "照 TradingView 右侧自选栏（2026-11-15 实测）：列 Symbol / Last / Chg / Chg%，行首小旗标与字母圆徽标；最新价变动时只有变了的尾数闪涨跌色、约 1 秒落回；点列头排序（升序、降序、回原顺序）。价格怎么写由 formatPrice 定，数与文字由调用方传。",
+      "files": [
+        {
+          "path": "src/quant/watchlist-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/watchlist-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "watchlist",
+      "type": "registry:component",
+      "title": "Watchlist",
+      "description": "照 TradingView 右侧自选栏（2026-11-15 实测）：列 Symbol / Last / Chg / Chg%，行首小旗标与字母圆徽标；最新价变动时只有变了的尾数闪涨跌色、约 1 秒落回；点列头排序（升序、降序、回原顺序）。价格怎么写由 formatPrice 定，数与文字由调用方传。",
+      "registryDependencies": [
+        "@katana/change-text",
+        "@katana/cn",
+        "@katana/quant-format",
+        "@katana/symbol-mark",
+        "@katana/watchlist-model"
+      ],
+      "files": [
+        {
+          "path": "src/quant/watchlist.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/watchlist.tsx"
         }
       ]
     },

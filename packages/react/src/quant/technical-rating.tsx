@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-import { Fragment, type CSSProperties, type ReactNode } from 'react'
+import { type CSSProperties, type ReactNode } from 'react'
 import { cn } from '../lib/cn.ts'
 import { GAUGE_CX, GAUGE_CY, ratingAngle, ratingZone, RATING_BOUNDS, zoneArc } from '../katana/rating-gauge-model.ts'
 import { ToggleGroup, ToggleGroupItem } from '../primitives/toggle-group.tsx'
@@ -8,6 +8,8 @@ import { ToggleGroup, ToggleGroupItem } from '../primitives/toggle-group.tsx'
 // 每个仪表底下写参与评级的指标总数；帮助中心「Technical Ratings」：评级只是指标读数的汇总、不建议只凭它买卖；2026-11-15 读）。
 // 五档分界与指针转角用包里 rating-gauge-model 的同一把尺子（−0.5、−0.1、0.1、0.5，出处见那里）。
 // 组件只画，不算：每组的 −1…1 分数与卖 / 中性 / 买个数、每个指标的读数与单项结论都由调用方算好传来；包里不带语言，档名、列名、免责一句也由调用方传。
+// 2026-11-15 #53 对齐 TradingView 技术页（主会话同日实测 /symbols/NASDAQ-AAPL/technicals/，只取布局与功能）：周期条、三个仪表（两端信号色、中段灰）、
+// 圆角三列计数框、两张并排明细表（每组一张，标题带「›」）、整宽 Pivots 表；颜色用 Graphite 涨跌色，不用 TV 的蓝。
 // 样子（用户 2026-11-15 的校准）：表格手感取 TradingView（无衬线 tabular-nums、右对齐、极淡分隔线、悬停整行提亮、纯文字加低饱和胶囊），
 // 卡片结构取 Arc（读数在上、明细在下、组间留白），不加工业装饰；颜色走涨跌语义色与中性灰，不用橙色。放在 PanelFrame 里用。
 
@@ -29,6 +31,21 @@ export type RatingRow = {
   /** 读数，调用方写好的文字（「54.20」）；没有写「—」。 */
   reading?: string
   verdict: RatingVerdict
+}
+
+export type PivotRow = {
+  key: string
+  /** 行名（R3、R2、R1、P、S1、S2、S3）。 */
+  label: string
+  /** 与 PivotTable.columns 一一对应；没有值写 null / undefined，画「—」。 */
+  values: readonly (string | null | undefined)[]
+}
+
+export type PivotTable = {
+  title: string
+  /** 列名（Classic、Fibonacci、Camarilla、Woodie、DM）。 */
+  columns: readonly string[]
+  rows: readonly PivotRow[]
 }
 
 export type TechnicalRatingTimeframe = { value: string; label: string }
@@ -55,6 +72,8 @@ export type TechnicalRatingProps = {
   labels: TechnicalRatingLabels
   /** 放大居中的那一组（总评）的 key；不给取中间那一组。 */
   primary?: string
+  /** 枢轴点表（整宽，放在明细表下面）；不给就不画。读数由调用方算。 */
+  pivots?: PivotTable
   timeframes?: readonly TechnicalRatingTimeframe[]
   timeframe?: string
   onTimeframeChange?: (value: string) => void
@@ -103,6 +122,8 @@ function Dial({ group, labels, primary }: { group: RatingGroup; labels: Technica
           </g>
         </svg>
         {labels.zones.map((zone, i) => {
+          // 两端的「强卖 / 强买」不画在弧旁：写出来比弧还宽、会盖住弧或被裁，两端的意思由弧色与下面的大字承担。
+          if (i === 0 || i === 4) return null
           const rad = (zoneMid(i) * Math.PI) / 180
           const x = GAUGE_CX + LABEL_R * Math.sin(rad)
           const y = GAUGE_CY - LABEL_R * Math.cos(rad)
@@ -123,17 +144,12 @@ function Dial({ group, labels, primary }: { group: RatingGroup; labels: Technica
         {word}
       </div>
       <div className="k-trating-counts" data-slot="rating-counts">
-        <span data-verdict="sell">
-          {labels.verdict.sell} {sell}
-        </span>
-        {' · '}
-        <span data-verdict="neutral">
-          {labels.verdict.neutral} {neutral}
-        </span>
-        {' · '}
-        <span data-verdict="buy">
-          {labels.verdict.buy} {buy}
-        </span>
+        {(['sell', 'neutral', 'buy'] as const).map((v) => (
+          <span key={v} data-verdict={v}>
+            <small>{labels.verdict[v]}</small>
+            <b>{group.counts[v]}</b>
+          </span>
+        ))}
       </div>
       <div className="k-trating-total">{labels.total(sell + neutral + buy)}</div>
     </figure>
@@ -145,6 +161,7 @@ export function TechnicalRating({
   rows = [],
   labels,
   primary,
+  pivots,
   timeframes,
   timeframe,
   onTimeframeChange,
@@ -195,44 +212,80 @@ export function TechnicalRating({
         </p>
       ) : null}
       {sections.length > 0 ? (
-        <table className="k-trating-table" data-slot="rating-table">
-          <thead>
-            <tr>
-              <th scope="col">{labels.columns.name}</th>
-              <th scope="col" className="is-num">
-                {labels.columns.reading}
-              </th>
-              <th scope="col" className="is-end">
-                {labels.columns.verdict}
-              </th>
-            </tr>
-          </thead>
+        <div className="k-trating-tables" data-slot="rating-table">
           {sections.map((section) => (
-            <Fragment key={section.key}>
-              <tbody data-slot="rating-section" data-group={section.key}>
-                {section.label ? (
-                  <tr className="k-trating-section">
-                    <th scope="colgroup" colSpan={3}>
-                      {section.label}
-                      <span className="k-trating-section-n">{section.rows.length}</span>
+            <section key={section.key} className="k-trating-card" data-slot="rating-section" data-group={section.key}>
+              {section.label ? (
+                <h3 className="k-trating-card-title">
+                  {section.label}
+                  <span className="k-trating-chev" aria-hidden="true">
+                    ›
+                  </span>
+                </h3>
+              ) : null}
+              <table className="k-trating-table" aria-label={section.label ?? labels.list}>
+                <thead>
+                  <tr>
+                    <th scope="col">{labels.columns.name}</th>
+                    <th scope="col" className="is-num">
+                      {labels.columns.reading}
+                    </th>
+                    <th scope="col" className="is-end">
+                      {labels.columns.verdict}
                     </th>
                   </tr>
-                ) : null}
-                {section.rows.map((row) => (
-                  <tr key={row.key} className="k-trating-row" data-slot="rating-row" data-verdict={row.verdict}>
-                    <th scope="row">{row.name}</th>
-                    <td className="is-num">{row.reading ?? DASH}</td>
-                    <td className="is-end">
-                      <span className="k-trating-verdict" data-verdict={row.verdict}>
-                        {labels.verdict[row.verdict]}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </Fragment>
+                </thead>
+                <tbody>
+                  {section.rows.map((row) => (
+                    <tr key={row.key} className="k-trating-row" data-slot="rating-row" data-verdict={row.verdict}>
+                      <th scope="row">{row.name}</th>
+                      <td className="is-num">{row.reading ?? DASH}</td>
+                      <td className="is-end">
+                        <span className="k-trating-verdict" data-verdict={row.verdict}>
+                          {labels.verdict[row.verdict]}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </section>
           ))}
-        </table>
+        </div>
+      ) : null}
+      {pivots ? (
+        <section className="k-trating-card is-wide" data-slot="rating-pivots">
+          <h3 className="k-trating-card-title">
+            {pivots.title}
+            <span className="k-trating-chev" aria-hidden="true">
+              ›
+            </span>
+          </h3>
+          <table className="k-trating-table is-pivots" aria-label={pivots.title}>
+            <thead>
+              <tr>
+                <th scope="col" aria-label={pivots.title} />
+                {pivots.columns.map((c) => (
+                  <th key={c} scope="col" className="is-num">
+                    {c}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {pivots.rows.map((row) => (
+                <tr key={row.key} className="k-trating-row" data-slot="pivot-row">
+                  <th scope="row">{row.label}</th>
+                  {pivots.columns.map((c, i) => (
+                    <td key={c} className="is-num">
+                      {row.values[i] ?? DASH}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </section>
       ) : null}
     </div>
   )
