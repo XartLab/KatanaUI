@@ -1797,6 +1797,35 @@
       ]
     },
     {
+      "name": "range-histogram-model",
+      "type": "registry:component",
+      "title": "Range Histogram Model",
+      "description": "一排柱子画出全体的分布，下面一条轨道两个把手：拖出来的区间里的柱子亮、区间外的暗；柱色取 seq 顺序色阶（越高越亮）。用在筛选器，在全市场分布上拖市值、涨幅、换手的区间。点柱子或轨道，最近的把手跳过去。功能参照 Arc Range histogram slider，实现原创。",
+      "files": [
+        {
+          "path": "src/patterns/range-histogram-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/patterns/range-histogram-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "range-histogram-slider",
+      "type": "registry:component",
+      "title": "Range Histogram Slider",
+      "description": "一排柱子画出全体的分布，下面一条轨道两个把手：拖出来的区间里的柱子亮、区间外的暗；柱色取 seq 顺序色阶（越高越亮）。用在筛选器，在全市场分布上拖市值、涨幅、换手的区间。点柱子或轨道，最近的把手跳过去。功能参照 Arc Range histogram slider，实现原创。",
+      "registryDependencies": [
+        "@katana/range-histogram-model"
+      ],
+      "files": [
+        {
+          "path": "src/patterns/range-histogram-slider.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/patterns/range-histogram-slider.tsx"
+        }
+      ]
+    },
+    {
       "name": "tree-view",
       "type": "registry:component",
       "title": "Tree View",
@@ -1889,15 +1918,6 @@
           "path": "src/quant/brush-chart.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/quant/brush-chart.tsx"
-      "name": "range-histogram-model",
-      "type": "registry:component",
-      "title": "Range Histogram Model",
-      "description": "一排柱子画出全体的分布，下面一条轨道两个把手：拖出来的区间里的柱子亮、区间外的暗；柱色取 seq 顺序色阶（越高越亮）。用在筛选器，在全市场分布上拖市值、涨幅、换手的区间。点柱子或轨道，最近的把手跳过去。功能参照 Arc Range histogram slider，实现原创。",
-      "files": [
-        {
-          "path": "src/patterns/range-histogram-model.ts",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/patterns/range-histogram-model.ts"
         }
       ]
     },
@@ -1942,18 +1962,6 @@
           "path": "src/quant/calendar-model.ts",
           "type": "registry:component",
           "target": "~/src/katana/ui/quant/calendar-model.ts"
-      "name": "range-histogram-slider",
-      "type": "registry:component",
-      "title": "Range Histogram Slider",
-      "description": "一排柱子画出全体的分布，下面一条轨道两个把手：拖出来的区间里的柱子亮、区间外的暗；柱色取 seq 顺序色阶（越高越亮）。用在筛选器，在全市场分布上拖市值、涨幅、换手的区间。点柱子或轨道，最近的把手跳过去。功能参照 Arc Range histogram slider，实现原创。",
-      "registryDependencies": [
-        "@katana/range-histogram-model"
-      ],
-      "files": [
-        {
-          "path": "src/patterns/range-histogram-slider.tsx",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/patterns/range-histogram-slider.tsx"
         }
       ]
     },
@@ -1971,6 +1979,36 @@
           "path": "src/quant/change-text.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/quant/change-text.tsx"
+        }
+      ]
+    },
+    {
+      "name": "chart-scale",
+      "type": "registry:component",
+      "title": "Chart Scale",
+      "description": "分布与关系类的图（Ridgeline、SlopeChart、ConnectedScatter）共用的纯函数：线性比例尺、好看的刻度、分位数。",
+      "files": [
+        {
+          "path": "src/quant/chart-scale.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/chart-scale.ts"
+        }
+      ]
+    },
+    {
+      "name": "connected-scatter",
+      "type": "registry:component",
+      "title": "Connected Scatter",
+      "description": "每个点是一个时刻的 (x, y)，按时间顺序连成轨迹，看一个对象在两个量之间怎么走（如策略的波动 vs 收益按月的路径、风格漂移）。时间方向不单靠颜色：起点空心圈、终点强调色实心圈加箭头、中间的点按时间取 seq 色阶（越晚越亮）。多条轨迹各取 series 色板的一个色。功能参照 Arc Connected scatter，实现原创。",
+      "registryDependencies": [
+        "@katana/chart-kit",
+        "@katana/scatter-model"
+      ],
+      "files": [
+        {
+          "path": "src/quant/connected-scatter.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/connected-scatter.tsx"
         }
       ]
     },
@@ -2055,15 +2093,6 @@
           "path": "src/quant/meter-model.ts",
           "type": "registry:component",
           "target": "~/src/katana/ui/quant/meter-model.ts"
-      "name": "chart-scale",
-      "type": "registry:component",
-      "title": "Chart Scale",
-      "description": "分布与关系类的图（Ridgeline、SlopeChart、ConnectedScatter）共用的纯函数：线性比例尺、好看的刻度、分位数。",
-      "files": [
-        {
-          "path": "src/quant/chart-scale.ts",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/quant/chart-scale.ts"
         }
       ]
     },
@@ -2082,19 +2111,6 @@
           "path": "src/quant/meter.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/quant/meter.tsx"
-      "name": "connected-scatter",
-      "type": "registry:component",
-      "title": "Connected Scatter",
-      "description": "每个点是一个时刻的 (x, y)，按时间顺序连成轨迹，看一个对象在两个量之间怎么走（如策略的波动 vs 收益按月的路径、风格漂移）。时间方向不单靠颜色：起点空心圈、终点强调色实心圈加箭头、中间的点按时间取 seq 色阶（越晚越亮）。多条轨迹各取 series 色板的一个色。功能参照 Arc Connected scatter，实现原创。",
-      "registryDependencies": [
-        "@katana/chart-kit",
-        "@katana/scatter-model"
-      ],
-      "files": [
-        {
-          "path": "src/quant/connected-scatter.tsx",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/quant/connected-scatter.tsx"
         }
       ]
     },
@@ -2116,15 +2132,6 @@
       ]
     },
     {
-      "name": "series-geometry",
-      "type": "registry:component",
-      "title": "Series Geometry",
-      "description": "序列图共用的几何（纯函数）：好看的刻度、比例尺、折线与面积路径，BrushChart、HorizonChart、SmallMultiples、SeriesExplorer 都用。",
-      "files": [
-        {
-          "path": "src/quant/series-geometry.ts",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/quant/series-geometry.ts"
       "name": "quantile-layers",
       "type": "registry:component",
       "title": "Quantile Layers",
@@ -2209,22 +2216,19 @@
       ]
     },
     {
-      "name": "spark-tile",
+      "name": "series-geometry",
       "type": "registry:component",
-      "title": "Spark Tile",
-      "description": "KPI 行的瓦片：点阵标签、LCD 数值、24px 迷你折线（末点橙）、一行变化说明；有阈值画琥珀虚线，接近阈值边框转暗橙并脉冲一次。对设计稿的 SparkTile 卡。",
-      "registryDependencies": [
-        "@katana/chart-kit",
-        "@katana/cn",
-        "@katana/rolling-text",
-        "@katana/series-geometry",
-        "@katana/use-scrubber"
-      ],
+      "title": "Series Geometry",
+      "description": "序列图共用的几何（纯函数）：好看的刻度、比例尺、折线与面积路径，BrushChart、HorizonChart、SmallMultiples、SeriesExplorer 都用。",
       "files": [
         {
-          "path": "src/quant/spark-tile.tsx",
+          "path": "src/quant/series-geometry.ts",
           "type": "registry:component",
-          "target": "~/src/katana/ui/quant/spark-tile.tsx"
+          "target": "~/src/katana/ui/quant/series-geometry.ts"
+        }
+      ]
+    },
+    {
       "name": "slope-chart",
       "type": "registry:component",
       "title": "Slope Chart",
@@ -2251,6 +2255,26 @@
           "path": "src/quant/slope-model.ts",
           "type": "registry:component",
           "target": "~/src/katana/ui/quant/slope-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "spark-tile",
+      "type": "registry:component",
+      "title": "Spark Tile",
+      "description": "KPI 行的瓦片：点阵标签、LCD 数值、24px 迷你折线（末点橙）、一行变化说明；有阈值画琥珀虚线，接近阈值边框转暗橙并脉冲一次。对设计稿的 SparkTile 卡。",
+      "registryDependencies": [
+        "@katana/chart-kit",
+        "@katana/cn",
+        "@katana/rolling-text",
+        "@katana/series-geometry",
+        "@katana/use-scrubber"
+      ],
+      "files": [
+        {
+          "path": "src/quant/spark-tile.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/spark-tile.tsx"
         }
       ]
     },
@@ -2298,38 +2322,6 @@
           "path": "src/quant/uptime-bars.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/quant/uptime-bars.tsx"
-        }
-      ]
-    },
-    {
-      "name": "waterfall-chart",
-      "type": "registry:component",
-      "title": "Waterfall Chart",
-      "description": "期初权益到期末权益的桥：起点一根总计柱，中间每一步是一根浮动的增减柱（涨跌色跟涨跌配色走），末尾一根总计柱，相邻柱之间连水平线。指针或 ←→ 扫读。功能参照 Arc 的 MRR waterfall。",
-      "registryDependencies": [
-        "@katana/cn",
-        "@katana/series-geometry",
-        "@katana/use-scrubber",
-        "@katana/waterfall-model"
-      ],
-      "files": [
-        {
-          "path": "src/quant/waterfall-chart.tsx",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/quant/waterfall-chart.tsx"
-        }
-      ]
-    },
-    {
-      "name": "waterfall-model",
-      "type": "registry:component",
-      "title": "Waterfall Model",
-      "description": "WaterfallChart 的累加（纯函数）：增减柱接着累计、总计柱重置累计并给出对不上的差额。",
-      "files": [
-        {
-          "path": "src/quant/waterfall-model.ts",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/quant/waterfall-model.ts"
         }
       ]
     },
@@ -2429,8 +2421,6 @@
       "type": "registry:component",
       "title": "Series Explorer",
       "description": "盈亏探索积木：一排 KPI 瓦片（SparkTile），点一张展开成下面的图面板；面板顶上是指标页签、区间切换、对比上一期、右上三件，图是该指标的序列（柱或线），下面是刷选条；顶行可以对账（期初到期末、差额、灯加词），页脚来源行。交互参照 Arc 的 Metric explorer，样子与内容照设计稿 IntradayPnL、PnLLedger、EquityCurve 三张卡。",
-      "title": "Symbol Galaxy",
-      "description": "持仓、自选、筛选结果按行业、市场、因子分位或状态聚成一团团的圆：面积是市值或仓位，圆面用发散色 div-*：正负各两档，-200 只给涨跌幅绝对值在前 20% 的点，中点灰，涨跌色不上面积；团名放在团的外接圆上方的留白里。上面一排切换分组方式，点在团间平滑迁移；悬停读详情，点击选中；Tab 在团间走、方向键在团内走。点多时自动改画 canvas。布局用 d3-hierarchy 的 pack，同样的数据永远同样的位置。功能参照 Arc Customer galaxy，实现原创。",
       "dependencies": [
         "lucide-react@1.67.0"
       ],
@@ -2446,8 +2436,6 @@
         "@katana/toggle-group",
         "@katana/toolbar",
         "@katana/use-scrubber"
-        "@katana/chart-kit",
-        "@katana/toggle-group"
       ],
       "files": [
         {
@@ -2487,10 +2475,14 @@
           "path": "src/blocks/attribution-bars/attribution-model.ts",
           "type": "registry:component",
           "target": "~/src/katana/ui/blocks/attribution-bars/attribution-model.ts"
+        }
+      ]
+    },
+    {
       "name": "symbol-galaxy",
       "type": "registry:component",
       "title": "Symbol Galaxy",
-      "description": "持仓、自选、筛选结果按行业、市场、因子分位或状态聚成一团团的圆：面积是市值或仓位，颜色是涨跌（七档，跟涨跌配色走）。上面一排切换分组方式，点在团间平滑迁移；悬停读详情，点击选中；Tab 在团间走、方向键在团内走。点多时自动改画 canvas。布局用 d3-hierarchy 的 pack，同样的数据永远同样的位置。功能参照 Arc Customer galaxy，实现原创。",
+      "description": "持仓、自选、筛选结果按行业、市场、因子分位或状态聚成一团团的圆：面积是市值或仓位，圆面用发散色 div-*：正负各两档，-200 只给涨跌幅绝对值在前 20% 的点，中点灰，涨跌色不上面积；团名放在团的外接圆上方的留白里。上面一排切换分组方式，点在团间平滑迁移；悬停读详情，点击选中；Tab 在团间走、方向键在团内走。点多时自动改画 canvas。布局用 d3-hierarchy 的 pack，同样的数据永远同样的位置。功能参照 Arc Customer galaxy，实现原创。",
       "dependencies": [
         "d3-hierarchy@3.1.3"
       ],
@@ -2498,8 +2490,8 @@
         "@types/d3-hierarchy@3.1.7"
       ],
       "registryDependencies": [
-        "@katana/toggle-group",
-        "@katana/treemap-model"
+        "@katana/chart-kit",
+        "@katana/toggle-group"
       ],
       "files": [
         {

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 // Ridgeline 的纯逻辑：高斯核密度估计、Silverman 带宽、各组的山脊曲线。功能参照 Arc Ridgeline（uiarc.dev，2026-11-14 读），实现原创。
-import { quantileSorted } from './chart-scale'
+import { quantileSorted } from './chart-scale.ts'
 
 export type RidgeGroup = { id: string; label: string; values: readonly number[] }
 

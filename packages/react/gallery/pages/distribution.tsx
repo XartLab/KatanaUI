@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 import { useMemo, useState } from 'react'
-import { SymbolGalaxy, type GalaxyNode } from '../../src/blocks'
+import { SymbolGalaxy, type GalaxyNode } from '../../src/blocks/index.ts'
 import {
   ConnectedScatter,
   QuantileLayers,
@@ -8,7 +8,7 @@ import {
   SlopeChart,
   type ScatterSeries,
   type SlopeItem,
-} from '../../src/quant'
+} from '../../src/quant/index.ts'
 import {
   histogramBins,
   RangeHistogramSlider,
@@ -16,8 +16,8 @@ import {
   uptimeShare,
   type UptimeCell,
   type UptimeStatus,
-} from '../../src/index'
-import { Row } from './parts'
+} from '../../src/index.ts'
+import { Row } from './parts.tsx'
 
 /** 图右上三件的演示 props；导出与全屏的回调留空（演示页没有可导出的东西）。 */
 const ACTIONS = { group: '图的操作', table: '表格视图', exportCsv: '导出 CSV', fullscreen: '全屏' }

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 // ConnectedScatter 的纯逻辑：两轴范围、像素坐标、终点箭头、键盘移动。功能参照 Arc Connected scatter（uiarc.dev，2026-11-14 读），实现原创。
-import { linearScale, niceTicks } from './chart-scale'
+import { linearScale, niceTicks } from './chart-scale.ts'
 
 export type ScatterPoint = {
   x: number

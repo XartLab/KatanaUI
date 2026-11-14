@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vite-plus/test'
-import { QuantileLayers } from './quantile-layers'
-import { isMonotonic, layerLevel, quantileRange, type QuantileLayer } from './quantile-model'
+import { QuantileLayers } from './quantile-layers.tsx'
+import { isMonotonic, layerLevel, quantileRange, type QuantileLayer } from './quantile-model.ts'
 
 const layer = (rank: number, final: number): QuantileLayer => ({
   rank,

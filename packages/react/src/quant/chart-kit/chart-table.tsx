@@ -4,7 +4,7 @@
 // 表头与读屏名只从 props 来。复用 series.css 的 .k-sx-table 皮肤。
 import { useVirtualizer } from '@tanstack/react-virtual'
 import { useRef, type ReactNode } from 'react'
-import type { ChartActionsLabels } from './chart-actions'
+import type { ChartActionsLabels } from './chart-actions.tsx'
 
 /** 每张图都带的「表格视图 / 导出 / 全屏」这一组 props：表格视图总有；导出与全屏的回调不给就不画那个按钮。 */
 export type ChartViewProps = {

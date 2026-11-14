@@ -3,9 +3,9 @@
 // 两侧写名字与数，标签互相不重叠；rank 模式不看数值、只看名次的升降。悬停或聚焦一条，其余变暗，读数行写整句；上下键在条间走，Enter 选中。
 // 功能参照 Arc Slope chart（uiarc.dev，2026-11-14 读，页面只写了这个名字），实现原创；用在 RebalanceDesk 的差额。文字全由 props 传。
 import { useRef, useState, type KeyboardEvent, type ReactNode } from 'react'
-import { ChartActions } from './chart-kit/chart-actions'
-import { ChartTable, type ChartViewProps } from './chart-kit/chart-table'
-import { slopeLayout, type SlopeItem, type SlopeMode } from './slope-model'
+import { ChartActions } from './chart-kit/chart-actions.tsx'
+import { ChartTable, type ChartViewProps } from './chart-kit/chart-table.tsx'
+import { slopeLayout, type SlopeItem, type SlopeMode } from './slope-model.ts'
 
 const W = 560
 const PAD = 16

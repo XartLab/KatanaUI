@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vite-plus/test'
-import { linearScale, niceTicks, quantileSorted } from './chart-scale'
-import { Ridgeline } from './ridgeline'
-import { gaussianKde, ridgelines, ridgeStats, silvermanBandwidth } from './ridgeline-model'
+import { linearScale, niceTicks, quantileSorted } from './chart-scale.ts'
+import { Ridgeline } from './ridgeline.tsx'
+import { gaussianKde, ridgelines, ridgeStats, silvermanBandwidth } from './ridgeline-model.ts'
 
 const view = {
   actionLabels: { group: '操作', table: '表格视图', exportCsv: '导出', fullscreen: '全屏' },

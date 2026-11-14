@@ -4,15 +4,15 @@
 // 悬停一层其余变 40%，点击锁定（下面一排按钮也能键盘操作）；图上扫读出 LCD 提示列各层的值；底部一行结论：单调性（灯加词）、各项统计、来源。
 // 图右上三件（表格视图必有）。分层多于 10 不画线，只给表格（卡写改热力图，热力图待做）。文字全由 props 传。
 import { useState, type ReactNode } from 'react'
-import { cn } from '../lib/cn'
-import { useScrubber } from '../lib/use-scrubber'
-import { ChartActions, type ChartActionsLabels } from './chart-kit/chart-actions'
-import { ChartValue, type ChartValueText } from './chart-kit/chart-value'
-import { DotFill, useDotId } from './chart-kit/dot-fill'
-import { EndMarker } from './chart-kit/end-marker'
-import { LcdTooltip } from './chart-kit/lcd-tooltip'
-import { PlotGrid, PlotYAxis } from './chart-kit/plot-axes'
-import { seqColor } from './chart-kit/series-colors'
+import { cn } from '../lib/cn.ts'
+import { useScrubber } from '../lib/use-scrubber.ts'
+import { ChartActions, type ChartActionsLabels } from './chart-kit/chart-actions.tsx'
+import { ChartValue, type ChartValueText } from './chart-kit/chart-value.tsx'
+import { DotFill, useDotId } from './chart-kit/dot-fill.tsx'
+import { EndMarker } from './chart-kit/end-marker.tsx'
+import { LcdTooltip } from './chart-kit/lcd-tooltip.tsx'
+import { PlotGrid, PlotYAxis } from './chart-kit/plot-axes.tsx'
+import { seqColor } from './chart-kit/series-colors.ts'
 import {
   isMonotonic,
   layerLevel,
@@ -21,8 +21,8 @@ import {
   quantileRange,
   sortLayers,
   type QuantileLayer,
-} from './quantile-model'
-import { areaPath, linePath, makePlot, pct, PLOT_W } from './series-geometry'
+} from './quantile-model.ts'
+import { areaPath, linePath, makePlot, pct, PLOT_W } from './series-geometry.ts'
 
 export type QuantileStat = { key: string; label: string; value: string }
 

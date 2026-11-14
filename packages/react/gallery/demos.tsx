@@ -63,9 +63,6 @@ import {
   SparklineDemo,
   TreemapDemo,
 } from './pages/quotes.tsx'
-import { AccordionDemo, TabsDemo } from './pages/layout.tsx'
-import { ContextMenuDemo, DialogDemo, DropdownMenuDemo, PopoverDemo, TooltipDemo } from './pages/overlays.tsx'
-} from './pages/quotes'
 import {
   ConnectedScatterDemo,
   SymbolGalaxyDemo,
@@ -74,9 +71,9 @@ import {
   RidgelineDemo,
   SlopeChartDemo,
   UptimeBarsDemo,
-} from './pages/distribution'
-import { AccordionDemo, TabsDemo } from './pages/layout'
-import { ContextMenuDemo, DialogDemo, DropdownMenuDemo, PopoverDemo, TooltipDemo } from './pages/overlays'
+} from './pages/distribution.tsx'
+import { AccordionDemo, TabsDemo } from './pages/layout.tsx'
+import { ContextMenuDemo, DialogDemo, DropdownMenuDemo, PopoverDemo, TooltipDemo } from './pages/overlays.tsx'
 import {
   ButtonDemo,
   CheckboxDemo,

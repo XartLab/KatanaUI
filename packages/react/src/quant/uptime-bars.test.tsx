@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vite-plus/test'
-import { UptimeBars } from './uptime-bars'
-import { countStatuses, moveCell, uptimeShare, type UptimeCell } from './uptime-bars-model'
+import { UptimeBars } from './uptime-bars.tsx'
+import { countStatuses, moveCell, uptimeShare, type UptimeCell } from './uptime-bars-model.ts'
 
 const view = {
   actionLabels: { group: '操作', table: '表格视图', exportCsv: '导出', fullscreen: '全屏' },

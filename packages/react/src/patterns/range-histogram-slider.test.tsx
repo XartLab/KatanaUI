@@ -1,8 +1,16 @@
 // SPDX-License-Identifier: MIT
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vite-plus/test'
-import { histogramBins, moveThumb, nearestThumb, ratioOf, snapValue, stepValue, valueAt } from './range-histogram-model'
-import { RangeHistogramSlider } from './range-histogram-slider'
+import {
+  histogramBins,
+  moveThumb,
+  nearestThumb,
+  ratioOf,
+  snapValue,
+  stepValue,
+  valueAt,
+} from './range-histogram-model.ts'
+import { RangeHistogramSlider } from './range-histogram-slider.tsx'
 
 describe('histogramBins', () => {
   it('等宽分箱，最后一箱含 max，范围外与非有限数丢掉', () => {

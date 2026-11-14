@@ -497,6 +497,22 @@
   background: var(--div-pos-200);
   fill: var(--div-pos-200);
 }
+/* 图例里 -200 / +200 两档上的字：按底色亮度现算黑字或白字（算法与理由见 series.css 的 .k-heat-cell[data-tone='pos2']）。 */
+.k-galaxy-legend .is-step-2,
+.k-galaxy-legend .is-step2 {
+  color: color(
+    from var(--div-pos-200) srgb clamp(0, calc((0.43 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) * 1000), 1)
+      clamp(0, calc((0.43 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) * 1000), 1)
+      clamp(0, calc((0.43 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) * 1000), 1)
+  );
+}
+.k-galaxy-legend .is-step-2 {
+  color: color(
+    from var(--div-neg-200) srgb clamp(0, calc((0.43 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) * 1000), 1)
+      clamp(0, calc((0.43 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) * 1000), 1)
+      clamp(0, calc((0.43 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) * 1000), 1)
+  );
+}
 .k-galaxy-tip {
   position: absolute;
   inset: 0;

@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vite-plus/test'
-import { SlopeChart } from './slope-chart'
-import { ranks, slopeLayout, spreadLabels } from './slope-model'
+import { SlopeChart } from './slope-chart.tsx'
+import { ranks, slopeLayout, spreadLabels } from './slope-model.ts'
 
 const view = {
   actionLabels: { group: '操作', table: '表格视图', exportCsv: '导出', fullscreen: '全屏' },

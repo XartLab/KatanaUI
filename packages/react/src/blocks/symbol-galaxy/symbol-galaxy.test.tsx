@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vite-plus/test'
-import { galaxyStep, hitNode, layoutGalaxy, stepNode, type GalaxyNode } from './galaxy-model'
-import { SymbolGalaxy } from './symbol-galaxy'
+import { galaxyStep, hitNode, layoutGalaxy, stepNode, type GalaxyNode } from './galaxy-model.ts'
+import { SymbolGalaxy } from './symbol-galaxy.tsx'
 
 const frame = { width: 800, height: 520, pad: 8, headroom: 20 }
 const sectors = ['金融', '科技', '消费']
