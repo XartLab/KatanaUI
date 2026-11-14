@@ -1,7 +1,7 @@
 # 换皮：别的项目只覆盖哪些变量
 
 组件只读语义 token（`--bg-*`、`--ink-*`、`--pnl-up` …），不读 KATANA 专有的名字，所以换皮只改变量、不改组件。
-`src/theming.test.ts` 守着这一条：`src/primitives/`、`patterns/`、`lib/`、`quant/` 里出现的 `var(--x)`（含 Tailwind 的 `h-(--x)` 简写）不在 `tokens/tokens.css` 里就红。
+`src/theming.test.ts` 守着这一条：`src/primitives/`、`patterns/`、`lib/`、`quant/` 里出现的 `var(--x)`（含 Tailwind 的 `h-(--x)` 简写）不在 `@katana-ui/tokens` 的 `tokens.css` 里就红。
 三类例外不是 token：Radix 在打开的弹层上写进来的 `--radix-*`，动效入场用的 `--k-in-*`（带 fallback），Tailwind 自己的 `--tw-*`。
 
 ## 怎么覆盖
@@ -9,7 +9,7 @@
 先引 `tokens.css`，再引你自己的覆盖，最后引 `ui.css`：
 
 ```css
-@import 'katana/ui/tokens/tokens.css';
+@import 'katana/ui/tokens.css';
 @import './my-theme.css'; /* 下面这种 */
 @import 'katana/ui/ui.css';
 ```

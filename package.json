@@ -9,7 +9,7 @@
     "test": "pnpm -r --workspace-concurrency=1 run check && pnpm -r --workspace-concurrency=1 run test",
     "typecheck": "pnpm -r run typecheck",
     "build:site": "pnpm --filter @katana-ui/react build:site",
-    "tokens:sync": "pnpm --filter @katana-ui/react tokens:sync",
+    "tokens:sync": "pnpm --filter @katana-ui/tokens tokens:sync",
     "ds:build": "pnpm --filter @katana-ui/react ds:build"
   },
   "engines": {

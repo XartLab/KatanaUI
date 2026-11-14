@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: MIT */
 /* @katana-ui/react 的 Tailwind 主题（决策记录 0049，延续 #1774 的试做）。
    只引 Tailwind 的 theme 与 utilities，不引 preflight：全局重置仍是应用自己的 base.css，新旧样式并存，调用方一个一个换。
-   颜色、字体、曲线都接到 token（tokens/tokens.css），不另起一套色板，两个主题都跟着走。 */
+   颜色、字体、曲线都接到 token（@katana-ui/tokens 的 tokens.css），不另起一套色板，两个主题都跟着走。 */
 @import 'tailwindcss/theme.css' layer(theme);
 /* utilities 不放进层里（#1774 试出来的坑）：应用现有的样式（base.css、ui.css）都没分层，没分层的规则永远压过分了层的，
    放进层里的话 base.css 里一条 button 的规则就能盖掉这边的类。不分层就按引入顺序比，所以 ui.css 要在应用的样式之后引入。

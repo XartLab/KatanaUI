@@ -1,14 +1,15 @@
 // SPDX-License-Identifier: MIT
 // 从代码生成 design-pipeline 的设计系统包 packages/react/design-system/（`pnpm --filter @katana-ui/react ds:build`）。
 // 包里的文件都不手写，跟代码不会有两份：
-//   tokens.json          ← src/tokens/tokens.json（token 源头；ds-tokens.mjs：只留 Console 与 Graphite，补 contrast，过不了线的把比值写进 usage）
+//   tokens.json          ← @katana-ui/tokens 的 tokens.json（token 源头；ds-tokens.mjs：只留 Console 与 Graphite，补 contrast，过不了线的把比值写进 usage）
 //   README.md            ← ds/guidelines.md（手写的三节规则，原样复制，去掉开头的出处注释）
-//   components/bundle.css ← src/tokens/tokens.css 加上 Tailwind 编出来的 ui.css（预览与产品共用的同一份样式）
+//   components/bundle.css ← @katana-ui/tokens 的 tokens.css 加上 Tailwind 编出来的 ui.css（预览与产品共用的同一份样式）
 //   components/<Comp>/   ← 文档站的页数据（gallery/registry.ts 的 PAGES：说明、属性、组成、键盘）与页上的预览（gallery/demos.tsx）经 ds/render.tsx 渲染出的 README.md 与静态 preview.html；
 //                          每个页一个件，自有件（katana/）与量化件（quant/）都在里面，不再另写一份
 // 格式见 design-pipeline `skill/references/design-system-package.md`（2026-11-14 读，0.15.0-beta.1）。
 // 用法：node scripts/ds-build.mjs            重新生成
 //       node scripts/ds-build.mjs --check    只比对：生成的与已提交的不一样就退出 1（pnpm lint:ds 先跑它）
+import { createRequire } from 'node:module'
 import { mkdirSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs'
 import { dirname, join, relative, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -21,6 +22,8 @@ import { buildDesignSystemTokens } from './ds-tokens.mjs'
 const here = dirname(fileURLToPath(import.meta.url))
 const pkg = resolve(here, '..')
 const target = join(pkg, 'design-system')
+// token 源头与生成物在 @katana-ui/tokens 包里，按包名解析（本地连到仓库里的 packages/tokens）。
+const resolveToken = createRequire(import.meta.url).resolve
 
 const SPDX = 'SPDX-License-Identifier: MIT'
 const json = (value) => `${JSON.stringify(value, null, 2)}\n`
@@ -63,14 +66,14 @@ async function loadRender() {
 const compare = (a, b) => (a < b ? -1 : a > b ? 1 : 0)
 
 export async function generate() {
-  const source = JSON.parse(readFileSync(join(pkg, 'src/tokens/tokens.json'), 'utf8'))
+  const source = JSON.parse(readFileSync(resolveToken('@katana-ui/tokens/tokens.json'), 'utf8'))
   const files = new Map()
   files.set('tokens.json', json(buildDesignSystemTokens(source)))
 
   const guidelines = readFileSync(join(pkg, 'ds/guidelines.md'), 'utf8').replace(/^<!--[\s\S]*?-->\n/, '')
   files.set('README.md', guidelines)
 
-  const tokensCss = readFileSync(join(pkg, 'src/tokens/tokens.css'), 'utf8')
+  const tokensCss = readFileSync(resolveToken('@katana-ui/tokens/tokens.css'), 'utf8')
   // 预览里摆件用的版面类（gallery/preview.css，文档站也引它）并在 ui.css 后面，一起提色值。
   const previewCss = readFileSync(join(pkg, 'gallery/preview.css'), 'utf8').replace(/^\/\*[\s\S]*?\*\/\n/, '')
   const { css: uiCss, hoisted } = hoistRawColours(`${await compileUiCss()}\n${previewCss}`)
@@ -91,7 +94,7 @@ export async function generate() {
     `<!-- @dsCard group="Cover" height=540 -->\n<!-- ${SPDX} -->\n${renderCover({ name: source.name, tagline: 'Console-style components for quant and trading UIs' })}`,
   )
 
-  const head = `/* ${SPDX} */\n/* 生成文件（pnpm --filter @katana-ui/react ds:build）：src/tokens/tokens.css、Tailwind 编出的 src/ui.css、预览的版面类（gallery/preview.css），以及两段补充（见各段的注释）。预览与产品共用这一份。 */\n`
+  const head = `/* ${SPDX} */\n/* 生成文件（pnpm --filter @katana-ui/react ds:build）：@katana-ui/tokens 的 tokens.css、Tailwind 编出的 src/ui.css、预览的版面类（gallery/preview.css），以及两段补充（见各段的注释）。预览与产品共用这一份。 */\n`
   const base = `${head}${tokensCss}${uiCss}\n/* 组件里白色、黑色的透明度层：ui.css 的类里原来是裸色值，这里提成变量（值不变），换主题时从这里改。 */\n${hoistedBlock}`
   // 运行时才有值的变量：Radix 在打开的弹层上量好写进来，动效的 --k-in-* 由调用方覆盖。
   const known = declaredVars(base)

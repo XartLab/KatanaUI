@@ -6,7 +6,7 @@ This repository is the source of truth for Katana UI. Issues and pull requests a
   and a minimal snippet or screenshot.
 - **Have a fix?** Open a pull request against `main`. CI runs the same checks as `pnpm test`, `pnpm typecheck` and
   `pnpm build:site`.
-- **Design tokens** live in `packages/react/src/tokens/tokens.json`. Do not edit the generated `tokens.css`; change the
+- **Design tokens** live in `packages/tokens/src/tokens.json`. Do not edit the generated `tokens.css`; change the
   JSON and run `pnpm tokens:sync`.
 
 ## Working on the code locally

@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: MIT */
-/* 生成文件（pnpm --filter @katana-ui/react ds:build）：src/tokens/tokens.css、Tailwind 编出的 src/ui.css、预览的版面类（gallery/preview.css），以及两段补充（见各段的注释）。预览与产品共用这一份。 */
-/* Generated from src/tokens/tokens.json + src/tokens/motion.tokens.json by scripts/sync-tokens.mjs. Do not edit. */
+/* 生成文件（pnpm --filter @katana-ui/react ds:build）：@katana-ui/tokens 的 tokens.css、Tailwind 编出的 src/ui.css、预览的版面类（gallery/preview.css），以及两段补充（见各段的注释）。预览与产品共用这一份。 */
+/* Generated from src/tokens.json + src/motion.tokens.json by scripts/sync-tokens.mjs. Do not edit. */
 :root {
   --bg-000: #0b0b09;
   --bg-100: #141311;

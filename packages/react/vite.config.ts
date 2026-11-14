@@ -3,7 +3,7 @@ import tailwindcss from '@tailwindcss/vite'
 import { defineConfig } from 'vite-plus'
 
 // 组件库自己的 Vite+ 配置。XartLab/KatanaUI 是组件库的源头仓库（#2），文档站、测试、格式化、代码检查都在包里配，不靠仓库根目录。
-// 格式化与代码检查的规则跟根目录一致，改的时候两边一起改。
+// 格式化与代码检查的规则跟 packages/tokens 一致，改的时候两边一起改。
 export default defineConfig({
   // 文档站的地址前缀：Pages 发布在 /KatanaUI/ 下，用 SITE_BASE=/KatanaUI/ 给；不给就是根路径（本地 dev 与预览）。
   base: process.env.SITE_BASE ?? '/',
@@ -22,9 +22,6 @@ export default defineConfig({
     printWidth: 120,
     ignorePatterns: [
       '**/*.md',
-      'src/tokens/tokens.css',
-      // token 源头沿用原来 design/tokens.json 的手排格式（KATANAview 里 design/** 不格式化）。
-      'src/tokens/tokens.json',
       // 设计系统包由 ds-build.mjs 生成、shadcn 清单由 registry-json.mjs 生成，格式归生成器管（与 KATANAview 根目录的配置一致）。
       'design-system/**',
       'registry.json',

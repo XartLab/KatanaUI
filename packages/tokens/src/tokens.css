@@ -1,4 +1,4 @@
-/* Generated from src/tokens/tokens.json + src/tokens/motion.tokens.json by scripts/sync-tokens.mjs. Do not edit. */
+/* Generated from src/tokens.json + src/motion.tokens.json by scripts/sync-tokens.mjs. Do not edit. */
 :root {
   --bg-000: #0b0b09;
   --bg-100: #141311;

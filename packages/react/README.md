@@ -20,13 +20,30 @@ The package is not on npm yet. Pin a release tag of this repository (your git cr
 }
 ```
 
+`@katana-ui/react` depends on `@katana-ui/tokens` (the design tokens, a sibling package in this repository) with an
+exact version. Neither package is on npm yet, so tell your package manager where the tokens package lives, pinned to
+the same tag. With pnpm 12, put this in your `pnpm-workspace.yaml`:
+
+```yaml
+overrides:
+  '@katana-ui/tokens': git+https://github.com/XartLab/KatanaUI.git#v0.1.0&path:packages/tokens
+# pnpm 12 refuses git dependencies of dependencies by default; this package is one.
+blockExoticSubdeps: false
+```
+
+pnpm 12 reads `overrides` from `pnpm-workspace.yaml` only: a `pnpm.overrides` field in `package.json` is ignored, and
+the install fails with a 404 for `@katana-ui/tokens`. (Checked with pnpm 12.18.0 on a clean project; other package
+managers are not checked.) Once the packages are on npm, both settings go away.
+
 ```ts
 import '@katana-ui/react/tokens.css' // tokens first
 import '@katana-ui/react/ui.css' // Tailwind theme and motion, last
+import tokens from '@katana-ui/react/tokens.json' // the token source, for canvas code
 import { Button } from '@katana-ui/react'
 ```
 
-The package ships TypeScript source, so your bundler (Vite, for example) compiles it.
+`@katana-ui/react/tokens.css` and `@katana-ui/react/tokens.json` forward to `@katana-ui/tokens`, so the import lines do
+not change. The package ships TypeScript source, so your bundler (Vite, for example) compiles it.
 
 ## Install with shadcn
 
@@ -40,7 +57,8 @@ Your project needs React 19 and Tailwind CSS v4. Add the registry to your `compo
 }
 ```
 
-Then add the style (tokens, Tailwind theme, motion) and the components you want. Each item copies its source files into
+Then add the style (tokens, Tailwind theme, motion) and the components you want. The `style` and `motion` items depend
+on the `@katana-ui/tokens` package, so install that one too (see above for the git form, until it is on npm). Each item copies its source files into
 your project and installs the npm packages it needs; items depend on each other, so `button` also brings the
 `cn` and `focus` helpers.
 
@@ -54,7 +72,7 @@ Import order matters because Tailwind utilities are not layered. In your entry s
 own styles next, and `ui.css` last:
 
 ```css
-@import 'katana/ui/tokens/tokens.css';
+@import 'katana/ui/tokens.css';
 @import './app.css';
 @import 'katana/ui/ui.css';
 ```
@@ -66,8 +84,9 @@ variables under a `data-theme` attribute on the root element; no component code 
 `tokens.css`: Console (default) and Graphite (`data-theme="graphite"`). Setting `data-updown="cn"` swaps the up and down
 colors for markets where red means up.
 
-The token source is `src/tokens/tokens.json` (plus `src/tokens/motion.tokens.json` for springs). `src/tokens/tokens.css`
-is generated from it: edit the JSON, then run `pnpm tokens:sync`. `pnpm test` fails when the two disagree.
+The token source lives in the sibling package `packages/tokens` (`@katana-ui/tokens`): `src/tokens.json`, plus
+`src/motion.tokens.json` for springs. `src/tokens.css` there is generated from them: edit the JSON, then run
+`pnpm tokens:sync` from the repository root. `pnpm test` fails when the two disagree.
 
 ## Develop locally
 
@@ -84,7 +103,7 @@ pnpm build:site   # documentation site and shadcn registry into dist/ and dist/r
 ## Layout
 
 ```
-src/tokens      token source (tokens.json), generated CSS variables (tokens.css) and motion springs
+src/tokens.css  forwards to @katana-ui/tokens (the token source and generated CSS variables live in packages/tokens)
 src/theme       Tailwind v4 theme, keyframes and component CSS
 src/lib         cn, focus ring, motion helpers
 src/primitives  Radix-based building blocks (button, input, select, dialog, menus, tabs, ...)

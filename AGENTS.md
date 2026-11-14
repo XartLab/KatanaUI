@@ -8,7 +8,7 @@ KatanaUI 是设计系统的**源头仓库**（2026-11-14 用户定，#2）：tok
 以前它是 KATANAview `packages/ui` 的只读镜像，现在反过来，KATANAview 按 git 标签依赖这里发布的版本，不再带组件库源码。
 
 - 结构照 salt-ds：仓库根是 pnpm workspace，包在 `packages/`。现在有 `packages/react`（`@katana-ui/react`）；
-  `@katana-ui/tokens`（三层 token 与密度）按 #2 第 2 步拆出来。
+  `packages/tokens`（`@katana-ui/tokens`：三层 token 与密度、弹簧，生成 `tokens.css`）。`@katana-ui/react` 依赖它，写确切版本、不写 `workspace:`。
 - 包内的分层、件的归属、文档站与设计系统产物的规矩见 [packages/react/docs/zh-CN.md](packages/react/docs/zh-CN.md)。
 - 许可证 MIT。每个源文件头写 `SPDX-License-Identifier: MIT`。不许引进 AGPL 的代码；取自别处的写明出处与许可证，记进包的 `NOTICE`。
 - 包不依赖任何应用。应用相关的事（行情、面板、文案语言）由调用方传。
@@ -27,7 +27,7 @@ KatanaUI 是设计系统的**源头仓库**（2026-11-14 用户定，#2）：tok
 - `pnpm typecheck`
 - `pnpm build:site`
 
-改 token：改 `packages/react/src/tokens/tokens.json`，跑 `pnpm tokens:sync`；改了文档站的页数据或件，跑 `pnpm ds:build`。生成文件不手改。
+改 token：改 `packages/tokens/src/tokens.json`（弹簧改 `motion.tokens.json`），跑 `pnpm tokens:sync`；改了文档站的页数据或件，跑 `pnpm ds:build`。生成文件不手改。
 
 ## 发版
 

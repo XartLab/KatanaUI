@@ -171,6 +171,9 @@ importers:
       '@internationalized/date':
         specifier: 3.12.4
         version: 3.12.4
+      '@katana-ui/tokens':
+        specifier: 0.1.0
+        version: link:../tokens
       '@tanstack/react-table':
         specifier: 9.3.1
         version: 9.3.1(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
@@ -229,6 +232,21 @@ importers:
       shadcn:
         specifier: 4.22.2
         version: 4.22.2
+      typescript:
+        specifier: 7.0.2
+        version: 7.0.2
+      vite:
+        specifier: npm:@voidzero-dev/vite-plus-core@1.4.0
+        version: '@voidzero-dev/vite-plus-core@1.4.0(@types/node@22.20.5)(jiti@2.7.0)(typescript@7.0.2)'
+      vite-plus:
+        specifier: 1.4.0
+        version: 1.4.0(@types/node@22.20.5)(@vitest/ui@5.0.5)(jiti@2.7.0)(typescript@7.0.2)
+
+  packages/tokens:
+    devDependencies:
+      '@types/node':
+        specifier: 22.20.5
+        version: 22.20.5
       typescript:
         specifier: 7.0.2
         version: 7.0.2

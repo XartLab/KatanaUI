@@ -9,6 +9,7 @@
       "title": "Style",
       "description": "设计 token（Console 与 Graphite 两个主题、红涨绿跌切换）、Tailwind v4 主题与动效 CSS。ui.css 最后引。",
       "dependencies": [
+        "@katana-ui/tokens@0.1.0",
         "tailwindcss@4.3.5"
       ],
       "files": [
@@ -18,9 +19,9 @@
           "target": "~/src/katana/ui/ui.css"
         },
         {
-          "path": "src/tokens/tokens.css",
+          "path": "src/tokens.css",
           "type": "registry:file",
-          "target": "~/src/katana/ui/tokens/tokens.css"
+          "target": "~/src/katana/ui/tokens.css"
         },
         {
           "path": "src/theme/theme.css",
@@ -169,16 +170,14 @@
       "type": "registry:lib",
       "title": "Motion",
       "description": "三条弹簧参数（snappy、gentle、settle），给 motion/react 用。",
+      "dependencies": [
+        "@katana-ui/tokens@0.1.0"
+      ],
       "files": [
         {
           "path": "src/lib/motion.ts",
           "type": "registry:lib",
           "target": "~/src/katana/ui/lib/motion.ts"
-        },
-        {
-          "path": "src/tokens/motion.tokens.json",
-          "type": "registry:lib",
-          "target": "~/src/katana/ui/tokens/motion.tokens.json"
         }
       ]
     },

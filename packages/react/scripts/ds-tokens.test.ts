@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: MIT
 import { readFileSync } from 'node:fs'
+import { createRequire } from 'node:module'
 import { describe, expect, it } from 'vite-plus/test'
 import { THEMES, buildContrast, buildDesignSystemTokens, parseHex, ratio, resolveColor } from './ds-tokens.mjs'
 
-const source = JSON.parse(readFileSync(new URL('../src/tokens/tokens.json', import.meta.url), 'utf8'))
+const source = JSON.parse(readFileSync(createRequire(import.meta.url).resolve('@katana-ui/tokens/tokens.json'), 'utf8'))
 
 describe('对比度算法', () => {
   it('黑白是 21:1，同色是 1:1（WCAG 2.x 的相对亮度公式）', () => {

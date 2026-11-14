@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: MIT
 import { readFileSync } from 'node:fs'
+import { createRequire } from 'node:module'
 import { describe, expect, it } from 'vite-plus/test'
 import { gentle, settle, snappy } from './motion'
 
-const tokensCss = readFileSync(new URL('../tokens/tokens.css', import.meta.url), 'utf8')
+const tokensCss = readFileSync(createRequire(import.meta.url).resolve('@katana-ui/tokens/tokens.css'), 'utf8')
 
 describe('motion', () => {
   it('三个弹簧是 spring 类型，带 token 里的参数', () => {

@@ -23,25 +23,25 @@
   "exports": {
     ".": "./src/index.ts",
     "./ui.css": "./src/ui.css",
-    "./tokens.css": "./src/tokens/tokens.css",
+    "./tokens.css": "./src/tokens.css",
     "./motion": "./src/lib/motion.ts",
     "./quant": "./src/quant/index.ts",
     "./quant/format": "./src/quant/format/index.ts",
     "./blocks": "./src/blocks/index.ts",
-    "./tokens.json": "./src/tokens/tokens.json"
+    "./tokens.json": "./src/tokens-json.ts"
   },
   "scripts": {
-    "dev": "node scripts/sync-tokens.mjs && vp dev",
+    "dev": "pnpm --filter @katana-ui/tokens run tokens:sync && vp dev",
     "build:site": "node scripts/build-site.mjs",
-    "test": "node scripts/sync-tokens.mjs --check && node scripts/ds-build.mjs --check && vp test run",
+    "test": "node scripts/ds-build.mjs --check && vp test run",
     "typecheck": "tsc -p tsconfig.json",
     "check": "vp check",
-    "ds:build": "node scripts/sync-tokens.mjs && node scripts/ds-build.mjs",
-    "registry:build": "node scripts/registry-json.mjs && shadcn build -o r",
-    "tokens:sync": "node scripts/sync-tokens.mjs"
+    "ds:build": "pnpm --filter @katana-ui/tokens run tokens:sync && node scripts/ds-build.mjs",
+    "registry:build": "node scripts/registry-json.mjs && shadcn build -o r"
   },
   "dependencies": {
     "@internationalized/date": "3.12.4",
+    "@katana-ui/tokens": "0.1.0",
     "@tanstack/react-table": "9.3.1",
     "@tanstack/react-virtual": "3.14.25",
     "class-variance-authority": "0.7.1",

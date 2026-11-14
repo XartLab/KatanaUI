@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: MIT */
 /* 基础件的动效（决策记录 0049）。曲线与时长是 token 里的弹簧：--ease-snappy / --dur-snappy（菜单、提示、开关、页签的底块）、
-   --ease-gentle / --dur-gentle（对话框），由 scripts/sync-tokens.mjs 按 tokens/motion.tokens.json 算成 CSS linear()，与 motion/react 用同一份参数。
+   --ease-gentle / --dur-gentle（对话框），由 @katana-ui/tokens 的 scripts/sync-tokens.mjs 按它的 motion.tokens.json 算成 CSS linear()，与 motion/react 用同一份参数。
    手感照 design/katana-console/project/motion.md：菜单从触发处轻升，对话框升起，页签的底块弹簧滑过去。
    产品不跟系统的「减少动态效果」（AGENTS.md 的产品底线），所以这里不写 prefers-reduced-motion。
    用单独的 scale、translate 属性，不用 transform：对话框靠 translate 居中，写 transform 会互相挤。 */

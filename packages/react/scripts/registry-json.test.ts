@@ -81,7 +81,7 @@ describe('shadcn 注册表清单', () => {
   it('style 带齐 tokens、theme 与动效，落点保持包内的相对结构（@source 的相对路径才有效）', () => {
     const style = registry.items.find((i) => i.name === 'style')!
     const targets = style.files.map((f) => f.target)
-    for (const rel of ['ui.css', 'tokens/tokens.css', 'theme/theme.css', 'theme/motion.css']) {
+    for (const rel of ['ui.css', 'tokens.css', 'theme/theme.css', 'theme/motion.css']) {
       expect(targets).toContain(`~/src/katana/ui/${rel}`)
     }
   })

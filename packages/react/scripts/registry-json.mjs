@@ -64,17 +64,23 @@ function collectItems() {
     'registry:style',
     [
       'src/ui.css',
-      'src/tokens/tokens.css',
+      'src/tokens.css',
       'src/theme/theme.css',
       ...listDir('src/theme')
         .filter((f) => f.endsWith('.css') && f !== 'theme.css')
         .map((f) => `src/theme/${f}`),
     ],
-    { fileType: 'registry:file', extraDependencies: [`tailwindcss@${pkg.dependencies.tailwindcss}`] },
+    {
+      fileType: 'registry:file',
+      extraDependencies: [
+        `tailwindcss@${pkg.dependencies.tailwindcss}`,
+        `@katana-ui/tokens@${pkg.dependencies['@katana-ui/tokens']}`,
+      ],
+    },
   )
   for (const f of listDir('src/lib').filter((f) => /\.tsx?$/.test(f) && !/\.test\./.test(f))) {
     const name = f.replace(/\.tsx?$/, '')
-    add(name, 'registry:lib', [`src/lib/${f}`, ...(name === 'motion' ? ['src/tokens/motion.tokens.json'] : [])])
+    add(name, 'registry:lib', [`src/lib/${f}`])
   }
   byFile('src/primitives', 'registry:ui')
   // katana/ 自有的件：带 JSX 的是 component，纯函数（解析、计时）是 lib。
