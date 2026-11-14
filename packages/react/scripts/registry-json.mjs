@@ -169,7 +169,8 @@ export async function buildRegistry() {
         } else if (!spec.startsWith('node:')) {
           const bare = spec.startsWith('@') ? spec.split('/').slice(0, 2).join('/') : spec.split('/')[0]
           if (bare === 'react' || bare === 'react-dom') continue
-          const version = pkg.dependencies[bare] ?? (bare === '@katana-ui/tokens' ? pkg.peerDependencies[bare] : undefined)
+          const version =
+            pkg.dependencies[bare] ?? (bare === '@katana-ui/tokens' ? pkg.peerDependencies[bare] : undefined)
           if (!version) throw new Error(`registry：${file} 引入 ${bare}，但 package.json 的 dependencies 里没有`)
           npm.add(`${bare}@${version}`)
           // 类型包（DefinitelyTyped：@scope/name → @types/scope__name）在 devDependencies 里就跟着写进 item，
