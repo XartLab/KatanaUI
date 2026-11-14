@@ -1,0 +1,82 @@
+/* SPDX-License-Identifier: MIT */
+/* DateRangePicker：两个日期框用 DateTimeInput 的皮肤（.k-dt-*），弹层里左边一列预设、右边双月日历（.k-cal* 同单月日历）。
+   区间内的日子用 12% 强调色底，起止两头用实心强调色（同单月日历的选中色）。 */
+.k-dr {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.k-dr-dash {
+  color: var(--ink-300);
+}
+.k-pop.k-dr-pop {
+  display: flex;
+  gap: 12px;
+  min-width: 0;
+  padding: 8px;
+}
+.k-dr-presets {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 88px;
+  padding-right: 8px;
+  border-right: 1px solid var(--alpha-white-7);
+}
+.k-dr-preset {
+  display: flex;
+  align-items: center;
+  height: 28px;
+  padding: 0 8px;
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
+  color: var(--ink-200);
+  font: var(--text-data) var(--font-sans);
+  text-align: left;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.k-dr-preset:hover {
+  background: var(--alpha-white-5);
+  color: var(--ink-100);
+}
+.k-dr-preset[aria-pressed='true'],
+.k-dr-preset[data-custom] {
+  background: var(--alpha-white-6);
+  color: var(--ink-100);
+  font-weight: 600;
+}
+.k-dr-preset[data-custom] {
+  cursor: default;
+}
+.k-dr-preset:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: -2px;
+}
+.k-rcal-months {
+  display: flex;
+  gap: 16px;
+}
+/* 双月日历里所有日子都画，起止之间的日子是 12% 强调色底，两头是实心。 */
+.k-rcal .k-cal-cell[data-selected] {
+  background: color-mix(in srgb, var(--signal-orange) 22%, transparent);
+  color: var(--ink-100);
+  font-weight: 500;
+  border-radius: 0;
+}
+.k-rcal .k-cal-cell[data-selection-start],
+.k-rcal .k-cal-cell[data-selection-end] {
+  background: var(--signal-orange);
+  color: var(--bg-000);
+  font-weight: 600;
+}
+.k-rcal .k-cal-cell[data-selection-start] {
+  border-radius: 6px 0 0 6px;
+}
+.k-rcal .k-cal-cell[data-selection-end] {
+  border-radius: 0 6px 6px 0;
+}
+.k-rcal .k-cal-cell[data-selection-start][data-selection-end] {
+  border-radius: 6px;
+}

@@ -7,7 +7,7 @@ import { ChangeTextDemo, PnlTextDemo, QuantFormatDemo } from './pages/quant'
 import { DataGridDemo, EmptyStateDemo, EstimateBadgeDemo, ToolbarDemo } from './pages/blocks'
 import { AlertDemo, ProgressDemo, ToastDemo } from './pages/feedback'
 import { ComboboxDemo, CommandDemo } from './pages/pickers'
-import { ChipGroupDemo, HoldToConfirmDemo, ShortcutRecorderDemo } from './pages/arc-controls'
+import { ChipGroupDemo, DateRangePickerDemo, HoldToConfirmDemo, ShortcutRecorderDemo } from './pages/arc-controls'
 import { FieldDemo, HoverCardDemo, ScrollAreaDemo, SeparatorDemo, SheetDemo } from './pages/structure'
 import {
   AiStatusDemo,
@@ -76,6 +76,7 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'shortcut-recorder': ShortcutRecorderDemo,
   'number-input': NumberInputDemo,
   'date-time-input': DateTimeInputDemo,
+  'date-range-picker': DateRangePickerDemo,
   skeleton: SkeletonDemo,
   toast: ToastDemo,
   alert: AlertDemo,
