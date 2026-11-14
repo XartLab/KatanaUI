@@ -347,7 +347,7 @@ describe('地平线图分带', () => {
     ]
     const shared = renderToStaticMarkup(<HorizonChart rows={rows} label="示例" formatValue={String} />)
     expect(shared.match(/data-slot="horizon-band"/g)).toHaveLength(12)
-    expect(shared).toMatch(/data-row="b"[\s\S]*data-band="2" style="[^"]*" d=""/)
+    expect(shared).toMatch(/data-row="b"[\s\S]*data-band="2"(?: data-outer="true")? style="[^"]*" d=""/)
     const own = renderToStaticMarkup(<HorizonChart rows={rows} label="示例" formatValue={String} scale="row" />)
     expect(own.match(/ d=""/g)?.length ?? 0).toBeLessThan(shared.match(/ d=""/g)!.length)
     expect(shared).toContain('data-tone="up"')

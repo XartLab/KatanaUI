@@ -496,10 +496,16 @@
   height: 100%;
 }
 .k-hz-band[data-sign='up'] {
-  fill: var(--pnl-up);
+  fill: var(--div-pos-100);
+}
+.k-hz-band[data-sign='up'][data-outer='true'] {
+  fill: var(--div-pos-200);
 }
 .k-hz-band[data-sign='down'] {
-  fill: var(--pnl-down);
+  fill: var(--div-neg-100);
+}
+.k-hz-band[data-sign='down'][data-outer='true'] {
+  fill: var(--div-neg-200);
 }
 .k-hz-value {
   color: var(--ink-100);
@@ -591,27 +597,11 @@ button.k-sm-head:focus-visible {
 }
 .k-sm-line {
   fill: none;
-  stroke: var(--ink-200);
+  stroke: var(--series-1);
   stroke-width: 1.5;
   stroke-linejoin: round;
+  filter: var(--chart-line-glow, none);
   vector-effect: non-scaling-stroke;
-}
-.k-sm-cell[data-tone='up'] .k-sm-line {
-  stroke: var(--pnl-up);
-}
-.k-sm-cell[data-tone='down'] .k-sm-line {
-  stroke: var(--pnl-down);
-}
-.k-sm-cell[data-tone='up'] .k-sm-dot {
-  background: var(--pnl-up);
-}
-.k-sm-cell[data-tone='down'] .k-sm-dot {
-  background: var(--pnl-down);
-}
-.k-sm-dot {
-  width: 6px;
-  height: 6px;
-  margin: -3px 0 0 -3px;
 }
 
 /* —— SeriesExplorer —— */

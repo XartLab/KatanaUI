@@ -1,11 +1,13 @@
 // SPDX-License-Identifier: MIT
-// 小图阵列（small multiples）：自选、组合里多个品种并排各一张小折线，同一个十字线：指针在任一张上移动，所有张的竖线与读数一起走。
+// 小图阵列（small multiples）：自选、组合里多个品种并排各一张小折线（series-1，不按涨跌着色；涨跌色只给标题行的数字），末点强调色，悬停出 LCD 窗，同一个十字线：指针在任一张上移动，所有张的竖线与读数一起走。
 // 功能参照 Arc 的 Small multiples（同步十字线的小图阵列，uiarc.dev/components/charts，2026-11-14 读，只取功能），实现原创。
 // 扫读用 useScrubber（受控，位置存在这里，所有张共用）；比例尺与路径用 quant 的 series-geometry。
 import { useState } from 'react'
 import { cn } from '../lib/cn'
 import { useScrubber } from '../lib/use-scrubber'
 import { quoteTone } from '../katana/quote-tone'
+import { EndMarker } from '../quant/chart-kit/end-marker'
+import { LcdTooltip } from '../quant/chart-kit/lcd-tooltip'
 import { extent, linePath, makePlot, pct, PLOT_W } from '../quant/series-geometry'
 
 export type SmallMultiple = { key: string; label: string; values: readonly number[] }
@@ -88,6 +90,7 @@ export function SmallMultiples({
                 <svg viewBox={`0 0 ${PLOT_W} ${height}`} preserveAspectRatio="none" aria-hidden="true">
                   <path className="k-sm-line" data-slot="small-multiple-line" d={linePath(item.values, plot)} />
                 </svg>
+                {Number.isFinite(item.values[at]) && <EndMarker x={plot.xAt(at)} y={plot.yAt(item.values[at]!)} />}
                 {active !== null && active < item.values.length && Number.isFinite(item.values[active]) && (
                   <>
                     <span
@@ -95,9 +98,11 @@ export function SmallMultiples({
                       data-slot="small-multiple-cross"
                       style={{ left: pct(plot.xAt(active)) }}
                     />
-                    <span
-                      className="k-plot-dot k-sm-dot"
-                      style={{ left: pct(plot.xAt(active)), top: plot.yAt(item.values[active]!) }}
+                    <LcdTooltip
+                      style={{ left: pct(plot.xAt(active)), top: 0 }}
+                      side={active > (item.values.length - 1) / 2 ? 'left' : 'right'}
+                      title={formatX?.(active)}
+                      rows={[{ key: 'v', label: item.label, value: formatValue(item.values[active]!) }]}
                     />
                   </>
                 )}

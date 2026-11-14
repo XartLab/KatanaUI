@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// 地平线图：十几个品种的日内收益各叠成一条窄带，一屏看完。每一行把正负值折成几条叠起来的带（颜色越深值越大），涨跌色跟涨跌配色走。
+// 地平线图：十几个品种的日内收益各叠成一条窄带，一屏看完。每一行把正负值折成几条叠起来的带（颜色越深值越大），正负用发散色 div-*（最外一档 -200，其余 -100；涨跌色只给右边的数字，不上面）。
 // 功能参照 Arc 的 Horizon chart（uiarc.dev/components/charts，2026-11-14 读，只取功能），实现原创。
 // 交互：所有行共用一个扫读位置（指针在任一行上移动，或键盘 ←→），每行画同一根竖线，右边一列写这一格各行的值（不选中时写最新值）。
 import { useState } from 'react'
@@ -75,6 +75,7 @@ export function HorizonChart({
                       data-slot="horizon-band"
                       data-sign="up"
                       data-band={k}
+                      data-outer={k === bands - 1 ? 'true' : undefined}
                       style={{ fillOpacity: (k + 1) / bands }}
                       d={areaOf(band, rowHeight)}
                     />
@@ -86,6 +87,7 @@ export function HorizonChart({
                       data-slot="horizon-band"
                       data-sign="down"
                       data-band={k}
+                      data-outer={k === bands - 1 ? 'true' : undefined}
                       style={{ fillOpacity: (k + 1) / bands }}
                       d={areaOf(band, rowHeight)}
                     />
