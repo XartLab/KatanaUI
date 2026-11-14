@@ -149,6 +149,11 @@
           "target": "~/src/katana/ui/theme/menu.css"
         },
         {
+          "path": "src/theme/metric-card.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/metric-card.css"
+        },
+        {
           "path": "src/theme/motion.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/motion.css"
@@ -335,6 +340,35 @@
           "path": "src/lib/spring.ts",
           "type": "registry:lib",
           "target": "~/src/katana/ui/lib/spring.ts"
+        }
+      ]
+    },
+    {
+      "name": "use-persisted-state",
+      "type": "registry:lib",
+      "title": "Use Persisted State",
+      "description": "拼面板用的数据表：TanStack Table 管排序、列宽、顺序、显隐，虚拟滚动只画看得见的行；列声明一个类型（价格、数量、盈亏、涨跌幅、方向、时间、品种……），格式化、对齐、着色、排序由类型给。列的状态受控（调用方存）；应用的能力经 DataGridHost 注入。",
+      "files": [
+        {
+          "path": "src/lib/use-persisted-state.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/lib/use-persisted-state.ts"
+        }
+      ]
+    },
+    {
+      "name": "use-saved-views",
+      "type": "registry:lib",
+      "title": "Use Saved Views",
+      "description": "拼面板用的数据表：TanStack Table 管排序、列宽、顺序、显隐，虚拟滚动只画看得见的行；列声明一个类型（价格、数量、盈亏、涨跌幅、方向、时间、品种……），格式化、对齐、着色、排序由类型给。列的状态受控（调用方存）；应用的能力经 DataGridHost 注入。",
+      "registryDependencies": [
+        "@katana/use-persisted-state"
+      ],
+      "files": [
+        {
+          "path": "src/lib/use-saved-views.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/lib/use-saved-views.ts"
         }
       ]
     },
@@ -2343,6 +2377,26 @@
       ]
     },
     {
+      "name": "metric-card",
+      "type": "registry:component",
+      "title": "Metric Card",
+      "description": "照 uiarc 的 Metric explorer 的结构：标题、大号当前值、较前日 / 周 / 月 / 年的变化（涨跌色）、迷你走势线（1 月 / 3 月 / 6 月 / 1 年分段）、可选阶段带（五档边界与文案由调用方给）、来源与更新时间一行；MetricCardGrid 把卡排成墙。组件只画不算，数据与文字都由调用方传，没有数据就是空态。",
+      "registryDependencies": [
+        "@katana/change-text",
+        "@katana/cn",
+        "@katana/quote-tone",
+        "@katana/sparkline",
+        "@katana/toggle-group"
+      ],
+      "files": [
+        {
+          "path": "src/quant/metric-card.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/metric-card.tsx"
+        }
+      ]
+    },
+    {
       "name": "pnl-text",
       "type": "registry:component",
       "title": "Pnl Text",
@@ -2625,19 +2679,29 @@
       "description": "拼面板用的数据表：TanStack Table 管排序、列宽、顺序、显隐，虚拟滚动只画看得见的行；列声明一个类型（价格、数量、盈亏、涨跌幅、方向、时间、品种……），格式化、对齐、着色、排序由类型给。列的状态受控（调用方存）；应用的能力经 DataGridHost 注入。",
       "dependencies": [
         "@tanstack/react-table@9.3.1",
-        "@tanstack/react-virtual@3.14.25"
+        "@tanstack/react-virtual@3.14.25",
+        "lucide-react@1.67.0"
       ],
       "registryDependencies": [
+        "@katana/button",
+        "@katana/checkbox",
+        "@katana/chip-group",
         "@katana/cn",
         "@katana/context-menu",
         "@katana/menu-any",
         "@katana/menu-parts",
+        "@katana/popover",
         "@katana/quant-format",
         "@katana/row-actions",
         "@katana/symbol-mark",
         "@katana/tone-text"
       ],
       "files": [
+        {
+          "path": "src/blocks/data-grid/column-picker.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/data-grid/column-picker.tsx"
+        },
         {
           "path": "src/blocks/data-grid/columns.ts",
           "type": "registry:component",
@@ -2652,6 +2716,11 @@
           "path": "src/blocks/data-grid/host.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/blocks/data-grid/host.tsx"
+        },
+        {
+          "path": "src/blocks/data-grid/layout-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/data-grid/layout-model.ts"
         },
         {
           "path": "src/blocks/data-grid/model.ts",

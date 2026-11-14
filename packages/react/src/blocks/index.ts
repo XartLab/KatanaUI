@@ -12,6 +12,20 @@ export {
   type GridMenuEntry,
 } from './data-grid/host.tsx'
 export { tableCsv, type SortSpec } from './data-grid/model.ts'
+export {
+  ColumnPicker,
+  type ColumnPickerLabels,
+  type ColumnPickerProps,
+  type ColumnSet,
+} from './data-grid/column-picker.tsx'
+export {
+  activeColumnSet,
+  applyColumnSet,
+  moveColumn,
+  reorderColumn,
+  setColumnFixed,
+  setColumnVisible,
+} from './data-grid/layout-model.ts'
 export { EmptyState, type EmptyStateSlot } from './empty-state.tsx'
 export { EstimateBadge } from './estimate-badge.tsx'
 export { EventTimeline, type EventTimelineLabels, type EventTimelineProps } from './event-timeline.tsx'

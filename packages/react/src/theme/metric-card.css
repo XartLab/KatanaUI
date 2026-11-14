@@ -1,0 +1,147 @@
+/* SPDX-License-Identifier: MIT */
+/* 指标卡与卡片墙（MetricCard，#30）：bg-200 单元格加发丝边，大号 LCD 感数值（无衬线 tabular-nums），变化行、走势线、阶段带、来源行。
+   阶段带的色从 --pnl-down 经中性灰到 --pnl-up，当前档全亮、其余 35%；不用橙色画数据，不用蓝。 */
+.k-metric-grid {
+  display: grid;
+  gap: var(--space-3);
+  min-width: 0;
+}
+.k-metric-wall {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-width: 0;
+}
+.k-metric-wall-bar {
+  display: flex;
+}
+.k-metric {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+  padding: var(--space-3);
+  background: var(--bg-200);
+  border: var(--hairline);
+  color: var(--ink-100);
+  font: var(--text-data) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+}
+.k-metric-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  min-width: 0;
+}
+.k-metric-title {
+  margin: 0;
+  overflow: hidden;
+  color: var(--ink-300);
+  font: inherit;
+  font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.k-metric-value {
+  color: var(--ink-100);
+  font-size: 28px;
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+}
+.k-metric-value small {
+  margin-left: 4px;
+  color: var(--ink-300);
+  font: 400 12px/1 var(--font-sans);
+  letter-spacing: 0;
+  vertical-align: baseline;
+}
+.k-metric-value.is-empty {
+  color: var(--ink-300);
+}
+.k-metric-changes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px var(--space-3);
+  margin: 0;
+}
+.k-metric-change {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+.k-metric-change dt {
+  color: var(--ink-300);
+}
+.k-metric-change dd {
+  margin: 0;
+}
+.k-metric-spark {
+  min-height: 48px;
+}
+.k-metric .k-spark {
+  height: 48px;
+}
+.k-metric .k-spark-empty {
+  line-height: 48px;
+}
+.k-metric-stages {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.k-metric-band {
+  position: relative;
+  display: flex;
+  gap: 2px;
+  height: 8px;
+}
+.k-metric-seg {
+  --t: var(--stage-t);
+  flex-basis: 0;
+  border-radius: 2px;
+  background: color-mix(
+    in srgb,
+    color-mix(in srgb, var(--pnl-down) calc((1 - var(--t)) * 100%), var(--pnl-up) calc(var(--t) * 100%)) 70%,
+    var(--ink-300)
+  );
+  opacity: 0.35;
+  transition: opacity var(--dur-gentle) var(--ease-gentle);
+}
+.k-metric-seg.is-active {
+  opacity: 1;
+}
+.k-metric-mark {
+  position: absolute;
+  top: -3px;
+  bottom: -3px;
+  width: 2px;
+  margin-left: -1px;
+  background: var(--ink-100);
+  transition: left var(--dur-gentle) var(--ease-gentle);
+}
+.k-metric-stage-names {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2);
+  color: var(--ink-300);
+  font-size: 11px;
+}
+.k-metric-stage-now {
+  color: var(--ink-100);
+  font-size: var(--text-data);
+  font-weight: 500;
+}
+.k-metric-foot {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 2px var(--space-2);
+  margin-top: auto;
+  padding-top: var(--space-2);
+  border-top: var(--hairline);
+  color: var(--ink-300);
+  font-size: 11px;
+}
