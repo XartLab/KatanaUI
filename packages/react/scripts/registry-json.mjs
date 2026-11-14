@@ -57,6 +57,8 @@ const INTERNAL = {
   'loading-gate': 'Loading 的计时与行数量取（纯函数）。',
   'opener-focus': '对话框与抽屉共用：关闭后把焦点还给打开前拿着它的元素。',
   label: 'Radix Label，Field 用它做标签（文档站在 field 页）。',
+  'chart-scale':
+    '分布与关系类的图（Ridgeline、SlopeChart、ConnectedScatter）共用的纯函数：线性比例尺、好看的刻度、分位数。',
   'loading-wait': 'Loading 的计时外壳：500ms、2s、10s 三个阶段。',
 }
 

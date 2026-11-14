@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 import { useMemo, useState } from 'react'
+import { Ridgeline } from '../../src/quant'
 import {
   histogramBins,
   RangeHistogramSlider,
@@ -121,6 +122,46 @@ export function RangeHistogramSliderDemo() {
             label="涨跌幅区间（不受控）"
             labels={{ low: '下限', high: '上限' }}
             formatValue={(value) => `${value.toFixed(1)}%`}
+          />
+        </div>
+      </Row>
+    </>
+  )
+}
+
+/** 因子 5 分位层的示例日收益（%）：每层 400 个、标准差 1.8，均值从 −1.2 升到 +1.5。 */
+const LAYERS = [-1.2, -0.4, 0.1, 0.7, 1.5].map((mean, i) => ({
+  id: `q${i + 1}`,
+  label: `第 ${i + 1} 层`,
+  values: gaussians(100 + i, 400, mean, 1.8),
+}))
+
+export function RidgelineDemo() {
+  return (
+    <>
+      <p className="gal-note">演示数据：固定种子生成的 5 层各 400 个示例收益，不是回测结果。</p>
+      <Row name="分层收益分布，0 为基准线">
+        <div className="gal-wide" data-gallery-ridge="layers">
+          <Ridgeline
+            groups={LAYERS}
+            label="示例：因子分层的日收益分布"
+            baseline={0}
+            formatValue={(value) => `${value}%`}
+            describe={(group, stats) =>
+              `${group.label}：中位数 ${stats.median.toFixed(2)}%，均值 ${stats.mean.toFixed(2)}%，${stats.n} 个`
+            }
+            idle="悬停或用上下键选一层"
+          />
+        </div>
+      </Row>
+      <Row name="没有基准线，窄一点">
+        <div className="gal-wide" data-gallery-ridge="plain">
+          <Ridgeline
+            groups={LAYERS.slice(0, 3)}
+            label="示例：前三层（无基准线）"
+            rowHeight={28}
+            overlap={1.5}
+            describe={(group, stats) => `${group.label}：中位数 ${stats.median.toFixed(2)}%`}
           />
         </div>
       </Row>

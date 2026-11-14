@@ -3907,6 +3907,72 @@ export const PAGES: readonly DocPage[] = [
       ['Home / End', '去最小 / 最大（不越过另一个把手）'],
     ],
   },
+  {
+    id: 'ridgeline',
+    group: 'quant',
+    cardHeight: 560,
+    title: 'Ridgeline 山脊图',
+    summary:
+      '每组一条核密度曲线，上下叠着排，一眼比各组分布的位置、宽窄与形状（分位层、因子分组的收益分布）。带宽默认 Silverman 经验规则；给了基准线就按中位数在它上下涂涨跌色。悬停或聚焦一条，其余变暗。功能参照 Arc Ridgeline，实现原创。',
+    exports: ['Ridgeline', 'ridgelines', 'ridgeStats', 'silvermanBandwidth', 'gaussianKde'],
+    props: [
+      {
+        part: 'Ridgeline',
+        note: '文字全由 props 传：每一条的整句在 describe 里。图是一个 role=group，每条一个带整句名的 role=img。',
+        rows: [
+          {
+            name: 'groups',
+            type: 'RidgeGroup[]',
+            desc: '{ id, label, values: number[] }，从上到下排；不是有限数的值丢掉。',
+          },
+          { name: 'label', type: 'string', desc: '整张图的读屏名。' },
+          {
+            name: 'describe',
+            type: '(group, stats) => string',
+            desc: '一条的整句（读屏名与读数行）；stats 有 n、mean、median、min、max。',
+          },
+          { name: 'formatValue', type: '(value: number) => string', default: 'String', desc: '横轴刻度怎么写。' },
+          {
+            name: 'baseline',
+            type: 'number',
+            desc: '参照线的位置（如 0）；给了画虚线，并按中位数涂 pnl-up / pnl-down。',
+          },
+          { name: 'domain', type: '[number, number]', desc: '横轴范围；不给取全体数据加两头各 3 个带宽。' },
+          { name: 'bandwidth', type: 'number', desc: '核密度的带宽；不给每组用 Silverman 规则。' },
+          { name: 'rowHeight', type: 'number', default: '40', desc: '一行的高（viewBox 单位）。' },
+          {
+            name: 'overlap',
+            type: 'number',
+            default: '2',
+            desc: '最高的山峰是一行高的几倍；大于 1 山脊叠进上一行。视觉取值，待定。',
+          },
+          { name: 'idle', type: 'ReactNode', desc: '没有悬停也没有聚焦时读数行写什么。' },
+        ],
+      },
+      {
+        part: 'ridgelines(groups, options) / silvermanBandwidth(values)',
+        note: 'silvermanBandwidth 是 h = 0.9 · min(σ, IQR / 1.34) · n^(−1/5)（Silverman 1986 式 3.31）；少于两个数或全相等返回 null，ridgelines 用范围的 1/50 兜底（待定）。gaussianKde(values, xs, h) 是高斯核密度，积分为 1。',
+        rows: [],
+      },
+    ],
+    states: [
+      '默认：每条是填充加顶线，中位数一根竖标；没有基准线时用中性色。',
+      '给了 baseline：中位数在它之上用涨色、之下用跌色（跟 data-updown 走），平用中性色。',
+      '悬停或聚焦一条：其余变暗，读数行写这一条的整句。',
+      '取不出带宽的组（少于两个数或全相等）画成一个窄峰。',
+    ],
+    donts: [
+      '不要用它比样本很少的组：核密度在几个点上画出的形状不可信，describe 里把个数写出来。',
+      '不要在数量级不同的组之间共用一条横轴：先标准化或分开画。',
+      '不要拿颜色单独表达涨跌：中位数竖标与读数行写出了数值。',
+    ],
+    composition:
+      'Ridgeline\n  svg role=group\n    g（刻度线与基准线）\n    g role=img（一条：标签 · 底线 · 填充 · 顶线 · 中位数竖标）\n  output（读数行）',
+    keys: [
+      ['↑ / ↓', '焦点在条间移动，到头不绕回'],
+      ['Home / End', '跳到第一 / 最后一条'],
+    ],
+  },
 ]
 
 export const pageById = (id: string): DocPage | undefined => PAGES.find((page) => page.id === id)
