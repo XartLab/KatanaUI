@@ -234,20 +234,20 @@ export function BrushChart({
       >
         <svg viewBox={`0 0 ${PLOT_W} ${height}`} preserveAspectRatio="none" aria-hidden="true">
           {plot.ticks.map((tick) => (
-            <line key={tick.value} className="k-brush-grid" x1={0} x2={PLOT_W} y1={tick.y} y2={tick.y} />
+            <line key={tick.value} className="k-plot-grid" x1={0} x2={PLOT_W} y1={tick.y} y2={tick.y} />
           ))}
           <path className="k-brush-area" d={areaPath(slice, plot, plot.domain[0])} />
           <path className="k-brush-line" data-slot="brush-line" d={linePath(slice, plot)} />
         </svg>
         {plot.ticks.map((tick) => (
-          <span key={tick.value} className="k-brush-ytick" style={{ top: tick.y }}>
+          <span key={tick.value} className="k-plot-ytick" style={{ top: tick.y }}>
             {formatValue(tick.value)}
           </span>
         ))}
         {active !== null && value !== null && (
           <>
-            <span className="k-brush-cross" data-slot="brush-cross" style={{ left: pct(plot.xAt(active)) }} />
-            <span className="k-brush-dot" style={{ left: pct(plot.xAt(active)), top: plot.yAt(value) }} />
+            <span className="k-plot-cross" data-slot="brush-cross" style={{ left: pct(plot.xAt(active)) }} />
+            <span className="k-plot-dot" style={{ left: pct(plot.xAt(active)), top: plot.yAt(value) }} />
           </>
         )}
       </div>
@@ -265,7 +265,7 @@ export function BrushChart({
           )
         })}
       </div>
-      <div className="k-brush-readout" data-slot="brush-readout" aria-live="polite">
+      <div className="k-plot-readout" data-slot="brush-readout" aria-live="polite">
         {active !== null && value !== null ? `${formatX(window[0] + active)}  ${formatValue(value)}` : null}
       </div>
       <BrushStrip

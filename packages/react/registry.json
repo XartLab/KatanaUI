@@ -1866,6 +1866,38 @@
       ]
     },
     {
+      "name": "waterfall-chart",
+      "type": "registry:component",
+      "title": "Waterfall Chart",
+      "description": "期初权益到期末权益的桥：起点一根总计柱，中间每一步是一根浮动的增减柱（涨跌色跟涨跌配色走），末尾一根总计柱，相邻柱之间连水平线。指针或 ←→ 扫读。功能参照 Arc 的 MRR waterfall。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/series-geometry",
+        "@katana/use-scrubber",
+        "@katana/waterfall-model"
+      ],
+      "files": [
+        {
+          "path": "src/quant/waterfall-chart.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/waterfall-chart.tsx"
+        }
+      ]
+    },
+    {
+      "name": "waterfall-model",
+      "type": "registry:component",
+      "title": "Waterfall Model",
+      "description": "WaterfallChart 的累加（纯函数）：增减柱接着累计、总计柱重置累计并给出对不上的差额。",
+      "files": [
+        {
+          "path": "src/quant/waterfall-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/waterfall-model.ts"
+        }
+      ]
+    },
+    {
       "name": "quant-format",
       "type": "registry:lib",
       "title": "Quant Format",

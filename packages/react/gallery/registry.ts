@@ -2383,6 +2383,55 @@ export const PAGES: readonly DocPage[] = [
     ],
   },
   {
+    id: 'waterfall-chart',
+    group: 'quant',
+    cardHeight: 560,
+    title: 'WaterfallChart 瀑布图（盈亏桥）',
+    summary:
+      '期初权益到期末权益的桥：起点一根总计柱，中间每一步是一根浮动的增减柱（涨跌色跟涨跌配色走），末尾一根总计柱，相邻柱之间连水平线。指针或 ←→ 扫读。功能参照 Arc 的 MRR waterfall。',
+    exports: ['WaterfallChart'],
+    props: [
+      {
+        part: 'WaterfallChart',
+        note: '总计柱与前面累计起来的不相等时，柱照它自己的值画、画虚线框，差额在读数里给出：不替调用方把桥抹平。',
+        rows: [
+          {
+            name: 'steps',
+            type: '{ key, label, value, kind?: "delta" | "total" }[]',
+            desc: 'delta（默认）在上一步的累计上加 value；total 的 value 本身是累计（期初、期末），柱从 0 起。',
+          },
+          { name: 'label', type: 'string', desc: '整张图的读屏名（必填）。' },
+          {
+            name: 'formatValue',
+            type: '(value: number, bar: WaterfallBar) => string',
+            desc: '柱上与读数里的数怎么写：增减柱传这一步的值，总计柱传累计，纵轴刻度也走它（当作总计）。正负号与单位由调用方定。',
+          },
+          { name: 'formatGap', type: '(gap: number) => string', desc: '总计柱对不上时读数里补的那句；不给就不提。' },
+          { name: 'height', type: 'number', default: '200', desc: '图高（px）。' },
+        ],
+      },
+    ],
+    states: [
+      '默认：涨跌总计三种颜色，柱顶写数。',
+      '扫读：选中的柱保持原色，其余变淡，下面一行写这一步的名字与值。',
+      '总计柱对不上：画虚线框，读数写差额。',
+      '一步为 0：画一条细线，既不涨也不跌的中性色。',
+    ],
+    donts: [
+      '不要拿它画不连续的几组数：每一步都接着上一步的累计，不相关的数用柱状图。',
+      '不要在包里写「未实现」「手续费」这类词：步骤名与差额的说法都由调用方传。',
+      '不要靠颜色单独传达涨跌：柱顶的数带正负号，读屏列表写满每一步。',
+    ],
+    composition:
+      'WaterfallChart\n  div[role=group]（svg：网格 · 零线 · 连线 · 柱；柱顶数字 · 纵轴刻度）\n  步骤名一行 · 读数行（aria-live）\n  ul.sr-only（每一步一句）',
+    keys: [
+      ['← →', '选中前后一根柱；没选中时先落到最后一根'],
+      ['Shift + ← →', '一次三根'],
+      ['Home / End', '第一根 / 最后一根'],
+      ['Esc', '清掉选中'],
+    ],
+  },
+  {
     id: 'step-player',
     group: 'readouts',
     cardHeight: 155,

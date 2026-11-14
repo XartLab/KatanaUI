@@ -34,7 +34,7 @@ import {
   WebSearchDemo,
 } from './pages/rare2.tsx'
 } from './pages/rare2'
-import { BrushChartDemo, UseScrubberDemo } from './pages/series'
+import { BrushChartDemo, UseScrubberDemo, WaterfallChartDemo } from './pages/series'
 import {
   GaugeBarDemo,
   PriceTagDemo,
@@ -123,6 +123,7 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'duration-picker': DurationPickerDemo,
   'use-scrubber': UseScrubberDemo,
   'brush-chart': BrushChartDemo,
+  'waterfall-chart': WaterfallChartDemo,
   sparkline: SparklineDemo,
   'gauge-bar': GaugeBarDemo,
   treemap: TreemapDemo,

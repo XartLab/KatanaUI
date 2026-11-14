@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 import { useScrubber } from '../../src/index'
-import { BrushChart } from '../../src/quant'
+import { BrushChart, WaterfallChart, type WaterfallStep } from '../../src/quant'
 import { Row } from './parts'
 
 // #1917：时间序列与盈亏的件的演示。下面所有数据都是演示用的合成数据（在这个展示页里按固定种子生成，不是行情、不是账户），每页也写明了；应用里没有样本数据。
@@ -72,6 +72,41 @@ export function BrushChartDemo() {
         />
       </div>
       <p className="gal-note">{DEMO_NOTE}</p>
+    </>
+  )
+}
+
+const BRIDGE: readonly WaterfallStep[] = [
+  { key: 'open', label: '期初权益', value: 10_000, kind: 'total' },
+  { key: 'realized', label: '已实现', value: 1_250 },
+  { key: 'fee', label: '手续费', value: -180 },
+  { key: 'funding', label: '资金费', value: -95 },
+  { key: 'close', label: '期末权益', value: 10_975, kind: 'total' },
+]
+
+const money = (value: number) => `${value > 0 ? '+' : ''}${value.toLocaleString('en-US')}`
+
+export function WaterfallChartDemo() {
+  return (
+    <>
+      <div className="gal-wide" data-gallery-waterfall="ok" style={{ maxWidth: 560 }}>
+        <WaterfallChart
+          steps={BRIDGE}
+          label="示例盈亏桥：期初到期末"
+          formatValue={(v, bar) => (bar.kind === 'total' ? v.toLocaleString('en-US') : money(v))}
+        />
+      </div>
+      <Row name="对不上">
+        <div className="gal-wide" data-gallery-waterfall="gap" style={{ maxWidth: 560 }}>
+          <WaterfallChart
+            steps={[...BRIDGE.slice(0, 4), { key: 'close', label: '期末权益', value: 11_100, kind: 'total' }]}
+            label="示例盈亏桥：期末与累计对不上"
+            formatValue={(v, bar) => (bar.kind === 'total' ? v.toLocaleString('en-US') : money(v))}
+            formatGap={(gap) => `未解释 ${money(gap)}`}
+          />
+        </div>
+      </Row>
+      <p className="gal-note">{DEMO_NOTE}总计柱与前面累计对不上时画虚线框、读数写差额，不替它抹平。</p>
     </>
   )
 }

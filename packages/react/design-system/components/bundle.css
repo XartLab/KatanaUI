@@ -6032,7 +6032,7 @@ button.k-quote-card.is-link:focus-visible {
   overflow: visible;
 }
 
-.k-brush-grid {
+.k-plot-grid {
   stroke: var(--chart-grid);
   stroke-width: 1px;
   vector-effect: non-scaling-stroke;
@@ -6056,7 +6056,7 @@ button.k-quote-card.is-link:focus-visible {
   stroke: none;
 }
 
-.k-brush-ytick {
+.k-plot-ytick {
   color: var(--chart-axis);
   font: var(--text-caption) var(--font-mono);
   pointer-events: none;
@@ -6065,7 +6065,7 @@ button.k-quote-card.is-link:focus-visible {
   transform: translateY(-100%);
 }
 
-.k-brush-cross {
+.k-plot-cross {
   background: var(--chart-crosshair);
   pointer-events: none;
   width: 1px;
@@ -6074,7 +6074,7 @@ button.k-quote-card.is-link:focus-visible {
   bottom: 0;
 }
 
-.k-brush-dot {
+.k-plot-dot {
   background: var(--series-1);
   width: 8px;
   height: 8px;
@@ -6105,7 +6105,7 @@ button.k-quote-card.is-link:focus-visible {
   transform: translateX(-100%);
 }
 
-.k-brush-readout {
+.k-plot-readout {
   min-height: 16px;
   color: var(--ink-100);
   font: var(--text-data) var(--font-mono);
@@ -6175,6 +6175,103 @@ button.k-quote-card.is-link:focus-visible {
   top: 25%;
   bottom: 25%;
   left: 5px;
+}
+
+.k-wf {
+  min-width: 0;
+  color: var(--ink-200);
+  font: var(--text-caption) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  display: flex;
+}
+
+.k-wf-plot {
+  touch-action: pan-y;
+  position: relative;
+}
+
+.k-wf-plot:focus-visible {
+  outline: 1px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.k-wf-plot > svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: visible;
+}
+
+.k-wf-zero {
+  stroke: var(--line-200);
+  stroke-width: 1px;
+  vector-effect: non-scaling-stroke;
+}
+
+.k-wf-link {
+  stroke: var(--ink-400);
+  stroke-width: 1px;
+  stroke-dasharray: 3 3;
+  vector-effect: non-scaling-stroke;
+}
+
+.k-wf-bar {
+  fill: var(--ink-300);
+  transition: fill-opacity var(--dur-snappy) var(--ease-snappy);
+}
+
+.k-wf-bar[data-direction="up"] {
+  fill: var(--pnl-up);
+}
+
+.k-wf-bar[data-direction="down"] {
+  fill: var(--pnl-down);
+}
+
+.k-wf-bar[data-gap="true"] {
+  stroke: var(--ink-100);
+  stroke-width: 1px;
+  stroke-dasharray: 4 2;
+  vector-effect: non-scaling-stroke;
+}
+
+.k-wf-plot:has([data-active="true"]) .k-wf-bar:not([data-active="true"]) {
+  fill-opacity: .45;
+}
+
+.k-wf-value {
+  color: var(--ink-100);
+  font: var(--text-caption) var(--font-mono);
+  white-space: nowrap;
+  pointer-events: none;
+  padding-bottom: 2px;
+  position: absolute;
+  transform: translate(-50%, -100%);
+}
+
+.k-wf-value[data-direction="up"] {
+  color: var(--pnl-up);
+}
+
+.k-wf-value[data-direction="down"] {
+  color: var(--pnl-down);
+}
+
+.k-wf-labels {
+  display: flex;
+}
+
+.k-wf-labels > span {
+  min-width: 0;
+  color: var(--chart-axis);
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1 1 0;
+  overflow: hidden;
 }
 
 @property --tw-translate-x {

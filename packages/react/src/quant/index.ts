@@ -13,3 +13,5 @@ export * from './format'
 // 时间序列与盈亏的件（#1917）。功能参照 Arc（uiarc.dev，2026-11-14 读），只取功能，实现原创。
 export { BrushChart, BrushStrip, type BrushChartProps, type BrushLabels, type BrushStripProps } from './brush-chart'
 export type { BrushWindow } from './brush-model'
+export { WaterfallChart, type WaterfallChartProps } from './waterfall-chart'
+export type { WaterfallBar, WaterfallStep } from './waterfall-model'

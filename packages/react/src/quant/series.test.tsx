@@ -3,6 +3,8 @@ import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vite-plus/test'
 import { BrushChart } from './brush-chart'
 import { centerWindow, clampWindow, moveWindow, resizeWindow } from './brush-model'
+import { WaterfallChart } from './waterfall-chart'
+import { waterfallBars, waterfallExtent } from './waterfall-model'
 import { areaPath, extent, linePath, makePlot, niceTicks, PLOT_W } from './series-geometry'
 
 // #1917：时间序列与盈亏的件的几何与结构（纯函数）。拖拽、悬停、键盘与画出来的像素在 e2e/ui-gallery.spec.ts 里用真浏览器验。
@@ -114,5 +116,63 @@ describe('BrushChart', () => {
     expect(html).toContain('aria-label="位置"')
     expect(html).toContain('aria-valuetext="d10 – d19"')
     expect(html).toContain('left:33.33333333333333%;width:33.33333333333333%')
+  })
+})
+
+describe('瀑布累加', () => {
+  const steps = [
+    { key: 'open', label: '期初', value: 1000, kind: 'total' as const },
+    { key: 'real', label: '已实现', value: 250 },
+    { key: 'fee', label: '手续费', value: -40 },
+    { key: 'fund', label: '资金费', value: -10 },
+    { key: 'end', label: '期末', value: 1200, kind: 'total' as const },
+  ]
+
+  it('增减柱从上一步的累计走到加上它之后；总计柱从 0 起，累计重置成它自己', () => {
+    const bars = waterfallBars(steps)
+    expect(bars.map((bar) => [bar.from, bar.to, bar.end])).toEqual([
+      [0, 1000, 1000],
+      [1000, 1250, 1250],
+      [1250, 1210, 1210],
+      [1210, 1200, 1200],
+      [0, 1200, 1200],
+    ])
+    expect(bars.map((bar) => bar.direction)).toEqual(['total', 'up', 'down', 'down', 'total'])
+  })
+
+  it('总计柱对不上时差额原样给出，不抹平；对得上是 0', () => {
+    expect(waterfallBars(steps)[4]!.gap).toBe(0)
+    expect(waterfallBars(steps)[0]!.gap).toBe(0)
+    const off = waterfallBars([...steps.slice(0, 4), { key: 'end', label: '期末', value: 1230, kind: 'total' }])
+    expect(off[4]!.gap).toBe(30)
+    expect(off[4]!.to).toBe(1230)
+  })
+
+  it('范围包住所有柱的两端和 0；一步为 0 是 flat', () => {
+    expect(waterfallExtent(waterfallBars(steps))).toEqual([0, 1250])
+    expect(
+      waterfallExtent(
+        waterfallBars([
+          { key: 'a', label: 'a', value: -5 },
+          { key: 'b', label: 'b', value: -5 },
+        ]),
+      ),
+    ).toEqual([-10, 0])
+    expect(waterfallBars([{ key: 'a', label: 'a', value: 0 }])[0]!.direction).toBe('flat')
+  })
+
+  it('渲染：每步一根柱，涨跌总计各带方向；对不上的总计柱带 data-gap；读屏列表写满每一步', () => {
+    const html = renderToStaticMarkup(
+      <WaterfallChart
+        steps={[...steps.slice(0, 4), { key: 'end', label: '期末', value: 1230, kind: 'total' }]}
+        label="盈亏桥"
+        formatValue={(v) => String(v)}
+        formatGap={(g) => `差 ${g}`}
+      />,
+    )
+    expect(html.match(/data-slot="waterfall-bar"/g)).toHaveLength(5)
+    expect(html).toContain('data-key="fee" data-direction="down"')
+    expect(html).toContain('data-key="end" data-direction="total" data-gap="true"')
+    expect(html).toContain('<li>期末  1230  差 30</li>')
   })
 })
