@@ -21,7 +21,7 @@ const TARGET_ROOT = '~/src/katana/ui'
  */
 const INTERNAL = {
   style: '设计 token（Console 与 Graphite 两个主题、红涨绿跌切换）、Tailwind v4 主题与动效 CSS。ui.css 最后引。',
-  cn: 'clsx 加 tailwind-merge，认得 k-text-* 字号档。',
+  cn: 'shadcn-ui/cn 引擎（替 clsx 加 tailwind-merge），认得 k-text-* 字号档。',
   focus: '各控件共用的焦点环类名。',
   motion: '三条弹簧参数（snappy、gentle、settle），给 motion/react 用。',
   spring: '把三条弹簧的停止阈值收到 0.001，给 scale、opacity、pathLength 这类 0 到 1 的量用。',

@@ -10,6 +10,7 @@ import { ComboboxDemo, CommandDemo } from './pages/pickers'
 import { FieldDemo, HoverCardDemo, ScrollAreaDemo, SeparatorDemo, SheetDemo } from './pages/structure'
 import {
   AiStatusDemo,
+  ArcadePixelDemo,
   DeleteButtonDemo,
   MatrixOrbDemo,
   NotificationBellDemo,
@@ -96,6 +97,7 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'status-icon': StatusIconDemo,
   'ai-status': AiStatusDemo,
   'matrix-orb': MatrixOrbDemo,
+  'arcade-pixel': ArcadePixelDemo,
   'step-player': StepPlayerDemo,
   'theme-selector': ThemeSelectorDemo,
   'code-block': CodeBlockDemo,

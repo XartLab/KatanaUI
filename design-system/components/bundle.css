@@ -289,6 +289,19 @@
       --tw-ring-offset-color: #fff;
       --tw-ring-offset-shadow: 0 0 #0000;
       --tw-outline-style: solid;
+      --tw-blur: initial;
+      --tw-brightness: initial;
+      --tw-contrast: initial;
+      --tw-grayscale: initial;
+      --tw-hue-rotate: initial;
+      --tw-invert: initial;
+      --tw-opacity: initial;
+      --tw-saturate: initial;
+      --tw-sepia: initial;
+      --tw-drop-shadow: initial;
+      --tw-drop-shadow-color: initial;
+      --tw-drop-shadow-alpha: 100%;
+      --tw-drop-shadow-size: initial;
       --tw-duration: initial;
       --tw-ease: initial;
       --tw-content: "";
@@ -473,6 +486,40 @@
   grid-column-start: 2;
 }
 
+.container {
+  width: 100%;
+}
+
+@media (min-width: 40rem) {
+  .container {
+    max-width: 40rem;
+  }
+}
+
+@media (min-width: 48rem) {
+  .container {
+    max-width: 48rem;
+  }
+}
+
+@media (min-width: 64rem) {
+  .container {
+    max-width: 64rem;
+  }
+}
+
+@media (min-width: 80rem) {
+  .container {
+    max-width: 80rem;
+  }
+}
+
+@media (min-width: 96rem) {
+  .container {
+    max-width: 96rem;
+  }
+}
+
 .m-0 {
   margin: 0;
 }
@@ -646,6 +693,10 @@
   height: 4px;
 }
 
+.h-1\/3 {
+  height: 33.3333%;
+}
+
 .h-3 {
   height: 12px;
 }
@@ -696,6 +747,10 @@
 
 .h-\[76px\] {
   height: 76px;
+}
+
+.h-\[200\%\] {
+  height: 200%;
 }
 
 .h-auto {
@@ -1419,6 +1474,10 @@
   background-color: var(--ds-c-2xn4aw);
 }
 
+.bg-white {
+  background-color: var(--color-white);
+}
+
 .bg-\[repeating-linear-gradient\(90deg\,var\(--signal-orange\)_0_3px\,transparent_3px_5px\)\] {
   background-image: repeating-linear-gradient(90deg,var(--signal-orange) 0 3px,transparent 3px 5px);
 }
@@ -1933,6 +1992,15 @@
 
 .-outline-offset-2 {
   outline-offset: calc(2px * -1);
+}
+
+.blur {
+  --tw-blur: blur(8px);
+  filter: var(--tw-blur, ) var(--tw-brightness, ) var(--tw-contrast, ) var(--tw-grayscale, ) var(--tw-hue-rotate, ) var(--tw-invert, ) var(--tw-saturate, ) var(--tw-sepia, ) var(--tw-drop-shadow, );
+}
+
+.filter {
+  filter: var(--tw-blur, ) var(--tw-brightness, ) var(--tw-contrast, ) var(--tw-grayscale, ) var(--tw-hue-rotate, ) var(--tw-invert, ) var(--tw-saturate, ) var(--tw-sepia, ) var(--tw-drop-shadow, );
 }
 
 .transition {
@@ -3263,6 +3331,24 @@
   font-weight: 500;
   line-height: 1;
   display: inline-flex;
+}
+
+.k-arcade-scanlines {
+  background-image: repeating-linear-gradient(var(--ds-c-3uduzz) 0 1px, var(--ds-c-2xn4aw) 1px 3px);
+}
+
+.k-arcade-roll {
+  background-image: linear-gradient(to bottom, transparent 0%, var(--alpha-white-4) 50%, transparent 100%);
+}
+
+.k-arcade-aberration {
+  mix-blend-mode: screen;
+  background-image: linear-gradient(90deg, var(--ds-c-90z0xj) 0%, var(--ds-c-90z0u8) 13%, var(--ds-c-11a090b) 87%, var(--ds-c-11a093m) 100%);
+}
+
+.k-arcade-vignette {
+  background-image: radial-gradient(125% 125%, var(--ds-c-2xn4aw) 40%, var(--ds-c-3uduy7) 74%, var(--ds-c-3udw59) 100%);
+  box-shadow: inset 0 0 24px var(--ds-c-3udw2n);
 }
 
 .k-badges {
@@ -5069,6 +5155,72 @@ button.k-quote-card.is-link:focus-visible {
   initial-value: solid;
 }
 
+@property --tw-blur {
+  syntax: "*";
+  inherits: false
+}
+
+@property --tw-brightness {
+  syntax: "*";
+  inherits: false
+}
+
+@property --tw-contrast {
+  syntax: "*";
+  inherits: false
+}
+
+@property --tw-grayscale {
+  syntax: "*";
+  inherits: false
+}
+
+@property --tw-hue-rotate {
+  syntax: "*";
+  inherits: false
+}
+
+@property --tw-invert {
+  syntax: "*";
+  inherits: false
+}
+
+@property --tw-opacity {
+  syntax: "*";
+  inherits: false
+}
+
+@property --tw-saturate {
+  syntax: "*";
+  inherits: false
+}
+
+@property --tw-sepia {
+  syntax: "*";
+  inherits: false
+}
+
+@property --tw-drop-shadow {
+  syntax: "*";
+  inherits: false
+}
+
+@property --tw-drop-shadow-color {
+  syntax: "*";
+  inherits: false
+}
+
+@property --tw-drop-shadow-alpha {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 100%;
+}
+
+@property --tw-drop-shadow-size {
+  syntax: "*";
+  inherits: false
+}
+
 @property --tw-duration {
   syntax: "*";
   inherits: false
@@ -5209,6 +5361,14 @@ button.k-quote-card.is-link:focus-visible {
   --ds-c-1igqc0m: color-mix(in srgb,var(--signal-red) 8%,transparent);
   --ds-c-muqw4p: color-mix(in srgb,var(--signal-orange) 20%,var(--bg-000));
   --ds-c-2xn4cb: #000c;
+  --ds-c-3uduzz: #00000070;
+  --ds-c-90z0xj: #ff00482e;
+  --ds-c-90z0u8: #ff004800;
+  --ds-c-11a090b: #00beff00;
+  --ds-c-11a093m: #00beff2e;
+  --ds-c-3uduy7: #00000052;
+  --ds-c-3udw59: #000000d1;
+  --ds-c-3udw2n: #000000a6;
   --ds-c-d84amz: #ff5a5a8c;
   --ds-c-1ijpx6x: color-mix(in srgb, var(--signal-orange) 28%, transparent);
   --ds-c-yj0hg8: #000;

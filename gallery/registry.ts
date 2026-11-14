@@ -1876,6 +1876,70 @@ export const PAGES: readonly DocPage[] = [
     keys: [],
   },
   {
+    id: 'arcade-pixel',
+    group: 'readouts',
+    cardHeight: 520,
+    title: 'ArcadePixel 像素屏',
+    summary:
+      '街机式像素屏：5x7 点阵字体或自带精灵画在 canvas 上，可选打字、擦除、闪烁、跑马灯四种进场，再叠扫描线、CRT 暗角与荧光。取自 SmoothUI（MIT）。',
+    exports: ['ArcadePixel', 'ARCADE_SPRITES'],
+    props: [
+      {
+        part: 'ArcadePixel',
+        note: '画布 aria-hidden，文字另放 sr-only 给读屏；屏外与标签页隐藏时动画暂停。文字与精灵二选一，都给时精灵优先。',
+        rows: [
+          {
+            name: 'text',
+            type: 'string',
+            desc: '用内置 5x7 字体画的文字；只认拉丁字母、数字与 - , : ! ? . * 空格，其余画成空格。',
+          },
+          {
+            name: 'sprite',
+            type: 'number[][]',
+            desc: '二维数组，值是色板下标，0 为空。内置 ARCADE_SPRITES：alien、alienAlt、arrow、heart。',
+          },
+          {
+            name: 'palette',
+            type: 'string[]',
+            default: "['transparent', 'var(--signal-orange)']",
+            desc: '下标对应的颜色，CSS 颜色或 var(--token)；下标 0 是底。',
+          },
+          { name: 'pixelSize', type: 'number', default: '8', desc: '一个像素格的边长（CSS 像素）。' },
+          { name: 'gap', type: 'number', default: '1', desc: '像素格之间的间隔。' },
+          { name: 'columns', type: 'number', desc: '显示窗口的宽（格数），默认等于内容宽；跑马灯用它定窗口。' },
+          {
+            name: 'animate',
+            type: "'none' | 'type' | 'wipe' | 'blink' | 'marquee'",
+            default: "'none'",
+            desc: '进场动画；marquee 一直滚。',
+          },
+          { name: 'loop', type: 'boolean', default: 'false', desc: '进场动画是否反复；blink 在 loop 下一直闪。' },
+          { name: 'speed', type: 'number', default: '1', desc: '动画速度倍数。' },
+          {
+            name: 'glow',
+            type: 'boolean | number',
+            default: 'false',
+            desc: '荧光外溢；数字是强度 0 到 1，true 为 0.65。',
+          },
+          { name: 'scanlines', type: 'boolean', default: 'false', desc: '缓慢上漂的扫描线。' },
+          { name: 'crt', type: 'boolean', default: 'false', desc: '暗角、红蓝边色散、滚动亮带与轻微闪烁。' },
+        ],
+      },
+    ],
+    states: [
+      '静态（animate=none）：画好就停，不占动画帧。',
+      'type / wipe / blink：播完停在整屏；loop 时反复。',
+      'marquee：一直滚；屏外或标签页隐藏时暂停。',
+    ],
+    donts: [
+      '没有中日韩字：5x7 字体只有拉丁字母、数字与几个标点，中文要用别的件。',
+      '不要拿它画行情数字或价格；它是装饰与状态牌，读数用 Lcd。',
+      '它不是可读的文本控件：文字在 sr-only 里，别指望复制画布上的字。',
+    ],
+    composition: 'ArcadePixel\n  canvas（aria-hidden）\n  CRT 叠层（扫描线、暗角、色散、闪烁）\n  span.sr-only',
+    keys: [],
+  },
+  {
     id: 'step-player',
     group: 'readouts',
     cardHeight: 155,

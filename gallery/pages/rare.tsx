@@ -2,6 +2,8 @@
 import { useEffect, useState } from 'react'
 import {
   AiStatus,
+  ARCADE_SPRITES,
+  ArcadePixel,
   Button,
   DeleteButton,
   MatrixOrb,
@@ -9,6 +11,7 @@ import {
   PasswordInput,
   StatusIcon,
   type AiStatusState,
+  type ArcadePixelAnimate,
   type OrbState,
   type StatusIconStatus,
 } from '../../src/index'
@@ -218,6 +221,64 @@ export function MatrixOrbDemo() {
       </Row>
       <p className="gal-note">
         方点排成圆：待命慢呼吸、聆听同心波跟音量走、思考几个热点绕着转；换状态时权重插值，整个球按弹簧缩放。
+      </p>
+    </>
+  )
+}
+
+const ARCADE_ANIMATES: ArcadePixelAnimate[] = ['none', 'type', 'wipe', 'blink', 'marquee']
+
+export function ArcadePixelDemo() {
+  const [run, setRun] = useState(0)
+  return (
+    <>
+      <Row name="文字">
+        <div data-gallery-arcade>
+          <ArcadePixel text="KATANA" pixelSize={6} />
+        </div>
+        <ArcadePixel text="READY 01" pixelSize={4} />
+        <ArcadePixel text="GAME OVER" pixelSize={4} palette={['transparent', 'var(--ink-100)']} />
+      </Row>
+      <Row name="精灵">
+        {Object.entries(ARCADE_SPRITES).map(([name, sprite]) => (
+          <Cell key={name} name={name}>
+            <ArcadePixel
+              sprite={sprite}
+              pixelSize={5}
+              palette={['transparent', 'var(--signal-orange)', 'var(--ink-100)']}
+            />
+          </Cell>
+        ))}
+      </Row>
+      <Row name="动画">
+        {ARCADE_ANIMATES.map((animate) => (
+          <Cell key={animate} name={animate}>
+            <ArcadePixel
+              key={run}
+              text={animate === 'marquee' ? 'KATANA READY' : 'READY'}
+              animate={animate}
+              columns={animate === 'marquee' ? 36 : undefined}
+              loop={animate === 'blink' || animate === 'marquee'}
+              pixelSize={3}
+            />
+          </Cell>
+        ))}
+        <Button onClick={() => setRun((n) => n + 1)}>重播</Button>
+      </Row>
+      <Row name="屏幕效果">
+        <Cell name="glow">
+          <ArcadePixel text="KATANA" pixelSize={4} glow />
+        </Cell>
+        <Cell name="scanlines">
+          <ArcadePixel text="KATANA" pixelSize={4} scanlines />
+        </Cell>
+        <Cell name="crt">
+          <ArcadePixel text="KATANA" pixelSize={4} crt glow scanlines />
+        </Cell>
+      </Row>
+      <p className="gal-note">
+        5x7 点阵字体只有拉丁字母、数字与 - , : ! ? . *
+        空格，没有中日韩字；也可以传自己的精灵（二维数组，数字是色板下标）。 屏外与标签页隐藏时动画暂停。
       </p>
     </>
   )

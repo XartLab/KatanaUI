@@ -144,6 +144,7 @@ export {
 
 // KATANA 自有件（#1860 从 src/ui 搬来）：读数、状态灯、点阵、快捷键方块、徽标、滚动数字、数字框、日期时间框、加载骨架。
 export { DotMatrix, DOT_PITCH, DOT_SIZE } from './katana/dot-matrix'
+export { ARCADE_SPRITES, ArcadePixel, type ArcadePixelAnimate, type ArcadePixelProps } from './katana/arcade-pixel'
 export { Lcd, type LcdTone } from './katana/lcd'
 export { Led, LINK_GROUPS, type LedState, type LinkGroup } from './katana/led'
 export { Kbd } from './katana/kbd'

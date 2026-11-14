@@ -33,6 +33,11 @@
           "target": "~/src/katana/ui/theme/ai-status.css"
         },
         {
+          "path": "src/theme/arcade-pixel.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/arcade-pixel.css"
+        },
+        {
           "path": "src/theme/badge.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/badge.css"
@@ -108,10 +113,9 @@
       "name": "cn",
       "type": "registry:lib",
       "title": "Cn",
-      "description": "clsx 加 tailwind-merge，认得 k-text-* 字号档。",
+      "description": "shadcn-ui/cn 引擎（替 clsx 加 tailwind-merge），认得 k-text-* 字号档。",
       "dependencies": [
-        "clsx@2.1.1",
-        "tailwind-merge@3.7.0"
+        "cn@0.5.1"
       ],
       "files": [
         {
@@ -770,6 +774,25 @@
           "path": "src/katana/ai-status.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/katana/ai-status.tsx"
+        }
+      ]
+    },
+    {
+      "name": "arcade-pixel",
+      "type": "registry:component",
+      "title": "Arcade Pixel",
+      "description": "街机式像素屏：5x7 点阵字体或自带精灵画在 canvas 上，可选打字、擦除、闪烁、跑马灯四种进场，再叠扫描线、CRT 暗角与荧光。取自 SmoothUI（MIT）。",
+      "dependencies": [
+        "motion@14.9.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn"
+      ],
+      "files": [
+        {
+          "path": "src/katana/arcade-pixel.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/katana/arcade-pixel.tsx"
         }
       ]
     },
