@@ -3,7 +3,7 @@
 //   bar：槽 10px、bg-000 + recess + hairline，填充用点阵纹理（4px 实 2px 空，60% 透明）；量永远用条长编码，不靠颜色深浅。
 //   gauge：34px 高的凹槽，中线 1px，指针 2px，底部刻度 0/25/50/75/100；弱势（< weakBelow）指针转 signal-red，受锁转 signal-amber。
 //   sync：分段齿条 + amber 刻度（评估点）+ 右侧 display-dense 大百分比；只给 paper 进度、容量使用、偏离门距离、回放进度。
-// 调用方不传颜色，只传 tone：accent（进行中，画中性 ink，不是橙色）/ ok（健康）/ warn（受限或越界）/ off（停用）。
+// 调用方不传颜色，只传 tone：accent（进行中）/ ok（健康）/ warn（受限或越界）/ off（停用）。
 // 限额板的用法：传 soft（接近）与 hard（越限），状态按「达到」算（已用 ≥ 软限是 warn，≥ 硬限是 breach），两根刻度分别是 amber 与 red，不靠颜色单独表达：
 // 根上带 data-state，右上角可写状态词（stateLabels），读屏有 role="meter" 与 valueText。越过阈值时条体脉冲一次（CSS 动画只在状态变成 warn / breach 时播）。
 // 外观（点阵纹理、强调色、数字字体）读 theme/chart-kit.css 里的变量。

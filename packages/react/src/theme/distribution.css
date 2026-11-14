@@ -342,9 +342,10 @@
   fill: var(--k-dot, var(--k-scatter-color));
   outline: none;
 }
-/* 末点是 ink-100（橙色只给状态灯与焦点，不画数据）；中间的点按时间取 seq，越新越亮。 */
+/* 末点是强调色（dataviz §3：末点 / 当前点 + 辉光）；中间的点按时间取 seq，越新越亮。 */
 .k-scatter-dot[data-kind='end'] {
-  fill: var(--ink-100);
+  fill: var(--chart-accent, var(--signal-orange));
+  filter: drop-shadow(0 0 4px var(--chart-accent, var(--signal-orange)));
 }
 .k-scatter-dot[data-kind='start'] {
   fill: var(--bg-000);
@@ -729,20 +730,4 @@
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
-}
-
-/* 精密仪器语言（#7）：星团名与悬停读数行用点阵字（团名在圆外留白里，取整数字号 12px），读数行左边 2px 强调条；图例上的数字不动。 */
-.k-galaxy-name {
-  font: var(--text-tag-md) var(--font-dot);
-  font-weight: 400;
-  -webkit-font-smoothing: none;
-}
-.k-galaxy-readout {
-  padding-left: 8px;
-  border-left: 2px solid var(--chart-accent, var(--signal-orange));
-  font: var(--text-tag-md) var(--font-dot);
-  -webkit-font-smoothing: none;
-}
-.k-galaxy-readout:empty {
-  border-left-color: transparent;
 }

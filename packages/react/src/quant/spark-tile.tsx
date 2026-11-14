@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 // KPI 瓦片（组件卡 SparkTile，2026-11-14 读 design/katana-console/project/components/SparkTile）：点阵标签 + LCD 数值 + 24px 迷你折线 + 一行变化。
-// bg-200 单元格 + hairline；迷你线 1.5px ink-100（trendTone 为 neutral 时 ink-300，表示「越低越好」的指标），末点 ink-100；
+// bg-200 单元格 + hairline；迷你线 1.5px series-1（trendTone 为 neutral 时 ink-300，表示「越低越好」的指标），末点 signal-orange；
 // 有阈值画 1px signal-amber 虚线；接近阈值（near）边框转 signal-orange-dim、变化行转 amber，并脉冲一次。迷你线不画轴、不画网格、不标数值。
 // 悬停迷你线出 LCD tooltip（时间、值）；一行最多 5 个由调用方的布局定。数值变化用数字滚动（RollingText）。
 import type { CSSProperties } from 'react'

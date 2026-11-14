@@ -6,8 +6,7 @@
    或在祖先上写 data-dialect 再覆盖）。每个都带默认值，不用在 :root 里定义：
    --chart-accent       强调色（末点、当前点、焦点）。默认 var(--signal-orange)
    --chart-accent-dim   强调色的暗档（接近阈值的边框）。默认 var(--signal-orange-dim)
-   --chart-end          末点的色。默认 var(--ink-100)（橙色只给状态灯与焦点，不画数据）
-   --chart-end-glow     末点的辉光（box-shadow）。默认 none
+   --chart-end-glow     末点的辉光（box-shadow）。默认 var(--glow-orange)；方块点可以设成 none
    --chart-end-radius   末点形状：50% 是圆，0 是方块。默认 50%
    --chart-end-size     末点边长。默认 8px
    --chart-fill-dot     面的纹理里点阵的 display。默认 inline
@@ -92,8 +91,8 @@
   height: var(--chart-end-size, 8px);
   margin: calc(var(--chart-end-size, 8px) / -2) 0 0 calc(var(--chart-end-size, 8px) / -2);
   border-radius: var(--chart-end-radius, 50%);
-  background: var(--chart-end, var(--ink-100));
-  box-shadow: var(--chart-end-glow, none);
+  background: var(--chart-accent, var(--signal-orange));
+  box-shadow: var(--chart-end-glow, var(--glow-orange));
 }
 .k-ck-end-value {
   position: absolute;
@@ -206,7 +205,7 @@ button.k-spark-tile:focus-visible {
 }
 .k-spark-tile-line {
   fill: none;
-  stroke: var(--ink-100);
+  stroke: var(--series-1);
   stroke-width: 1.5;
   stroke-linejoin: round;
   filter: var(--chart-line-glow, none);
@@ -254,14 +253,4 @@ button.k-spark-tile:focus-visible {
 .k-ck-unit {
   color: var(--ink-300);
   font-size: 0.85em;
-}
-
-/* 精密仪器语言（#7）：图的表格视图（ChartTable）列头用点阵字，表格左边 2px 强调条；单元格数字不动。 */
-.k-ck-table thead th {
-  font: var(--text-tag-md) var(--font-dot);
-  letter-spacing: 0;
-  -webkit-font-smoothing: none;
-}
-.k-ck-table {
-  border-left: 2px solid var(--chart-accent, var(--signal-orange));
 }

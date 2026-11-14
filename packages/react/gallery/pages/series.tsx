@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 import { useState } from 'react'
-import { ToggleGroup, ToggleGroupItem, useScrubber } from '../../src/index.ts'
+import { useScrubber } from '../../src/index.ts'
 import {
   AttributionBars,
   SeriesExplorer,
@@ -381,19 +381,12 @@ export function CalendarHeatmapDemo() {
           label="示例收益日历 2026-10"
           total={{ text: `${sum > 0 ? '+' : ''}${sum}`, value: sum }}
           toolbar={
-            <span className="gal-row">
-              <ToggleGroup
-                variant="sm"
-                aria-label="视图"
-                value={view}
-                onValueChange={(next) => next && setView(next as typeof view)}
-              >
-                {(['pnl', 'turnover', 'events'] as const).map((v) => (
-                  <ToggleGroupItem key={v} value={v} data-view={v}>
-                    {v === 'pnl' ? '收益' : v === 'turnover' ? '换手' : '事件'}
-                  </ToggleGroupItem>
-                ))}
-              </ToggleGroup>
+            <span className="gal-row" role="group" aria-label="视图">
+              {(['pnl', 'turnover', 'events'] as const).map((v) => (
+                <button key={v} type="button" aria-pressed={view === v} onClick={() => setView(v)} data-view={v}>
+                  {v === 'pnl' ? '收益' : v === 'turnover' ? '换手' : '事件'}
+                </button>
+              ))}
               <span>2026-10 · 账户 A B F</span>
             </span>
           }

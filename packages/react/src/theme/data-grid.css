@@ -207,11 +207,3 @@
   color: var(--ink-300);
   font: var(--text-caption) var(--font-sans);
 }
-
-/* 精密仪器语言（#7）：列头用点阵字（12px，不加字距）；已有的「打开的行」左边 2px 强调条就是这套语言里的选中条；单元格数字不动。 */
-.k-grid-col button,
-.k-grid-head-text {
-  font: var(--text-tag-md) var(--font-dot);
-  letter-spacing: 0;
-  -webkit-font-smoothing: none;
-}

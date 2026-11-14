@@ -2580,7 +2580,7 @@ export const PAGES: readonly DocPage[] = [
             name: 'tone',
             type: 'accent | ok | warn | off | ink',
             default: 'accent',
-            desc: '进行中 / 健康 / 受限或越界 / 停用。accent 档（默认，进行中）画中性 ink（白 / 灰），不是橙色；ok 绿、warn 琥珀、越限红。有软限或硬限且已达到时自动换成 warn。',
+            desc: '进行中 / 健康 / 受限或越界 / 停用。有软限或硬限且已达到时自动换成 warn。',
           },
           {
             name: 'soft / hard',
@@ -2606,7 +2606,7 @@ export const PAGES: readonly DocPage[] = [
       },
     ],
     states: [
-      '健康 / 进行中 / 停用：tone 决定点阵填充的颜色（进行中是中性 ink，不是橙色，橙色只给状态灯与焦点）。',
+      '健康 / 进行中 / 停用：tone 决定点阵填充的颜色。',
       '接近（已用 ≥ 软限）：tone 转 warn，状态词转琥珀，条体脉冲一次。',
       '越限（已用 ≥ 硬限）：tone 仍是 warn，状态词转红，硬限刻度红。',
       '刻度盘弱势 / 受锁：指针转红 / 琥珀。',

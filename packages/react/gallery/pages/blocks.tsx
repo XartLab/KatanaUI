@@ -90,12 +90,12 @@ const COLUMNS: readonly GridColumn<Example>[] = [
 ]
 
 const LAYOUT: readonly GridColumnLayout[] = [
-  { id: 'symbol', label: 'Symbol', width: 164, visible: true, fixed: true },
-  { id: 'side', label: 'Side', width: 44, visible: true },
-  { id: 'price', label: 'Price', width: 84, visible: true },
-  { id: 'qty', label: 'Qty', width: 60, visible: true },
-  { id: 'pnl', label: 'PnL', width: 100, visible: true },
-  { id: 'change', label: 'Chg %', width: 64, visible: true },
+  { id: 'symbol', label: 'Symbol', width: 190, visible: true },
+  { id: 'side', label: 'Side', width: 60, visible: true },
+  { id: 'price', label: 'Price', width: 100, visible: true },
+  { id: 'qty', label: 'Qty', width: 80, visible: true },
+  { id: 'pnl', label: 'PnL', width: 110, visible: true },
+  { id: 'change', label: 'Chg %', width: 80, visible: true },
   { id: 'at', label: 'Time (UTC)', width: 160, visible: true },
   { id: 'fills', label: 'Fills', width: 60, visible: true },
   { id: 'note', label: 'Note', width: 80, visible: true },

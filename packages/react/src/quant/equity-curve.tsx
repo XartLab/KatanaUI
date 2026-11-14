@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 // 权益曲线（组件卡 EquityCurve，design/katana-console components/EquityCurve，2026-10-17 读；#1931 从应用的 panels/kit 搬进来）：
-// 上区权益线 2px ink-100，基准线 1px 灰虚线；下区镜像回撤面用点阵 / 斜线纹理（读 CSS 变量，见 theme/chart-kit.css），不用实色；
+// 上区权益线 2px series-1，基准线 1px 灰虚线；下区镜像回撤面用点阵 / 斜线纹理（读 CSS 变量，见 theme/chart-kit.css），不用实色；
 // 末点 signal-orange 旁标最终值；线性 / 对数纵轴；底下一条概览刷选条，拖窗口只看一段；右上三件（表格视图、导出、全屏）。
 // 横轴是时间（照 TradingView 策略测试器的权益曲线）：点按自己的时刻摆。包里不带语言，文字与数值格式都由调用方传。
 import { useState, type PointerEvent } from 'react'
@@ -248,7 +248,7 @@ export function EquityCurve({
           <div className="k-eq-dd" style={{ height: DRAWDOWN_H }} data-slot="equity-drawdown" aria-hidden="true">
             <svg viewBox={`0 0 ${PLOT_W} ${DRAWDOWN_H}`} preserveAspectRatio="none">
               <defs>
-                <DotFill id={dotId} color="var(--pnl-down-area)" />
+                <DotFill id={dotId} color="var(--seq-300)" />
               </defs>
               <line className="k-ck-grid" x1={0} x2={PLOT_W} y1={zeroY} y2={zeroY} />
               {ddArea && (
