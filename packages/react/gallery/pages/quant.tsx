@@ -39,8 +39,9 @@ import {
   type RegimeSegment,
   type RegimeState,
 } from '../../src/quant/index.ts'
+import { symbolMenu } from '../../src/patterns/row-actions.tsx'
 import { ToggleGroup, ToggleGroupItem } from '../../src/primitives/toggle-group.tsx'
-import { Cell, Row, SAMPLE_MARK_SRC } from './parts.tsx'
+import { ActionLog, Cell, Row, SAMPLE_MARK_SRC, demoSymbolActions } from './parts.tsx'
 
 // 量化层（@katana-ui/react/quant，#1862、#1929）的演示。数值都是示例，不是行情，页上也写明。根元素设 data-updown="cn" 时涨跌色互换（红涨绿跌）。
 
@@ -242,14 +243,24 @@ const LADDER_LABELS: LimitLadderLabels = {
 
 export function LimitLadderDemo() {
   const [selected, setSelected] = useState<string | null>('300004')
+  const [log, setLog] = useState('')
   return (
-    <div style={{ width: '100%', maxWidth: 640, height: 660 }}>
-      <PanelFrame focused aria-label="连板天梯">
-        <PanelFrameHeader heading="连板天梯" object="演示数据" />
-        <PanelFrameBody>
-          <LimitLadder levels={LADDER_LEVELS} labels={LADDER_LABELS} selected={selected} onSelect={setSelected} />
-        </PanelFrameBody>
-      </PanelFrame>
+    <div style={{ width: '100%', maxWidth: 640 }}>
+      <div style={{ height: 660 }}>
+        <PanelFrame focused aria-label="连板天梯">
+          <PanelFrameHeader heading="连板天梯" object="演示数据" />
+          <PanelFrameBody>
+            <LimitLadder
+              levels={LADDER_LEVELS}
+              labels={LADDER_LABELS}
+              selected={selected}
+              onSelect={setSelected}
+              rowActions={(item) => demoSymbolActions(item.code, setLog)}
+            />
+          </PanelFrameBody>
+        </PanelFrame>
+      </div>
+      <ActionLog text={log} />
     </div>
   )
 }
@@ -389,6 +400,7 @@ const HEAT_LABELS: MarketHeatmapLabels = {
 
 export function MarketHeatmapDemo() {
   const [selected, setSelected] = useState<string | null>(null)
+  const [log, setLog] = useState('')
   const [scheme, setScheme] = useState<HeatmapScheme>('classic')
   const [market, setMarket] = useState('stocks')
   const [wide, setWide] = useState(false)
@@ -457,11 +469,13 @@ export function MarketHeatmapDemo() {
                 scheme={scheme}
                 selected={selected}
                 onSelect={setSelected}
+                cellActions={(item) => demoSymbolActions(item.code, setLog)}
               />
             </PanelFrameBody>
           </PanelFrame>
         </div>
       </div>
+      <ActionLog text={log} />
     </div>
   )
 }
@@ -1147,6 +1161,7 @@ const CAL_LABELS: EventCalendarLabels = {
     return `${m} 月 ${d} 日 周${week}`
   },
   count: (n) => `${n} 条`,
+  rowActions: '事件操作',
 }
 
 export function EventCalendarDemo() {
@@ -1162,6 +1177,12 @@ export function EventCalendarDemo() {
             timeZone="Asia/Shanghai"
             locale="zh-CN"
             defaultRange="week"
+            rowActions={(event) =>
+              symbolMenu({
+                newAlert: { label: '设提醒', onSelect: () => undefined },
+                copyCode: { label: `复制 ${event.id}`, onSelect: () => undefined },
+              })
+            }
           />
         </PanelFrameBody>
       </PanelFrame>

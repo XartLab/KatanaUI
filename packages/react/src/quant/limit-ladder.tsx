@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 import { useId, type KeyboardEvent } from 'react'
 import { cn } from '../lib/cn.ts'
+import { RowActions, RowContextMenu, type RowAction } from '../patterns/row-actions.tsx'
 import { SymbolMark } from '../katana/symbol-mark.tsx'
 import { ChangeText } from './change-text.tsx'
 import { formatVolume } from './format/index.ts'
@@ -52,6 +53,9 @@ export type LimitLadderLabels = {
   /** 整张天梯的读屏名。 */
   list: string
   empty: string
+  /** 行快捷操作按钮条与右键菜单的读屏名；省略时用英文。 */
+  rowActions?: string
+  rowMenu?: string
 }
 
 export type LimitLadderProps = {
@@ -60,12 +64,14 @@ export type LimitLadderProps = {
   /** 选中的个股代码。 */
   selected?: string | null
   onSelect?: (code: string) => void
+  /** 行快捷操作（#23，一般传 symbolMenu(...)）：悬停或键盘落到这一行时右端浮出前几颗带图标的按钮，右键（菜单键、Shift+F10）出整份菜单；不传就没有。 */
+  rowActions?: (item: LadderItem) => readonly RowAction[]
   className?: string
 }
 
 const DASH = '—'
 
-export function LimitLadder({ levels, labels, selected = null, onSelect, className }: LimitLadderProps) {
+export function LimitLadder({ levels, labels, selected = null, onSelect, rowActions, className }: LimitLadderProps) {
   const uid = useId()
   const sorted = [...levels].sort((a, b) => b.board - a.board)
 
@@ -82,6 +88,13 @@ export function LimitLadder({ levels, labels, selected = null, onSelect, classNa
     event.preventDefault()
     next.focus()
   }
+
+  const actionsFor = rowActions
+    ? (code: string) => {
+        const item = rows.find((entry) => entry.code === code)
+        return item ? rowActions(item) : []
+      }
+    : undefined
 
   const sealed = rows.filter((item) => item.status === 'sealed').length
   const highest = sorted[0]?.board
@@ -120,73 +133,78 @@ export function LimitLadder({ levels, labels, selected = null, onSelect, classNa
         <span>{labels.columns.industry}</span>
         <span />
       </div>
-      <div className="k-ladder-list" role="listbox" aria-label={labels.list} onKeyDown={onKeyDown}>
-        {sorted.map((level) => {
-          const headId = `${uid}-${level.board}`
-          const [done, total] = level.promoted ?? [0, 0]
-          return (
-            <div
-              key={level.board}
-              role="group"
-              aria-labelledby={headId}
-              className="k-ladder-level"
-              data-board={level.board}
-            >
-              <div className="k-ladder-head" id={headId} data-slot="ladder-head">
-                <span className="k-ladder-board" data-slot="ladder-board">
-                  {level.board}
-                </span>
-                <span className="k-ladder-unit">{labels.board}</span>
-                <span className="k-ladder-count">{labels.count(level.items.length)}</span>
-                {level.promoted ? (
-                  <span className="k-ladder-promote" data-slot="ladder-promote">
-                    <span className="k-ladder-promote-text">{labels.promoted(done, total)}</span>
-                    <span className="k-ladder-promote-bar" aria-hidden="true">
-                      <i style={{ width: `${total > 0 ? Math.min(100, (done / total) * 100) : 0}%` }} />
-                    </span>
+      <RowContextMenu actionsFor={actionsFor} label={labels.rowMenu ?? 'Row menu'}>
+        <div className="k-ladder-list" role="listbox" aria-label={labels.list} onKeyDown={onKeyDown}>
+          {sorted.map((level) => {
+            const headId = `${uid}-${level.board}`
+            const [done, total] = level.promoted ?? [0, 0]
+            return (
+              <div
+                key={level.board}
+                role="group"
+                aria-labelledby={headId}
+                className="k-ladder-level"
+                data-board={level.board}
+              >
+                <div className="k-ladder-head" id={headId} data-slot="ladder-head">
+                  <span className="k-ladder-board" data-slot="ladder-board">
+                    {level.board}
                   </span>
-                ) : null}
+                  <span className="k-ladder-unit">{labels.board}</span>
+                  <span className="k-ladder-count">{labels.count(level.items.length)}</span>
+                  {level.promoted ? (
+                    <span className="k-ladder-promote" data-slot="ladder-promote">
+                      <span className="k-ladder-promote-text">{labels.promoted(done, total)}</span>
+                      <span className="k-ladder-promote-bar" aria-hidden="true">
+                        <i style={{ width: `${total > 0 ? Math.min(100, (done / total) * 100) : 0}%` }} />
+                      </span>
+                    </span>
+                  ) : null}
+                </div>
+                {level.items.map((item) => {
+                  const isSelected = item.code === selected
+                  return (
+                    <div
+                      key={item.code}
+                      role="option"
+                      aria-selected={isSelected}
+                      tabIndex={item.code === tabbable ? 0 : -1}
+                      className={cn('k-ladder-row', isSelected && 'is-selected')}
+                      data-slot="ladder-row"
+                      data-code={item.code}
+                      data-status={item.status}
+                      onClick={() => onSelect?.(item.code)}
+                      onKeyDown={(event) => {
+                        if (event.key === 'Enter' || event.key === ' ') {
+                          event.preventDefault()
+                          onSelect?.(item.code)
+                        }
+                      }}
+                    >
+                      <span className="k-ladder-name">
+                        <SymbolMark code={item.code} name={item.name} src={item.logo} size={18} />
+                        <span className="k-ladder-symbol">{item.code}</span>
+                        <span className="k-ladder-sub">{item.name}</span>
+                      </span>
+                      <ChangeText className="k-ladder-num" value={item.change} />
+                      <span className="k-ladder-num">{item.firstSeal ?? DASH}</span>
+                      <span className="k-ladder-num">{!item.sealAmount ? DASH : formatVolume(item.sealAmount)}</span>
+                      <span className="k-ladder-num">{item.opens ?? DASH}</span>
+                      <span className="k-ladder-industry">{item.industry ?? DASH}</span>
+                      <span className="k-ladder-status" data-status={item.status}>
+                        {labels.status[item.status]}
+                      </span>
+                      {rowActions && (
+                        <RowActions items={rowActions(item)} label={labels.rowActions ?? 'Row actions'} pointerOnly />
+                      )}
+                    </div>
+                  )
+                })}
               </div>
-              {level.items.map((item) => {
-                const isSelected = item.code === selected
-                return (
-                  <div
-                    key={item.code}
-                    role="option"
-                    aria-selected={isSelected}
-                    tabIndex={item.code === tabbable ? 0 : -1}
-                    className={cn('k-ladder-row', isSelected && 'is-selected')}
-                    data-slot="ladder-row"
-                    data-code={item.code}
-                    data-status={item.status}
-                    onClick={() => onSelect?.(item.code)}
-                    onKeyDown={(event) => {
-                      if (event.key === 'Enter' || event.key === ' ') {
-                        event.preventDefault()
-                        onSelect?.(item.code)
-                      }
-                    }}
-                  >
-                    <span className="k-ladder-name">
-                      <SymbolMark code={item.code} name={item.name} src={item.logo} size={18} />
-                      <span className="k-ladder-symbol">{item.code}</span>
-                      <span className="k-ladder-sub">{item.name}</span>
-                    </span>
-                    <ChangeText className="k-ladder-num" value={item.change} />
-                    <span className="k-ladder-num">{item.firstSeal ?? DASH}</span>
-                    <span className="k-ladder-num">{!item.sealAmount ? DASH : formatVolume(item.sealAmount)}</span>
-                    <span className="k-ladder-num">{item.opens ?? DASH}</span>
-                    <span className="k-ladder-industry">{item.industry ?? DASH}</span>
-                    <span className="k-ladder-status" data-status={item.status}>
-                      {labels.status[item.status]}
-                    </span>
-                  </div>
-                )
-              })}
-            </div>
-          )
-        })}
-      </div>
+            )
+          })}
+        </div>
+      </RowContextMenu>
     </div>
   )
 }

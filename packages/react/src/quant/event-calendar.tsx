@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: MIT
-import { useMemo, useState, type ReactNode } from 'react'
+import { useMemo, useState } from 'react'
 import { cn } from '../lib/cn.ts'
 import { SymbolMark } from '../katana/symbol-mark.tsx'
 import { Switch } from '../primitives/switch.tsx'
 import { ToggleGroup, ToggleGroupItem } from '../primitives/toggle-group.tsx'
+import { RowActions, type RowAction } from '../patterns/row-actions.tsx'
 import { ChipGroup } from '../patterns/chip-group.tsx'
 import {
   Combobox,
@@ -31,7 +32,7 @@ import {
 // 功能参照 TradingView 的经济日历（帮助文档：按日期与重要程度、国家筛选，实际值对预期上色，2026-11-15 读，只取功能），卡片结构参照 Arc UI（uiarc.dev）；实现原创。
 // 表格手感同连板天梯（无衬线加 tabular-nums、数字右对齐、紧凑行、极淡分隔线）。重要程度用亮度格条，不上色；橙色不画数据，只给选中。
 // 实际值好于预期用涨色、差于预期用跌色：好坏方向由调用方按事件给（tone），件不懂 CPI 高是好是坏。未公布写「—」，还没到点的写倒计时。
-// 「现在」「时区」由调用方传，件里不读时钟；文字全由调用方传，包里没有语言。悬停行的操作（RowActions，#25 还没落地）先留 renderActions 槽。
+// 「现在」「时区」由调用方传，件里不读时钟；文字全由调用方传，包里没有语言。悬停行的操作用 RowActions（浮在行上、不占列宽），项由调用方给。
 // 筛选状态在件里（不受控）：区间、重要程度、国家、只看高重要。
 
 export type EventCalendarLabels = {
@@ -67,6 +68,8 @@ export type EventCalendarLabels = {
   /** 一天的标题（「11月17日 周二」），由调用方按语言格式化。 */
   dayTitle: (day: string) => string
   count: (n: number) => string
+  /** 行悬停按钮条的读屏名。 */
+  rowActions: string
 }
 
 export type EventCalendarProps = {
@@ -79,8 +82,8 @@ export type EventCalendarProps = {
   /** 给时间格式与日期选择的语言（zh-CN）。 */
   locale: string
   defaultRange?: Exclude<EconomicRangeKey, 'custom'>
-  /** 悬停（或键盘聚焦）一行时在行尾出现的操作，由调用方画。 */
-  renderActions?: (event: EconomicEvent) => ReactNode
+  /** 悬停（或键盘聚焦）一行时在行尾浮出的图标按钮（RowActions，#25），项与动作由调用方给。 */
+  rowActions?: (event: EconomicEvent) => readonly RowAction[]
   className?: string
 }
 
@@ -94,7 +97,7 @@ export function EventCalendar({
   timeZone,
   locale,
   defaultRange = 'week',
-  renderActions,
+  rowActions,
   className,
 }: EventCalendarProps) {
   const [rangeKey, setRangeKey] = useState<EconomicRangeKey>(defaultRange)
@@ -230,7 +233,7 @@ export function EventCalendar({
                     key={event.id}
                     role="row"
                     tabIndex={0}
-                    className="k-ecal-row"
+                    className="k-ecal-row k-row-host"
                     data-slot="ecal-row"
                     data-id={event.id}
                     data-importance={event.importance}
@@ -266,9 +269,7 @@ export function EventCalendar({
                     <span role="cell" className="k-ecal-num">
                       {event.previous ?? DASH}
                     </span>
-                    <span role="cell" className="k-ecal-actions">
-                      {renderActions?.(event)}
-                    </span>
+                    {rowActions && <RowActions items={rowActions(event)} label={labels.rowActions} focusable={false} />}
                   </div>
                 )
               })}

@@ -13,7 +13,7 @@
 | `now` | `number` | — | 现在（毫秒）：今天 / 本周 / 下周与倒计时从它算；件里不读时钟。 |
 | `timeZone / locale` | `string` | — | 显示时区（IANA）与语言：分天、时间格式、周起点（周一）都按它。 |
 | `defaultRange` | `'today' \| 'week' \| 'next'` | — | 起始区间，默认本周。 |
-| `renderActions` | `(event) => ReactNode` | — | 悬停或键盘聚焦一行时出现在行尾的操作（RowActions 落地前的槽）。 |
+| `rowActions` | `(event) => RowAction[]` | — | 悬停或键盘聚焦一行时浮在行尾的图标按钮（RowActions），不占列宽。 |
 
 ## States
 
@@ -35,7 +35,7 @@ EventCalendar
   列头
   table
     天（rowgroup）：日期标题
-      行：时间 | 旗帜 + 代码 | 事件 | 重要程度条 | 实际 | 预期 | 前值 | 行尾操作
+      行：时间 | 旗帜 + 代码 | 事件 | 重要程度条 | 实际 | 预期 | 前值（行尾悬停浮出 RowActions）
 ```
 
 ## Keyboard
