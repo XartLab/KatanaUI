@@ -6,6 +6,9 @@
 import { useRef, useState, type KeyboardEvent, type PointerEvent, type ReactNode } from 'react'
 import { moveThumb, nearestThumb, ratioOf, snapValue, stepValue, valueAt, type Thumb } from './range-histogram-model'
 
+// 箱的高度越高颜色越亮（顺序色阶 seq-200..600，dataviz §2）。patterns 层在 quant 之下，不能取 quant/chart-kit 的 seqColor，这里只列 token 名。
+const SEQ = ['var(--seq-200)', 'var(--seq-300)', 'var(--seq-400)', 'var(--seq-500)', 'var(--seq-600)'] as const
+
 export type RangeHistogramSliderProps = {
   /** 每一箱的个数，等宽分箱铺满 [min, max]；用 histogramBins 算。 */
   counts: readonly number[]
@@ -118,7 +121,10 @@ export function RangeHistogramSlider({
                 key={index}
                 className="k-range-hist-bar"
                 data-in={center >= lowRatio && center <= highRatio ? 'true' : 'false'}
-                style={{ height: `${(count / peak) * 100}%` }}
+                style={{
+                  height: `${(count / peak) * 100}%`,
+                  background: SEQ[Math.round((count / peak) * (SEQ.length - 1))],
+                }}
               />
             )
           })}

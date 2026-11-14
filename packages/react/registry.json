@@ -1910,7 +1910,7 @@
       "name": "range-histogram-model",
       "type": "registry:component",
       "title": "Range Histogram Model",
-      "description": "一排柱子画出全体的分布，下面一条轨道两个把手：拖出来的区间里的柱子亮、区间外的暗。用在筛选器，在全市场分布上拖市值、涨幅、换手的区间。点柱子或轨道，最近的把手跳过去。功能参照 Arc Range histogram slider，实现原创。",
+      "description": "一排柱子画出全体的分布，下面一条轨道两个把手：拖出来的区间里的柱子亮、区间外的暗；柱色取 seq 顺序色阶（越高越亮）。用在筛选器，在全市场分布上拖市值、涨幅、换手的区间。点柱子或轨道，最近的把手跳过去。功能参照 Arc Range histogram slider，实现原创。",
       "files": [
         {
           "path": "src/patterns/range-histogram-model.ts",
@@ -1963,7 +1963,7 @@
       "name": "range-histogram-slider",
       "type": "registry:component",
       "title": "Range Histogram Slider",
-      "description": "一排柱子画出全体的分布，下面一条轨道两个把手：拖出来的区间里的柱子亮、区间外的暗。用在筛选器，在全市场分布上拖市值、涨幅、换手的区间。点柱子或轨道，最近的把手跳过去。功能参照 Arc Range histogram slider，实现原创。",
+      "description": "一排柱子画出全体的分布，下面一条轨道两个把手：拖出来的区间里的柱子亮、区间外的暗；柱色取 seq 顺序色阶（越高越亮）。用在筛选器，在全市场分布上拖市值、涨幅、换手的区间。点柱子或轨道，最近的把手跳过去。功能参照 Arc Range histogram slider，实现原创。",
       "registryDependencies": [
         "@katana/range-histogram-model"
       ],
@@ -2103,8 +2103,9 @@
       "name": "connected-scatter",
       "type": "registry:component",
       "title": "Connected Scatter",
-      "description": "每个点是一个时刻的 (x, y)，按时间顺序连成轨迹，看一个对象在两个量之间怎么走（如策略的波动 vs 收益按月的路径、风格漂移）。时间方向不靠颜色：起点空心圈、终点实心圈加箭头、点越靠后越不透明。多条轨迹各取 series 色板的一个色。功能参照 Arc Connected scatter，实现原创。",
+      "description": "每个点是一个时刻的 (x, y)，按时间顺序连成轨迹，看一个对象在两个量之间怎么走（如策略的波动 vs 收益按月的路径、风格漂移）。时间方向不单靠颜色：起点空心圈、终点强调色实心圈加箭头、中间的点按时间取 seq 色阶（越晚越亮）。多条轨迹各取 series 色板的一个色。功能参照 Arc Connected scatter，实现原创。",
       "registryDependencies": [
+        "@katana/chart-kit",
         "@katana/scatter-model"
       ],
       "files": [
@@ -2213,7 +2214,7 @@
       "name": "scatter-model",
       "type": "registry:component",
       "title": "Scatter Model",
-      "description": "每个点是一个时刻的 (x, y)，按时间顺序连成轨迹，看一个对象在两个量之间怎么走（如策略的波动 vs 收益按月的路径、风格漂移）。时间方向不靠颜色：起点空心圈、终点实心圈加箭头、点越靠后越不透明。多条轨迹各取 series 色板的一个色。功能参照 Arc Connected scatter，实现原创。",
+      "description": "每个点是一个时刻的 (x, y)，按时间顺序连成轨迹，看一个对象在两个量之间怎么走（如策略的波动 vs 收益按月的路径、风格漂移）。时间方向不单靠颜色：起点空心圈、终点强调色实心圈加箭头、中间的点按时间取 seq 色阶（越晚越亮）。多条轨迹各取 series 色板的一个色。功能参照 Arc Connected scatter，实现原创。",
       "registryDependencies": [
         "@katana/chart-scale"
       ],
@@ -2245,7 +2246,7 @@
       "name": "slope-chart",
       "type": "registry:component",
       "title": "Slope Chart",
-      "description": "每项一条线连「前」「后」两列，看再平衡前后的权重、因子排名的变化。线按变化涂涨跌色（跟 data-updown 走），两侧写名字与数，标签互相不重叠；rank 模式纵轴是名次，涨跌看名次升降。悬停或聚焦一条，其余变暗。功能参照 Arc Slope chart，实现原创。",
+      "description": "每项一条线连「前」「后」两列，看再平衡前后的权重、因子排名的变化。线与点是中性墨色，涨跌色只上变化后的那个数字（跟 data-updown 走），悬停与聚焦的线用强调色，两侧写名字与数，标签互相不重叠；rank 模式纵轴是名次，涨跌看名次升降。悬停或聚焦一条，其余变暗。功能参照 Arc Slope chart，实现原创。",
       "registryDependencies": [
         "@katana/slope-model"
       ],
@@ -2261,7 +2262,7 @@
       "name": "slope-model",
       "type": "registry:component",
       "title": "Slope Model",
-      "description": "每项一条线连「前」「后」两列，看再平衡前后的权重、因子排名的变化。线按变化涂涨跌色（跟 data-updown 走），两侧写名字与数，标签互相不重叠；rank 模式纵轴是名次，涨跌看名次升降。悬停或聚焦一条，其余变暗。功能参照 Arc Slope chart，实现原创。",
+      "description": "每项一条线连「前」「后」两列，看再平衡前后的权重、因子排名的变化。线与点是中性墨色，涨跌色只上变化后的那个数字（跟 data-updown 走），悬停与聚焦的线用强调色，两侧写名字与数，标签互相不重叠；rank 模式纵轴是名次，涨跌看名次升降。悬停或聚焦一条，其余变暗。功能参照 Arc Slope chart，实现原创。",
       "files": [
         {
           "path": "src/quant/slope-model.ts",

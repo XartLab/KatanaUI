@@ -86,7 +86,7 @@ export function SlopeChart({
           {item.label} {formatValue(item.before)}
         </text>
         <text className="k-slope-text" x={x1 + 10} y={row.label1} dy="0.35em" textAnchor="start">
-          {formatValue(item.after)} {item.label}
+          <tspan className="k-slope-num">{formatValue(item.after)}</tspan> {item.label}
         </text>
       </>
     )

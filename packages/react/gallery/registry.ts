@@ -3857,7 +3857,7 @@ export const PAGES: readonly DocPage[] = [
     cardHeight: 162,
     title: 'RangeHistogramSlider 直方图区间滑块',
     summary:
-      '一排柱子画出全体的分布，下面一条轨道两个把手：拖出来的区间里的柱子亮、区间外的暗。用在筛选器，在全市场分布上拖市值、涨幅、换手的区间。点柱子或轨道，最近的把手跳过去。功能参照 Arc Range histogram slider，实现原创。',
+      '一排柱子画出全体的分布，下面一条轨道两个把手：拖出来的区间里的柱子亮、区间外的暗；柱色取 seq 顺序色阶（越高越亮）。用在筛选器，在全市场分布上拖市值、涨幅、换手的区间。点柱子或轨道，最近的把手跳过去。功能参照 Arc Range histogram slider，实现原创。',
     exports: ['RangeHistogramSlider', 'histogramBins'],
     props: [
       {
@@ -3890,7 +3890,7 @@ export const PAGES: readonly DocPage[] = [
       },
     ],
     states: [
-      '区间内的柱子用强调色，区间外的用暗色；区间那一段轨道也用强调色。',
+      '区间内的柱子不透明、区间外 35%，柱色按高度取 seq-200 到 seq-600；区间那一段轨道用强调色。',
       '两个把手叠在一起时，按指针往哪边拖决定动哪个，不会互相夹死。',
       '键盘聚焦的把手有焦点环。',
     ],
@@ -4034,7 +4034,7 @@ export const PAGES: readonly DocPage[] = [
     cardHeight: 700,
     title: 'SlopeChart 斜率图',
     summary:
-      '每项一条线连「前」「后」两列，看再平衡前后的权重、因子排名的变化。线按变化涂涨跌色（跟 data-updown 走），两侧写名字与数，标签互相不重叠；rank 模式纵轴是名次，涨跌看名次升降。悬停或聚焦一条，其余变暗。功能参照 Arc Slope chart，实现原创。',
+      '每项一条线连「前」「后」两列，看再平衡前后的权重、因子排名的变化。线与点是中性墨色，涨跌色只上变化后的那个数字（跟 data-updown 走），悬停与聚焦的线用强调色，两侧写名字与数，标签互相不重叠；rank 模式纵轴是名次，涨跌看名次升降。悬停或聚焦一条，其余变暗。功能参照 Arc Slope chart，实现原创。',
     exports: ['SlopeChart', 'slopeLayout', 'spreadLabels', 'ranks'],
     props: [
       {
@@ -4091,7 +4091,7 @@ export const PAGES: readonly DocPage[] = [
     cardHeight: 1146,
     title: 'ConnectedScatter 连线散点图',
     summary:
-      '每个点是一个时刻的 (x, y)，按时间顺序连成轨迹，看一个对象在两个量之间怎么走（如策略的波动 vs 收益按月的路径、风格漂移）。时间方向不靠颜色：起点空心圈、终点实心圈加箭头、点越靠后越不透明。多条轨迹各取 series 色板的一个色。功能参照 Arc Connected scatter，实现原创。',
+      '每个点是一个时刻的 (x, y)，按时间顺序连成轨迹，看一个对象在两个量之间怎么走（如策略的波动 vs 收益按月的路径、风格漂移）。时间方向不单靠颜色：起点空心圈、终点强调色实心圈加箭头、中间的点按时间取 seq 色阶（越晚越亮）。多条轨迹各取 series 色板的一个色。功能参照 Arc Connected scatter，实现原创。',
     exports: ['ConnectedScatter', 'scatterLayout'],
     props: [
       {
@@ -4117,7 +4117,7 @@ export const PAGES: readonly DocPage[] = [
       },
     ],
     states: [
-      '起点空心圈、中间小点、终点大实心圈加箭头；点越靠后越不透明（35% 到 100%，视觉取值，待定）。',
+      '起点空心圈、中间小点、终点大实心圈加箭头；中间的点取 seq-200 到 seq-600（按时间分档），终点用强调色加辉光。',
       '悬停或聚焦一个点：该点描白边，别的轨迹变暗，读数行写这个点的整句。',
       '单点的轨迹只画一个点，没有连线与箭头。',
     ],

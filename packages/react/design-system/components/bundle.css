@@ -8328,14 +8328,14 @@ button.k-sm-head:focus-visible {
 }
 
 .k-range-hist-bar {
-  background: var(--ink-400);
+  opacity: .35;
   border-radius: var(--radius-sm) var(--radius-sm) 0 0;
   flex: 1 1 0;
   min-height: 1px;
 }
 
 .k-range-hist-bar[data-in="true"] {
-  background: var(--signal-orange);
+  opacity: 1;
 }
 
 .k-range-hist-rail {
@@ -8541,24 +8541,17 @@ button.k-sm-head:focus-visible {
   font-variant-numeric: tabular-nums;
 }
 
-.k-slope-item[data-tone="up"] .k-slope-line {
-  stroke: var(--pnl-up);
-}
-
-.k-slope-item[data-tone="up"] .k-slope-dot {
+.k-slope-item[data-tone="up"] .k-slope-num {
   fill: var(--pnl-up);
 }
 
-.k-slope-item[data-tone="down"] .k-slope-line {
-  stroke: var(--pnl-down);
-}
-
-.k-slope-item[data-tone="down"] .k-slope-dot {
+.k-slope-item[data-tone="down"] .k-slope-num {
   fill: var(--pnl-down);
 }
 
 .k-slope-item:hover .k-slope-line, .k-slope-item:focus-visible .k-slope-line {
-  stroke-width: 3px;
+  stroke: var(--chart-accent, var(--signal-orange));
+  stroke-width: 2.5px;
 }
 
 .k-slope-item:focus-visible .k-slope-text {
@@ -8621,8 +8614,13 @@ button.k-sm-head:focus-visible {
 }
 
 .k-scatter-dot {
-  fill: var(--k-scatter-color);
+  fill: var(--k-dot, var(--k-scatter-color));
   outline: none;
+}
+
+.k-scatter-dot[data-kind="end"] {
+  fill: var(--chart-accent, var(--signal-orange));
+  filter: drop-shadow(0 0 4px var(--chart-accent, var(--signal-orange)));
 }
 
 .k-scatter-dot[data-kind="start"] {

@@ -3,6 +3,7 @@
 // 时间方向三路表达，不靠颜色：起点是空心圈、终点是实心圈加箭头，点越靠后越不透明。多条轨迹各取 series 色板里的一个色，悬停或聚焦一个点其余轨迹变暗。
 // 功能参照 Arc Connected scatter（uiarc.dev，2026-11-14 读，范例是 CAC vs LTV 随时间的路径），实现原创。文字全由 props 传。
 import { useRef, useState, type CSSProperties, type KeyboardEvent, type ReactNode } from 'react'
+import { seqColor } from './chart-kit/series-colors'
 import { moveScatter, scatterLayout, type ScatterFrame, type ScatterSeries } from './scatter-model'
 
 const FRAME: ScatterFrame = { width: 640, height: 360, left: 52, top: 14, right: 18, bottom: 40 }
@@ -128,7 +129,7 @@ export function ConnectedScatter({
                   cx={mapped.points[i]!.x}
                   cy={mapped.points[i]!.y}
                   r={i === 0 || i === n - 1 ? 5 : 3.5}
-                  style={{ opacity: n > 1 ? 0.35 + (0.65 * i) / (n - 1) : 1 }}
+                  style={{ ['--k-dot' as string]: seqColor(n > 1 ? (4 * i) / (n - 1) : 4) }}
                   role="img"
                   aria-label={point.label}
                   tabIndex={stop[0] === s && stop[1] === i ? 0 : -1}
