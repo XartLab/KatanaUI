@@ -237,7 +237,7 @@
   min-width: 0;
 }
 
-/* 列头拖动重排（#27）：被拖的列变淡，悬着的目标列左边亮一道强调线（放下时被拖的列占它的位置）。 */
+/* 列头拖动重排（#27）：被拖的列变淡，悬着的目标列左边亮一道线（--ink-100，橙色只给状态灯与焦点角括号）（放下时被拖的列占它的位置）。 */
 .k-grid-col[draggable='true'] {
   cursor: grab;
 }
@@ -251,7 +251,7 @@
   left: 0;
   z-index: 3;
   width: 2px;
-  background: var(--signal-orange);
+  background: var(--ink-100);
   content: '';
 }
 

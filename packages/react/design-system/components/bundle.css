@@ -5242,7 +5242,7 @@
 
 .k-grid-col.is-drop:before {
   z-index: 3;
-  background: var(--signal-orange);
+  background: var(--ink-100);
   content: "";
   width: 2px;
   position: absolute;
