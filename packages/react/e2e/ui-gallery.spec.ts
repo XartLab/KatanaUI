@@ -1742,6 +1742,30 @@ for (const theme of THEMES) {
       await expect(grid.getByRole('row').nth(1).locator('[data-col="symbol"]')).toContainText('600519')
     })
 
+    test('积木：面板外壳——聚焦的画橙色角括号，普通的没有，空态在壳里', async ({ page }) => {
+      await open(page, theme, 'panel-frame')
+      const frames = section(page, 'panel-frame').locator('[data-slot="panel-frame"]')
+      await expect(frames).toHaveCount(3)
+      const brackets = frames.nth(1).locator('[data-slot="panel-brackets"] i').first()
+      await expect(brackets).toBeVisible()
+      const box = await brackets.boundingBox()
+      expect(box?.width).toBeGreaterThan(5)
+      expect(await brackets.evaluate((el) => getComputedStyle(el).borderTopColor)).not.toBe('rgba(0, 0, 0, 0)')
+      await expect(frames.nth(0).locator('[data-slot="panel-brackets"]')).toHaveCount(0)
+      const title = (i: number) =>
+        frames
+          .nth(i)
+          .locator('[data-slot="panel-title"]')
+          .evaluate((el) => getComputedStyle(el).color)
+      expect(await title(1)).not.toBe(await title(0))
+      // 联动灯四组都取自信号色（赭、粉红、绿、琥珀），没有蓝：B 组是粉红，不是 signal-blue。
+      const groupB = frames.nth(1).getByRole('img', { name: 'Link group B' })
+      await expect(groupB).toHaveCSS('background-color', await token(page, '--signal-red'))
+      expect(await token(page, '--link-b')).not.toBe(await token(page, '--signal-blue'))
+      await expect(frames.nth(0).getByRole('button', { name: 'Maximize' })).toBeVisible()
+      await expect(frames.nth(2).getByRole('status')).toContainText('No data source')
+    })
+
     test('积木：空态、工具条按钮与估算标记', async ({ page }) => {
       await open(page, theme, 'empty-state')
       await expect(section(page, 'empty-state').getByRole('status')).toContainText('Nothing selected')
@@ -3016,10 +3040,10 @@ for (const theme of THEMES) {
     const total = Object.keys(map.cards).length
     await expect(page.locator('[data-card]')).toHaveCount(total)
     // 一张具体的卡：落点、状态、备注都写在行里；部分的卡写着缺什么。
-    // 原来用 DataGrid；#1869 之后它是「已做」，改用仍是「部分」且带计划落点的 PanelFrame。
+    // 原来用 DataGrid；#1869 之后它是「已做」，改用仍是「部分」的 PanelFrame（落点是包的出口，备注写还缺什么）。
     const row = page.locator('[data-card="PanelFrame"]')
     await expect(row).toHaveAttribute('data-status', '部分')
-    await expect(row).toContainText('PanelFrame（计划）')
+    await expect(row).toContainText('拖动抬起')
     await expect(row).toBeVisible()
     await page.getByRole('link', { name: 'button', exact: true }).click()
     await expect(section(page, 'button')).toBeVisible()

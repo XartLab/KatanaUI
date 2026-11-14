@@ -362,9 +362,8 @@
     "PanelFrame": {
       "kind": "积木",
       "status": "部分",
-      "at": ["src/workspace/PaneFrame.tsx", "EmptyState", "Toolbar"],
-      "planned": ["PanelFrame"],
-      "note": "#1869 做了空态 EmptyState 与工具条 Toolbar；面板壳本身还在应用里"
+      "at": ["PanelFrame", "EmptyState", "Toolbar"],
+      "note": "PanelFrame 已做（编号、标题、对象、联动灯、点阵元信息位、工具条、图标钮、来源行、焦点角括号）；卡上的拖动抬起、最大化动效、标题栏右键菜单、铆钉、密度档还没做"
     },
     "ParamScatter": {
       "kind": "面板",

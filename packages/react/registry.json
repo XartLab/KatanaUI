@@ -144,6 +144,11 @@
           "target": "~/src/katana/ui/theme/number-input.css"
         },
         {
+          "path": "src/theme/panel-frame.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/panel-frame.css"
+        },
+        {
           "path": "src/theme/quote.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/quote.css"
@@ -2565,6 +2570,27 @@
           "path": "src/blocks/event-timeline.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/blocks/event-timeline.tsx"
+        }
+      ]
+    },
+    {
+      "name": "panel-frame",
+      "type": "registry:component",
+      "title": "Panel Frame",
+      "description": "面板的外壳：编号、标题、对象、联动灯、点阵元信息位、局部工具条、右侧图标钮与底部来源行。聚焦时四角画橙色括号。面板不自己画边框与阴影。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/led",
+        "@katana/toolbar"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/panel-frame.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/panel-frame.tsx"
         }
       ]
     },

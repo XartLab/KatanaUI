@@ -851,7 +851,11 @@ export const PAGES: readonly DocPage[] = [
       },
     ],
     states: ['熄灭（默认）、on、ok、warn、danger；联动组按组色。', '空心、小号两种形态；无文字的灯必须带读屏名。'],
-    donts: ['不要拿它当装饰：只表达真实状态。', '不要单靠颜色说话，旁边要有文字或读屏名。'],
+    donts: [
+      '不要拿它当装饰：只表达真实状态。',
+      '不要单靠颜色说话，旁边要有文字或读屏名。',
+      '联动组 A-D 的颜色取自 Graphite 信号色（赭、粉红、绿、琥珀），不含蓝：设计决定不用 TradingView 蓝。',
+    ],
     composition: 'Led',
     keys: [],
   },
@@ -3375,6 +3379,49 @@ export const PAGES: readonly DocPage[] = [
     states: ['有操作：标题、说明下面带操作区。', '无操作：只有标题与说明。'],
     donts: ['不要拿空态当加载中；加载用 Loading。', '不要写没有下一步的空态说明。'],
     composition: 'EmptyState（role=status）\n  标签\n  标题（h3）\n  说明\n  动作',
+    keys: [],
+  },
+  {
+    id: 'panel-frame',
+    group: 'blocks',
+    cardHeight: 300,
+    title: 'PanelFrame 面板外壳',
+    summary:
+      '面板的外壳：编号、标题、对象、联动灯、点阵元信息位、局部工具条、右侧图标钮与底部来源行。聚焦时四角画橙色括号。面板不自己画边框与阴影。',
+    exports: ['PanelFrame'],
+    props: [
+      {
+        part: 'PanelFrame',
+        rows: [
+          { name: 'index', type: 'string', desc: '面板编号（01、02……），强调色点阵字。' },
+          { name: 'title', type: 'string', desc: '标题，同时是外壳的读屏名。' },
+          { name: 'object', type: 'string', desc: '当前对象，标题后的小字；前面的「·」由外壳画。' },
+          {
+            name: 'linkGroup / linkLabel / pinned',
+            type: 'LinkGroup | null / string / boolean',
+            desc: '联动组色灯；pinned 画空心圈。',
+          },
+          { name: 'meta', type: 'string', desc: '点阵元信息位（刷新频率、周期之类）。' },
+          { name: 'toolbar', type: 'ReactNode', desc: '局部工具条，放在标题与图标钮之间。' },
+          { name: 'source', type: 'ReactNode', desc: '来源行位：底部一行点阵字，不给就没有。' },
+          {
+            name: 'focused / brackets',
+            type: 'boolean',
+            desc: '聚焦面板标题 ink-100；brackets 默认跟着 focused，画四角橙色括号。',
+          },
+          {
+            name: 'maximized / onSettings / onMaximize / onClose',
+            type: 'boolean / () => void',
+            desc: '右侧图标钮；不传回调就不画那个钮。',
+          },
+          { name: 'labels', type: 'PanelFrameLabels', desc: '设置 / 最大化 / 还原 / 关闭的读屏名，由调用方传。' },
+        ],
+      },
+    ],
+    states: ['普通：标题 ink-300。', '聚焦：标题 ink-100，四角橙色括号。', '空态：正文摆 EmptyState，不画假数据。'],
+    donts: ['不要在面板里再画边框与阴影。', '不要把橙色用在数据上；它只给括号与状态灯。', '标题栏图标钮不超过 3 个。'],
+    composition:
+      'PanelFrame（section）\n  头：编号 | 联动灯 | 标题 | 对象 | 工具条 | 元信息 | 图标钮\n  正文\n  来源行\n  角括号（装饰）',
     keys: [],
   },
   {

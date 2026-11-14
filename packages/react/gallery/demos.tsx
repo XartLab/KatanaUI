@@ -12,7 +12,7 @@ import {
 } from './pages/readouts.tsx'
 import { ContextMenuOpen, DialogOpen, DropdownMenuOpen, PopoverOpen, SelectOpen, TooltipOpen } from './pages/open.tsx'
 import { ChangeTextDemo, PnlTextDemo, QuantFormatDemo } from './pages/quant.tsx'
-import { DataGridDemo, EmptyStateDemo, EstimateBadgeDemo, ToolbarDemo } from './pages/blocks.tsx'
+import { DataGridDemo, EmptyStateDemo, EstimateBadgeDemo, PanelFrameDemo, ToolbarDemo } from './pages/blocks.tsx'
 import { AlertDemo, ProgressDemo, ToastDemo } from './pages/feedback.tsx'
 import { ComboboxDemo, CommandDemo } from './pages/pickers.tsx'
 import { EventTimelineDemo, JsonViewerDemo } from './pages/arc-controls.tsx'
@@ -131,6 +131,7 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'quant-format': QuantFormatDemo,
   'data-grid': DataGridDemo,
   'empty-state': EmptyStateDemo,
+  'panel-frame': PanelFrameDemo,
   toolbar: ToolbarDemo,
   'estimate-badge': EstimateBadgeDemo,
   'event-timeline': EventTimelineDemo,

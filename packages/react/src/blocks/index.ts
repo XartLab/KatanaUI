@@ -13,6 +13,7 @@ export {
 } from './data-grid/host.tsx'
 export { tableCsv, type SortSpec } from './data-grid/model.ts'
 export { EmptyState, type EmptyStateSlot } from './empty-state.tsx'
+export { PanelFrame, type PanelFrameLabels, type PanelFrameProps } from './panel-frame.tsx'
 export { EstimateBadge } from './estimate-badge.tsx'
 export { EventTimeline, type EventTimelineLabels, type EventTimelineProps } from './event-timeline.tsx'
 export type { EventKind, SessionMinutes, TimelineEvent } from './event-timeline-model.ts'
