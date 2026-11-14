@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vite-plus/test'
+import { BulletMeter } from './bullet-meter'
+import { bulletModel } from './bullet-model'
 import { BrushChart } from './brush-chart'
 import { centerWindow, clampWindow, moveWindow, resizeWindow } from './brush-model'
 import { WaterfallChart } from './waterfall-chart'
@@ -174,5 +176,47 @@ describe('瀑布累加', () => {
     expect(html).toContain('data-key="fee" data-direction="down"')
     expect(html).toContain('data-key="end" data-direction="total" data-gap="true"')
     expect(html).toContain('<li>期末  1230  差 30</li>')
+  })
+})
+
+describe('子弹图仪表', () => {
+  it('状态按「达到」算：已用 ≥ 软限是 warn，≥ 硬限是 breach；没给限就是 ok', () => {
+    expect(bulletModel({ value: 79, soft: 80, hard: 100 }).state).toBe('ok')
+    expect(bulletModel({ value: 80, soft: 80, hard: 100 }).state).toBe('warn')
+    expect(bulletModel({ value: 100, soft: 80, hard: 100 }).state).toBe('breach')
+    expect(bulletModel({ value: 5 }).state).toBe('ok')
+    expect(bulletModel({ value: 90, hard: 100 }).state).toBe('ok')
+  })
+
+  it('位置：按满刻度，越界按边；满刻度没给取已用与两条限里最大的', () => {
+    const m = bulletModel({ value: 50, max: 200, soft: 100, hard: 150 })
+    expect([m.value, m.soft, m.hard]).toEqual([0.25, 0.5, 0.75])
+    expect(bulletModel({ value: 300, max: 200 }).value).toBe(1)
+    expect(bulletModel({ value: -5, max: 200 }).value).toBe(0)
+    expect(bulletModel({ value: 120, soft: 80, hard: 100 }).max).toBe(120)
+    expect(bulletModel({ value: 0, max: 0 }).value).toBe(0)
+    expect(bulletModel({ value: 10, max: 100 }).soft).toBeNull()
+  })
+
+  it('渲染：role=meter 带读屏句，三段底按限画，状态词跟状态走', () => {
+    const html = renderToStaticMarkup(
+      <BulletMeter
+        value={82}
+        max={120}
+        soft={80}
+        hard={100}
+        label="敞口"
+        valueText="已用 82"
+        formatValue={String}
+        stateLabels={{ warn: '接近' }}
+      />,
+    )
+    expect(html).toContain('role="meter"')
+    expect(html).toContain('aria-valuenow="82"')
+    expect(html).toContain('aria-valuetext="已用 82"')
+    expect(html).toContain('data-state="warn"')
+    expect(html).toContain('>接近<')
+    expect(html).toContain('class="k-bullet-zone is-warn"')
+    expect(html).toContain('class="k-bullet-zone is-breach"')
   })
 })

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 import { useScrubber } from '../../src/index'
-import { BrushChart, WaterfallChart, type WaterfallStep } from '../../src/quant'
+import { BrushChart, BulletMeter, WaterfallChart, type WaterfallStep } from '../../src/quant'
 import { Row } from './parts'
 
 // #1917：时间序列与盈亏的件的演示。下面所有数据都是演示用的合成数据（在这个展示页里按固定种子生成，不是行情、不是账户），每页也写明了；应用里没有样本数据。
@@ -107,6 +107,51 @@ export function WaterfallChartDemo() {
         </div>
       </Row>
       <p className="gal-note">{DEMO_NOTE}总计柱与前面累计对不上时画虚线框、读数写差额，不替它抹平。</p>
+    </>
+  )
+}
+
+export function BulletMeterDemo() {
+  const state = { ok: '正常', warn: '接近', breach: '越限' }
+  const ticks = { soft: '软限 80', hard: '硬限 100' }
+  return (
+    <>
+      <div className="gal-wide" data-gallery-bullet style={{ maxWidth: 420, display: 'grid', gap: 14 }}>
+        <BulletMeter
+          label="总敞口（示例）"
+          value={40}
+          max={120}
+          soft={80}
+          hard={100}
+          valueText="已用 40，软限 80，硬限 100，满刻度 120"
+          formatValue={(v) => `${v}%`}
+          stateLabels={state}
+          tickLabels={ticks}
+        />
+        <BulletMeter
+          label="单日亏损（示例）"
+          value={85}
+          max={120}
+          soft={80}
+          hard={100}
+          valueText="已用 85，软限 80，硬限 100，满刻度 120"
+          formatValue={(v) => `${v}%`}
+          stateLabels={state}
+          tickLabels={ticks}
+        />
+        <BulletMeter
+          label="连亏笔数（示例）"
+          value={130}
+          max={120}
+          soft={80}
+          hard={100}
+          valueText="已用 130，超过满刻度 120，硬限 100"
+          formatValue={(v) => `${v}%`}
+          stateLabels={state}
+          tickLabels={ticks}
+        />
+      </div>
+      <p className="gal-note">{DEMO_NOTE}达到软限算接近，达到硬限算越限；超出满刻度的条画满。</p>
     </>
   )
 }

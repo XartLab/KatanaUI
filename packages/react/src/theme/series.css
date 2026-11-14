@@ -236,3 +236,101 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+/* —— BulletMeter —— */
+.k-bullet {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  font: var(--text-caption) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+}
+.k-bullet-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+.k-bullet-label {
+  color: var(--ink-300);
+  font: var(--text-data) var(--font-sans);
+}
+.k-bullet-value {
+  color: var(--ink-100);
+  font: var(--text-data) var(--font-mono);
+}
+.k-bullet-state {
+  margin-left: 6px;
+  font-style: normal;
+  font-family: var(--font-sans);
+}
+.k-bullet[data-state='warn'] .k-bullet-state {
+  color: var(--signal-amber);
+}
+.k-bullet[data-state='breach'] .k-bullet-state {
+  color: var(--signal-red);
+}
+.k-bullet-track {
+  position: relative;
+  height: 14px;
+  border-radius: 2px;
+  background: var(--bg-300);
+  overflow: hidden;
+}
+.k-bullet-zone {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+}
+.k-bullet-zone.is-ok {
+  background: var(--bg-300);
+}
+.k-bullet-zone.is-warn {
+  background: color-mix(in srgb, var(--signal-amber) 24%, var(--bg-300));
+}
+.k-bullet-zone.is-breach {
+  background: color-mix(in srgb, var(--signal-red) 28%, var(--bg-300));
+}
+.k-bullet-fill {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  left: 0;
+  border-radius: 1px;
+  background: var(--ink-100);
+  transition: width var(--dur-snappy) var(--ease-snappy);
+}
+.k-bullet[data-state='warn'] .k-bullet-fill {
+  background: var(--signal-amber);
+}
+.k-bullet[data-state='breach'] .k-bullet-fill {
+  background: var(--signal-red);
+}
+.k-bullet-tick {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  margin-left: -1px;
+  background: var(--ink-300);
+}
+.k-bullet-tick.is-hard {
+  background: var(--signal-red);
+}
+.k-bullet-tick.is-soft {
+  background: var(--signal-amber);
+}
+.k-bullet-ticks {
+  position: relative;
+  height: 14px;
+  color: var(--ink-300);
+}
+.k-bullet-ticks > span {
+  position: absolute;
+  white-space: nowrap;
+  transform: translateX(-50%);
+}
+.k-bullet-ticks > span[data-align='end'] {
+  transform: translateX(-100%);
+}

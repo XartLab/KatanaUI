@@ -1802,6 +1802,36 @@
       ]
     },
     {
+      "name": "bullet-meter",
+      "type": "registry:component",
+      "title": "Bullet Meter",
+      "description": "限额板用的横向仪表：一根条是已用，底上三段是正常、接近、越限，两根刻度是软限与硬限，右上角写已用与状态词。对设计稿的 Meter 卡。功能参照 Arc 的 Budget variance。",
+      "registryDependencies": [
+        "@katana/bullet-model",
+        "@katana/cn"
+      ],
+      "files": [
+        {
+          "path": "src/quant/bullet-meter.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/bullet-meter.tsx"
+        }
+      ]
+    },
+    {
+      "name": "bullet-model",
+      "type": "registry:component",
+      "title": "Bullet Model",
+      "description": "BulletMeter 的几何与状态（纯函数）：位置、达到软限与硬限的判定。",
+      "files": [
+        {
+          "path": "src/quant/bullet-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/bullet-model.ts"
+        }
+      ]
+    },
+    {
       "name": "change-text",
       "type": "registry:component",
       "title": "Change Text",

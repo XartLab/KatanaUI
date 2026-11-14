@@ -6274,6 +6274,135 @@ button.k-quote-card.is-link:focus-visible {
   overflow: hidden;
 }
 
+.k-bullet {
+  min-width: 0;
+  font: var(--text-caption) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+  flex-direction: column;
+  gap: 6px;
+  display: flex;
+}
+
+.k-bullet-head {
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  display: flex;
+}
+
+.k-bullet-label {
+  color: var(--ink-300);
+  font: var(--text-data) var(--font-sans);
+}
+
+.k-bullet-value {
+  color: var(--ink-100);
+  font: var(--text-data) var(--font-mono);
+}
+
+.k-bullet-state {
+  font-style: normal;
+  font-family: var(--font-sans);
+  margin-left: 6px;
+}
+
+.k-bullet[data-state="warn"] .k-bullet-state {
+  color: var(--signal-amber);
+}
+
+.k-bullet[data-state="breach"] .k-bullet-state {
+  color: var(--signal-red);
+}
+
+.k-bullet-track {
+  background: var(--bg-300);
+  border-radius: 2px;
+  height: 14px;
+  position: relative;
+  overflow: hidden;
+}
+
+.k-bullet-zone {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+}
+
+.k-bullet-zone.is-ok {
+  background: var(--bg-300);
+}
+
+.k-bullet-zone.is-warn {
+  background: var(--signal-amber);
+}
+
+@supports (color: color-mix(in lab, red, red)) {
+  .k-bullet-zone.is-warn {
+    background: var(--ds-c-1cp2jaz);
+  }
+}
+
+.k-bullet-zone.is-breach {
+  background: var(--signal-red);
+}
+
+@supports (color: color-mix(in lab, red, red)) {
+  .k-bullet-zone.is-breach {
+    background: var(--ds-c-16w4yab);
+  }
+}
+
+.k-bullet-fill {
+  background: var(--ink-100);
+  transition: width var(--dur-snappy) var(--ease-snappy);
+  border-radius: 1px;
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  left: 0;
+}
+
+.k-bullet[data-state="warn"] .k-bullet-fill {
+  background: var(--signal-amber);
+}
+
+.k-bullet[data-state="breach"] .k-bullet-fill {
+  background: var(--signal-red);
+}
+
+.k-bullet-tick {
+  background: var(--ink-300);
+  width: 2px;
+  margin-left: -1px;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+}
+
+.k-bullet-tick.is-hard {
+  background: var(--signal-red);
+}
+
+.k-bullet-tick.is-soft {
+  background: var(--signal-amber);
+}
+
+.k-bullet-ticks {
+  height: 14px;
+  color: var(--ink-300);
+  position: relative;
+}
+
+.k-bullet-ticks > span {
+  white-space: nowrap;
+  position: absolute;
+  transform: translateX(-50%);
+}
+
+.k-bullet-ticks > span[data-align="end"] {
+  transform: translateX(-100%);
+}
+
 @property --tw-translate-x {
   syntax: "*";
   inherits: false;
@@ -6702,6 +6831,8 @@ button.k-quote-card.is-link:focus-visible {
   --ds-c-nhksol: color-mix(in srgb, var(--pnl-down) 55%, var(--ink-300));
   --ds-c-1dit3qa: color-mix(in srgb, var(--pnl-up) 55%, var(--ink-300));
   --ds-c-1sas9o0: color-mix(in srgb, var(--ink-100) 8%, transparent);
+  --ds-c-1cp2jaz: color-mix(in srgb, var(--signal-amber) 24%, var(--bg-300));
+  --ds-c-16w4yab: color-mix(in srgb, var(--signal-red) 28%, var(--bg-300));
   --ds-c-yj1s8q: #fff;
 }
 

@@ -29,6 +29,7 @@ const INTERNAL = {
     '序列图共用的几何（纯函数）：好看的刻度、比例尺、折线与面积路径，BrushChart、WaterfallChart、HorizonChart、SmallMultiples、SeriesExplorer 都用。',
   'brush-model': 'BrushChart 的窗口几何（纯函数）：夹取、平移、缩放、居中。',
   'waterfall-model': 'WaterfallChart 的累加（纯函数）：增减柱接着累计、总计柱重置累计并给出对不上的差额。',
+  'bullet-model': 'BulletMeter 的几何与状态（纯函数）：位置、达到软限与硬限的判定。',
   'hover-intent': '悬停意图：停一会儿才开、离开等一会儿再收、键盘聚焦立即开的钩子。',
   'code-highlight': 'CodeBlock 用的小型词法切分：注释、字符串、数字、关键字、函数、标点（纯函数，不加依赖）。',
   'matrix-orb-model': 'MatrixOrb 的纯数学：某状态下圆盘上一点在某一时刻的亮度。',
