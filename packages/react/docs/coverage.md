@@ -12,12 +12,12 @@
 
 | 归属 | 已做 | 部分 | 没做 | 总数 | 已做 / 总数 |
 | --- | --- | --- | --- | --- | --- |
-| 基础件 | 3 | 1 | 0 | 4 | 3 / 4 |
+| 基础件 | 4 | 0 | 0 | 4 | 4 / 4 |
 | 自有件 | 4 | 0 | 0 | 4 | 4 / 4 |
 | 量化 | 7 | 0 | 0 | 7 | 7 / 7 |
-| 积木 | 3 | 2 | 1 | 6 | 3 / 6 |
+| 积木 | 5 | 1 | 0 | 6 | 5 / 6 |
 | 面板 | 19 | 16 | 49 | 84 | 19 / 84 |
-| 合计 | | | | 105 | 36 / 105 |
+| 合计 | | | | 105 | 39 / 105 |
 
 ## 每张卡
 
@@ -111,8 +111,8 @@
 | SignalMonitor | 研究 | 面板 | — | 没做 | 研究层，还没有对应面板 |
 | SmartTape | 订单流 | 面板 | `src/panels/tape` | 已做 |  |
 | SparkTile | 图表 | 量化 | `SparkTile` | 已做 |  |
-| Splitter | 工作台 | 基础件 | `src/workspace/WorkspaceCanvas.tsx` | 部分 | 分割线在应用里自己做，没有抽进包里的 primitives |
-| StatusBar | 工作台 | 积木 | — | 没做 | 顶栏底栏的分段模型，还没有对应组件 |
+| Splitter | 工作台 | 基础件 | `Splitter`、`src/workspace/WorkspaceCanvas.tsx` | 已做 | #1901：Splitter 在包的 primitives 里（自写，没用 react-resizable-panels）；工作区的格子分割线用它 |
+| StatusBar | 工作台 | 积木 | `StatusBar` | 已做 | #1901：包里有分段模型的 StatusBar；应用现在没有底部状态栏（顶栏右上的 LocalServiceStatus 另算），还没有调用方 |
 | StatusLED | 工作台 | 自有件 | `Led` | 已做 |  |
 | StrategyCompare | 研究 | 面板 | — | 没做 | 研究层，还没有对应面板；组件库已有 ConnectedScatter 连线散点图（#1918）可画波动与收益的月度轨迹，面板里还没接 |
 | StressTest | 资产管理 | 面板 | — | 没做 | 资产管理，还没有对应面板 |
@@ -127,6 +127,6 @@
 | VolumeProfile | 订单流 | 面板 | `src/panels/volume-stats` | 部分 | 有成交量统计，价位分布轮廓没有 |
 | WalkForward | 研究 | 面板 | — | 没做 | 研究层，还没有对应面板 |
 | Watchlist | 发现 | 面板 | `src/panels/watchlist` | 已做 |  |
-| WorkspaceTabs | 工作台 | 积木 | `src/shell/WorkspaceMenu.tsx` | 部分 | 工作区切换是菜单，不是顶层标签 |
+| WorkspaceTabs | 工作台 | 积木 | `WorkspaceTabs` | 已做 | #1901：包里有标签条；应用的工作区切换仍是菜单（src/shell/WorkspaceMenu.tsx），换不换是产品决定，等用户定 |
 | Workspaces | 运行中心 | 面板 | `src/shell/WorkspaceManagerDialog.tsx` | 已做 |  |
 | YieldCurve | 固收 | 面板 | — | 没做 | 固收，还没有对应面板 |

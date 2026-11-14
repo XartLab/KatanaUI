@@ -494,15 +494,15 @@
     },
     "Splitter": {
       "kind": "基础件",
-      "status": "部分",
-      "at": ["src/workspace/WorkspaceCanvas.tsx"],
-      "note": "分割线在应用里自己做，没有抽进包里的 primitives"
+      "status": "已做",
+      "at": ["Splitter", "src/workspace/WorkspaceCanvas.tsx"],
+      "note": "#1901：Splitter 在包的 primitives 里（自写，没用 react-resizable-panels）；工作区的格子分割线用它"
     },
     "StatusBar": {
       "kind": "积木",
-      "status": "没做",
-      "at": [],
-      "note": "顶栏底栏的分段模型，还没有对应组件"
+      "status": "已做",
+      "at": ["StatusBar"],
+      "note": "#1901：包里有分段模型的 StatusBar；应用现在没有底部状态栏（顶栏右上的 LocalServiceStatus 另算），还没有调用方"
     },
     "StatusLED": {
       "kind": "自有件",
@@ -586,9 +586,9 @@
     },
     "WorkspaceTabs": {
       "kind": "积木",
-      "status": "部分",
-      "at": ["src/shell/WorkspaceMenu.tsx"],
-      "note": "工作区切换是菜单，不是顶层标签"
+      "status": "已做",
+      "at": ["WorkspaceTabs"],
+      "note": "#1901：包里有标签条；应用的工作区切换仍是菜单（src/shell/WorkspaceMenu.tsx），换不换是产品决定，等用户定"
     },
     "Workspaces": {
       "kind": "面板",

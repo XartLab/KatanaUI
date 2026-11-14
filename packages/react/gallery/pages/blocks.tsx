@@ -7,16 +7,20 @@ import {
   EmptyState,
   EstimateBadge,
   PanelFrame,
+  StatusBar,
   ToolButton,
   Toolbar,
   ToolbarGroup,
   ToolSlot,
+  WorkspaceTabs,
   type DataGridHost,
   type GridColumn,
   type GridColumnLayout,
   type SortSpec,
+  type StatusItem,
+  type WorkspaceTab,
 } from '../../src/blocks'
-import { Button } from '../../src'
+import { Button, Splitter } from '../../src'
 import { Row, SAMPLE_MARK_SRC } from './parts'
 
 // 积木层（@katana-ui/react/blocks，#1869）的演示。表里的数据都是写死的示例数据，不是行情。
@@ -302,6 +306,126 @@ export function PanelFrameDemo() {
           <p>Connect a source to see the book.</p>
         </EmptyState>
       </PanelFrame>
+    </div>
+  )
+}
+
+const STATUS_ITEMS: readonly StatusItem[] = [
+  { id: 'quote', label: 'QUOTE', value: '42 ms', led: 'ok', ledLabel: 'OK', priority: 3, onClick: () => {} },
+  { id: 'exec', label: 'EXEC', value: '118 ms', led: 'warn', ledLabel: 'Slow', priority: 3, onClick: () => {} },
+  { id: 'live', label: 'LIVE', value: 'IBKR U123', live: true, led: 'on', ledLabel: 'Live account' },
+  { id: 'link', label: 'LINK', value: 'A · BTCUSDT', priority: 1, onClick: () => {} },
+  { id: 'mode', label: 'MODE', value: 'QUIET', priority: 0 },
+  { id: 'clock', value: '09:30:12', priority: 4 },
+]
+
+export function StatusBarDemo() {
+  const [width, setWidth] = useState(720)
+  const items = STATUS_ITEMS
+  return (
+    <div className="gal-stack" style={{ width: '100%', maxWidth: 760 }}>
+      <p className="gal-note">项由数据声明；条变窄时先收优先级低的进「…」，实盘（琥珀框）与 pinned 的项不收。</p>
+      <div style={{ width }} data-testid="status-demo">
+        <StatusBar
+          label="Status bar"
+          moreLabel="More status items"
+          left={items.slice(0, 3)}
+          center={items.slice(3, 5)}
+          right={items.slice(5)}
+        />
+      </div>
+      <Row name="宽度">
+        <Button onClick={() => setWidth(720)}>720</Button>
+        <Button onClick={() => setWidth(420)}>420</Button>
+        <Button onClick={() => setWidth(260)}>260</Button>
+      </Row>
+    </div>
+  )
+}
+
+export function SplitterDemo() {
+  const [ratio, setRatio] = useState(0.4)
+  return (
+    <div className="gal-stack" style={{ width: '100%', maxWidth: 560 }}>
+      <p className="gal-note">
+        拖动、方向键（8px，Shift 32px）、Home / End、双击或 Enter 复位到 50%；靠近 1/3、1/2、2/3 吸附。
+      </p>
+      <div
+        data-testid="splitter-demo"
+        style={{
+          display: 'grid',
+          gridTemplateColumns: `minmax(0, ${ratio}fr) 8px minmax(0, ${1 - ratio}fr)`,
+          height: 120,
+        }}
+      >
+        <div style={{ background: 'var(--bg-200)', minWidth: 0 }}>
+          <p className="gal-note" style={{ padding: 8 }}>
+            {Math.round(ratio * 100)}%
+          </p>
+        </div>
+        <Splitter
+          axis="row"
+          ratio={ratio}
+          minFirst={80}
+          minSecond={80}
+          onPreview={() => {}}
+          onChange={setRatio}
+          label="Resize panes"
+          valueText={(value) => `First pane ${Math.round(value * 100)}%`}
+        />
+        <div style={{ background: 'var(--bg-200)', minWidth: 0 }}>
+          <p className="gal-note" style={{ padding: 8 }}>
+            {100 - Math.round(ratio * 100)}%
+          </p>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+const TABS: readonly WorkspaceTab[] = [
+  { id: 'overview', name: 'Overview', hotkey: '⌘1' },
+  { id: 'desk', name: 'Desk', hotkey: '⌘2' },
+  { id: 'lab', name: 'Lab', hotkey: '⌘3' },
+  { id: 'portfolio', name: 'Portfolio', hotkey: '⌘4' },
+  { id: 'runs', name: 'Runs', hotkey: '⌘5' },
+  { id: 'my-long-workspace-name', name: 'My very long workspace name' },
+]
+
+export function WorkspaceTabsDemo() {
+  const [tabs, setTabs] = useState(TABS)
+  const [active, setActive] = useState('desk')
+  const [renamed, setRenamed] = useState<string | null>(null)
+  return (
+    <div className="gal-stack" style={{ width: '100%', maxWidth: 640 }}>
+      <p className="gal-note">
+        点切换、拖或 Alt+← / → 排序、双击或 F2 改名、「+」新建；放不下的标签收进「…」下拉，当前标签始终可见。
+      </p>
+      <div style={{ width: 520 }} data-testid="tabs-demo">
+        <WorkspaceTabs
+          workspaces={tabs}
+          activeId={active}
+          label="Workspaces"
+          createLabel="New workspace"
+          moreLabel="More workspaces"
+          onSelect={setActive}
+          onRename={setRenamed}
+          onCreate={() => setTabs((prev) => [...prev, { id: `ws${prev.length}`, name: `Workspace ${prev.length}` }])}
+          onReorder={(id, target) =>
+            setTabs((prev) => {
+              const from = prev.findIndex((item) => item.id === id)
+              const to = prev.findIndex((item) => item.id === target)
+              if (from < 0 || to < 0) return prev
+              const next = [...prev]
+              next.splice(to, 0, ...next.splice(from, 1))
+              return next
+            })
+          }
+        />
+      </div>
+      <p className="gal-note" data-testid="tabs-rename">
+        {renamed ? `Rename requested: ${renamed}` : 'No rename requested'}
+      </p>
     </div>
   )
 }

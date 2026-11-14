@@ -3724,6 +3724,170 @@ export const PAGES: readonly DocPage[] = [
     keys: [],
   },
   {
+    id: 'status-bar',
+    group: 'blocks',
+    cardHeight: 280,
+    title: 'StatusBar 状态栏',
+    summary:
+      '顶栏、底栏的分段模型：左 / 中 / 右三段，每段一组项（点阵键名、值、状态灯、可点）；项由数据声明，宽度不够时按优先级收进「…」。实盘项有琥珀框、不可收起。',
+    exports: ['StatusBar', 'collapsedItems'],
+    props: [
+      {
+        part: 'StatusBar',
+        rows: [
+          { name: 'left / center / right', type: 'StatusItem[]', desc: '三段各一组项。' },
+          { name: 'label', type: 'string', desc: '状态栏的名字（读屏念）。' },
+          { name: 'moreLabel', type: 'string', desc: '「…」按钮的名字。' },
+        ],
+      },
+      {
+        part: 'StatusItem',
+        note: '一项的数据。',
+        rows: [
+          { name: 'id', type: 'string', desc: '稳定的 id。' },
+          { name: 'label / value', type: 'string / ReactNode', desc: '点阵键名（灰）与等宽的值（亮）。' },
+          { name: 'led / ledLabel', type: 'LedState / string', desc: '前面的状态灯与它的名字（给了灯就必须给名字）。' },
+          { name: 'onClick', type: '() => void', desc: '给了整项是按钮（QUOTE → 数据源）。' },
+          { name: 'priority', type: 'number', default: '0', desc: '越大越晚被收起。' },
+          { name: 'pinned / live', type: 'boolean', desc: '永不收起；live 另外画琥珀内描边（实盘账户）。' },
+          { name: 'hidden', type: 'boolean', desc: '隐藏（宿主「无事则隐藏」算出的结果），不占位。' },
+        ],
+      },
+      {
+        part: 'collapsedItems(items, available, gap, moreWidth)',
+        note: '收起哪些项的纯函数，StatusBar 内部用，自己排版时也能拿去。',
+        rows: [],
+      },
+    ],
+    states: [
+      '宽度够：所有项都在条上，段与段交替 bg-400 / bg-200，斜切叠接。',
+      '宽度不够：先收优先级最低的（同级收靠后的）进「…」弹层，pinned 与 live 不收。',
+      '项可点：悬停提亮，是按钮；不可点是纯读数。',
+      '实盘项：琥珀内描边，不能被隐藏策略收掉。',
+    ],
+    donts: [
+      '段不要超过 8 个，更多进运行中心。',
+      '整条栏亮灯不超过两盏（时钟不算）。',
+      '不要把键名与值写成一个长句，键名用短大写词。',
+    ],
+    composition: 'StatusBar\n  group（左 / 中 / 右）\n    StatusItem：Led · 键名 · 值\n  Popover（「…」收起的项）',
+    keys: [
+      ['Tab', '依次到可点的项与「…」'],
+      ['Enter / Space', '触发项；「…」打开收起的项'],
+    ],
+  },
+  {
+    id: 'splitter',
+    group: 'layout',
+    cardHeight: 210,
+    title: 'Splitter 分割线',
+    summary:
+      '一条 role=separator 的分割线：拖动零延迟、方向键 8px（Shift 32px）、Home / End、双击或 Enter 复位、靠近 1/3 1/2 2/3 吸附、两边最小尺寸。宿主只管排版，线只管比例。',
+    exports: ['Splitter', 'clampSplitRatio', 'snapSplitRatio', 'splitKeyRatio', 'DEFAULT_SNAP_POINTS'],
+    props: [
+      {
+        part: 'Splitter',
+        note: '线放在它分开的两块之间，量父元素的宽高换算比例（父元素是 grid，线占中间一条轨道）。',
+        rows: [
+          { name: 'axis', type: "'row' | 'column'", desc: 'row = 左右两块（竖线）；column = 上下两块（横线）。' },
+          { name: 'ratio', type: 'number', desc: '第一块占可用长度的比例，0 到 1。' },
+          { name: 'defaultRatio', type: 'number', default: '0.5', desc: '双击与 Enter 回到的比例。' },
+          { name: 'minFirst / minSecond', type: 'number', default: '0', desc: '两边最小尺寸（px）。' },
+          {
+            name: 'snapPoints / snapThresholdPx',
+            type: 'number[] / number',
+            default: '1/3 1/2 2/3 / 6',
+            desc: '吸附点与半径；传空数组或 0 关掉吸附。',
+          },
+          {
+            name: 'keyStepPx / fastStepPx',
+            type: 'number',
+            default: '8 / 32',
+            desc: '方向键一步与 Shift 加速的一步。',
+          },
+          {
+            name: 'onPreview',
+            type: '(ratio) => void',
+            desc: '拖动中每次移动：宿主直接写样式改布局（不要 setState）。',
+          },
+          { name: 'onChange', type: '(ratio) => void', desc: '提交：松手、方向键、双击、Enter。' },
+          { name: 'onDraggingChange', type: '(dragging: boolean) => void', desc: '开始 / 结束拖动。' },
+          {
+            name: 'label / valueText',
+            type: 'string / (ratio) => string',
+            desc: '线的名字与读屏念的值（说明第一块占几成）。',
+          },
+        ],
+      },
+    ],
+    states: [
+      '默认：1px line-100 的线，中央 16×2 的把手。',
+      '悬停：线变 line-200，把手提亮。',
+      '拖动中：线 2px signal-orange 加发光，把手同色；两侧实时重排。',
+      '键盘焦点：2px 焦点环。',
+    ],
+    donts: [
+      '不要拿它拖出新面板或拖到边缘分裂（不是 docking）。',
+      '拖动中不要触发面板内部的重渲染。',
+      '不要让松手改掉用户拖到的精确位置（吸附只在半径内）。',
+    ],
+    composition: 'Splitter（role=separator）\n  把手',
+    keys: [
+      ['← →（或 ↑ ↓）', '挪 8px；Shift 挪 32px'],
+      ['Home / End', '第一块缩到最小 / 放到最大'],
+      ['Enter', '回到默认位置（APG 里 Enter 是折叠，这里没有折叠）'],
+    ],
+  },
+  {
+    id: 'workspace-tabs',
+    group: 'blocks',
+    cardHeight: 260,
+    title: 'WorkspaceTabs 工作区标签',
+    summary:
+      '顶层工作区标签条：当前标签凹陷、底部橙线用弹簧滑过去，右侧快捷键提示，最右「+」新建；放不下的标签收进末尾的「…」下拉（当前标签始终可见），拖动或 Alt+方向键排序，双击或 F2 改名。宿主给数据与回调。',
+    exports: ['WorkspaceTabs'],
+    props: [
+      {
+        part: 'WorkspaceTabs',
+        rows: [
+          { name: 'workspaces', type: '{ id, name, hotkey? }[]', desc: '标签；hotkey 只显示，不绑定。' },
+          { name: 'activeId', type: 'string', desc: '当前标签。' },
+          { name: 'onSelect', type: '(id) => void', desc: '切换。' },
+          { name: 'onReorder', type: '(id, targetId) => void', desc: '把 id 挪到 targetId 的位置；不给就不能排序。' },
+          { name: 'onRename', type: '(id) => void', desc: '进改名；输入框是宿主的事；不给就不能改名。' },
+          {
+            name: 'onCreate / createLabel',
+            type: '() => void / string',
+            desc: '「+」与它的名字；不给 onCreate 就不画。',
+          },
+          { name: 'label', type: 'string', desc: '标签条的名字（读屏念）。' },
+        ],
+      },
+    ],
+    states: [
+      '当前标签：bg-000 凹陷、ink-100，橙线停在它下面。',
+      '切换：橙线用 snappy 弹簧从旧标签滑到新标签。',
+      '拖动中：落点标签左边亮一条线。',
+      '标签多：放不下的收进末尾「…」下拉，选中即切换；当前标签始终在条上（被收起时与最后一个可见的换位）；名字过长截断，悬停看全名。',
+    ],
+    donts: [
+      '不要在包里绑 ⌘1–9、Ctrl+Tab，宿主的快捷键表管。',
+      '不要在标签里放按钮（tab 里再放可交互元素违反 ARIA）。',
+      '不要做横向滚动：放不下就收进「…」下拉。',
+      '标签名不超过 8 个汉字 / 12 个字母。',
+    ],
+    composition:
+      'WorkspaceTabs\n  tablist\n    tab（名字 · 快捷键提示）\n    橙色指示线\n  DropdownMenu（「…」，收起的标签）\n  「+」按钮',
+    keys: [
+      ['← →', '在可见标签间移动焦点（整条只占一个 Tab 站）'],
+      ['Tab', '到「…」按钮，Enter 打开，↑ ↓ 选，Enter 切换'],
+      ['Home / End', '到第一个 / 最后一个标签'],
+      ['Enter / Space', '切换到聚焦的标签'],
+      ['Alt+← / Alt+→', '把聚焦的标签往前 / 往后挪一位'],
+      ['F2', '进改名'],
+    ],
+  },
+  {
     id: 'toolbar',
     group: 'blocks',
     cardHeight: 150,

@@ -34,5 +34,8 @@
 @import './theme/series.css';
 @import './theme/equity-curve.css';
 @import './theme/distribution.css';
+@import './theme/splitter.css';
 @import './theme/panel-frame.css';
+@import './theme/status-bar.css';
+@import './theme/workspace-tabs.css';
 @import './theme/quant.css';

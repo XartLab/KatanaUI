@@ -20,7 +20,16 @@ import {
   QuantFormatDemo,
   RegimeStripDemo,
 } from './pages/quant.tsx'
-import { DataGridDemo, EmptyStateDemo, EstimateBadgeDemo, PanelFrameDemo, ToolbarDemo } from './pages/blocks.tsx'
+import {
+  DataGridDemo,
+  EmptyStateDemo,
+  EstimateBadgeDemo,
+  PanelFrameDemo,
+  SplitterDemo,
+  StatusBarDemo,
+  ToolbarDemo,
+  WorkspaceTabsDemo,
+} from './pages/blocks.tsx'
 import { AlertDemo, ProgressDemo, ToastDemo } from './pages/feedback.tsx'
 import { ComboboxDemo, CommandDemo } from './pages/pickers.tsx'
 import { EventTimelineDemo, JsonViewerDemo } from './pages/arc-controls.tsx'
@@ -136,6 +145,9 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   field: FieldDemo,
   'change-text': ChangeTextDemo,
   'pnl-text': PnlTextDemo,
+  'status-bar': StatusBarDemo,
+  splitter: SplitterDemo,
+  'workspace-tabs': WorkspaceTabsDemo,
   'decimal-field': DecimalFieldDemo,
   'flow-gauges': FlowGaugesDemo,
   'regime-strip': RegimeStripDemo,

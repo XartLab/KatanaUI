@@ -217,6 +217,10 @@ export {
   type DurationValue,
 } from './katana/duration-picker.tsx'
 export { useHoverIntent } from './lib/hover-intent.ts'
+
+// 分割线（#1901）：一条 role=separator 的线，键盘、拖动、吸附、双击复位；工作区的格子分割线用它。
+export { Splitter, type SplitterProps } from './primitives/splitter.tsx'
+export { clampSplitRatio, DEFAULT_SNAP_POINTS, snapSplitRatio, splitKeyRatio } from './primitives/splitter-model.ts'
 export { useScrubber, type UseScrubberOptions } from './lib/use-scrubber.ts'
 
 // 报价与行情类的件（#1884）：迷你图、进度条、矩形树图（后三件从应用的分析视图提来）；行内价格标签、报价卡与一排、区间条、评级仪表是新做的。

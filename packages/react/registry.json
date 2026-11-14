@@ -174,6 +174,16 @@
           "target": "~/src/katana/ui/theme/shortcut-recorder.css"
         },
         {
+          "path": "src/theme/splitter.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/splitter.css"
+        },
+        {
+          "path": "src/theme/status-bar.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/status-bar.css"
+        },
+        {
           "path": "src/theme/symbol-mark.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/symbol-mark.css"
@@ -182,6 +192,11 @@
           "path": "src/theme/tree-view.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/tree-view.css"
+        },
+        {
+          "path": "src/theme/workspace-tabs.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/workspace-tabs.css"
         }
       ]
     },
@@ -756,6 +771,36 @@
           "path": "src/primitives/slider.tsx",
           "type": "registry:ui",
           "target": "~/src/katana/ui/primitives/slider.tsx"
+        }
+      ]
+    },
+    {
+      "name": "splitter-model",
+      "type": "registry:ui",
+      "title": "Splitter Model",
+      "description": "一条 role=separator 的分割线：拖动零延迟、方向键 8px（Shift 32px）、Home / End、双击或 Enter 复位、靠近 1/3 1/2 2/3 吸附、两边最小尺寸。宿主只管排版，线只管比例。",
+      "files": [
+        {
+          "path": "src/primitives/splitter-model.ts",
+          "type": "registry:ui",
+          "target": "~/src/katana/ui/primitives/splitter-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "splitter",
+      "type": "registry:ui",
+      "title": "Splitter",
+      "description": "一条 role=separator 的分割线：拖动零延迟、方向键 8px（Shift 32px）、Home / End、双击或 Enter 复位、靠近 1/3 1/2 2/3 吸附、两边最小尺寸。宿主只管排版，线只管比例。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/splitter-model"
+      ],
+      "files": [
+        {
+          "path": "src/primitives/splitter.tsx",
+          "type": "registry:ui",
+          "target": "~/src/katana/ui/primitives/splitter.tsx"
         }
       ]
     },
@@ -2583,6 +2628,57 @@
           "path": "src/blocks/symbol-galaxy/symbol-galaxy.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/blocks/symbol-galaxy/symbol-galaxy.tsx"
+        }
+      ]
+    },
+    {
+      "name": "status-bar",
+      "type": "registry:component",
+      "title": "Status Bar",
+      "description": "顶栏、底栏的分段模型：左 / 中 / 右三段，每段一组项（点阵键名、值、状态灯、可点）；项由数据声明，宽度不够时按优先级收进「…」。实盘项有琥珀框、不可收起。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/led",
+        "@katana/popover"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/status-bar/status-bar-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/status-bar/status-bar-model.ts"
+        },
+        {
+          "path": "src/blocks/status-bar/status-bar.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/status-bar/status-bar.tsx"
+        }
+      ]
+    },
+    {
+      "name": "workspace-tabs",
+      "type": "registry:component",
+      "title": "Workspace Tabs",
+      "description": "顶层工作区标签条：当前标签凹陷、底部橙线用弹簧滑过去，右侧快捷键提示，最右「+」新建；放不下的标签收进末尾的「…」下拉（当前标签始终可见），拖动或 Alt+方向键排序，双击或 F2 改名。宿主给数据与回调。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/dropdown-menu"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/workspace-tabs/workspace-tabs-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/workspace-tabs/workspace-tabs-model.ts"
+        },
+        {
+          "path": "src/blocks/workspace-tabs/workspace-tabs.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/workspace-tabs/workspace-tabs.tsx"
         }
       ]
     },

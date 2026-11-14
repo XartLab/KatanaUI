@@ -8843,6 +8843,80 @@ button.k-sm-head:focus-visible {
   overflow: hidden;
 }
 
+:where(.k-splitter) {
+  min-width: var(--space-2);
+  min-height: var(--space-2);
+  touch-action: none;
+  cursor: col-resize;
+  place-items: center;
+  display: grid;
+  position: relative;
+}
+
+:where(.k-splitter[data-axis="column"]) {
+  cursor: row-resize;
+}
+
+:where(.k-splitter):before {
+  content: "";
+  background: var(--line-100);
+  width: 1px;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc(50% - .5px);
+}
+
+:where(.k-splitter[data-axis="column"]):before {
+  width: auto;
+  height: 1px;
+  inset: calc(50% - .5px) 0 auto;
+}
+
+:where(.k-splitter-grip) {
+  background: var(--line-200);
+  width: 2px;
+  height: 16px;
+  display: block;
+  position: relative;
+}
+
+:where(.k-splitter[data-axis="column"] .k-splitter-grip) {
+  width: 16px;
+  height: 2px;
+}
+
+:where(.k-splitter:hover):before {
+  background: var(--line-200);
+}
+
+:where(.k-splitter:hover .k-splitter-grip, .k-splitter:focus-visible .k-splitter-grip) {
+  background: var(--ink-200);
+}
+
+:where(.k-splitter:focus-visible) {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: -2px;
+}
+
+:where(.k-splitter[data-dragging]):before {
+  background: var(--signal-orange);
+  box-shadow: 0 0 6px var(--signal-orange);
+  width: 2px;
+  left: calc(50% - 1px);
+}
+
+:where(.k-splitter[data-dragging][data-axis="column"]):before {
+  width: auto;
+  height: 2px;
+  top: calc(50% - 1px);
+  left: 0;
+}
+
+:where(.k-splitter[data-dragging] .k-splitter-grip) {
+  background: var(--signal-orange);
+}
+
 .k-panel {
   border: var(--hairline);
   border-radius: var(--radius-panel);
@@ -8999,6 +9073,238 @@ button.k-sm-head:focus-visible {
   border-width: 0 0 1px 1px;
   bottom: -1px;
   left: -1px;
+}
+
+.k-status-bar {
+  justify-content: space-between;
+  align-items: stretch;
+  gap: var(--space-2);
+  background: var(--bg-300);
+  border-top: 1px solid var(--line-100);
+  min-width: 0;
+  height: 28px;
+  display: flex;
+  position: relative;
+  overflow: hidden;
+}
+
+.k-status-group {
+  align-items: stretch;
+  min-width: 0;
+  display: flex;
+}
+
+.k-status-group[data-side="center"] {
+  flex: auto;
+  justify-content: center;
+}
+
+.k-status-group[data-side="right"] {
+  justify-content: flex-end;
+}
+
+.k-status-item {
+  background: var(--bg-400);
+  color: var(--ink-100);
+  font: inherit;
+  white-space: nowrap;
+  clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+  border: 0;
+  flex: none;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 0 -6px;
+  padding: 0 10px 0 14px;
+  display: inline-flex;
+  position: relative;
+}
+
+.k-status-group > :nth-child(2n) {
+  background: var(--bg-200);
+}
+
+.k-status-group > :first-child {
+  margin-left: 0;
+}
+
+button.k-status-item {
+  cursor: pointer;
+}
+
+button.k-status-item:hover {
+  color: var(--ink-100);
+  filter: brightness(1.15);
+}
+
+.k-status-item[data-live] {
+  box-shadow: inset 0 0 0 1px var(--signal-amber);
+}
+
+.k-status-key {
+  color: var(--ink-300);
+  font: var(--text-tag-md) var(--font-dot);
+  letter-spacing: var(--text-tag-md-tracking);
+  text-transform: uppercase;
+}
+
+.k-status-value {
+  font: 12px/16px var(--font-mono);
+}
+
+.k-status-more {
+  width: 28px;
+  color: var(--ink-300);
+  cursor: pointer;
+  background: none;
+  border: 0;
+  flex: 0 0 28px;
+  justify-content: center;
+  align-items: center;
+  padding: 0;
+  display: inline-flex;
+}
+
+.k-status-more:hover {
+  background: var(--bg-400);
+  color: var(--ink-100);
+}
+
+.k-status-more svg {
+  width: 14px;
+  height: 14px;
+}
+
+.k-status-pop {
+  flex-direction: column;
+  gap: 2px;
+  padding: 4px;
+  display: flex;
+}
+
+.k-status-pop .k-status-item {
+  clip-path: none;
+  background: none;
+  justify-content: flex-start;
+  height: 28px;
+  margin: 0;
+}
+
+.k-status-ruler {
+  visibility: hidden;
+  pointer-events: none;
+  display: flex;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.k-status-ruler .k-status-item {
+  clip-path: none;
+  margin: 0;
+}
+
+.k-wtabs {
+  min-width: 0;
+  height: var(--rail-h, 48px);
+  background: var(--bg-300);
+  box-shadow: inset 0 1px 0 var(--alpha-white-4);
+  align-items: stretch;
+  display: flex;
+  position: relative;
+  overflow: hidden;
+}
+
+.k-wtabs-list {
+  flex: 0 auto;
+  min-width: 0;
+  display: flex;
+  position: relative;
+  overflow: hidden;
+}
+
+.k-wtab {
+  border: 0;
+  border-right: 1px solid var(--line-100);
+  max-width: 200px;
+  color: var(--ink-300);
+  font: 600 14px/1 var(--font-sans);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  cursor: pointer;
+  background: none;
+  flex: none;
+  align-items: center;
+  gap: 8px;
+  padding: 0 16px;
+  display: inline-flex;
+}
+
+.k-wtab:hover {
+  background: var(--bg-400);
+  color: var(--ink-200);
+}
+
+.k-wtab[aria-selected="true"] {
+  background: var(--bg-000);
+  color: var(--ink-100);
+}
+
+.k-wtab[data-over] {
+  box-shadow: inset 2px 0 0 var(--ink-200);
+}
+
+.k-wtab-name {
+  text-overflow: ellipsis;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.k-wtab-key {
+  color: var(--ink-400);
+  font: 9px/1 var(--font-mono);
+  letter-spacing: 0;
+  flex: none;
+}
+
+.k-wtabs-mark {
+  background: var(--signal-orange);
+  pointer-events: none;
+  height: 2px;
+  transition: left var(--dur-snappy, .333s) var(--ease-snappy), width var(--dur-snappy, .333s) var(--ease-snappy);
+  position: absolute;
+  bottom: 0;
+}
+
+.k-wtabs-ruler {
+  visibility: hidden;
+  pointer-events: none;
+  display: flex;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.k-wtabs-more, .k-wtabs-create {
+  color: var(--ink-300);
+  cursor: pointer;
+  background: none;
+  border: 0;
+  flex: 0 0 40px;
+  justify-content: center;
+  align-items: center;
+  padding: 0;
+  display: inline-flex;
+}
+
+.k-wtabs-more:hover, .k-wtabs-create:hover {
+  background: var(--bg-400);
+  color: var(--ink-100);
+}
+
+.k-wtabs-more svg, .k-wtabs-create svg {
+  width: 16px;
+  height: 16px;
 }
 
 .k-flow {
@@ -9828,6 +10134,12 @@ button.k-consensus-hash:focus-visible {
 }
 .gal-scrub-bar[data-active='true'] {
   background: var(--series-1);
+}
+/* 面板壳类件的预览版面（#1901）：一摞。 */
+.gal-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 /* 组件里白色、黑色的透明度层：ui.css 的类里原来是裸色值，这里提成变量（值不变），换主题时从这里改。 */

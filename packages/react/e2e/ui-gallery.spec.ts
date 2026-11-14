@@ -3276,3 +3276,142 @@ for (const theme of THEMES) {
     await expect(section(page, 'button')).toBeVisible()
   })
 }
+
+// 状态栏、分割线、工作区标签（#1901）。PanelFrame 的断言以本仓库 #10 为准，不搬。
+for (const theme of THEMES) {
+  test(`StatusBar（${theme}）：项由数据声明；变窄时先收优先级低的进「…」，实盘项不收；可点的项触发`, async ({
+    page,
+  }) => {
+    await open(page, theme, 'status-bar')
+    const area = section(page, 'status-bar')
+    const bar = area.getByRole('group', { name: 'Status bar' })
+    const item = (name: string) => bar.locator(`.k-status-item:not(.k-status-ruler *)`).filter({ hasText: name })
+    for (const name of ['QUOTE', 'EXEC', 'LIVE', 'LINK', 'MODE']) await expect(item(name)).toBeVisible()
+    await expect(bar.getByRole('button', { name: 'More status items' })).toHaveCount(0)
+    expect((await item('LIVE').boundingBox())!.height).toBe(28)
+    await expect(item('LIVE')).toHaveCSS('box-shadow', new RegExp(`inset`))
+    await area.getByRole('button', { name: '260', exact: true }).click()
+    const more = bar.getByRole('button', { name: 'More status items' })
+    await expect(more).toBeVisible()
+    await expect(item('MODE')).toHaveCount(0)
+    await expect(item('LIVE')).toBeVisible()
+    await more.click()
+    await expect(page.locator('.k-status-pop').getByText('QUIET')).toBeVisible()
+    await page.keyboard.press('Escape')
+    // 条里放得下的项都没溢出条
+    const box = (await bar.boundingBox())!
+    for (const shown of await bar.locator('.k-status-item:not(.k-status-ruler *)').all()) {
+      const rect = (await shown.boundingBox())!
+      expect(rect.x + rect.width).toBeLessThanOrEqual(box.x + box.width + 1)
+    }
+  })
+
+  test(`Splitter（${theme}）：方向键挪、Shift 加速、Home / End 到两端、Enter 与双击复位、拖动改比例`, async ({
+    page,
+  }) => {
+    await open(page, theme, 'splitter')
+    const area = section(page, 'splitter')
+    const line = area.getByRole('separator', { name: 'Resize panes' })
+    const now = async () => Number(await line.getAttribute('aria-valuenow'))
+    await expect(line).toHaveAttribute('aria-orientation', 'vertical')
+    await expect(line).toHaveAttribute('aria-valuetext', 'First pane 40%')
+    await expect(line).toHaveCSS('cursor', 'col-resize')
+    await line.focus()
+    const start = await now()
+    await page.keyboard.press('ArrowRight')
+    await expect.poll(now).toBeGreaterThan(start)
+    const one = await now()
+    await page.keyboard.press('Shift+ArrowRight')
+    await expect.poll(now).toBeGreaterThan(one + 3)
+    await page.keyboard.press('ArrowLeft')
+    await page.keyboard.press('Home')
+    await expect.poll(now).toBe(Number(await line.getAttribute('aria-valuemin')))
+    await expect.poll(now).toBeLessThan(20)
+    await page.keyboard.press('End')
+    await expect.poll(now).toBe(Number(await line.getAttribute('aria-valuemax')))
+    await expect.poll(now).toBeGreaterThan(80)
+    await page.keyboard.press('Enter')
+    await expect.poll(now).toBe(50)
+    // 第一块的像素宽度跟着比例走
+    const grid = area.getByTestId('splitter-demo')
+    const first = grid.locator('> div').first()
+    const total = (await grid.boundingBox())!.width - 8
+    expect((await first.boundingBox())!.width).toBeCloseTo(total / 2, 0)
+    // 拖动：线挪到别处，松手提交
+    const box = (await line.boundingBox())!
+    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2)
+    await page.mouse.down()
+    await expect(line).toHaveAttribute('data-dragging', '')
+    await expect(line).toHaveCSS('cursor', 'col-resize')
+    await page.mouse.move(box.x - 100, box.y + 20, { steps: 6 })
+    await page.mouse.up()
+    await expect(line).not.toHaveAttribute('data-dragging', '')
+    await expect.poll(now).toBeLessThan(40)
+    await expect.poll(now).toBeGreaterThan(20)
+    await line.dblclick()
+    await expect.poll(now).toBe(50)
+  })
+
+  test(`WorkspaceTabs（${theme}）：点击切换、橙线跟着当前标签、方向键只移焦点、Alt+方向键排序、F2 改名、放不下的收进「…」且当前标签可见`, async ({
+    page,
+  }) => {
+    await open(page, theme, 'workspace-tabs')
+    const area = section(page, 'workspace-tabs')
+    const bar = area.getByRole('tablist', { name: 'Workspaces' })
+    const tab = (name: string) => bar.getByRole('tab', { name })
+    const mark = bar.locator('.k-wtabs-mark')
+    await expect(tab('Desk')).toHaveAttribute('aria-selected', 'true')
+    await expect(tab('Desk')).toHaveCSS('background-color', await token(page, '--bg-000'))
+    await expect(mark).toHaveCSS('background-color', await token(page, '--signal-orange'))
+    const under = async (name: string) => {
+      const [m, t] = await Promise.all([mark.boundingBox(), tab(name).boundingBox()])
+      return Math.abs(m!.x - t!.x) < 1 && Math.abs(m!.width - t!.width) < 1
+    }
+    await expect.poll(() => under('Desk')).toBe(true)
+    await tab('Lab').click()
+    await expect(tab('Lab')).toHaveAttribute('aria-selected', 'true')
+    await expect.poll(() => under('Lab')).toBe(true)
+    // 键盘：箭头移焦点不切换，Enter 才切换
+    await page.keyboard.press('ArrowLeft')
+    await expect(tab('Desk')).toBeFocused()
+    await expect(tab('Lab')).toHaveAttribute('aria-selected', 'true')
+    await page.keyboard.press('Enter')
+    await expect(tab('Desk')).toHaveAttribute('aria-selected', 'true')
+    await page.keyboard.press('Home')
+    await expect(tab('Overview')).toBeFocused()
+    // 排序：Alt+→ 把 Overview 挪到 Desk 后面
+    await page.keyboard.press('Alt+ArrowRight')
+    const names = async () =>
+      await bar
+        .getByRole('tab')
+        .evaluateAll((nodes) => nodes.map((node) => node.querySelector('.k-wtab-name')!.textContent))
+    await expect.poll(async () => (await names()).slice(0, 2)).toEqual(['Desk', 'Overview'])
+    await expect(tab('Overview')).toBeFocused()
+    // 改名入口
+    await page.keyboard.press('F2')
+    await expect(area.getByTestId('tabs-rename')).toHaveText('Rename requested: overview')
+    // 溢出：条放不下的标签收进「…」下拉，当前标签始终可见，不横向滚动
+    const more = area.getByRole('button', { name: 'More workspaces' })
+    await expect(more).toBeVisible()
+    await expect.poll(() => bar.evaluate((node) => node.scrollWidth <= node.clientWidth)).toBe(true)
+    const create = area.getByRole('button', { name: 'New workspace' })
+    for (let i = 0; i < 3; i++) await create.click()
+    // 点下拉里的项：它切成当前，并且进到条上（与最后一个可见的换位）
+    await more.click()
+    const item = page.getByRole('menuitem', { name: 'Workspace 8' })
+    await expect(item).toBeVisible()
+    await item.click()
+    await expect(tab('Workspace 8')).toHaveAttribute('aria-selected', 'true')
+    await expect(tab('Workspace 8')).toBeInViewport()
+    // 条上的标签不超出条的右边界，「…」与「+」都在条内
+    const box = (await bar.boundingBox())!
+    for (const shown of await bar.getByRole('tab').all()) {
+      const rect = (await shown.boundingBox())!
+      expect(rect.x + rect.width).toBeLessThanOrEqual(box.x + box.width + 1)
+    }
+    // ← → 只在可见标签间走
+    await tab('Workspace 8').focus()
+    await page.keyboard.press('ArrowRight')
+    await expect(tab('Workspace 8')).toBeFocused()
+  })
+}
