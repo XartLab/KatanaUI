@@ -45,7 +45,7 @@
   color: var(--ink-300);
 }
 .k-dt-seg[data-focused] {
-  background: color-mix(in srgb, var(--signal-orange) 28%, transparent);
+  background: var(--alpha-white-10);
   color: var(--ink-100);
 }
 .k-dt-sep {
@@ -133,10 +133,10 @@
   background: var(--alpha-white-5);
 }
 .k-cal-cell[data-focus-visible] {
-  box-shadow: inset 0 0 0 2px var(--signal-orange);
+  box-shadow: inset 0 0 0 2px var(--ink-200);
 }
 .k-cal-cell[data-selected] {
-  background: var(--signal-orange);
+  background: var(--ink-100);
   color: var(--bg-000);
   font-weight: 600;
 }

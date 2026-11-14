@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: MIT */
 /* WorkspaceTabs 的皮肤（#1901）。组件卡 WorkspaceTabs：条高 48（--rail-h 没有就 48），bg-300；标签 display 14px 600 大写字距 0.06em，
-   溢出的标签收进末尾的「…」下拉；右侧 mono 9px 快捷键 ink-400，标签之间 1px 发丝线；当前标签凹陷 bg-000、ink-100，底部 2px signal-orange 的线用 snappy 弹簧滑过去；hover bg-400。 */
+   溢出的标签收进末尾的「…」下拉；右侧 mono 9px 快捷键 ink-400，标签之间 1px 发丝线；当前标签凹陷 bg-000、ink-100，底部 2px ink-100 的线用 snappy 弹簧滑过去；hover bg-400。 */
 .k-wtabs {
   position: relative;
   display: flex;
@@ -61,7 +61,7 @@
   position: absolute;
   bottom: 0;
   height: 2px;
-  background: var(--signal-orange);
+  background: var(--ink-100);
   pointer-events: none;
   transition:
     left var(--dur-snappy, 333ms) var(--ease-snappy),

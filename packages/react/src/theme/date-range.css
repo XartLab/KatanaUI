@@ -60,14 +60,14 @@
 }
 /* 双月日历里所有日子都画，起止之间的日子是 12% 强调色底，两头是实心。 */
 .k-rcal .k-cal-cell[data-selected] {
-  background: color-mix(in srgb, var(--signal-orange) 22%, transparent);
+  background: var(--alpha-white-10);
   color: var(--ink-100);
   font-weight: 500;
   border-radius: 0;
 }
 .k-rcal .k-cal-cell[data-selection-start],
 .k-rcal .k-cal-cell[data-selection-end] {
-  background: var(--signal-orange);
+  background: var(--ink-100);
   color: var(--bg-000);
   font-weight: 600;
 }

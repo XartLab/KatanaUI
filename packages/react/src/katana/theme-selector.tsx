@@ -178,7 +178,7 @@ export function ThemeSelector({
                   layoutId={ringId}
                   data-slot="theme-selector-ring"
                   transition={snappy}
-                  className="pointer-events-none absolute -inset-[4px] rounded-[calc(var(--radius-overlay)+3px)] border-2 border-brand"
+                  className="pointer-events-none absolute -inset-[4px] rounded-[calc(var(--radius-overlay)+3px)] border-2 border-ink"
                 />
               ) : null}
             </button>

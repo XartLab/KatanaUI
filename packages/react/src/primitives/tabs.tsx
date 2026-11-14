@@ -110,7 +110,7 @@ function TabsTrigger({
           'disabled:cursor-not-allowed disabled:opacity-30',
           '[&_svg]:pointer-events-none [&_svg]:size-[13px] [&_svg]:shrink-0',
           // 线型的底线画在列表那道线上，向下压 1px 盖住它。
-          'after:absolute after:inset-x-0 after:-bottom-px after:h-0.5 after:bg-brand after:opacity-0 after:transition-opacity group-data-[variant=line]/tabs-list:data-[state=active]:after:opacity-100',
+          'after:absolute after:inset-x-0 after:-bottom-px after:h-0.5 after:bg-ink after:opacity-0 after:transition-opacity group-data-[variant=line]/tabs-list:data-[state=active]:after:opacity-100',
           focusRingInset,
         ],
         className,

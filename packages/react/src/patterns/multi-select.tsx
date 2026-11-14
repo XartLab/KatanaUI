@@ -152,7 +152,7 @@ export function MultiSelect({
                   }
                 }}
               >
-                <span aria-hidden="true" className="w-[10px] flex-none text-(--signal-orange)">
+                <span aria-hidden="true" className="w-[10px] flex-none text-ink">
                   {selected ? '✓' : ''}
                 </span>
                 <span>{text}</span>

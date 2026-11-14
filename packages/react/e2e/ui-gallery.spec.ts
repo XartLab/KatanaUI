@@ -265,7 +265,7 @@ for (const theme of THEMES) {
       await expect(focused).toHaveCSS('outline-color', ring)
     })
 
-    test('勾选与开关：点了翻转，开关的圆钮真的挪过去，轨道换成强调色', async ({ page }) => {
+    test('勾选与开关：点了翻转，开关的圆钮真的挪过去，轨道换成亮中性（不是品牌橙）', async ({ page }) => {
       await open(page, theme, 'checkbox')
       const boxes = section(page, 'checkbox')
       const check = boxes.getByRole('checkbox', { name: '未勾', exact: true })
@@ -275,7 +275,7 @@ for (const theme of THEMES) {
       await expect(check).toHaveAttribute('aria-checked', 'true')
       await settled(page)
       expect(await bg(check)).not.toBe(checkRest)
-      // 组件卡的样子：勾上后中心一块 6 × 6 的强调色方块，框是暗橙边、暗橙底，不是勾。
+      // 组件卡的样子：勾上后中心一块 6 × 6 的深色方块，框是亮中性（ink-100）底，不是勾，也不是橙。
       const led = check.locator('[data-slot="checkbox-indicator"]')
       const ledBox = (await led.boundingBox())!
       const checkBox = (await check.boundingBox())!
@@ -283,19 +283,11 @@ for (const theme of THEMES) {
       expect([Math.round(ledBox.width), Math.round(ledBox.height)]).toEqual([6, 6])
       expect(Math.abs(ledBox.x + 3 - (checkBox.x + 7))).toBeLessThanOrEqual(0.5)
       expect(Math.abs(ledBox.y + 3 - (checkBox.y + 7))).toBeLessThanOrEqual(0.5)
-      expect(await bg(led)).toBe(await token(page, '--signal-orange'))
+      expect(await bg(led)).toBe(await token(page, '--bg-000'))
+      expect(await bg(check)).toBe(await token(page, '--ink-100'))
+      expect(await bg(check)).not.toBe(await token(page, '--signal-orange'))
       // 发光只给状态灯（Precision Instrument §9）：勾选的方块是控件的「选中」，不发光。
       await expect(led).toHaveCSS('box-shadow', 'none')
-      expect(await check.evaluate((el) => getComputedStyle(el).borderTopColor)).toBe(
-        await page.evaluate(() => {
-          const probe = document.createElement('i')
-          probe.style.borderTop = '1px solid var(--signal-orange-dim)'
-          document.body.append(probe)
-          const color = getComputedStyle(probe).borderTopColor
-          probe.remove()
-          return color
-        }),
-      )
       await expect(check.locator('svg')).toHaveCount(0)
       await check.click()
       await expect(check).toHaveAttribute('aria-checked', 'false')
@@ -319,7 +311,8 @@ for (const theme of THEMES) {
       const orange = await token(page, '--signal-orange')
       await page.mouse.move(0, 0)
       await settled(page)
-      expect(await bg(trackOf)).toBe(orange)
+      expect(await bg(trackOf)).toBe(await token(page, '--ink-100'))
+      expect(await bg(trackOf)).not.toBe(orange)
       expect(await bg(trackOf)).not.toBe(off.track)
       // 外层盒 40 × 28（行高与焦点环按它，#1838 迁移不变），里面可见的轨道 34 × 18。
       const outer = (await toggle.boundingBox())!

@@ -121,7 +121,7 @@
 }
 .k-grid-resize:hover,
 .k-grid-resize:active {
-  background: linear-gradient(90deg, transparent 3px, var(--signal-orange) 3px 4px, transparent 4px);
+  background: linear-gradient(90deg, transparent 3px, var(--ink-100) 3px 4px, transparent 4px);
 }
 .k-grid-rows {
   position: relative;
@@ -146,11 +146,11 @@
   background: var(--dt-tint);
 }
 .k-grid-row.is-opened {
-  box-shadow: inset 2px 0 0 var(--signal-orange);
+  box-shadow: inset 2px 0 0 var(--ink-100);
 }
 /* 粘住的第一列盖住了行左边的强调色，自己再画一道。 */
 .k-grid-row.is-opened .k-grid-cell.is-fixed-first {
-  box-shadow: inset 2px 0 0 var(--signal-orange);
+  box-shadow: inset 2px 0 0 var(--ink-100);
 }
 .k-grid-body:focus-visible .k-grid-row.is-cursor {
   outline: 1px solid var(--line-200);

@@ -12,7 +12,7 @@ const indicatorVariants = cva('k-progress-fill h-full w-full', {
   variants: {
     /** Only changes the fill color; do not rely on color alone for status, write text beside it. */
     tone: {
-      default: 'bg-brand',
+      default: 'bg-ink',
       ok: 'bg-ok',
       warn: 'bg-(--signal-amber)',
       danger: 'bg-danger',
