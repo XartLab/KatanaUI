@@ -87,7 +87,7 @@
 | OrderBlotter | 组合 | 面板 | `src/panels/orders` | 已做 |  |
 | OrderTicket | 交易 | 面板 | `src/panels/order-ticket` | 已做 |  |
 | Overlays | 基元 | 基础件 | `Dialog`、`Sheet`、`Popover`、`Tooltip`、`HoverCard`、`DropdownMenu`、`ContextMenu`、`Toast` | 已做 |  |
-| PanelFrame | 工作台 | 积木 | `src/workspace/PaneFrame.tsx`、`EmptyState`、`Toolbar`、计划：`PanelFrame` | 部分 | #1869 做了空态 EmptyState 与工具条 Toolbar；面板壳本身还在应用里 |
+| PanelFrame | 工作台 | 积木 | `PanelFrame`、`EmptyState`、`Toolbar` | 部分 | PanelFrame 已做（编号、标题、对象、联动灯、点阵元信息位、工具条、图标钮、来源行、焦点角括号）；卡上的拖动抬起、最大化动效、标题栏右键菜单、铆钉、密度档还没做 |
 | ParamScatter | 研究 | 面板 | — | 没做 | 研究层，还没有对应面板 |
 | PerformanceReport | 资产管理 | 面板 | — | 没做 | 资产管理，还没有对应面板 |
 | PnLAttribution | 组合 | 面板 | `AttributionBars` | 部分 | 零轴条形归因（正负分组、折「其他」、费用·税在底）组件库有了；面板接线与维度切换的数据还没有 |

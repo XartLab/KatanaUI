@@ -1742,6 +1742,26 @@ for (const theme of THEMES) {
       await expect(grid.getByRole('row').nth(1).locator('[data-col="symbol"]')).toContainText('600519')
     })
 
+    test('积木：面板外壳——聚焦的画橙色角括号，普通的没有，空态在壳里', async ({ page }) => {
+      await open(page, theme, 'panel-frame')
+      const frames = section(page, 'panel-frame').locator('[data-slot="panel-frame"]')
+      await expect(frames).toHaveCount(3)
+      const brackets = frames.nth(1).locator('[data-slot="panel-brackets"] i').first()
+      await expect(brackets).toBeVisible()
+      const box = await brackets.boundingBox()
+      expect(box?.width).toBeGreaterThan(5)
+      expect(await brackets.evaluate((el) => getComputedStyle(el).borderTopColor)).not.toBe('rgba(0, 0, 0, 0)')
+      await expect(frames.nth(0).locator('[data-slot="panel-brackets"]')).toHaveCount(0)
+      const title = (i: number) =>
+        frames
+          .nth(i)
+          .locator('[data-slot="panel-title"]')
+          .evaluate((el) => getComputedStyle(el).color)
+      expect(await title(1)).not.toBe(await title(0))
+      await expect(frames.nth(0).getByRole('button', { name: 'Maximize' })).toBeVisible()
+      await expect(frames.nth(2).getByRole('status')).toContainText('No data source')
+    })
+
     test('积木：空态、工具条按钮与估算标记', async ({ page }) => {
       await open(page, theme, 'empty-state')
       await expect(section(page, 'empty-state').getByRole('status')).toContainText('Nothing selected')
