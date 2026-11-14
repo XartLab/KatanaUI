@@ -11724,35 +11724,18 @@ button.k-sm-head:focus-visible {
 }
 
 .k-trating-verdict {
-  font: 500 11px/16px var(--font-sans);
+  font: 500 13px/18px var(--font-sans);
   white-space: nowrap;
   color: var(--ink-300);
-  background: var(--alpha-white-5);
-  border-radius: 9999px;
-  padding: 1px 7px;
   display: inline-block;
 }
 
 .k-trating-verdict[data-verdict="buy"] {
   color: var(--pnl-up);
-  background: var(--pnl-up);
-}
-
-@supports (color: color-mix(in lab, red, red)) {
-  .k-trating-verdict[data-verdict="buy"] {
-    background: var(--ds-c-fmo1lj);
-  }
 }
 
 .k-trating-verdict[data-verdict="sell"] {
   color: var(--pnl-down);
-  background: var(--pnl-down);
-}
-
-@supports (color: color-mix(in lab, red, red)) {
-  .k-trating-verdict[data-verdict="sell"] {
-    background: var(--ds-c-jwmebu);
-  }
 }
 
 .k-trating-empty {

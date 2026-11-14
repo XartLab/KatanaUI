@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: MIT */
 /* 技术评级仪表（TechnicalRating，#20）。仪表是半圆五档弧加指针（几何与 RatingGauge 同一把尺子），总评居中放大；
-   指针转动用包里的 gentle 弹簧。明细表照 TradingView 的手感（无衬线 tabular-nums、右对齐、极淡分隔线、悬停整行提亮、结论是低饱和胶囊）。
+   指针转动用包里的 gentle 弹簧。明细表照 TradingView 的手感（无衬线 tabular-nums、右对齐、极淡分隔线、悬停整行提亮、结论是纯文字上色，2026-11-15 实测）。
    颜色走涨跌语义色与中性灰，不用橙色。窄于 440px 时总评独占一行、两个小仪表并排在下。 */
 .k-trating {
   container-type: inline-size;
@@ -224,20 +224,15 @@
 }
 .k-trating-verdict {
   display: inline-block;
-  padding: 1px 7px;
-  border-radius: 9999px;
-  font: 500 11px/16px var(--font-sans);
+  font: 500 13px/18px var(--font-sans);
   white-space: nowrap;
   color: var(--ink-300);
-  background: var(--alpha-white-5);
 }
 .k-trating-verdict[data-verdict='buy'] {
   color: var(--pnl-up);
-  background: color-mix(in srgb, var(--pnl-up) 12%, transparent);
 }
 .k-trating-verdict[data-verdict='sell'] {
   color: var(--pnl-down);
-  background: color-mix(in srgb, var(--pnl-down) 12%, transparent);
 }
 .k-trating-empty {
   margin: auto;

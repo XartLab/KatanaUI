@@ -2624,6 +2624,8 @@ for (const theme of THEMES) {
       const buyPill = rating.locator('[data-slot="rating-row"][data-verdict="buy"] .k-trating-verdict').first()
       await expect(buyPill).toBeVisible()
       expect(await colorAt(page, buyPill, 'color')).toEqual(await rgba(page, up))
+      // 纯文字上色：没有填色底。
+      expect((await colorAt(page, buyPill, 'background-color'))[3]).toBe(0)
       const row = rating.locator('[data-slot="rating-row"]').first()
       const idle = await bg(row)
       await row.hover()
@@ -4677,9 +4679,17 @@ for (const theme of THEMES) {
     const down = await token(page, '--pnl-down')
     expect(await colorAt(page, cells.nth(0).locator('.k-perf-value'), 'color')).toEqual(await rgba(page, up))
     expect(await colorAt(page, cells.nth(1).locator('.k-perf-value'), 'color')).toEqual(await rgba(page, down))
-    // 等宽：十格宽度相同。
-    const widths = await cells.evaluateAll((nodes) => nodes.map((n) => Math.round(n.getBoundingClientRect().width)))
-    expect(Math.max(...widths) - Math.min(...widths)).toBeLessThanOrEqual(1)
+    // 十格排成一行、互不重叠（放不下就横向滚，不挤在一起）。
+    const boxes = await cells.evaluateAll((nodes) =>
+      nodes.map((n) => {
+        const r = n.getBoundingClientRect()
+        return [Math.round(r.x), Math.round(r.right), Math.round(r.y)]
+      }),
+    )
+    boxes.forEach((b, i) => {
+      expect(b[2]).toBe(boxes[0]![2])
+      if (i > 0) expect(b[0]).toBeGreaterThanOrEqual(boxes[i - 1]![1] - 1)
+    })
     // 点「1 month」：回调（output 变）、aria-pressed 换到它、底色变灰。
     await expect(cells.nth(6)).toHaveAttribute('aria-pressed', 'true')
     const idle = await bg(cells.nth(2))

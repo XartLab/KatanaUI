@@ -61,7 +61,7 @@ const PEERS: readonly PeerItem[] = [
 }))
 
 export function PeerCardsDemo() {
-  const [log, setLog] = useState('—')
+  const [log, setLog] = useState('')
   return (
     <>
       <Row name="同业卡">
@@ -88,7 +88,7 @@ export function PeerCardsDemo() {
 }
 
 export function KeyStatsDemo() {
-  const [log, setLog] = useState('—')
+  const [log, setLog] = useState('')
   return (
     <>
       <Row name="三列">
