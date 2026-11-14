@@ -142,6 +142,9 @@
           "path": "src/theme/tree-view.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/tree-view.css"
+          "path": "src/theme/series.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/series.css"
         }
       ]
     },
@@ -255,6 +258,19 @@
           "path": "src/lib/spring.ts",
           "type": "registry:lib",
           "target": "~/src/katana/ui/lib/spring.ts"
+        }
+      ]
+    },
+    {
+      "name": "use-scrubber",
+      "type": "registry:lib",
+      "title": "Use Scrubber",
+      "description": "序列图共用的扫读钩子：指针在图上移动或键盘走，选中一格。←→ 一格，Shift+←→ 三格，Home / End 到头尾，Esc 清掉。可受控，几张图共用一个选中格。功能参照 Arc 的 Revenue explorer。",
+      "files": [
+        {
+          "path": "src/lib/use-scrubber.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/lib/use-scrubber.ts"
         }
       ]
     },
@@ -1754,6 +1770,34 @@
           "path": "src/patterns/tree-view.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/patterns/tree-view.tsx"
+      "name": "brush-chart",
+      "type": "registry:component",
+      "title": "Brush Chart",
+      "description": "一条整段序列的概览条，上面套一个可拖的窗口，主图只画窗口里的那一段：拖中间平移、拖两端缩放、点窗口外的地方把窗口移过去。主图上指针或 ←→ 扫读。可作 EquityCurve 的底座。功能参照 Arc 的 Brush chart。",
+      "registryDependencies": [
+        "@katana/brush-model",
+        "@katana/cn",
+        "@katana/series-geometry",
+        "@katana/use-scrubber"
+      ],
+      "files": [
+        {
+          "path": "src/quant/brush-chart.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/brush-chart.tsx"
+        }
+      ]
+    },
+    {
+      "name": "brush-model",
+      "type": "registry:component",
+      "title": "Brush Model",
+      "description": "BrushChart 的窗口几何（纯函数）：夹取、平移、缩放、居中。",
+      "files": [
+        {
+          "path": "src/quant/brush-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/brush-model.ts"
         }
       ]
     },
@@ -1788,6 +1832,19 @@
           "path": "src/quant/pnl-text.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/quant/pnl-text.tsx"
+        }
+      ]
+    },
+    {
+      "name": "series-geometry",
+      "type": "registry:component",
+      "title": "Series Geometry",
+      "description": "序列图共用的几何（纯函数）：好看的刻度、比例尺、折线与面积路径，BrushChart、WaterfallChart、HorizonChart、SmallMultiples、SeriesExplorer 都用。",
+      "files": [
+        {
+          "path": "src/quant/series-geometry.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/series-geometry.ts"
         }
       ]
     },

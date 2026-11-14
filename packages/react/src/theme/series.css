@@ -1,0 +1,155 @@
+/* SPDX-License-Identifier: MIT */
+/* 时间序列与盈亏的件（#1917）：BrushChart、WaterfallChart、BulletMeter、CalendarHeatmap、HorizonChart、SmallMultiples、SeriesExplorer。
+   颜色只用 token（涨跌用 --pnl-up / --pnl-down，跟涨跌配色走）；数字一律等宽；图都画在 viewBox 里、文字与十字线是叠在上面的 HTML。 */
+
+/* —— BrushChart —— */
+.k-brush {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  min-width: 0;
+  color: var(--ink-200);
+  font: var(--text-caption) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+}
+.k-brush-main,
+.k-brush-strip {
+  position: relative;
+  touch-action: pan-y;
+}
+.k-brush-main {
+  outline-offset: 2px;
+}
+.k-brush-main:focus-visible {
+  outline: 1px solid var(--focus-ring);
+}
+.k-brush-main > svg,
+.k-brush-strip > svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.k-brush-grid {
+  stroke: var(--chart-grid);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+.k-brush-line,
+.k-brush-strip-line {
+  fill: none;
+  stroke: var(--series-1);
+  stroke-width: 2;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+.k-brush-strip-line {
+  stroke-width: 1.5;
+}
+.k-brush-area,
+.k-brush-strip-area {
+  fill: var(--series-1);
+  fill-opacity: 0.12;
+  stroke: none;
+}
+.k-brush-ytick {
+  position: absolute;
+  left: 0;
+  transform: translateY(-100%);
+  color: var(--chart-axis);
+  font: var(--text-caption) var(--font-mono);
+  pointer-events: none;
+}
+.k-brush-cross {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--chart-crosshair);
+  pointer-events: none;
+}
+.k-brush-dot {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  margin: -4px 0 0 -4px;
+  border-radius: 50%;
+  background: var(--series-1);
+  box-shadow: 0 0 0 2px var(--bg-100);
+  pointer-events: none;
+}
+.k-brush-xaxis {
+  position: relative;
+  height: 14px;
+  color: var(--chart-axis);
+}
+.k-brush-xaxis > span {
+  position: absolute;
+  white-space: nowrap;
+  transform: translateX(-50%);
+}
+.k-brush-xaxis > span[data-align='start'] {
+  transform: none;
+}
+.k-brush-xaxis > span[data-align='end'] {
+  transform: translateX(-100%);
+}
+.k-brush-readout {
+  min-height: 16px;
+  color: var(--ink-100);
+  font: var(--text-data) var(--font-mono);
+}
+.k-brush-strip {
+  border: 1px solid var(--line-100);
+  border-radius: var(--radius-inner, 6px);
+  background: var(--bg-000);
+  overflow: hidden;
+  cursor: pointer;
+}
+.k-brush-dim {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background: var(--bg-000);
+  opacity: 0.6;
+  pointer-events: none;
+}
+.k-brush-window {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border-block: 1px solid var(--ink-300);
+  background: color-mix(in srgb, var(--ink-100) 8%, transparent);
+  cursor: grab;
+  outline: none;
+}
+.k-brush-strip[data-dragging='move'] .k-brush-window {
+  cursor: grabbing;
+}
+.k-brush-window:focus-visible,
+.k-brush-handle:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: -2px;
+}
+.k-brush-handle {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  /* 命中区 12px 宽，看得见的是中间 2px 的线（触屏上细线抓不到）。 */
+  width: 12px;
+  margin-left: -6px;
+  cursor: ew-resize;
+  outline: none;
+}
+.k-brush-handle::after {
+  content: '';
+  position: absolute;
+  top: 25%;
+  bottom: 25%;
+  left: 5px;
+  width: 2px;
+  border-radius: 1px;
+  background: var(--ink-200);
+}

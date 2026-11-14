@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 import { useScrubber } from '../../src/index'
+import { BrushChart } from '../../src/quant'
 import { Row } from './parts'
 
 // #1917：时间序列与盈亏的件的演示。下面所有数据都是演示用的合成数据（在这个展示页里按固定种子生成，不是行情、不是账户），每页也写明了；应用里没有样本数据。
@@ -51,6 +52,25 @@ export function UseScrubberDemo() {
           {scrub.index === null ? '未选中' : `第 ${scrub.index + 1} 格 · 值 ${bars[scrub.index]}`}
         </output>
       </Row>
+      <p className="gal-note">{DEMO_NOTE}</p>
+    </>
+  )
+}
+
+export function BrushChartDemo() {
+  const values = walk(11, 120, 1000, 18)
+  return (
+    <>
+      <div className="gal-wide" data-gallery-brush style={{ maxWidth: 640 }}>
+        <BrushChart
+          values={values}
+          label="示例权益曲线"
+          formatX={dayAt}
+          formatValue={(v) => v.toFixed(0)}
+          labels={{ start: '窗口起点', end: '窗口终点', window: '窗口位置' }}
+          defaultWindow={[60, 120]}
+        />
+      </div>
       <p className="gal-note">{DEMO_NOTE}</p>
     </>
   )
