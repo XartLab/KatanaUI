@@ -5284,6 +5284,131 @@
       "source": "src/blocks/data-grid/columns.ts",
       "props": []
     },
+    "HeatmapColorBy": {
+      "kind": "type",
+      "source": "src/quant/market-heatmap.tsx",
+      "props": [
+        {
+          "name": "key",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "unit",
+          "type": "string",
+          "required": false,
+          "description": "单位，接在数后面（「%」）。"
+        },
+        {
+          "name": "digits",
+          "type": "number",
+          "required": false,
+          "description": "小数位，默认 2。"
+        },
+        {
+          "name": "format",
+          "type": "(value: number) => string",
+          "required": false,
+          "description": "整个写法自己定（覆盖 unit 与 digits）。"
+        },
+        {
+          "name": "step",
+          "type": "number",
+          "required": false,
+          "description": "一档的宽（指标的单位）。不给就按这批值的最大绝对值自动取好数（载入或切指标时重算）；固定写成 1 就是 TradingView 的 ±3%。"
+        }
+      ]
+    },
+    "HeatmapItem": {
+      "kind": "type",
+      "source": "src/quant/market-heatmap.tsx",
+      "props": [
+        {
+          "name": "code",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "group",
+          "type": "string",
+          "required": false,
+          "description": "分组（行业）；不给的归到 labels.other。"
+        },
+        {
+          "name": "logo",
+          "type": "string",
+          "required": false,
+          "description": "品种徽标的图片地址；不给就画字母圆标。"
+        },
+        {
+          "name": "price",
+          "type": "number",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "size",
+          "type": "Record<string, number>",
+          "required": true,
+          "description": "各个大小指标的值，键是 HeatmapSizeBy.key。不是正数的格子不画。"
+        },
+        {
+          "name": "value",
+          "type": "Record<string, number | null>",
+          "required": true,
+          "description": "各个着色指标的值，键是 HeatmapColorBy.key。null 是没有数（画中性灰）。"
+        }
+      ]
+    },
+    "HeatmapScheme": {
+      "kind": "type",
+      "source": "src/quant/market-heatmap.tsx",
+      "props": []
+    },
+    "HeatmapSizeBy": {
+      "kind": "type",
+      "source": "src/quant/market-heatmap.tsx",
+      "props": [
+        {
+          "name": "key",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "equal",
+          "type": "boolean",
+          "required": false,
+          "description": "等大：每格一样大，不读 size。"
+        },
+        {
+          "name": "format",
+          "type": "(value: number) => string",
+          "required": false,
+          "description": "大小写成什么样；不给用 formatVolume（835.49 K、2.95 M、7.29 B）。"
+        }
+      ]
+    },
     "HoldToConfirm": {
       "kind": "component",
       "source": "src/katana/hold-to-confirm.tsx",
@@ -5779,6 +5904,95 @@
       "source": "src/primitives/label.tsx",
       "props": []
     },
+    "LadderItem": {
+      "kind": "type",
+      "source": "src/quant/limit-ladder.tsx",
+      "props": [
+        {
+          "name": "code",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "change",
+          "type": "number",
+          "required": true,
+          "description": "涨跌幅，已经是百分数（10 就是 +10%）。"
+        },
+        {
+          "name": "firstSeal",
+          "type": "string",
+          "required": false,
+          "description": "首次封板的时刻，调用方写好（「09:31」）；没封过不给。"
+        },
+        {
+          "name": "sealAmount",
+          "type": "number",
+          "required": false,
+          "description": "封单额（元）。"
+        },
+        {
+          "name": "opens",
+          "type": "number",
+          "required": false,
+          "description": "开板次数。"
+        },
+        {
+          "name": "industry",
+          "type": "string",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "logo",
+          "type": "string",
+          "required": false,
+          "description": "品种徽标的图片地址；不给就画字母圆标。"
+        },
+        {
+          "name": "status",
+          "type": "LadderStatus",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "LadderLevel": {
+      "kind": "type",
+      "source": "src/quant/limit-ladder.tsx",
+      "props": [
+        {
+          "name": "board",
+          "type": "number",
+          "required": true,
+          "description": "板位：几连板。"
+        },
+        {
+          "name": "promoted",
+          "type": "[number, number]",
+          "required": false,
+          "description": "晋级 [已晋级只数, 候选只数]：昨天低一档的票里今天封到这一档的。不给就不画晋级率。"
+        },
+        {
+          "name": "items",
+          "type": "readonly LadderItem[]",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "LadderStatus": {
+      "kind": "type",
+      "source": "src/quant/limit-ladder.tsx",
+      "props": []
+    },
     "Lcd": {
       "kind": "component",
       "source": "src/katana/lcd.tsx",
@@ -5874,6 +6088,133 @@
       "kind": "type",
       "source": "src/katana/led.tsx",
       "props": []
+    },
+    "LimitLadder": {
+      "kind": "component",
+      "source": "src/quant/limit-ladder.tsx",
+      "props": [
+        {
+          "name": "levels",
+          "type": "readonly LadderLevel[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "labels",
+          "type": "LimitLadderLabels",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "selected",
+          "type": "string | null",
+          "required": false,
+          "default": "null",
+          "description": "选中的个股代码。"
+        },
+        {
+          "name": "onSelect",
+          "type": "(code: string) => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "LimitLadderLabels": {
+      "kind": "type",
+      "source": "src/quant/limit-ladder.tsx",
+      "props": [
+        {
+          "name": "board",
+          "type": "string",
+          "required": true,
+          "description": "层号旁的单位（「板」）。"
+        },
+        {
+          "name": "promoted",
+          "type": "(done: number, total: number) => string",
+          "required": true,
+          "description": "层头的晋级率文字，例「晋级 1/3」。"
+        },
+        {
+          "name": "count",
+          "type": "(n: number) => string",
+          "required": true,
+          "description": "层头的只数文字，例「3 只」。"
+        },
+        {
+          "name": "status",
+          "type": "Record<LadderStatus, string>",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "columns",
+          "type": "{ name: string; change: string; firstSeal: string; sealAmount: string; opens: string; industry: string }",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "summary",
+          "type": "{ sealed: string; highest: string; promoteRate: string }",
+          "required": true,
+          "description": "顶部汇总读数的名字：涨停只数、最高板、整体晋级率。"
+        },
+        {
+          "name": "list",
+          "type": "string",
+          "required": true,
+          "description": "整张天梯的读屏名。"
+        },
+        {
+          "name": "empty",
+          "type": "string",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "LimitLadderProps": {
+      "kind": "type",
+      "source": "src/quant/limit-ladder.tsx",
+      "props": [
+        {
+          "name": "levels",
+          "type": "readonly LadderLevel[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "labels",
+          "type": "LimitLadderLabels",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "selected",
+          "type": "string | null",
+          "required": false,
+          "description": "选中的个股代码。"
+        },
+        {
+          "name": "onSelect",
+          "type": "(code: string) => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": ""
+        }
+      ]
     },
     "LinkGroup": {
       "kind": "type",
@@ -6129,6 +6470,250 @@
         }
       ]
     },
+    "MarketHeatmap": {
+      "kind": "component",
+      "source": "src/quant/market-heatmap.tsx",
+      "props": [
+        {
+          "name": "items",
+          "type": "readonly HeatmapItem[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "sizeBy",
+          "type": "readonly HeatmapSizeBy[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "colorBy",
+          "type": "readonly HeatmapColorBy[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "labels",
+          "type": "MarketHeatmapLabels",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "defaultSizeBy",
+          "type": "string",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "defaultColorBy",
+          "type": "string",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "defaultGrouped",
+          "type": "boolean",
+          "required": false,
+          "default": "true",
+          "description": "一开始分不分组（有分组数据时）；默认分组。"
+        },
+        {
+          "name": "scheme",
+          "type": "HeatmapScheme",
+          "required": false,
+          "default": "'classic'",
+          "description": "配色：classic 涨跌色（跟 data-updown）、mono 单色灰阶。色盲友好第二步做。"
+        },
+        {
+          "name": "formatPrice",
+          "type": "(value: number) => string",
+          "required": false,
+          "default": "(value) => formatPrice(value, { precision: 2 })",
+          "description": "价格怎么写；不给按 2 位小数。"
+        },
+        {
+          "name": "selected",
+          "type": "string | null",
+          "required": false,
+          "default": "null",
+          "description": ""
+        },
+        {
+          "name": "onSelect",
+          "type": "(code: string) => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "MarketHeatmapLabels": {
+      "kind": "type",
+      "source": "src/quant/market-heatmap.tsx",
+      "props": [
+        {
+          "name": "sizeBy",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "colorBy",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "view",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "grouped",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "flat",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "all",
+          "type": "string",
+          "required": true,
+          "description": "面包屑的根（放大前是「全部」）。"
+        },
+        {
+          "name": "other",
+          "type": "string",
+          "required": true,
+          "description": "没有分组的品种归到这个名字下。"
+        },
+        {
+          "name": "price",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "group",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "summary",
+          "type": "{ count: string; up: string; down: string }",
+          "required": true,
+          "description": "顶上汇总读数的名字：只数、上涨、下跌。"
+        },
+        {
+          "name": "segment",
+          "type": "(range: string) => string",
+          "required": true,
+          "description": "图例一档的读屏名，range 是写好的值边界，例「隐藏 -2.5% ~ -1.5% 的格子」。"
+        },
+        {
+          "name": "list",
+          "type": "string",
+          "required": true,
+          "description": "整张图的读屏名。"
+        },
+        {
+          "name": "empty",
+          "type": "string",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "MarketHeatmapProps": {
+      "kind": "type",
+      "source": "src/quant/market-heatmap.tsx",
+      "props": [
+        {
+          "name": "items",
+          "type": "readonly HeatmapItem[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "sizeBy",
+          "type": "readonly HeatmapSizeBy[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "colorBy",
+          "type": "readonly HeatmapColorBy[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "labels",
+          "type": "MarketHeatmapLabels",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "defaultSizeBy",
+          "type": "string",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "defaultColorBy",
+          "type": "string",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "defaultGrouped",
+          "type": "boolean",
+          "required": false,
+          "description": "一开始分不分组（有分组数据时）；默认分组。"
+        },
+        {
+          "name": "scheme",
+          "type": "HeatmapScheme",
+          "required": false,
+          "description": "配色：classic 涨跌色（跟 data-updown）、mono 单色灰阶。色盲友好第二步做。"
+        },
+        {
+          "name": "formatPrice",
+          "type": "(value: number) => string",
+          "required": false,
+          "description": "价格怎么写；不给按 2 位小数。"
+        },
+        {
+          "name": "selected",
+          "type": "string | null",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "onSelect",
+          "type": "(code: string) => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
     "MatrixOrb": {
       "kind": "component",
       "source": "src/katana/matrix-orb.tsx",
@@ -6248,92 +6833,55 @@
       "source": "src/quant/meter.tsx",
       "props": [
         {
+          "name": "label",
+          "type": "ReactNode",
+          "required": true,
+          "description": "名字（左上，ink-300）。"
+        },
+        {
           "name": "value",
           "type": "number",
           "required": true,
-          "description": "已用 / 读数（和 max 同一把尺）。"
+          "description": ""
         },
         {
           "name": "max",
           "type": "number",
           "required": false,
           "default": "100",
-          "description": "满刻度，默认 100（gauge 与 sync 固定按 0 到 100 读，传 max 无效）。"
-        },
-        {
-          "name": "display",
-          "type": "'bar' | 'gauge' | 'sync'",
-          "required": false,
-          "default": "'bar'",
-          "description": ""
-        },
-        {
-          "name": "tone",
-          "type": "ChartTone",
-          "required": false,
-          "default": "'accent'",
-          "description": "调用方只传语义；有 soft / hard 时状态达到 warn 或 breach 就换成 warn。"
-        },
-        {
-          "name": "soft",
-          "type": "number",
-          "required": false,
-          "description": "软限与硬限（可以只给一个）。"
-        },
-        {
-          "name": "hard",
-          "type": "number",
-          "required": false,
-          "description": ""
-        },
-        {
-          "name": "label",
-          "type": "string",
-          "required": true,
-          "description": "量的是什么（左上角的字，也是读屏名）。"
+          "description": "满量程，默认 100。"
         },
         {
           "name": "valueText",
           "type": "string",
-          "required": true,
-          "description": "读屏整句，例：「已用 72，软限 80，硬限 100」；由调用方按界面语言写。"
-        },
-        {
-          "name": "formatValue",
-          "type": "(value: number) => string",
-          "required": true,
-          "description": "读数写成什么字（右上角；sync 里是右侧大百分比）。"
-        },
-        {
-          "name": "stateLabels",
-          "type": "Partial<Record<MeterState, string>>",
           "required": false,
-          "description": "三种状态各写什么词（右上角、读数后面）；不给就不写。"
+          "description": "右边的数怎么写；不给就是四舍五入的百分数。"
         },
         {
-          "name": "tickLabels",
-          "type": "{ soft?: string; hard?: string }",
+          "name": "tone",
+          "type": "MeterTone",
           "required": false,
-          "description": "刻度小字（软限、硬限各一个，bar 里写在条下面）。"
+          "default": "'accent'",
+          "description": "accent 进行中（橙）、ok 健康（绿）、warn 受限或越界（琥珀）、danger 弱势（红）、off 停用。默认 accent。"
         },
         {
-          "name": "weakBelow",
-          "type": "number",
+          "name": "display",
+          "type": "MeterDisplay",
           "required": false,
-          "description": "gauge：弱势线，读数低于它指针转红（Meter 卡写 30）；不给不转。"
-        },
-        {
-          "name": "locked",
-          "type": "boolean",
-          "required": false,
-          "default": "false",
-          "description": "gauge：受锁，指针转 amber。"
+          "default": "'bar'",
+          "description": "形态，默认 bar。"
         },
         {
           "name": "mark",
           "type": "number",
           "required": false,
-          "description": "sync：评估点（0 到 100），画 amber 刻度。"
+          "description": "刻度（跟 value 同一个单位）：bar 与 sync 画一根琥珀竖线，gauge 不用。sync 里它是评估点。"
+        },
+        {
+          "name": "markLabel",
+          "type": "string",
+          "required": false,
+          "description": "读屏用：刻度那根线是什么（如「评估点」「上限」）；有 mark 时要给。"
         },
         {
           "name": "className",
@@ -6342,94 +6890,63 @@
           "description": ""
         }
       ]
+    },
+    "MeterDisplay": {
+      "kind": "type",
+      "source": "src/quant/meter.tsx",
+      "props": []
     },
     "MeterProps": {
       "kind": "type",
       "source": "src/quant/meter.tsx",
       "props": [
         {
+          "name": "label",
+          "type": "ReactNode",
+          "required": true,
+          "description": "名字（左上，ink-300）。"
+        },
+        {
           "name": "value",
           "type": "number",
           "required": true,
-          "description": "已用 / 读数（和 max 同一把尺）。"
+          "description": ""
         },
         {
           "name": "max",
           "type": "number",
           "required": false,
-          "description": "满刻度，默认 100（gauge 与 sync 固定按 0 到 100 读，传 max 无效）。"
-        },
-        {
-          "name": "display",
-          "type": "'bar' | 'gauge' | 'sync'",
-          "required": false,
-          "description": ""
-        },
-        {
-          "name": "tone",
-          "type": "ChartTone",
-          "required": false,
-          "description": "调用方只传语义；有 soft / hard 时状态达到 warn 或 breach 就换成 warn。"
-        },
-        {
-          "name": "soft",
-          "type": "number",
-          "required": false,
-          "description": "软限与硬限（可以只给一个）。"
-        },
-        {
-          "name": "hard",
-          "type": "number",
-          "required": false,
-          "description": ""
-        },
-        {
-          "name": "label",
-          "type": "string",
-          "required": true,
-          "description": "量的是什么（左上角的字，也是读屏名）。"
+          "description": "满量程，默认 100。"
         },
         {
           "name": "valueText",
           "type": "string",
-          "required": true,
-          "description": "读屏整句，例：「已用 72，软限 80，硬限 100」；由调用方按界面语言写。"
-        },
-        {
-          "name": "formatValue",
-          "type": "(value: number) => string",
-          "required": true,
-          "description": "读数写成什么字（右上角；sync 里是右侧大百分比）。"
-        },
-        {
-          "name": "stateLabels",
-          "type": "Partial<Record<MeterState, string>>",
           "required": false,
-          "description": "三种状态各写什么词（右上角、读数后面）；不给就不写。"
+          "description": "右边的数怎么写；不给就是四舍五入的百分数。"
         },
         {
-          "name": "tickLabels",
-          "type": "{ soft?: string; hard?: string }",
+          "name": "tone",
+          "type": "MeterTone",
           "required": false,
-          "description": "刻度小字（软限、硬限各一个，bar 里写在条下面）。"
+          "description": "accent 进行中（橙）、ok 健康（绿）、warn 受限或越界（琥珀）、danger 弱势（红）、off 停用。默认 accent。"
         },
         {
-          "name": "weakBelow",
-          "type": "number",
+          "name": "display",
+          "type": "MeterDisplay",
           "required": false,
-          "description": "gauge：弱势线，读数低于它指针转红（Meter 卡写 30）；不给不转。"
-        },
-        {
-          "name": "locked",
-          "type": "boolean",
-          "required": false,
-          "description": "gauge：受锁，指针转 amber。"
+          "description": "形态，默认 bar。"
         },
         {
           "name": "mark",
           "type": "number",
           "required": false,
-          "description": "sync：评估点（0 到 100），画 amber 刻度。"
+          "description": "刻度（跟 value 同一个单位）：bar 与 sync 画一根琥珀竖线，gauge 不用。sync 里它是评估点。"
+        },
+        {
+          "name": "markLabel",
+          "type": "string",
+          "required": false,
+          "description": "读屏用：刻度那根线是什么（如「评估点」「上限」）；有 mark 时要给。"
         },
         {
           "name": "className",
@@ -6439,9 +6956,9 @@
         }
       ]
     },
-    "MeterState": {
+    "MeterTone": {
       "kind": "type",
-      "source": "src/quant/meter-model.ts",
+      "source": "src/quant/meter.tsx",
       "props": []
     },
     "MultiSelect": {
@@ -6672,266 +7189,312 @@
     },
     "PanelFrame": {
       "kind": "component",
-      "source": "src/blocks/panel-frame.tsx",
+      "source": "src/blocks/panel-frame/panel-frame.tsx",
       "props": [
         {
-          "name": "index",
-          "type": "string",
+          "name": "focused",
+          "type": "boolean",
           "required": false,
-          "description": "面板编号（01、02……）：强调色点阵字，让同屏的面板认得出谁是谁。"
+          "default": "false",
+          "description": "焦点面板：标题文字提亮，其余面板标题退后（三层对比）。"
         },
         {
-          "name": "title",
-          "type": "string",
-          "required": true,
+          "name": "brackets",
+          "type": "boolean",
+          "required": false,
+          "default": "false",
+          "description": "画四角括号（大屏模式下的焦点面板；什么时候算「大屏」是宿主的事）。"
+        },
+        {
+          "name": "collapsed",
+          "type": "boolean",
+          "required": false,
+          "description": "折叠：只剩标题栏。受控；不传 collapsed 时用 defaultCollapsed 自己管。"
+        },
+        {
+          "name": "defaultCollapsed",
+          "type": "boolean",
+          "required": false,
+          "default": "false",
           "description": ""
         },
         {
-          "name": "object",
+          "name": "onCollapsedChange",
+          "type": "(collapsed: boolean) => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "classNames",
+          "type": "Partial<Record<PanelFrameSlot, string>>",
+          "required": false,
+          "default": "{}",
+          "description": "宿主要给各部分挂自己的类名时用（应用的旧类名钩子）。"
+        }
+      ]
+    },
+    "PanelFrameBody": {
+      "kind": "component",
+      "source": "src/blocks/panel-frame/panel-frame.tsx",
+      "props": [
+        {
+          "name": "state",
+          "type": "PanelFrameState",
+          "required": false,
+          "default": "'ready'",
+          "description": "内容区的状态：ready 画 children；loading 画骨架；empty、disconnected 画空态（不画假数据）。"
+        },
+        {
+          "name": "loadingLabel",
           "type": "string",
           "required": false,
-          "description": "当前对象：标题后面的小字，如「核心池 · 24」（前面的「·」由外壳画）。"
+          "default": "''",
+          "description": "loading 时骨架的名字（读屏念，包里没有文字）。"
+        },
+        {
+          "name": "view",
+          "type": "{ tag?: string; title: string; description?: ReactNode; actions?: ReactNode }",
+          "required": false,
+          "description": "empty、disconnected 时空态的文字与动作；同一个面板两种状态各传各的。"
+        }
+      ]
+    },
+    "PanelFrameBodyProps": {
+      "kind": "type",
+      "source": "src/blocks/panel-frame/panel-frame.tsx",
+      "props": [
+        {
+          "name": "state",
+          "type": "PanelFrameState",
+          "required": false,
+          "description": "内容区的状态：ready 画 children；loading 画骨架；empty、disconnected 画空态（不画假数据）。"
+        },
+        {
+          "name": "loadingLabel",
+          "type": "string",
+          "required": false,
+          "description": "loading 时骨架的名字（读屏念，包里没有文字）。"
+        },
+        {
+          "name": "view",
+          "type": "{ tag?: string; title: string; description?: ReactNode; actions?: ReactNode }",
+          "required": false,
+          "description": "empty、disconnected 时空态的文字与动作；同一个面板两种状态各传各的。"
+        }
+      ]
+    },
+    "PanelFrameHeader": {
+      "kind": "component",
+      "source": "src/blocks/panel-frame/panel-frame.tsx",
+      "props": [
+        {
+          "name": "heading",
+          "type": "ReactNode",
+          "required": false,
+          "description": "标题（h2）。不传就没有标题行（空格子）。不叫 title：那是 header 自己的悬停提示属性，照常透传。"
+        },
+        {
+          "name": "headingHidden",
+          "type": "boolean",
+          "required": false,
+          "default": "false",
+          "description": "标题只给读屏、不画出来（工具条占着标题栏时）。"
+        },
+        {
+          "name": "object",
+          "type": "ReactNode",
+          "required": false,
+          "description": "标题后的当前对象（品种、过滤条件），等宽小字。"
         },
         {
           "name": "linkGroup",
           "type": "LinkGroup | null",
           "required": false,
-          "default": "null",
-          "description": "联动组色标；null 或不给是熄灭。pinned 时画成空心圈（固定，不跟随联动）。"
+          "description": "联动组的色点：给组名画那一组的颜色；null 画熄灭的环；不传不画。"
         },
         {
           "name": "linkLabel",
           "type": "string",
           "required": false,
-          "description": ""
+          "default": "''",
+          "description": "色点的名字（读屏念，包里没有文字）。有 linkGroup 时必填。"
         },
         {
           "name": "pinned",
           "type": "boolean",
           "required": false,
           "default": "false",
-          "description": ""
-        },
-        {
-          "name": "meta",
-          "type": "string",
-          "required": false,
-          "description": "点阵元信息位：标题行右侧的一小段点阵字（刷新频率、周期之类）。"
+          "description": "固定（不跟随联动）：色点变空心圆。"
         },
         {
           "name": "toolbar",
           "type": "ReactNode",
           "required": false,
-          "description": "局部工具条：放在标题与右侧图标钮之间。"
+          "description": "标题后的局部工具条。"
         },
         {
-          "name": "source",
+          "name": "actions",
           "type": "ReactNode",
           "required": false,
-          "description": "来源行位：底部一行点阵字（「SOURCE · …」），不给就没有这一行。"
+          "description": "右侧动作槽（设置、最大化、关闭这类图标按钮；不超过三个，更多进设置）。"
         },
         {
-          "name": "focused",
+          "name": "collapsible",
           "type": "boolean",
           "required": false,
           "default": "false",
-          "description": "焦点面板：标题 ink-100、其余 ink-300（三层对比），并画角括号（brackets 默认跟着它）。"
+          "description": "画折叠按钮；两个名字由调用方传。"
         },
         {
-          "name": "brackets",
-          "type": "boolean",
-          "required": false,
-          "default": "focused",
-          "description": "四角的橙色 L 形括号；默认等于 focused。工作台只在大屏（≥ 1200px）画，件里不判断屏宽，调用方按需传。"
-        },
-        {
-          "name": "maximized",
-          "type": "boolean",
-          "required": false,
-          "default": "false",
-          "description": ""
-        },
-        {
-          "name": "onSettings",
-          "type": "() => void",
-          "required": false,
-          "description": ""
-        },
-        {
-          "name": "onMaximize",
-          "type": "() => void",
-          "required": false,
-          "description": ""
-        },
-        {
-          "name": "onClose",
-          "type": "() => void",
-          "required": false,
-          "description": ""
-        },
-        {
-          "name": "labels",
-          "type": "PanelFrameLabels",
-          "required": true,
-          "description": ""
-        },
-        {
-          "name": "className",
+          "name": "collapseLabel",
           "type": "string",
           "required": false,
           "description": ""
         },
         {
-          "name": "children",
-          "type": "ReactNode",
+          "name": "expandLabel",
+          "type": "string",
           "required": false,
+          "description": ""
+        },
+        {
+          "name": "classNames",
+          "type": "Partial<Record<PanelFrameSlot, string>>",
+          "required": false,
+          "default": "{}",
           "description": ""
         }
       ]
     },
-    "PanelFrameLabels": {
+    "PanelFrameHeaderProps": {
       "kind": "type",
-      "source": "src/blocks/panel-frame.tsx",
+      "source": "src/blocks/panel-frame/panel-frame.tsx",
       "props": [
         {
-          "name": "settings",
-          "type": "string",
-          "required": true,
-          "description": "外壳 section 的读屏名之外的三个图标钮。"
+          "name": "heading",
+          "type": "ReactNode",
+          "required": false,
+          "description": "标题（h2）。不传就没有标题行（空格子）。不叫 title：那是 header 自己的悬停提示属性，照常透传。"
         },
         {
-          "name": "maximize",
+          "name": "headingHidden",
+          "type": "boolean",
+          "required": false,
+          "description": "标题只给读屏、不画出来（工具条占着标题栏时）。"
+        },
+        {
+          "name": "object",
+          "type": "ReactNode",
+          "required": false,
+          "description": "标题后的当前对象（品种、过滤条件），等宽小字。"
+        },
+        {
+          "name": "linkGroup",
+          "type": "LinkGroup | null",
+          "required": false,
+          "description": "联动组的色点：给组名画那一组的颜色；null 画熄灭的环；不传不画。"
+        },
+        {
+          "name": "linkLabel",
           "type": "string",
-          "required": true,
+          "required": false,
+          "description": "色点的名字（读屏念，包里没有文字）。有 linkGroup 时必填。"
+        },
+        {
+          "name": "pinned",
+          "type": "boolean",
+          "required": false,
+          "description": "固定（不跟随联动）：色点变空心圆。"
+        },
+        {
+          "name": "toolbar",
+          "type": "ReactNode",
+          "required": false,
+          "description": "标题后的局部工具条。"
+        },
+        {
+          "name": "actions",
+          "type": "ReactNode",
+          "required": false,
+          "description": "右侧动作槽（设置、最大化、关闭这类图标按钮；不超过三个，更多进设置）。"
+        },
+        {
+          "name": "collapsible",
+          "type": "boolean",
+          "required": false,
+          "description": "画折叠按钮；两个名字由调用方传。"
+        },
+        {
+          "name": "collapseLabel",
+          "type": "string",
+          "required": false,
           "description": ""
         },
         {
-          "name": "restore",
+          "name": "expandLabel",
           "type": "string",
-          "required": true,
+          "required": false,
           "description": ""
         },
         {
-          "name": "close",
-          "type": "string",
-          "required": true,
+          "name": "classNames",
+          "type": "Partial<Record<PanelFrameSlot, string>>",
+          "required": false,
           "description": ""
         }
       ]
     },
     "PanelFrameProps": {
       "kind": "type",
-      "source": "src/blocks/panel-frame.tsx",
+      "source": "src/blocks/panel-frame/panel-frame.tsx",
       "props": [
-        {
-          "name": "index",
-          "type": "string",
-          "required": false,
-          "description": "面板编号（01、02……）：强调色点阵字，让同屏的面板认得出谁是谁。"
-        },
-        {
-          "name": "title",
-          "type": "string",
-          "required": true,
-          "description": ""
-        },
-        {
-          "name": "object",
-          "type": "string",
-          "required": false,
-          "description": "当前对象：标题后面的小字，如「核心池 · 24」（前面的「·」由外壳画）。"
-        },
-        {
-          "name": "linkGroup",
-          "type": "LinkGroup | null",
-          "required": false,
-          "description": "联动组色标；null 或不给是熄灭。pinned 时画成空心圈（固定，不跟随联动）。"
-        },
-        {
-          "name": "linkLabel",
-          "type": "string",
-          "required": false,
-          "description": ""
-        },
-        {
-          "name": "pinned",
-          "type": "boolean",
-          "required": false,
-          "description": ""
-        },
-        {
-          "name": "meta",
-          "type": "string",
-          "required": false,
-          "description": "点阵元信息位：标题行右侧的一小段点阵字（刷新频率、周期之类）。"
-        },
-        {
-          "name": "toolbar",
-          "type": "ReactNode",
-          "required": false,
-          "description": "局部工具条：放在标题与右侧图标钮之间。"
-        },
-        {
-          "name": "source",
-          "type": "ReactNode",
-          "required": false,
-          "description": "来源行位：底部一行点阵字（「SOURCE · …」），不给就没有这一行。"
-        },
         {
           "name": "focused",
           "type": "boolean",
           "required": false,
-          "description": "焦点面板：标题 ink-100、其余 ink-300（三层对比），并画角括号（brackets 默认跟着它）。"
+          "description": "焦点面板：标题文字提亮，其余面板标题退后（三层对比）。"
         },
         {
           "name": "brackets",
           "type": "boolean",
           "required": false,
-          "description": "四角的橙色 L 形括号；默认等于 focused。工作台只在大屏（≥ 1200px）画，件里不判断屏宽，调用方按需传。"
+          "description": "画四角括号（大屏模式下的焦点面板；什么时候算「大屏」是宿主的事）。"
         },
         {
-          "name": "maximized",
+          "name": "collapsed",
+          "type": "boolean",
+          "required": false,
+          "description": "折叠：只剩标题栏。受控；不传 collapsed 时用 defaultCollapsed 自己管。"
+        },
+        {
+          "name": "defaultCollapsed",
           "type": "boolean",
           "required": false,
           "description": ""
         },
         {
-          "name": "onSettings",
-          "type": "() => void",
+          "name": "onCollapsedChange",
+          "type": "(collapsed: boolean) => void",
           "required": false,
           "description": ""
         },
         {
-          "name": "onMaximize",
-          "type": "() => void",
+          "name": "classNames",
+          "type": "Partial<Record<PanelFrameSlot, string>>",
           "required": false,
-          "description": ""
-        },
-        {
-          "name": "onClose",
-          "type": "() => void",
-          "required": false,
-          "description": ""
-        },
-        {
-          "name": "labels",
-          "type": "PanelFrameLabels",
-          "required": true,
-          "description": ""
-        },
-        {
-          "name": "className",
-          "type": "string",
-          "required": false,
-          "description": ""
-        },
-        {
-          "name": "children",
-          "type": "ReactNode",
-          "required": false,
-          "description": ""
+          "description": "宿主要给各部分挂自己的类名时用（应用的旧类名钩子）。"
         }
       ]
+    },
+    "PanelFrameSlot": {
+      "kind": "type",
+      "source": "src/blocks/panel-frame/panel-frame.tsx",
+      "props": []
+    },
+    "PanelFrameState": {
+      "kind": "type",
+      "source": "src/blocks/panel-frame/panel-frame.tsx",
+      "props": []
     },
     "PasswordInput": {
       "kind": "component",
@@ -8279,6 +8842,77 @@
           "description": "Extra class name on the root."
         }
       ]
+    },
+    "RatingGroup": {
+      "kind": "type",
+      "source": "src/quant/technical-rating.tsx",
+      "props": [
+        {
+          "name": "key",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "value",
+          "type": "number",
+          "required": true,
+          "description": "−1（强卖）到 1（强买）。"
+        },
+        {
+          "name": "counts",
+          "type": "Record<RatingVerdict, number>",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "RatingRow": {
+      "kind": "type",
+      "source": "src/quant/technical-rating.tsx",
+      "props": [
+        {
+          "name": "key",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "group",
+          "type": "string",
+          "required": false,
+          "description": "属于哪一组（RatingGroup.key）；明细按组分节。不给的归到最后一节、不写节名。"
+        },
+        {
+          "name": "reading",
+          "type": "string",
+          "required": false,
+          "description": "读数，调用方写好的文字（「54.20」）；没有写「—」。"
+        },
+        {
+          "name": "verdict",
+          "type": "RatingVerdict",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "RatingVerdict": {
+      "kind": "type",
+      "source": "src/quant/technical-rating.tsx",
+      "props": []
     },
     "RegimeBand": {
       "kind": "component",
@@ -10171,107 +10805,75 @@
           "name": "label",
           "type": "string",
           "required": true,
-          "description": "点阵标签（大写短码）。"
-        },
-        {
-          "name": "text",
-          "type": "string | null",
-          "required": true,
-          "description": "数值的显示文字；number 给 RollingText 判涨跌方向。没有数据传 null，显示「—」。"
+          "description": "点阵小标签（如 NET ASSET）。"
         },
         {
           "name": "value",
-          "type": "number | null",
+          "type": "string | null",
           "required": true,
-          "description": ""
+          "description": "已经格式化好的数值；没有数据传 null。"
         },
         {
           "name": "unit",
           "type": "string",
           "required": false,
-          "description": "数值后的小字单位（「/月」「/ 150%」）。"
+          "description": "数值后面的小字（如「/月」「/ 150%」）。"
+        },
+        {
+          "name": "rollValue",
+          "type": "number",
+          "required": false,
+          "description": "数值也想让它滚起来时给这个数（数值变了，变了的那几位像里程表一样转过去；不给就直接换字）。"
         },
         {
           "name": "series",
           "type": "readonly number[]",
-          "required": false,
-          "default": "[]",
-          "description": "迷你线的数，从旧到新；少于两个数就不画。"
+          "required": true,
+          "description": "迷你线的数，从旧到新；少于两个数画不出线，写「—」。"
         },
         {
-          "name": "pointLabels",
-          "type": "readonly string[]",
-          "required": false,
-          "description": "每个点的时间标签（悬停 tooltip 用），与 series 等长；不给 tooltip 只写值。"
-        },
-        {
-          "name": "formatPoint",
-          "type": "(value: number) => string",
-          "required": false,
-          "description": "tooltip 里值的写法；不给用 text 的格式不可得，所以由调用方给。"
-        },
-        {
-          "name": "delta",
+          "name": "sparkLabel",
           "type": "string",
-          "required": false,
-          "description": "变化行文字；没有变化数据就不给，这一行不渲染（不留一行空的「—」）。"
-        },
-        {
-          "name": "deltaTone",
-          "type": "'up' | 'down' | 'muted' | 'warn'",
-          "required": false,
-          "default": "'muted'",
-          "description": "变化行颜色：up / down 用 pnl 色（只给数字），muted 是 ink-300，warn 是 amber。"
-        },
-        {
-          "name": "threshold",
-          "type": "number",
-          "required": false,
-          "description": "上限 / 下限的数；画 amber 虚线，迷你线的范围会把它包进来。"
-        },
-        {
-          "name": "near",
-          "type": "boolean",
-          "required": false,
-          "default": "false",
-          "description": "接近阈值：边框转 signal-orange-dim、变化行转 amber、脉冲一次。"
+          "required": true,
+          "description": "读屏名（整句，含「没有数据」的说法）。"
         },
         {
           "name": "trendTone",
           "type": "'series' | 'neutral'",
           "required": false,
           "default": "'series'",
-          "description": "series：迷你线用 series-1；neutral：ink-300（越低越好的指标）。"
+          "description": "series 是常态的线色（series-1）；neutral 是「越低越好」的指标（ink-300）。"
         },
         {
-          "name": "onOpen",
+          "name": "threshold",
+          "type": "number",
+          "required": false,
+          "description": "阈值（跟 series 同一个单位）：画一条琥珀虚线。"
+        },
+        {
+          "name": "state",
+          "type": "SparkTileState",
+          "required": false,
+          "default": "'normal'",
+          "description": ""
+        },
+        {
+          "name": "delta",
+          "type": "number",
+          "required": false,
+          "description": "变化百分数（1.5 就是 1.5%），写成带符号的 ChangeText，涨跌色跟 data-updown。"
+        },
+        {
+          "name": "note",
+          "type": "ReactNode",
+          "required": false,
+          "description": "变化行的小字说明（如「今日」「接近上限」）：状态不只靠颜色，near 与 over 时这里要写字。"
+        },
+        {
+          "name": "onClick",
           "type": "() => void",
           "required": false,
-          "description": "点击瓦片（打开该指标的完整图）；给了就渲染成按钮。"
-        },
-        {
-          "name": "expanded",
-          "type": "boolean",
-          "required": false,
-          "description": "这张瓦片展开着一个图面板（aria-expanded）：边框转强调色。"
-        },
-        {
-          "name": "index",
-          "type": "string",
-          "required": false,
-          "description": "编号（01、02……）：强调色等宽小字，写在标签前。"
-        },
-        {
-          "name": "dataKey",
-          "type": "string",
-          "required": false,
-          "description": "写在根上的 data-key，给父级的测试与联动认哪一张。"
-        },
-        {
-          "name": "seriesLabel",
-          "type": "string",
-          "required": true,
-          "description": "迷你线的读屏名（整句）。"
+          "description": "给了就整块是个按钮（点开该指标的完整图）。"
         },
         {
           "name": "className",
@@ -10289,103 +10891,73 @@
           "name": "label",
           "type": "string",
           "required": true,
-          "description": "点阵标签（大写短码）。"
-        },
-        {
-          "name": "text",
-          "type": "string | null",
-          "required": true,
-          "description": "数值的显示文字；number 给 RollingText 判涨跌方向。没有数据传 null，显示「—」。"
+          "description": "点阵小标签（如 NET ASSET）。"
         },
         {
           "name": "value",
-          "type": "number | null",
+          "type": "string | null",
           "required": true,
-          "description": ""
+          "description": "已经格式化好的数值；没有数据传 null。"
         },
         {
           "name": "unit",
           "type": "string",
           "required": false,
-          "description": "数值后的小字单位（「/月」「/ 150%」）。"
+          "description": "数值后面的小字（如「/月」「/ 150%」）。"
+        },
+        {
+          "name": "rollValue",
+          "type": "number",
+          "required": false,
+          "description": "数值也想让它滚起来时给这个数（数值变了，变了的那几位像里程表一样转过去；不给就直接换字）。"
         },
         {
           "name": "series",
           "type": "readonly number[]",
-          "required": false,
-          "description": "迷你线的数，从旧到新；少于两个数就不画。"
+          "required": true,
+          "description": "迷你线的数，从旧到新；少于两个数画不出线，写「—」。"
         },
         {
-          "name": "pointLabels",
-          "type": "readonly string[]",
-          "required": false,
-          "description": "每个点的时间标签（悬停 tooltip 用），与 series 等长；不给 tooltip 只写值。"
-        },
-        {
-          "name": "formatPoint",
-          "type": "(value: number) => string",
-          "required": false,
-          "description": "tooltip 里值的写法；不给用 text 的格式不可得，所以由调用方给。"
-        },
-        {
-          "name": "delta",
+          "name": "sparkLabel",
           "type": "string",
-          "required": false,
-          "description": "变化行文字；没有变化数据就不给，这一行不渲染（不留一行空的「—」）。"
-        },
-        {
-          "name": "deltaTone",
-          "type": "'up' | 'down' | 'muted' | 'warn'",
-          "required": false,
-          "description": "变化行颜色：up / down 用 pnl 色（只给数字），muted 是 ink-300，warn 是 amber。"
-        },
-        {
-          "name": "threshold",
-          "type": "number",
-          "required": false,
-          "description": "上限 / 下限的数；画 amber 虚线，迷你线的范围会把它包进来。"
-        },
-        {
-          "name": "near",
-          "type": "boolean",
-          "required": false,
-          "description": "接近阈值：边框转 signal-orange-dim、变化行转 amber、脉冲一次。"
+          "required": true,
+          "description": "读屏名（整句，含「没有数据」的说法）。"
         },
         {
           "name": "trendTone",
           "type": "'series' | 'neutral'",
           "required": false,
-          "description": "series：迷你线用 series-1；neutral：ink-300（越低越好的指标）。"
+          "description": "series 是常态的线色（series-1）；neutral 是「越低越好」的指标（ink-300）。"
         },
         {
-          "name": "onOpen",
+          "name": "threshold",
+          "type": "number",
+          "required": false,
+          "description": "阈值（跟 series 同一个单位）：画一条琥珀虚线。"
+        },
+        {
+          "name": "state",
+          "type": "SparkTileState",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "delta",
+          "type": "number",
+          "required": false,
+          "description": "变化百分数（1.5 就是 1.5%），写成带符号的 ChangeText，涨跌色跟 data-updown。"
+        },
+        {
+          "name": "note",
+          "type": "ReactNode",
+          "required": false,
+          "description": "变化行的小字说明（如「今日」「接近上限」）：状态不只靠颜色，near 与 over 时这里要写字。"
+        },
+        {
+          "name": "onClick",
           "type": "() => void",
           "required": false,
-          "description": "点击瓦片（打开该指标的完整图）；给了就渲染成按钮。"
-        },
-        {
-          "name": "expanded",
-          "type": "boolean",
-          "required": false,
-          "description": "这张瓦片展开着一个图面板（aria-expanded）：边框转强调色。"
-        },
-        {
-          "name": "index",
-          "type": "string",
-          "required": false,
-          "description": "编号（01、02……）：强调色等宽小字，写在标签前。"
-        },
-        {
-          "name": "dataKey",
-          "type": "string",
-          "required": false,
-          "description": "写在根上的 data-key，给父级的测试与联动认哪一张。"
-        },
-        {
-          "name": "seriesLabel",
-          "type": "string",
-          "required": true,
-          "description": "迷你线的读屏名（整句）。"
+          "description": "给了就整块是个按钮（点开该指标的完整图）。"
         },
         {
           "name": "className",
@@ -10394,6 +10966,11 @@
           "description": ""
         }
       ]
+    },
+    "SparkTileState": {
+      "kind": "type",
+      "source": "src/quant/spark-tile.tsx",
+      "props": []
     },
     "Sparkline": {
       "kind": "component",
@@ -11663,6 +12240,193 @@
         }
       ]
     },
+    "TechnicalRating": {
+      "kind": "component",
+      "source": "src/quant/technical-rating.tsx",
+      "props": [
+        {
+          "name": "groups",
+          "type": "readonly RatingGroup[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "rows",
+          "type": "readonly RatingRow[]",
+          "required": false,
+          "default": "[]",
+          "description": "指标明细，不给就只画仪表。"
+        },
+        {
+          "name": "labels",
+          "type": "TechnicalRatingLabels",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "primary",
+          "type": "string",
+          "required": false,
+          "description": "放大居中的那一组（总评）的 key；不给取中间那一组。"
+        },
+        {
+          "name": "timeframes",
+          "type": "readonly TechnicalRatingTimeframe[]",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "timeframe",
+          "type": "string",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "onTimeframeChange",
+          "type": "(value: string) => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "disclaimer",
+          "type": "ReactNode",
+          "required": false,
+          "description": "免责一句，由调用方写；件只留位置。"
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "TechnicalRatingLabels": {
+      "kind": "type",
+      "source": "src/quant/technical-rating.tsx",
+      "props": [
+        {
+          "name": "zones",
+          "type": "readonly [string, string, string, string, string]",
+          "required": true,
+          "description": "五档的名字，从卖到买（强卖、卖、中性、买、强买）：刻度文字与仪表下的大字都用它。"
+        },
+        {
+          "name": "verdict",
+          "type": "Record<RatingVerdict, string>",
+          "required": true,
+          "description": "卖 / 中性 / 买：个数行与明细里的单项结论。"
+        },
+        {
+          "name": "total",
+          "type": "(n: number) => string",
+          "required": true,
+          "description": "仪表下的指标总数，例「共 26 项指标」。"
+        },
+        {
+          "name": "columns",
+          "type": "{ name: string; reading: string; verdict: string }",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "timeframe",
+          "type": "string",
+          "required": true,
+          "description": "时间周期分段控件的读屏名。"
+        },
+        {
+          "name": "list",
+          "type": "string",
+          "required": true,
+          "description": "整件的读屏名。"
+        },
+        {
+          "name": "empty",
+          "type": "string",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "TechnicalRatingProps": {
+      "kind": "type",
+      "source": "src/quant/technical-rating.tsx",
+      "props": [
+        {
+          "name": "groups",
+          "type": "readonly RatingGroup[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "rows",
+          "type": "readonly RatingRow[]",
+          "required": false,
+          "description": "指标明细，不给就只画仪表。"
+        },
+        {
+          "name": "labels",
+          "type": "TechnicalRatingLabels",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "primary",
+          "type": "string",
+          "required": false,
+          "description": "放大居中的那一组（总评）的 key；不给取中间那一组。"
+        },
+        {
+          "name": "timeframes",
+          "type": "readonly TechnicalRatingTimeframe[]",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "timeframe",
+          "type": "string",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "onTimeframeChange",
+          "type": "(value: string) => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "disclaimer",
+          "type": "ReactNode",
+          "required": false,
+          "description": "免责一句，由调用方写；件只留位置。"
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "TechnicalRatingTimeframe": {
+      "kind": "type",
+      "source": "src/quant/technical-rating.tsx",
+      "props": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
     "ThemeOption": {
       "kind": "type",
       "source": "src/katana/theme-selector.tsx",
@@ -12533,6 +13297,30 @@
         }
       ]
     },
+    "TreemapLayoutOptions": {
+      "kind": "type",
+      "source": "src/katana/treemap-model.ts",
+      "props": [
+        {
+          "name": "width",
+          "type": "number",
+          "required": false,
+          "description": "Width of the layout box."
+        },
+        {
+          "name": "height",
+          "type": "number",
+          "required": false,
+          "description": "Height of the layout box."
+        },
+        {
+          "name": "head",
+          "type": "number",
+          "required": false,
+          "description": "Height reserved for each group header."
+        }
+      ]
+    },
     "TreemapProps": {
       "kind": "type",
       "source": "src/katana/treemap.tsx",
@@ -13336,6 +14124,11 @@
         }
       ]
     },
+    "formatVolume": {
+      "kind": "function",
+      "source": "src/quant/format/quantity.ts",
+      "props": []
+    },
     "gaussianKde": {
       "kind": "function",
       "source": "src/quant/ridgeline-model.ts",
@@ -13410,7 +14203,26 @@
     "layoutTreemap": {
       "kind": "function",
       "source": "src/katana/treemap-model.ts",
-      "props": []
+      "props": [
+        {
+          "name": "width",
+          "type": "number",
+          "required": false,
+          "description": "Width of the layout box."
+        },
+        {
+          "name": "height",
+          "type": "number",
+          "required": false,
+          "description": "Height of the layout box."
+        },
+        {
+          "name": "head",
+          "type": "number",
+          "required": false,
+          "description": "Height reserved for each group header."
+        }
+      ]
     },
     "menuContainerClass": {
       "kind": "value",

@@ -26,6 +26,12 @@
 
 items 是 { data, size, group }；size 不是正数的项不画；grouped 为 false 整张一块。colorStep(change, limit) 返回 −3 到 3 或 null。
 
+| 属性 | 类型 | 默认 | 说明 |
+| --- | --- | --- | --- |
+| `width` | `number` | — |  |
+| `height` | `number` | — |  |
+| `head` | `number` | — |  |
+
 ## Usage
 
 ```tsx

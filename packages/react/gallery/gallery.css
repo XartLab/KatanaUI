@@ -257,3 +257,8 @@ body {
     padding: 16px 16px 48px;
   }
 }
+/* 用法源码里的注释（文件头的 SPDX 行）与行号：代码块默认用装饰灰 ink-400，在页面底上对比度不够（Console 1.95:1、Graphite 3.95:1），这里提到 ink-300 过 axe。 */
+[data-usage-code] .italic,
+[data-usage-code] [data-slot='code-block-gutter'] {
+  color: var(--ink-300);
+}
