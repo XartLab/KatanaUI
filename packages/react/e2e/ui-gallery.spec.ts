@@ -2020,6 +2020,54 @@ for (const theme of THEMES) {
       await expect(grid.getByRole('row').nth(1).locator('[data-col="symbol"]')).toContainText('600519')
     })
 
+    test('量化：经济日历——按日分组、实际对预期上色、未公布写倒计时、筛选能用', async ({ page }) => {
+      await open(page, theme, 'event-calendar')
+      const cal = section(page, 'event-calendar').locator('[data-slot="event-calendar"]')
+      await expect(cal).toBeVisible()
+      // 默认本周（11-16 至 11-22）：三天有事件，按日期升序分组。
+      await expect(cal.locator('[data-slot="ecal-day-head"]').first()).toContainText('16 日')
+      expect(
+        await cal.locator('.k-ecal-day').evaluateAll((els) => els.map((el) => el.getAttribute('data-day'))),
+      ).toEqual(['2026-11-16', '2026-11-17', '2026-11-18', '2026-11-20'])
+      await expect(cal.locator('[data-day="2026-11-17"] [data-slot="ecal-day-head"]')).toContainText('今天')
+      // 实际好于预期涨色、差于预期跌色；未公布写「—」并带倒计时。
+      const color = (code: string) =>
+        cal.locator(`[data-id="${code}"] .k-ecal-actual`).evaluate((el) => getComputedStyle(el).color)
+      const up = await page.evaluate(() => {
+        const probe = document.createElement('i')
+        probe.style.color = 'var(--pnl-up)'
+        document.body.append(probe)
+        const c = getComputedStyle(probe).color
+        probe.remove()
+        return c
+      })
+      expect(await color('b1')).toBe(up)
+      expect(await color('a1')).not.toBe(up)
+      await expect(cal.locator('[data-id="b3"] .k-ecal-actual')).toContainText('—')
+      await expect(cal.locator('[data-id="b3"] .k-ecal-wait')).toHaveText('9 小时 0 分后')
+      // 重要程度条：3 格里亮几格。
+      await expect(cal.locator('[data-id="b2"] .k-ecal-level i.is-on')).toHaveCount(1)
+      await expect(cal.locator('[data-id="a1"] .k-ecal-level i.is-on')).toHaveCount(3)
+      // 今天：只剩 11-17 的 3 条以上。
+      await cal.getByRole('group', { name: '日期范围' }).getByRole('button', { name: '今天', exact: true }).click()
+      await expect(cal.locator('.k-ecal-day')).toHaveCount(1)
+      await cal.getByRole('group', { name: '日期范围' }).getByRole('button', { name: '本周', exact: true }).click()
+      // 只看高重要：每行都是 3 格。
+      await cal.getByRole('switch', { name: '只看高重要' }).click()
+      const levels = await cal
+        .locator('[data-slot="ecal-row"]')
+        .evaluateAll((els) => els.map((el) => el.getAttribute('data-importance')))
+      expect(levels.length).toBeGreaterThan(0)
+      expect(new Set(levels)).toEqual(new Set(['3']))
+      await cal.getByRole('switch', { name: '只看高重要' }).click()
+      // 国家多选：只选 JP，只剩一行。
+      await cal.getByRole('combobox', { name: '全部国家' }).click()
+      await page.getByRole('option', { name: /丙国/ }).click()
+      await page.keyboard.press('Escape')
+      await expect(cal.locator('[data-slot="ecal-row"]')).toHaveCount(1)
+      await expect(cal.locator('[data-slot="ecal-row"]')).toContainText('示例贸易帐')
+    })
+
     test('量化：连板天梯——层按板位从高到低，晋级率，炸板行文字淡显，选中行左侧有强调条', async ({ page }) => {
       await open(page, theme, 'limit-ladder')
       const ladder = section(page, 'limit-ladder').locator('[data-slot="limit-ladder"]')
