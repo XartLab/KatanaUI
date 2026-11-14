@@ -34,6 +34,10 @@
 
 数量的缩写（K / M / B）与千分位；单位 base 是币量、usd 带 $。
 
+### formatVolume(value)
+
+列表里的量与金额（照 TradingView 涨幅榜页，2026-11-15 读）：835.49 K、2.95 M、7.29 B，两位小数、数字与单位之间空一格；不到 1,000 取整；不带币种符号。
+
 ## States
 
 - formatPrice：定了小数位就恒写这么多位；不是有限数写 —。
@@ -55,4 +59,5 @@ formatQuantity
   formatCount
 formatCompact
   compactParts
+formatVolume
 ```

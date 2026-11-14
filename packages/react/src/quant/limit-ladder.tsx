@@ -1,11 +1,14 @@
 // SPDX-License-Identifier: MIT
 import { useId, type KeyboardEvent } from 'react'
 import { cn } from '../lib/cn.ts'
+import { SymbolMark } from '../katana/symbol-mark.tsx'
 import { ChangeText } from './change-text.tsx'
-import { formatCompact } from './format/index.ts'
+import { formatVolume } from './format/index.ts'
 
-// 连板天梯（#12）：按板位从高到低分层，层头写层号（点阵字）、只数与晋级率，层里列个股；炸板、跌停、没涨停的票淡显并带状态标签。
+// 连板天梯（#12）：顶上一行汇总读数，下面按板位从高到低分层，层头写板位、只数与晋级率，层里列个股；炸板、跌停、没涨停的票文字淡显、状态胶囊保持全亮。
 // 画法参照 KATANAview 的「涨停梯队」（分组列表 + 晋级条 + 状态标签，用户在看板截图里看过），只取结构与版式，实现在这里重写。
+// v2（用户看过 v1 后改）：表格手感取 TradingView 的列表（无衬线加 tabular-nums、右对齐、紧凑行、品种徽标，只看只量），
+// 汇总读数与分组头取 Arc UI（uiarc.dev，2026-11-14 读：Revenue explorer、Metric explorer 的块），实现原创。
 // 包里不带语言、不认任何数据集：层号单位、晋级率文字、状态名、列名都由调用方传；数字、涨跌幅的格式在件里。
 
 export type LadderStatus = 'sealed' | 'broken' | 'down' | 'none'
@@ -22,6 +25,8 @@ export type LadderItem = {
   /** 开板次数。 */
   opens?: number
   industry?: string
+  /** 品种徽标的图片地址；不给就画字母圆标。 */
+  logo?: string
   status: LadderStatus
 }
 
@@ -42,6 +47,8 @@ export type LimitLadderLabels = {
   count: (n: number) => string
   status: Record<LadderStatus, string>
   columns: { name: string; change: string; firstSeal: string; sealAmount: string; opens: string; industry: string }
+  /** 顶部汇总读数的名字：涨停只数、最高板、整体晋级率。 */
+  summary: { sealed: string; highest: string; promoteRate: string }
   /** 整张天梯的读屏名。 */
   list: string
   empty: string
@@ -76,6 +83,12 @@ export function LimitLadder({ levels, labels, selected = null, onSelect, classNa
     next.focus()
   }
 
+  const sealed = rows.filter((item) => item.status === 'sealed').length
+  const highest = sorted[0]?.board
+  const candidates = sorted.reduce((sum, level) => sum + (level.promoted?.[1] ?? 0), 0)
+  const advanced = sorted.reduce((sum, level) => sum + (level.promoted?.[0] ?? 0), 0)
+  const rate = candidates > 0 ? `${Math.round((advanced / candidates) * 100)}%` : DASH
+
   if (sorted.length === 0) {
     return (
       <div className={cn('k-ladder', className)} data-slot="limit-ladder" role="status">
@@ -86,6 +99,18 @@ export function LimitLadder({ levels, labels, selected = null, onSelect, classNa
 
   return (
     <div className={cn('k-ladder', className)} data-slot="limit-ladder">
+      <dl className="k-ladder-summary" data-slot="ladder-summary">
+        {[
+          [labels.summary.sealed, sealed],
+          [labels.summary.highest, highest],
+          [labels.summary.promoteRate, rate],
+        ].map(([name, value]) => (
+          <div key={name} className="k-ladder-read">
+            <dt>{name}</dt>
+            <dd>{value}</dd>
+          </div>
+        ))}
+      </dl>
       <div className="k-ladder-columns" aria-hidden="true">
         <span>{labels.columns.name}</span>
         <span className="is-num">{labels.columns.change}</span>
@@ -143,14 +168,13 @@ export function LimitLadder({ levels, labels, selected = null, onSelect, classNa
                     }}
                   >
                     <span className="k-ladder-name">
-                      <span className="k-ladder-title">{item.name}</span>
-                      <span className="k-ladder-code">{item.code}</span>
+                      <SymbolMark code={item.code} name={item.name} src={item.logo} size={18} />
+                      <span className="k-ladder-symbol">{item.code}</span>
+                      <span className="k-ladder-sub">{item.name}</span>
                     </span>
                     <ChangeText className="k-ladder-num" value={item.change} />
                     <span className="k-ladder-num">{item.firstSeal ?? DASH}</span>
-                    <span className="k-ladder-num">
-                      {!item.sealAmount ? DASH : formatCompact(item.sealAmount, 'base')}
-                    </span>
+                    <span className="k-ladder-num">{!item.sealAmount ? DASH : formatVolume(item.sealAmount)}</span>
                     <span className="k-ladder-num">{item.opens ?? DASH}</span>
                     <span className="k-ladder-industry">{item.industry ?? DASH}</span>
                     <span className="k-ladder-status" data-status={item.status}>

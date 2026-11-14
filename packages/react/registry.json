@@ -2097,11 +2097,12 @@
       "name": "limit-ladder",
       "type": "registry:component",
       "title": "Limit Ladder",
-      "description": "按板位从高到低分层的涨停梯队：层头是点阵层号、只数与晋级率（晋级 1/3 加一条细条），层里列个股；炸板、跌停、没涨停的整行淡显并带状态标签。数据与文字都由调用方传，件不认数据集。",
+      "description": "A 股专有件（连板、涨停、炸板是 A 股的概念）。按板位从高到低分层的涨停梯队：顶上一行汇总读数（涨停只数、最高板、整体晋级率），下面按层：层头是粗体板位、只数与晋级率（加 2px 细进度条），层间留白；层里列个股：徽标、代码（主）、名称（次）。炸板、跌停、没涨停的文字淡显，状态胶囊保持全亮。数据与文字都由调用方传，件不认数据集。",
       "registryDependencies": [
         "@katana/change-text",
         "@katana/cn",
-        "@katana/quant-format"
+        "@katana/quant-format",
+        "@katana/symbol-mark"
       ],
       "files": [
         {

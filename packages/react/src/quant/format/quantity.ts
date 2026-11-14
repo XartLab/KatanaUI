@@ -67,3 +67,15 @@ export function formatCompact(value: number, units: QuantityUnits = 'usd'): stri
   const { number, suffix } = compactParts(value, units)
   return number + suffix
 }
+
+/**
+ * 量与金额的列表写法（照 TradingView 涨幅榜页，2026-11-15 读自 tradingview.com/markets/stocks-usa/market-movers-gainers/：
+ * 835.49 K、2.95 M、7.29 B）：两位小数，数字后空一格再写 K / M / B；不到 1,000 照写（取整，千分位不加）；不带币种符号。
+ */
+export function formatVolume(value: number): string {
+  const sign = value < 0 ? '-' : ''
+  const size = Math.abs(value)
+  const [scaled, suffix] =
+    size >= 1e9 ? [size / 1e9, ' B'] : size >= 1e6 ? [size / 1e6, ' M'] : size >= 1e3 ? [size / 1e3, ' K'] : [size, '']
+  return `${sign}${suffix === '' ? String(Math.round(scaled)) : scaled.toFixed(2)}${suffix}`
+}

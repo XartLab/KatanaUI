@@ -1766,11 +1766,13 @@ for (const theme of THEMES) {
       await expect(frames.nth(2).getByRole('status')).toContainText('No data source')
     })
 
-    test('量化：连板天梯——层按板位从高到低，晋级率，炸板行淡显，选中行左侧有强调条', async ({ page }) => {
+    test('量化：连板天梯——层按板位从高到低，晋级率，炸板行文字淡显，选中行左侧有强调条', async ({ page }) => {
       await open(page, theme, 'limit-ladder')
       const ladder = section(page, 'limit-ladder').locator('[data-slot="limit-ladder"]')
       await expect(ladder).toBeVisible()
       const boards = await ladder.locator('[data-slot="ladder-board"]').allTextContents()
+      // 层号是粗体无衬线，不是点阵字。
+      await expect(ladder.locator('[data-slot="ladder-board"]').first()).not.toHaveCSS('font-family', /Doto/)
       expect(boards).toEqual(['5', '4', '3', '1'])
       await expect(ladder.locator('[data-board="4"] [data-slot="ladder-promote"]')).toContainText('晋级 1/2')
       await expect(ladder.locator('[data-board="1"] [data-slot="ladder-promote"]')).toContainText('晋级 6/31')
@@ -1782,11 +1784,41 @@ for (const theme of THEMES) {
       ])
       expect(filled!.width / bar!.width).toBeCloseTo(0.5, 1)
       // 炸板、跌停行淡显，封住行不淡。
-      const opacity = (code: string) =>
-        ladder.locator(`[data-code="${code}"]`).evaluate((el) => Number(getComputedStyle(el).opacity))
-      expect(await opacity('600002')).toBe(1)
-      expect(await opacity('000003')).toBeLessThan(1)
-      expect(await opacity('603007')).toBeLessThan(await opacity('600002'))
+      const opacity = (code: string, part: string) =>
+        ladder
+          .locator(`[data-code="${code}"] ${part}`)
+          .first()
+          .evaluate((el) => Number(getComputedStyle(el).opacity))
+      expect(await opacity('600002', '.k-ladder-symbol')).toBe(1)
+      expect(await opacity('000003', '.k-ladder-symbol')).toBeLessThan(1)
+      expect(await opacity('000003', '.k-ladder-num')).toBeLessThan(1)
+      expect(await opacity('603007', '.k-ladder-symbol')).toBeLessThan(await opacity('600002', '.k-ladder-symbol'))
+      // 淡显只作用在文字：状态胶囊全亮。
+      for (const code of ['000003', '603007', '600010']) expect(await opacity(code, '.k-ladder-status')).toBe(1)
+      // 数值列是界面无衬线加等宽数字，不是等宽字体族。
+      // 品种格：代码是主、名称是次（名称更淡更小）；封单额写成「520.00 M」，缺数据写「—」。
+      const sym = ladder.locator('[data-code="600002"]')
+      await expect(sym.locator('.k-ladder-symbol')).toHaveText('600002')
+      await expect(sym.locator('.k-ladder-sub')).toHaveText('示例电力')
+      expect(
+        await sym.locator('.k-ladder-sub').evaluate((el) => parseFloat(getComputedStyle(el).fontSize)),
+      ).toBeLessThan(await sym.locator('.k-ladder-symbol').evaluate((el) => parseFloat(getComputedStyle(el).fontSize)))
+      await expect(ladder.locator('[data-code="600001"] .k-ladder-num').nth(2)).toHaveText('520.00 M')
+      await expect(ladder.locator('[data-code="603007"] .k-ladder-num').nth(2)).toHaveText('—')
+      await expect(ladder.locator('[data-code="600001"] .k-ladder-num').first()).toHaveText('+10.00%')
+      const numStyle = await ladder
+        .locator('[data-code="600002"] .k-ladder-num')
+        .nth(1)
+        .evaluate((el) => ({ family: getComputedStyle(el).fontFamily, nums: getComputedStyle(el).fontVariantNumeric }))
+      expect(numStyle.family).not.toMatch(/mono/i)
+      expect(numStyle.family).toMatch(/Inter|sans/i)
+      expect(numStyle.nums).toContain('tabular-nums')
+      // 汇总读数：涨停 5 只（封住的），最高 5 板，整体晋级率 10/38 约 26%。
+      const summary = ladder.locator('[data-slot="ladder-summary"]')
+      await expect(summary).toContainText('涨停')
+      await expect(summary.locator('dd').nth(0)).toHaveText('5')
+      await expect(summary.locator('dd').nth(1)).toHaveText('5')
+      await expect(summary.locator('dd').nth(2)).toHaveText('26%')
       // 状态标签：封住取涨色，跌停取跌色，炸板是琥珀。
       const labelColor = (code: string) =>
         ladder.locator(`[data-code="${code}"] .k-ladder-status`).evaluate((el) => getComputedStyle(el).color)
