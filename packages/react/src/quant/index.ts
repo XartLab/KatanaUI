@@ -36,3 +36,5 @@ export {
 } from './ridgeline-model'
 export { SlopeChart, type SlopeChartProps } from './slope-chart'
 export { ranks, slopeLayout, spreadLabels, type SlopeItem, type SlopeMode, type SlopeRow } from './slope-model'
+export { ConnectedScatter, type ConnectedScatterProps } from './connected-scatter'
+export { scatterLayout, type ScatterPoint, type ScatterSeries } from './scatter-model'

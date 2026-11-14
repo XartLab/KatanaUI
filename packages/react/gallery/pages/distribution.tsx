@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 import { useMemo, useState } from 'react'
-import { Ridgeline, SlopeChart, type SlopeItem } from '../../src/quant'
+import { ConnectedScatter, Ridgeline, SlopeChart, type ScatterSeries, type SlopeItem } from '../../src/quant'
 import {
   histogramBins,
   RangeHistogramSlider,
@@ -220,6 +220,70 @@ export function SlopeChartDemo() {
             describe={(item, change) =>
               `${item.label}：得分 ${item.before} 到 ${item.after}，名次${change > 0 ? `升 ${change} 位` : change < 0 ? `降 ${-change} 位` : '不变'}`
             }
+          />
+        </div>
+      </Row>
+    </>
+  )
+}
+
+/** 两个示例策略各 8 个月的 (波动 %, 收益 %)：写死的数。甲一路往高波动高收益漂，乙往低波动漂。 */
+const MONTHS = ['01', '02', '03', '04', '05', '06', '07', '08']
+const path = (name: string, points: readonly (readonly [number, number])[]) =>
+  points.map(([x, y], i) => ({ x, y, label: `${name} 2026-${MONTHS[i]}：波动 ${x}%，收益 ${y}%` }))
+const STRATEGIES: readonly ScatterSeries[] = [
+  {
+    id: 'a',
+    label: '示例策略甲',
+    points: path('甲', [
+      [8, 4],
+      [9, 5],
+      [10, 4.5],
+      [11, 6],
+      [12, 7],
+      [13, 6.5],
+      [14, 8],
+      [15, 9],
+    ]),
+  },
+  {
+    id: 'b',
+    label: '示例策略乙',
+    points: path('乙', [
+      [14, 6],
+      [13, 6.5],
+      [12, 5.5],
+      [11, 5],
+      [10, 5.5],
+      [9, 4.5],
+      [8, 4],
+      [7, 4.2],
+    ]),
+  },
+]
+
+export function ConnectedScatterDemo() {
+  return (
+    <>
+      <p className="gal-note">演示数据：写死的两个示例策略各 8 个月的波动与收益，不是回测结果。</p>
+      <Row name="波动 vs 收益，按月连成轨迹">
+        <div className="gal-wide" data-gallery-scatter="two">
+          <ConnectedScatter
+            series={STRATEGIES}
+            label="示例：两个策略的波动与收益按月的轨迹"
+            axes={{ x: '年化波动（%）', y: '年化收益（%）' }}
+            formatX={(value) => `${value}%`}
+            formatY={(value) => `${value}%`}
+            idle="悬停或用方向键选一个月"
+          />
+        </div>
+      </Row>
+      <Row name="单条轨迹">
+        <div className="gal-wide" data-gallery-scatter="one">
+          <ConnectedScatter
+            series={STRATEGIES.slice(0, 1)}
+            label="示例：策略甲的轨迹"
+            axes={{ x: '年化波动（%）', y: '年化收益（%）' }}
           />
         </div>
       </Row>

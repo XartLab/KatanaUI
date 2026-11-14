@@ -4030,6 +4030,55 @@ export const PAGES: readonly DocPage[] = [
       ['Enter', '给了 onSelect 时选中当前项'],
     ],
   },
+  {
+    id: 'connected-scatter',
+    group: 'quant',
+    cardHeight: 760,
+    title: 'ConnectedScatter 连线散点图',
+    summary:
+      '每个点是一个时刻的 (x, y)，按时间顺序连成轨迹，看一个对象在两个量之间怎么走（如策略的波动 vs 收益按月的路径、风格漂移）。时间方向不靠颜色：起点空心圈、终点实心圈加箭头、点越靠后越不透明。多条轨迹各取 series 色板的一个色。功能参照 Arc Connected scatter，实现原创。',
+    exports: ['ConnectedScatter', 'scatterLayout'],
+    props: [
+      {
+        part: 'ConnectedScatter',
+        note: '文字全由 props 传：每个点的整句在 point.label 里，轴名在 axes。图是一个 role=group，每条轨迹一个 role=group，每个点一个带整句名的 role=img。',
+        rows: [
+          {
+            name: 'series',
+            type: 'ScatterSeries[]',
+            desc: '{ id, label, points: { x, y, label }[] }；点按时间从早到晚排。',
+          },
+          { name: 'label', type: 'string', desc: '整张图的读屏名。' },
+          { name: 'axes', type: '{ x: string; y: string }', desc: '两根轴的名字。' },
+          { name: 'formatX / formatY', type: '(value: number) => string', default: 'String', desc: '刻度怎么写。' },
+          { name: 'xDomain / yDomain', type: '[number, number]', desc: '轴范围；不给取全体数据放宽 5%。' },
+          { name: 'idle', type: 'ReactNode', desc: '没有悬停也没有聚焦时读数行写什么。' },
+        ],
+      },
+      {
+        part: 'scatterLayout(series, frame, options)',
+        note: '点到像素的纯函数：返回刻度位置、每个点的像素坐标与终点箭头的三个顶点。',
+        rows: [],
+      },
+    ],
+    states: [
+      '起点空心圈、中间小点、终点大实心圈加箭头；点越靠后越不透明（35% 到 100%，视觉取值，待定）。',
+      '悬停或聚焦一个点：该点描白边，别的轨迹变暗，读数行写这个点的整句。',
+      '单点的轨迹只画一个点，没有连线与箭头。',
+    ],
+    donts: [
+      '不要在没有时间顺序的数据上用它：连线表示先后。',
+      '不要放太多条轨迹（超过七条色板就循环、颜色重复）：轨迹交叠时看不清。',
+      '不要只靠颜色认哪条是哪条：图例与每个点的整句里都写了名字。',
+    ],
+    composition:
+      'ConnectedScatter\n  svg role=group\n    g（刻度线与轴名）\n    g role=group（一条轨迹：折线 · 终点箭头 · 各点 circle role=img）\n  ul（图例）\n  output（读数行）',
+    keys: [
+      ['← / →', '沿时间在同一条轨迹的点上走，到头不绕回'],
+      ['↑ / ↓', '去上一条 / 下一条轨迹的同一位置（不够长落在最后一个点）'],
+      ['Home / End', '去这条轨迹的第一个 / 最后一个点'],
+    ],
+  },
 ]
 
 export const pageById = (id: string): DocPage | undefined => PAGES.find((page) => page.id === id)
