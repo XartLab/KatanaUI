@@ -9783,6 +9783,282 @@ button.k-sm-head:focus-visible {
   margin: auto;
 }
 
+.k-trating {
+  gap: var(--space-4);
+  min-width: 0;
+  min-height: 0;
+  padding: var(--space-3) var(--inset-x);
+  font: var(--text-data) var(--font-sans);
+  color: var(--ink-100);
+  flex-direction: column;
+  flex: auto;
+  display: flex;
+  overflow: auto;
+  container-type: inline-size;
+}
+
+.k-trating-bar {
+  display: flex;
+}
+
+.k-trating-dials {
+  justify-content: center;
+  align-items: flex-end;
+  gap: var(--space-4) var(--space-6);
+  flex-wrap: wrap;
+  display: flex;
+}
+
+.k-trating-dial {
+  flex-direction: column;
+  flex: 1 1 0;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  max-width: 210px;
+  margin: 0;
+  display: flex;
+}
+
+.k-trating-dial.is-primary {
+  flex-grow: 1.5;
+  max-width: 300px;
+}
+
+.k-trating-name {
+  color: var(--ink-300);
+  font: 500 12px/16px var(--font-sans);
+}
+
+.k-trating-dial.is-primary .k-trating-name {
+  color: var(--ink-200);
+}
+
+.k-trating-gauge {
+  width: 100%;
+  position: relative;
+}
+
+.k-trating-gauge svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: visible;
+}
+
+.k-trating-zone {
+  fill: none;
+  stroke-width: 10px;
+  stroke-linecap: butt;
+  opacity: .3;
+  transition: opacity var(--dur-gentle) var(--ease-gentle);
+}
+
+.k-trating-zone.is-active {
+  opacity: 1;
+}
+
+.k-trating-zone.is-z0, .k-trating-zone.is-z1 {
+  stroke: var(--pnl-down);
+}
+
+@supports (color: color-mix(in lab, red, red)) {
+  .k-trating-zone.is-z1 {
+    stroke: var(--ds-c-nhksol);
+  }
+}
+
+.k-trating-zone.is-z2 {
+  stroke: var(--ink-300);
+}
+
+.k-trating-zone.is-z3 {
+  stroke: var(--pnl-up);
+}
+
+@supports (color: color-mix(in lab, red, red)) {
+  .k-trating-zone.is-z3 {
+    stroke: var(--ds-c-1dit3qa);
+  }
+}
+
+.k-trating-zone.is-z4 {
+  stroke: var(--pnl-up);
+}
+
+.k-trating-needle {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  transition: transform var(--dur-gentle) var(--ease-gentle);
+  fill: var(--ink-100);
+}
+
+.k-trating-hub {
+  fill: var(--ink-100);
+}
+
+.k-trating-tick {
+  color: var(--ink-300);
+  font: 500 11px/14px var(--font-sans);
+  white-space: nowrap;
+  transition: color var(--dur-gentle) var(--ease-gentle);
+  position: absolute;
+  transform: translate(-50%, -50%);
+}
+
+.k-trating-tick.is-active {
+  color: var(--ink-100);
+}
+
+.k-trating-dial:not(.is-primary) .k-trating-tick:is([data-zone="1"], [data-zone="2"], [data-zone="3"]) {
+  display: none;
+}
+
+.k-trating-word {
+  font: 600 16px/20px var(--font-sans);
+  letter-spacing: -.01em;
+  margin-top: 2px;
+}
+
+.k-trating-dial.is-primary .k-trating-word {
+  font-size: 24px;
+  line-height: 28px;
+}
+
+.k-trating-dial[data-zone="0"] .k-trating-word, .k-trating-dial[data-zone="1"] .k-trating-word {
+  color: var(--pnl-down);
+}
+
+.k-trating-dial[data-zone="3"] .k-trating-word, .k-trating-dial[data-zone="4"] .k-trating-word {
+  color: var(--pnl-up);
+}
+
+.k-trating-counts {
+  color: var(--ink-200);
+  font: 400 12px/16px var(--font-sans);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.k-trating-total {
+  color: var(--ink-300);
+  font: 400 11px/14px var(--font-sans);
+}
+
+.k-trating-disclaimer {
+  color: var(--ink-300);
+  font: 400 11px/16px var(--font-sans);
+  text-align: center;
+  margin: 0;
+}
+
+.k-trating-table {
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+  width: 100%;
+}
+
+.k-trating-table thead th {
+  height: 24px;
+  color: var(--ink-300);
+  font: 500 11px/14px var(--font-sans);
+  text-align: left;
+  padding: 0;
+}
+
+.k-trating-table .is-num {
+  text-align: right;
+}
+
+.k-trating-table .is-end {
+  text-align: right;
+  width: 72px;
+}
+
+.k-trating-section th {
+  height: 32px;
+  padding: var(--space-2) 0 var(--space-1);
+  font: 600 13px/18px var(--font-sans);
+  text-align: left;
+  vertical-align: bottom;
+}
+
+.k-trating-section-n {
+  color: var(--ink-300);
+  font: 500 12px/16px var(--font-sans);
+  margin-left: 8px;
+}
+
+.k-trating-row {
+  border-top: 1px solid var(--alpha-white-2_5);
+  height: 30px;
+}
+
+.k-trating-row:hover {
+  background: var(--alpha-white-2_5);
+}
+
+.k-trating-row th {
+  font: 400 13px/18px var(--font-sans);
+  text-align: left;
+  padding: 0;
+}
+
+.k-trating-row td {
+  padding: 0;
+}
+
+.k-trating-verdict {
+  font: 500 11px/16px var(--font-sans);
+  white-space: nowrap;
+  color: var(--ink-300);
+  background: var(--alpha-white-5);
+  border-radius: 9999px;
+  padding: 1px 7px;
+  display: inline-block;
+}
+
+.k-trating-verdict[data-verdict="buy"] {
+  color: var(--pnl-up);
+  background: var(--pnl-up);
+}
+
+@supports (color: color-mix(in lab, red, red)) {
+  .k-trating-verdict[data-verdict="buy"] {
+    background: var(--ds-c-fmo1lj);
+  }
+}
+
+.k-trating-verdict[data-verdict="sell"] {
+  color: var(--pnl-down);
+  background: var(--pnl-down);
+}
+
+@supports (color: color-mix(in lab, red, red)) {
+  .k-trating-verdict[data-verdict="sell"] {
+    background: var(--ds-c-jwmebu);
+  }
+}
+
+.k-trating-empty {
+  padding: var(--space-6);
+  color: var(--ink-300);
+  margin: auto;
+}
+
+@container (max-width: 440px) {
+  .k-trating-dial.is-primary {
+    flex-basis: 100%;
+    order: -1;
+    max-width: 300px;
+  }
+}
+
+.k-trating-table tbody:first-of-type .k-trating-section th {
+  height: 24px;
+  padding-top: 0;
+}
+
 @property --tw-translate-x {
   syntax: "*";
   inherits: false;
