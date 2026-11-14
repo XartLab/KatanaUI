@@ -9255,6 +9255,191 @@ button.k-sm-head:focus-visible {
   color: var(--ink-200);
 }
 
+.k-ecal {
+  --ecal-cols: 48px 36px minmax(160px, 1fr) 44px 84px 64px 64px;
+  gap: var(--space-3);
+  min-width: 0;
+  min-height: 0;
+  padding: var(--space-3) 0;
+  font: var(--text-data) var(--font-sans);
+  color: var(--ink-100);
+  flex-direction: column;
+  flex: auto;
+  display: flex;
+  overflow: auto;
+}
+
+.k-ecal-bar {
+  align-items: center;
+  gap: var(--space-3);
+  padding: 0 var(--inset-x);
+  flex-wrap: wrap;
+  display: flex;
+}
+
+.k-ecal-regions {
+  min-width: 112px;
+}
+
+.k-ecal-only {
+  color: var(--ink-200);
+  font: 500 12px/16px var(--font-sans);
+  align-items: center;
+  gap: 4px;
+  display: inline-flex;
+}
+
+.k-ecal-count {
+  color: var(--ink-300);
+  font: 500 12px/16px var(--font-sans);
+  font-variant-numeric: tabular-nums;
+  margin-left: auto;
+}
+
+.k-ecal-columns, .k-ecal-row {
+  grid-template-columns: var(--ecal-cols);
+  padding: 0 var(--inset-x);
+  align-items: center;
+  column-gap: 8px;
+  display: grid;
+}
+
+.k-ecal-columns {
+  height: 20px;
+  color: var(--ink-300);
+  font: 500 11px/14px var(--font-sans);
+}
+
+.k-ecal-columns .is-num {
+  text-align: right;
+}
+
+.k-ecal-list {
+  gap: var(--space-3);
+  flex-direction: column;
+  display: flex;
+}
+
+.k-ecal-day-head {
+  height: 28px;
+  padding: 0 var(--inset-x);
+  font: 700 13px/18px var(--font-sans);
+  align-items: center;
+  gap: 8px;
+  display: flex;
+}
+
+.k-ecal-today {
+  background: var(--alpha-white-5);
+  color: var(--ink-200);
+  font: 500 11px/16px var(--font-sans);
+  border-radius: 9999px;
+  margin-left: 8px;
+  padding: 1px 7px;
+}
+
+.k-ecal-row {
+  border-top: 1px solid var(--alpha-white-2_5);
+  outline: none;
+  height: 32px;
+  position: relative;
+}
+
+.k-ecal-row:hover, .k-ecal-row:focus-within {
+  background: var(--alpha-white-2_5);
+}
+
+.k-ecal-row:focus-visible {
+  outline: 1px solid var(--line-200);
+  outline-offset: -1px;
+}
+
+.k-ecal-time, .k-ecal-num {
+  font-variant-numeric: tabular-nums;
+}
+
+.k-ecal-time {
+  color: var(--ink-200);
+}
+
+.k-ecal-region {
+  color: var(--ink-200);
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  display: flex;
+}
+
+.k-ecal-name {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.k-ecal-row[data-importance="3"] .k-ecal-name {
+  font-weight: 600;
+}
+
+.k-ecal-level {
+  align-items: flex-end;
+  gap: 2px;
+  height: 12px;
+  display: inline-flex;
+}
+
+.k-ecal-level i {
+  background: var(--alpha-white-10);
+  border-radius: 1px;
+  width: 4px;
+}
+
+.k-ecal-level i:first-child {
+  height: 5px;
+}
+
+.k-ecal-level i:nth-child(2) {
+  height: 8px;
+}
+
+.k-ecal-level i:nth-child(3) {
+  height: 12px;
+}
+
+.k-ecal-level i.is-on {
+  background: var(--ink-100);
+}
+
+.k-ecal-num {
+  text-align: right;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-end;
+  display: flex;
+}
+
+.k-ecal-actual {
+  font-weight: 600;
+}
+
+.k-ecal-actual[data-tone="up"] {
+  color: var(--pnl-up);
+}
+
+.k-ecal-actual[data-tone="down"] {
+  color: var(--pnl-down);
+}
+
+.k-ecal-wait {
+  color: var(--ink-300);
+  font: 400 10px/12px var(--font-sans);
+}
+
+.k-ecal-empty {
+  padding: var(--space-6);
+  color: var(--ink-300);
+  margin: auto;
+}
+
 .k-mheat {
   --mheat-gap: 2px;
   gap: var(--space-3);

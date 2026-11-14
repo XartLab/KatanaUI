@@ -89,6 +89,11 @@
           "target": "~/src/katana/ui/theme/equity-curve.css"
         },
         {
+          "path": "src/theme/event-calendar.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/event-calendar.css"
+        },
+        {
           "path": "src/theme/event-timeline.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/event-timeline.css"
@@ -2215,6 +2220,43 @@
           "path": "src/quant/equity-curve.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/quant/equity-curve.tsx"
+        }
+      ]
+    },
+    {
+      "name": "event-calendar-model",
+      "type": "registry:component",
+      "title": "Event Calendar Model",
+      "description": "EventCalendar 的纯函数：按显示时区分天、今天 / 本周 / 下周区间、筛选、倒计时分钟。",
+      "files": [
+        {
+          "path": "src/quant/event-calendar-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/event-calendar-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "event-calendar",
+      "type": "registry:component",
+      "title": "Event Calendar",
+      "description": "按日分组的事件表：时间、国家 / 地区（旗帜图或字母圆标）、事件名、重要程度（1–3 格亮度条）、实际 / 预期 / 前值。实际值好于预期用涨色、差于预期用跌色，好坏方向由调用方按事件给；未公布写「—」，还没到点的写倒计时。顶上：今天 / 本周 / 下周 / 自定义区间，重要程度芯片，国家多选，「只看高重要」开关。数据、现在、时区、文字都由调用方传。",
+      "registryDependencies": [
+        "@katana/chip-group",
+        "@katana/cn",
+        "@katana/combobox",
+        "@katana/date-range-picker",
+        "@katana/event-calendar-model",
+        "@katana/row-actions",
+        "@katana/switch",
+        "@katana/symbol-mark",
+        "@katana/toggle-group"
+      ],
+      "files": [
+        {
+          "path": "src/quant/event-calendar.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/event-calendar.tsx"
         }
       ]
     },
