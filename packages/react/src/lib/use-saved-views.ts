@@ -55,9 +55,7 @@ export function useSavedViews<T>({ key, version, storage, recentLimit = 5 }: Use
     (id: string, value: T, name?: string) =>
       setState((previous) => ({
         ...previous,
-        views: previous.views.map((view) =>
-          view.id === id ? { ...view, value, name: name ?? view.name } : view,
-        ),
+        views: previous.views.map((view) => (view.id === id ? { ...view, value, name: name ?? view.name } : view)),
         recent: touch(previous.recent, id),
       })),
     [setState, touch],
@@ -119,5 +117,17 @@ export function useSavedViews<T>({ key, version, storage, recentLimit = 5 }: Use
     [version, setState],
   )
 
-  return { views: state.views, defaultView, defaultId: state.defaultId, recent, saveAs, save, remove, setDefault, use, exportJson, importJson }
+  return {
+    views: state.views,
+    defaultView,
+    defaultId: state.defaultId,
+    recent,
+    saveAs,
+    save,
+    remove,
+    setDefault,
+    use,
+    exportJson,
+    importJson,
+  }
 }
