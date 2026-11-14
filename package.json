@@ -10,7 +10,8 @@
     "typecheck": "pnpm -r run typecheck",
     "build:site": "pnpm --filter @katana-ui/react build:site",
     "tokens:sync": "pnpm --filter @katana-ui/tokens tokens:sync",
-    "ds:build": "pnpm --filter @katana-ui/react ds:build"
+    "ds:build": "pnpm --filter @katana-ui/react ds:build",
+    "test:e2e": "pnpm --filter @katana-ui/react test:e2e"
   },
   "engines": {
     "node": ">=22.13"

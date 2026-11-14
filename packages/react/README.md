@@ -7,6 +7,7 @@ every color, size, radius and motion value comes from a design token, so a whole
 - **Documentation and live previews:** <https://xartlab.github.io/KatanaUI/>
 - **shadcn registry:** `https://xartlab.github.io/KatanaUI/r/{name}.json`
 - **License:** MIT
+- **Browser tests:** `pnpm test:e2e` runs the Playwright suite against the built docs site; `pnpm --filter @katana-ui/react test:happo` sends Happo visual snapshots (needs a Happo account, not part of the gate).
 
 ## Install as a package
 

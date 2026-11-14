@@ -81,7 +81,7 @@ export type QuoteStripProps = {
 /** 一排报价卡：横向排开、放不下横向滚动；每张卡用小号。 */
 export function QuoteStrip({ label, items, className }: QuoteStripProps) {
   return (
-    <div className={`k-quote-strip${className ? ` ${className}` : ''}`} role="list" aria-label={label}>
+    <div className={`k-quote-strip${className ? ` ${className}` : ''}`} role="list" aria-label={label} tabIndex={0}>
       {items.map(({ id, ...card }) => (
         <div key={id} role="listitem" className="k-quote-strip-item">
           <QuoteCard size="sm" {...card} />
