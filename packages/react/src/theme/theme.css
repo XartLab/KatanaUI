@@ -35,8 +35,8 @@
   --color-ink-2: var(--ink-200);
   --color-ink-3: var(--ink-300);
   --color-ink-4: var(--ink-400);
-  --color-brand: var(--signal-orange);
-  --color-brand-dim: var(--signal-orange-dim);
+  --color-brand: var(--ink-100);
+  --color-brand-dim: var(--ink-300);
   --color-ok: var(--signal-green);
   --color-danger: var(--signal-red);
   --color-alpha-white-1: var(--alpha-white-1);
@@ -63,7 +63,7 @@
   --color-card-foreground: var(--ink-100);
   --color-popover: var(--bg-400);
   --color-popover-foreground: var(--ink-100);
-  --color-primary: var(--signal-orange);
+  --color-primary: var(--ink-100);
   --color-primary-foreground: var(--bg-000);
   --color-secondary: var(--bg-300);
   --color-secondary-foreground: var(--ink-100);

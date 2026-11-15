@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: MIT */
 /* Splitter 的皮肤（#1901）：规则从应用 styles/shell.css 的 .kc-splitter* 搬来，值没改，换成 .k-splitter。
    全部包在 :where() 里（优先级 0）：应用给它挂了旧类名 .kc-splitter，应用自己的规则要能压过这里；单独用时这里就是全部样子。
-   组件卡 Splitter：命中区 8px，可见线 1px line-100，中央 16×2 的 grip；hover 线变 line-200；拖动中 2px signal-orange 加发光。 */
+   组件卡 Splitter：命中区 8px，可见线 1px line-100，中央 16×2 的 grip；hover 线变 line-200；拖动中 2px ink-200 加发光。 */
 :where(.k-splitter) {
   position: relative;
   display: grid;
@@ -53,8 +53,8 @@
   outline-offset: -2px;
 }
 :where(.k-splitter[data-dragging])::before {
-  background: var(--signal-orange);
-  box-shadow: 0 0 6px var(--signal-orange);
+  background: var(--ink-200);
+  box-shadow: 0 0 6px var(--ink-200);
   width: 2px;
   left: calc(50% - 1px);
 }
@@ -65,5 +65,5 @@
   top: calc(50% - 1px);
 }
 :where(.k-splitter[data-dragging] .k-splitter-grip) {
-  background: var(--signal-orange);
+  background: var(--ink-200);
 }

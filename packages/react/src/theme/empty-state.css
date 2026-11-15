@@ -135,7 +135,7 @@
 }
 .k-tool.is-on,
 .k-tool[aria-pressed='true'] {
-  color: var(--signal-orange);
+  color: var(--ink-100);
 }
 .k-tool svg {
   width: 16px;

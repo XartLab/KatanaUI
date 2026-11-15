@@ -1390,8 +1390,8 @@
   border-color: var(--alpha-white-10);
 }
 
-.border-brand {
-  border-color: var(--signal-orange);
+.border-ink {
+  border-color: var(--ink-100);
 }
 
 .border-line {
@@ -1419,7 +1419,7 @@
 }
 
 .border-l-brand {
-  border-left-color: var(--signal-orange);
+  border-left-color: var(--ink-100);
 }
 
 .border-l-danger {
@@ -1428,10 +1428,6 @@
 
 .border-l-ok {
   border-left-color: var(--signal-green);
-}
-
-.bg-\(--accent\) {
-  background-color: var(--accent);
 }
 
 .bg-\(--k-actionable-background\) {
@@ -1452,6 +1448,10 @@
 
 .bg-\(--signal-amber\) {
   background-color: var(--signal-amber);
+}
+
+.bg-\(--signal-orange\) {
+  background-color: var(--signal-orange);
 }
 
 .bg-\[color-mix\(in_srgb\,var\(--cb-accent\)_12\%\,transparent\)\] {
@@ -1502,12 +1502,12 @@
   }
 }
 
-.bg-brand {
-  background-color: var(--signal-orange);
-}
-
 .bg-danger {
   background-color: var(--signal-red);
+}
+
+.bg-ink {
+  background-color: var(--ink-100);
 }
 
 .bg-ink-2 {
@@ -1568,8 +1568,8 @@
   background-color: var(--color-white);
 }
 
-.bg-\[repeating-linear-gradient\(90deg\,var\(--signal-orange\)_0_3px\,transparent_3px_5px\)\] {
-  background-image: repeating-linear-gradient(90deg,var(--signal-orange) 0 3px,transparent 3px 5px);
+.bg-\[repeating-linear-gradient\(90deg\,var\(--ink-200\)_0_3px\,transparent_3px_5px\)\] {
+  background-image: repeating-linear-gradient(90deg,var(--ink-200) 0 3px,transparent 3px 5px);
 }
 
 .p-0 {
@@ -1978,15 +1978,7 @@
   color: var(--signal-green);
 }
 
-.text-\[var\(--signal-red\)\] {
-  color: var(--signal-red);
-}
-
-.text-brand {
-  color: var(--signal-orange);
-}
-
-.text-danger {
+.text-\[var\(--signal-red\)\], .text-danger {
   color: var(--signal-red);
 }
 
@@ -2231,8 +2223,8 @@
   align-self: flex-start;
 }
 
-:is(:where(.group)[data-state="checked"] .group-data-\[state\=checked\]\:bg-brand) {
-  background-color: var(--signal-orange);
+:is(:where(.group)[data-state="checked"] .group-data-\[state\=checked\]\:bg-ink) {
+  background-color: var(--ink-100);
 }
 
 :is(:where(.group)[data-state="checked"] .group-data-\[state\=checked\]\:shadow-none) {
@@ -2241,14 +2233,8 @@
 }
 
 @media (hover: hover) {
-  :is(:where(.group):hover :is(:where(.group):enabled :is(:where(.group)[data-state="checked"] .group-data-\[state\=checked\]\:group-enabled\:group-hover\:bg-\[color-mix\(in_srgb\,var\(--signal-orange\)_85\%\,white\)\]))) {
-    background-color: var(--signal-orange);
-  }
-
-  @supports (color: color-mix(in lab, red, red)) {
-    :is(:where(.group):hover :is(:where(.group):enabled :is(:where(.group)[data-state="checked"] .group-data-\[state\=checked\]\:group-enabled\:group-hover\:bg-\[color-mix\(in_srgb\,var\(--signal-orange\)_85\%\,white\)\]))) {
-      background-color: var(--ds-c-1fmpdzv);
-    }
+  :is(:where(.group):hover :is(:where(.group):enabled :is(:where(.group)[data-state="checked"] .group-data-\[state\=checked\]\:group-enabled\:group-hover\:bg-ink-2))) {
+    background-color: var(--ink-200);
   }
 }
 
@@ -2288,9 +2274,9 @@
   height: 2px;
 }
 
-.after\:bg-brand:after {
+.after\:bg-ink:after {
   content: var(--tw-content);
-  background-color: var(--signal-orange);
+  background-color: var(--ink-100);
 }
 
 .after\:opacity-0:after {
@@ -2663,22 +2649,16 @@
   translate: var(--tw-translate-x) var(--tw-translate-y);
 }
 
-.data-\[state\=checked\]\:border-\(--signal-orange-dim\)[data-state="checked"] {
-  border-color: var(--signal-orange-dim);
-}
-
-.data-\[state\=checked\]\:bg-\[color-mix\(in_srgb\,var\(--signal-orange\)_20\%\,var\(--bg-000\)\)\][data-state="checked"] {
-  background-color: var(--signal-orange);
-}
-
-@supports (color: color-mix(in lab, red, red)) {
-  .data-\[state\=checked\]\:bg-\[color-mix\(in_srgb\,var\(--signal-orange\)_20\%\,var\(--bg-000\)\)\][data-state="checked"] {
-    background-color: var(--ds-c-muqw4p);
-  }
+.data-\[state\=checked\]\:border-ink[data-state="checked"] {
+  border-color: var(--ink-100);
 }
 
 .data-\[state\=checked\]\:bg-alpha-white-8[data-state="checked"] {
   background-color: var(--alpha-white-8);
+}
+
+.data-\[state\=checked\]\:bg-ink[data-state="checked"] {
+  background-color: var(--ink-100);
 }
 
 .data-\[state\=checked\]\:bg-surface-0[data-state="checked"] {
@@ -3001,7 +2981,7 @@
 }
 
 .k-dlg.confirm {
-  border-color: var(--signal-orange-dim);
+  border-color: var(--line-200);
 }
 
 @keyframes kc-pop-in {
@@ -3567,7 +3547,7 @@
 }
 
 .k-rec[data-state="recording"] .k-rec-field {
-  border-color: var(--signal-orange);
+  border-color: var(--ink-200);
   background: var(--alpha-white-4);
 }
 
@@ -3758,23 +3738,14 @@
 }
 
 .k-rcal .k-cal-cell[data-selected] {
-  background: var(--signal-orange);
-}
-
-@supports (color: color-mix(in lab, red, red)) {
-  .k-rcal .k-cal-cell[data-selected] {
-    background: var(--ds-c-y8385f);
-  }
-}
-
-.k-rcal .k-cal-cell[data-selected] {
+  background: var(--alpha-white-10);
   color: var(--ink-100);
   border-radius: 0;
   font-weight: 500;
 }
 
 .k-rcal .k-cal-cell[data-selection-start], .k-rcal .k-cal-cell[data-selection-end] {
-  background: var(--signal-orange);
+  background: var(--ink-100);
   color: var(--bg-000);
   font-weight: 600;
 }
@@ -3828,7 +3799,7 @@
 
 .k-tree-item[data-selected] .k-tree-row {
   background: var(--bg-000);
-  box-shadow: inset 2px 0 0 var(--signal-orange);
+  box-shadow: inset 2px 0 0 var(--ink-100);
   color: var(--ink-100);
 }
 
@@ -3900,7 +3871,7 @@
 }
 
 .k-json-search:focus-within {
-  border-color: var(--signal-orange-dim);
+  border-color: var(--alpha-white-11);
 }
 
 .k-json-input {
@@ -4009,16 +3980,7 @@
 }
 
 .k-json-hit {
-  background: var(--signal-orange);
-}
-
-@supports (color: color-mix(in lab, red, red)) {
-  .k-json-hit {
-    background: var(--ds-c-11wt5c3);
-  }
-}
-
-.k-json-hit {
+  background: var(--alpha-white-13);
   color: inherit;
   border-radius: 2px;
 }
@@ -4077,7 +4039,7 @@
 .k-tl-kind[aria-pressed="true"] {
   background: var(--bg-000);
   color: var(--ink-100);
-  box-shadow: inset 0 -2px 0 var(--signal-orange);
+  box-shadow: inset 0 -2px 0 var(--ink-100);
 }
 
 .k-tl-kind:focus-visible, .k-tl-view:focus-visible, .k-tl-marker:focus-visible {
@@ -4131,7 +4093,7 @@
 }
 
 [data-kind="anomaly"] {
-  --k-tl-color: var(--signal-orange);
+  --k-tl-color: var(--ink-100);
 }
 
 [data-kind="notice"] {
@@ -4160,7 +4122,7 @@
 }
 
 .k-tl-glyph[data-kind="anomaly"] {
-  filter: drop-shadow(0 0 3px var(--signal-orange));
+  filter: drop-shadow(0 0 3px var(--ink-100));
 }
 
 .k-tl-track {
@@ -4188,7 +4150,7 @@
 }
 
 .k-tl-now {
-  background: var(--signal-orange);
+  background: var(--ink-100);
   width: 1px;
   position: absolute;
   top: 4px;
@@ -4196,7 +4158,7 @@
 }
 
 .k-tl-now span {
-  color: var(--signal-orange);
+  color: var(--ink-100);
   font: 600 9px var(--font-mono);
   white-space: nowrap;
   position: absolute;
@@ -4205,7 +4167,7 @@
 }
 
 .k-tl-brush {
-  background: var(--signal-orange);
+  background: var(--ink-100);
   position: absolute;
   top: 8px;
   bottom: 8px;
@@ -4213,12 +4175,12 @@
 
 @supports (color: color-mix(in lab, red, red)) {
   .k-tl-brush {
-    background: var(--ds-c-70zl3a);
+    background: var(--ds-c-1mfxecf);
   }
 }
 
 .k-tl-brush {
-  border-inline: 1px solid var(--signal-orange-dim);
+  border-inline: 1px solid var(--ink-300);
 }
 
 .k-tl-marker {
@@ -7068,16 +7030,7 @@ button.k-sysmon-link-body:focus-visible {
 }
 
 .k-dt-seg[data-focused] {
-  background: var(--signal-orange);
-}
-
-@supports (color: color-mix(in lab, red, red)) {
-  .k-dt-seg[data-focused] {
-    background: var(--ds-c-1ijpx6x);
-  }
-}
-
-.k-dt-seg[data-focused] {
+  background: var(--alpha-white-10);
   color: var(--ink-100);
 }
 
@@ -7178,11 +7131,11 @@ button.k-sysmon-link-body:focus-visible {
 }
 
 .k-cal-cell[data-focus-visible] {
-  box-shadow: inset 0 0 0 2px var(--signal-orange);
+  box-shadow: inset 0 0 0 2px var(--ink-200);
 }
 
 .k-cal-cell[data-selected] {
-  background: var(--signal-orange);
+  background: var(--ink-100);
   color: var(--bg-000);
   font-weight: 600;
 }
@@ -7457,7 +7410,7 @@ button.k-sysmon-link-body:focus-visible {
 }
 
 .k-grid-resize:hover, .k-grid-resize:active {
-  background: linear-gradient(90deg, transparent 3px, var(--signal-orange) 3px 4px, transparent 4px);
+  background: linear-gradient(90deg, transparent 3px, var(--ink-100) 3px 4px, transparent 4px);
 }
 
 .k-grid-rows {
@@ -7488,7 +7441,7 @@ button.k-sysmon-link-body:focus-visible {
 }
 
 .k-grid-row.is-opened, .k-grid-row.is-opened .k-grid-cell.is-fixed-first {
-  box-shadow: inset 2px 0 0 var(--signal-orange);
+  box-shadow: inset 2px 0 0 var(--ink-100);
 }
 
 .k-grid-body:focus-visible .k-grid-row.is-cursor {
@@ -7847,7 +7800,7 @@ button.k-sysmon-link-body:focus-visible {
 }
 
 .k-tool.is-on, .k-tool[aria-pressed="true"] {
-  color: var(--signal-orange);
+  color: var(--ink-100);
 }
 
 .k-tool svg {
@@ -7912,8 +7865,8 @@ button.k-sysmon-link-body:focus-visible {
 }
 
 :where(.k-splitter[data-dragging]):before {
-  background: var(--signal-orange);
-  box-shadow: 0 0 6px var(--signal-orange);
+  background: var(--ink-200);
+  box-shadow: 0 0 6px var(--ink-200);
   width: 2px;
   left: calc(50% - 1px);
 }
@@ -7926,7 +7879,7 @@ button.k-sysmon-link-body:focus-visible {
 }
 
 :where(.k-splitter[data-dragging] .k-splitter-grip) {
-  background: var(--signal-orange);
+  background: var(--ink-200);
 }
 
 :where(.k-panel) {
@@ -8280,7 +8233,7 @@ button.k-status-item:hover {
 }
 
 .k-wtabs-mark {
-  background: var(--signal-orange);
+  background: var(--ink-100);
   pointer-events: none;
   height: 2px;
   transition: left var(--dur-snappy, .333s) var(--ease-snappy), width var(--dur-snappy, .333s) var(--ease-snappy);
@@ -8508,7 +8461,7 @@ button.k-status-item:hover {
 }
 
 .k-gauge-fill {
-  background: var(--signal-orange);
+  background: var(--ink-100);
   transition: width var(--dur-snappy) var(--ease-snappy);
   border-radius: 3px;
   position: absolute;
@@ -9086,8 +9039,8 @@ button.k-quote-card.is-link:focus-visible {
   height: var(--chart-end-size, 8px);
   margin: calc(var(--chart-end-size, 8px) / -2) 0 0 calc(var(--chart-end-size, 8px) / -2);
   border-radius: var(--chart-end-radius, 50%);
-  background: var(--chart-accent, var(--signal-orange));
-  box-shadow: var(--chart-end-glow, var(--glow-orange));
+  background: var(--chart-accent, var(--ink-100));
+  box-shadow: var(--chart-end-glow, none);
 }
 
 .k-ck-end-value {
@@ -9106,7 +9059,7 @@ button.k-quote-card.is-link:focus-visible {
 }
 
 .k-dotfill {
-  background: var(--chart-fill-image, repeating-linear-gradient(90deg, var(--k-dot, var(--chart-accent, var(--signal-orange))) 0 4px, transparent 4px 6px));
+  background: var(--chart-fill-image, repeating-linear-gradient(90deg, var(--k-dot, var(--chart-accent, var(--ink-100))) 0 4px, transparent 4px 6px));
   opacity: .6;
 }
 
@@ -9430,7 +9383,7 @@ button.k-quote-card.is-link:focus-visible {
 }
 
 .k-attr-index {
-  color: var(--chart-accent, var(--signal-orange));
+  color: var(--chart-accent, var(--ink-100));
 }
 
 .k-attr-row[data-kind="fee"] .k-attr-index {
@@ -9487,7 +9440,7 @@ button.k-quote-card.is-link:focus-visible {
 }
 
 .k-attr-bar[data-focus="true"] {
-  --k-dot: var(--chart-accent, var(--signal-orange));
+  --k-dot: var(--chart-accent, var(--ink-100));
 }
 
 .k-attr-row[data-closed="true"] .k-attr-bar {
@@ -9545,7 +9498,7 @@ button.k-quote-card.is-link:focus-visible {
 }
 
 .k-attr-readout[data-size="main"] {
-  border-left: 2px solid var(--chart-accent, var(--signal-orange));
+  border-left: 2px solid var(--chart-accent, var(--ink-100));
   padding-left: 10px;
 }
 
@@ -9806,7 +9759,7 @@ button.k-heat-cell {
 }
 
 .k-heat-cell[data-today="true"] {
-  box-shadow: inset 0 0 0 1px var(--chart-accent, var(--signal-orange));
+  box-shadow: inset 0 0 0 1px var(--chart-accent, var(--ink-100));
 }
 
 button.k-heat-cell[data-active="true"] {
@@ -10147,7 +10100,7 @@ button.k-sm-head:focus-visible {
 }
 
 .k-sx-kpis .k-spark-tile[data-expanded="true"] {
-  border-left-color: var(--chart-accent, var(--signal-orange));
+  border-left-color: var(--chart-accent, var(--ink-100));
 }
 
 .k-sx-kpis .k-spark-tile-tag {
@@ -10277,12 +10230,12 @@ button.k-sm-head:focus-visible {
 }
 
 .k-sx .k-brush-window {
-  border: 1px solid var(--chart-accent, var(--signal-orange));
+  border: 1px solid var(--chart-accent, var(--ink-100));
   background: none;
 }
 
 .k-sx .k-brush-handle:after {
-  background: var(--chart-accent, var(--signal-orange));
+  background: var(--chart-accent, var(--ink-100));
 }
 
 .k-sx-chart {
@@ -10484,7 +10437,7 @@ button.k-sm-head:focus-visible {
 }
 
 .k-sx-evt-text em {
-  color: var(--chart-accent, var(--signal-orange));
+  color: var(--chart-accent, var(--ink-100));
   font-style: normal;
 }
 
@@ -10804,7 +10757,7 @@ button.k-sm-head:focus-visible {
 }
 
 .k-range-hist-span {
-  background: var(--signal-orange);
+  background: var(--ink-100);
   position: absolute;
   top: 0;
   bottom: 0;
@@ -10812,7 +10765,7 @@ button.k-sm-head:focus-visible {
 
 .k-range-hist-thumb {
   box-sizing: border-box;
-  border: 2px solid var(--signal-orange);
+  border: 2px solid var(--ink-100);
   border-radius: var(--radius-pill);
   background: var(--bg-000);
   cursor: grab;
@@ -10968,7 +10921,7 @@ button.k-sm-head:focus-visible {
 }
 
 .k-slope-item:hover .k-slope-line, .k-slope-item:focus-visible .k-slope-line {
-  stroke: var(--chart-accent, var(--signal-orange));
+  stroke: var(--chart-accent, var(--ink-100));
   stroke-width: 2.5px;
 }
 
@@ -11037,8 +10990,8 @@ button.k-sm-head:focus-visible {
 }
 
 .k-scatter-dot[data-kind="end"] {
-  fill: var(--chart-accent, var(--signal-orange));
-  filter: drop-shadow(0 0 4px var(--chart-accent, var(--signal-orange)));
+  fill: var(--chart-accent, var(--ink-100));
+  filter: drop-shadow(0 0 4px var(--chart-accent, var(--ink-100)));
 }
 
 .k-scatter-dot[data-kind="start"] {
@@ -11154,7 +11107,7 @@ button.k-sm-head:focus-visible {
 }
 
 .k-galaxy-mark.is-selected, .k-galaxy-mark.is-active {
-  stroke: var(--chart-accent, var(--signal-orange));
+  stroke: var(--chart-accent, var(--ink-100));
   stroke-width: 2px;
 }
 
@@ -11351,7 +11304,7 @@ button.k-sm-head:focus-visible {
 }
 
 .k-ql-layer[aria-pressed="true"] {
-  border-color: var(--chart-accent, var(--signal-orange));
+  border-color: var(--chart-accent, var(--ink-100));
   color: var(--ink-100);
 }
 
@@ -11578,7 +11531,7 @@ button.k-sm-head:focus-visible {
 
 .k-ladder-row.is-selected {
   background: var(--alpha-white-6_5);
-  box-shadow: inset 2px 0 0 var(--signal-orange);
+  box-shadow: inset 2px 0 0 var(--ink-100);
 }
 
 .k-ladder-row:focus-visible {
@@ -13847,7 +13800,7 @@ button.k-spark-tile:focus-visible {
 }
 
 .k-meter {
-  --meter-color: var(--signal-orange);
+  --meter-color: var(--ink-100);
   min-width: 0;
   font-family: var(--font-mono);
   font-size: var(--text-caption-size);
@@ -14846,16 +14799,12 @@ button.k-consensus-hash:focus-visible {
   --ds-c-1644cwu: color-mix(in srgb,var(--cb-accent) 22%,var(--ink-100));
   --ds-c-1iba4oz: color-mix(in srgb,var(--cb-accent) 45%,var(--ink-100));
   --ds-c-da7x41: color-mix(in srgb,var(--cb-accent) 70%,var(--ink-100));
-  --ds-c-1fmpdzv: color-mix(in srgb,var(--signal-orange) 85%,white);
   --ds-c-y1ywmb: color-mix(in srgb,var(--signal-red) 14%,transparent);
   --ds-c-30djeg: color-mix(in oklab, var(--ink-100) 32%, transparent);
-  --ds-c-muqw4p: color-mix(in srgb,var(--signal-orange) 20%,var(--bg-000));
   --ds-c-2xn4cb: #000c;
   --ds-c-1y9twm9: color-mix(in srgb, var(--signal-red) 30%, transparent);
   --ds-c-qc8415: color-mix(in srgb, var(--signal-red) 38%, transparent);
-  --ds-c-y8385f: color-mix(in srgb, var(--signal-orange) 22%, transparent);
-  --ds-c-11wt5c3: color-mix(in srgb, var(--signal-orange) 40%, transparent);
-  --ds-c-70zl3a: color-mix(in srgb, var(--signal-orange) 16%, transparent);
+  --ds-c-1mfxecf: color-mix(in srgb, var(--ink-100) 16%, transparent);
   --ds-c-td9nfp: color-mix(in srgb, var(--ink-400) 55%, transparent);
   --ds-c-1xbddtq: color-mix(in srgb, var(--ink-400) 12%, transparent);
   --ds-c-3uduzz: #00000070;
@@ -14867,7 +14816,6 @@ button.k-consensus-hash:focus-visible {
   --ds-c-3udw59: #000000d1;
   --ds-c-3udw2n: #000000a6;
   --ds-c-d84amz: #ff5a5a8c;
-  --ds-c-1ijpx6x: color-mix(in srgb, var(--signal-orange) 28%, transparent);
   --ds-c-yj0hg8: #000;
   --ds-c-jjz0qz: color-mix(in srgb, var(--signal-amber) 10%, transparent);
   --ds-c-1ay9f5e: color-mix(in srgb, var(--signal-amber) 35%, transparent);

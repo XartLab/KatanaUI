@@ -273,7 +273,7 @@ for (const theme of THEMES) {
       await expect(focused).toHaveCSS('outline-color', ring)
     })
 
-    test('勾选与开关：点了翻转，开关的圆钮真的挪过去，轨道换成强调色', async ({ page }) => {
+    test('勾选与开关：点了翻转，开关的圆钮真的挪过去，轨道换成亮中性（不是品牌橙）', async ({ page }) => {
       await open(page, theme, 'checkbox')
       const boxes = section(page, 'checkbox')
       const check = boxes.getByRole('checkbox', { name: '未勾', exact: true })
@@ -283,7 +283,7 @@ for (const theme of THEMES) {
       await expect(check).toHaveAttribute('aria-checked', 'true')
       await settled(page)
       expect(await bg(check)).not.toBe(checkRest)
-      // 组件卡的样子：勾上后中心一块 6 × 6 的强调色方块，框是暗橙边、暗橙底，不是勾。
+      // 组件卡的样子：勾上后中心一块 6 × 6 的深色方块，框是亮中性（ink-100）底，不是勾，也不是橙。
       const led = check.locator('[data-slot="checkbox-indicator"]')
       const ledBox = (await led.boundingBox())!
       const checkBox = (await check.boundingBox())!
@@ -291,19 +291,11 @@ for (const theme of THEMES) {
       expect([Math.round(ledBox.width), Math.round(ledBox.height)]).toEqual([6, 6])
       expect(Math.abs(ledBox.x + 3 - (checkBox.x + 7))).toBeLessThanOrEqual(0.5)
       expect(Math.abs(ledBox.y + 3 - (checkBox.y + 7))).toBeLessThanOrEqual(0.5)
-      expect(await bg(led)).toBe(await token(page, '--signal-orange'))
+      expect(await bg(led)).toBe(await token(page, '--bg-000'))
+      expect(await bg(check)).toBe(await token(page, '--ink-100'))
+      expect(await bg(check)).not.toBe(await token(page, '--signal-orange'))
       // 发光只给状态灯（Precision Instrument §9）：勾选的方块是控件的「选中」，不发光。
       await expect(led).toHaveCSS('box-shadow', 'none')
-      expect(await check.evaluate((el) => getComputedStyle(el).borderTopColor)).toBe(
-        await page.evaluate(() => {
-          const probe = document.createElement('i')
-          probe.style.borderTop = '1px solid var(--signal-orange-dim)'
-          document.body.append(probe)
-          const color = getComputedStyle(probe).borderTopColor
-          probe.remove()
-          return color
-        }),
-      )
       await expect(check.locator('svg')).toHaveCount(0)
       await check.click()
       await expect(check).toHaveAttribute('aria-checked', 'false')
@@ -327,7 +319,8 @@ for (const theme of THEMES) {
       const orange = await token(page, '--signal-orange')
       await page.mouse.move(0, 0)
       await settled(page)
-      expect(await bg(trackOf)).toBe(orange)
+      expect(await bg(trackOf)).toBe(await token(page, '--ink-100'))
+      expect(await bg(trackOf)).not.toBe(orange)
       expect(await bg(trackOf)).not.toBe(off.track)
       // 外层盒 40 × 28（行高与焦点环按它，#1838 迁移不变），里面可见的轨道 34 × 18。
       const outer = (await toggle.boundingBox())!
@@ -505,7 +498,7 @@ for (const theme of THEMES) {
       expect(checked).toEqual({ color: await token(page, '--ink-100'), 'font-weight': '500' })
       const check = await css(grid.locator('.k-pop-check'), ['width', 'color', 'font-size'])
       expect(check.width).toBe('10px')
-      expect(check.color).toBe(await token(page, '--signal-orange'))
+      expect(check.color).toBe(await token(page, '--ink-100'))
       expect(check['font-size']).toBe('11px')
 
       // 分隔线：.k-pop-sep（:568）高 1（:569）· 上下外边距 4、左右 -6（:570）· 7% 白（:571）。
@@ -1258,7 +1251,7 @@ for (const theme of THEMES) {
       const root = fields.locator('[data-slot="slider"]').first()
       const thumb = root.locator('[data-slot="slider-thumb"]')
       // 组件卡 Controls「Slider」：把手 14 · 强调色（不发光，发光只给状态灯）；轨 6 高 · 凹槽阴影；填充是竖纹点阵。
-      expect(await bg(thumb)).toBe(await token(page, '--signal-orange'))
+      expect(await bg(thumb)).toBe(await token(page, '--ink-100'))
       await expect(thumb).toHaveCSS('box-shadow', 'none')
       await expect(thumb).toHaveCSS('width', '14px')
       expect(await thumb.evaluate((n) => parseFloat(getComputedStyle(n).borderTopLeftRadius))).toBeGreaterThanOrEqual(7)
@@ -1606,12 +1599,7 @@ for (const theme of THEMES) {
       await month.click()
       await expect
         .poll(() => colorAt(page, month, 'background-color'))
-        .toEqual(
-          await rgba(
-            page,
-            await resolved(page, 'background-color', 'color-mix(in srgb, var(--signal-orange) 28%, transparent)'),
-          ),
-        )
+        .toEqual(await rgba(page, await resolved(page, 'background-color', 'var(--alpha-white-10)')))
       await page.keyboard.type('12')
       await expect(shown).toHaveText('2026-12-14 09:30')
       // 日历：按钮打开，选中日橙底（:719-723），范围外的日子（min / max 只在「带秒」那一行）点不了。
@@ -1620,7 +1608,7 @@ for (const theme of THEMES) {
       await expect(cal).toBeVisible()
       await expect(cal.locator('.k-cal-cell[data-selected]')).toHaveCSS(
         'background-color',
-        await token(page, '--signal-orange'),
+        await token(page, '--ink-100'),
       )
       await cal
         .getByRole('button', { name: /12月20日/ })
@@ -1798,7 +1786,7 @@ for (const theme of THEMES) {
       const gauges = meters.getByTestId('meter-gauges').locator('.k-meter')
       await expect(gauges.nth(0).locator('.k-meter-ticks span')).toHaveText(['0', '25', '50', '75', '100'])
       await expect.poll(() => bg(gauges.nth(1).locator('.k-meter-pin'))).toBe(await token(page, '--signal-red'))
-      await expect.poll(() => bg(gauges.nth(0).locator('.k-meter-pin'))).toBe(await token(page, '--signal-orange'))
+      await expect.poll(() => bg(gauges.nth(0).locator('.k-meter-pin'))).toBe(await token(page, '--ink-100'))
       // sync：右侧大百分比，字比条上的数大得多；评估点刻度画在最右。
       const sync = meters.getByTestId('meter-sync').locator('.k-meter').first()
       await expect(sync.locator('.k-meter-big')).toHaveText('70%')
@@ -2325,7 +2313,7 @@ for (const theme of THEMES) {
       // 选中行左侧 2px 强调条；点另一行，条跟着走。
       const shadow = (code: string) =>
         ladder.locator(`[data-code="${code}"]`).evaluate((el) => getComputedStyle(el).boxShadow)
-      const orange = await tokenColor('--signal-orange')
+      const orange = await tokenColor('--ink-100')
       await expect(ladder.locator('[data-code="300004"]')).toHaveAttribute('aria-selected', 'true')
       expect(await shadow('300004')).toBe(`${orange} 2px 0px 0px 0px inset`)
       expect(await shadow('002005')).toBe('none')
@@ -2849,7 +2837,7 @@ for (const theme of THEMES) {
       await page.mouse.move(0, 0)
       await expect
         .poll(() => draw.evaluate((node) => getComputedStyle(node).color))
-        .toBe(await token(page, '--signal-orange'))
+        .toBe(await token(page, '--ink-100'))
       await show(page, 'estimate-badge')
       await expect(section(page, 'estimate-badge').getByText('Estimated from bars')).toBeVisible()
     })
@@ -4237,7 +4225,7 @@ for (const theme of THEMES) {
     await expect.poll(now).toBe(50)
   })
 
-  test(`WorkspaceTabs（${theme}）：点击切换、橙线跟着当前标签、方向键只移焦点、Alt+方向键排序、F2 改名、放不下的收进「…」且当前标签可见`, async ({
+  test(`WorkspaceTabs（${theme}）：点击切换、当前标签的亮线跟着走、方向键只移焦点、Alt+方向键排序、F2 改名、放不下的收进「…」且当前标签可见`, async ({
     page,
   }) => {
     await open(page, theme, 'workspace-tabs')
@@ -4247,7 +4235,7 @@ for (const theme of THEMES) {
     const mark = bar.locator('.k-wtabs-mark')
     await expect(tab('Desk')).toHaveAttribute('aria-selected', 'true')
     await expect(tab('Desk')).toHaveCSS('background-color', await token(page, '--bg-000'))
-    await expect(mark).toHaveCSS('background-color', await token(page, '--signal-orange'))
+    await expect(mark).toHaveCSS('background-color', await token(page, '--ink-100'))
     const under = async (name: string) => {
       const [m, t] = await Promise.all([mark.boundingBox(), tab(name).boundingBox()])
       return Math.abs(m!.x - t!.x) < 1 && Math.abs(m!.width - t!.width) < 1

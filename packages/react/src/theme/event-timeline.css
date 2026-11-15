@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: MIT */
-/* EventTimeline：照设计稿 EventTimeline 卡。2px --line-200 轴，8px 形状标记（圆 = 异动 --signal-orange，方 = 公告 --signal-blue，
+/* EventTimeline：照设计稿 EventTimeline 卡。2px --line-200 轴，8px 形状标记（圆 = 异动 --ink-100，方 = 公告 --signal-blue，
    三角 = 成交 --bid / --ask，方 = 警报 --signal-amber，菱形 = run --signal-green）；发光只给异动；盈亏色不用在标记上。
    标签 9px --ink-300 上下交错；tooltip 是 LCD 风（--bg-000 + --recess）；类别开关照 Segmented：选中 --bg-000 凹陷 + 底 2px 橙。 */
 .k-tl {
@@ -49,7 +49,7 @@
 .k-tl-kind[aria-pressed='true'] {
   background: var(--bg-000);
   color: var(--ink-100);
-  box-shadow: inset 0 -2px 0 var(--signal-orange);
+  box-shadow: inset 0 -2px 0 var(--ink-100);
 }
 .k-tl-kind:focus-visible,
 .k-tl-view:focus-visible,
@@ -99,7 +99,7 @@
   fill: var(--k-tl-color, var(--ink-300));
 }
 [data-kind='anomaly'] {
-  --k-tl-color: var(--signal-orange);
+  --k-tl-color: var(--ink-100);
 }
 [data-kind='notice'] {
   --k-tl-color: var(--signal-blue);
@@ -121,7 +121,7 @@
   fill: var(--ink-200);
 }
 .k-tl-glyph[data-kind='anomaly'] {
-  filter: drop-shadow(0 0 3px var(--signal-orange));
+  filter: drop-shadow(0 0 3px var(--ink-100));
 }
 
 /* 轴 */
@@ -151,13 +151,13 @@
   top: 4px;
   bottom: 4px;
   width: 1px;
-  background: var(--signal-orange);
+  background: var(--ink-100);
 }
 .k-tl-now span {
   position: absolute;
   top: -2px;
   left: 4px;
-  color: var(--signal-orange);
+  color: var(--ink-100);
   font: 600 9px var(--font-mono);
   white-space: nowrap;
 }
@@ -165,8 +165,8 @@
   position: absolute;
   top: 8px;
   bottom: 8px;
-  background: color-mix(in srgb, var(--signal-orange) 16%, transparent);
-  border-inline: 1px solid var(--signal-orange-dim);
+  background: color-mix(in srgb, var(--ink-100) 16%, transparent);
+  border-inline: 1px solid var(--ink-300);
 }
 .k-tl-marker {
   position: absolute;

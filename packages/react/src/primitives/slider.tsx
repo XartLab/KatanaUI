@@ -111,14 +111,14 @@ function Slider({
           // 填充的右端停在把手中心：宽度 = 比例 × (轨宽 − 把手) + 把手的一半。
           <span
             data-slot="slider-fill"
-            className="absolute inset-y-0 left-0 bg-[repeating-linear-gradient(90deg,var(--signal-orange)_0_3px,transparent_3px_5px)]"
+            className="absolute inset-y-0 left-0 bg-[repeating-linear-gradient(90deg,var(--ink-200)_0_3px,transparent_3px_5px)]"
             style={{ width: `calc(${fraction} * (100% - ${THUMB}px) + ${THUMB / 2}px)` }}
           />
         ) : (
           // 多把手：填充从最小那个把手的中心到最大那个的中心（Radix 的 Range 按百分比摆，两端对不到把手中心，差最多 7px）。
           <span
             data-slot="slider-fill"
-            className="absolute inset-y-0 bg-[repeating-linear-gradient(90deg,var(--signal-orange)_0_3px,transparent_3px_5px)]"
+            className="absolute inset-y-0 bg-[repeating-linear-gradient(90deg,var(--ink-200)_0_3px,transparent_3px_5px)]"
             style={{
               left: `calc(${low} * (100% - ${THUMB}px) + ${THUMB / 2}px)`,
               width: `calc(${high - low} * (100% - ${THUMB}px))`,
@@ -132,7 +132,7 @@ function Slider({
           data-slot="slider-thumb"
           aria-label={thumbLabels?.[index]}
           className={cn(
-            'box-border block size-[14px] shrink-0 cursor-grab rounded-full border-2 border-surface-3 bg-(--accent)',
+            'box-border block size-[14px] shrink-0 cursor-grab rounded-full border-2 border-surface-3 bg-ink',
             'active:cursor-grabbing',
             focusRing,
           )}
