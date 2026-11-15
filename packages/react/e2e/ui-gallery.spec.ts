@@ -4160,10 +4160,16 @@ for (const theme of THEMES) {
       )
     const total = Object.keys(map.cards).length
     await expect(page.locator('[data-card]')).toHaveCount(total)
-    // 一张具体的卡：落点、状态、备注都写在行里；部分的卡写着缺什么。
-    // 部分的卡写着缺什么：取第一张状态是「部分」的卡（数据表、面板壳先后做完过，不写死哪一张）。
-    const row = page.locator('[data-card][data-status="部分"]').first()
-    await expect(row).toContainText(/\S/)
+    // 卡片会从「部分」变成「已做」；用映射选定一张仍有缺项说明的卡，核对同一行的状态和说明。
+    const cardName = Object.keys(map.cards).find((name) => {
+      const card = map.cards[name]
+      return card?.status === '部分' && Boolean(card.note?.trim())
+    })
+    if (!cardName) throw new Error('覆盖映射中没有带缺项说明的「部分」卡片')
+    const card = map.cards[cardName]!
+    const row = page.locator(`[data-card=${JSON.stringify(cardName)}]`)
+    await expect(row).toHaveAttribute('data-status', card.status)
+    await expect(row).toContainText(card.note!)
     await expect(row).toBeVisible()
     await page.getByRole('link', { name: 'button', exact: true }).click()
     await expect(section(page, 'button')).toBeVisible()
