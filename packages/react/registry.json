@@ -104,6 +104,11 @@
           "target": "~/src/katana/ui/theme/event-timeline.css"
         },
         {
+          "path": "src/theme/filter-bar.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/filter-bar.css"
+        },
+        {
           "path": "src/theme/flow-sankey.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/flow-sankey.css"
@@ -1920,6 +1925,42 @@
       ]
     },
     {
+      "name": "filter-bar-model",
+      "type": "registry:component",
+      "title": "Filter Bar Model",
+      "description": "选股器的顶部过滤行：一行可换行的胶囊，每个胶囊是一个字段；点开浮层有标题与垃圾桶（把这个过滤从条上拿掉）、搜索框、预设条件列表（主文字加灰色副标题）、底部「手动设置」（运算符加值）。最后是「+」（按分组列出所有字段，进组再选）与「⋯」（重置全部条件）。照 TradingView 选股器（主会话 2026-11-15 登录态实测），实现原创。字段、运算符、预设与文字都由调用方定义；条件受控，件不过滤数据，调用方用 applyFilters 或自己的方式过滤。",
+      "files": [
+        {
+          "path": "src/patterns/filter-bar-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/patterns/filter-bar-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "filter-bar",
+      "type": "registry:component",
+      "title": "Filter Bar",
+      "description": "选股器的顶部过滤行：一行可换行的胶囊，每个胶囊是一个字段；点开浮层有标题与垃圾桶（把这个过滤从条上拿掉）、搜索框、预设条件列表（主文字加灰色副标题）、底部「手动设置」（运算符加值）。最后是「+」（按分组列出所有字段，进组再选）与「⋯」（重置全部条件）。照 TradingView 选股器（主会话 2026-11-15 登录态实测），实现原创。字段、运算符、预设与文字都由调用方定义；条件受控，件不过滤数据，调用方用 applyFilters 或自己的方式过滤。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/button",
+        "@katana/cn",
+        "@katana/filter-bar-model",
+        "@katana/input",
+        "@katana/popover"
+      ],
+      "files": [
+        {
+          "path": "src/patterns/filter-bar.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/patterns/filter-bar.tsx"
+        }
+      ]
+    },
+    {
       "name": "multi-select",
       "type": "registry:component",
       "title": "Multi Select",
@@ -2023,6 +2064,26 @@
           "path": "src/patterns/tree-view.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/patterns/tree-view.tsx"
+        }
+      ]
+    },
+    {
+      "name": "view-switcher",
+      "type": "registry:component",
+      "title": "View Switcher",
+      "description": "选股器的顶部过滤行：一行可换行的胶囊，每个胶囊是一个字段；点开浮层有标题与垃圾桶（把这个过滤从条上拿掉）、搜索框、预设条件列表（主文字加灰色副标题）、底部「手动设置」（运算符加值）。最后是「+」（按分组列出所有字段，进组再选）与「⋯」（重置全部条件）。照 TradingView 选股器（主会话 2026-11-15 登录态实测），实现原创。字段、运算符、预设与文字都由调用方定义；条件受控，件不过滤数据，调用方用 applyFilters 或自己的方式过滤。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/dropdown-menu"
+      ],
+      "files": [
+        {
+          "path": "src/patterns/view-switcher.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/patterns/view-switcher.tsx"
         }
       ]
     },
@@ -2349,8 +2410,7 @@
       "description": "资金从来源（央行、银行信贷、财政、海外……）经通道到用途（偿债、消费、投资、资产配置）再到受益方的桑基图，节点与流量由调用方给，列由节点的 column 定。悬停节点或链路出 LCD 读数：金额、占来源流出、占总量；点节点（或聚焦后 Enter / 空格）钉住它的全部上游与下游，其余压暗，再点或 Esc 取消。「交易流量」与「价格重估」分开：交易流量是实色带，价格重估（估值变了、没有资金移动）是斜纹带，占比与总量只算交易流量，右上有开关可以把重估整条拿掉；图例分开写。链路与节点是中性灰，不用橙与蓝，节点想着色由调用方给 color。排布用 d3-sankey 0.12.3（BSD-3-Clause，见 NOTICE），有环时不画、写 labels.cycle（先把回流拆成另一个节点）。需求稿是 issue #45，没有读到可对照的参照产品页面，待核对；演示数据全部虚构。",
       "registryDependencies": [
         "@katana/chart-kit",
-        "@katana/flow-sankey-model",
-        "@katana/switch"
+        "@katana/flow-sankey-model"
       ],
       "files": [
         {
@@ -2433,11 +2493,16 @@
       "type": "registry:component",
       "title": "Market Heatmap",
       "description": "照 TradingView 的股票热力图：格子面积是所选的大小指标（市值、成交额或等大），颜色是所选指标落在七档色阶的哪一档，按行业分组或平铺。顶上一行汇总读数（只数、上涨、下跌），工具条用分段控件切大小、颜色、视图；点组名放大到只看这一组（面包屑返回，Esc 也行）；悬停出这只票的价格与各项读数；底部图例写出每一档的值边界，点一档就隐藏这一档的格子。A 股、港股、美股、加密共用，只换数据与分组；不认数据集，品种、指标、文字都由调用方传。排布与着色档用包里矩形树图的 layoutTreemap、colorStep。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
       "registryDependencies": [
         "@katana/cn",
         "@katana/market-heatmap-model",
         "@katana/quant-format",
         "@katana/row-actions",
+        "@katana/select",
+        "@katana/switch",
         "@katana/symbol-mark",
         "@katana/toggle-group",
         "@katana/treemap-model"
@@ -2564,6 +2629,25 @@
           "path": "src/quant/quantile-model.ts",
           "type": "registry:component",
           "target": "~/src/katana/ui/quant/quantile-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "rating-text",
+      "type": "registry:component",
+      "title": "Rating Text",
+      "description": "分析师评级、技术评级结论的单元格写法：图标加文字，强力买入双上箭头、买入单上箭头、中性等号、卖出单下箭头、强力卖出双下箭头；买入档取涨色、卖出档取跌色（跟 data-updown），中性不着色。照 TradingView 选股器「分析师评级」列（主会话 2026-11-15 登录态实测），实现原创。放进 DataGrid 的 custom 列里用（见 FilterBar 页的选股器）。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn"
+      ],
+      "files": [
+        {
+          "path": "src/quant/rating-text.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/rating-text.tsx"
         }
       ]
     },
@@ -2858,6 +2942,11 @@
           "target": "~/src/katana/ui/blocks/data-grid/column-picker.tsx"
         },
         {
+          "path": "src/blocks/data-grid/column-set-tabs.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/data-grid/column-set-tabs.tsx"
+        },
+        {
           "path": "src/blocks/data-grid/columns.ts",
           "type": "registry:component",
           "target": "~/src/katana/ui/blocks/data-grid/columns.ts"
@@ -3073,18 +3162,22 @@
       "name": "news-feed",
       "type": "registry:component",
       "title": "News Feed",
-      "description": "快讯与要闻的流：列表（时间、来源、标题、相关品种胶囊、重要标记）与卡片网格（来源 + 时间、标题、两行摘要、胶囊）两种排法；顶上频道分段、来源多选、关键词搜索、暂停。新到的不打断阅读：在顶部且没暂停时淡入插入，否则出「n 条新消息」，点了才插入。功能参照 TradingView News Flow 帮助页（只读到：新闻集中在一处、可设多种过滤）与 uiarc.dev 的卡片结构（待核对），实现原创。演示数据是虚构的。",
+      "description": "NewsFeed 点开一条后的阅读窗：来源与操作（复制链接、举报、关闭）、标题、元信息、品种胶囊带涨跌、「要点」列表（闪电图标）、正文。照 TradingView 新闻流的阅读窗（主会话 2026-11-15 实测）。件不取数：标题、元信息、要点、正文都由调用方传；正文里的品种胶囊用 NewsSymbolChip 内联。",
       "dependencies": [
         "lucide-react@1.67.0"
       ],
       "registryDependencies": [
         "@katana/button",
+        "@katana/checkbox",
         "@katana/chip-group",
         "@katana/cn",
         "@katana/input",
+        "@katana/popover",
+        "@katana/quant-format",
         "@katana/row-actions",
         "@katana/symbol-mark",
-        "@katana/toggle-group"
+        "@katana/toggle-group",
+        "@katana/view-switcher"
       ],
       "files": [
         {
@@ -3096,6 +3189,11 @@
           "path": "src/blocks/news-feed/news-feed.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/blocks/news-feed/news-feed.tsx"
+        },
+        {
+          "path": "src/blocks/news-feed/news-reader.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/news-feed/news-reader.tsx"
         }
       ]
     },

@@ -4,6 +4,8 @@
 
 ## Provide
 
+`*` marks a required prop.
+
 ### VintageSeries
 
 文字与格式全由 props 传，件不认识任何统计口径。主图高 chartHeight，下面修订小图固定 64px；统计期不超过 72 个时才画发布点，更多只留线与修订竖线。
@@ -22,6 +24,12 @@
 ### normalizeVintages / knownAt / knownValue / revisionStats
 
 整理发布值、取某一刻已知的值、统计修订的纯函数；调用方想在别处出同样的数可以直接调。只发布过一次的期修订是 null，不写成 0。
+
+## Usage
+
+```tsx
+
+```
 
 ## States
 

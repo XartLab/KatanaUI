@@ -1099,6 +1099,16 @@ export const PAGES: readonly DocPage[] = [
             type: '(item: HeatmapItem) => RowAction[]',
             desc: '格子的右键菜单（#23，一般传 symbolMenu(...)）：右键、菜单键、Shift+F10 出同一份品种菜单。格子小，不画悬停按钮。读屏名取 labels.cellMenu（可选）。不传就没有。',
           },
+          {
+            name: 'labels.display',
+            type: 'HeatmapDisplayLabels',
+            desc: '给了，工具条多三个显示开关（照 TradingView 热图，主会话 2026-11-15 实测）：Logo 开关、标题（无 / 代码 / 全名）、格内数值（无 / 价格 / 当前大小指标的值 / 着色指标的读数）。不给格子照旧。',
+          },
+          {
+            name: 'labels.fullscreen',
+            type: 'string',
+            desc: '给了，工具条最右出全屏钮（容器 requestFullscreen），字是读屏名与提示。',
+          },
         ],
       },
     ],
@@ -1199,6 +1209,32 @@ export const PAGES: readonly DocPage[] = [
     composition:
       'MetricCardGrid\n  MetricCard\n    标题 | 分段控件（ToggleGroup）\n    当前值\n    变化（ChangeText）\n    走势线（Sparkline）\n    阶段带\n    来源 · 更新时间',
     keys: [['Tab', '到分段控件（← → 移动，Space / Enter 选）']],
+  },
+  {
+    id: 'rating-text',
+    group: 'quant',
+    cardHeight: 140,
+    title: 'RatingText 五档评级',
+    summary:
+      '分析师评级、技术评级结论的单元格写法：图标加文字，强力买入双上箭头、买入单上箭头、中性等号、卖出单下箭头、强力卖出双下箭头；买入档取涨色、卖出档取跌色（跟 data-updown），中性不着色。照 TradingView 选股器「分析师评级」列（主会话 2026-11-15 登录态实测），实现原创。放进 DataGrid 的 custom 列里用（见 FilterBar 页的选股器）。',
+    exports: ['RatingText'],
+    props: [
+      {
+        part: 'RatingText',
+        note: '其余属性透传给 span。',
+        rows: [
+          { name: 'level', type: "'strong-sell' | 'sell' | 'neutral' | 'buy' | 'strong-buy'", desc: '五档。' },
+          { name: 'children', type: 'string', desc: '档名，由调用方传（包里不带语言）。' },
+        ],
+      },
+    ],
+    states: [
+      '买入、强力买入：涨色；卖出、强力卖出：跌色；中性：继承周围字色。',
+      '方向不只靠颜色：图标一至两层箭头表示强弱。',
+    ],
+    donts: ['不要自己拼箭头字符着色；用这个件，涨跌色才会跟 data-updown。'],
+    composition: 'RatingText（内部：lucide 图标）；放在 DataGrid 的 custom 列 cell 里',
+    keys: [],
   },
   {
     id: 'technical-rating',
@@ -3391,6 +3427,146 @@ export const PAGES: readonly DocPage[] = [
     keys: [],
   },
   {
+    id: 'filter-bar',
+    group: 'forms',
+    cardHeight: 520,
+    title: 'FilterBar 过滤条',
+    summary:
+      '选股器的顶部过滤行：一行可换行的胶囊，每个胶囊是一个字段；点开浮层有标题与垃圾桶（把这个过滤从条上拿掉）、搜索框、预设条件列表（主文字加灰色副标题）、底部「手动设置」（运算符加值）。最后是「+」（按分组列出所有字段，进组再选）与「⋯」（重置全部条件）。照 TradingView 选股器（主会话 2026-11-15 登录态实测），实现原创。字段、运算符、预设与文字都由调用方定义；条件受控，件不过滤数据，调用方用 applyFilters 或自己的方式过滤。',
+    exports: ['FilterBar', 'ViewSwitcher', 'applyFilters', 'conditionText', 'matchCondition'],
+    props: [
+      {
+        part: 'FilterBar',
+        rows: [
+          {
+            name: 'fields',
+            type: 'FilterField[]',
+            desc: '{ key, label, group?, input?（number / text）, operators: {value,label}[], presets?: {key,label,hint?,op,value}[], shown? }。',
+          },
+          {
+            name: 'value',
+            type: 'FilterCondition[]',
+            desc: '{ id, field, op, value, label? }；同一字段只留最后设的一条。',
+          },
+          {
+            name: 'onChange',
+            type: '(next: FilterCondition[]) => void',
+            desc: '条件变了（设、清除、移除字段、重置）。',
+          },
+          {
+            name: 'labels',
+            type: 'FilterBarLabels',
+            desc: '全部文字，由调用方传。传了 undo 与 redo 两个读屏名，条的最左多一对撤销 / 重做按钮（件自己记它改过的条件快照，最多 50 步；从外面换掉条件不进栈）。',
+          },
+          {
+            name: 'defaultShown',
+            type: 'string[]',
+            desc: '条上一开始有哪些字段；不给取 shown 为真的，再没有取前 6 个。',
+          },
+        ],
+      },
+      {
+        part: 'ViewSwitcher',
+        note: '标题位置的「已保存的视图」下拉（选股器标题的保存的筛选、新闻流标题的 Full feed）；件不存视图，列表与当前项由调用方传。',
+        rows: [
+          { name: 'views', type: 'ViewOption[]', desc: '{ key, label }；下拉里按这个顺序列。' },
+          { name: 'value', type: 'string', desc: '当前视图的键。' },
+          { name: 'onValueChange', type: '(key: string) => void', desc: '选了另一个视图。' },
+          {
+            name: 'onSave',
+            type: '() => void',
+            desc: '给了，列表底部多一项「另存为」（文字 labels.save）；命名对话框与存哪里归调用方。',
+          },
+          { name: 'labels', type: '{ trigger: string; save?: string }', desc: '读屏名与「另存为」文字。' },
+        ],
+      },
+      {
+        part: 'applyFilters / matchCondition',
+        note: '纯函数；约定的运算符名：gt、gte、lt、lte、eq、neq、between（值写成「下限..上限」）、contains、in（逗号分隔）。别的运算符名调用方自己匹配。',
+        rows: [
+          {
+            name: 'applyFilters(rows, conditions, getCell)',
+            type: 'Row[]',
+            desc: '所有条件都满足（且）；getCell 按字段键取这一行的值。',
+          },
+        ],
+      },
+    ],
+    states: ['设了条件的胶囊：底色加深，字提亮并带条件文字。', '字段被移除：从条上拿掉，它的条件一并清除。'],
+    donts: ['不要把过滤逻辑写进件：件只出条件，数据由调用方过滤。', '字段很多时别全摆在条上：用「+」加。'],
+    composition:
+      'FilterBar\n  胶囊 × n（Popover：标题 + 垃圾桶、搜索、预设列表、手动设置）\n  「+」（Popover：搜索、分组列表带计数）\n  「⋯」（重置）',
+    keys: [
+      ['Tab', '在胶囊、「+」、「⋯」间移动'],
+      ['Enter', '打开浮层或选中预设'],
+    ],
+  },
+  {
+    id: 'column-set-tabs',
+    group: 'blocks',
+    cardHeight: 520,
+    title: 'ColumnSetTabs 列集标签行',
+    summary:
+      '表上方的一行页签（概览、估值、分红…），点一个就把 DataGrid 的列换成这一套。照 TradingView 选股器的列组标签（主会话 2026-11-15 实测）；与 ColumnPicker 里的列集芯片是同一份数据与同一个纯函数。不存状态：哪个亮着由看得见的列恰好等于它的列推出来，手动改过列之后没有页签亮着。',
+    exports: ['ColumnSetTabs'],
+    props: [
+      {
+        part: 'ColumnSetTabs',
+        rows: [
+          { name: 'layout / onLayoutChange', type: 'GridColumnLayout[]', desc: 'DataGrid 的列摆法，受控。' },
+          { name: 'sets', type: 'ColumnSet[]', desc: '{ id, label, columns: 列 id[] }。' },
+          { name: 'label', type: 'string', desc: '整行的读屏名。' },
+          { name: 'children', type: 'ReactNode', desc: '右侧按钮位（刷新、全屏）。' },
+        ],
+      },
+    ],
+    states: ['选中：白底黑字小胶囊。', '手动改过列：没有页签选中。'],
+    donts: ['不要自己存「当前列集」：它由列推出来。'],
+    composition: 'ColumnSetTabs\n  tablist\n    tab × n\n  右侧按钮位',
+    keys: [
+      ['Tab', '在页签间移动'],
+      ['Enter', '套用这一套列'],
+    ],
+  },
+  {
+    id: 'news-reader',
+    group: 'blocks',
+    cardHeight: 520,
+    title: 'NewsReader 新闻阅读窗',
+    summary:
+      'NewsFeed 点开一条后的阅读窗：来源与操作（复制链接、举报、关闭）、标题、元信息、品种胶囊带涨跌、「要点」列表（闪电图标）、正文。照 TradingView 新闻流的阅读窗（主会话 2026-11-15 实测）。件不取数：标题、元信息、要点、正文都由调用方传；正文里的品种胶囊用 NewsSymbolChip 内联。',
+    exports: ['NewsReader', 'NewsSymbolChip'],
+    props: [
+      {
+        part: 'NewsReader',
+        rows: [
+          {
+            name: 'title / source / sourceLogo / meta',
+            type: 'string',
+            desc: '标题、来源、来源徽标、写好的元信息一行。',
+          },
+          {
+            name: 'symbols',
+            type: 'NewsReaderSymbol[]',
+            desc: '{ code, name?, logo?, change?（涨跌幅百分数） }；涨跌色走 pnl token。',
+          },
+          { name: 'keyPoints', type: 'string[]', desc: '要点；空数组不画这一块。' },
+          { name: 'children', type: 'ReactNode', desc: '正文。' },
+          { name: 'labels', type: 'NewsReaderLabels', desc: '读屏名与「要点」「关闭」「举报」「复制链接」。' },
+          {
+            name: 'onClose / onReport / onCopyLink / onSymbolPick',
+            type: 'function',
+            desc: '给了才画对应的按钮；点品种胶囊回调。',
+          },
+        ],
+      },
+    ],
+    states: ['品种涨跌：正涨色、负跌色，0 不上色。'],
+    donts: ['不要在件里取数或翻译：文字由调用方传。'],
+    composition: 'NewsReader（article）\n  header：来源 + 操作\n  标题、元信息\n  品种胶囊\n  要点\n  正文',
+    keys: [['Tab', '在操作与品种胶囊间移动']],
+  },
+  {
     id: 'news-feed',
     group: 'blocks',
     cardHeight: 560,
@@ -3425,7 +3601,34 @@ export const PAGES: readonly DocPage[] = [
             desc: '全部文字：all、feed、channels、sources、clearSources、search、layout、layoutList、layoutCard、pause、resume、important、empty，以及 newItems(n)、ago(秒)、absolute(时间)。包里没有语言。',
           },
           { name: 'defaultLayout', type: "'list' | 'card'", desc: '起始排法，默认 list。' },
+          {
+            name: 'facets',
+            type: 'NewsFacet[]',
+            desc: '组合过滤（照 TradingView News Flow，主会话 2026-11-15 实测）：{ key, label, options, single?, shown? }；条目用 NewsItem.facets 带取值。每个分面一个胶囊，浮层里复选、可重置、可移除，「+ 添加过滤」再加；取值之间「或」，分面之间「且」。需要 labels.facets 的文字。',
+          },
+          { name: 'selected', type: 'string | null', desc: '阅读窗开着的那条：行底色加深。' },
           { name: 'onSymbolPick', type: '(symbol, item) => void', desc: '点品种胶囊。' },
+          {
+            name: 'reader',
+            type: '(item, { close }) => ReactNode',
+            desc: '给了就是左列表右阅读窗的并排排法（照 TradingView News Flow，主会话 2026-11-15 实测）：点标题打开这一条，返回的节点（一般是 NewsReader）画在右边，选中行底色加深；件的宽度不到 900px 时阅读窗改成盖在列表上的浮层。',
+          },
+          {
+            name: 'views / view / onViewChange / onSaveView',
+            type: 'ViewOption[] / string / (key) => void / () => void',
+            desc: '标题行的已保存过滤视图下拉（Full feed 那样）；需要 labels.views。切换与另存由调用方处理，一般换 key 让件里的过滤状态重置。',
+          },
+          {
+            name: 'symbolStyle',
+            type: "'stack' | 'chips'",
+            default: "'stack'",
+            desc: '相关品种：stack = 重叠的一排徽标（悬停出代码与名称），chips = 带代码的胶囊。',
+          },
+          {
+            name: 'NewsItem.readMinutes / labels.read / labels.collapse',
+            type: 'number / (n) => string / string',
+            desc: '条目写「n 分钟阅读」（labels.read 与 readMinutes 都有才写）；labels.collapse 给了，标题行右边有收起 / 展开过滤区的按钮。',
+          },
           {
             name: 'itemActions',
             type: '(item) => RowAction[]',

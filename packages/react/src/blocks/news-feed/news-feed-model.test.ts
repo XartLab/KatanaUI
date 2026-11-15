@@ -22,3 +22,19 @@ describe('news feed model', () => {
     expect(sortNews(items).map((i) => i.id)).toEqual(['b', 'c', 'a'])
   })
 })
+
+describe('filterNews 分面', () => {
+  const base = { channel: 'c', source: 's', time: 0, title: 't' }
+  const items = [
+    { ...base, id: '1', facets: { market: ['stocks'], country: ['cn'] } },
+    { ...base, id: '2', facets: { market: ['crypto'], country: ['cn'] } },
+    { ...base, id: '3' },
+  ]
+  const f = (facets: Record<string, string[]>) =>
+    filterNews(items, { channel: '', sources: [], query: '', facets }).map((i) => i.id)
+  it('取值之间或、分面之间且、空数组不筛', () => {
+    expect(f({ market: ['stocks', 'crypto'] })).toEqual(['1', '2'])
+    expect(f({ market: ['stocks'], country: ['cn'] })).toEqual(['1'])
+    expect(f({ market: [] })).toEqual(['1', '2', '3'])
+  })
+})

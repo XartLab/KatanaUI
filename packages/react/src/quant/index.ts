@@ -32,12 +32,16 @@ export {
 export {
   MarketHeatmap,
   type HeatmapColorBy,
+  type HeatmapDisplayLabels,
+  type HeatmapTitleMode,
+  type HeatmapValueMode,
   type HeatmapItem,
   type HeatmapScheme,
   type HeatmapSizeBy,
   type MarketHeatmapLabels,
   type MarketHeatmapProps,
 } from './market-heatmap.tsx'
+export { RatingText, type RatingLevel, type RatingTextProps } from './rating-text.tsx'
 export {
   TechnicalRating,
   type RatingGroup,

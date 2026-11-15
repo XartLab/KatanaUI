@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 import type { ComponentType } from 'react'
+import { NewsReaderDemo, ScreenerDemo } from './pages/screener.tsx'
 import { DateTimeInputDemo, NumberInputDemo, SkeletonDemo } from './pages/fields.tsx'
 import {
   BadgeDemo,
@@ -23,6 +24,7 @@ import {
   MeterDemo,
   PnlTextDemo,
   QuantFormatDemo,
+  RatingTextDemo,
   RegimeStripDemo,
   SparkTileDemo,
   TechnicalRatingDemo,
@@ -161,6 +163,7 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'event-calendar': EventCalendarDemo,
   'limit-ladder': LimitLadderDemo,
   'market-heatmap': MarketHeatmapDemo,
+  'rating-text': RatingTextDemo,
   'technical-rating': TechnicalRatingDemo,
   'metric-card': MetricCardDemo,
   'decimal-field': DecimalFieldDemo,
@@ -177,6 +180,9 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'estimate-badge': EstimateBadgeDemo,
   'event-timeline': EventTimelineDemo,
   'news-feed': NewsFeedDemo,
+  'filter-bar': ScreenerDemo,
+  'column-set-tabs': ScreenerDemo,
+  'news-reader': NewsReaderDemo,
   'strategy-report': StrategyReportDemo,
   'transmission-chain': TransmissionChainDemo,
   'param-scatter': ParamScatterDemo,

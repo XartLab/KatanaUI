@@ -4,6 +4,8 @@
 
 ## Provide
 
+`*` marks a required prop.
+
 ### TransmissionChain
 
 件只画、只回调：节点、边、证据与全部文字由调用方传，件不认识任何应用或研究框架；高度由外层给。
@@ -11,10 +13,16 @@
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
 | `nodes` | `ChainNode[]` | — | { id, label, note? }：传导环节。没有节点写 labels.notConnected，不补样本。 |
-| `edges` | `ChainEdge[]` | — | { id, from, to, status: untested | supported | contradicted | partial, label?, feedback?, failureCondition?, evidence?: HypothesisEvidence[]（kind、source、href、publishedAt、summary、stance: support | oppose） }。证据计数由 evidence 数出来，不另传；指向不存在节点的边、自环与重复 id 被丢掉。 |
+| `edges` | `ChainEdge[]` | — | { id, from, to, status: untested \| supported \| contradicted \| partial, label?, feedback?, failureCondition?, evidence?: HypothesisEvidence[]（kind、source、href、publishedAt、summary、stance: support \| oppose） }。证据计数由 evidence 数出来，不另传；指向不存在节点的边、自环与重复 id 被丢掉。 |
 | `labels` | `TransmissionChainLabels` | — | 全部文字（状态名、立场名、来源类别、各区标题、提示与 counts / edgeName 函数）。包里没有语言。 |
 | `direction` | `'LR' \| 'TB'` | — | 布局方向，默认从上到下（链长时横排会宽到缩得看不清）；LR 从左到右。 |
-| `defaultSelected / onSelect` | `ChainSelection` | — | 起始选中（{ kind: edge | node, id }）与选中变化的回调；选中的 id 不存在时当作没选。 |
+| `defaultSelected / onSelect` | `ChainSelection` | — | 起始选中（{ kind: edge \| node, id }）与选中变化的回调；选中的 id 不存在时当作没选。 |
+
+## Usage
+
+```tsx
+
+```
 
 ## States
 

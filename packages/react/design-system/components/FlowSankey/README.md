@@ -4,6 +4,8 @@
 
 ## Provide
 
+`*` marks a required prop.
+
 ### FlowSankey
 
 文字全由 props 传。图是 viewBox 960 宽的 svg，随容器缩放；每个节点是 role=button 的矩形，读屏名带流入与流出；图右上有表格视图、导出、全屏三件（表格视图总有，表里每条链路一行）。
@@ -11,7 +13,7 @@
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
 | `nodes` | `FlowNode[]` | — | { id, label, column?, color? }。column 全给才按它分列（从 0 起），否则由链路深度定；没有任何链路的节点不画。 |
-| `links` | `FlowLink[]` | — | { id?, source, target, value, kind?: flow | revaluation, note? }。value 不是正数或指向不存在节点的链路丢掉。kind 默认 flow。 |
+| `links` | `FlowLink[]` | — | { id?, source, target, value, kind?: flow \| revaluation, note? }。value 不是正数或指向不存在节点的链路丢掉。kind 默认 flow。 |
 | `labels` | `FlowSankeyLabels` | — | 全部文字：读屏名、两种链路的名字、读数行名、开关、空态与有环的提示。 |
 | `columnLabels` | `string[]` | — | 每一列顶上的标题；不给不画。 |
 | `formatValue / formatShare` | `(number) => string` | — | 金额（含单位）与占比（0.25）怎么写；占比默认一位小数的百分数。 |
@@ -22,6 +24,12 @@
 ### layoutFlow(nodes, links, options)
 
 节点与链路 → 排布、占比、总量的纯函数（总量是没有交易流入的节点的交易流出之和）；返回 { ok: true, nodes, links, total, dropped, columns } 或 { ok: false, reason: empty | cycle }。
+
+## Usage
+
+```tsx
+
+```
 
 ## States
 

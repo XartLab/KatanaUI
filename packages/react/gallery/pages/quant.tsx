@@ -14,6 +14,7 @@ import {
   MetricCardGrid,
   Meter,
   PnlText,
+  RatingText,
   RegimeBand,
   RegimeStrip,
   SparkTile,
@@ -52,6 +53,28 @@ import { ToggleGroup, ToggleGroupItem } from '../../src/primitives/toggle-group.
 import { ActionLog, Cell, Row, SAMPLE_MARK_SRC, demoSymbolActions } from './parts.tsx'
 
 // 量化层（@katana-ui/react/quant，#1862、#1929）的演示。数值都是示例，不是行情，页上也写明。根元素设 data-updown="cn" 时涨跌色互换（红涨绿跌）。
+
+export function RatingTextDemo() {
+  return (
+    <Row name="五档">
+      <Cell name="强力买入">
+        <RatingText level="strong-buy">强力买入</RatingText>
+      </Cell>
+      <Cell name="买入">
+        <RatingText level="buy">买入</RatingText>
+      </Cell>
+      <Cell name="中性">
+        <RatingText level="neutral">中性</RatingText>
+      </Cell>
+      <Cell name="卖出">
+        <RatingText level="sell">卖出</RatingText>
+      </Cell>
+      <Cell name="强力卖出">
+        <RatingText level="strong-sell">强力卖出</RatingText>
+      </Cell>
+    </Row>
+  )
+}
 
 export function ChangeTextDemo() {
   return (
@@ -404,7 +427,20 @@ const HEAT_LABELS: MarketHeatmapLabels = {
   segment: (range) => `隐藏或显示 ${range} 的格子`,
   list: '市场热力图',
   empty: '没有数据',
+  fullscreen: '全屏',
+  dataset: '数据集',
+  openInScreener: '在选股器打开',
+  display: {
+    logo: 'Logo',
+    title: { label: '标题', none: '无', code: '代码', name: '全名' },
+    value: { label: '格内数值', none: '无', price: '价格', size: '成交额', change: '涨跌幅' },
+  },
 }
+
+const HEAT_DATASETS = [
+  { key: 'stocks', label: '分行业的股票' },
+  { key: 'coins', label: '不分组的加密' },
+]
 
 export function MarketHeatmapDemo() {
   const [selected, setSelected] = useState<string | null>(null)
@@ -433,10 +469,6 @@ export function MarketHeatmapDemo() {
   return (
     <div style={{ display: 'grid', gap: 12, width: '100%', maxWidth: wide ? undefined : 760 }}>
       <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
-        <ToggleGroup variant="sm" aria-label="数据" value={market} onValueChange={setMarket}>
-          <ToggleGroupItem value="stocks">分行业的股票</ToggleGroupItem>
-          <ToggleGroupItem value="coins">不分组的加密</ToggleGroupItem>
-        </ToggleGroup>
         <ToggleGroup variant="sm" aria-label="配色" value={scheme} onValueChange={(v) => setScheme(v as HeatmapScheme)}>
           <ToggleGroupItem value="classic">经典</ToggleGroupItem>
           <ToggleGroupItem value="mono">单色</ToggleGroupItem>
@@ -474,6 +506,10 @@ export function MarketHeatmapDemo() {
                 sizeBy={HEAT_SIZE}
                 colorBy={HEAT_COLOR}
                 labels={{ ...HEAT_LABELS, group: '行业' }}
+                datasets={HEAT_DATASETS}
+                dataset={market}
+                onDatasetChange={setMarket}
+                onOpenInScreener={() => setLog('在选股器打开：' + (coins ? '加密货币' : '分行业的股票'))}
                 scheme={scheme}
                 selected={selected}
                 onSelect={setSelected}
