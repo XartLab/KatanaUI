@@ -27,6 +27,7 @@ import {
   SparkTileDemo,
   TechnicalRatingDemo,
 } from './pages/quant.tsx'
+import { FlowSankeyDemo, VintageSeriesDemo } from './pages/flows.tsx'
 import { ParamScatterDemo, StrategyReportDemo } from './pages/strategy.tsx'
 import { TransmissionChainDemo } from './pages/research.tsx'
 import {
@@ -179,6 +180,8 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'strategy-report': StrategyReportDemo,
   'transmission-chain': TransmissionChainDemo,
   'param-scatter': ParamScatterDemo,
+  'flow-sankey': FlowSankeyDemo,
+  'vintage-series': VintageSeriesDemo,
   'system-monitor': SystemMonitorDemo,
   'decision-queue': DecisionQueueDemo,
   'hypothesis-ledger': HypothesisLedgerDemo,

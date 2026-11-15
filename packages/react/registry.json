@@ -104,6 +104,11 @@
           "target": "~/src/katana/ui/theme/event-timeline.css"
         },
         {
+          "path": "src/theme/flow-sankey.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/flow-sankey.css"
+        },
+        {
           "path": "src/theme/fonts.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/fonts.css"
@@ -257,6 +262,11 @@
           "path": "src/theme/tree-view.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/tree-view.css"
+        },
+        {
+          "path": "src/theme/vintage-series.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/vintage-series.css"
         },
         {
           "path": "src/theme/workspace-tabs.css",
@@ -2309,6 +2319,43 @@
       ]
     },
     {
+      "name": "flow-sankey-model",
+      "type": "registry:component",
+      "title": "Flow Sankey Model",
+      "description": "资金从来源（央行、银行信贷、财政、海外……）经通道到用途（偿债、消费、投资、资产配置）再到受益方的桑基图，节点与流量由调用方给，列由节点的 column 定。悬停节点或链路出 LCD 读数：金额、占来源流出、占总量；点节点（或聚焦后 Enter / 空格）钉住它的全部上游与下游，其余压暗，再点或 Esc 取消。「交易流量」与「价格重估」分开：交易流量是实色带，价格重估（估值变了、没有资金移动）是斜纹带，占比与总量只算交易流量，右上有开关可以把重估整条拿掉；图例分开写。链路与节点是中性灰，不用橙与蓝，节点想着色由调用方给 color。排布用 d3-sankey 0.12.3（BSD-3-Clause，见 NOTICE），有环时不画、写 labels.cycle（先把回流拆成另一个节点）。需求稿是 issue #45，没有读到可对照的参照产品页面，待核对；演示数据全部虚构。",
+      "dependencies": [
+        "d3-sankey@0.12.3"
+      ],
+      "devDependencies": [
+        "@types/d3-sankey@0.12.5"
+      ],
+      "files": [
+        {
+          "path": "src/quant/flow-sankey-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/flow-sankey-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "flow-sankey",
+      "type": "registry:component",
+      "title": "Flow Sankey",
+      "description": "资金从来源（央行、银行信贷、财政、海外……）经通道到用途（偿债、消费、投资、资产配置）再到受益方的桑基图，节点与流量由调用方给，列由节点的 column 定。悬停节点或链路出 LCD 读数：金额、占来源流出、占总量；点节点（或聚焦后 Enter / 空格）钉住它的全部上游与下游，其余压暗，再点或 Esc 取消。「交易流量」与「价格重估」分开：交易流量是实色带，价格重估（估值变了、没有资金移动）是斜纹带，占比与总量只算交易流量，右上有开关可以把重估整条拿掉；图例分开写。链路与节点是中性灰，不用橙与蓝，节点想着色由调用方给 color。排布用 d3-sankey 0.12.3（BSD-3-Clause，见 NOTICE），有环时不画、写 labels.cycle（先把回流拆成另一个节点）。需求稿是 issue #45，没有读到可对照的参照产品页面，待核对；演示数据全部虚构。",
+      "registryDependencies": [
+        "@katana/chart-kit",
+        "@katana/flow-sankey-model",
+        "@katana/switch"
+      ],
+      "files": [
+        {
+          "path": "src/quant/flow-sankey.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/flow-sankey.tsx"
+        }
+      ]
+    },
+    {
       "name": "horizon-chart",
       "type": "registry:component",
       "title": "Horizon Chart",
@@ -2702,6 +2749,40 @@
           "path": "src/quant/uptime-bars.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/quant/uptime-bars.tsx"
+        }
+      ]
+    },
+    {
+      "name": "vintage-series-model",
+      "type": "registry:component",
+      "title": "Vintage Series Model",
+      "description": "宏观序列按发布时间（point-in-time）画，避免把后来修订的数当成当时已知（框架第十节的要求）。横轴是统计期，同一期有一串发布值（首次发布、每次修订）：一条实线是「当时已知值」（默认每期的首次发布值；给 asOf 就是截至那一刻已知的最后一次发布，那时还没发布的期不画），一条灰虚线是「最新修订值」，上面一排分段按钮切「当时已知值 / 最新修订值 / 两条都看」。每次发布画一个点（空心是当时已知，灰点是最新，更小的是中间的修订），同一期的点之间连细竖线，线长就是修订幅度；下面一条小图画每期修订了多少（最新 − 首次，涨跌发散阶，没修订过的期不画）。顶上四个读数：修订过的期数、平均绝对修订、平均修订方向（正是后来普遍上修）、最大一次。坐标、网格、十字线与 LCD 读数复用 SeriesExplorer 的那套，键位同它。演示数据是固定种子合成的虚构月度同比，页上与小标都写明。",
+      "files": [
+        {
+          "path": "src/quant/vintage-series-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/vintage-series-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "vintage-series",
+      "type": "registry:component",
+      "title": "Vintage Series",
+      "description": "宏观序列按发布时间（point-in-time）画，避免把后来修订的数当成当时已知（框架第十节的要求）。横轴是统计期，同一期有一串发布值（首次发布、每次修订）：一条实线是「当时已知值」（默认每期的首次发布值；给 asOf 就是截至那一刻已知的最后一次发布，那时还没发布的期不画），一条灰虚线是「最新修订值」，上面一排分段按钮切「当时已知值 / 最新修订值 / 两条都看」。每次发布画一个点（空心是当时已知，灰点是最新，更小的是中间的修订），同一期的点之间连细竖线，线长就是修订幅度；下面一条小图画每期修订了多少（最新 − 首次，涨跌发散阶，没修订过的期不画）。顶上四个读数：修订过的期数、平均绝对修订、平均修订方向（正是后来普遍上修）、最大一次。坐标、网格、十字线与 LCD 读数复用 SeriesExplorer 的那套，键位同它。演示数据是固定种子合成的虚构月度同比，页上与小标都写明。",
+      "registryDependencies": [
+        "@katana/chart-kit",
+        "@katana/cn",
+        "@katana/series-geometry",
+        "@katana/toggle-group",
+        "@katana/use-scrubber",
+        "@katana/vintage-series-model"
+      ],
+      "files": [
+        {
+          "path": "src/quant/vintage-series.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/vintage-series.tsx"
         }
       ]
     },
