@@ -250,7 +250,7 @@
   background: color-mix(in srgb, var(--ink-100) 6%, transparent);
 }
 .k-attr-index {
-  color: var(--chart-accent, var(--signal-orange));
+  color: var(--chart-accent, var(--ink-100));
 }
 .k-attr-row[data-kind='fee'] .k-attr-index {
   color: var(--ink-300);
@@ -307,7 +307,7 @@
     width var(--dur-snappy) var(--ease-snappy);
 }
 .k-attr-bar[data-focus='true'] {
-  --k-dot: var(--chart-accent, var(--signal-orange));
+  --k-dot: var(--chart-accent, var(--ink-100));
 }
 .k-attr-row[data-closed='true'] .k-attr-bar {
   --k-dot: var(--ink-300);
@@ -359,7 +359,7 @@
 }
 .k-attr-readout[data-size='main'] {
   padding-left: 10px;
-  border-left: 2px solid var(--chart-accent, var(--signal-orange));
+  border-left: 2px solid var(--chart-accent, var(--ink-100));
 }
 .k-attr-readout-label {
   color: var(--ink-300);
@@ -584,7 +584,7 @@ button.k-heat-cell {
   color: var(--ink-300);
 }
 .k-heat-cell[data-today='true'] {
-  box-shadow: inset 0 0 0 1px var(--chart-accent, var(--signal-orange));
+  box-shadow: inset 0 0 0 1px var(--chart-accent, var(--ink-100));
 }
 button.k-heat-cell[data-active='true'] {
   outline: 1px solid var(--ink-100);
@@ -889,7 +889,7 @@ button.k-sm-head:focus-visible {
 }
 /* 选中态：左侧 2px 强调色竖条（参照图 MASS / VOLUME 那种）。 */
 .k-sx-kpis .k-spark-tile[data-expanded='true'] {
-  border-left-color: var(--chart-accent, var(--signal-orange));
+  border-left-color: var(--chart-accent, var(--ink-100));
 }
 .k-sx-kpis .k-spark-tile-tag {
   color: var(--ink-300);
@@ -1001,11 +1001,11 @@ button.k-sm-head:focus-visible {
   opacity: 0.5;
 }
 .k-sx .k-brush-window {
-  border: 1px solid var(--chart-accent, var(--signal-orange));
+  border: 1px solid var(--chart-accent, var(--ink-100));
   background: transparent;
 }
 .k-sx .k-brush-handle::after {
-  background: var(--chart-accent, var(--signal-orange));
+  background: var(--chart-accent, var(--ink-100));
 }
 .k-sx-chart {
   position: relative;
@@ -1172,6 +1172,6 @@ button.k-sm-head:focus-visible {
   right: calc(var(--k-run) + 4px);
 }
 .k-sx-evt-text em {
-  color: var(--chart-accent, var(--signal-orange));
+  color: var(--chart-accent, var(--ink-100));
   font-style: normal;
 }

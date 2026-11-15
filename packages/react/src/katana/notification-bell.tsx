@@ -113,7 +113,7 @@ export function NotificationBell({
             exit={{ scale: 0, opacity: 0 }}
             transition={unit(snappy)}
             className={cn(
-              'pointer-events-none absolute top-0 right-0 grid place-items-center rounded-full bg-brand text-surface-0',
+              'pointer-events-none absolute top-0 right-0 grid place-items-center rounded-full bg-(--signal-orange) text-surface-0',
               variant === 'dot'
                 ? 'size-2 translate-x-[2px] -translate-y-[1px]'
                 : 'k-text-micro h-[14px] min-w-[14px] translate-x-[5px] -translate-y-[3px] overflow-hidden px-[3px] leading-none tracking-normal tabular-nums',

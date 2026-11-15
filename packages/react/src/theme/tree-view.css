@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: MIT */
 /* TreeView：照设计稿 DataGrid 卡（2026-11-14 读）：行高 --row-base，等宽字（中英混排对得齐），数量是 tabular-nums；
-   悬停 --bg-400，选中 --bg-000 + 左 2px --signal-orange（选中不改字重，免得换行宽）；缩进按层级 16px 一档（--k-tree-level 由组件按 aria-level 写）；
+   悬停 --bg-400，选中 --bg-000 + 左 2px --ink-100（选中不改字重，免得换行宽）；缩进按层级 16px 一档（--k-tree-level 由组件按 aria-level 写）；
    展开的箭头转 90 度（0.15s，同菜单）。RAC 在行上写 data-hovered / data-selected / data-focus-visible。 */
 .k-tree {
   display: flex;
@@ -33,7 +33,7 @@
 }
 .k-tree-item[data-selected] .k-tree-row {
   background: var(--bg-000);
-  box-shadow: inset 2px 0 0 var(--signal-orange);
+  box-shadow: inset 2px 0 0 var(--ink-100);
   color: var(--ink-100);
 }
 .k-tree-item[data-focus-visible] .k-tree-row {

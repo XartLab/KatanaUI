@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MIT
+import { MaximizeIcon } from 'lucide-react'
 import {
   useCallback,
   useId,
@@ -15,6 +16,8 @@ import { cn } from '../lib/cn.ts'
 import { RowContextMenu, type RowAction } from '../patterns/row-actions.tsx'
 import { SymbolMark } from '../katana/symbol-mark.tsx'
 import { layoutTreemap, type TreemapBlock } from '../katana/treemap-model.ts'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../primitives/select.tsx'
+import { Switch } from '../primitives/switch.tsx'
 import { ToggleGroup, ToggleGroupItem } from '../primitives/toggle-group.tsx'
 import { formatPrice, formatVolume } from './format/index.ts'
 import {
@@ -96,7 +99,33 @@ export type MarketHeatmapLabels = {
   empty: string
   /** 格子右键菜单的读屏名（传了 cellActions 才用）；省略时用英文。 */
   cellMenu?: string
+  /**
+   * 显示开关的文字（照 TradingView 热图的 logo、标题、格内数值三个开关，帮助中心「TradingView heatmaps」2026-11-15 读）；
+   * 不传就没有这一组开关，格子照旧（徽标 + 代码 + 着色指标的读数）。
+   */
+  display?: HeatmapDisplayLabels
+  /** 全屏按钮的读屏名与提示（容器 requestFullscreen，TradingView 热图有全屏）；不传就没有这个按钮。 */
+  fullscreen?: string
+  /** 数据集下拉的读屏名（传了 datasets 才用）。 */
+  dataset?: string
+  /** 「在选股器打开」按钮的字（传了 onOpenInScreener 才用）。 */
+  openInScreener?: string
 }
+
+export type HeatmapDisplayLabels = {
+  logo: string
+  /** 标题：无 / 代码 / 全名。 */
+  title: { label: string; none: string; code: string; name: string }
+  /** 格内数值：无 / 价格 / 当前大小指标的值（成交量、成交额…，等大时没有这项）/ 着色指标的读数（涨跌幅）。 */
+  value: { label: string; none: string; price: string; size: string; change: string }
+}
+
+export type HeatmapTitleMode = 'none' | 'code' | 'name'
+export type HeatmapValueMode = 'none' | 'price' | 'size' | 'change'
+
+/** 一行字估多宽（像素，12px 半粗体）：汉字 12，其余 7.4。 */
+const textWidth = (text: string) =>
+  Array.from(text).reduce((sum, ch) => sum + (/[\u2e80-\u9fff\uff00-\uffef]/.test(ch) ? 12 : CODE_CHAR_W), 0)
 
 export type MarketHeatmapProps = {
   items: readonly HeatmapItem[]
@@ -115,6 +144,17 @@ export type MarketHeatmapProps = {
   onSelect?: (code: string) => void
   /** 格子的右键菜单（#23，一般传 symbolMenu(...)）：右键、菜单键、Shift+F10 出同一份品种菜单；不传就没有。格子小，不画悬停按钮。 */
   cellActions?: (item: HeatmapItem) => readonly RowAction[]
+  /**
+   * 工具条：dropdowns（默认）= 数据集、大小、颜色、分组四个下拉（照 TradingView 热图，用户 2026-11-15 实测），
+   * segments = 每个指标一排分段按钮（指标少、想一眼看全时用）。
+   */
+  toolbar?: 'dropdowns' | 'segments'
+  /** 数据集（标普 500、纳斯达克 100…）：传了就在工具条最左出一个下拉，换了调 onDatasetChange（数据由调用方换）。 */
+  datasets?: readonly { key: string; label: string }[]
+  dataset?: string
+  onDatasetChange?: (key: string) => void
+  /** 工具条最右的「在选股器打开」按钮；调用方决定怎么打开。 */
+  onOpenInScreener?: () => void
   className?: string
 }
 
@@ -126,10 +166,13 @@ const MIN_CODE_H = 24
 const MIN_VALUE_H = 40
 /** 徽标分三档（按格子实际像素，同一个件不分小屏大屏）：徽标直径、需要的最小宽高；公司名要更大的格子。待定（#15）：像素阈值没实测，照 1920×1080 与 760 宽两种面板目测取的。 */
 const LOGO_TIERS = [
-  { size: 32, w: 110, h: 120 },
-  { size: 24, w: 72, h: 80 },
-  { size: 16, w: 44, h: 56 },
+  { size: 32, w: 140, h: 120 },
+  { size: 24, w: 96, h: 72 },
 ] as const
+/** 格子的四档（用户 2026-11-15 实测 TradingView 热图）：大 = 徽标 + 代码 + 读数；中 = 代码 + 读数；小 = 只有徽标（没图片是首字母）；更小 = 只有色块。 */
+const SMALL_LOGO = 16
+const MIN_SMALL_W = 20
+const MIN_SMALL_H = 20
 const NAME_W = 120
 const NAME_H = 110
 const HEAD_H = 22
@@ -175,8 +218,14 @@ export function MarketHeatmap({
   selected = null,
   onSelect,
   cellActions,
+  toolbar = 'dropdowns',
+  datasets,
+  dataset,
+  onDatasetChange,
+  onOpenInScreener,
   className,
 }: MarketHeatmapProps) {
+  const display = labels.display
   const uid = useId()
   const figure = useRef<HTMLElement>(null)
   const plot = useRef<HTMLDivElement>(null)
@@ -184,6 +233,9 @@ export function MarketHeatmap({
   const [colorKey, setColorKey] = useState(defaultColorBy ?? colorBy[0]?.key ?? '')
   const [grouped, setGrouped] = useState(defaultGrouped)
   const [drill, setDrill] = useState<string | null>(null)
+  const [showLogo, setShowLogo] = useState(true)
+  const [titleMode, setTitleMode] = useState<HeatmapTitleMode>('code')
+  const [valueMode, setValueMode] = useState<HeatmapValueMode>('change')
   const [hiddenSteps, setHiddenSteps] = useState<ReadonlySet<number>>(new Set())
   const [hover, setHover] = useState<Hover | null>(null)
   const [hoverGroup, setHoverGroup] = useState<string | null>(null)
@@ -457,50 +509,175 @@ export function MarketHeatmap({
         ) : null}
       </div>
       <div className="k-mheat-bar" data-slot="heatmap-toolbar">
-        <div className="k-mheat-field">
-          <span className="k-mheat-field-label">{labels.sizeBy}</span>
-          <ToggleGroup variant="sm" aria-label={labels.sizeBy} value={size.key} onValueChange={setSizeKey}>
-            {sizeBy.map((option) => (
-              <ToggleGroupItem key={option.key} value={option.key}>
-                {option.label}
-              </ToggleGroupItem>
-            ))}
-          </ToggleGroup>
-        </div>
-        <div className="k-mheat-field">
-          <span className="k-mheat-field-label">{labels.colorBy}</span>
-          <ToggleGroup
-            variant="sm"
-            aria-label={labels.colorBy}
-            value={color.key}
-            onValueChange={(next) => {
-              setColorKey(next)
-              setHiddenSteps(new Set())
-            }}
-          >
-            {colorBy.map((option) => (
-              <ToggleGroupItem key={option.key} value={option.key}>
-                {option.label}
-              </ToggleGroupItem>
-            ))}
-          </ToggleGroup>
-        </div>
-        {hasGroups ? (
-          <div className="k-mheat-field">
-            <span className="k-mheat-field-label">{labels.view}</span>
-            <ToggleGroup
-              variant="sm"
-              aria-label={labels.view}
-              value={grouped ? 'grouped' : 'flat'}
+        {datasets && datasets.length > 0 ? (
+          <Select value={dataset ?? datasets[0].key} onValueChange={(next) => onDatasetChange?.(next)}>
+            <SelectTrigger aria-label={labels.dataset ?? labels.group} className="k-mheat-select">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {datasets.map((option) => (
+                <SelectItem key={option.key} value={option.key}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        ) : null}
+        {toolbar === 'dropdowns' ? (
+          <>
+            <Select value={size.key} onValueChange={setSizeKey}>
+              <SelectTrigger aria-label={labels.sizeBy} className="k-mheat-select">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {sizeBy.map((option) => (
+                  <SelectItem key={option.key} value={option.key}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Select
+              value={color.key}
               onValueChange={(next) => {
-                setGrouped(next === 'grouped')
-                setDrill(null)
+                setColorKey(next)
+                setHiddenSteps(new Set())
               }}
             >
-              <ToggleGroupItem value="grouped">{labels.grouped}</ToggleGroupItem>
-              <ToggleGroupItem value="flat">{labels.flat}</ToggleGroupItem>
-            </ToggleGroup>
-          </div>
+              <SelectTrigger aria-label={labels.colorBy} className="k-mheat-select">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {colorBy.map((option) => (
+                  <SelectItem key={option.key} value={option.key}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {hasGroups ? (
+              <Select
+                value={grouped ? 'grouped' : 'flat'}
+                onValueChange={(next) => {
+                  setGrouped(next === 'grouped')
+                  setDrill(null)
+                }}
+              >
+                <SelectTrigger aria-label={labels.view} className="k-mheat-select">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="grouped">{labels.grouped}</SelectItem>
+                  <SelectItem value="flat">{labels.flat}</SelectItem>
+                </SelectContent>
+              </Select>
+            ) : null}
+          </>
+        ) : (
+          <>
+            <div className="k-mheat-field">
+              <span className="k-mheat-field-label">{labels.sizeBy}</span>
+              <ToggleGroup variant="sm" aria-label={labels.sizeBy} value={size.key} onValueChange={setSizeKey}>
+                {sizeBy.map((option) => (
+                  <ToggleGroupItem key={option.key} value={option.key}>
+                    {option.label}
+                  </ToggleGroupItem>
+                ))}
+              </ToggleGroup>
+            </div>
+            <div className="k-mheat-field">
+              <span className="k-mheat-field-label">{labels.colorBy}</span>
+              <ToggleGroup
+                variant="sm"
+                aria-label={labels.colorBy}
+                value={color.key}
+                onValueChange={(next) => {
+                  setColorKey(next)
+                  setHiddenSteps(new Set())
+                }}
+              >
+                {colorBy.map((option) => (
+                  <ToggleGroupItem key={option.key} value={option.key}>
+                    {option.label}
+                  </ToggleGroupItem>
+                ))}
+              </ToggleGroup>
+            </div>
+            {hasGroups ? (
+              <div className="k-mheat-field">
+                <span className="k-mheat-field-label">{labels.view}</span>
+                <ToggleGroup
+                  variant="sm"
+                  aria-label={labels.view}
+                  value={grouped ? 'grouped' : 'flat'}
+                  onValueChange={(next) => {
+                    setGrouped(next === 'grouped')
+                    setDrill(null)
+                  }}
+                >
+                  <ToggleGroupItem value="grouped">{labels.grouped}</ToggleGroupItem>
+                  <ToggleGroupItem value="flat">{labels.flat}</ToggleGroupItem>
+                </ToggleGroup>
+              </div>
+            ) : null}
+          </>
+        )}
+        {labels.fullscreen ? (
+          <button
+            type="button"
+            className="k-mheat-fullscreen"
+            data-slot="heatmap-fullscreen"
+            aria-label={labels.fullscreen}
+            title={labels.fullscreen}
+            onClick={() => {
+              const root = figure.current
+              if (!root) return
+              if (document.fullscreenElement === root) void document.exitFullscreen()
+              else void root.requestFullscreen?.()
+            }}
+          >
+            <MaximizeIcon size={14} aria-hidden="true" />
+          </button>
+        ) : null}
+        {display ? (
+          <>
+            <div className="k-mheat-field">
+              <span className="k-mheat-field-label">{display.logo}</span>
+              <Switch checked={showLogo} onCheckedChange={setShowLogo} aria-label={display.logo} />
+            </div>
+            <div className="k-mheat-field">
+              <span className="k-mheat-field-label">{display.title.label}</span>
+              <ToggleGroup
+                variant="sm"
+                aria-label={display.title.label}
+                value={titleMode}
+                onValueChange={(next) => setTitleMode(next as HeatmapTitleMode)}
+              >
+                <ToggleGroupItem value="none">{display.title.none}</ToggleGroupItem>
+                <ToggleGroupItem value="code">{display.title.code}</ToggleGroupItem>
+                <ToggleGroupItem value="name">{display.title.name}</ToggleGroupItem>
+              </ToggleGroup>
+            </div>
+            <div className="k-mheat-field">
+              <span className="k-mheat-field-label">{display.value.label}</span>
+              <ToggleGroup
+                variant="sm"
+                aria-label={display.value.label}
+                value={valueMode}
+                onValueChange={(next) => setValueMode(next as HeatmapValueMode)}
+              >
+                <ToggleGroupItem value="none">{display.value.none}</ToggleGroupItem>
+                <ToggleGroupItem value="price">{display.value.price}</ToggleGroupItem>
+                {size.equal ? null : <ToggleGroupItem value="size">{display.value.size}</ToggleGroupItem>}
+                <ToggleGroupItem value="change">{display.value.change}</ToggleGroupItem>
+              </ToggleGroup>
+            </div>
+          </>
+        ) : null}
+        {onOpenInScreener && labels.openInScreener ? (
+          <button type="button" className="k-mheat-open" data-slot="heatmap-open-screener" onClick={onOpenInScreener}>
+            {labels.openInScreener}
+          </button>
         ) : null}
       </div>
       <RowContextMenu
@@ -587,11 +764,22 @@ export function MarketHeatmap({
                   const w = cell.x1 - cell.x0
                   const h = cell.y1 - cell.y0
                   const showCode =
-                    w >= Math.max(MIN_CODE_W, item.code.length * CODE_CHAR_W + CODE_PAD_W) && h >= MIN_CODE_H
+                    w >= Math.max(MIN_CODE_W, textWidth(titleMode === 'name' ? item.name : item.code) + CODE_PAD_W) &&
+                    h >= MIN_CODE_H
                   const showValue = showCode && h >= MIN_VALUE_H
-                  const logo = showCode ? LOGO_TIERS.find((tier) => w >= tier.w && h >= tier.h) : undefined
-                  const showName = logo !== undefined && logo.size >= 24 && w >= NAME_W && h >= NAME_H
+                  const logo = showCode && showLogo ? LOGO_TIERS.find((tier) => w >= tier.w && h >= tier.h) : undefined
+                  const logoOnly = !showCode && showLogo && w >= MIN_SMALL_W && h >= MIN_SMALL_H
+                  const showName =
+                    titleMode === 'code' && logo !== undefined && logo.size >= 24 && w >= NAME_W && h >= NAME_H
                   const text = formatMetric(item.value[color.key], color)
+                  const cellValue =
+                    valueMode === 'price'
+                      ? item.price === undefined
+                        ? '—'
+                        : priceText(item.price)
+                      : valueMode === 'size'
+                        ? (size.format ?? formatVolume)(item.size[size.key] ?? 0)
+                        : text
                   return (
                     <div
                       key={item.code}
@@ -616,7 +804,7 @@ export function MarketHeatmap({
                       data-flash={flashing.has(item.code) || undefined}
                       data-selected={item.code === selected || undefined}
                       data-labelled={showCode}
-                      data-logo={logo?.size}
+                      data-logo={logo?.size ?? (logoOnly ? SMALL_LOGO : undefined)}
                       style={{ left: cell.x0, top: cell.y0, width: w, height: h } satisfies CSSProperties}
                       onClick={() => onSelect?.(item.code)}
                       onKeyDown={(event) => move(event, block, item.code)}
@@ -646,10 +834,16 @@ export function MarketHeatmap({
                               size={logo.size}
                             />
                           ) : null}
-                          <span className="k-mheat-code">{item.code}</span>
+                          {titleMode === 'none' ? null : (
+                            <span className="k-mheat-code">{titleMode === 'name' ? item.name : item.code}</span>
+                          )}
                           {showName ? <span className="k-mheat-name">{item.name}</span> : null}
-                          {showValue ? <span className="k-mheat-value">{text}</span> : null}
+                          {showValue && valueMode !== 'none' ? (
+                            <span className="k-mheat-value">{cellValue}</span>
+                          ) : null}
                         </>
+                      ) : logoOnly ? (
+                        <SymbolMark code={item.code} name={item.name} src={item.logo} size={SMALL_LOGO} />
                       ) : null}
                     </div>
                   )

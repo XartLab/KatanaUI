@@ -23,6 +23,8 @@
 | `selected` | `string \| null` | — | 选中的代码；选中的格子画 2px 白色内圈。 |
 | `onSelect` | `(code: string) => void` | — | 点格子，或焦点在格子上按 Enter / Space。 |
 | `cellActions` | `(item: HeatmapItem) => RowAction[]` | — | 格子的右键菜单（#23，一般传 symbolMenu(...)）：右键、菜单键、Shift+F10 出同一份品种菜单。格子小，不画悬停按钮。读屏名取 labels.cellMenu（可选）。不传就没有。 |
+| `labels.display` | `HeatmapDisplayLabels` | — | 给了，工具条多三个显示开关（照 TradingView 热图，主会话 2026-11-15 实测）：Logo 开关、标题（无 / 代码 / 全名）、格内数值（无 / 价格 / 当前大小指标的值 / 着色指标的读数）。不给格子照旧。 |
+| `labels.fullscreen` | `string` | — | 给了，工具条最右出全屏钮（容器 requestFullscreen），字是读屏名与提示。 |
 
 ## Usage
 

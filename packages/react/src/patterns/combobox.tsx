@@ -86,7 +86,7 @@ function ComboboxItem({
       className={cn('data-[checked]:font-medium data-[checked]:text-ink', className)}
       {...props}
     >
-      <span aria-hidden="true" className="w-[10px] flex-none text-brand">
+      <span aria-hidden="true" className="w-[10px] flex-none text-ink">
         {selected ? '✓' : ''}
       </span>
       {children}
