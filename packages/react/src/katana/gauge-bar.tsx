@@ -6,17 +6,34 @@ import type { ReactNode } from 'react'
 export type GaugeBarClasses = Partial<Record<'root' | 'head' | 'label' | 'value' | 'track' | 'fill' | 'note', string>>
 
 export type GaugeBarProps = {
+  /** The name. */
   label: ReactNode
-  /** 已经格式化好的数。 */
+  /**
+   * The already formatted number.
+   * 已经格式化好的数。
+   */
   value: ReactNode
-  /** 数取不到：数那里写原因，换成弱色。 */
+  /**
+   * The number could not be fetched: write the reason where the number goes, in a muted color.
+   * 数取不到：数那里写原因，换成弱色。
+   */
   unavailable?: boolean
-  /** 数在最小到最大之间的位置（0 到 1，越界按边画）；null 不画填充。 */
+  /**
+   * Position of the number between the minimum and maximum (0 to 1, clamped to the ends); null draws no fill.
+   * 数在最小到最大之间的位置（0 到 1，越界按边画）；null 不画填充。
+   */
   share: number | null
-  /** 档位词（整个节点由调用方给，常是一枚徽标）。 */
+  /**
+   * The level word (a whole node supplied by the caller, often a badge).
+   * 档位词（整个节点由调用方给，常是一枚徽标）。
+   */
   level?: ReactNode
+  /** A line of explanation underneath. */
   note?: ReactNode
-  /** 每个部位额外的类名，写在包里的类名之后。 */
+  /**
+   * Extra class names per part, written after the package ones.
+   * 每个部位额外的类名，写在包里的类名之后。
+   */
   classes?: GaugeBarClasses
 }
 

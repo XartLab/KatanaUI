@@ -27,17 +27,30 @@ export type DurationPickerLabels = {
 }
 
 export type DurationPickerProps = {
+  /** The current duration; typing calls back immediately, already clamped. */
   value?: DurationValue
+  /** Initial duration when uncontrolled. */
   defaultValue?: DurationValue
+  /** Called with the new duration. */
   onChange?: (value: DurationValue) => void
-  /** 点对勾或按 Enter 确认时触发，参数是确认的值。 */
+  /**
+   * Called with the confirmed value when the check mark is clicked or Enter is pressed.
+   * 点对勾或按 Enter 确认时触发，参数是确认的值。
+   */
   onConfirm?: (value: DurationValue) => void
+  /** Called when the editing state changes. */
   onEditingChange?: (editing: boolean) => void
+  /** Start in the editing state. */
   defaultEditing?: boolean
+  /** Upper bound for hours; larger input is clamped. */
   maxHours?: number
+  /** Upper bound for minutes; larger input is clamped. */
   maxMinutes?: number
+  /** Texts for the controls: hours, minutes, edit, save, hoursInput and minutesInput (required). */
   labels: DurationPickerLabels
+  /** Disable the picker. */
   disabled?: boolean
+  /** Extra class name on the root. */
   className?: string
 }
 

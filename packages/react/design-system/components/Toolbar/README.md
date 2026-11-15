@@ -4,41 +4,70 @@
 
 ## Provide
 
+`*` marks a required prop.
+
 ### Toolbar
 
 其余属性透传给 div；ref 给宿主量宽度、找子元素。
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `label` | `string` | — | 工具条的名字（屏幕阅读器念）。 |
+| `ref` | `Ref<T> \| undefined` | — | Allows getting a ref to the component instance. |
+| `label` * | `string` | — | Name of the toolbar (read by screen readers). |
 
 ### ToolbarGroup
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `side` | `'left' \| 'right'` | — | 左组或右组。 |
+| `side` * | `'left' \| 'right'` | — | Left group or right group. |
 
 ### ToolSlot
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `tool` | `string` | — | 工具 id，写成 data-tool，宿主据此量宽度。 |
-| `folded` | `boolean` | — | 收起：藏起来但不拆掉（量宽度还要用）。 |
-| `separator` | `boolean` | — | 前面画一道分隔线（相邻工具属于不同用途组）。 |
+| `tool` * | `string` | — | Tool id, written as data-tool so the host can measure widths. |
+| `folded` | `boolean` | — | Folded: hidden but not removed (it is still measured). |
+| `separator` | `boolean` | — | Draw a divider before it (neighbouring tools belong to different groups). |
 
 ### ToolButton
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `label` | `string` | — | 按钮的名字（aria-label，也是没有 title 时的悬停提示）。 |
-| `title` | `string` | — | 悬停提示（比名字多一句说明）。 |
-| `keys` | `ReactNode` | — | 提示里跟在后面的快捷键写法。 |
-| `pressed` | `boolean` | — | 开关类工具是否开着（aria-pressed，橙色）。 |
-| `renderTooltip` | `(button) => ReactElement` | — | 宿主有自己的提示件时包按钮。 |
+| `label` * | `string` | — | Name of the button: read by screen readers, and the hover hint when there is no title. |
+| `title` | `string` | — | Hover hint (one more sentence than the name). |
+| `keys` | `ReactNode` | — | Shortcut written after the hint (the host writes it from its key map). |
+| `pressed` | `boolean` | — | Whether a toggle tool is on (aria-pressed, orange). |
+| `disabled` | `boolean` | — | Disable the button. |
+| `onClick` * | `() => void` | — | Called when clicked. |
+| `className` | `string` | — | Extra class name on the button. |
+| `renderTooltip` | `(button: ReactElement) => ReactElement` | — | Wrap the button in the host's own tooltip component; the package tooltip is used when omitted. |
+| `children` * | `ReactNode` | — | The icon. |
 
 ### useRovingToolbar(ref)
 
 Toolbar 内部用；自己拼工具条的也可以拿去。整条只占一个 Tab 站。
+
+## Usage
+
+```tsx
+// SPDX-License-Identifier: MIT
+import { Bell } from 'lucide-react'
+import { ToolButton, Toolbar, ToolbarGroup, ToolSlot } from '@katana-ui/react/blocks'
+
+export function ToolbarUsage() {
+  return (
+    <Toolbar label="Chart toolbar">
+      <ToolbarGroup side="left">
+        <ToolSlot tool="alerts">
+          <ToolButton label="Alerts" onClick={() => {}}>
+            <Bell />
+          </ToolButton>
+        </ToolSlot>
+      </ToolbarGroup>
+    </Toolbar>
+  )
+}
+```
 
 ## States
 

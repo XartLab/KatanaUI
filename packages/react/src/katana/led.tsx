@@ -16,13 +16,23 @@ export function Led({
   small,
   label,
 }: {
+  /** on glows orange; ok, warn and danger are green, amber and red. */
   state?: LedState
+  /** Link group: panels in the same group follow the same symbol; the group color overrides state. */
   group?: LinkGroup | null
+  /** Hollow: transparent fill with a 1px border, no glow. */
   hollow?: boolean
-  /** 旁边没有写出状态的文字：熄灭态画一圈 3:1 的环，不靠近乎看不见的暗点单独表示（WCAG 1.4.11，#477）。 */
+  /**
+   * Set when no text next to the light names the state: the off state draws a 3:1 ring instead of a barely visible dark dot.
+   * 旁边没有写出状态的文字：熄灭态画一圈 3:1 的环，不靠近乎看不见的暗点单独表示（WCAG 1.4.11，#477）。
+   */
   bare?: boolean
-  /** 6px 的小灯：药丸这样的行内小件里用（来源角标，#1069）。 */
+  /**
+   * A 6px light for inline pieces such as pills.
+   * 6px 的小灯：药丸这样的行内小件里用（来源角标，#1069）。
+   */
   small?: boolean
+  /** Accessible name (required). */
   label: string
 }) {
   const tone = group ? `link-${group.toLowerCase()}` : state === 'off' ? '' : state

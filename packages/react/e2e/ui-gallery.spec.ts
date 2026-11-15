@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: MIT
 import { expect, test, type Locator, type Page } from '@playwright/test'
+import { readFileSync } from 'node:fs'
 import { summarize, type CoverageMap } from '../docs/coverage-core'
 import coverageMap from '../docs/coverage-map.json' with { type: 'json' }
+import propsGenerated from '../gallery/props.generated.json' with { type: 'json' }
 import { GROUPS, PAGES } from '../gallery/registry'
 
 // @katana-ui/react 的组件文档站（packages/react/gallery，入口 index.html，#1838、#1860）：在真浏览器里看用户看到的。
@@ -13,7 +15,7 @@ test.use({ viewport: { width: 1100, height: 1500 } })
 
 const THEMES = ['console', 'graphite'] as const
 
-// 文档站（#1860）：一页一个组件，地址 #/<件名>，预览容器带 data-gallery=<件名>。?theme= 指定主题（不带是 Console）。
+// 文档站（#1860）：一页一个组件，地址 #/<件名>，预览容器带 data-gallery=<件名>。?theme= 指定主题（不带是 Graphite）。
 const open = async (page: Page, theme: (typeof THEMES)[number], id = 'button') => {
   await page.goto(`/?theme=${theme}#/${id}`)
   await page.locator(`[data-gallery="${id}"]`).waitFor()
@@ -3899,15 +3901,26 @@ test('密度演示里的主按钮：Graphite 的底是 Graphite 的 --ink-100，
   expect(colors[0]).not.toBe(colors[1])
 })
 
-test('不带 ?theme= 是 Console；页头切到 Graphite，主按钮底色跟着变，地址带上 theme=graphite', async ({ page }) => {
+test('不带 ?theme= 是 Graphite；页头切到 Console，主按钮底色跟着变，地址带上 theme=console', async ({ page }) => {
   await page.goto('/#/button')
-  await expect(page.locator('html')).toHaveAttribute('data-theme', 'console')
-  const primary = section(page, 'button').getByRole('button', { name: 'primary', exact: true })
-  const console = await bg(primary)
-  await page.getByRole('group', { name: '主题' }).getByRole('button', { name: 'Graphite' }).click()
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'graphite')
-  await expect.poll(() => bg(primary)).not.toBe(console)
-  await expect(page).toHaveURL(/theme=graphite/)
+  const primary = section(page, 'button').getByRole('button', { name: 'primary', exact: true })
+  const graphite = await bg(primary)
+  await page.getByRole('group', { name: '主题' }).getByRole('button', { name: 'Console' }).click()
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'console')
+  await expect.poll(() => bg(primary)).not.toBe(graphite)
+  await expect(page).toHaveURL(/theme=console/)
+})
+
+test('文档站默认就是 Graphite：不带 ?theme= 时页面底色与目录栏底色是 Graphite 的 bg-000 与 bg-100（#1775）', async ({
+  page,
+}) => {
+  await page.goto('/#/button')
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'graphite')
+  // Graphite 的 bg-000 = #000000、bg-100 = #070707；Console 的 bg-100 是 #141311，默认要是 Console 就会红。
+  await expect(page.locator('html')).toHaveCSS('background-color', 'rgb(0, 0, 0)')
+  await expect(page.getByRole('navigation', { name: '组件' })).toHaveCSS('background-color', 'rgb(7, 7, 7)')
+  expect(await token(page, '--bg-100')).toBe('rgb(7, 7, 7)')
 })
 
 test('目录：按类分组；直接打开 #/<件名>；点链接换页、后退回上一页；没有的页写原因', async ({ page }) => {
@@ -4715,6 +4728,122 @@ for (const theme of THEMES) {
     await expect(doc.getByTestId('mon-empty').locator('.k-sysmon-empty')).toHaveCount(4)
     await expect(doc.getByTestId('mon-empty').locator('.k-sysmon-empty').first()).toHaveText('未连接')
   })
+
+  test(`传导链图（${theme}）：布局从上到下、状态色与线型、点边出证据与失败条件、点节点淡出不相干的边、缩放平移适应、无节点写未连接`, async ({
+    page,
+  }) => {
+    await open(page, theme, 'transmission-chain')
+    const doc = section(page, 'transmission-chain')
+    const chain = doc.getByTestId('tc-frame').getByTestId('tc')
+    const canvas = chain.locator('.k-tc-canvas')
+    const edges = chain.locator('.k-tc-edge')
+    const nodes = chain.locator('.k-tc-node')
+    await expect(nodes).toHaveCount(7)
+    await expect(edges).toHaveCount(8)
+    // 布局：从上到下，整张图在视口里（适应窗口）。
+    const nodeBox = async (id: string) => (await chain.locator(`[data-node-id="${id}"]`).boundingBox())!
+    const geo = await nodeBox('geo')
+    const rules = await nodeBox('rules')
+    const credit = await nodeBox('credit')
+    const price = await nodeBox('price')
+    expect(geo.y + geo.height).toBeLessThan(rules.y)
+    expect(rules.y + rules.height).toBeLessThan(credit.y)
+    expect(price.width).toBeGreaterThan(40)
+    const area = (await canvas.boundingBox())!
+    for (const b of [geo, price]) {
+      expect(b.x).toBeGreaterThanOrEqual(area.x - 1)
+      expect(b.x + b.width).toBeLessThanOrEqual(area.x + area.width + 1)
+      expect(b.y).toBeGreaterThanOrEqual(area.y - 1)
+      expect(b.y + b.height).toBeLessThanOrEqual(area.y + area.height + 1)
+    }
+    // 状态色与线型：支持涨色实线、反对跌色、部分琥珀点划线、未检验灰虚线；不是橙色。
+    const stroke = (id: string) =>
+      chain.locator(`[data-edge-id="${id}"] .k-tc-line`).evaluate((el) => {
+        const style = getComputedStyle(el)
+        return { color: style.stroke, dash: style.strokeDasharray }
+      })
+    const probe = async (name: string) => {
+      const color = await token(page, name)
+      return color
+    }
+    expect((await stroke('e1')).color).toBe(await probe('--pnl-up'))
+    expect((await stroke('e1')).dash).toBe('none')
+    expect((await stroke('e6')).color).toBe(await probe('--pnl-down'))
+    expect((await stroke('e3')).color).toBe(await probe('--signal-amber'))
+    expect((await stroke('e3')).dash).not.toBe('none')
+    expect((await stroke('e4')).color).toBe(await probe('--ink-400'))
+    expect((await stroke('e4')).dash).not.toBe('none')
+    // 标签：状态图标 + 文字 + 证据计数；没证据的不写计数。
+    await expect(chain.locator('[data-edge-id="e1"] .k-tc-chip-text')).toHaveText('目标约束规则 支 2 反 0')
+    await expect(chain.locator('[data-edge-id="e4"] .k-tc-chip-text')).toHaveText('资金外流')
+    await expect(chain.locator('[data-edge-id="e8"]')).toHaveAttribute('data-feedback', 'true')
+    // 图例：四种状态各一条，条数对得上（支持 4 含反馈边、部分 2、反对 1、未检验 1）。
+    const legend = chain.locator('.k-tc-legend li')
+    await expect(legend).toHaveCount(4)
+    await expect(legend.nth(0)).toContainText('有证据支持')
+    await expect(legend.nth(0).locator('b')).toHaveText('4')
+    await expect(legend.nth(1).locator('b')).toHaveText('2')
+    await expect(legend.nth(2).locator('b')).toHaveText('1')
+    await expect(legend.nth(3).locator('b')).toHaveText('1')
+    // 没选：写提示。点边：右侧出这条边的标题、状态字、失败条件、证据行（立场字 + 来源类别）。
+    await expect(chain.locator('.k-tc-hint')).toBeVisible()
+    await chain.locator('[data-edge-id="e6"] .k-tc-chip').click()
+    const detail = chain.getByTestId('tc-edge-detail')
+    await expect(detail.locator('.k-tc-title')).toHaveText('境内外资产配置 → 资产价格')
+    await expect(detail.locator('.k-tc-badge')).toContainText('证据反对')
+    await expect(detail.locator('.k-tc-failure')).toHaveText('资金外流加快的时期，境内资产价格没有承压。')
+    const rows = detail.locator('.k-hl-ev')
+    await expect(rows).toHaveCount(2)
+    await expect(rows.first()).toContainText('反对')
+    await expect(rows.first()).toContainText('政策与资金变化')
+    await expect(rows.first()).toContainText('2026-10-20')
+    await expect(rows.first().locator('.k-hl-source')).toHaveText('演示数据')
+    await expect(chain.locator('[data-edge-id="e6"]')).toHaveAttribute('data-selected', 'true')
+    // 没写失败条件、没有证据的边：提示写出来。
+    await chain.locator('[data-edge-id="e4"] .k-tc-chip').click()
+    await expect(detail.locator('.k-tc-badge')).toContainText('未检验')
+    await expect(detail.locator('.k-tc-missing')).toHaveText('还没有证据。')
+    // 点节点：列出上下游边，不相干的边与节点淡出；点上下游里的一条跳到那条边。
+    await chain.locator('[data-node-id="price"]').click()
+    const nodeDetail = chain.getByTestId('tc-node-detail')
+    await expect(nodeDetail.locator('.k-tc-title')).toHaveText('资产价格')
+    await expect(nodeDetail.locator('.k-tc-link')).toHaveCount(3)
+    await expect(chain.locator('[data-edge-id="e1"]')).toHaveAttribute('data-dim', 'true')
+    await expect(chain.locator('[data-edge-id="e8"]')).not.toHaveAttribute('data-dim', 'true')
+    await expect(chain.locator('[data-edge-id="e1"]')).toHaveCSS('opacity', '0.3')
+    await nodeDetail.locator('.k-tc-link').last().click()
+    await expect(detail.locator('.k-tc-title')).toHaveText('资产价格 → 信用与购买力分配')
+    await expect(detail.locator('.k-tc-badge')).toContainText('有证据支持')
+    // 键盘：焦点到边上按 Enter 选中。
+    await chain.locator('[data-edge-id="e2"]').focus()
+    await page.keyboard.press('Enter')
+    await expect(chain.locator('[data-edge-id="e2"]')).toHaveAttribute('data-selected', 'true')
+    // 缩放：滚轮放大、按钮缩小、适应回到初始；拖背景平移。
+    const k = async () => Number(await chain.locator('[data-view-k]').getAttribute('data-view-k'))
+    const translate = () => chain.locator('[data-view-k]').getAttribute('transform')
+    const k0 = await k()
+    const t0 = await translate()
+    await page.mouse.move(area.x + area.width / 2, area.y + 6)
+    await page.mouse.wheel(0, -300)
+    await expect.poll(k).toBeGreaterThan(k0 * 1.3)
+    const kZoomed = await k()
+    await chain.getByRole('button', { name: '缩小' }).click()
+    await expect.poll(k).toBeLessThan(kZoomed)
+    await page.mouse.move(area.x + 8, area.y + 8)
+    await page.mouse.down()
+    await page.mouse.move(area.x + 68, area.y + 48, { steps: 4 })
+    await page.mouse.up()
+    await expect.poll(translate).not.toBe(t0)
+    await chain.getByRole('button', { name: '适应窗口' }).click()
+    await expect.poll(translate).toBe(t0)
+    await expect.poll(k).toBeCloseTo(k0, 3)
+    // 点空白取消选择。
+    await page.mouse.click(area.x + 8, area.y + 8)
+    await expect(chain.locator('.k-tc-hint')).toBeVisible()
+    // 没有节点：写未连接。
+    await expect(doc.getByTestId('tc-empty').locator('.k-tc-empty')).toHaveText('未连接')
+  })
+
   test(`假说账（${theme}）：一行一条、展开看失败条件与证据、倒计时与自动过期、按层与状态筛选、观察表`, async ({
     page,
   }) => {
@@ -4812,3 +4941,58 @@ for (const theme of THEMES) {
     await expect(rows).toHaveCount(6)
   })
 }
+
+// 属性表读生成的数据、每页有「用法」（#1902）。
+
+test('每一页的「用法」：最小例子渲染出来，下面是它的源码', async ({ page }) => {
+  for (const doc of PAGES) {
+    await page.goto(`/#/${doc.id}`)
+    const usage = page.locator('[data-usage]')
+    await expect(usage.getByRole('heading', { name: '用法' })).toBeVisible()
+    const live = usage.locator('[data-usage-live]')
+    await expect(live, `${doc.id} 的用法例子`).toBeVisible()
+    expect((await live.boundingBox())!.height, `${doc.id} 的用法例子有高度`).toBeGreaterThan(20)
+    await expect(usage.locator('[data-usage-code] [data-slot="code-block-pre"]')).toContainText('@katana-ui/react')
+    await expect(usage.getByRole('button', { name: '复制用法代码' })).toBeVisible()
+  }
+})
+
+test('复制用法：剪贴板里是那个例子文件的源码（引包名），提示换成「已复制」再复原', async ({ page, context }) => {
+  await context.grantPermissions(['clipboard-read', 'clipboard-write'])
+  await page.goto('/#/button')
+  const usage = page.locator('[data-usage]')
+  const copy = usage.getByRole('button', { name: '复制用法代码' })
+  await copy.click()
+  await expect(page.getByRole('tooltip').or(page.locator('[data-slot="tooltip-content"]')).first()).toHaveText('已复制')
+  const text = await page.evaluate(() => navigator.clipboard.readText())
+  const file = readFileSync('gallery/usage/ButtonUsage.tsx', 'utf8')
+  expect(text).toBe(file.replace(/'\.\.\/\.\.\/src\/index'/, "'@katana-ui/react'").trimEnd())
+  expect(text).toContain("import { Button } from '@katana-ui/react'")
+  expect(text).not.toMatch(/\.\.\/\.\.\/src/)
+  await expect(copy).not.toHaveAttribute('data-copied', '', { timeout: 6000 })
+})
+
+test('属性表：Button 页的行就是 TS 类型生成的（名、类型、默认值、必填标记、英文说明），不列继承来的 button 属性', async ({
+  page,
+}) => {
+  await page.goto('/#/button')
+  const table = page.locator('[data-part="Button"] table')
+  const generated = propsGenerated.exports.Button.props
+  await expect(table.locator('tbody tr')).toHaveCount(generated.length)
+  for (const prop of generated) {
+    const row = table
+      .locator('tbody tr')
+      .filter({ has: page.locator('td:first-child code', { hasText: new RegExp(`^${prop.name}$`) }) })
+    await expect(row.locator('td').nth(3)).toHaveText(prop.description)
+    await expect(row.locator('td').nth(2)).toHaveText(prop.default ?? '—')
+  }
+  await expect(table.locator('td:first-child code', { hasText: /^onClick$/ })).toHaveCount(0)
+  // 必填的属性带星号：MultiSelect 的 values 必填，label 可选。
+  await page.goto('/#/multi-select')
+  const values = page.locator('[data-part="MultiSelect"] tbody tr').filter({ hasText: 'Ids of the selected options.' })
+  await expect(values.locator('abbr[title="必填"]')).toHaveCount(1)
+  const label = page
+    .locator('[data-part="MultiSelect"] tbody tr')
+    .filter({ hasText: 'Accessible name of the trigger.' })
+  await expect(label.locator('abbr')).toHaveCount(0)
+})

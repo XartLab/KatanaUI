@@ -4,17 +4,39 @@
 
 ## Provide
 
+`*` marks a required prop.
+
 ### ThemeSelector
 
 role=radiogroup；tab 只停在选中那张。value 传 null 表示受控但还没选。
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `themes` | `ThemeOption[]` | — | { value, label, colors: { rail, panel, line, strong, muted, tile } }（必填）。 |
-| `value / defaultValue / onChange` | `string` | — | 当前主题。 |
-| `label` | `string` | — | 整组的读屏名（必填）。 |
-| `showLabels` | `boolean` | `true` | 缩略下面写不写名字（读屏名不受影响）。 |
-| `disabled` | `boolean` | — | 整组禁用。 |
+| `themes` * | `readonly ThemeOption[]` | — | The themes to choose from, each with value, label and preview colors (required). |
+| `value` | `string \| null` | — | The current theme; null means controlled but nothing selected. |
+| `defaultValue` | `string` | — | Initial theme when uncontrolled. |
+| `onChange` | `(value: string) => void` | — | Called with the chosen theme value. |
+| `label` * | `string` | — | Accessible name of the whole group (required). |
+| `showLabels` | `boolean` | `true` | Whether to write the name under each thumbnail (accessible names are not affected). |
+| `disabled` | `boolean` | — | Disable the whole group. |
+| `className` | `string` | — | Extra class name on the root. |
+
+## Usage
+
+```tsx
+// SPDX-License-Identifier: MIT
+import { ThemeSelector, type ThemeOption } from '@katana-ui/react'
+
+const colors = { rail: '#111', panel: '#181818', line: '#333', strong: '#eee', muted: '#888', tile: '#222' }
+const THEMES: readonly ThemeOption[] = [
+  { value: 'console', label: 'Console', colors },
+  { value: 'graphite', label: 'Graphite', colors },
+]
+
+export function ThemeSelectorUsage() {
+  return <ThemeSelector themes={THEMES} label="Theme" defaultValue="console" />
+}
+```
 
 ## States
 

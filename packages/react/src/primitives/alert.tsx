@@ -15,6 +15,7 @@ const alertVariants = cva(
   ],
   {
     variants: {
+      /** Color of the stripe and the icon. */
       tone: {
         default: 'border-l-alpha-white-12 [&>svg]:text-ink-3',
         ok: 'border-l-ok [&>svg]:text-ok',

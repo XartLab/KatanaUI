@@ -4,18 +4,32 @@
 
 ## Provide
 
+`*` marks a required prop.
+
 ### Sparkline
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `values` | `readonly number[]` | — | 从旧到新；少于两个数画「—」。 |
-| `label` | `string` | — | 读屏名（整句，含没有数据的说法），必填，由调用方按界面语言写。 |
-| `tone` | `'up' \| 'down' \| 'flat'` | — | 不给就按头尾涨跌。 |
-| `className / emptyClassName` | `string` | — | 加在折线 svg 与空态「—」上。 |
+| `values` * | `readonly number[]` | — | The values from oldest to newest; fewer than two draws a dash. |
+| `label` * | `string` | — | Accessible name as a whole sentence, including how "no data" is said; written by the caller in the UI language (required). |
+| `tone` | `QuoteTone` | — | Color tone; follows the first-to-last change when omitted. |
+| `className` | `string` | — | Extra class name on the svg, written before is-<tone>. |
+| `emptyClassName` | `string` | — | Extra class name on the dash shown when there is no data. |
 
 ### 纯函数
 
 sparkPoints(values, width, height) 给 polyline 的点；sparkTone(values) 取头尾三态；quoteTone(change) 由一个涨跌数取三态（报价类的件共用）。
+
+## Usage
+
+```tsx
+// SPDX-License-Identifier: MIT
+import { Sparkline } from '@katana-ui/react'
+
+export function SparklineUsage() {
+  return <Sparkline values={[10, 10.4, 10.2, 11, 11.8]} label="Price trend, up" />
+}
+```
 
 ## States
 

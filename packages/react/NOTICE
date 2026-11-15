@@ -58,7 +58,11 @@ This package is licensed under the MIT License (see LICENSE).
    子集的生成办法没有随文件搬来，上游版本号与读取日期除 Doto 外待核对。
    Barlow Condensed, DM Mono, Doto and Maple Mono NF CN are used under SIL OFL 1.1; the licence texts ship next to the font files.
 
-6. d3-sankey（https://github.com/d3/d3-sankey ，BSD-3-Clause，Copyright 2015, Mike Bostock；2026-11-15 核对 0.12.3 的 LICENSE 与 package.json）
+6. @dagrejs/dagre 3.1.3（https://github.com/dagrejs/dagre ，MIT，2026-11-15 读 npm 包 package.json 的 license 字段）
+   `src/blocks/transmission-chain/` 的有向图布局用它（运行时依赖，代码不随本包分发，由使用者的包管理器安装；它依赖的 @dagrejs/graphlib 同为 MIT）。
+   dagre is a runtime dependency (MIT) used for the transmission chain graph layout; it is installed from npm and not redistributed here.
+
+7. d3-sankey（https://github.com/d3/d3-sankey ，BSD-3-Clause，Copyright 2015, Mike Bostock；2026-11-15 核对 0.12.3 的 LICENSE 与 package.json）
    `src/quant/flow-sankey-model.ts` 用它排桑基图，是运行时依赖（`d3-sankey` 0.12.3），代码不随本包分发，由使用者的包管理器安装；
    它再依赖 d3-array 2.12.1、d3-shape 1.3.7、d3-path 1.0.9，核对过，都是 BSD-3-Clause。BSD-3-Clause 的条件：再分发时带着版权声明与许可条文、
    不用作者名字为衍生品背书；我们不分发它的代码，条文随它自己的包走。类型取自 DefinitelyTyped 的 `@types/d3-sankey`（MIT，只是开发依赖）。

@@ -254,6 +254,11 @@
           "target": "~/src/katana/ui/theme/technical-rating.css"
         },
         {
+          "path": "src/theme/transmission-chain.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/transmission-chain.css"
+        },
+        {
           "path": "src/theme/tree-view.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/tree-view.css"
@@ -3201,6 +3206,33 @@
           "path": "src/blocks/strategy-report/strategy-report.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/blocks/strategy-report/strategy-report.tsx"
+        }
+      ]
+    },
+    {
+      "name": "transmission-chain",
+      "type": "registry:component",
+      "title": "Transmission Chain",
+      "description": "研究「谁创造资金 → 谁先取得购买力 → 经过什么通道 → 用于什么 → 谁获得收入与利润 → 哪类资产拥有收益权」这类传导框架的有向图：节点是传导环节，边是传导关系，每条边有验证状态（未检验 / 有证据支持 / 证据反对 / 部分成立）与证据计数，边上的标签写状态图标与「支 n 反 n」。点边，右侧出这条判断的失败条件与证据列表（每条证据有立场，并标来源类别：学者观点 / 政策与资金变化 / 数据 / 财报）；点节点，列出它的上下游边，不挨着的边淡出。支持沿链回到上游的反馈边（如资产价格经抵押品与再融资回到信用）。布局用 dagre（MIT，一层一层排，环由它先反转再还原），滚轮缩放、拖动平移、一键适应。状态色：支持 = 涨色、反对 = 跌色、部分 = 琥珀点划线、未检验 = 灰虚线，状态另有图标与状态字，不只靠颜色；橙色不画数据，不用蓝。画法参照 TradingView 的缩放与平移手感；证据行与数据类型同 HypothesisLedger（HypothesisEvidence，样式用它的 k-hl-ev）。演示数据（状态与证据条数）是编的，页上与证据行都写明。",
+      "dependencies": [
+        "@dagrejs/dagre@3.1.3",
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/button",
+        "@katana/cn",
+        "@katana/hypothesis-ledger"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/transmission-chain/transmission-chain-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/transmission-chain/transmission-chain-model.ts"
+        },
+        {
+          "path": "src/blocks/transmission-chain/transmission-chain.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/transmission-chain/transmission-chain.tsx"
         }
       ]
     },

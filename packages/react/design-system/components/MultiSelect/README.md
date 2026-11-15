@@ -4,18 +4,47 @@
 
 ## Provide
 
+`*` marks a required prop.
+
 ### MultiSelect
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `values` | `readonly string[]` | — | 已选项的 id。 |
-| `options` | `readonly (readonly [string, string])[]` | — | [id, 显示的字]，按这个顺序显示与上报。 |
-| `onValuesChange` | `(values: string[]) => void` | — | 切了一项后的整组 id。 |
-| `empty` | `string` | — | 一个都没选时触发器上写的字。 |
-| `separator` | `string` | — | 已选项名字之间的分隔。 |
-| `label` | `string` | — | 触发器的读屏名字。 |
-| `width` | `number` | — | 触发器宽度（px）。 |
-| `triggerClassName / contentClassName` | `string` | — | 应用里的样式与测试按这两个类找触发器与弹层。 |
+| `values` * | `readonly string[]` | — | Ids of the selected options. |
+| `options` * | `readonly (readonly [string, string])[]` | — | Options as [id, label] pairs, shown and reported in this order. |
+| `onValuesChange` * | `(values: string[]) => void` | — | Called with the full list of selected ids after one option toggles. |
+| `empty` * | `string` | — | Text on the trigger when nothing is selected. |
+| `label` | `string` | — | Accessible name of the trigger. |
+| `separator` * | `string` | — | Text placed between the selected option names. |
+| `width` | `number` | — | Trigger width in px. |
+| `triggerClassName` | `string` | — | Extra class name on the trigger, for app styles and tests to find it. |
+| `contentClassName` | `string` | — | Extra class name on the popup, for app styles and tests to find it. |
+
+## Usage
+
+```tsx
+// SPDX-License-Identifier: MIT
+import { useState } from 'react'
+import { MultiSelect } from '@katana-ui/react'
+
+export function MultiSelectUsage() {
+  const [values, setValues] = useState(['name'])
+  return (
+    <MultiSelect
+      label="Columns"
+      values={values}
+      onValuesChange={setValues}
+      options={[
+        ['name', 'Name'],
+        ['price', 'Price'],
+        ['volume', 'Volume'],
+      ]}
+      empty="None"
+      separator=", "
+    />
+  )
+}
+```
 
 ## States
 

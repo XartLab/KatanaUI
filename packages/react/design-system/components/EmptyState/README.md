@@ -4,15 +4,33 @@
 
 ## Provide
 
+`*` marks a required prop.
+
 ### EmptyState
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `tag` | `string` | — | 点阵小标签；点阵字体没打包时回退到等宽字体。 |
-| `title` | `string` | — | 标题。 |
-| `children` | `ReactNode` | — | 标题下的说明。 |
-| `actions` | `ReactNode` | — | 动作区（按钮）。 |
-| `classNames` | `Partial<Record<root \| tag \| title \| text \| actions, string>>` | — | 各部分额外类名。 |
+| `tag` | `string` | — | Small dot-matrix tag such as NO DATA (the caller writes the text). |
+| `title` * | `string` | — | The title. |
+| `children` | `ReactNode` | — | The description under the title. |
+| `actions` | `ReactNode` | — | The action area (buttons). |
+| `classNames` | `Partial<Record<EmptyStateSlot, string>>` | `{}` | Extra class names per part. |
+
+## Usage
+
+```tsx
+// SPDX-License-Identifier: MIT
+import { Button } from '@katana-ui/react'
+import { EmptyState } from '@katana-ui/react/blocks'
+
+export function EmptyStateUsage() {
+  return (
+    <EmptyState tag="NO DATA" title="Nothing selected" actions={<Button variant="primary">Pick a symbol</Button>}>
+      <p>Connect a data source first.</p>
+    </EmptyState>
+  )
+}
+```
 
 ## States
 
