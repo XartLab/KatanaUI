@@ -2656,10 +2656,54 @@ for (const theme of THEMES) {
       await expect(rating.locator('[data-slot="rating-row"]')).toHaveCount(20)
       // 免责一句与「演示数据」标识都在。
       await expect(rating.locator('[data-slot="rating-disclaimer"]')).toHaveText(
-        '评级只是指标读数的汇总，不是买卖建议。',
+        'Ratings only summarise indicator readings; they are not trading advice.',
       )
+      // 十个周期，选中一个。
+      await expect(rating.locator('[data-slot="rating-timeframe"] button')).toHaveCount(10)
+      // 两张明细表并排（同一行、不同列），枢轴点表整宽在它们下面，七行，缺值写「—」。
+      const cards = rating.locator('[data-slot="rating-section"]')
+      await expect(cards).toHaveCount(2)
+      const [c0, c1, pv] = await Promise.all([
+        cards.nth(0).boundingBox(),
+        cards.nth(1).boundingBox(),
+        rating.locator('[data-slot="rating-pivots"]').boundingBox(),
+      ])
+      expect(Math.abs(c0!.y - c1!.y)).toBeLessThan(2)
+      expect(c1!.x).toBeGreaterThan(c0!.x + c0!.width - 2)
+      expect(pv!.y).toBeGreaterThan(c0!.y + c0!.height - 2)
+      expect(pv!.width).toBeGreaterThan(c0!.width * 1.8)
+      await expect(rating.locator('[data-slot="pivot-row"]')).toHaveText([
+        /^R3/,
+        /^R2/,
+        /^R1/,
+        /^P/,
+        /^S1/,
+        /^S2/,
+        /^S3/,
+      ])
+      await expect(rating.locator('[data-slot="rating-pivots"] thead th')).toContainText([
+        'Classic',
+        'Fibonacci',
+        'Camarilla',
+        'Woodie',
+        'DM',
+      ])
+      await expect(rating.locator('[data-slot="rating-pivots"] td', { hasText: '—' }).first()).toBeVisible()
+      // 弧：两端是涨跌色，中段是灰。
+      const stroke = (i: number) =>
+        dials
+          .nth(1)
+          .locator(`.k-trating-zone.is-z${i}`)
+          .evaluate((n) => getComputedStyle(n).stroke)
+      expect(await rgba(page, await stroke(0))).toEqual(await rgba(page, await token(page, '--pnl-down')))
+      expect(await rgba(page, await stroke(4))).toEqual(await rgba(page, await token(page, '--pnl-up')))
+      for (const i of [1, 2, 3]) {
+        const c = await rgba(page, await stroke(i))
+        expect(c).not.toEqual(await rgba(page, await token(page, '--pnl-down')))
+        expect(c).not.toEqual(await rgba(page, await token(page, '--pnl-up')))
+      }
       const zoneOf = (v: number) => (v < -0.5 ? 0 : v < -0.1 ? 1 : v <= 0.1 ? 2 : v <= 0.5 ? 3 : 4)
-      const WORDS = ['强卖', '卖', '中性', '买', '强买']
+      const WORDS = ['Strong sell', 'Sell', 'Neutral', 'Buy', 'Strong buy']
       // 每个仪表：个数文字里的卖 / 买算出分数，针的实际旋转（读算出来的 transform）等于 分数 × 90°，大字是所在档；总数与明细行数对得上。
       const check = async () => {
         for (let i = 0; i < 3; i += 1) {
@@ -2668,7 +2712,7 @@ for (const theme of THEMES) {
           const [sell, neutral, buy] = [...text.matchAll(/(\d+)/g)].map((m) => Number(m[1]))
           const value = (buy! - sell!) / (sell! + neutral! + buy!)
           await expect(dial.locator('[data-slot="rating-word"]')).toHaveText(WORDS[zoneOf(value)]!)
-          await expect(dial).toContainText(`共 ${sell! + neutral! + buy!} 项指标`)
+          await expect(dial).toContainText(`${sell! + neutral! + buy!} indicators`)
           await expect
             .poll(async () =>
               dial.locator('[data-slot="rating-needle"]').evaluate((node) => {
@@ -2689,15 +2733,16 @@ for (const theme of THEMES) {
           .locator('[data-slot="rating-word"]')
           .evaluate((n) => parseFloat(getComputedStyle(n).fontSize))
       expect(await size(1)).toBeGreaterThan(await size(0))
-      // 五档刻度字在总评上都看得见。
-      await expect(dials.nth(1).locator('[data-slot="rating-tick"]')).toHaveText(WORDS)
+      // 总评上看得见中间三档的刻度字（两端靠弧色与大字），小仪表不画刻度字。
+      await expect(dials.nth(1).locator('[data-slot="rating-tick"]')).toHaveText(WORDS.slice(1, 4))
+      await expect(dials.nth(0).locator('[data-slot="rating-tick"]').first()).toBeHidden()
       // 颜色：买档的大字是涨色、卖档是跌色，中性不是这两个色。
       const up = await token(page, '--pnl-up')
       const down = await token(page, '--pnl-down')
       // 切周期：分段控件点一下，仪表读数跟着变（针与个数），再回来。
       const before = await dials.nth(1).locator('[data-slot="rating-counts"]').textContent()
       const seen = new Set<string>([before!])
-      for (const name of ['1 分', '1 月']) {
+      for (const name of ['1 minute', '1 month']) {
         await rating.getByRole('button', { name }).click()
         await expect(rating.getByRole('button', { name })).toHaveAttribute('aria-pressed', 'true')
         await check()
@@ -2715,6 +2760,8 @@ for (const theme of THEMES) {
       const buyPill = rating.locator('[data-slot="rating-row"][data-verdict="buy"] .k-trating-verdict').first()
       await expect(buyPill).toBeVisible()
       expect(await colorAt(page, buyPill, 'color')).toEqual(await rgba(page, up))
+      // 纯文字上色：没有填色底。
+      expect((await colorAt(page, buyPill, 'background-color'))[3]).toBe(0)
       const row = rating.locator('[data-slot="rating-row"]').first()
       const idle = await bg(row)
       await row.hover()
@@ -5292,6 +5339,166 @@ for (const theme of THEMES) {
     expect(await color('BETA')).not.toBe(await color('ALFA'))
     await expect(reader.getByRole('region', { name: '要点' }).locator('li')).toHaveCount(3)
     for (const name of ['复制链接', '举报', '关闭']) await expect(reader.getByRole('button', { name })).toBeVisible()
+  })
+
+  test(`品种概览：业绩条点一格选中并回调，涨跌幅按涨跌上色，过千写 K% · ${theme}`, async ({ page }) => {
+    await open(page, theme, 'performance-strip')
+    const strip = section(page, 'performance-strip').locator('[data-slot="performance-strip"]')
+    const cells = strip.locator('[data-slot="performance-cell"]')
+    await expect(cells).toHaveCount(10)
+    await expect(cells.nth(8).locator('.k-perf-value')).toHaveText('+1.84K%')
+    await expect(cells.nth(9).locator('.k-perf-value')).toHaveText('+142.60K%')
+    const up = await token(page, '--pnl-up')
+    const down = await token(page, '--pnl-down')
+    expect(await colorAt(page, cells.nth(0).locator('.k-perf-value'), 'color')).toEqual(await rgba(page, up))
+    expect(await colorAt(page, cells.nth(1).locator('.k-perf-value'), 'color')).toEqual(await rgba(page, down))
+    // 十格排成一行、互不重叠（放不下就横向滚，不挤在一起）。
+    const boxes = await cells.evaluateAll((nodes) =>
+      nodes.map((n) => {
+        const r = n.getBoundingClientRect()
+        return [Math.round(r.x), Math.round(r.right), Math.round(r.y)]
+      }),
+    )
+    boxes.forEach((b, i) => {
+      expect(b[2]).toBe(boxes[0]![2])
+      if (i > 0) expect(b[0]).toBeGreaterThanOrEqual(boxes[i - 1]![1] - 1)
+    })
+    // 点「1 month」：回调（output 变）、aria-pressed 换到它、底色变灰。
+    await expect(cells.nth(6)).toHaveAttribute('aria-pressed', 'true')
+    const idle = await bg(cells.nth(2))
+    await cells.nth(2).click()
+    await expect(section(page, 'performance-strip').locator('[data-gallery-picked]')).toHaveText('区间：1m')
+    await expect(cells.nth(2)).toHaveAttribute('aria-pressed', 'true')
+    await expect(cells.nth(6)).toHaveAttribute('aria-pressed', 'false')
+    await expect.poll(() => bg(cells.nth(2))).not.toBe(idle)
+  })
+
+  test(`品种概览：同业卡翻页箭头真的滚动、到头变灰，「+」与对比按钮回调，名称截断 · ${theme}`, async ({ page }) => {
+    await open(page, theme, 'peer-cards')
+    const demo = section(page, 'peer-cards')
+    const rail = demo.getByRole('list', { name: 'Peers' })
+    const prev = demo.locator('[data-slot="peer-prev"]')
+    const next = demo.locator('[data-slot="peer-next"]')
+    await expect(demo.locator('[data-slot="peer-card"]')).toHaveCount(7)
+    await expect(prev).toBeDisabled()
+    await expect(next).toBeEnabled()
+    await next.click()
+    await expect.poll(() => rail.evaluate((n) => n.scrollLeft)).toBeGreaterThan(50)
+    await expect(prev).toBeEnabled()
+    for (let i = 0; i < 6; i += 1) await next.click({ timeout: 1500 }).catch(() => {}) // 滚到头就变灰，点不动是对的
+    await expect(next).toBeDisabled()
+    await prev.click()
+    await expect(next).toBeEnabled()
+    // 回到头，再看卡片内容：名称被截断（scrollWidth 大于 clientWidth），涨跌幅上色。
+    for (let i = 0; i < 8; i += 1) await prev.click({ timeout: 1500 }).catch(() => {})
+    await expect(prev).toBeDisabled()
+    const card = demo.locator('[data-key="BRV"]')
+    const name = card.locator('.k-peers-name')
+    expect(await name.evaluate((n) => n.scrollWidth > n.clientWidth)).toBe(true)
+    expect(await colorAt(page, card.locator('.k-peers-change'), 'color')).toEqual(
+      await rgba(page, await token(page, '--pnl-down')),
+    )
+    await card.getByRole('button', { name: 'Add BRV to compare' }).click()
+    await expect(demo.locator('[data-gallery-picked]')).toHaveText('add BRV')
+    await demo.locator('[data-slot="peer-compare"]').click()
+    await expect(demo.locator('[data-gallery-picked]')).toHaveText('compare')
+  })
+
+  test(`品种概览：关键数据三列，标签可点，徽标是中性胶囊，没有值写「—」 · ${theme}`, async ({ page }) => {
+    await open(page, theme, 'key-stats')
+    const demo = section(page, 'key-stats')
+    const items = demo.locator('[data-slot="key-stat"]')
+    await expect(items).toHaveCount(6)
+    const xs = await items.evaluateAll((nodes) => nodes.map((n) => Math.round(n.getBoundingClientRect().x)))
+    expect(new Set(xs).size, '三列').toBe(3)
+    await expect(items.nth(5).locator('.k-keystats-value')).toHaveText('—')
+    const badge = items.nth(0).locator('.k-keystats-badge')
+    await expect(badge).toHaveText('Mega cap')
+    expect(await badge.evaluate((n) => getComputedStyle(n).textTransform)).toBe('uppercase')
+    // 中性：徽标底色不是涨跌色。
+    const badgeBg = await bg(badge)
+    expect(badgeBg).not.toBe(await token(page, '--pnl-up'))
+    await items
+      .nth(1)
+      .getByRole('button', { name: /Price to earnings/ })
+      .click()
+    await expect(demo.locator('[data-gallery-picked]')).toHaveText('pe')
+    await demo.getByRole('button', { name: /Key stats/ }).click()
+    await expect(demo.locator('[data-gallery-picked]')).toHaveText('title')
+  })
+
+  test(`品种概览：区间条三角标随现价移动，比较条两条按比例 · ${theme}`, async ({ page }) => {
+    await open(page, theme, 'range-bar')
+    const day = page.locator('[data-gallery-range="tv"] [role="meter"]').first()
+    await expect(day).toHaveAttribute('data-marker', 'triangle')
+    const where = async () => {
+      const track = (await day.locator('.k-range-track').boundingBox())!
+      const mark = (await day.locator('[data-slot="range-mark"]').boundingBox())!
+      return (mark.x + mark.width / 2 - track.x) / track.width
+    }
+    await expect.poll(where, { timeout: 3000 }).toBeCloseTo((212.4 - 209.1) / (214.8 - 209.1), 1)
+    await page.locator('[data-gallery-range-set="low"]').click()
+    await expect.poll(where, { timeout: 3000 }).toBeCloseTo(0, 1)
+    await page.locator('[data-gallery-range-set="high"]').click()
+    await expect.poll(where, { timeout: 3000 }).toBeCloseTo(1, 1)
+    // 三角在轨道下方：标记的上沿不高于轨道。
+    const track = (await day.locator('.k-range-track').boundingBox())!
+    const mark = (await day.locator('[data-slot="range-mark"]').boundingBox())!
+    expect(mark.y).toBeGreaterThanOrEqual(track.y)
+    expect(mark.height).toBeGreaterThan(4)
+    await expect(page.locator('[data-gallery-range="tv"]').getByText("Day's range", { exact: true })).toBeVisible()
+    // 比较条：成交量 59.2 / 74.6，宽度比对得上。
+    const fills = page.locator('[data-gallery-compare] [data-slot="compare-fill"]')
+    const [a, b] = await fills.evaluateAll((nodes) => nodes.map((n) => n.getBoundingClientRect().width))
+    expect(a! / b!).toBeCloseTo(59.2 / 74.6, 1)
+  })
+
+  test(`品种概览：自选列表点列头排序（升、降、原顺序），价格变动只有变了的尾数闪涨跌色并落回 · ${theme}`, async ({
+    page,
+  }) => {
+    await open(page, theme, 'watchlist')
+    const demo = section(page, 'watchlist')
+    const codes = () => demo.locator('[data-slot="watch-row"] .k-watch-code').allTextContents()
+    expect(await codes()).toEqual(['AAA', 'BRV', 'CHL', 'DLT', 'ECH'])
+    const sortBtn = (key: string) => demo.locator(`[data-slot="watch-sort"][data-key="${key}"]`)
+    await sortBtn('last').click()
+    expect(await codes()).toEqual(['ECH', 'DLT', 'AAA', 'CHL', 'BRV'])
+    await expect(sortBtn('last').locator('xpath=ancestor::th')).toHaveAttribute('aria-sort', 'ascending')
+    await sortBtn('last').click()
+    expect(await codes()).toEqual(['BRV', 'CHL', 'AAA', 'DLT', 'ECH'])
+    await sortBtn('last').click()
+    expect(await codes()).toEqual(['AAA', 'BRV', 'CHL', 'DLT', 'ECH'])
+    await sortBtn('chgPct').click()
+    expect(await codes()).toEqual(['BRV', 'DLT', 'AAA', 'CHL', 'ECH'])
+    // 闪色：AAA 212.40 → 212.46，只有末位「6」带 data-flash=up 且是涨色，头部不是；约 1 秒后落回。
+    const up = await rgba(page, await token(page, '--pnl-up'))
+    const down = await rgba(page, await token(page, '--pnl-down'))
+    const aaa = demo.locator('[data-key="a"] [data-slot="watch-last"]')
+    await expect(aaa).toHaveText('212.40')
+    const plain = await colorAt(page, aaa, 'color')
+    await demo.locator('[data-gallery-tick]').click()
+    const flash = aaa.locator('[data-slot="watch-flash"]')
+    await expect(flash).toHaveText('6')
+    await expect(flash).toHaveAttribute('data-flash', 'up')
+    // 动画的起点色是涨色（读动画的第一帧，不读此刻的算出色：它已经在往回落了）。
+    const from = await flash.evaluate((n) =>
+      String((n.getAnimations()[0]!.effect as KeyframeEffect).getKeyframes()[0]!.color),
+    )
+    expect(await rgba(page, from)).toEqual(up)
+    expect(await colorAt(page, aaa, 'color')).toEqual(plain)
+    await expect.poll(() => colorAt(page, flash, 'color'), { timeout: 3000 }).toEqual(plain)
+    // 下跌：BRV 1,044.10 → 1043.90 两种格式不同长度也只闪变了的尾部，用跌色。
+    await demo.locator('[data-gallery-tick-down]').click()
+    const brv = demo.locator('[data-key="b"] [data-slot="watch-flash"]')
+    await expect(brv).toHaveAttribute('data-flash', 'down')
+    const fromDown = await brv.evaluate((n) =>
+      String((n.getAnimations()[0]!.effect as KeyframeEffect).getKeyframes()[0]!.color),
+    )
+    expect(await rgba(page, fromDown)).toEqual(down)
+    // 旗标：点一下翻转。
+    const flag = demo.locator('[data-key="b"] [data-slot="watch-flag"]')
+    await flag.click({ force: true })
+    await expect(flag).toHaveAttribute('aria-pressed', 'true')
   })
 }
 

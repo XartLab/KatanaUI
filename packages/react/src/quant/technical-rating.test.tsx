@@ -43,9 +43,9 @@ describe('TechnicalRating', () => {
     ])
   })
 
-  it('个数行与总数：卖 n · 中性 n · 买 n，共 n 项', () => {
+  it('个数框三列：卖 n、中性 n、买 n，共 n 项', () => {
     const out = html([one(0.2)])
-    expect(out.replace(/<[^>]+>/g, '')).toContain('卖 2 · 中性 3 · 买 4')
+    expect(out.replace(/<[^>]+>/g, '')).toContain('卖2中性3买4')
     expect(out).toContain('共 9 项指标')
   })
 
@@ -59,6 +59,7 @@ describe('TechnicalRating', () => {
     expect(out).toContain('54.20')
     expect(out).toContain('—')
     expect(html([one(0.2)])).not.toContain('<table')
+    expect(out).toContain('data-slot="rating-section"')
     expect(html([])).toContain('没有数据')
   })
 
@@ -68,5 +69,17 @@ describe('TechnicalRating', () => {
     const out = html([one(0)], { disclaimer: '仅供参考', timeframes: [{ value: '1d', label: '1 日' }] })
     expect(out).toContain('仅供参考')
     expect(out).toContain('1 日')
+  })
+
+  it('Pivots 表：缺值画「—」，不给 pivots 就没有', () => {
+    const pivots = {
+      title: 'Pivots',
+      columns: ['Classic', 'DM'],
+      rows: [{ key: 'R1', label: 'R1', values: ['10.00', null] }],
+    }
+    const out = html([one(0)], { pivots })
+    expect(out).toContain('data-slot="rating-pivots"')
+    expect(out.replace(/<[^>]+>/g, '')).toContain('R110.00—')
+    expect(html([one(0)])).not.toContain('rating-pivots')
   })
 })

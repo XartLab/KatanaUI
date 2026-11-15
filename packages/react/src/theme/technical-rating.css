@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: MIT */
 /* 技术评级仪表（TechnicalRating，#20）。仪表是半圆五档弧加指针（几何与 RatingGauge 同一把尺子），总评居中放大；
-   指针转动用包里的 gentle 弹簧。明细表照 TradingView 的手感（无衬线 tabular-nums、右对齐、极淡分隔线、悬停整行提亮、结论是低饱和胶囊）。
+   指针转动用包里的 gentle 弹簧。明细表照 TradingView 的手感（无衬线 tabular-nums、右对齐、极淡分隔线、悬停整行提亮、结论是纯文字上色，2026-11-15 实测）。
    颜色走涨跌语义色与中性灰，不用橙色。窄于 440px 时总评独占一行、两个小仪表并排在下。 */
 .k-trating {
   container-type: inline-size;
@@ -69,14 +69,14 @@
 .k-trating-zone.is-z0 {
   stroke: var(--pnl-down);
 }
-.k-trating-zone.is-z1 {
-  stroke: color-mix(in srgb, var(--pnl-down) 55%, var(--ink-300));
-}
-.k-trating-zone.is-z2 {
+.k-trating-zone.is-z1,
+.k-trating-zone.is-z2,
+.k-trating-zone.is-z3 {
   stroke: var(--ink-300);
 }
+.k-trating-zone.is-z1,
 .k-trating-zone.is-z3 {
-  stroke: color-mix(in srgb, var(--pnl-up) 55%, var(--ink-300));
+  stroke: var(--ink-400);
 }
 .k-trating-zone.is-z4 {
   stroke: var(--pnl-up);
@@ -102,8 +102,8 @@
 .k-trating-tick.is-active {
   color: var(--ink-100);
 }
-/* 小仪表窄，只留两端的刻度字，中间三档靠弧的颜色与下面的大字。 */
-.k-trating-dial:not(.is-primary) .k-trating-tick:is([data-zone='1'], [data-zone='2'], [data-zone='3']) {
+/* 小仪表窄，不画刻度字，靠弧的颜色与下面的大字。 */
+.k-trating-dial:not(.is-primary) .k-trating-tick {
   display: none;
 }
 .k-trating-word {
@@ -124,10 +124,36 @@
   color: var(--pnl-up);
 }
 .k-trating-counts {
-  color: var(--ink-200);
-  font: 400 12px/16px var(--font-sans);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  width: 100%;
+  max-width: 220px;
+  margin-top: 6px;
+  border: 1px solid var(--alpha-white-7);
+  border-radius: 8px;
   font-variant-numeric: tabular-nums;
-  white-space: nowrap;
+}
+.k-trating-counts span {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 6px 4px;
+}
+.k-trating-counts span + span {
+  border-left: 1px solid var(--alpha-white-7);
+}
+.k-trating-counts small {
+  color: var(--ink-300);
+  font: 400 11px/14px var(--font-sans);
+}
+.k-trating-counts b {
+  font: 600 15px/20px var(--font-sans);
+}
+.k-trating-counts [data-verdict='sell'] b {
+  color: var(--pnl-down);
+}
+.k-trating-counts [data-verdict='buy'] b {
+  color: var(--pnl-up);
 }
 .k-trating-total {
   color: var(--ink-300);
@@ -138,6 +164,23 @@
   color: var(--ink-300);
   font: 400 11px/16px var(--font-sans);
   text-align: center;
+}
+.k-trating-tables {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: var(--space-4) var(--space-6);
+}
+.k-trating-card {
+  min-width: 0;
+  margin: 0;
+}
+.k-trating .k-trating-card-title {
+  margin: 0 0 var(--space-1);
+  font: 600 14px/20px var(--font-sans);
+}
+.k-trating-chev {
+  margin-left: 4px;
+  color: var(--ink-300);
 }
 .k-trating-table {
   width: 100%;
@@ -158,17 +201,11 @@
   width: 72px;
   text-align: right;
 }
-.k-trating-section th {
-  height: 32px;
-  padding: var(--space-2) 0 var(--space-1);
-  font: 600 13px/18px var(--font-sans);
-  text-align: left;
-  vertical-align: bottom;
+.k-trating-table.is-pivots thead th:first-child {
+  width: 40px;
 }
-.k-trating-section-n {
-  margin-left: 8px;
-  color: var(--ink-300);
-  font: 500 12px/16px var(--font-sans);
+.k-trating-table.is-pivots td {
+  padding-left: var(--space-2);
 }
 .k-trating-row {
   height: 30px;
@@ -187,20 +224,15 @@
 }
 .k-trating-verdict {
   display: inline-block;
-  padding: 1px 7px;
-  border-radius: 9999px;
-  font: 500 11px/16px var(--font-sans);
+  font: 500 13px/18px var(--font-sans);
   white-space: nowrap;
   color: var(--ink-300);
-  background: var(--alpha-white-5);
 }
 .k-trating-verdict[data-verdict='buy'] {
   color: var(--pnl-up);
-  background: color-mix(in srgb, var(--pnl-up) 12%, transparent);
 }
 .k-trating-verdict[data-verdict='sell'] {
   color: var(--pnl-down);
-  background: color-mix(in srgb, var(--pnl-down) 12%, transparent);
 }
 .k-trating-empty {
   margin: auto;
@@ -214,8 +246,22 @@
     max-width: 300px;
   }
 }
-/* 第一节紧贴列头，不留空白；后面的节之间才留。 */
-.k-trating-table tbody:first-of-type .k-trating-section th {
-  height: 24px;
-  padding-top: 0;
+
+/* 周期条：十个周期一排，窄了横向滚；选中是灰底胶囊。 */
+.k-trating-bar {
+  flex: none;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.k-trating-bar [data-state='on'] {
+  border-radius: 9999px;
+  background: var(--alpha-white-9);
+}
+.k-trating-bar > div {
+  flex: 0 0 auto;
+  background: transparent;
+}
+.k-trating-bar button {
+  border-radius: 9999px;
+  white-space: nowrap;
 }

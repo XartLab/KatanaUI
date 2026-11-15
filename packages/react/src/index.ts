@@ -268,7 +268,14 @@ export {
 } from './katana/treemap-model.ts'
 export { PriceTag, type PriceTagProps } from './katana/price-tag.tsx'
 export { QuoteCard, QuoteStrip, type QuoteCardProps, type QuoteStripProps } from './katana/quote-card.tsx'
-export { RangeBar, rangeShare, type RangeBarProps } from './katana/range-bar.tsx'
+export {
+  CompareBar,
+  RangeBar,
+  rangeShare,
+  type CompareBarProps,
+  type CompareBarSide,
+  type RangeBarProps,
+} from './katana/range-bar.tsx'
 export { RatingGauge, type RatingGaugeProps } from './katana/rating-gauge.tsx'
 export { ratingAngle, ratingZone } from './katana/rating-gauge-model.ts'
 export { quoteTone, type QuoteTone } from './katana/quote-tone.ts'

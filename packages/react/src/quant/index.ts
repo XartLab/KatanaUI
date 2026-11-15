@@ -44,6 +44,8 @@ export {
 export { RatingText, type RatingLevel, type RatingTextProps } from './rating-text.tsx'
 export {
   TechnicalRating,
+  type PivotRow,
+  type PivotTable,
   type RatingGroup,
   type RatingRow,
   type RatingVerdict,
@@ -173,3 +175,14 @@ export {
   type VintageRow,
   type VintageStep,
 } from './vintage-series-model.ts'
+// 对齐 TradingView 品种页（#53，主会话 2026-11-15 实测，只取布局与功能）：业绩条、同业卡、关键数据、自选列表。
+export {
+  PerformanceStrip,
+  formatPerformance,
+  type PerformanceItem,
+  type PerformanceStripProps,
+} from './performance-strip.tsx'
+export { PeerCards, type PeerCardsLabels, type PeerCardsProps, type PeerItem } from './peer-cards.tsx'
+export { KeyStats, type KeyStatItem, type KeyStatsProps } from './key-stats.tsx'
+export { Watchlist, type WatchlistLabels, type WatchlistProps, type WatchlistRow } from './watchlist.tsx'
+export { changedTail, nextSort, sortRows, type WatchlistSort, type WatchlistSortKey } from './watchlist-model.ts'

@@ -30,6 +30,7 @@ import {
   TechnicalRatingDemo,
 } from './pages/quant.tsx'
 import { FlowSankeyDemo, VintageSeriesDemo } from './pages/flows.tsx'
+import { KeyStatsDemo, PeerCardsDemo, PerformanceStripDemo, RangeBarTvDemo, WatchlistDemo } from './pages/overview.tsx'
 import { ParamScatterDemo, StrategyReportDemo } from './pages/strategy.tsx'
 import { TransmissionChainDemo } from './pages/research.tsx'
 import {
@@ -165,6 +166,10 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'market-heatmap': MarketHeatmapDemo,
   'rating-text': RatingTextDemo,
   'technical-rating': TechnicalRatingDemo,
+  'performance-strip': PerformanceStripDemo,
+  'peer-cards': PeerCardsDemo,
+  'key-stats': KeyStatsDemo,
+  watchlist: WatchlistDemo,
   'metric-card': MetricCardDemo,
   'decimal-field': DecimalFieldDemo,
   'quant-format': QuantFormatDemo,
@@ -219,7 +224,12 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   treemap: TreemapDemo,
   'price-tag': PriceTagDemo,
   'quote-card': QuoteCardDemo,
-  'range-bar': RangeBarDemo,
+  'range-bar': () => (
+    <>
+      <RangeBarDemo />
+      <RangeBarTvDemo />
+    </>
+  ),
   'rating-gauge': RatingGaugeDemo,
   'quote-table': QuoteTableDemo,
   'row-actions': RowActionsDemo,

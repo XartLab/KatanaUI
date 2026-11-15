@@ -19,6 +19,10 @@
 | `highLabel` | `string` | — | Small caption above the high end, such as "High". |
 | `className` | `string` | — | Extra class name on the root. |
 
+### CompareBar
+
+两条同比例尺的细条，比成交量与 30 日均量；只用中性灰（没有方向，不上涨跌色）。
+
 ### rangeShare(low, high, value)
 
 现价在区间里的位置 0 到 1；算不出是 null。

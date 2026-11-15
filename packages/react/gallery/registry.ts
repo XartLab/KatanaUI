@@ -1242,7 +1242,7 @@ export const PAGES: readonly DocPage[] = [
     cardHeight: 780,
     title: 'TechnicalRating 技术评级仪表（跨市场共用）',
     summary:
-      '照 TradingView 的 Technicals 仪表：三个半圆仪表（振荡指标、总评、均线，总评居中放大），五档刻度文字，指针按 −1…1 的分数转到所在档（分界 −0.5、−0.1、0.1、0.5），下面一行大字写档名，再一行「卖 n · 中性 n · 买 n」与指标总数；底下是指标明细表（名称、读数、单项结论胶囊），顶上是时间周期分段控件。组件只画不算：分数、个数、读数与结论都由调用方传；档名、列名、免责一句也由调用方传，件只留位置。颜色走涨跌语义色与中性灰，不用橙色。放在 PanelFrame 里用。',
+      '照 TradingView 技术页（2026-11-15 实测）：顶上十个时间周期（选中是灰底胶囊），三个半圆仪表（振荡指标、总评、均线，总评居中放大；弧两端取涨跌色、中段灰；刻度字只写中间三档），指针按 −1…1 的分数转到所在档（分界 −0.5、−0.1、0.1、0.5），下面是档名大字、圆角三列「卖 / 中性 / 买」计数框与指标总数；再下面每组一张并排明细表（名称、读数、结论文字上色，标题带「›」），最底下是整宽的 Pivots 表（R3…S3 × Classic、Fibonacci、Camarilla、Woodie、DM，缺值「—」）。组件只画不算：分数、个数、读数与结论都由调用方传；档名、列名、免责一句也由调用方传，件只留位置。颜色走涨跌语义色与中性灰，不用橙色。放在 PanelFrame 里用。',
     exports: ['TechnicalRating'],
     props: [
       {
@@ -1274,13 +1274,18 @@ export const PAGES: readonly DocPage[] = [
             desc: '时间周期分段控件的选项、当前值与回调；不给 timeframes 就没有这一条。切周期后传新的 groups 与 rows。',
           },
           { name: 'disclaimer', type: 'ReactNode', desc: '免责一句，画在仪表与明细之间；不给就不画。' },
+          {
+            name: 'pivots',
+            type: 'PivotTable',
+            desc: '{ title, columns: string[], rows: { key, label, values: (string | null)[] }[] }；整宽的枢轴点表，放在明细表下面；值由调用方算好，缺的传 null 画「—」。不给就不画。',
+          },
         ],
       },
     ],
     states: [
       '档：分数小于 −0.5 强卖，−0.5 到 −0.1 卖，−0.1 到 0.1 中性，0.1 到 0.5 买，大于 0.5 强买；正好落在 ±0.1 算中性，落在 ±0.5 算卖 / 买。分数 −1 指针在最左，1 在最右，0 竖直。',
-      '所在档的弧与刻度字全亮，其余弧 30% 不透明；指针与亮档用 gentle 弹簧过渡。小仪表只留两端的刻度字。',
-      '明细行悬停整行提亮；结论是低饱和胶囊（买取涨色、卖取跌色、中性灰），涨跌色跟 data-updown。',
+      '所在档的弧全亮，其余弧 30% 不透明；指针与亮档用 gentle 弹簧过渡。总评只写中间三档的刻度字（两端靠弧色与大字），小仪表不画刻度字。弧：两端涨跌色，中段灰。',
+      '明细行悬停整行提亮；结论是纯文字上色，不带底色（买取涨色、卖取跌色、中性灰），涨跌色跟 data-updown。',
     ],
     donts: [
       '不要把评级当买卖建议；免责一句由调用方写，别删这个位置。',
@@ -1288,7 +1293,7 @@ export const PAGES: readonly DocPage[] = [
       '没有数据时传空数组，件画空态，不要放样本读数。',
     ],
     composition:
-      'TechnicalRating（group）\n  时间周期（分段控件）\n  仪表（figure ×3）：组名 | 半圆五档弧 + 刻度字 + 指针 | 档名 | 卖 n · 中性 n · 买 n | 共 n 项指标\n  免责一句\n  明细表：列头 | 节（组名 + 项数）| 行（指标 | 读数 | 结论）',
+      'TechnicalRating（group）\n  时间周期（分段控件）\n  仪表（figure ×3）：组名 | 半圆五档弧 + 刻度字 + 指针 | 档名 | 三列计数框（卖 / 中性 / 买）| 共 n 项指标\n  免责一句\n  明细表（每组一张 section）：标题 › | 列头 | 行（指标 | 读数 | 结论）\n  Pivots 表（section）：列头 | 行（R3…S3）',
     keys: [['Tab', '依次到周期控件的按钮（← → 在其中移动，Space / Enter 选）']],
   },
   {
@@ -4170,14 +4175,156 @@ export const PAGES: readonly DocPage[] = [
     keys: [['Tab / Enter', '有 onSelect 时到卡上、触发']],
   },
   {
+    id: 'performance-strip',
+    group: 'quotes',
+    cardHeight: 150,
+    title: 'PerformanceStrip 业绩条',
+    summary:
+      '照 TradingView 品种页的 Performance 一行（2026-11-15 实测）：一排等宽格，上行周期（1 day … All time）、下行涨跌幅（涨跌色，过千写成 K%、M%）；点一格选中（灰底，aria-pressed）并回调，由调用方去切图表区间。数与周期名都由调用方传，件不算涨跌幅。选中用中性灰，不用 TV 的蓝。',
+    exports: ['PerformanceStrip', 'formatPerformance'],
+    props: [
+      {
+        part: 'PerformanceStrip',
+        rows: [
+          { name: 'items', type: 'PerformanceItem[]', desc: '{ key, label, change（百分数；没有写 null，画「—」）}。' },
+          {
+            name: 'value / defaultValue / onValueChange',
+            type: 'string / string / (key) => void',
+            desc: '选中的格子；不给 value 就自己记。',
+          },
+          { name: 'label', type: 'string', desc: '读屏名（role=group），必填。' },
+          { name: 'digits', type: 'number', default: '2', desc: '涨跌幅位数。' },
+        ],
+      },
+      {
+        part: 'formatPerformance(value, digits)',
+        note: '纯函数：+12.50%、+1.84K%、+142.60K%；不是有限数写「—」。',
+        rows: [],
+      },
+    ],
+    states: [
+      '选中的格子灰底、aria-pressed=true；悬停提亮。',
+      '涨红跌绿由 data-updown 决定，平不着色。',
+      '没有数据的格写「—」。',
+    ],
+    donts: ['不要在件里算涨跌幅；由调用方传。', '不要用蓝色表示选中。'],
+    composition: 'PerformanceStrip role=group\n  button × n（周期名 · 涨跌幅）',
+    keys: [['Tab / Space / Enter', '到格子上、选中']],
+  },
+  {
+    id: 'peer-cards',
+    group: 'quotes',
+    cardHeight: 230,
+    title: 'PeerCards 同业卡',
+    summary:
+      '照 TradingView 品种页的 Peers（2026-11-15 实测）：横向卡片带，左右翻页箭头（到头变灰）；每卡一个字母圆徽标、代码、名称（过长截断）、右上「+」、价格（带单位小字）与涨跌幅（涨跌色）；右上角整组一个「Select to compare」按钮。数、价格与文字都由调用方传，不放真实公司标志。',
+    exports: ['PeerCards'],
+    props: [
+      {
+        part: 'PeerCards',
+        rows: [
+          {
+            name: 'items',
+            type: 'PeerItem[]',
+            desc: '{ key, code, name, price（写好的）, unit?, change（百分数）, logoSrc? }。',
+          },
+          {
+            name: 'labels',
+            type: 'PeerCardsLabels',
+            desc: '{ list, prev, next, compare, add(item) }：读屏名与按钮字。',
+          },
+          { name: 'onSelect / onAdd / onCompare', type: 'callbacks', desc: '点卡、点「+」、点「Select to compare」。' },
+        ],
+      },
+    ],
+    states: ['滚到最左：上一页箭头 disabled；滚到最右：下一页箭头 disabled。', '名称过长：省略号，悬停看全名。'],
+    donts: ['不要把「+」塞进卡的按钮里：它是卡旁边另一个按钮。', '不要放真实公司标志。'],
+    composition:
+      'PeerCards\n  按钮组（compare · prev · next）\n  div role=list\n    div role=listitem（button 卡 · button +）',
+    keys: [['Tab / Enter', '卡、「+」、箭头、对比按钮']],
+  },
+  {
+    id: 'key-stats',
+    group: 'quotes',
+    cardHeight: 300,
+    title: 'KeyStats 关键数据',
+    summary:
+      '照 TradingView 品种页的 Key stats（2026-11-15 实测）：标题带「›」，三列网格，每项一个灰色小标签（带「›」，给了 onItem 就可点）、一个大号数值（带单位小字）、可选徽标（中性灰胶囊，不用 TV 的紫色）。数值与文字由调用方传。',
+    exports: ['KeyStats'],
+    props: [
+      {
+        part: 'KeyStats',
+        rows: [
+          { name: 'title', type: 'string', desc: '标题。' },
+          { name: 'items', type: 'KeyStatItem[]', desc: '{ key, label, value?, unit?, badge? }；没有值画「—」。' },
+          { name: 'onTitle / onItem', type: 'callbacks', desc: '给了标题与标签就变成按钮，带「›」。' },
+          { name: 'columns', type: 'number', default: '3', desc: '列数。' },
+        ],
+      },
+    ],
+    states: ['没给 onItem：标签是普通文字，没有「›」。', '没有值：数值位写「—」。'],
+    donts: ['不要在件里格式化数值；由调用方传。', '徽标不要用彩色。'],
+    composition: 'KeyStats section\n  h3 标题（›）\n  dl 网格\n    div（dt 标签 › · dd 数值 · 单位 · 徽标）',
+    keys: [['Tab / Enter', '给了回调时到标题、标签上、触发']],
+  },
+  {
+    id: 'watchlist',
+    group: 'quotes',
+    cardHeight: 380,
+    title: 'Watchlist 自选列表',
+    summary:
+      '照 TradingView 右侧自选栏（2026-11-15 实测）：列 Symbol / Last / Chg / Chg%，行首小旗标与字母圆徽标；最新价变动时只有变了的尾数闪涨跌色、约 1 秒落回；点列头排序（升序、降序、回原顺序）。价格怎么写由 formatPrice 定，数与文字由调用方传。',
+    exports: ['Watchlist', 'changedTail', 'nextSort', 'sortRows'],
+    props: [
+      {
+        part: 'Watchlist',
+        rows: [
+          {
+            name: 'rows',
+            type: 'WatchlistRow[]',
+            desc: '{ key, code, name?, last, change, changePct, flagged?, logoSrc? }。',
+          },
+          {
+            name: 'labels',
+            type: 'WatchlistLabels',
+            desc: '{ columns: { symbol, last, chg, chgPct }, list, empty, flag(row) }。',
+          },
+          {
+            name: 'formatPrice',
+            type: '(n: number) => string',
+            default: 'toFixed(2)',
+            desc: '最新价与涨跌额怎么写；闪色按它写出来的文字比尾数。',
+          },
+          { name: 'sort / onSortChange', type: 'WatchlistSort | null', desc: '排序（受控）；不给就自己记。' },
+          { name: 'onRow / onFlag', type: 'callbacks', desc: '点行；点旗标（行 + 新状态）。' },
+        ],
+      },
+      { part: 'changedTail(prev, next)', note: '新旧价格文字从哪一位开始不同：返回 { head, tail }。', rows: [] },
+      { part: 'nextSort / sortRows', note: '列头点击的循环与排序，纯函数。', rows: [] },
+    ],
+    states: [
+      '最新价变大：变了的尾数起闪涨色；变小闪跌色；约 1 秒落回原色。',
+      '当前排序列的列头带 ▲ / ▼，th 的 aria-sort 跟着变。',
+      '旗标：悬停才显示，标上的常亮；没有行画空态。',
+    ],
+    donts: ['不要给整个价格闪色：只有变了的尾数。', '不要放真实公司标志。'],
+    composition:
+      'Watchlist table\n  thead：列头按钮 × 4\n  tbody tr：旗标 · SymbolMark · 代码 | 最新价（尾数闪色）| 涨跌额 | 涨跌幅',
+    keys: [['Tab / Enter', '列头排序、旗标']],
+  },
+  {
     id: 'range-bar',
     group: 'quotes',
     cardHeight: 60,
     title: 'RangeBar 区间条',
     summary: '一条横线从最低到最高，标记指着现价在区间里的位置，两端写最低与最高。用来看当日区间、52 周区间。',
-    exports: ['RangeBar', 'rangeShare'],
+    exports: ['RangeBar', 'rangeShare', 'CompareBar'],
     propParts: [
       { part: 'RangeBar' },
+      {
+        part: 'CompareBar',
+        note: '两条同比例尺的细条，比成交量与 30 日均量；只用中性灰（没有方向，不上涨跌色）。',
+      },
       {
         part: 'rangeShare(low, high, value)',
         symbol: 'rangeShare',

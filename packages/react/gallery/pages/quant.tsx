@@ -42,6 +42,7 @@ import {
   type RatingGroup,
   type RatingRow,
   type RatingVerdict,
+  type PivotTable,
   type TechnicalRatingLabels,
   type ConsensusParty,
   type FlowGaugeData,
@@ -525,24 +526,28 @@ export function MarketHeatmapDemo() {
 }
 
 // 技术评级仪表（#20）的演示：读数与结论从合成价格算出来，不是行情；分数与个数在这里按「买 − 卖」除以总数现算，真实调用方自己算。
+// 周期与列名照 TradingView 技术页（2026-11-15 实测）：1 分钟到 1 月共十档；仪表三组 Oscillators / Summary / Moving Averages。
 const RATING_TIMEFRAMES = [
-  { value: '1m', label: '1 分' },
-  { value: '15m', label: '15 分' },
-  { value: '1h', label: '1 小时' },
-  { value: '4h', label: '4 小时' },
-  { value: '1d', label: '1 日' },
-  { value: '1w', label: '1 周' },
-  { value: '1M', label: '1 月' },
+  { value: '1m', label: '1 minute' },
+  { value: '5m', label: '5 minutes' },
+  { value: '15m', label: '15 minutes' },
+  { value: '30m', label: '30 minutes' },
+  { value: '1h', label: '1 hour' },
+  { value: '2h', label: '2 hours' },
+  { value: '4h', label: '4 hours' },
+  { value: '1d', label: '1 day' },
+  { value: '1w', label: '1 week' },
+  { value: '1M', label: '1 month' },
 ]
-const RATING_ZONES = ['强卖', '卖', '中性', '买', '强买'] as const
+const RATING_ZONES = ['Strong sell', 'Sell', 'Neutral', 'Buy', 'Strong buy'] as const
 const RATING_LABELS: TechnicalRatingLabels = {
   zones: RATING_ZONES,
-  verdict: { sell: '卖', neutral: '中性', buy: '买' },
-  total: (n) => `共 ${n} 项指标`,
-  columns: { name: '指标', reading: '读数', verdict: '结论' },
-  timeframe: '时间周期',
-  list: '技术评级',
-  empty: '没有数据',
+  verdict: { sell: 'Sell', neutral: 'Neutral', buy: 'Buy' },
+  total: (n) => `${n} indicators`,
+  columns: { name: 'Name', reading: 'Value', verdict: 'Action' },
+  timeframe: 'Timeframe',
+  list: 'Technical rating',
+  empty: 'No data',
 }
 
 // 演示价格：每个周期一条固定种子的合成收盘价（随机游走加慢波），读数与结论都从它算出来，规则照 TradingView 的技术评级
@@ -640,36 +645,72 @@ function makeRating(frame: number) {
   const groups = [
     group(
       'osc',
-      '振荡指标',
+      'Oscillators',
       rows.filter((r) => r.group === 'osc'),
     ),
-    group('all', '总评', rows),
+    group('all', 'Summary', rows),
     group(
       'ma',
-      '均线',
+      'Moving Averages',
       rows.filter((r) => r.group === 'ma'),
     ),
   ]
-  return { rows, groups }
+  return { rows, groups, pivots: makePivots(close) }
+}
+
+// 枢轴点：高低收取最近 20 根，规则照常见定义（Classic、Fibonacci、Camarilla、Woodie、DM）；Woodie 与 DM 只有一部分档位，缺的传 null 画「—」。演示用，不是行情。
+function makePivots(close: readonly number[]): PivotTable {
+  const w = close.slice(-20)
+  const [h, l, c, o] = [Math.max(...w), Math.min(...w), close.at(-1)!, close.at(-2)!]
+  const r = h - l
+  const f = (v: number | null) => (v === null ? null : v.toFixed(2))
+  const p = (h + l + c) / 3
+  const wp = (h + l + 2 * c) / 4
+  const x = c < o ? h + 2 * l + c : c > o ? 2 * h + l + c : h + l + 2 * c
+  const cols = {
+    classic: [h + 2 * (p - l), p + r, 2 * p - l, p, 2 * p - h, p - r, l - 2 * (h - p)],
+    fib: [p + r, p + 0.618 * r, p + 0.382 * r, p, p - 0.382 * r, p - 0.618 * r, p - r],
+    cam: [
+      c + (r * 1.1) / 4,
+      c + (r * 1.1) / 6,
+      c + (r * 1.1) / 12,
+      p,
+      c - (r * 1.1) / 12,
+      c - (r * 1.1) / 6,
+      c - (r * 1.1) / 4,
+    ],
+    woodie: [null, wp + r, 2 * wp - l, wp, 2 * wp - h, wp - r, null],
+    dm: [null, null, x / 2 - l, x / 4, x / 2 - h, null, null],
+  }
+  return {
+    title: 'Pivots',
+    columns: ['Classic', 'Fibonacci', 'Camarilla', 'Woodie', 'DM'],
+    rows: ['R3', 'R2', 'R1', 'P', 'S1', 'S2', 'S3'].map((label, i) => ({
+      key: label,
+      label,
+      values: [cols.classic[i]!, cols.fib[i]!, cols.cam[i]!, cols.woodie[i]!, cols.dm[i]!].map(f),
+    })),
+  }
 }
 
 export function TechnicalRatingDemo() {
   const [frame, setFrame] = useState('1d')
-  const { rows, groups } = makeRating(RATING_TIMEFRAMES.findIndex((tf) => tf.value === frame))
+  const { rows, groups, pivots } = makeRating(RATING_TIMEFRAMES.findIndex((tf) => tf.value === frame))
   return (
-    <div style={{ width: '100%', maxWidth: 520, height: 760 }}>
+    <div style={{ width: '100%', maxWidth: 760, height: 900 }}>
       <PanelFrame focused aria-label="技术评级">
-        <PanelFrameHeader heading="技术评级" object="演示数据" />
+        <PanelFrameHeader heading="Technicals" object="演示数据" />
         <PanelFrameBody>
           <TechnicalRating
             groups={groups}
             rows={rows}
             labels={RATING_LABELS}
             primary="all"
+            pivots={pivots}
             timeframes={RATING_TIMEFRAMES}
             timeframe={frame}
             onTimeframeChange={setFrame}
-            disclaimer="评级只是指标读数的汇总，不是买卖建议。"
+            disclaimer="Ratings only summarise indicator readings; they are not trading advice."
           />
         </PanelFrameBody>
       </PanelFrame>
