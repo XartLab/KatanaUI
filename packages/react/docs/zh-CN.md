@@ -97,7 +97,7 @@ pnpm --filter @katana-ui/react exec shadcn add <component>
 ## 文档站
 
 开发服务器（`pnpm dev:all`）与 e2e 测试台上有 `/ui-gallery.html`（根目录的 `vp preview` 没有）：组件文档站，版式照 kobra.systems 的组件页（2026-11-14 读，只取结构）。
-左侧目录按类分组，右侧一个组件一页，地址 `#/<件名>`（直接打开、前进后退都行）；每页依次是实时预览（默认 Console，页头切 Graphite，`?theme=graphite` 直接以它打开）、属性表、组成、键盘操作。正式构建里没有。
+左侧目录按类分组，右侧一个组件一页，地址 `#/<件名>`（直接打开、前进后退都行）；每页依次是实时预览（默认 Graphite，页头切 Console，`?theme=console` 直接以它打开）、属性表、组成、键盘操作。正式构建里没有。
 悬停、按下、键盘焦点没法静态摆出来，用鼠标和 Tab 键去碰页上的件，`e2e/ui-gallery.spec.ts` 量它们的计算样式。
 
 加一个件的文档页：在 `gallery/registry.ts` 的 `PAGES` 里加一项（说明、覆盖的出口名、属性表、组成、键盘），在 `gallery/pages/` 写它的演示、在 `gallery/demos.tsx` 登记。

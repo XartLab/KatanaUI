@@ -4,6 +4,8 @@ NewsFeed 点开一条后的阅读窗：来源与操作（复制链接、举报�
 
 ## Provide
 
+`*` marks a required prop.
+
 ### NewsReader
 
 | 属性 | 类型 | 默认 | 说明 |
@@ -14,6 +16,12 @@ NewsFeed 点开一条后的阅读窗：来源与操作（复制链接、举报�
 | `children` | `ReactNode` | — | 正文。 |
 | `labels` | `NewsReaderLabels` | — | 读屏名与「要点」「关闭」「举报」「复制链接」。 |
 | `onClose / onReport / onCopyLink / onSymbolPick` | `function` | — | 给了才画对应的按钮；点品种胶囊回调。 |
+
+## Usage
+
+```tsx
+
+```
 
 ## States
 

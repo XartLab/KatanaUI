@@ -3,16 +3,30 @@
 // 功能参照 TradingView 小组件 Symbol Info 的区间（tradingview.com/widget-docs，2026-11-14 读：页面只说有「显示品种详情」，没写区间条的样子）与 ATAS 的区间读数，
 // 画法我们自己定：标记按弹簧（snappy）滑到新位置；数据在区间外就贴边；最高等于最低时不画标记（没有位置可说）。不嵌、不抄其代码与样式。
 export type RangeBarProps = {
+  /** Lowest value; no marker is drawn when high is not greater than low. */
   low: number
+  /** Highest value. */
   high: number
+  /** Current value; it sticks to the edge when outside the range. */
   value: number
-  /** 数怎么写；不给就最多两位小数。 */
+  /**
+   * How to write a number; at most two decimals when omitted.
+   * 数怎么写；不给就最多两位小数。
+   */
   format?: (value: number) => string
-  /** 读屏名（如「当日区间」）。 */
+  /**
+   * Accessible name (role=meter), required, for example "Day range".
+   * 读屏名（如「当日区间」）。
+   */
   label: string
-  /** 两端上方的小标题（如「低」「高」），不给就不写。 */
+  /**
+   * Small caption above the low end, such as "Low"; nothing when omitted.
+   * 两端上方的小标题（如「低」「高」），不给就不写。
+   */
   lowLabel?: string
+  /** Small caption above the high end, such as "High". */
   highLabel?: string
+  /** Extra class name on the root. */
   className?: string
 }
 

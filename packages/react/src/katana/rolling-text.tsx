@@ -43,7 +43,18 @@ export function rollStrip(char: string, out: string, direction: 'up' | 'down'): 
   return { strip: (direction === 'up' ? passed : passed.reverse()).join(NEWLINE), steps }
 }
 
-export function RollingText({ text, value, animate }: { text: string; value: number; animate: boolean }) {
+export function RollingText({
+  text,
+  value,
+  animate,
+}: {
+  /** The whole string to show, including thousands separators and the decimal point. */
+  text: string
+  /** The same number as a value, used to decide the direction of the change. */
+  value: number
+  /** When false the text is replaced without rolling. */
+  animate: boolean
+}) {
   const [roll, setRoll] = useState<Roll>({
     text,
     value,

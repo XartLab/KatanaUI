@@ -21,7 +21,10 @@
 @import './theme/news-feed.css';
 @import './theme/strategy-report.css';
 @import './theme/param-scatter.css';
+@import './theme/flow-sankey.css';
+@import './theme/vintage-series.css';
 @import './theme/system-monitor.css';
+@import './theme/transmission-chain.css';
 @import './theme/decision-queue.css';
 @import './theme/hypothesis-ledger.css';
 @import './theme/symbol-mark.css';

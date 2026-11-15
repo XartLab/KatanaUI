@@ -35,15 +35,27 @@ export type ThemeOption = {
 }
 
 export type ThemeSelectorProps = {
+  /** The themes to choose from, each with value, label and preview colors (required). */
   themes: readonly ThemeOption[]
+  /** The current theme; null means controlled but nothing selected. */
   value?: string | null
+  /** Initial theme when uncontrolled. */
   defaultValue?: string
+  /** Called with the chosen theme value. */
   onChange?: (value: string) => void
-  /** 整组的读屏名（必填）。 */
+  /**
+   * Accessible name of the whole group (required).
+   * 整组的读屏名（必填）。
+   */
   label: string
-  /** 缩略下面是否写名字。 */
+  /**
+   * Whether to write the name under each thumbnail (accessible names are not affected).
+   * 缩略下面是否写名字。
+   */
   showLabels?: boolean
+  /** Disable the whole group. */
   disabled?: boolean
+  /** Extra class name on the root. */
   className?: string
 }
 

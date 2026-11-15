@@ -4,13 +4,26 @@
 
 ## Provide
 
+`*` marks a required prop.
+
 ### BadgeGroup
 
 没有徽标时什么都不画。每个徽标是一个 role=img，名字是全称，读屏读「科创板：涨跌幅 20%」。
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `items` | `{ id: string; label: string; text: string }[]` | — | label 是上标上的字（单字），text 是全称（读屏名与悬停提示）。 |
+| `items` * | `readonly BadgeItem[]` | — | The badges: label is the one-character mark, text is the full name (accessible name and hover hint). |
+
+## Usage
+
+```tsx
+// SPDX-License-Identifier: MIT
+import { BadgeGroup } from '@katana-ui/react'
+
+export function BadgeUsage() {
+  return <BadgeGroup items={[{ id: 'star', label: 'S', text: 'STAR market: 20% daily limit' }]} />
+}
+```
 
 ## States
 

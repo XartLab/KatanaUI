@@ -73,7 +73,12 @@ function DropdownMenuItem({
   variant = 'default',
   bare,
   ...props
-}: ComponentProps<typeof DropdownMenuPrimitive.Item> & { variant?: 'default' | 'danger'; bare?: boolean }) {
+}: ComponentProps<typeof DropdownMenuPrimitive.Item> & {
+  /** Style of the row: danger uses the danger text color. */
+  variant?: 'default' | 'danger'
+  /** Skip the row skin. */
+  bare?: boolean
+}) {
   return (
     <DropdownMenuPrimitive.Item
       data-slot="dropdown-menu-item"
@@ -90,7 +95,10 @@ function DropdownMenuCheckboxItem({
   children,
   bare,
   ...props
-}: ComponentProps<typeof DropdownMenuPrimitive.CheckboxItem> & { bare?: boolean }) {
+}: ComponentProps<typeof DropdownMenuPrimitive.CheckboxItem> & {
+  /** Skip the row skin. */
+  bare?: boolean
+}) {
   return (
     <DropdownMenuPrimitive.CheckboxItem
       data-slot="dropdown-menu-checkbox-item"

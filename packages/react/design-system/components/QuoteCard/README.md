@@ -4,24 +4,43 @@
 
 ## Provide
 
+`*` marks a required prop.
+
 ### QuoteCard
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `name / symbol` | `string` | — | 名字与代码。 |
-| `price / change / percent` | `string` | — | 已格式化好的价、涨跌额、涨跌幅。 |
-| `tone` | `'up' \| 'down' \| 'flat'` | `'flat'` | 涨跌三态。 |
-| `spark / sparkLabel` | `number[] / string` | — | 迷你图的数与读屏名；不给 spark 就不画。 |
-| `footer` | `ReactNode` | — | 卡下面一行，常放 RangeBar。 |
-| `size` | `'md' \| 'sm'` | `'md'` | sm 是 148 宽的小卡，QuoteStrip 里用。 |
-| `onSelect` | `() => void` | — | 给了整张卡渲染成一个按钮（悬停提亮、按下缩到 0.98）。 |
+| `name` * | `string` | — | Name of the symbol. |
+| `symbol` | `string` | — | Code, small and muted beside the name. |
+| `price` * | `string` | — | The already formatted price. |
+| `change` | `string` | — | The already formatted change amount, signed. |
+| `percent` | `string` | — | The already formatted change percentage, signed. |
+| `tone` | `QuoteTone` | `'flat'` | Up, down or flat. |
+| `spark` | `readonly number[]` | — | Values of the mini chart, oldest to newest; no chart is drawn when omitted. |
+| `sparkLabel` | `string` | — | Accessible name of the mini chart. |
+| `footer` | `ReactNode` | — | A line under the card, often a RangeBar. |
+| `size` | `'md' \| 'sm'` | `'md'` | sm is a narrow horizontal card used inside QuoteStrip. |
+| `onSelect` | `() => void` | — | When given the whole card renders as a button. |
+| `className` | `string` | — | Extra class name on the root. |
 
 ### QuoteStrip
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `label` | `string` | — | 读屏名，必填。 |
-| `items` | `(QuoteCardProps & { id })[]` | — | 每张卡的属性加一个 id。 |
+| `label` * | `string` | — | Accessible name (required). |
+| `items` * | `readonly (QuoteCardProps & { id: string })[]` | — | The cards: the props of each QuoteCard plus an id. |
+| `className` | `string` | — | Extra class name on the root. |
+
+## Usage
+
+```tsx
+// SPDX-License-Identifier: MIT
+import { QuoteCard } from '@katana-ui/react'
+
+export function QuoteCardUsage() {
+  return <QuoteCard name="Alpha" symbol="AAA" price="11.80" change="+1.80" percent="+18.00%" tone="up" />
+}
+```
 
 ## States
 

@@ -3,7 +3,15 @@
 // 搬自 src/ui/Keys.tsx（#1860）：「Mod+Shift+H」怎么拆成块、Mod 在这个平台上叫什么，是应用的事（热键表在 src/hotkeys），这里只管画：调用方给拆好的块与读屏用的整串文字。
 
 /** 一串快捷键方块：parts 是每一块上的字，label 是读屏读的整串。 */
-export function Kbd({ parts, label }: { parts: readonly string[]; label: string }) {
+export function Kbd({
+  parts,
+  label,
+}: {
+  /** The text on each key cap. */
+  parts: readonly string[]
+  /** The whole shortcut as read by screen readers (required). */
+  label: string
+}) {
   return (
     <span className="k-keys" aria-label={label}>
       {parts.map((key, index) => (

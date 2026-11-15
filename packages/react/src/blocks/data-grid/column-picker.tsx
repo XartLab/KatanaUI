@@ -23,13 +23,23 @@ export type ColumnPickerLabels = {
 }
 
 export type ColumnPickerProps = {
+  /** The same layout as DataGrid's. */
   layout: readonly GridColumnLayout[]
+  /** Called with the whole new layout after a column set is chosen or a column is toggled. */
   onLayoutChange: (next: GridColumnLayout[]) => void
-  /** 列集；省略或空就只有勾选。 */
+  /**
+   * Column sets; omit or leave empty for ticks only.
+   * 列集；省略或空就只有勾选。
+   */
   sets?: readonly ColumnSet[]
+  /** Copy for the trigger and the two group headings (the package carries no language). */
   labels: ColumnPickerLabels
-  /** 触发按钮只画图标（读屏名仍是 labels.trigger），用在表头最右的「+」位置。 */
+  /**
+   * Icon-only trigger (the read-aloud name stays labels.trigger), for the "+" slot at the far right of the header.
+   * 触发按钮只画图标（读屏名仍是 labels.trigger），用在表头最右的「+」位置。
+   */
   iconOnly?: boolean
+  /** Extra class name on the root. */
   className?: string
 }
 

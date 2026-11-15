@@ -5,15 +5,29 @@
 import { TONE_GLYPH, type QuoteTone } from './quote-tone.ts'
 
 export type PriceTagProps = {
-  /** 品种名或代码；不给就只有价格与涨跌。 */
+  /**
+   * Symbol name or code; only price and change are shown when omitted.
+   * 品种名或代码；不给就只有价格与涨跌。
+   */
   name?: string
-  /** 已经格式化好的价。 */
+  /**
+   * The already formatted price.
+   * 已经格式化好的价。
+   */
   price: string
-  /** 已经格式化好的涨跌（带符号，如「+1.20%」）。 */
+  /**
+   * The already formatted change, signed (for example "+1.20%").
+   * 已经格式化好的涨跌（带符号，如「+1.20%」）。
+   */
   change?: string
+  /** Up, down or flat: sets the color and the triangle (none for flat). */
   tone?: QuoteTone
-  /** 读屏读的整句（含涨跌方向）；不给就读可见的字。 */
+  /**
+   * The whole sentence read by screen readers, including the direction; the visible text is read when omitted.
+   * 读屏读的整句（含涨跌方向）；不给就读可见的字。
+   */
   label?: string
+  /** Extra class name on the root. */
   className?: string
 }
 

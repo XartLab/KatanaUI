@@ -4,24 +4,37 @@
 
 ## Provide
 
+`*` marks a required prop.
+
 ### Button
 
 其余属性透传给原生 button；type 默认 button，放进表单不会误提交。
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `variant` | `'default' \| 'primary' \| 'danger' \| 'ghost' \| 'icon' \| 'link'` | `'default'` | primary 是实心浅色主按钮；danger 字色走危险色；icon 是 28 见方无边的图标钮。 |
-| `size` | `'default' \| 'sm' \| 'icon'` | `'default'` | default 30 高；sm 26 高圆角 8；icon 28 见方。 |
-| `asChild` | `boolean` | `false` | 渲染成子元素自己（链接、菜单触发器），不套一层 button。 |
+| `variant` | `"link" \| "default" \| "danger" \| "primary" \| "ghost" \| "icon"` | `'default'` | Visual style: primary is the solid light button, danger uses the danger text color, icon is a borderless 28px icon button. |
+| `size` | `"default" \| "icon" \| "sm"` | `'default'` | Height: default is 30px, sm is 26px with an 8px radius, icon is a 28px square. |
+| `asChild` | `boolean` | `false` | Render the child element itself (a link, a menu trigger) instead of wrapping it in a button. |
 
 ### buttonVariants
 
 返回类名的函数，给不是 button 的元素画成按钮（包着文件输入的 label 之类）。
 
-| 属性 | 类型 | 默认 | 说明 |
-| --- | --- | --- | --- |
-| `variant` | `同 Button` | — | 同上。 |
-| `size` | `同 Button` | — | 同上。 |
+## Usage
+
+```tsx
+// SPDX-License-Identifier: MIT
+import { Button } from '@katana-ui/react'
+
+export function ButtonUsage() {
+  return (
+    <>
+      <Button variant="primary">Save</Button>
+      <Button>Cancel</Button>
+    </>
+  )
+}
+```
 
 ## States
 

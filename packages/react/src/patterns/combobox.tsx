@@ -39,8 +39,12 @@ function ComboboxContent({
   commandProps,
   ...props
 }: ComponentProps<typeof PopoverContent> & {
-  /** 搜索框与列表的读屏名（必填：cmdk 用它给 combobox 与 listbox 起名）。 */
+  /**
+   * Accessible name of the search box and the list (required: cmdk names the combobox and the listbox with it).
+   * 搜索框与列表的读屏名（必填：cmdk 用它给 combobox 与 listbox 起名）。
+   */
   label: string
+  /** Props passed to the Command inside (for example shouldFilter: false to rank on your own). */
   commandProps?: ComponentProps<typeof Command>
 }) {
   return (
@@ -71,7 +75,10 @@ function ComboboxItem({
   className,
   children,
   ...props
-}: ComponentProps<typeof CommandItem> & { selected?: boolean }) {
+}: ComponentProps<typeof CommandItem> & {
+  /** Selected: draws a check mark on the left and sets data-checked. */
+  selected?: boolean
+}) {
   return (
     <CommandItem
       data-slot="combobox-item"

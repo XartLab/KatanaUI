@@ -61,9 +61,14 @@ export function StatusIcon({
   label,
   className,
 }: {
+  /** The status; pending is a spinning arc. */
   status: StatusIconStatus
-  /** 读屏名（必填）：只靠颜色与形状不够，读屏要听到状态。旁边已经有文字写明了状态时传空串，图标就当装饰、对读屏隐藏。 */
+  /**
+   * Accessible name (required): color and shape alone are not enough. Pass an empty string when text next to it states the status, and the icon becomes decorative.
+   * 读屏名（必填）：只靠颜色与形状不够，读屏要听到状态。旁边已经有文字写明了状态时传空串，图标就当装饰、对读屏隐藏。
+   */
   label: string
+  /** Extra class name on the icon. */
   className?: string
 }) {
   return (

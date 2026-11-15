@@ -65,23 +65,46 @@ export function DateTimeInput({
   labels,
   locale,
 }: {
-  /** 读屏用的名字：日期叫「<label>的日期」，时刻叫「<label>的时刻」。 */
+  /**
+   * Field name used to build the accessible names: the date is read as "<label> date", the time as "<label> time".
+   * 读屏用的名字：日期叫「<label>的日期」，时刻叫「<label>的时刻」。
+   */
   label: string
+  /** The date as YYYY-MM-DD. */
   date: string
+  /** Called with the new date. */
   onDate: (value: string) => void
-  /** 不给就只有日期。 */
+  /**
+   * The time as HH:mm or HH:mm:ss; omit it (and onTime) for a date-only field.
+   * 不给就只有日期。
+   */
   time?: string
+  /** Called with the new time. */
   onTime?: (value: string) => void
-  /** 时刻带秒（补录成交）。 */
+  /**
+   * Include seconds in the time.
+   * 时刻带秒（补录成交）。
+   */
   seconds?: boolean
-  /** 能选的最早、最晚日期（YYYY-MM-DD）：日历里范围外的日子灰着点不了，框里打了范围外的日期标成不合法。 */
+  /**
+   * Earliest selectable date (YYYY-MM-DD); days outside the range are disabled and typed dates outside it are marked invalid.
+   * 能选的最早、最晚日期（YYYY-MM-DD）：日历里范围外的日子灰着点不了，框里打了范围外的日期标成不合法。
+   */
   min?: string
+  /** Latest selectable date (YYYY-MM-DD). */
   max?: string
+  /** sm is 26px high. */
   size?: 'sm'
+  /** Focus the field on mount, like the native attribute. */
   autoFocus?: boolean
+  /** Extra class name on the root. */
   className?: string
+  /** Accessible names and button names (the package ships no text; the caller passes them in the UI language). */
   labels: DateTimeLabels
-  /** 给 react-aria 的语言（年-月-日的顺序）：中文界面 zh-CN（分隔由下面换成「-」），英文界面 en-CA。 */
+  /**
+   * Locale for react-aria: zh-CN or en-CA, both year-month-day.
+   * 给 react-aria 的语言（年-月-日的顺序）：中文界面 zh-CN（分隔由下面换成「-」），英文界面 en-CA。
+   */
   locale: string
 }) {
   const [open, setOpen] = useState(false)

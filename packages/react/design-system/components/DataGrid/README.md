@@ -4,55 +4,62 @@
 
 ## Provide
 
+`*` marks a required prop.
+
 ### DataGrid
 
 示例数据写死在页里，不是行情。行高档：compact 20、default 24、relaxed 32。没有 DataGridHost 时能点、能排序、能键盘选行，只是没有快捷键与标准右键项。
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `columns` | `GridColumn<Row>[]` | — | 列的定义：id、type、value、format、text、sort、tone、fill、cell（custom 列的内容）、render、csv、rowHeader。列对象要稳定，别每次渲染新建。 |
-| `layout` | `GridColumnLayout[]` | — | 列怎么摆：次序就是显示次序，每项 id、label、width、visible、align、fixed。 |
-| `rows / rowId` | `Row[] / (row) => string` | — | 行与稳定的行 id。 |
-| `label` | `string` | — | 屏幕阅读器念的表名。 |
-| `sort / onSortChange` | `SortSpec \| null / (next) => void` | — | 排序受控；点表头在升序、倒序、不排之间转。没给 onSortChange 就不能排序，表头是普通的字。 |
-| `sortRemovable` | `boolean` | `true` | false 时第三下回到升序。 |
-| `onLayoutChange` | `(next: GridColumnLayout[]) => void` | — | 列摆法变了（列头右键菜单的固定 / 隐藏 / 左右移、拖动列头重排）：给出整份新 layout，调用方存。没给就没有这些菜单项，列头不能拖。列头右键菜单的文案走 DataGridHost 的 texts.columnMenu。 |
-| `onResize / onResetColumns` | `function` | — | 拖完列宽 / 重置列；没给就没有拖动把手与「重置列」。 |
-| `onOpen / restoreRow / isOpened` | `function` | — | 点一行、从详情返回时放回键盘所在行、正开着的行（左边强调色）。 |
-| `rowProps` | `(row) => GridRowProps \| undefined` | — | 给一行加属性：className（并进行的类名）、title、data-*、aria-*。状态、测试钩子从这里来，不用在外面再包一层。 |
-| `renderSubRow` | `(row) => ReactNode` | — | 可展开的子行，跨满整行宽、高度跟着内容走；返回 null / undefined / false 是这一行没有子行。表按 treegrid 读，有子行的行带 aria-expanded。 |
-| `expanded / onExpandedChange / defaultExpanded` | `Set<string> / (id, expanded) => void / (row) => boolean` | — | 展开状态：给了 expanded 就受控（展开收起只通知 onExpandedChange）；不给时表自己记，没动过的行看 defaultExpanded（省略是收起）。 |
-| `menu / panelMenu / menuTail / rowInfo / extrasFirst` | `function` | — | 右键菜单里标准项之外追加的项与次序。 |
-| `askText / onExport` | `function` | — | 问 Agent 的摘要文字（需宿主 askAgent）/ 导出 CSV 交给宿主存。 |
-| `timeZone` | `'local' \| 'utc' \| string` | `'local'` | time 列的时区。 |
-| `rowActions` | `(row) => RowAction[]` | — | 行快捷操作（#23，一般传 symbolMenu(...)）：悬停或键盘落到这一行时右端浮出前三颗带图标的按钮（浮在行上，不挤列宽；按钮条名字取 texts.rowActions）；右键、菜单键、Shift+F10 开的菜单最前面是整份项，只在右键落在单独一行时出现。不传就没有。 |
-| `density` | `'compact' \| 'default' \| 'relaxed'` | `'default'` | 行高档。 |
-| `hideHeader` | `boolean` | `false` | 不画表头。 |
-| `headExtra` | `(columnId: string) => ReactNode` | — | 表头每列名字后面的附加内容（选股器代码列的搜索图标）；返回 null 就没有。列布局的 sub 字段给列名下面加一行小字（口径，如 TTM），有它表头自动加高一行。排序箭头画在列名前面。 |
-| `headEnd` | `ReactNode` | — | 表头最右的固定位置（选股器的「+」加列，一般放 ColumnPicker 的 iconOnly）。 |
-| `autoRowHeight` | `boolean` | `false` | 行高跟着内容走：多行的格子、行里有按钮的表。density 的行高是最小高度，格子里的字可以折行。 |
-| `ruled` | `boolean` | `false` | 行与行之间画一道细线。 |
-| `selectable` | `boolean` | `true` | false：点行不选、不打开，没有悬停底色，只留键盘移动与展开（行里主要是按钮的表）。 |
-| `interactive` | `boolean` | `true` | false 是只读展示表（ARIA table），行不响应点击。 |
-| `fit / maxHeight` | `boolean / number` | — | 高度跟着内容走（对话框里的小表），maxHeight 像素以内不出滚动条。 |
-| `foot / presorted / rowTree / classNames` | `various` | — | 表下说明、调用方已排好、树形行、各部分额外类名（含 subrow）。 |
+| `columns` * | `readonly GridColumn<Row>[]` | — | Column definitions, a module-level constant (column objects must be stable). |
+| `layout` * | `readonly GridColumnLayout[]` | — | How the columns are laid out: order, visibility, width and header text; stored by the caller. |
+| `rows` * | `readonly Row[]` | — | The rows. |
+| `rowId` * | `(row: Row) => string` | — | Returns the stable id of a row. |
+| `label` * | `string` | — | Table name read by screen readers. |
+| `sort` | `SortSpec \| null` | `null` | Current sort; omit for unsorted. |
+| `onSortChange` | `(next: SortSpec \| null) => void` | — | Without it sorting is off and headers are plain text, not buttons. |
+| `sortRemovable` | `boolean` | `true` | When false the third click goes back to ascending (a table with a default sort cannot be unsorted). |
+| `onLayoutChange` | `(next: GridColumnLayout[]) => void` | — | Layout changed (column menu pin / hide / move, header drag reorder): gets the whole new layout; the caller stores it. |
+| `onResize` | `(id: string, width: number) => void` | — | Called after a column width drag; without it there are no drag handles and no reset-columns item. |
+| `onResetColumns` | `() => void` | — | Reset columns (menu item and shortcut): the caller puts order, visibility, width and sort back to defaults. |
+| `onOpen` | `(row: Row) => void` | — | What a plain click on a row does. |
+| `restoreRow` | `string \| null` | — | Row to put keyboard focus back on when returning from a detail view (WCAG 2.4.3); only works at mount. |
+| `isOpened` | `(row: Row) => boolean` | — | Whether a row is the one currently open (an accent stripe on its left). |
+| `rowClass` | `(row: Row) => string \| undefined` | — | Extra class name for a row. |
+| `rowActions` | `(row: Row) => readonly RowAction[]` | — | Row quick actions (usually the result of symbolMenu(...)): hovering or keyboard-focusing a row floats the first few icon buttons at its right end; the whole list also leads the context menu when it opens on a single row. |
+| `rowProps` | `(row: Row) => GridRowProps \| undefined` | — | Extra attributes for a row (class name, tooltip, data-*, aria-*), so state and test hooks need no wrapper. |
+| `renderSubRow` | `(row: Row) => ReactNode` | — | Expandable detail row spanning the full width; return null, undefined or false for a row without one. |
+| `expanded` | `ReadonlySet<string>` | — | Expanded row ids (controlled); when given, expanding and collapsing only notify through onExpandedChange. |
+| `onExpandedChange` | `(id: string, expanded: boolean) => void` | — | Called when a row is expanded or collapsed. |
+| `defaultExpanded` | `(row: Row) => boolean` | — | Uncontrolled: whether a row the user has not toggled starts expanded; omit for collapsed. |
+| `menu` | `(rows: Row[]) => readonly GridMenuEntry[]` | — | Items appended after the standard ones in the context menu, acting on the selected rows. |
+| `extrasFirst` | `boolean` | — | Put the items from menu before the standard ones (copy, export, reset columns) instead of after. |
+| `menuTail` | `() => readonly GridMenuEntry[]` | — | Items placed after the standard ones when extrasFirst is set. |
+| `panelMenu` | `() => readonly GridMenuEntry[]` | — | Items added to the menu when the click lands on empty space. |
+| `rowInfo` | `(row: Row) => string` | — | Gray text at the bottom of the context menu for a row (an id, say). |
+| `askText` | `(rows: Row[]) => string \| null` | — | Summary text of the selected rows for "Ask the agent" (null when there is nothing to write); needs askAgent from the host. |
+| `exportName` | `string` | `'table'` | File name for the export, without extension. |
+| `onExport` | `(csv: string, fileName: string) => void` | — | Called with the CSV text and file name; without it there is no export item. |
+| `foot` | `ReactNode` | — | A line of text under the table. |
+| `presorted` | `boolean` | — | Rows are already sorted by the caller (group rows with children): the header still shows the sort marker but the table does not sort. |
+| `rowTree` | `(row: Row) => { level: number; expanded?: boolean }` | — | Tree rows: the table reads as an ARIA treegrid and rows carry aria-level and aria-expanded. |
+| `timeZone` | `string` | — | Time zone of time columns: 'local' (default), 'utc' or an IANA name. |
+| `sortLocale` | `string` | — | Locale for sorting text columns (Intl.Collator); follows the runtime when omitted. |
+| `density` | `GridDensity` | `'default'` | Row height tier. |
+| `hideHeader` | `boolean` | — | Do not draw the header (a two-column metrics table, say). |
+| `autoRowHeight` | `boolean` | — | Row height follows the content (multi-line cells, buttons in rows): the density height is a minimum and the measured height wins; cell text may wrap. |
+| `ruled` | `boolean` | — | Draw a thin rule between rows. |
+| `selectable` | `boolean` | `true` | When false, clicking a row neither selects nor opens it and there is no hover tint; only keyboard movement and expanding remain (for tables of mostly buttons). |
+| `interactive` | `boolean` | `true` | Interactive (default true): rows can be clicked, selected and moved with the keyboard, with a context menu. |
+| `stretch` | `boolean` | — | Treat column widths as proportions: when the container is wider than the sum, the extra space is shared by width ratio; by default widths are fixed pixels. |
+| `fit` | `boolean` | — | Height follows the content (a small table in a dialog): no scrollbar up to maxHeight px. |
+| `maxHeight` | `number` | — | Largest height in px when fit is set. |
+| `classNames` | `Partial<Record<GridSlot, string>>` | `{}` | Extra class names per part. |
 
 ### 列类型 ColumnType
 
 数字类默认靠右，用等宽数字；pnl、change、side 用 ToneText 跟 data-updown 着色（红涨绿跌时互换）。
-
-| 属性 | 类型 | 默认 | 说明 |
-| --- | --- | --- | --- |
-| `text` | `string` | — | 字符串，按字排序（自然序）。 |
-| `number` | `number \| 十进制字符串` | — | 数值排序（十进制字符串不转双精度）；format.digits 定小数位。 |
-| `price` | `number` | — | formatPrice：format.precision 或 tick 定小数位。 |
-| `quantity` | `number` | — | formatQuantity：format.units（base | usd）与 size 缩写。 |
-| `pnl` | `number` | — | 带符号的盈亏，format.digits（默认 2）、suffix（单位），按方向着色。 |
-| `change` | `number（百分数）` | — | +1.23% 写法，按方向着色。 |
-| `side` | `'buy' \| 'sell'` | — | 买卖文字加方向色；format.labels 传文案。 |
-| `time` | `毫秒时间戳` | — | YYYY-MM-DD HH:MM:SS，时区取 timeZone；format.timeStyle 可只写时间或日期。 |
-| `symbol` | `string \| { code, venue? }` | — | 代码加场所两段，场所写淡。 |
-| `custom` | `cell(row) => ReactNode` | — | 格子里画什么都行（多行的字、使用度条、按钮）；复制、导出与排序用 text 与 sort。放在里面的按钮自己管点击。 |
 
 ### DataGridHost（经 DataGridHostProvider 提供）
 
@@ -60,10 +67,11 @@
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `matchKey / keysOf` | `function` | — | 按键对应表的哪个动作（copy、save、resetColumns、contextMenu、askAgent）/ 动作的快捷键写法。 |
-| `texts` | `Partial<DataGridTexts>` | — | 菜单项与可访问名称的文案；copy、save、resetColumns 三项都给了菜单里才有标准项。 |
-| `renderMenu` | `(entries) => ReactNode` | — | 宿主的菜单项比包里的多时自己画；省略时包里画 item / 二级 / 分隔线。 |
-| `askAgent` | `(text \| null) => void` | — | 问 Agent：给了它，又给了 askText，菜单多一项、表获得焦点时按键也一样。 |
+| `matchKey` | `(event: KeyboardEvent<HTMLElement>) => GridAction \| null` | — | Which table action a key press stands for; null if none. |
+| `keysOf` | `(action: GridAction) => string \| undefined` | — | How an action's shortcut is written (shown at the right of menu items and in the table name). |
+| `texts` | `Partial<DataGridTexts>` | — | Texts of the menu items and accessible names; the standard menu items appear only when copy, save and resetColumns are all given. |
+| `renderMenu` | `(entries: readonly GridMenuEntry[]) => ReactNode` | — | What to draw in the menu: use it when the host's items go beyond GridMenuEntry; by default the package draws item, submenu and separator. |
+| `askAgent` | `(text: string \| null) => void` | — | Ask the agent: when given together with askText, rows get a context menu item and the key works while the table is focused. |
 
 ### ColumnPicker
 
@@ -71,10 +79,11 @@
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `layout / onLayoutChange` | `GridColumnLayout[] / (next) => void` | — | 同 DataGrid 的 layout。 |
-| `sets` | `{ id, label, columns: string[] }[]` | — | 列集：集里的列显示并按集的次序排前面，其余藏起来。省略就只有勾选。 |
-| `labels` | `{ trigger, sets, columns }` | — | 文案由调用方传，包里没有语言。 |
-| `iconOnly` | `boolean` | `false` | 触发按钮只画「+」图标（读屏名仍是 labels.trigger），放在表头最右。 |
+| `layout` * | `readonly GridColumnLayout[]` | — | The same layout as DataGrid's. |
+| `onLayoutChange` * | `(next: GridColumnLayout[]) => void` | — | Called with the whole new layout after a column set is chosen or a column is toggled. |
+| `sets` | `readonly ColumnSet[]` | `[]` | Column sets; omit or leave empty for ticks only. |
+| `labels` * | `ColumnPickerLabels` | — | Copy for the trigger and the two group headings (the package carries no language). |
+| `className` | `string` | — | Extra class name on the root. |
 
 ### usePersistedState(key, initial, { version, storage?, validate? })
 
@@ -95,6 +104,44 @@
 ### tableCsv(header, rows)
 
 导出的 CSV：含逗号、引号、换行的格子加引号，公式开头的补单引号。
+
+## Usage
+
+```tsx
+// SPDX-License-Identifier: MIT
+import { useState } from 'react'
+import { DataGrid, type GridColumn, type GridColumnLayout, type SortSpec } from '@katana-ui/react/blocks'
+
+type Row = { id: string; symbol: string; pnl: number }
+
+const ROWS: readonly Row[] = [
+  { id: 'a', symbol: 'BTCUSDT', pnl: 125.4 },
+  { id: 'b', symbol: 'ETHUSDT', pnl: -31.75 },
+]
+const COLUMNS: readonly GridColumn<Row>[] = [
+  { id: 'symbol', type: 'text', value: (row) => row.symbol },
+  { id: 'pnl', type: 'pnl', value: (row) => row.pnl },
+]
+const LAYOUT: readonly GridColumnLayout[] = [
+  { id: 'symbol', label: 'Symbol', width: 120, visible: true },
+  { id: 'pnl', label: 'PnL', width: 100, visible: true },
+]
+
+export function DataGridUsage() {
+  const [sort, setSort] = useState<SortSpec | null>(null)
+  return (
+    <DataGrid
+      columns={COLUMNS}
+      layout={LAYOUT}
+      rows={ROWS}
+      rowId={(row) => row.id}
+      label="Positions"
+      sort={sort}
+      onSortChange={setSort}
+    />
+  )
+}
+```
 
 ## States
 

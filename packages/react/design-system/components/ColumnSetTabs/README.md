@@ -4,6 +4,8 @@
 
 ## Provide
 
+`*` marks a required prop.
+
 ### ColumnSetTabs
 
 | 属性 | 类型 | 默认 | 说明 |
@@ -12,6 +14,12 @@
 | `sets` | `ColumnSet[]` | — | { id, label, columns: 列 id[] }。 |
 | `label` | `string` | — | 整行的读屏名。 |
 | `children` | `ReactNode` | — | 右侧按钮位（刷新、全屏）。 |
+
+## Usage
+
+```tsx
+
+```
 
 ## States
 

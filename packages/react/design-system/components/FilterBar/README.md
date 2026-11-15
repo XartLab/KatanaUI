@@ -4,6 +4,8 @@
 
 ## Provide
 
+`*` marks a required prop.
+
 ### FilterBar
 
 | 属性 | 类型 | 默认 | 说明 |
@@ -33,6 +35,12 @@
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
 | `applyFilters(rows, conditions, getCell)` | `Row[]` | — | 所有条件都满足（且）；getCell 按字段键取这一行的值。 |
+
+## Usage
+
+```tsx
+
+```
 
 ## States
 

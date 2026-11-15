@@ -4,6 +4,8 @@
 
 ## Provide
 
+`*` marks a required prop.
+
 ### RatingText
 
 其余属性透传给 span。
@@ -12,6 +14,12 @@
 | --- | --- | --- | --- |
 | `level` | `'strong-sell' \| 'sell' \| 'neutral' \| 'buy' \| 'strong-buy'` | — | 五档。 |
 | `children` | `string` | — | 档名，由调用方传（包里不带语言）。 |
+
+## Usage
+
+```tsx
+
+```
 
 ## States
 

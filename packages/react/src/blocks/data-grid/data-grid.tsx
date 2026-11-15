@@ -109,101 +109,217 @@ const features = tableFeatures({
 })
 
 export type DataGridProps<Row extends object> = {
-  /** 列的定义，模块级常量（表里的列对象要稳定）。 */
+  /**
+   * Column definitions, a module-level constant (column objects must be stable).
+   * 列的定义，模块级常量（表里的列对象要稳定）。
+   */
   columns: readonly GridColumn<Row>[]
-  /** 列怎么摆：次序、显隐、宽度、表头的字。调用方存。 */
+  /**
+   * How the columns are laid out: order, visibility, width and header text; stored by the caller.
+   * 列怎么摆：次序、显隐、宽度、表头的字。调用方存。
+   */
   layout: readonly GridColumnLayout[]
+  /** The rows. */
   rows: readonly Row[]
+  /** Returns the stable id of a row. */
   rowId: (row: Row) => string
-  /** 屏幕阅读器念的表名。 */
+  /**
+   * Table name read by screen readers.
+   * 屏幕阅读器念的表名。
+   */
   label: string
-  /** 现在的排序；省略是不排。 */
+  /**
+   * Current sort; omit for unsorted.
+   * 现在的排序；省略是不排。
+   */
   sort?: SortSpec | null
-  /** 没给就不能排序：表头是普通的字，不是按钮。 */
+  /**
+   * Without it sorting is off and headers are plain text, not buttons.
+   * 没给就不能排序：表头是普通的字，不是按钮。
+   */
   onSortChange?: (next: SortSpec | null) => void
-  /** 点到第三下回到不排；false 时回到正序（有默认排序的表不允许「不排」）。 */
+  /**
+   * When false the third click goes back to ascending (a table with a default sort cannot be unsorted).
+   * 点到第三下回到不排；false 时回到正序（有默认排序的表不允许「不排」）。
+   */
   sortRemovable?: boolean
   /**
+   * Layout changed (column menu pin / hide / move, header drag reorder): gets the whole new layout; the caller stores it.
+   * Without it those menu items are absent and headers cannot be dragged.
    * 列摆法变了（列头菜单的固定 / 隐藏 / 左右移、拖动列头重排）：给出新的整份 layout，调用方存。
    * 没给就没有这些菜单项，列头也不能拖。
    */
   onLayoutChange?: (next: GridColumnLayout[]) => void
-  /** 拖完列宽。 */
+  /**
+   * Called after a column width drag; without it there are no drag handles and no reset-columns item.
+   * 拖完列宽。
+   */
   onResize?: (id: string, width: number) => void
-  /** 重置列（菜单项与快捷键）：调用方把次序、显隐、宽度、排序放回默认。 */
+  /**
+   * Reset columns (menu item and shortcut): the caller puts order, visibility, width and sort back to defaults.
+   * 重置列（菜单项与快捷键）：调用方把次序、显隐、宽度、排序放回默认。
+   */
   onResetColumns?: () => void
-  /** 点一行（不带修饰键）做的事。 */
+  /**
+   * What a plain click on a row does.
+   * 点一行（不带修饰键）做的事。
+   */
   onOpen?: (row: Row) => void
-  /** 从详情返回时把键盘所在的行放回它（WCAG 2.4.3）；只在挂上来那一刻管用。 */
+  /**
+   * Row to put keyboard focus back on when returning from a detail view (WCAG 2.4.3); only works at mount.
+   * 从详情返回时把键盘所在的行放回它（WCAG 2.4.3）；只在挂上来那一刻管用。
+   */
   restoreRow?: string | null
-  /** 正开着的那一行（左边一道强调色）。 */
+  /**
+   * Whether a row is the one currently open (an accent stripe on its left).
+   * 正开着的那一行（左边一道强调色）。
+   */
   isOpened?: (row: Row) => boolean
+  /** Extra class name for a row. */
   rowClass?: (row: Row) => string | undefined
   /**
-   * 行快捷操作（#23，一般传 symbolMenu(...) 的结果）：悬停这一行或键盘落到这一行时，行右端浮出前几颗带图标的按钮，浮在行上、不挤列宽；
-   * 右键（菜单键、Shift+F10）整份进菜单最前面，只在右键落在单独一行时出现（多行选中时动作对谁没有定论，不画）。
+   * Row quick actions (usually the result of symbolMenu(...)): hovering or keyboard-focusing a row floats the first few icon buttons at its right end; the whole list also leads the context menu when it opens on a single row.
+   * 行快捷操作（#23，一般传 symbolMenu(...) 的结果）：悬停这一行或键盘落到这一行时，行右端浮出前几颗带图标的按钮；右键整份进菜单最前面，只在右键落在单独一行时出现。
    */
   rowActions?: (row: Row) => readonly RowAction[]
-  /** 给一行加属性（类名、悬停提示、data-*、aria-*）：状态、测试钩子这类行上的东西从这里来，不用包一层。 */
+  /**
+   * Extra attributes for a row (class name, tooltip, data-*, aria-*), so state and test hooks need no wrapper.
+   * 给一行加属性（类名、悬停提示、data-*、aria-*）：状态、测试钩子这类行上的东西从这里来，不用包一层。
+   */
   rowProps?: (row: Row) => GridRowProps | undefined
   /**
+   * Expandable detail row spanning the full width; return null, undefined or false for a row without one. The grid reads as an ARIA treegrid: rows with a detail row carry aria-expanded, and the focused row expands with ArrowRight and collapses with ArrowLeft.
    * 可展开的子行（跨满整行宽，高度跟着内容走）：返回要画的内容；返回 null / undefined / false 是这一行没有子行。
    * 表按 ARIA treegrid 读：有子行的行带 aria-expanded，键盘所在的行按 → 展开、← 收起（WAI-ARIA APG 的 Treegrid 键位）。
    */
   renderSubRow?: (row: Row) => ReactNode
-  /** 展开的行 id（受控）；给了它，展开收起只经 onExpandedChange 通知调用方，表自己不记。 */
+  /**
+   * Expanded row ids (controlled); when given, expanding and collapsing only notify through onExpandedChange.
+   * 展开的行 id（受控）；给了它，展开收起只经 onExpandedChange 通知调用方，表自己不记。
+   */
   expanded?: ReadonlySet<string>
+  /** Called when a row is expanded or collapsed. */
   onExpandedChange?: (id: string, expanded: boolean) => void
-  /** 不受控时，一行没被用户展开或收起过的话是不是展开（待生效的提示默认摊开）。省略是收起。 */
+  /**
+   * Uncontrolled: whether a row the user has not toggled starts expanded; omit for collapsed.
+   * 不受控时，一行没被用户展开或收起过的话是不是展开（待生效的提示默认摊开）。省略是收起。
+   */
   defaultExpanded?: (row: Row) => boolean
-  /** 右键菜单里标准项之后追加的项，对选中的行生效。 */
+  /**
+   * Items appended after the standard ones in the context menu, acting on the selected rows.
+   * 右键菜单里标准项之后追加的项，对选中的行生效。
+   */
   menu?: (rows: Row[]) => readonly GridMenuEntry[]
-  /** 默认标准项（复制、导出、重置列）在前，menu 的项在后；设 true 反过来（照 TradingView：表自己的操作在前、表格工具垫底）。 */
+  /**
+   * Put the items from menu before the standard ones (copy, export, reset columns) instead of after.
+   * 默认标准项（复制、导出、重置列）在前，menu 的项在后；设 true 反过来（照 TradingView：表自己的操作在前、表格工具垫底）。
+   */
   extrasFirst?: boolean
-  /** extrasFirst 时垫在标准项后面的项。 */
+  /**
+   * Items placed after the standard ones when extrasFirst is set.
+   * extrasFirst 时垫在标准项后面的项。
+   */
   menuTail?: () => readonly GridMenuEntry[]
-  /** 点在空白处时菜单里追加的项。 */
+  /**
+   * Items added to the menu when the click lands on empty space.
+   * 点在空白处时菜单里追加的项。
+   */
   panelMenu?: () => readonly GridMenuEntry[]
-  /** 右键菜单底部的灰字（交易表的 Id、Exec id）。 */
+  /**
+   * Gray text at the bottom of the context menu for a row (an id, say).
+   * 右键菜单底部的灰字（交易表的 Id、Exec id）。
+   */
   rowInfo?: (row: Row) => string
-  /** 「问 Agent」：把选中的行写成摘要文字（没有可写的返回 null）。要宿主提供 askAgent 才有这一项。 */
+  /**
+   * Summary text of the selected rows for "Ask the agent" (null when there is nothing to write); needs askAgent from the host.
+   * 「问 Agent」：把选中的行写成摘要文字（没有可写的返回 null）。要宿主提供 askAgent 才有这一项。
+   */
   askText?: (rows: Row[]) => string | null
-  /** 导出的文件名（不含扩展名）；宿主的 download 能力不在包里，导出由 onExport 接手。 */
+  /**
+   * File name for the export, without extension.
+   * 导出的文件名（不含扩展名）；宿主的 download 能力不在包里，导出由 onExport 接手。
+   */
   exportName?: string
-  /** 导出 CSV：包里算好文字与文件名，交给宿主存。没给就没有导出。 */
+  /**
+   * Called with the CSV text and file name; without it there is no export item.
+   * 导出 CSV：包里算好文字与文件名，交给宿主存。没给就没有导出。
+   */
   onExport?: (csv: string, fileName: string) => void
-  /** 表下面的一行说明。 */
+  /**
+   * A line of text under the table.
+   * 表下面的一行说明。
+   */
   foot?: ReactNode
-  /** 行已经由调用方排好（分组行带子行）：表照样画表头的标记，但不再自己排。 */
+  /**
+   * Rows are already sorted by the caller (group rows with children): the header still shows the sort marker but the table does not sort.
+   * 行已经由调用方排好（分组行带子行）：表照样画表头的标记，但不再自己排。
+   */
   presorted?: boolean
-  /** 树形行：表按 ARIA treegrid 读，行带 aria-level 与 aria-expanded。 */
+  /**
+   * Tree rows: the table reads as an ARIA treegrid and rows carry aria-level and aria-expanded.
+   * 树形行：表按 ARIA treegrid 读，行带 aria-level 与 aria-expanded。
+   */
   rowTree?: (row: Row) => { level: number; expanded?: boolean }
-  /** time 列的时区：'local'（默认）、'utc'、IANA 名。 */
+  /**
+   * Time zone of time columns: 'local' (default), 'utc' or an IANA name.
+   * time 列的时区：'local'（默认）、'utc'、IANA 名。
+   */
   timeZone?: string
-  /** 文字列排序的语言（Intl.Collator）；省略跟运行环境。 */
+  /**
+   * Locale for sorting text columns (Intl.Collator); follows the runtime when omitted.
+   * 文字列排序的语言（Intl.Collator）；省略跟运行环境。
+   */
   sortLocale?: string
+  /** Row height tier. */
   density?: GridDensity
-  /** 不画表头（两列的指标表之类）。 */
+  /**
+   * Do not draw the header (a two-column metrics table, say).
+   * 不画表头（两列的指标表之类）。
+   */
   hideHeader?: boolean
-  /** 列头里排序按钮后面的附加内容（例如 Symbol 列头上的搜索图标）：按列 id 给，没有返回 null。 */
+  /**
+   * Extra content after the sort button in each column head (a search icon on the Symbol head, say): given per column id, null for none.
+   * 列头里排序按钮后面的附加内容（例如 Symbol 列头上的搜索图标）：按列 id 给，没有返回 null。
+   */
   headExtra?: (columnId: string) => ReactNode
-  /** 表头最右端的内容（「+ 加列」按钮，接 ColumnPicker）；浮在表头右端，不占列。 */
+  /**
+   * Content at the far right of the header (the "+ add column" button, wired to ColumnPicker); floats over the header end and takes no column.
+   * 表头最右端的内容（「+ 加列」按钮，接 ColumnPicker）；浮在表头右端，不占列。
+   */
   headEnd?: ReactNode
-  /** 行高跟着内容走（多行的格子、行里有按钮）：density 的行高是最小高度，量到的真实高度为准；格子里的字可以折行。 */
+  /**
+   * Row height follows the content (multi-line cells, buttons in rows): the density height is a minimum and the measured height wins; cell text may wrap.
+   * 行高跟着内容走（多行的格子、行里有按钮）：density 的行高是最小高度，量到的真实高度为准；格子里的字可以折行。
+   */
   autoRowHeight?: boolean
-  /** 行与行之间画一道细线。 */
+  /**
+   * Draw a thin rule between rows.
+   * 行与行之间画一道细线。
+   */
   ruled?: boolean
-  /** false：点行不选、不打开，没有悬停底色，只留键盘移动与展开（行里主要是按钮的表）。默认 true。 */
+  /**
+   * When false, clicking a row neither selects nor opens it and there is no hover tint; only keyboard movement and expanding remain (for tables of mostly buttons). Default true.
+   * false：点行不选、不打开，没有悬停底色，只留键盘移动与展开（行里主要是按钮的表）。默认 true。
+   */
   selectable?: boolean
   /**
+   * Interactive (default true): rows can be clicked, selected and moved with the keyboard, with a context menu. false is a read-only ARIA table.
    * 可交互（默认 true）：能点行、选行、键盘移动、右键菜单。false 是只读的展示表：语义是 ARIA table，行不响应点击。
    */
   interactive?: boolean
-  /** 列宽当比例：容器比列宽之和宽时按 width 的比例把多出来的撑给各列（对话框里的小表）；默认列宽是定死的像素。 */
+  /**
+   * Treat column widths as proportions: when the container is wider than the sum, the extra space is shared by width ratio; by default widths are fixed pixels.
+   * 列宽当比例：容器比列宽之和宽时按 width 的比例把多出来的撑给各列（对话框里的小表）；默认列宽是定死的像素。
+   */
   stretch?: boolean
-  /** 高度跟着内容走（对话框里的小表）：不撑满父级；maxHeight（像素）以内不出滚动条。省略时撑满父级。 */
+  /**
+   * Height follows the content (a small table in a dialog): no scrollbar up to maxHeight px. Fills the parent when omitted.
+   * 高度跟着内容走（对话框里的小表）：不撑满父级；maxHeight（像素）以内不出滚动条。省略时撑满父级。
+   */
   fit?: boolean
+  /** Largest height in px when fit is set. */
   maxHeight?: number
+  /** Extra class names per part. */
   classNames?: Partial<Record<GridSlot, string>>
 }
 

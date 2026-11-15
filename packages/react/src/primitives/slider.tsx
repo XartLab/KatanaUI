@@ -27,9 +27,15 @@ function Slider({
   onPointerCancel,
   ...props
 }: Omit<ComponentProps<typeof SliderPrimitive.Root>, 'value' | 'defaultValue' | 'orientation'> & {
-  /** 受控：每个把手一个值。 */
+  /**
+   * One value per thumb; two values make a range.
+   * 受控：每个把手一个值。
+   */
   value: readonly number[]
-  /** 每个把手的名字（读屏器读它；名字只放在真正的 slider 上，Root 是没有 role 的 span）。 */
+  /**
+   * Accessible name of each thumb (the name goes on the real slider element, not on the Root).
+   * 每个把手的名字（读屏器读它；名字只放在真正的 slider 上，Root 是没有 role 的 span）。
+   */
   thumbLabels?: readonly string[]
 }) {
   const single = value.length === 1

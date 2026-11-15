@@ -4,15 +4,29 @@
 
 ## Provide
 
+`*` marks a required prop.
+
 ### PriceTag
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `name` | `string` | — | 品种名或代码；不给就只有价与涨跌。 |
-| `price` | `string` | — | 已格式化好的价。 |
-| `change` | `string` | — | 已格式化好的涨跌（带符号）。 |
-| `tone` | `'up' \| 'down' \| 'flat'` | `'flat'` | 涨跌三态：定颜色与三角（▲ ▼，平没有）。 |
-| `label` | `string` | — | 读屏读的整句；不给就读可见的字。 |
+| `name` | `string` | — | Symbol name or code; only price and change are shown when omitted. |
+| `price` * | `string` | — | The already formatted price. |
+| `change` | `string` | — | The already formatted change, signed (for example "+1.20%"). |
+| `tone` | `QuoteTone` | `'flat'` | Up, down or flat: sets the color and the triangle (none for flat). |
+| `label` | `string` | — | The whole sentence read by screen readers, including the direction; the visible text is read when omitted. |
+| `className` | `string` | — | Extra class name on the root. |
+
+## Usage
+
+```tsx
+// SPDX-License-Identifier: MIT
+import { PriceTag } from '@katana-ui/react'
+
+export function PriceTagUsage() {
+  return <PriceTag name="BTCUSDT" price="106,977.4" change="+1.20%" tone="up" />
+}
+```
 
 ## States
 

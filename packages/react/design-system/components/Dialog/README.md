@@ -4,13 +4,11 @@
 
 ## Provide
 
+`*` marks a required prop.
+
 ### Dialog
 
 其余属性透传给 Radix Dialog.Root。
-
-| 属性 | 类型 | 默认 | 说明 |
-| --- | --- | --- | --- |
-| `open / onOpenChange` | `boolean / (open: boolean) => void` | — | 受控的开合；代码开的对话框用它。 |
 
 ### DialogContent
 
@@ -18,9 +16,9 @@
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `closeLabel` | `string` | — | 给了就在标题栏右上角画关闭钮，读屏读这个名字；包里不放文案。 |
-| `bare` | `boolean` | — | 不带皮肤，样子由调用方的类名给。 |
-| `overlayClassName` | `string` | — | 遮罩上追加的类名。 |
+| `closeLabel` | `string` | — | When given, draws a close button at the top right of the title bar and uses this as its accessible name. |
+| `bare` | `boolean` | — | Skip the skin and the position; the caller's class names style the content. |
+| `overlayClassName` | `string` | — | Extra class name on the backdrop. |
 
 ### DialogTitle
 
@@ -28,7 +26,7 @@
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `bare` | `boolean` | — | 不带标题样式。 |
+| `bare` | `boolean` | — | Skip the title style. |
 
 ### DialogHeader / DialogBody / DialogFooter
 
@@ -37,6 +35,47 @@
 ### DialogTrigger / DialogClose / DialogDescription / DialogPortal / DialogOverlay
 
 透传 Radix 同名部件。
+
+## Usage
+
+```tsx
+// SPDX-License-Identifier: MIT
+import {
+  Button,
+  Dialog,
+  DialogBody,
+  DialogClose,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@katana-ui/react'
+
+export function DialogUsage() {
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button>Reset layout</Button>
+      </DialogTrigger>
+      <DialogContent closeLabel="Close">
+        <DialogHeader>
+          <DialogTitle>Reset layout</DialogTitle>
+        </DialogHeader>
+        <DialogBody>Widgets you added will be removed.</DialogBody>
+        <DialogFooter>
+          <DialogClose asChild>
+            <Button>Cancel</Button>
+          </DialogClose>
+          <DialogClose asChild>
+            <Button variant="primary">Reset</Button>
+          </DialogClose>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  )
+}
+```
 
 ## States
 

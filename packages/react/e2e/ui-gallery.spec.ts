@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: MIT
 import { expect, test, type Locator, type Page } from '@playwright/test'
+import { readFileSync } from 'node:fs'
 import { summarize, type CoverageMap } from '../docs/coverage-core'
 import coverageMap from '../docs/coverage-map.json' with { type: 'json' }
+import propsGenerated from '../gallery/props.generated.json' with { type: 'json' }
 import { GROUPS, PAGES } from '../gallery/registry'
 
 // @katana-ui/react 的组件文档站（packages/react/gallery，入口 index.html，#1838、#1860）：在真浏览器里看用户看到的。
@@ -13,7 +15,7 @@ test.use({ viewport: { width: 1100, height: 1500 } })
 
 const THEMES = ['console', 'graphite'] as const
 
-// 文档站（#1860）：一页一个组件，地址 #/<件名>，预览容器带 data-gallery=<件名>。?theme= 指定主题（不带是 Console）。
+// 文档站（#1860）：一页一个组件，地址 #/<件名>，预览容器带 data-gallery=<件名>。?theme= 指定主题（不带是 Graphite）。
 const open = async (page: Page, theme: (typeof THEMES)[number], id = 'button') => {
   await page.goto(`/?theme=${theme}#/${id}`)
   await page.locator(`[data-gallery="${id}"]`).waitFor()
@@ -2028,58 +2030,125 @@ for (const theme of THEMES) {
       await expect(grid.getByRole('row').nth(1).locator('[data-col="symbol"]')).toContainText('600519')
     })
 
-    test('量化：经济日历——按日分组、实际对预期上色、未公布写倒计时、筛选能用', async ({ page }) => {
+    test('量化：日历——周条选日、合并同时同国、现在线、类别与国家筛选、行详情、财报意外与排序', async ({ page }) => {
       await open(page, theme, 'event-calendar')
       const cal = section(page, 'event-calendar').locator('[data-slot="event-calendar"]')
       await expect(cal).toBeVisible()
-      // 默认本周（11-16 至 11-22）：三天有事件，按日期升序分组。
-      await expect(cal.locator('[data-slot="ecal-day-head"]').first()).toContainText('16 日')
+      const rowIds = () =>
+        cal.locator('[data-slot="ecal-row"]').evaluateAll((els) => els.map((el) => el.getAttribute('data-id')))
+      const card = (day: string) => cal.locator(`.k-ecal-daycard[data-day="${day}"]`)
+      const css = (selector: string, prop: 'color' | 'fontWeight') =>
+        cal
+          .locator(selector)
+          .first()
+          .evaluate((el, p) => getComputedStyle(el)[p], prop)
+      const up = await token(page, '--pnl-up')
+      const down = await token(page, '--pnl-down')
+      // 周条：周一到周日七张日卡，选中的是今天（11-17），今天带下划线，卡上列出当天各类别的条数。
+      await expect(cal.locator('.k-ecal-daycard')).toHaveCount(7)
+      await expect(card('2026-11-17')).toHaveAttribute('aria-pressed', 'true')
+      await expect(card('2026-11-17')).toHaveAttribute('data-today', 'true')
+      await expect(card('2026-11-17')).toContainText('经济 5')
+      await expect(card('2026-11-17')).toContainText('财报 3')
+      await expect(card('2026-11-16')).not.toContainText('财报')
+      // 一天：日期分隔行粘顶，表头的数字列名在它右侧；现在线（09:30）在已发布的 09:00 与未发布的 17:00 之间。
+      await expect(cal.locator('[data-slot="ecal-day-head"]')).toHaveCSS('position', 'sticky')
+      await expect(cal.locator('[data-slot="ecal-day-head"]')).toContainText('实际')
       expect(
-        await cal.locator('.k-ecal-day').evaluateAll((els) => els.map((el) => el.getAttribute('data-day'))),
-      ).toEqual(['2026-11-16', '2026-11-17', '2026-11-18', '2026-11-20'])
-      await expect(cal.locator('[data-day="2026-11-17"] [data-slot="ecal-day-head"]')).toContainText('今天')
-      // 实际好于预期涨色、差于预期跌色；未公布写「—」并带倒计时。
-      const color = (code: string) =>
-        cal.locator(`[data-id="${code}"] .k-ecal-actual`).evaluate((el) => getComputedStyle(el).color)
-      const up = await page.evaluate(() => {
-        const probe = document.createElement('i')
-        probe.style.color = 'var(--pnl-up)'
-        document.body.append(probe)
-        const c = getComputedStyle(probe).color
-        probe.remove()
-        return c
-      })
-      expect(await color('b1')).toBe(up)
-      expect(await color('a1')).not.toBe(up)
+        await cal
+          .locator('[data-slot="ecal-row"], [data-slot="ecal-now"]')
+          .evaluateAll((els) => els.map((el) => el.getAttribute('data-id') ?? 'now')),
+      ).toEqual(['b2', 'b1', 'now', 'b3', 'b4', 'b5'])
+      await expect(cal.locator('[data-slot="ecal-now"]')).toContainText('09:30')
+      // 实际值只加粗、不上涨跌色；缺值「—」带倒计时；已发布与未发布区分。
+      expect(Number(await css('[data-id="b1"] .k-ecal-actual', 'fontWeight'))).toBeGreaterThanOrEqual(600)
+      expect(await css('[data-id="b1"] .k-ecal-actual', 'color')).not.toBe(up)
+      expect(await css('[data-id="b1"] .k-ecal-actual', 'color')).not.toBe(down)
       await expect(cal.locator('[data-id="b3"] .k-ecal-actual')).toContainText('—')
-      await expect(cal.locator('[data-id="b3"] .k-ecal-wait')).toHaveText('9 小时 0 分后')
-      // 重要程度条：3 格里亮几格。
+      await expect(cal.locator('[data-id="b3"] .k-ecal-wait')).toHaveText('7 小时 30 分后')
+      await expect(cal.locator('[data-id="b1"]')).toHaveAttribute('data-state', 'released')
+      await expect(cal.locator('[data-id="b3"]')).toHaveAttribute('data-state', 'upcoming')
+      // 同一时间同一国家合并：b4 写时间与国家，b5 左边留空。
+      await expect(cal.locator('[data-id="b4"] .k-ecal-time')).toHaveText('21:30')
+      await expect(cal.locator('[data-id="b5"] .k-ecal-time')).toHaveText('')
+      await expect(cal.locator('[data-id="b5"] .k-ecal-region')).toHaveText('')
+      await expect(cal.locator('[data-id="b5"]')).toHaveAttribute('data-repeat', 'true')
       await expect(cal.locator('[data-id="b2"] .k-ecal-level i.is-on')).toHaveCount(1)
-      await expect(cal.locator('[data-id="a1"] .k-ecal-level i.is-on')).toHaveCount(3)
-      // 今天：只剩 11-17 的 3 条以上。
-      await cal.getByRole('group', { name: '日期范围' }).getByRole('button', { name: '今天', exact: true }).click()
-      await expect(cal.locator('.k-ecal-day')).toHaveCount(1)
-      await cal.getByRole('group', { name: '日期范围' }).getByRole('button', { name: '本周', exact: true }).click()
-      // 只看高重要：每行都是 3 格。
-      await cal.getByRole('switch', { name: '只看高重要' }).click()
-      const levels = await cal
-        .locator('[data-slot="ecal-row"]')
-        .evaluateAll((els) => els.map((el) => el.getAttribute('data-importance')))
-      expect(levels.length).toBeGreaterThan(0)
-      expect(new Set(levels)).toEqual(new Set(['3']))
-      await cal.getByRole('switch', { name: '只看高重要' }).click()
-      // 国家列只有旗帜位（字母圆标），全名在悬停提示与读屏名里；右键出与悬停按钮同一份项。
-      await expect(cal.locator('[data-id="b2"] .k-ecal-region')).toHaveAttribute('title', '丙国')
-      await expect(cal.locator('[data-id="b2"] .k-ecal-region > *')).toHaveCount(1)
-      await cal.locator('[data-id="b2"]').click({ button: 'right' })
-      await expect(page.getByRole('menuitem')).toHaveCount(2)
-      await page.keyboard.press('Escape')
-      // 国家多选：只选 JP，只剩一行。
-      await cal.getByRole('combobox', { name: '全部国家' }).click()
-      await page.getByRole('option', { name: /丙国/ }).click()
-      await page.keyboard.press('Escape')
-      await expect(cal.locator('[data-slot="ecal-row"]')).toHaveCount(1)
-      await expect(cal.locator('[data-slot="ecal-row"]')).toContainText('示例贸易帐')
+      // 点日卡换天；上一周翻到 11-09 起，今天按钮回来。
+      await card('2026-11-18').click()
+      expect(await rowIds()).toEqual(['c1', 'c2', 'c3'])
+      await cal.getByRole('button', { name: '上一周' }).click()
+      await expect(card('2026-11-10')).toBeVisible()
+      await cal.getByRole('button', { name: '今天', exact: true }).click()
+      expect(await rowIds()).toEqual(['b2', 'b1', 'b3', 'b4', 'b5'])
+      // 重要性是单开关：按下只剩 3 档；再按恢复。
+      await cal.getByRole('button', { name: '只看高重要' }).click()
+      await card('2026-11-18').click()
+      expect(await rowIds()).toEqual(['c2', 'c3'])
+      await cal.getByRole('button', { name: '只看高重要' }).click()
+      // 经济类别下拉：只留「就业」。
+      await cal.getByRole('combobox', { name: '经济类别' }).click()
+      await page.getByRole('option', { name: '就业' }).click()
+      expect(await rowIds()).toEqual(['c1', 'c2'])
+      await cal.getByRole('combobox', { name: '经济类别' }).click()
+      await page.getByRole('option', { name: '全部类别' }).click()
+      // 行详情：点开 a1（11-16）出说明、来源、下次发布与历史值小图；再点收起；没详情的行点了没反应。
+      await card('2026-11-16').click()
+      await cal.locator('[data-id="a1"]').click()
+      const detail = cal.locator('[data-slot="ecal-detail"][data-for="a1"]')
+      await expect(detail).toContainText('示例统计局')
+      await expect(detail).toContainText('11/30')
+      await expect(detail.locator('svg.k-spark')).toBeVisible()
+      await expect(cal.locator('[data-id="a1"] .k-ecal-name-btn')).toHaveAttribute('aria-expanded', 'true')
+      await cal.locator('[data-id="a1"]').click()
+      await expect(detail).toHaveCount(0)
+      await cal.locator('[data-id="a2"]').click()
+      await expect(cal.locator('[data-slot="ecal-detail"]')).toHaveCount(0)
+      // 国家选择框：模态，按地区分组，预设与取消 / 应用；只选 JP 应用后，11-17 只剩 b2。
+      await card('2026-11-17').click()
+      await cal.getByRole('button', { name: '全部国家' }).click()
+      const dialog = page.getByRole('dialog', { name: '选择国家' })
+      await expect(dialog.getByText('ASIA')).toBeVisible()
+      await dialog.getByRole('checkbox', { name: /丙国/ }).click()
+      await dialog.getByRole('button', { name: '取消' }).first().click()
+      expect(await rowIds()).toHaveLength(5)
+      await cal.getByRole('button', { name: '全部国家' }).click()
+      await dialog.getByRole('checkbox', { name: /丙国/ }).click()
+      await dialog.getByRole('button', { name: '应用' }).click()
+      expect(await rowIds()).toEqual(['b2'])
+      await cal.getByRole('button', { name: '1 个国家' }).click()
+      await dialog.getByRole('button', { name: '全球' }).click()
+      await dialog.getByRole('button', { name: '应用' }).click()
+      expect(await rowIds()).toHaveLength(5)
+      // 财报页：EPS 意外 +% 涨色、−% 跌色，实际值不上色；时段图标；营收后带币种小字；列头按市值排序。
+      const tabs = cal.getByRole('tablist', { name: '日历类别' })
+      await tabs.getByRole('tab', { name: '财报' }).click()
+      expect(await rowIds()).toEqual(['e1', 'e2', 'e3'])
+      expect(await css('[data-id="e1"] .k-ecal-surprise', 'color')).toBe(up)
+      await expect(cal.locator('[data-id="e1"] .k-ecal-surprise').first()).toHaveText('+8.40%')
+      expect(await css('[data-id="e2"] .k-ecal-surprise', 'color')).toBe(down)
+      expect(await css('[data-id="e1"] .k-ecal-actual', 'color')).not.toBe(up)
+      await expect(cal.locator('[data-id="e1"] [aria-label="盘前"]')).toBeVisible()
+      await expect(cal.locator('[data-id="e3"] [aria-label="盘后"]')).toBeVisible()
+      await expect(cal.locator('[data-id="e1"]')).toContainText('18.40 B USD')
+      await expect(cal.locator('[data-id="e3"] .k-ecal-actual').first()).toHaveText('—')
+      await expect(cal.locator('[data-slot="ecal-links"][data-for="e1"]')).toContainText('电话会')
+      await expect(cal.locator('[data-slot="ecal-links"][data-for="e3"]')).toHaveCount(0)
+      const cap = cal.getByRole('columnheader', { name: /市值/ })
+      await cap.click()
+      expect(await rowIds()).toEqual(['e3', 'e1', 'e2'])
+      await expect(cap).toHaveAttribute('aria-sort', 'descending')
+      await cap.click()
+      expect(await rowIds()).toEqual(['e2', 'e1', 'e3'])
+      await cap.click()
+      expect(await rowIds()).toEqual(['e1', 'e2', 'e3'])
+      await tabs.getByRole('tab', { name: '分红' }).click()
+      await expect(cal.locator('[data-id="d-1"]')).toContainText('$0.25')
+      await card('2026-11-18').click()
+      await expect(cal.locator('[data-id="d-2"]')).toContainText('3.41%')
+      await tabs.getByRole('tab', { name: 'IPO' }).click()
+      await expect(cal.locator('[data-id="i-1"]')).toContainText('14.00 – 16.00')
+      await expect(cal.locator('[data-id="i-1"]')).toContainText('已定价')
     })
 
     test('行快捷操作（#23）：DataGrid 悬停出按钮且列宽不变，右键出同一份菜单，点「Copy code」回调收到这一行，键盘落到行上按钮可见、菜单键与 Shift+F10 开菜单', async ({
@@ -3978,15 +4047,26 @@ test('密度演示里的主按钮：Graphite 的底是 Graphite 的 --ink-100，
   expect(colors[0]).not.toBe(colors[1])
 })
 
-test('不带 ?theme= 是 Console；页头切到 Graphite，主按钮底色跟着变，地址带上 theme=graphite', async ({ page }) => {
+test('不带 ?theme= 是 Graphite；页头切到 Console，主按钮底色跟着变，地址带上 theme=console', async ({ page }) => {
   await page.goto('/#/button')
-  await expect(page.locator('html')).toHaveAttribute('data-theme', 'console')
-  const primary = section(page, 'button').getByRole('button', { name: 'primary', exact: true })
-  const console = await bg(primary)
-  await page.getByRole('group', { name: '主题' }).getByRole('button', { name: 'Graphite' }).click()
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'graphite')
-  await expect.poll(() => bg(primary)).not.toBe(console)
-  await expect(page).toHaveURL(/theme=graphite/)
+  const primary = section(page, 'button').getByRole('button', { name: 'primary', exact: true })
+  const graphite = await bg(primary)
+  await page.getByRole('group', { name: '主题' }).getByRole('button', { name: 'Console' }).click()
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'console')
+  await expect.poll(() => bg(primary)).not.toBe(graphite)
+  await expect(page).toHaveURL(/theme=console/)
+})
+
+test('文档站默认就是 Graphite：不带 ?theme= 时页面底色与目录栏底色是 Graphite 的 bg-000 与 bg-100（#1775）', async ({
+  page,
+}) => {
+  await page.goto('/#/button')
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'graphite')
+  // Graphite 的 bg-000 = #000000、bg-100 = #070707；Console 的 bg-100 是 #141311，默认要是 Console 就会红。
+  await expect(page.locator('html')).toHaveCSS('background-color', 'rgb(0, 0, 0)')
+  await expect(page.getByRole('navigation', { name: '组件' })).toHaveCSS('background-color', 'rgb(7, 7, 7)')
+  expect(await token(page, '--bg-100')).toBe('rgb(7, 7, 7)')
 })
 
 test('目录：按类分组；直接打开 #/<件名>；点链接换页、后退回上一页；没有的页写原因', async ({ page }) => {
@@ -4443,6 +4523,197 @@ for (const theme of THEMES) {
     await expect(chart.locator('[data-slot="param-scatter-table"]')).toContainText('f8-s40')
   })
 
+  test(`资金流向桑基图（${theme}）：节点与链路、斜纹重估、悬停读数、点节点钉住上下游、键盘走、开关、表格视图、有环`, async ({
+    page,
+  }) => {
+    await open(page, theme, 'flow-sankey')
+    const chart = section(page, 'flow-sankey').locator('[data-gallery-flow="main"]')
+    const nodes = chart.locator('[data-slot="flow-node"]')
+    const rect = (id: string) => chart.locator(`[data-slot="flow-node"][data-id="${id}"] rect`)
+    const links = chart.locator('[data-slot="flow-link"]')
+    await expect(nodes).toHaveCount(16)
+    await expect(links).toHaveCount(26)
+    // 交易流量是中性灰的实色带，价格重估是斜纹（图案描边），两者带宽都按值画出来。
+    const flow = chart.locator('[data-slot="flow-link"][data-kind="flow"]')
+    const reval = chart.locator('[data-slot="flow-link"][data-kind="revaluation"]')
+    await expect(flow).toHaveCount(24)
+    await expect(reval).toHaveCount(2)
+    expect(await colorAt(page, flow.first(), 'stroke')).toEqual(await rgba(page, await token(page, '--ink-300')))
+    expect(await reval.first().evaluate((e) => getComputedStyle(e).stroke)).toMatch(/^url\(/)
+    expect(parseFloat(await flow.first().evaluate((e) => getComputedStyle(e).strokeWidth))).toBeGreaterThan(2)
+    expect((await rect('assets').boundingBox())!.height).toBeGreaterThan(15)
+    // 开关是中性灰（按下是 bg-300），不是橙。
+    expect(await colorAt(page, chart.getByRole('button', { name: '显示价格重估' }), 'background-color')).toEqual(
+      await rgba(page, await token(page, '--bg-300')),
+    )
+    await expect(chart.locator('[data-slot="flow-legend"]')).toContainText('交易流量')
+    await expect(chart.locator('[data-slot="flow-legend"]')).toContainText('价格重估')
+    await expect(chart.locator('.k-fsk-head')).toHaveText(['来源', '通道', '用途', '受益方'])
+    expect(await colorAt(page, rect('assets'), 'fill')).toEqual(await rgba(page, await token(page, '--ink-300')))
+    // 悬停节点：读数写流入、流出、占总量（只算交易流量），上游与下游亮，别的压暗。
+    await rect('assets').hover()
+    const tip = chart.locator('[data-slot="lcd-tooltip"]')
+    await expect(tip).toBeVisible()
+    await expect(tip).toContainText('资产配置')
+    await expect(tip).toContainText('流入')
+    await expect(tip).toContainText('170')
+    await expect(tip).toContainText('23.3%')
+    // 读数不压住被悬停节点的标签。
+    const tipBox = (await tip.boundingBox())!
+    const labelBox = (await chart.locator('[data-slot="flow-node"][data-id="assets"] text').boundingBox())!
+    expect(
+      tipBox.x < labelBox.x + labelBox.width &&
+        labelBox.x < tipBox.x + tipBox.width &&
+        tipBox.y < labelBox.y + labelBox.height &&
+        labelBox.y < tipBox.y + tipBox.height,
+    ).toBe(false)
+    await expect(tip).toContainText('重估（出）')
+    await expect(rect('nonbank')).toHaveAttribute('data-lit', '')
+    await expect(rect('foreign')).toHaveAttribute('data-lit', '')
+    await expect(rect('fin')).toHaveAttribute('data-lit', '')
+    await expect(rect('treasury')).toHaveAttribute('data-dim', '')
+    expect(await colorAt(page, rect('assets'), 'fill')).toEqual(await rgba(page, await token(page, '--ink-100')))
+    await page.mouse.move(2, 2)
+    await expect(tip).toHaveCount(0)
+    await expect(chart.locator('[data-dim]')).toHaveCount(0)
+    // 悬停链路：写金额、占来源流出、占总量，只亮它与两端。
+    const target = chart.locator('[data-slot="flow-link"][data-id="consume>households>flow"]')
+    const at = await target.evaluate((element) => {
+      const path = element as unknown as SVGPathElement
+      const point = path.getPointAtLength(path.getTotalLength() / 2)
+      const matrix = path.getScreenCTM()!
+      return { x: point.x * matrix.a + matrix.e, y: point.y * matrix.d + matrix.f }
+    })
+    await page.mouse.move(at.x, at.y)
+    await expect(tip).toContainText('消费 → 居民')
+    await expect(tip).toContainText('50.0%')
+    await expect(tip).toContainText('9.6%')
+    await expect(target).toHaveAttribute('data-lit', '')
+    await expect(rect('consume')).toHaveAttribute('data-lit', '')
+    await expect(rect('banks')).toHaveAttribute('data-dim', '')
+    await page.mouse.move(2, 2)
+    // 点节点钉住：移开、失焦后还在；点空白取消。
+    await rect('treasury').click()
+    await expect(rect('treasury')).toHaveAttribute('data-pinned', '')
+    await page.mouse.move(2, 2)
+    await page.locator('body').click({ position: { x: 2, y: 2 } })
+    await expect(rect('treasury')).toHaveAttribute('data-pinned', '')
+    await expect(rect('debt')).toHaveAttribute('data-lit', '')
+    await expect(rect('cb')).toHaveAttribute('data-dim', '')
+    await chart.locator('svg.k-fsk-svg').click({ position: { x: 4, y: 4 } })
+    await expect(chart.locator('[data-pinned]')).toHaveCount(0)
+    await expect(chart.locator('[data-dim]')).toHaveCount(0)
+    // 键盘：聚焦第一个节点，↓ 同列下一个，→ 去连着的下一列，Enter 钉住，Esc 取消。
+    const focusedId = () =>
+      page.evaluate(
+        () => (document.activeElement?.closest('[data-slot="flow-node"]') as HTMLElement | null)?.dataset.id,
+      )
+    await rect('cb').focus()
+    await expect(tip).toBeVisible()
+    await page.keyboard.press('ArrowDown')
+    expect(await focusedId()).toBe('credit')
+    await page.keyboard.press('ArrowRight')
+    const next = await focusedId()
+    expect(['banks', 'nonbank']).toContain(next)
+    await page.keyboard.press('Enter')
+    await expect(rect(next!)).toHaveAttribute('data-pinned', '')
+    await page.keyboard.press('Escape')
+    await expect(chart.locator('[data-pinned]')).toHaveCount(0)
+    // 开关：关掉价格重估，它整条不参与排布，图上与图例里都没有，节点高度回到只有交易流量。
+    const before = (await rect('assets').boundingBox())!.height
+    await chart.getByRole('button', { name: '显示价格重估' }).click()
+    await expect(reval).toHaveCount(0)
+    await expect(chart.locator('[data-slot="flow-legend"]')).not.toContainText('价格重估')
+    await expect.poll(async () => (await rect('assets').boundingBox())!.height).toBeLessThan(before)
+    await chart.getByRole('button', { name: '显示价格重估' }).click()
+    await expect(reval).toHaveCount(2)
+    // 表格视图：每条链路一行，重估单独标类型。
+    await chart.getByRole('button', { name: '表格视图' }).click()
+    const table = chart.locator('[data-slot="flow-sankey-table"]')
+    await expect(table).toBeVisible()
+    await expect(table).toHaveAttribute('data-rows', '26')
+    await expect(table).toContainText('央行 → 银行体系')
+    await expect(table.locator('tr', { hasText: '资产配置 → 居民' }).filter({ hasText: '价格重估' })).toHaveCount(1)
+    // 有环：不画、写提示。
+    await expect(section(page, 'flow-sankey').locator('[data-gallery-flow="cycle"] .k-fsk-empty')).toHaveText(
+      '流向里有环，先拆开再画',
+    )
+  })
+
+  test(`按发布时间的宏观序列（${theme}）：两条线与发布点、切换、十字线读出发布史、修订小图、截至某日已知、表格视图`, async ({
+    page,
+  }) => {
+    await open(page, theme, 'vintage-series')
+    const main = section(page, 'vintage-series').locator('[data-gallery-vintage="main"]')
+    const known = main.locator('[data-slot="vintage-known"]')
+    const latest = main.locator('[data-slot="vintage-latest"]')
+    await expect(known).toBeVisible()
+    await expect(latest).toBeVisible()
+    expect((await known.boundingBox())!.width).toBeGreaterThan(300)
+    expect(await colorAt(page, known, 'stroke')).toEqual(await rgba(page, await token(page, '--ink-100')))
+    expect(await latest.evaluate((e) => getComputedStyle(e).strokeDasharray)).not.toBe('none')
+    // 发布点：每期一个「当时已知」空心点，总点数 = 表格视图的行数（每次发布一行），修订竖线只画在修订过的期。
+    const dots = main.locator('[data-slot="vintage-release"]')
+    await expect(main.locator('[data-slot="vintage-release"][data-role="known"]')).toHaveCount(36)
+    const total = await dots.count()
+    expect(await main.locator('[data-slot="vintage-release"][data-role="latest"]').count()).toBeGreaterThan(20)
+    const fullWidth = (await known.boundingBox())!.width
+    // 修订竖线只画在修订过的期：条数 = 最新那一种点的个数。
+    const latestDots = await main.locator('[data-slot="vintage-release"][data-role="latest"]').count()
+    await expect(main.locator('[data-slot="vintage-span"]')).toHaveCount(latestDots)
+    await expect(main.locator('[data-metric="revised"] dd')).toHaveText(/^\d+ \/ 36$/)
+    await expect(main.locator('[data-metric="meanAbs"] dd')).toHaveText(/^\d\.\d\d%$/)
+    await expect(main.locator('[data-metric="bias"] dd')).toHaveText(/^[+-]\d\.\d\d$/)
+    // 十字线读出这一期的全部发布史：键盘 Home 到第一期（有首次发布与年度基准修订），读数带修订幅度。
+    const slider = main.locator('[data-slot="vintage-chart"]')
+    // 平时图区外面没有框。
+    expect(await slider.evaluate((e) => getComputedStyle(e).outlineStyle)).toBe('none')
+    await slider.focus()
+    await page.keyboard.press('Home')
+    const tip = main.locator('[data-slot="lcd-tooltip"]')
+    await expect(tip).toContainText('2023-01')
+    await expect(tip).toContainText('年度基准修订')
+    await expect(tip).toContainText('累计修订')
+    await expect(main.locator('[data-slot="vintage-cross"]')).toBeVisible()
+    await expect(slider).toHaveAttribute('aria-valuetext', /2023-01.*当时已知值.*最新修订值/)
+    await page.keyboard.press('ArrowRight')
+    await expect(tip).toContainText('2023-02')
+    await page.keyboard.press('Escape')
+    await expect(tip).toHaveCount(0)
+    // 修订小图：涨跌两种柱，颜色是发散阶，不用橙与蓝。
+    const up = main.locator('[data-slot="vintage-rev"][data-tone="up"]').first()
+    const down = main.locator('[data-slot="vintage-rev"][data-tone="down"]').first()
+    expect(await colorAt(page, up, 'fill')).toEqual(await rgba(page, await token(page, '--div-pos-200')))
+    expect(await colorAt(page, down, 'fill')).toEqual(await rgba(page, await token(page, '--div-neg-200')))
+    expect((await up.boundingBox())!.height).toBeGreaterThan(1)
+    // 切换：只看当时已知，最新线与它的点没了；只看最新，当时已知线没了。
+    await main.getByRole('group', { name: '看哪条线' }).getByRole('button', { name: '当时已知值', exact: true }).click()
+    await expect(latest).toHaveCount(0)
+    await expect(main.locator('[data-slot="vintage-release"][data-role="latest"]')).toHaveCount(0)
+    await expect(known).toBeVisible()
+    await main.getByRole('group', { name: '看哪条线' }).getByRole('button', { name: '最新修订值', exact: true }).click()
+    await expect(known).toHaveCount(0)
+    await expect(latest).toBeVisible()
+    await main.getByRole('group', { name: '看哪条线' }).getByRole('button', { name: '两条都看', exact: true }).click()
+    await expect(known).toBeVisible()
+    // 表格视图：每次发布一行，点数对得上。
+    await main.getByRole('button', { name: '表格视图' }).click()
+    const table = main.locator('[data-slot="vintage-series-table"]')
+    await expect(table).toBeVisible()
+    await expect(table).toHaveAttribute('data-rows', String(total))
+    await expect(table).toContainText('2023-01')
+    await expect(table).toContainText('2024-07-15')
+    // 截至 2025-06-30 已知：之后才发布的期当时还不存在，「当时已知」线在那里断开，读数写「还没发布」。
+    const asof = section(page, 'vintage-series').locator('[data-gallery-vintage="asof"]')
+    const asofKnown = asof.locator('[data-slot="vintage-known"]')
+    await expect(asofKnown).toBeVisible()
+    expect((await asofKnown.boundingBox())!.width).toBeLessThan(fullWidth * 0.9)
+    await asof.locator('[data-slot="vintage-chart"]').focus()
+    await page.keyboard.press('End')
+    await expect(asof.locator('[data-slot="lcd-tooltip"]')).toContainText('还没发布')
+    await expect(asof.locator('[data-slot="vintage-chart"]')).toHaveAttribute('aria-valuetext', /2025-12.*还没发布/)
+  })
+
   test(`建议队列（${theme}）：卡片内容与来源链接、倒计时与过期、接受要按住、拒绝与稍后回调、筛选与一行记录`, async ({
     page,
   }) => {
@@ -4603,6 +4874,122 @@ for (const theme of THEMES) {
     await expect(doc.getByTestId('mon-empty').locator('.k-sysmon-empty')).toHaveCount(4)
     await expect(doc.getByTestId('mon-empty').locator('.k-sysmon-empty').first()).toHaveText('未连接')
   })
+
+  test(`传导链图（${theme}）：布局从上到下、状态色与线型、点边出证据与失败条件、点节点淡出不相干的边、缩放平移适应、无节点写未连接`, async ({
+    page,
+  }) => {
+    await open(page, theme, 'transmission-chain')
+    const doc = section(page, 'transmission-chain')
+    const chain = doc.getByTestId('tc-frame').getByTestId('tc')
+    const canvas = chain.locator('.k-tc-canvas')
+    const edges = chain.locator('.k-tc-edge')
+    const nodes = chain.locator('.k-tc-node')
+    await expect(nodes).toHaveCount(7)
+    await expect(edges).toHaveCount(8)
+    // 布局：从上到下，整张图在视口里（适应窗口）。
+    const nodeBox = async (id: string) => (await chain.locator(`[data-node-id="${id}"]`).boundingBox())!
+    const geo = await nodeBox('geo')
+    const rules = await nodeBox('rules')
+    const credit = await nodeBox('credit')
+    const price = await nodeBox('price')
+    expect(geo.y + geo.height).toBeLessThan(rules.y)
+    expect(rules.y + rules.height).toBeLessThan(credit.y)
+    expect(price.width).toBeGreaterThan(40)
+    const area = (await canvas.boundingBox())!
+    for (const b of [geo, price]) {
+      expect(b.x).toBeGreaterThanOrEqual(area.x - 1)
+      expect(b.x + b.width).toBeLessThanOrEqual(area.x + area.width + 1)
+      expect(b.y).toBeGreaterThanOrEqual(area.y - 1)
+      expect(b.y + b.height).toBeLessThanOrEqual(area.y + area.height + 1)
+    }
+    // 状态色与线型：支持涨色实线、反对跌色、部分琥珀点划线、未检验灰虚线；不是橙色。
+    const stroke = (id: string) =>
+      chain.locator(`[data-edge-id="${id}"] .k-tc-line`).evaluate((el) => {
+        const style = getComputedStyle(el)
+        return { color: style.stroke, dash: style.strokeDasharray }
+      })
+    const probe = async (name: string) => {
+      const color = await token(page, name)
+      return color
+    }
+    expect((await stroke('e1')).color).toBe(await probe('--pnl-up'))
+    expect((await stroke('e1')).dash).toBe('none')
+    expect((await stroke('e6')).color).toBe(await probe('--pnl-down'))
+    expect((await stroke('e3')).color).toBe(await probe('--signal-amber'))
+    expect((await stroke('e3')).dash).not.toBe('none')
+    expect((await stroke('e4')).color).toBe(await probe('--ink-400'))
+    expect((await stroke('e4')).dash).not.toBe('none')
+    // 标签：状态图标 + 文字 + 证据计数；没证据的不写计数。
+    await expect(chain.locator('[data-edge-id="e1"] .k-tc-chip-text')).toHaveText('目标约束规则 支 2 反 0')
+    await expect(chain.locator('[data-edge-id="e4"] .k-tc-chip-text')).toHaveText('资金外流')
+    await expect(chain.locator('[data-edge-id="e8"]')).toHaveAttribute('data-feedback', 'true')
+    // 图例：四种状态各一条，条数对得上（支持 4 含反馈边、部分 2、反对 1、未检验 1）。
+    const legend = chain.locator('.k-tc-legend li')
+    await expect(legend).toHaveCount(4)
+    await expect(legend.nth(0)).toContainText('有证据支持')
+    await expect(legend.nth(0).locator('b')).toHaveText('4')
+    await expect(legend.nth(1).locator('b')).toHaveText('2')
+    await expect(legend.nth(2).locator('b')).toHaveText('1')
+    await expect(legend.nth(3).locator('b')).toHaveText('1')
+    // 没选：写提示。点边：右侧出这条边的标题、状态字、失败条件、证据行（立场字 + 来源类别）。
+    await expect(chain.locator('.k-tc-hint')).toBeVisible()
+    await chain.locator('[data-edge-id="e6"] .k-tc-chip').click()
+    const detail = chain.getByTestId('tc-edge-detail')
+    await expect(detail.locator('.k-tc-title')).toHaveText('境内外资产配置 → 资产价格')
+    await expect(detail.locator('.k-tc-badge')).toContainText('证据反对')
+    await expect(detail.locator('.k-tc-failure')).toHaveText('资金外流加快的时期，境内资产价格没有承压。')
+    const rows = detail.locator('.k-hl-ev')
+    await expect(rows).toHaveCount(2)
+    await expect(rows.first()).toContainText('反对')
+    await expect(rows.first()).toContainText('政策与资金变化')
+    await expect(rows.first()).toContainText('2026-10-20')
+    await expect(rows.first().locator('.k-hl-source')).toHaveText('演示数据')
+    await expect(chain.locator('[data-edge-id="e6"]')).toHaveAttribute('data-selected', 'true')
+    // 没写失败条件、没有证据的边：提示写出来。
+    await chain.locator('[data-edge-id="e4"] .k-tc-chip').click()
+    await expect(detail.locator('.k-tc-badge')).toContainText('未检验')
+    await expect(detail.locator('.k-tc-missing')).toHaveText('还没有证据。')
+    // 点节点：列出上下游边，不相干的边与节点淡出；点上下游里的一条跳到那条边。
+    await chain.locator('[data-node-id="price"]').click()
+    const nodeDetail = chain.getByTestId('tc-node-detail')
+    await expect(nodeDetail.locator('.k-tc-title')).toHaveText('资产价格')
+    await expect(nodeDetail.locator('.k-tc-link')).toHaveCount(3)
+    await expect(chain.locator('[data-edge-id="e1"]')).toHaveAttribute('data-dim', 'true')
+    await expect(chain.locator('[data-edge-id="e8"]')).not.toHaveAttribute('data-dim', 'true')
+    await expect(chain.locator('[data-edge-id="e1"]')).toHaveCSS('opacity', '0.3')
+    await nodeDetail.locator('.k-tc-link').last().click()
+    await expect(detail.locator('.k-tc-title')).toHaveText('资产价格 → 信用与购买力分配')
+    await expect(detail.locator('.k-tc-badge')).toContainText('有证据支持')
+    // 键盘：焦点到边上按 Enter 选中。
+    await chain.locator('[data-edge-id="e2"]').focus()
+    await page.keyboard.press('Enter')
+    await expect(chain.locator('[data-edge-id="e2"]')).toHaveAttribute('data-selected', 'true')
+    // 缩放：滚轮放大、按钮缩小、适应回到初始；拖背景平移。
+    const k = async () => Number(await chain.locator('[data-view-k]').getAttribute('data-view-k'))
+    const translate = () => chain.locator('[data-view-k]').getAttribute('transform')
+    const k0 = await k()
+    const t0 = await translate()
+    await page.mouse.move(area.x + area.width / 2, area.y + 6)
+    await page.mouse.wheel(0, -300)
+    await expect.poll(k).toBeGreaterThan(k0 * 1.3)
+    const kZoomed = await k()
+    await chain.getByRole('button', { name: '缩小' }).click()
+    await expect.poll(k).toBeLessThan(kZoomed)
+    await page.mouse.move(area.x + 8, area.y + 8)
+    await page.mouse.down()
+    await page.mouse.move(area.x + 68, area.y + 48, { steps: 4 })
+    await page.mouse.up()
+    await expect.poll(translate).not.toBe(t0)
+    await chain.getByRole('button', { name: '适应窗口' }).click()
+    await expect.poll(translate).toBe(t0)
+    await expect.poll(k).toBeCloseTo(k0, 3)
+    // 点空白取消选择。
+    await page.mouse.click(area.x + 8, area.y + 8)
+    await expect(chain.locator('.k-tc-hint')).toBeVisible()
+    // 没有节点：写未连接。
+    await expect(doc.getByTestId('tc-empty').locator('.k-tc-empty')).toHaveText('未连接')
+  })
+
   test(`假说账（${theme}）：一行一条、展开看失败条件与证据、倒计时与自动过期、按层与状态筛选、观察表`, async ({
     page,
   }) => {
@@ -4919,3 +5306,58 @@ for (const theme of THEMES) {
     for (const name of ['复制链接', '举报', '关闭']) await expect(reader.getByRole('button', { name })).toBeVisible()
   })
 }
+
+// 属性表读生成的数据、每页有「用法」（#1902）。
+
+test('每一页的「用法」：最小例子渲染出来，下面是它的源码', async ({ page }) => {
+  for (const doc of PAGES) {
+    await page.goto(`/#/${doc.id}`)
+    const usage = page.locator('[data-usage]')
+    await expect(usage.getByRole('heading', { name: '用法' })).toBeVisible()
+    const live = usage.locator('[data-usage-live]')
+    await expect(live, `${doc.id} 的用法例子`).toBeVisible()
+    expect((await live.boundingBox())!.height, `${doc.id} 的用法例子有高度`).toBeGreaterThan(20)
+    await expect(usage.locator('[data-usage-code] [data-slot="code-block-pre"]')).toContainText('@katana-ui/react')
+    await expect(usage.getByRole('button', { name: '复制用法代码' })).toBeVisible()
+  }
+})
+
+test('复制用法：剪贴板里是那个例子文件的源码（引包名），提示换成「已复制」再复原', async ({ page, context }) => {
+  await context.grantPermissions(['clipboard-read', 'clipboard-write'])
+  await page.goto('/#/button')
+  const usage = page.locator('[data-usage]')
+  const copy = usage.getByRole('button', { name: '复制用法代码' })
+  await copy.click()
+  await expect(page.getByRole('tooltip').or(page.locator('[data-slot="tooltip-content"]')).first()).toHaveText('已复制')
+  const text = await page.evaluate(() => navigator.clipboard.readText())
+  const file = readFileSync('gallery/usage/ButtonUsage.tsx', 'utf8')
+  expect(text).toBe(file.replace(/'\.\.\/\.\.\/src\/index'/, "'@katana-ui/react'").trimEnd())
+  expect(text).toContain("import { Button } from '@katana-ui/react'")
+  expect(text).not.toMatch(/\.\.\/\.\.\/src/)
+  await expect(copy).not.toHaveAttribute('data-copied', '', { timeout: 6000 })
+})
+
+test('属性表：Button 页的行就是 TS 类型生成的（名、类型、默认值、必填标记、英文说明），不列继承来的 button 属性', async ({
+  page,
+}) => {
+  await page.goto('/#/button')
+  const table = page.locator('[data-part="Button"] table')
+  const generated = propsGenerated.exports.Button.props
+  await expect(table.locator('tbody tr')).toHaveCount(generated.length)
+  for (const prop of generated) {
+    const row = table
+      .locator('tbody tr')
+      .filter({ has: page.locator('td:first-child code', { hasText: new RegExp(`^${prop.name}$`) }) })
+    await expect(row.locator('td').nth(3)).toHaveText(prop.description)
+    await expect(row.locator('td').nth(2)).toHaveText(prop.default ?? '—')
+  }
+  await expect(table.locator('td:first-child code', { hasText: /^onClick$/ })).toHaveCount(0)
+  // 必填的属性带星号：MultiSelect 的 values 必填，label 可选。
+  await page.goto('/#/multi-select')
+  const values = page.locator('[data-part="MultiSelect"] tbody tr').filter({ hasText: 'Ids of the selected options.' })
+  await expect(values.locator('abbr[title="必填"]')).toHaveCount(1)
+  const label = page
+    .locator('[data-part="MultiSelect"] tbody tr')
+    .filter({ hasText: 'Accessible name of the trigger.' })
+  await expect(label.locator('abbr')).toHaveCount(0)
+})

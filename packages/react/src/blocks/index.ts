@@ -76,6 +76,18 @@ export type {
   StrategyAction,
   StrategyStatus,
 } from './system-monitor/system-monitor-model.ts'
+export {
+  TransmissionChain,
+  type ChainSelection,
+  type TransmissionChainLabels,
+  type TransmissionChainProps,
+} from './transmission-chain/transmission-chain.tsx'
+export type {
+  ChainDirection,
+  ChainEdge,
+  ChainNode,
+  ChainStatus,
+} from './transmission-chain/transmission-chain-model.ts'
 export { Toolbar, ToolbarGroup, ToolButton, ToolSlot } from './toolbar/toolbar.tsx'
 export { useRovingToolbar } from './toolbar/use-roving-toolbar.ts'
 
