@@ -133,6 +133,9 @@ export function generate() {
       exports[name] = next
     }
   }
+  if (Object.values(exports).every(({ props }) => props.length === 0)) {
+    throw new Error('docs-props：所有导出的属性表都为空（或没有导出），拒绝生成；请检查包路径与 TS 声明。')
+  }
   return Object.fromEntries(Object.entries(exports).toSorted(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0)))
 }
 
