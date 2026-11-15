@@ -11,8 +11,20 @@
 | `fields` | `FilterField[]` | — | { key, label, group?, input?（number / text）, operators: {value,label}[], presets?: {key,label,hint?,op,value}[], shown? }。 |
 | `value` | `FilterCondition[]` | — | { id, field, op, value, label? }；同一字段只留最后设的一条。 |
 | `onChange` | `(next: FilterCondition[]) => void` | — | 条件变了（设、清除、移除字段、重置）。 |
-| `labels` | `FilterBarLabels` | — | 全部文字，由调用方传。 |
+| `labels` | `FilterBarLabels` | — | 全部文字，由调用方传。传了 undo 与 redo 两个读屏名，条的最左多一对撤销 / 重做按钮（件自己记它改过的条件快照，最多 50 步；从外面换掉条件不进栈）。 |
 | `defaultShown` | `string[]` | — | 条上一开始有哪些字段；不给取 shown 为真的，再没有取前 6 个。 |
+
+### ViewSwitcher
+
+标题位置的「已保存的视图」下拉（选股器标题的保存的筛选、新闻流标题的 Full feed）；件不存视图，列表与当前项由调用方传。
+
+| 属性 | 类型 | 默认 | 说明 |
+| --- | --- | --- | --- |
+| `views` | `ViewOption[]` | — | { key, label }；下拉里按这个顺序列。 |
+| `value` | `string` | — | 当前视图的键。 |
+| `onValueChange` | `(key: string) => void` | — | 选了另一个视图。 |
+| `onSave` | `() => void` | — | 给了，列表底部多一项「另存为」（文字 labels.save）；命名对话框与存哪里归调用方。 |
+| `labels` | `{ trigger: string; save?: string }` | — | 读屏名与「另存为」文字。 |
 
 ### applyFilters / matchCondition
 

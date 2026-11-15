@@ -25,6 +25,14 @@ const show = async (page: Page, id: string) => {
   await page.locator(`[data-gallery="${id}"]`).waitFor()
 }
 const section = (page: Page, id: string) => page.locator(`[data-gallery="${id}"]`)
+/** 热图工具条的下拉：点开名为 label 的下拉，选名为 option 的项。 */
+const heatPick = async (page: Page, map: Locator, label: string, option: string) => {
+  await map.getByRole('combobox', { name: label }).click()
+  await page.getByRole('option', { name: option, exact: true }).click()
+  // 选完焦点回到触发器（Radix 异步还）：等它回来，后面的键盘操作才不被抢走焦点。
+  // 换数据集会让热图整个重建，焦点没处还，不等。
+  if (label !== '数据集') await expect(map.getByRole('combobox', { name: label })).toBeFocused()
+}
 const bg = (locator: Locator) => locator.evaluate((element) => getComputedStyle(element).backgroundColor)
 const token = (page: Page, name: string) =>
   page.evaluate((variable) => {
@@ -2269,7 +2277,7 @@ for (const theme of THEMES) {
       await page.setViewportSize({ width: 1400, height: 900 })
       await open(page, theme, 'market-heatmap')
       const map = section(page, 'market-heatmap').locator('[data-slot="market-heatmap"]')
-      await map.getByRole('button', { name: '平铺' }).click()
+      await heatPick(page, map, '视图', '平铺')
       await map.evaluate((el) => Promise.all(el.getAnimations({ subtree: true }).map((a) => a.finished)))
       const cells = map.locator('[data-slot="heatmap-cell"]')
       const big = cells.first()
@@ -2305,6 +2313,35 @@ for (const theme of THEMES) {
       await expect(map.getByRole('button', { name: '全屏' })).toBeVisible()
     })
 
+    test('量化：市场热力图——工具条是四个下拉加「在选股器打开」；格子分四档：徽标 + 代码 + 读数、代码 + 读数、只有徽标、只有色块', async ({
+      page,
+    }) => {
+      await page.setViewportSize({ width: 1400, height: 900 })
+      await open(page, theme, 'market-heatmap')
+      const demo = section(page, 'market-heatmap')
+      const map = demo.locator('[data-slot="market-heatmap"]')
+      for (const name of ['数据集', '大小', '颜色', '视图'])
+        await expect(map.getByRole('combobox', { name })).toBeVisible()
+      await heatPick(page, map, '数据集', '不分组的加密')
+      await expect(map.locator('[data-slot="heatmap-cell"]')).toHaveCount(30)
+      await heatPick(page, map, '数据集', '分行业的股票')
+      await map.getByRole('button', { name: '在选股器打开' }).click()
+      await expect(demo).toContainText('在选股器打开：分行业的股票')
+      await heatPick(page, map, '视图', '平铺')
+      await map.evaluate((el) => Promise.all(el.getAnimations({ subtree: true }).map((a) => a.finished)))
+      const tiers = await map.locator('[data-slot="heatmap-cell"]').evaluateAll((nodes) =>
+        nodes.map((n) => ({
+          logo: n.querySelectorAll('[data-slot="symbol-mark"]').length,
+          code: n.querySelectorAll('.k-mheat-code').length,
+          value: n.querySelectorAll('.k-mheat-value').length,
+        })),
+      )
+      expect(tiers.some((t) => t.logo === 1 && t.code === 1 && t.value === 1)).toBe(true)
+      expect(tiers.some((t) => t.logo === 0 && t.code === 1)).toBe(true)
+      expect(tiers.some((t) => t.logo === 1 && t.code === 0 && t.value === 0)).toBe(true)
+      expect(tiers.some((t) => t.logo === 0 && t.code === 0)).toBe(true)
+    })
+
     test('量化：市场热力图——面积跟大小成正比，颜色落在对应档，点组名放大，图例点一档隐藏，小格子不写字', async ({
       page,
     }) => {
@@ -2315,7 +2352,7 @@ for (const theme of THEMES) {
       await expect(map.locator('[data-slot="heatmap-group"]')).toHaveCount(8)
       const sizeOf = (cell: Locator) => cell.getAttribute('data-size').then(Number)
       // 面积跟市值成正比：平铺（所有格子一个密度）后抽两格比；每格四周各让出 1px 缝，量到的宽高各补 2px 才是排布的那一格。
-      await map.getByRole('button', { name: '平铺' }).click()
+      await heatPick(page, map, '视图', '平铺')
       await expect(map.locator('[data-slot="heatmap-group"]')).toHaveCount(0)
       await map.evaluate((el) => Promise.all(el.getAnimations({ subtree: true }).map((a) => a.finished)))
       const area = (cell: Locator) => cell.boundingBox().then((b) => (b!.width + 2) * (b!.height + 2))
@@ -2332,7 +2369,7 @@ for (const theme of THEMES) {
       const expected = (await sizeOf(big)) / (await sizeOf(mid))
       expect(ratio / expected).toBeGreaterThan(0.96)
       expect(ratio / expected).toBeLessThan(1.04)
-      await map.getByRole('button', { name: '分组' }).click()
+      await heatPick(page, map, '视图', '分组')
       await expect(map.locator('[data-slot="heatmap-group"]')).toHaveCount(8)
       // 颜色落在对应档：格子的涨跌幅（固定一档 1%）算出档号，底色等于图例里那一档的色块。
       const swatch = (step: number) => map.locator(`[data-slot="heatmap-swatch"][data-step="${step}"]`)
@@ -2429,7 +2466,7 @@ for (const theme of THEMES) {
       expect(inGroup).toBeGreaterThanOrEqual(7)
       await expect(map.locator('[data-slot="heatmap-group"]')).toHaveCount(0)
       await expect(map.locator('[data-slot="heatmap-crumb"]')).toContainText(name)
-      await expect(map.getByRole('button', { name: '市值' })).toHaveAttribute('aria-pressed', 'true')
+      await expect(map.getByRole('combobox', { name: '大小' })).toHaveText('市值')
       await expect.poll(() => area(cells.first())).toBeGreaterThan(before)
       await map.locator('[data-slot="heatmap-crumb"]').getByRole('button', { name: '全部' }).click()
       await expect(cells).toHaveCount(60)
@@ -2489,8 +2526,8 @@ for (const theme of THEMES) {
       expect(up).toBeGreaterThan(0)
       expect(down).toBeGreaterThan(0)
       // 等大：每格差不多大（组块内的格子面积相同，跨组块可能略有差别，所以平铺后再比）。
-      await map.getByRole('button', { name: '平铺' }).click()
-      await map.getByRole('button', { name: '等大' }).click()
+      await heatPick(page, map, '视图', '平铺')
+      await heatPick(page, map, '大小', '等大')
       await expect(map.locator('[data-slot="heatmap-group"]')).toHaveCount(0)
       // 位置与大小是过渡过去的：等动画走完再量。
       await map.evaluate((el) => Promise.all(el.getAnimations({ subtree: true }).map((a) => a.finished)))
@@ -2504,9 +2541,9 @@ for (const theme of THEMES) {
       // 周表现：档宽自动取好数，图例的数跟着变（涨跌幅固定 1%，周表现不是）。
       const legend = map.locator('[data-slot="heatmap-legend"]')
       await expect(legend).not.toContainText('+9%')
-      await map.getByRole('button', { name: '周表现' }).click()
+      await heatPick(page, map, '颜色', '周表现')
       await expect(legend).toContainText('+9%')
-      await expect(map.getByRole('button', { name: '周表现' })).toHaveAttribute('aria-pressed', 'true')
+      await expect(map.getByRole('combobox', { name: '颜色' })).toHaveText('周表现')
       // 单色：格子的底色是灰（红绿蓝相等），不带涨跌色。
       await demo.getByRole('button', { name: '单色' }).click()
       await expect(map).toHaveAttribute('data-scheme', 'mono')
@@ -2521,7 +2558,7 @@ for (const theme of THEMES) {
       }
       await demo.getByRole('button', { name: '经典' }).click()
       // 键盘：先分组；Tab 进某组的格子，方向键在组内走（落点还在同一组），再 Tab 到下一个组名。
-      await map.getByRole('button', { name: '分组' }).click()
+      await heatPick(page, map, '视图', '分组')
       const firstHead = map.locator('[data-slot="heatmap-group"]').first()
       await firstHead.focus()
       await page.keyboard.press('Tab')
@@ -2547,11 +2584,11 @@ for (const theme of THEMES) {
         await firstHead.getAttribute('data-group'),
       )
       // 不分组的加密：没有组名，也没有视图切换，三十格。
-      await demo.getByRole('button', { name: '不分组的加密' }).click()
+      await heatPick(page, map, '数据集', '不分组的加密')
       await expect(cells).toHaveCount(30)
       await expect(map.locator('[data-slot="heatmap-group"]')).toHaveCount(0)
-      await expect(map.getByRole('group', { name: '视图' })).toHaveCount(0)
-      await expect(map.getByRole('button', { name: '市值' })).toBeVisible()
+      await expect(map.getByRole('combobox', { name: '视图' })).toHaveCount(0)
+      await expect(map.getByRole('combobox', { name: '大小' })).toHaveText('市值')
     })
 
     test('量化：技术评级——指针角度对应分数，档名随分数跨档，个数文字正确，切周期仪表真的动', async ({ page }) => {
@@ -4672,7 +4709,7 @@ for (const theme of THEMES) {
       grid
         .locator('[data-col="symbol"]')
         .allTextContents()
-        .then((all) => all.filter((t) => t !== '代码'))
+        .then((all) => all.filter((t) => !t.startsWith('代码')))
     expect(await codes()).toHaveLength(8)
     // 预设：价格「高于 100」，副标题「高价股」在浮层里；选了以后胶囊带条件文字，表只剩价格大于 100 的 5 只。
     await bar.locator('[data-slot="filter-pill"][data-field="price"]').click()
@@ -4708,8 +4745,72 @@ for (const theme of THEMES) {
     await expect(tabs.getByRole('tab', { name: '概览' })).toHaveAttribute('aria-selected', 'true')
     await tabs.getByRole('tab', { name: '估值' }).click()
     await expect(tabs.getByRole('tab', { name: '估值' })).toHaveAttribute('aria-selected', 'true')
-    await expect(grid.getByRole('columnheader')).toHaveCount(4)
+    await expect(grid.locator('[role="columnheader"][data-col]')).toHaveCount(4)
     await expect(grid.getByRole('columnheader', { name: /涨跌幅/ })).toHaveCount(0)
+  })
+
+  test(`选股器（${theme}）：保存的筛选下拉、撤销重做、两行表头与总数、评级图标、表头「+」加列`, async ({ page }) => {
+    await open(page, theme, 'filter-bar')
+    const doc = section(page, 'filter-bar')
+    const bar = doc.locator('[data-slot="filter-bar"]')
+    const grid = doc.getByTestId('screener-grid')
+    const rowsOf = () => grid.locator('[data-slot="rating-text"]')
+    // 表头：代码列第二行写总数，搜索图标在名字后；市盈率第二行是口径 TTM；排序箭头画在名字前。
+    const symbolHead = grid.getByRole('columnheader', { name: /代码/ })
+    await expect(symbolHead.locator('.k-grid-head-sub')).toHaveText('8 / 8')
+    await expect(grid.getByRole('columnheader', { name: /市盈率/ }).locator('.k-grid-head-sub')).toHaveText('TTM')
+    await expect(grid.getByRole('img', { name: '搜索代码' })).toBeVisible()
+    await grid
+      .getByRole('columnheader', { name: /价格/ })
+      .getByRole('button')
+      .first()
+      .click()
+    const arrowBox = (await grid
+      .getByRole('columnheader', { name: /价格/ })
+      .locator('.k-grid-sort')
+      .boundingBox())!
+    const nameBox = (await grid
+      .getByRole('columnheader', { name: /价格/ })
+      .locator('.k-grid-head-name')
+      .boundingBox())!
+    expect(arrowBox.x + arrowBox.width).toBeLessThanOrEqual(nameBox.x + 1)
+    // 评级列：五种图标加文字，强力买入取涨色，强力卖出取跌色。
+    await expect(rowsOf()).toHaveCount(8)
+    const tone = (level: string) =>
+      grid
+        .locator(`[data-slot="rating-text"][data-level="${level}"]`)
+        .first()
+        .evaluate((el) => getComputedStyle(el).color)
+    expect(await tone('strong-buy')).not.toBe(await tone('strong-sell'))
+    await expect(grid.locator('[data-slot="rating-text"][data-level="strong-buy"]').first()).toHaveText('强力买入')
+    expect(await grid.locator('[data-slot="rating-text"][data-level="strong-buy"] svg').count()).toBe(2)
+    // 撤销 / 重做：设一个预设，撤销回到 8 行，重做回到筛过的。
+    const undo = bar.getByRole('button', { name: '撤销' })
+    const redo = bar.getByRole('button', { name: '重做' })
+    await expect(undo).toBeDisabled()
+    await bar.locator('[data-slot="filter-pill"][data-field="price"]').click()
+    await page.getByRole('dialog', { name: '价格' }).locator('[data-preset="p-high"]').click()
+    await expect(rowsOf()).toHaveCount(4)
+    await undo.click()
+    await expect(rowsOf()).toHaveCount(8)
+    await expect(redo).toBeEnabled()
+    await redo.click()
+    await expect(rowsOf()).toHaveCount(4)
+    // 标题下拉：切到「高股息」换一组条件；另存为多一项并选中。
+    const title = doc.getByRole('button', { name: '已保存的筛选' })
+    await title.click()
+    await page.getByRole('menuitemradio', { name: '高股息' }).click()
+    await expect(rowsOf()).toHaveCount(4)
+    await expect(title).toContainText('高股息')
+    await title.click()
+    await page.getByRole('menuitem', { name: '另存为…' }).click()
+    await expect(title).toContainText('未命名筛选')
+    // 表头最右的「+」：弹出列选择，勾上股息率，表头多一列。
+    const cols = grid.locator('[role="columnheader"][data-col]')
+    const before = await cols.count()
+    await grid.getByRole('button', { name: '添加列' }).click()
+    await page.getByRole('dialog', { name: '添加列' }).getByRole('checkbox', { name: '股息率' }).click()
+    await expect(cols).toHaveCount(before + 1)
   })
 
   test(`新闻流（${theme}）：组合过滤——加分面、多选、重置、移除；选中行加深；阅读窗`, async ({ page }) => {
@@ -4723,6 +4824,7 @@ for (const theme of THEMES) {
     await pop.getByRole('checkbox', { name: '股票' }).click()
     await expect(rows).toHaveCount(1)
     await page.keyboard.press('Escape')
+    await expect(page.getByRole('dialog')).toHaveCount(0)
     // 再加「国家」分面（「添加过滤」里没有的才列），再选「乙国」：且关系，没有命中。
     await frame.locator('[data-slot="news-facet-add"]').click()
     await page.locator('[data-facet-option="country"]').click()
@@ -4730,15 +4832,69 @@ for (const theme of THEMES) {
     await page.getByRole('dialog', { name: '国家' }).getByRole('checkbox', { name: '乙国' }).click()
     await expect(rows).toHaveCount(0)
     await page.keyboard.press('Escape')
+    await expect(page.getByRole('dialog')).toHaveCount(0)
     // 重置国家：回到只受「市场」影响；移除「市场」：全部六条。
     await frame.locator('[data-facet="country"]').click()
     await page.getByRole('dialog', { name: '国家' }).getByRole('button', { name: '重置' }).click()
     await page.keyboard.press('Escape')
+    await expect(page.getByRole('dialog')).toHaveCount(0)
     await expect(rows).toHaveCount(1)
     await frame.locator('[data-facet="market"]').click()
     await page.getByRole('dialog', { name: '市场' }).getByRole('button', { name: '移除 市场' }).click()
     await expect(frame.locator('[data-facet="market"]')).toHaveCount(0)
     await expect(rows).toHaveCount(6)
+  })
+
+  test(`新闻流（${theme}）：并排阅读窗（点标题右边出阅读窗、窄了改浮层）、保存的过滤下拉、收起过滤、阅读分钟数、重叠的品种徽标`, async ({
+    page,
+  }) => {
+    await open(page, theme, 'news-feed')
+    const split = section(page, 'news-feed').getByTestId('news-split')
+    const feed = split.locator('.k-news')
+    const rows = feed.locator('.k-news-item')
+    await expect(rows.first()).toContainText('分钟阅读')
+    // 重叠的徽标：同一条里相邻两颗徽标左右重叠（后一颗的左边在前一颗的右边之内）。
+    const pair = feed
+      .locator('.k-news-symbols[data-style="stack"]')
+      .filter({ has: page.locator('.k-news-symbol + .k-news-symbol') })
+      .first()
+    const [a, b] = await pair
+      .locator('.k-news-symbol')
+      .evaluateAll((nodes) =>
+        nodes.slice(0, 2).map((n) => n.getBoundingClientRect().toJSON() as { left: number; right: number }),
+      )
+    expect(b!.left).toBeLessThan(a!.right)
+    // 点标题：右边出阅读窗，该行加深；窗里是这一条的标题。
+    const title = await rows.nth(1).locator('.k-news-title').textContent()
+    await rows.nth(1).locator('.k-news-title').click()
+    const pane = feed.locator('[data-slot="news-reader-pane"]')
+    await expect(pane).toBeVisible()
+    await expect(pane.getByRole('heading', { level: 2 })).toHaveText(title!)
+    await expect(rows.nth(1)).toHaveAttribute('data-selected', '')
+    const listBox = (await feed.locator('.k-news-main').boundingBox())!
+    const paneBox = (await pane.boundingBox())!
+    expect(paneBox.x).toBeGreaterThanOrEqual(listBox.x + listBox.width - 1)
+    // 关闭：阅读窗消失。
+    await pane.getByRole('button', { name: '关闭' }).click()
+    await expect(pane).toHaveCount(0)
+    // 收起过滤：来源与分面行消失，再展开回来。
+    await expect(feed.locator('[data-slot="news-facets"]')).toBeVisible()
+    await feed.getByRole('button', { name: '收起过滤' }).click()
+    await expect(feed.locator('[data-slot="news-facets"]')).toHaveCount(0)
+    await feed.getByRole('button', { name: '展开过滤' }).click()
+    await expect(feed.locator('[data-slot="news-facets"]')).toBeVisible()
+    // 保存的过滤下拉：另存为后多一项并选中。
+    const views = feed.getByRole('button', { name: '已保存的新闻过滤' })
+    await expect(views).toContainText('全部新闻')
+    await views.click()
+    await page.getByRole('menuitem', { name: '另存为…' }).click()
+    await expect(views).toContainText('未命名过滤')
+    // 窄了（容器不到 900px）阅读窗盖在列表上。
+    await split.getByRole('button', { name: '窄 640px' }).click()
+    await rows.first().locator('.k-news-title').click()
+    const narrow = (await feed.locator('[data-slot="news-reader-pane"]').boundingBox())!
+    const main = (await feed.locator('.k-news-main').boundingBox())!
+    expect(narrow.x).toBeLessThanOrEqual(main.x + 2)
   })
 
   test(`新闻阅读窗（${theme}）：品种涨跌上色、要点、操作按钮`, async ({ page }) => {

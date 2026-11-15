@@ -15,6 +15,8 @@ export type NewsItem = {
   summary?: string
   symbols?: readonly NewsSymbol[]
   important?: boolean
+  /** 预计阅读分钟数：写在时间后面（labels.read 传了才写）。 */
+  readMinutes?: number
   /** 有链接就把标题渲染成链接（新窗口打开）。 */
   href?: string
   /** 组合过滤用的分面取值：键是 NewsFacet.key，值是这条新闻在这个分面上的取值（可多个）。 */

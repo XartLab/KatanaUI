@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: MIT
+import { SearchIcon } from 'lucide-react'
 import { useMemo, useState } from 'react'
-import { formatVolume } from '../../src/quant/index.ts'
+import { RatingText, formatVolume, type RatingLevel } from '../../src/quant/index.ts'
 import {
+  ColumnPicker,
   ColumnSetTabs,
   DataGrid,
   NewsReader,
@@ -11,6 +13,7 @@ import {
 } from '../../src/blocks/index.ts'
 import {
   FilterBar,
+  ViewSwitcher,
   applyFilters,
   type FilterBarLabels,
   type FilterCondition,
@@ -28,6 +31,7 @@ type Stock = {
   pe: number
   sector: string
   yield: number
+  rating: RatingLevel
 }
 
 const STOCKS: readonly Stock[] = [
@@ -40,6 +44,7 @@ const STOCKS: readonly Stock[] = [
     pe: 34.1,
     sector: '科技',
     yield: 0.6,
+    rating: 'strong-buy',
   },
   {
     code: 'BETA',
@@ -50,6 +55,7 @@ const STOCKS: readonly Stock[] = [
     pe: 21.4,
     sector: '消费',
     yield: 1.9,
+    rating: 'buy',
   },
   {
     code: 'GAMA',
@@ -60,6 +66,7 @@ const STOCKS: readonly Stock[] = [
     pe: 48.7,
     sector: '科技',
     yield: 0.2,
+    rating: 'strong-buy',
   },
   {
     code: 'DELT',
@@ -70,6 +77,7 @@ const STOCKS: readonly Stock[] = [
     pe: 9.3,
     sector: '能源',
     yield: 4.8,
+    rating: 'sell',
   },
   {
     code: 'EPSI',
@@ -80,9 +88,30 @@ const STOCKS: readonly Stock[] = [
     pe: 12.8,
     sector: '工业',
     yield: 2.7,
+    rating: 'neutral',
   },
-  { code: 'ZETA', name: '示例泽塔矿业', price: 9.12, change: -2.6, mcap: 1.9e10, pe: 7.1, sector: '材料', yield: 5.9 },
-  { code: 'ETAX', name: '示例伊塔生物', price: 74.0, change: 0.0, mcap: 2.4e10, pe: 0, sector: '医疗', yield: 0 },
+  {
+    code: 'ZETA',
+    name: '示例泽塔矿业',
+    price: 9.12,
+    change: -2.6,
+    mcap: 1.9e10,
+    pe: 7.1,
+    sector: '材料',
+    yield: 5.9,
+    rating: 'strong-sell',
+  },
+  {
+    code: 'ETAX',
+    name: '示例伊塔生物',
+    price: 74.0,
+    change: 0.0,
+    mcap: 2.4e10,
+    pe: 0,
+    sector: '医疗',
+    yield: 0,
+    rating: 'neutral',
+  },
   {
     code: 'THET',
     name: '示例西塔金融',
@@ -92,16 +121,33 @@ const STOCKS: readonly Stock[] = [
     pe: 14.2,
     sector: '金融',
     yield: 3.1,
+    rating: 'buy',
   },
 ]
+
+const RATING_ORDER: readonly RatingLevel[] = ['strong-sell', 'sell', 'neutral', 'buy', 'strong-buy']
+const RATING_TEXT: Record<RatingLevel, string> = {
+  'strong-sell': '强力卖出',
+  sell: '卖出',
+  neutral: '中性',
+  buy: '买入',
+  'strong-buy': '强力买入',
+}
 
 const COLUMNS: readonly GridColumn<Stock>[] = [
   { id: 'symbol', type: 'symbol', value: (row) => ({ code: row.code, venue: '', name: row.name }) },
   { id: 'price', type: 'price', value: (row) => row.price },
   { id: 'change', type: 'change', value: (row) => row.change },
-  { id: 'mcap', type: 'number', value: (row) => `${formatVolume(row.mcap)} USD` },
-  { id: 'pe', type: 'number', value: (row) => (row.pe ? row.pe.toFixed(1) : '—') },
-  { id: 'yield', type: 'number', value: (row) => `${row.yield.toFixed(1)}%` },
+  { id: 'mcap', type: 'number', value: (row) => row.mcap, text: (row) => `${formatVolume(row.mcap)} USD` },
+  { id: 'pe', type: 'number', value: (row) => row.pe, text: (row) => (row.pe ? row.pe.toFixed(1) : '—') },
+  { id: 'yield', type: 'number', value: (row) => row.yield, text: (row) => `${row.yield.toFixed(1)}%` },
+  {
+    id: 'rating',
+    type: 'custom',
+    sort: (row) => RATING_ORDER.indexOf(row.rating),
+    text: (row) => RATING_TEXT[row.rating],
+    cell: (row) => <RatingText level={row.rating}>{RATING_TEXT[row.rating]}</RatingText>,
+  },
   { id: 'sector', type: 'text', value: (row) => row.sector },
 ]
 
@@ -109,14 +155,15 @@ const LAYOUT: readonly GridColumnLayout[] = [
   { id: 'symbol', label: '代码', width: 200, visible: true },
   { id: 'price', label: '价格', width: 100, visible: true },
   { id: 'change', label: '涨跌幅', width: 90, visible: true },
-  { id: 'mcap', label: '市值', width: 110, visible: true },
-  { id: 'pe', label: '市盈率', width: 90, visible: true },
-  { id: 'yield', label: '股息率', width: 90, visible: false },
+  { id: 'mcap', label: '市值', width: 120, visible: true },
+  { id: 'pe', label: '市盈率', sub: 'TTM', width: 90, visible: true },
+  { id: 'yield', label: '股息率', sub: 'TTM', width: 90, visible: false },
+  { id: 'rating', label: '分析师评级', width: 130, visible: true },
   { id: 'sector', label: '板块', width: 90, visible: true },
 ]
 
 const SETS: readonly ColumnSet[] = [
-  { id: 'overview', label: '概览', columns: ['symbol', 'price', 'change', 'mcap', 'pe', 'sector'] },
+  { id: 'overview', label: '概览', columns: ['symbol', 'price', 'change', 'mcap', 'pe', 'rating', 'sector'] },
   { id: 'valuation', label: '估值', columns: ['symbol', 'price', 'pe', 'mcap'] },
   { id: 'dividends', label: '分红', columns: ['symbol', 'price', 'yield', 'sector'] },
 ]
@@ -191,21 +238,91 @@ const BAR_LABELS: FilterBarLabels = {
   clear: '清除条件',
   back: '返回',
   otherGroup: '其他',
+  undo: '撤销',
+  redo: '重做',
+}
+
+const COLUMN_PICKER_LABELS = { trigger: '添加列', sets: '列集', columns: '列' }
+
+const SAVED_SCREENS: Record<string, { label: string; conditions: FilterCondition[] }> = {
+  all: { label: '全部股票', conditions: [] },
+  dividend: {
+    label: '高股息',
+    conditions: [{ id: 'v-div', field: 'yield', op: 'gt', value: '2.5', label: '高于 2.5%' }],
+  },
+  large: {
+    label: '大盘科技',
+    conditions: [
+      { id: 'v-mcap', field: 'mcap', op: 'gt', value: '1e11', label: '大盘股' },
+      { id: 'v-sector', field: 'sector', op: 'eq', value: '科技', label: '科技' },
+    ],
+  },
 }
 
 export function ScreenerDemo() {
+  const [screen, setScreen] = useState('all')
+  const [saved, setSaved] = useState<readonly { key: string; label: string }[]>(
+    Object.entries(SAVED_SCREENS).map(([key, v]) => ({ key, label: v.label })),
+  )
   const [conditions, setConditions] = useState<FilterCondition[]>([])
   const [layout, setLayout] = useState<GridColumnLayout[]>([...LAYOUT])
+  const [sort, setSort] = useState<{ id: string; desc: boolean } | null>(null)
   const rows = useMemo(() => applyFilters(STOCKS, conditions, (row, field) => row[field as keyof Stock]), [conditions])
+  // 代码列的表头第二行写总数（TradingView 选股器的「N 个」）。
+  const shownLayout = useMemo(
+    () =>
+      layout.map((column) =>
+        column.id === 'symbol' ? { ...column, sub: `${rows.length} / ${STOCKS.length}` } : column,
+      ),
+    [layout, rows.length],
+  )
   return (
-    <div className="gal-stack" style={{ width: '100%', maxWidth: 820 }}>
+    <div className="gal-stack" style={{ width: '100%', maxWidth: 900 }}>
       <p className="gal-note">
-        演示数据（股票是虚构的）。点过滤胶囊选预设或手动设；「+」加字段；「⋯」重置。共 {rows.length} 行。
+        演示数据（股票是虚构的）。标题是已保存筛选的下拉；点过滤胶囊选预设或手动设；左边的撤销与重做按钮管过滤条件；「+」加字段；「⋯」重置。
       </p>
+      <ViewSwitcher
+        views={saved}
+        value={screen}
+        onValueChange={(key) => {
+          setScreen(key)
+          setConditions(SAVED_SCREENS[key]?.conditions ?? [])
+        }}
+        onSave={() => {
+          const key = `saved-${saved.length}`
+          setSaved([...saved, { key, label: `未命名筛选 ${saved.length - 2}` }])
+          setScreen(key)
+        }}
+        labels={{ trigger: '已保存的筛选', save: '另存为…' }}
+      />
       <FilterBar fields={FIELDS} value={conditions} onChange={setConditions} labels={BAR_LABELS} />
       <ColumnSetTabs layout={layout} onLayoutChange={setLayout} sets={SETS} label="列集" />
-      <div style={{ display: 'flex', height: 300 }} data-testid="screener-grid">
-        <DataGrid columns={COLUMNS} layout={layout} rows={rows} rowId={(row) => row.code} label="选股结果" />
+      <div style={{ display: 'flex', height: 320 }} data-testid="screener-grid">
+        <DataGrid
+          columns={COLUMNS}
+          layout={shownLayout}
+          rows={rows}
+          rowId={(row) => row.code}
+          label="选股结果"
+          sort={sort}
+          onSortChange={setSort}
+          headExtra={(id) =>
+            id === 'symbol' ? (
+              <span className="k-grid-head-icon" role="img" aria-label="搜索代码">
+                <SearchIcon size={12} aria-hidden="true" />
+              </span>
+            ) : null
+          }
+          headEnd={
+            <ColumnPicker
+              layout={layout}
+              onLayoutChange={setLayout}
+              sets={SETS}
+              labels={COLUMN_PICKER_LABELS}
+              iconOnly
+            />
+          }
+        />
       </div>
     </div>
   )

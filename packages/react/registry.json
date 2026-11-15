@@ -2053,6 +2053,26 @@
       ]
     },
     {
+      "name": "view-switcher",
+      "type": "registry:component",
+      "title": "View Switcher",
+      "description": "选股器的顶部过滤行：一行可换行的胶囊，每个胶囊是一个字段；点开浮层有标题与垃圾桶（把这个过滤从条上拿掉）、搜索框、预设条件列表（主文字加灰色副标题）、底部「手动设置」（运算符加值）。最后是「+」（按分组列出所有字段，进组再选）与「⋯」（重置全部条件）。照 TradingView 选股器（主会话 2026-11-15 登录态实测），实现原创。字段、运算符、预设与文字都由调用方定义；条件受控，件不过滤数据，调用方用 applyFilters 或自己的方式过滤。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/dropdown-menu"
+      ],
+      "files": [
+        {
+          "path": "src/patterns/view-switcher.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/patterns/view-switcher.tsx"
+        }
+      ]
+    },
+    {
       "name": "chart-kit",
       "type": "registry:component",
       "title": "Chart Kit",
@@ -2425,6 +2445,7 @@
         "@katana/market-heatmap-model",
         "@katana/quant-format",
         "@katana/row-actions",
+        "@katana/select",
         "@katana/switch",
         "@katana/symbol-mark",
         "@katana/toggle-group",
@@ -2552,6 +2573,25 @@
           "path": "src/quant/quantile-model.ts",
           "type": "registry:component",
           "target": "~/src/katana/ui/quant/quantile-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "rating-text",
+      "type": "registry:component",
+      "title": "Rating Text",
+      "description": "分析师评级、技术评级结论的单元格写法：图标加文字，强力买入双上箭头、买入单上箭头、中性等号、卖出单下箭头、强力卖出双下箭头；买入档取涨色、卖出档取跌色（跟 data-updown），中性不着色。照 TradingView 选股器「分析师评级」列（主会话 2026-11-15 登录态实测），实现原创。放进 DataGrid 的 custom 列里用（见 FilterBar 页的选股器）。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn"
+      ],
+      "files": [
+        {
+          "path": "src/quant/rating-text.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/rating-text.tsx"
         }
       ]
     },
@@ -3046,7 +3086,8 @@
         "@katana/quant-format",
         "@katana/row-actions",
         "@katana/symbol-mark",
-        "@katana/toggle-group"
+        "@katana/toggle-group",
+        "@katana/view-switcher"
       ],
       "files": [
         {

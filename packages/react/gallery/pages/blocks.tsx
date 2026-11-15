@@ -10,6 +10,7 @@ import {
   EstimateBadge,
   HypothesisLedger,
   NewsFeed,
+  NewsReader,
   SystemMonitor,
   PanelFrame,
   PanelFrameBody,
@@ -43,7 +44,7 @@ import {
   type WorkspaceTab,
 } from '../../src/blocks/index.ts'
 import { ConsensusBlock } from '../../src/quant/index.ts'
-import { Button, Splitter, symbolMenu, usePersistedState } from '../../src/index.ts'
+import { Button, Splitter, ToggleGroup, ToggleGroupItem, symbolMenu, usePersistedState } from '../../src/index.ts'
 import { ActionLog, Row, SAMPLE_MARK_SRC, demoSymbolActions } from './parts.tsx'
 
 // 积木层（@katana-ui/react/blocks，#1869）的演示。表里的数据都是写死的示例数据，不是行情。
@@ -615,6 +616,10 @@ const NEWS_LABELS: NewsFeedLabels = {
   important: '重要',
   empty: '没有符合筛选的新闻',
   facets: { group: '组合过滤', add: '添加过滤', reset: '重置', remove: '移除', none: '无' },
+  read: (n) => `${n} 分钟阅读`,
+  views: { trigger: '已保存的新闻过滤', save: '另存为…' },
+  collapse: '收起过滤',
+  expand: '展开过滤',
 }
 
 const NEWS_FACETS: readonly NewsFacet[] = [
@@ -644,6 +649,63 @@ const NEWS_FACETS: readonly NewsFacet[] = [
     ],
   },
 ]
+
+const NEWS_VIEWS = [
+  { key: 'full', label: '全部新闻' },
+  { key: 'stocks', label: '只看股票' },
+]
+
+/** 并排阅读窗（宽度够时左列表右阅读窗，不够时盖在列表上）：已保存视图下拉、收起过滤、阅读分钟数、重叠的品种徽标。 */
+function NewsFeedSplit() {
+  const [saved, setSaved] = useState(NEWS_VIEWS)
+  const [view, setView] = useState('full')
+  const [wide, setWide] = useState(true)
+  return (
+    <div style={{ display: 'grid', gap: 8 }}>
+      <ToggleGroup
+        variant="sm"
+        aria-label="宽度"
+        value={wide ? 'wide' : 'narrow'}
+        onValueChange={(v) => setWide(v === 'wide')}
+      >
+        <ToggleGroupItem value="wide">宽 1000px</ToggleGroupItem>
+        <ToggleGroupItem value="narrow">窄 640px</ToggleGroupItem>
+      </ToggleGroup>
+      <div style={{ height: 460, width: wide ? 1000 : 640 }}>
+        <NewsFeed
+          key={view}
+          items={NEWS_ITEMS.map((item, index) => ({ ...item, readMinutes: 1 + (index % 4) }))}
+          channels={NEWS_CHANNELS}
+          sources={NEWS_SOURCES}
+          now={NEWS_NOW}
+          labels={NEWS_LABELS}
+          facets={NEWS_FACETS.map((f) => (view === 'stocks' && f.key === 'market' ? { ...f, shown: true } : f))}
+          views={saved}
+          view={view}
+          onViewChange={setView}
+          onSaveView={() => {
+            const key = `saved-${saved.length}`
+            setSaved([...saved, { key, label: `未命名过滤 ${saved.length - 1}` }])
+            setView(key)
+          }}
+          reader={(item, { close }) => (
+            <NewsReader
+              title={item.title}
+              source="演示通讯社"
+              meta={`${NEWS_LABELS.ago(Math.floor((NEWS_NOW - item.time) / 1000))} · 演示通讯社 · ${NEWS_LABELS.read!(item.readMinutes ?? 2)}`}
+              symbols={(item.symbols ?? []).map((s, i) => ({ ...s, change: i === 0 ? 1.24 : -0.59 }))}
+              keyPoints={item.summary ? [item.summary] : []}
+              labels={{ reader: '新闻阅读', keyPoints: '要点', close: '关闭', report: '举报', copyLink: '复制链接' }}
+              onClose={close}
+            >
+              <p>以上内容是演示文字，公司、数字与来源都是虚构的。</p>
+            </NewsReader>
+          )}
+        />
+      </div>
+    </div>
+  )
+}
 
 export function NewsFeedDemo() {
   const [items, setItems] = useState(NEWS_ITEMS)
@@ -694,6 +756,9 @@ export function NewsFeedDemo() {
             </div>
           </PanelFrameBody>
         </PanelFrame>
+      </div>
+      <div style={{ overflow: 'auto' }} data-testid="news-split">
+        <NewsFeedSplit />
       </div>
       <div style={{ height: 420 }} data-testid="news-cards">
         <NewsFeed

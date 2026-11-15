@@ -26,6 +26,7 @@ export {
   type MarketHeatmapLabels,
   type MarketHeatmapProps,
 } from './market-heatmap.tsx'
+export { RatingText, type RatingLevel, type RatingTextProps } from './rating-text.tsx'
 export {
   TechnicalRating,
   type RatingGroup,

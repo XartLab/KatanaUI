@@ -62,6 +62,8 @@ export type GridColumnLayout = {
   align?: 'start' | 'end'
   /** 横向滚动时粘在左边（#248）。 */
   fixed?: boolean
+  /** 表头第二行的小字（口径：TTM、TTM YoY；或总数）；有任何一列给了，表头加高到放得下两行（照 TradingView 选股器，主会话 2026-11-15 实测）。 */
+  sub?: string
 }
 
 /** 行高档：compact 20、default 24、relaxed 32（像素）。 */
@@ -183,6 +185,10 @@ export type DataGridProps<Row extends object> = {
   density?: GridDensity
   /** 不画表头（两列的指标表之类）。 */
   hideHeader?: boolean
+  /** 列头里排序按钮后面的附加内容（例如 Symbol 列头上的搜索图标）：按列 id 给，没有返回 null。 */
+  headExtra?: (columnId: string) => ReactNode
+  /** 表头最右端的内容（「+ 加列」按钮，接 ColumnPicker）；浮在表头右端，不占列。 */
+  headEnd?: ReactNode
   /** 行高跟着内容走（多行的格子、行里有按钮）：density 的行高是最小高度，量到的真实高度为准；格子里的字可以折行。 */
   autoRowHeight?: boolean
   /** 行与行之间画一道细线。 */
@@ -246,6 +252,8 @@ export function DataGrid<Row extends object>({
   sortLocale,
   density = 'default',
   hideHeader,
+  headExtra,
+  headEnd,
   autoRowHeight,
   ruled,
   selectable = true,
@@ -259,7 +267,9 @@ export function DataGrid<Row extends object>({
   const texts = { ...DEFAULT_TEXTS, ...host?.texts }
   const id = useId()
   const rowHeight = ROW_HEIGHTS[density]
-  const headHeight = HEAD_HEIGHTS[density]
+  const headHeight = layout.some((column) => column.visible && column.sub)
+    ? HEAD_HEIGHTS[density] + 14
+    : HEAD_HEIGHTS[density]
   const byId = useMemo(() => new Map(columns.map((column) => [column.id, column])), [columns])
   const layoutOf = useMemo(() => new Map(layout.map((entry) => [entry.id, entry])), [layout])
   const labelOf = (column: string) => layoutOf.get(column)?.label ?? column
@@ -766,16 +776,29 @@ export function DataGrid<Row extends object>({
                           title={texts.sortTitle({ id: column.id, label: name })}
                           onClick={() => column.toggleSorting()}
                         >
-                          {name}
                           {state && (
                             <span className="k-grid-sort" aria-hidden="true">
                               {state === 'desc' ? '▼' : '▲'}
                             </span>
                           )}
+                          <span className="k-grid-head-name">
+                            <span>{name}</span>
+                            {layoutOf.get(column.id)?.sub ? (
+                              <small className="k-grid-head-sub">{layoutOf.get(column.id)?.sub}</small>
+                            ) : null}
+                          </span>
                         </button>
                       ) : (
-                        <span className="k-grid-head-text">{name}</span>
+                        <span className="k-grid-head-text">
+                          <span className="k-grid-head-name">
+                            <span>{name}</span>
+                            {layoutOf.get(column.id)?.sub ? (
+                              <small className="k-grid-head-sub">{layoutOf.get(column.id)?.sub}</small>
+                            ) : null}
+                          </span>
+                        </span>
                       )}
+                      {headExtra?.(column.id)}
                       {onResize && (
                         <span
                           className="k-grid-resize"
@@ -788,6 +811,11 @@ export function DataGrid<Row extends object>({
                     </div>
                   )
                 })}
+                {headEnd ? (
+                  <div className="k-grid-head-end" role="columnheader" data-slot="grid-head-end">
+                    {headEnd}
+                  </div>
+                ) : null}
               </div>
             ))}
           <div

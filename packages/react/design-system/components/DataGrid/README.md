@@ -28,6 +28,8 @@
 | `rowActions` | `(row) => RowAction[]` | — | 行快捷操作（#23，一般传 symbolMenu(...)）：悬停或键盘落到这一行时右端浮出前三颗带图标的按钮（浮在行上，不挤列宽；按钮条名字取 texts.rowActions）；右键、菜单键、Shift+F10 开的菜单最前面是整份项，只在右键落在单独一行时出现。不传就没有。 |
 | `density` | `'compact' \| 'default' \| 'relaxed'` | `'default'` | 行高档。 |
 | `hideHeader` | `boolean` | `false` | 不画表头。 |
+| `headExtra` | `(columnId: string) => ReactNode` | — | 表头每列名字后面的附加内容（选股器代码列的搜索图标）；返回 null 就没有。列布局的 sub 字段给列名下面加一行小字（口径，如 TTM），有它表头自动加高一行。排序箭头画在列名前面。 |
+| `headEnd` | `ReactNode` | — | 表头最右的固定位置（选股器的「+」加列，一般放 ColumnPicker 的 iconOnly）。 |
 | `autoRowHeight` | `boolean` | `false` | 行高跟着内容走：多行的格子、行里有按钮的表。density 的行高是最小高度，格子里的字可以折行。 |
 | `ruled` | `boolean` | `false` | 行与行之间画一道细线。 |
 | `selectable` | `boolean` | `true` | false：点行不选、不打开，没有悬停底色，只留键盘移动与展开（行里主要是按钮的表）。 |
@@ -72,6 +74,7 @@
 | `layout / onLayoutChange` | `GridColumnLayout[] / (next) => void` | — | 同 DataGrid 的 layout。 |
 | `sets` | `{ id, label, columns: string[] }[]` | — | 列集：集里的列显示并按集的次序排前面，其余藏起来。省略就只有勾选。 |
 | `labels` | `{ trigger, sets, columns }` | — | 文案由调用方传，包里没有语言。 |
+| `iconOnly` | `boolean` | `false` | 触发按钮只画「+」图标（读屏名仍是 labels.trigger），放在表头最右。 |
 
 ### usePersistedState(key, initial, { version, storage?, validate? })
 

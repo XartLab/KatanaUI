@@ -445,3 +445,20 @@
   padding: var(--space-4);
   background: var(--bg-100);
 }
+.k-mheat-select {
+  min-width: 96px;
+}
+.k-mheat-open {
+  margin-left: auto;
+  height: 30px;
+  padding: 0 var(--space-3);
+  border: var(--hairline);
+  border-radius: var(--radius-control);
+  background: transparent;
+  color: var(--ink-100);
+  font: 500 12px/1 var(--font-sans);
+  cursor: pointer;
+}
+.k-mheat-open:hover {
+  background: var(--alpha-white-4, rgba(255, 255, 255, 0.05));
+}

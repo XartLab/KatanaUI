@@ -376,3 +376,81 @@ a.k-news-title:hover {
 .k-news-reader-body p {
   margin: 0 0 var(--space-3);
 }
+
+/* 标题行：已保存视图下拉 + 折叠；并排阅读窗（左列表右阅读窗，件不到 900px 宽时盖在列表上）。 */
+.k-news {
+  container-type: inline-size;
+}
+.k-news-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.k-news-split {
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
+  gap: var(--space-3);
+}
+.k-news-main {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  min-height: 0;
+}
+.k-news-pane {
+  flex: 0 0 min(46%, 520px);
+  min-width: 0;
+  overflow: auto;
+  border-left: var(--hairline);
+}
+@container (max-width: 899px) {
+  .k-news-split {
+    position: relative;
+  }
+  .k-news-pane {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    border-left: 0;
+    background: var(--bg-300);
+  }
+}
+.k-news-read {
+  color: var(--ink-300);
+  white-space: nowrap;
+}
+.k-news-source {
+  white-space: nowrap;
+}
+.k-news[data-layout='list'] .k-news-meta {
+  flex-wrap: wrap;
+  gap: 0 8px;
+}
+.k-news-symbols[data-style='stack'] {
+  flex-wrap: nowrap;
+  gap: 0;
+}
+.k-news-symbols[data-style='stack'] .k-news-symbol {
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  justify-content: center;
+  border: 2px solid var(--bg-300);
+  border-radius: 50%;
+  background: transparent;
+}
+.k-news-symbols[data-style='stack'] .k-news-symbol + .k-news-symbol {
+  margin-left: -6px;
+}
+
+.k-news-top[data-collapsed] {
+  display: none;
+}
+
+/* 悬停的快捷操作条浮在行右端：有操作的列表行，把品种徽标让到它左边，免得被盖住点不到。待定：64px 是两颗图标按钮加内距的估值，没实测。 */
+.k-news[data-layout='list'] .k-news-item[data-actions] .k-news-symbols {
+  margin-inline-end: 64px;
+}

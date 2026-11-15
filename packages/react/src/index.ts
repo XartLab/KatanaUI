@@ -132,6 +132,7 @@ export { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger, tooltipConten
 export { MultiSelect } from './patterns/multi-select.tsx'
 export { ChipGroup, type ChipGroupProps, type ChipItem } from './patterns/chip-group.tsx'
 export { FilterBar, type FilterBarLabels, type FilterBarProps } from './patterns/filter-bar.tsx'
+export { ViewSwitcher, type ViewOption, type ViewSwitcherProps } from './patterns/view-switcher.tsx'
 export {
   applyFilters,
   conditionText,

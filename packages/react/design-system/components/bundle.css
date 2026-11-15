@@ -405,6 +405,10 @@
   pointer-events: none;
 }
 
+.collapse {
+  visibility: collapse;
+}
+
 .visible {
   visibility: visible;
 }
@@ -4764,6 +4768,94 @@ button.k-news-title:hover, a.k-news-title:hover {
   margin: 0 0 var(--space-3);
 }
 
+.k-news {
+  container-type: inline-size;
+}
+
+.k-news-head {
+  justify-content: space-between;
+  align-items: center;
+  display: flex;
+}
+
+.k-news-split {
+  gap: var(--space-3);
+  flex: auto;
+  min-height: 0;
+  display: flex;
+}
+
+.k-news-main {
+  flex-direction: column;
+  flex: 1 1 0;
+  gap: 8px;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+}
+
+.k-news-pane {
+  border-left: var(--hairline);
+  flex: 0 0 min(46%, 520px);
+  min-width: 0;
+  overflow: auto;
+}
+
+@container (max-width: 899px) {
+  .k-news-split {
+    position: relative;
+  }
+
+  .k-news-pane {
+    z-index: 3;
+    background: var(--bg-300);
+    border-left: 0;
+    position: absolute;
+    inset: 0;
+  }
+}
+
+.k-news-read {
+  color: var(--ink-300);
+  white-space: nowrap;
+}
+
+.k-news-source {
+  white-space: nowrap;
+}
+
+.k-news[data-layout="list"] .k-news-meta {
+  flex-wrap: wrap;
+  gap: 0 8px;
+}
+
+.k-news-symbols[data-style="stack"] {
+  flex-wrap: nowrap;
+  gap: 0;
+}
+
+.k-news-symbols[data-style="stack"] .k-news-symbol {
+  border: 2px solid var(--bg-300);
+  background: none;
+  border-radius: 50%;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+}
+
+.k-news-symbols[data-style="stack"] .k-news-symbol + .k-news-symbol {
+  margin-left: -6px;
+}
+
+.k-news-top[data-collapsed] {
+  display: none;
+}
+
+.k-news[data-layout="list"] .k-news-item[data-actions] .k-news-symbols {
+  margin-inline-end: 64px;
+}
+
 .k-sr {
   min-width: 0;
   height: 100%;
@@ -6884,6 +6976,48 @@ button.k-sysmon-link-body:focus-visible {
 .k-colpick-item:hover {
   background: var(--alpha-white-6);
   color: var(--ink-100);
+}
+
+.k-grid-head-name {
+  min-width: 0;
+  text-align: inherit;
+  flex-direction: column;
+  line-height: 14px;
+  display: flex;
+}
+
+.k-grid-col.is-end .k-grid-head-name {
+  align-items: flex-end;
+}
+
+.k-grid-head-name > span {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.k-grid-head-sub {
+  color: var(--ink-300);
+  font: 400 10px/12px var(--font-sans);
+  opacity: .8;
+}
+
+.k-grid-head-end {
+  z-index: 3;
+  background: var(--bg-100);
+  align-items: center;
+  padding: 0 4px;
+  display: flex;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+}
+
+.k-grid-head-icon {
+  color: var(--ink-300);
+  margin-left: 4px;
+  display: inline-flex;
 }
 
 .k-empty {
@@ -11223,6 +11357,33 @@ button.k-sm-head:focus-visible {
   outline-offset: 1px;
 }
 
+.k-viewsw {
+  border-radius: var(--radius-control);
+  color: var(--ink-100);
+  font: 600 14px/20px var(--font-sans);
+  cursor: pointer;
+  background: none;
+  border: 0;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 6px;
+  display: inline-flex;
+}
+
+.k-viewsw:hover {
+  background: var(--alpha-white-4, var(--ds-c-192esqo));
+}
+
+.k-viewsw:focus-visible {
+  outline: 2px solid var(--ink-100);
+  outline-offset: 1px;
+}
+
+.k-fbar-history {
+  gap: 2px;
+  display: inline-flex;
+}
+
 .k-mheat {
   --mheat-gap: 2px;
   gap: var(--space-3);
@@ -11860,6 +12021,26 @@ button.k-sm-head:focus-visible {
 .k-mheat:fullscreen {
   padding: var(--space-4);
   background: var(--bg-100);
+}
+
+.k-mheat-select {
+  min-width: 96px;
+}
+
+.k-mheat-open {
+  height: 30px;
+  padding: 0 var(--space-3);
+  border: var(--hairline);
+  border-radius: var(--radius-control);
+  color: var(--ink-100);
+  font: 500 12px/1 var(--font-sans);
+  cursor: pointer;
+  background: none;
+  margin-left: auto;
+}
+
+.k-mheat-open:hover {
+  background: var(--alpha-white-4, var(--ds-c-192esqo));
 }
 
 .k-trating {
@@ -13560,6 +13741,7 @@ button.k-consensus-hash:focus-visible {
   --ds-c-fmo1lj: color-mix(in srgb, var(--pnl-up) 12%, transparent);
   --ds-c-qbul3h: color-mix(in srgb, var(--signal-amber) 12%, transparent);
   --ds-c-jwmebu: color-mix(in srgb, var(--pnl-down) 12%, transparent);
+  --ds-c-192esqo: #ffffff0d;
   --ds-c-1twsk1: color-mix(in srgb, color-mix(in srgb, var(--pnl-down) calc((1 - var(--t)) * 100%), var(--pnl-up) calc(var(--t) * 100%)) 70%, var(--ink-300));
   --ds-c-2xn4b5: #0009;
   --ds-c-yj1s8q: #fff;

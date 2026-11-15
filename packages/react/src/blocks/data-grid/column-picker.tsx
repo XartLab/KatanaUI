@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-import { Columns3 } from 'lucide-react'
+import { Columns3, PlusIcon } from 'lucide-react'
 import { ChipGroup } from '../../patterns/chip-group.tsx'
 import { Button } from '../../primitives/button.tsx'
 import { Checkbox } from '../../primitives/checkbox.tsx'
@@ -28,18 +28,26 @@ export type ColumnPickerProps = {
   /** 列集；省略或空就只有勾选。 */
   sets?: readonly ColumnSet[]
   labels: ColumnPickerLabels
+  /** 触发按钮只画图标（读屏名仍是 labels.trigger），用在表头最右的「+」位置。 */
+  iconOnly?: boolean
   className?: string
 }
 
-export function ColumnPicker({ layout, onLayoutChange, sets = [], labels, className }: ColumnPickerProps) {
+export function ColumnPicker({ layout, onLayoutChange, sets = [], labels, iconOnly, className }: ColumnPickerProps) {
   const active = activeColumnSet(layout, sets)
   const shown = layout.filter((column) => column.visible).length
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button size="sm" variant="ghost" className={className} aria-label={labels.trigger}>
-          <Columns3 aria-hidden="true" />
-          {labels.trigger}
+        <Button
+          size={iconOnly ? 'icon' : 'sm'}
+          variant="ghost"
+          className={className}
+          aria-label={labels.trigger}
+          title={iconOnly ? labels.trigger : undefined}
+        >
+          {iconOnly ? <PlusIcon aria-hidden="true" /> : <Columns3 aria-hidden="true" />}
+          {iconOnly ? null : labels.trigger}
         </Button>
       </PopoverTrigger>
       <PopoverContent align="end" className="k-colpick" aria-label={labels.trigger}>

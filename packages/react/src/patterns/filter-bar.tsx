@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-import { ChevronDownIcon, EllipsisIcon, PlusIcon, Trash2Icon } from 'lucide-react'
+import { ChevronDownIcon, EllipsisIcon, PlusIcon, Redo2Icon, Trash2Icon, Undo2Icon } from 'lucide-react'
 import { useId, useMemo, useState } from 'react'
 import { cn } from '../lib/cn.ts'
 import { Button } from '../primitives/button.tsx'
@@ -33,6 +33,9 @@ export type FilterBarLabels = {
   clear: string
   back: string
   otherGroup: string
+  /** 撤销 / 重做按钮的读屏名；两个都不传就没有这一对按钮（照 TradingView 选股器标题行的撤销重做，2026-11-15 实测）。 */
+  undo?: string
+  redo?: string
 }
 
 export type FilterBarProps = {
@@ -179,11 +182,56 @@ export function FilterBar({ fields, value, onChange, labels, defaultShown, class
   const groups = useMemo(() => groupFields(fields, query, labels.otherGroup), [fields, query, labels.otherGroup])
   const byKey = new Map(fields.map((f) => [f.key, f]))
   const showField = (key: string) => setShown((prev) => (prev.includes(key) ? prev : [...prev, key]))
+  // 撤销 / 重做：件自己记过滤条件的快照；只记这个件改的，调用方从外面换掉条件（切换保存的视图）不进栈。
+  const [history, setHistory] = useState<{ past: FilterCondition[][]; future: FilterCondition[][] }>({
+    past: [],
+    future: [],
+  })
+  const commit = (next: FilterCondition[]) => {
+    setHistory((h) => ({ past: [...h.past, [...value]].slice(-50), future: [] }))
+    onChange(next)
+  }
+  const undo = () => {
+    const prev = history.past.at(-1)
+    if (!prev) return
+    setHistory({ past: history.past.slice(0, -1), future: [[...value], ...history.future] })
+    onChange(prev)
+  }
+  const redo = () => {
+    const next = history.future[0]
+    if (!next) return
+    setHistory({ past: [...history.past, [...value]], future: history.future.slice(1) })
+    onChange(next)
+  }
   const set = (field: string, op: string, v: string, label?: string) =>
-    onChange([...value.filter((c) => c.field !== field), { id: nextId(), field, op, value: v, label }])
+    commit([...value.filter((c) => c.field !== field), { id: nextId(), field, op, value: v, label }])
 
   return (
     <div className={cn('k-fbar', className)} role="group" aria-label={labels.bar} data-slot="filter-bar">
+      {labels.undo && labels.redo ? (
+        <span className="k-fbar-history">
+          <Button
+            size="icon"
+            variant="ghost"
+            aria-label={labels.undo}
+            data-slot="filter-undo"
+            disabled={history.past.length === 0}
+            onClick={undo}
+          >
+            <Undo2Icon aria-hidden="true" />
+          </Button>
+          <Button
+            size="icon"
+            variant="ghost"
+            aria-label={labels.redo}
+            data-slot="filter-redo"
+            disabled={history.future.length === 0}
+            onClick={redo}
+          >
+            <Redo2Icon aria-hidden="true" />
+          </Button>
+        </span>
+      ) : null}
       {shown.flatMap((key) => {
         const field = byKey.get(key)
         return field
@@ -194,10 +242,10 @@ export function FilterBar({ fields, value, onChange, labels, defaultShown, class
                 conditions={value.filter((c) => c.field === key)}
                 labels={labels}
                 onSet={(op, v, label) => set(key, op, v, label)}
-                onClear={() => onChange(value.filter((c) => c.field !== key))}
+                onClear={() => commit(value.filter((c) => c.field !== key))}
                 onRemove={() => {
                   setShown((prev) => prev.filter((k) => k !== key))
-                  onChange(value.filter((c) => c.field !== key))
+                  commit(value.filter((c) => c.field !== key))
                 }}
               />,
             ]
@@ -279,7 +327,7 @@ export function FilterBar({ fields, value, onChange, labels, defaultShown, class
           </Button>
         </PopoverTrigger>
         <PopoverContent align="start" className="k-fbar-pop k-fbar-menu">
-          <Button size="sm" variant="ghost" disabled={value.length === 0} onClick={() => onChange([])}>
+          <Button size="sm" variant="ghost" disabled={value.length === 0} onClick={() => commit([])}>
             {labels.reset}
           </Button>
         </PopoverContent>
