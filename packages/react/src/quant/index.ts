@@ -4,8 +4,23 @@
 export { ChangeText } from './change-text.tsx'
 export { DecimalField, type DecimalFieldProps } from './decimal-field.tsx'
 export { PnlText } from './pnl-text.tsx'
-export { EventCalendar, type EventCalendarLabels, type EventCalendarProps } from './event-calendar.tsx'
-export type { EconomicEvent, EconomicImportance, EconomicRangeKey, EconomicTone } from './event-calendar-model.ts'
+export {
+  EventCalendar,
+  type CalendarItem,
+  type EarningsLink,
+  type EventCalendarLabels,
+  type EventCalendarProps,
+} from './event-calendar.tsx'
+export type {
+  CalendarCategory,
+  DividendEvent,
+  EarningsEvent,
+  EarningsSession,
+  EconomicEvent,
+  EconomicImportance,
+  EconomicCategory,
+  IpoEvent,
+} from './event-calendar-model.ts'
 export {
   LimitLadder,
   type LadderItem,

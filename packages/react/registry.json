@@ -2285,17 +2285,22 @@
       "name": "event-calendar",
       "type": "registry:component",
       "title": "Event Calendar",
-      "description": "按日分组的事件表：时间、国家 / 地区（旗帜图或字母圆标）、事件名、重要程度（1–3 格亮度条）、实际 / 预期 / 前值。实际值好于预期用涨色、差于预期用跌色，好坏方向由调用方按事件给；未公布写「—」，还没到点的写倒计时。顶上：今天 / 本周 / 下周 / 自定义区间，重要程度芯片，国家多选，「只看高重要」开关。数据、现在、时区、文字都由调用方传。",
+      "description": "照 TradingView 日历的布局（主会话 2026-11-15 登录态实测）：导航行（今天、选日期、按周翻页、范围文字、时区读数），周条（周一到周日七张日卡，列出当天各类别条数，点卡选日），类别药丸（经济 / 财报 / 分红 / IPO，给了哪类数据才有哪个），重要性单开关（只看高重要）、经济类别下拉（12 类，单选）、国家选择框（模态：搜索、全球与前 20 预设、按地区分组两列复选、取消 / 应用）。经济表：日期分隔行粘顶、数字列名写在它右侧；同一时间同一国家的事件合并；实际值加粗不上涨跌色；点开一行看说明、来源、历史值小图、下次发布（比 TradingView 多的部分）。财报表：时段图标 + 时间、徽标、代码、公司名，预期 / 实际 EPS 与营收，EPS 意外与营收意外（只有这两列上涨跌色），市值，币种小字，行下可选「财报材料 / 电话会」。分红、IPO 各有自己的列。数据、现在、时区、文字都由调用方传。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
       "registryDependencies": [
-        "@katana/chip-group",
+        "@katana/button",
+        "@katana/checkbox",
         "@katana/cn",
-        "@katana/combobox",
-        "@katana/date-range-picker",
+        "@katana/dialog",
         "@katana/event-calendar-model",
+        "@katana/input",
+        "@katana/quant-format",
         "@katana/row-actions",
-        "@katana/switch",
-        "@katana/symbol-mark",
-        "@katana/toggle-group"
+        "@katana/select",
+        "@katana/sparkline",
+        "@katana/symbol-mark"
       ],
       "files": [
         {

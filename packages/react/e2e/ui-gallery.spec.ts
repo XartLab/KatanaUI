@@ -2022,58 +2022,125 @@ for (const theme of THEMES) {
       await expect(grid.getByRole('row').nth(1).locator('[data-col="symbol"]')).toContainText('600519')
     })
 
-    test('量化：经济日历——按日分组、实际对预期上色、未公布写倒计时、筛选能用', async ({ page }) => {
+    test('量化：日历——周条选日、合并同时同国、现在线、类别与国家筛选、行详情、财报意外与排序', async ({ page }) => {
       await open(page, theme, 'event-calendar')
       const cal = section(page, 'event-calendar').locator('[data-slot="event-calendar"]')
       await expect(cal).toBeVisible()
-      // 默认本周（11-16 至 11-22）：三天有事件，按日期升序分组。
-      await expect(cal.locator('[data-slot="ecal-day-head"]').first()).toContainText('16 日')
+      const rowIds = () =>
+        cal.locator('[data-slot="ecal-row"]').evaluateAll((els) => els.map((el) => el.getAttribute('data-id')))
+      const card = (day: string) => cal.locator(`.k-ecal-daycard[data-day="${day}"]`)
+      const css = (selector: string, prop: 'color' | 'fontWeight') =>
+        cal
+          .locator(selector)
+          .first()
+          .evaluate((el, p) => getComputedStyle(el)[p], prop)
+      const up = await token(page, '--pnl-up')
+      const down = await token(page, '--pnl-down')
+      // 周条：周一到周日七张日卡，选中的是今天（11-17），今天带下划线，卡上列出当天各类别的条数。
+      await expect(cal.locator('.k-ecal-daycard')).toHaveCount(7)
+      await expect(card('2026-11-17')).toHaveAttribute('aria-pressed', 'true')
+      await expect(card('2026-11-17')).toHaveAttribute('data-today', 'true')
+      await expect(card('2026-11-17')).toContainText('经济 5')
+      await expect(card('2026-11-17')).toContainText('财报 3')
+      await expect(card('2026-11-16')).not.toContainText('财报')
+      // 一天：日期分隔行粘顶，表头的数字列名在它右侧；现在线（09:30）在已发布的 09:00 与未发布的 17:00 之间。
+      await expect(cal.locator('[data-slot="ecal-day-head"]')).toHaveCSS('position', 'sticky')
+      await expect(cal.locator('[data-slot="ecal-day-head"]')).toContainText('实际')
       expect(
-        await cal.locator('.k-ecal-day').evaluateAll((els) => els.map((el) => el.getAttribute('data-day'))),
-      ).toEqual(['2026-11-16', '2026-11-17', '2026-11-18', '2026-11-20'])
-      await expect(cal.locator('[data-day="2026-11-17"] [data-slot="ecal-day-head"]')).toContainText('今天')
-      // 实际好于预期涨色、差于预期跌色；未公布写「—」并带倒计时。
-      const color = (code: string) =>
-        cal.locator(`[data-id="${code}"] .k-ecal-actual`).evaluate((el) => getComputedStyle(el).color)
-      const up = await page.evaluate(() => {
-        const probe = document.createElement('i')
-        probe.style.color = 'var(--pnl-up)'
-        document.body.append(probe)
-        const c = getComputedStyle(probe).color
-        probe.remove()
-        return c
-      })
-      expect(await color('b1')).toBe(up)
-      expect(await color('a1')).not.toBe(up)
+        await cal
+          .locator('[data-slot="ecal-row"], [data-slot="ecal-now"]')
+          .evaluateAll((els) => els.map((el) => el.getAttribute('data-id') ?? 'now')),
+      ).toEqual(['b2', 'b1', 'now', 'b3', 'b4', 'b5'])
+      await expect(cal.locator('[data-slot="ecal-now"]')).toContainText('09:30')
+      // 实际值只加粗、不上涨跌色；缺值「—」带倒计时；已发布与未发布区分。
+      expect(Number(await css('[data-id="b1"] .k-ecal-actual', 'fontWeight'))).toBeGreaterThanOrEqual(600)
+      expect(await css('[data-id="b1"] .k-ecal-actual', 'color')).not.toBe(up)
+      expect(await css('[data-id="b1"] .k-ecal-actual', 'color')).not.toBe(down)
       await expect(cal.locator('[data-id="b3"] .k-ecal-actual')).toContainText('—')
-      await expect(cal.locator('[data-id="b3"] .k-ecal-wait')).toHaveText('9 小时 0 分后')
-      // 重要程度条：3 格里亮几格。
+      await expect(cal.locator('[data-id="b3"] .k-ecal-wait')).toHaveText('7 小时 30 分后')
+      await expect(cal.locator('[data-id="b1"]')).toHaveAttribute('data-state', 'released')
+      await expect(cal.locator('[data-id="b3"]')).toHaveAttribute('data-state', 'upcoming')
+      // 同一时间同一国家合并：b4 写时间与国家，b5 左边留空。
+      await expect(cal.locator('[data-id="b4"] .k-ecal-time')).toHaveText('21:30')
+      await expect(cal.locator('[data-id="b5"] .k-ecal-time')).toHaveText('')
+      await expect(cal.locator('[data-id="b5"] .k-ecal-region')).toHaveText('')
+      await expect(cal.locator('[data-id="b5"]')).toHaveAttribute('data-repeat', 'true')
       await expect(cal.locator('[data-id="b2"] .k-ecal-level i.is-on')).toHaveCount(1)
-      await expect(cal.locator('[data-id="a1"] .k-ecal-level i.is-on')).toHaveCount(3)
-      // 今天：只剩 11-17 的 3 条以上。
-      await cal.getByRole('group', { name: '日期范围' }).getByRole('button', { name: '今天', exact: true }).click()
-      await expect(cal.locator('.k-ecal-day')).toHaveCount(1)
-      await cal.getByRole('group', { name: '日期范围' }).getByRole('button', { name: '本周', exact: true }).click()
-      // 只看高重要：每行都是 3 格。
-      await cal.getByRole('switch', { name: '只看高重要' }).click()
-      const levels = await cal
-        .locator('[data-slot="ecal-row"]')
-        .evaluateAll((els) => els.map((el) => el.getAttribute('data-importance')))
-      expect(levels.length).toBeGreaterThan(0)
-      expect(new Set(levels)).toEqual(new Set(['3']))
-      await cal.getByRole('switch', { name: '只看高重要' }).click()
-      // 国家列只有旗帜位（字母圆标），全名在悬停提示与读屏名里；右键出与悬停按钮同一份项。
-      await expect(cal.locator('[data-id="b2"] .k-ecal-region')).toHaveAttribute('title', '丙国')
-      await expect(cal.locator('[data-id="b2"] .k-ecal-region > *')).toHaveCount(1)
-      await cal.locator('[data-id="b2"]').click({ button: 'right' })
-      await expect(page.getByRole('menuitem')).toHaveCount(2)
-      await page.keyboard.press('Escape')
-      // 国家多选：只选 JP，只剩一行。
-      await cal.getByRole('combobox', { name: '全部国家' }).click()
-      await page.getByRole('option', { name: /丙国/ }).click()
-      await page.keyboard.press('Escape')
-      await expect(cal.locator('[data-slot="ecal-row"]')).toHaveCount(1)
-      await expect(cal.locator('[data-slot="ecal-row"]')).toContainText('示例贸易帐')
+      // 点日卡换天；上一周翻到 11-09 起，今天按钮回来。
+      await card('2026-11-18').click()
+      expect(await rowIds()).toEqual(['c1', 'c2', 'c3'])
+      await cal.getByRole('button', { name: '上一周' }).click()
+      await expect(card('2026-11-10')).toBeVisible()
+      await cal.getByRole('button', { name: '今天', exact: true }).click()
+      expect(await rowIds()).toEqual(['b2', 'b1', 'b3', 'b4', 'b5'])
+      // 重要性是单开关：按下只剩 3 档；再按恢复。
+      await cal.getByRole('button', { name: '只看高重要' }).click()
+      await card('2026-11-18').click()
+      expect(await rowIds()).toEqual(['c2', 'c3'])
+      await cal.getByRole('button', { name: '只看高重要' }).click()
+      // 经济类别下拉：只留「就业」。
+      await cal.getByRole('combobox', { name: '经济类别' }).click()
+      await page.getByRole('option', { name: '就业' }).click()
+      expect(await rowIds()).toEqual(['c1', 'c2'])
+      await cal.getByRole('combobox', { name: '经济类别' }).click()
+      await page.getByRole('option', { name: '全部类别' }).click()
+      // 行详情：点开 a1（11-16）出说明、来源、下次发布与历史值小图；再点收起；没详情的行点了没反应。
+      await card('2026-11-16').click()
+      await cal.locator('[data-id="a1"]').click()
+      const detail = cal.locator('[data-slot="ecal-detail"][data-for="a1"]')
+      await expect(detail).toContainText('示例统计局')
+      await expect(detail).toContainText('11/30')
+      await expect(detail.locator('svg.k-spark')).toBeVisible()
+      await expect(cal.locator('[data-id="a1"] .k-ecal-name-btn')).toHaveAttribute('aria-expanded', 'true')
+      await cal.locator('[data-id="a1"]').click()
+      await expect(detail).toHaveCount(0)
+      await cal.locator('[data-id="a2"]').click()
+      await expect(cal.locator('[data-slot="ecal-detail"]')).toHaveCount(0)
+      // 国家选择框：模态，按地区分组，预设与取消 / 应用；只选 JP 应用后，11-17 只剩 b2。
+      await card('2026-11-17').click()
+      await cal.getByRole('button', { name: '全部国家' }).click()
+      const dialog = page.getByRole('dialog', { name: '选择国家' })
+      await expect(dialog.getByText('ASIA')).toBeVisible()
+      await dialog.getByRole('checkbox', { name: /丙国/ }).click()
+      await dialog.getByRole('button', { name: '取消' }).first().click()
+      expect(await rowIds()).toHaveLength(5)
+      await cal.getByRole('button', { name: '全部国家' }).click()
+      await dialog.getByRole('checkbox', { name: /丙国/ }).click()
+      await dialog.getByRole('button', { name: '应用' }).click()
+      expect(await rowIds()).toEqual(['b2'])
+      await cal.getByRole('button', { name: '1 个国家' }).click()
+      await dialog.getByRole('button', { name: '全球' }).click()
+      await dialog.getByRole('button', { name: '应用' }).click()
+      expect(await rowIds()).toHaveLength(5)
+      // 财报页：EPS 意外 +% 涨色、−% 跌色，实际值不上色；时段图标；营收后带币种小字；列头按市值排序。
+      const tabs = cal.getByRole('tablist', { name: '日历类别' })
+      await tabs.getByRole('tab', { name: '财报' }).click()
+      expect(await rowIds()).toEqual(['e1', 'e2', 'e3'])
+      expect(await css('[data-id="e1"] .k-ecal-surprise', 'color')).toBe(up)
+      await expect(cal.locator('[data-id="e1"] .k-ecal-surprise').first()).toHaveText('+8.40%')
+      expect(await css('[data-id="e2"] .k-ecal-surprise', 'color')).toBe(down)
+      expect(await css('[data-id="e1"] .k-ecal-actual', 'color')).not.toBe(up)
+      await expect(cal.locator('[data-id="e1"] [aria-label="盘前"]')).toBeVisible()
+      await expect(cal.locator('[data-id="e3"] [aria-label="盘后"]')).toBeVisible()
+      await expect(cal.locator('[data-id="e1"]')).toContainText('18.40 B USD')
+      await expect(cal.locator('[data-id="e3"] .k-ecal-actual').first()).toHaveText('—')
+      await expect(cal.locator('[data-slot="ecal-links"][data-for="e1"]')).toContainText('电话会')
+      await expect(cal.locator('[data-slot="ecal-links"][data-for="e3"]')).toHaveCount(0)
+      const cap = cal.getByRole('columnheader', { name: /市值/ })
+      await cap.click()
+      expect(await rowIds()).toEqual(['e3', 'e1', 'e2'])
+      await expect(cap).toHaveAttribute('aria-sort', 'descending')
+      await cap.click()
+      expect(await rowIds()).toEqual(['e2', 'e1', 'e3'])
+      await cap.click()
+      expect(await rowIds()).toEqual(['e1', 'e2', 'e3'])
+      await tabs.getByRole('tab', { name: '分红' }).click()
+      await expect(cal.locator('[data-id="d-1"]')).toContainText('$0.25')
+      await card('2026-11-18').click()
+      await expect(cal.locator('[data-id="d-2"]')).toContainText('3.41%')
+      await tabs.getByRole('tab', { name: 'IPO' }).click()
+      await expect(cal.locator('[data-id="i-1"]')).toContainText('14.00 – 16.00')
+      await expect(cal.locator('[data-id="i-1"]')).toContainText('已定价')
     })
 
     test('行快捷操作（#23）：DataGrid 悬停出按钮且列宽不变，右键出同一份菜单，点「Copy code」回调收到这一行，键盘落到行上按钮可见、菜单键与 Shift+F10 开菜单', async ({
