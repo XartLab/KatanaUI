@@ -31,24 +31,48 @@ export type StepPlayerLabels = {
 }
 
 export type StepPlayerProps = {
-  /** 步数，或每一步的描述；默认 4 步。 */
+  /**
+   * Number of steps, or a description of each step (which may carry its own duration).
+   * 步数，或每一步的描述；默认 4 步。
+   */
   steps?: number | readonly StepPlayerStep[]
+  /** Current step (0-based). */
   value?: number
+  /** Initial step when uncontrolled. */
   defaultValue?: number
+  /** Called with the new step index. */
   onValueChange?: (index: number) => void
+  /** Whether it is playing. */
   playing?: boolean
+  /** Initial playing state when uncontrolled. */
   defaultPlaying?: boolean
+  /** Called when the playing state changes. */
   onPlayingChange?: (playing: boolean) => void
-  /** 每步默认放多久（毫秒）。 */
+  /**
+   * Default duration of each step in milliseconds.
+   * 每步默认放多久（毫秒）。
+   */
   duration?: number
+  /** Go back to the first step after the last one finishes and keep playing. */
   loop?: boolean
-  /** 最后一步放完时触发一次（循环时也触发）。 */
+  /**
+   * Called once when the last step finishes (also when looping).
+   * 最后一步放完时触发一次（循环时也触发）。
+   */
   onComplete?: () => void
-  /** 钮与条的高（px）。 */
+  /**
+   * Height of the button and the bar in px.
+   * 钮与条的高（px）。
+   */
   size?: number
-  /** 点圆点直接去那一步。 */
+  /**
+   * Click a dot to jump to that step; the hit area is at least 44px high.
+   * 点圆点直接去那一步。
+   */
   seekable?: boolean
+  /** Texts for the buttons and announcements: play, pause, replay, group and step (required). */
   labels: StepPlayerLabels
+  /** Extra class name on the root. */
   className?: string
 }
 

@@ -4,15 +4,27 @@
 
 ## Provide
 
+`*` marks a required prop.
+
 ### Progress
 
 其余属性透传给 Radix Progress.Root。读屏要一个名字：传 aria-label。
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `value` | `number \| null` | — | 0 到 max；不给或 null 是不确定态（没有 aria-valuenow）。 |
-| `max` | `number` | `100` | 满格的值。 |
-| `tone` | `'default' \| 'ok' \| 'warn' \| 'danger'` | `'default'` | 只改填充的颜色；状态别只靠颜色，旁边写字。 |
+| `value` | `number \| null` | — | From 0 to max; omitted or null is the indeterminate state. |
+| `tone` | `"default" \| "ok" \| "warn" \| "danger"` | — | Only changes the fill color; do not rely on color alone for status, write text beside it. |
+
+## Usage
+
+```tsx
+// SPDX-License-Identifier: MIT
+import { Progress } from '@katana-ui/react'
+
+export function ProgressUsage() {
+  return <Progress aria-label="Import progress" value={60} />
+}
+```
 
 ## States
 

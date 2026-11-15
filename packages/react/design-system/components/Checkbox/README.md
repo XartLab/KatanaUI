@@ -4,17 +4,22 @@
 
 ## Provide
 
+`*` marks a required prop.
+
 ### Checkbox
 
 其余属性透传给 Radix Checkbox.Root。
 
-| 属性 | 类型 | 默认 | 说明 |
-| --- | --- | --- | --- |
-| `checked` | `boolean \| 'indeterminate'` | — | 受控的选中状态。 |
-| `defaultChecked` | `boolean` | — | 不受控的初值。 |
-| `onCheckedChange` | `(checked: boolean \| 'indeterminate') => void` | — | 点了。 |
-| `disabled` | `boolean` | — | 灰掉，不响应。 |
-| `aria-invalid` | `boolean` | — | 为真时框边变红。 |
+## Usage
+
+```tsx
+// SPDX-License-Identifier: MIT
+import { Checkbox } from '@katana-ui/react'
+
+export function CheckboxUsage() {
+  return <Checkbox aria-label="Confirm before ordering" defaultChecked />
+}
+```
 
 ## States
 

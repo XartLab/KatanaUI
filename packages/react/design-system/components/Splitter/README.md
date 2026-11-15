@@ -4,6 +4,8 @@
 
 ## Provide
 
+`*` marks a required prop.
+
 ### Splitter
 
 线放在它分开的两块之间，量父元素的宽高换算比例（父元素是 grid，线占中间一条轨道）。
@@ -20,6 +22,51 @@
 | `onChange` | `(ratio) => void` | — | 提交：松手、方向键、双击、Enter。 |
 | `onDraggingChange` | `(dragging: boolean) => void` | — | 开始 / 结束拖动。 |
 | `label / valueText` | `string / (ratio) => string` | — | 线的名字与读屏念的值（说明第一块占几成）。 |
+
+## Usage
+
+```tsx
+// SPDX-License-Identifier: MIT
+import { useState } from 'react'
+import { Splitter } from '@katana-ui/react'
+
+export function SplitterUsage() {
+  const [ratio, setRatio] = useState(0.4)
+  return (
+    <div className="gal-stack" style={{ width: '100%', maxWidth: 560 }}>
+      <div
+        data-testid="splitter-demo"
+        style={{
+          display: 'grid',
+          gridTemplateColumns: `minmax(0, ${ratio}fr) 8px minmax(0, ${1 - ratio}fr)`,
+          height: 120,
+        }}
+      >
+        <div style={{ background: 'var(--bg-200)', minWidth: 0 }}>
+          <p className="gal-note" style={{ padding: 8 }}>
+            {Math.round(ratio * 100)}%
+          </p>
+        </div>
+        <Splitter
+          axis="row"
+          ratio={ratio}
+          minFirst={80}
+          minSecond={80}
+          onPreview={() => {}}
+          onChange={setRatio}
+          label="Resize panes"
+          valueText={(value) => `First pane ${Math.round(value * 100)}%`}
+        />
+        <div style={{ background: 'var(--bg-200)', minWidth: 0 }}>
+          <p className="gal-note" style={{ padding: 8 }}>
+            {100 - Math.round(ratio * 100)}%
+          </p>
+        </div>
+      </div>
+    </div>
+  )
+}
+```
 
 ## States
 

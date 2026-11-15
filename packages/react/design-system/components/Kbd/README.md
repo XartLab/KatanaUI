@@ -4,14 +4,27 @@
 
 ## Provide
 
+`*` marks a required prop.
+
 ### Kbd
 
 怎么把「Mod+Shift+H」拆成块、Mod 在这个平台叫什么，是调用方的事。
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `parts` | `readonly string[]` | — | 每一块上的字。 |
-| `label` | `string` | — | 读屏读的整串（必填）。 |
+| `parts` * | `readonly string[]` | — | The text on each key cap. |
+| `label` * | `string` | — | The whole shortcut as read by screen readers (required). |
+
+## Usage
+
+```tsx
+// SPDX-License-Identifier: MIT
+import { Kbd } from '@katana-ui/react'
+
+export function KbdUsage() {
+  return <Kbd parts={['Ctrl', 'Shift', 'H']} label="Ctrl+Shift+H" />
+}
+```
 
 ## States
 

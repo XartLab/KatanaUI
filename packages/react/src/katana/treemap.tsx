@@ -16,18 +16,35 @@ export type TreemapClasses = Partial<
 >
 
 export type TreemapProps<T> = {
+  /** The result of layoutTreemap. */
   blocks: readonly TreemapBlock<T>[]
-  /** 画组头（可点下钻）；下钻之后不画。 */
+  /**
+   * Draw group headers (clickable to drill down); pass false after drilling down.
+   * 画组头（可点下钻）；下钻之后不画。
+   */
   heads?: boolean
-  /** 一格上写什么：名字、数的文字、颜色用的涨跌数（null 是没有数）。 */
+  /**
+   * What to write on a cell: the name, the text of the number, and the change used for color (null means none).
+   * 一格上写什么：名字、数的文字、颜色用的涨跌数（null 是没有数）。
+   */
   describe: (data: T) => { name: string; text: string; change: number | null }
-  /** 色例两端是多少（小数）。 */
+  /**
+   * Where the color scale ends (as a decimal); changes are cut at plus or minus limit into seven steps from -3 to +3.
+   * 色例两端是多少（小数）。
+   */
   limit?: number
-  /** 色例上每一档写的字（−3 到 +3）。 */
+  /**
+   * Text for each step of the color scale (-3 to +3).
+   * 色例上每一档写的字（−3 到 +3）。
+   */
   legendText: (step: number) => string
+  /** A row above the cells. */
   toolbar?: ReactNode
+  /** Called when a group header is clicked. */
   onGroup?: (name: string) => void
+  /** Called when a cell is clicked; when given, cells are focusable buttons that trigger on Enter. */
   onItem?: (data: T) => void
+  /** Extra class names per part. */
   classes?: TreemapClasses
 }
 

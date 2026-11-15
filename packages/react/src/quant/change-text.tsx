@@ -9,7 +9,14 @@ export function ChangeText({
   digits = 2,
   arrow,
   ...rest
-}: { value: number; digits?: number; arrow?: boolean } & Omit<ComponentProps<'span'>, 'children'>) {
+}: {
+  /** A percentage already (1.5 means 1.5%). */
+  value: number
+  /** Number of decimal places. */
+  digits?: number
+  /** Put an up or down triangle before the text (none for flat) so direction does not rely on color alone. */
+  arrow?: boolean
+} & Omit<ComponentProps<'span'>, 'children'>) {
   return (
     <ToneText tone={toneOf(value, digits)} arrow={arrow} data-slot="change-text" {...rest}>
       {formatPercentChange(value, digits)}

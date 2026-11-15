@@ -4,16 +4,30 @@
 
 ## Provide
 
+`*` marks a required prop.
+
 ### AiStatus
 
 整行是 role=status，状态变了读屏播报。
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `state` | `'thinking' \| 'searching' \| 'writing' \| 'done' \| 'error'` | — | 状态；前三个是进行中。 |
-| `label` | `string` | — | 状态文字（必填），状态变了就换这个字符串。 |
-| `detail` | `string` | — | 文字后的灰色细节，如正在读哪个来源。 |
-| `elapsed` | `number` | — | 已进行的秒数；只在进行中显示，写成「12s」「1m 05s」。 |
+| `state` * | `AiStatusState` | — | The state; the first three are in progress. |
+| `label` * | `string` | — | Status text (required, in the UI language); change the string when the state changes. |
+| `detail` | `string` | — | Gray detail after the text, such as which source is being read. |
+| `elapsed` | `number` | — | Elapsed seconds; shown only for in-progress states, written like "12s" or "1m 05s". |
+| `className` | `string` | — | Extra class name on the root. |
+
+## Usage
+
+```tsx
+// SPDX-License-Identifier: MIT
+import { AiStatus } from '@katana-ui/react'
+
+export function AiStatusUsage() {
+  return <AiStatus state="thinking" label="Thinking" elapsed={12} />
+}
+```
 
 ## States
 

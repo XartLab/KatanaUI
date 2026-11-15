@@ -22,16 +22,29 @@ export type QuoteRow = {
 export type QuoteGroup = { id: string; label: string; rows: readonly QuoteRow[] }
 
 export type QuoteTableProps = {
+  /** The groups, one tab each; a QuoteRow is { id, name, symbol?, price, percent?, tone?, spark?, sparkLabel? }. */
   groups: readonly QuoteGroup[]
-  /** 表头四列的字（名称、走势、最新价、涨跌幅）与没有行时的字。 */
+  /**
+   * Text of the four header columns (name, trend, price, change).
+   * 表头四列的字（名称、走势、最新价、涨跌幅）与没有行时的字。
+   */
   columns: { name: string; trend: string; price: string; change: string }
+  /** Text written when a group has no rows. */
   empty: string
-  /** 读屏名。 */
+  /**
+   * Accessible name of the tab strip.
+   * 读屏名。
+   */
   label: string
+  /** The selected group id when controlled. */
   value?: string
+  /** The initially selected group id when uncontrolled. */
   defaultValue?: string
+  /** Called with the group id when the tab changes. */
   onValueChange?: (id: string) => void
+  /** When given, rows are clickable and focusable and trigger on Enter. */
   onRow?: (row: QuoteRow) => void
+  /** Extra class name on the root. */
   className?: string
 }
 

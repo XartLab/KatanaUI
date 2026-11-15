@@ -4,16 +4,46 @@
 
 ## Provide
 
+`*` marks a required prop.
+
 ### DurationPicker
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `value / defaultValue / onChange` | `{ hours, minutes }` | — | 当前时长；打字时即时回调（已夹进范围）。 |
-| `onConfirm` | `(value) => void` | — | 点对勾或 Enter 确认时触发。 |
-| `onEditingChange / defaultEditing` | `(editing) => void / boolean` | — | 编辑状态。 |
-| `maxHours / maxMinutes` | `number` | `24 / 59` | 上限；超过的输入夹到上限。 |
-| `labels` | `DurationPickerLabels` | — | { hours, minutes, edit, save, hoursInput, minutesInput }（必填）。 |
-| `disabled` | `boolean` | — | 禁用。 |
+| `value` | `DurationValue` | — | The current duration; typing calls back immediately, already clamped. |
+| `defaultValue` | `DurationValue` | — | Initial duration when uncontrolled. |
+| `onChange` | `(value: DurationValue) => void` | — | Called with the new duration. |
+| `onConfirm` | `(value: DurationValue) => void` | — | Called with the confirmed value when the check mark is clicked or Enter is pressed. |
+| `onEditingChange` | `(editing: boolean) => void` | — | Called when the editing state changes. |
+| `defaultEditing` | `boolean` | `false` | Start in the editing state. |
+| `maxHours` | `number` | `24` | Upper bound for hours; larger input is clamped. |
+| `maxMinutes` | `number` | `59` | Upper bound for minutes; larger input is clamped. |
+| `labels` * | `DurationPickerLabels` | — | Texts for the controls: hours, minutes, edit, save, hoursInput and minutesInput (required). |
+| `disabled` | `boolean` | — | Disable the picker. |
+| `className` | `string` | — | Extra class name on the root. |
+
+## Usage
+
+```tsx
+// SPDX-License-Identifier: MIT
+import { DurationPicker } from '@katana-ui/react'
+
+export function DurationPickerUsage() {
+  return (
+    <DurationPicker
+      defaultValue={{ hours: 2, minutes: 30 }}
+      labels={{
+        hours: 'h',
+        minutes: 'm',
+        edit: 'Edit duration',
+        save: 'Confirm duration',
+        hoursInput: 'Hours',
+        minutesInput: 'Minutes',
+      }}
+    />
+  )
+}
+```
 
 ## States
 

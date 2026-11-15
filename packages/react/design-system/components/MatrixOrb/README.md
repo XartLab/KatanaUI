@@ -4,17 +4,31 @@
 
 ## Provide
 
+`*` marks a required prop.
+
 ### MatrixOrb
 
 画在 canvas 上，role=img；状态用文字另外读出。颜色取元素的 color，跟主题走。
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `state` | `'idle' \| 'listening' \| 'thinking'` | `'idle'` | 状态；换状态时三种的权重插值过去，不跳。 |
-| `level` | `number` | — | 聆听态的音量 0 到 1；不给用模拟包络。 |
-| `cells` | `number` | `16` | 一边几个点；点距 6px，所以 16 是 96px 见方。 |
-| `color` | `string` | `'var(--signal-orange)'` | 点的颜色，CSS 颜色或 var(--token)。 |
-| `label` | `string` | — | 读屏名（必填）。 |
+| `state` | `OrbState` | `'idle'` | The state; when it changes the weights of the three patterns interpolate, with no jump. |
+| `level` | `number` | — | Volume of the listening state from 0 to 1; a simulated envelope is used when omitted. |
+| `cells` | `number` | `16` | Dots per side; the pitch is 6px, so 16 is 96px square. |
+| `label` * | `string` | — | Accessible name (required). |
+| `color` | `string` | `'var(--signal-orange)'` | Color of the dots, a CSS color or a CSS variable reference; defaults to the theme accent. |
+| `className` | `string` | — | Extra class name on the root. |
+
+## Usage
+
+```tsx
+// SPDX-License-Identifier: MIT
+import { MatrixOrb } from '@katana-ui/react'
+
+export function MatrixOrbUsage() {
+  return <MatrixOrb state="idle" label="Assistant" />
+}
+```
 
 ## States
 

@@ -5,10 +5,17 @@
 export type PriceFallback = { maxFraction: number } | { significant: number }
 
 export interface PriceFormat {
-  /** 小数位（品种的价格精度）。null 或不给：看 tick，tick 也没有就按 fallback。 */
+  /**
+   * Decimal places (the symbol's price precision); null or omitted falls back to tick, then to fallback.
+   * 小数位（品种的价格精度）。null 或不给：看 tick，tick 也没有就按 fallback。
+   */
   precision?: number | null
-  /** 最小变动价位（A 股 0.01、期货自定、加密 1e-8）：没给 precision 时由它定小数位。 */
+  /**
+   * Minimum price increment (0.01 for A-shares, 1e-8 for crypto); sets the decimals when precision is missing.
+   * 最小变动价位（A 股 0.01、期货自定、加密 1e-8）：没给 precision 时由它定小数位。
+   */
   tick?: number
+  /** What to write when neither precision nor tick is given. */
   fallback?: PriceFallback
 }
 

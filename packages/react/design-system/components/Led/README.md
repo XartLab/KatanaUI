@@ -4,22 +4,40 @@
 
 ## Provide
 
+`*` marks a required prop.
+
 ### Led
 
 一个 role=img 的 span，名字是 label。
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `state` | `'off' \| 'on' \| 'ok' \| 'warn' \| 'danger'` | `'off'` | on 是橙色发光，ok / warn / danger 是绿、琥珀、红。 |
-| `group` | `'A' \| 'B' \| 'C' \| 'D' \| null` | — | 联动组：同组的面板跟着同一个品种走；给了就用组的颜色，盖过 state。 |
-| `hollow` | `boolean` | — | 空心：透明底加 1px 边，不发光。 |
-| `bare` | `boolean` | — | 旁边没有写出状态的文字时给：熄灭态画一圈 3:1 的环，不靠几乎看不见的暗点（WCAG 1.4.11）。 |
-| `small` | `boolean` | — | 6px 的小灯，药丸这样的行内小件里用。 |
-| `label` | `string` | — | 读屏名（必填）。 |
+| `state` | `LedState` | `'off'` | on glows orange; ok, warn and danger are green, amber and red. |
+| `group` | `LinkGroup \| null` | — | Link group: panels in the same group follow the same symbol; the group color overrides state. |
+| `hollow` | `boolean` | — | Hollow: transparent fill with a 1px border, no glow. |
+| `bare` | `boolean` | — | Set when no text next to the light names the state: the off state draws a 3:1 ring instead of a barely visible dark dot. |
+| `small` | `boolean` | — | A 6px light for inline pieces such as pills. |
+| `label` * | `string` | — | Accessible name (required). |
 
 ### LINK_GROUPS
 
 联动组名的列表 A、B、C、D；组的颜色是 token link-a 到 link-d。
+
+## Usage
+
+```tsx
+// SPDX-License-Identifier: MIT
+import { Led } from '@katana-ui/react'
+
+export function LedUsage() {
+  return (
+    <>
+      <Led state="ok" label="Connected" />
+      <Led state="danger" label="Disconnected" />
+    </>
+  )
+}
+```
 
 ## States
 

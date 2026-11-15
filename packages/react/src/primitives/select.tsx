@@ -80,7 +80,10 @@ function SelectItem({
   children,
   ...props
 }: ComponentProps<typeof SelectPrimitive.Item> & {
-  /** 文字前面的东西（色带之类）；不进触发器上的值。 */
+  /**
+   * Content before the label (a color swatch, say); it is not shown in the trigger value.
+   * 文字前面的东西（色带之类）；不进触发器上的值。
+   */
   leading?: ReactNode
 }) {
   return (

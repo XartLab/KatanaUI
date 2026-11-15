@@ -4,16 +4,29 @@
 
 ## Provide
 
+`*` marks a required prop.
+
 ### PasswordInput
 
 其余属性透传给 Input（不含 type）；ref 指向里面的 input。自动填充、拼写检查、自动大写默认关。
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `toggleLabel` | `string` | — | 眼睛按钮的读屏名（必填）。名字不随状态变，当前是否显示由 aria-pressed 表达。 |
-| `defaultVisible` | `boolean` | `false` | 一开始就显示明文。 |
-| `onVisibleChange` | `(visible: boolean) => void` | — | 切换时回调。 |
-| `size` | `'default' \| 'sm'` | `'default'` | 同 Input：30 高与 26 高。 |
+| `toggleLabel` * | `string` | — | Accessible name of the show/hide button (required). |
+| `defaultVisible` | `boolean` | `false` | Show the plain text from the start. |
+| `onVisibleChange` | `(visible: boolean) => void` | — | Called when the visibility is toggled. |
+| `size` | `'default' \| 'sm'` | — | Same as Input: 30px and 26px. |
+
+## Usage
+
+```tsx
+// SPDX-License-Identifier: MIT
+import { PasswordInput } from '@katana-ui/react'
+
+export function PasswordInputUsage() {
+  return <PasswordInput toggleLabel="Show password" aria-label="Proxy password" />
+}
+```
 
 ## States
 
