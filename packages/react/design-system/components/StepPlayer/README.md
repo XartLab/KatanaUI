@@ -4,21 +4,51 @@
 
 ## Provide
 
+`*` marks a required prop.
+
 ### StepPlayer
 
 值与播放状态都可受控，也可不受控。文字全由 labels 给，包里没有文案。
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `steps` | `number \| { duration?, label? }[]` | `4` | 步数，或每一步的描述（可自带时长）。 |
-| `value / defaultValue / onValueChange` | `number` | — | 当前第几步（0 起）。 |
-| `playing / defaultPlaying / onPlayingChange` | `boolean` | — | 是否在放。 |
-| `duration` | `number` | `4000` | 每步默认放多久（毫秒）。 |
-| `loop` | `boolean` | `false` | 最后一步放完回到第一步继续。 |
-| `onComplete` | `() => void` | — | 最后一步放完触发一次（循环时也触发）。 |
-| `seekable` | `boolean` | `false` | 点圆点直接去那一步；点击区至少 44px 高。 |
-| `size` | `number` | `32` | 钮与条的高（px）。 |
-| `labels` | `StepPlayerLabels` | — | { play, pause, replay, group(index, count), step(index, count) }（必填）。 |
+| `steps` | `number \| readonly StepPlayerStep[]` | `4` | Number of steps, or a description of each step (which may carry its own duration). |
+| `value` | `number` | — | Current step (0-based). |
+| `defaultValue` | `number` | `0` | Initial step when uncontrolled. |
+| `onValueChange` | `(index: number) => void` | — | Called with the new step index. |
+| `playing` | `boolean` | — | Whether it is playing. |
+| `defaultPlaying` | `boolean` | `false` | Initial playing state when uncontrolled. |
+| `onPlayingChange` | `(playing: boolean) => void` | — | Called when the playing state changes. |
+| `duration` | `number` | `4000` | Default duration of each step in milliseconds. |
+| `loop` | `boolean` | `false` | Go back to the first step after the last one finishes and keep playing. |
+| `onComplete` | `() => void` | — | Called once when the last step finishes (also when looping). |
+| `size` | `number` | `32` | Height of the button and the bar in px. |
+| `seekable` | `boolean` | `false` | Click a dot to jump to that step; the hit area is at least 44px high. |
+| `labels` * | `StepPlayerLabels` | — | Texts for the buttons and announcements: play, pause, replay, group and step (required). |
+| `className` | `string` | — | Extra class name on the root. |
+
+## Usage
+
+```tsx
+// SPDX-License-Identifier: MIT
+import { StepPlayer } from '@katana-ui/react'
+
+export function StepPlayerUsage() {
+  return (
+    <StepPlayer
+      steps={3}
+      duration={700}
+      labels={{
+        play: 'Play',
+        pause: 'Pause',
+        replay: 'Replay',
+        group: (at, count) => `Step ${at + 1} of ${count}`,
+        step: (at) => `Go to step ${at + 1}`,
+      }}
+    />
+  )
+}
+```
 
 ## States
 

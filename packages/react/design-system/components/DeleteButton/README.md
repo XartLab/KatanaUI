@@ -4,16 +4,34 @@
 
 ## Provide
 
+`*` marks a required prop.
+
 ### DeleteButton
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `label` | `string` | — | 原按钮的读屏名，如「删除工作区」（必填）。 |
-| `confirmLabel / cancelLabel` | `string` | — | 展开后两个小钮的读屏名（必填）。 |
-| `doneLabel / keptLabel` | `string` | — | 确认、取消之后读屏播报的话；不给就不播。 |
-| `onConfirm` | `() => void` | — | 点了确认。第一次点原按钮不会触发它。 |
-| `onCancel` | `() => void` | — | 取消（含 Esc、点外面、Tab 走开）。 |
-| `disabled` | `boolean` | — | 禁用原按钮。 |
+| `label` * | `string` | — | Accessible name of the original button, for example "Delete workspace" (required). |
+| `confirmLabel` * | `string` | — | Accessible name of the confirm button after it expands (required). |
+| `cancelLabel` * | `string` | — | Accessible name of the cancel button after it expands (required). |
+| `doneLabel` | `string` | — | Announced to screen readers after confirming or cancelling; nothing is announced when omitted. |
+| `keptLabel` | `string` | — | Announced to screen readers after cancelling. |
+| `onConfirm` | `() => void` | — | Called when the confirm button is clicked; the first click on the original button does not call it. |
+| `onCancel` | `() => void` | — | Called on cancel (including Esc, a click outside, and tabbing away). |
+| `disabled` | `boolean` | — | Disable the original button. |
+| `className` | `string` | — | Extra class name on the root. |
+
+## Usage
+
+```tsx
+// SPDX-License-Identifier: MIT
+import { DeleteButton } from '@katana-ui/react'
+
+export function DeleteButtonUsage() {
+  return (
+    <DeleteButton label="Delete workspace" confirmLabel="Confirm delete" cancelLabel="Cancel" onConfirm={() => {}} />
+  )
+}
+```
 
 ## States
 

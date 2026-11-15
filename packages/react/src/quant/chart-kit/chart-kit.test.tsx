@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vite-plus/test'
-import { SparkTile } from '../spark-tile.tsx'
 import { DotFill } from './dot-fill.tsx'
 import { ChartActions } from './chart-actions.tsx'
 import { ChartValue } from './chart-value.tsx'
@@ -82,29 +81,6 @@ describe('图表底座的结构', () => {
     expect(full).toContain('data-action="export"')
     expect(full).toContain('data-action="fullscreen"')
     expect(full).toContain('aria-pressed="true"')
-  })
-
-  it('SparkTile：标签、数值、迷你线与变化行；有阈值画虚线，near 标在根上；没有数据写破折号且不画线', () => {
-    const html = renderToStaticMarkup(
-      <SparkTile
-        label="EXPOSURE"
-        text="131"
-        value={131}
-        series={[110, 120, 131]}
-        threshold={150}
-        near
-        delta="接近上限"
-        seriesLabel="敞口走势"
-      />,
-    )
-    expect(html).toContain('EXPOSURE')
-    expect(html).toContain('k-spark-tile-threshold')
-    expect(html).toContain('data-near="true"')
-    expect(html).toContain('data-tone="warn"')
-    expect(html).toContain('data-slot="end-marker"')
-    const empty = renderToStaticMarkup(<SparkTile label="X" text={null} value={null} seriesLabel="无" />)
-    expect(empty).toContain('—')
-    expect(empty).not.toContain('k-spark-tile-line')
   })
 })
 

@@ -1,0 +1,221 @@
+/* SPDX-License-Identifier: MIT */
+/* 技术评级仪表（TechnicalRating，#20）。仪表是半圆五档弧加指针（几何与 RatingGauge 同一把尺子），总评居中放大；
+   指针转动用包里的 gentle 弹簧。明细表照 TradingView 的手感（无衬线 tabular-nums、右对齐、极淡分隔线、悬停整行提亮、结论是低饱和胶囊）。
+   颜色走涨跌语义色与中性灰，不用橙色。窄于 440px 时总评独占一行、两个小仪表并排在下。 */
+.k-trating {
+  container-type: inline-size;
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: var(--space-4);
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+  padding: var(--space-3) var(--inset-x);
+  font: var(--text-data) var(--font-sans);
+  color: var(--ink-100);
+}
+.k-trating-bar {
+  display: flex;
+}
+.k-trating-dials {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: center;
+  gap: var(--space-4) var(--space-6);
+}
+.k-trating-dial {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  max-width: 210px;
+  margin: 0;
+}
+.k-trating-dial.is-primary {
+  flex-grow: 1.5;
+  max-width: 300px;
+}
+.k-trating-name {
+  color: var(--ink-300);
+  font: 500 12px/16px var(--font-sans);
+}
+.k-trating-dial.is-primary .k-trating-name {
+  color: var(--ink-200);
+}
+.k-trating-gauge {
+  position: relative;
+  width: 100%;
+}
+.k-trating-gauge svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.k-trating-zone {
+  fill: none;
+  stroke-width: 10;
+  stroke-linecap: butt;
+  opacity: 0.3;
+  transition: opacity var(--dur-gentle) var(--ease-gentle);
+}
+.k-trating-zone.is-active {
+  opacity: 1;
+}
+.k-trating-zone.is-z0 {
+  stroke: var(--pnl-down);
+}
+.k-trating-zone.is-z1 {
+  stroke: color-mix(in srgb, var(--pnl-down) 55%, var(--ink-300));
+}
+.k-trating-zone.is-z2 {
+  stroke: var(--ink-300);
+}
+.k-trating-zone.is-z3 {
+  stroke: color-mix(in srgb, var(--pnl-up) 55%, var(--ink-300));
+}
+.k-trating-zone.is-z4 {
+  stroke: var(--pnl-up);
+}
+/* 指针在原点画、朝上；转轴取它自己外框的底边中点（就是圆心），不受 viewBox 起点影响。 */
+.k-trating-needle {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  transition: transform var(--dur-gentle) var(--ease-gentle);
+  fill: var(--ink-100);
+}
+.k-trating-hub {
+  fill: var(--ink-100);
+}
+.k-trating-tick {
+  position: absolute;
+  color: var(--ink-300);
+  font: 500 11px/14px var(--font-sans);
+  white-space: nowrap;
+  transform: translate(-50%, -50%);
+  transition: color var(--dur-gentle) var(--ease-gentle);
+}
+.k-trating-tick.is-active {
+  color: var(--ink-100);
+}
+/* 小仪表窄，只留两端的刻度字，中间三档靠弧的颜色与下面的大字。 */
+.k-trating-dial:not(.is-primary) .k-trating-tick:is([data-zone='1'], [data-zone='2'], [data-zone='3']) {
+  display: none;
+}
+.k-trating-word {
+  margin-top: 2px;
+  font: 600 16px/20px var(--font-sans);
+  letter-spacing: -0.01em;
+}
+.k-trating-dial.is-primary .k-trating-word {
+  font-size: 24px;
+  line-height: 28px;
+}
+.k-trating-dial[data-zone='0'] .k-trating-word,
+.k-trating-dial[data-zone='1'] .k-trating-word {
+  color: var(--pnl-down);
+}
+.k-trating-dial[data-zone='3'] .k-trating-word,
+.k-trating-dial[data-zone='4'] .k-trating-word {
+  color: var(--pnl-up);
+}
+.k-trating-counts {
+  color: var(--ink-200);
+  font: 400 12px/16px var(--font-sans);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.k-trating-total {
+  color: var(--ink-300);
+  font: 400 11px/14px var(--font-sans);
+}
+.k-trating-disclaimer {
+  margin: 0;
+  color: var(--ink-300);
+  font: 400 11px/16px var(--font-sans);
+  text-align: center;
+}
+.k-trating-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+.k-trating-table thead th {
+  height: 24px;
+  padding: 0;
+  color: var(--ink-300);
+  font: 500 11px/14px var(--font-sans);
+  text-align: left;
+}
+.k-trating-table .is-num {
+  text-align: right;
+}
+.k-trating-table .is-end {
+  width: 72px;
+  text-align: right;
+}
+.k-trating-section th {
+  height: 32px;
+  padding: var(--space-2) 0 var(--space-1);
+  font: 600 13px/18px var(--font-sans);
+  text-align: left;
+  vertical-align: bottom;
+}
+.k-trating-section-n {
+  margin-left: 8px;
+  color: var(--ink-300);
+  font: 500 12px/16px var(--font-sans);
+}
+.k-trating-row {
+  height: 30px;
+  border-top: 1px solid var(--alpha-white-2_5);
+}
+.k-trating-row:hover {
+  background: var(--alpha-white-2_5);
+}
+.k-trating-row th {
+  padding: 0;
+  font: 400 13px/18px var(--font-sans);
+  text-align: left;
+}
+.k-trating-row td {
+  padding: 0;
+}
+.k-trating-verdict {
+  display: inline-block;
+  padding: 1px 7px;
+  border-radius: 9999px;
+  font: 500 11px/16px var(--font-sans);
+  white-space: nowrap;
+  color: var(--ink-300);
+  background: var(--alpha-white-5);
+}
+.k-trating-verdict[data-verdict='buy'] {
+  color: var(--pnl-up);
+  background: color-mix(in srgb, var(--pnl-up) 12%, transparent);
+}
+.k-trating-verdict[data-verdict='sell'] {
+  color: var(--pnl-down);
+  background: color-mix(in srgb, var(--pnl-down) 12%, transparent);
+}
+.k-trating-empty {
+  margin: auto;
+  padding: var(--space-6);
+  color: var(--ink-300);
+}
+@container (max-width: 440px) {
+  .k-trating-dial.is-primary {
+    flex-basis: 100%;
+    order: -1;
+    max-width: 300px;
+  }
+}
+/* 第一节紧贴列头，不留空白；后面的节之间才留。 */
+.k-trating-table tbody:first-of-type .k-trating-section th {
+  height: 24px;
+  padding-top: 0;
+}

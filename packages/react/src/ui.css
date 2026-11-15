@@ -18,6 +18,12 @@
 @import './theme/tree-view.css';
 @import './theme/json-viewer.css';
 @import './theme/event-timeline.css';
+@import './theme/news-feed.css';
+@import './theme/strategy-report.css';
+@import './theme/param-scatter.css';
+@import './theme/system-monitor.css';
+@import './theme/decision-queue.css';
+@import './theme/hypothesis-ledger.css';
 @import './theme/symbol-mark.css';
 @import './theme/arcade-pixel.css';
 @import './theme/badge.css';
@@ -27,6 +33,10 @@
 @import './theme/loading.css';
 @import './theme/data-grid.css';
 @import './theme/empty-state.css';
+@import './theme/splitter.css';
+@import './theme/panel-frame.css';
+@import './theme/status-bar.css';
+@import './theme/workspace-tabs.css';
 @import './theme/ai-status.css';
 @import './theme/quote.css';
 @import './theme/fonts.css';
@@ -34,6 +44,10 @@
 @import './theme/series.css';
 @import './theme/equity-curve.css';
 @import './theme/distribution.css';
-@import './theme/panel-frame.css';
 @import './theme/limit-ladder.css';
+@import './theme/event-calendar.css';
 @import './theme/market-heatmap.css';
+@import './theme/technical-rating.css';
+@import './theme/metric-card.css';
+@import './theme/row-actions.css';
+@import './theme/quant.css';

@@ -46,3 +46,14 @@ This package is licensed under the MIT License (see LICENSE).
 
 4. Michroma（https://github.com/googlefonts/Michroma-font ，SIL OFL 1.1，© 2011 The Michroma Project Authors）
    `src/fonts/michroma-regular.woff` 是它的拉丁子集，许可全文在 `src/fonts/michroma-ofl.txt`。
+
+5. Barlow Condensed、DM Mono、Doto、Maple Mono NF CN（均为 SIL OFL 1.1；原在 KATANAview 的 design/fonts/，2026-11-15 搬来，提交 3c5897fb）
+   `src/fonts/barlow-semibold-full.woff2`、`barlow-bold-full.woff2`（Barlow Condensed 的 600 与 700）、`dm-regular-full.woff2`（DM Mono 400）、
+   `doto-extrabold-latin.woff2`（Doto ExtraBold 的拉丁子集，取自 @fontsource/doto 5.3.0）、`maple-medium-latin.woff2`（Maple Mono NF CN Medium 的拉丁子集）。
+   许可全文随字体文件在 `src/fonts/barlow-OFL.txt`、`dm-OFL.txt`、`doto-OFL.txt`、`maple-OFL.txt`；声明都在 `src/fonts.css`（含 Michroma 与方舟像素；出口 `@katana-ui/react/fonts.css`）。
+   版权（照各份 OFL 文本首行）：Barlow © 2017 The Barlow Project Authors（https://github.com/jpt/barlow）；
+   DM Mono © 2020 The DM Mono Project Authors（https://www.github.com/googlefonts/dm-mono）；
+   Doto © 2024 The Doto Project Authors（https://github.com/oliverlalan/Doto）；
+   Maple Mono © 2022 The Maple Mono Project Authors（https://github.com/subframe7536/maple-font）。
+   子集的生成办法没有随文件搬来，上游版本号与读取日期除 Doto 外待核对。
+   Barlow Condensed, DM Mono, Doto and Maple Mono NF CN are used under SIL OFL 1.1; the licence texts ship next to the font files.

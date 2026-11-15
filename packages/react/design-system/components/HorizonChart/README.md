@@ -4,6 +4,8 @@
 
 ## Provide
 
+`*` marks a required prop.
+
 ### HorizonChart
 
 每行一个 svg（viewBox，竖向是像素），右边一列写值：没选中写最新值，选中后写那一格。各行点数应当相同，短的行末尾当没有值。
@@ -18,6 +20,51 @@
 | `scale` | `'shared' \| 'row'` | `'shared'` | shared：所有行同一把满刻度，行与行可比；row：每行各用自己的最大值，只看形状。 |
 | `max` | `number` | — | 固定满刻度；不给按数据算。 |
 | `rowHeight` | `number` | `24` | 一行高（px）。 |
+
+## Usage
+
+```tsx
+// SPDX-License-Identifier: MIT
+import { HorizonChart, type HorizonRow } from '@katana-ui/react/quant'
+
+const HZ_POINTS = 48
+
+const hz = (f: (i: number) => number) => Array.from({ length: HZ_POINTS }, (_, i) => +f(i).toFixed(3))
+
+export const HORIZON_DEMO_ROWS: readonly HorizonRow[] = [
+  { key: 'AAA', label: 'AAA', values: hz((i) => 3 * Math.sin(i / 3.8)) },
+  { key: 'BBB', label: 'BBB', values: hz((i) => 1.2 * Math.sin(i / 3.8 + 1)) },
+  { key: 'CCC', label: 'CCC', values: hz((i) => (i < HZ_POINTS / 2 ? 0.9 : -0.9)) },
+  { key: 'DDD', label: 'DDD', values: hz((i) => -2 * Math.cos(i / 5)) },
+]
+
+const pctText = (value: number) => `${value > 0 ? '+' : ''}${value.toFixed(2)}%`
+
+export function HorizonChartUsage() {
+  return (
+    <>
+      <div className="gal-wide" data-gallery-horizon="shared" style={{ maxWidth: 560 }}>
+        <HorizonChart
+          rows={HORIZON_DEMO_ROWS}
+          label="示例：四个品种的日内收益（共用刻度）"
+          formatValue={pctText}
+          formatX={(i) => `第 ${i + 1} 点`}
+        />
+      </div>
+      <div className="gal-wide" data-gallery-horizon="row" style={{ maxWidth: 560 }}>
+        <HorizonChart
+          rows={HORIZON_DEMO_ROWS}
+          label="示例：四个品种的日内收益（各自刻度）"
+          formatValue={pctText}
+          scale="row"
+        />
+      </div>
+    </>
+  )
+}
+
+/** 演示用的六个品种的价格走势：闭式公式，一条 40 个点。 */
+```
 
 ## States
 

@@ -183,9 +183,9 @@ describe('SeriesExplorer 渲染', () => {
     const three = render({ defaultRange: '3m', defaultMetric: null })
     // 甲：最近三月 60+70+80 = 210，前三月 30+40+50 = 120，涨 75%。
     expect(three).toContain('data-key="a"')
-    expect(three).toContain('data-tone="up">75%<')
+    expect(three).toContain('+75.00%')
     const all = render({ defaultMetric: null })
-    expect(all).not.toContain('k-spark-tile-delta')
+    expect(all).not.toContain('data-slot="change-text"')
   })
 
   it('没有点：只写空态', () => {

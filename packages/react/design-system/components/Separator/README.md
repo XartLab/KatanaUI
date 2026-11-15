@@ -4,14 +4,28 @@
 
 ## Provide
 
+`*` marks a required prop.
+
 ### Separator
 
 其余属性透传给 Radix Separator.Root。
 
-| 属性 | 类型 | 默认 | 说明 |
-| --- | --- | --- | --- |
-| `orientation` | `'horizontal' \| 'vertical'` | `'horizontal'` | 横或竖。 |
-| `decorative` | `boolean` | `true` | 真：只是画一道线；假：role=separator 与 aria-orientation，读屏知道这里分了区域。 |
+## Usage
+
+```tsx
+// SPDX-License-Identifier: MIT
+import { Separator } from '@katana-ui/react'
+
+export function SeparatorUsage() {
+  return (
+    <div>
+      <span>Above</span>
+      <Separator />
+      <span>Below</span>
+    </div>
+  )
+}
+```
 
 ## States
 

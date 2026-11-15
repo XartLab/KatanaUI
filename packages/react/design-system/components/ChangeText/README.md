@@ -4,15 +4,33 @@
 
 ## Provide
 
+`*` marks a required prop.
+
 ### ChangeText
 
 其余属性透传给 span。四舍五入成 0 的小负数也按「平」处理，不带正负号。
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `value` | `number` | — | 已经是百分数（1.5 就是 1.5%）。 |
-| `digits` | `number` | `2` | 小数位。 |
-| `arrow` | `boolean` | `false` | 文字前加 ▲ / ▼（平不加）：方向不只靠颜色。 |
+| `value` * | `number` | — | A percentage already (1.5 means 1.5%). |
+| `digits` | `number` | `2` | Number of decimal places. |
+| `arrow` | `boolean` | — | Put an up or down triangle before the text (none for flat) so direction does not rely on color alone. |
+
+## Usage
+
+```tsx
+// SPDX-License-Identifier: MIT
+import { ChangeText } from '@katana-ui/react/quant'
+
+export function ChangeTextUsage() {
+  return (
+    <>
+      <ChangeText value={1.234} />
+      <ChangeText value={-0.5} arrow />
+    </>
+  )
+}
+```
 
 ## States
 

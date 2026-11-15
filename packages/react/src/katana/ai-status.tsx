@@ -90,13 +90,24 @@ function Glyph({ state }: { state: AiStatusState }) {
 }
 
 export type AiStatusProps = {
+  /** The state; the first three are in progress. */
   state: AiStatusState
-  /** 状态文字（必填，由调用方按界面语言给），状态变了就换这个字符串。 */
+  /**
+   * Status text (required, in the UI language); change the string when the state changes.
+   * 状态文字（必填，由调用方按界面语言给），状态变了就换这个字符串。
+   */
   label: string
-  /** 文字后面的灰色细节，如正在读哪个来源。 */
+  /**
+   * Gray detail after the text, such as which source is being read.
+   * 文字后面的灰色细节，如正在读哪个来源。
+   */
   detail?: string
-  /** 已进行的秒数；只在进行中的状态显示。 */
+  /**
+   * Elapsed seconds; shown only for in-progress states, written like "12s" or "1m 05s".
+   * 已进行的秒数；只在进行中的状态显示。
+   */
   elapsed?: number
+  /** Extra class name on the root. */
   className?: string
 }
 

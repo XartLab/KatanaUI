@@ -24,15 +24,29 @@ const subscribeResize = (onChange: () => void) => {
 const readRatio = () => Math.min(window.devicePixelRatio || 1, 4)
 
 export type MatrixOrbProps = {
+  /** The state; when it changes the weights of the three patterns interpolate, with no jump. */
   state?: OrbState
-  /** 聆听态的音量，0 到 1；不给就用模拟包络。 */
+  /**
+   * Volume of the listening state from 0 to 1; a simulated envelope is used when omitted.
+   * 聆听态的音量，0 到 1；不给就用模拟包络。
+   */
   level?: number
-  /** 一边几个点（圆盘直径），默认 16，即 96px 见方。 */
+  /**
+   * Dots per side; the pitch is 6px, so 16 is 96px square.
+   * 一边几个点（圆盘直径），默认 16，即 96px 见方。
+   */
   cells?: number
-  /** 读屏名（必填）：球本身不带字，状态用文字另外读出。 */
+  /**
+   * Accessible name (required).
+   * 读屏名（必填）：球本身不带字，状态用文字另外读出。
+   */
   label: string
-  /** 点的颜色，默认是主题的强调色；传 CSS 颜色，或写成 var(token 名)。 */
+  /**
+   * Color of the dots, a CSS color or a CSS variable reference; defaults to the theme accent.
+   * 点的颜色，默认是主题的强调色；传 CSS 颜色，或写成 var(token 名)。
+   */
   color?: string
+  /** Extra class name on the root. */
   className?: string
 }
 

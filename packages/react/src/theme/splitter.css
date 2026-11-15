@@ -1,0 +1,69 @@
+/* SPDX-License-Identifier: MIT */
+/* Splitter 的皮肤（#1901）：规则从应用 styles/shell.css 的 .kc-splitter* 搬来，值没改，换成 .k-splitter。
+   全部包在 :where() 里（优先级 0）：应用给它挂了旧类名 .kc-splitter，应用自己的规则要能压过这里；单独用时这里就是全部样子。
+   组件卡 Splitter：命中区 8px，可见线 1px line-100，中央 16×2 的 grip；hover 线变 line-200；拖动中 2px signal-orange 加发光。 */
+:where(.k-splitter) {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-width: var(--space-2);
+  min-height: var(--space-2);
+  touch-action: none;
+  cursor: col-resize;
+}
+:where(.k-splitter[data-axis='column']) {
+  cursor: row-resize;
+}
+:where(.k-splitter)::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc(50% - 0.5px);
+  width: 1px;
+  background: var(--line-100);
+}
+:where(.k-splitter[data-axis='column'])::before {
+  top: calc(50% - 0.5px);
+  bottom: auto;
+  left: 0;
+  right: 0;
+  width: auto;
+  height: 1px;
+}
+:where(.k-splitter-grip) {
+  position: relative;
+  display: block;
+  width: 2px;
+  height: 16px;
+  background: var(--line-200);
+}
+:where(.k-splitter[data-axis='column'] .k-splitter-grip) {
+  width: 16px;
+  height: 2px;
+}
+:where(.k-splitter:hover)::before {
+  background: var(--line-200);
+}
+:where(.k-splitter:hover .k-splitter-grip, .k-splitter:focus-visible .k-splitter-grip) {
+  background: var(--ink-200);
+}
+:where(.k-splitter:focus-visible) {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: -2px;
+}
+:where(.k-splitter[data-dragging])::before {
+  background: var(--signal-orange);
+  box-shadow: 0 0 6px var(--signal-orange);
+  width: 2px;
+  left: calc(50% - 1px);
+}
+:where(.k-splitter[data-dragging][data-axis='column'])::before {
+  width: auto;
+  height: 2px;
+  left: 0;
+  top: calc(50% - 1px);
+}
+:where(.k-splitter[data-dragging] .k-splitter-grip) {
+  background: var(--signal-orange);
+}

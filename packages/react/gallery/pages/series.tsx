@@ -11,10 +11,8 @@ import {
 } from '../../src/blocks/index.ts'
 import {
   BrushChart,
-  Meter,
   CalendarHeatmap,
   HorizonChart,
-  SparkTile,
   EquityCurve,
   type EquityCurvePoint,
   type CalendarDay,
@@ -207,106 +205,6 @@ export function AttributionBarsDemo() {
         ×n」，费用·税永远在最底；已平仓的行整行删除线、名称后一个「已平
         09-18」点阵小标签。品种前是徽标：股票用字母圆标，BTC
         一行用自绘的示意图标演示有图的样子（示意图标，不是真实标志）。
-      </p>
-    </>
-  )
-}
-
-export function MeterDemo() {
-  const state = { ok: '正常', warn: '接近', breach: '越限' }
-  const ticks = { soft: '软限 80', hard: '硬限 100' }
-  const pctText = (v: number) => `${v}%`
-  return (
-    <>
-      <div className="gal-wide" data-gallery-meter="bar" style={{ maxWidth: 360, display: 'grid', gap: 10 }}>
-        <Meter label="LOAD · 敞口" value={72} tone="ok" valueText="敞口 72%" formatValue={pctText} />
-        <Meter label="LOAD · 受锁" value={38} tone="warn" valueText="受锁 38%" formatValue={pctText} />
-        <Meter label="回测进度" value={61} tone="accent" valueText="回测进度 61%" formatValue={pctText} />
-        <Meter label="OFF" value={0} tone="off" valueText="停用 0%" formatValue={pctText} />
-      </div>
-      <Row name="限额（软限与硬限）">
-        <div className="gal-wide" data-gallery-meter="limits" style={{ maxWidth: 420, display: 'grid', gap: 14 }}>
-          <Meter
-            label="总敞口"
-            value={40}
-            max={120}
-            soft={80}
-            hard={100}
-            tone="ok"
-            valueText="已用 40，软限 80，硬限 100，满刻度 120"
-            formatValue={pctText}
-            stateLabels={state}
-            tickLabels={ticks}
-          />
-          <Meter
-            label="单日亏损"
-            value={85}
-            max={120}
-            soft={80}
-            hard={100}
-            tone="ok"
-            valueText="已用 85，软限 80，硬限 100，满刻度 120"
-            formatValue={pctText}
-            stateLabels={state}
-            tickLabels={ticks}
-          />
-          <Meter
-            label="连亏笔数"
-            value={130}
-            max={120}
-            soft={80}
-            hard={100}
-            tone="ok"
-            valueText="已用 130，超过满刻度 120，硬限 100"
-            formatValue={pctText}
-            stateLabels={state}
-            tickLabels={ticks}
-          />
-        </div>
-      </Row>
-      <Row name="Gauge">
-        <div className="gal-wide" data-gallery-meter="gauge" style={{ maxWidth: 360, display: 'grid', gap: 10 }}>
-          <Meter
-            display="gauge"
-            label="RS-20 · 电子"
-            value={94}
-            weakBelow={30}
-            valueText="RS-20 电子 94"
-            formatValue={String}
-          />
-          <Meter
-            display="gauge"
-            label="RS-20 · 军工"
-            value={27}
-            weakBelow={30}
-            valueText="RS-20 军工 27"
-            formatValue={String}
-          />
-          <Meter
-            display="gauge"
-            label="RS-20 · 受锁"
-            value={60}
-            locked
-            valueText="RS-20 受锁 60"
-            formatValue={String}
-          />
-        </div>
-      </Row>
-      <Row name="Sync">
-        <div className="gal-wide" data-gallery-meter="sync" style={{ maxWidth: 360 }}>
-          <Meter
-            display="sync"
-            label="PAPER 进度"
-            value={64}
-            mark={80}
-            valueText="paper 进度 64%，评估点 80%"
-            formatValue={pctText}
-          />
-        </div>
-      </Row>
-      <p className="gal-note">
-        {DEMO_NOTE}调用方只传 tone（accent / ok / warn /
-        off），不传颜色。限额板传软限与硬限：达到软限算接近、达到硬限算越限，越过时条体脉冲一次；超出满刻度的条画满。
       </p>
     </>
   )
@@ -603,80 +501,6 @@ export function SeriesExplorerDemo() {
         {DEMO_NOTE}按月 24 个点（第 10 个月休市，画灰色竖带）；点瓦片展开图面板。第二个例子的第 19 个月有一笔没记的入金
         500，窗口包含它时对账亮琥珀灯并写差额。
       </p>
-    </>
-  )
-}
-
-const spark = (seed: number, base: number, drift: number, spread: number) =>
-  walk(seed, 24, base, spread).map((v, i) => v + i * drift)
-
-export function SparkTileDemo() {
-  const days = Array.from({ length: 24 }, (_, i) => `D-${24 - i}`)
-  const fmt = (v: number) => v.toFixed(2)
-  return (
-    <>
-      <div
-        className="gal-wide"
-        data-gallery-spark
-        style={{ display: 'grid', gridTemplateColumns: 'repeat(5, minmax(0, 1fr))', gap: 8 }}
-      >
-        <SparkTile
-          label="NET ASSET"
-          text="¥ 2.42M"
-          value={2.42}
-          series={spark(21, 100, 0.6, 2)}
-          pointLabels={days}
-          formatPoint={fmt}
-          seriesLabel="净值走势（演示）"
-          delta="+1.31% 今日"
-          deltaTone="up"
-        />
-        <SparkTile
-          label="DRAWDOWN"
-          text="-3.1%"
-          value={-3.1}
-          series={spark(22, 10, -0.3, 1.5)}
-          pointLabels={days}
-          formatPoint={fmt}
-          seriesLabel="回撤走势（演示）"
-          trendTone="neutral"
-          delta="峰值 -6.8% · 02-14"
-        />
-        <SparkTile
-          label="SHARPE 60D"
-          text="1.84"
-          value={1.84}
-          series={spark(23, 14, 0.1, 1.2)}
-          pointLabels={days}
-          formatPoint={fmt}
-          seriesLabel="夏普走势（演示）"
-          delta="区间 1.2–2.1"
-        />
-        <SparkTile
-          label="TURNOVER"
-          text="0.62"
-          value={0.62}
-          unit="/月"
-          series={spark(24, 10, 0, 1.4)}
-          pointLabels={days}
-          formatPoint={fmt}
-          seriesLabel="换手走势（演示）"
-          delta="稳定"
-        />
-        <SparkTile
-          label="EXPOSURE"
-          text="131"
-          value={131}
-          unit="/ 150%"
-          series={[110, 112, 111, 118, 117, 124, 122, 128, 131]}
-          threshold={150}
-          near
-          formatPoint={fmt}
-          seriesLabel="敞口走势（演示）"
-          delta="接近上限"
-        />
-      </div>
-      <p className="gal-note">{DEMO_NOTE}数字是演示用的，场景照设计稿 SparkTile 卡。</p>
     </>
   )
 }

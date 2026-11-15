@@ -167,11 +167,13 @@
   font: var(--text-data) var(--font-sans);
   line-height: 24px;
   font-variant-numeric: tabular-nums;
+  text-align: left;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 .k-grid-cell.is-end {
   justify-content: flex-end;
+  text-align: right;
 }
 .k-grid-cell.is-up {
   color: var(--pnl-up);
@@ -206,4 +208,84 @@
   border-top: 1px solid var(--line-100);
   color: var(--ink-300);
   font: var(--text-caption) var(--font-sans);
+}
+/* 行高跟着内容走（autoRowHeight）：density 的行高是最小高度，格子里的字可以折行，内容多高行就多高，行与行之间留点气。 */
+.k-grid.is-auto .k-grid-row {
+  align-items: stretch;
+}
+.k-grid.is-auto .k-grid-cell {
+  padding-block: 4px;
+  overflow: visible;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+/* 行间细线（ruled）画在格子上：粘住的格子有自己的底，线不会被盖掉。 */
+.k-grid.is-ruled .k-grid-cell {
+  border-bottom: 1px solid var(--line-100);
+}
+/* 子行（renderSubRow）：跨满整行宽，高度跟着内容走；底色与内边距由调用方经 classNames.subrow 给。 */
+.k-grid-subrow {
+  position: absolute;
+  inset-inline: 0;
+  color: var(--ink-100);
+}
+.k-grid.is-ruled .k-grid-subrow {
+  border-bottom: 1px solid var(--line-100);
+}
+.k-grid-subcell {
+  min-width: 0;
+}
+
+/* 列头拖动重排（#27）：被拖的列变淡，悬着的目标列左边亮一道线（--ink-100，橙色只给状态灯与焦点角括号）（放下时被拖的列占它的位置）。 */
+.k-grid-col[draggable='true'] {
+  cursor: grab;
+}
+.k-grid-col.is-dragging {
+  opacity: 0.4;
+}
+.k-grid-col.is-drop::before {
+  position: absolute;
+  top: 2px;
+  bottom: 2px;
+  left: 0;
+  z-index: 3;
+  width: 2px;
+  background: var(--ink-100);
+  content: '';
+}
+
+/* ColumnPicker（#27）：弹层里上面是列集芯片，下面是一列勾选。 */
+.k-colpick {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 220px;
+}
+.k-colpick-heading {
+  color: var(--ink-300);
+  font: var(--text-caption) var(--font-sans);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.k-colpick-list {
+  display: flex;
+  flex-direction: column;
+  max-height: 260px;
+  overflow-y: auto;
+}
+.k-colpick-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 26px;
+  padding: 0 4px;
+  border-radius: var(--radius-sm);
+  color: var(--ink-200);
+  font: var(--text-data) var(--font-sans);
+  cursor: pointer;
+}
+.k-colpick-item:hover {
+  background: var(--alpha-white-6);
+  color: var(--ink-100);
 }

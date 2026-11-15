@@ -4,6 +4,8 @@
 
 ## Provide
 
+`*` marks a required prop.
+
 ### ArcadePixel
 
 画布 aria-hidden，文字另放 sr-only 给读屏；屏外与标签页隐藏时动画暂停。文字与精灵二选一，都给时精灵优先。
@@ -22,6 +24,56 @@
 | `glow` | `boolean \| number` | `false` | 荧光外溢；数字是强度 0 到 1，true 为 0.65。 |
 | `scanlines` | `boolean` | `false` | 缓慢上漂的扫描线。 |
 | `crt` | `boolean` | `false` | 暗角、红蓝边色散、滚动亮带与轻微闪烁。 |
+
+## Usage
+
+```tsx
+// SPDX-License-Identifier: MIT
+import { useState } from 'react'
+import { ARCADE_SPRITES, ArcadePixel, Button, type ArcadePixelAnimate } from '@katana-ui/react'
+
+const ARCADE_ANIMATES: ArcadePixelAnimate[] = ['none', 'type', 'wipe', 'blink', 'marquee']
+
+export function ArcadePixelUsage() {
+  const [run, setRun] = useState(0)
+  return (
+    <>
+      <div data-gallery-arcade>
+        <ArcadePixel text="KATANA" pixelSize={6} />
+      </div>
+      <ArcadePixel text="READY 01" pixelSize={4} />
+      <ArcadePixel text="GAME OVER" pixelSize={4} palette={['transparent', 'var(--ink-100)']} />
+
+      {Object.entries(ARCADE_SPRITES).map(([name, sprite]) => (
+        <ArcadePixel
+          key={name}
+          sprite={sprite}
+          pixelSize={5}
+          palette={['transparent', 'var(--signal-orange)', 'var(--ink-100)']}
+        />
+      ))}
+
+      {ARCADE_ANIMATES.map((animate) => (
+        <ArcadePixel
+          key={run}
+          text={animate === 'marquee' ? 'KATANA READY' : 'READY'}
+          animate={animate}
+          columns={animate === 'marquee' ? 36 : undefined}
+          loop={animate === 'blink' || animate === 'marquee'}
+          pixelSize={3}
+        />
+      ))}
+      <Button onClick={() => setRun((n) => n + 1)}>重播</Button>
+
+      <ArcadePixel text="KATANA" pixelSize={4} glow />
+
+      <ArcadePixel text="KATANA" pixelSize={4} scanlines />
+
+      <ArcadePixel text="KATANA" pixelSize={4} crt glow scanlines />
+    </>
+  )
+}
+```
 
 ## States
 

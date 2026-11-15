@@ -42,18 +42,33 @@ export function LoadingView({
   areaRef,
   onRetry,
 }: {
+  /** The current phase; null draws nothing. */
   phase: LoadingPhase | null
+  /** All the text. */
   texts: LoadingTexts
+  /** Accessible name of the skeleton. */
   label?: string
+  /** What is loading, shown in the caption. */
   what?: string
+  /** Where it loads from; omitted when absent. */
   source?: string | null
-  /** 骨架画几行。 */
+  /**
+   * Number of skeleton rows.
+   * 骨架画几行。
+   */
   rows: number
-  /** 行数是量出来的（撑满面板主体）：每行占一个表格行高。 */
+  /**
+   * The row count was measured (fill mode): each row takes one table row height.
+   * 行数是量出来的（撑满面板主体）：每行占一个表格行高。
+   */
   measured: boolean
+  /** Fill the parent. */
   fill: boolean
+  /** The real header when it is already known. */
   header?: ReactNode
+  /** Ref to the area whose height is measured. */
   areaRef?: Ref<HTMLDivElement>
+  /** When given, the amber bar offers a retry button. */
   onRetry?: () => void
 }) {
   if (phase === null && !fill) return null

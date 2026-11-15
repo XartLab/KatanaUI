@@ -84,9 +84,8 @@
     },
     "ConsensusBlock": {
       "kind": "量化",
-      "status": "没做",
-      "at": [],
-      "note": "写命令提交前的必要条件块，还没有对应组件"
+      "status": "已做",
+      "at": ["ConsensusBlock"]
     },
     "Controls": {
       "kind": "基础件",
@@ -102,7 +101,7 @@
     "Cover": {
       "kind": "自有件",
       "status": "已做",
-      "at": ["packages/ui/design-system/components/Cover"],
+      "at": ["packages/react/design-system/components/Cover"],
       "note": "封面页，随设计系统带出"
     },
     "DOMHeatmap": {
@@ -148,9 +147,9 @@
     },
     "DecisionQueue": {
       "kind": "面板",
-      "status": "没做",
-      "at": [],
-      "note": "决策层，还没有对应面板"
+      "status": "已做",
+      "at": ["DecisionQueue"],
+      "note": "件已做（建议卡片、接受按住确认、状态筛选、已处理收成一行）；应用里接真实建议源另开票"
     },
     "DeploymentBoard": {
       "kind": "面板",
@@ -235,9 +234,8 @@
     },
     "FlowGauges": {
       "kind": "量化",
-      "status": "没做",
-      "at": [],
-      "note": "订单流四个仪表，还没有对应组件"
+      "status": "已做",
+      "at": ["FlowGauges"]
     },
     "Footprint": {
       "kind": "面板",
@@ -265,9 +263,9 @@
     },
     "HypothesisLedger": {
       "kind": "面板",
-      "status": "没做",
-      "at": [],
-      "note": "研究层，还没有对应面板"
+      "status": "已做",
+      "at": ["HypothesisLedger"],
+      "note": "件已做（假说一行一条可展开：命题、传导层、状态、失败条件与期限倒计时、证据、关联资产；按层与状态筛选；观察表视图）；字段按用户 2026-11-15 的框架，不照设计稿的 HYPO 假设账；应用里接真实数据另开票"
     },
     "IndicatorPanel": {
       "kind": "面板",
@@ -305,8 +303,7 @@
     "Meter": {
       "kind": "量化",
       "status": "已做",
-      "at": ["Meter"],
-      "note": "条（点阵填充）、刻度盘、同步率三种形态；限额板传软限与硬限，达到软限接近、达到硬限越限；应用接线另开票"
+      "at": ["Meter"]
     },
     "ModelCard": {
       "kind": "面板",
@@ -316,9 +313,9 @@
     },
     "NewsFeed": {
       "kind": "面板",
-      "status": "部分",
-      "at": ["src/panels/alice-reports"],
-      "note": "有报告流，公告、RSS、数据源事件的统一时间流没有"
+      "status": "已做",
+      "at": ["NewsFeed"],
+      "note": "件已做（列表与卡片、频道、来源、搜索、暂停、新消息计数）；应用里接真实新闻源另开票"
     },
     "Notes": {
       "kind": "面板",
@@ -361,9 +358,9 @@
     },
     "PanelFrame": {
       "kind": "积木",
-      "status": "部分",
-      "at": ["PanelFrame", "EmptyState", "Toolbar"],
-      "note": "PanelFrame 已做（编号、标题、对象、联动灯、点阵元信息位、工具条、图标钮、来源行、焦点角括号）；卡上的拖动抬起、最大化动效、标题栏右键菜单、铆钉、密度档还没做"
+      "status": "已做",
+      "at": ["PanelFrame", "EmptyState", "Toolbar", "src/workspace/PaneFrame.tsx"],
+      "note": "#1901：PanelFrame 是壳（标题栏、联动色点、可折叠、焦点括号、状态内容区）；应用的 PaneFrame 是挂旧类名的薄适配层"
     },
     "ParamScatter": {
       "kind": "面板",
@@ -424,9 +421,8 @@
     },
     "RegimeStrip": {
       "kind": "量化",
-      "status": "没做",
-      "at": [],
-      "note": "市场状态带，还没有对应组件"
+      "status": "已做",
+      "at": ["RegimeStrip"]
     },
     "ReplayBar": {
       "kind": "面板",
@@ -492,21 +488,20 @@
     },
     "SparkTile": {
       "kind": "量化",
-      "status": "没做",
-      "at": [],
-      "note": "点阵标签 + LCD + 迷你折线的 KPI 瓦片，还没有对应组件"
+      "status": "已做",
+      "at": ["SparkTile"]
     },
     "Splitter": {
       "kind": "基础件",
-      "status": "部分",
-      "at": ["src/workspace/WorkspaceCanvas.tsx"],
-      "note": "分割线在应用里自己做，没有抽进包里的 primitives"
+      "status": "已做",
+      "at": ["Splitter", "src/workspace/WorkspaceCanvas.tsx"],
+      "note": "#1901：Splitter 在包的 primitives 里（自写，没用 react-resizable-panels）；工作区的格子分割线用它"
     },
     "StatusBar": {
       "kind": "积木",
-      "status": "没做",
-      "at": [],
-      "note": "顶栏底栏的分段模型，还没有对应组件"
+      "status": "已做",
+      "at": ["StatusBar"],
+      "note": "#1901：包里有分段模型的 StatusBar；应用现在没有底部状态栏（顶栏右上的 LocalServiceStatus 另算），还没有调用方"
     },
     "StatusLED": {
       "kind": "自有件",
@@ -534,8 +529,8 @@
     "SystemHealth": {
       "kind": "面板",
       "status": "部分",
-      "at": ["src/shell/LocalServiceStatus.tsx"],
-      "note": "本地服务状态有，六块仪表没有；组件库已有 UptimeBars 逐格可用条（#1918）可补逐小时可用，面板里还没接"
+      "at": ["SystemMonitor"],
+      "note": "件已做（连接状态条、策略实例表、延迟与错误率小图、事件流、急停；#36）；应用里接真实连接与策略数据另开票，原六块仪表与逐小时可用（UptimeBars）还没接"
     },
     "TCA": {
       "kind": "面板",
@@ -590,9 +585,9 @@
     },
     "WorkspaceTabs": {
       "kind": "积木",
-      "status": "部分",
-      "at": ["src/shell/WorkspaceMenu.tsx"],
-      "note": "工作区切换是菜单，不是顶层标签"
+      "status": "已做",
+      "at": ["WorkspaceTabs"],
+      "note": "#1901：包里有标签条；应用的工作区切换仍是菜单（src/shell/WorkspaceMenu.tsx），换不换是产品决定，等用户定"
     },
     "Workspaces": {
       "kind": "面板",

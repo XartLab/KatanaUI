@@ -11,8 +11,37 @@ import {
   SymbolMarkDemo,
 } from './pages/readouts.tsx'
 import { ContextMenuOpen, DialogOpen, DropdownMenuOpen, PopoverOpen, SelectOpen, TooltipOpen } from './pages/open.tsx'
-import { ChangeTextDemo, LimitLadderDemo, MarketHeatmapDemo, PnlTextDemo, QuantFormatDemo } from './pages/quant.tsx'
-import { DataGridDemo, EmptyStateDemo, EstimateBadgeDemo, PanelFrameDemo, ToolbarDemo } from './pages/blocks.tsx'
+import {
+  ChangeTextDemo,
+  ConsensusBlockDemo,
+  DecimalFieldDemo,
+  FlowGaugesDemo,
+  EventCalendarDemo,
+  LimitLadderDemo,
+  MarketHeatmapDemo,
+  MetricCardDemo,
+  MeterDemo,
+  PnlTextDemo,
+  QuantFormatDemo,
+  RegimeStripDemo,
+  SparkTileDemo,
+  TechnicalRatingDemo,
+} from './pages/quant.tsx'
+import { ParamScatterDemo, StrategyReportDemo } from './pages/strategy.tsx'
+import {
+  DataGridDemo,
+  DecisionQueueDemo,
+  EmptyStateDemo,
+  EstimateBadgeDemo,
+  HypothesisLedgerDemo,
+  NewsFeedDemo,
+  SystemMonitorDemo,
+  PanelFrameDemo,
+  SplitterDemo,
+  StatusBarDemo,
+  ToolbarDemo,
+  WorkspaceTabsDemo,
+} from './pages/blocks.tsx'
 import { AlertDemo, ProgressDemo, ToastDemo } from './pages/feedback.tsx'
 import { ComboboxDemo, CommandDemo } from './pages/pickers.tsx'
 import { EventTimelineDemo, JsonViewerDemo } from './pages/arc-controls.tsx'
@@ -43,8 +72,6 @@ import {
 } from './pages/rare2.tsx'
 import {
   BrushChartDemo,
-  MeterDemo,
-  SparkTileDemo,
   CalendarHeatmapDemo,
   HorizonChartDemo,
   SeriesExplorerDemo,
@@ -58,6 +85,7 @@ import {
   PriceTagDemo,
   QuoteCardDemo,
   QuoteTableDemo,
+  RowActionsDemo,
   RangeBarDemo,
   RatingGaugeDemo,
   SparklineDemo,
@@ -128,15 +156,30 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   field: FieldDemo,
   'change-text': ChangeTextDemo,
   'pnl-text': PnlTextDemo,
+  'event-calendar': EventCalendarDemo,
   'limit-ladder': LimitLadderDemo,
   'market-heatmap': MarketHeatmapDemo,
+  'technical-rating': TechnicalRatingDemo,
+  'metric-card': MetricCardDemo,
+  'decimal-field': DecimalFieldDemo,
   'quant-format': QuantFormatDemo,
+  'spark-tile': SparkTileDemo,
+  meter: MeterDemo,
+  'flow-gauges': FlowGaugesDemo,
+  'regime-strip': RegimeStripDemo,
+  'consensus-block': ConsensusBlockDemo,
   'data-grid': DataGridDemo,
   'empty-state': EmptyStateDemo,
   'panel-frame': PanelFrameDemo,
   toolbar: ToolbarDemo,
   'estimate-badge': EstimateBadgeDemo,
   'event-timeline': EventTimelineDemo,
+  'news-feed': NewsFeedDemo,
+  'strategy-report': StrategyReportDemo,
+  'param-scatter': ParamScatterDemo,
+  'system-monitor': SystemMonitorDemo,
+  'decision-queue': DecisionQueueDemo,
+  'hypothesis-ledger': HypothesisLedgerDemo,
   'password-input': PasswordInputDemo,
   'hold-to-confirm': HoldToConfirmDemo,
   'delete-button': DeleteButtonDemo,
@@ -156,8 +199,6 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'brush-chart': BrushChartDemo,
   'attribution-bars': AttributionBarsDemo,
   'equity-curve': EquityCurveDemo,
-  meter: MeterDemo,
-  'spark-tile': SparkTileDemo,
   'calendar-heatmap': CalendarHeatmapDemo,
   'horizon-chart': HorizonChartDemo,
   'small-multiples': SmallMultiplesDemo,
@@ -170,6 +211,7 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'range-bar': RangeBarDemo,
   'rating-gauge': RatingGaugeDemo,
   'quote-table': QuoteTableDemo,
+  'row-actions': RowActionsDemo,
   'uptime-bars': UptimeBarsDemo,
   'range-histogram-slider': RangeHistogramSliderDemo,
   ridgeline: RidgelineDemo,
@@ -177,6 +219,9 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'slope-chart': SlopeChartDemo,
   'connected-scatter': ConnectedScatterDemo,
   'symbol-galaxy': SymbolGalaxyDemo,
+  'status-bar': StatusBarDemo,
+  splitter: SplitterDemo,
+  'workspace-tabs': WorkspaceTabsDemo,
 }
 
 /**

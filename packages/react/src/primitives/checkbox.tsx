@@ -7,7 +7,7 @@ import { cn } from '../lib/cn.ts'
 import { focusRing } from '../lib/focus.ts'
 
 // 勾选方块：照组件卡（design/katana-console/project/components/Controls/README.md「Checkbox」）：14 × 14 凹陷方框（圆角 2 · 1px 线 · recess），
-// 选中后中心一块 6 × 6 的强调色发光方块，像一颗 LED；选中的框是暗橙边加暗橙底。数值照旧皮肤（#1777 之前的 .k-ck-box）。
+// 选中后中心一块 6 × 6 的强调色方块（不发光，发光只给状态灯）；选中的框是暗橙边加暗橙底。数值照旧皮肤（#1777 之前的 .k-ck-box）。
 // Radix 的勾选有第三种状态 indeterminate，调用方不用就只传 true / false。
 function Checkbox({ className, ...props }: ComponentProps<typeof CheckboxPrimitive.Root>) {
   return (
@@ -24,10 +24,7 @@ function Checkbox({ className, ...props }: ComponentProps<typeof CheckboxPrimiti
       )}
       {...props}
     >
-      <CheckboxPrimitive.Indicator
-        data-slot="checkbox-indicator"
-        className="block size-[6px] bg-(--signal-orange) shadow-[var(--glow-orange)]"
-      />
+      <CheckboxPrimitive.Indicator data-slot="checkbox-indicator" className="block size-[6px] bg-(--accent)" />
     </CheckboxPrimitive.Root>
   )
 }

@@ -1,0 +1,107 @@
+<!-- SPDX-License-Identifier: AGPL-3.0-only -->
+<!-- Precision Instrument UI 金样例（2026-11-14）：回测净值与回撤、键值表、KPI、归因清单。演示数据（固定种子合成）。?m=light | ?m=dark -->
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Michroma&family=Noto+Sans+SC:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}body{margin:0}
+:root{--mono:'IBM Plex Mono','Noto Sans SC',monospace;--wide:'Michroma','Noto Sans SC',sans-serif}
+.sheet{width:1600px;height:900px;position:relative;overflow:hidden;font-family:var(--mono);color:var(--ink)}
+.light{--bg:#e8ebee;--bg2:#eef0f2;--ink:#1a1d21;--ink2:#4c535b;--ink3:#7d848c;--hair:#c3c8ce;--grid:#d6dade;--dot:rgba(40,50,60,.07);--acc:#2457a8;--accInk:#fff;--up:#1d7a4c;--dn:#b8352a;--tag:#16191c;--tagInk:#e8ebee}
+.dark{--bg:#15181b;--bg2:#1a1e22;--ink:#dfe3e7;--ink2:#9aa2ab;--ink3:#69717a;--hair:#30363c;--grid:#252a2f;--dot:rgba(220,230,240,.05);--acc:#5a8fe0;--accInk:#0e1114;--up:#5fb886;--dn:#e06a5a;--tag:#dfe3e7;--tagInk:#15181b}
+.sheet{background:var(--bg)}.sheet::before{content:"";position:absolute;inset:0;background-image:radial-gradient(var(--dot) 1px,transparent 1.3px);background-size:5px 5px}
+.reg{position:absolute;width:11px;height:11px;margin:-5px 0 0 -5px;color:var(--ink3);opacity:.6;font:300 15px/11px var(--mono);text-align:center}
+.corner{position:absolute;width:6px;height:6px;background:var(--ink)}
+.h1{font:15px var(--wide);letter-spacing:.16em}
+.cap{font-size:10px;letter-spacing:.2em;color:var(--ink2);text-transform:uppercase}
+.tag{display:inline-block;background:var(--tag);color:var(--tagInk);font:12px var(--wide);letter-spacing:.14em;padding:3px 10px 2px}
+.seg{display:flex;gap:6px}.seg span{font:10.5px var(--wide);letter-spacing:.12em;border:1px solid var(--ink3);padding:5px 12px;color:var(--ink2)}
+.seg span.on{background:var(--acc);border-color:var(--acc);color:var(--accInk)}
+.kv{display:grid;grid-template-columns:150px 1fr;font-size:10.5px;letter-spacing:.12em}
+.kv div{border-bottom:1px solid var(--hair);padding:7px 0 6px}.kv .k{color:var(--ink2)}
+.idx{color:var(--acc);font:13px var(--wide)}
+.kpi{border-left:3px solid var(--acc);padding:2px 0 2px 12px;margin-bottom:16px}
+.kpi .l{font-size:9.5px;letter-spacing:.22em;color:var(--ink3)}.kpi .v{font:24px var(--wide);margin-top:3px}
+.bom{font-size:11px;letter-spacing:.08em}
+.bom .r{display:grid;grid-template-columns:30px 132px 1fr 66px;align-items:center;height:25px;border-bottom:1px solid var(--hair)}
+.bom .hd{font-size:9.5px;letter-spacing:.2em;color:var(--ink3);height:20px;border-bottom:1px solid var(--ink)}
+.strike{color:var(--ink3);text-decoration:line-through}
+.foot{position:absolute;left:80px;right:80px;bottom:34px;display:flex;justify-content:space-between;font-size:9px;letter-spacing:.18em;color:var(--ink3);text-transform:uppercase}
+.sw{display:flex;gap:2px;position:absolute;right:80px;bottom:56px}.sw i{width:18px;height:4px;display:block}
+</style></head><body>
+<div id="root"></div>
+<script>
+const D = {"eq": [1.0, 1.004602332951071, 1.010918595132061, 1.0144649651861393, 1.031825010892555, 1.0502906707345088, 1.0661848788376742, 1.0701207125620276, 1.0888097250266693, 1.0940533339998495, 1.1049427325517178, 1.1239838502211033, 1.1446818535748828, 1.1639267790161953, 1.1760939901711351, 1.196111294386878, 1.2069164738888825, 1.2185031583787775, 1.2358326986484964, 1.2437316737195472, 1.249337490338421, 1.250932166595983, 1.25987064906215, 1.2640782583812693, 1.2507508459667356, 1.2500786563770856, 1.2522436030579462, 1.2381269433536422, 1.2386748729527919, 1.2438133007293817, 1.2381961128743582, 1.2356265218371616, 1.2247417743442155, 1.2100379330084436, 1.2120296284852121, 1.1944520288234275, 1.1985673666905932, 1.1795427945451904, 1.1778887859830287, 1.1670841281650233, 1.1733778628719553, 1.1752685737297512, 1.1883685132722632, 1.1957379692897845, 1.1900192924300708, 1.2041748777186312, 1.1991496706844946, 1.2161378154300952, 1.2275206600504323, 1.232220006348176, 1.2520515654912594, 1.2716484458964126, 1.2909263224606413, 1.3051297103360866, 1.3332485966290113, 1.3467372880665323, 1.379164101898371, 1.388366630826755, 1.407130269491366, 1.4382198379807858, 1.4674173927939342, 1.4775742671435386, 1.5029569965397787, 1.519673227106482, 1.5326200271861372, 1.5403442280730768, 1.5526598806763245, 1.5644690060234405, 1.5857154397462006, 1.5817654772099845, 1.5796236693420818, 1.5724756710322159, 1.5841631183551872, 1.5663358835026968, 1.5618671169836948, 1.5488060763391025, 1.5419852843908428, 1.5549077826169548, 1.5402785146454057, 1.5293391899502333, 1.496348584192536, 1.4987325084786387, 1.4928441792962712, 1.4968802072515834, 1.4798105823354113, 1.4770224221152377, 1.489073850347011, 1.503441253806741, 1.5166016643479046, 1.5275921439572022, 1.5379803165141517, 1.5593898420524142, 1.5749151176099006, 1.6032743750880618, 1.6502056451827851, 1.6818977447221934, 1.7075346186520337, 1.7353890497126643, 1.74603497998554, 1.7793658810288469, 1.795595782167255, 1.8360738377324557, 1.8787368542232061, 1.9043944821260974, 1.937370782148036, 1.9495409243408375, 1.981341125813755, 1.9757817910033415, 1.9896137753300716, 2.0064609689234314, 2.03358889962137, 2.0535429895782866, 2.0744974659481974, 2.065339878579437, 2.064085773550022, 2.076509498954677, 2.0404002043760365, 2.0084717424511465, 2.0017393067331413, 1.9900477705864372], "bm": [1.0, 1.0041571575625827, 1.0041819179576539, 1.0047176392330586, 1.0084559257316492, 1.0113244923660432, 1.0138797385077272, 1.019837554232188, 1.0240128611591894, 1.0167224624344797, 1.0159691256078303, 1.0173614517052827, 1.0157223056406717, 1.019349218799767, 1.029733993486042, 1.037544552795259, 1.0353682206305639, 1.0364738834602119, 1.039419683475072, 1.0361095874977304, 1.0440924042374675, 1.0470407058289646, 1.0409168624411467, 1.0493807843685277, 1.0493724215851203, 1.046763365346488, 1.0481122251689752, 1.054127581658258, 1.0607993753952198, 1.0644179936920843, 1.0592067730508996, 1.057661607932153, 1.052665279149542, 1.051554079930078, 1.0425538703726454, 1.0454696386247575, 1.0501663950348266, 1.038623833300357, 1.0364621354428265, 1.0431855162795458, 1.0456748275259988, 1.0496189185313152, 1.0545470294664097, 1.0591223798695557, 1.0676045389492008, 1.072139849658162, 1.0704583053807974, 1.0624768919722292, 1.0695929779597313, 1.0799151181422229, 1.0808322967946202, 1.0860734200845517, 1.0940324932097527, 1.0935142710456074, 1.0954104190044347, 1.102346860469556, 1.1016588522541755, 1.1026792736716795, 1.1028005703234922, 1.0989025205904082, 1.0936919535247318, 1.0988953093564244, 1.1053733101184935, 1.107928691897179, 1.1128882253939116, 1.1162126228255007, 1.1180032481932045, 1.1229553213226158, 1.1265765301521746, 1.1262805153197828, 1.133284767145875, 1.1372842763711453, 1.1245200830135627, 1.1276906506148585, 1.1308401402180557, 1.136353812508043, 1.1352058034651964, 1.1390378771826435, 1.1402939594473336, 1.141760710749434, 1.1408079169745526, 1.1359676842278437, 1.1432009889793733, 1.1535529711476022, 1.1533604661887646, 1.1588002322710997, 1.1451099949939019, 1.138654188780789, 1.1319808872666433, 1.1405536876152336, 1.1434683901920386, 1.14610624138507, 1.1567263830682335, 1.1568778271258682, 1.1520950683410032, 1.1524077781798128, 1.1583139004150746, 1.163865961342238, 1.1569438040466342, 1.1532233128648874, 1.1465914750926585, 1.1527060066960215, 1.1491456569516447, 1.1444323963805323, 1.1553584234684502, 1.1662207089431575, 1.1670496897204505, 1.1771250148847126, 1.1754603938724695, 1.1797506146930041, 1.175620656933872, 1.186244507928405, 1.1870711746011104, 1.195016080083579, 1.1976701479746377, 1.1980088702487, 1.1976063919377602, 1.2044254629184092, 1.2026717763781856, 1.2096029182246615], "dd": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.01054318617235006, -0.011074948810614882, -0.009362280574683801, -0.020529832591899333, -0.02009637082201543, -0.01603141064845004, -0.020475113257667155, -0.022507891703273164, -0.03111870944400752, -0.04275077513161851, -0.04117516423604084, -0.055080632149312136, -0.05182502843974779, -0.06687518219349153, -0.06818365225948242, -0.07673111183832326, -0.07175219960310164, -0.07025647665615609, -0.05989324205762159, -0.0540633371694873, -0.05858732674196587, -0.04738898107412126, -0.051364373420930254, -0.03792521755145506, -0.028920360023952374, -0.02520275293231422, -0.009514199623535058, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.0024909655523366325, -0.003841654215773871, -0.008349397617080534, -0.0009789407053145682, -0.012221332880889113, -0.015039471877957289, -0.023276158181953166, -0.027577555379265872, -0.01942823810442096, -0.02865389587684608, -0.03555256408740681, -0.05635743546015304, -0.054854060878339994, -0.058567418921514514, -0.056022177919157756, -0.0667867984105267, -0.06854509636884132, -0.060945102114070004, -0.05188458400368978, -0.0435852320447595, -0.03665430400192182, -0.0301032089589095, -0.016601716193165084, -0.00681100900299525, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.0028058443535967648, 0.0, 0.0, 0.0, 0.0, 0.0, -0.004414364210647337, -0.005018898585839593, 0.0, -0.017389419406372952, -0.032765444385292164, -0.036007633126251104, -0.04163801244914356]}
+const mode = new URLSearchParams(location.search).get('m') || 'light'
+const S = document.createElement('div'); S.className = 'sheet ' + mode
+document.getElementById('root').appendChild(S)
+const add = h => S.insertAdjacentHTML('beforeend', h)
+// sheet bounds and registration marks
+;[[64,64],[1536,64],[64,836],[1536,836]].forEach(([x,y])=>add(`<div class="corner" style="left:${x-3}px;top:${y-3}px"></div>`))
+for (let x=480;x<=1440;x+=160) [150,820].forEach(y=>add(`<div class="reg" style="left:${x}px;top:${y}px">+</div>`))
+// header
+add(`<div style="position:absolute;left:80px;top:80px"><div class="h1">KATANA · RESEARCH</div><div class="cap" style="margin-top:7px">回测记录 / 本机账本 / 演示数据</div></div>
+<div style="position:absolute;right:80px;top:80px;text-align:right"><div class="h1">RUN/2C91</div><div class="cap" style="margin-top:7px">BLATT 01 / 03 · RS-20</div></div>`)
+// left column
+add(`<div style="position:absolute;left:80px;top:168px;width:360px">
+ <span class="tag">回测 · 费率敏感性</span>
+ <div class="cap" style="margin-top:16px;color:var(--ink)">同一策略，三档费率，一条基准</div>
+ <div class="seg" style="margin-top:20px"><span>净值</span><span class="on">回撤</span><span>分层</span><span>归因</span></div>
+ <div class="kv" style="margin-top:26px">
+  <div class="k">策略</div><div>RS-20 · 动量轮动</div>
+  <div class="k">基准</div><div>000300.XSHG 沪深300</div>
+  <div class="k">区间</div><div>2024-01-02 → 2026-09-30</div>
+  <div class="k">费率</div><div>0.15‰ 双边 · 印花 0.5‰</div>
+  <div class="k">样本</div><div>612 交易日 · 1 838 笔</div>
+  <div class="k">账户</div><div>A · 研究账本，不计入总账</div>
+ </div>
+ <div style="margin-top:30px">
+  <div class="kpi"><div class="l">NET VALUE</div><div class="v">${D.eq[D.eq.length-1].toFixed(2)}</div></div>
+  <div class="kpi"><div class="l">MAX DRAWDOWN</div><div class="v">${(Math.min(...D.dd)*100).toFixed(1)}<span style="font:15px var(--mono);margin-left:4px">%</span></div></div>
+  <div class="kpi"><div class="l">SHARPE · ANNUAL</div><div class="v">1.84</div></div>
+ </div></div>`)
+// chart
+const cx0=520,cy0=200,W=620,H=330, n=D.eq.length, lo=.95, hi=2.2
+const X=i=>cx0+i/(n-1)*W, Y=v=>cy0+(hi-v)/(hi-lo)*H, ddTop=cy0+H+40, ddH=110, YD=v=>ddTop+(-v)/.1*ddH
+let g=`<svg width="1600" height="900" style="position:absolute;inset:0" aria-hidden="true">
+<defs><pattern id="hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="6" stroke="var(--ink)" stroke-width="1.1"/></pattern>
+<pattern id="raster" width="12" height="12" patternUnits="userSpaceOnUse"><path d="M12 0H0V12" fill="none" stroke="var(--grid)" stroke-width="1"/></pattern></defs>
+<rect x="${cx0}" y="${cy0}" width="${W}" height="${H}" fill="url(#raster)" stroke="var(--ink)" stroke-width="1"/>
+<text x="${cx0+10}" y="${cy0+18}" font-family="Michroma" font-size="9" letter-spacing="2" fill="var(--acc)">NAV</text>
+<rect x="${cx0}" y="${ddTop}" width="${W}" height="${ddH}" fill="none" stroke="var(--hair)"/>
+<text x="${cx0+10}" y="${ddTop+18}" font-family="Michroma" font-size="9" letter-spacing="2" fill="var(--acc)">DRAWDOWN</text>`
+;[1.0,1.4,1.8].forEach(v=>{g+=`<line x1="${cx0+W}" y1="${Y(v)}" x2="${cx0+W+6}" y2="${Y(v)}" stroke="var(--ink)"/><text x="${cx0+W+12}" y="${Y(v)+3}" font-size="9.5" fill="var(--ink2)" font-family="IBM Plex Mono" letter-spacing="1">${v.toFixed(1)}</text>`})
+;['2024-01','2024-09','2025-05','2026-01','2026-09'].forEach((t,k)=>{const x=cx0+k*W/4;g+=`<line x1="${x}" y1="${ddTop+ddH}" x2="${x}" y2="${ddTop+ddH+6}" stroke="var(--ink)"/><text x="${x}" y="${ddTop+ddH+20}" text-anchor="middle" font-size="9.5" fill="var(--ink2)" font-family="IBM Plex Mono" letter-spacing="1">${t}</text>`})
+const p=a=>'M'+a.map((v,i)=>X(i).toFixed(1)+','+Y(v).toFixed(1)).join('L')
+g+=`<path d="${p(D.bm)}" fill="none" stroke="var(--ink3)" stroke-width="1" stroke-dasharray="4 4"/>`
+g+=`<path d="${p(D.eq)}" fill="none" stroke="var(--ink)" stroke-width="1.8"/>`
+g+=`<path d="M${X(0)},${ddTop}L${D.dd.map((v,i)=>X(i).toFixed(1)+','+YD(v).toFixed(1)).join('L')}L${X(n-1)},${ddTop}Z" fill="url(#hatch)" opacity=".75"/>`
+g+=`<line x1="${cx0}" y1="${ddTop}" x2="${cx0+W}" y2="${ddTop}" stroke="var(--ink)"/>`
+// max drawdown dimension line
+let mi=0;D.dd.forEach((v,i)=>{if(v<D.dd[mi])mi=i})
+const mx=X(mi)
+g+=`<line x1="${mx+40}" y1="${ddTop}" x2="${mx+40}" y2="${YD(D.dd[mi])}" stroke="var(--ink)"/><line x1="${mx+34}" y1="${ddTop}" x2="${mx+46}" y2="${ddTop}" stroke="var(--ink)"/><line x1="${mx+34}" y1="${YD(D.dd[mi])}" x2="${mx+46}" y2="${YD(D.dd[mi])}" stroke="var(--ink)"/>
+<rect x="${mx+48}" y="${(ddTop+YD(D.dd[mi]))/2-9}" width="86" height="16" fill="var(--bg)"/><text x="${mx+52}" y="${(ddTop+YD(D.dd[mi]))/2+3}" font-size="10" font-family="IBM Plex Mono" letter-spacing="1" fill="var(--ink)">MDD ${(D.dd[mi]*100).toFixed(1)} %</text>`
+// numbered callouts with leader lines
+const call=(i,num,label,dx,dy)=>{const x=X(i),y=Y(D.eq[i]);g+=`<circle cx="${x}" cy="${y}" r="3" fill="var(--ink)"/><line x1="${x}" y1="${y}" x2="${x+dx}" y2="${y+dy}" stroke="var(--ink)" stroke-width=".8"/><text x="${x+dx+(dx>0?6:-6)}" y="${y+dy+4}" text-anchor="${dx>0?'start':'end'}" font-family="Michroma" font-size="12" fill="var(--acc)">${num}</text><text x="${x+dx+(dx>0?32:-32)}" y="${y+dy+4}" text-anchor="${dx>0?'start':'end'}" font-family="IBM Plex Mono" font-size="9.5" letter-spacing="1.2" fill="var(--ink2)">${label}</text>`}
+call(33,'01','费率上调 0.10→0.15‰',30,-70)
+call(78,'02','换仓 · 新能源权重 ↑',-30,-62)
+const ex=X(n-1),ey=Y(D.eq[n-1])
+g+=`<rect x="${ex-4}" y="${ey-4}" width="8" height="8" fill="var(--acc)"/><text x="${ex+10}" y="${ey-8}" font-family="IBM Plex Mono" font-size="10.5" fill="var(--ink)" letter-spacing="1">${D.eq[n-1].toFixed(2)}</text>`
+// legend
+g+=`<g font-family="IBM Plex Mono" font-size="9.5" letter-spacing="1.5" fill="var(--ink2)"><line x1="${cx0}" y1="${cy0-14}" x2="${cx0+18}" y2="${cy0-14}" stroke="var(--ink)" stroke-width="1.8"/><text x="${cx0+24}" y="${cy0-11}">RS-20</text><line x1="${cx0+86}" y1="${cy0-14}" x2="${cx0+104}" y2="${cy0-14}" stroke="var(--ink3)" stroke-dasharray="4 4"/><text x="${cx0+110}" y="${cy0-11}">沪深300</text><rect x="${cx0+186}" y="${cy0-19}" width="10" height="10" fill="url(#hatch)"/><text x="${cx0+202}" y="${cy0-11}">回撤</text></g>`
+g+='</svg>'; add(g)
+// right: attribution as bill
+const A=[['300750','宁德时代',73920],['00700','腾讯控股',14300],['002475','立讯精密',8760],['600519','贵州茅台',-11200],['IF2510','沪深300 期货',-32580],['601012','隆基绿能 · 已平',-4100],['—','费用 · 税',-2000]]
+let b=`<div style="position:absolute;left:1220px;top:168px;width:300px;padding-right:0"><div class="h1" style="font-size:12.5px">ATTRIBUTION</div><div class="cap" style="margin:6px 0 12px">按品种 · 今日 · 刻度 ±80 000</div><div class="bom">
+<div class="r hd"><span>IDX</span><span>品种</span><span></span><span style="text-align:right">贡献</span></div>`
+A.forEach(([c,nm,v],i)=>{const closed=nm.includes('已平');const w=Math.abs(v)/80000*34
+ b+=`<div class="r ${closed?'strike':''}"><span class="idx" style="${closed?'color:var(--ink3)':''}">${String(i+1).padStart(2,'0')}</span><span>${c} ${nm.replace(' · 已平','')}</span>
+ <svg width="72" height="10"><line x1="36" y1="0" x2="36" y2="10" stroke="var(--ink3)"/><rect x="${v>=0?36:36-w}" y="1" width="${w}" height="8" fill="${i===0?'var(--acc)':'var(--ink2)'}" opacity="${i===0?1:.55}"/></svg>
+ <span style="text-align:right;color:${closed||c==='—'?'var(--ink2)':(v>=0?'var(--up)':'var(--dn)')}">${v>0?'+':''}${v.toLocaleString('en').replace(/,/g,' ')}</span></div>`})
+b+=`</div><div class="cap" style="margin-top:10px;font-size:9px">06 601012 于 09-18 平仓 · 研究账本不计入</div>
+<div style="margin-top:30px"><div class="kpi"><div class="l">TODAY · EST</div><div class="v" style="color:var(--up)">+44 440</div></div><div class="kpi"><div class="l">EXPOSURE</div><div class="v">131 / 150<span style="font:15px var(--mono);margin-left:4px">%</span></div></div></div></div>`
+add(b)
+add(`<div class="sw">${['#2457a8','#1d8a8a','#6b8a2a','#b0802a','#b8352a','#9a2a7a','#7d848c'].map(c=>`<i style="background:${c}"></i>`).join('')}</div>
+<div class="foot"><span>来源 / 本机回测引擎 · 行情 akshare 日线 · 演示数据，不是行情，不是账户</span><span>KATANA / RS-20 / 01</span></div>`)
+</script></body></html>

@@ -4,16 +4,35 @@
 
 ## Provide
 
+`*` marks a required prop.
+
 ### PnlText
 
 其余属性透传给 span。
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `value` | `number \| string \| null \| undefined` | — | 只用来定方向；0、空、解析不了的算「平」。 |
-| `tone` | `'up' \| 'down' \| 'flat'` | — | 方向不是由 value 的符号推出来时（例：亏损额写成正数）盖掉。 |
-| `arrow` | `boolean` | `false` | 文字前加 ▲ / ▼。 |
-| `as` | `'span' \| 'strong'` | `'span'` | 渲染成哪个元素。 |
+| `value` * | `number \| string \| null \| undefined` | — | Only decides the direction; 0, empty and unparseable values count as flat. |
+| `tone` | `Tone` | — | Overrides the direction when it is not given by the sign of value (a loss written as a positive number, say). |
+| `arrow` | `boolean` | — | Put an up or down triangle before the text. |
+| `as` | `'span' \| 'strong'` | — | Which element to render. |
+| `children` * | `ReactNode` | — | The text to show. |
+
+## Usage
+
+```tsx
+// SPDX-License-Identifier: MIT
+import { PnlText } from '@katana-ui/react/quant'
+
+export function PnlTextUsage() {
+  return (
+    <>
+      <PnlText value="12.5">+12.50</PnlText>
+      <PnlText value="-3">-3.00</PnlText>
+    </>
+  )
+}
+```
 
 ## States
 

@@ -26,19 +26,4 @@ test('序列探索：元信息行是点阵字，汉字用随包的方舟像素�
       ).length,
   )
   expect(faces).toBe(1)
-
-  // 编号 01 / 02 / 03 是强调色
-  const accent = await page.evaluate(() => {
-    const probe = document.createElement('i')
-    probe.style.color = 'var(--chart-accent, var(--signal-orange))'
-    document.body.append(probe)
-    const color = getComputedStyle(probe).color
-    probe.remove()
-    return color
-  })
-  const indexes = page.locator('[data-gallery="series-explorer"] .k-sx-kpis .k-spark-tile-index')
-  expect(await indexes.count()).toBeGreaterThanOrEqual(3)
-  for (const color of await indexes.evaluateAll((els) => els.map((e) => getComputedStyle(e).color))) {
-    expect(color).toBe(accent)
-  }
 })

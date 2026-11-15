@@ -4,14 +4,15 @@
 
 ## Provide
 
+`*` marks a required prop.
+
 ### Tabs
 
 其余属性透传给 Radix Tabs.Root。
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `value / defaultValue / onValueChange` | `string / string / (value: string) => void` | — | 受控与不受控。 |
-| `bare` | `boolean` | — | 不带皮肤。 |
+| `bare` | `boolean` | — | Skip the skin. |
 
 ### TabsList
 
@@ -19,7 +20,7 @@
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `variant` | `'default' \| 'line' \| 'bare'` | `'default'` | bare 不带皮肤，样子由调用方的类名给。 |
+| `variant` | `"line" \| "default" \| "bare"` | `'default'` | Skin: line, default, or bare (no skin, the caller's class names style it). |
 
 ### TabsTrigger
 
@@ -27,17 +28,31 @@
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `value` | `string` | — | 对应 TabsContent 的 value。 |
-| `disabled` | `boolean` | — | 这一页签灰掉。 |
-| `bare` | `boolean` | — | 不带皮肤。 |
+| `bare` | `boolean` | — | Skip the skin. |
 
 ### TabsContent
 
 其余属性透传给 Radix Tabs.Content。
 
-| 属性 | 类型 | 默认 | 说明 |
-| --- | --- | --- | --- |
-| `value` | `string` | — | 对应 TabsTrigger 的 value。 |
+## Usage
+
+```tsx
+// SPDX-License-Identifier: MIT
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@katana-ui/react'
+
+export function TabsUsage() {
+  return (
+    <Tabs defaultValue="gainers">
+      <TabsList>
+        <TabsTrigger value="gainers">Gainers</TabsTrigger>
+        <TabsTrigger value="volume">Volume</TabsTrigger>
+      </TabsList>
+      <TabsContent value="gainers">Top gainers</TabsContent>
+      <TabsContent value="volume">Top by volume</TabsContent>
+    </Tabs>
+  )
+}
+```
 
 ## States
 

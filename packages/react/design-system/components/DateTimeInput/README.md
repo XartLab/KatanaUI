@@ -4,21 +4,60 @@
 
 ## Provide
 
+`*` marks a required prop.
+
 ### DateTimeInput
 
 值一律是字符串（日期 YYYY-MM-DD，时刻 HH:mm 或 HH:mm:ss，空串是没填完）；按哪个时区解读由调用方定。
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `label` | `string` | — | 字段名，拼进读屏名。 |
-| `date / onDate` | `string / (value: string) => void` | — | 日期。 |
-| `time / onTime` | `string / (value: string) => void` | — | 时刻；不给 onTime 就只有日期。 |
-| `seconds` | `boolean` | `false` | 时刻带秒。 |
-| `min / max` | `string` | — | 能选的最早、最晚日期；范围外的日子灰着点不了，打进去的标成不合法。 |
-| `size` | `'sm'` | — | 26 高。 |
-| `labels` | `DateTimeLabels` | — | 读屏名与按钮名（包里不带文字，调用方按界面语言给）。 |
-| `locale` | `string` | — | 给 react-aria 的语言：zh-CN 或 en-CA，都是年-月-日的顺序。 |
-| `autoFocus / className` | `boolean / string` | — | 照原生。 |
+| `label` * | `string` | — | Field name used to build the accessible names: the date is read as "<label> date", the time as "<label> time". |
+| `date` * | `string` | — | The date as YYYY-MM-DD. |
+| `onDate` * | `(value: string) => void` | — | Called with the new date. |
+| `time` | `string` | — | The time as HH:mm or HH:mm:ss; omit it (and onTime) for a date-only field. |
+| `onTime` | `(value: string) => void` | — | Called with the new time. |
+| `seconds` | `boolean` | `false` | Include seconds in the time. |
+| `min` | `string` | — | Earliest selectable date (YYYY-MM-DD); days outside the range are disabled and typed dates outside it are marked invalid. |
+| `max` | `string` | — | Latest selectable date (YYYY-MM-DD). |
+| `size` | `'sm'` | — | sm is 26px high. |
+| `autoFocus` | `boolean` | — | Focus the field on mount, like the native attribute. |
+| `className` | `string` | — | Extra class name on the root. |
+| `labels` * | `DateTimeLabels` | — | Accessible names and button names (the package ships no text; the caller passes them in the UI language). |
+| `locale` * | `string` | — | Locale for react-aria: zh-CN or en-CA, both year-month-day. |
+
+## Usage
+
+```tsx
+// SPDX-License-Identifier: MIT
+import { useState } from 'react'
+import { DateTimeInput, type DateTimeLabels } from '@katana-ui/react'
+
+const LABELS: DateTimeLabels = {
+  date: (label) => `${label} date`,
+  pickDate: (label) => `Pick ${label} date`,
+  calendar: (label) => `${label} calendar`,
+  time: (label) => `${label} time`,
+  previousMonth: 'Previous month',
+  nextMonth: 'Next month',
+}
+
+export function DateTimeInputUsage() {
+  const [date, setDate] = useState('2026-11-14')
+  const [time, setTime] = useState('09:30')
+  return (
+    <DateTimeInput
+      label="Start"
+      labels={LABELS}
+      locale="en-CA"
+      date={date}
+      onDate={setDate}
+      time={time}
+      onTime={setTime}
+    />
+  )
+}
+```
 
 ## States
 

@@ -150,3 +150,61 @@ describe('表的渲染', () => {
     expect(out).toContain('aria-label="t!"')
   })
 })
+
+describe('自定义列、行属性与子行', () => {
+  type Item = { id: string; name: string; note?: string }
+  const items: Item[] = [
+    { id: 'a', name: 'Alpha', note: 'extra A' },
+    { id: 'b', name: 'Beta' },
+  ]
+  const columns: GridColumn<Item>[] = [
+    { id: 'name', type: 'custom', cell: (row) => <b data-testid="custom">{row.name}</b>, text: (row) => row.name },
+  ]
+  const layout = [{ id: 'name', label: 'Name', width: 100, visible: true }]
+  const html = (props: Record<string, unknown> = {}) =>
+    renderToStaticMarkup(
+      <DataGrid columns={columns} layout={layout} rows={items} rowId={(row) => row.id} label="t" {...props} />,
+    )
+
+  it('custom 列：格子里画 cell(row) 的内容，复制与排序用 text', () => {
+    expect(html()).toContain('<b data-testid="custom">Alpha</b>')
+    expect(cell({ id: 'c', type: 'custom', text: () => 'copy me' }, null).text).toBe('copy me')
+    expect(defaultAlign('custom')).toBe('start')
+  })
+
+  it('rowProps：类名并进行的类名，data-* 与 title 写到行上', () => {
+    const out = html({ rowProps: (row: Item) => ({ className: `is-${row.id}`, 'data-item': row.id, title: row.name }) })
+    expect(out).toContain('data-item="a"')
+    expect(out).toContain('title="Beta"')
+    expect(out).toMatch(/class="k-grid-row[^"]* is-a"/)
+  })
+
+  it('子行：有子行的行带 aria-expanded，展开了的行后面跟一条跨满整行的子行；表按 treegrid 读', () => {
+    const out = html({
+      renderSubRow: (row: Item) => row.note && <i>{row.note}</i>,
+      defaultExpanded: (row: Item) => row.id === 'a',
+    })
+    expect(out).toContain('role="treegrid"')
+    expect(out).toContain('aria-expanded="true"')
+    expect(out).toContain('data-subrow="a"')
+    expect(out).toContain('<i>extra A</i>')
+    expect(out).toContain('aria-colspan="1"')
+    // Beta 没有子行：没有 aria-expanded，也不能展开。
+    expect(out.match(/aria-expanded/g)).toHaveLength(1)
+  })
+
+  it('子行收起时不画；受控的 expanded 说了算', () => {
+    const renderSubRow = (row: Item) => <i>{row.name}</i>
+    expect(html({ renderSubRow })).not.toContain('data-subrow')
+    const out = html({ renderSubRow, expanded: new Set(['b']), defaultExpanded: () => true })
+    expect(out).toContain('data-subrow="b"')
+    expect(out).not.toContain('data-subrow="a"')
+  })
+
+  it('没给 onSortChange：表头是普通的字，不是按钮；selectable=false：行没有选中与悬停', () => {
+    const out = html({ selectable: false })
+    expect(out).not.toContain('<button')
+    expect(out).not.toContain('is-interactive')
+    expect(out).not.toContain('aria-selected')
+  })
+})

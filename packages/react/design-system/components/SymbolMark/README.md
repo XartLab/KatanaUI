@@ -4,6 +4,8 @@
 
 ## Provide
 
+`*` marks a required prop.
+
 ### SymbolMark
 
 图片从哪来由调用方给；件里不带任何企业或币种的标志（商标）。读屏名用 name，没有就用 code。
@@ -22,6 +24,33 @@
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
 | `(code, name?)` | `string` | — | 代码里的拉丁字母前 2 个（大写）；没有就取名称首字，再没有取代码首字符。 |
+
+## Usage
+
+```tsx
+// SPDX-License-Identifier: MIT
+import { SymbolMark } from '@katana-ui/react'
+
+const SAMPLE_MARK_SRC = `data:image/svg+xml;utf8,${encodeURIComponent(
+  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><circle cx="16" cy="16" r="16" fill="#2a2a2a"/></svg>',
+)}`
+
+export function SymbolMarkUsage() {
+  return (
+    <>
+      <SymbolMark code="AAPL" name="Apple" />
+      <SymbolMark code="600519" name="贵州茅台" />
+      <SymbolMark code="00700" name="腾讯控股" />
+      <SymbolMark code="BTCUSDT" name="Bitcoin" />
+
+      <SymbolMark code="BTC" name="Bitcoin" src={SAMPLE_MARK_SRC} />
+      <SymbolMark code="BTC" name="Bitcoin" src={SAMPLE_MARK_SRC} size={28} />
+
+      <SymbolMark code="ETH" name="Ethereum" src="data:image/png;base64,broken" />
+    </>
+  )
+}
+```
 
 ## States
 

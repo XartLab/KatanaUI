@@ -279,7 +279,7 @@ export function SeriesExplorer({
       )}
 
       <div className="k-sx-kpis" data-slot="series-kpis">
-        {kpis.map((item, itemIndex) => {
+        {kpis.map((item) => {
           const current = reduceWindow(points, window, item.series, item.reduce)
           const before = previous === null ? null : reduceWindow(points, previous, item.series, item.reduce)
           const ratio = changeRatio(current, before)
@@ -289,18 +289,17 @@ export function SeriesExplorer({
             <SparkTile
               key={item.key}
               label={item.label}
-              text={current === null ? null : item.format(current)}
-              value={current}
+              value={current === null ? null : item.format(current)}
               series={spark}
               threshold={item.limit}
               trendTone="neutral"
-              delta={ratio === null ? undefined : formatChange(ratio)}
-              deltaTone={itemDef?.cost || ratio === null || ratio === 0 ? 'muted' : ratio > 0 ? 'up' : 'down'}
-              seriesLabel={labels.spark(item.label)}
-              expanded={metric === item.key}
-              onOpen={() => setMetric(metric === item.key ? null : item.key)}
-              dataKey={item.key}
-              index={String(itemIndex + 1).padStart(2, '0')}
+              delta={ratio === null || itemDef?.cost ? undefined : ratio * 100}
+              note={ratio === null || !itemDef?.cost ? undefined : formatChange(ratio)}
+              sparkLabel={labels.spark(item.label)}
+              aria-expanded={metric === item.key}
+              data-expanded={metric === item.key ? 'true' : 'false'}
+              data-key={item.key}
+              onClick={() => setMetric(metric === item.key ? null : item.key)}
             />
           )
         })}

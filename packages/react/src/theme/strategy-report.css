@@ -1,0 +1,274 @@
+/* SPDX-License-Identifier: MIT */
+/* StrategyReport（策略报告）：页签行、关键读数、三列指标表、直方图、连续盈亏条、属性。
+   涨跌色（--pnl-up / --pnl-down）给字；面（柱、连续条）用中档 --div-pos-200 / --div-neg-200，灰色是持平。橙色留给数据线，这里不用。 */
+.k-sr {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  color: var(--ink-200);
+  font: var(--text-data) var(--font-sans);
+}
+.k-sr-tabs {
+  flex: 1 1 auto;
+  min-height: 0;
+  gap: 8px;
+}
+.k-sr-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.k-sr-top-end {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.k-sr-badge {
+  padding: 2px 8px;
+  border: 1px solid var(--line-200);
+  border-radius: var(--radius-pill);
+  color: var(--ink-300);
+  font: var(--text-caption) var(--font-sans);
+}
+.k-sr-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+}
+.k-sr-pane {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+.k-sr-pane-grid {
+  height: 100%;
+  min-height: 220px;
+}
+.k-sr-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.k-sr-empty {
+  margin: auto;
+  padding: var(--space-6);
+  color: var(--ink-300);
+  text-align: center;
+}
+
+/* 关键读数 */
+.k-sr-kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(84px, 1fr));
+  gap: 1px;
+  background: var(--line-100);
+  border: 1px solid var(--line-100);
+  border-radius: var(--radius-control);
+  overflow: hidden;
+}
+.k-sr-kpi {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  padding: 8px 10px;
+  background: var(--bg-200);
+}
+.k-sr-kpi-label {
+  color: var(--ink-300);
+  font: var(--text-caption) var(--font-sans);
+}
+.k-sr-kpi-value {
+  color: var(--ink-100);
+  font: 600 16px/20px var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.k-sr-kpi-sub {
+  color: var(--ink-300);
+  font: var(--text-caption) var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+/* 指标表 */
+.k-sr-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+.k-sr-table th,
+.k-sr-table td {
+  padding: 5px 10px;
+  border-bottom: 1px solid var(--line-100);
+  text-align: right;
+  white-space: nowrap;
+}
+.k-sr-table thead th {
+  color: var(--ink-300);
+  font-weight: 500;
+}
+.k-sr-table tbody th {
+  color: var(--ink-300);
+  font-weight: 400;
+  text-align: left;
+}
+.k-sr-table td {
+  font-family: var(--font-mono);
+}
+.k-sr-table [data-active] {
+  background: var(--group-bg);
+}
+.k-sr-table thead th[data-active] {
+  color: var(--ink-100);
+}
+
+/* 分布 */
+.k-sr-charts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+}
+.k-sr-figure {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  margin: 0;
+}
+.k-sr-figure figcaption {
+  color: var(--ink-300);
+  font: var(--text-data) var(--font-sans);
+}
+.k-sr-bars {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.k-sr-gridline line {
+  stroke: var(--chart-grid);
+}
+.k-sr-gridline text,
+.k-sr-edge {
+  fill: var(--ink-300);
+  font: var(--text-caption) var(--font-mono);
+}
+.k-sr-bar {
+  fill: var(--ink-400);
+}
+.k-sr-bar[data-tone='up'] {
+  fill: var(--div-pos-200);
+}
+.k-sr-bar[data-tone='down'] {
+  fill: var(--div-neg-200);
+}
+.k-sr-bar:hover {
+  stroke: var(--ink-100);
+  stroke-width: 1;
+}
+.k-sr-streaks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.k-sr-streak {
+  position: relative;
+  width: 8px;
+  height: 18px;
+  border-radius: 1px;
+  background: var(--ink-400);
+}
+.k-sr-streak[data-result='win'] {
+  background: var(--div-pos-200);
+}
+.k-sr-streak[data-result='loss'] {
+  background: var(--div-neg-200);
+}
+.k-sr-legend {
+  display: flex;
+  gap: 12px;
+  margin: 0;
+  color: var(--ink-300);
+  font: var(--text-caption) var(--font-sans);
+}
+.k-sr-legend span::before {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-right: 6px;
+  border-radius: 1px;
+  background: var(--ink-400);
+  content: '';
+}
+.k-sr-legend [data-result='win']::before {
+  background: var(--div-pos-200);
+}
+.k-sr-legend [data-result='loss']::before {
+  background: var(--div-neg-200);
+}
+
+/* 事实清单与属性：一行 键 —— 值 */
+.k-sr-facts,
+.k-sr-prop-group dl,
+.k-sr-detail {
+  display: grid;
+  margin: 0;
+}
+.k-sr-facts {
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0 24px;
+}
+.k-sr-facts > div,
+.k-sr-prop-group dl > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 4px 0;
+  border-bottom: 1px solid var(--line-100);
+}
+.k-sr-facts dt,
+.k-sr-prop-group dt,
+.k-sr-detail dt {
+  color: var(--ink-300);
+}
+.k-sr-facts dd,
+.k-sr-prop-group dd,
+.k-sr-detail dd {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+.k-sr-props {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px 32px;
+}
+.k-sr-prop-group h4 {
+  margin: 0 0 4px;
+  color: var(--ink-100);
+  font: 600 12px/16px var(--font-sans);
+}
+.k-sr-detail {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 4px 24px;
+  padding: 6px 8px 8px;
+}
+.k-sr-detail > div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.k-sr-detail dd {
+  text-align: left;
+}

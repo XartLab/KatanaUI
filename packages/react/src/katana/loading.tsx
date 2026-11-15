@@ -28,16 +28,28 @@ export function Loading({
   onRetry,
   children,
 }: {
+  /** All the text (the package ships none). */
   texts: LoadingTexts
+  /** Whether we are waiting. */
   pending: boolean
-  /** 读屏读的话；调用方有更具体的就给（「正在载入分析组件」）。 */
+  /**
+   * Accessible name of the skeleton; defaults to texts.skeleton.
+   * 读屏读的话；调用方有更具体的就给（「正在载入分析组件」）。
+   */
   label?: string
+  /** What is loading, shown in the caption "loading <what> · <source>". */
   what?: string
+  /** Where it loads from, the second part of the caption; omitted when absent. */
   source?: string | null
+  /** How many lines to draw when the visible height is unknown. */
   lines?: number
+  /** Fill the parent; the line count is measured from the container height. */
   fill?: boolean
+  /** The real header when it is already known; the skeleton only covers what is below it. */
   header?: ReactNode
+  /** When given, the amber bar after 10 seconds offers a retry button. */
   onRetry?: () => void
+  /** The content shown once loading is done. */
   children: ReactNode
 }) {
   const [revealed, setRevealed] = useState(false)
@@ -72,12 +84,19 @@ export function LoadingBoundary({
   onRetry,
   children,
 }: {
+  /** All the text (the package ships none). */
   texts: LoadingTexts
+  /** Accessible name of the skeleton. */
   label?: string
+  /** What is loading, shown in the caption. */
   what?: string
+  /** How many lines to draw when the visible height is unknown. */
   lines?: number
+  /** Fill the parent; the line count is measured from the container height. */
   fill?: boolean
+  /** When given, the amber bar after 10 seconds offers a retry button. */
   onRetry?: () => void
+  /** The content that suspends. */
   children: ReactNode
 }) {
   const [revealed, setRevealed] = useState(false)
