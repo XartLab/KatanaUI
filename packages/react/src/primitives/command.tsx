@@ -32,9 +32,13 @@ function CommandDialog({
   commandProps,
   ...props
 }: ComponentProps<typeof Dialog> & {
+  /** Title for screen readers (not shown, required). */
   title: string
+  /** Description for screen readers (not shown, required). */
   description: string
+  /** Extra class name on the dialog content. */
   className?: string
+  /** Props passed to the Command inside. */
   commandProps?: ComponentProps<typeof CommandPrimitive>
 }) {
   return (

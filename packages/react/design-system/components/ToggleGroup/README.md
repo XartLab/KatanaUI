@@ -4,16 +4,19 @@
 
 ## Provide
 
+`*` marks a required prop.
+
 ### ToggleGroup
 
 其余属性透传给 Radix ToggleGroup.Root。单选语义：点已选中的项不会取消。
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `value` | `string \| null` | — | 当前选中项；null 是一个都没选。 |
-| `onValueChange` | `(value: string) => void` | — | 选了另一项。 |
-| `variant` | `'default' \| 'sm'` | `'default'` | default 带边的设置页样式；sm 是 26 高的工具条样式。 |
-| `pillClassName / textClassName` | `string` | — | 选中块、文字外壳上追加的类名。 |
+| `variant` | `Variant` | `'default'` | Skin: default is the bordered settings style, sm is the 26px toolbar style. |
+| `pillClassName` | `string` | — | Extra class name on the selected pill. |
+| `textClassName` | `string` | — | Extra class name on the text wrapper. |
+| `value` * | `string \| null` | — | The selected item; null means none is selected. |
+| `onValueChange` * | `(value: string) => void` | — | Called with the newly selected value. |
 
 ### ToggleGroupItem
 
@@ -21,12 +24,30 @@
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `value` | `string` | — | 这一项的值。 |
-| `disabled` | `boolean` | — | 这一项灰掉。 |
+| `value` * | `string` | — | The value of this item. |
 
 ### toggleGroupVariants / toggleItemVariants
 
 外壳与按钮的类名函数。
+
+## Usage
+
+```tsx
+// SPDX-License-Identifier: MIT
+import { useState } from 'react'
+import { ToggleGroup, ToggleGroupItem } from '@katana-ui/react'
+
+export function ToggleGroupUsage() {
+  const [frame, setFrame] = useState('d')
+  return (
+    <ToggleGroup aria-label="Timeframe" value={frame} onValueChange={setFrame}>
+      <ToggleGroupItem value="d">Day</ToggleGroupItem>
+      <ToggleGroupItem value="w">Week</ToggleGroupItem>
+      <ToggleGroupItem value="m">Month</ToggleGroupItem>
+    </ToggleGroup>
+  )
+}
+```
 
 ## States
 

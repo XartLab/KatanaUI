@@ -1,14 +1,27 @@
 // SPDX-License-Identifier: MIT
-import { LayoutGrid, List, Pause, Play, Search } from 'lucide-react'
+import {
+  ChevronDownIcon,
+  ChevronUpIcon,
+  LayoutGrid,
+  List,
+  Pause,
+  Play,
+  PlusIcon,
+  Search,
+  Trash2Icon,
+} from 'lucide-react'
 import { useMemo, useRef, useState, type ReactNode } from 'react'
 import { cn } from '../../lib/cn.ts'
 import { SymbolMark } from '../../katana/symbol-mark.tsx'
 import { ChipGroup, type ChipItem } from '../../patterns/chip-group.tsx'
 import { RowActions, RowContextMenu, type RowAction } from '../../patterns/row-actions.tsx'
+import { ViewSwitcher, type ViewOption } from '../../patterns/view-switcher.tsx'
 import { Button } from '../../primitives/button.tsx'
 import { Input } from '../../primitives/input.tsx'
 import { ToggleGroup, ToggleGroupItem } from '../../primitives/toggle-group.tsx'
-import { filterNews, sortNews, type NewsItem, type NewsSymbol } from './news-feed-model.ts'
+import { Checkbox } from '../../primitives/checkbox.tsx'
+import { Popover, PopoverContent, PopoverTrigger } from '../../primitives/popover.tsx'
+import { filterNews, sortNews, type NewsFacet, type NewsItem, type NewsSymbol } from './news-feed-model.ts'
 
 // 新闻流（#29）：列表（时间、来源、标题、相关品种胶囊、重要标记）与卡片网格（来源 + 时间、标题、两行摘要、品种胶囊）两种排法；
 // 顶上是频道分段、来源多选芯片、关键词搜索、暂停。功能照 TradingView 帮助文档「新闻流」的做法（频道、来源筛选、搜索）与
@@ -39,12 +52,41 @@ export type NewsFeedLabels = {
   absolute: (time: number) => string
   important: string
   empty: ReactNode
+  /** 组合过滤（传了 facets 才用）：「+ 添加过滤」、浮层里的重置与移除、读屏名。 */
+  facets?: { group: string; add: string; reset: string; remove: string; none: string }
+  /** 「3 分钟阅读」；传了且条目有 readMinutes 才写（TradingView 的「2 min read」）。 */
+  read?: (minutes: number) => string
+  /** 标题行的已保存过滤视图下拉（传了 views 才用）：读屏名与「另存为」。 */
+  views?: { trigger: string; save?: string }
+  /** 折叠 / 展开过滤区的按钮读屏名；传了就有这个按钮。 */
+  collapse?: string
+  expand?: string
 }
 
 export type NewsFeedProps = {
   items: readonly NewsItem[]
   channels: readonly { value: string; label: string }[]
   sources: readonly { value: string; label: string }[]
+  /**
+   * 组合过滤（照 TradingView News Flow：多个可增删、可重置的多选过滤，条目用 NewsItem.facets 带取值；主会话 2026-11-15 实测）。
+   * 类别与取值由调用方传；没传就没有这一排。过滤条上哪些分面在是件里的状态（NewsFacet.shown 给初值）。
+   */
+  facets?: readonly NewsFacet[]
+  onFacetsChange?: (picked: Record<string, string[]>) => void
+  /** 选中的那条（阅读窗开着的那条）：行底色加深。给了 reader 时件自己管这一条，不用传。 */
+  selected?: string | null
+  /**
+   * 阅读窗：给了就是左列表右阅读窗的并排排法（照 TradingView News Flow，主会话 2026-11-15 实测）；点标题打开这一条，返回的节点（一般是 NewsReader）画在右边，
+   * 件的宽度不到 900px 时改成盖在列表上的浮层。close 关掉阅读窗。
+   */
+  reader?: (item: NewsItem, ctx: { close: () => void }) => ReactNode
+  /** 标题行的已保存过滤视图（Full feed 这样的下拉）；切换、另存都由调用方处理（件里的过滤状态由调用方用 key 重置）。 */
+  views?: readonly ViewOption[]
+  view?: string
+  onViewChange?: (key: string) => void
+  onSaveView?: () => void
+  /** 相关品种的画法：stack = 重叠的一排徽标（默认，TradingView 新闻列表），chips = 带代码的胶囊。 */
+  symbolStyle?: 'stack' | 'chips'
   /** 当前时间（毫秒）：相对时间按它算；调用方定时更新它。 */
   now: number
   labels: NewsFeedLabels
@@ -69,6 +111,15 @@ export function NewsFeed({
   items,
   channels,
   sources,
+  facets = [],
+  onFacetsChange,
+  selected = null,
+  reader,
+  views,
+  view,
+  onViewChange,
+  onSaveView,
+  symbolStyle = 'stack',
   now,
   labels,
   defaultLayout = 'list',
@@ -84,7 +135,15 @@ export function NewsFeed({
   const [channel, setChannel] = useState('')
   const [picked, setPicked] = useState<string[]>([])
   const [query, setQuery] = useState('')
+  const [facetShown, setFacetShown] = useState<string[]>(() => facets.filter((f) => f.shown).map((f) => f.key))
+  const [facetPicked, setFacetPicked] = useState<Record<string, string[]>>({})
+  const setPicked2 = (next: Record<string, string[]>) => {
+    setFacetPicked(next)
+    onFacetsChange?.(next)
+  }
   const [layout, setLayout] = useState(defaultLayout)
+  const [collapsed, setCollapsed] = useState(false)
+  const [openId, setOpenId] = useState<string | null>(null)
   const [paused, setPaused] = useState(false)
   const [atTop, setAtTop] = useState(true)
   // shown：已放进列表的条目 id；其余（来自 items）就是「新消息」。fresh：刚插入的，用来播淡入。
@@ -105,11 +164,11 @@ export function NewsFeed({
     if (!paused && atTop) release()
   }
 
-  const filter = { channel, sources: picked, query }
+  const filter = { channel, sources: picked, query, facets: facetPicked }
   const visible = useMemo(
     () => filterNews(sortNews(items.filter((i) => shown.has(i.id))), filter),
     // oxlint-disable-next-line react/exhaustive-deps -- filter 是三个值拼出来的新对象，依赖写成三个值
-    [items, shown, channel, picked, query],
+    [items, shown, channel, picked, query, facetPicked],
   )
   const pending = filterNews(
     items.filter((i) => !shown.has(i.id)),
@@ -119,143 +178,318 @@ export function NewsFeed({
   const sourceName = (value: string) => sources.find((s) => s.value === value)?.label ?? value
   const chips: ChipItem[] = sources.map((s) => ({ value: s.value, label: s.label }))
 
+  const opened = reader && openId !== null ? items.find((i) => i.id === openId) : undefined
+  const selectedId = reader ? (opened?.id ?? null) : selected
+  const open = (item: NewsItem) => {
+    if (reader) setOpenId(item.id)
+    onOpen?.(item)
+  }
+  const headed = (views && views.length > 0 && labels.views) || labels.collapse
+
   return (
-    <section className={cn('k-news', className)} aria-label={labels.feed} data-layout={layout}>
-      <div className="k-news-top">
-        <ToggleGroup
-          variant="sm"
-          aria-label={labels.channels}
-          value={channel === '' ? 'all' : channel}
-          onValueChange={(v) => {
-            const next = v === 'all' ? '' : v
-            setChannel(next)
-            onChannelChange?.(next)
-          }}
-        >
-          <ToggleGroupItem value="all">{labels.all}</ToggleGroupItem>
-          {channels.map((c) => (
-            <ToggleGroupItem key={c.value} value={c.value}>
-              {c.label}
-            </ToggleGroupItem>
-          ))}
-        </ToggleGroup>
-        <label className="k-news-search">
-          <Search size={13} aria-hidden />
-          <Input
-            size="sm"
-            type="search"
-            aria-label={labels.search}
-            placeholder={labels.search}
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-          />
-        </label>
-        <ToggleGroup
-          variant="sm"
-          aria-label={labels.layout}
-          value={layout}
-          onValueChange={(v) => setLayout(v as 'list' | 'card')}
-        >
-          <ToggleGroupItem value="list" aria-label={labels.layoutList} title={labels.layoutList}>
-            <List size={14} aria-hidden />
-          </ToggleGroupItem>
-          <ToggleGroupItem value="card" aria-label={labels.layoutCard} title={labels.layoutCard}>
-            <LayoutGrid size={14} aria-hidden />
-          </ToggleGroupItem>
-        </ToggleGroup>
-        <Button
-          variant="icon"
-          aria-label={paused ? labels.resume : labels.pause}
-          title={paused ? labels.resume : labels.pause}
-          aria-pressed={paused}
-          onClick={() => {
-            setPaused(!paused)
-            onPausedChange?.(!paused)
-          }}
-        >
-          {paused ? <Play aria-hidden /> : <Pause aria-hidden />}
-        </Button>
-      </div>
-      {sources.length > 0 && (
-        <ChipGroup
-          items={chips}
-          value={picked}
-          onValueChange={(next) => {
-            setPicked(next)
-            onSourcesChange?.(next)
-          }}
-          label={labels.sources}
-          clearLabel={labels.clearSources}
-        />
-      )}
-      {pending > 0 && (
-        <button
-          type="button"
-          className="k-news-new"
-          data-testid="news-new"
-          onClick={() => {
-            release()
-            scroller.current?.scrollTo({ top: 0 })
-          }}
-        >
-          {labels.newItems(pending)}
-        </button>
-      )}
-      <div ref={scroller} className="k-news-scroll" onScroll={(e) => setAtTop(e.currentTarget.scrollTop <= TOP_SLACK)}>
-        {visible.length === 0 ? (
-          <div className="k-news-empty">{labels.empty}</div>
-        ) : (
-          <RowContextMenu
-            actionsFor={itemActions && ((id) => itemActions(items.find((i) => i.id === id)!))}
-            label={itemActionsLabel}
-            keyAttribute="data-news-id"
-          >
-            <ol className="k-news-items" aria-label={labels.feed}>
-              {visible.map((item) => (
-                <li
-                  key={item.id}
-                  className={cn('k-news-item', fresh.has(item.id) && 'is-fresh')}
-                  data-important={item.important ? '' : undefined}
-                  data-news-id={item.id}
-                >
-                  <div className="k-news-meta">
-                    <span className="k-news-source">{sourceName(item.source)}</span>
-                    <time
-                      className="k-news-time"
-                      dateTime={new Date(item.time).toISOString()}
-                      title={labels.absolute(item.time)}
-                    >
-                      {labels.ago(Math.max(0, Math.floor((now - item.time) / 1000)))}
-                    </time>
-                    {item.important && (
-                      <span className="k-news-flag" role="img" aria-label={labels.important} title={labels.important} />
-                    )}
-                  </div>
-                  <div className="k-news-body">
-                    <Title item={item} onOpen={onOpen} />
-                    {item.summary && layout === 'card' && <p className="k-news-summary">{item.summary}</p>}
-                  </div>
-                  {itemActions && <RowActions items={itemActions(item)} label={itemActionsLabel} />}
-                  {item.symbols && item.symbols.length > 0 && (
-                    <div className="k-news-symbols">
-                      {item.symbols.map((s) => (
-                        <button
-                          key={s.code}
-                          type="button"
-                          className="k-news-symbol"
-                          onClick={() => onSymbolPick?.(s, item)}
-                        >
-                          <SymbolMark code={s.code} name={s.name} size={14} />
-                          <span>{s.code}</span>
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </li>
+    <section
+      className={cn('k-news', className)}
+      aria-label={labels.feed}
+      data-layout={layout}
+      data-reader={opened ? '' : undefined}
+    >
+      {headed ? (
+        <div className="k-news-head" data-slot="news-head">
+          {views && views.length > 0 && labels.views ? (
+            <ViewSwitcher
+              views={views}
+              value={view ?? views[0]!.key}
+              onValueChange={(key) => onViewChange?.(key)}
+              onSave={onSaveView}
+              labels={labels.views}
+            />
+          ) : (
+            <span />
+          )}
+          {labels.collapse ? (
+            <Button
+              size="icon"
+              variant="ghost"
+              aria-label={collapsed ? (labels.expand ?? labels.collapse) : labels.collapse}
+              aria-expanded={!collapsed}
+              onClick={() => setCollapsed(!collapsed)}
+            >
+              {collapsed ? <ChevronDownIcon aria-hidden="true" /> : <ChevronUpIcon aria-hidden="true" />}
+            </Button>
+          ) : null}
+        </div>
+      ) : null}
+      <div className="k-news-split">
+        <div className="k-news-main">
+          <div className="k-news-top" data-collapsed={collapsed ? '' : undefined}>
+            <ToggleGroup
+              variant="sm"
+              aria-label={labels.channels}
+              value={channel === '' ? 'all' : channel}
+              onValueChange={(v) => {
+                const next = v === 'all' ? '' : v
+                setChannel(next)
+                onChannelChange?.(next)
+              }}
+            >
+              <ToggleGroupItem value="all">{labels.all}</ToggleGroupItem>
+              {channels.map((c) => (
+                <ToggleGroupItem key={c.value} value={c.value}>
+                  {c.label}
+                </ToggleGroupItem>
               ))}
-            </ol>
-          </RowContextMenu>
-        )}
+            </ToggleGroup>
+            <label className="k-news-search">
+              <Search size={13} aria-hidden />
+              <Input
+                size="sm"
+                type="search"
+                aria-label={labels.search}
+                placeholder={labels.search}
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+              />
+            </label>
+            <ToggleGroup
+              variant="sm"
+              aria-label={labels.layout}
+              value={layout}
+              onValueChange={(v) => setLayout(v as 'list' | 'card')}
+            >
+              <ToggleGroupItem value="list" aria-label={labels.layoutList} title={labels.layoutList}>
+                <List size={14} aria-hidden />
+              </ToggleGroupItem>
+              <ToggleGroupItem value="card" aria-label={labels.layoutCard} title={labels.layoutCard}>
+                <LayoutGrid size={14} aria-hidden />
+              </ToggleGroupItem>
+            </ToggleGroup>
+            <Button
+              variant="icon"
+              aria-label={paused ? labels.resume : labels.pause}
+              title={paused ? labels.resume : labels.pause}
+              aria-pressed={paused}
+              onClick={() => {
+                setPaused(!paused)
+                onPausedChange?.(!paused)
+              }}
+            >
+              {paused ? <Play aria-hidden /> : <Pause aria-hidden />}
+            </Button>
+          </div>
+          {facets.length > 0 && labels.facets && !collapsed && (
+            <div className="k-news-facets" role="group" aria-label={labels.facets.group} data-slot="news-facets">
+              {facetShown.flatMap((key) => {
+                const facet = facets.find((f) => f.key === key)
+                if (!facet) return []
+                const chosen = facetPicked[key] ?? []
+                return [
+                  <Popover key={key}>
+                    <PopoverTrigger asChild>
+                      <button
+                        type="button"
+                        className="k-news-facet"
+                        data-facet={key}
+                        data-active={chosen.length > 0 ? '' : undefined}
+                      >
+                        <span>{facet.label}</span>
+                        {chosen.length > 0 && (
+                          <b>
+                            {chosen.length === 1
+                              ? (facet.options.find((o) => o.value === chosen[0])?.label ?? chosen[0])
+                              : chosen.length}
+                          </b>
+                        )}
+                        <ChevronDownIcon size={12} aria-hidden="true" />
+                      </button>
+                    </PopoverTrigger>
+                    <PopoverContent align="start" className="k-news-facet-pop" aria-label={facet.label}>
+                      <div className="k-news-facet-head">
+                        <b>{facet.label}</b>
+                        <span>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            disabled={chosen.length === 0}
+                            onClick={() => setPicked2({ ...facetPicked, [key]: [] })}
+                          >
+                            {labels.facets!.reset}
+                          </Button>
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            aria-label={`${labels.facets!.remove} ${facet.label}`}
+                            onClick={() => {
+                              setFacetShown((prev) => prev.filter((k) => k !== key))
+                              setPicked2({ ...facetPicked, [key]: [] })
+                            }}
+                          >
+                            <Trash2Icon aria-hidden="true" />
+                          </Button>
+                        </span>
+                      </div>
+                      <ul>
+                        {facet.options.map((o) => (
+                          <li key={o.value}>
+                            <label>
+                              <Checkbox
+                                checked={chosen.includes(o.value)}
+                                onCheckedChange={(on) =>
+                                  setPicked2({
+                                    ...facetPicked,
+                                    [key]:
+                                      on === true
+                                        ? facet.single
+                                          ? [o.value]
+                                          : [...chosen, o.value]
+                                        : chosen.filter((v) => v !== o.value),
+                                  })
+                                }
+                              />
+                              {o.label}
+                            </label>
+                          </li>
+                        ))}
+                      </ul>
+                    </PopoverContent>
+                  </Popover>,
+                ]
+              })}
+              {facets.some((f) => !facetShown.includes(f.key)) ? (
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <button type="button" className="k-news-facet k-news-facet-add" data-slot="news-facet-add">
+                      <PlusIcon size={12} aria-hidden="true" />
+                      <span>{labels.facets.add}</span>
+                    </button>
+                  </PopoverTrigger>
+                  <PopoverContent align="start" className="k-news-facet-pop" aria-label={labels.facets.add}>
+                    <ul>
+                      {facets
+                        .filter((f) => !facetShown.includes(f.key))
+                        .map((f) => (
+                          <li key={f.key}>
+                            <button
+                              type="button"
+                              data-facet-option={f.key}
+                              onClick={() => setFacetShown((prev) => [...prev, f.key])}
+                            >
+                              {f.label}
+                            </button>
+                          </li>
+                        ))}
+                    </ul>
+                  </PopoverContent>
+                </Popover>
+              ) : null}
+            </div>
+          )}
+          {sources.length > 0 && !collapsed && (
+            <ChipGroup
+              items={chips}
+              value={picked}
+              onValueChange={(next) => {
+                setPicked(next)
+                onSourcesChange?.(next)
+              }}
+              label={labels.sources}
+              clearLabel={labels.clearSources}
+            />
+          )}
+          {pending > 0 && (
+            <button
+              type="button"
+              className="k-news-new"
+              data-testid="news-new"
+              onClick={() => {
+                release()
+                scroller.current?.scrollTo({ top: 0 })
+              }}
+            >
+              {labels.newItems(pending)}
+            </button>
+          )}
+          <div
+            ref={scroller}
+            className="k-news-scroll"
+            onScroll={(e) => setAtTop(e.currentTarget.scrollTop <= TOP_SLACK)}
+          >
+            {visible.length === 0 ? (
+              <div className="k-news-empty">{labels.empty}</div>
+            ) : (
+              <RowContextMenu
+                actionsFor={itemActions && ((id) => itemActions(items.find((i) => i.id === id)!))}
+                label={itemActionsLabel}
+                keyAttribute="data-news-id"
+              >
+                <ol className="k-news-items" aria-label={labels.feed}>
+                  {visible.map((item) => (
+                    <li
+                      key={item.id}
+                      className={cn('k-news-item', fresh.has(item.id) && 'is-fresh')}
+                      data-important={item.important ? '' : undefined}
+                      data-news-id={item.id}
+                      data-selected={item.id === selectedId ? '' : undefined}
+                      data-actions={itemActions ? '' : undefined}
+                    >
+                      <div className="k-news-meta">
+                        <span className="k-news-source">{sourceName(item.source)}</span>
+                        <time
+                          className="k-news-time"
+                          dateTime={new Date(item.time).toISOString()}
+                          title={labels.absolute(item.time)}
+                        >
+                          {labels.ago(Math.max(0, Math.floor((now - item.time) / 1000)))}
+                        </time>
+                        {labels.read && item.readMinutes !== undefined ? (
+                          <span className="k-news-read">{labels.read(item.readMinutes)}</span>
+                        ) : null}
+                        {item.important && (
+                          <span
+                            className="k-news-flag"
+                            role="img"
+                            aria-label={labels.important}
+                            title={labels.important}
+                          />
+                        )}
+                      </div>
+                      <div className="k-news-body">
+                        <Title item={item} onOpen={reader || onOpen ? open : undefined} />
+                        {item.summary && layout === 'card' && <p className="k-news-summary">{item.summary}</p>}
+                      </div>
+                      {itemActions && <RowActions items={itemActions(item)} label={itemActionsLabel} />}
+                      {item.symbols && item.symbols.length > 0 && (
+                        <div className="k-news-symbols" data-style={symbolStyle}>
+                          {item.symbols.map((symbol) => (
+                            <button
+                              key={symbol.code}
+                              type="button"
+                              className="k-news-symbol"
+                              aria-label={symbolStyle === 'stack' ? symbol.code : undefined}
+                              title={symbolStyle === 'stack' ? `${symbol.code} ${symbol.name ?? ''}`.trim() : undefined}
+                              onClick={() => onSymbolPick?.(symbol, item)}
+                            >
+                              <SymbolMark
+                                code={symbol.code}
+                                name={symbol.name}
+                                size={symbolStyle === 'stack' ? 18 : 14}
+                              />
+                              {symbolStyle === 'chips' ? <span>{symbol.code}</span> : null}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </li>
+                  ))}
+                </ol>
+              </RowContextMenu>
+            )}
+          </div>
+        </div>
+        {opened && reader ? (
+          <aside className="k-news-pane" data-slot="news-reader-pane">
+            {reader(opened, { close: () => setOpenId(null) })}
+          </aside>
+        ) : null}
       </div>
     </section>
   )

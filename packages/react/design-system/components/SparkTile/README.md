@@ -4,6 +4,8 @@ KPI 瓦片：点阵小标签、LCD 数值、24px 迷你折线（可画阈值虚�
 
 ## Provide
 
+`*` marks a required prop.
+
 ### SparkTile
 
 给了 onClick 整块就是按钮（点开该指标的完整图），不给是普通块。文案（标签、说明、读屏名）都由调用方传。
@@ -22,6 +24,72 @@ KPI 瓦片：点阵小标签、LCD 数值、24px 迷你折线（可画阈值虚�
 | `delta` | `number` | — | 变化百分数，写成带符号带箭头的 ChangeText，涨跌色跟 data-updown。 |
 | `note` | `ReactNode` | — | 变化行的小字说明；near、over 时要在这里写字。 |
 | `onClick` | `() => void` | — | 给了就是按钮。 |
+
+## Usage
+
+```tsx
+// SPDX-License-Identifier: MIT
+import { useState } from 'react'
+import { SparkTile } from '@katana-ui/react/quant'
+
+const asset = [18, 16, 17, 12, 13, 9, 10, 6, 4]
+
+const drawdown = [4, 8, 6, 12, 10, 16, 12, 18, 14]
+
+const stable = [10, 12, 9, 14, 11, 13, 10, 12, 11]
+
+const exposure = [16, 14, 15, 10, 11, 8, 9, 5, 4]
+
+export function SparkTileUsage() {
+  const [clicks, setClicks] = useState(0)
+  return (
+    <>
+      <div className="gal-grid-5" data-testid="spark-row">
+        <SparkTile
+          label="NET ASSET"
+          value="2.42M"
+          series={asset.map((v) => 20 - v)}
+          sparkLabel="近 9 期净值走势"
+          delta={1.31}
+          note="今日"
+        />
+        <SparkTile
+          label="DRAWDOWN"
+          value="-3.1%"
+          series={drawdown}
+          sparkLabel="近 9 期回撤走势"
+          trendTone="neutral"
+          note="峰值 -6.8% · 02-14"
+        />
+        <SparkTile label="TURNOVER" value="0.62" unit="/月" series={stable} sparkLabel="近 9 期换手" note="稳定" />
+        <SparkTile
+          label="EXPOSURE"
+          value="131"
+          unit="/ 150%"
+          series={exposure.map((v) => 20 - v)}
+          sparkLabel="近 9 期敞口，虚线是上限"
+          threshold={19}
+          state="near"
+          note="接近上限"
+        />
+        <SparkTile label="SHARPE 60D" value={null} series={[]} sparkLabel="夏普：没有数据" note="等待数据" />
+      </div>
+
+      <div className="gal-grid-5">
+        <SparkTile
+          label="FILLS"
+          value={String(clicks)}
+          series={stable}
+          sparkLabel="近 9 期成交"
+          delta={-0.8}
+          note="点我 +1"
+          onClick={() => setClicks((n) => n + 1)}
+        />
+      </div>
+    </>
+  )
+}
+```
 
 ## States
 

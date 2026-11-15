@@ -4,22 +4,30 @@
 
 ## Provide
 
+`*` marks a required prop.
+
 ### Input
 
 其余属性透传给原生 input；type 默认 text。
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `size` | `'default' \| 'sm'` | `'default'` | default 30 高；sm 26 高、字号取 data 档。 |
+| `size` | `"default" \| "sm"` | — | Height: default is 30px, sm is 26px with the data type size. |
 
 ### inputVariants
 
 返回类名的函数，给 textarea 等非 input 元素用。
 
-| 属性 | 类型 | 默认 | 说明 |
-| --- | --- | --- | --- |
-| `size` | `'default' \| 'sm'` | `'default'` | 同 Input。 |
-| `multiline` | `boolean` | `false` | 多行：高度由内容定。 |
+## Usage
+
+```tsx
+// SPDX-License-Identifier: MIT
+import { Input } from '@katana-ui/react'
+
+export function InputUsage() {
+  return <Input aria-label="Quantity" placeholder="0.00" />
+}
+```
 
 ## States
 

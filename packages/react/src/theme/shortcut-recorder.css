@@ -36,7 +36,7 @@
   cursor: not-allowed;
 }
 .k-rec[data-state='recording'] .k-rec-field {
-  border-color: var(--signal-orange);
+  border-color: var(--ink-200);
   background: var(--alpha-white-4);
 }
 .k-rec[data-state='conflict'] .k-rec-field {

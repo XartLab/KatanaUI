@@ -4,6 +4,8 @@
 
 ## Provide
 
+`*` marks a required prop.
+
 ### useScrubber(options)
 
 返回 { index, set, pointer, keys, props }：props 是 pointer 与 keys 的合并，整个摊在图的容器上；几张图共用时把 pointer 摊在每张上、keys 摊在外层。
@@ -14,6 +16,35 @@
 | `mode` | `'point' \| 'band'` | `'point'` | point：格是点（折线），指针落到最近的点；band：格是带（柱），落在哪条带里。 |
 | `index` | `number \| null` | — | 受控的选中格；不给就钩子自己管。 |
 | `onIndexChange` | `(index: number \| null) => void` | — | 选中格变了（含清掉，null）。 |
+
+## Usage
+
+```tsx
+// SPDX-License-Identifier: MIT
+import { useScrubber } from '@katana-ui/react'
+
+export function UseScrubberUsage() {
+  const bars = [4, 7, 5, 9, 12, 8, 6, 10, 14, 11, 7, 9]
+  const scrub = useScrubber({ count: bars.length, mode: 'band' })
+  return (
+    <>
+      <div className="gal-scrub" data-gallery-scrubber role="group" aria-label="扫读演示：十二根柱" {...scrub.props}>
+        {bars.map((value, i) => (
+          <span
+            key={i}
+            className="gal-scrub-bar"
+            data-active={scrub.index === i ? 'true' : undefined}
+            style={{ height: value * 6 }}
+          />
+        ))}
+      </div>
+      <output className="gal-label" data-gallery-scrubber-readout>
+        {scrub.index === null ? '未选中' : `第 ${scrub.index + 1} 格 · 值 ${bars[scrub.index]}`}
+      </output>
+    </>
+  )
+}
+```
 
 ## States
 

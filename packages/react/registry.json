@@ -104,6 +104,16 @@
           "target": "~/src/katana/ui/theme/event-timeline.css"
         },
         {
+          "path": "src/theme/filter-bar.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/filter-bar.css"
+        },
+        {
+          "path": "src/theme/flow-sankey.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/flow-sankey.css"
+        },
+        {
           "path": "src/theme/fonts.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/fonts.css"
@@ -112,6 +122,11 @@
           "path": "src/theme/hold-to-confirm.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/hold-to-confirm.css"
+        },
+        {
+          "path": "src/theme/hypothesis-ledger.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/hypothesis-ledger.css"
         },
         {
           "path": "src/theme/json-viewer.css",
@@ -234,6 +249,11 @@
           "target": "~/src/katana/ui/theme/symbol-mark.css"
         },
         {
+          "path": "src/theme/symbol-overview.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/symbol-overview.css"
+        },
+        {
           "path": "src/theme/system-monitor.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/system-monitor.css"
@@ -244,9 +264,19 @@
           "target": "~/src/katana/ui/theme/technical-rating.css"
         },
         {
+          "path": "src/theme/transmission-chain.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/transmission-chain.css"
+        },
+        {
           "path": "src/theme/tree-view.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/tree-view.css"
+        },
+        {
+          "path": "src/theme/vintage-series.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/vintage-series.css"
         },
         {
           "path": "src/theme/workspace-tabs.css",
@@ -1900,6 +1930,42 @@
       ]
     },
     {
+      "name": "filter-bar-model",
+      "type": "registry:component",
+      "title": "Filter Bar Model",
+      "description": "选股器的顶部过滤行：一行可换行的胶囊，每个胶囊是一个字段；点开浮层有标题与垃圾桶（把这个过滤从条上拿掉）、搜索框、预设条件列表（主文字加灰色副标题）、底部「手动设置」（运算符加值）。最后是「+」（按分组列出所有字段，进组再选）与「⋯」（重置全部条件）。照 TradingView 选股器（主会话 2026-11-15 登录态实测），实现原创。字段、运算符、预设与文字都由调用方定义；条件受控，件不过滤数据，调用方用 applyFilters 或自己的方式过滤。",
+      "files": [
+        {
+          "path": "src/patterns/filter-bar-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/patterns/filter-bar-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "filter-bar",
+      "type": "registry:component",
+      "title": "Filter Bar",
+      "description": "选股器的顶部过滤行：一行可换行的胶囊，每个胶囊是一个字段；点开浮层有标题与垃圾桶（把这个过滤从条上拿掉）、搜索框、预设条件列表（主文字加灰色副标题）、底部「手动设置」（运算符加值）。最后是「+」（按分组列出所有字段，进组再选）与「⋯」（重置全部条件）。照 TradingView 选股器（主会话 2026-11-15 登录态实测），实现原创。字段、运算符、预设与文字都由调用方定义；条件受控，件不过滤数据，调用方用 applyFilters 或自己的方式过滤。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/button",
+        "@katana/cn",
+        "@katana/filter-bar-model",
+        "@katana/input",
+        "@katana/popover"
+      ],
+      "files": [
+        {
+          "path": "src/patterns/filter-bar.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/patterns/filter-bar.tsx"
+        }
+      ]
+    },
+    {
       "name": "multi-select",
       "type": "registry:component",
       "title": "Multi Select",
@@ -2003,6 +2069,26 @@
           "path": "src/patterns/tree-view.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/patterns/tree-view.tsx"
+        }
+      ]
+    },
+    {
+      "name": "view-switcher",
+      "type": "registry:component",
+      "title": "View Switcher",
+      "description": "选股器的顶部过滤行：一行可换行的胶囊，每个胶囊是一个字段；点开浮层有标题与垃圾桶（把这个过滤从条上拿掉）、搜索框、预设条件列表（主文字加灰色副标题）、底部「手动设置」（运算符加值）。最后是「+」（按分组列出所有字段，进组再选）与「⋯」（重置全部条件）。照 TradingView 选股器（主会话 2026-11-15 登录态实测），实现原创。字段、运算符、预设与文字都由调用方定义；条件受控，件不过滤数据，调用方用 applyFilters 或自己的方式过滤。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/dropdown-menu"
+      ],
+      "files": [
+        {
+          "path": "src/patterns/view-switcher.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/patterns/view-switcher.tsx"
         }
       ]
     },
@@ -2265,17 +2351,22 @@
       "name": "event-calendar",
       "type": "registry:component",
       "title": "Event Calendar",
-      "description": "按日分组的事件表：时间、国家 / 地区（旗帜图或字母圆标）、事件名、重要程度（1–3 格亮度条）、实际 / 预期 / 前值。实际值好于预期用涨色、差于预期用跌色，好坏方向由调用方按事件给；未公布写「—」，还没到点的写倒计时。顶上：今天 / 本周 / 下周 / 自定义区间，重要程度芯片，国家多选，「只看高重要」开关。数据、现在、时区、文字都由调用方传。",
+      "description": "照 TradingView 日历的布局（主会话 2026-11-15 登录态实测）：导航行（今天、选日期、按周翻页、范围文字、时区读数），周条（周一到周日七张日卡，列出当天各类别条数，点卡选日），类别药丸（经济 / 财报 / 分红 / IPO，给了哪类数据才有哪个），重要性单开关（只看高重要）、经济类别下拉（12 类，单选）、国家选择框（模态：搜索、全球与前 20 预设、按地区分组两列复选、取消 / 应用）。经济表：日期分隔行粘顶、数字列名写在它右侧；同一时间同一国家的事件合并；实际值加粗不上涨跌色；点开一行看说明、来源、历史值小图、下次发布（比 TradingView 多的部分）。财报表：时段图标 + 时间、徽标、代码、公司名，预期 / 实际 EPS 与营收，EPS 意外与营收意外（只有这两列上涨跌色），市值，币种小字，行下可选「财报材料 / 电话会」。分红、IPO 各有自己的列。数据、现在、时区、文字都由调用方传。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
       "registryDependencies": [
-        "@katana/chip-group",
+        "@katana/button",
+        "@katana/checkbox",
         "@katana/cn",
-        "@katana/combobox",
-        "@katana/date-range-picker",
+        "@katana/dialog",
         "@katana/event-calendar-model",
+        "@katana/input",
+        "@katana/quant-format",
         "@katana/row-actions",
-        "@katana/switch",
-        "@katana/symbol-mark",
-        "@katana/toggle-group"
+        "@katana/select",
+        "@katana/sparkline",
+        "@katana/symbol-mark"
       ],
       "files": [
         {
@@ -2295,6 +2386,42 @@
           "path": "src/quant/flow-gauges.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/quant/flow-gauges.tsx"
+        }
+      ]
+    },
+    {
+      "name": "flow-sankey-model",
+      "type": "registry:component",
+      "title": "Flow Sankey Model",
+      "description": "资金从来源（央行、银行信贷、财政、海外……）经通道到用途（偿债、消费、投资、资产配置）再到受益方的桑基图，节点与流量由调用方给，列由节点的 column 定。悬停节点或链路出 LCD 读数：金额、占来源流出、占总量；点节点（或聚焦后 Enter / 空格）钉住它的全部上游与下游，其余压暗，再点或 Esc 取消。「交易流量」与「价格重估」分开：交易流量是实色带，价格重估（估值变了、没有资金移动）是斜纹带，占比与总量只算交易流量，右上有开关可以把重估整条拿掉；图例分开写。链路与节点是中性灰，不用橙与蓝，节点想着色由调用方给 color。排布用 d3-sankey 0.12.3（BSD-3-Clause，见 NOTICE），有环时不画、写 labels.cycle（先把回流拆成另一个节点）。需求稿是 issue #45，没有读到可对照的参照产品页面，待核对；演示数据全部虚构。",
+      "dependencies": [
+        "d3-sankey@0.12.3"
+      ],
+      "devDependencies": [
+        "@types/d3-sankey@0.12.5"
+      ],
+      "files": [
+        {
+          "path": "src/quant/flow-sankey-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/flow-sankey-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "flow-sankey",
+      "type": "registry:component",
+      "title": "Flow Sankey",
+      "description": "资金从来源（央行、银行信贷、财政、海外……）经通道到用途（偿债、消费、投资、资产配置）再到受益方的桑基图，节点与流量由调用方给，列由节点的 column 定。悬停节点或链路出 LCD 读数：金额、占来源流出、占总量；点节点（或聚焦后 Enter / 空格）钉住它的全部上游与下游，其余压暗，再点或 Esc 取消。「交易流量」与「价格重估」分开：交易流量是实色带，价格重估（估值变了、没有资金移动）是斜纹带，占比与总量只算交易流量，右上有开关可以把重估整条拿掉；图例分开写。链路与节点是中性灰，不用橙与蓝，节点想着色由调用方给 color。排布用 d3-sankey 0.12.3（BSD-3-Clause，见 NOTICE），有环时不画、写 labels.cycle（先把回流拆成另一个节点）。需求稿是 issue #45，没有读到可对照的参照产品页面，待核对；演示数据全部虚构。",
+      "registryDependencies": [
+        "@katana/chart-kit",
+        "@katana/flow-sankey-model"
+      ],
+      "files": [
+        {
+          "path": "src/quant/flow-sankey.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/flow-sankey.tsx"
         }
       ]
     },
@@ -2327,6 +2454,22 @@
           "path": "src/quant/horizon-model.ts",
           "type": "registry:component",
           "target": "~/src/katana/ui/quant/horizon-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "key-stats",
+      "type": "registry:component",
+      "title": "Key Stats",
+      "description": "照 TradingView 品种页的 Key stats（2026-11-15 实测）：标题带「›」，三列网格，每项一个灰色小标签（带「›」，给了 onItem 就可点）、一个大号数值（带单位小字）、可选徽标（中性灰胶囊，不用 TV 的紫色）。数值与文字由调用方传。",
+      "registryDependencies": [
+        "@katana/cn"
+      ],
+      "files": [
+        {
+          "path": "src/quant/key-stats.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/key-stats.tsx"
         }
       ]
     },
@@ -2371,11 +2514,16 @@
       "type": "registry:component",
       "title": "Market Heatmap",
       "description": "照 TradingView 的股票热力图：格子面积是所选的大小指标（市值、成交额或等大），颜色是所选指标落在七档色阶的哪一档，按行业分组或平铺。顶上一行汇总读数（只数、上涨、下跌），工具条用分段控件切大小、颜色、视图；点组名放大到只看这一组（面包屑返回，Esc 也行）；悬停出这只票的价格与各项读数；底部图例写出每一档的值边界，点一档就隐藏这一档的格子。A 股、港股、美股、加密共用，只换数据与分组；不认数据集，品种、指标、文字都由调用方传。排布与着色档用包里矩形树图的 layoutTreemap、colorStep。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
       "registryDependencies": [
         "@katana/cn",
         "@katana/market-heatmap-model",
         "@katana/quant-format",
         "@katana/row-actions",
+        "@katana/select",
+        "@katana/switch",
         "@katana/symbol-mark",
         "@katana/toggle-group",
         "@katana/treemap-model"
@@ -2456,6 +2604,41 @@
       ]
     },
     {
+      "name": "peer-cards",
+      "type": "registry:component",
+      "title": "Peer Cards",
+      "description": "照 TradingView 品种页的 Peers（2026-11-15 实测）：横向卡片带，左右翻页箭头（到头变灰）；每卡一个字母圆徽标、代码、名称（过长截断）、右上「+」、价格（带单位小字）与涨跌幅（涨跌色）；右上角整组一个「Select to compare」按钮。数、价格与文字都由调用方传，不放真实公司标志。",
+      "registryDependencies": [
+        "@katana/change-text",
+        "@katana/cn",
+        "@katana/symbol-mark"
+      ],
+      "files": [
+        {
+          "path": "src/quant/peer-cards.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/peer-cards.tsx"
+        }
+      ]
+    },
+    {
+      "name": "performance-strip",
+      "type": "registry:component",
+      "title": "Performance Strip",
+      "description": "照 TradingView 品种页的 Performance 一行（2026-11-15 实测）：一排等宽格，上行周期（1 day … All time）、下行涨跌幅（涨跌色，过千写成 K%、M%）；点一格选中（灰底，aria-pressed）并回调，由调用方去切图表区间。数与周期名都由调用方传，件不算涨跌幅。选中用中性灰，不用 TV 的蓝。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/quant-format"
+      ],
+      "files": [
+        {
+          "path": "src/quant/performance-strip.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/performance-strip.tsx"
+        }
+      ]
+    },
+    {
       "name": "pnl-text",
       "type": "registry:component",
       "title": "Pnl Text",
@@ -2502,6 +2685,25 @@
           "path": "src/quant/quantile-model.ts",
           "type": "registry:component",
           "target": "~/src/katana/ui/quant/quantile-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "rating-text",
+      "type": "registry:component",
+      "title": "Rating Text",
+      "description": "分析师评级、技术评级结论的单元格写法：图标加文字，强力买入双上箭头、买入单上箭头、中性等号、卖出单下箭头、强力卖出双下箭头；买入档取涨色、卖出档取跌色（跟 data-updown），中性不着色。照 TradingView 选股器「分析师评级」列（主会话 2026-11-15 登录态实测），实现原创。放进 DataGrid 的 custom 列里用（见 FilterBar 页的选股器）。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn"
+      ],
+      "files": [
+        {
+          "path": "src/quant/rating-text.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/rating-text.tsx"
         }
       ]
     },
@@ -2634,7 +2836,7 @@
       "name": "technical-rating",
       "type": "registry:component",
       "title": "Technical Rating",
-      "description": "照 TradingView 的 Technicals 仪表：三个半圆仪表（振荡指标、总评、均线，总评居中放大），五档刻度文字，指针按 −1…1 的分数转到所在档（分界 −0.5、−0.1、0.1、0.5），下面一行大字写档名，再一行「卖 n · 中性 n · 买 n」与指标总数；底下是指标明细表（名称、读数、单项结论胶囊），顶上是时间周期分段控件。组件只画不算：分数、个数、读数与结论都由调用方传；档名、列名、免责一句也由调用方传，件只留位置。颜色走涨跌语义色与中性灰，不用橙色。放在 PanelFrame 里用。",
+      "description": "照 TradingView 技术页（2026-11-15 实测）：顶上十个时间周期（选中是灰底胶囊），三个半圆仪表（振荡指标、总评、均线，总评居中放大；弧两端取涨跌色、中段灰；刻度字只写中间三档），指针按 −1…1 的分数转到所在档（分界 −0.5、−0.1、0.1、0.5），下面是档名大字、圆角三列「卖 / 中性 / 买」计数框与指标总数；再下面每组一张并排明细表（名称、读数、结论文字上色，标题带「›」），最底下是整宽的 Pivots 表（R3…S3 × Classic、Fibonacci、Camarilla、Woodie、DM，缺值「—」）。组件只画不算：分数、个数、读数与结论都由调用方传；档名、列名、免责一句也由调用方传，件只留位置。颜色走涨跌语义色与中性灰，不用橙色。放在 PanelFrame 里用。",
       "registryDependencies": [
         "@katana/cn",
         "@katana/rating-gauge-model",
@@ -2692,6 +2894,73 @@
           "path": "src/quant/uptime-bars.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/quant/uptime-bars.tsx"
+        }
+      ]
+    },
+    {
+      "name": "vintage-series-model",
+      "type": "registry:component",
+      "title": "Vintage Series Model",
+      "description": "宏观序列按发布时间（point-in-time）画，避免把后来修订的数当成当时已知（框架第十节的要求）。横轴是统计期，同一期有一串发布值（首次发布、每次修订）：一条实线是「当时已知值」（默认每期的首次发布值；给 asOf 就是截至那一刻已知的最后一次发布，那时还没发布的期不画），一条灰虚线是「最新修订值」，上面一排分段按钮切「当时已知值 / 最新修订值 / 两条都看」。每次发布画一个点（空心是当时已知，灰点是最新，更小的是中间的修订），同一期的点之间连细竖线，线长就是修订幅度；下面一条小图画每期修订了多少（最新 − 首次，涨跌发散阶，没修订过的期不画）。顶上四个读数：修订过的期数、平均绝对修订、平均修订方向（正是后来普遍上修）、最大一次。坐标、网格、十字线与 LCD 读数复用 SeriesExplorer 的那套，键位同它。演示数据是固定种子合成的虚构月度同比，页上与小标都写明。",
+      "files": [
+        {
+          "path": "src/quant/vintage-series-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/vintage-series-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "vintage-series",
+      "type": "registry:component",
+      "title": "Vintage Series",
+      "description": "宏观序列按发布时间（point-in-time）画，避免把后来修订的数当成当时已知（框架第十节的要求）。横轴是统计期，同一期有一串发布值（首次发布、每次修订）：一条实线是「当时已知值」（默认每期的首次发布值；给 asOf 就是截至那一刻已知的最后一次发布，那时还没发布的期不画），一条灰虚线是「最新修订值」，上面一排分段按钮切「当时已知值 / 最新修订值 / 两条都看」。每次发布画一个点（空心是当时已知，灰点是最新，更小的是中间的修订），同一期的点之间连细竖线，线长就是修订幅度；下面一条小图画每期修订了多少（最新 − 首次，涨跌发散阶，没修订过的期不画）。顶上四个读数：修订过的期数、平均绝对修订、平均修订方向（正是后来普遍上修）、最大一次。坐标、网格、十字线与 LCD 读数复用 SeriesExplorer 的那套，键位同它。演示数据是固定种子合成的虚构月度同比，页上与小标都写明。",
+      "registryDependencies": [
+        "@katana/chart-kit",
+        "@katana/cn",
+        "@katana/series-geometry",
+        "@katana/toggle-group",
+        "@katana/use-scrubber",
+        "@katana/vintage-series-model"
+      ],
+      "files": [
+        {
+          "path": "src/quant/vintage-series.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/vintage-series.tsx"
+        }
+      ]
+    },
+    {
+      "name": "watchlist-model",
+      "type": "registry:component",
+      "title": "Watchlist Model",
+      "description": "照 TradingView 右侧自选栏（2026-11-15 实测）：列 Symbol / Last / Chg / Chg%，行首小旗标与字母圆徽标；最新价变动时只有变了的尾数闪涨跌色、约 1 秒落回；点列头排序（升序、降序、回原顺序）。价格怎么写由 formatPrice 定，数与文字由调用方传。",
+      "files": [
+        {
+          "path": "src/quant/watchlist-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/watchlist-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "watchlist",
+      "type": "registry:component",
+      "title": "Watchlist",
+      "description": "照 TradingView 右侧自选栏（2026-11-15 实测）：列 Symbol / Last / Chg / Chg%，行首小旗标与字母圆徽标；最新价变动时只有变了的尾数闪涨跌色、约 1 秒落回；点列头排序（升序、降序、回原顺序）。价格怎么写由 formatPrice 定，数与文字由调用方传。",
+      "registryDependencies": [
+        "@katana/change-text",
+        "@katana/cn",
+        "@katana/quant-format",
+        "@katana/symbol-mark",
+        "@katana/watchlist-model"
+      ],
+      "files": [
+        {
+          "path": "src/quant/watchlist.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/watchlist.tsx"
         }
       ]
     },
@@ -2785,6 +3054,23 @@
           "path": "src/blocks/data-grid/model.ts",
           "type": "registry:component",
           "target": "~/src/katana/ui/blocks/data-grid/model.ts"
+        }
+      ]
+    },
+    {
+      "name": "column-set-tabs",
+      "type": "registry:component",
+      "title": "Column Set Tabs",
+      "description": "表上方的一行页签（概览、估值、分红…），点一个就把 DataGrid 的列换成这一套。照 TradingView 选股器的列组标签（主会话 2026-11-15 实测）；与 ColumnPicker 里的列集芯片是同一份数据与同一个纯函数。不存状态：哪个亮着由看得见的列恰好等于它的列推出来，手动改过列之后没有页签亮着。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/data-grid"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/data-grid/column-set-tabs.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/data-grid/column-set-tabs.tsx"
         }
       ]
     },
@@ -2983,12 +3269,15 @@
       ],
       "registryDependencies": [
         "@katana/button",
+        "@katana/checkbox",
         "@katana/chip-group",
         "@katana/cn",
         "@katana/input",
+        "@katana/popover",
         "@katana/row-actions",
         "@katana/symbol-mark",
-        "@katana/toggle-group"
+        "@katana/toggle-group",
+        "@katana/view-switcher"
       ],
       "files": [
         {
@@ -3028,6 +3317,33 @@
           "path": "src/blocks/decision-queue/decision-queue.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/blocks/decision-queue/decision-queue.tsx"
+        }
+      ]
+    },
+    {
+      "name": "hypothesis-ledger",
+      "type": "registry:component",
+      "title": "Hypothesis Ledger",
+      "description": "研究「地缘与国内利益结构 → 货币与信用流向 → 购买力与利润再分配 → 资产定价」这类框架用的面板。每条假说一行、可展开：命题、所属传导层（国家战略 / 信用供给 / 财政分配 / 跨境流动 / 产业承接 / 利润归属 / 资产配置 / 避险）、状态（待验证 / 有支持 / 被否定 / 过期）、提前写好的失败条件与检验期限（到期倒计时，过了期限的待验证项自动标过期）、证据列表（学者观点 / 政策原文 / 数据 / 财报，各带发布时间、来源链接、支持或反对）、关联品种或资产。顶上按层与状态筛选；同一面板可切「观察表」：传导层 × 核心证据 × 最容易混淆的地方。学者观点、已发生的政策与资金变化、我们的假说分开放，不混排。件不改状态，由调用方写回。字段按用户 2026-11-15 给的框架，对设计稿 HypothesisLedger 卡的功能（假设账、证据与反例）重写；样子照 TradingView 告警列表的读法，实现原创。演示数据是虚构的。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/chip-group",
+        "@katana/cn",
+        "@katana/led",
+        "@katana/toggle-group"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/hypothesis-ledger/hypothesis-ledger-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/hypothesis-ledger/hypothesis-ledger-model.ts"
+        },
+        {
+          "path": "src/blocks/hypothesis-ledger/hypothesis-ledger.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/hypothesis-ledger/hypothesis-ledger.tsx"
         }
       ]
     },
@@ -3088,6 +3404,55 @@
           "path": "src/blocks/strategy-report/strategy-report.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/blocks/strategy-report/strategy-report.tsx"
+        }
+      ]
+    },
+    {
+      "name": "transmission-chain",
+      "type": "registry:component",
+      "title": "Transmission Chain",
+      "description": "研究「谁创造资金 → 谁先取得购买力 → 经过什么通道 → 用于什么 → 谁获得收入与利润 → 哪类资产拥有收益权」这类传导框架的有向图：节点是传导环节，边是传导关系，每条边有验证状态（未检验 / 有证据支持 / 证据反对 / 部分成立）与证据计数，边上的标签写状态图标与「支 n 反 n」。点边，右侧出这条判断的失败条件与证据列表（每条证据有立场，并标来源类别：学者观点 / 政策与资金变化 / 数据 / 财报）；点节点，列出它的上下游边，不挨着的边淡出。支持沿链回到上游的反馈边（如资产价格经抵押品与再融资回到信用）。布局用 dagre（MIT，一层一层排，环由它先反转再还原），滚轮缩放、拖动平移、一键适应。状态色：支持 = 涨色、反对 = 跌色、部分 = 琥珀点划线、未检验 = 灰虚线，状态另有图标与状态字，不只靠颜色；橙色不画数据，不用蓝。画法参照 TradingView 的缩放与平移手感；证据行与数据类型同 HypothesisLedger（HypothesisEvidence，样式用它的 k-hl-ev）。演示数据（状态与证据条数）是编的，页上与证据行都写明。",
+      "dependencies": [
+        "@dagrejs/dagre@3.1.3",
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/button",
+        "@katana/cn",
+        "@katana/hypothesis-ledger"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/transmission-chain/transmission-chain-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/transmission-chain/transmission-chain-model.ts"
+        },
+        {
+          "path": "src/blocks/transmission-chain/transmission-chain.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/transmission-chain/transmission-chain.tsx"
+        }
+      ]
+    },
+    {
+      "name": "news-reader",
+      "type": "registry:component",
+      "title": "News Reader",
+      "description": "NewsFeed 点开一条后的阅读窗：来源与操作（复制链接、举报、关闭）、标题、元信息、品种胶囊带涨跌、「要点」列表（闪电图标）、正文。照 TradingView 新闻流的阅读窗（主会话 2026-11-15 实测）。件不取数：标题、元信息、要点、正文都由调用方传；正文里的品种胶囊用 NewsSymbolChip 内联。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/button",
+        "@katana/cn",
+        "@katana/quant-format",
+        "@katana/symbol-mark"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/news-feed/news-reader.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/news-feed/news-reader.tsx"
         }
       ]
     },

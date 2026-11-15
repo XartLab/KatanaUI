@@ -250,7 +250,7 @@
   background: color-mix(in srgb, var(--ink-100) 6%, transparent);
 }
 .k-attr-index {
-  color: var(--chart-accent, var(--signal-orange));
+  color: var(--chart-accent, var(--ink-100));
 }
 .k-attr-row[data-kind='fee'] .k-attr-index {
   color: var(--ink-300);
@@ -307,7 +307,7 @@
     width var(--dur-snappy) var(--ease-snappy);
 }
 .k-attr-bar[data-focus='true'] {
-  --k-dot: var(--chart-accent, var(--signal-orange));
+  --k-dot: var(--chart-accent, var(--ink-100));
 }
 .k-attr-row[data-closed='true'] .k-attr-bar {
   --k-dot: var(--ink-300);
@@ -359,7 +359,7 @@
 }
 .k-attr-readout[data-size='main'] {
   padding-left: 10px;
-  border-left: 2px solid var(--chart-accent, var(--signal-orange));
+  border-left: 2px solid var(--chart-accent, var(--ink-100));
 }
 .k-attr-readout-label {
   color: var(--ink-300);
@@ -565,13 +565,13 @@ button.k-heat-cell {
   font: var(--text-num-sm) var(--chart-font-axis, var(--font-mono));
 }
 /* 中档涨跌色（div-pos-200 / div-neg-200）上的字：绿涨红跌与红涨绿跌两套配色的亮度不同，白字或黑字谁过 4.5:1 随格色变，
-   所以按格色的亮度现算：伽马编码后的加权亮度高于 0.43 用黑字，否则白字（0.43 是这两档在 Console / Graphite 两个主题里实测分得开的位置，2026-11-14 axe 实测）。 */
+   所以按格色的亮度现算：伽马编码后的加权亮度高于 0.44 用黑字，否则白字（0.44 是这两档在 Console / Graphite 两个主题里实测分得开的位置，2026-11-14 axe 实测）。 */
 .k-heat-cell[data-tone='pos2'],
 .k-heat-cell[data-tone='neg2'] {
   --k-on: color(
-    from var(--k-cell) srgb clamp(0, calc((0.43 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) * 1000), 1)
-      clamp(0, calc((0.43 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) * 1000), 1)
-      clamp(0, calc((0.43 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) * 1000), 1)
+    from var(--k-cell) srgb clamp(0, calc((0.44 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) * 1000), 1)
+      clamp(0, calc((0.44 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) * 1000), 1)
+      clamp(0, calc((0.44 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) * 1000), 1)
   );
 }
 .k-heat-cell[data-tone='pos2'] .k-heat-date,
@@ -584,7 +584,7 @@ button.k-heat-cell {
   color: var(--ink-300);
 }
 .k-heat-cell[data-today='true'] {
-  box-shadow: inset 0 0 0 1px var(--chart-accent, var(--signal-orange));
+  box-shadow: inset 0 0 0 1px var(--chart-accent, var(--ink-100));
 }
 button.k-heat-cell[data-active='true'] {
   outline: 1px solid var(--ink-100);
@@ -889,7 +889,7 @@ button.k-sm-head:focus-visible {
 }
 /* 选中态：左侧 2px 强调色竖条（参照图 MASS / VOLUME 那种）。 */
 .k-sx-kpis .k-spark-tile[data-expanded='true'] {
-  border-left-color: var(--chart-accent, var(--signal-orange));
+  border-left-color: var(--chart-accent, var(--ink-100));
 }
 .k-sx-kpis .k-spark-tile-tag {
   color: var(--ink-300);
@@ -1001,11 +1001,11 @@ button.k-sm-head:focus-visible {
   opacity: 0.5;
 }
 .k-sx .k-brush-window {
-  border: 1px solid var(--chart-accent, var(--signal-orange));
+  border: 1px solid var(--chart-accent, var(--ink-100));
   background: transparent;
 }
 .k-sx .k-brush-handle::after {
-  background: var(--chart-accent, var(--signal-orange));
+  background: var(--chart-accent, var(--ink-100));
 }
 .k-sx-chart {
   position: relative;
@@ -1172,6 +1172,6 @@ button.k-sm-head:focus-visible {
   right: calc(var(--k-run) + 4px);
 }
 .k-sx-evt-text em {
-  color: var(--chart-accent, var(--signal-orange));
+  color: var(--chart-accent, var(--ink-100));
   font-style: normal;
 }

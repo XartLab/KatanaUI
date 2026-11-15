@@ -4,31 +4,19 @@
 
 ## Provide
 
+`*` marks a required prop.
+
 ### Select
 
 其余属性透传给 Radix Select.Root。
-
-| 属性 | 类型 | 默认 | 说明 |
-| --- | --- | --- | --- |
-| `value` | `string` | — | 当前值；传空串显示 SelectValue 的 placeholder。 |
-| `onValueChange` | `(value: string) => void` | — | 选了一项。 |
-| `disabled` | `boolean` | — | 整个下拉灰掉。 |
 
 ### SelectTrigger
 
 其余属性透传给 Radix Select.Trigger。没有可见文字时要给 aria-label。
 
-| 属性 | 类型 | 默认 | 说明 |
-| --- | --- | --- | --- |
-| `className` | `string` | — | 追加类名（宽度、对齐在这里调）。 |
-
 ### SelectValue
 
 其余属性透传给 Radix Select.Value。
-
-| 属性 | 类型 | 默认 | 说明 |
-| --- | --- | --- | --- |
-| `placeholder` | `ReactNode` | — | 没有值时写的字，文案由调用方传。 |
 
 ### SelectItem
 
@@ -36,8 +24,7 @@
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `value` | `string` | — | 这一项的值。 |
-| `leading` | `ReactNode` | — | 文字前面的东西（色带之类），不进触发器上的值。 |
+| `leading` | `ReactNode` | — | Content before the label (a color swatch, say); it is not shown in the trigger value. |
 
 ### SelectContent
 
@@ -50,6 +37,29 @@
 ### selectTriggerVariants / selectItemClass
 
 触发器与列表项的类名，MultiSelect 与应用里别的下拉用它们跟单选下拉长一个样。
+
+## Usage
+
+```tsx
+// SPDX-License-Identifier: MIT
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@katana-ui/react'
+import { useState } from 'react'
+
+export function SelectUsage() {
+  const [kind, setKind] = useState('line')
+  return (
+    <Select value={kind} onValueChange={setKind}>
+      <SelectTrigger aria-label="Chart type">
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectItem value="line">Line</SelectItem>
+        <SelectItem value="candles">Candles</SelectItem>
+      </SelectContent>
+    </Select>
+  )
+}
+```
 
 ## States
 

@@ -4,18 +4,34 @@
 
 ## Provide
 
+`*` marks a required prop.
+
 ### RatingGauge
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `score` | `number` | — | −1（强烈卖出）到 +1（强烈买入），平分五段；越界夹到边，不是有限数当 0。 |
-| `zones` | `[string × 5]` | — | 五段的名字，从卖到买，档位词也取自这里。 |
-| `label` | `string` | — | 读屏名，必填。 |
-| `children` | `ReactNode` | — | 档位词下面再写点什么（个数统计）。 |
+| `score` * | `number` | — | From -1 (strong sell) to +1 (strong buy), split into five equal zones; out of range is clamped and a non-finite number counts as 0. |
+| `zones` * | `readonly [string, string, string, string, string]` | — | Names of the five zones from sell to buy; the level word is taken from here too. |
+| `label` * | `string` | — | Accessible name, required, for example "Technical rating". |
+| `children` | `ReactNode` | — | Extra content under the level word (the counts of sell, neutral and buy). |
+| `className` | `string` | — | Extra class name on the root. |
 
 ### ratingZone(score) / ratingAngle(score)
 
 落在第几段（0 到 4）；指针转角（度，−90 到 +90）。
+
+## Usage
+
+```tsx
+// SPDX-License-Identifier: MIT
+import { RatingGauge } from '@katana-ui/react'
+
+const ZONES = ['Strong sell', 'Sell', 'Neutral', 'Buy', 'Strong buy'] as const
+
+export function RatingGaugeUsage() {
+  return <RatingGauge score={0.3} zones={ZONES} label="Technical rating" />
+}
+```
 
 ## States
 

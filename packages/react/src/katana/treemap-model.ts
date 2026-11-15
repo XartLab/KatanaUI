@@ -9,7 +9,14 @@ export const TREEMAP_H = 600
 const HEAD = 28
 
 /** 排布的尺寸与组头高；不给就是 1000 × 600 的排布单位与 28（旧调用方不变）。传实际像素就能按真实尺寸排、按像素判断格子够不够大。 */
-export type TreemapLayoutOptions = { width?: number; height?: number; head?: number }
+export type TreemapLayoutOptions = {
+  /** Width of the layout box. */
+  width?: number
+  /** Height of the layout box. */
+  height?: number
+  /** Height reserved for each group header. */
+  head?: number
+}
 
 export type TreemapItem<T> = { data: T; size: number; group: string }
 export type TreemapCell<T> = { data: T; x0: number; y0: number; x1: number; y1: number }

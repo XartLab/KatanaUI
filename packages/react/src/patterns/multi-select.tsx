@@ -21,18 +21,35 @@ export function MultiSelect({
   triggerClassName,
   contentClassName,
 }: {
+  /** Ids of the selected options. */
   values: readonly string[]
-  /** [id, 显示的字]，按这个顺序显示与上报。 */
+  /**
+   * Options as [id, label] pairs, shown and reported in this order.
+   * [id, 显示的字]，按这个顺序显示与上报。
+   */
   options: readonly (readonly [string, string])[]
+  /** Called with the full list of selected ids after one option toggles. */
   onValuesChange: (values: string[]) => void
-  /** 一个都没选时触发器上写的字。 */
+  /**
+   * Text on the trigger when nothing is selected.
+   * 一个都没选时触发器上写的字。
+   */
   empty: string
+  /** Accessible name of the trigger. */
   label?: string
-  /** 已选项名字之间的分隔（例：中文的「、」）。 */
+  /**
+   * Text placed between the selected option names.
+   * 已选项名字之间的分隔（例：中文的「、」）。
+   */
   separator: string
+  /** Trigger width in px. */
   width?: number
-  /** 应用里的样式、测试按这两个类找触发器与弹层。 */
+  /**
+   * Extra class name on the trigger, for app styles and tests to find it.
+   * 应用里的样式、测试按这两个类找触发器与弹层。
+   */
   triggerClassName?: string
+  /** Extra class name on the popup, for app styles and tests to find it. */
   contentClassName?: string
 }) {
   const list = useRef<HTMLDivElement>(null)
@@ -135,7 +152,7 @@ export function MultiSelect({
                   }
                 }}
               >
-                <span aria-hidden="true" className="w-[10px] flex-none text-(--signal-orange)">
+                <span aria-hidden="true" className="w-[10px] flex-none text-ink">
                   {selected ? '✓' : ''}
                 </span>
                 <span>{text}</span>

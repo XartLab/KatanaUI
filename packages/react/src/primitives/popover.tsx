@@ -36,7 +36,10 @@ function PopoverContent({
   sideOffset = 4,
   variant = 'panel',
   ...props
-}: ComponentProps<typeof PopoverPrimitive.Content> & { variant?: keyof typeof skin }) {
+}: ComponentProps<typeof PopoverPrimitive.Content> & {
+  /** Skin of the popup. */
+  variant?: keyof typeof skin
+}) {
   return (
     <OverlayPortal portal={PopoverPrimitive.Portal}>
       <PopoverPrimitive.Content

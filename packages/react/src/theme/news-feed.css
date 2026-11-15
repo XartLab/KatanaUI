@@ -204,3 +204,253 @@ a.k-news-title:hover {
   background: var(--bg-300);
   border-radius: 6px;
 }
+
+/* 组合过滤：胶囊（同过滤条）、浮层里的复选列表、选中行底色加深。 */
+.k-news-facets {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+.k-news-facet {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 26px;
+  padding: 0 10px;
+  border: 1px solid var(--alpha-white-8);
+  border-radius: var(--radius-pill);
+  background: var(--alpha-white-3);
+  color: var(--ink-200);
+  font: 500 12px/16px var(--font-sans);
+  white-space: nowrap;
+  cursor: pointer;
+}
+.k-news-facet:hover {
+  background: var(--alpha-white-6);
+  color: var(--ink-100);
+}
+.k-news-facet[data-active] {
+  background: var(--alpha-white-8);
+  color: var(--ink-100);
+}
+.k-news-facet:focus-visible {
+  outline: 1px solid var(--line-200);
+  outline-offset: 1px;
+}
+.k-news-facet-pop {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 240px;
+  max-height: 360px;
+  overflow: auto;
+}
+.k-news-facet-pop ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.k-news-facet-pop label,
+.k-news-facet-pop li > button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 5px 6px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--ink-100);
+  font: 400 12px/16px var(--font-sans);
+  text-align: left;
+  cursor: pointer;
+}
+.k-news-facet-pop label:hover,
+.k-news-facet-pop li > button:hover {
+  background: var(--alpha-white-5);
+}
+.k-news-facet-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font: 600 13px/18px var(--font-sans);
+}
+.k-news-item[data-selected] {
+  background: var(--alpha-white-6);
+}
+
+/* 阅读窗：来源与操作一行，标题、元信息、品种胶囊、要点（闪电图标）、正文；涨跌色走 pnl token。 */
+.k-news-reader {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-width: 0;
+  padding: var(--space-4);
+  color: var(--ink-100);
+  font: 400 13px/20px var(--font-sans);
+}
+.k-news-reader-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.k-news-reader-source {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--ink-200);
+  font-weight: 500;
+}
+.k-news-reader-actions {
+  display: inline-flex;
+  gap: 2px;
+}
+.k-news-reader-title {
+  margin: 0;
+  font: 700 20px/28px var(--font-sans);
+}
+.k-news-reader-meta {
+  margin: 0;
+  color: var(--ink-300);
+  font-size: 12px;
+}
+.k-news-reader-symbols {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.k-news-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 24px;
+  padding: 0 8px;
+  border: 0;
+  border-radius: 6px;
+  background: var(--alpha-white-5);
+  color: var(--ink-100);
+  font: 600 12px/16px var(--font-sans);
+  cursor: pointer;
+}
+.k-news-chip:hover {
+  background: var(--alpha-white-8);
+}
+.k-news-chip-change {
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+}
+.k-news-chip-change[data-tone='up'] {
+  color: var(--pnl-up);
+}
+.k-news-chip-change[data-tone='down'] {
+  color: var(--pnl-down);
+}
+.k-news-reader-points h3 {
+  margin: 0 0 6px;
+  color: var(--ink-300);
+  font: 600 11px/14px var(--font-sans);
+  letter-spacing: 0.06em;
+}
+.k-news-reader-points ul {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.k-news-reader-points li {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+.k-news-reader-points li svg {
+  flex: none;
+  margin-top: 4px;
+  color: var(--ink-200);
+}
+.k-news-reader-body {
+  color: var(--ink-200);
+}
+.k-news-reader-body p {
+  margin: 0 0 var(--space-3);
+}
+
+/* 标题行：已保存视图下拉 + 折叠；并排阅读窗（左列表右阅读窗，件不到 900px 宽时盖在列表上）。 */
+.k-news {
+  container-type: inline-size;
+}
+.k-news-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.k-news-split {
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
+  gap: var(--space-3);
+}
+.k-news-main {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  min-height: 0;
+}
+.k-news-pane {
+  flex: 0 0 min(46%, 520px);
+  min-width: 0;
+  overflow: auto;
+  border-left: var(--hairline);
+}
+@container (max-width: 899px) {
+  .k-news-split {
+    position: relative;
+  }
+  .k-news-pane {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    border-left: 0;
+    background: var(--bg-300);
+  }
+}
+.k-news-read {
+  color: var(--ink-300);
+  white-space: nowrap;
+}
+.k-news-source {
+  white-space: nowrap;
+}
+.k-news[data-layout='list'] .k-news-meta {
+  flex-wrap: wrap;
+  gap: 0 8px;
+}
+.k-news-symbols[data-style='stack'] {
+  flex-wrap: nowrap;
+  gap: 0;
+}
+.k-news-symbols[data-style='stack'] .k-news-symbol {
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  justify-content: center;
+  border: 2px solid var(--bg-300);
+  border-radius: 50%;
+  background: transparent;
+}
+.k-news-symbols[data-style='stack'] .k-news-symbol + .k-news-symbol {
+  margin-left: -6px;
+}
+
+.k-news-top[data-collapsed] {
+  display: none;
+}
+
+/* 悬停的快捷操作条浮在行右端：有操作的列表行，把品种徽标让到它左边，免得被盖住点不到。待定：64px 是两颗图标按钮加内距的估值，没实测。 */
+.k-news[data-layout='list'] .k-news-item[data-actions] .k-news-symbols {
+  margin-inline-end: 64px;
+}

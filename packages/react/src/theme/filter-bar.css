@@ -1,0 +1,183 @@
+/* SPDX-License-Identifier: MIT */
+/* 过滤条（FilterBar）：胶囊 24 高 · 4% 白底 8% 白边 · 12px，同 ChipGroup；设了条件的胶囊字提亮并带条件文字；浮层里预设是主文字加灰色副标题。 */
+.k-fbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+.k-fbar-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 26px;
+  padding: 0 10px;
+  border: 1px solid var(--alpha-white-8);
+  border-radius: var(--radius-pill);
+  background: var(--alpha-white-3);
+  color: var(--ink-200);
+  font: 500 12px/16px var(--font-sans);
+  white-space: nowrap;
+  cursor: pointer;
+}
+.k-fbar-pill:hover {
+  background: var(--alpha-white-6);
+  color: var(--ink-100);
+}
+.k-fbar-pill[data-active] {
+  background: var(--alpha-white-8);
+  color: var(--ink-100);
+}
+.k-fbar-pill:focus-visible {
+  outline: 1px solid var(--line-200);
+  outline-offset: 1px;
+}
+.k-fbar-pill-value {
+  color: var(--ink-100);
+  font-weight: 600;
+}
+.k-fbar-pop {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 280px;
+  max-height: 420px;
+  overflow: auto;
+}
+.k-fbar-pop-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font: 600 13px/18px var(--font-sans);
+}
+.k-fbar-pop-head > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+.k-fbar-presets,
+.k-fbar-groups {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.k-fbar-presets button,
+.k-fbar-groups button {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  padding: 6px 8px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--ink-100);
+  font: 500 12px/16px var(--font-sans);
+  text-align: left;
+  cursor: pointer;
+}
+.k-fbar-presets button:hover,
+.k-fbar-groups button:hover {
+  background: var(--alpha-white-5);
+}
+.k-fbar-groups button[aria-disabled='true'] {
+  color: var(--ink-300);
+}
+.k-fbar-presets small,
+.k-fbar-groups small {
+  color: var(--ink-300);
+  font: 400 11px/14px var(--font-sans);
+}
+.k-fbar-empty {
+  padding: 8px;
+  color: var(--ink-300);
+  font: 400 12px/16px var(--font-sans);
+}
+.k-fbar-manual {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 6px;
+  align-items: center;
+  padding-top: 8px;
+  border-top: 1px solid var(--alpha-white-5);
+}
+.k-fbar-manual b {
+  grid-column: 1 / -1;
+  color: var(--ink-300);
+  font: 500 11px/14px var(--font-sans);
+}
+.k-fbar-manual select {
+  height: 26px;
+  border: 1px solid var(--alpha-white-9);
+  border-radius: 6px;
+  background: var(--alpha-white-4);
+  color: var(--ink-100);
+  font: 500 12px/16px var(--font-sans);
+}
+
+/* ColumnSetTabs：一行页签，选中的是白底黑字小胶囊（同日历的类别药丸），右侧留按钮位。 */
+.k-cset {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.k-cset-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.k-cset-extra {
+  display: inline-flex;
+  margin-left: auto;
+  gap: 2px;
+}
+.k-cset-tab {
+  height: 26px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 9999px;
+  background: transparent;
+  color: var(--ink-200);
+  font: 500 12px/16px var(--font-sans);
+  cursor: pointer;
+}
+.k-cset-tab:hover {
+  background: var(--alpha-white-5);
+  color: var(--ink-100);
+}
+.k-cset-tab[aria-selected='true'] {
+  background: var(--ink-100);
+  color: var(--bg-000);
+}
+.k-cset-tab:focus-visible {
+  outline: 2px solid var(--line-200);
+  outline-offset: 1px;
+}
+
+/* ViewSwitcher：标题位置的下拉 */
+.k-viewsw {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 6px;
+  border: 0;
+  border-radius: var(--radius-control);
+  background: transparent;
+  color: var(--ink-100);
+  font: 600 14px/20px var(--font-sans);
+  cursor: pointer;
+}
+.k-viewsw:hover {
+  background: var(--alpha-white-4);
+}
+.k-viewsw:focus-visible {
+  outline: 2px solid var(--ink-100);
+  outline-offset: 1px;
+}
+.k-fbar-history {
+  display: inline-flex;
+  gap: 2px;
+}

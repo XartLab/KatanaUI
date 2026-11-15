@@ -6,7 +6,15 @@
 export const DOT_SIZE = 4
 export const DOT_PITCH = 6
 
-export function DotMatrix({ id, color = 'var(--seq-300)' }: { id: string; color?: string }) {
+export function DotMatrix({
+  id,
+  color = 'var(--seq-300)',
+}: {
+  /** Id of the pattern; it must differ for every chart on the same page. */
+  id: string
+  /** Fill color of the dots. */
+  color?: string
+}) {
   return (
     <pattern id={id} width={DOT_PITCH} height={DOT_PITCH} patternUnits="userSpaceOnUse">
       <rect className="k-dot-tile" width={DOT_SIZE} height={DOT_SIZE} style={{ fill: color }} />

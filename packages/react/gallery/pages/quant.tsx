@@ -14,6 +14,7 @@ import {
   MetricCardGrid,
   Meter,
   PnlText,
+  RatingText,
   RegimeBand,
   RegimeStrip,
   SparkTile,
@@ -23,7 +24,10 @@ import {
   formatPrice,
   formatQuantity,
   formatVolume,
+  type DividendEvent,
+  type EarningsEvent,
   type EconomicEvent,
+  type IpoEvent,
   type EventCalendarLabels,
   type HeatmapColorBy,
   type HeatmapItem,
@@ -38,6 +42,7 @@ import {
   type RatingGroup,
   type RatingRow,
   type RatingVerdict,
+  type PivotTable,
   type TechnicalRatingLabels,
   type ConsensusParty,
   type FlowGaugeData,
@@ -49,6 +54,28 @@ import { ToggleGroup, ToggleGroupItem } from '../../src/primitives/toggle-group.
 import { ActionLog, Cell, Row, SAMPLE_MARK_SRC, demoSymbolActions } from './parts.tsx'
 
 // 量化层（@katana-ui/react/quant，#1862、#1929）的演示。数值都是示例，不是行情，页上也写明。根元素设 data-updown="cn" 时涨跌色互换（红涨绿跌）。
+
+export function RatingTextDemo() {
+  return (
+    <Row name="五档">
+      <Cell name="强力买入">
+        <RatingText level="strong-buy">强力买入</RatingText>
+      </Cell>
+      <Cell name="买入">
+        <RatingText level="buy">买入</RatingText>
+      </Cell>
+      <Cell name="中性">
+        <RatingText level="neutral">中性</RatingText>
+      </Cell>
+      <Cell name="卖出">
+        <RatingText level="sell">卖出</RatingText>
+      </Cell>
+      <Cell name="强力卖出">
+        <RatingText level="strong-sell">强力卖出</RatingText>
+      </Cell>
+    </Row>
+  )
+}
 
 export function ChangeTextDemo() {
   return (
@@ -401,7 +428,20 @@ const HEAT_LABELS: MarketHeatmapLabels = {
   segment: (range) => `隐藏或显示 ${range} 的格子`,
   list: '市场热力图',
   empty: '没有数据',
+  fullscreen: '全屏',
+  dataset: '数据集',
+  openInScreener: '在选股器打开',
+  display: {
+    logo: 'Logo',
+    title: { label: '标题', none: '无', code: '代码', name: '全名' },
+    value: { label: '格内数值', none: '无', price: '价格', size: '成交额', change: '涨跌幅' },
+  },
 }
+
+const HEAT_DATASETS = [
+  { key: 'stocks', label: '分行业的股票' },
+  { key: 'coins', label: '不分组的加密' },
+]
 
 export function MarketHeatmapDemo() {
   const [selected, setSelected] = useState<string | null>(null)
@@ -430,10 +470,6 @@ export function MarketHeatmapDemo() {
   return (
     <div style={{ display: 'grid', gap: 12, width: '100%', maxWidth: wide ? undefined : 760 }}>
       <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
-        <ToggleGroup variant="sm" aria-label="数据" value={market} onValueChange={setMarket}>
-          <ToggleGroupItem value="stocks">分行业的股票</ToggleGroupItem>
-          <ToggleGroupItem value="coins">不分组的加密</ToggleGroupItem>
-        </ToggleGroup>
         <ToggleGroup variant="sm" aria-label="配色" value={scheme} onValueChange={(v) => setScheme(v as HeatmapScheme)}>
           <ToggleGroupItem value="classic">经典</ToggleGroupItem>
           <ToggleGroupItem value="mono">单色</ToggleGroupItem>
@@ -471,6 +507,10 @@ export function MarketHeatmapDemo() {
                 sizeBy={HEAT_SIZE}
                 colorBy={HEAT_COLOR}
                 labels={{ ...HEAT_LABELS, group: '行业' }}
+                datasets={HEAT_DATASETS}
+                dataset={market}
+                onDatasetChange={setMarket}
+                onOpenInScreener={() => setLog('在选股器打开：' + (coins ? '加密货币' : '分行业的股票'))}
                 scheme={scheme}
                 selected={selected}
                 onSelect={setSelected}
@@ -486,24 +526,28 @@ export function MarketHeatmapDemo() {
 }
 
 // 技术评级仪表（#20）的演示：读数与结论从合成价格算出来，不是行情；分数与个数在这里按「买 − 卖」除以总数现算，真实调用方自己算。
+// 周期与列名照 TradingView 技术页（2026-11-15 实测）：1 分钟到 1 月共十档；仪表三组 Oscillators / Summary / Moving Averages。
 const RATING_TIMEFRAMES = [
-  { value: '1m', label: '1 分' },
-  { value: '15m', label: '15 分' },
-  { value: '1h', label: '1 小时' },
-  { value: '4h', label: '4 小时' },
-  { value: '1d', label: '1 日' },
-  { value: '1w', label: '1 周' },
-  { value: '1M', label: '1 月' },
+  { value: '1m', label: '1 minute' },
+  { value: '5m', label: '5 minutes' },
+  { value: '15m', label: '15 minutes' },
+  { value: '30m', label: '30 minutes' },
+  { value: '1h', label: '1 hour' },
+  { value: '2h', label: '2 hours' },
+  { value: '4h', label: '4 hours' },
+  { value: '1d', label: '1 day' },
+  { value: '1w', label: '1 week' },
+  { value: '1M', label: '1 month' },
 ]
-const RATING_ZONES = ['强卖', '卖', '中性', '买', '强买'] as const
+const RATING_ZONES = ['Strong sell', 'Sell', 'Neutral', 'Buy', 'Strong buy'] as const
 const RATING_LABELS: TechnicalRatingLabels = {
   zones: RATING_ZONES,
-  verdict: { sell: '卖', neutral: '中性', buy: '买' },
-  total: (n) => `共 ${n} 项指标`,
-  columns: { name: '指标', reading: '读数', verdict: '结论' },
-  timeframe: '时间周期',
-  list: '技术评级',
-  empty: '没有数据',
+  verdict: { sell: 'Sell', neutral: 'Neutral', buy: 'Buy' },
+  total: (n) => `${n} indicators`,
+  columns: { name: 'Name', reading: 'Value', verdict: 'Action' },
+  timeframe: 'Timeframe',
+  list: 'Technical rating',
+  empty: 'No data',
 }
 
 // 演示价格：每个周期一条固定种子的合成收盘价（随机游走加慢波），读数与结论都从它算出来，规则照 TradingView 的技术评级
@@ -601,36 +645,72 @@ function makeRating(frame: number) {
   const groups = [
     group(
       'osc',
-      '振荡指标',
+      'Oscillators',
       rows.filter((r) => r.group === 'osc'),
     ),
-    group('all', '总评', rows),
+    group('all', 'Summary', rows),
     group(
       'ma',
-      '均线',
+      'Moving Averages',
       rows.filter((r) => r.group === 'ma'),
     ),
   ]
-  return { rows, groups }
+  return { rows, groups, pivots: makePivots(close) }
+}
+
+// 枢轴点：高低收取最近 20 根，规则照常见定义（Classic、Fibonacci、Camarilla、Woodie、DM）；Woodie 与 DM 只有一部分档位，缺的传 null 画「—」。演示用，不是行情。
+function makePivots(close: readonly number[]): PivotTable {
+  const w = close.slice(-20)
+  const [h, l, c, o] = [Math.max(...w), Math.min(...w), close.at(-1)!, close.at(-2)!]
+  const r = h - l
+  const f = (v: number | null) => (v === null ? null : v.toFixed(2))
+  const p = (h + l + c) / 3
+  const wp = (h + l + 2 * c) / 4
+  const x = c < o ? h + 2 * l + c : c > o ? 2 * h + l + c : h + l + 2 * c
+  const cols = {
+    classic: [h + 2 * (p - l), p + r, 2 * p - l, p, 2 * p - h, p - r, l - 2 * (h - p)],
+    fib: [p + r, p + 0.618 * r, p + 0.382 * r, p, p - 0.382 * r, p - 0.618 * r, p - r],
+    cam: [
+      c + (r * 1.1) / 4,
+      c + (r * 1.1) / 6,
+      c + (r * 1.1) / 12,
+      p,
+      c - (r * 1.1) / 12,
+      c - (r * 1.1) / 6,
+      c - (r * 1.1) / 4,
+    ],
+    woodie: [null, wp + r, 2 * wp - l, wp, 2 * wp - h, wp - r, null],
+    dm: [null, null, x / 2 - l, x / 4, x / 2 - h, null, null],
+  }
+  return {
+    title: 'Pivots',
+    columns: ['Classic', 'Fibonacci', 'Camarilla', 'Woodie', 'DM'],
+    rows: ['R3', 'R2', 'R1', 'P', 'S1', 'S2', 'S3'].map((label, i) => ({
+      key: label,
+      label,
+      values: [cols.classic[i]!, cols.fib[i]!, cols.cam[i]!, cols.woodie[i]!, cols.dm[i]!].map(f),
+    })),
+  }
 }
 
 export function TechnicalRatingDemo() {
   const [frame, setFrame] = useState('1d')
-  const { rows, groups } = makeRating(RATING_TIMEFRAMES.findIndex((tf) => tf.value === frame))
+  const { rows, groups, pivots } = makeRating(RATING_TIMEFRAMES.findIndex((tf) => tf.value === frame))
   return (
-    <div style={{ width: '100%', maxWidth: 520, height: 760 }}>
+    <div style={{ width: '100%', maxWidth: 760, height: 900 }}>
       <PanelFrame focused aria-label="技术评级">
-        <PanelFrameHeader heading="技术评级" object="演示数据" />
+        <PanelFrameHeader heading="Technicals" object="演示数据" />
         <PanelFrameBody>
           <TechnicalRating
             groups={groups}
             rows={rows}
             labels={RATING_LABELS}
             primary="all"
+            pivots={pivots}
             timeframes={RATING_TIMEFRAMES}
             timeframe={frame}
             onTimeframeChange={setFrame}
-            disclaimer="评级只是指标读数的汇总，不是买卖建议。"
+            disclaimer="Ratings only summarise indicator readings; they are not trading advice."
           />
         </PanelFrameBody>
       </PanelFrame>
@@ -982,8 +1062,8 @@ export function DecimalFieldDemo() {
   )
 }
 
-// 经济日历（#28）的演示数据：事件名、国家名、数值全是编出来的，不是真实数据。固定「现在」= 2026-11-17 周二 08:00（上海），截图与断言不随真实日期变。
-const CAL_NOW = Date.UTC(2026, 10, 17, 0, 0)
+// 经济日历（#28）的演示数据：事件名、国家名、数值全是编出来的，不是真实数据。固定「现在」= 2026-11-17 周二 09:30（上海），截图与断言不随真实日期变。
+const CAL_NOW = Date.UTC(2026, 10, 17, 1, 30)
 const calAt = (day: number, hour: number, minute = 0) => Date.UTC(2026, 10, day, hour - 8, minute)
 const CAL_EVENTS: EconomicEvent[] = [
   {
@@ -991,64 +1071,92 @@ const CAL_EVENTS: EconomicEvent[] = [
     at: calAt(16, 9, 30),
     region: 'CN',
     regionName: '甲国',
+    regionGroup: 'ASIA',
     name: '示例消费者物价指数 同比',
     importance: 3,
     actual: '0.4%',
     forecast: '0.3%',
     previous: '0.3%',
-    tone: 'down',
+    category: 'prices',
+    description: '衡量一篮子消费品与服务的价格相对去年同期的变化，是央行判断通胀压力的主要依据之一（演示文字）。',
+    source: '示例统计局',
+    history: [0.1, 0.2, 0.2, 0.1, 0.3, 0.3, 0.4],
+    nextAt: calAt(30, 9, 30),
   },
   {
     id: 'a2',
+    category: 'consumer',
     at: calAt(16, 22, 0),
     region: 'US',
     regionName: '乙国',
+    regionGroup: 'NORTH AMERICA',
     name: '示例零售销售 环比',
     importance: 2,
     actual: '0.2%',
     forecast: '0.4%',
     previous: '0.6%',
-    tone: 'down',
   },
   {
     id: 'b1',
+    category: 'business',
     at: calAt(17, 9, 0),
     region: 'CN',
     regionName: '甲国',
+    regionGroup: 'ASIA',
     name: '示例工业增加值 同比',
     importance: 2,
     actual: '5.1%',
     forecast: '4.9%',
     previous: '4.8%',
-    tone: 'up',
+    description: '规模以上工业企业增加值的同比增速（演示文字）。',
+    source: '示例统计局',
+    history: [4.2, 4.5, 4.4, 4.7, 4.8, 5.1],
+    nextAt: calAt(30, 10, 0),
   },
   {
     id: 'b2',
+    category: 'trade',
     at: calAt(17, 8, 45),
     region: 'JP',
     regionName: '丙国',
+    regionGroup: 'ASIA',
     name: '示例贸易帐',
     importance: 1,
     actual: '-0.2万亿',
     forecast: '-0.3万亿',
     previous: '-0.4万亿',
-    tone: 'up',
   },
   {
     id: 'b3',
+    category: 'business',
     at: calAt(17, 17, 0),
     region: 'EU',
     regionName: '丁区',
+    regionGroup: 'EUROPE',
     name: '示例经济景气指数',
     importance: 2,
     forecast: '98.5',
     previous: '97.9',
   },
   {
-    id: 'b4',
+    id: 'b5',
+    category: 'housing',
     at: calAt(17, 21, 30),
     region: 'US',
     regionName: '乙国',
+    regionGroup: 'NORTH AMERICA',
+    name: '示例建筑许可',
+    importance: 1,
+    forecast: '1.40M',
+    previous: '1.38M',
+  },
+  {
+    id: 'b4',
+    category: 'housing',
+    at: calAt(17, 21, 30),
+    region: 'US',
+    regionName: '乙国',
+    regionGroup: 'NORTH AMERICA',
     name: '示例新屋开工',
     importance: 1,
     forecast: '1.32M',
@@ -1056,9 +1164,11 @@ const CAL_EVENTS: EconomicEvent[] = [
   },
   {
     id: 'c1',
+    category: 'labor',
     at: calAt(18, 10, 0),
     region: 'GB',
     regionName: '戊国',
+    regionGroup: 'EUROPE',
     name: '示例失业率',
     importance: 2,
     forecast: '4.3%',
@@ -1066,28 +1176,38 @@ const CAL_EVENTS: EconomicEvent[] = [
   },
   {
     id: 'c2',
+    category: 'labor',
     at: calAt(18, 21, 30),
     region: 'US',
     regionName: '乙国',
+    regionGroup: 'NORTH AMERICA',
     name: '示例非农就业人数',
     importance: 3,
     forecast: '18.5万',
     previous: '22.8万',
+    description: '非农部门当月新增就业人数，是判断劳动力市场与政策走向的关键数据（演示文字）。',
+    source: '示例劳工部',
+    history: [18.1, 20.4, 25.3, 19.8, 22.8],
+    nextAt: calAt(25, 21, 30),
   },
   {
     id: 'c3',
+    category: 'money',
     at: calAt(18, 23, 0),
     region: 'US',
     regionName: '乙国',
+    regionGroup: 'NORTH AMERICA',
     name: '示例央行官员讲话',
     importance: 3,
     previous: '—',
   },
   {
     id: 'd1',
+    category: 'money',
     at: calAt(20, 15, 0),
     region: 'EU',
     regionName: '丁区',
+    regionGroup: 'EUROPE',
     name: '示例央行利率决议',
     importance: 3,
     forecast: '2.25%',
@@ -1098,6 +1218,7 @@ const CAL_EVENTS: EconomicEvent[] = [
     at: calAt(20, 20, 30),
     region: 'US',
     regionName: '乙国',
+    regionGroup: 'NORTH AMERICA',
     name: '示例初请失业金人数',
     importance: 2,
     forecast: '22.0万',
@@ -1105,9 +1226,11 @@ const CAL_EVENTS: EconomicEvent[] = [
   },
   {
     id: 'n1',
+    category: 'business',
     at: calAt(24, 9, 30),
     region: 'CN',
     regionName: '甲国',
+    regionGroup: 'ASIA',
     name: '示例制造业采购经理指数',
     importance: 3,
     forecast: '50.2',
@@ -1115,9 +1238,11 @@ const CAL_EVENTS: EconomicEvent[] = [
   },
   {
     id: 'n2',
+    category: 'business',
     at: calAt(25, 10, 0),
     region: 'GB',
     regionName: '戊国',
+    regionGroup: 'EUROPE',
     name: '示例工业产出',
     importance: 1,
     forecast: '0.1%',
@@ -1125,47 +1250,220 @@ const CAL_EVENTS: EconomicEvent[] = [
   },
 ]
 
+const CAL_EARNINGS: EarningsEvent[] = [
+  {
+    id: 'e1',
+    currency: 'USD',
+    at: calAt(17, 7, 0),
+    region: 'US',
+    regionName: '乙国',
+    regionGroup: 'NORTH AMERICA',
+    code: 'ALFA',
+    name: '示例阿尔法科技',
+    session: 'before',
+    epsActual: 1.42,
+    epsForecast: 1.31,
+    revenueActual: 18.4e9,
+    revenueForecast: 17.9e9,
+    marketCap: 612e9,
+  },
+  {
+    id: 'e2',
+    currency: 'USD',
+    at: calAt(17, 20, 0),
+    region: 'US',
+    regionName: '乙国',
+    regionGroup: 'NORTH AMERICA',
+    code: 'BETA',
+    name: '示例贝塔零售',
+    session: 'before',
+    epsActual: 0.88,
+    epsForecast: 0.95,
+    revenueActual: 52.1e9,
+    revenueForecast: 52.6e9,
+    marketCap: 240e9,
+  },
+  {
+    id: 'e3',
+    currency: 'USD',
+    at: calAt(17, 22, 0),
+    region: 'US',
+    regionName: '乙国',
+    regionGroup: 'NORTH AMERICA',
+    code: 'GAMA',
+    name: '示例伽马半导体',
+    session: 'after',
+    epsForecast: 2.05,
+    revenueForecast: 9.8e9,
+    marketCap: 1.1e12,
+  },
+  {
+    id: 'e4',
+    at: calAt(18, 16, 0),
+    region: 'CN',
+    regionName: '甲国',
+    regionGroup: 'ASIA',
+    code: '600001',
+    name: '示例德尔塔能源',
+    epsForecast: 0.62,
+    revenueForecast: 31.2e9,
+    marketCap: 88e9,
+  },
+  {
+    id: 'e5',
+    currency: 'USD',
+    at: calAt(19, 7, 0),
+    region: 'EU',
+    regionName: '丁区',
+    regionGroup: 'EUROPE',
+    code: 'EPSI',
+    name: '示例艾普西隆汽车',
+    session: 'before',
+    epsForecast: 1.7,
+    revenueForecast: 40.3e9,
+    marketCap: 56e9,
+  },
+]
+const CAL_DIVIDENDS: DividendEvent[] = [
+  {
+    id: 'd-1',
+    at: calAt(17, 0),
+    region: 'US',
+    regionName: '乙国',
+    regionGroup: 'NORTH AMERICA',
+    code: 'ALFA',
+    name: '示例阿尔法科技',
+    currency: '$',
+    amount: 0.25,
+    yield: 0.62,
+    payAt: calAt(28, 0),
+  },
+  {
+    id: 'd-2',
+    at: calAt(18, 0),
+    region: 'CN',
+    regionName: '甲国',
+    regionGroup: 'ASIA',
+    code: '600001',
+    name: '示例德尔塔能源',
+    currency: '¥',
+    amount: 0.8,
+    yield: 3.41,
+    payAt: calAt(26, 0),
+  },
+  {
+    id: 'd-3',
+    at: calAt(20, 0),
+    region: 'GB',
+    regionName: '戊国',
+    regionGroup: 'EUROPE',
+    code: 'ZETA',
+    name: '示例泽塔矿业',
+    currency: '£',
+    amount: 0.46,
+    yield: 5.12,
+    payAt: calAt(30, 0),
+  },
+]
+const CAL_IPOS: IpoEvent[] = [
+  {
+    id: 'i-1',
+    at: calAt(18, 0),
+    region: 'US',
+    regionName: '乙国',
+    regionGroup: 'NORTH AMERICA',
+    code: 'ETAX',
+    name: '示例伊塔生物',
+    exchange: 'NASDAQ',
+    priceLow: 14,
+    priceHigh: 16,
+    shares: 8.5e6,
+    dealSize: 127.5e6,
+    status: '已定价',
+  },
+  {
+    id: 'i-2',
+    at: calAt(19, 0),
+    region: 'CN',
+    regionName: '甲国',
+    regionGroup: 'ASIA',
+    name: '示例西塔机器人',
+    exchange: 'SSE',
+    priceLow: 36.4,
+    priceHigh: 36.4,
+    shares: 62e6,
+    dealSize: 2.26e9,
+    status: '待上市',
+  },
+]
+
 const CAL_LABELS: EventCalendarLabels = {
   list: '经济日历',
-  empty: '这段时间没有符合条件的事件',
-  range: { today: '今天', week: '本周', next: '下周', custom: '自定义' },
-  rangeGroup: '日期范围',
-  importanceGroup: '重要程度',
-  importanceClear: '清除重要程度筛选',
-  importance: (level) => `重要程度 ${level}`,
-  regionsAll: '全部国家',
-  regionsPlaceholder: '搜索国家 / 地区',
-  regionsEmpty: '没有这个国家',
-  regionsCount: (n) => `${n} 个国家`,
-  onlyHigh: '只看高重要',
+  empty: '这一天没有符合条件的事件',
+  nav: { today: '今天', prevWeek: '上一周', nextWeek: '下一周', pickDate: '选择日期', week: '本周' },
+  categoryGroup: '日历类别',
+  category: { economic: '经济', earnings: '财报', dividends: '分红', ipo: 'IPO' },
+  highOnly: '只看高重要',
+  economicCategory: {
+    label: '经济类别',
+    all: '全部类别',
+    items: {
+      bonds: '债券',
+      business: '商业',
+      consumer: '消费',
+      gdp: 'GDP',
+      government: '政府',
+      health: '卫生',
+      housing: '住房',
+      labor: '就业',
+      money: '货币',
+      prices: '价格',
+      trade: '贸易',
+      taxes: '税收',
+    },
+  },
+  countries: {
+    all: '全部国家',
+    count: (n) => `${n} 个国家`,
+    title: '选择国家',
+    search: '搜索国家 / 地区',
+    entireWorld: '全球',
+    top: '前 20 大经济体',
+    empty: '没有这个国家',
+    otherGroup: '其他',
+    cancel: '取消',
+    apply: '应用',
+  },
   today: '今天',
-  columns: {
-    time: '时间',
-    region: '国家',
-    event: '事件',
-    importance: '重要',
-    actual: '实际',
-    forecast: '预期',
-    previous: '前值',
+  now: '现在',
+  importance: (level) => `重要程度 ${level}`,
+  columns: { actual: '实际', forecast: '预期', previous: '前值' },
+  earningsColumns: {
+    epsEstimate: 'EPS 预期',
+    epsActual: 'EPS 实际',
+    epsSurprise: 'EPS 意外',
+    revenueEstimate: '营收预期',
+    revenueActual: '营收实际',
+    revenueSurprise: '营收意外',
+    marketCap: '市值',
   },
+  dividendColumns: { amount: '每股分红', yield: '股息率', payDate: '派息日' },
+  ipoColumns: { exchange: '交易所', priceRange: '发行价', shares: '股数', dealSize: '募资额', status: '状态' },
+  session: { before: '盘前', during: '盘中', after: '盘后' },
   countdown: (m) => (m >= 60 ? `${Math.floor(m / 60)} 小时 ${m % 60} 分后` : `${m} 分后`),
-  dateRange: {
-    start: '起点',
-    end: '终点',
-    pickRange: '选择区间',
-    calendar: '区间日历',
-    previousMonth: '上个月',
-    nextMonth: '下个月',
-    presets: '常用区间',
-    preset: { today: '今天', week: '本周', month: '本月', ytd: '年初至今' },
-    custom: '自定义',
-  },
   dayTitle: (day) => {
     const [y, m, d] = day.split('-').map(Number)
     const week = '日一二三四五六'[new Date(Date.UTC(y!, m! - 1, d!)).getUTCDay()]
     return `${m} 月 ${d} 日 周${week}`
   },
   count: (n) => `${n} 条`,
+  detail: {
+    description: '说明',
+    source: '来源',
+    history: '历史值',
+    historyLabel: (n) => `最近 ${n} 期历史值`,
+    nextRelease: '下次发布',
+  },
   rowActions: '事件操作',
   rowMenu: '事件菜单',
 }
@@ -1178,11 +1476,23 @@ export function EventCalendarDemo() {
         <PanelFrameBody>
           <EventCalendar
             events={CAL_EVENTS}
+            earnings={CAL_EARNINGS}
+            dividends={CAL_DIVIDENDS}
+            ipos={CAL_IPOS}
             labels={CAL_LABELS}
             now={CAL_NOW}
             timeZone="Asia/Shanghai"
             locale="zh-CN"
-            defaultRange="week"
+            defaultDay="2026-11-17"
+            topRegions={['US', 'CN', 'JP']}
+            earningsLinks={(e) =>
+              e.epsActual === undefined
+                ? []
+                : [
+                    { key: 'm', label: '财报材料' },
+                    { key: 'c', label: '电话会' },
+                  ]
+            }
             rowActions={(event) =>
               symbolMenu({
                 newAlert: { label: '设提醒', onSelect: () => undefined },

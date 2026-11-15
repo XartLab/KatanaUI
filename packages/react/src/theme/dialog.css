@@ -51,5 +51,5 @@
 }
 /* 确认类对话框：边是强调色的暗档。 */
 .k-dlg.confirm {
-  border-color: var(--signal-orange-dim);
+  border-color: var(--line-200);
 }

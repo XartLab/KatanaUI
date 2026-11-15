@@ -7,23 +7,47 @@ import { Sparkline } from './sparkline.tsx'
 import { TONE_GLYPH, type QuoteTone } from './quote-tone.ts'
 
 export type QuoteCardProps = {
+  /** Name of the symbol. */
   name: string
-  /** 代码，小号弱色写在名字旁。 */
+  /**
+   * Code, small and muted beside the name.
+   * 代码，小号弱色写在名字旁。
+   */
   symbol?: string
+  /** The already formatted price. */
   price: string
-  /** 涨跌额与涨跌幅，已格式化（带符号）。 */
+  /**
+   * The already formatted change amount, signed.
+   * 涨跌额与涨跌幅，已格式化（带符号）。
+   */
   change?: string
+  /** The already formatted change percentage, signed. */
   percent?: string
+  /** Up, down or flat. */
   tone?: QuoteTone
-  /** 迷你图的数（旧到新）与读屏名；不给 values 就不画。 */
+  /**
+   * Values of the mini chart, oldest to newest; no chart is drawn when omitted.
+   * 迷你图的数（旧到新）与读屏名；不给 values 就不画。
+   */
   spark?: readonly number[]
+  /** Accessible name of the mini chart. */
   sparkLabel?: string
-  /** 卡下面一行：区间条之类。 */
+  /**
+   * A line under the card, often a RangeBar.
+   * 卡下面一行：区间条之类。
+   */
   footer?: ReactNode
-  /** 小号：窄、横排，给 QuoteStrip 用。 */
+  /**
+   * sm is a narrow horizontal card used inside QuoteStrip.
+   * 小号：窄、横排，给 QuoteStrip 用。
+   */
   size?: 'md' | 'sm'
-  /** 给了就整张卡是一个按钮。 */
+  /**
+   * When given the whole card renders as a button.
+   * 给了就整张卡是一个按钮。
+   */
   onSelect?: () => void
+  /** Extra class name on the root. */
   className?: string
 }
 
@@ -72,9 +96,14 @@ export function QuoteCard({
 }
 
 export type QuoteStripProps = {
-  /** 读屏名。 */
+  /**
+   * Accessible name (required).
+   * 读屏名。
+   */
   label: string
+  /** The cards: the props of each QuoteCard plus an id. */
   items: readonly (QuoteCardProps & { id: string })[]
+  /** Extra class name on the root. */
   className?: string
 }
 

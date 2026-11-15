@@ -4,17 +4,47 @@
 
 ## Provide
 
+`*` marks a required prop.
+
 ### QuoteTable
 
 页签值可受控（value / onValueChange）也可不受控（defaultValue，默认第一组）。
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `groups` | `{ id, label, rows: QuoteRow[] }[]` | — | 每组一个页签；QuoteRow 是 { id, name, symbol?, price, percent?, tone?, spark?, sparkLabel? }。 |
-| `columns` | `{ name, trend, price, change }` | — | 表头四列的字。 |
-| `empty` | `string` | — | 这一组没有行时写的字。 |
-| `label` | `string` | — | 页签条的读屏名。 |
-| `onRow` | `(row: QuoteRow) => void` | — | 给了行可点、可聚焦，回车触发。 |
+| `groups` * | `readonly QuoteGroup[]` | — | The groups, one tab each; a QuoteRow is { id, name, symbol?, price, percent?, tone?, spark?, sparkLabel? |
+| `columns` * | `{ name: string; trend: string; price: string; change: string }` | — | Text of the four header columns (name, trend, price, change). |
+| `empty` * | `string` | — | Text written when a group has no rows. |
+| `label` * | `string` | — | Accessible name of the tab strip. |
+| `value` | `string` | — | The selected group id when controlled. |
+| `defaultValue` | `string` | — | The initially selected group id when uncontrolled. |
+| `onValueChange` | `(id: string) => void` | — | Called with the group id when the tab changes. |
+| `onRow` | `(row: QuoteRow) => void` | — | When given, rows are clickable and focusable and trigger on Enter. |
+| `className` | `string` | — | Extra class name on the root. |
+
+## Usage
+
+```tsx
+// SPDX-License-Identifier: MIT
+import { QuoteTable } from '@katana-ui/react'
+
+export function QuoteTableUsage() {
+  return (
+    <QuoteTable
+      label="Watchlists"
+      columns={{ name: 'Name', trend: 'Trend', price: 'Last', change: 'Chg %' }}
+      empty="No symbols in this group"
+      groups={[
+        {
+          id: 'main',
+          label: 'Main',
+          rows: [{ id: 'a', name: 'Alpha', symbol: 'AAA', price: '11.80', percent: '+18.00%', tone: 'up' }],
+        },
+      ]}
+    />
+  )
+}
+```
 
 ## States
 
