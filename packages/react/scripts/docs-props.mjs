@@ -35,7 +35,12 @@ function createProgram() {
   return ts.createProgram({ rootNames: ENTRIES.map((entry) => join(pkg, entry)), options: parsed.options })
 }
 
-const inPackage = (file) => !file.fileName.includes('/node_modules/') && file.fileName.startsWith(`${pkg}/src/`)
+// TS 文件名与宿主系统的包根可能使用不同分隔符；两边统一后再判包内声明。
+export const inPackage = (file, packageRoot = pkg) => {
+  const fileName = file.fileName.replaceAll('\\', '/')
+  const sourceRoot = `${packageRoot.replaceAll('\\', '/')}/src/`
+  return !fileName.includes('/node_modules/') && fileName.startsWith(sourceRoot)
+}
 
 /** 形参解构里的默认值：`{ variant = 'default' }` → { variant: "'default'" }。 */
 function destructuringDefaults(declaration) {
