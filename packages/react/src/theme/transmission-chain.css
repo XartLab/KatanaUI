@@ -1,0 +1,269 @@
+/* SPDX-License-Identifier: MIT */
+/* TransmissionChain（传导链图）：画布（SVG 节点与边）+ 右侧详情。状态色：支持 --pnl-up、反对 --pnl-down、部分琥珀、未检验灰虚线；
+   状态不只靠颜色：线型（实 / 点划 / 虚）、标签上的图标、右侧的状态字。橙色不画数据，不用蓝。 */
+.k-tc {
+  display: flex;
+  min-height: 0;
+  height: 100%;
+  border: var(--hairline);
+  background: var(--bg-100);
+  color: var(--ink-200);
+  font: var(--text-data) var(--font-sans);
+}
+.k-tc-canvas {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+.k-tc-canvas:active {
+  cursor: grabbing;
+}
+.k-tc-svg {
+  display: block;
+}
+.k-tc-empty {
+  margin: 0;
+  padding: 24px;
+  color: var(--ink-300);
+  text-align: center;
+}
+.k-tc-tools {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  flex-direction: column;
+  border: var(--hairline);
+  background: var(--bg-200);
+}
+.k-tc-legend {
+  position: absolute;
+  bottom: 8px;
+  left: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  margin: 0;
+  padding: 4px 8px;
+  list-style: none;
+  border: var(--hairline);
+  background: var(--bg-200);
+  color: var(--ink-300);
+  font: var(--text-caption) var(--font-sans);
+}
+.k-tc-legend li {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.k-tc-legend b {
+  color: var(--ink-100);
+  font-variant-numeric: tabular-nums;
+}
+
+/* 线型与颜色：由状态定，边、箭头、图例、徽标共用。 */
+.k-tc-edge[data-status='supported'],
+.k-tc-legend [data-status='supported'],
+.k-tc-badge[data-status='supported'],
+.k-tc-arrow[data-status='supported'] {
+  --tc-color: var(--pnl-up);
+  --tc-dash: none;
+}
+.k-tc-edge[data-status='contradicted'],
+.k-tc-legend [data-status='contradicted'],
+.k-tc-badge[data-status='contradicted'],
+.k-tc-arrow[data-status='contradicted'] {
+  --tc-color: var(--pnl-down);
+  --tc-dash: none;
+}
+.k-tc-edge[data-status='partial'],
+.k-tc-legend [data-status='partial'],
+.k-tc-badge[data-status='partial'],
+.k-tc-arrow[data-status='partial'] {
+  --tc-color: var(--signal-amber);
+  --tc-dash: 9 3 2 3;
+}
+.k-tc-edge[data-status='untested'],
+.k-tc-legend [data-status='untested'],
+.k-tc-badge[data-status='untested'],
+.k-tc-arrow[data-status='untested'] {
+  --tc-color: var(--ink-400);
+  --tc-dash: 5 4;
+}
+.k-tc-arrow path {
+  fill: var(--tc-color);
+}
+.k-tc-legend [data-status] {
+  color: var(--ink-300);
+}
+.k-tc-legend-line {
+  stroke: var(--tc-color);
+  stroke-width: 2;
+  stroke-dasharray: var(--tc-dash);
+}
+
+.k-tc-edge {
+  cursor: pointer;
+  outline: none;
+  transition: opacity 120ms;
+}
+.k-tc-hit {
+  fill: none;
+  stroke: transparent;
+  stroke-width: 14;
+}
+.k-tc-line {
+  fill: none;
+  stroke: var(--tc-color);
+  stroke-width: 1.75;
+  stroke-dasharray: var(--tc-dash);
+}
+.k-tc-edge[data-selected='true'] .k-tc-line,
+.k-tc-edge:hover .k-tc-line {
+  stroke-width: 3;
+}
+.k-tc-edge:focus-visible .k-tc-chip,
+.k-tc-edge[data-selected='true'] .k-tc-chip {
+  stroke: var(--ink-100);
+}
+.k-tc-chip {
+  fill: var(--bg-200);
+  stroke: var(--tc-color);
+  stroke-width: 1;
+}
+.k-tc-chip-icon {
+  color: var(--tc-color);
+  stroke: var(--tc-color);
+}
+.k-tc-chip-text {
+  fill: var(--ink-200);
+  font: var(--text-caption) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+  dominant-baseline: central;
+}
+.k-tc-node {
+  cursor: pointer;
+  outline: none;
+  transition: opacity 120ms;
+}
+.k-tc-node rect {
+  fill: var(--bg-200);
+  stroke: var(--line-200);
+}
+.k-tc-node text {
+  fill: var(--ink-100);
+  font: var(--text-data) var(--font-sans);
+  font-weight: 600;
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+.k-tc-node:hover rect {
+  fill: var(--bg-300);
+}
+.k-tc-node:focus-visible rect,
+.k-tc-node[data-selected='true'] rect {
+  stroke: var(--ink-100);
+  stroke-width: 2;
+}
+.k-tc [data-dim='true'] {
+  opacity: 0.3;
+}
+
+.k-tc-detail {
+  flex: 0 0 300px;
+  min-width: 0;
+  overflow: auto;
+  padding: 12px;
+  border-left: var(--hairline);
+  background: var(--bg-100);
+}
+.k-tc-hint,
+.k-tc-missing,
+.k-tc-note {
+  margin: 0;
+  color: var(--ink-300);
+}
+.k-tc-title {
+  margin: 0 0 8px;
+  color: var(--ink-100);
+  font: inherit;
+  font-weight: 700;
+}
+.k-tc-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+.k-tc-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 1px 8px;
+  border: 1px solid var(--tc-color);
+  border-radius: var(--radius-pill);
+  color: var(--ink-100);
+  font: var(--text-caption) var(--font-sans);
+}
+.k-tc-badge svg {
+  color: var(--tc-color);
+}
+.k-tc-tag {
+  margin-right: 6px;
+  padding: 1px 6px;
+  border: 1px solid var(--line-200);
+  border-radius: var(--radius-pill);
+  color: var(--ink-300);
+  font: var(--text-caption) var(--font-sans);
+}
+.k-tc-count {
+  color: var(--ink-300);
+  font-variant-numeric: tabular-nums;
+}
+.k-tc-section {
+  margin-top: 12px;
+}
+.k-tc-section h5 {
+  margin: 0 0 4px;
+  color: var(--ink-300);
+  font: var(--text-caption) var(--font-sans);
+  font-weight: 700;
+}
+.k-tc-failure {
+  margin: 0;
+  padding: 6px 8px;
+  border-left: 3px solid var(--signal-amber);
+  background: var(--bg-200);
+  color: var(--ink-100);
+}
+.k-tc-missing {
+  font-style: italic;
+}
+.k-tc-links {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.k-tc-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 4px 6px;
+  border: var(--hairline);
+  background: var(--bg-200);
+  color: var(--ink-100);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.k-tc-link:hover {
+  background: var(--bg-300);
+}

@@ -926,9 +926,9 @@ export const PAGES: readonly DocPage[] = [
     id: 'event-calendar',
     group: 'quant',
     cardHeight: 670,
-    title: 'EventCalendar 经济日历',
+    title: 'EventCalendar 日历（经济 / 财报 / 分红 / IPO）',
     summary:
-      '按日分组的事件表：时间、国家 / 地区（旗帜图或字母圆标）、事件名、重要程度（1–3 格亮度条）、实际 / 预期 / 前值。实际值好于预期用涨色、差于预期用跌色，好坏方向由调用方按事件给；未公布写「—」，还没到点的写倒计时。顶上：今天 / 本周 / 下周 / 自定义区间，重要程度芯片，国家多选，「只看高重要」开关。数据、现在、时区、文字都由调用方传。',
+      '照 TradingView 日历的布局（主会话 2026-11-15 登录态实测）：导航行（今天、选日期、按周翻页、范围文字、时区读数），周条（周一到周日七张日卡，列出当天各类别条数，点卡选日），类别药丸（经济 / 财报 / 分红 / IPO，给了哪类数据才有哪个），重要性单开关（只看高重要）、经济类别下拉（12 类，单选）、国家选择框（模态：搜索、全球与前 20 预设、按地区分组两列复选、取消 / 应用）。经济表：日期分隔行粘顶、数字列名写在它右侧；同一时间同一国家的事件合并；实际值加粗不上涨跌色；点开一行看说明、来源、历史值小图、下次发布（比 TradingView 多的部分）。财报表：时段图标 + 时间、徽标、代码、公司名，预期 / 实际 EPS 与营收，EPS 意外与营收意外（只有这两列上涨跌色），市值，币种小字，行下可选「财报材料 / 电话会」。分红、IPO 各有自己的列。数据、现在、时区、文字都由调用方传。',
     exports: ['EventCalendar'],
     props: [
       {
@@ -936,33 +936,49 @@ export const PAGES: readonly DocPage[] = [
         rows: [
           {
             name: 'events',
-            type: 'CalendarEvent[]',
-            desc: '{ id, at（毫秒）, region, regionName, flag?, name, importance（1–3）, actual?, forecast?, previous?（格式化好的文字）, tone?（up / down / flat：实际对预期的好坏）}。',
+            type: 'EconomicEvent[]',
+            desc: '经济事件：{ id, at（毫秒）, region, regionName, flag?, name, importance（1–3）, actual?, forecast?, previous?（格式化好的文字）, category?（12 类之一）, regionGroup?（国家框的地区分组）, description?, source?, history?（数字，从旧到新）, nextAt? }。给了说明 / 来源 / 历史值 / 下次发布任一项，这一行才能点开。',
+          },
+          {
+            name: 'earnings / dividends / ipos',
+            type: 'EarningsEvent[] / DividendEvent[] / IpoEvent[]',
+            desc: '可选；给了哪类就多一个页签。数字都是原值（EPS、营收、市值、每股金额、股息率百分数），件按 formatVolume 等写；财报的实际对预期自己比，高于预期用涨色。分红的 at 是除权日，派息日用 payAt。',
           },
           {
             name: 'labels',
             type: 'EventCalendarLabels',
-            desc: '区间、芯片、国家多选、列名、倒计时、日期标题、空态等文字，由调用方传。',
+            desc: '类别、区间、重要程度、国家多选、各类列名、盘前盘后、倒计时、「现在」、详情小标题、日期标题、空态等文字，由调用方传。',
           },
-          { name: 'now', type: 'number', desc: '现在（毫秒）：今天 / 本周 / 下周与倒计时从它算；件里不读时钟。' },
+          {
+            name: 'now',
+            type: 'number',
+            desc: '现在（毫秒）：今天 / 本周 / 下周、倒计时与「现在」线从它算；件里不读时钟。',
+          },
           {
             name: 'timeZone / locale',
             type: 'string',
-            desc: '显示时区（IANA）与语言：分天、时间格式、周起点（周一）都按它。',
+            desc: '显示时区（IANA）与语言：分天、时间格式（时间列头带时区缩写）、周起点（周一）都按它。',
           },
-          { name: 'defaultRange', type: "'today' | 'week' | 'next'", desc: '起始区间，默认本周。' },
+          {
+            name: 'defaultRange',
+            type: "'yesterday' | 'today' | 'tomorrow' | 'week' | 'next'",
+            desc: '起始区间，默认今天。',
+          },
+          { name: 'defaultCategory', type: 'CalendarCategory', desc: '起始类别，默认经济。' },
           {
             name: 'rowActions',
-            type: '(event) => RowAction[]',
-            desc: '悬停或键盘聚焦一行时浮在行尾的图标按钮（RowActions），不占列宽。',
+            type: '(event, category) => RowAction[]',
+            desc: '悬停或键盘聚焦一行时浮在行尾的图标按钮（RowActions），不占列宽；右键出同一份菜单。',
           },
         ],
       },
     ],
     states: [
-      '涨色 / 跌色：实际值按 tone 上色；不给 tone 不上色。',
-      '未公布：实际写「—」；还没到点的在下面写倒计时（「45 分后」）。',
-      '只看高重要：开着时重要程度芯片置灰，只留最高一档。',
+      '涨色 / 跌色：只给财报的 EPS 意外与营收意外（正涨色、负跌色，带正负号百分比）；实际值一律只加粗，不上色。',
+      '已发布：时间与事件名用亮字；未发布：实际写「—」，还没到点的在下面写倒计时（「45 分后」）。',
+      '同一时间同一国家的经济事件合并：时间与国家只在组首行写。',
+      '现在线：只在今天那天的经济 / 财报页出现，插在已过与未到的行之间。',
+      '行展开：点一行或在行上按 Enter / 空格，详情行在它下面；再点收起。',
     ],
     donts: [
       '不要把橙色用在数据上。',
@@ -970,8 +986,11 @@ export const PAGES: readonly DocPage[] = [
       '没有数据时不要放样本行，传空数组。',
     ],
     composition:
-      'EventCalendar\n  筛选条：分段（今天 | 本周 | 下周 | 自定义）| 重要程度芯片 | 国家多选 | 只看高重要 | 条数\n  列头\n  table\n    天（rowgroup）：日期标题\n      行：时间 | 旗帜 + 代码 | 事件 | 重要程度条 | 实际 | 预期 | 前值（行尾悬停浮出 RowActions）',
-    keys: [['Tab', '在行间移动焦点']],
+      'EventCalendar\n  导航行：今天 | 选日期 | ‹ › | 范围 | 时区\n  周条：七张日卡\n  类别药丸 | 重要性开关 | 经济类别下拉 | 国家 | 条数\n  table\n    天（rowgroup）：粘顶的日期标题 + 数字列名\n      行：按类别不同的列（行尾悬停浮出 RowActions）\n      现在线（今天）\n      详情行（经济，点开后）/ 动作行（财报）',
+    keys: [
+      ['Tab', '在行间移动焦点'],
+      ['Enter / 空格', '展开或收起有详情的行'],
+    ],
   },
   {
     id: 'limit-ladder',
@@ -1080,6 +1099,16 @@ export const PAGES: readonly DocPage[] = [
             type: '(item: HeatmapItem) => RowAction[]',
             desc: '格子的右键菜单（#23，一般传 symbolMenu(...)）：右键、菜单键、Shift+F10 出同一份品种菜单。格子小，不画悬停按钮。读屏名取 labels.cellMenu（可选）。不传就没有。',
           },
+          {
+            name: 'labels.display',
+            type: 'HeatmapDisplayLabels',
+            desc: '给了，工具条多三个显示开关（照 TradingView 热图，主会话 2026-11-15 实测）：Logo 开关、标题（无 / 代码 / 全名）、格内数值（无 / 价格 / 当前大小指标的值 / 着色指标的读数）。不给格子照旧。',
+          },
+          {
+            name: 'labels.fullscreen',
+            type: 'string',
+            desc: '给了，工具条最右出全屏钮（容器 requestFullscreen），字是读屏名与提示。',
+          },
         ],
       },
     ],
@@ -1180,6 +1209,32 @@ export const PAGES: readonly DocPage[] = [
     composition:
       'MetricCardGrid\n  MetricCard\n    标题 | 分段控件（ToggleGroup）\n    当前值\n    变化（ChangeText）\n    走势线（Sparkline）\n    阶段带\n    来源 · 更新时间',
     keys: [['Tab', '到分段控件（← → 移动，Space / Enter 选）']],
+  },
+  {
+    id: 'rating-text',
+    group: 'quant',
+    cardHeight: 140,
+    title: 'RatingText 五档评级',
+    summary:
+      '分析师评级、技术评级结论的单元格写法：图标加文字，强力买入双上箭头、买入单上箭头、中性等号、卖出单下箭头、强力卖出双下箭头；买入档取涨色、卖出档取跌色（跟 data-updown），中性不着色。照 TradingView 选股器「分析师评级」列（主会话 2026-11-15 登录态实测），实现原创。放进 DataGrid 的 custom 列里用（见 FilterBar 页的选股器）。',
+    exports: ['RatingText'],
+    props: [
+      {
+        part: 'RatingText',
+        note: '其余属性透传给 span。',
+        rows: [
+          { name: 'level', type: "'strong-sell' | 'sell' | 'neutral' | 'buy' | 'strong-buy'", desc: '五档。' },
+          { name: 'children', type: 'string', desc: '档名，由调用方传（包里不带语言）。' },
+        ],
+      },
+    ],
+    states: [
+      '买入、强力买入：涨色；卖出、强力卖出：跌色；中性：继承周围字色。',
+      '方向不只靠颜色：图标一至两层箭头表示强弱。',
+    ],
+    donts: ['不要自己拼箭头字符着色；用这个件，涨跌色才会跟 data-updown。'],
+    composition: 'RatingText（内部：lucide 图标）；放在 DataGrid 的 custom 列 cell 里',
+    keys: [],
   },
   {
     id: 'technical-rating',
@@ -3372,6 +3427,146 @@ export const PAGES: readonly DocPage[] = [
     keys: [],
   },
   {
+    id: 'filter-bar',
+    group: 'forms',
+    cardHeight: 520,
+    title: 'FilterBar 过滤条',
+    summary:
+      '选股器的顶部过滤行：一行可换行的胶囊，每个胶囊是一个字段；点开浮层有标题与垃圾桶（把这个过滤从条上拿掉）、搜索框、预设条件列表（主文字加灰色副标题）、底部「手动设置」（运算符加值）。最后是「+」（按分组列出所有字段，进组再选）与「⋯」（重置全部条件）。照 TradingView 选股器（主会话 2026-11-15 登录态实测），实现原创。字段、运算符、预设与文字都由调用方定义；条件受控，件不过滤数据，调用方用 applyFilters 或自己的方式过滤。',
+    exports: ['FilterBar', 'ViewSwitcher', 'applyFilters', 'conditionText', 'matchCondition'],
+    props: [
+      {
+        part: 'FilterBar',
+        rows: [
+          {
+            name: 'fields',
+            type: 'FilterField[]',
+            desc: '{ key, label, group?, input?（number / text）, operators: {value,label}[], presets?: {key,label,hint?,op,value}[], shown? }。',
+          },
+          {
+            name: 'value',
+            type: 'FilterCondition[]',
+            desc: '{ id, field, op, value, label? }；同一字段只留最后设的一条。',
+          },
+          {
+            name: 'onChange',
+            type: '(next: FilterCondition[]) => void',
+            desc: '条件变了（设、清除、移除字段、重置）。',
+          },
+          {
+            name: 'labels',
+            type: 'FilterBarLabels',
+            desc: '全部文字，由调用方传。传了 undo 与 redo 两个读屏名，条的最左多一对撤销 / 重做按钮（件自己记它改过的条件快照，最多 50 步；从外面换掉条件不进栈）。',
+          },
+          {
+            name: 'defaultShown',
+            type: 'string[]',
+            desc: '条上一开始有哪些字段；不给取 shown 为真的，再没有取前 6 个。',
+          },
+        ],
+      },
+      {
+        part: 'ViewSwitcher',
+        note: '标题位置的「已保存的视图」下拉（选股器标题的保存的筛选、新闻流标题的 Full feed）；件不存视图，列表与当前项由调用方传。',
+        rows: [
+          { name: 'views', type: 'ViewOption[]', desc: '{ key, label }；下拉里按这个顺序列。' },
+          { name: 'value', type: 'string', desc: '当前视图的键。' },
+          { name: 'onValueChange', type: '(key: string) => void', desc: '选了另一个视图。' },
+          {
+            name: 'onSave',
+            type: '() => void',
+            desc: '给了，列表底部多一项「另存为」（文字 labels.save）；命名对话框与存哪里归调用方。',
+          },
+          { name: 'labels', type: '{ trigger: string; save?: string }', desc: '读屏名与「另存为」文字。' },
+        ],
+      },
+      {
+        part: 'applyFilters / matchCondition',
+        note: '纯函数；约定的运算符名：gt、gte、lt、lte、eq、neq、between（值写成「下限..上限」）、contains、in（逗号分隔）。别的运算符名调用方自己匹配。',
+        rows: [
+          {
+            name: 'applyFilters(rows, conditions, getCell)',
+            type: 'Row[]',
+            desc: '所有条件都满足（且）；getCell 按字段键取这一行的值。',
+          },
+        ],
+      },
+    ],
+    states: ['设了条件的胶囊：底色加深，字提亮并带条件文字。', '字段被移除：从条上拿掉，它的条件一并清除。'],
+    donts: ['不要把过滤逻辑写进件：件只出条件，数据由调用方过滤。', '字段很多时别全摆在条上：用「+」加。'],
+    composition:
+      'FilterBar\n  胶囊 × n（Popover：标题 + 垃圾桶、搜索、预设列表、手动设置）\n  「+」（Popover：搜索、分组列表带计数）\n  「⋯」（重置）',
+    keys: [
+      ['Tab', '在胶囊、「+」、「⋯」间移动'],
+      ['Enter', '打开浮层或选中预设'],
+    ],
+  },
+  {
+    id: 'column-set-tabs',
+    group: 'blocks',
+    cardHeight: 520,
+    title: 'ColumnSetTabs 列集标签行',
+    summary:
+      '表上方的一行页签（概览、估值、分红…），点一个就把 DataGrid 的列换成这一套。照 TradingView 选股器的列组标签（主会话 2026-11-15 实测）；与 ColumnPicker 里的列集芯片是同一份数据与同一个纯函数。不存状态：哪个亮着由看得见的列恰好等于它的列推出来，手动改过列之后没有页签亮着。',
+    exports: ['ColumnSetTabs'],
+    props: [
+      {
+        part: 'ColumnSetTabs',
+        rows: [
+          { name: 'layout / onLayoutChange', type: 'GridColumnLayout[]', desc: 'DataGrid 的列摆法，受控。' },
+          { name: 'sets', type: 'ColumnSet[]', desc: '{ id, label, columns: 列 id[] }。' },
+          { name: 'label', type: 'string', desc: '整行的读屏名。' },
+          { name: 'children', type: 'ReactNode', desc: '右侧按钮位（刷新、全屏）。' },
+        ],
+      },
+    ],
+    states: ['选中：白底黑字小胶囊。', '手动改过列：没有页签选中。'],
+    donts: ['不要自己存「当前列集」：它由列推出来。'],
+    composition: 'ColumnSetTabs\n  tablist\n    tab × n\n  右侧按钮位',
+    keys: [
+      ['Tab', '在页签间移动'],
+      ['Enter', '套用这一套列'],
+    ],
+  },
+  {
+    id: 'news-reader',
+    group: 'blocks',
+    cardHeight: 520,
+    title: 'NewsReader 新闻阅读窗',
+    summary:
+      'NewsFeed 点开一条后的阅读窗：来源与操作（复制链接、举报、关闭）、标题、元信息、品种胶囊带涨跌、「要点」列表（闪电图标）、正文。照 TradingView 新闻流的阅读窗（主会话 2026-11-15 实测）。件不取数：标题、元信息、要点、正文都由调用方传；正文里的品种胶囊用 NewsSymbolChip 内联。',
+    exports: ['NewsReader', 'NewsSymbolChip'],
+    props: [
+      {
+        part: 'NewsReader',
+        rows: [
+          {
+            name: 'title / source / sourceLogo / meta',
+            type: 'string',
+            desc: '标题、来源、来源徽标、写好的元信息一行。',
+          },
+          {
+            name: 'symbols',
+            type: 'NewsReaderSymbol[]',
+            desc: '{ code, name?, logo?, change?（涨跌幅百分数） }；涨跌色走 pnl token。',
+          },
+          { name: 'keyPoints', type: 'string[]', desc: '要点；空数组不画这一块。' },
+          { name: 'children', type: 'ReactNode', desc: '正文。' },
+          { name: 'labels', type: 'NewsReaderLabels', desc: '读屏名与「要点」「关闭」「举报」「复制链接」。' },
+          {
+            name: 'onClose / onReport / onCopyLink / onSymbolPick',
+            type: 'function',
+            desc: '给了才画对应的按钮；点品种胶囊回调。',
+          },
+        ],
+      },
+    ],
+    states: ['品种涨跌：正涨色、负跌色，0 不上色。'],
+    donts: ['不要在件里取数或翻译：文字由调用方传。'],
+    composition: 'NewsReader（article）\n  header：来源 + 操作\n  标题、元信息\n  品种胶囊\n  要点\n  正文',
+    keys: [['Tab', '在操作与品种胶囊间移动']],
+  },
+  {
     id: 'news-feed',
     group: 'blocks',
     cardHeight: 560,
@@ -3406,7 +3601,34 @@ export const PAGES: readonly DocPage[] = [
             desc: '全部文字：all、feed、channels、sources、clearSources、search、layout、layoutList、layoutCard、pause、resume、important、empty，以及 newItems(n)、ago(秒)、absolute(时间)。包里没有语言。',
           },
           { name: 'defaultLayout', type: "'list' | 'card'", desc: '起始排法，默认 list。' },
+          {
+            name: 'facets',
+            type: 'NewsFacet[]',
+            desc: '组合过滤（照 TradingView News Flow，主会话 2026-11-15 实测）：{ key, label, options, single?, shown? }；条目用 NewsItem.facets 带取值。每个分面一个胶囊，浮层里复选、可重置、可移除，「+ 添加过滤」再加；取值之间「或」，分面之间「且」。需要 labels.facets 的文字。',
+          },
+          { name: 'selected', type: 'string | null', desc: '阅读窗开着的那条：行底色加深。' },
           { name: 'onSymbolPick', type: '(symbol, item) => void', desc: '点品种胶囊。' },
+          {
+            name: 'reader',
+            type: '(item, { close }) => ReactNode',
+            desc: '给了就是左列表右阅读窗的并排排法（照 TradingView News Flow，主会话 2026-11-15 实测）：点标题打开这一条，返回的节点（一般是 NewsReader）画在右边，选中行底色加深；件的宽度不到 900px 时阅读窗改成盖在列表上的浮层。',
+          },
+          {
+            name: 'views / view / onViewChange / onSaveView',
+            type: 'ViewOption[] / string / (key) => void / () => void',
+            desc: '标题行的已保存过滤视图下拉（Full feed 那样）；需要 labels.views。切换与另存由调用方处理，一般换 key 让件里的过滤状态重置。',
+          },
+          {
+            name: 'symbolStyle',
+            type: "'stack' | 'chips'",
+            default: "'stack'",
+            desc: '相关品种：stack = 重叠的一排徽标（悬停出代码与名称），chips = 带代码的胶囊。',
+          },
+          {
+            name: 'NewsItem.readMinutes / labels.read / labels.collapse',
+            type: 'number / (n) => string / string',
+            desc: '条目写「n 分钟阅读」（labels.read 与 readMinutes 都有才写）；labels.collapse 给了，标题行右边有收起 / 展开过滤区的按钮。',
+          },
           {
             name: 'itemActions',
             type: '(item) => RowAction[]',
@@ -3437,6 +3659,67 @@ export const PAGES: readonly DocPage[] = [
     keys: [
       ['Tab', '在频道、搜索、排法、暂停、来源芯片、新消息按钮、标题、胶囊间移动'],
       ['Enter / Space', '触发当前按钮'],
+    ],
+  },
+  {
+    id: 'transmission-chain',
+    group: 'blocks',
+    cardHeight: 760,
+    title: 'TransmissionChain 传导链图',
+    summary:
+      '研究「谁创造资金 → 谁先取得购买力 → 经过什么通道 → 用于什么 → 谁获得收入与利润 → 哪类资产拥有收益权」这类传导框架的有向图：节点是传导环节，边是传导关系，每条边有验证状态（未检验 / 有证据支持 / 证据反对 / 部分成立）与证据计数，边上的标签写状态图标与「支 n 反 n」。点边，右侧出这条判断的失败条件与证据列表（每条证据有立场，并标来源类别：学者观点 / 政策与资金变化 / 数据 / 财报）；点节点，列出它的上下游边，不挨着的边淡出。支持沿链回到上游的反馈边（如资产价格经抵押品与再融资回到信用）。布局用 dagre（MIT，一层一层排，环由它先反转再还原），滚轮缩放、拖动平移、一键适应。状态色：支持 = 涨色、反对 = 跌色、部分 = 琥珀点划线、未检验 = 灰虚线，状态另有图标与状态字，不只靠颜色；橙色不画数据，不用蓝。画法参照 TradingView 的缩放与平移手感；证据行与数据类型同 HypothesisLedger（HypothesisEvidence，样式用它的 k-hl-ev）。演示数据（状态与证据条数）是编的，页上与证据行都写明。',
+    exports: ['TransmissionChain'],
+    props: [
+      {
+        part: 'TransmissionChain',
+        note: '件只画、只回调：节点、边、证据与全部文字由调用方传，件不认识任何应用或研究框架；高度由外层给。',
+        rows: [
+          {
+            name: 'nodes',
+            type: 'ChainNode[]',
+            desc: '{ id, label, note? }：传导环节。没有节点写 labels.notConnected，不补样本。',
+          },
+          {
+            name: 'edges',
+            type: 'ChainEdge[]',
+            desc: '{ id, from, to, status: untested | supported | contradicted | partial, label?, feedback?, failureCondition?, evidence?: HypothesisEvidence[]（kind、source、href、publishedAt、summary、stance: support | oppose） }。证据计数由 evidence 数出来，不另传；指向不存在节点的边、自环与重复 id 被丢掉。',
+          },
+          {
+            name: 'labels',
+            type: 'TransmissionChainLabels',
+            desc: '全部文字（状态名、立场名、来源类别、各区标题、提示与 counts / edgeName 函数）。包里没有语言。',
+          },
+          {
+            name: 'direction',
+            type: "'LR' | 'TB'",
+            desc: '布局方向，默认从上到下（链长时横排会宽到缩得看不清）；LR 从左到右。',
+          },
+          {
+            name: 'defaultSelected / onSelect',
+            type: 'ChainSelection',
+            desc: '起始选中（{ kind: edge | node, id }）与选中变化的回调；选中的 id 不存在时当作没选。',
+          },
+        ],
+      },
+    ],
+    states: [
+      '没有节点：写 labels.notConnected。',
+      '边没有证据：右侧写 labels.noEvidence，标签上不写计数。',
+      '边没有失败条件：右侧写 labels.noFailureCondition（琥珀提示），不替调用方编。',
+      '选中节点：不挨着它的节点与边淡出到 30%。',
+      '反馈边：data-feedback，布局时权重很低，不参与定层，画出来绕回上游。',
+    ],
+    donts: [
+      '不要用橙色或蓝色画状态：状态用涨色、跌色、琥珀、灰加图标与文字。',
+      '不要把演示数据当研究结论。',
+      '不要在件里写文字或判断状态：状态由调用方按证据定，件只显示。',
+    ],
+    composition:
+      'TransmissionChain\n  画布：svg（dagre 布局）× 边（路径、箭头、标签）+ 节点；缩放 / 适应按钮；状态图例\n  详情：边（状态、失败条件、证据行）或节点（上下游边）',
+    keys: [
+      ['Tab', '在缩放按钮、边、节点间移动'],
+      ['Enter / Space', '选中当前的边或节点'],
+      ['滚轮 / 拖动', '缩放（以指针为中心）/ 平移'],
     ],
   },
   {
@@ -4458,6 +4741,151 @@ export const PAGES: readonly DocPage[] = [
       ['Home / End', '到最左 / 最右的点'],
       ['Enter / 空格', '选中当前点'],
       ['Esc', '取消选中'],
+    ],
+  },
+  {
+    id: 'flow-sankey',
+    group: 'quant',
+    cardHeight: 640,
+    title: 'FlowSankey 资金流向桑基图',
+    summary:
+      '资金从来源（央行、银行信贷、财政、海外……）经通道到用途（偿债、消费、投资、资产配置）再到受益方的桑基图，节点与流量由调用方给，列由节点的 column 定。悬停节点或链路出 LCD 读数：金额、占来源流出、占总量；点节点（或聚焦后 Enter / 空格）钉住它的全部上游与下游，其余压暗，再点或 Esc 取消。「交易流量」与「价格重估」分开：交易流量是实色带，价格重估（估值变了、没有资金移动）是斜纹带，占比与总量只算交易流量，右上有开关可以把重估整条拿掉；图例分开写。链路与节点是中性灰，不用橙与蓝，节点想着色由调用方给 color。排布用 d3-sankey 0.12.3（BSD-3-Clause，见 NOTICE），有环时不画、写 labels.cycle（先把回流拆成另一个节点）。需求稿是 issue #45，没有读到可对照的参照产品页面，待核对；演示数据全部虚构。',
+    exports: ['FlowSankey', 'layoutFlow', 'linkEnds', 'moveNode', 'neighborhood'],
+    props: [
+      {
+        part: 'FlowSankey',
+        note: '文字全由 props 传。图是 viewBox 960 宽的 svg，随容器缩放；每个节点是 role=button 的矩形，读屏名带流入与流出；图右上有表格视图、导出、全屏三件（表格视图总有，表里每条链路一行）。',
+        rows: [
+          {
+            name: 'nodes',
+            type: 'FlowNode[]',
+            desc: '{ id, label, column?, color? }。column 全给才按它分列（从 0 起），否则由链路深度定；没有任何链路的节点不画。',
+          },
+          {
+            name: 'links',
+            type: 'FlowLink[]',
+            desc: '{ id?, source, target, value, kind?: flow | revaluation, note? }。value 不是正数或指向不存在节点的链路丢掉。kind 默认 flow。',
+          },
+          {
+            name: 'labels',
+            type: 'FlowSankeyLabels',
+            desc: '全部文字：读屏名、两种链路的名字、读数行名、开关、空态与有环的提示。',
+          },
+          { name: 'columnLabels', type: 'string[]', desc: '每一列顶上的标题；不给不画。' },
+          {
+            name: 'formatValue / formatShare',
+            type: '(number) => string',
+            desc: '金额（含单位）与占比（0.25）怎么写；占比默认一位小数的百分数。',
+          },
+          { name: 'height', type: 'number', default: '420', desc: '图高（viewBox 单位）。' },
+          { name: 'badge', type: 'ReactNode', desc: '图例行右端的小标，如「演示数据」。' },
+          {
+            name: 'actionLabels / tableLabel / tableHead / source / onExport / onFullscreen',
+            type: 'ChartViewProps',
+            desc: '同其他图：三个图工具的名字、表格视图的读屏名与表头（五列：链路、类型、金额、占来源流出、占总量）、来源一行、导出与全屏的回调。',
+          },
+        ],
+      },
+      {
+        part: 'layoutFlow(nodes, links, options)',
+        note: '节点与链路 → 排布、占比、总量的纯函数（总量是没有交易流入的节点的交易流出之和）；返回 { ok: true, nodes, links, total, dropped, columns } 或 { ok: false, reason: empty | cycle }。',
+        rows: [],
+      },
+    ],
+    states: [
+      '没有选中：全部链路与节点正常亮度；悬停节点时它的上下游亮、其余压暗；悬停链路时只亮它与两端。',
+      '钉住节点后离开也保持高亮，直到再点同一个节点、点空白或按 Esc。',
+      '价格重估链路是斜纹，不进占比与总量；关掉开关后它整条不参与排布，图上只剩交易流量。',
+      '没有可画的链路写 labels.empty；有环写 labels.cycle，不抛错。',
+    ],
+    donts: [
+      '不要把价格重估写成 kind: flow：它没有资金移动，会混进占比。',
+      '不要传环（A→B→A）：资金回流请记成另一个节点（例如「回流」）。',
+      '不要在件里写文字、也不要把演示数据当真实资金流向。',
+    ],
+    composition:
+      'FlowSankey\n  Switch（显示价格重估）· 图右上三件（表格视图 · 导出 · 全屏）\n  svg role=group\n    pattern（斜纹）\n    path × 链路\n    rect role=button × 节点 · text 标签\n  LcdTooltip（悬停读数）\n  图例（交易流量 · 价格重估 · 小标）',
+    keys: [
+      ['Tab', '进图，停在一个节点上'],
+      ['↑ / ↓', '同一列里上一个 / 下一个节点'],
+      ['← / →', '去连着的上一列 / 下一列里纵向最近的节点'],
+      ['Home / End', '第一个 / 最后一个节点'],
+      ['Enter / 空格', '钉住或取消钉住这个节点的上下游'],
+      ['Esc', '取消钉住'],
+    ],
+  },
+  {
+    id: 'vintage-series',
+    group: 'quant',
+    cardHeight: 760,
+    title: 'VintageSeries 按发布时间的宏观序列',
+    summary:
+      '宏观序列按发布时间（point-in-time）画，避免把后来修订的数当成当时已知（框架第十节的要求）。横轴是统计期，同一期有一串发布值（首次发布、每次修订）：一条实线是「当时已知值」（默认每期的首次发布值；给 asOf 就是截至那一刻已知的最后一次发布，那时还没发布的期不画），一条灰虚线是「最新修订值」，上面一排分段按钮切「当时已知值 / 最新修订值 / 两条都看」。每次发布画一个点（空心是当时已知，灰点是最新，更小的是中间的修订），同一期的点之间连细竖线，线长就是修订幅度；下面一条小图画每期修订了多少（最新 − 首次，涨跌发散阶，没修订过的期不画）。顶上四个读数：修订过的期数、平均绝对修订、平均修订方向（正是后来普遍上修）、最大一次。坐标、网格、十字线与 LCD 读数复用 SeriesExplorer 的那套，键位同它。演示数据是固定种子合成的虚构月度同比，页上与小标都写明。',
+    exports: ['VintageSeries', 'normalizeVintages', 'knownAt', 'knownValue', 'revisionStats', 'vintageExtent'],
+    props: [
+      {
+        part: 'VintageSeries',
+        note: '文字与格式全由 props 传，件不认识任何统计口径。主图高 chartHeight，下面修订小图固定 64px；统计期不超过 72 个时才画发布点，更多只留线与修订竖线。',
+        rows: [
+          {
+            name: 'observations',
+            type: 'VintageObservation[]',
+            desc: '{ period, releases: { at, value, note? }[] }。period 是统计期（毫秒，UTC），at 是这个值发布的时刻；不用排序，件整理（同一期给两次会合并，非有限数丢掉）。',
+          },
+          {
+            name: 'labels',
+            type: 'VintageSeriesLabels',
+            desc: '全部文字：读屏名、三个切换项、修订小图名、读数行名、四个读数名、空态。',
+          },
+          {
+            name: 'formatPeriod / formatAt',
+            type: '(ms) => string',
+            desc: '统计期与发布时刻怎么写；时区与语言由调用方定。',
+          },
+          { name: 'formatValue / formatDelta', type: '(number) => string', desc: '值与带正负号的变化怎么写。' },
+          {
+            name: 'asOf',
+            type: 'number',
+            desc: '「当时已知」取截至这一刻的最后一次发布；不给取每期首次发布值。「最新修订值」不受它影响（它就是事后看到的）。',
+          },
+          { name: 'defaultMode', type: "'known' | 'latest' | 'both'", default: 'both', desc: '起始看哪条线。' },
+          {
+            name: 'chartHeight / badge',
+            type: 'number / string',
+            default: '220',
+            desc: '主图高（px）；右上小标，如「演示数据」。',
+          },
+          {
+            name: 'actionLabels / tableLabel / tableHead / source / onExport / onFullscreen',
+            type: 'ChartViewProps',
+            desc: '同其他图；表格视图每次发布一行（五列：统计期、发布时刻、值、较上次、较首次）。',
+          },
+        ],
+      },
+      {
+        part: 'normalizeVintages / knownAt / knownValue / revisionStats',
+        note: '整理发布值、取某一刻已知的值、统计修订的纯函数；调用方想在别处出同样的数可以直接调。只发布过一次的期修订是 null，不写成 0。',
+        rows: [],
+      },
+    ],
+    states: [
+      '只发布过一次的期：只有一个点，没有修订竖线，修订小图里没有它的柱。',
+      '给了 asOf：那一刻还没发布的期，「当时已知」线在那里断开，读数里写 labels.notYet。',
+      '修订小图：最新高于首次是涨色柱、低于是跌色柱，零线以上以下对称不拉伸；没有任何修订时是一条零线。',
+      '没有数据写 labels.empty。',
+    ],
+    donts: [
+      '不要把「最新修订值」当成当时已知拿去回测或写成当时的判断：那是偷看未来。',
+      '不要只传最新值：件要的是每次发布的值与发布时刻。',
+      '不要把演示数据当真实统计。',
+    ],
+    composition:
+      'VintageSeries\n  ToggleGroup（当时已知值 / 最新修订值 / 两条都看）· 小标 · 图右上三件\n  dl（四个修订读数）\n  role=slider 的图\n    主图 svg（网格 · 修订竖线 · 两条线）· 纵轴刻度 · 发布点（HTML 小点）· 十字线 · LcdTooltip\n    修订小图 svg（零线 · 柱）\n  横轴 · 图例',
+    keys: [
+      ['← / →', '逐期走，十字线与读数跟着'],
+      ['Shift + ← / →', '一次走三期'],
+      ['Home / End', '第一期 / 最后一期'],
+      ['Esc', '清掉十字线'],
     ],
   },
   {

@@ -18,6 +18,7 @@ export {
   type ColumnPickerProps,
   type ColumnSet,
 } from './data-grid/column-picker.tsx'
+export { ColumnSetTabs, type ColumnSetTabsProps } from './data-grid/column-set-tabs.tsx'
 export {
   activeColumnSet,
   applyColumnSet,
@@ -52,7 +53,14 @@ export type {
   WatchRow,
 } from './hypothesis-ledger/hypothesis-ledger-model.ts'
 export { NewsFeed, type NewsFeedLabels, type NewsFeedProps } from './news-feed/news-feed.tsx'
-export type { NewsItem, NewsSymbol } from './news-feed/news-feed-model.ts'
+export type { NewsFacet, NewsItem, NewsSymbol } from './news-feed/news-feed-model.ts'
+export {
+  NewsReader,
+  NewsSymbolChip,
+  type NewsReaderLabels,
+  type NewsReaderProps,
+  type NewsReaderSymbol,
+} from './news-feed/news-reader.tsx'
 export {
   SystemMonitor,
   type SystemMonitorLabels,
@@ -68,6 +76,18 @@ export type {
   StrategyAction,
   StrategyStatus,
 } from './system-monitor/system-monitor-model.ts'
+export {
+  TransmissionChain,
+  type ChainSelection,
+  type TransmissionChainLabels,
+  type TransmissionChainProps,
+} from './transmission-chain/transmission-chain.tsx'
+export type {
+  ChainDirection,
+  ChainEdge,
+  ChainNode,
+  ChainStatus,
+} from './transmission-chain/transmission-chain-model.ts'
 export { Toolbar, ToolbarGroup, ToolButton, ToolSlot } from './toolbar/toolbar.tsx'
 export { useRovingToolbar } from './toolbar/use-roving-toolbar.ts'
 
