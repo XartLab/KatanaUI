@@ -51,8 +51,11 @@ function DialogContent({
   bare,
   ...props
 }: ComponentProps<typeof DialogPrimitive.Content> & {
+  /** When given, draws a close button at the top right of the title bar and uses this as its accessible name. */
   closeLabel?: string
+  /** Skip the skin and the position; the caller's class names style the content. */
   bare?: boolean
+  /** Extra class name on the backdrop. */
   overlayClassName?: string
 }) {
   // Radix 的模态对话框关闭后只会聚焦 DialogTrigger；由代码打开的没有触发器，焦点还给打开前拿着它的元素（lib/opener-focus.ts）。
@@ -127,7 +130,14 @@ function DialogFooter({ className, ...props }: ComponentProps<'div'>) {
 }
 
 /** bare：不带标题的皮肤（只要 Radix 的 aria 关系），字样由调用方的类名给——自带整套外观的浮层、设置窗左栏的窗名用。 */
-function DialogTitle({ className, bare, ...props }: ComponentProps<typeof DialogPrimitive.Title> & { bare?: boolean }) {
+function DialogTitle({
+  className,
+  bare,
+  ...props
+}: ComponentProps<typeof DialogPrimitive.Title> & {
+  /** Skip the title style. */
+  bare?: boolean
+}) {
   return (
     <DialogPrimitive.Title
       data-slot="dialog-title"

@@ -4,6 +4,8 @@
 
 ## Provide
 
+`*` marks a required prop.
+
 ### PerformanceStrip
 
 | 属性 | 类型 | 默认 | 说明 |
@@ -16,6 +18,12 @@
 ### formatPerformance(value, digits)
 
 纯函数：+12.50%、+1.84K%、+142.60K%；不是有限数写「—」。
+
+## Usage
+
+```tsx
+
+```
 
 ## States
 

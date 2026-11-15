@@ -18,6 +18,7 @@ const inputVariants = cva(
   ],
   {
     variants: {
+      /** Height: default is 30px, sm is 26px with the data type size. */
       size: {
         default: 'h-[30px] px-2',
         sm: 'h-[26px] px-1.5 [font-size:var(--text-data-size)]',

@@ -4,6 +4,8 @@
 
 ## Provide
 
+`*` marks a required prop.
+
 ### Meter
 
 名字与数永远在，不做只有一根条。填充与指针走 gentle 弹簧；tone 一变成 warn，条体脉冲一次。
@@ -18,6 +20,36 @@
 | `display` | `'bar' \| 'gauge' \| 'sync'` | `'bar'` | sync 只给 paper 进度、容量使用、偏离门距离、回放进度。 |
 | `mark` | `number` | — | 刻度（跟 value 同单位）：琥珀竖线，sync 里是评估点；gauge 不画。 |
 | `markLabel` | `string` | — | 读屏用：刻度是什么（评估点、上限）；有 mark 时要给。 |
+
+## Usage
+
+```tsx
+// SPDX-License-Identifier: MIT
+import { Meter } from '@katana-ui/react/quant'
+
+export function MeterUsage() {
+  return (
+    <>
+      <div className="gal-stack" data-testid="meter-bars">
+        <Meter label="LOAD · 敞口" value={72} tone="ok" />
+        <Meter label="LOAD · 受锁（超过 60% 上限）" value={38} tone="warn" mark={60} markLabel="上限" />
+        <Meter label="回测进度" value={61} />
+        <Meter label="OFF" value={0} tone="off" />
+      </div>
+
+      <div className="gal-stack" data-testid="meter-gauges">
+        <Meter label="RS-20 · 电子" value={94} display="gauge" />
+        <Meter label="RS-20 · 军工（弱势）" value={27} display="gauge" tone="danger" />
+      </div>
+
+      <div className="gal-stack" data-testid="meter-sync">
+        <Meter label="PAPER · 第 21 / 30 天" value={70} display="sync" mark={100} markLabel="评估点" />
+        <Meter label="容量使用" value={52} display="sync" tone="ok" mark={80} markLabel="容量上限" />
+      </div>
+    </>
+  )
+}
+```
 
 ## States
 

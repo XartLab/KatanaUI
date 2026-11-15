@@ -4,6 +4,8 @@
 
 ## Provide
 
+`*` marks a required prop.
+
 ### SmallMultiples
 
 一行放几张由容器宽与 minWidth 定。各张点数应当相同，短的张在超出的格上不画竖线。
@@ -18,6 +20,57 @@
 | `minWidth` | `number` | `160` | 每张的最小宽（px）。 |
 | `height` | `number` | `56` | 折线区高（px）。 |
 | `onSelect` | `(key: string) => void` | — | 给了标题就是按钮（可聚焦），点了拿到这一张的 key。 |
+
+## Usage
+
+```tsx
+// SPDX-License-Identifier: MIT
+import { useState } from 'react'
+import { SmallMultiples, type SmallMultiple } from '@katana-ui/react/blocks'
+
+const SM_POINTS = 40
+
+const sm = (f: (i: number) => number) => Array.from({ length: SM_POINTS }, (_, i) => +f(i).toFixed(3))
+
+export const SMALL_MULTIPLES_DEMO: readonly SmallMultiple[] = [
+  { key: 'AAA', label: 'AAA', values: sm((i) => 100 + i * 0.5) },
+  { key: 'BBB', label: 'BBB', values: sm((i) => 100 - i * 0.3) },
+  { key: 'CCC', label: 'CCC', values: sm((i) => 100 + 5 * Math.sin((i * Math.PI) / (SM_POINTS - 1))) },
+  { key: 'DDD', label: 'DDD', values: sm((i) => 50 + 20 * Math.cos(i / 6)) },
+  { key: 'EEE', label: 'EEE', values: sm((i) => 80 + 8 * Math.sin(i / 3) + i * 0.2) },
+  { key: 'FFF', label: 'FFF', values: sm((i) => 120 - 15 * Math.sin(i / 8)) },
+]
+
+export function SmallMultiplesUsage() {
+  const [picked, setPicked] = useState<string | null>(null)
+  return (
+    <>
+      <div className="gal-wide" data-gallery-multiples="each" style={{ maxWidth: 640 }}>
+        <SmallMultiples
+          items={SMALL_MULTIPLES_DEMO}
+          label="示例：六个品种的走势（各自范围）"
+          formatValue={(v) => v.toFixed(2)}
+          formatX={(i) => `第 ${i + 1} 点`}
+          onSelect={setPicked}
+        />
+      </div>
+      <p className="gal-note" data-gallery-multiples-picked>
+        {picked === null ? '还没点标题' : `点了 ${picked}`}
+      </p>
+      <div className="gal-wide" data-gallery-multiples="shared" style={{ maxWidth: 640 }}>
+        <SmallMultiples
+          items={SMALL_MULTIPLES_DEMO}
+          label="示例：六个品种的走势（共用范围）"
+          formatValue={(v) => v.toFixed(2)}
+          yScale="shared"
+        />
+      </div>
+    </>
+  )
+}
+
+/** 演示用的 24 个月的盈亏：2025-01 到 2026-12，一月一个点，闭式公式生成（已实现、手续费、资金费、净盈亏）。 */
+```
 
 ## States
 

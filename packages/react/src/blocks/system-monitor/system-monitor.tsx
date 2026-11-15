@@ -159,7 +159,7 @@ export function SystemMonitor({
         )}
       </header>
 
-      <div className="k-sysmon-body">
+      <div className="k-sysmon-body" tabIndex={0}>
         <section aria-label={labels.links} className="k-sysmon-links">
           {links.length === 0 ? (
             <div className="k-sysmon-empty">{labels.notConnected}</div>

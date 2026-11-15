@@ -3,7 +3,9 @@ import type { ComponentType } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { InlineOverlays } from '../src/index'
 import { DEMOS, OPEN_DEMOS } from '../gallery/demos'
-import { GROUPS, PAGES, type DocPage, type PropTable } from '../gallery/registry'
+import { resolveParts, type ResolvedPart } from '../gallery/props'
+import { GROUPS, PAGES, type DocPage } from '../gallery/registry'
+import { usageOf } from '../gallery/usage'
 
 // 设计系统包（packages/react/design-system/）每个件的说明与静态预览：全部读文档站的页数据（gallery/registry.ts 的 PAGES）与页上的预览（gallery/demos.tsx 的 DEMOS），
 // 这里不再另写一份。ds-build.mjs 经 vite 的 ssrLoadModule 载入本文件。预览是 react-dom/server 把页上的实时预览渲染成静态 HTML：
@@ -27,12 +29,13 @@ export const cardGroup = (page: DocPage): string => {
 
 const list = (items: readonly string[]): string => items.map((item) => `- ${item}`).join('\n')
 
-const propsMarkdown = (table: PropTable): string => {
+const propsMarkdown = (table: ResolvedPart): string => {
   const head = `### ${table.part}\n${table.note ? `\n${table.note}\n` : ''}`
   if (table.rows.length === 0) return head
+  const cell = (text: string) => text.replaceAll('|', '\\|')
   const rows = table.rows.map(
     (row) =>
-      `| \`${row.name}\` | \`${row.type.replaceAll('|', '\\|')}\` | ${row.default ? `\`${row.default}\`` : '—'} | ${row.desc} |`,
+      `| \`${row.name}\`${row.required ? ' *' : ''} | \`${cell(row.type)}\` | ${row.default ? `\`${cell(row.default)}\`` : '—'} | ${cell(row.description)} |`,
   )
   return `${head}\n| 属性 | 类型 | 默认 | 说明 |\n| --- | --- | --- | --- |\n${rows.join('\n')}\n`
 }
@@ -48,7 +51,15 @@ ${page.summary}
 
 ## Provide
 
-${page.props.map(propsMarkdown).join('\n')}
+\`*\` marks a required prop.
+
+${resolveParts(page).map(propsMarkdown).join('\n')}
+## Usage
+
+\`\`\`tsx
+${usageOf(page.id)?.source ?? ''}
+\`\`\`
+
 ## States
 
 ${list(page.states)}

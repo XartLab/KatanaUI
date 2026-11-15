@@ -22,7 +22,7 @@
   color: var(--ink-300);
 }
 .k-json-search:focus-within {
-  border-color: var(--signal-orange-dim);
+  border-color: var(--alpha-white-11);
 }
 .k-json-input {
   flex: 1;
@@ -115,7 +115,7 @@
   text-overflow: ellipsis;
 }
 .k-json-hit {
-  background: color-mix(in srgb, var(--signal-orange) 40%, transparent);
+  background: var(--alpha-white-13);
   border-radius: 2px;
   color: inherit;
 }

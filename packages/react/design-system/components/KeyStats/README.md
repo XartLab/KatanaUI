@@ -4,6 +4,8 @@
 
 ## Provide
 
+`*` marks a required prop.
+
 ### KeyStats
 
 | 属性 | 类型 | 默认 | 说明 |
@@ -12,6 +14,12 @@
 | `items` | `KeyStatItem[]` | — | { key, label, value?, unit?, badge? }；没有值画「—」。 |
 | `onTitle / onItem` | `callbacks` | — | 给了标题与标签就变成按钮，带「›」。 |
 | `columns` | `number` | `3` | 列数。 |
+
+## Usage
+
+```tsx
+
+```
 
 ## States
 

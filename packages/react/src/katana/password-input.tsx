@@ -51,10 +51,16 @@ function Eye({ open }: { open: boolean }) {
 }
 
 export type PasswordInputProps = Omit<ComponentProps<'input'>, 'type' | 'size'> & {
-  /** 切换按钮的读屏名（必填：包里没有文字）。名字不随状态变，当前是不是显示着由 aria-pressed 表达。 */
+  /**
+   * Accessible name of the show/hide button (required). It does not change with state; aria-pressed says whether the text is shown.
+   * 切换按钮的读屏名（必填：包里没有文字）。名字不随状态变，当前是不是显示着由 aria-pressed 表达。
+   */
   toggleLabel: string
+  /** Show the plain text from the start. */
   defaultVisible?: boolean
+  /** Called when the visibility is toggled. */
   onVisibleChange?: (visible: boolean) => void
+  /** Same as Input: 30px and 26px. */
   size?: 'default' | 'sm'
 }
 

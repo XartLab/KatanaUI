@@ -4,6 +4,8 @@
 
 ## Provide
 
+`*` marks a required prop.
+
 ### PeerCards
 
 | 属性 | 类型 | 默认 | 说明 |
@@ -11,6 +13,12 @@
 | `items` | `PeerItem[]` | — | { key, code, name, price（写好的）, unit?, change（百分数）, logoSrc? }。 |
 | `labels` | `PeerCardsLabels` | — | { list, prev, next, compare, add(item) }：读屏名与按钮字。 |
 | `onSelect / onAdd / onCompare` | `callbacks` | — | 点卡、点「+」、点「Select to compare」。 |
+
+## Usage
+
+```tsx
+
+```
 
 ## States
 

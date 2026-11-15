@@ -111,7 +111,7 @@
 }
 .k-ladder-row.is-selected {
   background: var(--alpha-white-6_5);
-  box-shadow: inset 2px 0 0 var(--signal-orange);
+  box-shadow: inset 2px 0 0 var(--ink-100);
 }
 .k-ladder-row:focus-visible {
   outline: 1px solid var(--line-200);

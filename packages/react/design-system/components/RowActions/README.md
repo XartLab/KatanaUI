@@ -4,6 +4,8 @@
 
 ## Provide
 
+`*` marks a required prop.
+
 ### RowActions
 
 按钮条绝对定位在宿主行右端，宿主行要 position: relative（单独用时给行加 k-row-host，悬停与焦点在行内都出现）。
@@ -55,6 +57,42 @@
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
 | `items` | `RowAction[]` | — | 在当前菜单（右键或下拉）里画整份项：图标在名字前，快捷键在行尾。 |
+
+## Usage
+
+```tsx
+// SPDX-License-Identifier: MIT
+import { useState } from 'react'
+import { RowActions, symbolMenu } from '@katana-ui/react'
+
+export function RowActionsUsage() {
+  const [log, setLog] = useState('')
+  const items = (code: string) =>
+    symbolMenu({
+      openChart: { label: 'Open chart', onSelect: () => setLog(`Open chart · ${code}`) },
+      addToWatchlist: { label: 'Add to watchlist', onSelect: () => setLog(`Add to watchlist · ${code}`) },
+      newAlert: { label: 'New alert', onSelect: () => setLog(`New alert · ${code}`) },
+      copyCode: { label: 'Copy code', onSelect: () => setLog(`Copy code · ${code}`) },
+    })
+  return (
+    <div className="gal-wide" style={{ maxWidth: 420 }}>
+      <ul style={{ margin: 0, padding: 0, listStyle: 'none' }}>
+        {['ALFA', 'BRAV', 'CHAR'].map((code) => (
+          <li
+            key={code}
+            className="k-row-host"
+            style={{ display: 'flex', alignItems: 'center', height: 30, padding: '0 8px', fontSize: 12 }}
+          >
+            <span>{code}</span>
+            <RowActions items={items(code)} label={`${code} actions`} />
+          </li>
+        ))}
+      </ul>
+      <p className="gal-note">{log ? `Last action: ${log}` : 'Last action: none yet'}</p>
+    </div>
+  )
+}
+```
 
 ## States
 

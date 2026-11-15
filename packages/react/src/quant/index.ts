@@ -4,8 +4,23 @@
 export { ChangeText } from './change-text.tsx'
 export { DecimalField, type DecimalFieldProps } from './decimal-field.tsx'
 export { PnlText } from './pnl-text.tsx'
-export { EventCalendar, type EventCalendarLabels, type EventCalendarProps } from './event-calendar.tsx'
-export type { EconomicEvent, EconomicImportance, EconomicRangeKey, EconomicTone } from './event-calendar-model.ts'
+export {
+  EventCalendar,
+  type CalendarItem,
+  type EarningsLink,
+  type EventCalendarLabels,
+  type EventCalendarProps,
+} from './event-calendar.tsx'
+export type {
+  CalendarCategory,
+  DividendEvent,
+  EarningsEvent,
+  EarningsSession,
+  EconomicEvent,
+  EconomicImportance,
+  EconomicCategory,
+  IpoEvent,
+} from './event-calendar-model.ts'
 export {
   LimitLadder,
   type LadderItem,
@@ -17,12 +32,16 @@ export {
 export {
   MarketHeatmap,
   type HeatmapColorBy,
+  type HeatmapDisplayLabels,
+  type HeatmapTitleMode,
+  type HeatmapValueMode,
   type HeatmapItem,
   type HeatmapScheme,
   type HeatmapSizeBy,
   type MarketHeatmapLabels,
   type MarketHeatmapProps,
 } from './market-heatmap.tsx'
+export { RatingText, type RatingLevel, type RatingTextProps } from './rating-text.tsx'
 export {
   TechnicalRating,
   type PivotRow,
@@ -122,6 +141,40 @@ export {
   type ParamRamp,
 } from './param-scatter-model.ts'
 
+// 资金流向桑基图与按发布时间画的宏观序列（#45）。
+export { FlowSankey, type FlowSankeyLabels, type FlowSankeyProps } from './flow-sankey.tsx'
+export {
+  layoutFlow,
+  linkEnds,
+  moveNode,
+  neighborhood,
+  type FlowKind,
+  type FlowLayout,
+  type FlowLayoutFailure,
+  type FlowLayoutOptions,
+  type FlowLink,
+  type FlowNode,
+  type LaidLink,
+  type LaidNode,
+} from './flow-sankey-model.ts'
+export {
+  VintageSeries,
+  type VintageMode,
+  type VintageSeriesLabels,
+  type VintageSeriesProps,
+} from './vintage-series.tsx'
+export {
+  knownAt,
+  knownValue,
+  normalizeVintages,
+  revisionStats,
+  vintageExtent,
+  type RevisionStats,
+  type VintageObservation,
+  type VintageRelease,
+  type VintageRow,
+  type VintageStep,
+} from './vintage-series-model.ts'
 // 对齐 TradingView 品种页（#53，主会话 2026-11-15 实测，只取布局与功能）：业绩条、同业卡、关键数据、自选列表。
 export {
   PerformanceStrip,

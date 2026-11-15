@@ -76,7 +76,7 @@ export function MenuCheckColumn({ children }: { children: ReactNode }) {
     <span
       data-slot="menu-check"
       aria-hidden="true"
-      className="k-pop-check flex w-[10px] flex-none items-center justify-center text-brand [font-size:var(--text-caption-size)]"
+      className="k-pop-check flex w-[10px] flex-none items-center justify-center text-ink [font-size:var(--text-caption-size)]"
     >
       {children}
     </span>

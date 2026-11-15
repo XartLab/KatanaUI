@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 import type { ComponentType } from 'react'
+import { NewsReaderDemo, ScreenerDemo } from './pages/screener.tsx'
 import { DateTimeInputDemo, NumberInputDemo, SkeletonDemo } from './pages/fields.tsx'
 import {
   BadgeDemo,
@@ -23,12 +24,15 @@ import {
   MeterDemo,
   PnlTextDemo,
   QuantFormatDemo,
+  RatingTextDemo,
   RegimeStripDemo,
   SparkTileDemo,
   TechnicalRatingDemo,
 } from './pages/quant.tsx'
+import { FlowSankeyDemo, VintageSeriesDemo } from './pages/flows.tsx'
 import { KeyStatsDemo, PeerCardsDemo, PerformanceStripDemo, RangeBarTvDemo, WatchlistDemo } from './pages/overview.tsx'
 import { ParamScatterDemo, StrategyReportDemo } from './pages/strategy.tsx'
+import { TransmissionChainDemo } from './pages/research.tsx'
 import {
   DataGridDemo,
   DecisionQueueDemo,
@@ -160,6 +164,7 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'event-calendar': EventCalendarDemo,
   'limit-ladder': LimitLadderDemo,
   'market-heatmap': MarketHeatmapDemo,
+  'rating-text': RatingTextDemo,
   'technical-rating': TechnicalRatingDemo,
   'performance-strip': PerformanceStripDemo,
   'peer-cards': PeerCardsDemo,
@@ -180,8 +185,14 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'estimate-badge': EstimateBadgeDemo,
   'event-timeline': EventTimelineDemo,
   'news-feed': NewsFeedDemo,
+  'filter-bar': ScreenerDemo,
+  'column-set-tabs': ScreenerDemo,
+  'news-reader': NewsReaderDemo,
   'strategy-report': StrategyReportDemo,
+  'transmission-chain': TransmissionChainDemo,
   'param-scatter': ParamScatterDemo,
+  'flow-sankey': FlowSankeyDemo,
+  'vintage-series': VintageSeriesDemo,
   'system-monitor': SystemMonitorDemo,
   'decision-queue': DecisionQueueDemo,
   'hypothesis-ledger': HypothesisLedgerDemo,

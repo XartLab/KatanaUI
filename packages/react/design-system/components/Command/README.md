@@ -4,6 +4,8 @@
 
 ## Provide
 
+`*` marks a required prop.
+
 ### Command
 
 其余属性透传给 cmdk 的 Command（shouldFilter、filter、loop、value、onValueChange）。
@@ -12,24 +14,38 @@
 
 其余属性透传给 cmdk 的 Item。aria-selected 说的是当前高亮，不是已选。
 
-| 属性 | 类型 | 默认 | 说明 |
-| --- | --- | --- | --- |
-| `value` | `string` | — | 过滤用的值，同一个 Command 里要唯一。 |
-| `keywords` | `string[]` | — | 额外的搜索词（别名、拼音、英文名）。 |
-| `onSelect` | `(value: string) => void` | — | 回车或点击选中。 |
-| `disabled` | `boolean` | — | 不可选。 |
-
 ### CommandDialog
 
 其余属性透传给 Dialog。
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `title` | `string` | — | 读屏用的标题（不显示，必填）。 |
-| `description` | `string` | — | 读屏用的说明（不显示，必填）。 |
-| `commandProps` | `ComponentProps<typeof Command>` | — | 给里面的 Command。 |
+| `title` * | `string` | — | Title for screen readers (not shown, required). |
+| `description` * | `string` | — | Description for screen readers (not shown, required). |
+| `className` | `string` | — | Extra class name on the dialog content. |
+| `commandProps` | `ComponentProps<typeof CommandPrimitive>` | — | Props passed to the Command inside. |
 
 ### CommandInput / CommandList / CommandEmpty / CommandGroup / CommandSeparator / CommandShortcut
+
+## Usage
+
+```tsx
+// SPDX-License-Identifier: MIT
+import { Command, CommandEmpty, CommandInput, CommandItem, CommandList } from '@katana-ui/react'
+
+export function CommandUsage() {
+  return (
+    <Command label="Commands">
+      <CommandInput placeholder="Search commands" />
+      <CommandList aria-label="Commands">
+        <CommandEmpty>No matching command</CommandEmpty>
+        <CommandItem value="trend-line">Trend line</CommandItem>
+        <CommandItem value="fib">Fibonacci retracement</CommandItem>
+      </CommandList>
+    </Command>
+  )
+}
+```
 
 ## States
 

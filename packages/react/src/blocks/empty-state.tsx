@@ -15,13 +15,24 @@ export function EmptyState({
   actions,
   classNames = {},
 }: {
-  /** 点阵小标签（NO DATA 之类，调用方给字）。 */
+  /**
+   * Small dot-matrix tag such as NO DATA (the caller writes the text).
+   * 点阵小标签（NO DATA 之类，调用方给字）。
+   */
   tag?: string
+  /** The title. */
   title: string
-  /** 标题下的说明。 */
+  /**
+   * The description under the title.
+   * 标题下的说明。
+   */
   children?: ReactNode
+  /** The action area (buttons). */
   actions?: ReactNode
-  /** 各部分额外挂的类名。 */
+  /**
+   * Extra class names per part.
+   * 各部分额外挂的类名。
+   */
   classNames?: Partial<Record<EmptyStateSlot, string>>
 }) {
   return (

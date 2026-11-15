@@ -4,15 +4,43 @@
 
 ## Provide
 
+`*` marks a required prop.
+
 ### TaskList
 
 每行是 role=checkbox 的按钮；屏外有 role=status 的区播报勾上与取消。
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `tasks / defaultTasks / onTasksChange` | `Task[]` | — | { id, label, done? }；可受控也可不受控。 |
-| `labels` | `TaskListLabels` | — | { completed(label), reopened(label) }：播报的话（必填）。 |
-| `label` | `string` | — | 清单的读屏名。 |
+| `tasks` | `readonly Task[]` | — | The tasks, each with id, label and optional done; controlled. |
+| `defaultTasks` | `readonly Task[]` | `[]` | Initial tasks when uncontrolled. |
+| `onTasksChange` | `(tasks: Task[]) => void` | — | Called with the new task list. |
+| `labels` * | `TaskListLabels` | — | Announcement texts: completed(label) and reopened(label) (required). |
+| `label` | `string` | — | Accessible name of the list. |
+| `className` | `string` | — | Extra class name on the root. |
+
+## Usage
+
+```tsx
+// SPDX-License-Identifier: MIT
+import { useState } from 'react'
+import { TaskList, type Task } from '@katana-ui/react'
+
+export function TaskListUsage() {
+  const [tasks, setTasks] = useState<Task[]>([
+    { id: 'read', label: 'Read the last 20 daily bars' },
+    { id: 'suggest', label: 'Suggest, with sources', done: true },
+  ])
+  return (
+    <TaskList
+      tasks={tasks}
+      onTasksChange={setTasks}
+      label="Plan"
+      labels={{ completed: (label) => `${label} done`, reopened: (label) => `${label} reopened` }}
+    />
+  )
+}
+```
 
 ## States
 

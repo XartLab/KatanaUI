@@ -151,20 +151,39 @@ function SkeletonCard() {
 }
 
 export type WebSearchProps = {
+  /** The sources, each with id, site, title and an optional snippet (required). */
   sources: readonly WebSource[]
+  /** Searching shows a shimmer and a progress ring, with empty skeletons where results have not arrived. */
   status?: WebSearchStatus
-  /** 药丸里的状态文字（必填），如「检索中」「已检索 3 个站点」；状态或数量变了就换这个字符串。 */
+  /**
+   * Status text inside the pill (required), for example "Searching" or "Searched 3 sites"; the text slides when the string changes.
+   * 药丸里的状态文字（必填），如「检索中」「已检索 3 个站点」；状态或数量变了就换这个字符串。
+   */
   label: string
-  /** 进度环（0 到 1）；不给按来源条数算。 */
+  /**
+   * Progress ring from 0 to 1; computed from the number of sources when omitted.
+   * 进度环（0 到 1）；不给按来源条数算。
+   */
   progress?: number
-  /** 「还有 N 条」卡片的文字与「收起」卡片的文字。 */
+  /**
+   * Text of the "N more" card (required).
+   * 「还有 N 条」卡片的文字与「收起」卡片的文字。
+   */
   moreLabel: (count: number) => string
+  /** Text of the "collapse" card (required). */
   lessLabel: string
+  /** Whether the source area is expanded. */
   open?: boolean
+  /** Initial expanded state when uncontrolled. */
   defaultOpen?: boolean
+  /** Called when the source area expands or collapses. */
   onOpenChange?: (open: boolean) => void
-  /** 给了，来源卡片才可点。 */
+  /**
+   * When given, source cards become clickable and call it.
+   * 给了，来源卡片才可点。
+   */
   onOpen?: (source: WebSource) => void
+  /** Extra class name on the root. */
   className?: string
 }
 
@@ -351,9 +370,14 @@ export function WebSearch({
 }
 
 export type WebSearchCitationProps = {
+  /** The source this citation points to. */
   source: WebSource
-  /** 行内的序号（1 起）。 */
+  /**
+   * Inline number (1-based); nothing is written when omitted.
+   * 行内的序号（1 起）。
+   */
   index?: number
+  /** Extra class name on the root. */
   className?: string
 }
 

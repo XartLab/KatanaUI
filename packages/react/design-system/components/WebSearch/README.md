@@ -4,18 +4,25 @@
 
 ## Provide
 
+`*` marks a required prop.
+
 ### WebSearch
 
 检索中的进度环每来一条结果补上剩下的 30%，不会自己走满；第四条起最后一格是「还有 N 条」。
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `sources` | `WebSource[]` | — | { id, site, title, snippet? }（必填）。 |
-| `status` | `'searching' \| 'done'` | `'done'` | 检索中带流光与进度环、没到的位置画空骨架。 |
-| `label` | `string` | — | 药丸里的状态文字（必填）；换了字符串就上下滑着换。 |
-| `moreLabel / lessLabel` | `(n) => string / string` | — | 「还有 N 条」与「收起」卡片的文字（必填）。 |
-| `open / defaultOpen / onOpenChange` | `boolean` | `true` | 来源区展开与否。 |
-| `onOpen` | `(source) => void` | — | 给了，来源卡片才可点。 |
+| `sources` * | `readonly WebSource[]` | — | The sources, each with id, site, title and an optional snippet (required). |
+| `status` | `WebSearchStatus` | `'done'` | Searching shows a shimmer and a progress ring, with empty skeletons where results have not arrived. |
+| `label` * | `string` | — | Status text inside the pill (required), for example "Searching" or "Searched 3 sites"; the text slides when the string changes. |
+| `progress` | `number` | — | Progress ring from 0 to 1; computed from the number of sources when omitted. |
+| `moreLabel` * | `(count: number) => string` | — | Text of the "N more" card (required). |
+| `lessLabel` * | `string` | — | Text of the "collapse" card (required). |
+| `open` | `boolean` | — | Whether the source area is expanded. |
+| `defaultOpen` | `boolean` | `true` | Initial expanded state when uncontrolled. |
+| `onOpenChange` | `(open: boolean) => void` | — | Called when the source area expands or collapses. |
+| `onOpen` | `(source: WebSource) => void` | — | When given, source cards become clickable and call it. |
+| `className` | `string` | — | Extra class name on the root. |
 
 ### WebSearchCitation
 
@@ -23,12 +30,37 @@
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `source` | `WebSource` | — | 这条引用指向的来源。 |
-| `index` | `number` | — | 行内序号（1 起），不给不写。 |
+| `source` * | `WebSource` | — | The source this citation points to. |
+| `index` | `number` | — | Inline number (1-based); nothing is written when omitted. |
+| `className` | `string` | — | Extra class name on the root. |
 
 ### useHoverIntent
 
 钩子 (openDelay = 300, closeDelay = 150)：返回 { active, set(next, delay), hover }，hover 展开到触发处与弹层上。触屏不处理。
+
+## Usage
+
+```tsx
+// SPDX-License-Identifier: MIT
+import { WebSearch, type WebSource } from '@katana-ui/react'
+
+const SOURCES: readonly WebSource[] = [
+  { id: 'a', site: 'Reuters', title: 'Central bank cuts reserve ratio', snippet: 'About 1 trillion yuan released.' },
+  { id: 'b', site: 'Bloomberg', title: 'Tech leads the rally' },
+]
+
+export function WebSearchUsage() {
+  return (
+    <WebSearch
+      sources={SOURCES}
+      status="done"
+      label="Searched 2 sites"
+      moreLabel={(count) => `${count} more`}
+      lessLabel="Collapse"
+    />
+  )
+}
+```
 
 ## States
 

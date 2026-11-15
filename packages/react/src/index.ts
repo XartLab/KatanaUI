@@ -131,6 +131,17 @@ export { ToggleGroup, ToggleGroupItem, toggleGroupVariants, toggleItemVariants }
 export { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger, tooltipContentClass } from './primitives/tooltip.tsx'
 export { MultiSelect } from './patterns/multi-select.tsx'
 export { ChipGroup, type ChipGroupProps, type ChipItem } from './patterns/chip-group.tsx'
+export { FilterBar, type FilterBarLabels, type FilterBarProps } from './patterns/filter-bar.tsx'
+export { ViewSwitcher, type ViewOption, type ViewSwitcherProps } from './patterns/view-switcher.tsx'
+export {
+  applyFilters,
+  conditionText,
+  matchCondition,
+  type FilterCondition,
+  type FilterField,
+  type FilterOperator,
+  type FilterPreset,
+} from './patterns/filter-bar-model.ts'
 export { DateRangePicker, type DateRangeLabels, type DateRangePickerProps } from './patterns/date-range-picker.tsx'
 export type { DateRange, RangePreset, WeekStart } from './patterns/date-range-model.ts'
 export { TreeView, type TreeNode, type TreeViewProps } from './patterns/tree-view.tsx'
@@ -189,7 +200,7 @@ export {
 } from './katana/toast.tsx'
 export { Loading, LoadingBoundary } from './katana/loading.tsx'
 export { LoadingView, type LoadingTexts } from './katana/loading-view.tsx'
-export type { LoadingPhase } from './katana/loading-gate.ts'
+export { LOADING_TIMEOUT_MS, type LoadingPhase } from './katana/loading-gate.ts'
 
 // 学自 rare-ui 的交互、本仓库重写的件（#1861）：密钥输入、原地确认的危险按钮、带未读数的铃、状态图标、行内 AI 状态、点阵状态球。
 export { PasswordInput, type PasswordInputProps } from './katana/password-input.tsx'

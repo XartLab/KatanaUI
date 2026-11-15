@@ -75,16 +75,29 @@ function Check() {
 }
 
 export type DeleteButtonProps = {
-  /** 原按钮的读屏名，如「删除工作区」。 */
+  /**
+   * Accessible name of the original button, for example "Delete workspace" (required).
+   * 原按钮的读屏名，如「删除工作区」。
+   */
   label: string
+  /** Accessible name of the confirm button after it expands (required). */
   confirmLabel: string
+  /** Accessible name of the cancel button after it expands (required). */
   cancelLabel: string
-  /** 确认、取消之后读屏播报的话；不给就不播。 */
+  /**
+   * Announced to screen readers after confirming or cancelling; nothing is announced when omitted.
+   * 确认、取消之后读屏播报的话；不给就不播。
+   */
   doneLabel?: string
+  /** Announced to screen readers after cancelling. */
   keptLabel?: string
+  /** Called when the confirm button is clicked; the first click on the original button does not call it. */
   onConfirm?: () => void
+  /** Called on cancel (including Esc, a click outside, and tabbing away). */
   onCancel?: () => void
+  /** Disable the original button. */
   disabled?: boolean
+  /** Extra class name on the root. */
   className?: string
 }
 

@@ -4,6 +4,8 @@
 
 ## Provide
 
+`*` marks a required prop.
+
 ### DateRangePicker
 
 值是 { start, end } 一对 YYYY-MM-DD（含两头），按哪个时区解读由调用方定。底座是 react-aria 的 DateField 与 RangeCalendar；浮层用我们的 Popover。
@@ -17,6 +19,50 @@
 | `min / max` | `string` | — | 能选的最早、最晚日期。 |
 | `labels` | `DateRangeLabels` | — | 文字：start、end、pickRange、calendar、previousMonth、nextMonth、presets、preset（今天 / 本周 / 本月 / 年初至今）、custom；包里不带语言。 |
 | `locale` | `string` | — | 给 react-aria 的语言：中文界面 zh-CN，英文界面 en-CA。 |
+
+## Usage
+
+```tsx
+// SPDX-License-Identifier: MIT
+import { useState } from 'react'
+import { DateRangePicker, type DateRange, type DateRangeLabels } from '@katana-ui/react'
+
+const RANGE_LABELS: DateRangeLabels = {
+  start: '起点',
+  end: '终点',
+  pickRange: '选择区间',
+  calendar: '区间日历',
+  previousMonth: '上个月',
+  nextMonth: '下个月',
+  presets: '常用区间',
+  preset: { today: '今天', week: '本周', month: '本月', ytd: '年初至今' },
+  custom: '自定义',
+}
+
+// 演示固定「今天」是 2026-11-14（周六），预设与截图才不随真实日期变；应用里由显示时区算出来传进去。
+
+export function DateRangePickerUsage() {
+  const [range, setRange] = useState<DateRange | null>({ start: '2026-11-09', end: '2026-11-14' })
+  return (
+    <>
+      <DateRangePicker value={range} onValue={setRange} today="2026-11-14" labels={RANGE_LABELS} locale="zh-CN" />
+      <output data-gallery-range>{range ? `${range.start} ~ ${range.end}` : '未选'}</output>
+
+      <DateRangePicker
+        value={null}
+        onValue={() => {}}
+        today="2026-11-14"
+        min="2026-01-01"
+        max="2026-12-31"
+        labels={RANGE_LABELS}
+        locale="zh-CN"
+      />
+    </>
+  )
+}
+
+// 演示用的分类树（不是真实的品种库或数据集）。
+```
 
 ## States
 

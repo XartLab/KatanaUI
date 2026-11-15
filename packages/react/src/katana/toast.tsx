@@ -23,7 +23,10 @@ function ToastViewport({
   className,
   position = 'bottom-right',
   ...props
-}: ComponentProps<'div'> & { position?: ToastPosition }) {
+}: ComponentProps<'div'> & {
+  /** Which corner: at the bottom corners new toasts stack upward from the window edge, at the top corners downward. */
+  position?: ToastPosition
+}) {
   return (
     <div
       role="region"
@@ -43,7 +46,14 @@ function ToastViewport({
   )
 }
 
-function Toast({ className, phase = 'open', ...props }: ComponentProps<'div'> & { phase?: ToastPhase }) {
+function Toast({
+  className,
+  phase = 'open',
+  ...props
+}: ComponentProps<'div'> & {
+  /** entering is just inserted (draw one frame, then switch to open so the transition has a start); closing is leaving, and the caller removes the node after TOAST_EXIT_MS. */
+  phase?: ToastPhase
+}) {
   return (
     <div
       data-slot="toast"
@@ -73,7 +83,10 @@ function ToastIcon({ className, children, ...props }: ComponentProps<'span'>) {
     <span
       data-slot="toast-icon"
       aria-hidden="true"
-      className={cn('mt-0.5 flex size-4 flex-none items-center justify-center text-brand [&>svg]:size-4', className)}
+      className={cn(
+        'mt-0.5 flex size-4 flex-none items-center justify-center text-(--signal-orange) [&>svg]:size-4',
+        className,
+      )}
       {...props}
     >
       {children ?? <BellRing />}
@@ -110,7 +123,10 @@ function ToastClose({
   label,
   className,
   ...props
-}: Omit<ComponentProps<typeof Button>, 'aria-label'> & { label: string }) {
+}: Omit<ComponentProps<typeof Button>, 'aria-label'> & {
+  /** Accessible name (required; the package ships no text). */
+  label: string
+}) {
   return (
     <Button
       type="button"

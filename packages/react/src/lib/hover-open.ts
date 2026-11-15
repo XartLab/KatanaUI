@@ -7,7 +7,15 @@ import { useEffect, useRef, useState, type PointerEvent } from 'react'
  * hover 摊在触发器和弹层内容两处（指针从触发器移进弹层时，进入内容会取消待收的计时）。
  * 触屏不触发（照 Base UI openOnHover 只管鼠标与笔）。数字由调用方给：参照 Base UI 的 delay / closeDelay，各处原来的值。
  */
-export function useHoverOpen({ openDelay, closeDelay }: { openDelay: number; closeDelay: number }) {
+export function useHoverOpen({
+  openDelay,
+  closeDelay,
+}: {
+  /** Milliseconds the pointer must rest on the trigger before it opens. */
+  openDelay: number
+  /** Milliseconds after the pointer leaves the trigger and content before it closes. */
+  closeDelay: number
+}) {
   const [open, setOpen] = useState(false)
   /** 最近一次打开是不是悬停开的（关的时候不清，关闭时的焦点处理也要看它）：悬停开的菜单不该抢页面上正在用的焦点，调用方在 onOpenAutoFocus 里看它。 */
   const byHover = useRef(false)

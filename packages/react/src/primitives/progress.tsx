@@ -10,8 +10,9 @@ import { cn } from '../lib/cn.ts'
 // tone 只改填充的颜色：默认强调色，ok 绿，warn 琥珀，danger 红；颜色之外要让人知道状态时旁边写字。读屏要一个名字：调用方传 aria-label。
 const indicatorVariants = cva('k-progress-fill h-full w-full', {
   variants: {
+    /** Only changes the fill color; do not rely on color alone for status, write text beside it. */
     tone: {
-      default: 'bg-brand',
+      default: 'bg-ink',
       ok: 'bg-ok',
       warn: 'bg-(--signal-amber)',
       danger: 'bg-danger',
@@ -27,7 +28,10 @@ function Progress({
   tone,
   ...props
 }: Omit<ComponentProps<typeof ProgressPrimitive.Root>, 'value'> & {
-  /** 0 到 max；不给或 null 是不确定态。 */
+  /**
+   * From 0 to max; omitted or null is the indeterminate state.
+   * 0 到 max；不给或 null 是不确定态。
+   */
   value?: number | null
 } & VariantProps<typeof indicatorVariants>) {
   const percent = value == null ? null : Math.min(100, Math.max(0, (value / max) * 100))

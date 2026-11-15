@@ -4,6 +4,8 @@
 
 ## Provide
 
+`*` marks a required prop.
+
 ### DropdownMenu / DropdownMenuTrigger / DropdownMenuContent
 
 其余属性透传给 Radix DropdownMenu 的同名部件。
@@ -14,13 +16,16 @@
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `variant` | `'default' \| 'danger'` | `'default'` | danger 字色走危险色。 |
-| `bare` | `boolean` | — | 不带行皮肤。 |
-| `onSelect` | `(event: Event) => void` | — | 选中（一次点击只叫一次）。 |
+| `variant` | `'default' \| 'danger'` | `'default'` | Style of the row: danger uses the danger text color. |
+| `bare` | `boolean` | — | Skip the row skin. |
 
 ### DropdownMenuCheckboxItem / DropdownMenuRadioGroup / DropdownMenuRadioItem
 
 勾选项与单选组，透传 Radix 同名部件（checked / onCheckedChange、value / onValueChange）。
+
+| 属性 | 类型 | 默认 | 说明 |
+| --- | --- | --- | --- |
+| `bare` | `boolean` | — | Skip the row skin. |
 
 ### DropdownMenuSub / DropdownMenuSubTrigger / DropdownMenuSubContent
 
@@ -37,6 +42,27 @@
 ### useMenuParts / MenuCheckColumn / MenuItemIcon / MenuItemLabel / MenuItemHint
 
 行内的对齐列：勾选列、图标、文字、右侧提示；useMenuParts 让同一份菜单内容既能画在下拉菜单里也能画在右键菜单里。
+
+## Usage
+
+```tsx
+// SPDX-License-Identifier: MIT
+import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@katana-ui/react'
+
+export function DropdownMenuUsage() {
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button>Menu</Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent>
+        <DropdownMenuItem>Add widget</DropdownMenuItem>
+        <DropdownMenuItem variant="danger">Delete board</DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  )
+}
+```
 
 ## States
 

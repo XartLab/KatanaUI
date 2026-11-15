@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// 末点 / 最优点 / 当前点（dataviz.md §3）：signal-orange 的圆点 + glow，旁边标数值；其余点不标。HTML 叠层，位置由调用方定（left 百分比、top 像素）。
+// 末点 / 最优点 / 当前点（dataviz.md §3）：ink-100 的圆点（不发光），旁边标数值；其余点不标。HTML 叠层，位置由调用方定（left 百分比、top 像素）。
 import type { CSSProperties } from 'react'
 import { pct } from '../series-geometry.ts'
 

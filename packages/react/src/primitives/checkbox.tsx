@@ -7,7 +7,7 @@ import { cn } from '../lib/cn.ts'
 import { focusRing } from '../lib/focus.ts'
 
 // 勾选方块：照组件卡（design/katana-console/project/components/Controls/README.md「Checkbox」）：14 × 14 凹陷方框（圆角 2 · 1px 线 · recess），
-// 选中后中心一块 6 × 6 的强调色方块（不发光，发光只给状态灯）；选中的框是暗橙边加暗橙底。数值照旧皮肤（#1777 之前的 .k-ck-box）。
+// 选中后中心一块 6 × 6 的方块（不发光，发光只给状态灯）；选中的框是亮中性（ink-100）底，中心一块深色方块。数值照旧皮肤（#1777 之前的 .k-ck-box）。
 // Radix 的勾选有第三种状态 indeterminate，调用方不用就只传 true / false。
 function Checkbox({ className, ...props }: ComponentProps<typeof CheckboxPrimitive.Root>) {
   return (
@@ -16,7 +16,7 @@ function Checkbox({ className, ...props }: ComponentProps<typeof CheckboxPrimiti
       className={cn(
         'peer inline-flex size-[14px] shrink-0 cursor-pointer items-center justify-center rounded-[var(--radius-sm)] border border-line-strong bg-surface-0 p-0',
         'shadow-[var(--recess)] transition-colors duration-150',
-        'data-[state=checked]:border-(--signal-orange-dim) data-[state=checked]:bg-[color-mix(in_srgb,var(--signal-orange)_20%,var(--bg-000))]',
+        'data-[state=checked]:border-ink data-[state=checked]:bg-ink',
         'disabled:cursor-not-allowed disabled:opacity-40',
         'aria-invalid:border-danger',
         focusRing,
@@ -24,7 +24,7 @@ function Checkbox({ className, ...props }: ComponentProps<typeof CheckboxPrimiti
       )}
       {...props}
     >
-      <CheckboxPrimitive.Indicator data-slot="checkbox-indicator" className="block size-[6px] bg-(--accent)" />
+      <CheckboxPrimitive.Indicator data-slot="checkbox-indicator" className="block size-[6px] bg-surface-0" />
     </CheckboxPrimitive.Root>
   )
 }

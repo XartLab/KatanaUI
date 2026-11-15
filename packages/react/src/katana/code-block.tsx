@@ -112,22 +112,45 @@ function CopyButton({
 }
 
 export type CodeBlockProps = {
+  /** The source code (required). */
   code: string
-  /** 语言：ts tsx js json py sh css 等；认不得的当纯文本。 */
+  /**
+   * Language: ts, tsx, js, json, py, sh, css and so on; unknown ones are plain text.
+   * 语言：ts tsx js json py sh css 等；认不得的当纯文本。
+   */
   language?: string
-  /** 强调色，任何 CSS 颜色；整套配色从它混出来。默认主题的强调色。 */
+  /**
+   * Accent color, any CSS color; the whole palette is mixed from it.
+   * 强调色，任何 CSS 颜色；整套配色从它混出来。默认主题的强调色。
+   */
   accent?: string
-  /** 头里写的名字；不给写语言。 */
+  /**
+   * Name written in the header; the language is written when omitted.
+   * 头里写的名字；不给写语言。
+   */
   filename?: string
-  /** 要不要头（文件名与复制钮）；关了复制钮浮在右上角。 */
+  /**
+   * Whether to draw the header; without it the copy button floats at the top right.
+   * 要不要头（文件名与复制钮）；关了复制钮浮在右上角。
+   */
   showHeader?: boolean
+  /** Whether to draw line numbers. */
   showLineNumbers?: boolean
+  /** Whether to draw the copy button. */
   showCopyButton?: boolean
-  /** 要高亮的行（1 起）。 */
+  /**
+   * Lines to highlight (1-based).
+   * 要高亮的行（1 起）。
+   */
   highlightLines?: readonly number[]
-  /** 复制钮的读屏名与复制成功后的读屏名（调用方按界面语言给）。 */
+  /**
+   * Accessible name of the copy button (required).
+   * 复制钮的读屏名与复制成功后的读屏名（调用方按界面语言给）。
+   */
   copyLabel: string
+  /** Accessible name of the copy button after a successful copy (required). */
   copiedLabel: string
+  /** Extra class name on the root. */
   className?: string
 }
 

@@ -4,6 +4,8 @@
 
 ## Provide
 
+`*` marks a required prop.
+
 ### Watchlist
 
 | 属性 | 类型 | 默认 | 说明 |
@@ -21,6 +23,12 @@
 ### nextSort / sortRows
 
 列头点击的循环与排序，纯函数。
+
+## Usage
+
+```tsx
+
+```
 
 ## States
 
