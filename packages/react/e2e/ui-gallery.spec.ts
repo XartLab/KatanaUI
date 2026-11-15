@@ -1591,12 +1591,7 @@ for (const theme of THEMES) {
       await month.click()
       await expect
         .poll(() => colorAt(page, month, 'background-color'))
-        .toEqual(
-          await rgba(
-            page,
-            await resolved(page, 'background-color', 'var(--alpha-white-10)'),
-          ),
-        )
+        .toEqual(await rgba(page, await resolved(page, 'background-color', 'var(--alpha-white-10)')))
       await page.keyboard.type('12')
       await expect(shown).toHaveText('2026-12-14 09:30')
       // 日历：按钮打开，选中日橙底（:719-723），范围外的日子（min / max 只在「带秒」那一行）点不了。
