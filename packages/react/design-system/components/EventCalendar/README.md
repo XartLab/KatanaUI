@@ -27,7 +27,7 @@ import { PanelFrame, PanelFrameBody, PanelFrameHeader } from '@katana-ui/react/b
 import { EventCalendar, type EconomicEvent, type EventCalendarLabels } from '@katana-ui/react/quant'
 import { symbolMenu } from '@katana-ui/react'
 
-const CAL_NOW = Date.UTC(2026, 10, 17, 0, 0)
+const CAL_NOW = Date.UTC(2026, 10, 17, 1, 30)
 
 const calAt = (day: number, hour: number, minute = 0) => Date.UTC(2026, 10, day, hour - 8, minute)
 
@@ -42,7 +42,6 @@ const CAL_EVENTS: EconomicEvent[] = [
     actual: '0.4%',
     forecast: '0.3%',
     previous: '0.3%',
-    tone: 'down',
   },
   {
     id: 'a2',
@@ -54,7 +53,6 @@ const CAL_EVENTS: EconomicEvent[] = [
     actual: '0.2%',
     forecast: '0.4%',
     previous: '0.6%',
-    tone: 'down',
   },
   {
     id: 'b1',
@@ -66,7 +64,6 @@ const CAL_EVENTS: EconomicEvent[] = [
     actual: '5.1%',
     forecast: '4.9%',
     previous: '4.8%',
-    tone: 'up',
   },
   {
     id: 'b2',
@@ -78,7 +75,6 @@ const CAL_EVENTS: EconomicEvent[] = [
     actual: '-0.2万亿',
     forecast: '-0.3万亿',
     previous: '-0.4万亿',
-    tone: 'up',
   },
   {
     id: 'b3',
@@ -173,45 +169,71 @@ const CAL_EVENTS: EconomicEvent[] = [
 
 const CAL_LABELS: EventCalendarLabels = {
   list: '经济日历',
-  empty: '这段时间没有符合条件的事件',
-  range: { today: '今天', week: '本周', next: '下周', custom: '自定义' },
-  rangeGroup: '日期范围',
-  importanceGroup: '重要程度',
-  importanceClear: '清除重要程度筛选',
-  importance: (level) => `重要程度 ${level}`,
-  regionsAll: '全部国家',
-  regionsPlaceholder: '搜索国家 / 地区',
-  regionsEmpty: '没有这个国家',
-  regionsCount: (n) => `${n} 个国家`,
-  onlyHigh: '只看高重要',
+  empty: '这一天没有符合条件的事件',
+  nav: { today: '今天', prevWeek: '上一周', nextWeek: '下一周', pickDate: '选择日期', week: '本周' },
+  categoryGroup: '日历类别',
+  category: { economic: '经济', earnings: '财报', dividends: '分红', ipo: 'IPO' },
+  highOnly: '只看高重要',
+  economicCategory: {
+    label: '经济类别',
+    all: '全部类别',
+    items: {
+      bonds: '债券',
+      business: '商业',
+      consumer: '消费',
+      gdp: 'GDP',
+      government: '政府',
+      health: '卫生',
+      housing: '住房',
+      labor: '就业',
+      money: '货币',
+      prices: '价格',
+      trade: '贸易',
+      taxes: '税收',
+    },
+  },
+  countries: {
+    all: '全部国家',
+    count: (n) => `${n} 个国家`,
+    title: '选择国家',
+    search: '搜索国家 / 地区',
+    entireWorld: '全球',
+    top: '前 20 大经济体',
+    empty: '没有这个国家',
+    otherGroup: '其他',
+    cancel: '取消',
+    apply: '应用',
+  },
   today: '今天',
-  columns: {
-    time: '时间',
-    region: '国家',
-    event: '事件',
-    importance: '重要',
-    actual: '实际',
-    forecast: '预期',
-    previous: '前值',
+  now: '现在',
+  importance: (level) => `重要程度 ${level}`,
+  columns: { actual: '实际', forecast: '预期', previous: '前值' },
+  earningsColumns: {
+    epsEstimate: 'EPS 预期',
+    epsActual: 'EPS 实际',
+    epsSurprise: 'EPS 意外',
+    revenueEstimate: '营收预期',
+    revenueActual: '营收实际',
+    revenueSurprise: '营收意外',
+    marketCap: '市值',
   },
+  dividendColumns: { amount: '每股分红', yield: '股息率', payDate: '派息日' },
+  ipoColumns: { exchange: '交易所', priceRange: '发行价', shares: '股数', dealSize: '募资额', status: '状态' },
+  session: { before: '盘前', during: '盘中', after: '盘后' },
   countdown: (m) => (m >= 60 ? `${Math.floor(m / 60)} 小时 ${m % 60} 分后` : `${m} 分后`),
-  dateRange: {
-    start: '起点',
-    end: '终点',
-    pickRange: '选择区间',
-    calendar: '区间日历',
-    previousMonth: '上个月',
-    nextMonth: '下个月',
-    presets: '常用区间',
-    preset: { today: '今天', week: '本周', month: '本月', ytd: '年初至今' },
-    custom: '自定义',
-  },
   dayTitle: (day) => {
     const [y, m, d] = day.split('-').map(Number)
     const week = '日一二三四五六'[new Date(Date.UTC(y!, m! - 1, d!)).getUTCDay()]
     return `${m} 月 ${d} 日 周${week}`
   },
   count: (n) => `${n} 条`,
+  detail: {
+    description: '说明',
+    source: '来源',
+    history: '历史值',
+    historyLabel: (n) => `最近 ${n} 期历史值`,
+    nextRelease: '下次发布',
+  },
   rowActions: '事件操作',
   rowMenu: '事件菜单',
 }
@@ -228,7 +250,8 @@ export function EventCalendarUsage() {
             now={CAL_NOW}
             timeZone="Asia/Shanghai"
             locale="zh-CN"
-            defaultRange="week"
+            defaultDay="2026-11-17"
+            topRegions={['US', 'CN', 'JP']}
             rowActions={(event) =>
               symbolMenu({
                 newAlert: { label: '设提醒', onSelect: () => undefined },

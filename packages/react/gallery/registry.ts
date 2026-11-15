@@ -48,7 +48,13 @@ export type DocPage = {
 }
 
 /** 不是组件的出口：样式合并与焦点环的类名工具，不单独成页。 */
-export const NON_COMPONENT_EXPORTS: readonly string[] = ['cn', 'focusRing', 'focusRingInset', 'InlineOverlays']
+export const NON_COMPONENT_EXPORTS: readonly string[] = [
+  'cn',
+  'focusRing',
+  'focusRingInset',
+  'InlineOverlays',
+  'LOADING_TIMEOUT_MS',
+]
 
 export const PAGES: readonly DocPage[] = [
   {

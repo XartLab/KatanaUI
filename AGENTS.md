@@ -15,7 +15,7 @@ KatanaUI 是设计系统的**源头仓库**（2026-11-14 用户定，#2）：tok
 
 ## 已定的设计决定（不要推翻，要改先问用户）
 
-- 默认主题定为 Graphite（KATANAview #1776，还没合；合入后随 #2 第 3 步的同步带过来，在那之前代码里 `:root` 仍是 Console）。Graphite 是中性色纯灰，信号色是油画颜料色；Console 留作可切主题。不用 TradingView 蓝，不用暖白配高亮黄。
+- 默认主题是 Graphite（用户 2026-11-14 定，KATANAview #1775；已落地：`tokens.css` 的 `:root` 就是 Graphite，Console 是 `data-theme="console"` 的覆盖块，文档站默认也是 Graphite）。Graphite 是中性色纯灰，信号色是油画颜料色（土黄 `#d6a548`、铬绿 `#5fae8c`、玫瑰茜红 `#f2607c`）；Console 留作可切主题。不用 TradingView 蓝，不用暖白配高亮黄。
 - 组件的样子以 KATANAview 工作台现在的样式为准；Salt 学 token 结构（原值 → 调色 → 语义特征）、密度、文档组织，Salt 是 Apache-2.0，能照搬的实现可以照搬，写出处。
 - 包名 `@katana-ui/*`，不带 `katanaview`：要能用在别的量化项目里。
 

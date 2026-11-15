@@ -98,7 +98,7 @@ own styles next, and `ui.css` last:
 
 Components read semantic tokens only (`--bg-*`, `--ink-*`, `--pnl-up`, and so on). To reskin, override those CSS
 variables under a `data-theme` attribute on the root element; no component code changes. Two themes ship in
-`tokens.css`: Console (default) and Graphite (`data-theme="graphite"`). Setting `data-updown="cn"` swaps the up and down
+`tokens.css`: Graphite (default, on `:root`) and Console (`data-theme="console"`). Setting `data-updown="cn"` swaps the up and down
 colors for markets where red means up.
 
 The token source lives in the sibling package `packages/tokens` (`@katana-ui/tokens`): `src/tokens.json`, plus

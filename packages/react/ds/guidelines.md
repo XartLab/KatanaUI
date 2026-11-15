@@ -21,7 +21,7 @@ KATANA Console 的组件库：给量化与交易界面用的深色控制台风�
 - 对比度已在 `tokens.json` 的 `contrast` 里按两个主题量过：`ink-100`、`ink-200`、各 `signal-*`、`pnl-up`、`pnl-down` 在五层底上够 4.5:1，`focus-ring` 够 3:1。没过线的写在该 token 的用法里，保留原值，不另改色。
 - 强调色 `signal-orange` 只给「活的」东西：焦点、选中、LED。发光体每屏不超过 3 个；同一时刻运动的元素不超过 1 个。
 - 涨跌色：`pnl-up`、`pnl-down` 默认绿涨红跌；根元素加 `data-updown="cn"` 互换成红涨绿跌，件不用改。表示错误与危险的 `signal-red` 不跟着换。
-- 主题：Console 在 `:root`，Graphite 用 `data-theme="graphite"` 覆盖；只改颜色、圆角、玻璃与阴影，字号不变。
+- 主题：Graphite 在 `:root`（默认），Console 用 `data-theme="console"` 覆盖；只改颜色、圆角、玻璃与阴影，字号不变。
 - 字体：界面文字六档（`display`、`title`、`body`、`data`、`caption`、`micro`），签名件三档（`lcd`、`tag`、`tag-md`）；件里写 `k-text-data` 这样的档名，不写数字字号。`lcd` 与 `tag` 只放短的数字与大写拉丁。
 - 间距：4px 基准，padding、margin、gap 只取 `space-*` 的刻度。数值列之间至少 12px，列间距至少 8px。分组靠间距，不靠边框。
 - 圆角：面板是方的（`radius-panel` 0），控件 `radius-control`，浮层 `radius-overlay`，内层 `radius-inner`；Graphite 下各档不同，用变量不用数字。

@@ -3031,11 +3031,6 @@
           "target": "~/src/katana/ui/blocks/data-grid/column-picker.tsx"
         },
         {
-          "path": "src/blocks/data-grid/column-set-tabs.tsx",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/blocks/data-grid/column-set-tabs.tsx"
-        },
-        {
           "path": "src/blocks/data-grid/columns.ts",
           "type": "registry:component",
           "target": "~/src/katana/ui/blocks/data-grid/columns.ts"
@@ -3059,6 +3054,23 @@
           "path": "src/blocks/data-grid/model.ts",
           "type": "registry:component",
           "target": "~/src/katana/ui/blocks/data-grid/model.ts"
+        }
+      ]
+    },
+    {
+      "name": "column-set-tabs",
+      "type": "registry:component",
+      "title": "Column Set Tabs",
+      "description": "表上方的一行页签（概览、估值、分红…），点一个就把 DataGrid 的列换成这一套。照 TradingView 选股器的列组标签（主会话 2026-11-15 实测）；与 ColumnPicker 里的列集芯片是同一份数据与同一个纯函数。不存状态：哪个亮着由看得见的列恰好等于它的列推出来，手动改过列之后没有页签亮着。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/data-grid"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/data-grid/column-set-tabs.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/data-grid/column-set-tabs.tsx"
         }
       ]
     },
@@ -3251,7 +3263,7 @@
       "name": "news-feed",
       "type": "registry:component",
       "title": "News Feed",
-      "description": "NewsFeed 点开一条后的阅读窗：来源与操作（复制链接、举报、关闭）、标题、元信息、品种胶囊带涨跌、「要点」列表（闪电图标）、正文。照 TradingView 新闻流的阅读窗（主会话 2026-11-15 实测）。件不取数：标题、元信息、要点、正文都由调用方传；正文里的品种胶囊用 NewsSymbolChip 内联。",
+      "description": "快讯与要闻的流：列表（时间、来源、标题、相关品种胶囊、重要标记）与卡片网格（来源 + 时间、标题、两行摘要、胶囊）两种排法；顶上频道分段、来源多选、关键词搜索、暂停。新到的不打断阅读：在顶部且没暂停时淡入插入，否则出「n 条新消息」，点了才插入。功能参照 TradingView News Flow 帮助页（只读到：新闻集中在一处、可设多种过滤）与 uiarc.dev 的卡片结构（待核对），实现原创。演示数据是虚构的。",
       "dependencies": [
         "lucide-react@1.67.0"
       ],
@@ -3262,7 +3274,6 @@
         "@katana/cn",
         "@katana/input",
         "@katana/popover",
-        "@katana/quant-format",
         "@katana/row-actions",
         "@katana/symbol-mark",
         "@katana/toggle-group",
@@ -3278,11 +3289,6 @@
           "path": "src/blocks/news-feed/news-feed.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/blocks/news-feed/news-feed.tsx"
-        },
-        {
-          "path": "src/blocks/news-feed/news-reader.tsx",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/blocks/news-feed/news-reader.tsx"
         }
       ]
     },
@@ -3425,6 +3431,28 @@
           "path": "src/blocks/transmission-chain/transmission-chain.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/blocks/transmission-chain/transmission-chain.tsx"
+        }
+      ]
+    },
+    {
+      "name": "news-reader",
+      "type": "registry:component",
+      "title": "News Reader",
+      "description": "NewsFeed 点开一条后的阅读窗：来源与操作（复制链接、举报、关闭）、标题、元信息、品种胶囊带涨跌、「要点」列表（闪电图标）、正文。照 TradingView 新闻流的阅读窗（主会话 2026-11-15 实测）。件不取数：标题、元信息、要点、正文都由调用方传；正文里的品种胶囊用 NewsSymbolChip 内联。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/button",
+        "@katana/cn",
+        "@katana/quant-format",
+        "@katana/symbol-mark"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/news-feed/news-reader.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/news-feed/news-reader.tsx"
         }
       ]
     },

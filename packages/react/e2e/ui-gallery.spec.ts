@@ -4082,15 +4082,21 @@ test('密度演示里的主按钮：Graphite 的底是 Graphite 的 --ink-100，
   expect(colors[0]).not.toBe(colors[1])
 })
 
-test('不带 ?theme= 是 Graphite；页头切到 Console，主按钮底色跟着变，地址带上 theme=console', async ({ page }) => {
+test('不带 ?theme= 是 Graphite；页头切到 Console，主按钮底色跟着变，地址带上 theme=console，切回去地址的 theme 去掉', async ({
+  page,
+}) => {
   await page.goto('/#/button')
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'graphite')
   const primary = section(page, 'button').getByRole('button', { name: 'primary', exact: true })
   const graphite = await bg(primary)
-  await page.getByRole('group', { name: '主题' }).getByRole('button', { name: 'Console' }).click()
+  const themes = page.getByRole('group', { name: '主题' })
+  await themes.getByRole('button', { name: 'Console' }).click()
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'console')
   await expect.poll(() => bg(primary)).not.toBe(graphite)
   await expect(page).toHaveURL(/theme=console/)
+  await themes.getByRole('button', { name: 'Graphite' }).click()
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'graphite')
+  await expect(page).not.toHaveURL(/theme=/)
 })
 
 test('文档站默认就是 Graphite：不带 ?theme= 时页面底色与目录栏底色是 Graphite 的 bg-000 与 bg-100（#1775）', async ({

@@ -109,10 +109,22 @@ export type CompareBarSide = {
 }
 
 export type CompareBarProps = {
+  /**
+   * The first bar (drawn light grey): its name, value (sets the width) and the reading text.
+   * 第一条（亮灰）：名字、数值（定宽度）与写好的读数。
+   */
   a: CompareBarSide
+  /**
+   * The second bar (drawn dark grey); the widths follow the larger of the two values.
+   * 第二条（暗灰）；宽度按两者里大的那个算。
+   */
   b: CompareBarSide
-  /** 读屏名。 */
+  /**
+   * Accessible name (role=group), required.
+   * 读屏名（role=group）。
+   */
   label: string
+  /** Extra class name on the root. */
   className?: string
 }
 

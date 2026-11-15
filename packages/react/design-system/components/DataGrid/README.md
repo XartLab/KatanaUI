@@ -48,6 +48,8 @@
 | `sortLocale` | `string` | — | Locale for sorting text columns (Intl.Collator); follows the runtime when omitted. |
 | `density` | `GridDensity` | `'default'` | Row height tier. |
 | `hideHeader` | `boolean` | — | Do not draw the header (a two-column metrics table, say). |
+| `headExtra` | `(columnId: string) => ReactNode` | — | Extra content after the sort button in each column head (a search icon on the Symbol head, say): given per column id, null for none. |
+| `headEnd` | `ReactNode` | — | Content at the far right of the header (the "+ add column" button, wired to ColumnPicker); floats over the header end and takes no column. |
 | `autoRowHeight` | `boolean` | — | Row height follows the content (multi-line cells, buttons in rows): the density height is a minimum and the measured height wins; cell text may wrap. |
 | `ruled` | `boolean` | — | Draw a thin rule between rows. |
 | `selectable` | `boolean` | `true` | When false, clicking a row neither selects nor opens it and there is no hover tint; only keyboard movement and expanding remain (for tables of mostly buttons). |
@@ -83,6 +85,7 @@
 | `onLayoutChange` * | `(next: GridColumnLayout[]) => void` | — | Called with the whole new layout after a column set is chosen or a column is toggled. |
 | `sets` | `readonly ColumnSet[]` | `[]` | Column sets; omit or leave empty for ticks only. |
 | `labels` * | `ColumnPickerLabels` | — | Copy for the trigger and the two group headings (the package carries no language). |
+| `iconOnly` | `boolean` | — | Icon-only trigger (the read-aloud name stays labels.trigger), for the "+" slot at the far right of the header. |
 | `className` | `string` | — | Extra class name on the root. |
 
 ### usePersistedState(key, initial, { version, storage?, validate? })

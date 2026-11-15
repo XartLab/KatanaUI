@@ -228,13 +228,6 @@ export function EventCalendar({
   const active: CalendarCategory = categories.includes(category) ? category : 'economic'
   const items = sources[active] ?? EMPTY
 
-  const filterOf = (range: string) => ({
-    range: { start: range, end: range },
-    highOnly,
-    category: econCategory,
-    regions,
-    timeZone,
-  })
   const week = weekDays(day)
 
   // 周条：每天各类别（有数据的）还剩几条，按当前的国家 / 重要性 / 经济类别筛。

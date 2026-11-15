@@ -10,7 +10,7 @@ import { usageName, usageOf } from './usage'
 
 // 组件文档站（#1860）：左侧目录按类分组，右侧一个组件一页，地址 `#/<件名>`，可直接打开、可前进后退。
 // 版式照 kobra.systems/components/<件名>（2026-11-14 读，只取结构）：标题与一句说明、实时预览、属性表、组成、键盘。
-// 预览默认 Graphite 主题（跟 Console 应用的默认一致，#1775），页头的切换看 Console（主题是根节点上的 data-theme）；?theme=console 直接以它打开。
+// 预览默认 Graphite 主题（跟 Console 应用的默认一致，KATANAview #1775），页头的切换看 Console（主题是根节点上的 data-theme）；?theme=console 直接以它打开。
 
 /** 「覆盖」页的地址 `#/coverage`：不是组件页，在目录里单列一组「总览」。 */
 export const COVERAGE_ID = 'coverage'

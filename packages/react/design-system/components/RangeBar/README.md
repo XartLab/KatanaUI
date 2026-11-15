@@ -17,11 +17,20 @@
 | `label` * | `string` | — | Accessible name (role=meter), required, for example "Day range". |
 | `lowLabel` | `string` | — | Small caption above the low end, such as "Low"; nothing when omitted. |
 | `highLabel` | `string` | — | Small caption above the high end, such as "High". |
+| `marker` | `'bar' \| 'triangle'` | `'bar'` | Marker style: a bar (default) or a triangle below the track (the TradingView right-rail look). |
+| `title` | `string` | — | Visible title above the track ("Day's range"); nothing when omitted, the accessible name stays label. |
 | `className` | `string` | — | Extra class name on the root. |
 
 ### CompareBar
 
 两条同比例尺的细条，比成交量与 30 日均量；只用中性灰（没有方向，不上涨跌色）。
+
+| 属性 | 类型 | 默认 | 说明 |
+| --- | --- | --- | --- |
+| `a` * | `CompareBarSide` | — | The first bar (drawn light grey): its name, value (sets the width) and the reading text. |
+| `b` * | `CompareBarSide` | — | The second bar (drawn dark grey); the widths follow the larger of the two values. |
+| `label` * | `string` | — | Accessible name (role=group), required. |
+| `className` | `string` | — | Extra class name on the root. |
 
 ### rangeShare(low, high, value)
 

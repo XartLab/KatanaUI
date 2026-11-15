@@ -133,8 +133,12 @@ function collectItems() {
     add(
       'data-grid',
       'registry:component',
-      codeIn('src/blocks/data-grid').map((f) => `src/blocks/data-grid/${f}`),
+      codeIn('src/blocks/data-grid')
+        .filter((f) => f !== 'column-set-tabs.tsx')
+        .map((f) => `src/blocks/data-grid/${f}`),
     )
+    // 列集标签行有自己的文档页，页的说明要有归属：单独一项，依赖 data-grid（引它的模型）。
+    add('column-set-tabs', 'registry:component', ['src/blocks/data-grid/column-set-tabs.tsx'])
     add(
       'toolbar',
       'registry:component',
@@ -170,8 +174,12 @@ function collectItems() {
       add(
         dir,
         'registry:component',
-        codeIn(`src/blocks/${dir}`).map((f) => `src/blocks/${dir}/${f}`),
+        codeIn(`src/blocks/${dir}`)
+          .filter((f) => !(dir === 'news-feed' && f === 'news-reader.tsx'))
+          .map((f) => `src/blocks/${dir}/${f}`),
       )
+    // 阅读窗有自己的文档页，页的说明要有归属：单独一项。
+    add('news-reader', 'registry:component', ['src/blocks/news-feed/news-reader.tsx'])
     byFile('src/blocks', 'registry:component', (f) => isCode(f) && f !== 'index.ts')
   }
   return items

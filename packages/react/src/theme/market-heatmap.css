@@ -460,5 +460,5 @@
   cursor: pointer;
 }
 .k-mheat-open:hover {
-  background: var(--alpha-white-4, rgba(255, 255, 255, 0.05));
+  background: var(--alpha-white-4);
 }
