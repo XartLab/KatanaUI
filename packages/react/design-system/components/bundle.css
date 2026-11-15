@@ -1419,7 +1419,7 @@
 }
 
 .border-l-brand {
-  border-left-color: var(--signal-orange);
+  border-left-color: var(--ink-100);
 }
 
 .border-l-danger {
@@ -1448,6 +1448,10 @@
 
 .bg-\(--signal-amber\) {
   background-color: var(--signal-amber);
+}
+
+.bg-\(--signal-orange\) {
+  background-color: var(--signal-orange);
 }
 
 .bg-\[color-mix\(in_srgb\,var\(--cb-accent\)_12\%\,transparent\)\] {
@@ -1496,10 +1500,6 @@
   .bg-black\/45 {
     background-color: var(--ds-c-12ixrfp);
   }
-}
-
-.bg-brand {
-  background-color: var(--signal-orange);
 }
 
 .bg-danger {
@@ -1912,6 +1912,10 @@
   color: var(--pnl-up);
 }
 
+.text-\(--signal-orange\) {
+  color: var(--signal-orange);
+}
+
 .text-\(color\:--k-actionable-bold-foreground\) {
   color: var(--k-actionable-bold-foreground);
 }
@@ -1974,15 +1978,7 @@
   color: var(--signal-green);
 }
 
-.text-\[var\(--signal-red\)\] {
-  color: var(--signal-red);
-}
-
-.text-brand {
-  color: var(--signal-orange);
-}
-
-.text-danger {
+.text-\[var\(--signal-red\)\], .text-danger {
   color: var(--signal-red);
 }
 
@@ -4043,7 +4039,7 @@
 .k-tl-kind[aria-pressed="true"] {
   background: var(--bg-000);
   color: var(--ink-100);
-  box-shadow: inset 0 -2px 0 var(--signal-orange);
+  box-shadow: inset 0 -2px 0 var(--ink-100);
 }
 
 .k-tl-kind:focus-visible, .k-tl-view:focus-visible, .k-tl-marker:focus-visible {
@@ -4097,7 +4093,7 @@
 }
 
 [data-kind="anomaly"] {
-  --k-tl-color: var(--signal-orange);
+  --k-tl-color: var(--ink-100);
 }
 
 [data-kind="notice"] {
@@ -4126,7 +4122,7 @@
 }
 
 .k-tl-glyph[data-kind="anomaly"] {
-  filter: drop-shadow(0 0 3px var(--signal-orange));
+  filter: drop-shadow(0 0 3px var(--ink-100));
 }
 
 .k-tl-track {
@@ -4154,7 +4150,7 @@
 }
 
 .k-tl-now {
-  background: var(--signal-orange);
+  background: var(--ink-100);
   width: 1px;
   position: absolute;
   top: 4px;
@@ -4162,7 +4158,7 @@
 }
 
 .k-tl-now span {
-  color: var(--signal-orange);
+  color: var(--ink-100);
   font: 600 9px var(--font-mono);
   white-space: nowrap;
   position: absolute;
@@ -4171,7 +4167,7 @@
 }
 
 .k-tl-brush {
-  background: var(--signal-orange);
+  background: var(--ink-100);
   position: absolute;
   top: 8px;
   bottom: 8px;
@@ -4179,12 +4175,12 @@
 
 @supports (color: color-mix(in lab, red, red)) {
   .k-tl-brush {
-    background: var(--ds-c-70zl3a);
+    background: var(--ds-c-1mfxecf);
   }
 }
 
 .k-tl-brush {
-  border-inline: 1px solid var(--signal-orange-dim);
+  border-inline: 1px solid var(--ink-300);
 }
 
 .k-tl-marker {
@@ -8033,7 +8029,7 @@ button.k-quote-card.is-link:focus-visible {
   margin: calc(var(--chart-end-size, 8px) / -2) 0 0 calc(var(--chart-end-size, 8px) / -2);
   border-radius: var(--chart-end-radius, 50%);
   background: var(--chart-accent, var(--ink-100));
-  box-shadow: var(--chart-end-glow, var(--glow-orange));
+  box-shadow: var(--chart-end-glow, none);
 }
 
 .k-ck-end-value {
@@ -13084,7 +13080,7 @@ button.k-consensus-hash:focus-visible {
   --ds-c-2xn4cb: #000c;
   --ds-c-1y9twm9: color-mix(in srgb, var(--signal-red) 30%, transparent);
   --ds-c-qc8415: color-mix(in srgb, var(--signal-red) 38%, transparent);
-  --ds-c-70zl3a: color-mix(in srgb, var(--signal-orange) 16%, transparent);
+  --ds-c-1mfxecf: color-mix(in srgb, var(--ink-100) 16%, transparent);
   --ds-c-3uduzz: #00000070;
   --ds-c-90z0xj: #ff00482e;
   --ds-c-90z0u8: #ff004800;

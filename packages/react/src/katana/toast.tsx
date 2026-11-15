@@ -83,7 +83,7 @@ function ToastIcon({ className, children, ...props }: ComponentProps<'span'>) {
     <span
       data-slot="toast-icon"
       aria-hidden="true"
-      className={cn('mt-0.5 flex size-4 flex-none items-center justify-center text-brand [&>svg]:size-4', className)}
+      className={cn('mt-0.5 flex size-4 flex-none items-center justify-center text-(--signal-orange) [&>svg]:size-4', className)}
       {...props}
     >
       {children ?? <BellRing />}
