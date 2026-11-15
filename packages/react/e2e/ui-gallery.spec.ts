@@ -4537,6 +4537,122 @@ for (const theme of THEMES) {
     await expect(doc.getByTestId('mon-empty').locator('.k-sysmon-empty')).toHaveCount(4)
     await expect(doc.getByTestId('mon-empty').locator('.k-sysmon-empty').first()).toHaveText('未连接')
   })
+
+  test(`传导链图（${theme}）：布局从上到下、状态色与线型、点边出证据与失败条件、点节点淡出不相干的边、缩放平移适应、无节点写未连接`, async ({
+    page,
+  }) => {
+    await open(page, theme, 'transmission-chain')
+    const doc = section(page, 'transmission-chain')
+    const chain = doc.getByTestId('tc-frame').getByTestId('tc')
+    const canvas = chain.locator('.k-tc-canvas')
+    const edges = chain.locator('.k-tc-edge')
+    const nodes = chain.locator('.k-tc-node')
+    await expect(nodes).toHaveCount(7)
+    await expect(edges).toHaveCount(8)
+    // 布局：从上到下，整张图在视口里（适应窗口）。
+    const nodeBox = async (id: string) => (await chain.locator(`[data-node-id="${id}"]`).boundingBox())!
+    const geo = await nodeBox('geo')
+    const rules = await nodeBox('rules')
+    const credit = await nodeBox('credit')
+    const price = await nodeBox('price')
+    expect(geo.y + geo.height).toBeLessThan(rules.y)
+    expect(rules.y + rules.height).toBeLessThan(credit.y)
+    expect(price.width).toBeGreaterThan(40)
+    const area = (await canvas.boundingBox())!
+    for (const b of [geo, price]) {
+      expect(b.x).toBeGreaterThanOrEqual(area.x - 1)
+      expect(b.x + b.width).toBeLessThanOrEqual(area.x + area.width + 1)
+      expect(b.y).toBeGreaterThanOrEqual(area.y - 1)
+      expect(b.y + b.height).toBeLessThanOrEqual(area.y + area.height + 1)
+    }
+    // 状态色与线型：支持涨色实线、反对跌色、部分琥珀点划线、未检验灰虚线；不是橙色。
+    const stroke = (id: string) =>
+      chain.locator(`[data-edge-id="${id}"] .k-tc-line`).evaluate((el) => {
+        const style = getComputedStyle(el)
+        return { color: style.stroke, dash: style.strokeDasharray }
+      })
+    const probe = async (name: string) => {
+      const color = await token(page, name)
+      return color
+    }
+    expect((await stroke('e1')).color).toBe(await probe('--pnl-up'))
+    expect((await stroke('e1')).dash).toBe('none')
+    expect((await stroke('e6')).color).toBe(await probe('--pnl-down'))
+    expect((await stroke('e3')).color).toBe(await probe('--signal-amber'))
+    expect((await stroke('e3')).dash).not.toBe('none')
+    expect((await stroke('e4')).color).toBe(await probe('--ink-400'))
+    expect((await stroke('e4')).dash).not.toBe('none')
+    // 标签：状态图标 + 文字 + 证据计数；没证据的不写计数。
+    await expect(chain.locator('[data-edge-id="e1"] .k-tc-chip-text')).toHaveText('目标约束规则 支 2 反 0')
+    await expect(chain.locator('[data-edge-id="e4"] .k-tc-chip-text')).toHaveText('资金外流')
+    await expect(chain.locator('[data-edge-id="e8"]')).toHaveAttribute('data-feedback', 'true')
+    // 图例：四种状态各一条，条数对得上（支持 4 含反馈边、部分 2、反对 1、未检验 1）。
+    const legend = chain.locator('.k-tc-legend li')
+    await expect(legend).toHaveCount(4)
+    await expect(legend.nth(0)).toContainText('有证据支持')
+    await expect(legend.nth(0).locator('b')).toHaveText('4')
+    await expect(legend.nth(1).locator('b')).toHaveText('2')
+    await expect(legend.nth(2).locator('b')).toHaveText('1')
+    await expect(legend.nth(3).locator('b')).toHaveText('1')
+    // 没选：写提示。点边：右侧出这条边的标题、状态字、失败条件、证据行（立场字 + 来源类别）。
+    await expect(chain.locator('.k-tc-hint')).toBeVisible()
+    await chain.locator('[data-edge-id="e6"] .k-tc-chip').click()
+    const detail = chain.getByTestId('tc-edge-detail')
+    await expect(detail.locator('.k-tc-title')).toHaveText('境内外资产配置 → 资产价格')
+    await expect(detail.locator('.k-tc-badge')).toContainText('证据反对')
+    await expect(detail.locator('.k-tc-failure')).toHaveText('资金外流加快的时期，境内资产价格没有承压。')
+    const rows = detail.locator('.k-hl-ev')
+    await expect(rows).toHaveCount(2)
+    await expect(rows.first()).toContainText('反对')
+    await expect(rows.first()).toContainText('政策与资金变化')
+    await expect(rows.first()).toContainText('2026-10-20')
+    await expect(rows.first().locator('.k-hl-source')).toHaveText('演示数据')
+    await expect(chain.locator('[data-edge-id="e6"]')).toHaveAttribute('data-selected', 'true')
+    // 没写失败条件、没有证据的边：提示写出来。
+    await chain.locator('[data-edge-id="e4"] .k-tc-chip').click()
+    await expect(detail.locator('.k-tc-badge')).toContainText('未检验')
+    await expect(detail.locator('.k-tc-missing')).toHaveText('还没有证据。')
+    // 点节点：列出上下游边，不相干的边与节点淡出；点上下游里的一条跳到那条边。
+    await chain.locator('[data-node-id="price"]').click()
+    const nodeDetail = chain.getByTestId('tc-node-detail')
+    await expect(nodeDetail.locator('.k-tc-title')).toHaveText('资产价格')
+    await expect(nodeDetail.locator('.k-tc-link')).toHaveCount(3)
+    await expect(chain.locator('[data-edge-id="e1"]')).toHaveAttribute('data-dim', 'true')
+    await expect(chain.locator('[data-edge-id="e8"]')).not.toHaveAttribute('data-dim', 'true')
+    await expect(chain.locator('[data-edge-id="e1"]')).toHaveCSS('opacity', '0.3')
+    await nodeDetail.locator('.k-tc-link').last().click()
+    await expect(detail.locator('.k-tc-title')).toHaveText('资产价格 → 信用与购买力分配')
+    await expect(detail.locator('.k-tc-badge')).toContainText('有证据支持')
+    // 键盘：焦点到边上按 Enter 选中。
+    await chain.locator('[data-edge-id="e2"]').focus()
+    await page.keyboard.press('Enter')
+    await expect(chain.locator('[data-edge-id="e2"]')).toHaveAttribute('data-selected', 'true')
+    // 缩放：滚轮放大、按钮缩小、适应回到初始；拖背景平移。
+    const k = async () => Number(await chain.locator('[data-view-k]').getAttribute('data-view-k'))
+    const translate = () => chain.locator('[data-view-k]').getAttribute('transform')
+    const k0 = await k()
+    const t0 = await translate()
+    await page.mouse.move(area.x + area.width / 2, area.y + 6)
+    await page.mouse.wheel(0, -300)
+    await expect.poll(k).toBeGreaterThan(k0 * 1.3)
+    const kZoomed = await k()
+    await chain.getByRole('button', { name: '缩小' }).click()
+    await expect.poll(k).toBeLessThan(kZoomed)
+    await page.mouse.move(area.x + 8, area.y + 8)
+    await page.mouse.down()
+    await page.mouse.move(area.x + 68, area.y + 48, { steps: 4 })
+    await page.mouse.up()
+    await expect.poll(translate).not.toBe(t0)
+    await chain.getByRole('button', { name: '适应窗口' }).click()
+    await expect.poll(translate).toBe(t0)
+    await expect.poll(k).toBeCloseTo(k0, 3)
+    // 点空白取消选择。
+    await page.mouse.click(area.x + 8, area.y + 8)
+    await expect(chain.locator('.k-tc-hint')).toBeVisible()
+    // 没有节点：写未连接。
+    await expect(doc.getByTestId('tc-empty').locator('.k-tc-empty')).toHaveText('未连接')
+  })
+
   test(`假说账（${theme}）：一行一条、展开看失败条件与证据、倒计时与自动过期、按层与状态筛选、观察表`, async ({
     page,
   }) => {
