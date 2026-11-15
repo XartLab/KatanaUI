@@ -65,7 +65,12 @@ function ContextMenuItem({
   variant = 'default',
   bare,
   ...props
-}: ComponentProps<typeof ContextMenuPrimitive.Item> & { variant?: 'default' | 'danger'; bare?: boolean }) {
+}: ComponentProps<typeof ContextMenuPrimitive.Item> & {
+  /** Style of the row: danger uses the danger text color. */
+  variant?: 'default' | 'danger'
+  /** Skip the row skin. */
+  bare?: boolean
+}) {
   return (
     <ContextMenuPrimitive.Item
       data-slot="context-menu-item"

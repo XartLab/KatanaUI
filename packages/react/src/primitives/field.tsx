@@ -36,6 +36,7 @@ const FieldContext = createContext<FieldState | null>(null)
 
 const fieldVariants = cva('group/field flex w-full gap-1.5 data-[invalid=true]:text-danger', {
   variants: {
+    /** Label above the control, or label and description on the left with the control on the right. */
     orientation: {
       vertical: 'flex-col [&>*]:w-full',
       horizontal: 'flex-row items-center justify-between gap-3',
@@ -50,7 +51,13 @@ function Field({
   invalid = false,
   disabled = false,
   ...props
-}: ComponentProps<'div'> & VariantProps<typeof fieldVariants> & { invalid?: boolean; disabled?: boolean }) {
+}: ComponentProps<'div'> &
+  VariantProps<typeof fieldVariants> & {
+    /** Turns the label to the danger color, marks the control aria-invalid and shows FieldError. */
+    invalid?: boolean
+    /** Dims the label to 45% and disables the control. */
+    disabled?: boolean
+  }) {
   const base = useId()
   const [parts, setParts] = useState<{ description: number; error: number }>({ description: 0, error: 0 })
   const register = useCallback((part: 'description' | 'error') => {

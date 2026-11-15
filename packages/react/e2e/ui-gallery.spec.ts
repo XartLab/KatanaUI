@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: MIT
 import { expect, test, type Locator, type Page } from '@playwright/test'
+import { readFileSync } from 'node:fs'
 import { summarize, type CoverageMap } from '../docs/coverage-core'
 import coverageMap from '../docs/coverage-map.json' with { type: 'json' }
+import propsGenerated from '../gallery/props.generated.json' with { type: 'json' }
 import { GROUPS, PAGES } from '../gallery/registry'
 
 // @katana-ui/react 的组件文档站（packages/react/gallery，入口 index.html，#1838、#1860）：在真浏览器里看用户看到的。
@@ -13,7 +15,7 @@ test.use({ viewport: { width: 1100, height: 1500 } })
 
 const THEMES = ['console', 'graphite'] as const
 
-// 文档站（#1860）：一页一个组件，地址 #/<件名>，预览容器带 data-gallery=<件名>。?theme= 指定主题（不带是 Console）。
+// 文档站（#1860）：一页一个组件，地址 #/<件名>，预览容器带 data-gallery=<件名>。?theme= 指定主题（不带是 Graphite）。
 const open = async (page: Page, theme: (typeof THEMES)[number], id = 'button') => {
   await page.goto(`/?theme=${theme}#/${id}`)
   await page.locator(`[data-gallery="${id}"]`).waitFor()
@@ -3899,15 +3901,26 @@ test('密度演示里的主按钮：Graphite 的底是 Graphite 的 --ink-100，
   expect(colors[0]).not.toBe(colors[1])
 })
 
-test('不带 ?theme= 是 Console；页头切到 Graphite，主按钮底色跟着变，地址带上 theme=graphite', async ({ page }) => {
+test('不带 ?theme= 是 Graphite；页头切到 Console，主按钮底色跟着变，地址带上 theme=console', async ({ page }) => {
   await page.goto('/#/button')
-  await expect(page.locator('html')).toHaveAttribute('data-theme', 'console')
-  const primary = section(page, 'button').getByRole('button', { name: 'primary', exact: true })
-  const console = await bg(primary)
-  await page.getByRole('group', { name: '主题' }).getByRole('button', { name: 'Graphite' }).click()
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'graphite')
-  await expect.poll(() => bg(primary)).not.toBe(console)
-  await expect(page).toHaveURL(/theme=graphite/)
+  const primary = section(page, 'button').getByRole('button', { name: 'primary', exact: true })
+  const graphite = await bg(primary)
+  await page.getByRole('group', { name: '主题' }).getByRole('button', { name: 'Console' }).click()
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'console')
+  await expect.poll(() => bg(primary)).not.toBe(graphite)
+  await expect(page).toHaveURL(/theme=console/)
+})
+
+test('文档站默认就是 Graphite：不带 ?theme= 时页面底色与目录栏底色是 Graphite 的 bg-000 与 bg-100（#1775）', async ({
+  page,
+}) => {
+  await page.goto('/#/button')
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'graphite')
+  // Graphite 的 bg-000 = #000000、bg-100 = #070707；Console 的 bg-100 是 #141311，默认要是 Console 就会红。
+  await expect(page.locator('html')).toHaveCSS('background-color', 'rgb(0, 0, 0)')
+  await expect(page.getByRole('navigation', { name: '组件' })).toHaveCSS('background-color', 'rgb(7, 7, 7)')
+  expect(await token(page, '--bg-100')).toBe('rgb(7, 7, 7)')
 })
 
 test('目录：按类分组；直接打开 #/<件名>；点链接换页、后退回上一页；没有的页写原因', async ({ page }) => {
@@ -4737,3 +4750,58 @@ for (const theme of THEMES) {
     await expect(rows).toHaveCount(6)
   })
 }
+
+// 属性表读生成的数据、每页有「用法」（#1902）。
+
+test('每一页的「用法」：最小例子渲染出来，下面是它的源码', async ({ page }) => {
+  for (const doc of PAGES) {
+    await page.goto(`/#/${doc.id}`)
+    const usage = page.locator('[data-usage]')
+    await expect(usage.getByRole('heading', { name: '用法' })).toBeVisible()
+    const live = usage.locator('[data-usage-live]')
+    await expect(live, `${doc.id} 的用法例子`).toBeVisible()
+    expect((await live.boundingBox())!.height, `${doc.id} 的用法例子有高度`).toBeGreaterThan(20)
+    await expect(usage.locator('[data-usage-code] [data-slot="code-block-pre"]')).toContainText('@katana-ui/react')
+    await expect(usage.getByRole('button', { name: '复制用法代码' })).toBeVisible()
+  }
+})
+
+test('复制用法：剪贴板里是那个例子文件的源码（引包名），提示换成「已复制」再复原', async ({ page, context }) => {
+  await context.grantPermissions(['clipboard-read', 'clipboard-write'])
+  await page.goto('/#/button')
+  const usage = page.locator('[data-usage]')
+  const copy = usage.getByRole('button', { name: '复制用法代码' })
+  await copy.click()
+  await expect(page.getByRole('tooltip').or(page.locator('[data-slot="tooltip-content"]')).first()).toHaveText('已复制')
+  const text = await page.evaluate(() => navigator.clipboard.readText())
+  const file = readFileSync('gallery/usage/ButtonUsage.tsx', 'utf8')
+  expect(text).toBe(file.replace(/'\.\.\/\.\.\/src\/index'/, "'@katana-ui/react'").trimEnd())
+  expect(text).toContain("import { Button } from '@katana-ui/react'")
+  expect(text).not.toMatch(/\.\.\/\.\.\/src/)
+  await expect(copy).not.toHaveAttribute('data-copied', '', { timeout: 6000 })
+})
+
+test('属性表：Button 页的行就是 TS 类型生成的（名、类型、默认值、必填标记、英文说明），不列继承来的 button 属性', async ({
+  page,
+}) => {
+  await page.goto('/#/button')
+  const table = page.locator('[data-part="Button"] table')
+  const generated = propsGenerated.exports.Button.props
+  await expect(table.locator('tbody tr')).toHaveCount(generated.length)
+  for (const prop of generated) {
+    const row = table
+      .locator('tbody tr')
+      .filter({ has: page.locator('td:first-child code', { hasText: new RegExp(`^${prop.name}$`) }) })
+    await expect(row.locator('td').nth(3)).toHaveText(prop.description)
+    await expect(row.locator('td').nth(2)).toHaveText(prop.default ?? '—')
+  }
+  await expect(table.locator('td:first-child code', { hasText: /^onClick$/ })).toHaveCount(0)
+  // 必填的属性带星号：MultiSelect 的 values 必填，label 可选。
+  await page.goto('/#/multi-select')
+  const values = page.locator('[data-part="MultiSelect"] tbody tr').filter({ hasText: 'Ids of the selected options.' })
+  await expect(values.locator('abbr[title="必填"]')).toHaveCount(1)
+  const label = page
+    .locator('[data-part="MultiSelect"] tbody tr')
+    .filter({ hasText: 'Accessible name of the trigger.' })
+  await expect(label.locator('abbr')).toHaveCount(0)
+})

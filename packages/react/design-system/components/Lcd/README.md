@@ -4,16 +4,34 @@
 
 ## Provide
 
+`*` marks a required prop.
+
 ### Lcd
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `label` | `string` | — | 点阵小标签。 |
-| `value` | `string \| null` | — | 读数；没有数据传 null，显示「—」。 |
-| `tone` | `'neutral' \| 'up' \| 'down' \| 'accent' \| 'warn'` | `'neutral'` | 数值颜色：中性、涨、跌、当前关注（橙）、警告（琥珀）。 |
-| `note` | `string` | — | 数字下面一行 10px 小字（单位、口径）；不放第二个数值。 |
-| `inline` | `boolean` | — | 标签与数字排成一行。 |
-| `fill` | `boolean` | — | 撑满所在的格子（KPI 行里每格一个）；默认按内容收缩。 |
+| `label` * | `string` | — | Small dot-matrix label. |
+| `value` * | `string \| null` | — | The reading; pass null when there is no data and it shows a dash. |
+| `inline` | `boolean` | — | Put the label and the number on one line. |
+| `fill` | `boolean` | — | Fill the cell it sits in (one per cell in a KPI row); by default it shrinks to its content. |
+| `tone` | `LcdTone` | `'neutral'` | Number color: neutral, up, down, focus (orange) or warning (amber). |
+| `note` | `string` | — | A 10px line under the number (unit, basis); do not put a second value here. |
+
+## Usage
+
+```tsx
+// SPDX-License-Identifier: MIT
+import { Lcd } from '@katana-ui/react'
+
+export function LcdUsage() {
+  return (
+    <>
+      <Lcd label="PNL" value="+1,284.50" tone="up" note="USDT today" />
+      <Lcd label="LAST" value={null} />
+    </>
+  )
+}
+```
 
 ## States
 

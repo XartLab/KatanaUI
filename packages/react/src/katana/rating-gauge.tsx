@@ -7,14 +7,27 @@ import type { CSSProperties, ReactNode } from 'react'
 import { ratingAngle, ratingZone, zoneArc, GAUGE_CX, GAUGE_CY, RATING_ZONES } from './rating-gauge-model.ts'
 
 export type RatingGaugeProps = {
-  /** −1（强烈卖出）到 +1（强烈买入）。 */
+  /**
+   * From -1 (strong sell) to +1 (strong buy), split into five equal zones; out of range is clamped and a non-finite number counts as 0.
+   * −1（强烈卖出）到 +1（强烈买入）。
+   */
   score: number
-  /** 五段的名字，从卖到买；也是档位词的来源。 */
+  /**
+   * Names of the five zones from sell to buy; the level word is taken from here too.
+   * 五段的名字，从卖到买；也是档位词的来源。
+   */
   zones: readonly [string, string, string, string, string]
-  /** 读屏名（如「技术面评级」）。 */
+  /**
+   * Accessible name, required, for example "Technical rating".
+   * 读屏名（如「技术面评级」）。
+   */
   label: string
-  /** 圆心下面再写点什么（卖出 / 中性 / 买入各几个）。 */
+  /**
+   * Extra content under the level word (the counts of sell, neutral and buy).
+   * 圆心下面再写点什么（卖出 / 中性 / 买入各几个）。
+   */
   children?: ReactNode
+  /** Extra class name on the root. */
   className?: string
 }
 

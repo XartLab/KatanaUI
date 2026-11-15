@@ -4,6 +4,8 @@ Popover 加 Command 拼出来：触发器跟单选下拉一个样，打开后焦
 
 ## Provide
 
+`*` marks a required prop.
+
 ### Combobox
 
 其余属性透传给 Radix Popover.Root。open、onOpenChange 受控。
@@ -14,8 +16,9 @@ Popover 加 Command 拼出来：触发器跟单选下拉一个样，打开后焦
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `label` | `string` | — | 搜索框与列表的读屏名（必填）。 |
-| `commandProps` | `ComponentProps<typeof Command>` | — | 给里面的 Command（例：shouldFilter: false，自己排名）。 |
+| `variant` | `keyof typeof skin` | — | Skin of the popup. |
+| `label` * | `string` | — | Accessible name of the search box and the list (required: cmdk names the combobox and the listbox with it). |
+| `commandProps` | `ComponentProps<typeof Command>` | — | Props passed to the Command inside (for example shouldFilter: false to rank on your own). |
 
 ### ComboboxItem
 
@@ -23,9 +26,56 @@ Popover 加 Command 拼出来：触发器跟单选下拉一个样，打开后焦
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `selected` | `boolean` | `false` | 已选：左边画勾，data-checked。 |
+| `selected` | `boolean` | `false` | Selected: draws a check mark on the left and sets data-checked. |
 
 ### ComboboxTrigger / ComboboxInput / ComboboxList / ComboboxEmpty / ComboboxGroup
+
+## Usage
+
+```tsx
+// SPDX-License-Identifier: MIT
+import {
+  Combobox,
+  ComboboxContent,
+  ComboboxEmpty,
+  ComboboxInput,
+  ComboboxItem,
+  ComboboxList,
+  ComboboxTrigger,
+} from '@katana-ui/react'
+import { useState } from 'react'
+
+export function ComboboxUsage() {
+  const [value, setValue] = useState('1h')
+  const [open, setOpen] = useState(false)
+  return (
+    <Combobox open={open} onOpenChange={setOpen}>
+      <ComboboxTrigger aria-label="Timeframe">
+        <span>{value}</span>
+      </ComboboxTrigger>
+      <ComboboxContent label="Search timeframes">
+        <ComboboxInput placeholder="Search" />
+        <ComboboxList>
+          <ComboboxEmpty>No match</ComboboxEmpty>
+          {['1m', '5m', '1h', '1d'].map((frame) => (
+            <ComboboxItem
+              key={frame}
+              value={frame}
+              selected={frame === value}
+              onSelect={() => {
+                setValue(frame)
+                setOpen(false)
+              }}
+            >
+              {frame}
+            </ComboboxItem>
+          ))}
+        </ComboboxList>
+      </ComboboxContent>
+    </Combobox>
+  )
+}
+```
 
 ## States
 

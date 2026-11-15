@@ -4,21 +4,15 @@
 
 ## Provide
 
+`*` marks a required prop.
+
 ### TooltipProvider
 
 其余属性透传给 Radix Tooltip.Provider。
 
-| 属性 | 类型 | 默认 | 说明 |
-| --- | --- | --- | --- |
-| `delayDuration` | `number` | `0` | 悬停多少毫秒后出现。 |
-
 ### Tooltip
 
 其余属性透传给 Radix Tooltip.Root。
-
-| 属性 | 类型 | 默认 | 说明 |
-| --- | --- | --- | --- |
-| `defaultOpen / open` | `boolean` | — | 初始或受控的开合。 |
 
 ### TooltipTrigger
 
@@ -28,13 +22,29 @@
 
 其余属性透传给 Radix Tooltip.Content。
 
-| 属性 | 类型 | 默认 | 说明 |
-| --- | --- | --- | --- |
-| `sideOffset` | `number` | `6` | 离触发器的距离。 |
-
 ### tooltipContentClass
 
 提示的皮肤类名，应用里自己定位的提示（图表悬停）借它长一个样。
+
+## Usage
+
+```tsx
+// SPDX-License-Identifier: MIT
+import { Button, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@katana-ui/react'
+
+export function TooltipUsage() {
+  return (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button>Hover me</Button>
+        </TooltipTrigger>
+        <TooltipContent>Fill ratio = filled / touched</TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  )
+}
+```
 
 ## States
 

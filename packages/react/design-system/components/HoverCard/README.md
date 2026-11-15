@@ -4,6 +4,8 @@
 
 ## Provide
 
+`*` marks a required prop.
+
 ### HoverCard
 
 其余属性透传给 Radix HoverCard.Root。openDelay、closeDelay 在这里改。
@@ -12,10 +14,25 @@
 
 其余属性透传给 Radix HoverCard.Content。
 
-| 属性 | 类型 | 默认 | 说明 |
-| --- | --- | --- | --- |
-| `align` | `'start' \| 'center' \| 'end'` | `'center'` | 对齐触发器的哪一边。 |
-| `sideOffset` | `number` | `4` | 离触发器的距离。 |
+## Usage
+
+```tsx
+// SPDX-License-Identifier: MIT
+import { HoverCard, HoverCardContent, HoverCardTrigger } from '@katana-ui/react'
+
+export function HoverCardUsage() {
+  return (
+    <HoverCard>
+      <HoverCardTrigger asChild>
+        <a href="#/hover-card" className="text-ink underline">
+          BTCUSDT.P
+        </a>
+      </HoverCardTrigger>
+      <HoverCardContent>Perpetual swap, tick size 0.1.</HoverCardContent>
+    </HoverCard>
+  )
+}
+```
 
 ## States
 

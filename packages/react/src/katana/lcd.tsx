@@ -18,11 +18,17 @@ export function Lcd({
   tone = 'neutral',
   note,
 }: {
+  /** Small dot-matrix label. */
   label: string
+  /** The reading; pass null when there is no data and it shows a dash. */
   value: string | null
+  /** Put the label and the number on one line. */
   inline?: boolean
+  /** Fill the cell it sits in (one per cell in a KPI row); by default it shrinks to its content. */
   fill?: boolean
+  /** Number color: neutral, up, down, focus (orange) or warning (amber). */
   tone?: LcdTone
+  /** A 10px line under the number (unit, basis); do not put a second value here. */
   note?: string
 }) {
   const classes = ['k-lcd', inline ? 'inline' : '', fill ? 'fill' : '', value === null ? 'is-empty' : `tone-${tone}`]

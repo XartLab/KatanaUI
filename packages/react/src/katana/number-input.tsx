@@ -30,24 +30,47 @@ export function NumberInput({
   expression,
   caption,
 }: {
+  /** The current value. */
   value: number
+  /** Called when the value changes; empty or non-numeric input does not call it. */
   onValue: (value: number) => void
+  /** Unit suffix; when given, screen readers read the value together with the unit. */
   unit?: string
+  /** Lower bound; values below it are clamped. */
   min?: number
+  /** Upper bound; values above it are clamped. */
   max?: number
+  /** Step size. */
   step?: number
+  /** sm is 26px high; the default is 30px. */
   size?: 'sm'
+  /** Width of the box in px. */
   width?: number
+  /** Accessible name. */
   label?: string
+  /** Show the red border. */
   invalid?: boolean
-  /** 灰掉：不能打字、不能拖、方向键不动它。 */
+  /**
+   * Greyed out: cannot type, drag, or step with the arrow keys.
+   * 灰掉：不能打字、不能拖、方向键不动它。
+   */
   disabled?: boolean
-  /** 哨兵值（例：-1、0 表示「自动」）：值等于它、又没在打字时，框里写 autoText，不把内部的数露给用户。 */
+  /**
+   * Sentinel value (for example -1 or 0 meaning automatic): while the value equals it and the user is not typing, the box shows autoText.
+   * 哨兵值（例：-1、0 表示「自动」）：值等于它、又没在打字时，框里写 autoText，不把内部的数露给用户。
+   */
   autoValue?: number
+  /** Text shown in place of the sentinel value. */
   autoText?: string
-  /** 框里可以写算式：回车或离开时算（Esc 放弃）。写不成算式的字标红。 */
+  /**
+   * Allow typing an expression, evaluated on Enter or blur (Esc discards); text that is not an expression turns red.
+   * 框里可以写算式：回车或离开时算（Esc 放弃）。写不成算式的字标红。
+   */
   expression?: boolean
-  /** 框内左边的文字标签（拖它与拖整个框一样改值）；读屏名仍由 label 给。 */
+  /**
+   * Text label inside the box on the left (dragging it changes the value like dragging the box); the accessible name still comes from label.
+   * 框内左边的文字标签（拖它与拖整个框一样改值）；读屏名仍由 label 给。
+   */
   caption?: string
 }) {
   const autoShown = autoText !== undefined && value === autoValue

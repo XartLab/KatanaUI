@@ -15,7 +15,10 @@ function ScrollArea({
   viewportClassName,
   type = 'hover',
   ...props
-}: ComponentProps<typeof ScrollAreaPrimitive.Root> & { viewportClassName?: string }) {
+}: ComponentProps<typeof ScrollAreaPrimitive.Root> & {
+  /** Extra class name on the scrolling viewport inside. */
+  viewportClassName?: string
+}) {
   return (
     <ScrollAreaPrimitive.Root
       data-slot="scroll-area"

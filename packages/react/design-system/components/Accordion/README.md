@@ -4,27 +4,37 @@
 
 ## Provide
 
+`*` marks a required prop.
+
 ### Accordion
 
 其余属性透传给 Radix Accordion.Root。
-
-| 属性 | 类型 | 默认 | 说明 |
-| --- | --- | --- | --- |
-| `type` | `'single' \| 'multiple'` | — | 同时能展开一项还是多项（必填）。 |
-| `collapsible` | `boolean` | — | single 时能不能把唯一展开的那项也收起。 |
-| `defaultValue / value` | `string \| string[]` | — | 展开的项。 |
 
 ### AccordionItem
 
 其余属性透传给 Radix Accordion.Item。
 
-| 属性 | 类型 | 默认 | 说明 |
-| --- | --- | --- | --- |
-| `value` | `string` | — | 这一项的值。 |
-
 ### AccordionTrigger / AccordionContent
 
 标题行（带箭头）与展开的内容，透传 Radix 同名部件。
+
+## Usage
+
+```tsx
+// SPDX-License-Identifier: MIT
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@katana-ui/react'
+
+export function AccordionUsage() {
+  return (
+    <Accordion type="single" collapsible defaultValue="source">
+      <AccordionItem value="source">
+        <AccordionTrigger>Where does the data come from?</AccordionTrigger>
+        <AccordionContent>Public market data; the reason is shown when it is unavailable.</AccordionContent>
+      </AccordionItem>
+    </Accordion>
+  )
+}
+```
 
 ## States
 
