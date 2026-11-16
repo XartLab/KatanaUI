@@ -163,6 +163,7 @@ MIT（用户 2026-11-14 定，#1876），见本文开头。别的项目经注册
 - 浏览器行为（#2 第 4 步从 KATANAview 搬来）：`pnpm test:e2e`（根目录或本包都行）。`playwright.config.ts` 先 `vp build` 打包文档站、再 `vp preview` 给页面，只跑 dpr-1 一个项目。`e2e/ui-gallery.spec.ts` 量计算样式、键盘、动效、像素，`e2e/ui-gallery-a11y.spec.ts` 每页在两个主题下跑 axe 与控制台检查（当场修不了的违规列在 `e2e/ui-gallery-a11y-known.json`，只许减）。同一份断言不为过关而放松：跑红了先查是这边缺东西还是测试过期。
 - Playwright 要的 Chromium 跟机器上预装的版本不一致时，用 `PLAYWRIGHT_BROWSERS_PATH` 指到一个放软链的目录（目录名按 Playwright 要的版本号，如 `chromium-1194`，指向预装的那份），或 `pnpm exec playwright install chromium`。
 - Happo 视觉回归（要云端账号，不进门禁）：`pnpm --filter @katana-ui/react test:happo`，用 `e2e/ui-gallery-happo.spec.ts`。
+- pixelgate 视觉回归（试点，只报告、不进门禁）：`pnpm test:visual`，用 `visual/gallery.spec.ts` 与 `playwright.pixelgate.config.ts`，不会被 `pnpm test:e2e` 带上。基线放 `packages/react/.pixelgate/baseline/`，只提交 Linux 的；本机 Windows/macOS 的基线与 current/diff/report 被 `.gitignore` 挡掉。批准 CI 一次运行的结果：`gh run download <id> -n pixelgate -D <目录>`，再 `pixelgate approve --out-dir packages/react/.pixelgate --from <目录>`。
 
 ## 单独成仓库（#1881）
 

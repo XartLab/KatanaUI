@@ -12,7 +12,8 @@
     "tokens:sync": "pnpm --filter @katana-ui/tokens tokens:sync",
     "ui:coverage": "pnpm --filter @katana-ui/react ui:coverage",
     "ds:build": "pnpm --filter @katana-ui/react ds:build",
-    "test:e2e": "pnpm --filter @katana-ui/react test:e2e"
+    "test:e2e": "pnpm --filter @katana-ui/react test:e2e",
+    "test:visual": "pnpm --filter @katana-ui/react test:visual"
   },
   "engines": {
     "node": ">=22.13"

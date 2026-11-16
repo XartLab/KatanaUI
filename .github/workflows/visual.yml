@@ -1,0 +1,47 @@
+# SPDX-License-Identifier: MIT
+# pixelgate 视觉回归试点（只报告，不进门禁；决定记录见 AGENTS.md「已定的设计决定」）：
+# 在 GitHub 托管的 Linux runner 上跑 `pnpm test:visual`，失败不挡 PR，报告当制品上传。
+# 提交的基线只有 Linux 的：用本工作流的制品里的 current/ 经 `pixelgate approve --from` 生成。
+name: Visual
+
+on:
+  pull_request:
+    paths:
+      - 'packages/**'
+      - 'pnpm-lock.yaml'
+      - '.github/workflows/visual.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: visual-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  visual:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 26
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @katana-ui/react exec playwright install --with-deps chromium
+      - name: pnpm test:visual（试点：只报告，红了不挡 PR）
+        run: pnpm test:visual
+        continue-on-error: true
+      - name: 上传 pixelgate 产物
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: pixelgate
+          path: packages/react/.pixelgate
+          include-hidden-files: true
+          if-no-files-found: warn
+      - name: 写入作业摘要
+        if: ${{ !cancelled() }}
+        run: pnpm --filter @katana-ui/react exec pixelgate summary --out-dir .pixelgate >> "$GITHUB_STEP_SUMMARY"

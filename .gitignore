@@ -4,3 +4,9 @@ dist/
 r/
 test-results/
 playwright-report/
+# pixelgate 视觉回归试点：只提交 Linux 基线（CI 产出）；本机运行的产物与 Windows/macOS 基线不进库。
+/packages/react/.pixelgate/current/
+/packages/react/.pixelgate/diff/
+/packages/react/.pixelgate/report/
+/packages/react/.pixelgate/baseline/*-win32/
+/packages/react/.pixelgate/baseline/*-darwin/

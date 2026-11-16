@@ -8,6 +8,7 @@ every color, size, radius and motion value comes from a design token, so a whole
 - **shadcn registry:** `https://xartlab.github.io/KatanaUI/r/{name}.json`
 - **License:** MIT
 - **Browser tests:** `pnpm test:e2e` runs the Playwright suite against the built docs site; `pnpm --filter @katana-ui/react test:happo` sends Happo visual snapshots (needs a Happo account, not part of the gate).
+- **Visual regression (pixelgate pilot, report-only):** `pnpm test:visual` screenshots a few docs-site pages in both themes (local baselines are git-ignored; only Linux baselines are committed). To approve a CI run: `gh run download <id> -n pixelgate -D <dir>`, then `pixelgate approve --out-dir packages/react/.pixelgate --from <dir>`.
 
 ## Install as a package
 
