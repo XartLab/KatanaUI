@@ -4,7 +4,25 @@
 import type { Config, PageSnap } from 'pixelgate-cli'
 import { PAGES } from './gallery/registry.ts'
 
-export type ThemeId = 'graphite' | 'console'
+export type ThemeId = 'graphite' | 'console' | 'paper'
+
+/**
+ * Paper（浅色）只截浮层与带阴影的页：G0 / G1 把浮层阴影换成 --shadow-overlay / -tooltip / -dialog / -thumb，
+ * 浅底上阴影最显眼，深色两套看不出来的差异在这里能看到。别的页 Paper 不截，免得基线翻三倍。
+ */
+export const PAPER_PAGES = [
+  'tooltip',
+  'popover',
+  'hover-card',
+  'dropdown-menu',
+  'select',
+  'combobox',
+  'multi-select',
+  'dialog',
+  'sheet',
+  'toast',
+  'switch',
+] as const
 
 /** 固定时钟：文档站里「更新于 xx」「刚刚」这类读 Date.now() 的文字不随运行时间变。 */
 const FIXED_TIME = '2026-01-01T00:00:00Z'

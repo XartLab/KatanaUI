@@ -128,8 +128,10 @@ import { EquityCurve } from '@katana-ui/react/quant'`}
           [
             '合并前、改了共用层',
             <>
-              {code('pnpm vr')}：全量，两个主题 × 每个组件页（1440x900、dpr 1），外加文档站外壳三张与 dpr 2
-              的几页关键页；改了令牌、theme 样式、lib、primitives 一定跑它
+              {code('pnpm vr')}：全量，两个主题 × 每个组件页（1440x900、dpr 1），Paper（浅色）只截 11
+              个带阴影的浮层页（tooltip、popover、
+              hover-card、dropdown-menu、select、combobox、multi-select、dialog、sheet、toast、switch，浅底上阴影最显眼），外加文档站外壳三张与
+              dpr 2 的几页关键页；改了令牌、theme 样式、lib、primitives 一定跑它
             </>,
           ],
           ['看什么', '只看报告（.pixelgate/report/index.html）里 changed 的图，并排、滑块、红色标出变化的像素'],
