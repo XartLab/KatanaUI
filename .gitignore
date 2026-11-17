@@ -4,3 +4,10 @@ dist/
 r/
 test-results/
 playwright-report/
+# pixelgate：基线要提交，这次运行的截图、差异图与报告不提交
+/packages/react/.pixelgate/current/
+/packages/react/.pixelgate/diff/
+/packages/react/.pixelgate/report/
+/packages/react/.pixelgate/hidpi/current/
+/packages/react/.pixelgate/hidpi/diff/
+/packages/react/.pixelgate/hidpi/report/

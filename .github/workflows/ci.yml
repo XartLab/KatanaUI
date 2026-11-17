@@ -29,3 +29,36 @@ jobs:
       - run: pnpm test
       - run: pnpm typecheck
       - run: pnpm build:site
+
+  # 视觉回归（pixelgate，自研）：只在 PR 上跑——main 上的内容已经过 PR 这一关，不重复占 runner（本文件其余 job 两边都跑，这条是有意的例外）。
+  # CI 不写基线、缺基线算失败（--ci）；基线是 Linux 渲染的，提交在 packages/react/.pixelgate/baseline/。
+  visual:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 26
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec playwright install --with-deps chromium
+        working-directory: packages/react
+      - run: pnpm vr --ci
+        working-directory: packages/react
+      # 不管过没过都把摘要写进 job summary；没有报告（比如配置错误）就不写。
+      - if: always()
+        run: pnpm vr:summary >> "$GITHUB_STEP_SUMMARY" || true
+        working-directory: packages/react
+      # 失败时上传报告与这次的截图（接受时用：gh run download 之后 pnpm vr:approve --from <目录>）；基线不用传，仓库里就有。
+      - if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: pixelgate
+          path: |
+            packages/react/.pixelgate/
+            !packages/react/.pixelgate/baseline/
+            !packages/react/.pixelgate/hidpi/baseline/
+          include-hidden-files: true
+          if-no-files-found: ignore

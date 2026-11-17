@@ -148,7 +148,7 @@ import { EquityCurve } from '@katana-ui/react/quant'`}
           ],
           [
             '不进视觉回归的页',
-            'agent-avatar、arcade-pixel、border-beam、grid-loader、matrix-orb、motion-loader、pixel-flow-field、ransom-note、shine-text、wave-text：动画由 JS 逐帧驱动，CSS 关不掉，整页都是这个动画，没有稳定的一块可遮；market-heatmap：分块布局随量到容器尺寸的时机变，两次运行不一致；它们的行为仍由 e2e 管',
+            'agent-avatar、arcade-pixel、aurora-curtain、border-beam、grid-loader、matrix-orb、motion-loader、pixel-flow-field、ransom-note、shine-text、wave-text：动画由 JS 逐帧驱动，CSS 关不掉，整页都是这个动画，没有稳定的一块可遮；ai-status：循环动画停的帧不固定，两次运行差几十个像素；market-heatmap：分块布局随量到容器尺寸的时机变，两次运行不一致；它们的行为仍由 e2e 管',
           ],
         ]}
       />

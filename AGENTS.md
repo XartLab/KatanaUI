@@ -30,6 +30,8 @@ KatanaUI 是设计系统的**源头仓库**（2026-11-14 用户定，#2）：tok
 
 **敏捷节奏（2026-11-15 用户定：先出效果，测试以后再说）**：做组件时每个 PR 只跑 `pnpm typecheck`、`pnpm build:site`（改了件就 `pnpm ds:build` 并提交生成物）和改到的那一个文档站 e2e 文件的 dpr-1，先截图给用户看样式；全量 `pnpm test` 与全量 e2e 攒到用户点头的几件合完后集中跑一次，红了再修。用户原话：「每次全量测试太慢了，我们先敏捷开发，先出来看效果再说测试的问题」。
 
+**视觉回归（pixelgate，自研）**：改了视觉相关的件，交付前在 `packages/react` 跑 `pnpm vr:fast`（只截受影响的页，约半分钟），在汇报里附 changed 列表与 report 路径（`.pixelgate/report/index.html`）；合并前、或改了令牌 / theme 样式 / lib / primitives 这类共用层，跑全量 `pnpm vr`。预期的变化用 `pnpm vr:approve` 收为新基线并随代码提交，规则写在文档站「开发接入 → 视觉回归」。
+
 改 token：改 `packages/tokens/src/tokens.json`（弹簧改 `motion.tokens.json`），跑 `pnpm tokens:sync`；改了文档站的页数据或件，跑 `pnpm ds:build`。生成文件不手改。
 
 ## 发版

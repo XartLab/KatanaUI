@@ -14,7 +14,21 @@
     "erasableSyntaxOnly": true,
     "verbatimModuleSyntax": true
   },
-  "include": ["src", "gallery", "ds", "scripts", "e2e", "vite.config.ts", "playwright.config.ts", "happo.config.ts"],
+  "include": [
+    "src",
+    "gallery",
+    "ds",
+    "scripts",
+    "e2e",
+    "vite.config.ts",
+    "playwright.config.ts",
+    "happo.config.ts",
+    "pixelgate.config.ts",
+    "pixelgate.hidpi.config.ts",
+    "pixelgate.shared.ts",
+    "pixelgate.vite.config.ts",
+    "pixelgate.fast.config.ts"
+  ],
   "exclude": [
     "src/**/*.test.ts",
     "src/**/*.test.tsx",
