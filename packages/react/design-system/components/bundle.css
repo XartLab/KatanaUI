@@ -13233,6 +13233,8 @@ button.k-sm-head:focus-visible {
 }
 
 .k-sx-meta {
+  font-family: var(--font-dot);
+  -webkit-font-smoothing: none;
   padding-bottom: 6px;
 }
 

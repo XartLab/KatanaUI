@@ -48,6 +48,10 @@
 }
 .k-sx-meta {
   padding-bottom: 6px;
+  /* 元信息行（名 · RUN 编号 · 区间 · 币种）是仪器档案的铭牌，用点阵字（Doto，汉字落到随包的方舟像素子集；精密仪器语言 #7）。
+     2026-11-17 数据字照 TradingView 换无衬线时它被一并换掉，这里改回；读数、事件文字、标注照旧用 --font-num。 */
+  font-family: var(--font-dot);
+  -webkit-font-smoothing: none;
 }
 .k-sx-span {
   color: var(--k-content-secondary-foreground);

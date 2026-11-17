@@ -26,7 +26,11 @@ const blocks: GuidanceMap = {
   },
   'series-explorer': {
     aliases: ['Time series explorer', 'Metric explorer', 'Chart with range selector', 'Performance chart'],
-    use: ['一组指标各有一条时间序列，点开一个看细节。', '要在同一窗口里切区间、对比上一期、对账。'],
+    use: [
+      '一组指标各有一条时间序列，点开一个看细节。',
+      '要在同一窗口里切区间、对比上一期、对账。',
+      '标题下的元信息行（名 · RUN 编号 · 区间 · 币种）用点阵字 --font-dot（Doto + 方舟像素子集），像仪器铭牌；读数、事件、标注用 --font-num（2026-11-18）。',
+    ],
     avoid: ['只看一条线，用 equity-curve。', '要在时间窗上画选区，用 brush-chart。'],
     a11y: [
       '图上是 role=slider，aria-valuetext 念「日期 值」，读屏名取自 labels.chart。',
