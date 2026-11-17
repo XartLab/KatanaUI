@@ -6,9 +6,9 @@ import type { ComponentApi } from '@a2ui/web_core'
 import { CommonSchemas } from '@a2ui/web_core/v1_0'
 import { useEffect, useMemo, useState } from 'react'
 import { z } from 'zod'
-import { HypothesisLedger, type Hypothesis } from '../../blocks/index.ts'
-import { hypothesisLabels } from '../labels.ts'
-import { Cell, SourceClicks, actionSchema, httpsUrl, isoToMs, parseList, weightSchema } from '../support.tsx'
+import { HypothesisLedger, type Hypothesis, type HypothesisLedgerLabels } from '../../blocks/index.ts'
+import { text } from '../blocks-support.ts'
+import { Cell, SourceClicks, actionSchema, fill, httpsUrl, isoToMs, parseList, weightSchema } from '../support.tsx'
 
 const LAYERS = ['strategy', 'credit', 'fiscal', 'crossborder', 'industry', 'profit', 'allocation', 'haven'] as const
 
@@ -44,6 +44,95 @@ const hypothesisSchema = z
 
 type Row = z.infer<typeof hypothesisSchema>
 
+const labelsSchema = z
+  .object({
+    ledger: text('Accessible name of the whole ledger, for example "Hypotheses".'),
+    views: text('Accessible name of the view switch.'),
+    viewLedger: text('View tab: the ledger.'),
+    viewWatch: text('View tab: the watch table.'),
+    statusFilter: text('Accessible name of the status filter group.'),
+    layerFilter: text('Accessible name of the layer filter group.'),
+    clearLayers: text('Button that clears the layer filter.'),
+    all: text('The "all" choice of a filter.'),
+    layerStrategy: text('Layer name: strategy.'),
+    layerCredit: text('Layer name: credit.'),
+    layerFiscal: text('Layer name: fiscal.'),
+    layerCrossborder: text('Layer name: cross-border.'),
+    layerIndustry: text('Layer name: industry.'),
+    layerProfit: text('Layer name: profit.'),
+    layerAllocation: text('Layer name: allocation.'),
+    layerHaven: text('Layer name: haven.'),
+    statusPending: text('Status word: pending.'),
+    statusSupported: text('Status word: supported.'),
+    statusRefuted: text('Status word: refuted.'),
+    statusExpired: text('Status word: expired.'),
+    kindScholar: text('Evidence kind: scholar.'),
+    kindPolicy: text('Evidence kind: policy.'),
+    kindData: text('Evidence kind: data.'),
+    kindFiling: text('Evidence kind: filing.'),
+    stanceSupport: text('Evidence stance: supports the claim.'),
+    stanceOppose: text('Evidence stance: opposes the claim.'),
+    failure: text('Heading of the failure condition, for example "Fails if".'),
+    evidence: text('Heading of the evidence list.'),
+    assets: text('Heading of the asset list.'),
+    noEvidence: text('Text when a claim has no evidence yet.'),
+    tally: text('Evidence count; {support} and {oppose}, for example "{support} for · {oppose} against".'),
+    dueToday: text('Deadline text when it is today.'),
+    deadlineIn: text('Days left; {days}, for example "{days} d left".'),
+    overdueBy: text('Days overdue; {days}, for example "{days} d overdue".'),
+    empty: text('Text when there are no hypotheses.'),
+    watchLayer: text('Watch table column: layer.'),
+    watchEvidence: text('Watch table column: key evidence.'),
+    watchConfusion: text('Watch table column: easily confused with.'),
+  })
+  .strict()
+
+type LedgerText = z.infer<typeof labelsSchema>
+
+/** 把智能体写的文案模板拼成件要的 labels：函数在这里造，智能体只传字。 */
+function hypothesisLabels(t: LedgerText): HypothesisLedgerLabels {
+  return {
+    ledger: t.ledger,
+    views: t.views,
+    viewLedger: t.viewLedger,
+    viewWatch: t.viewWatch,
+    statusFilter: t.statusFilter,
+    layerFilter: t.layerFilter,
+    clearLayers: t.clearLayers,
+    all: t.all,
+    layer: {
+      strategy: t.layerStrategy,
+      credit: t.layerCredit,
+      fiscal: t.layerFiscal,
+      crossborder: t.layerCrossborder,
+      industry: t.layerIndustry,
+      profit: t.layerProfit,
+      allocation: t.layerAllocation,
+      haven: t.layerHaven,
+    },
+    status: {
+      pending: t.statusPending,
+      supported: t.statusSupported,
+      refuted: t.statusRefuted,
+      expired: t.statusExpired,
+    },
+    kind: { scholar: t.kindScholar, policy: t.kindPolicy, data: t.kindData, filing: t.kindFiling },
+    stance: { support: t.stanceSupport, oppose: t.stanceOppose },
+    failure: t.failure,
+    evidence: t.evidence,
+    assets: t.assets,
+    noEvidence: t.noEvidence,
+    tally: (support, oppose) => fill(t.tally, { support, oppose }),
+    deadlineIn: (days) => (days === 0 ? t.dueToday : fill(t.deadlineIn, { days })),
+    overdueBy: (days) => fill(t.overdueBy, { days }),
+    date: (time) => new Date(time).toISOString().slice(0, 10),
+    empty: t.empty,
+    watchLayer: t.watchLayer,
+    watchEvidence: t.watchEvidence,
+    watchConfusion: t.watchConfusion,
+  }
+}
+
 export const KatanaHypothesisLedgerApi = {
   name: 'KatanaHypothesisLedger',
   schema: z
@@ -56,12 +145,9 @@ export const KatanaHypothesisLedgerApi = {
       now: CommonSchemas.DynamicString.describe(
         'The current time, ISO 8601, used for deadlines. Omit to use the clock of the device.',
       ).optional(),
-      labels: z
-        .record(z.string(), z.string())
-        .describe(
-          'Overrides for the built-in English text, keyed by: ledger, views, statusFilter, layerFilter, clearLayers, all, layerStrategy, layerCredit, layerFiscal, layerCrossborder, layerIndustry, layerProfit, layerAllocation, layerHaven, statusPending, statusSupported, statusRefuted, statusExpired, kindScholar, kindPolicy, kindData, kindFiling, stanceSupport, stanceOppose, failure, evidence, assets, noEvidence, tally ({support}, {oppose}), dueToday, deadlineIn ({days}), overdueBy ({days}), empty. Write them in the language of the user.',
-        )
-        .optional(),
+      labels: labelsSchema.describe(
+        'All visible and screen-reader text of the ledger, written in the language of the user. Placeholders in braces are filled in by the component.',
+      ),
       onOpenSource: actionSchema(
         'Dispatched when the user opens an evidence link. metadata.extensions.katanaSource carries {itemId, label, href}; the host decides whether and how to open the https link.',
       ).optional(),
@@ -111,7 +197,7 @@ export const KatanaHypothesisLedger = createComponentImplementation(KatanaHypoth
     }))
     return { items, hrefs }
   }, [props.items])
-  const labels = useMemo(() => hypothesisLabels(props.labels), [props.labels])
+  const labels = useMemo(() => hypothesisLabels(props.labels as LedgerText), [props.labels])
   return (
     <Cell weight={props.weight}>
       <SourceClicks

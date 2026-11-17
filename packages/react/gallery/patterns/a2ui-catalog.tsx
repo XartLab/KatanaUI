@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: MIT
 import catalog from '../../public/a2ui/katana/v1.json'
 import { A2uiCatalogUsage } from '../usage/A2uiCatalogUsage'
+import { pageById } from '../registry'
 import type { Pattern } from './types'
 
-// 已登记组件对应的 KatanaUI 件（页 id 链到组件页）；表里的「可绑定」与「动作」读目录 JSON，不手写，目录变了表跟着变。
+// 名字对不上的才写在这里（如 TextField 对 Input + Field）；其余按 KatanaXxx → Xxx 推出，表的行来自目录 JSON，加件不用改这里。
 const PARTS: Readonly<Record<string, readonly [part: string, page: string]>> = {
   KatanaButton: ['Button', 'button'],
   KatanaTextField: ['Input + Field', 'input'],
@@ -20,6 +21,44 @@ const PARTS: Readonly<Record<string, readonly [part: string, page: string]>> = {
   KatanaAiStatus: ['AiStatus', 'ai-status'],
   KatanaWebSearch: ['WebSearch', 'web-search'],
   KatanaAlert: ['Alert', 'alert'],
+  KatanaDataGrid: ['DataGrid', 'data-grid'],
+  KatanaNewsFeed: ['NewsFeed', 'news-feed'],
+  KatanaNewsReader: ['NewsReader', 'news-reader'],
+  KatanaEventTimeline: ['EventTimeline', 'event-timeline'],
+  KatanaStatusBar: ['StatusBar', 'status-bar'],
+  KatanaSystemMonitor: ['SystemMonitor', 'system-monitor'],
+  KatanaEmptyState: ['EmptyState', 'empty-state'],
+  KatanaTaskList: ['TaskList', 'task-list'],
+  KatanaStepPlayer: ['StepPlayer', 'step-player'],
+  KatanaConsensusBlock: ['ConsensusBlock', 'consensus-block'],
+  KatanaLimitLadder: ['LimitLadder', 'limit-ladder'],
+  KatanaTechnicalRating: ['TechnicalRating', 'technical-rating'],
+  KatanaWatchlist: ['Watchlist', 'watchlist'],
+  KatanaQuoteTable: ['QuoteTable', 'quote-table'],
+  KatanaAccordion: ['Accordion', 'accordion'],
+  KatanaPanelFrame: ['PanelFrame', 'panel-frame'],
+  KatanaSplitter: ['Splitter', 'splitter'],
+  KatanaCheckbox: ['Checkbox', 'checkbox'],
+  KatanaToggleGroup: ['ToggleGroup', 'toggle-group'],
+  KatanaMultiSelect: ['MultiSelect', 'multi-select'],
+  KatanaChipGroup: ['ChipGroup', 'chip-group'],
+  KatanaNumberInput: ['NumberInput', 'number-input'],
+  KatanaDecimalField: ['DecimalField', 'decimal-field'],
+  KatanaDateRangePicker: ['DateRangePicker', 'date-range-picker'],
+  KatanaDurationPicker: ['DurationPicker', 'duration-picker'],
+  KatanaCombobox: ['Combobox', 'combobox'],
+  KatanaPasswordInput: ['PasswordInput', 'password-input'],
+  KatanaToast: ['Toast', 'toast'],
+  KatanaCodeBlock: ['CodeBlock', 'code-block'],
+  KatanaJsonViewer: ['JsonViewer', 'json-viewer'],
+  KatanaSymbolMark: ['SymbolMark', 'symbol-mark'],
+  KatanaCommand: ['Command', 'command'],
+}
+
+/** KatanaEquityCurve → ['EquityCurve', 'equity-curve']：组件页 id 是件名的 kebab 写法。 */
+const derivePart = (name: string): readonly [string, string] => {
+  const part = name.slice('Katana'.length)
+  return [part, part.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase()]
 }
 
 type Prop = Record<string, unknown>
@@ -55,21 +94,22 @@ function Reference() {
           </tr>
         </thead>
         <tbody>
-          {Object.entries(PARTS).map(([name, [part, page]]) => {
-            const props = components[name]!.properties
-            return (
-              <tr key={name}>
-                <td>
-                  <code>{name}</code>
-                </td>
-                <td className="gal-fd-usage">
-                  <a href={`#/${page}`}>{part}</a>
-                </td>
-                <td className="gal-fd-usage">{bindable(props).join('、') || '—'}</td>
-                <td className="gal-fd-usage">{actions(props).join('、') || '—'}</td>
-              </tr>
-            )
-          })}
+          {Object.keys(components)
+            .filter((name) => name.startsWith('Katana'))
+            .map((name) => {
+              const [part, page] = PARTS[name] ?? derivePart(name)
+              const props = components[name]!.properties
+              return (
+                <tr key={name}>
+                  <td>
+                    <code>{name}</code>
+                  </td>
+                  <td className="gal-fd-usage">{pageById(page) ? <a href={`#/${page}`}>{part}</a> : part}</td>
+                  <td className="gal-fd-usage">{bindable(props).join('、') || '—'}</td>
+                  <td className="gal-fd-usage">{actions(props).join('、') || '—'}</td>
+                </tr>
+              )
+            })}
           <tr>
             <td>
               <code>{layout.join('、')}</code>

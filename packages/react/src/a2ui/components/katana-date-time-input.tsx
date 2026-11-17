@@ -5,8 +5,7 @@ import type { ComponentApi } from '@a2ui/web_core'
 import { CommonSchemas } from '@a2ui/web_core/v1_0'
 import { z } from 'zod'
 import { DateTimeInput, Field, FieldLabel } from '../../index.ts'
-import { dateTimeLabels } from '../labels.ts'
-import { Cell, joinIso, splitIso, weightSchema } from '../support.tsx'
+import { Cell, fill, joinIso, splitIso, weightSchema } from '../support.tsx'
 
 export const KatanaDateTimeInputApi = {
   name: 'KatanaDateTimeInput',
@@ -25,11 +24,18 @@ export const KatanaDateTimeInputApi = {
         .describe('Locale of the segments and the calendar. Both write year-month-day.')
         .optional(),
       labels: z
-        .record(z.string(), z.string())
+        .object({
+          date: z.string().describe('Accessible name of the date segments. May contain {label}, the field label.'),
+          pickDate: z.string().describe('Accessible name of the calendar button. May contain {label}.'),
+          calendar: z.string().describe('Accessible name of the calendar popup. May contain {label}.'),
+          time: z.string().describe('Accessible name of the time segments. May contain {label}.'),
+          previousMonth: z.string().describe('Accessible name of the previous-month button.'),
+          nextMonth: z.string().describe('Accessible name of the next-month button.'),
+        })
+        .strict()
         .describe(
-          'Overrides for the accessible names, keyed by: date, pickDate, calendar, time (each may contain {label}), previousMonth, nextMonth.',
-        )
-        .optional(),
+          'The accessible names, all required: the component carries no wording of its own. Write them in the language of the user.',
+        ),
       checks: CommonSchemas.Checkable.shape.checks,
       weight: weightSchema,
     })
@@ -40,6 +46,7 @@ export const KatanaDateTimeInput = createComponentImplementation(KatanaDateTimeI
   const label = props.label ?? ''
   const withTime = props.enableTime === true
   const { date, time } = splitIso(props.value)
+  const text = props.labels
   return (
     <Cell weight={props.weight}>
       <Field>
@@ -53,7 +60,14 @@ export const KatanaDateTimeInput = createComponentImplementation(KatanaDateTimeI
           min={props.min}
           max={props.max}
           locale={props.locale ?? 'en-CA'}
-          labels={dateTimeLabels(props.labels)}
+          labels={{
+            date: (name) => fill(text.date, { label: name }),
+            pickDate: (name) => fill(text.pickDate, { label: name }),
+            calendar: (name) => fill(text.calendar, { label: name }),
+            time: (name) => fill(text.time, { label: name }),
+            previousMonth: text.previousMonth,
+            nextMonth: text.nextMonth,
+          }}
         />
       </Field>
     </Cell>

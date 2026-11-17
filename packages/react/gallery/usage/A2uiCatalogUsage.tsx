@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 import { Suspense, lazy, useState } from 'react'
 import { CodeBlock } from '../../src/index'
-import { MESSAGES, MORE_MESSAGES } from '../a2ui-messages'
+import { BLOCKS_MESSAGES, CHART_MESSAGES, MESSAGES, MORE_MESSAGES, READOUT_MESSAGES } from '../a2ui-messages'
 import type { Received } from '../a2ui-host'
 
 // 渲染器与 Lit 都在懒加载的块里：文档站首屏不背它，Node 里的单测也不会载入它。
@@ -67,6 +67,84 @@ export function A2uiCatalogUsage() {
           <div data-testid="a2ui-more" style={{ minWidth: 0 }}>
             <Suspense fallback={null}>
               <HostSurface messages={MORE_MESSAGES} onAction={setReceived} />
+            </Suspense>
+          </div>
+        </div>
+      </details>
+      <details>
+        <summary>Readouts: lights, readings, meters, quotes, ratings, key stats, peers, order flow and regimes</summary>
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))',
+            gap: 16,
+            marginTop: 12,
+          }}
+        >
+          <div style={{ minWidth: 0 }}>
+            <CodeBlock
+              code={JSON.stringify(READOUT_MESSAGES, null, 2)}
+              language="json"
+              filename="readout-messages.json"
+              copyLabel="Copy messages"
+              copiedLabel="Copied"
+            />
+          </div>
+          <div data-testid="a2ui-readouts" style={{ minWidth: 0 }}>
+            <Suspense fallback={null}>
+              <HostSurface messages={READOUT_MESSAGES} onAction={setReceived} />
+            </Suspense>
+          </div>
+        </div>
+      </details>
+      <details>
+        <summary>Charts: equity curve, attribution, uptime and treemap, with the chart tools and actions</summary>
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))',
+            gap: 16,
+            marginTop: 12,
+          }}
+        >
+          <div style={{ minWidth: 0, maxHeight: 560, overflow: 'auto' }}>
+            <CodeBlock
+              code={JSON.stringify(CHART_MESSAGES, null, 2)}
+              language="json"
+              filename="chart-messages.json"
+              copyLabel="Copy messages"
+              copiedLabel="Copied"
+            />
+          </div>
+          <div data-testid="a2ui-charts" style={{ minWidth: 0 }}>
+            <Suspense fallback={null}>
+              <HostSurface messages={CHART_MESSAGES} onAction={setReceived} />
+            </Suspense>
+          </div>
+        </div>
+      </details>
+      <details>
+        <summary>Blocks and layout: a panel frame around a reading, a data grid and a task list</summary>
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))',
+            gap: 16,
+            marginTop: 12,
+          }}
+        >
+          <div style={{ minWidth: 0 }}>
+            <CodeBlock
+              code={JSON.stringify(BLOCKS_MESSAGES, null, 2)}
+              language="json"
+              filename="blocks-messages.json"
+              copyLabel="Copy messages"
+              copiedLabel="Copied"
+            />
+          </div>
+          <div data-testid="a2ui-blocks" style={{ minWidth: 0 }}>
+            <Suspense fallback={null}>
+              <HostSurface messages={BLOCKS_MESSAGES} onAction={setReceived} />
             </Suspense>
           </div>
         </div>

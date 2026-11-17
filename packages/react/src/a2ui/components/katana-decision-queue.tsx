@@ -6,9 +6,9 @@ import type { ComponentApi } from '@a2ui/web_core'
 import { CommonSchemas } from '@a2ui/web_core/v1_0'
 import { useEffect, useMemo, useState } from 'react'
 import { z } from 'zod'
-import { DecisionQueue, type DecisionItem } from '../../blocks/index.ts'
-import { decisionLabels } from '../labels.ts'
-import { Cell, SourceClicks, actionSchema, httpsUrl, isoToMs, parseList, weightSchema } from '../support.tsx'
+import { DecisionQueue, type DecisionItem, type DecisionQueueLabels } from '../../blocks/index.ts'
+import { text } from '../blocks-support.ts'
+import { Cell, SourceClicks, actionSchema, fill, httpsUrl, isoToMs, parseList, weightSchema } from '../support.tsx'
 
 const itemSchema = z
   .object({
@@ -39,6 +39,90 @@ const itemSchema = z
 
 type Item = z.infer<typeof itemSchema>
 
+const labelsSchema = z
+  .object({
+    queue: text('Accessible name of the whole queue, for example "Suggestions".'),
+    filters: text('Accessible name of the status filter group.'),
+    filterPending: text('Filter tab: pending suggestions.'),
+    filterAccepted: text('Filter tab: accepted suggestions.'),
+    filterRejected: text('Filter tab: rejected suggestions.'),
+    filterExpired: text('Filter tab: expired suggestions.'),
+    accept: text('The accept button.'),
+    reject: text('The reject button.'),
+    snooze: text('The postpone button.'),
+    acceptHint: text('Hint that accepting needs a press and hold, for example "Hold to confirm".'),
+    acceptedButton: text('Text of the accept button once held to the end.'),
+    snoozed: text('Text shown after a suggestion was postponed.'),
+    statusPending: text('Status word: pending.'),
+    statusSnoozed: text('Status word: postponed.'),
+    statusAccepted: text('Status word: accepted.'),
+    statusRejected: text('Status word: rejected.'),
+    statusExpired: text('Status word: expired.'),
+    confidence: text('Confidence line; {percent} is the number 0 to 100, for example "Confidence {percent}%".'),
+    basis: text('Heading of the basis line.'),
+    sources: text('Heading of the source list.'),
+    details: text('Label of the expand toggle.'),
+    createdAgo: text('When it was made; {ago} is the relative time, for example "Created {ago}".'),
+    expiresIn: text('Countdown; {time} is minutes and seconds, for example "{time} left".'),
+    expired: text('Text of the countdown once it ran out.'),
+    resolvedBy: text('Who resolved it and when; {by} and {ago}, for example "{by} · {ago}".'),
+    secondsAgo: text('Relative time under a minute; {n} seconds, for example "{n}s ago".'),
+    minutesAgo: text('Relative time under an hour; {n} minutes, for example "{n} min ago".'),
+    hoursAgo: text('Relative time of an hour or more; {n} hours, for example "{n} h ago".'),
+    emptyPending: text('Empty text of the pending tab.'),
+    emptyAccepted: text('Empty text of the accepted tab.'),
+    emptyRejected: text('Empty text of the rejected tab.'),
+    emptyExpired: text('Empty text of the expired tab.'),
+  })
+  .strict()
+
+type QueueText = z.infer<typeof labelsSchema>
+
+/** 把智能体写的文案模板拼成件要的 labels：函数在这里造，智能体只传字。 */
+function decisionLabels(t: QueueText): DecisionQueueLabels {
+  const span = (seconds: number) =>
+    seconds < 60
+      ? fill(t.secondsAgo, { n: seconds })
+      : seconds < 3600
+        ? fill(t.minutesAgo, { n: Math.floor(seconds / 60) })
+        : fill(t.hoursAgo, { n: Math.floor(seconds / 3600) })
+  return {
+    queue: t.queue,
+    filters: t.filters,
+    filter: {
+      pending: t.filterPending,
+      accepted: t.filterAccepted,
+      rejected: t.filterRejected,
+      expired: t.filterExpired,
+    },
+    accept: t.accept,
+    reject: t.reject,
+    snooze: t.snooze,
+    acceptHint: t.acceptHint,
+    accepted: t.acceptedButton,
+    snoozed: t.snoozed,
+    status: {
+      pending: t.statusPending,
+      snoozed: t.statusSnoozed,
+      accepted: t.statusAccepted,
+      rejected: t.statusRejected,
+      expired: t.statusExpired,
+    },
+    confidence: (percent) => fill(t.confidence, { percent }),
+    basis: t.basis,
+    sources: t.sources,
+    details: t.details,
+    createdAgo: (seconds) => fill(t.createdAgo, { ago: span(seconds) }),
+    expiresIn: (seconds) =>
+      fill(t.expiresIn, { time: `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}` }),
+    expired: t.expired,
+    resolvedBy: (by, ago) => fill(t.resolvedBy, { by, ago }),
+    ago: span,
+    absolute: (time) => new Date(time).toISOString().replace('T', ' ').slice(0, 16) + ' UTC',
+    empty: { pending: t.emptyPending, accepted: t.emptyAccepted, rejected: t.emptyRejected, expired: t.emptyExpired },
+  }
+}
+
 export const KatanaDecisionQueueApi = {
   name: 'KatanaDecisionQueue',
   schema: z
@@ -51,12 +135,9 @@ export const KatanaDecisionQueueApi = {
       now: CommonSchemas.DynamicString.describe(
         'The current time, ISO 8601, used for countdowns and expiry. Omit to use the clock of the device.',
       ).optional(),
-      labels: z
-        .record(z.string(), z.string())
-        .describe(
-          'Overrides for the built-in English text, keyed by: queue, filters, filterPending, filterAccepted, filterRejected, filterExpired, accept, reject, snooze, acceptHint, acceptedButton, snoozed, statusPending, statusSnoozed, statusAccepted, statusRejected, statusExpired, confidence ({percent}), basis, sources, details, createdAgo ({ago}), expiresIn ({time}), resolvedBy ({by}, {ago}), secondsAgo/minutesAgo/hoursAgo ({n}), emptyPending, emptyAccepted, emptyRejected, emptyExpired. Write them in the language of the user.',
-        )
-        .optional(),
+      labels: labelsSchema.describe(
+        'All visible and screen-reader text of the queue, written in the language of the user. Placeholders in braces are filled in by the component.',
+      ),
       onAccept: actionSchema(
         'Dispatched when the user holds the accept button to the end. The suggestion is in metadata.extensions.katanaDecision.id. Accepting never places an order by itself.',
       ).optional(),
@@ -120,7 +201,7 @@ export const KatanaDecisionQueue = createComponentImplementation(KatanaDecisionQ
   const fixed = isoToMs(props.now)
   const now = useNow(fixed)
   const { items, hrefs } = useMemo(() => toItems(props.items, fixed ?? Date.now()), [props.items, fixed])
-  const labels = useMemo(() => decisionLabels(props.labels), [props.labels])
+  const labels = useMemo(() => decisionLabels(props.labels as QueueText), [props.labels])
   const decide = (run: typeof props.onAccept) => (item: DecisionItem) =>
     void run?.({ metadata: { extensions: { katanaDecision: { id: item.id } } } })
   return (

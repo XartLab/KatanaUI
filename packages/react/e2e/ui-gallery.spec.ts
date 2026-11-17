@@ -5820,8 +5820,74 @@ test('A2UI 目录：智能体的消息渲染成 KatanaUI 的件，点「接受�
   await surface.getByRole('button', { name: 'Accept' }).click()
   await expect(host).toContainText('Host received suggestion.accept')
   await expect(host).toContainText('"symbol":"600001"')
-  // 已登记组件表读目录 JSON：十五个 Katana 件一行一个，另有一行排版件。
+  // 已登记组件表读目录 JSON：每个 Katana 件一行，另有一行排版件；行数跟目录 JSON 对齐（表由目录生成，不能漏件）。
   const table = page.getByTestId('a2ui-components')
-  await expect(table.locator('tbody tr')).toHaveCount(16)
+  const katanaCount = Object.keys(
+    (
+      JSON.parse(readFileSync(new URL('../public/a2ui/katana/v1.json', import.meta.url), 'utf8')) as {
+        components: Record<string, unknown>
+      }
+    ).components,
+  ).filter((name) => name.startsWith('Katana')).length
+  await expect(table.locator('tbody tr')).toHaveCount(katanaCount + 1)
+  await expect(table.locator('tbody tr', { hasText: 'KatanaDataGrid' })).toContainText('onRowClick')
   await expect(table.locator('tbody tr', { hasText: 'KatanaDecisionQueue' })).toContainText('onAccept')
+})
+
+test('A2UI 目录：积木与布局 surface 渲染出面板壳、数据表与任务清单，点一行宿主收到 Action', async ({ page }) => {
+  await page.goto('/#/a2ui-catalog')
+  await page.locator('[data-gallery="a2ui-catalog"]').waitFor()
+  await page.getByText('Blocks and layout: a panel frame', { exact: false }).click()
+  const blocks = page.getByTestId('a2ui-blocks')
+  await expect(blocks.getByRole('heading', { name: '今日概览' })).toBeVisible()
+  await expect(blocks.locator('[data-slot="metric-value"]')).toContainText('+1,240.50')
+  const grid = blocks.getByRole('grid', { name: /持仓/ })
+  await expect(grid).toBeVisible()
+  await expect(grid.getByText('BTCUSDT')).toBeVisible()
+  await expect(blocks.getByRole('checkbox')).toHaveCount(3)
+  await blocks.getByRole('checkbox', { name: '读完 ACME 的年报' }).click()
+  await expect(page.getByTestId('a2ui-host')).toContainText('Host received task.toggle')
+  await grid.getByText('ETHUSDT').click()
+  await expect(page.getByTestId('a2ui-host')).toContainText('Host received row.open')
+})
+
+test('A2UI 目录：读数与状态 surface 渲染出灯、读数、仪表、同业与状态带，点同业卡宿主收到 Action', async ({ page }) => {
+  await page.goto('/#/a2ui-catalog')
+  await page.locator('[data-gallery="a2ui-catalog"]').waitFor()
+  await page.getByText('Readouts: lights, readings', { exact: false }).click()
+  const readouts = page.getByTestId('a2ui-readouts')
+  await expect(readouts.getByRole('img', { name: 'Market feed: connected' })).toBeVisible()
+  await expect(readouts.getByText('NET ASSET')).toBeVisible()
+  await expect(readouts.getByRole('meter', { name: 'Exposure' })).toBeVisible()
+  await expect(readouts.locator('[data-slot="rating-text"]')).toContainText('Buy')
+  await expect(readouts.locator('[data-slot="key-stats"]')).toContainText('MEGA CAP')
+  await expect(readouts.getByRole('group', { name: 'Order flow' })).toContainText('N/A')
+  // 点业绩条的一格：选中态写回数据模型，宿主收到 range.select。
+  await readouts.locator('[data-slot="performance-cell"][data-key="1y"]').click()
+  await expect(readouts.locator('[data-slot="performance-cell"][data-key="1y"]')).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  )
+  await expect(page.getByTestId('a2ui-host')).toContainText('Host received range.select')
+  await readouts.locator('[data-slot="peer-card"][data-key="p2"] .k-peers-main').click()
+  await expect(page.getByTestId('a2ui-host')).toContainText('Host received peer.select')
+  // 点状态带图例：高亮一个状态。
+  const pick = readouts.locator('.k-regime-legend button').first()
+  await pick.click()
+  await expect(pick).toHaveAttribute('aria-pressed', 'true')
+})
+
+test('A2UI 目录：图表 surface 渲染权益曲线、归因、可用率与矩形树图，点格子宿主收到 Action', async ({ page }) => {
+  await page.goto('/#/a2ui-catalog')
+  await page.locator('[data-gallery="a2ui-catalog"]').waitFor()
+  await page.getByText('Charts: equity curve', { exact: false }).click()
+  const charts = page.getByTestId('a2ui-charts')
+  await expect(charts.locator('[data-slot="equity-curve"]')).toBeVisible()
+  await expect(charts.getByRole('group', { name: 'Chart tools' }).first()).toBeVisible()
+  await expect(charts.getByText('Account equity')).toBeVisible()
+  // 点可用率条的一格、矩形树图的一格：宿主收到 Action。
+  await charts.getByLabel('Nov 5: outage, 2 gaps').first().click()
+  await expect(page.getByTestId('a2ui-host')).toContainText('Host received uptime.select')
+  await charts.getByRole('button', { name: 'ACME +2.10%' }).click()
+  await expect(page.getByTestId('a2ui-host')).toContainText('Host received treemap.select')
 })

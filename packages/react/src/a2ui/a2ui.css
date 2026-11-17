@@ -58,3 +58,36 @@
   --a2ui-tabs-header-color-active: var(--ink-100);
   --a2ui-divider-spacing: var(--space-3);
 }
+
+/* 进度条加一句解释里的档位词（KatanaGaugeBar）：一枚中性小标，字与线都走 token。 */
+.k-a2ui-level {
+  padding: 0 var(--space-1);
+  border: 1px solid var(--line-100);
+  border-radius: var(--radius-control);
+  color: var(--ink-200);
+  font: var(--text-caption) var(--font-sans-small);
+}
+
+/* 积木与布局件的小样式：子组件纵向排开、面板工具条横向排开，间距走 token。 */
+.k-a2ui-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-width: 0;
+}
+.k-a2ui-panel-tools {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+}
+.k-a2ui-split {
+  display: grid;
+  min-width: 0;
+  min-height: 0;
+}
+.k-a2ui-split > * {
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+}
