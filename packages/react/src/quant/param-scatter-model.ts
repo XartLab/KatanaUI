@@ -38,7 +38,8 @@ export function rampPosition(
 /** 色阶的颜色（CSS color-mix，端点是主题 token）：单色阶从暗灰到亮灰；发散色阶以中灰为中点，负侧跌色、正侧涨色，不用橙与蓝。 */
 export function rampColor(position: number, ramp: 'sequential' | 'diverging'): string {
   const t = Math.min(1, Math.max(-1, position))
-  if (ramp === 'sequential') return `color-mix(in srgb, var(--k-content-primary-foreground) ${Math.round(t * 100)}%, var(--k-content-tertiary-foreground))`
+  if (ramp === 'sequential')
+    return `color-mix(in srgb, var(--k-content-primary-foreground) ${Math.round(t * 100)}%, var(--k-content-tertiary-foreground))`
   const end = t >= 0 ? 'var(--div-pos-200)' : 'var(--div-neg-200)'
   return `color-mix(in srgb, ${end} ${Math.round(Math.abs(t) * 100)}%, var(--k-content-tertiary-foreground))`
 }

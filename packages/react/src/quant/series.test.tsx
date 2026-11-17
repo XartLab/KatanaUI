@@ -2,14 +2,7 @@
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vite-plus/test'
 import { CalendarHeatmap } from './calendar-heatmap.tsx'
-import {
-  addDays,
-  calendarGrid,
-  calendarKey,
-  calendarTone,
-  isoWeek,
-  monthGrid,
-} from './calendar-model.ts'
+import { addDays, calendarGrid, calendarKey, calendarTone, isoWeek, monthGrid } from './calendar-model.ts'
 import { BrushChart } from './brush-chart.tsx'
 import { centerWindow, clampWindow, moveWindow, resizeWindow } from '../lib/chart/brush-model.ts'
 import { HorizonChart } from './horizon-chart.tsx'
