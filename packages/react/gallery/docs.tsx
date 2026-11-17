@@ -5,6 +5,7 @@ import { CopyButton } from './CopyButton'
 import { CoveragePage } from './coverage'
 import { RENDERING_ID, RenderingPage } from './rendering'
 import { FOUNDATION_PAGES, FoundationPage, isFoundation } from './foundations'
+import { GUIDES, GUIDE_GROUPS, GuidePage, guideBySlug } from './guides'
 import { DEMOS } from './demos'
 import { resolveParts, type ResolvedPart } from './props'
 import { GROUPS, PAGES, pageById, type DocPage } from './registry'
@@ -179,6 +180,7 @@ export function Docs({ theme, onTheme }: { theme: ThemeName; onTheme: (theme: Th
   const onCoverage = id === COVERAGE_ID
   const onRendering = id === RENDERING_ID
   const onFoundation = isFoundation(id)
+  const onGuide = guideBySlug(id) !== undefined
   return (
     <div className="gal-shell" data-gallery-theme={theme}>
       <nav className="gal-nav" aria-label="组件">
@@ -215,6 +217,20 @@ export function Docs({ theme, onTheme }: { theme: ThemeName; onTheme: (theme: Th
             </section>
           )
         })}
+        {GUIDE_GROUPS.map((group) => (
+          <section key={group.id}>
+            <h2>{group.title}</h2>
+            <ul>
+              {GUIDES.filter((guide) => guide.group === group.id).map((guide) => (
+                <li key={guide.slug}>
+                  <a href={`#/${guide.slug}`} aria-current={guide.slug === id ? 'page' : undefined} title={guide.path}>
+                    {guide.title}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ))}
         <section>
           <h2>总览</h2>
           <ul>
@@ -254,6 +270,8 @@ export function Docs({ theme, onTheme }: { theme: ThemeName; onTheme: (theme: Th
             <RenderingPage />
           ) : onFoundation ? (
             <FoundationPage id={id} />
+          ) : onGuide ? (
+            <GuidePage key={id} slug={id} />
           ) : shown ? (
             <DocBody key={shown.id} page={shown} />
           ) : (

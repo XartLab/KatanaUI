@@ -99,6 +99,7 @@
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
     "happo": "7.2.3",
+    "marked": "18.2.1",
     "react": "19.3.1",
     "react-dom": "19.3.1",
     "shadcn": "4.22.2",
