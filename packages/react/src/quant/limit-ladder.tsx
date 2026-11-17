@@ -173,7 +173,8 @@ function PromoteText({ done, total, labels }: { done: number; total: number; lab
 export function LimitLadder({ levels, labels, selected = null, onSelect, rowActions, className }: LimitLadderProps) {
   const uid = useId()
   const root = useRef<HTMLDivElement>(null)
-  const sorted = [...levels].sort((a, b) => b.board - a.board)
+  // js/copying-array-methods：toSorted 替代「展开复制再 sort」。
+  const sorted = levels.toSorted((a, b) => b.board - a.board)
 
   // 上下键在行间走（roving）：焦点所在行 tabIndex=0，其余 -1；没有焦点行时选中行、再没有就第一行进 Tab 序。
   const rows = sorted.flatMap((level) => level.items)

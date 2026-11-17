@@ -146,6 +146,8 @@ export function NumberInput({
   }
 
   const onKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+    // ime-safe-enter-submit：这是文本 input，输入法组合中的回车（选词）不应提交数值。
+    if (event.nativeEvent.isComposing || event.keyCode === 229) return
     const keys = { shift: event.shiftKey, alt: event.altKey }
     let next: number | null = null
     if (event.key === 'ArrowUp') next = nudged(value, 1, keys, range)

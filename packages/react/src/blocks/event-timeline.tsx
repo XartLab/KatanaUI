@@ -314,8 +314,9 @@ export function EventTimeline(props: EventTimelineProps) {
               </tr>
             </thead>
             <tbody>
-              {[...visible]
-                .sort((a, b) => a.at - b.at)
+              {/* js/copying-array-methods：toSorted 替代「展开复制再 sort」。 */}
+              {visible
+                .toSorted((a, b) => a.at - b.at)
                 .map((e) => (
                   <tr key={e.id} className={fresh.has(e.id) ? 'k-live-enter' : undefined}>
                     <td className="k-tl-num">

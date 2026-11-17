@@ -272,7 +272,8 @@ export function EventCalendar({
     const sign = sort.dir === 'desc' ? -1 : 1
     return days.map((d) => ({
       ...d,
-      events: [...d.events].sort((a, b) => {
+      // js/copying-array-methods：toSorted 替代「展开复制再 sort」。
+      events: d.events.toSorted((a, b) => {
         const [x, y] = [value(a), value(b)]
         if (x === undefined || y === undefined) return x === y ? 0 : x === undefined ? 1 : -1
         return (x - y) * sign

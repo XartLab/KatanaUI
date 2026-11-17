@@ -145,6 +145,7 @@ export function CalendarHeatmap({
     return Math.min(4, Math.floor((Math.abs(day.value) / turnoverMax) * 5))
   }
 
+  // ime-safe-enter-submit 不适用，不加输入法判断：这个 keydown 挂在 svg 与 role="grid" 的容器上（tabIndex=0），不是文本输入，不会有输入法组合。
   const onKeyDown = (event: KeyboardEvent<Element>) => {
     if (event.altKey || event.ctrlKey || event.metaKey) return
     if (event.key === 'Enter' && shown !== null) {
@@ -352,9 +353,9 @@ export function CalendarHeatmap({
             </tr>
           </thead>
           <tbody>
+            {/* js/copying-array-methods：toSorted 替代「slice 复制再 sort」。 */}
             {range
-              .slice()
-              .sort((a, b) => a.date.localeCompare(b.date))
+              .toSorted((a, b) => a.date.localeCompare(b.date))
               .map((day) => (
                 <tr key={day.date}>
                   <td>{day.date}</td>

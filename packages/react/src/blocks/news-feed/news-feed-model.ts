@@ -65,5 +65,6 @@ export function filterNews(items: readonly NewsItem[], filter: NewsFilter): News
 
 /** 新的在前；同一时间按 id 定序，列表不跳。 */
 export function sortNews(items: readonly NewsItem[]): NewsItem[] {
-  return [...items].sort((a, b) => b.time - a.time || (a.id < b.id ? -1 : 1))
+  // js/copying-array-methods：toSorted 直接返回新数组，少一次展开复制。
+  return items.toSorted((a, b) => b.time - a.time || (a.id < b.id ? -1 : 1))
 }

@@ -182,6 +182,8 @@ export function SideNav({ groups, current, header, footer, searchLabel, emptyLab
             onChange={(event) => setQuery(event.target.value)}
             onKeyDown={(event) => {
               if (event.key === 'Escape') setQuery('')
+              // ime-safe-enter-submit：中文输入法选词时的回车是确认候选，不是点第一个链接。
+              if (event.nativeEvent.isComposing || event.keyCode === 229) return
               if (event.key === 'Enter') {
                 const first = scroller.current?.querySelector<HTMLAnchorElement>('.k-sidenav-link')
                 first?.click()

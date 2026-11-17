@@ -182,11 +182,15 @@ export function selectPages(changed: readonly string[], ctx: MapContext): Select
   return { ids: [...ids].sort(), shared, foundation, unmapped }
 }
 
-/** 选好的页 → pixelgate 的页名（graphite 主题一个 target）。共用层追加代表页。 */
+/**
+ * 选好的页 → pixelgate 的页名（graphite 主题一个 target）。
+ * 共用层改动、或多个文件加起来超过 MAX_PAGES 时只跑代表页（不再把各文件的页并起来）：快速模式要的是一分钟内出结果，全面覆盖交给合并前的全量。
+ */
 export function onlyNames(selection: Selection, pageIds: ReadonlySet<string>): string[] {
-  const ids = new Set(selection.ids)
-  if (selection.shared) for (const id of REPRESENTATIVE_IDS) if (pageIds.has(id)) ids.add(id)
+  const wide = selection.shared || selection.ids.length > MAX_PAGES
+  const ids = new Set(wide ? [] : selection.ids)
+  if (wide) for (const id of REPRESENTATIVE_IDS) if (pageIds.has(id)) ids.add(id)
   const names = [...ids].sort().map((id) => `graphite--${id}`)
-  if (selection.shared || selection.foundation) names.push('graphite--shell-foundation')
+  if (wide || selection.foundation) names.push('graphite--shell-foundation')
   return names
 }

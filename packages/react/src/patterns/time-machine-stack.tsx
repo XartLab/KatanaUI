@@ -204,27 +204,25 @@ export function TimeMachineStack({
         style={{ perspective, touchAction: 'none' }}
       >
         <AnimatePresence initial={false}>
-          {visible
-            .slice()
-            .reverse()
-            .map(({ item, pos }) => {
-              const state = stateAt(pos)
-              return (
-                <Panel
-                  key={item.id}
-                  id={`${listId}-${item.id}`}
-                  front={pos === 0}
-                  // 面板只会从两个位置进来：往前翻时在最深一格之后，往回翻时在最前面。
-                  initial={dir === 1 ? stateAt(visibleCount) : stateAt(-1)}
-                  animate={state}
-                  exit={{ opacity: 0, transform: exitState.transform, transition: EXIT }}
-                  top={reservedTop}
-                  zIndex={visibleCount - pos}
-                >
-                  {item.content}
-                </Panel>
-              )
-            })}
+          {/* js/copying-array-methods：toReversed 替代「slice 复制再 reverse」。 */}
+          {visible.toReversed().map(({ item, pos }) => {
+            const state = stateAt(pos)
+            return (
+              <Panel
+                key={item.id}
+                id={`${listId}-${item.id}`}
+                front={pos === 0}
+                // 面板只会从两个位置进来：往前翻时在最深一格之后，往回翻时在最前面。
+                initial={dir === 1 ? stateAt(visibleCount) : stateAt(-1)}
+                animate={state}
+                exit={{ opacity: 0, transform: exitState.transform, transition: EXIT }}
+                top={reservedTop}
+                zIndex={visibleCount - pos}
+              >
+                {item.content}
+              </Panel>
+            )
+          })}
         </AnimatePresence>
       </div>
       <div aria-live="polite" className="sr-only">

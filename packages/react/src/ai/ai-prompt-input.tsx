@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // 改自 SmoothUI ai-prompt-input（https://github.com/educlopez/smoothui ，MIT，© 2024 Eduardo Calvo）
 // 提示词输入框：输入多行自动长高（到 8 行封顶再滚），回车发送、Shift+回车换行；流式输出时发送钮变成停止；附件一排小标；字数到上限的 80% 才显示计数。
-// 长高用 layout 弹簧，高度取 textarea 自己的 scrollHeight，整页不会在敲字中途重排。
+// 长高优先用 CSS field-sizing: content；不支持时才退回 JS 取 textarea 自己的 scrollHeight，整页不会在敲字中途重排。
 // 状态（AiState）只在这里改一件事：出错、完成时画一圈语义色，不改形——输入框随状态变形会跟正在写的字打架。
 // 相对原件：所有英文（占位符、发送、停止、附件、移除）改成 props / labels；中文输入法选词时的回车不发送（见 ai-prompt-model.ts）；
 // 发送钮与小按钮用我们的 Button；颜色走 token；弹簧取 snappy；去掉 reduced-motion 分支。
@@ -25,6 +25,8 @@ import { getAiStateAccentColor, type AiState } from './ai-core.ts'
 
 const MIN_ROWS = 1
 const MAX_ROWS = 8
+/** 浏览器支持 field-sizing: content 时由 CSS 量高，JS 量高只作退路（modern-web-guidance: form-fields-automatically-fit-contents）。 */
+const FIELD_SIZING = typeof CSS !== 'undefined' && CSS.supports('field-sizing', 'content')
 /** 附件小标逐个错开 35ms 进场（原件 ATTACHMENT_STAGGER）。 */
 const ATTACHMENT_STAGGER = 0.035
 
@@ -109,6 +111,8 @@ export function AiPromptInput({
   const ring = state === 'error' || state === 'done' ? getAiStateAccentColor(state, 'transparent') : undefined
 
   const resize = useCallback(() => {
+    // 有 field-sizing 的浏览器由 CSS 量高，这里不再动高度。
+    if (FIELD_SIZING) return
     const el = textarea.current
     if (!el) return
     // 先收回去，否则 scrollHeight 只增不减。
@@ -224,7 +228,9 @@ export function AiPromptInput({
         onKeyDown={keyDown}
         onFocus={() => setFocused(true)}
         onBlur={() => setFocused(false)}
-        className="k-text-body m-0 block max-h-64 w-full resize-none rounded-none border-0 bg-transparent px-4 pt-3 pb-2 text-ink outline-0 placeholder:text-ink-4"
+        // 高度由 CSS field-sizing: content 跟着内容长；上限 8 行 = 8lh + 上下内边距（pt-3 + pb-2 = 1.25rem），超出再滚。
+        style={{ maxHeight: `calc(${MAX_ROWS}lh + 1.25rem)` }}
+        className="k-text-body m-0 block [field-sizing:content] overflow-y-auto w-full resize-none rounded-none border-0 bg-transparent px-4 pt-3 pb-2 text-ink outline-0 placeholder:text-ink-4"
       />
       <div className="flex items-center justify-between gap-2 px-2 pb-2">
         <div className="flex min-w-0 items-center gap-1">

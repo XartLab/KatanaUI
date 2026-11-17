@@ -65,7 +65,8 @@ export function SmallMultiples({
             exact: true,
           })
           const first = item.values.find((value) => Number.isFinite(value))
-          const last = [...item.values].reverse().find((value) => Number.isFinite(value))
+          // js/copying-array-methods：findLast 从后往前找，等价于原来的「复制 + reverse + find」，且不复制。
+          const last = item.values.findLast((value) => Number.isFinite(value))
           const tone = quoteTone(first === undefined || last === undefined ? null : last - first)
           const at = active === null ? item.values.length - 1 : Math.min(active, item.values.length - 1)
           const value = item.values[at]

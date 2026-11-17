@@ -28,7 +28,9 @@ KatanaUI 是设计系统的**源头仓库**（2026-11-14 用户定，#2）：tok
 - `pnpm typecheck`
 - `pnpm build:site`
 
-**敏捷节奏（2026-11-15 用户定：先出效果，测试以后再说）**：做组件时每个 PR 只跑 `pnpm typecheck`、`pnpm build:site`（改了件就 `pnpm ds:build` 并提交生成物）和改到的那一个文档站 e2e 文件的 dpr-1，先截图给用户看样式；全量 `pnpm test` 与全量 e2e 攒到用户点头的几件合完后集中跑一次，红了再修。用户原话：「每次全量测试太慢了，我们先敏捷开发，先出来看效果再说测试的问题」。
+**快速模式（2026-11-18 用户定：速度太慢，平时只跑 fast）**：改完在 `packages/react` 跑 `pnpm fast`（一般一分钟内）：只查改动文件的格式与 lint、类型检查、受影响的单测、受影响页的 e2e（dpr-1）、`vr:fast`；改了共用层（令牌、theme 样式、lib、primitives、被二十几页引用的件）它会跳过 e2e 并提示。全量（`pnpm test`、`pnpm test:e2e`、`pnpm vr`）只在一批改动合并前集中跑一次，红了再修。派给 worker 的活也照这个验，不要每件都跑全量、补全量截图。
+
+**写界面代码前查现代写法（modern-web-guidance，Chrome / Edge / Firefox / MDN 维护）**：做对话框、浮层、动画进出场、滚动、表单、布局这类件之前，先 `npx -y modern-web-guidance@latest search "<要做的事>"`，再 `retrieve <guide-id>` 读对应指南，优先用平台原生能力（popover、dialog、View Transitions、field-sizing、toSorted 等），别照训练数据里的老套路写。交付前可跑 `npx -y modern-web-guidance@latest legacy-scan src` 看有没有新引入的旧写法。
 
 **视觉回归（pixelgate，自研）**：改了视觉相关的件，交付前在 `packages/react` 跑 `pnpm vr:fast`（只截受影响的页，约半分钟），在汇报里附 changed 列表与 report 路径（`.pixelgate/report/index.html`）；合并前、或改了令牌 / theme 样式 / lib / primitives 这类共用层，跑全量 `pnpm vr`。预期的变化用 `pnpm vr:approve` 收为新基线并随代码提交，规则写在文档站「开发接入 → 视觉回归」。
 

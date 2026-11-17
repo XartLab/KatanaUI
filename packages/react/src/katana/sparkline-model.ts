@@ -636,7 +636,8 @@ function quantile(sorted: readonly number[], q: number): number {
 export function silvermanBandwidth(values: readonly number[], fallback = 1): number {
   const nums = values.filter(Number.isFinite)
   if (nums.length < 2) return fallback
-  const sorted = [...nums].sort((a, b) => a - b)
+  // js/copying-array-methods：toSorted 替代「展开复制再 sort」。
+  const sorted = nums.toSorted((a, b) => a - b)
   const iqr = quantile(sorted, 0.75) - quantile(sorted, 0.25)
   const sd = stdev(nums)
   const spread = iqr > 0 ? Math.min(sd, iqr / 1.34) : sd

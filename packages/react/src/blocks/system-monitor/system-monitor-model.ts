@@ -58,17 +58,20 @@ const SEVERITY_RANK: Record<EventSeverity, number> = { error: 2, warn: 1, info: 
 
 /** 异常的排前面（出错、断开、变慢、正常），同级保持传入顺序。 */
 export function sortLinks(links: readonly MonitorLink[]): MonitorLink[] {
-  return [...links].sort((a, b) => LINK_RANK[a.state] - LINK_RANK[b.state])
+  // js/copying-array-methods：toSorted 替代「展开复制再 sort」。
+  return links.toSorted((a, b) => LINK_RANK[a.state] - LINK_RANK[b.state])
 }
 
 /** 出错的排前面，其余保持传入顺序（运行中的不因状态抖动而换位）。 */
 export function sortStrategies(strategies: readonly MonitorStrategy[]): MonitorStrategy[] {
-  return [...strategies].sort((a, b) => Number(b.status === 'error') - Number(a.status === 'error'))
+  // js/copying-array-methods：toSorted 替代「展开复制再 sort」。
+  return strategies.toSorted((a, b) => Number(b.status === 'error') - Number(a.status === 'error'))
 }
 
 /** 新的在前；同一时间按 id 定序。 */
 export function sortEvents(events: readonly MonitorEvent[]): MonitorEvent[] {
-  return [...events].sort((a, b) => b.at - a.at || (a.id < b.id ? -1 : 1))
+  // js/copying-array-methods：toSorted 替代「展开复制再 sort」。
+  return events.toSorted((a, b) => b.at - a.at || (a.id < b.id ? -1 : 1))
 }
 
 /** 事件筛选：kinds 空 = 全部类别；minSeverity 是「这一级及以上」。 */

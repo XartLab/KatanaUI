@@ -542,8 +542,9 @@ export function StrategyReport({
   }, [labels.list.columns])
   const rows = useMemo(() => {
     const cumulative = cumulativeById(shown)
-    return [...shown]
-      .sort((a, b) => b.exitTime - a.exitTime)
+    // js/copying-array-methods：toSorted 替代「展开复制再 sort」。
+    return shown
+      .toSorted((a, b) => b.exitTime - a.exitTime)
       .map((trade) => ({ ...trade, index: 0, cumulative: cumulative.get(trade.id) ?? 0 }))
       .map((trade, i, all) => ({ ...trade, index: all.length - i }))
   }, [shown])

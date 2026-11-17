@@ -192,7 +192,8 @@ export function QuantileLayers({
               side={at > count * 0.6 ? 'left' : 'right'}
               style={{ left: pct(plot.xAt(at)), top: 8 }}
               rows={[
-                ...[...sorted].reverse().map((layer) => ({
+                // js/copying-array-methods：toReversed 替代「展开复制再 reverse」。
+                ...sorted.toReversed().map((layer) => ({
                   key: String(layer.rank),
                   label: layer.label,
                   value: Number.isFinite(layer.points[at]) ? <ChartValue text={formatValue(layer.points[at]!)} /> : '—',

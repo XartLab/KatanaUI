@@ -196,6 +196,8 @@ export function DurationPicker({
     edit(which, fieldText(Math.min(max, Math.max(0, now + delta))))
   }
   const onKey = (which: 'hours' | 'minutes') => (event: KeyboardEvent<HTMLInputElement>) => {
+    // ime-safe-enter-submit：输入法组合中的按键（含选词回车）不交给确认逻辑。
+    if (event.nativeEvent.isComposing || event.keyCode === 229) return
     if (event.key === 'Enter') {
       event.preventDefault()
       confirm()

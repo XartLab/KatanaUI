@@ -64,7 +64,8 @@ function placeLabels(
   unit: number,
 ): Map<string, LabelBox> {
   const out = new Map<string, LabelBox>()
-  for (const c of [...circles].sort((a, b) => b.r - a.r)) {
+  // js/copying-array-methods：toSorted 替代「展开复制再 sort」。
+  for (const c of circles.toSorted((a, b) => b.r - a.r)) {
     const w = labelWidth(c.key) * unit
     const lh = LABEL_H * unit
     const above = c.y - c.r - LABEL_GAP * unit - lh

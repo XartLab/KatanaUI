@@ -18,7 +18,8 @@ export function lastFinite(values: readonly number[]): number {
 
 /** 分层按层号排好（不改入参）。 */
 export const sortLayers = (layers: readonly QuantileLayer[]): QuantileLayer[] =>
-  [...layers].sort((a, b) => a.rank - b.rank)
+  // js/copying-array-methods：toSorted 替代「展开复制再 sort」。
+  layers.toSorted((a, b) => a.rank - b.rank)
 
 /** 单调：按层号排好后，期末累计收益严格递增（不是「基本递增」，卡写的是「一眼看出是否单调」）。少于两层、有缺值的不算单调。 */
 export function isMonotonic(layers: readonly QuantileLayer[]): boolean {

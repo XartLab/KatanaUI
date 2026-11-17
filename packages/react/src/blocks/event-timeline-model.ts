@@ -142,7 +142,8 @@ export function clusterMarkers(
   session: SessionMinutes,
   max = MAX_MARKERS,
 ): Marker[] {
-  const sorted = [...events].sort((a, b) => a.at - b.at)
+  // 与 modern-web-guidance js/copying-array-methods：toSorted 直接返回排好的新数组，不必先展开复制再原地排。
+  const sorted = events.toSorted((a, b) => a.at - b.at)
   for (let bucket = 1; ; bucket *= 2) {
     const buckets = new Map<number, TimelineEvent[]>()
     for (const event of sorted) {

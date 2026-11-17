@@ -25,7 +25,8 @@ export function sortRows<T extends Sortable>(rows: readonly T[], sort: Watchlist
   const pick = (row: T) =>
     sort.key === 'symbol' ? row.code : sort.key === 'last' ? row.last : sort.key === 'chg' ? row.change : row.changePct
   const sign = sort.dir === 'asc' ? 1 : -1
-  return [...rows].sort((a, b) => {
+  // js/copying-array-methods：toSorted 替代「展开复制再 sort」。
+  return rows.toSorted((a, b) => {
     const x = pick(a)
     const y = pick(b)
     if (typeof x === 'number' && typeof y === 'number') {
