@@ -82,7 +82,8 @@
     "vr:summary": "node scripts/vr.mjs summary",
     "build": "tsc -p tsconfig.build.json",
     "prepare": "pnpm run build",
-    "a2ui:catalog": "node scripts/a2ui-catalog.mjs"
+    "a2ui:catalog": "node scripts/a2ui-catalog.mjs",
+    "fast": "node scripts/fast.mjs"
   },
   "dependencies": {
     "@chenglou/pretext": "1.0.0",
