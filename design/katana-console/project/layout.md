@@ -1,6 +1,6 @@
 # 布局与工作区网格
 
-外壳不是 docking。Workspace 标签 → split 树 → Pane。这页定面板怎么排、多大、缝多宽、大屏模式怎么变。
+外壳不是 docking。Workspace 标签 → split 树 → Pane。这页定面板怎么排、多大、缝多宽、大屏模式怎么变。侧栏导航与滚动条见 navigation.md。
 
 ## 外壳尺寸
 

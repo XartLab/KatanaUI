@@ -1,5 +1,53 @@
 # 字体与中文排版
 
+
+> **2026-11-17 更新：现行实现见 §0。** §1–§4 是 10 月的快照，跟 §0 冲突的两处（数字字体、正文字体）列在 §0.5，等用户定。
+
+## 0. 现行规则（2026-11-17）
+
+实现：`@katana-ui/tokens` 的 `type.families`、`@katana-ui/react` 的 `src/patterns/font-catalog.ts`、`RenderingSettings`、`theme/rendering.css`。字样对比在文档站「总览 → 渲染设置」。
+
+### 0.1 字族角色
+
+| 变量 | 用途 | 默认值 |
+|---|---|---|
+| `--font-sans` | 界面文字 12–19px | 平台界面字体：`-apple-system`（SF，光学尺寸自动）→ `Segoe UI Variable Text` → `Segoe UI` → Roboto / Ubuntu → 苹方 / 微软雅黑 UI / Noto Sans SC |
+| `--font-sans-small` | ≤11px（说明、刻度、标签） | 同上，Windows 用 `Segoe UI Variable Small` 光学档 |
+| `--font-sans-display` | ≥20px（大读数、标题） | 同上，Windows 用 `Segoe UI Variable Display` |
+| `--font-num` / `--font-num-small` | 数据字：价格、数量、刻度、编号 | 跟界面字体（`var(--font-sans)`） |
+| `--font-mono` | 代码、JSON、日志、命令 | 系统等宽：`ui-monospace` / SF Mono / Menlo / Consolas |
+| `--font-lcd`、`--font-dot` | LCD 读数窗、点阵件 | 不变（pixel.md） |
+
+- 选系统界面字体的理由：它们是各平台为屏幕、为本平台的平滑方式调过的；Segoe UI Variable 按字号分 Small / Text / Display 三档（微软 Windows 11 排版规范），网页里要按字号分别写字体名。
+- 数字对齐靠全局 `font-feature-settings: 'lnum', 'tnum'`（根上开一次，`font` 简写不重置它）；可选斜线零（`zero`）。
+
+### 0.2 按角色换字体（字体目录）
+
+渲染设置里四个角色各选一个字体：**界面、汉字、数据字、代码**。目录 27 项，分三类：
+
+- **系统**：上表的默认栈。
+- **开源（OFL-1.1）**：Inter、IBM Plex Sans、Roboto Flex、Source Sans 3、Geist、Public Sans、Space Grotesk、Barlow Condensed、思源黑体 Noto Sans SC、得意黑、JetBrains Mono、IBM Plex Mono、Geist Mono、Roboto Mono、Iosevka、Fira Code、Chivo Mono、Maple Mono CN。组件包不带这些字体文件，应用用哪个装哪个包（fontsource / chinese-fonts）。
+- **本机**：鸿蒙 HarmonyOS Sans SC、MiSans、思源黑体、更纱黑体 / 更纱等宽、微软雅黑 UI、苹方、Cascadia Mono。许可证不便打包或体积太大，只读本机已装的。
+
+选择写在根节点的 `data-font-<角色>` 与字体变量上，组件不用改。
+
+### 0.3 字号、行高、字重
+
+- 文字档（`--text-*`）的字号与行高都乘 `--k-text-scale`（渲染设置的「字号」，默认 1）后**取整到整像素**；行高一律写成整像素，不用 1.4 这类小数倍（会把下面的内容推到小数位置，字就糊）。
+- 字重加 `--k-weight-adjust`（渲染设置的「字重补偿」，−60…+60，默认 0）：暗底浅字看着偏粗、不同显示器和平滑方式观感不同，交给用户调。相当于终端的 font-thicken。
+- 9px（`tag`）只给拉丁大写与点阵；汉字最小 11px（不变）。
+
+### 0.4 中英混排
+
+- 一个栈按字符回退（不变）。
+- 可选「中英对齐」：`font-size-adjust: cap-height from-font`，按大写字母高度把汉字回退字体缩放到跟拉丁一致；默认关，看观感开。
+
+### 0.5 跟 10 月快照冲突、待用户定的
+
+1. **数据字**：快照要求「数字永远走 mono（Maple Mono CN）、表格只用 mono」；现行默认数据字跟界面字体走（tnum 对齐）。两种都能用：数据字一项选 Maple Mono CN 就回到快照的做法。**默认用哪个，等用户定。**
+2. **正文**：快照是 Noto Sans SC；现行默认是平台界面字体（汉字回退苹方 / 微软雅黑 UI）。
+3. **压缩标题**（Barlow Condensed + 得意黑）：现行界面里没有用，目录里可选。
+
 六个字体角色，全部开源（SIL OFL），可随 GPL 项目分发。拉丁和中文在同一个栈里按字符回退，一行混排自动各用各的。
 
 ## 1. 字体清单

@@ -39,6 +39,8 @@ KATANAview 的设计系统：**工业控制台的材质，Apple 式的物理交�
 
 ### 字体
 
+> 2026-11-17：现行字体规则见 typography.md §0（平台界面字体 + 光学档、数据字角色、按角色换字体、字重补偿、字号取整）；下面是 10 月的角色表，跟 §0 冲突的两处在 §0.5 待定。
+
 六个角色，全部 OFL 开源，拉丁与中文在同一个栈里按字符回退（规则、来源、分片见 typography.md）：
 
 - **Display**：Barlow Condensed + 得意黑 Smiley Sans——面板标题、工作区名。
@@ -89,7 +91,7 @@ KATANAview 的设计系统：**工业控制台的材质，Apple 式的物理交�
 | Footprint | Bid×Ask 足迹，失衡反白，POC |
 | SparkTile | KPI 瓦片：点阵标签 + LCD + 迷你线 |
 
-渲染设置面板（GPU / 后端 / 抗锯齿 / DPR / 帧率 / 色觉友好 / 安静模式）见 rendering.md。
+渲染设置面板（GPU / 后端 / 抗锯齿 / DPR / 帧率 / 色觉友好 / 安静模式）见 rendering.md；网页文字的平滑、像素对齐、字重补偿、字号、字体选择与写组件时的清晰度硬规则见 rendering.md「Web 文字与像素」（2026-11-17）。
 
 ### 数据与订单流（stack.md）
 
@@ -217,6 +219,7 @@ Calendar · NewsFeed · EventTimeline ｜ BrinsonAttribution · TCA · Corporate
 - coverage.md：ATAS X / Fincept / TradingView 功能覆盖矩阵，✅ 已有 · 🟧 本批 · ⬜ 下一批 · ✖ 不做；2026-10-03 修正了三张未建卡的虚标，ATAS 部分以 atas.md 为准。
 - states.md：空 · 加载 · 错误 · 断线 · 过期 五态的视觉、文案、LED。
 - layout.md：外壳尺寸、7 个布局模板、密度与最小尺寸、大屏模式、响应。
+- navigation.md：**侧栏导航与滚动条**（2026-11-17）——SideNav 的结构与数值、大分组带图标条目不带、虚线轨迹与弯钩、过滤框与 ⌘K、全站细滚动条。
 - readability.md：可读性第一性原理——感知 / 认知 / 神经科学 / 心理学 30 条，每条带数值与落点。**必读。**
 - icons.md：Lucide 基础 + 12 个控制台专用图标。
 - pixel.md：点阵体系——字体清单、硬规则、尺寸表、签名时刻（时钟 / 开盘自检 / 跑马）。
