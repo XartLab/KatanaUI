@@ -13,12 +13,13 @@
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
 | `value` * | `number` | — | The current value. |
-| `onValue` * | `(value: number) => void` | — | Called when the value changes; empty or non-numeric input does not call it. |
+| `onValueChange` | `(value: number) => void` | — | Called when the value changes; empty or non-numeric input does not call it. |
+| `onValue` | `(value: number) => void` | — | Old name of onValueChange, kept for one release. |
 | `unit` | `string` | — | Unit suffix; when given, screen readers read the value together with the unit. |
 | `min` | `number` | — | Lower bound; values below it are clamped. |
 | `max` | `number` | — | Upper bound; values above it are clamped. |
 | `step` | `number` | `1` | Step size. |
-| `size` | `'sm'` | — | sm is 26px high; the default is 30px. |
+| `size` | `'sm' \| 'md'` | — | sm is 26px high; md (the default) is 30px. |
 | `width` | `number` | `96` | Width of the box in px. |
 | `label` | `string` | — | Accessible name. |
 | `invalid` | `boolean` | — | Show the red border. |
@@ -37,7 +38,7 @@ import { NumberInput } from '@katana-ui/react'
 
 export function NumberInputUsage() {
   const [width, setWidth] = useState(14)
-  return <NumberInput label="Line width" value={width} onValue={setWidth} min={1} max={40} unit="px" />
+  return <NumberInput label="Line width" value={width} onValueChange={setWidth} min={1} max={40} unit="px" />
 }
 ```
 

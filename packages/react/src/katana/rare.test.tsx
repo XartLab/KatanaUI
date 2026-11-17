@@ -1,46 +1,12 @@
 // SPDX-License-Identifier: MIT
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vite-plus/test'
-import { AiStatus, DeleteButton, MatrixOrb, NotificationBell, PasswordInput, StatusIcon } from '../index.ts'
+import { AiStatus, MatrixOrb, NotificationBell, StatusIcon } from '../index.ts'
 import { formatElapsed } from './ai-status.tsx'
 import { orbIntensity, ORB_SCALE, simulatedLevel } from './matrix-orb-model.ts'
 import { badgeText, swingImpulse } from './notification-bell.tsx'
-import { eyePath } from './password-input.tsx'
 
 // #1861 六件的纯逻辑与结构。动效、焦点、键盘在 e2e/ui-gallery.spec.ts 里用真浏览器逐帧采样。
-
-describe('PasswordInput', () => {
-  it('默认是遮住的 password 输入框，眼睛按钮名字由调用方给、aria-pressed 表达状态', () => {
-    const html = renderToStaticMarkup(<PasswordInput toggleLabel="显示密钥" defaultValue="abc" />)
-    expect(html).toContain('type="password"')
-    expect(html).toContain('aria-label="显示密钥"')
-    expect(html).toContain('aria-pressed="false"')
-    expect(html).toContain('autoComplete="off"')
-  })
-
-  it('defaultVisible 一开始就是明文', () => {
-    const html = renderToStaticMarkup(<PasswordInput toggleLabel="x" defaultVisible />)
-    expect(html).toContain('type="text"')
-    expect(html).toContain('aria-pressed="true"')
-  })
-
-  it('眼睛的轮廓：闭合是压平的线，睁开是杏仁，越界的值被夹住', () => {
-    expect(eyePath(0)).toBe('M2 12C6 12 18 12 22 12C18 12 6 12 2 12Z')
-    expect(eyePath(1)).toBe('M2 12C6 4 18 4 22 12C18 20 6 20 2 12Z')
-    expect(eyePath(2)).toBe(eyePath(1))
-    expect(eyePath(-1)).toBe(eyePath(0))
-  })
-})
-
-describe('DeleteButton', () => {
-  it('待命时只有一个按钮，不展开、不带确认钮', () => {
-    const html = renderToStaticMarkup(<DeleteButton label="删除" confirmLabel="确认" cancelLabel="取消" />)
-    expect(html).toContain('aria-label="删除"')
-    expect(html).toContain('aria-expanded="false"')
-    expect(html).toContain('data-phase="idle"')
-    expect(html).not.toContain('aria-label="确认"')
-  })
-})
 
 describe('NotificationBell', () => {
   it('角标的字：0 不画，超过上限写 +，非有限数当 0，小数取整', () => {

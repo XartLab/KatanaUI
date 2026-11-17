@@ -22,13 +22,13 @@ export type FontOption = {
 }
 
 /** 系统默认栈（跟 tokens.json 的 families 一致）：按平台的界面字体与光学档。 */
-export const SYSTEM_UI = {
+const SYSTEM_UI = {
   text: '-apple-system, BlinkMacSystemFont, "Segoe UI Variable Text", "Segoe UI", Roboto, Ubuntu',
   small: '-apple-system, BlinkMacSystemFont, "Segoe UI Variable Small", "Segoe UI", Roboto, Ubuntu',
   display: '-apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Roboto, Ubuntu',
 } as const
-export const SYSTEM_CJK = '"PingFang SC", "Microsoft YaHei UI", "Noto Sans SC"'
-export const SYSTEM_MONO = 'ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono"'
+const SYSTEM_CJK = '"PingFang SC", "Microsoft YaHei UI", "Noto Sans SC"'
+const SYSTEM_MONO = 'ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono"'
 
 export const FONT_CATALOG: readonly FontOption[] = [
   // 界面拉丁

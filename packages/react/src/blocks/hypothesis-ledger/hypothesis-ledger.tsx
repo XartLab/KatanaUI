@@ -151,7 +151,7 @@ export function HypothesisLedger({
         <>
           <ChipGroup
             label={labels.layerFilter}
-            clearLabel={labels.clearLayers}
+            labels={{ clear: labels.clearLayers }}
             value={layers}
             onValueChange={(next) => setLayers(next as HypothesisLayer[])}
             items={HYPOTHESIS_LAYERS.map((l) => ({ value: l, label: labels.layer[l], count: byLayer[l] }))}

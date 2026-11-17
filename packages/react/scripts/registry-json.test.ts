@@ -86,7 +86,7 @@ describe('shadcn 注册表清单', () => {
     }
   })
 
-  it('katana/ 的件都进注册表：带 JSX 的是 component，纯函数是 lib；样式入口带齐它们的 css', () => {
+  it('katana/ 与 patterns/ 的件都进注册表：带 JSX 的是 component，纯函数是 lib；样式入口带齐它们的 css', () => {
     const typeOf = (name: string) => registry.items.find((i) => i.name === name)?.type
     expect(typeOf('led')).toBe('registry:component')
     expect(typeOf('number-field-model')).toBe('registry:lib')

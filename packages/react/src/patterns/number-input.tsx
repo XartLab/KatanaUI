@@ -6,6 +6,7 @@ import { evaluateInput, typedLive } from './number-expression.ts'
 // 组件卡 Controls · 数字框。外观是卡上的皮肤（theme/number-input.css）。
 
 /**
+ * Number box: a value with an optional unit suffix; type, use the arrow keys or drag left and right to change it.
  * 数字框：一个框，值 + 可选的单位后缀，没有滑块、没有 −/+ 按钮。三种改法：
  * 直接打字（越界夹进范围）、上下方向键（按步长，Shift 或 PageUp/PageDown 十档，Alt 精调）、按住左右拖（Shift 粗调、Alt 精调，规则见 number-field-model）。
  * 角色是 spinbutton（WAI-ARIA 数字微调框模式）：带当前值、范围，有单位时带「值 + 单位」的文字。
@@ -13,27 +14,13 @@ import { evaluateInput, typedLive } from './number-expression.ts'
  * expression 打开后框里还能写算式（`+10%`、`*2`、`100*1.5`，规则见 number-expression），回车或离开时按当前值算；caption 是框内左边的文字标签，
  * 同样是拖动区（功能参照 Arc Scrub input，uiarc.dev/docs/components/scrub-input，2026-11-14 读，实现原创）。
  */
-export function NumberInput({
-  value,
-  onValue,
-  unit,
-  min,
-  max,
-  step = 1,
-  size,
-  width = 96,
-  label,
-  invalid,
-  disabled,
-  autoValue,
-  autoText,
-  expression,
-  caption,
-}: {
+export type NumberInputProps = {
   /** The current value. */
   value: number
-  /** Called when the value changes; empty or non-numeric input does not call it. */
-  onValue: (value: number) => void
+  /** Called when the value changes; empty or non-numeric input does not call it. Values are always within min / max. */
+  onValueChange?: (value: number) => void
+  /** Old name of onValueChange, kept for one release. @deprecated Use onValueChange. */
+  onValue?: (value: number) => void
   /** Unit suffix; when given, screen readers read the value together with the unit. */
   unit?: string
   /** Lower bound; values below it are clamped. */
@@ -42,8 +29,8 @@ export function NumberInput({
   max?: number
   /** Step size. */
   step?: number
-  /** sm is 26px high; the default is 30px. */
-  size?: 'sm'
+  /** sm is 26px high; md (the default) is 30px. */
+  size?: 'sm' | 'md'
   /** Width of the box in px. */
   width?: number
   /** Accessible name. */
@@ -72,7 +59,27 @@ export function NumberInput({
    * 框内左边的文字标签（拖它与拖整个框一样改值）；读屏名仍由 label 给。
    */
   caption?: string
-}) {
+}
+
+/** Number box (spinbutton): type, arrow keys or drag to change the value. */
+export function NumberInput({
+  value,
+  onValueChange,
+  onValue,
+  unit,
+  min,
+  max,
+  step = 1,
+  size,
+  width = 96,
+  label,
+  invalid,
+  disabled,
+  autoValue,
+  autoText,
+  expression,
+  caption,
+}: NumberInputProps) {
   const autoShown = autoText !== undefined && value === autoValue
   const [draft, setDraft] = useState<string | null>(null)
   const [scrubbing, setScrubbing] = useState(false)
@@ -89,8 +96,9 @@ export function NumberInput({
   } | null>(null)
   const range = { min, max, step }
 
+  const emit = onValueChange ?? onValue
   const commit = (next: number) => {
-    if (next !== value) onValue(next)
+    if (next !== value) emit?.(next)
   }
   // 算式：草稿不是空、也算不出就标红；回车与离开时把草稿算成值。
   const evaluated = expression && draft !== null ? evaluateInput(draft, value, range) : null
@@ -135,7 +143,7 @@ export function NumberInput({
     const next = scrubbed(state.anchorValue, event.clientX - state.anchorX, mode, range)
     if (next !== state.last) {
       state.last = next
-      onValue(next)
+      emit?.(next)
     }
   }
   const endDrag = (event: PointerEvent<HTMLSpanElement>) => {
@@ -169,7 +177,7 @@ export function NumberInput({
 
   return (
     <span
-      className={`k-num${size ? ` ${size}` : ''}${invalid || badExpression ? ' err' : ''}${disabled ? ' dis' : ''}${scrubbing ? ' scrubbing' : ''}`}
+      className={`k-num${size === 'sm' ? ' sm' : ''}${invalid || badExpression ? ' err' : ''}${disabled ? ' dis' : ''}${scrubbing ? ' scrubbing' : ''}`}
       style={{ width }}
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}

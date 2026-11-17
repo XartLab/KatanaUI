@@ -96,7 +96,7 @@ export function ThemeSelectorDemo() {
     <>
       <Row name="两个主题">
         <div data-gallery-themes>
-          <ThemeSelector themes={THEMES} label="主题" value={theme} onChange={setTheme} />
+          <ThemeSelector themes={THEMES} label="主题" value={theme} onValueChange={setTheme} />
         </div>
         <output data-gallery-theme>{theme}</output>
       </Row>
@@ -252,8 +252,8 @@ export function TaskListDemo() {
       <Row name="清单">
         <div data-gallery-tasks className="gal-wide">
           <TaskList
-            tasks={tasks}
-            onTasksChange={setTasks}
+            value={tasks}
+            onValueChange={setTasks}
             label="计划"
             labels={{ completed: (label) => `${label} 已完成`, reopened: (label) => `${label} 已重开` }}
           />

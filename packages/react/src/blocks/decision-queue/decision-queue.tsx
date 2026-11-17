@@ -2,7 +2,7 @@
 import { ChevronRight, ExternalLink } from 'lucide-react'
 import { useId, useState, type ReactNode } from 'react'
 import { cn } from '../../lib/cn.ts'
-import { HoldToConfirm } from '../../katana/hold-to-confirm.tsx'
+import { HoldToConfirm } from '../../patterns/hold-to-confirm.tsx'
 import { Led, type LedState } from '../../katana/led.tsx'
 import { MeasuredSkeleton } from '../../katana/measured-skeleton.tsx'
 import { Skeleton } from '../../katana/skeleton.tsx'
@@ -286,9 +286,8 @@ function OpenCard({
       ) : null}
       <div className="k-dq-buttons">
         <HoldToConfirm
-          tone="default"
-          hint={labels.acceptHint}
-          confirmedLabel={labels.accepted}
+          tone="neutral"
+          labels={{ hint: labels.acceptHint, confirmed: labels.accepted }}
           holdMs={holdMs}
           onConfirm={() => onAccept?.(item)}
         >

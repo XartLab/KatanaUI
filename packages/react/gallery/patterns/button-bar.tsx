@@ -11,8 +11,7 @@ function Demo() {
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
         <DeleteButton
           label="删除工作区"
-          confirmLabel="确认删除"
-          cancelLabel="取消"
+          labels={{ confirm: '确认删除', cancel: '取消' }}
           onConfirm={() => setLog('已删除工作区（演示）')}
         />
         <span style={{ flex: 1 }} />
@@ -23,8 +22,7 @@ function Demo() {
       </div>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
         <HoldToConfirm
-          hint="按住 2 秒，全部平仓"
-          confirmedLabel="已平仓"
+          labels={{ hint: '按住 2 秒，全部平仓', confirmed: '已平仓' }}
           onConfirm={() => setLog('已全部平仓（演示）')}
         >
           全部平仓

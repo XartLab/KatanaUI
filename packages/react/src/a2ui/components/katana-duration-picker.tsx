@@ -60,7 +60,7 @@ export const KatanaDurationPicker = createComponentImplementation(KatanaDuration
       <FieldLabel>{props.label}</FieldLabel>
       <DurationPicker
         value={{ hours: whole(props.hours), minutes: whole(props.minutes) }}
-        onChange={(next) => {
+        onValueChange={(next) => {
           props.setHours?.(next.hours)
           props.setMinutes?.(next.minutes)
         }}

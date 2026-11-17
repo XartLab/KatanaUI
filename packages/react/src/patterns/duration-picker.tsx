@@ -11,6 +11,7 @@ import { cn } from '../lib/cn.ts'
 import { focusRing } from '../lib/focus.ts'
 import { snappy } from '../lib/motion.ts'
 import { unit } from '../lib/spring.ts'
+import { fieldText, parseField } from './duration-picker-model.ts'
 
 export type DurationValue = { hours: number; minutes: number }
 
@@ -31,7 +32,9 @@ export type DurationPickerProps = {
   value?: DurationValue
   /** Initial duration when uncontrolled. */
   defaultValue?: DurationValue
-  /** Called with the new duration. */
+  /** Called with the new duration (already clamped) while typing, stepping or cancelling. */
+  onValueChange?: (value: DurationValue) => void
+  /** Old name of onValueChange, kept for one release. @deprecated Use onValueChange. */
   onChange?: (value: DurationValue) => void
   /**
    * Called with the confirmed value when the check mark is clicked or Enter is pressed.
@@ -52,19 +55,6 @@ export type DurationPickerProps = {
   disabled?: boolean
   /** Extra class name on the root. */
   className?: string
-}
-
-/** 输入框里的字 → 数：只认数字，空当 0，超出范围夹进 0 到 max；overflow 为真表示被夹了（要抖一下）。 */
-export function parseField(text: string, max: number): { value: number; overflow: boolean } {
-  const digits = text.replace(/\D/g, '')
-  if (digits === '') return { value: 0, overflow: false }
-  const raw = Number(digits)
-  return raw > max ? { value: max, overflow: true } : { value: raw, overflow: false }
-}
-
-/** 数 → 输入框里的字：0 在编辑时显示成空（占位符画 0），其它写数字。 */
-export function fieldText(value: number): string {
-  return value === 0 ? '' : String(value)
 }
 
 const RADIUS = 'var(--radius-control)'
@@ -120,16 +110,18 @@ function Field({
         'k-text-body h-full min-w-0 border-0 bg-transparent p-0 text-center text-ink tabular-nums',
         'placeholder:text-ink-4',
         editing
-          ? 'cursor-text rounded-[5px] bg-surface-1 outline-0 focus-visible:outline-2 focus-visible:outline-(--focus-ring)'
+          ? 'cursor-text rounded-[5px] bg-surface-1 outline-0 focus-visible:outline-2 focus-visible:outline-(--k-focused-outlineColor)'
           : 'cursor-default outline-0',
       )}
     />
   )
 }
 
+/** Hours-and-minutes duration pill; the pen button switches it into editing, the check mark confirms. */
 export function DurationPicker({
   value,
   defaultValue,
+  onValueChange,
   onChange,
   onConfirm,
   onEditingChange,
@@ -140,6 +132,7 @@ export function DurationPicker({
   disabled,
   className,
 }: DurationPickerProps) {
+  const emit = onValueChange ?? onChange
   const [editing, setEditing] = useState(defaultEditing)
   const [hours, setHours] = useState(() => fieldText(value?.hours ?? defaultValue?.hours ?? 0))
   const [minutes, setMinutes] = useState(() => fieldText(value?.minutes ?? defaultValue?.minutes ?? 0))
@@ -173,7 +166,7 @@ export function DurationPicker({
     const back = before.current
     setHours(fieldText(back.hours))
     setMinutes(fieldText(back.minutes))
-    onChange?.(back)
+    emit?.(back)
     setEditingTo(false)
   }
   // 进入编辑后焦点落在「时」上（渲染完、输入框不再 readOnly 才聚焦得上）。
@@ -188,7 +181,7 @@ export function DurationPicker({
     }
     if (which === 'hours') setHours(text)
     else setMinutes(text)
-    onChange?.(next)
+    emit?.(next)
   }
   const step = (which: 'hours' | 'minutes', delta: number) => {
     const max = which === 'hours' ? maxHours : maxMinutes

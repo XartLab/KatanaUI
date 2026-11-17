@@ -28,13 +28,15 @@ export const KatanaDecimalFieldApi = {
         .enum(['error', 'warning'])
         .describe("'error' marks the box invalid with a red border; 'warning' only turns the border amber.")
         .optional(),
-      buttons: z
+      labels: z
         .object({
           decrease: z.string().describe('Accessible name and tooltip of the minus button.'),
           increase: z.string().describe('Accessible name and tooltip of the plus button.'),
         })
         .strict()
-        .describe('When given, the minus and plus buttons are shown, with these texts.')
+        .describe(
+          'When given, the minus and plus buttons are shown, with these texts. Write them in the language of the user.',
+        )
         .optional(),
       disabled: CommonSchemas.DynamicBoolean.describe('When true the box cannot be changed.').optional(),
       readOnly: CommonSchemas.DynamicBoolean.describe(
@@ -55,13 +57,13 @@ export const KatanaDecimalField = createComponentImplementation(KatanaDecimalFie
         <DecimalField
           label={props.label ?? ''}
           value={props.value ?? ''}
-          onValue={(next) => props.setValue?.(next)}
+          onValueChange={(next) => props.setValue?.(next)}
           step={props.step}
           base={props.base ?? null}
           unit={props.unit}
           placeholder={props.placeholder}
           status={errors.length > 0 ? 'error' : props.status}
-          buttons={props.buttons}
+          labels={props.labels}
           disabled={props.disabled === true}
           readOnly={props.readOnly === true}
         />

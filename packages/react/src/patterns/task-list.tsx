@@ -11,12 +11,9 @@ import { cn } from '../lib/cn.ts'
 import { focusRing } from '../lib/focus.ts'
 import { snappy } from '../lib/motion.ts'
 import { unit } from '../lib/spring.ts'
+import { orderTasks, type Task } from './task-list-model.ts'
 
-export type Task = {
-  id: string
-  label: string
-  done?: boolean
-}
+export type { Task } from './task-list-model.ts'
 
 export type TaskListLabels = {
   /** 勾上后读屏播报，如「<label> 已完成」。 */
@@ -25,26 +22,15 @@ export type TaskListLabels = {
   reopened: (label: string) => string
 }
 
-/**
- * 清单的显示次序：没完成的在前、保持原次序；已「划完」的（parked 里的）沉到后面，按沉下去的先后排。
- * 勾上但线还没划完的行仍留在原位。parked 里有、但现在已不是完成的（被外面改了）或已经不存在的，当作没沉。
- */
-export function orderTasks(tasks: readonly Task[], parked: readonly string[]): Task[] {
-  const sunk = parked
-    .map((id) => tasks.find((task) => task.id === id))
-    .filter((task): task is Task => task?.done === true)
-  return [...tasks.filter((task) => !sunk.includes(task)), ...sunk]
-}
-
 function Mark({ done }: { done: boolean }) {
   return (
     <svg aria-hidden="true" viewBox="0 0 24 24" className="size-5 flex-none" data-slot="task-list-mark">
-      <circle cx={12} cy={12} r={9.5} fill="none" stroke="var(--ink-400)" strokeWidth={2} />
+      <circle cx={12} cy={12} r={9.5} fill="none" stroke="var(--k-content-tertiary-foreground)" strokeWidth={2} />
       <motion.circle
         cx={12}
         cy={12}
         r={9.5}
-        fill="var(--signal-orange)"
+        fill="var(--accent)"
         style={{ transformBox: 'view-box', transformOrigin: '12px 12px' }}
         initial={false}
         animate={{ scale: done ? 1 : 0 }}
@@ -53,7 +39,7 @@ function Mark({ done }: { done: boolean }) {
       <motion.path
         d="M7.6 12.6 10.6 15.4 16.4 9"
         fill="none"
-        stroke="var(--bg-000)"
+        stroke="var(--k-surface-sunken-background)"
         strokeWidth={2.4}
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -120,10 +106,16 @@ function TaskRow({
 
 export type TaskListProps = {
   /** The tasks, each with id, label and optional done; controlled. */
-  tasks?: readonly Task[]
+  value?: readonly Task[]
   /** Initial tasks when uncontrolled. */
+  defaultValue?: readonly Task[]
+  /** Called with the new task list after a row is checked or unchecked. */
+  onValueChange?: (tasks: Task[]) => void
+  /** Old name of value, kept for one release. @deprecated Use value. */
+  tasks?: readonly Task[]
+  /** Old name of defaultValue, kept for one release. @deprecated Use defaultValue. */
   defaultTasks?: readonly Task[]
-  /** Called with the new task list. */
+  /** Old name of onValueChange, kept for one release. @deprecated Use onValueChange. */
   onTasksChange?: (tasks: Task[]) => void
   /** Announcement texts: completed(label) and reopened(label) (required). */
   labels: TaskListLabels
@@ -136,8 +128,21 @@ export type TaskListProps = {
   className?: string
 }
 
-export function TaskList({ tasks, defaultTasks = [], onTasksChange, labels, label, className }: TaskListProps) {
-  const [inner, setInner] = useState<readonly Task[]>(defaultTasks)
+/** Checklist: check a row and it strikes through, then sinks to the bottom; uncheck to bring it back. */
+export function TaskList({
+  value,
+  defaultValue,
+  onValueChange,
+  tasks: legacyTasks,
+  defaultTasks,
+  onTasksChange,
+  labels,
+  label,
+  className,
+}: TaskListProps) {
+  const tasks = value ?? legacyTasks
+  const emit = onValueChange ?? onTasksChange
+  const [inner, setInner] = useState<readonly Task[]>(defaultValue ?? defaultTasks ?? [])
   const current = tasks ?? inner
   const [parked, setParked] = useState<string[]>(() => current.filter((task) => task.done).map((task) => task.id))
   const [announcement, setAnnouncement] = useState('')
@@ -145,7 +150,7 @@ export function TaskList({ tasks, defaultTasks = [], onTasksChange, labels, labe
   const toggle = (task: Task, done: boolean) => {
     const next = current.map((item) => (item.id === task.id ? { ...item, done } : item))
     if (tasks === undefined) setInner(next)
-    onTasksChange?.(next)
+    emit?.(next)
     setAnnouncement(done ? labels.completed(task.label) : labels.reopened(task.label))
     // 取消勾：立刻回到原位，不等动画。
     if (!done) setParked((ids) => ids.filter((id) => id !== task.id))

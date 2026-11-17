@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // 渲染设置（2026-11-17）：应用「设置 → 渲染」那一页的件，每一项一行：名称、一句说明、控件，照原生程序的渲染设置页（如 Tern、Windows Terminal）的写法。
 // 值落在根节点上（theme/rendering.css 读）：data-text-smoothing、data-pixel-snap、data-numerals、data-cjk-adjust、data-font-<角色> 与 --k-weight-adjust、--k-text-scale、字体变量（font-catalog.ts）。
-// 件本身不存值：调用方拿 onChange 的值自己存（本地设置文件、localStorage 都行），启动时用 applyRendering 写回根节点。
+// 件本身不存值：调用方拿 onValueChange 的值自己存（本地设置文件、localStorage 都行），启动时用 applyRendering 写回根节点。
 
 import type { ReactNode } from 'react'
 import { Button } from '../primitives/button.tsx'
@@ -171,13 +171,27 @@ function Switch({
 }
 
 export type RenderingSettingsProps = {
+  /** The current settings (controlled). */
   value: RenderingSettingsValue
-  onChange: (next: RenderingSettingsValue) => void
+  /** Called with the whole new settings object when any row changes or Reset is pressed. */
+  onValueChange?: (next: RenderingSettingsValue) => void
+  /** Old name of onValueChange, kept for one release. @deprecated Use onValueChange. */
+  onChange?: (next: RenderingSettingsValue) => void
+  /** Texts; defaults to RENDERING_LABELS_ZH. */
   labels?: RenderingSettingsLabels
 }
 
-/** 渲染设置面板：受控件，值由调用方保存；一般在 onChange 里调 applyRendering 并存盘。 */
-export function RenderingSettings({ value, onChange, labels = RENDERING_LABELS_ZH }: RenderingSettingsProps) {
+/**
+ * Rendering settings panel: one row per setting (smoothing, pixel snap, weight, scale, slashed zero, CJK alignment, fonts).
+ * 渲染设置面板：受控件，值由调用方保存；一般在 onValueChange 里调 applyRendering 并存盘。
+ */
+export function RenderingSettings({
+  value,
+  onValueChange,
+  onChange: legacyOnChange,
+  labels = RENDERING_LABELS_ZH,
+}: RenderingSettingsProps) {
+  const onChange = (next: RenderingSettingsValue) => (onValueChange ?? legacyOnChange)?.(next)
   const patch = (part: Partial<RenderingSettingsValue>) => onChange({ ...value, ...part })
   return (
     <div className="k-render" data-slot="rendering-settings">

@@ -46,7 +46,7 @@ export const KatanaNumberInput = createComponentImplementation(KatanaNumberInput
         <NumberInput
           label={props.label}
           value={value}
-          onValue={(next) => props.setValue?.(next)}
+          onValueChange={(next) => props.setValue?.(next)}
           min={props.min}
           max={props.max}
           step={props.step ?? 1}

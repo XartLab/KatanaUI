@@ -14,7 +14,7 @@ export const SCRUB_SLOW_PX_PER_STEP = 40
 /** Shift 粗调：一格改十档。 */
 export const SCRUB_COARSE_STEPS = 10
 /** Alt 精调：小数步长的一格是步长的十分之一。 */
-export const SCRUB_FINE_DIVISOR = 10
+const SCRUB_FINE_DIVISOR = 10
 /** 按下去后挪过这么多像素才算拖动，之前的是点击（点进去打字）。 */
 export const SCRUB_THRESHOLD_PX = 3
 
@@ -31,7 +31,7 @@ export const scrubMode = (keys: ScrubKeys): ScrubMode => (keys.alt ? 'fine' : ke
  * 精调：步长小于 1（小数框）时一格是步长的十分之一；步长是整数的框（根数、像素、百分比）仍按整数走，只是慢十倍（拖 40px 一档），
  * 免得整数设置被调出 0.1 这种存不进去的值。
  */
-export function stepPlan(mode: ScrubMode, step: number): { px: number; increment: number } {
+function stepPlan(mode: ScrubMode, step: number): { px: number; increment: number } {
   if (mode === 'coarse') return { px: SCRUB_PX_PER_STEP, increment: step * SCRUB_COARSE_STEPS }
   if (mode === 'fine')
     return step < 1
@@ -44,7 +44,7 @@ export function stepPlan(mode: ScrubMode, step: number): { px: number; increment
  * 夹进范围。结果里的 -0 归一成 0：`Number((-1e-11).toFixed(10))` 与 `Number('-0')` 都得 -0，
  * `Object.is` 与 `toLocaleString` 之类的格式化都会把它当成另一个值（显示成 "-0"）；`-0 + 0` 是 0。
  */
-export const clampTo = (value: number, { min, max }: Pick<Range, 'min' | 'max'>): number =>
+const clampTo = (value: number, { min, max }: Pick<Range, 'min' | 'max'>): number =>
   clamp(value, min ?? -Infinity, max ?? Infinity) + 0
 
 /**

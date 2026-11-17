@@ -4,7 +4,7 @@
 // 步骤：改动文件的格式与 lint → 类型检查（全量，约 9 秒）→ 受影响的单测（vitest --changed）→ 受影响页的 e2e（按页 id 在用例源码里挑）→ vr:fast。
 // 用法：pnpm fast [--base <ref>] [--no-e2e] [--no-vr]；任何一步失败就停，退出码非 0。
 import { spawnSync } from 'node:child_process'
-import { readFileSync } from 'node:fs'
+import { readFileSync, readdirSync } from 'node:fs'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -60,14 +60,23 @@ const shared = dry.includes('共用层')
 if (shared) process.stdout.write('\n（共用层改动：快速模式跳过 e2e，合并前请跑 pnpm test:e2e）\n')
 if (!has('--no-e2e') && ids.length && !shared) {
   // e2e 用例名是中文，没法按页 id 过滤；在用例源码里找提到这些页 id 的 test(...)，取它们的标题拼成 -g。
-  const spec = readFileSync(join(pkgDir, 'e2e/ui-gallery.spec.ts'), 'utf8')
-  const starts = [...spec.matchAll(/\btest\(\s*(['`])((?:\\.|(?!\1).)*)\1/g)]
+  // 各页的专属用例分在 e2e/ 下几个 spec 里（ui-gallery.spec.ts 与按组拆出来的）；a11y 与 happo 是全站扫，不按页挑。
+  const specs = readdirSync(join(pkgDir, 'e2e')).filter(
+    (f) => f.endsWith('.spec.ts') && !/^ui-gallery-(a11y|happo)\./.test(f),
+  )
   const titles = new Set()
-  starts.forEach((m, i) => {
-    const body = spec.slice(m.index, starts[i + 1]?.index ?? spec.length)
-    if (ids.some((id) => body.includes(`'${id}'`) || body.includes(`"${id}"`) || body.includes(`#/${id}`)))
-      titles.add(m[2])
-  })
+  const files = new Set()
+  for (const file of specs) {
+    const spec = readFileSync(join(pkgDir, 'e2e', file), 'utf8')
+    const starts = [...spec.matchAll(/\btest\(\s*(['`])((?:\\.|(?!\1).)*)\1/g)]
+    starts.forEach((m, i) => {
+      const body = spec.slice(m.index, starts[i + 1]?.index ?? spec.length)
+      if (ids.some((id) => body.includes(`'${id}'`) || body.includes(`"${id}"`) || body.includes(`#/${id}`))) {
+        titles.add(m[2])
+        files.add(`e2e/${file}`)
+      }
+    })
+  }
   if (titles.size === 0) process.stdout.write('\n（受影响的页没有专属 e2e 用例，跳过 e2e）\n')
   else if (titles.size > 40)
     process.stdout.write(`\n（波及 ${titles.size} 条 e2e，太多：快速模式跳过，合并前请跑 pnpm test:e2e）\n`)
@@ -85,7 +94,7 @@ if (!has('--no-e2e') && ids.length && !shared) {
     run(
       `受影响的 e2e（${titles.size} 条，dpr-1）`,
       'pnpm',
-      ['exec', 'playwright', 'test', 'e2e/ui-gallery.spec.ts', '--project=dpr-1', '--workers=4', '-g', grep],
+      ['exec', 'playwright', 'test', ...files, '--project=dpr-1', '--workers=4', '-g', grep],
       {
         PLAYWRIGHT_BROWSERS_PATH: process.env.PLAYWRIGHT_BROWSERS_PATH ?? '/opt/pw-browsers',
       },

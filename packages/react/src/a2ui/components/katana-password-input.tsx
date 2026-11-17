@@ -17,9 +17,14 @@ export const KatanaPasswordInputApi = {
       value: CommonSchemas.DataBinding.describe(
         'Where the typed secret is written: only a binding such as {"@path": "/form/secret"} is accepted, never a literal. This is write-only: the component never shows a value already in the data model, so you cannot prefill it, and it only writes what the user types. Setting the bound path to an empty string clears the box. Whether the data model is sent back to you is up to the host; do not ask the user to type a secret unless the host keeps it out of your context.',
       ),
-      toggleLabel: CommonSchemas.DynamicString.describe(
-        'Accessible name of the show/hide eye button. It does not change with state.',
-      ),
+      labels: z
+        .object({
+          toggle: z.string().describe('Accessible name of the show/hide eye button. It does not change with state.'),
+        })
+        .strict()
+        .describe(
+          'All the texts, all required: the component carries no wording of its own. Write them in the language of the user.',
+        ),
       placeholder: CommonSchemas.DynamicString.describe('Hint text shown while the box is empty.').optional(),
       disabled: CommonSchemas.DynamicBoolean.describe('When true the box cannot be edited.').optional(),
       checks: CommonSchemas.Checkable.shape.checks,
@@ -30,13 +35,13 @@ export const KatanaPasswordInputApi = {
 
 function Control({
   epoch,
-  toggleLabel,
+  labels,
   placeholder,
   disabled,
   onText,
 }: {
   epoch: number
-  toggleLabel: string
+  labels: { toggle: string }
   placeholder?: string
   disabled: boolean
   onText: (text: string) => void
@@ -47,7 +52,7 @@ function Control({
     <PasswordInput
       key={epoch}
       {...field}
-      toggleLabel={toggleLabel}
+      labels={labels}
       placeholder={placeholder}
       disabled={disabled}
       onChange={(event) => onText(event.target.value)}
@@ -72,7 +77,7 @@ export const KatanaPasswordInput = createComponentImplementation(KatanaPasswordI
         <FieldLabel>{props.label}</FieldLabel>
         <Control
           epoch={epoch}
-          toggleLabel={props.toggleLabel ?? ''}
+          labels={props.labels}
           placeholder={props.placeholder}
           disabled={props.disabled === true}
           onText={(text) => {

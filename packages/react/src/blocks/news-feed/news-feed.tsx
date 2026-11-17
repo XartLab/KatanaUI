@@ -602,7 +602,7 @@ export function NewsFeed({
                 onSourcesChange?.(next)
               }}
               label={labels.sources}
-              clearLabel={labels.clearSources}
+              labels={{ clear: labels.clearSources }}
             />
           )}
           {/* 新消息到达的播报：一直在，文字变了读屏才读；只读条数。 */}

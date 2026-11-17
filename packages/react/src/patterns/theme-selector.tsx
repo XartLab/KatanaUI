@@ -10,6 +10,7 @@ import { useId, useRef, useState, type KeyboardEvent } from 'react'
 import { cn } from '../lib/cn.ts'
 import { focusRing } from '../lib/focus.ts'
 import { snappy } from '../lib/motion.ts'
+import { nextThemeIndex } from './theme-selector-model.ts'
 
 /** 缩略里用到的六个颜色（任何 CSS 颜色写法）。 */
 export type ThemePalette = {
@@ -42,6 +43,8 @@ export type ThemeSelectorProps = {
   /** Initial theme when uncontrolled. */
   defaultValue?: string
   /** Called with the chosen theme value. */
+  onValueChange?: (value: string) => void
+  /** Old name of onValueChange, kept for one release. @deprecated Use onValueChange. */
   onChange?: (value: string) => void
   /**
    * Accessible name of the whole group (required).
@@ -57,16 +60,6 @@ export type ThemeSelectorProps = {
   disabled?: boolean
   /** Extra class name on the root. */
   className?: string
-}
-
-/** 方向键与 Home / End 之后该选中第几个；不是这几个键返回 null。到头循环。 */
-export function nextThemeIndex(key: string, index: number, count: number): number | null {
-  if (count <= 0) return null
-  if (key === 'Home') return 0
-  if (key === 'End') return count - 1
-  if (key === 'ArrowRight' || key === 'ArrowDown') return (index + 1) % count
-  if (key === 'ArrowLeft' || key === 'ArrowUp') return (index - 1 + count) % count
-  return null
 }
 
 function Preview({ colors }: { colors: ThemePalette }) {
@@ -108,16 +101,19 @@ function Preview({ colors }: { colors: ThemePalette }) {
   )
 }
 
+/** Theme picker: one live thumbnail per theme in a radiogroup; the ring slides to the selected one. */
 export function ThemeSelector({
   themes,
   value,
   defaultValue,
+  onValueChange,
   onChange,
   label,
   showLabels = true,
   disabled,
   className,
 }: ThemeSelectorProps) {
+  const emit = onValueChange ?? onChange
   const ringId = useId()
   const [inner, setInner] = useState(defaultValue ?? themes[0]?.value)
   const items = useRef<(HTMLButtonElement | null)[]>([])
@@ -128,7 +124,7 @@ export function ThemeSelector({
   const select = (next: string) => {
     if (next === selected) return
     if (value === undefined) setInner(next)
-    onChange?.(next)
+    emit?.(next)
   }
   const onKeyDown = (event: KeyboardEvent<HTMLButtonElement>, index: number) => {
     const target = nextThemeIndex(event.key, index, themes.length)

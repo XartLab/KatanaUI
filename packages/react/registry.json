@@ -234,6 +234,11 @@
           "target": "~/src/katana/ui/theme/quote.css"
         },
         {
+          "path": "src/theme/range-histogram-slider.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/range-histogram-slider.css"
+        },
+        {
           "path": "src/theme/rendering.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/rendering.css"
@@ -317,6 +322,11 @@
           "path": "src/theme/tree-view.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/tree-view.css"
+        },
+        {
+          "path": "src/theme/view-switcher.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/view-switcher.css"
         },
         {
           "path": "src/theme/vintage-series.css",
@@ -1635,65 +1645,6 @@
       ]
     },
     {
-      "name": "date-time-input",
-      "type": "registry:component",
-      "title": "Date Time Input",
-      "description": "可以逐段打字的「年-月-日」与「时:分」，日期框右边的日历按钮打开日历；不随浏览器语言变格式。",
-      "dependencies": [
-        "lucide-react@1.67.0",
-        "react-aria-components@1.22.1"
-      ],
-      "registryDependencies": [
-        "@katana/date-time-model",
-        "@katana/popover"
-      ],
-      "files": [
-        {
-          "path": "src/katana/date-time-input.tsx",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/katana/date-time-input.tsx"
-        }
-      ]
-    },
-    {
-      "name": "date-time-model",
-      "type": "registry:lib",
-      "title": "Date Time Model",
-      "description": "DateTimeInput 的解析与格式化（纯函数）。",
-      "dependencies": [
-        "@internationalized/date@3.12.4"
-      ],
-      "files": [
-        {
-          "path": "src/katana/date-time-model.ts",
-          "type": "registry:lib",
-          "target": "~/src/katana/ui/katana/date-time-model.ts"
-        }
-      ]
-    },
-    {
-      "name": "delete-button",
-      "type": "registry:component",
-      "title": "Delete Button",
-      "description": "危险操作不弹对话框：点一下按钮在原地展开出「确认」「取消」，垃圾桶的盖子掀开。Esc、点外面、Tab 走开都是取消。学自 rare-ui。",
-      "dependencies": [
-        "motion@14.9.0"
-      ],
-      "registryDependencies": [
-        "@katana/cn",
-        "@katana/focus",
-        "@katana/motion",
-        "@katana/spring"
-      ],
-      "files": [
-        {
-          "path": "src/katana/delete-button.tsx",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/katana/delete-button.tsx"
-        }
-      ]
-    },
-    {
       "name": "dither-chart",
       "type": "registry:component",
       "title": "Dither Chart",
@@ -1719,28 +1670,6 @@
           "path": "src/katana/dot-matrix.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/katana/dot-matrix.tsx"
-        }
-      ]
-    },
-    {
-      "name": "duration-picker",
-      "type": "registry:component",
-      "title": "Duration Picker",
-      "description": "平时是连成一整条的药丸「2 时 30 分」加笔钮；点笔钮三段用弹簧分开、内侧圆角长出来，数字变成可输入的框，笔变对勾；点对勾确认。输入超上限夹住并抖一下。学自 rare-ui。",
-      "dependencies": [
-        "motion@14.9.0"
-      ],
-      "registryDependencies": [
-        "@katana/cn",
-        "@katana/focus",
-        "@katana/motion",
-        "@katana/spring"
-      ],
-      "files": [
-        {
-          "path": "src/katana/duration-picker.tsx",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/katana/duration-picker.tsx"
         }
       ]
     },
@@ -1812,36 +1741,6 @@
           "path": "src/katana/grid-loader.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/katana/grid-loader.tsx"
-        }
-      ]
-    },
-    {
-      "name": "hold-model",
-      "type": "registry:lib",
-      "title": "Hold Model",
-      "description": "HoldToConfirm 的进度规则：按住填满、松手退回的时长与每帧推进（纯函数）。",
-      "files": [
-        {
-          "path": "src/katana/hold-model.ts",
-          "type": "registry:lib",
-          "target": "~/src/katana/ui/katana/hold-model.ts"
-        }
-      ]
-    },
-    {
-      "name": "hold-to-confirm",
-      "type": "registry:component",
-      "title": "Hold To Confirm",
-      "description": "不可撤的动作（全平、全撤、停策略）用的按钮：按住把底色从左填满才触发，松手往回退；键盘按住空格或回车同样。单击不触发。功能参照 Arc，实现原创。",
-      "registryDependencies": [
-        "@katana/cn",
-        "@katana/hold-model"
-      ],
-      "files": [
-        {
-          "path": "src/katana/hold-to-confirm.tsx",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/katana/hold-to-confirm.tsx"
         }
       ]
     },
@@ -2162,55 +2061,6 @@
       ]
     },
     {
-      "name": "number-expression",
-      "type": "registry:lib",
-      "title": "Number Expression",
-      "description": "NumberInput 的算式输入：+10%、*2、100*1.5 按当前值算（纯函数，不用 eval）。",
-      "registryDependencies": [
-        "@katana/number-field-model"
-      ],
-      "files": [
-        {
-          "path": "src/katana/number-expression.ts",
-          "type": "registry:lib",
-          "target": "~/src/katana/ui/katana/number-expression.ts"
-        }
-      ]
-    },
-    {
-      "name": "number-field-model",
-      "type": "registry:lib",
-      "title": "Number Field Model",
-      "description": "NumberInput 的解析与取整（纯函数）。",
-      "registryDependencies": [
-        "@katana/num"
-      ],
-      "files": [
-        {
-          "path": "src/katana/number-field-model.ts",
-          "type": "registry:lib",
-          "target": "~/src/katana/ui/katana/number-field-model.ts"
-        }
-      ]
-    },
-    {
-      "name": "number-input",
-      "type": "registry:component",
-      "title": "Number Input",
-      "description": "一个框：值加可选的单位后缀，没有 −/+ 按钮；打字、方向键、按住左右拖三种改法，可选框内标签与算式输入。",
-      "registryDependencies": [
-        "@katana/number-expression",
-        "@katana/number-field-model"
-      ],
-      "files": [
-        {
-          "path": "src/katana/number-input.tsx",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/katana/number-input.tsx"
-        }
-      ]
-    },
-    {
       "name": "page-preloader",
       "type": "registry:component",
       "title": "Page Preloader",
@@ -2226,29 +2076,6 @@
           "path": "src/katana/page-preloader.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/katana/page-preloader.tsx"
-        }
-      ]
-    },
-    {
-      "name": "password-input",
-      "type": "registry:component",
-      "title": "Password Input",
-      "description": "带眼睛按钮的输入框：默认遮住，点一下显示或遮住；上下眼睑用弹簧开合，输入框不丢焦点与选区。学自 rare-ui（不要强度条）。",
-      "dependencies": [
-        "motion@14.9.0"
-      ],
-      "registryDependencies": [
-        "@katana/cn",
-        "@katana/focus",
-        "@katana/input",
-        "@katana/motion",
-        "@katana/spring"
-      ],
-      "files": [
-        {
-          "path": "src/katana/password-input.tsx",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/katana/password-input.tsx"
         }
       ]
     },
@@ -2437,40 +2264,6 @@
           "path": "src/katana/scrubber.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/katana/scrubber.tsx"
-        }
-      ]
-    },
-    {
-      "name": "shortcut-model",
-      "type": "registry:lib",
-      "title": "Shortcut Model",
-      "description": "ShortcutRecorder 的规则：一次按键变成规范组合串（修饰键次序、物理键）。",
-      "files": [
-        {
-          "path": "src/katana/shortcut-model.ts",
-          "type": "registry:lib",
-          "target": "~/src/katana/ui/katana/shortcut-model.ts"
-        }
-      ]
-    },
-    {
-      "name": "shortcut-recorder",
-      "type": "registry:component",
-      "title": "Shortcut Recorder",
-      "description": "热键设置用的录键框：点一下进入录键态，按下组合键就记下来；冲突由调用方传的占用表判断，冲突时不写入并说占着的是谁。功能参照 Arc，实现原创。",
-      "dependencies": [
-        "lucide-react@1.67.0"
-      ],
-      "registryDependencies": [
-        "@katana/cn",
-        "@katana/kbd",
-        "@katana/shortcut-model"
-      ],
-      "files": [
-        {
-          "path": "src/katana/shortcut-recorder.tsx",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/katana/shortcut-recorder.tsx"
         }
       ]
     },
@@ -2701,49 +2494,6 @@
       ]
     },
     {
-      "name": "task-list",
-      "type": "registry:component",
-      "title": "Task List",
-      "description": "点一行打勾：圆圈填上强调色、对勾一笔画出来、文字被一道线划掉，划完这一行沉到底部，其余行弹簧补位；再点取消，回到原位。学自 rare-ui。",
-      "dependencies": [
-        "motion@14.9.0"
-      ],
-      "registryDependencies": [
-        "@katana/cn",
-        "@katana/focus",
-        "@katana/motion",
-        "@katana/spring"
-      ],
-      "files": [
-        {
-          "path": "src/katana/task-list.tsx",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/katana/task-list.tsx"
-        }
-      ]
-    },
-    {
-      "name": "theme-selector",
-      "type": "registry:component",
-      "title": "Theme Selector",
-      "description": "每个主题一张缩略预览（迷你控制台），选中的那张加一圈环，环在选项之间用弹簧滑过去。缩略颜色由调用方传，所以能同时预览别的主题。学自 rare-ui。",
-      "dependencies": [
-        "motion@14.9.0"
-      ],
-      "registryDependencies": [
-        "@katana/cn",
-        "@katana/focus",
-        "@katana/motion"
-      ],
-      "files": [
-        {
-          "path": "src/katana/theme-selector.tsx",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/katana/theme-selector.tsx"
-        }
-      ]
-    },
-    {
       "name": "toast",
       "type": "registry:component",
       "title": "Toast",
@@ -2888,7 +2638,7 @@
     },
     {
       "name": "date-range-model",
-      "type": "registry:component",
+      "type": "registry:lib",
       "title": "Date Range Model",
       "description": "DateRangePicker 的预设规则：今天、本周、本月、年初至今（截至今天）与区间认预设（纯函数）。",
       "dependencies": [
@@ -2897,7 +2647,7 @@
       "files": [
         {
           "path": "src/patterns/date-range-model.ts",
-          "type": "registry:component",
+          "type": "registry:lib",
           "target": "~/src/katana/ui/patterns/date-range-model.ts"
         }
       ]
@@ -2926,6 +2676,65 @@
       ]
     },
     {
+      "name": "date-time-input",
+      "type": "registry:component",
+      "title": "Date Time Input",
+      "description": "可以逐段打字的「年-月-日」与「时:分」，日期框右边的日历按钮打开日历；不随浏览器语言变格式。",
+      "dependencies": [
+        "lucide-react@1.67.0",
+        "react-aria-components@1.22.1"
+      ],
+      "registryDependencies": [
+        "@katana/date-time-model",
+        "@katana/popover"
+      ],
+      "files": [
+        {
+          "path": "src/patterns/date-time-input.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/patterns/date-time-input.tsx"
+        }
+      ]
+    },
+    {
+      "name": "date-time-model",
+      "type": "registry:lib",
+      "title": "Date Time Model",
+      "description": "DateTimeInput 的解析与格式化（纯函数）。",
+      "dependencies": [
+        "@internationalized/date@3.12.4"
+      ],
+      "files": [
+        {
+          "path": "src/patterns/date-time-model.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/patterns/date-time-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "delete-button",
+      "type": "registry:component",
+      "title": "Delete Button",
+      "description": "危险操作不弹对话框：点一下按钮在原地展开出「确认」「取消」，垃圾桶的盖子掀开。Esc、点外面、Tab 走开都是取消。学自 rare-ui。",
+      "dependencies": [
+        "motion@14.9.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/focus",
+        "@katana/motion",
+        "@katana/spring"
+      ],
+      "files": [
+        {
+          "path": "src/patterns/delete-button.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/patterns/delete-button.tsx"
+        }
+      ]
+    },
+    {
       "name": "dock",
       "type": "registry:component",
       "title": "Dock",
@@ -2942,6 +2751,42 @@
           "path": "src/patterns/dock.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/patterns/dock.tsx"
+        }
+      ]
+    },
+    {
+      "name": "duration-picker-model",
+      "type": "registry:lib",
+      "title": "Duration Picker Model",
+      "description": "DurationPicker 的输入规则：框里的字与数互转，空当 0，超上限夹住并标记要抖一下（纯函数）。",
+      "files": [
+        {
+          "path": "src/patterns/duration-picker-model.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/patterns/duration-picker-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "duration-picker",
+      "type": "registry:component",
+      "title": "Duration Picker",
+      "description": "平时是连成一整条的药丸「2 时 30 分」加笔钮；点笔钮三段用弹簧分开、内侧圆角长出来，数字变成可输入的框，笔变对勾；点对勾确认。输入超上限夹住并抖一下。学自 rare-ui。",
+      "dependencies": [
+        "motion@14.9.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/duration-picker-model",
+        "@katana/focus",
+        "@katana/motion",
+        "@katana/spring"
+      ],
+      "files": [
+        {
+          "path": "src/patterns/duration-picker.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/patterns/duration-picker.tsx"
         }
       ]
     },
@@ -3009,13 +2854,13 @@
     },
     {
       "name": "filter-bar-model",
-      "type": "registry:component",
+      "type": "registry:lib",
       "title": "Filter Bar Model",
       "description": "选股器的顶部过滤行：一行可换行的胶囊，每个胶囊是一个字段；点开浮层有标题与垃圾桶（把这个过滤从条上拿掉）、搜索框、预设条件列表（主文字加灰色副标题）、底部「手动设置」（运算符加值）。最后是「+」（按分组列出所有字段，进组再选）与「⋯」（重置全部条件）。照 TradingView 选股器（主会话 2026-11-15 登录态实测），实现原创。字段、运算符、预设与文字都由调用方定义；条件受控，件不过滤数据，调用方用 applyFilters 或自己的方式过滤。",
       "files": [
         {
           "path": "src/patterns/filter-bar-model.ts",
-          "type": "registry:component",
+          "type": "registry:lib",
           "target": "~/src/katana/ui/patterns/filter-bar-model.ts"
         }
       ]
@@ -3066,14 +2911,45 @@
     },
     {
       "name": "font-catalog",
-      "type": "registry:component",
+      "type": "registry:lib",
       "title": "Font Catalog",
       "description": "应用「设置 → 渲染」那一页：字体（界面、汉字、数据字、代码四个角色，各从字体目录 FONT_CATALOG 里挑：系统、开源、本机已装三类）、文字平滑（灰度 / 系统）、像素对齐、字重补偿（-60..+60，相当于终端的 font-thicken）、字号缩放（取整到整像素）、斜线零、中英对齐（font-size-adjust）。每项一行：名称、一句说明、控件。值写在根节点上（theme/rendering.css 读），件是受控的，调用方存值，启动时用 applyRendering 写回。字样表与本机字体检测见总览里的 rendering 页。",
       "files": [
         {
           "path": "src/patterns/font-catalog.ts",
-          "type": "registry:component",
+          "type": "registry:lib",
           "target": "~/src/katana/ui/patterns/font-catalog.ts"
+        }
+      ]
+    },
+    {
+      "name": "hold-model",
+      "type": "registry:lib",
+      "title": "Hold Model",
+      "description": "HoldToConfirm 的进度规则：按住填满、松手退回的时长与每帧推进（纯函数）。",
+      "files": [
+        {
+          "path": "src/patterns/hold-model.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/patterns/hold-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "hold-to-confirm",
+      "type": "registry:component",
+      "title": "Hold To Confirm",
+      "description": "不可撤的动作（全平、全撤、停策略）用的按钮：按住把底色从左填满才触发，松手往回退；键盘按住空格或回车同样。单击不触发。功能参照 Arc，实现原创。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/hold-model",
+        "@katana/severity"
+      ],
+      "files": [
+        {
+          "path": "src/patterns/hold-to-confirm.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/patterns/hold-to-confirm.tsx"
         }
       ]
     },
@@ -3092,6 +2968,95 @@
           "path": "src/patterns/multi-select.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/patterns/multi-select.tsx"
+        }
+      ]
+    },
+    {
+      "name": "number-expression",
+      "type": "registry:lib",
+      "title": "Number Expression",
+      "description": "NumberInput 的算式输入：+10%、*2、100*1.5 按当前值算（纯函数，不用 eval）。",
+      "registryDependencies": [
+        "@katana/number-field-model"
+      ],
+      "files": [
+        {
+          "path": "src/patterns/number-expression.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/patterns/number-expression.ts"
+        }
+      ]
+    },
+    {
+      "name": "number-field-model",
+      "type": "registry:lib",
+      "title": "Number Field Model",
+      "description": "NumberInput 的解析与取整（纯函数）。",
+      "registryDependencies": [
+        "@katana/num"
+      ],
+      "files": [
+        {
+          "path": "src/patterns/number-field-model.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/patterns/number-field-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "number-input",
+      "type": "registry:component",
+      "title": "Number Input",
+      "description": "一个框：值加可选的单位后缀，没有 −/+ 按钮；打字、方向键、按住左右拖三种改法，可选框内标签与算式输入。",
+      "registryDependencies": [
+        "@katana/number-expression",
+        "@katana/number-field-model"
+      ],
+      "files": [
+        {
+          "path": "src/patterns/number-input.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/patterns/number-input.tsx"
+        }
+      ]
+    },
+    {
+      "name": "password-input-model",
+      "type": "registry:lib",
+      "title": "Password Input Model",
+      "description": "PasswordInput 的眼睛轮廓：睁开程度 0..1 到 SVG 路径（纯函数）。",
+      "registryDependencies": [
+        "@katana/num"
+      ],
+      "files": [
+        {
+          "path": "src/patterns/password-input-model.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/patterns/password-input-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "password-input",
+      "type": "registry:component",
+      "title": "Password Input",
+      "description": "带眼睛按钮的输入框：默认遮住，点一下显示或遮住；上下眼睑用弹簧开合，输入框不丢焦点与选区。学自 rare-ui（不要强度条）。",
+      "dependencies": [
+        "motion@14.9.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/focus",
+        "@katana/input",
+        "@katana/motion",
+        "@katana/password-input-model",
+        "@katana/spring"
+      ],
+      "files": [
+        {
+          "path": "src/patterns/password-input.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/patterns/password-input.tsx"
         }
       ]
     },
@@ -3117,7 +3082,7 @@
     },
     {
       "name": "range-histogram-model",
-      "type": "registry:component",
+      "type": "registry:lib",
       "title": "Range Histogram Model",
       "description": "一排柱子画出全体的分布，下面一条轨道两个把手：拖出来的区间里的柱子亮、区间外的暗；柱色取 seq 顺序色阶（越高越亮）。用在筛选器，在全市场分布上拖市值、涨幅、换手的区间。点柱子或轨道，最近的把手跳过去。功能参照 Arc Range histogram slider，实现原创。",
       "registryDependencies": [
@@ -3126,7 +3091,7 @@
       "files": [
         {
           "path": "src/patterns/range-histogram-model.ts",
-          "type": "registry:component",
+          "type": "registry:lib",
           "target": "~/src/katana/ui/patterns/range-histogram-model.ts"
         }
       ]
@@ -3212,6 +3177,40 @@
       ]
     },
     {
+      "name": "shortcut-model",
+      "type": "registry:lib",
+      "title": "Shortcut Model",
+      "description": "ShortcutRecorder 的规则：一次按键变成规范组合串（修饰键次序、物理键）。",
+      "files": [
+        {
+          "path": "src/patterns/shortcut-model.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/patterns/shortcut-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "shortcut-recorder",
+      "type": "registry:component",
+      "title": "Shortcut Recorder",
+      "description": "热键设置用的录键框：点一下进入录键态，按下组合键就记下来；冲突由调用方传的占用表判断，冲突时不写入并说占着的是谁。功能参照 Arc，实现原创。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/kbd",
+        "@katana/shortcut-model"
+      ],
+      "files": [
+        {
+          "path": "src/patterns/shortcut-recorder.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/patterns/shortcut-recorder.tsx"
+        }
+      ]
+    },
+    {
       "name": "side-nav",
       "type": "registry:component",
       "title": "Side Nav",
@@ -3221,6 +3220,77 @@
           "path": "src/patterns/side-nav.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/patterns/side-nav.tsx"
+        }
+      ]
+    },
+    {
+      "name": "task-list-model",
+      "type": "registry:lib",
+      "title": "Task List Model",
+      "description": "TaskList 的任务形状与次序：没完成的保持原位，划完的按沉下去的先后排到底部（纯函数）。",
+      "files": [
+        {
+          "path": "src/patterns/task-list-model.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/patterns/task-list-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "task-list",
+      "type": "registry:component",
+      "title": "Task List",
+      "description": "点一行打勾：圆圈填上强调色、对勾一笔画出来、文字被一道线划掉，划完这一行沉到底部，其余行弹簧补位；再点取消，回到原位。学自 rare-ui。",
+      "dependencies": [
+        "motion@14.9.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/focus",
+        "@katana/motion",
+        "@katana/spring",
+        "@katana/task-list-model"
+      ],
+      "files": [
+        {
+          "path": "src/patterns/task-list.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/patterns/task-list.tsx"
+        }
+      ]
+    },
+    {
+      "name": "theme-selector-model",
+      "type": "registry:lib",
+      "title": "Theme Selector Model",
+      "description": "ThemeSelector 的键盘规则：方向键与 Home / End 移到哪一张，到头循环（纯函数）。",
+      "files": [
+        {
+          "path": "src/patterns/theme-selector-model.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/patterns/theme-selector-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "theme-selector",
+      "type": "registry:component",
+      "title": "Theme Selector",
+      "description": "每个主题一张缩略预览（迷你控制台），选中的那张加一圈环，环在选项之间用弹簧滑过去。缩略颜色由调用方传，所以能同时预览别的主题。学自 rare-ui。",
+      "dependencies": [
+        "motion@14.9.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/focus",
+        "@katana/motion",
+        "@katana/theme-selector-model"
+      ],
+      "files": [
+        {
+          "path": "src/patterns/theme-selector.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/patterns/theme-selector.tsx"
         }
       ]
     },

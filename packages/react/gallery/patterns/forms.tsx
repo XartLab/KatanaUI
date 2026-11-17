@@ -48,7 +48,7 @@ function Demo() {
         <FieldDescription>最多 40 字。</FieldDescription>
         {nameError ? <FieldError>{nameError}</FieldError> : null}
       </Field>
-      <DecimalField label="限价" value={price} onValue={setPrice} step="0.5" unit="USDT" />
+      <DecimalField label="限价" value={price} onValueChange={setPrice} step="0.5" unit="USDT" />
       <DateTimeInput
         label="开始"
         labels={DT_LABELS}

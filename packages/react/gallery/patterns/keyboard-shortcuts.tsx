@@ -33,7 +33,7 @@ function Demo() {
       <ShortcutRecorder
         label="全部平仓快捷键"
         value={flatten}
-        onValue={setFlatten}
+        onValueChange={setFlatten}
         labels={LABELS}
         conflicts={TAKEN}
         requireModifier

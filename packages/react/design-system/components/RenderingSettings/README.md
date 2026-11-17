@@ -11,7 +11,7 @@
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
 | `value` | `RenderingSettingsValue` | — | { smoothing, pixelSnap, weightAdjust, textScale, slashedZero, cjkAdjust, fonts }；fonts 是按角色（ui、cjk、num、mono）选的字体 id，见 FONT_CATALOG。默认值是 DEFAULT_RENDERING。 |
-| `onChange` | `(next: RenderingSettingsValue) => void` | — | 改了任一项；一般在这里 applyRendering(next) 并存盘。 |
+| `onValueChange` | `(next: RenderingSettingsValue) => void` | — | 改了任一项或按了恢复默认，给整份新值；一般在这里 applyRendering(next) 并存盘。旧名 onChange 留一个版本（@deprecated）。 |
 | `labels` | `RenderingSettingsLabels` | — | 全部文字，默认 RENDERING_LABELS_ZH。 |
 
 ## Usage
@@ -27,7 +27,7 @@ export function RenderingSettingsUsage() {
   return (
     <RenderingSettings
       value={value}
-      onChange={(next) => {
+      onValueChange={(next) => {
         setValue(next)
         applyRendering(next)
       }}
@@ -51,5 +51,14 @@ export function RenderingSettingsUsage() {
 ```
 RenderingSettings
   行 × 6（名称、说明、ToggleGroup 或 Slider）
+  字体小节
+    行 × 4（界面、汉字、数据字、代码：Select）
   恢复默认（Button）
 ```
+
+## Keyboard
+
+- `Tab`：按行的次序走过每个控件，最后是恢复默认
+- `← →`：开关与平滑方式（分段切换）里换一段
+- `← → / ↑ ↓`：字重、字号滑块走一格（字重 10，字号 5%）；Home / End 到两头
+- `Enter / Space`：打开字体下拉；下拉里 ↑ ↓ 选、Enter 确定、Esc 收起

@@ -170,8 +170,7 @@ const EXAMPLES: Record<string, Record<string, unknown>> = {
   KatanaTaskList: {
     tasks: [{ id: 't1', label: 'Read the filing', done: true }],
     label: 'Plan',
-    completedLabel: '{label} done',
-    reopenedLabel: '{label} reopened',
+    labels: { completed: '{label} done', reopened: '{label} reopened' },
     onToggle: { event: { name: 'task.toggle' } },
   },
   KatanaStepPlayer: {
@@ -597,8 +596,8 @@ const EXAMPLES: Record<string, Record<string, unknown>> = {
       { value: 'open', label: 'Open', count: 3 },
       { value: 'done', label: 'Done' },
     ],
-    values: { '@path': '/filters' },
-    clearLabel: 'Clear filters',
+    value: { '@path': '/filters' },
+    labels: { clear: 'Clear filters' },
   },
   KatanaNumberInput: { label: 'Leverage', value: { '@path': '/form/lev' }, min: 1, max: 10, unit: 'x' },
   KatanaDecimalField: {
@@ -606,7 +605,7 @@ const EXAMPLES: Record<string, Record<string, unknown>> = {
     value: { '@path': '/order/price' },
     step: '0.01',
     unit: 'USDT',
-    buttons: { decrease: 'One tick down', increase: 'One tick up' },
+    labels: { decrease: 'One tick down', increase: 'One tick up' },
   },
   KatanaDateRangePicker: {
     label: 'Period',
@@ -649,7 +648,7 @@ const EXAMPLES: Record<string, Record<string, unknown>> = {
     searchPlaceholder: 'Search',
     emptyText: 'No match',
   },
-  KatanaPasswordInput: { label: 'API secret', value: { '@path': '/form/secret' }, toggleLabel: 'Show or hide' },
+  KatanaPasswordInput: { label: 'API secret', value: { '@path': '/form/secret' }, labels: { toggle: 'Show or hide' } },
   KatanaToast: { title: 'Order sent to the host', description: 'Waiting for your confirmation.', closeLabel: 'Close' },
   KatanaCodeBlock: {
     code: 'print(1)',

@@ -50,21 +50,8 @@ function Segments({ segment }: { segment: DateSegmentProps['segment'] }) {
   return <DateSegment segment={segment} className="k-dt-seg" />
 }
 
-export function DateTimeInput({
-  label,
-  date,
-  onDate,
-  time,
-  onTime,
-  seconds = false,
-  min,
-  max,
-  size,
-  autoFocus,
-  className,
-  labels,
-  locale,
-}: {
+/** Date (and optional time) field typed segment by segment, with a calendar button. Values are YYYY-MM-DD and HH:mm(:ss) strings. */
+export type DateTimeInputProps = {
   /**
    * Field name used to build the accessible names: the date is read as "<label> date", the time as "<label> time".
    * 读屏用的名字：日期叫「<label>的日期」，时刻叫「<label>的时刻」。
@@ -93,8 +80,8 @@ export function DateTimeInput({
   min?: string
   /** Latest selectable date (YYYY-MM-DD). */
   max?: string
-  /** sm is 26px high. */
-  size?: 'sm'
+  /** sm is 26px high; md (the default) is 30px. */
+  size?: 'sm' | 'md'
   /** Focus the field on mount, like the native attribute. */
   autoFocus?: boolean
   /** Extra class name on the root. */
@@ -106,14 +93,31 @@ export function DateTimeInput({
    * 给 react-aria 的语言（年-月-日的顺序）：中文界面 zh-CN（分隔由下面换成「-」），英文界面 en-CA。
    */
   locale: string
-}) {
+}
+
+/** Date and time field: year-month-day segments, a calendar popover and an optional 24-hour time field. */
+export function DateTimeInput({
+  label,
+  date,
+  onDate,
+  time,
+  onTime,
+  seconds = false,
+  min,
+  max,
+  size,
+  autoFocus,
+  className,
+  labels,
+  locale,
+}: DateTimeInputProps) {
   const [open, setOpen] = useState(false)
   const day = toCalendarDate(date)
   const minValue = toCalendarDate(min ?? '')
   const maxValue = toCalendarDate(max ?? '')
   return (
     <I18nProvider locale={locale}>
-      <span className={`k-dt${size ? ` ${size}` : ''}${className ? ` ${className}` : ''}`}>
+      <span className={`k-dt${size === 'sm' ? ' sm' : ''}${className ? ` ${className}` : ''}`}>
         <DateField
           aria-label={labels.date(label)}
           className="k-dt-field k-dt-date"

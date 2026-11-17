@@ -1,5 +1,6 @@
-/* SPDX-License-Identifier: MIT */
-/* ChipGroup：芯片 24 高 · 圆角 pill · 4% 白底 8% 白边 · 12px；选中用 --seg-on-bg / --seg-on-ink（分段切换同一对，对底 ≥ 3:1，#477）；
+/* SPDX-License-Identifier: MIT 
+   G2（2026-11-18）：颜色改读 characteristics（--k-actionable-*、--k-content-*）；芯片边从 8% 白统一成按钮的 7%（--k-actionable-borderColor），清除钮悬停底 5% → 4%。 */
+/* ChipGroup：芯片 24 高 · 圆角 pill · 3% 白底 7% 白边 · 12px；选中用 --seg-on-bg / --seg-on-ink（分段切换同一对，对底 ≥ 3:1，#477）；
    数量是等宽数字，选中时随字色。 */
 .k-chips {
   display: flex;
@@ -13,10 +14,10 @@
   gap: 6px;
   height: 24px;
   padding: 0 10px;
-  background: var(--alpha-white-3);
-  border: 1px solid var(--alpha-white-8);
+  background: var(--k-actionable-background);
+  border: 1px solid var(--k-actionable-borderColor);
   border-radius: var(--radius-pill);
-  color: var(--ink-200);
+  color: var(--k-content-body-foreground);
   font: var(--text-data) var(--font-sans);
   font-weight: 500;
   line-height: 1;
@@ -29,8 +30,8 @@
     scale 0.15s;
 }
 .k-chip:hover:not(:disabled) {
-  background: var(--alpha-white-6);
-  color: var(--ink-100);
+  background: var(--k-actionable-background-hover);
+  color: var(--k-content-primary-foreground);
 }
 .k-chip:active:not(:disabled) {
   scale: 0.96;
@@ -65,10 +66,10 @@
   background: transparent;
   border: 0;
   border-radius: var(--radius-pill);
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   cursor: pointer;
 }
 .k-chip-clear:hover {
-  background: var(--alpha-white-5);
-  color: var(--ink-100);
+  background: var(--k-actionable-subtle-background-hover);
+  color: var(--k-content-primary-foreground);
 }

@@ -5023,16 +5023,34 @@
           "description": "multiple 可以选多个（默认）；single 最多一个。"
         },
         {
+          "name": "labels",
+          "type": "ChipGroupLabels",
+          "required": false,
+          "description": "Texts: clear (optional; no clear button without it)."
+        },
+        {
           "name": "clearLabel",
           "type": "string",
           "required": false,
-          "description": "给了，有选中项时末尾出现一个清除钮，读屏名与 title 用它。"
+          "description": "Old name of labels.clear, kept for one release."
         },
         {
           "name": "className",
           "type": "string",
           "required": false,
           "description": ""
+        }
+      ]
+    },
+    "ChipGroupLabels": {
+      "kind": "type",
+      "source": "src/patterns/chip-group.tsx",
+      "props": [
+        {
+          "name": "clear",
+          "type": "string",
+          "required": false,
+          "description": "Given: a clear button appears at the end while something is selected; its accessible name and title."
         }
       ]
     },
@@ -5071,10 +5089,16 @@
           "description": "multiple 可以选多个（默认）；single 最多一个。"
         },
         {
+          "name": "labels",
+          "type": "ChipGroupLabels",
+          "required": false,
+          "description": "Texts: clear (optional; no clear button without it)."
+        },
+        {
           "name": "clearLabel",
           "type": "string",
           "required": false,
-          "description": "给了，有选中项时末尾出现一个清除钮，读屏名与 title 用它。"
+          "description": "Old name of labels.clear, kept for one release."
         },
         {
           "name": "className",
@@ -7447,13 +7471,19 @@
           "name": "value",
           "type": "DateRange | null",
           "required": true,
-          "description": ""
+          "description": "The current range (inclusive YYYY-MM-DD pair); null means nothing picked."
+        },
+        {
+          "name": "onValueChange",
+          "type": "(range: DateRange) => void",
+          "required": false,
+          "description": "Called with a valid range once both ends are filled and start ≤ end (typing, calendar or a preset)."
         },
         {
           "name": "onValue",
           "type": "(range: DateRange) => void",
-          "required": true,
-          "description": ""
+          "required": false,
+          "description": "Old name of onValueChange, kept for one release."
         },
         {
           "name": "today",
@@ -7508,13 +7538,19 @@
           "name": "value",
           "type": "DateRange | null",
           "required": true,
-          "description": ""
+          "description": "The current range (inclusive YYYY-MM-DD pair); null means nothing picked."
+        },
+        {
+          "name": "onValueChange",
+          "type": "(range: DateRange) => void",
+          "required": false,
+          "description": "Called with a valid range once both ends are filled and start ≤ end (typing, calendar or a preset)."
         },
         {
           "name": "onValue",
           "type": "(range: DateRange) => void",
-          "required": true,
-          "description": ""
+          "required": false,
+          "description": "Old name of onValueChange, kept for one release."
         },
         {
           "name": "today",
@@ -7562,7 +7598,7 @@
     },
     "DateTimeInput": {
       "kind": "component",
-      "source": "src/katana/date-time-input.tsx",
+      "source": "src/patterns/date-time-input.tsx",
       "props": [
         {
           "name": "label",
@@ -7615,9 +7651,93 @@
         },
         {
           "name": "size",
-          "type": "'sm'",
+          "type": "'sm' | 'md'",
           "required": false,
-          "description": "sm is 26px high."
+          "description": "sm is 26px high; md (the default) is 30px."
+        },
+        {
+          "name": "autoFocus",
+          "type": "boolean",
+          "required": false,
+          "description": "Focus the field on mount, like the native attribute."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        },
+        {
+          "name": "labels",
+          "type": "DateTimeLabels",
+          "required": true,
+          "description": "Accessible names and button names (the package ships no text; the caller passes them in the UI language)."
+        },
+        {
+          "name": "locale",
+          "type": "string",
+          "required": true,
+          "description": "Locale for react-aria: zh-CN or en-CA, both year-month-day."
+        }
+      ]
+    },
+    "DateTimeInputProps": {
+      "kind": "type",
+      "source": "src/patterns/date-time-input.tsx",
+      "props": [
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "Field name used to build the accessible names: the date is read as \"<label> date\", the time as \"<label> time\"."
+        },
+        {
+          "name": "date",
+          "type": "string",
+          "required": true,
+          "description": "The date as YYYY-MM-DD."
+        },
+        {
+          "name": "onDate",
+          "type": "(value: string) => void",
+          "required": true,
+          "description": "Called with the new date."
+        },
+        {
+          "name": "time",
+          "type": "string",
+          "required": false,
+          "description": "The time as HH:mm or HH:mm:ss; omit it (and onTime) for a date-only field."
+        },
+        {
+          "name": "onTime",
+          "type": "(value: string) => void",
+          "required": false,
+          "description": "Called with the new time."
+        },
+        {
+          "name": "seconds",
+          "type": "boolean",
+          "required": false,
+          "description": "Include seconds in the time."
+        },
+        {
+          "name": "min",
+          "type": "string",
+          "required": false,
+          "description": "Earliest selectable date (YYYY-MM-DD); days outside the range are disabled and typed dates outside it are marked invalid."
+        },
+        {
+          "name": "max",
+          "type": "string",
+          "required": false,
+          "description": "Latest selectable date (YYYY-MM-DD)."
+        },
+        {
+          "name": "size",
+          "type": "'sm' | 'md'",
+          "required": false,
+          "description": "sm is 26px high; md (the default) is 30px."
         },
         {
           "name": "autoFocus",
@@ -7647,7 +7767,7 @@
     },
     "DateTimeLabels": {
       "kind": "type",
-      "source": "src/katana/date-time-input.tsx",
+      "source": "src/patterns/date-time-input.tsx",
       "props": [
         {
           "name": "date",
@@ -7695,13 +7815,19 @@
           "name": "value",
           "type": "string",
           "required": true,
-          "description": ""
+          "description": "The value as a decimal string (never goes through a JS number)."
+        },
+        {
+          "name": "onValueChange",
+          "type": "(value: string) => void",
+          "required": false,
+          "description": "Called with the new string on typing, arrow keys and the buttons."
         },
         {
           "name": "onValue",
           "type": "(value: string) => void",
-          "required": true,
-          "description": ""
+          "required": false,
+          "description": "Old name of onValueChange, kept for one release."
         },
         {
           "name": "step",
@@ -7753,16 +7879,40 @@
           "description": "error 设 aria-invalid 并换危险色边；warning 只换琥珀色边，不设 aria-invalid。"
         },
         {
-          "name": "buttons",
-          "type": "{ decrease: string; increase: string }",
+          "name": "labels",
+          "type": "DecimalFieldLabels",
           "required": false,
-          "description": "给了才显示 − / + 按钮；文字由调用方传（读屏名，也是悬停提示）。"
+          "description": "Given: − / + buttons appear; the texts are their accessible names and hover tips."
+        },
+        {
+          "name": "buttons",
+          "type": "DecimalFieldLabels",
+          "required": false,
+          "description": "Old name of labels, kept for one release."
         },
         {
           "name": "className",
           "type": "string",
           "required": false,
           "description": ""
+        }
+      ]
+    },
+    "DecimalFieldLabels": {
+      "kind": "type",
+      "source": "src/quant/decimal-field.tsx",
+      "props": [
+        {
+          "name": "decrease",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name and hover tip of the − button."
+        },
+        {
+          "name": "increase",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name and hover tip of the + button."
         }
       ]
     },
@@ -7774,13 +7924,19 @@
           "name": "value",
           "type": "string",
           "required": true,
-          "description": ""
+          "description": "The value as a decimal string (never goes through a JS number)."
+        },
+        {
+          "name": "onValueChange",
+          "type": "(value: string) => void",
+          "required": false,
+          "description": "Called with the new string on typing, arrow keys and the buttons."
         },
         {
           "name": "onValue",
           "type": "(value: string) => void",
-          "required": true,
-          "description": ""
+          "required": false,
+          "description": "Old name of onValueChange, kept for one release."
         },
         {
           "name": "step",
@@ -7831,10 +7987,16 @@
           "description": "error 设 aria-invalid 并换危险色边；warning 只换琥珀色边，不设 aria-invalid。"
         },
         {
-          "name": "buttons",
-          "type": "{ decrease: string; increase: string }",
+          "name": "labels",
+          "type": "DecimalFieldLabels",
           "required": false,
-          "description": "给了才显示 − / + 按钮；文字由调用方传（读屏名，也是悬停提示）。"
+          "description": "Given: − / + buttons appear; the texts are their accessible names and hover tips."
+        },
+        {
+          "name": "buttons",
+          "type": "DecimalFieldLabels",
+          "required": false,
+          "description": "Old name of labels, kept for one release."
         },
         {
           "name": "className",
@@ -8277,7 +8439,7 @@
     },
     "DeleteButton": {
       "kind": "component",
-      "source": "src/katana/delete-button.tsx",
+      "source": "src/patterns/delete-button.tsx",
       "props": [
         {
           "name": "label",
@@ -8286,28 +8448,34 @@
           "description": "Accessible name of the original button, for example \"Delete workspace\" (required)."
         },
         {
+          "name": "labels",
+          "type": "DeleteButtonLabels",
+          "required": false,
+          "description": "Texts: confirm and cancel (required unless the deprecated confirmLabel / cancelLabel are given), done and kept."
+        },
+        {
           "name": "confirmLabel",
           "type": "string",
-          "required": true,
-          "description": "Accessible name of the confirm button after it expands (required)."
+          "required": false,
+          "description": "Old name of labels.confirm, kept for one release."
         },
         {
           "name": "cancelLabel",
           "type": "string",
-          "required": true,
-          "description": "Accessible name of the cancel button after it expands (required)."
+          "required": false,
+          "description": "Old name of labels.cancel, kept for one release."
         },
         {
           "name": "doneLabel",
           "type": "string",
           "required": false,
-          "description": "Announced to screen readers after confirming or cancelling; nothing is announced when omitted."
+          "description": "Old name of labels.done, kept for one release."
         },
         {
           "name": "keptLabel",
           "type": "string",
           "required": false,
-          "description": "Announced to screen readers after cancelling."
+          "description": "Old name of labels.kept, kept for one release."
         },
         {
           "name": "onConfirm",
@@ -8335,9 +8503,39 @@
         }
       ]
     },
+    "DeleteButtonLabels": {
+      "kind": "type",
+      "source": "src/patterns/delete-button.tsx",
+      "props": [
+        {
+          "name": "confirm",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the confirm button after it expands."
+        },
+        {
+          "name": "cancel",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the cancel button after it expands."
+        },
+        {
+          "name": "done",
+          "type": "string",
+          "required": false,
+          "description": "Announced to screen readers after confirming; nothing is announced when omitted."
+        },
+        {
+          "name": "kept",
+          "type": "string",
+          "required": false,
+          "description": "Announced to screen readers after cancelling."
+        }
+      ]
+    },
     "DeleteButtonProps": {
       "kind": "type",
-      "source": "src/katana/delete-button.tsx",
+      "source": "src/patterns/delete-button.tsx",
       "props": [
         {
           "name": "label",
@@ -8346,28 +8544,34 @@
           "description": "Accessible name of the original button, for example \"Delete workspace\" (required)."
         },
         {
+          "name": "labels",
+          "type": "DeleteButtonLabels",
+          "required": false,
+          "description": "Texts: confirm and cancel (required unless the deprecated confirmLabel / cancelLabel are given), done and kept."
+        },
+        {
           "name": "confirmLabel",
           "type": "string",
-          "required": true,
-          "description": "Accessible name of the confirm button after it expands (required)."
+          "required": false,
+          "description": "Old name of labels.confirm, kept for one release."
         },
         {
           "name": "cancelLabel",
           "type": "string",
-          "required": true,
-          "description": "Accessible name of the cancel button after it expands (required)."
+          "required": false,
+          "description": "Old name of labels.cancel, kept for one release."
         },
         {
           "name": "doneLabel",
           "type": "string",
           "required": false,
-          "description": "Announced to screen readers after confirming or cancelling; nothing is announced when omitted."
+          "description": "Old name of labels.done, kept for one release."
         },
         {
           "name": "keptLabel",
           "type": "string",
           "required": false,
-          "description": "Announced to screen readers after cancelling."
+          "description": "Old name of labels.kept, kept for one release."
         },
         {
           "name": "onConfirm",
@@ -9325,7 +9529,7 @@
     },
     "DurationPicker": {
       "kind": "component",
-      "source": "src/katana/duration-picker.tsx",
+      "source": "src/patterns/duration-picker.tsx",
       "props": [
         {
           "name": "value",
@@ -9340,10 +9544,16 @@
           "description": "Initial duration when uncontrolled."
         },
         {
+          "name": "onValueChange",
+          "type": "(value: DurationValue) => void",
+          "required": false,
+          "description": "Called with the new duration (already clamped) while typing, stepping or cancelling."
+        },
+        {
           "name": "onChange",
           "type": "(value: DurationValue) => void",
           "required": false,
-          "description": "Called with the new duration."
+          "description": "Old name of onValueChange, kept for one release."
         },
         {
           "name": "onConfirm",
@@ -9400,7 +9610,7 @@
     },
     "DurationPickerLabels": {
       "kind": "type",
-      "source": "src/katana/duration-picker.tsx",
+      "source": "src/patterns/duration-picker.tsx",
       "props": [
         {
           "name": "hours",
@@ -9442,7 +9652,7 @@
     },
     "DurationPickerProps": {
       "kind": "type",
-      "source": "src/katana/duration-picker.tsx",
+      "source": "src/patterns/duration-picker.tsx",
       "props": [
         {
           "name": "value",
@@ -9457,10 +9667,16 @@
           "description": "Initial duration when uncontrolled."
         },
         {
+          "name": "onValueChange",
+          "type": "(value: DurationValue) => void",
+          "required": false,
+          "description": "Called with the new duration (already clamped) while typing, stepping or cancelling."
+        },
+        {
           "name": "onChange",
           "type": "(value: DurationValue) => void",
           "required": false,
-          "description": "Called with the new duration."
+          "description": "Old name of onValueChange, kept for one release."
         },
         {
           "name": "onConfirm",
@@ -9514,7 +9730,7 @@
     },
     "DurationValue": {
       "kind": "type",
-      "source": "src/katana/duration-picker.tsx",
+      "source": "src/patterns/duration-picker.tsx",
       "props": [
         {
           "name": "hours",
@@ -11625,13 +11841,19 @@
           "name": "value",
           "type": "readonly FilterCondition[]",
           "required": true,
-          "description": ""
+          "description": "The conditions (controlled)."
+        },
+        {
+          "name": "onValueChange",
+          "type": "(next: FilterCondition[]) => void",
+          "required": false,
+          "description": "Called with the new conditions (set, clear, remove, reset, undo, redo)."
         },
         {
           "name": "onChange",
           "type": "(next: FilterCondition[]) => void",
-          "required": true,
-          "description": ""
+          "required": false,
+          "description": "Old name of onValueChange, kept for one release."
         },
         {
           "name": "labels",
@@ -11775,13 +11997,19 @@
           "name": "value",
           "type": "readonly FilterCondition[]",
           "required": true,
-          "description": ""
+          "description": "The conditions (controlled)."
+        },
+        {
+          "name": "onValueChange",
+          "type": "(next: FilterCondition[]) => void",
+          "required": false,
+          "description": "Called with the new conditions (set, clear, remove, reset, undo, redo)."
         },
         {
           "name": "onChange",
           "type": "(next: FilterCondition[]) => void",
-          "required": true,
-          "description": ""
+          "required": false,
+          "description": "Old name of onValueChange, kept for one release."
         },
         {
           "name": "labels",
@@ -14498,52 +14726,58 @@
     },
     "HoldToConfirm": {
       "kind": "component",
-      "source": "src/katana/hold-to-confirm.tsx",
+      "source": "src/patterns/hold-to-confirm.tsx",
       "props": [
         {
           "name": "children",
           "type": "ReactNode",
           "required": true,
-          "description": "按钮上的字。"
+          "description": "Button text."
         },
         {
           "name": "onConfirm",
           "type": "() => void",
           "required": true,
-          "description": "填满时回调，一次按住只回调一次；要等松手再按才能再触发。"
+          "description": "Called once when the fill completes; release and press again to trigger again."
         },
         {
           "name": "holdMs",
           "type": "number",
           "required": false,
           "default": "HOLD_MS",
-          "description": "按住多久填满（毫秒），默认 2000（待定，出处见 hold-model）。"
+          "description": "How long to hold until full, in ms (default 2000)."
         },
         {
           "name": "releaseMs",
           "type": "number",
           "required": false,
           "default": "RELEASE_MS",
-          "description": "松手后退回要多久（毫秒），默认 200。"
+          "description": "How long the fill takes to drain after release, in ms (default 200)."
+        },
+        {
+          "name": "labels",
+          "type": "HoldToConfirmLabels",
+          "required": false,
+          "description": "Texts: hint (required unless the deprecated hint prop is given) and confirmed."
         },
         {
           "name": "hint",
           "type": "string",
-          "required": true,
-          "description": "读屏与悬停提示：「按住 2 秒确认」这类，由调用方按界面语言写（必填，没有它读屏用户不知道要按住）。"
+          "required": false,
+          "description": "Old name of labels.hint, kept for one release."
         },
         {
           "name": "confirmedLabel",
           "type": "ReactNode",
           "required": false,
-          "description": "填满后的字（原地换掉 children，直到松手）；不给就不换。"
+          "description": "Old name of labels.confirmed, kept for one release."
         },
         {
           "name": "tone",
-          "type": "'danger' | 'default'",
+          "type": "Severity | 'default'",
           "required": false,
           "default": "'danger'",
-          "description": "danger 是红色填充（默认），default 是中性色。"
+          "description": "Fill color: danger (default) is red, warn amber, ok green, neutral 10% white; 'default' is the deprecated name of neutral."
         },
         {
           "name": "disabled",
@@ -14559,51 +14793,75 @@
         }
       ]
     },
+    "HoldToConfirmLabels": {
+      "kind": "type",
+      "source": "src/patterns/hold-to-confirm.tsx",
+      "props": [
+        {
+          "name": "hint",
+          "type": "string",
+          "required": true,
+          "description": "Screen-reader description and hover tip, such as \"Hold 2 s to confirm\"; without it screen-reader users do not know they must hold."
+        },
+        {
+          "name": "confirmed",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Text that replaces children once filled, until release; omitted means children stay."
+        }
+      ]
+    },
     "HoldToConfirmProps": {
       "kind": "type",
-      "source": "src/katana/hold-to-confirm.tsx",
+      "source": "src/patterns/hold-to-confirm.tsx",
       "props": [
         {
           "name": "children",
           "type": "ReactNode",
           "required": true,
-          "description": "按钮上的字。"
+          "description": "Button text."
         },
         {
           "name": "onConfirm",
           "type": "() => void",
           "required": true,
-          "description": "填满时回调，一次按住只回调一次；要等松手再按才能再触发。"
+          "description": "Called once when the fill completes; release and press again to trigger again."
         },
         {
           "name": "holdMs",
           "type": "number",
           "required": false,
-          "description": "按住多久填满（毫秒），默认 2000（待定，出处见 hold-model）。"
+          "description": "How long to hold until full, in ms (default 2000)."
         },
         {
           "name": "releaseMs",
           "type": "number",
           "required": false,
-          "description": "松手后退回要多久（毫秒），默认 200。"
+          "description": "How long the fill takes to drain after release, in ms (default 200)."
+        },
+        {
+          "name": "labels",
+          "type": "HoldToConfirmLabels",
+          "required": false,
+          "description": "Texts: hint (required unless the deprecated hint prop is given) and confirmed."
         },
         {
           "name": "hint",
           "type": "string",
-          "required": true,
-          "description": "读屏与悬停提示：「按住 2 秒确认」这类，由调用方按界面语言写（必填，没有它读屏用户不知道要按住）。"
+          "required": false,
+          "description": "Old name of labels.hint, kept for one release."
         },
         {
           "name": "confirmedLabel",
           "type": "ReactNode",
           "required": false,
-          "description": "填满后的字（原地换掉 children，直到松手）；不给就不换。"
+          "description": "Old name of labels.confirmed, kept for one release."
         },
         {
           "name": "tone",
-          "type": "'danger' | 'default'",
+          "type": "Severity | 'default'",
           "required": false,
-          "description": "danger 是红色填充（默认），default 是中性色。"
+          "description": "Fill color: danger (default) is red, warn amber, ok green, neutral 10% white; 'default' is the deprecated name of neutral."
         },
         {
           "name": "disabled",
@@ -20461,7 +20719,7 @@
     },
     "NumberInput": {
       "kind": "component",
-      "source": "src/katana/number-input.tsx",
+      "source": "src/patterns/number-input.tsx",
       "props": [
         {
           "name": "value",
@@ -20470,10 +20728,16 @@
           "description": "The current value."
         },
         {
+          "name": "onValueChange",
+          "type": "(value: number) => void",
+          "required": false,
+          "description": "Called when the value changes; empty or non-numeric input does not call it."
+        },
+        {
           "name": "onValue",
           "type": "(value: number) => void",
-          "required": true,
-          "description": "Called when the value changes; empty or non-numeric input does not call it."
+          "required": false,
+          "description": "Old name of onValueChange, kept for one release."
         },
         {
           "name": "unit",
@@ -20502,15 +20766,117 @@
         },
         {
           "name": "size",
-          "type": "'sm'",
+          "type": "'sm' | 'md'",
           "required": false,
-          "description": "sm is 26px high; the default is 30px."
+          "description": "sm is 26px high; md (the default) is 30px."
         },
         {
           "name": "width",
           "type": "number",
           "required": false,
           "default": "96",
+          "description": "Width of the box in px."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": false,
+          "description": "Accessible name."
+        },
+        {
+          "name": "invalid",
+          "type": "boolean",
+          "required": false,
+          "description": "Show the red border."
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "required": false,
+          "description": "Greyed out: cannot type, drag, or step with the arrow keys."
+        },
+        {
+          "name": "autoValue",
+          "type": "number",
+          "required": false,
+          "description": "Sentinel value (for example -1 or 0 meaning automatic): while the value equals it and the user is not typing, the box shows autoText."
+        },
+        {
+          "name": "autoText",
+          "type": "string",
+          "required": false,
+          "description": "Text shown in place of the sentinel value."
+        },
+        {
+          "name": "expression",
+          "type": "boolean",
+          "required": false,
+          "description": "Allow typing an expression, evaluated on Enter or blur (Esc discards); text that is not an expression turns red."
+        },
+        {
+          "name": "caption",
+          "type": "string",
+          "required": false,
+          "description": "Text label inside the box on the left (dragging it changes the value like dragging the box); the accessible name still comes from label."
+        }
+      ]
+    },
+    "NumberInputProps": {
+      "kind": "type",
+      "source": "src/patterns/number-input.tsx",
+      "props": [
+        {
+          "name": "value",
+          "type": "number",
+          "required": true,
+          "description": "The current value."
+        },
+        {
+          "name": "onValueChange",
+          "type": "(value: number) => void",
+          "required": false,
+          "description": "Called when the value changes; empty or non-numeric input does not call it."
+        },
+        {
+          "name": "onValue",
+          "type": "(value: number) => void",
+          "required": false,
+          "description": "Old name of onValueChange, kept for one release."
+        },
+        {
+          "name": "unit",
+          "type": "string",
+          "required": false,
+          "description": "Unit suffix; when given, screen readers read the value together with the unit."
+        },
+        {
+          "name": "min",
+          "type": "number",
+          "required": false,
+          "description": "Lower bound; values below it are clamped."
+        },
+        {
+          "name": "max",
+          "type": "number",
+          "required": false,
+          "description": "Upper bound; values above it are clamped."
+        },
+        {
+          "name": "step",
+          "type": "number",
+          "required": false,
+          "description": "Step size."
+        },
+        {
+          "name": "size",
+          "type": "'sm' | 'md'",
+          "required": false,
+          "description": "sm is 26px high; md (the default) is 30px."
+        },
+        {
+          "name": "width",
+          "type": "number",
+          "required": false,
           "description": "Width of the box in px."
         },
         {
@@ -22009,13 +22375,19 @@
     },
     "PasswordInput": {
       "kind": "component",
-      "source": "src/katana/password-input.tsx",
+      "source": "src/patterns/password-input.tsx",
       "props": [
+        {
+          "name": "labels",
+          "type": "PasswordInputLabels",
+          "required": false,
+          "description": "Texts: toggle (required unless the deprecated toggleLabel is given)."
+        },
         {
           "name": "toggleLabel",
           "type": "string",
-          "required": true,
-          "description": "Accessible name of the show/hide button (required)."
+          "required": false,
+          "description": "Old name of labels.toggle, kept for one release."
         },
         {
           "name": "defaultVisible",
@@ -22032,21 +22404,39 @@
         },
         {
           "name": "size",
-          "type": "'default' | 'sm'",
+          "type": "'sm' | 'md' | 'default'",
           "required": false,
-          "description": "Same as Input: 30px and 26px."
+          "description": "Same as Input: md is 30px (the default), sm is 26px; 'default' is the deprecated name of md."
+        }
+      ]
+    },
+    "PasswordInputLabels": {
+      "kind": "type",
+      "source": "src/patterns/password-input.tsx",
+      "props": [
+        {
+          "name": "toggle",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the show/hide button."
         }
       ]
     },
     "PasswordInputProps": {
       "kind": "type",
-      "source": "src/katana/password-input.tsx",
+      "source": "src/patterns/password-input.tsx",
       "props": [
+        {
+          "name": "labels",
+          "type": "PasswordInputLabels",
+          "required": false,
+          "description": "Texts: toggle (required unless the deprecated toggleLabel is given)."
+        },
         {
           "name": "toggleLabel",
           "type": "string",
-          "required": true,
-          "description": "Accessible name of the show/hide button (required)."
+          "required": false,
+          "description": "Old name of labels.toggle, kept for one release."
         },
         {
           "name": "defaultVisible",
@@ -22062,9 +22452,9 @@
         },
         {
           "name": "size",
-          "type": "'default' | 'sm'",
+          "type": "'sm' | 'md' | 'default'",
           "required": false,
-          "description": "Same as Input: 30px and 26px."
+          "description": "Same as Input: md is 30px (the default), sm is 26px; 'default' is the deprecated name of md."
         }
       ]
     },
@@ -24593,9 +24983,9 @@
         },
         {
           "name": "labels",
-          "type": "{ low: string; high: string }",
+          "type": "RangeHistogramSliderLabels",
           "required": true,
-          "description": "两个把手的读屏名（整句，如「市值下限」「市值上限」）。"
+          "description": "Thumb names: low and high (required)."
         },
         {
           "name": "label",
@@ -24614,6 +25004,24 @@
           "type": "string",
           "required": false,
           "description": ""
+        }
+      ]
+    },
+    "RangeHistogramSliderLabels": {
+      "kind": "type",
+      "source": "src/patterns/range-histogram-slider.tsx",
+      "props": [
+        {
+          "name": "low",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the lower thumb (a full phrase, such as \"Market cap minimum\")."
+        },
+        {
+          "name": "high",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the upper thumb."
         }
       ]
     },
@@ -24671,9 +25079,9 @@
         },
         {
           "name": "labels",
-          "type": "{ low: string; high: string }",
+          "type": "RangeHistogramSliderLabels",
           "required": true,
-          "description": "两个把手的读屏名（整句，如「市值下限」「市值上限」）。"
+          "description": "Thumb names: low and high (required)."
         },
         {
           "name": "label",
@@ -25342,20 +25750,26 @@
           "name": "value",
           "type": "RenderingSettingsValue",
           "required": true,
-          "description": ""
+          "description": "The current settings (controlled)."
+        },
+        {
+          "name": "onValueChange",
+          "type": "(next: RenderingSettingsValue) => void",
+          "required": false,
+          "description": "Called with the whole new settings object when any row changes or Reset is pressed."
         },
         {
           "name": "onChange",
           "type": "(next: RenderingSettingsValue) => void",
-          "required": true,
-          "description": ""
+          "required": false,
+          "description": "Old name of onValueChange, kept for one release."
         },
         {
           "name": "labels",
           "type": "RenderingSettingsLabels",
           "required": false,
           "default": "RENDERING_LABELS_ZH",
-          "description": ""
+          "description": "Texts; defaults to RENDERING_LABELS_ZH."
         }
       ]
     },
@@ -25499,19 +25913,25 @@
           "name": "value",
           "type": "RenderingSettingsValue",
           "required": true,
-          "description": ""
+          "description": "The current settings (controlled)."
+        },
+        {
+          "name": "onValueChange",
+          "type": "(next: RenderingSettingsValue) => void",
+          "required": false,
+          "description": "Called with the whole new settings object when any row changes or Reset is pressed."
         },
         {
           "name": "onChange",
           "type": "(next: RenderingSettingsValue) => void",
-          "required": true,
-          "description": ""
+          "required": false,
+          "description": "Old name of onValueChange, kept for one release."
         },
         {
           "name": "labels",
           "type": "RenderingSettingsLabels",
           "required": false,
-          "description": ""
+          "description": "Texts; defaults to RENDERING_LABELS_ZH."
         }
       ]
     },
@@ -28146,7 +28566,7 @@
     },
     "ShortcutRecorder": {
       "kind": "component",
-      "source": "src/katana/shortcut-recorder.tsx",
+      "source": "src/patterns/shortcut-recorder.tsx",
       "props": [
         {
           "name": "value",
@@ -28155,10 +28575,16 @@
           "description": "当前快捷键（规范串，见 shortcut-model）；null 是没设。"
         },
         {
+          "name": "onValueChange",
+          "type": "(next: string | null) => void",
+          "required": false,
+          "description": "Called with the new combo (canonical string) or null when cleared; conflicts and invalid combos do not call it."
+        },
+        {
           "name": "onValue",
           "type": "(next: string | null) => void",
-          "required": true,
-          "description": "录到新的（规范串）或清除（null）。冲突与不合规的不回调。"
+          "required": false,
+          "description": "Old name of onValueChange, kept for one release."
         },
         {
           "name": "label",
@@ -28207,7 +28633,7 @@
     },
     "ShortcutRecorderLabels": {
       "kind": "type",
-      "source": "src/katana/shortcut-recorder.tsx",
+      "source": "src/patterns/shortcut-recorder.tsx",
       "props": [
         {
           "name": "empty",
@@ -28243,7 +28669,7 @@
     },
     "ShortcutRecorderProps": {
       "kind": "type",
-      "source": "src/katana/shortcut-recorder.tsx",
+      "source": "src/patterns/shortcut-recorder.tsx",
       "props": [
         {
           "name": "value",
@@ -28252,10 +28678,16 @@
           "description": "当前快捷键（规范串，见 shortcut-model）；null 是没设。"
         },
         {
+          "name": "onValueChange",
+          "type": "(next: string | null) => void",
+          "required": false,
+          "description": "Called with the new combo (canonical string) or null when cleared; conflicts and invalid combos do not call it."
+        },
+        {
           "name": "onValue",
           "type": "(next: string | null) => void",
-          "required": true,
-          "description": "录到新的（规范串）或清除（null）。冲突与不合规的不回调。"
+          "required": false,
+          "description": "Old name of onValueChange, kept for one release."
         },
         {
           "name": "label",
@@ -32258,7 +32690,7 @@
     },
     "Task": {
       "kind": "type",
-      "source": "src/katana/task-list.tsx",
+      "source": "src/patterns/task-list-model.ts",
       "props": [
         {
           "name": "id",
@@ -32282,26 +32714,43 @@
     },
     "TaskList": {
       "kind": "component",
-      "source": "src/katana/task-list.tsx",
+      "source": "src/patterns/task-list.tsx",
       "props": [
         {
-          "name": "tasks",
+          "name": "value",
           "type": "readonly Task[]",
           "required": false,
           "description": "The tasks, each with id, label and optional done; controlled."
         },
         {
+          "name": "defaultValue",
+          "type": "readonly Task[]",
+          "required": false,
+          "description": "Initial tasks when uncontrolled."
+        },
+        {
+          "name": "onValueChange",
+          "type": "(tasks: Task[]) => void",
+          "required": false,
+          "description": "Called with the new task list after a row is checked or unchecked."
+        },
+        {
+          "name": "tasks",
+          "type": "readonly Task[]",
+          "required": false,
+          "description": "Old name of value, kept for one release."
+        },
+        {
           "name": "defaultTasks",
           "type": "readonly Task[]",
           "required": false,
-          "default": "[]",
-          "description": "Initial tasks when uncontrolled."
+          "description": "Old name of defaultValue, kept for one release."
         },
         {
           "name": "onTasksChange",
           "type": "(tasks: Task[]) => void",
           "required": false,
-          "description": "Called with the new task list."
+          "description": "Old name of onValueChange, kept for one release."
         },
         {
           "name": "labels",
@@ -32325,7 +32774,7 @@
     },
     "TaskListLabels": {
       "kind": "type",
-      "source": "src/katana/task-list.tsx",
+      "source": "src/patterns/task-list.tsx",
       "props": [
         {
           "name": "completed",
@@ -32343,25 +32792,43 @@
     },
     "TaskListProps": {
       "kind": "type",
-      "source": "src/katana/task-list.tsx",
+      "source": "src/patterns/task-list.tsx",
       "props": [
         {
-          "name": "tasks",
+          "name": "value",
           "type": "readonly Task[]",
           "required": false,
           "description": "The tasks, each with id, label and optional done; controlled."
         },
         {
-          "name": "defaultTasks",
+          "name": "defaultValue",
           "type": "readonly Task[]",
           "required": false,
           "description": "Initial tasks when uncontrolled."
         },
         {
+          "name": "onValueChange",
+          "type": "(tasks: Task[]) => void",
+          "required": false,
+          "description": "Called with the new task list after a row is checked or unchecked."
+        },
+        {
+          "name": "tasks",
+          "type": "readonly Task[]",
+          "required": false,
+          "description": "Old name of value, kept for one release."
+        },
+        {
+          "name": "defaultTasks",
+          "type": "readonly Task[]",
+          "required": false,
+          "description": "Old name of defaultValue, kept for one release."
+        },
+        {
           "name": "onTasksChange",
           "type": "(tasks: Task[]) => void",
           "required": false,
-          "description": "Called with the new task list."
+          "description": "Old name of onValueChange, kept for one release."
         },
         {
           "name": "labels",
@@ -33079,7 +33546,7 @@
     },
     "ThemeOption": {
       "kind": "type",
-      "source": "src/katana/theme-selector.tsx",
+      "source": "src/patterns/theme-selector.tsx",
       "props": [
         {
           "name": "value",
@@ -33103,7 +33570,7 @@
     },
     "ThemePalette": {
       "kind": "type",
-      "source": "src/katana/theme-selector.tsx",
+      "source": "src/patterns/theme-selector.tsx",
       "props": [
         {
           "name": "rail",
@@ -33145,7 +33612,7 @@
     },
     "ThemeSelector": {
       "kind": "component",
-      "source": "src/katana/theme-selector.tsx",
+      "source": "src/patterns/theme-selector.tsx",
       "props": [
         {
           "name": "themes",
@@ -33166,10 +33633,16 @@
           "description": "Initial theme when uncontrolled."
         },
         {
-          "name": "onChange",
+          "name": "onValueChange",
           "type": "(value: string) => void",
           "required": false,
           "description": "Called with the chosen theme value."
+        },
+        {
+          "name": "onChange",
+          "type": "(value: string) => void",
+          "required": false,
+          "description": "Old name of onValueChange, kept for one release."
         },
         {
           "name": "label",
@@ -33200,7 +33673,7 @@
     },
     "ThemeSelectorProps": {
       "kind": "type",
-      "source": "src/katana/theme-selector.tsx",
+      "source": "src/patterns/theme-selector.tsx",
       "props": [
         {
           "name": "themes",
@@ -33221,10 +33694,16 @@
           "description": "Initial theme when uncontrolled."
         },
         {
-          "name": "onChange",
+          "name": "onValueChange",
           "type": "(value: string) => void",
           "required": false,
           "description": "Called with the chosen theme value."
+        },
+        {
+          "name": "onChange",
+          "type": "(value: string) => void",
+          "required": false,
+          "description": "Old name of onValueChange, kept for one release."
         },
         {
           "name": "label",
@@ -35000,13 +35479,13 @@
           "name": "value",
           "type": "string",
           "required": true,
-          "description": ""
+          "description": "Key of the current view."
         },
         {
           "name": "onValueChange",
           "type": "(key: string) => void",
           "required": true,
-          "description": ""
+          "description": "Called with the chosen view's key."
         },
         {
           "name": "onSave",
@@ -35016,7 +35495,7 @@
         },
         {
           "name": "labels",
-          "type": "{ /** 整个下拉的读屏名。 */ trigger: string save?: string }",
+          "type": "ViewSwitcherLabels",
           "required": true,
           "description": ""
         },
@@ -35034,6 +35513,24 @@
         }
       ]
     },
+    "ViewSwitcherLabels": {
+      "kind": "type",
+      "source": "src/patterns/view-switcher.tsx",
+      "props": [
+        {
+          "name": "trigger",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the dropdown trigger."
+        },
+        {
+          "name": "save",
+          "type": "string",
+          "required": false,
+          "description": "Text of the \"Save as…\" item; shown only together with onSave."
+        }
+      ]
+    },
     "ViewSwitcherProps": {
       "kind": "type",
       "source": "src/patterns/view-switcher.tsx",
@@ -35048,13 +35545,13 @@
           "name": "value",
           "type": "string",
           "required": true,
-          "description": ""
+          "description": "Key of the current view."
         },
         {
           "name": "onValueChange",
           "type": "(key: string) => void",
           "required": true,
-          "description": ""
+          "description": "Called with the chosen view's key."
         },
         {
           "name": "onSave",
@@ -35064,7 +35561,7 @@
         },
         {
           "name": "labels",
-          "type": "{ /** 整个下拉的读屏名。 */ trigger: string save?: string }",
+          "type": "ViewSwitcherLabels",
           "required": true,
           "description": ""
         },

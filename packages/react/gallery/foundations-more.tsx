@@ -525,6 +525,21 @@ function NamingPage() {
           ；件里不写 rgba。除 Paper 外各主题同值（就是改前写死的值），Paper 轻一档。
         </li>
         <li>
+          输入件（G2，2026-11-18）：文本框、日期框、日期区间框读 {code('--k-editable-background')}（alpha-white-3 档）、
+          {code('--k-editable-borderColor')}（alpha-white-7 档），聚焦边 {code('--k-editable-borderColor-active')}（alpha-white-12 档）；
+          以拖与按键为主的带框数值件（NumberInput、ShortcutRecorder）读 {code('--k-editable-bold-*')}：底更淡（alpha-white-2
+          档）边更重（alpha-white-10 档），悬停底 4 档、拖动中底 6 档边 14 档。不合法一律是 {code('--k-status-danger-foreground')}{' '}
+          的实色边（同 Input 的 aria-invalid）；原来 NumberInput 与 DateTimeInput 写死的 55% 浅红不跟主题，去掉了。
+        </li>
+        <li>
+          选中与键盘位置：日历选中的日子、区间两端是 {code('--k-selectable-bold-background-selected')} 实心底配{' '}
+          {code('--k-selectable-bold-foreground-selected')} 字，区间中段 {code('--k-selectable-bold-background')}（alpha-white-10
+          档）；日期框里正在打的那一段是 {code('--k-focused-background')}
+          。无框小按钮（日历翻月、清除钮、预设项）的悬停底统一 {code('--k-actionable-subtle-background-hover')}
+          （alpha-white-4 档，原来各写 5 档）；胶囊（ChipGroup、FilterBar）的边统一按钮的 {code('--k-actionable-borderColor')}（alpha-white-7 档
+          ，原来 8 档）。
+        </li>
+        <li>
           状态语气在代码里是 {code("Severity = 'neutral' | 'ok' | 'warn' | 'danger'")}（状态灯与仪表多
           off、accent），涨跌是 {code("Tone = 'up' | 'down' | 'flat'")}，都在 src/lib；状态灯用{' '}
           {code('ledOf(severity)')}，不再各写映射表。

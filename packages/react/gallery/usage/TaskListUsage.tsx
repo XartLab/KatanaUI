@@ -9,8 +9,8 @@ export function TaskListUsage() {
   ])
   return (
     <TaskList
-      tasks={tasks}
-      onTasksChange={setTasks}
+      value={tasks}
+      onValueChange={setTasks}
       label="Plan"
       labels={{ completed: (label) => `${label} done`, reopened: (label) => `${label} reopened` }}
     />

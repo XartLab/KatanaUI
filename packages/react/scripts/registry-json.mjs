@@ -2,7 +2,7 @@
 // 生成 registry.json（shadcn registry 的清单，shadcn 4.22.2 的 schema；`pnpm --filter @katana-ui/react registry:build` 先跑它再跑 `shadcn build`）。
 // 清单由脚本从源码与文档站的页数据（gallery/registry.ts：每个 item 的说明读它的页）生成，不手写：每个源文件一项（文件名短横线小写就是 item 名），registryDependencies 与 npm dependencies 从 import 扫出来，不会漏。
 // 约定（#1862 定）：
-//   type：primitives/ → registry:ui；lib/、quant/format/、katana/ 的纯函数 → registry:lib；patterns/、quant/、katana/、blocks/ 的件 → registry:component；`style`（token、主题、动效）→ registry:style。
+//   type：primitives/ → registry:ui；lib/、quant/format/、katana/、patterns/ 的纯函数 → registry:lib；patterns/、quant/、katana/、blocks/ 的件 → registry:component；`style`（token、主题、动效）→ registry:style。
 //   命名：`@katana/<文件名>`；同名冲突在源码里就不许有（每层文件名唯一，单测查）。
 //   落点：每个文件的 target 保持包内的相对结构（~/src/katana/ui/<层>/<文件>），所以件之间的相对 import 与 theme.css 里的 @source 路径在别的项目里原样有效。
 // 用法：node scripts/registry-json.mjs           写 registry.json
@@ -85,6 +85,10 @@ const INTERNAL = {
   'json-viewer-model': 'JsonViewer 的数据模型：把任意值建成带稳定 id 的节点树，查找命中与要展开的祖先（纯函数）。',
   'event-timeline-model': 'EventTimeline 的分组规则：按显示时区的自然日分组、新的在前，钟点格式（纯函数）。',
   'hold-model': 'HoldToConfirm 的进度规则：按住填满、松手退回的时长与每帧推进（纯函数）。',
+  'duration-picker-model': 'DurationPicker 的输入规则：框里的字与数互转，空当 0，超上限夹住并标记要抖一下（纯函数）。',
+  'password-input-model': 'PasswordInput 的眼睛轮廓：睁开程度 0..1 到 SVG 路径（纯函数）。',
+  'task-list-model': 'TaskList 的任务形状与次序：没完成的保持原位，划完的按沉下去的先后排到底部（纯函数）。',
+  'theme-selector-model': 'ThemeSelector 的键盘规则：方向键与 Home / End 移到哪一张，到头循环（纯函数）。',
   'loading-gate': 'Loading 的计时与行数量取（纯函数）。',
   'opener-focus': '对话框与抽屉共用：关闭后把焦点还给打开前拿着它的元素。',
   label: 'Radix Label，Field 用它做标签（文档站在 field 页）。',
@@ -137,7 +141,10 @@ function collectItems() {
   for (const f of listDir('src/katana').filter(isCode)) {
     add(f.replace(/\.[^.]+$/, ''), f.endsWith('.tsx') ? 'registry:component' : 'registry:lib', [`src/katana/${f}`])
   }
-  byFile('src/patterns', 'registry:component')
+  // patterns/ 同 katana/：带 JSX 的是 component，纯函数（模型、目录数据）是 lib。
+  for (const f of listDir('src/patterns').filter(isCode)) {
+    add(f.replace(/\.[^.]+$/, ''), f.endsWith('.tsx') ? 'registry:component' : 'registry:lib', [`src/patterns/${f}`])
+  }
   // AI 对话类件（改自 SmoothUI）：一文件一项，带 JSX 的是 component，纯函数（切词、计数、种子散列）与状态约定是 lib。
   for (const f of listDir('src/ai').filter(isCode))
     add(f.replace(/\.[^.]+$/, ''), f.endsWith('.tsx') ? 'registry:component' : 'registry:lib', [`src/ai/${f}`])

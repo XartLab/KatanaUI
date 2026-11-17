@@ -32,16 +32,19 @@ export function HoldToConfirmDemo() {
   return (
     <>
       <Row name="danger · 默认 2 秒">
-        <HoldToConfirm hint="按住 2 秒，全部平仓" confirmedLabel="已平仓" onConfirm={() => setFlattened((n) => n + 1)}>
+        <HoldToConfirm
+          labels={{ hint: '按住 2 秒，全部平仓', confirmed: '已平仓' }}
+          onConfirm={() => setFlattened((n) => n + 1)}
+        >
           全部平仓
         </HoldToConfirm>
         <output data-gallery-hold>已触发 {flattened} 次</output>
       </Row>
-      <Row name="default · 1 秒">
+      <Row name="neutral · 1 秒">
         <HoldToConfirm
-          tone="default"
+          tone="neutral"
           holdMs={1000}
-          hint="按住 1 秒，停止策略"
+          labels={{ hint: '按住 1 秒，停止策略' }}
           onConfirm={() => setStopped((n) => n + 1)}
         >
           停止策略
@@ -49,7 +52,7 @@ export function HoldToConfirmDemo() {
         <output data-gallery-hold-fast>已触发 {stopped} 次</output>
       </Row>
       <Row name="禁用">
-        <HoldToConfirm disabled hint="按住 2 秒，全部撤单" onConfirm={() => {}}>
+        <HoldToConfirm disabled labels={{ hint: '按住 2 秒，全部撤单' }} onConfirm={() => {}}>
           全部撤单
         </HoldToConfirm>
       </Row>
@@ -78,7 +81,7 @@ export function ShortcutRecorderDemo() {
         <ShortcutRecorder
           label="全部平仓快捷键"
           value={flatten}
-          onValue={setFlatten}
+          onValueChange={setFlatten}
           labels={RECORDER_LABELS}
           conflicts={TAKEN}
         />
@@ -88,14 +91,14 @@ export function ShortcutRecorderDemo() {
         <ShortcutRecorder
           label="切换品种快捷键"
           value={bare}
-          onValue={setBare}
+          onValueChange={setBare}
           labels={RECORDER_LABELS}
           requireModifier
         />
         <output data-gallery-recorder-mod>{bare ?? '未设置'}</output>
       </Row>
       <Row name="禁用">
-        <ShortcutRecorder label="只读快捷键" value="F5" onValue={() => {}} labels={RECORDER_LABELS} disabled />
+        <ShortcutRecorder label="只读快捷键" value="F5" onValueChange={() => {}} labels={RECORDER_LABELS} disabled />
       </Row>
       <p className="gal-note">
         演示：占用表里是「全部撤单 = Ctrl+Shift+K」「市价买入 = Alt+B」，录到它们会提示冲突、不写入。
@@ -119,7 +122,13 @@ export function ChipGroupDemo() {
   return (
     <>
       <Row name="多选 · 带清除">
-        <ChipGroup label="市场" items={CHIP_ITEMS} value={markets} onValueChange={setMarkets} clearLabel="清除筛选" />
+        <ChipGroup
+          label="市场"
+          items={CHIP_ITEMS}
+          value={markets}
+          onValueChange={setMarkets}
+          labels={{ clear: '清除筛选' }}
+        />
         <output data-gallery-chips>{markets.join(',') || '无'}</output>
       </Row>
       <Row name="单选">
@@ -155,13 +164,19 @@ export function DateRangePickerDemo() {
   return (
     <>
       <Row name="区间 + 预设">
-        <DateRangePicker value={range} onValue={setRange} today="2026-11-14" labels={RANGE_LABELS} locale="zh-CN" />
+        <DateRangePicker
+          value={range}
+          onValueChange={setRange}
+          today="2026-11-14"
+          labels={RANGE_LABELS}
+          locale="zh-CN"
+        />
         <output data-gallery-range>{range ? `${range.start} ~ ${range.end}` : '未选'}</output>
       </Row>
       <Row name="未选 · 限定范围">
         <DateRangePicker
           value={null}
-          onValue={() => {}}
+          onValueChange={() => {}}
           today="2026-11-14"
           min="2026-01-01"
           max="2026-12-31"

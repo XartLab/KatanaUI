@@ -136,7 +136,7 @@ export {
 } from './primitives/toggle-group.tsx'
 export { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger, tooltipContentClass } from './primitives/tooltip.tsx'
 export { MultiSelect } from './patterns/multi-select.tsx'
-export { ChipGroup, type ChipGroupProps, type ChipItem } from './patterns/chip-group.tsx'
+export { ChipGroup, type ChipGroupLabels, type ChipGroupProps, type ChipItem } from './patterns/chip-group.tsx'
 export { FilterBar, type FilterBarLabels, type FilterBarProps } from './patterns/filter-bar.tsx'
 export {
   DEFAULT_RENDERING,
@@ -180,7 +180,12 @@ export {
   type FlashDirection,
   type ValueFlash,
 } from './lib/live.ts'
-export { ViewSwitcher, type ViewOption, type ViewSwitcherProps } from './patterns/view-switcher.tsx'
+export {
+  ViewSwitcher,
+  type ViewOption,
+  type ViewSwitcherLabels,
+  type ViewSwitcherProps,
+} from './patterns/view-switcher.tsx'
 export {
   applyFilters,
   conditionText,
@@ -225,13 +230,13 @@ export {
   ShortcutRecorder,
   type ShortcutRecorderLabels,
   type ShortcutRecorderProps,
-} from './katana/shortcut-recorder.tsx'
+} from './patterns/shortcut-recorder.tsx'
 export { SymbolMark, symbolMarkLetters, type SymbolMarkProps } from './katana/symbol-mark.tsx'
 export { BadgeGroup, type BadgeItem } from './katana/badge.tsx'
 export { RollingText, rollSlots, rollStrip } from './katana/rolling-text.tsx'
 export { Scrubber, scrubSnap, scrubValueAt, type ScrubberProps } from './katana/scrubber.tsx'
-export { NumberInput } from './katana/number-input.tsx'
-export { DateTimeInput, type DateTimeLabels } from './katana/date-time-input.tsx'
+export { NumberInput, type NumberInputProps } from './patterns/number-input.tsx'
+export { DateTimeInput, type DateTimeInputProps, type DateTimeLabels } from './patterns/date-time-input.tsx'
 export { Skeleton } from './katana/skeleton.tsx'
 export {
   MeasuredSkeleton,
@@ -258,9 +263,9 @@ export { LoadingView, type LoadingTexts } from './katana/loading-view.tsx'
 export { LOADING_TIMEOUT_MS, type LoadingPhase } from './katana/loading-gate.ts'
 
 // 学自 rare-ui 的交互、本仓库重写的件（#1861）：密钥输入、原地确认的危险按钮、带未读数的铃、状态图标、行内 AI 状态、点阵状态球。
-export { PasswordInput, type PasswordInputProps } from './katana/password-input.tsx'
-export { DeleteButton, type DeleteButtonProps } from './katana/delete-button.tsx'
-export { HoldToConfirm, type HoldToConfirmProps } from './katana/hold-to-confirm.tsx'
+export { PasswordInput, type PasswordInputLabels, type PasswordInputProps } from './patterns/password-input.tsx'
+export { DeleteButton, type DeleteButtonLabels, type DeleteButtonProps } from './patterns/delete-button.tsx'
+export { HoldToConfirm, type HoldToConfirmLabels, type HoldToConfirmProps } from './patterns/hold-to-confirm.tsx'
 export { NotificationBell, type NotificationBellProps } from './katana/notification-bell.tsx'
 export { StatusIcon, type StatusIconStatus } from './katana/status-icon.tsx'
 export { AiStatus, type AiStatusProps, type AiStatusState } from './katana/ai-status.tsx'
@@ -274,7 +279,7 @@ export {
   type ThemeOption,
   type ThemePalette,
   type ThemeSelectorProps,
-} from './katana/theme-selector.tsx'
+} from './patterns/theme-selector.tsx'
 export { CodeBlock, type CodeBlockProps } from './katana/code-block.tsx'
 export { JsonViewer, type JsonViewerLabels, type JsonViewerProps } from './katana/json-viewer.tsx'
 export {
@@ -285,13 +290,13 @@ export {
   type WebSearchStatus,
   type WebSource,
 } from './katana/web-search.tsx'
-export { TaskList, type Task, type TaskListLabels, type TaskListProps } from './katana/task-list.tsx'
+export { TaskList, type Task, type TaskListLabels, type TaskListProps } from './patterns/task-list.tsx'
 export {
   DurationPicker,
   type DurationPickerLabels,
   type DurationPickerProps,
   type DurationValue,
-} from './katana/duration-picker.tsx'
+} from './patterns/duration-picker.tsx'
 export { useHoverIntent } from './lib/hover-intent.ts'
 export { useScrubber, type UseScrubberOptions } from './lib/use-scrubber.ts'
 export {
@@ -346,7 +351,11 @@ export { quoteTone, type QuoteTone } from './katana/quote-tone.ts'
 // 分布与关系类的件（#1918）：功能参照 Arc（uiarc.dev，2026-11-14 读），实现原创。
 export { UptimeBars, type UptimeBarsProps } from './quant/uptime-bars.tsx'
 export { uptimeShare, type UptimeCell, type UptimeStatus } from './quant/uptime-bars-model.ts'
-export { RangeHistogramSlider, type RangeHistogramSliderProps } from './patterns/range-histogram-slider.tsx'
+export {
+  RangeHistogramSlider,
+  type RangeHistogramSliderLabels,
+  type RangeHistogramSliderProps,
+} from './patterns/range-histogram-slider.tsx'
 export { histogramBins } from './patterns/range-histogram-model.ts'
 
 // 文字动效（改自 SmoothUI，MIT；各文件头写明出处与归并关系）。

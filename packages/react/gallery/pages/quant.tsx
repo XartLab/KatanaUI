@@ -1056,7 +1056,7 @@ export function DecimalFieldDemo() {
     <>
       <Row name="价格（tick 0.5）">
         <div className="gal-wide">
-          <DecimalField label="价格" value={price} onValue={setPrice} step="0.5" buttons={BUTTONS} />
+          <DecimalField label="价格" value={price} onValueChange={setPrice} step="0.5" buttons={BUTTONS} />
         </div>
         <output data-testid="decimal-price-out">{price}</output>
       </Row>
@@ -1065,7 +1065,7 @@ export function DecimalFieldDemo() {
           <DecimalField
             label="数量"
             value={qty}
-            onValue={setQty}
+            onValueChange={setQty}
             step="0.001"
             base="1"
             unit="BTC"
@@ -1077,16 +1077,30 @@ export function DecimalFieldDemo() {
       </Row>
       <Row name="状态">
         <Cell name="只读">
-          <DecimalField label="只读价格" value={locked} onValue={setLocked} step="0.5" readOnly buttons={BUTTONS} />
+          <DecimalField
+            label="只读价格"
+            value={locked}
+            onValueChange={setLocked}
+            step="0.5"
+            readOnly
+            buttons={BUTTONS}
+          />
         </Cell>
         <Cell name="禁用">
-          <DecimalField label="禁用价格" value={locked} onValue={setLocked} step="0.5" disabled buttons={BUTTONS} />
+          <DecimalField
+            label="禁用价格"
+            value={locked}
+            onValueChange={setLocked}
+            step="0.5"
+            disabled
+            buttons={BUTTONS}
+          />
         </Cell>
         <Cell name="error">
-          <DecimalField label="错误价格" value="abc" onValue={() => {}} step="0.5" status="error" />
+          <DecimalField label="错误价格" value="abc" onValueChange={() => {}} step="0.5" status="error" />
         </Cell>
         <Cell name="warning">
-          <DecimalField label="警告价格" value="100.3" onValue={() => {}} step="0.5" status="warning" />
+          <DecimalField label="警告价格" value="100.3" onValueChange={() => {}} step="0.5" status="warning" />
         </Cell>
       </Row>
       <p className="gal-note">↑ / ↓ 走一格，Shift 十格；打字自由，合不合法由调用方判。0.1 的格子加起来是精确的。</p>

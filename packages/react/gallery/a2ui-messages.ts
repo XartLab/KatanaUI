@@ -233,8 +233,8 @@ export const MORE_MESSAGES = [
             { value: 'open', label: 'Open', count: 3 },
             { value: 'done', label: 'Done', count: 12 },
           ],
-          values: { '@path': '/pick/chips' },
-          clearLabel: 'Clear the filter',
+          value: { '@path': '/pick/chips' },
+          labels: { clear: 'Clear the filter' },
         },
         {
           id: 'lev',
@@ -252,7 +252,7 @@ export const MORE_MESSAGES = [
           step: '0.01',
           unit: 'USDT',
           value: { '@path': '/pick/price' },
-          buttons: { decrease: 'One tick down', increase: 'One tick up' },
+          labels: { decrease: 'One tick down', increase: 'One tick up' },
         },
         {
           id: 'combo',
@@ -271,7 +271,7 @@ export const MORE_MESSAGES = [
           id: 'secret',
           component: 'KatanaPasswordInput',
           label: 'API secret',
-          toggleLabel: 'Show or hide the secret',
+          labels: { toggle: 'Show or hide the secret' },
           value: { '@path': '/pick/secret' },
         },
         {
@@ -947,8 +947,7 @@ export const BLOCKS_MESSAGES = [
           component: 'KatanaTaskList',
           label: '今日计划',
           tasks: { '@path': '/tasks' },
-          completedLabel: '{label}，已完成',
-          reopenedLabel: '{label}，已重新打开',
+          labels: { completed: '{label}，已完成', reopened: '{label}，已重新打开' },
           onToggle: { event: { name: 'task.toggle' } },
         },
       ],
