@@ -53,7 +53,7 @@ export function effectiveStatus(item: DecisionItem, now: number): DecisionStatus
   return open && item.expiresAt !== undefined && item.expiresAt <= now ? 'expired' : item.status
 }
 
-export function filterOf(status: DecisionStatus): DecisionFilter {
+function filterOf(status: DecisionStatus): DecisionFilter {
   return status === 'snoozed' ? 'pending' : status
 }
 

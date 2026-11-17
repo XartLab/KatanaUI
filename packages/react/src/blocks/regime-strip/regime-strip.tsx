@@ -10,27 +10,9 @@
 // 样本外的识别有滞后，最后一段常是估的：segment.estimated 画斜纹（不是颜色的另一种标记），图例旁写 estimateText。
 // 分状态收益表不在本件里（那是调用方的表格）；这里只有带 + 图例。文案一律由调用方传。
 import type { ReactNode } from 'react'
+import { regimeSpans, type RegimeColor, type RegimeSegment, type RegimeState } from './regime-strip-model.ts'
 
-/** 状态的色：series-1…7 之一（≤ 6 态，挑色距大的几个，如 1、2、4、7）。 */
-export type RegimeColor = 1 | 2 | 3 | 4 | 5 | 6 | 7
-
-export type RegimeState = {
-  id: string
-  name: string
-  color: RegimeColor
-  /** 图例里名字后面的小字（如占比「47%」），已格式化。 */
-  detail?: string
-}
-
-export type RegimeSegment = {
-  /** 起止时间（调用方的时间单位，毫秒、序号都行，只要跟 scale 一致）。 */
-  from: number
-  to: number
-  /** 对应 RegimeState.id。 */
-  state: string
-  /** 还没被后面的数据确认（最后一段常见）。 */
-  estimated?: boolean
-}
+export type { RegimeColor, RegimeSegment, RegimeState } from './regime-strip-model.ts'
 
 export type RegimeBandProps = {
   segments: readonly RegimeSegment[]
@@ -68,22 +50,6 @@ export type RegimeStripProps = RegimeBandProps & {
   onPickState?: (state: string | null) => void
   /** 图例旁的标题（如 RUN 3d07 · HMM 4 态）。 */
   title?: ReactNode
-}
-
-/** 每段的 left 与 width（0 到 1 的比例，越界裁到带内）；起止倒过来或在带外的段不画。纯函数。 */
-export function regimeSpans(
-  segments: readonly RegimeSegment[],
-  scale?: (time: number) => number,
-): ({ segment: RegimeSegment; left: number; width: number } | null)[] {
-  const times = segments.flatMap((s) => [s.from, s.to])
-  const lo = Math.min(...times)
-  const hi = Math.max(...times)
-  const at = scale ?? ((t: number) => (hi > lo ? (t - lo) / (hi - lo) : 0))
-  return segments.map((segment) => {
-    const left = Math.min(1, Math.max(0, at(segment.from)))
-    const right = Math.min(1, Math.max(0, at(segment.to)))
-    return right > left ? { segment, left, width: right - left } : null
-  })
 }
 
 const COLOR_VAR: Record<RegimeColor, string> = {

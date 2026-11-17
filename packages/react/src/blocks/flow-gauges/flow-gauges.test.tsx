@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: MIT
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vite-plus/test'
-import { depthHeights, FlowGauges, signedSpan } from './flow-gauges.tsx'
+import { depthHeights, signedSpan } from './flow-gauges-model.ts'
+import { FlowGauges } from './flow-gauges.tsx'
 
 // 结构与纯函数；颜色读 token、阻止项有字，在浏览器里查（e2e/ui-gallery.spec.ts）。G6 从 src/quant/quant-batch2.test.tsx 拆来。
 

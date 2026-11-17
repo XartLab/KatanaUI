@@ -41,8 +41,6 @@ export const HYPOTHESIS_STATUSES: readonly HypothesisStatus[] = ['pending', 'sup
 /** 证据类型：把学者观点、已发生的政策与资金变化、数据、财报分开，不混成一团。 */
 export type EvidenceKind = 'scholar' | 'policy' | 'data' | 'filing'
 
-export const EVIDENCE_KINDS: readonly EvidenceKind[] = ['scholar', 'policy', 'data', 'filing']
-
 export type HypothesisEvidence = {
   id: string
   kind: EvidenceKind

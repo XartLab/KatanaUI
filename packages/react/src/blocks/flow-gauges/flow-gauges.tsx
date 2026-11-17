@@ -9,6 +9,7 @@
 // 压力不是盈亏：零轴居中的条用 series-1（正）/ series-2（负），不用涨跌色；方向同时靠左右位置与带符号的数字，不只靠颜色。
 // 窗口不足就是 N/A，不填零（value 传 null、或矩阵那一行给 null）；无逐笔方向的估算值标「估算」，且灰显。不做声音、不做闪烁：这是读数，不是告警。
 import type { ReactNode } from 'react'
+import { depthHeights, signedSpan } from './flow-gauges-model.ts'
 
 /** 零轴居中的两个量：Market Pressure 与 Price Change，−100…+100。 */
 export type FlowSignedGauge = {
@@ -76,25 +77,6 @@ export type FlowGaugesProps = {
   /** @deprecated Use `labels.estimate`; kept for one version. */
   estimateText?: string
   className?: string
-}
-
-/** 零轴居中的条：正数从中线往右、负数往左，各占半宽；越界贴边，null 与非有限数不画。返回 left、width（百分数）。纯函数。 */
-export function signedSpan(value: number | null, limit = 100): { left: number; width: number } | null {
-  if (value === null || !Number.isFinite(value) || limit <= 0) return null
-  const half = (Math.min(limit, Math.abs(value)) / limit) * 50
-  return value >= 0 ? { left: 50, width: half } : { left: 50 - half, width: half }
-}
-
-/** 挂单柱的高度（百分数）：按两边最大的一档排，最大的 100。两边都没有量返回 null（N/A）。纯函数。 */
-export function depthHeights(
-  bids: readonly number[],
-  asks: readonly number[],
-): { bids: number[]; asks: number[] } | null {
-  const all = [...bids, ...asks].filter((size) => Number.isFinite(size) && size > 0)
-  if (all.length === 0) return null
-  const top = Math.max(...all)
-  const scale = (sizes: readonly number[]) => sizes.map((size) => (size > 0 ? (size / top) * 100 : 0))
-  return { bids: scale(bids), asks: scale(asks) }
 }
 
 function Signed({ gauge, naText, estimateText }: { gauge: FlowSignedGauge; naText: string; estimateText: string }) {

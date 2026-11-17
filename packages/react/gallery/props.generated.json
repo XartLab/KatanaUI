@@ -25321,12 +25321,12 @@
     },
     "RegimeColor": {
       "kind": "type",
-      "source": "src/blocks/regime-strip/regime-strip.tsx",
+      "source": "src/blocks/regime-strip/regime-strip-model.ts",
       "props": []
     },
     "RegimeSegment": {
       "kind": "type",
-      "source": "src/blocks/regime-strip/regime-strip.tsx",
+      "source": "src/blocks/regime-strip/regime-strip-model.ts",
       "props": [
         {
           "name": "from",
@@ -25356,7 +25356,7 @@
     },
     "RegimeState": {
       "kind": "type",
-      "source": "src/blocks/regime-strip/regime-strip.tsx",
+      "source": "src/blocks/regime-strip/regime-strip-model.ts",
       "props": [
         {
           "name": "id",

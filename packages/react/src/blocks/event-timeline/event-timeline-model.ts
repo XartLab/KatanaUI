@@ -33,7 +33,7 @@ export type SessionMinutes = readonly (readonly [number, number])[]
 /** 段与段之间的空档压成轴长的这一比例（午休「压缩成一段短带」；3% 是目测定的，待定）。 */
 export const GAP_FRACTION = 0.03
 /** 一条轴上最多画这么多标记（卡里的 ≤ 60）。 */
-export const MAX_MARKERS = 60
+const MAX_MARKERS = 60
 
 const clockFormats = new Map<string, Intl.DateTimeFormat>()
 

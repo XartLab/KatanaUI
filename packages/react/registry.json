@@ -6012,6 +6012,11 @@
       "description": "市场状态带：状态模型把历史分成几种状态，画成无缝色带叠在任何时间轴下，配图例；颜色是类别（series-1…7）不是好坏；RegimeBand 只画带。",
       "files": [
         {
+          "path": "src/blocks/regime-strip/regime-strip-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/regime-strip/regime-strip-model.ts"
+        },
+        {
           "path": "src/blocks/regime-strip/regime-strip.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/blocks/regime-strip/regime-strip.tsx"
@@ -6024,6 +6029,11 @@
       "title": "Flow Gauges",
       "description": "订单流四个仪表一行：Market Pressure、Price Change（零轴居中，−100…+100）、DOM Pressure（前 N 档买卖挂单柱）、Delta Divergence（多周期 LED 矩阵）；只收算好的数，窗口不足写 N/A。",
       "files": [
+        {
+          "path": "src/blocks/flow-gauges/flow-gauges-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/flow-gauges/flow-gauges-model.ts"
+        },
         {
           "path": "src/blocks/flow-gauges/flow-gauges.tsx",
           "type": "registry:component",
