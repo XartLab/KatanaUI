@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
 // 组件卡 SparkTile（design/katana-console/project/components/SparkTile，#1929）。KPI 瓦片：点阵小标签 + LCD 数值 + 24px 迷你折线 + 一行变化说明。
-// 迷你线的折点与纵坐标用 katana/sparkline 的 sparkPoints、sparkY，所以阈值线与折线落在同一个刻度上。
+// 迷你线的折点与纵坐标用 quotes/sparkline 的 sparkPoints、sparkY，所以阈值线与折线落在同一个刻度上。
 // 实时刷新：数值变了闪涨跌色（有 rollValue 的走 RollingText 的滚轮加闪），新点追加时线平滑延伸、末点放一圈光晕闪一次（共用层 lib/live-*.ts）。
 // 数据全由调用方给（数组、当前值、变化）：没有数据就是空态（数值「—」、线的位置写「—」），不补样本。文案（标签、说明、读屏名）一律由调用方传，包里不写。
 import { useRef, type AriaAttributes, type ReactNode } from 'react'
-import { pointsText, sparkCoords, sparkY } from '../katana/sparkline.tsx'
+import { pointsText, sparkCoords, sparkY } from './sparkline.tsx'
 import { useLineExtend } from '../lib/live-line.ts'
 import { ReadoutFlash } from '../lib/live-readout.tsx'
 import { useValueFlash } from '../lib/live.ts'

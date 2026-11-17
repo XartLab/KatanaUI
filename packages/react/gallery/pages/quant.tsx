@@ -49,7 +49,7 @@ import {
   type RegimeSegment,
   type RegimeState,
 } from '../../src/quant/index.ts'
-import { symbolMenu } from '../../src/patterns/row-actions.tsx'
+import { symbolMenu } from '../../src/quotes/row-actions.tsx'
 import { ToggleGroup, ToggleGroupItem } from '../../src/primitives/toggle-group.tsx'
 import { LiveToggle } from '../LiveToggle.tsx'
 import { ladderFrom, ladderLevels, ladderStep } from '../ladder-sim.ts'

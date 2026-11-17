@@ -2,7 +2,7 @@
 import type { ComponentProps } from 'react'
 import { cn } from '../lib/cn.ts'
 import { useValueFlash } from '../lib/live.ts'
-import { formatPercentChange, toneOf } from './format/index.ts'
+import { formatPercentChange, toneOf } from '../quant/format/index.ts'
 import { ToneText } from './tone-text.tsx'
 
 /** 涨跌幅：value 已经是百分数（1.5 就是 1.5%），写成「+1.50%」，涨跌色跟 data-updown。位数由调用方传。 */

@@ -4360,7 +4360,7 @@ export const PAGES: readonly DocPage[] = [
       { part: 'Sparkline' },
       {
         part: '纯函数',
-        note: 'sparkPoints(values, width, height) 给 polyline 的点；sparkTone(values) 取头尾三态；quoteTone(change) 由一个涨跌数取三态（报价类的件共用）。几何（断点分段、基准切分、单调插值、设备像素对齐、时间到横坐标与休市压缩、时间与价格刻度、读数框位置）在 katana/sparkline-model.ts，都是纯函数。',
+        note: 'sparkPoints(values, width, height) 给 polyline 的点；sparkTone(values) 取头尾三态；quoteTone(change) 由一个涨跌数取三态（报价类的件共用）。几何（断点分段、基准切分、单调插值、设备像素对齐、时间到横坐标与休市压缩、时间与价格刻度、读数框位置）在 quotes/sparkline-model.ts，都是纯函数。',
       },
     ],
     states: [

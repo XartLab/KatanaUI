@@ -3,9 +3,9 @@ import { useId, useRef, type KeyboardEvent } from 'react'
 import { cn } from '../lib/cn.ts'
 import { useEnterMarks, useFlipList, useStatusFlash, useValueFlash } from '../lib/live.ts'
 import { RollingText } from '../katana/rolling-text.tsx'
-import { RowActions, RowContextMenu, type RowAction } from '../patterns/row-actions.tsx'
-import { SymbolMark } from '../katana/symbol-mark.tsx'
-import { ChangeText } from './change-text.tsx'
+import { RowActions, RowContextMenu, type RowAction } from '../quotes/row-actions.tsx'
+import { SymbolMark } from '../quotes/symbol-mark.tsx'
+import { ChangeText } from '../quotes/change-text.tsx'
 import { formatVolume } from './format/index.ts'
 
 // 连板天梯（#12）：顶上一行汇总读数，下面按板位从高到低分层，层头写板位、只数与晋级率，层里列个股；炸板、跌停、没涨停的票文字淡显、状态胶囊保持全亮。

@@ -5,7 +5,7 @@ import { cn } from '../../lib/cn.ts'
 import { useStatusFlash } from '../../lib/live.ts'
 import { MeasuredSkeleton } from '../../katana/measured-skeleton.tsx'
 import { Skeleton } from '../../katana/skeleton.tsx'
-import { SymbolMark } from '../../katana/symbol-mark.tsx'
+import { SymbolMark } from '../../quotes/symbol-mark.tsx'
 import { Button } from '../../primitives/button.tsx'
 import { formatPercentChange } from '../../quant/format/index.ts'
 

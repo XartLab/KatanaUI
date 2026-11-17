@@ -2,8 +2,8 @@
 import { ChevronLeftIcon, ChevronRightIcon, CrownIcon, MoonIcon, SunIcon } from 'lucide-react'
 import { Fragment, useMemo, useState, type KeyboardEvent, type ReactNode } from 'react'
 import { cn } from '../lib/cn.ts'
-import { Sparkline } from '../katana/sparkline.tsx'
-import { SymbolMark } from '../katana/symbol-mark.tsx'
+import { Sparkline } from '../quotes/sparkline.tsx'
+import { SymbolMark } from '../quotes/symbol-mark.tsx'
 import { Button } from '../primitives/button.tsx'
 import { Checkbox } from '../primitives/checkbox.tsx'
 import {
@@ -17,7 +17,7 @@ import {
 } from '../primitives/dialog.tsx'
 import { Input } from '../primitives/input.tsx'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../primitives/select.tsx'
-import { RowActions, RowContextMenu, type RowAction } from '../patterns/row-actions.tsx'
+import { RowActions, RowContextMenu, type RowAction } from '../quotes/row-actions.tsx'
 import { formatPercentChange, formatVolume } from './format/index.ts'
 import {
   ECONOMIC_CATEGORIES,

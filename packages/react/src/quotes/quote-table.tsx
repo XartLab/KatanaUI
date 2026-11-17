@@ -8,8 +8,8 @@ import { useRef } from 'react'
 import { cn } from '../lib/cn.ts'
 import { useEnterMarks, useFlipList, useValueFlash } from '../lib/live.ts'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../primitives/tabs.tsx'
-import { Sparkline } from '../katana/sparkline.tsx'
-import { TONE_GLYPH, type QuoteTone } from '../katana/quote-tone.ts'
+import { Sparkline } from './sparkline.tsx'
+import { TONE_GLYPH, type QuoteTone } from './quote-tone.ts'
 
 export type QuoteRow = {
   id: string

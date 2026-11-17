@@ -23,7 +23,7 @@ import { EndMarker } from '../../quant/chart-kit/end-marker.tsx'
 import { LcdTooltip } from '../../quant/chart-kit/lcd-tooltip.tsx'
 import { PlotGrid, PlotYAxis } from '../../quant/chart-kit/plot-axes.tsx'
 import { linePath, makePlot, pct, PLOT_W } from '../../quant/series-geometry.ts'
-import { SparkTile } from '../../quant/spark-tile.tsx'
+import { SparkTile } from '../../quotes/spark-tile.tsx'
 import {
   changeRatio,
   chartExtent,

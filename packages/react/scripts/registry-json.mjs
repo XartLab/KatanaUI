@@ -2,7 +2,7 @@
 // 生成 registry.json（shadcn registry 的清单，shadcn 4.22.2 的 schema；`pnpm --filter @katana-ui/react registry:build` 先跑它再跑 `shadcn build`）。
 // 清单由脚本从源码与文档站的页数据（gallery/registry.ts：每个 item 的说明读它的页）生成，不手写：每个源文件一项（文件名短横线小写就是 item 名），registryDependencies 与 npm dependencies 从 import 扫出来，不会漏。
 // 约定（#1862 定）：
-//   type：primitives/ → registry:ui；lib/、quant/format/、katana/ 的纯函数 → registry:lib；patterns/、quant/、katana/、blocks/ 的件 → registry:component；`style`（token、主题、动效）→ registry:style。
+//   type：primitives/ → registry:ui；lib/、quant/format/、katana/、quotes/ 的纯函数 → registry:lib；patterns/、quotes/、quant/、katana/、blocks/ 的件 → registry:component；`style`（token、主题、动效）→ registry:style。
 //   命名：`@katana/<文件名>`；同名冲突在源码里就不许有（每层文件名唯一，单测查）。
 //   落点：每个文件的 target 保持包内的相对结构（~/src/katana/ui/<层>/<文件>），所以件之间的相对 import 与 theme.css 里的 @source 路径在别的项目里原样有效。
 // 用法：node scripts/registry-json.mjs           写 registry.json
@@ -138,6 +138,9 @@ function collectItems() {
     add(f.replace(/\.[^.]+$/, ''), f.endsWith('.tsx') ? 'registry:component' : 'registry:lib', [`src/katana/${f}`])
   }
   byFile('src/patterns', 'registry:component')
+  // quotes/：行情套件（G4 从 katana、quant、patterns 收拢）：带 JSX 的是 component，纯函数（模型、涨跌三态）是 lib。
+  for (const f of listDir('src/quotes').filter((f) => isCode(f) && f !== 'index.ts'))
+    add(f.replace(/\.[^.]+$/, ''), f.endsWith('.tsx') ? 'registry:component' : 'registry:lib', [`src/quotes/${f}`])
   // AI 对话类件（改自 SmoothUI）：一文件一项，带 JSX 的是 component，纯函数（切词、计数、种子散列）与状态约定是 lib。
   for (const f of listDir('src/ai').filter(isCode))
     add(f.replace(/\.[^.]+$/, ''), f.endsWith('.tsx') ? 'registry:component' : 'registry:lib', [`src/ai/${f}`])

@@ -7,8 +7,8 @@ import { Led, type LedState } from '../../katana/led.tsx'
 import { ChipGroup } from '../../patterns/chip-group.tsx'
 import { Button } from '../../primitives/button.tsx'
 import { ToggleGroup, ToggleGroupItem } from '../../primitives/toggle-group.tsx'
-import { PnlText } from '../../quant/pnl-text.tsx'
-import { SparkTile, type SparkTileProps } from '../../quant/spark-tile.tsx'
+import { PnlText } from '../../quotes/pnl-text.tsx'
+import { SparkTile, type SparkTileProps } from '../../quotes/spark-tile.tsx'
 import { meterShare } from '../../quant/meter.tsx'
 import {
   filterEvents,

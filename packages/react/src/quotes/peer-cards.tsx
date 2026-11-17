@@ -4,7 +4,7 @@
 // 价格、单位、文字都由调用方写好传来；涨跌幅是数，按涨跌语义色上色。徽标用包里的 SymbolMark（字母圆，不放真实公司标志）。
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { cn } from '../lib/cn.ts'
-import { SymbolMark } from '../katana/symbol-mark.tsx'
+import { SymbolMark } from './symbol-mark.tsx'
 import { ChangeText } from './change-text.tsx'
 
 export type PeerItem = {

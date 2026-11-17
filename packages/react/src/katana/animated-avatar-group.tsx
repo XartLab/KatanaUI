@@ -6,7 +6,7 @@
 import { motion } from 'motion/react'
 import { useState } from 'react'
 import { cn } from '../lib/cn.ts'
-import { SymbolMark } from './symbol-mark.tsx'
+import { SymbolMark } from '../quotes/symbol-mark.tsx'
 
 // 弹簧参数来自 SmoothUI animated-avatar-group：bounce 0.1、0.25 秒；每枚晚 0.03 秒依次展开。
 const SPRING = { type: 'spring' as const, bounce: 0.1, duration: 0.25 }

@@ -4858,7 +4858,7 @@
     },
     "ChangeText": {
       "kind": "component",
-      "source": "src/quant/change-text.tsx",
+      "source": "src/quotes/change-text.tsx",
       "props": [
         {
           "name": "value",
@@ -5779,7 +5779,7 @@
     },
     "CompareBar": {
       "kind": "component",
-      "source": "src/katana/range-bar.tsx",
+      "source": "src/quotes/range-bar.tsx",
       "props": [
         {
           "name": "a",
@@ -5809,7 +5809,7 @@
     },
     "CompareBarProps": {
       "kind": "type",
-      "source": "src/katana/range-bar.tsx",
+      "source": "src/quotes/range-bar.tsx",
       "props": [
         {
           "name": "a",
@@ -5839,7 +5839,7 @@
     },
     "CompareBarSide": {
       "kind": "type",
-      "source": "src/katana/range-bar.tsx",
+      "source": "src/quotes/range-bar.tsx",
       "props": [
         {
           "name": "label",
@@ -13200,7 +13200,7 @@
     },
     "GaugeBar": {
       "kind": "component",
-      "source": "src/katana/gauge-bar.tsx",
+      "source": "src/quotes/gauge-bar.tsx",
       "props": [
         {
           "name": "label",
@@ -13249,12 +13249,12 @@
     },
     "GaugeBarClasses": {
       "kind": "type",
-      "source": "src/katana/gauge-bar.tsx",
+      "source": "src/quotes/gauge-bar.tsx",
       "props": []
     },
     "GaugeBarProps": {
       "kind": "type",
-      "source": "src/katana/gauge-bar.tsx",
+      "source": "src/quotes/gauge-bar.tsx",
       "props": [
         {
           "name": "label",
@@ -15846,7 +15846,7 @@
     },
     "KeyStatItem": {
       "kind": "type",
-      "source": "src/quant/key-stats.tsx",
+      "source": "src/quotes/key-stats.tsx",
       "props": [
         {
           "name": "key",
@@ -15882,7 +15882,7 @@
     },
     "KeyStats": {
       "kind": "component",
-      "source": "src/quant/key-stats.tsx",
+      "source": "src/quotes/key-stats.tsx",
       "props": [
         {
           "name": "title",
@@ -15925,7 +15925,7 @@
     },
     "KeyStatsProps": {
       "kind": "type",
-      "source": "src/quant/key-stats.tsx",
+      "source": "src/quotes/key-stats.tsx",
       "props": [
         {
           "name": "title",
@@ -18260,7 +18260,7 @@
     },
     "MetricCard": {
       "kind": "component",
-      "source": "src/quant/metric-card.tsx",
+      "source": "src/quotes/metric-card.tsx",
       "props": [
         {
           "name": "title",
@@ -18363,7 +18363,7 @@
     },
     "MetricCardGrid": {
       "kind": "component",
-      "source": "src/quant/metric-card.tsx",
+      "source": "src/quotes/metric-card.tsx",
       "props": [
         {
           "name": "children",
@@ -18424,7 +18424,7 @@
     },
     "MetricCardGridProps": {
       "kind": "type",
-      "source": "src/quant/metric-card.tsx",
+      "source": "src/quotes/metric-card.tsx",
       "props": [
         {
           "name": "children",
@@ -18484,7 +18484,7 @@
     },
     "MetricCardProps": {
       "kind": "type",
-      "source": "src/quant/metric-card.tsx",
+      "source": "src/quotes/metric-card.tsx",
       "props": [
         {
           "name": "title",
@@ -18586,7 +18586,7 @@
     },
     "MetricChange": {
       "kind": "type",
-      "source": "src/quant/metric-card.tsx",
+      "source": "src/quotes/metric-card.tsx",
       "props": [
         {
           "name": "key",
@@ -18615,7 +18615,7 @@
     },
     "MetricRange": {
       "kind": "type",
-      "source": "src/quant/metric-card.tsx",
+      "source": "src/quotes/metric-card.tsx",
       "props": [
         {
           "name": "key",
@@ -18639,7 +18639,7 @@
     },
     "MetricStage": {
       "kind": "type",
-      "source": "src/quant/metric-card.tsx",
+      "source": "src/quotes/metric-card.tsx",
       "props": [
         {
           "name": "label",
@@ -18663,12 +18663,12 @@
     },
     "MetricTrendTone": {
       "kind": "type",
-      "source": "src/quant/metric-card.tsx",
+      "source": "src/quotes/metric-card.tsx",
       "props": []
     },
     "MiniChart": {
       "kind": "component",
-      "source": "src/katana/mini-chart.tsx",
+      "source": "src/quotes/mini-chart.tsx",
       "props": [
         {
           "name": "symbol",
@@ -18810,7 +18810,7 @@
     },
     "MiniChartProps": {
       "kind": "type",
-      "source": "src/katana/mini-chart.tsx",
+      "source": "src/quotes/mini-chart.tsx",
       "props": [
         {
           "name": "symbol",
@@ -22053,7 +22053,7 @@
     },
     "PeerCards": {
       "kind": "component",
-      "source": "src/quant/peer-cards.tsx",
+      "source": "src/quotes/peer-cards.tsx",
       "props": [
         {
           "name": "items",
@@ -22095,7 +22095,7 @@
     },
     "PeerCardsLabels": {
       "kind": "type",
-      "source": "src/quant/peer-cards.tsx",
+      "source": "src/quotes/peer-cards.tsx",
       "props": [
         {
           "name": "list",
@@ -22131,7 +22131,7 @@
     },
     "PeerCardsProps": {
       "kind": "type",
-      "source": "src/quant/peer-cards.tsx",
+      "source": "src/quotes/peer-cards.tsx",
       "props": [
         {
           "name": "items",
@@ -22173,7 +22173,7 @@
     },
     "PeerItem": {
       "kind": "type",
-      "source": "src/quant/peer-cards.tsx",
+      "source": "src/quotes/peer-cards.tsx",
       "props": [
         {
           "name": "key",
@@ -22221,7 +22221,7 @@
     },
     "PerformanceItem": {
       "kind": "type",
-      "source": "src/quant/performance-strip.tsx",
+      "source": "src/quotes/performance-strip.tsx",
       "props": [
         {
           "name": "key",
@@ -22245,7 +22245,7 @@
     },
     "PerformanceStrip": {
       "kind": "component",
-      "source": "src/quant/performance-strip.tsx",
+      "source": "src/quotes/performance-strip.tsx",
       "props": [
         {
           "name": "items",
@@ -22294,7 +22294,7 @@
     },
     "PerformanceStripProps": {
       "kind": "type",
-      "source": "src/quant/performance-strip.tsx",
+      "source": "src/quotes/performance-strip.tsx",
       "props": [
         {
           "name": "items",
@@ -22690,7 +22690,7 @@
     },
     "PivotRow": {
       "kind": "type",
-      "source": "src/quant/technical-rating.tsx",
+      "source": "src/quotes/technical-rating.tsx",
       "props": [
         {
           "name": "key",
@@ -22714,7 +22714,7 @@
     },
     "PivotTable": {
       "kind": "type",
-      "source": "src/quant/technical-rating.tsx",
+      "source": "src/quotes/technical-rating.tsx",
       "props": [
         {
           "name": "title",
@@ -23214,7 +23214,7 @@
     },
     "PnlText": {
       "kind": "component",
-      "source": "src/quant/pnl-text.tsx",
+      "source": "src/quotes/pnl-text.tsx",
       "props": [
         {
           "name": "value",
@@ -23432,7 +23432,7 @@
     },
     "PriceTag": {
       "kind": "component",
-      "source": "src/katana/price-tag.tsx",
+      "source": "src/quotes/price-tag.tsx",
       "props": [
         {
           "name": "name",
@@ -23475,7 +23475,7 @@
     },
     "PriceTagProps": {
       "kind": "type",
-      "source": "src/katana/price-tag.tsx",
+      "source": "src/quotes/price-tag.tsx",
       "props": [
         {
           "name": "name",
@@ -23935,7 +23935,7 @@
     },
     "QuoteCard": {
       "kind": "component",
-      "source": "src/katana/quote-card.tsx",
+      "source": "src/quotes/quote-card.tsx",
       "props": [
         {
           "name": "name",
@@ -24015,7 +24015,7 @@
     },
     "QuoteCardProps": {
       "kind": "type",
-      "source": "src/katana/quote-card.tsx",
+      "source": "src/quotes/quote-card.tsx",
       "props": [
         {
           "name": "name",
@@ -24093,7 +24093,7 @@
     },
     "QuoteGroup": {
       "kind": "type",
-      "source": "src/patterns/quote-table.tsx",
+      "source": "src/quotes/quote-table.tsx",
       "props": [
         {
           "name": "id",
@@ -24117,7 +24117,7 @@
     },
     "QuoteRow": {
       "kind": "type",
-      "source": "src/patterns/quote-table.tsx",
+      "source": "src/quotes/quote-table.tsx",
       "props": [
         {
           "name": "id",
@@ -24177,7 +24177,7 @@
     },
     "QuoteStrip": {
       "kind": "component",
-      "source": "src/katana/quote-card.tsx",
+      "source": "src/quotes/quote-card.tsx",
       "props": [
         {
           "name": "label",
@@ -24201,7 +24201,7 @@
     },
     "QuoteStripProps": {
       "kind": "type",
-      "source": "src/katana/quote-card.tsx",
+      "source": "src/quotes/quote-card.tsx",
       "props": [
         {
           "name": "label",
@@ -24225,7 +24225,7 @@
     },
     "QuoteTable": {
       "kind": "component",
-      "source": "src/patterns/quote-table.tsx",
+      "source": "src/quotes/quote-table.tsx",
       "props": [
         {
           "name": "groups",
@@ -24285,7 +24285,7 @@
     },
     "QuoteTableProps": {
       "kind": "type",
-      "source": "src/patterns/quote-table.tsx",
+      "source": "src/quotes/quote-table.tsx",
       "props": [
         {
           "name": "groups",
@@ -24345,7 +24345,7 @@
     },
     "QuoteTone": {
       "kind": "type",
-      "source": "src/katana/quote-tone.ts",
+      "source": "src/quotes/quote-tone.ts",
       "props": []
     },
     "RENDERING_LABELS_ZH": {
@@ -24365,7 +24365,7 @@
     },
     "RangeBar": {
       "kind": "component",
-      "source": "src/katana/range-bar.tsx",
+      "source": "src/quotes/range-bar.tsx",
       "props": [
         {
           "name": "low",
@@ -24433,7 +24433,7 @@
     },
     "RangeBarProps": {
       "kind": "type",
-      "source": "src/katana/range-bar.tsx",
+      "source": "src/quotes/range-bar.tsx",
       "props": [
         {
           "name": "low",
@@ -24817,7 +24817,7 @@
     },
     "RatingGauge": {
       "kind": "component",
-      "source": "src/katana/rating-gauge.tsx",
+      "source": "src/quotes/rating-gauge.tsx",
       "props": [
         {
           "name": "score",
@@ -24853,7 +24853,7 @@
     },
     "RatingGaugeProps": {
       "kind": "type",
-      "source": "src/katana/rating-gauge.tsx",
+      "source": "src/quotes/rating-gauge.tsx",
       "props": [
         {
           "name": "score",
@@ -24889,7 +24889,7 @@
     },
     "RatingGroup": {
       "kind": "type",
-      "source": "src/quant/technical-rating.tsx",
+      "source": "src/quotes/technical-rating.tsx",
       "props": [
         {
           "name": "key",
@@ -24919,12 +24919,12 @@
     },
     "RatingLevel": {
       "kind": "type",
-      "source": "src/quant/rating-text.tsx",
+      "source": "src/quotes/rating-text.tsx",
       "props": []
     },
     "RatingRow": {
       "kind": "type",
-      "source": "src/quant/technical-rating.tsx",
+      "source": "src/quotes/technical-rating.tsx",
       "props": [
         {
           "name": "key",
@@ -24960,7 +24960,7 @@
     },
     "RatingText": {
       "kind": "component",
-      "source": "src/quant/rating-text.tsx",
+      "source": "src/quotes/rating-text.tsx",
       "props": [
         {
           "name": "level",
@@ -24978,7 +24978,7 @@
     },
     "RatingTextProps": {
       "kind": "type",
-      "source": "src/quant/rating-text.tsx",
+      "source": "src/quotes/rating-text.tsx",
       "props": [
         {
           "name": "level",
@@ -24996,7 +24996,7 @@
     },
     "RatingVerdict": {
       "kind": "type",
-      "source": "src/quant/technical-rating.tsx",
+      "source": "src/quotes/technical-rating.tsx",
       "props": []
     },
     "RegimeBand": {
@@ -26396,7 +26396,7 @@
     },
     "RowAction": {
       "kind": "type",
-      "source": "src/patterns/row-actions.tsx",
+      "source": "src/quotes/row-actions.tsx",
       "props": [
         {
           "name": "key",
@@ -26438,7 +26438,7 @@
     },
     "RowActionMenuItems": {
       "kind": "component",
-      "source": "src/patterns/row-actions.tsx",
+      "source": "src/quotes/row-actions.tsx",
       "props": [
         {
           "name": "items",
@@ -26450,7 +26450,7 @@
     },
     "RowActions": {
       "kind": "component",
-      "source": "src/patterns/row-actions.tsx",
+      "source": "src/quotes/row-actions.tsx",
       "props": [
         {
           "name": "items",
@@ -26500,7 +26500,7 @@
     },
     "RowActionsProps": {
       "kind": "type",
-      "source": "src/patterns/row-actions.tsx",
+      "source": "src/quotes/row-actions.tsx",
       "props": [
         {
           "name": "items",
@@ -26548,7 +26548,7 @@
     },
     "RowContextMenu": {
       "kind": "component",
-      "source": "src/patterns/row-actions.tsx",
+      "source": "src/quotes/row-actions.tsx",
       "props": [
         {
           "name": "actionsFor",
@@ -26579,7 +26579,7 @@
     },
     "RowContextMenuProps": {
       "kind": "type",
-      "source": "src/patterns/row-actions.tsx",
+      "source": "src/quotes/row-actions.tsx",
       "props": [
         {
           "name": "actionsFor",
@@ -28974,7 +28974,7 @@
     },
     "SparkAxis": {
       "kind": "type",
-      "source": "src/katana/sparkline.tsx",
+      "source": "src/quotes/sparkline.tsx",
       "props": [
         {
           "name": "price",
@@ -29004,7 +29004,7 @@
     },
     "SparkTile": {
       "kind": "component",
-      "source": "src/quant/spark-tile.tsx",
+      "source": "src/quotes/spark-tile.tsx",
       "props": [
         {
           "name": "label",
@@ -29090,7 +29090,7 @@
     },
     "SparkTileProps": {
       "kind": "type",
-      "source": "src/quant/spark-tile.tsx",
+      "source": "src/quotes/spark-tile.tsx",
       "props": [
         {
           "name": "label",
@@ -29174,12 +29174,12 @@
     },
     "SparkTileState": {
       "kind": "type",
-      "source": "src/quant/spark-tile.tsx",
+      "source": "src/quotes/spark-tile.tsx",
       "props": []
     },
     "Sparkline": {
       "kind": "component",
-      "source": "src/katana/sparkline.tsx",
+      "source": "src/quotes/sparkline.tsx",
       "props": [
         {
           "name": "values",
@@ -29395,7 +29395,7 @@
     },
     "SparklineProps": {
       "kind": "type",
-      "source": "src/katana/sparkline.tsx",
+      "source": "src/quotes/sparkline.tsx",
       "props": [
         {
           "name": "values",
@@ -29611,7 +29611,7 @@
     },
     "SparklineVariant": {
       "kind": "type",
-      "source": "src/katana/sparkline.tsx",
+      "source": "src/quotes/sparkline.tsx",
       "props": []
     },
     "Splitter": {
@@ -31682,7 +31682,7 @@
     },
     "SymbolMark": {
       "kind": "component",
-      "source": "src/katana/symbol-mark.tsx",
+      "source": "src/quotes/symbol-mark.tsx",
       "props": [
         {
           "name": "code",
@@ -31719,7 +31719,7 @@
     },
     "SymbolMarkProps": {
       "kind": "type",
-      "source": "src/katana/symbol-mark.tsx",
+      "source": "src/quotes/symbol-mark.tsx",
       "props": [
         {
           "name": "code",
@@ -31755,7 +31755,7 @@
     },
     "SymbolMenuInput": {
       "kind": "type",
-      "source": "src/patterns/row-actions.tsx",
+      "source": "src/quotes/row-actions.tsx",
       "props": [
         {
           "name": "openChart",
@@ -32189,12 +32189,12 @@
     },
     "TREEMAP_H": {
       "kind": "value",
-      "source": "src/katana/treemap-model.ts",
+      "source": "src/quotes/treemap-model.ts",
       "props": []
     },
     "TREEMAP_W": {
       "kind": "value",
-      "source": "src/katana/treemap-model.ts",
+      "source": "src/quotes/treemap-model.ts",
       "props": []
     },
     "Tabs": {
@@ -32368,7 +32368,7 @@
     },
     "TechnicalRating": {
       "kind": "component",
-      "source": "src/quant/technical-rating.tsx",
+      "source": "src/quotes/technical-rating.tsx",
       "props": [
         {
           "name": "groups",
@@ -32435,7 +32435,7 @@
     },
     "TechnicalRatingLabels": {
       "kind": "type",
-      "source": "src/quant/technical-rating.tsx",
+      "source": "src/quotes/technical-rating.tsx",
       "props": [
         {
           "name": "zones",
@@ -32483,7 +32483,7 @@
     },
     "TechnicalRatingProps": {
       "kind": "type",
-      "source": "src/quant/technical-rating.tsx",
+      "source": "src/quotes/technical-rating.tsx",
       "props": [
         {
           "name": "groups",
@@ -32549,7 +32549,7 @@
     },
     "TechnicalRatingTimeframe": {
       "kind": "type",
-      "source": "src/quant/technical-rating.tsx",
+      "source": "src/quotes/technical-rating.tsx",
       "props": [
         {
           "name": "value",
@@ -34304,7 +34304,7 @@
     },
     "Treemap": {
       "kind": "component",
-      "source": "src/katana/treemap.tsx",
+      "source": "src/quotes/treemap.tsx",
       "props": [
         {
           "name": "blocks",
@@ -34373,7 +34373,7 @@
     },
     "TreemapBlock": {
       "kind": "type",
-      "source": "src/katana/treemap-model.ts",
+      "source": "src/quotes/treemap-model.ts",
       "props": [
         {
           "name": "name",
@@ -34415,7 +34415,7 @@
     },
     "TreemapCell": {
       "kind": "type",
-      "source": "src/katana/treemap-model.ts",
+      "source": "src/quotes/treemap-model.ts",
       "props": [
         {
           "name": "data",
@@ -34451,12 +34451,12 @@
     },
     "TreemapClasses": {
       "kind": "type",
-      "source": "src/katana/treemap.tsx",
+      "source": "src/quotes/treemap.tsx",
       "props": []
     },
     "TreemapItem": {
       "kind": "type",
-      "source": "src/katana/treemap-model.ts",
+      "source": "src/quotes/treemap-model.ts",
       "props": [
         {
           "name": "data",
@@ -34480,7 +34480,7 @@
     },
     "TreemapLayoutOptions": {
       "kind": "type",
-      "source": "src/katana/treemap-model.ts",
+      "source": "src/quotes/treemap-model.ts",
       "props": [
         {
           "name": "width",
@@ -34504,7 +34504,7 @@
     },
     "TreemapProps": {
       "kind": "type",
-      "source": "src/katana/treemap.tsx",
+      "source": "src/quotes/treemap.tsx",
       "props": [
         {
           "name": "blocks",
@@ -35479,7 +35479,7 @@
     },
     "Watchlist": {
       "kind": "component",
-      "source": "src/quant/watchlist.tsx",
+      "source": "src/quotes/watchlist.tsx",
       "props": [
         {
           "name": "rows",
@@ -35534,7 +35534,7 @@
     },
     "WatchlistLabels": {
       "kind": "type",
-      "source": "src/quant/watchlist.tsx",
+      "source": "src/quotes/watchlist.tsx",
       "props": [
         {
           "name": "columns",
@@ -35564,7 +35564,7 @@
     },
     "WatchlistProps": {
       "kind": "type",
-      "source": "src/quant/watchlist.tsx",
+      "source": "src/quotes/watchlist.tsx",
       "props": [
         {
           "name": "rows",
@@ -35618,7 +35618,7 @@
     },
     "WatchlistRow": {
       "kind": "type",
-      "source": "src/quant/watchlist.tsx",
+      "source": "src/quotes/watchlist.tsx",
       "props": [
         {
           "name": "key",
@@ -35672,7 +35672,7 @@
     },
     "WatchlistSort": {
       "kind": "type",
-      "source": "src/quant/watchlist-model.ts",
+      "source": "src/quotes/watchlist-model.ts",
       "props": [
         {
           "name": "key",
@@ -35690,7 +35690,7 @@
     },
     "WatchlistSortKey": {
       "kind": "type",
-      "source": "src/quant/watchlist-model.ts",
+      "source": "src/quotes/watchlist-model.ts",
       "props": []
     },
     "WaveText": {
@@ -36324,7 +36324,7 @@
     },
     "changedTail": {
       "kind": "function",
-      "source": "src/quant/watchlist-model.ts",
+      "source": "src/quotes/watchlist-model.ts",
       "props": []
     },
     "clampSplitRatio": {
@@ -36344,7 +36344,7 @@
     },
     "colorStep": {
       "kind": "function",
-      "source": "src/katana/treemap-model.ts",
+      "source": "src/quotes/treemap-model.ts",
       "props": []
     },
     "compactParts": {
@@ -36531,7 +36531,7 @@
     },
     "formatPerformance": {
       "kind": "function",
-      "source": "src/quant/performance-strip.tsx",
+      "source": "src/quotes/performance-strip.tsx",
       "props": []
     },
     "formatPrice": {
@@ -36779,7 +36779,7 @@
     },
     "layoutTreemap": {
       "kind": "function",
-      "source": "src/katana/treemap-model.ts",
+      "source": "src/quotes/treemap-model.ts",
       "props": [
         {
           "name": "width",
@@ -36870,12 +36870,12 @@
     },
     "metricStageIndex": {
       "kind": "function",
-      "source": "src/quant/metric-card.tsx",
+      "source": "src/quotes/metric-card.tsx",
       "props": []
     },
     "metricTrendTone": {
       "kind": "function",
-      "source": "src/quant/metric-card.tsx",
+      "source": "src/quotes/metric-card.tsx",
       "props": []
     },
     "morphTokens": {
@@ -36910,7 +36910,7 @@
     },
     "nextSort": {
       "kind": "function",
-      "source": "src/quant/watchlist-model.ts",
+      "source": "src/quotes/watchlist-model.ts",
       "props": []
     },
     "normalizeVintages": {
@@ -36930,7 +36930,7 @@
     },
     "quoteTone": {
       "kind": "function",
-      "source": "src/katana/quote-tone.ts",
+      "source": "src/quotes/quote-tone.ts",
       "props": []
     },
     "rampColor": {
@@ -36958,7 +36958,7 @@
     },
     "rangeShare": {
       "kind": "function",
-      "source": "src/katana/range-bar.tsx",
+      "source": "src/quotes/range-bar.tsx",
       "props": []
     },
     "ranks": {
@@ -36973,12 +36973,12 @@
     },
     "ratingAngle": {
       "kind": "function",
-      "source": "src/katana/rating-gauge-model.ts",
+      "source": "src/quotes/rating-gauge-model.ts",
       "props": []
     },
     "ratingZone": {
       "kind": "function",
-      "source": "src/katana/rating-gauge-model.ts",
+      "source": "src/quotes/rating-gauge-model.ts",
       "props": []
     },
     "readPersisted": {
@@ -37216,17 +37216,17 @@
     },
     "sortRows": {
       "kind": "function",
-      "source": "src/quant/watchlist-model.ts",
+      "source": "src/quotes/watchlist-model.ts",
       "props": []
     },
     "sparkPoints": {
       "kind": "function",
-      "source": "src/katana/sparkline.tsx",
+      "source": "src/quotes/sparkline.tsx",
       "props": []
     },
     "sparkTone": {
       "kind": "function",
-      "source": "src/katana/sparkline.tsx",
+      "source": "src/quotes/sparkline.tsx",
       "props": []
     },
     "splitDepthSegments": {
@@ -37304,12 +37304,12 @@
     },
     "symbolMarkLetters": {
       "kind": "function",
-      "source": "src/katana/symbol-mark.tsx",
+      "source": "src/quotes/symbol-mark.tsx",
       "props": []
     },
     "symbolMenu": {
       "kind": "function",
-      "source": "src/patterns/row-actions.tsx",
+      "source": "src/quotes/row-actions.tsx",
       "props": [
         {
           "name": "openChart",

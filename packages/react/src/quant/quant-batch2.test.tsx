@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vite-plus/test'
-import { sparkPoints, sparkY } from '../katana/sparkline.tsx'
+import { sparkPoints, sparkY } from '../quotes/sparkline.tsx'
 import { ConsensusBlock, countConsensus, FlowGauges, Meter, RegimeBand, RegimeStrip, SparkTile } from './index.ts'
 import { depthHeights, signedSpan } from './flow-gauges.tsx'
 import { meterShare } from './meter.tsx'
 import { regimeSpans } from './regime-strip.tsx'
-import { sparkTileShape } from './spark-tile.tsx'
+import { sparkTileShape } from '../quotes/spark-tile.tsx'
 
 // 结构与纯函数；颜色读 token、data-updown 互换、阻止项有字，在浏览器里查（e2e/ui-gallery.spec.ts）。
 

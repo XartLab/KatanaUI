@@ -2,7 +2,7 @@
 import { type CSSProperties, type ReactNode } from 'react'
 import { cn } from '../lib/cn.ts'
 import { useValueFlash, type FlashDirection } from '../lib/live.ts'
-import { GAUGE_CX, GAUGE_CY, ratingAngle, ratingZone, RATING_BOUNDS, zoneArc } from '../katana/rating-gauge-model.ts'
+import { GAUGE_CX, GAUGE_CY, ratingAngle, ratingZone, RATING_BOUNDS, zoneArc } from './rating-gauge-model.ts'
 import { ToggleGroup, ToggleGroupItem } from '../primitives/toggle-group.tsx'
 
 // 技术评级仪表（#20）：照 TradingView 的 Technicals 仪表（博客「Meet the new technicals tab」：振荡指标、均线、由全部评级合成的总评三组，

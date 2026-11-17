@@ -2,14 +2,14 @@
 // 指标卡 MetricCard 与卡片墙 MetricCardGrid（#30）：标题、大号当前值、较前日 / 周 / 月 / 年的变化、迷你走势线（分段切 1 月 / 3 月 / 6 月 / 1 年）、
 // 可选阶段带（如 极度恐惧…极度贪婪，边界与文案由调用方给）、来源与更新时间一行。
 // 结构参照 uiarc 的 Metric explorer（uiarc.dev，2026-11-15 读，只取结构：标题加大数、变化行、走势线加分段、来源行），实现原创。
-// 走势线复用 katana/sparkline 的 Sparkline，分段控件复用 ToggleGroup，变化复用 ChangeText；组件只画不算，数据与文字都由调用方传，没有数据就是空态。
+// 走势线复用 quotes/sparkline 的 Sparkline，分段控件复用 ToggleGroup，变化复用 ChangeText；组件只画不算，数据与文字都由调用方传，没有数据就是空态。
 // 实时刷新：大号当前值变了闪涨跌色（ReadoutFlash），走势线新点追加时由 Sparkline 平滑延伸；换区间不做过场。
 // 颜色：涨跌色只给变化与走势线；阶段带是从跌色到涨色的渐变加中间灰（类别靠文字，不只靠颜色），不用橙色画数据，不用蓝。
 import { createContext, useContext, useState, type ReactNode } from 'react'
 import { cn } from '../lib/cn.ts'
 import { ReadoutFlash } from '../lib/live-readout.tsx'
-import { Sparkline, sparkTone } from '../katana/sparkline.tsx'
-import type { QuoteTone } from '../katana/quote-tone.ts'
+import { Sparkline, sparkTone } from './sparkline.tsx'
+import type { QuoteTone } from './quote-tone.ts'
 import { ToggleGroup, ToggleGroupItem } from '../primitives/toggle-group.tsx'
 import { ChangeText } from './change-text.tsx'
 
