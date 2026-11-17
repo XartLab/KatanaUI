@@ -207,7 +207,14 @@ export function SystemMonitor({
             <div className="k-sysmon-empty">{labels.notConnected}</div>
           ) : (
             metrics.map(({ key, sparkLabel, state, ...tile }) => (
-              <MetricCard variant="tile" key={key} trendTone="neutral" {...tile} labels={{ spark: sparkLabel }} status={state} />
+              <MetricCard
+                variant="tile"
+                key={key}
+                trendTone="neutral"
+                {...tile}
+                labels={{ spark: sparkLabel }}
+                status={state}
+              />
             ))
           )}
         </section>

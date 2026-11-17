@@ -44,9 +44,24 @@
           "target": "~/src/katana/ui/theme/arcade-pixel.css"
         },
         {
+          "path": "src/theme/attribution-bars.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/attribution-bars.css"
+        },
+        {
           "path": "src/theme/badge.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/badge.css"
+        },
+        {
+          "path": "src/theme/brush-chart.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/brush-chart.css"
+        },
+        {
+          "path": "src/theme/calendar-heatmap.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/calendar-heatmap.css"
         },
         {
           "path": "src/theme/chart-kit.css",
@@ -57,6 +72,11 @@
           "path": "src/theme/chip-group.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/chip-group.css"
+        },
+        {
+          "path": "src/theme/connected-scatter.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/connected-scatter.css"
         },
         {
           "path": "src/theme/consensus-block.css",
@@ -87,11 +107,6 @@
           "path": "src/theme/dialog.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/dialog.css"
-        },
-        {
-          "path": "src/theme/distribution.css",
-          "type": "registry:file",
-          "target": "~/src/katana/ui/theme/distribution.css"
         },
         {
           "path": "src/theme/empty-state.css",
@@ -139,9 +154,19 @@
           "target": "~/src/katana/ui/theme/form-motion.css"
         },
         {
+          "path": "src/theme/gauge-bar.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/gauge-bar.css"
+        },
+        {
           "path": "src/theme/hold-to-confirm.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/hold-to-confirm.css"
+        },
+        {
+          "path": "src/theme/horizon-chart.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/horizon-chart.css"
         },
         {
           "path": "src/theme/hypothesis-ledger.css",
@@ -157,6 +182,11 @@
           "path": "src/theme/kbd.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/kbd.css"
+        },
+        {
+          "path": "src/theme/key-stats.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/key-stats.css"
         },
         {
           "path": "src/theme/lcd.css",
@@ -204,6 +234,11 @@
           "target": "~/src/katana/ui/theme/metric-card.css"
         },
         {
+          "path": "src/theme/mini-chart.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/mini-chart.css"
+        },
+        {
           "path": "src/theme/motion-text.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/motion-text.css"
@@ -239,14 +274,49 @@
           "target": "~/src/katana/ui/theme/param-scatter.css"
         },
         {
-          "path": "src/theme/quant.css",
+          "path": "src/theme/peer-cards.css",
           "type": "registry:file",
-          "target": "~/src/katana/ui/theme/quant.css"
+          "target": "~/src/katana/ui/theme/peer-cards.css"
         },
         {
-          "path": "src/theme/quote.css",
+          "path": "src/theme/performance-strip.css",
           "type": "registry:file",
-          "target": "~/src/katana/ui/theme/quote.css"
+          "target": "~/src/katana/ui/theme/performance-strip.css"
+        },
+        {
+          "path": "src/theme/price-tag.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/price-tag.css"
+        },
+        {
+          "path": "src/theme/quantile-layers.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/quantile-layers.css"
+        },
+        {
+          "path": "src/theme/quote-card.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/quote-card.css"
+        },
+        {
+          "path": "src/theme/quote-table.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/quote-table.css"
+        },
+        {
+          "path": "src/theme/range-bar.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/range-bar.css"
+        },
+        {
+          "path": "src/theme/range-histogram-slider.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/range-histogram-slider.css"
+        },
+        {
+          "path": "src/theme/rating-gauge.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/rating-gauge.css"
         },
         {
           "path": "src/theme/regime-strip.css",
@@ -257,6 +327,11 @@
           "path": "src/theme/rendering.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/rendering.css"
+        },
+        {
+          "path": "src/theme/ridgeline.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/ridgeline.css"
         },
         {
           "path": "src/theme/rolling-text.css",
@@ -274,9 +349,9 @@
           "target": "~/src/katana/ui/theme/scrubber.css"
         },
         {
-          "path": "src/theme/series.css",
+          "path": "src/theme/series-explorer.css",
           "type": "registry:file",
-          "target": "~/src/katana/ui/theme/series.css"
+          "target": "~/src/katana/ui/theme/series-explorer.css"
         },
         {
           "path": "src/theme/shortcut-recorder.css",
@@ -287,6 +362,26 @@
           "path": "src/theme/side-nav.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/side-nav.css"
+        },
+        {
+          "path": "src/theme/slope-chart.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/slope-chart.css"
+        },
+        {
+          "path": "src/theme/small-multiples.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/small-multiples.css"
+        },
+        {
+          "path": "src/theme/spark-tile.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/spark-tile.css"
+        },
+        {
+          "path": "src/theme/sparkline.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/sparkline.css"
         },
         {
           "path": "src/theme/splitter.css",
@@ -309,19 +404,24 @@
           "target": "~/src/katana/ui/theme/sui-motion.css"
         },
         {
+          "path": "src/theme/symbol-galaxy.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/symbol-galaxy.css"
+        },
+        {
           "path": "src/theme/symbol-mark.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/symbol-mark.css"
         },
         {
-          "path": "src/theme/symbol-overview.css",
-          "type": "registry:file",
-          "target": "~/src/katana/ui/theme/symbol-overview.css"
-        },
-        {
           "path": "src/theme/system-monitor.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/system-monitor.css"
+        },
+        {
+          "path": "src/theme/tag.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/tag.css"
         },
         {
           "path": "src/theme/technical-rating.css",
@@ -344,9 +444,29 @@
           "target": "~/src/katana/ui/theme/tree-view.css"
         },
         {
+          "path": "src/theme/treemap.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/treemap.css"
+        },
+        {
+          "path": "src/theme/uptime-bars.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/uptime-bars.css"
+        },
+        {
+          "path": "src/theme/view-switcher.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/view-switcher.css"
+        },
+        {
           "path": "src/theme/vintage-series.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/vintage-series.css"
+        },
+        {
+          "path": "src/theme/watchlist.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/watchlist.css"
         },
         {
           "path": "src/theme/workspace-tabs.css",
@@ -641,6 +761,164 @@
       ]
     },
     {
+      "name": "brush-model",
+      "type": "registry:lib",
+      "title": "Brush Model",
+      "description": "BrushChart 与 SeriesExplorer 共用的刷选窗口几何（纯函数，lib/chart）：夹取、平移、缩放、居中。",
+      "registryDependencies": [
+        "@katana/num"
+      ],
+      "files": [
+        {
+          "path": "src/lib/chart/brush-model.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/lib/chart/brush-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "chart-scale",
+      "type": "registry:lib",
+      "title": "Chart Scale",
+      "description": "分布与关系类的图（Ridgeline、SlopeChart、ConnectedScatter）共用的纯函数：线性比例尺、好看的刻度、分位数。",
+      "files": [
+        {
+          "path": "src/lib/chart/chart-scale.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/lib/chart/chart-scale.ts"
+        }
+      ]
+    },
+    {
+      "name": "scatter-model",
+      "type": "registry:lib",
+      "title": "Scatter Model",
+      "description": "每个点是一个时刻的 (x, y)，按时间顺序连成轨迹，看一个对象在两个量之间怎么走（如策略的波动 vs 收益按月的路径、风格漂移）。时间方向不单靠颜色：起点空心圈、终点强调色实心圈加箭头、中间的点按时间取 seq 色阶（越晚越亮）。多条轨迹各取 series 色板的一个色。功能参照 Arc Connected scatter，实现原创。",
+      "registryDependencies": [
+        "@katana/chart-scale",
+        "@katana/num"
+      ],
+      "files": [
+        {
+          "path": "src/lib/chart/scatter-model.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/lib/chart/scatter-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "series-geometry",
+      "type": "registry:lib",
+      "title": "Series Geometry",
+      "description": "序列图共用的几何（纯函数）：好看的刻度、比例尺、折线与面积路径，BrushChart、HorizonChart、SmallMultiples、SeriesExplorer 都用。",
+      "registryDependencies": [
+        "@katana/num"
+      ],
+      "files": [
+        {
+          "path": "src/lib/chart/series-geometry.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/lib/chart/series-geometry.ts"
+        }
+      ]
+    },
+    {
+      "name": "chart-kit",
+      "type": "registry:component",
+      "title": "Chart Kit",
+      "description": "图表共用底座：配色分配（series / seq / div）、点阵纹理、LCD tooltip、末点、轴与网格、图右上三件（表格视图、导出、全屏）。",
+      "dependencies": [
+        "@tanstack/react-virtual@3.14.25",
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/live",
+        "@katana/series-geometry"
+      ],
+      "files": [
+        {
+          "path": "src/lib/chart/chart-kit/chart-actions.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/lib/chart/chart-kit/chart-actions.tsx"
+        },
+        {
+          "path": "src/lib/chart/chart-kit/chart-table.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/lib/chart/chart-kit/chart-table.tsx"
+        },
+        {
+          "path": "src/lib/chart/chart-kit/chart-value.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/lib/chart/chart-kit/chart-value.tsx"
+        },
+        {
+          "path": "src/lib/chart/chart-kit/dot-fill.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/lib/chart/chart-kit/dot-fill.tsx"
+        },
+        {
+          "path": "src/lib/chart/chart-kit/end-marker.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/lib/chart/chart-kit/end-marker.tsx"
+        },
+        {
+          "path": "src/lib/chart/chart-kit/lcd-tooltip.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/lib/chart/chart-kit/lcd-tooltip.tsx"
+        },
+        {
+          "path": "src/lib/chart/chart-kit/plot-axes.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/lib/chart/chart-kit/plot-axes.tsx"
+        },
+        {
+          "path": "src/lib/chart/chart-kit/series-colors.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/lib/chart/chart-kit/series-colors.ts"
+        }
+      ]
+    },
+    {
+      "name": "quant-format",
+      "type": "registry:lib",
+      "title": "Quant Format",
+      "description": "价格、涨跌幅、数量的写法（纯函数，不带 React；另有 @katana-ui/react/quant/format 出口给画布与 Worker）。小数位由调用方传，不在这里猜。",
+      "dependencies": [
+        "bignumber.js@11.1.5"
+      ],
+      "registryDependencies": [
+        "@katana/tone"
+      ],
+      "files": [
+        {
+          "path": "src/lib/chart/format/change.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/lib/chart/format/change.ts"
+        },
+        {
+          "path": "src/lib/chart/format/decimal-step.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/lib/chart/format/decimal-step.ts"
+        },
+        {
+          "path": "src/lib/chart/format/index.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/lib/chart/format/index.ts"
+        },
+        {
+          "path": "src/lib/chart/format/price.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/lib/chart/format/price.ts"
+        },
+        {
+          "path": "src/lib/chart/format/quantity.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/lib/chart/format/quantity.ts"
+        }
+      ]
+    },
+    {
       "name": "accordion",
       "type": "registry:ui",
       "title": "Accordion",
@@ -670,7 +948,8 @@
         "class-variance-authority@0.7.1"
       ],
       "registryDependencies": [
-        "@katana/cn"
+        "@katana/cn",
+        "@katana/severity"
       ],
       "files": [
         {
@@ -1172,7 +1451,9 @@
         "radix-ui@1.8.1"
       ],
       "registryDependencies": [
-        "@katana/cn"
+        "@katana/alert",
+        "@katana/cn",
+        "@katana/severity"
       ],
       "files": [
         {
@@ -1567,6 +1848,32 @@
       ]
     },
     {
+      "name": "arcade-pixel-paint",
+      "type": "registry:lib",
+      "title": "Arcade Pixel Paint",
+      "description": "ArcadePixel 的画法：把调色板里的 var(--token) 读成颜色、画一帧（亮点、荧光、熄灭的点阵）。",
+      "files": [
+        {
+          "path": "src/katana/arcade-pixel-paint.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/katana/arcade-pixel-paint.ts"
+        }
+      ]
+    },
+    {
+      "name": "arcade-pixel-sprites",
+      "type": "registry:lib",
+      "title": "Arcade Pixel Sprites",
+      "description": "街机式像素屏：5x7 点阵字体或自带精灵画在 canvas 上，可选打字、擦除、闪烁、跑马灯四种进场，再叠扫描线、CRT 暗角与荧光。取自 SmoothUI（MIT）。",
+      "files": [
+        {
+          "path": "src/katana/arcade-pixel-sprites.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/katana/arcade-pixel-sprites.ts"
+        }
+      ]
+    },
+    {
       "name": "arcade-pixel",
       "type": "registry:component",
       "title": "Arcade Pixel",
@@ -1575,6 +1882,8 @@
         "motion@14.9.0"
       ],
       "registryDependencies": [
+        "@katana/arcade-pixel-paint",
+        "@katana/arcade-pixel-sprites",
         "@katana/cn"
       ],
       "files": [
@@ -1590,6 +1899,10 @@
       "type": "registry:component",
       "title": "Badge",
       "description": "品种名后的上标小字（板块、风险标记）：次要文字色，不抢品种名；悬停写全称。",
+      "registryDependencies": [
+        "@katana/severity",
+        "@katana/tag"
+      ],
       "files": [
         {
           "path": "src/katana/badge.tsx",
@@ -1657,65 +1970,6 @@
       ]
     },
     {
-      "name": "date-time-input",
-      "type": "registry:component",
-      "title": "Date Time Input",
-      "description": "可以逐段打字的「年-月-日」与「时:分」，日期框右边的日历按钮打开日历；不随浏览器语言变格式。",
-      "dependencies": [
-        "lucide-react@1.67.0",
-        "react-aria-components@1.22.1"
-      ],
-      "registryDependencies": [
-        "@katana/date-time-model",
-        "@katana/popover"
-      ],
-      "files": [
-        {
-          "path": "src/katana/date-time-input.tsx",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/katana/date-time-input.tsx"
-        }
-      ]
-    },
-    {
-      "name": "date-time-model",
-      "type": "registry:lib",
-      "title": "Date Time Model",
-      "description": "DateTimeInput 的解析与格式化（纯函数）。",
-      "dependencies": [
-        "@internationalized/date@3.12.4"
-      ],
-      "files": [
-        {
-          "path": "src/katana/date-time-model.ts",
-          "type": "registry:lib",
-          "target": "~/src/katana/ui/katana/date-time-model.ts"
-        }
-      ]
-    },
-    {
-      "name": "delete-button",
-      "type": "registry:component",
-      "title": "Delete Button",
-      "description": "危险操作不弹对话框：点一下按钮在原地展开出「确认」「取消」，垃圾桶的盖子掀开。Esc、点外面、Tab 走开都是取消。学自 rare-ui。",
-      "dependencies": [
-        "motion@14.9.0"
-      ],
-      "registryDependencies": [
-        "@katana/cn",
-        "@katana/focus",
-        "@katana/motion",
-        "@katana/spring"
-      ],
-      "files": [
-        {
-          "path": "src/katana/delete-button.tsx",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/katana/delete-button.tsx"
-        }
-      ]
-    },
-    {
       "name": "dither-chart",
       "type": "registry:component",
       "title": "Dither Chart",
@@ -1741,28 +1995,6 @@
           "path": "src/katana/dot-matrix.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/katana/dot-matrix.tsx"
-        }
-      ]
-    },
-    {
-      "name": "duration-picker",
-      "type": "registry:component",
-      "title": "Duration Picker",
-      "description": "平时是连成一整条的药丸「2 时 30 分」加笔钮；点笔钮三段用弹簧分开、内侧圆角长出来，数字变成可输入的框，笔变对勾；点对勾确认。输入超上限夹住并抖一下。学自 rare-ui。",
-      "dependencies": [
-        "motion@14.9.0"
-      ],
-      "registryDependencies": [
-        "@katana/cn",
-        "@katana/focus",
-        "@katana/motion",
-        "@katana/spring"
-      ],
-      "files": [
-        {
-          "path": "src/katana/duration-picker.tsx",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/katana/duration-picker.tsx"
         }
       ]
     },
@@ -1806,19 +2038,6 @@
       ]
     },
     {
-      "name": "gauge-bar",
-      "type": "registry:component",
-      "title": "Gauge Bar",
-      "description": "上面一行名字、数和档位词，中间一条进度条标出数的位置，下面一句说明数是怎么来的。取不到时不画填充，数那里写原因。从应用的分析视图提来。",
-      "files": [
-        {
-          "path": "src/katana/gauge-bar.tsx",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/katana/gauge-bar.tsx"
-        }
-      ]
-    },
-    {
       "name": "grid-loader",
       "type": "registry:component",
       "title": "Grid Loader",
@@ -1834,36 +2053,6 @@
           "path": "src/katana/grid-loader.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/katana/grid-loader.tsx"
-        }
-      ]
-    },
-    {
-      "name": "hold-model",
-      "type": "registry:lib",
-      "title": "Hold Model",
-      "description": "HoldToConfirm 的进度规则：按住填满、松手退回的时长与每帧推进（纯函数）。",
-      "files": [
-        {
-          "path": "src/katana/hold-model.ts",
-          "type": "registry:lib",
-          "target": "~/src/katana/ui/katana/hold-model.ts"
-        }
-      ]
-    },
-    {
-      "name": "hold-to-confirm",
-      "type": "registry:component",
-      "title": "Hold To Confirm",
-      "description": "不可撤的动作（全平、全撤、停策略）用的按钮：按住把底色从左填满才触发，松手往回退；键盘按住空格或回车同样。单击不触发。功能参照 Arc，实现原创。",
-      "registryDependencies": [
-        "@katana/cn",
-        "@katana/hold-model"
-      ],
-      "files": [
-        {
-          "path": "src/katana/hold-to-confirm.tsx",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/katana/hold-to-confirm.tsx"
         }
       ]
     },
@@ -1959,7 +2148,9 @@
       "title": "Lcd",
       "description": "点阵小标签在上、LCD 数字在中、一行灰色小字在下的读数窗；没有数据显示「—」。",
       "registryDependencies": [
-        "@katana/live-readout"
+        "@katana/live-readout",
+        "@katana/severity",
+        "@katana/tone"
       ],
       "files": [
         {
@@ -1975,7 +2166,8 @@
       "title": "Led",
       "description": "8px 的 StatusLED：默认熄灭，只表达真实状态；必须配文字或读屏名，不单靠颜色说话。",
       "registryDependencies": [
-        "@katana/live"
+        "@katana/live",
+        "@katana/severity"
       ],
       "files": [
         {
@@ -2002,7 +2194,7 @@
       "name": "loading-view",
       "type": "registry:component",
       "title": "Loading View",
-      "description": "等数据的那一块：500ms 内到了什么也不画；超过了出点阵骨架，2s 说「仍在加载」，10s 转琥珀条加重试。不脉冲、不转圈。",
+      "description": "加载态的唯一入口：给 pending 等数据，不给 pending 当 Suspense 边界，给 phase 钉在某一段直接画。500ms 内到了什么也不画；超过了出点阵骨架，2s 说「仍在加载」，10s 转琥珀条加重试。",
       "registryDependencies": [
         "@katana/button",
         "@katana/led",
@@ -2038,8 +2230,9 @@
       "name": "loading",
       "type": "registry:component",
       "title": "Loading",
-      "description": "等数据的那一块：500ms 内到了什么也不画；超过了出点阵骨架，2s 说「仍在加载」，10s 转琥珀条加重试。不脉冲、不转圈。",
+      "description": "加载态的唯一入口：给 pending 等数据，不给 pending 当 Suspense 边界，给 phase 钉在某一段直接画。500ms 内到了什么也不画；超过了出点阵骨架，2s 说「仍在加载」，10s 转琥珀条加重试。",
       "registryDependencies": [
+        "@katana/loading-gate",
         "@katana/loading-view",
         "@katana/loading-wait"
       ],
@@ -2121,27 +2314,6 @@
       ]
     },
     {
-      "name": "mini-chart",
-      "type": "registry:component",
-      "title": "Mini Chart",
-      "description": "照 TradingView 的 Mini Chart 小组件（2026-11-18 在浏览器里看的）：卡片上一行「品种图标 + 代码 + 角标」，一行「最新价 单位 + 涨跌幅」，下面是走势（Sparkline 的 area：线 2px 圆角、线下很淡的同色渐变、末端实心点加空心环）。给了毫秒时间戳与 domain，线只画到现在、右边留空；live 时价格滚动、涨跌幅闪色。没有基准线与坐标轴，默认不开悬停。",
-      "registryDependencies": [
-        "@katana/change-text",
-        "@katana/cn",
-        "@katana/quote-tone",
-        "@katana/rolling-text",
-        "@katana/sparkline",
-        "@katana/symbol-mark"
-      ],
-      "files": [
-        {
-          "path": "src/katana/mini-chart.tsx",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/katana/mini-chart.tsx"
-        }
-      ]
-    },
-    {
       "name": "motion-loader",
       "type": "registry:component",
       "title": "Motion Loader",
@@ -2184,55 +2356,6 @@
       ]
     },
     {
-      "name": "number-expression",
-      "type": "registry:lib",
-      "title": "Number Expression",
-      "description": "NumberInput 的算式输入：+10%、*2、100*1.5 按当前值算（纯函数，不用 eval）。",
-      "registryDependencies": [
-        "@katana/number-field-model"
-      ],
-      "files": [
-        {
-          "path": "src/katana/number-expression.ts",
-          "type": "registry:lib",
-          "target": "~/src/katana/ui/katana/number-expression.ts"
-        }
-      ]
-    },
-    {
-      "name": "number-field-model",
-      "type": "registry:lib",
-      "title": "Number Field Model",
-      "description": "NumberInput 的解析与取整（纯函数）。",
-      "registryDependencies": [
-        "@katana/num"
-      ],
-      "files": [
-        {
-          "path": "src/katana/number-field-model.ts",
-          "type": "registry:lib",
-          "target": "~/src/katana/ui/katana/number-field-model.ts"
-        }
-      ]
-    },
-    {
-      "name": "number-input",
-      "type": "registry:component",
-      "title": "Number Input",
-      "description": "一个框：值加可选的单位后缀，没有 −/+ 按钮；打字、方向键、按住左右拖三种改法，可选框内标签与算式输入。",
-      "registryDependencies": [
-        "@katana/number-expression",
-        "@katana/number-field-model"
-      ],
-      "files": [
-        {
-          "path": "src/katana/number-input.tsx",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/katana/number-input.tsx"
-        }
-      ]
-    },
-    {
       "name": "page-preloader",
       "type": "registry:component",
       "title": "Page Preloader",
@@ -2248,29 +2371,6 @@
           "path": "src/katana/page-preloader.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/katana/page-preloader.tsx"
-        }
-      ]
-    },
-    {
-      "name": "password-input",
-      "type": "registry:component",
-      "title": "Password Input",
-      "description": "带眼睛按钮的输入框：默认遮住，点一下显示或遮住；上下眼睑用弹簧开合，输入框不丢焦点与选区。学自 rare-ui（不要强度条）。",
-      "dependencies": [
-        "motion@14.9.0"
-      ],
-      "registryDependencies": [
-        "@katana/cn",
-        "@katana/focus",
-        "@katana/input",
-        "@katana/motion",
-        "@katana/spring"
-      ],
-      "files": [
-        {
-          "path": "src/katana/password-input.tsx",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/katana/password-input.tsx"
         }
       ]
     },
@@ -2312,102 +2412,6 @@
           "path": "src/katana/power-off-slide.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/katana/power-off-slide.tsx"
-        }
-      ]
-    },
-    {
-      "name": "price-tag",
-      "type": "registry:component",
-      "title": "Price Tag",
-      "description": "夹在一句话或一行里的「名字 价格 涨跌」，数字等宽对齐，涨跌带三角与颜色，跟着周围的字号走。",
-      "registryDependencies": [
-        "@katana/live-readout",
-        "@katana/quote-tone"
-      ],
-      "files": [
-        {
-          "path": "src/katana/price-tag.tsx",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/katana/price-tag.tsx"
-        }
-      ]
-    },
-    {
-      "name": "quote-card",
-      "type": "registry:component",
-      "title": "Quote Card",
-      "description": "一只品种一张卡：名字与代码、最新价（大）、涨跌与涨跌幅、可选的迷你图与底部一行；QuoteStrip 是一排小号的卡，放不下横向滚动。",
-      "registryDependencies": [
-        "@katana/live-readout",
-        "@katana/quote-tone",
-        "@katana/sparkline"
-      ],
-      "files": [
-        {
-          "path": "src/katana/quote-card.tsx",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/katana/quote-card.tsx"
-        }
-      ]
-    },
-    {
-      "name": "quote-tone",
-      "type": "registry:lib",
-      "title": "Quote Tone",
-      "description": "一列数从旧到新，按容器的真实像素画（不拉伸、线宽 1.5px，高 80 以上 2px、圆角连接）。默认是线加线下渐变（贴线 22% 渐到 0），最新值处是实心点加常驻空心环；给毫秒时间戳与 domain 时横轴是整个交易时段、线只画到现在（对齐 TradingView Markets 页的日内图），可加右侧价格刻度、底部时间刻度与最新价价签；另有 line、baseline（基准上涨色下跌色）、bars、winloss（胜负格）四种画法。look 给两种可选画风（默认外观不变）：instrument 是把数据当科学档案来排版的仪器档案页（细线、一个信号色、点阵与角标、投影谱、极值与研究员批注、档案编号与来源行），ascii 是终端字形（块字符或盲文点阵、可换点阵字体）。可加基准虚线、最高最低点、右端最新值、成交量、断点、单调曲线；interactive 时悬停出一根竖线、吸附点与紧挨光标的三行读数（数值、日期、时间），键盘左右键走点。线色按最后值对基准（没基准按头尾），涨跌色跟涨跌配色走，没有数据只留「—」。",
-      "registryDependencies": [
-        "@katana/tone"
-      ],
-      "files": [
-        {
-          "path": "src/katana/quote-tone.ts",
-          "type": "registry:lib",
-          "target": "~/src/katana/ui/katana/quote-tone.ts"
-        }
-      ]
-    },
-    {
-      "name": "range-bar",
-      "type": "registry:component",
-      "title": "Range Bar",
-      "description": "一条横线从最低到最高，标记指着现价在区间里的位置，两端写最低与最高。用来看当日区间、52 周区间。",
-      "files": [
-        {
-          "path": "src/katana/range-bar.tsx",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/katana/range-bar.tsx"
-        }
-      ]
-    },
-    {
-      "name": "rating-gauge-model",
-      "type": "registry:lib",
-      "title": "Rating Gauge Model",
-      "description": "半圆分五段（强烈卖出到强烈买入），一根指针转到分数那一段，圆心下面写档位词，下面可再放卖出 / 中性 / 买入各几个。",
-      "registryDependencies": [
-        "@katana/num"
-      ],
-      "files": [
-        {
-          "path": "src/katana/rating-gauge-model.ts",
-          "type": "registry:lib",
-          "target": "~/src/katana/ui/katana/rating-gauge-model.ts"
-        }
-      ]
-    },
-    {
-      "name": "rating-gauge",
-      "type": "registry:component",
-      "title": "Rating Gauge",
-      "description": "半圆分五段（强烈卖出到强烈买入），一根指针转到分数那一段，圆心下面写档位词，下面可再放卖出 / 中性 / 买入各几个。",
-      "registryDependencies": [
-        "@katana/rating-gauge-model"
-      ],
-      "files": [
-        {
-          "path": "src/katana/rating-gauge.tsx",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/katana/rating-gauge.tsx"
         }
       ]
     },
@@ -2463,44 +2467,10 @@
       ]
     },
     {
-      "name": "shortcut-model",
-      "type": "registry:lib",
-      "title": "Shortcut Model",
-      "description": "ShortcutRecorder 的规则：一次按键变成规范组合串（修饰键次序、物理键）。",
-      "files": [
-        {
-          "path": "src/katana/shortcut-model.ts",
-          "type": "registry:lib",
-          "target": "~/src/katana/ui/katana/shortcut-model.ts"
-        }
-      ]
-    },
-    {
-      "name": "shortcut-recorder",
-      "type": "registry:component",
-      "title": "Shortcut Recorder",
-      "description": "热键设置用的录键框：点一下进入录键态，按下组合键就记下来；冲突由调用方传的占用表判断，冲突时不写入并说占着的是谁。功能参照 Arc，实现原创。",
-      "dependencies": [
-        "lucide-react@1.67.0"
-      ],
-      "registryDependencies": [
-        "@katana/cn",
-        "@katana/kbd",
-        "@katana/shortcut-model"
-      ],
-      "files": [
-        {
-          "path": "src/katana/shortcut-recorder.tsx",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/katana/shortcut-recorder.tsx"
-        }
-      ]
-    },
-    {
       "name": "skeleton",
       "type": "registry:component",
       "title": "Skeleton",
-      "description": "等数据的那一块：500ms 内到了什么也不画；超过了出点阵骨架，2s 说「仍在加载」，10s 转琥珀条加重试。不脉冲、不转圈。",
+      "description": "骨架条本身：12 高的点阵圆角条（bg-200 底、line-200 边），第一行 40%、最后一行 70%、中间满宽；不脉冲、不转圈。什么时候出、出多久由 Loading 管。",
       "registryDependencies": [
         "@katana/loading-gate"
       ],
@@ -2509,106 +2479,6 @@
           "path": "src/katana/skeleton.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/katana/skeleton.tsx"
-        }
-      ]
-    },
-    {
-      "name": "sparkline-ascii",
-      "type": "registry:component",
-      "title": "Sparkline Ascii",
-      "description": "Sparkline 的 ascii 画风：方块或盲文字形画走势，一个 pre，新列乱码落定。",
-      "registryDependencies": [
-        "@katana/live",
-        "@katana/live-line",
-        "@katana/sparkline",
-        "@katana/sparkline-model",
-        "@katana/sparkline-shared",
-        "@katana/text-measure"
-      ],
-      "files": [
-        {
-          "path": "src/katana/sparkline-ascii.tsx",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/katana/sparkline-ascii.tsx"
-        }
-      ]
-    },
-    {
-      "name": "sparkline-instrument",
-      "type": "registry:component",
-      "title": "Sparkline Instrument",
-      "description": "Sparkline 的 instrument 画风：点阵、对位角标、投影谱、极值十字与批注、档案编号与 SOURCES。",
-      "registryDependencies": [
-        "@katana/live-line",
-        "@katana/sparkline",
-        "@katana/sparkline-model",
-        "@katana/sparkline-shared",
-        "@katana/text-measure"
-      ],
-      "files": [
-        {
-          "path": "src/katana/sparkline-instrument.tsx",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/katana/sparkline-instrument.tsx"
-        }
-      ]
-    },
-    {
-      "name": "sparkline-model",
-      "type": "registry:lib",
-      "title": "Sparkline Model",
-      "description": "每组一条核密度曲线，上下叠着排，一眼比各组分布的位置、宽窄与形状（分位层、因子分组的收益分布）。带宽默认 Silverman 经验规则；给了基准线就画一条贯穿的虚线。分层是序数：线与点阵面取 seq 色阶（暗到亮），不用涨跌色。悬停或聚焦一条，其余变暗。功能参照 Arc Ridgeline，实现原创。",
-      "registryDependencies": [
-        "@katana/live-line",
-        "@katana/quote-tone"
-      ],
-      "files": [
-        {
-          "path": "src/katana/sparkline-model.ts",
-          "type": "registry:lib",
-          "target": "~/src/katana/ui/katana/sparkline-model.ts"
-        }
-      ]
-    },
-    {
-      "name": "sparkline-shared",
-      "type": "registry:lib",
-      "title": "Sparkline Shared",
-      "description": "Sparkline 各画风共用的钩子：量容器、设备像素比、文字测量重置。",
-      "registryDependencies": [
-        "@katana/live-line",
-        "@katana/sparkline",
-        "@katana/sparkline-model",
-        "@katana/text-measure"
-      ],
-      "files": [
-        {
-          "path": "src/katana/sparkline-shared.ts",
-          "type": "registry:lib",
-          "target": "~/src/katana/ui/katana/sparkline-shared.ts"
-        }
-      ]
-    },
-    {
-      "name": "sparkline",
-      "type": "registry:component",
-      "title": "Sparkline",
-      "description": "一列数从旧到新，按容器的真实像素画（不拉伸、线宽 1.5px，高 80 以上 2px、圆角连接）。默认是线加线下渐变（贴线 22% 渐到 0），最新值处是实心点加常驻空心环；给毫秒时间戳与 domain 时横轴是整个交易时段、线只画到现在（对齐 TradingView Markets 页的日内图），可加右侧价格刻度、底部时间刻度与最新价价签；另有 line、baseline（基准上涨色下跌色）、bars、winloss（胜负格）四种画法。look 给两种可选画风（默认外观不变）：instrument 是把数据当科学档案来排版的仪器档案页（细线、一个信号色、点阵与角标、投影谱、极值与研究员批注、档案编号与来源行），ascii 是终端字形（块字符或盲文点阵、可换点阵字体）。可加基准虚线、最高最低点、右端最新值、成交量、断点、单调曲线；interactive 时悬停出一根竖线、吸附点与紧挨光标的三行读数（数值、日期、时间），键盘左右键走点。线色按最后值对基准（没基准按头尾），涨跌色跟涨跌配色走，没有数据只留「—」。",
-      "registryDependencies": [
-        "@katana/live",
-        "@katana/live-line",
-        "@katana/quote-tone",
-        "@katana/sparkline-ascii",
-        "@katana/sparkline-instrument",
-        "@katana/sparkline-model",
-        "@katana/sparkline-shared",
-        "@katana/text-measure"
-      ],
-      "files": [
-        {
-          "path": "src/katana/sparkline.tsx",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/katana/sparkline.tsx"
         }
       ]
     },
@@ -2640,6 +2510,7 @@
       "registryDependencies": [
         "@katana/cn",
         "@katana/motion",
+        "@katana/severity",
         "@katana/spring"
       ],
       "files": [
@@ -2707,61 +2578,19 @@
       ]
     },
     {
-      "name": "symbol-mark",
+      "name": "tag",
       "type": "registry:component",
-      "title": "Symbol Mark",
-      "description": "品种名前的小圆标（学 TradingView 列表里企业 / 币种标志）：有图显示圆形裁切的图片，加载失败退回字母；没有图就是字母圆标，底 bg-400、字 ink-200，不按代码随机上色。尺寸默认 18（行高 28 的一行）。",
-      "registryDependencies": [
-        "@katana/cn"
-      ],
-      "files": [
-        {
-          "path": "src/katana/symbol-mark.tsx",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/katana/symbol-mark.tsx"
-        }
-      ]
-    },
-    {
-      "name": "task-list",
-      "type": "registry:component",
-      "title": "Task List",
-      "description": "点一行打勾：圆圈填上强调色、对勾一笔画出来、文字被一道线划掉，划完这一行沉到底部，其余行弹簧补位；再点取消，回到原位。学自 rare-ui。",
-      "dependencies": [
-        "motion@14.9.0"
-      ],
+      "title": "Tag",
+      "description": "小标签的底座：语气（Severity：neutral、ok、warn、danger）× 尺寸（sm、md）× 填充或描边。BadgeGroup 的上标徽标、EstimateBadge 的估算标记都是它；颜色只读 --k-status-*。",
       "registryDependencies": [
         "@katana/cn",
-        "@katana/focus",
-        "@katana/motion",
-        "@katana/spring"
+        "@katana/severity"
       ],
       "files": [
         {
-          "path": "src/katana/task-list.tsx",
+          "path": "src/katana/tag.tsx",
           "type": "registry:component",
-          "target": "~/src/katana/ui/katana/task-list.tsx"
-        }
-      ]
-    },
-    {
-      "name": "theme-selector",
-      "type": "registry:component",
-      "title": "Theme Selector",
-      "description": "每个主题一张缩略预览（迷你控制台），选中的那张加一圈环，环在选项之间用弹簧滑过去。缩略颜色由调用方传，所以能同时预览别的主题。学自 rare-ui。",
-      "dependencies": [
-        "motion@14.9.0"
-      ],
-      "registryDependencies": [
-        "@katana/cn",
-        "@katana/focus",
-        "@katana/motion"
-      ],
-      "files": [
-        {
-          "path": "src/katana/theme-selector.tsx",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/katana/theme-selector.tsx"
+          "target": "~/src/katana/ui/katana/tag.tsx"
         }
       ]
     },
@@ -2775,50 +2604,14 @@
       ],
       "registryDependencies": [
         "@katana/button",
-        "@katana/cn"
+        "@katana/cn",
+        "@katana/severity"
       ],
       "files": [
         {
           "path": "src/katana/toast.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/katana/toast.tsx"
-        }
-      ]
-    },
-    {
-      "name": "treemap-model",
-      "type": "registry:lib",
-      "title": "Treemap Model",
-      "description": "一格一项，面积按大小，颜色按涨跌分七档（跟涨跌配色走），格子够大才写名字和数；点组头下钻，底部是色例。排布用 d3-hierarchy 的 squarify。从应用的分析视图提来。",
-      "dependencies": [
-        "d3-hierarchy@3.1.3"
-      ],
-      "devDependencies": [
-        "@types/d3-hierarchy@3.1.7"
-      ],
-      "files": [
-        {
-          "path": "src/katana/treemap-model.ts",
-          "type": "registry:lib",
-          "target": "~/src/katana/ui/katana/treemap-model.ts"
-        }
-      ]
-    },
-    {
-      "name": "treemap",
-      "type": "registry:component",
-      "title": "Treemap",
-      "description": "一格一项，面积按大小，颜色按涨跌分七档（跟涨跌配色走），格子够大才写名字和数；点组头下钻，底部是色例。排布用 d3-hierarchy 的 squarify。从应用的分析视图提来。",
-      "registryDependencies": [
-        "@katana/live",
-        "@katana/num",
-        "@katana/treemap-model"
-      ],
-      "files": [
-        {
-          "path": "src/katana/treemap.tsx",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/katana/treemap.tsx"
         }
       ]
     },
@@ -2910,7 +2703,7 @@
     },
     {
       "name": "date-range-model",
-      "type": "registry:component",
+      "type": "registry:lib",
       "title": "Date Range Model",
       "description": "DateRangePicker 的预设规则：今天、本周、本月、年初至今（截至今天）与区间认预设（纯函数）。",
       "dependencies": [
@@ -2919,7 +2712,7 @@
       "files": [
         {
           "path": "src/patterns/date-range-model.ts",
-          "type": "registry:component",
+          "type": "registry:lib",
           "target": "~/src/katana/ui/patterns/date-range-model.ts"
         }
       ]
@@ -2948,6 +2741,65 @@
       ]
     },
     {
+      "name": "date-time-input",
+      "type": "registry:component",
+      "title": "Date Time Input",
+      "description": "可以逐段打字的「年-月-日」与「时:分」，日期框右边的日历按钮打开日历；不随浏览器语言变格式。",
+      "dependencies": [
+        "lucide-react@1.67.0",
+        "react-aria-components@1.22.1"
+      ],
+      "registryDependencies": [
+        "@katana/date-time-model",
+        "@katana/popover"
+      ],
+      "files": [
+        {
+          "path": "src/patterns/date-time-input.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/patterns/date-time-input.tsx"
+        }
+      ]
+    },
+    {
+      "name": "date-time-model",
+      "type": "registry:lib",
+      "title": "Date Time Model",
+      "description": "DateTimeInput 的解析与格式化（纯函数）。",
+      "dependencies": [
+        "@internationalized/date@3.12.4"
+      ],
+      "files": [
+        {
+          "path": "src/patterns/date-time-model.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/patterns/date-time-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "delete-button",
+      "type": "registry:component",
+      "title": "Delete Button",
+      "description": "危险操作不弹对话框：点一下按钮在原地展开出「确认」「取消」，垃圾桶的盖子掀开。Esc、点外面、Tab 走开都是取消。学自 rare-ui。",
+      "dependencies": [
+        "motion@14.9.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/focus",
+        "@katana/motion",
+        "@katana/spring"
+      ],
+      "files": [
+        {
+          "path": "src/patterns/delete-button.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/patterns/delete-button.tsx"
+        }
+      ]
+    },
+    {
       "name": "dock",
       "type": "registry:component",
       "title": "Dock",
@@ -2964,6 +2816,42 @@
           "path": "src/patterns/dock.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/patterns/dock.tsx"
+        }
+      ]
+    },
+    {
+      "name": "duration-picker-model",
+      "type": "registry:lib",
+      "title": "Duration Picker Model",
+      "description": "DurationPicker 的输入规则：框里的字与数互转，空当 0，超上限夹住并标记要抖一下（纯函数）。",
+      "files": [
+        {
+          "path": "src/patterns/duration-picker-model.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/patterns/duration-picker-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "duration-picker",
+      "type": "registry:component",
+      "title": "Duration Picker",
+      "description": "平时是连成一整条的药丸「2 时 30 分」加笔钮；点笔钮三段用弹簧分开、内侧圆角长出来，数字变成可输入的框，笔变对勾；点对勾确认。输入超上限夹住并抖一下。学自 rare-ui。",
+      "dependencies": [
+        "motion@14.9.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/duration-picker-model",
+        "@katana/focus",
+        "@katana/motion",
+        "@katana/spring"
+      ],
+      "files": [
+        {
+          "path": "src/patterns/duration-picker.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/patterns/duration-picker.tsx"
         }
       ]
     },
@@ -3031,13 +2919,13 @@
     },
     {
       "name": "filter-bar-model",
-      "type": "registry:component",
+      "type": "registry:lib",
       "title": "Filter Bar Model",
       "description": "选股器的顶部过滤行：一行可换行的胶囊，每个胶囊是一个字段；点开浮层有标题与垃圾桶（把这个过滤从条上拿掉）、搜索框、预设条件列表（主文字加灰色副标题）、底部「手动设置」（运算符加值）。最后是「+」（按分组列出所有字段，进组再选）与「⋯」（重置全部条件）。照 TradingView 选股器（主会话 2026-11-15 登录态实测），实现原创。字段、运算符、预设与文字都由调用方定义；条件受控，件不过滤数据，调用方用 applyFilters 或自己的方式过滤。",
       "files": [
         {
           "path": "src/patterns/filter-bar-model.ts",
-          "type": "registry:component",
+          "type": "registry:lib",
           "target": "~/src/katana/ui/patterns/filter-bar-model.ts"
         }
       ]
@@ -3088,14 +2976,45 @@
     },
     {
       "name": "font-catalog",
-      "type": "registry:component",
+      "type": "registry:lib",
       "title": "Font Catalog",
       "description": "应用「设置 → 渲染」那一页：字体（界面、汉字、数据字、代码四个角色，各从字体目录 FONT_CATALOG 里挑：系统、开源、本机已装三类）、文字平滑（灰度 / 系统）、像素对齐、字重补偿（-60..+60，相当于终端的 font-thicken）、字号缩放（取整到整像素）、斜线零、中英对齐（font-size-adjust）。每项一行：名称、一句说明、控件。值写在根节点上（theme/rendering.css 读），件是受控的，调用方存值，启动时用 applyRendering 写回。字样表与本机字体检测见总览里的 rendering 页。",
       "files": [
         {
           "path": "src/patterns/font-catalog.ts",
-          "type": "registry:component",
+          "type": "registry:lib",
           "target": "~/src/katana/ui/patterns/font-catalog.ts"
+        }
+      ]
+    },
+    {
+      "name": "hold-model",
+      "type": "registry:lib",
+      "title": "Hold Model",
+      "description": "HoldToConfirm 的进度规则：按住填满、松手退回的时长与每帧推进（纯函数）。",
+      "files": [
+        {
+          "path": "src/patterns/hold-model.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/patterns/hold-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "hold-to-confirm",
+      "type": "registry:component",
+      "title": "Hold To Confirm",
+      "description": "不可撤的动作（全平、全撤、停策略）用的按钮：按住把底色从左填满才触发，松手往回退；键盘按住空格或回车同样。单击不触发。功能参照 Arc，实现原创。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/hold-model",
+        "@katana/severity"
+      ],
+      "files": [
+        {
+          "path": "src/patterns/hold-to-confirm.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/patterns/hold-to-confirm.tsx"
         }
       ]
     },
@@ -3118,28 +3037,97 @@
       ]
     },
     {
-      "name": "quote-table",
-      "type": "registry:component",
-      "title": "Quote Table",
-      "description": "上面一排页签（指数、自选、热门……），下面是当前这组的行情表：名称与代码、迷你图、最新价、涨跌幅。由 Tabs 与 Sparkline 组出来。",
+      "name": "number-expression",
+      "type": "registry:lib",
+      "title": "Number Expression",
+      "description": "NumberInput 的算式输入：+10%、*2、100*1.5 按当前值算（纯函数，不用 eval）。",
       "registryDependencies": [
-        "@katana/cn",
-        "@katana/live",
-        "@katana/quote-tone",
-        "@katana/sparkline",
-        "@katana/tabs"
+        "@katana/number-field-model"
       ],
       "files": [
         {
-          "path": "src/patterns/quote-table.tsx",
+          "path": "src/patterns/number-expression.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/patterns/number-expression.ts"
+        }
+      ]
+    },
+    {
+      "name": "number-field-model",
+      "type": "registry:lib",
+      "title": "Number Field Model",
+      "description": "NumberInput 的解析与取整（纯函数）。",
+      "registryDependencies": [
+        "@katana/num"
+      ],
+      "files": [
+        {
+          "path": "src/patterns/number-field-model.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/patterns/number-field-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "number-input",
+      "type": "registry:component",
+      "title": "Number Input",
+      "description": "一个框：值加可选的单位后缀，没有 −/+ 按钮；打字、方向键、按住左右拖三种改法，可选框内标签与算式输入。",
+      "registryDependencies": [
+        "@katana/number-expression",
+        "@katana/number-field-model"
+      ],
+      "files": [
+        {
+          "path": "src/patterns/number-input.tsx",
           "type": "registry:component",
-          "target": "~/src/katana/ui/patterns/quote-table.tsx"
+          "target": "~/src/katana/ui/patterns/number-input.tsx"
+        }
+      ]
+    },
+    {
+      "name": "password-input-model",
+      "type": "registry:lib",
+      "title": "Password Input Model",
+      "description": "PasswordInput 的眼睛轮廓：睁开程度 0..1 到 SVG 路径（纯函数）。",
+      "registryDependencies": [
+        "@katana/num"
+      ],
+      "files": [
+        {
+          "path": "src/patterns/password-input-model.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/patterns/password-input-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "password-input",
+      "type": "registry:component",
+      "title": "Password Input",
+      "description": "带眼睛按钮的输入框：默认遮住，点一下显示或遮住；上下眼睑用弹簧开合，输入框不丢焦点与选区。学自 rare-ui（不要强度条）。",
+      "dependencies": [
+        "motion@14.9.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/focus",
+        "@katana/input",
+        "@katana/motion",
+        "@katana/password-input-model",
+        "@katana/spring"
+      ],
+      "files": [
+        {
+          "path": "src/patterns/password-input.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/patterns/password-input.tsx"
         }
       ]
     },
     {
       "name": "range-histogram-model",
-      "type": "registry:component",
+      "type": "registry:lib",
       "title": "Range Histogram Model",
       "description": "一排柱子画出全体的分布，下面一条轨道两个把手：拖出来的区间里的柱子亮、区间外的暗；柱色取 seq 顺序色阶（越高越亮）。用在筛选器，在全市场分布上拖市值、涨幅、换手的区间。点柱子或轨道，最近的把手跳过去。功能参照 Arc Range histogram slider，实现原创。",
       "registryDependencies": [
@@ -3148,7 +3136,7 @@
       "files": [
         {
           "path": "src/patterns/range-histogram-model.ts",
-          "type": "registry:component",
+          "type": "registry:lib",
           "target": "~/src/katana/ui/patterns/range-histogram-model.ts"
         }
       ]
@@ -3212,24 +3200,36 @@
       ]
     },
     {
-      "name": "row-actions",
+      "name": "shortcut-model",
+      "type": "registry:lib",
+      "title": "Shortcut Model",
+      "description": "ShortcutRecorder 的规则：一次按键变成规范组合串（修饰键次序、物理键）。",
+      "files": [
+        {
+          "path": "src/patterns/shortcut-model.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/patterns/shortcut-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "shortcut-recorder",
       "type": "registry:component",
-      "title": "Row Actions",
-      "description": "所有带品种的行（DataGrid、连板天梯、报价表）与格子（市场热力图）共用的一套：悬停或键盘落到一行时，行右端浮出前几颗无边框图标按钮，浮在行上、不挤列宽；右键（菜单键、Shift+F10）出同一份菜单。件不认识「图表」「自选」，只认 { key, label, icon?, shortcut?, onSelect }，文案与动作都由调用方传；symbolMenu 把标准四项（开图、加自选、新建告警、复制代码，固定次序）拼成这样的数组，调用方的项接在后面。DataGrid、LimitLadder、MarketHeatmap 各有一个可选 prop 接它，不传就没有，旧用法不变。功能参照 TradingView 品种搜索结果行的悬停操作，自选行的细节待核对。样子照连板天梯：按钮无边框、悬停灰底，不加橙色。",
+      "title": "Shortcut Recorder",
+      "description": "热键设置用的录键框：点一下进入录键态，按下组合键就记下来；冲突由调用方传的占用表判断，冲突时不写入并说占着的是谁。功能参照 Arc，实现原创。",
       "dependencies": [
         "lucide-react@1.67.0"
       ],
       "registryDependencies": [
         "@katana/cn",
-        "@katana/context-menu",
-        "@katana/menu-any",
-        "@katana/menu-parts"
+        "@katana/kbd",
+        "@katana/shortcut-model"
       ],
       "files": [
         {
-          "path": "src/patterns/row-actions.tsx",
+          "path": "src/patterns/shortcut-recorder.tsx",
           "type": "registry:component",
-          "target": "~/src/katana/ui/patterns/row-actions.tsx"
+          "target": "~/src/katana/ui/patterns/shortcut-recorder.tsx"
         }
       ]
     },
@@ -3243,6 +3243,77 @@
           "path": "src/patterns/side-nav.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/patterns/side-nav.tsx"
+        }
+      ]
+    },
+    {
+      "name": "task-list-model",
+      "type": "registry:lib",
+      "title": "Task List Model",
+      "description": "TaskList 的任务形状与次序：没完成的保持原位，划完的按沉下去的先后排到底部（纯函数）。",
+      "files": [
+        {
+          "path": "src/patterns/task-list-model.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/patterns/task-list-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "task-list",
+      "type": "registry:component",
+      "title": "Task List",
+      "description": "点一行打勾：圆圈填上强调色、对勾一笔画出来、文字被一道线划掉，划完这一行沉到底部，其余行弹簧补位；再点取消，回到原位。学自 rare-ui。",
+      "dependencies": [
+        "motion@14.9.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/focus",
+        "@katana/motion",
+        "@katana/spring",
+        "@katana/task-list-model"
+      ],
+      "files": [
+        {
+          "path": "src/patterns/task-list.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/patterns/task-list.tsx"
+        }
+      ]
+    },
+    {
+      "name": "theme-selector-model",
+      "type": "registry:lib",
+      "title": "Theme Selector Model",
+      "description": "ThemeSelector 的键盘规则：方向键与 Home / End 移到哪一张，到头循环（纯函数）。",
+      "files": [
+        {
+          "path": "src/patterns/theme-selector-model.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/patterns/theme-selector-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "theme-selector",
+      "type": "registry:component",
+      "title": "Theme Selector",
+      "description": "每个主题一张缩略预览（迷你控制台），选中的那张加一圈环，环在选项之间用弹簧滑过去。缩略颜色由调用方传，所以能同时预览别的主题。学自 rare-ui。",
+      "dependencies": [
+        "motion@14.9.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/focus",
+        "@katana/motion",
+        "@katana/theme-selector-model"
+      ],
+      "files": [
+        {
+          "path": "src/patterns/theme-selector.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/patterns/theme-selector.tsx"
         }
       ]
     },
@@ -3303,6 +3374,633 @@
           "path": "src/patterns/view-switcher.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/patterns/view-switcher.tsx"
+        }
+      ]
+    },
+    {
+      "name": "change-text",
+      "type": "registry:component",
+      "title": "Change Text",
+      "description": "百分数的涨跌幅文字，写成「+1.23%」；颜色只读 --pnl-up / --pnl-down，根上设 data-updown=\"cn\" 就互换成红涨绿跌；零不着色。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/live",
+        "@katana/quant-format",
+        "@katana/tone-text"
+      ],
+      "files": [
+        {
+          "path": "src/quotes/change-text.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quotes/change-text.tsx"
+        }
+      ]
+    },
+    {
+      "name": "flash-price",
+      "type": "registry:component",
+      "title": "Flash Price",
+      "description": "最新价只闪变了的尾数（照 TradingView 自选栏）：Watchlist 与 QuoteTable 的价格格共用。",
+      "registryDependencies": [
+        "@katana/live",
+        "@katana/watchlist-model"
+      ],
+      "files": [
+        {
+          "path": "src/quotes/flash-price.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quotes/flash-price.tsx"
+        }
+      ]
+    },
+    {
+      "name": "gauge-bar",
+      "type": "registry:component",
+      "title": "Gauge Bar",
+      "description": "上面一行名字、数和档位词，中间一条进度条标出数的位置，下面一句说明数是怎么来的。取不到时不画填充，数那里写原因。从应用的分析视图提来。",
+      "files": [
+        {
+          "path": "src/quotes/gauge-bar.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quotes/gauge-bar.tsx"
+        }
+      ]
+    },
+    {
+      "name": "key-stats",
+      "type": "registry:component",
+      "title": "Key Stats",
+      "description": "照 TradingView 品种页的 Key stats（2026-11-15 实测）：标题带「›」，三列网格，每项一个灰色小标签（带「›」，给了 onItem 就可点）、一个大号数值（带单位小字）、可选徽标（中性灰胶囊，不用 TV 的紫色）。数值与文字由调用方传。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/live-readout"
+      ],
+      "files": [
+        {
+          "path": "src/quotes/key-stats.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quotes/key-stats.tsx"
+        }
+      ]
+    },
+    {
+      "name": "metric-card",
+      "type": "registry:component",
+      "title": "Metric Card",
+      "description": "报价类读数卡的共用壳（2026-11-18）：variant=\"card\" 照 uiarc 的 Metric explorer 的结构，variant=\"tile\" 是 KPI 瓦片（原 SparkTile）。卡：标题、大号当前值、较前日 / 周 / 月 / 年的变化（涨跌色）、迷你走势线（1 月 / 3 月 / 6 月 / 1 年分段）、可选阶段带（五档边界与文案由调用方给）、来源与更新时间一行；MetricCardGrid 把卡排成墙。组件只画不算，数据与文字都由调用方传，没有数据就是空态。",
+      "registryDependencies": [
+        "@katana/change-text",
+        "@katana/cn",
+        "@katana/metric-tile",
+        "@katana/quote-tone",
+        "@katana/readout-value",
+        "@katana/sparkline",
+        "@katana/toggle-group"
+      ],
+      "files": [
+        {
+          "path": "src/quotes/metric-card.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quotes/metric-card.tsx"
+        }
+      ]
+    },
+    {
+      "name": "metric-tile",
+      "type": "registry:component",
+      "title": "Metric Tile",
+      "description": "MetricCard variant=\"tile\" 的瓦片本体（原 SparkTile 的画法）与它的几何 sparkTileShape。",
+      "registryDependencies": [
+        "@katana/change-text",
+        "@katana/live",
+        "@katana/live-line",
+        "@katana/readout-value",
+        "@katana/sparkline"
+      ],
+      "files": [
+        {
+          "path": "src/quotes/metric-tile.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quotes/metric-tile.tsx"
+        }
+      ]
+    },
+    {
+      "name": "mini-chart",
+      "type": "registry:component",
+      "title": "Mini Chart",
+      "description": "照 TradingView 的 Mini Chart 小组件（2026-11-18 在浏览器里看的）：卡片上一行「品种图标 + 代码 + 角标」，一行「最新价 单位 + 涨跌幅」，下面是走势（Sparkline 的 area：线 2px 圆角、线下很淡的同色渐变、末端实心点加空心环）。给了毫秒时间戳与 domain，线只画到现在、右边留空；live 时价格滚动、涨跌幅闪色。没有基准线与坐标轴，默认不开悬停。",
+      "registryDependencies": [
+        "@katana/change-text",
+        "@katana/cn",
+        "@katana/quote-tone",
+        "@katana/rolling-text",
+        "@katana/sparkline",
+        "@katana/symbol-mark"
+      ],
+      "files": [
+        {
+          "path": "src/quotes/mini-chart.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quotes/mini-chart.tsx"
+        }
+      ]
+    },
+    {
+      "name": "peer-cards",
+      "type": "registry:component",
+      "title": "Peer Cards",
+      "description": "照 TradingView 品种页的 Peers（2026-11-15 实测）：横向卡片带，左右翻页箭头（到头变灰）；每卡一个字母圆徽标、代码、名称（过长截断）、右上「+」、价格（带单位小字）与涨跌幅（涨跌色）；右上角整组一个「Select to compare」按钮。数、价格与文字都由调用方传，不放真实公司标志。",
+      "registryDependencies": [
+        "@katana/change-text",
+        "@katana/cn",
+        "@katana/quote-row",
+        "@katana/symbol-mark"
+      ],
+      "files": [
+        {
+          "path": "src/quotes/peer-cards.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quotes/peer-cards.tsx"
+        }
+      ]
+    },
+    {
+      "name": "performance-strip",
+      "type": "registry:component",
+      "title": "Performance Strip",
+      "description": "照 TradingView 品种页的 Performance 一行（2026-11-15 实测）：一排等宽格，上行周期（1 day … All time）、下行涨跌幅（涨跌色，过千写成 K%、M%）；点一格选中（灰底，aria-pressed）并回调，由调用方去切图表区间。数与周期名都由调用方传，件不算涨跌幅。选中用中性灰，不用 TV 的蓝。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/quant-format"
+      ],
+      "files": [
+        {
+          "path": "src/quotes/performance-strip.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quotes/performance-strip.tsx"
+        }
+      ]
+    },
+    {
+      "name": "pnl-text",
+      "type": "registry:component",
+      "title": "Pnl Text",
+      "description": "盈亏文字：字由调用方格式化好（币种、位数、符号都由调用方定），本件只按方向着色，颜色规则同 ChangeText。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/live",
+        "@katana/live-readout",
+        "@katana/quant-format",
+        "@katana/tone-text"
+      ],
+      "files": [
+        {
+          "path": "src/quotes/pnl-text.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quotes/pnl-text.tsx"
+        }
+      ]
+    },
+    {
+      "name": "price-tag",
+      "type": "registry:component",
+      "title": "Price Tag",
+      "description": "夹在一句话或一行里的「名字 价格 涨跌」，数字等宽对齐，涨跌带三角与颜色，跟着周围的字号走。值是数（last、changePct，跟统一行情行同名），价格文字由 formatPrice 写。",
+      "registryDependencies": [
+        "@katana/live-readout",
+        "@katana/quant-format",
+        "@katana/quote-row",
+        "@katana/quote-tone"
+      ],
+      "files": [
+        {
+          "path": "src/quotes/price-tag.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quotes/price-tag.tsx"
+        }
+      ]
+    },
+    {
+      "name": "quote-card",
+      "type": "registry:component",
+      "title": "Quote Card",
+      "description": "一只品种一张卡：名字与代码、最新价（大）、涨跌与涨跌幅、可选的迷你图与底部一行；QuoteStrip 是一排小号的卡，放不下横向滚动。值是数（统一行情行的 last / change / changePct），整行 {...row} 直接摊进来，价格文字由 formatPrice 写。",
+      "registryDependencies": [
+        "@katana/live-readout",
+        "@katana/num",
+        "@katana/quant-format",
+        "@katana/quote-row",
+        "@katana/quote-tone",
+        "@katana/sparkline"
+      ],
+      "files": [
+        {
+          "path": "src/quotes/quote-card.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quotes/quote-card.tsx"
+        }
+      ]
+    },
+    {
+      "name": "quote-row",
+      "type": "registry:lib",
+      "title": "Quote Row",
+      "description": "照 TradingView 右侧自选栏（2026-11-15 实测）：列 Symbol / Last / Chg / Chg%，行首小旗标与字母圆徽标；最新价变动时只有变了的尾数闪涨跌色、约 1 秒落回；点列头排序（升序、降序、回原顺序）。价格怎么写由 formatPrice 定，数与文字由调用方传。",
+      "registryDependencies": [
+        "@katana/quant-format"
+      ],
+      "files": [
+        {
+          "path": "src/quotes/quote-row.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/quotes/quote-row.ts"
+        }
+      ]
+    },
+    {
+      "name": "quote-table",
+      "type": "registry:component",
+      "title": "Quote Table",
+      "description": "上面一排页签（指数、自选、热门……），下面是当前这组的行情表：名称与代码、迷你图、最新价、涨跌幅。由 Tabs 与 Sparkline 组出来；行就是 Watchlist 的行（统一行情行加 spark），值是数，价格文字由 formatPrice 写。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/flash-price",
+        "@katana/live",
+        "@katana/quant-format",
+        "@katana/quote-row",
+        "@katana/quote-tone",
+        "@katana/sparkline",
+        "@katana/tabs",
+        "@katana/watchlist"
+      ],
+      "files": [
+        {
+          "path": "src/quotes/quote-table.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quotes/quote-table.tsx"
+        }
+      ]
+    },
+    {
+      "name": "quote-tone",
+      "type": "registry:lib",
+      "title": "Quote Tone",
+      "description": "一列数从旧到新，按容器的真实像素画（不拉伸、线宽 1.5px，高 80 以上 2px、圆角连接）。默认是线加线下渐变（贴线 22% 渐到 0），最新值处是实心点加常驻空心环；给毫秒时间戳与 domain 时横轴是整个交易时段、线只画到现在（对齐 TradingView Markets 页的日内图），可加右侧价格刻度、底部时间刻度与最新价价签；另有 line、baseline（基准上涨色下跌色）、bars、winloss（胜负格）四种画法。look 给两种可选画风（默认外观不变）：instrument 是把数据当科学档案来排版的仪器档案页（细线、一个信号色、点阵与角标、投影谱、极值与研究员批注、档案编号与来源行），ascii 是终端字形（块字符或盲文点阵、可换点阵字体）。可加基准虚线、最高最低点、右端最新值、成交量、断点、单调曲线；interactive 时悬停出一根竖线、吸附点与紧挨光标的三行读数（数值、日期、时间），键盘左右键走点。线色按最后值对基准（没基准按头尾），涨跌色跟涨跌配色走，没有数据只留「—」。",
+      "registryDependencies": [
+        "@katana/tone"
+      ],
+      "files": [
+        {
+          "path": "src/quotes/quote-tone.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/quotes/quote-tone.ts"
+        }
+      ]
+    },
+    {
+      "name": "range-bar",
+      "type": "registry:component",
+      "title": "Range Bar",
+      "description": "一条横线从最低到最高，标记指着现价在区间里的位置，两端写最低与最高。用来看当日区间、52 周区间。",
+      "files": [
+        {
+          "path": "src/quotes/range-bar.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quotes/range-bar.tsx"
+        }
+      ]
+    },
+    {
+      "name": "rating-gauge-model",
+      "type": "registry:lib",
+      "title": "Rating Gauge Model",
+      "description": "半圆分五段（强烈卖出到强烈买入），一根指针转到分数那一段，圆心下面写档位词，下面可再放卖出 / 中性 / 买入各几个。",
+      "registryDependencies": [
+        "@katana/num"
+      ],
+      "files": [
+        {
+          "path": "src/quotes/rating-gauge-model.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/quotes/rating-gauge-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "rating-gauge",
+      "type": "registry:component",
+      "title": "Rating Gauge",
+      "description": "半圆分五段（强烈卖出到强烈买入），一根指针转到分数那一段，圆心下面写档位词，下面可再放卖出 / 中性 / 买入各几个。",
+      "registryDependencies": [
+        "@katana/rating-gauge-model"
+      ],
+      "files": [
+        {
+          "path": "src/quotes/rating-gauge.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quotes/rating-gauge.tsx"
+        }
+      ]
+    },
+    {
+      "name": "rating-text",
+      "type": "registry:component",
+      "title": "Rating Text",
+      "description": "分析师评级、技术评级结论的单元格写法：图标加文字，强力买入双上箭头、买入单上箭头、中性等号、卖出单下箭头、强力卖出双下箭头；买入档取涨色、卖出档取跌色（跟 data-updown），中性不着色。照 TradingView 选股器「分析师评级」列（主会话 2026-11-15 登录态实测），实现原创。放进 DataGrid 的 custom 列里用（见 FilterBar 页的选股器）。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn"
+      ],
+      "files": [
+        {
+          "path": "src/quotes/rating-text.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quotes/rating-text.tsx"
+        }
+      ]
+    },
+    {
+      "name": "readout-value",
+      "type": "registry:component",
+      "title": "Readout Value",
+      "description": "读数壳里的数值一格：没有数据写「—」，变了闪涨跌色或滚轮，单位小字；MetricCard 的卡与瓦片共用。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/live-readout",
+        "@katana/rolling-text"
+      ],
+      "files": [
+        {
+          "path": "src/quotes/readout-value.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quotes/readout-value.tsx"
+        }
+      ]
+    },
+    {
+      "name": "row-actions",
+      "type": "registry:component",
+      "title": "Row Actions",
+      "description": "所有带品种的行（DataGrid、连板天梯、报价表）与格子（市场热力图）共用的一套：悬停或键盘落到一行时，行右端浮出前几颗无边框图标按钮，浮在行上、不挤列宽；右键（菜单键、Shift+F10）出同一份菜单。件不认识「图表」「自选」，只认 { key, label, icon?, shortcut?, onSelect }，文案与动作都由调用方传；symbolMenu 把标准四项（开图、加自选、新建告警、复制代码，固定次序）拼成这样的数组，调用方的项接在后面。DataGrid、LimitLadder、MarketHeatmap 各有一个可选 prop 接它，不传就没有，旧用法不变。功能参照 TradingView 品种搜索结果行的悬停操作，自选行的细节待核对。样子照连板天梯：按钮无边框、悬停灰底，不加橙色。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/context-menu",
+        "@katana/menu-any",
+        "@katana/menu-parts"
+      ],
+      "files": [
+        {
+          "path": "src/quotes/row-actions.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quotes/row-actions.tsx"
+        }
+      ]
+    },
+    {
+      "name": "spark-tile",
+      "type": "registry:component",
+      "title": "Spark Tile",
+      "description": "KPI 瓦片：点阵小标签、LCD 数值、24px 迷你折线（可画阈值虚线）、一行变化说明；数据由调用方给，没有数据是空态，一行最多放 5 个。2026-11-18 起它就是 MetricCard variant=\"tile\"，SparkTile 留作兼容的旧名。",
+      "registryDependencies": [
+        "@katana/metric-card",
+        "@katana/metric-tile"
+      ],
+      "files": [
+        {
+          "path": "src/quotes/spark-tile.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quotes/spark-tile.tsx"
+        }
+      ]
+    },
+    {
+      "name": "sparkline-ascii",
+      "type": "registry:component",
+      "title": "Sparkline Ascii",
+      "description": "Sparkline 的 ascii 画风：方块或盲文字形画走势，一个 pre，新列乱码落定。",
+      "registryDependencies": [
+        "@katana/live",
+        "@katana/live-line",
+        "@katana/sparkline",
+        "@katana/sparkline-model",
+        "@katana/sparkline-shared",
+        "@katana/text-measure"
+      ],
+      "files": [
+        {
+          "path": "src/quotes/sparkline-ascii.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quotes/sparkline-ascii.tsx"
+        }
+      ]
+    },
+    {
+      "name": "sparkline-instrument",
+      "type": "registry:component",
+      "title": "Sparkline Instrument",
+      "description": "Sparkline 的 instrument 画风：点阵、对位角标、投影谱、极值十字与批注、档案编号与 SOURCES。",
+      "registryDependencies": [
+        "@katana/live-line",
+        "@katana/sparkline",
+        "@katana/sparkline-model",
+        "@katana/sparkline-shared",
+        "@katana/text-measure"
+      ],
+      "files": [
+        {
+          "path": "src/quotes/sparkline-instrument.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quotes/sparkline-instrument.tsx"
+        }
+      ]
+    },
+    {
+      "name": "sparkline-model",
+      "type": "registry:lib",
+      "title": "Sparkline Model",
+      "description": "每组一条核密度曲线，上下叠着排，一眼比各组分布的位置、宽窄与形状（分位层、因子分组的收益分布）。带宽默认 Silverman 经验规则；给了基准线就画一条贯穿的虚线。分层是序数：线与点阵面取 seq 色阶（暗到亮），不用涨跌色。悬停或聚焦一条，其余变暗。功能参照 Arc Ridgeline，实现原创。",
+      "registryDependencies": [
+        "@katana/live-line",
+        "@katana/quote-tone"
+      ],
+      "files": [
+        {
+          "path": "src/quotes/sparkline-model.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/quotes/sparkline-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "sparkline-shared",
+      "type": "registry:lib",
+      "title": "Sparkline Shared",
+      "description": "Sparkline 各画风共用的钩子：量容器、设备像素比、文字测量重置。",
+      "registryDependencies": [
+        "@katana/live-line",
+        "@katana/sparkline",
+        "@katana/sparkline-model",
+        "@katana/text-measure"
+      ],
+      "files": [
+        {
+          "path": "src/quotes/sparkline-shared.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/quotes/sparkline-shared.ts"
+        }
+      ]
+    },
+    {
+      "name": "sparkline",
+      "type": "registry:component",
+      "title": "Sparkline",
+      "description": "一列数从旧到新，按容器的真实像素画（不拉伸、线宽 1.5px，高 80 以上 2px、圆角连接）。默认是线加线下渐变（贴线 22% 渐到 0），最新值处是实心点加常驻空心环；给毫秒时间戳与 domain 时横轴是整个交易时段、线只画到现在（对齐 TradingView Markets 页的日内图），可加右侧价格刻度、底部时间刻度与最新价价签；另有 line、baseline（基准上涨色下跌色）、bars、winloss（胜负格）四种画法。look 给两种可选画风（默认外观不变）：instrument 是把数据当科学档案来排版的仪器档案页（细线、一个信号色、点阵与角标、投影谱、极值与研究员批注、档案编号与来源行），ascii 是终端字形（块字符或盲文点阵、可换点阵字体）。可加基准虚线、最高最低点、右端最新值、成交量、断点、单调曲线；interactive 时悬停出一根竖线、吸附点与紧挨光标的三行读数（数值、日期、时间），键盘左右键走点。线色按最后值对基准（没基准按头尾），涨跌色跟涨跌配色走，没有数据只留「—」。",
+      "registryDependencies": [
+        "@katana/live",
+        "@katana/live-line",
+        "@katana/quote-tone",
+        "@katana/sparkline-ascii",
+        "@katana/sparkline-instrument",
+        "@katana/sparkline-model",
+        "@katana/sparkline-shared",
+        "@katana/text-measure"
+      ],
+      "files": [
+        {
+          "path": "src/quotes/sparkline.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quotes/sparkline.tsx"
+        }
+      ]
+    },
+    {
+      "name": "symbol-mark",
+      "type": "registry:component",
+      "title": "Symbol Mark",
+      "description": "品种名前的小圆标（学 TradingView 列表里企业 / 币种标志）：有图显示圆形裁切的图片，加载失败退回字母；没有图就是字母圆标，底 bg-400、字 ink-200，不按代码随机上色。尺寸两档：sm 18（行高 28 的一行，默认）、md 28（卡片）；热力图格子这类要别的直径的仍可传数。字号跟直径走（28 以上 16，其余 12），在 css 里按 data-size 取字号 token，不内联。",
+      "registryDependencies": [
+        "@katana/cn"
+      ],
+      "files": [
+        {
+          "path": "src/quotes/symbol-mark.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quotes/symbol-mark.tsx"
+        }
+      ]
+    },
+    {
+      "name": "technical-rating",
+      "type": "registry:component",
+      "title": "Technical Rating",
+      "description": "照 TradingView 技术页（2026-11-15 实测）：顶上十个时间周期（选中是灰底胶囊），三个半圆仪表（振荡指标、总评、均线，总评居中放大；弧两端取涨跌色、中段灰；刻度字只写中间三档），指针按 −1…1 的分数转到所在档（分界 −0.5、−0.1、0.1、0.5），下面是档名大字、圆角三列「卖 / 中性 / 买」计数框与指标总数；再下面每组一张并排明细表（名称、读数、结论文字上色，标题带「›」），最底下是整宽的 Pivots 表（R3…S3 × Classic、Fibonacci、Camarilla、Woodie、DM，缺值「—」）。组件只画不算：分数、个数、读数与结论都由调用方传；档名、列名、免责一句也由调用方传，件只留位置。颜色走涨跌语义色与中性灰，不用橙色。放在 PanelFrame 里用。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/live",
+        "@katana/rating-gauge-model",
+        "@katana/toggle-group"
+      ],
+      "files": [
+        {
+          "path": "src/quotes/technical-rating.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quotes/technical-rating.tsx"
+        }
+      ]
+    },
+    {
+      "name": "tone-text",
+      "type": "registry:component",
+      "title": "Tone Text",
+      "description": "ChangeText 与 PnlText 共用的底：方向到颜色与箭头。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/quant-format"
+      ],
+      "files": [
+        {
+          "path": "src/quotes/tone-text.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quotes/tone-text.tsx"
+        }
+      ]
+    },
+    {
+      "name": "treemap-model",
+      "type": "registry:lib",
+      "title": "Treemap Model",
+      "description": "一格一项，面积按大小，颜色按涨跌分七档（跟涨跌配色走），格子够大才写名字和数；点组头下钻，底部是色例。排布用 d3-hierarchy 的 squarify。从应用的分析视图提来。",
+      "dependencies": [
+        "d3-hierarchy@3.1.3"
+      ],
+      "devDependencies": [
+        "@types/d3-hierarchy@3.1.7"
+      ],
+      "files": [
+        {
+          "path": "src/quotes/treemap-model.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/quotes/treemap-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "treemap",
+      "type": "registry:component",
+      "title": "Treemap",
+      "description": "一格一项，面积按大小，颜色按涨跌分七档（跟涨跌配色走），格子够大才写名字和数；点组头下钻，底部是色例。排布用 d3-hierarchy 的 squarify。从应用的分析视图提来。",
+      "registryDependencies": [
+        "@katana/live",
+        "@katana/num",
+        "@katana/treemap-model"
+      ],
+      "files": [
+        {
+          "path": "src/quotes/treemap.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quotes/treemap.tsx"
+        }
+      ]
+    },
+    {
+      "name": "watchlist-model",
+      "type": "registry:lib",
+      "title": "Watchlist Model",
+      "description": "照 TradingView 右侧自选栏（2026-11-15 实测）：列 Symbol / Last / Chg / Chg%，行首小旗标与字母圆徽标；最新价变动时只有变了的尾数闪涨跌色、约 1 秒落回；点列头排序（升序、降序、回原顺序）。价格怎么写由 formatPrice 定，数与文字由调用方传。",
+      "files": [
+        {
+          "path": "src/quotes/watchlist-model.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/quotes/watchlist-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "watchlist",
+      "type": "registry:component",
+      "title": "Watchlist",
+      "description": "照 TradingView 右侧自选栏（2026-11-15 实测）：列 Symbol / Last / Chg / Chg%，行首小旗标与字母圆徽标；最新价变动时只有变了的尾数闪涨跌色、约 1 秒落回；点列头排序（升序、降序、回原顺序）。价格怎么写由 formatPrice 定，数与文字由调用方传。",
+      "registryDependencies": [
+        "@katana/change-text",
+        "@katana/cn",
+        "@katana/flash-price",
+        "@katana/live",
+        "@katana/num",
+        "@katana/quote-row",
+        "@katana/symbol-mark",
+        "@katana/watchlist-model"
+      ],
+      "files": [
+        {
+          "path": "src/quotes/watchlist.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quotes/watchlist.tsx"
         }
       ]
     },
@@ -4557,63 +5255,6 @@
       ]
     },
     {
-      "name": "chart-kit",
-      "type": "registry:component",
-      "title": "Chart Kit",
-      "description": "图表共用底座：配色分配（series / seq / div）、点阵纹理、LCD tooltip、末点、轴与网格、图右上三件（表格视图、导出、全屏）。",
-      "dependencies": [
-        "@tanstack/react-virtual@3.14.25",
-        "lucide-react@1.67.0"
-      ],
-      "registryDependencies": [
-        "@katana/cn",
-        "@katana/live",
-        "@katana/series-geometry"
-      ],
-      "files": [
-        {
-          "path": "src/quant/chart-kit/chart-actions.tsx",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/quant/chart-kit/chart-actions.tsx"
-        },
-        {
-          "path": "src/quant/chart-kit/chart-table.tsx",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/quant/chart-kit/chart-table.tsx"
-        },
-        {
-          "path": "src/quant/chart-kit/chart-value.tsx",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/quant/chart-kit/chart-value.tsx"
-        },
-        {
-          "path": "src/quant/chart-kit/dot-fill.tsx",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/quant/chart-kit/dot-fill.tsx"
-        },
-        {
-          "path": "src/quant/chart-kit/end-marker.tsx",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/quant/chart-kit/end-marker.tsx"
-        },
-        {
-          "path": "src/quant/chart-kit/lcd-tooltip.tsx",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/quant/chart-kit/lcd-tooltip.tsx"
-        },
-        {
-          "path": "src/quant/chart-kit/plot-axes.tsx",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/quant/chart-kit/plot-axes.tsx"
-        },
-        {
-          "path": "src/quant/chart-kit/series-colors.ts",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/quant/chart-kit/series-colors.ts"
-        }
-      ]
-    },
-    {
       "name": "brush-chart",
       "type": "registry:component",
       "title": "Brush Chart",
@@ -4630,22 +5271,6 @@
           "path": "src/quant/brush-chart.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/quant/brush-chart.tsx"
-        }
-      ]
-    },
-    {
-      "name": "brush-model",
-      "type": "registry:component",
-      "title": "Brush Model",
-      "description": "BrushChart 的窗口几何（纯函数）：夹取、平移、缩放、居中。",
-      "registryDependencies": [
-        "@katana/num"
-      ],
-      "files": [
-        {
-          "path": "src/quant/brush-model.ts",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/quant/brush-model.ts"
         }
       ]
     },
@@ -4673,46 +5298,14 @@
       "type": "registry:component",
       "title": "Calendar Model",
       "description": "CalendarHeatmap 的格子排布、档位与键盘（纯函数）：日历日按 UTC 算，一周一列。",
-      "registryDependencies": [
-        "@katana/date"
+      "dependencies": [
+        "@internationalized/date@3.12.4"
       ],
       "files": [
         {
           "path": "src/quant/calendar-model.ts",
           "type": "registry:component",
           "target": "~/src/katana/ui/quant/calendar-model.ts"
-        }
-      ]
-    },
-    {
-      "name": "change-text",
-      "type": "registry:component",
-      "title": "Change Text",
-      "description": "百分数的涨跌幅文字，写成「+1.23%」；颜色只读 --pnl-up / --pnl-down，根上设 data-updown=\"cn\" 就互换成红涨绿跌；零不着色。",
-      "registryDependencies": [
-        "@katana/cn",
-        "@katana/live",
-        "@katana/quant-format",
-        "@katana/tone-text"
-      ],
-      "files": [
-        {
-          "path": "src/quant/change-text.tsx",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/quant/change-text.tsx"
-        }
-      ]
-    },
-    {
-      "name": "chart-scale",
-      "type": "registry:component",
-      "title": "Chart Scale",
-      "description": "分布与关系类的图（Ridgeline、SlopeChart、ConnectedScatter）共用的纯函数：线性比例尺、好看的刻度、分位数。",
-      "files": [
-        {
-          "path": "src/quant/chart-scale.ts",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/quant/chart-scale.ts"
         }
       ]
     },
@@ -4798,12 +5391,38 @@
       ]
     },
     {
+      "name": "event-calendar-cells",
+      "type": "registry:component",
+      "title": "Event Calendar Cells",
+      "description": "EventCalendar 的表格部分：四个类别的列集、一行的单元格、重要程度格条、经济事件的详情行。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/event-calendar-model",
+        "@katana/event-calendar-types",
+        "@katana/quant-format",
+        "@katana/sparkline",
+        "@katana/symbol-mark"
+      ],
+      "files": [
+        {
+          "path": "src/quant/event-calendar-cells.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/event-calendar-cells.tsx"
+        }
+      ]
+    },
+    {
       "name": "event-calendar-model",
       "type": "registry:component",
       "title": "Event Calendar Model",
       "description": "EventCalendar 的纯函数：按显示时区分天、今天 / 本周 / 下周区间、筛选、倒计时分钟。",
+      "dependencies": [
+        "@internationalized/date@3.12.4"
+      ],
       "registryDependencies": [
-        "@katana/date",
         "@katana/tone"
       ],
       "files": [
@@ -4815,25 +5434,61 @@
       ]
     },
     {
+      "name": "event-calendar-regions",
+      "type": "registry:component",
+      "title": "Event Calendar Regions",
+      "description": "EventCalendar 的国家选择：触发按钮加模态框（搜索、两个预设、按地区分组复选、取消 / 应用）。",
+      "registryDependencies": [
+        "@katana/button",
+        "@katana/checkbox",
+        "@katana/dialog",
+        "@katana/event-calendar-types",
+        "@katana/input",
+        "@katana/symbol-mark"
+      ],
+      "files": [
+        {
+          "path": "src/quant/event-calendar-regions.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/event-calendar-regions.tsx"
+        }
+      ]
+    },
+    {
+      "name": "event-calendar-types",
+      "type": "registry:component",
+      "title": "Event Calendar Types",
+      "description": "EventCalendar 的公开类型：四类事件的行、文案（labels）、财报行下的链接、属性。",
+      "registryDependencies": [
+        "@katana/event-calendar-model",
+        "@katana/row-actions"
+      ],
+      "files": [
+        {
+          "path": "src/quant/event-calendar-types.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/event-calendar-types.ts"
+        }
+      ]
+    },
+    {
       "name": "event-calendar",
       "type": "registry:component",
       "title": "Event Calendar",
       "description": "照 TradingView 日历的布局（主会话 2026-11-15 登录态实测）：导航行（今天、选日期、按周翻页、范围文字、时区读数），周条（周一到周日七张日卡，列出当天各类别条数，点卡选日），类别药丸（经济 / 财报 / 分红 / IPO，给了哪类数据才有哪个），重要性单开关（只看高重要）、经济类别下拉（12 类，单选）、国家选择框（模态：搜索、全球与前 20 预设、按地区分组两列复选、取消 / 应用）。经济表：日期分隔行粘顶、数字列名写在它右侧；同一时间同一国家的事件合并；实际值加粗不上涨跌色；点开一行看说明、来源、历史值小图、下次发布（比 TradingView 多的部分）。财报表：时段图标 + 时间、徽标、代码、公司名，预期 / 实际 EPS 与营收，EPS 意外与营收意外（只有这两列上涨跌色），市值，币种小字，行下可选「财报材料 / 电话会」。分红、IPO 各有自己的列。数据、现在、时区、文字都由调用方传。",
       "dependencies": [
+        "@internationalized/date@3.12.4",
         "lucide-react@1.67.0"
       ],
       "registryDependencies": [
         "@katana/button",
-        "@katana/checkbox",
         "@katana/cn",
-        "@katana/dialog",
+        "@katana/event-calendar-cells",
         "@katana/event-calendar-model",
-        "@katana/input",
-        "@katana/quant-format",
+        "@katana/event-calendar-regions",
+        "@katana/event-calendar-types",
         "@katana/row-actions",
-        "@katana/select",
-        "@katana/sparkline",
-        "@katana/symbol-mark"
+        "@katana/select"
       ],
       "files": [
         {
@@ -4913,23 +5568,6 @@
       ]
     },
     {
-      "name": "key-stats",
-      "type": "registry:component",
-      "title": "Key Stats",
-      "description": "照 TradingView 品种页的 Key stats（2026-11-15 实测）：标题带「›」，三列网格，每项一个灰色小标签（带「›」，给了 onItem 就可点）、一个大号数值（带单位小字）、可选徽标（中性灰胶囊，不用 TV 的紫色）。数值与文字由调用方传。",
-      "registryDependencies": [
-        "@katana/cn",
-        "@katana/live-readout"
-      ],
-      "files": [
-        {
-          "path": "src/quant/key-stats.tsx",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/quant/key-stats.tsx"
-        }
-      ]
-    },
-    {
       "name": "limit-ladder",
       "type": "registry:component",
       "title": "Limit Ladder",
@@ -4952,6 +5590,84 @@
       ]
     },
     {
+      "name": "market-heatmap-card",
+      "type": "registry:component",
+      "title": "Market Heatmap Card",
+      "description": "MarketHeatmap 的悬停卡片：跟着鼠标，写价格、各着色指标、大小指标与分组，不伸出图外。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/market-heatmap-hooks",
+        "@katana/market-heatmap-model",
+        "@katana/market-heatmap-types",
+        "@katana/quant-format",
+        "@katana/symbol-mark"
+      ],
+      "files": [
+        {
+          "path": "src/quant/market-heatmap-card.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/market-heatmap-card.tsx"
+        }
+      ]
+    },
+    {
+      "name": "market-heatmap-cell",
+      "type": "registry:component",
+      "title": "Market Heatmap Cell",
+      "description": "MarketHeatmap 的一格：按格子真实像素分四档写字（徽标 + 代码 + 读数 / 代码 + 读数 / 只有徽标 / 只有色块）。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/market-heatmap-model",
+        "@katana/market-heatmap-types",
+        "@katana/quant-format",
+        "@katana/symbol-mark",
+        "@katana/text-measure",
+        "@katana/treemap-model"
+      ],
+      "files": [
+        {
+          "path": "src/quant/market-heatmap-cell.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/market-heatmap-cell.tsx"
+        }
+      ]
+    },
+    {
+      "name": "market-heatmap-hooks",
+      "type": "registry:component",
+      "title": "Market Heatmap Hooks",
+      "description": "MarketHeatmap 的副作用钩子：量绘图区尺寸、放大返回的焦点、按底色现算字色、格子位置的弹簧过渡、涨跌翻向时闪一下。",
+      "registryDependencies": [
+        "@katana/live",
+        "@katana/market-heatmap-types",
+        "@katana/treemap-model"
+      ],
+      "files": [
+        {
+          "path": "src/quant/market-heatmap-hooks.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/market-heatmap-hooks.ts"
+        }
+      ]
+    },
+    {
+      "name": "market-heatmap-legend",
+      "type": "registry:component",
+      "title": "Market Heatmap Legend",
+      "description": "MarketHeatmap 的图例：七档色块与值边界，悬停预览、点一档隐藏。",
+      "registryDependencies": [
+        "@katana/market-heatmap-model",
+        "@katana/market-heatmap-types"
+      ],
+      "files": [
+        {
+          "path": "src/quant/market-heatmap-legend.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/market-heatmap-legend.tsx"
+        }
+      ]
+    },
+    {
       "name": "market-heatmap-model",
       "type": "registry:component",
       "title": "Market Heatmap Model",
@@ -4968,24 +5684,59 @@
       ]
     },
     {
-      "name": "market-heatmap",
+      "name": "market-heatmap-toolbar",
       "type": "registry:component",
-      "title": "Market Heatmap",
-      "description": "照 TradingView 的股票热力图：格子面积是所选的大小指标（市值、成交额或等大），颜色是所选指标落在七档色阶的哪一档，按行业分组或平铺。顶上一行汇总读数（只数、上涨、下跌），工具条用分段控件切大小、颜色、视图；点组名放大到只看这一组（面包屑返回，Esc 也行）；悬停出这只票的价格与各项读数；底部图例写出每一档的值边界，点一档就隐藏这一档的格子。A 股、港股、美股、加密共用，只换数据与分组；不认数据集，品种、指标、文字都由调用方传。排布与着色档用包里矩形树图的 layoutTreemap、colorStep。",
+      "title": "Market Heatmap Toolbar",
+      "description": "MarketHeatmap 的工具条：数据集、大小、颜色、分组（下拉或分段），全屏，显示开关，「在选股器打开」。",
       "dependencies": [
         "lucide-react@1.67.0"
       ],
       "registryDependencies": [
-        "@katana/cn",
-        "@katana/live",
-        "@katana/market-heatmap-model",
-        "@katana/quant-format",
-        "@katana/row-actions",
+        "@katana/market-heatmap-types",
         "@katana/select",
         "@katana/switch",
-        "@katana/symbol-mark",
-        "@katana/text-measure",
-        "@katana/toggle-group",
+        "@katana/toggle-group"
+      ],
+      "files": [
+        {
+          "path": "src/quant/market-heatmap-toolbar.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/market-heatmap-toolbar.tsx"
+        }
+      ]
+    },
+    {
+      "name": "market-heatmap-types",
+      "type": "registry:component",
+      "title": "Market Heatmap Types",
+      "description": "MarketHeatmap 的公开类型：格子数据、大小与着色指标、文案、属性。",
+      "registryDependencies": [
+        "@katana/row-actions"
+      ],
+      "files": [
+        {
+          "path": "src/quant/market-heatmap-types.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/market-heatmap-types.ts"
+        }
+      ]
+    },
+    {
+      "name": "market-heatmap",
+      "type": "registry:component",
+      "title": "Market Heatmap",
+      "description": "照 TradingView 的股票热力图：格子面积是所选的大小指标（市值、成交额或等大），颜色是所选指标落在七档色阶的哪一档，按行业分组或平铺。顶上一行汇总读数（只数、上涨、下跌），工具条用分段控件切大小、颜色、视图；点组名放大到只看这一组（面包屑返回，Esc 也行）；悬停出这只票的价格与各项读数；底部图例写出每一档的值边界，点一档就隐藏这一档的格子。A 股、港股、美股、加密共用，只换数据与分组；不认数据集，品种、指标、文字都由调用方传。排布与着色档用包里矩形树图的 layoutTreemap、colorStep。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/market-heatmap-card",
+        "@katana/market-heatmap-cell",
+        "@katana/market-heatmap-hooks",
+        "@katana/market-heatmap-legend",
+        "@katana/market-heatmap-model",
+        "@katana/market-heatmap-toolbar",
+        "@katana/market-heatmap-types",
+        "@katana/quant-format",
+        "@katana/row-actions",
         "@katana/treemap-model"
       ],
       "files": [
@@ -4993,27 +5744,6 @@
           "path": "src/quant/market-heatmap.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/quant/market-heatmap.tsx"
-        }
-      ]
-    },
-    {
-      "name": "metric-card",
-      "type": "registry:component",
-      "title": "Metric Card",
-      "description": "照 uiarc 的 Metric explorer 的结构：标题、大号当前值、较前日 / 周 / 月 / 年的变化（涨跌色）、迷你走势线（1 月 / 3 月 / 6 月 / 1 年分段）、可选阶段带（五档边界与文案由调用方给）、来源与更新时间一行；MetricCardGrid 把卡排成墙。组件只画不算，数据与文字都由调用方传，没有数据就是空态。",
-      "registryDependencies": [
-        "@katana/change-text",
-        "@katana/cn",
-        "@katana/live-readout",
-        "@katana/quote-tone",
-        "@katana/sparkline",
-        "@katana/toggle-group"
-      ],
-      "files": [
-        {
-          "path": "src/quant/metric-card.tsx",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/quant/metric-card.tsx"
         }
       ]
     },
@@ -5052,61 +5782,6 @@
       ]
     },
     {
-      "name": "peer-cards",
-      "type": "registry:component",
-      "title": "Peer Cards",
-      "description": "照 TradingView 品种页的 Peers（2026-11-15 实测）：横向卡片带，左右翻页箭头（到头变灰）；每卡一个字母圆徽标、代码、名称（过长截断）、右上「+」、价格（带单位小字）与涨跌幅（涨跌色）；右上角整组一个「Select to compare」按钮。数、价格与文字都由调用方传，不放真实公司标志。",
-      "registryDependencies": [
-        "@katana/change-text",
-        "@katana/cn",
-        "@katana/symbol-mark"
-      ],
-      "files": [
-        {
-          "path": "src/quant/peer-cards.tsx",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/quant/peer-cards.tsx"
-        }
-      ]
-    },
-    {
-      "name": "performance-strip",
-      "type": "registry:component",
-      "title": "Performance Strip",
-      "description": "照 TradingView 品种页的 Performance 一行（2026-11-15 实测）：一排等宽格，上行周期（1 day … All time）、下行涨跌幅（涨跌色，过千写成 K%、M%）；点一格选中（灰底，aria-pressed）并回调，由调用方去切图表区间。数与周期名都由调用方传，件不算涨跌幅。选中用中性灰，不用 TV 的蓝。",
-      "registryDependencies": [
-        "@katana/cn",
-        "@katana/quant-format"
-      ],
-      "files": [
-        {
-          "path": "src/quant/performance-strip.tsx",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/quant/performance-strip.tsx"
-        }
-      ]
-    },
-    {
-      "name": "pnl-text",
-      "type": "registry:component",
-      "title": "Pnl Text",
-      "description": "盈亏文字：字由调用方格式化好（币种、位数、符号都由调用方定），本件只按方向着色，颜色规则同 ChangeText。",
-      "registryDependencies": [
-        "@katana/cn",
-        "@katana/live",
-        "@katana/live-readout",
-        "@katana/quant-format",
-        "@katana/tone-text"
-      ],
-      "files": [
-        {
-          "path": "src/quant/pnl-text.tsx",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/quant/pnl-text.tsx"
-        }
-      ]
-    },
-    {
       "name": "quantile-layers",
       "type": "registry:component",
       "title": "Quantile Layers",
@@ -5136,25 +5811,6 @@
           "path": "src/quant/quantile-model.ts",
           "type": "registry:component",
           "target": "~/src/katana/ui/quant/quantile-model.ts"
-        }
-      ]
-    },
-    {
-      "name": "rating-text",
-      "type": "registry:component",
-      "title": "Rating Text",
-      "description": "分析师评级、技术评级结论的单元格写法：图标加文字，强力买入双上箭头、买入单上箭头、中性等号、卖出单下箭头、强力卖出双下箭头；买入档取涨色、卖出档取跌色（跟 data-updown），中性不着色。照 TradingView 选股器「分析师评级」列（主会话 2026-11-15 登录态实测），实现原创。放进 DataGrid 的 custom 列里用（见 FilterBar 页的选股器）。",
-      "dependencies": [
-        "lucide-react@1.67.0"
-      ],
-      "registryDependencies": [
-        "@katana/cn"
-      ],
-      "files": [
-        {
-          "path": "src/quant/rating-text.tsx",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/quant/rating-text.tsx"
         }
       ]
     },
@@ -5194,39 +5850,6 @@
       ]
     },
     {
-      "name": "scatter-model",
-      "type": "registry:component",
-      "title": "Scatter Model",
-      "description": "每个点是一个时刻的 (x, y)，按时间顺序连成轨迹，看一个对象在两个量之间怎么走（如策略的波动 vs 收益按月的路径、风格漂移）。时间方向不单靠颜色：起点空心圈、终点强调色实心圈加箭头、中间的点按时间取 seq 色阶（越晚越亮）。多条轨迹各取 series 色板的一个色。功能参照 Arc Connected scatter，实现原创。",
-      "registryDependencies": [
-        "@katana/chart-scale",
-        "@katana/num"
-      ],
-      "files": [
-        {
-          "path": "src/quant/scatter-model.ts",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/quant/scatter-model.ts"
-        }
-      ]
-    },
-    {
-      "name": "series-geometry",
-      "type": "registry:component",
-      "title": "Series Geometry",
-      "description": "序列图共用的几何（纯函数）：好看的刻度、比例尺、折线与面积路径，BrushChart、HorizonChart、SmallMultiples、SeriesExplorer 都用。",
-      "registryDependencies": [
-        "@katana/num"
-      ],
-      "files": [
-        {
-          "path": "src/quant/series-geometry.ts",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/quant/series-geometry.ts"
-        }
-      ]
-    },
-    {
       "name": "slope-chart",
       "type": "registry:component",
       "title": "Slope Chart",
@@ -5254,63 +5877,6 @@
           "path": "src/quant/slope-model.ts",
           "type": "registry:component",
           "target": "~/src/katana/ui/quant/slope-model.ts"
-        }
-      ]
-    },
-    {
-      "name": "spark-tile",
-      "type": "registry:component",
-      "title": "Spark Tile",
-      "description": "KPI 瓦片：点阵小标签、LCD 数值、24px 迷你折线（可画阈值虚线）、一行变化说明；数据由调用方给，没有数据是空态，一行最多放 5 个。",
-      "registryDependencies": [
-        "@katana/change-text",
-        "@katana/live",
-        "@katana/live-line",
-        "@katana/live-readout",
-        "@katana/rolling-text",
-        "@katana/sparkline"
-      ],
-      "files": [
-        {
-          "path": "src/quant/spark-tile.tsx",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/quant/spark-tile.tsx"
-        }
-      ]
-    },
-    {
-      "name": "technical-rating",
-      "type": "registry:component",
-      "title": "Technical Rating",
-      "description": "照 TradingView 技术页（2026-11-15 实测）：顶上十个时间周期（选中是灰底胶囊），三个半圆仪表（振荡指标、总评、均线，总评居中放大；弧两端取涨跌色、中段灰；刻度字只写中间三档），指针按 −1…1 的分数转到所在档（分界 −0.5、−0.1、0.1、0.5），下面是档名大字、圆角三列「卖 / 中性 / 买」计数框与指标总数；再下面每组一张并排明细表（名称、读数、结论文字上色，标题带「›」），最底下是整宽的 Pivots 表（R3…S3 × Classic、Fibonacci、Camarilla、Woodie、DM，缺值「—」）。组件只画不算：分数、个数、读数与结论都由调用方传；档名、列名、免责一句也由调用方传，件只留位置。颜色走涨跌语义色与中性灰，不用橙色。放在 PanelFrame 里用。",
-      "registryDependencies": [
-        "@katana/cn",
-        "@katana/live",
-        "@katana/rating-gauge-model",
-        "@katana/toggle-group"
-      ],
-      "files": [
-        {
-          "path": "src/quant/technical-rating.tsx",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/quant/technical-rating.tsx"
-        }
-      ]
-    },
-    {
-      "name": "tone-text",
-      "type": "registry:component",
-      "title": "Tone Text",
-      "description": "ChangeText 与 PnlText 共用的底：方向到颜色与箭头。",
-      "registryDependencies": [
-        "@katana/cn",
-        "@katana/quant-format"
-      ],
-      "files": [
-        {
-          "path": "src/quant/tone-text.tsx",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/quant/tone-text.tsx"
         }
       ]
     },
@@ -5345,80 +5911,6 @@
           "path": "src/quant/vintage-series.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/quant/vintage-series.tsx"
-        }
-      ]
-    },
-    {
-      "name": "watchlist-model",
-      "type": "registry:component",
-      "title": "Watchlist Model",
-      "description": "照 TradingView 右侧自选栏（2026-11-15 实测）：列 Symbol / Last / Chg / Chg%，行首小旗标与字母圆徽标；最新价变动时只有变了的尾数闪涨跌色、约 1 秒落回；点列头排序（升序、降序、回原顺序）。价格怎么写由 formatPrice 定，数与文字由调用方传。",
-      "files": [
-        {
-          "path": "src/quant/watchlist-model.ts",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/quant/watchlist-model.ts"
-        }
-      ]
-    },
-    {
-      "name": "watchlist",
-      "type": "registry:component",
-      "title": "Watchlist",
-      "description": "照 TradingView 右侧自选栏（2026-11-15 实测）：列 Symbol / Last / Chg / Chg%，行首小旗标与字母圆徽标；最新价变动时只有变了的尾数闪涨跌色、约 1 秒落回；点列头排序（升序、降序、回原顺序）。价格怎么写由 formatPrice 定，数与文字由调用方传。",
-      "registryDependencies": [
-        "@katana/change-text",
-        "@katana/cn",
-        "@katana/live",
-        "@katana/num",
-        "@katana/quant-format",
-        "@katana/symbol-mark",
-        "@katana/watchlist-model"
-      ],
-      "files": [
-        {
-          "path": "src/quant/watchlist.tsx",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/quant/watchlist.tsx"
-        }
-      ]
-    },
-    {
-      "name": "quant-format",
-      "type": "registry:lib",
-      "title": "Quant Format",
-      "description": "价格、涨跌幅、数量的写法（纯函数，不带 React；另有 @katana-ui/react/quant/format 出口给画布与 Worker）。小数位由调用方传，不在这里猜。",
-      "dependencies": [
-        "bignumber.js@11.1.5"
-      ],
-      "registryDependencies": [
-        "@katana/tone"
-      ],
-      "files": [
-        {
-          "path": "src/quant/format/change.ts",
-          "type": "registry:lib",
-          "target": "~/src/katana/ui/quant/format/change.ts"
-        },
-        {
-          "path": "src/quant/format/decimal-step.ts",
-          "type": "registry:lib",
-          "target": "~/src/katana/ui/quant/format/decimal-step.ts"
-        },
-        {
-          "path": "src/quant/format/index.ts",
-          "type": "registry:lib",
-          "target": "~/src/katana/ui/quant/format/index.ts"
-        },
-        {
-          "path": "src/quant/format/price.ts",
-          "type": "registry:lib",
-          "target": "~/src/katana/ui/quant/format/price.ts"
-        },
-        {
-          "path": "src/quant/format/quantity.ts",
-          "type": "registry:lib",
-          "target": "~/src/katana/ui/quant/format/quantity.ts"
         }
       ]
     },
@@ -5565,8 +6057,8 @@
         "@katana/chart-kit",
         "@katana/cn",
         "@katana/led",
+        "@katana/metric-card",
         "@katana/series-geometry",
-        "@katana/spark-tile",
         "@katana/switch",
         "@katana/text-measure",
         "@katana/toggle-group",
@@ -5575,9 +6067,34 @@
       ],
       "files": [
         {
+          "path": "src/blocks/series-explorer/series-explorer-events.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/series-explorer/series-explorer-events.tsx"
+        },
+        {
+          "path": "src/blocks/series-explorer/series-explorer-head.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/series-explorer/series-explorer-head.tsx"
+        },
+        {
           "path": "src/blocks/series-explorer/series-explorer-model.ts",
           "type": "registry:component",
           "target": "~/src/katana/ui/blocks/series-explorer/series-explorer-model.ts"
+        },
+        {
+          "path": "src/blocks/series-explorer/series-explorer-reconcile.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/series-explorer/series-explorer-reconcile.tsx"
+        },
+        {
+          "path": "src/blocks/series-explorer/series-explorer-table.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/series-explorer/series-explorer-table.tsx"
+        },
+        {
+          "path": "src/blocks/series-explorer/series-explorer-types.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/series-explorer/series-explorer-types.ts"
         },
         {
           "path": "src/blocks/series-explorer/series-explorer.tsx",
@@ -5856,6 +6373,7 @@
         "@katana/hold-to-confirm",
         "@katana/led",
         "@katana/meter",
+        "@katana/metric-card",
         "@katana/pnl-text",
         "@katana/severity",
         "@katana/spark-tile",
@@ -6109,9 +6627,10 @@
       "name": "estimate-badge",
       "type": "registry:component",
       "title": "Estimate Badge",
-      "description": "琥珀色描边的小字标记（例如「按 K 线估算」），悬停写规则摘要；字与规则由调用方传。",
+      "description": "琥珀色描边的小字标记（例如「按 K 线估算」），悬停写规则摘要；字与规则由调用方传。是 Tag 的 warn、描边、md 档。",
       "registryDependencies": [
-        "@katana/cn"
+        "@katana/cn",
+        "@katana/tag"
       ],
       "files": [
         {

@@ -63,15 +63,18 @@ const INTERNAL = {
   'chart-kit':
     '图表共用底座：配色分配（series / seq / div）、点阵纹理、LCD tooltip、末点、轴与网格、图右上三件（表格视图、导出、全屏）。',
   'market-heatmap-types': 'MarketHeatmap 的公开类型：格子数据、大小与着色指标、文案、属性。',
-  'market-heatmap-toolbar': 'MarketHeatmap 的工具条：数据集、大小、颜色、分组（下拉或分段），全屏，显示开关，「在选股器打开」。',
-  'market-heatmap-cell': 'MarketHeatmap 的一格：按格子真实像素分四档写字（徽标 + 代码 + 读数 / 代码 + 读数 / 只有徽标 / 只有色块）。',
+  'market-heatmap-toolbar':
+    'MarketHeatmap 的工具条：数据集、大小、颜色、分组（下拉或分段），全屏，显示开关，「在选股器打开」。',
+  'market-heatmap-cell':
+    'MarketHeatmap 的一格：按格子真实像素分四档写字（徽标 + 代码 + 读数 / 代码 + 读数 / 只有徽标 / 只有色块）。',
   'market-heatmap-card': 'MarketHeatmap 的悬停卡片：跟着鼠标，写价格、各着色指标、大小指标与分组，不伸出图外。',
   'market-heatmap-legend': 'MarketHeatmap 的图例：七档色块与值边界，悬停预览、点一档隐藏。',
   'market-heatmap-hooks':
     'MarketHeatmap 的副作用钩子：量绘图区尺寸、放大返回的焦点、按底色现算字色、格子位置的弹簧过渡、涨跌翻向时闪一下。',
   'event-calendar-types': 'EventCalendar 的公开类型：四类事件的行、文案（labels）、财报行下的链接、属性。',
   'event-calendar-cells': 'EventCalendar 的表格部分：四个类别的列集、一行的单元格、重要程度格条、经济事件的详情行。',
-  'event-calendar-regions': 'EventCalendar 的国家选择：触发按钮加模态框（搜索、两个预设、按地区分组复选、取消 / 应用）。',
+  'event-calendar-regions':
+    'EventCalendar 的国家选择：触发按钮加模态框（搜索、两个预设、按地区分组复选、取消 / 应用）。',
   'market-heatmap-model':
     'MarketHeatmap 的纯函数：色阶七档的档宽取好数、值落在哪一档、图例的值边界、方向键找邻居的格子。',
   'calendar-model': 'CalendarHeatmap 的格子排布、档位与键盘（纯函数）：日历日按 UTC 算，一周一列。',

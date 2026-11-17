@@ -124,7 +124,13 @@ export function HeatmapCell({
       {showCode ? (
         <>
           {logo ? (
-            <SymbolMark className="k-mheat-logo" symbol={item.symbol} name={item.name} src={item.logo} size={logo.size} />
+            <SymbolMark
+              className="k-mheat-logo"
+              symbol={item.symbol}
+              name={item.name}
+              src={item.logo}
+              size={logo.size}
+            />
           ) : null}
           {titleMode === 'none' ? null : (
             <span className="k-mheat-code">{titleMode === 'name' ? item.name : item.symbol}</span>
