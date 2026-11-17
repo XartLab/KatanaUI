@@ -23,6 +23,8 @@ const INTERNAL = {
   style: '设计 token（Console 与 Graphite 两个主题、红涨绿跌切换）、Tailwind v4 主题与动效 CSS。ui.css 最后引。',
   cn: 'shadcn-ui/cn 引擎（替 clsx 加 tailwind-merge），认得 k-text-* 字号档。',
   focus: '各控件共用的焦点环类名。',
+  'font-catalog':
+    '字体目录（纯数据与函数）：界面、汉字、数据字、代码四个角色可选的系统、开源、本机字体，与选择算出的字体变量。RenderingSettings 用。',
   motion: '三条弹簧参数（snappy、gentle、settle），给 motion/react 用。',
   spring: '把三条弹簧的停止阈值收到 0.001，给 scale、opacity、pathLength 这类 0 到 1 的量用。',
   'series-geometry':

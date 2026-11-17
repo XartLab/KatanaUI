@@ -88,13 +88,13 @@
 }
 .k-sr-kpi-value {
   color: var(--ink-100);
-  font: 600 16px/20px var(--font-sans);
+  font: 600 16px/20px var(--font-num);
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
 .k-sr-kpi-sub {
   color: var(--ink-300);
-  font: var(--text-caption) var(--font-sans-small);
+  font: var(--text-caption) var(--font-num-small);
   font-variant-numeric: tabular-nums;
 }
 
@@ -121,7 +121,7 @@
   text-align: left;
 }
 .k-sr-table td {
-  font-family: var(--font-sans);
+  font-family: var(--font-num);
 }
 .k-sr-table [data-active] {
   background: var(--group-bg);
@@ -158,7 +158,7 @@
 .k-sr-gridline text,
 .k-sr-edge {
   fill: var(--ink-300);
-  font: var(--text-caption) var(--font-sans-small);
+  font: var(--text-caption) var(--font-num-small);
 }
 .k-sr-bar {
   fill: var(--ink-400);
@@ -245,7 +245,7 @@
 .k-sr-prop-group dd,
 .k-sr-detail dd {
   margin: 0;
-  font-family: var(--font-sans);
+  font-family: var(--font-num);
   font-variant-numeric: tabular-nums;
   text-align: right;
 }

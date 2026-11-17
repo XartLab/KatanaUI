@@ -3518,8 +3518,18 @@ export const PAGES: readonly DocPage[] = [
     cardHeight: 560,
     title: 'RenderingSettings 渲染设置',
     summary:
-      '应用「设置 → 渲染」那一页：文字平滑（灰度 / 系统）、像素对齐、字重补偿（-60..+60，相当于终端的 font-thicken）、字号缩放（取整到整像素）、斜线零、中英对齐（font-size-adjust）。每项一行：名称、一句说明、控件。值写在根节点上（theme/rendering.css 读），件是受控的，调用方存值，启动时用 applyRendering 写回。字样表与本机字体检测见总览里的 rendering 页。',
-    exports: ['RenderingSettings', 'applyRendering', 'readRendering', 'DEFAULT_RENDERING', 'RENDERING_LABELS_ZH'],
+      '应用「设置 → 渲染」那一页：字体（界面、汉字、数据字、代码四个角色，各从字体目录 FONT_CATALOG 里挑：系统、开源、本机已装三类）、文字平滑（灰度 / 系统）、像素对齐、字重补偿（-60..+60，相当于终端的 font-thicken）、字号缩放（取整到整像素）、斜线零、中英对齐（font-size-adjust）。每项一行：名称、一句说明、控件。值写在根节点上（theme/rendering.css 读），件是受控的，调用方存值，启动时用 applyRendering 写回。字样表与本机字体检测见总览里的 rendering 页。',
+    exports: [
+      'RenderingSettings',
+      'applyRendering',
+      'readRendering',
+      'DEFAULT_RENDERING',
+      'RENDERING_LABELS_ZH',
+      'FONT_CATALOG',
+      'DEFAULT_FONTS',
+      'fontVariables',
+      'fontsFor',
+    ],
     props: [
       {
         part: 'RenderingSettings',
@@ -3527,7 +3537,7 @@ export const PAGES: readonly DocPage[] = [
           {
             name: 'value',
             type: 'RenderingSettingsValue',
-            desc: '{ smoothing, pixelSnap, weightAdjust, textScale, slashedZero, cjkAdjust }；默认值是 DEFAULT_RENDERING。',
+            desc: '{ smoothing, pixelSnap, weightAdjust, textScale, slashedZero, cjkAdjust, fonts }；fonts 是按角色（ui、cjk、num、mono）选的字体 id，见 FONT_CATALOG。默认值是 DEFAULT_RENDERING。',
           },
           {
             name: 'onChange',

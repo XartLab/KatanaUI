@@ -29,13 +29,13 @@ button.k-spark-tile:focus-visible {
   outline-offset: -2px;
 }
 .k-spark-tile-tag {
-  font-family: var(--font-sans-small);
+  font-family: var(--font-num-small);
   font-size: var(--text-tag-size);
   letter-spacing: 0.12em;
   color: var(--ink-300);
 }
 .k-spark-tile-value {
-  font-family: var(--font-sans);
+  font-family: var(--font-num);
   font-size: var(--text-lcd-size);
   line-height: 20px;
   font-weight: 500;
@@ -137,7 +137,7 @@ button.k-spark-tile:focus-visible {
   flex-direction: column;
   gap: 4px;
   min-width: 0;
-  font-family: var(--font-sans-small);
+  font-family: var(--font-num-small);
   font-size: var(--text-caption-size);
 }
 .k-meter[data-tone='ok'] {
@@ -250,7 +250,7 @@ button.k-spark-tile:focus-visible {
 .k-meter-big {
   min-width: 3.4em;
   text-align: right;
-  font: var(--text-display-dense) var(--font-sans);
+  font: var(--text-display-dense) var(--font-num);
   font-size: 24px;
   line-height: 24px;
   letter-spacing: var(--text-display-dense-tracking);
@@ -266,7 +266,7 @@ button.k-spark-tile:focus-visible {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 6px;
-  font-family: var(--font-sans-small);
+  font-family: var(--font-num-small);
   font-size: var(--text-caption-size);
   font-variant-numeric: tabular-nums;
 }
@@ -281,13 +281,13 @@ button.k-spark-tile:focus-visible {
   box-shadow: var(--recess);
 }
 .k-flow-title {
-  font-family: var(--font-sans-small);
+  font-family: var(--font-num-small);
   font-size: var(--text-tag-size);
   letter-spacing: 0.1em;
   color: var(--ink-300);
 }
 .k-flow-value {
-  font-family: var(--font-sans);
+  font-family: var(--font-num);
   font-size: var(--text-lcd-size);
   line-height: 20px;
   letter-spacing: 0.06em;
@@ -298,7 +298,7 @@ button.k-spark-tile:focus-visible {
 }
 .k-flow-est {
   margin-left: 6px;
-  font-family: var(--font-sans-small);
+  font-family: var(--font-num-small);
   font-size: var(--text-micro-size);
   letter-spacing: 0;
   color: var(--signal-amber);
@@ -396,7 +396,7 @@ button.k-spark-tile:focus-visible {
   flex-direction: column;
   gap: 6px;
   min-width: 0;
-  font-family: var(--font-sans-small);
+  font-family: var(--font-num-small);
   font-size: var(--text-micro-size);
 }
 .k-regime-title {
@@ -478,7 +478,7 @@ button.k-spark-tile:focus-visible {
   flex-direction: column;
   gap: 6px;
   min-width: 0;
-  font-family: var(--font-sans-small);
+  font-family: var(--font-num-small);
   font-size: var(--text-caption-size);
 }
 .k-consensus-intent {
@@ -519,7 +519,7 @@ button.k-consensus-party:focus-visible {
   outline-offset: -2px;
 }
 .k-consensus-tag {
-  font-family: var(--font-sans-small);
+  font-family: var(--font-num-small);
   font-size: var(--text-tag-size);
   letter-spacing: 0.08em;
   color: var(--ink-300);
@@ -636,7 +636,7 @@ button.k-consensus-party:focus-visible {
   padding: 0;
   border: 0;
   background: none;
-  font-family: var(--font-sans);
+  font-family: var(--font-num);
   letter-spacing: 0.06em;
   color: var(--signal-orange);
 }

@@ -3,7 +3,13 @@
 // 字样表照字体测试的做法：每个文字档一行，同一行里放最容易糊、最容易认错的字（0O 1lI、负号、千分位、百分比、中英混排），暗底几档灰，再加 1px 线与格子。
 
 import { useEffect, useMemo, useState } from 'react'
-import { RenderingSettings, applyRendering, readRendering, type RenderingSettingsValue } from '../src/index'
+import {
+  FONT_CATALOG,
+  RenderingSettings,
+  applyRendering,
+  readRendering,
+  type RenderingSettingsValue,
+} from '../src/index'
 
 export const RENDERING_ID = 'rendering'
 const STORE = 'katana-ui.rendering'
@@ -101,6 +107,30 @@ export function RenderingPage() {
           </div>
         ))}
       </dl>
+
+      <h2>字体库</h2>
+      <p className="gal-lede">
+        设置里能选的全部字体，每个用它自己画同一行字。「开源」打包在文档站里；「本机」要你电脑上装了才显示，没装的那一行会落到回退字体。
+      </p>
+      <table className="gal-render-ramp gal-render-fonts">
+        <tbody>
+          {FONT_CATALOG.filter((font) => font.kind !== 'system').map((font) => (
+            <tr key={font.id}>
+              <th>
+                {font.label}
+                <br />
+                <span>
+                  {font.roles.join(' / ')} · {font.kind === 'web' ? `开源 ${font.license ?? ''}` : '本机'}
+                </span>
+              </th>
+              <td style={{ fontFamily: `${font.family}, var(--font-sans)`, fontSize: 14, fontWeight: 400 }}>
+                {SAMPLE}
+                {font.note ? <small>{font.note}</small> : null}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
 
       <h2>文字档</h2>
       <table className="gal-render-ramp">

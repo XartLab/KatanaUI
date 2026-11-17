@@ -4,6 +4,7 @@ import { createRoot } from 'react-dom/client'
 import './gallery.css'
 import '../src/fonts.css'
 import '../src/ui.css'
+import './web-fonts'
 import { applyTheme, Docs, themeFromUrl, type ThemeName } from './docs'
 import { restoreRendering } from './rendering'
 restoreRendering()

@@ -142,6 +142,16 @@ export {
   type RenderingSettingsProps,
   type RenderingSettingsValue,
 } from './patterns/rendering-settings.tsx'
+export {
+  DEFAULT_FONTS,
+  FONT_CATALOG,
+  fontVariables,
+  fontsFor,
+  type FontChoice,
+  type FontKind,
+  type FontOption,
+  type FontRole,
+} from './patterns/font-catalog.ts'
 export { ViewSwitcher, type ViewOption, type ViewSwitcherProps } from './patterns/view-switcher.tsx'
 export {
   applyFilters,

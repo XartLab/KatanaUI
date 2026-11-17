@@ -1,12 +1,14 @@
 // SPDX-License-Identifier: MIT
 // 渲染设置（2026-11-17）：应用「设置 → 渲染」那一页的件，每一项一行：名称、一句说明、控件，照原生程序的渲染设置页（如 Tern、Windows Terminal）的写法。
-// 值落在根节点上（theme/rendering.css 读）：data-text-smoothing、data-pixel-snap、data-numerals、data-cjk-adjust 与 --k-weight-adjust、--k-text-scale。
+// 值落在根节点上（theme/rendering.css 读）：data-text-smoothing、data-pixel-snap、data-numerals、data-cjk-adjust、data-font-<角色> 与 --k-weight-adjust、--k-text-scale、字体变量（font-catalog.ts）。
 // 件本身不存值：调用方拿 onChange 的值自己存（本地设置文件、localStorage 都行），启动时用 applyRendering 写回根节点。
 
 import type { ReactNode } from 'react'
 import { Button } from '../primitives/button.tsx'
 import { Slider } from '../primitives/slider.tsx'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../primitives/select.tsx'
 import { ToggleGroup, ToggleGroupItem } from '../primitives/toggle-group.tsx'
+import { DEFAULT_FONTS, fontsFor, fontVariables, type FontChoice, type FontRole } from './font-catalog.ts'
 
 export type RenderingSettingsValue = {
   /** grayscale：灰度平滑（默认）；system：交回系统默认（macOS 上可能是子像素）。 */
@@ -21,6 +23,8 @@ export type RenderingSettingsValue = {
   slashedZero: boolean
   /** 中英混排按大写字母高度对齐汉字回退字体。 */
   cjkAdjust: boolean
+  /** 按角色选的字体（font-catalog.ts 的 id）。 */
+  fonts: FontChoice
 }
 
 export const DEFAULT_RENDERING: RenderingSettingsValue = {
@@ -30,7 +34,10 @@ export const DEFAULT_RENDERING: RenderingSettingsValue = {
   textScale: 1,
   slashedZero: false,
   cjkAdjust: false,
+  fonts: DEFAULT_FONTS,
 }
+
+const ROLES: readonly FontRole[] = ['ui', 'cjk', 'num', 'mono']
 
 /** 把设置写到根节点（或给定节点）上；默认值对应的属性会移除，根节点保持干净。 */
 export function applyRendering(value: RenderingSettingsValue, root: HTMLElement = document.documentElement) {
@@ -44,6 +51,8 @@ export function applyRendering(value: RenderingSettingsValue, root: HTMLElement 
     on ? root.style.setProperty(name, text) : root.style.removeProperty(name)
   prop('--k-weight-adjust', value.weightAdjust !== 0, String(value.weightAdjust))
   prop('--k-text-scale', value.textScale !== 1, String(value.textScale))
+  for (const role of ROLES) set(`data-font-${role}`, value.fonts[role] !== DEFAULT_FONTS[role], value.fonts[role])
+  for (const [name, stack] of Object.entries(fontVariables(value.fonts))) prop(name, stack !== undefined, stack ?? '')
 }
 
 /** 从根节点读回当前设置（没写过的项是默认值）。 */
@@ -61,6 +70,9 @@ export function readRendering(target?: HTMLElement): RenderingSettingsValue {
     textScale: num('--k-text-scale', 1),
     slashedZero: root.getAttribute('data-numerals') === 'slashed',
     cjkAdjust: root.getAttribute('data-cjk-adjust') === 'cap',
+    fonts: Object.fromEntries(
+      ROLES.map((role) => [role, root.getAttribute(`data-font-${role}`) ?? DEFAULT_FONTS[role]]),
+    ) as FontChoice,
   }
 }
 
@@ -82,6 +94,10 @@ export type RenderingSettingsLabels = {
   on: string
   off: string
   reset: string
+  fonts: string
+  fontRoles: Record<FontRole, { title: string; hint: string }>
+  followUi: string
+  kinds: { system: string; web: string; local: string }
 }
 
 export const RENDERING_LABELS_ZH: RenderingSettingsLabels = {
@@ -104,6 +120,18 @@ export const RENDERING_LABELS_ZH: RenderingSettingsLabels = {
   on: '开',
   off: '关',
   reset: '恢复默认',
+  fonts: '字体',
+  fontRoles: {
+    ui: { title: '界面', hint: '标题、正文、按钮、表头里的英文与数字。' },
+    cjk: { title: '汉字', hint: '所有中文；英文仍用「界面」那一项。' },
+    num: {
+      title: '数据字',
+      hint: '价格、数量、刻度、编号与小标签。默认跟界面字体走（开等宽数字）；选等宽字体时列更齐。',
+    },
+    mono: { title: '代码', hint: '代码、JSON、日志与命令。' },
+  },
+  followUi: '跟界面字体',
+  kinds: { system: '系统', web: '开源', local: '本机' },
 }
 
 function Row({ title, hint, children }: { title: string; hint: string; children: ReactNode }) {
@@ -216,6 +244,25 @@ export function RenderingSettings({ value, onChange, labels = RENDERING_LABELS_Z
           labels={labels}
         />
       </Row>
+      <div className="k-render-section">{labels.fonts}</div>
+      {ROLES.map((role) => (
+        <Row key={role} title={labels.fontRoles[role].title} hint={labels.fontRoles[role].hint}>
+          <Select value={value.fonts[role]} onValueChange={(id) => patch({ fonts: { ...value.fonts, [role]: id } })}>
+            <SelectTrigger aria-label={labels.fontRoles[role].title} className="k-render-select">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {role === 'num' ? <SelectItem value="follow-ui">{labels.followUi}</SelectItem> : null}
+              {fontsFor(role).map((font) => (
+                <SelectItem key={font.id} value={font.id} title={font.note}>
+                  <span style={font.family ? { fontFamily: font.family } : undefined}>{font.label}</span>
+                  <span className="k-render-kind"> · {labels.kinds[font.kind]}</span>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </Row>
+      ))}
       <div className="k-render-foot">
         <Button variant="ghost" size="sm" onClick={() => onChange(DEFAULT_RENDERING)}>
           {labels.reset}

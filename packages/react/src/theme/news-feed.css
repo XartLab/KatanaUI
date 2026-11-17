@@ -121,7 +121,7 @@ a.k-news-title:hover {
   border: 1px solid var(--alpha-white-8);
   border-radius: var(--radius-pill);
   color: var(--ink-200);
-  font: var(--text-data) var(--font-sans);
+  font: var(--text-data) var(--font-num);
   cursor: pointer;
 }
 .k-news-symbol:hover {

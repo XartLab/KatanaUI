@@ -1,6 +1,6 @@
 # RenderingSettings
 
-应用「设置 → 渲染」那一页：文字平滑（灰度 / 系统）、像素对齐、字重补偿（-60..+60，相当于终端的 font-thicken）、字号缩放（取整到整像素）、斜线零、中英对齐（font-size-adjust）。每项一行：名称、一句说明、控件。值写在根节点上（theme/rendering.css 读），件是受控的，调用方存值，启动时用 applyRendering 写回。字样表与本机字体检测见总览里的 rendering 页。
+应用「设置 → 渲染」那一页：字体（界面、汉字、数据字、代码四个角色，各从字体目录 FONT_CATALOG 里挑：系统、开源、本机已装三类）、文字平滑（灰度 / 系统）、像素对齐、字重补偿（-60..+60，相当于终端的 font-thicken）、字号缩放（取整到整像素）、斜线零、中英对齐（font-size-adjust）。每项一行：名称、一句说明、控件。值写在根节点上（theme/rendering.css 读），件是受控的，调用方存值，启动时用 applyRendering 写回。字样表与本机字体检测见总览里的 rendering 页。
 
 ## Provide
 
@@ -10,7 +10,7 @@
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `value` | `RenderingSettingsValue` | — | { smoothing, pixelSnap, weightAdjust, textScale, slashedZero, cjkAdjust }；默认值是 DEFAULT_RENDERING。 |
+| `value` | `RenderingSettingsValue` | — | { smoothing, pixelSnap, weightAdjust, textScale, slashedZero, cjkAdjust, fonts }；fonts 是按角色（ui、cjk、num、mono）选的字体 id，见 FONT_CATALOG。默认值是 DEFAULT_RENDERING。 |
 | `onChange` | `(next: RenderingSettingsValue) => void` | — | 改了任一项；一般在这里 applyRendering(next) 并存盘。 |
 | `labels` | `RenderingSettingsLabels` | — | 全部文字，默认 RENDERING_LABELS_ZH。 |
 

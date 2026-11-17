@@ -176,6 +176,8 @@
   --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI Variable Text", "Segoe UI", Roboto, Ubuntu, "PingFang SC", "Microsoft YaHei UI", "Noto Sans SC", sans-serif;
   --font-sans-small: -apple-system, BlinkMacSystemFont, "Segoe UI Variable Small", "Segoe UI", Roboto, Ubuntu, "PingFang SC", "Microsoft YaHei UI", "Noto Sans SC", sans-serif;
   --font-sans-display: -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Roboto, Ubuntu, "PingFang SC", "Microsoft YaHei UI", "Noto Sans SC", sans-serif;
+  --font-num: var(--font-sans);
+  --font-num-small: var(--font-sans-small);
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", "Maple Mono NF CN", "PingFang SC", "Microsoft YaHei UI", monospace;
   --font-display: "Barlow Condensed", "Smiley Sans", "Noto Sans SC", "Microsoft YaHei UI", sans-serif;
   --font-lcd: "DM Mono", "Maple Mono NF CN", "Maple Mono", "Noto Sans SC", "Microsoft YaHei UI", monospace;
@@ -3771,7 +3773,7 @@
 
 .k-tree {
   color: var(--ink-200);
-  font: var(--text-data) var(--font-sans);
+  font: var(--text-data) var(--font-num);
   outline: 0;
   flex-direction: column;
   display: flex;
@@ -4009,7 +4011,7 @@
 
 .k-tl-scope {
   color: var(--ink-200);
-  font-family: var(--font-sans-small);
+  font-family: var(--font-num-small);
   font-size: var(--text-caption-size);
 }
 
@@ -4056,7 +4058,7 @@
 
 .k-tl-total {
   color: var(--ink-300);
-  font-family: var(--font-sans-small);
+  font-family: var(--font-num-small);
   font-size: var(--text-caption-size);
   font-variant-numeric: tabular-nums;
   margin-left: auto;
@@ -4089,7 +4091,7 @@
 
 .k-tl-head {
   color: var(--ink-300);
-  font: 600 11px var(--font-sans);
+  font: 600 11px var(--font-num);
   font-variant-numeric: tabular-nums;
   margin: 0;
 }
@@ -4166,7 +4168,7 @@
 
 .k-tl-now span {
   color: var(--ink-100);
-  font: 600 9px var(--font-sans);
+  font: 600 9px var(--font-num);
   white-space: nowrap;
   position: absolute;
   top: -2px;
@@ -4237,7 +4239,7 @@
   border-radius: var(--radius-pill);
   min-width: 12px;
   color: var(--ink-100);
-  font: 600 9px var(--font-sans);
+  font: 600 9px var(--font-num);
   text-align: center;
   padding: 0 3px;
   line-height: 12px;
@@ -4272,7 +4274,7 @@
 
 .k-tl-tip-time {
   color: var(--ink-100);
-  font-family: var(--font-sans);
+  font-family: var(--font-num);
   font-variant-numeric: tabular-nums;
 }
 
@@ -4283,7 +4285,7 @@
 .k-tl-tip-ref, .k-tl-tip-more {
   width: 100%;
   color: var(--ink-300);
-  font-family: var(--font-sans);
+  font-family: var(--font-num);
   font-size: 10px;
 }
 
@@ -4307,7 +4309,7 @@
 }
 
 .k-tl-num {
-  font-family: var(--font-sans);
+  font-family: var(--font-num);
   font-variant-numeric: tabular-nums;
 }
 
@@ -4447,7 +4449,7 @@ button.k-news-title:hover, a.k-news-title:hover {
   border-radius: var(--radius-pill);
   height: 20px;
   color: var(--ink-200);
-  font: var(--text-data) var(--font-sans);
+  font: var(--text-data) var(--font-num);
   cursor: pointer;
   align-items: center;
   gap: 4px;
@@ -4923,14 +4925,14 @@ button.k-news-title:hover, a.k-news-title:hover {
 
 .k-sr-kpi-value {
   color: var(--ink-100);
-  font: 600 16px/20px var(--font-sans);
+  font: 600 16px/20px var(--font-num);
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
 
 .k-sr-kpi-sub {
   color: var(--ink-300);
-  font: var(--text-caption) var(--font-sans-small);
+  font: var(--text-caption) var(--font-num-small);
   font-variant-numeric: tabular-nums;
 }
 
@@ -4959,7 +4961,7 @@ button.k-news-title:hover, a.k-news-title:hover {
 }
 
 .k-sr-table td {
-  font-family: var(--font-sans);
+  font-family: var(--font-num);
 }
 
 .k-sr-table [data-active] {
@@ -5001,7 +5003,7 @@ button.k-news-title:hover, a.k-news-title:hover {
 
 .k-sr-gridline text, .k-sr-edge {
   fill: var(--ink-300);
-  font: var(--text-caption) var(--font-sans-small);
+  font: var(--text-caption) var(--font-num-small);
 }
 
 .k-sr-bar {
@@ -5095,7 +5097,7 @@ button.k-news-title:hover, a.k-news-title:hover {
 }
 
 .k-sr-facts dd, .k-sr-prop-group dd, .k-sr-detail dd {
-  font-family: var(--font-sans);
+  font-family: var(--font-num);
   font-variant-numeric: tabular-nums;
   text-align: right;
   margin: 0;
@@ -5327,7 +5329,7 @@ button.k-news-title:hover, a.k-news-title:hover {
 
 .k-fsk-amount {
   fill: var(--ink-300);
-  font-family: var(--font-sans);
+  font-family: var(--font-num);
   font-variant-numeric: tabular-nums;
 }
 
@@ -5472,7 +5474,7 @@ button.k-news-title:hover, a.k-news-title:hover {
 
 .k-vs-stats dd {
   color: var(--ink-100);
-  font: var(--text-data) var(--font-sans);
+  font: var(--text-data) var(--font-num);
   font-variant-numeric: tabular-nums;
   margin: 0;
 }
@@ -6297,7 +6299,7 @@ button.k-sysmon-link-body:focus-visible {
   border: 1px solid var(--alpha-white-8);
   border-radius: var(--radius-pill);
   color: var(--ink-200);
-  font: var(--text-data) var(--font-sans);
+  font: var(--text-data) var(--font-num);
   padding: 0 6px;
 }
 
@@ -6692,7 +6694,7 @@ button.k-sysmon-link-body:focus-visible {
 .k-symbol-mark {
   background: var(--bg-400);
   color: var(--ink-200);
-  font-family: var(--font-sans);
+  font-family: var(--font-num);
   letter-spacing: 0;
   vertical-align: middle;
   -webkit-user-select: none;
@@ -7677,7 +7679,7 @@ button.k-sysmon-link-body:focus-visible {
 }
 
 .k-empty-tag {
-  font: var(--text-tag-md) var(--font-sans);
+  font: var(--text-tag-md) var(--font-num);
   letter-spacing: var(--text-tag-md-tracking);
   color: var(--ink-300);
   text-transform: uppercase;
@@ -7948,7 +7950,7 @@ button.k-sysmon-link-body:focus-visible {
   color: var(--ink-300);
   text-overflow: ellipsis;
   white-space: nowrap;
-  font: 11px/16px var(--font-sans);
+  font: 11px/16px var(--font-num);
   flex: 0 auto;
   overflow: hidden;
 }
@@ -8112,13 +8114,13 @@ button.k-status-item:hover {
 
 .k-status-key {
   color: var(--ink-200);
-  font: var(--text-tag-md) var(--font-sans);
+  font: var(--text-tag-md) var(--font-num);
   letter-spacing: var(--text-tag-md-tracking);
   text-transform: uppercase;
 }
 
 .k-status-value {
-  font: 12px/16px var(--font-sans);
+  font: 12px/16px var(--font-num);
 }
 
 .k-status-more {
@@ -8232,7 +8234,7 @@ button.k-status-item:hover {
 
 .k-wtab-key {
   color: var(--ink-300);
-  font: 9px/1 var(--font-sans);
+  font: 9px/1 var(--font-num);
   letter-spacing: 0;
   flex: none;
 }
@@ -9045,6 +9047,22 @@ button.k-quote-card.is-link:focus-visible {
   display: flex;
 }
 
+.k-render-section {
+  border-bottom: 1px solid var(--line-100);
+  color: var(--ink-300);
+  font: var(--text-micro) var(--font-sans-small);
+  letter-spacing: var(--text-micro-tracking);
+  padding: 14px 16px 6px;
+}
+
+.k-render-select {
+  width: 220px;
+}
+
+.k-render-kind {
+  color: var(--ink-400);
+}
+
 .k-ck-grid {
   stroke: var(--chart-grid-color, var(--chart-grid));
   stroke-dasharray: var(--chart-grid-dash, none);
@@ -9054,7 +9072,7 @@ button.k-quote-card.is-link:focus-visible {
 
 .k-ck-ytick {
   color: var(--chart-axis);
-  font: var(--text-num-sm) var(--chart-font-axis, var(--font-sans-small));
+  font: var(--text-num-sm) var(--chart-font-axis, var(--font-num-small));
   pointer-events: none;
   white-space: nowrap;
   padding-right: 8px;
@@ -9070,7 +9088,7 @@ button.k-quote-card.is-link:focus-visible {
   min-width: 96px;
   box-shadow: var(--recess);
   color: var(--lcd-fg);
-  font-family: var(--chart-font-num, var(--font-sans));
+  font-family: var(--chart-font-num, var(--font-num));
   font-variant-numeric: tabular-nums;
   pointer-events: none;
   white-space: nowrap;
@@ -9085,12 +9103,12 @@ button.k-quote-card.is-link:focus-visible {
 
 .k-ck-tip-title {
   color: var(--ink-300);
-  font: var(--text-num-sm) var(--chart-font-axis, var(--font-sans-small));
+  font: var(--text-num-sm) var(--chart-font-axis, var(--font-num-small));
   margin-bottom: 2px;
 }
 
 .k-ck-tip-row {
-  font: var(--text-caption) var(--chart-font-num, var(--font-sans-small));
+  font: var(--text-caption) var(--chart-font-num, var(--font-num-small));
   align-items: center;
   gap: 8px;
   display: flex;
@@ -9129,7 +9147,7 @@ button.k-quote-card.is-link:focus-visible {
 
 .k-ck-end-value {
   color: var(--ink-100);
-  font: var(--text-num-sm) var(--chart-font-num, var(--font-sans-small));
+  font: var(--text-num-sm) var(--chart-font-num, var(--font-num-small));
   white-space: nowrap;
   position: absolute;
   top: 0;
@@ -9245,7 +9263,7 @@ button.k-quote-card.is-link:focus-visible {
 
 .k-plot-ytick {
   color: var(--chart-axis);
-  font: var(--text-caption) var(--font-sans-small);
+  font: var(--text-caption) var(--font-num-small);
   pointer-events: none;
   position: absolute;
   left: 0;
@@ -9295,7 +9313,7 @@ button.k-quote-card.is-link:focus-visible {
 .k-plot-readout {
   min-height: 16px;
   color: var(--ink-100);
-  font: var(--text-data) var(--font-sans);
+  font: var(--text-data) var(--font-num);
 }
 
 .k-brush .k-plot-xaxis {
@@ -9396,14 +9414,14 @@ button.k-quote-card.is-link:focus-visible {
 
 .k-attr-title {
   color: var(--ink-100);
-  font: 12px/20px var(--font-sans);
+  font: 12px/20px var(--font-num);
   letter-spacing: .14em;
   text-transform: uppercase;
   margin: 0;
 }
 
 .k-attr-meta, .k-attr-source, .k-attr-cols, .k-attr-index, .k-attr-closed, .k-attr-readout-label, .k-attr-table th {
-  font: var(--text-tag-md) var(--font-sans);
+  font: var(--text-tag-md) var(--font-num);
   letter-spacing: 0;
   font-style: normal;
 }
@@ -9638,7 +9656,7 @@ button.k-quote-card.is-link:focus-visible {
 }
 
 .k-attr-foot .k-attr-note {
-  font: var(--text-tag-md) var(--font-sans);
+  font: var(--text-tag-md) var(--font-num);
   letter-spacing: 0;
 }
 
@@ -9670,7 +9688,7 @@ button.k-quote-card.is-link:focus-visible {
 
 .k-heat-total {
   color: var(--ink-100);
-  font: var(--text-lcd) var(--chart-font-num, var(--font-sans));
+  font: var(--text-lcd) var(--chart-font-num, var(--font-num));
   letter-spacing: .08em;
 }
 
@@ -9790,7 +9808,7 @@ rect.k-heat-cell[data-active="true"] {
 
 .k-heat-wk {
   color: var(--ink-300);
-  font: var(--text-num-sm) var(--chart-font-axis, var(--font-sans-small));
+  font: var(--text-num-sm) var(--chart-font-axis, var(--font-num-small));
   align-items: center;
   display: flex;
 }
@@ -9812,14 +9830,14 @@ button.k-heat-cell {
 
 .k-heat-date {
   color: var(--ink-200);
-  font: var(--text-num-sm) var(--chart-font-axis, var(--font-sans-small));
+  font: var(--text-num-sm) var(--chart-font-axis, var(--font-num-small));
   position: absolute;
   top: 3px;
   left: 4px;
 }
 
 .k-heat-num {
-  font: var(--text-num-sm) var(--chart-font-axis, var(--font-sans-small));
+  font: var(--text-num-sm) var(--chart-font-axis, var(--font-num-small));
   position: absolute;
   bottom: 3px;
   right: 4px;
@@ -9869,7 +9887,7 @@ button.k-heat-cell[data-active="true"] {
 
 .k-heat-dots b {
   color: var(--ink-300);
-  font: var(--text-num-sm) var(--chart-font-axis, var(--font-sans-small));
+  font: var(--text-num-sm) var(--chart-font-axis, var(--font-num-small));
 }
 
 .k-heat-evtext {
@@ -9920,7 +9938,7 @@ button.k-heat-cell[data-active="true"] {
 
 .k-heat-table {
   border-collapse: collapse;
-  font: var(--text-data) var(--font-sans);
+  font: var(--text-data) var(--font-num);
 }
 
 .k-heat-table th, .k-heat-table td {
@@ -10002,7 +10020,7 @@ button.k-heat-cell[data-active="true"] {
 
 .k-hz-value {
   color: var(--ink-100);
-  font: var(--text-data) var(--font-sans);
+  font: var(--text-data) var(--font-num);
   text-align: right;
 }
 
@@ -10079,7 +10097,7 @@ button.k-sm-head:focus-visible {
 
 .k-sm-value {
   color: var(--ink-100);
-  font: var(--text-data) var(--font-sans);
+  font: var(--text-data) var(--font-num);
 }
 
 .k-sm-value[data-tone="up"] {
@@ -10143,7 +10161,7 @@ button.k-sm-head:focus-visible {
 }
 
 .k-sx-meta, .k-sx-source, .k-sx-evt-text, .k-sx-dim-label {
-  font: var(--text-tag-md) var(--font-sans);
+  font: var(--text-tag-md) var(--font-num);
   letter-spacing: 0;
   font-style: normal;
 }
@@ -10184,7 +10202,7 @@ button.k-sm-head:focus-visible {
 
 .k-sx-kpis .k-spark-tile-tag {
   color: var(--ink-300);
-  font: var(--text-num-sm) var(--font-sans-small);
+  font: var(--text-num-sm) var(--font-num-small);
   letter-spacing: .16em;
   text-transform: uppercase;
 }
@@ -10226,7 +10244,7 @@ button.k-sm-head:focus-visible {
 
 .k-sx-kv small {
   color: var(--ink-300);
-  font: var(--text-num-sm) var(--font-sans-small);
+  font: var(--text-num-sm) var(--font-num-small);
   letter-spacing: .16em;
   text-transform: uppercase;
 }
@@ -10238,7 +10256,7 @@ button.k-sm-head:focus-visible {
 
 .k-sx-kv i {
   color: var(--ink-300);
-  font: var(--text-num-sm) var(--font-sans-small);
+  font: var(--text-num-sm) var(--font-num-small);
   font-style: normal;
 }
 
@@ -10400,7 +10418,7 @@ button.k-sm-head:focus-visible {
 .k-sx-table table {
   border-collapse: collapse;
   width: 100%;
-  font: var(--text-data) var(--font-sans);
+  font: var(--text-data) var(--font-num);
 }
 
 .k-sx-table th, .k-sx-table td {
@@ -10644,7 +10662,7 @@ button.k-sm-head:focus-visible {
 .k-eq-table table {
   border-collapse: collapse;
   width: 100%;
-  font: var(--text-data) var(--font-sans);
+  font: var(--text-data) var(--font-num);
   font-variant-numeric: tabular-nums;
 }
 
@@ -10671,7 +10689,7 @@ button.k-sm-head:focus-visible {
 
 .k-eq-source {
   color: var(--ink-300);
-  font: var(--text-num-sm) var(--font-sans-small);
+  font: var(--text-num-sm) var(--font-num-small);
 }
 
 .k-uptime {
@@ -10769,17 +10787,17 @@ button.k-sm-head:focus-visible {
 
 .k-uptime-count, .k-uptime-avail {
   color: var(--ink-100);
-  font: var(--text-num-sm) var(--chart-font-num, var(--font-sans-small));
+  font: var(--text-num-sm) var(--chart-font-num, var(--font-num-small));
   font-variant-numeric: tabular-nums;
 }
 
 .k-uptime-avail {
-  font: var(--text-lcd) var(--chart-font-num, var(--font-sans));
+  font: var(--text-lcd) var(--chart-font-num, var(--font-num));
 }
 
 .k-uptime-range {
   color: var(--chart-axis);
-  font: var(--text-num-sm) var(--chart-font-axis, var(--font-sans-small));
+  font: var(--text-num-sm) var(--chart-font-axis, var(--font-num-small));
   justify-content: space-between;
   display: flex;
 }
@@ -11281,7 +11299,7 @@ button.k-sm-head:focus-visible {
 
 .k-ql-xaxis {
   color: var(--chart-axis);
-  font: var(--text-num-sm) var(--chart-font-axis, var(--font-sans-small));
+  font: var(--text-num-sm) var(--chart-font-axis, var(--font-num-small));
   justify-content: space-between;
   padding-top: 4px;
   display: flex;
@@ -11350,7 +11368,7 @@ button.k-sm-head:focus-visible {
 
 .k-ql-tail {
   color: var(--ink-200);
-  font: var(--text-num-sm) var(--chart-font-axis, var(--font-sans-small));
+  font: var(--text-num-sm) var(--chart-font-axis, var(--font-num-small));
   pointer-events: none;
   white-space: nowrap;
   position: absolute;
@@ -11359,7 +11377,7 @@ button.k-sm-head:focus-visible {
 
 .k-ql-tail-value {
   color: var(--ink-100);
-  font-family: var(--chart-font-num, var(--font-sans));
+  font-family: var(--chart-font-num, var(--font-num));
 }
 
 .k-ql-legend {
@@ -11372,7 +11390,7 @@ button.k-sm-head:focus-visible {
   border: var(--hairline);
   height: 22px;
   color: var(--ink-200);
-  font: var(--text-num-sm) var(--chart-font-axis, var(--font-sans-small));
+  font: var(--text-num-sm) var(--chart-font-axis, var(--font-num-small));
   cursor: pointer;
   background: none;
   border-radius: 4px;
@@ -11432,7 +11450,7 @@ button.k-sm-head:focus-visible {
 
 .k-ql-stat-value {
   color: var(--ink-100);
-  font: var(--text-num-sm) var(--chart-font-num, var(--font-sans-small));
+  font: var(--text-num-sm) var(--chart-font-num, var(--font-num-small));
   font-variant-numeric: tabular-nums;
 }
 
@@ -14272,14 +14290,14 @@ button.k-spark-tile:focus-visible {
 }
 
 .k-spark-tile-tag {
-  font-family: var(--font-sans-small);
+  font-family: var(--font-num-small);
   font-size: var(--text-tag-size);
   letter-spacing: .12em;
   color: var(--ink-300);
 }
 
 .k-spark-tile-value {
-  font-family: var(--font-sans);
+  font-family: var(--font-num);
   font-size: var(--text-lcd-size);
   letter-spacing: .06em;
   white-space: nowrap;
@@ -14392,7 +14410,7 @@ button.k-spark-tile:focus-visible {
 .k-meter {
   --meter-color: var(--ink-100);
   min-width: 0;
-  font-family: var(--font-sans-small);
+  font-family: var(--font-num-small);
   font-size: var(--text-caption-size);
   flex-direction: column;
   gap: 4px;
@@ -14524,7 +14542,7 @@ button.k-spark-tile:focus-visible {
 .k-meter-big {
   text-align: right;
   min-width: 3.4em;
-  font: var(--text-display-dense) var(--font-sans);
+  font: var(--text-display-dense) var(--font-num);
   letter-spacing: var(--text-display-dense-tracking);
   color: var(--meter-color);
   font-variant-numeric: tabular-nums;
@@ -14537,7 +14555,7 @@ button.k-spark-tile:focus-visible {
 }
 
 .k-flow {
-  font-family: var(--font-sans-small);
+  font-family: var(--font-num-small);
   font-size: var(--text-caption-size);
   font-variant-numeric: tabular-nums;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -14557,14 +14575,14 @@ button.k-spark-tile:focus-visible {
 }
 
 .k-flow-title {
-  font-family: var(--font-sans-small);
+  font-family: var(--font-num-small);
   font-size: var(--text-tag-size);
   letter-spacing: .1em;
   color: var(--ink-300);
 }
 
 .k-flow-value {
-  font-family: var(--font-sans);
+  font-family: var(--font-num);
   font-size: var(--text-lcd-size);
   letter-spacing: .06em;
   color: var(--ink-100);
@@ -14576,7 +14594,7 @@ button.k-spark-tile:focus-visible {
 }
 
 .k-flow-est {
-  font-family: var(--font-sans-small);
+  font-family: var(--font-num-small);
   font-size: var(--text-micro-size);
   letter-spacing: 0;
   color: var(--signal-amber);
@@ -14686,7 +14704,7 @@ button.k-spark-tile:focus-visible {
 
 .k-regime {
   min-width: 0;
-  font-family: var(--font-sans-small);
+  font-family: var(--font-num-small);
   font-size: var(--text-micro-size);
   flex-direction: column;
   gap: 6px;
@@ -14780,7 +14798,7 @@ button.k-spark-tile:focus-visible {
 
 .k-consensus {
   min-width: 0;
-  font-family: var(--font-sans-small);
+  font-family: var(--font-num-small);
   font-size: var(--text-caption-size);
   flex-direction: column;
   gap: 6px;
@@ -14831,7 +14849,7 @@ button.k-consensus-party:focus-visible {
 }
 
 .k-consensus-tag {
-  font-family: var(--font-sans-small);
+  font-family: var(--font-num-small);
   font-size: var(--text-tag-size);
   letter-spacing: .08em;
   color: var(--ink-300);
@@ -14963,7 +14981,7 @@ button.k-consensus-party:focus-visible {
 }
 
 .k-consensus-hash {
-  font-family: var(--font-sans);
+  font-family: var(--font-num);
   letter-spacing: .06em;
   color: var(--signal-orange);
   background: none;

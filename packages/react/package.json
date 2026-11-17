@@ -19,7 +19,8 @@
   "type": "module",
   "sideEffects": [
     "*.css",
-    "./gallery/main.tsx"
+    "./gallery/main.tsx",
+    "./gallery/web-fonts.ts"
   ],
   "exports": {
     ".": {
@@ -90,6 +91,24 @@
   },
   "devDependencies": {
     "@axe-core/playwright": "4.13.0",
+    "@chinese-fonts/dyh": "3.0.0",
+    "@chinese-fonts/maple-mono-cn": "2.0.0",
+    "@fontsource-variable/fira-code": "5.3.0",
+    "@fontsource-variable/geist": "5.3.0",
+    "@fontsource-variable/geist-mono": "5.3.0",
+    "@fontsource-variable/inter": "5.3.0",
+    "@fontsource-variable/jetbrains-mono": "5.3.0",
+    "@fontsource-variable/noto-sans-sc": "5.3.1",
+    "@fontsource-variable/public-sans": "5.3.0",
+    "@fontsource-variable/roboto-flex": "5.3.0",
+    "@fontsource-variable/roboto-mono": "5.3.0",
+    "@fontsource-variable/source-sans-3": "5.3.1",
+    "@fontsource-variable/space-grotesk": "5.3.0",
+    "@fontsource/barlow-condensed": "5.3.0",
+    "@fontsource/chivo-mono": "5.3.0",
+    "@fontsource/ibm-plex-mono": "5.3.0",
+    "@fontsource/ibm-plex-sans": "5.3.0",
+    "@fontsource/iosevka": "5.3.0",
     "@katana-ui/tokens": "0.2.0",
     "@playwright/test": "1.56.1",
     "@tailwindcss/vite": "4.3.5",

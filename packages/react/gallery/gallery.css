@@ -512,3 +512,13 @@ body {
   border: 0;
   border-top: 1px solid var(--line-100);
 }
+.gal-render-fonts th span {
+  color: var(--ink-400);
+}
+.gal-render-fonts td small {
+  display: block;
+  margin-top: 2px;
+  color: var(--ink-400);
+  font: var(--text-caption) var(--font-sans-small);
+  white-space: normal;
+}

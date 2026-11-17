@@ -2729,6 +2729,11 @@
       "source": "src/primitives/context-menu.tsx",
       "props": []
     },
+    "DEFAULT_FONTS": {
+      "kind": "value",
+      "source": "src/patterns/font-catalog.ts",
+      "props": []
+    },
     "DEFAULT_RENDERING": {
       "kind": "value",
       "source": "src/patterns/rendering-settings.tsx",
@@ -6084,6 +6089,11 @@
       "source": "src/blocks/hypothesis-ledger/hypothesis-ledger-model.ts",
       "props": []
     },
+    "FONT_CATALOG": {
+      "kind": "value",
+      "source": "src/patterns/font-catalog.ts",
+      "props": []
+    },
     "Field": {
       "kind": "component",
       "source": "src/primitives/field.tsx",
@@ -7189,6 +7199,75 @@
           "description": "无逐笔方向、数是估出来的：灰显并标估算。"
         }
       ]
+    },
+    "FontChoice": {
+      "kind": "type",
+      "source": "src/patterns/font-catalog.ts",
+      "props": []
+    },
+    "FontKind": {
+      "kind": "type",
+      "source": "src/patterns/font-catalog.ts",
+      "props": []
+    },
+    "FontOption": {
+      "kind": "type",
+      "source": "src/patterns/font-catalog.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "family",
+          "type": "string",
+          "required": true,
+          "description": "CSS font-family 里写的名字（不含回退）。system 项为空，用默认栈。"
+        },
+        {
+          "name": "roles",
+          "type": "readonly FontRole[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "kind",
+          "type": "FontKind",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "pkg",
+          "type": "string",
+          "required": false,
+          "description": "web 项：npm 包名（应用引它的 CSS）。"
+        },
+        {
+          "name": "license",
+          "type": "string",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "note",
+          "type": "string",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "FontRole": {
+      "kind": "type",
+      "source": "src/patterns/font-catalog.ts",
+      "props": []
     },
     "GalaxyGroup": {
       "kind": "type",
@@ -14780,6 +14859,30 @@
           "type": "string",
           "required": true,
           "description": ""
+        },
+        {
+          "name": "fonts",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "fontRoles",
+          "type": "Record<FontRole, { title: string; hint: string }>",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "followUi",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "kinds",
+          "type": "{ system: string; web: string; local: string }",
+          "required": true,
+          "description": ""
         }
       ]
     },
@@ -14846,6 +14949,12 @@
           "type": "boolean",
           "required": true,
           "description": "中英混排按大写字母高度对齐汉字回退字体。"
+        },
+        {
+          "name": "fonts",
+          "type": "FontChoice",
+          "required": true,
+          "description": "按角色选的字体（font-catalog.ts 的 id）。"
         }
       ]
     },
@@ -22078,6 +22187,12 @@
           "type": "boolean",
           "required": true,
           "description": "中英混排按大写字母高度对齐汉字回退字体。"
+        },
+        {
+          "name": "fonts",
+          "type": "FontChoice",
+          "required": true,
+          "description": "按角色选的字体（font-catalog.ts 的 id）。"
         }
       ]
     },
@@ -22246,6 +22361,16 @@
     "focusRingInset": {
       "kind": "value",
       "source": "src/lib/focus.ts",
+      "props": []
+    },
+    "fontVariables": {
+      "kind": "function",
+      "source": "src/patterns/font-catalog.ts",
+      "props": []
+    },
+    "fontsFor": {
+      "kind": "function",
+      "source": "src/patterns/font-catalog.ts",
       "props": []
     },
     "formatCompact": {

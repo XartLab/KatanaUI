@@ -58,7 +58,7 @@
   color: var(--ink-300);
   text-overflow: ellipsis;
   white-space: nowrap;
-  font: 11px/16px var(--font-sans);
+  font: 11px/16px var(--font-num);
 }
 :where(.k-panel-link) {
   display: inline-flex;

@@ -100,3 +100,16 @@
   justify-content: flex-end;
   padding: 8px 12px;
 }
+.k-render-section {
+  padding: 14px 16px 6px;
+  border-bottom: 1px solid var(--line-100);
+  color: var(--ink-300);
+  font: var(--text-micro) var(--font-sans-small);
+  letter-spacing: var(--text-micro-tracking);
+}
+.k-render-select {
+  width: 220px;
+}
+.k-render-kind {
+  color: var(--ink-400);
+}
