@@ -234,6 +234,11 @@
           "target": "~/src/katana/ui/theme/shortcut-recorder.css"
         },
         {
+          "path": "src/theme/side-nav.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/side-nav.css"
+        },
+        {
           "path": "src/theme/splitter.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/splitter.css"
@@ -2087,6 +2092,19 @@
           "path": "src/patterns/row-actions.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/patterns/row-actions.tsx"
+        }
+      ]
+    },
+    {
+      "name": "side-nav",
+      "type": "registry:component",
+      "title": "Side Nav",
+      "description": "分组的侧栏导航：组名小号大写；没选中的字淡，悬停变亮，当前项最亮。每组左边一条 1px 虚线从组顶走到当前项、用 6px 弯钩拐进去，悬停另一项时以淡色画一条到悬停项，切换时 200ms 滑过去。顶上过滤框（⌘K / Ctrl+K 聚焦，Enter 打开第一项，Esc 清空），底部淡出。照 rareui.com 组件站左栏（2026-11-17 实测），实现原创。件不管路由：链接给 href，当前项由调用方传。轨迹颜色走 --k-sidenav-trail，默认品牌橙。",
+      "files": [
+        {
+          "path": "src/patterns/side-nav.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/patterns/side-nav.tsx"
         }
       ]
     },

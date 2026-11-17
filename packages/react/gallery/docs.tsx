@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
-import { useEffect, useSyncExternalStore } from 'react'
-import { CodeBlock, ToggleGroup, ToggleGroupItem } from '../src/index'
+import { useEffect, useState, useSyncExternalStore } from 'react'
+import { CodeBlock, SideNav, ToggleGroup, ToggleGroupItem, type SideNavGroup } from '../src/index'
 import { CopyButton } from './CopyButton'
 import { CoveragePage } from './coverage'
 import { RENDERING_ID, RenderingPage } from './rendering'
@@ -169,6 +169,66 @@ function DocBody({ page }: { page: DocPage }) {
   )
 }
 
+/** 左栏目录：基础 → 各组组件 → 文档 → 总览；组件页的名字用页标题（英文名 + 中文名），按 id 与标题都能搜到。 */
+const navGroups: readonly SideNavGroup[] = [
+  {
+    id: 'foundations',
+    title: '基础',
+    items: FOUNDATION_PAGES.map((item) => ({
+      id: item.id,
+      label: item.title,
+      href: `#/${item.id}`,
+      keywords: item.id,
+    })),
+  },
+  ...GROUPS.map((group) => ({
+    id: group.id,
+    title: group.title,
+    items: PAGES.filter((item) => item.group === group.id).map((item) => {
+      const [name, ...rest] = item.title.split(' ')
+      return {
+        id: item.id,
+        label: (
+          <>
+            {name}
+            {rest.length > 0 ? <span className="gal-nav-cn"> {rest.join(' ').replace(/（[^）]*）/g, '')}</span> : null}
+          </>
+        ),
+        href: `#/${item.id}`,
+        keywords: `${item.id} ${item.title}`,
+      }
+    }),
+  })).filter((group) => group.items.length > 0),
+  ...GUIDE_GROUPS.map((group) => ({
+    id: group.id,
+    title: group.title,
+    items: GUIDES.filter((guide) => guide.group === group.id).map((guide) => ({
+      id: guide.slug,
+      label: guide.title,
+      href: `#/${guide.slug}`,
+      keywords: guide.path,
+      title: guide.path,
+    })),
+  })),
+  {
+    id: 'overview',
+    title: '总览',
+    items: [
+      { id: COVERAGE_ID, label: '设计稿覆盖表', href: `#/${COVERAGE_ID}`, keywords: COVERAGE_ID },
+      { id: RENDERING_ID, label: '渲染设置', href: `#/${RENDERING_ID}`, keywords: RENDERING_ID },
+    ],
+  },
+]
+
+function PanelIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <rect x="2" y="2.5" width="12" height="11" rx="2.5" stroke="currentColor" />
+      <path d="M6 2.5v11" stroke="currentColor" />
+    </svg>
+  )
+}
+
 export function Docs({ theme, onTheme }: { theme: ThemeName; onTheme: (theme: ThemeName) => void }) {
   const id = useSyncExternalStore(subscribe, currentId)
   const page = pageById(id)
@@ -181,74 +241,44 @@ export function Docs({ theme, onTheme }: { theme: ThemeName; onTheme: (theme: Th
   const onRendering = id === RENDERING_ID
   const onFoundation = isFoundation(id)
   const onGuide = guideBySlug(id) !== undefined
+  const [navOpen, setNavOpen] = useState(true)
+  const currentNav = onCoverage || onRendering || onFoundation || onGuide ? id : shown?.id
   return (
     <div className="gal-shell" data-gallery-theme={theme}>
-      <nav className="gal-nav" aria-label="组件">
-        <a className="gal-brand" href={`#/${PAGES[0].id}`}>
-          @katana-ui/react
-        </a>
-        <section>
-          <h2>基础</h2>
-          <ul>
-            {FOUNDATION_PAGES.map((item) => (
-              <li key={item.id}>
-                <a href={`#/${item.id}`} aria-current={item.id === id ? 'page' : undefined}>
-                  {item.id}
+      {navOpen ? (
+        <aside className="gal-side">
+          <SideNav
+            aria-label="文档目录"
+            groups={navGroups}
+            current={currentNav}
+            searchLabel="搜索组件与文档"
+            emptyLabel="没有匹配的页"
+            header={
+              <div className="gal-side-head">
+                <button
+                  type="button"
+                  className="gal-side-toggle"
+                  onClick={() => setNavOpen(false)}
+                  aria-label="收起目录"
+                >
+                  <PanelIcon />
+                </button>
+                <a className="gal-crumb" href={`#/${PAGES[0].id}`}>
+                  <span className="gal-crumb-dot" aria-hidden="true" />
+                  KatanaUI <span className="gal-crumb-sep">/</span> <b>组件</b>
                 </a>
-              </li>
-            ))}
-          </ul>
-        </section>
-        {GROUPS.map((group) => {
-          const pages = PAGES.filter((item) => item.group === group.id)
-          if (pages.length === 0) return null
-          return (
-            <section key={group.id}>
-              <h2>{group.title}</h2>
-              <ul>
-                {pages.map((item) => (
-                  <li key={item.id}>
-                    <a href={`#/${item.id}`} aria-current={item.id === shown?.id ? 'page' : undefined}>
-                      {item.id}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </section>
-          )
-        })}
-        {GUIDE_GROUPS.map((group) => (
-          <section key={group.id}>
-            <h2>{group.title}</h2>
-            <ul>
-              {GUIDES.filter((guide) => guide.group === group.id).map((guide) => (
-                <li key={guide.slug}>
-                  <a href={`#/${guide.slug}`} aria-current={guide.slug === id ? 'page' : undefined} title={guide.path}>
-                    {guide.title}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </section>
-        ))}
-        <section>
-          <h2>总览</h2>
-          <ul>
-            <li>
-              <a href={`#/${COVERAGE_ID}`} aria-current={onCoverage ? 'page' : undefined}>
-                {COVERAGE_ID}
-              </a>
-            </li>
-            <li>
-              <a href={`#/${RENDERING_ID}`} aria-current={onRendering ? 'page' : undefined}>
-                {RENDERING_ID}
-              </a>
-            </li>
-          </ul>
-        </section>
-      </nav>
+              </div>
+            }
+          />
+        </aside>
+      ) : null}
       <div className="gal-main">
         <div className="gal-bar">
+          {navOpen ? null : (
+            <button type="button" className="gal-side-toggle" onClick={() => setNavOpen(true)} aria-label="展开目录">
+              <PanelIcon />
+            </button>
+          )}
           <span>组件文档 · 演示数据</span>
           <ToggleGroup
             variant="sm"

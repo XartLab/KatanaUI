@@ -2,6 +2,7 @@
 import type { ComponentType } from 'react'
 import { NewsReaderDemo, ScreenerDemo } from './pages/screener.tsx'
 import { RenderingSettingsDemo } from './rendering.tsx'
+import { SideNavUsage } from './usage/SideNavUsage.tsx'
 import { DateTimeInputDemo, NumberInputDemo, SkeletonDemo } from './pages/fields.tsx'
 import {
   BadgeDemo,
@@ -188,6 +189,7 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'news-feed': NewsFeedDemo,
   'filter-bar': ScreenerDemo,
   'rendering-settings': RenderingSettingsDemo,
+  'side-nav': SideNavUsage,
   'column-set-tabs': ScreenerDemo,
   'news-reader': NewsReaderDemo,
   'strategy-report': StrategyReportDemo,

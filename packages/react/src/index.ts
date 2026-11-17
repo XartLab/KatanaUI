@@ -152,6 +152,7 @@ export {
   type FontOption,
   type FontRole,
 } from './patterns/font-catalog.ts'
+export { SideNav, type SideNavGroup, type SideNavItem, type SideNavProps } from './patterns/side-nav.tsx'
 export { ViewSwitcher, type ViewOption, type ViewSwitcherProps } from './patterns/view-switcher.tsx'
 export {
   applyFilters,

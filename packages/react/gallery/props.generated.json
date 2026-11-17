@@ -16597,6 +16597,162 @@
       "source": "src/blocks/strategy-report/strategy-report-model.ts",
       "props": []
     },
+    "SideNav": {
+      "kind": "component",
+      "source": "src/patterns/side-nav.tsx",
+      "props": [
+        {
+          "name": "groups",
+          "type": "readonly SideNavGroup[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "current",
+          "type": "string",
+          "required": false,
+          "description": "当前项的 id。"
+        },
+        {
+          "name": "header",
+          "type": "ReactNode",
+          "required": false,
+          "description": "顶部（品牌、面包屑、收起按钮等）。"
+        },
+        {
+          "name": "footer",
+          "type": "ReactNode",
+          "required": false,
+          "description": "底部（版本、链接等）。"
+        },
+        {
+          "name": "searchLabel",
+          "type": "string",
+          "required": false,
+          "description": "搜索框的占位与读屏名；不给就不显示搜索框。"
+        },
+        {
+          "name": "emptyLabel",
+          "type": "string",
+          "required": false,
+          "description": "搜索没有结果时的文字。"
+        },
+        {
+          "name": "aria-label",
+          "type": "string",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "SideNavGroup": {
+      "kind": "type",
+      "source": "src/patterns/side-nav.tsx",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "title",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "items",
+          "type": "readonly SideNavItem[]",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "SideNavItem": {
+      "kind": "type",
+      "source": "src/patterns/side-nav.tsx",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "label",
+          "type": "ReactNode",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "href",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "keywords",
+          "type": "string",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "title",
+          "type": "string",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "SideNavProps": {
+      "kind": "type",
+      "source": "src/patterns/side-nav.tsx",
+      "props": [
+        {
+          "name": "groups",
+          "type": "readonly SideNavGroup[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "current",
+          "type": "string",
+          "required": false,
+          "description": "当前项的 id。"
+        },
+        {
+          "name": "header",
+          "type": "ReactNode",
+          "required": false,
+          "description": "顶部（品牌、面包屑、收起按钮等）。"
+        },
+        {
+          "name": "footer",
+          "type": "ReactNode",
+          "required": false,
+          "description": "底部（版本、链接等）。"
+        },
+        {
+          "name": "searchLabel",
+          "type": "string",
+          "required": false,
+          "description": "搜索框的占位与读屏名；不给就不显示搜索框。"
+        },
+        {
+          "name": "emptyLabel",
+          "type": "string",
+          "required": false,
+          "description": "搜索没有结果时的文字。"
+        },
+        {
+          "name": "aria-label",
+          "type": "string",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
     "SizeFormat": {
       "kind": "type",
       "source": "src/quant/format/quantity.ts",

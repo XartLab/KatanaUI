@@ -9063,6 +9063,197 @@ button.k-quote-card.is-link:focus-visible {
   color: var(--ink-400);
 }
 
+.k-sidenav {
+  --k-sidenav-trail: var(--accent);
+  height: 100%;
+  min-height: 0;
+  color: var(--ink-100);
+  flex-direction: column;
+  display: flex;
+}
+
+.k-sidenav-head {
+  padding: 0 4px 12px;
+}
+
+.k-sidenav-search {
+  margin: 0 4px 12px;
+  position: relative;
+}
+
+.k-sidenav-search input {
+  box-sizing: border-box;
+  border: 1px solid var(--alpha-white-8);
+  background: var(--alpha-white-2);
+  width: 100%;
+  height: 30px;
+  color: var(--ink-100);
+  font: var(--text-data) var(--font-sans);
+  border-radius: 8px;
+  outline: none;
+  padding: 0 40px 0 10px;
+}
+
+.k-sidenav-search input::placeholder {
+  color: var(--ink-400);
+}
+
+.k-sidenav-search input:focus-visible {
+  border-color: var(--alpha-white-13);
+  box-shadow: 0 0 0 2px var(--focus-ring);
+}
+
+.k-sidenav-search kbd {
+  background: var(--alpha-white-6);
+  color: var(--ink-300);
+  font: var(--text-micro) var(--font-sans-small);
+  pointer-events: none;
+  border-radius: 5px;
+  padding: 2px 5px;
+  position: absolute;
+  top: 50%;
+  right: 6px;
+  translate: 0 round(-50%, 1px);
+}
+
+.k-sidenav-scroll {
+  scrollbar-width: none;
+  flex-direction: column;
+  flex: 1;
+  gap: 20px;
+  min-height: 0;
+  padding: 0 4px 24px;
+  display: flex;
+  overflow-y: auto;
+  -webkit-mask-image: linear-gradient(var(--ds-c-yj0hg8) calc(100% - 48px), var(--ds-c-2xn4aw));
+  mask-image: linear-gradient(var(--ds-c-yj0hg8) calc(100% - 48px), var(--ds-c-2xn4aw));
+}
+
+.k-sidenav-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.k-sidenav-title {
+  color: var(--ink-100);
+  margin: 0 0 6px;
+}
+
+@supports (color: color-mix(in lab, red, red)) {
+  .k-sidenav-title {
+    color: var(--ds-c-iamwm4);
+  }
+}
+
+.k-sidenav-title {
+  font: 600 11px/16px var(--font-sans-small);
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+
+.k-sidenav-items {
+  position: relative;
+}
+
+.k-sidenav-list {
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+}
+
+.k-sidenav-link {
+  color: var(--ink-100);
+  border-radius: 8px;
+  padding: 6px 8px 6px 20px;
+  display: block;
+}
+
+@supports (color: color-mix(in lab, red, red)) {
+  .k-sidenav-link {
+    color: var(--ds-c-1n1hod9);
+  }
+}
+
+.k-sidenav-link {
+  font: calc(400 + var(--k-weight-adjust, 0)) round(nearest, calc(14px * var(--k-text-scale, 1)), 1px) / round(nearest, calc(20px * var(--k-text-scale, 1)), 1px) var(--font-sans);
+  text-decoration: none;
+  transition: color .2s;
+}
+
+.k-sidenav-link:hover {
+  color: var(--ink-100);
+}
+
+@supports (color: color-mix(in lab, red, red)) {
+  .k-sidenav-link:hover {
+    color: var(--ds-c-137tvog);
+  }
+}
+
+.k-sidenav-link[aria-current="page"] {
+  color: var(--ink-100);
+}
+
+.k-sidenav-link:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: -2px;
+}
+
+.k-sidenav-trail {
+  pointer-events: none;
+  transition: opacity .2s;
+  position: absolute;
+  inset: 0;
+}
+
+.k-sidenav-trail[data-kind="hover"] {
+  color: var(--ink-100);
+}
+
+@supports (color: color-mix(in lab, red, red)) {
+  .k-sidenav-trail[data-kind="hover"] {
+    color: var(--ds-c-1ckw6u3);
+  }
+}
+
+.k-sidenav-trail[data-kind="active"] {
+  color: var(--k-sidenav-trail);
+}
+
+.k-sidenav-line {
+  background-image: repeating-linear-gradient(to top, var(--ds-c-2xn4aw) 0 2px, currentColor 2px 4px);
+  width: 1px;
+  transition: height .2s;
+  position: absolute;
+  top: 0;
+  left: 2px;
+}
+
+.k-sidenav-hook {
+  transition: top .2s;
+  position: absolute;
+  left: 2px;
+}
+
+.k-sidenav-empty {
+  color: var(--ink-400);
+  font: var(--text-data) var(--font-sans);
+  margin: 0;
+  padding: 6px 8px;
+}
+
+.k-sidenav-foot {
+  padding: 12px 4px 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .k-sidenav-trail, .k-sidenav-line, .k-sidenav-hook, .k-sidenav-link {
+    transition: none;
+  }
+}
+
 .k-ck-grid {
   stroke: var(--chart-grid-color, var(--chart-grid));
   stroke-dasharray: var(--chart-grid-dash, none);
@@ -15436,6 +15627,10 @@ button.k-consensus-hash:focus-visible {
   --ds-c-12mkgp9: color-mix(in srgb, var(--pnl-up) 100%, var(--bg-000));
   --ds-c-nhksol: color-mix(in srgb, var(--pnl-down) 55%, var(--ink-300));
   --ds-c-1dit3qa: color-mix(in srgb, var(--pnl-up) 55%, var(--ink-300));
+  --ds-c-iamwm4: color-mix(in srgb, var(--ink-100) 40%, transparent);
+  --ds-c-1n1hod9: color-mix(in srgb, var(--ink-100) 50%, transparent);
+  --ds-c-137tvog: color-mix(in srgb, var(--ink-100) 80%, transparent);
+  --ds-c-1ckw6u3: color-mix(in srgb, var(--ink-100) 30%, transparent);
   --ds-c-1sas9o0: color-mix(in srgb, var(--ink-100) 8%, transparent);
   --ds-c-1liwpbi: color-mix(in srgb, var(--ink-100) 6%, transparent);
   --ds-c-3roitp: color-mix(in srgb, var(--pnl-down) 60%, transparent);
