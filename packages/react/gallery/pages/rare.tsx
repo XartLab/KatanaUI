@@ -15,10 +15,10 @@ import {
   StatusIcon,
   ToggleGroup,
   ToggleGroupItem,
-  type AiStatusState,
+  type AiStatusValue,
   type ArcadePixelAnimate,
   type OrbState,
-  type StatusIconStatus,
+  type StatusIconTone,
   useEnterMarks,
 } from '../../src/index'
 import { Cell, Row } from './parts'
@@ -150,33 +150,33 @@ export function NotificationBellDemo() {
   )
 }
 
-const STATUSES: readonly StatusIconStatus[] = ['success', 'error', 'warning', 'info', 'pending']
+const STATUS_TONES: readonly StatusIconTone[] = ['ok', 'danger', 'warn', 'info', 'neutral', 'pending']
 
 export function StatusIconDemo() {
-  const [status, setStatus] = useState<StatusIconStatus>('pending')
+  const [tone, setTone] = useState<StatusIconTone>('pending')
   return (
     <>
-      <Row name="五种">
-        {STATUSES.map((item) => (
+      <Row name="语气">
+        {STATUS_TONES.map((item) => (
           <Cell key={item} name={item}>
-            <StatusIcon status={item} label={`状态 ${item}`} />
+            <StatusIcon tone={item} label={`状态 ${item}`} />
           </Cell>
         ))}
       </Row>
       <Row name="换状态">
         <div data-gallery-status>
-          <StatusIcon status={status} label={`当前 ${status}`} />
+          <StatusIcon tone={tone} label={`当前 ${tone}`} />
         </div>
-        <Button onClick={() => setStatus('pending')}>进行中</Button>
-        <Button onClick={() => setStatus('success')}>成功</Button>
-        <Button onClick={() => setStatus('error')}>失败</Button>
+        <Button onClick={() => setTone('pending')}>进行中</Button>
+        <Button onClick={() => setTone('ok')}>成功</Button>
+        <Button onClick={() => setTone('danger')}>失败</Button>
       </Row>
       <p className="gal-note">对勾与叉一笔一笔画出来；进行中的弧先退出，结果图标再弹入。</p>
     </>
   )
 }
 
-const AI_STATES: readonly { state: AiStatusState; label: string }[] = [
+const AI_STATES: readonly { state: AiStatusValue; label: string }[] = [
   { state: 'thinking', label: '思考中' },
   { state: 'searching', label: '检索中' },
   { state: 'writing', label: '编写中' },
@@ -185,7 +185,7 @@ const AI_STATES: readonly { state: AiStatusState; label: string }[] = [
 ]
 
 export function AiStatusDemo() {
-  const [state, setState] = useState<AiStatusState>('thinking')
+  const [state, setState] = useState<AiStatusValue>('thinking')
   const [elapsed, setElapsed] = useState(0)
   const active = state === 'thinking' || state === 'searching' || state === 'writing'
   useEffect(() => {
@@ -198,7 +198,7 @@ export function AiStatusDemo() {
     <>
       <Row name="当前">
         <AiStatus
-          state={state}
+          status={state}
           label={current.label}
           detail={state === 'searching' ? 'docs/product/README.md' : undefined}
           elapsed={elapsed}
@@ -219,7 +219,7 @@ export function AiStatusDemo() {
       </Row>
       <Row name="五种">
         {AI_STATES.map((item) => (
-          <AiStatus key={item.state} state={item.state} label={item.label} />
+          <AiStatus key={item.state} status={item.state} label={item.label} />
         ))}
       </Row>
       <p className="gal-note">进行中的文字有流光，结束就停；换状态时图标缩放着换、文字上下滑着换，整行宽度弹簧伸缩。</p>
@@ -243,7 +243,7 @@ export function MatrixOrbDemo() {
     <>
       <Row name="可切换">
         <div data-gallery-orb>
-          <MatrixOrb state={state} level={state === 'listening' ? level : undefined} label={`状态球：${state}`} />
+          <MatrixOrb status={state} level={state === 'listening' ? level : undefined} label={`状态球：${state}`} />
         </div>
         <ToggleGroup
           size="sm"
@@ -274,7 +274,7 @@ export function MatrixOrbDemo() {
       <Row name="三种">
         {ORB_STATES.map((item) => (
           <Cell key={item.state} name={item.label}>
-            <MatrixOrb state={item.state} label={`状态球：${item.label}`} cells={12} />
+            <MatrixOrb status={item.state} label={`状态球：${item.label}`} cells={12} />
           </Cell>
         ))}
       </Row>
@@ -296,15 +296,16 @@ export function ArcadePixelDemo() {
           <ArcadePixel text="KATANA" pixelSize={6} />
         </div>
         <ArcadePixel text="READY 01" pixelSize={4} />
-        <ArcadePixel text="GAME OVER" pixelSize={4} palette={['transparent', 'var(--ink-100)']} />
+        <ArcadePixel text="GAME OVER" pixelSize={4} palette={['transparent', 'var(--k-content-primary-foreground)']} />
       </Row>
       <Row name="精灵">
         {Object.entries(ARCADE_SPRITES).map(([name, sprite]) => (
           <Cell key={name} name={name}>
             <ArcadePixel
               sprite={sprite}
+              label={name}
               pixelSize={5}
-              palette={['transparent', 'var(--signal-orange)', 'var(--ink-100)']}
+              palette={['transparent', 'var(--accent)', 'var(--k-content-primary-foreground)']}
             />
           </Cell>
         ))}

@@ -11,7 +11,7 @@ export const KatanaAiStatusApi = {
   name: 'KatanaAiStatus',
   schema: z
     .object({
-      state: z
+      status: z
         .enum(['thinking', 'searching', 'writing', 'done', 'error'])
         .or(CommonSchemas.DataBinding)
         .describe(
@@ -20,20 +20,20 @@ export const KatanaAiStatusApi = {
       label: CommonSchemas.DynamicString.describe('The status text, for example "Reading the filing".'),
       detail: CommonSchemas.DynamicString.describe('A second, quieter line of detail.').optional(),
       elapsed: CommonSchemas.DynamicNumber.describe(
-        'Seconds since the step began; shown only while the state is active.',
+        'Seconds since the step began; shown only while the status is in progress.',
       ).optional(),
       weight: weightSchema,
     })
     .strict(),
 } satisfies ComponentApi
 
-const STATES = ['thinking', 'searching', 'writing', 'done', 'error'] as const
+const STATUSES = ['thinking', 'searching', 'writing', 'done', 'error'] as const
 
 export const KatanaAiStatus = createComponentImplementation(KatanaAiStatusApi, ({ props }) => {
-  const state = STATES.find((item) => item === props.state) ?? 'thinking'
+  const status = STATUSES.find((item) => item === props.status) ?? 'thinking'
   return (
     <Cell weight={props.weight}>
-      <AiStatus state={state} label={props.label ?? ''} detail={props.detail} elapsed={props.elapsed} />
+      <AiStatus status={status} label={props.label ?? ''} detail={props.detail} elapsed={props.elapsed} />
     </Cell>
   )
 })

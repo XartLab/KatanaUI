@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: MIT */
-/* EmptyState、EstimateBadge、Toolbar 的皮肤（blocks，#1869）。规则从应用 styles/panel.css 的 .kc-panel-state*、.kc-rt-estimate、
+/* EmptyState、Toolbar 的皮肤（blocks，#1869）。规则从应用 styles/panel.css 的 .kc-panel-state*、.kc-rt-estimate、
    .kc-toolbar*、.kc-tool* 搬来，换成 .k-*，值没改。 */
 .k-empty {
   display: flex;
@@ -16,7 +16,7 @@
   font: var(--text-tag-md) var(--font-num);
   font-weight: 400;
   letter-spacing: var(--text-tag-md-tracking);
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   text-transform: uppercase;
 }
 .k-empty-title {
@@ -27,7 +27,7 @@
   text-wrap: balance;
 }
 .k-empty-text {
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   font-size: var(--text-data-size);
 }
 .k-empty-text p {
@@ -40,17 +40,7 @@
   gap: var(--space-2);
   margin-top: var(--space-1);
 }
-/* 估算标记：琥珀色描边的小字，和警示文字同一种颜色 */
-.k-estimate {
-  display: inline-block;
-  padding: 0 6px;
-  color: var(--signal-amber);
-  border: 1px solid currentColor;
-  border-radius: var(--radius-sm);
-  font: var(--text-caption) var(--font-sans-small);
-  font-weight: 500;
-  white-space: nowrap;
-}
+/* 估算标记（EstimateBadge）的样子在 Tag（theme/tag.css：md 档、warn、描边），这里不再单写。 */
 
 /* 工具条：一行，左组 + 右组 */
 .k-toolbar {

@@ -58,6 +58,37 @@ export function ToastDemo() {
           </Toast>
         </div>
       </Row>
+      <Row name="语气">
+        <div style={{ width: 340, display: 'grid', gap: 8 }} data-gallery-toast-tones>
+          <Toast tone="ok" data-testid="toast-ok">
+            <ToastContent>
+              <ToastIcon />
+              <ToastText>
+                <ToastTitle>委托已成交</ToastTitle>
+                <ToastDescription>ACME 买入 100 股（示例）</ToastDescription>
+              </ToastText>
+            </ToastContent>
+          </Toast>
+          <Toast tone="warn" data-testid="toast-warn">
+            <ToastContent>
+              <ToastIcon />
+              <ToastText>
+                <ToastTitle>行情延迟</ToastTitle>
+                <ToastDescription>落后 5 分钟（示例）</ToastDescription>
+              </ToastText>
+            </ToastContent>
+          </Toast>
+          <Toast tone="danger" data-testid="toast-danger">
+            <ToastContent>
+              <ToastIcon />
+              <ToastText>
+                <ToastTitle>下单被拒</ToastTitle>
+                <ToastDescription>可用保证金不足（示例）</ToastDescription>
+              </ToastText>
+            </ToastContent>
+          </Toast>
+        </div>
+      </Row>
       <Row name="弹出">
         <Button onClick={add}>弹一条提示</Button>
         <p className="gal-note">提示叠在窗口右下角；两条以上多出「全部关掉」。收起走过渡，播完才摘节点。</p>

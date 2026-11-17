@@ -47,7 +47,7 @@ import { SideNavUsage } from './usage/SideNavUsage.tsx'
 import { LiveUsage } from './usage/LiveUsage.tsx'
 import { TextMeasureUsage } from './usage/TextMeasureUsage.tsx'
 import { MeasuredSkeletonUsage } from './usage/MeasuredSkeletonUsage.tsx'
-import { DateTimeInputDemo, NumberInputDemo, SkeletonDemo } from './pages/fields.tsx'
+import { DateTimeInputDemo, LoadingDemo, NumberInputDemo, SkeletonDemo } from './pages/fields.tsx'
 import {
   BadgeDemo,
   DotMatrixDemo,
@@ -56,6 +56,7 @@ import {
   LedDemo,
   RollingTextDemo,
   SymbolMarkDemo,
+  TagDemo,
 } from './pages/readouts.tsx'
 import { ContextMenuOpen, DialogOpen, DropdownMenuOpen, PopoverOpen, SelectOpen, TooltipOpen } from './pages/open.tsx'
 import {
@@ -273,6 +274,7 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'gravity-letters': GravityLettersDemo,
   'ransom-note': RansomNoteDemo,
   badge: BadgeDemo,
+  tag: TagDemo,
   kbd: KbdDemo,
   'shortcut-recorder': ShortcutRecorderDemo,
   'symbol-mark': SymbolMarkDemo,
@@ -280,6 +282,7 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'date-time-input': DateTimeInputDemo,
   'date-range-picker': DateRangePickerDemo,
   skeleton: SkeletonDemo,
+  loading: LoadingDemo,
   'measured-skeleton': MeasuredSkeletonUsage,
   toast: ToastDemo,
   alert: AlertDemo,

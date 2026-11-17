@@ -26,8 +26,15 @@ export const KatanaCodeBlockApi = {
         .describe('Line numbers (starting at 1) to highlight.')
         .optional(),
       showCopyButton: z.boolean().default(true).describe('Whether to show the copy button.').optional(),
-      copyLabel: CommonSchemas.DynamicString.describe('Accessible name of the copy button.'),
-      copiedLabel: CommonSchemas.DynamicString.describe('Accessible name of the copy button right after copying.'),
+      labels: z
+        .object({
+          copy: z.string().min(1).describe('Accessible name of the copy button.'),
+          copied: z.string().min(1).describe('Accessible name of the copy button right after copying.'),
+        })
+        .strict()
+        .describe(
+          'Both accessible names, required: the component carries no wording. Write them in the language of the user.',
+        ),
       weight: weightSchema,
     })
     .strict(),
@@ -42,8 +49,7 @@ export const KatanaCodeBlock = createComponentImplementation(KatanaCodeBlockApi,
       showLineNumbers={props.showLineNumbers}
       highlightLines={props.highlightLines}
       showCopyButton={props.showCopyButton}
-      copyLabel={props.copyLabel ?? ''}
-      copiedLabel={props.copiedLabel ?? ''}
+      labels={props.labels}
     />
   </Cell>
 ))

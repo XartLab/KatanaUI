@@ -38,19 +38,26 @@ describe('NotificationBell', () => {
 
 describe('StatusIcon', () => {
   it('有名字时是 role=img；名字是空串时当装饰对读屏隐藏', () => {
-    const named = renderToStaticMarkup(<StatusIcon status="success" label="成功" />)
+    const named = renderToStaticMarkup(<StatusIcon tone="ok" label="成功" />)
     expect(named).toContain('role="img"')
     expect(named).toContain('aria-label="成功"')
-    const decorative = renderToStaticMarkup(<StatusIcon status="warning" label="" />)
+    const decorative = renderToStaticMarkup(<StatusIcon tone="warn" label="" />)
     expect(decorative).not.toContain('role="img"')
     expect(decorative).toContain('aria-hidden="true"')
   })
 
-  it('五种状态各有颜色类', () => {
-    const tones = (['success', 'error', 'warning', 'info', 'pending'] as const).map(
-      (status) => renderToStaticMarkup(<StatusIcon status={status} label={status} />).match(/text-[^ "]+/)?.[0],
+  it('六种语气各有颜色类，颜色只读 --k-status-* 与 --k-content-*', () => {
+    const tones = (['ok', 'danger', 'warn', 'info', 'neutral', 'pending'] as const).map(
+      (tone) => renderToStaticMarkup(<StatusIcon tone={tone} label={tone} />).match(/text-[^ "]+/)?.[0],
     )
-    expect(new Set(tones).size).toBe(5)
+    expect(new Set(tones).size).toBe(6)
+    for (const cls of tones) expect(cls).toMatch(/--k-(status|content)-/)
+  })
+
+  it('旧的 status 仍可用（@deprecated）：success → ok、error → danger、warning → warn', () => {
+    expect(renderToStaticMarkup(<StatusIcon status="success" label="a" />)).toContain('data-tone="ok"')
+    expect(renderToStaticMarkup(<StatusIcon status="error" label="a" />)).toContain('data-tone="danger"')
+    expect(renderToStaticMarkup(<StatusIcon status="warning" label="a" />)).toContain('data-tone="warn"')
   })
 })
 
@@ -65,12 +72,12 @@ describe('AiStatus', () => {
   })
 
   it('进行中带流光与耗时，结束后都没有；整行是 role=status', () => {
-    const active = renderToStaticMarkup(<AiStatus state="thinking" label="思考" elapsed={12} />)
+    const active = renderToStaticMarkup(<AiStatus status="thinking" label="思考" elapsed={12} />)
     expect(active).toContain('role="status"')
     expect(active).toContain('k-ai-shimmer')
     expect(active).toContain('12s')
     expect(active).toContain('data-active')
-    const done = renderToStaticMarkup(<AiStatus state="done" label="完成" elapsed={12} />)
+    const done = renderToStaticMarkup(<AiStatus status="done" label="完成" elapsed={12} />)
     expect(done).not.toContain('k-ai-shimmer')
     expect(done).not.toContain('12s')
     expect(done).not.toContain('data-active')
@@ -117,7 +124,7 @@ describe('MatrixOrb 的亮度公式', () => {
   })
 
   it('画布是 role=img，名字由调用方给，状态写在 data-state，边长 = 点数 × 点距 6', () => {
-    const html = renderToStaticMarkup(<MatrixOrb state="thinking" label="状态球" cells={10} />)
+    const html = renderToStaticMarkup(<MatrixOrb status="thinking" label="状态球" cells={10} />)
     expect(html).toContain('role="img"')
     expect(html).toContain('aria-label="状态球"')
     expect(html).toContain('data-state="thinking"')

@@ -2,5 +2,5 @@
 import { MatrixOrb } from '../../src/index'
 
 export function MatrixOrbUsage() {
-  return <MatrixOrb state="idle" label="Assistant" />
+  return <MatrixOrb status="idle" label="Assistant" />
 }

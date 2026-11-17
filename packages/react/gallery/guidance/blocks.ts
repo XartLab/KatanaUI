@@ -59,7 +59,7 @@ const blocks: GuidanceMap = {
   'empty-state': {
     aliases: ['Zero state', 'Blank slate', 'No data', 'Placeholder'],
     use: ['面板里没有连接、没选品种或没有数据时。', '空态要带一个下一步的动作，比如去连接。'],
-    avoid: ['数据在加载，用 skeleton。', '操作出错了，用 alert。'],
+    avoid: ['数据在加载，用 loading。', '操作出错了，用 alert。'],
     a11y: [
       '根节点是 role=status，出现时读屏会念标题与说明。',
       '标题是 h3，注意放进去后的标题层级。',
@@ -115,9 +115,9 @@ const blocks: GuidanceMap = {
   'estimate-badge': {
     aliases: ['Estimated tag', 'Approximation marker', 'Caveat label', 'Warning tag'],
     use: ['数值是按规则估出来的，不是真实成交，比如按 K 线估算。', '悬停要给出估算依据。'],
-    avoid: ['数据本身有问题，用 alert。', '一般的状态标签，用 badge。'],
+    avoid: ['数据本身有问题，用 alert。', '一般的状态标签，用 tag（它就是 Tag 的 warn 描边档）。'],
     a11y: [
-      '就是一个 span，读屏名是它的文字，没有额外角色。',
+      '就是一个 span（Tag），读屏名是它的文字，没有额外角色。',
       '依据放在 title 里，触屏与读屏未必读到；关键规则请同时写进正文。',
     ],
   },

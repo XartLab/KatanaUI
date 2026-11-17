@@ -136,8 +136,7 @@ function UsageSection({ page }: { page: DocPage }) {
           filename={`usage/${usageName(page.id)}.tsx`}
           showHeader={false}
           showCopyButton={false}
-          copyLabel="复制"
-          copiedLabel="已复制"
+          labels={{ copy: '复制', copied: '已复制' }}
         />
       </div>
     </section>

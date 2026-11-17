@@ -12,7 +12,8 @@
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `state` | `OrbState` | `'idle'` | The state; when it changes the weights of the patterns interpolate, with no jump. |
+| `status` | `OrbState` | — | What the agent is doing (a state machine, so status); when it changes the weights of the patterns interpolate, with no jump. |
+| `state` | `OrbState` | — | Old name kept for one release. |
 | `level` | `number` | — | Volume of the listening state from 0 to 1; a simulated envelope is used when omitted. |
 | `cells` | `number` | `16` | Dots per side; the pitch is 6px, so 16 is 96px square. |
 | `label` * | `string` | — | Accessible name (required). |
@@ -26,7 +27,7 @@
 import { MatrixOrb } from '@katana-ui/react'
 
 export function MatrixOrbUsage() {
-  return <MatrixOrb state="idle" label="Assistant" />
+  return <MatrixOrb status="idle" label="Assistant" />
 }
 ```
 
@@ -42,7 +43,7 @@ export function MatrixOrbUsage() {
 ## Don't
 
 - 只表达 Agent 真实在做的事，不当装饰。
-- label 要传（读屏名字）。
+- label 要传（读屏名字）；状态用 status 传（状态机，旧的 state 留一个版本）。
 
 ## Composition
 

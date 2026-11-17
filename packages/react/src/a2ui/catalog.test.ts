@@ -98,8 +98,12 @@ const EXAMPLES: Record<string, Record<string, unknown>> = {
       },
     ],
   },
-  KatanaAiStatus: { state: 'searching', label: 'Reading the filing', elapsed: 12 },
-  KatanaWebSearch: { sources: [{ id: 's1', site: 'Reuters', title: 'Headline' }], label: 'Searched 1 source' },
+  KatanaAiStatus: { status: 'searching', label: 'Reading the filing', elapsed: 12 },
+  KatanaWebSearch: {
+    sources: [{ id: 's1', site: 'Reuters', title: 'Headline' }],
+    label: 'Searched 1 source',
+    labels: { more: '{count} more', less: 'Show fewer' },
+  },
   KatanaAlert: { tone: 'warn', title: 'Stale data', description: 'The feed is 5 minutes behind.' },
   KatanaDataGrid: {
     label: 'Positions',
@@ -654,8 +658,7 @@ const EXAMPLES: Record<string, Record<string, unknown>> = {
     code: 'print(1)',
     language: 'python',
     highlightLines: [1],
-    copyLabel: 'Copy',
-    copiedLabel: 'Copied',
+    labels: { copy: 'Copy', copied: 'Copied' },
   },
   KatanaJsonViewer: {
     value: { '@path': '/raw' },
@@ -671,10 +674,10 @@ const EXAMPLES: Record<string, Record<string, unknown>> = {
     onSelect: { event: { name: 'command.select' } },
   },
   KatanaBadgeGroup: { items: [{ id: 'b1', label: 'S', text: 'Special treatment' }] },
-  KatanaLed: { state: 'ok', label: 'Market feed: connected', group: 'A' },
+  KatanaLed: { tone: 'ok', label: 'Market feed: connected', group: 'A' },
   KatanaLcd: { label: 'NET ASSET', value: '1,240.50', tone: 'up', note: 'USDT' },
   KatanaRollingText: { text: '1,240.50', value: 1240.5, animate: true },
-  KatanaStatusIcon: { status: 'success', label: 'Backtest finished' },
+  KatanaStatusIcon: { tone: 'ok', label: 'Backtest finished' },
   KatanaProgress: { label: 'Backtest progress', value: 40, max: 100, tone: 'ok' },
   KatanaMeter: {
     label: 'Exposure',
@@ -819,7 +822,7 @@ describe('A2UI 目录', () => {
     ).toBe(false)
     const { labels: _drop, ...noLabels } = EXAMPLES.KatanaDateTimeInput!
     expect(api('KatanaDateTimeInput').schema.safeParse(noLabels).success).toBe(false)
-    const { copyLabel: _copy, ...noCopy } = EXAMPLES.KatanaCodeBlock!
+    const { labels: _copy, ...noCopy } = EXAMPLES.KatanaCodeBlock!
     expect(api('KatanaCodeBlock').schema.safeParse(noCopy).success).toBe(false)
   })
 })

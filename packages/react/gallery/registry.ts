@@ -677,7 +677,11 @@ export const PAGES: readonly DocPage[] = [
       { part: 'Led', note: '一个 role=img 的 span，名字是 label。' },
       { part: 'LINK_GROUPS', note: '联动组名的列表 A、B、C、D；组的颜色是 token link-a 到 link-d。' },
     ],
-    states: ['熄灭（默认）、on、ok、warn、danger；联动组按组色。', '空心、小号两种形态；无文字的灯必须带读屏名。'],
+    states: [
+      'tone（SeverityExt）：off / neutral 熄灭（默认），accent 亮强调色，ok、warn、danger 亮状态色；联动组按组色。旧的 state（on 等于 accent）留一个版本。',
+      '空心、小号两种形态；无文字的灯必须带读屏名。',
+      '状态变了在灯外闪一圈：变坏（warn、danger）用警示闪，变好用涨色闪。',
+    ],
     donts: [
       '不要拿它当装饰：只表达真实状态。',
       '不要单靠颜色说话，旁边要有文字或读屏名。',
@@ -693,11 +697,16 @@ export const PAGES: readonly DocPage[] = [
     title: 'Lcd 读数窗',
     summary: '点阵小标签在上、LCD 数字在中、一行灰色小字在下的读数窗；没有数据显示「—」。',
     exports: ['Lcd'],
-    propParts: [{ part: 'Lcd' }],
+    propParts: [
+      {
+        part: 'Lcd',
+        note: '数字由调用方格式化好传字符串，件不算；变了闪一下涨跌色（ReadoutFlash）。fill 撑满格子（KPI 行），inline 标签与数字同一行。',
+      },
+    ],
     states: [
       '有值：标签在上、数字在中、小字在下。',
       '没有数据：数字位置写「—」，不写 0。',
-      '色调：up、down、accent、warn，或不着色。',
+      'tone：neutral 不着色；ok、warn、danger 取 --k-status-*；up、down、flat 取 --k-tone-*（跟 data-updown 换红绿）；accent 是当前关注。',
     ],
     donts: ['不要在没有数据时写 0。', '不要在件里写死币种与位数，由调用方传。'],
     composition: 'Lcd',
@@ -718,8 +727,15 @@ export const PAGES: readonly DocPage[] = [
         note: '点的边长 4 与点距 6（像素），给要自己算对齐的图表用。',
       },
     ],
-    states: ['静态纹理：4px 实、2px 空；颜色默认取中性，可传 token。'],
-    donts: ['不要用它代替需要读数的实色块；它只给面（回撤面等）。'],
+    states: [
+      '静态纹理：4px 实、2px 空；颜色默认 --seq-300，可传 token。',
+      '每张图一个 id：同页两张图共用一个 id 时后一张会读到前一张的颜色。',
+    ],
+    donts: [
+      '不要用它代替需要读数的实色块；它只给面（回撤面等）。',
+      '不要传写死的颜色值：传 var(--token)，换主题才跟着换。',
+      '不要改点的大小与点距：4 / 6 是点阵签名，跟 MatrixOrb、Loading 骨架是同一套。',
+    ],
     composition: 'svg\n  defs\n    DotMatrix\n  rect (fill="url(#id)")',
     keys: [],
   },
@@ -748,7 +764,11 @@ export const PAGES: readonly DocPage[] = [
       'stagger：个位先转，十位、百位依次晚一拍。',
       'resize：位数变了（999 到 1,000），变了的位淡入并从涨跌方向滑一小段。',
     ],
-    donts: ['值没变时不要滚；价格、盈亏的变化只用它给的一次闪，不再加别的动效。'],
+    donts: [
+      '值没变时不要滚；价格、盈亏的变化只用它给的一次闪，不再加别的动效。',
+      '十字线在看历史时传 animate=false：回看的数不是新到的，不滚不闪。',
+      '不要把千分位、小数位交给它算：text 由调用方格式化好，value 只用来判涨跌方向。',
+    ],
     composition: 'RollingText',
     keys: [],
   },
@@ -762,12 +782,47 @@ export const PAGES: readonly DocPage[] = [
     propParts: [
       {
         part: 'BadgeGroup',
-        note: '没有徽标时什么都不画。每个徽标是一个 role=img，名字是全称，读屏读「科创板：涨跌幅 20%」。',
+        note: '没有徽标时什么都不画。每个徽标是一个 Tag（sm 档）、role=img，名字是全称，读屏读「科创板：涨跌幅 20%」。风险标记给 tone（warn、danger）。',
       },
     ],
-    states: ['次要文字色的上标小字；悬停写全称。'],
-    donts: ['不要用它放必须读的信息：它在品种名旁边，是次要的。'],
-    composition: 'BadgeGroup',
+    states: [
+      'Tag 的 sm 档：micro 小字、行高 1、一块 neutral 的浅底，贴在品种名右上；悬停写全称，指针是 help。',
+      '风险标记：item.tone 给 warn 或 danger，字与底换成状态色。',
+      '没有徽标：什么都不画（不留空位）。',
+    ],
+    donts: [
+      '不要用它放必须读的信息：它在品种名旁边，是次要的。',
+      '上标只放一个字：全称写在 text 里（读屏名与悬停）。',
+      '不要自己再画一种徽标：行内标记用 Tag，品种名后的上标用 BadgeGroup。',
+    ],
+    composition: 'BadgeGroup\n  Tag（sm）× n',
+    keys: [],
+  },
+  {
+    id: 'tag',
+    group: 'readouts',
+    cardHeight: 150,
+    title: 'Tag 小标签',
+    summary:
+      '小标签的底座：语气（Severity：neutral、ok、warn、danger）× 尺寸（sm、md）× 填充或描边。BadgeGroup 的上标徽标、EstimateBadge 的估算标记都是它；颜色只读 --k-status-*。',
+    exports: ['Tag'],
+    propParts: [
+      {
+        part: 'Tag',
+        note: '其余属性透传给 span。填充：字取 foreground、底取 background；outlined：底透明、1px 边取字色。sm 是 micro 字号、行高 1，md 是 caption 500。',
+      },
+    ],
+    states: [
+      'neutral（默认）、ok、warn、danger 四种语气。',
+      '填充（默认）或描边（outlined）。',
+      'sm：品种名后的上标；md：行内标记。',
+    ],
+    donts: [
+      '不要只靠颜色说语气：字本身要说清（「估算」「停牌」）。',
+      '不要拿它做按钮或可删的筛选项：它不可交互，可点的用 Button、可删的用 ChipGroup。',
+      '不要写死颜色：只有四种语气，要别的颜色说明语气不对。',
+    ],
+    composition: 'Tag（span）',
     keys: [],
   },
   {
@@ -778,8 +833,12 @@ export const PAGES: readonly DocPage[] = [
     summary: '把一个快捷键组合画成一串小方块：20 高、圆角 4、6% 白底 12% 白边。',
     exports: ['Kbd'],
     propParts: [{ part: 'Kbd', note: '怎么把「Mod+Shift+H」拆成块、Mod 在这个平台叫什么，是调用方的事。' }],
-    states: ['一个组合画成一串小方块；单键与多键。'],
-    donts: ['不要把快捷键写成普通文字加方括号。'],
+    states: ['一个组合画成一串小方块；单键与多键。', '读屏读 label（整串，如「Ctrl+Shift+H」），不逐块读。'],
+    donts: [
+      '不要把快捷键写成普通文字加方括号。',
+      '不要在件里拆「Mod」：平台上叫 Ctrl 还是 ⌘ 由调用方定好再传 parts。',
+      '不要拿它画可点的按钮：它只是标注，按键录入用 ShortcutRecorder。',
+    ],
     composition: 'Kbd',
     keys: [],
   },
@@ -1008,27 +1067,52 @@ export const PAGES: readonly DocPage[] = [
     cardHeight: 554,
     title: 'Skeleton 加载骨架',
     summary:
-      '等数据的那一块：500ms 内到了什么也不画；超过了出点阵骨架，2s 说「仍在加载」，10s 转琥珀条加重试。不脉冲、不转圈。',
-    exports: ['Skeleton', 'Loading', 'LoadingBoundary', 'LoadingView'],
+      '骨架条本身：12 高的点阵圆角条（bg-200 底、line-200 边），第一行 40%、最后一行 70%、中间满宽；不脉冲、不转圈。什么时候出、出多久由 Loading 管。',
+    exports: ['Skeleton'],
     propParts: [
-      { part: 'Skeleton' },
+      {
+        part: 'Skeleton',
+        note: 'role=status、aria-busy；读屏读 label（必填）。rows 为真时每行占一个表格行高（--row-base），撑满面板主体用；一般经 Loading 用，不单摆。',
+      },
+    ],
+    states: [
+      'lines 行：第一行 40%、最后一行 70%、中间满宽；只有一行时 70%。',
+      'rows：每行占一个表格行高，行数由 Loading 量。',
+    ],
+    donts: ['不要脉冲、不要转圈。', '不要自己判断什么时候摆它：500ms 延迟与 2s / 10s 两段在 Loading 里。'],
+    composition: 'Skeleton（role=status）\n  span.sr-only（label）\n  span.k-loading-line × lines',
+    keys: [],
+  },
+  {
+    id: 'loading',
+    group: 'feedback',
+    cardHeight: 554,
+    title: 'Loading 加载态',
+    summary:
+      '加载态的唯一入口：给 pending 等数据，不给 pending 当 Suspense 边界，给 phase 钉在某一段直接画。500ms 内到了什么也不画；超过了出点阵骨架，2s 说「仍在加载」，10s 转琥珀条加重试。',
+    exports: ['Loading', 'LoadingBoundary', 'LoadingView'],
+    propParts: [
       {
         part: 'Loading',
-        note: 'pending 为真时 children 不挂载；骨架出过的内容用 2px 模糊揭示，没出过的直接出现。只管显示，不管取数。',
+        note: 'pending 为真时 children 不挂载；骨架出过的内容用 2px 模糊揭示，没出过的直接出现。只管显示，不管取数。文字全在 labels（LoadingLabels，原 texts）。',
       },
-      {
-        part: 'LoadingBoundary',
-        note: 'Suspense 的写法：等的是 React.lazy 或 use() 的 promise；属性同 Loading，没有 pending、source、header。',
-      },
-      { part: 'LoadingView', note: '只管画「在等」这一块，计时与量高度不在这里；通常不直接用。' },
+      { part: 'LoadingBoundary', note: '@deprecated：等于不给 pending 的 Loading（Suspense 边界），留一个版本。' },
+      { part: 'LoadingView', note: '@deprecated：等于给 phase 的 Loading（只画、不计时），留一个版本。' },
     ],
     states: [
       '500ms 内：什么也不画。',
-      '超过 500ms：点阵骨架；2s：说「仍在加载」；10s：琥珀条加重试。',
+      '超过 500ms：caption（亮强调色灯 +「加载 <内容> · <来源>」）加点阵骨架；2s：说「仍在加载」。',
+      '10s：琥珀条（warn 灯 + 文案 + 重试），骨架留着、降到半透明；没给 onRetry 就没有重试钮。',
       '数据到了：骨架出过的内容用 2px 模糊揭示，没出过的直接出现。',
     ],
-    donts: ['不要脉冲、不要转圈。', '表头与外框已知时保留，骨架只占内容区。'],
-    composition: 'Loading\n  LoadingWait（计时）\n    LoadingView\n      Led\n      Button（重试）\n      Skeleton',
+    donts: [
+      '不要脉冲、不要转圈。',
+      '表头与外框已知时保留（header），骨架只占内容区。',
+      '不要再拼 LoadingView / LoadingBoundary：一个 Loading 全包了，按 pending 与 phase 选用法。',
+      '错误文案每句不超过 12 字，先说怎么办（「点重试」），再说原因。',
+    ],
+    composition:
+      'Loading\n  LoadingWait（计时，内部）\n    caption：Led + 文案 / 琥珀条：Led + 文案 + Button（重试）\n    Skeleton',
     keys: [['Tab', '10 秒后的重试按钮可聚焦；Enter / Space 触发']],
   },
   {
@@ -1610,7 +1694,7 @@ export const PAGES: readonly DocPage[] = [
       },
       {
         part: 'Toast',
-        note: '其余属性透传给 div。过渡的起点与终点由 data-starting-style、data-ending-style 给（phase 换的）。',
+        note: '其余属性透传给 div。过渡的起点与终点由 data-starting-style、data-ending-style 给（phase 换的）。tone（Severity）定色条与图标的颜色，neutral 是主文字色色条加强调色图标。',
       },
       { part: 'ToastClose', note: '其余属性透传给 Button（icon 变体）。' },
       {
@@ -1622,9 +1706,11 @@ export const PAGES: readonly DocPage[] = [
       '进入：从边上平移加淡入（phase=entering 画一帧再切 open）。',
       '收起：反向平移淡出，播完（TOAST_EXIT_MS）调用方再摘节点。',
       '多条：按位置叠，两条以上出「全部关掉」。',
+      '语气：neutral（默认）、ok、warn、danger，色条与图标取 --k-status-*-foreground；说明文字是 ink-2（console 主题下 ink-3 不到 4.5:1）。',
     ],
     donts: [
       '不要把需要用户处理的事只放在弹出提示里，它会自己消失。',
+      '不要只靠色条说语气：标题里写明（「下单被拒」而不是「出错了」）。',
       '不要在包里写死文案，关闭名与「全部关掉」都由调用方传。',
       '不要自己再做一套计时与队列放进 Toast，那是调用方的事。',
     ],
@@ -2102,7 +2188,11 @@ export const PAGES: readonly DocPage[] = [
       { part: 'NotificationBell', note: '其余属性透传给 button。角标对读屏隐藏，数变了由名字（label）播报。' },
     ],
     states: ['0：角标收起。', '有未读：角标弹出，数字按增减方向滚。', '数变多：铃从顶端摆一下。'],
-    donts: ['铃是图标，label 必须传（读屏名字）。'],
+    donts: [
+      '铃是图标，label 必须传（读屏名字），而且要带未读数：数变了就换这个字符串。',
+      '不要拿角标数表示别的量（价格、进度）：它只表示未读条数，超过 max 写「99+」。',
+      '不需要数字的场合用 variant=dot，不要传 1 假装。',
+    ],
     composition: 'NotificationBell\n  svg（铃，转轴在上）\n  span（角标）\n  span（role=status 播报）',
     keys: [['Enter / Space', '点击（按钮）']],
   },
@@ -2114,10 +2204,18 @@ export const PAGES: readonly DocPage[] = [
     summary:
       '提示条里的成功、失败、警告、说明、进行中：换状态时旧的缩小退出、新的弹入，对勾与叉一笔一笔画出来。学自 rare-ui 的 toast。',
     exports: ['StatusIcon'],
-    propParts: [{ part: 'StatusIcon', note: '16 见方，role=img。应用的提示条（AlertToasts）用它表达成功与警告。' }],
-    states: ['成功、失败、警告、说明、进行中五种。', '换状态时旧的缩小退出、新的弹入，对勾与叉一笔一笔画出来。'],
+    propParts: [
+      {
+        part: 'StatusIcon',
+        note: '16 见方，role=img。tone：Severity（ok 对勾、warn 叹号、danger 叉、neutral 说明）加 info（蓝的说明）与 pending（转圈）；旧的 status（success / error / warning）留一个版本。',
+      },
+    ],
+    states: [
+      'ok、danger、warn、info、neutral、pending 六种，颜色取 --k-status-*；pending 是一圈匀速转的弧。',
+      '换状态时旧的缩小退出、新的弹入，对勾与叉一笔一笔画出来。',
+    ],
     donts: ['不要单靠图标说话：旁边要有文字。', 'label 必须传（读屏名字）。'],
-    composition: 'StatusIcon\n  svg（按 status 换，笔画画出来）',
+    composition: 'StatusIcon\n  svg（按 tone 换，笔画画出来）',
     keys: [],
   },
   {
@@ -2130,12 +2228,16 @@ export const PAGES: readonly DocPage[] = [
     exports: ['AiStatus'],
     propParts: [{ part: 'AiStatus', note: '整行是 role=status，状态变了读屏播报。' }],
     states: [
-      '按 state 换图标与文字；进行中带流光。',
+      '按 status（状态机：thinking、searching、writing、done、error）换图标与文字；进行中带流光。旧的 state 留一个版本。',
       '可带 detail 与耗时 elapsed。',
       '换状态时图标缩放、文字上下滑、整行宽度弹簧伸缩。',
     ],
-    donts: ['没有真实进展时不要显示进行中。'],
-    composition: 'AiStatus\n  span（图标，按 state 换）\n  span（文字，按 label 换）\n  span（细节）\n  span（耗时）',
+    donts: [
+      '没有真实进展时不要显示进行中。',
+      '状态变了要换 label：图标换了文字没换，读屏听不到。',
+      '不要给 done、error 传耗时：只在进行中显示，结束就收起。',
+    ],
+    composition: 'AiStatus\n  span（图标，按 status 换）\n  span（文字，按 label 换）\n  span（细节）\n  span（耗时）',
     keys: [],
   },
   {
@@ -2157,7 +2259,10 @@ export const PAGES: readonly DocPage[] = [
       '完成：亮而平，点变绿。',
       '出错：亮斑在原地乱跳，点变红。',
     ],
-    donts: ['只表达 Agent 真实在做的事，不当装饰。', 'label 要传（读屏名字）。'],
+    donts: [
+      '只表达 Agent 真实在做的事，不当装饰。',
+      'label 要传（读屏名字）；状态用 status 传（状态机，旧的 state 留一个版本）。',
+    ],
     composition: 'MatrixOrb\n  canvas（requestAnimationFrame 循环）',
     keys: [],
   },
@@ -2187,7 +2292,7 @@ export const PAGES: readonly DocPage[] = [
           {
             name: 'palette',
             type: 'string[]',
-            default: "['transparent', 'var(--signal-orange)']",
+            default: "['transparent', 'var(--accent)']",
             desc: '下标对应的颜色，CSS 颜色或 var(--token)；下标 0 是底。',
           },
           { name: 'pixelSize', type: 'number', default: '8', desc: '一个像素格的边长（CSS 像素）。' },
@@ -2209,6 +2314,11 @@ export const PAGES: readonly DocPage[] = [
           },
           { name: 'scanlines', type: 'boolean', default: 'false', desc: '缓慢上漂的扫描线。' },
           { name: 'crt', type: 'boolean', default: 'false', desc: '暗角、红蓝边色散、滚动亮带与轻微闪烁。' },
+          {
+            name: 'label',
+            type: 'string',
+            desc: '读屏名，不给用 text；纯精灵又没给就当装饰，整块对读屏隐藏（包里不带兜底文案）。',
+          },
         ],
       },
     ],
@@ -2221,6 +2331,7 @@ export const PAGES: readonly DocPage[] = [
       '没有中日韩字：5x7 字体只有拉丁字母、数字与几个标点，中文要用别的件。',
       '不要拿它画行情数字或价格；它是装饰与状态牌，读数用 Lcd。',
       '它不是可读的文本控件：文字在 sr-only 里，别指望复制画布上的字。',
+      '不要写死颜色：色板传 var(--token)；CRT 叠层的暗、亮、色散三色读 --lcd-bg / --lcd-fg / 状态色，可用 --arcade-* 覆盖。',
     ],
     composition: 'ArcadePixel\n  canvas（aria-hidden）\n  CRT 叠层（扫描线、暗角、色散、闪烁）\n  span.sr-only',
     keys: [],
@@ -3087,7 +3198,11 @@ export const PAGES: readonly DocPage[] = [
     exports: ['StepPlayer'],
     propParts: [{ part: 'StepPlayer', note: '值与播放状态都可受控，也可不受控。文字全由 labels 给，包里没有文案。' }],
     states: ['播放中：当前一步撑成长条，里面的填充随时间走。', '暂停、重放；可循环。', 'seekable 时可点圆点跳步。'],
-    donts: ['它是按时间走的演示进度，不要拿它表示真实任务进度。'],
+    donts: [
+      '它是按时间走的演示进度，不要拿它表示真实任务进度（用 Progress）。',
+      '尺寸只用 sm（24）与 md（32）：直接写像素数的旧写法留一个版本。',
+      '可跳时每个圆点都要有读屏名：步上写 label，或给 labels.step。',
+    ],
     composition:
       'StepPlayer\n  button（播放 / 暂停 / 重放，图标弹簧缩放着换）\n  div role=group（圆点条）\n    div（一步：长条 / 亮点 / 暗点）\n      button（可跳时的点击区）',
     keys: [
@@ -3133,8 +3248,16 @@ export const PAGES: readonly DocPage[] = [
         note: '认得 ts / tsx / js / json / py / sh / css；别的语言当纯文本。开头的空行与结尾的空白会去掉。',
       },
     ],
-    states: ['带文件名头、行号、复制钮；复制后钮上写 copiedLabel。', '可高亮指定的行。'],
-    donts: ['复制钮的文案由调用方传（copyLabel、copiedLabel）。'],
+    states: [
+      '带文件名头、行号、复制钮；复制后钮变对勾、读屏名换成 labels.copied，1.8 秒复原。',
+      '可高亮指定的行（强调色 12% 的底）。',
+      '没有头：复制钮浮在右上角。',
+    ],
+    donts: [
+      '复制钮的文案由调用方传（labels.copy、labels.copied；旧的 copyLabel / copiedLabel 留一个版本）。',
+      '注释不要用 ink-4：深底上不到 3:1，注释色是 ink-3 斜体。',
+      '不要拿它执行或渲染代码：代码只当文字画。',
+    ],
     composition:
       'CodeBlock\n  div（头：名字 + 复制钮）\n  div role=region（滚动区，可聚焦）\n    pre > 每行一个 div（行号 + token）',
     keys: [
@@ -3167,7 +3290,11 @@ export const PAGES: readonly DocPage[] = [
       '点开是一排来源卡片；「还有 N 条」展开全部。',
       '行内引用：悬停或键盘聚焦弹出预览。',
     ],
-    donts: ['不存也不开 URL：要打开来源由调用方在 onOpen 里处理。'],
+    donts: [
+      '不存也不开 URL：要打开来源由调用方在 onOpen 里处理。',
+      '「还有 N 条」「收起」由调用方传（labels.more / labels.less；旧的 moreLabel / lessLabel 留一个版本）。',
+      '不要去取网站图标：来源小标是站名首字母（micro 字号），不发网络请求。',
+    ],
     composition:
       'WebSearch\n  button（药丸：地球 + 文字 + 小标 + 箭头）\n  ol（来源卡片 / 骨架 / 更多 / 收起）\nWebSearchCitation\n  button（行内小标）\n  span role=tooltip（预览）',
     keys: [
@@ -3328,7 +3455,12 @@ export const PAGES: readonly DocPage[] = [
     title: 'EmptyState 空态',
     summary: '面板的「空」态：点阵小标签、一行标题、说明与动作。没有连接、没选品种、没有数据时摆它，不画假数据。',
     exports: ['EmptyState'],
-    propParts: [{ part: 'EmptyState' }],
+    propParts: [
+      {
+        part: 'EmptyState',
+        note: 'role=status；标题是 h3。点阵标签、说明、动作都可省；classNames 按部位挂额外的类。',
+      },
+    ],
     states: ['有操作：标题、说明下面带操作区。', '无操作：只有标题与说明。'],
     donts: ['不要拿空态当加载中；加载用 Loading。', '不要写没有下一步的空态说明。'],
     composition: 'EmptyState（role=status）\n  标签\n  标题（h3）\n  说明\n  动作',
@@ -3769,12 +3901,18 @@ export const PAGES: readonly DocPage[] = [
     group: 'blocks',
     cardHeight: 90,
     title: 'EstimateBadge 估算标记',
-    summary: '琥珀色描边的小字标记（例如「按 K 线估算」），悬停写规则摘要；字与规则由调用方传。',
+    summary:
+      '琥珀色描边的小字标记（例如「按 K 线估算」），悬停写规则摘要；字与规则由调用方传。是 Tag 的 warn、描边、md 档。',
     exports: ['EstimateBadge'],
-    propParts: [{ part: 'EstimateBadge' }],
-    states: ['只有一种样子：小标，悬停给出估算依据。'],
-    donts: ['不要在精确值上挂估算标记。', '不要省略 title 里的依据。'],
-    composition: 'EstimateBadge',
+    propParts: [
+      {
+        part: 'EstimateBadge',
+        note: '就是 <Tag tone="warn" outlined>：caption 500、左右 6px、1px 同色边、圆角 radius-sm。',
+      },
+    ],
+    states: ['只有一种样子：琥珀字、同色描边的小标。', '悬停：title 写估算依据（浏览器原生提示）。'],
+    donts: ['不要在精确值上挂估算标记。', '不要省略 title 里的依据。', '别的语气的行内标记直接用 Tag，不要拿它改色。'],
+    composition: 'EstimateBadge\n  Tag（warn · outlined · md）',
     keys: [],
   },
   {

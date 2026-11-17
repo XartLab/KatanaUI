@@ -7,17 +7,17 @@ import { z } from 'zod'
 import { StatusIcon } from '../../index.ts'
 import { Cell, weightSchema } from '../support.tsx'
 
-const STATUSES = ['success', 'error', 'warning', 'info', 'pending'] as const
+const TONES = ['ok', 'warn', 'danger', 'neutral', 'info', 'pending'] as const
 
 export const KatanaStatusIconApi = {
   name: 'KatanaStatusIcon',
   schema: z
     .object({
-      status: z
-        .enum(STATUSES)
+      tone: z
+        .enum(TONES)
         .or(CommonSchemas.DataBinding)
         .describe(
-          "The status. 'pending' is a spinning arc. May be bound to the data model so the icon changes as work finishes.",
+          "The tone: 'ok' is a check, 'danger' a cross, 'warn' an exclamation, 'info' and 'neutral' an i, 'pending' a spinning arc. May be bound to the data model so the icon changes as work finishes.",
         ),
       label: CommonSchemas.DynamicString.describe(
         'Accessible name stating the status. Send an empty string when text next to the icon already says it; the icon is then decorative.',
@@ -29,6 +29,6 @@ export const KatanaStatusIconApi = {
 
 export const KatanaStatusIcon = createComponentImplementation(KatanaStatusIconApi, ({ props }) => (
   <Cell weight={props.weight}>
-    <StatusIcon status={STATUSES.find((item) => item === props.status) ?? 'pending'} label={props.label ?? ''} />
+    <StatusIcon tone={TONES.find((item) => item === props.tone) ?? 'pending'} label={props.label ?? ''} />
   </Cell>
 ))

@@ -20,12 +20,12 @@ const RELEASE = 0.08
 
 /** 没传 color 时按状态取色：完成是绿、出错是红，其余是强调色（状态靠色相也读得出，不只靠动）。 */
 const STATE_COLOR: Readonly<Record<OrbState, string>> = {
-  idle: 'var(--signal-orange)',
-  listening: 'var(--signal-orange)',
-  thinking: 'var(--signal-orange)',
-  streaming: 'var(--signal-orange)',
-  done: 'var(--signal-green)',
-  error: 'var(--signal-red)',
+  idle: 'var(--accent)',
+  listening: 'var(--accent)',
+  thinking: 'var(--accent)',
+  streaming: 'var(--accent)',
+  done: 'var(--k-status-ok-foreground)',
+  error: 'var(--k-status-danger-foreground)',
 }
 
 const subscribeResize = (onChange: () => void) => {
@@ -35,7 +35,15 @@ const subscribeResize = (onChange: () => void) => {
 const readRatio = () => Math.min(window.devicePixelRatio || 1, 4)
 
 export type MatrixOrbProps = {
-  /** The state; when it changes the weights of the patterns interpolate, with no jump. */
+  /**
+   * What the agent is doing (a state machine, so status); when it changes the weights of the patterns interpolate, with no jump.
+   * 状态机（G3 起叫 status，体检 §4）：换状态时各图案的权重插值过去，不跳。默认 idle。
+   */
+  status?: OrbState
+  /**
+   * Old name kept for one release.
+   * @deprecated Use status.
+   */
   state?: OrbState
   /**
    * Volume of the listening state from 0 to 1; a simulated envelope is used when omitted.
@@ -61,7 +69,8 @@ export type MatrixOrbProps = {
   className?: string
 }
 
-export function MatrixOrb({ state = 'idle', level, cells = 16, label, color, className }: MatrixOrbProps) {
+export function MatrixOrb({ status, state: legacy, level, cells = 16, label, color, className }: MatrixOrbProps) {
+  const state: OrbState = status ?? legacy ?? 'idle'
   const canvas = useRef<HTMLCanvasElement>(null)
   const stateRef = useRef(state)
   const levelRef = useRef(level)
