@@ -18,7 +18,7 @@ export function PlotYAxis({ plot, format }: { plot: Plot; format: (value: number
   return (
     <>
       {plot.ticks.map((tick) => (
-        <span key={tick.value} className="k-ck-ytick" data-slot="plot-ytick" style={{ top: tick.y }}>
+        <span key={tick.value} className="k-ck-ytick" data-slot="plot-ytick" style={{ top: Math.round(tick.y) }}>
           <ChartValue text={format(tick.value)} />
         </span>
       ))}

@@ -23,7 +23,7 @@
   margin: 0;
   font: var(--text-body) var(--font-sans);
   font-weight: 600;
-  line-height: 1.4;
+  line-height: round(nearest, 1.4em, 1px);
   text-wrap: balance;
 }
 .k-empty-text {

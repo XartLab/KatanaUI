@@ -195,7 +195,7 @@
   color: var(--ink-300);
   font: 9px var(--font-sans);
   white-space: nowrap;
-  transform: translateX(-50%);
+  translate: round(nearest, -50%, 1px) 0;
   pointer-events: none;
 }
 .k-tl-marker[data-side='up'] .k-tl-label {
@@ -232,7 +232,7 @@
   border: 1px solid var(--line-100);
   border-radius: var(--radius-sm);
   box-shadow: var(--recess);
-  transform: translateX(-50%);
+  translate: round(nearest, -50%, 1px) 0;
   pointer-events: none;
 }
 .k-tl-tip-row {

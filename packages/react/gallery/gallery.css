@@ -84,7 +84,7 @@ body {
   z-index: 2;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   gap: 12px;
   padding: 10px 24px;
   background: var(--bg-000);
@@ -118,7 +118,7 @@ body {
   max-width: 62ch;
   color: var(--ink-200);
   font: var(--text-body) var(--font-sans);
-  line-height: 1.6;
+  line-height: round(nearest, 1.6em, 1px);
 }
 .gal-doc h2[id^='gal-h-'] {
   margin: 0 0 8px;
@@ -214,7 +214,7 @@ body {
   padding-left: 20px;
   color: var(--ink-200);
   font: var(--text-data) var(--font-sans);
-  line-height: 1.6;
+  line-height: round(nearest, 1.6em, 1px);
 }
 .gal-keys th {
   width: 220px;
@@ -237,7 +237,7 @@ body {
   border-radius: var(--radius-control);
   color: var(--ink-200);
   font: var(--text-data) var(--font-mono);
-  line-height: 1.6;
+  line-height: round(nearest, 1.6em, 1px);
 }
 
 @media (max-width: 760px) {
@@ -261,4 +261,13 @@ body {
 [data-usage-code] .italic,
 [data-usage-code] [data-slot='code-block-gutter'] {
   color: var(--ink-300);
+}
+.gal-bar > span:first-child {
+  margin-right: auto;
+}
+.gal-render {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font: var(--text-caption) var(--font-sans);
 }

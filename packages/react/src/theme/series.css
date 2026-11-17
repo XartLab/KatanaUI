@@ -88,7 +88,7 @@
 .k-plot-xaxis > span {
   position: absolute;
   white-space: nowrap;
-  transform: translateX(-50%);
+  translate: round(nearest, -50%, 1px) 0;
 }
 .k-plot-xaxis > span[data-align='start'] {
   transform: none;
@@ -201,8 +201,6 @@
   font: var(--text-tag-md) var(--font-sans);
   letter-spacing: 0;
   font-style: normal;
-  -webkit-font-smoothing: none;
-  font-smooth: never;
 }
 .k-attr-meta,
 .k-attr-source {
@@ -409,7 +407,6 @@
 .k-attr-foot .k-attr-note {
   font: var(--text-tag-md) var(--font-sans);
   letter-spacing: 0;
-  -webkit-font-smoothing: none;
 }
 .k-attr-note {
   margin-left: auto;
@@ -857,8 +854,6 @@ button.k-sm-head:focus-visible {
   font: var(--text-tag-md) var(--font-sans);
   letter-spacing: 0;
   font-style: normal;
-  -webkit-font-smoothing: none;
-  font-smooth: never;
 }
 .k-sx-meta,
 .k-sx-source {
@@ -1129,7 +1124,7 @@ button.k-sm-head:focus-visible {
   position: absolute;
   top: 50%;
   right: 8px;
-  transform: translateY(-50%);
+  translate: 0 round(nearest, -50%, 1px);
   color: var(--ink-200);
   white-space: nowrap;
 }

@@ -33,7 +33,7 @@
   margin: 0;
   color: var(--ink-300);
   font: var(--text-caption) var(--font-sans);
-  line-height: 1.5;
+  line-height: round(nearest, 1.5em, 1px);
 }
 .gal-wide {
   width: 100%;

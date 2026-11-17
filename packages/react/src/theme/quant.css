@@ -33,7 +33,6 @@ button.k-spark-tile:focus-visible {
   font-size: var(--text-tag-size);
   letter-spacing: 0.12em;
   color: var(--ink-300);
-  -webkit-font-smoothing: none;
 }
 .k-spark-tile-value {
   font-family: var(--font-sans);
@@ -286,7 +285,6 @@ button.k-spark-tile:focus-visible {
   font-size: var(--text-tag-size);
   letter-spacing: 0.1em;
   color: var(--ink-300);
-  -webkit-font-smoothing: none;
 }
 .k-flow-value {
   font-family: var(--font-sans);
@@ -525,7 +523,6 @@ button.k-consensus-party:focus-visible {
   font-size: var(--text-tag-size);
   letter-spacing: 0.08em;
   color: var(--ink-300);
-  -webkit-font-smoothing: none;
 }
 .k-consensus-state {
   display: inline-flex;

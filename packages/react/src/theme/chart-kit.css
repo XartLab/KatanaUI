@@ -29,7 +29,7 @@
   position: absolute;
   right: 100%;
   padding-right: 8px;
-  transform: translateY(-50%);
+  translate: 0 round(nearest, -50%, 1px);
   color: var(--chart-axis);
   font: var(--text-num-sm) var(--chart-font-axis, var(--font-sans));
   pointer-events: none;
@@ -98,7 +98,7 @@
   position: absolute;
   top: 0;
   right: 10px;
-  transform: translateY(-50%);
+  translate: 0 round(nearest, -50%, 1px);
   color: var(--ink-100);
   font: var(--text-num-sm) var(--chart-font-num, var(--font-sans));
   white-space: nowrap;

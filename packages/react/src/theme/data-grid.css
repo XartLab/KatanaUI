@@ -216,7 +216,7 @@
 .k-grid.is-auto .k-grid-cell {
   padding-block: 4px;
   overflow: visible;
-  line-height: 1.4;
+  line-height: round(nearest, 1.4em, 1px);
   overflow-wrap: anywhere;
   white-space: normal;
 }

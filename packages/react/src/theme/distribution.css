@@ -436,7 +436,7 @@
 }
 .k-galaxy-name {
   position: absolute;
-  transform: translate(-50%, -50%);
+  translate: round(nearest, -50%, 1px) round(nearest, -50%, 1px);
   white-space: nowrap;
   color: var(--ink-200);
   font: var(--text-caption) var(--font-sans);

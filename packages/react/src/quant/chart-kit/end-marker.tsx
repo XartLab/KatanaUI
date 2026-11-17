@@ -17,7 +17,7 @@ export type EndMarkerProps = {
 
 export function EndMarker({ x, y, value, side = 'left', style }: EndMarkerProps) {
   return (
-    <span className="k-ck-end" data-slot="end-marker" data-side={side} style={{ left: pct(x), top: y, ...style }}>
+    <span className="k-ck-end" data-slot="end-marker" data-side={side} style={{ left: pct(x), top: Math.round(y), ...style }}>
       <i className="k-ck-end-dot" />
       {value === undefined ? null : <span className="k-ck-end-value">{value}</span>}
     </span>

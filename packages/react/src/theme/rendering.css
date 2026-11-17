@@ -1,0 +1,38 @@
+/* SPDX-License-Identifier: MIT */
+/* 渲染：文字平滑与像素对齐（2026-11-17）。
+
+   做法照 TradingView（同日在 tradingview.com 实测）与 lightweight-charts：
+   - 正文 `-webkit-font-smoothing: antialiased`（灰度平滑）。只在 macOS 生效；Windows 的 ClearType / DirectWrite 由系统与浏览器管，CSS 改不了，
+     我们能做的是别让文字落在小数像素上、别无故把文字放进合成层（合成层上透明底的文字会退成灰度，Windows 下看着发虚）。
+   - 直线与矩形贴像素：网格、零线、基线、柱子与格子 `shape-rendering: crispEdges`，由浏览器把边吸到设备像素上，1px 线不再糊成两条半透明线。
+     曲线（净值、走势线）不吸，保持几何精度，不然出锯齿。
+   - 居中用的 -50% 平移改写成 `translate: round(nearest, -50%, 1px)`（见各件的样式），定位用的 px 在组件里 Math.round。
+
+   两个开关挂在根节点上（跟 data-theme 一样），应用可以放进「设置 → 渲染」：
+   - data-text-smoothing="grayscale"（默认）| "system"：system 交回系统默认平滑（macOS 上是子像素 / 系统设置）。
+   - data-pixel-snap="on"（默认）| "off"：off 关掉吸附，线与格子按几何位置画（缩放截图、导出时可能想要）。 */
+
+:root {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: auto;
+}
+:root[data-text-smoothing='system'] {
+  -webkit-font-smoothing: auto;
+  -moz-osx-font-smoothing: auto;
+}
+
+/* 直线与矩形贴像素（只挑水平 / 竖直的线与不带圆角的矩形；斜线和曲线不在这里）。 */
+:root:not([data-pixel-snap='off']) :is(
+    .k-ck-grid,
+    .k-plot-zero,
+    .k-ql-zero,
+    .k-ql-cursor,
+    .k-ridge-baseline,
+    .k-ridge-base,
+    .k-spark-tile-limit,
+    .k-vs-latest
+  ),
+:root:not([data-pixel-snap='off']) [class^='k-'] svg rect:not([rx]) {
+  shape-rendering: crispEdges;
+}

@@ -13,8 +13,6 @@
   font-style: normal;
   line-height: 1;
   letter-spacing: 0;
-  -webkit-font-smoothing: none;
-  font-smooth: never;
   vertical-align: middle;
   user-select: none;
 }

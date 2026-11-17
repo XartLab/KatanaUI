@@ -43,7 +43,7 @@
   white-space: nowrap;
   font: var(--text-data) var(--font-sans);
   font-weight: 600;
-  line-height: 1.3;
+  line-height: round(nearest, 1.3em, 1px);
 }
 :where(.k-panel-header.has-toolbar > h2) {
   flex: 0 1 120px;
