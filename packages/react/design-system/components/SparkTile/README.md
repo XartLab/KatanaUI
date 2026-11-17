@@ -1,6 +1,6 @@
 # SparkTile
 
-KPI 瓦片：点阵小标签、LCD 数值、24px 迷你折线（可画阈值虚线）、一行变化说明；数据由调用方给，没有数据是空态，一行最多放 5 个。
+KPI 瓦片：点阵小标签、LCD 数值、24px 迷你折线（可画阈值虚线）、一行变化说明；数据由调用方给，没有数据是空态，一行最多放 5 个。2026-11-18 起它就是 MetricCard variant="tile"，SparkTile 留作兼容的旧名。
 
 ## Provide
 
@@ -8,7 +8,7 @@ KPI 瓦片：点阵小标签、LCD 数值、24px 迷你折线（可画阈值虚�
 
 ### SparkTile
 
-给了 onClick 整块就是按钮（点开该指标的完整图），不给是普通块。文案（标签、说明、读屏名）都由调用方传。
+等于 <MetricCard variant="tile">：delta → changePct、sparkLabel → labels.spark、state → status、onClick → onSelect，新代码写 MetricCard。给了 onClick（onSelect）整块就是按钮，不给是普通块。文案都由调用方传。
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
@@ -30,7 +30,7 @@ KPI 瓦片：点阵小标签、LCD 数值、24px 迷你折线（可画阈值虚�
 ```tsx
 // SPDX-License-Identifier: MIT
 import { useState } from 'react'
-import { SparkTile } from '@katana-ui/react/quant'
+import { MetricCard } from '@katana-ui/react/quotes'
 
 const asset = [18, 16, 17, 12, 13, 9, 10, 6, 4]
 
@@ -45,45 +45,64 @@ export function SparkTileUsage() {
   return (
     <>
       <div className="gal-grid-5" data-testid="spark-row">
-        <SparkTile
+        <MetricCard
+          variant="tile"
           label="NET ASSET"
           value="2.42M"
           series={asset.map((v) => 20 - v)}
-          sparkLabel="近 9 期净值走势"
-          delta={1.31}
+          labels={{ spark: '近 9 期净值走势' }}
+          changePct={1.31}
           note="今日"
         />
-        <SparkTile
+        <MetricCard
+          variant="tile"
           label="DRAWDOWN"
           value="-3.1%"
           series={drawdown}
-          sparkLabel="近 9 期回撤走势"
+          labels={{ spark: '近 9 期回撤走势' }}
           trendTone="neutral"
           note="峰值 -6.8% · 02-14"
         />
-        <SparkTile label="TURNOVER" value="0.62" unit="/月" series={stable} sparkLabel="近 9 期换手" note="稳定" />
-        <SparkTile
+        <MetricCard
+          variant="tile"
+          label="TURNOVER"
+          value="0.62"
+          unit="/月"
+          series={stable}
+          labels={{ spark: '近 9 期换手' }}
+          note="稳定"
+        />
+        <MetricCard
+          variant="tile"
           label="EXPOSURE"
           value="131"
           unit="/ 150%"
           series={exposure.map((v) => 20 - v)}
-          sparkLabel="近 9 期敞口，虚线是上限"
+          labels={{ spark: '近 9 期敞口，虚线是上限' }}
           threshold={19}
-          state="near"
+          status="near"
           note="接近上限"
         />
-        <SparkTile label="SHARPE 60D" value={null} series={[]} sparkLabel="夏普：没有数据" note="等待数据" />
+        <MetricCard
+          variant="tile"
+          label="SHARPE 60D"
+          value={null}
+          series={[]}
+          labels={{ spark: '夏普：没有数据' }}
+          note="等待数据"
+        />
       </div>
 
       <div className="gal-grid-5">
-        <SparkTile
+        <MetricCard
+          variant="tile"
           label="FILLS"
           value={String(clicks)}
           series={stable}
-          sparkLabel="近 9 期成交"
-          delta={-0.8}
+          labels={{ spark: '近 9 期成交' }}
+          changePct={-0.8}
           note="点我 +1"
-          onClick={() => setClicks((n) => n + 1)}
+          onSelect={() => setClicks((n) => n + 1)}
         />
       </div>
     </>
@@ -108,9 +127,10 @@ export function SparkTileUsage() {
 ## Composition
 
 ```
-SparkTile
-  ChangeText
-  RollingText（给了 rollValue 时）
+SparkTile = MetricCard variant="tile"
+  ReadoutValue（数值 · RollingText 给了 rollValue 时）
+  迷你线（svg）
+  ChangeText · note
 ```
 
 ## Keyboard

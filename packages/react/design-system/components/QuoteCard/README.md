@@ -1,6 +1,6 @@
 # QuoteCard
 
-一只品种一张卡：名字与代码、最新价（大）、涨跌与涨跌幅、可选的迷你图与底部一行；QuoteStrip 是一排小号的卡，放不下横向滚动。
+一只品种一张卡：名字与代码、最新价（大）、涨跌与涨跌幅、可选的迷你图与底部一行；QuoteStrip 是一排小号的卡，放不下横向滚动。值是数（统一行情行的 last / change / changePct），整行 {...row} 直接摊进来，价格文字由 formatPrice 写。
 
 ## Provide
 
@@ -8,22 +8,30 @@
 
 ### QuoteCard
 
+方向由 change 的正负定（没有 change 看 changePct，也可传 tone）；迷你图的读屏名在 labels.spark。旧的 price / percent 与字符串 change、sparkLabel 照认一个版本（@deprecated）。
+
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `name` * | `string` | — | Name of the symbol. |
+| `name` | `string` | — | Name of the symbol; the symbol code takes its place when omitted. |
 | `symbol` | `string` | — | Code, small and muted beside the name. |
-| `price` * | `string` | — | The already formatted price. |
-| `change` | `string` | — | The already formatted change amount, signed. |
-| `percent` | `string` | — | The already formatted change percentage, signed. |
-| `tone` | `QuoteTone` | `'flat'` | Up, down or flat. |
+| `last` | `number` | — | Last price. |
+| `change` | `number \| string` | — | Change amount, signed (a preformatted string is deprecated). |
+| `changePct` | `number` | — | Change as a percentage (1.5 means 1.5%). |
+| `formatPrice` | `FormatPrice` | — | Writes the last price and the change amount; two decimals when omitted. |
+| `tone` | `QuoteTone` | — | Up, down or flat; derived from change (then changePct) when omitted. |
+| `price` | `string` | — | Deprecated: use last with formatPrice. |
+| `percent` | `string` | — | Deprecated: use changePct. |
 | `spark` | `readonly number[]` | — | Values of the mini chart, oldest to newest; no chart is drawn when omitted. |
-| `sparkLabel` | `string` | — | Accessible name of the mini chart. |
+| `labels` | `QuoteCardLabels` | — | Accessible texts. |
+| `sparkLabel` | `string` | — | Deprecated: use labels.spark. |
 | `footer` | `ReactNode` | — | A line under the card, often a RangeBar. |
 | `size` | `'md' \| 'sm'` | `'md'` | sm is a narrow horizontal card used inside QuoteStrip. |
 | `onSelect` | `() => void` | — | When given the whole card renders as a button. |
 | `className` | `string` | — | Extra class name on the root. |
 
 ### QuoteStrip
+
+items 是 QuoteCard 的属性加 id；每张卡用小号。
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
@@ -47,6 +55,7 @@ export function QuoteCardUsage() {
 - 默认：名字、价、涨跌；可带迷你图与底部一行。
 - 可点：整张卡是按钮，悬停提亮、按下缩到 0.98、键盘焦点有环。
 - 小号（QuoteStrip 里）：148 宽，放不下横向滚动。
+- 价格变了：闪一次涨跌色；迷你图新点追加时线平滑延伸。
 
 ## Don't
 

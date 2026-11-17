@@ -18,10 +18,10 @@ function walk(seed: number, start: number, step: number, lo: number, hi: number,
 }
 
 const METRIC_RANGES = [
-  { key: '1m', label: '1 月', n: 21 },
-  { key: '3m', label: '3 月', n: 63 },
-  { key: '6m', label: '6 月', n: 126 },
-  { key: '1y', label: '1 年', n: 250 },
+  { id: '1m', label: '1 月', n: 21 },
+  { id: '3m', label: '3 月', n: 63 },
+  { id: '6m', label: '6 月', n: 126 },
+  { id: '1y', label: '1 年', n: 250 },
 ] as const
 
 function metricProps(values: readonly number[]): { ranges: MetricRange[]; changes: MetricChange[] } {
@@ -31,12 +31,12 @@ function metricProps(values: readonly number[]): { ranges: MetricRange[]; change
     return base === undefined || base === 0 ? null : ((last - base) / Math.abs(base)) * 100
   }
   return {
-    ranges: METRIC_RANGES.map((r) => ({ key: r.key, label: r.label, values: values.slice(-r.n) })),
+    ranges: METRIC_RANGES.map((r) => ({ id: r.id, label: r.label, values: values.slice(-r.n) })),
     changes: [
-      { key: 'd', label: '较前日', value: since(1) },
-      { key: 'w', label: '较前周', value: since(5) },
-      { key: 'm', label: '较前月', value: since(21) },
-      { key: 'y', label: '较前年', value: since(249) },
+      { id: 'd', label: '较前日', value: since(1) },
+      { id: 'w', label: '较前周', value: since(5) },
+      { id: 'm', label: '较前月', value: since(21) },
+      { id: 'y', label: '较前年', value: since(249) },
     ],
   }
 }
@@ -106,13 +106,12 @@ function MetricWall({
         return (
           <MetricCard
             key={d.title}
-            title={d.title}
+            label={d.title}
             value={last.toFixed(d.digits)}
             unit={'unit' in d ? d.unit : undefined}
             {...metricProps(values)}
             trendTone={'trend' in d ? d.trend : 'direction'}
-            rangeLabel={`${d.title}走势区间`}
-            sparkLabel={`${d.title}走势`}
+            labels={{ range: `${d.title}走势区间`, spark: `${d.title}走势` }}
             stages={'stages' in d ? d.stages : undefined}
             current={last}
             source="演示数据，不是行情"
@@ -140,12 +139,11 @@ export function MetricCardUsage() {
             <section data-testid="metric-empty">
               <MetricCardGrid label="空态" minWidth={280}>
                 <MetricCard
-                  title="未接入的指标"
+                  label="未接入的指标"
                   value={null}
-                  changes={[{ key: 'd', label: '较前日', value: null }]}
-                  ranges={[{ key: '1m', label: '1 月', values: [] }]}
-                  rangeLabel="走势区间"
-                  sparkLabel="没有数据"
+                  changes={[{ id: 'd', label: '较前日', value: null }]}
+                  ranges={[{ id: '1m', label: '1 月', values: [] }]}
+                  labels={{ range: '走势区间', spark: '没有数据' }}
                   source="未连接"
                 />
               </MetricCardGrid>

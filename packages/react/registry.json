@@ -3036,6 +3036,23 @@
       ]
     },
     {
+      "name": "flash-price",
+      "type": "registry:component",
+      "title": "Flash Price",
+      "description": "最新价只闪变了的尾数（照 TradingView 自选栏）：Watchlist 与 QuoteTable 的价格格共用。",
+      "registryDependencies": [
+        "@katana/live",
+        "@katana/watchlist-model"
+      ],
+      "files": [
+        {
+          "path": "src/quotes/flash-price.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quotes/flash-price.tsx"
+        }
+      ]
+    },
+    {
       "name": "gauge-bar",
       "type": "registry:component",
       "title": "Gauge Bar",
@@ -3069,12 +3086,13 @@
       "name": "metric-card",
       "type": "registry:component",
       "title": "Metric Card",
-      "description": "照 uiarc 的 Metric explorer 的结构：标题、大号当前值、较前日 / 周 / 月 / 年的变化（涨跌色）、迷你走势线（1 月 / 3 月 / 6 月 / 1 年分段）、可选阶段带（五档边界与文案由调用方给）、来源与更新时间一行；MetricCardGrid 把卡排成墙。组件只画不算，数据与文字都由调用方传，没有数据就是空态。",
+      "description": "报价类读数卡的共用壳（2026-11-18）：variant=\"card\" 照 uiarc 的 Metric explorer 的结构，variant=\"tile\" 是 KPI 瓦片（原 SparkTile）。卡：标题、大号当前值、较前日 / 周 / 月 / 年的变化（涨跌色）、迷你走势线（1 月 / 3 月 / 6 月 / 1 年分段）、可选阶段带（五档边界与文案由调用方给）、来源与更新时间一行；MetricCardGrid 把卡排成墙。组件只画不算，数据与文字都由调用方传，没有数据就是空态。",
       "registryDependencies": [
         "@katana/change-text",
         "@katana/cn",
-        "@katana/live-readout",
+        "@katana/metric-tile",
         "@katana/quote-tone",
+        "@katana/readout-value",
         "@katana/sparkline",
         "@katana/toggle-group"
       ],
@@ -3083,6 +3101,26 @@
           "path": "src/quotes/metric-card.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/quotes/metric-card.tsx"
+        }
+      ]
+    },
+    {
+      "name": "metric-tile",
+      "type": "registry:component",
+      "title": "Metric Tile",
+      "description": "MetricCard variant=\"tile\" 的瓦片本体（原 SparkTile 的画法）与它的几何 sparkTileShape。",
+      "registryDependencies": [
+        "@katana/change-text",
+        "@katana/live",
+        "@katana/live-line",
+        "@katana/readout-value",
+        "@katana/sparkline"
+      ],
+      "files": [
+        {
+          "path": "src/quotes/metric-tile.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quotes/metric-tile.tsx"
         }
       ]
     },
@@ -3115,6 +3153,7 @@
       "registryDependencies": [
         "@katana/change-text",
         "@katana/cn",
+        "@katana/quote-row",
         "@katana/symbol-mark"
       ],
       "files": [
@@ -3166,9 +3205,11 @@
       "name": "price-tag",
       "type": "registry:component",
       "title": "Price Tag",
-      "description": "夹在一句话或一行里的「名字 价格 涨跌」，数字等宽对齐，涨跌带三角与颜色，跟着周围的字号走。",
+      "description": "夹在一句话或一行里的「名字 价格 涨跌」，数字等宽对齐，涨跌带三角与颜色，跟着周围的字号走。值是数（last、changePct，跟统一行情行同名），价格文字由 formatPrice 写。",
       "registryDependencies": [
         "@katana/live-readout",
+        "@katana/quant-format",
+        "@katana/quote-row",
         "@katana/quote-tone"
       ],
       "files": [
@@ -3183,9 +3224,12 @@
       "name": "quote-card",
       "type": "registry:component",
       "title": "Quote Card",
-      "description": "一只品种一张卡：名字与代码、最新价（大）、涨跌与涨跌幅、可选的迷你图与底部一行；QuoteStrip 是一排小号的卡，放不下横向滚动。",
+      "description": "一只品种一张卡：名字与代码、最新价（大）、涨跌与涨跌幅、可选的迷你图与底部一行；QuoteStrip 是一排小号的卡，放不下横向滚动。值是数（统一行情行的 last / change / changePct），整行 {...row} 直接摊进来，价格文字由 formatPrice 写。",
       "registryDependencies": [
         "@katana/live-readout",
+        "@katana/num",
+        "@katana/quant-format",
+        "@katana/quote-row",
         "@katana/quote-tone",
         "@katana/sparkline"
       ],
@@ -3198,16 +3242,36 @@
       ]
     },
     {
+      "name": "quote-row",
+      "type": "registry:lib",
+      "title": "Quote Row",
+      "description": "照 TradingView 右侧自选栏（2026-11-15 实测）：列 Symbol / Last / Chg / Chg%，行首小旗标与字母圆徽标；最新价变动时只有变了的尾数闪涨跌色、约 1 秒落回；点列头排序（升序、降序、回原顺序）。价格怎么写由 formatPrice 定，数与文字由调用方传。",
+      "registryDependencies": [
+        "@katana/quant-format"
+      ],
+      "files": [
+        {
+          "path": "src/quotes/quote-row.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/quotes/quote-row.ts"
+        }
+      ]
+    },
+    {
       "name": "quote-table",
       "type": "registry:component",
       "title": "Quote Table",
-      "description": "上面一排页签（指数、自选、热门……），下面是当前这组的行情表：名称与代码、迷你图、最新价、涨跌幅。由 Tabs 与 Sparkline 组出来。",
+      "description": "上面一排页签（指数、自选、热门……），下面是当前这组的行情表：名称与代码、迷你图、最新价、涨跌幅。由 Tabs 与 Sparkline 组出来；行就是 Watchlist 的行（统一行情行加 spark），值是数，价格文字由 formatPrice 写。",
       "registryDependencies": [
         "@katana/cn",
+        "@katana/flash-price",
         "@katana/live",
+        "@katana/quant-format",
+        "@katana/quote-row",
         "@katana/quote-tone",
         "@katana/sparkline",
-        "@katana/tabs"
+        "@katana/tabs",
+        "@katana/watchlist"
       ],
       "files": [
         {
@@ -3298,6 +3362,24 @@
       ]
     },
     {
+      "name": "readout-value",
+      "type": "registry:component",
+      "title": "Readout Value",
+      "description": "读数壳里的数值一格：没有数据写「—」，变了闪涨跌色或滚轮，单位小字；MetricCard 的卡与瓦片共用。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/live-readout",
+        "@katana/rolling-text"
+      ],
+      "files": [
+        {
+          "path": "src/quotes/readout-value.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quotes/readout-value.tsx"
+        }
+      ]
+    },
+    {
       "name": "row-actions",
       "type": "registry:component",
       "title": "Row Actions",
@@ -3323,14 +3405,10 @@
       "name": "spark-tile",
       "type": "registry:component",
       "title": "Spark Tile",
-      "description": "KPI 瓦片：点阵小标签、LCD 数值、24px 迷你折线（可画阈值虚线）、一行变化说明；数据由调用方给，没有数据是空态，一行最多放 5 个。",
+      "description": "KPI 瓦片：点阵小标签、LCD 数值、24px 迷你折线（可画阈值虚线）、一行变化说明；数据由调用方给，没有数据是空态，一行最多放 5 个。2026-11-18 起它就是 MetricCard variant=\"tile\"，SparkTile 留作兼容的旧名。",
       "registryDependencies": [
-        "@katana/change-text",
-        "@katana/live",
-        "@katana/live-line",
-        "@katana/live-readout",
-        "@katana/rolling-text",
-        "@katana/sparkline"
+        "@katana/metric-card",
+        "@katana/metric-tile"
       ],
       "files": [
         {
@@ -3444,7 +3522,7 @@
       "name": "symbol-mark",
       "type": "registry:component",
       "title": "Symbol Mark",
-      "description": "品种名前的小圆标（学 TradingView 列表里企业 / 币种标志）：有图显示圆形裁切的图片，加载失败退回字母；没有图就是字母圆标，底 bg-400、字 ink-200，不按代码随机上色。尺寸默认 18（行高 28 的一行）。",
+      "description": "品种名前的小圆标（学 TradingView 列表里企业 / 币种标志）：有图显示圆形裁切的图片，加载失败退回字母；没有图就是字母圆标，底 bg-400、字 ink-200，不按代码随机上色。尺寸两档：sm 18（行高 28 的一行，默认）、md 28（卡片）；热力图格子这类要别的直径的仍可传数。字号跟直径走（28 以上 16，其余 12），在 css 里按 data-size 取字号 token，不内联。",
       "registryDependencies": [
         "@katana/cn"
       ],
@@ -3550,9 +3628,10 @@
       "registryDependencies": [
         "@katana/change-text",
         "@katana/cn",
+        "@katana/flash-price",
         "@katana/live",
         "@katana/num",
-        "@katana/quant-format",
+        "@katana/quote-row",
         "@katana/symbol-mark",
         "@katana/watchlist-model"
       ],

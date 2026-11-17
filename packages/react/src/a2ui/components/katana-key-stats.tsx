@@ -4,12 +4,12 @@ import { createComponentImplementation } from '@a2ui/react'
 import type { ComponentApi } from '@a2ui/web_core'
 import { CommonSchemas } from '@a2ui/web_core/v1_0'
 import { z } from 'zod'
-import { KeyStats } from '../../quant/index.ts'
+import { KeyStats } from '../../quotes/index.ts'
 import { Cell, actionSchema, parseList, weightSchema } from '../support.tsx'
 
 const itemSchema = z
   .object({
-    key: z.string().min(1).describe('Stable id of the stat. The host gets it back when the stat is pressed.'),
+    id: z.string().min(1).describe('Stable id of the stat. The host gets it back when the stat is pressed.'),
     label: z.string().describe('The small grey label.'),
     value: z
       .string()
@@ -34,8 +34,8 @@ export const KatanaKeyStatsApi = {
       onTitle: actionSchema(
         'Dispatched when the user presses the heading. When it is omitted the heading is plain text.',
       ).optional(),
-      onItem: actionSchema(
-        'Dispatched when the user presses a stat label. metadata.extensions.katanaStat.key carries the stat key. When it is omitted the labels are plain text.',
+      onSelect: actionSchema(
+        'Dispatched when the user presses a stat label. metadata.extensions.katanaStat.id carries the stat id. When it is omitted the labels are plain text.',
       ).optional(),
       weight: weightSchema,
     })
@@ -43,7 +43,7 @@ export const KatanaKeyStatsApi = {
 } satisfies ComponentApi
 
 export const KatanaKeyStats = createComponentImplementation(KatanaKeyStatsApi, ({ props }) => {
-  const { onTitle, onItem } = props
+  const { onTitle, onSelect } = props
   return (
     <Cell weight={props.weight}>
       <KeyStats
@@ -51,8 +51,8 @@ export const KatanaKeyStats = createComponentImplementation(KatanaKeyStatsApi, (
         items={parseList(itemSchema, props.items).map((item) => ({ ...item, value: item.value || undefined }))}
         columns={props.columns}
         onTitle={onTitle ? () => void onTitle() : undefined}
-        onItem={
-          onItem ? (item) => void onItem({ metadata: { extensions: { katanaStat: { key: item.key } } } }) : undefined
+        onSelect={
+          onSelect ? (item) => void onSelect({ metadata: { extensions: { katanaStat: { id: item.id } } } }) : undefined
         }
       />
     </Cell>

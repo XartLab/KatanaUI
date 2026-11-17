@@ -22,4 +22,16 @@ describe('品种徽标', () => {
     expect(image).toContain('aria-label="BTC"')
     expect(image).toContain('width:28px')
   })
+
+  it('symbol 是新名（code 旧名照认）；size 取 sm | md，字号交给 css 的 data-size，不内联', () => {
+    const sm = renderToStaticMarkup(<SymbolMark symbol="AAPL" />)
+    expect(sm).toContain('aria-label="AAPL"')
+    expect(sm).toContain('data-size="sm"')
+    expect(sm).toContain('width:18px')
+    expect(sm).not.toContain('font-size')
+    const md = renderToStaticMarkup(<SymbolMark symbol="AAPL" size="md" />)
+    expect(md).toContain('data-size="md"')
+    expect(md).toContain('width:28px')
+    expect(renderToStaticMarkup(<SymbolMark code="TSLA" size={14} />)).toContain('data-size="sm"')
+  })
 })

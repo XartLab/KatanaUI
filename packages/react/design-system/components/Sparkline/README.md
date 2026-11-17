@@ -8,6 +8,8 @@
 
 ### Sparkline
 
+值是数（从旧到新）；读数、标签、刻度字由调用方的 format 与 label 写。interactive 时才可聚焦、走点。
+
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
 | `values` * | `readonly SparkValue[]` | — | The values from oldest to newest; null or NaN breaks the line, and fewer than two valid values draws a dash. |

@@ -11,7 +11,15 @@ export {
   type RowContextMenuProps,
   type SymbolMenuInput,
 } from './row-actions.tsx'
-export { QuoteTable, type QuoteGroup, type QuoteRow, type QuoteTableProps } from './quote-table.tsx'
+export {
+  QuoteTable,
+  type LegacyQuoteRow,
+  type QuoteGroup,
+  type QuoteTableLabels,
+  type QuoteTableProps,
+  type QuoteTableRow,
+} from './quote-table.tsx'
+export { plainPrice, rowTone, type FormatPrice, type QuoteRow } from './quote-row.ts'
 export { SymbolMark, symbolMarkLetters, type SymbolMarkProps } from './symbol-mark.tsx'
 export {
   Sparkline,
@@ -35,7 +43,13 @@ export {
   type TreemapLayoutOptions,
 } from './treemap-model.ts'
 export { PriceTag, type PriceTagProps } from './price-tag.tsx'
-export { QuoteCard, QuoteStrip, type QuoteCardProps, type QuoteStripProps } from './quote-card.tsx'
+export {
+  QuoteCard,
+  QuoteStrip,
+  type QuoteCardLabels,
+  type QuoteCardProps,
+  type QuoteStripProps,
+} from './quote-card.tsx'
 export {
   CompareBar,
   RangeBar,
@@ -80,7 +94,19 @@ export {
   type PerformanceItem,
   type PerformanceStripProps,
 } from './performance-strip.tsx'
-export { PeerCards, type PeerCardsLabels, type PeerCardsProps, type PeerItem } from './peer-cards.tsx'
+export {
+  PeerCards,
+  type LegacyPeerItem,
+  type PeerCardsLabels,
+  type PeerCardsProps,
+  type PeerItem,
+} from './peer-cards.tsx'
 export { KeyStats, type KeyStatItem, type KeyStatsProps } from './key-stats.tsx'
-export { Watchlist, type WatchlistLabels, type WatchlistProps, type WatchlistRow } from './watchlist.tsx'
+export {
+  Watchlist,
+  type LegacyWatchlistRow,
+  type WatchlistLabels,
+  type WatchlistProps,
+  type WatchlistRow,
+} from './watchlist.tsx'
 export { changedTail, nextSort, sortRows, type WatchlistSort, type WatchlistSortKey } from './watchlist-model.ts'

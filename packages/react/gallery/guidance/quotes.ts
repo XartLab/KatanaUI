@@ -66,8 +66,9 @@ const quotes: GuidanceMap = {
     ],
     avoid: ['带涨停、连板的热力格用 market-heatmap。', '项目很少时用 attribution-bars。'],
     a11y: [
-      '给了 onItem 的格子是 role=button，读屏名为「名字 数」。',
+      '给了 onSelect 的格子是 role=button，读屏名为「名字 数」。',
       '色例对读屏隐藏，涨跌要靠格内文字读出。',
+      '格内字色按底色明暗自动选黑或白（oklch 亮度 0.565 为界），七档在所有主题下 ≥ 4.5:1；不要用 classes 盖成固定白字。',
       '组头是原生按钮。',
     ],
   },
@@ -76,7 +77,7 @@ const quotes: GuidanceMap = {
     use: [
       '一句话或一行里提到品种，附价格与涨跌。',
       '新闻、对话正文里的行内引用。',
-      '价格变了闪一下涨跌色，约 600ms，同一处 1 秒内最多一次。',
+      '值传数（last、changePct）与 formatPrice，跟行情行同名；价格变了闪一下涨跌色，约 600ms，同一处 1 秒内最多一次。',
     ],
     avoid: ['需要卡片版面用 quote-card。', '只显示盈亏数用 pnl-text。'],
     a11y: ['外层 aria-label 读成完整的一句，三角符号对读屏隐藏。', '涨跌靠三角与带符号的文字，不只靠颜色。'],
@@ -86,6 +87,7 @@ const quotes: GuidanceMap = {
     use: [
       '看一只品种的价、涨跌与走势。',
       '顶部一排指数行情，用 QuoteStrip 横向滚动。',
+      '值是数：一行 QuoteRow 直接 {...row} 摊进来，价格文字由 formatPrice 写。',
       '价格变了闪涨跌色，迷你图新点追加时平滑延伸。',
     ],
     avoid: ['要比较很多指标用 metric-card。', '多品种列表用 quote-table 或 watchlist。'],
@@ -115,7 +117,7 @@ const quotes: GuidanceMap = {
     aliases: ['Stat grid', 'Description list', 'Fundamentals', 'Key metrics'],
     use: [
       '品种页上市值、市盈率等一屏基本数据。',
-      '指标要点开看详情时给 onItem。',
+      '指标要点开看详情时给 onSelect。',
       '数值是字符串或数字时，变了闪一下涨跌色。',
     ],
     avoid: ['单个重点指标用 metric-card 或 lcd。', '随时间变化的数用 sparkline 类件。'],
@@ -127,6 +129,7 @@ const quotes: GuidanceMap = {
       '右侧自选栏，看一批品种的最新价与涨跌。',
       '要点列头排序、标旗。',
       '价格变了只有变了的尾数闪涨跌色，涨跌幅也闪；排序下价格变了行平滑换位，新加的行蓝线高亮 1.2 秒。',
+      '行是统一行情行 { id, symbol, name, last, change, changePct }，跟 QuoteTable、PeerCards、QuoteCard 同一份数据。',
     ],
     avoid: ['需要几十列与大量行时用 data-grid。', '只要一屏概览用 quote-table。'],
     a11y: [
@@ -166,7 +169,7 @@ const quotes: GuidanceMap = {
     use: [
       '首页总览：指数、自选、热门分组一屏看。',
       '行可点进入品种。',
-      '最新价与涨跌幅变了闪涨跌色（方向由 value 或价格文字读出），调用方重排行时行平滑换位，新加的行蓝线高亮 1.2 秒。',
+      '行与 Watchlist 同一个模型（数 + formatPrice）：最新价变了只闪变了的尾数，涨跌幅变了整格闪，调用方重排行时行平滑换位，新加的行蓝线高亮 1.2 秒。',
     ],
     avoid: ['要排序、筛选、很多行用 data-grid 或 watchlist。', '只有一组时不用页签，直接用 quote-card 的一排。'],
     a11y: [
@@ -174,6 +177,75 @@ const quotes: GuidanceMap = {
       '表头用 th，可点的行可聚焦。',
       '迷你图读屏名由调用方传。',
     ],
+  },
+  'change-text': {
+    aliases: ['Change %', 'Chg%', 'Delta text', 'Price change'],
+    use: [
+      '行情表、自选列表里的涨跌幅列。',
+      '盘中看板的指标旁标日内变化。',
+      '实时更新的数传 flash：变大闪涨色、变小闪跌色；默认不闪，静态表格排序翻页不该闪。',
+    ],
+    avoid: ['带币种的盈亏金额用 pnl-text。', '要画走势而不只是一个数时用 spark-tile。'],
+    a11y: ['符号 + / - 写在字里，不只靠红绿区分。', '零不着色也不带号，读屏照读数字。'],
+  },
+  'pnl-text': {
+    aliases: ['P&L', 'PnL cell', 'Profit/Loss text', 'Gain/Loss'],
+    use: [
+      '持仓、订单表里的浮动与已实现盈亏。',
+      '账户摘要里的当日盈亏。',
+      '实时更新的盈亏传 flash，按 value 的增减闪涨跌色；默认不闪。',
+    ],
+    avoid: ['百分比涨跌幅用 change-text。', '格式化（币种、位数、符号）由调用方做，不要指望它格式化。'],
+    a11y: ['符号由调用方写进字里，不只靠颜色。', '颜色跟 data-updown，红涨绿跌互换时文字不变。'],
+  },
+  'rating-text': {
+    aliases: ['Analyst Rating', 'Recommendation', 'Rating badge', 'Consensus rating'],
+    use: ['选股器里的分析师评级列。', '技术评级的单元格结论。'],
+    avoid: ['要同时看分数、买卖计数与指标明细时用 technical-rating。', '表示必要条件是否满足用 consensus-block。'],
+    a11y: ['档位写在文字里，图标是装饰（aria-hidden）。', '强弱靠一或两层箭头，不只靠颜色。'],
+  },
+  'technical-rating': {
+    aliases: ['Technicals', 'Technical Analysis gauge', 'Summary gauge', 'Technical Ratings'],
+    use: [
+      '看一只票在各时间周期的技术面总评。',
+      '单品种详情页里并列振荡指标与均线的结论。',
+      '评级变了闪：总评档位升了闪涨色、降了闪跌色，买 / 卖个数与明细里的单项结论变了同理（卖的个数变多算偏空）。',
+    ],
+    avoid: ['只要一个评级标签时用 rating-text。', '它是读数不是买卖信号，下单前走 consensus-block。'],
+    a11y: [
+      '仪表有读屏名，档名、买 / 中性 / 卖计数都是文字。',
+      '明细表是真 table，带 aria-label；结论文字上色，不靠色块。',
+    ],
+  },
+  'metric-card': {
+    aliases: ['Metric explorer', 'KPI card', 'Stat card', 'Scorecard'],
+    use: [
+      '研究页展示一个宏观或市场指标的当前值与区间变化。',
+      '多个指标排成卡片墙做宏观看板。',
+      '大号当前值与变化变了闪涨跌色；走势线新点追加时平滑延伸，换区间直接换。',
+    ],
+    avoid: ['一行放多个小指标用 spark-tile。', '要读完整时间序列与扫读时用 brush-chart 或 vintage-series。'],
+    a11y: [
+      '走势线有读屏名，数值与变化都是文字。',
+      '阶段带的档名写在带下面，不只靠颜色。',
+      '没有数据时写 —，不画样本。',
+    ],
+  },
+  'spark-tile': {
+    aliases: ['Sparkline card', 'KPI tile', 'Stat tile', 'Mini chart'],
+    use: [
+      '盘中监控一排关键指标（延迟、敞口、成交率）。',
+      '回测摘要里并排放几个核心数。',
+      '数值变了闪涨跌色（有 rollValue 时滚轮加闪）；新点追加时线平滑延伸，末点闪一圈光晕。',
+    ],
+    avoid: ['超过 5 个指标改用表格。', '要读历史序列细节时用 metric-card 或 brush-chart。'],
+    a11y: ['迷你线是 role="img" 加读屏名，没有数据时写 —。', '接近阈值要在说明里写字，不只靠边框变色。'],
+  },
+  'symbol-mark': {
+    aliases: ['Avatar', 'Logo chip', 'Ticker icon', 'Symbol icon'],
+    use: ['自选、行情行里品种名前的小圆标。', '没有图时用代码字母占位。'],
+    avoid: ['用户头像用 Avatar 类件，这里不是。', '要按数据着色时不要用它的底色。'],
+    a11y: ['role=img，读屏名取 name，没有就取 symbol。', '退回字母时字母对读屏隐藏，不会重复读。'],
   },
   'infinite-slider': {
     aliases: ['Ticker tape', 'Marquee', 'News ticker', 'Carousel'],

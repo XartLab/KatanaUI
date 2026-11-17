@@ -1,4 +1,5 @@
 /* SPDX-License-Identifier: MIT */
+/* 还直接读色阶的（2026-11-18 G4 迁 token 时留下）：--signal-orange-dim——characteristics 里没有同值、同语义的（轨道、徽标底、悬停的半透明灰档，暗橙边框），等 G0 补齐再换。 */
 /* KPI 瓦片 SparkTile（MetricCard variant="tile"，#1929）。尺寸与层次照 design/katana-console/project/components/SparkTile/preview.html；2026-11-18 从 quant.css 拆出。
    颜色只用 token（涨跌读 --pnl-up / --pnl-down，跟 data-updown 互换）；数字等宽；动效只用弹簧的 CSS 形式（--dur-* / --ease-*）。点阵字（--font-dot）保持 -webkit-font-smoothing: none。 */
 
@@ -10,9 +11,9 @@
   min-width: 0;
   margin: 0;
   padding: 8px 10px;
-  background: var(--bg-200);
+  background: var(--k-container-secondary-background);
   border: var(--hairline);
-  color: var(--ink-100);
+  color: var(--k-content-primary-foreground);
   font: inherit;
   text-align: left;
   font-variant-numeric: tabular-nums;
@@ -21,7 +22,7 @@ button.k-spark-tile {
   cursor: pointer;
 }
 button.k-spark-tile:hover {
-  background: var(--bg-300);
+  background: var(--k-container-primary-background);
 }
 button.k-spark-tile:focus-visible {
   outline: 2px solid var(--focus-ring);
@@ -31,7 +32,7 @@ button.k-spark-tile:focus-visible {
   font-family: var(--font-num-small);
   font-size: var(--text-tag-size);
   letter-spacing: 0.12em;
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
 }
 .k-spark-tile-value {
   font-family: var(--font-num);
@@ -42,13 +43,13 @@ button.k-spark-tile:focus-visible {
   white-space: nowrap;
 }
 .k-spark-tile-value.is-empty {
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
 }
 .k-spark-tile-value small {
   margin-left: 4px;
   font-size: var(--text-micro-size);
   letter-spacing: 0;
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
 }
 .k-spark-tile-chart {
   position: relative;
@@ -58,7 +59,7 @@ button.k-spark-tile:focus-visible {
   padding-right: 3px;
 }
 .k-spark-tile-chart.is-empty {
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-data) var(--font-sans);
   line-height: 24px;
 }
@@ -70,16 +71,16 @@ button.k-spark-tile:focus-visible {
 }
 .k-spark-tile-line {
   fill: none;
-  stroke: var(--k-spark-color, var(--ink-100));
+  stroke: var(--k-spark-color, var(--k-content-primary-foreground));
   stroke-width: 1.5;
   stroke-linejoin: round;
   vector-effect: non-scaling-stroke;
 }
 .k-spark-tile-line.is-neutral {
-  stroke: var(--ink-300);
+  stroke: var(--k-content-secondary-foreground);
 }
 .k-spark-tile-limit {
-  stroke: var(--signal-amber);
+  stroke: var(--k-status-warn-foreground);
   stroke-width: 1;
   stroke-dasharray: 2 2;
   vector-effect: non-scaling-stroke;
@@ -106,10 +107,10 @@ button.k-spark-tile:focus-visible {
   height: 5px;
   margin-top: -2.5px;
   border-radius: var(--radius-pill);
-  background: var(--k-spark-color, var(--ink-100));
+  background: var(--k-spark-color, var(--k-content-primary-foreground));
 }
 .k-spark-tile-end.is-neutral {
-  background: var(--ink-300);
+  background: var(--k-content-secondary-foreground);
 }
 .k-spark-tile-delta {
   display: flex;
@@ -119,7 +120,7 @@ button.k-spark-tile:focus-visible {
   line-height: 14px;
 }
 .k-spark-tile-note {
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
 }
 .k-spark-tile[data-state='near'],
 .k-spark-tile[data-state='over'] {
@@ -127,17 +128,17 @@ button.k-spark-tile:focus-visible {
 }
 .k-spark-tile[data-state='near'] .k-spark-tile-note,
 .k-spark-tile[data-state='over'] .k-spark-tile-note {
-  color: var(--signal-amber);
+  color: var(--k-status-warn-foreground);
 }
 .k-spark-tile[data-state='over'] {
   animation: k-tile-pulse var(--dur-gentle) var(--ease-gentle) 1;
 }
 @keyframes k-tile-pulse {
   0% {
-    box-shadow: 0 0 0 0 var(--signal-amber);
+    box-shadow: 0 0 0 0 var(--k-status-warn-foreground);
   }
   40% {
-    box-shadow: 0 0 0 2px var(--signal-amber);
+    box-shadow: 0 0 0 2px var(--k-status-warn-foreground);
   }
   100% {
     box-shadow: 0 0 0 0 transparent;

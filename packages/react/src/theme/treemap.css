@@ -27,7 +27,7 @@
   padding: 0 4px;
   overflow: hidden;
   border: 0;
-  color: var(--ink-200);
+  color: var(--k-content-body-foreground);
   background: transparent;
   font: var(--text-caption) var(--font-sans-small);
   font-weight: 600;
@@ -37,7 +37,7 @@
   cursor: pointer;
 }
 .k-treemap-head:hover {
-  color: var(--ink-100);
+  color: var(--k-content-primary-foreground);
   text-decoration: underline;
 }
 .k-treemap-cell {
@@ -47,7 +47,10 @@
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  color: var(--ink-100);
+  /* 字色按格子底色的明暗选黑或白（2026-11-18 对比度修复：原来一律白字，压在亮绿 / 亮红上只有 1.5 到 4.4:1）。
+     oklch 亮度 0.565 是分界：七档在八个主题、两种涨跌配色下都 ≥ 4.5:1（逐档算过，记在文档站 treemap 页）。 */
+  background: var(--treemap-cell, transparent);
+  color: oklch(from var(--treemap-cell, var(--k-surface-sunken-background)) clamp(0, (0.565 - l) * 1000, 1) 0 0);
   font: var(--text-caption) var(--font-sans-small);
   font-variant-numeric: tabular-nums;
   line-height: 14px;
@@ -70,7 +73,7 @@
   cursor: pointer;
 }
 .k-treemap-cell.is-link:hover {
-  outline: 1px solid var(--ink-100);
+  outline: 1px solid var(--k-content-primary-foreground);
   outline-offset: -1px;
 }
 .k-treemap-name {
@@ -89,30 +92,31 @@
 .k-treemap-legend li {
   flex: 1 1 0;
   height: 16px;
-  color: var(--ink-100);
+  background: var(--treemap-cell, transparent);
+  color: oklch(from var(--treemap-cell, var(--k-surface-sunken-background)) clamp(0, (0.565 - l) * 1000, 1) 0 0);
   font: var(--text-caption) var(--font-sans-small);
   line-height: 16px;
   text-align: center;
 }
 .k-treemap .is-step-3 {
-  background: color-mix(in srgb, var(--pnl-down) 100%, var(--bg-000));
+  --treemap-cell: color-mix(in srgb, var(--pnl-down) 100%, var(--k-surface-sunken-background));
 }
 .k-treemap .is-step-2 {
-  background: color-mix(in srgb, var(--pnl-down) 70%, var(--bg-000));
+  --treemap-cell: color-mix(in srgb, var(--pnl-down) 70%, var(--k-surface-sunken-background));
 }
 .k-treemap .is-step-1 {
-  background: color-mix(in srgb, var(--pnl-down) 42%, var(--bg-000));
+  --treemap-cell: color-mix(in srgb, var(--pnl-down) 42%, var(--k-surface-sunken-background));
 }
 .k-treemap .is-step0,
 .k-treemap .is-stepna {
-  background: color-mix(in srgb, var(--ink-300) 30%, var(--bg-000));
+  --treemap-cell: color-mix(in srgb, var(--k-content-secondary-foreground) 30%, var(--k-surface-sunken-background));
 }
 .k-treemap .is-step1 {
-  background: color-mix(in srgb, var(--pnl-up) 42%, var(--bg-000));
+  --treemap-cell: color-mix(in srgb, var(--pnl-up) 42%, var(--k-surface-sunken-background));
 }
 .k-treemap .is-step2 {
-  background: color-mix(in srgb, var(--pnl-up) 70%, var(--bg-000));
+  --treemap-cell: color-mix(in srgb, var(--pnl-up) 70%, var(--k-surface-sunken-background));
 }
 .k-treemap .is-step3 {
-  background: color-mix(in srgb, var(--pnl-up) 100%, var(--bg-000));
+  --treemap-cell: color-mix(in srgb, var(--pnl-up) 100%, var(--k-surface-sunken-background));
 }

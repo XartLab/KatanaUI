@@ -50,6 +50,8 @@ export type TreemapProps<T> = {
   /** Called when a group header is clicked. */
   onGroup?: (name: string) => void
   /** Called when a cell is clicked; when given, cells are focusable buttons that trigger on Enter. */
+  onSelect?: (data: T) => void
+  /** Deprecated: use onSelect. @deprecated Use onSelect. */
   onItem?: (data: T) => void
   /** Extra class names per part. */
   classes?: TreemapClasses
@@ -114,10 +116,12 @@ export function Treemap<T>({
   legendText,
   toolbar,
   onGroup,
-  onItem,
+  onSelect,
+  onItem: legacyOnItem,
   cellKey,
   classes = {},
 }: TreemapProps<T>) {
+  const onItem = onSelect ?? legacyOnItem
   return (
     <figure className={join('k-treemap', classes.root)}>
       {toolbar && <div className={join('k-treemap-bar', classes.bar)}>{toolbar}</div>}

@@ -20,7 +20,6 @@ import {
   MetricCard,
   MetricCardGrid,
   PnlText,
-  SparkTile,
   type EquityCurvePoint,
   type MetricRange,
   type MetricStage,
@@ -89,8 +88,6 @@ export function LiveQuoteDemo() {
   )
   const change = state.price - PREV_CLOSE
   const percent = (change / PREV_CLOSE) * 100
-  const tone = change > 0 ? 'up' : change < 0 ? 'down' : 'flat'
-  const sign = change >= 0 ? '+' : ''
   return (
     <Live id="quote" step={advance}>
       <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start', flexWrap: 'wrap' }}>
@@ -98,17 +95,16 @@ export function LiveQuoteDemo() {
           <QuoteCard
             name="示例甲"
             symbol="AAA"
-            price={state.price.toFixed(2)}
-            change={`${sign}${change.toFixed(2)}`}
-            percent={`${sign}${percent.toFixed(2)}%`}
-            tone={tone}
+            last={state.price}
+            change={change}
+            changePct={percent}
             spark={state.trail}
-            sparkLabel="示例甲走势"
+            labels={{ spark: '示例甲走势' }}
           />
         </div>
         <p>
           行内：
-          <PriceTag name="示例甲" price={state.price.toFixed(2)} change={`${sign}${percent.toFixed(2)}%`} tone={tone} />
+          <PriceTag name="示例甲" last={state.price} changePct={percent} />
         </p>
       </div>
     </Live>
@@ -231,10 +227,10 @@ export function LiveKeyStatsDemo() {
       <KeyStats
         title="关键数据"
         items={[
-          { key: 'cap', label: '总市值', value: `${state.cap.toFixed(2)}T`, unit: 'USD', badge: '超大盘' },
-          { key: 'pe', label: '市盈率（TTM）', value: state.pe.toFixed(2) },
-          { key: 'eps', label: '每股收益（TTM）', value: state.eps.toFixed(2), unit: 'USD' },
-          { key: 'beta', label: 'Beta（1 年）', value: '—' },
+          { id: 'cap', label: '总市值', value: `${state.cap.toFixed(2)}T`, unit: 'USD', badge: '超大盘' },
+          { id: 'pe', label: '市盈率（TTM）', value: state.pe.toFixed(2) },
+          { id: 'eps', label: '每股收益（TTM）', value: state.eps.toFixed(2), unit: 'USD' },
+          { id: 'beta', label: 'Beta（1 年）', value: '—' },
         ]}
       />
     </Live>
@@ -270,30 +266,33 @@ export function LiveSparkTileDemo() {
   return (
     <Live id="spark-tile" step={advance}>
       <div className="gal-grid-5">
-        <SparkTile
+        <MetricCard
+          variant="tile"
           label="NET ASSET"
           value={`${state.nav.toFixed(2)}M`}
           series={state.navTrail}
-          sparkLabel="净值走势"
-          delta={(state.nav / NAV_BASE - 1) * 100}
+          labels={{ spark: '净值走势' }}
+          changePct={(state.nav / NAV_BASE - 1) * 100}
           note="今日"
         />
-        <SparkTile
+        <MetricCard
+          variant="tile"
           label="DRAWDOWN"
           value={`${state.dd.toFixed(1)}%`}
           series={state.navTrail.map((v) => 20 - v)}
-          sparkLabel="回撤走势"
+          labels={{ spark: '回撤走势' }}
           trendTone="neutral"
           note="峰值 -6.8%"
         />
-        <SparkTile
+        <MetricCard
+          variant="tile"
           label="EXPOSURE"
           value={String(state.exposure)}
           unit="/ 150%"
           series={state.expTrail}
-          sparkLabel="敞口走势，虚线是上限"
+          labels={{ spark: '敞口走势，虚线是上限' }}
           threshold={19}
-          state={over ? 'over' : state.exposure >= 125 ? 'near' : 'normal'}
+          status={over ? 'over' : state.exposure >= 125 ? 'near' : 'normal'}
           note={over ? '越过上限' : state.exposure >= 125 ? '接近上限' : '正常'}
         />
       </div>
@@ -419,7 +418,7 @@ export function LiveMetricCardDemo() {
           return (
             <MetricCard
               key={card.title}
-              title={card.title}
+              label={card.title}
               value={last.toFixed(card.digits)}
               changes={[
                 { key: 'd', label: '较前日', value: since(1) },
@@ -427,8 +426,7 @@ export function LiveMetricCardDemo() {
               ]}
               ranges={ranges}
               trendTone={index === 0 ? 'neutral' : 'inverse'}
-              rangeLabel={`${card.title}走势区间`}
-              sparkLabel={`${card.title}走势`}
+              labels={{ range: `${card.title}走势区间`, spark: `${card.title}走势` }}
               stages={index === 0 ? FEAR_GREED : undefined}
               current={last}
               source="演示数据，不是行情"

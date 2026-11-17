@@ -10,8 +10,8 @@
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `items` | `PerformanceItem[]` | — | { key, label, change（百分数；没有写 null，画「—」）}。 |
-| `value / defaultValue / onValueChange` | `string / string / (key) => void` | — | 选中的格子；不给 value 就自己记。 |
+| `items` | `PerformanceItem[]` | — | { id（旧名 key）, label, change（百分数；没有写 null，画「—」）}。 |
+| `value / defaultValue / onValueChange` | `string / string / (id) => void` | — | 选中的格子；不给 value 就自己记。 |
 | `label` | `string` | — | 读屏名（role=group），必填。 |
 | `digits` | `number` | `2` | 涨跌幅位数。 |
 

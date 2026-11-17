@@ -1,17 +1,18 @@
 // SPDX-License-Identifier: MIT
 // KatanaMetricCard：一个指标一张卡（大号当前值、几项涨跌、迷你走势线、来源）。数字与文字都由智能体传，卡片不算也不取数。
+// 字段跟读数壳统一（2026-11-18）：label / value / unit / changes / series / labels.spark；瓦片外观是 KatanaSparkTile。
 import { createComponentImplementation } from '@a2ui/react'
 import type { ComponentApi } from '@a2ui/web_core'
 import { CommonSchemas } from '@a2ui/web_core/v1_0'
 import { z } from 'zod'
-import { MetricCard } from '../../quant/index.ts'
+import { MetricCard } from '../../quotes/index.ts'
 import { Cell, numberList, numberListSchema, weightSchema } from '../support.tsx'
 
 export const KatanaMetricCardApi = {
   name: 'KatanaMetricCard',
   schema: z
     .object({
-      title: CommonSchemas.DynamicString.describe('The metric name shown above the number.'),
+      label: CommonSchemas.DynamicString.describe('The metric name shown above the number.'),
       value: CommonSchemas.DynamicString.describe(
         'The current value, already formatted as text. Use an empty string when there is no data.',
       ),
@@ -33,12 +34,16 @@ export const KatanaMetricCardApi = {
         .max(4)
         .describe('Up to four changes shown under the value.')
         .optional(),
-      trend: numberListSchema(
+      series: numberListSchema(
         'Recent values from oldest to newest for the small trend line. Omit to hide the line.',
       ).optional(),
-      trendLabel: CommonSchemas.DynamicString.describe(
-        'Accessible name of the trend line as a whole sentence. Required when trend is given.',
-      ).optional(),
+      labels: z
+        .object({
+          spark: z.string().describe('Accessible name of the trend line as a whole sentence.'),
+        })
+        .strict()
+        .describe('Screen-reader text, in the language of the user. Required when series is given.')
+        .optional(),
       trendTone: z
         .enum(['direction', 'neutral', 'inverse'])
         .default('direction')
@@ -56,23 +61,22 @@ export const KatanaMetricCardApi = {
 } satisfies ComponentApi
 
 export const KatanaMetricCard = createComponentImplementation(KatanaMetricCardApi, ({ props }) => {
-  const trend = numberList(props.trend)
-  const label = props.trendLabel ?? props.title ?? ''
+  const series = numberList(props.series)
+  const spark = props.labels?.spark ?? props.label ?? ''
   return (
     <Cell weight={props.weight}>
       <MetricCard
-        title={props.title ?? ''}
+        label={props.label ?? ''}
         value={props.value ? props.value : null}
         unit={props.unit}
         changes={(props.changes ?? []).map((change, index) => ({
-          key: String(index),
+          id: String(index),
           label: change.label,
           value: change.value,
         }))}
-        ranges={trend.length > 1 ? [{ key: 'trend', label, values: trend }] : undefined}
+        series={series.length > 1 && props.labels ? series : undefined}
         trendTone={props.trendTone}
-        rangeLabel={label}
-        sparkLabel={label}
+        labels={{ spark }}
         source={props.source}
         updatedAt={props.updatedAt}
       />

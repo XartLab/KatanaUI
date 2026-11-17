@@ -13043,6 +13043,11 @@
       "source": "src/patterns/font-catalog.ts",
       "props": []
     },
+    "FormatPrice": {
+      "kind": "type",
+      "source": "src/quotes/quote-row.ts",
+      "props": []
+    },
     "GRID_LOADER_PATTERNS": {
       "kind": "value",
       "source": "src/katana/grid-loader.tsx",
@@ -15849,16 +15854,22 @@
       "source": "src/quotes/key-stats.tsx",
       "props": [
         {
+          "name": "id",
+          "type": "string",
+          "required": false,
+          "description": "Stable item id."
+        },
+        {
           "name": "key",
           "type": "string",
-          "required": true,
-          "description": ""
+          "required": false,
+          "description": "Deprecated: use id."
         },
         {
           "name": "label",
           "type": "string",
           "required": true,
-          "description": ""
+          "description": "Small grey label above the value."
         },
         {
           "name": "value",
@@ -15888,38 +15899,44 @@
           "name": "title",
           "type": "string",
           "required": true,
-          "description": ""
+          "description": "Section title (also the accessible name)."
         },
         {
           "name": "items",
           "type": "readonly KeyStatItem[]",
           "required": true,
-          "description": ""
+          "description": "The stats, in reading order."
         },
         {
           "name": "onTitle",
           "type": "() => void",
           "required": false,
-          "description": "给了：标题与每一项的标签带「›」、可点。"
+          "description": "When given the title gets a chevron and is clickable."
+        },
+        {
+          "name": "onSelect",
+          "type": "(item: KeyStatItem) => void",
+          "required": false,
+          "description": "When given each label gets a chevron and is clickable."
         },
         {
           "name": "onItem",
           "type": "(item: KeyStatItem) => void",
           "required": false,
-          "description": ""
+          "description": "Deprecated: use onSelect."
         },
         {
           "name": "columns",
           "type": "number",
           "required": false,
           "default": "3",
-          "description": ""
+          "description": "Number of grid columns, 3 by default."
         },
         {
           "name": "className",
           "type": "string",
           "required": false,
-          "description": ""
+          "description": "Extra class name on the root."
         }
       ]
     },
@@ -15931,37 +15948,43 @@
           "name": "title",
           "type": "string",
           "required": true,
-          "description": ""
+          "description": "Section title (also the accessible name)."
         },
         {
           "name": "items",
           "type": "readonly KeyStatItem[]",
           "required": true,
-          "description": ""
+          "description": "The stats, in reading order."
         },
         {
           "name": "onTitle",
           "type": "() => void",
           "required": false,
-          "description": "给了：标题与每一项的标签带「›」、可点。"
+          "description": "When given the title gets a chevron and is clickable."
+        },
+        {
+          "name": "onSelect",
+          "type": "(item: KeyStatItem) => void",
+          "required": false,
+          "description": "When given each label gets a chevron and is clickable."
         },
         {
           "name": "onItem",
           "type": "(item: KeyStatItem) => void",
           "required": false,
-          "description": ""
+          "description": "Deprecated: use onSelect."
         },
         {
           "name": "columns",
           "type": "number",
           "required": false,
-          "description": ""
+          "description": "Number of grid columns, 3 by default."
         },
         {
           "name": "className",
           "type": "string",
           "required": false,
-          "description": ""
+          "description": "Extra class name on the root."
         }
       ]
     },
@@ -16544,6 +16567,168 @@
       "kind": "type",
       "source": "src/katana/led.tsx",
       "props": []
+    },
+    "LegacyPeerItem": {
+      "kind": "type",
+      "source": "src/quotes/peer-cards.tsx",
+      "props": [
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": "Company or instrument name (truncated when long)."
+        },
+        {
+          "name": "logoSrc",
+          "type": "string",
+          "required": false,
+          "description": "Logo image of the symbol mark; letters are drawn when omitted."
+        },
+        {
+          "name": "unit",
+          "type": "string",
+          "required": false,
+          "description": "Small text after the price (USD)."
+        },
+        {
+          "name": "key",
+          "type": "string",
+          "required": true,
+          "description": "Deprecated: use id."
+        },
+        {
+          "name": "code",
+          "type": "string",
+          "required": true,
+          "description": "Deprecated: use symbol."
+        },
+        {
+          "name": "price",
+          "type": "string",
+          "required": true,
+          "description": "Deprecated: use last with formatPrice."
+        },
+        {
+          "name": "change",
+          "type": "number",
+          "required": true,
+          "description": "Deprecated: use changePct (this was the percentage)."
+        }
+      ]
+    },
+    "LegacyQuoteRow": {
+      "kind": "type",
+      "source": "src/quotes/quote-table.tsx",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "symbol",
+          "type": "string",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "price",
+          "type": "string",
+          "required": true,
+          "description": "Deprecated: use last with formatPrice."
+        },
+        {
+          "name": "value",
+          "type": "number",
+          "required": false,
+          "description": "Deprecated: use last."
+        },
+        {
+          "name": "percent",
+          "type": "string",
+          "required": false,
+          "description": "Deprecated: use changePct."
+        },
+        {
+          "name": "tone",
+          "type": "QuoteTone",
+          "required": false,
+          "description": "Deprecated: derived from change."
+        },
+        {
+          "name": "spark",
+          "type": "readonly number[]",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "sparkLabel",
+          "type": "string",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "LegacyWatchlistRow": {
+      "kind": "type",
+      "source": "src/quotes/watchlist.tsx",
+      "props": [
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "description": "Display name; the symbol is shown when omitted."
+        },
+        {
+          "name": "flagged",
+          "type": "boolean",
+          "required": false,
+          "description": "Whether the row's flag is on."
+        },
+        {
+          "name": "last",
+          "type": "number",
+          "required": true,
+          "description": "Last price."
+        },
+        {
+          "name": "change",
+          "type": "number",
+          "required": true,
+          "description": "Change amount, signed."
+        },
+        {
+          "name": "changePct",
+          "type": "number",
+          "required": true,
+          "description": "Change as a percentage (1.5 means 1.5%)."
+        },
+        {
+          "name": "logoSrc",
+          "type": "string",
+          "required": false,
+          "description": "Logo image of the symbol mark; letters are drawn when omitted."
+        },
+        {
+          "name": "key",
+          "type": "string",
+          "required": true,
+          "description": "Deprecated: use id."
+        },
+        {
+          "name": "code",
+          "type": "string",
+          "required": true,
+          "description": "Deprecated: use symbol."
+        }
+      ]
     },
     "LimitLadder": {
       "kind": "component",
@@ -18263,101 +18448,162 @@
       "source": "src/quotes/metric-card.tsx",
       "props": [
         {
+          "name": "variant",
+          "type": "'card' | 'tile'",
+          "required": false,
+          "default": "'card'",
+          "description": "card is the full metric card; tile is the compact KPI tile (formerly SparkTile)."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": false,
+          "description": "Title of the readout (the card heading or the tile's dot-matrix tag)."
+        },
+        {
           "name": "title",
           "type": "string",
-          "required": true,
-          "description": ""
+          "required": false,
+          "description": "Deprecated: use label."
         },
         {
           "name": "value",
           "type": "string | null",
           "required": true,
-          "description": "已格式化的当前值；没有数据传 null。"
+          "description": "Formatted current value; null when there is no data."
         },
         {
           "name": "unit",
           "type": "string",
           "required": false,
-          "description": "数值后面的小字。"
+          "description": "Small text after the value."
+        },
+        {
+          "name": "rollValue",
+          "type": "number",
+          "required": false,
+          "description": "Tile: when given the changed digits roll like an odometer."
+        },
+        {
+          "name": "changePct",
+          "type": "number",
+          "required": false,
+          "description": "One change as a percentage (1.5 means 1.5%); the tile shows it beside note."
         },
         {
           "name": "changes",
           "type": "readonly MetricChange[]",
           "required": false,
-          "description": "较前日 / 周 / 月 / 年，想放几个放几个。"
+          "description": "Card: several changes (vs day / week / month / year)."
+        },
+        {
+          "name": "series",
+          "type": "readonly number[]",
+          "required": false,
+          "description": "Trend values, oldest to newest: the tile's line, or the card's line when there are no ranges."
         },
         {
           "name": "ranges",
           "type": "readonly MetricRange[]",
           "required": false,
-          "description": "走势分段（1 月 / 3 月 / 6 月 / 1 年）；只给一段就不画分段控件。"
+          "description": "Card: trend ranges (1M / 3M / 6M / 1Y); one range draws no switch."
         },
         {
           "name": "range",
           "type": "string",
           "required": false,
-          "description": "当前段的 key；不给用 defaultRange，再不给取第一段。给了就由调用方控制。"
+          "description": "Card: the current range id (controlled)."
         },
         {
           "name": "defaultRange",
           "type": "string",
           "required": false,
-          "description": ""
+          "description": "Card: the initial range id."
         },
         {
           "name": "onRangeChange",
-          "type": "(key: string) => void",
+          "type": "(id: string) => void",
           "required": false,
-          "description": ""
+          "description": "Card: called with the range id when it changes."
         },
         {
           "name": "trendTone",
-          "type": "MetricTrendTone",
+          "type": "MetricTrendTone | 'series'",
           "required": false,
-          "default": "'direction'",
-          "description": "走势线怎么着色，默认 direction。"
+          "description": "How the line is colored: card direction / neutral / inverse, tile series / neutral."
+        },
+        {
+          "name": "labels",
+          "type": "MetricCardLabels",
+          "required": false,
+          "description": "Accessible texts."
         },
         {
           "name": "rangeLabel",
           "type": "string",
-          "required": true,
-          "description": "分段控件与走势线的读屏名（整句）。"
+          "required": false,
+          "description": "Deprecated: use labels.range."
         },
         {
           "name": "sparkLabel",
           "type": "string",
-          "required": true,
-          "description": ""
+          "required": false,
+          "description": "Deprecated: use labels.spark."
         },
         {
           "name": "stages",
           "type": "readonly MetricStage[]",
           "required": false,
-          "description": "阶段带：从低到高的档；current 是当前值（原始数，跟 from / to 同一单位）。"
+          "description": "Card: stage band from low to high; current is the raw value in the same unit."
         },
         {
           "name": "current",
           "type": "number",
           "required": false,
-          "description": ""
+          "description": "Card: raw current value placed on the stage band."
         },
         {
           "name": "source",
           "type": "ReactNode",
           "required": false,
-          "description": "来源与更新时间，各一段文字，由调用方写。"
+          "description": "Card: source line."
         },
         {
           "name": "updatedAt",
           "type": "ReactNode",
           "required": false,
-          "description": ""
+          "description": "Card: update time line."
+        },
+        {
+          "name": "threshold",
+          "type": "number",
+          "required": false,
+          "description": "Tile: threshold in the series unit, drawn as an amber dashed line."
+        },
+        {
+          "name": "status",
+          "type": "SparkTileState",
+          "required": false,
+          "default": "'normal'",
+          "description": "Tile: normal, near or over the threshold; also write it in note."
+        },
+        {
+          "name": "note",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Tile: small text beside the change; near and over must say it here, not only by color."
+        },
+        {
+          "name": "onSelect",
+          "type": "() => void",
+          "required": false,
+          "description": "Tile: when given the whole tile is a button."
         },
         {
           "name": "className",
           "type": "string",
           "required": false,
-          "description": ""
+          "description": "Extra class name on the root."
         }
       ]
     },
@@ -18386,7 +18632,7 @@
         },
         {
           "name": "ranges",
-          "type": "readonly { key: string; label: string }[]",
+          "type": "readonly { id?: string; /** Deprecated: use id. @deprecated Use id. */ key?: string; label: string }[]",
           "required": false,
           "description": "共用的区间分段（放在墙顶上一次）：传了它，卡片不再各画各的分段控件，所有卡按它的 key 取自己 ranges 里同 key 的一段。"
         },
@@ -18446,7 +18692,7 @@
         },
         {
           "name": "ranges",
-          "type": "readonly { key: string; label: string }[]",
+          "type": "readonly { id?: string; /** Deprecated: use id. @deprecated Use id. */ key?: string; label: string }[]",
           "required": false,
           "description": "共用的区间分段（放在墙顶上一次）：传了它，卡片不再各画各的分段控件，所有卡按它的 key 取自己 ranges 里同 key 的一段。"
         },
@@ -18487,100 +18733,160 @@
       "source": "src/quotes/metric-card.tsx",
       "props": [
         {
+          "name": "variant",
+          "type": "'card' | 'tile'",
+          "required": false,
+          "description": "card is the full metric card; tile is the compact KPI tile (formerly SparkTile)."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": false,
+          "description": "Title of the readout (the card heading or the tile's dot-matrix tag)."
+        },
+        {
           "name": "title",
           "type": "string",
-          "required": true,
-          "description": ""
+          "required": false,
+          "description": "Deprecated: use label."
         },
         {
           "name": "value",
           "type": "string | null",
           "required": true,
-          "description": "已格式化的当前值；没有数据传 null。"
+          "description": "Formatted current value; null when there is no data."
         },
         {
           "name": "unit",
           "type": "string",
           "required": false,
-          "description": "数值后面的小字。"
+          "description": "Small text after the value."
+        },
+        {
+          "name": "rollValue",
+          "type": "number",
+          "required": false,
+          "description": "Tile: when given the changed digits roll like an odometer."
+        },
+        {
+          "name": "changePct",
+          "type": "number",
+          "required": false,
+          "description": "One change as a percentage (1.5 means 1.5%); the tile shows it beside note."
         },
         {
           "name": "changes",
           "type": "readonly MetricChange[]",
           "required": false,
-          "description": "较前日 / 周 / 月 / 年，想放几个放几个。"
+          "description": "Card: several changes (vs day / week / month / year)."
+        },
+        {
+          "name": "series",
+          "type": "readonly number[]",
+          "required": false,
+          "description": "Trend values, oldest to newest: the tile's line, or the card's line when there are no ranges."
         },
         {
           "name": "ranges",
           "type": "readonly MetricRange[]",
           "required": false,
-          "description": "走势分段（1 月 / 3 月 / 6 月 / 1 年）；只给一段就不画分段控件。"
+          "description": "Card: trend ranges (1M / 3M / 6M / 1Y); one range draws no switch."
         },
         {
           "name": "range",
           "type": "string",
           "required": false,
-          "description": "当前段的 key；不给用 defaultRange，再不给取第一段。给了就由调用方控制。"
+          "description": "Card: the current range id (controlled)."
         },
         {
           "name": "defaultRange",
           "type": "string",
           "required": false,
-          "description": ""
+          "description": "Card: the initial range id."
         },
         {
           "name": "onRangeChange",
-          "type": "(key: string) => void",
+          "type": "(id: string) => void",
           "required": false,
-          "description": ""
+          "description": "Card: called with the range id when it changes."
         },
         {
           "name": "trendTone",
-          "type": "MetricTrendTone",
+          "type": "MetricTrendTone | 'series'",
           "required": false,
-          "description": "走势线怎么着色，默认 direction。"
+          "description": "How the line is colored: card direction / neutral / inverse, tile series / neutral."
+        },
+        {
+          "name": "labels",
+          "type": "MetricCardLabels",
+          "required": false,
+          "description": "Accessible texts."
         },
         {
           "name": "rangeLabel",
           "type": "string",
-          "required": true,
-          "description": "分段控件与走势线的读屏名（整句）。"
+          "required": false,
+          "description": "Deprecated: use labels.range."
         },
         {
           "name": "sparkLabel",
           "type": "string",
-          "required": true,
-          "description": ""
+          "required": false,
+          "description": "Deprecated: use labels.spark."
         },
         {
           "name": "stages",
           "type": "readonly MetricStage[]",
           "required": false,
-          "description": "阶段带：从低到高的档；current 是当前值（原始数，跟 from / to 同一单位）。"
+          "description": "Card: stage band from low to high; current is the raw value in the same unit."
         },
         {
           "name": "current",
           "type": "number",
           "required": false,
-          "description": ""
+          "description": "Card: raw current value placed on the stage band."
         },
         {
           "name": "source",
           "type": "ReactNode",
           "required": false,
-          "description": "来源与更新时间，各一段文字，由调用方写。"
+          "description": "Card: source line."
         },
         {
           "name": "updatedAt",
           "type": "ReactNode",
           "required": false,
-          "description": ""
+          "description": "Card: update time line."
+        },
+        {
+          "name": "threshold",
+          "type": "number",
+          "required": false,
+          "description": "Tile: threshold in the series unit, drawn as an amber dashed line."
+        },
+        {
+          "name": "status",
+          "type": "SparkTileState",
+          "required": false,
+          "description": "Tile: normal, near or over the threshold; also write it in note."
+        },
+        {
+          "name": "note",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Tile: small text beside the change; near and over must say it here, not only by color."
+        },
+        {
+          "name": "onSelect",
+          "type": "() => void",
+          "required": false,
+          "description": "Tile: when given the whole tile is a button."
         },
         {
           "name": "className",
           "type": "string",
           "required": false,
-          "description": ""
+          "description": "Extra class name on the root."
         }
       ]
     },
@@ -18589,22 +18895,28 @@
       "source": "src/quotes/metric-card.tsx",
       "props": [
         {
+          "name": "id",
+          "type": "string",
+          "required": false,
+          "description": "Stable id of the change row."
+        },
+        {
           "name": "key",
           "type": "string",
-          "required": true,
-          "description": ""
+          "required": false,
+          "description": "Deprecated: use id."
         },
         {
           "name": "label",
           "type": "string",
           "required": true,
-          "description": "「较前日」之类，由调用方写。"
+          "description": "Label such as \"vs yesterday\", written by the caller."
         },
         {
           "name": "value",
           "type": "number | null",
           "required": true,
-          "description": "变化百分数（1.5 就是 1.5%）；没有数据传 null，写「—」。"
+          "description": "Change as a percentage (1.5 means 1.5%); null writes an em dash."
         }
       ]
     },
@@ -18618,22 +18930,28 @@
       "source": "src/quotes/metric-card.tsx",
       "props": [
         {
+          "name": "id",
+          "type": "string",
+          "required": false,
+          "description": "Stable id of the range (the value of the range switch)."
+        },
+        {
           "name": "key",
           "type": "string",
-          "required": true,
-          "description": ""
+          "required": false,
+          "description": "Deprecated: use id."
         },
         {
           "name": "label",
           "type": "string",
           "required": true,
-          "description": "分段按钮上的字（1 月）。"
+          "description": "Text on the range button (1M)."
         },
         {
           "name": "values",
           "type": "readonly number[]",
           "required": true,
-          "description": "这一段的走势，从旧到新；少于两个数画不出线，写「—」。"
+          "description": "Values of this range, oldest to newest; fewer than two draws a dash."
         }
       ]
     },
@@ -22057,15 +22375,22 @@
       "props": [
         {
           "name": "items",
-          "type": "readonly PeerItem[]",
+          "type": "readonly (PeerItem | LegacyPeerItem)[]",
           "required": true,
-          "description": ""
+          "description": "The cards, in order."
         },
         {
           "name": "labels",
           "type": "PeerCardsLabels",
           "required": true,
-          "description": ""
+          "description": "Accessible names and the compare button text."
+        },
+        {
+          "name": "formatPrice",
+          "type": "FormatPrice",
+          "required": false,
+          "default": "plainPrice",
+          "description": "Writes the price; two decimals when omitted."
         },
         {
           "name": "onSelect",
@@ -22135,15 +22460,21 @@
       "props": [
         {
           "name": "items",
-          "type": "readonly PeerItem[]",
+          "type": "readonly (PeerItem | LegacyPeerItem)[]",
           "required": true,
-          "description": ""
+          "description": "The cards, in order."
         },
         {
           "name": "labels",
           "type": "PeerCardsLabels",
           "required": true,
-          "description": ""
+          "description": "Accessible names and the compare button text."
+        },
+        {
+          "name": "formatPrice",
+          "type": "FormatPrice",
+          "required": false,
+          "description": "Writes the price; two decimals when omitted."
         },
         {
           "name": "onSelect",
@@ -22176,46 +22507,46 @@
       "source": "src/quotes/peer-cards.tsx",
       "props": [
         {
-          "name": "key",
+          "name": "symbol",
           "type": "string",
           "required": true,
-          "description": ""
+          "description": "Symbol code (BTCUSDT, 600519)."
         },
         {
-          "name": "code",
+          "name": "id",
           "type": "string",
           "required": true,
-          "description": ""
+          "description": "Stable row id (used for keys, reordering and enter marks)."
+        },
+        {
+          "name": "last",
+          "type": "number",
+          "required": true,
+          "description": "Last price."
+        },
+        {
+          "name": "changePct",
+          "type": "number",
+          "required": true,
+          "description": "Change as a percentage (1.5 means 1.5%)."
         },
         {
           "name": "name",
           "type": "string",
           "required": true,
-          "description": ""
-        },
-        {
-          "name": "price",
-          "type": "string",
-          "required": true,
-          "description": "已格式化的价格。"
+          "description": "Company or instrument name (truncated when long)."
         },
         {
           "name": "unit",
           "type": "string",
           "required": false,
-          "description": "价格后的小字（USD）。"
-        },
-        {
-          "name": "change",
-          "type": "number",
-          "required": true,
-          "description": "涨跌幅，百分数。"
+          "description": "Small text after the price (USD)."
         },
         {
           "name": "logoSrc",
           "type": "string",
           "required": false,
-          "description": ""
+          "description": "Logo image of the symbol mark; letters are drawn when omitted."
         }
       ]
     },
@@ -22224,10 +22555,16 @@
       "source": "src/quotes/performance-strip.tsx",
       "props": [
         {
+          "name": "id",
+          "type": "string",
+          "required": false,
+          "description": "Stable cell id (the value passed to onValueChange)."
+        },
+        {
           "name": "key",
           "type": "string",
-          "required": true,
-          "description": ""
+          "required": false,
+          "description": "Deprecated: use id."
         },
         {
           "name": "label",
@@ -23441,23 +23778,41 @@
           "description": "Symbol name or code; only price and change are shown when omitted."
         },
         {
+          "name": "last",
+          "type": "number",
+          "required": false,
+          "description": "Last price."
+        },
+        {
+          "name": "changePct",
+          "type": "number",
+          "required": false,
+          "description": "Change as a percentage (1.5 means 1.5%); not shown when omitted."
+        },
+        {
+          "name": "formatPrice",
+          "type": "FormatPrice",
+          "required": false,
+          "default": "plainPrice",
+          "description": "Writes the last price; two decimals when omitted."
+        },
+        {
           "name": "price",
           "type": "string",
-          "required": true,
-          "description": "The already formatted price."
+          "required": false,
+          "description": "Deprecated: use last with formatPrice."
         },
         {
           "name": "change",
           "type": "string",
           "required": false,
-          "description": "The already formatted change, signed (for example \"+1.20%\")."
+          "description": "Deprecated: use changePct."
         },
         {
           "name": "tone",
           "type": "QuoteTone",
           "required": false,
-          "default": "'flat'",
-          "description": "Up, down or flat: sets the color and the triangle (none for flat)."
+          "description": "Up, down or flat: sets the color and the triangle (none for flat); derived from changePct when omitted."
         },
         {
           "name": "label",
@@ -23484,22 +23839,40 @@
           "description": "Symbol name or code; only price and change are shown when omitted."
         },
         {
+          "name": "last",
+          "type": "number",
+          "required": false,
+          "description": "Last price."
+        },
+        {
+          "name": "changePct",
+          "type": "number",
+          "required": false,
+          "description": "Change as a percentage (1.5 means 1.5%); not shown when omitted."
+        },
+        {
+          "name": "formatPrice",
+          "type": "FormatPrice",
+          "required": false,
+          "description": "Writes the last price; two decimals when omitted."
+        },
+        {
           "name": "price",
           "type": "string",
-          "required": true,
-          "description": "The already formatted price."
+          "required": false,
+          "description": "Deprecated: use last with formatPrice."
         },
         {
           "name": "change",
           "type": "string",
           "required": false,
-          "description": "The already formatted change, signed (for example \"+1.20%\")."
+          "description": "Deprecated: use changePct."
         },
         {
           "name": "tone",
           "type": "QuoteTone",
           "required": false,
-          "description": "Up, down or flat: sets the color and the triangle (none for flat)."
+          "description": "Up, down or flat: sets the color and the triangle (none for flat); derived from changePct when omitted."
         },
         {
           "name": "label",
@@ -23940,8 +24313,8 @@
         {
           "name": "name",
           "type": "string",
-          "required": true,
-          "description": "Name of the symbol."
+          "required": false,
+          "description": "Name of the symbol; the symbol code takes its place when omitted."
         },
         {
           "name": "symbol",
@@ -23950,29 +24323,46 @@
           "description": "Code, small and muted beside the name."
         },
         {
-          "name": "price",
-          "type": "string",
-          "required": true,
-          "description": "The already formatted price."
+          "name": "last",
+          "type": "number",
+          "required": false,
+          "description": "Last price."
         },
         {
           "name": "change",
-          "type": "string",
+          "type": "number | string",
           "required": false,
-          "description": "The already formatted change amount, signed."
+          "description": "Change amount, signed (a preformatted string is deprecated)."
         },
         {
-          "name": "percent",
-          "type": "string",
+          "name": "changePct",
+          "type": "number",
           "required": false,
-          "description": "The already formatted change percentage, signed."
+          "description": "Change as a percentage (1.5 means 1.5%)."
+        },
+        {
+          "name": "formatPrice",
+          "type": "FormatPrice",
+          "required": false,
+          "description": "Writes the last price and the change amount; two decimals when omitted."
         },
         {
           "name": "tone",
           "type": "QuoteTone",
           "required": false,
-          "default": "'flat'",
-          "description": "Up, down or flat."
+          "description": "Up, down or flat; derived from change (then changePct) when omitted."
+        },
+        {
+          "name": "price",
+          "type": "string",
+          "required": false,
+          "description": "Deprecated: use last with formatPrice."
+        },
+        {
+          "name": "percent",
+          "type": "string",
+          "required": false,
+          "description": "Deprecated: use changePct."
         },
         {
           "name": "spark",
@@ -23981,10 +24371,16 @@
           "description": "Values of the mini chart, oldest to newest; no chart is drawn when omitted."
         },
         {
+          "name": "labels",
+          "type": "QuoteCardLabels",
+          "required": false,
+          "description": "Accessible texts."
+        },
+        {
           "name": "sparkLabel",
           "type": "string",
           "required": false,
-          "description": "Accessible name of the mini chart."
+          "description": "Deprecated: use labels.spark."
         },
         {
           "name": "footer",
@@ -24013,6 +24409,18 @@
         }
       ]
     },
+    "QuoteCardLabels": {
+      "kind": "type",
+      "source": "src/quotes/quote-card.tsx",
+      "props": [
+        {
+          "name": "spark",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the mini chart."
+        }
+      ]
+    },
     "QuoteCardProps": {
       "kind": "type",
       "source": "src/quotes/quote-card.tsx",
@@ -24020,8 +24428,8 @@
         {
           "name": "name",
           "type": "string",
-          "required": true,
-          "description": "Name of the symbol."
+          "required": false,
+          "description": "Name of the symbol; the symbol code takes its place when omitted."
         },
         {
           "name": "symbol",
@@ -24030,28 +24438,46 @@
           "description": "Code, small and muted beside the name."
         },
         {
-          "name": "price",
-          "type": "string",
-          "required": true,
-          "description": "The already formatted price."
+          "name": "last",
+          "type": "number",
+          "required": false,
+          "description": "Last price."
         },
         {
           "name": "change",
-          "type": "string",
+          "type": "number | string",
           "required": false,
-          "description": "The already formatted change amount, signed."
+          "description": "Change amount, signed (a preformatted string is deprecated)."
         },
         {
-          "name": "percent",
-          "type": "string",
+          "name": "changePct",
+          "type": "number",
           "required": false,
-          "description": "The already formatted change percentage, signed."
+          "description": "Change as a percentage (1.5 means 1.5%)."
+        },
+        {
+          "name": "formatPrice",
+          "type": "FormatPrice",
+          "required": false,
+          "description": "Writes the last price and the change amount; two decimals when omitted."
         },
         {
           "name": "tone",
           "type": "QuoteTone",
           "required": false,
-          "description": "Up, down or flat."
+          "description": "Up, down or flat; derived from change (then changePct) when omitted."
+        },
+        {
+          "name": "price",
+          "type": "string",
+          "required": false,
+          "description": "Deprecated: use last with formatPrice."
+        },
+        {
+          "name": "percent",
+          "type": "string",
+          "required": false,
+          "description": "Deprecated: use changePct."
         },
         {
           "name": "spark",
@@ -24060,10 +24486,16 @@
           "description": "Values of the mini chart, oldest to newest; no chart is drawn when omitted."
         },
         {
+          "name": "labels",
+          "type": "QuoteCardLabels",
+          "required": false,
+          "description": "Accessible texts."
+        },
+        {
           "name": "sparkLabel",
           "type": "string",
           "required": false,
-          "description": "Accessible name of the mini chart."
+          "description": "Deprecated: use labels.spark."
         },
         {
           "name": "footer",
@@ -24099,79 +24531,61 @@
           "name": "id",
           "type": "string",
           "required": true,
-          "description": ""
+          "description": "Group id (the tab value)."
         },
         {
           "name": "label",
           "type": "string",
           "required": true,
-          "description": ""
+          "description": "Tab text."
         },
         {
           "name": "rows",
-          "type": "readonly QuoteRow[]",
+          "type": "readonly (QuoteTableRow | LegacyQuoteRow)[]",
           "required": true,
-          "description": ""
+          "description": "The rows of this group."
         }
       ]
     },
     "QuoteRow": {
       "kind": "type",
-      "source": "src/quotes/quote-table.tsx",
+      "source": "src/quotes/quote-row.ts",
       "props": [
         {
           "name": "id",
           "type": "string",
           "required": true,
-          "description": ""
-        },
-        {
-          "name": "name",
-          "type": "string",
-          "required": true,
-          "description": ""
+          "description": "Stable row id (used for keys, reordering and enter marks)."
         },
         {
           "name": "symbol",
           "type": "string",
-          "required": false,
-          "description": ""
-        },
-        {
-          "name": "price",
-          "type": "string",
           "required": true,
-          "description": "已经格式化好的价与涨跌幅。"
+          "description": "Symbol code (BTCUSDT, 600519)."
         },
         {
-          "name": "value",
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "description": "Display name; the symbol is shown when omitted."
+        },
+        {
+          "name": "last",
           "type": "number",
-          "required": false,
-          "description": "Numeric value of price, used to decide the direction of a flash; read from the price text when omitted."
+          "required": true,
+          "description": "Last price."
         },
         {
-          "name": "percent",
-          "type": "string",
-          "required": false,
-          "description": ""
+          "name": "change",
+          "type": "number",
+          "required": true,
+          "description": "Change amount, signed."
         },
         {
-          "name": "tone",
-          "type": "QuoteTone",
-          "required": false,
-          "description": ""
-        },
-        {
-          "name": "spark",
-          "type": "readonly number[]",
-          "required": false,
-          "description": ""
-        },
-        {
-          "name": "sparkLabel",
-          "type": "string",
-          "required": false,
-          "description": ""
+          "name": "changePct",
+          "type": "number",
+          "required": true,
+          "description": "Change as a percentage (1.5 means 1.5%)."
         }
       ]
     },
@@ -24231,25 +24645,38 @@
           "name": "groups",
           "type": "readonly QuoteGroup[]",
           "required": true,
-          "description": "The groups, one tab each; a QuoteRow is { id, name, symbol?, price, percent?, tone?, spark?, sparkLabel?"
+          "description": "The groups, one tab each."
+        },
+        {
+          "name": "labels",
+          "type": "QuoteTableLabels",
+          "required": false,
+          "description": "Header, empty and accessible texts."
         },
         {
           "name": "columns",
-          "type": "{ name: string; trend: string; price: string; change: string }",
-          "required": true,
-          "description": "Text of the four header columns (name, trend, price, change)."
+          "type": "QuoteTableLabels['columns']",
+          "required": false,
+          "description": "Deprecated: use labels.columns."
         },
         {
           "name": "empty",
           "type": "string",
-          "required": true,
-          "description": "Text written when a group has no rows."
+          "required": false,
+          "description": "Deprecated: use labels.empty."
         },
         {
           "name": "label",
           "type": "string",
-          "required": true,
-          "description": "Accessible name of the tab strip."
+          "required": false,
+          "description": "Deprecated: use labels.list."
+        },
+        {
+          "name": "formatPrice",
+          "type": "FormatPrice",
+          "required": false,
+          "default": "plainPrice",
+          "description": "Writes the last price; two decimals when omitted."
         },
         {
           "name": "value",
@@ -24270,16 +24697,46 @@
           "description": "Called with the group id when the tab changes."
         },
         {
-          "name": "onRow",
-          "type": "(row: QuoteRow) => void",
+          "name": "onSelect",
+          "type": "(row: QuoteTableRow | LegacyQuoteRow) => void",
           "required": false,
           "description": "When given, rows are clickable and focusable and trigger on Enter."
+        },
+        {
+          "name": "onRow",
+          "type": "(row: QuoteTableRow | LegacyQuoteRow) => void",
+          "required": false,
+          "description": "Deprecated: use onSelect."
         },
         {
           "name": "className",
           "type": "string",
           "required": false,
           "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "QuoteTableLabels": {
+      "kind": "type",
+      "source": "src/quotes/quote-table.tsx",
+      "props": [
+        {
+          "name": "columns",
+          "type": "{ name: string; trend: string; price: string; change: string }",
+          "required": true,
+          "description": "Text of the four header columns (name, trend, price, change)."
+        },
+        {
+          "name": "empty",
+          "type": "string",
+          "required": true,
+          "description": "Text written when a group has no rows."
+        },
+        {
+          "name": "list",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the tab strip."
         }
       ]
     },
@@ -24291,25 +24748,37 @@
           "name": "groups",
           "type": "readonly QuoteGroup[]",
           "required": true,
-          "description": "The groups, one tab each; a QuoteRow is { id, name, symbol?, price, percent?, tone?, spark?, sparkLabel?"
+          "description": "The groups, one tab each."
+        },
+        {
+          "name": "labels",
+          "type": "QuoteTableLabels",
+          "required": false,
+          "description": "Header, empty and accessible texts."
         },
         {
           "name": "columns",
-          "type": "{ name: string; trend: string; price: string; change: string }",
-          "required": true,
-          "description": "Text of the four header columns (name, trend, price, change)."
+          "type": "QuoteTableLabels['columns']",
+          "required": false,
+          "description": "Deprecated: use labels.columns."
         },
         {
           "name": "empty",
           "type": "string",
-          "required": true,
-          "description": "Text written when a group has no rows."
+          "required": false,
+          "description": "Deprecated: use labels.empty."
         },
         {
           "name": "label",
           "type": "string",
-          "required": true,
-          "description": "Accessible name of the tab strip."
+          "required": false,
+          "description": "Deprecated: use labels.list."
+        },
+        {
+          "name": "formatPrice",
+          "type": "FormatPrice",
+          "required": false,
+          "description": "Writes the last price; two decimals when omitted."
         },
         {
           "name": "value",
@@ -24330,16 +24799,82 @@
           "description": "Called with the group id when the tab changes."
         },
         {
-          "name": "onRow",
-          "type": "(row: QuoteRow) => void",
+          "name": "onSelect",
+          "type": "(row: QuoteTableRow | LegacyQuoteRow) => void",
           "required": false,
           "description": "When given, rows are clickable and focusable and trigger on Enter."
+        },
+        {
+          "name": "onRow",
+          "type": "(row: QuoteTableRow | LegacyQuoteRow) => void",
+          "required": false,
+          "description": "Deprecated: use onSelect."
         },
         {
           "name": "className",
           "type": "string",
           "required": false,
           "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "QuoteTableRow": {
+      "kind": "type",
+      "source": "src/quotes/quote-table.tsx",
+      "props": [
+        {
+          "name": "symbol",
+          "type": "string",
+          "required": true,
+          "description": "Symbol code (BTCUSDT, 600519)."
+        },
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "Stable row id (used for keys, reordering and enter marks)."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "description": "Display name; the symbol is shown when omitted."
+        },
+        {
+          "name": "last",
+          "type": "number",
+          "required": true,
+          "description": "Last price."
+        },
+        {
+          "name": "change",
+          "type": "number",
+          "required": true,
+          "description": "Change amount, signed."
+        },
+        {
+          "name": "changePct",
+          "type": "number",
+          "required": true,
+          "description": "Change as a percentage (1.5 means 1.5%)."
+        },
+        {
+          "name": "logoSrc",
+          "type": "string",
+          "required": false,
+          "description": "Logo image of the symbol mark; letters are drawn when omitted."
+        },
+        {
+          "name": "spark",
+          "type": "readonly number[]",
+          "required": false,
+          "description": "Values of the mini chart, oldest to newest."
+        },
+        {
+          "name": "sparkLabel",
+          "type": "string",
+          "required": false,
+          "description": "Accessible name of the mini chart."
         }
       ]
     },
@@ -29010,81 +29545,79 @@
           "name": "label",
           "type": "string",
           "required": true,
-          "description": "点阵小标签（如 NET ASSET）。"
+          "description": "Small dot-matrix label (NET ASSET)."
         },
         {
           "name": "value",
           "type": "string | null",
           "required": true,
-          "description": "已经格式化好的数值；没有数据传 null。"
+          "description": "Formatted value; null when there is no data."
         },
         {
           "name": "unit",
           "type": "string",
           "required": false,
-          "description": "数值后面的小字（如「/月」「/ 150%」）。"
+          "description": "Small text after the value (/mo, / 150%)."
         },
         {
           "name": "rollValue",
           "type": "number",
           "required": false,
-          "description": "数值也想让它滚起来时给这个数（数值变了，变了的那几位像里程表一样转过去；不给就直接换字）。"
+          "description": "When given the changed digits roll like an odometer."
         },
         {
           "name": "series",
           "type": "readonly number[]",
           "required": true,
-          "description": "迷你线的数，从旧到新；少于两个数画不出线，写「—」。"
+          "description": "Values of the mini line, oldest to newest; fewer than two draws a dash."
         },
         {
           "name": "sparkLabel",
           "type": "string",
           "required": true,
-          "description": "读屏名（整句，含「没有数据」的说法）。"
+          "description": "Accessible name of the mini line (a whole sentence, including how to say no data)."
         },
         {
           "name": "trendTone",
           "type": "'series' | 'neutral'",
           "required": false,
-          "default": "'series'",
-          "description": "series 是常态的线色（series-1）；neutral 是「越低越好」的指标（ink-300）。"
+          "description": "series is the normal line color; neutral is for lower-is-better metrics."
         },
         {
           "name": "threshold",
           "type": "number",
           "required": false,
-          "description": "阈值（跟 series 同一个单位）：画一条琥珀虚线。"
+          "description": "Threshold in the series unit, drawn as an amber dashed line."
         },
         {
           "name": "state",
           "type": "SparkTileState",
           "required": false,
-          "default": "'normal'",
-          "description": ""
+          "description": "normal, near or over the threshold; also write it in note."
         },
         {
           "name": "delta",
           "type": "number",
           "required": false,
-          "description": "变化百分数（1.5 就是 1.5%），写成带符号的 ChangeText，涨跌色跟 data-updown。"
+          "description": "Change as a percentage (1.5 means 1.5%)."
         },
         {
           "name": "note",
           "type": "ReactNode",
           "required": false,
-          "description": "变化行的小字说明（如「今日」「接近上限」）：状态不只靠颜色，near 与 over 时这里要写字。"
+          "description": "Small text next to the change; near and over must say it here, not only by color."
         },
         {
           "name": "onClick",
           "type": "() => void",
           "required": false,
-          "description": "给了就整块是个按钮（点开该指标的完整图）。"
+          "description": "When given the whole tile is a button."
         },
         {
           "name": "className",
           "type": "string",
           "required": false,
-          "description": ""
+          "description": "Extra class name on the root."
         }
       ]
     },
@@ -29096,85 +29629,85 @@
           "name": "label",
           "type": "string",
           "required": true,
-          "description": "点阵小标签（如 NET ASSET）。"
+          "description": "Small dot-matrix label (NET ASSET)."
         },
         {
           "name": "value",
           "type": "string | null",
           "required": true,
-          "description": "已经格式化好的数值；没有数据传 null。"
+          "description": "Formatted value; null when there is no data."
         },
         {
           "name": "unit",
           "type": "string",
           "required": false,
-          "description": "数值后面的小字（如「/月」「/ 150%」）。"
+          "description": "Small text after the value (/mo, / 150%)."
         },
         {
           "name": "rollValue",
           "type": "number",
           "required": false,
-          "description": "数值也想让它滚起来时给这个数（数值变了，变了的那几位像里程表一样转过去；不给就直接换字）。"
+          "description": "When given the changed digits roll like an odometer."
         },
         {
           "name": "series",
           "type": "readonly number[]",
           "required": true,
-          "description": "迷你线的数，从旧到新；少于两个数画不出线，写「—」。"
+          "description": "Values of the mini line, oldest to newest; fewer than two draws a dash."
         },
         {
           "name": "sparkLabel",
           "type": "string",
           "required": true,
-          "description": "读屏名（整句，含「没有数据」的说法）。"
+          "description": "Accessible name of the mini line (a whole sentence, including how to say no data)."
         },
         {
           "name": "trendTone",
           "type": "'series' | 'neutral'",
           "required": false,
-          "description": "series 是常态的线色（series-1）；neutral 是「越低越好」的指标（ink-300）。"
+          "description": "series is the normal line color; neutral is for lower-is-better metrics."
         },
         {
           "name": "threshold",
           "type": "number",
           "required": false,
-          "description": "阈值（跟 series 同一个单位）：画一条琥珀虚线。"
+          "description": "Threshold in the series unit, drawn as an amber dashed line."
         },
         {
           "name": "state",
           "type": "SparkTileState",
           "required": false,
-          "description": ""
+          "description": "normal, near or over the threshold; also write it in note."
         },
         {
           "name": "delta",
           "type": "number",
           "required": false,
-          "description": "变化百分数（1.5 就是 1.5%），写成带符号的 ChangeText，涨跌色跟 data-updown。"
+          "description": "Change as a percentage (1.5 means 1.5%)."
         },
         {
           "name": "note",
           "type": "ReactNode",
           "required": false,
-          "description": "变化行的小字说明（如「今日」「接近上限」）：状态不只靠颜色，near 与 over 时这里要写字。"
+          "description": "Small text next to the change; near and over must say it here, not only by color."
         },
         {
           "name": "onClick",
           "type": "() => void",
           "required": false,
-          "description": "给了就整块是个按钮（点开该指标的完整图）。"
+          "description": "When given the whole tile is a button."
         },
         {
           "name": "className",
           "type": "string",
           "required": false,
-          "description": ""
+          "description": "Extra class name on the root."
         }
       ]
     },
     "SparkTileState": {
       "kind": "type",
-      "source": "src/quotes/spark-tile.tsx",
+      "source": "src/quotes/metric-tile.tsx",
       "props": []
     },
     "Sparkline": {
@@ -31685,35 +32218,41 @@
       "source": "src/quotes/symbol-mark.tsx",
       "props": [
         {
+          "name": "symbol",
+          "type": "string",
+          "required": false,
+          "description": "Symbol code (BTCUSDT, 600519)."
+        },
+        {
           "name": "code",
           "type": "string",
-          "required": true,
-          "description": "品种代码（BTCUSDT、600519）。"
+          "required": false,
+          "description": "Deprecated: use symbol."
         },
         {
           "name": "name",
           "type": "string",
           "required": false,
-          "description": "名称（宁德时代）：读屏名，并在代码没有字母时取首字。"
+          "description": "Name: the accessible name, and the first character when the code has no letters."
         },
         {
           "name": "src",
           "type": "string",
           "required": false,
-          "description": "图片地址；不给或加载失败就画字母。"
+          "description": "Image URL; letters are drawn when omitted or when it fails to load."
         },
         {
           "name": "size",
-          "type": "number",
+          "type": "'sm' | 'md' | number",
           "required": false,
-          "default": "18",
-          "description": "直径（像素），默认 18（行高 28 的一行）。"
+          "default": "'sm'",
+          "description": "sm is 18px (a 28px row), md is 28px (cards); a number is a custom diameter in pixels."
         },
         {
           "name": "className",
           "type": "string",
           "required": false,
-          "description": ""
+          "description": "Extra class name on the root."
         }
       ]
     },
@@ -31722,34 +32261,40 @@
       "source": "src/quotes/symbol-mark.tsx",
       "props": [
         {
+          "name": "symbol",
+          "type": "string",
+          "required": false,
+          "description": "Symbol code (BTCUSDT, 600519)."
+        },
+        {
           "name": "code",
           "type": "string",
-          "required": true,
-          "description": "品种代码（BTCUSDT、600519）。"
+          "required": false,
+          "description": "Deprecated: use symbol."
         },
         {
           "name": "name",
           "type": "string",
           "required": false,
-          "description": "名称（宁德时代）：读屏名，并在代码没有字母时取首字。"
+          "description": "Name: the accessible name, and the first character when the code has no letters."
         },
         {
           "name": "src",
           "type": "string",
           "required": false,
-          "description": "图片地址；不给或加载失败就画字母。"
+          "description": "Image URL; letters are drawn when omitted or when it fails to load."
         },
         {
           "name": "size",
-          "type": "number",
+          "type": "'sm' | 'md' | number",
           "required": false,
-          "description": "直径（像素），默认 18（行高 28 的一行）。"
+          "description": "sm is 18px (a 28px row), md is 28px (cards); a number is a custom diameter in pixels."
         },
         {
           "name": "className",
           "type": "string",
           "required": false,
-          "description": ""
+          "description": "Extra class name on the root."
         }
       ]
     },
@@ -32036,55 +32581,55 @@
           "name": "label",
           "type": "string",
           "required": true,
-          "description": "点阵小标签（如 NET ASSET）。"
+          "description": "Small dot-matrix label (NET ASSET)."
         },
         {
           "name": "note",
           "type": "ReactNode",
           "required": false,
-          "description": "变化行的小字说明（如「今日」「接近上限」）：状态不只靠颜色，near 与 over 时这里要写字。"
+          "description": "Small text next to the change; near and over must say it here, not only by color."
         },
         {
           "name": "value",
           "type": "string | null",
           "required": true,
-          "description": "已经格式化好的数值；没有数据传 null。"
+          "description": "Formatted value; null when there is no data."
         },
         {
           "name": "threshold",
           "type": "number",
           "required": false,
-          "description": "阈值（跟 series 同一个单位）：画一条琥珀虚线。"
+          "description": "Threshold in the series unit, drawn as an amber dashed line."
         },
         {
           "name": "unit",
           "type": "string",
           "required": false,
-          "description": "数值后面的小字（如「/月」「/ 150%」）。"
+          "description": "Small text after the value (/mo, / 150%)."
         },
         {
           "name": "series",
           "type": "readonly number[]",
           "required": true,
-          "description": "迷你线的数，从旧到新；少于两个数画不出线，写「—」。"
+          "description": "Values of the mini line, oldest to newest; fewer than two draws a dash."
         },
         {
           "name": "sparkLabel",
           "type": "string",
           "required": true,
-          "description": "读屏名（整句，含「没有数据」的说法）。"
+          "description": "Accessible name of the mini line (a whole sentence, including how to say no data)."
         },
         {
           "name": "state",
           "type": "SparkTileState",
           "required": false,
-          "description": ""
+          "description": "normal, near or over the threshold; also write it in note."
         },
         {
           "name": "trendTone",
           "type": "'series' | 'neutral'",
           "required": false,
-          "description": "series 是常态的线色（series-1）；neutral 是「越低越好」的指标（ink-300）。"
+          "description": "series is the normal line color; neutral is for lower-is-better metrics."
         },
         {
           "name": "key",
@@ -34357,10 +34902,16 @@
           "description": "Called when a group header is clicked."
         },
         {
-          "name": "onItem",
+          "name": "onSelect",
           "type": "(data: T) => void",
           "required": false,
           "description": "Called when a cell is clicked; when given, cells are focusable buttons that trigger on Enter."
+        },
+        {
+          "name": "onItem",
+          "type": "(data: T) => void",
+          "required": false,
+          "description": "Deprecated: use onSelect."
         },
         {
           "name": "classes",
@@ -34555,10 +35106,16 @@
           "description": "Called when a group header is clicked."
         },
         {
-          "name": "onItem",
+          "name": "onSelect",
           "type": "(data: T) => void",
           "required": false,
           "description": "Called when a cell is clicked; when given, cells are focusable buttons that trigger on Enter."
+        },
+        {
+          "name": "onItem",
+          "type": "(data: T) => void",
+          "required": false,
+          "description": "Deprecated: use onSelect."
         },
         {
           "name": "classes",
@@ -35483,52 +36040,58 @@
       "props": [
         {
           "name": "rows",
-          "type": "readonly WatchlistRow[]",
+          "type": "readonly (WatchlistRow | LegacyWatchlistRow)[]",
           "required": true,
-          "description": ""
+          "description": "The rows, in their original order."
         },
         {
           "name": "labels",
           "type": "WatchlistLabels",
           "required": true,
-          "description": ""
+          "description": "Column names and accessible names."
         },
         {
           "name": "formatPrice",
-          "type": "(value: number) => string",
+          "type": "FormatPrice",
           "required": false,
-          "default": "plain",
-          "description": ""
+          "default": "plainPrice",
+          "description": "Writes a price or change amount; two decimals when omitted."
         },
         {
           "name": "sort",
           "type": "WatchlistSort | null",
           "required": false,
-          "description": "排序（受控）；null 是原顺序。"
+          "description": "Sort (controlled); null is the original order."
         },
         {
           "name": "onSortChange",
           "type": "(sort: WatchlistSort | null) => void",
           "required": false,
-          "description": ""
+          "description": "Called with the next sort when a column header is clicked."
+        },
+        {
+          "name": "onSelect",
+          "type": "(row: WatchlistRow) => void",
+          "required": false,
+          "description": "Called with the row when it is clicked; rows become links when given."
         },
         {
           "name": "onRow",
           "type": "(row: WatchlistRow) => void",
           "required": false,
-          "description": ""
+          "description": "Deprecated: use onSelect."
         },
         {
           "name": "onFlag",
           "type": "(row: WatchlistRow, flagged: boolean) => void",
           "required": false,
-          "description": ""
+          "description": "Called when a row's flag is toggled."
         },
         {
           "name": "className",
           "type": "string",
           "required": false,
-          "description": ""
+          "description": "Extra class name on the table."
         }
       ]
     },
@@ -35540,25 +36103,25 @@
           "name": "columns",
           "type": "Record<WatchlistSortKey, string>",
           "required": true,
-          "description": ""
+          "description": "Header text of the four columns."
         },
         {
           "name": "list",
           "type": "string",
           "required": true,
-          "description": "整张表的读屏名。"
+          "description": "Accessible name of the whole table."
         },
         {
           "name": "empty",
           "type": "string",
           "required": true,
-          "description": ""
+          "description": "Text shown when there are no rows."
         },
         {
           "name": "flag",
           "type": "(row: WatchlistRow) => string",
           "required": true,
-          "description": "旗标按钮的读屏名。"
+          "description": "Accessible name of a row's flag button."
         }
       ]
     },
@@ -35568,51 +36131,57 @@
       "props": [
         {
           "name": "rows",
-          "type": "readonly WatchlistRow[]",
+          "type": "readonly (WatchlistRow | LegacyWatchlistRow)[]",
           "required": true,
-          "description": ""
+          "description": "The rows, in their original order."
         },
         {
           "name": "labels",
           "type": "WatchlistLabels",
           "required": true,
-          "description": ""
+          "description": "Column names and accessible names."
         },
         {
           "name": "formatPrice",
-          "type": "(value: number) => string",
+          "type": "FormatPrice",
           "required": false,
-          "description": ""
+          "description": "Writes a price or change amount; two decimals when omitted."
         },
         {
           "name": "sort",
           "type": "WatchlistSort | null",
           "required": false,
-          "description": "排序（受控）；null 是原顺序。"
+          "description": "Sort (controlled); null is the original order."
         },
         {
           "name": "onSortChange",
           "type": "(sort: WatchlistSort | null) => void",
           "required": false,
-          "description": ""
+          "description": "Called with the next sort when a column header is clicked."
+        },
+        {
+          "name": "onSelect",
+          "type": "(row: WatchlistRow) => void",
+          "required": false,
+          "description": "Called with the row when it is clicked; rows become links when given."
         },
         {
           "name": "onRow",
           "type": "(row: WatchlistRow) => void",
           "required": false,
-          "description": ""
+          "description": "Deprecated: use onSelect."
         },
         {
           "name": "onFlag",
           "type": "(row: WatchlistRow, flagged: boolean) => void",
           "required": false,
-          "description": ""
+          "description": "Called when a row's flag is toggled."
         },
         {
           "name": "className",
           "type": "string",
           "required": false,
-          "description": ""
+          "description": "Extra class name on the table."
         }
       ]
     },
@@ -35621,52 +36190,52 @@
       "source": "src/quotes/watchlist.tsx",
       "props": [
         {
-          "name": "key",
+          "name": "id",
           "type": "string",
           "required": true,
-          "description": ""
+          "description": "Stable row id (used for keys, reordering and enter marks)."
         },
         {
-          "name": "code",
+          "name": "symbol",
           "type": "string",
           "required": true,
-          "description": ""
+          "description": "Symbol code (BTCUSDT, 600519)."
         },
         {
           "name": "name",
           "type": "string",
           "required": false,
-          "description": ""
+          "description": "Display name; the symbol is shown when omitted."
         },
         {
           "name": "last",
           "type": "number",
           "required": true,
-          "description": "最新价。"
+          "description": "Last price."
         },
         {
           "name": "change",
           "type": "number",
           "required": true,
-          "description": "涨跌额。"
+          "description": "Change amount, signed."
         },
         {
           "name": "changePct",
           "type": "number",
           "required": true,
-          "description": "涨跌幅，百分数。"
+          "description": "Change as a percentage (1.5 means 1.5%)."
         },
         {
           "name": "flagged",
           "type": "boolean",
           "required": false,
-          "description": ""
+          "description": "Whether the row's flag is on."
         },
         {
           "name": "logoSrc",
           "type": "string",
           "required": false,
-          "description": ""
+          "description": "Logo image of the symbol mark; letters are drawn when omitted."
         }
       ]
     },
@@ -36918,6 +37487,11 @@
       "source": "src/quant/vintage-series-model.ts",
       "props": []
     },
+    "plainPrice": {
+      "kind": "function",
+      "source": "src/quotes/quote-row.ts",
+      "props": []
+    },
     "preloaderExitMs": {
       "kind": "function",
       "source": "src/katana/page-preloader.tsx",
@@ -37068,6 +37642,24 @@
       "kind": "function",
       "source": "src/katana/rolling-text.tsx",
       "props": []
+    },
+    "rowTone": {
+      "kind": "function",
+      "source": "src/quotes/quote-row.ts",
+      "props": [
+        {
+          "name": "change",
+          "type": "number",
+          "required": true,
+          "description": "Change amount, signed."
+        },
+        {
+          "name": "changePct",
+          "type": "number",
+          "required": true,
+          "description": "Change as a percentage (1.5 means 1.5%)."
+        }
+      ]
     },
     "scatterLayout": {
       "kind": "function",

@@ -7,7 +7,8 @@ import {
   Watchlist,
   type PeerItem,
   type WatchlistRow,
-} from '../../src/quant/index.ts'
+} from '../../src/quotes/index.ts'
+import { formatPrice } from '../../src/quant/index.ts'
 import { CompareBar, RangeBar } from '../../src/index'
 import { LiveToggle } from '../LiveToggle'
 import { chance, useLiveTicker, type Rng } from '../live-sim'
@@ -19,16 +20,16 @@ import { Row } from './parts'
 const SAMPLE = '演示数据，不是行情'
 
 const PERF = [
-  { key: '1d', label: '1 day', change: 0.62 },
-  { key: '5d', label: '5 days', change: -1.4 },
-  { key: '1m', label: '1 month', change: 3.18 },
-  { key: '3m', label: '3 months', change: 11.4 },
-  { key: '6m', label: '6 months', change: -4.07 },
-  { key: 'ytd', label: 'Year to date', change: 19.83 },
-  { key: '1y', label: '1 year', change: 27.5 },
-  { key: '5y', label: '5 years', change: 312.9 },
-  { key: '10y', label: '10 years', change: 1840.2 },
-  { key: 'all', label: 'All time', change: 142600 },
+  { id: '1d', label: '1 day', change: 0.62 },
+  { id: '5d', label: '5 days', change: -1.4 },
+  { id: '1m', label: '1 month', change: 3.18 },
+  { id: '3m', label: '3 months', change: 11.4 },
+  { id: '6m', label: '6 months', change: -4.07 },
+  { id: 'ytd', label: 'Year to date', change: 19.83 },
+  { id: '1y', label: '1 year', change: 27.5 },
+  { id: '5y', label: '5 years', change: 312.9 },
+  { id: '10y', label: '10 years', change: 1840.2 },
+  { id: 'all', label: 'All time', change: 142600 },
 ]
 
 export function PerformanceStripDemo() {
@@ -47,21 +48,22 @@ export function PerformanceStripDemo() {
 }
 
 const PEERS: readonly PeerItem[] = [
-  ['AAA', 'Alpha Devices Incorporated', '212.40', 0.84],
-  ['BRV', 'Bravo Semiconductor Holdings', '1,044.10', -2.31],
-  ['CHL', 'Charlie Software', '418.77', 1.12],
-  ['DLT', 'Delta Cloud Systems Ltd', '96.05', -0.2],
-  ['ECH', 'Echo Networks', '57.90', 4.5],
-  ['FXT', 'Foxtrot Instruments', '301.12', 0],
-  ['GLF', 'Golf Platforms', '128.66', -1.05],
-].map(([code, name, price, change]) => ({
-  key: String(code),
-  code: String(code),
+  ['AAA', 'Alpha Devices Incorporated', 212.4, 0.84],
+  ['BRV', 'Bravo Semiconductor Holdings', 1044.1, -2.31],
+  ['CHL', 'Charlie Software', 418.77, 1.12],
+  ['DLT', 'Delta Cloud Systems Ltd', 96.05, -0.2],
+  ['ECH', 'Echo Networks', 57.9, 4.5],
+  ['FXT', 'Foxtrot Instruments', 301.12, 0],
+  ['GLF', 'Golf Platforms', 128.66, -1.05],
+].map(([symbol, name, last, changePct]) => ({
+  id: String(symbol),
+  symbol: String(symbol),
   name: String(name),
-  price: String(price),
+  last: Number(last),
   unit: 'USD',
-  change: Number(change),
+  changePct: Number(changePct),
 }))
+const usd = (value: number) => formatPrice(value, { precision: 2 })
 
 export function PeerCardsDemo() {
   const [log, setLog] = useState('')
@@ -71,15 +73,16 @@ export function PeerCardsDemo() {
         <div className="gal-wide" data-gallery-peers style={{ maxWidth: 560 }}>
           <PeerCards
             items={PEERS}
+            formatPrice={usd}
             labels={{
               list: 'Peers',
               prev: 'Previous',
               next: 'Next',
               compare: 'Select to compare',
-              add: (item) => `Add ${item.code} to compare`,
+              add: (item) => `Add ${item.symbol} to compare`,
             }}
-            onSelect={(item) => setLog(`open ${item.code}`)}
-            onAdd={(item) => setLog(`add ${item.code}`)}
+            onSelect={(item) => setLog(`open ${item.symbol}`)}
+            onAdd={(item) => setLog(`add ${item.symbol}`)}
             onCompare={() => setLog('compare')}
           />
         </div>
@@ -99,14 +102,14 @@ export function KeyStatsDemo() {
           <KeyStats
             title="Key stats"
             onTitle={() => setLog('title')}
-            onItem={(item) => setLog(item.key)}
+            onSelect={(item) => setLog(item.id ?? '')}
             items={[
-              { key: 'cap', label: 'Market cap', value: '3.41T', unit: 'USD', badge: 'Mega cap' },
-              { key: 'pe', label: 'Price to earnings (P/E TTM)', value: '31.20' },
-              { key: 'eps', label: 'Basic EPS (TTM)', value: '6.57', unit: 'USD' },
-              { key: 'rev', label: 'Revenue (FY)', value: '391.04B', unit: 'USD' },
-              { key: 'div', label: 'Dividend yield (indicated)', value: '0.44', unit: '%' },
-              { key: 'beta', label: 'Beta (1Y)', value: '—' },
+              { id: 'cap', label: 'Market cap', value: '3.41T', unit: 'USD', badge: 'Mega cap' },
+              { id: 'pe', label: 'Price to earnings (P/E TTM)', value: '31.20' },
+              { id: 'eps', label: 'Basic EPS (TTM)', value: '6.57', unit: 'USD' },
+              { id: 'rev', label: 'Revenue (FY)', value: '391.04B', unit: 'USD' },
+              { id: 'div', label: 'Dividend yield (indicated)', value: '0.44', unit: '%' },
+              { id: 'beta', label: 'Beta (1Y)', value: '—' },
             ]}
           />
         </div>
@@ -168,11 +171,11 @@ export function RangeBarTvDemo() {
 }
 
 const WATCH: readonly WatchlistRow[] = [
-  { key: 'a', code: 'AAA', name: 'Alpha Devices', last: 212.4, change: 1.77, changePct: 0.84, flagged: true },
-  { key: 'b', code: 'BRV', name: 'Bravo Semi', last: 1044.1, change: -24.7, changePct: -2.31 },
-  { key: 'c', code: 'CHL', name: 'Charlie Software', last: 418.77, change: 4.64, changePct: 1.12 },
-  { key: 'd', code: 'DLT', name: 'Delta Cloud', last: 96.05, change: -0.19, changePct: -0.2 },
-  { key: 'e', code: 'ECH', name: 'Echo Networks', last: 57.9, change: 2.5, changePct: 4.5 },
+  { id: 'a', symbol: 'AAA', name: 'Alpha Devices', last: 212.4, change: 1.77, changePct: 0.84, flagged: true },
+  { id: 'b', symbol: 'BRV', name: 'Bravo Semi', last: 1044.1, change: -24.7, changePct: -2.31 },
+  { id: 'c', symbol: 'CHL', name: 'Charlie Software', last: 418.77, change: 4.64, changePct: 1.12 },
+  { id: 'd', symbol: 'DLT', name: 'Delta Cloud', last: 96.05, change: -0.19, changePct: -0.2 },
+  { id: 'e', symbol: 'ECH', name: 'Echo Networks', last: 57.9, change: 2.5, changePct: 4.5 },
 ]
 
 // 实时：每个节拍各行价格随机走一步（涨跌额、涨跌幅跟着算），偶尔来一只新的；点列头排序后，价格变了行会换位。
@@ -182,8 +185,8 @@ const watchStep = (_: WatchMove, rng: Rng, tick: number): WatchMove => ({
   walk: Array.from({ length: WATCH_MAX }, () => (rng() * 2 - 1) * 0.012),
   add: chance(rng, 0.2)
     ? {
-        key: `n${tick}`,
-        code: `NEW${tick}`,
+        id: `n${tick}`,
+        symbol: `NEW${tick}`,
         name: 'New Listing',
         last: 30 + Math.round(rng() * 200),
         change: 0.4,
@@ -221,9 +224,9 @@ export function WatchlistDemo() {
               columns: { symbol: 'Symbol', last: 'Last', chg: 'Chg', chgPct: 'Chg%' },
               list: 'Watchlist',
               empty: 'No symbols',
-              flag: (row) => `Flag ${row.code}`,
+              flag: (row) => `Flag ${row.symbol}`,
             }}
-            onFlag={(row, flagged) => setRows((prev) => prev.map((r) => (r.key === row.key ? { ...r, flagged } : r)))}
+            onFlag={(row, flagged) => setRows((prev) => prev.map((r) => (r.id === row.id ? { ...r, flagged } : r)))}
           />
         </div>
         <div className="gal-actions">

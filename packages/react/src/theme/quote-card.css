@@ -8,10 +8,10 @@
   gap: 4px;
   min-width: 0;
   padding: 10px 12px;
-  border: 1px solid var(--line-100);
+  border: 1px solid var(--k-separable-tertiary-borderColor);
   border-radius: var(--radius-control);
-  background: var(--bg-100);
-  color: var(--ink-100);
+  background: var(--k-surface-base-background);
+  color: var(--k-content-primary-foreground);
   font: var(--text-data) var(--font-sans);
   font-variant-numeric: tabular-nums;
   text-align: left;
@@ -23,7 +23,7 @@ button.k-quote-card.is-link {
     transform var(--dur-snappy) var(--ease-snappy);
 }
 button.k-quote-card.is-link:hover {
-  background: var(--bg-200);
+  background: var(--k-container-secondary-background);
 }
 button.k-quote-card.is-link:active {
   transform: scale(0.98);
@@ -40,12 +40,12 @@ button.k-quote-card.is-link:focus-visible {
 }
 .k-quote-name {
   overflow: hidden;
-  color: var(--ink-200);
+  color: var(--k-content-body-foreground);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 .k-quote-symbol {
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-sans-small);
 }
 .k-quote-price {

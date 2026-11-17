@@ -197,7 +197,15 @@ export {
   type RowContextMenuProps,
   type SymbolMenuInput,
 } from './quotes/row-actions.tsx'
-export { QuoteTable, type QuoteGroup, type QuoteRow, type QuoteTableProps } from './quotes/quote-table.tsx'
+export {
+  QuoteTable,
+  type LegacyQuoteRow,
+  type QuoteGroup,
+  type QuoteTableLabels,
+  type QuoteTableProps,
+  type QuoteTableRow,
+} from './quotes/quote-table.tsx'
+export { plainPrice, rowTone, type FormatPrice, type QuoteRow } from './quotes/quote-row.ts'
 export {
   Combobox,
   ComboboxContent,
@@ -324,7 +332,13 @@ export {
   type TreemapLayoutOptions,
 } from './quotes/treemap-model.ts'
 export { PriceTag, type PriceTagProps } from './quotes/price-tag.tsx'
-export { QuoteCard, QuoteStrip, type QuoteCardProps, type QuoteStripProps } from './quotes/quote-card.tsx'
+export {
+  QuoteCard,
+  QuoteStrip,
+  type QuoteCardLabels,
+  type QuoteCardProps,
+  type QuoteStripProps,
+} from './quotes/quote-card.tsx'
 export {
   CompareBar,
   RangeBar,

@@ -8,7 +8,10 @@ import { cn } from '../lib/cn.ts'
 import { formatPercentChange, toneOf } from '../quant/format/index.ts'
 
 export type PerformanceItem = {
-  key: string
+  /** Stable cell id (the value passed to onValueChange). */
+  id?: string
+  /** Deprecated: use id. @deprecated Use id. */
+  key?: string
   /** 周期名，调用方写好（「1 天」「Year to date」）。 */
   label: string
   /** 涨跌幅，百分数（12.5 就是 12.5%）；没有写 null / undefined，画「—」。 */
@@ -51,19 +54,20 @@ export function PerformanceStrip({
     <div className={cn('k-perf', className)} role="group" aria-label={label} data-slot="performance-strip">
       {items.map((item) => {
         const tone = typeof item.change === 'number' ? toneOf(item.change, digits) : 'flat'
-        const on = item.key === current
+        const id = item.id ?? item.key ?? item.label
+        const on = id === current
         return (
           <button
-            key={item.key}
+            key={id}
             type="button"
             className="k-perf-cell"
             data-slot="performance-cell"
-            data-key={item.key}
+            data-key={id}
             data-tone={tone}
             aria-pressed={on}
             onClick={() => {
-              if (value === undefined) setInner(item.key)
-              onValueChange?.(item.key)
+              if (value === undefined) setInner(id)
+              onValueChange?.(id)
             }}
           >
             <span className="k-perf-label">{item.label}</span>

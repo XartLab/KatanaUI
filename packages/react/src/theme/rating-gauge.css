@@ -30,13 +30,13 @@
   stroke: var(--pnl-down);
 }
 .k-rating-zone.is-z1 {
-  stroke: color-mix(in srgb, var(--pnl-down) 55%, var(--ink-300));
+  stroke: color-mix(in srgb, var(--pnl-down) 55%, var(--k-content-secondary-foreground));
 }
 .k-rating-zone.is-z2 {
-  stroke: var(--ink-300);
+  stroke: var(--k-content-secondary-foreground);
 }
 .k-rating-zone.is-z3 {
-  stroke: color-mix(in srgb, var(--pnl-up) 55%, var(--ink-300));
+  stroke: color-mix(in srgb, var(--pnl-up) 55%, var(--k-content-secondary-foreground));
 }
 .k-rating-zone.is-z4 {
   stroke: var(--pnl-up);
@@ -44,19 +44,19 @@
 .k-rating-needle {
   transform-origin: 100px 100px;
   transition: transform var(--dur-gentle) var(--ease-gentle);
-  fill: var(--ink-100);
+  fill: var(--k-content-primary-foreground);
 }
 .k-rating-hub {
-  fill: var(--ink-100);
+  fill: var(--k-content-primary-foreground);
 }
 .k-rating-word {
-  color: var(--ink-100);
+  color: var(--k-content-primary-foreground);
   font: var(--text-title) var(--font-sans);
 }
 .k-rating-extra {
   display: flex;
   gap: 12px;
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-sans-small);
   font-variant-numeric: tabular-nums;
 }

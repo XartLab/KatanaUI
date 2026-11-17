@@ -8,10 +8,10 @@
   gap: 8px;
   min-width: 0;
   padding: 12px 14px 8px;
-  border: 1px solid var(--line-100);
+  border: 1px solid var(--k-separable-tertiary-borderColor);
   border-radius: var(--radius-control);
-  background: var(--bg-100);
-  color: var(--ink-100);
+  background: var(--k-surface-base-background);
+  color: var(--k-content-primary-foreground);
   font: var(--text-data) var(--font-sans);
   font-variant-numeric: tabular-nums;
   text-align: left;
@@ -21,7 +21,7 @@ button.k-mini-chart.is-link {
   transition: background-color var(--dur-snappy) var(--ease-snappy);
 }
 button.k-mini-chart.is-link:hover {
-  background: var(--bg-200);
+  background: var(--k-container-secondary-background);
 }
 button.k-mini-chart.is-link:focus-visible {
   outline: 2px solid var(--focus-ring);
@@ -35,7 +35,7 @@ button.k-mini-chart.is-link:focus-visible {
 }
 .k-mini-symbol {
   overflow: hidden;
-  color: var(--ink-100);
+  color: var(--k-content-primary-foreground);
   font: var(--text-data) var(--font-sans);
   font-weight: 600;
   text-overflow: ellipsis;
@@ -44,8 +44,8 @@ button.k-mini-chart.is-link:focus-visible {
 .k-mini-badge {
   padding: 0 4px;
   border-radius: var(--radius-sm);
-  background: var(--bg-300);
-  color: var(--ink-300);
+  background: var(--k-container-primary-background);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-sans-small);
 }
 .k-mini-quote {
@@ -59,7 +59,7 @@ button.k-mini-chart.is-link:focus-visible {
   font-variant-numeric: tabular-nums;
 }
 .k-mini-unit {
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-sans-small);
 }
 .k-mini-change {

@@ -183,9 +183,21 @@ export {
   type PerformanceItem,
   type PerformanceStripProps,
 } from '../quotes/performance-strip.tsx'
-export { PeerCards, type PeerCardsLabels, type PeerCardsProps, type PeerItem } from '../quotes/peer-cards.tsx'
+export {
+  PeerCards,
+  type LegacyPeerItem,
+  type PeerCardsLabels,
+  type PeerCardsProps,
+  type PeerItem,
+} from '../quotes/peer-cards.tsx'
 export { KeyStats, type KeyStatItem, type KeyStatsProps } from '../quotes/key-stats.tsx'
-export { Watchlist, type WatchlistLabels, type WatchlistProps, type WatchlistRow } from '../quotes/watchlist.tsx'
+export {
+  Watchlist,
+  type LegacyWatchlistRow,
+  type WatchlistLabels,
+  type WatchlistProps,
+  type WatchlistRow,
+} from '../quotes/watchlist.tsx'
 export {
   changedTail,
   nextSort,

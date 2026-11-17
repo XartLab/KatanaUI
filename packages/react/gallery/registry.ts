@@ -715,21 +715,26 @@ export const PAGES: readonly DocPage[] = [
   },
   {
     id: 'symbol-mark',
-    group: 'readouts',
+    group: 'quotes',
     cardHeight: 220,
     title: 'SymbolMark 品种徽标',
     summary:
-      '品种名前的小圆标（学 TradingView 列表里企业 / 币种标志）：有图显示圆形裁切的图片，加载失败退回字母；没有图就是字母圆标，底 bg-400、字 ink-200，不按代码随机上色。尺寸默认 18（行高 28 的一行）。',
+      '品种名前的小圆标（学 TradingView 列表里企业 / 币种标志）：有图显示圆形裁切的图片，加载失败退回字母；没有图就是字母圆标，底 bg-400、字 ink-200，不按代码随机上色。尺寸两档：sm 18（行高 28 的一行，默认）、md 28（卡片）；热力图格子这类要别的直径的仍可传数。字号跟直径走（28 以上 16，其余 12），在 css 里按 data-size 取字号 token，不内联。',
     exports: ['SymbolMark', 'symbolMarkLetters'],
     props: [
       {
         part: 'SymbolMark',
-        note: '图片从哪来由调用方给；件里不带任何企业或币种的标志（商标）。读屏名用 name，没有就用 code。',
+        note: '图片从哪来由调用方给；件里不带任何企业或币种的标志（商标）。读屏名用 name，没有就用 symbol。旧名 code 照认一个版本（@deprecated）。',
         rows: [
-          { name: 'code', type: 'string', desc: '品种代码；字母圆标取其中的拉丁字母前 2 个。' },
+          { name: 'symbol', type: 'string', desc: '品种代码；字母圆标取其中的拉丁字母前 2 个（旧名 code）。' },
           { name: 'name', type: 'string', desc: '名称：读屏名；代码里没有字母（600519、00700）时取名称首字。' },
           { name: 'src', type: 'string', desc: '图片地址；不给或加载失败就画字母。' },
-          { name: 'size', type: 'number', default: '18', desc: '直径（像素）。' },
+          {
+            name: 'size',
+            type: "'sm' | 'md' | number",
+            default: "'sm'",
+            desc: 'sm 18px（列表行）、md 28px（卡片）；数是自定直径（像素）。',
+          },
         ],
       },
       {
@@ -744,9 +749,18 @@ export const PAGES: readonly DocPage[] = [
         ],
       },
     ],
-    states: ['字母圆标；有图；图加载失败退回字母。'],
-    donts: ['不要按代码随机上色：颜色留给数据。', '不要在件里内置真实公司或币种的标志。'],
-    composition: 'SymbolMark\n  span[role=img][aria-label]\n    img（有图且没失败）| span 字母',
+    states: [
+      '字母圆标：底 surface-overlay（bg-400）、字 content-body（ink-200），中性，不按代码上色。',
+      '有图：圆形裁切、铺满；图加载失败退回字母，换了 src 会重新尝试。',
+      '代码里没有拉丁字母（600519、00700）：取名称首字，再没有取代码首字符。',
+      'sm（18）字号 12，md（28）及以上字号 16；data-size 标出档位。',
+    ],
+    donts: [
+      '不要按代码随机上色：颜色留给数据。',
+      '不要在件里内置真实公司或币种的标志。',
+      '不要拿它当按钮：它是 role=img 的徽标，可点的是它所在的行或卡。',
+    ],
+    composition: 'SymbolMark\n  span[role=img][aria-label][data-size]\n    img（有图且没失败）| span 字母',
     keys: [],
   },
   {
@@ -982,7 +996,7 @@ export const PAGES: readonly DocPage[] = [
   },
   {
     id: 'change-text',
-    group: 'quant',
+    group: 'quotes',
     cardHeight: 122,
     title: 'ChangeText 涨跌幅',
     summary:
@@ -1210,30 +1224,36 @@ export const PAGES: readonly DocPage[] = [
   },
   {
     id: 'metric-card',
-    group: 'quant',
+    group: 'quotes',
     cardHeight: 780,
     title: 'MetricCard 指标卡与卡片墙（跨市场共用）',
     summary:
-      '照 uiarc 的 Metric explorer 的结构：标题、大号当前值、较前日 / 周 / 月 / 年的变化（涨跌色）、迷你走势线（1 月 / 3 月 / 6 月 / 1 年分段）、可选阶段带（五档边界与文案由调用方给）、来源与更新时间一行；MetricCardGrid 把卡排成墙。组件只画不算，数据与文字都由调用方传，没有数据就是空态。',
+      '报价类读数卡的共用壳（2026-11-18）：variant="card" 照 uiarc 的 Metric explorer 的结构，variant="tile" 是 KPI 瓦片（原 SparkTile）。卡：标题、大号当前值、较前日 / 周 / 月 / 年的变化（涨跌色）、迷你走势线（1 月 / 3 月 / 6 月 / 1 年分段）、可选阶段带（五档边界与文案由调用方给）、来源与更新时间一行；MetricCardGrid 把卡排成墙。组件只画不算，数据与文字都由调用方传，没有数据就是空态。',
     exports: ['MetricCard', 'MetricCardGrid', 'metricTrendTone', 'metricStageIndex'],
     props: [
       {
         part: 'MetricCard',
         rows: [
           {
-            name: 'title / value / unit',
+            name: 'variant',
+            type: "'card' | 'tile'",
+            default: "'card'",
+            desc: 'card 是完整指标卡；tile 是 KPI 瓦片（原 SparkTile，字段见 SparkTile 页）。',
+          },
+          {
+            name: 'label / value / unit',
             type: 'string / string | null / string',
-            desc: '标题、已格式化的当前值（没有数据传 null，写 —）、数值后的小字。',
+            desc: '标题（旧名 title）、已格式化的当前值（没有数据传 null，写 —）、数值后的小字。',
           },
           {
-            name: 'changes',
-            type: 'MetricChange[]',
-            desc: '{ key, label, value（百分数，null 写 —） }，想放几个放几个，涨跌色带箭头。',
+            name: 'changePct / changes',
+            type: 'number / MetricChange[]',
+            desc: 'changePct 一个变化（百分数）；changes 多个：{ id, label, value（百分数，null 写 —） }，涨跌色带箭头。',
           },
           {
-            name: 'ranges',
-            type: 'MetricRange[]',
-            desc: '{ key, label, values }：每段的走势（从旧到新）；多于一段时出分段控件。',
+            name: 'series / ranges',
+            type: 'number[] / MetricRange[]',
+            desc: 'series 一段走势；ranges 多段：{ id, label, values }（从旧到新），多于一段时出分段控件。',
           },
           {
             name: 'range / defaultRange / onRangeChange',
@@ -1245,7 +1265,11 @@ export const PAGES: readonly DocPage[] = [
             type: "'direction' | 'neutral' | 'inverse'",
             desc: '走势线着色：direction 头尾涨跌（默认）；neutral 中性灰白（恐惧贪婪、情绪分这类没有好坏方向的）；inverse 涨是坏（如 VIX），涨取跌色。',
           },
-          { name: 'rangeLabel / sparkLabel', type: 'string', desc: '分段控件与走势线的读屏名（整句）。' },
+          {
+            name: 'labels',
+            type: '{ range?, spark }',
+            desc: '分段控件与走势线的读屏名（整句；旧名 rangeLabel / sparkLabel）。',
+          },
           {
             name: 'stages / current',
             type: 'MetricStage[] / number',
@@ -1260,8 +1284,8 @@ export const PAGES: readonly DocPage[] = [
           { name: 'label', type: 'string', desc: '整墙的读屏名。' },
           {
             name: 'ranges / range / defaultRange / onRangeChange / rangeLabel',
-            type: '{ key, label }[] / string / string / (key) => void / string',
-            desc: '共用区间分段，放在墙顶一次；传了它卡片不再各画分段控件，都按这个 key 取自己 ranges 里同 key 的一段。',
+            type: '{ id, label }[] / string / string / (id) => void / string',
+            desc: '共用区间分段，放在墙顶一次；传了它卡片不再各画分段控件，都按这个 id 取自己 ranges 里同 id 的一段。',
           },
           { name: 'minWidth', type: 'number', desc: '每张卡最小宽（px），默认 260；一行几张由容器宽决定。' },
         ],
@@ -1276,9 +1300,11 @@ export const PAGES: readonly DocPage[] = [
       '变化与走势线用涨跌色（跟 data-updown）；走势线颜色按所选区间的头尾涨跌。',
       '阶段带从跌色经灰到涨色，当前档全亮；档名写在带下面，不只靠颜色。',
       '没有数据：数值写 —，变化写 —，线的位置写 —，不画样本。',
+      'variant="tile"：DOM 与样子同原 SparkTile（k-spark-tile*），数值一格与卡共用 ReadoutValue（— / 闪色 / 滚轮 / 单位）。',
     ],
     donts: [
       '不要在件里算指标、写死中文或写死阶段边界；都由调用方传。',
+      '不要再新写 SparkTile：用 MetricCard variant="tile"，SparkTile 只是兼容的旧名。',
       '不要把阶段带当买卖信号；它只是读数落在哪一档。',
       '不要用橙色或蓝色画数据。',
     ],
@@ -1288,7 +1314,7 @@ export const PAGES: readonly DocPage[] = [
   },
   {
     id: 'rating-text',
-    group: 'quant',
+    group: 'quotes',
     cardHeight: 140,
     title: 'RatingText 五档评级',
     summary:
@@ -1308,13 +1334,17 @@ export const PAGES: readonly DocPage[] = [
       '买入、强力买入：涨色；卖出、强力卖出：跌色；中性：继承周围字色。',
       '方向不只靠颜色：图标一至两层箭头表示强弱。',
     ],
-    donts: ['不要自己拼箭头字符着色；用这个件，涨跌色才会跟 data-updown。'],
+    donts: [
+      '不要自己拼箭头字符着色；用这个件，涨跌色才会跟 data-updown。',
+      '不要只写档名不给图标：方向与强弱靠箭头层数，不只靠颜色。',
+      '不要拿它写涨跌幅：那是 ChangeText。',
+    ],
     composition: 'RatingText（内部：lucide 图标）；放在 DataGrid 的 custom 列 cell 里',
     keys: [],
   },
   {
     id: 'technical-rating',
-    group: 'quant',
+    group: 'quotes',
     cardHeight: 780,
     title: 'TechnicalRating 技术评级仪表（跨市场共用）',
     summary:
@@ -1374,7 +1404,7 @@ export const PAGES: readonly DocPage[] = [
   },
   {
     id: 'pnl-text',
-    group: 'quant',
+    group: 'quotes',
     cardHeight: 70,
     title: 'PnlText 盈亏',
     summary: '盈亏文字：字由调用方格式化好（币种、位数、符号都由调用方定），本件只按方向着色，颜色规则同 ChangeText。',
@@ -2356,16 +2386,16 @@ export const PAGES: readonly DocPage[] = [
   },
   {
     id: 'spark-tile',
-    group: 'quant',
+    group: 'quotes',
     cardHeight: 358,
     title: 'SparkTile KPI 瓦片',
     summary:
-      'KPI 瓦片：点阵小标签、LCD 数值、24px 迷你折线（可画阈值虚线）、一行变化说明；数据由调用方给，没有数据是空态，一行最多放 5 个。',
+      'KPI 瓦片：点阵小标签、LCD 数值、24px 迷你折线（可画阈值虚线）、一行变化说明；数据由调用方给，没有数据是空态，一行最多放 5 个。2026-11-18 起它就是 MetricCard variant="tile"，SparkTile 留作兼容的旧名。',
     exports: ['SparkTile'],
     props: [
       {
         part: 'SparkTile',
-        note: '给了 onClick 整块就是按钮（点开该指标的完整图），不给是普通块。文案（标签、说明、读屏名）都由调用方传。',
+        note: '等于 <MetricCard variant="tile">：delta → changePct、sparkLabel → labels.spark、state → status、onClick → onSelect，新代码写 MetricCard。给了 onClick（onSelect）整块就是按钮，不给是普通块。文案都由调用方传。',
         rows: [
           { name: 'label', type: 'string', desc: '点阵小标签。' },
           { name: 'value', type: 'string | null', desc: '已格式化的数值；null 是没有数据，写 —。' },
@@ -2408,7 +2438,8 @@ export const PAGES: readonly DocPage[] = [
       '不要用颜色区分瓦片类型，只用标签；接近阈值要在说明里写字，不只靠边框颜色。',
       '没有数据时不要传一列 0 凑数。',
     ],
-    composition: 'SparkTile\n  ChangeText\n  RollingText（给了 rollValue 时）',
+    composition:
+      'SparkTile = MetricCard variant="tile"\n  ReadoutValue（数值 · RollingText 给了 rollValue 时）\n  迷你线（svg）\n  ChangeText · note',
     keys: [['Enter / Space', '给了 onClick 时触发']],
   },
   {
@@ -4357,7 +4388,10 @@ export const PAGES: readonly DocPage[] = [
       '一列数从旧到新，按容器的真实像素画（不拉伸、线宽 1.5px，高 80 以上 2px、圆角连接）。默认是线加线下渐变（贴线 22% 渐到 0），最新值处是实心点加常驻空心环；给毫秒时间戳与 domain 时横轴是整个交易时段、线只画到现在（对齐 TradingView Markets 页的日内图），可加右侧价格刻度、底部时间刻度与最新价价签；另有 line、baseline（基准上涨色下跌色）、bars、winloss（胜负格）四种画法。look 给两种可选画风（默认外观不变）：instrument 是把数据当科学档案来排版的仪器档案页（细线、一个信号色、点阵与角标、投影谱、极值与研究员批注、档案编号与来源行），ascii 是终端字形（块字符或盲文点阵、可换点阵字体）。可加基准虚线、最高最低点、右端最新值、成交量、断点、单调曲线；interactive 时悬停出一根竖线、吸附点与紧挨光标的三行读数（数值、日期、时间），键盘左右键走点。线色按最后值对基准（没基准按头尾），涨跌色跟涨跌配色走，没有数据只留「—」。',
     exports: ['Sparkline', 'sparkPoints', 'sparkTone', 'quoteTone'],
     propParts: [
-      { part: 'Sparkline' },
+      {
+        part: 'Sparkline',
+        note: '值是数（从旧到新）；读数、标签、刻度字由调用方的 format 与 label 写。interactive 时才可聚焦、走点。',
+      },
       {
         part: '纯函数',
         note: 'sparkPoints(values, width, height) 给 polyline 的点；sparkTone(values) 取头尾三态；quoteTone(change) 由一个涨跌数取三态（报价类的件共用）。几何（断点分段、基准切分、单调插值、设备像素对齐、时间到横坐标与休市压缩、时间与价格刻度、读数框位置）在 quotes/sparkline-model.ts，都是纯函数。',
@@ -4432,7 +4466,12 @@ export const PAGES: readonly DocPage[] = [
     summary:
       '上面一行名字、数和档位词，中间一条进度条标出数的位置，下面一句说明数是怎么来的。取不到时不画填充，数那里写原因。从应用的分析视图提来。',
     exports: ['GaugeBar'],
-    propParts: [{ part: 'GaugeBar' }],
+    propParts: [
+      {
+        part: 'GaugeBar',
+        note: 'share 是 0 到 1 的位置（null 表示取不到）；名字、数、档位词与说明都是调用方写好的字。',
+      },
+    ],
     states: [
       '有位置：填充占轨道的 share，宽度按 snappy 弹簧变。',
       '取不到（share 为 null）：不画填充，数换成弱色小字并写原因。',
@@ -4453,7 +4492,7 @@ export const PAGES: readonly DocPage[] = [
     propParts: [
       {
         part: 'Treemap',
-        note: '排布由调用方先用 layoutTreemap 算好再传 blocks；工具条（下拉、返回钮）从 toolbar 传。',
+        note: '排布由调用方先用 layoutTreemap 算好再传 blocks；工具条（下拉、返回钮）从 toolbar 传。点格子 onSelect（旧名 onItem）。',
       },
       {
         part: 'layoutTreemap(items, grouped)',
@@ -4466,9 +4505,11 @@ export const PAGES: readonly DocPage[] = [
       '分组下钻：点组头只剩那一组，工具条里自己放返回钮。',
       '格子太小时只留色块，不写字。',
       '没有涨跌数的格子用中性色。',
+      '格子上的字按底色明暗选黑或白（oklch 亮度 0.565 为界，relative color 从底色算）：七档在八个主题与两种涨跌配色下都 ≥ 4.5:1（2026-11-18 修，原来一律白字压在亮绿亮红上只有 1.5 到 4.4:1）；色例同理。',
     ],
     donts: [
       '不要用于项目数很多又没法下钻的场景，小格会糊成一片。',
+      '不要用 classes 把格子的字色写死成白色：底色最亮的几档会掉到 4.5:1 以下。',
       '不要把排布放进渲染里重算：先用 layoutTreemap 排好再传 blocks。',
     ],
     composition:
@@ -4483,11 +4524,26 @@ export const PAGES: readonly DocPage[] = [
     group: 'quotes',
     cardHeight: 48,
     title: 'PriceTag 行内价格标签',
-    summary: '夹在一句话或一行里的「名字 价格 涨跌」，数字等宽对齐，涨跌带三角与颜色，跟着周围的字号走。',
+    summary:
+      '夹在一句话或一行里的「名字 价格 涨跌」，数字等宽对齐，涨跌带三角与颜色，跟着周围的字号走。值是数（last、changePct，跟统一行情行同名），价格文字由 formatPrice 写。',
     exports: ['PriceTag'],
-    propParts: [{ part: 'PriceTag' }],
-    states: ['涨、跌：涨跌文字带三角与对应颜色。', '平：没有三角，用弱色。', '只有价格：不写名字与涨跌。'],
-    donts: ['不要只靠颜色表达涨跌：三角与带符号的文字必须在。', '不要在包里格式化数字，价与涨跌由调用方传好。'],
+    propParts: [
+      {
+        part: 'PriceTag',
+        note: '方向由 changePct 的正负定（也可传 tone 盖过）；旧的 price / change 字符串照认一个版本（@deprecated）。不可交互，没有键盘操作。',
+      },
+    ],
+    states: [
+      '涨、跌：涨跌文字带三角与对应颜色。',
+      '平：没有三角，用弱色。',
+      '只有价格：不写名字与涨跌。',
+      '价格变了：闪一次涨跌色（ReadoutFlash），约 1 秒落回。',
+    ],
+    donts: [
+      '不要只靠颜色表达涨跌：三角与带符号的文字必须在。',
+      '不要传写好的价格字符串：传数与 formatPrice，品种精度由调用方定。',
+      '不要拿它当按钮：要可点用 QuoteCard 的 onSelect。',
+    ],
     composition: 'PriceTag\n  span（名字）\n  span（价）\n  span（三角 · 涨跌）',
     keys: [],
   },
@@ -4497,13 +4553,20 @@ export const PAGES: readonly DocPage[] = [
     cardHeight: 300,
     title: 'QuoteCard 报价卡',
     summary:
-      '一只品种一张卡：名字与代码、最新价（大）、涨跌与涨跌幅、可选的迷你图与底部一行；QuoteStrip 是一排小号的卡，放不下横向滚动。',
+      '一只品种一张卡：名字与代码、最新价（大）、涨跌与涨跌幅、可选的迷你图与底部一行；QuoteStrip 是一排小号的卡，放不下横向滚动。值是数（统一行情行的 last / change / changePct），整行 {...row} 直接摊进来，价格文字由 formatPrice 写。',
     exports: ['QuoteCard', 'QuoteStrip'],
-    propParts: [{ part: 'QuoteCard' }, { part: 'QuoteStrip' }],
+    propParts: [
+      {
+        part: 'QuoteCard',
+        note: '方向由 change 的正负定（没有 change 看 changePct，也可传 tone）；迷你图的读屏名在 labels.spark。旧的 price / percent 与字符串 change、sparkLabel 照认一个版本（@deprecated）。',
+      },
+      { part: 'QuoteStrip', note: 'items 是 QuoteCard 的属性加 id；每张卡用小号。' },
+    ],
     states: [
       '默认：名字、价、涨跌；可带迷你图与底部一行。',
       '可点：整张卡是按钮，悬停提亮、按下缩到 0.98、键盘焦点有环。',
       '小号（QuoteStrip 里）：148 宽，放不下横向滚动。',
+      '价格变了：闪一次涨跌色；迷你图新点追加时线平滑延伸。',
     ],
     donts: ['不要在卡里再放可点的子元素：给了 onSelect 整张卡已是按钮。', '不要把一排卡折行成网格：一排就是横向滚动。'],
     composition:
@@ -4522,10 +4585,14 @@ export const PAGES: readonly DocPage[] = [
       {
         part: 'PerformanceStrip',
         rows: [
-          { name: 'items', type: 'PerformanceItem[]', desc: '{ key, label, change（百分数；没有写 null，画「—」）}。' },
+          {
+            name: 'items',
+            type: 'PerformanceItem[]',
+            desc: '{ id（旧名 key）, label, change（百分数；没有写 null，画「—」）}。',
+          },
           {
             name: 'value / defaultValue / onValueChange',
-            type: 'string / string / (key) => void',
+            type: 'string / string / (id) => void',
             desc: '选中的格子；不给 value 就自己记。',
           },
           { name: 'label', type: 'string', desc: '读屏名（role=group），必填。' },
@@ -4562,7 +4629,13 @@ export const PAGES: readonly DocPage[] = [
           {
             name: 'items',
             type: 'PeerItem[]',
-            desc: '{ key, code, name, price（写好的）, unit?, change（百分数）, logoSrc? }。',
+            desc: '统一行情行的字段：{ id, symbol, name, last（数）, changePct（百分数）, unit?, logoSrc? }；旧的 { key, code, price 字符串, change } 照认一个版本。',
+          },
+          {
+            name: 'formatPrice',
+            type: '(n: number) => string',
+            default: 'toFixed(2)',
+            desc: '价格怎么写（品种精度由调用方定）。',
           },
           {
             name: 'labels',
@@ -4592,13 +4665,21 @@ export const PAGES: readonly DocPage[] = [
         part: 'KeyStats',
         rows: [
           { name: 'title', type: 'string', desc: '标题。' },
-          { name: 'items', type: 'KeyStatItem[]', desc: '{ key, label, value?, unit?, badge? }；没有值画「—」。' },
-          { name: 'onTitle / onItem', type: 'callbacks', desc: '给了标题与标签就变成按钮，带「›」。' },
+          {
+            name: 'items',
+            type: 'KeyStatItem[]',
+            desc: '{ id（旧名 key）, label, value?, unit?, badge? }；没有值画「—」。',
+          },
+          {
+            name: 'onTitle / onSelect',
+            type: 'callbacks',
+            desc: '给了标题与标签就变成按钮，带「›」（onSelect 旧名 onItem）。',
+          },
           { name: 'columns', type: 'number', default: '3', desc: '列数。' },
         ],
       },
     ],
-    states: ['没给 onItem：标签是普通文字，没有「›」。', '没有值：数值位写「—」。'],
+    states: ['没给 onSelect：标签是普通文字，没有「›」。', '没有值：数值位写「—」。', '数值变了：闪一次涨跌色。'],
     donts: ['不要在件里格式化数值；由调用方传。', '徽标不要用彩色。'],
     composition: 'KeyStats section\n  h3 标题（›）\n  dl 网格\n    div（dt 标签 › · dd 数值 · 单位 · 徽标）',
     keys: [['Tab / Enter', '给了回调时到标题、标签上、触发']],
@@ -4610,7 +4691,7 @@ export const PAGES: readonly DocPage[] = [
     title: 'Watchlist 自选列表',
     summary:
       '照 TradingView 右侧自选栏（2026-11-15 实测）：列 Symbol / Last / Chg / Chg%，行首小旗标与字母圆徽标；最新价变动时只有变了的尾数闪涨跌色、约 1 秒落回；点列头排序（升序、降序、回原顺序）。价格怎么写由 formatPrice 定，数与文字由调用方传。',
-    exports: ['Watchlist', 'changedTail', 'nextSort', 'sortRows'],
+    exports: ['Watchlist', 'changedTail', 'nextSort', 'sortRows', 'plainPrice', 'rowTone'],
     props: [
       {
         part: 'Watchlist',
@@ -4618,7 +4699,7 @@ export const PAGES: readonly DocPage[] = [
           {
             name: 'rows',
             type: 'WatchlistRow[]',
-            desc: '{ key, code, name?, last, change, changePct, flagged?, logoSrc? }。',
+            desc: '统一行情行 QuoteRow { id, symbol, name?, last, change, changePct }（都是数）加 { flagged?, logoSrc? }；旧的 key / code 照认一个版本。',
           },
           {
             name: 'labels',
@@ -4632,8 +4713,13 @@ export const PAGES: readonly DocPage[] = [
             desc: '最新价与涨跌额怎么写；闪色按它写出来的文字比尾数。',
           },
           { name: 'sort / onSortChange', type: 'WatchlistSort | null', desc: '排序（受控）；不给就自己记。' },
-          { name: 'onRow / onFlag', type: 'callbacks', desc: '点行；点旗标（行 + 新状态）。' },
+          { name: 'onSelect / onFlag', type: 'callbacks', desc: '点行（旧名 onRow）；点旗标（行 + 新状态）。' },
         ],
+      },
+      {
+        part: 'QuoteRow · plainPrice · rowTone',
+        note: '统一的行情行（2026-11-18）：Watchlist、QuoteTable、PeerCards、QuoteCard 都用 { id, symbol, name, last, change, changePct }，值是数，文字由 formatPrice 写；plainPrice 是不给 formatPrice 时的两位小数，rowTone(row) 由 change（再看 changePct）定涨跌。',
+        rows: [],
       },
       { part: 'changedTail(prev, next)', note: '新旧价格文字从哪一位开始不同：返回 { head, tail }。', rows: [] },
       { part: 'nextSort / sortRows', note: '列头点击的循环与排序，纯函数。', rows: [] },
@@ -4643,7 +4729,11 @@ export const PAGES: readonly DocPage[] = [
       '当前排序列的列头带 ▲ / ▼，th 的 aria-sort 跟着变。',
       '旗标：悬停才显示，标上的常亮；没有行画空态。',
     ],
-    donts: ['不要给整个价格闪色：只有变了的尾数。', '不要放真实公司标志。'],
+    donts: [
+      '不要给整个价格闪色：只有变了的尾数。',
+      '不要放真实公司标志。',
+      '不要传写好的价格字符串：行是数，位数交给 formatPrice。',
+    ],
     composition:
       'Watchlist table\n  thead：列头按钮 × 4\n  tbody tr：旗标 · SymbolMark · 代码 | 最新价（尾数闪色）| 涨跌额 | 涨跌幅',
     keys: [['Tab / Enter', '列头排序、旗标']],
@@ -4656,7 +4746,10 @@ export const PAGES: readonly DocPage[] = [
     summary: '一条横线从最低到最高，标记指着现价在区间里的位置，两端写最低与最高。用来看当日区间、52 周区间。',
     exports: ['RangeBar', 'rangeShare', 'CompareBar'],
     propParts: [
-      { part: 'RangeBar' },
+      {
+        part: 'RangeBar',
+        note: 'low / high / value 是数，两端的字由 digits 或调用方的 lowLabel / highLabel 写；role=meter 要 label。',
+      },
       {
         part: 'CompareBar',
         note: '两条同比例尺的细条，比成交量与 30 日均量；只用中性灰（没有方向，不上涨跌色）。',
@@ -4685,7 +4778,10 @@ export const PAGES: readonly DocPage[] = [
       '半圆分五段（强烈卖出到强烈买入），一根指针转到分数那一段，圆心下面写档位词，下面可再放卖出 / 中性 / 买入各几个。',
     exports: ['RatingGauge', 'ratingZone', 'ratingAngle'],
     propParts: [
-      { part: 'RatingGauge' },
+      {
+        part: 'RatingGauge',
+        note: 'score 是 −1 到 +1 的数，五个档位名由调用方传（zones）；children 放在档位词下面（常是卖出 / 中性 / 买入的个数）。',
+      },
       {
         part: 'ratingZone(score) / ratingAngle(score)',
         symbol: 'ratingZone',
@@ -4807,13 +4903,17 @@ export const PAGES: readonly DocPage[] = [
     cardHeight: 250,
     title: 'QuoteTable 分组页签行情表',
     summary:
-      '上面一排页签（指数、自选、热门……），下面是当前这组的行情表：名称与代码、迷你图、最新价、涨跌幅。由 Tabs 与 Sparkline 组出来。',
+      '上面一排页签（指数、自选、热门……），下面是当前这组的行情表：名称与代码、迷你图、最新价、涨跌幅。由 Tabs 与 Sparkline 组出来；行就是 Watchlist 的行（统一行情行加 spark），值是数，价格文字由 formatPrice 写。',
     exports: ['QuoteTable'],
     propParts: [
-      { part: 'QuoteTable', note: '页签值可受控（value / onValueChange）也可不受控（defaultValue，默认第一组）。' },
+      {
+        part: 'QuoteTable',
+        note: '页签值可受控（value / onValueChange）也可不受控（defaultValue，默认第一组）。文字在 labels（{ list, columns, empty }）；点行 onSelect。旧的 label / columns / empty / onRow 与字符串行（price / percent / tone）照认一个版本（@deprecated）。',
+      },
     ],
     states: [
       '默认：第一组页签选中，下面是该组行情表。',
+      '最新价变了：只闪变了的尾数（与 Watchlist 同一个 FlashPrice）；涨跌幅变了整格闪涨跌色。',
       '行可点：悬停提亮，键盘 Tab 到行、Enter 触发。',
       '空组：写调用方给的说明，不画表头。',
       '没有迷你图数据的行：走势列留空。',

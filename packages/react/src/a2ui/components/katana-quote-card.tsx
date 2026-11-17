@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
-// KatanaQuoteCard：一只品种一张报价卡（名字、最新价、涨跌、迷你图）。价与涨跌由智能体格式化好传来；点卡片只发 Action，不跳转。
+// KatanaQuoteCard：一只品种一张报价卡（名字、最新价、涨跌、迷你图）。值是数（统一行情行的 last / change / changePct，2026-11-18），位数由 digits 定，方向由 change 的正负定；
+// 点卡片只发 Action，不跳转。
 import { createComponentImplementation } from '@a2ui/react'
 import type { ComponentApi } from '@a2ui/web_core'
 import { CommonSchemas } from '@a2ui/web_core/v1_0'
@@ -7,28 +8,30 @@ import { z } from 'zod'
 import { QuoteCard } from '../../index.ts'
 import { Cell, actionSchema, numberList, numberListSchema, weightSchema } from '../support.tsx'
 
-const TONES = ['up', 'down', 'flat'] as const
-
 export const KatanaQuoteCardApi = {
   name: 'KatanaQuoteCard',
   schema: z
     .object({
       name: CommonSchemas.DynamicString.describe('Name of the symbol.'),
       symbol: CommonSchemas.DynamicString.describe('Code of the symbol, shown small beside the name.').optional(),
-      price: CommonSchemas.DynamicString.describe('The latest price, already formatted.'),
-      change: CommonSchemas.DynamicString.describe('The change amount, already formatted and signed.').optional(),
-      percent: CommonSchemas.DynamicString.describe('The change percentage, already formatted and signed.').optional(),
-      tone: z
-        .enum(TONES)
-        .or(CommonSchemas.DataBinding)
-        .describe("Direction: 'up', 'down' or 'flat'. Sets the color and the triangle. Defaults to 'flat'.")
-        .optional(),
+      last: CommonSchemas.DynamicNumber.describe('The latest price.'),
+      change: CommonSchemas.DynamicNumber.describe(
+        'The change amount in price units; its sign sets the color and the triangle.',
+      ).optional(),
+      changePct: CommonSchemas.DynamicNumber.describe(
+        'The change as a percentage already: 1.5 means +1.50%.',
+      ).optional(),
+      digits: z.number().int().min(0).max(8).default(2).describe('Decimal places of the price and change.').optional(),
       spark: numberListSchema(
         'Recent values from oldest to newest for the mini chart. Omit to hide the chart.',
       ).optional(),
-      sparkLabel: CommonSchemas.DynamicString.describe(
-        'Accessible name of the mini chart as a whole sentence. Required when spark is given.',
-      ).optional(),
+      labels: z
+        .object({
+          spark: z.string().describe('Accessible name of the mini chart as a whole sentence.'),
+        })
+        .strict()
+        .describe('Screen-reader text, in the language of the user. Required when spark is given.')
+        .optional(),
       size: z.enum(['md', 'sm']).describe("'sm' is a narrow horizontal card for dense rows.").optional(),
       onSelect: actionSchema(
         'Dispatched when the user presses the card. When it is omitted the card is not a button.',
@@ -41,17 +44,21 @@ export const KatanaQuoteCardApi = {
 export const KatanaQuoteCard = createComponentImplementation(KatanaQuoteCardApi, ({ props }) => {
   const spark = numberList(props.spark)
   const select = props.onSelect
+  const digits = props.digits ?? 2
+  const hasSpark = spark.length > 1 && props.labels !== undefined
   return (
     <Cell weight={props.weight}>
       <QuoteCard
         name={props.name ?? ''}
         symbol={props.symbol}
-        price={props.price ?? ''}
+        last={props.last}
         change={props.change}
-        percent={props.percent}
-        tone={TONES.find((item) => item === props.tone)}
-        spark={spark.length > 1 ? spark : undefined}
-        sparkLabel={props.sparkLabel}
+        changePct={props.changePct}
+        formatPrice={(value) =>
+          value.toLocaleString('en-US', { minimumFractionDigits: digits, maximumFractionDigits: digits })
+        }
+        spark={hasSpark ? spark : undefined}
+        labels={props.labels}
         size={props.size}
         onSelect={select ? () => void select() : undefined}
       />

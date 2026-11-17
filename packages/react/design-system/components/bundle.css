@@ -8375,9 +8375,11 @@ button.k-sysmon-link-body:focus-visible {
 }
 
 .k-symbol-mark {
-  background: var(--bg-400);
-  color: var(--ink-200);
+  background: var(--k-surface-overlay-background);
+  color: var(--k-content-body-foreground);
   font-family: var(--font-num);
+  font-style: normal;
+  font-size: var(--text-data-size);
   letter-spacing: 0;
   vertical-align: middle;
   -webkit-user-select: none;
@@ -8386,10 +8388,13 @@ button.k-sysmon-link-body:focus-visible {
   flex: none;
   justify-content: center;
   align-items: center;
-  font-style: normal;
   line-height: 1;
   display: inline-flex;
   overflow: hidden;
+}
+
+.k-symbol-mark[data-size="md"] {
+  font-size: var(--text-lcd-size);
 }
 
 .k-symbol-mark[data-kind="image"] img {
@@ -10389,8 +10394,8 @@ button.k-status-item:hover {
 }
 
 .k-spark {
-  --k-spark-color: var(--ink-200);
-  --k-spark-ring: var(--bg-100);
+  --k-spark-color: var(--k-content-body-foreground);
+  --k-spark-ring: var(--k-surface-base-background);
   width: 100%;
   height: 36px;
   display: block;
@@ -10441,7 +10446,7 @@ button.k-status-item:hover {
 }
 
 .k-spark-base {
-  stroke: var(--line-200);
+  stroke: var(--k-separable-bold-borderColor);
   stroke-width: 1px;
   stroke-dasharray: 2 2;
 }
@@ -10455,11 +10460,11 @@ button.k-status-item:hover {
 }
 
 .k-spark-bar.is-flat, .k-spark-cell.is-flat {
-  fill: var(--ink-400);
+  fill: var(--k-content-tertiary-foreground);
 }
 
 .k-spark-vol {
-  fill: var(--ink-400);
+  fill: var(--k-content-tertiary-foreground);
   fill-opacity: .6;
 }
 
@@ -10481,7 +10486,7 @@ button.k-status-item:hover {
 }
 
 .k-spark-extreme {
-  fill: var(--ink-100);
+  fill: var(--k-content-primary-foreground);
 }
 
 .k-spark-dot.is-hover {
@@ -10534,7 +10539,7 @@ button.k-status-item:hover {
 }
 
 .k-spark-text {
-  fill: var(--ink-300);
+  fill: var(--k-content-secondary-foreground);
   font: var(--text-num-sm) var(--font-num-small);
   font-variant-numeric: tabular-nums;
   dominant-baseline: central;
@@ -10542,20 +10547,20 @@ button.k-status-item:hover {
 }
 
 .k-spark-last {
-  fill: var(--ink-200);
+  fill: var(--k-content-body-foreground);
 }
 
 .k-spark-cursor {
-  stroke: var(--line-200);
+  stroke: var(--k-separable-bold-borderColor);
   stroke-width: 1px;
 }
 
 .k-spark-tag rect {
-  fill: var(--ink-400);
+  fill: var(--k-content-tertiary-foreground);
 }
 
 .k-spark-tag text {
-  fill: var(--bg-000);
+  fill: var(--k-surface-sunken-background);
   font: var(--text-num-sm) var(--font-num-small);
   font-variant-numeric: tabular-nums;
   dominant-baseline: central;
@@ -10571,11 +10576,11 @@ button.k-status-item:hover {
 }
 
 .k-spark-tag.is-flat rect {
-  fill: var(--bg-400);
+  fill: var(--k-surface-overlay-background);
 }
 
 .k-spark-tag.is-flat text {
-  fill: var(--ink-100);
+  fill: var(--k-content-primary-foreground);
 }
 
 .k-spark-tipbox {
@@ -10585,9 +10590,9 @@ button.k-status-item:hover {
 
 .k-spark-tip {
   background: var(--lcd-bg);
-  border: 1px solid var(--line-100);
+  border: 1px solid var(--k-separable-tertiary-borderColor);
   border-radius: var(--radius-md);
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-num-small);
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
@@ -10596,14 +10601,14 @@ button.k-status-item:hover {
 }
 
 .k-spark-tip-value {
-  color: var(--ink-100);
+  color: var(--k-content-primary-foreground);
   font: var(--text-data) var(--font-num-small);
   font-variant-numeric: tabular-nums;
   font-weight: 600;
 }
 
 .k-spark-empty {
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-data) var(--font-sans);
   font-weight: 400;
   line-height: 36px;
@@ -10615,18 +10620,18 @@ button.k-status-item:hover {
 
 .k-spark-ins-plus {
   fill: none;
-  stroke: var(--line-100);
+  stroke: var(--k-separable-tertiary-borderColor);
   stroke-width: 1px;
 }
 
 .k-spark-ins-corner, .k-spark-ins-reticle {
   fill: none;
-  stroke: var(--line-200);
+  stroke: var(--k-separable-bold-borderColor);
   stroke-width: 1px;
 }
 
 .k-spark-ins-meta, .k-spark-ins-text, .k-spark-ins-tag text {
-  fill: var(--ink-400);
+  fill: var(--k-content-tertiary-foreground);
   font: var(--text-micro) var(--font-mono);
   letter-spacing: .15em;
   font-variant-numeric: tabular-nums;
@@ -10635,50 +10640,50 @@ button.k-status-item:hover {
 }
 
 .k-spark-ins-text {
-  fill: var(--ink-300);
+  fill: var(--k-content-secondary-foreground);
 }
 
 .k-spark-ins-last {
-  fill: var(--ink-200);
+  fill: var(--k-content-body-foreground);
 }
 
 .k-spark-ins-tick, .k-spark-ins-spine {
-  stroke: var(--line-200);
+  stroke: var(--k-separable-bold-borderColor);
   stroke-width: 1px;
 }
 
 .k-spark-ins-base {
-  stroke: var(--ink-400);
+  stroke: var(--k-content-tertiary-foreground);
   stroke-width: 1px;
   stroke-dasharray: 2 2;
 }
 
 .k-spark-ins-line {
   fill: none;
-  stroke: var(--ink-200);
+  stroke: var(--k-content-body-foreground);
   stroke-width: 1px;
   stroke-linejoin: round;
 }
 
 .k-spark-ins-bar {
-  fill: var(--ink-400);
+  fill: var(--k-content-tertiary-foreground);
   fill-opacity: .7;
   transition: width var(--dur-reorder) var(--ease-snappy);
 }
 
 .k-spark-ins-now {
-  stroke: var(--ink-100);
+  stroke: var(--k-content-primary-foreground);
   stroke-width: 1px;
 }
 
 .k-spark-ins-cross {
   fill: none;
-  stroke: var(--ink-100);
+  stroke: var(--k-content-primary-foreground);
   stroke-width: 1px;
 }
 
 .k-spark-ins-lead, .k-spark-ins-cursor {
-  stroke: var(--ink-400);
+  stroke: var(--k-content-tertiary-foreground);
   stroke-width: 1px;
 }
 
@@ -10707,12 +10712,12 @@ button.k-status-item:hover {
 
 .k-spark-ins-tag rect {
   fill: none;
-  stroke: var(--ink-300);
+  stroke: var(--k-content-secondary-foreground);
   stroke-width: 1px;
 }
 
 .k-spark-ins-tag text {
-  fill: var(--ink-100);
+  fill: var(--k-content-primary-foreground);
 }
 
 .k-spark-instrument .k-spark-tip {
@@ -10724,7 +10729,7 @@ button.k-status-item:hover {
   --k-ascii-size: 12px;
   width: 100%;
   height: 36px;
-  color: var(--ink-200);
+  color: var(--k-content-body-foreground);
   font: var(--k-ascii-size) / var(--k-ascii-size) var(--font-mono);
   display: block;
   position: relative;
@@ -10763,11 +10768,11 @@ button.k-status-item:hover {
 }
 
 .k-spark-ascii-pre .is-dim {
-  color: var(--ink-400);
+  color: var(--k-content-tertiary-foreground);
 }
 
 .k-spark-ascii-cursor {
-  background: var(--line-200);
+  background: var(--k-separable-bold-borderColor);
   opacity: .5;
   pointer-events: none;
   position: absolute;
@@ -10782,11 +10787,11 @@ button.k-status-item:hover {
 }
 
 .k-mini-chart {
-  border: 1px solid var(--line-100);
+  border: 1px solid var(--k-separable-tertiary-borderColor);
   border-radius: var(--radius-control);
-  background: var(--bg-100);
+  background: var(--k-surface-base-background);
   min-width: 0;
-  color: var(--ink-100);
+  color: var(--k-content-primary-foreground);
   font: var(--text-data) var(--font-sans);
   font-variant-numeric: tabular-nums;
   text-align: left;
@@ -10802,7 +10807,7 @@ button.k-mini-chart.is-link {
 }
 
 button.k-mini-chart.is-link:hover {
-  background: var(--bg-200);
+  background: var(--k-container-secondary-background);
 }
 
 button.k-mini-chart.is-link:focus-visible {
@@ -10818,7 +10823,7 @@ button.k-mini-chart.is-link:focus-visible {
 }
 
 .k-mini-symbol {
-  color: var(--ink-100);
+  color: var(--k-content-primary-foreground);
   font: var(--text-data) var(--font-sans);
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -10828,8 +10833,8 @@ button.k-mini-chart.is-link:focus-visible {
 
 .k-mini-badge {
   border-radius: var(--radius-sm);
-  background: var(--bg-300);
-  color: var(--ink-300);
+  background: var(--k-container-primary-background);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-sans-small);
   padding: 0 4px;
 }
@@ -10847,7 +10852,7 @@ button.k-mini-chart.is-link:focus-visible {
 }
 
 .k-mini-unit {
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-sans-small);
 }
 
@@ -10880,18 +10885,18 @@ button.k-mini-chart.is-link:focus-visible {
 }
 
 .k-gauge-label {
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-data) var(--font-sans);
 }
 
 .k-gauge-value {
-  color: var(--ink-100);
+  color: var(--k-content-primary-foreground);
   font: var(--text-title) var(--font-sans);
   font-variant-numeric: tabular-nums;
 }
 
 .k-gauge-value.is-unavailable {
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-data) var(--font-sans);
 }
 
@@ -10904,7 +10909,7 @@ button.k-mini-chart.is-link:focus-visible {
 }
 
 .k-gauge-fill {
-  background: var(--ink-100);
+  background: var(--k-content-primary-foreground);
   transition: width var(--dur-snappy) var(--ease-snappy);
   border-radius: 3px;
   position: absolute;
@@ -10912,7 +10917,7 @@ button.k-mini-chart.is-link:focus-visible {
 }
 
 .k-gauge-note {
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-sans-small);
   margin: 0;
   line-height: 16px;
@@ -10942,7 +10947,7 @@ button.k-mini-chart.is-link:focus-visible {
 .k-treemap-head {
   z-index: 1;
   height: 16px;
-  color: var(--ink-200);
+  color: var(--k-content-body-foreground);
   font: var(--text-caption) var(--font-sans-small);
   text-align: left;
   text-overflow: ellipsis;
@@ -10957,12 +10962,13 @@ button.k-mini-chart.is-link:focus-visible {
 }
 
 .k-treemap-head:hover {
-  color: var(--ink-100);
+  color: var(--k-content-primary-foreground);
   text-decoration: underline;
 }
 
 .k-treemap-cell {
-  color: var(--ink-100);
+  background: var(--treemap-cell, transparent);
+  color: var(--ds-c-19o6dqr);
   font: var(--text-caption) var(--font-sans-small);
   font-variant-numeric: tabular-nums;
   text-align: center;
@@ -10987,7 +10993,7 @@ button.k-mini-chart.is-link:focus-visible {
 }
 
 .k-treemap-cell.is-link:hover {
-  outline: 1px solid var(--ink-100);
+  outline: 1px solid var(--k-content-primary-foreground);
   outline-offset: -1px;
 }
 
@@ -11007,8 +11013,9 @@ button.k-mini-chart.is-link:focus-visible {
 }
 
 .k-treemap-legend li {
+  background: var(--treemap-cell, transparent);
   height: 16px;
-  color: var(--ink-100);
+  color: var(--ds-c-19o6dqr);
   font: var(--text-caption) var(--font-sans-small);
   text-align: center;
   flex: 1 1 0;
@@ -11016,77 +11023,77 @@ button.k-mini-chart.is-link:focus-visible {
 }
 
 .k-treemap .is-step-3 {
-  background: var(--pnl-down);
+  --treemap-cell: var(--pnl-down);
 }
 
 @supports (color: color-mix(in lab, red, red)) {
   .k-treemap .is-step-3 {
-    background: var(--ds-c-clc5nk);
+    --treemap-cell: color-mix(in srgb, var(--pnl-down) 100%, var(--k-surface-sunken-background));
   }
 }
 
 .k-treemap .is-step-2 {
-  background: var(--pnl-down);
+  --treemap-cell: var(--pnl-down);
 }
 
 @supports (color: color-mix(in lab, red, red)) {
   .k-treemap .is-step-2 {
-    background: var(--ds-c-1v6dr3q);
+    --treemap-cell: color-mix(in srgb, var(--pnl-down) 70%, var(--k-surface-sunken-background));
   }
 }
 
 .k-treemap .is-step-1 {
-  background: var(--pnl-down);
+  --treemap-cell: var(--pnl-down);
 }
 
 @supports (color: color-mix(in lab, red, red)) {
   .k-treemap .is-step-1 {
-    background: var(--ds-c-1g34po5);
+    --treemap-cell: color-mix(in srgb, var(--pnl-down) 42%, var(--k-surface-sunken-background));
   }
 }
 
 .k-treemap .is-step0, .k-treemap .is-stepna {
-  background: var(--ink-300);
+  --treemap-cell: var(--k-content-secondary-foreground);
 }
 
 @supports (color: color-mix(in lab, red, red)) {
   .k-treemap .is-step0, .k-treemap .is-stepna {
-    background: var(--ds-c-1rculs5);
+    --treemap-cell: color-mix(in srgb, var(--k-content-secondary-foreground) 30%, var(--k-surface-sunken-background));
   }
 }
 
 .k-treemap .is-step1 {
-  background: var(--pnl-up);
+  --treemap-cell: var(--pnl-up);
 }
 
 @supports (color: color-mix(in lab, red, red)) {
   .k-treemap .is-step1 {
-    background: var(--ds-c-bz96bm);
+    --treemap-cell: color-mix(in srgb, var(--pnl-up) 42%, var(--k-surface-sunken-background));
   }
 }
 
 .k-treemap .is-step2 {
-  background: var(--pnl-up);
+  --treemap-cell: var(--pnl-up);
 }
 
 @supports (color: color-mix(in lab, red, red)) {
   .k-treemap .is-step2 {
-    background: var(--ds-c-r2i7r7);
+    --treemap-cell: color-mix(in srgb, var(--pnl-up) 70%, var(--k-surface-sunken-background));
   }
 }
 
 .k-treemap .is-step3 {
-  background: var(--pnl-up);
+  --treemap-cell: var(--pnl-up);
 }
 
 @supports (color: color-mix(in lab, red, red)) {
   .k-treemap .is-step3 {
-    background: var(--ds-c-12mkgp9);
+    --treemap-cell: color-mix(in srgb, var(--pnl-up) 100%, var(--k-surface-sunken-background));
   }
 }
 
 .k-price-tag {
-  color: var(--ink-100);
+  color: var(--k-content-primary-foreground);
   font: var(--text-data) var(--font-sans);
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
@@ -11096,7 +11103,7 @@ button.k-mini-chart.is-link:focus-visible {
 }
 
 .k-price-tag-name {
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
 }
 
 .k-price-tag-glyph {
@@ -11113,15 +11120,15 @@ button.k-mini-chart.is-link:focus-visible {
 }
 
 .k-price-tag.is-flat .k-price-tag-change, .k-quote-card.is-flat .k-quote-change, .k-quote-rows tr.is-flat .k-quote-rows-change {
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
 }
 
 .k-quote-card {
-  border: 1px solid var(--line-100);
+  border: 1px solid var(--k-separable-tertiary-borderColor);
   border-radius: var(--radius-control);
-  background: var(--bg-100);
+  background: var(--k-surface-base-background);
   min-width: 0;
-  color: var(--ink-100);
+  color: var(--k-content-primary-foreground);
   font: var(--text-data) var(--font-sans);
   font-variant-numeric: tabular-nums;
   text-align: left;
@@ -11137,7 +11144,7 @@ button.k-quote-card.is-link {
 }
 
 button.k-quote-card.is-link:hover {
-  background: var(--bg-200);
+  background: var(--k-container-secondary-background);
 }
 
 button.k-quote-card.is-link:active {
@@ -11157,14 +11164,14 @@ button.k-quote-card.is-link:focus-visible {
 }
 
 .k-quote-name {
-  color: var(--ink-200);
+  color: var(--k-content-body-foreground);
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
 }
 
 .k-quote-symbol {
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-sans-small);
 }
 
@@ -11211,7 +11218,7 @@ button.k-quote-card.is-link:focus-visible {
 
 .k-range {
   min-width: 0;
-  color: var(--ink-200);
+  color: var(--k-content-body-foreground);
   font: var(--text-caption) var(--font-sans-small);
   font-variant-numeric: tabular-nums;
   align-items: center;
@@ -11230,7 +11237,7 @@ button.k-quote-card.is-link:focus-visible {
 }
 
 .k-range-end small {
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-sans-small);
 }
 
@@ -11243,7 +11250,7 @@ button.k-quote-card.is-link:focus-visible {
 }
 
 .k-range-fill {
-  background: var(--ink-300);
+  background: var(--k-content-secondary-foreground);
   transition: width var(--dur-snappy) var(--ease-snappy);
   border-radius: 2px;
   position: absolute;
@@ -11251,7 +11258,7 @@ button.k-quote-card.is-link:focus-visible {
 }
 
 .k-range-mark {
-  background: var(--ink-100);
+  background: var(--k-content-primary-foreground);
   width: 4px;
   height: 12px;
   transition: left var(--dur-snappy) var(--ease-snappy);
@@ -11259,6 +11266,80 @@ button.k-quote-card.is-link:focus-visible {
   margin: -6px 0 0 -2px;
   position: absolute;
   top: 50%;
+}
+
+.k-range-block {
+  flex-direction: column;
+  gap: 6px;
+  display: flex;
+}
+
+.k-range-title {
+  color: var(--k-content-secondary-foreground);
+  font: 400 12px/16px var(--font-sans);
+}
+
+.k-range[data-marker="triangle"] .k-range-fill {
+  display: none;
+}
+
+.k-range[data-marker="triangle"] .k-range-track {
+  background: var(--k-content-tertiary-foreground);
+  height: 2px;
+  overflow: visible;
+}
+
+.k-range[data-marker="triangle"] .k-range-mark {
+  border-right: 5px solid var(--ds-c-2xn4aw);
+  border-bottom: 7px solid var(--k-content-primary-foreground);
+  background: none;
+  border-left: 5px solid var(--ds-c-2xn4aw);
+  border-radius: 0;
+  width: 0;
+  height: 0;
+  margin: 3px 0 0 -5px;
+  top: 100%;
+}
+
+.k-compare {
+  font: var(--text-caption) var(--font-sans-small);
+  font-variant-numeric: tabular-nums;
+  flex-direction: column;
+  gap: 8px;
+  display: flex;
+}
+
+.k-compare-head {
+  color: var(--k-content-secondary-foreground);
+  justify-content: space-between;
+  display: flex;
+}
+
+.k-compare-text {
+  color: var(--k-content-primary-foreground);
+}
+
+.k-compare-track {
+  background: var(--alpha-white-5);
+  border-radius: 2px;
+  height: 4px;
+  margin-top: 4px;
+  display: block;
+}
+
+.k-compare-fill {
+  height: 100%;
+  transition: width var(--dur-snappy) var(--ease-snappy);
+  border-radius: 2px;
+  display: block;
+}
+
+.k-compare-row[data-side="a"] .k-compare-fill {
+  background: var(--k-content-primary-foreground);
+}
+
+.k-compare-row[data-side="b"] .k-compare-fill {
+  background: var(--k-content-tertiary-foreground);
 }
 
 .k-rating {
@@ -11295,12 +11376,12 @@ button.k-quote-card.is-link:focus-visible {
 
 @supports (color: color-mix(in lab, red, red)) {
   .k-rating-zone.is-z1 {
-    stroke: var(--ds-c-nhksol);
+    stroke: var(--ds-c-1yxxpoj);
   }
 }
 
 .k-rating-zone.is-z2 {
-  stroke: var(--ink-300);
+  stroke: var(--k-content-secondary-foreground);
 }
 
 .k-rating-zone.is-z3 {
@@ -11309,7 +11390,7 @@ button.k-quote-card.is-link:focus-visible {
 
 @supports (color: color-mix(in lab, red, red)) {
   .k-rating-zone.is-z3 {
-    stroke: var(--ds-c-1dit3qa);
+    stroke: var(--ds-c-nyok28);
   }
 }
 
@@ -11320,20 +11401,20 @@ button.k-quote-card.is-link:focus-visible {
 .k-rating-needle {
   transform-origin: 100px 100px;
   transition: transform var(--dur-gentle) var(--ease-gentle);
-  fill: var(--ink-100);
+  fill: var(--k-content-primary-foreground);
 }
 
 .k-rating-hub {
-  fill: var(--ink-100);
+  fill: var(--k-content-primary-foreground);
 }
 
 .k-rating-word {
-  color: var(--ink-100);
+  color: var(--k-content-primary-foreground);
   font: var(--text-title) var(--font-sans);
 }
 
 .k-rating-extra {
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-sans-small);
   font-variant-numeric: tabular-nums;
   gap: 12px;
@@ -11345,7 +11426,7 @@ button.k-quote-card.is-link:focus-visible {
 }
 
 .k-quote-table-empty {
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-data) var(--font-sans);
   margin: 0;
   padding: 12px 0;
@@ -11359,7 +11440,7 @@ button.k-quote-card.is-link:focus-visible {
 }
 
 .k-quote-rows th, .k-quote-rows td {
-  border-bottom: 1px solid var(--line-100);
+  border-bottom: 1px solid var(--k-separable-tertiary-borderColor);
   text-align: left;
   vertical-align: middle;
   padding: 6px 8px;
@@ -11367,7 +11448,7 @@ button.k-quote-card.is-link:focus-visible {
 }
 
 .k-quote-rows thead th {
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-sans-small);
 }
 
@@ -11377,11 +11458,11 @@ button.k-quote-card.is-link:focus-visible {
 }
 
 .k-quote-rows-name {
-  color: var(--ink-100);
+  color: var(--k-content-primary-foreground);
 }
 
 .k-quote-rows-name small {
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-sans-small);
   margin-left: 6px;
 }
@@ -11399,7 +11480,7 @@ button.k-quote-card.is-link:focus-visible {
 }
 
 .k-quote-rows tbody tr.is-link:hover {
-  background: var(--bg-200);
+  background: var(--k-container-secondary-background);
 }
 
 .k-quote-rows tbody tr.is-link:focus-visible {
@@ -15981,7 +16062,7 @@ button.k-sm-head:focus-visible {
   min-height: 0;
   padding: var(--space-3) var(--inset-x);
   font: var(--text-data) var(--font-sans);
-  color: var(--ink-100);
+  color: var(--k-content-primary-foreground);
   flex-direction: column;
   flex: auto;
   display: flex;
@@ -16018,12 +16099,12 @@ button.k-sm-head:focus-visible {
 }
 
 .k-trating-name {
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   font: 500 12px/16px var(--font-sans);
 }
 
 .k-trating-dial.is-primary .k-trating-name {
-  color: var(--ink-200);
+  color: var(--k-content-body-foreground);
 }
 
 .k-trating-gauge {
@@ -16055,11 +16136,11 @@ button.k-sm-head:focus-visible {
 }
 
 .k-trating-zone.is-z1, .k-trating-zone.is-z2, .k-trating-zone.is-z3 {
-  stroke: var(--ink-300);
+  stroke: var(--k-content-secondary-foreground);
 }
 
 .k-trating-zone.is-z1, .k-trating-zone.is-z3 {
-  stroke: var(--ink-400);
+  stroke: var(--k-content-tertiary-foreground);
 }
 
 .k-trating-zone.is-z4 {
@@ -16070,15 +16151,15 @@ button.k-sm-head:focus-visible {
   transform-box: fill-box;
   transform-origin: 50% 100%;
   transition: transform var(--dur-gentle) var(--ease-gentle);
-  fill: var(--ink-100);
+  fill: var(--k-content-primary-foreground);
 }
 
 .k-trating-hub {
-  fill: var(--ink-100);
+  fill: var(--k-content-primary-foreground);
 }
 
 .k-trating-tick {
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   font: 500 11px/14px var(--font-sans);
   white-space: nowrap;
   transition: color var(--dur-gentle) var(--ease-gentle);
@@ -16087,7 +16168,7 @@ button.k-sm-head:focus-visible {
 }
 
 .k-trating-tick.is-active {
-  color: var(--ink-100);
+  color: var(--k-content-primary-foreground);
 }
 
 .k-trating-dial:not(.is-primary) .k-trating-tick {
@@ -16114,7 +16195,7 @@ button.k-sm-head:focus-visible {
 }
 
 .k-trating-counts {
-  border: 1px solid var(--alpha-white-7);
+  border: 1px solid var(--k-separable-secondary-borderColor);
   font-variant-numeric: tabular-nums;
   border-radius: 8px;
   grid-template-columns: repeat(3, 1fr);
@@ -16132,11 +16213,11 @@ button.k-sm-head:focus-visible {
 }
 
 .k-trating-counts span + span {
-  border-left: 1px solid var(--alpha-white-7);
+  border-left: 1px solid var(--k-separable-secondary-borderColor);
 }
 
 .k-trating-counts small {
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   font: 400 11px/14px var(--font-sans);
 }
 
@@ -16153,12 +16234,12 @@ button.k-sm-head:focus-visible {
 }
 
 .k-trating-total {
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   font: 400 11px/14px var(--font-sans);
 }
 
 .k-trating-disclaimer {
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   font: 400 11px/16px var(--font-sans);
   text-align: center;
   margin: 0;
@@ -16181,7 +16262,7 @@ button.k-sm-head:focus-visible {
 }
 
 .k-trating-chev {
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   margin-left: 4px;
 }
 
@@ -16193,7 +16274,7 @@ button.k-sm-head:focus-visible {
 
 .k-trating-table thead th {
   height: 24px;
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   font: 500 11px/14px var(--font-sans);
   text-align: left;
   padding: 0;
@@ -16238,7 +16319,7 @@ button.k-sm-head:focus-visible {
 .k-trating-verdict {
   font: 500 13px/18px var(--font-sans);
   white-space: nowrap;
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   display: inline-block;
 }
 
@@ -16252,7 +16333,7 @@ button.k-sm-head:focus-visible {
 
 .k-trating-empty {
   padding: var(--space-6);
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   margin: auto;
 }
 
@@ -16297,7 +16378,7 @@ button.k-sm-head:focus-visible {
 }
 
 .k-perf-cell {
-  color: var(--ink-100);
+  color: var(--k-content-primary-foreground);
   cursor: pointer;
   transition: background var(--dur-snappy) var(--ease-snappy);
   background: none;
@@ -16311,7 +16392,7 @@ button.k-sm-head:focus-visible {
 }
 
 .k-perf-cell:hover {
-  background: var(--alpha-white-3);
+  background: var(--k-actionable-background);
 }
 
 .k-perf-cell[aria-pressed="true"] {
@@ -16319,12 +16400,12 @@ button.k-sm-head:focus-visible {
 }
 
 .k-perf-cell:focus-visible {
-  outline: 2px solid var(--ink-200);
+  outline: 2px solid var(--k-content-body-foreground);
   outline-offset: -2px;
 }
 
 .k-perf-label {
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   font: 400 12px/16px var(--font-sans);
   white-space: nowrap;
 }
@@ -16358,7 +16439,7 @@ button.k-sm-head:focus-visible {
 
 .k-peers-compare {
   border: 1px solid var(--alpha-white-9);
-  color: var(--ink-100);
+  color: var(--k-content-primary-foreground);
   font: 500 12px/16px var(--font-sans);
   cursor: pointer;
   background: none;
@@ -16375,7 +16456,7 @@ button.k-sm-head:focus-visible {
   background: var(--alpha-white-5);
   width: 24px;
   height: 24px;
-  color: var(--ink-100);
+  color: var(--k-content-primary-foreground);
   font: 500 16px/22px var(--font-sans);
   cursor: pointer;
   border: 0;
@@ -16402,11 +16483,11 @@ button.k-sm-head:focus-visible {
 }
 
 .k-peers-main {
-  border: 1px solid var(--alpha-white-7);
+  border: 1px solid var(--k-separable-secondary-borderColor);
   background: var(--alpha-white-2);
   width: 100%;
   min-width: 0;
-  color: var(--ink-100);
+  color: var(--k-content-primary-foreground);
   text-align: left;
   cursor: pointer;
   border-radius: 10px;
@@ -16436,7 +16517,7 @@ button.k-sm-head:focus-visible {
 
 .k-peers-name {
   min-width: 0;
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   font: 400 12px/16px var(--font-sans);
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -16452,7 +16533,7 @@ button.k-sm-head:focus-visible {
 }
 
 .k-peers-price small {
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   font: 400 11px/14px var(--font-sans);
   margin-left: 4px;
 }
@@ -16465,7 +16546,7 @@ button.k-sm-head:focus-visible {
 .k-peers-add {
   width: 22px;
   height: 22px;
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   font: 400 16px/20px var(--font-sans);
   cursor: pointer;
   background: none;
@@ -16478,7 +16559,7 @@ button.k-sm-head:focus-visible {
 
 .k-peers-add:hover {
   background: var(--alpha-white-7);
-  color: var(--ink-100);
+  color: var(--k-content-primary-foreground);
 }
 
 .k-keystats {
@@ -16501,11 +16582,11 @@ button.k-sm-head:focus-visible {
 }
 
 .k-keystats button:hover {
-  color: var(--ink-100);
+  color: var(--k-content-primary-foreground);
 }
 
 .k-keystats-chev {
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   margin-left: 4px;
 }
 
@@ -16520,7 +16601,7 @@ button.k-sm-head:focus-visible {
 }
 
 .k-keystats-item dt {
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   font: 400 12px/16px var(--font-sans);
 }
 
@@ -16538,93 +16619,19 @@ button.k-sm-head:focus-visible {
 }
 
 .k-keystats-item small {
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   font: 400 12px/16px var(--font-sans);
 }
 
 .k-keystats-badge {
   background: var(--alpha-white-7);
-  color: var(--ink-200);
+  color: var(--k-content-body-foreground);
   font: 600 10px/16px var(--font-sans);
   letter-spacing: .04em;
   text-transform: uppercase;
   border-radius: 9999px;
   align-self: center;
   padding: 1px 8px;
-}
-
-.k-range-block {
-  flex-direction: column;
-  gap: 6px;
-  display: flex;
-}
-
-.k-range-title {
-  color: var(--ink-300);
-  font: 400 12px/16px var(--font-sans);
-}
-
-.k-range[data-marker="triangle"] .k-range-fill {
-  display: none;
-}
-
-.k-range[data-marker="triangle"] .k-range-track {
-  background: var(--ink-400);
-  height: 2px;
-  overflow: visible;
-}
-
-.k-range[data-marker="triangle"] .k-range-mark {
-  border-right: 5px solid var(--ds-c-2xn4aw);
-  border-bottom: 7px solid var(--ink-100);
-  background: none;
-  border-left: 5px solid var(--ds-c-2xn4aw);
-  border-radius: 0;
-  width: 0;
-  height: 0;
-  margin: 3px 0 0 -5px;
-  top: 100%;
-}
-
-.k-compare {
-  font: var(--text-caption) var(--font-sans-small);
-  font-variant-numeric: tabular-nums;
-  flex-direction: column;
-  gap: 8px;
-  display: flex;
-}
-
-.k-compare-head {
-  color: var(--ink-300);
-  justify-content: space-between;
-  display: flex;
-}
-
-.k-compare-text {
-  color: var(--ink-100);
-}
-
-.k-compare-track {
-  background: var(--alpha-white-5);
-  border-radius: 2px;
-  height: 4px;
-  margin-top: 4px;
-  display: block;
-}
-
-.k-compare-fill {
-  height: 100%;
-  transition: width var(--dur-snappy) var(--ease-snappy);
-  border-radius: 2px;
-  display: block;
-}
-
-.k-compare-row[data-side="a"] .k-compare-fill {
-  background: var(--ink-100);
-}
-
-.k-compare-row[data-side="b"] .k-compare-fill {
-  background: var(--ink-400);
 }
 
 .k-watch {
@@ -16646,7 +16653,7 @@ button.k-sm-head:focus-visible {
 
 .k-watch thead th {
   height: 28px;
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   font: 500 11px/14px var(--font-sans);
 }
 
@@ -16660,7 +16667,7 @@ button.k-sm-head:focus-visible {
 }
 
 .k-watch thead button:hover {
-  color: var(--ink-100);
+  color: var(--k-content-primary-foreground);
 }
 
 .k-watch-caret {
@@ -16696,7 +16703,7 @@ button.k-sm-head:focus-visible {
 .k-watch-flag {
   width: 14px;
   height: 14px;
-  color: var(--ink-400);
+  color: var(--k-content-tertiary-foreground);
   cursor: pointer;
   background: none;
   border: 0;
@@ -16713,7 +16720,7 @@ button.k-sm-head:focus-visible {
 }
 
 .k-watch-flag[aria-pressed="true"] {
-  color: var(--ink-100);
+  color: var(--k-content-primary-foreground);
 }
 
 .k-watch-flag[aria-pressed="true"] svg {
@@ -16742,7 +16749,7 @@ button.k-sm-head:focus-visible {
 
 .k-watch-empty {
   padding: var(--space-6);
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   text-align: center;
   margin: 0;
 }
@@ -16768,9 +16775,9 @@ button.k-sm-head:focus-visible {
   gap: var(--space-2);
   min-width: 0;
   padding: var(--space-3);
-  background: var(--bg-200);
+  background: var(--k-container-secondary-background);
   border: var(--hairline);
-  color: var(--ink-100);
+  color: var(--k-content-primary-foreground);
   font: var(--text-data) var(--font-sans);
   font-variant-numeric: tabular-nums;
   flex-direction: column;
@@ -16786,7 +16793,7 @@ button.k-sm-head:focus-visible {
 }
 
 .k-metric-title {
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   font: inherit;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -16796,15 +16803,15 @@ button.k-sm-head:focus-visible {
 }
 
 .k-metric-value {
-  color: var(--ink-100);
+  color: var(--k-content-primary-foreground);
+  font-size: var(--text-display-size);
   letter-spacing: -.01em;
-  font-size: 28px;
   font-weight: 500;
   line-height: round(1.1em, 1px);
 }
 
 .k-metric-value small {
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   font: 400 12px/1 var(--font-sans);
   letter-spacing: 0;
   vertical-align: baseline;
@@ -16812,7 +16819,7 @@ button.k-sm-head:focus-visible {
 }
 
 .k-metric-value.is-empty {
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
 }
 
 .k-metric-changes {
@@ -16829,7 +16836,7 @@ button.k-sm-head:focus-visible {
 }
 
 .k-metric-change dt {
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
 }
 
 .k-metric-change dd {
@@ -16870,7 +16877,7 @@ button.k-sm-head:focus-visible {
 
 @supports (color: color-mix(in lab, red, red)) {
   .k-metric-seg {
-    background: var(--ds-c-1twsk1);
+    background: var(--ds-c-xy49pb);
   }
 }
 
@@ -16884,7 +16891,7 @@ button.k-sm-head:focus-visible {
 }
 
 .k-metric-mark {
-  background: var(--ink-100);
+  background: var(--k-content-primary-foreground);
   width: 2px;
   transition: left var(--dur-gentle) var(--ease-gentle);
   margin-left: -1px;
@@ -16897,14 +16904,14 @@ button.k-sm-head:focus-visible {
   justify-content: space-between;
   align-items: baseline;
   gap: var(--space-2);
-  color: var(--ink-300);
-  font-size: 11px;
+  color: var(--k-content-secondary-foreground);
+  font-size: var(--text-caption-size);
   display: flex;
 }
 
 .k-metric-stage-now {
-  color: var(--ink-100);
-  font-size: var(--text-data);
+  color: var(--k-content-primary-foreground);
+  font-size: var(--text-data-size);
   font-weight: 500;
 }
 
@@ -16913,16 +16920,16 @@ button.k-sm-head:focus-visible {
   gap: 2px var(--space-2);
   padding-top: var(--space-2);
   border-top: var(--hairline);
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
+  font-size: var(--text-caption-size);
   flex-wrap: wrap;
   margin-top: auto;
-  font-size: 11px;
   display: flex;
 }
 
 .k-row-actions {
   z-index: 1;
-  background: linear-gradient(to right, transparent, var(--bg-300) 12px);
+  background: linear-gradient(to right, transparent, var(--k-container-primary-background) 12px);
   opacity: 0;
   pointer-events: none;
   transition: opacity .1s var(--ease-snappy, ease-out);
@@ -16943,7 +16950,7 @@ button.k-sm-head:focus-visible {
 .k-row-action {
   width: 22px;
   height: 22px;
-  color: var(--ink-200);
+  color: var(--k-content-body-foreground);
   cursor: pointer;
   background: none;
   border: 0;
@@ -16957,11 +16964,11 @@ button.k-sm-head:focus-visible {
 
 .k-row-action:hover:not(:disabled) {
   background: var(--alpha-white-9);
-  color: var(--ink-100);
+  color: var(--k-content-primary-foreground);
 }
 
 .k-row-action:focus-visible {
-  outline: 1px solid var(--line-200);
+  outline: 1px solid var(--k-separable-bold-borderColor);
   outline-offset: -1px;
 }
 
@@ -16980,10 +16987,10 @@ button.k-sm-head:focus-visible {
 }
 
 .k-spark-tile {
-  background: var(--bg-200);
+  background: var(--k-container-secondary-background);
   border: var(--hairline);
   min-width: 0;
-  color: var(--ink-100);
+  color: var(--k-content-primary-foreground);
   font: inherit;
   text-align: left;
   font-variant-numeric: tabular-nums;
@@ -16999,7 +17006,7 @@ button.k-spark-tile {
 }
 
 button.k-spark-tile:hover {
-  background: var(--bg-300);
+  background: var(--k-container-primary-background);
 }
 
 button.k-spark-tile:focus-visible {
@@ -17011,7 +17018,7 @@ button.k-spark-tile:focus-visible {
   font-family: var(--font-num-small);
   font-size: var(--text-tag-size);
   letter-spacing: .12em;
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
 }
 
 .k-spark-tile-value {
@@ -17024,13 +17031,13 @@ button.k-spark-tile:focus-visible {
 }
 
 .k-spark-tile-value.is-empty {
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
 }
 
 .k-spark-tile-value small {
   font-size: var(--text-micro-size);
   letter-spacing: 0;
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   margin-left: 4px;
 }
 
@@ -17042,7 +17049,7 @@ button.k-spark-tile:focus-visible {
 }
 
 .k-spark-tile-chart.is-empty {
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-data) var(--font-sans);
   line-height: 24px;
 }
@@ -17056,18 +17063,18 @@ button.k-spark-tile:focus-visible {
 
 .k-spark-tile-line {
   fill: none;
-  stroke: var(--k-spark-color, var(--ink-100));
+  stroke: var(--k-spark-color, var(--k-content-primary-foreground));
   stroke-width: 1.5px;
   stroke-linejoin: round;
   vector-effect: non-scaling-stroke;
 }
 
 .k-spark-tile-line.is-neutral {
-  stroke: var(--ink-300);
+  stroke: var(--k-content-secondary-foreground);
 }
 
 .k-spark-tile-limit {
-  stroke: var(--signal-amber);
+  stroke: var(--k-status-warn-foreground);
   stroke-width: 1px;
   stroke-dasharray: 2 2;
   vector-effect: non-scaling-stroke;
@@ -17089,7 +17096,7 @@ button.k-spark-tile:focus-visible {
 
 .k-spark-tile-end {
   border-radius: var(--radius-pill);
-  background: var(--k-spark-color, var(--ink-100));
+  background: var(--k-spark-color, var(--k-content-primary-foreground));
   width: 5px;
   height: 5px;
   margin-top: -2.5px;
@@ -17098,7 +17105,7 @@ button.k-spark-tile:focus-visible {
 }
 
 .k-spark-tile-end.is-neutral {
-  background: var(--ink-300);
+  background: var(--k-content-secondary-foreground);
 }
 
 .k-spark-tile-delta {
@@ -17110,7 +17117,7 @@ button.k-spark-tile:focus-visible {
 }
 
 .k-spark-tile-note {
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
 }
 
 .k-spark-tile[data-state="near"], .k-spark-tile[data-state="over"] {
@@ -17118,7 +17125,7 @@ button.k-spark-tile:focus-visible {
 }
 
 .k-spark-tile[data-state="near"] .k-spark-tile-note, .k-spark-tile[data-state="over"] .k-spark-tile-note {
-  color: var(--signal-amber);
+  color: var(--k-status-warn-foreground);
 }
 
 .k-spark-tile[data-state="over"] {
@@ -17127,11 +17134,11 @@ button.k-spark-tile:focus-visible {
 
 @keyframes k-tile-pulse {
   0% {
-    box-shadow: 0 0 0 0 var(--signal-amber);
+    box-shadow: 0 0 0 0 var(--k-status-warn-foreground);
   }
 
   40% {
-    box-shadow: 0 0 0 2px var(--signal-amber);
+    box-shadow: 0 0 0 2px var(--k-status-warn-foreground);
   }
 
   100% {
@@ -18723,15 +18730,9 @@ button.k-consensus-hash:focus-visible {
   --ds-c-1onh62z: color-mix(in srgb, var(--pnl-down) 22%, transparent);
   --ds-c-xr40fv: color-mix(in srgb, var(--signal-green) 16%, transparent);
   --ds-c-2bvhsz: color-mix(in srgb, var(--signal-red) 14%, transparent);
-  --ds-c-clc5nk: color-mix(in srgb, var(--pnl-down) 100%, var(--bg-000));
-  --ds-c-1v6dr3q: color-mix(in srgb, var(--pnl-down) 70%, var(--bg-000));
-  --ds-c-1g34po5: color-mix(in srgb, var(--pnl-down) 42%, var(--bg-000));
-  --ds-c-1rculs5: color-mix(in srgb, var(--ink-300) 30%, var(--bg-000));
-  --ds-c-bz96bm: color-mix(in srgb, var(--pnl-up) 42%, var(--bg-000));
-  --ds-c-r2i7r7: color-mix(in srgb, var(--pnl-up) 70%, var(--bg-000));
-  --ds-c-12mkgp9: color-mix(in srgb, var(--pnl-up) 100%, var(--bg-000));
-  --ds-c-nhksol: color-mix(in srgb, var(--pnl-down) 55%, var(--ink-300));
-  --ds-c-1dit3qa: color-mix(in srgb, var(--pnl-up) 55%, var(--ink-300));
+  --ds-c-19o6dqr: oklch(from var(--treemap-cell, var(--k-surface-sunken-background)) clamp(0, (.565 - l) * 1000, 1) 0 0);
+  --ds-c-1yxxpoj: color-mix(in srgb, var(--pnl-down) 55%, var(--k-content-secondary-foreground));
+  --ds-c-nyok28: color-mix(in srgb, var(--pnl-up) 55%, var(--k-content-secondary-foreground));
   --ds-c-iamwm4: color-mix(in srgb, var(--ink-100) 40%, transparent);
   --ds-c-19oxb0j: color-mix(in srgb, var(--ink-100) 65%, transparent);
   --ds-c-1n1hod9: color-mix(in srgb, var(--ink-100) 50%, transparent);
@@ -18745,7 +18746,7 @@ button.k-consensus-hash:focus-visible {
   --ds-c-fmo1lj: color-mix(in srgb, var(--pnl-up) 12%, transparent);
   --ds-c-qbul3h: color-mix(in srgb, var(--signal-amber) 12%, transparent);
   --ds-c-jwmebu: color-mix(in srgb, var(--pnl-down) 12%, transparent);
-  --ds-c-1twsk1: color-mix(in srgb, color-mix(in srgb, var(--pnl-down) calc((1 - var(--t)) * 100%), var(--pnl-up) calc(var(--t) * 100%)) 70%, var(--ink-300));
+  --ds-c-xy49pb: color-mix(in srgb, color-mix(in srgb, var(--pnl-down) calc((1 - var(--t)) * 100%), var(--pnl-up) calc(var(--t) * 100%)) 70%, var(--k-content-secondary-foreground));
   --ds-c-2xn4b5: #0009;
   --ds-c-87ch24: color-mix(in oklab, var(--glow-color) var(--glow-strength), transparent);
   --ds-c-yj1s8q: #fff;

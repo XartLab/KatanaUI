@@ -931,7 +931,7 @@
         "component": {
           "const": "KatanaMetricCard"
         },
-        "title": {
+        "label": {
           "anyOf": [
             {
               "type": "string"
@@ -1002,7 +1002,7 @@
           "maxItems": 4,
           "description": "Up to four changes shown under the value."
         },
-        "trend": {
+        "series": {
           "anyOf": [
             {
               "type": "array",
@@ -1016,20 +1016,19 @@
           ],
           "description": "Recent values from oldest to newest for the small trend line. Omit to hide the line. Either a literal array or {\"@path\": \"/some/array\"} bound to the data model."
         },
-        "trendLabel": {
-          "anyOf": [
-            {
-              "type": "string"
-            },
-            {
-              "$ref": "common_types.json#/$defs/DataBinding"
-            },
-            {
-              "$ref": "common_types.json#/$defs/FunctionCall",
-              "description": "Invokes a named function, combining common function properties with the catalog function definition."
+        "labels": {
+          "type": "object",
+          "properties": {
+            "spark": {
+              "type": "string",
+              "description": "Accessible name of the trend line as a whole sentence."
             }
+          },
+          "required": [
+            "spark"
           ],
-          "description": "Accessible name of the trend line as a whole sentence. Required when trend is given."
+          "additionalProperties": false,
+          "description": "Screen-reader text, in the language of the user. Required when series is given."
         },
         "trendTone": {
           "type": "string",
@@ -1079,7 +1078,7 @@
       },
       "required": [
         "component",
-        "title",
+        "label",
         "value"
       ],
       "unevaluatedProperties": false
@@ -6369,12 +6368,12 @@
               "items": {
                 "type": "object",
                 "properties": {
-                  "key": {
+                  "id": {
                     "type": "string",
                     "minLength": 1,
-                    "description": "Stable key of the row. The host gets it back with every action."
+                    "description": "Stable id of the row. The host gets it back with every action."
                   },
-                  "code": {
+                  "symbol": {
                     "type": "string",
                     "description": "The instrument code."
                   },
@@ -6400,8 +6399,8 @@
                   }
                 },
                 "required": [
-                  "key",
-                  "code",
+                  "id",
+                  "symbol",
                   "last",
                   "change",
                   "changePct"
@@ -6451,7 +6450,7 @@
             },
             "flag": {
               "type": "string",
-              "description": "Accessible name of the flag button; {code} is the instrument code, for example \"Flag {code}\"."
+              "description": "Accessible name of the flag button; {symbol} is the instrument code, for example \"Flag {symbol}\"."
             }
           },
           "required": [
@@ -6466,7 +6465,7 @@
           "additionalProperties": false,
           "description": "All visible and screen-reader text, in the language of the user."
         },
-        "onRow": {
+        "onSelect": {
           "anyOf": [
             {
               "type": "object",
@@ -6519,7 +6518,7 @@
               "description": "Executes a renderer or agent-side function."
             }
           ],
-          "description": "Dispatched when the user presses a row. metadata.extensions.katanaWatch carries {key, code}. The host receives the action and decides what to do; the component itself does nothing else."
+          "description": "Dispatched when the user presses a row. metadata.extensions.katanaWatch carries {id, symbol}. The host receives the action and decides what to do; the component itself does nothing else."
         },
         "onFlag": {
           "anyOf": [
@@ -6574,7 +6573,7 @@
               "description": "Executes a renderer or agent-side function."
             }
           ],
-          "description": "Dispatched when the user flags or unflags a row. metadata.extensions.katanaWatch carries {key, code, flagged}. The host receives the action and decides what to do; the component itself does nothing else."
+          "description": "Dispatched when the user flags or unflags a row. metadata.extensions.katanaWatch carries {id, symbol, flagged}. The host receives the action and decides what to do; the component itself does nothing else."
         },
         "weight": {
           "type": "number",
@@ -6621,30 +6620,25 @@
                           "minLength": 1,
                           "description": "Stable id of the row. The host gets it back when the row is pressed."
                         },
-                        "name": {
-                          "type": "string",
-                          "description": "The instrument name."
-                        },
                         "symbol": {
                           "type": "string",
                           "description": "The instrument code, in small text beside the name."
                         },
-                        "price": {
+                        "name": {
                           "type": "string",
-                          "description": "The price, already formatted as text."
+                          "description": "The instrument name; the code takes its place when omitted."
                         },
-                        "percent": {
-                          "type": "string",
-                          "description": "The change, already formatted as text such as \"+1.20%\"."
+                        "last": {
+                          "type": "number",
+                          "description": "The latest price."
                         },
-                        "tone": {
-                          "type": "string",
-                          "enum": [
-                            "up",
-                            "down",
-                            "flat"
-                          ],
-                          "description": "Direction of the change; colors the change text."
+                        "change": {
+                          "type": "number",
+                          "description": "Price change in price units; its sign sets the direction."
+                        },
+                        "changePct": {
+                          "type": "number",
+                          "description": "Price change as a percent already: 1.5 is +1.50%."
                         },
                         "spark": {
                           "type": "array",
@@ -6661,8 +6655,10 @@
                       },
                       "required": [
                         "id",
-                        "name",
-                        "price"
+                        "symbol",
+                        "last",
+                        "change",
+                        "changePct"
                       ],
                       "additionalProperties": false
                     },
@@ -6684,46 +6680,57 @@
           ],
           "description": "The groups, one tab each. Either a literal array or {\"@path\": \"/quotes\"} bound to a data-model array."
         },
-        "label": {
-          "anyOf": [
-            {
-              "type": "string"
+        "digits": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 8,
+          "default": 2,
+          "description": "Decimal places of prices."
+        },
+        "labels": {
+          "type": "object",
+          "properties": {
+            "list": {
+              "type": "string",
+              "description": "Accessible name of the tab strip."
             },
-            {
-              "$ref": "common_types.json#/$defs/DataBinding"
+            "columnName": {
+              "type": "string",
+              "description": "Header of the name column."
             },
-            {
-              "$ref": "common_types.json#/$defs/FunctionCall",
-              "description": "Invokes a named function, combining common function properties with the catalog function definition."
+            "columnTrend": {
+              "type": "string",
+              "description": "Header of the trend column."
+            },
+            "columnPrice": {
+              "type": "string",
+              "description": "Header of the price column."
+            },
+            "columnChange": {
+              "type": "string",
+              "description": "Header of the change column."
+            },
+            "empty": {
+              "type": "string",
+              "description": "Text when a group has no rows."
             }
+          },
+          "required": [
+            "list",
+            "columnName",
+            "columnTrend",
+            "columnPrice",
+            "columnChange",
+            "empty"
           ],
-          "description": "Accessible name of the tab strip."
-        },
-        "columnName": {
-          "type": "string",
-          "description": "Header of the name column."
-        },
-        "columnTrend": {
-          "type": "string",
-          "description": "Header of the trend column."
-        },
-        "columnPrice": {
-          "type": "string",
-          "description": "Header of the price column."
-        },
-        "columnChange": {
-          "type": "string",
-          "description": "Header of the change column."
-        },
-        "empty": {
-          "type": "string",
-          "description": "Text when a group has no rows."
+          "additionalProperties": false,
+          "description": "All visible and screen-reader text, in the language of the user."
         },
         "defaultGroup": {
           "type": "string",
           "description": "Id of the group shown first. Defaults to the first group."
         },
-        "onRow": {
+        "onSelect": {
           "anyOf": [
             {
               "type": "object",
@@ -6842,12 +6849,7 @@
       "required": [
         "component",
         "groups",
-        "label",
-        "columnName",
-        "columnTrend",
-        "columnPrice",
-        "columnChange",
-        "empty"
+        "labels"
       ],
       "unevaluatedProperties": false
     },
@@ -15699,7 +15701,7 @@
         "component": {
           "const": "KatanaSymbolMark"
         },
-        "code": {
+        "symbol": {
           "anyOf": [
             {
               "type": "string"
@@ -15730,11 +15732,22 @@
           "description": "The instrument name. It is the accessible name, and gives the letter when the code has no Latin letters."
         },
         "size": {
-          "type": "integer",
-          "minimum": 12,
-          "maximum": 64,
-          "default": 18,
-          "description": "Diameter in px."
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": [
+                "sm",
+                "md"
+              ]
+            },
+            {
+              "type": "integer",
+              "minimum": 12,
+              "maximum": 64
+            }
+          ],
+          "default": "sm",
+          "description": "'sm' is 18px (a list row), 'md' is 28px (a card); a number is a custom diameter in px."
         },
         "weight": {
           "type": "number",
@@ -15744,7 +15757,7 @@
       },
       "required": [
         "component",
-        "code"
+        "symbol"
       ],
       "unevaluatedProperties": false
     },
@@ -16563,10 +16576,10 @@
           ],
           "description": "Symbol name or code. Only price and change are shown when omitted."
         },
-        "price": {
+        "last": {
           "anyOf": [
             {
-              "type": "string"
+              "type": "number"
             },
             {
               "$ref": "common_types.json#/$defs/DataBinding"
@@ -16576,12 +16589,12 @@
               "description": "Invokes a named function, combining common function properties with the catalog function definition."
             }
           ],
-          "description": "The price, already formatted."
+          "description": "The latest price."
         },
-        "change": {
+        "changePct": {
           "anyOf": [
             {
-              "type": "string"
+              "type": "number"
             },
             {
               "$ref": "common_types.json#/$defs/DataBinding"
@@ -16591,23 +16604,14 @@
               "description": "Invokes a named function, combining common function properties with the catalog function definition."
             }
           ],
-          "description": "The change, already formatted and signed (for example \"+1.20%\")."
+          "description": "The change as a percentage already: 1.5 means +1.50%. Its sign sets the color and a triangle; omit to hide."
         },
-        "tone": {
-          "anyOf": [
-            {
-              "type": "string",
-              "enum": [
-                "up",
-                "down",
-                "flat"
-              ]
-            },
-            {
-              "$ref": "common_types.json#/$defs/DataBinding"
-            }
-          ],
-          "description": "Direction: 'up' and 'down' set the color and a triangle, 'flat' has neither. Defaults to 'flat'."
+        "digits": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 8,
+          "default": 2,
+          "description": "Decimal places of the price."
         },
         "label": {
           "anyOf": [
@@ -16632,7 +16636,7 @@
       },
       "required": [
         "component",
-        "price"
+        "last"
       ],
       "unevaluatedProperties": false
     },
@@ -16672,10 +16676,10 @@
           ],
           "description": "Code of the symbol, shown small beside the name."
         },
-        "price": {
+        "last": {
           "anyOf": [
             {
-              "type": "string"
+              "type": "number"
             },
             {
               "$ref": "common_types.json#/$defs/DataBinding"
@@ -16685,12 +16689,12 @@
               "description": "Invokes a named function, combining common function properties with the catalog function definition."
             }
           ],
-          "description": "The latest price, already formatted."
+          "description": "The latest price."
         },
         "change": {
           "anyOf": [
             {
-              "type": "string"
+              "type": "number"
             },
             {
               "$ref": "common_types.json#/$defs/DataBinding"
@@ -16700,12 +16704,12 @@
               "description": "Invokes a named function, combining common function properties with the catalog function definition."
             }
           ],
-          "description": "The change amount, already formatted and signed."
+          "description": "The change amount in price units; its sign sets the color and the triangle."
         },
-        "percent": {
+        "changePct": {
           "anyOf": [
             {
-              "type": "string"
+              "type": "number"
             },
             {
               "$ref": "common_types.json#/$defs/DataBinding"
@@ -16715,23 +16719,14 @@
               "description": "Invokes a named function, combining common function properties with the catalog function definition."
             }
           ],
-          "description": "The change percentage, already formatted and signed."
+          "description": "The change as a percentage already: 1.5 means +1.50%."
         },
-        "tone": {
-          "anyOf": [
-            {
-              "type": "string",
-              "enum": [
-                "up",
-                "down",
-                "flat"
-              ]
-            },
-            {
-              "$ref": "common_types.json#/$defs/DataBinding"
-            }
-          ],
-          "description": "Direction: 'up', 'down' or 'flat'. Sets the color and the triangle. Defaults to 'flat'."
+        "digits": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 8,
+          "default": 2,
+          "description": "Decimal places of the price and change."
         },
         "spark": {
           "anyOf": [
@@ -16747,20 +16742,19 @@
           ],
           "description": "Recent values from oldest to newest for the mini chart. Omit to hide the chart. Either a literal array or {\"@path\": \"/some/array\"} bound to the data model."
         },
-        "sparkLabel": {
-          "anyOf": [
-            {
-              "type": "string"
-            },
-            {
-              "$ref": "common_types.json#/$defs/DataBinding"
-            },
-            {
-              "$ref": "common_types.json#/$defs/FunctionCall",
-              "description": "Invokes a named function, combining common function properties with the catalog function definition."
+        "labels": {
+          "type": "object",
+          "properties": {
+            "spark": {
+              "type": "string",
+              "description": "Accessible name of the mini chart as a whole sentence."
             }
+          },
+          "required": [
+            "spark"
           ],
-          "description": "Accessible name of the mini chart as a whole sentence. Required when spark is given."
+          "additionalProperties": false,
+          "description": "Screen-reader text, in the language of the user. Required when spark is given."
         },
         "size": {
           "type": "string",
@@ -16834,7 +16828,7 @@
       "required": [
         "component",
         "name",
-        "price"
+        "last"
       ],
       "unevaluatedProperties": false
     },
@@ -17227,20 +17221,19 @@
           ],
           "description": "Recent values from oldest to newest for the mini line. Fewer than two numbers draws a dash. Either a literal array or {\"@path\": \"/some/array\"} bound to the data model."
         },
-        "sparkLabel": {
-          "anyOf": [
-            {
-              "type": "string"
-            },
-            {
-              "$ref": "common_types.json#/$defs/DataBinding"
-            },
-            {
-              "$ref": "common_types.json#/$defs/FunctionCall",
-              "description": "Invokes a named function, combining common function properties with the catalog function definition."
+        "labels": {
+          "type": "object",
+          "properties": {
+            "spark": {
+              "type": "string",
+              "description": "Accessible name of the mini line as a whole sentence, including what to say when there is no data."
             }
+          },
+          "required": [
+            "spark"
           ],
-          "description": "Accessible name of the mini line as a whole sentence, including what to say when there is no data."
+          "additionalProperties": false,
+          "description": "Screen-reader text, in the language of the user."
         },
         "trendTone": {
           "type": "string",
@@ -17265,7 +17258,7 @@
           ],
           "description": "A threshold in the same unit as the series, drawn as an amber dashed line."
         },
-        "state": {
+        "status": {
           "anyOf": [
             {
               "type": "string",
@@ -17279,9 +17272,9 @@
               "$ref": "common_types.json#/$defs/DataBinding"
             }
           ],
-          "description": "'normal', 'near' (close to the threshold) or 'over' (past it). State must also be written in note, not only shown by color."
+          "description": "'normal', 'near' (close to the threshold) or 'over' (past it). The status must also be written in note, not only shown by color."
         },
-        "delta": {
+        "changePct": {
           "anyOf": [
             {
               "type": "number"
@@ -17377,7 +17370,7 @@
         "label",
         "value",
         "series",
-        "sparkLabel"
+        "labels"
       ],
       "unevaluatedProperties": false
     },
@@ -17409,7 +17402,7 @@
               "items": {
                 "type": "object",
                 "properties": {
-                  "key": {
+                  "id": {
                     "type": "string",
                     "minLength": 1,
                     "description": "Stable id of the stat. The host gets it back when the stat is pressed."
@@ -17432,7 +17425,7 @@
                   }
                 },
                 "required": [
-                  "key",
+                  "id",
                   "label"
                 ],
                 "additionalProperties": false
@@ -17506,7 +17499,7 @@
           ],
           "description": "Dispatched when the user presses the heading. When it is omitted the heading is plain text. The host receives the action and decides what to do; the component itself does nothing else."
         },
-        "onItem": {
+        "onSelect": {
           "anyOf": [
             {
               "type": "object",
@@ -17559,7 +17552,7 @@
               "description": "Executes a renderer or agent-side function."
             }
           ],
-          "description": "Dispatched when the user presses a stat label. metadata.extensions.katanaStat.key carries the stat key. When it is omitted the labels are plain text. The host receives the action and decides what to do; the component itself does nothing else."
+          "description": "Dispatched when the user presses a stat label. metadata.extensions.katanaStat.id carries the stat id. When it is omitted the labels are plain text. The host receives the action and decides what to do; the component itself does nothing else."
         },
         "weight": {
           "type": "number",
@@ -17587,7 +17580,7 @@
               "items": {
                 "type": "object",
                 "properties": {
-                  "key": {
+                  "id": {
                     "type": "string",
                     "minLength": 1,
                     "description": "Stable id of the period (for example \"1m\")."
@@ -17605,7 +17598,7 @@
                   }
                 },
                 "required": [
-                  "key",
+                  "id",
                   "label",
                   "change"
                 ],
@@ -17646,7 +17639,7 @@
               "description": "Invokes a named function, combining common function properties with the catalog function definition."
             }
           ],
-          "description": "The key of the selected period. Bind it to the data model with {\"@path\": \"/range\"} so the choice is written back."
+          "description": "The id of the selected period. Bind it to the data model with {\"@path\": \"/range\"} so the choice is written back."
         },
         "digits": {
           "type": "integer",
@@ -17708,7 +17701,7 @@
               "description": "Executes a renderer or agent-side function."
             }
           ],
-          "description": "Dispatched when the user presses a period. metadata.extensions.katanaPeriod.key carries the period key. The host receives the action and decides what to do; the component itself does nothing else."
+          "description": "Dispatched when the user presses a period. metadata.extensions.katanaPeriod.id carries the period id. The host receives the action and decides what to do; the component itself does nothing else."
         },
         "weight": {
           "type": "number",
@@ -17736,12 +17729,12 @@
               "items": {
                 "type": "object",
                 "properties": {
-                  "key": {
+                  "id": {
                     "type": "string",
                     "minLength": 1,
                     "description": "Stable id of the peer. The host gets it back with every action."
                   },
-                  "code": {
+                  "symbol": {
                     "type": "string",
                     "minLength": 1,
                     "description": "The symbol code (for example a ticker)."
@@ -17750,25 +17743,25 @@
                     "type": "string",
                     "description": "The company or fund name; long names are truncated."
                   },
-                  "price": {
-                    "type": "string",
-                    "description": "The price, already formatted."
+                  "last": {
+                    "type": "number",
+                    "description": "The latest price."
                   },
                   "unit": {
                     "type": "string",
                     "description": "A small unit after the price (for example \"USD\")."
                   },
-                  "change": {
+                  "changePct": {
                     "type": "number",
                     "description": "The change as a percentage already: 1.5 means +1.50%."
                   }
                 },
                 "required": [
-                  "key",
-                  "code",
+                  "id",
+                  "symbol",
                   "name",
-                  "price",
-                  "change"
+                  "last",
+                  "changePct"
                 ],
                 "additionalProperties": false
               }
@@ -17778,6 +17771,13 @@
             }
           ],
           "description": "The peers. Either a literal array or {\"@path\": \"/peers\"} bound to a data-model array. Items that do not fit the shape are dropped."
+        },
+        "digits": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 8,
+          "default": 2,
+          "description": "Decimal places of prices."
         },
         "labels": {
           "type": "object",
@@ -17800,7 +17800,7 @@
             },
             "add": {
               "type": "string",
-              "description": "Accessible name of the \"+\" button on each card. {code} and {name} are replaced by the peer."
+              "description": "Accessible name of the \"+\" button on each card. {symbol} and {name} are replaced by the peer."
             }
           },
           "required": [
@@ -17866,7 +17866,7 @@
               "description": "Executes a renderer or agent-side function."
             }
           ],
-          "description": "Dispatched when the user presses a peer card. metadata.extensions.katanaPeer.key carries the key. The host receives the action and decides what to do; the component itself does nothing else."
+          "description": "Dispatched when the user presses a peer card. metadata.extensions.katanaPeer.id carries the id. The host receives the action and decides what to do; the component itself does nothing else."
         },
         "onAdd": {
           "anyOf": [
@@ -17921,7 +17921,7 @@
               "description": "Executes a renderer or agent-side function."
             }
           ],
-          "description": "Dispatched when the user presses the \"+\" on a card. metadata.extensions.katanaPeer.key carries the key. The host receives the action and decides what to do; the component itself does nothing else."
+          "description": "Dispatched when the user presses the \"+\" on a card. metadata.extensions.katanaPeer.id carries the id. The host receives the action and decides what to do; the component itself does nothing else."
         },
         "onCompare": {
           "anyOf": [

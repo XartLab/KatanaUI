@@ -1,6 +1,6 @@
 # MetricCard
 
-照 uiarc 的 Metric explorer 的结构：标题、大号当前值、较前日 / 周 / 月 / 年的变化（涨跌色）、迷你走势线（1 月 / 3 月 / 6 月 / 1 年分段）、可选阶段带（五档边界与文案由调用方给）、来源与更新时间一行；MetricCardGrid 把卡排成墙。组件只画不算，数据与文字都由调用方传，没有数据就是空态。
+报价类读数卡的共用壳（2026-11-18）：variant="card" 照 uiarc 的 Metric explorer 的结构，variant="tile" 是 KPI 瓦片（原 SparkTile）。卡：标题、大号当前值、较前日 / 周 / 月 / 年的变化（涨跌色）、迷你走势线（1 月 / 3 月 / 6 月 / 1 年分段）、可选阶段带（五档边界与文案由调用方给）、来源与更新时间一行；MetricCardGrid 把卡排成墙。组件只画不算，数据与文字都由调用方传，没有数据就是空态。
 
 ## Provide
 
@@ -10,12 +10,13 @@
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `title / value / unit` | `string / string \| null / string` | — | 标题、已格式化的当前值（没有数据传 null，写 —）、数值后的小字。 |
-| `changes` | `MetricChange[]` | — | { key, label, value（百分数，null 写 —） }，想放几个放几个，涨跌色带箭头。 |
-| `ranges` | `MetricRange[]` | — | { key, label, values }：每段的走势（从旧到新）；多于一段时出分段控件。 |
+| `variant` | `'card' \| 'tile'` | `'card'` | card 是完整指标卡；tile 是 KPI 瓦片（原 SparkTile，字段见 SparkTile 页）。 |
+| `label / value / unit` | `string / string \| null / string` | — | 标题（旧名 title）、已格式化的当前值（没有数据传 null，写 —）、数值后的小字。 |
+| `changePct / changes` | `number / MetricChange[]` | — | changePct 一个变化（百分数）；changes 多个：{ id, label, value（百分数，null 写 —） }，涨跌色带箭头。 |
+| `series / ranges` | `number[] / MetricRange[]` | — | series 一段走势；ranges 多段：{ id, label, values }（从旧到新），多于一段时出分段控件。 |
 | `range / defaultRange / onRangeChange` | `string / string / (key) => void` | — | 当前段；不给就内部管。 |
 | `trendTone` | `'direction' \| 'neutral' \| 'inverse'` | — | 走势线着色：direction 头尾涨跌（默认）；neutral 中性灰白（恐惧贪婪、情绪分这类没有好坏方向的）；inverse 涨是坏（如 VIX），涨取跌色。 |
-| `rangeLabel / sparkLabel` | `string` | — | 分段控件与走势线的读屏名（整句）。 |
+| `labels` | `{ range?, spark }` | — | 分段控件与走势线的读屏名（整句；旧名 rangeLabel / sparkLabel）。 |
 | `stages / current` | `MetricStage[] / number` | — | 阶段带：{ label, from, to } 从低到高，current 是当前值；所在档全亮、其余 35%，带上一根竖线标当前，下面写档名。 |
 | `source / updatedAt` | `ReactNode` | — | 来源与更新时间，底部一行。 |
 
@@ -24,7 +25,7 @@
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
 | `label` | `string` | — | 整墙的读屏名。 |
-| `ranges / range / defaultRange / onRangeChange / rangeLabel` | `{ key, label }[] / string / string / (key) => void / string` | — | 共用区间分段，放在墙顶一次；传了它卡片不再各画分段控件，都按这个 key 取自己 ranges 里同 key 的一段。 |
+| `ranges / range / defaultRange / onRangeChange / rangeLabel` | `{ id, label }[] / string / string / (id) => void / string` | — | 共用区间分段，放在墙顶一次；传了它卡片不再各画分段控件，都按这个 id 取自己 ranges 里同 id 的一段。 |
 | `minWidth` | `number` | — | 每张卡最小宽（px），默认 260；一行几张由容器宽决定。 |
 
 ### metricTrendTone(trend, values) / metricStageIndex(stages, value)
@@ -54,10 +55,10 @@ function walk(seed: number, start: number, step: number, lo: number, hi: number,
 }
 
 const METRIC_RANGES = [
-  { key: '1m', label: '1 月', n: 21 },
-  { key: '3m', label: '3 月', n: 63 },
-  { key: '6m', label: '6 月', n: 126 },
-  { key: '1y', label: '1 年', n: 250 },
+  { id: '1m', label: '1 月', n: 21 },
+  { id: '3m', label: '3 月', n: 63 },
+  { id: '6m', label: '6 月', n: 126 },
+  { id: '1y', label: '1 年', n: 250 },
 ] as const
 
 function metricProps(values: readonly number[]): { ranges: MetricRange[]; changes: MetricChange[] } {
@@ -67,12 +68,12 @@ function metricProps(values: readonly number[]): { ranges: MetricRange[]; change
     return base === undefined || base === 0 ? null : ((last - base) / Math.abs(base)) * 100
   }
   return {
-    ranges: METRIC_RANGES.map((r) => ({ key: r.key, label: r.label, values: values.slice(-r.n) })),
+    ranges: METRIC_RANGES.map((r) => ({ id: r.id, label: r.label, values: values.slice(-r.n) })),
     changes: [
-      { key: 'd', label: '较前日', value: since(1) },
-      { key: 'w', label: '较前周', value: since(5) },
-      { key: 'm', label: '较前月', value: since(21) },
-      { key: 'y', label: '较前年', value: since(249) },
+      { id: 'd', label: '较前日', value: since(1) },
+      { id: 'w', label: '较前周', value: since(5) },
+      { id: 'm', label: '较前月', value: since(21) },
+      { id: 'y', label: '较前年', value: since(249) },
     ],
   }
 }
@@ -142,13 +143,12 @@ function MetricWall({
         return (
           <MetricCard
             key={d.title}
-            title={d.title}
+            label={d.title}
             value={last.toFixed(d.digits)}
             unit={'unit' in d ? d.unit : undefined}
             {...metricProps(values)}
             trendTone={'trend' in d ? d.trend : 'direction'}
-            rangeLabel={`${d.title}走势区间`}
-            sparkLabel={`${d.title}走势`}
+            labels={{ range: `${d.title}走势区间`, spark: `${d.title}走势` }}
             stages={'stages' in d ? d.stages : undefined}
             current={last}
             source="演示数据，不是行情"
@@ -176,12 +176,11 @@ export function MetricCardUsage() {
             <section data-testid="metric-empty">
               <MetricCardGrid label="空态" minWidth={280}>
                 <MetricCard
-                  title="未接入的指标"
+                  label="未接入的指标"
                   value={null}
-                  changes={[{ key: 'd', label: '较前日', value: null }]}
-                  ranges={[{ key: '1m', label: '1 月', values: [] }]}
-                  rangeLabel="走势区间"
-                  sparkLabel="没有数据"
+                  changes={[{ id: 'd', label: '较前日', value: null }]}
+                  ranges={[{ id: '1m', label: '1 月', values: [] }]}
+                  labels={{ range: '走势区间', spark: '没有数据' }}
                   source="未连接"
                 />
               </MetricCardGrid>
@@ -199,10 +198,12 @@ export function MetricCardUsage() {
 - 变化与走势线用涨跌色（跟 data-updown）；走势线颜色按所选区间的头尾涨跌。
 - 阶段带从跌色经灰到涨色，当前档全亮；档名写在带下面，不只靠颜色。
 - 没有数据：数值写 —，变化写 —，线的位置写 —，不画样本。
+- variant="tile"：DOM 与样子同原 SparkTile（k-spark-tile*），数值一格与卡共用 ReadoutValue（— / 闪色 / 滚轮 / 单位）。
 
 ## Don't
 
 - 不要在件里算指标、写死中文或写死阶段边界；都由调用方传。
+- 不要再新写 SparkTile：用 MetricCard variant="tile"，SparkTile 只是兼容的旧名。
 - 不要把阶段带当买卖信号；它只是读数落在哪一档。
 - 不要用橙色或蓝色画数据。
 

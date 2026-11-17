@@ -23,6 +23,9 @@ const INTERNAL = {
   'sparkline-ascii': 'Sparkline 的 ascii 画风：方块或盲文字形画走势，一个 pre，新列乱码落定。',
   'sparkline-instrument': 'Sparkline 的 instrument 画风：点阵、对位角标、投影谱、极值十字与批注、档案编号与 SOURCES。',
   'sparkline-shared': 'Sparkline 各画风共用的钩子：量容器、设备像素比、文字测量重置。',
+  'flash-price': '最新价只闪变了的尾数（照 TradingView 自选栏）：Watchlist 与 QuoteTable 的价格格共用。',
+  'readout-value': '读数壳里的数值一格：没有数据写「—」，变了闪涨跌色或滚轮，单位小字；MetricCard 的卡与瓦片共用。',
+  'metric-tile': 'MetricCard variant="tile" 的瓦片本体（原 SparkTile 的画法）与它的几何 sparkTileShape。',
   'gravity-model':
     'GravityLetters 的纯物理：掉落（重力、地面与墙的反弹、摩擦、静止判定）与回位（弹簧把每个字拉回原位）。',
   split: '文字动效共用的切分：按字、词（Intl.Segmenter，中文按词）、行切成片段，保留空白。',

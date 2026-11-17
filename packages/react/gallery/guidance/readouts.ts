@@ -61,12 +61,6 @@ const readouts: GuidanceMap = {
     avoid: ['要让用户录入快捷键用 shortcut-recorder。'],
     a11y: ['外层 span 带 aria-label，读成完整组合而不是一串单键。', '只是展示，不可聚焦。'],
   },
-  'symbol-mark': {
-    aliases: ['Avatar', 'Logo chip', 'Ticker icon', 'Symbol icon'],
-    use: ['自选、行情行里品种名前的小圆标。', '没有图时用代码字母占位。'],
-    avoid: ['用户头像用 Avatar 类件，这里不是。', '要按数据着色时不要用它的底色。'],
-    a11y: ['role=img，读屏名取 name，没有就取 code。', '退回字母时字母对读屏隐藏，不会重复读。'],
-  },
   'notification-bell': {
     aliases: ['Notification', 'Bell icon', 'Alert indicator', 'Badge'],
     use: [

@@ -24,10 +24,5 @@
     "page": "web-search",
     "rule": "color-contrast",
     "reason": "虚线占位按钮的 ink-3 文字落在浅色预览底（#efefef）上 3.05:1：预览底与件的主题不配，另开票查是预览还是件"
-  },
-  {
-    "page": "treemap",
-    "rule": "color-contrast",
-    "reason": "热力图块用固定的涨跌色做底，白字压在亮绿 / 亮红上 1.5 到 4.4:1；要按底色明暗选字色，另开票"
   }
 ]

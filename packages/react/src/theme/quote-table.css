@@ -8,7 +8,7 @@
 .k-quote-table-empty {
   margin: 0;
   padding: 12px 0;
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-data) var(--font-sans);
 }
 .k-quote-rows {
@@ -20,13 +20,13 @@
 .k-quote-rows th,
 .k-quote-rows td {
   padding: 6px 8px;
-  border-bottom: 1px solid var(--line-100);
+  border-bottom: 1px solid var(--k-separable-tertiary-borderColor);
   font-weight: 400;
   text-align: left;
   vertical-align: middle;
 }
 .k-quote-rows thead th {
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-sans-small);
 }
 .k-quote-rows .is-num {
@@ -34,11 +34,11 @@
   white-space: nowrap;
 }
 .k-quote-rows-name {
-  color: var(--ink-100);
+  color: var(--k-content-primary-foreground);
 }
 .k-quote-rows-name small {
   margin-left: 6px;
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-sans-small);
 }
 .k-quote-rows-trend {
@@ -51,7 +51,7 @@
   cursor: pointer;
 }
 .k-quote-rows tbody tr.is-link:hover {
-  background: var(--bg-200);
+  background: var(--k-container-secondary-background);
 }
 .k-quote-rows tbody tr.is-link:focus-visible {
   outline: 2px solid var(--focus-ring);

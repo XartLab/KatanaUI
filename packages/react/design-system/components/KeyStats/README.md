@@ -11,8 +11,8 @@
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
 | `title` | `string` | — | 标题。 |
-| `items` | `KeyStatItem[]` | — | { key, label, value?, unit?, badge? }；没有值画「—」。 |
-| `onTitle / onItem` | `callbacks` | — | 给了标题与标签就变成按钮，带「›」。 |
+| `items` | `KeyStatItem[]` | — | { id（旧名 key）, label, value?, unit?, badge? }；没有值画「—」。 |
+| `onTitle / onSelect` | `callbacks` | — | 给了标题与标签就变成按钮，带「›」（onSelect 旧名 onItem）。 |
 | `columns` | `number` | `3` | 列数。 |
 
 ## Usage
@@ -42,8 +42,9 @@ export function KeyStatsUsage() {
 
 ## States
 
-- 没给 onItem：标签是普通文字，没有「›」。
+- 没给 onSelect：标签是普通文字，没有「›」。
 - 没有值：数值位写「—」。
+- 数值变了：闪一次涨跌色。
 
 ## Don't
 
