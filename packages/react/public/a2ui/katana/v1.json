@@ -8693,15 +8693,36 @@
           "maximum": 3,
           "description": "Decimal places of the share column, written as a percentage. Defaults to 1."
         },
+        "labels": {
+          "type": "object",
+          "properties": {
+            "other": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Name of the folded row, with {n} where the number of folded items goes, for example \"Other x{n}\"."
+            },
+            "share": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Label of the share line in the tooltip."
+            }
+          },
+          "required": [
+            "other",
+            "share"
+          ],
+          "additionalProperties": false,
+          "description": "Words of the chart: the folded row and the share line. Required (or the deprecated pair below)."
+        },
         "otherLabel": {
           "type": "string",
           "minLength": 1,
-          "description": "Name of the folded row, with {n} where the number of folded items goes, for example \"Other x{n}\"."
+          "description": "Deprecated: use labels.other. Kept for one release."
         },
         "shareLabel": {
           "type": "string",
           "minLength": 1,
-          "description": "Label of the share line in the tooltip."
+          "description": "Deprecated: use labels.share. Kept for one release."
         },
         "readouts": {
           "type": "array",
@@ -9024,8 +9045,6 @@
         "items",
         "title",
         "label",
-        "otherLabel",
-        "shareLabel",
         "heads",
         "footer",
         "actionLabels"

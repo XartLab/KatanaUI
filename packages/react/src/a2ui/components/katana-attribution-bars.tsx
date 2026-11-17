@@ -65,10 +65,18 @@ export const KatanaAttributionBarsApi = {
         .max(3)
         .describe('Decimal places of the share column, written as a percentage. Defaults to 1.')
         .optional(),
-      otherLabel: text(
-        'Name of the folded row, with {n} where the number of folded items goes, for example "Other x{n}".',
-      ),
-      shareLabel: text('Label of the share line in the tooltip.'),
+      labels: z
+        .object({
+          other: text(
+            'Name of the folded row, with {n} where the number of folded items goes, for example "Other x{n}".',
+          ),
+          share: text('Label of the share line in the tooltip.'),
+        })
+        .strict()
+        .describe('Words of the chart: the folded row and the share line. Required (or the deprecated pair below).')
+        .optional(),
+      otherLabel: text('Deprecated: use labels.other. Kept for one release.').optional(),
+      shareLabel: text('Deprecated: use labels.share. Kept for one release.').optional(),
       readouts: z
         .array(
           z
@@ -148,9 +156,11 @@ export const KatanaAttributionBars = createComponentImplementation(KatanaAttribu
         meta={meta === undefined ? undefined : (scale) => fill(meta, { scale: format(scale) })}
         label={label}
         formatValue={format}
-        otherLabel={(folded) => fill(props.otherLabel ?? '', { n: folded })}
+        labels={{
+          other: (folded) => fill(props.labels?.other ?? props.otherLabel ?? '', { n: folded }),
+          share: props.labels?.share ?? props.shareLabel ?? '',
+        }}
         formatShare={(ratio) => share(ratio * 100)}
-        shareLabel={props.shareLabel ?? ''}
         readouts={props.readouts?.map((readout) => ({
           key: readout.key,
           label: readout.label,

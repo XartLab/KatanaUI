@@ -24,6 +24,24 @@ import {
 
 export type AttributionChoice = { key: string; label: string }
 
+/** 一组分段切换（维度、区间）：读屏名、选项、当前值与回调。 */
+export type AttributionSwitch = {
+  label: string
+  options: readonly AttributionChoice[]
+  value: string
+  onValueChange?: (key: string) => void
+  /** @deprecated 用 `onValueChange`（G5 统一回调名）；下一个版本删。 */
+  onChange?: (key: string) => void
+}
+
+/** 件里的文字（G5：散落的 otherLabel / shareLabel 收进来）。 */
+export type AttributionBarsLabels = {
+  /** 「其他 ×n」写成什么。 */
+  other: (folded: number) => string
+  /** tooltip 里占比那一行的标签。 */
+  share: string
+}
+
 export type AttributionBarsProps = {
   items: readonly AttributionItem[]
   /** 标题（英文部分宽体大写）。 */
@@ -33,17 +51,19 @@ export type AttributionBarsProps = {
   /** 整张图的读屏名。 */
   label: string
   /** 维度切换（品种 / 账户 / 策略 / 资产类别）；换维度由调用方换 items。 */
-  dimensions?: { label: string; options: readonly AttributionChoice[]; value: string; onChange: (key: string) => void }
+  dimensions?: AttributionSwitch
   /** 区间切换。 */
-  ranges?: { label: string; options: readonly AttributionChoice[]; value: string; onChange: (key: string) => void }
+  ranges?: AttributionSwitch
   /** 一个贡献写成什么字（行尾数字与 tooltip）；正负号由调用方定。 */
   formatValue: (value: number) => string
-  /** 「其他 ×n」写成什么。 */
-  otherLabel: (folded: number) => string
+  /** 「其他 ×n」与 tooltip 里占比那一行的字。 */
+  labels?: AttributionBarsLabels
+  /** @deprecated 用 `labels.other`；下一个版本删。 */
+  otherLabel?: (folded: number) => string
   /** 占比写成什么字。 */
   formatShare: (share: number) => string
-  /** tooltip 里占比那一行的标签。 */
-  shareLabel: string
+  /** @deprecated 用 `labels.share`；下一个版本删。 */
+  shareLabel?: string
   /** 汇总行：第一个是合计（大号，左 2px 强调色竖条），其余（正贡献、负贡献）小一号跟在右边；value 决定数字的涨跌色。 */
   readouts?: readonly { key: string; label: string; text: string; value?: number }[]
   /** 当前联动的品种：它的条转强调色纹理。 */
@@ -70,6 +90,7 @@ export function AttributionBars({
   dimensions,
   ranges,
   formatValue,
+  labels,
   otherLabel,
   formatShare,
   shareLabel,
@@ -91,15 +112,23 @@ export function AttributionBars({
   const sum = rows.reduce((s, row) => s + Math.abs(row.value), 0)
   const [active, setActive] = useState<string | null>(null)
   const [table, setTable] = useState(false)
-  const text = (row: AttributionRow) => (row.kind === 'other' ? otherLabel(row.folded) : row.label)
+  // 旧名 otherLabel / shareLabel 映射到 labels（@deprecated，留一个版本）；包里不带文案，都没给就是空字。
+  const otherText = labels?.other ?? otherLabel ?? (() => '')
+  const shareText = labels?.share ?? shareLabel ?? ''
+  const text = (row: AttributionRow) => (row.kind === 'other' ? otherText(row.folded) : row.label)
   const share = (row: AttributionRow) => (sum > 0 ? Math.abs(row.value) / sum : 0)
   const tone = (value: number) => (value > 0 ? 'up' : value < 0 ? 'down' : 'flat')
   const key = (row: AttributionRow) => (event: KeyboardEvent<HTMLElement>) => {
     if (event.key === 'Enter' && onSelect && row.kind === 'item') onSelect(row.key)
     if (event.key === 'Escape' && active !== null) setActive(null)
   }
-  const segment = (spec: NonNullable<AttributionBarsProps['ranges']>) => (
-    <ToggleGroup variant="sm" aria-label={spec.label} value={spec.value} onValueChange={spec.onChange}>
+  const segment = (spec: AttributionSwitch) => (
+    <ToggleGroup
+      variant="sm"
+      aria-label={spec.label}
+      value={spec.value}
+      onValueChange={(key) => (spec.onValueChange ?? spec.onChange)?.(key)}
+    >
       {spec.options.map((option) => (
         <ToggleGroupItem key={option.key} value={option.key}>
           {option.label}
@@ -251,7 +280,7 @@ export function AttributionBars({
                           title={text(row)}
                           rows={[
                             { key: 'v', label: label, value: formatValue(row.value) },
-                            { key: 's', label: shareLabel, value: formatShare(share(row)) },
+                            { key: 's', label: shareText, value: formatShare(share(row)) },
                             ...row.detail.map((d, n) => ({ key: `d${n}`, label: d.label, value: d.value })),
                           ]}
                         />

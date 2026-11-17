@@ -3127,13 +3127,13 @@
         },
         {
           "name": "dimensions",
-          "type": "{ label: string; options: readonly AttributionChoice[]; value: string; onChange: (key: string) => void }",
+          "type": "AttributionSwitch",
           "required": false,
           "description": "维度切换（品种 / 账户 / 策略 / 资产类别）；换维度由调用方换 items。"
         },
         {
           "name": "ranges",
-          "type": "{ label: string; options: readonly AttributionChoice[]; value: string; onChange: (key: string) => void }",
+          "type": "AttributionSwitch",
           "required": false,
           "description": "区间切换。"
         },
@@ -3144,10 +3144,16 @@
           "description": "一个贡献写成什么字（行尾数字与 tooltip）；正负号由调用方定。"
         },
         {
+          "name": "labels",
+          "type": "AttributionBarsLabels",
+          "required": false,
+          "description": "「其他 ×n」与 tooltip 里占比那一行的字。"
+        },
+        {
           "name": "otherLabel",
           "type": "(folded: number) => string",
-          "required": true,
-          "description": "「其他 ×n」写成什么。"
+          "required": false,
+          "description": ""
         },
         {
           "name": "formatShare",
@@ -3158,8 +3164,8 @@
         {
           "name": "shareLabel",
           "type": "string",
-          "required": true,
-          "description": "tooltip 里占比那一行的标签。"
+          "required": false,
+          "description": ""
         },
         {
           "name": "readouts",
@@ -3224,6 +3230,24 @@
         }
       ]
     },
+    "AttributionBarsLabels": {
+      "kind": "type",
+      "source": "src/blocks/attribution-bars/attribution-bars.tsx",
+      "props": [
+        {
+          "name": "other",
+          "type": "(folded: number) => string",
+          "required": true,
+          "description": "「其他 ×n」写成什么。"
+        },
+        {
+          "name": "share",
+          "type": "string",
+          "required": true,
+          "description": "tooltip 里占比那一行的标签。"
+        }
+      ]
+    },
     "AttributionBarsProps": {
       "kind": "type",
       "source": "src/blocks/attribution-bars/attribution-bars.tsx",
@@ -3254,13 +3278,13 @@
         },
         {
           "name": "dimensions",
-          "type": "{ label: string; options: readonly AttributionChoice[]; value: string; onChange: (key: string) => void }",
+          "type": "AttributionSwitch",
           "required": false,
           "description": "维度切换（品种 / 账户 / 策略 / 资产类别）；换维度由调用方换 items。"
         },
         {
           "name": "ranges",
-          "type": "{ label: string; options: readonly AttributionChoice[]; value: string; onChange: (key: string) => void }",
+          "type": "AttributionSwitch",
           "required": false,
           "description": "区间切换。"
         },
@@ -3271,10 +3295,16 @@
           "description": "一个贡献写成什么字（行尾数字与 tooltip）；正负号由调用方定。"
         },
         {
+          "name": "labels",
+          "type": "AttributionBarsLabels",
+          "required": false,
+          "description": "「其他 ×n」与 tooltip 里占比那一行的字。"
+        },
+        {
           "name": "otherLabel",
           "type": "(folded: number) => string",
-          "required": true,
-          "description": "「其他 ×n」写成什么。"
+          "required": false,
+          "description": ""
         },
         {
           "name": "formatShare",
@@ -3285,8 +3315,8 @@
         {
           "name": "shareLabel",
           "type": "string",
-          "required": true,
-          "description": "tooltip 里占比那一行的标签。"
+          "required": false,
+          "description": ""
         },
         {
           "name": "readouts",
@@ -3413,6 +3443,42 @@
           "type": "readonly { label: string; value: string }[]",
           "required": false,
           "description": "悬停 tooltip 里多写的几行（持仓数、所属账户……），文字由调用方给。"
+        }
+      ]
+    },
+    "AttributionSwitch": {
+      "kind": "type",
+      "source": "src/blocks/attribution-bars/attribution-bars.tsx",
+      "props": [
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "options",
+          "type": "readonly AttributionChoice[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "value",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "onValueChange",
+          "type": "(key: string) => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "onChange",
+          "type": "(key: string) => void",
+          "required": false,
+          "description": ""
         }
       ]
     },

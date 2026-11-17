@@ -2257,7 +2257,11 @@ export const PAGES: readonly DocPage[] = [
             desc: 'kind 为 fee 的是费用·税，永远单独一行放最底；closed 是名称后的点阵小标签（整行删除线）；detail 是 tooltip 里多写的几行。',
           },
           { name: 'formatValue / formatShare', type: '(n) => string', desc: '贡献与占比写成什么字。' },
-          { name: 'otherLabel / shareLabel', type: '(n) => string / string', desc: '「其他 ×n」与占比那一行的标签。' },
+          {
+            name: 'labels',
+            type: '{ other: (n) => string, share: string }',
+            desc: '「其他 ×n」与占比那一行的字。旧名 otherLabel / shareLabel 留一个版本（@deprecated）。',
+          },
           {
             name: 'title / meta',
             type: 'string / (scale) => string',
@@ -2265,8 +2269,8 @@ export const PAGES: readonly DocPage[] = [
           },
           {
             name: 'dimensions / ranges',
-            type: '{ label, options, value, onChange }',
-            desc: '顶行的两组分段；换了就换 items，同一位置的条长会过渡。',
+            type: '{ label, options, value, onValueChange }',
+            desc: '顶行的两组分段；换了就换 items，同一位置的条长会过渡。旧名 onChange 留一个版本。',
           },
           {
             name: 'readouts',
