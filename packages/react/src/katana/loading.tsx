@@ -4,6 +4,7 @@
  * 加载态的唯一入口（G3，体检 §1「加载五件、texts 与别处 labels 不一致」）：
  * - 给 pending：等数据。pending 为真时 children 不挂载，500ms 后还没到才出骨架；到了以后，骨架出过的内容从 2px 模糊揭示到清晰，没出过的直接出现。
  * - 不给 pending：当 Suspense 边界用（原 LoadingBoundary），等 React.lazy 或 use() 的 promise；延迟、2s / 10s 两段与揭示是同一套。
+ *   判的是「写没写 pending 这个属性」（'pending' in props），不是值：pending={undefined}（数据还没开始取）仍是等数据、当没在等，不会静默切成 Suspense。
  * - 给 phase：钉在某一段（loading / slow / timeout）直接画，不计时、不挂 children；文档站、测试与截图用（原来要直接用 LoadingView）。
  * 文字全在 labels（原 texts，留一个版本作兼容）。fill：内容要撑满父级（面板主体）时给，骨架行数按容器高度量；嵌在流里的用 lines。
  * what / source：caption「加载 <内容> · <来源>」的两段（来源没有就省）；header：已经知道的真表头，骨架只占它下面。
@@ -27,8 +28,9 @@ export type LoadingProps = {
    */
   texts?: LoadingLabels
   /**
-   * Whether we are waiting for data. Omit it to use Loading as a Suspense boundary (React.lazy, use()).
-   * 在等数据：给了就按它；不给就是 Suspense 边界（等的是代码或 promise，没有来源）。
+   * Whether we are waiting for data. Omit the prop entirely to use Loading as a Suspense boundary (React.lazy, use());
+   * passing pending={undefined} still means data mode (treated as not pending).
+   * 在等数据：写了这个属性就按它（undefined 当 false）；属性不写才是 Suspense 边界（等的是代码或 promise，没有来源）。
    */
   pending?: boolean
   /**
@@ -57,20 +59,23 @@ export type LoadingProps = {
   children?: ReactNode
 }
 
-export function Loading({
-  labels: given,
-  texts,
-  pending,
-  phase,
-  label,
-  what,
-  source,
-  lines = 3,
-  fill = false,
-  header,
-  onRetry,
-  children,
-}: LoadingProps) {
+export function Loading(props: LoadingProps) {
+  const {
+    labels: given,
+    texts,
+    pending,
+    phase,
+    label,
+    what,
+    source,
+    lines = 3,
+    fill = false,
+    header,
+    onRetry,
+    children,
+  } = props
+  // 按属性在不在判模式，不按值：pending={undefined} 不会把等数据静默换成 Suspense。
+  const suspenseMode = !('pending' in props)
   const [revealed, setRevealed] = useState(false)
   const labels = (given ?? texts)!
   if (phase !== undefined)
@@ -101,7 +106,7 @@ export function Loading({
       onSettled={setRevealed}
     />
   )
-  if (pending === undefined)
+  if (suspenseMode)
     // Suspense 的写法：fallback 显示了多久、出没出过骨架，都由 LoadingWait 判断；等的是代码不是数据，所以没有来源与表头，重试由外面换 key 重建。
     return (
       <Suspense fallback={wait(false)}>

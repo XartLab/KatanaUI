@@ -16,7 +16,7 @@ const feedback: GuidanceMap = {
     aliases: ['Loading', 'Spinner', 'Suspense fallback', 'LoadingBoundary', 'LoadingView'],
     use: [
       '等数据：<Loading pending labels>，内容到了再挂 children。',
-      '等 React.lazy / use()：不给 pending，Loading 就是 Suspense 边界。',
+      '等 React.lazy / use()：pending 这个属性不写，Loading 就是 Suspense 边界；按属性在不在判，pending={undefined} 仍是等数据（当没在等），不会切模式。',
       '文档、测试、截图要看某一段：给 phase（loading / slow / timeout）。',
       '撑满面板主体给 fill，骨架行数按高度量；表头已知就传 header。',
     ],
