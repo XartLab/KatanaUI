@@ -146,7 +146,7 @@ function UsageSection({ page }: { page: DocPage }) {
 function DocBody({ page }: { page: DocPage }) {
   const Demo = DEMOS[page.id]
   const guide = guidanceOf(page.id)
-  const source = sourceOf(page.exports)
+  const source = sourceOf(page.exports, page.title)
   const avoid = [...(guide.avoid ?? []), ...page.donts]
   return (
     <article className="gal-doc" data-page={page.id}>
@@ -157,7 +157,7 @@ function DocBody({ page }: { page: DocPage }) {
           <div>
             <dt>包</dt>
             <dd>
-              <code>{packageOf(page.group)}</code>
+              <code>{packageOf(page.exports, page.title)}</code>
             </dd>
           </div>
           {source ? (
