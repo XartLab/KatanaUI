@@ -5,6 +5,8 @@
 // values is inconsistent」，2026-10-17 读）；Shift 粗调 ×10 是主会话照 Figma 的方向键约定定的（原文未读）。灵敏度是 Claude 定的：
 // 常速 4px 一档。粗调不用 Ctrl（Mac 上 Ctrl + 点击会变成右键）。
 
+import { clamp } from '../lib/num.ts'
+
 /** 常速：每拖多少像素改一档（一档 = step）。 */
 export const SCRUB_PX_PER_STEP = 4
 /** 精调时步长已经是整数（不能再切成十分之一）：改成每拖这么多像素才走一档，速度同样是常速的十分之一。 */
@@ -43,7 +45,7 @@ export function stepPlan(mode: ScrubMode, step: number): { px: number; increment
  * `Object.is` 与 `toLocaleString` 之类的格式化都会把它当成另一个值（显示成 "-0"）；`-0 + 0` 是 0。
  */
 export const clampTo = (value: number, { min, max }: Pick<Range, 'min' | 'max'>): number =>
-  Math.min(max ?? Infinity, Math.max(min ?? -Infinity, value)) + 0
+  clamp(value, min ?? -Infinity, max ?? Infinity) + 0
 
 /**
  * 夹进范围，只去掉浮点尾巴（0.1 + 0.2 之类）。不把结果拉回以 0 为原点的步长网格：步进以当前值为基准（0.1、步长 0.5，

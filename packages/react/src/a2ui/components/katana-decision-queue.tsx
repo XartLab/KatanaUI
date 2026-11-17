@@ -6,6 +6,7 @@ import type { ComponentApi } from '@a2ui/web_core'
 import { CommonSchemas } from '@a2ui/web_core/v1_0'
 import { useEffect, useMemo, useState } from 'react'
 import { z } from 'zod'
+import { mss } from '../../lib/date.ts'
 import { DecisionQueue, type DecisionItem, type DecisionQueueLabels } from '../../blocks/index.ts'
 import { text } from '../blocks-support.ts'
 import { Cell, SourceClicks, actionSchema, fill, httpsUrl, isoToMs, parseList, weightSchema } from '../support.tsx'
@@ -113,8 +114,7 @@ function decisionLabels(t: QueueText): DecisionQueueLabels {
     sources: t.sources,
     details: t.details,
     createdAgo: (seconds) => fill(t.createdAgo, { ago: span(seconds) }),
-    expiresIn: (seconds) =>
-      fill(t.expiresIn, { time: `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}` }),
+    expiresIn: (seconds) => fill(t.expiresIn, { time: mss(seconds) }),
     expired: t.expired,
     resolvedBy: (by, ago) => fill(t.resolvedBy, { by, ago }),
     ago: span,

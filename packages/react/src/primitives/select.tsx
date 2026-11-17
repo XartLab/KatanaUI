@@ -63,7 +63,7 @@ function SelectContent({ className, children, ...props }: ComponentProps<typeof 
         align="start"
         sideOffset={2}
         className={cn(
-          'k-text-body z-50 box-border max-h-[min(var(--radix-select-content-available-height),calc(100dvh-16px))] min-w-[var(--radix-select-trigger-width)] overflow-y-auto rounded-[7px] border border-alpha-white-8 bg-surface-4 p-1 text-ink-2 shadow-[0_8px_24px_rgba(0,0,0,0.4)] outline-0',
+          'k-text-body z-50 box-border max-h-[min(var(--radix-select-content-available-height),calc(100dvh-16px))] min-w-[var(--radix-select-trigger-width)] overflow-y-auto rounded-[7px] border border-alpha-white-8 bg-surface-4 p-1 text-ink-2 shadow-[var(--shadow-overlay-sm)] outline-0',
           className,
         )}
         {...props}

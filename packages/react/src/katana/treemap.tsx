@@ -6,13 +6,12 @@
 // 工具条（大小、颜色、分组的下拉、返回钮）是应用的事，从 toolbar 传进来；排布在 treemap-model.ts，调用方先排好再传 blocks。
 import type { CSSProperties, ReactNode } from 'react'
 import { useValueFlash } from '../lib/live.ts'
+import { pct } from '../lib/num.ts'
 import { colorStep, TREEMAP_H, TREEMAP_W, type TreemapBlock } from './treemap-model.ts'
 
 /** 格子多小就不写字（排布单位的宽、高）。 */
 const MIN_TEXT_W = 48
 const MIN_TEXT_H = 28
-
-const pct = (value: number, total: number) => `${(value / total) * 100}%`
 
 export type TreemapClasses = Partial<
   Record<'root' | 'bar' | 'plot' | 'group' | 'head' | 'cell' | 'name' | 'value' | 'legend', string>

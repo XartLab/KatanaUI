@@ -36,6 +36,8 @@ Vite+ 用足（2026-11-18）：根目录直接 `pnpm fast` / `pnpm vr` / `pnpm v
 
 **视觉回归（pixelgate，自研）**：改了视觉相关的件，交付前在 `packages/react` 跑 `pnpm vr:fast`（只截受影响的页，约半分钟），在汇报里附 changed 列表与 report 路径（`.pixelgate/report/index.html`）；合并前、或改了令牌 / theme 样式 / lib / primitives 这类共用层，跑全量 `pnpm vr`。预期的变化用 `pnpm vr:approve` 收为新基线并随代码提交，规则写在文档站「开发接入 → 视觉回归」。
 
+读 token：新代码只读 characteristics（`--k-*`）与语义 token（`--pnl-up`、`--chart-grid`、`--shadow-overlay` 这类），不直接读色阶（`--bg-*`、`--ink-*`、`--signal-*`、`--alpha-white-*`）；阴影不写 rgba，用 `--shadow-*`；状态与涨跌的类型用 `src/lib/severity.ts`、`src/lib/tone.ts`（2026-11-18，G0）。
+
 改 token：改 `packages/tokens/src/tokens.json`（弹簧改 `motion.tokens.json`），跑 `pnpm tokens:sync`；改了文档站的页数据或件，跑 `pnpm ds:build`。生成文件不手改。
 
 ## 发版

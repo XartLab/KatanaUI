@@ -16,7 +16,7 @@ import { Button } from './button.tsx'
 const sheetVariants = cva(
   [
     'k-sheet k-text-body fixed z-41 flex flex-col border border-alpha-white-8 bg-surface-3 leading-[1.45] text-ink outline-0',
-    'shadow-[0_2px_4px_rgba(0,0,0,0.5),0_24px_70px_rgba(0,0,0,0.45)]',
+    'shadow-[var(--shadow-dialog)]',
   ],
   {
     variants: {

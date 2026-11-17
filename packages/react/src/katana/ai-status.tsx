@@ -8,6 +8,7 @@
 import { AnimatePresence, animate, motion, useMotionValue } from 'motion/react'
 import { useLayoutEffect, useRef, useState } from 'react'
 import { cn } from '../lib/cn.ts'
+import { pad } from '../lib/num.ts'
 import { fontFor, measureText } from '../lib/text-measure.ts'
 import { snappy } from '../lib/motion.ts'
 import { unit } from '../lib/spring.ts'
@@ -25,7 +26,7 @@ const ACTIVE: Readonly<Record<AiStatusState, boolean>> = {
 /** 耗时的写法：不到一分钟写「12s」，之后写「1m 05s」。纯数字加单位字母，不带中文。 */
 export function formatElapsed(seconds: number): string {
   const total = Math.max(0, Math.floor(Number.isFinite(seconds) ? seconds : 0))
-  return total < 60 ? `${total}s` : `${Math.floor(total / 60)}m ${String(total % 60).padStart(2, '0')}s`
+  return total < 60 ? `${total}s` : `${Math.floor(total / 60)}m ${pad(total % 60)}s`
 }
 
 const STROKE = {

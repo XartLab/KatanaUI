@@ -72,7 +72,7 @@ function DialogContent({
             : [
                 'k-dlg k-text-body fixed top-1/2 left-1/2 z-41 flex max-h-[calc(100dvh-24px)] w-[min(560px,calc(100vw-24px))] -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden',
                 'rounded-[14px] border border-alpha-white-8 bg-surface-3 leading-[1.45] text-ink outline-0',
-                'shadow-[0_2px_4px_rgba(0,0,0,0.5),0_24px_70px_rgba(0,0,0,0.45)]',
+                'shadow-[var(--shadow-dialog)]',
               ],
           className,
         )}

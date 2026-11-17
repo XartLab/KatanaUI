@@ -347,6 +347,22 @@
       ]
     },
     {
+      "name": "date",
+      "type": "registry:lib",
+      "title": "Date",
+      "description": "日期与钟点的文字：UTC 的 YYYY-MM-DD、时区里的日期键、HH:MM、M:SS。",
+      "registryDependencies": [
+        "@katana/num"
+      ],
+      "files": [
+        {
+          "path": "src/lib/date.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/lib/date.ts"
+        }
+      ]
+    },
+    {
       "name": "fine-pointer",
       "type": "registry:lib",
       "title": "Fine Pointer",
@@ -461,6 +477,19 @@
       ]
     },
     {
+      "name": "num",
+      "type": "registry:lib",
+      "title": "Num",
+      "description": "数字小工具：clamp、pad（补零）、signed（带正负号）、extent（最低最高）、pct（百分比字符串）。",
+      "files": [
+        {
+          "path": "src/lib/num.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/lib/num.ts"
+        }
+      ]
+    },
+    {
       "name": "opener-focus",
       "type": "registry:lib",
       "title": "Opener Focus",
@@ -483,6 +512,19 @@
           "path": "src/lib/overlay.tsx",
           "type": "registry:lib",
           "target": "~/src/katana/ui/lib/overlay.tsx"
+        }
+      ]
+    },
+    {
+      "name": "severity",
+      "type": "registry:lib",
+      "title": "Severity",
+      "description": "状态语气 Severity（neutral / ok / warn / danger，加 off / accent 为 SeverityExt）、ledOf 映射到状态灯、--k-status-* 取色。",
+      "files": [
+        {
+          "path": "src/lib/severity.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/lib/severity.ts"
         }
       ]
     },
@@ -515,6 +557,19 @@
           "path": "src/lib/text-measure.ts",
           "type": "registry:lib",
           "target": "~/src/katana/ui/lib/text-measure.ts"
+        }
+      ]
+    },
+    {
+      "name": "tone",
+      "type": "registry:lib",
+      "title": "Tone",
+      "description": "涨跌三态 Tone（up / down / flat）的唯一定义与 --k-tone-* 取色；QuoteTone、EconomicTone 是它的旧名。",
+      "files": [
+        {
+          "path": "src/lib/tone.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/lib/tone.ts"
         }
       ]
     },
@@ -1233,6 +1288,9 @@
       "type": "registry:ui",
       "title": "Splitter Model",
       "description": "一条 role=separator 的分割线：拖动零延迟、方向键 8px（Shift 32px）、Home / End、双击或 Enter 复位、靠近 1/3 1/2 2/3 吸附、两边最小尺寸。宿主只管排版，线只管比例。",
+      "registryDependencies": [
+        "@katana/num"
+      ],
       "files": [
         {
           "path": "src/primitives/splitter-model.ts",
@@ -1390,6 +1448,7 @@
       "registryDependencies": [
         "@katana/cn",
         "@katana/motion",
+        "@katana/num",
         "@katana/spring",
         "@katana/text-measure"
       ],
@@ -2120,6 +2179,9 @@
       "type": "registry:lib",
       "title": "Number Field Model",
       "description": "NumberInput 的解析与取整（纯函数）。",
+      "registryDependencies": [
+        "@katana/num"
+      ],
       "files": [
         {
           "path": "src/katana/number-field-model.ts",
@@ -2268,6 +2330,9 @@
       "type": "registry:lib",
       "title": "Quote Tone",
       "description": "一列数从旧到新，按容器的真实像素画（不拉伸、线宽 1.5px，高 80 以上 2px、圆角连接）。默认是线加线下渐变（贴线 22% 渐到 0），最新值处是实心点加常驻空心环；给毫秒时间戳与 domain 时横轴是整个交易时段、线只画到现在（对齐 TradingView Markets 页的日内图），可加右侧价格刻度、底部时间刻度与最新价价签；另有 line、baseline（基准上涨色下跌色）、bars、winloss（胜负格）四种画法。look 给两种可选画风（默认外观不变）：instrument 是把数据当科学档案来排版的仪器档案页（细线、一个信号色、点阵与角标、投影谱、极值与研究员批注、档案编号与来源行），ascii 是终端字形（块字符或盲文点阵、可换点阵字体）。可加基准虚线、最高最低点、右端最新值、成交量、断点、单调曲线；interactive 时悬停出一根竖线、吸附点与紧挨光标的三行读数（数值、日期、时间），键盘左右键走点。线色按最后值对基准（没基准按头尾），涨跌色跟涨跌配色走，没有数据只留「—」。",
+      "registryDependencies": [
+        "@katana/tone"
+      ],
       "files": [
         {
           "path": "src/katana/quote-tone.ts",
@@ -2294,6 +2359,9 @@
       "type": "registry:lib",
       "title": "Rating Gauge Model",
       "description": "半圆分五段（强烈卖出到强烈买入），一根指针转到分数那一段，圆心下面写档位词，下面可再放卖出 / 中性 / 买入各几个。",
+      "registryDependencies": [
+        "@katana/num"
+      ],
       "files": [
         {
           "path": "src/katana/rating-gauge-model.ts",
@@ -2525,7 +2593,8 @@
       "title": "Squircle",
       "description": "把元素用 clip-path 裁成曲率连续的圆角矩形（苹果图标那种角）：比 border-radius 的圆弧过渡柔和。smoothing 为 0 就是普通圆角，1 把曲线推到很深。边框改成沿同一条曲线画的 SVG 描边（CSS 边框会被裁断）。本系统的面板默认直角，这件只给头像、徽标、图标底这类单个小方块用。",
       "registryDependencies": [
-        "@katana/cn"
+        "@katana/cn",
+        "@katana/num"
       ],
       "files": [
         {
@@ -2561,6 +2630,9 @@
       "type": "registry:lib",
       "title": "Step Player Model",
       "description": "StepPlayer 的纯逻辑：一步放完后是前进、循环还是结束。",
+      "registryDependencies": [
+        "@katana/num"
+      ],
       "files": [
         {
           "path": "src/katana/step-player-model.ts",
@@ -2714,6 +2786,7 @@
       "description": "一格一项，面积按大小，颜色按涨跌分七档（跟涨跌配色走），格子够大才写名字和数；点组头下钻，底部是色例。排布用 d3-hierarchy 的 squarify。从应用的分析视图提来。",
       "registryDependencies": [
         "@katana/live",
+        "@katana/num",
         "@katana/treemap-model"
       ],
       "files": [
@@ -3044,6 +3117,9 @@
       "type": "registry:component",
       "title": "Range Histogram Model",
       "description": "一排柱子画出全体的分布，下面一条轨道两个把手：拖出来的区间里的柱子亮、区间外的暗；柱色取 seq 顺序色阶（越高越亮）。用在筛选器，在全市场分布上拖市值、涨幅、换手的区间。点柱子或轨道，最近的把手跳过去。功能参照 Arc Range histogram slider，实现原创。",
+      "registryDependencies": [
+        "@katana/num"
+      ],
       "files": [
         {
           "path": "src/patterns/range-histogram-model.ts",
@@ -4068,7 +4144,8 @@
       "title": "Border Beam",
       "description": "沿元素边框跑一圈带拖尾的彗星光，SVG 描边实现；可多束、反向、悬停暂停、屏外暂停，圆角可用像素或连续圆角。适用「等你处理」的卡片：AI 建议待审批、风控告警未确认；处理完关掉（active=false）。",
       "registryDependencies": [
-        "@katana/cn"
+        "@katana/cn",
+        "@katana/num"
       ],
       "files": [
         {
@@ -4156,7 +4233,8 @@
         "motion@14.9.0"
       ],
       "registryDependencies": [
-        "@katana/cn"
+        "@katana/cn",
+        "@katana/num"
       ],
       "files": [
         {
@@ -4535,6 +4613,9 @@
       "type": "registry:component",
       "title": "Brush Model",
       "description": "BrushChart 的窗口几何（纯函数）：夹取、平移、缩放、居中。",
+      "registryDependencies": [
+        "@katana/num"
+      ],
       "files": [
         {
           "path": "src/quant/brush-model.ts",
@@ -4551,7 +4632,8 @@
       "registryDependencies": [
         "@katana/calendar-model",
         "@katana/chart-kit",
-        "@katana/cn"
+        "@katana/cn",
+        "@katana/num"
       ],
       "files": [
         {
@@ -4566,6 +4648,9 @@
       "type": "registry:component",
       "title": "Calendar Model",
       "description": "CalendarHeatmap 的格子排布、档位与键盘（纯函数）：日历日按 UTC 算，一周一列。",
+      "registryDependencies": [
+        "@katana/date"
+      ],
       "files": [
         {
           "path": "src/quant/calendar-model.ts",
@@ -4705,6 +4790,10 @@
       "type": "registry:component",
       "title": "Event Calendar Model",
       "description": "EventCalendar 的纯函数：按显示时区分天、今天 / 本周 / 下周区间、筛选、倒计时分钟。",
+      "registryDependencies": [
+        "@katana/date",
+        "@katana/tone"
+      ],
       "files": [
         {
           "path": "src/quant/event-calendar-model.ts",
@@ -5137,7 +5226,8 @@
       "title": "Scatter Model",
       "description": "每个点是一个时刻的 (x, y)，按时间顺序连成轨迹，看一个对象在两个量之间怎么走（如策略的波动 vs 收益按月的路径、风格漂移）。时间方向不单靠颜色：起点空心圈、终点强调色实心圈加箭头、中间的点按时间取 seq 色阶（越晚越亮）。多条轨迹各取 series 色板的一个色。功能参照 Arc Connected scatter，实现原创。",
       "registryDependencies": [
-        "@katana/chart-scale"
+        "@katana/chart-scale",
+        "@katana/num"
       ],
       "files": [
         {
@@ -5152,6 +5242,9 @@
       "type": "registry:component",
       "title": "Series Geometry",
       "description": "序列图共用的几何（纯函数）：好看的刻度、比例尺、折线与面积路径，BrushChart、HorizonChart、SmallMultiples、SeriesExplorer 都用。",
+      "registryDependencies": [
+        "@katana/num"
+      ],
       "files": [
         {
           "path": "src/quant/series-geometry.ts",
@@ -5336,6 +5429,7 @@
         "@katana/change-text",
         "@katana/cn",
         "@katana/live",
+        "@katana/num",
         "@katana/quant-format",
         "@katana/symbol-mark",
         "@katana/watchlist-model"
@@ -5355,6 +5449,9 @@
       "description": "价格、涨跌幅、数量的写法（纯函数，不带 React；另有 @katana-ui/react/quant/format 出口给画布与 Worker）。小数位由调用方传，不在这里猜。",
       "dependencies": [
         "bignumber.js@11.1.5"
+      ],
+      "registryDependencies": [
+        "@katana/tone"
       ],
       "files": [
         {
@@ -5403,6 +5500,7 @@
         "@katana/live",
         "@katana/menu-any",
         "@katana/menu-parts",
+        "@katana/num",
         "@katana/popover",
         "@katana/quant-format",
         "@katana/row-actions",
@@ -5533,6 +5631,7 @@
       "registryDependencies": [
         "@katana/chart-kit",
         "@katana/cn",
+        "@katana/num",
         "@katana/symbol-mark",
         "@katana/toggle-group",
         "@katana/toolbar"
@@ -5832,6 +5931,7 @@
         "@katana/button",
         "@katana/cn",
         "@katana/hypothesis-ledger",
+        "@katana/num",
         "@katana/text-measure"
       ],
       "files": [
@@ -5910,6 +6010,7 @@
       "title": "Event Timeline Model",
       "description": "EventTimeline 的分组规则：按显示时区的自然日分组、新的在前，钟点格式（纯函数）。",
       "registryDependencies": [
+        "@katana/date",
         "@katana/text-measure"
       ],
       "files": [

@@ -5,6 +5,7 @@
 // 与原件的差别：原件的 border 只是 CSS 边框（角上会被裁断），这里换成沿曲线的描边；描边色取 --line-200；默认半径 12（原件 24，我们的件圆角都小）；路径算法没改（超椭圆指数 2 + 4×smoothing）。
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type ElementType, type ReactNode } from 'react'
 import { cn } from '../lib/cn.ts'
+import { clamp } from '../lib/num.ts'
 
 const DEFAULT_RADIUS = 12
 const DEFAULT_SMOOTHING = 0.6
@@ -16,7 +17,6 @@ const MIN_SAMPLES = 12
 const MAX_SAMPLES = 48
 const SAMPLES_PER_PX = 0.5
 
-const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value))
 type Point = { x: number; y: number }
 const fmt = ({ x, y }: Point) => `${x.toFixed(2)},${y.toFixed(2)}`
 

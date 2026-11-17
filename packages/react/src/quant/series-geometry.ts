@@ -3,6 +3,8 @@
 // 比例尺不另加图表依赖（#1917：几十行自己写）。图画在 viewBox 里：横向宽度是抽象的 PLOT_W，竖向就是像素高度（元素高度固定、preserveAspectRatio="none"），
 // 所以不需要量尺寸；文字与十字线是叠在上面的 HTML，按百分比定位。
 
+import { extent as numExtent, pct as share } from '../lib/num.ts'
+
 /** 横向抽象宽度。 */
 export const PLOT_W = 1000
 
@@ -48,16 +50,7 @@ export function niceTicks(
 }
 
 /** 一列数的最低与最高（跳过非有限数），可选把 0 包进来；全空返回 [0, 1]。 */
-export function extent(values: readonly number[], includeZero = false): Domain {
-  let lo = includeZero ? 0 : Infinity
-  let hi = includeZero ? 0 : -Infinity
-  for (const value of values) {
-    if (!Number.isFinite(value)) continue
-    if (value < lo) lo = value
-    if (value > hi) hi = value
-  }
-  return lo <= hi ? [lo, hi] : [0, 1]
-}
+export const extent = (values: readonly number[], includeZero = false): Domain => numExtent(values, includeZero)
 
 export type PlotOptions = {
   height: number
@@ -123,4 +116,4 @@ export function areaPath(values: readonly number[], plot: Plot, baseline: number
 }
 
 /** 位置占整宽的百分比，给 HTML 叠层用。 */
-export const pct = (x: number) => `${(x / PLOT_W) * 100}%`
+export const pct = (x: number) => share(x, PLOT_W)

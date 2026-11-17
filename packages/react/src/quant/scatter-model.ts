@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 // ConnectedScatter 的纯逻辑：两轴范围、像素坐标、终点箭头、键盘移动。功能参照 Arc Connected scatter（uiarc.dev，2026-11-14 读），实现原创。
+import { extent } from '../lib/num.ts'
 import { linearScale, niceTicks } from './chart-scale.ts'
 
 export type ScatterPoint = {
@@ -25,11 +26,9 @@ export type ScatterLayout = {
 }
 
 /** 数据范围按 pad 比例向两头放宽（默认 5%）再取好看的刻度；单点或全相等时左右各放 1。 */
-function extent(values: readonly number[], pad: number): [number, number] {
-  const finite = values.filter((value) => Number.isFinite(value))
-  if (finite.length === 0) return [0, 1]
-  const lo = Math.min(...finite)
-  const hi = Math.max(...finite)
+function paddedExtent(values: readonly number[], pad: number): [number, number] {
+  if (!values.some((value) => Number.isFinite(value))) return [0, 1]
+  const [lo, hi] = extent(values)
   if (lo === hi) return [lo - 1, hi + 1]
   const margin = (hi - lo) * pad
   const ticks = niceTicks(lo - margin, hi + margin, 5)
@@ -65,13 +64,13 @@ export function scatterLayout(
   const all = series.flatMap((item) => item.points)
   const xDomain =
     options.xDomain ??
-    extent(
+    paddedExtent(
       all.map((p) => p.x),
       0.05,
     )
   const yDomain =
     options.yDomain ??
-    extent(
+    paddedExtent(
       all.map((p) => p.y),
       0.05,
     )

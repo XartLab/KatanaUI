@@ -1,12 +1,14 @@
 // SPDX-License-Identifier: MIT
 // 评级仪表的几何与分档（纯函数）：半圆从左（−1，强烈卖出）到右（+1，强烈买入）分五段，指针按分数转。
 
+import { clamp } from '../lib/num.ts'
+
 export const RATING_ZONES = 5
 export const GAUGE_CX = 100
 export const GAUGE_CY = 100
 export const GAUGE_R = 84
 
-const clampScore = (score: number) => (Number.isFinite(score) ? Math.min(1, Math.max(-1, score)) : 0)
+const clampScore = (score: number) => (Number.isFinite(score) ? clamp(score, -1, 1) : 0)
 
 /**
  * 五段的分界，照 TradingView「Technical Ratings」的阈值（tradingview.com/support/solutions/43000614331，2026-11-14 读；

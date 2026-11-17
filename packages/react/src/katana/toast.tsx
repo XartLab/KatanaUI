@@ -62,7 +62,7 @@ function Toast({
       {...(phase === 'closing' ? { 'data-ending-style': '' } : {})}
       className={cn(
         'k-toast k-text-body rounded-[var(--radius-overlay)] border border-l-2 border-alpha-white-6 border-l-brand bg-surface-4 p-3 text-ink-2',
-        'shadow-[0_16px_48px_rgba(0,0,0,0.55),0_2px_8px_rgba(0,0,0,0.3)]',
+        'shadow-[var(--shadow-overlay)]',
         'data-[starting-style]:translate-y-2 data-[starting-style]:opacity-0 data-[ending-style]:translate-y-2 data-[ending-style]:opacity-0',
         'group-data-[position^=top]/toasts:data-[starting-style]:-translate-y-2 group-data-[position^=top]/toasts:data-[ending-style]:-translate-y-2',
         className,

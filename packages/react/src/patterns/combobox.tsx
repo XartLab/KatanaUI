@@ -53,7 +53,7 @@ function ComboboxContent({
       align="start"
       sideOffset={2}
       className={cn(
-        'w-[max(var(--radix-popover-trigger-width),220px)] overflow-hidden rounded-[7px] border-alpha-white-8 p-0 shadow-[0_8px_24px_rgba(0,0,0,0.4)]',
+        'w-[max(var(--radix-popover-trigger-width),220px)] overflow-hidden rounded-[7px] border-alpha-white-8 p-0 shadow-[var(--shadow-overlay-sm)]',
         className,
       )}
       {...props}

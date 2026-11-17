@@ -12,7 +12,7 @@ import { OverlayPortal } from '../lib/overlay.tsx'
 // 开得很快（延迟 0）：提示是给已经停在按钮上的人看的，等 700ms（Radix 默认）反而像卡了。
 const tooltipContentClass = [
   'k-text-data z-60 inline-flex items-center gap-2 rounded-[6px] border border-line bg-surface-0 px-2 py-1.5 leading-[1.3] font-normal text-ink-2',
-  'shadow-[0_2px_10px_rgba(0,0,0,0.5)]',
+  'shadow-[var(--shadow-tooltip)]',
   '[&_.k-kbd]:border-transparent [&_.k-kbd]:bg-ink [&_.k-kbd]:font-semibold [&_.k-kbd]:text-surface-0',
 ].join(' ')
 

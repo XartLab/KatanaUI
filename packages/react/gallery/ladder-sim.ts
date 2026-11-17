@@ -3,6 +3,7 @@
 // 用 live-sim 的节拍器与带种子的随机数，所以同一个种子同一串；全是编出来的演示数据，不是行情。
 import type { LadderItem, LadderLevel } from '../src/quant/index.ts'
 import { chance, pick, randomInt, type Rng } from './live-sim'
+import { hhmm } from '../src/lib/date.ts'
 
 /** 带板位的个股（拍平后好改；渲染前再按板位分层）。 */
 export type LadderStock = LadderItem & { board: number }
@@ -46,8 +47,7 @@ export function ladderLevels(sim: LadderSim): LadderLevel[] {
 }
 
 const round1 = (n: number) => Math.round(n * 10) / 10
-const clock = (arrivals: number) =>
-  `${String(9 + Math.floor((30 + arrivals * 7) / 60)).padStart(2, '0')}:${String((30 + arrivals * 7) % 60).padStart(2, '0')}`
+const clock = (arrivals: number) => hhmm(9 * 60 + 30 + arrivals * 7)
 
 /** 一个节拍：先让封住的几只封单量随机变，再按概率发生各种事件；每种事件都有概率，长跑下来都会碰到。 */
 export function ladderStep(sim: LadderSim, rng: Rng): LadderSim {

@@ -6,6 +6,7 @@
 import { useRef, useState } from 'react'
 import { cn } from '../lib/cn.ts'
 import { useEnterMarks, useFlipList, useValueFlash } from '../lib/live.ts'
+import { signed } from '../lib/num.ts'
 import { SymbolMark } from '../katana/symbol-mark.tsx'
 import { ChangeText } from './change-text.tsx'
 import { toneOf } from './format/index.ts'
@@ -47,7 +48,6 @@ export type WatchlistProps = {
 }
 
 const plain = (n: number) => n.toFixed(2)
-const signed = (n: number, fmt: (v: number) => string) => (n > 0 ? '+' : n < 0 ? '-' : '') + fmt(Math.abs(n))
 
 /**
  * 最新价：数变了，从第一位不同的数字起到末尾闪一下涨跌色底（共用层 useValueFlash：方向、1 秒节流、key 都由它给）；渲染时比较新旧值，不用 effect。

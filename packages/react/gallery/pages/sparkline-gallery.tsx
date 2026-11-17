@@ -5,6 +5,8 @@ import { Button, MiniChart, Sparkline, type SparklineVariant } from '../../src/i
 import { LiveToggle } from '../LiveToggle'
 import { makeRng, randomWalk, useLiveTicker } from '../live-sim'
 import { Row } from './parts'
+import { hhmm } from '../../src/lib/date.ts'
+import { pad } from '../../src/lib/num.ts'
 
 /** 带种子的随机游走：同一个种子永远同一串，截图与断言才稳。 */
 function walk(seed: number, count: number, start = 100, pct = 0.006): number[] {
@@ -24,9 +26,7 @@ const VOLUMES = walk(3, 48, 500, 0.4).map((v) => Math.abs(v))
 const RETURNS = Array.from({ length: 24 }, (_, i) =>
   i % 7 === 3 ? 0 : Math.round((makeRng(40 + i)() - 0.45) * 100) / 100,
 )
-const TIMES = DAY.map(
-  (_, i) => `${String(9 + Math.floor((i * 5) / 60)).padStart(2, '0')}:${String((i * 5) % 60).padStart(2, '0')}`,
-)
+const TIMES = DAY.map((_, i) => hhmm(9 * 60 + i * 5))
 const VARIANTS: readonly SparklineVariant[] = ['area', 'line', 'baseline', 'bars', 'winloss']
 const VARIANT_NAME: Record<SparklineVariant, string> = {
   area: 'area 面积',
@@ -74,13 +74,12 @@ const PREV_INDEX = 4651.2
 const barTime = (n: number) => (n <= 24 ? MORNING[0] + n * 5 * MIN : AFTERNOON[0] + (n - 25) * 5 * MIN)
 /** 一天 50 个点：上午 25 个（9:30 到 11:30），下午 25 个（13:00 到 15:00）。 */
 const BAR_COUNT = 50
-const pad2 = (n: number) => String(n).padStart(2, '0')
 /** 时间戳写成 UTC+8 的日期与时间（手写，不依赖机器时区与区域设置）。 */
 const formatTime = (t: number) => {
   const d = new Date(t + 8 * HOUR)
   return {
-    date: `${d.getUTCFullYear()}-${pad2(d.getUTCMonth() + 1)}-${pad2(d.getUTCDate())}`,
-    time: `${pad2(d.getUTCHours())}:${pad2(d.getUTCMinutes())} UTC+8`,
+    date: `${d.getUTCFullYear()}-${pad(d.getUTCMonth() + 1)}-${pad(d.getUTCDate())}`,
+    time: `${pad(d.getUTCHours())}:${pad(d.getUTCMinutes())} UTC+8`,
   }
 }
 const formatTick = (t: number) => formatTime(t).time.slice(0, 5)

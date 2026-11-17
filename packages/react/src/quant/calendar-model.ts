@@ -3,6 +3,8 @@
 // 列是周、行是星期；weekStart 决定一周从哪天起（0 周日、1 周一）。第一列开头与最后一列结尾不在区间里的格子不画。
 // 格色：正负各两档（div-*-100 与 -200，-200 只给超 80 分位的格），不再按比例分四档。
 
+import { isoDate } from '../lib/date.ts'
+
 const DAY = 86_400_000
 const DATE = /^(\d{4})-(\d{2})-(\d{2})$/
 
@@ -14,7 +16,7 @@ export function parseDate(text: string): number {
 }
 
 export function formatDate(ms: number): string {
-  return new Date(ms).toISOString().slice(0, 10)
+  return isoDate(ms)
 }
 
 export const addDays = (text: string, days: number): string => formatDate(parseDate(text) + days * DAY)

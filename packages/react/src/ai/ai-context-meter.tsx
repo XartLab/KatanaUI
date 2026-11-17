@@ -121,7 +121,7 @@ export function AiContextMeter({
             id={panelId}
             role="group"
             data-slot="ai-context-breakdown"
-            className="absolute bottom-full left-0 z-50 mb-1.5 w-56 rounded-[var(--radius-overlay)] border border-alpha-white-6 bg-surface-4 p-2.5 shadow-[0_16px_48px_rgba(0,0,0,0.55),0_2px_8px_rgba(0,0,0,0.3)]"
+            className="absolute bottom-full left-0 z-50 mb-1.5 w-56 rounded-[var(--radius-overlay)] border border-alpha-white-6 bg-surface-4 p-2.5 shadow-[var(--shadow-overlay)]"
             style={{ transformOrigin: 'bottom left' }}
             initial={{ opacity: 0, scale: 0.96, y: 4 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}

@@ -33748,7 +33748,7 @@
     },
     "Tone": {
       "kind": "type",
-      "source": "src/quant/format/change.ts",
+      "source": "src/lib/tone.ts",
       "props": []
     },
     "ToolButton": {

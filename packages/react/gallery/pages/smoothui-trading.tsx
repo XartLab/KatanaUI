@@ -34,6 +34,7 @@ import {
 import { LiveToggle } from '../LiveToggle.tsx'
 import { chance, pick, randomWalk, useLiveEnabled, useLiveTicker, type Rng } from '../live-sim.ts'
 import { Cell, Row } from './parts.tsx'
+import { hhmm } from '../../src/lib/date.ts'
 
 const LIVE_LABELS = { group: '数据刷新', live: '实时', paused: '暂停' }
 
@@ -51,8 +52,7 @@ const SOURCES = ['演示通讯社', '演示交易所', '演示研究部']
 type Wire = { n: number; title: string; source: string; time: string }
 type WireState = { wires: Wire[]; count: number }
 const clock = (n: number) => {
-  const minutes = 9 * 60 + 30 + n
-  return `${String(Math.floor(minutes / 60)).padStart(2, '0')}:${String(minutes % 60).padStart(2, '0')}`
+  return hhmm(9 * 60 + 30 + n)
 }
 function wireStep(state: WireState, rng: Rng, tick: number): WireState {
   // 第一拍必来一条：手动步进（e2e）有确定的结果；之后按概率，偶尔一次来两条。

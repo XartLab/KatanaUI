@@ -64,7 +64,7 @@ export function RichPopover({
           align={align}
           sideOffset={8}
           className={cn(
-            'k-text-body z-50 w-72 rounded-[var(--radius-overlay)] border border-alpha-white-6 bg-surface-4 p-3 text-ink-2 outline-0 shadow-[0_16px_48px_rgba(0,0,0,0.55),0_2px_8px_rgba(0,0,0,0.3)]',
+            'k-text-body z-50 w-72 rounded-[var(--radius-overlay)] border border-alpha-white-6 bg-surface-4 p-3 text-ink-2 outline-0 shadow-[var(--shadow-overlay)]',
             className,
           )}
         >

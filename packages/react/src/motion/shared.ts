@@ -6,6 +6,7 @@ import { useEffect, useState, type RefObject } from 'react'
 /** 画布的设备像素比封顶：再高只多花填充率，肉眼看不出。 */
 export const MAX_DPR = 2
 
+// 与 lib/num 的 clamp 先后相反（max 在外）：min > max 时这里得 min、那边得 max；调用方多、没逐个核对会不会碰到 min > max，留本地。
 export const clamp = (value: number, min: number, max: number) => Math.max(min, Math.min(max, value))
 
 /** 裸的自定义属性名（--ink-100）补成 var(--ink-100)；其余原样。 */

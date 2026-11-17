@@ -233,7 +233,8 @@ function CharacteristicsPage() {
     <>
       <p className="gal-lede">
         语义特征层（照 Salt 的
-        characteristics）：按「这是什么」命名——actionable（可点的）、content（文字）、separable（分隔线）、container（容器）、focused（焦点环）——值引用调色层。组件只该读这一层与密度变量，换主题只改调色层。
+        characteristics）：按「这是什么」命名——actionable（可点的）、content（文字）、separable（分隔线）、container（容器）、focused（焦点环）、surface（面）、status（状态语气）、tone（涨跌）、chart（图）、overlay（浮层影子）——值引用调色层与语义
+        token。组件只该读这一层、语义 token 与密度变量，不直接读色阶；换主题只改调色层。
       </p>
       <TokenTable
         rows={T.characteristics.tokens}

@@ -33,7 +33,7 @@ function Switch({ className, ...props }: ComponentProps<typeof SwitchPrimitive.R
       />
       <SwitchPrimitive.Thumb
         data-slot="switch-thumb"
-        className="pointer-events-none relative ml-[5px] block size-[14px] translate-x-0 rounded-full bg-ink-3 shadow-[0_1px_2px_rgba(0,0,0,0.5)] data-[state=checked]:translate-x-[16px] data-[state=checked]:bg-surface-0"
+        className="pointer-events-none relative ml-[5px] block size-[14px] translate-x-0 rounded-full bg-ink-3 shadow-[var(--shadow-thumb)] data-[state=checked]:translate-x-[16px] data-[state=checked]:bg-surface-0"
       />
     </SwitchPrimitive.Root>
   )

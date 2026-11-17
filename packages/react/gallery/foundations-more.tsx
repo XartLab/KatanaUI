@@ -498,13 +498,48 @@ function NamingPage() {
           ['动效', '--ease-<名> / --dur-<名>', code('--ease-gentle'), '能'],
         ]}
       />
+      <h2>读哪一层（G0，2026-11-18 定）</h2>
+      <ul>
+        <li>
+          次序：原始色阶（{code('--bg-000…400')} {code('--ink-100…400')} {code('--signal-*')}）→ 语义 token（
+          {code('--pnl-up')} {code('--chart-grid')} {code('--shadow-overlay')} 这类按用途命名、分主题取值的）→
+          characteristics（
+          {code('--k-*')}，只引用前两层，不写字面值）。
+        </li>
+        <li>
+          新代码只读 {code('--k-*')} 与语义 token，不直接读色阶：底用 {code('--k-surface-*')}，字用{' '}
+          {code('--k-content-*')}
+          ，状态色用 {code('--k-status-<ok|warn|danger|info|neutral>-<foreground|background|borderColor>')}，涨跌用{' '}
+          {code('--k-tone-<up|down|flat>-foreground')}，图用 {code('--k-chart-*')}。迁移模板是
+          Button（primitives/button.tsx）。
+        </li>
+        <li>
+          Tailwind 的颜色类（{code('bg-surface-3')} {code('text-ink-2')} {code('text-danger')}）在 theme.css 里已改指
+          characteristics，值与改前逐个相等；{code('bg-alpha-white-N')} 那一列是调色刻度，迁移时换成按用途的{' '}
+          {code('--k-*')}。
+        </li>
+        <li>
+          阴影：浮层（popover、hover-card、菜单、toast）读 {code('--shadow-overlay')}
+          ，贴着触发器的列表（select、combobox、multi-select）读 {code('--shadow-overlay-sm')}，tooltip 读{' '}
+          {code('--shadow-tooltip')}，dialog 与 sheet 读 {code('--shadow-dialog')}，开关滑块读 {code('--shadow-thumb')}
+          ；件里不写 rgba。除 Paper 外各主题同值（就是改前写死的值），Paper 轻一档。
+        </li>
+        <li>
+          状态语气在代码里是 {code("Severity = 'neutral' | 'ok' | 'warn' | 'danger'")}（状态灯与仪表多
+          off、accent），涨跌是 {code("Tone = 'up' | 'down' | 'flat'")}，都在 src/lib；状态灯用{' '}
+          {code('ledOf(severity)')}，不再各写映射表。
+        </li>
+      </ul>
       <h2>语义特征的词</h2>
       <Table
         head={['位置', '可选的词']}
         rows={[
-          ['特征', 'actionable（可点的）· content（文字）· separable（分隔线）· container（容器）· focused（焦点）'],
+          [
+            '特征',
+            'actionable（可点的）· content（文字）· separable（分隔线）· container（容器）· focused（焦点）· surface（面：sunken / base / raised / overlay）· status（状态语气）· tone（涨跌）· chart（图）· overlay（浮层影子）',
+          ],
           ['强调', 'bold · subtle（中间那档不写）'],
-          ['属性', 'background · foreground · borderColor · outlineColor · outlineWidth · outlineOffset'],
+          ['属性', 'background · foreground · borderColor · outlineColor · outlineWidth · outlineOffset · shadow'],
           ['状态', 'hover · active · disabled（静止不写）'],
         ]}
       />

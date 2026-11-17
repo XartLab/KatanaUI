@@ -6,6 +6,7 @@ import type { ComponentApi } from '@a2ui/web_core'
 import { CommonSchemas } from '@a2ui/web_core/v1_0'
 import { useEffect, useMemo, useState } from 'react'
 import { z } from 'zod'
+import { isoDate } from '../../lib/date.ts'
 import { HypothesisLedger, type Hypothesis, type HypothesisLedgerLabels } from '../../blocks/index.ts'
 import { text } from '../blocks-support.ts'
 import { Cell, SourceClicks, actionSchema, fill, httpsUrl, isoToMs, parseList, weightSchema } from '../support.tsx'
@@ -125,7 +126,7 @@ function hypothesisLabels(t: LedgerText): HypothesisLedgerLabels {
     tally: (support, oppose) => fill(t.tally, { support, oppose }),
     deadlineIn: (days) => (days === 0 ? t.dueToday : fill(t.deadlineIn, { days })),
     overdueBy: (days) => fill(t.overdueBy, { days }),
-    date: (time) => new Date(time).toISOString().slice(0, 10),
+    date: isoDate,
     empty: t.empty,
     watchLayer: t.watchLayer,
     watchEvidence: t.watchEvidence,

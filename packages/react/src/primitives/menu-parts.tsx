@@ -25,7 +25,7 @@ export const SUBMENU_ALIGN_OFFSET = -7
 
 /** 可用高度取 Radix Popper 给的 --radix-popper-available-height（菜单、弹层内容都继承得到）。 */
 export const menuContainerClass =
-  'k-pop k-text-body z-50 max-h-[min(var(--radix-popper-available-height),calc(100dvh-16px))] min-w-[180px] overflow-x-hidden overflow-y-auto rounded-[var(--radius-overlay)] border border-alpha-white-6 bg-surface-4 p-1.5 leading-none text-ink-2 outline-0 shadow-[0_16px_48px_rgba(0,0,0,0.55),0_2px_8px_rgba(0,0,0,0.3)]'
+  'k-pop k-text-body z-50 max-h-[min(var(--radix-popper-available-height),calc(100dvh-16px))] min-w-[180px] overflow-x-hidden overflow-y-auto rounded-[var(--radius-overlay)] border border-alpha-white-6 bg-surface-4 p-1.5 leading-none text-ink-2 outline-0 shadow-[var(--shadow-overlay)]'
 
 export const menuRowClass = cn(
   'k-pop-item relative flex h-[30px] cursor-pointer items-center justify-between gap-3 rounded-[6px] px-2 whitespace-nowrap text-ink-2 select-none',

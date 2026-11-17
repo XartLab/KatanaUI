@@ -26,6 +26,7 @@
 | `formatTime` | `SparklineProps['formatTime']` | — | Turns a timestamp into the date and time lines of the hover readout. |
 | `baseline` | `number` | — | Reference value such as the previous close; draws a dashed line (off by default, as in TradingView). |
 | `interactive` | `boolean` | `false` | Hover readout and keyboard walking on the chart (off by default). |
+| `look` | `SparklineProps['look']` | — | Look of the chart, passed to Sparkline: default (unchanged), instrument or ascii. |
 | `chartHeight` | `number` | `80` | Height of the chart in pixels; 80 and above draws the line at 2px. |
 | `live` | `boolean` | `false` | Live data: the price rolls when it changes and the change flashes the up or down color. |
 | `onSelect` | `(event: MouseEvent<HTMLButtonElement>) => void` | — | When given the whole card is a button; keep interactive off then. |
@@ -60,6 +61,7 @@ export function MiniChartUsage() {
 - 给了 times 与 domain（可加 sessions）：横轴是整个交易时段，线只画到最后一个点，右边留空；午休被压缩、线在那里断开。
 - live：价格变了用 RollingText 滚动，涨跌幅闪一次涨跌色，走势新点追加时线平滑延伸、末端环放大淡出一次。
 - 给了 onSelect：整张卡是按钮，悬停提亮、键盘焦点有环；不要同时开 interactive。
+- look：原样交给走势的 Sparkline（instrument、ascii），卡片本身与默认外观不变。
 - 没有走势数据（有效值少于两个）：走势的位置只留「—」。
 
 ## Don't

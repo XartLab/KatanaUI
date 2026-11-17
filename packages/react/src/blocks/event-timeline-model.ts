@@ -3,6 +3,7 @@
 // 轴按交易时段排，午休压成一小段（看的是顺序不是斜率）；同一分钟的事件聚成一个带计数的标记；可见标记 ≤ 60，更多先聚合；标签上下交错。
 // 时区由调用方传（应用的显示时区，IANA 名）：同一刻在上海与纽约可能落在不同的「天」，件里不猜、不读系统时区。
 
+import { dayKeyIn } from '../lib/date.ts'
 import { fontFor, measureText } from '../lib/text-measure.ts'
 
 /** 类别：异动 / 公告 / 成交 / 警报 / run；形状与状态色见 event-timeline.css。 */
@@ -34,18 +35,10 @@ export const GAP_FRACTION = 0.03
 /** 一条轴上最多画这么多标记（卡里的 ≤ 60）。 */
 export const MAX_MARKERS = 60
 
-const dayFormats = new Map<string, Intl.DateTimeFormat>()
 const clockFormats = new Map<string, Intl.DateTimeFormat>()
 
 /** 某一刻在时区 timeZone 里是哪一天：YYYY-MM-DD。 */
-export function dayKey(at: number, timeZone: string): string {
-  let format = dayFormats.get(timeZone)
-  if (!format) {
-    format = new Intl.DateTimeFormat('en-CA', { timeZone, year: 'numeric', month: '2-digit', day: '2-digit' })
-    dayFormats.set(timeZone, format)
-  }
-  return format.format(at)
-}
+export const dayKey = (at: number, timeZone: string): string => dayKeyIn(at, timeZone)
 
 /** 某一刻在时区 timeZone 里的钟点：HH:mm:ss（24 小时制）。 */
 export function clock(at: number, timeZone: string): string {

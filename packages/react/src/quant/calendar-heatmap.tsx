@@ -12,6 +12,7 @@
 // 右上角三件：表格视图（总有）、导出与全屏（回调由调用方给）。文字（休、周标、月份、数值）都从 props 来。
 import { useState, type CSSProperties, type KeyboardEvent, type ReactNode } from 'react'
 import { cn } from '../lib/cn.ts'
+import { pad } from '../lib/num.ts'
 import { calendarGrid, calendarKey, calendarTone, monthGrid, type CalendarTone } from './calendar-model.ts'
 import { ChartActions, type ChartActionsLabels } from './chart-kit/chart-actions.tsx'
 import { LcdTooltip } from './chart-kit/lcd-tooltip.tsx'
@@ -156,7 +157,7 @@ export function CalendarHeatmap({
     const first = mode === 'month' ? `${shownMonth}-01` : start
     const last =
       mode === 'month'
-        ? `${shownMonth}-${String(new Date(Date.UTC(Number(shownMonth.slice(0, 4)), Number(shownMonth.slice(5)), 0)).getUTCDate()).padStart(2, '0')}`
+        ? `${shownMonth}-${pad(new Date(Date.UTC(Number(shownMonth.slice(0, 4)), Number(shownMonth.slice(5)), 0)).getUTCDate())}`
         : end
     const next = calendarKey(shown, event.key, first, last)
     if (next === undefined) return

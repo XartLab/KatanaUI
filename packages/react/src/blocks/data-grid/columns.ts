@@ -9,6 +9,7 @@ import {
   type QuantityUnits,
   type SizeFormat,
 } from '../../quant/format/index.ts'
+import { pad, signed as signedText } from '../../lib/num.ts'
 import { compareDecimal } from './model.ts'
 
 // 列类型（#1869）：列声明一个类型，格式化、对齐、着色、排序由类型给，不每列手写。
@@ -124,8 +125,6 @@ function toNumber(value: unknown): number | null {
   }
   return null
 }
-
-const pad = (value: number, width = 2) => String(value).padStart(width, '0')
 
 /** 毫秒时间戳写成 YYYY-MM-DD HH:MM:SS（或只写时间、日期）；时区见 CellEnv。 */
 export function formatTimestamp(
@@ -258,9 +257,9 @@ export function resolveCell<Row>(column: GridColumn<Row>, row: Row, env: CellEnv
 
 /** 带符号的数：正数带 +，负数带 -，舍入成零不带号；千分位 en-US。 */
 function signed(value: number, digits: number): string {
-  const at = Number(value.toFixed(digits))
-  const body = Math.abs(at).toLocaleString('en-US', { minimumFractionDigits: digits, maximumFractionDigits: digits })
-  return at > 0 ? `+${body}` : at < 0 ? `-${body}` : body
+  return signedText(Number(value.toFixed(digits)), (abs) =>
+    abs.toLocaleString('en-US', { minimumFractionDigits: digits, maximumFractionDigits: digits }),
+  )
 }
 
 /** 一列的排序比较：数字类按数（十进制字符串按十进制），time 按毫秒，别的按字（numeric 的自然序，locale 由调用方给）。 */

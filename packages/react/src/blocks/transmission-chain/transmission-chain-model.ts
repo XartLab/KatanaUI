@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 import { Graph, layout } from '@dagrejs/dagre'
 import type { HypothesisEvidence } from '../hypothesis-ledger/hypothesis-ledger-model.ts'
+import { clamp } from '../../lib/num.ts'
 
 // 传导链图的纯函数：布局（dagre，MIT，https://github.com/dagrejs/dagre ，2026-11-15 读其类型定义：Graph 支持多重边与 acyclicer，
 // 布局结果给出节点中心与边的折点、边标签的中心）、边的曲线路径、缩放与适应视图。不带 React 与 DOM。
@@ -195,7 +196,7 @@ export type View = { x: number; y: number; k: number }
 export const MIN_ZOOM = 0.25
 export const MAX_ZOOM = 3
 
-const clampZoom = (k: number) => Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, k))
+const clampZoom = (k: number) => clamp(k, MIN_ZOOM, MAX_ZOOM)
 
 /** 把整张图放进视口并居中；放大不超过 1（小图不放大成一团）。 */
 export function fitView(

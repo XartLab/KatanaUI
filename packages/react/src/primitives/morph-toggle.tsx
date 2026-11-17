@@ -85,7 +85,7 @@ function MorphToggle({
           transition={spring}
           style={{ width: dims.thumb, height: dims.thumb, left: dims.inset, top: dims.inset }}
           className={cn(
-            'absolute grid place-items-center bg-ink-3 shadow-[0_1px_2px_rgba(0,0,0,0.5)]',
+            'absolute grid place-items-center bg-ink-3 shadow-[var(--shadow-thumb)]',
             checked && 'bg-surface-0',
           )}
         >

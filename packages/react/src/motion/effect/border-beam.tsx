@@ -2,6 +2,7 @@
 // 改自 SmoothUI border-beam（https://github.com/educlopez/smoothui ，MIT，© 2024 Eduardo Calvo）。边框光束：沿元素边框跑一圈带拖尾的彗星光，SVG 描边实现，可多束、可反向、悬停暂停、屏外暂停。相对原件：默认颜色走 token，去掉 useReducedMotion。
 import { cn } from '../../lib/cn.ts'
 import { type ReactNode, useEffect, useId, useMemo, useRef, useState } from 'react'
+import { clamp } from '../../lib/num.ts'
 
 /** Corner geometry: a pixel radius, or an Apple-style continuous squircle. */
 export type BorderBeamRadius = number | 'squircle'
@@ -144,8 +145,6 @@ const buildBorderPath = (width: number, height: number, radius: BorderBeamRadius
 
 /** Wraps a normalised offset back into `[0, 1)` so the dash never falls off. */
 const wrapUnit = (value: number) => ((value % PATH_UNIT) + PATH_UNIT) % PATH_UNIT
-
-const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value))
 
 /**
  * Blurring a stroke darkens its fringe whenever the stroke itself is dark, so

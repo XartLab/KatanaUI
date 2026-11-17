@@ -8,6 +8,7 @@
 import { DownloadIcon, ExpandIcon, TableIcon } from 'lucide-react'
 import { useState, type KeyboardEvent } from 'react'
 import { cn } from '../../lib/cn.ts'
+import { pad } from '../../lib/num.ts'
 import { ToggleGroup, ToggleGroupItem } from '../../primitives/toggle-group.tsx'
 import { SymbolMark } from '../../katana/symbol-mark.tsx'
 import { LcdTooltip } from '../../quant/chart-kit/lcd-tooltip.tsx'
@@ -60,8 +61,6 @@ export type AttributionBarsProps = {
   maxItems?: number
   className?: string
 }
-
-const pad = (n: number) => String(n).padStart(2, '0')
 
 export function AttributionBars({
   items,

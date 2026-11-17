@@ -4,6 +4,7 @@ import { cn } from '../../lib/cn.ts'
 import { type MotionValue, motion, motionValue } from 'motion/react'
 import type { ReactElement, ReactNode } from 'react'
 import { useEffect, useRef, useState } from 'react'
+import { clamp } from '../../lib/num.ts'
 
 export type MagneticFieldMode = 'attract' | 'repel' | 'orbit'
 
@@ -56,8 +57,6 @@ const MAX_DELTA_SECONDS = 0.05
 const ORBIT_RADIAL_FACTOR = 0.2
 const ORBIT_TANGENTIAL_FACTOR = 0.4
 const MAGNETIC_SELECTOR = '[data-magnetic]'
-
-const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value))
 
 const computeFalloff = (distance: number, radius: number) => {
   if (distance >= radius) {

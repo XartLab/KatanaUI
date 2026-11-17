@@ -125,7 +125,7 @@ export function MultiSelect({
           ;(all.find((row) => row.getAttribute('aria-selected') === 'true') ?? all[0])?.focus()
         }}
         className={cn(
-          'w-auto min-w-[var(--radix-popover-trigger-width)] max-h-[min(var(--radix-popover-content-available-height),calc(100dvh-16px))] overflow-auto rounded-[7px] border-alpha-white-8 p-1 shadow-[0_8px_24px_rgba(0,0,0,0.4)]',
+          'w-auto min-w-[var(--radix-popover-trigger-width)] max-h-[min(var(--radix-popover-content-available-height),calc(100dvh-16px))] overflow-auto rounded-[7px] border-alpha-white-8 p-1 shadow-[var(--shadow-overlay-sm)]',
           contentClassName,
         )}
       >
