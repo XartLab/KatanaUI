@@ -10133,10 +10133,15 @@
               "items": {
                 "type": "object",
                 "properties": {
+                  "symbol": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "Instrument symbol, unique in the list."
+                  },
                   "code": {
                     "type": "string",
                     "minLength": 1,
-                    "description": "Instrument code, unique in the list."
+                    "description": "Deprecated: use symbol. Kept for one release."
                   },
                   "name": {
                     "type": "string",
@@ -10170,7 +10175,6 @@
                   }
                 },
                 "required": [
-                  "code",
                   "name",
                   "size",
                   "value"
@@ -10626,7 +10630,7 @@
               "description": "Executes a renderer or agent-side function."
             }
           ],
-          "description": "Dispatched when the user chooses a cell. metadata.extensions.katanaChartPoint carries {code}. The host receives the action and decides what to do; the component itself does nothing else."
+          "description": "Dispatched when the user chooses a cell. metadata.extensions.katanaChartPoint carries {symbol} (and the deprecated {code}, same value, for one release). The host receives the action and decides what to do; the component itself does nothing else."
         },
         "onOpenInScreener": {
           "anyOf": [

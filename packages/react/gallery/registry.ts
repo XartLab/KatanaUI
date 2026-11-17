@@ -1138,7 +1138,7 @@ export const PAGES: readonly DocPage[] = [
           {
             name: 'items',
             type: 'HeatmapItem[]',
-            desc: '{ code, name, group?, logo?, price?, size: Record<键, number>, value: Record<键, number | null> }。size 里不是正数的格子不画；value 是 null 画成灰（没有数）；没有 group 的品种归到 labels.other，所有品种都没有 group 就不分组、也不出视图切换。',
+            desc: '{ symbol, name, group?, logo?, price?, size: Record<键, number>, value: Record<键, number | null> }（旧名 code 留一个版本，@deprecated）。size 里不是正数的格子不画；value 是 null 画成灰（没有数）；没有 group 的品种归到 labels.other，所有品种都没有 group 就不分组、也不出视图切换。',
           },
           {
             name: 'sizeBy',
@@ -1169,7 +1169,7 @@ export const PAGES: readonly DocPage[] = [
           },
           { name: 'formatPrice', type: '(value: number) => string', desc: '悬停卡片上的价格写法；不给写 2 位小数。' },
           { name: 'selected', type: 'string | null', desc: '选中的代码；选中的格子画 2px 白色内圈。' },
-          { name: 'onSelect', type: '(code: string) => void', desc: '点格子，或焦点在格子上按 Enter / Space。' },
+          { name: 'onSelect', type: '(symbol: string) => void', desc: '点格子，或焦点在格子上按 Enter / Space。' },
           {
             name: 'cellActions',
             type: '(item: HeatmapItem) => RowAction[]',

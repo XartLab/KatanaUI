@@ -10,7 +10,7 @@ import { HeatmapCell } from './market-heatmap-cell.tsx'
 import { useCellFlip, useDrillFocus, useInkContrast, usePlotBox, useTurnFlash } from './market-heatmap-hooks.ts'
 import { HeatmapLegend } from './market-heatmap-legend.tsx'
 import { HeatmapToolbar } from './market-heatmap-toolbar.tsx'
-import type { HeatmapItem, HeatmapTitleMode, HeatmapValueMode, MarketHeatmapProps } from './market-heatmap-types.ts'
+import type { HeatmapEntry, HeatmapTitleMode, HeatmapValueMode, MarketHeatmapProps } from './market-heatmap-types.ts'
 
 export type {
   HeatmapColorBy,
@@ -36,7 +36,7 @@ export type {
 const HEAD_H = 22
 
 export function MarketHeatmap({
-  items,
+  items: rawItems,
   sizeBy,
   colorBy,
   labels,
@@ -55,6 +55,11 @@ export function MarketHeatmap({
   onOpenInScreener,
   className,
 }: MarketHeatmapProps) {
+  // 旧名 code 映射到 symbol（@deprecated，留一个版本）。
+  const items = useMemo<HeatmapEntry[]>(
+    () => rawItems.map((item) => (item.symbol !== undefined ? item : { ...item, symbol: item.code })) as HeatmapEntry[],
+    [rawItems],
+  )
   const uid = useId()
   const figure = useRef<HTMLElement>(null)
   const plot = useRef<HTMLDivElement>(null)
@@ -83,7 +88,7 @@ export function MarketHeatmap({
   const values = useMemo(() => items.map((item) => (color ? item.value[color.key] : null)), [items, color])
   const unit = color?.step ?? niceUnit(values)
 
-  const blocks = useMemo<TreemapBlock<HeatmapItem>[]>(() => {
+  const blocks = useMemo<TreemapBlock<HeatmapEntry>[]>(() => {
     if (!size) return []
     const inGroup = drill === null ? items : items.filter((item) => (item.group ?? labels.other) === drill)
     const layoutItems = inGroup.map((item) => ({
@@ -105,10 +110,10 @@ export function MarketHeatmap({
   const flashing = useTurnFlash(items, color)
 
   const stepFor = useCallback(
-    (item: HeatmapItem) => (color ? stepOf(item.value[color.key], unit) : null),
+    (item: HeatmapEntry) => (color ? stepOf(item.value[color.key], unit) : null),
     [color, unit],
   )
-  const hiddenOf = (item: HeatmapItem) => {
+  const hiddenOf = (item: HeatmapEntry) => {
     const step = stepFor(item)
     return step !== null && hiddenSteps.has(step)
   }
@@ -133,7 +138,7 @@ export function MarketHeatmap({
     )
   }
 
-  const move = (event: KeyboardEvent<HTMLElement>, block: TreemapBlock<HeatmapItem>, code: string) => {
+  const move = (event: KeyboardEvent<HTMLElement>, block: TreemapBlock<HeatmapEntry>, code: string) => {
     const keys: Record<string, Direction> = {
       ArrowLeft: 'left',
       ArrowRight: 'right',
@@ -148,7 +153,9 @@ export function MarketHeatmap({
     const direction = keys[event.key]
     if (!direction) return
     event.preventDefault()
-    const boxes = block.cells.filter((cell) => !hiddenOf(cell.data)).map((cell) => ({ ...cell, code: cell.data.code }))
+    const boxes = block.cells
+      .filter((cell) => !hiddenOf(cell.data))
+      .map((cell) => ({ ...cell, code: cell.data.symbol }))
     const next = neighbour(boxes, code, direction)
     if (next)
       plot.current?.querySelector<HTMLElement>(`[data-slot="heatmap-cell"][data-code="${CSS.escape(next)}"]`)?.focus()
@@ -167,7 +174,7 @@ export function MarketHeatmap({
     else setHover((old) => (old?.open ? { ...old, x, y, snap: false } : old))
   }
 
-  const hovered = hover ? all.find((cell) => cell.data.code === hover.code)?.data : undefined
+  const hovered = hover ? all.find((cell) => cell.data.symbol === hover.code)?.data : undefined
 
   return (
     <figure
@@ -241,7 +248,7 @@ export function MarketHeatmap({
         actionsFor={
           cellActions
             ? (code) => {
-                const item = items.find((entry) => entry.code === code)
+                const item = items.find((entry) => entry.symbol === code)
                 return item ? cellActions(item) : []
               }
             : undefined
@@ -262,7 +269,7 @@ export function MarketHeatmap({
           {blocks.map((block) => {
             const visible = block.cells.filter((cell) => !hiddenOf(cell.data))
             const tabbable =
-              visible.find((cell) => cell.data.code === rove[block.name])?.data.code ?? visible[0]?.data.code
+              visible.find((cell) => cell.data.symbol === rove[block.name])?.data.symbol ?? visible[0]?.data.symbol
             const headingId = `${uid}-${block.name}`
             // 组头右边的平均涨跌：这一组着色指标的简单平均（没有数的格子不算）。
             const nums = block.cells.flatMap((cell) => {
@@ -319,15 +326,15 @@ export function MarketHeatmap({
                   const step = stepFor(item)
                   return (
                     <HeatmapCell
-                      key={item.code}
+                      key={item.symbol}
                       cell={cell}
                       size={size}
                       color={color}
                       step={step}
                       hidden={hiddenOf(item)}
-                      tabbable={item.code === tabbable}
-                      selected={item.code === selected}
-                      flash={flashing.get(item.code)}
+                      tabbable={item.symbol === tabbable}
+                      selected={item.symbol === selected}
+                      flash={flashing.get(item.symbol)}
                       dim={
                         previewStep !== null && step !== previewStep
                           ? 'legend'
@@ -340,14 +347,14 @@ export function MarketHeatmap({
                       valueMode={valueMode}
                       priceText={priceText}
                       onSelect={onSelect}
-                      onKeyDown={(event) => move(event, block, item.code)}
+                      onKeyDown={(event) => move(event, block, item.symbol)}
                       onFocus={(event) => {
-                        setRove((old) => ({ ...old, [block.name]: item.code }))
+                        setRove((old) => ({ ...old, [block.name]: item.symbol }))
                         const rect = plot.current?.getBoundingClientRect()
                         const own = event.currentTarget.getBoundingClientRect()
                         if (rect)
                           setHover({
-                            code: item.code,
+                            code: item.symbol,
                             x: own.right - rect.left - 24,
                             y: own.top - rect.top + 8,
                             open: true,

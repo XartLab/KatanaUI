@@ -2,8 +2,7 @@
 // MarketHeatmap 的公开类型：格子数据、大小与着色指标、文案、属性。从 market-heatmap.tsx 拆出（G5），名字与形状不变。
 import type { RowAction } from '../patterns/row-actions.tsx'
 
-export type HeatmapItem = {
-  code: string
+type HeatmapItemFields = {
   name: string
   /** 分组（行业）；不给的归到 labels.other。 */
   group?: string
@@ -15,6 +14,25 @@ export type HeatmapItem = {
   /** 各个着色指标的值，键是 HeatmapColorBy.key。null 是没有数（画中性灰）。 */
   value: Record<string, number | null>
 }
+
+/** 一格的数据。品种字段叫 symbol（G5 统一）；旧名 code 留一个版本（@deprecated，运行时映射到 symbol）。 */
+export type HeatmapItem = HeatmapItemFields &
+  (
+    | {
+        /** 品种代码，列表里唯一。 */
+        symbol: string
+        /** @deprecated 用 `symbol`（G5 统一品种字段名）；下一个版本删。 */
+        code?: string
+      }
+    | {
+        symbol?: undefined
+        /** @deprecated 用 `symbol`（G5 统一品种字段名）；下一个版本删。 */
+        code: string
+      }
+  )
+
+/** 件内部用的一格：symbol 已从旧名 code 补上。 */
+export type HeatmapEntry = HeatmapItem & { symbol: string }
 
 export type HeatmapSizeBy = {
   key: string
@@ -101,7 +119,7 @@ export type MarketHeatmapProps = {
   selected?: string | null
   onSelect?: (code: string) => void
   /** 格子的右键菜单（#23，一般传 symbolMenu(...)）：右键、菜单键、Shift+F10 出同一份品种菜单；不传就没有。格子小，不画悬停按钮。 */
-  cellActions?: (item: HeatmapItem) => readonly RowAction[]
+  cellActions?: (item: HeatmapEntry) => readonly RowAction[]
   /**
    * 工具条：dropdowns（默认）= 数据集、大小、颜色、分组四个下拉（照 TradingView 热图，用户 2026-11-15 实测），
    * segments = 每个指标一排分段按钮（指标少、想一眼看全时用）。

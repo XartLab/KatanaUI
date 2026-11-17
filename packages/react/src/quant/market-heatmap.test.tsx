@@ -29,9 +29,9 @@ const labels: MarketHeatmapLabels = {
   empty: '没有数据',
 }
 
-const item = (code: string, group: string | undefined, cap: number, day: number | null): HeatmapItem => ({
-  code,
-  name: `名${code}`,
+const item = (symbol: string, group: string | undefined, cap: number, day: number | null): HeatmapItem => ({
+  symbol,
+  name: `名${symbol}`,
   group,
   size: { cap },
   value: { day },
@@ -116,5 +116,16 @@ describe('MarketHeatmap 渲染结构', () => {
       />,
     )
     expect(empty).toContain('没有数据')
+  })
+  it('旧字段名 code（@deprecated）照样认：映射到 symbol', () => {
+    const legacy = renderToStaticMarkup(
+      <MarketHeatmap
+        items={[{ code: 'OLD', name: '旧名', size: { cap: 1 }, value: { day: 1 } }]}
+        sizeBy={[{ key: 'cap', label: '市值' }]}
+        colorBy={[{ key: 'day', label: '涨跌' }]}
+        labels={labels}
+      />,
+    )
+    expect(legacy).toContain('data-code="OLD"')
   })
 })

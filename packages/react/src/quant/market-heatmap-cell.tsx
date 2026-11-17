@@ -10,7 +10,7 @@ import type { TreemapCell } from '../katana/treemap-model.ts'
 import { formatMetric } from './market-heatmap-model.ts'
 import type {
   HeatmapColorBy,
-  HeatmapItem,
+  HeatmapEntry,
   HeatmapSizeBy,
   HeatmapTitleMode,
   HeatmapValueMode,
@@ -37,7 +37,7 @@ const NAME_H = 110
 const textWidth = (text: string) => measureText(text, fontFor(600, 12, '--font-num'))
 
 export type HeatmapCellProps = {
-  cell: TreemapCell<HeatmapItem>
+  cell: TreemapCell<HeatmapEntry>
   size: HeatmapSizeBy
   color: HeatmapColorBy
   /** 着色指标落在哪一档；没有数是 null。 */
@@ -83,7 +83,7 @@ export function HeatmapCell({
   const w = cell.x1 - cell.x0
   const h = cell.y1 - cell.y0
   const showCode =
-    w >= Math.max(MIN_CODE_W, textWidth(titleMode === 'name' ? item.name : item.code) + CODE_PAD_W) && h >= MIN_CODE_H
+    w >= Math.max(MIN_CODE_W, textWidth(titleMode === 'name' ? item.name : item.symbol) + CODE_PAD_W) && h >= MIN_CODE_H
   const showValue = showCode && h >= MIN_VALUE_H
   const logo = showCode && showLogo ? LOGO_TIERS.find((tier) => w >= tier.w && h >= tier.h) : undefined
   const logoOnly = !showCode && showLogo && w >= MIN_SMALL_W && h >= MIN_SMALL_H
@@ -101,12 +101,12 @@ export function HeatmapCell({
     <div
       role="button"
       tabIndex={hidden ? -1 : tabbable ? 0 : -1}
-      aria-label={`${item.name} ${item.code} ${text}`}
+      aria-label={`${item.name} ${item.symbol} ${text}`}
       aria-pressed={selected}
       aria-hidden={hidden || undefined}
       className={cn('k-mheat-cell', flash && 'k-live-flash')}
       data-slot="heatmap-cell"
-      data-code={item.code}
+      data-code={item.symbol}
       data-size={size.equal ? 1 : (item.size[size.key] ?? 0)}
       data-step={step ?? 'na'}
       data-hidden={hidden || undefined}
@@ -116,7 +116,7 @@ export function HeatmapCell({
       data-labelled={showCode}
       data-logo={logo?.size ?? (logoOnly ? SMALL_LOGO : undefined)}
       style={{ left: cell.x0, top: cell.y0, width: w, height: h } satisfies CSSProperties}
-      onClick={() => onSelect?.(item.code)}
+      onClick={() => onSelect?.(item.symbol)}
       onKeyDown={onKeyDown}
       onFocus={onFocus}
       onBlur={onBlur}
@@ -124,16 +124,16 @@ export function HeatmapCell({
       {showCode ? (
         <>
           {logo ? (
-            <SymbolMark className="k-mheat-logo" code={item.code} name={item.name} src={item.logo} size={logo.size} />
+            <SymbolMark className="k-mheat-logo" code={item.symbol} name={item.name} src={item.logo} size={logo.size} />
           ) : null}
           {titleMode === 'none' ? null : (
-            <span className="k-mheat-code">{titleMode === 'name' ? item.name : item.code}</span>
+            <span className="k-mheat-code">{titleMode === 'name' ? item.name : item.symbol}</span>
           )}
           {showName ? <span className="k-mheat-name">{item.name}</span> : null}
           {showValue && valueMode !== 'none' ? <span className="k-mheat-value">{cellValue}</span> : null}
         </>
       ) : logoOnly ? (
-        <SymbolMark code={item.code} name={item.name} src={item.logo} size={SMALL_LOGO} />
+        <SymbolMark code={item.symbol} name={item.name} src={item.logo} size={SMALL_LOGO} />
       ) : null}
     </div>
   )

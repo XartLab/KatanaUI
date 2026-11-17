@@ -4,7 +4,7 @@
 import { useEffect, useLayoutEffect, useRef, useState, type RefObject } from 'react'
 import { LIVE_FLASH_GAP_MS, LIVE_FLASH_MS } from '../lib/live.ts'
 import type { TreemapCell } from '../katana/treemap-model.ts'
-import type { HeatmapColorBy, HeatmapItem, HeatmapScheme } from './market-heatmap-types.ts'
+import type { HeatmapColorBy, HeatmapEntry, HeatmapScheme } from './market-heatmap-types.ts'
 
 // 手感的时长（用户 2026-11-15 看第二版后定方向：照 TradingView 热力图的交互手感；时长待定，没实测）：
 // 卡片首次出现淡入 100ms、离开淡出 160ms（CSS）；数据变了颜色过渡 300ms（CSS）；涨跌方向变了的格子闪一下新方向的涨跌色（共用层 live.css 的 .k-live-flash，时长 --dur-flash；FLASH_MS 只管多久后摘掉标记，同一格 1 秒内最多一次）。
@@ -102,7 +102,7 @@ export function useInkContrast(figure: RefObject<HTMLElement | null>, scheme: He
 /** 格子位置与大小的弹簧过渡（FLIP）；容器自己变大变小时不做。 */
 export function useCellFlip(
   plot: RefObject<HTMLElement | null>,
-  all: readonly TreemapCell<HeatmapItem>[],
+  all: readonly TreemapCell<HeatmapEntry>[],
   box: PlotBox,
   drill: string | null,
 ) {
@@ -115,7 +115,7 @@ export function useCellFlip(
   useLayoutEffect(() => {
     const root = plot.current
     const next = new Map<string, Rect>(
-      all.map((cell) => [cell.data.code, { l: cell.x0, t: cell.y0, w: cell.x1 - cell.x0, h: cell.y1 - cell.y0 }]),
+      all.map((cell) => [cell.data.symbol, { l: cell.x0, t: cell.y0, w: cell.x1 - cell.x0, h: cell.y1 - cell.y0 }]),
     )
     const resized = lastBox.current !== null && lastBox.current !== box
     const previous = rects.current
@@ -149,7 +149,7 @@ export function useCellFlip(
 
 /** 同一个着色指标下涨跌方向翻了的格子：返回正在闪的格子与新方向（同一格 1 秒内最多一次）。 */
 export function useTurnFlash(
-  items: readonly HeatmapItem[],
+  items: readonly HeatmapEntry[],
   color: HeatmapColorBy | undefined,
 ): ReadonlyMap<string, 'up' | 'down'> {
   const [flashing, setFlashing] = useState<ReadonlyMap<string, 'up' | 'down'>>(new Map())
@@ -161,7 +161,7 @@ export function useTurnFlash(
     const map = new Map<string, number>()
     for (const item of items) {
       const v = item.value[color.key]
-      if (typeof v === 'number') map.set(item.code, Math.sign(v))
+      if (typeof v === 'number') map.set(item.symbol, Math.sign(v))
     }
     const old = signs.current
     signs.current = { key: color.key, map }

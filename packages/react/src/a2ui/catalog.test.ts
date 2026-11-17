@@ -367,7 +367,7 @@ const EXAMPLES: Record<string, Record<string, unknown>> = {
     onItem: { event: { name: 'chart.select' } },
   },
   KatanaMarketHeatmap: {
-    items: [{ code: 'ACME', name: 'Acme Corp', group: 'Tech', size: { cap: 10 }, value: { change: 1.2 } }],
+    items: [{ symbol: 'ACME', name: 'Acme Corp', group: 'Tech', size: { cap: 10 }, value: { change: 1.2 } }],
     sizeBy: [{ key: 'cap', label: 'Market cap' }],
     colorBy: [{ key: 'change', label: 'Change', unit: '%' }],
     labels: {

@@ -14514,50 +14514,7 @@
     "HeatmapItem": {
       "kind": "type",
       "source": "src/quant/market-heatmap-types.ts",
-      "props": [
-        {
-          "name": "code",
-          "type": "string",
-          "required": true,
-          "description": ""
-        },
-        {
-          "name": "name",
-          "type": "string",
-          "required": true,
-          "description": ""
-        },
-        {
-          "name": "group",
-          "type": "string",
-          "required": false,
-          "description": "分组（行业）；不给的归到 labels.other。"
-        },
-        {
-          "name": "logo",
-          "type": "string",
-          "required": false,
-          "description": "品种徽标的图片地址；不给就画字母圆标。"
-        },
-        {
-          "name": "price",
-          "type": "number",
-          "required": false,
-          "description": ""
-        },
-        {
-          "name": "size",
-          "type": "Record<string, number>",
-          "required": true,
-          "description": "各个大小指标的值，键是 HeatmapSizeBy.key。不是正数的格子不画。"
-        },
-        {
-          "name": "value",
-          "type": "Record<string, number | null>",
-          "required": true,
-          "description": "各个着色指标的值，键是 HeatmapColorBy.key。null 是没有数（画中性灰）。"
-        }
-      ]
+      "props": []
     },
     "HeatmapScheme": {
       "kind": "type",
@@ -17664,7 +17621,7 @@
         },
         {
           "name": "cellActions",
-          "type": "(item: HeatmapItem) => readonly RowAction[]",
+          "type": "(item: HeatmapEntry) => readonly RowAction[]",
           "required": false,
           "description": "格子的右键菜单（#23，一般传 symbolMenu(...)）：右键、菜单键、Shift+F10 出同一份品种菜单；不传就没有。格子小，不画悬停按钮。"
         },
@@ -17893,7 +17850,7 @@
         },
         {
           "name": "cellActions",
-          "type": "(item: HeatmapItem) => readonly RowAction[]",
+          "type": "(item: HeatmapEntry) => readonly RowAction[]",
           "required": false,
           "description": "格子的右键菜单（#23，一般传 symbolMenu(...)）：右键、菜单键、Shift+F10 出同一份品种菜单；不传就没有。格子小，不画悬停按钮。"
         },

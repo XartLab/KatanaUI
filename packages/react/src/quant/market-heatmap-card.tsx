@@ -6,7 +6,7 @@ import { formatVolume } from '../lib/chart/format/index.ts'
 import { SymbolMark } from '../katana/symbol-mark.tsx'
 import { formatMetric } from './market-heatmap-model.ts'
 import type { PlotBox } from './market-heatmap-hooks.ts'
-import type { HeatmapColorBy, HeatmapItem, HeatmapSizeBy, MarketHeatmapLabels } from './market-heatmap-types.ts'
+import type { HeatmapColorBy, HeatmapEntry, HeatmapSizeBy, MarketHeatmapLabels } from './market-heatmap-types.ts'
 
 const CARD_W = 200
 /** 悬停卡片的高（估算）：标题与内距 67，每行 18；只用来别让卡片伸出图的下沿。 */
@@ -18,7 +18,7 @@ export type Hover = { code: string; x: number; y: number; open: boolean; snap: b
 
 export type HeatmapCardProps = {
   hover: Hover
-  hovered: HeatmapItem
+  hovered: HeatmapEntry
   box: PlotBox
   labels: MarketHeatmapLabels
   colorBy: readonly HeatmapColorBy[]
@@ -58,8 +58,8 @@ export function HeatmapCard({
       style={{ left: cardLeft, top: cardTop, width: CARD_W }}
     >
       <div className="k-mheat-card-title">
-        <SymbolMark code={hovered.code} name={hovered.name} src={hovered.logo} size={18} />
-        <span className="k-mheat-card-code">{hovered.code}</span>
+        <SymbolMark code={hovered.symbol} name={hovered.name} src={hovered.logo} size={18} />
+        <span className="k-mheat-card-code">{hovered.symbol}</span>
         <span className="k-mheat-card-name">{hovered.name}</span>
       </div>
       <dl className="k-mheat-card-rows">

@@ -12,7 +12,8 @@ import { Cell, actionSchema, fill, weightSchema } from '../support.tsx'
 
 const itemSchema = z
   .object({
-    code: z.string().min(1).describe('Instrument code, unique in the list.'),
+    symbol: z.string().min(1).describe('Instrument symbol, unique in the list.').optional(),
+    code: z.string().min(1).describe('Deprecated: use symbol. Kept for one release.').optional(),
     name: text('Full name of the instrument.'),
     group: z.string().describe('Group such as the sector. Items without one are put under labels.other.').optional(),
     price: z.number().describe('Last price.').optional(),
@@ -24,6 +25,7 @@ const itemSchema = z
       .describe('Value of each color metric, keyed by colorBy key. Null means no data.'),
   })
   .strict()
+  .refine((item) => item.symbol !== undefined || item.code !== undefined, 'symbol is required')
 
 type Item = z.infer<typeof itemSchema>
 
@@ -128,7 +130,7 @@ export const KatanaMarketHeatmapApi = {
         .strict()
         .describe('All visible words of the heatmap; it carries none of its own.'),
       onSelect: actionSchema(
-        'Dispatched when the user chooses a cell. metadata.extensions.katanaChartPoint carries {code}.',
+        'Dispatched when the user chooses a cell. metadata.extensions.katanaChartPoint carries {symbol} (and the deprecated {code}, same value, for one release).',
       ).optional(),
       onOpenInScreener: actionSchema(
         'Dispatched when the user presses the open in screener button. Without it no button is drawn.',
@@ -142,7 +144,7 @@ export const KatanaMarketHeatmap = createComponentImplementation(KatanaMarketHea
   const items = useMemo<HeatmapItem[]>(
     () =>
       parseCapped<Item>(itemSchema, props.items, MAX_ITEMS).map((item) => ({
-        code: item.code,
+        symbol: (item.symbol ?? item.code)!,
         name: item.name,
         ...(item.group === undefined ? {} : { group: item.group }),
         ...(item.price === undefined ? {} : { price: item.price }),
@@ -207,7 +209,11 @@ export const KatanaMarketHeatmap = createComponentImplementation(KatanaMarketHea
         toolbar={props.toolbar}
         formatPrice={price}
         selected={props.selected}
-        onSelect={props.onSelect ? (code) => dispatch(props.onSelect, 'katanaChartPoint', { code }) : undefined}
+        onSelect={
+          props.onSelect
+            ? (symbol) => dispatch(props.onSelect, 'katanaChartPoint', { symbol, code: symbol })
+            : undefined
+        }
         onOpenInScreener={
           props.onOpenInScreener
             ? () => dispatch(props.onOpenInScreener, 'katanaChart', { label: labels.list })
