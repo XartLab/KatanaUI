@@ -72,7 +72,8 @@ body {
   gap: 8px;
 }
 .gal-nav-cn {
-  color: color-mix(in srgb, currentColor 70%, transparent);
+  /* 2026-11-18：原来是 currentColor 的 70%，压在没选中（50% 亮度）的链接上不到 4.5:1，换成次要字色。 */
+  color: var(--k-content-secondary-foreground);
   font-size: 0.86em;
 }
 
@@ -613,7 +614,8 @@ body {
   gap: 6px;
 }
 .gal-doc-meta dt {
-  color: var(--ink-400);
+  /* ink-4 是装饰灰（2.5:1 左右），属性名要可读，用次要字色（≥4.5:1）。 */
+  color: var(--k-content-secondary-foreground);
 }
 .gal-doc-meta dd {
   margin: 0;

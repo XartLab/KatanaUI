@@ -1,1 +1,22 @@
-[]
+[
+  {
+    "page": "sparkline",
+    "rule": "color-contrast",
+    "reason": "ASCII / braille 迷你图里没点亮的点阵格（.is-dim）故意用 ink-4 画底纹（约 2:1），是图形不是要读的字；整张图有 role=img 与读屏名。要改成非文字的底纹另开票"
+  },
+  {
+    "page": "word-build",
+    "rule": "color-contrast",
+    "reason": "逐词搭出的动画由 motion 库的弹簧驱动，axe 量的时候后面的词还在淡入（1.1–1.2:1）；settle 只等得到 WAAPI 动画，等不到 motion 的弹簧。读屏名是整句，不受影响"
+  },
+  {
+    "page": "scroll-reveal-paragraph",
+    "rule": "color-contrast",
+    "reason": "随滚动点亮的段落：没滚到的词按设计先暗着（ink-4，约 2:1），滚到才亮；axe 量的是没滚的初始态。完整文字在读屏名里"
+  },
+  {
+    "page": "kinetic-type-scroll",
+    "rule": "color-contrast",
+    "reason": "随滚动变形的大字：没滚到的字母按设计半透明（约 3.9:1），这些字母 aria-hidden，读屏读的是整句；axe 量的是没滚的初始态"
+  }
+]

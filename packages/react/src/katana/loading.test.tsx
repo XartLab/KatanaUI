@@ -45,6 +45,12 @@ describe('Loading 的模式按属性在不在判', () => {
   })
 
   it('pending={false}：直接出 children', () => {
-    expect(renderToStaticMarkup(<Loading labels={labels} pending={false}>READY</Loading>)).toContain('READY')
+    expect(
+      renderToStaticMarkup(
+        <Loading labels={labels} pending={false}>
+          READY
+        </Loading>,
+      ),
+    ).toContain('READY')
   })
 })

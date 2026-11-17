@@ -17601,14 +17601,12 @@
           "name": "lines",
           "type": "number",
           "required": false,
-          "default": "3",
           "description": "How many lines to draw when the visible height is unknown."
         },
         {
           "name": "fill",
           "type": "boolean",
           "required": false,
-          "default": "false",
           "description": "Fill the parent; the line count is measured from the container height."
         },
         {

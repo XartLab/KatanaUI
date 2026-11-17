@@ -41,6 +41,10 @@
   font: 400 12px/16px var(--font-sans);
   white-space: nowrap;
 }
+/* 选中格的底更亮，次要字色在 Console 里只剩 4.29:1，换正文字色（2026-11-18）。 */
+.k-perf-cell[aria-pressed='true'] .k-perf-label {
+  color: var(--k-content-body-foreground);
+}
 .k-perf-value {
   font: 600 14px/20px var(--font-sans);
 }

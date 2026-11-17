@@ -3168,6 +3168,10 @@
   color: var(--cb-accent);
 }
 
+.text-\(--k-content-body-foreground\) {
+  color: var(--k-content-body-foreground);
+}
+
 .text-\(--pnl-down\) {
   color: var(--pnl-down);
 }
@@ -9798,7 +9802,6 @@ button.k-sysmon-link-body:focus-visible {
 .k-grid-head-sub {
   color: var(--k-content-secondary-foreground);
   font: 400 10px/12px var(--font-sans);
-  opacity: .8;
 }
 
 .k-grid-head-end {
@@ -11869,7 +11872,7 @@ button.k-quote-card.is-link:focus-visible {
 
 .k-sidenav-search kbd {
   background: var(--k-actionable-background-hover);
-  color: var(--k-content-secondary-foreground);
+  color: var(--k-content-body-foreground);
   font: var(--text-micro) var(--font-sans-small);
   pointer-events: none;
   border-radius: 5px;
@@ -11899,23 +11902,14 @@ button.k-quote-card.is-link:focus-visible {
 }
 
 .k-sidenav-title {
-  color: var(--k-content-primary-foreground);
+  color: var(--k-content-secondary-foreground);
+  font: 600 11px/16px var(--font-sans-small);
+  letter-spacing: .14em;
+  text-transform: uppercase;
   align-items: center;
   gap: 6px;
   margin: 0 0 6px;
   display: flex;
-}
-
-@supports (color: color-mix(in lab, red, red)) {
-  .k-sidenav-title {
-    color: var(--ds-c-wxxma0);
-  }
-}
-
-.k-sidenav-title {
-  font: 600 11px/16px var(--font-sans-small);
-  letter-spacing: .14em;
-  text-transform: uppercase;
 }
 
 .k-sidenav-items {
@@ -16555,6 +16549,10 @@ button.k-sm-head:focus-visible {
   white-space: nowrap;
 }
 
+.k-perf-cell[aria-pressed="true"] .k-perf-label {
+  color: var(--k-content-body-foreground);
+}
+
 .k-perf-value {
   font: 600 14px/20px var(--font-sans);
 }
@@ -18885,7 +18883,6 @@ button.k-consensus-hash:focus-visible {
   --ds-c-19o6dqr: oklch(from var(--treemap-cell, var(--k-surface-sunken-background)) clamp(0, (.565 - l) * 1000, 1) 0 0);
   --ds-c-1yxxpoj: color-mix(in srgb, var(--pnl-down) 55%, var(--k-content-secondary-foreground));
   --ds-c-nyok28: color-mix(in srgb, var(--pnl-up) 55%, var(--k-content-secondary-foreground));
-  --ds-c-wxxma0: color-mix(in srgb, var(--k-content-primary-foreground) 40%, transparent);
   --ds-c-1oc80of: color-mix(in srgb, var(--k-content-primary-foreground) 65%, transparent);
   --ds-c-2noc21: color-mix(in srgb, var(--k-content-primary-foreground) 50%, transparent);
   --ds-c-1hv4lcc: color-mix(in srgb, var(--k-content-primary-foreground) 80%, transparent);

@@ -89,8 +89,8 @@ function TaskRow({
       className="m-0 list-none"
       style={{ paddingLeft: depth * 20 }}
       initial={false}
-      // 完成的行沉 1px、淡到 65%：让位给正在跑的那一行。
-      animate={{ opacity: done ? 0.65 : 1, y: done ? 1 : 0 }}
+      // 完成的行沉 1px、淡到 70%：让位给正在跑的那一行（70% 下备注用正文字色仍 ≥4.5:1；原 65% + ink-3 只有 2.9:1）。
+      animate={{ opacity: done ? 0.7 : 1, y: done ? 1 : 0 }}
       transition={unit(snappy)}
     >
       <span className="relative flex items-start gap-2 py-1">
@@ -99,7 +99,9 @@ function TaskRow({
           {task.label}
           <span className="sr-only"> · {statusLabels[task.status]}</span>
         </span>
-        {task.note ? <span className="k-text-caption shrink-0 text-ink-3 tabular-nums">{task.note}</span> : null}
+        {task.note ? (
+          <span className="k-text-caption shrink-0 text-(--k-content-body-foreground) tabular-nums">{task.note}</span>
+        ) : null}
         {running ? (
           <span
             aria-hidden="true"

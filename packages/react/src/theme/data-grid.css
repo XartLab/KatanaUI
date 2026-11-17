@@ -310,7 +310,7 @@
 .k-grid-head-sub {
   color: var(--k-content-secondary-foreground);
   font: 400 10px/12px var(--font-sans);
-  opacity: 0.8;
+  /* 原来再叠 opacity 0.8，Console 里只有 3.8:1；10px 小字要 ≥4.5:1，去掉（2026-11-18）。 */
 }
 .k-grid-head-end {
   position: absolute;

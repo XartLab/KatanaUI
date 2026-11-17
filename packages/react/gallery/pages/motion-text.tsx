@@ -318,6 +318,10 @@ function ScrollBox({
   return (
     <div
       className="k-text-body"
+      // 可滚的框要能用键盘滚到（axe scrollable-region-focusable）：可聚焦、有名字。
+      tabIndex={0}
+      role="region"
+      aria-label="滚动示例"
       data-gallery-motion={id}
       data-testid={`${id}-scroller`}
       ref={box}

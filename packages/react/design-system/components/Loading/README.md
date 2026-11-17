@@ -19,8 +19,8 @@ pending 为真时 children 不挂载；骨架出过的内容用 2px 模糊揭示
 | `label` | `string` | — | Accessible name of the skeleton; defaults to labels.skeleton. |
 | `what` | `string` | — | What is loading, shown in the caption "loading <what> · <source>". |
 | `source` | `string \| null` | — | Where it loads from, the second part of the caption; omitted when absent (and always in Suspense mode). |
-| `lines` | `number` | `3` | How many lines to draw when the visible height is unknown. |
-| `fill` | `boolean` | `false` | Fill the parent; the line count is measured from the container height. |
+| `lines` | `number` | — | How many lines to draw when the visible height is unknown. |
+| `fill` | `boolean` | — | Fill the parent; the line count is measured from the container height. |
 | `header` | `ReactNode` | — | The real header when it is already known; the skeleton only covers what is below it. |
 | `onRetry` | `() => void` | — | When given, the amber bar after 10 seconds offers a retry button. |
 | `children` | `ReactNode` | — | The content shown once loading is done. |

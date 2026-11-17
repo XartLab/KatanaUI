@@ -804,6 +804,9 @@ export function ScrollProgressDemo() {
       <div
         ref={box}
         data-testid="scroll-box"
+        tabIndex={0}
+        role="region"
+        aria-label="滚动示例"
         style={{ height: 192, overflow: 'auto', border: '1px solid var(--line-100)', background: 'var(--bg-100)' }}
       >
         <ScrollProgress label="阅读进度" container={box} position="top" />

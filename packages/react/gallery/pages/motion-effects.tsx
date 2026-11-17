@@ -638,6 +638,9 @@ export function ParallaxLayersDemo() {
       <div
         ref={container}
         data-scrollbox
+        tabIndex={0}
+        role="region"
+        aria-label="滚动示例"
         style={{ height: 240, overflowY: 'auto', border: '1px solid var(--line-100)', background: 'var(--bg-100)' }}
       >
         <div style={{ height: 120 }} />
@@ -741,6 +744,9 @@ export function ScrollImageRevealDemo() {
       <div
         ref={container}
         data-scrollbox
+        tabIndex={0}
+        role="region"
+        aria-label="滚动示例"
         style={{
           height: 260,
           overflowY: 'auto',
@@ -815,6 +821,9 @@ export function SvgDrawOnScrollDemo() {
       <div
         ref={container}
         data-scrollbox
+        tabIndex={0}
+        role="region"
+        aria-label="滚动示例"
         style={{ height: 260, overflowY: 'auto', border: '1px solid var(--line-100)', background: 'var(--bg-100)' }}
       >
         <div style={{ height: 200 }} />

@@ -45,7 +45,8 @@
   padding: 2px 5px;
   border-radius: 5px;
   background: var(--k-actionable-background-hover);
-  color: var(--k-content-secondary-foreground);
+  /* 次要字色压在悬停底上差一点到 4.5:1，换正文字色。 */
+  color: var(--k-content-body-foreground);
   font: var(--text-micro) var(--font-sans-small);
   pointer-events: none;
 }
@@ -71,7 +72,8 @@
   gap: 6px;
   align-items: center;
   margin: 0 0 6px;
-  color: color-mix(in srgb, var(--k-content-primary-foreground) 40%, transparent);
+  /* 组名原来是主字色的 40%（约 3:1），2026-11-18 改为次要字色，≥4.5:1。 */
+  color: var(--k-content-secondary-foreground);
   font: 600 11px/16px var(--font-sans-small);
   letter-spacing: 0.14em;
   text-transform: uppercase;
