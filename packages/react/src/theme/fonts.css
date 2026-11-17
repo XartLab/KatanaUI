@@ -4,3 +4,9 @@
 :root {
   --font-wide: 'Michroma', 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei UI', sans-serif;
 }
+
+/* 数字对齐照 TradingView（2026-11-17 实测：全站 font-feature-settings "lnum","tnum"，数字不用等宽或窄体）。
+   font 简写不重置 font-feature-settings，所以在根上开一次就会继承到所有件。 */
+:root {
+  font-feature-settings: 'lnum', 'tnum';
+}

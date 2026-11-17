@@ -84,17 +84,17 @@
 .k-uptime-count,
 .k-uptime-avail {
   color: var(--ink-100);
-  font: var(--text-num-sm) var(--chart-font-num, var(--font-lcd));
+  font: var(--text-num-sm) var(--chart-font-num, var(--font-sans));
   font-variant-numeric: tabular-nums;
 }
 .k-uptime-avail {
-  font: var(--text-lcd) var(--chart-font-num, var(--font-lcd));
+  font: var(--text-lcd) var(--chart-font-num, var(--font-sans));
 }
 .k-uptime-range {
   display: flex;
   justify-content: space-between;
   color: var(--chart-axis);
-  font: var(--text-num-sm) var(--chart-font-axis, var(--font-mono));
+  font: var(--text-num-sm) var(--chart-font-axis, var(--font-sans));
 }
 .k-uptime-readout {
   min-height: 16px;
@@ -555,7 +555,7 @@
   justify-content: space-between;
   padding-top: 4px;
   color: var(--chart-axis);
-  font: var(--text-num-sm) var(--chart-font-axis, var(--font-mono));
+  font: var(--text-num-sm) var(--chart-font-axis, var(--font-sans));
 }
 .k-ql-note {
   margin: 0;
@@ -608,13 +608,13 @@
   position: absolute;
   transform: translate(8px, -50%);
   color: var(--ink-200);
-  font: var(--text-num-sm) var(--chart-font-axis, var(--font-mono));
+  font: var(--text-num-sm) var(--chart-font-axis, var(--font-sans));
   pointer-events: none;
   white-space: nowrap;
 }
 .k-ql-tail-value {
   color: var(--ink-100);
-  font-family: var(--chart-font-num, var(--font-lcd));
+  font-family: var(--chart-font-num, var(--font-sans));
 }
 .k-ql-legend {
   display: flex;
@@ -631,7 +631,7 @@
   border-radius: 4px;
   background: transparent;
   color: var(--ink-200);
-  font: var(--text-num-sm) var(--chart-font-axis, var(--font-mono));
+  font: var(--text-num-sm) var(--chart-font-axis, var(--font-sans));
   cursor: pointer;
 }
 .k-ql-layer[aria-pressed='true'] {
@@ -677,7 +677,7 @@
 }
 .k-ql-stat-value {
   color: var(--ink-100);
-  font: var(--text-num-sm) var(--chart-font-num, var(--font-lcd));
+  font: var(--text-num-sm) var(--chart-font-num, var(--font-sans));
   font-variant-numeric: tabular-nums;
 }
 .k-ql-source {

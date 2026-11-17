@@ -59,7 +59,7 @@
   left: 0;
   transform: translateY(-100%);
   color: var(--chart-axis);
-  font: var(--text-caption) var(--font-mono);
+  font: var(--text-caption) var(--font-sans);
   pointer-events: none;
 }
 .k-plot-cross {
@@ -99,7 +99,7 @@
 .k-plot-readout {
   min-height: 16px;
   color: var(--ink-100);
-  font: var(--text-data) var(--font-mono);
+  font: var(--text-data) var(--font-sans);
 }
 .k-brush .k-plot-xaxis {
   margin-left: var(--k-plot-gutter, 56px);
@@ -186,7 +186,7 @@
 .k-attr-title {
   margin: 0;
   color: var(--ink-100);
-  font: 12px/20px var(--font-wide);
+  font: 12px/20px var(--font-sans);
   letter-spacing: 0.14em;
   text-transform: uppercase;
 }
@@ -198,7 +198,7 @@
 .k-attr-closed,
 .k-attr-readout-label,
 .k-attr-table th {
-  font: var(--text-tag-md) var(--font-dot);
+  font: var(--text-tag-md) var(--font-sans);
   letter-spacing: 0;
   font-style: normal;
   -webkit-font-smoothing: none;
@@ -407,7 +407,7 @@
   color: var(--ink-300);
 }
 .k-attr-foot .k-attr-note {
-  font: var(--text-tag-md) var(--font-dot);
+  font: var(--text-tag-md) var(--font-sans);
   letter-spacing: 0;
   -webkit-font-smoothing: none;
 }
@@ -437,7 +437,7 @@
 }
 .k-heat-total {
   color: var(--ink-100);
-  font: var(--text-lcd) var(--chart-font-num, var(--font-lcd));
+  font: var(--text-lcd) var(--chart-font-num, var(--font-sans));
   letter-spacing: 0.08em;
 }
 .k-heat-total[data-tone='up'] {
@@ -536,7 +536,7 @@ rect.k-heat-cell[data-active='true'] {
   display: flex;
   align-items: center;
   color: var(--ink-300);
-  font: var(--text-num-sm) var(--chart-font-axis, var(--font-mono));
+  font: var(--text-num-sm) var(--chart-font-axis, var(--font-sans));
 }
 button.k-heat-cell {
   position: relative;
@@ -556,13 +556,13 @@ button.k-heat-cell {
   top: 3px;
   left: 4px;
   color: var(--ink-200);
-  font: var(--text-num-sm) var(--chart-font-axis, var(--font-mono));
+  font: var(--text-num-sm) var(--chart-font-axis, var(--font-sans));
 }
 .k-heat-num {
   position: absolute;
   right: 4px;
   bottom: 3px;
-  font: var(--text-num-sm) var(--chart-font-axis, var(--font-mono));
+  font: var(--text-num-sm) var(--chart-font-axis, var(--font-sans));
 }
 /* 中档涨跌色（div-pos-200 / div-neg-200）上的字：绿涨红跌与红涨绿跌两套配色的亮度不同，白字或黑字谁过 4.5:1 随格色变，
    所以按格色的亮度现算：伽马编码后的加权亮度高于 0.44 用黑字，否则白字（0.44 是这两档在 Console / Graphite 两个主题里实测分得开的位置，2026-11-14 axe 实测）。 */
@@ -609,7 +609,7 @@ button.k-heat-cell[data-active='true'] {
 }
 .k-heat-dots b {
   color: var(--ink-300);
-  font: var(--text-num-sm) var(--chart-font-axis, var(--font-mono));
+  font: var(--text-num-sm) var(--chart-font-axis, var(--font-sans));
 }
 .k-heat-evtext {
   position: absolute;
@@ -651,7 +651,7 @@ button.k-heat-cell[data-active='true'] {
 }
 .k-heat-table {
   border-collapse: collapse;
-  font: var(--text-data) var(--font-mono);
+  font: var(--text-data) var(--font-sans);
 }
 .k-heat-table th,
 .k-heat-table td {
@@ -723,7 +723,7 @@ button.k-heat-cell[data-active='true'] {
 }
 .k-hz-value {
   color: var(--ink-100);
-  font: var(--text-data) var(--font-mono);
+  font: var(--text-data) var(--font-sans);
   text-align: right;
 }
 .k-hz-value[data-tone='up'] {
@@ -791,7 +791,7 @@ button.k-sm-head:focus-visible {
 }
 .k-sm-value {
   color: var(--ink-100);
-  font: var(--text-data) var(--font-mono);
+  font: var(--text-data) var(--font-sans);
 }
 .k-sm-value[data-tone='up'] {
   color: var(--pnl-up);
@@ -840,11 +840,11 @@ button.k-sm-head:focus-visible {
 .k-sx-head {
   height: 36px;
 }
-/* 标题：英文部分宽体大写小字（--font-wide 是 Michroma，只有拉丁；中文自动落到无衬线，不强行宽体）。 */
+/* 标题：照 TradingView，用界面无衬线（2026-11-17 起不再用宽体 Michroma）。 */
 .k-sx-title {
   margin: 0;
   color: var(--ink-100);
-  font: 12px/20px var(--font-wide);
+  font: 12px/20px var(--font-sans);
   letter-spacing: 0.14em;
   text-transform: uppercase;
 }
@@ -854,7 +854,7 @@ button.k-sm-head:focus-visible {
 .k-sx-source,
 .k-sx-evt-text,
 .k-sx-dim-label {
-  font: var(--text-tag-md) var(--font-dot);
+  font: var(--text-tag-md) var(--font-sans);
   letter-spacing: 0;
   font-style: normal;
   -webkit-font-smoothing: none;
@@ -893,7 +893,7 @@ button.k-sm-head:focus-visible {
 }
 .k-sx-kpis .k-spark-tile-tag {
   color: var(--ink-300);
-  font: var(--text-num-sm) var(--font-mono);
+  font: var(--text-num-sm) var(--font-sans);
   letter-spacing: 0.16em;
   text-transform: uppercase;
 }
@@ -930,7 +930,7 @@ button.k-sm-head:focus-visible {
 }
 .k-sx-kv small {
   color: var(--ink-300);
-  font: var(--text-num-sm) var(--font-mono);
+  font: var(--text-num-sm) var(--font-sans);
   letter-spacing: 0.16em;
   text-transform: uppercase;
 }
@@ -940,7 +940,7 @@ button.k-sm-head:focus-visible {
 }
 .k-sx-kv i {
   color: var(--ink-300);
-  font: var(--text-num-sm) var(--font-mono);
+  font: var(--text-num-sm) var(--font-sans);
   font-style: normal;
 }
 .k-sx-recon em {
@@ -1072,7 +1072,7 @@ button.k-sm-head:focus-visible {
 .k-sx-table table {
   width: 100%;
   border-collapse: collapse;
-  font: var(--text-data) var(--font-mono);
+  font: var(--text-data) var(--font-sans);
 }
 .k-sx-table th,
 .k-sx-table td {

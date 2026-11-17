@@ -105,7 +105,7 @@
 .k-eq-table table {
   width: 100%;
   border-collapse: collapse;
-  font: var(--text-data) var(--font-mono);
+  font: var(--text-data) var(--font-sans);
   font-variant-numeric: tabular-nums;
 }
 .k-eq-table th,
@@ -129,5 +129,5 @@
 }
 .k-eq-source {
   color: var(--ink-300);
-  font: var(--text-num-sm) var(--font-mono);
+  font: var(--text-num-sm) var(--font-sans);
 }

@@ -85,7 +85,7 @@
   border: 1px solid var(--alpha-white-8);
   border-radius: var(--radius-pill);
   color: var(--ink-200);
-  font: var(--text-data) var(--font-mono);
+  font: var(--text-data) var(--font-sans);
 }
 .k-dq-rationale {
   margin: 0;

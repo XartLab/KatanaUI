@@ -35,7 +35,7 @@
 .k-vs-stats dd {
   margin: 0;
   color: var(--ink-100);
-  font: var(--text-data) var(--font-mono);
+  font: var(--text-data) var(--font-sans);
   font-variant-numeric: tabular-nums;
 }
 .k-vs-body[hidden],

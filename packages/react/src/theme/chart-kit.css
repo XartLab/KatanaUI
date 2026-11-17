@@ -15,8 +15,8 @@
    --chart-line-glow    数据线的辉光（filter）。默认 none
    --chart-grid-dash    网格线的虚线（stroke-dasharray）。默认 none；「分度」网格可以在这里加刻度齿
    --chart-grid-color   网格线颜色。默认 var(--chart-grid)
-   --chart-font-num     数字字体（tooltip、数值、瓦片；LCD 或宽体）。默认 var(--font-lcd)
-   --chart-font-axis    轴与标注的数字字体。默认 var(--font-mono) */
+   --chart-font-num     数字字体（tooltip、数值、瓦片；LCD 或宽体）。默认 var(--font-sans)
+   --chart-font-axis    轴与标注的数字字体。默认 var(--font-sans) */
 
 /* 轴与网格 */
 .k-ck-grid {
@@ -31,7 +31,7 @@
   padding-right: 8px;
   transform: translateY(-50%);
   color: var(--chart-axis);
-  font: var(--text-num-sm) var(--chart-font-axis, var(--font-mono));
+  font: var(--text-num-sm) var(--chart-font-axis, var(--font-sans));
   pointer-events: none;
   white-space: nowrap;
 }
@@ -47,7 +47,7 @@
   border: var(--hairline);
   box-shadow: var(--recess);
   color: var(--lcd-fg);
-  font-family: var(--chart-font-num, var(--font-lcd));
+  font-family: var(--chart-font-num, var(--font-sans));
   font-variant-numeric: tabular-nums;
   pointer-events: none;
   white-space: nowrap;
@@ -58,13 +58,13 @@
 .k-ck-tip-title {
   margin-bottom: 2px;
   color: var(--ink-300);
-  font: var(--text-num-sm) var(--chart-font-axis, var(--font-mono));
+  font: var(--text-num-sm) var(--chart-font-axis, var(--font-sans));
 }
 .k-ck-tip-row {
   display: flex;
   align-items: center;
   gap: 8px;
-  font: var(--text-caption) var(--chart-font-num, var(--font-lcd));
+  font: var(--text-caption) var(--chart-font-num, var(--font-sans));
 }
 .k-ck-tip-swatch {
   width: 8px;
@@ -100,7 +100,7 @@
   right: 10px;
   transform: translateY(-50%);
   color: var(--ink-100);
-  font: var(--text-num-sm) var(--chart-font-num, var(--font-lcd));
+  font: var(--text-num-sm) var(--chart-font-num, var(--font-sans));
   white-space: nowrap;
 }
 .k-ck-end[data-side='right'] .k-ck-end-value {

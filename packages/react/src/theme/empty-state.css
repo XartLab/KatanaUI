@@ -13,7 +13,7 @@
   text-align: center;
 }
 .k-empty-tag {
-  font: var(--text-tag-md) var(--font-dot);
+  font: var(--text-tag-md) var(--font-sans);
   font-weight: 400;
   letter-spacing: var(--text-tag-md-tracking);
   color: var(--ink-300);

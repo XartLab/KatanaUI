@@ -171,8 +171,8 @@
   --text-tag-md: 500 12px/16px;
   --text-tag-md-size: 12px;
   --text-tag-md-tracking: 0.08em;
-  --font-sans: "Inter Variable", "Inter", "PingFang SC", "Microsoft YaHei UI", "Noto Sans SC", system-ui, sans-serif;
-  --font-mono: "JetBrains Mono", "Maple Mono NF CN", "Sarasa Mono SC", "PingFang SC", "Microsoft YaHei UI", "Noto Sans SC", monospace;
+  --font-sans: -apple-system, BlinkMacSystemFont, "Trebuchet MS", Roboto, Ubuntu, "PingFang SC", "Microsoft YaHei UI", "Noto Sans SC", sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", "Maple Mono NF CN", "PingFang SC", "Microsoft YaHei UI", monospace;
   --font-display: "Barlow Condensed", "Smiley Sans", "Noto Sans SC", "Microsoft YaHei UI", sans-serif;
   --font-lcd: "DM Mono", "Maple Mono NF CN", "Maple Mono", "Noto Sans SC", "Microsoft YaHei UI", monospace;
   --font-dot: "Doto", "Ark Pixel 12 zh_cn Subset", "Ark Pixel 12px Proportional zh_cn", "Fusion Pixel 12px Proportional zh_hans", "Noto Sans SC", "Microsoft YaHei UI", monospace;
