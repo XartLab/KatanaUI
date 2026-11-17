@@ -215,7 +215,8 @@ body {
   letter-spacing: var(--text-micro-tracking);
   text-transform: uppercase;
 }
-.gal-doc h3 {
+/* 只管属性表的小标题：不带作用域会漏进预览里的演示（演示自己的 h3 被改成等宽加粗）。 */
+.gal-prop > h3 {
   margin: 0;
   color: var(--ink-100);
   font: var(--text-data) var(--font-mono);
@@ -693,7 +694,9 @@ body {
 .gal-doc-tabs [role='tabpanel'] > section + section {
   margin-top: 24px;
 }
-.gal-doc-tabs [role='tabpanel'] h2,
+/* 只管文档自己的节标题：别的选择器写成后代会压过预览里 PanelFrame 等件的 h2（零特异性皮肤），标题颜色、字号、边距全被改掉。 */
+.gal-doc-tabs [role='tabpanel'] > section:not(.gal-preview) > h2,
+.gal-usage-head > h2,
 .gal-doc > section > h2 {
   margin: 0 0 8px;
   color: var(--ink-100);

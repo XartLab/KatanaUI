@@ -4,7 +4,29 @@ import { readFileSync } from 'node:fs'
 import { summarize, type CoverageMap } from '../docs/coverage-core'
 import coverageMap from '../docs/coverage-map.json' with { type: 'json' }
 import propsGenerated from '../gallery/props.generated.json' with { type: 'json' }
+import blocksGuidance from '../gallery/guidance/blocks'
+import feedbackGuidance from '../gallery/guidance/feedback'
+import formsGuidance from '../gallery/guidance/forms'
+import layoutGuidance from '../gallery/guidance/layout'
+import overlaysGuidance from '../gallery/guidance/overlays'
+import quantGuidance from '../gallery/guidance/quant'
+import quotesGuidance from '../gallery/guidance/quotes'
+import readoutsGuidance from '../gallery/guidance/readouts'
 import { GROUPS, PAGES } from '../gallery/registry'
+
+// 指南按组分文件；gallery/guidance/index.ts 用 import.meta.glob 合并（Vite 才有），Playwright 的 Node 里没有，这里逐个引进来合并。
+const GUIDANCE: Record<string, { use?: readonly string[]; avoid?: readonly string[] }> = Object.assign(
+  {},
+  blocksGuidance,
+  feedbackGuidance,
+  formsGuidance,
+  layoutGuidance,
+  overlaysGuidance,
+  quantGuidance,
+  quotesGuidance,
+  readoutsGuidance,
+)
+const guidanceOf = (id: string) => GUIDANCE[id] ?? {}
 
 // @katana-ui/react 的组件文档站（packages/react/gallery，入口 index.html，#1838、#1860）：在真浏览器里看用户看到的。
 // 每个件在 Console 与 Graphite 两个主题下各跑一遍：看得见、有尺寸；悬停与按下底色真的变；勾选与开关点了翻转；
@@ -22,9 +44,14 @@ const open = async (page: Page, theme: (typeof THEMES)[number], id = 'button') =
   await expect(page.locator('html')).toHaveAttribute('data-theme', theme)
 }
 /** 换到另一页：点左侧目录的链接（单页应用，不重载，主题与页面状态都留着）。 */
+/** 目录（SideNav）里某一页的链接：可见名是「Button 按钮」这类展示名，按地址找；限定 .k-sidenav-link，顶上品牌面包屑也指向第一页，不限定会撞上。 */
+const navLink = (page: Page, id: string) =>
+  page.getByRole('navigation', { name: '文档目录' }).locator(`a.k-sidenav-link[href="#/${id}"]`)
+/** 组件页的页签：示例 / 怎么用 / 无障碍 / 属性，切过去才有那一页签里的内容（别的页签的面板不渲染）。 */
+const docTab = (page: Page, name: '示例' | '怎么用' | '无障碍' | '属性') =>
+  page.getByRole('tablist', { name: '这一页的内容' }).getByRole('tab', { name }).click()
 const show = async (page: Page, id: string) => {
-  // 目录链接的可见名是「Button 按钮」这类展示名，按地址找链接，不依赖文案。
-  await page.getByRole('navigation', { name: '文档目录' }).locator(`a[href="#/${id}"]`).click()
+  await navLink(page, id).click()
   await page.locator(`[data-gallery="${id}"]`).waitFor()
 }
 const section = (page: Page, id: string) => page.locator(`[data-gallery="${id}"]`)
@@ -163,6 +190,8 @@ function sample(page: Page, spec: SampleSpec, ms: number): Promise<(string | num
 for (const theme of THEMES) {
   test.describe(`组件文档站 · ${theme}`, () => {
     test('每一页的预览都看得见、有尺寸，每个能点的件都有尺寸，页上没有报错', async ({ page }) => {
+      // 要逐页点目录、量尺寸，页数过百，默认 30 秒不够。
+      test.setTimeout(120_000)
       const errors: string[] = []
       page.on('pageerror', (error) => errors.push(error.message))
       page.on('console', (message) => message.type() === 'error' && errors.push(message.text()))
@@ -256,8 +285,8 @@ for (const theme of THEMES) {
 
     test('键盘 Tab 到按钮有焦点环（取 --focus-ring，2px）', async ({ page }) => {
       await open(page, theme)
-      // 点一下预览前面的标题（把键盘的起点放在这里），再按 Tab：落到第一个按钮上（键盘到达的焦点才画焦点环）。
-      await page.getByRole('heading', { level: 1 }).click()
+      // 点一下预览卡的内边距（把键盘的起点放在预览里；页头的源码链接、页签都排在预览前面，从标题起 Tab 会先落到它们），再按 Tab：落到第一个按钮上（键盘到达的焦点才画焦点环）。
+      await section(page, 'button').click({ position: { x: 4, y: 4 } })
       await page.keyboard.press('Tab')
       const focused = page.locator(':focus')
       await expect(focused).toHaveAttribute('data-slot', 'button')
@@ -873,25 +902,27 @@ for (const theme of THEMES) {
     })
 
     test('子菜单悬停延迟：悬停不到 100ms 不开，超过 100ms 开（Radix 默认）', async ({ page }) => {
+      // 悬停延迟是 Radix 的 setTimeout：用假时钟一格一格走，停多久由测试定，不被机器忙不忙拖成真实的几百毫秒（4 个 worker 并跑时真等 40 ms 会漂过 100 ms）。
+      await page.clock.install()
       await open(page, theme, 'dropdown-menu')
       await section(page, 'dropdown-menu').getByRole('button', { name: '菜单', exact: true }).click()
       const parent = page.locator('[data-slot="dropdown-menu-sub-trigger"]')
       const box = (await parent.boundingBox())!
       const sub = page.getByRole('menuitem', { name: '导出为图片' })
+      // 菜单已开：时钟停住，之后只按测试给的毫秒数往前走。
+      await page.clock.pauseAt(new Date(Date.now() + 10_000))
       // 进到「更多」后马上离开（路过）：不开。
       await page.mouse.move(box.x + 10, box.y + 5)
-      // browser-practice-allow fixed-wait: 模拟人手路过：指针在子菜单触发处只停 40 ms 就走开（比 Radix 写死的 100 ms 悬停延迟短），停留的时长就是被测的输入，没有「没发生」的状态可等
-      await page.waitForTimeout(40)
+      await page.clock.runFor(40)
       await page.mouse.move(box.x + 10, box.y - 60)
-      // browser-practice-allow fixed-wait: 证明路过之后过了悬停延迟（100 ms）子菜单也没开（负向断言；延迟是 Radix 内部写死的定时器），没有「没发生」的状态可等
-      await page.waitForTimeout(250)
+      await page.clock.runFor(250)
       await expect(sub).toHaveCount(0)
-      // 停住：过 100ms 开。
+      // 停住：不到 100 ms 还没开，过了 100 ms 开。
       await page.mouse.move(box.x + 10, box.y + 5)
-      // browser-practice-allow fixed-wait: 证明停住 40 ms（不到 100 ms 悬停延迟）时子菜单还没开（负向断言；延迟是 Radix 内部写死的定时器），没有「没发生」的状态可等
-      await page.waitForTimeout(40)
+      await page.clock.runFor(40)
       await expect(sub).toHaveCount(0)
-      await expect(sub).toBeVisible({ timeout: 1000 })
+      await page.clock.runFor(100)
+      await expect(sub).toBeVisible()
     })
 
     // 安全三角（#1832「0 关，靠自带的安全三角防误收」）：指针从「更多」斜着朝二级走，路上压过下面一行「删除看板」，
@@ -4126,24 +4157,29 @@ test('不带 ?theme= 是 Graphite；页头切到 Console，主按钮底色跟着
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'graphite')
   const primary = section(page, 'button').getByRole('button', { name: 'primary', exact: true })
   const graphite = await bg(primary)
-  const themes = page.getByRole('group', { name: '主题' })
-  await themes.getByRole('button', { name: 'Console' }).click()
+  // 顶栏的主题是下拉（combobox「主题」），不再是一组按钮。
+  const themes = page.getByRole('combobox', { name: '主题' })
+  await themes.click()
+  await page.getByRole('option', { name: 'Console' }).click()
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'console')
   await expect.poll(() => bg(primary)).not.toBe(graphite)
   await expect(page).toHaveURL(/theme=console/)
-  await themes.getByRole('button', { name: 'Graphite' }).click()
+  await themes.click()
+  await page.getByRole('option', { name: 'Graphite' }).click()
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'graphite')
   await expect(page).not.toHaveURL(/theme=/)
 })
 
-test('文档站默认就是 Graphite：不带 ?theme= 时页面底色与目录栏底色是 Graphite 的 bg-000 与 bg-100（#1775）', async ({
+test('文档站默认就是 Graphite：不带 ?theme= 时页面底色与内容面板底色是 Graphite 的 bg-000 与 bg-100（#1775）', async ({
   page,
 }) => {
   await page.goto('/#/button')
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'graphite')
   // Graphite 的 bg-000 = #000000、bg-100 = #070707；Console 的 bg-100 是 #141311，默认要是 Console 就会红。
+  // 目录栏现在直接贴着页面底（透明），bg-100 落在右边的内容面板上。
   await expect(page.locator('html')).toHaveCSS('background-color', 'rgb(0, 0, 0)')
-  await expect(page.getByRole('navigation', { name: '文档目录' })).toHaveCSS('background-color', 'rgb(7, 7, 7)')
+  await expect(page.getByRole('navigation', { name: '文档目录' })).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)')
+  await expect(page.locator('.gal-main')).toHaveCSS('background-color', 'rgb(7, 7, 7)')
   expect(await token(page, '--bg-100')).toBe('rgb(7, 7, 7)')
 })
 
@@ -4151,15 +4187,23 @@ test('目录：按类分组；直接打开 #/<件名>；点链接换页、后退
   await page.goto('/')
   await expect(page).toHaveURL(/#\/button$/)
   const nav = page.getByRole('navigation', { name: '文档目录' })
-  for (const group of GROUPS.filter((item) => PAGES.some((doc) => doc.group === item.id)))
-    await expect(nav.getByRole('heading', { name: group.title })).toBeVisible()
+  // 组名：入门 / 基础 / Token 与主题 在组件各组之前，模式、总览在后面（foundations.tsx 带样式与 JSX，测试里不引，写死组名）。
+  const titles = [
+    '入门',
+    '基础',
+    'Token 与主题',
+    ...GROUPS.filter((item) => PAGES.some((doc) => doc.group === item.id)).map((item) => item.title),
+    '模式',
+    '总览',
+  ]
+  for (const title of titles) await expect(nav.getByRole('heading', { name: title, exact: true })).toBeVisible()
   // 目录里每一页都有链接，当前页标 aria-current。
-  for (const { id } of PAGES) await expect(nav.getByRole('link', { name: id, exact: true })).toBeVisible()
-  await expect(nav.getByRole('link', { name: 'button', exact: true })).toHaveAttribute('aria-current', 'page')
+  for (const { id } of PAGES) await expect(navLink(page, id)).toBeVisible()
+  await expect(navLink(page, 'button')).toHaveAttribute('aria-current', 'page')
   await show(page, 'slider')
   await expect(page).toHaveURL(/#\/slider$/)
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Slider 滑块')
-  await expect(nav.getByRole('link', { name: 'slider', exact: true })).toHaveAttribute('aria-current', 'page')
+  await expect(navLink(page, 'slider')).toHaveAttribute('aria-current', 'page')
   await page.goBack()
   await expect(page).toHaveURL(/#\/button$/)
   await expect(section(page, 'button')).toBeVisible()
@@ -4168,15 +4212,29 @@ test('目录：按类分组；直接打开 #/<件名>；点链接换页、后退
 })
 
 test('每一页写着属性表、组成，有键盘操作的写键盘', async ({ page }) => {
+  // 每页要切三个页签，页数过百，默认 30 秒不够。
+  test.setTimeout(180_000)
   for (const doc of PAGES) {
     await page.goto(`/#/${doc.id}`)
     await expect(page.getByRole('heading', { level: 1 })).toHaveText(doc.title)
-    await expect(page.getByRole('heading', { name: '属性' })).toBeVisible()
+    const guide = guidanceOf(doc.id)
+    // 怎么用：什么时候用 / 别用、状态、组成（别用 = 指南里的 avoid + 登记的 donts）。
+    await docTab(page, '怎么用')
     await expect(page.getByRole('heading', { name: '组成' })).toBeVisible()
-    await expect(page.getByRole('heading', { name: '键盘' })).toHaveCount(doc.keys.length > 0 ? 1 : 0)
     await expect(page.getByRole('heading', { name: '状态', exact: true })).toBeVisible()
-    await expect(page.getByRole('heading', { name: '不要', exact: true })).toBeVisible()
-    await expect(page.locator('.gal-list li')).toHaveCount(doc.states.length + doc.donts.length)
+    await expect(page.getByRole('heading', { name: '什么时候用', exact: true })).toBeVisible()
+    await expect(page.getByRole('heading', { name: '什么时候别用', exact: true })).toBeVisible()
+    await expect(page.locator('.gal-list li')).toHaveCount(
+      (guide.use?.length ?? 0) + (guide.avoid?.length ?? 0) + doc.donts.length + doc.states.length,
+    )
+    // 无障碍：键盘一节每页都有；有键盘操作的列成表（一键一行），没有的写明没有。
+    await docTab(page, '无障碍')
+    await expect(page.getByRole('heading', { name: '键盘' })).toBeVisible()
+    await expect(page.locator('.gal-keys tr')).toHaveCount(doc.keys.length)
+    await expect(page.getByText('没有键盘交互')).toHaveCount(doc.keys.length > 0 ? 0 : 1)
+    // 属性：每个导出各一张表。
+    await docTab(page, '属性')
+    await expect(page.getByRole('heading', { name: '属性', exact: true, level: 2 })).toBeVisible()
   }
 })
 
@@ -4187,7 +4245,7 @@ for (const theme of THEMES) {
     await page.goto(`/?theme=${theme}#/coverage`)
     const nav = page.getByRole('navigation', { name: '文档目录' })
     await expect(nav.getByRole('heading', { name: '总览' })).toBeVisible()
-    await expect(nav.getByRole('link', { name: 'coverage', exact: true })).toHaveAttribute('aria-current', 'page')
+    await expect(navLink(page, 'coverage')).toHaveAttribute('aria-current', 'page')
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('覆盖')
     const map = coverageMap as CoverageMap
     const summary = page.getByTestId('coverage-summary')
@@ -4202,7 +4260,7 @@ for (const theme of THEMES) {
     const row = page.locator('[data-card][data-status="部分"]').first()
     await expect(row).toContainText(/\S/)
     await expect(row).toBeVisible()
-    await page.getByRole('link', { name: 'button', exact: true }).click()
+    await navLink(page, 'button').click()
     await expect(section(page, 'button')).toBeVisible()
   })
 }
@@ -5655,6 +5713,7 @@ test('属性表：Button 页的行就是 TS 类型生成的（名、类型、默
   page,
 }) => {
   await page.goto('/#/button')
+  await docTab(page, '属性')
   const table = page.locator('[data-part="Button"] table')
   const generated = propsGenerated.exports.Button.props
   await expect(table.locator('tbody tr')).toHaveCount(generated.length)
@@ -5668,6 +5727,7 @@ test('属性表：Button 页的行就是 TS 类型生成的（名、类型、默
   await expect(table.locator('td:first-child code', { hasText: /^onClick$/ })).toHaveCount(0)
   // 必填的属性带星号：MultiSelect 的 values 必填，label 可选。
   await page.goto('/#/multi-select')
+  await docTab(page, '属性')
   const values = page.locator('[data-part="MultiSelect"] tbody tr').filter({ hasText: 'Ids of the selected options.' })
   await expect(values.locator('abbr[title="必填"]')).toHaveCount(1)
   const label = page
