@@ -58,7 +58,7 @@
   padding: 0;
   list-style: none;
   color: var(--ink-200);
-  font: var(--text-caption) var(--font-sans);
+  font: var(--text-caption) var(--font-sans-small);
 }
 .k-uptime-legend li {
   display: inline-flex;
@@ -84,7 +84,7 @@
 .k-uptime-count,
 .k-uptime-avail {
   color: var(--ink-100);
-  font: var(--text-num-sm) var(--chart-font-num, var(--font-sans));
+  font: var(--text-num-sm) var(--chart-font-num, var(--font-sans-small));
   font-variant-numeric: tabular-nums;
 }
 .k-uptime-avail {
@@ -94,12 +94,12 @@
   display: flex;
   justify-content: space-between;
   color: var(--chart-axis);
-  font: var(--text-num-sm) var(--chart-font-axis, var(--font-sans));
+  font: var(--text-num-sm) var(--chart-font-axis, var(--font-sans-small));
 }
 .k-uptime-readout {
   min-height: 16px;
   color: var(--ink-200);
-  font: var(--text-caption) var(--font-sans);
+  font: var(--text-caption) var(--font-sans-small);
   font-variant-numeric: tabular-nums;
 }
 
@@ -168,7 +168,7 @@
 }
 .k-range-hist-readout {
   color: var(--ink-200);
-  font: var(--text-caption) var(--font-sans);
+  font: var(--text-caption) var(--font-sans-small);
   font-variant-numeric: tabular-nums;
 }
 
@@ -193,7 +193,7 @@
 .k-ridge-tick text,
 .k-ridge-name {
   fill: var(--ink-300);
-  font: var(--text-caption) var(--font-sans);
+  font: var(--text-caption) var(--font-sans-small);
 }
 .k-ridge-baseline {
   stroke: var(--ink-200);
@@ -226,7 +226,7 @@
 .k-ridge-readout {
   min-height: 16px;
   color: var(--ink-200);
-  font: var(--text-caption) var(--font-sans);
+  font: var(--text-caption) var(--font-sans-small);
   font-variant-numeric: tabular-nums;
 }
 
@@ -272,7 +272,7 @@
 }
 .k-slope-text {
   fill: var(--ink-200);
-  font: var(--text-caption) var(--font-sans);
+  font: var(--text-caption) var(--font-sans-small);
   font-variant-numeric: tabular-nums;
 }
 /* 涨跌色只上数字（dataviz §2）：线与点是中性墨色，变化后的那个数按涨跌上色；悬停与聚焦的线是强调色。 */
@@ -294,7 +294,7 @@
 .k-slope-readout {
   min-height: 16px;
   color: var(--ink-200);
-  font: var(--text-caption) var(--font-sans);
+  font: var(--text-caption) var(--font-sans-small);
   font-variant-numeric: tabular-nums;
 }
 .k-slope-over {
@@ -321,7 +321,7 @@
 .k-scatter-tick text,
 .k-scatter-axis {
   fill: var(--ink-300);
-  font: var(--text-caption) var(--font-sans);
+  font: var(--text-caption) var(--font-sans-small);
 }
 .k-scatter-series {
   transition: opacity var(--dur-snappy) var(--ease-snappy);
@@ -366,7 +366,7 @@
   padding: 0;
   list-style: none;
   color: var(--ink-200);
-  font: var(--text-caption) var(--font-sans);
+  font: var(--text-caption) var(--font-sans-small);
 }
 .k-scatter-legend li::before {
   display: inline-block;
@@ -380,7 +380,7 @@
 .k-scatter-readout {
   min-height: 16px;
   color: var(--ink-200);
-  font: var(--text-caption) var(--font-sans);
+  font: var(--text-caption) var(--font-sans-small);
   font-variant-numeric: tabular-nums;
 }
 
@@ -439,7 +439,7 @@
   translate: round(nearest, -50%, 1px) round(nearest, -50%, 1px);
   white-space: nowrap;
   color: var(--ink-200);
-  font: var(--text-caption) var(--font-sans);
+  font: var(--text-caption) var(--font-sans-small);
   font-weight: 600;
   line-height: 16px;
   pointer-events: none;
@@ -471,7 +471,7 @@
   flex: 1 1 0;
   height: 16px;
   color: var(--ink-100);
-  font: var(--text-caption) var(--font-sans);
+  font: var(--text-caption) var(--font-sans-small);
   line-height: 16px;
   text-align: center;
 }
@@ -521,7 +521,7 @@
 .k-galaxy-readout {
   min-height: 16px;
   color: var(--ink-200);
-  font: var(--text-caption) var(--font-sans);
+  font: var(--text-caption) var(--font-sans-small);
   font-variant-numeric: tabular-nums;
 }
 
@@ -555,12 +555,12 @@
   justify-content: space-between;
   padding-top: 4px;
   color: var(--chart-axis);
-  font: var(--text-num-sm) var(--chart-font-axis, var(--font-sans));
+  font: var(--text-num-sm) var(--chart-font-axis, var(--font-sans-small));
 }
 .k-ql-note {
   margin: 0;
   color: var(--ink-300);
-  font: var(--text-caption) var(--font-sans);
+  font: var(--text-caption) var(--font-sans-small);
 }
 .k-ql-plot {
   position: relative;
@@ -608,7 +608,7 @@
   position: absolute;
   transform: translate(8px, -50%);
   color: var(--ink-200);
-  font: var(--text-num-sm) var(--chart-font-axis, var(--font-sans));
+  font: var(--text-num-sm) var(--chart-font-axis, var(--font-sans-small));
   pointer-events: none;
   white-space: nowrap;
 }
@@ -631,7 +631,7 @@
   border-radius: 4px;
   background: transparent;
   color: var(--ink-200);
-  font: var(--text-num-sm) var(--chart-font-axis, var(--font-sans));
+  font: var(--text-num-sm) var(--chart-font-axis, var(--font-sans-small));
   cursor: pointer;
 }
 .k-ql-layer[aria-pressed='true'] {
@@ -654,7 +654,7 @@
   padding-top: 6px;
   border-top: var(--hairline);
   color: var(--ink-200);
-  font: var(--text-caption) var(--font-sans);
+  font: var(--text-caption) var(--font-sans-small);
 }
 .k-ql-verdict {
   display: inline-flex;
@@ -677,13 +677,13 @@
 }
 .k-ql-stat-value {
   color: var(--ink-100);
-  font: var(--text-num-sm) var(--chart-font-num, var(--font-sans));
+  font: var(--text-num-sm) var(--chart-font-num, var(--font-sans-small));
   font-variant-numeric: tabular-nums;
 }
 .k-ql-source {
   margin: 0;
   color: var(--ink-300);
-  font: var(--text-caption) var(--font-sans);
+  font: var(--text-caption) var(--font-sans-small);
 }
 
 /* 图右上三件所在的一行（表格视图 / 导出 / 全屏）。 */
@@ -706,7 +706,7 @@
 .k-dist-source {
   margin: 0;
   color: var(--ink-300);
-  font: var(--text-caption) var(--font-sans);
+  font: var(--text-caption) var(--font-sans-small);
 }
 
 /* 表格视图打开时，图与读数用 hidden 收起：作者样式里的 display 会盖过 hidden，这里压回去。 */

@@ -94,8 +94,8 @@
   font: var(--text-data) var(--font-sans);
 }
 @utility k-text-caption {
-  font-family: var(--font-sans);
-  font: var(--text-caption) var(--font-sans);
+  font-family: var(--font-sans-small);
+  font: var(--text-caption) var(--font-sans-small);
 }
 @utility k-text-micro {
   font-family: var(--font-sans);

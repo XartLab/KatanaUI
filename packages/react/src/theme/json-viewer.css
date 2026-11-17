@@ -38,7 +38,7 @@
 }
 .k-json-count {
   color: var(--ink-300);
-  font: var(--text-caption) var(--font-sans);
+  font: var(--text-caption) var(--font-sans-small);
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }

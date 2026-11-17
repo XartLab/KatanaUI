@@ -39,7 +39,7 @@
   align-items: center;
   gap: 8px;
   color: var(--ink-300);
-  font: var(--text-caption) var(--font-sans);
+  font: var(--text-caption) var(--font-sans-small);
   font-variant-numeric: tabular-nums;
 }
 .k-pscatter-ramp {
@@ -55,7 +55,7 @@
   gap: 4px 16px;
   min-height: 20px;
   color: var(--ink-200);
-  font: var(--text-caption) var(--font-sans);
+  font: var(--text-caption) var(--font-sans-small);
   font-variant-numeric: tabular-nums;
 }
 .k-pscatter-readout dl {
@@ -87,7 +87,7 @@
   border: 0;
   background: none;
   color: var(--ink-200);
-  font: var(--text-caption) var(--font-sans);
+  font: var(--text-caption) var(--font-sans-small);
   text-decoration: underline;
   cursor: pointer;
 }

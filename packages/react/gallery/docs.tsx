@@ -1,45 +1,44 @@
 // SPDX-License-Identifier: MIT
-import { useEffect, useState, useSyncExternalStore } from "react";
-import { CodeBlock, ToggleGroup, ToggleGroupItem } from "../src/index";
-import { CopyButton } from "./CopyButton";
-import { CoveragePage } from "./coverage";
-import { DEMOS } from "./demos";
-import { resolveParts, type ResolvedPart } from "./props";
-import { GROUPS, PAGES, pageById, type DocPage } from "./registry";
-import { usageName, usageOf } from "./usage";
+import { useEffect, useSyncExternalStore } from 'react'
+import { CodeBlock, ToggleGroup, ToggleGroupItem } from '../src/index'
+import { CopyButton } from './CopyButton'
+import { CoveragePage } from './coverage'
+import { RENDERING_ID, RenderingPage } from './rendering'
+import { DEMOS } from './demos'
+import { resolveParts, type ResolvedPart } from './props'
+import { GROUPS, PAGES, pageById, type DocPage } from './registry'
+import { usageName, usageOf } from './usage'
 
 // 组件文档站（#1860）：左侧目录按类分组，右侧一个组件一页，地址 `#/<件名>`，可直接打开、可前进后退。
 // 版式照 kobra.systems/components/<件名>（2026-11-14 读，只取结构）：标题与一句说明、实时预览、属性表、组成、键盘。
 // 预览默认 Graphite 主题（跟 Console 应用的默认一致，KATANAview #1775），页头的切换看 Console（主题是根节点上的 data-theme）；?theme=console 直接以它打开。
 
 /** 「覆盖」页的地址 `#/coverage`：不是组件页，在目录里单列一组「总览」。 */
-export const COVERAGE_ID = "coverage";
+export const COVERAGE_ID = 'coverage'
 
-export type ThemeName = "console" | "graphite";
+export type ThemeName = 'console' | 'graphite'
 
 const THEMES: readonly { id: ThemeName; label: string }[] = [
-  { id: "console", label: "Console" },
-  { id: "graphite", label: "Graphite" },
-];
+  { id: 'console', label: 'Console' },
+  { id: 'graphite', label: 'Graphite' },
+]
 
 export const themeFromUrl = (): ThemeName =>
-  new URLSearchParams(location.search).get("theme") === "console"
-    ? "console"
-    : "graphite";
+  new URLSearchParams(location.search).get('theme') === 'console' ? 'console' : 'graphite'
 
 const subscribe = (listener: () => void) => {
-  window.addEventListener("hashchange", listener);
-  return () => window.removeEventListener("hashchange", listener);
-};
-const currentId = () => location.hash.replace(/^#\/?/, "");
+  window.addEventListener('hashchange', listener)
+  return () => window.removeEventListener('hashchange', listener)
+}
+const currentId = () => location.hash.replace(/^#\/?/, '')
 
 /** 把主题写到根节点与地址上（地址的 ?theme= 让刷新、分享链接都停在同一个主题）。 */
 export function applyTheme(theme: ThemeName) {
-  document.documentElement.dataset.theme = theme;
-  const url = new URL(location.href);
-  if (theme === "graphite") url.searchParams.delete("theme");
-  else url.searchParams.set("theme", theme);
-  history.replaceState(null, "", url);
+  document.documentElement.dataset.theme = theme
+  const url = new URL(location.href)
+  if (theme === 'graphite') url.searchParams.delete('theme')
+  else url.searchParams.set('theme', theme)
+  history.replaceState(null, '', url)
 }
 
 function PropsTable({ table }: { table: ResolvedPart }) {
@@ -67,7 +66,7 @@ function PropsTable({ table }: { table: ResolvedPart }) {
                 <td>
                   <code>{row.type}</code>
                 </td>
-                <td>{row.default ? <code>{row.default}</code> : "—"}</td>
+                <td>{row.default ? <code>{row.default}</code> : '—'}</td>
                 <td>{row.description}</td>
               </tr>
             ))}
@@ -75,14 +74,14 @@ function PropsTable({ table }: { table: ResolvedPart }) {
         </table>
       ) : null}
     </div>
-  );
+  )
 }
 
 /** 「用法」：最小例子（usage/ 里的真实组件）渲染出来，下面是它的源码，可复制。 */
 function UsageSection({ page }: { page: DocPage }) {
-  const usage = usageOf(page.id);
-  if (!usage) return null;
-  const { Usage, source } = usage;
+  const usage = usageOf(page.id)
+  if (!usage) return null
+  const { Usage, source } = usage
   return (
     <section aria-labelledby="gal-h-usage" className="gal-usage" data-usage>
       <div className="gal-usage-head">
@@ -104,11 +103,11 @@ function UsageSection({ page }: { page: DocPage }) {
         />
       </div>
     </section>
-  );
+  )
 }
 
 function DocBody({ page }: { page: DocPage }) {
-  const Demo = DEMOS[page.id];
+  const Demo = DEMOS[page.id]
   return (
     <article className="gal-doc" data-page={page.id}>
       <header className="gal-doc-head">
@@ -165,60 +164,19 @@ function DocBody({ page }: { page: DocPage }) {
         </section>
       ) : null}
     </article>
-  );
+  )
 }
 
-/** 页头的渲染开关（rendering.css）：写到根节点的 data 属性上，跟主题切换一样，用来对比效果。 */
-function RenderSwitch({
-  attr,
-  label,
-  options,
-}: {
-  attr: string;
-  label: string;
-  options: readonly (readonly [string, string])[];
-}) {
-  const [value, setValue] = useState(
-    () => document.documentElement.getAttribute(attr) ?? options[0]![0],
-  );
-  return (
-    <span className="gal-render">
-      {label}
-      <ToggleGroup
-        variant="sm"
-        value={value}
-        onValueChange={(next) => {
-          if (!next) return;
-          document.documentElement.setAttribute(attr, next);
-          setValue(next);
-        }}
-        aria-label={label}
-      >
-        {options.map(([id, text]) => (
-          <ToggleGroupItem key={id} value={id}>
-            {text}
-          </ToggleGroupItem>
-        ))}
-      </ToggleGroup>
-    </span>
-  );
-}
-
-export function Docs({
-  theme,
-  onTheme,
-}: {
-  theme: ThemeName;
-  onTheme: (theme: ThemeName) => void;
-}) {
-  const id = useSyncExternalStore(subscribe, currentId);
-  const page = pageById(id);
+export function Docs({ theme, onTheme }: { theme: ThemeName; onTheme: (theme: ThemeName) => void }) {
+  const id = useSyncExternalStore(subscribe, currentId)
+  const page = pageById(id)
   // 地址里没有页（直接打开 /ui-gallery.html）：落到第一页，用 replace 不留一条空历史。
   useEffect(() => {
-    if (id === "") history.replaceState(null, "", `#/${PAGES[0].id}`);
-  }, [id]);
-  const shown = page ?? (id === "" ? PAGES[0] : undefined);
-  const onCoverage = id === COVERAGE_ID;
+    if (id === '') history.replaceState(null, '', `#/${PAGES[0].id}`)
+  }, [id])
+  const shown = page ?? (id === '' ? PAGES[0] : undefined)
+  const onCoverage = id === COVERAGE_ID
+  const onRendering = id === RENDERING_ID
   return (
     <div className="gal-shell" data-gallery-theme={theme}>
       <nav className="gal-nav" aria-label="组件">
@@ -226,35 +184,34 @@ export function Docs({
           @katana-ui/react
         </a>
         {GROUPS.map((group) => {
-          const pages = PAGES.filter((item) => item.group === group.id);
-          if (pages.length === 0) return null;
+          const pages = PAGES.filter((item) => item.group === group.id)
+          if (pages.length === 0) return null
           return (
             <section key={group.id}>
               <h2>{group.title}</h2>
               <ul>
                 {pages.map((item) => (
                   <li key={item.id}>
-                    <a
-                      href={`#/${item.id}`}
-                      aria-current={item.id === shown?.id ? "page" : undefined}
-                    >
+                    <a href={`#/${item.id}`} aria-current={item.id === shown?.id ? 'page' : undefined}>
                       {item.id}
                     </a>
                   </li>
                 ))}
               </ul>
             </section>
-          );
+          )
         })}
         <section>
           <h2>总览</h2>
           <ul>
             <li>
-              <a
-                href={`#/${COVERAGE_ID}`}
-                aria-current={onCoverage ? "page" : undefined}
-              >
+              <a href={`#/${COVERAGE_ID}`} aria-current={onCoverage ? 'page' : undefined}>
                 {COVERAGE_ID}
+              </a>
+            </li>
+            <li>
+              <a href={`#/${RENDERING_ID}`} aria-current={onRendering ? 'page' : undefined}>
+                {RENDERING_ID}
               </a>
             </li>
           </ul>
@@ -275,26 +232,12 @@ export function Docs({
               </ToggleGroupItem>
             ))}
           </ToggleGroup>
-          <RenderSwitch
-            attr="data-text-smoothing"
-            label="文字平滑"
-            options={[
-              ["grayscale", "灰度"],
-              ["system", "系统"],
-            ]}
-          />
-          <RenderSwitch
-            attr="data-pixel-snap"
-            label="像素对齐"
-            options={[
-              ["on", "开"],
-              ["off", "关"],
-            ]}
-          />
         </div>
         <main>
           {onCoverage ? (
             <CoveragePage />
+          ) : onRendering ? (
+            <RenderingPage />
           ) : shown ? (
             <DocBody key={shown.id} page={shown} />
           ) : (
@@ -305,5 +248,5 @@ export function Docs({
         </main>
       </div>
     </div>
-  );
+  )
 }

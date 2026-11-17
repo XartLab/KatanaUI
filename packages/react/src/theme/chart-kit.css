@@ -31,7 +31,7 @@
   padding-right: 8px;
   translate: 0 round(nearest, -50%, 1px);
   color: var(--chart-axis);
-  font: var(--text-num-sm) var(--chart-font-axis, var(--font-sans));
+  font: var(--text-num-sm) var(--chart-font-axis, var(--font-sans-small));
   pointer-events: none;
   white-space: nowrap;
 }
@@ -58,13 +58,13 @@
 .k-ck-tip-title {
   margin-bottom: 2px;
   color: var(--ink-300);
-  font: var(--text-num-sm) var(--chart-font-axis, var(--font-sans));
+  font: var(--text-num-sm) var(--chart-font-axis, var(--font-sans-small));
 }
 .k-ck-tip-row {
   display: flex;
   align-items: center;
   gap: 8px;
-  font: var(--text-caption) var(--chart-font-num, var(--font-sans));
+  font: var(--text-caption) var(--chart-font-num, var(--font-sans-small));
 }
 .k-ck-tip-swatch {
   width: 8px;
@@ -100,7 +100,7 @@
   right: 10px;
   translate: 0 round(nearest, -50%, 1px);
   color: var(--ink-100);
-  font: var(--text-num-sm) var(--chart-font-num, var(--font-sans));
+  font: var(--text-num-sm) var(--chart-font-num, var(--font-sans-small));
   white-space: nowrap;
 }
 .k-ck-end[data-side='right'] .k-ck-end-value {

@@ -265,9 +265,70 @@ body {
 .gal-bar > span:first-child {
   margin-right: auto;
 }
-.gal-render {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font: var(--text-caption) var(--font-sans);
+.gal-render-page h2 {
+  margin: 28px 0 10px;
+  color: var(--ink-100);
+  font: var(--text-title) var(--font-sans);
+}
+.gal-render-env {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 4px 16px;
+  margin: 0;
+  font: var(--text-data) var(--font-sans);
+}
+.gal-render-env dt {
+  color: var(--ink-300);
+}
+.gal-render-env dd {
+  margin: 0;
+  color: var(--ink-400);
+}
+.gal-render-env dd[data-ok] {
+  color: var(--ink-100);
+}
+.gal-render-envrow {
+  display: contents;
+}
+.gal-render-ramp {
+  border-collapse: collapse;
+}
+.gal-render-ramp th {
+  padding: 6px 16px 6px 0;
+  color: var(--ink-300);
+  font: var(--text-caption) var(--font-sans-small);
+  text-align: left;
+  white-space: nowrap;
+}
+.gal-render-ramp td {
+  padding: 6px 0;
+  color: var(--ink-100);
+  white-space: nowrap;
+}
+.gal-render-inks {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  border: 1px solid var(--line-100);
+}
+.gal-render-inks > div {
+  padding: 10px 14px;
+}
+.gal-render-inks p {
+  margin: 4px 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.gal-render-lines {
+  height: 120px;
+  border: 1px solid var(--line-100);
+}
+.gal-render-lines svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.gal-render-lines rect {
+  fill: color-mix(in srgb, var(--ink-200) 40%, transparent);
 }

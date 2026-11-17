@@ -72,7 +72,7 @@
 .k-gauge-note {
   margin: 0;
   color: var(--ink-300);
-  font: var(--text-caption) var(--font-sans);
+  font: var(--text-caption) var(--font-sans-small);
   line-height: 16px;
 }
 
@@ -104,7 +104,7 @@
   border: 0;
   color: var(--ink-200);
   background: transparent;
-  font: var(--text-caption) var(--font-sans);
+  font: var(--text-caption) var(--font-sans-small);
   font-weight: 600;
   text-align: left;
   text-overflow: ellipsis;
@@ -123,7 +123,7 @@
   justify-content: center;
   overflow: hidden;
   color: var(--ink-100);
-  font: var(--text-caption) var(--font-sans);
+  font: var(--text-caption) var(--font-sans-small);
   font-variant-numeric: tabular-nums;
   line-height: 14px;
   text-align: center;
@@ -152,7 +152,7 @@
   flex: 1 1 0;
   height: 16px;
   color: var(--ink-100);
-  font: var(--text-caption) var(--font-sans);
+  font: var(--text-caption) var(--font-sans-small);
   line-height: 16px;
   text-align: center;
 }
@@ -257,7 +257,7 @@ button.k-quote-card.is-link:focus-visible {
 }
 .k-quote-symbol {
   color: var(--ink-300);
-  font: var(--text-caption) var(--font-sans);
+  font: var(--text-caption) var(--font-sans-small);
 }
 .k-quote-price {
   font: var(--text-title) var(--font-sans);
@@ -300,7 +300,7 @@ button.k-quote-card.is-link:focus-visible {
   gap: 8px;
   min-width: 0;
   color: var(--ink-200);
-  font: var(--text-caption) var(--font-sans);
+  font: var(--text-caption) var(--font-sans-small);
   font-variant-numeric: tabular-nums;
 }
 .k-range-end {
@@ -313,7 +313,7 @@ button.k-quote-card.is-link:focus-visible {
 }
 .k-range-end small {
   color: var(--ink-300);
-  font: var(--text-caption) var(--font-sans);
+  font: var(--text-caption) var(--font-sans-small);
 }
 .k-range-track {
   position: relative;
@@ -396,7 +396,7 @@ button.k-quote-card.is-link:focus-visible {
   display: flex;
   gap: 12px;
   color: var(--ink-300);
-  font: var(--text-caption) var(--font-sans);
+  font: var(--text-caption) var(--font-sans-small);
   font-variant-numeric: tabular-nums;
 }
 
@@ -426,7 +426,7 @@ button.k-quote-card.is-link:focus-visible {
 }
 .k-quote-rows thead th {
   color: var(--ink-300);
-  font: var(--text-caption) var(--font-sans);
+  font: var(--text-caption) var(--font-sans-small);
 }
 .k-quote-rows .is-num {
   text-align: right;
@@ -438,7 +438,7 @@ button.k-quote-card.is-link:focus-visible {
 .k-quote-rows-name small {
   margin-left: 6px;
   color: var(--ink-300);
-  font: var(--text-caption) var(--font-sans);
+  font: var(--text-caption) var(--font-sans-small);
 }
 .k-quote-rows-trend {
   width: 96px;

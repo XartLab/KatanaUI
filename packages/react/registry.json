@@ -209,6 +209,11 @@
           "target": "~/src/katana/ui/theme/quote.css"
         },
         {
+          "path": "src/theme/rendering.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/rendering.css"
+        },
+        {
           "path": "src/theme/rolling-text.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/rolling-text.css"
@@ -2027,6 +2032,24 @@
           "path": "src/patterns/range-histogram-slider.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/patterns/range-histogram-slider.tsx"
+        }
+      ]
+    },
+    {
+      "name": "rendering-settings",
+      "type": "registry:component",
+      "title": "Rendering Settings",
+      "description": "应用「设置 → 渲染」那一页：文字平滑（灰度 / 系统）、像素对齐、字重补偿（-60..+60，相当于终端的 font-thicken）、字号缩放（取整到整像素）、斜线零、中英对齐（font-size-adjust）。每项一行：名称、一句说明、控件。值写在根节点上（theme/rendering.css 读），件是受控的，调用方存值，启动时用 applyRendering 写回。字样表与本机字体检测见总览里的 rendering 页。",
+      "registryDependencies": [
+        "@katana/button",
+        "@katana/slider",
+        "@katana/toggle-group"
+      ],
+      "files": [
+        {
+          "path": "src/patterns/rendering-settings.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/patterns/rendering-settings.tsx"
         }
       ]
     },

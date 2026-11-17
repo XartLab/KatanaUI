@@ -99,7 +99,7 @@
   height: 26px;
 }
 .k-unit {
-  font: var(--text-caption) var(--font-sans);
+  font: var(--text-caption) var(--font-sans-small);
   color: var(--ink-300);
 }
 
@@ -108,7 +108,7 @@
   align-self: center;
   padding-left: 10px;
   color: var(--ink-300);
-  font: var(--text-caption) var(--font-sans);
+  font: var(--text-caption) var(--font-sans-small);
   user-select: none;
   white-space: nowrap;
 }

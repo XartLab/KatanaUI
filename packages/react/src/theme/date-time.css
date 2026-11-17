@@ -108,7 +108,7 @@
 .k-cal-grid th {
   padding: 0 0 4px;
   color: var(--ink-300);
-  font: var(--text-caption) var(--font-sans);
+  font: var(--text-caption) var(--font-sans-small);
 }
 .k-cal-cell {
   display: grid;

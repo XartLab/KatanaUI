@@ -17,7 +17,7 @@
 }
 .k-tl-scope {
   color: var(--ink-200);
-  font-family: var(--font-sans);
+  font-family: var(--font-sans-small);
   font-size: var(--text-caption-size);
 }
 .k-tl-kinds {
@@ -60,7 +60,7 @@
 .k-tl-total {
   margin-left: auto;
   color: var(--ink-300);
-  font-family: var(--font-sans);
+  font-family: var(--font-sans-small);
   font-size: var(--text-caption-size);
   font-variant-numeric: tabular-nums;
 }

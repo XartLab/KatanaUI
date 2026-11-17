@@ -53,7 +53,7 @@
   border: var(--hairline);
   background: var(--bg-200);
   color: var(--ink-300);
-  font: var(--text-caption) var(--font-sans);
+  font: var(--text-caption) var(--font-sans-small);
 }
 .k-tc-legend li {
   display: inline-flex;
@@ -141,7 +141,7 @@
 }
 .k-tc-chip-text {
   fill: var(--ink-200);
-  font: var(--text-caption) var(--font-sans);
+  font: var(--text-caption) var(--font-sans-small);
   font-variant-numeric: tabular-nums;
   dominant-baseline: central;
 }
@@ -207,7 +207,7 @@
   border: 1px solid var(--tc-color);
   border-radius: var(--radius-pill);
   color: var(--ink-100);
-  font: var(--text-caption) var(--font-sans);
+  font: var(--text-caption) var(--font-sans-small);
 }
 .k-tc-badge svg {
   color: var(--tc-color);
@@ -218,7 +218,7 @@
   border: 1px solid var(--line-200);
   border-radius: var(--radius-pill);
   color: var(--ink-300);
-  font: var(--text-caption) var(--font-sans);
+  font: var(--text-caption) var(--font-sans-small);
 }
 .k-tc-count {
   color: var(--ink-300);
@@ -230,7 +230,7 @@
 .k-tc-section h5 {
   margin: 0 0 4px;
   color: var(--ink-300);
-  font: var(--text-caption) var(--font-sans);
+  font: var(--text-caption) var(--font-sans-small);
   font-weight: 700;
 }
 .k-tc-failure {

@@ -97,7 +97,12 @@ for (const theme of Object.keys(updown)) {
 // 文字样式表：--text-<档> 是 font 简写的前三项（字重 字号/行高），组件写 font: var(--text-档) var(--font-角色)；
 // --text-<档>-size 给只要字号的地方（继承字重与行高的小件、画布取字号）；有字距的档另出 --text-<档>-tracking。
 for (const { name, weight, size, line, tracking } of tokens.type.scale.tokens) {
-  lines.push(`  --text-${name}: ${weight} ${size}/${line};`, `  --text-${name}-size: ${size};`)
+  // 字重加 --k-weight-adjust（渲染设置的字重补偿，默认 0）；字号与行高乘 --k-text-scale（默认 1）后取整到整像素，缩放后文字仍落在像素格上。
+  const px = (v) => `round(nearest, calc(${v} * var(--k-text-scale, 1)), 1px)`
+  lines.push(
+    `  --text-${name}: calc(${weight} + var(--k-weight-adjust, 0)) ${px(size)}/${px(line)};`,
+    `  --text-${name}-size: ${px(size)};`,
+  )
   if (tracking) lines.push(`  --text-${name}-tracking: ${tracking};`)
 }
 for (const [name, family] of Object.entries(tokens.type.families)) lines.push(`  --font-${name}: ${family.value};`)

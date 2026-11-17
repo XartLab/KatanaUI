@@ -11,7 +11,7 @@
   margin: 0;
   min-width: 0;
   color: var(--ink-200);
-  font: var(--text-caption) var(--font-sans);
+  font: var(--text-caption) var(--font-sans-small);
   font-variant-numeric: tabular-nums;
 }
 .k-brush-main,
@@ -59,7 +59,7 @@
   left: 0;
   transform: translateY(-100%);
   color: var(--chart-axis);
-  font: var(--text-caption) var(--font-sans);
+  font: var(--text-caption) var(--font-sans-small);
   pointer-events: none;
 }
 .k-plot-cross {
@@ -421,7 +421,7 @@
   margin: 0;
   min-width: 0;
   color: var(--ink-200);
-  font: var(--text-caption) var(--font-sans);
+  font: var(--text-caption) var(--font-sans-small);
 }
 .k-heat-top {
   display: flex;
@@ -495,7 +495,7 @@
 }
 .k-heat-text {
   fill: var(--chart-axis);
-  font: var(--text-caption-size) var(--font-sans);
+  font: var(--text-caption-size) var(--font-sans-small);
 }
 rect.k-heat-cell {
   fill: var(--k-cell);
@@ -526,14 +526,14 @@ rect.k-heat-cell[data-active='true'] {
 .k-heat-head {
   height: 16px;
   color: var(--ink-300);
-  font: var(--text-num-sm) var(--font-sans);
+  font: var(--text-num-sm) var(--font-sans-small);
   text-align: center;
 }
 .k-heat-wk {
   display: flex;
   align-items: center;
   color: var(--ink-300);
-  font: var(--text-num-sm) var(--chart-font-axis, var(--font-sans));
+  font: var(--text-num-sm) var(--chart-font-axis, var(--font-sans-small));
 }
 button.k-heat-cell {
   position: relative;
@@ -553,13 +553,13 @@ button.k-heat-cell {
   top: 3px;
   left: 4px;
   color: var(--ink-200);
-  font: var(--text-num-sm) var(--chart-font-axis, var(--font-sans));
+  font: var(--text-num-sm) var(--chart-font-axis, var(--font-sans-small));
 }
 .k-heat-num {
   position: absolute;
   right: 4px;
   bottom: 3px;
-  font: var(--text-num-sm) var(--chart-font-axis, var(--font-sans));
+  font: var(--text-num-sm) var(--chart-font-axis, var(--font-sans-small));
 }
 /* 中档涨跌色（div-pos-200 / div-neg-200）上的字：绿涨红跌与红涨绿跌两套配色的亮度不同，白字或黑字谁过 4.5:1 随格色变，
    所以按格色的亮度现算：伽马编码后的加权亮度高于 0.44 用黑字，否则白字（0.44 是这两档在 Console / Graphite 两个主题里实测分得开的位置，2026-11-14 axe 实测）。 */
@@ -606,7 +606,7 @@ button.k-heat-cell[data-active='true'] {
 }
 .k-heat-dots b {
   color: var(--ink-300);
-  font: var(--text-num-sm) var(--chart-font-axis, var(--font-sans));
+  font: var(--text-num-sm) var(--chart-font-axis, var(--font-sans-small));
 }
 .k-heat-evtext {
   position: absolute;
@@ -615,7 +615,7 @@ button.k-heat-cell[data-active='true'] {
   left: 4px;
   overflow: hidden;
   color: var(--ink-200);
-  font: var(--text-num-sm) var(--font-sans);
+  font: var(--text-num-sm) var(--font-sans-small);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -669,7 +669,7 @@ button.k-heat-cell[data-active='true'] {
   margin: 0;
   min-width: 0;
   color: var(--ink-200);
-  font: var(--text-caption) var(--font-sans);
+  font: var(--text-caption) var(--font-sans-small);
   font-variant-numeric: tabular-nums;
 }
 .k-hz-rows {
@@ -738,7 +738,7 @@ button.k-heat-cell[data-active='true'] {
   margin: 0;
   min-width: 0;
   color: var(--ink-200);
-  font: var(--text-caption) var(--font-sans);
+  font: var(--text-caption) var(--font-sans-small);
   font-variant-numeric: tabular-nums;
 }
 .k-sm-grid {
@@ -822,7 +822,7 @@ button.k-sm-head:focus-visible {
   gap: 10px;
   min-width: 0;
   color: var(--ink-200);
-  font: var(--text-caption) var(--font-sans);
+  font: var(--text-caption) var(--font-sans-small);
   font-variant-numeric: tabular-nums;
 }
 .k-sx-empty {
@@ -866,7 +866,7 @@ button.k-sm-head:focus-visible {
 }
 .k-sx-span {
   color: var(--ink-300);
-  font: var(--text-caption) var(--font-sans);
+  font: var(--text-caption) var(--font-sans-small);
   white-space: nowrap;
 }
 /* KPI 一排平铺：没有边框与底色；选中的那一格顶上一条中性细线。 */
@@ -888,7 +888,7 @@ button.k-sm-head:focus-visible {
 }
 .k-sx-kpis .k-spark-tile-tag {
   color: var(--ink-300);
-  font: var(--text-num-sm) var(--font-sans);
+  font: var(--text-num-sm) var(--font-sans-small);
   letter-spacing: 0.16em;
   text-transform: uppercase;
 }
@@ -925,7 +925,7 @@ button.k-sm-head:focus-visible {
 }
 .k-sx-kv small {
   color: var(--ink-300);
-  font: var(--text-num-sm) var(--font-sans);
+  font: var(--text-num-sm) var(--font-sans-small);
   letter-spacing: 0.16em;
   text-transform: uppercase;
 }
@@ -935,7 +935,7 @@ button.k-sm-head:focus-visible {
 }
 .k-sx-kv i {
   color: var(--ink-300);
-  font: var(--text-num-sm) var(--font-sans);
+  font: var(--text-num-sm) var(--font-sans-small);
   font-style: normal;
 }
 .k-sx-recon em {

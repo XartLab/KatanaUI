@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 import type { ComponentType } from 'react'
 import { NewsReaderDemo, ScreenerDemo } from './pages/screener.tsx'
+import { RenderingSettingsDemo } from './rendering.tsx'
 import { DateTimeInputDemo, NumberInputDemo, SkeletonDemo } from './pages/fields.tsx'
 import {
   BadgeDemo,
@@ -186,6 +187,7 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'event-timeline': EventTimelineDemo,
   'news-feed': NewsFeedDemo,
   'filter-bar': ScreenerDemo,
+  'rendering-settings': RenderingSettingsDemo,
   'column-set-tabs': ScreenerDemo,
   'news-reader': NewsReaderDemo,
   'strategy-report': StrategyReportDemo,

@@ -20,7 +20,7 @@
   padding: 0 6px;
   border: var(--hairline);
   color: var(--ink-300);
-  font: var(--text-caption) var(--font-sans);
+  font: var(--text-caption) var(--font-sans-small);
 }
 .k-vs-stats {
   display: grid;
@@ -30,7 +30,7 @@
 }
 .k-vs-stats dt {
   color: var(--ink-300);
-  font: var(--text-caption) var(--font-sans);
+  font: var(--text-caption) var(--font-sans-small);
 }
 .k-vs-stats dd {
   margin: 0;
@@ -121,7 +121,7 @@
   top: 2px;
   left: 4px;
   color: var(--ink-300);
-  font: var(--text-caption) var(--font-sans);
+  font: var(--text-caption) var(--font-sans-small);
   pointer-events: none;
 }
 .k-vs-rev {
@@ -145,7 +145,7 @@
   gap: 16px;
   margin-top: 6px;
   color: var(--ink-300);
-  font: var(--text-caption) var(--font-sans);
+  font: var(--text-caption) var(--font-sans-small);
 }
 .k-vs-key {
   display: inline-flex;

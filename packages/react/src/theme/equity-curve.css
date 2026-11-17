@@ -16,7 +16,7 @@
   align-items: center;
   gap: var(--space-4);
   color: var(--ink-200);
-  font: var(--text-caption) var(--font-sans);
+  font: var(--text-caption) var(--font-sans-small);
 }
 .k-eq-title {
   margin: 0 var(--space-2) 0 0;
@@ -129,5 +129,5 @@
 }
 .k-eq-source {
   color: var(--ink-300);
-  font: var(--text-num-sm) var(--font-sans);
+  font: var(--text-num-sm) var(--font-sans-small);
 }

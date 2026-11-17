@@ -199,7 +199,7 @@
 .k-grid-tag {
   flex: none;
   color: var(--ink-300);
-  font: var(--text-caption) var(--font-sans);
+  font: var(--text-caption) var(--font-sans-small);
   line-height: 1;
 }
 .k-grid-foot {
@@ -207,7 +207,7 @@
   padding: 4px var(--inset-x);
   border-top: 1px solid var(--line-100);
   color: var(--ink-300);
-  font: var(--text-caption) var(--font-sans);
+  font: var(--text-caption) var(--font-sans-small);
 }
 /* 行高跟着内容走（autoRowHeight）：density 的行高是最小高度，格子里的字可以折行，内容多高行就多高，行与行之间留点气。 */
 .k-grid.is-auto .k-grid-row {
@@ -264,7 +264,7 @@
 }
 .k-colpick-heading {
   color: var(--ink-300);
-  font: var(--text-caption) var(--font-sans);
+  font: var(--text-caption) var(--font-sans-small);
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }

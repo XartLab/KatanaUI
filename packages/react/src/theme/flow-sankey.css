@@ -58,7 +58,7 @@
 }
 .k-fsk-label {
   fill: var(--ink-100);
-  font: var(--text-caption) var(--font-sans);
+  font: var(--text-caption) var(--font-sans-small);
   font-size: 12px;
   paint-order: stroke;
   stroke: var(--bg-100);
@@ -76,7 +76,7 @@
 }
 .k-fsk-head {
   fill: var(--ink-300);
-  font: var(--text-caption) var(--font-sans);
+  font: var(--text-caption) var(--font-sans-small);
   font-size: 11px;
   pointer-events: none;
 }
@@ -97,7 +97,7 @@
   border-radius: 4px;
   background: transparent;
   color: var(--ink-300);
-  font: var(--text-caption) var(--font-sans);
+  font: var(--text-caption) var(--font-sans-small);
   cursor: pointer;
 }
 .k-fsk-toggle i {
@@ -122,7 +122,7 @@
   align-items: center;
   gap: 14px;
   color: var(--ink-300);
-  font: var(--text-caption) var(--font-sans);
+  font: var(--text-caption) var(--font-sans-small);
 }
 .k-fsk-legend[hidden] {
   display: none !important;

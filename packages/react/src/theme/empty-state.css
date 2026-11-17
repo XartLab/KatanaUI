@@ -47,7 +47,7 @@
   color: var(--signal-amber);
   border: 1px solid currentColor;
   border-radius: var(--radius-sm);
-  font: var(--text-caption) var(--font-sans);
+  font: var(--text-caption) var(--font-sans-small);
   font-weight: 500;
   white-space: nowrap;
 }

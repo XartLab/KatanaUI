@@ -44,7 +44,7 @@
 }
 .k-rec-hint {
   color: var(--ink-300);
-  font: var(--text-caption) var(--font-sans);
+  font: var(--text-caption) var(--font-sans-small);
 }
 .k-rec-clear {
   display: inline-flex;
@@ -71,7 +71,7 @@
   flex-basis: 100%;
   min-height: 0;
   color: var(--signal-red);
-  font: var(--text-caption) var(--font-sans);
+  font: var(--text-caption) var(--font-sans-small);
 }
 .k-rec-msg:empty {
   display: none;

@@ -17,7 +17,7 @@
   border: 1px solid var(--alpha-white-10);
   border-radius: 4px;
   color: var(--ink-200);
-  font: var(--text-caption) var(--font-sans);
+  font: var(--text-caption) var(--font-sans-small);
   font-weight: 500;
   line-height: 1;
 }
