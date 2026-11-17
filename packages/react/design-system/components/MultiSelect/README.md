@@ -8,6 +8,8 @@
 
 ### MultiSelect
 
+选项、已选值、文案全由调用方传；列表是 Radix Popover，点一项只切这一项、不收起。
+
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
 | `values` * | `readonly string[]` | — | Ids of the selected options. |
@@ -55,6 +57,8 @@ export function MultiSelectUsage() {
 ## Don't
 
 - 不要在包里写死分隔符与空态文案，由调用方传。
+- 只能选一个时用 Select。
+- 已选很多时触发器会截断，选项多于十几项用可搜索的 Combobox（多选）。
 
 ## Composition
 

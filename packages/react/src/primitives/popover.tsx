@@ -25,7 +25,7 @@ function PopoverClose({ ...props }: ComponentProps<typeof PopoverPrimitive.Close
 
 const skin = {
   panel:
-    'k-text-body z-50 w-72 rounded-[var(--radius-overlay)] border border-alpha-white-6 bg-surface-4 p-3 text-ink-2 outline-0 shadow-[var(--shadow-overlay)]',
+    'k-text-body z-50 w-72 rounded-[var(--radius-overlay)] border border-(color:--k-overlay-borderColor) bg-(--k-surface-overlay-background) p-3 text-(color:--k-content-body-foreground) outline-0 shadow-(--k-overlay-shadow)',
   menu: menuContainerClass,
   bare: 'z-50 outline-0',
 } as const
@@ -63,11 +63,23 @@ function PopoverHeader({ className, ...props }: ComponentProps<'div'>) {
 }
 
 function PopoverTitle({ className, ...props }: ComponentProps<'div'>) {
-  return <div data-slot="popover-title" className={cn('k-text-data text-ink', className)} {...props} />
+  return (
+    <div
+      data-slot="popover-title"
+      className={cn('k-text-data text-(color:--k-content-primary-foreground)', className)}
+      {...props}
+    />
+  )
 }
 
 function PopoverDescription({ className, ...props }: ComponentProps<'p'>) {
-  return <p data-slot="popover-description" className={cn('k-text-caption text-ink-3', className)} {...props} />
+  return (
+    <p
+      data-slot="popover-description"
+      className={cn('k-text-caption text-(color:--k-content-secondary-foreground)', className)}
+      {...props}
+    />
+  )
 }
 
 export {

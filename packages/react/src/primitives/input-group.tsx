@@ -11,10 +11,10 @@ function InputGroup({ className, ...props }: ComponentProps<'div'>) {
       role="group"
       data-slot="input-group"
       className={cn(
-        'box-border flex h-[30px] w-full min-w-0 items-center overflow-hidden rounded-[6px] border border-alpha-white-7 bg-alpha-white-3',
-        'transition-[border-color] duration-[120ms] has-[[data-slot=input]:focus]:border-alpha-white-12',
+        'box-border flex h-[30px] w-full min-w-0 items-center overflow-hidden rounded-[6px] border border-(color:--k-editable-borderColor) bg-(--k-editable-background)',
+        'transition-[border-color] duration-[120ms] has-[[data-slot=input]:focus]:border-(color:--k-editable-borderColor-active)',
         'has-[[data-slot=input]:focus-visible]:outline-(length:--k-focused-outlineWidth) has-[[data-slot=input]:focus-visible]:-outline-offset-2 has-[[data-slot=input]:focus-visible]:outline-(color:--k-focused-outlineColor)',
-        'has-[[data-slot=input][aria-invalid=true]]:border-danger has-[[data-slot=input]:disabled]:cursor-not-allowed has-[[data-slot=input]:disabled]:opacity-45',
+        'has-[[data-slot=input][aria-invalid=true]]:border-(color:--k-status-danger-foreground) has-[[data-slot=input]:disabled]:cursor-not-allowed has-[[data-slot=input]:disabled]:opacity-45',
         '[&_[data-slot=input]]:h-full [&_[data-slot=input]]:min-w-0 [&_[data-slot=input]]:flex-1 [&_[data-slot=input]]:rounded-none [&_[data-slot=input]]:border-0 [&_[data-slot=input]]:bg-transparent [&_[data-slot=input]]:outline-0',
         className,
       )}
@@ -37,7 +37,7 @@ function InputGroupAddon({
       data-slot="input-group-addon"
       data-align={align}
       className={cn(
-        'flex shrink-0 items-center gap-1 text-ink-3 [&_svg]:size-[13px]',
+        'flex shrink-0 items-center gap-1 text-(color:--k-content-secondary-foreground) [&_svg]:size-[13px]',
         align === 'start' ? 'order-first pl-2' : 'order-last pr-2',
         className,
       )}
@@ -49,7 +49,11 @@ function InputGroupAddon({
 /** 附件里的一段字：币种、单位、前缀这类，不可选中。 */
 function InputGroupText({ className, ...props }: ComponentProps<'span'>) {
   return (
-    <span data-slot="input-group-text" className={cn('k-text-data select-none text-ink-3', className)} {...props} />
+    <span
+      data-slot="input-group-text"
+      className={cn('k-text-data select-none text-(color:--k-content-secondary-foreground)', className)}
+      {...props}
+    />
   )
 }
 

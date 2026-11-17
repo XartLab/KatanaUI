@@ -28,11 +28,11 @@ function RadioGroupItem({ className, ...props }: ComponentProps<typeof RadioGrou
     <RadioGroupPrimitive.Item
       data-slot="radio-group-item"
       className={cn(
-        'peer inline-flex size-[14px] shrink-0 cursor-pointer items-center justify-center rounded-full border border-line-strong bg-surface-0 p-0',
+        'peer inline-flex size-[14px] shrink-0 cursor-pointer items-center justify-center rounded-full border border-(color:--k-separable-bold-borderColor) bg-(--k-surface-sunken-background) p-0',
         'shadow-[var(--recess)] transition-colors duration-150',
-        'data-[state=checked]:border-ink data-[state=checked]:bg-ink',
+        'data-[state=checked]:border-(color:--k-selectable-bold-background-selected) data-[state=checked]:bg-(--k-selectable-bold-background-selected)',
         'disabled:cursor-not-allowed disabled:opacity-40',
-        'aria-invalid:border-danger',
+        'aria-invalid:border-(color:--k-status-danger-foreground)',
         focusRing,
         className,
       )}
@@ -40,7 +40,7 @@ function RadioGroupItem({ className, ...props }: ComponentProps<typeof RadioGrou
     >
       <RadioGroupPrimitive.Indicator
         data-slot="radio-group-indicator"
-        className="block size-[6px] rounded-full bg-surface-0"
+        className="block size-[6px] rounded-full bg-(--k-selectable-bold-foreground-selected)"
       />
     </RadioGroupPrimitive.Item>
   )

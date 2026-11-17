@@ -12,7 +12,8 @@
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `variant` | `Variant` | `'default'` | Skin: default is the bordered settings style, sm is the 26px toolbar style. |
+| `size` | `ToggleGroupSize` | — | Size: md (default) is the bordered settings style, sm is the 26px toolbar style. |
+| `variant` | `'default' \| 'sm'` | — |  |
 | `pillClassName` | `string` | — | Extra class name on the selected pill. |
 | `textClassName` | `string` | — | Extra class name on the text wrapper. |
 | `value` * | `string \| null` | — | The selected item; null means none is selected. |
@@ -52,11 +53,14 @@ export function ToggleGroupUsage() {
 ## States
 
 - 选中、未选、禁用项。
+- size：md（默认，有边框、按钮 24 高、选中 700）与 sm（工具条：无边框、选中块随选中项滑动）；旧名 variant 留一个版本。
 - 键盘 Tab 到每个按钮，Space 或 Enter 选中。
 
 ## Don't
 
 - 超过五项换 Select。
+- 不要拿它切换页面内容，那是 Tabs。
+- 不要一组里混着文字项与纯图标项；纯图标项各自要 aria-label。
 
 ## Composition
 

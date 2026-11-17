@@ -61,6 +61,8 @@ export function PopoverUsage() {
 ## Don't
 
 - 不要在弹层里再开弹层。
+- 只读的说明用 Tooltip 或 HoverCard，不要用 Popover。
+- 要打断用户、必须裁决的事用 Dialog。
 
 ## Composition
 

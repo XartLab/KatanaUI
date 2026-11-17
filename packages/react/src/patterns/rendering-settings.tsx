@@ -159,7 +159,7 @@ function Switch({
 }) {
   return (
     <ToggleGroup
-      variant="sm"
+      size="sm"
       value={value ? 'on' : 'off'}
       onValueChange={(next) => next && onChange(next === 'on')}
       aria-label={name}
@@ -183,7 +183,7 @@ export function RenderingSettings({ value, onChange, labels = RENDERING_LABELS_Z
     <div className="k-render" data-slot="rendering-settings">
       <Row title={labels.smoothing} hint={labels.smoothingHint}>
         <ToggleGroup
-          variant="sm"
+          size="sm"
           value={value.smoothing}
           onValueChange={(next) => next && patch({ smoothing: next as RenderingSettingsValue['smoothing'] })}
           aria-label={labels.smoothing}

@@ -71,8 +71,8 @@ function DialogContent({
             ? 'z-41 outline-0'
             : [
                 'k-dlg k-text-body fixed top-1/2 left-1/2 z-41 flex max-h-[calc(100dvh-24px)] w-[min(560px,calc(100vw-24px))] -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden',
-                'rounded-[14px] border border-alpha-white-8 bg-surface-3 leading-[1.45] text-ink outline-0',
-                'shadow-[var(--shadow-dialog)]',
+                'rounded-[14px] border border-(color:--k-overlay-dialog-borderColor) bg-(--k-surface-raised-background) leading-[1.45] text-(color:--k-content-primary-foreground) outline-0',
+                'shadow-(--k-overlay-dialog-shadow)',
               ],
           className,
         )}
@@ -98,7 +98,7 @@ function DialogHeader({ className, ...props }: ComponentProps<'div'>) {
     <div
       data-slot="dialog-header"
       className={cn(
-        'k-dlg-head flex h-[50px] shrink-0 items-center gap-3 border-b border-alpha-white-5 pr-12 pl-4',
+        'k-dlg-head flex h-[50px] shrink-0 items-center gap-3 border-b border-(color:--k-separable-subtle-borderColor) pr-12 pl-4',
         className,
       )}
       {...props}
@@ -121,7 +121,7 @@ function DialogFooter({ className, ...props }: ComponentProps<'div'>) {
     <div
       data-slot="dialog-footer"
       className={cn(
-        'k-dlg-foot flex shrink-0 flex-wrap items-center justify-end gap-2 border-t border-alpha-white-5 px-4 py-3',
+        'k-dlg-foot flex shrink-0 flex-wrap items-center justify-end gap-2 border-t border-(color:--k-separable-subtle-borderColor) px-4 py-3',
         className,
       )}
       {...props}
@@ -141,7 +141,10 @@ function DialogTitle({
   return (
     <DialogPrimitive.Title
       data-slot="dialog-title"
-      className={cn(!bare && 'k-text-title m-0 min-w-0 flex-1 truncate leading-none text-ink', className)}
+      className={cn(
+        !bare && 'k-text-title m-0 min-w-0 flex-1 truncate leading-none text-(color:--k-content-primary-foreground)',
+        className,
+      )}
       {...props}
     />
   )
@@ -155,7 +158,7 @@ function DialogDescription({
   return (
     <DialogPrimitive.Description
       data-slot="dialog-description"
-      className={cn(!bare && 'k-text-body text-ink-3', className)}
+      className={cn(!bare && 'k-text-body text-(color:--k-content-secondary-foreground)', className)}
       {...props}
     />
   )

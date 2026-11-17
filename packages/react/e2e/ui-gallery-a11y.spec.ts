@@ -15,7 +15,7 @@ type Known = { page: string; theme?: (typeof THEMES)[number]; rule: string; reas
 const knownList = known as readonly Known[]
 
 // 清单只许减：条目数不许超过现在的数；修好一条就删一条并把这个数调小。
-const KNOWN_CAP = 6
+const KNOWN_CAP = 4
 test('已知清单只减不增', () => {
   expect(knownList.length).toBeLessThanOrEqual(KNOWN_CAP)
 })

@@ -38,17 +38,25 @@ const feedback: GuidanceMap = {
   },
   alert: {
     aliases: ['Banner', 'Callout', 'Inline message', 'Notice'],
-    use: ['页面里常驻的提示、警告或错误说明。', '表单或区块顶部说明为什么不可用。'],
+    use: [
+      '页面里常驻的提示、警告或错误说明。',
+      '表单或区块顶部说明为什么不可用。',
+      '语气 tone 是 Severity：neutral（默认，22% 白色条）· ok · warn · danger，色条与图标读 --k-status-*；旧名 tone="default" 等于 neutral（G1，2026-11-18）。',
+    ],
     avoid: ['会自己消失的反馈用 toast。', '必须裁决的用 dialog。', '字段旁的错误用 field。'],
     a11y: [
-      'role 按语气定：warn、danger 是 alert，default、ok 是 status。',
+      'role 按语气定：warn、danger 是 alert，neutral、ok 是 status。',
       '页面一直在的提示改传 role=note，不要反复播报。',
       '语气靠标题写明，不只靠色条。',
     ],
   },
   progress: {
     aliases: ['Progress bar', 'Linear progress', 'Loading bar', 'Meter'],
-    use: ['上传、回测等知道进度的任务。', '不知道进度时用不确定条。'],
+    use: [
+      '上传、回测等知道进度的任务。',
+      '不知道进度时用不确定条。',
+      '填充色 tone 是 Severity：neutral（默认，亮中性 ink-100）· ok · warn · danger，与 Alert 同一套；轨道读 --k-container-track-background；旧名 tone="default" 等于 neutral。',
+    ],
     avoid: ['库存、额度的满格用 meter。', '等待内容区加载用 skeleton。'],
     a11y: [
       'Radix Progress，role=progressbar，确定态带 aria-valuenow。',

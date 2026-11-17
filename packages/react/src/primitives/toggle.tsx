@@ -3,7 +3,7 @@
 import { Toggle as TogglePrimitive } from 'radix-ui'
 import type { ComponentProps } from 'react'
 import { cn } from '../lib/cn.ts'
-import { buttonVariants } from './button.tsx'
+import { buttonSizeOf, buttonVariants, type ButtonSize } from './button.tsx'
 
 /**
  * 单个开关按钮：按下是「开」（aria-pressed），再按是「关」；工具条里的「显示均线」「跟随最新」这类。
@@ -11,12 +11,13 @@ import { buttonVariants } from './button.tsx'
  */
 function Toggle({
   className,
-  size = 'default',
+  size: sizeProp,
   ...props
 }: ComponentProps<typeof TogglePrimitive.Root> & {
-  /** Height: default is 30px, sm is 26px, icon is a 28px square. */
-  size?: 'default' | 'sm' | 'icon'
+  /** Height: md (default) is 30px, sm is 26px, icon is a 28px square; `'default'` is the deprecated name of md. */
+  size?: ButtonSize | 'default'
 }) {
+  const size = buttonSizeOf(sizeProp)
   return (
     <TogglePrimitive.Root
       data-slot="toggle"

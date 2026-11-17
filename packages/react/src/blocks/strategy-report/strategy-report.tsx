@@ -647,7 +647,7 @@ export function StrategyReport({
           </TabsList>
           <div className="k-sr-top-end">
             {badge === undefined ? null : <span className="k-sr-badge">{badge}</span>}
-            <ToggleGroup variant="sm" aria-label={labels.side.group} value={side} onValueChange={changeSide}>
+            <ToggleGroup size="sm" aria-label={labels.side.group} value={side} onValueChange={changeSide}>
               {SIDES.map((key) => (
                 <ToggleGroupItem key={key} value={key}>
                   {labels.side[key]}

@@ -19,7 +19,7 @@ function NavigationMenu({ className, children, ...props }: ComponentProps<typeof
       <div className="absolute top-full left-0 flex w-full justify-center">
         <NavigationMenuPrimitive.Viewport
           data-slot="navigation-menu-viewport"
-          className="relative mt-1 shrink-0 h-[var(--radix-navigation-menu-viewport-height)] origin-top overflow-hidden rounded-[var(--radius-overlay)] border border-alpha-white-6 bg-surface-4 shadow-[var(--shadow-overlay)] w-(--radix-navigation-menu-viewport-width) max-w-[100vw]"
+          className="relative mt-1 shrink-0 h-[var(--radix-navigation-menu-viewport-height)] origin-top overflow-hidden rounded-[var(--radius-overlay)] border border-(color:--k-overlay-borderColor) bg-(--k-surface-overlay-background) shadow-(--k-overlay-shadow) w-(--radix-navigation-menu-viewport-width) max-w-[100vw]"
         />
       </div>
     </NavigationMenuPrimitive.Root>
@@ -41,8 +41,8 @@ function NavigationMenuItem({ ...props }: ComponentProps<typeof NavigationMenuPr
 }
 
 const triggerClass = cn(
-  'k-text-data group inline-flex h-[30px] cursor-pointer items-center gap-1 rounded-[var(--radius-control)] px-2.5 text-ink-2 select-none',
-  'transition-colors duration-100 hover:bg-alpha-white-4 hover:text-ink data-[state=open]:bg-alpha-white-6 data-[state=open]:text-ink',
+  'k-text-data group inline-flex h-[30px] cursor-pointer items-center gap-1 rounded-[var(--radius-control)] px-2.5 text-(color:--k-content-body-foreground) select-none',
+  'transition-colors duration-100 hover:bg-(--k-selectable-background-hover) hover:text-(color:--k-content-primary-foreground) data-[state=open]:bg-(--k-selectable-background-active) data-[state=open]:text-(color:--k-content-primary-foreground)',
   focusRingInset,
 )
 
@@ -60,7 +60,7 @@ function NavigationMenuTrigger({
       {children}
       <ChevronDown
         aria-hidden="true"
-        className="size-[13px] text-ink-3 transition-transform duration-200 group-data-[state=open]:rotate-180"
+        className="size-[13px] text-(color:--k-content-secondary-foreground) transition-transform duration-200 group-data-[state=open]:rotate-180"
       />
     </NavigationMenuPrimitive.Trigger>
   )
@@ -81,8 +81,8 @@ function NavigationMenuLink({ className, ...props }: ComponentProps<typeof Navig
     <NavigationMenuPrimitive.Link
       data-slot="navigation-menu-link"
       className={cn(
-        'k-text-body block cursor-pointer rounded-[6px] p-2 text-ink-2 no-underline select-none transition-colors duration-100 hover:bg-alpha-white-4 hover:text-ink',
-        'data-[active]:bg-alpha-white-6 data-[active]:text-ink',
+        'k-text-body block cursor-pointer rounded-[6px] p-2 text-(color:--k-content-body-foreground) no-underline select-none transition-colors duration-100 hover:bg-(--k-selectable-background-hover) hover:text-(color:--k-content-primary-foreground)',
+        'data-[active]:bg-(--k-selectable-background-active) data-[active]:text-(color:--k-content-primary-foreground)',
         focusRingInset,
         className,
       )}

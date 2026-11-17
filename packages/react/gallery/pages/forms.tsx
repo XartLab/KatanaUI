@@ -261,7 +261,7 @@ export function ToggleGroupDemo() {
           禁用
         </ToggleGroupItem>
       </ToggleGroup>
-      <ToggleGroup variant="sm" value={toolbar} onValueChange={setToolbar} aria-label="周期（工具条样式）">
+      <ToggleGroup size="sm" value={toolbar} onValueChange={setToolbar} aria-label="周期（工具条样式）">
         {TIMEFRAMES.map(([id, text]) => (
           <ToggleGroupItem key={id} value={id}>
             {text}

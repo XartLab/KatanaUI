@@ -12,8 +12,8 @@
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
+| `tone` | `Severity \| 'default' \| null` | — | Fill color: neutral (default), ok, warn or danger. |
 | `value` | `number \| null` | — | From 0 to max; omitted or null is the indeterminate state. |
-| `tone` | `"default" \| "ok" \| "warn" \| "danger"` | — | Only changes the fill color; do not rely on color alone for status, write text beside it. |
 
 ## Usage
 
@@ -30,7 +30,7 @@ export function ProgressUsage() {
 
 - 确定：按 value 填充，aria-valuenow 跟值。
 - 不确定：value 缺省，来回滑动的条，不带 aria-valuenow。
-- tone：default、ok、warn、danger 换填充颜色。
+- tone（Severity）：neutral（默认，亮中性）、ok、warn、danger 换填充颜色；旧名 default 等于 neutral。
 
 ## Don't
 

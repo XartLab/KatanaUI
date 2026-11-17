@@ -15,7 +15,7 @@ export function LiveToggle({ labels, className }: { labels: LiveToggleLabels; cl
   return (
     <ToggleGroup
       aria-label={labels.group}
-      variant="sm"
+      size="sm"
       className={className}
       data-slot="live-toggle"
       value={on ? 'live' : 'paused'}

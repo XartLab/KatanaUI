@@ -529,6 +529,19 @@ function NamingPage() {
           off、accent），涨跌是 {code("Tone = 'up' | 'down' | 'flat'")}，都在 src/lib；状态灯用{' '}
           {code('ledOf(severity)')}，不再各写映射表。
         </li>
+        <li>
+          基础件（G1，2026-11-18）：原来写 {code('bg-alpha-white-N')} 的地方按用途换成新的
+          characteristics，值逐个相等——浮层边 {code('--k-overlay-borderColor')}（7%）/ {code('-compact-')}
+          （9%，贴触发器的列表）/ {code('-dialog-')}（9%）；输入框 {code('--k-editable-*')}（4% 底、8% 边、聚焦
+          22%）；菜单与列表行 {code('--k-selectable-*')}（密排高亮 4%、悬停 5%、展开 7%、选中 9%）；
+          勾选、单选、开关选中是 {code('--k-selectable-bold-*')}（实心 ink-100 + 最深底色的勾）；开关轨道{' '}
+          {code('--k-selectable-track-*')}。浮层影子读 {code('--k-overlay-*-shadow')}。
+        </li>
+        <li>
+          尺寸统一 {code("size: 'sm' | 'md'")}（Button、Input、Textarea、Toggle、ToggleGroup、MorphToggle），md
+          是默认；旧名 {code("'default'")} 等于 md，ToggleGroup 的 {code('variant')} 改叫 {code('size')}
+          ，都留一个版本。Button / Toggle 的 {code("size='icon'")} 是形状（28 见方），不算尺寸档，照旧。
+        </li>
       </ul>
       <h2>语义特征的词</h2>
       <Table
@@ -536,11 +549,11 @@ function NamingPage() {
         rows={[
           [
             '特征',
-            'actionable（可点的）· content（文字）· separable（分隔线）· container（容器）· focused（焦点）· surface（面：sunken / base / raised / overlay）· status（状态语气）· tone（涨跌）· chart（图）· overlay（浮层影子）',
+            'actionable（可点的）· editable（输入框）· selectable（可选的行、勾选、开关、分段）· content（文字）· separable（分隔线）· container（容器）· focused（焦点）· surface（面：sunken / base / raised / overlay）· status（状态语气）· tone（涨跌）· chart（图）· overlay（浮层的边与影子）',
           ],
           ['强调', 'bold · subtle（中间那档不写）'],
           ['属性', 'background · foreground · borderColor · outlineColor · outlineWidth · outlineOffset · shadow'],
-          ['状态', 'hover · active · disabled（静止不写）'],
+          ['状态', 'hover · active · selected · selectedHover · filled · disabled（静止不写）'],
         ]}
       />
       <Src href="https://www.saltdesignsystem.com/salt/themes/design-tokens">Salt Design System · Design tokens</Src>

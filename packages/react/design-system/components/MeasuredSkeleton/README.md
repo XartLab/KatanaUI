@@ -89,7 +89,7 @@ export function MeasuredSkeletonUsage() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)', width: 320 }}>
       <ToggleGroup
-        variant="sm"
+        size="sm"
         aria-label="数据状态"
         value={loading ? 'loading' : 'loaded'}
         onValueChange={(next) => next && setLoading(next === 'loading')}

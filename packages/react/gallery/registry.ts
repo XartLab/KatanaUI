@@ -85,6 +85,7 @@ export const PAGES: readonly DocPage[] = [
     ],
     states: [
       '默认：4% 白底 8% 白边，悬停提亮，按下缩到 0.97。',
+      '尺寸：md（默认，30 高）、sm（26 高、圆角 8、字 11 粗 600）、icon（28 见方，只放图标）；旧名 size="default" 等于 md。',
       '禁用：45% 不透明度，不响应指针。',
       '焦点：键盘 Tab 到时画 focus-ring 的外框。',
       'effect（改自 SmoothUI，MIT）：magnetic 指针靠近时按钮朝它偏、离开弹回；dot-morph 前面一颗点悬停时拉成竖条；clip-corners 四个角切掉、悬停时切口变大。三种只在有精确指针的设备上动。',
@@ -115,6 +116,7 @@ export const PAGES: readonly DocPage[] = [
     ],
     states: [
       '默认、有值、禁用。',
+      '尺寸：md（默认，30 高）、sm（26 高，字 12）；旧名 size="default" 等于 md。',
       'aria-invalid 时边框变危险色。',
       '焦点：边框提亮（focus-ring）。',
       'floatingLabel：标签静止时盖在框里，聚焦或有内容时缩小升到框上面一条 14px 的留白里（改自 SmoothUI float-input，MIT）。',
@@ -157,7 +159,11 @@ export const PAGES: readonly DocPage[] = [
       },
     ],
     states: ['默认、已选、未选（占位）、禁用。', '展开：列表项左侧留一列放勾；当前项加粗。'],
-    donts: ['不要把可以直接点的两三个选项藏进下拉。'],
+    donts: [
+      '不要把可以直接点的两三个选项藏进下拉。',
+      '选项多到要找（十几项以上）用 Combobox，能搜。',
+      '要选多个用 MultiSelect，不要拿单选下拉连选几次。',
+    ],
     composition: 'Select\n  SelectTrigger\n    SelectValue\n    SelectArrow\n  SelectContent\n    SelectItem',
     keys: [
       ['Enter / Space / ↓', '在触发器上打开列表'],
@@ -174,13 +180,22 @@ export const PAGES: readonly DocPage[] = [
     title: 'MultiSelect 多选下拉',
     summary: '触发器写已选项的名字，列表项前面一列勾；点一项只切这一项，列表不收。由 Popover 加勾选组出来。',
     exports: ['MultiSelect'],
-    propParts: [{ part: 'MultiSelect' }],
+    propParts: [
+      {
+        part: 'MultiSelect',
+        note: '选项、已选值、文案全由调用方传；列表是 Radix Popover，点一项只切这一项、不收起。',
+      },
+    ],
     states: [
       '一个都没选：写 empty。',
       '已选若干：按选项的顺序写名字，separator 隔开。',
       '点一项只切这一项，列表不收。',
     ],
-    donts: ['不要在包里写死分隔符与空态文案，由调用方传。'],
+    donts: [
+      '不要在包里写死分隔符与空态文案，由调用方传。',
+      '只能选一个时用 Select。',
+      '已选很多时触发器会截断，选项多于十几项用可搜索的 Combobox（多选）。',
+    ],
     composition: 'MultiSelect（内部：Popover + PopoverTrigger + PopoverContent，列表项为 role=option）',
     keys: [
       ['Enter / Space / ↓', '在触发器上打开；焦点落在第一个已选项'],
@@ -204,7 +219,11 @@ export const PAGES: readonly DocPage[] = [
       '未勾、已勾、半选（indeterminate）、禁用、禁用已勾、错误（aria-invalid）。',
       'indicator="check"：勾的路径从头画到尾，半选画横杠。',
     ],
-    donts: ['不要让勾选框单独承载状态而不带文字。'],
+    donts: [
+      '不要让勾选框单独承载状态而不带文字。',
+      '不要用勾选框做立刻生效的开关（那是 Switch），勾选框配「保存 / 应用」。',
+      '半选只给「部分子项已勾」的父项用，不要拿它表示「未知」。',
+    ],
     composition: 'Checkbox',
     keys: [
       ['Tab', '聚焦'],
@@ -219,8 +238,17 @@ export const PAGES: readonly DocPage[] = [
     summary: '34 × 18 的轨道画在 40 × 28 的布局盒里；开时轨道换强调色，圆钮挪过去。',
     exports: ['Switch'],
     propParts: [{ part: 'Switch', note: '其余属性透传给 Radix Switch.Root。' }],
-    states: ['关、开、禁用关、禁用开。'],
-    donts: ['不要用开关做「提交」这类一次性动作。'],
+    states: [
+      '关：10% 白轨道 + 9% 白内描边，圆钮 ink-300（--k-selectable-track-* / -thumb-background）。',
+      '开：轨道换实心亮中性（--k-selectable-bold-background-selected），圆钮换深色并滑 16px（snappy）。',
+      '悬停：关时轨道提到 18% 白，开时实心降到 ink-200。',
+      '禁用关、禁用开：45% 不透明度，不响应指针。',
+    ],
+    donts: [
+      '不要用开关做「提交」这类一次性动作。',
+      '不要把开关放进要点「保存」才生效的表单里，那用 Checkbox。',
+      '标签写开着时的意思（「显示成交量」），不要写成问句或「开 / 关」。',
+    ],
     composition: 'Switch',
     keys: [
       ['Tab', '聚焦'],
@@ -243,8 +271,16 @@ export const PAGES: readonly DocPage[] = [
         note: '外壳与按钮的类名函数。',
       },
     ],
-    states: ['选中、未选、禁用项。', '键盘 Tab 到每个按钮，Space 或 Enter 选中。'],
-    donts: ['超过五项换 Select。'],
+    states: [
+      '选中、未选、禁用项。',
+      'size：md（默认，有边框、按钮 24 高、选中 700）与 sm（工具条：无边框、选中块随选中项滑动）；旧名 variant 留一个版本。',
+      '键盘 Tab 到每个按钮，Space 或 Enter 选中。',
+    ],
+    donts: [
+      '超过五项换 Select。',
+      '不要拿它切换页面内容，那是 Tabs。',
+      '不要一组里混着文字项与纯图标项；纯图标项各自要 aria-label。',
+    ],
     composition: 'ToggleGroup\n  ToggleGroupItem',
     keys: [
       ['Tab', '每个按钮都是停靠点（不是方向键走的一组）'],
@@ -310,7 +346,11 @@ export const PAGES: readonly DocPage[] = [
     exports: ['Slider'],
     propParts: [{ part: 'Slider', note: '其余属性透传给 Radix Slider.Root。只做横向，受控。' }],
     states: ['单值、区间、禁用。', '键盘 ← → 走一格。', '按住或拖动：把手放大 1.12，松手弹回。'],
-    donts: ['滑钮必须有 thumbLabels。'],
+    donts: [
+      '滑钮必须有 thumbLabels。',
+      '要输入精确值（价格、数量）时旁边配 NumberInput，别只给滑杆。',
+      '区间的两个把手不要叠在一起还用同一个名字，读屏分不清。',
+    ],
     composition: 'Slider',
     keys: [
       ['← →', '走一个步进'],
@@ -332,7 +372,12 @@ export const PAGES: readonly DocPage[] = [
       { part: 'TooltipContent', note: '其余属性透传给 Radix Tooltip.Content。' },
       { part: 'tooltipContentClass', note: '提示的皮肤类名，应用里自己定位的提示（图表悬停）借它长一个样。' },
     ],
-    states: ['触发器静止；悬停或聚焦后浮出提示（默认没有延迟）。'],
+    states: [
+      '触发器静止；悬停或聚焦后浮出提示（默认没有延迟）。',
+      '浮出：最深底 + 1px 分隔线色边 + --k-overlay-tooltip-shadow，没有小箭头。',
+      '内容里有键帽（.k-kbd）：压成实心浅色块，字用最深底色。',
+      '移开或 Esc：直接消失，不播退场动画（#1849）。',
+    ],
     donts: ['提示里不放可点的东西，要放用 Popover。', '重要的信息不要只放在提示里。'],
     composition: 'TooltipProvider\n  Tooltip\n    TooltipTrigger\n    TooltipContent',
     keys: [
@@ -377,7 +422,11 @@ export const PAGES: readonly DocPage[] = [
       },
     ],
     states: ['收起；打开后焦点落进去，Esc 收起并还回焦点。', '三种皮肤：panel、menu、bare。'],
-    donts: ['不要在弹层里再开弹层。'],
+    donts: [
+      '不要在弹层里再开弹层。',
+      '只读的说明用 Tooltip 或 HoverCard，不要用 Popover。',
+      '要打断用户、必须裁决的事用 Dialog。',
+    ],
     composition:
       'Popover\n  PopoverTrigger\n  PopoverContent\n    PopoverHeader\n      PopoverTitle\n      PopoverDescription\n    PopoverClose',
     keys: [
@@ -420,7 +469,12 @@ export const PAGES: readonly DocPage[] = [
         note: '透传 Radix 同名部件。',
       },
     ],
-    states: ['收起；打开后焦点圈在对话框里，Esc 关闭并还回焦点。'],
+    states: [
+      '收起；打开后焦点圈在对话框里，Esc 关闭并还回焦点。',
+      '打开：surface-raised 底、9% 白边（--k-overlay-dialog-borderColor）、--k-overlay-dialog-shadow，背后压一层遮罩。',
+      '头脚：标题栏 50 高、按钮栏上下各一道 5% 白分隔（--k-separable-subtle-borderColor）；正文太长时只滚正文。',
+      '确认类（.k-dlg.confirm）：边换成 line-200。',
+    ],
     donts: ['不要用对话框放不重要的通知。', '对话框必须有标题。'],
     composition:
       'Dialog\n  DialogTrigger\n  DialogContent\n    DialogHeader\n      DialogTitle\n    DialogBody\n      DialogDescription\n    DialogFooter\n      DialogClose',
@@ -494,7 +548,11 @@ export const PAGES: readonly DocPage[] = [
       },
     ],
     states: ['行：默认、悬停、禁用、危险。', '勾选行左侧占一列放勾。'],
-    donts: ['菜单项不超过一屏，更长的换命令面板。'],
+    donts: [
+      '菜单项不超过一屏，更长的换命令面板。',
+      '不要拿它选表单里的一个值，那是 Select。',
+      '二级菜单不要超过一层。',
+    ],
     composition:
       'DropdownMenu\n  DropdownMenuTrigger\n  DropdownMenuContent\n    DropdownMenuLabel\n    DropdownMenuItem（含 DropdownMenuShortcut）\n    DropdownMenuSeparator\n    DropdownMenuCheckboxItem\n    DropdownMenuRadioGroup\n      DropdownMenuRadioItem\n    DropdownMenuSub\n      DropdownMenuSubTrigger\n      DropdownMenuSubContent',
     keys: [
@@ -563,7 +621,11 @@ export const PAGES: readonly DocPage[] = [
       { part: 'TabsContent', note: '其余属性透传给 Radix Tabs.Content。' },
     ],
     states: ['选中、未选、禁用页签。', '默认与 line 两种样式。'],
-    donts: ['页签名保持短，一行放得下。'],
+    donts: [
+      '页签名保持短，一行放得下。',
+      '只切换一个值、不换内容时用 ToggleGroup。',
+      '页签多到放不下时不要折两行，收进下拉或改导航。',
+    ],
     composition: 'Tabs\n  TabsList\n    TabsTrigger\n  TabsContent',
     keys: [
       ['← →', '在页签间走并选中'],
@@ -588,7 +650,11 @@ export const PAGES: readonly DocPage[] = [
       },
     ],
     states: ['展开、收起。', '键盘 ↑ ↓ 在标题间走，Enter 或 Space 展开。'],
-    donts: ['不要把用户必须读的内容收起来。'],
+    donts: [
+      '不要把用户必须读的内容收起来。',
+      '只有一段可收起时用 Collapsible。',
+      '标题里不放按钮或链接，整行就是展开的触发。',
+    ],
     composition: 'Accordion\n  AccordionItem\n    AccordionTrigger\n    AccordionContent',
     keys: [
       ['Enter / Space', '展开或收起'],
@@ -1568,7 +1634,10 @@ export const PAGES: readonly DocPage[] = [
       { part: 'Alert', note: '其余属性透传给 div。语气不能只靠颜色：标题或说明里要写字。' },
       { part: 'AlertTitle / AlertDescription', symbol: 'AlertTitle', note: '都是 div。' },
     ],
-    states: ['default、ok：role=status；warn、danger：role=alert。', '左边 2px 色条取语气的颜色。'],
+    states: [
+      'tone 是 Severity：neutral（默认）、ok 是 role=status；warn、danger 是 role=alert。旧名 default 等于 neutral。',
+      '左边 2px 色条与图标取 --k-status-<tone>-foreground；neutral 的色条是 --k-status-neutral-bold-borderColor（22% 白）。',
+    ],
     donts: [
       '不要用它代替弹出提示：Alert 是页面里一直在的说明。',
       '不要给一直在页面里的 Alert 保留 role=alert，传 role=note。',
@@ -1588,7 +1657,7 @@ export const PAGES: readonly DocPage[] = [
     states: [
       '确定：按 value 填充，aria-valuenow 跟值。',
       '不确定：value 缺省，来回滑动的条，不带 aria-valuenow。',
-      'tone：default、ok、warn、danger 换填充颜色。',
+      'tone（Severity）：neutral（默认，亮中性）、ok、warn、danger 换填充颜色；旧名 default 等于 neutral。',
     ],
     donts: ['不要在不知道进度时传一个假的 value。', '不要用它表示库存或额度的满格，用 Meter。', '不要省掉可访问名。'],
     composition: 'Progress\n  （内部：Progress.Indicator）',
@@ -5492,7 +5561,10 @@ export const PAGES: readonly DocPage[] = [
       '单个按下即开的按钮（aria-pressed）：外形是 Button，开时换分段选中的底与字；按下缩到 0.97。改自 SmoothUI（MIT）。',
     exports: ['Toggle'],
     propParts: [{ part: 'Toggle', note: '其余属性透传给 Radix Toggle.Root。' }],
-    states: ['关、开、禁用关、禁用开。', 'sm 是 26 高，icon 是 28 见方。'],
+    states: [
+      '关、开、禁用关、禁用开。',
+      'md（默认）30 高，sm 是 26 高，icon 是 28 见方；旧名 size="default" 等于 md。',
+    ],
     donts: ['互斥的几项用 ToggleGroup。', '设置页里的开关用 Switch。'],
     composition: 'Toggle',
     keys: [
@@ -5573,7 +5645,11 @@ export const PAGES: readonly DocPage[] = [
       '带仪式感的单个开关：圆钮滑动时形状跟着变（方块变圆），或钮里两个图标转着换。底座是 Radix Switch，尺寸与颜色同 Switch。改自 SmoothUI（MIT）。',
     exports: ['MorphToggle'],
     propParts: [{ part: 'MorphToggle', note: '其余属性透传给 Radix Switch.Root。' }],
-    states: ['plain、morph、icon 三种变体 × 关、开。', 'lg 尺寸给带图标的圆钮。', '禁用降到 45%。'],
+    states: [
+      'plain、morph、icon 三种变体 × 关、开。',
+      'md（默认，与 Switch 同大）；lg 尺寸给带图标的圆钮；旧名 size="default" 等于 md。',
+      '禁用降到 45%。',
+    ],
     donts: ['设置页里成排的开关用 Switch，别都换成它。', 'icon 变体的两个图标要一眼分得清开与关。'],
     composition: 'MorphToggle\n  span（轨道）\n    motion.span（圆钮）\n      图标（icon 变体）',
     keys: [

@@ -806,7 +806,7 @@ function NewsFeedSplit() {
   return (
     <div style={{ display: 'grid', gap: 8 }}>
       <ToggleGroup
-        variant="sm"
+        size="sm"
         aria-label="宽度"
         value={wide ? 'wide' : 'narrow'}
         onValueChange={(v) => setWide(v === 'wide')}

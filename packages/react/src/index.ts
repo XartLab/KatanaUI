@@ -9,7 +9,7 @@ export { InlineOverlays } from './lib/overlay.tsx'
 
 export { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from './primitives/accordion.tsx'
 export { Alert, AlertDescription, AlertTitle, alertVariants } from './primitives/alert.tsx'
-export { Button, buttonVariants } from './primitives/button.tsx'
+export { Button, buttonVariants, type ButtonSize } from './primitives/button.tsx'
 export { Checkbox } from './primitives/checkbox.tsx'
 export {
   Command,
@@ -96,7 +96,7 @@ export {
   PopoverTitle,
   PopoverTrigger,
 } from './primitives/popover.tsx'
-export { Input, inputVariants } from './primitives/input.tsx'
+export { Input, inputVariants, type InputSize } from './primitives/input.tsx'
 export { Progress } from './primitives/progress.tsx'
 export { ScrollArea, ScrollBar } from './primitives/scroll-area.tsx'
 export { Separator } from './primitives/separator.tsx'
@@ -127,7 +127,13 @@ export {
 export { Slider } from './primitives/slider.tsx'
 export { Switch } from './primitives/switch.tsx'
 export { Tabs, TabsContent, TabsList, TabsTrigger, tabsListVariants } from './primitives/tabs.tsx'
-export { ToggleGroup, ToggleGroupItem, toggleGroupVariants, toggleItemVariants } from './primitives/toggle-group.tsx'
+export {
+  ToggleGroup,
+  ToggleGroupItem,
+  toggleGroupVariants,
+  toggleItemVariants,
+  type ToggleGroupSize,
+} from './primitives/toggle-group.tsx'
 export { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger, tooltipContentClass } from './primitives/tooltip.tsx'
 export { MultiSelect } from './patterns/multi-select.tsx'
 export { ChipGroup, type ChipGroupProps, type ChipItem } from './patterns/chip-group.tsx'

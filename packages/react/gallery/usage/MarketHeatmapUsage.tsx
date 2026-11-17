@@ -178,16 +178,16 @@ export function MarketHeatmapUsage() {
   return (
     <div style={{ display: 'grid', gap: 12, width: '100%', maxWidth: wide ? undefined : 760 }}>
       <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
-        <ToggleGroup variant="sm" aria-label="数据" value={market} onValueChange={setMarket}>
+        <ToggleGroup size="sm" aria-label="数据" value={market} onValueChange={setMarket}>
           <ToggleGroupItem value="stocks">分行业的股票</ToggleGroupItem>
           <ToggleGroupItem value="coins">不分组的加密</ToggleGroupItem>
         </ToggleGroup>
-        <ToggleGroup variant="sm" aria-label="配色" value={scheme} onValueChange={(v) => setScheme(v as HeatmapScheme)}>
+        <ToggleGroup size="sm" aria-label="配色" value={scheme} onValueChange={(v) => setScheme(v as HeatmapScheme)}>
           <ToggleGroupItem value="classic">经典</ToggleGroupItem>
           <ToggleGroupItem value="mono">单色</ToggleGroupItem>
         </ToggleGroup>
         <ToggleGroup
-          variant="sm"
+          size="sm"
           aria-label="屏幕"
           value={wide ? 'wide' : 'small'}
           onValueChange={(v) => setWide(v === 'wide')}
@@ -196,7 +196,7 @@ export function MarketHeatmapUsage() {
           <ToggleGroupItem value="wide">大屏 1920×1080</ToggleGroupItem>
         </ToggleGroup>
         <ToggleGroup
-          variant="sm"
+          size="sm"
           aria-label="更新"
           value={live ? 'live' : 'still'}
           onValueChange={(v) => setLive(v === 'live')}

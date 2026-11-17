@@ -24,11 +24,11 @@ function Checkbox({
     <CheckboxPrimitive.Root
       data-slot="checkbox"
       className={cn(
-        'peer inline-flex size-[14px] shrink-0 cursor-pointer items-center justify-center rounded-[var(--radius-sm)] border border-line-strong bg-surface-0 p-0',
+        'peer inline-flex size-[14px] shrink-0 cursor-pointer items-center justify-center rounded-[var(--radius-sm)] border border-(color:--k-separable-bold-borderColor) bg-(--k-surface-sunken-background) p-0',
         'shadow-[var(--recess)] transition-colors duration-150',
-        'data-[state=checked]:border-ink data-[state=checked]:bg-ink',
+        'data-[state=checked]:border-(color:--k-selectable-bold-background-selected) data-[state=checked]:bg-(--k-selectable-bold-background-selected)',
         'disabled:cursor-not-allowed disabled:opacity-40',
-        'aria-invalid:border-danger',
+        'aria-invalid:border-(color:--k-status-danger-foreground)',
         focusRing,
         className,
       )}
@@ -36,7 +36,10 @@ function Checkbox({
     >
       {/* 已选与半选的符号都弹进来（theme/form-motion.css）；半选的方块压成 2px 的横杠，不再和已选长得一样。 */}
       {indicator === 'check' ? (
-        <CheckboxPrimitive.Indicator data-slot="checkbox-indicator" className="block size-[10px] text-surface-0">
+        <CheckboxPrimitive.Indicator
+          data-slot="checkbox-indicator"
+          className="block size-[10px] text-(color:--k-selectable-bold-foreground-selected)"
+        >
           <svg
             data-slot="checkbox-mark"
             aria-hidden="true"
@@ -55,7 +58,7 @@ function Checkbox({
       ) : (
         <CheckboxPrimitive.Indicator
           data-slot="checkbox-indicator"
-          className="block size-[6px] bg-surface-0 data-[state=indeterminate]:h-[2px]"
+          className="block size-[6px] bg-(--k-selectable-bold-foreground-selected) data-[state=indeterminate]:h-[2px]"
         />
       )}
     </CheckboxPrimitive.Root>

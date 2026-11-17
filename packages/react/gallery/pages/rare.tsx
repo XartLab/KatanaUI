@@ -249,7 +249,7 @@ export function MatrixOrbDemo() {
           <MatrixOrb state={state} level={state === 'listening' ? level : undefined} label={`状态球：${state}`} />
         </div>
         <ToggleGroup
-          variant="sm"
+          size="sm"
           value={state}
           onValueChange={(next) => next && setState(next as OrbState)}
           aria-label="状态"

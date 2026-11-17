@@ -120,7 +120,7 @@ export function HypothesisLedger({
       <div className="k-hl-bar">
         {watch && (
           <ToggleGroup
-            variant="sm"
+            size="sm"
             aria-label={labels.views}
             value={view}
             onValueChange={(next) => next && setView(next as 'ledger' | 'watch')}
@@ -131,7 +131,7 @@ export function HypothesisLedger({
         )}
         {view === 'ledger' && (
           <ToggleGroup
-            variant="sm"
+            size="sm"
             aria-label={labels.statusFilter}
             value={status}
             onValueChange={(next) => next && setStatus(next as HypothesisStatus | 'all')}

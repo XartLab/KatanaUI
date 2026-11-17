@@ -99,7 +99,7 @@ export function AttributionBars({
     if (event.key === 'Escape' && active !== null) setActive(null)
   }
   const segment = (spec: NonNullable<AttributionBarsProps['ranges']>) => (
-    <ToggleGroup variant="sm" aria-label={spec.label} value={spec.value} onValueChange={spec.onChange}>
+    <ToggleGroup size="sm" aria-label={spec.label} value={spec.value} onValueChange={spec.onChange}>
       {spec.options.map((option) => (
         <ToggleGroupItem key={option.key} value={option.key}>
           {option.label}

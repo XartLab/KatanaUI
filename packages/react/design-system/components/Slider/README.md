@@ -37,6 +37,8 @@ export function SliderUsage() {
 ## Don't
 
 - 滑钮必须有 thumbLabels。
+- 要输入精确值（价格、数量）时旁边配 NumberInput，别只给滑杆。
+- 区间的两个把手不要叠在一起还用同一个名字，读屏分不清。
 
 ## Composition
 

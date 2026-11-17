@@ -17,9 +17,9 @@ function CollapsibleTrigger({ className, children, ...props }: ComponentProps<ty
     <CollapsiblePrimitive.Trigger
       data-slot="collapsible-trigger"
       className={cn(
-        'k-text-body flex min-h-9 w-full cursor-pointer items-center justify-between gap-4 rounded-[6px] py-2 text-left text-ink-2',
-        'transition-colors duration-150 enabled:hover:text-ink disabled:cursor-not-allowed disabled:opacity-45',
-        '[&[data-state=open]]:text-ink [&[data-state=open]>svg]:rotate-180',
+        'k-text-body flex min-h-9 w-full cursor-pointer items-center justify-between gap-4 rounded-[6px] py-2 text-left text-(color:--k-content-body-foreground)',
+        'transition-colors duration-150 enabled:hover:text-(color:--k-content-primary-foreground) disabled:cursor-not-allowed disabled:opacity-45',
+        '[&[data-state=open]]:text-(color:--k-content-primary-foreground) [&[data-state=open]>svg]:rotate-180',
         focusRingInset,
         className,
       )}
@@ -28,7 +28,7 @@ function CollapsibleTrigger({ className, children, ...props }: ComponentProps<ty
       {children}
       <ChevronDown
         aria-hidden="true"
-        className="pointer-events-none size-[13px] shrink-0 text-ink-3 transition-transform duration-200"
+        className="pointer-events-none size-[13px] shrink-0 text-(color:--k-content-secondary-foreground) transition-transform duration-200"
       />
     </CollapsiblePrimitive.Trigger>
   )

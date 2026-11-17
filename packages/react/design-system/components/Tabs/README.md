@@ -62,6 +62,8 @@ export function TabsUsage() {
 ## Don't
 
 - 页签名保持短，一行放得下。
+- 只切换一个值、不换内容时用 ToggleGroup。
+- 页签多到放不下时不要折两行，收进下拉或改导航。
 
 ## Composition
 

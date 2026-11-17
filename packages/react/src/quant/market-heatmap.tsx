@@ -590,7 +590,7 @@ export function MarketHeatmap({
           <>
             <div className="k-mheat-field">
               <span className="k-mheat-field-label">{labels.sizeBy}</span>
-              <ToggleGroup variant="sm" aria-label={labels.sizeBy} value={size.key} onValueChange={setSizeKey}>
+              <ToggleGroup size="sm" aria-label={labels.sizeBy} value={size.key} onValueChange={setSizeKey}>
                 {sizeBy.map((option) => (
                   <ToggleGroupItem key={option.key} value={option.key}>
                     {option.label}
@@ -601,7 +601,7 @@ export function MarketHeatmap({
             <div className="k-mheat-field">
               <span className="k-mheat-field-label">{labels.colorBy}</span>
               <ToggleGroup
-                variant="sm"
+                size="sm"
                 aria-label={labels.colorBy}
                 value={color.key}
                 onValueChange={(next) => {
@@ -620,7 +620,7 @@ export function MarketHeatmap({
               <div className="k-mheat-field">
                 <span className="k-mheat-field-label">{labels.view}</span>
                 <ToggleGroup
-                  variant="sm"
+                  size="sm"
                   aria-label={labels.view}
                   value={grouped ? 'grouped' : 'flat'}
                   onValueChange={(next) => {
@@ -661,7 +661,7 @@ export function MarketHeatmap({
             <div className="k-mheat-field">
               <span className="k-mheat-field-label">{display.title.label}</span>
               <ToggleGroup
-                variant="sm"
+                size="sm"
                 aria-label={display.title.label}
                 value={titleMode}
                 onValueChange={(next) => setTitleMode(next as HeatmapTitleMode)}
@@ -674,7 +674,7 @@ export function MarketHeatmap({
             <div className="k-mheat-field">
               <span className="k-mheat-field-label">{display.value.label}</span>
               <ToggleGroup
-                variant="sm"
+                size="sm"
                 aria-label={display.value.label}
                 value={valueMode}
                 onValueChange={(next) => setValueMode(next as HeatmapValueMode)}

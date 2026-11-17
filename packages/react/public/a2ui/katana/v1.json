@@ -279,11 +279,11 @@
         "size": {
           "type": "string",
           "enum": [
-            "default",
+            "md",
             "sm"
           ],
-          "default": "default",
-          "description": "Button height: 30px or 26px."
+          "default": "md",
+          "description": "Button height: md is 30px, sm is 26px."
         },
         "disabled": {
           "anyOf": [
@@ -7208,12 +7208,12 @@
         "tone": {
           "type": "string",
           "enum": [
-            "default",
+            "neutral",
             "ok",
             "warn",
             "danger"
           ],
-          "default": "default",
+          "default": "neutral",
           "description": "Tone of the notice. 'warn' and 'danger' are announced to screen readers at once."
         },
         "title": {
@@ -14277,14 +14277,14 @@
           ],
           "description": "The value of the chosen segment; an empty string means none is chosen. Bind it to the data model with {\"@path\": \"/form/x\"} so the choice is written back."
         },
-        "variant": {
+        "size": {
           "type": "string",
           "enum": [
-            "default",
+            "md",
             "sm"
           ],
-          "default": "default",
-          "description": "Skin: 'default' is the 24px bordered settings style, 'sm' is the 26px toolbar style."
+          "default": "md",
+          "description": "Size: 'md' is the 24px bordered settings style, 'sm' is the 26px toolbar style."
         },
         "weight": {
           "type": "number",
@@ -16291,7 +16291,7 @@
             {
               "type": "string",
               "enum": [
-                "default",
+                "neutral",
                 "ok",
                 "warn",
                 "danger"
@@ -16301,7 +16301,7 @@
               "$ref": "common_types.json#/$defs/DataBinding"
             }
           ],
-          "description": "Fill color: 'default', 'ok' (green), 'warn' (amber) or 'danger' (red). State must also be written as text nearby."
+          "description": "Fill color: 'neutral' (default), 'ok' (green), 'warn' (amber) or 'danger' (red). State must also be written as text nearby."
         },
         "weight": {
           "type": "number",

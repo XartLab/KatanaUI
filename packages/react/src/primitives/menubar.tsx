@@ -14,7 +14,7 @@ function Menubar({ className, ...props }: ComponentProps<typeof MenubarPrimitive
     <MenubarPrimitive.Root
       data-slot="menubar"
       className={cn(
-        'flex h-[30px] items-center gap-0.5 rounded-[var(--radius-control)] border border-alpha-white-6 bg-surface-1 p-0.5',
+        'flex h-[30px] items-center gap-0.5 rounded-[var(--radius-control)] border border-(color:--k-container-subtle-borderColor) bg-(--k-surface-base-background) p-0.5',
         className,
       )}
       {...props}
@@ -31,8 +31,8 @@ function MenubarTrigger({ className, ...props }: ComponentProps<typeof MenubarPr
     <MenubarPrimitive.Trigger
       data-slot="menubar-trigger"
       className={cn(
-        'k-text-data inline-flex h-[24px] cursor-pointer items-center rounded-[var(--radius-md)] px-2 text-ink-2 select-none',
-        'transition-colors duration-100 hover:bg-alpha-white-4 hover:text-ink data-[state=open]:bg-alpha-white-6 data-[state=open]:text-ink',
+        'k-text-data inline-flex h-[24px] cursor-pointer items-center rounded-[var(--radius-md)] px-2 text-(color:--k-content-body-foreground) select-none',
+        'transition-colors duration-100 hover:bg-(--k-selectable-background-hover) hover:text-(color:--k-content-primary-foreground) data-[state=open]:bg-(--k-selectable-background-active) data-[state=open]:text-(color:--k-content-primary-foreground)',
         focusRingInset,
         className,
       )}

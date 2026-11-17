@@ -1966,9 +1966,9 @@
       "props": [
         {
           "name": "tone",
-          "type": "\"default\" | \"ok\" | \"warn\" | \"danger\"",
+          "type": "Severity | 'default' | null",
           "required": false,
-          "description": "Color of the stripe and the icon."
+          "description": "Color of the stripe and the icon: neutral (default), ok, warn or danger."
         }
       ]
     },
@@ -4342,17 +4342,16 @@
       "props": [
         {
           "name": "variant",
-          "type": "\"link\" | \"default\" | \"danger\" | \"primary\" | \"ghost\" | \"icon\"",
+          "type": "\"link\" | \"danger\" | \"default\" | \"primary\" | \"ghost\" | \"icon\"",
           "required": false,
           "default": "'default'",
           "description": "Visual style: primary is the solid light button, danger uses the danger text color, icon is a borderless 28px icon button."
         },
         {
           "name": "size",
-          "type": "\"default\" | \"icon\" | \"sm\"",
+          "type": "ButtonSize | 'default' | null",
           "required": false,
-          "default": "'default'",
-          "description": "Height: default is 30px, sm is 26px with an 8px radius, icon is a 28px square."
+          "description": "Height: sm is 26px, md (default) is 30px, icon is a 28px square."
         },
         {
           "name": "asChild",
@@ -4382,6 +4381,11 @@
           "description": "Distance in px from the button center within which a magnetic button reacts."
         }
       ]
+    },
+    "ButtonSize": {
+      "kind": "type",
+      "source": "src/primitives/button.tsx",
+      "props": []
     },
     "CalendarCategory": {
       "kind": "type",
@@ -5770,7 +5774,15 @@
     "CommandSeparator": {
       "kind": "component",
       "source": "src/primitives/command.tsx",
-      "props": []
+      "props": [
+        {
+          "name": "alwaysRender",
+          "type": "boolean",
+          "required": false,
+          "default": "false",
+          "description": "Keep the line while a search is typed (cmdk hides separators during a search by default)."
+        }
+      ]
     },
     "CommandShortcut": {
       "kind": "component",
@@ -15585,9 +15597,9 @@
       "props": [
         {
           "name": "size",
-          "type": "\"default\" | \"sm\"",
+          "type": "InputSize | 'default' | null",
           "required": false,
-          "description": "Height: default is 30px, sm is 26px with the data type size."
+          "description": "Height: sm is 26px, md (default) is 30px; `'default'` is the deprecated name of md."
         },
         {
           "name": "floatingLabel",
@@ -15618,6 +15630,11 @@
     "InputGroupText": {
       "kind": "component",
       "source": "src/primitives/input-group.tsx",
+      "props": []
+    },
+    "InputSize": {
+      "kind": "type",
+      "source": "src/primitives/input.tsx",
       "props": []
     },
     "IpoEvent": {
@@ -19301,10 +19318,10 @@
         },
         {
           "name": "size",
-          "type": "keyof typeof SIZES",
+          "type": "keyof typeof SIZES | 'default'",
           "required": false,
-          "default": "'default'",
-          "description": "default matches Switch; lg is bigger so an icon fits in the thumb."
+          "default": "'md'",
+          "description": "md (default) matches Switch; lg is bigger so an icon fits in the thumb."
         },
         {
           "name": "icons",
@@ -23520,16 +23537,16 @@
       "source": "src/primitives/progress.tsx",
       "props": [
         {
+          "name": "tone",
+          "type": "Severity | 'default' | null",
+          "required": false,
+          "description": "Fill color: neutral (default), ok, warn or danger."
+        },
+        {
           "name": "value",
           "type": "number | null",
           "required": false,
           "description": "From 0 to max; omitted or null is the indeterminate state."
-        },
-        {
-          "name": "tone",
-          "type": "\"default\" | \"ok\" | \"warn\" | \"danger\"",
-          "required": false,
-          "description": "Only changes the fill color; do not rely on color alone for status, write text beside it."
         }
       ]
     },
@@ -33054,9 +33071,9 @@
       "props": [
         {
           "name": "size",
-          "type": "'default' | 'sm'",
+          "type": "InputSize | 'default'",
           "required": false,
-          "description": "Font size: sm uses the data type size."
+          "description": "Font size: sm uses the data type size, md (default) the body size; `'default'` is the deprecated name of md."
         }
       ]
     },
@@ -33600,15 +33617,15 @@
         },
         {
           "name": "variant",
-          "type": "\"link\" | \"default\" | \"danger\" | \"primary\" | \"ghost\" | \"icon\"",
+          "type": "\"link\" | \"danger\" | \"default\" | \"primary\" | \"ghost\" | \"icon\"",
           "required": false,
           "description": "Visual style: primary is the solid light button, danger uses the danger text color, icon is a borderless 28px icon button."
         },
         {
           "name": "size",
-          "type": "\"default\" | \"icon\" | \"sm\"",
+          "type": "ButtonSize | 'default' | null",
           "required": false,
-          "description": "Height: default is 30px, sm is 26px with an 8px radius, icon is a 28px square."
+          "description": "Height: sm is 26px, md (default) is 30px, icon is a 28px square."
         },
         {
           "name": "effect",
@@ -33690,10 +33707,9 @@
       "props": [
         {
           "name": "size",
-          "type": "'default' | 'sm' | 'icon'",
+          "type": "ButtonSize | 'default'",
           "required": false,
-          "default": "'default'",
-          "description": "Height: default is 30px, sm is 26px, icon is a 28px square."
+          "description": "Height: md (default) is 30px, sm is 26px, icon is a 28px square; `'default'` is the deprecated name of md."
         }
       ]
     },
@@ -33702,11 +33718,16 @@
       "source": "src/primitives/toggle-group.tsx",
       "props": [
         {
-          "name": "variant",
-          "type": "Variant",
+          "name": "size",
+          "type": "ToggleGroupSize",
           "required": false,
-          "default": "'default'",
-          "description": "Skin: default is the bordered settings style, sm is the 26px toolbar style."
+          "description": "Size: md (default) is the bordered settings style, sm is the 26px toolbar style."
+        },
+        {
+          "name": "variant",
+          "type": "'default' | 'sm'",
+          "required": false,
+          "description": "Old name of size: 'default' is md, 'sm' is sm."
         },
         {
           "name": "pillClassName",
@@ -33745,6 +33766,11 @@
           "description": "The value of this item."
         }
       ]
+    },
+    "ToggleGroupSize": {
+      "kind": "type",
+      "source": "src/primitives/toggle-group.tsx",
+      "props": []
     },
     "Tone": {
       "kind": "type",

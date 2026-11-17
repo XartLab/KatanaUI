@@ -104,7 +104,7 @@ function OtpField({
               <span
                 aria-hidden="true"
                 data-slot="otp-separator"
-                className="h-px bg-line-strong"
+                className="h-px bg-(--k-separable-bold-borderColor)"
                 style={{ width: SEPARATOR }}
               />
             ) : null}
@@ -114,9 +114,10 @@ function OtpField({
               data-filled={char ? '' : undefined}
               data-active={focused && index === active ? '' : undefined}
               className={cn(
-                'k-text-body relative box-border grid h-(--k-size-base) shrink-0 place-items-center rounded-[6px] border border-alpha-white-7 bg-alpha-white-3 font-medium text-ink tabular-nums',
-                'transition-[border-color,background-color] duration-[120ms] data-[filled]:border-alpha-white-10 data-[filled]:bg-alpha-white-5',
-                invalid && 'border-danger data-[filled]:border-danger',
+                'k-text-body relative box-border grid h-(--k-size-base) shrink-0 place-items-center rounded-[6px] border border-(color:--k-editable-borderColor) bg-(--k-editable-background) font-medium text-(color:--k-content-primary-foreground) tabular-nums',
+                'transition-[border-color,background-color] duration-[120ms] data-[filled]:border-(color:--k-editable-borderColor-filled) data-[filled]:bg-(--k-editable-background-filled)',
+                invalid &&
+                  'border-(color:--k-status-danger-foreground) data-[filled]:border-(color:--k-status-danger-foreground)',
               )}
               style={{ width: SLOT }}
             >
@@ -126,7 +127,11 @@ function OtpField({
                   {mask ? '•' : char}
                 </span>
               ) : focused && index === active ? (
-                <span aria-hidden="true" data-slot="otp-caret" className="h-4 w-px bg-ink" />
+                <span
+                  aria-hidden="true"
+                  data-slot="otp-caret"
+                  className="h-4 w-px bg-(--k-content-primary-foreground)"
+                />
               ) : null}
             </span>
           </span>
@@ -137,9 +142,9 @@ function OtpField({
         aria-hidden="true"
         data-slot="otp-frame"
         className={cn(
-          'pointer-events-none absolute top-0 left-0 box-border h-(--k-size-base) rounded-[6px] border border-alpha-white-14 transition-opacity duration-[120ms]',
+          'pointer-events-none absolute top-0 left-0 box-border h-(--k-size-base) rounded-[6px] border border-(color:--k-editable-bold-borderColor-active) transition-opacity duration-[120ms]',
           focused ? 'opacity-100' : 'opacity-0',
-          invalid && 'border-danger',
+          invalid && 'border-(color:--k-status-danger-foreground)',
         )}
         style={{ width: SLOT, translate: `${frameX}px 0` }}
       />

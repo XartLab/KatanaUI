@@ -33,6 +33,8 @@ export function CheckboxUsage() {
 ## Don't
 
 - 不要让勾选框单独承载状态而不带文字。
+- 不要用勾选框做立刻生效的开关（那是 Switch），勾选框配「保存 / 应用」。
+- 半选只给「部分子项已勾」的父项用，不要拿它表示「未知」。
 
 ## Composition
 

@@ -29,10 +29,10 @@ export const KatanaToggleGroupApi = {
       value: CommonSchemas.DynamicString.describe(
         'The value of the chosen segment; an empty string means none is chosen. Bind it to the data model with {"@path": "/form/x"} so the choice is written back.',
       ),
-      variant: z
-        .enum(['default', 'sm'])
-        .default('default')
-        .describe("Skin: 'default' is the 24px bordered settings style, 'sm' is the 26px toolbar style.")
+      size: z
+        .enum(['md', 'sm'])
+        .default('md')
+        .describe("Size: 'md' is the 24px bordered settings style, 'sm' is the 26px toolbar style.")
         .optional(),
       weight: weightSchema,
     })
@@ -44,7 +44,7 @@ export const KatanaToggleGroup = createComponentImplementation(KatanaToggleGroup
   return (
     <Cell weight={props.weight}>
       <ToggleGroup
-        variant={props.variant}
+        size={props.size}
         aria-label={props.label}
         value={chosen}
         onValueChange={(next) => props.setValue?.(next)}

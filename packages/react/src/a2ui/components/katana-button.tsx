@@ -19,7 +19,7 @@ export const KatanaButtonApi = {
           "Visual style. 'primary' is the one main call to action in a region, 'danger' marks a destructive action, 'ghost' is a quiet button without a border.",
         )
         .optional(),
-      size: z.enum(['default', 'sm']).default('default').describe('Button height: 30px or 26px.').optional(),
+      size: z.enum(['md', 'sm']).default('md').describe('Button height: md is 30px, sm is 26px.').optional(),
       disabled: CommonSchemas.DynamicBoolean.describe('When true the button cannot be pressed.').optional(),
       action: actionSchema(
         'Dispatched when the user presses the button. Orders and other trades must only be requested through here.',

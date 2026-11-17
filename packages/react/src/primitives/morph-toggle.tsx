@@ -9,9 +9,9 @@ import { focusRing } from '../lib/focus.ts'
 import { snappy } from '../lib/motion.ts'
 import { unit } from '../lib/spring.ts'
 
-// 尺寸：default 与 Switch 一样（轨道 34 × 18 · 圆钮 14），lg 给带图标的圆钮（轨道 44 × 24 · 圆钮 20）。外层盒子的高、焦点环也照 Switch：--target-min。
+// 尺寸：md（旧名 default）与 Switch 一样（轨道 34 × 18 · 圆钮 14），lg 给带图标的圆钮（轨道 44 × 24 · 圆钮 20）。外层盒子的高、焦点环也照 Switch：--target-min。
 const SIZES = {
-  default: { track: 'w-[34px] h-[18px]', thumb: 14, travel: 16, inset: 2, box: 'w-10' },
+  md: { track: 'w-[34px] h-[18px]', thumb: 14, travel: 16, inset: 2, box: 'w-10' },
   lg: { track: 'w-[44px] h-[24px]', thumb: 20, travel: 20, inset: 2, box: 'w-[50px]' },
 } as const
 
@@ -26,7 +26,7 @@ const RADIUS_ON = 999
 function MorphToggle({
   className,
   variant = 'morph',
-  size = 'default',
+  size = 'md',
   icons,
   checked: checkedProp,
   defaultChecked = false,
@@ -35,8 +35,8 @@ function MorphToggle({
 }: Omit<ComponentProps<typeof SwitchPrimitive.Root>, 'children'> & {
   /** Thumb motion: morph changes the thumb shape while it slides, icon swaps the icons inside it, plain only slides. */
   variant?: 'plain' | 'morph' | 'icon'
-  /** default matches Switch; lg is bigger so an icon fits in the thumb. */
-  size?: keyof typeof SIZES
+  /** md (default) matches Switch; lg is bigger so an icon fits in the thumb. `'default'` is the deprecated name of md. */
+  size?: keyof typeof SIZES | 'default'
   /** Icons shown in the thumb for the on and off states (icon variant). */
   icons?: { on: ReactNode; off: ReactNode }
   /** Accessible name (required). */
@@ -44,7 +44,7 @@ function MorphToggle({
 }) {
   const [inner, setInner] = useState(defaultChecked)
   const checked = checkedProp ?? inner
-  const dims = SIZES[size]
+  const dims = SIZES[size === 'default' ? 'md' : size]
   // 弹簧：moving 的位置与圆角用同一条 snappy；0 到 1 的量（缩放、透明度）用 unit() 收紧停止阈值。
   const spring = unit(snappy)
   return (
@@ -69,9 +69,9 @@ function MorphToggle({
         data-slot="morph-toggle-track"
         aria-hidden
         className={cn(
-          'pointer-events-none relative rounded-full bg-alpha-white-10 shadow-[inset_0_0_0_1px_var(--alpha-white-9)]',
-          'transition-[background-color,box-shadow] duration-150 group-enabled:group-hover:bg-alpha-white-11',
-          'group-data-[state=checked]:bg-ink group-data-[state=checked]:shadow-none group-data-[state=checked]:group-enabled:group-hover:bg-ink-2',
+          'pointer-events-none relative rounded-full bg-(--k-selectable-track-background) shadow-[inset_0_0_0_1px_var(--k-selectable-track-borderColor)]',
+          'transition-[background-color,box-shadow] duration-150 group-enabled:group-hover:bg-(--k-selectable-track-background-hover)',
+          'group-data-[state=checked]:bg-(--k-selectable-bold-background-selected) group-data-[state=checked]:shadow-none group-data-[state=checked]:group-enabled:group-hover:bg-(--k-selectable-bold-background-selectedHover)',
           dims.track,
         )}
       >
@@ -85,8 +85,8 @@ function MorphToggle({
           transition={spring}
           style={{ width: dims.thumb, height: dims.thumb, left: dims.inset, top: dims.inset }}
           className={cn(
-            'absolute grid place-items-center bg-ink-3 shadow-[var(--shadow-thumb)]',
-            checked && 'bg-surface-0',
+            'absolute grid place-items-center bg-(--k-selectable-thumb-background) shadow-[var(--shadow-thumb)]',
+            checked && 'bg-(--k-selectable-bold-foreground-selected)',
           )}
         >
           {variant === 'icon' && icons ? (
@@ -97,7 +97,12 @@ function MorphToggle({
                 animate={{ opacity: 1, rotate: 0, scale: 1 }}
                 exit={{ opacity: 0, rotate: -90, scale: 0.5 }}
                 transition={spring}
-                className={cn('grid place-items-center', checked ? 'text-ink' : 'text-surface-0')}
+                className={cn(
+                  'grid place-items-center',
+                  checked
+                    ? 'text-(color:--k-selectable-bold-background-selected)'
+                    : 'text-(color:--k-selectable-bold-foreground-selected)',
+                )}
                 style={{ width: dims.thumb - 6, height: dims.thumb - 6 }}
               >
                 {checked ? icons.on : icons.off}

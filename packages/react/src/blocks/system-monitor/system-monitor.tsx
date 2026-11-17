@@ -258,7 +258,7 @@ export function SystemMonitor({
             <>
               <div className="k-sysmon-filters">
                 <ToggleGroup
-                  variant="sm"
+                  size="sm"
                   aria-label={labels.eventSeverity}
                   value={minSeverity}
                   onValueChange={(v) => setMinSeverity(v as EventSeverity)}

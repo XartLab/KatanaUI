@@ -12,8 +12,8 @@
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `variant` | `"link" \| "default" \| "danger" \| "primary" \| "ghost" \| "icon"` | `'default'` | Visual style: primary is the solid light button, danger uses the danger text color, icon is a borderless 28px icon button. |
-| `size` | `"default" \| "icon" \| "sm"` | `'default'` | Height: default is 30px, sm is 26px with an 8px radius, icon is a 28px square. |
+| `variant` | `"link" \| "danger" \| "default" \| "primary" \| "ghost" \| "icon"` | `'default'` | Visual style: primary is the solid light button, danger uses the danger text color, icon is a borderless 28px icon button. |
+| `size` | `ButtonSize \| 'default' \| null` | — | Height: sm is 26px, md (default) is 30px, icon is a 28px square. |
 | `asChild` | `boolean` | `false` | Render the child element itself (a link, a menu trigger) instead of wrapping it in a button. |
 | `effect` | `ButtonEffect` | — | Optional hover effect from SmoothUI: magnetic leans toward the pointer, dot-morph stretches a leading dot into a bar, clip-corners cuts the corners wider. |
 | `magnetStrength` | `number` | `0.3` | How far a magnetic button leans: the fraction of the pointer offset it follows (0 to 1). |
@@ -42,6 +42,7 @@ export function ButtonUsage() {
 ## States
 
 - 默认：4% 白底 8% 白边，悬停提亮，按下缩到 0.97。
+- 尺寸：md（默认，30 高）、sm（26 高、圆角 8、字 11 粗 600）、icon（28 见方，只放图标）；旧名 size="default" 等于 md。
 - 禁用：45% 不透明度，不响应指针。
 - 焦点：键盘 Tab 到时画 focus-ring 的外框。
 - effect（改自 SmoothUI，MIT）：magnetic 指针靠近时按钮朝它偏、离开弹回；dot-morph 前面一颗点悬停时拉成竖条；clip-corners 四个角切掉、悬停时切口变大。三种只在有精确指针的设备上动。

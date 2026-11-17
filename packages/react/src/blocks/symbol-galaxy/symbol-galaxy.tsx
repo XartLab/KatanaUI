@@ -232,7 +232,7 @@ export function SymbolGalaxy({
     >
       <div className="k-galaxy-bar">
         <ToggleGroup
-          variant="sm"
+          size="sm"
           aria-label={groupingLabel}
           value={mode}
           onValueChange={(next) => {

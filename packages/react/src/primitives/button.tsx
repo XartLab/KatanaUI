@@ -38,20 +38,30 @@ const buttonVariants = cva(
         icon: 'size-(--k-size-row) border-0 bg-transparent p-0 text-(color:--k-actionable-subtle-foreground) transition-[color,background-color] duration-[120ms] not-disabled:hover:bg-(--k-actionable-subtle-background-hover) not-disabled:hover:text-(color:--k-actionable-subtle-foreground-hover) not-disabled:active:scale-100 not-disabled:active:bg-(--k-actionable-subtle-background-active) disabled:opacity-35 focus-visible:-outline-offset-2 [&_svg]:size-[15px]',
         link: 'border-transparent bg-transparent font-normal text-(color:--k-content-secondary-foreground) underline decoration-(color:--k-separable-primary-borderColor) underline-offset-[3px] not-disabled:hover:bg-transparent not-disabled:hover:text-(color:--k-content-primary-foreground) not-disabled:active:bg-transparent',
       },
-      /** Height: default is 30px, sm is 26px with an 8px radius, icon is a 28px square. */
+      /** Height: md is 30px, sm is 26px with an 8px radius, icon is a 28px square (any variant, icon-only content). */
       size: {
-        default: 'h-(--k-size-base) px-(--k-spacing-200)',
+        md: 'h-(--k-size-base) px-(--k-spacing-200)',
         sm: 'k-text-caption h-[26px] rounded-[8px] px-2 font-semibold',
         icon: 'size-(--k-size-row) p-0',
       },
     },
     // 链接按钮：高 auto · 内边 2px 4px（size 的类写在 variant 之后会盖掉它，所以单独列；改前 .k-btn.lnk，ui.css 52-62）。
-    compoundVariants: [{ variant: 'link', size: 'default', class: 'h-auto px-1 py-0.5' }],
-    defaultVariants: { variant: 'default', size: 'default' },
+    compoundVariants: [{ variant: 'link', size: 'md', class: 'h-auto px-1 py-0.5' }],
+    defaultVariants: { variant: 'default', size: 'md' },
   },
 )
 
 type ButtonEffect = 'magnetic' | 'dot-morph' | 'clip-corners'
+
+/**
+ * Button height: sm or md (default); icon is the 28px square for icon-only buttons.
+ * 尺寸统一 sm | md（体检 §4，G1）；icon 是形状（正方形），不是高度档，留着；'default' 是旧名，等于 md。
+ */
+type ButtonSize = 'sm' | 'md' | 'icon'
+
+/** Maps the deprecated size name to the current one. */
+const buttonSizeOf = (size: ButtonSize | 'default' | null | undefined): ButtonSize =>
+  size == null || size === 'default' ? 'md' : size
 
 // 磁吸：指针靠近按钮时按钮朝指针偏一点，离开后弹回。弹簧参数取自 SmoothUI magnetic-button（bounce 0.1 · duration 0.4）；
 // 只在有精确指针的设备上生效（hover: hover 且 pointer: fine）。没开 magnetic 的按钮不挂任何监听，也不建任何弹簧。
@@ -84,7 +94,7 @@ function useMagnet(ref: { current: HTMLElement | null }, enabled: boolean, stren
 function Button({
   className,
   variant = 'default',
-  size = 'default',
+  size: sizeProp,
   asChild = false,
   type,
   effect,
@@ -94,7 +104,11 @@ function Button({
   ref,
   ...props
 }: ComponentProps<'button'> &
-  VariantProps<typeof buttonVariants> & {
+  Omit<VariantProps<typeof buttonVariants>, 'size'> & {
+    /**
+     * Height: sm is 26px, md (default) is 30px, icon is a 28px square. `'default'` is the deprecated name of md.
+     */
+    size?: ButtonSize | 'default' | null
     /** Render the child element itself (a link, a menu trigger) instead of wrapping it in a button. */
     asChild?: boolean
     /**
@@ -107,6 +121,7 @@ function Button({
     /** Distance in px from the button center within which a magnetic button reacts. */
     magnetRadius?: number
   }) {
+  const size = buttonSizeOf(sizeProp)
   const Comp = asChild ? Slot.Root : 'button'
   const own = useRef<HTMLButtonElement | null>(null)
   useMagnet(own, effect === 'magnetic', magnetStrength, magnetRadius)
@@ -140,4 +155,5 @@ function Button({
   )
 }
 
-export { Button, buttonVariants }
+export { Button, buttonSizeOf, buttonVariants }
+export type { ButtonSize }

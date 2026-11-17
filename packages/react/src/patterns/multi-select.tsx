@@ -125,7 +125,7 @@ export function MultiSelect({
           ;(all.find((row) => row.getAttribute('aria-selected') === 'true') ?? all[0])?.focus()
         }}
         className={cn(
-          'w-auto min-w-[var(--radix-popover-trigger-width)] max-h-[min(var(--radix-popover-content-available-height),calc(100dvh-16px))] overflow-auto rounded-[7px] border-alpha-white-8 p-1 shadow-[var(--shadow-overlay-sm)]',
+          'w-auto min-w-[var(--radix-popover-trigger-width)] max-h-[min(var(--radix-popover-content-available-height),calc(100dvh-16px))] overflow-auto rounded-[7px] border-(color:--k-overlay-compact-borderColor) p-1 shadow-(--k-overlay-compact-shadow)',
           contentClassName,
         )}
       >
@@ -142,7 +142,7 @@ export function MultiSelect({
                 data-state={selected ? 'checked' : 'unchecked'}
                 className={cn(
                   selectItemClass,
-                  'hover:data-[state=unchecked]:bg-alpha-white-4 focus-visible:bg-alpha-white-4',
+                  'hover:data-[state=unchecked]:bg-(--k-selectable-background-hover) focus-visible:bg-(--k-selectable-background-hover)',
                 )}
                 onClick={() => toggle(key)}
                 onKeyDown={(event) => {
@@ -152,7 +152,7 @@ export function MultiSelect({
                   }
                 }}
               >
-                <span aria-hidden="true" className="w-[10px] flex-none text-ink">
+                <span aria-hidden="true" className="w-[10px] flex-none text-(color:--k-content-primary-foreground)">
                   {selected ? '✓' : ''}
                 </span>
                 <span>{text}</span>

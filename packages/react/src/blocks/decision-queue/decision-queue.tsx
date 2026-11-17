@@ -143,7 +143,7 @@ export function DecisionQueue({
   return (
     <section className={cn('k-dq', className)} aria-label={labels.queue}>
       <ToggleGroup
-        variant="sm"
+        size="sm"
         aria-label={labels.filters}
         value={filter}
         onValueChange={(next) => {

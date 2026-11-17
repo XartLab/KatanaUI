@@ -433,7 +433,7 @@ export function NewsFeed({
         <div className="k-news-main">
           <div className="k-news-top" data-collapsed={collapsed ? '' : undefined}>
             <ToggleGroup
-              variant="sm"
+              size="sm"
               aria-label={labels.channels}
               value={channel === '' ? 'all' : channel}
               onValueChange={(v) => {
@@ -461,7 +461,7 @@ export function NewsFeed({
               />
             </label>
             <ToggleGroup
-              variant="sm"
+              size="sm"
               aria-label={labels.layout}
               value={layout}
               onValueChange={(v) => setLayout(v as 'list' | 'card')}

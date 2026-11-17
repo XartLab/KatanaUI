@@ -74,7 +74,7 @@ export function Pagination({ page, totalPages, onPageChange, siblings = 1, label
             <li
               key={`e${index}`}
               aria-hidden="true"
-              className="k-text-data flex size-7 items-center justify-center text-ink-4"
+              className="k-text-data flex size-7 items-center justify-center text-(color:--k-content-tertiary-foreground)"
             >
               …
             </li>
@@ -91,13 +91,18 @@ export function Pagination({ page, totalPages, onPageChange, siblings = 1, label
                 aria-current={item === page ? 'page' : undefined}
                 aria-label={labels.page(item)}
                 onClick={() => onPageChange(item)}
-                className={cn('relative tabular-nums', item === page ? 'text-ink' : 'text-ink-3')}
+                className={cn(
+                  'relative tabular-nums',
+                  item === page
+                    ? 'text-(color:--k-content-primary-foreground)'
+                    : 'text-(color:--k-content-secondary-foreground)',
+                )}
               >
                 {item === page ? (
                   <motion.span
                     layoutId={layoutId}
                     transition={{ ...snappy, restDelta: 0.001 }}
-                    className="absolute inset-0 rounded-[var(--radius-control)] border border-alpha-white-8 bg-alpha-white-5"
+                    className="absolute inset-0 rounded-[var(--radius-control)] border border-(color:--k-selectable-borderColor-selected) bg-(--k-selectable-subtle-background-selected)"
                   />
                 ) : null}
                 <span className="relative">{item}</span>

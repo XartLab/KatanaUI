@@ -81,6 +81,8 @@ const overlays: GuidanceMap = {
       '名字取 Command 的 label，CommandDialog 取标题。',
       'aria-selected 表示高亮，不是已选。',
       '焦点始终留在输入框里。',
+      'cmdk 在可用的行上也写 data-disabled="false"：行的禁用样式只认 data-disabled="true"（以前按属性存在判断，每行都被画成禁用、对比度 2.67:1，G1 修）。',
+      '分隔线是 role="none" 的装饰线，不用 cmdk 的 Separator（它写死 role="separator"，listbox 里不许有，axe aria-required-children）；有搜索词时照样隐去，alwaysRender 留着。',
     ],
   },
 }

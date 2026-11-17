@@ -192,7 +192,7 @@ export function EquityCurve({
           {labels.drawdown}
         </span>
         <ToggleGroup
-          variant="sm"
+          size="sm"
           className="k-eq-scale"
           aria-label={labels.scale.group}
           value={mode}

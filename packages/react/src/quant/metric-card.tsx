@@ -152,7 +152,7 @@ export function MetricCard({
         <h3 className="k-metric-title">{title}</h3>
         {!shared && ranges && ranges.length > 1 ? (
           <ToggleGroup
-            variant="sm"
+            size="sm"
             aria-label={rangeLabel}
             value={shown?.key ?? null}
             onValueChange={(next) => {
@@ -245,7 +245,7 @@ export function MetricCardGrid({
       <div className="k-metric-wall" data-slot="metric-wall">
         <div className="k-metric-wall-bar" data-slot="metric-wall-range">
           <ToggleGroup
-            variant="sm"
+            size="sm"
             aria-label={rangeLabel}
             value={key}
             onValueChange={(next) => {

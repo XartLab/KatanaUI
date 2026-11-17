@@ -243,7 +243,7 @@ export function SeriesExplorer({
           </ToolbarGroup>
           <ToolbarGroup side="right">
             <ToggleGroup
-              variant="sm"
+              size="sm"
               aria-label={labels.ranges}
               value={dragged !== null && dragged.range === rangeKey ? null : rangeKey}
               onValueChange={(next) => {
@@ -340,7 +340,7 @@ export function SeriesExplorer({
         <div className="k-sx-panel" data-slot="series-panel" data-metric={kpi.key} onKeyDown={panelKey}>
           <div className="k-sx-bar">
             <ToggleGroup
-              variant="sm"
+              size="sm"
               aria-label={labels.metrics}
               value={metric}
               onValueChange={(next) => setMetric(next)}

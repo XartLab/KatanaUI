@@ -118,7 +118,7 @@ function CheckboxGroupItem({
       <label
         htmlFor={id}
         className={cn(
-          'k-text-body cursor-pointer text-ink',
+          'k-text-body cursor-pointer text-(color:--k-content-primary-foreground)',
           off && 'cursor-not-allowed opacity-45',
           parent && 'font-medium',
         )}

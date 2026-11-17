@@ -34,7 +34,7 @@ export type BreadcrumbProps = {
 export function Breadcrumb({ items, label, separator, className }: BreadcrumbProps) {
   return (
     <nav aria-label={label} data-slot="breadcrumb" className={cn('inline-flex', className)}>
-      <ol className="k-text-data m-0 flex list-none flex-wrap items-center gap-1 p-0 text-ink-3">
+      <ol className="k-text-data m-0 flex list-none flex-wrap items-center gap-1 p-0 text-(color:--k-content-secondary-foreground)">
         {items.map((item, index) => {
           const last = index === items.length - 1
           return (
@@ -46,19 +46,22 @@ export function Breadcrumb({ items, label, separator, className }: BreadcrumbPro
               transition={{ ...snappy, delay: index * STAGGER_S }}
             >
               {index > 0 ? (
-                <span aria-hidden="true" className="inline-flex text-ink-4 [&>svg]:size-[13px]">
+                <span
+                  aria-hidden="true"
+                  className="inline-flex text-(color:--k-content-tertiary-foreground) [&>svg]:size-[13px]"
+                >
                   {separator ?? <ChevronRight />}
                 </span>
               ) : null}
               {last ? (
-                <span aria-current="page" className="text-ink">
+                <span aria-current="page" className="text-(color:--k-content-primary-foreground)">
                   {item.label}
                 </span>
               ) : item.href ? (
                 <a
                   href={item.href}
                   className={cn(
-                    'rounded-[var(--radius-sm)] text-ink-3 no-underline transition-colors duration-150 hover:text-ink',
+                    'rounded-[var(--radius-sm)] text-(color:--k-content-secondary-foreground) no-underline transition-colors duration-150 hover:text-(color:--k-content-primary-foreground)',
                     focusRing,
                   )}
                 >

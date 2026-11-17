@@ -12,7 +12,7 @@
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `size` | `'default' \| 'sm' \| 'icon'` | `'default'` | Height: default is 30px, sm is 26px, icon is a 28px square. |
+| `size` | `ButtonSize \| 'default'` | — | Height: md (default) is 30px, sm is 26px, icon is a 28px square; `'default'` is the deprecated name of md. |
 
 ## Usage
 
@@ -28,7 +28,7 @@ export function ToggleUsage() {
 ## States
 
 - 关、开、禁用关、禁用开。
-- sm 是 26 高，icon 是 28 见方。
+- md（默认）30 高，sm 是 26 高，icon 是 28 见方；旧名 size="default" 等于 md。
 
 ## Don't
 

@@ -139,7 +139,7 @@ export function VintageSeries({
     <figure className={cn('k-vs', className)} data-slot="vintage-series" data-mode={mode}>
       <div className="k-vs-bar">
         <ToggleGroup
-          variant="sm"
+          size="sm"
           aria-label={labels.mode}
           value={mode}
           onValueChange={(next) => {

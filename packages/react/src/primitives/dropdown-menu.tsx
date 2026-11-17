@@ -83,7 +83,11 @@ function DropdownMenuItem({
     <DropdownMenuPrimitive.Item
       data-slot="dropdown-menu-item"
       data-variant={variant}
-      className={cn(!bare && menuRowClass, !bare && 'data-[variant=danger]:text-danger', className)}
+      className={cn(
+        !bare && menuRowClass,
+        !bare && 'data-[variant=danger]:text-(color:--k-status-danger-foreground)',
+        className,
+      )}
       {...props}
     />
   )
@@ -194,7 +198,11 @@ function DropdownMenuSubTrigger({
   return (
     <DropdownMenuPrimitive.SubTrigger
       data-slot="dropdown-menu-sub-trigger"
-      className={cn(menuRowClass, 'data-[state=open]:bg-alpha-white-6 data-[state=open]:text-ink', className)}
+      className={cn(
+        menuRowClass,
+        'data-[state=open]:bg-(--k-selectable-background-active) data-[state=open]:text-(color:--k-content-primary-foreground)',
+        className,
+      )}
       {...props}
       ref={sub?.setTrigger}
     >

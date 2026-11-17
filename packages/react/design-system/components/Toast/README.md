@@ -29,8 +29,8 @@
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
 | `asChild` | `boolean` | — | Render the child element itself (a link, a menu trigger) instead of wrapping it in a button. |
-| `variant` | `"link" \| "default" \| "danger" \| "primary" \| "ghost" \| "icon"` | — | Visual style: primary is the solid light button, danger uses the danger text color, icon is a borderless 28px icon button. |
-| `size` | `"default" \| "icon" \| "sm"` | — | Height: default is 30px, sm is 26px with an 8px radius, icon is a 28px square. |
+| `variant` | `"link" \| "danger" \| "default" \| "primary" \| "ghost" \| "icon"` | — | Visual style: primary is the solid light button, danger uses the danger text color, icon is a borderless 28px icon button. |
+| `size` | `ButtonSize \| 'default' \| null` | — | Height: sm is 26px, md (default) is 30px, icon is a 28px square. |
 | `effect` | `ButtonEffect` | — | Optional hover effect from SmoothUI: magnetic leans toward the pointer, dot-morph stretches a leading dot into a bar, clip-corners cuts the corners wider. |
 | `magnetStrength` | `number` | — | How far a magnetic button leans: the fraction of the pointer offset it follows (0 to 1). |
 | `magnetRadius` | `number` | — | Distance in px from the button center within which a magnetic button reacts. |

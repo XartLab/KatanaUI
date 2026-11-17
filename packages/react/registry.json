@@ -645,7 +645,8 @@
         "class-variance-authority@0.7.1"
       ],
       "registryDependencies": [
-        "@katana/cn"
+        "@katana/cn",
+        "@katana/severity"
       ],
       "files": [
         {
@@ -1147,7 +1148,9 @@
         "radix-ui@1.8.1"
       ],
       "registryDependencies": [
-        "@katana/cn"
+        "@katana/alert",
+        "@katana/cn",
+        "@katana/severity"
       ],
       "files": [
         {

@@ -225,7 +225,7 @@ export function TechnicalRating({
       {timeframes && timeframes.length > 0 ? (
         <div className="k-trating-bar" data-slot="rating-timeframe">
           <ToggleGroup
-            variant="sm"
+            size="sm"
             aria-label={labels.timeframe}
             value={timeframe ?? timeframes[0]!.value}
             onValueChange={(next) => next && onTimeframeChange?.(next)}

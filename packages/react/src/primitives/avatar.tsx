@@ -18,10 +18,10 @@ const SIZE: Record<AvatarSize, string> = {
 const DOT: Record<AvatarSize, string> = { sm: 'size-2', md: 'size-[10px]', lg: 'size-3' }
 // 状态色走信号色 token：在线绿、离开琥珀、忙碌红、离线灰。
 const STATUS: Record<AvatarStatusValue, string> = {
-  online: 'bg-ok',
-  away: 'bg-(--signal-amber)',
-  busy: 'bg-danger',
-  offline: 'bg-ink-4',
+  online: 'bg-(--k-status-ok-foreground)',
+  away: 'bg-(--k-status-warn-foreground)',
+  busy: 'bg-(--k-status-danger-foreground)',
+  offline: 'bg-(--k-content-tertiary-foreground)',
 }
 
 const GroupContext = createContext<AvatarSize | undefined>(undefined)
@@ -63,7 +63,7 @@ export function Avatar({ src, alt, fallback, size, status, statusLabel, classNam
         <AvatarPrimitive.Fallback
           aria-label={alt}
           role="img"
-          className="flex size-full items-center justify-center rounded-full bg-alpha-white-6 font-medium text-ink-3 uppercase ring-1 ring-alpha-white-8 ring-inset"
+          className="flex size-full items-center justify-center rounded-full bg-(--k-container-subtle-background) font-medium text-(color:--k-content-secondary-foreground) uppercase ring-1 ring-(color:--k-container-bold-borderColor) ring-inset"
         >
           {fallback}
         </AvatarPrimitive.Fallback>
@@ -74,7 +74,7 @@ export function Avatar({ src, alt, fallback, size, status, statusLabel, classNam
             data-slot="avatar-status"
             data-status={status}
             className={cn(
-              'absolute right-0 bottom-0 rounded-full ring-2 ring-surface-1',
+              'absolute right-0 bottom-0 rounded-full ring-2 ring-(color:--k-surface-base-background)',
               DOT[resolved],
               STATUS[status],
             )}
@@ -111,7 +111,7 @@ export function AvatarGroup({ children, label, max, size = 'md', overflowLabel, 
         aria-label={label}
         data-slot="avatar-group"
         className={cn(
-          'flex items-center -space-x-2 [&>[data-slot=avatar]]:ring-2 [&>[data-slot=avatar]]:ring-surface-1 [&>[data-slot=avatar-overflow]]:ring-2 [&>[data-slot=avatar-overflow]]:ring-surface-1',
+          'flex items-center -space-x-2 [&>[data-slot=avatar]]:ring-2 [&>[data-slot=avatar]]:ring-(color:--k-surface-base-background) [&>[data-slot=avatar-overflow]]:ring-2 [&>[data-slot=avatar-overflow]]:ring-(color:--k-surface-base-background)',
           className,
         )}
       >
@@ -122,7 +122,7 @@ export function AvatarGroup({ children, label, max, size = 'md', overflowLabel, 
             aria-label={overflowLabel?.(hidden)}
             data-slot="avatar-overflow"
             className={cn(
-              'inline-flex shrink-0 items-center justify-center rounded-full bg-alpha-white-6 font-medium text-ink-3 tabular-nums select-none',
+              'inline-flex shrink-0 items-center justify-center rounded-full bg-(--k-container-subtle-background) font-medium text-(color:--k-content-secondary-foreground) tabular-nums select-none',
               SIZE[size],
             )}
           >

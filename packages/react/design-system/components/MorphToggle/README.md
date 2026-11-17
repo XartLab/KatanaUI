@@ -14,7 +14,7 @@
 | --- | --- | --- | --- |
 | `aria-label` * | `string \| undefined` | — | Defines a string value that labels the current element. |
 | `variant` | `'plain' \| 'morph' \| 'icon'` | `'morph'` | Thumb motion: morph changes the thumb shape while it slides, icon swaps the icons inside it, plain only slides. |
-| `size` | `keyof typeof SIZES` | `'default'` | default matches Switch; lg is bigger so an icon fits in the thumb. |
+| `size` | `keyof typeof SIZES \| 'default'` | `'md'` | md (default) matches Switch; lg is bigger so an icon fits in the thumb. |
 | `icons` | `{ on: ReactNode; off: ReactNode }` | — | Icons shown in the thumb for the on and off states (icon variant). |
 
 ## Usage
@@ -31,7 +31,7 @@ export function MorphToggleUsage() {
 ## States
 
 - plain、morph、icon 三种变体 × 关、开。
-- lg 尺寸给带图标的圆钮。
+- md（默认，与 Switch 同大）；lg 尺寸给带图标的圆钮；旧名 size="default" 等于 md。
 - 禁用降到 45%。
 
 ## Don't

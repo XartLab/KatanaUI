@@ -7,7 +7,7 @@ import { z } from 'zod'
 import { Progress } from '../../index.ts'
 import { Cell, weightSchema } from '../support.tsx'
 
-const TONES = ['default', 'ok', 'warn', 'danger'] as const
+const TONES = ['neutral', 'ok', 'warn', 'danger'] as const
 
 export const KatanaProgressApi = {
   name: 'KatanaProgress',
@@ -24,7 +24,7 @@ export const KatanaProgressApi = {
         .enum(TONES)
         .or(CommonSchemas.DataBinding)
         .describe(
-          "Fill color: 'default', 'ok' (green), 'warn' (amber) or 'danger' (red). State must also be written as text nearby.",
+          "Fill color: 'neutral' (default), 'ok' (green), 'warn' (amber) or 'danger' (red). State must also be written as text nearby.",
         )
         .optional(),
       weight: weightSchema,

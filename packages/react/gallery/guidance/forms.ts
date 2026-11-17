@@ -9,6 +9,8 @@ const forms: GuidanceMap = {
       '下单面板、对话框底部的确认与取消。',
       '工具条上带图标的单点操作（icon 变体）。',
       '表单提交，一个区域只放一个主按钮。',
+      '尺寸只有 sm（26 高）与 md（30 高，默认）；size="icon" 是 28 的正方形，给只有图标的按钮。旧名 size="default" 等于 md，留一个版本（G1，2026-11-18）。',
+      '颜色只读 characteristics（--k-actionable-*），是所有件迁移 token 的模板。',
     ],
     avoid: ['不可撤销的动作（全平、全撤）改用 HoldToConfirm。', '只在两三个选项里切换，用 ToggleGroup。'],
     a11y: [
@@ -19,7 +21,11 @@ const forms: GuidanceMap = {
   },
   input: {
     aliases: ['Text field', 'Input (Salt / Radix)', '文本框'],
-    use: ['填代码、名称、备注这类单行文字。', '放进 Field 里，由 Field 接好标签与错误。'],
+    use: [
+      '填代码、名称、备注这类单行文字。',
+      '放进 Field 里，由 Field 接好标签与错误。',
+      '尺寸 sm（26 高，字 12）与 md（30 高，默认）；旧名 size="default" 等于 md。底、边、聚焦边读 --k-editable-*（4% 白底、8% 白边、聚焦 22% 白边）。',
+    ],
     avoid: ['只收数字、要步进或单位时用 NumberInput。', '收密钥用 PasswordInput。', '几行以上的文字不是这个件。'],
     a11y: [
       '原生 input，读屏名来自关联的 Label（Field 自动接）或自己传的 aria-label。',
@@ -154,7 +160,11 @@ const forms: GuidanceMap = {
       '分段切换',
       'TradingView 周期切换',
     ],
-    use: ['K 线周期、买卖方向、视图模式这类二到五项的互斥切换。', '设置页里少量选项并排摆开。'],
+    use: [
+      'K 线周期、买卖方向、视图模式这类二到五项的互斥切换。',
+      '设置页里少量选项并排摆开。',
+      '尺寸用 size：md（默认，设置页：有边框、按钮 24 高）与 sm（工具条：无边框、选中块滑动）。原来叫 variant="default | sm"，体检认定那是尺寸，改名 size；variant 留一个版本（G1，2026-11-18）。',
+    ],
     avoid: ['选项多于五个用 Select。', '切换页面内容用 Tabs。'],
     a11y: [
       '整组 role=group，每个按钮是 aria-pressed 的开关，读屏读「已按下 / 未按下」。',

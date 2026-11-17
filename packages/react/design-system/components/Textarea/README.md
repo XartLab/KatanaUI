@@ -12,7 +12,7 @@
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `size` | `'default' \| 'sm'` | — | Font size: sm uses the data type size. |
+| `size` | `InputSize \| 'default'` | — | Font size: sm uses the data type size, md (default) the body size; `'default'` is the deprecated name of md. |
 
 ## Usage
 

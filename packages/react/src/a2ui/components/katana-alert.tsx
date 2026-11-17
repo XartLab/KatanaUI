@@ -12,8 +12,8 @@ export const KatanaAlertApi = {
   schema: z
     .object({
       tone: z
-        .enum(['default', 'ok', 'warn', 'danger'])
-        .default('default')
+        .enum(['neutral', 'ok', 'warn', 'danger'])
+        .default('neutral')
         .describe("Tone of the notice. 'warn' and 'danger' are announced to screen readers at once.")
         .optional(),
       title: CommonSchemas.DynamicString.describe(
