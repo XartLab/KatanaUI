@@ -4,7 +4,17 @@
 // 属性表不手写（#1902）：页上只记「哪几个部件、各一句说明」（propParts），每个部件的自有属性由 pnpm docs:props 从 TS 类型与 JSDoc 生成到 props.generated.json；
 // 继承来的 DOM / Radix 属性不逐条列，note 里写透传给谁。每页的「用法」是 usage/<页 id>.tsx：真实可运行的最小例子，页上渲染它也展示它的源码（Vite ?raw）。
 
-export type GroupId = 'forms' | 'overlays' | 'layout' | 'readouts' | 'feedback' | 'quotes' | 'quant' | 'blocks'
+export type GroupId =
+  | 'forms'
+  | 'overlays'
+  | 'layout'
+  | 'readouts'
+  | 'feedback'
+  | 'motion'
+  | 'ai'
+  | 'quotes'
+  | 'quant'
+  | 'blocks'
 
 export const GROUPS: readonly { id: GroupId; title: string }[] = [
   { id: 'forms', title: '表单控件' },
@@ -12,6 +22,10 @@ export const GROUPS: readonly { id: GroupId; title: string }[] = [
   { id: 'layout', title: '布局与导航' },
   { id: 'readouts', title: '读数与状态' },
   { id: 'feedback', title: '反馈' },
+  // 动效：文字进场、切换过场、背景与特效（多数照 SmoothUI 改，MIT）；信息流不只靠闪烁。
+  { id: 'motion', title: '动效' },
+  // AI：对话、推理、工具调用、审批、来源（交易里 AI 建议要人审，审批件是关键）。
+  { id: 'ai', title: 'AI' },
   { id: 'quotes', title: '报价与行情' },
   { id: 'quant', title: '量化' },
   { id: 'blocks', title: '积木' },
