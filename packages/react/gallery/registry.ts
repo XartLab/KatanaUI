@@ -2649,14 +2649,14 @@ export const PAGES: readonly DocPage[] = [
     id: 'calendar-heatmap',
     group: 'quant',
     cardHeight: 560,
-    title: 'CalendarHeatmap 日历',
+    title: 'CalendarHeatmap 日历热力图',
     summary:
       '月历格：底色是收益（或换手）的低饱和发散热力，格内日期左上、数值右下，左下点阵事件点（最多 3 个，更多写 +n）；休市日灰底写「休」，今天强调色描边，周标 W40。切「事件」视图时格子不着色。mode 为 year 是整年的格子。对设计稿的 Calendar 卡；功能参照 Arc 的 Activity heatmap。',
     exports: ['CalendarHeatmap'],
     props: [
       {
         part: 'CalendarHeatmap',
-        note: '日期是不带时区的日历日 YYYY-MM-DD，按 UTC 零点算。外观读 CSS 变量，见 theme/chart-kit.css 开头。年视图用的是整年的格子（一周一列），不是 12 个缩小月历（待定：第一版先做整年格子）。',
+        note: '日期是不带时区的日历日 YYYY-MM-DD，用 @internationalized/date 的 CalendarDate 算（不碰本地时区）。样式在 theme/calendar-heatmap.css。年视图用的是整年的格子（一周一列），不是 12 个缩小月历（待定：第一版先做整年格子）。',
         rows: [
           {
             name: 'days',

@@ -4760,7 +4760,7 @@
     },
     "CalendarItem": {
       "kind": "type",
-      "source": "src/quant/event-calendar.tsx",
+      "source": "src/quant/event-calendar-types.ts",
       "props": []
     },
     "ChainDirection": {
@@ -9707,7 +9707,7 @@
     },
     "EarningsLink": {
       "kind": "type",
-      "source": "src/quant/event-calendar.tsx",
+      "source": "src/quant/event-calendar-types.ts",
       "props": [
         {
           "name": "key",
@@ -10412,7 +10412,7 @@
     },
     "EventCalendarLabels": {
       "kind": "type",
-      "source": "src/quant/event-calendar.tsx",
+      "source": "src/quant/event-calendar-types.ts",
       "props": [
         {
           "name": "list",
@@ -10550,7 +10550,7 @@
     },
     "EventCalendarProps": {
       "kind": "type",
-      "source": "src/quant/event-calendar.tsx",
+      "source": "src/quant/event-calendar-types.ts",
       "props": [
         {
           "name": "events",
@@ -14309,7 +14309,7 @@
     },
     "HeatmapColorBy": {
       "kind": "type",
-      "source": "src/quant/market-heatmap.tsx",
+      "source": "src/quant/market-heatmap-types.ts",
       "props": [
         {
           "name": "key",
@@ -14351,7 +14351,7 @@
     },
     "HeatmapDisplayLabels": {
       "kind": "type",
-      "source": "src/quant/market-heatmap.tsx",
+      "source": "src/quant/market-heatmap-types.ts",
       "props": [
         {
           "name": "logo",
@@ -14375,7 +14375,7 @@
     },
     "HeatmapItem": {
       "kind": "type",
-      "source": "src/quant/market-heatmap.tsx",
+      "source": "src/quant/market-heatmap-types.ts",
       "props": [
         {
           "name": "code",
@@ -14423,12 +14423,12 @@
     },
     "HeatmapScheme": {
       "kind": "type",
-      "source": "src/quant/market-heatmap.tsx",
+      "source": "src/quant/market-heatmap-types.ts",
       "props": []
     },
     "HeatmapSizeBy": {
       "kind": "type",
-      "source": "src/quant/market-heatmap.tsx",
+      "source": "src/quant/market-heatmap-types.ts",
       "props": [
         {
           "name": "key",
@@ -14458,12 +14458,12 @@
     },
     "HeatmapTitleMode": {
       "kind": "type",
-      "source": "src/quant/market-heatmap.tsx",
+      "source": "src/quant/market-heatmap-types.ts",
       "props": []
     },
     "HeatmapValueMode": {
       "kind": "type",
-      "source": "src/quant/market-heatmap.tsx",
+      "source": "src/quant/market-heatmap-types.ts",
       "props": []
     },
     "Histogram": {
@@ -17571,7 +17571,7 @@
     },
     "MarketHeatmapLabels": {
       "kind": "type",
-      "source": "src/quant/market-heatmap.tsx",
+      "source": "src/quant/market-heatmap-types.ts",
       "props": [
         {
           "name": "sizeBy",
@@ -17685,7 +17685,7 @@
     },
     "MarketHeatmapProps": {
       "kind": "type",
-      "source": "src/quant/market-heatmap.tsx",
+      "source": "src/quant/market-heatmap-types.ts",
       "props": [
         {
           "name": "items",
@@ -27607,7 +27607,7 @@
     },
     "SeriesExplorerColumn": {
       "kind": "type",
-      "source": "src/blocks/series-explorer/series-explorer.tsx",
+      "source": "src/blocks/series-explorer/series-explorer-types.ts",
       "props": [
         {
           "name": "key",
@@ -27637,7 +27637,7 @@
     },
     "SeriesExplorerLabels": {
       "kind": "type",
-      "source": "src/blocks/series-explorer/series-explorer.tsx",
+      "source": "src/blocks/series-explorer/series-explorer-types.ts",
       "props": [
         {
           "name": "chart",
@@ -27727,7 +27727,7 @@
     },
     "SeriesExplorerProps": {
       "kind": "type",
-      "source": "src/blocks/series-explorer/series-explorer.tsx",
+      "source": "src/blocks/series-explorer/series-explorer-types.ts",
       "props": [
         {
           "name": "points",

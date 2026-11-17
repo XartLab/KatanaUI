@@ -11905,6 +11905,85 @@ button.k-quote-card.is-link:focus-visible {
   font-size: .85em;
 }
 
+.k-plot-cross {
+  background: var(--chart-crosshair);
+  pointer-events: none;
+  width: 1px;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+}
+
+.k-plot-xaxis {
+  height: 14px;
+  color: var(--chart-axis);
+  position: relative;
+}
+
+.k-plot-xaxis > span {
+  white-space: nowrap;
+  position: absolute;
+  translate: round(-50%, 1px);
+}
+
+.k-plot-xaxis > span[data-align="start"] {
+  transform: none;
+}
+
+.k-plot-xaxis > span[data-align="end"] {
+  transform: translateX(-100%);
+}
+
+.k-plot-readout {
+  min-height: 16px;
+  color: var(--ink-100);
+  font: var(--text-data) var(--font-num);
+}
+
+.k-plot-zero {
+  stroke: var(--line-200);
+  stroke-width: 1px;
+  vector-effect: non-scaling-stroke;
+}
+
+.k-dist-bar {
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+  display: flex;
+}
+
+.k-ck-table th:not(:first-child), .k-ck-table td {
+  text-align: left;
+  white-space: normal;
+}
+
+.k-ck-table [data-num="true"] {
+  text-align: right;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.k-dist-source {
+  color: var(--ink-300);
+  font: var(--text-caption) var(--font-sans-small);
+  margin: 0;
+}
+
+.k-ridge [hidden], .k-scatter [hidden], .k-slope [hidden], .k-uptime [hidden], .k-galaxy [hidden] {
+  display: none !important;
+}
+
+.k-ck-table[data-virtual="true"] tbody tr {
+  height: 28px;
+}
+
+.k-ck-table[data-virtual="true"] th, .k-ck-table[data-virtual="true"] td {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
 .k-brush {
   min-width: 0;
   color: var(--ink-200);
@@ -11938,12 +12017,6 @@ button.k-quote-card.is-link:focus-visible {
   overflow: visible;
 }
 
-.k-plot-grid {
-  stroke: var(--chart-grid);
-  stroke-width: 1px;
-  vector-effect: non-scaling-stroke;
-}
-
 .k-brush-line, .k-brush-strip-line {
   fill: none;
   stroke: var(--ink-100);
@@ -11958,61 +12031,6 @@ button.k-quote-card.is-link:focus-visible {
 
 .k-brush-area, .k-brush-strip-area {
   stroke: none;
-}
-
-.k-plot-ytick {
-  color: var(--chart-axis);
-  font: var(--text-caption) var(--font-num-small);
-  pointer-events: none;
-  position: absolute;
-  left: 0;
-  transform: translateY(-100%);
-}
-
-.k-plot-cross {
-  background: var(--chart-crosshair);
-  pointer-events: none;
-  width: 1px;
-  position: absolute;
-  top: 0;
-  bottom: 0;
-}
-
-.k-plot-dot {
-  background: var(--series-1);
-  width: 8px;
-  height: 8px;
-  box-shadow: 0 0 0 2px var(--bg-100);
-  pointer-events: none;
-  border-radius: 50%;
-  margin: -4px 0 0 -4px;
-  position: absolute;
-}
-
-.k-plot-xaxis {
-  height: 14px;
-  color: var(--chart-axis);
-  position: relative;
-}
-
-.k-plot-xaxis > span {
-  white-space: nowrap;
-  position: absolute;
-  translate: round(-50%, 1px);
-}
-
-.k-plot-xaxis > span[data-align="start"] {
-  transform: none;
-}
-
-.k-plot-xaxis > span[data-align="end"] {
-  transform: translateX(-100%);
-}
-
-.k-plot-readout {
-  min-height: 16px;
-  color: var(--ink-100);
-  font: var(--text-data) var(--font-num);
 }
 
 .k-brush .k-plot-xaxis {
@@ -12083,12 +12101,6 @@ button.k-quote-card.is-link:focus-visible {
   top: 25%;
   bottom: 25%;
   left: 5px;
-}
-
-.k-plot-zero {
-  stroke: var(--line-200);
-  stroke-width: 1px;
-  vector-effect: non-scaling-stroke;
 }
 
 .k-attr {
@@ -14018,6 +14030,10 @@ button.k-sm-head:focus-visible {
   font-variant-numeric: tabular-nums;
 }
 
+.k-galaxy-bar {
+  justify-content: space-between;
+}
+
 .k-ql {
   flex-direction: column;
   gap: 8px;
@@ -14202,48 +14218,6 @@ button.k-sm-head:focus-visible {
   color: var(--ink-300);
   font: var(--text-caption) var(--font-sans-small);
   margin: 0;
-}
-
-.k-dist-bar {
-  justify-content: flex-end;
-  align-items: center;
-  gap: 8px;
-  display: flex;
-}
-
-.k-ck-table th:not(:first-child), .k-ck-table td {
-  text-align: left;
-  white-space: normal;
-}
-
-.k-ck-table [data-num="true"] {
-  text-align: right;
-  white-space: nowrap;
-  font-variant-numeric: tabular-nums;
-}
-
-.k-dist-source {
-  color: var(--ink-300);
-  font: var(--text-caption) var(--font-sans-small);
-  margin: 0;
-}
-
-.k-ridge [hidden], .k-scatter [hidden], .k-slope [hidden], .k-uptime [hidden], .k-galaxy [hidden] {
-  display: none !important;
-}
-
-.k-galaxy-bar {
-  justify-content: space-between;
-}
-
-.k-ck-table[data-virtual="true"] tbody tr {
-  height: 28px;
-}
-
-.k-ck-table[data-virtual="true"] th, .k-ck-table[data-virtual="true"] td {
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  overflow: hidden;
 }
 
 .k-ladder {
@@ -14491,19 +14465,6 @@ button.k-sm-head:focus-visible {
   overflow: hidden;
 }
 
-.k-ecal-tabs {
-  margin: 0 var(--inset-x);
-  align-self: flex-start;
-}
-
-.k-ecal-panel {
-  gap: var(--space-2);
-  flex-direction: column;
-  flex: auto;
-  min-height: 0;
-  display: flex;
-}
-
 .k-ecal-scroll {
   flex: auto;
   min-height: 0;
@@ -14535,16 +14496,6 @@ button.k-sm-head:focus-visible {
   align-items: center;
   column-gap: 8px;
   display: grid;
-}
-
-.k-ecal-columns {
-  height: 20px;
-  color: var(--ink-300);
-  font: 500 11px/14px var(--font-sans);
-}
-
-.k-ecal-columns .is-num {
-  text-align: right;
 }
 
 .k-ecal-list {
@@ -14646,47 +14597,6 @@ button.k-sm-head:focus-visible {
 }
 
 .k-ecal-level i.is-on {
-  background: var(--ink-100);
-}
-
-.k-ecal-imp {
-  background: var(--alpha-white-3);
-  border-radius: 8px;
-  gap: 2px;
-  padding: 2px;
-  display: inline-flex;
-}
-
-.k-ecal-imp-btn {
-  cursor: pointer;
-  background: none;
-  border: 0;
-  border-radius: 6px;
-  justify-content: center;
-  align-items: center;
-  width: 28px;
-  height: 24px;
-  display: inline-flex;
-}
-
-.k-ecal-imp-btn:hover {
-  background: var(--alpha-white-5);
-}
-
-.k-ecal-imp-btn[aria-pressed="true"] {
-  background: var(--alpha-white-10);
-}
-
-.k-ecal-imp-btn:focus-visible {
-  outline: 1px solid var(--line-200);
-  outline-offset: -1px;
-}
-
-.k-ecal-imp-btn .k-ecal-level i {
-  background: var(--alpha-white-11);
-}
-
-.k-ecal-imp-btn .k-ecal-level i.is-on {
   background: var(--ink-100);
 }
 
