@@ -38,6 +38,7 @@ import {
   type SeriesDef,
   type SeriesPoint,
 } from './series-explorer-model.ts'
+import { fontFor, measureText } from '../../lib/text-measure.ts'
 
 export type SeriesExplorerColumn = {
   key: string
@@ -504,11 +505,11 @@ export function SeriesExplorer({
                     const x = plot.xAt(i)
                     const y = plot.yAt(value)
                     // 引线与标签的避让（简单版）：四个方向（上 / 下 × 右 / 左）按「空间大的一侧、靠右的往左」排好先后，
-                    // 取第一个标签框不压数据线的；都压就用第一个。不量宽度，按 700px 估（1px ≈ PLOT_W / 700）；
+                    // 取第一个标签框不压数据线的；都压就用第一个。标签字宽用 pretext 量（2026-11-17），绘图区宽仍按 700px 估（1px ≈ PLOT_W / 700）；
                     // 长度取到边缘留 16px 为止（标签半行高 8px 加余量）（10–28px）。
                     const run = 28
                     const pxToX = PLOT_W / 700
-                    const textW = (event.label.length * 7 + 22) * pxToX
+                    const textW = (measureText(event.label, fontFor(400, 11, '--font-sans-small')) + 22) * pxToX
                     const prefTop = y > chartHeight / 2
                     const prefRight = x <= PLOT_W * 0.65
                     const choices = [

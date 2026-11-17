@@ -22521,6 +22521,11 @@
       "source": "src/blocks/strategy-report/strategy-report-model.ts",
       "props": []
     },
+    "fitsWidth": {
+      "kind": "function",
+      "source": "src/lib/text-measure.ts",
+      "props": []
+    },
     "focusRing": {
       "kind": "value",
       "source": "src/lib/focus.ts",
@@ -22529,6 +22534,11 @@
     "focusRingInset": {
       "kind": "value",
       "source": "src/lib/focus.ts",
+      "props": []
+    },
+    "fontFor": {
+      "kind": "function",
+      "source": "src/lib/text-measure.ts",
       "props": []
     },
     "fontVariables": {
@@ -22870,6 +22880,11 @@
         }
       ]
     },
+    "measureText": {
+      "kind": "function",
+      "source": "src/lib/text-measure.ts",
+      "props": []
+    },
     "menuContainerClass": {
       "kind": "value",
       "source": "src/primitives/menu-parts.tsx",
@@ -23010,6 +23025,11 @@
     "reorderColumn": {
       "kind": "function",
       "source": "src/blocks/data-grid/layout-model.ts",
+      "props": []
+    },
+    "resetTextMeasure": {
+      "kind": "function",
+      "source": "src/lib/text-measure.ts",
       "props": []
     },
     "resolveRamp": {
@@ -23320,6 +23340,11 @@
       "source": "src/primitives/tabs.tsx",
       "props": []
     },
+    "textHeight": {
+      "kind": "function",
+      "source": "src/lib/text-measure.ts",
+      "props": []
+    },
     "toggleGroupVariants": {
       "kind": "function",
       "source": "src/primitives/toggle-group.tsx",
@@ -23338,6 +23363,11 @@
     "tooltipContentClass": {
       "kind": "value",
       "source": "src/primitives/tooltip.tsx",
+      "props": []
+    },
+    "truncateText": {
+      "kind": "function",
+      "source": "src/lib/text-measure.ts",
       "props": []
     },
     "uptimeShare": {
@@ -23477,6 +23507,11 @@
     "vintageExtent": {
       "kind": "function",
       "source": "src/quant/vintage-series-model.ts",
+      "props": []
+    },
+    "wrapText": {
+      "kind": "function",
+      "source": "src/lib/text-measure.ts",
       "props": []
     }
   }

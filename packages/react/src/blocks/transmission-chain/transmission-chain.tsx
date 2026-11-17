@@ -11,7 +11,6 @@ import {
   layoutChain,
   smoothPath,
   statusTotals,
-  textWidth,
   validEdges,
   zoomAt,
   type ChainDirection,
@@ -21,6 +20,7 @@ import {
   type View,
 } from './transmission-chain-model.ts'
 import type { EvidenceKind, HypothesisEvidence } from '../hypothesis-ledger/hypothesis-ledger-model.ts'
+import { fontFor, measureText, truncateText } from '../../lib/text-measure.ts'
 
 // 传导链图（#44）：有向图，节点是传导环节，边是传导关系；每条边有验证状态（未检验 / 有证据支持 / 证据反对 / 部分）和证据计数，
 // 点边在右侧出证据列表与失败条件，点节点列出它的上下游边；支持沿链回到上游的反馈边。布局用 dagre（MIT），可缩放平移。
@@ -87,18 +87,14 @@ const chipText = (edge: ChainEdge, labels: TransmissionChainLabels) => {
   const c = evidenceCounts(edge)
   return [edge.label, edge.evidence?.length ? labels.counts(c.support, c.oppose) : ''].filter(Boolean).join(' ')
 }
+/** 边上标签胶囊的字（11px 说明档）与节点名（12px 半粗体）的字体：用 pretext 量真实字宽（2026-11-17），不再按全角 12、半角 7 估。 */
+const CHIP_FONT = () => fontFor(400, 11, '--font-sans-small')
+const NODE_FONT = () => fontFor(600, 12, '--font-sans')
 const chipWidth = (edge: ChainEdge, labels: TransmissionChainLabels) =>
-  CHIP_PAD * 2 + ICON_SIZE + 4 + textWidth(chipText(edge, labels))
+  CHIP_PAD * 2 + ICON_SIZE + 4 + Math.ceil(measureText(chipText(edge, labels), CHIP_FONT()))
 
-function clip(text: string, max: number) {
-  if (textWidth(text) <= max) return text
-  let out = ''
-  for (const char of text) {
-    if (textWidth(out + char + '…') > max) break
-    out += char
-  }
-  return `${out}…`
-}
+/** 节点名放不下就截尾加省略号（SVG 里没有 text-overflow）。 */
+const clip = (text: string, max: number) => truncateText(text, NODE_FONT(), max)
 
 export function TransmissionChain({
   nodes,

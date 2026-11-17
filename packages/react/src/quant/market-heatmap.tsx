@@ -32,6 +32,7 @@ import {
   type Direction,
   type HeatStep,
 } from './market-heatmap-model.ts'
+import { fontFor, measureText } from '../lib/text-measure.ts'
 
 // 市场热力图（#15）：照 TradingView 的股票热力图（帮助中心「TradingView heatmaps: from global trends to details」，2026-11-15 读）：
 // 格子面积是所选的大小指标（市值、成交额，或等大），颜色是所选的着色指标落在哪一档，按行业分组或平铺；点组名放大到只看这一组，点格子是选中，
@@ -123,9 +124,8 @@ export type HeatmapDisplayLabels = {
 export type HeatmapTitleMode = 'none' | 'code' | 'name'
 export type HeatmapValueMode = 'none' | 'price' | 'size' | 'change'
 
-/** 一行字估多宽（像素，12px 半粗体）：汉字 12，其余 7.4。 */
-const textWidth = (text: string) =>
-  Array.from(text).reduce((sum, ch) => sum + (/[\u2e80-\u9fff\uff00-\uffef]/.test(ch) ? 12 : CODE_CHAR_W), 0)
+/** 格内代码 / 名字的真实宽度（像素，12px 半粗体数据字）：用 pretext 量，不再按每字 7.4 估（2026-11-17）。 */
+const textWidth = (text: string) => measureText(text, fontFor(600, 12, '--font-num'))
 
 export type MarketHeatmapProps = {
   items: readonly HeatmapItem[]
@@ -158,9 +158,8 @@ export type MarketHeatmapProps = {
   className?: string
 }
 
-/** 格子多小就不写字（像素）：宽要放得下整个代码（每个字约 7.4，两边内距共 10；12px 半粗体量的），不然画出来是被截断的半截代码；再加一行读数要更高。 */
+/** 格子多小就不写字（像素）：宽要放得下整个代码（pretext 量的真实字宽，两边内距共 10），不然画出来是被截断的半截代码；再加一行读数要更高。 */
 const MIN_CODE_W = 40
-const CODE_CHAR_W = 7.4
 const CODE_PAD_W = 10
 const MIN_CODE_H = 24
 const MIN_VALUE_H = 40

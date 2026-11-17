@@ -409,6 +409,22 @@
       ]
     },
     {
+      "name": "text-measure",
+      "type": "registry:lib",
+      "title": "Text Measure",
+      "description": "不碰 DOM 量文字：一行多宽、放不放得下、放不下截尾加省略号、按宽度折成几行、一段字多高。包一层 @chenglou/pretext（MIT）：同一段字同一字体只准备一次，宽度变了只重算排版。给 SVG / canvas 里的字（没有自动换行与省略号）、按字宽决定写不写字的格子、按内容定列宽、虚拟列表预先定行高用。字体按 CSS 变量解析成具名字体（去掉 -apple-system 这类量不准的系统别名）；Web 字体加载完、缩放、换字体时自动清缓存；没有 canvas 的环境退回估宽。",
+      "dependencies": [
+        "@chenglou/pretext@1.0.0"
+      ],
+      "files": [
+        {
+          "path": "src/lib/text-measure.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/lib/text-measure.ts"
+        }
+      ]
+    },
+    {
       "name": "use-persisted-state",
       "type": "registry:lib",
       "title": "Use Persisted State",
@@ -2581,6 +2597,7 @@
         "@katana/select",
         "@katana/switch",
         "@katana/symbol-mark",
+        "@katana/text-measure",
         "@katana/toggle-group",
         "@katana/treemap-model"
       ],
@@ -3169,6 +3186,7 @@
         "@katana/series-geometry",
         "@katana/spark-tile",
         "@katana/switch",
+        "@katana/text-measure",
         "@katana/toggle-group",
         "@katana/toolbar",
         "@katana/use-scrubber"
@@ -3475,7 +3493,8 @@
       "registryDependencies": [
         "@katana/button",
         "@katana/cn",
-        "@katana/hypothesis-ledger"
+        "@katana/hypothesis-ledger",
+        "@katana/text-measure"
       ],
       "files": [
         {

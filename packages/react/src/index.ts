@@ -153,6 +153,15 @@ export {
   type FontRole,
 } from './patterns/font-catalog.ts'
 export { SideNav, type SideNavGroup, type SideNavItem, type SideNavProps } from './patterns/side-nav.tsx'
+export {
+  fitsWidth,
+  fontFor,
+  measureText,
+  resetTextMeasure,
+  textHeight,
+  truncateText,
+  wrapText,
+} from './lib/text-measure.ts'
 export { ViewSwitcher, type ViewOption, type ViewSwitcherProps } from './patterns/view-switcher.tsx'
 export {
   applyFilters,

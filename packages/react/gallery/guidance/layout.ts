@@ -3,6 +3,16 @@
 import type { GuidanceMap } from './types'
 
 const layout: GuidanceMap = {
+  'text-measure': {
+    aliases: ['pretext', 'Text measurement', 'measureText', 'Line clamp'],
+    use: [
+      'SVG / canvas 里的标签要截断或折行。',
+      '按字宽决定格子里写不写字、写代码还是全名。',
+      '按内容定列宽、给虚拟列表预先定行高。',
+    ],
+    avoid: ['HTML 里的单行省略，用 CSS text-overflow。', '要双向文字（阿拉伯文、希伯来文）的视觉顺序：它不处理 bidi。'],
+    a11y: ['截断的字要把全文给读屏（SVG 的 aria-label 或 title）。'],
+  },
   tabs: {
     aliases: ['Tab', 'Tab bar', 'Segmented control', 'Tabbed pane'],
     use: ['同一块区域里切换几个并列的视图，一次只看一个。', '视图之间是平级关系，切换不换页、不丢上下文。'],

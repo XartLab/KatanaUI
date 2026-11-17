@@ -3348,6 +3348,49 @@ export const PAGES: readonly DocPage[] = [
     ],
   },
   {
+    id: 'text-measure',
+    group: 'layout',
+    cardHeight: 300,
+    title: 'measureText 文字测量',
+    summary:
+      '不碰 DOM 量文字：一行多宽、放不放得下、放不下截尾加省略号、按宽度折成几行、一段字多高。包一层 @chenglou/pretext（MIT）：同一段字同一字体只准备一次，宽度变了只重算排版。给 SVG / canvas 里的字（没有自动换行与省略号）、按字宽决定写不写字的格子、按内容定列宽、虚拟列表预先定行高用。字体按 CSS 变量解析成具名字体（去掉 -apple-system 这类量不准的系统别名）；Web 字体加载完、缩放、换字体时自动清缓存；没有 canvas 的环境退回估宽。',
+    exports: ['measureText', 'fitsWidth', 'truncateText', 'wrapText', 'textHeight', 'fontFor', 'resetTextMeasure'],
+    props: [
+      {
+        part: 'measureText',
+        rows: [
+          { name: 'measureText(text, font)', type: 'number', desc: '一行字的宽度（像素，像 max-content）。' },
+          { name: 'fitsWidth(text, font, maxWidth)', type: 'boolean', desc: '放不放得下，留 2px 余量。' },
+          {
+            name: 'truncateText(text, font, maxWidth, ellipsis?)',
+            type: 'string',
+            desc: '放不下就按字素截尾加省略号。',
+          },
+          {
+            name: 'wrapText(text, font, maxWidth, lineHeight, maxLines?)',
+            type: '{ lines, height }',
+            desc: '折成多行；超过 maxLines 的折进最后一行加省略号。',
+          },
+          { name: 'textHeight(text, font, maxWidth, lineHeight)', type: 'number', desc: '一段字的高度，给虚拟列表。' },
+          {
+            name: 'fontFor(weight, sizePx, familyVar?, element?)',
+            type: 'string',
+            desc: '拼 canvas 字体串：读 CSS 字体变量（默认 --font-sans），去掉系统别名。',
+          },
+          { name: 'resetTextMeasure()', type: 'void', desc: '手动清缓存（字体变了而自动监听没覆盖到时）。' },
+        ],
+      },
+    ],
+    states: ['有 canvas：pretext 实测', '没有 canvas（单测、服务端渲染）：按全角 1em、半角 0.6em 估'],
+    donts: [
+      '不要在每次渲染里 prepare 新文本又丢掉：同一段字会缓存，别拼随机串',
+      '能用 CSS 的 text-overflow 解决的 HTML 文字不用它',
+    ],
+    composition:
+      'measureText / fitsWidth / truncateText / wrapText / textHeight\n  fontFor（字体串）\n  @chenglou/pretext（prepare → layout）',
+    keys: [],
+  },
+  {
     id: 'side-nav',
     group: 'layout',
     cardHeight: 520,
