@@ -13,7 +13,7 @@
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
 | `size` | `ToggleGroupSize` | — | Size: md (default) is the bordered settings style, sm is the 26px toolbar style. |
-| `variant` | `'default' \| 'sm'` | — |  |
+| `variant` | `'default' \| 'sm'` | — | Old name of size: 'default' is md, 'sm' is sm. |
 | `pillClassName` | `string` | — | Extra class name on the selected pill. |
 | `textClassName` | `string` | — | Extra class name on the text wrapper. |
 | `value` * | `string \| null` | — | The selected item; null means none is selected. |

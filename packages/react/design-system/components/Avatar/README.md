@@ -54,7 +54,7 @@ export function AvatarUsage() {
 
 ## States
 
-- 图片加载中或失败：显示 fallback（缩写）。
+- 图片加载中或失败：显示 fallback（缩写），7% 白底、ink-200 字（ink-300 在 Console 下只有 4.42:1）。
 - 有 status：右下角一个状态点（在线、离开、忙碌、离线），读屏名由 statusLabel 给。
 - 在 AvatarGroup 里：叠放、环形描边，超过 max 的折成 +N。
 

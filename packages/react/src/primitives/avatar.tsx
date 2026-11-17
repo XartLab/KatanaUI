@@ -6,6 +6,7 @@ import { cn } from '../lib/cn.ts'
 
 // 头像：图片加载失败或还没到就显示 fallback（缩写）；右下角可挂在线状态点；AvatarGroup 叠放并把多出的折成 +N。
 // 状态点与 +N 的读屏名由调用方传（labels / statusLabel），包里不带文字。底座是 Radix Avatar。
+// 缩写与 +N 的字用 ink-200（--k-content-body-foreground）：ink-300 压在 7% 白的底上 Console 下只有 4.42:1（G1 axe 查出，2026-11-18）。
 
 export type AvatarSize = 'sm' | 'md' | 'lg'
 export type AvatarStatusValue = 'online' | 'away' | 'busy' | 'offline'
@@ -63,7 +64,7 @@ export function Avatar({ src, alt, fallback, size, status, statusLabel, classNam
         <AvatarPrimitive.Fallback
           aria-label={alt}
           role="img"
-          className="flex size-full items-center justify-center rounded-full bg-(--k-container-subtle-background) font-medium text-(color:--k-content-secondary-foreground) uppercase ring-1 ring-(color:--k-container-bold-borderColor) ring-inset"
+          className="flex size-full items-center justify-center rounded-full bg-(--k-container-subtle-background) font-medium text-(color:--k-content-body-foreground) uppercase ring-1 ring-(color:--k-container-bold-borderColor) ring-inset"
         >
           {fallback}
         </AvatarPrimitive.Fallback>
@@ -122,7 +123,7 @@ export function AvatarGroup({ children, label, max, size = 'md', overflowLabel, 
             aria-label={overflowLabel?.(hidden)}
             data-slot="avatar-overflow"
             className={cn(
-              'inline-flex shrink-0 items-center justify-center rounded-full bg-(--k-container-subtle-background) font-medium text-(color:--k-content-secondary-foreground) tabular-nums select-none',
+              'inline-flex shrink-0 items-center justify-center rounded-full bg-(--k-container-subtle-background) font-medium text-(color:--k-content-body-foreground) tabular-nums select-none',
               SIZE[size],
             )}
           >
