@@ -11,7 +11,7 @@ import { cn } from '../../lib/cn.ts'
 import { pad } from '../../lib/num.ts'
 import { ToggleGroup, ToggleGroupItem } from '../../primitives/toggle-group.tsx'
 import { SymbolMark } from '../../katana/symbol-mark.tsx'
-import { LcdTooltip } from '../../quant/chart-kit/lcd-tooltip.tsx'
+import { LcdTooltip } from '../../lib/chart/chart-kit/lcd-tooltip.tsx'
 import { Toolbar, ToolbarGroup, ToolButton } from '../toolbar/toolbar.tsx'
 import {
   ATTRIBUTION_MAX_ITEMS,

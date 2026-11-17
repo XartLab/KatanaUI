@@ -6,7 +6,7 @@ import { RollingText } from '../katana/rolling-text.tsx'
 import { RowActions, RowContextMenu, type RowAction } from '../patterns/row-actions.tsx'
 import { SymbolMark } from '../katana/symbol-mark.tsx'
 import { ChangeText } from './change-text.tsx'
-import { formatVolume } from './format/index.ts'
+import { formatVolume } from '../lib/chart/format/index.ts'
 
 // 连板天梯（#12）：顶上一行汇总读数，下面按板位从高到低分层，层头写板位、只数与晋级率，层里列个股；炸板、跌停、没涨停的票文字淡显、状态胶囊保持全亮。
 // 画法参照 KATANAview 的「涨停梯队」（分组列表 + 晋级条 + 状态标签，用户在看板截图里看过），只取结构与版式，实现在这里重写。

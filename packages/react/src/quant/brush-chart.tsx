@@ -15,12 +15,12 @@ import {
   moveWindow,
   resizeWindow,
   type BrushWindow,
-} from './brush-model.ts'
-import { DotFill, useDotId } from './chart-kit/dot-fill.tsx'
-import { EndMarker } from './chart-kit/end-marker.tsx'
-import { LcdTooltip } from './chart-kit/lcd-tooltip.tsx'
-import { PlotGrid, PlotYAxis } from './chart-kit/plot-axes.tsx'
-import { areaPath, extent, linePath, makePlot, pct, PLOT_W } from './series-geometry.ts'
+} from '../lib/chart/brush-model.ts'
+import { DotFill, useDotId } from '../lib/chart/chart-kit/dot-fill.tsx'
+import { EndMarker } from '../lib/chart/chart-kit/end-marker.tsx'
+import { LcdTooltip } from '../lib/chart/chart-kit/lcd-tooltip.tsx'
+import { PlotGrid, PlotYAxis } from '../lib/chart/chart-kit/plot-axes.tsx'
+import { areaPath, extent, linePath, makePlot, pct, PLOT_W } from '../lib/chart/series-geometry.ts'
 
 export type BrushLabels = {
   /** 窗口左端手柄的读屏名。 */

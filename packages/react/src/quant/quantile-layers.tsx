@@ -6,13 +6,13 @@
 import { useState, type ReactNode } from 'react'
 import { cn } from '../lib/cn.ts'
 import { useScrubber } from '../lib/use-scrubber.ts'
-import { ChartActions, type ChartActionsLabels } from './chart-kit/chart-actions.tsx'
-import { ChartValue, type ChartValueText } from './chart-kit/chart-value.tsx'
-import { DotFill, useDotId } from './chart-kit/dot-fill.tsx'
-import { EndMarker } from './chart-kit/end-marker.tsx'
-import { LcdTooltip } from './chart-kit/lcd-tooltip.tsx'
-import { PlotGrid, PlotYAxis } from './chart-kit/plot-axes.tsx'
-import { seqColor } from './chart-kit/series-colors.ts'
+import { ChartActions, type ChartActionsLabels } from '../lib/chart/chart-kit/chart-actions.tsx'
+import { ChartValue, type ChartValueText } from '../lib/chart/chart-kit/chart-value.tsx'
+import { DotFill, useDotId } from '../lib/chart/chart-kit/dot-fill.tsx'
+import { EndMarker } from '../lib/chart/chart-kit/end-marker.tsx'
+import { LcdTooltip } from '../lib/chart/chart-kit/lcd-tooltip.tsx'
+import { PlotGrid, PlotYAxis } from '../lib/chart/chart-kit/plot-axes.tsx'
+import { seqColor } from '../lib/chart/chart-kit/series-colors.ts'
 import {
   isMonotonic,
   layerLevel,
@@ -22,7 +22,7 @@ import {
   sortLayers,
   type QuantileLayer,
 } from './quantile-model.ts'
-import { areaPath, linePath, makePlot, pct, PLOT_W } from './series-geometry.ts'
+import { areaPath, linePath, makePlot, pct, PLOT_W } from '../lib/chart/series-geometry.ts'
 
 export type QuantileStat = { key: string; label: string; value: string }
 

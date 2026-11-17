@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: MIT */
-/* 图表共用底座（#1931，quant/chart-kit）：LCD tooltip、末点、轴与网格、点阵纹理（HTML 条）、图右上三件、SparkTile。
+/* 图表共用底座（#1931，lib/chart/chart-kit）：LCD tooltip、末点、轴与网格、点阵纹理（HTML 条）、图右上三件、SparkTile。
    颜色只用 token；涨跌色（--pnl-up / --pnl-down）只给文字，不给面（dataviz.md §2、readability.md §14）。 */
 
 /* 视觉开关（样子全由变量决定，件里不写死；默认是现在的样子，照 dataviz.md。将来的方言——示波器屏、工业文档感——只覆盖这些变量，

@@ -20,7 +20,7 @@ import { layoutTreemap, type TreemapBlock } from '../katana/treemap-model.ts'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../primitives/select.tsx'
 import { Switch } from '../primitives/switch.tsx'
 import { ToggleGroup, ToggleGroupItem } from '../primitives/toggle-group.tsx'
-import { formatPrice, formatVolume } from './format/index.ts'
+import { formatPrice, formatVolume } from '../lib/chart/format/index.ts'
 import {
   formatLegend,
   formatMetric,

@@ -18,7 +18,7 @@ import {
 import { Input } from '../primitives/input.tsx'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../primitives/select.tsx'
 import { RowActions, RowContextMenu, type RowAction } from '../patterns/row-actions.tsx'
-import { formatPercentChange, formatVolume } from './format/index.ts'
+import { formatPercentChange, formatVolume } from '../lib/chart/format/index.ts'
 import {
   ECONOMIC_CATEGORIES,
   dayKeyOf,

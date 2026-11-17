@@ -7,7 +7,7 @@ import { MeasuredSkeleton } from '../../katana/measured-skeleton.tsx'
 import { Skeleton } from '../../katana/skeleton.tsx'
 import { SymbolMark } from '../../katana/symbol-mark.tsx'
 import { Button } from '../../primitives/button.tsx'
-import { formatPercentChange } from '../../quant/format/index.ts'
+import { formatPercentChange } from '../../lib/chart/format/index.ts'
 
 // 新闻阅读窗（NewsFeed 点开一条后右侧的窗，主会话 2026-11-15 实测 tradingview.com/news-flow/）：来源徽标、标题、「时间 · 来源 · 2 min read」、品种胶囊带涨跌（SPCX −0.59%）、
 // 「KEY POINTS」要点列表（闪电图标）、正文（正文里的品种胶囊由调用方在 body 里用 NewsSymbolChip 放）；右上关闭、举报、复制链接。

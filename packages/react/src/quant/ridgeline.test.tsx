@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vite-plus/test'
-import { linearScale, niceTicks, quantileSorted } from './chart-scale.ts'
+import { linearScale, niceTicks, quantileSorted } from '../lib/chart/chart-scale.ts'
 import { Ridgeline } from './ridgeline.tsx'
 import { gaussianKde, ridgelines, ridgeStats, silvermanBandwidth } from './ridgeline-model.ts'
 

@@ -8,7 +8,7 @@
     },
     "AUTO_SIZE": {
       "kind": "value",
-      "source": "src/quant/format/quantity.ts",
+      "source": "src/lib/chart/format/quantity.ts",
       "props": []
     },
     "Accordion": {
@@ -4333,7 +4333,7 @@
     },
     "BrushWindow": {
       "kind": "type",
-      "source": "src/quant/brush-model.ts",
+      "source": "src/lib/chart/brush-model.ts",
       "props": []
     },
     "Button": {
@@ -23403,12 +23403,12 @@
     },
     "PriceFallback": {
       "kind": "type",
-      "source": "src/quant/format/price.ts",
+      "source": "src/lib/chart/format/price.ts",
       "props": []
     },
     "PriceFormat": {
       "kind": "type",
-      "source": "src/quant/format/price.ts",
+      "source": "src/lib/chart/format/price.ts",
       "props": [
         {
           "name": "precision",
@@ -23930,7 +23930,7 @@
     },
     "QuantityUnits": {
       "kind": "type",
-      "source": "src/quant/format/quantity.ts",
+      "source": "src/lib/chart/format/quantity.ts",
       "props": []
     },
     "QuoteCard": {
@@ -26633,7 +26633,7 @@
     },
     "ScatterPoint": {
       "kind": "type",
-      "source": "src/quant/scatter-model.ts",
+      "source": "src/lib/chart/scatter-model.ts",
       "props": [
         {
           "name": "x",
@@ -26657,7 +26657,7 @@
     },
     "ScatterSeries": {
       "kind": "type",
-      "source": "src/quant/scatter-model.ts",
+      "source": "src/lib/chart/scatter-model.ts",
       "props": [
         {
           "name": "id",
@@ -28459,7 +28459,7 @@
     },
     "SizeFormat": {
       "kind": "type",
-      "source": "src/quant/format/quantity.ts",
+      "source": "src/lib/chart/format/quantity.ts",
       "props": [
         {
           "name": "abbreviate",
@@ -36349,7 +36349,7 @@
     },
     "compactParts": {
       "kind": "function",
-      "source": "src/quant/format/quantity.ts",
+      "source": "src/lib/chart/format/quantity.ts",
       "props": []
     },
     "computeReport": {
@@ -36466,7 +36466,7 @@
     },
     "decimalsOfTick": {
       "kind": "function",
-      "source": "src/quant/format/price.ts",
+      "source": "src/lib/chart/format/price.ts",
       "props": []
     },
     "falloff": {
@@ -36516,17 +36516,17 @@
     },
     "formatCompact": {
       "kind": "function",
-      "source": "src/quant/format/quantity.ts",
+      "source": "src/lib/chart/format/quantity.ts",
       "props": []
     },
     "formatCount": {
       "kind": "function",
-      "source": "src/quant/format/quantity.ts",
+      "source": "src/lib/chart/format/quantity.ts",
       "props": []
     },
     "formatPercentChange": {
       "kind": "function",
-      "source": "src/quant/format/change.ts",
+      "source": "src/lib/chart/format/change.ts",
       "props": []
     },
     "formatPerformance": {
@@ -36536,7 +36536,7 @@
     },
     "formatPrice": {
       "kind": "function",
-      "source": "src/quant/format/price.ts",
+      "source": "src/lib/chart/format/price.ts",
       "props": [
         {
           "name": "precision",
@@ -36560,7 +36560,7 @@
     },
     "formatQuantity": {
       "kind": "function",
-      "source": "src/quant/format/quantity.ts",
+      "source": "src/lib/chart/format/quantity.ts",
       "props": [
         {
           "name": "abbreviate",
@@ -36578,7 +36578,7 @@
     },
     "formatVolume": {
       "kind": "function",
-      "source": "src/quant/format/quantity.ts",
+      "source": "src/lib/chart/format/quantity.ts",
       "props": []
     },
     "gaussianKde": {
@@ -37071,7 +37071,7 @@
     },
     "scatterLayout": {
       "kind": "function",
-      "source": "src/quant/scatter-model.ts",
+      "source": "src/lib/chart/scatter-model.ts",
       "props": [
         {
           "name": "width",
@@ -37294,7 +37294,7 @@
     },
     "stepDecimal": {
       "kind": "function",
-      "source": "src/quant/format/decimal-step.ts",
+      "source": "src/lib/chart/format/decimal-step.ts",
       "props": []
     },
     "stepNode": {
@@ -37370,7 +37370,7 @@
     },
     "toneOf": {
       "kind": "function",
-      "source": "src/quant/format/change.ts",
+      "source": "src/lib/chart/format/change.ts",
       "props": []
     },
     "tooltipContentClass": {

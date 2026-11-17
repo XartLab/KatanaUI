@@ -8,7 +8,7 @@ import {
   type PriceFallback,
   type QuantityUnits,
   type SizeFormat,
-} from '../../quant/format/index.ts'
+} from '../../lib/chart/format/index.ts'
 import { pad, signed as signedText } from '../../lib/num.ts'
 import { compareDecimal } from './model.ts'
 

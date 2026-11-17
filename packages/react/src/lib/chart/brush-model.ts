@@ -2,7 +2,7 @@
 // 刷选窗口的几何（纯函数）。窗口是 [start, end)：start 含、end 不含，按点的下标，单位是「第几个点」，不是像素。
 // 夹取规则：窗口不出 [0, count]，长度不小于 minSpan（点数不够时取 count）；缩放时另一端不动；整体平移时长度不变，碰到边就停在边上。
 
-import { clamp } from '../lib/num.ts'
+import { clamp } from '../num.ts'
 
 export type BrushWindow = readonly [start: number, end: number]
 

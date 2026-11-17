@@ -14,9 +14,9 @@ import { useState, type CSSProperties, type KeyboardEvent, type ReactNode } from
 import { cn } from '../lib/cn.ts'
 import { pad } from '../lib/num.ts'
 import { calendarGrid, calendarKey, calendarTone, monthGrid, type CalendarTone } from './calendar-model.ts'
-import { ChartActions, type ChartActionsLabels } from './chart-kit/chart-actions.tsx'
-import { LcdTooltip } from './chart-kit/lcd-tooltip.tsx'
-import { divHotThreshold } from './chart-kit/series-colors.ts'
+import { ChartActions, type ChartActionsLabels } from '../lib/chart/chart-kit/chart-actions.tsx'
+import { LcdTooltip } from '../lib/chart/chart-kit/lcd-tooltip.tsx'
+import { divHotThreshold } from '../lib/chart/chart-kit/series-colors.ts'
 
 export type CalendarEvent = {
   label: string

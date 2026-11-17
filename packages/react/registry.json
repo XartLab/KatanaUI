@@ -616,6 +616,164 @@
       ]
     },
     {
+      "name": "brush-model",
+      "type": "registry:lib",
+      "title": "Brush Model",
+      "description": "BrushChart 的窗口几何（纯函数）：夹取、平移、缩放、居中。",
+      "registryDependencies": [
+        "@katana/num"
+      ],
+      "files": [
+        {
+          "path": "src/lib/chart/brush-model.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/lib/chart/brush-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "chart-scale",
+      "type": "registry:lib",
+      "title": "Chart Scale",
+      "description": "分布与关系类的图（Ridgeline、SlopeChart、ConnectedScatter）共用的纯函数：线性比例尺、好看的刻度、分位数。",
+      "files": [
+        {
+          "path": "src/lib/chart/chart-scale.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/lib/chart/chart-scale.ts"
+        }
+      ]
+    },
+    {
+      "name": "scatter-model",
+      "type": "registry:lib",
+      "title": "Scatter Model",
+      "description": "每个点是一个时刻的 (x, y)，按时间顺序连成轨迹，看一个对象在两个量之间怎么走（如策略的波动 vs 收益按月的路径、风格漂移）。时间方向不单靠颜色：起点空心圈、终点强调色实心圈加箭头、中间的点按时间取 seq 色阶（越晚越亮）。多条轨迹各取 series 色板的一个色。功能参照 Arc Connected scatter，实现原创。",
+      "registryDependencies": [
+        "@katana/chart-scale",
+        "@katana/num"
+      ],
+      "files": [
+        {
+          "path": "src/lib/chart/scatter-model.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/lib/chart/scatter-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "series-geometry",
+      "type": "registry:lib",
+      "title": "Series Geometry",
+      "description": "序列图共用的几何（纯函数）：好看的刻度、比例尺、折线与面积路径，BrushChart、HorizonChart、SmallMultiples、SeriesExplorer 都用。",
+      "registryDependencies": [
+        "@katana/num"
+      ],
+      "files": [
+        {
+          "path": "src/lib/chart/series-geometry.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/lib/chart/series-geometry.ts"
+        }
+      ]
+    },
+    {
+      "name": "chart-kit",
+      "type": "registry:component",
+      "title": "Chart Kit",
+      "description": "图表共用底座：配色分配（series / seq / div）、点阵纹理、LCD tooltip、末点、轴与网格、图右上三件（表格视图、导出、全屏）。",
+      "dependencies": [
+        "@tanstack/react-virtual@3.14.25",
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/live",
+        "@katana/series-geometry"
+      ],
+      "files": [
+        {
+          "path": "src/lib/chart/chart-kit/chart-actions.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/lib/chart/chart-kit/chart-actions.tsx"
+        },
+        {
+          "path": "src/lib/chart/chart-kit/chart-table.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/lib/chart/chart-kit/chart-table.tsx"
+        },
+        {
+          "path": "src/lib/chart/chart-kit/chart-value.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/lib/chart/chart-kit/chart-value.tsx"
+        },
+        {
+          "path": "src/lib/chart/chart-kit/dot-fill.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/lib/chart/chart-kit/dot-fill.tsx"
+        },
+        {
+          "path": "src/lib/chart/chart-kit/end-marker.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/lib/chart/chart-kit/end-marker.tsx"
+        },
+        {
+          "path": "src/lib/chart/chart-kit/lcd-tooltip.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/lib/chart/chart-kit/lcd-tooltip.tsx"
+        },
+        {
+          "path": "src/lib/chart/chart-kit/plot-axes.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/lib/chart/chart-kit/plot-axes.tsx"
+        },
+        {
+          "path": "src/lib/chart/chart-kit/series-colors.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/lib/chart/chart-kit/series-colors.ts"
+        }
+      ]
+    },
+    {
+      "name": "quant-format",
+      "type": "registry:lib",
+      "title": "Quant Format",
+      "description": "价格、涨跌幅、数量的写法（纯函数，不带 React；另有 @katana-ui/react/quant/format 出口给画布与 Worker）。小数位由调用方传，不在这里猜。",
+      "dependencies": [
+        "bignumber.js@11.1.5"
+      ],
+      "registryDependencies": [
+        "@katana/tone"
+      ],
+      "files": [
+        {
+          "path": "src/lib/chart/format/change.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/lib/chart/format/change.ts"
+        },
+        {
+          "path": "src/lib/chart/format/decimal-step.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/lib/chart/format/decimal-step.ts"
+        },
+        {
+          "path": "src/lib/chart/format/index.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/lib/chart/format/index.ts"
+        },
+        {
+          "path": "src/lib/chart/format/price.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/lib/chart/format/price.ts"
+        },
+        {
+          "path": "src/lib/chart/format/quantity.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/lib/chart/format/quantity.ts"
+        }
+      ]
+    },
+    {
       "name": "accordion",
       "type": "registry:ui",
       "title": "Accordion",
@@ -4532,63 +4690,6 @@
       ]
     },
     {
-      "name": "chart-kit",
-      "type": "registry:component",
-      "title": "Chart Kit",
-      "description": "图表共用底座：配色分配（series / seq / div）、点阵纹理、LCD tooltip、末点、轴与网格、图右上三件（表格视图、导出、全屏）。",
-      "dependencies": [
-        "@tanstack/react-virtual@3.14.25",
-        "lucide-react@1.67.0"
-      ],
-      "registryDependencies": [
-        "@katana/cn",
-        "@katana/live",
-        "@katana/series-geometry"
-      ],
-      "files": [
-        {
-          "path": "src/quant/chart-kit/chart-actions.tsx",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/quant/chart-kit/chart-actions.tsx"
-        },
-        {
-          "path": "src/quant/chart-kit/chart-table.tsx",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/quant/chart-kit/chart-table.tsx"
-        },
-        {
-          "path": "src/quant/chart-kit/chart-value.tsx",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/quant/chart-kit/chart-value.tsx"
-        },
-        {
-          "path": "src/quant/chart-kit/dot-fill.tsx",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/quant/chart-kit/dot-fill.tsx"
-        },
-        {
-          "path": "src/quant/chart-kit/end-marker.tsx",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/quant/chart-kit/end-marker.tsx"
-        },
-        {
-          "path": "src/quant/chart-kit/lcd-tooltip.tsx",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/quant/chart-kit/lcd-tooltip.tsx"
-        },
-        {
-          "path": "src/quant/chart-kit/plot-axes.tsx",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/quant/chart-kit/plot-axes.tsx"
-        },
-        {
-          "path": "src/quant/chart-kit/series-colors.ts",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/quant/chart-kit/series-colors.ts"
-        }
-      ]
-    },
-    {
       "name": "brush-chart",
       "type": "registry:component",
       "title": "Brush Chart",
@@ -4605,22 +4706,6 @@
           "path": "src/quant/brush-chart.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/quant/brush-chart.tsx"
-        }
-      ]
-    },
-    {
-      "name": "brush-model",
-      "type": "registry:component",
-      "title": "Brush Model",
-      "description": "BrushChart 的窗口几何（纯函数）：夹取、平移、缩放、居中。",
-      "registryDependencies": [
-        "@katana/num"
-      ],
-      "files": [
-        {
-          "path": "src/quant/brush-model.ts",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/quant/brush-model.ts"
         }
       ]
     },
@@ -4675,19 +4760,6 @@
           "path": "src/quant/change-text.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/quant/change-text.tsx"
-        }
-      ]
-    },
-    {
-      "name": "chart-scale",
-      "type": "registry:component",
-      "title": "Chart Scale",
-      "description": "分布与关系类的图（Ridgeline、SlopeChart、ConnectedScatter）共用的纯函数：线性比例尺、好看的刻度、分位数。",
-      "files": [
-        {
-          "path": "src/quant/chart-scale.ts",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/quant/chart-scale.ts"
         }
       ]
     },
@@ -5221,39 +5293,6 @@
       ]
     },
     {
-      "name": "scatter-model",
-      "type": "registry:component",
-      "title": "Scatter Model",
-      "description": "每个点是一个时刻的 (x, y)，按时间顺序连成轨迹，看一个对象在两个量之间怎么走（如策略的波动 vs 收益按月的路径、风格漂移）。时间方向不单靠颜色：起点空心圈、终点强调色实心圈加箭头、中间的点按时间取 seq 色阶（越晚越亮）。多条轨迹各取 series 色板的一个色。功能参照 Arc Connected scatter，实现原创。",
-      "registryDependencies": [
-        "@katana/chart-scale",
-        "@katana/num"
-      ],
-      "files": [
-        {
-          "path": "src/quant/scatter-model.ts",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/quant/scatter-model.ts"
-        }
-      ]
-    },
-    {
-      "name": "series-geometry",
-      "type": "registry:component",
-      "title": "Series Geometry",
-      "description": "序列图共用的几何（纯函数）：好看的刻度、比例尺、折线与面积路径，BrushChart、HorizonChart、SmallMultiples、SeriesExplorer 都用。",
-      "registryDependencies": [
-        "@katana/num"
-      ],
-      "files": [
-        {
-          "path": "src/quant/series-geometry.ts",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/quant/series-geometry.ts"
-        }
-      ]
-    },
-    {
       "name": "slope-chart",
       "type": "registry:component",
       "title": "Slope Chart",
@@ -5439,45 +5478,6 @@
           "path": "src/quant/watchlist.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/quant/watchlist.tsx"
-        }
-      ]
-    },
-    {
-      "name": "quant-format",
-      "type": "registry:lib",
-      "title": "Quant Format",
-      "description": "价格、涨跌幅、数量的写法（纯函数，不带 React；另有 @katana-ui/react/quant/format 出口给画布与 Worker）。小数位由调用方传，不在这里猜。",
-      "dependencies": [
-        "bignumber.js@11.1.5"
-      ],
-      "registryDependencies": [
-        "@katana/tone"
-      ],
-      "files": [
-        {
-          "path": "src/quant/format/change.ts",
-          "type": "registry:lib",
-          "target": "~/src/katana/ui/quant/format/change.ts"
-        },
-        {
-          "path": "src/quant/format/decimal-step.ts",
-          "type": "registry:lib",
-          "target": "~/src/katana/ui/quant/format/decimal-step.ts"
-        },
-        {
-          "path": "src/quant/format/index.ts",
-          "type": "registry:lib",
-          "target": "~/src/katana/ui/quant/format/index.ts"
-        },
-        {
-          "path": "src/quant/format/price.ts",
-          "type": "registry:lib",
-          "target": "~/src/katana/ui/quant/format/price.ts"
-        },
-        {
-          "path": "src/quant/format/quantity.ts",
-          "type": "registry:lib",
-          "target": "~/src/katana/ui/quant/format/quantity.ts"
         }
       ]
     },

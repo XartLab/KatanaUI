@@ -5,7 +5,7 @@ import { cn } from '../lib/cn.ts'
 import { Button } from '../primitives/button.tsx'
 import { Input } from '../primitives/input.tsx'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../primitives/tooltip.tsx'
-import { stepDecimal } from './format/index.ts'
+import { stepDecimal } from '../lib/chart/format/index.ts'
 
 // 十进制字符串框（价格、数量）：值是字符串，不经 JS 数字（决策记录 0014），按品种的最小变动价位或最小下单量走一格。
 // 从下单面板的 StepField 收进来（#1955）；外观与行为照原来的样子：一个输入框 + 右边两个图标按钮，不给用户设步长

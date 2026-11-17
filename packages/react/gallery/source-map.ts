@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
-// 页头的「包」与「源码」：从包的各个出口文件（src/index.ts、src/blocks/index.ts、src/quant/index.ts、src/quant/format/index.ts）
+// 页头的「包」与「源码」：从包的各个出口文件（src/index.ts、src/blocks/index.ts、src/quant/index.ts、src/lib/chart/format/index.ts）
 // 读出「出口名 → 源文件」与「出口名 → 子路径」，不手抄。
 
-const RAW = import.meta.glob(['../src/index.ts', '../src/*/index.ts', '../src/*/*/index.ts'], {
+const RAW = import.meta.glob(['../src/index.ts', '../src/*/index.ts', '../src/*/*/index.ts', '../src/*/*/*/index.ts'], {
   eager: true,
   query: '?raw',
   import: 'default',
@@ -14,7 +14,7 @@ const ENTRY: Record<string, string> = {
   '': '@katana-ui/react',
   'blocks/': '@katana-ui/react/blocks',
   'quant/': '@katana-ui/react/quant',
-  'quant/format/': '@katana-ui/react/quant/format',
+  'lib/chart/format/': '@katana-ui/react/quant/format',
 }
 
 const SOURCES = new Map<string, string>()

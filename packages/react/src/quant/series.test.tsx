@@ -13,10 +13,10 @@ import {
   parseDate,
 } from './calendar-model.ts'
 import { BrushChart } from './brush-chart.tsx'
-import { centerWindow, clampWindow, moveWindow, resizeWindow } from './brush-model.ts'
+import { centerWindow, clampWindow, moveWindow, resizeWindow } from '../lib/chart/brush-model.ts'
 import { HorizonChart } from './horizon-chart.tsx'
 import { horizonBands, horizonMax } from './horizon-model.ts'
-import { areaPath, extent, linePath, makePlot, niceTicks, PLOT_W } from './series-geometry.ts'
+import { areaPath, extent, linePath, makePlot, niceTicks, PLOT_W } from '../lib/chart/series-geometry.ts'
 
 // #1917：时间序列与盈亏的件的几何与结构（纯函数）。拖拽、悬停、键盘与画出来的像素在 e2e/ui-gallery.spec.ts 里用真浏览器验。
 

@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 import { useId, useRef, useState, type KeyboardEvent, type PointerEvent, type ReactNode } from 'react'
-import { ChartActions } from './chart-kit/chart-actions.tsx'
-import { ChartTable, type ChartViewProps } from './chart-kit/chart-table.tsx'
-import { LcdTooltip, type LcdTooltipRow } from './chart-kit/lcd-tooltip.tsx'
+import { ChartActions } from '../lib/chart/chart-kit/chart-actions.tsx'
+import { ChartTable, type ChartViewProps } from '../lib/chart/chart-kit/chart-table.tsx'
+import { LcdTooltip, type LcdTooltipRow } from '../lib/chart/chart-kit/lcd-tooltip.tsx'
 import {
   layoutFlow,
   linkEnds,

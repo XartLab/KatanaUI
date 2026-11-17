@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // ParamScatter（参数优化散点图）的纯逻辑：值域与色阶、最优点、方向键找邻居。不带 React 与 DOM。
 // TradingView 没有这张图（策略测试器不做参数网格），照通用的参数扫描做法：两个参数为轴、点的颜色是目标值、点选看这组参数的读数。
-import { scatterLayout, type ScatterFrame } from './scatter-model.ts'
+import { scatterLayout, type ScatterFrame } from '../lib/chart/scatter-model.ts'
 
 export type ParamPoint = {
   id: string

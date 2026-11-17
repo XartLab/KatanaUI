@@ -5,7 +5,7 @@
 // 数与周期名都由调用方传，件不算涨跌幅。
 import { useState } from 'react'
 import { cn } from '../lib/cn.ts'
-import { formatPercentChange, toneOf } from './format/index.ts'
+import { formatPercentChange, toneOf } from '../lib/chart/format/index.ts'
 
 export type PerformanceItem = {
   key: string
