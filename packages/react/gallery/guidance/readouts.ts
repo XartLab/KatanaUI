@@ -30,8 +30,22 @@ const readouts: GuidanceMap = {
     a11y: ['纯装饰的 SVG 纹理，不带信息，读屏不应依赖它。', '纹理静止，没有动效。'],
   },
   'rolling-text': {
-    aliases: ['Odometer', 'Animated number', 'Number flow', 'Ticker'],
-    use: ['实时价格、盈亏这类会跳动的数字。', '想让人一眼看出涨还是跌的方向。'],
+    aliases: [
+      'Odometer',
+      'Animated number',
+      'Number flow',
+      'Price flow',
+      'Digit roll',
+      'Ticker',
+      'rolling-text',
+      'Split-flap',
+    ],
+    use: [
+      '实时价格、盈亏这类会跳动的数字。',
+      '想让人一眼看出涨还是跌的方向。',
+      '品种代码这类字母位换了，给 ramp 让它转过几个中间字再落下。',
+      '报价跳动想让个位先转，给 stagger；计数器样子给 boxed；位数会变（999 到 1,000）给 resize。',
+    ],
     avoid: ['值不常变的数用 lcd 或普通文字。', '一次性大批量刷新的表格不要逐格滚。'],
     a11y: ['动效只是辅助，别用它承载唯一信息。', '涨跌除了闪色还要有符号或箭头。'],
   },
@@ -65,7 +79,11 @@ const readouts: GuidanceMap = {
   },
   'matrix-orb': {
     aliases: ['Voice orb', 'AI orb', 'Activity indicator', 'Agent status'],
-    use: ['展示 Agent 正在待命、聆听或思考。', '语音输入时让波纹跟着音量走。'],
+    use: [
+      '展示 Agent 正在待命、聆听、思考、流式输出、完成或出错。',
+      '语音输入时让波纹跟着音量走。',
+      '同一个状态名也传给 AiPromptInput 的 state，整面一起动。',
+    ],
     avoid: ['要写具体进展用 ai-status。', '后台任务进度用 progress。'],
     a11y: ['role=img，读屏名取 label，必传。', '状态变化不会自动播报，要读出变化时配 ai-status。'],
   },
@@ -112,6 +130,24 @@ const readouts: GuidanceMap = {
     ],
     avoid: ['连续数值（延迟、用量）用 spark-tile 或 sparkline。', '当前状态一个点用 led。'],
     a11y: ['整条是 role=group，每格 role=img，读屏名取该格的 label。', '状态用颜色加高度两路表达，不靠颜色单独传意。'],
+  },
+  'dither-chart': {
+    aliases: ['Pixel chart', 'Halftone chart', 'Bayer dither', 'Retro chart'],
+    use: ['总览卡里装饰性的小图，要像素风。', '线、柱、堆叠、环、仪表、漏斗、热力一套调子。'],
+    avoid: ['要读精确数的图用 sparkline、equity-curve。', '需要悬停取值的图不要用它。'],
+    a11y: ['画布 aria-hidden，读屏读 description（必填）。', '序列靠点阵密度区分，不只靠颜色。'],
+  },
+  'count-badge': {
+    aliases: ['Badge', 'Notification dot', 'Counter', 'Status dot'],
+    use: ['头像、标签页、图标按钮角上的未读数或状态点。', '数字会涨会落，想看到增减方向。'],
+    avoid: ['铃加未读数用 notification-bell。', '品种名后的上标用 badge。'],
+    a11y: ['角标是 role=status，读屏名取 label（要带数字），变了会播报。', '状态点除了颜色，label 里写状态词。'],
+  },
+  'switchboard-card': {
+    aliases: ['LED board', 'Light grid', 'Activity card', 'Dot display'],
+    use: ['「市场活跃度」「在线品种」这类带装饰意味的总览卡。', '用 lit 矩阵点亮一个字或形状。'],
+    avoid: ['要读数的用 lcd 或 metric-card。', '一页放多块随机闪的卡。'],
+    a11y: ['灯阵是装饰性的，信息写在标题与说明里。', '有 onClick 时整卡是按钮，读屏名取 title。'],
   },
 }
 

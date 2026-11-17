@@ -1,6 +1,6 @@
 # MatrixOrb
 
-一盘方点排成圆：待命慢呼吸，聆听同心波跟输入电平（麦克风音量）走，思考几个热点绕着转。点阵签名件的动态版，用来表达 Agent 在做什么。学自 rare-ui。
+一盘方点排成圆：待命慢呼吸，聆听同心波跟输入电平（麦克风音量）走，思考几个热点绕着转；另有流式、完成、出错三态（并入自 SmoothUI siri-orb / ai-core 的六态约定，用点阵自己的方式表达）。点阵签名件的动态版，用来表达 Agent 在做什么。学自 rare-ui。
 
 ## Provide
 
@@ -12,11 +12,11 @@
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `state` | `OrbState` | `'idle'` | The state; when it changes the weights of the three patterns interpolate, with no jump. |
+| `state` | `OrbState` | `'idle'` | The state; when it changes the weights of the patterns interpolate, with no jump. |
 | `level` | `number` | — | Volume of the listening state from 0 to 1; a simulated envelope is used when omitted. |
 | `cells` | `number` | `16` | Dots per side; the pitch is 6px, so 16 is 96px square. |
 | `label` * | `string` | — | Accessible name (required). |
-| `color` | `string` | `'var(--signal-orange)'` | Color of the dots, a CSS color or a CSS variable reference; defaults to the theme accent. |
+| `color` | `string` | — | Color of the dots, a CSS color or a CSS variable reference; defaults to the theme accent (green when done, red on error). |
 | `className` | `string` | — | Extra class name on the root. |
 
 ## Usage
@@ -35,6 +35,9 @@ export function MatrixOrbUsage() {
 - 待命：慢呼吸。
 - 聆听：同心波跟 level（输入电平）走。
 - 思考：几个热点绕着转。
+- 流式：由内向外的脉冲环，节奏固定、不跟电平（并入自 SmoothUI 的六态约定）。
+- 完成：亮而平，点变绿。
+- 出错：亮斑在原地乱跳，点变红。
 
 ## Don't
 

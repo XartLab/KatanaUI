@@ -266,13 +266,21 @@ const CAL_PROPS = {
 export function CalendarHeatmapDemo() {
   const [view, setView] = useState<'pnl' | 'turnover' | 'events'>('pnl')
   const [picked, setPicked] = useState('')
+  const [replay, setReplay] = useState(0)
   const month = CAL_DAYS.filter((day) => day.date.startsWith('2026-10'))
   const sum = month.reduce((t, day) => t + (day.date <= '2026-10-19' ? (day.value ?? 0) : 0), 0)
   return (
     <>
-      <div className="gal-wide" data-gallery-calendar="month" style={{ maxWidth: 620 }}>
+      <Row name="进场">
+        <button type="button" data-gallery-calendar-replay onClick={() => setReplay((n) => n + 1)}>
+          重播进场
+        </button>
+        <span className="gal-note">reveal：格子依次淡入长大；已播 {replay} 次</span>
+      </Row>
+      <div className="gal-wide" data-gallery-calendar="month" key={replay} style={{ maxWidth: 620 }}>
         <CalendarHeatmap
           {...CAL_PROPS}
+          reveal={replay > 0}
           days={CAL_DAYS}
           month="2026-10"
           today="2026-10-19"

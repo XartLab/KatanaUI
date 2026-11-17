@@ -223,6 +223,7 @@ export {
 export { SymbolMark, symbolMarkLetters, type SymbolMarkProps } from './katana/symbol-mark.tsx'
 export { BadgeGroup, type BadgeItem } from './katana/badge.tsx'
 export { RollingText, rollSlots, rollStrip } from './katana/rolling-text.tsx'
+export { Scrubber, scrubSnap, scrubValueAt, type ScrubberProps } from './katana/scrubber.tsx'
 export { NumberInput } from './katana/number-input.tsx'
 export { DateTimeInput, type DateTimeLabels } from './katana/date-time-input.tsx'
 export { Skeleton } from './katana/skeleton.tsx'
@@ -333,3 +334,317 @@ export { UptimeBars, type UptimeBarsProps } from './quant/uptime-bars.tsx'
 export { uptimeShare, type UptimeCell, type UptimeStatus } from './quant/uptime-bars-model.ts'
 export { RangeHistogramSlider, type RangeHistogramSliderProps } from './patterns/range-histogram-slider.tsx'
 export { histogramBins } from './patterns/range-histogram-model.ts'
+
+// 文字动效（改自 SmoothUI，MIT；各文件头写明出处与归并关系）。
+export {
+  TEXT_REVEAL_EASES,
+  TEXT_REVEAL_PRESETS,
+  TextReveal,
+  type TextRevealBy,
+  type TextRevealEase,
+  type TextRevealFrom,
+  type TextRevealOrder,
+  type TextRevealPreset,
+  type TextRevealProps,
+} from './motion/text/text-reveal.tsx'
+export { TextSwap, type TextSwapProps, type TextSwapVariant } from './motion/text/text-swap.tsx'
+export { WordBuild, type WordBuildFrom, type WordBuildProps } from './motion/text/word-build.tsx'
+export { TypewriterText, type TypewriterTextProps } from './motion/text/typewriter-text.tsx'
+export {
+  ScrambleText,
+  scrambleFrame,
+  type ScrambleSettle,
+  type ScrambleTextProps,
+  type ScrambleTrigger,
+} from './motion/text/scramble-text.tsx'
+export {
+  TextMorph,
+  morphTokens,
+  type TextMorphAlign,
+  type TextMorphMode,
+  type TextMorphProps,
+  type TextMorphTag,
+} from './motion/text/text-morph.tsx'
+export { ShineText, type ShineTextProps } from './motion/text/shine-text.tsx'
+export { WaveText, type WaveTextProps } from './motion/text/wave-text.tsx'
+export { ScrollRevealParagraph, type ScrollRevealParagraphProps } from './motion/text/scroll-reveal-paragraph.tsx'
+export {
+  KineticTypeScroll,
+  type KineticTypeScrollAlign,
+  type KineticTypeScrollProps,
+  type ScrollOffsetTuple,
+} from './motion/text/kinetic-type-scroll.tsx'
+export {
+  PerspectiveText3D,
+  splitDepthSegments,
+  type PerspectiveText3DProps,
+  type PerspectiveTextDriver,
+  type PerspectiveTextSplit,
+} from './motion/text/perspective-text-3d.tsx'
+export { GravityLetters, type GravityLettersProps, type GravityLettersTrigger } from './motion/text/gravity-letters.tsx'
+export {
+  RansomNote,
+  createSeededRandom,
+  ransomScraps,
+  type RansomNoteAnimate,
+  type RansomNoteProps,
+} from './motion/text/ransom-note.tsx'
+
+// 表单与输入补件（改自 SmoothUI，MIT）：多行文本、单选、单个开关按钮、勾选组、输入框附件组、一次性验证码、动效开关与变形图标。
+export { Textarea } from './primitives/textarea.tsx'
+export { RadioGroup, RadioGroupItem } from './primitives/radio-group.tsx'
+export { Toggle } from './primitives/toggle.tsx'
+export { CheckboxGroup, CheckboxGroupItem } from './primitives/checkbox-group.tsx'
+export { InputGroup, InputGroupAddon, InputGroupText } from './primitives/input-group.tsx'
+export { OtpField } from './primitives/otp-field.tsx'
+export { MorphToggle } from './primitives/morph-toggle.tsx'
+export { MorphIcon, MORPH_ICON_VARIANTS, type MorphIconVariant } from './motion/icon/morph-icon.tsx'
+// AI 对话类件（src/ai/，多数改自 SmoothUI，MIT）：推理、工具调用、diff、审批、对话、输入框、计划、分支。
+export type { AiState } from './ai/ai-core.ts'
+export { AiReasoning, type AiReasoningLabels, type AiReasoningProps } from './ai/ai-reasoning.tsx'
+export { AiToolCall, type AiToolCallLabels, type AiToolCallProps, type AiToolCallStatus } from './ai/ai-tool-call.tsx'
+export { AiDiff, type AiDiffLabels, type AiDiffLine, type AiDiffLineKind, type AiDiffProps } from './ai/ai-diff.tsx'
+export { AiApproval, type AiApprovalFact, type AiApprovalOption, type AiApprovalProps } from './ai/ai-approval.tsx'
+export { AiContextMeter, type AiContextBreakdownItem, type AiContextMeterProps } from './ai/ai-context-meter.tsx'
+export { AiMessage, type AiMessageAuthor, type AiMessageLabels, type AiMessageProps } from './ai/ai-message.tsx'
+export { AiResponse, type AiResponseCitation, type AiResponseProps } from './ai/ai-response.tsx'
+export { AiConversation, type AiConversationProps } from './ai/ai-conversation.tsx'
+export {
+  AiPromptInput,
+  type AiPromptAttachment,
+  type AiPromptInputLabels,
+  type AiPromptInputProps,
+} from './ai/ai-prompt-input.tsx'
+export { AiSuggestions, type AiSuggestion, type AiSuggestionsProps } from './ai/ai-suggestions.tsx'
+export { AiArtifact, type AiArtifactLabels, type AiArtifactPane, type AiArtifactProps } from './ai/ai-artifact.tsx'
+export {
+  AiBranch,
+  AiBranchMessages,
+  AiBranchNext,
+  AiBranchPage,
+  AiBranchPrevious,
+  AiBranchSelector,
+  type AiBranchMessagesProps,
+  type AiBranchPageProps,
+  type AiBranchProps,
+  type AiBranchSelectorProps,
+} from './ai/ai-branch.tsx'
+export { AiTaskList, type AiTask, type AiTaskListProps, type AiTaskStatus } from './ai/ai-task-list.tsx'
+export { AgentAvatar, type AgentAvatarProps } from './ai/agent-avatar.tsx'
+
+// 照 SmoothUI 搬来与并入的「浮层、导航、展示与布局」一批（MIT，出处见 NOTICE）。
+export {
+  Avatar,
+  AvatarGroup,
+  useAvatarSize,
+  type AvatarGroupProps,
+  type AvatarProps,
+  type AvatarSize,
+  type AvatarStatusValue,
+} from './primitives/avatar.tsx'
+export { Breadcrumb, type BreadcrumbItem, type BreadcrumbProps } from './primitives/breadcrumb.tsx'
+export { Collapsible, CollapsibleContent, CollapsibleTrigger } from './primitives/collapsible.tsx'
+export {
+  Menubar,
+  MenubarContent,
+  MenubarItem,
+  MenubarMenu,
+  MenubarSeparator,
+  MenubarTrigger,
+} from './primitives/menubar.tsx'
+export {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+  navigationMenuTriggerClass,
+} from './primitives/navigation-menu.tsx'
+export { Pagination, buildPageRange, type PaginationLabels, type PaginationProps } from './primitives/pagination.tsx'
+export {
+  AnimatedFileUpload,
+  formatBytes,
+  type AnimatedFileUploadProps,
+  type FileUploadLabels,
+} from './patterns/animated-file-upload.tsx'
+export { Dock, falloff, type DockItem, type DockProps } from './patterns/dock.tsx'
+export { ExpandableCards, type ExpandableCard, type ExpandableCardsProps } from './patterns/expandable-cards.tsx'
+export {
+  ExpandableNavbar,
+  type ExpandableNavbarItem,
+  type ExpandableNavbarProps,
+} from './patterns/expandable-navbar.tsx'
+export { FileTree, type FileTreeItem, type FileTreeProps } from './patterns/file-tree.tsx'
+export { FloatingNavbar, type FloatingNavbarItem, type FloatingNavbarProps } from './patterns/floating-navbar.tsx'
+export { RichPopover, type RichPopoverProps } from './patterns/rich-popover.tsx'
+export {
+  TimeMachineStack,
+  type TimeMachineStackItem,
+  type TimeMachineStackProps,
+} from './patterns/time-machine-stack.tsx'
+export {
+  MacTerminal,
+  type MacTerminalLabels,
+  type MacTerminalProps,
+  type TerminalLine,
+  type TerminalLineType,
+} from './katana/mac-terminal.tsx'
+export {
+  FolderReveal,
+  type FolderRevealItem,
+  type FolderRevealProps,
+  type FolderTone,
+} from './motion/surface/folder-reveal.tsx'
+export { GlassCard, type GlassCardProps } from './motion/surface/glass-card.tsx'
+export { GlowHoverCard, type GlowHoverCardProps } from './motion/surface/glow-hover-card.tsx'
+export { GooeyPopover, type GooeyPopoverProps } from './motion/surface/gooey-popover.tsx'
+export { MorphSurface, type MorphSurfaceProps } from './motion/surface/morph-surface.tsx'
+export { TiltCard, type TiltCardProps } from './motion/surface/tilt-card.tsx'
+
+// 照 SmoothUI 搬来的「交易工作台最用得上」一批（MIT，出处见 NOTICE）：信息流进场、行情跑马灯、通知岛、自选置顶、点阵图、角标、加载、滚动进度、拨盘与滑动确认。
+export { AnimatedList, type AnimatedListItem, type AnimatedListProps } from './katana/animated-list.tsx'
+export { InfiniteSlider, type InfiniteSliderProps } from './katana/infinite-slider.tsx'
+export { DynamicIsland, type DynamicIslandProps } from './katana/dynamic-island.tsx'
+export { PinnedList, type PinnedListItem, type PinnedListLabels, type PinnedListProps } from './katana/pinned-list.tsx'
+export {
+  AnimatedAvatarGroup,
+  type AnimatedAvatarGroupItem,
+  type AnimatedAvatarGroupProps,
+} from './katana/animated-avatar-group.tsx'
+export { HoverExpand, type HoverExpandItem, type HoverExpandProps } from './katana/hover-expand.tsx'
+export {
+  DitherChart,
+  DITHER_CHART_VARIANTS,
+  type DitherChartMatrixOrder,
+  type DitherChartPoint,
+  type DitherChartProps,
+  type DitherChartSeries,
+  type DitherChartVariant,
+} from './katana/dither-chart.tsx'
+export {
+  CountBadge,
+  type CountBadgePosition,
+  type CountBadgeProps,
+  type CountBadgeStatus,
+} from './katana/count-badge.tsx'
+export {
+  SwitchboardCard,
+  litIndexes,
+  type SwitchboardCardProps,
+  type SwitchboardLight,
+} from './katana/switchboard-card.tsx'
+export { AnimatedTags, type AnimatedTagsLabels, type AnimatedTagsProps } from './katana/animated-tags.tsx'
+export { ExposureSlider, type ExposureSliderProps } from './katana/exposure-slider.tsx'
+export { PowerOffSlide, type PowerOffSlideProps } from './katana/power-off-slide.tsx'
+export {
+  AnimatedStepper,
+  type AnimatedStepperLabels,
+  type AnimatedStepperProps,
+  type AnimatedStepperStep,
+} from './katana/animated-stepper.tsx'
+export { Squircle, squirclePath, type SquircleProps } from './katana/squircle.tsx'
+export {
+  GridLoader,
+  GRID_LOADER_PATTERNS,
+  type GridLoaderPattern,
+  type GridLoaderProps,
+  type GridMatrix,
+} from './katana/grid-loader.tsx'
+export {
+  MotionLoader,
+  MOTION_LOADER_VARIANTS,
+  type MotionLoaderProps,
+  type MotionLoaderVariant,
+} from './katana/motion-loader.tsx'
+export {
+  PagePreloader,
+  PAGE_PRELOADER_VARIANTS,
+  preloaderExitMs,
+  type PagePreloaderProps,
+  type PagePreloaderVariant,
+} from './katana/page-preloader.tsx'
+export { ScrollProgress, type ScrollProgressProps } from './katana/scroll-progress.tsx'
+
+// 动效：过场、背景、特效与媒体（改自 SmoothUI，MIT；出处见 NOTICE）。WebGL 与 canvas 类只在屏内且标签页可见时跑；WebGL 不可用时各自退回 CSS 或淡入淡出。
+export {
+  ShaderReveal,
+  type ShaderRevealProps,
+  type ShaderRevealVariant,
+} from './motion/transition/shader-reveal/shader-reveal.tsx'
+export {
+  SdfBlobTransition,
+  type SdfBlobTransitionProps,
+  type SdfBlobVariant,
+} from './motion/transition/sdf-blob-transition.tsx'
+export {
+  ApertureBlurTransition,
+  type ApertureBlurTransitionProps,
+} from './motion/transition/aperture-blur-transition.tsx'
+export { ChromaBlurTransition, type ChromaBlurTransitionProps } from './motion/transition/chroma-blur-transition.tsx'
+export { AuroraCurtain, type AuroraCurtainProps, type AuroraDirection } from './motion/background/aurora-curtain.tsx'
+export { GravityStars, type GravityStarsProps } from './motion/background/gravity-stars.tsx'
+export { LiquidMetal, type LiquidMetalProps, type LiquidMetalVariant } from './motion/background/liquid-metal.tsx'
+export { Orb, type OrbProps } from './motion/background/orb.tsx'
+export {
+  PixelFlowField,
+  type PixelFlowFieldProps,
+  type PixelFlowFieldShape,
+} from './motion/background/pixel-flow-field.tsx'
+export { BorderBeam, type BorderBeamProps, type BorderBeamRadius } from './motion/effect/border-beam.tsx'
+export {
+  CursorImageTrail,
+  type CursorImageTrailProps,
+  type CursorTrailImage,
+} from './motion/effect/cursor-image-trail.tsx'
+export { DrawingCursor, type DrawingCursorHandle, type DrawingCursorProps } from './motion/effect/drawing-cursor.tsx'
+export { EmbossSurface, type EmbossSurfaceProps, type EmbossSurfaceVariant } from './motion/effect/emboss-surface.tsx'
+export {
+  HolographicFoil,
+  type HolographicFoilPattern,
+  type HolographicFoilProps,
+} from './motion/effect/holographic-foil.tsx'
+export {
+  MagneticField,
+  type MagneticFieldItem,
+  type MagneticFieldMode,
+  type MagneticFieldProps,
+} from './motion/effect/magnetic-field.tsx'
+export {
+  ParallaxLayers,
+  type ParallaxDirection,
+  type ParallaxLayer,
+  type ParallaxLayersProps,
+} from './motion/effect/parallax-layers.tsx'
+export {
+  ProgressiveBlur,
+  type ProgressiveBlurDirection,
+  type ProgressiveBlurProps,
+} from './motion/effect/progressive-blur.tsx'
+export {
+  ScrollImageReveal,
+  type ScrollImageRevealDirection,
+  type ScrollImageRevealMask,
+  type ScrollImageRevealProps,
+} from './motion/effect/scroll-image-reveal.tsx'
+export {
+  SvgClipMask,
+  type SvgClipMaskAnimate,
+  type SvgClipMaskProps,
+  type SvgClipMaskShape,
+} from './motion/effect/svg-clip-mask.tsx'
+export { SvgDrawOnScroll, type SvgDrawOnScrollProps } from './motion/effect/svg-draw-on-scroll.tsx'
+export {
+  AsciiRender,
+  type AsciiColorMode,
+  type AsciiRenderProps,
+  type AsciiRenderSource,
+} from './motion/media/ascii-render.tsx'
+export { DitherImage, type DitherAlgorithm, type DitherImageProps } from './motion/media/dither-image.tsx'
+export {
+  PixelBrushCanvas,
+  type PixelBrushCanvasBrush,
+  type PixelBrushCanvasHandle,
+  type PixelBrushCanvasLabels,
+  type PixelBrushCanvasProps,
+} from './motion/media/pixel-brush-canvas.tsx'

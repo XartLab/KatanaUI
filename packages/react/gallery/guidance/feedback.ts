@@ -82,6 +82,50 @@ const feedback: GuidanceMap = {
       '图标与来源小标对读屏隐藏。',
     ],
   },
+  'animated-list': {
+    aliases: ['Feed', 'Activity feed', 'Live list', 'Stream'],
+    use: [
+      '新闻快讯、成交回报、炸板提醒这类往上顶的信息流。',
+      '条目有稳定 id、会增删的列表。',
+      '读的人可能停在某条上：悬停时新条目先攒着。',
+    ],
+    avoid: ['上千行的流用 news-feed 的虚拟滚动。', '不会变的列表不需要它。', '要给每一条打分排序的用 data-grid。'],
+    a11y: [
+      'ul 带读屏名，aria-live=polite，新条目被礼貌播报。',
+      'onItemClick 开着时每条是按钮，读屏名取 label。',
+      '攒着的条数提示是 role=status。',
+    ],
+  },
+  'dynamic-island': {
+    aliases: ['Notch', 'Pill', 'Live activity', 'Island'],
+    use: ['成交回报、炸板提醒、连接状态这类「看一眼就退」的通知。', '内容大小不同、切换时想要弹性变形的场合。'],
+    avoid: ['要用户处理的事用 toast 或 dialog。', '一条持续显示的状态用 led 或 status-bar。'],
+    a11y: ['胶囊是 role=status、aria-live=polite，读屏名由调用方传。', '内容换了会播报新内容。'],
+  },
+  'grid-loader': {
+    aliases: ['Spinner', 'Loading indicator', 'Pixel loader', 'Activity indicator'],
+    use: ['按钮里、面板角上、AI 在想这类小的不定长等待。', '像素风的界面里替代圆形转圈。'],
+    avoid: ['等一整块数据时用 skeleton 与 Loading。', '有进度时用 progress。'],
+    a11y: ['role=status，读屏名取 label（必填）。', '颜色之外靠运动表达「在等」。'],
+  },
+  'motion-loader': {
+    aliases: ['Spinner', 'Loading indicator', 'Throbber', 'Activity indicator'],
+    use: ['行内与按钮里的小加载指示。', '连续运动的圆形款，与点阵款 grid-loader 二选一。'],
+    avoid: ['等一整块数据时用 skeleton 与 Loading。', '有进度时用 progress。'],
+    a11y: ['role=status，读屏名取 label（必填）。', '颜色取当前文字色，不单独传意。'],
+  },
+  'page-preloader': {
+    aliases: ['Splash', 'Page transition', 'Loading screen', 'Curtain'],
+    use: ['切换工作区、冷启动首屏的一次性过场。', '数据就绪后想要一个有仪式感的揭开。'],
+    avoid: ['每次切页都盖会让人烦，只用一次。', '要显示真实加载状态用 skeleton 与 Loading。'],
+    a11y: ['遮罩是 role=status，读屏名取 label。', '整页遮罩时锁住 body 滚动，揭开后还原。'],
+  },
+  'scroll-progress': {
+    aliases: ['Reading progress', 'Scroll indicator', 'Progress bar', 'Scroll spy'],
+    use: ['研报、新闻正文、策略报告这类长文里指示读到哪。', '想把进度放进自己顶栏时用 position=inline。'],
+    avoid: ['任务做了多少用 progress。', '内容不滚动的页面不要放。'],
+    a11y: ['role=progressbar，aria-valuenow 是 0 到 100。', '值经弹簧平滑，读屏取的是整数百分比。'],
+  },
 }
 
 export default feedback

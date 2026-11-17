@@ -154,3 +154,6 @@ export {
   type ReportTrade,
   type SideFilter,
 } from './strategy-report/strategy-report-model.ts'
+
+// 兑换面板（改自 SmoothUI swap-panel，MIT）。
+export { SwapPanel, type SwapAsset, type SwapPanelLabels, type SwapQuote, type SwapStatus } from './swap-panel.tsx'

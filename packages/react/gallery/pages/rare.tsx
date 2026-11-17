@@ -234,6 +234,9 @@ const ORB_STATES: readonly { state: OrbState; label: string }[] = [
   { state: 'idle', label: '空闲' },
   { state: 'listening', label: '聆听' },
   { state: 'thinking', label: '思考' },
+  { state: 'streaming', label: '流式' },
+  { state: 'done', label: '完成' },
+  { state: 'error', label: '出错' },
 ]
 
 export function MatrixOrbDemo() {

@@ -1,0 +1,34 @@
+/* SPDX-License-Identifier: MIT */
+/* 改自 SmoothUI 的几件动效件（CountBadge、PowerOffSlide）用到的关键帧：向外扩散的一圈（k-ping）与一道扫过文字的光（k-shimmer）。
+   产品不跟系统的「减少动态效果」（见 motion.css 头部），所以这里不写 prefers-reduced-motion。 */
+
+/* 角标外扩一圈：从原大小放大到 2 倍并淡出，一秒一次。 */
+.k-ping {
+  animation: k-ping 1s cubic-bezier(0, 0, 0.2, 1) infinite;
+  opacity: 0.75;
+}
+@keyframes k-ping {
+  75%,
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+/* 文字上扫过一道光：渐变底纹裁到字上，位置从右往左移，2 秒一轮。 */
+.k-shimmer {
+  background-image: linear-gradient(110deg, var(--ink-300) 35%, var(--ink-100) 50%, var(--ink-300) 65%);
+  background-size: 250% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: k-shimmer 2s linear infinite;
+}
+@keyframes k-shimmer {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: -100% 0;
+  }
+}

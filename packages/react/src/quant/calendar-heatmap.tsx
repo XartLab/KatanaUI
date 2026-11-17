@@ -5,8 +5,12 @@
 // 视图：pnl（收益，发散）/ turnover（换手，序数 seq 单色）/ events（格子不着色，事件按类别列出）。mode="year" 是整年的格子（一周一列、一天一格，格只有色没有字）。
 // 功能参照 Arc 的 Activity heatmap（uiarc.dev/components/charts，2026-11-14 读，只取功能）；样子与内容照 Calendar 卡，实现原创。
 // 交互：指针悬停或键盘选中一天，LCD tooltip 列这一天的数值与事件；点或 Enter 触发 onSelect（写联动 range）。键盘：←→ 前后一天、↑↓ 前后一周、Home / End、Esc。
+// 并入 SmoothUI contribution-graph（2026-11-17 读，MIT，© 2024 Eduardo Calvo；https://github.com/educlopez/smoothui ）里更好的几处，都是 CSS 与可选 prop，现有 API 与外观不变：
+// ① 悬停的 tooltip 不是凭空出现，而是从 0.8 倍弹到 1（原件的 scale 0.8 到 1）；② 悬停的格有颜色与描边的过渡（原件 hover:ring），切换视图时格色也平滑换；
+// ③ reveal：整张图进场时格子按顺序（年视图一列一列、月历一天一天）淡入，原件没有进场动效，这是照它的 tooltip 弹出同一手感补的，默认关。
+// 原件的 53 周 GitHub 版式、月份表头、5 档品牌色我们不要：我们的年视图是 svg、色是发散 / 序数色，且已有周标、休市、事件点。
 // 右上角三件：表格视图（总有）、导出与全屏（回调由调用方给）。文字（休、周标、月份、数值）都从 props 来。
-import { useState, type KeyboardEvent, type ReactNode } from 'react'
+import { useState, type CSSProperties, type KeyboardEvent, type ReactNode } from 'react'
 import { cn } from '../lib/cn.ts'
 import { calendarGrid, calendarKey, calendarTone, monthGrid, type CalendarTone } from './calendar-model.ts'
 import { ChartActions, type ChartActionsLabels } from './chart-kit/chart-actions.tsx'
@@ -37,6 +41,11 @@ const LEFT = 26
 const TOP = 16
 /** 一格最多画几个事件点，更多写 +n（Calendar 卡）。 */
 const MAX_DOTS = 3
+
+/** 进场时相邻两列（年视图）与两天（月历）之间的间隔，毫秒：年视图 53 列约 0.5 秒播完，月历一个月约 0.4 秒。 */
+const REVEAL_COL_MS = 10
+const REVEAL_DAY_MS = 12
+const revealStyle = (delay: number): CSSProperties => ({ '--k-reveal-delay': `${delay}ms` }) as CSSProperties
 
 export type CalendarHeatmapProps = {
   days: readonly CalendarDay[]
@@ -77,6 +86,8 @@ export type CalendarHeatmapProps = {
   onFullscreen?: () => void
   /** 点击一天（写联动 range）。 */
   onSelect?: (date: string) => void
+  /** Fades the cells in one after another when the chart first appears (and when the month or range changes). Off by default. */
+  reveal?: boolean
   className?: string
 }
 
@@ -104,6 +115,7 @@ export function CalendarHeatmap({
   onExport,
   onFullscreen,
   onSelect,
+  reveal = false,
   className,
 }: CalendarHeatmapProps) {
   const dates = days.map((day) => day.date).sort()
@@ -155,6 +167,7 @@ export function CalendarHeatmap({
     const day = byDate.get(date)
     return (
       <LcdTooltip
+        className="k-heat-tip"
         style={{ left: x, top: 0 }}
         title={date}
         rows={[
@@ -195,6 +208,7 @@ export function CalendarHeatmap({
           ))}
           {grid.cells.map((cell) => (
             <rect
+              style={reveal ? revealStyle(cell.col * REVEAL_COL_MS) : undefined}
               key={cell.date}
               className="k-heat-cell"
               data-slot="calendar-cell"
@@ -236,10 +250,10 @@ export function CalendarHeatmap({
             </span>
           ))}
         </div>
-        {weeks.map((week) => (
+        {weeks.map((week, weekIndex) => (
           <div key={week.days[0]!.date} className="k-heat-week" role="row">
             <span className="k-heat-wk">{weekLabel(week.week)}</span>
-            {week.days.map(({ date, inMonth }) => {
+            {week.days.map(({ date, inMonth }, dayIndex) => {
               if (!inMonth) return <span key={date} className="k-heat-cell k-heat-out" aria-hidden="true" />
               const day = byDate.get(date)
               const closed = day?.open === false
@@ -254,6 +268,7 @@ export function CalendarHeatmap({
                   role="gridcell"
                   tabIndex={-1}
                   className="k-heat-cell"
+                  style={reveal ? revealStyle((weekIndex * 7 + dayIndex) * REVEAL_DAY_MS) : undefined}
                   data-slot="calendar-cell"
                   data-date={date}
                   data-tone={toneOf(day)}
@@ -302,7 +317,13 @@ export function CalendarHeatmap({
   })()
 
   return (
-    <figure className={cn('k-heat', className)} data-slot="calendar-heatmap" data-mode={mode} data-view={view}>
+    <figure
+      className={cn('k-heat', className)}
+      data-slot="calendar-heatmap"
+      data-mode={mode}
+      data-view={view}
+      data-reveal={reveal ? '' : undefined}
+    >
       <div className="k-heat-top">
         {toolbar}
         {total && (

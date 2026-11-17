@@ -8,7 +8,9 @@ import {
   useContext,
   useId,
   useLayoutEffect,
+  useEffect,
   useMemo,
+  useRef,
   useState,
   type ComponentProps,
 } from 'react'
@@ -50,6 +52,7 @@ function Field({
   orientation,
   invalid = false,
   disabled = false,
+  shakeOnInvalid = false,
   ...props
 }: ComponentProps<'div'> &
   VariantProps<typeof fieldVariants> & {
@@ -57,8 +60,24 @@ function Field({
     invalid?: boolean
     /** Dims the label to 45% and disables the control. */
     disabled?: boolean
+    /**
+     * Shake the whole field once (3px) when it turns invalid.
+     * 变成无效的那一刻左右抖一下（改自 SmoothUI form 的 shake，幅度压小）。
+     */
+    shakeOnInvalid?: boolean
   }) {
   const base = useId()
+  // 只在「无效」由假变真的那一刻抖：data-shake 挂 400ms，动画在 theme/form-motion.css。
+  const [shaking, setShaking] = useState(false)
+  const wasInvalid = useRef(invalid)
+  useEffect(() => {
+    const turned = invalid && !wasInvalid.current
+    wasInvalid.current = invalid
+    if (!shakeOnInvalid || !turned) return
+    setShaking(true)
+    const timer = window.setTimeout(() => setShaking(false), 400)
+    return () => window.clearTimeout(timer)
+  }, [invalid, shakeOnInvalid])
   const [parts, setParts] = useState<{ description: number; error: number }>({ description: 0, error: 0 })
   const register = useCallback((part: 'description' | 'error') => {
     setParts((current) => ({ ...current, [part]: current[part] + 1 }))
@@ -88,6 +107,7 @@ function Field({
         data-orientation={orientation ?? 'vertical'}
         data-invalid={invalid}
         data-disabled={disabled}
+        data-shake={shaking ? '' : undefined}
         className={cn(fieldVariants({ orientation }), className)}
         {...props}
       />

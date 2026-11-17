@@ -34,6 +34,11 @@
           "target": "~/src/katana/ui/theme/ai-status.css"
         },
         {
+          "path": "src/theme/ai.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/ai.css"
+        },
+        {
           "path": "src/theme/arcade-pixel.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/arcade-pixel.css"
@@ -119,6 +124,11 @@
           "target": "~/src/katana/ui/theme/fonts.css"
         },
         {
+          "path": "src/theme/form-motion.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/form-motion.css"
+        },
+        {
           "path": "src/theme/hold-to-confirm.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/hold-to-confirm.css"
@@ -179,6 +189,16 @@
           "target": "~/src/katana/ui/theme/metric-card.css"
         },
         {
+          "path": "src/theme/motion-text.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/motion-text.css"
+        },
+        {
+          "path": "src/theme/motion-widgets.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/motion-widgets.css"
+        },
+        {
           "path": "src/theme/motion.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/motion.css"
@@ -229,6 +249,11 @@
           "target": "~/src/katana/ui/theme/row-actions.css"
         },
         {
+          "path": "src/theme/scrubber.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/scrubber.css"
+        },
+        {
           "path": "src/theme/series.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/series.css"
@@ -257,6 +282,11 @@
           "path": "src/theme/strategy-report.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/strategy-report.css"
+        },
+        {
+          "path": "src/theme/sui-motion.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/sui-motion.css"
         },
         {
           "path": "src/theme/symbol-mark.css",
@@ -313,6 +343,19 @@
           "path": "src/lib/cn.ts",
           "type": "registry:lib",
           "target": "~/src/katana/ui/lib/cn.ts"
+        }
+      ]
+    },
+    {
+      "name": "fine-pointer",
+      "type": "registry:lib",
+      "title": "Fine Pointer",
+      "description": "判断是否精细指针（鼠标、触控板）的钩子，倾斜卡、玻璃卡、光斑卡这类跟手装饰件用，触屏上不开。",
+      "files": [
+        {
+          "path": "src/lib/fine-pointer.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/lib/fine-pointer.ts"
         }
       ]
     },
@@ -558,12 +601,54 @@
       ]
     },
     {
+      "name": "avatar",
+      "type": "registry:ui",
+      "title": "Avatar",
+      "description": "圆形头像：图片没到或失败时显示缩写，右下角可挂在线状态点，AvatarGroup 叠放并把多出的折成 +N；三档尺寸 24 / 32 / 40。",
+      "dependencies": [
+        "radix-ui@1.8.1"
+      ],
+      "registryDependencies": [
+        "@katana/cn"
+      ],
+      "files": [
+        {
+          "path": "src/primitives/avatar.tsx",
+          "type": "registry:ui",
+          "target": "~/src/katana/ui/primitives/avatar.tsx"
+        }
+      ]
+    },
+    {
+      "name": "breadcrumb",
+      "type": "registry:ui",
+      "title": "Breadcrumb",
+      "description": "路径导航：一节一节从左侧轻滑进来（错开 40ms），最后一节是当前页、不是链接；分隔符可换。",
+      "dependencies": [
+        "lucide-react@1.67.0",
+        "motion@14.9.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/focus",
+        "@katana/motion"
+      ],
+      "files": [
+        {
+          "path": "src/primitives/breadcrumb.tsx",
+          "type": "registry:ui",
+          "target": "~/src/katana/ui/primitives/breadcrumb.tsx"
+        }
+      ]
+    },
+    {
       "name": "button",
       "type": "registry:ui",
       "title": "Button",
       "description": "30 高的默认按钮，六种变体与三种尺寸；悬停提亮、按下缩到 0.97，禁用降到 45% 不透明度。颜色只读 actionable（bold = primary、subtle = icon、negative = danger）、content、separable、focused 这几类 characteristic，高度与内距读密度（data-density 的 size-base、size-row、spacing-*）；「主题 × 密度」那三行在 high、medium、low 下各摆一遍。",
       "dependencies": [
         "class-variance-authority@0.7.1",
+        "motion@14.9.0",
         "radix-ui@1.8.1"
       ],
       "registryDependencies": [
@@ -579,10 +664,27 @@
       ]
     },
     {
+      "name": "checkbox-group",
+      "type": "registry:ui",
+      "title": "Checkbox Group",
+      "description": "一组勾选框，值是被选项的数组；带「全选」父项，部分选中时父项半选。改自 SmoothUI（MIT）。",
+      "registryDependencies": [
+        "@katana/checkbox",
+        "@katana/cn"
+      ],
+      "files": [
+        {
+          "path": "src/primitives/checkbox-group.tsx",
+          "type": "registry:ui",
+          "target": "~/src/katana/ui/primitives/checkbox-group.tsx"
+        }
+      ]
+    },
+    {
       "name": "checkbox",
       "type": "registry:ui",
       "title": "Checkbox",
-      "description": "14px 凹陷方框；选中后中心一块 6px 橙色发光方块（像一颗 LED），框换暗橙边、暗橙底，不画勾。",
+      "description": "14px 凹陷方框；选中后中心一块 6px 方块，框换亮中性底，符号弹进来。半选画 2px 横杠。可选 indicator=\"check\"：一笔写出来的勾（改自 SmoothUI，MIT）。",
       "dependencies": [
         "radix-ui@1.8.1"
       ],
@@ -595,6 +697,27 @@
           "path": "src/primitives/checkbox.tsx",
           "type": "registry:ui",
           "target": "~/src/katana/ui/primitives/checkbox.tsx"
+        }
+      ]
+    },
+    {
+      "name": "collapsible",
+      "type": "registry:ui",
+      "title": "Collapsible",
+      "description": "一个标题行加一块可收起的内容；内容高度从 0 长出来，箭头翻过来。成组、同时只开一项的用 Accordion。",
+      "dependencies": [
+        "lucide-react@1.67.0",
+        "radix-ui@1.8.1"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/focus"
+      ],
+      "files": [
+        {
+          "path": "src/primitives/collapsible.tsx",
+          "type": "registry:ui",
+          "target": "~/src/katana/ui/primitives/collapsible.tsx"
         }
       ]
     },
@@ -691,7 +814,7 @@
       "name": "field",
       "type": "registry:ui",
       "title": "Field",
-      "description": "标签加控件加说明加错误排成一组，并把它们的 ARIA 关联好：标签点一下聚焦控件，说明与错误进控件的 aria-describedby，出错时 aria-invalid、错误条 role=alert。",
+      "description": "标签加控件加说明加错误排成一组，并把它们的 ARIA 关联好：标签点一下聚焦控件，说明与错误进控件的 aria-describedby，出错时 aria-invalid、错误条 role=alert。可选 shakeOnInvalid：变成无效的那一刻整组抖一下（改自 SmoothUI form，MIT）。",
       "dependencies": [
         "class-variance-authority@0.7.1"
       ],
@@ -729,10 +852,26 @@
       ]
     },
     {
+      "name": "input-group",
+      "type": "registry:ui",
+      "title": "Input Group",
+      "description": "一个外框包住输入框与前后附件（图标、币种、单位、按钮），里面的 Input 去掉自己的边与底；焦点环画在外框里。改自 SmoothUI（MIT）。",
+      "registryDependencies": [
+        "@katana/cn"
+      ],
+      "files": [
+        {
+          "path": "src/primitives/input-group.tsx",
+          "type": "registry:ui",
+          "target": "~/src/katana/ui/primitives/input-group.tsx"
+        }
+      ]
+    },
+    {
       "name": "input",
       "type": "registry:ui",
       "title": "Input",
-      "description": "单行文本框：30 高（sm 26 高），4% 白底 8% 白边；聚焦边变亮，禁用降到 45%。",
+      "description": "单行文本框：30 高（sm 26 高），4% 白底 8% 白边；聚焦边变亮，禁用降到 45%。可选 floatingLabel：标签从框里升到框上。",
       "dependencies": [
         "class-variance-authority@0.7.1"
       ],
@@ -752,7 +891,7 @@
       "name": "label",
       "type": "registry:ui",
       "title": "Label",
-      "description": "标签加控件加说明加错误排成一组，并把它们的 ARIA 关联好：标签点一下聚焦控件，说明与错误进控件的 aria-describedby，出错时 aria-invalid、错误条 role=alert。",
+      "description": "标签加控件加说明加错误排成一组，并把它们的 ARIA 关联好：标签点一下聚焦控件，说明与错误进控件的 aria-describedby，出错时 aria-invalid、错误条 role=alert。可选 shakeOnInvalid：变成无效的那一刻整组抖一下（改自 SmoothUI form，MIT）。",
       "dependencies": [
         "radix-ui@1.8.1"
       ],
@@ -819,6 +958,110 @@
       ]
     },
     {
+      "name": "menubar",
+      "type": "registry:ui",
+      "title": "Menubar",
+      "description": "一排顶层菜单（文件、视图、运行）：方向键在它们之间走，一个开着时划到别的自动换开；面板用下拉菜单同一套皮肤与入场。",
+      "dependencies": [
+        "radix-ui@1.8.1"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/focus",
+        "@katana/menu-parts",
+        "@katana/overlay"
+      ],
+      "files": [
+        {
+          "path": "src/primitives/menubar.tsx",
+          "type": "registry:ui",
+          "target": "~/src/katana/ui/primitives/menubar.tsx"
+        }
+      ]
+    },
+    {
+      "name": "morph-toggle",
+      "type": "registry:ui",
+      "title": "Morph Toggle",
+      "description": "带仪式感的单个开关：圆钮滑动时形状跟着变（方块变圆），或钮里两个图标转着换。底座是 Radix Switch，尺寸与颜色同 Switch。改自 SmoothUI（MIT）。",
+      "dependencies": [
+        "motion@14.9.0",
+        "radix-ui@1.8.1"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/focus",
+        "@katana/motion",
+        "@katana/spring"
+      ],
+      "files": [
+        {
+          "path": "src/primitives/morph-toggle.tsx",
+          "type": "registry:ui",
+          "target": "~/src/katana/ui/primitives/morph-toggle.tsx"
+        }
+      ]
+    },
+    {
+      "name": "navigation-menu",
+      "type": "registry:ui",
+      "title": "Navigation Menu",
+      "description": "顶栏上一排带下拉面板的入口：面板共用一个视口，在入口之间划动时按方向滑入滑出，宽高平滑过渡。",
+      "dependencies": [
+        "lucide-react@1.67.0",
+        "radix-ui@1.8.1"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/focus"
+      ],
+      "files": [
+        {
+          "path": "src/primitives/navigation-menu.tsx",
+          "type": "registry:ui",
+          "target": "~/src/katana/ui/primitives/navigation-menu.tsx"
+        }
+      ]
+    },
+    {
+      "name": "otp-field",
+      "type": "registry:ui",
+      "title": "Otp Field",
+      "description": "一次性验证码输入（交易二次验证、短信码）：每格一个字，当前格的外框用弹簧滑到下一格，字翻进来，空格里一根闪的光标。一个透明的真输入框接键盘、粘贴与自动填充。改自 SmoothUI（MIT）。",
+      "registryDependencies": [
+        "@katana/cn"
+      ],
+      "files": [
+        {
+          "path": "src/primitives/otp-field.tsx",
+          "type": "registry:ui",
+          "target": "~/src/katana/ui/primitives/otp-field.tsx"
+        }
+      ]
+    },
+    {
+      "name": "pagination",
+      "type": "registry:ui",
+      "title": "Pagination",
+      "description": "分页器：当前页的底块在页码之间用弹簧滑过去，页码错开 30ms 进场，页数多时首尾常驻、当前页两侧留 siblings 页、其余折成省略号。",
+      "dependencies": [
+        "lucide-react@1.67.0",
+        "motion@14.9.0"
+      ],
+      "registryDependencies": [
+        "@katana/button",
+        "@katana/cn",
+        "@katana/motion"
+      ],
+      "files": [
+        {
+          "path": "src/primitives/pagination.tsx",
+          "type": "registry:ui",
+          "target": "~/src/katana/ui/primitives/pagination.tsx"
+        }
+      ]
+    },
+    {
       "name": "popover",
       "type": "registry:ui",
       "title": "Popover",
@@ -856,6 +1099,26 @@
           "path": "src/primitives/progress.tsx",
           "type": "registry:ui",
           "target": "~/src/katana/ui/primitives/progress.tsx"
+        }
+      ]
+    },
+    {
+      "name": "radio-group",
+      "type": "registry:ui",
+      "title": "Radio Group",
+      "description": "一组互斥的单选钮：14px 凹陷圆框，选中后框换亮中性，中心一颗深色点从小弹到位。方向键在选项间移动并选中。改自 SmoothUI（MIT）。",
+      "dependencies": [
+        "radix-ui@1.8.1"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/focus"
+      ],
+      "files": [
+        {
+          "path": "src/primitives/radio-group.tsx",
+          "type": "registry:ui",
+          "target": "~/src/katana/ui/primitives/radio-group.tsx"
         }
       ]
     },
@@ -949,7 +1212,7 @@
       "name": "slider",
       "type": "registry:ui",
       "title": "Slider",
-      "description": "凹槽轨 + 点阵填充 + 发光圆把手；拖动跟手，松手 settle 弹簧吸附到步进；一个值或一段范围。",
+      "description": "凹槽轨 + 点阵填充 + 圆把手；拖动跟手，松手 settle 弹簧吸附到步进，按住时把手放大到 1.12（改自 SmoothUI，MIT）；一个值或一段范围。",
       "dependencies": [
         "radix-ui@1.8.1"
       ],
@@ -1037,6 +1300,23 @@
       ]
     },
     {
+      "name": "textarea",
+      "type": "registry:ui",
+      "title": "Textarea",
+      "description": "多行文本框：与 Input 同一套皮肤（4% 白底 7% 白边，聚焦边提亮），默认三行高，竖向可拖。改自 SmoothUI（MIT）。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/input"
+      ],
+      "files": [
+        {
+          "path": "src/primitives/textarea.tsx",
+          "type": "registry:ui",
+          "target": "~/src/katana/ui/primitives/textarea.tsx"
+        }
+      ]
+    },
+    {
       "name": "toggle-group",
       "type": "registry:ui",
       "title": "Toggle Group",
@@ -1056,6 +1336,26 @@
           "path": "src/primitives/toggle-group.tsx",
           "type": "registry:ui",
           "target": "~/src/katana/ui/primitives/toggle-group.tsx"
+        }
+      ]
+    },
+    {
+      "name": "toggle",
+      "type": "registry:ui",
+      "title": "Toggle",
+      "description": "单个按下即开的按钮（aria-pressed）：外形是 Button，开时换分段选中的底与字；按下缩到 0.97。改自 SmoothUI（MIT）。",
+      "dependencies": [
+        "radix-ui@1.8.1"
+      ],
+      "registryDependencies": [
+        "@katana/button",
+        "@katana/cn"
+      ],
+      "files": [
+        {
+          "path": "src/primitives/toggle.tsx",
+          "type": "registry:ui",
+          "target": "~/src/katana/ui/primitives/toggle.tsx"
         }
       ]
     },
@@ -1098,6 +1398,87 @@
           "path": "src/katana/ai-status.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/katana/ai-status.tsx"
+        }
+      ]
+    },
+    {
+      "name": "animated-avatar-group",
+      "type": "registry:component",
+      "title": "Animated Avatar Group",
+      "description": "重叠的 SymbolMark 堆：ETF 前几大持仓、板块成分、相关品种一行放得下；悬停时拉开、略放大，超出的折成「+n」。外圈用底色描边把相邻两枚隔开。只有有鼠标的设备才展开。与 Avatar / AvatarGroup 的分工：那是人的头像，这是品种徽标。",
+      "dependencies": [
+        "motion@14.9.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/symbol-mark"
+      ],
+      "files": [
+        {
+          "path": "src/katana/animated-avatar-group.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/katana/animated-avatar-group.tsx"
+        }
+      ]
+    },
+    {
+      "name": "animated-list",
+      "type": "registry:component",
+      "title": "Animated List",
+      "description": "新闻快讯、成交回报这类往上顶的信息流：新条目从上方弹性插入并带蓝线高亮，旧条目被挤着下移，超出 maxVisible 的从底部淡出。鼠标停在列表上时新条目先攒着、不往下挤，移开后一次进来，攒了几条可提示。递减（越旧越淡）默认关，信息流要让每一条都读得清。",
+      "dependencies": [
+        "motion@14.9.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/focus"
+      ],
+      "files": [
+        {
+          "path": "src/katana/animated-list.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/katana/animated-list.tsx"
+        }
+      ]
+    },
+    {
+      "name": "animated-stepper",
+      "type": "registry:component",
+      "title": "Animated Stepper",
+      "description": "步骤条：下单向导（选品种、填参数、确认）这类多步流程。当前步的圆点外扩一圈光环，完成的步打钩（笔画画出来），步与步之间的线随进度填满，下方内容按前进或后退方向滑入。横排与竖排两种。与 StepPlayer 的分工：StepPlayer 是回放控制，这个是用户自己填的流程进度。",
+      "dependencies": [
+        "motion@14.9.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/focus"
+      ],
+      "files": [
+        {
+          "path": "src/katana/animated-stepper.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/katana/animated-stepper.tsx"
+        }
+      ]
+    },
+    {
+      "name": "animated-tags",
+      "type": "registry:component",
+      "title": "Animated Tags",
+      "description": "上面是「已选」，下面是「可选」，点一个标签它就飞到另一边（布局动画加模糊淡出淡入）。拿来选关注板块、策略标签、自选分组。与 ChipGroup 的分工：ChipGroup 是原地开关的筛选芯片，选中不换位置；AnimatedTags 把选中的拎出来单独放，适合要看清「我选了哪几个」。",
+      "dependencies": [
+        "lucide-react@1.67.0",
+        "motion@14.9.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/focus"
+      ],
+      "files": [
+        {
+          "path": "src/katana/animated-tags.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/katana/animated-tags.tsx"
         }
       ]
     },
@@ -1170,6 +1551,28 @@
       ]
     },
     {
+      "name": "count-badge",
+      "type": "registry:component",
+      "title": "Count Badge",
+      "description": "贴在任何元素角上的角标：点、数字、状态点三种；数字变了按增减方向上下滚，0 时淡出，超过上限写「99+」；可选向外扩散的一圈。与 NotificationBell 的分工：铃是「铃 + 未读数」一个整件，CountBadge 是通用的、贴在头像、标签页、图标按钮上的那一颗。",
+      "dependencies": [
+        "motion@14.9.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/motion",
+        "@katana/notification-bell",
+        "@katana/spring"
+      ],
+      "files": [
+        {
+          "path": "src/katana/count-badge.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/katana/count-badge.tsx"
+        }
+      ]
+    },
+    {
       "name": "date-time-input",
       "type": "registry:component",
       "title": "Date Time Input",
@@ -1229,6 +1632,22 @@
       ]
     },
     {
+      "name": "dither-chart",
+      "type": "registry:component",
+      "title": "Dither Chart",
+      "description": "整张图都由方点拼出来的小图：先在低分辨率画布上画线、柱、堆叠、环、仪表、漏斗或热力，再按 Bayer 矩阵把透明度量化成有点没点，放大成像素风。与 DotMatrix 的分工：DotMatrix 是 SVG 里的固定点阵纹理，DitherChart 是整图。装饰性的概览，不可取值，读准数用 Sparkline 与 EquityCurve。",
+      "registryDependencies": [
+        "@katana/cn"
+      ],
+      "files": [
+        {
+          "path": "src/katana/dither-chart.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/katana/dither-chart.tsx"
+        }
+      ]
+    },
+    {
       "name": "dot-matrix",
       "type": "registry:component",
       "title": "Dot Matrix",
@@ -1264,6 +1683,45 @@
       ]
     },
     {
+      "name": "dynamic-island",
+      "type": "registry:component",
+      "title": "Dynamic Island",
+      "description": "一个胶囊，内容换了它就弹着变成新内容的大小；旧内容模糊淡出、新内容从略小处模糊淡入。拿来放成交回报、炸板提醒、连接状态这类「一眼看到、过会儿退回」的通知。内容与切换时机都由调用方定，件只管那一下弹性变形。",
+      "dependencies": [
+        "motion@14.9.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn"
+      ],
+      "files": [
+        {
+          "path": "src/katana/dynamic-island.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/katana/dynamic-island.tsx"
+        }
+      ]
+    },
+    {
+      "name": "exposure-slider",
+      "type": "registry:component",
+      "title": "Exposure Slider",
+      "description": "刻度尺式的双向调节：中间一根定位线，左右拖动刻度尺，对准的刻度亮起，上方的环形读数左半圆表示负、右半圆表示正。拿来调净敞口、仓位偏移、杠杆这类中点是 0 的量；松手吸附到刻度。tone=pnl 时正负按涨跌色着色。",
+      "dependencies": [
+        "motion@14.9.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/focus"
+      ],
+      "files": [
+        {
+          "path": "src/katana/exposure-slider.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/katana/exposure-slider.tsx"
+        }
+      ]
+    },
+    {
       "name": "gauge-bar",
       "type": "registry:component",
       "title": "Gauge Bar",
@@ -1273,6 +1731,25 @@
           "path": "src/katana/gauge-bar.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/katana/gauge-bar.tsx"
+        }
+      ]
+    },
+    {
+      "name": "grid-loader",
+      "type": "registry:component",
+      "title": "Grid Loader",
+      "description": "3×3 像素点阵的转圈：几何小方块按图案亮起、呼吸（pulse）、依次点亮（stagger）或整图案轮换（sequence），带一点辉光。与 Loading 的分工：Loading 是「等数据时先出骨架」的整块门，GridLoader 是小的、不定长等待指示（按钮里、面板角上、AI 在想）。图案有 15 个常用的，也可传自己的 3×3 矩阵。",
+      "dependencies": [
+        "motion@14.9.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn"
+      ],
+      "files": [
+        {
+          "path": "src/katana/grid-loader.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/katana/grid-loader.tsx"
         }
       ]
     },
@@ -1303,6 +1780,45 @@
           "path": "src/katana/hold-to-confirm.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/katana/hold-to-confirm.tsx"
+        }
+      ]
+    },
+    {
+      "name": "hover-expand",
+      "type": "registry:component",
+      "title": "Hover Expand",
+      "description": "并排的一组面板，鼠标移到哪块哪块撑开（flex-grow 弹簧 4 比 1），其余收窄、标题竖排；键盘聚焦与方向键同样展开。拿来放板块概览、策略卡、情景对比这类「同时只看一块细节」的并列项。触屏没有悬停，点击展开。",
+      "dependencies": [
+        "motion@14.9.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/focus"
+      ],
+      "files": [
+        {
+          "path": "src/katana/hover-expand.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/katana/hover-expand.tsx"
+        }
+      ]
+    },
+    {
+      "name": "infinite-slider",
+      "type": "registry:component",
+      "title": "Infinite Slider",
+      "description": "无限滚动条，行情跑马灯（Ticker tape）的底座：内容复制一份首尾相接，匀速平移，没有接缝。速度按像素每秒，悬停可减速或停住，暂停与恢复都是平滑的变速，不跳。内容放 RollingText 价格与涨跌色，价格变了数字滚、整串闪一下。",
+      "dependencies": [
+        "motion@14.9.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn"
+      ],
+      "files": [
+        {
+          "path": "src/katana/infinite-slider.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/katana/infinite-slider.tsx"
         }
       ]
     },
@@ -1452,6 +1968,23 @@
       ]
     },
     {
+      "name": "mac-terminal",
+      "type": "registry:component",
+      "title": "Mac Terminal",
+      "description": "一段「命令逐字敲入、输出逐行出现」的脚本回放，用来演示回测日志、部署输出、AI 的推理过程。是回放，不是真终端：没有输入。离开屏幕或标签页隐藏时暂停。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/focus"
+      ],
+      "files": [
+        {
+          "path": "src/katana/mac-terminal.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/katana/mac-terminal.tsx"
+        }
+      ]
+    },
+    {
       "name": "matrix-orb-model",
       "type": "registry:lib",
       "title": "Matrix Orb Model",
@@ -1468,7 +2001,7 @@
       "name": "matrix-orb",
       "type": "registry:component",
       "title": "Matrix Orb",
-      "description": "一盘方点排成圆：待命慢呼吸，聆听同心波跟输入电平（麦克风音量）走，思考几个热点绕着转。点阵签名件的动态版，用来表达 Agent 在做什么。学自 rare-ui。",
+      "description": "一盘方点排成圆：待命慢呼吸，聆听同心波跟输入电平（麦克风音量）走，思考几个热点绕着转；另有流式、完成、出错三态（并入自 SmoothUI siri-orb / ai-core 的六态约定，用点阵自己的方式表达）。点阵签名件的动态版，用来表达 Agent 在做什么。学自 rare-ui。",
       "registryDependencies": [
         "@katana/cn",
         "@katana/dot-matrix",
@@ -1500,6 +2033,25 @@
           "path": "src/katana/measured-skeleton.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/katana/measured-skeleton.tsx"
+        }
+      ]
+    },
+    {
+      "name": "motion-loader",
+      "type": "registry:component",
+      "title": "Motion Loader",
+      "description": "一组连续运动的小加载指示：轨道、彗星、雷达、波形条、点环、呼吸光、方块蛇、变形环；都从 size 一个数缩放，颜色跟文字色。波形条与行情的条形很搭，点环适合行内。与 GridLoader 的分工：GridLoader 是像素点阵，MotionLoader 是连续运动的圆形。",
+      "dependencies": [
+        "motion@14.9.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn"
+      ],
+      "files": [
+        {
+          "path": "src/katana/motion-loader.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/katana/motion-loader.tsx"
         }
       ]
     },
@@ -1573,6 +2125,25 @@
       ]
     },
     {
+      "name": "page-preloader",
+      "type": "registry:component",
+      "title": "Page Preloader",
+      "description": "面板或整页的进场遮罩：先盖住内容停一会儿，数据就绪后用幕布、阶梯、像素、文字四种方式之一揭开。用在切换工作区、冷启动首屏。默认只盖住父级，整页遮罩要显式 fullScreen。与 Loading 的分工：Loading 管等数据时的骨架与超时，PagePreloader 只管「揭开」这一下，两者可叠着用。",
+      "dependencies": [
+        "motion@14.9.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn"
+      ],
+      "files": [
+        {
+          "path": "src/katana/page-preloader.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/katana/page-preloader.tsx"
+        }
+      ]
+    },
+    {
       "name": "password-input",
       "type": "registry:component",
       "title": "Password Input",
@@ -1592,6 +2163,47 @@
           "path": "src/katana/password-input.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/katana/password-input.tsx"
+        }
+      ]
+    },
+    {
+      "name": "pinned-list",
+      "type": "registry:component",
+      "title": "Pinned List",
+      "description": "可置顶的列表（自选股、常用面板）：点一行把它钉到最上面，钉住的行落下时轻压一下，下面的行依次补位；左侧长出强调条，图钉转 45 度。置顶数有上限，满了其余行变灰不可点。键盘：方向键走、Home / End 到头尾、Enter / 空格 / P 切换。",
+      "dependencies": [
+        "lucide-react@1.67.0",
+        "motion@14.9.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/focus"
+      ],
+      "files": [
+        {
+          "path": "src/katana/pinned-list.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/katana/pinned-list.tsx"
+        }
+      ]
+    },
+    {
+      "name": "power-off-slide",
+      "type": "registry:component",
+      "title": "Power Off Slide",
+      "description": "把圆钮从左拖到头才算数，拖不到头松手就弹回。拿来做「全部平仓」「清仓」「关闭策略」这类不可轻易误触的操作。轨上的字有一道光扫过，圆钮拖远了字渐渐淡掉；确认后轨换成「执行中」文字，到点圆钮回位。键盘与读屏另有路：圆钮聚焦后按 Enter 或空格直接确认。",
+      "dependencies": [
+        "motion@14.9.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/focus"
+      ],
+      "files": [
+        {
+          "path": "src/katana/power-off-slide.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/katana/power-off-slide.tsx"
         }
       ]
     },
@@ -1702,6 +2314,41 @@
       ]
     },
     {
+      "name": "scroll-progress",
+      "type": "registry:component",
+      "title": "Scroll Progress",
+      "description": "读长文（研报、新闻正文、策略报告）时指示读到哪了：条、环、数字、分段四种；值经弹簧平滑，不跟着滚轮的颗粒抖。自己读滚动位置（窗口，或 container 指定的滚动容器），不用传值。与 Progress 的分工：Progress 是受控的任务进度，这个读滚动。",
+      "dependencies": [
+        "motion@14.9.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn"
+      ],
+      "files": [
+        {
+          "path": "src/katana/scroll-progress.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/katana/scroll-progress.tsx"
+        }
+      ]
+    },
+    {
+      "name": "scrubber",
+      "type": "registry:component",
+      "title": "Scrubber",
+      "description": "一条带填充的擦洗控件：左边写名字，右边写读数，在条上按下并拖动就把值擦到那里，松手停住，值按步长吸附。拿来擦回测的回看时间点、拖下单数量、调价格偏移。把手平时小而淡，悬停、聚焦与拖动时变实。",
+      "registryDependencies": [
+        "@katana/cn"
+      ],
+      "files": [
+        {
+          "path": "src/katana/scrubber.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/katana/scrubber.tsx"
+        }
+      ]
+    },
+    {
       "name": "shortcut-model",
       "type": "registry:lib",
       "title": "Shortcut Model",
@@ -1769,6 +2416,22 @@
       ]
     },
     {
+      "name": "squircle",
+      "type": "registry:component",
+      "title": "Squircle",
+      "description": "把元素用 clip-path 裁成曲率连续的圆角矩形（苹果图标那种角）：比 border-radius 的圆弧过渡柔和。smoothing 为 0 就是普通圆角，1 把曲线推到很深。边框改成沿同一条曲线画的 SVG 描边（CSS 边框会被裁断）。本系统的面板默认直角，这件只给头像、徽标、图标底这类单个小方块用。",
+      "registryDependencies": [
+        "@katana/cn"
+      ],
+      "files": [
+        {
+          "path": "src/katana/squircle.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/katana/squircle.tsx"
+        }
+      ]
+    },
+    {
       "name": "status-icon",
       "type": "registry:component",
       "title": "Status Icon",
@@ -1822,6 +2485,23 @@
           "path": "src/katana/step-player.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/katana/step-player.tsx"
+        }
+      ]
+    },
+    {
+      "name": "switchboard-card",
+      "type": "registry:component",
+      "title": "Switchboard Card",
+      "description": "一块小灯阵加标题与说明：灯按 lit 矩阵常亮，或按种子随机明灭（灭、中、亮三档，像交换机面板）。拿来做「市场活跃度」「在线品种」这类带装饰意味的总览卡。随机用带种子的线性同余，同一个种子同一串，可暂停。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/focus"
+      ],
+      "files": [
+        {
+          "path": "src/katana/switchboard-card.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/katana/switchboard-card.tsx"
         }
       ]
     },
@@ -1964,6 +2644,30 @@
       ]
     },
     {
+      "name": "animated-file-upload",
+      "type": "registry:component",
+      "title": "Animated File Upload",
+      "description": "拖文件进来时区块放大、图标上浮，放下后文件行错落滑入，删除时向右滑出、剩下的补位；整块是一个按钮，超限的文件过滤掉并提示。导入回测数据、策略文件用。",
+      "dependencies": [
+        "lucide-react@1.67.0",
+        "motion@14.9.0"
+      ],
+      "registryDependencies": [
+        "@katana/button",
+        "@katana/cn",
+        "@katana/focus",
+        "@katana/motion",
+        "@katana/spring"
+      ],
+      "files": [
+        {
+          "path": "src/patterns/animated-file-upload.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/patterns/animated-file-upload.tsx"
+        }
+      ]
+    },
+    {
       "name": "chip-group",
       "type": "registry:component",
       "title": "Chip Group",
@@ -2042,6 +2746,88 @@
       ]
     },
     {
+      "name": "dock",
+      "type": "registry:component",
+      "title": "Dock",
+      "description": "一排工具图标，指针靠近时按距离放大（升余弦衰减，邻居跟着长）；悬停或聚焦出标签；选中时往上弹跳；active 的在底下画一个点。",
+      "dependencies": [
+        "motion@14.9.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/focus"
+      ],
+      "files": [
+        {
+          "path": "src/patterns/dock.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/patterns/dock.tsx"
+        }
+      ]
+    },
+    {
+      "name": "expandable-cards",
+      "type": "registry:component",
+      "title": "Expandable Cards",
+      "description": "横排卡片，点一张它横向撑开、露出右边的详情，其余保持窄卡，再点收回。并排比较几个版本或方案（策略 v1 到 v4）。",
+      "dependencies": [
+        "motion@14.9.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/focus"
+      ],
+      "files": [
+        {
+          "path": "src/patterns/expandable-cards.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/patterns/expandable-cards.tsx"
+        }
+      ]
+    },
+    {
+      "name": "expandable-navbar",
+      "type": "registry:component",
+      "title": "Expandable Navbar",
+      "description": "一排入口，悬停或点击一个，条的下沿长出一块面板把条撑高；在入口间移动时面板按方向横向交叉淡入，高度跟着内容变。",
+      "dependencies": [
+        "motion@14.9.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/focus"
+      ],
+      "files": [
+        {
+          "path": "src/patterns/expandable-navbar.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/patterns/expandable-navbar.tsx"
+        }
+      ]
+    },
+    {
+      "name": "file-tree",
+      "type": "registry:component",
+      "title": "File Tree",
+      "description": "策略目录、回测产物这类有文件夹也有文件的层级：行首是文件夹 / 文件图标、行尾可挂徽标；文件夹展开时子级高度弹出来、箭头转 90 度，可画纵向引导线。纯分类的树用 TreeView。",
+      "dependencies": [
+        "lucide-react@1.67.0",
+        "motion@14.9.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/focus",
+        "@katana/motion"
+      ],
+      "files": [
+        {
+          "path": "src/patterns/file-tree.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/patterns/file-tree.tsx"
+        }
+      ]
+    },
+    {
       "name": "filter-bar-model",
       "type": "registry:component",
       "title": "Filter Bar Model",
@@ -2074,6 +2860,27 @@
           "path": "src/patterns/filter-bar.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/patterns/filter-bar.tsx"
+        }
+      ]
+    },
+    {
+      "name": "floating-navbar",
+      "type": "registry:component",
+      "title": "Floating Navbar",
+      "description": "一条胶囊浮在内容上，当前项的底块用弹簧滑到点中的项；往下滚时条淡出上移让路，往回滚立即出现，滚过 120px 后收紧。研究报告、长文档的页内跳转用。",
+      "dependencies": [
+        "motion@14.9.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/focus",
+        "@katana/motion"
+      ],
+      "files": [
+        {
+          "path": "src/patterns/floating-navbar.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/patterns/floating-navbar.tsx"
         }
       ]
     },
@@ -2178,6 +2985,28 @@
       ]
     },
     {
+      "name": "rich-popover",
+      "type": "registry:component",
+      "title": "Rich Popover",
+      "description": "点触发器弹出的一张小卡：标题（可带外链）、一段说明、一枚元信息小标和一个主动作，带小尖角；入场是模糊加缩放一起收敛。品种悬停预览用 HoverCard，需要带动作、要点开的用它。",
+      "dependencies": [
+        "lucide-react@1.67.0",
+        "radix-ui@1.8.1"
+      ],
+      "registryDependencies": [
+        "@katana/button",
+        "@katana/cn",
+        "@katana/overlay"
+      ],
+      "files": [
+        {
+          "path": "src/patterns/rich-popover.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/patterns/rich-popover.tsx"
+        }
+      ]
+    },
+    {
       "name": "row-actions",
       "type": "registry:component",
       "title": "Row Actions",
@@ -2209,6 +3038,26 @@
           "path": "src/patterns/side-nav.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/patterns/side-nav.tsx"
+        }
+      ]
+    },
+    {
+      "name": "time-machine-stack",
+      "type": "registry:component",
+      "title": "Time Machine Stack",
+      "description": "一摞面板按深度排开，只有最前一张可读；滚轮、拖动、方向键往后翻，前一张飞过观众、后一张补上。回看策略版本史：最前是当前版本，往后是更早的。",
+      "dependencies": [
+        "motion@14.9.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/focus"
+      ],
+      "files": [
+        {
+          "path": "src/patterns/time-machine-stack.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/patterns/time-machine-stack.tsx"
         }
       ]
     },
@@ -2249,6 +3098,1254 @@
           "path": "src/patterns/view-switcher.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/patterns/view-switcher.tsx"
+        }
+      ]
+    },
+    {
+      "name": "agent-avatar-model",
+      "type": "registry:lib",
+      "title": "Agent Avatar Model",
+      "description": "AgentAvatar 的纯逻辑：名字取首字、按 id 稳定取色调、状态到光环的映射。",
+      "files": [
+        {
+          "path": "src/ai/agent-avatar-model.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/ai/agent-avatar-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "agent-avatar",
+      "type": "registry:component",
+      "title": "Agent Avatar",
+      "description": "Agent 的像素头像：由字符串种子确定地生成 6×6 的色块，同一个种子永远同一张脸；带呼吸、脉动、斜扫、闪点四种环境动效。多个 Agent（研究员、风控、执行）并存时一眼认出是谁说的话。改自 SmoothUI。",
+      "registryDependencies": [
+        "@katana/agent-avatar-model",
+        "@katana/cn"
+      ],
+      "files": [
+        {
+          "path": "src/ai/agent-avatar.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/ai/agent-avatar.tsx"
+        }
+      ]
+    },
+    {
+      "name": "ai-approval",
+      "type": "registry:component",
+      "title": "Ai Approval",
+      "description": "Agent 动手之前摆出来的一张卡：问题、事实表（标的、方向、数量、理由）、几个选项。选中不是勾单选钮：选中的一项展开铺满，其余收没。高风险动作（真的下单）的选项带 hold，画成 HoldToConfirm，按住填满才批。改自 SmoothUI，hold 是我们加的。",
+      "dependencies": [
+        "lucide-react@1.67.0",
+        "motion@14.9.0"
+      ],
+      "registryDependencies": [
+        "@katana/button",
+        "@katana/cn",
+        "@katana/hold-to-confirm",
+        "@katana/motion",
+        "@katana/spring"
+      ],
+      "files": [
+        {
+          "path": "src/ai/ai-approval.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/ai/ai-approval.tsx"
+        }
+      ]
+    },
+    {
+      "name": "ai-artifact",
+      "type": "registry:component",
+      "title": "Ai Artifact",
+      "description": "模型产出的东西的框：标题、预览 / 代码两个视图、复制。两个视图沿同一条水平轴走，预览永远在代码左边，所以切换有方向；选中指示块是一个共享元素在页签间滑。改自 SmoothUI。",
+      "dependencies": [
+        "lucide-react@1.67.0",
+        "motion@14.9.0"
+      ],
+      "registryDependencies": [
+        "@katana/button",
+        "@katana/cn",
+        "@katana/focus",
+        "@katana/motion",
+        "@katana/spring"
+      ],
+      "files": [
+        {
+          "path": "src/ai/ai-artifact.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/ai/ai-artifact.tsx"
+        }
+      ]
+    },
+    {
+      "name": "ai-branch",
+      "type": "registry:component",
+      "title": "Ai Branch",
+      "description": "同一个问题重答出的几个版本，用上一个 / 下一个翻，到头绕回；换分支时新的从下面淡入上来；只有一个版本时翻页条不画。复合件。改自 SmoothUI。",
+      "dependencies": [
+        "lucide-react@1.67.0",
+        "motion@14.9.0"
+      ],
+      "registryDependencies": [
+        "@katana/button",
+        "@katana/cn",
+        "@katana/motion",
+        "@katana/spring"
+      ],
+      "files": [
+        {
+          "path": "src/ai/ai-branch.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/ai/ai-branch.tsx"
+        }
+      ]
+    },
+    {
+      "name": "ai-context-meter",
+      "type": "registry:component",
+      "title": "Ai Context Meter",
+      "description": "上下文窗口用掉了多少：一个小环加「已用/总量」；越过 80% 变琥珀、越过 95% 变红，几何不变只换色相。悬停、聚焦或点按弹出分项（什么在占窗口）。改自 SmoothUI。",
+      "dependencies": [
+        "motion@14.9.0"
+      ],
+      "registryDependencies": [
+        "@katana/ai-context-model",
+        "@katana/cn",
+        "@katana/focus",
+        "@katana/motion",
+        "@katana/spring"
+      ],
+      "files": [
+        {
+          "path": "src/ai/ai-context-meter.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/ai/ai-context-meter.tsx"
+        }
+      ]
+    },
+    {
+      "name": "ai-context-model",
+      "type": "registry:lib",
+      "title": "Ai Context Model",
+      "description": "AiContextMeter 的纯逻辑：用量比例、80% 琥珀与 95% 红的分档、数字缩写。",
+      "files": [
+        {
+          "path": "src/ai/ai-context-model.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/ai/ai-context-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "ai-conversation",
+      "type": "registry:component",
+      "title": "Ai Conversation",
+      "description": "对话的滚动容器：只在读者本来就贴着底部时才跟着往下，往上翻读东西时不拽人；不再跟时冒出「回到最新」药丸。页上是一整段交易助手的演示：问「600519 今天为什么跌」→ 推理 → 调工具 → 带来源的回答 → 一条减仓建议进审批。改自 SmoothUI。",
+      "dependencies": [
+        "lucide-react@1.67.0",
+        "motion@14.9.0"
+      ],
+      "registryDependencies": [
+        "@katana/button",
+        "@katana/cn",
+        "@katana/motion",
+        "@katana/spring"
+      ],
+      "files": [
+        {
+          "path": "src/ai/ai-conversation.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/ai/ai-conversation.tsx"
+        }
+      ]
+    },
+    {
+      "name": "ai-core",
+      "type": "registry:lib",
+      "title": "Ai Core",
+      "description": "AI 件共用的状态名（与 MatrixOrb 的 OrbState 同一组）与各态动效参数、语义色。",
+      "registryDependencies": [
+        "@katana/matrix-orb-model"
+      ],
+      "files": [
+        {
+          "path": "src/ai/ai-core.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/ai/ai-core.ts"
+        }
+      ]
+    },
+    {
+      "name": "ai-diff-model",
+      "type": "registry:lib",
+      "title": "Ai Diff Model",
+      "description": "AiDiff 的纯逻辑：前后两版逐行比对出增删与上下文行。",
+      "files": [
+        {
+          "path": "src/ai/ai-diff-model.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/ai/ai-diff-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "ai-diff",
+      "type": "registry:component",
+      "title": "Ai Diff",
+      "description": "一份等人点头的修改：新增行从左往右擦进来，上下文行不动；接受闪一下绿，拒绝闪一下红并把各行收到零高让出版面。交易里用来展示 AI 改了哪些策略参数。改自 SmoothUI。",
+      "dependencies": [
+        "motion@14.9.0"
+      ],
+      "registryDependencies": [
+        "@katana/ai-diff-model",
+        "@katana/button",
+        "@katana/cn",
+        "@katana/motion",
+        "@katana/spring"
+      ],
+      "files": [
+        {
+          "path": "src/ai/ai-diff.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/ai/ai-diff.tsx"
+        }
+      ]
+    },
+    {
+      "name": "ai-message",
+      "type": "registry:component",
+      "title": "Ai Message",
+      "description": "一条消息：气泡加不碍事的动作（复制、重试、赞踩）。动作从气泡自己的边上滑出来，悬停与键盘聚焦都显出，始终挂着只是淡掉，所以行高不跳。助手自带卡片的回合关掉气泡。改自 SmoothUI。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/button",
+        "@katana/cn"
+      ],
+      "files": [
+        {
+          "path": "src/ai/ai-message.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/ai/ai-message.tsx"
+        }
+      ]
+    },
+    {
+      "name": "ai-prompt-input",
+      "type": "registry:component",
+      "title": "Ai Prompt Input",
+      "description": "多行自动长高（到 8 行封顶再滚）、回车发送、Shift+回车换行；流式中发送钮变停止；附件一排小标；字数到上限的 80% 才显示计数。中文输入法选词时的回车不发送。改自 SmoothUI。",
+      "dependencies": [
+        "lucide-react@1.67.0",
+        "motion@14.9.0"
+      ],
+      "registryDependencies": [
+        "@katana/ai-core",
+        "@katana/ai-prompt-model",
+        "@katana/button",
+        "@katana/cn",
+        "@katana/motion",
+        "@katana/spring"
+      ],
+      "files": [
+        {
+          "path": "src/ai/ai-prompt-input.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/ai/ai-prompt-input.tsx"
+        }
+      ]
+    },
+    {
+      "name": "ai-prompt-model",
+      "type": "registry:lib",
+      "title": "Ai Prompt Model",
+      "description": "AiPromptInput 的纯逻辑：回车发送与输入法选词判断、字数上限。",
+      "files": [
+        {
+          "path": "src/ai/ai-prompt-model.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/ai/ai-prompt-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "ai-reasoning",
+      "type": "registry:component",
+      "title": "Ai Reasoning",
+      "description": "可折叠的推理过程：摘要行只在模型真在想的时候有流光；结束后停一拍自动收起并报耗时。手动开合过就不再替你决定。改自 SmoothUI。",
+      "dependencies": [
+        "lucide-react@1.67.0",
+        "motion@14.9.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/focus",
+        "@katana/motion",
+        "@katana/spring"
+      ],
+      "files": [
+        {
+          "path": "src/ai/ai-reasoning.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/ai/ai-reasoning.tsx"
+        }
+      ]
+    },
+    {
+      "name": "ai-response-model",
+      "type": "registry:lib",
+      "title": "Ai Response Model",
+      "description": "AiResponse 的纯逻辑：按 Intl.Segmenter 切词（中文一词一词进场）与 [n] 引用切分。",
+      "files": [
+        {
+          "path": "src/ai/ai-response-model.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/ai/ai-response-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "ai-response",
+      "type": "registry:component",
+      "title": "Ai Response",
+      "description": "流式的助手文字：词到了才进场（淡入、去模糊、上移 2px），不是定时器逐字打；正文里的 [n] 换成行内引用小标，直接用 WebSearchCitation。切词用 Intl.Segmenter，中文也一词一词进。改自 SmoothUI。",
+      "dependencies": [
+        "motion@14.9.0"
+      ],
+      "registryDependencies": [
+        "@katana/ai-response-model",
+        "@katana/cn",
+        "@katana/motion",
+        "@katana/spring",
+        "@katana/web-search"
+      ],
+      "files": [
+        {
+          "path": "src/ai/ai-response.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/ai/ai-response.tsx"
+        }
+      ]
+    },
+    {
+      "name": "ai-suggestions",
+      "type": "registry:component",
+      "title": "Ai Suggestions",
+      "description": "提示词建议的药丸：对话的空态与回答后的追问一行。从中间向两边错开进场，因为这些是同等分量的备选，不是从左到右的优先级。改自 SmoothUI。",
+      "dependencies": [
+        "motion@14.9.0"
+      ],
+      "registryDependencies": [
+        "@katana/button",
+        "@katana/cn",
+        "@katana/motion",
+        "@katana/spring"
+      ],
+      "files": [
+        {
+          "path": "src/ai/ai-suggestions.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/ai/ai-suggestions.tsx"
+        }
+      ]
+    },
+    {
+      "name": "ai-task-list",
+      "type": "registry:component",
+      "title": "Ai Task List",
+      "description": "Agent 要走完的一份计划，只读：每一步是 排队 / 进行中 / 完成 / 失败，可带一层子步骤与小注。表头计数从任务派生；完成的行安静下来，进行中的行有流光下划线。与 TaskList（人来勾的清单）是两回事。改自 SmoothUI。",
+      "dependencies": [
+        "motion@14.9.0"
+      ],
+      "registryDependencies": [
+        "@katana/ai-task-model",
+        "@katana/cn",
+        "@katana/motion",
+        "@katana/spring"
+      ],
+      "files": [
+        {
+          "path": "src/ai/ai-task-list.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/ai/ai-task-list.tsx"
+        }
+      ]
+    },
+    {
+      "name": "ai-task-model",
+      "type": "registry:lib",
+      "title": "Ai Task Model",
+      "description": "AiTaskList 的纯逻辑：计划与子步骤的状态汇总、进度。",
+      "files": [
+        {
+          "path": "src/ai/ai-task-model.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/ai/ai-task-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "ai-tool-call",
+      "type": "registry:component",
+      "title": "Ai Tool Call",
+      "description": "一次工具调用，默认一行：名字、右侧小注、状态环。环是一个会变脸的东西：排队呼吸、运行缺一口并转、成功画对勾、失败画叉。参数与结果展开才看。改自 SmoothUI。",
+      "dependencies": [
+        "lucide-react@1.67.0",
+        "motion@14.9.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/focus",
+        "@katana/motion",
+        "@katana/spring"
+      ],
+      "files": [
+        {
+          "path": "src/ai/ai-tool-call.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/ai/ai-tool-call.tsx"
+        }
+      ]
+    },
+    {
+      "name": "gravity-letters",
+      "type": "registry:component",
+      "title": "Gravity Letters",
+      "description": "文字的每个字被放开后受重力掉到容器底、弹几下、静下来；再触发就被弹簧拉回原位。物理（掉落与回位）是纯函数。用于空状态、熔断提示这类带一点玩笑的场合。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/gravity-model",
+        "@katana/split"
+      ],
+      "files": [
+        {
+          "path": "src/motion/text/gravity-letters.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/motion/text/gravity-letters.tsx"
+        }
+      ]
+    },
+    {
+      "name": "gravity-model",
+      "type": "registry:lib",
+      "title": "Gravity Model",
+      "description": "GravityLetters 的纯物理：掉落（重力、地面与墙的反弹、摩擦、静止判定）与回位（弹簧把每个字拉回原位）。",
+      "files": [
+        {
+          "path": "src/motion/text/gravity-model.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/motion/text/gravity-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "kinetic-type-scroll",
+      "type": "registry:component",
+      "title": "Kinetic Type Scroll",
+      "description": "随滚动，一道「波」从第一个词走到最后一个词：波峰上的词放大、拉开字距、上浮、变亮，过了就回落；字体是可变字体时还能随之变粗（给 weightRange）。标题与分段大字用。",
+      "dependencies": [
+        "motion@14.9.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn"
+      ],
+      "files": [
+        {
+          "path": "src/motion/text/kinetic-type-scroll.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/motion/text/kinetic-type-scroll.tsx"
+        }
+      ]
+    },
+    {
+      "name": "perspective-text-3d",
+      "type": "registry:component",
+      "title": "Perspective Text 3d",
+      "description": "文字摆在一个 3D 平面上，词或行沿 Z 轴错开深度；整个平面随滚动进度、指针位置倾斜（driver），或固定一个角度。大标题的装饰。",
+      "dependencies": [
+        "motion@14.9.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn"
+      ],
+      "files": [
+        {
+          "path": "src/motion/text/perspective-text-3d.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/motion/text/perspective-text-3d.tsx"
+        }
+      ]
+    },
+    {
+      "name": "ransom-note",
+      "type": "registry:component",
+      "title": "Ransom Note",
+      "description": "文字像从报纸上剪下的纸片：每个字有自己的字体、底色、倾斜与大小，由种子决定（同种子同文字同排布）；可以飞进来拼好，或一直轻轻抖。纯装饰，与交易数据无关，给空状态和品牌页用；纸色与字体都取我们的 token。",
+      "dependencies": [
+        "motion@14.9.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/split"
+      ],
+      "files": [
+        {
+          "path": "src/motion/text/ransom-note.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/motion/text/ransom-note.tsx"
+        }
+      ]
+    },
+    {
+      "name": "scramble-text",
+      "type": "registry:component",
+      "title": "Scramble Text",
+      "description": "文字先乱成随机字符再落回真字：trigger=\"hover\" 在悬停或键盘聚焦时扰一次（SmoothUI scramble-hover）；trigger=\"change\" 在文字变了时扰一次，代码、价格换了用它。数字只换成数字、字母只换成字母、标点不动，宽度跟着原字走；settle=\"left-to-right\" 从左到右一位一位定下来，比整串一起定更好读。",
+      "registryDependencies": [
+        "@katana/cn"
+      ],
+      "files": [
+        {
+          "path": "src/motion/text/scramble-text.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/motion/text/scramble-text.tsx"
+        }
+      ]
+    },
+    {
+      "name": "scroll-reveal-paragraph",
+      "type": "registry:component",
+      "title": "Scroll Reveal Paragraph",
+      "description": "一段话随滚动一个词一个词地亮起来：每个词叠两层，底层是暗字，上层按滚动进度的一小段从 0 渐到 1。适合长篇研报摘要、说明页的导读。在某个滚动容器里滚时传 container。",
+      "dependencies": [
+        "motion@14.9.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn"
+      ],
+      "files": [
+        {
+          "path": "src/motion/text/scroll-reveal-paragraph.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/motion/text/scroll-reveal-paragraph.tsx"
+        }
+      ]
+    },
+    {
+      "name": "shine-text",
+      "type": "registry:component",
+      "title": "Shine Text",
+      "description": "一道高光循环扫过文字：背景渐变裁进字形，再平移。AI 在分析、数据在加载这类「进行中」的文字用它；底色默认次要文字色，高光默认主文字色，都可传 token。",
+      "dependencies": [
+        "motion@14.9.0"
+      ],
+      "files": [
+        {
+          "path": "src/motion/text/shine-text.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/motion/text/shine-text.tsx"
+        }
+      ]
+    },
+    {
+      "name": "split",
+      "type": "registry:lib",
+      "title": "Split",
+      "description": "文字动效共用的切分：按字、词（Intl.Segmenter，中文按词）、行切成片段，保留空白。",
+      "files": [
+        {
+          "path": "src/motion/text/split.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/motion/text/split.ts"
+        }
+      ]
+    },
+    {
+      "name": "text-morph",
+      "type": "registry:component",
+      "title": "Text Morph",
+      "description": "把一串字变成另一串：按字（或词）对比，两边都有的沿用同一个 key、用布局动画滑到新位置，没了的缩着出去，新来的弹着进来。价格 106,977.4 变 107,011.0 时没变的位置不动；订单状态词整个换。",
+      "dependencies": [
+        "motion@14.9.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/split"
+      ],
+      "files": [
+        {
+          "path": "src/motion/text/text-morph.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/motion/text/text-morph.tsx"
+        }
+      ]
+    },
+    {
+      "name": "text-reveal",
+      "type": "registry:component",
+      "title": "Text Reveal",
+      "description": "文字一块一块进场：整段、按行、按词或按字，从上下左右某一侧来，可带一点模糊与缩放，按顺序、从中间向外或从两头向中间错峰。SmoothUI 的 17 个文字进场原件（blur-out-up、bottom-up-letters、per-word-crossfade、soft-blur-in、stagger-from-center、mask-reveal-up 等）是同一个机制的不同参数，这里合成一个件：preset 取原件的参数，再改任一项就是自己的变体。新闻标题进场、结论句出现都用它。",
+      "dependencies": [
+        "motion@14.9.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/split"
+      ],
+      "files": [
+        {
+          "path": "src/motion/text/text-reveal.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/motion/text/text-reveal.tsx"
+        }
+      ]
+    },
+    {
+      "name": "text-swap",
+      "type": "registry:component",
+      "title": "Text Swap",
+      "description": "一句话换成下一句：旧的出、新的进。fade-through（Material 淡入淡出）、axis-x（向左滑出、从右滑入）、axis-z（缩放与景深）、word-cut（逐词硬切的阶梯）、slide-right（整句从左滑入、词依次显现）五种换法，对应 SmoothUI 的 fade-through、shared-axis-x/y/z、short-slide-right。自己轮播，或给 index 由外面控制（切换视图时让标签跟着换）。",
+      "dependencies": [
+        "motion@14.9.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn"
+      ],
+      "files": [
+        {
+          "path": "src/motion/text/text-swap.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/motion/text/text-swap.tsx"
+        }
+      ]
+    },
+    {
+      "name": "typewriter-text",
+      "type": "registry:component",
+      "title": "Typewriter Text",
+      "description": "一个字一个字地打出来，可以带光标、循环。文字变长（新文字以已打出的部分开头）时接着往下打，不从头重来，所以流式追加的 AI 回复和交易建议可以直接把累积的文字传进来。读屏读完整的句子，不读打到一半的字。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/split"
+      ],
+      "files": [
+        {
+          "path": "src/motion/text/typewriter-text.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/motion/text/typewriter-text.tsx"
+        }
+      ]
+    },
+    {
+      "name": "wave-text",
+      "type": "registry:component",
+      "title": "Wave Text",
+      "description": "每个字依次上下起伏，一道波在文字里循环走，表示「正在实时」。起伏高度、一个周期的时长、字与字的间隔都可调。",
+      "dependencies": [
+        "motion@14.9.0"
+      ],
+      "registryDependencies": [
+        "@katana/split"
+      ],
+      "files": [
+        {
+          "path": "src/motion/text/wave-text.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/motion/text/wave-text.tsx"
+        }
+      ]
+    },
+    {
+      "name": "word-build",
+      "type": "registry:component",
+      "title": "Word Build",
+      "description": "一句话一个词一个词地搭起来，停一会儿，整句退场，再搭下一句。from=\"right\" 是新词从右边进来、把一行推到居中（SmoothUI kinetic-center-build）；from=\"top\" 是新词从上方落下、叠成一列（short-slide-down）。适合一句话的市场摘要、AI 的一行结论。",
+      "dependencies": [
+        "motion@14.9.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn"
+      ],
+      "files": [
+        {
+          "path": "src/motion/text/word-build.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/motion/text/word-build.tsx"
+        }
+      ]
+    },
+    {
+      "name": "motion-shared",
+      "type": "registry:lib",
+      "title": "Motion Shared",
+      "description": "过场、背景、特效、媒体共用的小工具：DPR 封顶、CSS 颜色解析成画布能用的数值、离屏与标签页隐藏时暂停的钩子。",
+      "files": [
+        {
+          "path": "src/motion/shared.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/motion/shared.ts"
+        }
+      ]
+    },
+    {
+      "name": "shader-reveal",
+      "type": "registry:component",
+      "title": "Shader Reveal",
+      "description": "视图切换时，一层 WebGL 着色器的光带扫过，遮住的那一刻换内容，播完淡去；八种变体（noise、zoom、circle、wipe、luma、planetary、stripes、push）共用一个件。适用持仓、订单、成交这类整块视图的切换；表格里的行刷新不要用。颜色取主题 token，WebGL 不可用或标签页隐藏时退回普通淡入淡出。",
+      "dependencies": [
+        "motion@14.9.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/motion-shared"
+      ],
+      "files": [
+        {
+          "path": "src/motion/transition/shader-reveal/engine.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/motion/transition/shader-reveal/engine.ts"
+        },
+        {
+          "path": "src/motion/transition/shader-reveal/shader-reveal.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/motion/transition/shader-reveal/shader-reveal.tsx"
+        },
+        {
+          "path": "src/motion/transition/shader-reveal/shaders.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/motion/transition/shader-reveal/shaders.ts"
+        },
+        {
+          "path": "src/motion/transition/shader-reveal/stage.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/motion/transition/shader-reveal/stage.tsx"
+        }
+      ]
+    },
+    {
+      "name": "aperture-blur-transition",
+      "type": "registry:component",
+      "title": "Aperture Blur Transition",
+      "description": "一圈光从中心像光圈一样扩开，带细微的边缘起伏与颗粒，约 0.76 秒，是几个着色器过场里最短的。适合对话框式的内容整体换一页；颜色取主题 token。",
+      "registryDependencies": [
+        "@katana/shader-reveal"
+      ],
+      "files": [
+        {
+          "path": "src/motion/transition/aperture-blur-transition.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/motion/transition/aperture-blur-transition.tsx"
+        }
+      ]
+    },
+    {
+      "name": "chroma-blur-transition",
+      "type": "registry:component",
+      "title": "Chroma Blur Transition",
+      "description": "一道带色散的柔光帘子斜着扫过整块内容，约 1 秒；比光圈更柔、更慢。适合整页或整块视图的切换；颜色取主题 token。",
+      "registryDependencies": [
+        "@katana/shader-reveal"
+      ],
+      "files": [
+        {
+          "path": "src/motion/transition/chroma-blur-transition.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/motion/transition/chroma-blur-transition.tsx"
+        }
+      ]
+    },
+    {
+      "name": "sdf-blob-transition",
+      "type": "registry:component",
+      "title": "Sdf Blob Transition",
+      "description": "圆、扭环、两球相融、放射圆簇与全部叠加五种距离场形状，从中间长大，遮住的那一刻换内容。和 ShaderReveal 共用同一个 WebGL 引擎，形状更柔，适合首页与引导页的切换；盘中视图用更克制的 ShaderReveal 的 wipe。",
+      "registryDependencies": [
+        "@katana/shader-reveal"
+      ],
+      "files": [
+        {
+          "path": "src/motion/transition/sdf-blob-transition.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/motion/transition/sdf-blob-transition.tsx"
+        }
+      ]
+    },
+    {
+      "name": "aurora-curtain",
+      "type": "registry:component",
+      "title": "Aurora Curtain",
+      "description": "WebGL2 着色器在内容后面画几条缓缓飘动的光带，可调条数、柔度、亮度、方向与胶片颗粒。适用工作台的空状态、登录页、加载页的底；只当底，不承载数据，内容在它上面。屏外与标签页隐藏时停，WebGL2 不可用时退回 CSS 渐变。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/motion-shared"
+      ],
+      "files": [
+        {
+          "path": "src/motion/background/aurora-curtain.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/motion/background/aurora-curtain.tsx"
+        }
+      ]
+    },
+    {
+      "name": "gravity-stars",
+      "type": "registry:component",
+      "title": "Gravity Stars",
+      "description": "canvas 上的一片星点，缓缓漂移、明暗闪烁，指针像一口引力井，星点被吸过去再带着动量甩出，近处的星更大更快；可连线成星座。适用文档站首页、未连接的占位页；只当底。屏外与标签页隐藏时停。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/motion-shared"
+      ],
+      "files": [
+        {
+          "path": "src/motion/background/gravity-stars.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/motion/background/gravity-stars.tsx"
+        }
+      ]
+    },
+    {
+      "name": "liquid-metal",
+      "type": "registry:component",
+      "title": "Liquid Metal",
+      "description": "WebGL2 着色器画一块流动的金属面（铬、金、水银、油膜四种），指针推动流场；maskText 时把材质裁进字形。金属的明、暗、色调三色由 token 混出，跟主题走。适用会员、高级功能的徽标与标题；不进行情与下单区。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/motion-shared"
+      ],
+      "files": [
+        {
+          "path": "src/motion/background/liquid-metal.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/motion/background/liquid-metal.tsx"
+        }
+      ]
+    },
+    {
+      "name": "orb",
+      "type": "registry:component",
+      "title": "Orb",
+      "description": "WebGL2 画的一颗带光照的球，内部是 OkLab 混色的缓慢流动，循环首尾无缝；高光、边缘亮、内部散射、虹彩都可调。适合 AI 思考中、连接中的占位；要表达听与想的状态用 MatrixOrb。读屏看不到它：状态要用文字另外说。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/motion-shared"
+      ],
+      "files": [
+        {
+          "path": "src/motion/background/orb.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/motion/background/orb.tsx"
+        }
+      ]
+    },
+    {
+      "name": "pixel-flow-field",
+      "type": "registry:component",
+      "title": "Pixel Flow Field",
+      "description": "canvas 上一片方、圆或十字的像素格随流场漂，格子取样一个词或一张图：被覆盖的格子亮、强调色、墨色三档，指针划过会推开格子，scatter 加一就把字炸开再聚拢。适用连接中、加载中的占位页；只当底。字在画布里，要读的内容另外放文字。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/motion-shared"
+      ],
+      "files": [
+        {
+          "path": "src/motion/background/pixel-flow-field.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/motion/background/pixel-flow-field.tsx"
+        }
+      ]
+    },
+    {
+      "name": "border-beam",
+      "type": "registry:component",
+      "title": "Border Beam",
+      "description": "沿元素边框跑一圈带拖尾的彗星光，SVG 描边实现；可多束、反向、悬停暂停、屏外暂停，圆角可用像素或连续圆角。适用「等你处理」的卡片：AI 建议待审批、风控告警未确认；处理完关掉（active=false）。",
+      "registryDependencies": [
+        "@katana/cn"
+      ],
+      "files": [
+        {
+          "path": "src/motion/effect/border-beam.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/motion/effect/border-beam.tsx"
+        }
+      ]
+    },
+    {
+      "name": "cursor-image-trail",
+      "type": "registry:component",
+      "title": "Cursor Image Trail",
+      "description": "指针在区域里移动，每隔一段距离在光标处放一张图，带随机倾斜，弹出、停留、淡出；移动越快，图越大停得越久。只在有精确指针的设备上启用。适用首页、作品集式的页面；不进盯盘界面。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/motion-shared"
+      ],
+      "files": [
+        {
+          "path": "src/motion/effect/cursor-image-trail.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/motion/effect/cursor-image-trail.tsx"
+        }
+      ]
+    },
+    {
+      "name": "drawing-cursor",
+      "type": "registry:component",
+      "title": "Drawing Cursor",
+      "description": "指针划过留下一条会渐渐消失的线，画布叠在内容上，线宽随速度变细；可选不消退，当作批注，ref 提供 clear 与 toDataURL。只在有精确指针的设备上启用。适用在图表截图上圈一下给同事看；不是正式的绘图工具。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/motion-shared"
+      ],
+      "files": [
+        {
+          "path": "src/motion/effect/drawing-cursor.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/motion/effect/drawing-cursor.tsx"
+        }
+      ]
+    },
+    {
+      "name": "emboss-surface",
+      "type": "registry:component",
+      "title": "Emboss Surface",
+      "description": "用多层 box-shadow 与 text-shadow 做出压凸、压凹、石膏、金属压印四种浮雕，深度、柔度与光源角度可调，interactive 时光源跟着指针转。适合会员徽章、奖牌卡的面；盘面上的控件用扁平的 token，不要浮雕。",
+      "registryDependencies": [
+        "@katana/cn"
+      ],
+      "files": [
+        {
+          "path": "src/motion/effect/emboss-surface.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/motion/effect/emboss-surface.tsx"
+        }
+      ]
+    },
+    {
+      "name": "holographic-foil",
+      "type": "registry:component",
+      "title": "Holographic Foil",
+      "description": "一张带全息箔的卡：条纹箔层随指针（或设备倾斜）漂移、色相偏转，上面掠过一道柔光，整张卡轻微 3D 倾斜；四种箔（prism、aurora、gold、oil），颜色全由 token 混出。适合年度最佳策略、里程碑这类奖牌卡；不进盯盘界面。",
+      "dependencies": [
+        "motion@14.9.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn"
+      ],
+      "files": [
+        {
+          "path": "src/motion/effect/holographic-foil.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/motion/effect/holographic-foil.tsx"
+        }
+      ]
+    },
+    {
+      "name": "magnetic-field",
+      "type": "registry:component",
+      "title": "Magnetic Field",
+      "description": "指针靠近时，区域里的元素按弹簧被吸、被推或绕着转，离得越近越强；传 items 时件自己把每个元素放进弹簧容器，也可以给子元素加 data-magnetic。只在有精细指针的设备上启用。适合首页的板块标签云；不进有点击目标的操作区（会让人点不准）。",
+      "dependencies": [
+        "motion@14.9.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn"
+      ],
+      "files": [
+        {
+          "path": "src/motion/effect/magnetic-field.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/motion/effect/magnetic-field.tsx"
+        }
+      ]
+    },
+    {
+      "name": "parallax-layers",
+      "type": "registry:component",
+      "title": "Parallax Layers",
+      "description": "多层内容随滚动（可选再随指针）按各自的深度错位移动，每层可加模糊与透明度；container 指向滚动容器时跟它滚。适合首页头图、章节引子；数据、表格不放进去。深度 0 不动，1 动得最多。",
+      "dependencies": [
+        "motion@14.9.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn"
+      ],
+      "files": [
+        {
+          "path": "src/motion/effect/parallax-layers.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/motion/effect/parallax-layers.tsx"
+        }
+      ]
+    },
+    {
+      "name": "progressive-blur",
+      "type": "registry:component",
+      "title": "Progressive Blur",
+      "description": "叠几层带渐变遮罩的背景模糊，从一边向另一边（或由中心向外）模糊越来越重，盖在滚动列表的边缘，提示「下面还有」。模糊层不挡指针，也不进读屏。适用新闻流、日志、侧栏的边缘；表格要读的行不要被它盖住。",
+      "registryDependencies": [
+        "@katana/cn"
+      ],
+      "files": [
+        {
+          "path": "src/motion/effect/progressive-blur.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/motion/effect/progressive-blur.tsx"
+        }
+      ]
+    },
+    {
+      "name": "scroll-image-reveal",
+      "type": "registry:component",
+      "title": "Scroll Image Reveal",
+      "description": "图片随滚动进度揭开：擦除、帘子、圆形、百叶、缩放五种遮罩，里面的图再做反向视差；once 时揭开后不再合上。适合首页、策略介绍页配图；盘中界面里的图表不用它。必须写 alt。",
+      "dependencies": [
+        "motion@14.9.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/motion-shared"
+      ],
+      "files": [
+        {
+          "path": "src/motion/effect/scroll-image-reveal.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/motion/effect/scroll-image-reveal.tsx"
+        }
+      ]
+    },
+    {
+      "name": "svg-clip-mask",
+      "type": "registry:component",
+      "title": "Svg Clip Mask",
+      "description": "内容按一条 objectBoundingBox 路径（内置 blob、拱、菱形、波浪，或自定义）裁成异形；可循环变形、随滚动换形、悬停换形。变形的路径要有相同的命令结构。适合头像、封面图的异形裁切；数据图表不裁。",
+      "dependencies": [
+        "motion@14.9.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/motion-shared"
+      ],
+      "files": [
+        {
+          "path": "src/motion/effect/svg-clip-mask.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/motion/effect/svg-clip-mask.tsx"
+        }
+      ]
+    },
+    {
+      "name": "svg-draw-on-scroll",
+      "type": "registry:component",
+      "title": "Svg Draw On Scroll",
+      "description": "SVG 路径的笔画长度跟滚动进度走，多条路径依次画；marker 挂在笔尖，位置由路径本身的几何算出。适合策略复盘页的权益曲线入场、引导页的路线图；曲线要读数时用 EquityCurve。",
+      "dependencies": [
+        "motion@14.9.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/motion-shared"
+      ],
+      "files": [
+        {
+          "path": "src/motion/effect/svg-draw-on-scroll.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/motion/effect/svg-draw-on-scroll.tsx"
+        }
+      ]
+    },
+    {
+      "name": "ascii-render",
+      "type": "registry:component",
+      "title": "Ascii Render",
+      "description": "把图片或视频按亮度采样成一屏字符，单色（读主题的墨色）或带原图着色；视频按 fps 重画，屏外与暂停时停。读屏读 alt。适合首页的氛围图、加载页的占位；图要允许跨域读取，读不了就退回原图。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/motion-shared"
+      ],
+      "files": [
+        {
+          "path": "src/motion/media/ascii-render.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/motion/media/ascii-render.tsx"
+        }
+      ]
+    },
+    {
+      "name": "dither-image",
+      "type": "registry:component",
+      "title": "Dither Image",
+      "description": "把图片按 Bayer、Atkinson、Floyd-Steinberg 或阈值算法量化成 2 到 8 档，画成像素块；档位色默认取主题的墨色与底色，也可传色阶。progressive 时滚进视口再自上而下擦出。适合首页、文档的像素风配图；图要允许跨域读取。",
+      "dependencies": [
+        "motion@14.9.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/motion-shared"
+      ],
+      "files": [
+        {
+          "path": "src/motion/media/dither-image.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/motion/media/dither-image.tsx"
+        }
+      ]
+    },
+    {
+      "name": "pixel-brush-canvas",
+      "type": "registry:component",
+      "title": "Pixel Brush Canvas",
+      "description": "在小网格上画像素画：铅笔、橡皮、填充、直线、矩形，撤销最多 50 步，自带色板与工具条（showTools）。键盘可用：方向键移动，空格落笔，B、E、G 切笔，Ctrl 或 Cmd 加 Z 撤销。所有文案走必填的 labels。适合给头像、策略图标做像素风小图；不是通用绘图工具。",
+      "dependencies": [
+        "motion@14.9.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/motion-shared"
+      ],
+      "files": [
+        {
+          "path": "src/motion/media/pixel-brush-canvas.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/motion/media/pixel-brush-canvas.tsx"
+        }
+      ]
+    },
+    {
+      "name": "morph-icon",
+      "type": "registry:component",
+      "title": "Morph Icon",
+      "description": "图标的线条与形状在两个状态间补间：侧栏收展、列表与网格、菜单与叉、搜索放大、播放与停止、勾选方块。改自 SmoothUI（MIT）。",
+      "dependencies": [
+        "motion@14.9.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn"
+      ],
+      "files": [
+        {
+          "path": "src/motion/icon/morph-icon.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/motion/icon/morph-icon.tsx"
+        }
+      ]
+    },
+    {
+      "name": "folder-reveal",
+      "type": "registry:component",
+      "title": "Folder Reveal",
+      "description": "一个合着的文件夹，悬停（或点击）时前盖翻开、里面几张卡扇形展开。装饰件：适用首页、营销页里「一组东西收在一起」的示意；不进交易主界面。",
+      "dependencies": [
+        "motion@14.9.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/focus"
+      ],
+      "files": [
+        {
+          "path": "src/motion/surface/folder-reveal.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/motion/surface/folder-reveal.tsx"
+        }
+      ]
+    },
+    {
+      "name": "glass-card",
+      "type": "registry:component",
+      "title": "Glass Card",
+      "description": "毛玻璃底、内沿高光、随指针的镜面高光，悬停轻轻抬起。装饰件：适用压在图片或渐变上的首页、营销页卡片；压在纯色底上没有意义，不进交易主界面。没有搬原件的 SVG 折射环。",
+      "dependencies": [
+        "motion@14.9.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/fine-pointer"
+      ],
+      "files": [
+        {
+          "path": "src/motion/surface/glass-card.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/motion/surface/glass-card.tsx"
+        }
+      ]
+    },
+    {
+      "name": "glow-hover-card",
+      "type": "registry:component",
+      "title": "Glow Hover Card",
+      "description": "指针在卡上移动时，一团强调色的光斑跟着它，边线在光斑处亮起来。装饰件：适用首页的功能入口卡；不进交易主界面。光斑不跨卡（与原件的差别）。",
+      "registryDependencies": [
+        "@katana/cn"
+      ],
+      "files": [
+        {
+          "path": "src/motion/surface/glow-hover-card.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/motion/surface/glow-hover-card.tsx"
+        }
+      ]
+    },
+    {
+      "name": "gooey-popover",
+      "type": "registry:component",
+      "title": "Gooey Popover",
+      "description": "圆钮点开，一块「液体」从圆钮里长出来变成内容面板，收起时缩回去；SVG goo 滤镜只画形状，文字在滤镜上层不糊。装饰件：适用首页、营销页的小彩蛋式入口；交易主界面的弹层用 Popover。",
+      "dependencies": [
+        "motion@14.9.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/focus"
+      ],
+      "files": [
+        {
+          "path": "src/motion/surface/gooey-popover.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/motion/surface/gooey-popover.tsx"
+        }
+      ]
+    },
+    {
+      "name": "morph-surface",
+      "type": "registry:component",
+      "title": "Morph Surface",
+      "description": "一颗小药丸点开后自己长成一张面板，宽、高、圆角一起弹簧过渡；点外面或按 Esc 收回。装饰件：适用首页浮在页面一角的「问 AI」入口；交易主界面提问走命令面板或 AI 输入件。",
+      "dependencies": [
+        "motion@14.9.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/focus"
+      ],
+      "files": [
+        {
+          "path": "src/motion/surface/morph-surface.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/motion/surface/morph-surface.tsx"
+        }
+      ]
+    },
+    {
+      "name": "tilt-card",
+      "type": "registry:component",
+      "title": "Tilt Card",
+      "description": "指针在卡上移动时，卡跟着转（最多 12 度），一道高光跟着走，可选让带 data-tilt-depth 的子元素按深度错位出视差。装饰件：适用首页、营销页的功能卡；行情与下单区要稳，不进交易主界面。",
+      "dependencies": [
+        "motion@14.9.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/fine-pointer"
+      ],
+      "files": [
+        {
+          "path": "src/motion/surface/tilt-card.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/motion/surface/tilt-card.tsx"
         }
       ]
     },
@@ -3754,6 +5851,30 @@
           "path": "src/blocks/small-multiples.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/blocks/small-multiples.tsx"
+        }
+      ]
+    },
+    {
+      "name": "swap-panel",
+      "type": "registry:component",
+      "title": "Swap Panel",
+      "description": "付出一栏（输入、余额、Max）、收到一栏（报价算出的数额，换了会往上滚；报价中扫光）、中间翻转钮、报价明细（汇率、费用、影响、滑点，有效期画成倒计时圆环）与提交钮。文案全走 labels。改自 SmoothUI（MIT）。",
+      "dependencies": [
+        "lucide-react@1.67.0",
+        "motion@14.9.0"
+      ],
+      "registryDependencies": [
+        "@katana/button",
+        "@katana/cn",
+        "@katana/input",
+        "@katana/motion",
+        "@katana/spring"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/swap-panel.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/swap-panel.tsx"
         }
       ]
     }

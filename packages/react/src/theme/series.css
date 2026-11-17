@@ -510,6 +510,49 @@ rect.k-heat-cell[data-tone='none']:not([data-closed='true']):not([data-seq]) {
 rect.k-heat-cell[data-active='true'] {
   stroke: var(--ink-100);
 }
+/* 悬停与切视图时格色、描边平滑过渡（SmoothUI contribution-graph 的 hover 过渡）；时长用 flash 档，行情密时不拖。 */
+rect.k-heat-cell {
+  transition:
+    fill var(--dur-flash) var(--ease-snappy),
+    stroke var(--dur-flash) var(--ease-snappy);
+}
+button.k-heat-cell {
+  transition:
+    background-color var(--dur-flash) var(--ease-snappy),
+    outline-color var(--dur-flash) var(--ease-snappy);
+}
+/* tooltip 弹出：从 0.8 倍弹到 1（原件手感）；用单独的 scale 属性，不盖掉 .k-ck-tip 自己的 translateX。 */
+.k-heat-tip {
+  transform-origin: left center;
+  animation: k-heat-tip-in var(--dur-snappy) var(--ease-snappy) both;
+}
+@keyframes k-heat-tip-in {
+  from {
+    opacity: 0;
+    scale: 0.8;
+  }
+  to {
+    opacity: 1;
+    scale: 1;
+  }
+}
+/* reveal：格子按 --k-reveal-delay 依次淡入并从 0.6 倍长大。 */
+.k-heat[data-reveal] .k-heat-cell:not(.k-heat-out) {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: k-heat-reveal var(--dur-enter) var(--ease-snappy) both;
+  animation-delay: var(--k-reveal-delay, 0ms);
+}
+@keyframes k-heat-reveal {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
 /* 月历（34px 格） */
 .k-heat-month {
   display: grid;

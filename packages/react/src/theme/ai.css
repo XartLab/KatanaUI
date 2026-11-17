@@ -1,0 +1,97 @@
+/* SPDX-License-Identifier: MIT */
+/* AI 对话类件（src/ai/）里那几条匀速循环或一次性的动画：光标闪、待排队呼吸、对勾 / 叉被画出来、运行行的流光下划线、审批卡与 diff 决定后的一闪。
+   循环没有弹簧可用（同 ai-status.css）；时长是 SmoothUI 原值（改自 SmoothUI，https://github.com/educlopez/smoothui ，MIT，© 2024 Eduardo Calvo）。
+   产品不跟系统的「减少动态效果」，所以不写 prefers-reduced-motion。 */
+
+/* 流式光标：一根竖线，1 秒一次明灭（原件 AIResponse 的 caret）。 */
+.k-ai-caret {
+  animation: k-ai-caret 1s linear infinite;
+}
+@keyframes k-ai-caret {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.15;
+  }
+}
+
+/* 工具调用「排队中」：环的描边在 0.35 与 1 之间呼吸，1.6 秒一轮。 */
+.k-ai-pending {
+  animation: k-ai-pending 1.6s linear infinite;
+}
+@keyframes k-ai-pending {
+  0%,
+  100% {
+    stroke-opacity: 0.35;
+  }
+  50% {
+    stroke-opacity: 1;
+  }
+}
+
+/* 对勾与叉被一笔画出来：路径长度归一成 1，偏移 1 到 0；200ms 出，曲线取 --ease-snappy。 */
+.k-ai-draw {
+  stroke-dasharray: 1 1;
+  animation: k-ai-draw var(--dur-snappy, 200ms) var(--ease-snappy, ease-out) both;
+}
+@keyframes k-ai-draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* 计划里正在跑的那一行：一条细光在下划线上来回扫（一次只有一处在动，所以一眼看出哪一步是活的）。 */
+.k-ai-sweep {
+  background-image: linear-gradient(90deg, transparent 0%, currentColor 50%, transparent 100%);
+  background-size: 50% 100%;
+  background-repeat: no-repeat;
+  opacity: 0.5;
+  animation: k-ai-sweep 1.4s cubic-bezier(0.645, 0.045, 0.355, 1) infinite;
+}
+@keyframes k-ai-sweep {
+  from {
+    background-position-x: -50%;
+  }
+  to {
+    background-position-x: 150%;
+  }
+}
+
+/* 决定之后卡片闪一下（接受绿、拒绝红），然后停；再花哨就把一次普通的审阅变成了庆典。 */
+.k-ai-flash[data-flash='ok'] {
+  animation: k-ai-flash-ok 0.35s ease-out both;
+}
+.k-ai-flash[data-flash='no'] {
+  animation: k-ai-flash-no 0.35s ease-out both;
+}
+@keyframes k-ai-flash-ok {
+  from {
+    background-color: color-mix(in srgb, var(--signal-green) 16%, transparent);
+  }
+  to {
+    background-color: transparent;
+  }
+}
+@keyframes k-ai-flash-no {
+  from {
+    background-color: color-mix(in srgb, var(--signal-red) 14%, transparent);
+  }
+  to {
+    background-color: transparent;
+  }
+}
+
+/* 复制成功：图标弹一下（1 → 1.25 → 1，250ms）。 */
+.k-ai-pop {
+  animation: k-ai-pop 250ms var(--ease-snappy, ease-out);
+}
+@keyframes k-ai-pop {
+  45% {
+    scale: 1.25;
+  }
+}

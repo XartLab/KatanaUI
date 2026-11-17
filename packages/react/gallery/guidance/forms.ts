@@ -59,9 +59,82 @@ const forms: GuidanceMap = {
     a11y: [
       'Radix Checkbox：role=checkbox，状态在 aria-checked，读屏读「已选中 / 未选中」。',
       '读屏名来自旁边关联的 Label，没有文字时必须传 aria-label。',
-      '选中画的是一块发光方块，状态同时由 aria-checked 传达，不只靠颜色。',
+      '选中画的是一块方块（或描边的勾），状态同时由 aria-checked 传达，不只靠颜色；半选是 aria-checked=mixed。',
       'aria-invalid 时边框变危险色。',
     ],
+  },
+  textarea: {
+    aliases: ['Textarea (Salt / MUI / Radix)', 'Multiline text field', '多行文本框', '备注框'],
+    use: ['下单备注、策略说明、决策理由这类几行的文字。', '放进 Field 里，由 Field 接好标签与错误。'],
+    avoid: ['单行文字用 Input。', '要代码高亮或富文本不是这个件。'],
+    a11y: [
+      '原生 textarea，读屏名来自关联的 Label 或 aria-label。',
+      'aria-invalid 为真时边框变危险色，同时读屏读作「无效」。',
+    ],
+  },
+  'radio-group': {
+    aliases: ['Radio buttons (Salt / MUI / Radix)', '单选按钮', '单选组'],
+    use: ['委托类型、买卖方向这类三五个互斥选项，要一眼看全。', '选项带说明文字时，逐行排开。'],
+    avoid: ['选项超过五个换 Select。', '工具条里两三个切换用 ToggleGroup。', '独立的开与关用 Switch 或 Checkbox。'],
+    a11y: [
+      'Radix RadioGroup：组 role=radiogroup，每项 role=radio，状态在 aria-checked。',
+      '组的读屏名用 aria-label；每项的名字来自旁边的 Label，没有文字时传 aria-label。',
+      '方向键移动并选中，Tab 只停在选中项上；选中同时有点的形状变化，不只靠颜色。',
+    ],
+  },
+  toggle: {
+    aliases: ['Toggle button (Radix)', 'Pressed button', 'Toggle (Salt)', '开关按钮'],
+    use: ['图表工具条里「显示均线」「跟随最新」这类单个开关。', '带图标的单个开关（icon 尺寸）。'],
+    avoid: ['互斥的几项用 ToggleGroup。', '设置页里的开关用 Switch。', '一次性动作用 Button。'],
+    a11y: [
+      '原生 button，状态在 aria-pressed，读屏读「已按下 / 未按下」。',
+      '纯图标必须传 aria-label，名字不随状态变。',
+    ],
+  },
+  'checkbox-group': {
+    aliases: ['Checkbox group (Salt / MUI / Radix)', '复选框组', '全选'],
+    use: ['筛选里选多个市场、板块，要一眼看全。', '要「全选」父项时，部分选中显示半选。'],
+    avoid: ['选项很多或要搜索用 MultiSelect。', '单个确认项直接用 Checkbox。'],
+    a11y: [
+      '组 role=group，名字用 aria-label；每项是 Checkbox，文字用 label 关联，点文字也能勾。',
+      '父项半选时 aria-checked=mixed，读屏读「部分选中」。',
+    ],
+  },
+  'input-group': {
+    aliases: ['Input group (Salt / Bootstrap)', 'Input with addon', '输入框附件'],
+    use: ['限价、数量这类带币种符号、单位、「全仓」按钮的输入。', '前后要放图标时。'],
+    avoid: ['只要一个单位后缀的数字框用 NumberInput。', '附件多到比输入框还宽时拆成两行。'],
+    a11y: [
+      '外框 role=group；里面的 Input 照常带 aria-label 或 Label。',
+      '附件里的图标 aria-hidden，按钮必须传 aria-label。',
+      '焦点环与无效边框画在外框上，状态仍由里面输入框的 aria-invalid 传达。',
+    ],
+  },
+  'otp-field': {
+    aliases: ['OTP input', 'Verification code', 'PIN input', '验证码输入', '二次验证'],
+    use: ['下单、出金前的二次验证码。', '短信与身份验证器的一次性码，长度固定。'],
+    avoid: ['长度不定的口令用 PasswordInput。', '要在格间用方向键改中间某一位时，它不支持（只在末尾输入与退格）。'],
+    a11y: [
+      '真正的输入是一个透明的 input，读屏名取 aria-label（必传）；格子对读屏隐藏。',
+      'autocomplete=one-time-code，手机的短信自动填充能直接填满。',
+      '数字模式弹数字键盘（inputmode=numeric）；填满时调 onComplete。',
+      '无效时 aria-invalid，格与外框变危险色；错误原因写在旁边的文字里，不只靠颜色。',
+    ],
+  },
+  'morph-toggle': {
+    aliases: ['Animated switch', 'Theme toggle', 'Morph switch', '变形开关'],
+    use: ['实盘 / 模拟、主题、静音这类有仪式感的单个开关。', '开关状态要靠图标一眼认出（icon 变体）。'],
+    avoid: ['设置页成排的开关用 Switch。', '一次性动作不要用开关。'],
+    a11y: [
+      'Radix Switch：role=switch，状态在 aria-checked，读屏名取 aria-label（必传）。',
+      '状态同时由圆钮的位置与形状传达，不只靠颜色。',
+    ],
+  },
+  'morph-icon': {
+    aliases: ['Animated icon', 'Icon morph', 'Hamburger to close', '变形图标'],
+    use: ['菜单与关闭、播放与停止、列表与网格这类成对状态的按钮图标。', '侧栏收起展开的开关图标。'],
+    avoid: ['纯装饰的循环动画不要用它，它只在状态变化时动。', '要换成完全不同的图标时直接换，不用补间。'],
+    a11y: ['装饰时 aria-hidden，名字写在外面的按钮上。', '单独成为内容时传 label，渲染成 role=img 带 title。'],
   },
   switch: {
     aliases: ['Toggle', 'Switch (Salt / MUI / Radix)', '开关'],
@@ -263,6 +336,43 @@ const forms: GuidanceMap = {
       '整组 role=group，名字取 label；按 APG 多把手滑块，两个把手各是 role=slider。',
       '把手读屏名取 labels.low / labels.high，带 aria-valuemin / max / now 与 aria-valuetext（由 formatValue 生成）。',
       '柱子与轨道 aria-hidden，数值只靠把手与读数行读出。',
+    ],
+  },
+  'animated-tags': {
+    aliases: ['Tag picker', 'Tag input', 'Token field', 'Chips'],
+    use: ['选关注板块、策略标签、自选分组，要看清选了哪几个。', '选中的要单独放一处。'],
+    avoid: ['原地开关的筛选用 chip-group。', '选项很多用 multi-select 带搜索。'],
+    a11y: ['每个标签是按钮，读屏名由 labels.add / labels.remove 给（带标签名）。', '焦点环取自全局 focus-ring。'],
+  },
+  'exposure-slider': {
+    aliases: ['Dial', 'Ruler slider', 'Bipolar slider', 'Tape measure'],
+    use: ['调净敞口、仓位偏移、杠杆这类有正有负的量。', '手感想要拨盘。'],
+    avoid: ['单向数值用 slider。', '要输入精确数字用 number-input。'],
+    a11y: [
+      'role=slider，aria-valuemin / max / now 与 aria-valuetext 齐全。',
+      '键盘 ← → 一格、PageUp / PageDown 十格、Home / End 到两端。',
+    ],
+  },
+  scrubber: {
+    aliases: ['Scrub bar', 'Timeline scrubber', 'Drag to adjust', 'Value scrubber'],
+    use: ['回测里擦洗回看的时间点。', '拖动调整下单数量、价格偏移这类一行里的单个量。'],
+    avoid: [
+      '表单里的单值与区间用 slider。',
+      '要输入精确数字用 number-input。',
+      '图上悬停选一格的读数用 use-scrubber 钩子。',
+    ],
+    a11y: [
+      'role=slider，名字取 label，aria-valuetext 是 format 的结果。',
+      '键盘 ← → 一步、Shift 或 PageUp / PageDown 十步、Home / End 到两端。',
+    ],
+  },
+  'power-off-slide': {
+    aliases: ['Slide to confirm', 'Swipe to confirm', 'Slide to unlock', 'Slider button'],
+    use: ['全部平仓、清仓、关闭策略这类不可轻易误触的操作。', '鼠标与触屏上想要有手感的确认。'],
+    avoid: ['长按确认的用 hold-to-confirm。', '可撤销的小事用 button。'],
+    a11y: [
+      '圆钮是 role=button，读屏名取 label；Enter 或空格直接确认（键盘与读屏走这条路）。',
+      '执行中是 role=status。',
     ],
   },
 }

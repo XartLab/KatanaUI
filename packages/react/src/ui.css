@@ -31,7 +31,9 @@
 @import './theme/arcade-pixel.css';
 @import './theme/badge.css';
 @import './theme/live.css';
+@import './theme/motion-widgets.css';
 @import './theme/rolling-text.css';
+@import './theme/scrubber.css';
 @import './theme/number-input.css';
 @import './theme/date-time.css';
 @import './theme/loading.css';
@@ -42,6 +44,7 @@
 @import './theme/status-bar.css';
 @import './theme/workspace-tabs.css';
 @import './theme/ai-status.css';
+@import './theme/ai.css';
 @import './theme/quote.css';
 @import './theme/fonts.css';
 @import './theme/rendering.css';
@@ -59,3 +62,6 @@
 @import './theme/metric-card.css';
 @import './theme/row-actions.css';
 @import './theme/quant.css';
+@import './theme/sui-motion.css';
+@import './theme/form-motion.css';
+@import './theme/motion-text.css';

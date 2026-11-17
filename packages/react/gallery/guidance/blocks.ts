@@ -245,6 +245,16 @@ const blocks: GuidanceMap = {
       '画面里的 tooltip、图例与 canvas 对读屏隐藏，数据看读数行或表格视图。',
     ],
   },
+  'swap-panel': {
+    aliases: ['Swap', 'Currency converter', 'Convert widget', '兑换面板', '换汇'],
+    use: ['外汇、币对的兑换：付出一栏、收到一栏、报价与有效期。', '报价要实时刷新、有时效的单对转换。'],
+    avoid: ['一次比较多个币对用 QuoteTable。', '下单价格与数量的普通委托用普通表单。'],
+    a11y: [
+      '收到的数额 aria-live=polite，报价变了会读；倒计时圆环是 role=img，名字取 labels.expires。',
+      '资产钮与翻转钮的读屏名取 labels（含 {side}、{symbol} 模板），文案全由调用方传。',
+      '错误条 role=alert；quoting 时提交钮禁用，读屏读作「不可用」。',
+    ],
+  },
 }
 
 export default blocks

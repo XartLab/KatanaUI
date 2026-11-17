@@ -141,6 +141,28 @@ const quotes: GuidanceMap = {
       '迷你图读屏名由调用方传。',
     ],
   },
+  'infinite-slider': {
+    aliases: ['Ticker tape', 'Marquee', 'News ticker', 'Carousel'],
+    use: ['顶栏或底栏一条滚动的行情跑马灯。', '竖向的滚动榜（direction=vertical）。'],
+    avoid: ['要点击的行情用 watchlist 或 quote-table。', '读准数的用 lcd 或 price-tag。'],
+    a11y: ['外层 role=group，读屏名由调用方传；复制出来的一份 aria-hidden，只读一遍。', '悬停可减速，paused 可停住。'],
+  },
+  'pinned-list': {
+    aliases: ['Favorites', 'Pin list', 'Starred list', 'Watchlist order'],
+    use: ['自选股、常用面板按「钉在最上面」排序。', '置顶数有上限的列表。'],
+    avoid: ['多选用 multi-select 或 chip-group。', '几百行的自选用 data-grid。'],
+    a11y: [
+      '每行是 role=button、aria-pressed 表示是否置顶，读屏名由 labels 给。',
+      '漫游 tabindex：只有一行可 Tab 进入，方向键走。',
+      '满额后其余行 aria-disabled。',
+    ],
+  },
+  'animated-avatar-group': {
+    aliases: ['Avatar stack', 'Symbol stack', 'Face pile', 'Overlapping marks'],
+    use: ['ETF 前几大持仓、板块成分、相关品种一行放下。', '想悬停时看清每一枚。'],
+    avoid: ['人的头像用 avatar-group。', '要点击某个品种用 watchlist。'],
+    a11y: ['整组 role=group，每枚的名字取 name。', '悬停展开只是视觉，读屏顺序不变。'],
+  },
 }
 
 export default quotes

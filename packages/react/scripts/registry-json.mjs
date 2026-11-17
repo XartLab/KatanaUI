@@ -20,12 +20,25 @@ const TARGET_ROOT = '~/src/katana/ui'
  * 有页的件，说明读页数据（gallery/registry.ts 的 PAGES.summary），这里不写第二份。
  */
 const INTERNAL = {
+  'gravity-model':
+    'GravityLetters 的纯物理：掉落（重力、地面与墙的反弹、摩擦、静止判定）与回位（弹簧把每个字拉回原位）。',
+  split: '文字动效共用的切分：按字、词（Intl.Segmenter，中文按词）、行切成片段，保留空白。',
+  'agent-avatar-model': 'AgentAvatar 的纯逻辑：名字取首字、按 id 稳定取色调、状态到光环的映射。',
+  'ai-context-model': 'AiContextMeter 的纯逻辑：用量比例、80% 琥珀与 95% 红的分档、数字缩写。',
+  'ai-core': 'AI 件共用的状态名（与 MatrixOrb 的 OrbState 同一组）与各态动效参数、语义色。',
+  'ai-diff-model': 'AiDiff 的纯逻辑：前后两版逐行比对出增删与上下文行。',
+  'ai-prompt-model': 'AiPromptInput 的纯逻辑：回车发送与输入法选词判断、字数上限。',
+  'ai-response-model': 'AiResponse 的纯逻辑：按 Intl.Segmenter 切词（中文一词一词进场）与 [n] 引用切分。',
+  'ai-task-model': 'AiTaskList 的纯逻辑：计划与子步骤的状态汇总、进度。',
+  'fine-pointer': '判断是否精细指针（鼠标、触控板）的钩子，倾斜卡、玻璃卡、光斑卡这类跟手装饰件用，触屏上不开。',
   style: '设计 token（Console 与 Graphite 两个主题、红涨绿跌切换）、Tailwind v4 主题与动效 CSS。ui.css 最后引。',
   cn: 'shadcn-ui/cn 引擎（替 clsx 加 tailwind-merge），认得 k-text-* 字号档。',
   focus: '各控件共用的焦点环类名。',
   'font-catalog':
     '字体目录（纯数据与函数）：界面、汉字、数据字、代码四个角色可选的系统、开源、本机字体，与选择算出的字体变量。RenderingSettings 用。',
   motion: '三条弹簧参数（snappy、gentle、settle），给 motion/react 用。',
+  'motion-shared':
+    '过场、背景、特效、媒体共用的小工具：DPR 封顶、CSS 颜色解析成画布能用的数值、离屏与标签页隐藏时暂停的钩子。',
   spring: '把三条弹簧的停止阈值收到 0.001，给 scale、opacity、pathLength 这类 0 到 1 的量用。',
   'series-geometry':
     '序列图共用的几何（纯函数）：好看的刻度、比例尺、折线与面积路径，BrushChart、HorizonChart、SmallMultiples、SeriesExplorer 都用。',
@@ -115,6 +128,24 @@ function collectItems() {
     add(f.replace(/\.[^.]+$/, ''), f.endsWith('.tsx') ? 'registry:component' : 'registry:lib', [`src/katana/${f}`])
   }
   byFile('src/patterns', 'registry:component')
+  // AI 对话类件（改自 SmoothUI）：一文件一项，带 JSX 的是 component，纯函数（切词、计数、种子散列）与状态约定是 lib。
+  for (const f of listDir('src/ai').filter(isCode))
+    add(f.replace(/\.[^.]+$/, ''), f.endsWith('.tsx') ? 'registry:component' : 'registry:lib', [`src/ai/${f}`])
+  // 文字动效（改自 SmoothUI）：一文件一项，带 JSX 的是 component，纯函数（切分、物理）是 lib。
+  for (const f of listDir('src/motion/text').filter(isCode))
+    add(f.replace(/\.[^.]+$/, ''), f.endsWith('.tsx') ? 'registry:component' : 'registry:lib', [`src/motion/text/${f}`])
+  // 过场、背景、特效、媒体（改自 SmoothUI）：共用的 shared.ts 一项；着色器过场的引擎（shader-reveal/ 子目录）合成一项，其余一文件一项。
+  add('motion-shared', 'registry:lib', ['src/motion/shared.ts'])
+  add(
+    'shader-reveal',
+    'registry:component',
+    listDir('src/motion/transition/shader-reveal')
+      .filter(isCode)
+      .map((f) => `src/motion/transition/shader-reveal/${f}`),
+  )
+  for (const dir of ['transition', 'background', 'effect', 'media', 'icon', 'surface'])
+    for (const f of listDir(`src/motion/${dir}`).filter((f) => isCode(f) && f.endsWith('.tsx')))
+      add(f.replace(/\.[^.]+$/, ''), 'registry:component', [`src/motion/${dir}/${f}`])
   if (existsSync(join(pkgDir, 'src/quant'))) {
     add(
       'chart-kit',

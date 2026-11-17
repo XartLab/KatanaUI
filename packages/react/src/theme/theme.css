@@ -13,6 +13,8 @@
 @source '../katana';
 @source '../quant';
 @source '../blocks';
+@source '../motion';
+@source '../ai';
 
 /* shadcn 的组件里有 dark: 开头的类（`shadcn add` 新拷来的件会带）。Tailwind 默认按系统的深浅色决定它们生不生效，
    同一个产品在两台电脑上长得不一样；我们现有两个主题都是深色，所以 dark: 一直生效，做浅色主题（Paper）时再改成按 data-theme 判断。 */

@@ -3,7 +3,8 @@
 // 拷进来以后归我们改：样子（尺寸、颜色、动效）按 OpenMarket 实测样式与我们的 token 重写（决策记录 0049）。
 import { cva, type VariantProps } from 'class-variance-authority'
 import { Slot } from 'radix-ui'
-import type { ComponentProps } from 'react'
+import { animate } from 'motion/react'
+import { useEffect, useRef, type ComponentProps, type Ref } from 'react'
 import { cn } from '../lib/cn.ts'
 import { focusRing } from '../lib/focus.ts'
 
@@ -50,29 +51,92 @@ const buttonVariants = cva(
   },
 )
 
+type ButtonEffect = 'magnetic' | 'dot-morph' | 'clip-corners'
+
+// 磁吸：指针靠近按钮时按钮朝指针偏一点，离开后弹回。弹簧参数取自 SmoothUI magnetic-button（bounce 0.1 · duration 0.4）；
+// 只在有精确指针的设备上生效（hover: hover 且 pointer: fine）。没开 magnetic 的按钮不挂任何监听，也不建任何弹簧。
+const MAGNET_SPRING = { type: 'spring', bounce: 0.1, duration: 0.4 } as const
+
+function useMagnet(ref: { current: HTMLElement | null }, enabled: boolean, strength: number, radius: number) {
+  useEffect(() => {
+    const el = ref.current
+    if (!enabled || !el || !window.matchMedia('(hover: hover) and (pointer: fine)').matches) return
+    let resting = true
+    const move = (event: PointerEvent) => {
+      const box = el.getBoundingClientRect()
+      const dx = event.clientX - (box.left + box.width / 2)
+      const dy = event.clientY - (box.top + box.height / 2)
+      const distance = Math.hypot(dx, dy)
+      // 离中心越近吸得越多，出了半径就回到 0；已经在原位又在半径外就不再重启弹簧。
+      const pull = distance < radius ? (1 - distance / radius) * strength : 0
+      if (pull === 0 && resting) return
+      resting = pull === 0
+      animate(el, { x: dx * pull, y: dy * pull }, MAGNET_SPRING)
+    }
+    window.addEventListener('pointermove', move, { passive: true })
+    return () => {
+      window.removeEventListener('pointermove', move)
+      animate(el, { x: 0, y: 0 }, { duration: 0 })
+    }
+  }, [ref, enabled, strength, radius])
+}
+
 function Button({
   className,
   variant = 'default',
   size = 'default',
   asChild = false,
   type,
+  effect,
+  magnetStrength = 0.3,
+  magnetRadius = 120,
+  children,
+  ref,
   ...props
 }: ComponentProps<'button'> &
   VariantProps<typeof buttonVariants> & {
     /** Render the child element itself (a link, a menu trigger) instead of wrapping it in a button. */
     asChild?: boolean
+    /**
+     * Optional hover effect from SmoothUI: magnetic leans toward the pointer, dot-morph stretches a leading dot into a bar, clip-corners cuts the corners wider.
+     * 可选的悬停效果（改自 SmoothUI）：magnetic 朝指针偏、dot-morph 前面一颗点拉成竖条、clip-corners 四个角切口变大；dot-morph 不能与 asChild 同用。
+     */
+    effect?: ButtonEffect
+    /** How far a magnetic button leans: the fraction of the pointer offset it follows (0 to 1). */
+    magnetStrength?: number
+    /** Distance in px from the button center within which a magnetic button reacts. */
+    magnetRadius?: number
   }) {
   const Comp = asChild ? Slot.Root : 'button'
+  const own = useRef<HTMLButtonElement | null>(null)
+  useMagnet(own, effect === 'magnetic', magnetStrength, magnetRadius)
+  const setRef = (node: HTMLButtonElement | null) => {
+    own.current = node
+    if (typeof ref === 'function') ref(node)
+    else if (ref) (ref as { current: HTMLButtonElement | null }).current = node
+  }
   return (
     <Comp
       data-slot="button"
       data-variant={variant}
       data-size={size}
+      data-effect={effect}
+      ref={setRef as Ref<HTMLButtonElement>}
       // 原生 button 默认是 submit；放进表单里误提交的坑比多写一个 type 大得多。
       type={asChild ? type : (type ?? 'button')}
       className={cn(buttonVariants({ variant, size }), className)}
       {...props}
-    />
+    >
+      {/* asChild 的 Slot 只认一个子元素，不能在前面塞点；dot-morph 因此不与 asChild 同用。 */}
+      {asChild ? (
+        children
+      ) : (
+        <>
+          {effect === 'dot-morph' ? <span aria-hidden="true" data-slot="button-dot" /> : null}
+          {children}
+        </>
+      )}
+    </Comp>
   )
 }
 

@@ -107,6 +107,28 @@ const layout: GuidanceMap = {
       '搜索框有自己的 aria-label；⌘K 提示与图标对读屏隐藏。',
     ],
   },
+  'hover-expand': {
+    aliases: ['Accordion cards', 'Expanding panels', 'Image accordion', 'Hover cards'],
+    use: ['板块概览、策略卡、情景对比这类同时只看一块细节的并列项。', '横排或竖排的 2 到 5 个面板。'],
+    avoid: ['展开后要交互的用 tabs 或 accordion。', '超过 5 个面板不要用。'],
+    a11y: ['整组 role=group，面板是 aria-pressed 的按钮。', '键盘聚焦即展开，方向键切换。'],
+  },
+  'animated-stepper': {
+    aliases: ['Stepper', 'Wizard', 'Progress steps', 'Multi-step form'],
+    use: ['下单向导这类多步流程，要看到走到哪一步。', '横排与竖排两种。'],
+    avoid: ['步骤互相独立可任意顺序用 tabs。', '回放控制用 step-player。'],
+    a11y: [
+      'role=tablist 与 tab，tabpanel 与当前步关联。',
+      '每步的读屏名取 labels.step，带「已完成」「当前」。',
+      '允许点击导航时方向键走步。',
+    ],
+  },
+  squircle: {
+    aliases: ['Smooth corners', 'Superellipse', 'Continuous corners', 'Rounded rectangle'],
+    use: ['头像、徽标、图标底这类单个小方块要柔和的角。'],
+    avoid: ['整块面板默认直角，不要混用。', '要带焦点环的可聚焦元素不要用：焦点环会被裁。'],
+    a11y: ['只是形状，没有语义。', '裁切会连阴影与焦点环一起裁掉。'],
+  },
 }
 
 export default layout

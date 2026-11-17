@@ -194,7 +194,11 @@ const quant: GuidanceMap = {
   },
   'calendar-heatmap': {
     aliases: ['Activity heatmap', 'PnL Calendar', 'GitHub contributions', 'Calendar view'],
-    use: ['回测或实盘按日看收益的分布，找连续亏损的日子。', '看换手、事件在月内的节奏。'],
+    use: [
+      '回测或实盘按日看收益的分布，找连续亏损的日子。',
+      '看换手、事件在月内的节奏。',
+      '图第一次出现时想要进场感，给 reveal；之后换月、换视图不必再给。',
+    ],
     avoid: ['要看宏观事件与时间用 event-calendar。', '要精确读数用表格视图，不要靠颜色深浅。'],
     a11y: [
       '月历是 grid，行、列头与格子有读屏名。',

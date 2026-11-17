@@ -11,6 +11,8 @@ import {
   SymbolMark,
   type LedState,
 } from '../../src/index.ts'
+import { LiveToggle } from '../LiveToggle.tsx'
+import { randomWalk, useLiveTicker } from '../live-sim.ts'
 import { LiveLedLcdDemo } from './live-readouts.tsx'
 import { Cell, Row, SAMPLE_MARK_SRC } from './parts.tsx'
 
@@ -90,8 +92,41 @@ export function DotMatrixDemo() {
   )
 }
 
+const fmt2 = (v: number) => v.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+
+/** 报价实时跳动：个位先转、十位随后（stagger），带边的格子（boxed）；暂停时「步进」按钮与 window.__liveStep 各走一步。 */
+function QuoteFlowRows() {
+  const { state } = useLiveTicker({ price: 187.42, qty: 998 }, (s, rng) => ({
+    price: randomWalk(s.price, rng, 0.004),
+    // 数量偶尔跨过 999 到 1,000：看位数变化（resize）。
+    qty: Math.max(990, s.qty + Math.round((rng() - 0.45) * 6)),
+  }))
+  return (
+    <>
+      <Row name="报价 stagger">
+        <output data-gallery-quote-stagger style={{ fontSize: 'var(--text-lcd)' }}>
+          <RollingText text={fmt2(state.price)} value={state.price} animate stagger={60} />
+        </output>
+        <LiveToggle labels={{ group: '数据刷新', live: '实时', paused: '暂停' }} />
+      </Row>
+      <Row name="计数 boxed">
+        <output data-gallery-quote-boxed>
+          <RollingText text={String(Math.round(state.price))} value={state.price} animate boxed stagger={60} />
+        </output>
+      </Row>
+      <Row name="位数 resize">
+        <output data-gallery-quote-resize>
+          <RollingText text={state.qty.toLocaleString('en-US')} value={state.qty} animate resize />
+        </output>
+      </Row>
+    </>
+  )
+}
+
 export function RollingTextDemo() {
   const [value, setValue] = useState(106977.4)
+  const [codeIndex, setCodeIndex] = useState(0)
+  const code = ['AAPL.US', 'TSLA.US', 'NVDA.US', 'MSFT.US'][codeIndex % 4]!
   const text = value.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 })
   return (
     <>
@@ -111,6 +146,15 @@ export function RollingTextDemo() {
           涨 0.2
         </button>
       </Row>
+      <Row name="代码 ramp=4">
+        <output data-gallery-code>
+          <RollingText text={code} value={codeIndex} animate ramp={4} />
+        </output>
+        <button type="button" onClick={() => setCodeIndex((i) => i + 1)}>
+          换代码
+        </button>
+      </Row>
+      <QuoteFlowRows />
       <p className="gal-note">
         变了的那几位像里程表一样把中间的数字依次转过去，涨往上、跌往下，整串闪一下涨色或跌色；距上次滚动不到 1
         秒直接换字。
