@@ -33,8 +33,13 @@ export type BrushLabels = {
 
 export type BrushStripProps = {
   values: readonly number[]
-  window: BrushWindow
-  onWindowChange: (window: BrushWindow) => void
+  /** 当前窗口 [起, 止)（受控）。 */
+  value?: BrushWindow
+  onValueChange?: (window: BrushWindow) => void
+  /** @deprecated 用 `value`（G5 统一受控值的名字）；下一个版本删。 */
+  window?: BrushWindow
+  /** @deprecated 用 `onValueChange`；下一个版本删。 */
+  onWindowChange?: (window: BrushWindow) => void
   formatX: (index: number) => string
   labels: BrushLabels
   minSpan?: number
@@ -47,8 +52,10 @@ type Drag = { mode: 'move' | 'start' | 'end'; x: number; width: number; from: Br
 /** 只有概览条：SeriesExplorer 这类自己画主图的件用它。 */
 export function BrushStrip({
   values,
-  window,
-  onWindowChange,
+  value,
+  onValueChange,
+  window: legacyWindow,
+  onWindowChange: legacyChange,
   formatX,
   labels,
   minSpan = BRUSH_MIN_SPAN,
@@ -56,6 +63,9 @@ export function BrushStrip({
   className,
 }: BrushStripProps) {
   const count = values.length
+  // 旧名 window / onWindowChange 映射到新名（@deprecated，留一个版本）。
+  const window: BrushWindow = value ?? legacyWindow ?? [0, count]
+  const onWindowChange = (next: BrushWindow) => (onValueChange ?? legacyChange)?.(next)
   const [drag, setDrag] = useState<Drag | null>(null)
   const plot = makePlot(count, extent(values), { height, padTop: 4, padBottom: 4, exact: true })
   const dotId = useDotId('brush-strip')
@@ -186,9 +196,15 @@ export type BrushChartProps = {
   formatX: (index: number) => string
   formatValue: (value: number) => string
   labels: BrushLabels
-  /** 受控窗口；不给就自己管，起点是 defaultWindow 或整段。 */
+  /** 受控窗口 [起, 止)；不给就自己管，起点是 defaultValue 或整段。 */
+  value?: BrushWindow
+  defaultValue?: BrushWindow
+  onValueChange?: (window: BrushWindow) => void
+  /** @deprecated 用 `value`（G5 统一受控值的名字）；下一个版本删。 */
   window?: BrushWindow
+  /** @deprecated 用 `defaultValue`；下一个版本删。 */
   defaultWindow?: BrushWindow
+  /** @deprecated 用 `onValueChange`；下一个版本删。 */
   onWindowChange?: (window: BrushWindow) => void
   minSpan?: number
   /** 主图高（px）。 */
@@ -206,7 +222,10 @@ export function BrushChart({
   formatX,
   formatValue,
   labels,
-  window: controlled,
+  value: controlledValue,
+  defaultValue,
+  onValueChange,
+  window: legacyWindow,
   defaultWindow,
   onWindowChange,
   minSpan = BRUSH_MIN_SPAN,
@@ -215,12 +234,14 @@ export function BrushChart({
   className,
 }: BrushChartProps) {
   const count = values.length
-  const [inner, setInner] = useState<BrushWindow | undefined>(defaultWindow)
+  // 旧名 window / defaultWindow / onWindowChange 映射到新名（@deprecated，留一个版本）。
+  const controlled = controlledValue ?? legacyWindow
+  const [inner, setInner] = useState<BrushWindow | undefined>(defaultValue ?? defaultWindow)
   const window = clampWindow(controlled ?? inner ?? [0, count], count, minSpan)
   const change = (next: BrushWindow) => {
     const clamped = clampWindow(next, count, minSpan)
     if (controlled === undefined) setInner(clamped)
-    onWindowChange?.(clamped)
+    ;(onValueChange ?? onWindowChange)?.(clamped)
   }
   const slice = values.slice(window[0], window[1])
   const scrub = useScrubber({ count: slice.length })
@@ -288,8 +309,8 @@ export function BrushChart({
       </div>
       <BrushStrip
         values={values}
-        window={window}
-        onWindowChange={change}
+        value={window}
+        onValueChange={change}
         formatX={formatX}
         labels={labels}
         minSpan={minSpan}

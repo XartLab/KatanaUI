@@ -401,8 +401,8 @@ export function SeriesExplorer({
 
           <BrushStrip
             values={overview}
-            window={window}
-            onWindowChange={(next) => setDragged({ range: rangeKey, window: next })}
+            value={window}
+            onValueChange={(next) => setDragged({ range: rangeKey, window: next })}
             formatX={(index) => formatAt(points[index]!.at)}
             labels={labels.brush}
             height={44}

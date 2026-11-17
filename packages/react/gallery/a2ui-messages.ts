@@ -818,7 +818,7 @@ export const CHART_MESSAGES = [
             actions: CHART_ACTIONS,
           },
           source: 'Demo data',
-          onWindowChange: { event: { name: 'equity.window' } },
+          onValueChange: { event: { name: 'equity.window' } },
         },
         {
           id: 'attribution',

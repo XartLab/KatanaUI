@@ -4073,10 +4073,28 @@
           "description": ""
         },
         {
+          "name": "value",
+          "type": "BrushWindow",
+          "required": false,
+          "description": "受控窗口 [起, 止)；不给就自己管，起点是 defaultValue 或整段。"
+        },
+        {
+          "name": "defaultValue",
+          "type": "BrushWindow",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "onValueChange",
+          "type": "(window: BrushWindow) => void",
+          "required": false,
+          "description": ""
+        },
+        {
           "name": "window",
           "type": "BrushWindow",
           "required": false,
-          "description": "受控窗口；不给就自己管，起点是 defaultWindow 或整段。"
+          "description": ""
         },
         {
           "name": "defaultWindow",
@@ -4154,10 +4172,28 @@
           "description": ""
         },
         {
+          "name": "value",
+          "type": "BrushWindow",
+          "required": false,
+          "description": "受控窗口 [起, 止)；不给就自己管，起点是 defaultValue 或整段。"
+        },
+        {
+          "name": "defaultValue",
+          "type": "BrushWindow",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "onValueChange",
+          "type": "(window: BrushWindow) => void",
+          "required": false,
+          "description": ""
+        },
+        {
           "name": "window",
           "type": "BrushWindow",
           "required": false,
-          "description": "受控窗口；不给就自己管，起点是 defaultWindow 或整段。"
+          "description": ""
         },
         {
           "name": "defaultWindow",
@@ -4232,15 +4268,27 @@
           "description": ""
         },
         {
+          "name": "value",
+          "type": "BrushWindow",
+          "required": false,
+          "description": "当前窗口 [起, 止)（受控）。"
+        },
+        {
+          "name": "onValueChange",
+          "type": "(window: BrushWindow) => void",
+          "required": false,
+          "description": ""
+        },
+        {
           "name": "window",
           "type": "BrushWindow",
-          "required": true,
+          "required": false,
           "description": ""
         },
         {
           "name": "onWindowChange",
           "type": "(window: BrushWindow) => void",
-          "required": true,
+          "required": false,
           "description": ""
         },
         {
@@ -4288,15 +4336,27 @@
           "description": ""
         },
         {
+          "name": "value",
+          "type": "BrushWindow",
+          "required": false,
+          "description": "当前窗口 [起, 止)（受控）。"
+        },
+        {
+          "name": "onValueChange",
+          "type": "(window: BrushWindow) => void",
+          "required": false,
+          "description": ""
+        },
+        {
           "name": "window",
           "type": "BrushWindow",
-          "required": true,
+          "required": false,
           "description": ""
         },
         {
           "name": "onWindowChange",
           "type": "(window: BrushWindow) => void",
-          "required": true,
+          "required": false,
           "description": ""
         },
         {
@@ -10090,10 +10150,16 @@
           "description": ""
         },
         {
-          "name": "onWindowChange",
+          "name": "onValueChange",
           "type": "(window: BrushWindow) => void",
           "required": false,
           "description": "窗口变了（拖概览条）：给宿主把别的东西（成交表）跟着窗口筛。"
+        },
+        {
+          "name": "onWindowChange",
+          "type": "(window: BrushWindow) => void",
+          "required": false,
+          "description": ""
         },
         {
           "name": "onExport",
@@ -10264,10 +10330,16 @@
           "description": ""
         },
         {
-          "name": "onWindowChange",
+          "name": "onValueChange",
           "type": "(window: BrushWindow) => void",
           "required": false,
           "description": "窗口变了（拖概览条）：给宿主把别的东西（成交表）跟着窗口筛。"
+        },
+        {
+          "name": "onWindowChange",
+          "type": "(window: BrushWindow) => void",
+          "required": false,
+          "description": ""
         },
         {
           "name": "onExport",

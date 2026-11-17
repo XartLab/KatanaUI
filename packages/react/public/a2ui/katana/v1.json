@@ -7534,7 +7534,7 @@
           "type": "string",
           "description": "One line saying where the numbers come from and when."
         },
-        "onWindowChange": {
+        "onValueChange": {
           "anyOf": [
             {
               "type": "object",
@@ -7588,6 +7588,61 @@
             }
           ],
           "description": "Dispatched when the user drags the overview window. metadata.extensions.katanaChartWindow carries {from, to, fromIndex, toIndex} with the times in ISO 8601 and the indexes into points. The host receives the action and decides what to do; the component itself does nothing else."
+        },
+        "onWindowChange": {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "event": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "description": "The name of the action to be dispatched to the agent."
+                    },
+                    "userMessage": {
+                      "$ref": "common_types.json#/$defs/DynamicString",
+                      "description": "Represents a string"
+                    },
+                    "context": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "$ref": "common_types.json#/$defs/DynamicValue",
+                        "description": "A value that can be a literal, a path, or a function call returning any type."
+                      },
+                      "description": "A JSON object containing the key-value pairs for the action context. Values can be literals or paths. Use literal values unless the value must be dynamically bound to the data model. Do NOT use paths for static IDs."
+                    }
+                  },
+                  "required": [
+                    "name"
+                  ],
+                  "additionalProperties": false,
+                  "description": "The event to dispatch to the agent."
+                }
+              },
+              "required": [
+                "event"
+              ],
+              "additionalProperties": false,
+              "description": "Triggers an agent-side event."
+            },
+            {
+              "type": "object",
+              "properties": {
+                "functionCall": {
+                  "$ref": "common_types.json#/$defs/FunctionCall",
+                  "description": "Invokes a named function, combining common function properties with the catalog function definition."
+                }
+              },
+              "required": [
+                "functionCall"
+              ],
+              "additionalProperties": false,
+              "description": "Executes a renderer or agent-side function."
+            }
+          ],
+          "description": "Deprecated: use onValueChange. Kept for one release. The host receives the action and decides what to do; the component itself does nothing else."
         },
         "onExport": {
           "anyOf": [
@@ -9690,7 +9745,7 @@
           "additionalProperties": false,
           "description": "Accessible names of the two handles and of the window."
         },
-        "defaultWindow": {
+        "defaultValue": {
           "type": "array",
           "items": {
             "type": "integer",
@@ -9699,6 +9754,71 @@
           "minItems": 2,
           "maxItems": 2,
           "description": "Initial window as [start, end) point indexes. Defaults to the whole series."
+        },
+        "onValueChange": {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "event": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "description": "The name of the action to be dispatched to the agent."
+                    },
+                    "userMessage": {
+                      "$ref": "common_types.json#/$defs/DynamicString",
+                      "description": "Represents a string"
+                    },
+                    "context": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "$ref": "common_types.json#/$defs/DynamicValue",
+                        "description": "A value that can be a literal, a path, or a function call returning any type."
+                      },
+                      "description": "A JSON object containing the key-value pairs for the action context. Values can be literals or paths. Use literal values unless the value must be dynamically bound to the data model. Do NOT use paths for static IDs."
+                    }
+                  },
+                  "required": [
+                    "name"
+                  ],
+                  "additionalProperties": false,
+                  "description": "The event to dispatch to the agent."
+                }
+              },
+              "required": [
+                "event"
+              ],
+              "additionalProperties": false,
+              "description": "Triggers an agent-side event."
+            },
+            {
+              "type": "object",
+              "properties": {
+                "functionCall": {
+                  "$ref": "common_types.json#/$defs/FunctionCall",
+                  "description": "Invokes a named function, combining common function properties with the catalog function definition."
+                }
+              },
+              "required": [
+                "functionCall"
+              ],
+              "additionalProperties": false,
+              "description": "Executes a renderer or agent-side function."
+            }
+          ],
+          "description": "Dispatched when the user moves or resizes the window. metadata.extensions.katanaChartWindow carries {fromIndex, toIndex, from, to}; from and to are the xLabels at both ends. The host receives the action and decides what to do; the component itself does nothing else."
+        },
+        "defaultWindow": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "minItems": 2,
+          "maxItems": 2,
+          "description": "Deprecated: use defaultValue. Kept for one release."
         },
         "onWindowChange": {
           "anyOf": [
@@ -9753,7 +9873,7 @@
               "description": "Executes a renderer or agent-side function."
             }
           ],
-          "description": "Dispatched when the user moves or resizes the window. metadata.extensions.katanaChartWindow carries {fromIndex, toIndex, from, to}; from and to are the xLabels at both ends. The host receives the action and decides what to do; the component itself does nothing else."
+          "description": "Deprecated: use onValueChange. Kept for one release. The host receives the action and decides what to do; the component itself does nothing else."
         },
         "weight": {
           "type": "number",

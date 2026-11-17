@@ -274,7 +274,7 @@ const EXAMPLES: Record<string, Record<string, unknown>> = {
       brush: { start: 'Window start', end: 'Window end', window: 'Window' },
       actions: CHART_ACTIONS,
     },
-    onWindowChange: { event: { name: 'chart.window' } },
+    onValueChange: { event: { name: 'chart.window' } },
   },
   KatanaSeriesExplorer: {
     points: [
@@ -359,7 +359,7 @@ const EXAMPLES: Record<string, Record<string, unknown>> = {
     xLabels: ['a', 'b', 'c', 'd', 'e'],
     label: 'Price with an overview window',
     labels: { start: 'Window start', end: 'Window end', window: 'Window' },
-    onWindowChange: { event: { name: 'chart.window' } },
+    onValueChange: { event: { name: 'chart.window' } },
   },
   KatanaTreemap: {
     items: [{ id: 'a', name: 'ACME', group: 'Tech', size: 10, change: 0.01, text: '+1.00%' }],

@@ -62,6 +62,8 @@ export type EquityCurveProps = {
   formatTime: (time: number) => string
   labels: EquityCurveLabels
   /** 窗口变了（拖概览条）：给宿主把别的东西（成交表）跟着窗口筛。 */
+  onValueChange?: (window: BrushWindow) => void
+  /** @deprecated 用 `onValueChange`（G5 统一回调名）；下一个版本删。 */
   onWindowChange?: (window: BrushWindow) => void
   onExport?: () => void
   onFullscreen?: () => void
@@ -108,6 +110,7 @@ export function EquityCurve({
   xTicks,
   formatTime,
   labels,
+  onValueChange,
   onWindowChange,
   onExport,
   onFullscreen,
@@ -168,7 +171,7 @@ export function EquityCurve({
   const change = (next: BrushWindow) => {
     setWindow(next)
     setHover(null)
-    onWindowChange?.(next)
+    ;(onValueChange ?? onWindowChange)?.(next)
   }
 
   return (
@@ -340,8 +343,8 @@ export function EquityCurve({
 
       <BrushStrip
         values={points.map((point) => point.equity)}
-        window={window}
-        onWindowChange={change}
+        value={window}
+        onValueChange={change}
         formatX={(index) => points[index]!.title}
         labels={labels.brush}
         minSpan={2}

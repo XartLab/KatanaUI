@@ -87,7 +87,7 @@ export function BrushChartDemo() {
           formatX={dayAt}
           formatValue={(v) => v.toFixed(0)}
           labels={{ start: '窗口起点', end: '窗口终点', window: '窗口位置' }}
-          defaultWindow={[60, 120]}
+          defaultValue={[60, 120]}
         />
       </div>
       <p className="gal-note">{DEMO_NOTE}</p>

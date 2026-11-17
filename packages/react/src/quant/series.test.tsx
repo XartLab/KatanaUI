@@ -102,7 +102,7 @@ describe('BrushChart', () => {
       formatX={(i) => `d${i}`}
       formatValue={String}
       labels={labels}
-      defaultWindow={[10, 20]}
+      defaultValue={[10, 20]}
     />,
   )
 

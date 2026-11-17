@@ -86,9 +86,10 @@ export const KatanaEquityCurveApi = {
         .strict()
         .describe('All visible words of the chart; the component carries none of its own.'),
       source: viewShape.source,
-      onWindowChange: actionSchema(
+      onValueChange: actionSchema(
         'Dispatched when the user drags the overview window. metadata.extensions.katanaChartWindow carries {from, to, fromIndex, toIndex} with the times in ISO 8601 and the indexes into points.',
       ).optional(),
+      onWindowChange: actionSchema('Deprecated: use onValueChange. Kept for one release.').optional(),
       onExport: viewShape.onExport,
       onFullscreen: viewShape.onFullscreen,
       weight: weightSchema,
@@ -151,12 +152,12 @@ export const KatanaEquityCurve = createComponentImplementation(KatanaEquityCurve
           actions: labels.actions,
         }}
         source={props.source}
-        onWindowChange={(window) => {
+        onValueChange={(window) => {
           const [from, to] = window
           const first = points[from]
           const last = points[Math.min(to, points.length) - 1]
           if (!first || !last) return
-          dispatch(props.onWindowChange, 'katanaChartWindow', {
+          dispatch(props.onValueChange ?? props.onWindowChange, 'katanaChartWindow', {
             from: new Date(first.time).toISOString(),
             to: new Date(last.time).toISOString(),
             fromIndex: from,
