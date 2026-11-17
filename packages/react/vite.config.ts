@@ -1,35 +1,6 @@
 // SPDX-License-Identifier: MIT
-import { readdirSync, readFileSync, statSync } from 'node:fs'
-import { dirname, join, relative, resolve } from 'node:path'
 import tailwindcss from '@tailwindcss/vite'
 import { defineConfig } from 'vite-plus'
-
-// 文档站的「设计规范」两组：仓库级的 markdown（KatanaUI 根目录的 design/）不在包里，包要能单独拿出来（#1881），所以不写包外路径；
-// 由仓库根的 build:site / dev 脚本用 GALLERY_EXTRA_DOCS 给目录的绝对路径（键取「目录名/…」，如 design/katana-console/…），这里读成虚拟模块 virtual:extra-docs；没给就是空的。
-const EXTRA = 'virtual:extra-docs'
-function extraDocs() {
-  const dir = process.env.GALLERY_EXTRA_DOCS
-  return {
-    name: 'katana-extra-docs',
-    resolveId: (id: string) => (id === EXTRA ? `\0${EXTRA}` : undefined),
-    load(id: string) {
-      if (id !== `\0${EXTRA}`) return undefined
-      const files: Record<string, string> = {}
-      if (dir) {
-        const base = resolve(dir)
-        const walk = (at: string) => {
-          for (const name of readdirSync(at)) {
-            const path = join(at, name)
-            if (statSync(path).isDirectory()) walk(path)
-            else if (name.endsWith('.md')) files[relative(dirname(base), path)] = readFileSync(path, 'utf8')
-          }
-        }
-        walk(base)
-      }
-      return `export default ${JSON.stringify(files)}`
-    },
-  }
-}
 
 // 组件库自己的 Vite+ 配置。XartLab/KatanaUI 是组件库的源头仓库（#2），文档站、测试、格式化、代码检查都在包里配，不靠仓库根目录。
 // 格式化与代码检查的规则跟 packages/tokens 一致，改的时候两边一起改。
@@ -37,7 +8,7 @@ export default defineConfig({
   // 文档站的地址前缀：Pages 发布在 /KatanaUI/ 下，用 SITE_BASE=/KatanaUI/ 给；不给就是根路径（本地 dev 与预览）。
   base: process.env.SITE_BASE ?? '/',
   // 样式用 Tailwind v4（决策记录 0049）。JSX 由 tsconfig 的 jsx: react-jsx 交给 Vite+ 自带的转换，不用 React 插件。
-  plugins: [tailwindcss(), extraDocs()],
+  plugins: [tailwindcss()],
   build: { outDir: 'dist', emptyOutDir: true },
   // 单测：Node 环境；组件用 react-dom/server 渲染成字符串测结构。浏览器里的行为在 e2e/（`pnpm test:e2e`，Playwright）。
   test: {

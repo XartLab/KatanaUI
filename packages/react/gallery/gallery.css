@@ -429,105 +429,93 @@ body {
   color: var(--ink-300);
 }
 
-/* 「文档」页（guides.tsx）：仓库里的 markdown 渲染出来。 */
-.gal-guide {
-  max-width: 860px;
+/* 组件页头的包 / 源码 / 别名（照 Salt 组件页）。 */
+.gal-doc-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 20px;
+  margin: 12px 0 0;
+  font: var(--text-caption) var(--font-sans-small);
 }
-.gal-guide-path {
-  margin: 0 0 12px;
+.gal-doc-meta > div {
+  display: flex;
+  gap: 6px;
+}
+.gal-doc-meta dt {
   color: var(--ink-400);
 }
-.gal-guide-path code {
-  font: var(--text-caption) var(--font-mono);
-}
-.gal-guide-body {
+.gal-doc-meta dd {
+  margin: 0;
   color: var(--ink-200);
-  font: var(--text-body) var(--font-sans);
-  line-height: 22px;
 }
-.gal-guide-body :is(h1, h2, h3, h4) {
-  margin: 28px 0 10px;
-  color: var(--ink-100);
-  font-family: var(--font-sans);
-}
-.gal-guide-body h1 {
-  margin-top: 0;
-  font-size: 24px;
-  line-height: 30px;
-}
-.gal-guide-body h2 {
-  padding-bottom: 6px;
-  border-bottom: 1px solid var(--line-100);
-  font-size: 18px;
-  line-height: 24px;
-}
-.gal-guide-body h3 {
-  font-size: 15px;
-  line-height: 20px;
-}
-.gal-guide-body a {
-  color: var(--ink-100);
+.gal-doc-meta a {
+  color: var(--ink-200);
   text-decoration: underline;
   text-decoration-color: var(--line-200);
   text-underline-offset: 3px;
 }
-.gal-guide-body code {
-  padding: 1px 4px;
-  border-radius: 4px;
-  background: var(--bg-300);
-  color: var(--ink-100);
-  font: var(--text-caption) var(--font-mono);
+.gal-doc-tabs {
+  margin-top: 20px;
 }
-.gal-guide-body pre {
-  overflow: auto;
-  padding: 12px 14px;
-  border: 1px solid var(--line-100);
-  border-radius: 6px;
-  background: var(--bg-000);
-}
-.gal-guide-body pre code {
-  padding: 0;
-  background: none;
-}
-.gal-guide-body blockquote {
-  margin: 12px 0;
-  padding: 2px 14px;
-  border-left: 2px solid var(--line-200);
-  color: var(--ink-300);
-}
-.gal-guide-body table {
-  width: 100%;
-  margin: 12px 0;
-  border-collapse: collapse;
+.gal-todo {
+  color: var(--ink-400);
   font: var(--text-data) var(--font-sans);
 }
-.gal-guide-body :is(th, td) {
-  padding: 6px 10px;
-  border: 1px solid var(--line-100);
-  text-align: left;
-  vertical-align: top;
-}
-.gal-guide-body th {
-  background: var(--bg-200);
-  color: var(--ink-100);
-}
-.gal-guide-body :is(ul, ol) {
-  padding-left: 22px;
-}
-.gal-guide-body li + li {
-  margin-top: 4px;
-}
-.gal-guide-body hr {
-  border: 0;
-  border-top: 1px solid var(--line-100);
-}
-.gal-render-fonts th span {
-  color: var(--ink-400);
-}
-.gal-render-fonts td small {
-  display: block;
-  margin-top: 2px;
+.gal-fd-source {
+  margin: 8px 0 0;
   color: var(--ink-400);
   font: var(--text-caption) var(--font-sans-small);
-  white-space: normal;
+}
+.gal-fd-source a {
+  color: var(--ink-300);
+}
+.gal-fd-icons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin: 8px 0 12px;
+}
+.gal-fd-icons > span {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  min-width: 64px;
+  color: var(--ink-200);
+}
+.gal-fd-icons small,
+.gal-fd-ramp small {
+  color: var(--ink-400);
+  font: var(--text-micro) var(--font-sans-small);
+}
+.gal-fd-ramp {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 8px 0;
+}
+.gal-fd-ramp > span {
+  display: grid;
+  gap: 4px;
+}
+.gal-fd-ramp i {
+  display: block;
+  width: 72px;
+  height: 28px;
+  border: 1px solid var(--line-100);
+  border-radius: 4px;
+}
+.gal-doc-tabs [role='tabpanel'] {
+  padding-top: 8px;
+}
+.gal-doc-tabs [role='tabpanel'] > section + section {
+  margin-top: 24px;
+}
+.gal-doc-tabs [role='tabpanel'] h2,
+.gal-doc > section > h2 {
+  margin: 0 0 8px;
+  color: var(--ink-100);
+  font: var(--text-title) var(--font-sans);
+}
+.gal-doc > section + section {
+  margin-top: 24px;
 }

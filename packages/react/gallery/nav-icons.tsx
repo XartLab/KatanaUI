@@ -3,6 +3,9 @@
 // 图标用包里已有的 lucide-react（ISC）。logo 是 KatanaUI 自己画的标：方框里一道斜刃。
 
 import {
+  Coins,
+  Puzzle,
+  Rocket,
   Blocks,
   BookOpen,
   ChartCandlestick,
@@ -20,7 +23,10 @@ import {
 } from 'lucide-react'
 
 export const GROUP_ICONS: Record<string, LucideIcon> = {
+  start: Rocket,
   foundations: Palette,
+  tokens: Coins,
+  patterns: Puzzle,
   forms: TextCursorInput,
   overlays: Layers,
   layout: PanelsTopLeft,

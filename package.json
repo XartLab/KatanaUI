@@ -4,11 +4,11 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "dev": "GALLERY_EXTRA_DOCS=$PWD/design pnpm --filter @katana-ui/react dev",
+    "dev": "pnpm --filter @katana-ui/react dev",
     "check": "pnpm -r --workspace-concurrency=1 run check",
     "test": "pnpm -r --workspace-concurrency=1 run check && pnpm -r --workspace-concurrency=1 run test",
     "typecheck": "pnpm -r run typecheck",
-    "build:site": "GALLERY_EXTRA_DOCS=$PWD/design pnpm --filter @katana-ui/react build:site",
+    "build:site": "pnpm --filter @katana-ui/react build:site",
     "tokens:sync": "pnpm --filter @katana-ui/tokens tokens:sync",
     "ui:coverage": "pnpm --filter @katana-ui/react ui:coverage",
     "ds:build": "pnpm --filter @katana-ui/react ds:build",

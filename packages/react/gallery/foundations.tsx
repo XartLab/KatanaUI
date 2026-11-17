@@ -6,6 +6,7 @@
 import type { ReactNode } from 'react'
 import tokens from '../src/tokens-json'
 import { Button } from '../src/index'
+import { MORE_PAGES } from './foundations-more'
 
 type Valued = string | Record<string, string>
 type Token = {
@@ -35,18 +36,35 @@ const T = tokens as unknown as {
 }
 const THEMES = T.color.themes
 
+/** 入门、基础、Token 与主题三组页（照 Salt 文档站的目录）；顺序就是目录顺序。 */
 export const FOUNDATION_PAGES = [
-  { id: 'foundations', title: '三层 token' },
-  { id: 'color', title: '颜色' },
-  { id: 'typography', title: '字体与文字档' },
-  { id: 'spacing', title: '间距' },
-  { id: 'radius', title: '圆角' },
-  { id: 'shadow', title: '阴影与纹理' },
-  { id: 'border', title: '边框' },
-  { id: 'density', title: '密度' },
-  { id: 'characteristics', title: '语义特征' },
+  { id: 'developing', title: '开发接入', section: 'start' },
+  { id: 'styling', title: '样式引入', section: 'start' },
+  { id: 'color', title: '颜色', section: 'foundations' },
+  { id: 'typography', title: '字体与文字档', section: 'foundations' },
+  { id: 'spacing', title: '间距', section: 'foundations' },
+  { id: 'size', title: '尺寸', section: 'foundations' },
+  { id: 'density', title: '密度', section: 'foundations' },
+  { id: 'radius', title: '圆角', section: 'foundations' },
+  { id: 'border', title: '边框', section: 'foundations' },
+  { id: 'shadow', title: '层级与阴影', section: 'foundations' },
+  { id: 'duration', title: '时长与动效', section: 'foundations' },
+  { id: 'modes', title: '主题与模式', section: 'foundations' },
+  { id: 'responsiveness', title: '响应式', section: 'foundations' },
+  { id: 'cursor', title: '光标', section: 'foundations' },
+  { id: 'assets', title: '图标与资源', section: 'foundations' },
+  { id: 'dataviz', title: '数据可视化', section: 'foundations' },
+  { id: 'foundations', title: '三层 token', section: 'tokens' },
+  { id: 'characteristics', title: '语义特征', section: 'tokens' },
+  { id: 'token-naming', title: 'Token 命名', section: 'tokens' },
+  { id: 'theming', title: '主题接入', section: 'tokens' },
 ] as const
 export type FoundationId = (typeof FOUNDATION_PAGES)[number]['id']
+export const FOUNDATION_SECTIONS = [
+  { id: 'start', title: '入门' },
+  { id: 'foundations', title: '基础' },
+  { id: 'tokens', title: 'Token 与主题' },
+] as const
 export const isFoundation = (id: string): id is FoundationId => FOUNDATION_PAGES.some((page) => page.id === id)
 
 /** 值表里的一格：引用写成 {name}，显示成 var(--name)。 */
@@ -267,7 +285,9 @@ function OverviewPage() {
 
 export function FoundationPage({ id }: { id: FoundationId }) {
   const title = FOUNDATION_PAGES.find((page) => page.id === id)!.title
+  const more = MORE_PAGES[id as keyof typeof MORE_PAGES]
   const body = (() => {
+    if (more) return <more.Body />
     switch (id) {
       case 'foundations':
         return <OverviewPage />

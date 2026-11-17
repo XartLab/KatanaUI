@@ -1,11 +1,23 @@
 // SPDX-License-Identifier: MIT
 import { useEffect, useState, useSyncExternalStore } from 'react'
-import { CodeBlock, SideNav, ToggleGroup, ToggleGroupItem, type SideNavGroup } from '../src/index'
+import {
+  CodeBlock,
+  SideNav,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+  ToggleGroup,
+  ToggleGroupItem,
+  type SideNavGroup,
+} from '../src/index'
+import { guidanceOf } from './guidance'
+import { PATTERN_GROUPS, PatternPage, patternById } from './patterns'
+import { packageOf, sourceOf } from './source-map'
 import { CopyButton } from './CopyButton'
 import { CoveragePage } from './coverage'
 import { RENDERING_ID, RenderingPage } from './rendering'
-import { FOUNDATION_PAGES, FoundationPage, isFoundation } from './foundations'
-import { GUIDES, GUIDE_GROUPS, GuidePage, guideBySlug } from './guides'
+import { FOUNDATION_PAGES, FOUNDATION_SECTIONS, FoundationPage, isFoundation } from './foundations'
 import { GROUP_ICONS, KatanaMark } from './nav-icons'
 import { DEMOS } from './demos'
 import { resolveParts, type ResolvedPart } from './props'
@@ -111,66 +123,118 @@ function UsageSection({ page }: { page: DocPage }) {
 
 function DocBody({ page }: { page: DocPage }) {
   const Demo = DEMOS[page.id]
+  const guide = guidanceOf(page.id)
+  const source = sourceOf(page.exports)
+  const avoid = [...(guide.avoid ?? []), ...page.donts]
   return (
     <article className="gal-doc" data-page={page.id}>
       <header className="gal-doc-head">
         <h1>{page.title}</h1>
         <p>{page.summary}</p>
+        <dl className="gal-doc-meta">
+          <div>
+            <dt>包</dt>
+            <dd>
+              <code>{packageOf(page.group)}</code>
+            </dd>
+          </div>
+          {source ? (
+            <div>
+              <dt>源码</dt>
+              <dd>
+                <a href={source.href} target="_blank" rel="noreferrer">
+                  {source.path}
+                </a>
+              </dd>
+            </div>
+          ) : null}
+          {guide.aliases && guide.aliases.length > 0 ? (
+            <div>
+              <dt>也叫</dt>
+              <dd>{guide.aliases.join('、')}</dd>
+            </div>
+          ) : null}
+        </dl>
       </header>
-      <section className="gal-preview" data-gallery={page.id} aria-label="预览">
-        {Demo ? <Demo /> : null}
-      </section>
-      <UsageSection page={page} />
-      <section aria-labelledby="gal-h-props">
-        <h2 id="gal-h-props">属性</h2>
-        {resolveParts(page).map((table) => (
-          <PropsTable key={table.part} table={table} />
-        ))}
-      </section>
-      <section aria-labelledby="gal-h-states">
-        <h2 id="gal-h-states">状态</h2>
-        <ul className="gal-list">
-          {page.states.map((state) => (
-            <li key={state}>{state}</li>
-          ))}
-        </ul>
-      </section>
-      <section aria-labelledby="gal-h-donts">
-        <h2 id="gal-h-donts">不要</h2>
-        <ul className="gal-list">
-          {page.donts.map((dont) => (
-            <li key={dont}>{dont}</li>
-          ))}
-        </ul>
-      </section>
-      <section aria-labelledby="gal-h-parts">
-        <h2 id="gal-h-parts">组成</h2>
-        <pre className="gal-code" tabIndex={0}>
-          {page.composition}
-        </pre>
-      </section>
-      {page.keys.length > 0 ? (
-        <section aria-labelledby="gal-h-keys">
-          <h2 id="gal-h-keys">键盘</h2>
-          <table className="gal-keys">
-            <tbody>
-              {page.keys.map(([key, what]) => (
-                <tr key={key}>
-                  <th scope="row">
-                    <kbd>{key}</kbd>
-                  </th>
-                  <td>{what}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </section>
-      ) : null}
+      <Tabs defaultValue="examples" className="gal-doc-tabs">
+        <TabsList variant="line" aria-label="这一页的内容">
+          <TabsTrigger value="examples">示例</TabsTrigger>
+          <TabsTrigger value="usage">怎么用</TabsTrigger>
+          <TabsTrigger value="a11y">无障碍</TabsTrigger>
+          <TabsTrigger value="props">属性</TabsTrigger>
+        </TabsList>
+        <TabsContent value="examples">
+          <section className="gal-preview" data-gallery={page.id} aria-label="预览">
+            {Demo ? <Demo /> : null}
+          </section>
+          <UsageSection page={page} />
+        </TabsContent>
+        <TabsContent value="usage">
+          <GuideList id="gal-h-use" title="什么时候用" items={guide.use} />
+          <GuideList id="gal-h-avoid" title="什么时候别用" items={avoid} />
+          <GuideList id="gal-h-states" title="状态" items={page.states} />
+          <section aria-labelledby="gal-h-parts">
+            <h2 id="gal-h-parts">组成</h2>
+            <pre className="gal-code" tabIndex={0}>
+              {page.composition}
+            </pre>
+          </section>
+        </TabsContent>
+        <TabsContent value="a11y">
+          <GuideList id="gal-h-a11y" title="读屏、焦点与对比度" items={guide.a11y} />
+          <section aria-labelledby="gal-h-keys">
+            <h2 id="gal-h-keys">键盘</h2>
+            {page.keys.length > 0 ? (
+              <table className="gal-keys">
+                <tbody>
+                  {page.keys.map(([key, what]) => (
+                    <tr key={key}>
+                      <th scope="row">
+                        <kbd>{key}</kbd>
+                      </th>
+                      <td>{what}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            ) : (
+              <p className="gal-todo">没有键盘交互（不能聚焦，或只用 Tab 经过）。</p>
+            )}
+          </section>
+        </TabsContent>
+        <TabsContent value="props">
+          <section aria-labelledby="gal-h-props">
+            <h2 id="gal-h-props">属性</h2>
+            {resolveParts(page).map((table) => (
+              <PropsTable key={table.part} table={table} />
+            ))}
+          </section>
+        </TabsContent>
+      </Tabs>
     </article>
   )
 }
 
+/** 怎么用 / 无障碍里的一节：一条一句；没写的显示「待补」。 */
+function GuideList({ id, title, items }: { id: string; title: string; items?: readonly string[] }) {
+  return (
+    <section aria-labelledby={id}>
+      <h2 id={id}>{title}</h2>
+      {items && items.length > 0 ? (
+        <ul className="gal-list">
+          {items.map((item) => (
+            <li key={item}>{item}</li>
+          ))}
+        </ul>
+      ) : (
+        <p className="gal-todo">待补。</p>
+      )}
+    </section>
+  )
+}
+
 /** 左栏目录：基础 → 各组组件 → 文档 → 总览；组件页的名字用页标题（英文名 + 中文名），按 id 与标题都能搜到。
+ * 目录照 Salt：入门 → 基础 → Token 与主题 → 组件各组 → 模式 → 总览。
  * 图标只给大分组（用户 2026-11-17：「大分组有，小分组没 logo」），条目不带图标。 */
 const groupIcon = (id: string) => {
   const Icon = GROUP_ICONS[id]
@@ -178,17 +242,17 @@ const groupIcon = (id: string) => {
 }
 
 const navGroups: readonly SideNavGroup[] = [
-  {
-    id: 'foundations',
-    title: '基础',
-    icon: groupIcon('foundations'),
-    items: FOUNDATION_PAGES.map((item) => ({
+  ...FOUNDATION_SECTIONS.map((section) => ({
+    id: section.id,
+    title: section.title,
+    icon: groupIcon(section.id),
+    items: FOUNDATION_PAGES.filter((item) => item.section === section.id).map((item) => ({
       id: item.id,
       label: item.title,
       href: `#/${item.id}`,
       keywords: item.id,
     })),
-  },
+  })),
   ...GROUPS.map((group) => ({
     id: group.id,
     title: group.title,
@@ -208,18 +272,7 @@ const navGroups: readonly SideNavGroup[] = [
       }
     }),
   })).filter((group) => group.items.length > 0),
-  ...GUIDE_GROUPS.map((group) => ({
-    id: group.id,
-    title: group.title,
-    icon: groupIcon(group.id),
-    items: GUIDES.filter((guide) => guide.group === group.id).map((guide) => ({
-      id: guide.slug,
-      label: guide.title,
-      href: `#/${guide.slug}`,
-      keywords: guide.path,
-      title: guide.path,
-    })),
-  })),
+  ...PATTERN_GROUPS,
   {
     id: 'overview',
     title: '总览',
@@ -261,9 +314,9 @@ export function Docs({ theme, onTheme }: { theme: ThemeName; onTheme: (theme: Th
   const onCoverage = id === COVERAGE_ID
   const onRendering = id === RENDERING_ID
   const onFoundation = isFoundation(id)
-  const onGuide = guideBySlug(id) !== undefined
+  const pattern = patternById(id)
   const [navOpen, setNavOpen] = useState(true)
-  const currentNav = onCoverage || onRendering || onFoundation || onGuide ? id : shown?.id
+  const currentNav = onCoverage || onRendering || onFoundation || pattern ? id : shown?.id
   return (
     <div className="gal-shell" data-gallery-theme={theme}>
       {navOpen ? (
@@ -321,8 +374,8 @@ export function Docs({ theme, onTheme }: { theme: ThemeName; onTheme: (theme: Th
             <RenderingPage />
           ) : onFoundation ? (
             <FoundationPage id={id} />
-          ) : onGuide ? (
-            <GuidePage key={id} slug={id} />
+          ) : pattern ? (
+            <PatternPage key={id} pattern={pattern} />
           ) : shown ? (
             <DocBody key={shown.id} page={shown} />
           ) : (
