@@ -14,17 +14,6 @@
   font: var(--text-data) var(--font-sans);
   color: var(--ink-100);
 }
-.k-ecal-tabs {
-  align-self: flex-start;
-  margin: 0 var(--inset-x);
-}
-.k-ecal-panel {
-  display: flex;
-  flex: 1 1 auto;
-  flex-direction: column;
-  gap: var(--space-2);
-  min-height: 0;
-}
 .k-ecal-scroll {
   flex: 1 1 auto;
   min-height: 0;
@@ -53,14 +42,6 @@
   align-items: center;
   column-gap: 8px;
   padding: 0 var(--inset-x);
-}
-.k-ecal-columns {
-  height: 20px;
-  color: var(--ink-300);
-  font: 500 11px/14px var(--font-sans);
-}
-.k-ecal-columns .is-num {
-  text-align: right;
 }
 .k-ecal-list {
   display: flex;
@@ -148,41 +129,6 @@
   height: 12px;
 }
 .k-ecal-level i.is-on {
-  background: var(--ink-100);
-}
-/* 重要程度筛选：三个按钮各画一档格条，亮着的是选中；按下是灰底，不上色。 */
-.k-ecal-imp {
-  display: inline-flex;
-  gap: 2px;
-  padding: 2px;
-  border-radius: 8px;
-  background: var(--alpha-white-3);
-}
-.k-ecal-imp-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 24px;
-  border: 0;
-  border-radius: 6px;
-  background: transparent;
-  cursor: pointer;
-}
-.k-ecal-imp-btn:hover {
-  background: var(--alpha-white-5);
-}
-.k-ecal-imp-btn[aria-pressed='true'] {
-  background: var(--alpha-white-10);
-}
-.k-ecal-imp-btn:focus-visible {
-  outline: 1px solid var(--line-200);
-  outline-offset: -1px;
-}
-.k-ecal-imp-btn .k-ecal-level i {
-  background: var(--alpha-white-11);
-}
-.k-ecal-imp-btn .k-ecal-level i.is-on {
   background: var(--ink-100);
 }
 /* 已发布与未发布：已出数的行时间与事件名退一档，等着出数的保持全亮。 */

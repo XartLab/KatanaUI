@@ -13,8 +13,8 @@ import { ToggleGroup, ToggleGroupItem } from '../../primitives/toggle-group.tsx'
 import { onTextMeasureReset } from '../../lib/text-measure.ts'
 import { galaxyStep, hitNode, layoutGalaxy, stepNode, type GalaxyNode, type GalaxyPlace } from './galaxy-model.ts'
 
-export const GALAXY_W = 800
-export const GALAXY_H = 520
+const GALAXY_W = 800
+const GALAXY_H = 520
 const FRAME = { width: GALAXY_W, height: GALAXY_H, pad: 8, headroom: 20 }
 /** 迁移动画的时长（毫秒）：与 --dur-snappy 同为 333ms；canvas 里没法用 CSS 过渡，自己插值。 */
 const MOVE_MS = 333

@@ -93,7 +93,7 @@ type SLink = {
   note?: string
 }
 
-export const linkId = (link: Pick<FlowLink, 'id' | 'source' | 'target' | 'kind'>): string =>
+const linkId = (link: Pick<FlowLink, 'id' | 'source' | 'target' | 'kind'>): string =>
   link.id ?? `${link.source}>${link.target}>${link.kind ?? 'flow'}`
 
 const ratio = (part: number, whole: number): number | null => (whole > 0 ? part / whole : null)

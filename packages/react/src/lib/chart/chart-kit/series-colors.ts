@@ -12,7 +12,7 @@ const SERIES = [
   'var(--series-7)',
 ] as const
 
-export const SERIES_OTHER = 'var(--series-other)'
+const SERIES_OTHER = 'var(--series-other)'
 /** 有名字的序列最多这么多条；再多的折进「其他」（dataviz §2、EquityCurve 卡：超过 7 条折进「其他」或拆小多图）。 */
 
 /**
@@ -39,7 +39,7 @@ export function quantile(values: readonly number[], q: number): number {
 }
 
 /** 「超 80 分位」的分位：dataviz 与 Calendar 卡写的是 80 分位，用 |值| 算。 */
-export const DIV_HOT_QUANTILE = 0.8
+const DIV_HOT_QUANTILE = 0.8
 
 /** 一组值里 |值| 的 80 分位：超过它的值才用 -200 档，其余用 -100 档（全饱和不出现）。 */
 export const divHotThreshold = (values: readonly number[]): number =>

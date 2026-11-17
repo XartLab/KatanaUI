@@ -34,7 +34,7 @@ type Datum = { id: string; key: string; size: number; children?: Datum[] }
 /** 团与团之间、团内点与点之间留的缝（布局单位，画布宽 800）。点多时点很小，缝大了就吃掉大半面积，所以团内取小。视觉取值，待定。 */
 const NODE_GAP = 1
 /** 团名一行的高度：11px 字（--text-caption）的行高，画布宽 800 时布局单位约等于像素。 */
-export const LABEL_H = 16
+const LABEL_H = 16
 /** 团名与它的圈之间的空；团与团之间的缝 = 一行团名 + 这个空 + 余量 2，这样团名放在圈上方的留白里不会碰到邻团。视觉取值，待定。 */
 const LABEL_GAP = 2
 const GROUP_GAP = LABEL_H + LABEL_GAP + 2
