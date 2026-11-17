@@ -175,3 +175,30 @@
   left: auto !important;
   width: 96px;
 }
+
+/* 迷你图画廊：高一点的图、表格行里 96 × 22 的紧凑用法。 */
+.gal-spark-case {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.gal-spark-tall .k-spark {
+  height: 64px;
+}
+.gal-spark-table {
+  border-collapse: collapse;
+  font: var(--text-data) var(--font-sans);
+  color: var(--ink-200);
+}
+.gal-spark-table th {
+  padding: 4px 16px 4px 0;
+  text-align: left;
+  font-weight: 400;
+}
+.gal-spark-cell {
+  width: 96px;
+  padding: 4px 8px 4px 0;
+}
+.gal-spark-cell .k-spark {
+  height: 22px;
+}

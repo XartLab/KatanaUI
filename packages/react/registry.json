@@ -2246,7 +2246,7 @@
       "name": "quote-tone",
       "type": "registry:lib",
       "title": "Quote Tone",
-      "description": "一列数从旧到新，整宽铺开、上下按这列的高低，一根线。线色按头尾涨跌（涨跌色跟涨跌配色走），没有数据只留「—」。从应用的分析视图提来。",
+      "description": "一列数从旧到新，按容器的真实像素画（不拉伸、线宽 1.5px）。默认是线加线下渐变，最新值处有末端点；另有 line、baseline（基准上涨色下跌色）、bars、winloss（胜负格）四种画法。可加基准虚线、最高最低点、右端最新值、成交量、断点、单调曲线；interactive 时悬停出十字线与读数，键盘左右键走点。线色按最后值对基准（没基准按头尾），涨跌色跟涨跌配色走，没有数据只留「—」。",
       "files": [
         {
           "path": "src/katana/quote-tone.ts",
@@ -2399,13 +2399,33 @@
       ]
     },
     {
-      "name": "sparkline",
-      "type": "registry:component",
-      "title": "Sparkline",
-      "description": "一列数从旧到新，整宽铺开、上下按这列的高低，一根线。线色按头尾涨跌（涨跌色跟涨跌配色走），没有数据只留「—」。从应用的分析视图提来。",
+      "name": "sparkline-model",
+      "type": "registry:lib",
+      "title": "Sparkline Model",
+      "description": "Sparkline 的几何（纯函数）：断点分段、刻度、设备像素对齐、单调曲线、基准切分、最高最低、标签放左放右、悬停取点。",
       "registryDependencies": [
         "@katana/live-line",
         "@katana/quote-tone"
+      ],
+      "files": [
+        {
+          "path": "src/katana/sparkline-model.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/katana/sparkline-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "sparkline",
+      "type": "registry:component",
+      "title": "Sparkline",
+      "description": "一列数从旧到新，按容器的真实像素画（不拉伸、线宽 1.5px）。默认是线加线下渐变，最新值处有末端点；另有 line、baseline（基准上涨色下跌色）、bars、winloss（胜负格）四种画法。可加基准虚线、最高最低点、右端最新值、成交量、断点、单调曲线；interactive 时悬停出十字线与读数，键盘左右键走点。线色按最后值对基准（没基准按头尾），涨跌色跟涨跌配色走，没有数据只留「—」。",
+      "registryDependencies": [
+        "@katana/live",
+        "@katana/live-line",
+        "@katana/quote-tone",
+        "@katana/sparkline-model",
+        "@katana/text-measure"
       ],
       "files": [
         {

@@ -17,6 +17,7 @@ import {
   type TreemapItem,
 } from '../../src/index'
 import { LiveToggle } from '../LiveToggle'
+import { SparklineGallery } from './sparkline-gallery'
 import { LiveQuoteDemo, LiveSparklineDemo, LiveTreemapDemo } from './live-readouts'
 import { chance, randomWalk, useLiveTicker, type Rng } from '../live-sim'
 import { ActionLog, Row, demoSymbolActions } from './parts'
@@ -102,7 +103,8 @@ export function SparklineDemo() {
           <Sparkline values={[]} label="示例走势：没有数据" />
         </div>
       </Row>
-      <p className="gal-note">{SAMPLE}。线色按头尾比：涨跌色跟涨跌配色走，持平用中性灰。</p>
+      <p className="gal-note">{SAMPLE}。线色按头尾比（有基准按最后值对基准）：涨跌色跟涨跌配色走，持平用中性灰。</p>
+      <SparklineGallery />
       <LiveSparklineDemo />
     </>
   )

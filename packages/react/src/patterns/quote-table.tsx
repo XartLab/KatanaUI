@@ -121,7 +121,8 @@ function QuoteLine({ row, onRow, entering }: { row: QuoteRow; onRow?: (row: Quot
         {row.symbol && <small>{row.symbol}</small>}
       </th>
       <td className="k-quote-rows-trend">
-        {row.spark && <Sparkline values={row.spark} label={row.sparkLabel ?? ''} tone={tone} />}
+        {/* 行高只有 22px：不画末端点（价格格自己会闪，再脉动一个点只会吵）。 */}
+        {row.spark && <Sparkline values={row.spark} label={row.sparkLabel ?? ''} tone={tone} showLast={false} />}
       </td>
       <td key={`price-${price.key}`} className="is-num k-live-flash" data-flash={price.flash ?? undefined}>
         {row.price}

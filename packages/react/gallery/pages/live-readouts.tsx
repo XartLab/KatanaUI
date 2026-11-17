@@ -69,7 +69,7 @@ export function LiveSparklineDemo() {
   return (
     <Live id="sparkline" step={advance}>
       <div style={{ width: 240 }}>
-        <Sparkline values={state} label="实时走势" />
+        <Sparkline values={state} label="实时走势" lastLabel={state[state.length - 1]!.toFixed(2)} />
       </div>
     </Live>
   )

@@ -69,6 +69,8 @@ const INTERNAL = {
   'tone-text': 'ChangeText 与 PnlText 共用的底：方向到颜色与箭头。',
   'date-time-model': 'DateTimeInput 的解析与格式化（纯函数）。',
   'number-field-model': 'NumberInput 的解析与取整（纯函数）。',
+  'sparkline-model':
+    'Sparkline 的几何（纯函数）：断点分段、刻度、设备像素对齐、单调曲线、基准切分、最高最低、标签放左放右、悬停取点。',
   'number-expression': 'NumberInput 的算式输入：+10%、*2、100*1.5 按当前值算（纯函数，不用 eval）。',
   'shortcut-model': 'ShortcutRecorder 的规则：一次按键变成规范组合串（修饰键次序、物理键）。',
   'date-range-model': 'DateRangePicker 的预设规则：今天、本周、本月、年初至今（截至今天）与区间认预设（纯函数）。',

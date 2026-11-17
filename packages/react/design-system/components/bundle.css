@@ -10342,26 +10342,167 @@ button.k-status-item:hover {
 }
 
 .k-spark {
+  --k-spark-color: var(--ink-200);
+  --k-spark-ring: var(--bg-100);
   width: 100%;
   height: 36px;
   display: block;
   overflow: visible;
 }
 
-.k-spark polyline {
+.k-spark.is-up, .k-spark .k-spark-up {
+  --k-spark-color: var(--pnl-up);
+}
+
+.k-spark.is-down, .k-spark .k-spark-down {
+  --k-spark-color: var(--pnl-down);
+}
+
+.k-spark:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.k-spark-line {
   fill: none;
-  stroke: var(--ink-200);
-  stroke-width: 2px;
+  stroke: var(--k-spark-color);
+  stroke-width: 1.5px;
   stroke-linejoin: round;
-  vector-effect: non-scaling-stroke;
+  stroke-linecap: round;
 }
 
-.k-spark.is-up polyline {
-  stroke: var(--pnl-up);
+.k-spark-area {
+  stroke: none;
 }
 
-.k-spark.is-down polyline {
-  stroke: var(--pnl-down);
+.k-spark-stop-a {
+  stop-color: var(--k-spark-color);
+  stop-opacity: .2;
+}
+
+.k-spark-stop-b {
+  stop-color: var(--k-spark-color);
+  stop-opacity: 0;
+}
+
+.k-spark-stop-a.is-up, .k-spark-stop-b.is-up {
+  stop-color: var(--pnl-up);
+}
+
+.k-spark-stop-a.is-down, .k-spark-stop-b.is-down {
+  stop-color: var(--pnl-down);
+}
+
+.k-spark-base {
+  stroke: var(--line-200);
+  stroke-width: 1px;
+  stroke-dasharray: 2 2;
+}
+
+.k-spark-bar.is-up, .k-spark-cell.is-up {
+  fill: var(--pnl-up);
+}
+
+.k-spark-bar.is-down, .k-spark-cell.is-down {
+  fill: var(--pnl-down);
+}
+
+.k-spark-bar.is-flat, .k-spark-cell.is-flat {
+  fill: var(--ink-400);
+}
+
+.k-spark-vol {
+  fill: var(--ink-400);
+  fill-opacity: .6;
+}
+
+.k-spark-vol.is-up {
+  fill: var(--pnl-up);
+  fill-opacity: .5;
+}
+
+.k-spark-vol.is-down {
+  fill: var(--pnl-down);
+  fill-opacity: .5;
+}
+
+.k-spark-dot, .k-spark-extreme {
+  fill: var(--k-spark-color);
+  stroke: var(--k-spark-ring);
+  stroke-width: 2px;
+  paint-order: stroke;
+}
+
+.k-spark-extreme {
+  fill: var(--ink-100);
+}
+
+.k-spark-dot.is-hover {
+  stroke-width: 2px;
+}
+
+.k-spark-halo {
+  fill: var(--k-live-tone, var(--k-spark-color));
+  fill-opacity: .4;
+  pointer-events: none;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: k-spark-pulse var(--dur-flash) var(--ease-snappy);
+}
+
+.k-spark-halo[data-flash="up"] {
+  --k-live-tone: var(--pnl-up);
+}
+
+.k-spark-halo[data-flash="down"] {
+  --k-live-tone: var(--pnl-down);
+}
+
+@keyframes k-spark-pulse {
+  from {
+    opacity: 1;
+    transform: scale(0);
+  }
+
+  to {
+    opacity: 0;
+    transform: scale(1);
+  }
+}
+
+.k-spark-extremes {
+  transition: opacity var(--dur-reorder) linear;
+}
+
+.k-spark:has([data-extending]) .k-spark-extremes {
+  opacity: 0;
+}
+
+.k-spark-text {
+  fill: var(--ink-300);
+  font: var(--text-num-sm) var(--font-num-small);
+  font-variant-numeric: tabular-nums;
+  dominant-baseline: central;
+  pointer-events: none;
+}
+
+.k-spark-last {
+  fill: var(--ink-200);
+}
+
+.k-spark-cursor {
+  stroke: var(--line-200);
+  stroke-width: 1px;
+}
+
+.k-spark-tip {
+  fill: var(--lcd-bg);
+  stroke: var(--line-100);
+  stroke-width: 1px;
+}
+
+.k-spark-tip-value {
+  fill: var(--ink-100);
 }
 
 .k-spark-empty {
@@ -10926,7 +11067,7 @@ button.k-quote-card.is-link:focus-visible {
   -moz-osx-font-smoothing: auto;
 }
 
-:root:not([data-pixel-snap="off"]) :is(.k-ck-grid, .k-plot-zero, .k-ql-zero, .k-ql-cursor, .k-ridge-baseline, .k-ridge-base, .k-spark-tile-limit, .k-vs-latest), :root:not([data-pixel-snap="off"]) [class^="k-"] svg rect:not([rx]) {
+:root:not([data-pixel-snap="off"]) :is(.k-ck-grid, .k-plot-zero, .k-ql-zero, .k-ql-cursor, .k-ridge-baseline, .k-ridge-base, .k-spark-tile-limit, .k-spark-base, .k-spark-cursor, .k-spark-vol, .k-spark-bar, .k-spark-cell, .k-spark-tip, .k-vs-latest), :root:not([data-pixel-snap="off"]) [class^="k-"] svg rect:not([rx]) {
   shape-rendering: crispedges;
 }
 
@@ -18140,6 +18281,33 @@ button.k-consensus-hash:focus-visible {
   width: 96px;
 }
 
+/* 迷你图画廊：高一点的图、表格行里 96 × 22 的紧凑用法。 */
+.gal-spark-case {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.gal-spark-tall .k-spark {
+  height: 64px;
+}
+.gal-spark-table {
+  border-collapse: collapse;
+  font: var(--text-data) var(--font-sans);
+  color: var(--ink-200);
+}
+.gal-spark-table th {
+  padding: 4px 16px 4px 0;
+  text-align: left;
+  font-weight: 400;
+}
+.gal-spark-cell {
+  width: 96px;
+  padding: 4px 8px 4px 0;
+}
+.gal-spark-cell .k-spark {
+  height: 22px;
+}
+
 /* 组件里白色、黑色的透明度层：ui.css 的类里原来是裸色值，这里提成变量（值不变），换主题时从这里改。 */
 :root {
   --ds-c-2xn4aw: #0000;
@@ -18243,7 +18411,6 @@ button.k-consensus-hash:focus-visible {
   --k-rise: initial;
   --k-run: initial;
   --k-scatter-color: initial;
-  --k-spark-color: initial;
   --k-sy: initial;
   --k-text-scale: initial;
   --k-tree-level: initial;

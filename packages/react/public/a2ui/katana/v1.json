@@ -1171,7 +1171,51 @@
             "down",
             "flat"
           ],
-          "description": "Line color. Follows the change from the first to the last value when omitted."
+          "description": "Line color. Follows the last value against the baseline, or the first-to-last change without one, when omitted."
+        },
+        "variant": {
+          "type": "string",
+          "enum": [
+            "area",
+            "line",
+            "baseline",
+            "bars",
+            "winloss"
+          ],
+          "description": "Drawing style: area (line with a gradient below, the default), line, baseline (up color above the baseline, down color below), bars, or winloss (win/loss cells)."
+        },
+        "baseline": {
+          "type": "number",
+          "description": "Reference value such as the previous close. Draws a dashed line and decides the color when tone is omitted."
+        },
+        "showLast": {
+          "type": "boolean",
+          "description": "Draw a dot at the latest value. On by default for area, line and baseline."
+        },
+        "lastLabel": {
+          "type": "string",
+          "description": "Latest value text at the right end, already formatted in the UI language."
+        },
+        "showExtremes": {
+          "type": "boolean",
+          "description": "Mark the highest and the lowest value with a small dot."
+        },
+        "extremeLabels": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 2,
+          "maxItems": 2,
+          "description": "Texts beside the highest and the lowest dot, in that order, already formatted in the UI language."
+        },
+        "curve": {
+          "type": "string",
+          "enum": [
+            "linear",
+            "monotone"
+          ],
+          "description": "Curve between points: linear (default) or monotone (smooth, no overshoot)."
         },
         "weight": {
           "type": "number",

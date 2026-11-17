@@ -28873,9 +28873,9 @@
       "props": [
         {
           "name": "values",
-          "type": "readonly number[]",
+          "type": "readonly SparkValue[]",
           "required": true,
-          "description": "The values from oldest to newest; fewer than two draws a dash."
+          "description": "The values from oldest to newest; null or NaN breaks the line, and fewer than two valid values draws a dash."
         },
         {
           "name": "label",
@@ -28887,7 +28887,97 @@
           "name": "tone",
           "type": "QuoteTone",
           "required": false,
-          "description": "Color tone; follows the first-to-last change when omitted."
+          "description": "Color tone; follows the last value against the baseline, or the first-to-last change without one, when omitted."
+        },
+        {
+          "name": "variant",
+          "type": "SparklineVariant",
+          "required": false,
+          "description": "Drawing style: area (line with a gradient below, the default), line, baseline (up color above the baseline and down color below), bars, or winloss (Tufte win/loss cells)."
+        },
+        {
+          "name": "baseline",
+          "type": "number",
+          "required": false,
+          "description": "Reference value such as the previous close; draws a dashed line, and splits colors in baseline and bars (winloss defaults to 0, bars to the first value)."
+        },
+        {
+          "name": "showLast",
+          "type": "boolean",
+          "required": false,
+          "description": "Whether to draw a dot at the latest value (default true for area, line and baseline)."
+        },
+        {
+          "name": "lastLabel",
+          "type": "string",
+          "required": false,
+          "description": "Latest value text shown at the right end, already formatted by the caller; the line leaves room for it."
+        },
+        {
+          "name": "showExtremes",
+          "type": "boolean",
+          "required": false,
+          "description": "Mark the highest and lowest values with a small dot each."
+        },
+        {
+          "name": "extremeLabels",
+          "type": "readonly [string, string]",
+          "required": false,
+          "description": "Texts for the highest and the lowest dots, in that order, already formatted by the caller; placed left or right of the dot to stay inside."
+        },
+        {
+          "name": "interactive",
+          "type": "boolean",
+          "required": false,
+          "description": "Show a crosshair, a snapped dot and a readout on hover, and walk the points with the arrow keys; keep it off for one chart per table row."
+        },
+        {
+          "name": "format",
+          "type": "(value: number, index: number) => string",
+          "required": false,
+          "description": "Turns a value into its readout text; defaults to the plain number."
+        },
+        {
+          "name": "times",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "A time or date text for each value, shown before the value in the readout."
+        },
+        {
+          "name": "onHover",
+          "type": "(index: number | null) => void",
+          "required": false,
+          "description": "Called with the hovered or keyboard-selected index, or null when it leaves."
+        },
+        {
+          "name": "volumes",
+          "type": "readonly SparkValue[]",
+          "required": false,
+          "description": "Volume for each value, drawn as thin bars in the bottom quarter without covering the line."
+        },
+        {
+          "name": "volumeTone",
+          "type": "'neutral' | 'updown'",
+          "required": false,
+          "description": "Volume bar color: neutral (default) or follow the price change with the up and down colors."
+        },
+        {
+          "name": "curve",
+          "type": "SparkCurve",
+          "required": false,
+          "description": "Curve between points: linear (default) or monotone (smooth, never overshooting the data)."
+        },
+        {
+          "name": "width",
+          "type": "number",
+          "required": false,
+          "description": "Width in pixels used before the container has been measured (server render, first frame); default 200."
+        },
+        {
+          "name": "height",
+          "type": "number",
+          "required": false,
+          "description": "Height in pixels used before the container has been measured; default 36."
         },
         {
           "name": "className",
@@ -28909,9 +28999,9 @@
       "props": [
         {
           "name": "values",
-          "type": "readonly number[]",
+          "type": "readonly SparkValue[]",
           "required": true,
-          "description": "The values from oldest to newest; fewer than two draws a dash."
+          "description": "The values from oldest to newest; null or NaN breaks the line, and fewer than two valid values draws a dash."
         },
         {
           "name": "label",
@@ -28923,7 +29013,97 @@
           "name": "tone",
           "type": "QuoteTone",
           "required": false,
-          "description": "Color tone; follows the first-to-last change when omitted."
+          "description": "Color tone; follows the last value against the baseline, or the first-to-last change without one, when omitted."
+        },
+        {
+          "name": "variant",
+          "type": "SparklineVariant",
+          "required": false,
+          "description": "Drawing style: area (line with a gradient below, the default), line, baseline (up color above the baseline and down color below), bars, or winloss (Tufte win/loss cells)."
+        },
+        {
+          "name": "baseline",
+          "type": "number",
+          "required": false,
+          "description": "Reference value such as the previous close; draws a dashed line, and splits colors in baseline and bars (winloss defaults to 0, bars to the first value)."
+        },
+        {
+          "name": "showLast",
+          "type": "boolean",
+          "required": false,
+          "description": "Whether to draw a dot at the latest value (default true for area, line and baseline)."
+        },
+        {
+          "name": "lastLabel",
+          "type": "string",
+          "required": false,
+          "description": "Latest value text shown at the right end, already formatted by the caller; the line leaves room for it."
+        },
+        {
+          "name": "showExtremes",
+          "type": "boolean",
+          "required": false,
+          "description": "Mark the highest and lowest values with a small dot each."
+        },
+        {
+          "name": "extremeLabels",
+          "type": "readonly [string, string]",
+          "required": false,
+          "description": "Texts for the highest and the lowest dots, in that order, already formatted by the caller; placed left or right of the dot to stay inside."
+        },
+        {
+          "name": "interactive",
+          "type": "boolean",
+          "required": false,
+          "description": "Show a crosshair, a snapped dot and a readout on hover, and walk the points with the arrow keys; keep it off for one chart per table row."
+        },
+        {
+          "name": "format",
+          "type": "(value: number, index: number) => string",
+          "required": false,
+          "description": "Turns a value into its readout text; defaults to the plain number."
+        },
+        {
+          "name": "times",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "A time or date text for each value, shown before the value in the readout."
+        },
+        {
+          "name": "onHover",
+          "type": "(index: number | null) => void",
+          "required": false,
+          "description": "Called with the hovered or keyboard-selected index, or null when it leaves."
+        },
+        {
+          "name": "volumes",
+          "type": "readonly SparkValue[]",
+          "required": false,
+          "description": "Volume for each value, drawn as thin bars in the bottom quarter without covering the line."
+        },
+        {
+          "name": "volumeTone",
+          "type": "'neutral' | 'updown'",
+          "required": false,
+          "description": "Volume bar color: neutral (default) or follow the price change with the up and down colors."
+        },
+        {
+          "name": "curve",
+          "type": "SparkCurve",
+          "required": false,
+          "description": "Curve between points: linear (default) or monotone (smooth, never overshooting the data)."
+        },
+        {
+          "name": "width",
+          "type": "number",
+          "required": false,
+          "description": "Width in pixels used before the container has been measured (server render, first frame); default 200."
+        },
+        {
+          "name": "height",
+          "type": "number",
+          "required": false,
+          "description": "Height in pixels used before the container has been measured; default 36."
         },
         {
           "name": "className",
@@ -28938,6 +29118,11 @@
           "description": "Extra class name on the dash shown when there is no data."
         }
       ]
+    },
+    "SparklineVariant": {
+      "kind": "type",
+      "source": "src/katana/sparkline.tsx",
+      "props": []
     },
     "Splitter": {
       "kind": "component",

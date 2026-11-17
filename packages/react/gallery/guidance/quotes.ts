@@ -4,17 +4,26 @@ import type { GuidanceMap } from './types'
 
 const quotes: GuidanceMap = {
   sparkline: {
-    aliases: ['Mini chart', 'Trend line', 'Spark chart', 'Inline chart'],
+    aliases: ['Mini chart', 'Trend line', 'Spark chart', 'Inline chart', 'Symbol overview'],
     use: [
       '表格行、卡片里一眼看走势。',
       '没有空间放坐标轴的小图。',
-      '新点追加时线平滑延伸 240ms，不整条重画；换一列数直接换。',
+      '有昨收、开盘这类基准时传 baseline，涨跌色就按最后值对基准。',
+      '要逐点的涨跌或正负用 bars、winloss；趋势用默认的 area 或 line。',
+      '需要读某一点的数时开 interactive，悬停与键盘都能出读数。',
+      '新点追加时线与面积平滑延伸 240ms，末端点脉动一次；换一列数直接换。',
     ],
-    avoid: ['要读具体数值或交互用 equity-curve 或 spark-tile。', '多条线对比用 small-multiples。'],
+    avoid: [
+      '表格里一行一个时不要开 interactive，也别留末端点（行高 22px 这种）。',
+      '要完整坐标轴、缩放、多条线对比用 equity-curve 或 small-multiples。',
+      '不要把读数、标签的文字写进包里，由调用方传。',
+    ],
     a11y: [
       'svg 是 role=img，读屏名由调用方按界面语言传。',
       '没有数据时留「—」，读屏名说明没有数据。',
       '涨跌不只靠线色，旁边配价格或涨跌文字。',
+      'interactive 时 svg 可聚焦，左右键走点、Esc 退出，当前点的读数节流后由 aria-live 播报。',
+      '最高最低、最新值的字是调用方格式化好的普通文本，不靠颜色区分高低。',
     ],
   },
   'gauge-bar': {

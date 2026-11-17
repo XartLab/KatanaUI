@@ -2975,26 +2975,28 @@ for (const theme of THEMES) {
       ).toEqual([idx])
       // 共用分段：卡上不再有自己的分段控件；点墙顶的「1 年」，这面墙每张卡的走势线都变成 250 点，另一面墙不动。
       await expect(fear.getByRole('button', { name: '1 年' })).toHaveCount(0)
-      const points = (card: Locator) => card.locator('.k-spark polyline').getAttribute('points')
-      expect((await points(fear))!.split(' ')).toHaveLength(21)
+      const points = (card: Locator) => card.locator('.k-spark .k-spark-line').getAttribute('data-points')
+      expect(Number(await points(fear))).toBe(21)
       await global.getByRole('button', { name: '1 年' }).click()
       await expect(global.getByRole('button', { name: '1 年' })).toHaveAttribute('aria-pressed', 'true')
       for (const card of await global.locator('[data-slot="metric-card"]').all())
-        await expect.poll(async () => (await points(card))!.split(' ').length).toBe(250)
-      expect(
-        (await points(area.getByTestId('metric-ashare').locator('[data-slot="metric-card"]').first()))!.split(' '),
-      ).toHaveLength(21)
+        await expect.poll(async () => Number(await points(card))).toBe(250)
+      expect(Number(await points(area.getByTestId('metric-ashare').locator('[data-slot="metric-card"]').first()))).toBe(
+        21,
+      )
       // 走势线色：neutral（恐惧贪婪）不是涨跌色；inverse（VIX）与头尾涨跌相反；单位是小号灰色无衬线。
-      const strokeOf = (card: Locator) => card.locator('.k-spark polyline').evaluate((e) => getComputedStyle(e).stroke)
+      const strokeOf = (card: Locator) =>
+        card.locator('.k-spark .k-spark-line').evaluate((e) => getComputedStyle(e).stroke)
       const up = await rgba(page, await token(page, '--pnl-up'))
       const down = await rgba(page, await token(page, '--pnl-down'))
       const neutral = await rgba(page, await strokeOf(fear))
       expect(neutral).not.toEqual(up)
       expect(neutral).not.toEqual(down)
       const vix = global.locator('[data-slot="metric-card"]').nth(1)
-      const vixPts = (await points(vix))!.split(' ').map((p) => Number(p.split(',')[1]))
-      // y 向下为大：末点 y 比首点小就是涨；inverse 下涨取跌色。
-      const rose = vixPts[vixPts.length - 1]! < vixPts[0]!
+      // 线路径是 M x y L x y …：取第一个与最后一个点的 y。y 向下为大：末点 y 比首点小就是涨；inverse 下涨取跌色。
+      const vixPath = (await vix.locator('.k-spark .k-spark-line').getAttribute('d'))!
+      const vixY = [...vixPath.matchAll(/[ML]\s*(-?[\d.]+)\s+(-?[\d.]+)/g)].map((m) => Number(m[2]))
+      const rose = vixY[vixY.length - 1]! < vixY[0]!
       expect(await rgba(page, await strokeOf(vix))).toEqual(rose ? down : up)
       const unit = area.getByTestId('metric-ashare').locator('[data-slot="metric-value"] small').first()
       await expect(unit).toHaveText('只')
@@ -3004,7 +3006,7 @@ for (const theme of THEMES) {
       const empty = area.getByTestId('metric-empty').locator('[data-slot="metric-card"]')
       await expect(empty.locator('[data-slot="metric-value"]')).toHaveText('—')
       await expect(empty.locator('.k-metric-change dd')).toHaveText('—')
-      await expect(empty.locator('.k-spark polyline')).toHaveCount(0)
+      await expect(empty.locator('.k-spark-line')).toHaveCount(0)
       await expect(empty.locator('.k-spark-empty')).toHaveText('—')
     })
 
@@ -4014,16 +4016,157 @@ for (const theme of THEMES) {
       await expect(down).toHaveClass(/is-down/)
       await expect(flat).toHaveClass(/is-flat/)
       const box = (await up.boundingBox())!
-      const line = (await up.locator('polyline').boundingBox())!
-      expect(line.width, '折线铺满整宽').toBeGreaterThan(box.width - 2)
+      const line = (await up.locator('.k-spark-line').boundingBox())!
+      expect(line.width, '折线铺满整宽（两边留放末端点的几像素）').toBeGreaterThan(box.width - 10)
       expect(box.height).toBeGreaterThan(30)
-      await expect.poll(() => paint(up.locator('polyline'), 'stroke')).toEqual(await swatch(page, 'var(--pnl-up)'))
-      await expect.poll(() => paint(down.locator('polyline'), 'stroke')).toEqual(await swatch(page, 'var(--pnl-down)'))
-      await expect.poll(() => paint(flat.locator('polyline'), 'stroke')).toEqual(await swatch(page, 'var(--ink-200)'))
+      await expect.poll(() => paint(up.locator('.k-spark-line'), 'stroke')).toEqual(await swatch(page, 'var(--pnl-up)'))
+      await expect
+        .poll(() => paint(down.locator('.k-spark-line'), 'stroke'))
+        .toEqual(await swatch(page, 'var(--pnl-down)'))
+      await expect
+        .poll(() => paint(flat.locator('.k-spark-line'), 'stroke'))
+        .toEqual(await swatch(page, 'var(--ink-200)'))
       const empty = page.locator('[data-gallery-spark="empty"]').getByRole('img')
       await expect(empty).toHaveText('—')
       await expect(empty).toHaveAccessibleName('示例走势：没有数据')
       await expect(page.locator('[data-gallery-spark="empty"] svg')).toHaveCount(0)
+    })
+
+    test('迷你图：五种画法都渲染；按真实像素画，viewBox 的宽高等于容器的宽高，不拉伸', async ({ page }) => {
+      await open(page, theme, 'sparkline')
+      const of = (id: string) => page.locator(`[data-gallery-spark="${id}"] svg`)
+      await expect(of('variant-area').locator('.k-spark-area')).toHaveCount(1)
+      await expect(of('variant-area').locator('.k-spark-line')).toHaveCount(1)
+      await expect(of('variant-line').locator('.k-spark-line')).toHaveCount(1)
+      await expect(of('variant-line').locator('.k-spark-area')).toHaveCount(0)
+      // baseline：以基准切成上下两半，各有一份线与面积，上半涨色、下半跌色。
+      await expect(of('variant-baseline').locator('clipPath')).toHaveCount(2)
+      await expect(of('variant-baseline').locator('.k-spark-up .k-spark-line')).toHaveCount(1)
+      await expect(of('variant-baseline').locator('.k-spark-down .k-spark-line')).toHaveCount(1)
+      await expect
+        .poll(() => paint(of('variant-baseline').locator('.k-spark-up .k-spark-line'), 'stroke'))
+        .toEqual(await swatch(page, 'var(--pnl-up)'))
+      await expect
+        .poll(() => paint(of('variant-baseline').locator('.k-spark-down .k-spark-line'), 'stroke'))
+        .toEqual(await swatch(page, 'var(--pnl-down)'))
+      expect(await of('variant-bars').locator('.k-spark-bar').count()).toBeGreaterThan(20)
+      expect(await of('variant-winloss').locator('.k-spark-cell').count()).toBe(24)
+      for (const id of [
+        'variant-area',
+        'variant-line',
+        'variant-baseline',
+        'variant-bars',
+        'variant-winloss',
+        'volume',
+        'table',
+      ]) {
+        const svg = id === 'table' ? page.locator('[data-gallery-spark="table"] svg').first() : of(id)
+        const size = await svg.evaluate((el) => {
+          const box = el.getBoundingClientRect()
+          const [, , vw, vh] = (el.getAttribute('viewBox') ?? '').split(' ').map(Number)
+          return { vw, vh, w: box.width, h: box.height, par: el.getAttribute('preserveAspectRatio') }
+        })
+        expect(Math.abs(size.vw! - size.w), `${id} 宽`).toBeLessThan(1)
+        expect(Math.abs(size.vh! - size.h), `${id} 高`).toBeLessThan(1)
+        expect(size.par, `${id} 不用 none 拉伸`).not.toBe('none')
+      }
+      // 线宽 1.5px、虚线基准 2 2。
+      expect(
+        await of('variant-line')
+          .locator('.k-spark-line')
+          .evaluate((el) => getComputedStyle(el).strokeWidth),
+      ).toBe('1.5px')
+      const base = of('base-up').locator('.k-spark-base')
+      expect(await base.evaluate((el) => getComputedStyle(el).strokeDasharray)).toBe('2px, 2px')
+      await expect.poll(() => paint(base, 'stroke')).toEqual(await swatch(page, 'var(--line-200)'))
+    })
+
+    test('迷你图：基准线定涨跌色；最高最低与最新值带标签；断点断开；成交量不压线', async ({ page }) => {
+      await open(page, theme, 'sparkline')
+      const of = (id: string) => page.locator(`[data-gallery-spark="${id}"] svg`)
+      await expect(of('base-up')).toHaveClass(/is-up/)
+      await expect(of('base-down')).toHaveClass(/is-down/)
+      const ex = of('extremes')
+      await expect(ex.locator('.k-spark-extreme')).toHaveCount(2)
+      await expect(ex.locator('[data-extreme="max"] text')).toHaveText(/^\d+\.\d\d$/)
+      await expect(ex.locator('.k-spark-last')).toHaveText(/^\d+\.\d\d$/)
+      // 线收在最新值文字的左边，不压字。
+      const lastText = (await ex.locator('.k-spark-last').boundingBox())!
+      const lineBox = (await ex.locator('.k-spark-line').boundingBox())!
+      expect(lineBox.x + lineBox.width).toBeLessThan(lastText.x)
+      // 午休：线有两段（两个 M），面积也两块；停牌后的末端点取最后一个有效值。
+      expect(((await of('gap-lunch').locator('.k-spark-line').getAttribute('d')) ?? '').match(/M/g)).toHaveLength(2)
+      expect(((await of('gap-lunch').locator('.k-spark-area').getAttribute('d')) ?? '').match(/Z/g)).toHaveLength(2)
+      const halt = of('gap-halt')
+      const haltLine = (await halt.locator('.k-spark-line').boundingBox())!
+      const haltBox = (await halt.boundingBox())!
+      expect(haltLine.width, '停牌后线只画到一半多').toBeLessThan(haltBox.width * 0.75)
+      const haltDot = await halt.locator('.k-spark-dot').evaluate((el) => Number(el.getAttribute('cx')))
+      expect(haltDot).toBeLessThan(haltBox.width * 0.75)
+      // 成交量：量柱在底部四分之一里，价格线在量柱之上。
+      const vol = of('volume')
+      const volBars = vol.locator('.k-spark-vol')
+      expect(await volBars.count()).toBeGreaterThan(20)
+      const volTop = Math.min(...(await volBars.evaluateAll((els) => els.map((el) => el.getBoundingClientRect().top))))
+      const lineBottom = (await vol.locator('.k-spark-line').boundingBox())!
+      expect(lineBottom.y + lineBottom.height).toBeLessThanOrEqual(volTop + 1)
+      expect(volTop).toBeGreaterThan((await vol.boundingBox())!.y + (await vol.boundingBox())!.height * 0.7)
+      await expect(of('volume-updown').locator('.k-spark-vol.is-up').first()).toBeAttached()
+      await expect(of('curve-monotone').locator('.k-spark-line')).toHaveAttribute('d', /C/)
+      await expect(of('curve-linear').locator('.k-spark-line')).not.toHaveAttribute('d', /C/)
+    })
+
+    test('迷你图（interactive）：悬停出十字线、吸附圆点与读数；键盘左右键走点，Esc 退出，读屏播报当前点', async ({
+      page,
+    }) => {
+      await open(page, theme, 'sparkline')
+      const svg = page.locator('[data-gallery-spark="hover"] svg')
+      const cursor = svg.locator('.k-spark-cursor')
+      await expect(cursor).toHaveCount(0)
+      const box = (await svg.boundingBox())!
+      await page.mouse.move(box.x + box.width * 0.5, box.y + box.height * 0.5)
+      await expect(cursor).toHaveCount(1)
+      await expect(svg.locator('.k-spark-dot.is-hover')).toHaveCount(1)
+      const tip = svg.locator('.k-spark-tip-value')
+      await expect(tip).toHaveText(/^\d+\.\d\d$/)
+      await expect(svg.locator('.k-spark-tip-time')).toHaveText(/^\d\d:\d\d$/)
+      // 十字线贴着吸附点（横向差不到一个点距），读数框不出图。
+      const cx = Number(await cursor.getAttribute('x1'))
+      const dotX = Number(await svg.locator('.k-spark-dot.is-hover').getAttribute('cx'))
+      expect(Math.abs(cx - dotX)).toBeLessThan(1)
+      const tipBox = (await svg.locator('.k-spark-tip').boundingBox())!
+      expect(tipBox.x).toBeGreaterThanOrEqual(box.x - 1)
+      expect(tipBox.x + tipBox.width).toBeLessThanOrEqual(box.x + box.width + 1)
+      // 贴右边：读数翻到十字线左边。
+      await page.mouse.move(box.x + box.width - 4, box.y + box.height * 0.5)
+      await expect
+        .poll(
+          async () =>
+            (await svg.locator('.k-spark-tip').boundingBox())!.x +
+            (await svg.locator('.k-spark-tip').boundingBox())!.width,
+        )
+        .toBeLessThanOrEqual(box.x + box.width + 1)
+      await page.mouse.move(box.x - 40, box.y - 40)
+      await expect(cursor).toHaveCount(0)
+      // 键盘。
+      await svg.focus()
+      await expect(svg).toHaveAttribute('tabindex', '0')
+      await page.keyboard.press('Home')
+      await expect(svg.locator('.k-spark-tip-time')).toHaveText('09:00')
+      await page.keyboard.press('ArrowRight')
+      await expect(svg.locator('.k-spark-tip-time')).toHaveText('09:05')
+      await page.keyboard.press('ArrowLeft')
+      await expect(svg.locator('.k-spark-tip-time')).toHaveText('09:00')
+      await page.keyboard.press('ArrowLeft')
+      await expect(svg.locator('.k-spark-tip-time')).toHaveText('09:00')
+      const live = page.locator('[data-gallery-spark="hover"] [aria-live="polite"]')
+      await expect(live).toContainText('09:00')
+      await page.keyboard.press('End')
+      await expect(svg.locator('.k-spark-tip-time')).toHaveText('12:55')
+      await page.keyboard.press('Escape')
+      await expect(cursor).toHaveCount(0)
+      await expect(live).toHaveText('', { timeout: 2000 })
+      await expect(page.locator('[data-gallery-spark="hover"] .gal-note')).toContainText('Tab')
     })
 
     test('进度条：填充占轨道的 72%，取不到时不画填充、数换成弱色', async ({ page }) => {
@@ -6435,9 +6578,8 @@ test('通知铃刷新（NotificationBell）：新通知来时铃的底色闪、�
 
 // ---- 读数与图表的实时刷新（MetricCard、QuoteCard、PriceTag、SparkTile、KeyStats、StatusBar、Lcd、Led、Sparkline、EquityCurve、Treemap、UptimeBars）：window.__liveStep 步进，推进后等两个 rAF 再断言 ----
 const liveDemo = (page: Page, id: string) => page.locator(`[data-gallery-live="${id}"]`)
-/** 折线 polyline 的点数。 */
-const pointCount = (line: Locator) =>
-  line.evaluate((el) => (el.getAttribute('points') ?? '').trim().split(/\s+/).length)
+/** 折线（path）的有效点数：组件把它写在 data-points 上。 */
+const pointCount = (line: Locator) => line.evaluate((el) => Number(el.getAttribute('data-points')))
 
 test('读数刷新（MetricCard）：大号数值变了闪涨跌色，走势线新点进来时在延伸过场里，播完摘掉标记', async ({ page }) => {
   await open(page, THEMES[0], 'metric-card')
@@ -6445,7 +6587,7 @@ test('读数刷新（MetricCard）：大号数值变了闪涨跌色，走势线�
   const card = demo.locator('[data-slot="metric-card"]').first()
   const value = card.locator('[data-slot="metric-value"] .k-live-flash')
   await expect(value).not.toHaveAttribute('data-flash', /.+/)
-  const line = card.locator('.k-spark polyline')
+  const line = card.locator('.k-spark .k-spark-line')
   await expect(line).not.toHaveAttribute('data-extending', /.*/)
   await watchAttr(line, 'data-extending')
   await liveStep(page)
@@ -6459,7 +6601,7 @@ test('读数刷新（QuoteCard、PriceTag）：价格变了闪涨跌色，迷你
   await open(page, THEMES[0], 'quote-card')
   const demo = liveDemo(page, 'quote')
   const price = demo.locator('.k-quote-price .k-live-flash')
-  const line = demo.locator('.k-quote-card .k-spark polyline')
+  const line = demo.locator('.k-quote-card .k-spark .k-spark-line')
   const before = await pointCount(line)
   await expect(price).not.toHaveAttribute('data-flash', /.+/)
   await watchAttr(line, 'data-extending')
@@ -6495,13 +6637,24 @@ test('状态栏刷新（StatusBar）：行情断线整项闪跌红警示，重�
 
 test('走势线刷新（Sparkline）：新点追加，点数加一，线走延伸过场、播完点数仍是加一后的', async ({ page }) => {
   await open(page, THEMES[0], 'sparkline')
-  const line = liveDemo(page, 'sparkline').locator('.k-spark polyline')
+  const line = liveDemo(page, 'sparkline').locator('.k-spark .k-spark-line')
   const before = await pointCount(line)
+  const demo = liveDemo(page, 'sparkline')
+  await expect(demo.locator('.k-spark-halo')).toHaveCount(0)
   await watchAttr(line, 'data-extending')
   await liveStep(page)
   await expect.poll(() => sawAttr(line)).toBe(true)
+  // 末端点的光晕脉动一次：从 0 放大淡出（k-spark-pulse），不是闪底色；面积与末端点跟着线一起延伸。
+  const halo = demo.locator('.k-spark-halo')
+  await expect(halo).toHaveAttribute('data-flash', /^(up|down)$/)
+  expect(await halo.evaluate((el) => getComputedStyle(el).animationName)).toBe('k-spark-pulse')
+  await expect(demo.locator('.k-spark-dot')).toHaveCount(1)
   await expect(line).not.toHaveAttribute('data-extending', /.*/, { timeout: 2000 })
   expect(await pointCount(line)).toBe(before + 1)
+  const area = (await demo.locator('.k-spark-area').getAttribute('d'))!
+  const lineD = (await line.getAttribute('d'))!
+  expect(area.startsWith(lineD), '面积的上沿就是线').toBe(true)
+  await expect(halo).toHaveCount(0, { timeout: 2000 })
   // 攒到窗口上限（30 个点）后窗口左移：点数不再增加，仍然走过场。
   await liveStep(page, 20)
   await expect.poll(() => pointCount(line)).toBe(30)

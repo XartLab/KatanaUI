@@ -7,6 +7,12 @@ import { LIVE_REORDER_MS } from './live.ts'
 
 export type LinePoint = readonly [number, number]
 
+/** 跟着主线一起走过场的元素（面积、末端点、分色的另一半）：每一帧把当前的点交给 write 写进元素。 */
+export type LineFollower = {
+  ref: RefObject<SVGElement | null>
+  write: (el: SVGElement, points: readonly LinePoint[]) => void
+}
+
 const sameRun = (a: readonly number[], b: readonly number[]) => a.length === b.length && a.every((v, i) => v === b[i])
 
 /** 新数据相对旧数据怎么变的：append 是末尾多了一点，slide 是第一个点出窗、末尾进一个点，其余（换区间、重算）是 null。纯函数。 */
@@ -45,6 +51,7 @@ export function easeOf(css: string): (t: number) => number {
 /**
  * 在 el 的 attr（polyline 的 points 或 path 的 d）上做延伸过场：values 是这条线的原始数（判断是不是追加），coords 是已经算好的坐标，format 把坐标写成属性值。
  * 过场期间元素带 data-extending（样式与测试都能认）；有非有限坐标（断开的线）时直接换。
+ * followers：面积、末端点这类要与线同步走的元素，每帧一起写，保证同一帧里不错位。
  */
 export function useLineExtend(
   ref: RefObject<SVGElement | null>,
@@ -52,6 +59,7 @@ export function useLineExtend(
   values: readonly number[],
   coords: readonly LinePoint[],
   format: (points: readonly LinePoint[]) => string,
+  followers: readonly LineFollower[] = [],
 ): void {
   const prev = useRef<{ values: readonly number[]; sig: string } | null>(null)
   const shown = useRef<readonly LinePoint[]>(coords)
@@ -80,11 +88,13 @@ export function useLineExtend(
     const started = performance.now()
     el.setAttribute('data-extending', '')
     el.setAttribute(attr, format(from))
+    for (const follower of followers) if (follower.ref.current) follower.write(follower.ref.current, from)
     shown.current = from
     const step = (now: number) => {
       const t = Math.min(1, (now - started) / LIVE_REORDER_MS)
       const at = t >= 1 ? coords : lerpPoints(from, coords, ease(t))
       el.setAttribute(attr, format(at))
+      for (const follower of followers) if (follower.ref.current) follower.write(follower.ref.current, at)
       shown.current = at
       if (t < 1) frame.current = requestAnimationFrame(step)
       else el.removeAttribute('data-extending')
