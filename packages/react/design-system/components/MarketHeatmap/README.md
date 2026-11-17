@@ -12,7 +12,7 @@
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `items` | `HeatmapItem[]` | — | { code, name, group?, logo?, price?, size: Record<键, number>, value: Record<键, number \| null> }。size 里不是正数的格子不画；value 是 null 画成灰（没有数）；没有 group 的品种归到 labels.other，所有品种都没有 group 就不分组、也不出视图切换。 |
+| `items` | `HeatmapItem[]` | — | { symbol, name, group?, logo?, price?, size: Record<键, number>, value: Record<键, number \| null> }（旧名 code 留一个版本，@deprecated）。size 里不是正数的格子不画；value 是 null 画成灰（没有数）；没有 group 的品种归到 labels.other，所有品种都没有 group 就不分组、也不出视图切换。 |
 | `sizeBy` | `HeatmapSizeBy[]` | — | 大小指标：{ key, label, equal?, format? }。key 对 item.size 的键；equal 为真是等大，不读 size；format 不给用 formatVolume。 |
 | `colorBy` | `HeatmapColorBy[]` | — | 着色指标：{ key, label, unit?, digits?, format?, step? }。key 对 item.value 的键。step 是一档的宽（指标的单位），不给就按这批值的最大绝对值除以 3 再向上取到好数，载入与切指标时重算；写 1 就是 ±3%。 |
 | `labels` | `MarketHeatmapLabels` | — | 工具条、面包屑、汇总读数、悬停卡片、图例读屏名、空态的文字，由调用方传。 |
@@ -21,7 +21,7 @@
 | `scheme` | `'classic' \| 'mono'` | `'classic'` | 配色。classic 涨跌色（跟 data-updown 互换）加中性灰；mono 同一灰阶从暗到亮。色盲友好第二步做。 |
 | `formatPrice` | `(value: number) => string` | — | 悬停卡片上的价格写法；不给写 2 位小数。 |
 | `selected` | `string \| null` | — | 选中的代码；选中的格子画 2px 白色内圈。 |
-| `onSelect` | `(code: string) => void` | — | 点格子，或焦点在格子上按 Enter / Space。 |
+| `onSelect` | `(symbol: string) => void` | — | 点格子，或焦点在格子上按 Enter / Space。 |
 | `cellActions` | `(item: HeatmapItem) => RowAction[]` | — | 格子的右键菜单（#23，一般传 symbolMenu(...)）：右键、菜单键、Shift+F10 出同一份品种菜单。格子小，不画悬停按钮。读屏名取 labels.cellMenu（可选）。不传就没有。 |
 | `labels.display` | `HeatmapDisplayLabels` | — | 给了，工具条多三个显示开关（照 TradingView 热图，主会话 2026-11-15 实测）：Logo 开关、标题（无 / 代码 / 全名）、格内数值（无 / 价格 / 当前大小指标的值 / 着色指标的读数）。不给格子照旧。 |
 | `labels.fullscreen` | `string` | — | 给了，工具条最右出全屏钮（容器 requestFullscreen），字是读屏名与提示。 |
@@ -79,7 +79,7 @@ function makeStocks(): HeatmapItem[] {
       const cap = 1.2e10 * Math.exp(rand() * 3.6) * (g === 2 ? 3 : 1)
       const day = tilt + (rand() + rand() + rand() - 1.5) * 4
       out.push({
-        code: String(600000 + n * 7).padStart(6, '0'),
+        symbol: String(600000 + n * 7).padStart(6, '0'),
         name: `示例${mark}${HEAT_ORDINALS[i]}`,
         group: industry,
         price: 4 + rand() * 180,
@@ -130,7 +130,7 @@ function makeCoins(): HeatmapItem[] {
     const cap = 6e11 * Math.exp(-i * 0.28) * (0.7 + rand() * 0.6)
     const day = (rand() + rand() + rand() - 1.5) * 7
     return {
-      code,
+      symbol: code,
       name: `示例币 ${String(i + 1).padStart(2, '0')}`,
       price: 0.02 + rand() * 4000,
       size: { cap, turnover: cap * (0.02 + rand() * 0.12) },
