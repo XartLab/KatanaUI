@@ -14,7 +14,7 @@
 | `rows` | `RatingRow[]` | — | 指标明细：{ key, name, group?（对 groups 的 key，按组分节）, reading?（写好的文字，没有写「—」）, verdict }；不给就只画仪表。 |
 | `labels` | `TechnicalRatingLabels` | — | 五档名（从卖到买）、卖 / 中性 / 买、指标总数文字、列名、周期控件与整件的读屏名、空态文字。 |
 | `primary` | `string` | — | 放大居中的那一组的 key；不给取中间那一组。窄于 440px 时它独占一行。 |
-| `timeframes / timeframe / onTimeframeChange` | `TechnicalRatingTimeframe[] / string / (value) => void` | — | 时间周期分段控件的选项、当前值与回调；不给 timeframes 就没有这一条。切周期后传新的 groups 与 rows。 |
+| `timeframes / value / onValueChange` | `TechnicalRatingTimeframe[] / string / (value) => void` | — | 时间周期分段控件的选项、当前值与回调（旧名 timeframe / onTimeframeChange）；不给 timeframes 就没有这一条。切周期后传新的 groups 与 rows。 |
 | `disclaimer` | `ReactNode` | — | 免责一句，画在仪表与明细之间；不给就不画。 |
 | `pivots` | `PivotTable` | — | { title, columns: string[], rows: { key, label, values: (string \| null)[] }[] }；整宽的枢轴点表，放在明细表下面；值由调用方算好，缺的传 null 画「—」。不给就不画。 |
 
@@ -30,7 +30,7 @@ import {
   type RatingRow,
   type RatingVerdict,
   type TechnicalRatingLabels,
-} from '@katana-ui/react/quant'
+} from '@katana-ui/react/quotes'
 
 function seeded(seed: number) {
   let state = seed >>> 0
@@ -188,8 +188,8 @@ export function TechnicalRatingUsage() {
             labels={RATING_LABELS}
             primary="all"
             timeframes={RATING_TIMEFRAMES}
-            timeframe={frame}
-            onTimeframeChange={setFrame}
+            value={frame}
+            onValueChange={setFrame}
             disclaimer="评级只是指标读数的汇总，不是买卖建议。"
           />
         </PanelFrameBody>

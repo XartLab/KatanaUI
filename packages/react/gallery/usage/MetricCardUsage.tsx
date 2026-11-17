@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 import { PanelFrame, PanelFrameBody, PanelFrameHeader } from '../../src/blocks'
-import { MetricCard, MetricCardGrid, type MetricChange, type MetricRange, type MetricStage } from '../../src/quant'
+import { MetricCard, MetricCardGrid, type MetricChange, type MetricRange, type MetricStage } from '../../src/quotes'
 
 function walk(seed: number, start: number, step: number, lo: number, hi: number, n = 250): number[] {
   let state = seed

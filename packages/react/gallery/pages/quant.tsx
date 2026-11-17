@@ -737,8 +737,8 @@ export function TechnicalRatingDemo() {
               primary="all"
               pivots={pivots}
               timeframes={RATING_TIMEFRAMES}
-              timeframe={frame}
-              onTimeframeChange={setFrame}
+              value={frame}
+              onValueChange={setFrame}
               disclaimer="Ratings only summarise indicator readings; they are not trading advice."
             />
           </PanelFrameBody>

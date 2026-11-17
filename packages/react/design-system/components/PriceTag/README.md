@@ -26,10 +26,18 @@
 
 ```tsx
 // SPDX-License-Identifier: MIT
-import { PriceTag } from '@katana-ui/react'
+import { formatPrice } from '@katana-ui/react/quant'
+import { PriceTag } from '@katana-ui/react/quotes'
 
 export function PriceTagUsage() {
-  return <PriceTag name="BTCUSDT" price="106,977.4" change="+1.20%" tone="up" />
+  return (
+    <PriceTag
+      name="BTCUSDT"
+      last={106977.4}
+      changePct={1.2}
+      formatPrice={(value) => formatPrice(value, { tick: 0.1 })}
+    />
+  )
 }
 ```
 

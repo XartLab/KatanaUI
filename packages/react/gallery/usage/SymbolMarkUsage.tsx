@@ -8,15 +8,15 @@ const SAMPLE_MARK_SRC = `data:image/svg+xml;utf8,${encodeURIComponent(
 export function SymbolMarkUsage() {
   return (
     <>
-      <SymbolMark code="AAPL" name="Apple" />
-      <SymbolMark code="600519" name="贵州茅台" />
-      <SymbolMark code="00700" name="腾讯控股" />
-      <SymbolMark code="BTCUSDT" name="Bitcoin" />
+      <SymbolMark symbol="AAPL" name="Apple" />
+      <SymbolMark symbol="600519" name="贵州茅台" />
+      <SymbolMark symbol="00700" name="腾讯控股" />
+      <SymbolMark symbol="BTCUSDT" name="Bitcoin" />
 
-      <SymbolMark code="BTC" name="Bitcoin" src={SAMPLE_MARK_SRC} />
-      <SymbolMark code="BTC" name="Bitcoin" src={SAMPLE_MARK_SRC} size={28} />
+      <SymbolMark symbol="BTC" name="Bitcoin" src={SAMPLE_MARK_SRC} />
+      <SymbolMark symbol="BTC" name="Bitcoin" src={SAMPLE_MARK_SRC} size="md" />
 
-      <SymbolMark code="ETH" name="Ethereum" src="data:image/png;base64,broken" />
+      <SymbolMark symbol="ETH" name="Ethereum" src="data:image/png;base64,broken" />
     </>
   )
 }

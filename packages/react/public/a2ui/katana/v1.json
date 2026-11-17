@@ -6184,7 +6184,7 @@
           "maxItems": 12,
           "description": "The periods the user can switch between. Omit for no switch."
         },
-        "timeframe": {
+        "value": {
           "type": "string",
           "description": "The current period value. Defaults to the first one."
         },
@@ -6287,7 +6287,7 @@
           "additionalProperties": false,
           "description": "All visible and screen-reader text, in the language of the user."
         },
-        "onTimeframeChange": {
+        "onValueChange": {
           "anyOf": [
             {
               "type": "object",

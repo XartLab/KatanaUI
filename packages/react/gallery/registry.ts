@@ -1375,9 +1375,9 @@ export const PAGES: readonly DocPage[] = [
             desc: '放大居中的那一组的 key；不给取中间那一组。窄于 440px 时它独占一行。',
           },
           {
-            name: 'timeframes / timeframe / onTimeframeChange',
+            name: 'timeframes / value / onValueChange',
             type: 'TechnicalRatingTimeframe[] / string / (value) => void',
-            desc: '时间周期分段控件的选项、当前值与回调；不给 timeframes 就没有这一条。切周期后传新的 groups 与 rows。',
+            desc: '时间周期分段控件的选项、当前值与回调（旧名 timeframe / onTimeframeChange）；不给 timeframes 就没有这一条。切周期后传新的 groups 与 rows。',
           },
           { name: 'disclaimer', type: 'ReactNode', desc: '免责一句，画在仪表与明细之间；不给就不画。' },
           {

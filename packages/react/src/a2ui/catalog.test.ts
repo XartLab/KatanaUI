@@ -216,7 +216,7 @@ const EXAMPLES: Record<string, Record<string, unknown>> = {
       { value: '1d', label: '1d' },
     ],
     labels: wordsOf('KatanaTechnicalRating'),
-    onTimeframeChange: { event: { name: 'timeframe.change' } },
+    onValueChange: { event: { name: 'timeframe.change' } },
   },
   KatanaWatchlist: {
     rows: [{ id: 'a', symbol: 'ACME', last: 12.34, change: 0.2, changePct: 1.6 }],

@@ -32950,19 +32950,31 @@
           "name": "timeframes",
           "type": "readonly TechnicalRatingTimeframe[]",
           "required": false,
-          "description": ""
+          "description": "Timeframe choices of the switch above the gauges; no switch when omitted."
+        },
+        {
+          "name": "value",
+          "type": "string",
+          "required": false,
+          "description": "Selected timeframe value (controlled); the first one when omitted."
+        },
+        {
+          "name": "onValueChange",
+          "type": "(value: string) => void",
+          "required": false,
+          "description": "Called with the timeframe value when the switch changes."
         },
         {
           "name": "timeframe",
           "type": "string",
           "required": false,
-          "description": ""
+          "description": "Deprecated: use value."
         },
         {
           "name": "onTimeframeChange",
           "type": "(value: string) => void",
           "required": false,
-          "description": ""
+          "description": "Deprecated: use onValueChange."
         },
         {
           "name": "disclaimer",
@@ -33064,19 +33076,31 @@
           "name": "timeframes",
           "type": "readonly TechnicalRatingTimeframe[]",
           "required": false,
-          "description": ""
+          "description": "Timeframe choices of the switch above the gauges; no switch when omitted."
+        },
+        {
+          "name": "value",
+          "type": "string",
+          "required": false,
+          "description": "Selected timeframe value (controlled); the first one when omitted."
+        },
+        {
+          "name": "onValueChange",
+          "type": "(value: string) => void",
+          "required": false,
+          "description": "Called with the timeframe value when the switch changes."
         },
         {
           "name": "timeframe",
           "type": "string",
           "required": false,
-          "description": ""
+          "description": "Deprecated: use value."
         },
         {
           "name": "onTimeframeChange",
           "type": "(value: string) => void",
           "required": false,
-          "description": ""
+          "description": "Deprecated: use onValueChange."
         },
         {
           "name": "disclaimer",

@@ -37,7 +37,7 @@
 ```tsx
 // SPDX-License-Identifier: MIT
 import { PanelFrame, PanelFrameBody, PanelFrameHeader } from '@katana-ui/react/blocks'
-import { MetricCard, MetricCardGrid, type MetricChange, type MetricRange, type MetricStage } from '@katana-ui/react/quant'
+import { MetricCard, MetricCardGrid, type MetricChange, type MetricRange, type MetricStage } from '@katana-ui/react/quotes'
 
 function walk(seed: number, start: number, step: number, lo: number, hi: number, n = 250): number[] {
   let state = seed

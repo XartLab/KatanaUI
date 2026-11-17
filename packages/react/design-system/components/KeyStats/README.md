@@ -19,7 +19,7 @@
 
 ```tsx
 // SPDX-License-Identifier: MIT
-import { KeyStats } from '@katana-ui/react/quant'
+import { KeyStats } from '@katana-ui/react/quotes'
 
 export function KeyStatsUsage() {
   return (
@@ -27,12 +27,12 @@ export function KeyStatsUsage() {
       <KeyStats
         title="Key stats"
         onTitle={() => undefined}
-        onItem={() => undefined}
+        onSelect={() => undefined}
         items={[
-          { key: 'cap', label: 'Market cap', value: '3.41T', unit: 'USD', badge: 'Mega cap' },
-          { key: 'pe', label: 'Price to earnings (P/E TTM)', value: '31.20' },
-          { key: 'eps', label: 'Basic EPS (TTM)', value: '6.57', unit: 'USD' },
-          { key: 'beta', label: 'Beta (1Y)', value: '—' },
+          { id: 'cap', label: 'Market cap', value: '3.41T', unit: 'USD', badge: 'Mega cap' },
+          { id: 'pe', label: 'Price to earnings (P/E TTM)', value: '31.20' },
+          { id: 'eps', label: 'Basic EPS (TTM)', value: '6.57', unit: 'USD' },
+          { id: 'beta', label: 'Beta (1Y)', value: '—' },
         ]}
       />
     </div>

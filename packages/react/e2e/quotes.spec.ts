@@ -57,7 +57,7 @@ test.describe('Treemap 字色对比度（已知 a11y 条目已修）', () => {
 test.describe('SymbolMark 品种徽标', () => {
   test('sm 18px 字号 12、md 28px 字号 16；读屏名取 name；字号不内联', async ({ page }) => {
     await open(page, 'graphite', 'symbol-mark')
-    const apple = page.getByRole('img', { name: 'Apple' })
+    const apple = page.locator('[data-gallery="symbol-mark"]').getByRole('img', { name: 'Apple' }).first()
     await expect(apple).toBeVisible()
     await expect(apple).toHaveAttribute('data-size', 'sm')
     expect(await apple.evaluate((el) => [el.getBoundingClientRect().width, getComputedStyle(el).fontSize])).toEqual([
@@ -71,7 +71,9 @@ test.describe('SymbolMark 品种徽标', () => {
       '16px',
     ])
     // 没有拉丁字母的代码取名称首字。
-    await expect(page.getByRole('img', { name: '贵州茅台' })).toContainText('贵')
+    await expect(
+      page.locator('[data-gallery="symbol-mark"]').getByRole('img', { name: '贵州茅台' }).first(),
+    ).toContainText('贵')
   })
 })
 
@@ -80,7 +82,11 @@ test.describe('RatingText 五档评级', () => {
     await open(page, 'graphite', 'rating-text')
     const root = page.locator('[data-gallery="rating-text"]')
     const color = (name: string) =>
-      root.getByText(name, { exact: true }).evaluate((el) => getComputedStyle(el.closest('span') ?? el).color)
+      root
+        .locator('[data-slot="rating-text"]')
+        .filter({ hasText: new RegExp(`^${name}$`) })
+        .first()
+        .evaluate((el) => getComputedStyle(el).color)
     const swatch = (css: string) =>
       page.evaluate((value) => {
         const probe = document.createElement('i')
@@ -95,12 +101,14 @@ test.describe('RatingText 五档评级', () => {
     expect(await color('中性')).not.toBe(await swatch('var(--pnl-up)'))
     expect(await color('中性')).not.toBe(await swatch('var(--pnl-down)'))
     // 方向不只靠颜色：每档都有图标。
-    await expect(root.locator('svg')).toHaveCount(5)
+    await expect(root.locator('[data-slot="rating-text"] svg')).toHaveCount(
+      await root.locator('[data-slot="rating-text"]').count(),
+    )
   })
 })
 
 test.describe('RowActions 行快捷操作', () => {
-  test('悬停或 Tab 进行里按钮条浮出；点按钮执行动作；右键出同一份菜单', async ({ page }) => {
+  test('悬停或 Tab 进行里按钮条浮出；点按钮、键盘 Enter 都执行动作', async ({ page }) => {
     await open(page, 'graphite', 'row-actions')
     const rows = page.getByTestId('row-actions-list').locator('li')
     await expect(rows).toHaveCount(3)

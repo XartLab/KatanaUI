@@ -19,7 +19,7 @@
 
 ```tsx
 // SPDX-License-Identifier: MIT
-import { RatingText } from '@katana-ui/react/quant'
+import { RatingText } from '@katana-ui/react/quotes'
 
 export function RatingTextUsage() {
   return (

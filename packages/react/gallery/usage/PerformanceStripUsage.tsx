@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: MIT
 import { useState } from 'react'
-import { PerformanceStrip } from '../../src/quant'
+import { PerformanceStrip } from '../../src/quotes'
 
 const ITEMS = [
-  { key: '1d', label: '1 day', change: 0.62 },
-  { key: '1m', label: '1 month', change: 3.18 },
-  { key: '6m', label: '6 months', change: -4.07 },
-  { key: '1y', label: '1 year', change: 27.5 },
-  { key: '5y', label: '5 years', change: 312.9 },
+  { id: '1d', label: '1 day', change: 0.62 },
+  { id: '1m', label: '1 month', change: 3.18 },
+  { id: '6m', label: '6 months', change: -4.07 },
+  { id: '1y', label: '1 year', change: 27.5 },
+  { id: '5y', label: '5 years', change: 312.9 },
 ]
 
 export function PerformanceStripUsage() {

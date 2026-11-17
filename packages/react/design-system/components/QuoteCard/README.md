@@ -43,10 +43,12 @@ items 是 QuoteCard 的属性加 id；每张卡用小号。
 
 ```tsx
 // SPDX-License-Identifier: MIT
-import { QuoteCard } from '@katana-ui/react'
+import { QuoteCard, type QuoteRow } from '@katana-ui/react/quotes'
+
+const ROW: QuoteRow = { id: 'a', symbol: 'AAA', name: 'Alpha', last: 11.8, change: 1.8, changePct: 18 }
 
 export function QuoteCardUsage() {
-  return <QuoteCard name="Alpha" symbol="AAA" price="11.80" change="+1.80" percent="+18.00%" tone="up" />
+  return <QuoteCard {...ROW} />
 }
 ```
 
