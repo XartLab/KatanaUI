@@ -911,6 +911,33 @@ export const PAGES: readonly DocPage[] = [
     keys: [['Tab', '10 秒后的重试按钮可聚焦；Enter / Space 触发']],
   },
   {
+    id: 'measured-skeleton',
+    group: 'feedback',
+    cardHeight: 340,
+    title: 'MeasuredSkeleton 量出来的骨架',
+    summary:
+      '卡片、文章这类形状复杂的加载占位：用真组件加示例数据在不可见层排一次版，量出每行文字、每张图、每个控件的位置再画骨架，内容到了位置不动。外观与 Skeleton 同色、不闪不脉冲。',
+    exports: ['MeasuredSkeleton'],
+    propParts: [
+      {
+        part: 'MeasuredSkeleton',
+        note: '包 skullet（MIT，锁精确版本）的 Skeleton，件里不直接引第三方；label 必填，读屏读 role=status。',
+      },
+    ],
+    states: [
+      '加载中：不到 500ms 不露骨架条（不可见层照样占位），超过了才出，快的请求不闪。',
+      '骨架：每行文字一条 line-200 的圆角条，图片、按钮、标签各一块，圆角跟随内容；不闪、不脉冲。',
+      '数据到了：真内容淡入到骨架的位置，onReveal 调一次；给了 id 的下次进来第一帧就是上次的形状。',
+    ],
+    donts: [
+      '示例数据的文字行数、有没有图要和真的一样，否则内容到了会跳。',
+      '表格与图表不用它：表格用按行高的 Skeleton，图表自己画占位。',
+      '图片要给宽高或 aspect-ratio，否则加载完才有大小，会跳一次。',
+    ],
+    composition: 'MeasuredSkeleton\n  span role=status（读屏名）\n  skullet Skeleton（不可见层 + 骨架条）',
+    keys: [],
+  },
+  {
     id: 'change-text',
     group: 'quant',
     cardHeight: 122,

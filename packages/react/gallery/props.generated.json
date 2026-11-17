@@ -4021,6 +4021,18 @@
           "description": ""
         },
         {
+          "name": "loading",
+          "type": "boolean",
+          "required": false,
+          "description": "在加载：给了（含 false）队列的列表区就走量出来的骨架，false 时骨架退场、真卡片淡入；不传和以前一样。"
+        },
+        {
+          "name": "sample",
+          "type": "readonly DecisionItem[]",
+          "required": false,
+          "description": "加载时拿来量骨架的示例建议（理由长度、有没有来源与详情跟真的差不多；2 到 3 张卡够用）；不给画几行条。"
+        },
+        {
           "name": "now",
           "type": "number",
           "required": true,
@@ -4218,6 +4230,12 @@
           "type": "Record<DecisionFilter, ReactNode>",
           "required": true,
           "description": ""
+        },
+        {
+          "name": "loading",
+          "type": "string",
+          "required": false,
+          "description": "加载中读屏读的话；不给就读 queue。"
         }
       ]
     },
@@ -4230,6 +4248,18 @@
           "type": "readonly DecisionItem[]",
           "required": true,
           "description": ""
+        },
+        {
+          "name": "loading",
+          "type": "boolean",
+          "required": false,
+          "description": "在加载：给了（含 false）队列的列表区就走量出来的骨架，false 时骨架退场、真卡片淡入；不传和以前一样。"
+        },
+        {
+          "name": "sample",
+          "type": "readonly DecisionItem[]",
+          "required": false,
+          "description": "加载时拿来量骨架的示例建议（理由长度、有没有来源与详情跟真的差不多；2 到 3 张卡够用）；不给画几行条。"
         },
         {
           "name": "now",
@@ -8305,6 +8335,18 @@
           "description": ""
         },
         {
+          "name": "loading",
+          "type": "boolean",
+          "required": false,
+          "description": "在加载：给了（含 false）账本的列表区就走量出来的骨架，false 时骨架退场、真假说淡入；不传和以前一样。"
+        },
+        {
+          "name": "sample",
+          "type": "readonly Hypothesis[]",
+          "required": false,
+          "description": "加载时拿来量骨架的示例假说（命题长度、证据条数跟真的差不多；4 到 6 条够用）；不给画几行条。"
+        },
+        {
           "name": "watch",
           "type": "readonly WatchRow[]",
           "required": false,
@@ -8490,6 +8532,12 @@
           "type": "string",
           "required": true,
           "description": ""
+        },
+        {
+          "name": "loading",
+          "type": "string",
+          "required": false,
+          "description": "加载中读屏读的话；不给就读 ledger。"
         }
       ]
     },
@@ -8502,6 +8550,18 @@
           "type": "readonly Hypothesis[]",
           "required": true,
           "description": ""
+        },
+        {
+          "name": "loading",
+          "type": "boolean",
+          "required": false,
+          "description": "在加载：给了（含 false）账本的列表区就走量出来的骨架，false 时骨架退场、真假说淡入；不传和以前一样。"
+        },
+        {
+          "name": "sample",
+          "type": "readonly Hypothesis[]",
+          "required": false,
+          "description": "加载时拿来量骨架的示例假说（命题长度、证据条数跟真的差不多；4 到 6 条够用）；不给画几行条。"
         },
         {
           "name": "watch",
@@ -10163,6 +10223,191 @@
         }
       ]
     },
+    "MeasuredSkeleton": {
+      "kind": "component",
+      "source": "src/katana/measured-skeleton.tsx",
+      "props": [
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name read while loading (required; the package ships no text)."
+        },
+        {
+          "name": "loading",
+          "type": "boolean",
+          "required": false,
+          "description": "Whether we are waiting; data mode defaults to \"data is empty\"."
+        },
+        {
+          "name": "id",
+          "type": "string",
+          "required": false,
+          "description": "Remember the measured shape under this key."
+        },
+        {
+          "name": "onReveal",
+          "type": "() => void",
+          "required": false,
+          "description": "Called once when content has replaced the skeleton."
+        },
+        {
+          "name": "delay",
+          "type": "number",
+          "required": false,
+          "description": "Milliseconds to wait before the bars show; defaults to LoadingWait's 500."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Class name for the root element."
+        },
+        {
+          "name": "data",
+          "type": "never",
+          "required": false,
+          "description": "The data; loading while null or undefined."
+        },
+        {
+          "name": "sample",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Example content measured while loading, instead of children."
+        },
+        {
+          "name": "children",
+          "type": "ReactNode",
+          "required": true,
+          "description": "The content shown once loading is done."
+        }
+      ]
+    },
+    "MeasuredSkeletonDataProps": {
+      "kind": "type",
+      "source": "src/katana/measured-skeleton.tsx",
+      "props": [
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name read while loading (required; the package ships no text)."
+        },
+        {
+          "name": "loading",
+          "type": "boolean",
+          "required": false,
+          "description": "Whether we are waiting; data mode defaults to \"data is empty\"."
+        },
+        {
+          "name": "id",
+          "type": "string",
+          "required": false,
+          "description": "Remember the measured shape under this key."
+        },
+        {
+          "name": "onReveal",
+          "type": "() => void",
+          "required": false,
+          "description": "Called once when content has replaced the skeleton."
+        },
+        {
+          "name": "delay",
+          "type": "number",
+          "required": false,
+          "description": "Milliseconds to wait before the bars show; defaults to LoadingWait's 500."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Class name for the root element."
+        },
+        {
+          "name": "data",
+          "type": "T | null | undefined",
+          "required": true,
+          "description": "The data; loading while null or undefined."
+        },
+        {
+          "name": "sample",
+          "type": "T",
+          "required": false,
+          "description": "Example data laid out to draw the skeleton before real data arrives."
+        },
+        {
+          "name": "children",
+          "type": "(data: T) => ReactNode",
+          "required": true,
+          "description": "Renders the content from the data."
+        }
+      ]
+    },
+    "MeasuredSkeletonPlainProps": {
+      "kind": "type",
+      "source": "src/katana/measured-skeleton.tsx",
+      "props": [
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name read while loading (required; the package ships no text)."
+        },
+        {
+          "name": "loading",
+          "type": "boolean",
+          "required": false,
+          "description": "Whether we are waiting; data mode defaults to \"data is empty\"."
+        },
+        {
+          "name": "id",
+          "type": "string",
+          "required": false,
+          "description": "Remember the measured shape under this key."
+        },
+        {
+          "name": "onReveal",
+          "type": "() => void",
+          "required": false,
+          "description": "Called once when content has replaced the skeleton."
+        },
+        {
+          "name": "delay",
+          "type": "number",
+          "required": false,
+          "description": "Milliseconds to wait before the bars show; defaults to LoadingWait's 500."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Class name for the root element."
+        },
+        {
+          "name": "data",
+          "type": "never",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "sample",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Example content measured while loading, instead of children."
+        },
+        {
+          "name": "children",
+          "type": "ReactNode",
+          "required": true,
+          "description": "The content shown once loading is done."
+        }
+      ]
+    },
+    "MeasuredSkeletonProps": {
+      "kind": "type",
+      "source": "src/katana/measured-skeleton.tsx",
+      "props": []
+    },
     "MenuCheckColumn": {
       "kind": "component",
       "source": "src/primitives/menu-parts.tsx",
@@ -11000,6 +11245,18 @@
           "description": ""
         },
         {
+          "name": "loading",
+          "type": "boolean",
+          "required": false,
+          "description": "在加载：给了（含 false）列表区就走骨架，false 时骨架退场、真条目淡入；不传和以前一样。"
+        },
+        {
+          "name": "sample",
+          "type": "readonly NewsItem[]",
+          "required": false,
+          "description": "加载时拿来量卡片骨架的示例条目（标题、摘要长度跟真的差不多；3 到 6 条够用）；不给画几行条。"
+        },
+        {
           "name": "channels",
           "type": "readonly { value: string; label: string }[]",
           "required": true,
@@ -11267,6 +11524,12 @@
           "type": "string",
           "required": false,
           "description": ""
+        },
+        {
+          "name": "loading",
+          "type": "string",
+          "required": false,
+          "description": "加载中读屏读的话；不给就读 feed。"
         }
       ]
     },
@@ -11279,6 +11542,18 @@
           "type": "readonly NewsItem[]",
           "required": true,
           "description": ""
+        },
+        {
+          "name": "loading",
+          "type": "boolean",
+          "required": false,
+          "description": "在加载：给了（含 false）列表区就走骨架，false 时骨架退场、真条目淡入；不传和以前一样。"
+        },
+        {
+          "name": "sample",
+          "type": "readonly NewsItem[]",
+          "required": false,
+          "description": "加载时拿来量卡片骨架的示例条目（标题、摘要长度跟真的差不多；3 到 6 条够用）；不给画几行条。"
         },
         {
           "name": "channels",
@@ -11535,6 +11810,18 @@
           "description": "正文。"
         },
         {
+          "name": "loading",
+          "type": "boolean",
+          "required": false,
+          "description": "正文在加载：给了（含 false）正文就走量出来的骨架，false 时骨架退场、children 淡入；不传和以前一样。"
+        },
+        {
+          "name": "sample",
+          "type": "ReactNode",
+          "required": false,
+          "description": "加载时拿来量骨架的示例正文（段数、有没有图跟真的差不多就行）；不给画几行条。"
+        },
+        {
           "name": "labels",
           "type": "NewsReaderLabels",
           "required": true,
@@ -11605,6 +11892,12 @@
           "type": "string",
           "required": true,
           "description": ""
+        },
+        {
+          "name": "loading",
+          "type": "string",
+          "required": false,
+          "description": "正文加载时读屏读的话；不给就读 reader。"
         }
       ]
     },
@@ -11653,6 +11946,18 @@
           "type": "ReactNode",
           "required": true,
           "description": "正文。"
+        },
+        {
+          "name": "loading",
+          "type": "boolean",
+          "required": false,
+          "description": "正文在加载：给了（含 false）正文就走量出来的骨架，false 时骨架退场、children 淡入；不传和以前一样。"
+        },
+        {
+          "name": "sample",
+          "type": "ReactNode",
+          "required": false,
+          "description": "加载时拿来量骨架的示例正文（段数、有没有图跟真的差不多就行）；不给画几行条。"
         },
         {
           "name": "labels",
@@ -18199,6 +18504,12 @@
           "description": ""
         },
         {
+          "name": "loading",
+          "type": "boolean",
+          "required": false,
+          "description": "概览在加载：给了（含 false）概览页的指标卡就走量出来的骨架（用 format.money(0) 的宽度占位排一次版），false 时骨架退场、真指标淡入；不传和以前一样。"
+        },
+        {
           "name": "initialCapital",
           "type": "number",
           "required": true,
@@ -18351,6 +18662,12 @@
           "description": "整个件的读屏名。"
         },
         {
+          "name": "loading",
+          "type": "string",
+          "required": false,
+          "description": "概览加载中读屏读的话；不给就读 report。"
+        },
+        {
           "name": "tabs",
           "type": "{ group: string overview: string performance: string analysis: string ratios: string trades: string properties: string }",
           "required": true,
@@ -18445,6 +18762,12 @@
           "type": "readonly ReportTrade[]",
           "required": true,
           "description": ""
+        },
+        {
+          "name": "loading",
+          "type": "boolean",
+          "required": false,
+          "description": "概览在加载：给了（含 false）概览页的指标卡就走量出来的骨架（用 format.money(0) 的宽度占位排一次版），false 时骨架退场、真指标淡入；不传和以前一样。"
         },
         {
           "name": "initialCapital",

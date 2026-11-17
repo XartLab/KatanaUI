@@ -2,6 +2,8 @@
 import { CopyIcon, FlagIcon, XIcon, ZapIcon } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { cn } from '../../lib/cn.ts'
+import { MeasuredSkeleton } from '../../katana/measured-skeleton.tsx'
+import { Skeleton } from '../../katana/skeleton.tsx'
 import { SymbolMark } from '../../katana/symbol-mark.tsx'
 import { Button } from '../../primitives/button.tsx'
 import { formatPercentChange } from '../../quant/format/index.ts'
@@ -23,6 +25,8 @@ export type NewsReaderLabels = {
   close: string
   report: string
   copyLink: string
+  /** 正文加载时读屏读的话；不给就读 reader。 */
+  loading?: string
 }
 
 export type NewsReaderProps = {
@@ -36,6 +40,10 @@ export type NewsReaderProps = {
   keyPoints?: readonly string[]
   /** 正文。 */
   children: ReactNode
+  /** 正文在加载：给了（含 false）正文就走量出来的骨架，false 时骨架退场、children 淡入；不传和以前一样。 */
+  loading?: boolean
+  /** 加载时拿来量骨架的示例正文（段数、有没有图跟真的差不多就行）；不给画几行条。 */
+  sample?: ReactNode
   labels: NewsReaderLabels
   onClose?: () => void
   onReport?: () => void
@@ -74,6 +82,8 @@ export function NewsReader({
   symbols = [],
   keyPoints = [],
   children,
+  loading,
+  sample,
   labels,
   onClose,
   onReport,
@@ -134,7 +144,17 @@ export function NewsReader({
           </ul>
         </section>
       )}
-      <div className="k-news-reader-body">{children}</div>
+      <div className="k-news-reader-body">
+        {loading === undefined ? (
+          children
+        ) : loading && sample === undefined ? (
+          <Skeleton label={labels.loading ?? labels.reader} lines={6} />
+        ) : (
+          <MeasuredSkeleton loading={loading} label={labels.loading ?? labels.reader} sample={sample}>
+            {children}
+          </MeasuredSkeleton>
+        )}
+      </div>
     </article>
   )
 }

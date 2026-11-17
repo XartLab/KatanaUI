@@ -14,6 +14,8 @@ import { defaultRangeExtractor, useVirtualizer } from '@tanstack/react-virtual'
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react'
 import { onTextMeasureReset } from '../../lib/text-measure.ts'
 import { cn } from '../../lib/cn.ts'
+import { MeasuredSkeleton } from '../../katana/measured-skeleton.tsx'
+import { Skeleton } from '../../katana/skeleton.tsx'
 import { SymbolMark } from '../../katana/symbol-mark.tsx'
 import { ChipGroup, type ChipItem } from '../../patterns/chip-group.tsx'
 import { RowActions, RowContextMenu, type RowAction } from '../../patterns/row-actions.tsx'
@@ -64,10 +66,19 @@ export type NewsFeedLabels = {
   /** 折叠 / 展开过滤区的按钮读屏名；传了就有这个按钮。 */
   collapse?: string
   expand?: string
+  /** 加载中读屏读的话；不给就读 feed。 */
+  loading?: string
 }
 
 export type NewsFeedProps = {
   items: readonly NewsItem[]
+  /**
+   * 在加载：给了（含 false）列表区就走骨架，false 时骨架退场、真条目淡入；不传和以前一样。
+   * 卡片排法用 sample 量出来的骨架（每张卡的标题行数、摘要、品种胶囊都按真卡量），列表排法画按行高的条。
+   */
+  loading?: boolean
+  /** 加载时拿来量卡片骨架的示例条目（标题、摘要长度跟真的差不多；3 到 6 条够用）；不给画几行条。 */
+  sample?: readonly NewsItem[]
   channels: readonly { value: string; label: string }[]
   sources: readonly { value: string; label: string }[]
   /**
@@ -112,6 +123,8 @@ const TOP_SLACK = 4
 
 export function NewsFeed({
   items,
+  loading,
+  sample,
   channels,
   sources,
   facets = [],
@@ -304,6 +317,38 @@ export function NewsFeed({
       )}
     </li>
   )
+
+  // 列表区的真内容；加载态的骨架包在它外面（量出来的骨架要在同一个位置把它换出来）。
+  const list =
+    visible.length === 0 ? (
+      <div className="k-news-empty">{labels.empty}</div>
+    ) : (
+      <RowContextMenu
+        actionsFor={itemActions && ((id) => itemActions(items.find((i) => i.id === id)!))}
+        label={itemActionsLabel}
+        keyAttribute="data-news-id"
+      >
+        <ol
+          className="k-news-items"
+          aria-label={labels.feed}
+          data-virtual={virtual ? '' : undefined}
+          style={virtual ? { height: virtualizer.getTotalSize() } : undefined}
+        >
+          {virtual
+            ? virtualizer.getVirtualItems().map((row) =>
+                renderRow(visible[row.index]!, {
+                  'aria-setsize': visible.length,
+                  'aria-posinset': row.index + 1,
+                  style: { top: row.start, height: sizes[row.index] },
+                }),
+              )
+            : visible.map((item) => renderRow(item))}
+        </ol>
+      </RowContextMenu>
+    )
+  const loadingLabel = loading === undefined ? undefined : (labels.loading ?? labels.feed)
+  // 只有卡片排法且给了示例条目才量；列表排法是一行一条，按行高画条就够。
+  const measured = layout === 'card' && sample !== undefined && sample.length > 0
 
   const headed = (views && views.length > 0 && labels.views) || labels.collapse
 
@@ -534,31 +579,20 @@ export function NewsFeed({
             className="k-news-scroll"
             onScroll={(e) => setAtTop(e.currentTarget.scrollTop <= TOP_SLACK)}
           >
-            {visible.length === 0 ? (
-              <div className="k-news-empty">{labels.empty}</div>
+            {loadingLabel !== undefined && measured ? (
+              <MeasuredSkeleton loading={loading === true} label={loadingLabel}>
+                {loading ? (
+                  <ol className="k-news-items" aria-label={labels.feed}>
+                    {sample!.map((item) => renderRow(item))}
+                  </ol>
+                ) : (
+                  list
+                )}
+              </MeasuredSkeleton>
+            ) : loading ? (
+              <Skeleton label={loadingLabel!} lines={layout === 'card' ? 6 : 8} rows={layout === 'list'} />
             ) : (
-              <RowContextMenu
-                actionsFor={itemActions && ((id) => itemActions(items.find((i) => i.id === id)!))}
-                label={itemActionsLabel}
-                keyAttribute="data-news-id"
-              >
-                <ol
-                  className="k-news-items"
-                  aria-label={labels.feed}
-                  data-virtual={virtual ? '' : undefined}
-                  style={virtual ? { height: virtualizer.getTotalSize() } : undefined}
-                >
-                  {virtual
-                    ? virtualizer.getVirtualItems().map((row) =>
-                        renderRow(visible[row.index]!, {
-                          'aria-setsize': visible.length,
-                          'aria-posinset': row.index + 1,
-                          style: { top: row.start, height: sizes[row.index] },
-                        }),
-                      )
-                    : visible.map((item) => renderRow(item))}
-                </ol>
-              </RowContextMenu>
+              list
             )}
           </div>
         </div>

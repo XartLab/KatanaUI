@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 import { useMemo, useState, type ReactNode } from 'react'
 import { cn } from '../../lib/cn.ts'
+import { MeasuredSkeleton } from '../../katana/measured-skeleton.tsx'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../primitives/tabs.tsx'
 import { ToggleGroup, ToggleGroupItem } from '../../primitives/toggle-group.tsx'
 import { ToneText } from '../../quant/tone-text.tsx'
@@ -180,6 +181,8 @@ export type StrategyReportFormat = {
 export type StrategyReportLabels = {
   /** 整个件的读屏名。 */
   report: string
+  /** 概览加载中读屏读的话；不给就读 report。 */
+  loading?: string
   tabs: {
     group: string
     overview: string
@@ -234,6 +237,11 @@ export type StrategyReportPropertyGroup = { id: string; title: string; rows: rea
 
 export type StrategyReportProps = {
   trades: readonly ReportTrade[]
+  /**
+   * 概览在加载：给了（含 false）概览页的指标卡就走量出来的骨架（用 format.money(0) 的宽度占位排一次版），false 时骨架退场、真指标淡入；不传和以前一样。
+   * 权益曲线、指标表、交易列表是图与表，不在这里画骨架（加载时 trades 给空数组，它们本来就按空画）。
+   */
+  loading?: boolean
   initialCapital: number
   /** 一年几个交易日，夏普与索提诺按它年化。A 股、美股 252，加密 365；默认 252。 */
   periodsPerYear?: number
@@ -417,6 +425,7 @@ function Bars({
 
 export function StrategyReport({
   trades,
+  loading,
   initialCapital,
   periodsPerYear,
   riskFree,
@@ -558,6 +567,66 @@ export function StrategyReport({
   )
   const empty = trades.length === 0
 
+  // 概览页真内容；加载态的骨架包在它外面（量出来的骨架要在同一个位置把它换出来）。
+  const overview = empty ? (
+    <div className="k-sr-empty">{labels.empty}</div>
+  ) : (
+    <>
+      <div className="k-sr-kpis" data-slot="strategy-report-kpis">
+        {KPI.map((key) => (
+          <div key={key} className="k-sr-kpi" data-metric={key}>
+            <span className="k-sr-kpi-label">{labels.metrics[key]}</span>
+            <strong className="k-sr-kpi-value">
+              <Value metric={METRICS[key]} value={METRICS[key].get(current)} format={format} />
+            </strong>
+            {key === 'netProfit' && buyHold !== null ? (
+              <small className="k-sr-kpi-sub" data-slot="strategy-report-buyhold">
+                {labels.metrics.buyHold} {format.money(buyHold)}
+              </small>
+            ) : null}
+          </div>
+        ))}
+      </div>
+      {current.curve.length > 1 ? (
+        <EquityCurve
+          points={equityPoints}
+          title={labels.equity.title}
+          hint={labels.equity.hint}
+          name={labels.equity.name}
+          label={labels.equity.label}
+          benchmark={
+            benchmark
+              ? {
+                  name: benchmark.name,
+                  values: current.curve.map((p) => benchmark.at(p.time) - initialCapital),
+                }
+              : undefined
+          }
+          axis={(v) => format.money(v)}
+          formatTime={format.axisTime ?? format.time}
+          labels={labels.equity}
+        />
+      ) : null}
+    </>
+  )
+  // 加载时的指标卡：标签是真的，数值用 format.money(0) 占位（只为排版，骨架里看不到字）。
+  const kpiSample = (
+    <div className="k-sr-kpis" data-slot="strategy-report-kpis">
+      {KPI.map((key) => (
+        <div key={key} className="k-sr-kpi" data-metric={key}>
+          <span className="k-sr-kpi-label">{labels.metrics[key]}</span>
+          <strong className="k-sr-kpi-value">
+            <span>{format.money(0)}</span>
+          </strong>
+          {key === 'netProfit' && benchmark ? (
+            <small className="k-sr-kpi-sub">
+              {labels.metrics.buyHold} {format.money(0)}
+            </small>
+          ) : null}
+        </div>
+      ))}
+    </div>
+  )
   return (
     <section
       className={cn('k-sr', className)}
@@ -589,46 +658,12 @@ export function StrategyReport({
 
         <div className="k-sr-body">
           <TabsContent value="overview" className="k-sr-pane">
-            {empty ? (
-              <div className="k-sr-empty">{labels.empty}</div>
+            {loading === undefined ? (
+              overview
             ) : (
-              <>
-                <div className="k-sr-kpis" data-slot="strategy-report-kpis">
-                  {KPI.map((key) => (
-                    <div key={key} className="k-sr-kpi" data-metric={key}>
-                      <span className="k-sr-kpi-label">{labels.metrics[key]}</span>
-                      <strong className="k-sr-kpi-value">
-                        <Value metric={METRICS[key]} value={METRICS[key].get(current)} format={format} />
-                      </strong>
-                      {key === 'netProfit' && buyHold !== null ? (
-                        <small className="k-sr-kpi-sub" data-slot="strategy-report-buyhold">
-                          {labels.metrics.buyHold} {format.money(buyHold)}
-                        </small>
-                      ) : null}
-                    </div>
-                  ))}
-                </div>
-                {current.curve.length > 1 ? (
-                  <EquityCurve
-                    points={equityPoints}
-                    title={labels.equity.title}
-                    hint={labels.equity.hint}
-                    name={labels.equity.name}
-                    label={labels.equity.label}
-                    benchmark={
-                      benchmark
-                        ? {
-                            name: benchmark.name,
-                            values: current.curve.map((p) => benchmark.at(p.time) - initialCapital),
-                          }
-                        : undefined
-                    }
-                    axis={(v) => format.money(v)}
-                    formatTime={format.axisTime ?? format.time}
-                    labels={labels.equity}
-                  />
-                ) : null}
-              </>
+              <MeasuredSkeleton loading={loading} label={labels.loading ?? labels.report}>
+                <div className="k-sr-overview">{loading ? kpiSample : overview}</div>
+              </MeasuredSkeleton>
             )}
           </TabsContent>
 

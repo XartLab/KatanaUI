@@ -4,6 +4,7 @@ import { NewsReaderDemo, ScreenerDemo } from './pages/screener.tsx'
 import { RenderingSettingsDemo } from './rendering.tsx'
 import { SideNavUsage } from './usage/SideNavUsage.tsx'
 import { TextMeasureUsage } from './usage/TextMeasureUsage.tsx'
+import { MeasuredSkeletonUsage } from './usage/MeasuredSkeletonUsage.tsx'
 import { DateTimeInputDemo, NumberInputDemo, SkeletonDemo } from './pages/fields.tsx'
 import {
   BadgeDemo,
@@ -152,6 +153,7 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'date-time-input': DateTimeInputDemo,
   'date-range-picker': DateRangePickerDemo,
   skeleton: SkeletonDemo,
+  'measured-skeleton': MeasuredSkeletonUsage,
   toast: ToastDemo,
   alert: AlertDemo,
   progress: ProgressDemo,

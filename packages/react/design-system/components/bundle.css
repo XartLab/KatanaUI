@@ -5108,7 +5108,7 @@ button.k-news-title:hover, a.k-news-title:hover {
   overflow: auto;
 }
 
-.k-sr-pane {
+.k-sr-pane, .k-sr-overview {
   flex-direction: column;
   gap: 12px;
   min-width: 0;
@@ -7523,6 +7523,16 @@ button.k-sysmon-link-body:focus-visible {
   to {
     filter: none;
   }
+}
+
+.k-measured {
+  --skullet-base: var(--bg-200);
+  --skullet-animation: none;
+  --skullet-radius: var(--radius-control);
+}
+
+.k-measured.is-wait [skullet-layer] {
+  visibility: hidden;
 }
 
 .k-grid {
@@ -15967,5 +15977,6 @@ button.k-consensus-hash:focus-visible {
   --radix-slider-thumb-transform: initial;
   --radix-tooltip-content-transform-origin: initial;
   --roll-steps: initial;
+  --skullet-highlight: initial;
   --stage-t: initial;
 }

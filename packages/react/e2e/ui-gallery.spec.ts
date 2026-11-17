@@ -1693,6 +1693,62 @@ for (const theme of THEMES) {
       await expect(area.locator('[data-gallery-loaded]')).toBeVisible()
     })
 
+    test('量出来的骨架（MeasuredSkeleton）：加载态有骨架条与读屏名，切到已加载标题与按钮的位置不跳（≤1px）', async ({
+      page,
+    }) => {
+      await open(page, theme, 'measured-skeleton')
+      const area = section(page, 'measured-skeleton')
+      // 读屏：role=status 带名字（包里不带文字，名字由调用方给）。
+      await expect(area.getByRole('status').filter({ hasText: '正在载入文章卡片' })).toHaveCount(1)
+      // 500ms 后骨架条才露出（之前不可见层占位）：等到 is-wait 去掉。
+      await expect(area.locator('.k-measured:not(.is-wait)')).toHaveCount(1)
+      const bars = area.locator('[skullet-rect]')
+      expect(await bars.count()).toBeGreaterThan(0)
+      // 骨架底色 line-200（bg-200 在面板底上看不见），不脉冲。
+      await expect(bars.first()).toHaveCSS('background-color', await token(page, '--line-200'))
+      const rects = await bars.evaluateAll((nodes) =>
+        nodes.map((node) => {
+          const r = node.getBoundingClientRect()
+          return { x: r.x, y: r.y, width: r.width, height: r.height }
+        }),
+      )
+      // 加载态下真组件在 aria-hidden 的不可见层里量版，按角色找要带 includeHidden。
+      const button = area.getByRole('button', { name: '查看全文', includeHidden: true })
+      const title = area.getByRole('heading', { includeHidden: true })
+      const [buttonLoading, titleLoading] = [await button.boundingBox(), await title.boundingBox()]
+      // 加载态下按钮在不可见层里（visibility 隐藏但占位）：骨架块与它同位同大小。
+      const block = rects.find(
+        (r) =>
+          Math.abs(r.x - buttonLoading!.x) <= 1 &&
+          Math.abs(r.y - buttonLoading!.y) <= 1 &&
+          Math.abs(r.width - buttonLoading!.width) <= 1 &&
+          Math.abs(r.height - buttonLoading!.height) <= 1,
+      )
+      expect(block, '按钮有一块位置大小一致的骨架块').toBeDefined()
+      // 标题两行：两条文字条，左边与标题对齐，落在标题框里。
+      const lines = rects.filter(
+        (r) => r.y >= titleLoading!.y - 1 && r.y + r.height <= titleLoading!.y + titleLoading!.height + 1,
+      )
+      expect(lines.length).toBe(2)
+      for (const line of lines) expect(Math.abs(line.x - titleLoading!.x)).toBeLessThanOrEqual(1)
+
+      await area.getByRole('button', { name: '已加载' }).click()
+      await expect(area.getByRole('heading')).toContainText('营收好于预期')
+      await expect(area.getByRole('status').filter({ hasText: '正在载入文章卡片' })).toHaveCount(0)
+      // 骨架退场后（淡出结束）只剩真内容；位置对骨架块不动。
+      await expect(bars).toHaveCount(0)
+      const [buttonLoaded, titleLoaded] = [await button.boundingBox(), await title.boundingBox()]
+      for (const key of ['x', 'y', 'width', 'height'] as const) {
+        expect(Math.abs(buttonLoaded![key] - block![key]), `按钮 ${key}`).toBeLessThanOrEqual(1)
+        expect(Math.abs(titleLoaded![key] - titleLoading![key]), `标题 ${key}`).toBeLessThanOrEqual(1)
+      }
+      for (const line of lines) {
+        expect(Math.abs(line.x - titleLoaded!.x)).toBeLessThanOrEqual(1)
+        expect(line.y).toBeGreaterThanOrEqual(titleLoaded!.y - 1)
+        expect(line.y + line.height).toBeLessThanOrEqual(titleLoaded!.y + titleLoaded!.height + 1)
+      }
+    })
+
     test('量化：涨跌色读 pnl-up / pnl-down；根上设 data-updown="cn" 互换；方向不只靠颜色；三类市场的价格写法', async ({
       page,
     }) => {

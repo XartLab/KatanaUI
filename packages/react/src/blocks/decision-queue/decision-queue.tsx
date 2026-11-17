@@ -4,6 +4,8 @@ import { useId, useState, type ReactNode } from 'react'
 import { cn } from '../../lib/cn.ts'
 import { HoldToConfirm } from '../../katana/hold-to-confirm.tsx'
 import { Led, type LedState } from '../../katana/led.tsx'
+import { MeasuredSkeleton } from '../../katana/measured-skeleton.tsx'
+import { Skeleton } from '../../katana/skeleton.tsx'
 import { Button } from '../../primitives/button.tsx'
 import { ToggleGroup, ToggleGroupItem } from '../../primitives/toggle-group.tsx'
 import {
@@ -54,10 +56,16 @@ export type DecisionQueueLabels = {
   ago: (seconds: number) => string
   absolute: (time: number) => string
   empty: Record<DecisionFilter, ReactNode>
+  /** 加载中读屏读的话；不给就读 queue。 */
+  loading?: string
 }
 
 export type DecisionQueueProps = {
   items: readonly DecisionItem[]
+  /** 在加载：给了（含 false）队列的列表区就走量出来的骨架，false 时骨架退场、真卡片淡入；不传和以前一样。 */
+  loading?: boolean
+  /** 加载时拿来量骨架的示例建议（理由长度、有没有来源与详情跟真的差不多；2 到 3 张卡够用）；不给画几行条。 */
+  sample?: readonly DecisionItem[]
   /** 当前时间（毫秒）：倒计时、过期都按它算，调用方每秒更新；件不在渲染里取时间。 */
   now: number
   labels: DecisionQueueLabels
@@ -85,6 +93,8 @@ const LED: Record<DecisionStatus, LedState> = {
 
 export function DecisionQueue({
   items,
+  loading,
+  sample,
   now,
   labels,
   onAccept,
@@ -101,6 +111,35 @@ export function DecisionQueue({
   const counts = countByFilter(items, now)
   const rows = visibleDecisions(items, filter, now)
   const shared = { now, labels, renderDetail, renderTarget }
+  const loadingLabel = labels.loading ?? labels.queue
+  // 一列卡片；加载时用示例建议排同样的版，量出来的骨架就和真卡对得上。
+  const list = (shown: readonly DecisionItem[]) =>
+    shown.length === 0 ? (
+      <div className="k-dq-empty">{labels.empty[filter]}</div>
+    ) : (
+      <ol className="k-dq-list" aria-label={labels.queue}>
+        {shown.map((item) => {
+          const status = effectiveStatus(item, now)
+          return (
+            <li key={item.id} className="k-dq-item" data-status={status} data-decision-id={item.id}>
+              {status === 'pending' || status === 'snoozed' ? (
+                <OpenCard
+                  item={item}
+                  status={status}
+                  holdMs={holdMs}
+                  onAccept={onAccept}
+                  onReject={onReject}
+                  onSnooze={onSnooze}
+                  {...shared}
+                />
+              ) : (
+                <DoneRow item={item} status={status} {...shared} />
+              )}
+            </li>
+          )
+        })}
+      </ol>
+    )
   return (
     <section className={cn('k-dq', className)} aria-label={labels.queue}>
       <ToggleGroup
@@ -123,31 +162,14 @@ export function DecisionQueue({
         ))}
       </ToggleGroup>
       <div className="k-dq-scroll">
-        {rows.length === 0 ? (
-          <div className="k-dq-empty">{labels.empty[filter]}</div>
+        {loading === undefined ? (
+          list(rows)
+        ) : loading && sample === undefined ? (
+          <Skeleton label={loadingLabel} lines={8} rows />
         ) : (
-          <ol className="k-dq-list" aria-label={labels.queue}>
-            {rows.map((item) => {
-              const status = effectiveStatus(item, now)
-              return (
-                <li key={item.id} className="k-dq-item" data-status={status} data-decision-id={item.id}>
-                  {status === 'pending' || status === 'snoozed' ? (
-                    <OpenCard
-                      item={item}
-                      status={status}
-                      holdMs={holdMs}
-                      onAccept={onAccept}
-                      onReject={onReject}
-                      onSnooze={onSnooze}
-                      {...shared}
-                    />
-                  ) : (
-                    <DoneRow item={item} status={status} {...shared} />
-                  )}
-                </li>
-              )
-            })}
-          </ol>
+          <MeasuredSkeleton loading={loading} label={loadingLabel}>
+            {list(loading ? (sample ?? []) : rows)}
+          </MeasuredSkeleton>
         )}
       </div>
     </section>

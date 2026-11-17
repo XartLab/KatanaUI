@@ -6,8 +6,26 @@ const feedback: GuidanceMap = {
   skeleton: {
     aliases: ['Loading', 'Placeholder', 'Shimmer', 'Spinner'],
     use: ['等数据时占住内容区，用 Loading 包住内容。', '要给超时加重试时用 LoadingView。'],
-    avoid: ['知道进度时用 progress。', '操作结果的提示用 toast 或 alert。', '没数据（不是在等）用 empty-state。'],
+    avoid: [
+      '知道进度时用 progress。',
+      '操作结果的提示用 toast 或 alert。',
+      '没数据（不是在等）用 empty-state。',
+      '卡片、文章这类形状复杂的，用 measured-skeleton。',
+    ],
     a11y: ['加载区是 role=status、aria-busy，骨架线条对读屏隐藏。', '「仍在加载」与重试文案由调用方传。'],
+  },
+  'measured-skeleton': {
+    aliases: ['Skeleton screen', 'Content placeholder', 'Skullet', 'Shimmer'],
+    use: [
+      '卡片、文章、建议队列这类形状复杂的加载占位，内容到了位置不动。',
+      '示例数据排出的版面要和真数据同样的行数与控件。',
+    ],
+    avoid: ['表格用按行高的 skeleton，图表自己画占位。', '知道进度时用 progress。'],
+    a11y: [
+      '加载期间有一个 role=status 的读屏文字，名字由调用方传 label（必填）。',
+      '骨架本身 aria-hidden 且 inert，加载的容器带 aria-busy。',
+      '骨架不闪不脉冲，所以没有动效要另外照顾。',
+    ],
   },
   toast: {
     aliases: ['Snackbar', 'Notification', 'Banner', 'Flash message'],

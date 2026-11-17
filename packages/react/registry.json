@@ -1427,6 +1427,26 @@
       ]
     },
     {
+      "name": "measured-skeleton",
+      "type": "registry:component",
+      "title": "Measured Skeleton",
+      "description": "卡片、文章这类形状复杂的加载占位：用真组件加示例数据在不可见层排一次版，量出每行文字、每张图、每个控件的位置再画骨架，内容到了位置不动。外观与 Skeleton 同色、不闪不脉冲。",
+      "dependencies": [
+        "skullet@0.0.3"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/loading-gate"
+      ],
+      "files": [
+        {
+          "path": "src/katana/measured-skeleton.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/katana/measured-skeleton.tsx"
+        }
+      ]
+    },
+    {
       "name": "notification-bell",
       "type": "registry:component",
       "title": "Notification Bell",
@@ -3360,8 +3380,10 @@
         "@katana/chip-group",
         "@katana/cn",
         "@katana/input",
+        "@katana/measured-skeleton",
         "@katana/popover",
         "@katana/row-actions",
+        "@katana/skeleton",
         "@katana/symbol-mark",
         "@katana/text-measure",
         "@katana/toggle-group",
@@ -3398,6 +3420,8 @@
         "@katana/cn",
         "@katana/hold-to-confirm",
         "@katana/led",
+        "@katana/measured-skeleton",
+        "@katana/skeleton",
         "@katana/toggle-group"
       ],
       "files": [
@@ -3425,6 +3449,8 @@
         "@katana/chip-group",
         "@katana/cn",
         "@katana/led",
+        "@katana/measured-skeleton",
+        "@katana/skeleton",
         "@katana/toggle-group"
       ],
       "files": [
@@ -3482,6 +3508,7 @@
         "@katana/cn",
         "@katana/data-grid",
         "@katana/equity-curve",
+        "@katana/measured-skeleton",
         "@katana/quant-format",
         "@katana/tabs",
         "@katana/toggle-group",
@@ -3539,7 +3566,9 @@
       "registryDependencies": [
         "@katana/button",
         "@katana/cn",
+        "@katana/measured-skeleton",
         "@katana/quant-format",
+        "@katana/skeleton",
         "@katana/symbol-mark"
       ],
       "files": [

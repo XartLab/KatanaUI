@@ -113,3 +113,15 @@
     filter: none;
   }
 }
+
+/* 量出来的骨架（MeasuredSkeleton，skullet 的主题变量）：底色同 .k-loading-line 的 bg-200，不闪不脉冲（animation none），
+   文字条圆角取同一个 radius-control，图片与头像、按钮的圆角跟随内容自己的。出现前（is-wait）不可见层照样占位，只是不露骨架条。 */
+/* 骨架条画在 skullet 的 Shadow DOM 里，外面的边框与点阵纹进不去；只能给底色：用 k-loading-line 描边那档 line-200，bg-200 在面板底上几乎看不见。 */
+.k-measured {
+  --skullet-base: var(--line-200);
+  --skullet-animation: none;
+  --skullet-radius: var(--radius-control);
+}
+.k-measured.is-wait [skullet-layer] {
+  visibility: hidden;
+}

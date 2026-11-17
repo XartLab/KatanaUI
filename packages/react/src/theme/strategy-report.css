@@ -45,6 +45,12 @@
   gap: 12px;
   min-width: 0;
 }
+.k-sr-overview {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
 .k-sr-pane-grid {
   height: 100%;
   min-height: 220px;

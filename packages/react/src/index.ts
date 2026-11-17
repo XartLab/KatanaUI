@@ -215,6 +215,12 @@ export { NumberInput } from './katana/number-input.tsx'
 export { DateTimeInput, type DateTimeLabels } from './katana/date-time-input.tsx'
 export { Skeleton } from './katana/skeleton.tsx'
 export {
+  MeasuredSkeleton,
+  type MeasuredSkeletonDataProps,
+  type MeasuredSkeletonPlainProps,
+  type MeasuredSkeletonProps,
+} from './katana/measured-skeleton.tsx'
+export {
   TOAST_EXIT_MS,
   Toast,
   ToastClear,
