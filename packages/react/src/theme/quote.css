@@ -28,17 +28,18 @@
 .k-spark-line {
   fill: none;
   stroke: var(--k-spark-color);
-  stroke-width: 1.5px;
+  /* 线宽 1.5px；图高 80 以上组件把 --k-spark-lw 设成 2px。 */
+  stroke-width: var(--k-spark-lw, 1.5px);
   stroke-linejoin: round;
   stroke-linecap: round;
 }
 .k-spark-area {
   stroke: none;
 }
-/* 线下渐变：涨跌色 20% 到 0。 */
+/* 线下渐变：贴线处涨跌色 22%，往下渐到 0（TradingView 的面积也是很淡的同色渐变）。 */
 .k-spark-stop-a {
   stop-color: var(--k-spark-color);
-  stop-opacity: 0.2;
+  stop-opacity: 0.22;
 }
 .k-spark-stop-b {
   stop-color: var(--k-spark-color);
@@ -99,6 +100,14 @@
 .k-spark-dot.is-hover {
   stroke-width: 2px;
 }
+/* 末端点外面的空心环：常驻（TradingView 的末端点就是实心点套一个环），颜色同线，淡一点免得抢线。 */
+.k-spark-ring {
+  fill: none;
+  stroke: var(--k-spark-color);
+  stroke-width: 1px;
+  stroke-opacity: 0.5;
+  pointer-events: none;
+}
 /* 值变化时光晕从 0 放大淡出一次（不闪底色）；方向取这一次是涨还是跌。 */
 .k-spark-halo {
   fill: var(--k-live-tone, var(--k-spark-color));
@@ -145,19 +154,129 @@
   stroke: var(--line-200);
   stroke-width: 1px;
 }
+/* 右轴最新价价签：涨跌色的实底（面积版 token，上面的字用 bg-000，对比够 4.5:1），平盘用中性灰底。 */
+.k-spark-tag rect {
+  fill: var(--ink-400);
+}
+.k-spark-tag text {
+  fill: var(--bg-000);
+  font: var(--text-num-sm) var(--font-num-small);
+  font-variant-numeric: tabular-nums;
+  dominant-baseline: central;
+  pointer-events: none;
+}
+.k-spark-tag.is-up rect {
+  fill: var(--pnl-up-area);
+}
+.k-spark-tag.is-down rect {
+  fill: var(--pnl-down-area);
+}
+.k-spark-tag.is-flat rect {
+  fill: var(--bg-400);
+}
+.k-spark-tag.is-flat text {
+  fill: var(--ink-100);
+}
+/* 读数框：HTML 放在 foreignObject 里（svg 不裁，随光标走）；底色、圆角、字号都取 token，数值粗体，日期与时间弱色。 */
+.k-spark-tipbox {
+  overflow: visible;
+  pointer-events: none;
+}
 .k-spark-tip {
-  fill: var(--lcd-bg);
-  stroke: var(--line-100);
-  stroke-width: 1px;
+  display: inline-block;
+  padding: 6px 8px;
+  background: var(--lcd-bg);
+  border: 1px solid var(--line-100);
+  border-radius: var(--radius-md);
+  color: var(--ink-300);
+  font: var(--text-caption) var(--font-num-small);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
 .k-spark-tip-value {
-  fill: var(--ink-100);
+  color: var(--ink-100);
+  font: var(--text-data) var(--font-num-small);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
 }
 .k-spark-empty {
   color: var(--ink-300);
   font: var(--text-data) var(--font-sans);
   font-weight: 400;
   line-height: 36px;
+}
+
+/* —— 迷你行情卡 MiniChart（TradingView 的 Mini Chart 小组件）—— */
+.k-mini-chart {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  padding: 12px 14px 8px;
+  border: 1px solid var(--line-100);
+  border-radius: var(--radius-control);
+  background: var(--bg-100);
+  color: var(--ink-100);
+  font: var(--text-data) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+  text-align: left;
+}
+button.k-mini-chart.is-link {
+  cursor: pointer;
+  transition: background-color var(--dur-snappy) var(--ease-snappy);
+}
+button.k-mini-chart.is-link:hover {
+  background: var(--bg-200);
+}
+button.k-mini-chart.is-link:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 1px;
+}
+.k-mini-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.k-mini-symbol {
+  overflow: hidden;
+  color: var(--ink-100);
+  font: var(--text-data) var(--font-sans);
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.k-mini-badge {
+  padding: 0 4px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-300);
+  color: var(--ink-300);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-mini-quote {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+}
+.k-mini-price {
+  font: var(--text-title) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+}
+.k-mini-unit {
+  color: var(--ink-300);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-mini-change {
+  font: var(--text-data) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+}
+.k-mini-chart-body {
+  display: block;
+  min-width: 0;
+}
+.k-mini-chart .k-mini-spark {
+  height: 100%;
 }
 
 /* —— 进度条加一句解释 —— */

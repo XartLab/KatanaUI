@@ -2037,6 +2037,27 @@
       ]
     },
     {
+      "name": "mini-chart",
+      "type": "registry:component",
+      "title": "Mini Chart",
+      "description": "照 TradingView 的 Mini Chart 小组件（2026-11-18 在浏览器里看的）：卡片上一行「品种图标 + 代码 + 角标」，一行「最新价 单位 + 涨跌幅」，下面是走势（Sparkline 的 area：线 2px 圆角、线下很淡的同色渐变、末端实心点加空心环）。给了毫秒时间戳与 domain，线只画到现在、右边留空；live 时价格滚动、涨跌幅闪色。没有基准线与坐标轴，默认不开悬停。",
+      "registryDependencies": [
+        "@katana/change-text",
+        "@katana/cn",
+        "@katana/quote-tone",
+        "@katana/rolling-text",
+        "@katana/sparkline",
+        "@katana/symbol-mark"
+      ],
+      "files": [
+        {
+          "path": "src/katana/mini-chart.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/katana/mini-chart.tsx"
+        }
+      ]
+    },
+    {
       "name": "motion-loader",
       "type": "registry:component",
       "title": "Motion Loader",
@@ -2246,7 +2267,7 @@
       "name": "quote-tone",
       "type": "registry:lib",
       "title": "Quote Tone",
-      "description": "一列数从旧到新，按容器的真实像素画（不拉伸、线宽 1.5px）。默认是线加线下渐变，最新值处有末端点；另有 line、baseline（基准上涨色下跌色）、bars、winloss（胜负格）四种画法。可加基准虚线、最高最低点、右端最新值、成交量、断点、单调曲线；interactive 时悬停出十字线与读数，键盘左右键走点。线色按最后值对基准（没基准按头尾），涨跌色跟涨跌配色走，没有数据只留「—」。",
+      "description": "一列数从旧到新，按容器的真实像素画（不拉伸、线宽 1.5px，高 80 以上 2px、圆角连接）。默认是线加线下渐变（贴线 22% 渐到 0），最新值处是实心点加常驻空心环；给毫秒时间戳与 domain 时横轴是整个交易时段、线只画到现在（对齐 TradingView Markets 页的日内图），可加右侧价格刻度、底部时间刻度与最新价价签；另有 line、baseline（基准上涨色下跌色）、bars、winloss（胜负格）四种画法。可加基准虚线、最高最低点、右端最新值、成交量、断点、单调曲线；interactive 时悬停出一根竖线、吸附点与紧挨光标的三行读数（数值、日期、时间），键盘左右键走点。线色按最后值对基准（没基准按头尾），涨跌色跟涨跌配色走，没有数据只留「—」。",
       "files": [
         {
           "path": "src/katana/quote-tone.ts",
@@ -2419,7 +2440,7 @@
       "name": "sparkline",
       "type": "registry:component",
       "title": "Sparkline",
-      "description": "一列数从旧到新，按容器的真实像素画（不拉伸、线宽 1.5px）。默认是线加线下渐变，最新值处有末端点；另有 line、baseline（基准上涨色下跌色）、bars、winloss（胜负格）四种画法。可加基准虚线、最高最低点、右端最新值、成交量、断点、单调曲线；interactive 时悬停出十字线与读数，键盘左右键走点。线色按最后值对基准（没基准按头尾），涨跌色跟涨跌配色走，没有数据只留「—」。",
+      "description": "一列数从旧到新，按容器的真实像素画（不拉伸、线宽 1.5px，高 80 以上 2px、圆角连接）。默认是线加线下渐变（贴线 22% 渐到 0），最新值处是实心点加常驻空心环；给毫秒时间戳与 domain 时横轴是整个交易时段、线只画到现在（对齐 TradingView Markets 页的日内图），可加右侧价格刻度、底部时间刻度与最新价价签；另有 line、baseline（基准上涨色下跌色）、bars、winloss（胜负格）四种画法。可加基准虚线、最高最低点、右端最新值、成交量、断点、单调曲线；interactive 时悬停出一根竖线、吸附点与紧挨光标的三行读数（数值、日期、时间），键盘左右键走点。线色按最后值对基准（没基准按头尾），涨跌色跟涨跌配色走，没有数据只留「—」。",
       "registryDependencies": [
         "@katana/live",
         "@katana/live-line",

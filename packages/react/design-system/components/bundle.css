@@ -10366,7 +10366,7 @@ button.k-status-item:hover {
 .k-spark-line {
   fill: none;
   stroke: var(--k-spark-color);
-  stroke-width: 1.5px;
+  stroke-width: var(--k-spark-lw, 1.5px);
   stroke-linejoin: round;
   stroke-linecap: round;
 }
@@ -10377,7 +10377,7 @@ button.k-status-item:hover {
 
 .k-spark-stop-a {
   stop-color: var(--k-spark-color);
-  stop-opacity: .2;
+  stop-opacity: .22;
 }
 
 .k-spark-stop-b {
@@ -10441,6 +10441,14 @@ button.k-status-item:hover {
   stroke-width: 2px;
 }
 
+.k-spark-ring {
+  fill: none;
+  stroke: var(--k-spark-color);
+  stroke-width: 1px;
+  stroke-opacity: .5;
+  pointer-events: none;
+}
+
 .k-spark-halo {
   fill: var(--k-live-tone, var(--k-spark-color));
   fill-opacity: .4;
@@ -10495,14 +10503,56 @@ button.k-status-item:hover {
   stroke-width: 1px;
 }
 
+.k-spark-tag rect {
+  fill: var(--ink-400);
+}
+
+.k-spark-tag text {
+  fill: var(--bg-000);
+  font: var(--text-num-sm) var(--font-num-small);
+  font-variant-numeric: tabular-nums;
+  dominant-baseline: central;
+  pointer-events: none;
+}
+
+.k-spark-tag.is-up rect {
+  fill: var(--pnl-up-area);
+}
+
+.k-spark-tag.is-down rect {
+  fill: var(--pnl-down-area);
+}
+
+.k-spark-tag.is-flat rect {
+  fill: var(--bg-400);
+}
+
+.k-spark-tag.is-flat text {
+  fill: var(--ink-100);
+}
+
+.k-spark-tipbox {
+  pointer-events: none;
+  overflow: visible;
+}
+
 .k-spark-tip {
-  fill: var(--lcd-bg);
-  stroke: var(--line-100);
-  stroke-width: 1px;
+  background: var(--lcd-bg);
+  border: 1px solid var(--line-100);
+  border-radius: var(--radius-md);
+  color: var(--ink-300);
+  font: var(--text-caption) var(--font-num-small);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  padding: 6px 8px;
+  display: inline-block;
 }
 
 .k-spark-tip-value {
-  fill: var(--ink-100);
+  color: var(--ink-100);
+  font: var(--text-data) var(--font-num-small);
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
 }
 
 .k-spark-empty {
@@ -10510,6 +10560,90 @@ button.k-status-item:hover {
   font: var(--text-data) var(--font-sans);
   font-weight: 400;
   line-height: 36px;
+}
+
+.k-mini-chart {
+  border: 1px solid var(--line-100);
+  border-radius: var(--radius-control);
+  background: var(--bg-100);
+  min-width: 0;
+  color: var(--ink-100);
+  font: var(--text-data) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+  text-align: left;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 14px 8px;
+  display: flex;
+}
+
+button.k-mini-chart.is-link {
+  cursor: pointer;
+  transition: background-color var(--dur-snappy) var(--ease-snappy);
+}
+
+button.k-mini-chart.is-link:hover {
+  background: var(--bg-200);
+}
+
+button.k-mini-chart.is-link:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 1px;
+}
+
+.k-mini-head {
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  display: flex;
+}
+
+.k-mini-symbol {
+  color: var(--ink-100);
+  font: var(--text-data) var(--font-sans);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 600;
+  overflow: hidden;
+}
+
+.k-mini-badge {
+  border-radius: var(--radius-sm);
+  background: var(--bg-300);
+  color: var(--ink-300);
+  font: var(--text-caption) var(--font-sans-small);
+  padding: 0 4px;
+}
+
+.k-mini-quote {
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 8px;
+  display: flex;
+}
+
+.k-mini-price {
+  font: var(--text-title) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+}
+
+.k-mini-unit {
+  color: var(--ink-300);
+  font: var(--text-caption) var(--font-sans-small);
+}
+
+.k-mini-change {
+  font: var(--text-data) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+}
+
+.k-mini-chart-body {
+  min-width: 0;
+  display: block;
+}
+
+.k-mini-chart .k-mini-spark {
+  height: 100%;
 }
 
 .k-gauge {
@@ -11067,7 +11201,7 @@ button.k-quote-card.is-link:focus-visible {
   -moz-osx-font-smoothing: auto;
 }
 
-:root:not([data-pixel-snap="off"]) :is(.k-ck-grid, .k-plot-zero, .k-ql-zero, .k-ql-cursor, .k-ridge-baseline, .k-ridge-base, .k-spark-tile-limit, .k-spark-base, .k-spark-cursor, .k-spark-vol, .k-spark-bar, .k-spark-cell, .k-spark-tip, .k-vs-latest), :root:not([data-pixel-snap="off"]) [class^="k-"] svg rect:not([rx]) {
+:root:not([data-pixel-snap="off"]) :is(.k-ck-grid, .k-plot-zero, .k-ql-zero, .k-ql-cursor, .k-ridge-baseline, .k-ridge-base, .k-spark-tile-limit, .k-spark-base, .k-spark-cursor, .k-spark-vol, .k-spark-bar, .k-spark-cell, .k-vs-latest), :root:not([data-pixel-snap="off"]) [class^="k-"] svg rect:not([rx]) {
   shape-rendering: crispedges;
 }
 
@@ -18290,6 +18424,23 @@ button.k-consensus-hash:focus-visible {
 .gal-spark-tall .k-spark {
   height: 64px;
 }
+/* TradingView 式一节：迷你行情卡与日内大图上下排，大图高 220。 */
+.gal-spark-tv-live {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  max-width: 720px;
+}
+.gal-spark-tv {
+  width: 100%;
+}
+.gal-spark-tv[data-gallery-spark='tv-mini'] {
+  max-width: 320px;
+}
+.gal-spark-intraday .k-spark {
+  height: 220px;
+}
 .gal-spark-table {
   border-collapse: collapse;
   font: var(--text-data) var(--font-sans);
@@ -18411,6 +18562,7 @@ button.k-consensus-hash:focus-visible {
   --k-rise: initial;
   --k-run: initial;
   --k-scatter-color: initial;
+  --k-spark-lw: initial;
   --k-sy: initial;
   --k-text-scale: initial;
   --k-tree-level: initial;

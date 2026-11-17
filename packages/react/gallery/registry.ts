@@ -4354,13 +4354,13 @@ export const PAGES: readonly DocPage[] = [
     cardHeight: 60,
     title: 'Sparkline 迷你图',
     summary:
-      '一列数从旧到新，按容器的真实像素画（不拉伸、线宽 1.5px）。默认是线加线下渐变，最新值处有末端点；另有 line、baseline（基准上涨色下跌色）、bars、winloss（胜负格）四种画法。可加基准虚线、最高最低点、右端最新值、成交量、断点、单调曲线；interactive 时悬停出十字线与读数，键盘左右键走点。线色按最后值对基准（没基准按头尾），涨跌色跟涨跌配色走，没有数据只留「—」。',
+      '一列数从旧到新，按容器的真实像素画（不拉伸、线宽 1.5px，高 80 以上 2px、圆角连接）。默认是线加线下渐变（贴线 22% 渐到 0），最新值处是实心点加常驻空心环；给毫秒时间戳与 domain 时横轴是整个交易时段、线只画到现在（对齐 TradingView Markets 页的日内图），可加右侧价格刻度、底部时间刻度与最新价价签；另有 line、baseline（基准上涨色下跌色）、bars、winloss（胜负格）四种画法。可加基准虚线、最高最低点、右端最新值、成交量、断点、单调曲线；interactive 时悬停出一根竖线、吸附点与紧挨光标的三行读数（数值、日期、时间），键盘左右键走点。线色按最后值对基准（没基准按头尾），涨跌色跟涨跌配色走，没有数据只留「—」。',
     exports: ['Sparkline', 'sparkPoints', 'sparkTone', 'quoteTone'],
     propParts: [
       { part: 'Sparkline' },
       {
         part: '纯函数',
-        note: 'sparkPoints(values, width, height) 给 polyline 的点；sparkTone(values) 取头尾三态；quoteTone(change) 由一个涨跌数取三态（报价类的件共用）。几何（断点分段、基准切分、单调插值、设备像素对齐）在 katana/sparkline-model.ts，都是纯函数。',
+        note: 'sparkPoints(values, width, height) 给 polyline 的点；sparkTone(values) 取头尾三态；quoteTone(change) 由一个涨跌数取三态（报价类的件共用）。几何（断点分段、基准切分、单调插值、设备像素对齐、时间到横坐标与休市压缩、时间与价格刻度、读数框位置）在 katana/sparkline-model.ts，都是纯函数。',
       },
     ],
     states: [
@@ -4368,8 +4368,11 @@ export const PAGES: readonly DocPage[] = [
       'line：只一根线；baseline：以基准为界，上面涨色、下面跌色，线与面积都分色；bars：每个值一根细柱；winloss：每个值只表示正负，等高小方块。',
       '给了 baseline：画 1px 虚线（dash 2 2）；给了 lastLabel：右端写最新值，线留出位置不压字；showExtremes：最高最低各一个点，extremeLabels 在点旁写字，放不下自动换边。',
       'values 里的 null 或 NaN 是断点：线与面积在那里断开（午休、停牌），末端点取最后一个有效值。',
-      '值变化：末端点的光晕从 0 放大淡出一次，新点追加时线、面积与末端点一起平滑延伸；窗口左移不跳。',
-      'interactive：悬停出竖向十字线、吸附到最近点的圆点和读数小框（贴边翻转不出界）；聚焦后左右键走点，Home / End 到头尾，Esc 退出。',
+      '给了数字 times（毫秒）：按时间定横坐标；给了 domain 整个时段是横轴，线只画到最后一个点，右边留空；domain 之外与休市里的点裁掉。不给 times 与 domain 仍按序号铺满整宽。',
+      '给了 sessions（如 A 股上午、下午）：时段之间的休市在横轴上压成一道 4px 的细缝，线与面积在那里断开。',
+      '给了 axis（高度 60px 以上才生效）：右侧价格刻度（默认 4 档，从最低均分到最高）与底部时间刻度（自动挑放得下的间隔，或按分钟数），挤在一起的刻度字丢掉；lastTag：右轴上涨跌色实底的最新价价签，字用对比色。',
+      '值变化：末端环外的光晕从 0 放大淡出一次（环本身常驻），新点追加时线、面积与末端点一起平滑延伸；窗口左移不跳。',
+      'interactive：悬停出一根竖线（没有横线）、吸附到最近点的圆点和紧挨光标的读数框（HTML 三行：粗体数值、日期、时间，贴边左右翻转，不出容器；图太矮放不下时放到图上方）；只给了 times 没给 formatTime 时只显示数值；聚焦后左右键走点，Home / End 到头尾，Esc 退出。',
       '有 volumes：底部四分之一高度画细量柱，价格线在它上方；volumeTone 为 updown 时按涨跌着色。',
       '没有数据（有效值少于两个）：只留「—」，读屏名说清没有数据。',
     ],
@@ -4381,12 +4384,38 @@ export const PAGES: readonly DocPage[] = [
       '不要给一个根本没有基准意义的数列硬传 baseline：画出的虚线会被当成昨收。',
     ],
     composition:
-      'Sparkline\n  svg role=img（viewBox = 容器真实宽高；interactive 时 tabIndex=0）\n    defs（线下渐变、基准分色的两块裁剪）\n    量柱 · 基准虚线 · 面积 · 线（每段一个 M）· 柱 / 胜负格\n    最高最低点与字 · 光晕 · 末端点 · 右端最新值\n    悬停：十字线 · 吸附点 · 读数框\n  span[aria-live]（interactive 时，节流播报当前点的读数）',
+      'Sparkline\n  svg role=img（viewBox = 容器真实宽高；interactive 时 tabIndex=0）\n    defs（线下渐变、基准分色的两块裁剪）\n    量柱 · 基准虚线 · 面积 · 线（每段一个 M）· 柱 / 胜负格\n    最高最低点与字 · 光晕 · 末端点 · 右端最新值\n    价格刻度 · 时间刻度 · 最新价价签\n    悬停：竖线 · 吸附点 · 读数框（foreignObject 里的 HTML）\n  span[aria-live]（interactive 时，节流播报当前点的读数）',
     keys: [
       ['左 / 右方向键（interactive，聚焦时）', '走到前一个 / 后一个有效点，读屏播报读数'],
       ['Home / End', '走到第一个 / 最后一个有效点'],
       ['Esc', '退出读数，焦点留在图上'],
     ],
+  },
+  {
+    id: 'mini-chart',
+    group: 'quotes',
+    cardHeight: 260,
+    title: 'MiniChart 迷你行情卡',
+    summary:
+      '照 TradingView 的 Mini Chart 小组件（2026-11-18 在浏览器里看的）：卡片上一行「品种图标 + 代码 + 角标」，一行「最新价 单位 + 涨跌幅」，下面是走势（Sparkline 的 area：线 2px 圆角、线下很淡的同色渐变、末端实心点加空心环）。给了毫秒时间戳与 domain，线只画到现在、右边留空；live 时价格滚动、涨跌幅闪色。没有基准线与坐标轴，默认不开悬停。',
+    exports: ['MiniChart'],
+    propParts: [{ part: 'MiniChart' }],
+    states: [
+      '默认：图标、代码、价格、涨跌幅与走势；涨跌色按 change（涨、跌、平）。',
+      '给了 times 与 domain（可加 sessions）：横轴是整个交易时段，线只画到最后一个点，右边留空；午休被压缩、线在那里断开。',
+      'live：价格变了用 RollingText 滚动，涨跌幅闪一次涨跌色，走势新点追加时线平滑延伸、末端环放大淡出一次。',
+      '给了 onSelect：整张卡是按钮，悬停提亮、键盘焦点有环；不要同时开 interactive。',
+      '没有走势数据（有效值少于两个）：走势的位置只留「—」。',
+    ],
+    donts: [
+      '不要在包里写文字：角标、单位、读屏名都由调用方传。',
+      '不要给它加基准线与坐标轴：要它们用 Sparkline 的 baseline 与 axis。',
+      '不要在可点的卡上开 interactive：按钮里不该再有可聚焦的子元素。',
+      '不要拿它放进表格行：行内用 Sparkline，卡片用 MiniChart。',
+    ],
+    composition:
+      'MiniChart\n  div[role=group] | button\n    span（SymbolMark · 代码 · 角标）\n    span（价 RollingText · 单位 · ChangeText）\n    span > Sparkline',
+    keys: [['Tab / Enter', '有 onSelect 时到卡上、触发']],
   },
   {
     id: 'gauge-bar',

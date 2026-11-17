@@ -89,6 +89,8 @@ export type SparkLayout = {
   count: number
   /** true：每个值占一格、点在格子中央（柱与胜负格）；false：首尾贴两端（线）。 */
   slots: boolean
+  /** 给了就按它定每个值的横坐标（按时间排：值不等距，被裁掉的是 NaN）；不给按序号等分。 */
+  xs?: readonly number[]
 }
 
 export type SparkLayoutOptions = {
@@ -134,6 +136,7 @@ export function sparkLayout(values: readonly SparkValue[], o: SparkLayoutOptions
 
 /** 第 i 个值的横坐标。 */
 export function xAt(layout: SparkLayout, i: number): number {
+  if (layout.xs) return layout.xs[i] ?? Number.NaN
   const span = layout.right - layout.left
   if (layout.slots) return layout.left + ((i + 0.5) / Math.max(1, layout.count)) * span
   return layout.left + (layout.count > 1 ? (i / (layout.count - 1)) * span : span / 2)
@@ -145,14 +148,22 @@ export function yAt(layout: SparkLayout, value: number): number {
 }
 
 /** 一列值的坐标：断点处 y 是 NaN；y 吸到设备像素（水平线才清晰）。 */
-export function sparkLayoutPoints(values: readonly SparkValue[], layout: SparkLayout, dpr = 1): LinePoint[] {
+export function sparkLayoutPoints(
+  values: readonly SparkValue[],
+  layout: SparkLayout,
+  dpr = 1,
+  lineWidth = SPARK_LINE_W,
+): LinePoint[] {
   return values.map((value, i) => {
     const x = xAt(layout, i)
-    return isSparkValue(value)
-      ? ([x, snapLine(yAt(layout, value), SPARK_LINE_W, dpr)] as const)
+    return isSparkValue(value) && Number.isFinite(x)
+      ? ([x, snapLine(yAt(layout, value), lineWidth, dpr)] as const)
       : ([x, Number.NaN] as const)
   })
 }
+
+/** 线宽（CSS 像素）：图高 80 以上用 2px，更矮的用 1.5px（大图线太细、小图线太粗都不好看）。 */
+export const sparkLineWidth = (height: number): number => (height >= 80 ? 2 : SPARK_LINE_W)
 
 // ———— 曲线 ————
 
@@ -213,31 +224,51 @@ export function runPath(run: readonly LinePoint[], curve: SparkCurve = 'linear')
   return d
 }
 
-/** 把含断点（y 为 NaN）的点切成连续的段。 */
-export function pointRuns(points: readonly LinePoint[]): LinePoint[][] {
+/**
+ * 把含断点（y 为 NaN）的点切成连续的段。
+ * groups：每个点所在的交易时段号；相邻两个有效点时段号不同也要断开（午休两边的线不连）。
+ */
+export function pointRuns(points: readonly LinePoint[], groups?: readonly number[]): LinePoint[][] {
   const runs: LinePoint[][] = []
   let current: LinePoint[] = []
-  for (const p of points) {
-    if (Number.isFinite(p[1]) && Number.isFinite(p[0])) current.push(p)
-    else if (current.length) {
+  let group: number | undefined
+  points.forEach((p, i) => {
+    if (!(Number.isFinite(p[1]) && Number.isFinite(p[0]))) {
+      if (current.length) runs.push(current)
+      current = []
+      return
+    }
+    const g = groups?.[i]
+    if (current.length && groups && g !== group) {
       runs.push(current)
       current = []
     }
-  }
+    group = g
+    current.push(p)
+  })
   if (current.length) runs.push(current)
   return runs
 }
 
-/** 整条线的路径：每段一个 M，断点处断开；没有够两点的段返回空串。 */
-export function linePath(points: readonly LinePoint[], curve: SparkCurve = 'linear'): string {
-  return pointRuns(points)
+/** 整条线的路径：每段一个 M，断点处断开；没有够两点的段返回空串。groups 见 pointRuns。 */
+export function linePath(
+  points: readonly LinePoint[],
+  curve: SparkCurve = 'linear',
+  groups?: readonly number[],
+): string {
+  return pointRuns(points, groups)
     .map((run) => runPath(run, curve))
     .join('')
 }
 
-/** 线下面积的路径：每段先走线、再落到 floorY、回到段首封口；断点处各自封口。 */
-export function areaPath(points: readonly LinePoint[], floorY: number, curve: SparkCurve = 'linear'): string {
-  return pointRuns(points)
+/** 线下面积的路径：每段先走线、再落到 floorY、回到段首封口；断点处各自封口。groups 见 pointRuns。 */
+export function areaPath(
+  points: readonly LinePoint[],
+  floorY: number,
+  curve: SparkCurve = 'linear',
+  groups?: readonly number[],
+): string {
+  return pointRuns(points, groups)
     .filter((run) => run.length > 1)
     .map((run) => {
       const first = run[0]!
@@ -447,4 +478,136 @@ export function volumeRects(
     out.push({ i, x: sx, y: sy, width: sw, height: sh, side })
   })
   return out
+}
+
+// ———— 读数框 ————
+
+/**
+ * 读数框（HTML 三行那种）的位置：先放光标右边，放不下翻到左边，再夹进框内；纵向以点为中心夹进框内，框比图还高时放到图的上方。
+ * 返回左上角；above 为 true 表示放在图外上方。纯函数。
+ */
+export function tipPlacement(
+  cursorX: number,
+  pointY: number,
+  tipWidth: number,
+  tipHeight: number,
+  box: { width: number; height: number },
+  gap = 10,
+): { x: number; y: number; side: 'right' | 'left'; above: boolean } {
+  const fitsRight = cursorX + gap + tipWidth <= box.width
+  const side = fitsRight ? 'right' : 'left'
+  const x = fitsRight ? cursorX + gap : cursorX - gap - tipWidth
+  const above = tipHeight > box.height
+  const y = above ? -tipHeight - 6 : Math.max(0, Math.min(pointY - tipHeight / 2, box.height - tipHeight))
+  return { x: Math.max(0, Math.min(x, box.width - tipWidth)), y, side, above }
+}
+
+// ———— 时间轴 ————
+
+/** 一段交易时段 [开始, 结束]（毫秒时间戳）。 */
+export type SparkSpan = readonly [start: number, end: number]
+export type SparkTimeAxis = {
+  /** 横轴覆盖的整个时段（毫秒）。 */
+  domain: readonly [start: number, end: number]
+  /** 交易时段；时段之间的休市在横轴上压缩掉。不给整个 domain 是一段。 */
+  sessions?: readonly SparkSpan[]
+}
+/** 两个交易时段之间在横轴上留的像素（压缩掉休市后留一道细缝，让人看得出这里断过）。 */
+export const SPARK_SESSION_GAP = 4
+
+/** 规整交易时段：夹进 domain、去掉空段、按开始排序、合并重叠；没有可用的段退回整个 domain。domain 不合法返回空数组。 */
+export function timeSpans(axis: SparkTimeAxis): SparkSpan[] {
+  const [d0, d1] = axis.domain
+  if (!(Number.isFinite(d0) && Number.isFinite(d1) && d1 > d0)) return []
+  const clipped = (axis.sessions ?? [[d0, d1] as const])
+    .map(([a, b]) => [Math.max(a, d0), Math.min(b, d1)] as const)
+    .filter(([a, b]) => Number.isFinite(a) && Number.isFinite(b) && b > a)
+    .sort((x, y) => x[0] - y[0])
+  const merged: [number, number][] = []
+  for (const [a, b] of clipped) {
+    const last = merged[merged.length - 1]
+    if (last && a <= last[1]) last[1] = Math.max(last[1], b)
+    else merged.push([a, b])
+  }
+  return merged.length ? merged : [[d0, d1]]
+}
+
+/** 每个时间落在第几个交易时段；domain 之外、落在休市里、不是有限数的是 -1（要裁掉）。纯函数。 */
+export function timeGroups(times: readonly number[], spans: readonly SparkSpan[]): number[] {
+  return times.map((t) => (Number.isFinite(t) ? spans.findIndex(([a, b]) => t >= a && t <= b) : -1))
+}
+
+/** 时间 → 横坐标：[left, right] 里各时段按时长占宽，时段之间留 gap 像素；不在任何时段里返回 NaN。纯函数。 */
+export function timeX(
+  t: number,
+  spans: readonly SparkSpan[],
+  left: number,
+  right: number,
+  gap = SPARK_SESSION_GAP,
+): number {
+  const total = spans.reduce((sum, [a, b]) => sum + (b - a), 0)
+  if (!(total > 0) || !Number.isFinite(t)) return Number.NaN
+  const usable = Math.max(1, right - left - gap * (spans.length - 1))
+  let before = 0
+  for (let i = 0; i < spans.length; i++) {
+    const [a, b] = spans[i]!
+    if (t >= a && t <= b) return left + ((before + (t - a)) / total) * usable + gap * i
+    before += b - a
+  }
+  return Number.NaN
+}
+
+/** 一列时间的横坐标（被裁掉的是 NaN）。 */
+export function timeXs(
+  times: readonly number[],
+  spans: readonly SparkSpan[],
+  left: number,
+  right: number,
+  gap = SPARK_SESSION_GAP,
+): number[] {
+  return times.map((t) => timeX(t, spans, left, right, gap))
+}
+
+/**
+ * 时间刻度：每 minutes 分钟一个（按整分钟对齐到时间戳的整倍数，所以 30 分钟的刻度落在整点与半点），只取落在交易时段里的，时段两头也算。
+ * 对齐按 UTC 时间戳，半小时时区（印度）也是整点半点；只有 45 分钟时区（尼泊尔）会错开一刻钟。
+ */
+export function timeTicks(spans: readonly SparkSpan[], minutes: number): number[] {
+  const step = Math.max(1, minutes) * 60_000
+  const out: number[] = []
+  for (const [a, b] of spans) {
+    for (let t = Math.ceil(a / step) * step; t <= b; t += step) if (!out.includes(t)) out.push(t)
+  }
+  return out
+}
+
+const NICE_MINUTES = [5, 10, 15, 30, 60, 120, 240, 360, 720, 1440, 10080] as const
+/** 刻度间隔自动取：从小到大找第一个刻度数不超过 maxTicks 的间隔（分钟）。 */
+export function autoTickMinutes(spans: readonly SparkSpan[], maxTicks: number): number {
+  for (const m of NICE_MINUTES) if (timeTicks(spans, m).length <= Math.max(1, maxTicks)) return m
+  return NICE_MINUTES[NICE_MINUTES.length - 1]
+}
+
+/**
+ * 标签挨着放：从左到右留下不与前一个重叠的（间隔 gap），也不超出 [0, boxWidth]；每项是中心 x 与文字宽，返回留下的下标。纯函数。
+ */
+export function thinLabels(items: readonly { x: number; width: number }[], boxWidth: number, gap = 8): number[] {
+  const kept: number[] = []
+  let edge = -Infinity
+  items.forEach(({ x, width }, i) => {
+    if (!Number.isFinite(x)) return
+    const start = Math.max(0, Math.min(x - width / 2, boxWidth - width))
+    if (start < edge + gap) return
+    kept.push(i)
+    edge = start + width
+  })
+  return kept
+}
+
+// ———— 价格刻度 ————
+
+/** 价格刻度：lo 到 hi 均分 count 档（含两端），从高到低排。count 小于 2 取 2。纯函数。 */
+export function priceTicks(lo: number, hi: number, count = 4): number[] {
+  const n = Math.max(2, Math.floor(count))
+  return Array.from({ length: n }, (_, k) => hi - ((hi - lo) * k) / (n - 1))
 }

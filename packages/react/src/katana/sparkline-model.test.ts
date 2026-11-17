@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: MIT
 import { describe, expect, it } from 'vitest'
 import {
+  SPARK_SESSION_GAP,
   areaPath,
+  autoTickMinutes,
   barRects,
   baselineClips,
   labelPlacement,
@@ -9,6 +11,7 @@ import {
   monotoneTangents,
   nearestIndex,
   pointRuns,
+  priceTicks,
   readoutPlacement,
   resolveSparkTone,
   snapLine,
@@ -16,8 +19,16 @@ import {
   sparkExtremes,
   sparkLayout,
   sparkLayoutPoints,
+  sparkLineWidth,
   splitRuns,
   stepIndex,
+  thinLabels,
+  timeGroups,
+  timeSpans,
+  timeTicks,
+  timeX,
+  timeXs,
+  tipPlacement,
   volumeRects,
   winLossCells,
   xAt,
@@ -241,5 +252,159 @@ describe('成交量', () => {
     expect(rects[0]!.height).toBeCloseTo(5, 0)
     expect(rects[1]!.y + rects[1]!.height).toBe(40)
     expect(rects[1]!.side).toBe('up')
+  })
+})
+
+// 演示用的 A 股一天：9:30 到 11:30、13:00 到 15:00（只看时间差，时区不重要，用 UTC 毫秒）。
+const at = (h: number, m: number) => Date.UTC(2026, 10, 17, h, m)
+const DAY_AXIS = {
+  domain: [at(9, 30), at(15, 0)] as const,
+  sessions: [
+    [at(9, 30), at(11, 30)],
+    [at(13, 0), at(15, 0)],
+  ] as const,
+}
+
+describe('时间轴', () => {
+  it('没给交易时段整个 domain 是一段；domain 不合法没有段', () => {
+    expect(timeSpans({ domain: [0, 100] })).toEqual([[0, 100]])
+    expect(timeSpans({ domain: [100, 100] })).toEqual([])
+  })
+
+  it('交易时段夹进 domain、去空段、排序、合并重叠', () => {
+    expect(
+      timeSpans({
+        domain: [10, 100],
+        sessions: [
+          [60, 90],
+          [0, 20],
+          [15, 30],
+          [50, 50],
+        ],
+      }),
+    ).toEqual([
+      [10, 30],
+      [60, 90],
+    ])
+    expect(timeSpans({ domain: [10, 100], sessions: [[200, 300]] })).toEqual([[10, 100]])
+  })
+
+  it('时间到横坐标：没有休市时按时长线性铺在 [left, right]', () => {
+    const spans = timeSpans({ domain: [0, 100] })
+    expect(timeX(0, spans, 10, 110)).toBe(10)
+    expect(timeX(25, spans, 10, 110)).toBe(35)
+    expect(timeX(100, spans, 10, 110)).toBe(110)
+  })
+
+  it('domain 之外与休市里的时间是 NaN（被裁掉）', () => {
+    const spans = timeSpans(DAY_AXIS)
+    expect(timeX(at(9, 0), spans, 0, 300)).toBeNaN()
+    expect(timeX(at(15, 1), spans, 0, 300)).toBeNaN()
+    expect(timeX(at(12, 0), spans, 0, 300)).toBeNaN()
+    expect(timeGroups([at(9, 0), at(10, 0), at(12, 0), at(13, 0), at(15, 1), Number.NaN], spans)).toEqual([
+      -1, 0, -1, 1, -1, -1,
+    ])
+  })
+
+  it('休市压缩：午休不占宽，上午最后一点到下午第一点只隔一道细缝', () => {
+    const spans = timeSpans(DAY_AXIS)
+    const xs = timeXs([at(9, 30), at(11, 30), at(13, 0), at(15, 0)], spans, 0, 404)
+    expect(xs[0]).toBe(0)
+    expect(xs[3]).toBe(404)
+    // 上午下午各 2 小时、各占一半（扣掉缝）。
+    expect(xs[1]).toBeCloseTo((404 - SPARK_SESSION_GAP) / 2, 6)
+    expect(xs[2]! - xs[1]!).toBeCloseTo(SPARK_SESSION_GAP, 6)
+  })
+
+  it('线只画到现在：最后一点在时段中间时右边留空', () => {
+    const spans = timeSpans(DAY_AXIS)
+    const now = at(14, 0)
+    const x = timeX(now, spans, 0, 404)
+    const end = timeX(at(15, 0), spans, 0, 404)
+    expect(x).toBeLessThan(end)
+    // 14:00 在下午时段的一半：整个横轴 = 上午 200 + 缝 4 + 下午 200，14:00 在 204 + 100。
+    expect(x).toBeCloseTo(304, 6)
+  })
+
+  it('刻度：每 30 分钟一个，落在整点与半点，只取交易时段里的，时段两头都算', () => {
+    const spans = timeSpans(DAY_AXIS)
+    const ticks = timeTicks(spans, 30)
+    expect(ticks[0]).toBe(at(9, 30))
+    expect(ticks).toContain(at(11, 30))
+    expect(ticks).toContain(at(13, 0))
+    expect(ticks).not.toContain(at(12, 0))
+    expect(ticks[ticks.length - 1]).toBe(at(15, 0))
+    expect(ticks).toHaveLength(10)
+  })
+
+  it('刻度间隔自动取：放不下就换大一档', () => {
+    const spans = timeSpans(DAY_AXIS)
+    expect(autoTickMinutes(spans, 12)).toBe(30)
+    expect(autoTickMinutes(spans, 5)).toBe(60)
+    expect(autoTickMinutes(spans, 1)).toBeGreaterThan(60)
+  })
+
+  it('标签不重叠、不出框：挤到一起的后一个丢掉', () => {
+    expect(
+      thinLabels(
+        [
+          { x: 20, width: 30 },
+          { x: 40, width: 30 },
+          { x: 100, width: 30 },
+          { x: 195, width: 30 },
+        ],
+        200,
+      ),
+    ).toEqual([0, 2, 3])
+  })
+
+  it('价格刻度均分含两端、从高到低', () => {
+    expect(priceTicks(0, 30, 4)).toEqual([30, 20, 10, 0])
+    expect(priceTicks(5, 10, 1)).toEqual([10, 5])
+  })
+
+  it('线宽：80 以上 2px，更矮 1.5px', () => {
+    expect(sparkLineWidth(36)).toBe(1.5)
+    expect(sparkLineWidth(80)).toBe(2)
+  })
+
+  it('按时间排的横坐标：xAt 取 xs，被裁掉的点没有 y、不会被选中', () => {
+    const layout = { ...sparkLayout([1, 2, 3], { width: 100, height: 30 }), xs: [10, Number.NaN, 90] }
+    expect(xAt(layout, 0)).toBe(10)
+    expect(xAt(layout, 1)).toBeNaN()
+    const points = sparkLayoutPoints([1, 2, 3], layout)
+    expect(Number.isNaN(points[1]![1])).toBe(true)
+    expect(nearestIndex([1, 2, 3], 50, layout)).toBe(0)
+  })
+
+  it('时段号不同的相邻点断开：午休两边的线各是一段', () => {
+    const pts = [
+      [0, 5],
+      [10, 6],
+      [14, 7],
+      [24, 8],
+    ] as const
+    expect(pointRuns(pts)).toHaveLength(1)
+    expect(pointRuns(pts, [0, 0, 1, 1])).toHaveLength(2)
+    expect(linePath(pts, 'linear', [0, 0, 1, 1]).match(/M/g)).toHaveLength(2)
+    expect(areaPath(pts, 30, 'linear', [0, 0, 1, 1]).match(/Z/g)).toHaveLength(2)
+  })
+})
+
+describe('读数框位置', () => {
+  const box = { width: 200, height: 100 }
+  it('先放右边，放不下翻左边，不出框', () => {
+    expect(tipPlacement(50, 50, 60, 40, box).side).toBe('right')
+    const flipped = tipPlacement(180, 50, 60, 40, box)
+    expect(flipped.side).toBe('left')
+    expect(flipped.x + 60).toBeLessThanOrEqual(180)
+    expect(tipPlacement(5, 50, 300, 40, box).x).toBe(0)
+  })
+  it('纵向以点为中心并夹进框内；比图还高时放到图上方', () => {
+    expect(tipPlacement(50, 2, 60, 40, box).y).toBe(0)
+    expect(tipPlacement(50, 99, 60, 40, box).y).toBe(60)
+    const tall = tipPlacement(50, 10, 60, 120, box)
+    expect(tall.above).toBe(true)
+    expect(tall.y).toBeLessThan(-120)
   })
 })

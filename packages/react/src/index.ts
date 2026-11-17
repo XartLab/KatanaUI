@@ -302,7 +302,15 @@ export { clampSplitRatio, DEFAULT_SNAP_POINTS, snapSplitRatio, splitKeyRatio } f
 
 // 报价与行情类的件（#1884）：迷你图、进度条、矩形树图（后三件从应用的分析视图提来）；行内价格标签、报价卡与一排、区间条、评级仪表是新做的。
 // 功能参照 TradingView 小组件，只取「给用户看什么、怎么交互」，不嵌、不抄（用户 2026-11-14 定：我们做自己的）。分组页签行情表在 patterns/。
-export { Sparkline, sparkPoints, sparkTone, type SparklineProps, type SparklineVariant } from './katana/sparkline.tsx'
+export {
+  Sparkline,
+  sparkPoints,
+  sparkTone,
+  type SparkAxis,
+  type SparklineProps,
+  type SparklineVariant,
+} from './katana/sparkline.tsx'
+export { MiniChart, type MiniChartProps } from './katana/mini-chart.tsx'
 export { GaugeBar, type GaugeBarClasses, type GaugeBarProps } from './katana/gauge-bar.tsx'
 export { Treemap, type TreemapClasses, type TreemapProps } from './katana/treemap.tsx'
 export {

@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: MIT
 // 迷你图画廊：五种画法、基准线、最高最低、悬停读数、成交量、断点、曲线、实时、表格行里的紧凑用法。数据都是演示用的（带种子的随机游走），不是行情。
 import { useState } from 'react'
-import { Sparkline, type SparklineVariant } from '../../src/index'
-import { makeRng, randomWalk } from '../live-sim'
+import { Button, MiniChart, Sparkline, type SparklineVariant } from '../../src/index'
+import { LiveToggle } from '../LiveToggle'
+import { makeRng, randomWalk, useLiveTicker } from '../live-sim'
 import { Row } from './parts'
 
 /** 带种子的随机游走：同一个种子永远同一串，截图与断言才稳。 */
@@ -59,11 +60,111 @@ function Case({
   )
 }
 
+// —— TradingView 式：整个交易时段做横轴、线只画到现在 ——
+// 演示的「沪深300」是一天 5 分钟线：上午 9:30 到 11:30、下午 13:00 到 15:00（UTC+8，时间戳用 UTC 毫秒写，不随机器时区变）。
+const HOUR = 3_600_000
+const MIN = 60_000
+const DAY_OPEN = Date.UTC(2026, 10, 17, 1, 30)
+const MORNING: readonly [number, number] = [DAY_OPEN, DAY_OPEN + 2 * HOUR]
+const AFTERNOON: readonly [number, number] = [DAY_OPEN + 3.5 * HOUR, DAY_OPEN + 5.5 * HOUR]
+const SESSIONS: readonly (readonly [number, number])[] = [MORNING, AFTERNOON]
+const DOMAIN: readonly [number, number] = [MORNING[0], AFTERNOON[1]]
+const PREV_INDEX = 4651.2
+/** 第 n 根 5 分钟线的时间：上午 25 根（含 11:30），之后跳到 13:00 起算。 */
+const barTime = (n: number) => (n <= 24 ? MORNING[0] + n * 5 * MIN : AFTERNOON[0] + (n - 25) * 5 * MIN)
+/** 一天 50 个点：上午 25 个（9:30 到 11:30），下午 25 个（13:00 到 15:00）。 */
+const BAR_COUNT = 50
+const pad2 = (n: number) => String(n).padStart(2, '0')
+/** 时间戳写成 UTC+8 的日期与时间（手写，不依赖机器时区与区域设置）。 */
+const formatTime = (t: number) => {
+  const d = new Date(t + 8 * HOUR)
+  return {
+    date: `${d.getUTCFullYear()}-${pad2(d.getUTCMonth() + 1)}-${pad2(d.getUTCDate())}`,
+    time: `${pad2(d.getUTCHours())}:${pad2(d.getUTCMinutes())} UTC+8`,
+  }
+}
+const formatTick = (t: number) => formatTime(t).time.slice(0, 5)
+const money2 = (value: number) => value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+
+type Intraday = { values: readonly number[]; times: readonly number[] }
+/** 开盘到 13:55（第 36 根）的演示数据；之后每走一步长一根，直到 15:00 收盘。 */
+function intradayStart(): Intraday {
+  const rng = makeRng(23)
+  const values = [PREV_INDEX + 3.1]
+  for (let n = 1; n <= 36; n += 1) values.push(randomWalk(values[n - 1]!, rng, 0.0011))
+  return { values, times: values.map((_, n) => barTime(n)) }
+}
+
+export function TvStyleSection() {
+  const { state, advance } = useLiveTicker<Intraday>(intradayStart, (day, rng) => {
+    if (day.values.length >= BAR_COUNT) return day
+    const n = day.values.length
+    return {
+      values: [...day.values, randomWalk(day.values[n - 1]!, rng, 0.0011)],
+      times: [...day.times, barTime(n)],
+    }
+  })
+  const last = state.values[state.values.length - 1]!
+  const change = ((last - PREV_INDEX) / PREV_INDEX) * 100
+  return (
+    <Row name="TradingView 式（横轴是整个交易时段，线只画到现在）">
+      <div className="gal-spark-tv-live" data-gallery-live="spark-tv">
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+          <LiveToggle labels={{ group: '数据刷新', live: '实时', paused: '暂停' }} />
+          <Button size="sm" onClick={advance}>
+            走一步
+          </Button>
+          <span className="gal-note">实时刷新（模拟数据，每步长一根 5 分钟线）</span>
+        </div>
+        <div className="gal-spark-tv" data-gallery-spark="tv-mini">
+          <MiniChart
+            symbol="000300"
+            name="沪深300"
+            badge="D"
+            price={last}
+            unit="CNY"
+            formatPrice={money2}
+            change={change}
+            values={state.values}
+            times={state.times}
+            domain={DOMAIN}
+            sessions={SESSIONS}
+            formatTime={formatTime}
+            live
+            interactive
+            labels={{ card: '沪深300 今日走势', chart: '沪深300 日内走势' }}
+          />
+        </div>
+        <div className="gal-spark-tv gal-spark-intraday" data-gallery-spark="tv-intraday">
+          <Sparkline
+            values={state.values}
+            label="沪深300 日内走势（示例数据）"
+            tone={last >= PREV_INDEX ? 'up' : 'down'}
+            times={state.times}
+            domain={DOMAIN}
+            sessions={SESSIONS}
+            formatTime={formatTime}
+            format={(value) => money2(value)}
+            axis={{ price: 4, time: true, formatPrice: money2, formatTick }}
+            lastTag
+            interactive
+          />
+        </div>
+        <small className="gal-note">
+          示例数据，不是行情。横轴 9:30 到 15:00，午休（11:30 到
+          13:00）压缩成一道细缝、线在那里断开；线只画到现在，右边留空，实时每走一步被填一格。
+        </small>
+      </div>
+    </Row>
+  )
+}
+
 export function SparklineGallery() {
   const [hovered, setHovered] = useState<number | null>(null)
   return (
     <>
       <p className="gal-note">迷你图画廊：{'示例数据，不是行情'}。</p>
+      <TvStyleSection />
       <Row name="五种画法">
         {VARIANTS.map((variant) => (
           <Case key={variant} id={`variant-${variant}`} caption={VARIANT_NAME[variant]}>

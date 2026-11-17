@@ -3997,7 +3997,7 @@ for (const theme of THEMES) {
         context.fillRect(0, 0, 1, 1)
         return [...context.getImageData(0, 0, 1, 1).data]
       }, css)
-    const paint = (locator: Locator, property: 'stroke' | 'color' | 'backgroundColor') =>
+    const paint = (locator: Locator, property: 'stroke' | 'fill' | 'color' | 'backgroundColor') =>
       locator.evaluate((element, name) => {
         const canvas = document.createElement('canvas')
         canvas.width = canvas.height = 1
@@ -4123,6 +4123,8 @@ for (const theme of THEMES) {
       const svg = page.locator('[data-gallery-spark="hover"] svg')
       const cursor = svg.locator('.k-spark-cursor')
       await expect(cursor).toHaveCount(0)
+      // 「TradingView 式」一节加在最上面后这一例在视口外，鼠标要先滚到它。
+      await svg.scrollIntoViewIfNeeded()
       const box = (await svg.boundingBox())!
       await page.mouse.move(box.x + box.width * 0.5, box.y + box.height * 0.5)
       await expect(cursor).toHaveCount(1)
@@ -4167,6 +4169,142 @@ for (const theme of THEMES) {
       await expect(cursor).toHaveCount(0)
       await expect(live).toHaveText('', { timeout: 2000 })
       await expect(page.locator('[data-gallery-spark="hover"] .gal-note')).toContainText('Tab')
+    })
+
+    test('迷你图（TradingView 式日内图）：线只画到现在、右边留空；午休压缩；价签等于最新价；实时往右长', async ({
+      page,
+    }) => {
+      await open(page, theme, 'sparkline')
+      const svg = page.locator('[data-gallery-spark="tv-intraday"] svg')
+      await expect(svg).toHaveAttribute('data-timed', '')
+      const num = async (name: string) => Number(await svg.getAttribute(name))
+      const left = await num('data-plot-left')
+      const right = await num('data-plot-right')
+      // 与演示数据同一套时间（UTC 毫秒）：上午 9:30 到 11:30、下午 13:00 到 15:00，横轴 240 分钟加一道 4px 的缝。
+      const HOUR = 3_600_000
+      const open0 = Date.UTC(2026, 10, 17, 1, 30)
+      const afternoon = open0 + 3.5 * HOUR
+      const xOfAfternoon = (t: number) => left + ((120 + (t - afternoon) / 60_000) / 240) * (right - left - 4) + 4
+      const dotX = async () => Number(await svg.locator('circle.k-spark-dot:not(.is-hover)').getAttribute('cx'))
+      // 现在是 13:55（第 36 根）：最右点的 x 正是 13:55 对应的 x，右边留着一大片空。
+      expect(await dotX()).toBeCloseTo(xOfAfternoon(afternoon + 55 * 60_000), 1)
+      const lineBox = (await svg.locator('.k-spark-line').boundingBox())!
+      const svgBox = (await svg.boundingBox())!
+      expect(lineBox.x + lineBox.width, '线只画到现在，右边留空').toBeLessThan(svgBox.x + right - 40)
+      const areaBox = (await svg.locator('.k-spark-area').boundingBox())!
+      expect(areaBox.x + areaBox.width, '面积也只到最后一点').toBeLessThan(svgBox.x + right - 40)
+      // 午休压缩：线断成两段，上午最后一点（11:30）到下午第一点（13:00）只隔那道缝。
+      const d = (await svg.locator('.k-spark-line').getAttribute('d'))!
+      const [, morning, afternoonRun] = d.split('M')
+      const lastMorning = Number(morning!.trim().split('L').at(-1)!.split(' ')[0])
+      const firstAfternoon = Number(afternoonRun!.split('L')[0]!.split(' ')[0])
+      expect(firstAfternoon - lastMorning).toBeGreaterThan(0)
+      expect(firstAfternoon - lastMorning).toBeLessThan(6)
+      // 末端点：实心点外面套一个常驻空心环。
+      const ring = svg.locator('.k-spark-ring')
+      await expect(ring).toHaveCount(1)
+      await expect.poll(() => ring.evaluate((el) => getComputedStyle(el).fill)).toBe('none')
+      expect(Number(await ring.getAttribute('r'))).toBeGreaterThan(
+        Number(await svg.locator('circle.k-spark-dot').getAttribute('r')),
+      )
+      expect(Number(await ring.getAttribute('cx'))).toBeCloseTo(await dotX(), 1)
+      // 价签：文字等于最新价（迷你行情卡上的价同一个数），底色是涨跌色的面积 token。
+      const tag = svg.locator('[data-last-tag]')
+      const price = page.locator('[data-gallery-spark="tv-mini"] .k-mini-price')
+      await expect(tag.locator('text')).toHaveText(/^\d,\d{3}\.\d\d$/)
+      await expect(tag.locator('text')).toHaveText((await price.textContent())!)
+      await expect.poll(() => paint(tag.locator('rect'), 'fill')).toEqual(await swatch(page, 'var(--pnl-up-area)'))
+      // 价格刻度 4 档、时间刻度有字。
+      await expect(svg.locator('.k-spark-price-tick')).toHaveCount(4)
+      expect(await svg.locator('.k-spark-time-tick').count()).toBeGreaterThanOrEqual(4)
+      await expect(svg.locator('.k-spark-time-tick').first()).toHaveText(/^\d\d:\d\d$/)
+      // 实时：走三步，线往右长（右边的空被填一点），价签跟着最新价。
+      const before = await dotX()
+      await page.evaluate(() => window.__liveStep?.(3))
+      await expect.poll(dotX).toBeCloseTo(xOfAfternoon(afternoon + 70 * 60_000), 1)
+      expect(await dotX()).toBeGreaterThan(before)
+      await expect(tag.locator('text')).toHaveText((await price.textContent())!)
+    })
+
+    test('迷你图（TradingView 式悬停）：只有竖线，读数框三行（数值、日期、时间）贴边翻转不出容器', async ({ page }) => {
+      await open(page, theme, 'sparkline')
+      const svg = page.locator('[data-gallery-spark="tv-intraday"] svg')
+      await svg.scrollIntoViewIfNeeded()
+      const box = (await svg.boundingBox())!
+      const inside = async () => {
+        const tip = (await svg.locator('.k-spark-tip').boundingBox())!
+        expect(tip.x).toBeGreaterThanOrEqual(box.x - 1)
+        expect(tip.x + tip.width).toBeLessThanOrEqual(box.x + box.width + 1)
+        expect(tip.y).toBeGreaterThanOrEqual(box.y - 1)
+        expect(tip.y + tip.height).toBeLessThanOrEqual(box.y + box.height + 1)
+        return tip
+      }
+      await page.mouse.move(box.x + box.width * 0.3, box.y + box.height * 0.5)
+      await expect(svg.locator('.k-spark-cursor')).toHaveCount(1)
+      // 竖线：x 不变、从上到下；没有横线。
+      const cursor = svg.locator('.k-spark-cursor')
+      expect(await cursor.getAttribute('x1')).toBe(await cursor.getAttribute('x2'))
+      await expect(svg.locator('.k-spark-hover line')).toHaveCount(1)
+      await expect(svg.locator('.k-spark-dot.is-hover')).toHaveCount(1)
+      const rows = svg.locator('.k-spark-tip > div')
+      await expect(rows).toHaveCount(3)
+      await expect(rows.nth(0)).toHaveText(/^\d,\d{3}\.\d\d$/)
+      await expect(rows.nth(1)).toHaveText(/^2026-11-17$/)
+      await expect(rows.nth(2)).toHaveText(/^\d\d:\d\d UTC\+8$/)
+      await expect
+        .poll(() => rows.nth(0).evaluate((el) => Number(getComputedStyle(el).fontWeight)))
+        .toBeGreaterThanOrEqual(600)
+      const mid = await inside()
+      // 读数框紧挨竖线：在它右边。
+      const cx = box.x + Number(await cursor.getAttribute('x1'))
+      expect(mid.x).toBeGreaterThan(cx)
+      // 贴右边翻到竖线左边，仍不出容器。
+      await page.mouse.move(box.x + box.width - 3, box.y + box.height * 0.5)
+      await expect
+        .poll(async () => (await svg.locator('.k-spark-tip').boundingBox())!.x)
+        .toBeLessThan(box.x + box.width - 60)
+      await inside()
+      // 贴左边与上边也不出容器。
+      await page.mouse.move(box.x + 2, box.y + 2)
+      await inside()
+      // 只给了 times 没给 formatTime 的图只显示数值（迷你行情卡上没有 formatTime 的情形见 sparkline 的悬停用例）。
+      await page.mouse.move(box.x - 40, box.y - 40)
+      await expect(svg.locator('.k-spark-cursor')).toHaveCount(0)
+    })
+
+    test('MiniChart 迷你行情卡：图标、代码、角标、价格与涨跌幅，走势只画到现在；可点的卡是按钮', async ({ page }) => {
+      await open(page, theme, 'mini-chart')
+      const up = page.locator('[data-gallery-mini="up"] .k-mini-chart')
+      await expect(up.locator('.k-symbol-mark')).toBeVisible()
+      await expect(up.locator('.k-mini-symbol')).toHaveText('AAA')
+      await expect(up.locator('.k-mini-badge')).toHaveText('D')
+      await expect(up.locator('.k-mini-price')).toHaveText('11.80')
+      await expect(up.locator('.k-mini-unit')).toHaveText('USD')
+      await expect(up.locator('.k-mini-change')).toContainText('+18.00%')
+      await expect.poll(() => paint(up.locator('.k-mini-change'), 'color')).toEqual(await swatch(page, 'var(--pnl-up)'))
+      await expect(up.locator('svg.k-spark .k-spark-ring')).toHaveCount(1)
+      await expect
+        .poll(() => paint(up.locator('svg.k-spark .k-spark-line'), 'stroke'))
+        .toEqual(await swatch(page, 'var(--pnl-up)'))
+      // 涨跌色跟 change 走：跌的卡线是跌色。
+      const down = page.locator('[data-gallery-mini="down"] .k-mini-chart')
+      await expect
+        .poll(() => paint(down.locator('svg.k-spark .k-spark-line'), 'stroke'))
+        .toEqual(await swatch(page, 'var(--pnl-down)'))
+      // 图高 80：线 2px。
+      await expect
+        .poll(() => up.locator('svg.k-spark .k-spark-line').evaluate((el) => getComputedStyle(el).strokeWidth))
+        .toBe('2px')
+      // 没有数据：走势位置只留「—」。
+      await expect(page.locator('[data-gallery-mini="empty"] .k-spark-empty')).toHaveText('—')
+      // 可点：整张卡是按钮，名字取 labels.card。
+      const button = page.getByRole('button', { name: '打开示例乙' })
+      await button.click()
+      await expect(page.locator('[data-gallery-picked]')).toHaveText('选中：示例乙')
+      // 带时间轴的那张（沪深300）：线只画到现在，右边留空。
+      const tv = page.locator('[data-gallery-spark="tv-mini"] svg.k-spark')
+      const dot = Number(await tv.locator('circle.k-spark-dot').getAttribute('cx'))
+      expect(dot).toBeLessThan(Number(await tv.getAttribute('data-plot-right')) - 20)
     })
 
     test('进度条：填充占轨道的 72%，取不到时不画填充、数换成弱色', async ({ page }) => {

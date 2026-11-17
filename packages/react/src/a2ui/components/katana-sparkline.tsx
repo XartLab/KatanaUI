@@ -51,24 +51,71 @@ export const KatanaSparklineApi = {
         .enum(['linear', 'monotone'])
         .describe('Curve between points: linear (default) or monotone (smooth, no overshoot).')
         .optional(),
+      times: numberListSchema(
+        'Millisecond timestamp of each value, one to one with values; places points by time. Ignored when the count differs from values.',
+      ).optional(),
+      domain: z
+        .array(z.number())
+        .length(2)
+        .describe(
+          'The whole time span of the x axis in milliseconds as [start, end], such as a trading day: the line stops at the last point and the rest stays empty. Needs times.',
+        )
+        .optional(),
+      sessions: z
+        .array(z.array(z.number()).length(2))
+        .describe(
+          'Trading sessions in milliseconds as [start, end] pairs; the gaps between them are squeezed out and the line breaks there. Needs times.',
+        )
+        .optional(),
+      axisPrice: z
+        .boolean()
+        .describe('Show four price ticks on the right. Ignored when the chart is shorter than 60px.')
+        .optional(),
+      lastTag: z
+        .boolean()
+        .describe('Show the latest value as a filled tag on the right axis, in the up or down color.')
+        .optional(),
       weight: weightSchema,
     })
     .strict(),
 } satisfies ComponentApi
 
-export const KatanaSparkline = createComponentImplementation(KatanaSparklineApi, ({ props }) => (
-  <Cell weight={props.weight}>
-    <Sparkline
-      values={numberList(props.values)}
-      label={props.label ?? ''}
-      tone={props.tone}
-      variant={props.variant}
-      baseline={props.baseline}
-      showLast={props.showLast}
-      lastLabel={props.lastLabel}
-      showExtremes={props.showExtremes}
-      extremeLabels={props.extremeLabels?.length === 2 ? [props.extremeLabels[0]!, props.extremeLabels[1]!] : undefined}
-      curve={props.curve}
-    />
-  </Cell>
-))
+/** 时间戳要与数列一一对应才用；对不上整个丢掉，退回按序号铺（坏数据不拖垮整块）。 */
+function pairs(values: number[], times: unknown, domain: unknown, sessions: unknown) {
+  const stamps = numberList(times)
+  if (stamps.length !== values.length || !stamps.length) return {}
+  const span = Array.isArray(domain) && domain.length === 2 ? (numberList(domain) as number[]) : []
+  const spans = Array.isArray(sessions)
+    ? sessions.map((s) => numberList(s)).filter((s): s is [number, number] => s.length === 2)
+    : []
+  return {
+    times: stamps,
+    domain: span.length === 2 ? ([span[0]!, span[1]!] as const) : undefined,
+    sessions: spans.length ? spans : undefined,
+  }
+}
+
+export const KatanaSparkline = createComponentImplementation(KatanaSparklineApi, ({ props }) => {
+  const values = numberList(props.values)
+  return (
+    <Cell weight={props.weight}>
+      <Sparkline
+        values={values}
+        {...pairs(values, props.times, props.domain, props.sessions)}
+        axis={props.axisPrice ? { price: true } : undefined}
+        lastTag={props.lastTag}
+        label={props.label ?? ''}
+        tone={props.tone}
+        variant={props.variant}
+        baseline={props.baseline}
+        showLast={props.showLast}
+        lastLabel={props.lastLabel}
+        showExtremes={props.showExtremes}
+        extremeLabels={
+          props.extremeLabels?.length === 2 ? [props.extremeLabels[0]!, props.extremeLabels[1]!] : undefined
+        }
+        curve={props.curve}
+      />
+    </Cell>
+  )
+})

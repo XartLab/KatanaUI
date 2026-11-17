@@ -185,6 +185,23 @@
 .gal-spark-tall .k-spark {
   height: 64px;
 }
+/* TradingView 式一节：迷你行情卡与日内大图上下排，大图高 220。 */
+.gal-spark-tv-live {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  max-width: 720px;
+}
+.gal-spark-tv {
+  width: 100%;
+}
+.gal-spark-tv[data-gallery-spark='tv-mini'] {
+  max-width: 320px;
+}
+.gal-spark-intraday .k-spark {
+  height: 220px;
+}
 .gal-spark-table {
   border-collapse: collapse;
   font: var(--text-data) var(--font-sans);

@@ -1217,6 +1217,49 @@
           ],
           "description": "Curve between points: linear (default) or monotone (smooth, no overshoot)."
         },
+        "times": {
+          "anyOf": [
+            {
+              "type": "array",
+              "items": {
+                "type": "number"
+              }
+            },
+            {
+              "$ref": "common_types.json#/$defs/DataBinding"
+            }
+          ],
+          "description": "Millisecond timestamp of each value, one to one with values; places points by time. Ignored when the count differs from values. Either a literal array or {\"@path\": \"/some/array\"} bound to the data model."
+        },
+        "domain": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 2,
+          "maxItems": 2,
+          "description": "The whole time span of the x axis in milliseconds as [start, end], such as a trading day: the line stops at the last point and the rest stays empty. Needs times."
+        },
+        "sessions": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 2,
+            "maxItems": 2
+          },
+          "description": "Trading sessions in milliseconds as [start, end] pairs; the gaps between them are squeezed out and the line breaks there. Needs times."
+        },
+        "axisPrice": {
+          "type": "boolean",
+          "description": "Show four price ticks on the right. Ignored when the chart is shorter than 60px."
+        },
+        "lastTag": {
+          "type": "boolean",
+          "description": "Show the latest value as a filled tag on the right axis, in the up or down color."
+        },
         "weight": {
           "type": "number",
           "minimum": 0.000001,

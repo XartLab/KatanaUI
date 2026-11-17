@@ -2,7 +2,9 @@
 // 迷你图：一列数从旧到新，按容器的真实像素画（不再拉伸一个固定 viewBox，线宽不会随拉伸发虚）。
 // 样式取 TradingView 小组件 Mini Chart / Symbol Overview（线加线下渐变、基准线、末端点）与 Tufte 的 sparkline 原则（最高最低点、胜负格），
 // 只取做法、不抄其代码与样式，颜色全走自己的 token（涨跌 --pnl-up / --pnl-down，跟涨跌配色走）。
-// 几何（断点分段、刻度、设备像素对齐、单调曲线、基准切分、标签放左放右）在 ./sparkline-model.ts，这里只管画与交互。
+// 几何（断点分段、刻度、设备像素对齐、单调曲线、基准切分、标签放左放右、时间轴与休市压缩、价格刻度）在 ./sparkline-model.ts，这里只管画与交互。
+// 大图（日内走势）再对齐 TradingView 的 Markets 页（2026-11-18 在浏览器里看的）：横轴是整个交易时段、线只画到现在；
+// 末端点是实心点加常驻空心环；悬停只有一根竖线、读数框紧挨光标且是三行（数值、日期、时间）；右侧价格刻度加最新价价签。
 import {
   useEffect,
   useId,
@@ -10,6 +12,7 @@ import {
   useMemo,
   useRef,
   useState,
+  type CSSProperties,
   type KeyboardEvent,
   type PointerEvent,
 } from 'react'
@@ -17,8 +20,10 @@ import { useLineExtend, type LineFollower, type LinePoint } from '../lib/live-li
 import { useValueFlash } from '../lib/live.ts'
 import { fontFor, measureText, onTextMeasureReset } from '../lib/text-measure.ts'
 import {
+  SPARK_PAD_Y,
   SPARK_VOLUME_SHARE,
   areaPath,
+  autoTickMinutes,
   barRects,
   baselineClips,
   firstValid,
@@ -27,20 +32,29 @@ import {
   lastValid,
   linePath,
   nearestIndex,
-  readoutPlacement,
+  priceTicks,
   resolveSparkTone,
   snapLine,
   sparkCount,
   sparkExtremes,
   sparkLayout,
   sparkLayoutPoints,
+  sparkLineWidth,
   sparkNumbers,
   stepIndex,
+  thinLabels,
+  timeGroups,
+  timeSpans,
+  timeTicks,
+  timeX,
+  timeXs,
+  tipPlacement,
   volumeRects,
   winLossCells,
   xAt,
   yAt,
   type SparkCurve,
+  type SparkSpan,
   type SparkValue,
 } from './sparkline-model.ts'
 import { quoteTone, type QuoteTone } from './quote-tone.ts'
@@ -89,6 +103,17 @@ export const sparkTone = (values: readonly number[]): QuoteTone =>
 
 export type SparklineVariant = 'area' | 'line' | 'baseline' | 'bars' | 'winloss'
 
+export type SparkAxis = {
+  /** Price ticks on the right: true for 4, or the number of ticks; spread evenly from the lowest to the highest. */
+  price?: boolean | number
+  /** Time ticks at the bottom: true picks an interval that fits, or the interval in minutes. */
+  time?: boolean | number
+  /** Turns a price into tick text (also the text of the last-price tag); defaults to format, then the plain number. */
+  formatPrice?: (value: number) => string
+  /** Turns a timestamp into time tick text; defaults to the time line of formatTime. */
+  formatTick?: (time: number) => string
+}
+
 export type SparklineProps = {
   /**
    * The values from oldest to newest; null or NaN breaks the line, and fewer than two valid values draws a dash.
@@ -116,8 +141,8 @@ export type SparklineProps = {
    */
   baseline?: number
   /**
-   * Whether to draw a dot at the latest value (default true for area, line and baseline).
-   * 最新值处画圆点，值变化时光晕脉动一次（area、line、baseline 默认 true）。
+   * Whether to draw a dot with a hollow ring at the latest value (default true for area, line and baseline); the ring pulses once when the value changes.
+   * 最新值处画实心点加常驻空心环，值变化时光晕脉动一次（area、line、baseline 默认 true；矮于 28px 不画环）。
    */
   showLast?: boolean
   /**
@@ -136,8 +161,8 @@ export type SparklineProps = {
    */
   extremeLabels?: readonly [string, string]
   /**
-   * Show a crosshair, a snapped dot and a readout on hover, and walk the points with the arrow keys; keep it off for one chart per table row.
-   * 悬停出十字线、吸附圆点与读数，键盘左右键走点；表格里一行一个时不要开。
+   * Show a vertical line, a snapped dot and a readout box beside the cursor on hover, and walk the points with the arrow keys; keep it off for one chart per table row.
+   * 悬停出一根竖线、吸附圆点与紧挨光标的读数框，键盘左右键走点；表格里一行一个时不要开。
    */
   interactive?: boolean
   /**
@@ -146,10 +171,35 @@ export type SparklineProps = {
    */
   format?: (value: number, index: number) => string
   /**
-   * A time or date text for each value, shown before the value in the readout.
-   * 每个值对应的时间文字，读数里写在值前面。
+   * Time of each value, one to one with values: millisecond timestamps place points by time (see domain and sessions), or texts shown under the value in the readout.
+   * 每个值对应的时间：毫秒时间戳时按时间定横坐标（见 domain、sessions）；文字时只在读数里写在值下面，不影响位置。
    */
-  times?: readonly string[]
+  times?: readonly string[] | readonly number[]
+  /**
+   * The whole time span of the x axis in milliseconds (such as a trading day); the line stops at the last point and the rest stays empty. Needs numeric times; without it the span is the first to the last time.
+   * 横轴覆盖的整个时段（毫秒，如一个交易日）：线只画到最后一个点，右边留空；要数字 times 才生效，不给就取第一个到最后一个时间。
+   */
+  domain?: readonly [start: number, end: number]
+  /**
+   * Trading sessions in milliseconds (such as morning and afternoon); the gaps between them are squeezed out of the x axis and the line breaks there. Defaults to one session covering the domain.
+   * 交易时段（毫秒，如上午、下午）：时段之间的休市在横轴上压缩掉，线在那里断开；不给整个 domain 是一段。
+   */
+  sessions?: readonly (readonly [start: number, end: number])[]
+  /**
+   * Turns a timestamp into the date and time lines of the readout (and the time ticks); written by the caller so language and time zone are its own. Without it a timestamped readout shows only the value.
+   * 把时间戳写成读数里的日期与时间两行（时间刻度也用它的 time）；语言与时区由调用方定。不给时只显示数值。
+   */
+  formatTime?: (time: number) => { date: string; time: string }
+  /**
+   * Price ticks on the right and time ticks at the bottom, for large charts only (ignored below 60px high). price is on/off or the number of ticks (default 4); time is on/off or the interval in minutes, and needs numeric times plus formatTick or formatTime.
+   * 右侧价格刻度与底部时间刻度，大图用（高度低于 60px 忽略）：price 是开关或档数（默认 4）；time 是开关或间隔分钟数，要数字 times 加 formatTick 或 formatTime。
+   */
+  axis?: SparkAxis
+  /**
+   * Draw the latest value as a filled tag on the right axis, in the up or down color with the matching text color.
+   * 最新价价签：右轴上一个涨跌色实底小框，写最新价（用 axis.formatPrice 或 format 写成文字）。
+   */
+  lastTag?: boolean
   /**
    * Called with the hovered or keyboard-selected index, or null when it leaves.
    * 悬停或键盘选中的下标，离开时是 null。
@@ -264,12 +314,39 @@ function useThrottledText(text: string, ms = 300): string {
 }
 
 const TEXT_PX = 10
-const DOT_PAD = 3
 const LABEL_GAP = 6
-const TIP_H = 16
+/** 底部时间刻度占的高度：字高加上下留白。 */
+const TIME_BAND = TEXT_PX + 8
+/** 价签高度与左右内边距。 */
+const TAG_H = 16
+const TAG_PAD = 4
+/** 带坐标轴时上下多留的像素：放得下刻度字与价签的一半高。 */
+const AXIS_PAD_Y = TAG_H / 2
+
+const isStamps = (times: SparklineProps['times']): times is readonly number[] =>
+  !!times && times.length > 0 && typeof times[0] === 'number'
+
+/** 横轴要按哪些交易时段排：给了 domain 取它，没给用 sessions 的头尾，再没有用时间戳的最早到最晚；排不出来返回空数组（退回按序号铺）。 */
+function resolveSpans(
+  stamps: readonly number[],
+  domain: SparklineProps['domain'],
+  sessions: SparklineProps['sessions'],
+): SparkSpan[] {
+  const finite = stamps.filter(Number.isFinite)
+  const edge = sessions?.length
+    ? ([Math.min(...sessions.map((s) => s[0])), Math.max(...sessions.map((s) => s[1]))] as const)
+    : finite.length
+      ? ([Math.min(...finite), Math.max(...finite)] as const)
+      : null
+  const span = domain ?? edge
+  return span ? timeSpans({ domain: span, sessions }) : []
+}
+
+/** 价格没配格式时写成最多两位小数的原数。 */
+const plainPrice = (value: number) => String(Math.round(value * 100) / 100)
 
 function SparkChart({
-  values,
+  values: rawValues,
   label,
   tone,
   variant = 'area',
@@ -281,6 +358,11 @@ function SparkChart({
   interactive = false,
   format,
   times,
+  domain,
+  sessions,
+  formatTime,
+  axis,
+  lastTag = false,
   onHover,
   volumes,
   volumeTone = 'neutral',
@@ -296,7 +378,15 @@ function SparkChart({
   const uid = useId().replace(/[^a-zA-Z0-9]/g, '')
   const isLine = variant === 'area' || variant === 'line' || variant === 'baseline'
   const hasLast = showLast ?? isLine
-  const nums = useMemo(() => sparkNumbers(values), [values])
+  const lw = sparkLineWidth(h)
+
+  // —— 时间轴：给了毫秒时间戳就按时间排，domain 之外与休市里的点裁掉 ——
+  const stamps = isStamps(times) ? times : null
+  const spans = stamps ? resolveSpans(stamps, domain, sessions) : []
+  const timed = stamps !== null && spans.length > 0
+  const groups = timed ? timeGroups(stamps, spans) : null
+  const values = groups ? rawValues.map((value, i) => (groups[i]! >= 0 ? value : null)) : rawValues
+  const nums = sparkNumbers(values)
   const lastIdx = lastValid(values)
   const lastValue = lastIdx >= 0 ? (values[lastIdx] as number) : undefined
   const resolvedTone = resolveSparkTone(values, tone, baseline)
@@ -308,27 +398,57 @@ function SparkChart({
     // epoch 变了说明字体加载完，要重取。
     // oxlint-disable-next-line react-hooks/exhaustive-deps
   }, [epoch])
-  const lastLabelW = lastLabel ? measureText(lastLabel, font) : 0
 
-  const volH = volumes && volumes.length ? Math.round(h * SPARK_VOLUME_SHARE) : 0
+  // —— 坐标轴：矮图（< 60px）太挤，忽略 ——
+  const axisOn = h >= 60
+  const priceCount = axisOn && axis?.price ? (axis.price === true ? 4 : Math.max(2, Math.floor(axis.price))) : 0
+  const priceText = (value: number, index: number) =>
+    axis?.formatPrice ? axis.formatPrice(value) : format ? format(value, index) : plainPrice(value)
+  const tickText = axis?.formatTick ?? (formatTime ? (t: number) => formatTime(t).time : undefined)
+  const timeOn = axisOn && timed && !!axis?.time && !!tickText
+  const timeH = timeOn ? TIME_BAND : 0
+  const ph = h - timeH
+  const tagOn = lastTag && lastValue !== undefined
+  const rightAxis = priceCount > 0 || tagOn
+
+  const volH = volumes && volumes.length ? Math.round(ph * SPARK_VOLUME_SHARE) : 0
   // bars 的基准：不给就取第一个值（跟 baseline 样式同一个「开盘」语义）；winloss 不给按 0。
   const first = firstValid(values)
   const base = baseline ?? (variant === 'winloss' ? 0 : first >= 0 ? (values[first] as number) : 0)
-  const layout = sparkLayout(values, {
+  const layoutBase = {
     width: w,
-    height: h,
-    padRight: (hasLast ? DOT_PAD : 1) + (lastLabel ? LABEL_GAP + lastLabelW : 0),
+    height: ph,
     bottomReserve: volH,
     baseline: variant === 'bars' ? base : baseline,
     slots: variant === 'bars' || variant === 'winloss',
+    padY: rightAxis ? AXIS_PAD_Y + 1 : SPARK_PAD_Y,
+  }
+  // 值域只看数据，与右边留多宽无关：先排一遍拿到最高最低，才好量刻度字有多宽，再定右边留白。
+  const range = sparkLayout(values, layoutBase)
+  const tickValues = priceCount ? priceTicks(range.lo, range.hi, priceCount) : []
+  const tickWidths = tickValues.map((v) => measureText(priceText(v, -1), font))
+  const tagText = tagOn ? priceText(lastValue, lastIdx) : ''
+  const tagW = tagOn ? Math.max(measureText(tagText, font), ...tickWidths, 0) + TAG_PAD * 2 : 0
+  const axisW = tagOn ? tagW : Math.max(0, ...tickWidths)
+  const showLastLabel = !!lastLabel && !rightAxis
+  const lastLabelW = showLastLabel ? measureText(lastLabel, font) : 0
+  const dotR = h >= 60 ? 3 : 2
+  const ringOn = hasLast && h >= 28
+  const ringR = dotR + 2.5
+  const lastPad = hasLast ? (ringOn ? Math.ceil(ringR) + 1 : dotR + 1) : 1
+  const layout0 = sparkLayout(values, {
+    ...layoutBase,
+    padRight: lastPad + (showLastLabel ? LABEL_GAP + lastLabelW : 0) + (rightAxis ? axisW + LABEL_GAP : 0),
   })
-  const points = sparkLayoutPoints(values, layout, dpr)
-  const floorY = volH ? layout.bottom + 3 : h
+  const layout = timed ? { ...layout0, xs: timeXs(stamps, spans, layout0.left, layout0.right) } : layout0
+  const points = sparkLayoutPoints(values, layout, dpr, lw)
+  const floorY = volH ? layout.bottom + 3 : ph
   const baseY = baseline !== undefined && isSparkValue(baseline) ? snapLine(yAt(layout, baseline), 1, dpr) : null
-  const lineD = isLine ? linePath(points, curve) : ''
+  const runGroups = groups ?? undefined
+  const lineD = isLine ? linePath(points, curve, runGroups) : ''
   // baseline 样式不给基准时用第一个值当基准（TradingView 的 Baseline 默认也是第一根）。
   const splitY = variant === 'baseline' ? (baseY ?? snapLine(yAt(layout, base), 1, dpr)) : null
-  const splitClips = splitY === null ? null : baselineClips(splitY, w, h)
+  const splitClips = splitY === null ? null : baselineClips(splitY, w, ph)
   const areaFloor = variant === 'baseline' && splitY !== null ? splitY : floorY
 
   // —— 实时：新点追加时线、面积、末端点一起平滑延伸 ——
@@ -337,17 +457,26 @@ function SparkChart({
   const areaMain = useRef<SVGPathElement>(null)
   const areaAlt = useRef<SVGPathElement>(null)
   const dot = useRef<SVGCircleElement>(null)
+  const ring = useRef<SVGCircleElement>(null)
   const halo = useRef<SVGCircleElement>(null)
   const followers: LineFollower[] = isLine
     ? [
-        { ref: lineAlt, write: (el, p) => el.setAttribute('d', linePath(p, curve)) },
-        { ref: areaMain, write: (el, p) => el.setAttribute('d', areaPath(p, areaFloor, curve)) },
-        { ref: areaAlt, write: (el, p) => el.setAttribute('d', areaPath(p, areaFloor, curve)) },
+        { ref: lineAlt, write: (el, p) => el.setAttribute('d', linePath(p, curve, runGroups)) },
+        { ref: areaMain, write: (el, p) => el.setAttribute('d', areaPath(p, areaFloor, curve, runGroups)) },
+        { ref: areaAlt, write: (el, p) => el.setAttribute('d', areaPath(p, areaFloor, curve, runGroups)) },
         { ref: dot, write: (el, p) => moveTo(el, p[lastIdx]) },
+        { ref: ring, write: (el, p) => moveTo(el, p[lastIdx]) },
         { ref: halo, write: (el, p) => moveTo(el, p[lastIdx]) },
       ]
     : []
-  useLineExtend(lineMain, 'd', isLine ? nums : [], isLine ? points : [], (p) => linePath(p, curve), followers)
+  useLineExtend(
+    lineMain,
+    'd',
+    isLine ? nums : [],
+    isLine ? points : [],
+    (p) => linePath(p, curve, runGroups),
+    followers,
+  )
   const flash = useValueFlash(lastValue, { enabled: hasLast })
 
   // —— 悬停与键盘 ——
@@ -361,10 +490,14 @@ function SparkChart({
     reported.current = at
     hoverRef.current?.(at)
   }, [at])
-  const readout =
-    at === null
-      ? ''
-      : `${times?.[at] ? `${times[at]} ` : ''}${format ? format(values[at] as number, at) : String(values[at])}`
+  // 读数的日期与时间两行：时间戳要 formatTime 才写得出来；文字 times 原样当第二行。
+  const stampOf = (i: number): { date: string; time: string } => {
+    if (stamps) return formatTime ? formatTime(stamps[i]!) : { date: '', time: '' }
+    const text = (times as readonly string[] | undefined)?.[i]
+    return { date: '', time: text ?? '' }
+  }
+  const textOf = (i: number) => (format ? format(values[i] as number, i) : String(values[i]))
+  const readout = at === null ? '' : [stampOf(at).date, stampOf(at).time, textOf(at)].filter(Boolean).join(' ')
   const announced = useThrottledText(interactive ? readout : '')
 
   const onMove = (event: PointerEvent<SVGSVGElement>) => {
@@ -398,38 +531,72 @@ function SparkChart({
   const px = (p: LinePoint | undefined) => (p && Number.isFinite(p[1]) ? p : null)
   const lastPoint = px(points[lastIdx])
 
-  function tipOf(i: number) {
-    const value = values[i] as number
-    const text = format ? format(value, i) : String(value)
-    const time = times?.[i] ?? ''
-    const tw = measureText(text, font)
-    const tt = time ? measureText(time, font) : 0
-    const width = 10 + tw + (time ? tt + 6 : 0)
-    const cx = xOf(i)
-    const py = isLine ? (px(points[i])?.[1] ?? h / 2) : variant === 'bars' ? yAt(layout, value) : h / 2
-    return { text, time, tt, width, ...readoutPlacement(cx, py, width, TIP_H, { width: w, height: h }), cx, py }
-  }
   function xOf(i: number) {
     return snapLine(isLine ? (points[i]?.[0] ?? 0) : xAt(layout, i), 1, dpr)
   }
+  const hoverY =
+    at === null
+      ? 0
+      : isLine
+        ? (px(points[at])?.[1] ?? ph / 2)
+        : variant === 'bars'
+          ? yAt(layout, values[at] as number)
+          : ph / 2
 
-  const tip = at === null ? null : tipOf(at)
+  // 读数框是 HTML（foreignObject 里），宽高要量真实 DOM 才摆得准；量到之前先藏起来。
+  const tipRef = useRef<HTMLDivElement>(null)
+  const [tipSize, setTipSize] = useState<{ w: number; h: number } | null>(null)
+  const tipStamp = at === null ? null : stampOf(at)
+  const tipValue = at === null ? '' : textOf(at)
+  useLayoutEffect(() => {
+    const el = tipRef.current
+    if (!el) return
+    const next = { w: el.offsetWidth, h: el.offsetHeight }
+    setTipSize((prev) => (prev && prev.w === next.w && prev.h === next.h ? prev : next))
+  }, [at, tipValue, tipStamp?.date, tipStamp?.time])
+  const tip =
+    at === null
+      ? null
+      : {
+          cx: xOf(at),
+          ...tipPlacement(xOf(at), hoverY, tipSize?.w ?? 0, tipSize?.h ?? 0, { width: w, height: ph }),
+        }
+
+  // 时间刻度：自动挑一个放得下的间隔，再把挤在一起的丢掉（不重叠、不出框）。
+  const ticks = (() => {
+    if (!timeOn || !tickText) return []
+    const sample = measureText(tickText(spans[0]![0]), font)
+    const minutes =
+      typeof axis?.time === 'number'
+        ? axis.time
+        : autoTickMinutes(spans, Math.floor((layout.right - layout.left) / (sample + 12)))
+    const all = timeTicks(spans, minutes).map((t) => {
+      const text = tickText(t)
+      return { t, text, x: timeX(t, spans, layout.left, layout.right), width: measureText(text, font) }
+    })
+    return thinLabels(all, w).map((i) => all[i]!)
+  })()
 
   const gradientId = `ks${uid}a`
   const gradientUp = `ks${uid}u`
   const gradientDown = `ks${uid}d`
   const clipUp = `ks${uid}cu`
   const clipDown = `ks${uid}cd`
+  const tagY = lastPoint ? Math.min(Math.max(lastPoint[1], TAG_H / 2), ph - TAG_H / 2) : 0
 
   const body = (
     <svg
       ref={svg}
       className={`k-spark${className ? ` ${className}` : ''} is-${resolvedTone}`}
+      style={lw === 1.5 ? undefined : ({ '--k-spark-lw': `${lw}px` } as CSSProperties)}
       viewBox={`0 0 ${w} ${h}`}
       role="img"
       aria-label={label}
       data-variant={variant}
       data-curve={curve}
+      data-timed={timed ? '' : undefined}
+      data-plot-left={timed ? layout.left : undefined}
+      data-plot-right={timed ? layout.right : undefined}
       tabIndex={interactive ? 0 : undefined}
       onPointerMove={interactive ? onMove : undefined}
       onPointerLeave={interactive ? () => setActive(null) : undefined}
@@ -474,6 +641,31 @@ function SparkChart({
         )}
       </defs>
 
+      {tickValues.map((value, k) => {
+        const text = priceText(value, -1)
+        return (
+          <text
+            key={k}
+            className="k-spark-text k-spark-price-tick"
+            x={w}
+            y={Math.min(Math.max(yAt(layout, value), TEXT_PX / 2), ph - TEXT_PX / 2)}
+            textAnchor="end"
+          >
+            {text}
+          </text>
+        )
+      })}
+      {ticks.map((tick) => (
+        <text
+          key={tick.t}
+          className="k-spark-text k-spark-time-tick"
+          x={Math.max(0, Math.min(tick.x - tick.width / 2, w - tick.width))}
+          y={ph + TIME_BAND / 2}
+        >
+          {tick.text}
+        </text>
+      ))}
+
       {vols.map((r) => (
         <rect
           key={r.i}
@@ -491,7 +683,7 @@ function SparkChart({
         <path
           ref={areaMain}
           className="k-spark-area"
-          d={areaPath(points, floorY, curve)}
+          d={areaPath(points, floorY, curve, runGroups)}
           fill={`url(#${gradientId})`}
         />
       )}
@@ -501,7 +693,7 @@ function SparkChart({
             <path
               ref={areaMain}
               className="k-spark-area"
-              d={areaPath(points, areaFloor, curve)}
+              d={areaPath(points, areaFloor, curve, runGroups)}
               fill={`url(#${gradientUp})`}
             />
             <path ref={lineMain} className="k-spark-line" d={lineD} data-points={sparkCount(values)} />
@@ -510,7 +702,7 @@ function SparkChart({
             <path
               ref={areaAlt}
               className="k-spark-area"
-              d={areaPath(points, areaFloor, curve)}
+              d={areaPath(points, areaFloor, curve, runGroups)}
               fill={`url(#${gradientDown})`}
             />
             <path ref={lineAlt} className="k-spark-line" d={lineD} />
@@ -542,7 +734,7 @@ function SparkChart({
                   <text
                     className="k-spark-text"
                     x={place.x}
-                    y={Math.min(Math.max(p[1], TEXT_PX / 2 + 1), h - TEXT_PX / 2 - 1)}
+                    y={Math.min(Math.max(p[1], TEXT_PX / 2 + 1), ph - TEXT_PX / 2 - 1)}
                     textAnchor={place.anchor}
                   >
                     {text}
@@ -562,40 +754,54 @@ function SparkChart({
           data-flash={flash.flash}
           cx={lastPoint[0]}
           cy={lastPoint[1]}
-          r={7}
+          r={ringR + 3}
         />
       )}
-      {hasLast && lastPoint && <circle ref={dot} className="k-spark-dot" cx={lastPoint[0]} cy={lastPoint[1]} r={1.5} />}
-      {lastLabel && lastPoint && (
+      {ringOn && lastPoint && (
+        <circle ref={ring} className="k-spark-ring" cx={lastPoint[0]} cy={lastPoint[1]} r={ringR} />
+      )}
+      {hasLast && lastPoint && (
+        <circle ref={dot} className="k-spark-dot" cx={lastPoint[0]} cy={lastPoint[1]} r={dotR} />
+      )}
+      {showLastLabel && lastPoint && (
         <text
           className="k-spark-text k-spark-last"
           x={w}
-          y={Math.min(Math.max(lastPoint[1], TEXT_PX / 2 + 1), h - TEXT_PX / 2 - 1)}
+          y={Math.min(Math.max(lastPoint[1], TEXT_PX / 2 + 1), ph - TEXT_PX / 2 - 1)}
           textAnchor="end"
         >
           {lastLabel}
         </text>
       )}
+      {tagOn && lastPoint && (
+        <g className={`k-spark-tag is-${resolvedTone}`} data-last-tag="">
+          <rect x={w - tagW} y={tagY - TAG_H / 2} width={tagW} height={TAG_H} rx={2} />
+          <text x={w - tagW / 2} y={tagY} textAnchor="middle">
+            {tagText}
+          </text>
+        </g>
+      )}
 
       {tip && (
         <g className="k-spark-hover" pointerEvents="none">
-          <line className="k-spark-cursor" x1={tip.cx} x2={tip.cx} y1={0} y2={h} />
+          <line className="k-spark-cursor" x1={tip.cx} x2={tip.cx} y1={0} y2={ph} />
           {isLine && px(points[at!]) && (
-            <circle className="k-spark-dot is-hover" cx={points[at!]![0]} cy={points[at!]![1]} r={2} />
+            <circle className="k-spark-dot is-hover" cx={points[at!]![0]} cy={points[at!]![1]} r={dotR} />
           )}
-          <rect className="k-spark-tip" x={tip.x} y={tip.y} width={tip.width} height={TIP_H} />
-          {tip.time && (
-            <text className="k-spark-text k-spark-tip-time" x={tip.x + 5} y={tip.y + TIP_H / 2}>
-              {tip.time}
-            </text>
-          )}
-          <text
-            className="k-spark-text k-spark-tip-value"
-            x={tip.x + 5 + (tip.time ? tip.tt + 6 : 0)}
-            y={tip.y + TIP_H / 2}
+          <foreignObject
+            className="k-spark-tipbox"
+            x={tip.x}
+            y={tip.y}
+            width={TIPBOX_W}
+            height={TIPBOX_H}
+            visibility={tipSize ? undefined : 'hidden'}
           >
-            {tip.text}
-          </text>
+            <div ref={tipRef} className="k-spark-tip">
+              <div className="k-spark-tip-value">{tipValue}</div>
+              {tipStamp?.date && <div className="k-spark-tip-date">{tipStamp.date}</div>}
+              {tipStamp?.time && <div className="k-spark-tip-time">{tipStamp.time}</div>}
+            </div>
+          </foreignObject>
         </g>
       )}
     </svg>
@@ -610,6 +816,10 @@ function SparkChart({
     </>
   )
 }
+
+/** 读数框外壳（foreignObject）的宽高：只是个够大的容器，真正的大小由里面的 div 撑开。 */
+const TIPBOX_W = 260
+const TIPBOX_H = 140
 
 /** 把圆挪到一个点上（延伸过场里每帧调用）。 */
 function moveTo(el: SVGElement, point: LinePoint | undefined) {

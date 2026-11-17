@@ -12,9 +12,11 @@ const quotes: GuidanceMap = {
       '要逐点的涨跌或正负用 bars、winloss；趋势用默认的 area 或 line。',
       '需要读某一点的数时开 interactive，悬停与键盘都能出读数。',
       '新点追加时线与面积平滑延伸 240ms，末端点脉动一次；换一列数直接换。',
+      '日内走势（大图）给毫秒 times 与整个交易时段的 domain，线只画到现在；A 股再给 sessions 压缩午休；加 axis 与 lastTag 得到右侧价格刻度、底部时间刻度与最新价价签。',
     ],
     avoid: [
       '表格里一行一个时不要开 interactive，也别留末端点（行高 22px 这种）。',
+      '高度低于 60px 时不要指望 axis：太挤，会被忽略。',
       '要完整坐标轴、缩放、多条线对比用 equity-curve 或 small-multiples。',
       '不要把读数、标签的文字写进包里，由调用方传。',
     ],
@@ -22,8 +24,27 @@ const quotes: GuidanceMap = {
       'svg 是 role=img，读屏名由调用方按界面语言传。',
       '没有数据时留「—」，读屏名说明没有数据。',
       '涨跌不只靠线色，旁边配价格或涨跌文字。',
-      'interactive 时 svg 可聚焦，左右键走点、Esc 退出，当前点的读数节流后由 aria-live 播报。',
+      'interactive 时 svg 可聚焦，左右键走点、Esc 退出，当前点的日期、时间与数值节流后由 aria-live 播报。',
+      '价格刻度、时间刻度与价签是普通文本，由调用方格式化；涨跌不只靠价签颜色，旁边配价格文字。',
       '最高最低、最新值的字是调用方格式化好的普通文本，不靠颜色区分高低。',
+    ],
+  },
+  'mini-chart': {
+    aliases: ['Mini chart widget', 'Symbol card', 'Ticker card', 'Single ticker with chart'],
+    use: [
+      '看板、自选里一只品种一张小卡：图标、代码、价、涨跌幅与走势。',
+      '要显示「今天走了多久」时给 times 与 domain：线只画到现在，右边留空。',
+      '数据实时变时传 live：价格滚动、涨跌幅闪色、走势平滑延伸。',
+    ],
+    avoid: [
+      '表格行里用 sparkline，不要放整张卡。',
+      '要完整的价格刻度、时间刻度与价签用 sparkline 的 axis 与 lastTag。',
+      '只要价与涨跌幅、不要走势用 quote-card 或 price-tag。',
+    ],
+    a11y: [
+      '整张卡 role=group（给了 onSelect 是按钮），读屏名取 labels.card；走势 svg 是 role=img，名取 labels.chart。',
+      '涨跌不只靠颜色：涨跌幅前有三角，旁边有数字。',
+      '价格实时滚动时读屏拿到的是当前完整数字，转轮里的字不进文本。',
     ],
   },
   'gauge-bar': {

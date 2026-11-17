@@ -42,7 +42,6 @@
     .k-spark-vol,
     .k-spark-bar,
     .k-spark-cell,
-    .k-spark-tip,
     .k-vs-latest
   ),
 :root:not([data-pixel-snap='off']) [class^='k-'] svg rect:not([rx]) {

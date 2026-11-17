@@ -18666,6 +18666,274 @@
       "source": "src/quant/metric-card.tsx",
       "props": []
     },
+    "MiniChart": {
+      "kind": "component",
+      "source": "src/katana/mini-chart.tsx",
+      "props": [
+        {
+          "name": "symbol",
+          "type": "string",
+          "required": true,
+          "description": "Symbol code, shown beside the icon (and the letters of the icon when it has no image)."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "description": "Name of the symbol; the icon's accessible name, and its letters when the code has none (600519)."
+        },
+        {
+          "name": "logoSrc",
+          "type": "string",
+          "required": false,
+          "description": "Image address of the icon; letters are drawn when omitted or when it fails to load."
+        },
+        {
+          "name": "badge",
+          "type": "string",
+          "required": false,
+          "description": "Small tag after the code, such as the period (D); written by the caller."
+        },
+        {
+          "name": "price",
+          "type": "number",
+          "required": true,
+          "description": "The latest price."
+        },
+        {
+          "name": "unit",
+          "type": "string",
+          "required": false,
+          "description": "Unit after the price (USD, CNY), written by the caller."
+        },
+        {
+          "name": "digits",
+          "type": "number",
+          "required": false,
+          "default": "2",
+          "description": "Number of decimal places of the price when formatPrice is not given."
+        },
+        {
+          "name": "formatPrice",
+          "type": "(price: number) => string",
+          "required": false,
+          "description": "Turns the price into text (thousands separators, locale); defaults to a plain fixed-point number."
+        },
+        {
+          "name": "change",
+          "type": "number",
+          "required": true,
+          "description": "Change in percent (1.5 means +1.5%); decides the up, down or flat color of the card."
+        },
+        {
+          "name": "values",
+          "type": "readonly (number | null | undefined)[]",
+          "required": true,
+          "description": "Price values for the chart from oldest to newest."
+        },
+        {
+          "name": "times",
+          "type": "SparklineProps['times']",
+          "required": false,
+          "description": "Millisecond timestamp of each value; with domain the line stops at the last point."
+        },
+        {
+          "name": "domain",
+          "type": "SparklineProps['domain']",
+          "required": false,
+          "description": "The whole time span of the chart in milliseconds."
+        },
+        {
+          "name": "sessions",
+          "type": "SparklineProps['sessions']",
+          "required": false,
+          "description": "Trading sessions in milliseconds; the gaps between them are squeezed out."
+        },
+        {
+          "name": "formatTime",
+          "type": "SparklineProps['formatTime']",
+          "required": false,
+          "description": "Turns a timestamp into the date and time lines of the hover readout."
+        },
+        {
+          "name": "baseline",
+          "type": "number",
+          "required": false,
+          "description": "Reference value such as the previous close; draws a dashed line (off by default, as in TradingView)."
+        },
+        {
+          "name": "interactive",
+          "type": "boolean",
+          "required": false,
+          "default": "false",
+          "description": "Hover readout and keyboard walking on the chart (off by default)."
+        },
+        {
+          "name": "chartHeight",
+          "type": "number",
+          "required": false,
+          "default": "80",
+          "description": "Height of the chart in pixels; 80 and above draws the line at 2px."
+        },
+        {
+          "name": "live",
+          "type": "boolean",
+          "required": false,
+          "default": "false",
+          "description": "Live data: the price rolls when it changes and the change flashes the up or down color."
+        },
+        {
+          "name": "onSelect",
+          "type": "(event: MouseEvent<HTMLButtonElement>) => void",
+          "required": false,
+          "description": "When given the whole card is a button; keep interactive off then."
+        },
+        {
+          "name": "labels",
+          "type": "{ card: string; chart: string }",
+          "required": true,
+          "description": "Texts for screen readers, written by the caller in the UI language (required)."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "MiniChartProps": {
+      "kind": "type",
+      "source": "src/katana/mini-chart.tsx",
+      "props": [
+        {
+          "name": "symbol",
+          "type": "string",
+          "required": true,
+          "description": "Symbol code, shown beside the icon (and the letters of the icon when it has no image)."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "description": "Name of the symbol; the icon's accessible name, and its letters when the code has none (600519)."
+        },
+        {
+          "name": "logoSrc",
+          "type": "string",
+          "required": false,
+          "description": "Image address of the icon; letters are drawn when omitted or when it fails to load."
+        },
+        {
+          "name": "badge",
+          "type": "string",
+          "required": false,
+          "description": "Small tag after the code, such as the period (D); written by the caller."
+        },
+        {
+          "name": "price",
+          "type": "number",
+          "required": true,
+          "description": "The latest price."
+        },
+        {
+          "name": "unit",
+          "type": "string",
+          "required": false,
+          "description": "Unit after the price (USD, CNY), written by the caller."
+        },
+        {
+          "name": "digits",
+          "type": "number",
+          "required": false,
+          "description": "Number of decimal places of the price when formatPrice is not given."
+        },
+        {
+          "name": "formatPrice",
+          "type": "(price: number) => string",
+          "required": false,
+          "description": "Turns the price into text (thousands separators, locale); defaults to a plain fixed-point number."
+        },
+        {
+          "name": "change",
+          "type": "number",
+          "required": true,
+          "description": "Change in percent (1.5 means +1.5%); decides the up, down or flat color of the card."
+        },
+        {
+          "name": "values",
+          "type": "readonly (number | null | undefined)[]",
+          "required": true,
+          "description": "Price values for the chart from oldest to newest."
+        },
+        {
+          "name": "times",
+          "type": "SparklineProps['times']",
+          "required": false,
+          "description": "Millisecond timestamp of each value; with domain the line stops at the last point."
+        },
+        {
+          "name": "domain",
+          "type": "SparklineProps['domain']",
+          "required": false,
+          "description": "The whole time span of the chart in milliseconds."
+        },
+        {
+          "name": "sessions",
+          "type": "SparklineProps['sessions']",
+          "required": false,
+          "description": "Trading sessions in milliseconds; the gaps between them are squeezed out."
+        },
+        {
+          "name": "formatTime",
+          "type": "SparklineProps['formatTime']",
+          "required": false,
+          "description": "Turns a timestamp into the date and time lines of the hover readout."
+        },
+        {
+          "name": "baseline",
+          "type": "number",
+          "required": false,
+          "description": "Reference value such as the previous close; draws a dashed line (off by default, as in TradingView)."
+        },
+        {
+          "name": "interactive",
+          "type": "boolean",
+          "required": false,
+          "description": "Hover readout and keyboard walking on the chart (off by default)."
+        },
+        {
+          "name": "chartHeight",
+          "type": "number",
+          "required": false,
+          "description": "Height of the chart in pixels; 80 and above draws the line at 2px."
+        },
+        {
+          "name": "live",
+          "type": "boolean",
+          "required": false,
+          "description": "Live data: the price rolls when it changes and the change flashes the up or down color."
+        },
+        {
+          "name": "onSelect",
+          "type": "(event: MouseEvent<HTMLButtonElement>) => void",
+          "required": false,
+          "description": "When given the whole card is a button; keep interactive off then."
+        },
+        {
+          "name": "labels",
+          "type": "{ card: string; chart: string }",
+          "required": true,
+          "description": "Texts for screen readers, written by the caller in the UI language (required)."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
     "MonitorEvent": {
       "kind": "type",
       "source": "src/blocks/system-monitor/system-monitor-model.ts",
@@ -28692,6 +28960,36 @@
         }
       ]
     },
+    "SparkAxis": {
+      "kind": "type",
+      "source": "src/katana/sparkline.tsx",
+      "props": [
+        {
+          "name": "price",
+          "type": "boolean | number",
+          "required": false,
+          "description": "Price ticks on the right: true for 4, or the number of ticks; spread evenly from the lowest to the highest."
+        },
+        {
+          "name": "time",
+          "type": "boolean | number",
+          "required": false,
+          "description": "Time ticks at the bottom: true picks an interval that fits, or the interval in minutes."
+        },
+        {
+          "name": "formatPrice",
+          "type": "(value: number) => string",
+          "required": false,
+          "description": "Turns a price into tick text (also the text of the last-price tag); defaults to format, then the plain number."
+        },
+        {
+          "name": "formatTick",
+          "type": "(time: number) => string",
+          "required": false,
+          "description": "Turns a timestamp into time tick text; defaults to the time line of formatTime."
+        }
+      ]
+    },
     "SparkTile": {
       "kind": "component",
       "source": "src/quant/spark-tile.tsx",
@@ -28905,7 +29203,7 @@
           "name": "showLast",
           "type": "boolean",
           "required": false,
-          "description": "Whether to draw a dot at the latest value (default true for area, line and baseline)."
+          "description": "Whether to draw a dot with a hollow ring at the latest value (default true for area, line and baseline); the ring pulses once when the value changes."
         },
         {
           "name": "lastLabel",
@@ -28929,7 +29227,7 @@
           "name": "interactive",
           "type": "boolean",
           "required": false,
-          "description": "Show a crosshair, a snapped dot and a readout on hover, and walk the points with the arrow keys; keep it off for one chart per table row."
+          "description": "Show a vertical line, a snapped dot and a readout box beside the cursor on hover, and walk the points with the arrow keys; keep it off for one chart per table row."
         },
         {
           "name": "format",
@@ -28939,9 +29237,39 @@
         },
         {
           "name": "times",
-          "type": "readonly string[]",
+          "type": "readonly string[] | readonly number[]",
           "required": false,
-          "description": "A time or date text for each value, shown before the value in the readout."
+          "description": "Time of each value, one to one with values: millisecond timestamps place points by time (see domain and sessions), or texts shown under the value in the readout."
+        },
+        {
+          "name": "domain",
+          "type": "readonly [start: number, end: number]",
+          "required": false,
+          "description": "The whole time span of the x axis in milliseconds (such as a trading day); the line stops at the last point and the rest stays empty."
+        },
+        {
+          "name": "sessions",
+          "type": "readonly (readonly [start: number, end: number])[]",
+          "required": false,
+          "description": "Trading sessions in milliseconds (such as morning and afternoon); the gaps between them are squeezed out of the x axis and the line breaks there."
+        },
+        {
+          "name": "formatTime",
+          "type": "(time: number) => { date: string; time: string }",
+          "required": false,
+          "description": "Turns a timestamp into the date and time lines of the readout (and the time ticks); written by the caller so language and time zone are its own."
+        },
+        {
+          "name": "axis",
+          "type": "SparkAxis",
+          "required": false,
+          "description": "Price ticks on the right and time ticks at the bottom, for large charts only (ignored below 60px high)."
+        },
+        {
+          "name": "lastTag",
+          "type": "boolean",
+          "required": false,
+          "description": "Draw the latest value as a filled tag on the right axis, in the up or down color with the matching text color."
         },
         {
           "name": "onHover",
@@ -29031,7 +29359,7 @@
           "name": "showLast",
           "type": "boolean",
           "required": false,
-          "description": "Whether to draw a dot at the latest value (default true for area, line and baseline)."
+          "description": "Whether to draw a dot with a hollow ring at the latest value (default true for area, line and baseline); the ring pulses once when the value changes."
         },
         {
           "name": "lastLabel",
@@ -29055,7 +29383,7 @@
           "name": "interactive",
           "type": "boolean",
           "required": false,
-          "description": "Show a crosshair, a snapped dot and a readout on hover, and walk the points with the arrow keys; keep it off for one chart per table row."
+          "description": "Show a vertical line, a snapped dot and a readout box beside the cursor on hover, and walk the points with the arrow keys; keep it off for one chart per table row."
         },
         {
           "name": "format",
@@ -29065,9 +29393,39 @@
         },
         {
           "name": "times",
-          "type": "readonly string[]",
+          "type": "readonly string[] | readonly number[]",
           "required": false,
-          "description": "A time or date text for each value, shown before the value in the readout."
+          "description": "Time of each value, one to one with values: millisecond timestamps place points by time (see domain and sessions), or texts shown under the value in the readout."
+        },
+        {
+          "name": "domain",
+          "type": "readonly [start: number, end: number]",
+          "required": false,
+          "description": "The whole time span of the x axis in milliseconds (such as a trading day); the line stops at the last point and the rest stays empty."
+        },
+        {
+          "name": "sessions",
+          "type": "readonly (readonly [start: number, end: number])[]",
+          "required": false,
+          "description": "Trading sessions in milliseconds (such as morning and afternoon); the gaps between them are squeezed out of the x axis and the line breaks there."
+        },
+        {
+          "name": "formatTime",
+          "type": "(time: number) => { date: string; time: string }",
+          "required": false,
+          "description": "Turns a timestamp into the date and time lines of the readout (and the time ticks); written by the caller so language and time zone are its own."
+        },
+        {
+          "name": "axis",
+          "type": "SparkAxis",
+          "required": false,
+          "description": "Price ticks on the right and time ticks at the bottom, for large charts only (ignored below 60px high)."
+        },
+        {
+          "name": "lastTag",
+          "type": "boolean",
+          "required": false,
+          "description": "Draw the latest value as a filled tag on the right axis, in the up or down color with the matching text color."
         },
         {
           "name": "onHover",

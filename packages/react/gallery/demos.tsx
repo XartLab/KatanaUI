@@ -133,6 +133,7 @@ import {
 } from './pages/series.tsx'
 import {
   GaugeBarDemo,
+  MiniChartDemo,
   PriceTagDemo,
   QuoteCardDemo,
   QuoteTableDemo,
@@ -392,6 +393,7 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'small-multiples': SmallMultiplesDemo,
   'series-explorer': SeriesExplorerDemo,
   sparkline: SparklineDemo,
+  'mini-chart': MiniChartDemo,
   'gauge-bar': GaugeBarDemo,
   treemap: TreemapDemo,
   'price-tag': PriceTagDemo,

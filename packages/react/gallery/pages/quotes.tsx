@@ -3,6 +3,7 @@ import { useState } from 'react'
 import {
   Button,
   GaugeBar,
+  MiniChart,
   layoutTreemap,
   PriceTag,
   QuoteCard,
@@ -17,7 +18,7 @@ import {
   type TreemapItem,
 } from '../../src/index'
 import { LiveToggle } from '../LiveToggle'
-import { SparklineGallery } from './sparkline-gallery'
+import { SparklineGallery, TvStyleSection } from './sparkline-gallery'
 import { LiveQuoteDemo, LiveSparklineDemo, LiveTreemapDemo } from './live-readouts'
 import { chance, randomWalk, useLiveTicker, type Rng } from '../live-sim'
 import { ActionLog, Row, demoSymbolActions } from './parts'
@@ -106,6 +107,54 @@ export function SparklineDemo() {
       <p className="gal-note">{SAMPLE}。线色按头尾比（有基准按最后值对基准）：涨跌色跟涨跌配色走，持平用中性灰。</p>
       <SparklineGallery />
       <LiveSparklineDemo />
+    </>
+  )
+}
+
+export function MiniChartDemo() {
+  const [picked, setPicked] = useState('—')
+  return (
+    <>
+      <Row name="涨 · 跌（可点）· 没有数据">
+        <div className="gal-spark-tv" data-gallery-mini="up" style={{ width: 240 }}>
+          <MiniChart
+            symbol="AAA"
+            name="示例甲"
+            badge="D"
+            price={11.8}
+            unit="USD"
+            change={18}
+            values={rise}
+            labels={{ card: '示例甲，上涨', chart: '示例甲走势：涨' }}
+          />
+        </div>
+        <div className="gal-spark-tv" data-gallery-mini="down" style={{ width: 240 }}>
+          <MiniChart
+            symbol="BBB"
+            name="示例乙"
+            price={10.2}
+            unit="USD"
+            change={-15}
+            values={fall}
+            onSelect={() => setPicked('示例乙')}
+            labels={{ card: '打开示例乙', chart: '示例乙走势：跌' }}
+          />
+        </div>
+        <div className="gal-spark-tv" data-gallery-mini="empty" style={{ width: 240 }}>
+          <MiniChart
+            symbol="CCC"
+            name="示例丙"
+            price={10}
+            unit="USD"
+            change={0}
+            values={[]}
+            labels={{ card: '示例丙', chart: '示例丙：没有走势数据' }}
+          />
+        </div>
+        <output data-gallery-picked>选中：{picked}</output>
+      </Row>
+      <p className="gal-note">{SAMPLE}。给了 onSelect 整张卡是一个按钮；没有走势数据时图的位置只留「—」。</p>
+      <TvStyleSection />
     </>
   )
 }
