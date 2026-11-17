@@ -1,0 +1,118 @@
+/* SPDX-License-Identifier: MIT */
+/* 矩形树图 Treemap（#1884，从应用的分析视图搬来）。2026-11-18 从 quote.css 拆出。 颜色只用 token（--pnl-up / --pnl-down 跟涨跌配色走）；数字一律等宽（tabular-nums）；动效只用三条弹簧的 CSS 形式（--dur-* / --ease-*）。 */
+
+/* —— 矩形树图 —— */
+.k-treemap {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  min-width: 0;
+}
+.k-treemap-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+.k-treemap-plot {
+  position: relative;
+  height: 320px;
+  overflow: hidden;
+}
+.k-treemap-head {
+  position: absolute;
+  z-index: 1;
+  height: 16px;
+  padding: 0 4px;
+  overflow: hidden;
+  border: 0;
+  color: var(--ink-200);
+  background: transparent;
+  font: var(--text-caption) var(--font-sans-small);
+  font-weight: 600;
+  text-align: left;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.k-treemap-head:hover {
+  color: var(--ink-100);
+  text-decoration: underline;
+}
+.k-treemap-cell {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  color: var(--ink-100);
+  font: var(--text-caption) var(--font-sans-small);
+  font-variant-numeric: tabular-nums;
+  line-height: 14px;
+  text-align: center;
+  /* 实时刷新：颜色线性渐变（--dur-flash），换位与改大小用弹簧（--dur-reorder）；第一次出现不过渡（transition 只在值变时播）。 */
+  transition:
+    background-color var(--dur-flash) linear,
+    left var(--dur-reorder) var(--ease-snappy),
+    top var(--dur-reorder) var(--ease-snappy),
+    width var(--dur-reorder) var(--ease-snappy),
+    height var(--dur-reorder) var(--ease-snappy);
+}
+/* 涨跌翻了方向的那一闪：盖在格子上的一层，底色透明，闪色由 .k-live-flash 给。 */
+.k-treemap-flash {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.k-treemap-cell.is-link {
+  cursor: pointer;
+}
+.k-treemap-cell.is-link:hover {
+  outline: 1px solid var(--ink-100);
+  outline-offset: -1px;
+}
+.k-treemap-name {
+  max-width: 100%;
+  overflow: hidden;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.k-treemap-legend {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.k-treemap-legend li {
+  flex: 1 1 0;
+  height: 16px;
+  color: var(--ink-100);
+  font: var(--text-caption) var(--font-sans-small);
+  line-height: 16px;
+  text-align: center;
+}
+.k-treemap .is-step-3 {
+  background: color-mix(in srgb, var(--pnl-down) 100%, var(--bg-000));
+}
+.k-treemap .is-step-2 {
+  background: color-mix(in srgb, var(--pnl-down) 70%, var(--bg-000));
+}
+.k-treemap .is-step-1 {
+  background: color-mix(in srgb, var(--pnl-down) 42%, var(--bg-000));
+}
+.k-treemap .is-step0,
+.k-treemap .is-stepna {
+  background: color-mix(in srgb, var(--ink-300) 30%, var(--bg-000));
+}
+.k-treemap .is-step1 {
+  background: color-mix(in srgb, var(--pnl-up) 42%, var(--bg-000));
+}
+.k-treemap .is-step2 {
+  background: color-mix(in srgb, var(--pnl-up) 70%, var(--bg-000));
+}
+.k-treemap .is-step3 {
+  background: color-mix(in srgb, var(--pnl-up) 100%, var(--bg-000));
+}

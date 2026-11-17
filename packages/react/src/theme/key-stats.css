@@ -1,0 +1,64 @@
+/* SPDX-License-Identifier: MIT */
+/* 关键数据 KeyStats。 2026-11-18 从 symbol-overview.css 拆出（#53，对齐 TradingView 品种页，主会话 2026-11-15 实测，只取布局）。颜色只用涨跌语义色（--pnl-up / --pnl-down）与中性灰；选中是灰底，不用 TV 的蓝，徽标不用紫。 */
+
+/* —— 关键数据 —— */
+.k-keystats {
+  min-width: 0;
+  font: var(--text-data) var(--font-sans);
+}
+.k-keystats .k-keystats-title {
+  margin: 0 0 12px;
+  font: 600 16px/22px var(--font-sans);
+}
+.k-keystats button {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+.k-keystats button:hover {
+  color: var(--ink-100);
+}
+.k-keystats-chev {
+  margin-left: 4px;
+  color: var(--ink-300);
+}
+.k-keystats-grid {
+  display: grid;
+  gap: 16px 24px;
+  margin: 0;
+}
+.k-keystats-item {
+  min-width: 0;
+}
+.k-keystats-item dt {
+  color: var(--ink-300);
+  font: 400 12px/16px var(--font-sans);
+}
+.k-keystats-item dd {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 4px;
+  margin: 4px 0 0;
+  font-variant-numeric: tabular-nums;
+}
+.k-keystats-value {
+  font: 600 20px/26px var(--font-sans);
+}
+.k-keystats-item small {
+  color: var(--ink-300);
+  font: 400 12px/16px var(--font-sans);
+}
+.k-keystats-badge {
+  align-self: center;
+  padding: 1px 8px;
+  border-radius: 9999px;
+  background: var(--alpha-white-7);
+  color: var(--ink-200);
+  font: 600 10px/16px var(--font-sans);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}

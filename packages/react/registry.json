@@ -129,6 +129,11 @@
           "target": "~/src/katana/ui/theme/form-motion.css"
         },
         {
+          "path": "src/theme/gauge-bar.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/gauge-bar.css"
+        },
+        {
           "path": "src/theme/hold-to-confirm.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/hold-to-confirm.css"
@@ -147,6 +152,11 @@
           "path": "src/theme/kbd.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/kbd.css"
+        },
+        {
+          "path": "src/theme/key-stats.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/key-stats.css"
         },
         {
           "path": "src/theme/lcd.css",
@@ -189,6 +199,11 @@
           "target": "~/src/katana/ui/theme/metric-card.css"
         },
         {
+          "path": "src/theme/mini-chart.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/mini-chart.css"
+        },
+        {
           "path": "src/theme/motion-text.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/motion-text.css"
@@ -224,14 +239,44 @@
           "target": "~/src/katana/ui/theme/param-scatter.css"
         },
         {
+          "path": "src/theme/peer-cards.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/peer-cards.css"
+        },
+        {
+          "path": "src/theme/performance-strip.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/performance-strip.css"
+        },
+        {
+          "path": "src/theme/price-tag.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/price-tag.css"
+        },
+        {
           "path": "src/theme/quant.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/quant.css"
         },
         {
-          "path": "src/theme/quote.css",
+          "path": "src/theme/quote-card.css",
           "type": "registry:file",
-          "target": "~/src/katana/ui/theme/quote.css"
+          "target": "~/src/katana/ui/theme/quote-card.css"
+        },
+        {
+          "path": "src/theme/quote-table.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/quote-table.css"
+        },
+        {
+          "path": "src/theme/range-bar.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/range-bar.css"
+        },
+        {
+          "path": "src/theme/rating-gauge.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/rating-gauge.css"
         },
         {
           "path": "src/theme/rendering.css",
@@ -269,6 +314,16 @@
           "target": "~/src/katana/ui/theme/side-nav.css"
         },
         {
+          "path": "src/theme/spark-tile.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/spark-tile.css"
+        },
+        {
+          "path": "src/theme/sparkline.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/sparkline.css"
+        },
+        {
           "path": "src/theme/splitter.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/splitter.css"
@@ -294,11 +349,6 @@
           "target": "~/src/katana/ui/theme/symbol-mark.css"
         },
         {
-          "path": "src/theme/symbol-overview.css",
-          "type": "registry:file",
-          "target": "~/src/katana/ui/theme/symbol-overview.css"
-        },
-        {
           "path": "src/theme/system-monitor.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/system-monitor.css"
@@ -319,9 +369,19 @@
           "target": "~/src/katana/ui/theme/tree-view.css"
         },
         {
+          "path": "src/theme/treemap.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/treemap.css"
+        },
+        {
           "path": "src/theme/vintage-series.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/vintage-series.css"
+        },
+        {
+          "path": "src/theme/watchlist.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/watchlist.css"
         },
         {
           "path": "src/theme/workspace-tabs.css",

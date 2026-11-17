@@ -1,0 +1,75 @@
+/* SPDX-License-Identifier: MIT */
+/* 迷你行情卡 MiniChart。2026-11-18 从 quote.css 拆出。 颜色只用 token（--pnl-up / --pnl-down 跟涨跌配色走）；数字一律等宽（tabular-nums）；动效只用三条弹簧的 CSS 形式（--dur-* / --ease-*）。 */
+
+/* —— 迷你行情卡 MiniChart（TradingView 的 Mini Chart 小组件）—— */
+.k-mini-chart {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  padding: 12px 14px 8px;
+  border: 1px solid var(--line-100);
+  border-radius: var(--radius-control);
+  background: var(--bg-100);
+  color: var(--ink-100);
+  font: var(--text-data) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+  text-align: left;
+}
+button.k-mini-chart.is-link {
+  cursor: pointer;
+  transition: background-color var(--dur-snappy) var(--ease-snappy);
+}
+button.k-mini-chart.is-link:hover {
+  background: var(--bg-200);
+}
+button.k-mini-chart.is-link:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 1px;
+}
+.k-mini-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.k-mini-symbol {
+  overflow: hidden;
+  color: var(--ink-100);
+  font: var(--text-data) var(--font-sans);
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.k-mini-badge {
+  padding: 0 4px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-300);
+  color: var(--ink-300);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-mini-quote {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+}
+.k-mini-price {
+  font: var(--text-title) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+}
+.k-mini-unit {
+  color: var(--ink-300);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-mini-change {
+  font: var(--text-data) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+}
+.k-mini-chart-body {
+  display: block;
+  min-width: 0;
+}
+.k-mini-chart .k-mini-spark {
+  height: 100%;
+}

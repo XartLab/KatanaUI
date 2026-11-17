@@ -1,0 +1,59 @@
+/* SPDX-License-Identifier: MIT */
+/* 分组页签行情表 QuoteTable。2026-11-18 从 quote.css 拆出。 颜色只用 token（--pnl-up / --pnl-down 跟涨跌配色走）；数字一律等宽（tabular-nums）；动效只用三条弹簧的 CSS 形式（--dur-* / --ease-*）。 */
+
+/* —— 分组页签行情表 —— */
+.k-quote-table {
+  min-width: 0;
+}
+.k-quote-table-empty {
+  margin: 0;
+  padding: 12px 0;
+  color: var(--ink-300);
+  font: var(--text-data) var(--font-sans);
+}
+.k-quote-rows {
+  width: 100%;
+  border-collapse: collapse;
+  font: var(--text-data) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+}
+.k-quote-rows th,
+.k-quote-rows td {
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--line-100);
+  font-weight: 400;
+  text-align: left;
+  vertical-align: middle;
+}
+.k-quote-rows thead th {
+  color: var(--ink-300);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-quote-rows .is-num {
+  text-align: right;
+  white-space: nowrap;
+}
+.k-quote-rows-name {
+  color: var(--ink-100);
+}
+.k-quote-rows-name small {
+  margin-left: 6px;
+  color: var(--ink-300);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-quote-rows-trend {
+  width: 96px;
+}
+.k-quote-rows-trend .k-spark {
+  height: 22px;
+}
+.k-quote-rows tr.is-link {
+  cursor: pointer;
+}
+.k-quote-rows tbody tr.is-link:hover {
+  background: var(--bg-200);
+}
+.k-quote-rows tbody tr.is-link:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: -2px;
+}
