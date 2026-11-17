@@ -1,11 +1,5 @@
 [
   {
-    "page": "toast",
-    "theme": "console",
-    "rule": "color-contrast",
-    "reason": "说明文字 k-text-caption 用 ink-3（#8f887a）压在 surface 3 上是 4.45:1，差 0.05；要改 ink-3 令牌（全库都受影响），另开票定"
-  },
-  {
     "page": "command",
     "rule": "color-contrast",
     "reason": "命令面板的占位与分组标题用 ink-4（#5e5950）只有 2.5:1；ink-4 是装饰灰，这里该换 ink-3，要连同令牌一起定，另开票"
@@ -14,16 +8,6 @@
     "page": "command",
     "rule": "aria-required-children",
     "reason": "cmdk 的分隔线（role=separator）直接放在 listbox 里，axe 不认；来自 cmdk 库的结构，要换分隔写法，另开票"
-  },
-  {
-    "page": "code-block",
-    "rule": "color-contrast",
-    "reason": "代码高亮主题里的注释色 ink-4（#4a453c）压在深底上只有 1.95:1；要换高亮主题的注释色，另开票"
-  },
-  {
-    "page": "web-search",
-    "rule": "color-contrast",
-    "reason": "虚线占位按钮的 ink-3 文字落在浅色预览底（#efefef）上 3.05:1：预览底与件的主题不配，另开票查是预览还是件"
   },
   {
     "page": "treemap",

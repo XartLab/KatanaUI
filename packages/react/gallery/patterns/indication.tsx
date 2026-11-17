@@ -22,9 +22,9 @@ function Demo() {
         <Led state="danger" label="交易所 B 已断开" /> 交易所 B 断开
       </div>
       <div style={rowStyle}>
-        <StatusIcon status="success" label="已同步" /> 已同步
-        <StatusIcon status="pending" label="同步中" /> 同步中
-        <StatusIcon status="error" label="同步失败" /> 同步失败
+        <StatusIcon tone="ok" label="已同步" /> 已同步
+        <StatusIcon tone="pending" label="同步中" /> 同步中
+        <StatusIcon tone="danger" label="同步失败" /> 同步失败
       </div>
       <div style={rowStyle}>
         示例股票 <BadgeGroup items={[{ id: 'star', label: '科', text: '科创板：涨跌幅 20%' }]} />

@@ -16,8 +16,9 @@
 | `status` | `WebSearchStatus` | `'done'` | Searching shows a shimmer and a progress ring, with empty skeletons where results have not arrived. |
 | `label` * | `string` | — | Status text inside the pill (required), for example "Searching" or "Searched 3 sites"; the text slides when the string changes. |
 | `progress` | `number` | — | Progress ring from 0 to 1; computed from the number of sources when omitted. |
-| `moreLabel` * | `(count: number) => string` | — | Text of the "N more" card (required). |
-| `lessLabel` * | `string` | — | Text of the "collapse" card (required). |
+| `labels` | `WebSearchLabels` | — | Texts of the "N more" and "collapse" cards (required unless the deprecated moreLabel / lessLabel are given). |
+| `moreLabel` | `(count: number) => string` | — | Old name kept for one release. |
+| `lessLabel` | `string` | — | Old name kept for one release. |
 | `open` | `boolean` | — | Whether the source area is expanded. |
 | `defaultOpen` | `boolean` | `true` | Initial expanded state when uncontrolled. |
 | `onOpenChange` | `(open: boolean) => void` | — | Called when the source area expands or collapses. |
@@ -55,8 +56,7 @@ export function WebSearchUsage() {
       sources={SOURCES}
       status="done"
       label="Searched 2 sites"
-      moreLabel={(count) => `${count} more`}
-      lessLabel="Collapse"
+      labels={{ more: (count) => `${count} more`, less: 'Collapse' }}
     />
   )
 }
@@ -71,6 +71,8 @@ export function WebSearchUsage() {
 ## Don't
 
 - 不存也不开 URL：要打开来源由调用方在 onOpen 里处理。
+- 「还有 N 条」「收起」由调用方传（labels.more / labels.less；旧的 moreLabel / lessLabel 留一个版本）。
+- 不要去取网站图标：来源小标是站名首字母（micro 字号），不发网络请求。
 
 ## Composition
 

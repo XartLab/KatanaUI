@@ -1377,8 +1377,8 @@ for (const theme of THEMES) {
       await expect(led('状态 off')).toHaveCSS('border-top-left-radius', await radius(page, '--radius-pill'))
       await expect(led('状态 off')).toHaveCSS('background-color', await token(page, '--led-off'))
       // .on（:134-137）橙底 + glow-orange；.ok（:138-141）绿底 + 0 0 6px 同色。
-      await expect(led('状态 on')).toHaveCSS('background-color', await token(page, '--signal-orange'))
-      await expect(led('状态 on')).toHaveCSS('box-shadow', await resolved(page, 'box-shadow', 'var(--glow-orange)'))
+      await expect(led('状态 accent')).toHaveCSS('background-color', await token(page, '--accent'))
+      await expect(led('状态 accent')).toHaveCSS('box-shadow', await resolved(page, 'box-shadow', 'var(--glow-orange)'))
       await expect(led('状态 ok')).toHaveCSS('background-color', await token(page, '--signal-green'))
       await expect(led('状态 danger')).toHaveCSS('background-color', await token(page, '--signal-red'))
       // .link-a（:158-161）、.sm（:174-177）、.hollow（:178-182）。
@@ -1558,6 +1558,57 @@ for (const theme of THEMES) {
       await expect(area.locator('.k-badges')).toHaveCount(2)
     })
 
+    test('小标签 Tag：四种语气的字取 --k-status-*；填充底取 background、描边边取字色；sm 是 micro 字号、md 是 caption 500', async ({
+      page,
+    }) => {
+      await open(page, theme, 'tag')
+      for (const tone of ['neutral', 'ok', 'warn', 'danger'] as const) {
+        const fg = await token(page, `--k-status-${tone}-foreground`)
+        const filled = page.getByTestId(`tag-${tone}`)
+        await expect(filled).toHaveCSS('color', fg)
+        await expect(filled).toHaveCSS('background-color', await token(page, `--k-status-${tone}-background`))
+        await expect(filled).toHaveCSS('font-weight', '500')
+        const outlined = page.getByTestId(`tag-${tone}-outlined`)
+        await expect(outlined).toHaveCSS('border-top-color', fg)
+        await expect(outlined).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)')
+        await expect(page.getByTestId(`tag-${tone}-sm`)).toHaveCSS(
+          'font-size',
+          await resolved(page, 'font-size', 'var(--text-micro-size)'),
+        )
+      }
+      // 估算标记就是 warn · 描边 · md 的 Tag：琥珀字、同色 1px 边、透明底（等于改前 .k-estimate）。
+      await open(page, theme, 'estimate-badge')
+      const estimate = section(page, 'estimate-badge').getByText('Estimated from bars')
+      await expect(estimate).toHaveAttribute('data-slot', 'estimate-badge')
+      await expect(estimate).toHaveCSS('color', await token(page, '--signal-amber'))
+      await expect(estimate).toHaveCSS('border-top-color', await token(page, '--signal-amber'))
+      await expect(estimate).toHaveCSS('border-top-width', '1px')
+      await expect(estimate).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)')
+    })
+
+    test('JSON 查看器：树是 treegrid，→ 展开 ← 收起；查找命中高亮、祖先自动展开，命中数在 role=status 里', async ({
+      page,
+    }) => {
+      await open(page, theme, 'json-viewer')
+      const area = section(page, 'json-viewer')
+      const tree = area.getByRole('treegrid', { name: '消息' })
+      await expect(tree).toBeVisible()
+      // 默认只开根：orders 是收着的，里面的 FILL-0231 看不见。
+      await expect(tree.getByText('FILL-0231')).toHaveCount(0)
+      const orders = tree.getByRole('row', { name: /orders/ }).first()
+      await orders.focus()
+      await page.keyboard.press('ArrowRight')
+      await expect(orders).toHaveAttribute('aria-expanded', 'true')
+      await page.keyboard.press('ArrowLeft')
+      await expect(orders).toHaveAttribute('aria-expanded', 'false')
+      const search = area.getByRole('searchbox', { name: '在 JSON 里查找' }).first()
+      await search.fill('FILL-0240')
+      await expect(tree.locator('mark.k-json-hit')).toHaveText('FILL-0240')
+      await expect(area.getByRole('status').first()).toHaveText('1 处命中')
+      await search.fill('')
+      await expect(tree.getByText('FILL-0240')).toHaveCount(0)
+    })
+
     test('快捷键方块：20 高、圆角 4、6% 白底 12% 白边、500 字重（等于改前 .k-kbd）', async ({ page }) => {
       await open(page, theme, 'kbd')
       const area = section(page, 'kbd')
@@ -1664,7 +1715,7 @@ for (const theme of THEMES) {
       await expect(shown).toHaveText('2026-12-20 09:30')
     })
 
-    test('加载骨架：点阵条（12 高、bg-200、line-200 边），500ms 后才出，到了就换成内容；超时是琥珀条加重试', async ({
+    test('加载骨架：点阵条（12 高、bg-200、line-200 边、圆角 control），纵向 gap 8、内边 space-3；读屏是 role=status', async ({
       page,
     }) => {
       await open(page, theme, 'skeleton')
@@ -1683,20 +1734,26 @@ for (const theme of THEMES) {
       await expect(area.getByRole('status').first()).toHaveAttribute('aria-busy', 'true')
       // 读屏文字用 Tailwind 的 sr-only（原来是应用里的 .kc-visually-hidden）：包的样式表里要真有这条类，文字才不露出来。
       await expect(area.getByRole('status').first().locator('.sr-only')).toHaveCSS('width', '1px')
-      // caption（:786-788）：LED on + 文案；超时（:792-799）：琥珀条 + 重试按钮靠右。
+    })
+
+    test('加载态（Loading 单入口）：phase 钉住各段；caption 亮强调色灯，超时是琥珀条（--k-status-warn-*）加重试；pending 等 500ms 才出骨架，到了换成内容', async ({
+      page,
+    }) => {
+      await open(page, theme, 'loading')
+      const area = section(page, 'loading')
+      // caption（:786-788）：LED accent + 文案；超时（:792-799）：琥珀条 + 重试按钮靠右。
       await expect(area.getByText('加载 涨停池 · 本机服务')).toBeVisible()
+      await expect(area.locator('.k-loading-caption .k-led').first()).toHaveCSS(
+        'background-color',
+        await token(page, '--accent'),
+      )
       await expect(area.getByText('仍在加载 · 本机服务')).toBeVisible()
       const bar = area.locator('.k-loading-bar')
       await expect(bar).toContainText('点重试 · 本机服务 10 秒无回应')
       await expect(bar.getByRole('img', { name: '没有回应' })).toBeVisible()
       await expect
         .poll(() => colorAt(page, bar, 'border-top-color'))
-        .toEqual(
-          await rgba(
-            page,
-            await resolved(page, 'border-top-color', 'color-mix(in srgb, var(--signal-amber) 35%, transparent)'),
-          ),
-        )
+        .toEqual(await rgba(page, await resolved(page, 'border-top-color', 'var(--k-status-warn-borderColor)')))
       const retry = bar.getByRole('button', { name: '重试' })
       const [barBox, retryBox] = await Promise.all([bar.boundingBox(), retry.boundingBox()])
       expect(retryBox!.x + retryBox!.width).toBeGreaterThan(barBox!.x + barBox!.width - 16)
@@ -3072,6 +3129,27 @@ for (const theme of THEMES) {
       await expect(toasts).toHaveCount(0)
     })
 
+    test('弹出提示的语气：色条与图标取 --k-status-*；neutral 色条是主文字色、图标是强调色；说明文字用 ink-2（对比度够）', async ({
+      page,
+    }) => {
+      await open(page, theme, 'toast')
+      const area = section(page, 'toast')
+      const neutral = area.locator('[data-slot="toast"]').first()
+      await expect(neutral).toHaveAttribute('data-tone', 'neutral')
+      await expect(neutral).toHaveCSS('border-left-color', await token(page, '--k-content-primary-foreground'))
+      await expect(neutral.locator('[data-slot="toast-icon"]')).toHaveCSS('color', await token(page, '--accent'))
+      await expect(neutral.locator('[data-slot="toast-description"]')).toHaveCSS(
+        'color',
+        await token(page, '--k-content-body-foreground'),
+      )
+      for (const tone of ['ok', 'warn', 'danger'] as const) {
+        const toast = page.getByTestId(`toast-${tone}`)
+        const color = await token(page, `--k-status-${tone}-foreground`)
+        await expect(toast).toHaveCSS('border-left-color', color)
+        await expect(toast.locator('[data-slot="toast-icon"]')).toHaveCSS('color', color)
+      }
+    })
+
     test('行内提示：warn 与 danger 是 alert、其余是 status；左边 2px 色条取语气的颜色；图标在左', async ({ page }) => {
       await open(page, theme, 'alert')
       const area = section(page, 'alert')
@@ -3489,20 +3567,21 @@ for (const theme of THEMES) {
       await open(page, theme, 'status-icon')
       const area = section(page, 'status-icon')
       const tones = {
-        success: '--signal-green',
-        error: '--signal-red',
-        warning: '--signal-amber',
-        info: '--signal-blue',
-        pending: '--ink-300',
+        ok: '--k-status-ok-foreground',
+        danger: '--k-status-danger-foreground',
+        warn: '--k-status-warn-foreground',
+        info: '--k-status-info-foreground',
+        neutral: '--k-status-neutral-foreground',
+        pending: '--k-content-secondary-foreground',
       }
-      for (const [status, variable] of Object.entries(tones)) {
-        const icon = area.getByRole('img', { name: `状态 ${status}` })
-        await expect(icon).toHaveAttribute('data-status', status)
+      for (const [tone, variable] of Object.entries(tones)) {
+        const icon = area.getByRole('img', { name: `状态 ${tone}` })
+        await expect(icon).toHaveAttribute('data-tone', tone)
         await expect(icon).toHaveCSS('color', await token(page, variable))
         expect((await icon.boundingBox())?.width).toBe(16)
       }
       const live = area.locator('[data-gallery-status] [data-slot="status-icon"]')
-      await expect(live).toHaveAttribute('data-status', 'pending')
+      await expect(live).toHaveAttribute('data-tone', 'pending')
       // 进行中：弧在转（角度中途取样）。
       const turn = await sample(page, { kind: 'angle', selector: '[data-gallery-status] svg g' }, 500)
       expect(new Set(turn.map((angle) => Math.round(angle))).size, '转动中角度在变').toBeGreaterThan(5)
@@ -3510,7 +3589,7 @@ for (const theme of THEMES) {
       // 放宽到 1800 毫秒，断言（画到一半、末值 > 0.99）原样不动。
       const draw = sample(page, { kind: 'dash', selector: '[data-gallery-status] svg path' }, 1800)
       await area.getByRole('button', { name: '成功' }).click()
-      await expect(live).toHaveAttribute('data-status', 'success')
+      await expect(live).toHaveAttribute('data-tone', 'ok')
       const strokes = (await draw).filter((value) => !Number.isNaN(value))
       expect(
         strokes.some((value) => value > 0.05 && value < 0.95),
@@ -3518,8 +3597,8 @@ for (const theme of THEMES) {
       ).toBe(true)
       expect(strokes.at(-1)).toBeGreaterThan(0.99)
       await area.getByRole('button', { name: '失败' }).click()
-      await expect(live).toHaveAttribute('data-status', 'error')
-      await expect(live).toHaveCSS('color', await token(page, '--signal-red'))
+      await expect(live).toHaveAttribute('data-tone', 'danger')
+      await expect(live).toHaveCSS('color', await token(page, '--k-status-danger-foreground'))
       await expect(live.locator('path')).toHaveCount(2)
     })
 

@@ -122,9 +122,9 @@
   min-width: 1.4em;
   padding-inline: var(--space-1);
   margin-inline-end: var(--space-1);
-  border: 1px solid var(--line-100);
+  border: 1px solid var(--k-separable-tertiary-borderColor);
   border-radius: var(--radius-sm);
-  background: var(--bg-100);
+  background: var(--k-surface-base-background);
   text-align: center;
 }
 .k-roll[data-boxed] .k-roll-slot:last-child {

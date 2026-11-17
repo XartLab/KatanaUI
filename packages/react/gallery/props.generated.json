@@ -3,7 +3,7 @@
   "exports": {
     "ARCADE_SPRITES": {
       "kind": "value",
-      "source": "src/katana/arcade-pixel.tsx",
+      "source": "src/katana/arcade-pixel-sprites.ts",
       "props": []
     },
     "AUTO_SIZE": {
@@ -1570,10 +1570,16 @@
       "source": "src/katana/ai-status.tsx",
       "props": [
         {
+          "name": "status",
+          "type": "AiStatusValue",
+          "required": false,
+          "description": "What the agent is doing (a state machine, so it is status, not tone); the first three are in progress."
+        },
+        {
           "name": "state",
           "type": "AiStatusState",
-          "required": true,
-          "description": "The state; the first three are in progress."
+          "required": false,
+          "description": "Old name kept for one release."
         },
         {
           "name": "label",
@@ -1606,10 +1612,16 @@
       "source": "src/katana/ai-status.tsx",
       "props": [
         {
+          "name": "status",
+          "type": "AiStatusValue",
+          "required": false,
+          "description": "What the agent is doing (a state machine, so it is status, not tone); the first three are in progress."
+        },
+        {
           "name": "state",
           "type": "AiStatusState",
-          "required": true,
-          "description": "The state; the first three are in progress."
+          "required": false,
+          "description": "Old name kept for one release."
         },
         {
           "name": "label",
@@ -1638,6 +1650,11 @@
       ]
     },
     "AiStatusState": {
+      "kind": "type",
+      "source": "src/katana/ai-status.tsx",
+      "props": []
+    },
+    "AiStatusValue": {
       "kind": "type",
       "source": "src/katana/ai-status.tsx",
       "props": []
@@ -2843,6 +2860,12 @@
           "type": "string",
           "required": false,
           "description": "Text rendered through the built-in 5x7 pixel font."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": false,
+          "description": "Accessible name; defaults to text."
         }
       ]
     },
@@ -2932,6 +2955,12 @@
           "type": "string",
           "required": false,
           "description": "Text rendered through the built-in 5x7 pixel font."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": false,
+          "description": "Accessible name; defaults to text."
         }
       ]
     },
@@ -3748,7 +3777,7 @@
           "name": "items",
           "type": "readonly BadgeItem[]",
           "required": true,
-          "description": "The badges: label is the one-character mark, text is the full name (accessible name and hover hint)."
+          "description": "The badges: label is the one-character mark, text is the full name (accessible name and hover hint), tone colors a risk flag."
         }
       ]
     },
@@ -3773,6 +3802,12 @@
           "type": "string",
           "required": true,
           "description": "全称：读屏名，也是悬停提示。"
+        },
+        {
+          "name": "tone",
+          "type": "Severity",
+          "required": false,
+          "description": "语气：风险标记（如 ST）给 warn 或 danger；不给是 neutral。"
         }
       ]
     },
@@ -5215,7 +5250,7 @@
           "name": "accent",
           "type": "string",
           "required": false,
-          "default": "'var(--signal-orange)'",
+          "default": "'var(--accent)'",
           "description": "Accent color, any CSS color; the whole palette is mixed from it."
         },
         {
@@ -5252,22 +5287,46 @@
           "description": "Lines to highlight (1-based)."
         },
         {
+          "name": "labels",
+          "type": "CodeBlockLabels",
+          "required": false,
+          "description": "Accessible names of the copy button, before and right after copying (required unless the deprecated copyLabel / copiedLabel are given)."
+        },
+        {
           "name": "copyLabel",
           "type": "string",
-          "required": true,
-          "description": "Accessible name of the copy button (required)."
+          "required": false,
+          "description": "Old name kept for one release."
         },
         {
           "name": "copiedLabel",
           "type": "string",
-          "required": true,
-          "description": "Accessible name of the copy button after a successful copy (required)."
+          "required": false,
+          "description": "Old name kept for one release."
         },
         {
           "name": "className",
           "type": "string",
           "required": false,
           "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "CodeBlockLabels": {
+      "kind": "type",
+      "source": "src/katana/code-block.tsx",
+      "props": [
+        {
+          "name": "copy",
+          "type": "string",
+          "required": true,
+          "description": "The copy button."
+        },
+        {
+          "name": "copied",
+          "type": "string",
+          "required": true,
+          "description": "The copy button right after a successful copy."
         }
       ]
     },
@@ -5324,16 +5383,22 @@
           "description": "Lines to highlight (1-based)."
         },
         {
+          "name": "labels",
+          "type": "CodeBlockLabels",
+          "required": false,
+          "description": "Accessible names of the copy button, before and right after copying (required unless the deprecated copyLabel / copiedLabel are given)."
+        },
+        {
           "name": "copyLabel",
           "type": "string",
-          "required": true,
-          "description": "Accessible name of the copy button (required)."
+          "required": false,
+          "description": "Old name kept for one release."
         },
         {
           "name": "copiedLabel",
           "type": "string",
-          "required": true,
-          "description": "Accessible name of the copy button after a successful copy (required)."
+          "required": false,
+          "description": "Old name kept for one release."
         },
         {
           "name": "className",
@@ -16482,7 +16547,7 @@
           "type": "LcdTone",
           "required": false,
           "default": "'neutral'",
-          "description": "Number color: neutral, up, down, focus (orange) or warning (amber)."
+          "description": "Number color: neutral, ok, warn, danger; up, down, flat (price direction, follows data-updown); accent (current focus)."
         },
         {
           "name": "note",
@@ -16502,11 +16567,16 @@
       "source": "src/katana/led.tsx",
       "props": [
         {
+          "name": "tone",
+          "type": "SeverityExt",
+          "required": false,
+          "description": "Tone of the light: neutral and off are unlit, accent glows in the accent color, ok, warn and danger in the status colors."
+        },
+        {
           "name": "state",
           "type": "LedState",
           "required": false,
-          "default": "'off'",
-          "description": "on glows orange; ok, warn and danger are green, amber and red."
+          "description": "Old name kept for one release."
         },
         {
           "name": "group",
@@ -16830,22 +16900,34 @@
       "source": "src/katana/loading.tsx",
       "props": [
         {
+          "name": "labels",
+          "type": "LoadingLabels",
+          "required": false,
+          "description": "All the text (the package ships none); required unless the deprecated texts is given."
+        },
+        {
           "name": "texts",
-          "type": "LoadingTexts",
-          "required": true,
-          "description": "All the text (the package ships none)."
+          "type": "LoadingLabels",
+          "required": false,
+          "description": "Old name kept for one release."
         },
         {
           "name": "pending",
           "type": "boolean",
-          "required": true,
-          "description": "Whether we are waiting."
+          "required": false,
+          "description": "Whether we are waiting for data."
+        },
+        {
+          "name": "phase",
+          "type": "LoadingPhase",
+          "required": false,
+          "description": "Pin one phase and draw it at once, without timers and without mounting children (docs, tests, screenshots)."
         },
         {
           "name": "label",
           "type": "string",
           "required": false,
-          "description": "Accessible name of the skeleton; defaults to texts.skeleton."
+          "description": "Accessible name of the skeleton; defaults to labels.skeleton."
         },
         {
           "name": "what",
@@ -16857,7 +16939,7 @@
           "name": "source",
           "type": "string | null",
           "required": false,
-          "description": "Where it loads from, the second part of the caption; omitted when absent."
+          "description": "Where it loads from, the second part of the caption; omitted when absent (and always in Suspense mode)."
         },
         {
           "name": "lines",
@@ -16888,7 +16970,7 @@
         {
           "name": "children",
           "type": "ReactNode",
-          "required": true,
+          "required": false,
           "description": "The content shown once loading is done."
         }
       ]
@@ -16898,36 +16980,177 @@
       "source": "src/katana/loading.tsx",
       "props": [
         {
-          "name": "texts",
-          "type": "LoadingTexts",
-          "required": true,
-          "description": "All the text (the package ships none)."
+          "name": "fill",
+          "type": "boolean",
+          "required": false,
+          "description": "Fill the parent; the line count is measured from the container height."
         },
         {
           "name": "label",
           "type": "string",
           "required": false,
-          "description": "Accessible name of the skeleton."
+          "description": "Accessible name of the skeleton; defaults to labels.skeleton."
+        },
+        {
+          "name": "children",
+          "type": "ReactNode",
+          "required": false,
+          "description": "The content shown once loading is done."
+        },
+        {
+          "name": "labels",
+          "type": "LoadingLabels",
+          "required": false,
+          "description": "All the text (the package ships none); required unless the deprecated texts is given."
+        },
+        {
+          "name": "texts",
+          "type": "LoadingLabels",
+          "required": false,
+          "description": "Old name kept for one release."
         },
         {
           "name": "what",
           "type": "string",
           "required": false,
-          "description": "What is loading, shown in the caption."
+          "description": "What is loading, shown in the caption \"loading <what> · <source>\"."
         },
         {
           "name": "lines",
           "type": "number",
           "required": false,
-          "default": "3",
+          "description": "How many lines to draw when the visible height is unknown."
+        },
+        {
+          "name": "onRetry",
+          "type": "() => void",
+          "required": false,
+          "description": "When given, the amber bar after 10 seconds offers a retry button."
+        }
+      ]
+    },
+    "LoadingLabels": {
+      "kind": "type",
+      "source": "src/katana/loading-view.tsx",
+      "props": [
+        {
+          "name": "skeleton",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "content",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "noResponse",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "loadingLed",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "retry",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "loading",
+          "type": "(name: string, source: string | null) => string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "slow",
+          "type": "(source: string | null) => string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "timeout",
+          "type": "(source: string | null) => string",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "LoadingPhase": {
+      "kind": "type",
+      "source": "src/katana/loading-gate.ts",
+      "props": []
+    },
+    "LoadingProps": {
+      "kind": "type",
+      "source": "src/katana/loading.tsx",
+      "props": [
+        {
+          "name": "labels",
+          "type": "LoadingLabels",
+          "required": false,
+          "description": "All the text (the package ships none); required unless the deprecated texts is given."
+        },
+        {
+          "name": "texts",
+          "type": "LoadingLabels",
+          "required": false,
+          "description": "Old name kept for one release."
+        },
+        {
+          "name": "pending",
+          "type": "boolean",
+          "required": false,
+          "description": "Whether we are waiting for data."
+        },
+        {
+          "name": "phase",
+          "type": "LoadingPhase",
+          "required": false,
+          "description": "Pin one phase and draw it at once, without timers and without mounting children (docs, tests, screenshots)."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": false,
+          "description": "Accessible name of the skeleton; defaults to labels.skeleton."
+        },
+        {
+          "name": "what",
+          "type": "string",
+          "required": false,
+          "description": "What is loading, shown in the caption \"loading <what> · <source>\"."
+        },
+        {
+          "name": "source",
+          "type": "string | null",
+          "required": false,
+          "description": "Where it loads from, the second part of the caption; omitted when absent (and always in Suspense mode)."
+        },
+        {
+          "name": "lines",
+          "type": "number",
+          "required": false,
           "description": "How many lines to draw when the visible height is unknown."
         },
         {
           "name": "fill",
           "type": "boolean",
           "required": false,
-          "default": "false",
           "description": "Fill the parent; the line count is measured from the container height."
+        },
+        {
+          "name": "header",
+          "type": "ReactNode",
+          "required": false,
+          "description": "The real header when it is already known; the skeleton only covers what is below it."
         },
         {
           "name": "onRetry",
@@ -16938,15 +17161,10 @@
         {
           "name": "children",
           "type": "ReactNode",
-          "required": true,
-          "description": "The content that suspends."
+          "required": false,
+          "description": "The content shown once loading is done."
         }
       ]
-    },
-    "LoadingPhase": {
-      "kind": "type",
-      "source": "src/katana/loading-gate.ts",
-      "props": []
     },
     "LoadingTexts": {
       "kind": "type",
@@ -17013,10 +17231,16 @@
           "description": "The current phase; null draws nothing."
         },
         {
+          "name": "labels",
+          "type": "LoadingLabels",
+          "required": false,
+          "description": "All the text; required unless the deprecated texts is given."
+        },
+        {
           "name": "texts",
-          "type": "LoadingTexts",
-          "required": true,
-          "description": "All the text."
+          "type": "LoadingLabels",
+          "required": false,
+          "description": "Old name kept for one release."
         },
         {
           "name": "label",
@@ -17802,11 +18026,16 @@
       "source": "src/katana/matrix-orb.tsx",
       "props": [
         {
+          "name": "status",
+          "type": "OrbState",
+          "required": false,
+          "description": "What the agent is doing (a state machine, so status); when it changes the weights of the patterns interpolate, with no jump."
+        },
+        {
           "name": "state",
           "type": "OrbState",
           "required": false,
-          "default": "'idle'",
-          "description": "The state; when it changes the weights of the patterns interpolate, with no jump."
+          "description": "Old name kept for one release."
         },
         {
           "name": "level",
@@ -17846,10 +18075,16 @@
       "source": "src/katana/matrix-orb.tsx",
       "props": [
         {
+          "name": "status",
+          "type": "OrbState",
+          "required": false,
+          "description": "What the agent is doing (a state machine, so status); when it changes the weights of the patterns interpolate, with no jump."
+        },
+        {
           "name": "state",
           "type": "OrbState",
           "required": false,
-          "description": "The state; when it changes the weights of the patterns interpolate, with no jump."
+          "description": "Old name kept for one release."
         },
         {
           "name": "level",
@@ -27868,6 +28103,16 @@
       "source": "src/blocks/event-timeline-model.ts",
       "props": []
     },
+    "Severity": {
+      "kind": "type",
+      "source": "src/lib/severity.ts",
+      "props": []
+    },
+    "SeverityExt": {
+      "kind": "type",
+      "source": "src/lib/severity.ts",
+      "props": []
+    },
     "ShaderReveal": {
       "kind": "component",
       "source": "src/motion/transition/shader-reveal/shader-reveal.tsx",
@@ -30027,10 +30272,16 @@
       "source": "src/katana/status-icon.tsx",
       "props": [
         {
+          "name": "tone",
+          "type": "StatusIconTone",
+          "required": false,
+          "description": "Tone: ok, warn, danger, neutral, info, or pending (a spinning arc)."
+        },
+        {
           "name": "status",
           "type": "StatusIconStatus",
-          "required": true,
-          "description": "The status; pending is a spinning arc."
+          "required": false,
+          "description": "Old name kept for one release."
         },
         {
           "name": "label",
@@ -30047,6 +30298,11 @@
       ]
     },
     "StatusIconStatus": {
+      "kind": "type",
+      "source": "src/katana/status-icon.tsx",
+      "props": []
+    },
+    "StatusIconTone": {
       "kind": "type",
       "source": "src/katana/status-icon.tsx",
       "props": []
@@ -30194,10 +30450,10 @@
         },
         {
           "name": "size",
-          "type": "number",
+          "type": "StepPlayerSize | number",
           "required": false,
-          "default": "32",
-          "description": "Height of the button and the bar in px."
+          "default": "'md'",
+          "description": "Height of the button and the bar: sm 24px, md 32px (default)."
         },
         {
           "name": "seekable",
@@ -30322,9 +30578,9 @@
         },
         {
           "name": "size",
-          "type": "number",
+          "type": "StepPlayerSize | number",
           "required": false,
-          "description": "Height of the button and the bar in px."
+          "description": "Height of the button and the bar: sm 24px, md 32px (default)."
         },
         {
           "name": "seekable",
@@ -30345,6 +30601,11 @@
           "description": "Extra class name on the root."
         }
       ]
+    },
+    "StepPlayerSize": {
+      "kind": "type",
+      "source": "src/katana/step-player.tsx",
+      "props": []
     },
     "StepPlayerStep": {
       "kind": "type",
@@ -32239,6 +32500,62 @@
         }
       ]
     },
+    "Tag": {
+      "kind": "component",
+      "source": "src/katana/tag.tsx",
+      "props": [
+        {
+          "name": "tone",
+          "type": "Severity",
+          "required": false,
+          "default": "'neutral'",
+          "description": "Tone of the text, and of the fill or the edge: neutral (default), ok, warn or danger."
+        },
+        {
+          "name": "size",
+          "type": "TagSize",
+          "required": false,
+          "default": "'md'",
+          "description": "sm is micro text with line height 1 (marks after a symbol name); md is caption text (inline marks)."
+        },
+        {
+          "name": "outlined",
+          "type": "boolean",
+          "required": false,
+          "default": "false",
+          "description": "Draw a 1px edge in the text color on a transparent fill instead of a tinted fill."
+        }
+      ]
+    },
+    "TagProps": {
+      "kind": "type",
+      "source": "src/katana/tag.tsx",
+      "props": [
+        {
+          "name": "tone",
+          "type": "Severity",
+          "required": false,
+          "description": "Tone of the text, and of the fill or the edge: neutral (default), ok, warn or danger."
+        },
+        {
+          "name": "size",
+          "type": "TagSize",
+          "required": false,
+          "description": "sm is micro text with line height 1 (marks after a symbol name); md is caption text (inline marks)."
+        },
+        {
+          "name": "outlined",
+          "type": "boolean",
+          "required": false,
+          "description": "Draw a 1px edge in the text color on a transparent fill instead of a tinted fill."
+        }
+      ]
+    },
+    "TagSize": {
+      "kind": "type",
+      "source": "src/katana/tag.tsx",
+      "props": []
+    },
     "Task": {
       "kind": "type",
       "source": "src/katana/task-list.tsx",
@@ -33574,6 +33891,13 @@
       "kind": "component",
       "source": "src/katana/toast.tsx",
       "props": [
+        {
+          "name": "tone",
+          "type": "Severity",
+          "required": false,
+          "default": "'neutral'",
+          "description": "Tone of the color bar and the icon: neutral (default), ok, warn or danger."
+        },
         {
           "name": "phase",
           "type": "ToastPhase",
@@ -35798,16 +36122,22 @@
           "description": "Progress ring from 0 to 1; computed from the number of sources when omitted."
         },
         {
+          "name": "labels",
+          "type": "WebSearchLabels",
+          "required": false,
+          "description": "Texts of the \"N more\" and \"collapse\" cards (required unless the deprecated moreLabel / lessLabel are given)."
+        },
+        {
           "name": "moreLabel",
           "type": "(count: number) => string",
-          "required": true,
-          "description": "Text of the \"N more\" card (required)."
+          "required": false,
+          "description": "Old name kept for one release."
         },
         {
           "name": "lessLabel",
           "type": "string",
-          "required": true,
-          "description": "Text of the \"collapse\" card (required)."
+          "required": false,
+          "description": "Old name kept for one release."
         },
         {
           "name": "open",
@@ -35890,6 +36220,24 @@
         }
       ]
     },
+    "WebSearchLabels": {
+      "kind": "type",
+      "source": "src/katana/web-search.tsx",
+      "props": [
+        {
+          "name": "more",
+          "type": "(count: number) => string",
+          "required": true,
+          "description": "The card that stands for the hidden sources, for example \"3 more\"."
+        },
+        {
+          "name": "less",
+          "type": "string",
+          "required": true,
+          "description": "The card that folds them back."
+        }
+      ]
+    },
     "WebSearchProps": {
       "kind": "type",
       "source": "src/katana/web-search.tsx",
@@ -35919,16 +36267,22 @@
           "description": "Progress ring from 0 to 1; computed from the number of sources when omitted."
         },
         {
+          "name": "labels",
+          "type": "WebSearchLabels",
+          "required": false,
+          "description": "Texts of the \"N more\" and \"collapse\" cards (required unless the deprecated moreLabel / lessLabel are given)."
+        },
+        {
           "name": "moreLabel",
           "type": "(count: number) => string",
-          "required": true,
-          "description": "Text of the \"N more\" card (required)."
+          "required": false,
+          "description": "Old name kept for one release."
         },
         {
           "name": "lessLabel",
           "type": "string",
-          "required": true,
-          "description": "Text of the \"collapse\" card (required)."
+          "required": false,
+          "description": "Old name kept for one release."
         },
         {
           "name": "open",

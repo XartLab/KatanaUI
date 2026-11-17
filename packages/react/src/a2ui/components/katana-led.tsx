@@ -7,27 +7,25 @@ import { z } from 'zod'
 import { Led } from '../../index.ts'
 import { Cell, weightSchema } from '../support.tsx'
 
-const STATES = ['off', 'on', 'ok', 'warn', 'danger'] as const
+const TONES = ['off', 'neutral', 'accent', 'ok', 'warn', 'danger'] as const
 const GROUPS = ['A', 'B', 'C', 'D'] as const
 
 export const KatanaLedApi = {
   name: 'KatanaLed',
   schema: z
     .object({
-      state: z
-        .enum(STATES)
+      tone: z
+        .enum(TONES)
         .or(CommonSchemas.DataBinding)
         .describe(
-          "The state: 'on' glows orange, 'ok' is green, 'warn' amber, 'danger' red, 'off' is dark. May be bound to the data model so the light follows live status.",
+          "The tone: 'accent' glows in the accent color (in progress, online), 'ok' is green, 'warn' amber, 'danger' red, 'off' and 'neutral' are dark. May be bound to the data model so the light follows live status.",
         ),
       label: CommonSchemas.DynamicString.describe(
         'Accessible name that says what the light stands for and its state, as a whole phrase (for example "Market feed: connected").',
       ),
       group: z
         .enum(GROUPS)
-        .describe(
-          'Link group A to D: panels in the same group follow the same symbol. The group color overrides state.',
-        )
+        .describe('Link group A to D: panels in the same group follow the same symbol. The group color overrides tone.')
         .optional(),
       hollow: z.boolean().describe('Transparent fill with a thin border and no glow.').optional(),
       bare: z
@@ -43,7 +41,7 @@ export const KatanaLedApi = {
 export const KatanaLed = createComponentImplementation(KatanaLedApi, ({ props }) => (
   <Cell weight={props.weight}>
     <Led
-      state={STATES.find((item) => item === props.state) ?? 'off'}
+      tone={TONES.find((item) => item === props.tone) ?? 'off'}
       group={GROUPS.find((item) => item === props.group)}
       hollow={props.hollow}
       bare={props.bare}

@@ -4,15 +4,33 @@ import type { GuidanceMap } from './types'
 
 const feedback: GuidanceMap = {
   skeleton: {
-    aliases: ['Loading', 'Placeholder', 'Shimmer', 'Spinner'],
-    use: ['等数据时占住内容区，用 Loading 包住内容。', '要给超时加重试时用 LoadingView。'],
+    aliases: ['Placeholder', 'Shimmer', 'Skeleton line'],
+    use: ['骨架条本身：一般不单摆，经 loading 出现。', '要在自己的占位里画几条一样的点阵条时。'],
+    avoid: [
+      '等数据、等 Suspense 用 loading（它决定什么时候出骨架）。',
+      '卡片、文章这类形状复杂的，用 measured-skeleton。',
+    ],
+    a11y: ['role=status、aria-busy，读屏读 label；线条对读屏隐藏。'],
+  },
+  loading: {
+    aliases: ['Loading', 'Spinner', 'Suspense fallback', 'LoadingBoundary', 'LoadingView'],
+    use: [
+      '等数据：<Loading pending labels>，内容到了再挂 children。',
+      '等 React.lazy / use()：不给 pending，Loading 就是 Suspense 边界。',
+      '文档、测试、截图要看某一段：给 phase（loading / slow / timeout）。',
+      '撑满面板主体给 fill，骨架行数按高度量；表头已知就传 header。',
+    ],
     avoid: [
       '知道进度时用 progress。',
       '操作结果的提示用 toast 或 alert。',
       '没数据（不是在等）用 empty-state。',
       '卡片、文章这类形状复杂的，用 measured-skeleton。',
     ],
-    a11y: ['加载区是 role=status、aria-busy，骨架线条对读屏隐藏。', '「仍在加载」与重试文案由调用方传。'],
+    a11y: [
+      '骨架是 role=status、aria-busy；读屏名取 label，没有就用 labels.skeleton。',
+      '「仍在加载」、超时与重试文案全在 labels，由调用方按界面语言给；超时条的灯带「没有回应」的读屏名。',
+      '重试钮是普通按钮，Tab 可到。',
+    ],
   },
   'measured-skeleton': {
     aliases: ['Skeleton screen', 'Content placeholder', 'Skullet', 'Shimmer'],
@@ -34,6 +52,7 @@ const feedback: GuidanceMap = {
     a11y: [
       'ToastViewport 是 role=region，aria-live=assertive，新增的条目立刻被读。',
       '关闭钮与「全部关掉」的读屏名由调用方传。',
+      '语气（tone）只是色条与图标的颜色，标题里也要写明；说明文字用 ink-2，各主题都过 4.5:1。',
     ],
   },
   alert: {
@@ -60,7 +79,11 @@ const feedback: GuidanceMap = {
     aliases: ['Status glyph', 'Result icon', 'Check mark', 'Feedback icon'],
     use: ['提示条、列表行里的成功、失败、警告、进行中图标。', '状态切换要有明显动作时。'],
     avoid: ['只是一个在线点用 led。', '没有文字的状态不要单放图标。'],
-    a11y: ['传了 label 是 role=img 并读出，不传就 aria-hidden。', '图标旁边必须有文字。'],
+    a11y: [
+      '传了 label 是 role=img 并读出，不传就 aria-hidden。',
+      '图标旁边必须有文字。',
+      'ok、warn、danger 的字形各不相同（对勾、叹号、叉），不只靠颜色。',
+    ],
   },
   'ai-status': {
     aliases: ['Typing indicator', 'Thinking status', 'Agent status', 'Progress text'],
@@ -70,7 +93,7 @@ const feedback: GuidanceMap = {
       '换文字时宽度在同一帧算好交给弹簧，不先跳一帧。',
     ],
     avoid: ['有真实百分比用 progress。', '只想要状态球用 matrix-orb。', '步骤清单用 task-list。'],
-    a11y: ['整行是 role=status，状态变了读屏会播报。', '图标对读屏隐藏，文字是唯一的读法。'],
+    a11y: ['整行是 role=status，状态变了读屏会播报。', '图标对读屏隐藏，文字是唯一的读法；status 换了要同时换 label。'],
   },
   'web-search': {
     aliases: ['Sources', 'Citations', 'Footnote', 'Reference list'],
@@ -80,6 +103,7 @@ const feedback: GuidanceMap = {
       '药丸是按钮，用 aria-expanded 表示展开，状态在 aria-live=polite 里播报。',
       '行内引用是按钮，预览是 role=tooltip，聚焦就弹出。',
       '图标与来源小标对读屏隐藏。',
+      '「还有 N 条」「收起」是虚线边的按钮，文字 ink-3 在件自己的底上过 4.5:1。',
     ],
   },
   'animated-list': {

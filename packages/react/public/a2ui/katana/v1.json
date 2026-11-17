@@ -2240,7 +2240,7 @@
         "component": {
           "const": "KatanaAiStatus"
         },
-        "state": {
+        "status": {
           "anyOf": [
             {
               "type": "string",
@@ -2301,7 +2301,7 @@
               "description": "Invokes a named function, combining common function properties with the catalog function definition."
             }
           ],
-          "description": "Seconds since the step began; shown only while the state is active."
+          "description": "Seconds since the step began; shown only while the status is in progress."
         },
         "weight": {
           "type": "number",
@@ -2311,7 +2311,7 @@
       },
       "required": [
         "component",
-        "state",
+        "status",
         "label"
       ],
       "unevaluatedProperties": false
@@ -2385,35 +2385,26 @@
           ],
           "description": "The status text on the pill, for example \"Searched 6 sources\"."
         },
-        "moreLabel": {
-          "anyOf": [
-            {
-              "type": "string"
+        "labels": {
+          "type": "object",
+          "properties": {
+            "more": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Text of the \"show more\" tile; {count} is replaced with the number of hidden sources."
             },
-            {
-              "$ref": "common_types.json#/$defs/DataBinding"
-            },
-            {
-              "$ref": "common_types.json#/$defs/FunctionCall",
-              "description": "Invokes a named function, combining common function properties with the catalog function definition."
+            "less": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Text of the \"show fewer\" tile."
             }
+          },
+          "required": [
+            "more",
+            "less"
           ],
-          "description": "Text of the \"show more\" tile; may contain {count}."
-        },
-        "lessLabel": {
-          "anyOf": [
-            {
-              "type": "string"
-            },
-            {
-              "$ref": "common_types.json#/$defs/DataBinding"
-            },
-            {
-              "$ref": "common_types.json#/$defs/FunctionCall",
-              "description": "Invokes a named function, combining common function properties with the catalog function definition."
-            }
-          ],
-          "description": "Text of the \"show fewer\" tile."
+          "additionalProperties": false,
+          "description": "Both tile texts, required: the component carries no wording. Write them in the language of the user."
         },
         "onOpen": {
           "anyOf": [
@@ -2479,7 +2470,8 @@
       "required": [
         "component",
         "sources",
-        "label"
+        "label",
+        "labels"
       ],
       "unevaluatedProperties": false
     },
@@ -15402,6 +15394,16 @@
           ],
           "description": "The detail text."
         },
+        "tone": {
+          "type": "string",
+          "enum": [
+            "neutral",
+            "ok",
+            "warn",
+            "danger"
+          ],
+          "description": "Tone of the color bar and icon: 'neutral' (default), 'ok', 'warn' or 'danger'. Say it in the title too."
+        },
         "closeLabel": {
           "anyOf": [
             {
@@ -15544,35 +15546,26 @@
           "default": true,
           "description": "Whether to show the copy button."
         },
-        "copyLabel": {
-          "anyOf": [
-            {
-              "type": "string"
+        "labels": {
+          "type": "object",
+          "properties": {
+            "copy": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Accessible name of the copy button."
             },
-            {
-              "$ref": "common_types.json#/$defs/DataBinding"
-            },
-            {
-              "$ref": "common_types.json#/$defs/FunctionCall",
-              "description": "Invokes a named function, combining common function properties with the catalog function definition."
+            "copied": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Accessible name of the copy button right after copying."
             }
+          },
+          "required": [
+            "copy",
+            "copied"
           ],
-          "description": "Accessible name of the copy button."
-        },
-        "copiedLabel": {
-          "anyOf": [
-            {
-              "type": "string"
-            },
-            {
-              "$ref": "common_types.json#/$defs/DataBinding"
-            },
-            {
-              "$ref": "common_types.json#/$defs/FunctionCall",
-              "description": "Invokes a named function, combining common function properties with the catalog function definition."
-            }
-          ],
-          "description": "Accessible name of the copy button right after copying."
+          "additionalProperties": false,
+          "description": "Both accessible names, required: the component carries no wording. Write them in the language of the user."
         },
         "weight": {
           "type": "number",
@@ -15583,8 +15576,7 @@
       "required": [
         "component",
         "code",
-        "copyLabel",
-        "copiedLabel"
+        "labels"
       ],
       "unevaluatedProperties": false
     },
@@ -15980,13 +15972,14 @@
         "component": {
           "const": "KatanaLed"
         },
-        "state": {
+        "tone": {
           "anyOf": [
             {
               "type": "string",
               "enum": [
                 "off",
-                "on",
+                "neutral",
+                "accent",
                 "ok",
                 "warn",
                 "danger"
@@ -15996,7 +15989,7 @@
               "$ref": "common_types.json#/$defs/DataBinding"
             }
           ],
-          "description": "The state: 'on' glows orange, 'ok' is green, 'warn' amber, 'danger' red, 'off' is dark. May be bound to the data model so the light follows live status."
+          "description": "The tone: 'accent' glows in the accent color (in progress, online), 'ok' is green, 'warn' amber, 'danger' red, 'off' and 'neutral' are dark. May be bound to the data model so the light follows live status."
         },
         "label": {
           "anyOf": [
@@ -16021,7 +16014,7 @@
             "C",
             "D"
           ],
-          "description": "Link group A to D: panels in the same group follow the same symbol. The group color overrides state."
+          "description": "Link group A to D: panels in the same group follow the same symbol. The group color overrides tone."
         },
         "hollow": {
           "type": "boolean",
@@ -16043,7 +16036,7 @@
       },
       "required": [
         "component",
-        "state",
+        "tone",
         "label"
       ],
       "unevaluatedProperties": false
@@ -16090,17 +16083,20 @@
               "type": "string",
               "enum": [
                 "neutral",
+                "ok",
+                "warn",
+                "danger",
                 "up",
                 "down",
-                "accent",
-                "warn"
+                "flat",
+                "accent"
               ]
             },
             {
               "$ref": "common_types.json#/$defs/DataBinding"
             }
           ],
-          "description": "Number color: 'neutral', 'up' or 'down' for direction, 'accent' for the current focus, 'warn' for a warning. Direction is also stated in the text itself."
+          "description": "Number color: 'neutral', 'ok', 'warn' or 'danger' for a status; 'up', 'down' or 'flat' for direction; 'accent' for the current focus. Direction is also stated in the text itself."
         },
         "note": {
           "anyOf": [
@@ -16198,14 +16194,15 @@
         "component": {
           "const": "KatanaStatusIcon"
         },
-        "status": {
+        "tone": {
           "anyOf": [
             {
               "type": "string",
               "enum": [
-                "success",
-                "error",
-                "warning",
+                "ok",
+                "warn",
+                "danger",
+                "neutral",
                 "info",
                 "pending"
               ]
@@ -16214,7 +16211,7 @@
               "$ref": "common_types.json#/$defs/DataBinding"
             }
           ],
-          "description": "The status. 'pending' is a spinning arc. May be bound to the data model so the icon changes as work finishes."
+          "description": "The tone: 'ok' is a check, 'danger' a cross, 'warn' an exclamation, 'info' and 'neutral' an i, 'pending' a spinning arc. May be bound to the data model so the icon changes as work finishes."
         },
         "label": {
           "anyOf": [
@@ -16239,7 +16236,7 @@
       },
       "required": [
         "component",
-        "status",
+        "tone",
         "label"
       ],
       "unevaluatedProperties": false

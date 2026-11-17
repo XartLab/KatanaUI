@@ -9,7 +9,9 @@ import {
   LINK_GROUPS,
   RollingText,
   SymbolMark,
-  type LedState,
+  Tag,
+  type Severity,
+  type SeverityExt,
 } from '../../src/index.ts'
 import { LiveToggle } from '../LiveToggle.tsx'
 import { randomWalk, useLiveTicker } from '../live-sim.ts'
@@ -18,15 +20,15 @@ import { Cell, Row, SAMPLE_MARK_SRC } from './parts.tsx'
 
 // KATANA 自有的读数件的演示（#1860 从 src/ui 搬进包）：状态灯、LCD 读数、点阵、滚动数字、徽标、快捷键方块。数据和文案都是演示用的。
 
-const LED_STATES: readonly LedState[] = ['off', 'on', 'ok', 'warn', 'danger']
+const LED_TONES: readonly SeverityExt[] = ['off', 'accent', 'ok', 'warn', 'danger']
 
 export function LedDemo() {
   return (
     <>
       <Row name="状态">
-        {LED_STATES.map((state) => (
-          <Cell key={state} name={state}>
-            <Led state={state} label={`状态 ${state}`} />
+        {LED_TONES.map((tone) => (
+          <Cell key={tone} name={tone}>
+            <Led tone={tone} label={`状态 ${tone}`} />
           </Cell>
         ))}
       </Row>
@@ -39,13 +41,13 @@ export function LedDemo() {
       </Row>
       <Row name="形态">
         <Cell name="hollow">
-          <Led hollow state="ok" label="空心灯" />
+          <Led hollow tone="ok" label="空心灯" />
         </Cell>
         <Cell name="bare">
           <Led bare label="旁边没有文字的熄灭灯" />
         </Cell>
         <Cell name="small">
-          <Led small state="on" label="小灯" />
+          <Led small tone="accent" label="小灯" />
         </Cell>
       </Row>
       <LiveLedLcdDemo />
@@ -225,6 +227,36 @@ export function SymbolMarkDemo() {
         <SymbolMark code="ETH" name="Ethereum" src="data:image/png;base64,broken" />
       </Row>
       <p className="gal-note">示意图标：自绘的 SVG，演示有图的样子；不是任何真实币种或公司的标志。</p>
+    </>
+  )
+}
+
+const TAG_TONES: readonly Severity[] = ['neutral', 'ok', 'warn', 'danger']
+
+export function TagDemo() {
+  return (
+    <>
+      <Row name="填充 · md">
+        {TAG_TONES.map((tone) => (
+          <Tag key={tone} tone={tone} data-testid={`tag-${tone}`}>
+            {tone}
+          </Tag>
+        ))}
+      </Row>
+      <Row name="描边 · md">
+        {TAG_TONES.map((tone) => (
+          <Tag key={tone} tone={tone} outlined data-testid={`tag-${tone}-outlined`}>
+            {tone}
+          </Tag>
+        ))}
+      </Row>
+      <Row name="sm">
+        {TAG_TONES.map((tone) => (
+          <Tag key={tone} tone={tone} size="sm" data-testid={`tag-${tone}-sm`}>
+            {tone.slice(0, 1).toUpperCase()}
+          </Tag>
+        ))}
+      </Row>
     </>
   )
 }

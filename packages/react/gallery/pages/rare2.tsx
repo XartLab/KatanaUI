@@ -51,9 +51,11 @@ export function StepPlayerDemo() {
             labels={labels}
             seekable
             loop
-            size={40}
           />
         </div>
+      </Row>
+      <Row name="sm">
+        <StepPlayer steps={3} labels={labels} size="sm" />
       </Row>
       <p className="gal-note">
         点播放：当前步的填充随时间走，走完去下一步；放完图标变重放；可跳的那条点圆点直接去那一步。
@@ -143,8 +145,7 @@ export function CodeBlockDemo() {
             language="ts"
             filename="last-mean.ts"
             highlightLines={[4]}
-            copyLabel="复制代码"
-            copiedLabel="已复制"
+            labels={{ copy: '复制代码', copied: '已复制' }}
           />
         </div>
       </Row>
@@ -154,8 +155,7 @@ export function CodeBlockDemo() {
             code={SAMPLE_JSON}
             language="json"
             accent="var(--signal-blue)"
-            copyLabel="复制 JSON"
-            copiedLabel="已复制 JSON"
+            labels={{ copy: '复制 JSON', copied: '已复制 JSON' }}
           />
         </div>
       </Row>
@@ -166,8 +166,7 @@ export function CodeBlockDemo() {
             language="sh"
             showHeader={false}
             showLineNumbers={false}
-            copyLabel="复制命令"
-            copiedLabel="已复制命令"
+            labels={{ copy: '复制命令', copied: '已复制命令' }}
           />
         </div>
       </Row>
@@ -205,8 +204,7 @@ export function WebSearchDemo() {
             sources={shown}
             status={searching ? 'searching' : 'done'}
             label={label}
-            moreLabel={(n) => `还有 ${n} 条`}
-            lessLabel="收起"
+            labels={{ more: (n) => `还有 ${n} 条`, less: '收起' }}
           />
         </div>
       </Row>

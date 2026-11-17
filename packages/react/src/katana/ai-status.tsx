@@ -13,9 +13,12 @@ import { fontFor, measureText } from '../lib/text-measure.ts'
 import { snappy } from '../lib/motion.ts'
 import { unit } from '../lib/spring.ts'
 
-export type AiStatusState = 'thinking' | 'searching' | 'writing' | 'done' | 'error'
+/** What the agent is doing: the first three are in progress, done and error are final. */
+export type AiStatusValue = 'thinking' | 'searching' | 'writing' | 'done' | 'error'
+/** @deprecated Use AiStatusValue. */
+export type AiStatusState = AiStatusValue
 
-const ACTIVE: Readonly<Record<AiStatusState, boolean>> = {
+const ACTIVE: Readonly<Record<AiStatusValue, boolean>> = {
   thinking: true,
   searching: true,
   writing: true,
@@ -36,8 +39,8 @@ const STROKE = {
   strokeLinejoin: 'round',
 } as const
 
-function Glyph({ state }: { state: AiStatusState }) {
-  switch (state) {
+function Glyph({ status }: { status: AiStatusValue }) {
+  switch (status) {
     case 'thinking':
       return (
         <svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" data-glyph="thinking">
@@ -116,8 +119,16 @@ function textWidth(label: string, detail: string | undefined, elapsed: string | 
 }
 
 export type AiStatusProps = {
-  /** The state; the first three are in progress. */
-  state: AiStatusState
+  /**
+   * What the agent is doing (a state machine, so it is status, not tone); the first three are in progress. Required unless the deprecated state is given.
+   * 状态机（G3 起叫 status，体检 §4：状态机用 status）：thinking、searching、writing 进行中，done、error 结束。
+   */
+  status?: AiStatusValue
+  /**
+   * Old name kept for one release.
+   * @deprecated Use status.
+   */
+  state?: AiStatusState
   /**
    * Status text (required, in the UI language); change the string when the state changes.
    * 状态文字（必填，由调用方按界面语言给），状态变了就换这个字符串。
@@ -137,7 +148,8 @@ export type AiStatusProps = {
   className?: string
 }
 
-export function AiStatus({ state, label, detail, elapsed, className }: AiStatusProps) {
+export function AiStatus({ status: given, state: legacy, label, detail, elapsed, className }: AiStatusProps) {
+  const state: AiStatusValue = given ?? legacy ?? 'thinking'
   const active = ACTIVE[state]
   // 外层宽度由一个动效值持有，始终写成具体像素：文字一换，用 pretext 预先算出新宽，直接把目标宽交给弹簧走过去，
   // 不先渲染再量，所以没有「先跳一帧再动」。（曾经外层不写宽度、跟着里层自动伸缩，宽度当帧跳变，弹簧等于没动。）
@@ -179,10 +191,15 @@ export function AiStatus({ state, label, detail, elapsed, className }: AiStatusP
             exit={{ scale: 0.5, opacity: 0, rotate: 30 }}
             transition={unit(snappy)}
             style={{
-              color: state === 'error' ? 'var(--signal-red)' : active ? 'var(--signal-orange)' : 'var(--ink-300)',
+              color:
+                state === 'error'
+                  ? 'var(--k-status-danger-foreground)'
+                  : active
+                    ? 'var(--accent)'
+                    : 'var(--k-content-secondary-foreground)',
             }}
           >
-            <Glyph state={state} />
+            <Glyph status={state} />
           </motion.span>
         </AnimatePresence>
       </span>

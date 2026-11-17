@@ -8,6 +8,8 @@
 
 ### EmptyState
 
+role=status；标题是 h3。点阵标签、说明、动作都可省；classNames 按部位挂额外的类。
+
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
 | `tag` | `string` | — | Small dot-matrix tag such as NO DATA (the caller writes the text). |

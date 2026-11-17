@@ -49,6 +49,8 @@ export function RollingTextUsage() {
 ## Don't
 
 - 值没变时不要滚；价格、盈亏的变化只用它给的一次闪，不再加别的动效。
+- 十字线在看历史时传 animate=false：回看的数不是新到的，不滚不闪。
+- 不要把千分位、小数位交给它算：text 由调用方格式化好，value 只用来判涨跌方向。
 
 ## Composition
 

@@ -9,6 +9,7 @@ const readouts: GuidanceMap = {
       '连接、数据源、任务是否在线的一点小标记。',
       '多个面板按联动组着色，表示它们同步。',
       '状态变了（如行情断线）在灯外闪一圈光晕：变坏用警示色，变好用涨色，各一次。',
+      '语气传 tone（Severity 加 off / accent）：在线、进行中是 accent，已连上是 ok；手里是 Severity 的直接传，不用再写映射表。',
     ],
     avoid: ['要读出具体状态词时用 StatusIcon 或文字，不要只放灯。', '表示未读数用 notification-bell 的角标。'],
     a11y: ['role=img，读屏名取 label；只有灯没有文字时 label 必传。', '颜色不单独传意，旁边写状态文字。'],
@@ -50,10 +51,31 @@ const readouts: GuidanceMap = {
     a11y: ['动效只是辅助，别用它承载唯一信息。', '涨跌除了闪色还要有符号或箭头。'],
   },
   badge: {
-    aliases: ['Superscript tag', 'Tag', 'Label', 'Marker'],
-    use: ['品种名后标板块、风险（ST、科创板）。', '一个名字后挂几个小标记。'],
-    avoid: ['需要点击或带数字的用 chip-group 或 notification-bell。', '必须读到的警告用 alert。'],
+    aliases: ['Superscript tag', 'Label', 'Marker'],
+    use: ['品种名后标板块、风险（ST、科创板）。', '一个名字后挂几个小标记；风险标记给 tone。'],
+    avoid: [
+      '需要点击或带数字的用 chip-group 或 notification-bell。',
+      '必须读到的警告用 alert。',
+      '行内（不是上标）的小标签用 tag。',
+    ],
     a11y: ['每个徽标是 role=img，读屏名取全称而不是单字。', '悬停的 title 也是全称。'],
+  },
+  tag: {
+    aliases: ['Pill', 'Label', 'Chip', 'Lozenge', 'Badge'],
+    use: [
+      '行内的一个小标记：延迟、估算、停牌、已成交。',
+      '语气只有四种（Severity）：neutral、ok、warn、danger；要强调又不想用底色时用 outlined。',
+      'sm 给品种名后的上标（BadgeGroup 就是它），md 给正文与表格里的标记。',
+    ],
+    avoid: [
+      '可点或可删的选项用 chip-group。',
+      '带未读数的用 count-badge 或 notification-bell。',
+      '一整句提示用 alert。',
+    ],
+    a11y: [
+      '只是 span，没有角色；读屏读它的字。只放单字时给 role=img 与 aria-label 写全称（BadgeGroup 的做法）。',
+      '语气靠字说清，颜色只是重复；各语气的字色在自己的底上过 4.5:1。',
+    ],
   },
   kbd: {
     aliases: ['Keyboard key', 'Shortcut', 'Key cap', 'Hotkey'],
@@ -91,7 +113,10 @@ const readouts: GuidanceMap = {
     aliases: ['Pixel display', 'LED matrix', 'Marquee', 'Retro banner'],
     use: ['装饰性的状态牌、空态、欢迎屏。', '短的拉丁文字或精灵图的像素风展示。'],
     avoid: ['行情与价格读数用 lcd。', '含中文的文字，用普通文本。'],
-    a11y: ['画布 aria-hidden，真正的文字放在 sr-only 里读屏读它。', 'marquee 在屏外或标签页隐藏时暂停。'],
+    a11y: [
+      '画布 aria-hidden，真正的文字放在 sr-only 里读屏读它；纯精灵给 label，不给就整块当装饰。',
+      'marquee 在屏外或标签页隐藏时暂停。',
+    ],
   },
   'json-viewer': {
     aliases: ['Tree view', 'JSON tree', 'Object inspector', 'Data inspector'],
@@ -118,7 +143,7 @@ const readouts: GuidanceMap = {
     a11y: [
       '滚动区是 role=region 且可聚焦，键盘能滚动。',
       '行号对读屏隐藏，不会混进代码。',
-      '复制钮的读屏名由调用方传，复制后换成 copiedLabel。',
+      '复制钮的读屏名由调用方传（labels.copy），复制后换成 labels.copied。',
     ],
   },
   'uptime-bars': {

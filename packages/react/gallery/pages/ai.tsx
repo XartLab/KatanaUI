@@ -319,7 +319,7 @@ export function AiMessageDemo() {
           </AiMessage>
           <AiMessage
             timestamp="14:32"
-            avatar={<MatrixOrb state="done" cells={5} label="助手" />}
+            avatar={<MatrixOrb status="done" cells={5} label="助手" />}
             copyText="更像板块与资金面共振。"
             labels={MESSAGE_LABELS}
             onRetry={() => setVote('重试')}
@@ -546,7 +546,7 @@ export function AiBranchDemo() {
           <AiBranch>
             <AiBranchMessages>
               {BRANCHES.map((text) => (
-                <AiMessage key={text} avatar={<MatrixOrb state="done" cells={5} label="助手" />}>
+                <AiMessage key={text} avatar={<MatrixOrb status="done" cells={5} label="助手" />}>
                   {text}
                 </AiMessage>
               ))}
@@ -626,7 +626,7 @@ function ConversationRun({ onReplay }: { onReplay: () => void }) {
               600519 今天为什么跌
             </AiMessage>
             {tick >= 1 ? (
-              <AiMessage bubble={false} avatar={<MatrixOrb state={orb} cells={5} label={`助手：${state}`} />}>
+              <AiMessage bubble={false} avatar={<MatrixOrb status={orb} cells={5} label={`助手：${state}`} />}>
                 <div style={{ display: 'grid', gap: 10 }}>
                   <AiReasoning labels={REASONING_LABELS} isStreaming={reasoningStreaming}>
                     {REASONING_LINES.slice(0, Math.max(1, Math.min(REASONING_LINES.length, tick))).map((line) => (

@@ -304,6 +304,11 @@
           "target": "~/src/katana/ui/theme/system-monitor.css"
         },
         {
+          "path": "src/theme/tag.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/tag.css"
+        },
+        {
           "path": "src/theme/technical-rating.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/technical-rating.css"
@@ -1542,6 +1547,32 @@
       ]
     },
     {
+      "name": "arcade-pixel-paint",
+      "type": "registry:lib",
+      "title": "Arcade Pixel Paint",
+      "description": "ArcadePixel 的画法：把调色板里的 var(--token) 读成颜色、画一帧（亮点、荧光、熄灭的点阵）。",
+      "files": [
+        {
+          "path": "src/katana/arcade-pixel-paint.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/katana/arcade-pixel-paint.ts"
+        }
+      ]
+    },
+    {
+      "name": "arcade-pixel-sprites",
+      "type": "registry:lib",
+      "title": "Arcade Pixel Sprites",
+      "description": "街机式像素屏：5x7 点阵字体或自带精灵画在 canvas 上，可选打字、擦除、闪烁、跑马灯四种进场，再叠扫描线、CRT 暗角与荧光。取自 SmoothUI（MIT）。",
+      "files": [
+        {
+          "path": "src/katana/arcade-pixel-sprites.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/katana/arcade-pixel-sprites.ts"
+        }
+      ]
+    },
+    {
       "name": "arcade-pixel",
       "type": "registry:component",
       "title": "Arcade Pixel",
@@ -1550,6 +1581,8 @@
         "motion@14.9.0"
       ],
       "registryDependencies": [
+        "@katana/arcade-pixel-paint",
+        "@katana/arcade-pixel-sprites",
         "@katana/cn"
       ],
       "files": [
@@ -1565,6 +1598,10 @@
       "type": "registry:component",
       "title": "Badge",
       "description": "品种名后的上标小字（板块、风险标记）：次要文字色，不抢品种名；悬停写全称。",
+      "registryDependencies": [
+        "@katana/severity",
+        "@katana/tag"
+      ],
       "files": [
         {
           "path": "src/katana/badge.tsx",
@@ -1934,7 +1971,9 @@
       "title": "Lcd",
       "description": "点阵小标签在上、LCD 数字在中、一行灰色小字在下的读数窗；没有数据显示「—」。",
       "registryDependencies": [
-        "@katana/live-readout"
+        "@katana/live-readout",
+        "@katana/severity",
+        "@katana/tone"
       ],
       "files": [
         {
@@ -1950,7 +1989,8 @@
       "title": "Led",
       "description": "8px 的 StatusLED：默认熄灭，只表达真实状态；必须配文字或读屏名，不单靠颜色说话。",
       "registryDependencies": [
-        "@katana/live"
+        "@katana/live",
+        "@katana/severity"
       ],
       "files": [
         {
@@ -1977,7 +2017,7 @@
       "name": "loading-view",
       "type": "registry:component",
       "title": "Loading View",
-      "description": "等数据的那一块：500ms 内到了什么也不画；超过了出点阵骨架，2s 说「仍在加载」，10s 转琥珀条加重试。不脉冲、不转圈。",
+      "description": "加载态的唯一入口：给 pending 等数据，不给 pending 当 Suspense 边界，给 phase 钉在某一段直接画。500ms 内到了什么也不画；超过了出点阵骨架，2s 说「仍在加载」，10s 转琥珀条加重试。",
       "registryDependencies": [
         "@katana/button",
         "@katana/led",
@@ -2013,8 +2053,9 @@
       "name": "loading",
       "type": "registry:component",
       "title": "Loading",
-      "description": "等数据的那一块：500ms 内到了什么也不画；超过了出点阵骨架，2s 说「仍在加载」，10s 转琥珀条加重试。不脉冲、不转圈。",
+      "description": "加载态的唯一入口：给 pending 等数据，不给 pending 当 Suspense 边界，给 phase 钉在某一段直接画。500ms 内到了什么也不画；超过了出点阵骨架，2s 说「仍在加载」，10s 转琥珀条加重试。",
       "registryDependencies": [
+        "@katana/loading-gate",
         "@katana/loading-view",
         "@katana/loading-wait"
       ],
@@ -2475,7 +2516,7 @@
       "name": "skeleton",
       "type": "registry:component",
       "title": "Skeleton",
-      "description": "等数据的那一块：500ms 内到了什么也不画；超过了出点阵骨架，2s 说「仍在加载」，10s 转琥珀条加重试。不脉冲、不转圈。",
+      "description": "骨架条本身：12 高的点阵圆角条（bg-200 底、line-200 边），第一行 40%、最后一行 70%、中间满宽；不脉冲、不转圈。什么时候出、出多久由 Loading 管。",
       "registryDependencies": [
         "@katana/loading-gate"
       ],
@@ -2615,6 +2656,7 @@
       "registryDependencies": [
         "@katana/cn",
         "@katana/motion",
+        "@katana/severity",
         "@katana/spring"
       ],
       "files": [
@@ -2698,6 +2740,23 @@
       ]
     },
     {
+      "name": "tag",
+      "type": "registry:component",
+      "title": "Tag",
+      "description": "小标签的底座：语气（Severity：neutral、ok、warn、danger）× 尺寸（sm、md）× 填充或描边。BadgeGroup 的上标徽标、EstimateBadge 的估算标记都是它；颜色只读 --k-status-*。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/severity"
+      ],
+      "files": [
+        {
+          "path": "src/katana/tag.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/katana/tag.tsx"
+        }
+      ]
+    },
+    {
       "name": "task-list",
       "type": "registry:component",
       "title": "Task List",
@@ -2750,7 +2809,8 @@
       ],
       "registryDependencies": [
         "@katana/button",
-        "@katana/cn"
+        "@katana/cn",
+        "@katana/severity"
       ],
       "files": [
         {
@@ -5992,9 +6052,10 @@
       "name": "estimate-badge",
       "type": "registry:component",
       "title": "Estimate Badge",
-      "description": "琥珀色描边的小字标记（例如「按 K 线估算」），悬停写规则摘要；字与规则由调用方传。",
+      "description": "琥珀色描边的小字标记（例如「按 K 线估算」），悬停写规则摘要；字与规则由调用方传。是 Tag 的 warn、描边、md 档。",
       "registryDependencies": [
-        "@katana/cn"
+        "@katana/cn",
+        "@katana/tag"
       ],
       "files": [
         {

@@ -6,13 +6,24 @@ import type { ComponentApi } from '@a2ui/web_core'
 import { CommonSchemas } from '@a2ui/web_core/v1_0'
 import { createContext, useContext, useEffect, useRef, useState } from 'react'
 import { z } from 'zod'
-import { Toast, ToastClose, ToastContent, ToastDescription, ToastIcon, ToastText, ToastTitle } from '../../index.ts'
+import {
+  Toast,
+  ToastClose,
+  ToastContent,
+  ToastDescription,
+  ToastIcon,
+  ToastText,
+  ToastTitle,
+  type Severity,
+} from '../../index.ts'
 import { Cell, actionSchema, weightSchema } from '../support.tsx'
 
-export type KatanaToastRequest = { title: string; description?: string }
+export type KatanaToastRequest = { title: string; description?: string; tone?: Severity }
 
 /** 宿主在 A2uiSurface 外面包一层它，toast 就走宿主自己的队列与定时；不包就在原位画。 */
 export const KatanaToastHostContext = createContext<((toast: KatanaToastRequest) => void) | null>(null)
+
+const TONES = ['neutral', 'ok', 'warn', 'danger'] as const
 
 export const KatanaToastApi = {
   name: 'KatanaToast',
@@ -22,6 +33,12 @@ export const KatanaToastApi = {
         'A short notification heading. Write what happened in the words, not only in a color.',
       ),
       description: CommonSchemas.DynamicString.describe('The detail text.').optional(),
+      tone: z
+        .enum(TONES)
+        .describe(
+          "Tone of the color bar and icon: 'neutral' (default), 'ok', 'warn' or 'danger'. Say it in the title too.",
+        )
+        .optional(),
       closeLabel: CommonSchemas.DynamicString.describe(
         'Accessible name of the close button. Used only when the host has no toast of its own and the notice is drawn in place.',
       ),
@@ -38,19 +55,20 @@ export const KatanaToast = createComponentImplementation(KatanaToastApi, ({ prop
   const [closed, setClosed] = useState(false)
   const title = props.title ?? ''
   const description = props.description
+  const tone = TONES.find((item) => item === props.tone)
   // 同一段文字只通知一次（开发模式下 effect 会跑两遍）。
   const sent = useRef<string | null>(null)
   useEffect(() => {
     if (!host) return
-    const key = `${title}\n${description ?? ''}`
+    const key = `${title}\n${description ?? ''}\n${tone ?? ''}`
     if (sent.current === key) return
     sent.current = key
-    host({ title, ...(description === undefined ? {} : { description }) })
-  }, [host, title, description])
+    host({ title, ...(description === undefined ? {} : { description }), ...(tone === undefined ? {} : { tone }) })
+  }, [host, title, description, tone])
   if (host || closed) return null
   return (
     <Cell weight={props.weight}>
-      <Toast role="status">
+      <Toast role="status" tone={tone}>
         <ToastContent>
           <ToastIcon />
           <ToastText>

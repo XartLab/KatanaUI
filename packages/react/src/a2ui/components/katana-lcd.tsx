@@ -7,7 +7,7 @@ import { z } from 'zod'
 import { Lcd } from '../../index.ts'
 import { Cell, weightSchema } from '../support.tsx'
 
-const TONES = ['neutral', 'up', 'down', 'accent', 'warn'] as const
+const TONES = ['neutral', 'ok', 'warn', 'danger', 'up', 'down', 'flat', 'accent'] as const
 
 export const KatanaLcdApi = {
   name: 'KatanaLcd',
@@ -21,7 +21,7 @@ export const KatanaLcdApi = {
         .enum(TONES)
         .or(CommonSchemas.DataBinding)
         .describe(
-          "Number color: 'neutral', 'up' or 'down' for direction, 'accent' for the current focus, 'warn' for a warning. Direction is also stated in the text itself.",
+          "Number color: 'neutral', 'ok', 'warn' or 'danger' for a status; 'up', 'down' or 'flat' for direction; 'accent' for the current focus. Direction is also stated in the text itself.",
         )
         .optional(),
       note: CommonSchemas.DynamicString.describe(

@@ -1,8 +1,10 @@
 // SPDX-License-Identifier: MIT
 // 组件卡 StatusLED。LED 默认 off；只表达真实状态，必须配文字或 aria-label。
-// 搬自 src/ui（#1860）：样子与行为没改，皮肤在 ../theme/led.css。
+// 搬自 src/ui（#1860），皮肤在 ../theme/led.css。G3 起语气是 tone: SeverityExt（lib/severity.ts，neutral/off 熄灭、accent 亮强调色、ok/warn/danger 状态色），
+// 旧的 state（off/on/ok/warn/danger）留一个版本作兼容，运行时经 ledOf 映射到同一套类名。
 // 状态变了在灯外画一圈光晕闪一次（共用层 useStatusFlash；灯自己的底色就是状态色，闪底色看不见，所以闪外圈）：变坏（警告、危险）用警示闪，变好用涨色闪。
 import { useStatusFlash } from '../lib/live.ts'
+import { ledOf, type SeverityExt } from '../lib/severity.ts'
 
 export type LedState = 'off' | 'on' | 'ok' | 'warn' | 'danger'
 
@@ -11,14 +13,23 @@ export type LinkGroup = 'A' | 'B' | 'C' | 'D'
 export const LINK_GROUPS: readonly LinkGroup[] = ['A', 'B', 'C', 'D']
 
 export function Led({
-  state = 'off',
+  tone,
+  state,
   group,
   hollow,
   bare,
   small,
   label,
 }: {
-  /** on glows orange; ok, warn and danger are green, amber and red. */
+  /**
+   * Tone of the light: neutral and off are unlit, accent glows in the accent color, ok, warn and danger in the status colors. Defaults to off.
+   * 语气（Severity 加 off / accent）：neutral、off 熄灭，accent 亮强调色（进行中、在线），ok、warn、danger 是状态色。
+   */
+  tone?: SeverityExt
+  /**
+   * Old name kept for one release.
+   * @deprecated Use tone: off, on (accent), ok, warn, danger.
+   */
   state?: LedState
   /** Link group: panels in the same group follow the same symbol; the group color overrides state. */
   group?: LinkGroup | null
@@ -37,20 +48,21 @@ export function Led({
   /** Accessible name (required). */
   label: string
 }) {
-  const tone = group ? `link-${group.toLowerCase()}` : state === 'off' ? '' : state
-  const changed = useStatusFlash(state)
+  const lit: LedState = tone === undefined ? (state ?? 'off') : ledOf(tone)
+  const look = group ? `link-${group.toLowerCase()}` : lit === 'off' ? '' : lit
+  const changed = useStatusFlash(lit)
   return (
     <span
-      className={`k-led${tone ? ` ${tone}` : ''}${hollow ? ' hollow' : ''}${bare ? ' bare' : ''}${small ? ' sm' : ''}`}
+      className={`k-led${look ? ` ${look}` : ''}${hollow ? ' hollow' : ''}${bare ? ' bare' : ''}${small ? ' sm' : ''}`}
       role="img"
       aria-label={label}
     >
       {changed.flash && (
         <i
           key={changed.key}
-          className={state === 'warn' || state === 'danger' ? 'k-led-halo k-live-alert' : 'k-led-halo k-live-flash'}
-          data-tone={state === 'danger' ? 'negative' : undefined}
-          data-flash={state === 'warn' || state === 'danger' ? undefined : 'up'}
+          className={lit === 'warn' || lit === 'danger' ? 'k-led-halo k-live-alert' : 'k-led-halo k-live-flash'}
+          data-tone={lit === 'danger' ? 'negative' : undefined}
+          data-flash={lit === 'warn' || lit === 'danger' ? undefined : 'up'}
           aria-hidden="true"
         />
       )}

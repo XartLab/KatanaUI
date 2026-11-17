@@ -2,5 +2,5 @@
 import { AiStatus } from '../../src/index'
 
 export function AiStatusUsage() {
-  return <AiStatus state="thinking" label="Thinking" elapsed={12} />
+  return <AiStatus status="thinking" label="Thinking" elapsed={12} />
 }

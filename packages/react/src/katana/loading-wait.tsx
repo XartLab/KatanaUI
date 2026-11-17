@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 import { useEffectEvent, useLayoutEffect, useState, type ReactNode } from 'react'
 import { LOADING_TIMING, skeletonRows, startLoadingGate, type LoadingPhase } from './loading-gate.ts'
-import { LoadingView, type LoadingTexts } from './loading-view.tsx'
+import { LoadingView, type LoadingLabels } from './loading-view.tsx'
 
-// 搬自 src/ui/LoadingWait.tsx（#1860），文字改由 texts 给。
+// 搬自 src/ui/LoadingWait.tsx（#1860），文字改由 labels 给（G3 前叫 texts）。
 // 「在等」的那一段：挂上去就开始计时，500ms 之后才画骨架，之前什么也不画；2s 起 caption 改说「仍在加载」，10s 转成琥珀条加「重试」
 // （states.md 加载态与错误态，#1234；画法在 LoadingView）。卸载时（内容到了）把「骨架出没出过」交给 onSettled，由外面的 Loading / LoadingBoundary 决定内容要不要揭示：
 // 所以错误态显示期间数据晚到了，照样走揭示，不丢。这里不管取数：重试只是调 onRetry，由外面换 key 重建，计时也就从头来。
@@ -13,7 +13,7 @@ import { LoadingView, type LoadingTexts } from './loading-view.tsx'
 const rowHeightOf = (node: HTMLElement) => parseFloat(getComputedStyle(node).getPropertyValue('--row-base')) || 28
 
 export function LoadingWait({
-  texts,
+  labels,
   label,
   what,
   source,
@@ -24,7 +24,7 @@ export function LoadingWait({
   onRetry,
   onSettled,
 }: {
-  texts: LoadingTexts
+  labels: LoadingLabels
   label?: string
   /** 在等什么（caption 的「加载 X」）；不给写「内容」。 */
   what?: string
@@ -65,7 +65,7 @@ export function LoadingWait({
   return (
     <LoadingView
       phase={phase}
-      texts={texts}
+      labels={labels}
       label={label}
       what={what}
       source={source}

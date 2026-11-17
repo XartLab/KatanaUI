@@ -18,8 +18,7 @@ export function A2uiCatalogUsage() {
             code={JSON.stringify(MESSAGES, null, 2)}
             language="json"
             filename="messages.json"
-            copyLabel="Copy messages"
-            copiedLabel="Copied"
+            labels={{ copy: 'Copy messages', copied: 'Copied' }}
           />
         </div>
         <div style={{ minWidth: 0, display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -60,8 +59,7 @@ export function A2uiCatalogUsage() {
               code={JSON.stringify(MORE_MESSAGES, null, 2)}
               language="json"
               filename="more-messages.json"
-              copyLabel="Copy messages"
-              copiedLabel="Copied"
+              labels={{ copy: 'Copy messages', copied: 'Copied' }}
             />
           </div>
           <div data-testid="a2ui-more" style={{ minWidth: 0 }}>
@@ -86,8 +84,7 @@ export function A2uiCatalogUsage() {
               code={JSON.stringify(READOUT_MESSAGES, null, 2)}
               language="json"
               filename="readout-messages.json"
-              copyLabel="Copy messages"
-              copiedLabel="Copied"
+              labels={{ copy: 'Copy messages', copied: 'Copied' }}
             />
           </div>
           <div data-testid="a2ui-readouts" style={{ minWidth: 0 }}>
@@ -112,8 +109,7 @@ export function A2uiCatalogUsage() {
               code={JSON.stringify(CHART_MESSAGES, null, 2)}
               language="json"
               filename="chart-messages.json"
-              copyLabel="Copy messages"
-              copiedLabel="Copied"
+              labels={{ copy: 'Copy messages', copied: 'Copied' }}
             />
           </div>
           <div data-testid="a2ui-charts" style={{ minWidth: 0 }}>
@@ -138,8 +134,7 @@ export function A2uiCatalogUsage() {
               code={JSON.stringify(BLOCKS_MESSAGES, null, 2)}
               language="json"
               filename="blocks-messages.json"
-              copyLabel="Copy messages"
-              copiedLabel="Copied"
+              labels={{ copy: 'Copy messages', copied: 'Copied' }}
             />
           </div>
           <div data-testid="a2ui-blocks" style={{ minWidth: 0 }}>

@@ -6,6 +6,8 @@
 // ⑤ 滚动区是 region、可聚焦，长行横向滚；⑥ 去掉开头的空行与结尾的空白；⑦ 没有头时复制钮浮在右上角。
 // 我们的做法：配色用 CSS 的 color-mix 从强调色与主题的 ink token 混出来，所以两个主题自动跟着换，不读页面是深是浅；
 // 词法切分是自己写的小切分器（code-highlight.ts），没有加 prism 之类的依赖。
+// G3：复制钮的两句读屏名收进 labels（copy / copied，体检 §4 统一 labels），旧的 copyLabel / copiedLabel 留一个版本作兼容；
+//   注释色从 ink-4 提到 ink-3（ink-4 压在深底上只有 1.95:1，a11y 已知违规里那条），默认强调色读 --accent，悬停底读 --k-actionable-background-hover。
 import { AnimatePresence, motion } from 'motion/react'
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
 import { cn } from '../lib/cn.ts'
@@ -37,17 +39,15 @@ async function writeClipboard(text: string): Promise<boolean> {
   }
 }
 
-function CopyButton({
-  code,
-  copyLabel,
-  copiedLabel,
-  floating,
-}: {
-  code: string
-  copyLabel: string
-  copiedLabel: string
-  floating?: boolean
-}) {
+/** Accessible names of the copy button (the package ships no text). */
+export type CodeBlockLabels = {
+  /** The copy button. */
+  copy: string
+  /** The copy button right after a successful copy. */
+  copied: string
+}
+
+function CopyButton({ code, labels, floating }: { code: string; labels: CodeBlockLabels; floating?: boolean }) {
   const [copied, setCopied] = useState(false)
   const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
   useEffect(() => () => clearTimeout(timer.current), [])
@@ -62,11 +62,11 @@ function CopyButton({
       type="button"
       data-slot="code-block-copy"
       data-copied={copied || undefined}
-      aria-label={copied ? copiedLabel : copyLabel}
+      aria-label={copied ? labels.copied : labels.copy}
       onClick={copy}
       className={cn(
         'relative grid size-7 flex-none cursor-pointer place-items-center rounded-[var(--radius-control)] text-ink-3',
-        'transition-colors duration-[120ms] hover:bg-alpha-white-6 hover:text-ink active:scale-[0.92]',
+        'transition-colors duration-[120ms] hover:bg-(--k-actionable-background-hover) hover:text-ink active:scale-[0.92]',
         copied && 'text-(--cb-accent) hover:text-(--cb-accent)',
         floating && 'absolute top-2 right-2 z-10 border border-line bg-surface-3',
         focusRing,
@@ -121,7 +121,7 @@ export type CodeBlockProps = {
   language?: string
   /**
    * Accent color, any CSS color; the whole palette is mixed from it.
-   * 强调色，任何 CSS 颜色；整套配色从它混出来。默认主题的强调色。
+   * 强调色，任何 CSS 颜色；整套配色从它混出来。默认主题的强调色（--accent）。
    */
   accent?: string
   /**
@@ -144,12 +144,20 @@ export type CodeBlockProps = {
    */
   highlightLines?: readonly number[]
   /**
-   * Accessible name of the copy button (required).
+   * Accessible names of the copy button, before and right after copying (required unless the deprecated copyLabel / copiedLabel are given).
    * 复制钮的读屏名与复制成功后的读屏名（调用方按界面语言给）。
    */
-  copyLabel: string
-  /** Accessible name of the copy button after a successful copy (required). */
-  copiedLabel: string
+  labels?: CodeBlockLabels
+  /**
+   * Old name kept for one release.
+   * @deprecated Use labels.copy.
+   */
+  copyLabel?: string
+  /**
+   * Old name kept for one release.
+   * @deprecated Use labels.copied.
+   */
+  copiedLabel?: string
   /** Extra class name on the root. */
   className?: string
 }
@@ -157,16 +165,18 @@ export type CodeBlockProps = {
 export function CodeBlock({
   code,
   language = 'plain',
-  accent = 'var(--signal-orange)',
+  accent = 'var(--accent)',
   filename,
   showHeader = true,
   showLineNumbers = true,
   showCopyButton = true,
   highlightLines,
+  labels: given,
   copyLabel,
   copiedLabel,
   className,
 }: CodeBlockProps) {
+  const labels: CodeBlockLabels = given ?? { copy: copyLabel ?? '', copied: copiedLabel ?? '' }
   const source = useMemo(() => trimCode(code), [code])
   const lines = useMemo(() => highlight(source, language), [source, language])
   const marked = useMemo(() => new Set(highlightLines), [highlightLines])
@@ -190,10 +200,10 @@ export function CodeBlock({
           <span data-slot="code-block-name" className="k-text-caption min-w-0 flex-1 truncate text-ink-3" style={MONO}>
             {name}
           </span>
-          {showCopyButton ? <CopyButton code={source} copyLabel={copyLabel} copiedLabel={copiedLabel} /> : null}
+          {showCopyButton ? <CopyButton code={source} labels={labels} /> : null}
         </div>
       ) : showCopyButton ? (
-        <CopyButton code={source} copyLabel={copyLabel} copiedLabel={copiedLabel} floating />
+        <CopyButton code={source} labels={labels} floating />
       ) : null}
       <div
         role="region"
@@ -245,10 +255,10 @@ export function CodeBlock({
 /** 各类 token 的颜色：都是强调色与 ink token 的混合，主题换了自动跟着换。 */
 const TOKEN_CLASS = {
   plain: 'text-ink',
-  comment: 'text-ink-4 italic',
+  comment: 'text-ink-3 italic',
   punctuation: 'text-ink-3',
   keyword: 'text-(--cb-accent)',
-  string: 'text-[color-mix(in_srgb,var(--cb-accent)_45%,var(--ink-100))]',
-  number: 'text-[color-mix(in_srgb,var(--cb-accent)_70%,var(--ink-100))]',
-  function: 'text-[color-mix(in_srgb,var(--cb-accent)_22%,var(--ink-100))]',
+  string: 'text-[color-mix(in_srgb,var(--cb-accent)_45%,var(--k-content-primary-foreground))]',
+  number: 'text-[color-mix(in_srgb,var(--cb-accent)_70%,var(--k-content-primary-foreground))]',
+  function: 'text-[color-mix(in_srgb,var(--cb-accent)_22%,var(--k-content-primary-foreground))]',
 } as const satisfies Record<string, string>

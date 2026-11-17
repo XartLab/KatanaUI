@@ -214,6 +214,9 @@ export { DotMatrix, DOT_PITCH, DOT_SIZE } from './katana/dot-matrix.tsx'
 export { ARCADE_SPRITES, ArcadePixel, type ArcadePixelAnimate, type ArcadePixelProps } from './katana/arcade-pixel.tsx'
 export { Lcd, type LcdTone } from './katana/lcd.tsx'
 export { Led, LINK_GROUPS, type LedState, type LinkGroup } from './katana/led.tsx'
+// 状态语气（G0 定义在 lib/severity.ts，G3 起 Led、StatusIcon、Toast、Tag、Lcd 的 tone 用它）：只导出类型。
+export type { Severity, SeverityExt } from './lib/severity.ts'
+export { Tag, type TagProps, type TagSize } from './katana/tag.tsx'
 export { Kbd } from './katana/kbd.tsx'
 export {
   ShortcutRecorder,
@@ -247,8 +250,9 @@ export {
   type ToastPhase,
   type ToastPosition,
 } from './katana/toast.tsx'
-export { Loading, LoadingBoundary } from './katana/loading.tsx'
-export { LoadingView, type LoadingTexts } from './katana/loading-view.tsx'
+// 加载态的唯一入口是 Loading（G3）：LoadingBoundary（= 不给 pending）与 LoadingView（= 给 phase）留一个版本作兼容。
+export { Loading, LoadingBoundary, type LoadingProps } from './katana/loading.tsx'
+export { LoadingView, type LoadingLabels, type LoadingTexts } from './katana/loading-view.tsx'
 export { LOADING_TIMEOUT_MS, type LoadingPhase } from './katana/loading-gate.ts'
 
 // 学自 rare-ui 的交互、本仓库重写的件（#1861）：密钥输入、原地确认的危险按钮、带未读数的铃、状态图标、行内 AI 状态、点阵状态球。
@@ -256,26 +260,33 @@ export { PasswordInput, type PasswordInputProps } from './katana/password-input.
 export { DeleteButton, type DeleteButtonProps } from './katana/delete-button.tsx'
 export { HoldToConfirm, type HoldToConfirmProps } from './katana/hold-to-confirm.tsx'
 export { NotificationBell, type NotificationBellProps } from './katana/notification-bell.tsx'
-export { StatusIcon, type StatusIconStatus } from './katana/status-icon.tsx'
-export { AiStatus, type AiStatusProps, type AiStatusState } from './katana/ai-status.tsx'
+export { StatusIcon, type StatusIconStatus, type StatusIconTone } from './katana/status-icon.tsx'
+export { AiStatus, type AiStatusProps, type AiStatusState, type AiStatusValue } from './katana/ai-status.tsx'
 export { MatrixOrb, type MatrixOrbProps } from './katana/matrix-orb.tsx'
 export type { OrbState } from './katana/matrix-orb-model.ts'
 
 // 第二批（#1861）：里程表式数字滚动（升级 RollingText，见上）、分步进度条、主题选择、代码块、联网检索来源、任务清单、时长选择。
-export { StepPlayer, type StepPlayerLabels, type StepPlayerProps, type StepPlayerStep } from './katana/step-player.tsx'
+export {
+  StepPlayer,
+  type StepPlayerLabels,
+  type StepPlayerProps,
+  type StepPlayerSize,
+  type StepPlayerStep,
+} from './katana/step-player.tsx'
 export {
   ThemeSelector,
   type ThemeOption,
   type ThemePalette,
   type ThemeSelectorProps,
 } from './katana/theme-selector.tsx'
-export { CodeBlock, type CodeBlockProps } from './katana/code-block.tsx'
+export { CodeBlock, type CodeBlockLabels, type CodeBlockProps } from './katana/code-block.tsx'
 export { JsonViewer, type JsonViewerLabels, type JsonViewerProps } from './katana/json-viewer.tsx'
 export {
   WebSearch,
   WebSearchCitation,
   type WebSearchProps,
   type WebSearchCitationProps,
+  type WebSearchLabels,
   type WebSearchStatus,
   type WebSource,
 } from './katana/web-search.tsx'
