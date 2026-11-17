@@ -3147,6 +3147,7 @@
       "title": "Range Histogram Slider",
       "description": "一排柱子画出全体的分布，下面一条轨道两个把手：拖出来的区间里的柱子亮、区间外的暗；柱色取 seq 顺序色阶（越高越亮）。用在筛选器，在全市场分布上拖市值、涨幅、换手的区间。点柱子或轨道，最近的把手跳过去。功能参照 Arc Range histogram slider，实现原创。",
       "registryDependencies": [
+        "@katana/chart-kit",
         "@katana/range-histogram-model"
       ],
       "files": [
