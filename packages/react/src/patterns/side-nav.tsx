@@ -152,7 +152,8 @@ export function SideNav({ groups, current, header, footer, searchLabel, emptyLab
     if (at.top >= view.top && at.bottom <= view.bottom - 48) return
     const section = link.closest('section')
     const top = section && at.bottom - section.getBoundingClientRect().top < view.height - 48 ? section : link
-    top.scrollIntoView({ block: 'start' })
+    // 只滚目录自己的滚动层：scrollIntoView 会连页面一起滚（侧栏吸顶时，打开页面就被带下去约 100px）。
+    box.scrollTop += top.getBoundingClientRect().top - view.top
   }, [current])
 
   const needle = query.trim().toLowerCase()

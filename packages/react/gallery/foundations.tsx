@@ -155,23 +155,26 @@ function TypographyPage() {
       <table className="gal-fd-table">
         <thead>
           <tr>
-            <th>预览</th>
-            <th>名称</th>
-            <th>字体栈与用途</th>
+            <th>示例</th>
+            <th>token</th>
+            <th>用途</th>
           </tr>
         </thead>
         <tbody>
           {Object.entries(T.type.families).map(([name, family]) => (
             <tr key={name}>
-              <td className="gal-fd-preview" style={{ fontFamily: `var(--font-${name})`, fontSize: 16 }}>
-                Aa 0123 示例
+              <td className="gal-fd-preview">
+                <span className="k-fd-sample" style={{ fontFamily: `var(--font-${name})` }}>
+                  Aa 0123 示例
+                </span>
               </td>
               <td>
                 <code>--font-{name}</code>
+                <code className="k-fd-stack" title={family.value}>
+                  {family.value}
+                </code>
               </td>
               <td className="gal-fd-usage">
-                <code>{family.value}</code>
-                <br />
                 {family.role}
                 {family.note ? ` ${family.note}` : ''}
               </td>

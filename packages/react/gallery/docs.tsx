@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-import { useEffect, useState, useSyncExternalStore } from 'react'
+import { useEffect, useRef, useState, useSyncExternalStore } from 'react'
 import {
   CodeBlock,
   Select,
@@ -19,6 +19,7 @@ import { guidanceOf } from './guidance'
 import { PATTERN_GROUPS, PatternPage, patternById } from './patterns'
 import { packageOf, sourceOf } from './source-map'
 import { CopyButton } from './CopyButton'
+import { DocToc } from './DocToc'
 import { CoveragePage } from './coverage'
 import { RENDERING_ID, RenderingPage } from './rendering'
 import { FOUNDATION_PAGES, FOUNDATION_SECTIONS, FoundationPage, isFoundation } from './foundations'
@@ -179,12 +180,15 @@ function DocBody({ page }: { page: DocPage }) {
         </dl>
       </header>
       <Tabs defaultValue="examples" className="gal-doc-tabs">
-        <TabsList variant="line" aria-label="这一页的内容">
-          <TabsTrigger value="examples">示例</TabsTrigger>
-          <TabsTrigger value="usage">怎么用</TabsTrigger>
-          <TabsTrigger value="a11y">无障碍</TabsTrigger>
-          <TabsTrigger value="props">属性</TabsTrigger>
-        </TabsList>
+        {/* 页签行吸在顶栏下面：长页滚动时随时能切页签。 */}
+        <div className="gal-doc-tablist">
+          <TabsList variant="line" aria-label="这一页的内容">
+            <TabsTrigger value="examples">示例</TabsTrigger>
+            <TabsTrigger value="usage">怎么用</TabsTrigger>
+            <TabsTrigger value="a11y">无障碍</TabsTrigger>
+            <TabsTrigger value="props">属性</TabsTrigger>
+          </TabsList>
+        </div>
         <TabsContent value="examples">
           <section className="gal-preview" data-gallery={page.id} aria-label="预览">
             {Demo ? <Demo /> : null}
@@ -316,6 +320,19 @@ const navGroups: readonly SideNavGroup[] = [
   },
 ]
 
+/** 面包屑：页 id → 所在分组（名字、第一页的地址）与页名；从目录数据里查，目录加页它自己跟上。 */
+const crumbOf = (id: string) => {
+  for (const group of navGroups) {
+    const item = group.items.find((entry) => entry.id === id)
+    if (!item) continue
+    const title = PAGES.find((entry) => entry.id === id)?.title
+    // 组件页的目录条目是 JSX，页名取标题的英文名；别的页直接用条目文字。
+    const name = title ? title.split(' ')[0] : typeof item.label === 'string' ? item.label : id
+    return { group: group.title, href: group.items[0].href, name }
+  }
+  return null
+}
+
 function PanelIcon() {
   return (
     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
@@ -338,7 +355,13 @@ export function Docs({ theme, onTheme }: { theme: ThemeName; onTheme: (theme: Th
   const onFoundation = isFoundation(id)
   const pattern = patternById(id)
   const [navOpen, setNavOpen] = useState(true)
+  const body = useRef<HTMLDivElement>(null)
+  // 切页回到顶：侧栏、锚点或上一页的滚动位置都可能把页面带下去，标题会藏到顶栏后面。
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' })
+  }, [id])
   const currentNav = onCoverage || onRendering || onFoundation || pattern ? id : shown?.id
+  const crumb = currentNav ? crumbOf(currentNav) : null
   return (
     <div className="gal-shell" data-gallery-theme={theme}>
       {navOpen ? (
@@ -375,7 +398,22 @@ export function Docs({ theme, onTheme }: { theme: ThemeName; onTheme: (theme: Th
               <PanelIcon />
             </button>
           )}
-          <span>组件文档 · 演示数据</span>
+          <div className="gal-bar-left">
+            <nav className="gal-bar-crumb" aria-label="面包屑">
+              {crumb ? (
+                <>
+                  <a href={crumb.href}>{crumb.group}</a>
+                  <span className="gal-bar-sep" aria-hidden="true">
+                    /
+                  </span>
+                  <b aria-current="page">{crumb.name}</b>
+                </>
+              ) : (
+                <b>组件文档</b>
+              )}
+            </nav>
+            <span className="gal-bar-tag">演示数据</span>
+          </div>
           <Select value={theme} onValueChange={(next) => onTheme(next)}>
             <SelectTrigger aria-label="主题" className="gal-theme-select">
               <SelectValue />
@@ -390,22 +428,25 @@ export function Docs({ theme, onTheme }: { theme: ThemeName; onTheme: (theme: Th
             </SelectContent>
           </Select>
         </div>
-        <main>
-          {onCoverage ? (
-            <CoveragePage />
-          ) : onRendering ? (
-            <RenderingPage />
-          ) : onFoundation ? (
-            <FoundationPage id={id} />
-          ) : pattern ? (
-            <PatternPage key={id} pattern={pattern} />
-          ) : shown ? (
-            <DocBody key={shown.id} page={shown} />
-          ) : (
-            <p className="gal-missing" role="alert">
-              没有「{id}」这一页，从左侧目录里选。
-            </p>
-          )}
+        <main className="gal-page">
+          <div className="gal-page-body" ref={body}>
+            {onCoverage ? (
+              <CoveragePage />
+            ) : onRendering ? (
+              <RenderingPage />
+            ) : onFoundation ? (
+              <FoundationPage id={id} />
+            ) : pattern ? (
+              <PatternPage key={id} pattern={pattern} />
+            ) : shown ? (
+              <DocBody key={shown.id} page={shown} />
+            ) : (
+              <p className="gal-missing" role="alert">
+                没有「{id}」这一页，从左侧目录里选。
+              </p>
+            )}
+          </div>
+          <DocToc key={id} root={body} />
         </main>
       </div>
     </div>

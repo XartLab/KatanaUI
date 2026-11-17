@@ -23,7 +23,8 @@ const open = async (page: Page, theme: (typeof THEMES)[number], id = 'button') =
 }
 /** 换到另一页：点左侧目录的链接（单页应用，不重载，主题与页面状态都留着）。 */
 const show = async (page: Page, id: string) => {
-  await page.getByRole('navigation', { name: '组件' }).getByRole('link', { name: id, exact: true }).click()
+  // 目录链接的可见名是「Button 按钮」这类展示名，按地址找链接，不依赖文案。
+  await page.getByRole('navigation', { name: '文档目录' }).locator(`a[href="#/${id}"]`).click()
   await page.locator(`[data-gallery="${id}"]`).waitFor()
 }
 const section = (page: Page, id: string) => page.locator(`[data-gallery="${id}"]`)
@@ -983,15 +984,15 @@ for (const theme of THEMES) {
       const fields = section(page, 'input')
       const input = fields.getByRole('textbox', { name: '输入', exact: true })
       const small = fields.getByRole('textbox', { name: '输入 sm' })
-      // .k-in（ui.css 118-129）：30 高 · 内边 8 · 1px 边 · 圆角 6 · 13px/18px 400 · 字色 ink-100 · sans 字族（Inter）。
+      // .k-in（ui.css 118-129）：30 高 · 内边 8 · 1px 边 · 圆角 6 · 13px/18px 400 · 字色 ink-100 · sans 字族（系统界面字体栈，含 Segoe UI）。
       expect(
         await css(input, ['height', 'padding-left', 'padding-top', 'border-top-width', 'border-top-left-radius']),
       ).toEqual(['30px', '8px', '0px', '1px', '6px'])
       expect(await css(input, ['font-size', 'font-weight', 'line-height'])).toEqual(['13px', '400', '18px'])
-      expect((await css(input, ['font-family']))[0]).toContain('Inter')
+      expect((await css(input, ['font-family']))[0]).toContain('Segoe UI')
       expect(await colorOf(input)).toBe(await token(page, '--ink-100'))
       expect(await bg(input)).toMatch(/0\.04\)$/)
-      // .k-in.sm（ui.css 140-145）：26 高 · 内边 6 · 圆角 6 · 字号 12px，字重与行高、字族仍是 .k-in 的 400 / 18px / Inter。
+      // .k-in.sm（ui.css 140-145）：26 高 · 内边 6 · 圆角 6 · 字号 12px，字重与行高、字族仍是 .k-in 的 400 / 18px / 系统界面字体栈。
       expect(await css(small, ['height', 'padding-left', 'padding-top', 'border-top-left-radius'])).toEqual([
         '26px',
         '6px',
@@ -1004,7 +1005,7 @@ for (const theme of THEMES) {
         '18px',
         'normal',
       ])
-      expect((await css(small, ['font-family']))[0]).toContain('Inter')
+      expect((await css(small, ['font-family']))[0]).toContain('Segoe UI')
       expect(await colorOf(small)).toBe(await token(page, '--ink-100'))
       // :focus（ui.css 134-136）：边框提亮到 22% 白。
       await input.focus()
@@ -4142,14 +4143,14 @@ test('文档站默认就是 Graphite：不带 ?theme= 时页面底色与目录�
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'graphite')
   // Graphite 的 bg-000 = #000000、bg-100 = #070707；Console 的 bg-100 是 #141311，默认要是 Console 就会红。
   await expect(page.locator('html')).toHaveCSS('background-color', 'rgb(0, 0, 0)')
-  await expect(page.getByRole('navigation', { name: '组件' })).toHaveCSS('background-color', 'rgb(7, 7, 7)')
+  await expect(page.getByRole('navigation', { name: '文档目录' })).toHaveCSS('background-color', 'rgb(7, 7, 7)')
   expect(await token(page, '--bg-100')).toBe('rgb(7, 7, 7)')
 })
 
 test('目录：按类分组；直接打开 #/<件名>；点链接换页、后退回上一页；没有的页写原因', async ({ page }) => {
   await page.goto('/')
   await expect(page).toHaveURL(/#\/button$/)
-  const nav = page.getByRole('navigation', { name: '组件' })
+  const nav = page.getByRole('navigation', { name: '文档目录' })
   for (const group of GROUPS.filter((item) => PAGES.some((doc) => doc.group === item.id)))
     await expect(nav.getByRole('heading', { name: group.title })).toBeVisible()
   // 目录里每一页都有链接，当前页标 aria-current。
@@ -4184,7 +4185,7 @@ for (const theme of THEMES) {
     page,
   }) => {
     await page.goto(`/?theme=${theme}#/coverage`)
-    const nav = page.getByRole('navigation', { name: '组件' })
+    const nav = page.getByRole('navigation', { name: '文档目录' })
     await expect(nav.getByRole('heading', { name: '总览' })).toBeVisible()
     await expect(nav.getByRole('link', { name: 'coverage', exact: true })).toHaveAttribute('aria-current', 'page')
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('覆盖')
