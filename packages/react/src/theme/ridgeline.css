@@ -1,0 +1,59 @@
+/* SPDX-License-Identifier: MIT */
+/* Ridgeline（#1918）：各组收益分布叠画的山脊图。颜色只用语义 token。 */
+
+.k-ridge {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  min-width: 0;
+}
+.k-ridge-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+.k-ridge-tick line {
+  stroke: var(--chart-grid);
+  stroke-width: 1;
+}
+.k-ridge-tick text,
+.k-ridge-name {
+  fill: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-ridge-baseline {
+  stroke: var(--k-content-body-foreground);
+  stroke-dasharray: 3 3;
+}
+.k-ridge-row {
+  outline: none;
+  transition: opacity var(--dur-snappy) var(--ease-snappy);
+}
+.k-ridge-row[data-dim='true'] {
+  opacity: 0.35;
+}
+.k-ridge-row:focus-visible .k-ridge-name {
+  fill: var(--k-content-primary-foreground);
+  font-weight: 600;
+}
+.k-ridge-base {
+  stroke: var(--k-separable-bold-borderColor);
+}
+.k-ridge-line {
+  fill: none;
+  stroke: var(--k-content-body-foreground);
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+}
+.k-ridge-median {
+  stroke: var(--k-content-primary-foreground);
+  stroke-width: 1.5;
+}
+.k-ridge-readout {
+  min-height: 16px;
+  color: var(--k-content-body-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+  font-variant-numeric: tabular-nums;
+}

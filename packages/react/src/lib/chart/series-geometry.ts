@@ -3,7 +3,7 @@
 // 比例尺不另加图表依赖（#1917：几十行自己写）。图画在 viewBox 里：横向宽度是抽象的 PLOT_W，竖向就是像素高度（元素高度固定、preserveAspectRatio="none"），
 // 所以不需要量尺寸；文字与十字线是叠在上面的 HTML，按百分比定位。
 
-import { extent as numExtent, pct as share } from '../lib/num.ts'
+import { extent as numExtent, pct as share } from '../num.ts'
 
 /** 横向抽象宽度。 */
 export const PLOT_W = 1000

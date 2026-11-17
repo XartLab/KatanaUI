@@ -2,7 +2,7 @@
 // 图表类组件共用：数值写法的枚举、时间写法、图头三件的 schema、数据量上限。函数类属性智能体传不了，这里把枚举映射成库里的格式化函数。
 import { CommonSchemas } from '@a2ui/web_core/v1_0'
 import { z } from 'zod'
-import { formatPercentChange, formatPrice, formatVolume } from '../quant/format/index.ts'
+import { formatPercentChange, formatPrice, formatVolume } from '../lib/chart/format/index.ts'
 import { actionSchema } from './support.tsx'
 
 /** 序列点数上限：防止智能体塞爆页面。 */

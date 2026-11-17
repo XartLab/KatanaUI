@@ -3,7 +3,7 @@ import type { ComponentProps, ReactNode } from 'react'
 import { cn } from '../lib/cn.ts'
 import { useValueFlash } from '../lib/live.ts'
 import { parseReadout } from '../lib/live-readout.tsx'
-import { toneOf, type Tone } from './format/index.ts'
+import { toneOf, type Tone } from '../lib/chart/format/index.ts'
 import { ToneText } from './tone-text.tsx'
 
 /**

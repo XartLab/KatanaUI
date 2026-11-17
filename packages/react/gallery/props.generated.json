@@ -8,7 +8,7 @@
     },
     "AUTO_SIZE": {
       "kind": "value",
-      "source": "src/quant/format/quantity.ts",
+      "source": "src/lib/chart/format/quantity.ts",
       "props": []
     },
     "Accordion": {
@@ -3156,13 +3156,13 @@
         },
         {
           "name": "dimensions",
-          "type": "{ label: string; options: readonly AttributionChoice[]; value: string; onChange: (key: string) => void }",
+          "type": "AttributionSwitch",
           "required": false,
           "description": "维度切换（品种 / 账户 / 策略 / 资产类别）；换维度由调用方换 items。"
         },
         {
           "name": "ranges",
-          "type": "{ label: string; options: readonly AttributionChoice[]; value: string; onChange: (key: string) => void }",
+          "type": "AttributionSwitch",
           "required": false,
           "description": "区间切换。"
         },
@@ -3173,10 +3173,16 @@
           "description": "一个贡献写成什么字（行尾数字与 tooltip）；正负号由调用方定。"
         },
         {
+          "name": "labels",
+          "type": "AttributionBarsLabels",
+          "required": false,
+          "description": "「其他 ×n」与 tooltip 里占比那一行的字。"
+        },
+        {
           "name": "otherLabel",
           "type": "(folded: number) => string",
-          "required": true,
-          "description": "「其他 ×n」写成什么。"
+          "required": false,
+          "description": ""
         },
         {
           "name": "formatShare",
@@ -3187,8 +3193,8 @@
         {
           "name": "shareLabel",
           "type": "string",
-          "required": true,
-          "description": "tooltip 里占比那一行的标签。"
+          "required": false,
+          "description": ""
         },
         {
           "name": "readouts",
@@ -3253,6 +3259,24 @@
         }
       ]
     },
+    "AttributionBarsLabels": {
+      "kind": "type",
+      "source": "src/blocks/attribution-bars/attribution-bars.tsx",
+      "props": [
+        {
+          "name": "other",
+          "type": "(folded: number) => string",
+          "required": true,
+          "description": "「其他 ×n」写成什么。"
+        },
+        {
+          "name": "share",
+          "type": "string",
+          "required": true,
+          "description": "tooltip 里占比那一行的标签。"
+        }
+      ]
+    },
     "AttributionBarsProps": {
       "kind": "type",
       "source": "src/blocks/attribution-bars/attribution-bars.tsx",
@@ -3283,13 +3307,13 @@
         },
         {
           "name": "dimensions",
-          "type": "{ label: string; options: readonly AttributionChoice[]; value: string; onChange: (key: string) => void }",
+          "type": "AttributionSwitch",
           "required": false,
           "description": "维度切换（品种 / 账户 / 策略 / 资产类别）；换维度由调用方换 items。"
         },
         {
           "name": "ranges",
-          "type": "{ label: string; options: readonly AttributionChoice[]; value: string; onChange: (key: string) => void }",
+          "type": "AttributionSwitch",
           "required": false,
           "description": "区间切换。"
         },
@@ -3300,10 +3324,16 @@
           "description": "一个贡献写成什么字（行尾数字与 tooltip）；正负号由调用方定。"
         },
         {
+          "name": "labels",
+          "type": "AttributionBarsLabels",
+          "required": false,
+          "description": "「其他 ×n」与 tooltip 里占比那一行的字。"
+        },
+        {
           "name": "otherLabel",
           "type": "(folded: number) => string",
-          "required": true,
-          "description": "「其他 ×n」写成什么。"
+          "required": false,
+          "description": ""
         },
         {
           "name": "formatShare",
@@ -3314,8 +3344,8 @@
         {
           "name": "shareLabel",
           "type": "string",
-          "required": true,
-          "description": "tooltip 里占比那一行的标签。"
+          "required": false,
+          "description": ""
         },
         {
           "name": "readouts",
@@ -3442,6 +3472,42 @@
           "type": "readonly { label: string; value: string }[]",
           "required": false,
           "description": "悬停 tooltip 里多写的几行（持仓数、所属账户……），文字由调用方给。"
+        }
+      ]
+    },
+    "AttributionSwitch": {
+      "kind": "type",
+      "source": "src/blocks/attribution-bars/attribution-bars.tsx",
+      "props": [
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "options",
+          "type": "readonly AttributionChoice[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "value",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "onValueChange",
+          "type": "(key: string) => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "onChange",
+          "type": "(key: string) => void",
+          "required": false,
+          "description": ""
         }
       ]
     },
@@ -4108,10 +4174,28 @@
           "description": ""
         },
         {
+          "name": "value",
+          "type": "BrushWindow",
+          "required": false,
+          "description": "受控窗口 [起, 止)；不给就自己管，起点是 defaultValue 或整段。"
+        },
+        {
+          "name": "defaultValue",
+          "type": "BrushWindow",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "onValueChange",
+          "type": "(window: BrushWindow) => void",
+          "required": false,
+          "description": ""
+        },
+        {
           "name": "window",
           "type": "BrushWindow",
           "required": false,
-          "description": "受控窗口；不给就自己管，起点是 defaultWindow 或整段。"
+          "description": ""
         },
         {
           "name": "defaultWindow",
@@ -4189,10 +4273,28 @@
           "description": ""
         },
         {
+          "name": "value",
+          "type": "BrushWindow",
+          "required": false,
+          "description": "受控窗口 [起, 止)；不给就自己管，起点是 defaultValue 或整段。"
+        },
+        {
+          "name": "defaultValue",
+          "type": "BrushWindow",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "onValueChange",
+          "type": "(window: BrushWindow) => void",
+          "required": false,
+          "description": ""
+        },
+        {
           "name": "window",
           "type": "BrushWindow",
           "required": false,
-          "description": "受控窗口；不给就自己管，起点是 defaultWindow 或整段。"
+          "description": ""
         },
         {
           "name": "defaultWindow",
@@ -4267,15 +4369,27 @@
           "description": ""
         },
         {
+          "name": "value",
+          "type": "BrushWindow",
+          "required": false,
+          "description": "当前窗口 [起, 止)（受控）。"
+        },
+        {
+          "name": "onValueChange",
+          "type": "(window: BrushWindow) => void",
+          "required": false,
+          "description": ""
+        },
+        {
           "name": "window",
           "type": "BrushWindow",
-          "required": true,
+          "required": false,
           "description": ""
         },
         {
           "name": "onWindowChange",
           "type": "(window: BrushWindow) => void",
-          "required": true,
+          "required": false,
           "description": ""
         },
         {
@@ -4323,15 +4437,27 @@
           "description": ""
         },
         {
+          "name": "value",
+          "type": "BrushWindow",
+          "required": false,
+          "description": "当前窗口 [起, 止)（受控）。"
+        },
+        {
+          "name": "onValueChange",
+          "type": "(window: BrushWindow) => void",
+          "required": false,
+          "description": ""
+        },
+        {
           "name": "window",
           "type": "BrushWindow",
-          "required": true,
+          "required": false,
           "description": ""
         },
         {
           "name": "onWindowChange",
           "type": "(window: BrushWindow) => void",
-          "required": true,
+          "required": false,
           "description": ""
         },
         {
@@ -4368,7 +4494,7 @@
     },
     "BrushWindow": {
       "kind": "type",
-      "source": "src/quant/brush-model.ts",
+      "source": "src/lib/chart/brush-model.ts",
       "props": []
     },
     "Button": {
@@ -4799,7 +4925,7 @@
     },
     "CalendarItem": {
       "kind": "type",
-      "source": "src/quant/event-calendar.tsx",
+      "source": "src/quant/event-calendar-types.ts",
       "props": []
     },
     "ChainDirection": {
@@ -10000,7 +10126,7 @@
     },
     "EarningsLink": {
       "kind": "type",
-      "source": "src/quant/event-calendar.tsx",
+      "source": "src/quant/event-calendar-types.ts",
       "props": [
         {
           "name": "key",
@@ -10383,10 +10509,16 @@
           "description": ""
         },
         {
-          "name": "onWindowChange",
+          "name": "onValueChange",
           "type": "(window: BrushWindow) => void",
           "required": false,
           "description": "窗口变了（拖概览条）：给宿主把别的东西（成交表）跟着窗口筛。"
+        },
+        {
+          "name": "onWindowChange",
+          "type": "(window: BrushWindow) => void",
+          "required": false,
+          "description": ""
         },
         {
           "name": "onExport",
@@ -10557,10 +10689,16 @@
           "description": ""
         },
         {
-          "name": "onWindowChange",
+          "name": "onValueChange",
           "type": "(window: BrushWindow) => void",
           "required": false,
           "description": "窗口变了（拖概览条）：给宿主把别的东西（成交表）跟着窗口筛。"
+        },
+        {
+          "name": "onWindowChange",
+          "type": "(window: BrushWindow) => void",
+          "required": false,
+          "description": ""
         },
         {
           "name": "onExport",
@@ -10705,7 +10843,7 @@
     },
     "EventCalendarLabels": {
       "kind": "type",
-      "source": "src/quant/event-calendar.tsx",
+      "source": "src/quant/event-calendar-types.ts",
       "props": [
         {
           "name": "list",
@@ -10843,7 +10981,7 @@
     },
     "EventCalendarProps": {
       "kind": "type",
-      "source": "src/quant/event-calendar.tsx",
+      "source": "src/quant/event-calendar-types.ts",
       "props": [
         {
           "name": "events",
@@ -14614,7 +14752,7 @@
     },
     "HeatmapColorBy": {
       "kind": "type",
-      "source": "src/quant/market-heatmap.tsx",
+      "source": "src/quant/market-heatmap-types.ts",
       "props": [
         {
           "name": "key",
@@ -14656,7 +14794,7 @@
     },
     "HeatmapDisplayLabels": {
       "kind": "type",
-      "source": "src/quant/market-heatmap.tsx",
+      "source": "src/quant/market-heatmap-types.ts",
       "props": [
         {
           "name": "logo",
@@ -14680,60 +14818,17 @@
     },
     "HeatmapItem": {
       "kind": "type",
-      "source": "src/quant/market-heatmap.tsx",
-      "props": [
-        {
-          "name": "code",
-          "type": "string",
-          "required": true,
-          "description": ""
-        },
-        {
-          "name": "name",
-          "type": "string",
-          "required": true,
-          "description": ""
-        },
-        {
-          "name": "group",
-          "type": "string",
-          "required": false,
-          "description": "分组（行业）；不给的归到 labels.other。"
-        },
-        {
-          "name": "logo",
-          "type": "string",
-          "required": false,
-          "description": "品种徽标的图片地址；不给就画字母圆标。"
-        },
-        {
-          "name": "price",
-          "type": "number",
-          "required": false,
-          "description": ""
-        },
-        {
-          "name": "size",
-          "type": "Record<string, number>",
-          "required": true,
-          "description": "各个大小指标的值，键是 HeatmapSizeBy.key。不是正数的格子不画。"
-        },
-        {
-          "name": "value",
-          "type": "Record<string, number | null>",
-          "required": true,
-          "description": "各个着色指标的值，键是 HeatmapColorBy.key。null 是没有数（画中性灰）。"
-        }
-      ]
+      "source": "src/quant/market-heatmap-types.ts",
+      "props": []
     },
     "HeatmapScheme": {
       "kind": "type",
-      "source": "src/quant/market-heatmap.tsx",
+      "source": "src/quant/market-heatmap-types.ts",
       "props": []
     },
     "HeatmapSizeBy": {
       "kind": "type",
-      "source": "src/quant/market-heatmap.tsx",
+      "source": "src/quant/market-heatmap-types.ts",
       "props": [
         {
           "name": "key",
@@ -14763,12 +14858,12 @@
     },
     "HeatmapTitleMode": {
       "kind": "type",
-      "source": "src/quant/market-heatmap.tsx",
+      "source": "src/quant/market-heatmap-types.ts",
       "props": []
     },
     "HeatmapValueMode": {
       "kind": "type",
-      "source": "src/quant/market-heatmap.tsx",
+      "source": "src/quant/market-heatmap-types.ts",
       "props": []
     },
     "Histogram": {
@@ -18025,7 +18120,7 @@
         },
         {
           "name": "cellActions",
-          "type": "(item: HeatmapItem) => readonly RowAction[]",
+          "type": "(item: HeatmapEntry) => readonly RowAction[]",
           "required": false,
           "description": "格子的右键菜单（#23，一般传 symbolMenu(...)）：右键、菜单键、Shift+F10 出同一份品种菜单；不传就没有。格子小，不画悬停按钮。"
         },
@@ -18070,7 +18165,7 @@
     },
     "MarketHeatmapLabels": {
       "kind": "type",
-      "source": "src/quant/market-heatmap.tsx",
+      "source": "src/quant/market-heatmap-types.ts",
       "props": [
         {
           "name": "sizeBy",
@@ -18184,7 +18279,7 @@
     },
     "MarketHeatmapProps": {
       "kind": "type",
-      "source": "src/quant/market-heatmap.tsx",
+      "source": "src/quant/market-heatmap-types.ts",
       "props": [
         {
           "name": "items",
@@ -18254,7 +18349,7 @@
         },
         {
           "name": "cellActions",
-          "type": "(item: HeatmapItem) => readonly RowAction[]",
+          "type": "(item: HeatmapEntry) => readonly RowAction[]",
           "required": false,
           "description": "格子的右键菜单（#23，一般传 symbolMenu(...)）：右键、菜单键、Shift+F10 出同一份品种菜单；不传就没有。格子小，不画悬停按钮。"
         },
@@ -24045,12 +24140,12 @@
     },
     "PriceFallback": {
       "kind": "type",
-      "source": "src/quant/format/price.ts",
+      "source": "src/lib/chart/format/price.ts",
       "props": []
     },
     "PriceFormat": {
       "kind": "type",
-      "source": "src/quant/format/price.ts",
+      "source": "src/lib/chart/format/price.ts",
       "props": [
         {
           "name": "precision",
@@ -24572,7 +24667,7 @@
     },
     "QuantityUnits": {
       "kind": "type",
-      "source": "src/quant/format/quantity.ts",
+      "source": "src/lib/chart/format/quantity.ts",
       "props": []
     },
     "QuoteCard": {
@@ -27305,7 +27400,7 @@
     },
     "ScatterPoint": {
       "kind": "type",
-      "source": "src/quant/scatter-model.ts",
+      "source": "src/lib/chart/scatter-model.ts",
       "props": [
         {
           "name": "x",
@@ -27329,7 +27424,7 @@
     },
     "ScatterSeries": {
       "kind": "type",
-      "source": "src/quant/scatter-model.ts",
+      "source": "src/lib/chart/scatter-model.ts",
       "props": [
         {
           "name": "id",
@@ -28279,7 +28374,7 @@
     },
     "SeriesExplorerColumn": {
       "kind": "type",
-      "source": "src/blocks/series-explorer/series-explorer.tsx",
+      "source": "src/blocks/series-explorer/series-explorer-types.ts",
       "props": [
         {
           "name": "key",
@@ -28309,7 +28404,7 @@
     },
     "SeriesExplorerLabels": {
       "kind": "type",
-      "source": "src/blocks/series-explorer/series-explorer.tsx",
+      "source": "src/blocks/series-explorer/series-explorer-types.ts",
       "props": [
         {
           "name": "chart",
@@ -28399,7 +28494,7 @@
     },
     "SeriesExplorerProps": {
       "kind": "type",
-      "source": "src/blocks/series-explorer/series-explorer.tsx",
+      "source": "src/blocks/series-explorer/series-explorer-types.ts",
       "props": [
         {
           "name": "points",
@@ -29153,7 +29248,7 @@
     },
     "SizeFormat": {
       "kind": "type",
-      "source": "src/quant/format/quantity.ts",
+      "source": "src/lib/chart/format/quantity.ts",
       "props": [
         {
           "name": "abbreviate",
@@ -37226,7 +37321,7 @@
     },
     "compactParts": {
       "kind": "function",
-      "source": "src/quant/format/quantity.ts",
+      "source": "src/lib/chart/format/quantity.ts",
       "props": []
     },
     "computeReport": {
@@ -37343,7 +37438,7 @@
     },
     "decimalsOfTick": {
       "kind": "function",
-      "source": "src/quant/format/price.ts",
+      "source": "src/lib/chart/format/price.ts",
       "props": []
     },
     "falloff": {
@@ -37393,17 +37488,17 @@
     },
     "formatCompact": {
       "kind": "function",
-      "source": "src/quant/format/quantity.ts",
+      "source": "src/lib/chart/format/quantity.ts",
       "props": []
     },
     "formatCount": {
       "kind": "function",
-      "source": "src/quant/format/quantity.ts",
+      "source": "src/lib/chart/format/quantity.ts",
       "props": []
     },
     "formatPercentChange": {
       "kind": "function",
-      "source": "src/quant/format/change.ts",
+      "source": "src/lib/chart/format/change.ts",
       "props": []
     },
     "formatPerformance": {
@@ -37413,7 +37508,7 @@
     },
     "formatPrice": {
       "kind": "function",
-      "source": "src/quant/format/price.ts",
+      "source": "src/lib/chart/format/price.ts",
       "props": [
         {
           "name": "precision",
@@ -37437,7 +37532,7 @@
     },
     "formatQuantity": {
       "kind": "function",
-      "source": "src/quant/format/quantity.ts",
+      "source": "src/lib/chart/format/quantity.ts",
       "props": [
         {
           "name": "abbreviate",
@@ -37455,7 +37550,7 @@
     },
     "formatVolume": {
       "kind": "function",
-      "source": "src/quant/format/quantity.ts",
+      "source": "src/lib/chart/format/quantity.ts",
       "props": []
     },
     "gaussianKde": {
@@ -37948,7 +38043,7 @@
     },
     "scatterLayout": {
       "kind": "function",
-      "source": "src/quant/scatter-model.ts",
+      "source": "src/lib/chart/scatter-model.ts",
       "props": [
         {
           "name": "width",
@@ -38171,7 +38266,7 @@
     },
     "stepDecimal": {
       "kind": "function",
-      "source": "src/quant/format/decimal-step.ts",
+      "source": "src/lib/chart/format/decimal-step.ts",
       "props": []
     },
     "stepNode": {
@@ -38247,7 +38342,7 @@
     },
     "toneOf": {
       "kind": "function",
-      "source": "src/quant/format/change.ts",
+      "source": "src/lib/chart/format/change.ts",
       "props": []
     },
     "tooltipContentClass": {

@@ -104,8 +104,10 @@ export type { KpiDef, RangeDef, SeriesDef, SeriesPoint } from './series-explorer
 // 盈亏归因（#1917，#1931 从 quant 挪到这里：顶行用了 blocks 的 Toolbar）。
 export {
   AttributionBars,
+  type AttributionBarsLabels,
   type AttributionBarsProps,
   type AttributionChoice,
+  type AttributionSwitch,
 } from './attribution-bars/attribution-bars.tsx'
 export type { AttributionItem } from './attribution-bars/attribution-model.ts'
 

@@ -22,7 +22,7 @@
 }
 .k-fsk-link {
   fill: none;
-  stroke: var(--ink-300);
+  stroke: var(--k-content-secondary-foreground);
   stroke-opacity: 0.55;
   transition: stroke-opacity var(--dur-snappy) var(--ease-snappy);
 }
@@ -30,7 +30,7 @@
   stroke-opacity: 0.75;
 }
 .k-fsk-link[data-lit][data-kind='flow'] {
-  stroke: var(--ink-200);
+  stroke: var(--k-content-body-foreground);
   stroke-opacity: 0.85;
 }
 .k-fsk-link[data-lit][data-kind='revaluation'] {
@@ -40,14 +40,14 @@
   stroke-opacity: 0.08;
 }
 .k-fsk-rect {
-  fill: var(--ink-300);
+  fill: var(--k-content-secondary-foreground);
   cursor: pointer;
   outline: none;
   transition: opacity var(--dur-snappy) var(--ease-snappy);
 }
 .k-fsk-rect[data-lit],
 .k-fsk-rect[data-pinned] {
-  fill: var(--ink-100);
+  fill: var(--k-content-primary-foreground);
 }
 .k-fsk-rect[data-dim] {
   opacity: 0.35;
@@ -57,27 +57,27 @@
   stroke-width: 2;
 }
 .k-fsk-label {
-  fill: var(--ink-100);
+  fill: var(--k-content-primary-foreground);
   font: var(--text-caption) var(--font-sans-small);
-  font-size: 12px;
+  font-size: var(--text-data-size);
   paint-order: stroke;
-  stroke: var(--bg-100);
+  stroke: var(--k-surface-base-background);
   stroke-width: 3px;
   stroke-linejoin: round;
   pointer-events: none;
 }
 .k-fsk-label[data-dim] {
-  fill: var(--ink-300);
+  fill: var(--k-content-secondary-foreground);
 }
 .k-fsk-amount {
-  fill: var(--ink-300);
+  fill: var(--k-content-secondary-foreground);
   font-family: var(--font-num);
   font-variant-numeric: tabular-nums;
 }
 .k-fsk-head {
-  fill: var(--ink-300);
+  fill: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-sans-small);
-  font-size: 11px;
+  font-size: var(--text-caption-size);
   pointer-events: none;
 }
 .k-fsk-tip {
@@ -96,23 +96,23 @@
   border: var(--hairline);
   border-radius: 4px;
   background: transparent;
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-sans-small);
   cursor: pointer;
 }
 .k-fsk-toggle i {
   width: 8px;
   height: 8px;
-  border: 1px solid var(--ink-300);
+  border: 1px solid var(--k-content-secondary-foreground);
   border-radius: 2px;
 }
 .k-fsk-toggle[aria-pressed='true'] {
-  background: var(--bg-300);
-  color: var(--ink-100);
+  background: var(--k-surface-raised-background);
+  color: var(--k-content-primary-foreground);
 }
 .k-fsk-toggle[aria-pressed='true'] i {
-  background: var(--ink-100);
-  border-color: var(--ink-100);
+  background: var(--k-content-primary-foreground);
+  border-color: var(--k-content-primary-foreground);
 }
 .k-fsk-toggle:focus-visible {
   outline: 1px solid var(--focus-ring);
@@ -121,7 +121,7 @@
   display: flex;
   align-items: center;
   gap: 14px;
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-sans-small);
 }
 .k-fsk-legend[hidden] {
@@ -136,21 +136,21 @@
   display: inline-block;
   width: 18px;
   height: 8px;
-  background: color-mix(in srgb, var(--ink-400) 55%, transparent);
+  background: color-mix(in srgb, var(--k-content-tertiary-foreground) 55%, transparent);
 }
 .k-fsk-key[data-kind='revaluation'] i {
-  background: repeating-linear-gradient(135deg, var(--ink-200) 0 2px, transparent 2px 5px);
+  background: repeating-linear-gradient(135deg, var(--k-content-body-foreground) 0 2px, transparent 2px 5px);
 }
 .k-fsk-badge {
   margin-left: auto;
   padding: 0 6px;
   border: var(--hairline);
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
 }
 .k-fsk-empty {
   margin: 0;
   padding: 24px 0;
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-body) var(--font-sans);
   text-align: center;
 }

@@ -277,7 +277,7 @@ const EXAMPLES: Record<string, Record<string, unknown>> = {
       brush: { start: 'Window start', end: 'Window end', window: 'Window' },
       actions: CHART_ACTIONS,
     },
-    onWindowChange: { event: { name: 'chart.window' } },
+    onValueChange: { event: { name: 'chart.window' } },
   },
   KatanaSeriesExplorer: {
     points: [
@@ -330,8 +330,7 @@ const EXAMPLES: Record<string, Record<string, unknown>> = {
     ],
     title: 'Attribution',
     label: 'Profit and loss by instrument',
-    otherLabel: 'Other x{n}',
-    shareLabel: 'Share',
+    labels: { other: 'Other x{n}', share: 'Share' },
     heads: { index: 'No.', item: 'Item', value: 'Contribution', share: 'Share' },
     footer: { count: '2 items' },
     actionLabels: CHART_ACTIONS,
@@ -362,7 +361,7 @@ const EXAMPLES: Record<string, Record<string, unknown>> = {
     xLabels: ['a', 'b', 'c', 'd', 'e'],
     label: 'Price with an overview window',
     labels: { start: 'Window start', end: 'Window end', window: 'Window' },
-    onWindowChange: { event: { name: 'chart.window' } },
+    onValueChange: { event: { name: 'chart.window' } },
   },
   KatanaTreemap: {
     items: [{ id: 'a', name: 'ACME', group: 'Tech', size: 10, change: 0.01, text: '+1.00%' }],
@@ -371,7 +370,7 @@ const EXAMPLES: Record<string, Record<string, unknown>> = {
     onItem: { event: { name: 'chart.select' } },
   },
   KatanaMarketHeatmap: {
-    items: [{ code: 'ACME', name: 'Acme Corp', group: 'Tech', size: { cap: 10 }, value: { change: 1.2 } }],
+    items: [{ symbol: 'ACME', name: 'Acme Corp', group: 'Tech', size: { cap: 10 }, value: { change: 1.2 } }],
     sizeBy: [{ key: 'cap', label: 'Market cap' }],
     colorBy: [{ key: 'change', label: 'Change', unit: '%' }],
     labels: {

@@ -7,9 +7,9 @@
 import { useRef, useState, type ReactNode } from 'react'
 import { cn } from '../lib/cn.ts'
 import { useEnterMarks } from '../lib/live.ts'
-import { ChartActions } from './chart-kit/chart-actions.tsx'
-import { ChartValue, type ChartValueText } from './chart-kit/chart-value.tsx'
-import { ChartTable, type ChartViewProps } from './chart-kit/chart-table.tsx'
+import { ChartActions } from '../lib/chart/chart-kit/chart-actions.tsx'
+import { ChartValue, type ChartValueText } from '../lib/chart/chart-kit/chart-value.tsx'
+import { ChartTable, type ChartViewProps } from '../lib/chart/chart-kit/chart-table.tsx'
 import { countStatuses, moveCell, type UptimeCell, type UptimeStatus } from './uptime-bars-model.ts'
 
 export type UptimeBarsProps = ChartViewProps & {

@@ -1,0 +1,293 @@
+/* SPDX-License-Identifier: MIT */
+/* CalendarHeatmap（#1917，日历热力图；组件卡 Calendar）：年视图（svg）与月历。格色用发散色 / 序数色，涨跌色不上面积。颜色只用语义 token。 */
+
+.k-heat {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  min-width: 0;
+  color: var(--k-content-body-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-heat-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--k-content-secondary-foreground);
+}
+.k-heat-top .k-ck-actions {
+  margin-left: auto;
+}
+.k-heat-total {
+  color: var(--k-content-primary-foreground);
+  font: var(--text-lcd) var(--chart-font-num, var(--font-num));
+  letter-spacing: 0.08em;
+}
+.k-heat-total[data-tone='up'] {
+  color: var(--pnl-up);
+}
+.k-heat-total[data-tone='down'] {
+  color: var(--pnl-down);
+}
+.k-heat-stage {
+  position: relative;
+}
+/* 格色：正负用发散色 -100 / -200（涨跌色不上面积），持平是中点灰，休市 bg-100，没有数据是底色；换手视图用序数 seq。 */
+.k-heat-cell {
+  --k-cell: var(--k-container-secondary-background);
+}
+.k-heat-cell[data-tone='pos1'] {
+  --k-cell: var(--div-pos-100);
+}
+.k-heat-cell[data-tone='pos2'] {
+  --k-cell: var(--div-pos-200);
+}
+.k-heat-cell[data-tone='neg1'] {
+  --k-cell: var(--div-neg-100);
+}
+.k-heat-cell[data-tone='neg2'] {
+  --k-cell: var(--div-neg-200);
+}
+.k-heat-cell[data-tone='flat'] {
+  --k-cell: var(--div-mid);
+}
+.k-heat-cell[data-seq='0'] {
+  --k-cell: var(--seq-200);
+}
+.k-heat-cell[data-seq='1'] {
+  --k-cell: var(--seq-300);
+}
+.k-heat-cell[data-seq='2'] {
+  --k-cell: var(--seq-400);
+}
+.k-heat-cell[data-seq='3'] {
+  --k-cell: var(--seq-500);
+}
+.k-heat-cell[data-seq='4'] {
+  --k-cell: var(--seq-600);
+}
+.k-heat-cell[data-closed='true'] {
+  --k-cell: var(--k-surface-base-background);
+}
+/* 年视图（svg） */
+.k-heat-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  outline-offset: 2px;
+}
+.k-heat-svg:focus-visible {
+  outline: 1px solid var(--focus-ring);
+}
+.k-heat-text {
+  fill: var(--chart-axis);
+  font: var(--text-caption-size) var(--font-sans-small);
+}
+rect.k-heat-cell {
+  fill: var(--k-cell);
+  stroke: transparent;
+  stroke-width: 1.5;
+}
+rect.k-heat-cell[data-tone='none']:not([data-closed='true']):not([data-seq]) {
+  fill: transparent;
+  stroke: var(--k-separable-tertiary-borderColor);
+  stroke-width: 1;
+}
+rect.k-heat-cell[data-active='true'] {
+  stroke: var(--k-content-primary-foreground);
+}
+/* 悬停与切视图时格色、描边平滑过渡（SmoothUI contribution-graph 的 hover 过渡）；时长用 flash 档，行情密时不拖。 */
+rect.k-heat-cell {
+  transition:
+    fill var(--dur-flash) var(--ease-snappy),
+    stroke var(--dur-flash) var(--ease-snappy);
+}
+button.k-heat-cell {
+  transition:
+    background-color var(--dur-flash) var(--ease-snappy),
+    outline-color var(--dur-flash) var(--ease-snappy);
+}
+/* tooltip 弹出：从 0.8 倍弹到 1（原件手感）；用单独的 scale 属性，不盖掉 .k-ck-tip 自己的 translateX。 */
+.k-heat-tip {
+  transform-origin: left center;
+  animation: k-heat-tip-in var(--dur-snappy) var(--ease-snappy) both;
+}
+@keyframes k-heat-tip-in {
+  from {
+    opacity: 0;
+    scale: 0.8;
+  }
+  to {
+    opacity: 1;
+    scale: 1;
+  }
+}
+/* reveal：格子按 --k-reveal-delay 依次淡入并从 0.6 倍长大。 */
+.k-heat[data-reveal] .k-heat-cell:not(.k-heat-out) {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: k-heat-reveal var(--dur-enter) var(--ease-snappy) both;
+  animation-delay: var(--k-reveal-delay, 0ms);
+}
+@keyframes k-heat-reveal {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+/* 月历（34px 格） */
+.k-heat-month {
+  display: grid;
+  grid-template-columns: 40px repeat(7, 1fr);
+  gap: 2px;
+  outline-offset: 2px;
+}
+.k-heat-month:focus-visible {
+  outline: 1px solid var(--focus-ring);
+}
+.k-heat-week {
+  display: contents;
+}
+.k-heat-head {
+  height: 16px;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-num-sm) var(--font-sans-small);
+  text-align: center;
+}
+.k-heat-wk {
+  display: flex;
+  align-items: center;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-num-sm) var(--chart-font-axis, var(--font-num-small));
+}
+button.k-heat-cell {
+  position: relative;
+  height: 34px;
+  padding: 0;
+  border: 0;
+  background: var(--k-cell);
+  color: var(--k-content-primary-foreground);
+  font: inherit;
+  cursor: pointer;
+}
+.k-heat-out {
+  height: 34px;
+}
+.k-heat-date {
+  position: absolute;
+  top: 3px;
+  left: 4px;
+  color: var(--k-content-body-foreground);
+  font: var(--text-num-sm) var(--chart-font-axis, var(--font-num-small));
+}
+.k-heat-num {
+  position: absolute;
+  right: 4px;
+  bottom: 3px;
+  font: var(--text-num-sm) var(--chart-font-axis, var(--font-num-small));
+}
+/* 中档涨跌色（div-pos-200 / div-neg-200）上的字：绿涨红跌与红涨绿跌两套配色的亮度不同，白字或黑字谁过 4.5:1 随格色变，
+   所以按格色的亮度现算：伽马编码后的加权亮度高于 0.44 用黑字，否则白字（0.44 是这两档在 Console / Graphite 两个主题里实测分得开的位置，2026-11-14 axe 实测）。 */
+.k-heat-cell[data-tone='pos2'],
+.k-heat-cell[data-tone='neg2'] {
+  --k-on: color(
+    from var(--k-cell) srgb clamp(0, calc((0.44 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) * 1000), 1)
+      clamp(0, calc((0.44 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) * 1000), 1)
+      clamp(0, calc((0.44 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) * 1000), 1)
+  );
+}
+.k-heat-cell[data-tone='pos2'] .k-heat-date,
+.k-heat-cell[data-tone='pos2'] .k-heat-num,
+.k-heat-cell[data-tone='neg2'] .k-heat-date,
+.k-heat-cell[data-tone='neg2'] .k-heat-num {
+  color: var(--k-on);
+}
+.k-heat-cell[data-closed='true'] .k-heat-num {
+  color: var(--k-content-secondary-foreground);
+}
+.k-heat-cell[data-today='true'] {
+  box-shadow: inset 0 0 0 1px var(--chart-accent, var(--k-content-primary-foreground));
+}
+button.k-heat-cell[data-active='true'] {
+  outline: 1px solid var(--k-content-primary-foreground);
+  outline-offset: -1px;
+}
+.k-heat-dots {
+  position: absolute;
+  bottom: 3px;
+  left: 4px;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+.k-heat-dots i {
+  width: 5px;
+  height: 5px;
+  background: var(--k-content-secondary-foreground);
+}
+.k-heat-dots i[data-tone='holding'],
+.k-heat-dots i[data-tone='high'] {
+  background: var(--k-status-warn-foreground);
+}
+.k-heat-dots b {
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-num-sm) var(--chart-font-axis, var(--font-num-small));
+}
+.k-heat-evtext {
+  position: absolute;
+  right: 4px;
+  bottom: 3px;
+  left: 4px;
+  overflow: hidden;
+  color: var(--k-content-body-foreground);
+  font: var(--text-num-sm) var(--font-sans-small);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.k-heat-legend {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  color: var(--k-content-secondary-foreground);
+}
+.k-heat-legend i {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+  background: var(--k-cell, var(--k-surface-raised-background));
+}
+.k-heat-legend i[data-tone='pos1'] {
+  --k-cell: var(--div-pos-100);
+}
+.k-heat-legend i[data-tone='pos2'] {
+  --k-cell: var(--div-pos-200);
+}
+.k-heat-legend i[data-tone='neg1'] {
+  --k-cell: var(--div-neg-100);
+}
+.k-heat-legend i[data-tone='neg2'] {
+  --k-cell: var(--div-neg-200);
+}
+.k-heat-legend i[data-tone='flat'] {
+  --k-cell: var(--div-mid);
+}
+.k-heat-table {
+  border-collapse: collapse;
+  font: var(--text-data) var(--font-num);
+}
+.k-heat-table th,
+.k-heat-table td {
+  padding: 2px 8px;
+  border-bottom: var(--hairline);
+  text-align: right;
+}
+.k-heat-table th:first-child,
+.k-heat-table td:first-child {
+  text-align: left;
+}

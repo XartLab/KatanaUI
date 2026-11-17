@@ -5,16 +5,16 @@
 // 点不多时每个点一个 SVG 圆；多时（>= canvasFrom）改画 canvas，团的圈与标签、悬停与选中的标记仍是 SVG（所以键盘与读屏两种画法一样）。
 // 文字全由 props 传，包里没有文案。
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type ReactNode } from 'react'
-import { ChartActions } from '../../quant/chart-kit/chart-actions.tsx'
-import { ChartTable, type ChartViewProps } from '../../quant/chart-kit/chart-table.tsx'
-import { divHotThreshold } from '../../quant/chart-kit/series-colors.ts'
-import { LcdTooltip, type LcdTooltipRow } from '../../quant/chart-kit/lcd-tooltip.tsx'
+import { ChartActions } from '../../lib/chart/chart-kit/chart-actions.tsx'
+import { ChartTable, type ChartViewProps } from '../../lib/chart/chart-kit/chart-table.tsx'
+import { divHotThreshold } from '../../lib/chart/chart-kit/series-colors.ts'
+import { LcdTooltip, type LcdTooltipRow } from '../../lib/chart/chart-kit/lcd-tooltip.tsx'
 import { ToggleGroup, ToggleGroupItem } from '../../primitives/toggle-group.tsx'
 import { onTextMeasureReset } from '../../lib/text-measure.ts'
 import { galaxyStep, hitNode, layoutGalaxy, stepNode, type GalaxyNode, type GalaxyPlace } from './galaxy-model.ts'
 
-export const GALAXY_W = 800
-export const GALAXY_H = 520
+const GALAXY_W = 800
+const GALAXY_H = 520
 const FRAME = { width: GALAXY_W, height: GALAXY_H, pad: 8, headroom: 20 }
 /** 迁移动画的时长（毫秒）：与 --dur-snappy 同为 333ms；canvas 里没法用 CSS 过渡，自己插值。 */
 const MOVE_MS = 333

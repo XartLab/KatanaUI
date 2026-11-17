@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 import type { ComponentProps, ElementType, ReactNode } from 'react'
 import { cn } from '../lib/cn.ts'
-import type { Tone } from './format/index.ts'
+import type { Tone } from '../lib/chart/format/index.ts'
 
 // 涨跌与盈亏的文字：颜色只读 --pnl-up / --pnl-down（根上设 data-updown="cn" 就互换成红涨绿跌，决策记录 0019），文字自己带符号，
 // 可选再加箭头：颜色可能被换成另一套、也有人分不出红绿，方向不能只靠颜色。平（零）不着色，继承周围的字色。

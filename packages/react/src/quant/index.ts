@@ -53,11 +53,11 @@ export {
   type TechnicalRatingProps,
   type TechnicalRatingTimeframe,
 } from './technical-rating.tsx'
-export * from './format/index.ts'
+export * from '../lib/chart/format/index.ts'
 
 // 时间序列与盈亏的件（#1917）。功能参照 Arc（uiarc.dev，2026-11-14 读），只取功能，实现原创。
 export { BrushChart, BrushStrip, type BrushChartProps, type BrushLabels, type BrushStripProps } from './brush-chart.tsx'
-export type { BrushWindow } from './brush-model.ts'
+export type { BrushWindow } from '../lib/chart/brush-model.ts'
 export { EquityCurve, type EquityCurveLabels, type EquityCurvePoint, type EquityCurveProps } from './equity-curve.tsx'
 export {
   CalendarHeatmap,
@@ -80,7 +80,7 @@ export {
 export { SlopeChart, type SlopeChartProps } from './slope-chart.tsx'
 export { ranks, slopeLayout, spreadLabels, type SlopeItem, type SlopeMode, type SlopeRow } from './slope-model.ts'
 export { ConnectedScatter, type ConnectedScatterProps } from './connected-scatter.tsx'
-export { scatterLayout, type ScatterPoint, type ScatterSeries } from './scatter-model.ts'
+export { scatterLayout, type ScatterPoint, type ScatterSeries } from '../lib/chart/scatter-model.ts'
 export {
   QuantileLayers,
   type QuantileLayersLabels,

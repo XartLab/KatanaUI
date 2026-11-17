@@ -1,25 +1,25 @@
 // SPDX-License-Identifier: MIT
-// 日历热力图的格子排布、档位与键盘（纯函数）。日期都是不带时区的日历日 YYYY-MM-DD，内部按 UTC 零点算，不碰本地时区与夏令时。
+// 日历热力图的格子排布、档位与键盘（纯函数）。日期都是不带时区的日历日 YYYY-MM-DD，用 @internationalized/date 的 CalendarDate 算（跟 DateRangePicker、DateTimeInput 同一套），不碰本地时区与夏令时。
 // 列是周、行是星期；weekStart 决定一周从哪天起（0 周日、1 周一）。第一列开头与最后一列结尾不在区间里的格子不画。
 // 格色：正负各两档（div-*-100 与 -200，-200 只给超 80 分位的格），不再按比例分四档。
 
-import { isoDate } from '../lib/date.ts'
+import { CalendarDate, endOfMonth, getDayOfWeek, parseDate } from '@internationalized/date'
 
-const DAY = 86_400_000
-const DATE = /^(\d{4})-(\d{2})-(\d{2})$/
+/** 一周从哪天起（0 周日、1 周一）对应 @internationalized/date 的 firstDayOfWeek；locale 只是占位，起始日由它定。 */
+const FIRST = { 0: 'sun', 1: 'mon' } as const
+const rowOf = (day: CalendarDate, weekStart: 0 | 1) => getDayOfWeek(day, 'en-US', FIRST[weekStart])
 
-export function parseDate(text: string): number {
-  const match = DATE.exec(text)
-  if (!match) return Number.NaN
-  const ms = Date.UTC(Number(match[1]), Number(match[2]) - 1, Number(match[3]))
-  return formatDate(ms) === text ? ms : Number.NaN
+/** YYYY-MM-DD → 日历日；写错或日子不存在（2026-02-30）返回 null。 */
+function dayOf(text: string): CalendarDate | null {
+  try {
+    return parseDate(text)
+  } catch {
+    return null
+  }
 }
 
-export function formatDate(ms: number): string {
-  return isoDate(ms)
-}
-
-export const addDays = (text: string, days: number): string => formatDate(parseDate(text) + days * DAY)
+/** 日历日加减几天；日期写错原样返回。 */
+export const addDays = (text: string, days: number): string => dayOf(text)?.add({ days }).toString() ?? text
 
 export type CalendarCell = { date: string; col: number; row: number }
 
@@ -32,22 +32,22 @@ export type CalendarGrid = {
 
 /** from 到 to（含）每天一格。from 晚于 to 或日期写错返回空格子。 */
 export function calendarGrid(from: string, to: string, weekStart: 0 | 1 = 1): CalendarGrid {
-  const start = parseDate(from)
-  const end = parseDate(to)
-  if (!(start <= end)) return { cols: 0, cells: [], months: [] }
-  const rowOf = (ms: number) => (new Date(ms).getUTCDay() - weekStart + 7) % 7
-  const firstRow = rowOf(start)
+  const start = dayOf(from)
+  const end = dayOf(to)
+  if (!start || !end || start.compare(end) > 0) return { cols: 0, cells: [], months: [] }
+  const firstRow = rowOf(start, weekStart)
   const cells: CalendarCell[] = []
   const months: { col: number; month: number }[] = []
   let lastMonth = -1
-  for (let ms = start, index = 0; ms <= end; ms += DAY, index++) {
+  for (let day = start, index = 0; day.compare(end) <= 0; day = day.add({ days: 1 }), index++) {
     const col = Math.floor((index + firstRow) / 7)
-    const month = new Date(ms).getUTCMonth()
+    // month 保持 0 起（一月是 0），月份标签照旧用它取名字。
+    const month = day.month - 1
     if (month !== lastMonth) {
       months.push({ col, month })
       lastMonth = month
     }
-    cells.push({ date: formatDate(ms), col, row: rowOf(ms) })
+    cells.push({ date: day.toString(), col, row: rowOf(day, weekStart) })
   }
   return { cols: cells[cells.length - 1]!.col + 1, cells, months }
 }
@@ -67,29 +67,25 @@ export function calendarTone(value: number | null, hotAbove: number): CalendarTo
 
 /** ISO 8601 周序号（周四所在的那一周算本年，1 到 53）。 */
 export function isoWeek(date: string): number {
-  const ms = parseDate(date)
-  const weekday = (new Date(ms).getUTCDay() + 6) % 7
-  const thursday = ms + (3 - weekday) * DAY
-  const year = new Date(thursday).getUTCFullYear()
-  const first = Date.UTC(year, 0, 4)
-  const firstThursday = first + (3 - ((new Date(first).getUTCDay() + 6) % 7)) * DAY
-  return 1 + Math.round((thursday - firstThursday) / (7 * DAY))
+  const day = dayOf(date)
+  if (!day) return Number.NaN
+  // 本周的周四落在哪一年，这一周就算哪一年；周序号 = 周四是那年第几天 / 7。
+  const thursday = day.add({ days: 3 - getDayOfWeek(day, 'en-US', 'mon') })
+  return Math.floor(thursday.compare(new CalendarDate(thursday.year, 1, 1)) / 7) + 1
 }
 
 export type MonthWeek = { week: number; days: readonly { date: string; inMonth: boolean }[] }
 
 /** 一个月的月历：每行一周、每周 7 格，前后补上相邻月的日子（inMonth 为 false）。month 写 YYYY-MM；写错返回空。 */
 export function monthGrid(month: string, weekStart: 0 | 1 = 1): MonthWeek[] {
-  const first = `${month}-01`
-  const ms = parseDate(first)
-  if (Number.isNaN(ms)) return []
-  const last = new Date(Date.UTC(new Date(ms).getUTCFullYear(), new Date(ms).getUTCMonth() + 1, 0)).getTime()
-  const lead = (new Date(ms).getUTCDay() - weekStart + 7) % 7
-  const total = Math.ceil((lead + (last - ms) / DAY + 1) / 7) * 7
+  const first = dayOf(`${month}-01`)
+  if (!first) return []
+  const lead = rowOf(first, weekStart)
+  const total = Math.ceil((lead + endOfMonth(first).day) / 7) * 7
   const weeks: MonthWeek[] = []
   for (let i = 0; i < total; i += 7) {
     const days = Array.from({ length: 7 }, (_, k) => {
-      const date = formatDate(ms + (i + k - lead) * DAY)
+      const date = first.add({ days: i + k - lead }).toString()
       return { date, inMonth: date.startsWith(month) }
     })
     weeks.push({ week: isoWeek(days[weekStart === 1 ? 0 : 1]!.date), days })

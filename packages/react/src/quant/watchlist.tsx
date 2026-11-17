@@ -9,7 +9,7 @@ import { useEnterMarks, useFlipList, useValueFlash } from '../lib/live.ts'
 import { signed } from '../lib/num.ts'
 import { SymbolMark } from '../katana/symbol-mark.tsx'
 import { ChangeText } from './change-text.tsx'
-import { toneOf } from './format/index.ts'
+import { toneOf } from '../lib/chart/format/index.ts'
 import { changedTail, nextSort, sortRows, type WatchlistSort, type WatchlistSortKey } from './watchlist-model.ts'
 
 export type WatchlistRow = {

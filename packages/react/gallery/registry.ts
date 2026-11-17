@@ -1300,7 +1300,7 @@ export const PAGES: readonly DocPage[] = [
           {
             name: 'items',
             type: 'HeatmapItem[]',
-            desc: '{ code, name, group?, logo?, price?, size: Record<键, number>, value: Record<键, number | null> }。size 里不是正数的格子不画；value 是 null 画成灰（没有数）；没有 group 的品种归到 labels.other，所有品种都没有 group 就不分组、也不出视图切换。',
+            desc: '{ symbol, name, group?, logo?, price?, size: Record<键, number>, value: Record<键, number | null> }（旧名 code 留一个版本，@deprecated）。size 里不是正数的格子不画；value 是 null 画成灰（没有数）；没有 group 的品种归到 labels.other，所有品种都没有 group 就不分组、也不出视图切换。',
           },
           {
             name: 'sizeBy',
@@ -1331,7 +1331,7 @@ export const PAGES: readonly DocPage[] = [
           },
           { name: 'formatPrice', type: '(value: number) => string', desc: '悬停卡片上的价格写法；不给写 2 位小数。' },
           { name: 'selected', type: 'string | null', desc: '选中的代码；选中的格子画 2px 白色内圈。' },
-          { name: 'onSelect', type: '(code: string) => void', desc: '点格子，或焦点在格子上按 Enter / Space。' },
+          { name: 'onSelect', type: '(symbol: string) => void', desc: '点格子，或焦点在格子上按 Enter / Space。' },
           {
             name: 'cellActions',
             type: '(item: HeatmapItem) => RowAction[]',
@@ -2402,11 +2402,15 @@ export const PAGES: readonly DocPage[] = [
           },
           { name: 'formatValue', type: '(value: number) => string', desc: '数值写成什么：纵轴刻度与读数。' },
           { name: 'labels', type: '{ start, end, window }', desc: '三个手柄的读屏名（起点、终点、整个窗口）。' },
-          { name: 'window / defaultWindow', type: '[number, number]', desc: '受控 / 不受控的窗口，默认整段。' },
           {
-            name: 'onWindowChange',
+            name: 'value / defaultValue',
+            type: '[number, number]',
+            desc: '受控 / 不受控的窗口，默认整段。旧名 window / defaultWindow 留一个版本（@deprecated）。',
+          },
+          {
+            name: 'onValueChange',
             type: '(window: [number, number]) => void',
-            desc: '窗口变了（拖、键盘、点概览条）。',
+            desc: '窗口变了（拖、键盘、点概览条）。旧名 onWindowChange 留一个版本。',
           },
           { name: 'minSpan', type: 'number', default: '2', desc: '窗口最少几个点：折线至少两个点才画得出来。' },
           { name: 'height / brushHeight', type: 'number', default: '160 / 40', desc: '主图与概览条的高（px）。' },
@@ -2414,12 +2418,12 @@ export const PAGES: readonly DocPage[] = [
       },
       {
         part: 'BrushStrip',
-        note: '只有概览条（SeriesExplorer 这类自己画主图的件用它）。属性是 values、window、onWindowChange、formatX、labels、minSpan、height。',
-        rows: [{ name: 'window / onWindowChange', type: '[number, number]', desc: '必填：窗口由上层持有。' }],
+        note: '只有概览条（SeriesExplorer 这类自己画主图的件用它）。属性是 values、value、onValueChange、formatX、labels、minSpan、height（旧名 window / onWindowChange 留一个版本）。',
+        rows: [{ name: 'value / onValueChange', type: '[number, number]', desc: '窗口由上层持有（受控）。' }],
       },
     ],
     states: [
-      '默认：窗口整段（或 defaultWindow），概览条上窗口外变暗。',
+      '默认：窗口整段（或 defaultValue），概览条上窗口外变暗。',
       '拖动中：窗口换成抓取手形，主图同步变。',
       '扫读：主图上出现竖线与点，下面一行写时间与值。',
       '窗口到了最小（minSpan）：继续缩小被夹住，不再变。',
@@ -2457,7 +2461,11 @@ export const PAGES: readonly DocPage[] = [
             desc: 'kind 为 fee 的是费用·税，永远单独一行放最底；closed 是名称后的点阵小标签（整行删除线）；detail 是 tooltip 里多写的几行。',
           },
           { name: 'formatValue / formatShare', type: '(n) => string', desc: '贡献与占比写成什么字。' },
-          { name: 'otherLabel / shareLabel', type: '(n) => string / string', desc: '「其他 ×n」与占比那一行的标签。' },
+          {
+            name: 'labels',
+            type: '{ other: (n) => string, share: string }',
+            desc: '「其他 ×n」与占比那一行的字。旧名 otherLabel / shareLabel 留一个版本（@deprecated）。',
+          },
           {
             name: 'title / meta',
             type: 'string / (scale) => string',
@@ -2465,8 +2473,8 @@ export const PAGES: readonly DocPage[] = [
           },
           {
             name: 'dimensions / ranges',
-            type: '{ label, options, value, onChange }',
-            desc: '顶行的两组分段；换了就换 items，同一位置的条长会过渡。',
+            type: '{ label, options, value, onValueChange }',
+            desc: '顶行的两组分段；换了就换 items，同一位置的条长会过渡。旧名 onChange 留一个版本。',
           },
           {
             name: 'readouts',
@@ -2538,7 +2546,11 @@ export const PAGES: readonly DocPage[] = [
             desc: '宿主自己给整点 / 整日刻度（按显示时区）；不给就在窗口里均分 5 个。',
           },
           { name: 'labels', type: 'object', desc: '回撤、时刻列头、线性 / 对数、概览条三个手柄、右上三件的文字。' },
-          { name: 'onWindowChange', type: '(window) => void', desc: '拖概览条改窗口后回调，宿主可把别的表跟着筛。' },
+          {
+            name: 'onValueChange',
+            type: '(window) => void',
+            desc: '拖概览条改窗口后回调，宿主可把别的表跟着筛。旧名 onWindowChange 留一个版本。',
+          },
           { name: 'onExport / onFullscreen', type: '() => void', desc: '不给就不画那个按钮；表格视图总有。' },
         ],
       },
@@ -2853,14 +2865,14 @@ export const PAGES: readonly DocPage[] = [
     id: 'calendar-heatmap',
     group: 'quant',
     cardHeight: 560,
-    title: 'CalendarHeatmap 日历',
+    title: 'CalendarHeatmap 日历热力图',
     summary:
       '月历格：底色是收益（或换手）的低饱和发散热力，格内日期左上、数值右下，左下点阵事件点（最多 3 个，更多写 +n）；休市日灰底写「休」，今天强调色描边，周标 W40。切「事件」视图时格子不着色。mode 为 year 是整年的格子。对设计稿的 Calendar 卡；功能参照 Arc 的 Activity heatmap。',
     exports: ['CalendarHeatmap'],
     props: [
       {
         part: 'CalendarHeatmap',
-        note: '日期是不带时区的日历日 YYYY-MM-DD，按 UTC 零点算。外观读 CSS 变量，见 theme/chart-kit.css 开头。年视图用的是整年的格子（一周一列），不是 12 个缩小月历（待定：第一版先做整年格子）。',
+        note: '日期是不带时区的日历日 YYYY-MM-DD，用 @internationalized/date 的 CalendarDate 算（不碰本地时区）。样式在 theme/calendar-heatmap.css。年视图用的是整年的格子（一周一列），不是 12 个缩小月历（待定：第一版先做整年格子）。',
         rows: [
           {
             name: 'days',

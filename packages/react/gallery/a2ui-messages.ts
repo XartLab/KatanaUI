@@ -818,7 +818,7 @@ export const CHART_MESSAGES = [
             actions: CHART_ACTIONS,
           },
           source: 'Demo data',
-          onWindowChange: { event: { name: 'equity.window' } },
+          onValueChange: { event: { name: 'equity.window' } },
         },
         {
           id: 'attribution',
@@ -832,8 +832,7 @@ export const CHART_MESSAGES = [
           title: 'Profit and loss by instrument',
           label: 'Profit and loss by instrument today',
           valueFormat: { style: 'money', digits: 0, unit: 'USDT', signed: true },
-          otherLabel: 'Other x{n}',
-          shareLabel: 'Share of gross',
+          labels: { other: 'Other x{n}', share: 'Share of gross' },
           heads: { index: 'No.', item: 'Instrument', value: 'Contribution', share: 'Share' },
           footer: { count: '4 items', source: 'Demo data' },
           actionLabels: CHART_ACTIONS,

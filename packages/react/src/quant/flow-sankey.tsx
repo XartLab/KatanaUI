@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 import { useId, useRef, useState, type KeyboardEvent, type PointerEvent, type ReactNode } from 'react'
-import { ChartActions } from './chart-kit/chart-actions.tsx'
-import { ChartTable, type ChartViewProps } from './chart-kit/chart-table.tsx'
-import { LcdTooltip, type LcdTooltipRow } from './chart-kit/lcd-tooltip.tsx'
+import { ChartActions } from '../lib/chart/chart-kit/chart-actions.tsx'
+import { ChartTable, type ChartViewProps } from '../lib/chart/chart-kit/chart-table.tsx'
+import { LcdTooltip, type LcdTooltipRow } from '../lib/chart/chart-kit/lcd-tooltip.tsx'
 import {
   layoutFlow,
   linkEnds,
@@ -280,7 +280,13 @@ export function FlowSankey({
         >
           <defs>
             <pattern id={pattern} width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-              <line x1="0" y1="0" x2="0" y2="6" style={{ stroke: 'var(--ink-200)', strokeWidth: 2 }} />
+              <line
+                x1="0"
+                y1="0"
+                x2="0"
+                y2="6"
+                style={{ stroke: 'var(--k-content-body-foreground)', strokeWidth: 2 }}
+              />
             </pattern>
           </defs>
           {columnLabels !== undefined &&

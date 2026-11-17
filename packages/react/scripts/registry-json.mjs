@@ -2,7 +2,7 @@
 // 生成 registry.json（shadcn registry 的清单，shadcn 4.22.2 的 schema；`pnpm --filter @katana-ui/react registry:build` 先跑它再跑 `shadcn build`）。
 // 清单由脚本从源码与文档站的页数据（gallery/registry.ts：每个 item 的说明读它的页）生成，不手写：每个源文件一项（文件名短横线小写就是 item 名），registryDependencies 与 npm dependencies 从 import 扫出来，不会漏。
 // 约定（#1862 定）：
-//   type：primitives/ → registry:ui；lib/、quant/format/、katana/、patterns/ 的纯函数 → registry:lib；patterns/、quant/、katana/、blocks/ 的件 → registry:component；`style`（token、主题、动效）→ registry:style。
+//   type：primitives/ → registry:ui；lib/（含 lib/chart/ 与 lib/chart/format/）、katana/、patterns/ 的纯函数 → registry:lib；patterns/、quant/、katana/、blocks/ 的件 → registry:component；`style`（token、主题、动效）→ registry:style。
 //   命名：`@katana/<文件名>`；同名冲突在源码里就不许有（每层文件名唯一，单测查）。
 //   落点：每个文件的 target 保持包内的相对结构（~/src/katana/ui/<层>/<文件>），所以件之间的相对 import 与 theme.css 里的 @source 路径在别的项目里原样有效。
 // 用法：node scripts/registry-json.mjs           写 registry.json
@@ -52,13 +52,23 @@ const INTERNAL = {
   spring: '把三条弹簧的停止阈值收到 0.001，给 scale、opacity、pathLength 这类 0 到 1 的量用。',
   'series-geometry':
     '序列图共用的几何（纯函数）：好看的刻度、比例尺、折线与面积路径，BrushChart、HorizonChart、SmallMultiples、SeriesExplorer 都用。',
-  'brush-model': 'BrushChart 的窗口几何（纯函数）：夹取、平移、缩放、居中。',
+  'brush-model': 'BrushChart 与 SeriesExplorer 共用的刷选窗口几何（纯函数，lib/chart）：夹取、平移、缩放、居中。',
   'event-calendar-model': 'EventCalendar 的纯函数：按显示时区分天、今天 / 本周 / 下周区间、筛选、倒计时分钟。',
   'attribution-model':
     'AttributionBars 的排序与折叠（纯函数）：正负分组降序、超 7 项折「其他 ×n」、费用·税放底、对称刻度。',
   'equity-curve-model': 'EquityCurve 的纯逻辑：按时刻摆的横轴、线性 / 对数纵轴、镜像回撤的纵轴、默认横轴刻度。',
   'chart-kit':
     '图表共用底座：配色分配（series / seq / div）、点阵纹理、LCD tooltip、末点、轴与网格、图右上三件（表格视图、导出、全屏）。',
+  'market-heatmap-types': 'MarketHeatmap 的公开类型：格子数据、大小与着色指标、文案、属性。',
+  'market-heatmap-toolbar': 'MarketHeatmap 的工具条：数据集、大小、颜色、分组（下拉或分段），全屏，显示开关，「在选股器打开」。',
+  'market-heatmap-cell': 'MarketHeatmap 的一格：按格子真实像素分四档写字（徽标 + 代码 + 读数 / 代码 + 读数 / 只有徽标 / 只有色块）。',
+  'market-heatmap-card': 'MarketHeatmap 的悬停卡片：跟着鼠标，写价格、各着色指标、大小指标与分组，不伸出图外。',
+  'market-heatmap-legend': 'MarketHeatmap 的图例：七档色块与值边界，悬停预览、点一档隐藏。',
+  'market-heatmap-hooks':
+    'MarketHeatmap 的副作用钩子：量绘图区尺寸、放大返回的焦点、按底色现算字色、格子位置的弹簧过渡、涨跌翻向时闪一下。',
+  'event-calendar-types': 'EventCalendar 的公开类型：四类事件的行、文案（labels）、财报行下的链接、属性。',
+  'event-calendar-cells': 'EventCalendar 的表格部分：四个类别的列集、一行的单元格、重要程度格条、经济事件的详情行。',
+  'event-calendar-regions': 'EventCalendar 的国家选择：触发按钮加模态框（搜索、两个预设、按地区分组复选、取消 / 应用）。',
   'market-heatmap-model':
     'MarketHeatmap 的纯函数：色阶七档的档宽取好数、值落在哪一档、图例的值边界、方向键找邻居的格子。',
   'calendar-model': 'CalendarHeatmap 的格子排布、档位与键盘（纯函数）：日历日按 UTC 算，一周一列。',
@@ -138,6 +148,24 @@ function collectItems() {
     const name = f.replace(/\.tsx?$/, '')
     add(name, 'registry:lib', [`src/lib/${f}`])
   }
+  // lib/chart/：图表共用底座（G5 从 quant 下沉，blocks 与 quant 都用）。比例尺、几何、刷选窗口一文件一项；
+  // chart-kit/（带 JSX 的零件与配色）合成一项；format/（价格、涨跌幅、数量的纯函数）合成 quant-format 一项。
+  for (const f of listDir('src/lib/chart').filter((f) => /\.tsx?$/.test(f) && !/\.test\./.test(f)))
+    add(f.replace(/\.tsx?$/, ''), 'registry:lib', [`src/lib/chart/${f}`])
+  add(
+    'chart-kit',
+    'registry:component',
+    listDir('src/lib/chart/chart-kit')
+      .filter((f) => /\.tsx?$/.test(f) && !/\.test\./.test(f))
+      .map((f) => `src/lib/chart/chart-kit/${f}`),
+  )
+  add(
+    'quant-format',
+    'registry:lib',
+    listDir('src/lib/chart/format')
+      .filter((f) => f.endsWith('.ts') && !/\.test\./.test(f))
+      .map((f) => `src/lib/chart/format/${f}`),
+  )
   byFile('src/primitives', 'registry:ui')
   // katana/ 自有的件：带 JSX 的是 component，纯函数（解析、计时）是 lib。
   for (const f of listDir('src/katana').filter(isCode)) {
@@ -166,22 +194,7 @@ function collectItems() {
     for (const f of listDir(`src/motion/${dir}`).filter((f) => isCode(f) && f.endsWith('.tsx')))
       add(f.replace(/\.[^.]+$/, ''), 'registry:component', [`src/motion/${dir}/${f}`])
   if (existsSync(join(pkgDir, 'src/quant'))) {
-    add(
-      'chart-kit',
-      'registry:component',
-      listDir('src/quant/chart-kit')
-        .filter((f) => /\.tsx?$/.test(f) && !/\.test\./.test(f))
-        .map((f) => `src/quant/chart-kit/${f}`),
-    )
     byFile('src/quant', 'registry:component', (f) => isCode(f) && f !== 'index.ts')
-    // 格式化函数：src/quant/format/*.ts 合成一项，件依赖它。
-    const format = listDir('src/quant/format').filter((f) => f.endsWith('.ts') && !/\.test\./.test(f))
-    if (format.length)
-      add(
-        'quant-format',
-        'registry:lib',
-        format.map((f) => `src/quant/format/${f}`),
-      )
   }
   // blocks/：拼面板用的积木（#1869）。数据表与工具条各自一个子目录合成一项，空态、估算标记一文件一项。
   if (existsSync(join(pkgDir, 'src/blocks'))) {

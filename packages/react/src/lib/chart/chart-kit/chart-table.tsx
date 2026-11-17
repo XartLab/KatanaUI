@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // 图的表格视图（dataviz.md §4：无障碍兜底，每张图必须有）：图右上的「表格视图」按钮打开它，同一份数据写成一张表，键盘可达（滚动区可聚焦）。
 // 第一列是行头。行多时（>= VIRTUAL_FROM）用 @tanstack/react-virtual 只画看得见的那一段（照 DataGrid 的写法：固定行高、上下各一行占位撑出滚动高度）；行少时照旧全画。
-// 表头与读屏名只从 props 来。复用 series.css 的 .k-sx-table 皮肤。
+// 表头与读屏名只从 props 来。复用 series-explorer.css 的 .k-sx-table 皮肤。
 import { useVirtualizer } from '@tanstack/react-virtual'
 import { useRef, type ReactNode } from 'react'
 import type { ChartActionsLabels } from './chart-actions.tsx'

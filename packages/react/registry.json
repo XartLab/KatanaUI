@@ -44,9 +44,24 @@
           "target": "~/src/katana/ui/theme/arcade-pixel.css"
         },
         {
+          "path": "src/theme/attribution-bars.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/attribution-bars.css"
+        },
+        {
           "path": "src/theme/badge.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/badge.css"
+        },
+        {
+          "path": "src/theme/brush-chart.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/brush-chart.css"
+        },
+        {
+          "path": "src/theme/calendar-heatmap.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/calendar-heatmap.css"
         },
         {
           "path": "src/theme/chart-kit.css",
@@ -57,6 +72,11 @@
           "path": "src/theme/chip-group.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/chip-group.css"
+        },
+        {
+          "path": "src/theme/connected-scatter.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/connected-scatter.css"
         },
         {
           "path": "src/theme/data-grid.css",
@@ -82,11 +102,6 @@
           "path": "src/theme/dialog.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/dialog.css"
-        },
-        {
-          "path": "src/theme/distribution.css",
-          "type": "registry:file",
-          "target": "~/src/katana/ui/theme/distribution.css"
         },
         {
           "path": "src/theme/empty-state.css",
@@ -132,6 +147,11 @@
           "path": "src/theme/hold-to-confirm.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/hold-to-confirm.css"
+        },
+        {
+          "path": "src/theme/horizon-chart.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/horizon-chart.css"
         },
         {
           "path": "src/theme/hypothesis-ledger.css",
@@ -229,14 +249,29 @@
           "target": "~/src/katana/ui/theme/quant.css"
         },
         {
+          "path": "src/theme/quantile-layers.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/quantile-layers.css"
+        },
+        {
           "path": "src/theme/quote.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/quote.css"
         },
         {
+          "path": "src/theme/range-histogram-slider.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/range-histogram-slider.css"
+        },
+        {
           "path": "src/theme/rendering.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/rendering.css"
+        },
+        {
+          "path": "src/theme/ridgeline.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/ridgeline.css"
         },
         {
           "path": "src/theme/rolling-text.css",
@@ -254,9 +289,9 @@
           "target": "~/src/katana/ui/theme/scrubber.css"
         },
         {
-          "path": "src/theme/series.css",
+          "path": "src/theme/series-explorer.css",
           "type": "registry:file",
-          "target": "~/src/katana/ui/theme/series.css"
+          "target": "~/src/katana/ui/theme/series-explorer.css"
         },
         {
           "path": "src/theme/shortcut-recorder.css",
@@ -267,6 +302,16 @@
           "path": "src/theme/side-nav.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/side-nav.css"
+        },
+        {
+          "path": "src/theme/slope-chart.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/slope-chart.css"
+        },
+        {
+          "path": "src/theme/small-multiples.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/small-multiples.css"
         },
         {
           "path": "src/theme/splitter.css",
@@ -287,6 +332,11 @@
           "path": "src/theme/sui-motion.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/sui-motion.css"
+        },
+        {
+          "path": "src/theme/symbol-galaxy.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/symbol-galaxy.css"
         },
         {
           "path": "src/theme/symbol-mark.css",
@@ -322,6 +372,11 @@
           "path": "src/theme/tree-view.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/tree-view.css"
+        },
+        {
+          "path": "src/theme/uptime-bars.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/uptime-bars.css"
         },
         {
           "path": "src/theme/vintage-series.css",
@@ -617,6 +672,164 @@
           "path": "src/lib/use-scrubber.ts",
           "type": "registry:lib",
           "target": "~/src/katana/ui/lib/use-scrubber.ts"
+        }
+      ]
+    },
+    {
+      "name": "brush-model",
+      "type": "registry:lib",
+      "title": "Brush Model",
+      "description": "BrushChart 与 SeriesExplorer 共用的刷选窗口几何（纯函数，lib/chart）：夹取、平移、缩放、居中。",
+      "registryDependencies": [
+        "@katana/num"
+      ],
+      "files": [
+        {
+          "path": "src/lib/chart/brush-model.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/lib/chart/brush-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "chart-scale",
+      "type": "registry:lib",
+      "title": "Chart Scale",
+      "description": "分布与关系类的图（Ridgeline、SlopeChart、ConnectedScatter）共用的纯函数：线性比例尺、好看的刻度、分位数。",
+      "files": [
+        {
+          "path": "src/lib/chart/chart-scale.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/lib/chart/chart-scale.ts"
+        }
+      ]
+    },
+    {
+      "name": "scatter-model",
+      "type": "registry:lib",
+      "title": "Scatter Model",
+      "description": "每个点是一个时刻的 (x, y)，按时间顺序连成轨迹，看一个对象在两个量之间怎么走（如策略的波动 vs 收益按月的路径、风格漂移）。时间方向不单靠颜色：起点空心圈、终点强调色实心圈加箭头、中间的点按时间取 seq 色阶（越晚越亮）。多条轨迹各取 series 色板的一个色。功能参照 Arc Connected scatter，实现原创。",
+      "registryDependencies": [
+        "@katana/chart-scale",
+        "@katana/num"
+      ],
+      "files": [
+        {
+          "path": "src/lib/chart/scatter-model.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/lib/chart/scatter-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "series-geometry",
+      "type": "registry:lib",
+      "title": "Series Geometry",
+      "description": "序列图共用的几何（纯函数）：好看的刻度、比例尺、折线与面积路径，BrushChart、HorizonChart、SmallMultiples、SeriesExplorer 都用。",
+      "registryDependencies": [
+        "@katana/num"
+      ],
+      "files": [
+        {
+          "path": "src/lib/chart/series-geometry.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/lib/chart/series-geometry.ts"
+        }
+      ]
+    },
+    {
+      "name": "chart-kit",
+      "type": "registry:component",
+      "title": "Chart Kit",
+      "description": "图表共用底座：配色分配（series / seq / div）、点阵纹理、LCD tooltip、末点、轴与网格、图右上三件（表格视图、导出、全屏）。",
+      "dependencies": [
+        "@tanstack/react-virtual@3.14.25",
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/live",
+        "@katana/series-geometry"
+      ],
+      "files": [
+        {
+          "path": "src/lib/chart/chart-kit/chart-actions.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/lib/chart/chart-kit/chart-actions.tsx"
+        },
+        {
+          "path": "src/lib/chart/chart-kit/chart-table.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/lib/chart/chart-kit/chart-table.tsx"
+        },
+        {
+          "path": "src/lib/chart/chart-kit/chart-value.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/lib/chart/chart-kit/chart-value.tsx"
+        },
+        {
+          "path": "src/lib/chart/chart-kit/dot-fill.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/lib/chart/chart-kit/dot-fill.tsx"
+        },
+        {
+          "path": "src/lib/chart/chart-kit/end-marker.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/lib/chart/chart-kit/end-marker.tsx"
+        },
+        {
+          "path": "src/lib/chart/chart-kit/lcd-tooltip.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/lib/chart/chart-kit/lcd-tooltip.tsx"
+        },
+        {
+          "path": "src/lib/chart/chart-kit/plot-axes.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/lib/chart/chart-kit/plot-axes.tsx"
+        },
+        {
+          "path": "src/lib/chart/chart-kit/series-colors.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/lib/chart/chart-kit/series-colors.ts"
+        }
+      ]
+    },
+    {
+      "name": "quant-format",
+      "type": "registry:lib",
+      "title": "Quant Format",
+      "description": "价格、涨跌幅、数量的写法（纯函数，不带 React；另有 @katana-ui/react/quant/format 出口给画布与 Worker）。小数位由调用方传，不在这里猜。",
+      "dependencies": [
+        "bignumber.js@11.1.5"
+      ],
+      "registryDependencies": [
+        "@katana/tone"
+      ],
+      "files": [
+        {
+          "path": "src/lib/chart/format/change.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/lib/chart/format/change.ts"
+        },
+        {
+          "path": "src/lib/chart/format/decimal-step.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/lib/chart/format/decimal-step.ts"
+        },
+        {
+          "path": "src/lib/chart/format/index.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/lib/chart/format/index.ts"
+        },
+        {
+          "path": "src/lib/chart/format/price.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/lib/chart/format/price.ts"
+        },
+        {
+          "path": "src/lib/chart/format/quantity.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/lib/chart/format/quantity.ts"
         }
       ]
     },
@@ -4592,63 +4805,6 @@
       ]
     },
     {
-      "name": "chart-kit",
-      "type": "registry:component",
-      "title": "Chart Kit",
-      "description": "图表共用底座：配色分配（series / seq / div）、点阵纹理、LCD tooltip、末点、轴与网格、图右上三件（表格视图、导出、全屏）。",
-      "dependencies": [
-        "@tanstack/react-virtual@3.14.25",
-        "lucide-react@1.67.0"
-      ],
-      "registryDependencies": [
-        "@katana/cn",
-        "@katana/live",
-        "@katana/series-geometry"
-      ],
-      "files": [
-        {
-          "path": "src/quant/chart-kit/chart-actions.tsx",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/quant/chart-kit/chart-actions.tsx"
-        },
-        {
-          "path": "src/quant/chart-kit/chart-table.tsx",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/quant/chart-kit/chart-table.tsx"
-        },
-        {
-          "path": "src/quant/chart-kit/chart-value.tsx",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/quant/chart-kit/chart-value.tsx"
-        },
-        {
-          "path": "src/quant/chart-kit/dot-fill.tsx",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/quant/chart-kit/dot-fill.tsx"
-        },
-        {
-          "path": "src/quant/chart-kit/end-marker.tsx",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/quant/chart-kit/end-marker.tsx"
-        },
-        {
-          "path": "src/quant/chart-kit/lcd-tooltip.tsx",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/quant/chart-kit/lcd-tooltip.tsx"
-        },
-        {
-          "path": "src/quant/chart-kit/plot-axes.tsx",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/quant/chart-kit/plot-axes.tsx"
-        },
-        {
-          "path": "src/quant/chart-kit/series-colors.ts",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/quant/chart-kit/series-colors.ts"
-        }
-      ]
-    },
-    {
       "name": "brush-chart",
       "type": "registry:component",
       "title": "Brush Chart",
@@ -4665,22 +4821,6 @@
           "path": "src/quant/brush-chart.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/quant/brush-chart.tsx"
-        }
-      ]
-    },
-    {
-      "name": "brush-model",
-      "type": "registry:component",
-      "title": "Brush Model",
-      "description": "BrushChart 的窗口几何（纯函数）：夹取、平移、缩放、居中。",
-      "registryDependencies": [
-        "@katana/num"
-      ],
-      "files": [
-        {
-          "path": "src/quant/brush-model.ts",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/quant/brush-model.ts"
         }
       ]
     },
@@ -4708,8 +4848,8 @@
       "type": "registry:component",
       "title": "Calendar Model",
       "description": "CalendarHeatmap 的格子排布、档位与键盘（纯函数）：日历日按 UTC 算，一周一列。",
-      "registryDependencies": [
-        "@katana/date"
+      "dependencies": [
+        "@internationalized/date@3.12.4"
       ],
       "files": [
         {
@@ -4735,19 +4875,6 @@
           "path": "src/quant/change-text.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/quant/change-text.tsx"
-        }
-      ]
-    },
-    {
-      "name": "chart-scale",
-      "type": "registry:component",
-      "title": "Chart Scale",
-      "description": "分布与关系类的图（Ridgeline、SlopeChart、ConnectedScatter）共用的纯函数：线性比例尺、好看的刻度、分位数。",
-      "files": [
-        {
-          "path": "src/quant/chart-scale.ts",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/quant/chart-scale.ts"
         }
       ]
     },
@@ -4846,12 +4973,38 @@
       ]
     },
     {
+      "name": "event-calendar-cells",
+      "type": "registry:component",
+      "title": "Event Calendar Cells",
+      "description": "EventCalendar 的表格部分：四个类别的列集、一行的单元格、重要程度格条、经济事件的详情行。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/event-calendar-model",
+        "@katana/event-calendar-types",
+        "@katana/quant-format",
+        "@katana/sparkline",
+        "@katana/symbol-mark"
+      ],
+      "files": [
+        {
+          "path": "src/quant/event-calendar-cells.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/event-calendar-cells.tsx"
+        }
+      ]
+    },
+    {
       "name": "event-calendar-model",
       "type": "registry:component",
       "title": "Event Calendar Model",
       "description": "EventCalendar 的纯函数：按显示时区分天、今天 / 本周 / 下周区间、筛选、倒计时分钟。",
+      "dependencies": [
+        "@internationalized/date@3.12.4"
+      ],
       "registryDependencies": [
-        "@katana/date",
         "@katana/tone"
       ],
       "files": [
@@ -4863,25 +5016,61 @@
       ]
     },
     {
+      "name": "event-calendar-regions",
+      "type": "registry:component",
+      "title": "Event Calendar Regions",
+      "description": "EventCalendar 的国家选择：触发按钮加模态框（搜索、两个预设、按地区分组复选、取消 / 应用）。",
+      "registryDependencies": [
+        "@katana/button",
+        "@katana/checkbox",
+        "@katana/dialog",
+        "@katana/event-calendar-types",
+        "@katana/input",
+        "@katana/symbol-mark"
+      ],
+      "files": [
+        {
+          "path": "src/quant/event-calendar-regions.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/event-calendar-regions.tsx"
+        }
+      ]
+    },
+    {
+      "name": "event-calendar-types",
+      "type": "registry:component",
+      "title": "Event Calendar Types",
+      "description": "EventCalendar 的公开类型：四类事件的行、文案（labels）、财报行下的链接、属性。",
+      "registryDependencies": [
+        "@katana/event-calendar-model",
+        "@katana/row-actions"
+      ],
+      "files": [
+        {
+          "path": "src/quant/event-calendar-types.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/event-calendar-types.ts"
+        }
+      ]
+    },
+    {
       "name": "event-calendar",
       "type": "registry:component",
       "title": "Event Calendar",
       "description": "照 TradingView 日历的布局（主会话 2026-11-15 登录态实测）：导航行（今天、选日期、按周翻页、范围文字、时区读数），周条（周一到周日七张日卡，列出当天各类别条数，点卡选日），类别药丸（经济 / 财报 / 分红 / IPO，给了哪类数据才有哪个），重要性单开关（只看高重要）、经济类别下拉（12 类，单选）、国家选择框（模态：搜索、全球与前 20 预设、按地区分组两列复选、取消 / 应用）。经济表：日期分隔行粘顶、数字列名写在它右侧；同一时间同一国家的事件合并；实际值加粗不上涨跌色；点开一行看说明、来源、历史值小图、下次发布（比 TradingView 多的部分）。财报表：时段图标 + 时间、徽标、代码、公司名，预期 / 实际 EPS 与营收，EPS 意外与营收意外（只有这两列上涨跌色），市值，币种小字，行下可选「财报材料 / 电话会」。分红、IPO 各有自己的列。数据、现在、时区、文字都由调用方传。",
       "dependencies": [
+        "@internationalized/date@3.12.4",
         "lucide-react@1.67.0"
       ],
       "registryDependencies": [
         "@katana/button",
-        "@katana/checkbox",
         "@katana/cn",
-        "@katana/dialog",
+        "@katana/event-calendar-cells",
         "@katana/event-calendar-model",
-        "@katana/input",
-        "@katana/quant-format",
+        "@katana/event-calendar-regions",
+        "@katana/event-calendar-types",
         "@katana/row-actions",
-        "@katana/select",
-        "@katana/sparkline",
-        "@katana/symbol-mark"
+        "@katana/select"
       ],
       "files": [
         {
@@ -5013,6 +5202,84 @@
       ]
     },
     {
+      "name": "market-heatmap-card",
+      "type": "registry:component",
+      "title": "Market Heatmap Card",
+      "description": "MarketHeatmap 的悬停卡片：跟着鼠标，写价格、各着色指标、大小指标与分组，不伸出图外。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/market-heatmap-hooks",
+        "@katana/market-heatmap-model",
+        "@katana/market-heatmap-types",
+        "@katana/quant-format",
+        "@katana/symbol-mark"
+      ],
+      "files": [
+        {
+          "path": "src/quant/market-heatmap-card.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/market-heatmap-card.tsx"
+        }
+      ]
+    },
+    {
+      "name": "market-heatmap-cell",
+      "type": "registry:component",
+      "title": "Market Heatmap Cell",
+      "description": "MarketHeatmap 的一格：按格子真实像素分四档写字（徽标 + 代码 + 读数 / 代码 + 读数 / 只有徽标 / 只有色块）。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/market-heatmap-model",
+        "@katana/market-heatmap-types",
+        "@katana/quant-format",
+        "@katana/symbol-mark",
+        "@katana/text-measure",
+        "@katana/treemap-model"
+      ],
+      "files": [
+        {
+          "path": "src/quant/market-heatmap-cell.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/market-heatmap-cell.tsx"
+        }
+      ]
+    },
+    {
+      "name": "market-heatmap-hooks",
+      "type": "registry:component",
+      "title": "Market Heatmap Hooks",
+      "description": "MarketHeatmap 的副作用钩子：量绘图区尺寸、放大返回的焦点、按底色现算字色、格子位置的弹簧过渡、涨跌翻向时闪一下。",
+      "registryDependencies": [
+        "@katana/live",
+        "@katana/market-heatmap-types",
+        "@katana/treemap-model"
+      ],
+      "files": [
+        {
+          "path": "src/quant/market-heatmap-hooks.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/market-heatmap-hooks.ts"
+        }
+      ]
+    },
+    {
+      "name": "market-heatmap-legend",
+      "type": "registry:component",
+      "title": "Market Heatmap Legend",
+      "description": "MarketHeatmap 的图例：七档色块与值边界，悬停预览、点一档隐藏。",
+      "registryDependencies": [
+        "@katana/market-heatmap-model",
+        "@katana/market-heatmap-types"
+      ],
+      "files": [
+        {
+          "path": "src/quant/market-heatmap-legend.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/market-heatmap-legend.tsx"
+        }
+      ]
+    },
+    {
       "name": "market-heatmap-model",
       "type": "registry:component",
       "title": "Market Heatmap Model",
@@ -5029,24 +5296,59 @@
       ]
     },
     {
-      "name": "market-heatmap",
+      "name": "market-heatmap-toolbar",
       "type": "registry:component",
-      "title": "Market Heatmap",
-      "description": "照 TradingView 的股票热力图：格子面积是所选的大小指标（市值、成交额或等大），颜色是所选指标落在七档色阶的哪一档，按行业分组或平铺。顶上一行汇总读数（只数、上涨、下跌），工具条用分段控件切大小、颜色、视图；点组名放大到只看这一组（面包屑返回，Esc 也行）；悬停出这只票的价格与各项读数；底部图例写出每一档的值边界，点一档就隐藏这一档的格子。A 股、港股、美股、加密共用，只换数据与分组；不认数据集，品种、指标、文字都由调用方传。排布与着色档用包里矩形树图的 layoutTreemap、colorStep。",
+      "title": "Market Heatmap Toolbar",
+      "description": "MarketHeatmap 的工具条：数据集、大小、颜色、分组（下拉或分段），全屏，显示开关，「在选股器打开」。",
       "dependencies": [
         "lucide-react@1.67.0"
       ],
       "registryDependencies": [
-        "@katana/cn",
-        "@katana/live",
-        "@katana/market-heatmap-model",
-        "@katana/quant-format",
-        "@katana/row-actions",
+        "@katana/market-heatmap-types",
         "@katana/select",
         "@katana/switch",
-        "@katana/symbol-mark",
-        "@katana/text-measure",
-        "@katana/toggle-group",
+        "@katana/toggle-group"
+      ],
+      "files": [
+        {
+          "path": "src/quant/market-heatmap-toolbar.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/market-heatmap-toolbar.tsx"
+        }
+      ]
+    },
+    {
+      "name": "market-heatmap-types",
+      "type": "registry:component",
+      "title": "Market Heatmap Types",
+      "description": "MarketHeatmap 的公开类型：格子数据、大小与着色指标、文案、属性。",
+      "registryDependencies": [
+        "@katana/row-actions"
+      ],
+      "files": [
+        {
+          "path": "src/quant/market-heatmap-types.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/market-heatmap-types.ts"
+        }
+      ]
+    },
+    {
+      "name": "market-heatmap",
+      "type": "registry:component",
+      "title": "Market Heatmap",
+      "description": "照 TradingView 的股票热力图：格子面积是所选的大小指标（市值、成交额或等大），颜色是所选指标落在七档色阶的哪一档，按行业分组或平铺。顶上一行汇总读数（只数、上涨、下跌），工具条用分段控件切大小、颜色、视图；点组名放大到只看这一组（面包屑返回，Esc 也行）；悬停出这只票的价格与各项读数；底部图例写出每一档的值边界，点一档就隐藏这一档的格子。A 股、港股、美股、加密共用，只换数据与分组；不认数据集，品种、指标、文字都由调用方传。排布与着色档用包里矩形树图的 layoutTreemap、colorStep。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/market-heatmap-card",
+        "@katana/market-heatmap-cell",
+        "@katana/market-heatmap-hooks",
+        "@katana/market-heatmap-legend",
+        "@katana/market-heatmap-model",
+        "@katana/market-heatmap-toolbar",
+        "@katana/market-heatmap-types",
+        "@katana/quant-format",
+        "@katana/row-actions",
         "@katana/treemap-model"
       ],
       "files": [
@@ -5281,39 +5583,6 @@
       ]
     },
     {
-      "name": "scatter-model",
-      "type": "registry:component",
-      "title": "Scatter Model",
-      "description": "每个点是一个时刻的 (x, y)，按时间顺序连成轨迹，看一个对象在两个量之间怎么走（如策略的波动 vs 收益按月的路径、风格漂移）。时间方向不单靠颜色：起点空心圈、终点强调色实心圈加箭头、中间的点按时间取 seq 色阶（越晚越亮）。多条轨迹各取 series 色板的一个色。功能参照 Arc Connected scatter，实现原创。",
-      "registryDependencies": [
-        "@katana/chart-scale",
-        "@katana/num"
-      ],
-      "files": [
-        {
-          "path": "src/quant/scatter-model.ts",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/quant/scatter-model.ts"
-        }
-      ]
-    },
-    {
-      "name": "series-geometry",
-      "type": "registry:component",
-      "title": "Series Geometry",
-      "description": "序列图共用的几何（纯函数）：好看的刻度、比例尺、折线与面积路径，BrushChart、HorizonChart、SmallMultiples、SeriesExplorer 都用。",
-      "registryDependencies": [
-        "@katana/num"
-      ],
-      "files": [
-        {
-          "path": "src/quant/series-geometry.ts",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/quant/series-geometry.ts"
-        }
-      ]
-    },
-    {
       "name": "slope-chart",
       "type": "registry:component",
       "title": "Slope Chart",
@@ -5503,45 +5772,6 @@
       ]
     },
     {
-      "name": "quant-format",
-      "type": "registry:lib",
-      "title": "Quant Format",
-      "description": "价格、涨跌幅、数量的写法（纯函数，不带 React；另有 @katana-ui/react/quant/format 出口给画布与 Worker）。小数位由调用方传，不在这里猜。",
-      "dependencies": [
-        "bignumber.js@11.1.5"
-      ],
-      "registryDependencies": [
-        "@katana/tone"
-      ],
-      "files": [
-        {
-          "path": "src/quant/format/change.ts",
-          "type": "registry:lib",
-          "target": "~/src/katana/ui/quant/format/change.ts"
-        },
-        {
-          "path": "src/quant/format/decimal-step.ts",
-          "type": "registry:lib",
-          "target": "~/src/katana/ui/quant/format/decimal-step.ts"
-        },
-        {
-          "path": "src/quant/format/index.ts",
-          "type": "registry:lib",
-          "target": "~/src/katana/ui/quant/format/index.ts"
-        },
-        {
-          "path": "src/quant/format/price.ts",
-          "type": "registry:lib",
-          "target": "~/src/katana/ui/quant/format/price.ts"
-        },
-        {
-          "path": "src/quant/format/quantity.ts",
-          "type": "registry:lib",
-          "target": "~/src/katana/ui/quant/format/quantity.ts"
-        }
-      ]
-    },
-    {
       "name": "data-grid",
       "type": "registry:component",
       "title": "Data Grid",
@@ -5669,9 +5899,34 @@
       ],
       "files": [
         {
+          "path": "src/blocks/series-explorer/series-explorer-events.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/series-explorer/series-explorer-events.tsx"
+        },
+        {
+          "path": "src/blocks/series-explorer/series-explorer-head.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/series-explorer/series-explorer-head.tsx"
+        },
+        {
           "path": "src/blocks/series-explorer/series-explorer-model.ts",
           "type": "registry:component",
           "target": "~/src/katana/ui/blocks/series-explorer/series-explorer-model.ts"
+        },
+        {
+          "path": "src/blocks/series-explorer/series-explorer-reconcile.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/series-explorer/series-explorer-reconcile.tsx"
+        },
+        {
+          "path": "src/blocks/series-explorer/series-explorer-table.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/series-explorer/series-explorer-table.tsx"
+        },
+        {
+          "path": "src/blocks/series-explorer/series-explorer-types.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/series-explorer/series-explorer-types.ts"
         },
         {
           "path": "src/blocks/series-explorer/series-explorer.tsx",

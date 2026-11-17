@@ -29,14 +29,20 @@ export const KatanaBrushChartApi = {
         })
         .strict()
         .describe('Accessible names of the two handles and of the window.'),
-      defaultWindow: z
+      defaultValue: z
         .array(z.number().int().min(0))
         .length(2)
         .describe('Initial window as [start, end) point indexes. Defaults to the whole series.')
         .optional(),
-      onWindowChange: actionSchema(
+      onValueChange: actionSchema(
         'Dispatched when the user moves or resizes the window. metadata.extensions.katanaChartWindow carries {fromIndex, toIndex, from, to}; from and to are the xLabels at both ends.',
       ).optional(),
+      defaultWindow: z
+        .array(z.number().int().min(0))
+        .length(2)
+        .describe('Deprecated: use defaultValue. Kept for one release.')
+        .optional(),
+      onWindowChange: actionSchema('Deprecated: use onValueChange. Kept for one release.').optional(),
       weight: weightSchema,
     })
     .strict(),
@@ -47,6 +53,7 @@ export const KatanaBrushChart = createComponentImplementation(KatanaBrushChartAp
   const format = useMemo(() => makeFormat(props.valueFormat), [props.valueFormat])
   const xLabels = props.xLabels ?? []
   const { labels } = props
+  const initial = props.defaultValue ?? props.defaultWindow
   if (!labels) return null
   return (
     <Cell weight={props.weight}>
@@ -56,9 +63,9 @@ export const KatanaBrushChart = createComponentImplementation(KatanaBrushChartAp
         formatX={(index) => xLabels[index] ?? ''}
         formatValue={format}
         labels={labels}
-        defaultWindow={props.defaultWindow ? [props.defaultWindow[0] ?? 0, props.defaultWindow[1] ?? 1] : undefined}
-        onWindowChange={(window) =>
-          dispatch(props.onWindowChange, 'katanaChartWindow', {
+        defaultValue={initial ? [initial[0] ?? 0, initial[1] ?? 1] : undefined}
+        onValueChange={(window) =>
+          dispatch(props.onValueChange ?? props.onWindowChange, 'katanaChartWindow', {
             fromIndex: window[0],
             toIndex: window[1] - 1,
             from: xLabels[window[0]] ?? '',

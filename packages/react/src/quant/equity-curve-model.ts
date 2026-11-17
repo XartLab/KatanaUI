@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 // 权益曲线的纯逻辑：时间轴 x、线性 / 对数纵轴、镜像回撤的纵轴、默认横轴刻度。
-import { extent, niceTicks, PLOT_W, type Plot } from './series-geometry.ts'
+import { extent, niceTicks, PLOT_W, type Plot } from '../lib/chart/series-geometry.ts'
 
 export type EquityScale = 'linear' | 'log'
 

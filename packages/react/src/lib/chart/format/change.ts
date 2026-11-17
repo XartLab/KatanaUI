@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // 涨跌的写法与方向。方向（tone）由「按显示的位数舍入之后」的值定：写出来是 0.00% 的不着色，文字和颜色不会一个说涨一个说平。
 
-import type { Tone } from '../../lib/tone.ts'
+import type { Tone } from '../../tone.ts'
 
 export type { Tone }
 

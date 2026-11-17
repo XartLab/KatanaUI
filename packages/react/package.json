@@ -42,9 +42,9 @@
       "default": "./lib/quant/index.js"
     },
     "./quant/format": {
-      "types": "./lib/quant/format/index.d.ts",
-      "source": "./src/quant/format/index.ts",
-      "default": "./lib/quant/format/index.js"
+      "types": "./lib/lib/chart/format/index.d.ts",
+      "source": "./src/lib/chart/format/index.ts",
+      "default": "./lib/lib/chart/format/index.js"
     },
     "./blocks": {
       "types": "./lib/blocks/index.d.ts",

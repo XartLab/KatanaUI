@@ -87,7 +87,7 @@ export function BrushChartDemo() {
           formatX={dayAt}
           formatValue={(v) => v.toFixed(0)}
           labels={{ start: '窗口起点', end: '窗口终点', window: '窗口位置' }}
-          defaultWindow={[60, 120]}
+          defaultValue={[60, 120]}
         />
       </div>
       <p className="gal-note">{DEMO_NOTE}</p>
@@ -161,7 +161,7 @@ export function AttributionBarsDemo() {
           dimensions={{
             label: '维度',
             value: dim,
-            onChange: (key) => key && setDim(key),
+            onValueChange: (key) => key && setDim(key),
             options: [
               { key: 'symbol', label: '品种' },
               { key: 'account', label: '账户' },
@@ -172,7 +172,7 @@ export function AttributionBarsDemo() {
           ranges={{
             label: '区间',
             value: range,
-            onChange: (key) => key && setRange(key),
+            onValueChange: (key) => key && setRange(key),
             options: [
               { key: 'today', label: '今日' },
               { key: 'week', label: '本周' },
@@ -180,9 +180,8 @@ export function AttributionBarsDemo() {
             ],
           }}
           formatValue={money}
-          otherLabel={(n) => `其他 ×${n}`}
+          labels={{ other: (n) => `其他 ×${n}`, share: '占比' }}
           formatShare={(x) => `${(x * 100).toFixed(1)}%`}
-          shareLabel="占比"
           readouts={[
             { key: 'sum', label: '今日合计', text: money(pos + neg), value: pos + neg },
             { key: 'pos', label: '正贡献', text: money(pos), value: pos },
