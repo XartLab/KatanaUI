@@ -116,7 +116,8 @@
   width: 220px;
 }
 .k-render-kind {
-  color: var(--k-content-tertiary-foreground);
+  /* 下拉里「· 系统 / 开源 / 本机」的小字：原来 tertiary（ink-400）在 Graphite 上只有 3.8:1，axe 报对比度不足，改成 secondary（≥ 4.5:1）。 */
+  color: var(--k-content-secondary-foreground);
 }
 
 /* 滚动条（用户 2026-11-17：「滑条要小」）：全站细滚动条，滑块用半透明白，轨道透明；系统叠加滚动条（macOS）不受影响。 */

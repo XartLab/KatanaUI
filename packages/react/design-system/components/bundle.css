@@ -11475,7 +11475,7 @@ button.k-quote-card.is-link:focus-visible {
 }
 
 .k-render-kind {
-  color: var(--k-content-tertiary-foreground);
+  color: var(--k-content-secondary-foreground);
 }
 
 :root {

@@ -1593,12 +1593,12 @@ for (const theme of THEMES) {
       await expect(field).toHaveCSS('padding-left', '12px')
       await expect(box.locator('.k-unit')).toHaveText('px')
       await expect(box.locator('.k-unit')).toHaveCSS('color', await token(page, '--ink-300'))
-      // .sm（:101-103）26 高；.dis（:45-48）0.45 · not-allowed；.err（:55-57）红边。
+      // .sm 26 高；.dis 0.45 · not-allowed；.err 红边：G2 起与 Input 的 aria-invalid 同为 --k-status-danger-foreground（原写死 55% 浅红）。
       await expect(area.locator('.k-num.sm')).toHaveCSS('height', '26px')
       await expect(area.getByRole('spinbutton', { name: '禁用' }).locator('..')).toHaveCSS('opacity', '0.45')
       await expect(area.getByRole('spinbutton', { name: '非法' }).locator('..')).toHaveCSS(
         'border-top-color',
-        'rgba(255, 90, 90, 0.55)',
+        await token(page, '--k-status-danger-foreground'),
       )
       // 聚焦（:35-38）：边变亮、指针变打字的 I 形。
       await field.focus()
