@@ -1,0 +1,3 @@
+#!/bin/sh
+# 提交前只查暂存的文件：格式与 lint 能修的自动修（规则在 packages/react/vite.config.ts 的 staged）。
+cd packages/react && pnpm exec vp staged --relative

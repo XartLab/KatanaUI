@@ -66,8 +66,8 @@
   "scripts": {
     "dev": "pnpm --filter @katana-ui/tokens run tokens:sync && vp dev",
     "build:site": "node scripts/build-site.mjs",
-    "test": "node scripts/ui-coverage.mjs --check && node scripts/docs-props.mjs --check && node scripts/ds-build.mjs --check && vp test run",
-    "typecheck": "tsc -p tsconfig.json",
+    "test": "vp run docs-check && vp run unit",
+    "typecheck": "vp run tsc",
     "check": "vp check",
     "docs:props": "node scripts/docs-props.mjs",
     "ds:build": "pnpm --filter @katana-ui/tokens run tokens:sync && node scripts/ds-build.mjs",

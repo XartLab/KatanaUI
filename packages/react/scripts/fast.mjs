@@ -46,7 +46,7 @@ process.stdout.write(`改动 ${changed.length} 个文件\n`)
 
 const lintable = changed.filter((f) => /\.(m?[jt]sx?|css|json)$/.test(f) && !f.startsWith('.pixelgate/'))
 if (lintable.length) run('格式与 lint（只查改动文件）', 'pnpm', ['exec', 'vp', 'check', ...lintable])
-run('类型检查', 'pnpm', ['typecheck'])
+run('类型检查（Vite+ 任务缓存，没改就秒过）', 'pnpm', ['exec', 'vp', 'run', 'tsc'])
 run('受影响的单测', 'pnpm', ['exec', 'vp', 'test', 'run', '--changed', base, '--passWithNoTests'])
 
 // 受影响的页：复用 vr-fast 的映射（--dry 只打印页名，不截图）。

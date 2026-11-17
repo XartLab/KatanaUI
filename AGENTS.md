@@ -32,6 +32,8 @@ KatanaUI 是设计系统的**源头仓库**（2026-11-14 用户定，#2）：tok
 
 **写界面代码前查现代写法（modern-web-guidance，Chrome / Edge / Firefox / MDN 维护）**：做对话框、浮层、动画进出场、滚动、表单、布局这类件之前，先 `npx -y modern-web-guidance@latest search "<要做的事>"`，再 `retrieve <guide-id>` 读对应指南，优先用平台原生能力（popover、dialog、View Transitions、field-sizing、toSorted 等），别照训练数据里的老套路写。交付前可跑 `npx -y modern-web-guidance@latest legacy-scan src` 看有没有新引入的旧写法。
 
+Vite+ 用足（2026-11-18）：根目录直接 `pnpm fast` / `pnpm vr` / `pnpm vr:fast`（转给 @katana-ui/react）。类型检查、单测、文档自检是 `vite.config.ts` 里 `run.tasks` 的带缓存任务（`vp run tsc` / `unit` / `docs-check`），输入没变秒命中。提交时 `.vite-hooks/pre-commit` 跑 `vp staged`，只对暂存文件 `vp check --fix`；新克隆后跑一次 `vp hooks enable`。语法直接写最新的：tsconfig target/lib 都是 ESNext，`Object.groupBy`、`Array.prototype.toSorted/findLast`、`using`、`Promise.withResolvers` 等随便用，不写兼容垫片。
+
 **视觉回归（pixelgate，自研）**：改了视觉相关的件，交付前在 `packages/react` 跑 `pnpm vr:fast`（只截受影响的页，约半分钟），在汇报里附 changed 列表与 report 路径（`.pixelgate/report/index.html`）；合并前、或改了令牌 / theme 样式 / lib / primitives 这类共用层，跑全量 `pnpm vr`。预期的变化用 `pnpm vr:approve` 收为新基线并随代码提交，规则写在文档站「开发接入 → 视觉回归」。
 
 改 token：改 `packages/tokens/src/tokens.json`（弹簧改 `motion.tokens.json`），跑 `pnpm tokens:sync`；改了文档站的页数据或件，跑 `pnpm ds:build`。生成文件不手改。

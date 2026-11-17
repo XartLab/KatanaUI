@@ -45,4 +45,22 @@ export default defineConfig({
       'typescript/restrict-template-expressions': ['warn', { allowArray: true }],
     },
   },
+  // 带缓存的任务（`vp run <名>`，Vite+ 任务缓存）：输入文件没变就直接命中，不重跑——快速模式与全量都走它们。
+  run: {
+    tasks: {
+      tsc: { command: 'tsc -p tsconfig.json' },
+      unit: { command: 'vp test run' },
+      'docs-check': {
+        command: [
+          'node scripts/ui-coverage.mjs --check',
+          'node scripts/docs-props.mjs --check',
+          'node scripts/ds-build.mjs --check',
+        ],
+      },
+    },
+  },
+  // 提交前只查暂存的文件（`vp staged`，由 .vite-hooks/pre-commit 调用）：格式与 lint 能自动修的就修。
+  staged: {
+    '*.{ts,tsx,mts,js,mjs,css,json}': 'vp check --fix',
+  },
 })
