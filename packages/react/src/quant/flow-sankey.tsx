@@ -280,7 +280,7 @@ export function FlowSankey({
         >
           <defs>
             <pattern id={pattern} width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-              <line x1="0" y1="0" x2="0" y2="6" style={{ stroke: 'var(--ink-200)', strokeWidth: 2 }} />
+              <line x1="0" y1="0" x2="0" y2="6" style={{ stroke: 'var(--k-content-body-foreground)', strokeWidth: 2 }} />
             </pattern>
           </defs>
           {columnLabels !== undefined &&

@@ -37,7 +37,7 @@
 }
 .k-galaxy-ring {
   fill: none;
-  stroke: var(--line-200);
+  stroke: var(--k-separable-bold-borderColor);
   stroke-width: 1;
   stroke-dasharray: 2 3;
   pointer-events: none;
@@ -54,7 +54,7 @@
   position: absolute;
   translate: round(nearest, -50%, 1px) round(nearest, -50%, 1px);
   white-space: nowrap;
-  color: var(--ink-200);
+  color: var(--k-content-body-foreground);
   font: var(--text-caption) var(--font-sans-small);
   font-weight: 600;
   line-height: 16px;
@@ -65,13 +65,13 @@
 }
 .k-galaxy-mark {
   fill: none;
-  stroke: var(--ink-100);
+  stroke: var(--k-content-primary-foreground);
   stroke-width: 1.5;
   pointer-events: none;
 }
 .k-galaxy-mark.is-selected,
 .k-galaxy-mark.is-active {
-  stroke: var(--chart-accent, var(--ink-100));
+  stroke: var(--chart-accent, var(--k-content-primary-foreground));
   stroke-width: 2;
 }
 .k-galaxy-mark.is-hover {
@@ -86,7 +86,7 @@
 .k-galaxy-legend li {
   flex: 1 1 0;
   height: 16px;
-  color: var(--ink-100);
+  color: var(--k-content-primary-foreground);
   font: var(--text-caption) var(--font-sans-small);
   line-height: 16px;
   text-align: center;
@@ -136,7 +136,7 @@
 }
 .k-galaxy-readout {
   min-height: 16px;
-  color: var(--ink-200);
+  color: var(--k-content-body-foreground);
   font: var(--text-caption) var(--font-sans-small);
   font-variant-numeric: tabular-nums;
 }

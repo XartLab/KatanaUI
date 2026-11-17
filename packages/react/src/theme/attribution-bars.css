@@ -11,8 +11,8 @@
   min-width: 0;
   padding: 8px 10px;
   border: var(--hairline);
-  background: var(--bg-200);
-  color: var(--ink-200);
+  background: var(--k-container-secondary-background);
+  color: var(--k-content-body-foreground);
   font: var(--text-data) var(--font-sans);
   font-variant-numeric: tabular-nums;
 }
@@ -21,8 +21,8 @@
 }
 .k-attr-title {
   margin: 0;
-  color: var(--ink-100);
-  font: 12px/20px var(--font-num);
+  color: var(--k-content-primary-foreground);
+  font: var(--text-data-size)/20px var(--font-num);
   letter-spacing: 0.14em;
   text-transform: uppercase;
 }
@@ -41,7 +41,7 @@
 .k-attr-meta,
 .k-attr-source {
   margin: 0;
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   text-transform: uppercase;
 }
 .k-attr-main {
@@ -56,8 +56,8 @@
 }
 .k-attr-cols {
   height: 22px;
-  border-bottom: 1px solid var(--line-300, var(--ink-300));
-  color: var(--ink-300);
+  border-bottom: 1px solid var(--line-300, var(--k-content-secondary-foreground));
+  color: var(--k-content-secondary-foreground);
 }
 .k-attr-cols span {
   white-space: nowrap;
@@ -81,13 +81,13 @@
 }
 .k-attr-row[data-active='true'],
 .k-attr-row:focus-visible {
-  background: color-mix(in srgb, var(--ink-100) 6%, transparent);
+  background: color-mix(in srgb, var(--k-content-primary-foreground) 6%, transparent);
 }
 .k-attr-index {
-  color: var(--chart-accent, var(--ink-100));
+  color: var(--chart-accent, var(--k-content-primary-foreground));
 }
 .k-attr-row[data-kind='fee'] .k-attr-index {
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
 }
 .k-attr-mark-slot {
   flex: none;
@@ -99,22 +99,22 @@
   align-items: center;
   gap: 8px;
   overflow: hidden;
-  color: var(--ink-100);
+  color: var(--k-content-primary-foreground);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 .k-attr-row[data-kind='other'] .k-attr-label,
 .k-attr-row[data-kind='fee'] .k-attr-label {
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
 }
 /* 已平仓：整行删除线、降墨色（数值也不再着涨跌色）。 */
 .k-attr-row[data-closed='true'] {
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
 }
 .k-attr-row[data-closed='true'] .k-attr-label,
 .k-attr-row[data-closed='true'] .k-attr-value,
 .k-attr-row[data-closed='true'] .k-attr-share {
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   text-decoration: line-through;
 }
 .k-attr-axis {
@@ -128,10 +128,10 @@
   bottom: -5px;
   left: 50%;
   width: 1px;
-  background: var(--line-200);
+  background: var(--k-separable-bold-borderColor);
 }
 .k-attr-bar {
-  --k-dot: var(--ink-200);
+  --k-dot: var(--k-content-body-foreground);
   position: absolute;
   top: 2px;
   height: 10px;
@@ -141,10 +141,10 @@
     width var(--dur-snappy) var(--ease-snappy);
 }
 .k-attr-bar[data-focus='true'] {
-  --k-dot: var(--chart-accent, var(--ink-100));
+  --k-dot: var(--chart-accent, var(--k-content-primary-foreground));
 }
 .k-attr-row[data-closed='true'] .k-attr-bar {
-  --k-dot: var(--ink-300);
+  --k-dot: var(--k-content-secondary-foreground);
   opacity: 0.5;
 }
 .k-attr-value,
@@ -152,10 +152,10 @@
   text-align: right;
 }
 .k-attr-value {
-  color: var(--ink-100);
+  color: var(--k-content-primary-foreground);
 }
 .k-attr-share {
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
 }
 .k-attr-value[data-tone='up'] {
   color: var(--pnl-up);
@@ -164,14 +164,14 @@
   color: var(--pnl-down);
 }
 .k-attr-row[data-kind='fee'] .k-attr-value {
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
 }
 .k-attr-row[data-closed='true'] .k-attr-value[data-tone] {
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
 }
 .k-attr-closed {
   margin-left: 8px;
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   text-decoration: none;
   display: inline-block;
 }
@@ -193,18 +193,18 @@
 }
 .k-attr-readout[data-size='main'] {
   padding-left: 10px;
-  border-left: 2px solid var(--chart-accent, var(--ink-100));
+  border-left: 2px solid var(--chart-accent, var(--k-content-primary-foreground));
 }
 .k-attr-readout-label {
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
 }
 .k-attr-readout-value {
-  color: var(--ink-100);
-  font: 600 13px/18px var(--font-sans);
+  color: var(--k-content-primary-foreground);
+  font: 600 var(--text-body-size)/18px var(--font-sans);
   font-variant-numeric: tabular-nums;
 }
 .k-attr-readout[data-size='main'] .k-attr-readout-value {
-  font-size: 22px;
+  font-size: 22px; /* 22px 没有对应字号档（display 是 28），先留着，待 tokens 定读数大字一档 */
   line-height: 28px;
 }
 .k-attr-readout-value[data-tone='up'] {
@@ -223,7 +223,7 @@
   text-align: left;
 }
 .k-attr-table th {
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   font-weight: 400;
 }
 .k-attr-table td,
@@ -238,7 +238,7 @@
   margin-top: 2px;
   padding-top: 6px;
   border-top: var(--hairline);
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
 }
 .k-attr-foot .k-attr-note {
   font: var(--text-tag-md) var(--font-num);

@@ -141,7 +141,7 @@ export function QuantileLayers({
         <div className="k-ql-plot" style={{ height }} role="group" aria-label={labels.chart} {...scrub.props}>
           <svg viewBox={`0 0 ${PLOT_W} ${height}`} preserveAspectRatio="none" aria-hidden="true">
             <defs>
-              <DotFill id={fillId} color="var(--ink-400)" />
+              <DotFill id={fillId} color="var(--k-content-tertiary-foreground)" />
             </defs>
             <PlotGrid plot={plot} />
             <path className="k-ql-fill" d={areaPath(longShort, plot, 0)} style={{ fill: `url(#${fillId})` }} />

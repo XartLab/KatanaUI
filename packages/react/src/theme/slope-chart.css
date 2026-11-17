@@ -15,7 +15,7 @@
   overflow: visible;
 }
 .k-slope-head {
-  fill: var(--ink-300);
+  fill: var(--k-content-secondary-foreground);
   font: var(--text-micro) var(--font-sans);
   letter-spacing: var(--text-micro-tracking);
 }
@@ -34,14 +34,14 @@
   stroke-width: 10;
 }
 .k-slope-line {
-  stroke: var(--ink-300);
+  stroke: var(--k-content-secondary-foreground);
   stroke-width: 1.5;
 }
 .k-slope-dot {
-  fill: var(--ink-300);
+  fill: var(--k-content-secondary-foreground);
 }
 .k-slope-text {
-  fill: var(--ink-200);
+  fill: var(--k-content-body-foreground);
   font: var(--text-caption) var(--font-sans-small);
   font-variant-numeric: tabular-nums;
 }
@@ -54,16 +54,16 @@
 }
 .k-slope-item:hover .k-slope-line,
 .k-slope-item:focus-visible .k-slope-line {
-  stroke: var(--chart-accent, var(--ink-100));
+  stroke: var(--chart-accent, var(--k-content-primary-foreground));
   stroke-width: 2.5;
 }
 .k-slope-item:focus-visible .k-slope-text {
-  fill: var(--ink-100);
+  fill: var(--k-content-primary-foreground);
   font-weight: 600;
 }
 .k-slope-readout {
   min-height: 16px;
-  color: var(--ink-200);
+  color: var(--k-content-body-foreground);
   font: var(--text-caption) var(--font-sans-small);
   font-variant-numeric: tabular-nums;
 }

@@ -107,12 +107,12 @@ export function SeriesExplorer({
   // 线（净盈亏）用中性墨色：它是一条读数线，不是类别，也不用涨跌色（IntradayPnL 卡）；柱按序列配色，成本柱灰。
   const color =
     def === null
-      ? 'var(--ink-100)'
+      ? 'var(--k-content-primary-foreground)'
       : def.kind === 'line'
-        ? (def.color ?? 'var(--ink-100)')
+        ? (def.color ?? 'var(--k-content-primary-foreground)')
         : def.cost
-          ? 'var(--ink-300)'
-          : (def.color ?? 'var(--ink-200)')
+          ? 'var(--k-content-secondary-foreground)'
+          : (def.color ?? 'var(--k-content-body-foreground)')
   const recon = reconcile ? reconcileWindow(points, window, reconcile, reconcile.openingEquity) : null
   // 明细表最新的在最上面。
   const rows = shown.map((point, i) => ({ point, i })).reverse()

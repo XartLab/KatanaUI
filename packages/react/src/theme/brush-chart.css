@@ -8,7 +8,7 @@
   gap: 4px;
   margin: 0;
   min-width: 0;
-  color: var(--ink-200);
+  color: var(--k-content-body-foreground);
   font: var(--text-caption) var(--font-sans-small);
   font-variant-numeric: tabular-nums;
 }
@@ -35,7 +35,7 @@
 .k-brush-line,
 .k-brush-strip-line {
   fill: none;
-  stroke: var(--ink-100);
+  stroke: var(--k-content-primary-foreground);
   stroke-width: 2;
   stroke-linejoin: round;
   vector-effect: non-scaling-stroke;
@@ -51,9 +51,9 @@
   margin-left: var(--k-plot-gutter, 56px);
 }
 .k-brush-strip {
-  border: 1px solid var(--line-100);
+  border: 1px solid var(--k-separable-tertiary-borderColor);
   border-radius: var(--radius-inner, 6px);
-  background: var(--bg-000);
+  background: var(--k-surface-sunken-background);
   overflow: hidden;
   cursor: pointer;
 }
@@ -61,7 +61,7 @@
   position: absolute;
   top: 0;
   bottom: 0;
-  background: var(--bg-000);
+  background: var(--k-surface-sunken-background);
   opacity: 0.6;
   pointer-events: none;
 }
@@ -69,8 +69,8 @@
   position: absolute;
   top: 0;
   bottom: 0;
-  border-block: 1px solid var(--ink-300);
-  background: color-mix(in srgb, var(--ink-100) 8%, transparent);
+  border-block: 1px solid var(--k-content-secondary-foreground);
+  background: color-mix(in srgb, var(--k-content-primary-foreground) 8%, transparent);
   cursor: grab;
   outline: none;
 }
@@ -100,5 +100,5 @@
   left: 5px;
   width: 2px;
   border-radius: 1px;
-  background: var(--ink-200);
+  background: var(--k-content-body-foreground);
 }

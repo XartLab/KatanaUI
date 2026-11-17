@@ -20,11 +20,11 @@
 }
 .k-ridge-tick text,
 .k-ridge-name {
-  fill: var(--ink-300);
+  fill: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-sans-small);
 }
 .k-ridge-baseline {
-  stroke: var(--ink-200);
+  stroke: var(--k-content-body-foreground);
   stroke-dasharray: 3 3;
 }
 .k-ridge-row {
@@ -35,25 +35,25 @@
   opacity: 0.35;
 }
 .k-ridge-row:focus-visible .k-ridge-name {
-  fill: var(--ink-100);
+  fill: var(--k-content-primary-foreground);
   font-weight: 600;
 }
 .k-ridge-base {
-  stroke: var(--line-200);
+  stroke: var(--k-separable-bold-borderColor);
 }
 .k-ridge-line {
   fill: none;
-  stroke: var(--ink-200);
+  stroke: var(--k-content-body-foreground);
   stroke-width: 1.5;
   stroke-linejoin: round;
 }
 .k-ridge-median {
-  stroke: var(--ink-100);
+  stroke: var(--k-content-primary-foreground);
   stroke-width: 1.5;
 }
 .k-ridge-readout {
   min-height: 16px;
-  color: var(--ink-200);
+  color: var(--k-content-body-foreground);
   font: var(--text-caption) var(--font-sans-small);
   font-variant-numeric: tabular-nums;
 }

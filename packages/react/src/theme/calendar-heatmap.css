@@ -8,20 +8,20 @@
   gap: 6px;
   margin: 0;
   min-width: 0;
-  color: var(--ink-200);
+  color: var(--k-content-body-foreground);
   font: var(--text-caption) var(--font-sans-small);
 }
 .k-heat-top {
   display: flex;
   align-items: center;
   gap: 8px;
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
 }
 .k-heat-top .k-ck-actions {
   margin-left: auto;
 }
 .k-heat-total {
-  color: var(--ink-100);
+  color: var(--k-content-primary-foreground);
   font: var(--text-lcd) var(--chart-font-num, var(--font-num));
   letter-spacing: 0.08em;
 }
@@ -36,7 +36,7 @@
 }
 /* 格色：正负用发散色 -100 / -200（涨跌色不上面积），持平是中点灰，休市 bg-100，没有数据是底色；换手视图用序数 seq。 */
 .k-heat-cell {
-  --k-cell: var(--bg-200);
+  --k-cell: var(--k-container-secondary-background);
 }
 .k-heat-cell[data-tone='pos1'] {
   --k-cell: var(--div-pos-100);
@@ -69,7 +69,7 @@
   --k-cell: var(--seq-600);
 }
 .k-heat-cell[data-closed='true'] {
-  --k-cell: var(--bg-100);
+  --k-cell: var(--k-surface-base-background);
 }
 /* 年视图（svg） */
 .k-heat-svg {
@@ -92,11 +92,11 @@ rect.k-heat-cell {
 }
 rect.k-heat-cell[data-tone='none']:not([data-closed='true']):not([data-seq]) {
   fill: transparent;
-  stroke: var(--line-100);
+  stroke: var(--k-separable-tertiary-borderColor);
   stroke-width: 1;
 }
 rect.k-heat-cell[data-active='true'] {
-  stroke: var(--ink-100);
+  stroke: var(--k-content-primary-foreground);
 }
 /* 悬停与切视图时格色、描边平滑过渡（SmoothUI contribution-graph 的 hover 过渡）；时长用 flash 档，行情密时不拖。 */
 rect.k-heat-cell {
@@ -156,14 +156,14 @@ button.k-heat-cell {
 }
 .k-heat-head {
   height: 16px;
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-num-sm) var(--font-sans-small);
   text-align: center;
 }
 .k-heat-wk {
   display: flex;
   align-items: center;
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-num-sm) var(--chart-font-axis, var(--font-num-small));
 }
 button.k-heat-cell {
@@ -172,7 +172,7 @@ button.k-heat-cell {
   padding: 0;
   border: 0;
   background: var(--k-cell);
-  color: var(--ink-100);
+  color: var(--k-content-primary-foreground);
   font: inherit;
   cursor: pointer;
 }
@@ -183,7 +183,7 @@ button.k-heat-cell {
   position: absolute;
   top: 3px;
   left: 4px;
-  color: var(--ink-200);
+  color: var(--k-content-body-foreground);
   font: var(--text-num-sm) var(--chart-font-axis, var(--font-num-small));
 }
 .k-heat-num {
@@ -209,13 +209,13 @@ button.k-heat-cell {
   color: var(--k-on);
 }
 .k-heat-cell[data-closed='true'] .k-heat-num {
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
 }
 .k-heat-cell[data-today='true'] {
-  box-shadow: inset 0 0 0 1px var(--chart-accent, var(--ink-100));
+  box-shadow: inset 0 0 0 1px var(--chart-accent, var(--k-content-primary-foreground));
 }
 button.k-heat-cell[data-active='true'] {
-  outline: 1px solid var(--ink-100);
+  outline: 1px solid var(--k-content-primary-foreground);
   outline-offset: -1px;
 }
 .k-heat-dots {
@@ -229,14 +229,14 @@ button.k-heat-cell[data-active='true'] {
 .k-heat-dots i {
   width: 5px;
   height: 5px;
-  background: var(--ink-300);
+  background: var(--k-content-secondary-foreground);
 }
 .k-heat-dots i[data-tone='holding'],
 .k-heat-dots i[data-tone='high'] {
-  background: var(--signal-amber);
+  background: var(--k-status-warn-foreground);
 }
 .k-heat-dots b {
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-num-sm) var(--chart-font-axis, var(--font-num-small));
 }
 .k-heat-evtext {
@@ -245,7 +245,7 @@ button.k-heat-cell[data-active='true'] {
   bottom: 3px;
   left: 4px;
   overflow: hidden;
-  color: var(--ink-200);
+  color: var(--k-content-body-foreground);
   font: var(--text-num-sm) var(--font-sans-small);
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -254,13 +254,13 @@ button.k-heat-cell[data-active='true'] {
   display: flex;
   align-items: center;
   gap: 3px;
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
 }
 .k-heat-legend i {
   width: 12px;
   height: 12px;
   border-radius: 2px;
-  background: var(--k-cell, var(--bg-300));
+  background: var(--k-cell, var(--k-surface-raised-background));
 }
 .k-heat-legend i[data-tone='pos1'] {
   --k-cell: var(--div-pos-100);

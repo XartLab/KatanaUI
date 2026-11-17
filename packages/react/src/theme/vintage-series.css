@@ -19,7 +19,7 @@
 .k-vs-badge {
   padding: 0 6px;
   border: var(--hairline);
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-sans-small);
 }
 .k-vs-stats {
@@ -29,12 +29,12 @@
   margin: 0;
 }
 .k-vs-stats dt {
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-sans-small);
 }
 .k-vs-stats dd {
   margin: 0;
-  color: var(--ink-100);
+  color: var(--k-content-primary-foreground);
   font: var(--text-data) var(--font-num);
   font-variant-numeric: tabular-nums;
 }
@@ -54,8 +54,16 @@
 .k-vs-main {
   position: relative;
   background-image:
-    linear-gradient(to right, color-mix(in srgb, var(--ink-400) 12%, transparent) 1px, transparent 1px),
-    linear-gradient(to bottom, color-mix(in srgb, var(--ink-400) 12%, transparent) 1px, transparent 1px);
+    linear-gradient(
+      to right,
+      color-mix(in srgb, var(--k-content-tertiary-foreground) 12%, transparent) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      to bottom,
+      color-mix(in srgb, var(--k-content-tertiary-foreground) 12%, transparent) 1px,
+      transparent 1px
+    );
   background-size: 12px 12px;
 }
 .k-vs-main > svg,
@@ -73,7 +81,7 @@
   transition: d var(--dur-snappy) var(--ease-snappy);
 }
 .k-vs-known {
-  stroke: var(--ink-100);
+  stroke: var(--k-content-primary-foreground);
   stroke-width: 2;
 }
 .k-vs-latest {
@@ -82,7 +90,7 @@
   stroke-dasharray: 5 3;
 }
 .k-vs-span {
-  stroke: var(--ink-400);
+  stroke: var(--k-content-tertiary-foreground);
   stroke-width: 1;
   vector-effect: non-scaling-stroke;
 }
@@ -96,36 +104,36 @@
   pointer-events: none;
 }
 .k-vs-dot[data-role='known'] {
-  border: 1.5px solid var(--ink-100);
-  background: var(--bg-100);
+  border: 1.5px solid var(--k-content-primary-foreground);
+  background: var(--k-surface-base-background);
 }
 .k-vs-dot[data-role='latest'] {
-  background: var(--ink-300);
+  background: var(--k-content-secondary-foreground);
 }
 .k-vs-dot[data-role='mid'] {
   width: 4px;
   height: 4px;
   margin: -2px 0 0 -2px;
-  background: var(--ink-400);
+  background: var(--k-content-tertiary-foreground);
 }
 .k-vs-dot[data-active='true'] {
-  outline: 2px solid var(--ink-100);
+  outline: 2px solid var(--k-content-primary-foreground);
   outline-offset: 1px;
 }
 .k-vs-strip {
   position: relative;
-  border-top: 1px solid var(--line-100);
+  border-top: 1px solid var(--k-separable-tertiary-borderColor);
 }
 .k-vs-strip-title {
   position: absolute;
   top: 2px;
   left: 4px;
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-sans-small);
   pointer-events: none;
 }
 .k-vs-rev {
-  fill: var(--ink-300);
+  fill: var(--k-content-secondary-foreground);
 }
 .k-vs-rev[data-tone='up'] {
   fill: var(--div-pos-200);
@@ -135,7 +143,7 @@
 }
 .k-vs-rev[data-active='true'] {
   fill-opacity: 1;
-  stroke: var(--ink-100);
+  stroke: var(--k-content-primary-foreground);
 }
 .k-vs-xaxis {
   margin-left: var(--k-plot-gutter, 56px);
@@ -144,7 +152,7 @@
   display: flex;
   gap: 16px;
   margin-top: 6px;
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-sans-small);
 }
 .k-vs-key {
@@ -156,7 +164,7 @@
   display: inline-block;
   width: 18px;
   height: 0;
-  border-top: 2px solid var(--ink-100);
+  border-top: 2px solid var(--k-content-primary-foreground);
 }
 .k-vs-key[data-role='latest'] i {
   border-top: 2px dashed var(--chart-bench);
@@ -164,7 +172,7 @@
 .k-vs-empty {
   margin: 0;
   padding: 24px 0;
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-body) var(--font-sans);
   text-align: center;
 }

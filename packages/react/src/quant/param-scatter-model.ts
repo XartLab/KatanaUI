@@ -38,16 +38,16 @@ export function rampPosition(
 /** 色阶的颜色（CSS color-mix，端点是主题 token）：单色阶从暗灰到亮灰；发散色阶以中灰为中点，负侧跌色、正侧涨色，不用橙与蓝。 */
 export function rampColor(position: number, ramp: 'sequential' | 'diverging'): string {
   const t = Math.min(1, Math.max(-1, position))
-  if (ramp === 'sequential') return `color-mix(in srgb, var(--ink-100) ${Math.round(t * 100)}%, var(--ink-400))`
+  if (ramp === 'sequential') return `color-mix(in srgb, var(--k-content-primary-foreground) ${Math.round(t * 100)}%, var(--k-content-tertiary-foreground))`
   const end = t >= 0 ? 'var(--div-pos-200)' : 'var(--div-neg-200)'
-  return `color-mix(in srgb, ${end} ${Math.round(Math.abs(t) * 100)}%, var(--ink-400))`
+  return `color-mix(in srgb, ${end} ${Math.round(Math.abs(t) * 100)}%, var(--k-content-tertiary-foreground))`
 }
 
 /** 色条的渐变停靠点（与 rampColor 同一套端点）。 */
 export function rampGradient(ramp: 'sequential' | 'diverging'): string {
   return ramp === 'sequential'
-    ? 'linear-gradient(90deg, var(--ink-400), var(--ink-100))'
-    : 'linear-gradient(90deg, var(--div-neg-200), var(--ink-400), var(--div-pos-200))'
+    ? 'linear-gradient(90deg, var(--k-content-tertiary-foreground), var(--k-content-primary-foreground))'
+    : 'linear-gradient(90deg, var(--div-neg-200), var(--k-content-tertiary-foreground), var(--div-pos-200))'
 }
 
 /** 最优点的下标：goal 是 max 取最大、min 取最小；同值取靠前的；没有有效值是 -1。 */

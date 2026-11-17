@@ -7,7 +7,7 @@
   gap: 4px;
   margin: 0;
   min-width: 0;
-  color: var(--ink-200);
+  color: var(--k-content-body-foreground);
   font: var(--text-caption) var(--font-sans-small);
   font-variant-numeric: tabular-nums;
 }
@@ -28,7 +28,7 @@
 }
 .k-hz-label {
   overflow: hidden;
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-data) var(--font-sans);
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -36,7 +36,7 @@
 .k-hz-plot {
   position: relative;
   border-radius: 2px;
-  background: var(--bg-000);
+  background: var(--k-surface-sunken-background);
   overflow: hidden;
   touch-action: pan-y;
 }
@@ -58,7 +58,7 @@
   fill: var(--div-neg-200);
 }
 .k-hz-value {
-  color: var(--ink-100);
+  color: var(--k-content-primary-foreground);
   font: var(--text-data) var(--font-num);
   text-align: right;
 }

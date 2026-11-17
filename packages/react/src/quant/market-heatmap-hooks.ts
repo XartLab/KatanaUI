@@ -78,8 +78,8 @@ export function useInkContrast(figure: RefObject<HTMLElement | null>, scheme: He
     if (!root) return
     const apply = () => {
       const style = getComputedStyle(root)
-      const dark = luminanceOf(style.getPropertyValue('--bg-000'))
-      const light = luminanceOf(style.getPropertyValue('--ink-100'))
+      const dark = luminanceOf(style.getPropertyValue('--k-surface-sunken-background'))
+      const light = luminanceOf(style.getPropertyValue('--k-content-primary-foreground'))
       if (dark === null || light === null) return
       for (const swatch of root.querySelectorAll<HTMLElement>('[data-slot="heatmap-swatch"]')) {
         const base = luminanceOf(getComputedStyle(swatch).backgroundColor)
@@ -88,7 +88,7 @@ export function useInkContrast(figure: RefObject<HTMLElement | null>, scheme: He
         const withLight = (light + 0.05) / (base + 0.05)
         root.style.setProperty(
           `--mheat-ink-${Number(swatch.dataset.step) + 3}`,
-          withDark > withLight ? 'var(--bg-000)' : 'var(--ink-100)',
+          withDark > withLight ? 'var(--k-surface-sunken-background)' : 'var(--k-content-primary-foreground)',
         )
       }
     }
