@@ -519,3 +519,12 @@ body {
 .gal-doc > section + section {
   margin-top: 24px;
 }
+.gal-fd-table a {
+  color: var(--ink-100);
+  text-decoration: underline;
+  text-decoration-color: var(--line-200);
+  text-underline-offset: 3px;
+}
+.gal-fd-table a:hover {
+  text-decoration-color: var(--ink-300);
+}

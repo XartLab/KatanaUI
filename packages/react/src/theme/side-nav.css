@@ -175,11 +175,3 @@
 .k-sidenav-foot {
   padding: 12px 4px 0;
 }
-@media (prefers-reduced-motion: reduce) {
-  .k-sidenav-trail,
-  .k-sidenav-line,
-  .k-sidenav-hook,
-  .k-sidenav-link {
-    transition: none;
-  }
-}

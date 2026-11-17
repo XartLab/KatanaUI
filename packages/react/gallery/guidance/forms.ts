@@ -1,0 +1,270 @@
+// SPDX-License-Identifier: MIT
+// 表单控件组的「怎么用 / 无障碍」（照 Salt 组件页）。
+import type { GuidanceMap } from './types'
+
+const forms: GuidanceMap = {
+  button: {
+    aliases: ['Action', '操作按钮', 'Button (Salt / MUI)'],
+    use: [
+      '下单面板、对话框底部的确认与取消。',
+      '工具条上带图标的单点操作（icon 变体）。',
+      '表单提交，一个区域只放一个主按钮。',
+    ],
+    avoid: ['不可撤销的动作（全平、全撤）改用 HoldToConfirm。', '只在两三个选项里切换，用 ToggleGroup。'],
+    a11y: [
+      '原生 button，读屏名取按钮文字；纯图标按钮必须传 aria-label。',
+      '禁用走 disabled 属性，读屏读作「不可用」，同时降到 45% 不透明度。',
+      '键盘聚焦画 focus-ring 外框，鼠标点击不画。',
+    ],
+  },
+  input: {
+    aliases: ['Text field', 'Input (Salt / Radix)', '文本框'],
+    use: ['填代码、名称、备注这类单行文字。', '放进 Field 里，由 Field 接好标签与错误。'],
+    avoid: ['只收数字、要步进或单位时用 NumberInput。', '收密钥用 PasswordInput。', '几行以上的文字不是这个件。'],
+    a11y: [
+      '原生 input，读屏名来自关联的 Label（Field 自动接）或自己传的 aria-label。',
+      'aria-invalid 为真时边框变危险色，同时读屏读作「无效」。',
+      '禁用走 disabled 属性；说明与错误通过 aria-describedby 读出。',
+    ],
+  },
+  select: {
+    aliases: ['Dropdown', 'Select (Salt / MUI / Radix)', '下拉菜单', 'Symbol 周期选择'],
+    use: ['从五个以上的固定选项里选一个，如周期、账户、订单类型。', '空间窄，放不下一排按钮的工具条里。'],
+    avoid: ['选项很多且要搜索用 Combobox。', '要选多个用 MultiSelect。', '两三个选项用 ToggleGroup。'],
+    a11y: [
+      '基于 Radix Select：触发器 role=combobox，列表 role=listbox，每项 role=option。',
+      '读屏名来自触发器上的 aria-label 或关联的 Label。',
+      '当前项在列表里加粗并带勾，不只靠颜色。',
+      '禁用的触发器与单项读作「不可用」。',
+    ],
+  },
+  'multi-select': {
+    aliases: ['Multi-select dropdown', 'MultiSelect (Salt)', 'Autocomplete multiple (MUI)'],
+    use: ['筛选器里选多个市场、板块、标签。', '选项在十来个以内，不需要搜索。'],
+    avoid: [
+      '只选一个用 Select。',
+      '选项几十个以上并要搜索用 Combobox（多选模式）。',
+      '选项很少且想一眼看全用 ChipGroup。',
+    ],
+    a11y: [
+      '触发器 role=combobox，带 aria-expanded 与 aria-haspopup=listbox。',
+      '弹层 role=listbox 且 aria-multiselectable，每项 role=option、aria-selected 表示是否已选。',
+      '读屏名取 label 属性，同时给触发器与列表。',
+    ],
+  },
+  checkbox: {
+    aliases: ['Checkbox (Salt / MUI / Radix)', '复选框', '勾选框'],
+    use: ['设置页里独立的开关式选项，如「启用声音提醒」。', '多条记录里批量勾选。', '同意条款这类需要显式确认的项。'],
+    avoid: ['立即生效的开关用 Switch。', '互斥的几项用 ToggleGroup。'],
+    a11y: [
+      'Radix Checkbox：role=checkbox，状态在 aria-checked，读屏读「已选中 / 未选中」。',
+      '读屏名来自旁边关联的 Label，没有文字时必须传 aria-label。',
+      '选中画的是一块发光方块，状态同时由 aria-checked 传达，不只靠颜色。',
+      'aria-invalid 时边框变危险色。',
+    ],
+  },
+  switch: {
+    aliases: ['Toggle', 'Switch (Salt / MUI / Radix)', '开关'],
+    use: ['设置项立即生效，如「实时推送」「深色模式」。', '策略的启停。'],
+    avoid: ['要点提交才生效的选项用 Checkbox。', '一次性动作用 Button 或 HoldToConfirm。'],
+    a11y: [
+      'Radix Switch：role=switch，状态在 aria-checked，读屏读「开 / 关」。',
+      '读屏名来自关联的 Label 或 aria-label。',
+      '开关状态靠圆钮位置与轨道颜色两个通道一起传达。',
+    ],
+  },
+  'toggle-group': {
+    aliases: [
+      'Segmented control',
+      'Toggle button group (MUI)',
+      'ToggleButtonGroup (Salt)',
+      '分段切换',
+      'TradingView 周期切换',
+    ],
+    use: ['K 线周期、买卖方向、视图模式这类二到五项的互斥切换。', '设置页里少量选项并排摆开。'],
+    avoid: ['选项多于五个用 Select。', '切换页面内容用 Tabs。'],
+    a11y: [
+      '整组 role=group，每个按钮是 aria-pressed 的开关，读屏读「已按下 / 未按下」。',
+      '整组的名字要传 aria-label；仅图标的按钮各自传 aria-label。',
+      '禁用项读作「不可用」，仍可被读屏浏览到。',
+    ],
+  },
+  'chip-group': {
+    aliases: ['Filter chips (MUI)', 'Toggle chip', 'Pill filter', '标签筛选'],
+    use: ['自选分组、选股结果的快速分面筛选。', '选项在十个以内，需要一眼看到全部并带命中数。'],
+    avoid: ['选项很多时用 MultiSelect 或 Combobox。', '互斥的几项用 ToggleGroup。'],
+    a11y: [
+      '整组 role=group，名字取 label 属性。',
+      '每个芯片是 aria-pressed 的开关；组内只有一个停靠点，方向键在芯片间走。',
+      '清除钮的读屏名取 clearLabel，图标本身 aria-hidden。',
+    ],
+  },
+  slider: {
+    aliases: ['Range slider', 'Slider (Salt / MUI / Radix)', '滑动条'],
+    use: ['风险比例、仓位百分比这类有上下限的连续取值。', '区间（两个把手）：价格范围、止盈止损线。'],
+    avoid: ['需要输入精确值用 NumberInput。', '要在全体分布上选区间用 RangeHistogramSlider。'],
+    a11y: [
+      'Radix Slider：每个把手 role=slider，带 aria-valuemin / max / now。',
+      '读屏名来自 thumbLabels，每个把手各传一个（区间要分清「最小」「最大」）。',
+      '禁用时把手读作「不可用」。',
+    ],
+  },
+  'shortcut-recorder': {
+    aliases: ['Hotkey input', 'Keybinding recorder', '热键录入', '快捷键设置'],
+    use: ['设置页里给下单、切图表等操作绑定热键。', '需要提示冲突并说明占用者的热键表。'],
+    avoid: ['录入普通文字用 Input。', '固定快捷键的展示用 Kbd。'],
+    a11y: [
+      '录键框是 button，读屏名取 label，当前快捷键写在 aria-describedby 指向的屏外文字里。',
+      '冲突与状态提示放在 role=status 区，出现时读屏播报。',
+      '清除钮有独立读屏名（labels.clear）。',
+      'Tab 在录键态也会移走焦点，不会把键盘用户困住。',
+    ],
+  },
+  'number-input': {
+    aliases: ['Number field', 'NumberInput (Salt / MUI)', 'Spinbutton', '价格 / 数量输入'],
+    use: [
+      '下单面板的价格、数量、止损价。',
+      '带单位的参数（%、手、点），要按住拖动微调。',
+      '需要「+10%」「*2」这类算式输入。',
+    ],
+    avoid: ['固定几档的选择用 Select 或 ToggleGroup。', '要看分布再选区间用 RangeHistogramSlider。'],
+    a11y: [
+      '输入框 role=spinbutton，带 aria-valuenow / min / max。',
+      '有单位时 aria-valuetext 读「数值 单位」。',
+      '读屏名取 label 属性；框内标签只是视觉，aria-hidden。',
+      '错误或算式写错时 aria-invalid 为真。',
+    ],
+  },
+  'date-time-input': {
+    aliases: ['Date field', 'DatePicker (Salt / MUI)', 'DateTimeField', '日期时间选择'],
+    use: ['回放起点、报告日期、订单有效期。', '需要精确到分钟，又想直接打字的场合。'],
+    avoid: ['选起止两个日期用 DateRangePicker。', '只要时长（如 2 小时 30 分）用 DurationPicker。'],
+    a11y: [
+      '基于 react-aria 的 DateField：每一段是独立的可聚焦段，读屏读出段名与值。',
+      '日期、时间、日历按钮、日历各有读屏名，由 labels 传入，文案不写死在件里。',
+      '日期不合法时按 aria 校验标红，错误随控件读出。',
+    ],
+  },
+  'date-range-picker': {
+    aliases: ['Date range', 'DateRangePicker (Salt / MUI)', 'Range calendar', '日期区间'],
+    use: ['回放、台账、绩效报告选起止日期。', '常用区间（本周、本月、年初至今）要一键选。'],
+    avoid: ['选单个日期用 DateTimeInput。', '要选未来区间（事件日历）时预设不适用。'],
+    a11y: [
+      '起点、终点各是一个 react-aria 的分段日期框，读屏名分别取 labels.start、labels.end。',
+      '预设列是 role=group，每项 aria-pressed；「自定义」带 aria-current。',
+      '日历是 react-aria 的 RangeCalendar，翻月按钮有读屏名。',
+      '终点早于起点时按 aria 校验标红。',
+    ],
+  },
+  combobox: {
+    aliases: ['Autocomplete', 'Combobox (Salt / Radix)', 'Searchable select', '可搜索下拉', '代码搜索框'],
+    use: ['选标的、账户、策略这类上十项并需要搜索的列表。', '多选并想边搜边勾。'],
+    avoid: ['少量固定选项用 Select。', '纯文本自由输入用 Input。'],
+    a11y: [
+      '触发器 role=combobox，带 aria-expanded。',
+      '搜索框与列表必须各传 label，否则读屏读不出名字。',
+      '行的 aria-selected 只表示高亮；已选状态用 selected，画勾并写 data-checked。',
+      '无匹配时 ComboboxEmpty 的文字会被读出。',
+    ],
+  },
+  field: {
+    aliases: ['Form field', 'FormField (Salt)', 'FormControl (MUI)', '表单项'],
+    use: ['把标签、控件、说明、错误排成一组并接好 ARIA。', '一组相关的字段用 FieldSet 加 FieldLegend 包起来。'],
+    avoid: ['单独一个控件且标签已写在旁边时不必包。', '全局提示用 Alert，不用 FieldError。'],
+    a11y: [
+      '点标签聚焦控件；控件用 useFieldControl 拿 id，与标签对上。',
+      '说明与错误只在渲染后才写进控件的 aria-describedby，不会指向不存在的 id。',
+      'invalid 时控件 aria-invalid，FieldError 是 role=alert，出现时读屏马上读。',
+      'FieldSet / FieldGroup 是 role=group，组名取 FieldLegend。',
+    ],
+  },
+  'hold-to-confirm': {
+    aliases: ['Press and hold button', 'Hold to confirm', '长按确认', '按住确认'],
+    use: ['全平、全撤、停止策略这类不可撤的动作。', '误触代价高、又不想弹对话框的面板。'],
+    avoid: ['可撤销的动作用 Button。', '要先预览内容再确认用 Dialog。'],
+    a11y: [
+      '原生 button，读屏名取按钮文字。',
+      'hint 写进屏外文字并挂在 aria-describedby 上，读屏用户靠它知道要按多久、做什么。',
+      '填满后文字换成 confirmedLabel，按钮上同步更新。',
+    ],
+  },
+  'password-input': {
+    aliases: ['Password field', 'PasswordInput (Salt / Mantine)', '密钥输入', 'API key 输入'],
+    use: ['券商 API Key、密钥、令牌的录入。', '需要临时显示明文核对的敏感字段。'],
+    avoid: ['不需要遮住的内容用 Input。', '要强度提示时件里没有，自己在 Field 里写说明。'],
+    a11y: [
+      '遮住时是原生 password 输入框，读屏名来自关联的 Label 或 aria-label。',
+      '眼睛按钮读屏名取 toggleLabel（必传），名字不随状态变，是否显示由 aria-pressed 表达。',
+      '切换后输入框保持焦点与选区。',
+    ],
+  },
+  'delete-button': {
+    aliases: ['Inline confirm', 'Confirm button', 'Two-step delete', '原地确认'],
+    use: ['删自选、删预警、删模板这类轻量但不可撤的操作。', '列表行内，弹对话框太重。'],
+    avoid: ['影响全局或资金的动作用 HoldToConfirm。', '确认前需要看详情用 Dialog。'],
+    a11y: [
+      '静止时是图标按钮，读屏名取 label，aria-expanded 表示是否已展开。',
+      '展开后的「确认」「取消」各是带读屏名的按钮（confirmLabel、cancelLabel）。',
+      '屏外有 aria-live=polite 的 role=status 区，播报展开与完成。',
+    ],
+  },
+  'theme-selector': {
+    aliases: ['Theme picker', 'Theme switcher', '主题切换', '外观选择'],
+    use: ['设置页里选界面主题，要看到缩略预览。', '主题不止深浅两种的场合。'],
+    avoid: ['只有明暗两档用 Switch 或 ToggleGroup。', '选字体、字号这类非主题项用 RenderingSettings。'],
+    a11y: [
+      '整组 role=radiogroup，名字取 label；每张预览 role=radio，aria-checked 表示选中。',
+      '每张的读屏名取该主题的 label，缩略图 aria-hidden。',
+      '整组禁用时 aria-disabled。',
+    ],
+  },
+  'task-list': {
+    aliases: ['Checklist', 'To-do list', 'Task checklist', '待办清单'],
+    use: ['开盘前检查、复盘步骤这类要逐项勾掉的清单。', '已完成项想自动沉到底部。'],
+    avoid: ['设置项的开关用 Checkbox 或 Switch。', '需要进度条或步骤状态时用 Progress。'],
+    a11y: [
+      '每行是 role=checkbox 的按钮，aria-checked 表示是否完成，整行都能点。',
+      '屏外有 role=status 的 aria-live=polite 区，勾上与取消时播报「某某已完成 / 已重开」。',
+      '整份清单的名字取 label。',
+    ],
+  },
+  'duration-picker': {
+    aliases: ['Time duration input', 'Duration field', '时长输入'],
+    use: ['订单有效时长、冷却时间、回放步长。', '值在一天以内，用「时 + 分」表达。'],
+    avoid: ['选具体时刻用 DateTimeInput。', '长到天、周的时长不适用，上限由 maxHours、maxMinutes 定。'],
+    a11y: ['整条药丸的名字取 label。', '笔钮读屏名随状态变：编辑中读 labels.save，否则读 labels.edit。'],
+  },
+  'filter-bar': {
+    aliases: ['Filter builder', 'Screener filters', 'Filter pills', '选股器过滤条', 'TradingView Screener'],
+    use: ['选股器顶部，按市值、涨幅、换手等字段筛。', '字段多、条件要随时增减的表格视图。'],
+    avoid: ['只有三五个固定筛选用 ChipGroup。', '单个字段的值域选择用 RangeHistogramSlider。'],
+    a11y: [
+      '整条 role=group，名字取 labels.bar。',
+      '每个字段胶囊打开的浮层以字段名为读屏名。',
+      '撤销、重做、「+」「⋯」、移除钮都是带读屏名的图标按钮，图标 aria-hidden。',
+      '已在条上的字段在「+」列表里 aria-disabled。',
+    ],
+  },
+  'rendering-settings': {
+    aliases: ['Appearance settings', 'Font settings', '字体设置', '渲染设置'],
+    use: ['应用「设置 → 渲染」页，整个应用一份。', '用户要自己挑字体、平滑、字重补偿。'],
+    avoid: ['只切主题颜色用 ThemeSelector。', '某个面板自己的字号不要另开，用全局字号缩放。'],
+    a11y: [
+      '每项一行：名称、说明、控件，控件读屏名取该项名称。',
+      '各字体角色的下拉读屏名取角色标题。',
+      '用的是 Select、Slider、ToggleGroup 等原件，读屏行为随各原件。',
+    ],
+  },
+  'range-histogram-slider': {
+    aliases: ['Range histogram slider', 'Histogram range filter', 'Distribution slider', '分布区间滑块'],
+    use: ['选股器里在全市场分布上拖市值、涨幅、换手的区间。', '想一边看分布一边定上下限。'],
+    avoid: ['单值用 Slider。', '没有分布数据、只要上下限用两个 NumberInput。'],
+    a11y: [
+      '整组 role=group，名字取 label；按 APG 多把手滑块，两个把手各是 role=slider。',
+      '把手读屏名取 labels.low / labels.high，带 aria-valuemin / max / now 与 aria-valuetext（由 formatValue 生成）。',
+      '柱子与轨道 aria-hidden，数值只靠把手与读数行读出。',
+    ],
+  },
+}
+
+export default forms

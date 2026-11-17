@@ -1,0 +1,118 @@
+// SPDX-License-Identifier: MIT
+// 报价与行情组的「怎么用 / 无障碍」（照 Salt 组件页）。
+import type { GuidanceMap } from './types'
+
+const quotes: GuidanceMap = {
+  sparkline: {
+    aliases: ['Mini chart', 'Trend line', 'Spark chart', 'Inline chart'],
+    use: ['表格行、卡片里一眼看走势。', '没有空间放坐标轴的小图。'],
+    avoid: ['要读具体数值或交互用 equity-curve 或 spark-tile。', '多条线对比用 small-multiples。'],
+    a11y: [
+      'svg 是 role=img，读屏名由调用方按界面语言传。',
+      '没有数据时留「—」，读屏名说明没有数据。',
+      '涨跌不只靠线色，旁边配价格或涨跌文字。',
+    ],
+  },
+  'gauge-bar': {
+    aliases: ['Meter', 'Progress bar', 'Level indicator', 'Scale bar'],
+    use: ['一个数在区间里的位置，带档位词（如估值分位）。', '需要附一句数是怎么来的。'],
+    avoid: ['表示任务进度用 progress。', '上下界都有的现价位置用 range-bar。', '多值用 meter 或 attribution-bars。'],
+    a11y: ['轨道对读屏隐藏，名字、数、档位词与说明都是普通文本，按顺序读出。', '取不到数时写原因的文字会被读到。'],
+  },
+  treemap: {
+    aliases: ['Heatmap', 'Market map', 'Squarified treemap', 'Block chart'],
+    use: ['看一个板块或持仓里谁大谁涨谁跌。', '需要从组下钻到组内成员。'],
+    avoid: ['带涨停、连板的热力格用 market-heatmap。', '项目很少时用 attribution-bars。'],
+    a11y: [
+      '给了 onItem 的格子是 role=button，读屏名为「名字 数」。',
+      '色例对读屏隐藏，涨跌要靠格内文字读出。',
+      '组头是原生按钮。',
+    ],
+  },
+  'price-tag': {
+    aliases: ['Inline price', 'Ticker chip', 'Quote chip', 'Price label'],
+    use: ['一句话或一行里提到品种，附价格与涨跌。', '新闻、对话正文里的行内引用。'],
+    avoid: ['需要卡片版面用 quote-card。', '只显示盈亏数用 pnl-text。'],
+    a11y: ['外层 aria-label 读成完整的一句，三角符号对读屏隐藏。', '涨跌靠三角与带符号的文字，不只靠颜色。'],
+  },
+  'quote-card': {
+    aliases: ['Ticker card', 'Stock card', 'Stat card', 'Quote tile'],
+    use: ['看一只品种的价、涨跌与走势。', '顶部一排指数行情，用 QuoteStrip 横向滚动。'],
+    avoid: ['要比较很多指标用 metric-card。', '多品种列表用 quote-table 或 watchlist。'],
+    a11y: [
+      '给了 onSelect 整张卡是一个原生按钮，不含其它可点元素。',
+      'QuoteStrip 是 role=list，每张卡 role=listitem。',
+      '涨跌带三角与符号，不只靠颜色。',
+    ],
+  },
+  'performance-strip': {
+    aliases: ['Performance row', 'Returns table', 'Period selector', 'Segmented stats'],
+    use: ['品种页上按周期（1 日到全部）看涨跌幅。', '点一格同时切换图表区间。'],
+    avoid: ['只选区间不显示涨跌用 toggle-group 或 tabs。', '要列多只品种用 quote-table。'],
+    a11y: ['整排是 role=group，读屏名取 label。', '每格是按钮，选中用 aria-pressed。', '涨跌带符号，不只靠颜色。'],
+  },
+  'peer-cards': {
+    aliases: ['Related symbols', 'Carousel', 'Comparison cards', 'Similar stocks'],
+    use: ['品种页底部列出同业，点一张跳转。', '让人把几只放进对比。'],
+    avoid: ['要完整表格用 quote-table 或 data-grid。', '只有两三张时直接平铺，不用翻页。'],
+    a11y: [
+      '卡片带是 role=list，每张 role=listitem。',
+      '「+」是卡旁边独立的按钮，有自己的读屏名。',
+      '翻页箭头到头会禁用。',
+    ],
+  },
+  'key-stats': {
+    aliases: ['Stat grid', 'Description list', 'Fundamentals', 'Key metrics'],
+    use: ['品种页上市值、市盈率等一屏基本数据。', '指标要点开看详情时给 onItem。'],
+    avoid: ['单个重点指标用 metric-card 或 lcd。', '随时间变化的数用 sparkline 类件。'],
+    a11y: ['用 dl 结构，标签是 dt，数值是 dd，读屏能成对读。', '「›」装饰符号对读屏隐藏。', '没有值读到「—」。'],
+  },
+  watchlist: {
+    aliases: ['Symbol list', 'Quote list', 'Market watch', 'Portfolio table'],
+    use: ['右侧自选栏，看一批品种的最新价与涨跌。', '要点列头排序、标旗。'],
+    avoid: ['需要几十列与大量行时用 data-grid。', '只要一屏概览用 quote-table。'],
+    a11y: [
+      '是真表格，列头是按钮，当前排序列 th 带 aria-sort。',
+      '旗标是带 aria-pressed 的按钮。',
+      '价格闪色只是视觉，不播报；涨跌另有文字列。',
+    ],
+  },
+  'range-bar': {
+    aliases: ['Range slider', '52-week range', 'Min-max bar', 'Position bar'],
+    use: ['当日区间、52 周区间里现价的位置。', '用 CompareBar 对比两个区间。'],
+    avoid: ['可拖动选区间用 slider 或 range-histogram-slider。', '没有上下界的量用 gauge-bar。'],
+    a11y: [
+      'RangeBar 是 role=meter，带最小、最大、当前值与可读的 aria-valuetext，名字取 label，必传。',
+      'CompareBar 是 role=group，名字也必传。',
+    ],
+  },
+  'rating-gauge': {
+    aliases: ['Gauge', 'Speedometer', 'Technical rating', 'Semi-circle gauge'],
+    use: ['技术面评级，从强烈卖出到强烈买入。', '一个分数落在五档里的哪一档。'],
+    avoid: ['只想显示评级文字用 technical-rating 或 rating-text。', '连续数值进度用 gauge-bar。'],
+    a11y: ['role=img，读屏名为「label: 档位名」。', '弧与指针对读屏隐藏，档位词与统计数是普通文字。'],
+  },
+  'row-actions': {
+    aliases: ['Row actions', 'Hover toolbar', 'Quick actions', 'Context actions'],
+    use: ['带品种的表格行、热力格上的开图、加自选、告警等操作。', '同一份动作既给悬停按钮也给右键菜单。'],
+    avoid: ['整页的工具栏用 toolbar。', '一个行只有一个动作时直接放普通按钮。'],
+    a11y: [
+      '按钮是图标按钮，读屏名取各项的 label，必传。',
+      '按钮条在键盘落到这一行时也会出现。',
+      '禁用项用 aria-disabled。',
+      '右键菜单也能由菜单键或 Shift+F10 打开。',
+    ],
+  },
+  'quote-table': {
+    aliases: ['Market table', 'Tabbed list', 'Index table', 'Quote list'],
+    use: ['首页总览：指数、自选、热门分组一屏看。', '行可点进入品种。'],
+    avoid: ['要排序、筛选、很多行用 data-grid 或 watchlist。', '只有一组时不用页签，直接用 quote-card 的一排。'],
+    a11y: [
+      '分组页签底座是 Radix Tabs（role=tablist），内容是 role=tabpanel。',
+      '表头用 th，可点的行可聚焦。',
+      '迷你图读屏名由调用方传。',
+    ],
+  },
+}
+
+export default quotes
