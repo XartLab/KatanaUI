@@ -6,6 +6,8 @@ import { CoveragePage } from './coverage'
 import { RENDERING_ID, RenderingPage } from './rendering'
 import { FOUNDATION_PAGES, FoundationPage, isFoundation } from './foundations'
 import { GUIDES, GUIDE_GROUPS, GuidePage, guideBySlug } from './guides'
+import { ListChecks, Palette, SlidersHorizontal, type LucideIcon } from 'lucide-react'
+import { FOUNDATION_ICONS, GROUP_ICONS, KatanaMark, iconFor } from './nav-icons'
 import { DEMOS } from './demos'
 import { resolveParts, type ResolvedPart } from './props'
 import { GROUPS, PAGES, pageById, type DocPage } from './registry'
@@ -170,20 +172,29 @@ function DocBody({ page }: { page: DocPage }) {
 }
 
 /** 左栏目录：基础 → 各组组件 → 文档 → 总览；组件页的名字用页标题（英文名 + 中文名），按 id 与标题都能搜到。 */
+const groupIcon = (id: string) => {
+  const Icon = GROUP_ICONS[id]
+  return Icon ? <Icon aria-hidden /> : undefined
+}
+const itemIcon = (Icon: LucideIcon) => <Icon aria-hidden />
+
 const navGroups: readonly SideNavGroup[] = [
   {
     id: 'foundations',
     title: '基础',
+    icon: groupIcon('foundations'),
     items: FOUNDATION_PAGES.map((item) => ({
       id: item.id,
       label: item.title,
       href: `#/${item.id}`,
       keywords: item.id,
+      icon: itemIcon(FOUNDATION_ICONS[item.id] ?? Palette),
     })),
   },
   ...GROUPS.map((group) => ({
     id: group.id,
     title: group.title,
+    icon: groupIcon(group.id),
     items: PAGES.filter((item) => item.group === group.id).map((item) => {
       const [name, ...rest] = item.title.split(' ')
       return {
@@ -196,12 +207,14 @@ const navGroups: readonly SideNavGroup[] = [
         ),
         href: `#/${item.id}`,
         keywords: `${item.id} ${item.title}`,
+        icon: itemIcon(iconFor(item.id, group.id)),
       }
     }),
   })).filter((group) => group.items.length > 0),
   ...GUIDE_GROUPS.map((group) => ({
     id: group.id,
     title: group.title,
+    icon: groupIcon(group.id),
     items: GUIDES.filter((guide) => guide.group === group.id).map((guide) => ({
       id: guide.slug,
       label: guide.title,
@@ -213,9 +226,22 @@ const navGroups: readonly SideNavGroup[] = [
   {
     id: 'overview',
     title: '总览',
+    icon: groupIcon('overview'),
     items: [
-      { id: COVERAGE_ID, label: '设计稿覆盖表', href: `#/${COVERAGE_ID}`, keywords: COVERAGE_ID },
-      { id: RENDERING_ID, label: '渲染设置', href: `#/${RENDERING_ID}`, keywords: RENDERING_ID },
+      {
+        id: COVERAGE_ID,
+        label: '设计稿覆盖表',
+        href: `#/${COVERAGE_ID}`,
+        keywords: COVERAGE_ID,
+        icon: itemIcon(ListChecks),
+      },
+      {
+        id: RENDERING_ID,
+        label: '渲染设置',
+        href: `#/${RENDERING_ID}`,
+        keywords: RENDERING_ID,
+        icon: itemIcon(SlidersHorizontal),
+      },
     ],
   },
 ]
@@ -264,7 +290,7 @@ export function Docs({ theme, onTheme }: { theme: ThemeName; onTheme: (theme: Th
                   <PanelIcon />
                 </button>
                 <a className="gal-crumb" href={`#/${PAGES[0].id}`}>
-                  <span className="gal-crumb-dot" aria-hidden="true" />
+                  <KatanaMark />
                   KatanaUI <span className="gal-crumb-sep">/</span> <b>组件</b>
                 </a>
               </div>

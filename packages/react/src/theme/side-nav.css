@@ -56,14 +56,19 @@
   min-height: 0;
   padding: 0 4px 24px;
   overflow-y: auto;
-  scrollbar-width: none;
+  /* 滚动条细（用户：「滑条要小」）：平时透明，悬停栏里才显出来。 */
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
   /* 底部淡出，跟参照一样提示还能往下滚。 */
   mask-image: linear-gradient(to bottom, #000 calc(100% - 48px), transparent);
 }
-.k-sidenav-scroll::-webkit-scrollbar {
-  display: none;
+.k-sidenav-scroll:hover {
+  scrollbar-color: var(--alpha-white-13) transparent;
 }
 .k-sidenav-title {
+  display: flex;
+  gap: 6px;
+  align-items: center;
   margin: 0 0 6px;
   color: color-mix(in srgb, var(--ink-100) 40%, transparent);
   font: 600 11px/16px var(--font-sans-small);
@@ -81,8 +86,20 @@
   padding: 0;
   list-style: none;
 }
+.k-sidenav-title-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 12px;
+  height: 12px;
+}
+.k-sidenav-title-icon svg {
+  width: 12px;
+  height: 12px;
+}
 .k-sidenav-link {
-  display: block;
+  display: flex;
+  gap: 8px;
+  align-items: center;
   padding: 6px 8px 6px 20px;
   border-radius: 8px;
   color: color-mix(in srgb, var(--ink-100) 50%, transparent);
@@ -93,6 +110,24 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   transition: color 200ms;
+}
+.k-sidenav-icon {
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  opacity: 0.8;
+}
+.k-sidenav-icon svg {
+  width: 16px;
+  height: 16px;
+  stroke-width: 1.75;
+}
+.k-sidenav-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .k-sidenav-link:hover {
   color: color-mix(in srgb, var(--ink-100) 80%, transparent);

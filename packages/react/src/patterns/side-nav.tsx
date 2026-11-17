@@ -8,8 +8,16 @@
 
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react'
 
-export type SideNavItem = { id: string; label: ReactNode; href: string; keywords?: string; title?: string }
-export type SideNavGroup = { id: string; title: string; items: readonly SideNavItem[] }
+export type SideNavItem = {
+  id: string
+  label: ReactNode
+  href: string
+  /** 16px 图标（如 lucide 的图标）；同一组里有的有、有的没有时，没有的留出同宽的空位，字对齐。 */
+  icon?: ReactNode
+  keywords?: string
+  title?: string
+}
+export type SideNavGroup = { id: string; title: string; icon?: ReactNode; items: readonly SideNavItem[] }
 
 export type SideNavProps = {
   groups: readonly SideNavGroup[]
@@ -77,7 +85,10 @@ function Group({ group, current }: { group: SideNavGroup; current?: string }) {
 
   return (
     <section className="k-sidenav-group" data-slot="side-nav-group">
-      <h2 className="k-sidenav-title">{group.title}</h2>
+      <h2 className="k-sidenav-title">
+        {group.icon ? <span className="k-sidenav-title-icon">{group.icon}</span> : null}
+        {group.title}
+      </h2>
       <div ref={list} className="k-sidenav-items" onPointerLeave={() => point(null)}>
         <TrailMark kind="hover" mark={(node) => void (hover.current = node)} />
         <TrailMark kind="active" mark={(node) => void (active.current = node)} />
@@ -94,7 +105,12 @@ function Group({ group, current }: { group: SideNavGroup; current?: string }) {
                 onFocus={() => point(item.id)}
                 onBlur={() => point(null)}
               >
-                {item.label}
+                {group.items.some((entry) => entry.icon) ? (
+                  <span className="k-sidenav-icon" aria-hidden="true">
+                    {item.icon}
+                  </span>
+                ) : null}
+                <span className="k-sidenav-label">{item.label}</span>
               </a>
             </li>
           ))}
@@ -128,7 +144,15 @@ export function SideNav({ groups, current, header, footer, searchLabel, emptyLab
   // 当前项滚进可视区（只在 current 变了时）。
   useEffect(() => {
     const link = scroller.current?.querySelector<HTMLElement>('[aria-current="page"]')
-    link?.scrollIntoView({ block: 'nearest' })
+    // 当前项在视口里就不动；不在就滚到它，并让组名也露出来（组太长时至少保证当前项可见）。
+    const box = scroller.current
+    if (!link || !box) return
+    const view = box.getBoundingClientRect()
+    const at = link.getBoundingClientRect()
+    if (at.top >= view.top && at.bottom <= view.bottom - 48) return
+    const section = link.closest('section')
+    const top = section && at.bottom - section.getBoundingClientRect().top < view.height - 48 ? section : link
+    top.scrollIntoView({ block: 'start' })
   }, [current])
 
   const needle = query.trim().toLowerCase()

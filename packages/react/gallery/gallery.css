@@ -65,11 +65,8 @@ body {
 .gal-crumb-sep {
   color: var(--ink-400);
 }
-.gal-crumb-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 2px;
-  background: var(--accent);
+.gal-crumb {
+  gap: 8px;
 }
 .gal-nav-cn {
   color: color-mix(in srgb, currentColor 70%, transparent);

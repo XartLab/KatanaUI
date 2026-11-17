@@ -113,3 +113,9 @@
 .k-render-kind {
   color: var(--ink-400);
 }
+
+/* 滚动条（用户 2026-11-17：「滑条要小」）：全站细滚动条，滑块用半透明白，轨道透明；系统叠加滚动条（macOS）不受影响。 */
+:root {
+  scrollbar-width: thin;
+  scrollbar-color: var(--alpha-white-13) transparent;
+}
