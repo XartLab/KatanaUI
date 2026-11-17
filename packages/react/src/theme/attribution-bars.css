@@ -1,0 +1,249 @@
+/* SPDX-License-Identifier: MIT */
+/* AttributionBars（#1917，组件卡 PnLAttribution）：Toolbar 顶行、编号清单、零轴条形、合计读数。涨跌色只上数字与条。颜色只用语义 token。 */
+
+.k-attr {
+  --k-attr-idx: 28px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  min-width: 0;
+  padding: 8px 10px;
+  border: var(--hairline);
+  background: var(--bg-200);
+  color: var(--ink-200);
+  font: var(--text-data) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+}
+.k-attr-head {
+  height: 36px;
+}
+.k-attr-title {
+  margin: 0;
+  color: var(--ink-100);
+  font: 12px/20px var(--font-num);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+/* 装饰性小标签用点阵字（pixel.md：整数字号 12、不加字距、不斜体不伪粗、关抗锯齿）；数值不用。 */
+.k-attr-meta,
+.k-attr-source,
+.k-attr-cols,
+.k-attr-index,
+.k-attr-closed,
+.k-attr-readout-label,
+.k-attr-table th {
+  font: var(--text-tag-md) var(--font-num);
+  letter-spacing: 0;
+  font-style: normal;
+}
+.k-attr-meta,
+.k-attr-source {
+  margin: 0;
+  color: var(--ink-300);
+  text-transform: uppercase;
+}
+.k-attr-main {
+  min-width: 0;
+}
+.k-attr-cols,
+.k-attr-row {
+  display: grid;
+  grid-template-columns: var(--k-attr-idx) minmax(0, 1fr) 34% 84px 88px;
+  gap: 12px;
+  align-items: center;
+}
+.k-attr-cols {
+  height: 22px;
+  border-bottom: 1px solid var(--line-300, var(--ink-300));
+  color: var(--ink-300);
+}
+.k-attr-cols span {
+  white-space: nowrap;
+}
+.k-attr-cols span:nth-child(4),
+.k-attr-cols span:nth-child(5) {
+  text-align: right;
+}
+.k-attr-rows {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.k-attr-row {
+  position: relative;
+  height: 28px;
+  border-bottom: var(--hairline);
+  outline: none;
+}
+.k-attr-row[data-active='true'],
+.k-attr-row:focus-visible {
+  background: color-mix(in srgb, var(--ink-100) 6%, transparent);
+}
+.k-attr-index {
+  color: var(--chart-accent, var(--ink-100));
+}
+.k-attr-row[data-kind='fee'] .k-attr-index {
+  color: var(--ink-300);
+}
+.k-attr-mark-slot {
+  flex: none;
+  width: 18px;
+  height: 18px;
+}
+.k-attr-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow: hidden;
+  color: var(--ink-100);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.k-attr-row[data-kind='other'] .k-attr-label,
+.k-attr-row[data-kind='fee'] .k-attr-label {
+  color: var(--ink-300);
+}
+/* 已平仓：整行删除线、降墨色（数值也不再着涨跌色）。 */
+.k-attr-row[data-closed='true'] {
+  color: var(--ink-300);
+}
+.k-attr-row[data-closed='true'] .k-attr-label,
+.k-attr-row[data-closed='true'] .k-attr-value,
+.k-attr-row[data-closed='true'] .k-attr-share {
+  color: var(--ink-300);
+  text-decoration: line-through;
+}
+.k-attr-axis {
+  position: relative;
+  height: 14px;
+}
+.k-attr-axis::before {
+  content: '';
+  position: absolute;
+  top: -5px;
+  bottom: -5px;
+  left: 50%;
+  width: 1px;
+  background: var(--line-200);
+}
+.k-attr-bar {
+  --k-dot: var(--ink-200);
+  position: absolute;
+  top: 2px;
+  height: 10px;
+  opacity: 1;
+  transition:
+    left var(--dur-snappy) var(--ease-snappy),
+    width var(--dur-snappy) var(--ease-snappy);
+}
+.k-attr-bar[data-focus='true'] {
+  --k-dot: var(--chart-accent, var(--ink-100));
+}
+.k-attr-row[data-closed='true'] .k-attr-bar {
+  --k-dot: var(--ink-300);
+  opacity: 0.5;
+}
+.k-attr-value,
+.k-attr-share {
+  text-align: right;
+}
+.k-attr-value {
+  color: var(--ink-100);
+}
+.k-attr-share {
+  color: var(--ink-300);
+}
+.k-attr-value[data-tone='up'] {
+  color: var(--pnl-up);
+}
+.k-attr-value[data-tone='down'] {
+  color: var(--pnl-down);
+}
+.k-attr-row[data-kind='fee'] .k-attr-value {
+  color: var(--ink-300);
+}
+.k-attr-row[data-closed='true'] .k-attr-value[data-tone] {
+  color: var(--ink-300);
+}
+.k-attr-closed {
+  margin-left: 8px;
+  color: var(--ink-300);
+  text-decoration: none;
+  display: inline-block;
+}
+.k-attr-tip {
+  top: 100%;
+  left: 52px;
+}
+/* 汇总行：合计大号、左边 2px 强调色竖条；正负贡献小一号跟在右边；标签点阵小字。 */
+.k-attr-summary {
+  display: flex;
+  align-items: flex-end;
+  gap: 32px;
+  padding: 2px 0 6px;
+}
+.k-attr-readout {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.k-attr-readout[data-size='main'] {
+  padding-left: 10px;
+  border-left: 2px solid var(--chart-accent, var(--ink-100));
+}
+.k-attr-readout-label {
+  color: var(--ink-300);
+}
+.k-attr-readout-value {
+  color: var(--ink-100);
+  font: 600 13px/18px var(--font-sans);
+  font-variant-numeric: tabular-nums;
+}
+.k-attr-readout[data-size='main'] .k-attr-readout-value {
+  font-size: 22px;
+  line-height: 28px;
+}
+.k-attr-readout-value[data-tone='up'] {
+  color: var(--pnl-up);
+}
+.k-attr-readout-value[data-tone='down'] {
+  color: var(--pnl-down);
+}
+.k-attr-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: right;
+}
+.k-attr-table th:nth-child(-n + 2),
+.k-attr-table td:nth-child(-n + 2) {
+  text-align: left;
+}
+.k-attr-table th {
+  color: var(--ink-300);
+  font-weight: 400;
+}
+.k-attr-table td,
+.k-attr-table th {
+  padding: 2px 8px;
+  border-bottom: var(--hairline);
+}
+.k-attr-foot {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 2px;
+  padding-top: 6px;
+  border-top: var(--hairline);
+  color: var(--ink-300);
+}
+.k-attr-foot .k-attr-note {
+  font: var(--text-tag-md) var(--font-num);
+  letter-spacing: 0;
+}
+.k-attr-note {
+  margin-left: auto;
+}

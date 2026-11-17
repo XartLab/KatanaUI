@@ -33,7 +33,7 @@ tokens → theme → lib → primitives → katana → patterns → quant → bl
 
 ### 分布与关系类的件（#1918）
 
-功能参照 Arc（uiarc.dev，2026-11-14 读：目录页与件名；源码页要授权，没读），只学「有哪些部分、键盘怎么走、动效怎么表现」，实现原创，不装它的 registry、不抄代码；每个件的文件头写明出处。样式在 `src/theme/distribution.css`，颜色只用语义 token。
+功能参照 Arc（uiarc.dev，2026-11-14 读：目录页与件名；源码页要授权，没读），只学「有哪些部分、键盘怎么走、动效怎么表现」，实现原创，不装它的 registry、不抄代码；每个件的文件头写明出处。样式一件一个 css（`src/theme/<件名>.css`，共用的图右上三件那一行与表格视图在 `chart-kit.css`），颜色只用语义 token。
 
 | 件 | 层 | 用途 |
 | --- | --- | --- |

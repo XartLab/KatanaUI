@@ -1,0 +1,70 @@
+/* SPDX-License-Identifier: MIT */
+/* HorizonChart（#1917）：地平线图，正负各几条叠起来的窄带。颜色只用语义 token。 */
+
+.k-hz {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  min-width: 0;
+  color: var(--ink-200);
+  font: var(--text-caption) var(--font-sans-small);
+  font-variant-numeric: tabular-nums;
+}
+.k-hz-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  outline-offset: 2px;
+}
+.k-hz-rows:focus-visible {
+  outline: 1px solid var(--focus-ring);
+}
+.k-hz-row {
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr) 64px;
+  align-items: center;
+  gap: 8px;
+}
+.k-hz-label {
+  overflow: hidden;
+  color: var(--ink-300);
+  font: var(--text-data) var(--font-sans);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.k-hz-plot {
+  position: relative;
+  border-radius: 2px;
+  background: var(--bg-000);
+  overflow: hidden;
+  touch-action: pan-y;
+}
+.k-hz-plot > svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.k-hz-band[data-sign='up'] {
+  fill: var(--div-pos-100);
+}
+.k-hz-band[data-sign='up'][data-outer='true'] {
+  fill: var(--div-pos-200);
+}
+.k-hz-band[data-sign='down'] {
+  fill: var(--div-neg-100);
+}
+.k-hz-band[data-sign='down'][data-outer='true'] {
+  fill: var(--div-neg-200);
+}
+.k-hz-value {
+  color: var(--ink-100);
+  font: var(--text-data) var(--font-num);
+  text-align: right;
+}
+.k-hz-value[data-tone='up'] {
+  color: var(--pnl-up);
+}
+.k-hz-value[data-tone='down'] {
+  color: var(--pnl-down);
+}

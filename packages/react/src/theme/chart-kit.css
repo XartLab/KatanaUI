@@ -168,3 +168,82 @@
   color: var(--ink-300);
   font-size: 0.85em;
 }
+
+/* —— 序列图共用（原 series.css，G5 拆分时收到这里）：十字线、横轴、读数、零线 —— */
+.k-plot-cross {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--chart-crosshair);
+  pointer-events: none;
+}
+.k-plot-xaxis {
+  position: relative;
+  height: 14px;
+  color: var(--chart-axis);
+}
+.k-plot-xaxis > span {
+  position: absolute;
+  white-space: nowrap;
+  translate: round(nearest, -50%, 1px) 0;
+}
+.k-plot-xaxis > span[data-align='start'] {
+  transform: none;
+}
+.k-plot-xaxis > span[data-align='end'] {
+  transform: translateX(-100%);
+}
+.k-plot-readout {
+  min-height: 16px;
+  color: var(--ink-100);
+  font: var(--text-data) var(--font-num);
+}
+/* 零线（SeriesExplorer 等共用） */
+.k-plot-zero {
+  stroke: var(--line-200);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+/* —— 分布类图共用（原 distribution.css）：图右上三件那一行、表格视图、来源行 —— */
+/* 图右上三件所在的一行（表格视图 / 导出 / 全屏）。 */
+.k-dist-bar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+.k-ck-table th:not(:first-child),
+.k-ck-table td {
+  text-align: left;
+  white-space: normal;
+}
+.k-ck-table [data-num='true'] {
+  text-align: right;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.k-dist-source {
+  margin: 0;
+  color: var(--ink-300);
+  font: var(--text-caption) var(--font-sans-small);
+}
+/* 表格视图打开时，图与读数用 hidden 收起：作者样式里的 display 会盖过 hidden，这里压回去。 */
+.k-ridge [hidden],
+.k-scatter [hidden],
+.k-slope [hidden],
+.k-uptime [hidden],
+.k-galaxy [hidden] {
+  display: none !important;
+}
+/* 虚拟滚动：行高固定，单元格不换行（行高要等于 chart-table.tsx 的 ROW_H）。 */
+.k-ck-table[data-virtual='true'] tbody tr {
+  height: 28px;
+}
+.k-ck-table[data-virtual='true'] th,
+.k-ck-table[data-virtual='true'] td {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
