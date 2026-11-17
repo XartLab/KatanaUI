@@ -159,12 +159,128 @@ export function TvStyleSection() {
   )
 }
 
+// —— 仪器档案（instrument）：把数据当成科学档案来排版 ——
+/** 一个值在列里的最高与最低下标（演示批注与极值标签用）。 */
+const argExtreme = (values: readonly number[], pick: 'max' | 'min') =>
+  values.reduce((best, v, i) => ((pick === 'max' ? v > values[best]! : v < values[best]!) ? i : best), 0)
+
+export function InstrumentSection() {
+  const { state, advance } = useLiveTicker<Intraday>(intradayStart, (day, rng) => {
+    if (day.values.length >= BAR_COUNT) return day
+    const n = day.values.length
+    return {
+      values: [...day.values, randomWalk(day.values[n - 1]!, rng, 0.0011)],
+      times: [...day.times, barTime(n)],
+    }
+  })
+  const { values, times } = state
+  const hi = argExtreme(values, 'max')
+  const lo = argExtreme(values, 'min')
+  return (
+    <Row name="仪器档案（instrument）">
+      <div className="gal-spark-tv-live" data-gallery-look="instrument">
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+          <LiveToggle labels={{ group: '数据刷新', live: '实时', paused: '暂停' }} />
+          <Button size="sm" onClick={advance}>
+            走一步
+          </Button>
+          <span className="gal-note">实时刷新（模拟数据，每步长一根 5 分钟线，投影谱的柱子平滑变化）</span>
+        </div>
+        <div className="gal-spark-tv gal-spark-sheet" data-gallery-spark="instrument-big">
+          <Sparkline
+            look="instrument"
+            values={values}
+            label="沪深300 日内走势，仪器档案版（示例数据）"
+            times={times}
+            domain={DOMAIN}
+            sessions={SESSIONS}
+            formatTime={formatTime}
+            format={money2}
+            baseline={PREV_INDEX}
+            axis={{ price: 5, time: true, formatPrice: money2, formatTick }}
+            projection
+            showExtremes
+            extremeLabels={[`H ${money2(values[hi]!)}`, `L ${money2(values[lo]!)}`]}
+            annotation={{ index: hi, text: '冲高后回落' }}
+            meta={{
+              id: '000300.XSHG · 5M · SHEET 01',
+              source: 'SRC / SSE · 5m · 2026-11-17 13:55 UTC+8',
+            }}
+            reticle
+            interactive
+          />
+        </div>
+        <div className="gal-spark-tv" data-gallery-spark="instrument-small" style={{ width: 200 }}>
+          <Sparkline
+            look="instrument"
+            values={values}
+            label="沪深300 走势，仪器档案版小图（示例数据）"
+            baseline={PREV_INDEX}
+          />
+        </div>
+        <small className="gal-note">
+          示例数据，不是行情。线是 1px
+          中性墨色，不用涨跌色；全图只有末端点与批注用信号色。投影谱是这列值的核密度（Silverman
+          带宽），与主图共享纵轴，横线标当前值。高度低于 80 时只画线、点阵与末端点。
+        </small>
+      </div>
+    </Row>
+  )
+}
+
+// —— 终端字形（ascii）：字符画走势 ——
+const ASCII_BASE = walk(21, 90, 100, 0.012)
+export function AsciiSection() {
+  const { state, advance } = useLiveTicker<readonly number[]>(
+    ASCII_BASE,
+    (values, rng) => [...values.slice(1), randomWalk(values[values.length - 1]!, rng, 0.012)],
+    { intervalMs: 1500 },
+  )
+  const cases = [
+    { id: 'ascii-blocks-line', glyphs: 'blocks', height: 12, text: 'blocks 单行（经典 spark）' },
+    { id: 'ascii-blocks', glyphs: 'blocks', height: 48, text: 'blocks 多行（每行 8 级）' },
+    { id: 'ascii-braille', glyphs: 'braille', height: 48, text: 'braille 盲文点阵（2 × 4 点）' },
+  ] as const
+  return (
+    <Row name="终端字形（ascii）">
+      <div className="gal-spark-tv-live" data-gallery-look="ascii">
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+          <LiveToggle labels={{ group: '数据刷新', live: '实时', paused: '暂停' }} />
+          <Button size="sm" onClick={advance}>
+            走一步
+          </Button>
+          <span className="gal-note">实时刷新（整幅左移一列，新列先乱码几帧再落定）</span>
+        </div>
+        {cases.map((c) => (
+          <Case key={c.id} id={c.id} width={360} caption={c.text}>
+            <Sparkline
+              look="ascii"
+              values={state}
+              label={`示例走势：${c.text}`}
+              glyphs={c.glyphs}
+              height={c.height}
+              baseline={state[0]}
+              interactive={c.id === 'ascii-braille'}
+              format={money}
+            />
+          </Case>
+        ))}
+        <small className="gal-note">
+          示例数据，不是行情。列数按容器宽与等宽字宽算，整幅是一个 pre；默认中性墨色，最新一列用信号色；虚线 ┄ 是基准。
+        </small>
+      </div>
+    </Row>
+  )
+}
+
 export function SparklineGallery() {
   const [hovered, setHovered] = useState<number | null>(null)
   return (
     <>
       <p className="gal-note">迷你图画廊：{'示例数据，不是行情'}。</p>
       <TvStyleSection />
+      <InstrumentSection />
+      <AsciiSection />
       <Row name="五种画法">
         {VARIANTS.map((variant) => (
           <Case key={variant} id={`variant-${variant}`} caption={VARIANT_NAME[variant]}>

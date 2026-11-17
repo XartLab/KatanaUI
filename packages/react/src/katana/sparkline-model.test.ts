@@ -1,7 +1,21 @@
 // SPDX-License-Identifier: MIT
 import { describe, expect, it } from 'vitest'
 import {
+  BLOCK_GLYPHS,
   SPARK_SESSION_GAP,
+  blockRows,
+  brailleRows,
+  calloutPlacement,
+  columnValues,
+  columnValuesAt,
+  graticuleStep,
+  sparkHistogramBins,
+  kernelDensity,
+  projectionProfile,
+  seededRandom,
+  sessionColumns,
+  silvermanBandwidth,
+  sketchCircle,
   areaPath,
   autoTickMinutes,
   barRects,
@@ -406,5 +420,111 @@ describe('读数框位置', () => {
     const tall = tipPlacement(50, 10, 60, 120, box)
     expect(tall.above).toBe(true)
     expect(tall.y).toBeLessThan(-120)
+  })
+})
+
+describe('投影谱：分箱与核密度', () => {
+  it('直方图：等分区间、最大值落最后一箱、区间外与断点不计', () => {
+    expect(sparkHistogramBins([0, 1, 2, 3, 4, null, Number.NaN, 9], 0, 4, 4)).toEqual([1, 1, 1, 2])
+    expect(sparkHistogramBins([1, 2], 3, 3, 3)).toEqual([0, 0, 0])
+  })
+  it('Silverman 带宽：0.9 × min(sd, IQR/1.34) × n^-0.2，常数列与单点给正的 fallback', () => {
+    const v = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    const sd = Math.sqrt(8.25)
+    const iqr = 7.75 - 3.25
+    expect(silvermanBandwidth(v)).toBeCloseTo(0.9 * Math.min(sd, iqr / 1.34) * 10 ** -0.2, 10)
+    expect(silvermanBandwidth([5, 5, 5, 5], 0.3)).toBe(0.3)
+    expect(silvermanBandwidth([5], 2)).toBe(2)
+  })
+  it('核密度：积分约为 1，峰在数据密集处，与样本个数无关地归一', () => {
+    const v = [10, 10.2, 9.8, 10.1, 9.9, 14]
+    const n = 200
+    const d = kernelDensity(v, 5, 19, n)
+    const area = d.reduce((s, y) => s + y, 0) * (14 / (n - 1))
+    expect(area).toBeCloseTo(1, 1)
+    const peak = d.indexOf(Math.max(...d))
+    expect(5 + (peak / (n - 1)) * 14).toBeGreaterThan(9.5)
+    expect(5 + (peak / (n - 1)) * 14).toBeLessThan(10.5)
+  })
+  it('投影谱：按最大值归一到 0 到 1，第 0 档在最低；没有有效值全是 0', () => {
+    const p = projectionProfile([1, 1, 1, 2, 3], 1, 3, 5, 'histogram')
+    expect(Math.max(...p)).toBe(1)
+    expect(p[0]).toBe(1)
+    expect(projectionProfile([null, Number.NaN], 0, 1, 4)).toEqual([0, 0, 0, 0])
+    const k = projectionProfile([1, 1.1, 0.9, 3], 0, 4, 20)
+    expect(Math.max(...k)).toBeCloseTo(1, 10)
+    expect(k).toHaveLength(20)
+  })
+  it('点阵间距随尺寸取 8 / 12 / 16 三档', () => {
+    expect(graticuleStep(200, 36)).toBe(8)
+    expect(graticuleStep(400, 100)).toBe(12)
+    expect(graticuleStep(720, 220)).toBe(16)
+  })
+})
+
+describe('批注：引线与手绘圈', () => {
+  it('极值引线：最高往上最低往下，右边放不下就换到左边，字一直在框里', () => {
+    const box = { width: 100, height: 60 }
+    const a = calloutPlacement(10, 30, 40, box, true)
+    expect(a).toMatchObject({ anchor: 'start', x2: 18, y2: 22 })
+    const b = calloutPlacement(90, 30, 40, box, false)
+    expect(b.anchor).toBe('end')
+    expect(b.x2).toBe(82)
+    expect(b.y2).toBe(38)
+    expect(calloutPlacement(10, 2, 20, box, true).y2).toBe(5)
+  })
+  it('手绘圈：同一个种子永远同一个路径，不同种子不同，坐标都是有限数', () => {
+    const a = sketchCircle(50, 40, 8, 12)
+    expect(sketchCircle(50, 40, 8, 12)).toBe(a)
+    expect(sketchCircle(50, 40, 8, 13)).not.toBe(a)
+    expect(a.startsWith('M')).toBe(true)
+    expect(a).not.toMatch(/NaN|Infinity/)
+    expect(seededRandom(3)()).toBe(seededRandom(3)())
+  })
+})
+
+describe('终端字形', () => {
+  it('blocks 一行：最低是 ▁、最高是 █，断点是空格（Zach Holman 的 spark）', () => {
+    expect(blockRows([0, 1, 2, 3, 4, 5, 6, 7], 1, 0, 7)).toEqual([BLOCK_GLYPHS])
+    expect(blockRows([0, null, 7], 1, 0, 7)).toEqual(['▁ █'])
+  })
+  it('blocks 多行：每行 8 级，上满下填；最上一行在 rows[0]', () => {
+    expect(blockRows([0, 7, 15], 2, 0, 15)).toEqual(['  █', '▁██'])
+    // 第二行（下面那行）填满之后上面一行才开始长：值 11 → 下行满 █，上行 ▄
+    expect(blockRows([11], 2, 0, 15)).toEqual(['▄', '█'])
+  })
+  it('braille：2 × 4 点编码（左列 1 2 3 7，右列 4 5 6 8），一条斜线连续', () => {
+    // 左上点（x0,y0）= 0x01，右上点 = 0x08：一行两点同高的最高值 → 两个点在最上面
+    expect(brailleRows([1, 1], 1, 1, 0, 1)).toEqual([String.fromCharCode(0x2800 + 0x01 + 0x08)])
+    // 两点同在最底：左下 0x40，右下 0x80
+    expect(brailleRows([0, 0], 1, 1, 0, 1)).toEqual([String.fromCharCode(0x2800 + 0x40 + 0x80)])
+    // 从最低爬到最高：两列之间补满竖线，整个字符的 8 个点里左列下半、右列上半被点亮
+    const [ch] = brailleRows([0, 1], 1, 1, 0, 1)
+    const mask = ch!.charCodeAt(0) - 0x2800
+    expect(mask & 0x40).toBeTruthy()
+    expect(mask & 0x08).toBeTruthy()
+    expect(brailleRows([null, null], 1, 1, 0, 1)).toEqual(['\u2800'])
+  })
+  it('按序号排列：值多了取均值，少了线性插值，断点那列是 null', () => {
+    expect(columnValues([1, 3, 5, 7], 2)).toEqual([2, 6])
+    expect(columnValues([0, 10], 5)).toEqual([0, 2.5, 5, 7.5, 10])
+    expect(columnValues([0, null, 10], 5)).toEqual([0, null, null, null, 10])
+  })
+  it('时段横轴：休市压成一列，各段按时长分列，时段外是 -1', () => {
+    const H = 3_600_000
+    const spans = [
+      [0, 2 * H],
+      [3.5 * H, 5.5 * H],
+    ] as const
+    const r = sessionColumns([0, 2 * H, 3.5 * H, 5.5 * H, 2.5 * H], spans, 21)!
+    expect(r.gaps).toEqual([10])
+    expect(r.colOf).toEqual([0, 9, 11, 20, -1])
+    expect(sessionColumns([0], spans, 2)).toBeNull()
+    // 盲文每字符两格：colOf 按格数给
+    expect(sessionColumns([2 * H], spans, 21, 2)!.colOf).toEqual([19])
+  })
+  it('按列填值：同列取均值，有值的两列之间的空列线性补上，blocked 的休市列不补', () => {
+    expect(columnValuesAt([1, 3, 5], [0, 0, 3], 5)).toEqual([2, 3, 4, 5, null].map((v) => v))
+    expect(columnValuesAt([1, 5], [0, 2], 3, [1])).toEqual([1, null, 5])
   })
 })

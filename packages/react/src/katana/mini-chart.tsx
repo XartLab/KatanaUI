@@ -72,6 +72,11 @@ export type MiniChartProps = {
   baseline?: number
   /** Hover readout and keyboard walking on the chart (off by default). */
   interactive?: boolean
+  /**
+   * Look of the chart, passed to Sparkline: default (unchanged), instrument or ascii.
+   * 走势的画风，原样交给 Sparkline：default（不变）、instrument、ascii。
+   */
+  look?: SparklineProps['look']
   /** Height of the chart in pixels; 80 and above draws the line at 2px. Default 80. */
   chartHeight?: number
   /**
@@ -110,6 +115,7 @@ export function MiniChart({
   formatTime,
   baseline,
   interactive = false,
+  look,
   chartHeight = 80,
   live = false,
   onSelect,
@@ -143,6 +149,7 @@ export function MiniChart({
           sessions={sessions}
           formatTime={formatTime}
           interactive={interactive}
+          look={look}
           format={(value) => (formatPrice ? formatPrice(value) : value.toFixed(digits))}
           height={chartHeight}
           className="k-mini-spark"

@@ -4354,7 +4354,7 @@ export const PAGES: readonly DocPage[] = [
     cardHeight: 60,
     title: 'Sparkline 迷你图',
     summary:
-      '一列数从旧到新，按容器的真实像素画（不拉伸、线宽 1.5px，高 80 以上 2px、圆角连接）。默认是线加线下渐变（贴线 22% 渐到 0），最新值处是实心点加常驻空心环；给毫秒时间戳与 domain 时横轴是整个交易时段、线只画到现在（对齐 TradingView Markets 页的日内图），可加右侧价格刻度、底部时间刻度与最新价价签；另有 line、baseline（基准上涨色下跌色）、bars、winloss（胜负格）四种画法。可加基准虚线、最高最低点、右端最新值、成交量、断点、单调曲线；interactive 时悬停出一根竖线、吸附点与紧挨光标的三行读数（数值、日期、时间），键盘左右键走点。线色按最后值对基准（没基准按头尾），涨跌色跟涨跌配色走，没有数据只留「—」。',
+      '一列数从旧到新，按容器的真实像素画（不拉伸、线宽 1.5px，高 80 以上 2px、圆角连接）。默认是线加线下渐变（贴线 22% 渐到 0），最新值处是实心点加常驻空心环；给毫秒时间戳与 domain 时横轴是整个交易时段、线只画到现在（对齐 TradingView Markets 页的日内图），可加右侧价格刻度、底部时间刻度与最新价价签；另有 line、baseline（基准上涨色下跌色）、bars、winloss（胜负格）四种画法。look 给两种可选画风（默认外观不变）：instrument 是把数据当科学档案来排版的仪器档案页（细线、一个信号色、点阵与角标、投影谱、极值与研究员批注、档案编号与来源行），ascii 是终端字形（块字符或盲文点阵、可换点阵字体）。可加基准虚线、最高最低点、右端最新值、成交量、断点、单调曲线；interactive 时悬停出一根竖线、吸附点与紧挨光标的三行读数（数值、日期、时间），键盘左右键走点。线色按最后值对基准（没基准按头尾），涨跌色跟涨跌配色走，没有数据只留「—」。',
     exports: ['Sparkline', 'sparkPoints', 'sparkTone', 'quoteTone'],
     propParts: [
       { part: 'Sparkline' },
@@ -4375,6 +4375,10 @@ export const PAGES: readonly DocPage[] = [
       'interactive：悬停出一根竖线（没有横线）、吸附到最近点的圆点和紧挨光标的读数框（HTML 三行：粗体数值、日期、时间，贴边左右翻转，不出容器；图太矮放不下时放到图上方）；只给了 times 没给 formatTime 时只显示数值；聚焦后左右键走点，Home / End 到头尾，Esc 退出。',
       '有 volumes：底部四分之一高度画细量柱，价格线在它上方；volumeTone 为 updown 时按涨跌着色。',
       '没有数据（有效值少于两个）：只留「—」，读屏名说清没有数据。',
+      'look="instrument"（仪器档案）：1px 中性墨色线（不用涨跌色），底上是很淡的 + 点阵，四角 6px 的 L 形对位角标（reticle 加中心十字）；全图只有末端点与批注用信号色（--accent，可传 signal）；刻度是 2 到 3px 的短线加宽字距（0.15em）等宽小字；baseline 画成细虚线，interactive 悬停是横竖两条细线的十字准星加读数框。',
+      'instrument 的大图（高 80 以上）：projection 在右侧画这列值的分布（默认高斯核密度、Silverman 带宽，projectionMode 可换直方图），与主图共享纵轴，横线标当前值，新点进来柱子平滑过渡；showExtremes 的最高最低是小十字加引线加 extremeLabels 写的 H / L；annotation 是一圈手绘圈（按下标播种，不随渲染变）加一句话；meta 是左上档案编号与左下 SOURCES 行。高度低于 80 时只画线、点阵与末端点。',
+      'look="ascii"（终端字形）：整幅是一个 pre（aria-hidden），外层 role=img；glyphs 取 blocks（每列一个 ▁▂▃▄▅▆▇█，高了多行、每行 8 级）或 braille（盲文 2 × 4 点连续折线）；列数按容器宽与字宽算；默认中性墨色、最新一列信号色，给 tone 着涨跌色；font="dot" 换点阵字体。',
+      'ascii 的断点那一列是空格，时段横轴按列映射、休市压成一列 ┊，baseline 是一行 ┄；新点进来整幅左移一列，新列先在字形集里乱跳几帧再落定（--dur-reorder）；interactive 的读数框照旧。',
     ],
     donts: [
       '不要在静态的折线上读具体数值：要数请配价格文字，或开 interactive。',
@@ -4382,9 +4386,11 @@ export const PAGES: readonly DocPage[] = [
       '不要把读数、标签、读屏名写死在包里：format、extremeLabels、lastLabel、label 都由调用方按界面语言传。',
       '不要拿 bars 或 winloss 表达趋势：它们是逐点的涨跌与正负，趋势用 area 或 line。',
       '不要给一个根本没有基准意义的数列硬传 baseline：画出的虚线会被当成昨收。',
+      '不要在 instrument 里再加第二个信号色或涨跌色：信号色只标「此刻要看的地方」（末端点、批注）。',
+      '不要把 ascii 放进要读准数的地方：字符画只给走势的形状，要数配文字或开 interactive。',
     ],
     composition:
-      'Sparkline\n  svg role=img（viewBox = 容器真实宽高；interactive 时 tabIndex=0）\n    defs（线下渐变、基准分色的两块裁剪）\n    量柱 · 基准虚线 · 面积 · 线（每段一个 M）· 柱 / 胜负格\n    最高最低点与字 · 光晕 · 末端点 · 右端最新值\n    价格刻度 · 时间刻度 · 最新价价签\n    悬停：竖线 · 吸附点 · 读数框（foreignObject 里的 HTML）\n  span[aria-live]（interactive 时，节流播报当前点的读数）',
+      'Sparkline\n  svg role=img（viewBox = 容器真实宽高；interactive 时 tabIndex=0）\n    defs（线下渐变、基准分色的两块裁剪）\n    量柱 · 基准虚线 · 面积 · 线（每段一个 M）· 柱 / 胜负格\n    最高最低点与字 · 光晕 · 末端点 · 右端最新值\n    价格刻度 · 时间刻度 · 最新价价签\n    悬停：竖线 · 吸附点 · 读数框（foreignObject 里的 HTML）\n  span[aria-live]（interactive 时，节流播报当前点的读数）\n\nlook="instrument"\n  svg role=img\n    + 点阵 · 四角角标 · 眉头与 SOURCES 行\n    价格刻度（短线 + 字）· 时间刻度 · 基准细虚线\n    投影谱（脊线 · 横向细柱 · 当前值横线）· 线 · 极值（小十字 + 引线 + 字）· 批注（手绘圈 + 引线 + 字）· 末端点 · 价签\n    悬停：横竖十字线 · 读数框\n\nlook="ascii"\n  span[role=img]\n    pre[aria-hidden]（每行一个 span，同色连续字符合并成一个节点）\n    悬停：列光标 · 读数框',
     keys: [
       ['左 / 右方向键（interactive，聚焦时）', '走到前一个 / 后一个有效点，读屏播报读数'],
       ['Home / End', '走到第一个 / 最后一个有效点'],
@@ -4405,6 +4411,7 @@ export const PAGES: readonly DocPage[] = [
       '给了 times 与 domain（可加 sessions）：横轴是整个交易时段，线只画到最后一个点，右边留空；午休被压缩、线在那里断开。',
       'live：价格变了用 RollingText 滚动，涨跌幅闪一次涨跌色，走势新点追加时线平滑延伸、末端环放大淡出一次。',
       '给了 onSelect：整张卡是按钮，悬停提亮、键盘焦点有环；不要同时开 interactive。',
+      'look：原样交给走势的 Sparkline（instrument、ascii），卡片本身与默认外观不变。',
       '没有走势数据（有效值少于两个）：走势的位置只留「—」。',
     ],
     donts: [

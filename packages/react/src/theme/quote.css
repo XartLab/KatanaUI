@@ -206,6 +206,162 @@
   line-height: 36px;
 }
 
+/* —— 迷你图画风：instrument 仪器档案（look="instrument"）—— */
+/* 1px 中性墨色线；全图唯一的信号色 --k-spark-signal（默认 --accent，调用方可传 signal）只给末端点与批注；点阵、角标、刻度都是很淡的 --line-*。 */
+.k-spark-instrument {
+  --k-spark-signal: var(--accent);
+}
+.k-spark-ins-plus {
+  fill: none;
+  stroke: var(--line-100);
+  stroke-width: 1px;
+}
+.k-spark-ins-corner,
+.k-spark-ins-reticle {
+  fill: none;
+  stroke: var(--line-200);
+  stroke-width: 1px;
+}
+.k-spark-ins-meta,
+.k-spark-ins-text,
+.k-spark-ins-tag text {
+  fill: var(--ink-400);
+  /* 宽字距 0.15em 的等宽小标签（设计稿 10 到 11px）；包里没有对应的字距 token，这里写死并与 sparkline-instrument.tsx 的 TRACKING 同值。 */
+  font: var(--text-micro) var(--font-mono);
+  letter-spacing: 0.15em;
+  font-variant-numeric: tabular-nums;
+  dominant-baseline: central;
+  pointer-events: none;
+}
+.k-spark-ins-text {
+  fill: var(--ink-300);
+}
+.k-spark-ins-last {
+  fill: var(--ink-200);
+}
+.k-spark-ins-tick,
+.k-spark-ins-spine {
+  stroke: var(--line-200);
+  stroke-width: 1px;
+}
+.k-spark-ins-base {
+  stroke: var(--ink-400);
+  stroke-width: 1px;
+  stroke-dasharray: 2 2;
+}
+.k-spark-ins-line {
+  fill: none;
+  stroke: var(--ink-200);
+  stroke-width: 1px;
+  stroke-linejoin: round;
+}
+.k-spark-ins-bar {
+  fill: var(--ink-400);
+  fill-opacity: 0.7;
+  /* 新点进来投影谱的柱子平滑变化（宽度写在 style 里，CSS 才能过渡）。 */
+  transition: width var(--dur-reorder) var(--ease-snappy);
+}
+.k-spark-ins-now {
+  stroke: var(--ink-100);
+  stroke-width: 1px;
+}
+.k-spark-ins-cross {
+  fill: none;
+  stroke: var(--ink-100);
+  stroke-width: 1px;
+}
+.k-spark-ins-lead,
+.k-spark-ins-cursor {
+  stroke: var(--ink-400);
+  stroke-width: 1px;
+}
+.k-spark-ins-circle {
+  fill: none;
+  stroke: var(--k-spark-signal);
+  stroke-width: 1.25px;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.k-spark-ins-note .k-spark-ins-lead {
+  stroke: var(--k-spark-signal);
+}
+.k-spark-ins-note-text {
+  fill: var(--k-spark-signal);
+}
+/* 末端点：信号色实心点，外圈底色描边隔开；不闪底色。 */
+.k-spark-ins-dot {
+  fill: var(--k-spark-signal);
+  stroke: var(--k-spark-ring);
+  stroke-width: 2px;
+  paint-order: stroke;
+}
+.k-spark-ins-tag rect {
+  fill: none;
+  stroke: var(--ink-300);
+  stroke-width: 1px;
+}
+.k-spark-ins-tag text {
+  fill: var(--ink-100);
+}
+.k-spark-instrument .k-spark-tip {
+  border-radius: 0;
+  font-family: var(--font-mono);
+}
+
+/* —— 迷你图画风：ascii 终端字形（look="ascii"）—— */
+/* 块字符要上下接得上，行高必须等于字号：--k-ascii-size 与 sparkline-ascii.tsx 的 LINE 同值（12px）。 */
+.k-spark-ascii {
+  --k-ascii-size: 12px;
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 36px;
+  overflow: visible;
+  color: var(--ink-200);
+  font: var(--k-ascii-size) / var(--k-ascii-size) var(--font-mono);
+}
+.k-spark-ascii.is-dot {
+  font-family: var(--font-dot);
+  -webkit-font-smoothing: none;
+}
+.k-spark-ascii.is-up {
+  color: var(--pnl-up);
+}
+.k-spark-ascii.is-down {
+  color: var(--pnl-down);
+}
+.k-spark-ascii:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+.k-spark-ascii-pre {
+  margin: 0;
+  font: inherit;
+  letter-spacing: 0;
+  white-space: pre;
+  overflow: hidden;
+  font-variant-ligatures: none;
+}
+.k-spark-ascii-pre .is-signal {
+  color: var(--accent);
+}
+.k-spark-ascii-pre .is-dim {
+  color: var(--ink-400);
+}
+.k-spark-ascii-cursor {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background: var(--line-200);
+  opacity: 0.5;
+  pointer-events: none;
+}
+.k-spark-ascii-tipbox {
+  position: absolute;
+  z-index: 1;
+  pointer-events: none;
+}
+
 /* —— 迷你行情卡 MiniChart（TradingView 的 Mini Chart 小组件）—— */
 .k-mini-chart {
   display: flex;

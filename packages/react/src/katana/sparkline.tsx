@@ -18,7 +18,7 @@ import {
 } from 'react'
 import { useLineExtend, type LineFollower, type LinePoint } from '../lib/live-line.ts'
 import { useValueFlash } from '../lib/live.ts'
-import { fontFor, measureText, onTextMeasureReset } from '../lib/text-measure.ts'
+import { fontFor, measureText } from '../lib/text-measure.ts'
 import {
   SPARK_PAD_Y,
   SPARK_VOLUME_SHARE,
@@ -44,7 +44,6 @@ import {
   stepIndex,
   thinLabels,
   timeGroups,
-  timeSpans,
   timeTicks,
   timeX,
   timeXs,
@@ -54,10 +53,22 @@ import {
   xAt,
   yAt,
   type SparkCurve,
-  type SparkSpan,
   type SparkValue,
 } from './sparkline-model.ts'
 import { quoteTone, type QuoteTone } from './quote-tone.ts'
+import { SparkAscii } from './sparkline-ascii.tsx'
+import { SparkInstrument } from './sparkline-instrument.tsx'
+import {
+  getComputedStyleSafe,
+  isStamps,
+  moveTo,
+  plainPrice,
+  resolveSpans,
+  useBox,
+  useDpr,
+  useTextEpoch,
+  useThrottledText,
+} from './sparkline-shared.ts'
 
 const W = 200
 const H = 36
@@ -100,6 +111,9 @@ export const pointsText = (coords: readonly LinePoint[]): string =>
 /** 头尾比：涨、跌、持平；少于两个数算持平。 */
 export const sparkTone = (values: readonly number[]): QuoteTone =>
   values.length > 1 ? quoteTone(values[values.length - 1]! - values[0]!) : 'flat'
+
+/** default is the market-panel look; instrument is the research-sheet look; ascii draws the trend with terminal glyphs. */
+export type SparklineLook = 'default' | 'instrument' | 'ascii'
 
 export type SparklineVariant = 'area' | 'line' | 'baseline' | 'bars' | 'winloss'
 
@@ -240,6 +254,56 @@ export type SparklineProps = {
    * 没数据时那个「—」的额外类名。
    */
   emptyClassName?: string
+  /**
+   * Overall look: default (market panel, unchanged), instrument (research sheet: hairline neutral ink, one signal color, graticule, corner marks, projection) or ascii (terminal glyphs). instrument and ascii draw one line and ignore variant, volumes and lastTag colors.
+   * 画风：default 行情面板（不变）、instrument 精密仪器档案页、ascii 终端字形；后两种只画一条线，忽略 variant 与 volumes。
+   */
+  look?: SparklineLook
+  /**
+   * The one signal color of the instrument look, as a CSS color; default var(--accent). Used only for the end dot and the annotation.
+   * instrument 的唯一信号色（CSS 颜色），默认 var(--accent)，只用在末端点与批注。
+   */
+  signal?: string
+  /**
+   * instrument only (height 80 and up): draw the distribution of the values on the right, sharing the vertical axis, with a line at the current value.
+   * instrument：在右侧画这列值的分布（共享纵轴），当前值处有一道横线；高度 80 以上才画。
+   */
+  projection?: boolean
+  /**
+   * How the projection is estimated: kde (default, Gaussian kernel with Silverman bandwidth) or histogram.
+   * 投影谱怎么估：kde（默认，高斯核、Silverman 带宽）或 histogram（直方图）。
+   */
+  projectionMode?: 'kde' | 'histogram'
+  /**
+   * instrument only: one analyst note on a point, a hand-drawn circle around values[index] plus a sentence in the signal color; text is written by the caller.
+   * instrument：一条研究员批注，在第 index 个点画手绘圈并写一句话（信号色），文字由调用方写。
+   */
+  annotation?: { index: number; text: string }
+  /**
+   * instrument only: a sheet header (top left) and a SOURCES footer (bottom left), both already written by the caller; left out when the chart is lower than 80px.
+   * instrument：左上的档案编号与左下的来源行，调用方写好；高度低于 80 时省略。
+   */
+  meta?: { id?: string; source?: string }
+  /**
+   * instrument only: draw a small registration cross at the center of the plot.
+   * instrument：在图中心画一个小十字准星（套准标记）。
+   */
+  reticle?: boolean
+  /**
+   * ascii only: block glyphs (one of ▁▂▃▄▅▆▇█ per column, more rows when tall) or braille dots (2 x 4 per character, continuous line). Default blocks.
+   * ascii：blocks 块字符（每列一个 ▁▂▃▄▅▆▇█，高了多行）或 braille 盲文点阵（每字符 2×4 点，连续折线），默认 blocks。
+   */
+  glyphs?: 'blocks' | 'braille'
+  /**
+   * ascii only: mono (default, --font-mono) or dot (the --font-dot pixel font).
+   * ascii：字体 mono（默认，--font-mono）或 dot（--font-dot 点阵字体）。
+   */
+  font?: 'mono' | 'dot'
+  /**
+   * ascii only: number of text rows; defaults to as many 12px rows as fit the height.
+   * ascii：字符行数，默认按高度放得下几行 12px 的行。
+   */
+  rows?: number
 }
 
 export function Sparkline(props: SparklineProps) {
@@ -253,64 +317,9 @@ export function Sparkline(props: SparklineProps) {
         —
       </span>
     )
+  if (props.look === 'instrument') return <SparkInstrument {...props} />
+  if (props.look === 'ascii') return <SparkAscii {...props} />
   return <SparkChart {...props} />
-}
-
-/** 量 svg 在页面上的真实宽高（ResizeObserver）；量到之前用调用方给的或默认值。 */
-function useBox(ref: React.RefObject<SVGSVGElement | null>, fallbackW: number, fallbackH: number) {
-  const [box, setBox] = useState({ w: fallbackW, h: fallbackH })
-  useLayoutEffect(() => {
-    const el = ref.current
-    if (!el) return
-    const read = (w: number, h: number) => {
-      if (!(w > 0 && h > 0)) return
-      setBox((prev) => (Math.abs(prev.w - w) < 0.01 && Math.abs(prev.h - h) < 0.01 ? prev : { w, h }))
-    }
-    const rect = el.getBoundingClientRect()
-    read(rect.width, rect.height)
-    if (typeof ResizeObserver === 'undefined') return
-    const observer = new ResizeObserver((entries) => {
-      const size = entries[entries.length - 1]?.contentRect
-      if (size) read(size.width, size.height)
-    })
-    observer.observe(el)
-    return () => observer.disconnect()
-  }, [ref])
-  return box
-}
-
-/** 设备像素比（线与柱按它对齐）；缩放页面或换到另一块屏幕时跟着变。 */
-function useDpr(): number {
-  const [dpr, setDpr] = useState(1)
-  useLayoutEffect(() => {
-    const read = () => setDpr(window.devicePixelRatio || 1)
-    read()
-    window.addEventListener('resize', read)
-    return () => window.removeEventListener('resize', read)
-  }, [])
-  return dpr
-}
-
-/** 字体变了（Web 字体加载完、DPR 变了）文字量出来的宽要重算。 */
-function useTextEpoch(): number {
-  const [epoch, setEpoch] = useState(0)
-  useEffect(() => onTextMeasureReset(() => setEpoch((n) => n + 1)), [])
-  return epoch
-}
-
-/** 读屏播报要节流：一直按住方向键时不一句一句念，停下 ms 后才更新。 */
-function useThrottledText(text: string, ms = 300): string {
-  const [shown, setShown] = useState('')
-  const last = useRef(0)
-  useEffect(() => {
-    const wait = text === '' ? 0 : Math.max(0, last.current + ms - performance.now())
-    const timer = setTimeout(() => {
-      last.current = performance.now()
-      setShown(text)
-    }, wait)
-    return () => clearTimeout(timer)
-  }, [text, ms])
-  return shown
 }
 
 const TEXT_PX = 10
@@ -322,28 +331,6 @@ const TAG_H = 16
 const TAG_PAD = 4
 /** 带坐标轴时上下多留的像素：放得下刻度字与价签的一半高。 */
 const AXIS_PAD_Y = TAG_H / 2
-
-const isStamps = (times: SparklineProps['times']): times is readonly number[] =>
-  !!times && times.length > 0 && typeof times[0] === 'number'
-
-/** 横轴要按哪些交易时段排：给了 domain 取它，没给用 sessions 的头尾，再没有用时间戳的最早到最晚；排不出来返回空数组（退回按序号铺）。 */
-function resolveSpans(
-  stamps: readonly number[],
-  domain: SparklineProps['domain'],
-  sessions: SparklineProps['sessions'],
-): SparkSpan[] {
-  const finite = stamps.filter(Number.isFinite)
-  const edge = sessions?.length
-    ? ([Math.min(...sessions.map((s) => s[0])), Math.max(...sessions.map((s) => s[1]))] as const)
-    : finite.length
-      ? ([Math.min(...finite), Math.max(...finite)] as const)
-      : null
-  const span = domain ?? edge
-  return span ? timeSpans({ domain: span, sessions }) : []
-}
-
-/** 价格没配格式时写成最多两位小数的原数。 */
-const plainPrice = (value: number) => String(Math.round(value * 100) / 100)
 
 function SparkChart({
   values: rawValues,
@@ -820,15 +807,3 @@ function SparkChart({
 /** 读数框外壳（foreignObject）的宽高：只是个够大的容器，真正的大小由里面的 div 撑开。 */
 const TIPBOX_W = 260
 const TIPBOX_H = 140
-
-/** 把圆挪到一个点上（延伸过场里每帧调用）。 */
-function moveTo(el: SVGElement, point: LinePoint | undefined) {
-  if (!point || !Number.isFinite(point[1])) return
-  el.setAttribute('cx', String(point[0]))
-  el.setAttribute('cy', String(point[1]))
-}
-
-/** 读根节点上的一个 CSS 变量（服务端渲染里没有 document，返回空串）。 */
-function getComputedStyleSafe(name: string): string {
-  return typeof document === 'undefined' ? '' : getComputedStyle(document.documentElement).getPropertyValue(name).trim()
-}

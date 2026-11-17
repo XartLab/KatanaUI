@@ -18769,6 +18769,12 @@
           "description": "Hover readout and keyboard walking on the chart (off by default)."
         },
         {
+          "name": "look",
+          "type": "SparklineProps['look']",
+          "required": false,
+          "description": "Look of the chart, passed to Sparkline: default (unchanged), instrument or ascii."
+        },
+        {
           "name": "chartHeight",
           "type": "number",
           "required": false,
@@ -18901,6 +18907,12 @@
           "type": "boolean",
           "required": false,
           "description": "Hover readout and keyboard walking on the chart (off by default)."
+        },
+        {
+          "name": "look",
+          "type": "SparklineProps['look']",
+          "required": false,
+          "description": "Look of the chart, passed to Sparkline: default (unchanged), instrument or ascii."
         },
         {
           "name": "chartHeight",
@@ -29318,6 +29330,66 @@
           "type": "string",
           "required": false,
           "description": "Extra class name on the dash shown when there is no data."
+        },
+        {
+          "name": "look",
+          "type": "SparklineLook",
+          "required": false,
+          "description": "Overall look: default (market panel, unchanged), instrument (research sheet: hairline neutral ink, one signal color, graticule, corner marks, projection) or ascii (terminal glyphs)."
+        },
+        {
+          "name": "signal",
+          "type": "string",
+          "required": false,
+          "description": "The one signal color of the instrument look, as a CSS color; default var(--accent)."
+        },
+        {
+          "name": "projection",
+          "type": "boolean",
+          "required": false,
+          "description": "instrument only (height 80 and up): draw the distribution of the values on the right, sharing the vertical axis, with a line at the current value."
+        },
+        {
+          "name": "projectionMode",
+          "type": "'kde' | 'histogram'",
+          "required": false,
+          "description": "How the projection is estimated: kde (default, Gaussian kernel with Silverman bandwidth) or histogram."
+        },
+        {
+          "name": "annotation",
+          "type": "{ index: number; text: string }",
+          "required": false,
+          "description": "instrument only: one analyst note on a point, a hand-drawn circle around values[index] plus a sentence in the signal color; text is written by the caller."
+        },
+        {
+          "name": "meta",
+          "type": "{ id?: string; source?: string }",
+          "required": false,
+          "description": "instrument only: a sheet header (top left) and a SOURCES footer (bottom left), both already written by the caller; left out when the chart is lower than 80px."
+        },
+        {
+          "name": "reticle",
+          "type": "boolean",
+          "required": false,
+          "description": "instrument only: draw a small registration cross at the center of the plot."
+        },
+        {
+          "name": "glyphs",
+          "type": "'blocks' | 'braille'",
+          "required": false,
+          "description": "ascii only: block glyphs (one of ▁▂▃▄▅▆▇█ per column, more rows when tall) or braille dots (2 x 4 per character, continuous line)."
+        },
+        {
+          "name": "font",
+          "type": "'mono' | 'dot'",
+          "required": false,
+          "description": "ascii only: mono (default, --font-mono) or dot (the --font-dot pixel font)."
+        },
+        {
+          "name": "rows",
+          "type": "number",
+          "required": false,
+          "description": "ascii only: number of text rows; defaults to as many 12px rows as fit the height."
         }
       ]
     },
@@ -29474,6 +29546,66 @@
           "type": "string",
           "required": false,
           "description": "Extra class name on the dash shown when there is no data."
+        },
+        {
+          "name": "look",
+          "type": "SparklineLook",
+          "required": false,
+          "description": "Overall look: default (market panel, unchanged), instrument (research sheet: hairline neutral ink, one signal color, graticule, corner marks, projection) or ascii (terminal glyphs)."
+        },
+        {
+          "name": "signal",
+          "type": "string",
+          "required": false,
+          "description": "The one signal color of the instrument look, as a CSS color; default var(--accent)."
+        },
+        {
+          "name": "projection",
+          "type": "boolean",
+          "required": false,
+          "description": "instrument only (height 80 and up): draw the distribution of the values on the right, sharing the vertical axis, with a line at the current value."
+        },
+        {
+          "name": "projectionMode",
+          "type": "'kde' | 'histogram'",
+          "required": false,
+          "description": "How the projection is estimated: kde (default, Gaussian kernel with Silverman bandwidth) or histogram."
+        },
+        {
+          "name": "annotation",
+          "type": "{ index: number; text: string }",
+          "required": false,
+          "description": "instrument only: one analyst note on a point, a hand-drawn circle around values[index] plus a sentence in the signal color; text is written by the caller."
+        },
+        {
+          "name": "meta",
+          "type": "{ id?: string; source?: string }",
+          "required": false,
+          "description": "instrument only: a sheet header (top left) and a SOURCES footer (bottom left), both already written by the caller; left out when the chart is lower than 80px."
+        },
+        {
+          "name": "reticle",
+          "type": "boolean",
+          "required": false,
+          "description": "instrument only: draw a small registration cross at the center of the plot."
+        },
+        {
+          "name": "glyphs",
+          "type": "'blocks' | 'braille'",
+          "required": false,
+          "description": "ascii only: block glyphs (one of ▁▂▃▄▅▆▇█ per column, more rows when tall) or braille dots (2 x 4 per character, continuous line)."
+        },
+        {
+          "name": "font",
+          "type": "'mono' | 'dot'",
+          "required": false,
+          "description": "ascii only: mono (default, --font-mono) or dot (the --font-dot pixel font)."
+        },
+        {
+          "name": "rows",
+          "type": "number",
+          "required": false,
+          "description": "ascii only: number of text rows; defaults to as many 12px rows as fit the height."
         }
       ]
     },

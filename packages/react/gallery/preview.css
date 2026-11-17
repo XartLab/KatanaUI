@@ -202,6 +202,10 @@
 .gal-spark-intraday .k-spark {
   height: 220px;
 }
+/* 仪器档案的大图：高 300，放得下眉头、投影谱、时间刻度与 SOURCES 行。 */
+.gal-spark-sheet .k-spark {
+  height: 300px;
+}
 .gal-spark-table {
   border-collapse: collapse;
   font: var(--text-data) var(--font-sans);

@@ -2267,7 +2267,7 @@
       "name": "quote-tone",
       "type": "registry:lib",
       "title": "Quote Tone",
-      "description": "一列数从旧到新，按容器的真实像素画（不拉伸、线宽 1.5px，高 80 以上 2px、圆角连接）。默认是线加线下渐变（贴线 22% 渐到 0），最新值处是实心点加常驻空心环；给毫秒时间戳与 domain 时横轴是整个交易时段、线只画到现在（对齐 TradingView Markets 页的日内图），可加右侧价格刻度、底部时间刻度与最新价价签；另有 line、baseline（基准上涨色下跌色）、bars、winloss（胜负格）四种画法。可加基准虚线、最高最低点、右端最新值、成交量、断点、单调曲线；interactive 时悬停出一根竖线、吸附点与紧挨光标的三行读数（数值、日期、时间），键盘左右键走点。线色按最后值对基准（没基准按头尾），涨跌色跟涨跌配色走，没有数据只留「—」。",
+      "description": "一列数从旧到新，按容器的真实像素画（不拉伸、线宽 1.5px，高 80 以上 2px、圆角连接）。默认是线加线下渐变（贴线 22% 渐到 0），最新值处是实心点加常驻空心环；给毫秒时间戳与 domain 时横轴是整个交易时段、线只画到现在（对齐 TradingView Markets 页的日内图），可加右侧价格刻度、底部时间刻度与最新价价签；另有 line、baseline（基准上涨色下跌色）、bars、winloss（胜负格）四种画法。look 给两种可选画风（默认外观不变）：instrument 是把数据当科学档案来排版的仪器档案页（细线、一个信号色、点阵与角标、投影谱、极值与研究员批注、档案编号与来源行），ascii 是终端字形（块字符或盲文点阵、可换点阵字体）。可加基准虚线、最高最低点、右端最新值、成交量、断点、单调曲线；interactive 时悬停出一根竖线、吸附点与紧挨光标的三行读数（数值、日期、时间），键盘左右键走点。线色按最后值对基准（没基准按头尾），涨跌色跟涨跌配色走，没有数据只留「—」。",
       "files": [
         {
           "path": "src/katana/quote-tone.ts",
@@ -2420,10 +2420,51 @@
       ]
     },
     {
+      "name": "sparkline-ascii",
+      "type": "registry:component",
+      "title": "Sparkline Ascii",
+      "description": "Sparkline 的 ascii 画风：方块或盲文字形画走势，一个 pre，新列乱码落定。",
+      "registryDependencies": [
+        "@katana/live",
+        "@katana/live-line",
+        "@katana/sparkline",
+        "@katana/sparkline-model",
+        "@katana/sparkline-shared",
+        "@katana/text-measure"
+      ],
+      "files": [
+        {
+          "path": "src/katana/sparkline-ascii.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/katana/sparkline-ascii.tsx"
+        }
+      ]
+    },
+    {
+      "name": "sparkline-instrument",
+      "type": "registry:component",
+      "title": "Sparkline Instrument",
+      "description": "Sparkline 的 instrument 画风：点阵、对位角标、投影谱、极值十字与批注、档案编号与 SOURCES。",
+      "registryDependencies": [
+        "@katana/live-line",
+        "@katana/sparkline",
+        "@katana/sparkline-model",
+        "@katana/sparkline-shared",
+        "@katana/text-measure"
+      ],
+      "files": [
+        {
+          "path": "src/katana/sparkline-instrument.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/katana/sparkline-instrument.tsx"
+        }
+      ]
+    },
+    {
       "name": "sparkline-model",
       "type": "registry:lib",
       "title": "Sparkline Model",
-      "description": "Sparkline 的几何（纯函数）：断点分段、刻度、设备像素对齐、单调曲线、基准切分、最高最低、标签放左放右、悬停取点。",
+      "description": "每组一条核密度曲线，上下叠着排，一眼比各组分布的位置、宽窄与形状（分位层、因子分组的收益分布）。带宽默认 Silverman 经验规则；给了基准线就画一条贯穿的虚线。分层是序数：线与点阵面取 seq 色阶（暗到亮），不用涨跌色。悬停或聚焦一条，其余变暗。功能参照 Arc Ridgeline，实现原创。",
       "registryDependencies": [
         "@katana/live-line",
         "@katana/quote-tone"
@@ -2437,15 +2478,37 @@
       ]
     },
     {
+      "name": "sparkline-shared",
+      "type": "registry:lib",
+      "title": "Sparkline Shared",
+      "description": "Sparkline 各画风共用的钩子：量容器、设备像素比、文字测量重置。",
+      "registryDependencies": [
+        "@katana/live-line",
+        "@katana/sparkline",
+        "@katana/sparkline-model",
+        "@katana/text-measure"
+      ],
+      "files": [
+        {
+          "path": "src/katana/sparkline-shared.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/katana/sparkline-shared.ts"
+        }
+      ]
+    },
+    {
       "name": "sparkline",
       "type": "registry:component",
       "title": "Sparkline",
-      "description": "一列数从旧到新，按容器的真实像素画（不拉伸、线宽 1.5px，高 80 以上 2px、圆角连接）。默认是线加线下渐变（贴线 22% 渐到 0），最新值处是实心点加常驻空心环；给毫秒时间戳与 domain 时横轴是整个交易时段、线只画到现在（对齐 TradingView Markets 页的日内图），可加右侧价格刻度、底部时间刻度与最新价价签；另有 line、baseline（基准上涨色下跌色）、bars、winloss（胜负格）四种画法。可加基准虚线、最高最低点、右端最新值、成交量、断点、单调曲线；interactive 时悬停出一根竖线、吸附点与紧挨光标的三行读数（数值、日期、时间），键盘左右键走点。线色按最后值对基准（没基准按头尾），涨跌色跟涨跌配色走，没有数据只留「—」。",
+      "description": "一列数从旧到新，按容器的真实像素画（不拉伸、线宽 1.5px，高 80 以上 2px、圆角连接）。默认是线加线下渐变（贴线 22% 渐到 0），最新值处是实心点加常驻空心环；给毫秒时间戳与 domain 时横轴是整个交易时段、线只画到现在（对齐 TradingView Markets 页的日内图），可加右侧价格刻度、底部时间刻度与最新价价签；另有 line、baseline（基准上涨色下跌色）、bars、winloss（胜负格）四种画法。look 给两种可选画风（默认外观不变）：instrument 是把数据当科学档案来排版的仪器档案页（细线、一个信号色、点阵与角标、投影谱、极值与研究员批注、档案编号与来源行），ascii 是终端字形（块字符或盲文点阵、可换点阵字体）。可加基准虚线、最高最低点、右端最新值、成交量、断点、单调曲线；interactive 时悬停出一根竖线、吸附点与紧挨光标的三行读数（数值、日期、时间），键盘左右键走点。线色按最后值对基准（没基准按头尾），涨跌色跟涨跌配色走，没有数据只留「—」。",
       "registryDependencies": [
         "@katana/live",
         "@katana/live-line",
         "@katana/quote-tone",
+        "@katana/sparkline-ascii",
+        "@katana/sparkline-instrument",
         "@katana/sparkline-model",
+        "@katana/sparkline-shared",
         "@katana/text-measure"
       ],
       "files": [

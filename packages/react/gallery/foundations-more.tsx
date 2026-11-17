@@ -113,6 +113,45 @@ import { EquityCurve } from '@katana-ui/react/quant'`}
           ['基础页表格', '三列顶对齐、行高 20px；长字体栈单行截断，全文在悬停提示'],
         ]}
       />
+      <h2>视觉回归</h2>
+      <p>
+        用自研的 pixelgate（MIT，本地跑，没有云服务）把文档站每个组件页的预览截下来，跟提交进仓库的基线逐像素比；
+        有变化就退出码 1，给 CI、推送前和 worker 自查用。
+      </p>
+      <Table
+        head={['规则', '做法']}
+        rows={[
+          [
+            '平时改了组件',
+            <>{code('pnpm vr:fast')}：只截这次改动影响到的页（graphite、dpr 1、开发服务器），改一个组件约半分钟</>,
+          ],
+          [
+            '合并前、改了共用层',
+            <>
+              {code('pnpm vr')}：全量，两个主题 × 每个组件页（1440x900、dpr 1），外加文档站外壳三张与 dpr 2
+              的几页关键页；改了令牌、theme 样式、lib、primitives 一定跑它
+            </>,
+          ],
+          ['看什么', '只看报告（.pixelgate/report/index.html）里 changed 的图，并排、滑块、红色标出变化的像素'],
+          ['确认是预期改动', <>{code('pnpm vr:approve')} 收为新基线，连同代码一起提交；不预期就改代码</>],
+          [
+            'CI',
+            '只在 PR 上跑 pnpm vr --ci：不写基线，缺基线算失败；失败时 report 作为 artifact 上传，摘要写进 job summary',
+          ],
+          [
+            '基线在哪',
+            '.pixelgate/baseline/（Linux 渲染，要提交）；在别的系统上字体光栅不同，要接受 CI 的图时用 pnpm vr:approve --from <下载的 artifact 目录>',
+          ],
+          [
+            '比较方式',
+            'pixelmatch，逐像素色差阈值 0.1，忽略抗锯齿；稳定化：固定时钟、关光标闪烁、动画归零、实时演示保持暂停',
+          ],
+          [
+            '不进视觉回归的页',
+            'agent-avatar、arcade-pixel、border-beam、grid-loader、matrix-orb、motion-loader、pixel-flow-field、ransom-note、shine-text、wave-text：动画由 JS 逐帧驱动，CSS 关不掉，整页都是这个动画，没有稳定的一块可遮；market-heatmap：分块布局随量到容器尺寸的时机变，两次运行不一致；它们的行为仍由 e2e 管',
+          ],
+        ]}
+      />
     </>
   )
 }
@@ -417,6 +456,20 @@ function DataVizPage() {
         <li>数值用数据字（--font-num，等宽数字）；单位与币种小一号、淡一档。</li>
         <li>每个图都能切成表格看（图下的表格按钮）。</li>
         <li>颜色不是唯一信号：涨跌同时有正负号，系列同时有图例或末端标签。</li>
+      </ul>
+      <h2>三种画风</h2>
+      <p>同一张迷你图（Sparkline 与 MiniChart 的 look）有三种画风，一屏里只用一种。</p>
+      <ul className="gal-list">
+        <li>default：行情面板的画风，涨跌色的线加线下渐变，默认外观，不变。</li>
+        <li>
+          instrument：把数据当成科学档案来排版，1px
+          中性墨色细线，全图只有一个信号色（只标「此刻要看的地方」：末端点与批注）， 配 +
+          点阵、对位角标、投影谱、极值小十字与研究员批注；用在研究与复盘这种要看清分布的场合。
+        </li>
+        <li>
+          ascii：终端字形，块字符或盲文点阵、等宽字或点阵字体，最新一列用信号色；用在状态栏、日志旁、加载这类终端感的地方。
+        </li>
+        <li>instrument 不用涨跌色，ascii 默认也不用（要着色传 tone）；涨跌靠旁边的数字与正负号表达。</li>
       </ul>
     </>
   )

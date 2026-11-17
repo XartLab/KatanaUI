@@ -611,3 +611,306 @@ export function priceTicks(lo: number, hi: number, count = 4): number[] {
   const n = Math.max(2, Math.floor(count))
   return Array.from({ length: n }, (_, k) => hi - ((hi - lo) * k) / (n - 1))
 }
+
+// ———— 画风：仪器档案（instrument）与终端字形（ascii）的纯函数 ————
+
+/** 一列有效值的标准差（总体）；少于两个返回 0。 */
+function stdev(nums: readonly number[]): number {
+  if (nums.length < 2) return 0
+  const mean = nums.reduce((s, v) => s + v, 0) / nums.length
+  return Math.sqrt(nums.reduce((s, v) => s + (v - mean) ** 2, 0) / nums.length)
+}
+
+/** 升序数组里按线性插值取分位数（q 在 0 到 1）。 */
+function quantile(sorted: readonly number[], q: number): number {
+  if (!sorted.length) return 0
+  const at = q * (sorted.length - 1)
+  const i = Math.floor(at)
+  return sorted[i]! + (sorted[Math.min(sorted.length - 1, i + 1)]! - sorted[i]!) * (at - i)
+}
+
+/**
+ * 核密度的带宽，Silverman 经验法则：0.9 × min(标准差, 四分位距 / 1.34) × n^(-1/5)。
+ * 少于两个值、或这列几乎是常数（带宽为 0）时按 fallback（默认 1）给一个正数，免得除零。纯函数。
+ */
+export function silvermanBandwidth(values: readonly number[], fallback = 1): number {
+  const nums = values.filter(Number.isFinite)
+  if (nums.length < 2) return fallback
+  const sorted = [...nums].sort((a, b) => a - b)
+  const iqr = quantile(sorted, 0.75) - quantile(sorted, 0.25)
+  const sd = stdev(nums)
+  const spread = iqr > 0 ? Math.min(sd, iqr / 1.34) : sd
+  const h = 0.9 * spread * nums.length ** -0.2
+  return h > 0 ? h : fallback
+}
+
+/** 直方图分箱：[lo, hi] 等分成 bins 个箱（第 0 箱是最低的），返回每箱的个数；hi 这个值落进最后一箱，区间外的丢掉。纯函数。 */
+export function sparkHistogramBins(values: readonly SparkValue[], lo: number, hi: number, bins: number): number[] {
+  const n = Math.max(1, Math.floor(bins))
+  const out = new Array<number>(n).fill(0)
+  const span = hi - lo
+  if (!(span > 0)) return out
+  for (const v of values) {
+    if (!isSparkValue(v) || v < lo || v > hi) continue
+    out[Math.min(n - 1, Math.floor(((v - lo) / span) * n))]! += 1
+  }
+  return out
+}
+
+/** 高斯核密度：在 [lo, hi] 里等距取 samples 个点（含两端，第 0 个在 lo），返回每点的密度（没归一化）。bandwidth 不给用 Silverman。纯函数。 */
+export function kernelDensity(
+  values: readonly SparkValue[],
+  lo: number,
+  hi: number,
+  samples: number,
+  bandwidth?: number,
+): number[] {
+  const nums = sparkNumbers(values)
+  const n = Math.max(2, Math.floor(samples))
+  const h = bandwidth && bandwidth > 0 ? bandwidth : silvermanBandwidth(nums, (hi - lo) / 20 || 1)
+  const norm = 1 / (nums.length * h * Math.sqrt(2 * Math.PI))
+  return Array.from({ length: n }, (_, k) => {
+    const y = lo + ((hi - lo) * k) / (n - 1)
+    let sum = 0
+    for (const v of nums) sum += Math.exp(-0.5 * ((y - v) / h) ** 2)
+    return sum * norm
+  })
+}
+
+export type SparkProjectionMode = 'kde' | 'histogram'
+
+/** 投影谱：把一列值在 [lo, hi] 上的分布排成 rows 档（第 0 档在 lo、即图的底部），按最大值归一到 0 到 1。mode 取核密度（默认）或直方图。纯函数。 */
+export function projectionProfile(
+  values: readonly SparkValue[],
+  lo: number,
+  hi: number,
+  rows: number,
+  mode: SparkProjectionMode = 'kde',
+): number[] {
+  const n = Math.max(2, Math.floor(rows))
+  if (!sparkCount(values)) return new Array<number>(n).fill(0)
+  const raw = mode === 'histogram' ? sparkHistogramBins(values, lo, hi, n) : kernelDensity(values, lo, hi, n)
+  const peak = Math.max(...raw)
+  return peak > 0 ? raw.map((v) => v / peak) : raw.map(() => 0)
+}
+
+/** 对位点阵（+ 号）的间距：图越大越疏，取 8 / 12 / 16 三档，按较短的一边定。纯函数。 */
+export function graticuleStep(width: number, height: number): number {
+  const short = Math.min(width, height)
+  return short < 60 ? 8 : short < 140 ? 12 : 16
+}
+
+/** 极值批注的引线：从点（px, py）斜着引到标签；最高往上、最低往下，放不下就换一侧，字一直在框里。纯函数。 */
+export function calloutPlacement(
+  px: number,
+  py: number,
+  textWidth: number,
+  box: { width: number; height: number },
+  up: boolean,
+  lead = 8,
+  textHeight = 10,
+): { x2: number; y2: number; tx: number; ty: number; anchor: 'start' | 'end' } {
+  const right = px + lead + textWidth + 2 <= box.width
+  const dy = up ? -lead : lead
+  const y2 = Math.max(textHeight / 2, Math.min(py + dy, box.height - textHeight / 2))
+  const x2 = right ? px + lead : px - lead
+  return { x2, y2, tx: right ? x2 + 2 : x2 - 2, ty: y2, anchor: right ? 'start' : 'end' }
+}
+
+/** 带种子的小随机数（mulberry32）：同一个种子永远同一串，手绘圈每次渲染都一样。 */
+export function seededRandom(seed: number): () => number {
+  let a = seed >>> 0
+  return () => {
+    a = (a + 0x6d2b79f5) >>> 0
+    let t = a
+    t = Math.imul(t ^ (t >>> 15), t | 1)
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61)
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296
+  }
+}
+
+/**
+ * 手绘感的圈（SVG path 的 d）：绕圆心一圈多一点，半径与起点带轻微抖动，用二次曲线连成一笔。
+ * 抖动由 seed 定（用下标播种），同一个种子永远同一个圈，不会每次渲染都变。纯函数。
+ */
+export function sketchCircle(cx: number, cy: number, r: number, seed: number, points = 10): string {
+  const rand = seededRandom(seed * 7919 + 13)
+  const start = rand() * Math.PI * 2
+  const turn = Math.PI * 2 * 1.08
+  const pts = Array.from({ length: points + 1 }, (_, k) => {
+    const a = start + (turn * k) / points
+    const rr = r * (1 + (rand() - 0.5) * 0.14 + (k / points) * 0.06)
+    return [cx + Math.cos(a) * rr, cy + Math.sin(a) * rr * 0.92] as const
+  })
+  const f = (v: number) => v.toFixed(2)
+  let d = `M${f(pts[0]![0])},${f(pts[0]![1])}`
+  for (let k = 1; k < pts.length; k++) {
+    const mid = [(pts[k - 1]![0] + pts[k]![0]) / 2, (pts[k - 1]![1] + pts[k]![1]) / 2] as const
+    d += ` Q${f(pts[k - 1]![0])},${f(pts[k - 1]![1])} ${f(mid[0])},${f(mid[1])}`
+  }
+  return `${d} L${f(pts[pts.length - 1]![0])},${f(pts[pts.length - 1]![1])}`
+}
+
+export const BLOCK_GLYPHS = '▁▂▃▄▅▆▇█'
+
+/**
+ * 块字符 sparkline：每列一个值，rows 行（每行 8 级，上满下填，最上一行在 rows[0]）。值落在 [lo, hi]，null 与非有限数那一列画空格。
+ * 一行时就是经典的 ▁▂▃▄▅▆▇█（Zach Holman 的 spark）。纯函数。
+ */
+export function blockRows(columns: readonly SparkValue[], rows: number, lo: number, hi: number): string[] {
+  const n = Math.max(1, Math.floor(rows))
+  const levels = n * 8
+  const span = hi - lo || 1
+  const heights = columns.map((v) =>
+    isSparkValue(v) ? Math.min(levels, Math.max(1, Math.round(((v - lo) / span) * (levels - 1)) + 1)) : 0,
+  )
+  return Array.from({ length: n }, (_, k) => {
+    const row = n - 1 - k // 0 是最下面一行
+    return heights
+      .map((h) => {
+        const fill = Math.min(8, Math.max(0, h - row * 8))
+        return fill === 0 ? ' ' : BLOCK_GLYPHS[fill - 1]!
+      })
+      .join('')
+  })
+}
+
+/** 盲文点的位掩码：[列 0..1][行 0..3]，Unicode 盲文 U+2800 起的 8 点编码（左列 1 2 3 7，右列 4 5 6 8）。 */
+const BRAILLE_BIT = [
+  [0x01, 0x02, 0x04, 0x40],
+  [0x08, 0x10, 0x20, 0x80],
+] as const
+
+/** 盲文点阵折线：每个字符 2 × 4 点，所以 cols 个字符宽 2·cols 个点、rows 行高 4·rows 个点；相邻两列的有效点用线连起来，断点处不连。纯函数（drawille 的做法）。 */
+export function brailleRows(
+  dotValues: readonly SparkValue[],
+  cols: number,
+  rows: number,
+  lo: number,
+  hi: number,
+): string[] {
+  const w = cols * 2
+  const h = rows * 4
+  const span = hi - lo || 1
+  const grid = new Uint8Array(cols * rows)
+  const plot = (x: number, y: number) => {
+    if (x < 0 || x >= w || y < 0 || y >= h) return
+    grid[Math.floor(y / 4) * cols + Math.floor(x / 2)]! |= BRAILLE_BIT[x % 2]![y % 4]!
+  }
+  const ys = dotValues.slice(0, w).map((v) => (isSparkValue(v) ? Math.round((1 - (v - lo) / span) * (h - 1)) : null))
+  ys.forEach((y, x) => {
+    if (y === null) return
+    plot(x, y)
+    const before = x > 0 ? ys[x - 1] : null
+    if (before === null || before === undefined) return
+    // 与前一列之间的竖向连线：两列的 y 之间补满，折线才连得上。
+    const mid = Math.round((before + y) / 2)
+    for (let yy = Math.min(before, mid); yy <= Math.max(before, mid); yy++) plot(x - 1, yy)
+    for (let yy = Math.min(y, mid); yy <= Math.max(y, mid); yy++) plot(x, yy)
+  })
+  return Array.from({ length: rows }, (_, r) => {
+    let line = ''
+    for (let c = 0; c < cols; c++) {
+      const mask = grid[r * cols + c]!
+      // 空格子也用盲文的空白（U+2800）：同一个回退字体里宽度才跟有点的字符一样，列才对得齐。
+      line += String.fromCharCode(0x2800 + mask)
+    }
+    return line
+  })
+}
+
+/** 把一列值排进 cols 个字符列（按序号，不带时间）：值多于列数取每列的均值，少于列数线性插值（两端都有效才插，否则按最近的）；整列无有效值的是 null。纯函数。 */
+export function columnValues(values: readonly SparkValue[], cols: number): SparkValue[] {
+  const n = values.length
+  const out: SparkValue[] = new Array<SparkValue>(cols).fill(null)
+  if (!n || cols < 1) return out
+  if (n >= cols) {
+    for (let c = 0; c < cols; c++) {
+      const from = Math.floor((c * n) / cols)
+      const to = Math.max(from + 1, Math.floor(((c + 1) * n) / cols))
+      const bucket = sparkNumbers(values.slice(from, to))
+      out[c] = bucket.length ? bucket.reduce((s, v) => s + v, 0) / bucket.length : null
+    }
+    return out
+  }
+  for (let c = 0; c < cols; c++) {
+    const at = cols === 1 ? 0 : (c / (cols - 1)) * (n - 1)
+    const a = values[Math.floor(at)]
+    const b = values[Math.ceil(at)]
+    out[c] = isSparkValue(a) && isSparkValue(b) ? a + (b - a) * (at - Math.floor(at)) : null
+  }
+  return out
+}
+
+/**
+ * 时段横轴按字符列排：休市压成一列（gaps 里的列画 ┊），其余列按各时段时长分；每个时间落在哪一列（时段之外是 -1）。纯函数。
+ * scale 是每个字符横向有几格（盲文是 2 个点列），colOf 按格数给；gaps 始终是字符列号。
+ * 列数不够放（少于时段数加缝）时不压缩，返回 null，调用方退回按序号排。
+ */
+export function sessionColumns(
+  times: readonly number[],
+  spans: readonly SparkSpan[],
+  cols: number,
+  scale = 1,
+): { colOf: number[]; gaps: number[] } | null {
+  const gapCount = spans.length - 1
+  const usable = cols - gapCount
+  if (!spans.length || usable < spans.length) return null
+  const total = spans.reduce((s, [a, b]) => s + (b - a), 0)
+  const widths = spans.map(([a, b]) => Math.max(1, Math.round(((b - a) / total) * usable)))
+  // 四舍五入后总宽可能不等于 usable：差的补到最宽的段。
+  const widest = widths.indexOf(Math.max(...widths))
+  widths[widest]! += usable - widths.reduce((s, v) => s + v, 0)
+  const starts: number[] = []
+  const gaps: number[] = []
+  let col = 0
+  widths.forEach((w, i) => {
+    starts.push(col)
+    col += w
+    if (i < spans.length - 1) gaps.push(col++)
+  })
+  const colOf = times.map((t) => {
+    const i = spans.findIndex(([a, b]) => t >= a && t <= b)
+    if (i < 0) return -1
+    const [a, b] = spans[i]!
+    const cells = widths[i]! * scale
+    return starts[i]! * scale + Math.min(cells - 1, Math.floor(((t - a) / (b - a)) * cells))
+  })
+  return { colOf, gaps }
+}
+
+/** 已知每个值落在哪一列（-1 是裁掉的），算每列的值：同列取均值；两个有值的列之间的空列线性补上（中间没有断点、也没有 blocked 的休市列才补）。纯函数。 */
+export function columnValuesAt(
+  values: readonly SparkValue[],
+  colOf: readonly number[],
+  cols: number,
+  blocked: readonly number[] = [],
+): SparkValue[] {
+  const sum = new Array<number>(cols).fill(0)
+  const cnt = new Array<number>(cols).fill(0)
+  const nulled = new Array<boolean>(cols).fill(false)
+  for (const c of blocked) nulled[c] = true
+  values.forEach((v, i) => {
+    const c = colOf[i] ?? -1
+    if (c < 0 || c >= cols) return
+    if (isSparkValue(v)) {
+      sum[c]! += v
+      cnt[c]! += 1
+    } else nulled[c] = true
+  })
+  const out: SparkValue[] = sum.map((s, c) => (cnt[c] ? s / cnt[c]! : null))
+  // 补空列：只在前后两列都有值、且中间没有被断点占着的列时补。
+  let prev = -1
+  for (let c = 0; c < cols; c++) {
+    if (out[c] === null) continue
+    if (prev >= 0 && c - prev > 1) {
+      const inner = Array.from({ length: c - prev - 1 }, (_, k) => prev + 1 + k)
+      if (!inner.some((x) => nulled[x])) {
+        for (const x of inner)
+          out[x] = (out[prev] as number) + ((out[c] as number) - (out[prev] as number)) * ((x - prev) / (c - prev))
+      }
+    }
+    prev = c
+  }
+  return out
+}

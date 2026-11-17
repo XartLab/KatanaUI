@@ -12,12 +12,14 @@ const quotes: GuidanceMap = {
       '要逐点的涨跌或正负用 bars、winloss；趋势用默认的 area 或 line。',
       '需要读某一点的数时开 interactive，悬停与键盘都能出读数。',
       '新点追加时线与面积平滑延伸 240ms，末端点脉动一次；换一列数直接换。',
+      'look 三种画风：default 用在行情面板（涨跌色、面积渐变）；instrument 用在研究与复盘这种要「看清分布」的场合（投影谱、极值与批注、档案编号与来源行）；ascii 用在终端感的状态栏、日志旁、加载等场合。',
       '日内走势（大图）给毫秒 times 与整个交易时段的 domain，线只画到现在；A 股再给 sessions 压缩午休；加 axis 与 lastTag 得到右侧价格刻度、底部时间刻度与最新价价签。',
     ],
     avoid: [
       '表格里一行一个时不要开 interactive，也别留末端点（行高 22px 这种）。',
       '高度低于 60px 时不要指望 axis：太挤，会被忽略。',
       '要完整坐标轴、缩放、多条线对比用 equity-curve 或 small-multiples。',
+      'instrument 与 ascii 不是行情面板的默认，别把它们混进同一张表的各行；一屏里一种画风。',
       '不要把读数、标签的文字写进包里，由调用方传。',
     ],
     a11y: [
@@ -27,6 +29,7 @@ const quotes: GuidanceMap = {
       'interactive 时 svg 可聚焦，左右键走点、Esc 退出，当前点的日期、时间与数值节流后由 aria-live 播报。',
       '价格刻度、时间刻度与价签是普通文本，由调用方格式化；涨跌不只靠价签颜色，旁边配价格文字。',
       '最高最低、最新值的字是调用方格式化好的普通文本，不靠颜色区分高低。',
+      'instrument 的眉头、来源行、刻度、极值与批注都是 svg 里的普通文本，由调用方写；ascii 的 pre 是 aria-hidden，读屏只读外层 role=img 的名字。',
     ],
   },
   'mini-chart': {
@@ -35,6 +38,7 @@ const quotes: GuidanceMap = {
       '看板、自选里一只品种一张小卡：图标、代码、价、涨跌幅与走势。',
       '要显示「今天走了多久」时给 times 与 domain：线只画到现在，右边留空。',
       '数据实时变时传 live：价格滚动、涨跌幅闪色、走势平滑延伸。',
+      '要仪器档案或终端字形的走势时传 look（instrument、ascii），默认外观不变。',
     ],
     avoid: [
       '表格行里用 sparkline，不要放整张卡。',

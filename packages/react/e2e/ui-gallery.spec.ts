@@ -4272,6 +4272,144 @@ for (const theme of THEMES) {
       await expect(svg.locator('.k-spark-cursor')).toHaveCount(0)
     })
 
+    test('迷你图（look=default）：默认画风的结构不变，没有仪器与字形画风的节点', async ({ page }) => {
+      await open(page, theme, 'sparkline')
+      const svg = page.locator('[data-gallery-spark="tv-intraday"] svg')
+      await expect(svg).toHaveClass(/k-spark is-(up|down|flat)/)
+      await expect(svg).not.toHaveAttribute('data-look', /.*/)
+      for (const part of ['.k-spark-line', '.k-spark-area', '.k-spark-ring', '.k-spark-dot', '[data-last-tag]'])
+        await expect(svg.locator(part).first()).toHaveCount(1)
+      await expect(svg.locator('[class*="k-spark-ins-"]')).toHaveCount(0)
+      await expect(page.locator('[data-gallery-spark="variant-area"] .k-spark-ascii')).toHaveCount(0)
+      await expect
+        .poll(() => paint(svg.locator('.k-spark-line'), 'stroke'))
+        .toEqual(await swatch(page, 'var(--pnl-up)'))
+    })
+
+    test('迷你图（look=instrument）：有投影谱与极值批注，线是中性墨色，末端点是唯一的信号色（批注除外）', async ({
+      page,
+    }) => {
+      await open(page, theme, 'sparkline')
+      const signalPainted = (locator: Locator) =>
+        locator.evaluate((root) => {
+          const probe = document.createElement('i')
+          probe.style.color = 'var(--accent)'
+          document.body.append(probe)
+          const accent = getComputedStyle(probe).color
+          probe.remove()
+          return [...root.querySelectorAll('*')]
+            .filter((el) => {
+              const style = getComputedStyle(el)
+              return style.fill === accent || style.stroke === accent
+            })
+            .map((el) => el.getAttribute('class') ?? el.tagName)
+        })
+      // 小图：只画线、点阵与末端点；没有投影、角标、眉头；信号色只有末端点。
+      const small = page.locator('[data-gallery-spark="instrument-small"] svg')
+      await expect(small).toHaveAttribute('data-look', 'instrument')
+      await expect(small.locator('.k-spark-ins-grid')).toHaveCount(1)
+      await expect(small.locator('.k-spark-ins-proj, .k-spark-ins-corner, .k-spark-ins-meta')).toHaveCount(0)
+      expect(await signalPainted(small)).toEqual(['k-spark-ins-dot'])
+      await expect
+        .poll(() => paint(small.locator('.k-spark-ins-line'), 'stroke'))
+        .toEqual(await swatch(page, 'var(--ink-200)'))
+      await expect
+        .poll(() => small.locator('.k-spark-ins-line').evaluate((el) => getComputedStyle(el).strokeWidth))
+        .toBe('1px')
+      // 大图：投影谱、极值、批注、眉头与来源行都在；线不是涨跌色；信号色只有末端点与批注。
+      const big = page.locator('[data-gallery-spark="instrument-big"] svg')
+      await big.scrollIntoViewIfNeeded()
+      await expect(big.locator('.k-spark-ins-proj')).toHaveCount(1)
+      expect(await big.locator('.k-spark-ins-bar').count()).toBeGreaterThan(20)
+      await expect(big.locator('.k-spark-ins-now')).toHaveCount(1)
+      await expect(big.locator('[data-extreme="max"] text')).toHaveText(/^H \d,\d{3}\.\d\d$/)
+      await expect(big.locator('[data-extreme="min"] text')).toHaveText(/^L \d,\d{3}\.\d\d$/)
+      await expect(big.locator('[data-annotation] .k-spark-ins-circle')).toHaveCount(1)
+      await expect(big.locator('[data-meta="id"]')).toHaveText(/^000300\.XSHG/)
+      await expect(big.locator('[data-meta="source"]')).toContainText('SRC / SSE')
+      await expect(big.locator('.k-spark-ins-corner')).toHaveCount(1)
+      const accentParts = new Set(await signalPainted(big))
+      expect([...accentParts].sort()).toEqual(
+        ['k-spark-ins-circle', 'k-spark-ins-dot', 'k-spark-ins-lead', 'k-spark-ins-text k-spark-ins-note-text'].sort(),
+      )
+      const pnl = [await swatch(page, 'var(--pnl-up)'), await swatch(page, 'var(--pnl-down)')]
+      expect(pnl).not.toContainEqual(await paint(big.locator('.k-spark-ins-line'), 'stroke'))
+      // 投影谱与主图共享纵轴：当前值横线与末端点同一个 y。
+      const dotY = Number(await big.locator('.k-spark-ins-dot').getAttribute('cy'))
+      expect(Number(await big.locator('.k-spark-ins-now').getAttribute('y1'))).toBeCloseTo(dotY, 1)
+      // 实时：走一步，线延伸、投影谱与当前值线跟着最新点。
+      const barWidths = () =>
+        big.locator('.k-spark-ins-bar').evaluateAll((els) => els.map((el) => (el as SVGElement).style.width).join())
+      const before = await barWidths()
+      await page.evaluate(() => window.__liveStep?.(1))
+      await expect.poll(barWidths).not.toBe(before)
+      await expect
+        .poll(async () => Number(await big.locator('.k-spark-ins-now').getAttribute('y1')))
+        .toBeCloseTo(Number(await big.locator('.k-spark-ins-dot').getAttribute('cy')), 1)
+      // 悬停：横竖两条细线，不是只有竖线。
+      const box = (await big.boundingBox())!
+      await page.mouse.move(box.x + box.width * 0.4, box.y + box.height * 0.5)
+      await expect(big.locator('.k-spark-ins-cursor')).toHaveCount(2)
+      await expect(big.locator('.k-spark-tip-value')).toHaveText(/^\d,\d{3}\.\d\d$/)
+    })
+
+    test('迷你图（look=ascii）：整幅是一个 pre，字符数与列数一致；盲文与点阵字体；实时新列乱码后落定', async ({
+      page,
+    }) => {
+      await open(page, theme, 'sparkline')
+      for (const id of ['ascii-blocks-line', 'ascii-blocks', 'ascii-braille']) {
+        const root = page.locator(`[data-gallery-spark="${id}"] .k-spark-ascii`)
+        await expect(root).toHaveAttribute('role', 'img')
+        await expect(root.locator('pre')).toHaveCount(1)
+        await expect(root.locator('pre')).toHaveAttribute('aria-hidden', 'true')
+        const cols = Number(await root.getAttribute('data-cols'))
+        const rows = Number(await root.getAttribute('data-rows'))
+        expect(cols).toBeGreaterThan(20)
+        const lines = ((await root.locator('pre').textContent()) ?? '').split('\n')
+        expect(lines).toHaveLength(rows)
+        for (const line of lines) expect(Array.from(line)).toHaveLength(cols)
+        // 同色连续字符合并：节点数远少于字符数。
+        expect(await root.locator('pre *').count()).toBeLessThan(cols)
+      }
+      await expect(page.locator('[data-gallery-spark="ascii-blocks-line"] .k-spark-ascii')).toHaveAttribute(
+        'data-rows',
+        '1',
+      )
+      expect((await page.locator('[data-gallery-spark="ascii-blocks-line"] pre').textContent()) ?? '').toMatch(
+        /^[▁▂▃▄▅▆▇█ ┄]+$/,
+      )
+      expect((await page.locator('[data-gallery-spark="ascii-braille"] pre').textContent()) ?? '').toMatch(
+        /[\u2801-\u28ff]/,
+      )
+      // 最新一列用信号色，其余是中性墨色。
+      const sig = page.locator('[data-gallery-spark="ascii-blocks-line"] pre .is-signal')
+      await expect(sig).toHaveCount(1)
+      await expect.poll(() => paint(sig, 'color')).toEqual(await swatch(page, 'var(--accent)'))
+      // 实时：走一步，新列先乱码（data-scrambling）再落定为目标字形（data-last），列数不变。
+      const root = page.locator('[data-gallery-spark="ascii-blocks"] .k-spark-ascii')
+      await root.scrollIntoViewIfNeeded()
+      const cols = Number(await root.getAttribute('data-cols'))
+      await watchAttr(root, 'data-scrambling')
+      await page.evaluate(() => window.__liveStep?.(1))
+      await expect.poll(() => sawAttr(root)).toBe(true)
+      await expect(root).not.toHaveAttribute('data-scrambling', /.*/, { timeout: 2000 })
+      // 渲染出来的最新一列（信号色那一列）逐行读出来，等于目标字形。
+      const rendered = await root.locator('pre').evaluate((pre) => {
+        const rows = [...pre.querySelectorAll('.k-spark-ascii-row')]
+        const col = rows
+          .map((row) => {
+            const mark = row.querySelector('.is-signal')
+            return mark ? (row.textContent ?? '').indexOf(mark.textContent ?? '') : -1
+          })
+          .find((c) => c >= 0)
+        return rows.map((row) => (col === undefined ? ' ' : (Array.from(row.textContent ?? '')[col] ?? ' '))).join('')
+      })
+      // 基准线 ┄ 画在空格的位置上，目标字形里那是空格。
+      expect(rendered.replaceAll('┄', ' ')).toBe((await root.getAttribute('data-last')) ?? '')
+      const text = ((await root.locator('pre').textContent()) ?? '').split('\n')
+      for (const line of text) expect(Array.from(line)).toHaveLength(cols)
+    })
+
     test('MiniChart 迷你行情卡：图标、代码、角标、价格与涨跌幅，走势只画到现在；可点的卡是按钮', async ({ page }) => {
       await open(page, theme, 'mini-chart')
       const up = page.locator('[data-gallery-mini="up"] .k-mini-chart')
