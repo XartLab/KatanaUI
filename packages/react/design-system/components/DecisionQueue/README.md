@@ -27,6 +27,7 @@
 // SPDX-License-Identifier: MIT
 import { useState } from 'react'
 import {
+  ConsensusBlock,
   DecisionQueue,
   PanelFrame,
   PanelFrameBody,
@@ -34,7 +35,6 @@ import {
   type DecisionItem,
   type DecisionQueueLabels,
 } from '@katana-ui/react/blocks'
-import { ConsensusBlock } from '@katana-ui/react/quant'
 import { Button } from '@katana-ui/react'
 
 const DQ_NOW = Date.UTC(2026, 10, 15, 9, 30, 0)
@@ -189,10 +189,10 @@ export function DecisionQueueUsage() {
                   i.id === 'd1' ? (
                     <ConsensusBlock
                       label="执行前检查"
-                      intent="买入 · 600001 × 2,000"
+                      subject="买入 · 600001 × 2,000"
                       parties={[
-                        { key: 'gw', label: 'GATEWAY', state: 'pass', message: '整手 ✓' },
-                        { key: 'risk', label: 'RISK', state: 'warn', message: '集中度 58 / 60' },
+                        { id: 'gw', label: 'GATEWAY', state: 'pass', message: '整手 ✓' },
+                        { id: 'risk', label: 'RISK', state: 'warn', message: '集中度 58 / 60' },
                       ]}
                       verdict="warn"
                       verdictText="可提交"
@@ -217,6 +217,7 @@ export function DecisionQueueUsage() {
 - 稍后：仍在待处理页，带「已推后」标记，不再给「稍后」按钮。
 - 过了有效期没人处理：按已过期画，不能再接受或拒绝（调用方不必先改状态）。
 - 已接受 / 已拒绝 / 已过期：收成一行（灯、结果、动作、对象、谁与何时），点开看理由与来源。
+- 灯的语气（decisionSeverity → ledOf，G6）：待处理 accent、稍后 warn、接受 ok、拒绝 danger、过期 off。
 
 ## Don't
 

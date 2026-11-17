@@ -3090,7 +3090,7 @@
           "additionalProperties": false,
           "description": "All visible and screen-reader text, in the language of the user."
         },
-        "onOpen": {
+        "onSelect": {
           "anyOf": [
             {
               "type": "object",
@@ -3143,7 +3143,7 @@
               "description": "Executes a renderer or agent-side function."
             }
           ],
-          "description": "Dispatched when the user opens an item. metadata.extensions.katanaNews carries {id, href}; href is null when the item has none. The host receives the action and decides what to do; the component itself does nothing else."
+          "description": "Dispatched when the user selects (opens) an item. metadata.extensions.katanaNews carries {id, href}; href is null when the item has none. The host receives the action and decides what to do; the component itself does nothing else."
         },
         "weight": {
           "type": "number",
@@ -3453,7 +3453,7 @@
           ],
           "description": "Dispatched when the user presses copy link; the host knows the link. The host receives the action and decides what to do; the component itself does nothing else."
         },
-        "onSymbolPick": {
+        "onSymbolSelect": {
           "anyOf": [
             {
               "type": "object",
@@ -3762,7 +3762,7 @@
           "additionalProperties": false,
           "description": "All visible and screen-reader text, in the language of the user."
         },
-        "onPick": {
+        "onSelect": {
           "anyOf": [
             {
               "type": "object",
@@ -3815,7 +3815,7 @@
               "description": "Executes a renderer or agent-side function."
             }
           ],
-          "description": "Dispatched when the user picks an event (the earliest of a group). metadata.extensions.katanaEvent carries {id}. The host receives the action and decides what to do; the component itself does nothing else."
+          "description": "Dispatched when the user selects an event (the earliest of a group). metadata.extensions.katanaEvent carries {id}. The host receives the action and decides what to do; the component itself does nothing else."
         },
         "onBrush": {
           "anyOf": [
@@ -3912,20 +3912,21 @@
                 "type": "string",
                 "description": "The value, already formatted as text."
               },
-              "led": {
+              "tone": {
                 "type": "string",
                 "enum": [
+                  "neutral",
                   "off",
-                  "on",
+                  "accent",
                   "ok",
                   "warn",
                   "danger"
                 ],
-                "description": "A status light before the item. Needs ledLabel. Use it only for a real state."
+                "description": "Tone of a status light before the item: 'ok', 'warn', 'danger', 'accent' (lit, e.g. live), 'off' or 'neutral' (unlit). Needs ledLabel. Use it only for a real state."
               },
               "ledLabel": {
                 "type": "string",
-                "description": "Accessible name of the light. Required when led is given."
+                "description": "Accessible name of the light. Required when tone is given."
               },
               "pressable": {
                 "type": "boolean",
@@ -3978,20 +3979,21 @@
                 "type": "string",
                 "description": "The value, already formatted as text."
               },
-              "led": {
+              "tone": {
                 "type": "string",
                 "enum": [
+                  "neutral",
                   "off",
-                  "on",
+                  "accent",
                   "ok",
                   "warn",
                   "danger"
                 ],
-                "description": "A status light before the item. Needs ledLabel. Use it only for a real state."
+                "description": "Tone of a status light before the item: 'ok', 'warn', 'danger', 'accent' (lit, e.g. live), 'off' or 'neutral' (unlit). Needs ledLabel. Use it only for a real state."
               },
               "ledLabel": {
                 "type": "string",
-                "description": "Accessible name of the light. Required when led is given."
+                "description": "Accessible name of the light. Required when tone is given."
               },
               "pressable": {
                 "type": "boolean",
@@ -4044,20 +4046,21 @@
                 "type": "string",
                 "description": "The value, already formatted as text."
               },
-              "led": {
+              "tone": {
                 "type": "string",
                 "enum": [
+                  "neutral",
                   "off",
-                  "on",
+                  "accent",
                   "ok",
                   "warn",
                   "danger"
                 ],
-                "description": "A status light before the item. Needs ledLabel. Use it only for a real state."
+                "description": "Tone of a status light before the item: 'ok', 'warn', 'danger', 'accent' (lit, e.g. live), 'off' or 'neutral' (unlit). Needs ledLabel. Use it only for a real state."
               },
               "ledLabel": {
                 "type": "string",
-                "description": "Accessible name of the light. Required when led is given."
+                "description": "Accessible name of the light. Required when tone is given."
               },
               "pressable": {
                 "type": "boolean",
@@ -4107,9 +4110,19 @@
           ],
           "description": "Accessible name of the bar."
         },
-        "moreLabel": {
-          "type": "string",
-          "description": "Accessible name of the \"more\" button that holds folded items."
+        "labels": {
+          "type": "object",
+          "properties": {
+            "more": {
+              "type": "string",
+              "description": "Accessible name of the \"more\" button that holds folded items."
+            }
+          },
+          "required": [
+            "more"
+          ],
+          "additionalProperties": false,
+          "description": "All screen-reader text, in the language of the user."
         },
         "onItem": {
           "anyOf": [
@@ -4175,7 +4188,7 @@
       "required": [
         "component",
         "label",
-        "moreLabel"
+        "labels"
       ],
       "unevaluatedProperties": false
     },
@@ -4879,7 +4892,7 @@
           ],
           "description": "Dispatched when the user holds the emergency stop to the end. Without it there is no emergency stop button. The host must confirm. The host receives the action and decides what to do; the component itself does nothing else."
         },
-        "onLinkPick": {
+        "onSelect": {
           "anyOf": [
             {
               "type": "object",
@@ -4932,7 +4945,7 @@
               "description": "Executes a renderer or agent-side function."
             }
           ],
-          "description": "Dispatched when the user presses a connection. metadata.extensions.katanaLink carries {id}. The host receives the action and decides what to do; the component itself does nothing else."
+          "description": "Dispatched when the user selects a connection. metadata.extensions.katanaLink carries {id}. The host receives the action and decides what to do; the component itself does nothing else."
         },
         "weight": {
           "type": "number",
@@ -5406,7 +5419,7 @@
           ],
           "description": "Accessible name of the whole block."
         },
-        "intent": {
+        "subject": {
           "anyOf": [
             {
               "type": "string"
@@ -5426,10 +5439,10 @@
           "items": {
             "type": "object",
             "properties": {
-              "key": {
+              "id": {
                 "type": "string",
                 "minLength": 1,
-                "description": "Stable key of the party."
+                "description": "Stable id of the party."
               },
               "label": {
                 "type": "string",
@@ -5458,7 +5471,7 @@
               }
             },
             "required": [
-              "key",
+              "id",
               "label",
               "state",
               "message"
@@ -7053,22 +7066,14 @@
         "collapsible": {
           "type": "boolean",
           "default": false,
-          "description": "When true the title bar has a button that folds the body. Requires collapseLabel and expandLabel."
+          "description": "When true the title bar has a button that folds the body. Requires labels.collapse and labels.expand."
         },
         "defaultCollapsed": {
           "type": "boolean",
           "default": false,
           "description": "Start folded. Only with collapsible."
         },
-        "collapseLabel": {
-          "type": "string",
-          "description": "Accessible name of the fold button while the body is open. Required when collapsible is true."
-        },
-        "expandLabel": {
-          "type": "string",
-          "description": "Accessible name of the fold button while the body is folded. Required when collapsible is true."
-        },
-        "state": {
+        "status": {
           "type": "string",
           "enum": [
             "ready",
@@ -7077,11 +7082,26 @@
             "disconnected"
           ],
           "default": "ready",
-          "description": "'ready' shows the children; 'loading' a placeholder (needs loadingLabel); 'empty' and 'disconnected' an empty state (needs view). No fake data is drawn."
+          "description": "'ready' shows the children; 'loading' a placeholder (needs labels.loading); 'empty' and 'disconnected' an empty state (needs view). No fake data is drawn."
         },
-        "loadingLabel": {
-          "type": "string",
-          "description": "Accessible name of the placeholder. Required when state is loading."
+        "labels": {
+          "type": "object",
+          "properties": {
+            "collapse": {
+              "type": "string",
+              "description": "Accessible name of the fold button while the body is open. Required when collapsible is true."
+            },
+            "expand": {
+              "type": "string",
+              "description": "Accessible name of the fold button while the body is folded. Required when collapsible is true."
+            },
+            "loading": {
+              "type": "string",
+              "description": "Accessible name of the placeholder. Required when status is loading."
+            }
+          },
+          "additionalProperties": false,
+          "description": "Screen-reader text, in the language of the user."
         },
         "view": {
           "type": "object",
@@ -7103,7 +7123,7 @@
             "title"
           ],
           "additionalProperties": false,
-          "description": "What to write when state is empty or disconnected. Required for those states."
+          "description": "What to write when status is empty or disconnected. Required for those states."
         },
         "weight": {
           "type": "number",
@@ -18254,35 +18274,24 @@
           ],
           "description": "Accessible name of the whole row."
         },
-        "naText": {
-          "anyOf": [
-            {
-              "type": "string"
+        "labels": {
+          "type": "object",
+          "properties": {
+            "na": {
+              "type": "string",
+              "description": "The text drawn where there is no number (for example \"N/A\")."
             },
-            {
-              "$ref": "common_types.json#/$defs/DataBinding"
-            },
-            {
-              "$ref": "common_types.json#/$defs/FunctionCall",
-              "description": "Invokes a named function, combining common function properties with the catalog function definition."
+            "estimate": {
+              "type": "string",
+              "description": "The text of the estimate mark (for example \"est.\")."
             }
+          },
+          "required": [
+            "na",
+            "estimate"
           ],
-          "description": "The text drawn where there is no number (for example \"N/A\")."
-        },
-        "estimateText": {
-          "anyOf": [
-            {
-              "type": "string"
-            },
-            {
-              "$ref": "common_types.json#/$defs/DataBinding"
-            },
-            {
-              "$ref": "common_types.json#/$defs/FunctionCall",
-              "description": "Invokes a named function, combining common function properties with the catalog function definition."
-            }
-          ],
-          "description": "The text of the estimate mark (for example \"est.\")."
+          "additionalProperties": false,
+          "description": "All visible text, in the language of the user."
         },
         "weight": {
           "type": "number",
@@ -18294,8 +18303,7 @@
         "component",
         "gauges",
         "label",
-        "naText",
-        "estimateText"
+        "labels"
       ],
       "unevaluatedProperties": false
     },
@@ -18431,35 +18439,23 @@
           ],
           "description": "The id of the state the market is in now. It is marked in the legend."
         },
-        "currentText": {
-          "anyOf": [
-            {
-              "type": "string"
+        "labels": {
+          "type": "object",
+          "properties": {
+            "current": {
+              "type": "string",
+              "description": "The word that marks the current state (for example \"Now\"). Required when current is given."
             },
-            {
-              "$ref": "common_types.json#/$defs/DataBinding"
-            },
-            {
-              "$ref": "common_types.json#/$defs/FunctionCall",
-              "description": "Invokes a named function, combining common function properties with the catalog function definition."
+            "estimate": {
+              "type": "string",
+              "description": "The legend text for striped, unconfirmed segments (for example \"est.\")."
             }
+          },
+          "required": [
+            "estimate"
           ],
-          "description": "The word that marks the current state (for example \"Now\"). Required when current is given."
-        },
-        "estimateText": {
-          "anyOf": [
-            {
-              "type": "string"
-            },
-            {
-              "$ref": "common_types.json#/$defs/DataBinding"
-            },
-            {
-              "$ref": "common_types.json#/$defs/FunctionCall",
-              "description": "Invokes a named function, combining common function properties with the catalog function definition."
-            }
-          ],
-          "description": "The legend text for striped, unconfirmed segments (for example \"est.\")."
+          "additionalProperties": false,
+          "description": "All visible text, in the language of the user."
         },
         "activeState": {
           "anyOf": [
@@ -18476,7 +18472,7 @@
           ],
           "description": "The id of the highlighted state; the others fade. Bind it with {\"@path\": \"/regime/active\"} so a press on the legend is written back. Empty means none."
         },
-        "onPickState": {
+        "onSelect": {
           "anyOf": [
             {
               "type": "object",
@@ -18542,7 +18538,7 @@
         "states",
         "segments",
         "label",
-        "estimateText"
+        "labels"
       ],
       "unevaluatedProperties": false
     }

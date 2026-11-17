@@ -15,7 +15,7 @@
 | `onSelect` | `(id) => void` | — | 切换。 |
 | `onReorder` | `(id, targetId) => void` | — | 把 id 挪到 targetId 的位置；不给就不能排序。 |
 | `onRename` | `(id) => void` | — | 进改名；输入框是宿主的事；不给就不能改名。 |
-| `onCreate / createLabel` | `() => void / string` | — | 「+」与它的名字；不给 onCreate 就不画。 |
+| `onCreate / labels` | `() => void / { create?, more? }` | — | 「+」与它的名字、「更多」下拉的名字；不给 onCreate 就不画「+」（旧名 createLabel / moreLabel 留一个版本）。 |
 | `label` | `string` | — | 标签条的名字（读屏念）。 |
 
 ## Usage
@@ -45,8 +45,7 @@ export function WorkspaceTabsUsage() {
           workspaces={tabs}
           activeId={active}
           label="Workspaces"
-          createLabel="New workspace"
-          moreLabel="More workspaces"
+          labels={{ create: 'New workspace', more: 'More workspaces' }}
           onSelect={setActive}
           onRename={setRenamed}
           onCreate={() => setTabs((prev) => [...prev, { id: `ws${prev.length}`, name: `Workspace ${prev.length}` }])}

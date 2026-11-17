@@ -80,8 +80,8 @@ export const KatanaEventTimelineApi = {
         })
         .strict()
         .describe('All visible and screen-reader text, in the language of the user.'),
-      onPick: actionSchema(
-        'Dispatched when the user picks an event (the earliest of a group). metadata.extensions.katanaEvent carries {id}.',
+      onSelect: actionSchema(
+        'Dispatched when the user selects an event (the earliest of a group). metadata.extensions.katanaEvent carries {id}.',
       ).optional(),
       onBrush: actionSchema(
         'Dispatched when the user drags a span on the axis. metadata.extensions.katanaRange carries {from, to} as ISO 8601.',
@@ -123,8 +123,8 @@ export const KatanaEventTimeline = createComponentImplementation(KatanaEventTime
         now={isoToMs(props.now)}
         scope={props.scope}
         label={props.label ?? ''}
-        onPick={
-          props.onPick ? (event) => void props.onPick?.(withExtension('katanaEvent', { id: event.id })) : undefined
+        onSelect={
+          props.onSelect ? (event) => void props.onSelect?.(withExtension('katanaEvent', { id: event.id })) : undefined
         }
         onBrush={
           props.onBrush

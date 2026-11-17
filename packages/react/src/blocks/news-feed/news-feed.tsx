@@ -1,42 +1,25 @@
 // SPDX-License-Identifier: MIT
-import {
-  ChevronDownIcon,
-  ChevronUpIcon,
-  LayoutGrid,
-  List,
-  Pause,
-  Play,
-  PlusIcon,
-  Search,
-  Trash2Icon,
-} from 'lucide-react'
-import { defaultRangeExtractor, useVirtualizer } from '@tanstack/react-virtual'
-import {
-  Fragment,
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-  type CSSProperties,
-  type ReactNode,
-} from 'react'
-import { onTextMeasureReset } from '../../lib/text-measure.ts'
+/**
+ * News stream with list and card layouts, filters, a reader pane and live arrival handling.
+ * 新闻流；一条在 news-row.tsx，组合过滤条 news-facets.tsx，列表虚拟化与滚动锚定 use-news-virtual.ts（体检 §7 拆分）。
+ */
+import { ChevronDownIcon, ChevronUpIcon, LayoutGrid, List, Pause, Play, Search } from 'lucide-react'
+import { Fragment, useMemo, useRef, useState, type ReactNode } from 'react'
 import { useEnterMarks } from '../../lib/live.ts'
 import { cn } from '../../lib/cn.ts'
 import { MeasuredSkeleton } from '../../katana/measured-skeleton.tsx'
 import { Skeleton } from '../../katana/skeleton.tsx'
-import { SymbolMark } from '../../katana/symbol-mark.tsx'
 import { ChipGroup, type ChipItem } from '../../patterns/chip-group.tsx'
-import { RowActions, RowContextMenu, type RowAction } from '../../patterns/row-actions.tsx'
+import { RowContextMenu, type RowAction } from '../../patterns/row-actions.tsx'
 import { ViewSwitcher, type ViewOption } from '../../patterns/view-switcher.tsx'
 import { Button } from '../../primitives/button.tsx'
 import { Input } from '../../primitives/input.tsx'
 import { ToggleGroup, ToggleGroupItem } from '../../primitives/toggle-group.tsx'
-import { Checkbox } from '../../primitives/checkbox.tsx'
-import { Popover, PopoverContent, PopoverTrigger } from '../../primitives/popover.tsx'
-import { listRowHeight, readRowFonts, VIRTUAL_THRESHOLD, type RowFonts } from './news-feed-rows.ts'
+import { VIRTUAL_THRESHOLD } from './news-feed-rows.ts'
 import { filterNews, sortNews, type NewsFacet, type NewsItem, type NewsSymbol } from './news-feed-model.ts'
+import { NewsFacets, type NewsFacetsLabels } from './news-facets.tsx'
+import { NewsRow, type NewsRowPosition } from './news-row.tsx'
+import { useNewsVirtual } from './use-news-virtual.ts'
 
 // 新闻流（#29）：列表（时间、来源、标题、相关品种胶囊、重要标记）与卡片网格（来源 + 时间、标题、两行摘要、品种胶囊）两种排法；
 // 顶上是频道分段、来源多选芯片、关键词搜索、暂停。功能照 TradingView 帮助文档「新闻流」的做法（频道、来源筛选、搜索）与
@@ -69,7 +52,7 @@ export type NewsFeedLabels = {
   important: string
   empty: ReactNode
   /** 组合过滤（传了 facets 才用）：「+ 添加过滤」、浮层里的重置与移除、读屏名。 */
-  facets?: { group: string; add: string; reset: string; remove: string; none: string }
+  facets?: NewsFacetsLabels
   /** 「3 分钟阅读」；传了且条目有 readMinutes 才写（TradingView 的「2 min read」）。 */
   read?: (minutes: number) => string
   /** 标题行的已保存过滤视图下拉（传了 views 才用）：读屏名与「另存为」。 */
@@ -79,6 +62,8 @@ export type NewsFeedLabels = {
   expand?: string
   /** 加载中读屏读的话；不给就读 feed。 */
   loading?: string
+  /** 每条快捷操作的读屏名与右键菜单名（itemActions 给了才用）。 */
+  itemActions?: string
 }
 
 export type NewsFeedProps = {
@@ -116,12 +101,17 @@ export type NewsFeedProps = {
   now: number
   labels: NewsFeedLabels
   defaultLayout?: 'list' | 'card'
+  /** 点了一条的相关品种。 */
+  onSymbolSelect?: (symbol: NewsSymbol, item: NewsItem) => void
+  /** @deprecated Use `onSymbolSelect`; kept for one version. */
   onSymbolPick?: (symbol: NewsSymbol, item: NewsItem) => void
   /** 每条的快捷操作：悬停出前几颗图标按钮，右键出同一份菜单（RowActions / RowContextMenu）；返回空数组就没有。 */
   itemActions?: (item: NewsItem) => readonly RowAction[]
-  /** 快捷操作的读屏名与右键菜单名。 */
+  /** @deprecated Use `labels.itemActions`; kept for one version. */
   itemActionsLabel?: string
-  /** 给了，标题是按钮，点击回调；没给且条目有 href 时标题是链接。 */
+  /** 选中一条（点标题）：给了，标题是按钮；没给且条目有 href 时标题是链接。 */
+  onSelect?: (item: NewsItem) => void
+  /** @deprecated Use `onSelect`; kept for one version. */
   onOpen?: (item: NewsItem) => void
   onChannelChange?: (channel: string) => void
   onSourcesChange?: (sources: string[]) => void
@@ -152,21 +142,26 @@ export function NewsFeed({
   now,
   labels,
   defaultLayout = 'list',
+  onSymbolSelect: onSymbolSelectProp,
   onSymbolPick,
   itemActions,
-  itemActionsLabel = '',
+  itemActionsLabel,
+  onSelect: onSelectProp,
   onOpen,
   onChannelChange,
   onSourcesChange,
   onPausedChange,
   className,
 }: NewsFeedProps) {
+  const onSelect = onSelectProp ?? onOpen
+  const onSymbolSelect = onSymbolSelectProp ?? onSymbolPick
+  const actionsLabel = labels.itemActions ?? itemActionsLabel ?? ''
   const [channel, setChannel] = useState('')
   const [picked, setPicked] = useState<string[]>([])
   const [query, setQuery] = useState('')
   const [facetShown, setFacetShown] = useState<string[]>(() => facets.filter((f) => f.shown).map((f) => f.key))
   const [facetPicked, setFacetPicked] = useState<Record<string, string[]>>({})
-  const setPicked2 = (next: Record<string, string[]>) => {
+  const setFacets = (next: Record<string, string[]>) => {
     setFacetPicked(next)
     onFacetsChange?.(next)
   }
@@ -215,151 +210,48 @@ export function NewsFeed({
 
   // 虚拟化只管「列表」排法且条目多于阈值；少了完全走老写法（卡片是自适应网格，行高本来就不是一行一高，不虚拟化）。
   const virtual = layout === 'list' && visible.length > VIRTUAL_THRESHOLD
-  // 滚动区宽度与字体（字号、行高、具名字体）：行高只依赖它们；宽度变了只重算高度，prepare 在 text-measure 里按「字体+文本」缓存。
-  const [width, setWidth] = useState(0)
-  const [fonts, setFonts] = useState<RowFonts | null>(null)
-  const [epoch, setEpoch] = useState(0)
-  // 字体缓存被清（Web 字体加载完、换渲染字体、DPR 变）后行高要重算。
-  useEffect(() => onTextMeasureReset(() => setEpoch((n) => n + 1)), [])
-  useLayoutEffect(() => {
-    const el = scroller.current
-    if (!virtual || !el) return
-    setFonts(readRowFonts(el))
-    setWidth(el.clientWidth)
-    // 用 clientWidth（不含滚动条）而不是 contentRect：行宽就是它。
-    const observer = new ResizeObserver(() => setWidth(el.clientWidth))
-    observer.observe(el)
-    return () => observer.disconnect()
-  }, [virtual, epoch])
-
-  const sizes = useMemo(() => {
-    if (!virtual || !fonts) return []
-    return visible.map((item) =>
-      listRowHeight(
-        {
-          title: item.title,
-          source: sourceName(item.source),
-          time: labels.ago(Math.max(0, Math.floor((now - item.time) / 1000))),
-          read: labels.read && item.readMinutes !== undefined ? labels.read(item.readMinutes) : undefined,
-          important: !!item.important,
-          symbolCodes: item.symbols?.map((symbol) => symbol.code) ?? [],
-          symbolStyle,
-          hasActions: !!itemActions,
-        },
-        fonts,
-        width,
-      ),
-    )
-    // oxlint-disable-next-line react/exhaustive-deps -- sourceName 由 sources 决定，依赖写 sources
-  }, [virtual, fonts, width, visible, now, labels, sources, symbolStyle, itemActions, epoch])
-
-  const selectedIndex = virtual && selectedId !== null ? visible.findIndex((i) => i.id === selectedId) : -1
-  // 返回的函数不能被 React Compiler 记忆化，只在这个组件里用。
-  const virtualizer = useVirtualizer({
-    count: virtual ? visible.length : 0,
-    getScrollElement: () => scroller.current,
-    estimateSize: (index) => sizes[index] ?? 32,
-    overscan: 8,
-    initialRect: { width: 0, height: 600 },
-    getItemKey: (index) => visible[index]?.id ?? index,
-    // 阅读窗开着的那条即使滚出去也留着：键盘焦点在它的标题按钮上，卸掉焦点就丢了。
-    rangeExtractor: (range) => {
-      const indexes = defaultRangeExtractor(range)
-      return selectedIndex >= 0 && !indexes.includes(selectedIndex)
-        ? [...indexes, selectedIndex].sort((a, b) => a - b)
-        : indexes
-    },
-  })
-  // estimateSize 不是 virtualizer 缓存的依赖，高度变了要显式 measure()；内容没变就不动，免得 labels 每次新对象造成循环。
-  const lastSizes = useRef<number[]>([])
-  useLayoutEffect(() => {
-    const last = lastSizes.current
-    if (last.length === sizes.length && last.every((size, i) => size === sizes[i])) return
-    lastSizes.current = sizes
-    virtualizer.measure()
-  }, [sizes, virtualizer])
-  // 滚动锚定：行是绝对定位，新行插在上面时用户正看的那条会被顶下去；记下首个可见行的位置，放进新行后把 scrollTop 补回去。
-  // 只在 scrollTop > 0 且是放进新条目（shown 变了）时补：在最顶上（0）就是要看见最新的，筛选条件变了也不跟。
-  const starts = useMemo(() => {
-    let total = 0
-    return sizes.map((size) => {
-      const start = total
-      total += size
-      return start
-    })
-  }, [sizes])
-  const anchor = useRef<{ id: string; start: number } | null>(null)
-  const anchoredShown = useRef(shown)
-  useLayoutEffect(() => {
-    const el = scroller.current
-    const ready = virtual && el && starts.length === visible.length
-    if (ready) {
-      const previous = anchor.current
-      if (previous && anchoredShown.current !== shown && el.scrollTop > 0) {
-        const index = visible.findIndex((i) => i.id === previous.id)
-        if (index >= 0 && starts[index] !== previous.start) el.scrollTop += starts[index]! - previous.start
-      }
-      const top = el.scrollTop
-      const first = starts.findIndex((start, i) => start + sizes[i]! > top)
-      anchor.current = first >= 0 ? { id: visible[first]!.id, start: starts[first]! } : null
-    } else anchor.current = null
-    anchoredShown.current = shown
+  const ago = (time: number) => labels.ago(Math.max(0, Math.floor((now - time) / 1000)))
+  const { virtualizer, sizes } = useNewsVirtual({
+    scroller,
+    virtual,
+    visible,
+    shown,
+    selectedId,
+    rowOf: (item) => ({
+      title: item.title,
+      source: sourceName(item.source),
+      time: ago(item.time),
+      read: labels.read && item.readMinutes !== undefined ? labels.read(item.readMinutes) : undefined,
+      important: !!item.important,
+      symbolCodes: item.symbols?.map((symbol) => symbol.code) ?? [],
+      symbolStyle,
+      hasActions: !!itemActions,
+    }),
+    deps: [now, labels, sources, symbolStyle, itemActions],
   })
   const chips: ChipItem[] = sources.map((s) => ({ value: s.value, label: s.label }))
 
   const open = (item: NewsItem) => {
     if (reader) setOpenId(item.id)
-    onOpen?.(item)
+    onSelect?.(item)
   }
-  // 一条的 DOM：虚拟化与否共用；虚拟化时多带 aria-setsize / aria-posinset（读屏要知道总条数）与绝对定位的 top、height。
-  const renderRow = (
-    item: NewsItem,
-    position?: { 'aria-setsize': number; 'aria-posinset': number; style: CSSProperties },
-  ) => (
-    <li
-      {...position}
+  const renderRow = (item: NewsItem, position?: NewsRowPosition) => (
+    <NewsRow
       key={item.id}
-      className={cn('k-news-item', entering.has(item.id) && 'k-live-enter')}
-      data-important={item.important ? '' : undefined}
-      data-news-id={item.id}
-      data-selected={item.id === selectedId ? '' : undefined}
-      data-actions={itemActions ? '' : undefined}
-    >
-      <div className="k-news-meta">
-        <span className="k-news-source">{sourceName(item.source)}</span>
-        <time className="k-news-time" dateTime={new Date(item.time).toISOString()} title={labels.absolute(item.time)}>
-          {labels.ago(Math.max(0, Math.floor((now - item.time) / 1000)))}
-        </time>
-        {labels.read && item.readMinutes !== undefined ? (
-          <span className="k-news-read">{labels.read(item.readMinutes)}</span>
-        ) : null}
-        {item.important && (
-          <span className="k-news-flag" role="img" aria-label={labels.important} title={labels.important} />
-        )}
-      </div>
-      <div className="k-news-body">
-        <Title item={item} onOpen={reader || onOpen ? open : undefined} />
-        {item.summary && layout === 'card' && <p className="k-news-summary">{item.summary}</p>}
-      </div>
-      {itemActions && <RowActions items={itemActions(item)} label={itemActionsLabel} />}
-      {item.symbols && item.symbols.length > 0 && (
-        <div className="k-news-symbols" data-style={symbolStyle}>
-          {item.symbols.map((symbol) => (
-            <button
-              key={symbol.code}
-              type="button"
-              className="k-news-symbol"
-              aria-label={symbolStyle === 'stack' ? symbol.code : undefined}
-              title={symbolStyle === 'stack' ? `${symbol.code} ${symbol.name ?? ''}`.trim() : undefined}
-              onClick={() => onSymbolPick?.(symbol, item)}
-            >
-              <SymbolMark code={symbol.code} name={symbol.name} size={symbolStyle === 'stack' ? 18 : 14} />
-              {symbolStyle === 'chips' ? <span>{symbol.code}</span> : null}
-            </button>
-          ))}
-        </div>
-      )}
-    </li>
+      item={item}
+      position={position}
+      entering={entering.has(item.id)}
+      selected={item.id === selectedId}
+      source={sourceName(item.source)}
+      now={now}
+      labels={labels}
+      layout={layout}
+      symbolStyle={symbolStyle}
+      actions={itemActions?.(item)}
+      actionsLabel={actionsLabel}
+      onSelect={reader || onSelect ? open : undefined}
+      onSymbolSelect={onSymbolSelect}
+    />
   )
 
   // 列表区的真内容；加载态的骨架包在它外面（量出来的骨架要在同一个位置把它换出来）。
@@ -369,7 +261,7 @@ export function NewsFeed({
     ) : (
       <RowContextMenu
         actionsFor={itemActions && ((id) => itemActions(items.find((i) => i.id === id)!))}
-        label={itemActionsLabel}
+        label={actionsLabel}
         keyAttribute="data-news-id"
       >
         <ol
@@ -487,111 +379,14 @@ export function NewsFeed({
             </Button>
           </div>
           {facets.length > 0 && labels.facets && !collapsed && (
-            <div className="k-news-facets" role="group" aria-label={labels.facets.group} data-slot="news-facets">
-              {facetShown.flatMap((key) => {
-                const facet = facets.find((f) => f.key === key)
-                if (!facet) return []
-                const chosen = facetPicked[key] ?? []
-                return [
-                  <Popover key={key}>
-                    <PopoverTrigger asChild>
-                      <button
-                        type="button"
-                        className="k-news-facet"
-                        data-facet={key}
-                        data-active={chosen.length > 0 ? '' : undefined}
-                      >
-                        <span>{facet.label}</span>
-                        {chosen.length > 0 && (
-                          <b>
-                            {chosen.length === 1
-                              ? (facet.options.find((o) => o.value === chosen[0])?.label ?? chosen[0])
-                              : chosen.length}
-                          </b>
-                        )}
-                        <ChevronDownIcon size={12} aria-hidden="true" />
-                      </button>
-                    </PopoverTrigger>
-                    <PopoverContent align="start" className="k-news-facet-pop" aria-label={facet.label}>
-                      <div className="k-news-facet-head">
-                        <b>{facet.label}</b>
-                        <span>
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            disabled={chosen.length === 0}
-                            onClick={() => setPicked2({ ...facetPicked, [key]: [] })}
-                          >
-                            {labels.facets!.reset}
-                          </Button>
-                          <Button
-                            size="icon"
-                            variant="ghost"
-                            aria-label={`${labels.facets!.remove} ${facet.label}`}
-                            onClick={() => {
-                              setFacetShown((prev) => prev.filter((k) => k !== key))
-                              setPicked2({ ...facetPicked, [key]: [] })
-                            }}
-                          >
-                            <Trash2Icon aria-hidden="true" />
-                          </Button>
-                        </span>
-                      </div>
-                      <ul>
-                        {facet.options.map((o) => (
-                          <li key={o.value}>
-                            <label>
-                              <Checkbox
-                                checked={chosen.includes(o.value)}
-                                onCheckedChange={(on) =>
-                                  setPicked2({
-                                    ...facetPicked,
-                                    [key]:
-                                      on === true
-                                        ? facet.single
-                                          ? [o.value]
-                                          : [...chosen, o.value]
-                                        : chosen.filter((v) => v !== o.value),
-                                  })
-                                }
-                              />
-                              {o.label}
-                            </label>
-                          </li>
-                        ))}
-                      </ul>
-                    </PopoverContent>
-                  </Popover>,
-                ]
-              })}
-              {facets.some((f) => !facetShown.includes(f.key)) ? (
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <button type="button" className="k-news-facet k-news-facet-add" data-slot="news-facet-add">
-                      <PlusIcon size={12} aria-hidden="true" />
-                      <span>{labels.facets.add}</span>
-                    </button>
-                  </PopoverTrigger>
-                  <PopoverContent align="start" className="k-news-facet-pop" aria-label={labels.facets.add}>
-                    <ul>
-                      {facets
-                        .filter((f) => !facetShown.includes(f.key))
-                        .map((f) => (
-                          <li key={f.key}>
-                            <button
-                              type="button"
-                              data-facet-option={f.key}
-                              onClick={() => setFacetShown((prev) => [...prev, f.key])}
-                            >
-                              {f.label}
-                            </button>
-                          </li>
-                        ))}
-                    </ul>
-                  </PopoverContent>
-                </Popover>
-              ) : null}
-            </div>
+            <NewsFacets
+              facets={facets}
+              shown={facetShown}
+              onShownChange={setFacetShown}
+              picked={facetPicked}
+              onPickedChange={setFacets}
+              labels={labels.facets}
+            />
           )}
           {sources.length > 0 && !collapsed && (
             <ChipGroup
@@ -655,20 +450,4 @@ export function NewsFeed({
       </div>
     </section>
   )
-}
-
-function Title({ item, onOpen }: { item: NewsItem; onOpen?: (item: NewsItem) => void }) {
-  if (onOpen)
-    return (
-      <button type="button" className="k-news-title" onClick={() => onOpen(item)}>
-        {item.title}
-      </button>
-    )
-  if (item.href)
-    return (
-      <a className="k-news-title" href={item.href} target="_blank" rel="noreferrer">
-        {item.title}
-      </a>
-    )
-  return <span className="k-news-title">{item.title}</span>
 }

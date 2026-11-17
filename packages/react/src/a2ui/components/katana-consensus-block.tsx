@@ -5,7 +5,7 @@ import { createComponentImplementation } from '@a2ui/react'
 import type { ComponentApi } from '@a2ui/web_core'
 import { CommonSchemas } from '@a2ui/web_core/v1_0'
 import { z } from 'zod'
-import { ConsensusBlock } from '../../quant/index.ts'
+import { ConsensusBlock } from '../../blocks/index.ts'
 import { text, withExtension } from '../blocks-support.ts'
 import { Cell, actionSchema, weightSchema } from '../support.tsx'
 
@@ -16,14 +16,14 @@ export const KatanaConsensusBlockApi = {
   schema: z
     .object({
       label: CommonSchemas.DynamicString.describe('Accessible name of the whole block.'),
-      intent: CommonSchemas.DynamicString.describe(
+      subject: CommonSchemas.DynamicString.describe(
         'What is being checked, for example "Order · Account A · Buy 300750 x 2,000".',
       ).optional(),
       parties: z
         .array(
           z
             .object({
-              key: z.string().min(1).describe('Stable key of the party.'),
+              id: z.string().min(1).describe('Stable id of the party.'),
               label: text('Short name of the party, for example "Gateway".'),
               state: z.enum(STATES).describe('The state this party reports.'),
               message: text('One short sentence from the party, ten words at most.'),
@@ -68,9 +68,9 @@ export const KatanaConsensusBlock = createComponentImplementation(KatanaConsensu
   <Cell weight={props.weight}>
     <ConsensusBlock
       label={props.label ?? ''}
-      intent={props.intent}
+      subject={props.subject}
       parties={(props.parties ?? []).map((party) => ({
-        key: party.key,
+        id: party.id,
         label: party.label,
         state: party.state,
         message: party.message,

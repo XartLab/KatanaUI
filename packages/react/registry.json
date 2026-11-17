@@ -59,6 +59,11 @@
           "target": "~/src/katana/ui/theme/chip-group.css"
         },
         {
+          "path": "src/theme/consensus-block.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/consensus-block.css"
+        },
+        {
           "path": "src/theme/data-grid.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/data-grid.css"
@@ -112,6 +117,11 @@
           "path": "src/theme/filter-bar.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/filter-bar.css"
+        },
+        {
+          "path": "src/theme/flow-gauges.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/flow-gauges.css"
         },
         {
           "path": "src/theme/flow-sankey.css",
@@ -184,6 +194,11 @@
           "target": "~/src/katana/ui/theme/menu.css"
         },
         {
+          "path": "src/theme/meter.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/meter.css"
+        },
+        {
           "path": "src/theme/metric-card.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/metric-card.css"
@@ -232,6 +247,11 @@
           "path": "src/theme/quote.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/quote.css"
+        },
+        {
+          "path": "src/theme/regime-strip.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/regime-strip.css"
         },
         {
           "path": "src/theme/rendering.css",
@@ -307,6 +327,11 @@
           "path": "src/theme/technical-rating.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/technical-rating.css"
+        },
+        {
+          "path": "src/theme/toolbar.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/toolbar.css"
         },
         {
           "path": "src/theme/transmission-chain.css",
@@ -4709,19 +4734,6 @@
       ]
     },
     {
-      "name": "consensus-block",
-      "type": "registry:component",
-      "title": "Consensus Block",
-      "description": "写命令提交前的必要条件块：当前意图、各必要条件的满足或阻止、结论与参数 hash；不是投票，任一方未过、未返回、超时、失效都不可提交，裁决永远在执行网关与账户服务。",
-      "files": [
-        {
-          "path": "src/quant/consensus-block.tsx",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/quant/consensus-block.tsx"
-        }
-      ]
-    },
-    {
       "name": "decimal-field",
       "type": "registry:component",
       "title": "Decimal Field",
@@ -4828,19 +4840,6 @@
           "path": "src/quant/event-calendar.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/quant/event-calendar.tsx"
-        }
-      ]
-    },
-    {
-      "name": "flow-gauges",
-      "type": "registry:component",
-      "title": "Flow Gauges",
-      "description": "订单流四个仪表一行：Market Pressure、Price Change（零轴居中，−100…+100）、DOM Pressure（前 N 档买卖挂单柱）、Delta Divergence（多周期 LED 矩阵）；只收算好的数，窗口不足写 N/A。",
-      "files": [
-        {
-          "path": "src/quant/flow-gauges.tsx",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/quant/flow-gauges.tsx"
         }
       ]
     },
@@ -4994,19 +4993,6 @@
           "path": "src/quant/market-heatmap.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/quant/market-heatmap.tsx"
-        }
-      ]
-    },
-    {
-      "name": "meter",
-      "type": "registry:component",
-      "title": "Meter",
-      "description": "横向仪表，三种形态：条（进度、负载、敞口）、刻度（0 到 100 的读数带指针）、同步率条（带齿分段加琥珀评估刻度与右侧大百分比）；颜色只传 tone。",
-      "files": [
-        {
-          "path": "src/quant/meter.tsx",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/quant/meter.tsx"
         }
       ]
     },
@@ -5173,19 +5159,6 @@
       ]
     },
     {
-      "name": "regime-strip",
-      "type": "registry:component",
-      "title": "Regime Strip",
-      "description": "市场状态带：状态模型把历史分成几种状态，画成无缝色带叠在任何时间轴下，配图例；颜色是类别（series-1…7）不是好坏；RegimeBand 只画带。",
-      "files": [
-        {
-          "path": "src/quant/regime-strip.tsx",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/quant/regime-strip.tsx"
-        }
-      ]
-    },
-    {
       "name": "ridgeline-model",
       "type": "registry:component",
       "title": "Ridgeline Model",
@@ -5342,38 +5315,6 @@
       ]
     },
     {
-      "name": "uptime-bars-model",
-      "type": "registry:component",
-      "title": "Uptime Bars Model",
-      "description": "一格一天或一小时的可用条，用于数据源与连接健康：颜色加高度一起表达状态（绿满格可用、琥珀半高降级、红满格中断、虚线底无数据）；悬停或聚焦一格，条下的读数行写那一格的整句（如断流次数）。功能参照 Arc Uptime status，实现原创。",
-      "files": [
-        {
-          "path": "src/quant/uptime-bars-model.ts",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/quant/uptime-bars-model.ts"
-        }
-      ]
-    },
-    {
-      "name": "uptime-bars",
-      "type": "registry:component",
-      "title": "Uptime Bars",
-      "description": "一格一天或一小时的可用条，用于数据源与连接健康：颜色加高度一起表达状态（绿满格可用、琥珀半高降级、红满格中断、虚线底无数据）；悬停或聚焦一格，条下的读数行写那一格的整句（如断流次数）。功能参照 Arc Uptime status，实现原创。",
-      "registryDependencies": [
-        "@katana/chart-kit",
-        "@katana/cn",
-        "@katana/live",
-        "@katana/uptime-bars-model"
-      ],
-      "files": [
-        {
-          "path": "src/quant/uptime-bars.tsx",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/quant/uptime-bars.tsx"
-        }
-      ]
-    },
-    {
       "name": "vintage-series-model",
       "type": "registry:component",
       "title": "Vintage Series Model",
@@ -5520,6 +5461,11 @@
           "target": "~/src/katana/ui/blocks/data-grid/columns.ts"
         },
         {
+          "path": "src/blocks/data-grid/data-grid-props.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/data-grid/data-grid-props.ts"
+        },
+        {
           "path": "src/blocks/data-grid/data-grid.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/blocks/data-grid/data-grid.tsx"
@@ -5528,6 +5474,21 @@
           "path": "src/blocks/data-grid/fit-width.ts",
           "type": "registry:component",
           "target": "~/src/katana/ui/blocks/data-grid/fit-width.ts"
+        },
+        {
+          "path": "src/blocks/data-grid/grid-cells.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/data-grid/grid-cells.tsx"
+        },
+        {
+          "path": "src/blocks/data-grid/grid-head.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/data-grid/grid-head.tsx"
+        },
+        {
+          "path": "src/blocks/data-grid/grid-menu.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/data-grid/grid-menu.tsx"
         },
         {
           "path": "src/blocks/data-grid/host.tsx",
@@ -5543,6 +5504,11 @@
           "path": "src/blocks/data-grid/model.ts",
           "type": "registry:component",
           "target": "~/src/katana/ui/blocks/data-grid/model.ts"
+        },
+        {
+          "path": "src/blocks/data-grid/use-column-sizing.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/data-grid/use-column-sizing.ts"
         }
       ]
     },
@@ -5714,6 +5680,7 @@
         "@katana/live",
         "@katana/live-readout",
         "@katana/popover",
+        "@katana/severity",
         "@katana/text-measure"
       ],
       "files": [
@@ -5782,6 +5749,11 @@
       ],
       "files": [
         {
+          "path": "src/blocks/news-feed/news-facets.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/news-feed/news-facets.tsx"
+        },
+        {
           "path": "src/blocks/news-feed/news-feed-model.ts",
           "type": "registry:component",
           "target": "~/src/katana/ui/blocks/news-feed/news-feed-model.ts"
@@ -5795,6 +5767,16 @@
           "path": "src/blocks/news-feed/news-feed.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/blocks/news-feed/news-feed.tsx"
+        },
+        {
+          "path": "src/blocks/news-feed/news-row.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/news-feed/news-row.tsx"
+        },
+        {
+          "path": "src/blocks/news-feed/use-news-virtual.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/news-feed/use-news-virtual.ts"
         }
       ]
     },
@@ -5812,6 +5794,7 @@
         "@katana/hold-to-confirm",
         "@katana/led",
         "@katana/measured-skeleton",
+        "@katana/severity",
         "@katana/skeleton",
         "@katana/toggle-group"
       ],
@@ -5841,6 +5824,7 @@
         "@katana/cn",
         "@katana/led",
         "@katana/measured-skeleton",
+        "@katana/severity",
         "@katana/skeleton",
         "@katana/toggle-group"
       ],
@@ -5873,6 +5857,7 @@
         "@katana/led",
         "@katana/meter",
         "@katana/pnl-text",
+        "@katana/severity",
         "@katana/spark-tile",
         "@katana/toggle-group"
       ],
@@ -5900,16 +5885,31 @@
         "@katana/data-grid",
         "@katana/equity-curve",
         "@katana/measured-skeleton",
-        "@katana/quant-format",
         "@katana/tabs",
         "@katana/toggle-group",
+        "@katana/tone",
         "@katana/tone-text"
       ],
       "files": [
         {
+          "path": "src/blocks/strategy-report/strategy-report-metrics.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/strategy-report/strategy-report-metrics.ts"
+        },
+        {
           "path": "src/blocks/strategy-report/strategy-report-model.ts",
           "type": "registry:component",
           "target": "~/src/katana/ui/blocks/strategy-report/strategy-report-model.ts"
+        },
+        {
+          "path": "src/blocks/strategy-report/strategy-report-panes.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/strategy-report/strategy-report-panes.tsx"
+        },
+        {
+          "path": "src/blocks/strategy-report/strategy-report-types.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/strategy-report/strategy-report-types.ts"
         },
         {
           "path": "src/blocks/strategy-report/strategy-report.tsx",
@@ -5936,6 +5936,11 @@
       ],
       "files": [
         {
+          "path": "src/blocks/transmission-chain/transmission-chain-detail.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/transmission-chain/transmission-chain-detail.tsx"
+        },
+        {
           "path": "src/blocks/transmission-chain/transmission-chain-model.ts",
           "type": "registry:component",
           "target": "~/src/katana/ui/blocks/transmission-chain/transmission-chain-model.ts"
@@ -5944,6 +5949,108 @@
           "path": "src/blocks/transmission-chain/transmission-chain.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/blocks/transmission-chain/transmission-chain.tsx"
+        }
+      ]
+    },
+    {
+      "name": "event-timeline",
+      "type": "registry:component",
+      "title": "Event Timeline",
+      "description": "发现区的统一事件流（公告、告警、成交、数据源事件）：按显示时区的自然日分组，新的在前，每条一个钟点、一个按类型上色的圆点、标题加来源标签与说明。对设计稿的 EventTimeline 卡。功能参照 Arc，实现原创。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/date",
+        "@katana/live",
+        "@katana/text-measure"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/event-timeline/event-timeline-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/event-timeline/event-timeline-model.ts"
+        },
+        {
+          "path": "src/blocks/event-timeline/event-timeline.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/event-timeline/event-timeline.tsx"
+        }
+      ]
+    },
+    {
+      "name": "meter",
+      "type": "registry:component",
+      "title": "Meter",
+      "description": "横向仪表，三种形态：条（进度、负载、敞口）、刻度（0 到 100 的读数带指针）、同步率条（带齿分段加琥珀评估刻度与右侧大百分比）；颜色只传 tone。",
+      "registryDependencies": [
+        "@katana/severity"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/meter/meter.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/meter/meter.tsx"
+        }
+      ]
+    },
+    {
+      "name": "consensus-block",
+      "type": "registry:component",
+      "title": "Consensus Block",
+      "description": "写命令提交前的必要条件块：当前意图、各必要条件的满足或阻止、结论与参数 hash；不是投票，任一方未过、未返回、超时、失效都不可提交，裁决永远在执行网关与账户服务。",
+      "files": [
+        {
+          "path": "src/blocks/consensus-block/consensus-block.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/consensus-block/consensus-block.tsx"
+        }
+      ]
+    },
+    {
+      "name": "regime-strip",
+      "type": "registry:component",
+      "title": "Regime Strip",
+      "description": "市场状态带：状态模型把历史分成几种状态，画成无缝色带叠在任何时间轴下，配图例；颜色是类别（series-1…7）不是好坏；RegimeBand 只画带。",
+      "files": [
+        {
+          "path": "src/blocks/regime-strip/regime-strip.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/regime-strip/regime-strip.tsx"
+        }
+      ]
+    },
+    {
+      "name": "flow-gauges",
+      "type": "registry:component",
+      "title": "Flow Gauges",
+      "description": "订单流四个仪表一行：Market Pressure、Price Change（零轴居中，−100…+100）、DOM Pressure（前 N 档买卖挂单柱）、Delta Divergence（多周期 LED 矩阵）；只收算好的数，窗口不足写 N/A。",
+      "files": [
+        {
+          "path": "src/blocks/flow-gauges/flow-gauges.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/flow-gauges/flow-gauges.tsx"
+        }
+      ]
+    },
+    {
+      "name": "uptime-bars",
+      "type": "registry:component",
+      "title": "Uptime Bars",
+      "description": "一格一天或一小时的可用条，用于数据源与连接健康：颜色加高度一起表达状态（绿满格可用、琥珀半高降级、红满格中断、虚线底无数据）；悬停或聚焦一格，条下的读数行写那一格的整句（如断流次数）。功能参照 Arc Uptime status，实现原创。",
+      "registryDependencies": [
+        "@katana/chart-kit",
+        "@katana/cn",
+        "@katana/live"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/uptime-bars/uptime-bars-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/uptime-bars/uptime-bars-model.ts"
+        },
+        {
+          "path": "src/blocks/uptime-bars/uptime-bars.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/uptime-bars/uptime-bars.tsx"
         }
       ]
     },
@@ -6001,41 +6108,6 @@
           "path": "src/blocks/estimate-badge.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/blocks/estimate-badge.tsx"
-        }
-      ]
-    },
-    {
-      "name": "event-timeline-model",
-      "type": "registry:component",
-      "title": "Event Timeline Model",
-      "description": "EventTimeline 的分组规则：按显示时区的自然日分组、新的在前，钟点格式（纯函数）。",
-      "registryDependencies": [
-        "@katana/date",
-        "@katana/text-measure"
-      ],
-      "files": [
-        {
-          "path": "src/blocks/event-timeline-model.ts",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/blocks/event-timeline-model.ts"
-        }
-      ]
-    },
-    {
-      "name": "event-timeline",
-      "type": "registry:component",
-      "title": "Event Timeline",
-      "description": "发现区的统一事件流（公告、告警、成交、数据源事件）：按显示时区的自然日分组，新的在前，每条一个钟点、一个按类型上色的圆点、标题加来源标签与说明。对设计稿的 EventTimeline 卡。功能参照 Arc，实现原创。",
-      "registryDependencies": [
-        "@katana/cn",
-        "@katana/event-timeline-model",
-        "@katana/live"
-      ],
-      "files": [
-        {
-          "path": "src/blocks/event-timeline.tsx",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/blocks/event-timeline.tsx"
         }
       ]
     },

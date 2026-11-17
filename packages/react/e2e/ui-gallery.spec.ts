@@ -8860,3 +8860,101 @@ test('SmoothUI 并入 CalendarHeatmap：reveal 让格子依次淡入，悬停的
   await expect(tip).toBeVisible()
   expect(await tip.evaluate((el) => getComputedStyle(el).animationName)).toBe('k-heat-tip-in')
 })
+
+// G6：三页原来没有专属 e2e（体检 §5）：TreeView、SideNav、ColumnSetTabs。
+for (const theme of THEMES) {
+  test(`TreeView（${theme}）：→ 展开 ← 收起、↑↓ 走、点行选中写回 value、Enter 激活、禁用项不能选`, async ({ page }) => {
+    await open(page, theme, 'tree-view')
+    const area = section(page, 'tree-view')
+    const tree = area.getByRole('treegrid', { name: '品种分类' })
+    const row = (name: string) => tree.getByRole('row', { name, exact: true })
+    const picked = area.locator('[data-gallery-tree]')
+    // 默认展开 A 股与主板，沪市选中
+    await expect(row('沪市')).toHaveAttribute('aria-selected', 'true')
+    await expect(picked).toHaveText('cn-sh')
+    await expect(row('港股')).toHaveAttribute('aria-expanded', 'false')
+    await expect(tree.getByRole('row', { name: '主板' })).toHaveCount(1)
+    // 点一行：选中它（给了 onAction，点行是「选中这一行」）
+    await row('科创板').click()
+    await expect(row('科创板')).toHaveAttribute('aria-selected', 'true')
+    await expect(row('沪市')).toHaveAttribute('aria-selected', 'false')
+    await expect(picked).toHaveText('cn-star')
+    // 键盘：↓ 到港股，→ 展开，↓ 进子级，← 回父级再 ← 收起
+    await page.keyboard.press('ArrowDown')
+    await expect(row('港股')).toBeFocused()
+    await page.keyboard.press('ArrowRight')
+    await expect(row('港股')).toHaveAttribute('aria-expanded', 'true')
+    await expect(tree.getByRole('row', { name: '主板' })).toHaveCount(2)
+    await page.keyboard.press('ArrowDown')
+    await expect(tree.getByRole('row', { name: '主板' }).nth(1)).toBeFocused()
+    await page.keyboard.press('ArrowLeft')
+    await expect(row('港股')).toBeFocused()
+    await page.keyboard.press('ArrowLeft')
+    await expect(row('港股')).toHaveAttribute('aria-expanded', 'false')
+    // Enter 激活（onAction）
+    await page.keyboard.press('Enter')
+    await expect(area.locator('[data-gallery-tree-open]')).toHaveText('hk')
+    // 禁用项：展开加密后点永续，选中不变
+    await row('加密').click()
+    await page.keyboard.press('ArrowRight')
+    await row('永续').click({ force: true })
+    await expect(row('永续')).toHaveAttribute('aria-disabled', 'true')
+    await expect(picked).toHaveText('crypto')
+  })
+
+  test(`SideNav（${theme}）：当前项 aria-current、过滤框按标题与关键词过滤、没有命中整组隐藏写空态、Enter 打开第一个`, async ({
+    page,
+  }) => {
+    await open(page, theme, 'side-nav')
+    const area = section(page, 'side-nav')
+    const nav = area.getByRole('navigation', { name: 'Workspace' })
+    const link = (name: string) => nav.getByRole('link', { name, exact: true })
+    await expect(link('Heatmap')).toHaveAttribute('aria-current', 'page')
+    // 当前项轨迹画出来了（不透明），悬停另一项出淡色轨迹
+    await expect(nav.locator('.k-sidenav-trail[data-kind="active"]').first()).toHaveCSS('opacity', '1')
+    await link('Orders').hover()
+    await expect(nav.locator('.k-sidenav-trail[data-kind="hover"]').nth(1)).toHaveCSS('opacity', '1')
+    // 点一项：调用方把 current 换过去
+    await link('Positions').click()
+    await expect(link('Positions')).toHaveAttribute('aria-current', 'page')
+    await expect(link('Heatmap')).not.toHaveAttribute('aria-current', 'page')
+    // 过滤：按关键词（bots 的 keywords 有 automation）命中，别的组整组隐藏
+    const search = nav.getByRole('searchbox', { name: 'Search' })
+    await search.fill('automation')
+    await expect(nav.getByRole('link')).toHaveCount(1)
+    await expect(link('Bots')).toBeVisible()
+    await expect(nav.getByRole('heading', { name: 'Markets' })).toHaveCount(0)
+    // 没有命中：写空态；Esc 清空
+    await search.fill('zzz')
+    await expect(nav.getByText('No match')).toBeVisible()
+    await search.press('Escape')
+    await expect(nav.getByRole('link')).toHaveCount(6)
+    // Enter 打开过滤后的第一个
+    await search.fill('scr')
+    await search.press('Enter')
+    await expect(link('Screener')).toHaveAttribute('aria-current', 'page')
+  })
+
+  test(`ColumnSetTabs（${theme}）：点页签换整套列、亮着的页签跟着列走、手动改列后没有页签亮着`, async ({ page }) => {
+    await open(page, theme, 'column-set-tabs')
+    const area = section(page, 'column-set-tabs')
+    const tabs = area.getByRole('tablist', { name: '列集' })
+    const all = tabs.getByRole('tab')
+    await expect(all.first()).toHaveAttribute('aria-selected', 'true')
+    const heads = async () =>
+      (await area.locator('[role="columnheader"][data-col]').allTextContents()).map((t) =>
+        t.replace(/[▲▼]/g, '').trim(),
+      )
+    const before = await heads()
+    await all.nth(1).click()
+    await expect(all.nth(1)).toHaveAttribute('aria-selected', 'true')
+    await expect(all.first()).toHaveAttribute('aria-selected', 'false')
+    await expect.poll(heads).not.toEqual(before)
+    // 手动在 ColumnPicker 里多勾一列：看得见的列不再恰好等于哪一套，没有页签亮着
+    await area.getByRole('button', { name: '添加列' }).click()
+    const list = page.getByRole('group', { name: '列' })
+    await list.getByRole('checkbox', { checked: false }).first().click()
+    await page.keyboard.press('Escape')
+    await expect(tabs.locator('[aria-selected="true"]')).toHaveCount(0)
+  })
+}

@@ -3,8 +3,8 @@
 // 轴按交易时段排，午休压成一小段（看的是顺序不是斜率）；同一分钟的事件聚成一个带计数的标记；可见标记 ≤ 60，更多先聚合；标签上下交错。
 // 时区由调用方传（应用的显示时区，IANA 名）：同一刻在上海与纽约可能落在不同的「天」，件里不猜、不读系统时区。
 
-import { dayKeyIn } from '../lib/date.ts'
-import { fontFor, measureText } from '../lib/text-measure.ts'
+import { dayKeyIn } from '../../lib/date.ts'
+import { fontFor, measureText } from '../../lib/text-measure.ts'
 
 /** 类别：异动 / 公告 / 成交 / 警报 / run；形状与状态色见 event-timeline.css。 */
 export type EventKind = 'anomaly' | 'notice' | 'fill' | 'alert' | 'run'

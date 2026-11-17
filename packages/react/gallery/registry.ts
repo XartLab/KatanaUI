@@ -1096,7 +1096,11 @@ export const PAGES: readonly DocPage[] = [
             desc: '板位单位、晋级率与只数文字、状态名、汇总读数名、列名、读屏名、空态文字，由调用方传。',
           },
           { name: 'selected', type: 'string | null', desc: '选中个股的代码；选中行左侧画 2px 强调条。' },
-          { name: 'onSelect', type: '(code: string) => void', desc: '点击或 Enter / Space 选一行。' },
+          {
+            name: 'onSelect',
+            type: '(item: LadderItem) => void',
+            desc: '点击或 Enter / Space 选一行；给出整条（G6 起不再只给代码）。',
+          },
           {
             name: 'rowActions',
             type: '(item: LadderItem) => RowAction[]',
@@ -1819,8 +1823,12 @@ export const PAGES: readonly DocPage[] = [
             default: "'single'",
             desc: 'none 只展开收起，点行不选。',
           },
-          { name: 'selectedKeys / defaultSelectedKeys', type: 'string[]', desc: '选中的 id，受控 / 非受控。' },
-          { name: 'onSelectionChange', type: '(keys: string[]) => void', desc: '选中变了。' },
+          {
+            name: 'value / defaultValue',
+            type: 'string[]',
+            desc: '选中的 id，受控 / 非受控（旧名 selectedKeys / defaultSelectedKeys 留一个版本）。',
+          },
+          { name: 'onValueChange', type: '(value: string[]) => void', desc: '选中变了（旧名 onSelectionChange）。' },
           { name: 'expandedKeys / defaultExpandedKeys', type: 'string[]', desc: '展开的 id，受控 / 非受控。' },
           { name: 'onExpandedChange', type: '(keys: string[]) => void', desc: '展开变了。' },
           {
@@ -2430,9 +2438,9 @@ export const PAGES: readonly DocPage[] = [
           { name: 'valueText', type: 'string', desc: '右边的数怎么写；不给就是四舍五入的百分数。' },
           {
             name: 'tone',
-            type: "'accent' | 'ok' | 'warn' | 'danger' | 'off'",
+            type: 'SeverityExt',
             default: "'accent'",
-            desc: '进行中（橙）、健康（绿）、受限或越界（琥珀）、弱势（红）、停用。',
+            desc: '进行中 accent（橙）、健康 ok（绿）、受限或越界 warn（琥珀）、弱势 danger（红）、停用 off / neutral。',
           },
           {
             name: 'display',
@@ -2450,6 +2458,7 @@ export const PAGES: readonly DocPage[] = [
       'gauge：34px 凹槽、中线、底部 0/25/50/75/100 刻度，指针带光；弱势用 danger（红）。',
       'sync：14px 带齿条，右侧大百分比（display-dense 字），琥珀刻度是评估点。',
       'warn：条与数转琥珀，条体脉冲一次；off：全部转灰。',
+      'tone 是 SeverityExt（G6）：neutral 画法同 off（没有判断就不着色）。',
     ],
     donts: [
       '不要传颜色，只传 tone。',
@@ -2479,8 +2488,11 @@ export const PAGES: readonly DocPage[] = [
             desc: '每格一个，kind 是 pressure | priceChange | dom | divergence。',
           },
           { name: 'label', type: 'string', desc: '整行的读屏名。' },
-          { name: 'naText', type: 'string', default: "'N/A'", desc: '没有数的位置写什么。' },
-          { name: 'estimateText', type: 'string', default: "'est.'", desc: '估算标记的字。' },
+          {
+            name: 'labels',
+            type: '{ na?, estimate? }',
+            desc: "没有数的位置写什么（默认 'N/A'）、估算标记的字（默认 'est.'）；旧名 naText / estimateText 留一个版本。",
+          },
         ],
       },
       {
@@ -2540,12 +2552,15 @@ export const PAGES: readonly DocPage[] = [
         rows: [
           { name: 'title', type: 'ReactNode', desc: '图例上方的标题行。' },
           { name: 'current', type: 'string', desc: '当前所处状态的 id。' },
-          { name: 'currentText', type: 'string', desc: '「当前」的字；给了 current 就要给。' },
-          { name: 'estimateText', type: 'string', default: "'est.'", desc: '有估算段时图例末尾的字。' },
           {
-            name: 'onPickState',
-            type: '(id: string | null) => void',
-            desc: '给了图例每项就是按钮：点选高亮，再点取消（传 null）。',
+            name: 'labels',
+            type: '{ current?, estimate? }',
+            desc: "「当前」的字（给了 current 就要给）、有估算段时图例末尾的字（默认 'est.'）；旧名 currentText / estimateText 留一个版本。",
+          },
+          {
+            name: 'onSelect',
+            type: '(state: RegimeState | null) => void',
+            desc: '给了图例每项就是按钮：点选高亮，再点同一项取消（传 null）；旧名 onPickState（给 id）留一个版本。',
           },
         ],
       },
@@ -2586,7 +2601,7 @@ export const PAGES: readonly DocPage[] = [
       '不要只靠颜色认状态，图例里一定有名字。',
     ],
     composition: 'RegimeStrip\n  RegimeBand\n  图例（色块 + 名字 + 小字）',
-    keys: [['Enter / Space', '给了 onPickState 时，图例项点选或取消高亮']],
+    keys: [['Enter / Space', '给了 onSelect 时，图例项点选或取消高亮']],
   },
   {
     id: 'consensus-block',
@@ -2602,7 +2617,11 @@ export const PAGES: readonly DocPage[] = [
         note: '各方的判定来自各自的权威，件只画不判，不合成第四种判断。一个表单只放一个。结构不皮肤化。',
         rows: [
           { name: 'label', type: 'string', desc: '整块的读屏名。' },
-          { name: 'intent', type: 'ReactNode', desc: '当前意图（下单 · 账户 A · 买 300750 × 2,000）。' },
+          {
+            name: 'subject',
+            type: 'ReactNode',
+            desc: '要提交的是什么（下单 · 账户 A · 买 300750 × 2,000）；旧名 intent 留一个版本。',
+          },
           {
             name: 'parties',
             type: 'readonly ConsensusParty[]',
@@ -3153,7 +3172,7 @@ export const PAGES: readonly DocPage[] = [
       {
         part: 'DataGridHost（经 DataGridHostProvider 提供）',
         symbol: 'DataGridHost',
-        note: '应用才有的能力；包里不带语言，文案都是宿主传的。',
+        note: '应用才有的能力；包里不带语言，文案都是宿主经 labels（DataGridLabels）传的；旧名 texts / DataGridTexts 留一个版本（G6）。',
       },
       {
         part: 'ColumnPicker',
@@ -3270,7 +3289,11 @@ export const PAGES: readonly DocPage[] = [
             type: "'A' | 'B' | 'C' | 'D' | null",
             desc: '联动色点：给组名画那组的颜色；null 画熄灭的环；不传不画。',
           },
-          { name: 'linkLabel', type: 'string', desc: '色点的名字（读屏念）；有 linkGroup 时必填。' },
+          {
+            name: 'labels',
+            type: '{ link?, collapse?, expand? }',
+            desc: '色点的名字（有 linkGroup 时必填）、折叠按钮两态的名字（collapsible 时必填）；旧名 linkLabel / collapseLabel / expandLabel 留一个版本。',
+          },
           { name: 'pinned', type: 'boolean', default: 'false', desc: '固定（不跟随联动）：色点变空心圆。' },
           { name: 'toolbar', type: 'ReactNode', desc: '标题后的局部工具条（Toolbar）。' },
           { name: 'actions', type: 'ReactNode', desc: '右侧动作槽（设置、最大化、关闭）；不超过三个，更多进设置。' },
@@ -3278,7 +3301,7 @@ export const PAGES: readonly DocPage[] = [
             name: 'collapsible',
             type: 'boolean',
             default: 'false',
-            desc: '画折叠按钮（collapseLabel、expandLabel 由调用方传）。',
+            desc: '画折叠按钮（名字经 labels.collapse、labels.expand 传）。',
           },
         ],
       },
@@ -3287,12 +3310,12 @@ export const PAGES: readonly DocPage[] = [
         note: '其余属性透传给 div（tabpanel 的 role、id 也走这里）。',
         rows: [
           {
-            name: 'state',
+            name: 'status',
             type: "'ready' | 'loading' | 'empty' | 'disconnected'",
             default: "'ready'",
-            desc: 'ready 画 children；loading 画骨架；empty、disconnected 画空态。',
+            desc: 'ready 画 children；loading 画骨架；empty、disconnected 画空态（旧名 state 留一个版本）。',
           },
-          { name: 'loadingLabel', type: 'string', desc: 'loading 时骨架的名字（读屏念）。' },
+          { name: 'labels', type: '{ loading? }', desc: 'loading 时骨架的名字（读屏念；旧名 loadingLabel）。' },
           {
             name: 'view',
             type: '{ tag?, title, description?, actions? }',
@@ -3330,7 +3353,7 @@ export const PAGES: readonly DocPage[] = [
         rows: [
           { name: 'left / center / right', type: 'StatusItem[]', desc: '三段各一组项。' },
           { name: 'label', type: 'string', desc: '状态栏的名字（读屏念）。' },
-          { name: 'moreLabel', type: 'string', desc: '「…」按钮的名字。' },
+          { name: 'labels', type: '{ more }', desc: '「…」按钮的名字（旧名 moreLabel 留一个版本）。' },
         ],
       },
       {
@@ -3339,7 +3362,11 @@ export const PAGES: readonly DocPage[] = [
         rows: [
           { name: 'id', type: 'string', desc: '稳定的 id。' },
           { name: 'label / value', type: 'string / ReactNode', desc: '点阵键名（灰）与等宽的值（亮）。' },
-          { name: 'led / ledLabel', type: 'LedState / string', desc: '前面的状态灯与它的名字（给了灯就必须给名字）。' },
+          {
+            name: 'tone / ledLabel',
+            type: 'SeverityExt / string',
+            desc: '前面状态灯的语气（灯由 ledOf 取，accent 是点亮的强调色）与它的名字（给了灯就必须给名字）；旧名 led（LedState）留一个版本。',
+          },
           { name: 'onClick', type: '() => void', desc: '给了整项是按钮（QUOTE → 数据源）。' },
           { name: 'priority', type: 'number', default: '0', desc: '越大越晚被收起。' },
           { name: 'pinned / live', type: 'boolean', desc: '永不收起；live 另外画琥珀内描边（实盘账户）。' },
@@ -3357,6 +3384,7 @@ export const PAGES: readonly DocPage[] = [
       '宽度不够：先收优先级最低的（同级收靠后的）进「…」弹层，pinned 与 live 不收。',
       '项可点：悬停提亮，是按钮；不可点是纯读数。',
       '实盘项：琥珀内描边，不能被隐藏策略收掉。',
+      '灯：项给 tone（Severity，加 off / accent），灯由 ledOf 取——neutral、off 不亮，accent 是点亮的强调色（实盘项用它）；旧的 led（LedState）留一个版本。',
     ],
     donts: [
       '段不要超过 8 个，更多进运行中心。',
@@ -3559,8 +3587,11 @@ export const PAGES: readonly DocPage[] = [
           { name: 'current', type: 'string', desc: '当前项的 id；轨迹画到它。' },
           { name: 'header', type: 'ReactNode', desc: '顶部（品牌、面包屑、收起按钮）。' },
           { name: 'footer', type: 'ReactNode', desc: '底部。' },
-          { name: 'searchLabel', type: 'string', desc: '过滤框的占位与读屏名；不给就没有过滤框。' },
-          { name: 'emptyLabel', type: 'string', desc: '过滤没有结果时的文字。' },
+          {
+            name: 'labels',
+            type: '{ search?, empty? }',
+            desc: '过滤框的占位与读屏名（不给就没有过滤框）、过滤没有结果时的文字；旧名 searchLabel / emptyLabel 留一个版本。',
+          },
         ],
       },
     ],
@@ -3595,9 +3626,9 @@ export const PAGES: readonly DocPage[] = [
           { name: 'onReorder', type: '(id, targetId) => void', desc: '把 id 挪到 targetId 的位置；不给就不能排序。' },
           { name: 'onRename', type: '(id) => void', desc: '进改名；输入框是宿主的事；不给就不能改名。' },
           {
-            name: 'onCreate / createLabel',
-            type: '() => void / string',
-            desc: '「+」与它的名字；不给 onCreate 就不画。',
+            name: 'onCreate / labels',
+            type: '() => void / { create?, more? }',
+            desc: '「+」与它的名字、「更多」下拉的名字；不给 onCreate 就不画「+」（旧名 createLabel / moreLabel 留一个版本）。',
           },
           { name: 'label', type: 'string', desc: '标签条的名字（读屏念）。' },
         ],
@@ -3803,7 +3834,11 @@ export const PAGES: readonly DocPage[] = [
       },
     ],
     states: ['选中：白底黑字小胶囊。', '手动改过列：没有页签选中。'],
-    donts: ['不要自己存「当前列集」：它由列推出来。'],
+    donts: [
+      '不要自己存「当前列集」：它由列推出来。',
+      '不要拿它代替 ColumnPicker：页签只套整套列，单列的显隐与次序在 ColumnPicker 里改。',
+      '页签不要超过一行能放下的数量（约 8 个）；更多的套用放进 ColumnPicker 的列集芯片。',
+    ],
     composition: 'ColumnSetTabs\n  tablist\n    tab × n\n  右侧按钮位',
     keys: [
       ['Tab', '在页签间移动'],
@@ -3845,7 +3880,7 @@ export const PAGES: readonly DocPage[] = [
             desc: '读屏名与「要点」「关闭」「举报」「复制链接」；updated（「已更新」）传了，这一条被更新时标题闪一次并留标记，不传就不闪。',
           },
           {
-            name: 'onClose / onReport / onCopyLink / onSymbolPick',
+            name: 'onClose / onReport / onCopyLink / onSymbolSelect',
             type: 'function',
             desc: '给了才画对应的按钮；点品种胶囊回调。',
           },
@@ -3853,7 +3888,11 @@ export const PAGES: readonly DocPage[] = [
       },
     ],
     states: ['品种涨跌：正涨色、负跌色，0 不上色。', '被更新：标题闪警示色，旁边留「已更新」。'],
-    donts: ['不要在件里取数或翻译：文字由调用方传。'],
+    donts: [
+      '不要在件里取数或翻译：文字由调用方传。',
+      '品种胶囊的涨跌不要用橙色或蓝色：只用涨跌色（pnl token，跟 data-updown 互换）。',
+      '「已更新」不要当警告：只在同一条被改了时闪一次（新信息的蓝），不要拿它提示别的条。',
+    ],
     composition: 'NewsReader（article）\n  header：来源 + 操作\n  标题、元信息\n  品种胶囊\n  要点\n  正文',
     keys: [['Tab', '在操作与品种胶囊间移动']],
   },
@@ -3898,7 +3937,11 @@ export const PAGES: readonly DocPage[] = [
             desc: '组合过滤（照 TradingView News Flow，主会话 2026-11-15 实测）：{ key, label, options, single?, shown? }；条目用 NewsItem.facets 带取值。每个分面一个胶囊，浮层里复选、可重置、可移除，「+ 添加过滤」再加；取值之间「或」，分面之间「且」。需要 labels.facets 的文字。',
           },
           { name: 'selected', type: 'string | null', desc: '阅读窗开着的那条：行底色加深。' },
-          { name: 'onSymbolPick', type: '(symbol, item) => void', desc: '点品种胶囊。' },
+          {
+            name: 'onSymbolSelect',
+            type: '(symbol, item) => void',
+            desc: '点品种胶囊（旧名 onSymbolPick 留一个版本）。',
+          },
           {
             name: 'reader',
             type: '(item, { close }) => ReactNode',
@@ -3923,9 +3966,13 @@ export const PAGES: readonly DocPage[] = [
           {
             name: 'itemActions',
             type: '(item) => RowAction[]',
-            desc: '每条的快捷操作：悬停出前几颗图标按钮，右键出同一份菜单；配 itemActionsLabel（读屏名）。',
+            desc: '每条的快捷操作：悬停出前几颗图标按钮，右键出同一份菜单；读屏名在 labels.itemActions（旧名 itemActionsLabel）。',
           },
-          { name: 'onOpen', type: '(item) => void', desc: '给了，标题是按钮；没给而条目有 href，标题是新窗口链接。' },
+          {
+            name: 'onSelect',
+            type: '(item) => void',
+            desc: '选中一条：给了，标题是按钮；没给而条目有 href，标题是新窗口链接（旧名 onOpen 留一个版本）。',
+          },
           {
             name: 'onChannelChange / onSourcesChange / onPausedChange',
             type: 'callback',
@@ -4132,6 +4179,7 @@ export const PAGES: readonly DocPage[] = [
       '过了检验期限还没结论：自动按「过期」画（调用方不必先改状态），倒计时换成已过期天数。',
       '有支持 / 被否定：人下了结论，行上显示期限日期；一行上的「n 支持 · m 反对」是证据对比。',
       '筛选：状态与传导层叠加，两边的计数各自不被对方的筛选影响；没有结果出空态。',
+      '灯的语气（hypothesisSeverity → ledOf，G6）：待验证 accent（点亮的强调色）、支持 ok、证伪 danger、过期 warn；不再在件里手写灯表。',
     ],
     donts: [
       '不要把学者观点当成已发生的事实：证据按类型打标，假说自己永远是命题。',
@@ -4199,6 +4247,7 @@ export const PAGES: readonly DocPage[] = [
       '稍后：仍在待处理页，带「已推后」标记，不再给「稍后」按钮。',
       '过了有效期没人处理：按已过期画，不能再接受或拒绝（调用方不必先改状态）。',
       '已接受 / 已拒绝 / 已过期：收成一行（灯、结果、动作、对象、谁与何时），点开看理由与来源。',
+      '灯的语气（decisionSeverity → ledOf，G6）：待处理 accent、稍后 warn、接受 ok、拒绝 danger、过期 off。',
     ],
     donts: [
       '不要把接受做成单击：它是不可撤的，必须按住。',
@@ -4271,7 +4320,11 @@ export const PAGES: readonly DocPage[] = [
             type: 'number',
             desc: '额度条转琥珀的占用比；不给不预警，≥ 1 总是红。预警线属于账户风控，由调用方给。',
           },
-          { name: 'onLinkPick', type: '(link) => void', desc: '给了，连接条上每个连接是按钮。' },
+          {
+            name: 'onSelect',
+            type: '(link) => void',
+            desc: '选中一个连接：给了，连接条上每个连接是按钮（旧名 onLinkPick 留一个版本）。',
+          },
         ],
       },
     ],
@@ -4281,6 +4334,7 @@ export const PAGES: readonly DocPage[] = [
       '策略出错：整行左侧红边，名字下写出错说明；排在最前。',
       '额度 ≥ 1：条贴边变红；达到 quotaWarnAt：琥珀。',
       '事件筛选没有命中：写 labels.noEvents。',
+      '灯的语气（linkSeverity / strategySeverity / eventSeverity → ledOf，G6）：连接 ok / degraded warn / error danger / offline off；策略 running ok / paused warn / error danger / stopped off；事件 info neutral（不亮）/ warn / error danger。',
     ],
     donts: [
       '不要用橙色画状态或数据：橙色不画数据，状态用绿、琥珀、红加文字。',

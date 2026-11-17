@@ -5,7 +5,7 @@
   flex-direction: column;
   min-height: 0;
   height: 100%;
-  color: var(--ink-200);
+  color: var(--k-content-body-foreground);
   font: var(--text-data) var(--font-sans);
   font-variant-numeric: tabular-nums;
 }
@@ -18,7 +18,7 @@
 }
 .k-sysmon-head h3 {
   margin: 0;
-  color: var(--ink-100);
+  color: var(--k-content-primary-foreground);
   font: inherit;
   font-weight: 700;
 }
@@ -32,10 +32,10 @@
 }
 .k-sysmon-empty {
   padding: 12px;
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   text-align: center;
   border: var(--hairline);
-  background: var(--bg-200);
+  background: var(--k-container-secondary-background);
 }
 .k-sysmon-linklist {
   display: flex;
@@ -46,16 +46,16 @@
   list-style: none;
 }
 .k-sysmon-link {
-  background: var(--bg-200);
+  background: var(--k-container-secondary-background);
   border: var(--hairline);
-  border-left: 3px solid var(--line-200);
+  border-left: 3px solid var(--k-separable-bold-borderColor);
 }
 .k-sysmon-link[data-state='error'] {
-  border-left-color: var(--signal-red);
+  border-left-color: var(--k-status-danger-foreground);
 }
 .k-sysmon-link[data-state='offline'],
 .k-sysmon-link[data-state='degraded'] {
-  border-left-color: var(--signal-amber);
+  border-left-color: var(--k-status-warn-foreground);
 }
 .k-sysmon-link-body {
   display: flex;
@@ -72,26 +72,26 @@ button.k-sysmon-link-body {
   cursor: pointer;
 }
 button.k-sysmon-link-body:hover {
-  background: var(--bg-300);
+  background: var(--k-surface-raised-background);
 }
 button.k-sysmon-link-body:focus-visible {
   outline: 2px solid var(--focus-ring);
   outline-offset: -2px;
 }
 .k-sysmon-link-name {
-  color: var(--ink-100);
+  color: var(--k-content-primary-foreground);
   font-weight: 600;
 }
 .k-sysmon-link[data-state='error'] .k-sysmon-link-state {
-  color: var(--signal-red);
+  color: var(--k-status-danger-foreground);
 }
 .k-sysmon-link[data-state='offline'] .k-sysmon-link-state,
 .k-sysmon-link[data-state='degraded'] .k-sysmon-link-state {
-  color: var(--signal-amber);
+  color: var(--k-status-warn-foreground);
 }
 .k-sysmon-link-state,
 .k-sysmon-link-beat {
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
 }
 .k-sysmon-metrics {
   display: grid;
@@ -117,30 +117,30 @@ button.k-sysmon-link-body:focus-visible {
   border-bottom: var(--hairline);
 }
 .k-sysmon-table thead th {
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   font-weight: 500;
-  background: var(--bg-200);
+  background: var(--k-container-secondary-background);
 }
 .k-sysmon-table .num {
   text-align: right;
 }
 .k-sysmon-row[data-status='error'] {
-  box-shadow: inset 3px 0 0 var(--signal-red);
-  background: var(--alpha-white-3);
+  box-shadow: inset 3px 0 0 var(--k-status-danger-foreground);
+  background: var(--k-actionable-background);
 }
 .k-sysmon-name {
-  color: var(--ink-100);
+  color: var(--k-content-primary-foreground);
   font-weight: 600;
 }
 .k-sysmon-name-cell {
   display: flex;
   flex-direction: column;
   gap: 2px;
-  color: var(--ink-100);
+  color: var(--k-content-primary-foreground);
   font-weight: 600;
 }
 .k-sysmon-error {
-  color: var(--signal-red);
+  color: var(--k-status-danger-foreground);
   font-weight: 400;
 }
 .k-sysmon-status {
@@ -149,7 +149,7 @@ button.k-sysmon-link-body:focus-visible {
   gap: 6px;
 }
 .k-sysmon-row[data-status='error'] .k-sysmon-status {
-  color: var(--signal-red);
+  color: var(--k-status-danger-foreground);
 }
 .k-sysmon-quota {
   display: inline-flex;
@@ -160,19 +160,19 @@ button.k-sysmon-link-body:focus-visible {
   display: inline-block;
   width: 64px;
   height: 6px;
-  background: var(--bg-000);
+  background: var(--k-surface-sunken-background);
   box-shadow: var(--recess);
 }
 .k-sysmon-quota-track > span {
   display: block;
   height: 100%;
-  background: var(--signal-green);
+  background: var(--k-status-ok-foreground);
 }
 .k-sysmon-quota[data-tone='warn'] .k-sysmon-quota-track > span {
-  background: var(--signal-amber);
+  background: var(--k-status-warn-foreground);
 }
 .k-sysmon-quota[data-tone='danger'] .k-sysmon-quota-track > span {
-  background: var(--signal-red);
+  background: var(--k-status-danger-foreground);
 }
 .k-sysmon-actions {
   display: flex;
@@ -210,23 +210,23 @@ button.k-sysmon-link-body:focus-visible {
   align-self: center;
 }
 .k-sysmon-event[data-severity='warn'] {
-  border-left-color: var(--signal-amber);
+  border-left-color: var(--k-status-warn-foreground);
 }
 .k-sysmon-event[data-severity='error'] {
-  border-left-color: var(--signal-red);
+  border-left-color: var(--k-status-danger-foreground);
 }
 .k-sysmon-event-time {
   min-width: 64px;
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
 }
 .k-sysmon-event-kind {
   min-width: 56px;
-  color: var(--ink-200);
+  color: var(--k-content-body-foreground);
   font-weight: 600;
 }
 .k-sysmon-event[data-severity='error'] .k-sysmon-event-text {
-  color: var(--signal-red);
+  color: var(--k-status-danger-foreground);
 }
 .k-sysmon-event-text {
-  color: var(--ink-100);
+  color: var(--k-content-primary-foreground);
 }

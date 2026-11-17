@@ -29,23 +29,31 @@ export const KatanaPanelFrameApi = {
       collapsible: z
         .boolean()
         .default(false)
-        .describe('When true the title bar has a button that folds the body. Requires collapseLabel and expandLabel.')
+        .describe(
+          'When true the title bar has a button that folds the body. Requires labels.collapse and labels.expand.',
+        )
         .optional(),
       defaultCollapsed: z.boolean().default(false).describe('Start folded. Only with collapsible.').optional(),
-      collapseLabel: text(
-        'Accessible name of the fold button while the body is open. Required when collapsible is true.',
-      ).optional(),
-      expandLabel: text(
-        'Accessible name of the fold button while the body is folded. Required when collapsible is true.',
-      ).optional(),
-      state: z
+      status: z
         .enum(['ready', 'loading', 'empty', 'disconnected'])
         .default('ready')
         .describe(
-          "'ready' shows the children; 'loading' a placeholder (needs loadingLabel); 'empty' and 'disconnected' an empty state (needs view). No fake data is drawn.",
+          "'ready' shows the children; 'loading' a placeholder (needs labels.loading); 'empty' and 'disconnected' an empty state (needs view). No fake data is drawn.",
         )
         .optional(),
-      loadingLabel: text('Accessible name of the placeholder. Required when state is loading.').optional(),
+      labels: z
+        .object({
+          collapse: text(
+            'Accessible name of the fold button while the body is open. Required when collapsible is true.',
+          ).optional(),
+          expand: text(
+            'Accessible name of the fold button while the body is folded. Required when collapsible is true.',
+          ).optional(),
+          loading: text('Accessible name of the placeholder. Required when status is loading.').optional(),
+        })
+        .strict()
+        .describe('Screen-reader text, in the language of the user.')
+        .optional(),
       view: z
         .object({
           tag: text('A short dot-matrix tag such as NO DATA.').optional(),
@@ -53,31 +61,31 @@ export const KatanaPanelFrameApi = {
           description: text('A line under the title.').optional(),
         })
         .strict()
-        .describe('What to write when state is empty or disconnected. Required for those states.')
+        .describe('What to write when status is empty or disconnected. Required for those states.')
         .optional(),
       weight: weightSchema,
     })
     .strict()
     .superRefine((value, ctx) => {
-      if (value.collapsible && (!value.collapseLabel || !value.expandLabel)) {
+      if (value.collapsible && (!value.labels?.collapse || !value.labels?.expand)) {
         ctx.addIssue({
           code: 'custom',
-          path: ['collapseLabel'],
-          message: 'collapseLabel and expandLabel are required when collapsible is true.',
+          path: ['labels'],
+          message: 'labels.collapse and labels.expand are required when collapsible is true.',
         })
       }
-      if (value.state === 'loading' && !value.loadingLabel) {
+      if (value.status === 'loading' && !value.labels?.loading) {
         ctx.addIssue({
           code: 'custom',
-          path: ['loadingLabel'],
-          message: 'loadingLabel is required when state is loading.',
+          path: ['labels'],
+          message: 'labels.loading is required when status is loading.',
         })
       }
-      if ((value.state === 'empty' || value.state === 'disconnected') && !value.view) {
+      if ((value.status === 'empty' || value.status === 'disconnected') && !value.view) {
         ctx.addIssue({
           code: 'custom',
           path: ['view'],
-          message: 'view is required when state is empty or disconnected.',
+          message: 'view is required when status is empty or disconnected.',
         })
       }
     }),
@@ -101,12 +109,11 @@ export const KatanaPanelFrame = createComponentImplementation(KatanaPanelFrameAp
           toolbar={toolbar.length > 0 ? <div className="k-a2ui-panel-tools">{draw(props.toolbar)}</div> : undefined}
           actions={actions.length > 0 ? draw(props.actions) : undefined}
           collapsible={props.collapsible === true}
-          collapseLabel={props.collapseLabel}
-          expandLabel={props.expandLabel}
+          labels={{ collapse: props.labels?.collapse, expand: props.labels?.expand }}
         />
         <PanelFrameBody
-          state={props.state}
-          loadingLabel={props.loadingLabel}
+          status={props.status}
+          labels={{ loading: props.labels?.loading }}
           view={
             props.view
               ? { tag: props.view.tag, title: props.view.title, description: props.view.description }

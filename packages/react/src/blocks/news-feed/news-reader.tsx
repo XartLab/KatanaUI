@@ -53,6 +53,9 @@ export type NewsReaderProps = {
   onClose?: () => void
   onReport?: () => void
   onCopyLink?: () => void
+  /** 点了一个品种胶囊。 */
+  onSymbolSelect?: (symbol: NewsReaderSymbol) => void
+  /** @deprecated Use `onSymbolSelect`; kept for one version. */
   onSymbolPick?: (symbol: NewsReaderSymbol) => void
   className?: string
 }
@@ -61,13 +64,16 @@ export type NewsReaderProps = {
 export function NewsSymbolChip({
   symbol,
   onPick,
+  onSelect = onPick,
 }: {
   symbol: NewsReaderSymbol
+  onSelect?: (symbol: NewsReaderSymbol) => void
+  /** @deprecated Use `onSelect`; kept for one version. */
   onPick?: (symbol: NewsReaderSymbol) => void
 }) {
   const tone = symbol.change === undefined || symbol.change === 0 ? undefined : symbol.change > 0 ? 'up' : 'down'
   return (
-    <button type="button" className="k-news-chip" data-symbol={symbol.code} onClick={() => onPick?.(symbol)}>
+    <button type="button" className="k-news-chip" data-symbol={symbol.code} onClick={() => onSelect?.(symbol)}>
       <SymbolMark code={symbol.code} name={symbol.name} src={symbol.logo} size={14} />
       <span>{symbol.code}</span>
       {symbol.change !== undefined && (
@@ -95,6 +101,7 @@ export function NewsReader({
   onReport,
   onCopyLink,
   onSymbolPick,
+  onSymbolSelect = onSymbolPick,
   className,
 }: NewsReaderProps) {
   // 同一条被改了（标题、要点、version 任一变）就在标题处闪一次警示色并留「已更新」；不传 labels.updated 就不闪（不拿没文字的标记去吓人）。
@@ -151,7 +158,7 @@ export function NewsReader({
       {symbols.length > 0 && (
         <div className="k-news-reader-symbols">
           {symbols.map((s) => (
-            <NewsSymbolChip key={s.code} symbol={s} onPick={onSymbolPick} />
+            <NewsSymbolChip key={s.code} symbol={s} onSelect={onSymbolSelect} />
           ))}
         </div>
       )}

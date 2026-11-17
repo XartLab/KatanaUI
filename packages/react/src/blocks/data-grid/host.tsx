@@ -3,7 +3,7 @@ import { createContext, useContext, type KeyboardEvent, type ReactNode } from 'r
 
 // DataGridHost：表要用、但属于宿主应用的能力经这个 context 注入（#1869）：快捷键表、文案、右键菜单怎么画、「问 Agent」。
 // 没有 Provider 时表照常能用：能点、能排序、能键盘选行，只是没有快捷键，右键菜单里没有标准项（复制、导出、重置列）。
-// 包里不带语言：所有文案经 texts 传；菜单项与快捷键提示都是宿主给的字。
+// 包里不带语言：所有文案经 labels 传（旧名 texts 留一个版本）；菜单项与快捷键提示都是宿主给的字。
 
 /** 表自己有的几个动作；快捷键是宿主的键位表定。 */
 export type GridAction = 'copy' | 'save' | 'resetColumns' | 'contextMenu' | 'askAgent'
@@ -32,7 +32,8 @@ export type GridMenuEntry =
     }
   | { type: 'separator' }
 
-export type DataGridTexts = {
+/** Menu item texts and accessible names of DataGrid. */
+export type DataGridLabels = {
   /** 菜单项。三项都给了，菜单里才有标准项。 */
   copy: string
   save: string
@@ -81,7 +82,12 @@ export type DataGridHost = {
   /**
    * Texts of the menu items and accessible names; the standard menu items appear only when copy, save and resetColumns are all given.
    */
-  texts?: Partial<DataGridTexts>
+  labels?: Partial<DataGridLabels>
+  /**
+   * Old name of labels.
+   * @deprecated Use `labels`; kept for one version.
+   */
+  texts?: Partial<DataGridLabels>
   /**
    * What to draw in the menu: use it when the host's items go beyond GridMenuEntry; by default the package draws item, submenu and separator.
    * 菜单里画什么：宿主的菜单项比 GridMenuEntry 多（收藏星、自带内容的二级……）时自己画；省略时包里画 item / submenu / separator。
@@ -94,6 +100,9 @@ export type DataGridHost = {
   askAgent?: (text: string | null) => void
 }
 
+/** @deprecated Renamed to `DataGridLabels`; kept for one version. */
+export type DataGridTexts = DataGridLabels
+
 const Context = createContext<DataGridHost | undefined>(undefined)
 
 export const DataGridHostProvider = Context.Provider
@@ -101,8 +110,8 @@ export const DataGridHostProvider = Context.Provider
 export const useDataGridHost = (): DataGridHost | undefined => useContext(Context)
 
 /** 没有宿主文案时的英文（表头提示这类不能空）。 */
-export const DEFAULT_TEXTS: Omit<DataGridTexts, 'copy' | 'save' | 'resetColumns' | 'columnMenu'> & {
-  columnMenu: Required<DataGridTexts['columnMenu']>
+export const DEFAULT_LABELS: Omit<DataGridLabels, 'copy' | 'save' | 'resetColumns' | 'columnMenu'> & {
+  columnMenu: Required<DataGridLabels['columnMenu']>
 } = {
   gridLabel: (label) => label,
   menuLabel: (label) => `${label} menu`,
@@ -124,3 +133,16 @@ export const DEFAULT_TEXTS: Omit<DataGridTexts, 'copy' | 'save' | 'resetColumns'
     label: (column) => `${column.label} column menu`,
   },
 }
+
+/** 宿主文案与默认英文合起来；columnMenu 逐键合并：宿主只翻旧的几项时，新加的「适应内容」仍有默认英文。 */
+export function resolveLabels(host: DataGridHost | undefined) {
+  const given = host?.labels ?? host?.texts
+  return {
+    ...DEFAULT_LABELS,
+    ...given,
+    columnMenu: { ...DEFAULT_LABELS.columnMenu, ...given?.columnMenu },
+  }
+}
+
+/** DataGrid 里用的整份文案（标准菜单三项仍可能缺）。 */
+export type ResolvedGridLabels = ReturnType<typeof resolveLabels>

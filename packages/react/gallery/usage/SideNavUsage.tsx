@@ -37,7 +37,12 @@ export function SideNavUsage() {
         }
       }}
     >
-      <SideNav groups={GROUPS} current={current} searchLabel="Search" emptyLabel="No match" aria-label="Workspace" />
+      <SideNav
+        groups={GROUPS}
+        current={current}
+        labels={{ search: 'Search', empty: 'No match' }}
+        aria-label="Workspace"
+      />
     </div>
   )
 }

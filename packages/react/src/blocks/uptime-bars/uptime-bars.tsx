@@ -5,11 +5,11 @@
 // 功能参照 Arc Uptime status（uiarc.dev/llms.txt 目录，2026-11-14 读，页面只写了「逐日可用条」），实现原创；
 // 用在数据源 / 连接健康（对 DataSources、SystemHealth 的缺口）。文字全由 props 传。
 import { useRef, useState, type ReactNode } from 'react'
-import { cn } from '../lib/cn.ts'
-import { useEnterMarks } from '../lib/live.ts'
-import { ChartActions } from './chart-kit/chart-actions.tsx'
-import { ChartValue, type ChartValueText } from './chart-kit/chart-value.tsx'
-import { ChartTable, type ChartViewProps } from './chart-kit/chart-table.tsx'
+import { cn } from '../../lib/cn.ts'
+import { useEnterMarks } from '../../lib/live.ts'
+import { ChartActions } from '../../quant/chart-kit/chart-actions.tsx'
+import { ChartValue, type ChartValueText } from '../../quant/chart-kit/chart-value.tsx'
+import { ChartTable, type ChartViewProps } from '../../quant/chart-kit/chart-table.tsx'
 import { countStatuses, moveCell, type UptimeCell, type UptimeStatus } from './uptime-bars-model.ts'
 
 export type UptimeBarsProps = ChartViewProps & {

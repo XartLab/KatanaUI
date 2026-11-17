@@ -14,8 +14,7 @@
 | --- | --- | --- | --- |
 | `gauges` | `readonly FlowGaugeData[]` | — | 每格一个，kind 是 pressure \| priceChange \| dom \| divergence。 |
 | `label` | `string` | — | 整行的读屏名。 |
-| `naText` | `string` | `'N/A'` | 没有数的位置写什么。 |
-| `estimateText` | `string` | `'est.'` | 估算标记的字。 |
+| `labels` | `{ na?, estimate? }` | — | 没有数的位置写什么（默认 'N/A'）、估算标记的字（默认 'est.'）；旧名 naText / estimateText 留一个版本。 |
 
 ### pressure / priceChange 格
 
@@ -43,7 +42,7 @@
 
 ```tsx
 // SPDX-License-Identifier: MIT
-import { FlowGauges, type FlowGaugeData } from '@katana-ui/react/quant'
+import { FlowGauges, type FlowGaugeData } from '@katana-ui/react/blocks'
 
 const flowGauges: readonly FlowGaugeData[] = [
   {
@@ -107,7 +106,7 @@ export function FlowGaugesUsage() {
               note: '无逐笔方向',
             },
           ]}
-          estimateText="估算"
+          labels={{ estimate: '估算' }}
         />
       </div>
     </>

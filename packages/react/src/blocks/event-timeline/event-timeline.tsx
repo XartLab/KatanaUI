@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 import { useCallback, useId, useRef, useState, type PointerEvent, type ReactNode } from 'react'
-import { cn } from '../lib/cn.ts'
-import { useEnterMarks } from '../lib/live.ts'
+import { cn } from '../../lib/cn.ts'
+import { useEnterMarks } from '../../lib/live.ts'
 import {
   EVENT_KINDS,
   clock,
@@ -59,7 +59,9 @@ export type EventTimelineProps = {
   labels: EventTimelineLabels
   /** 整条时间线的读屏名。 */
   label: string
-  /** 点击事件（聚合标记给其中最早的一条）：调用方去定位回放与高亮对应面板。 */
+  /** 选中一个事件（点击；聚合标记给其中最早的一条）：调用方去定位回放与高亮对应面板。 */
+  onSelect?: (event: TimelineEvent) => void
+  /** @deprecated Use `onSelect`; kept for one version. */
   onPick?: (event: TimelineEvent) => void
   /** 拖选一段轴松手后给出起止时刻。 */
   onBrush?: (range: { from: number; to: number }) => void
@@ -112,7 +114,8 @@ function Lane({
   /** 刚到的事件 id（高亮 1.2 秒）。 */
   fresh: ReadonlySet<string>
 }) {
-  const { timeZone, session, now, labels, onPick, onBrush } = props
+  const { timeZone, session, now, labels, onBrush } = props
+  const onSelect = props.onSelect ?? props.onPick
   const markers = clusterMarkers(
     events.filter((e) => active.has(e.kind)),
     timeZone,
@@ -216,7 +219,7 @@ function Lane({
               onPointerLeave={() => setHover((h) => (h === marker.key ? null : h))}
               onFocus={() => setHover(marker.key)}
               onBlur={() => setHover((h) => (h === marker.key ? null : h))}
-              onClick={() => onPick?.(first)}
+              onClick={() => onSelect?.(first)}
             >
               <Glyph kind={marker.kind} side={sideOf(marker.events)} />
               {many ? (

@@ -2,6 +2,7 @@
 import { Bell, Camera, Maximize2, Settings, X } from 'lucide-react'
 import { useState } from 'react'
 import {
+  ConsensusBlock,
   ColumnPicker,
   DataGrid,
   DataGridHostProvider,
@@ -43,7 +44,6 @@ import {
   type StatusItem,
   type WorkspaceTab,
 } from '../../src/blocks/index.ts'
-import { ConsensusBlock } from '../../src/quant/index.ts'
 import {
   Button,
   Splitter,
@@ -168,7 +168,7 @@ const DETAIL_LAYOUT: readonly GridColumnLayout[] = [
 ]
 
 const HOST: DataGridHost = {
-  texts: { copy: 'Copy', save: 'Export CSV…', resetColumns: 'Reset columns' },
+  labels: { copy: 'Copy', save: 'Export CSV…', resetColumns: 'Reset columns' },
 }
 
 const COLUMN_SETS: readonly ColumnSet[] = [
@@ -429,7 +429,7 @@ export function PanelFrameDemo() {
               heading="Chart"
               object="· BTCUSDT · 1h"
               linkGroup="A"
-              linkLabel="Link group A"
+              labels={{ link: 'Link group A' }}
               actions={
                 <>
                   <Button variant="icon" aria-label="Maximize">
@@ -454,11 +454,9 @@ export function PanelFrameDemo() {
               heading="Watchlist"
               object="· Core · 24"
               linkGroup="B"
-              linkLabel="Link group B, pinned"
+              labels={{ link: 'Link group B, pinned', collapse: 'Collapse', expand: 'Expand' }}
               pinned
               collapsible
-              collapseLabel="Collapse"
-              expandLabel="Expand"
             />
             <PanelFrameBody>
               <p className="gal-note" style={{ padding: 8 }}>
@@ -469,9 +467,9 @@ export function PanelFrameDemo() {
         </div>
         <div style={{ width: 270, height: 150 }}>
           <PanelFrame aria-label="Orders panel">
-            <PanelFrameHeader heading="Orders" linkGroup={null} linkLabel="No link group" />
+            <PanelFrameHeader heading="Orders" linkGroup={null} labels={{ link: 'No link group' }} />
             <PanelFrameBody
-              state="disconnected"
+              status="disconnected"
               view={{ tag: 'OFFLINE', title: 'Not connected', description: 'Connect an account to see orders.' }}
             />
           </PanelFrame>
@@ -479,7 +477,7 @@ export function PanelFrameDemo() {
         <div style={{ width: 270, height: 150 }}>
           <PanelFrame aria-label="Trades panel">
             <PanelFrameHeader heading="Trades" />
-            <PanelFrameBody state="loading" loadingLabel="Loading" />
+            <PanelFrameBody status="loading" labels={{ loading: 'Loading' }} />
           </PanelFrame>
         </div>
       </div>
@@ -488,9 +486,9 @@ export function PanelFrameDemo() {
 }
 
 const STATUS_ITEMS: readonly StatusItem[] = [
-  { id: 'quote', label: 'QUOTE', value: '42 ms', led: 'ok', ledLabel: 'OK', priority: 3, onClick: () => {} },
-  { id: 'exec', label: 'EXEC', value: '118 ms', led: 'warn', ledLabel: 'Slow', priority: 3, onClick: () => {} },
-  { id: 'live', label: 'LIVE', value: 'IBKR U123', live: true, led: 'on', ledLabel: 'Live account' },
+  { id: 'quote', label: 'QUOTE', value: '42 ms', tone: 'ok', ledLabel: 'OK', priority: 3, onClick: () => {} },
+  { id: 'exec', label: 'EXEC', value: '118 ms', tone: 'warn', ledLabel: 'Slow', priority: 3, onClick: () => {} },
+  { id: 'live', label: 'LIVE', value: 'IBKR U123', live: true, tone: 'accent', ledLabel: 'Live account' },
   { id: 'link', label: 'LINK', value: 'A · BTCUSDT', priority: 1, onClick: () => {} },
   { id: 'mode', label: 'MODE', value: 'QUIET', priority: 0 },
   { id: 'clock', value: '09:30:12', priority: 4 },
@@ -505,7 +503,7 @@ export function StatusBarDemo() {
       <div style={{ width }} data-testid="status-demo">
         <StatusBar
           label="Status bar"
-          moreLabel="More status items"
+          labels={{ more: 'More status items' }}
           left={items.slice(0, 3)}
           center={items.slice(3, 5)}
           right={items.slice(5)}
@@ -584,8 +582,7 @@ export function WorkspaceTabsDemo() {
           workspaces={tabs}
           activeId={active}
           label="Workspaces"
-          createLabel="New workspace"
-          moreLabel="More workspaces"
+          labels={{ create: 'New workspace', more: 'More workspaces' }}
           onSelect={setActive}
           onRename={setRenamed}
           onCreate={() => setTabs((prev) => [...prev, { id: `ws${prev.length}`, name: `Workspace ${prev.length}` }])}
@@ -681,6 +678,7 @@ const NEWS_ITEMS: NewsItem[] = [
   },
 ]
 const NEWS_LABELS: NewsFeedLabels = {
+  itemActions: '新闻操作',
   all: '全部',
   feed: '新闻流',
   channels: '频道',
@@ -894,8 +892,7 @@ export function NewsFeedDemo() {
                 now={NEWS_NOW}
                 labels={NEWS_LABELS}
                 facets={NEWS_FACETS}
-                onSymbolPick={(s) => setPicked(s.code)}
-                itemActionsLabel="新闻操作"
+                onSymbolSelect={(s) => setPicked(s.code)}
                 itemActions={(item) =>
                   item.symbols?.length
                     ? symbolMenu({
@@ -1077,10 +1074,10 @@ export function DecisionQueueDemo() {
                   i.id === 'd1' ? (
                     <ConsensusBlock
                       label="执行前检查"
-                      intent="买入 · 600001 × 2,000"
+                      subject="买入 · 600001 × 2,000"
                       parties={[
-                        { key: 'gw', label: 'GATEWAY', state: 'pass', message: '整手 ✓' },
-                        { key: 'risk', label: 'RISK', state: 'warn', message: '集中度 58 / 60' },
+                        { id: 'gw', label: 'GATEWAY', state: 'pass', message: '整手 ✓' },
+                        { id: 'risk', label: 'RISK', state: 'warn', message: '集中度 58 / 60' },
                       ]}
                       verdict="warn"
                       verdictText="可提交"

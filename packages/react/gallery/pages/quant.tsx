@@ -1,22 +1,30 @@
 // SPDX-License-Identifier: MIT
 import { useEffect, useMemo, useState } from 'react'
-import { PanelFrame, PanelFrameBody, PanelFrameHeader } from '../../src/blocks/index.ts'
 import {
-  ChangeText,
   ConsensusBlock,
   countConsensus,
+  FlowGauges,
+  Meter,
+  PanelFrame,
+  PanelFrameBody,
+  PanelFrameHeader,
+  RegimeBand,
+  RegimeStrip,
+  type ConsensusParty,
+  type FlowGaugeData,
+  type RegimeSegment,
+  type RegimeState,
+} from '../../src/blocks/index.ts'
+import {
+  ChangeText,
   DecimalField,
   EventCalendar,
-  FlowGauges,
   LimitLadder,
   MarketHeatmap,
   MetricCard,
   MetricCardGrid,
-  Meter,
   PnlText,
   RatingText,
-  RegimeBand,
-  RegimeStrip,
   SparkTile,
   TechnicalRating,
   formatCompact,
@@ -44,10 +52,6 @@ import {
   type RatingVerdict,
   type PivotTable,
   type TechnicalRatingLabels,
-  type ConsensusParty,
-  type FlowGaugeData,
-  type RegimeSegment,
-  type RegimeState,
 } from '../../src/quant/index.ts'
 import { symbolMenu } from '../../src/patterns/row-actions.tsx'
 import { ToggleGroup, ToggleGroupItem } from '../../src/primitives/toggle-group.tsx'
@@ -300,7 +304,7 @@ export function LimitLadderDemo() {
               levels={ladderLevels(sim)}
               labels={LADDER_LABELS}
               selected={selected}
-              onSelect={setSelected}
+              onSelect={(item) => setSelected(item.code)}
               rowActions={(item) => demoSymbolActions(item.code, setLog)}
             />
           </PanelFrameBody>
@@ -903,7 +907,7 @@ export function FlowGaugesDemo() {
                 note: '无逐笔方向',
               },
             ]}
-            estimateText="估算"
+            labels={{ estimate: '估算' }}
           />
         </div>
       </Row>
@@ -947,10 +951,9 @@ export function RegimeStripDemo() {
               `${state.name} · ${segment.from}–${segment.to}${segment.estimated ? '（估）' : ''}`
             }
             current="trend"
-            currentText="当前"
-            estimateText="估（尚未确认）"
+            labels={{ current: '当前', estimate: '估（尚未确认）' }}
             activeState={active}
-            onPickState={setActive}
+            onSelect={(state) => setActive(state?.id ?? null)}
           />
         </div>
       </Row>
@@ -973,20 +976,20 @@ const stateText = {
   pending: '评估中',
 }
 const orderParties: readonly ConsensusParty[] = [
-  { key: 'gw', label: 'GATEWAY', state: 'pass', message: '可用 ✓ 整手 ✓' },
+  { id: 'gw', label: 'GATEWAY', state: 'pass', message: '可用 ✓ 整手 ✓' },
   {
-    key: 'acct',
+    id: 'acct',
     label: 'ACCOUNT',
     state: 'warn',
     message: '集中度 58 / 60',
     detail: '单票集中度上限 60%，当前 58%；再买 2,000 股会到 61%（示例）。',
   },
-  { key: 'rules', label: 'RULES', state: 'pass', message: '无规则命中' },
+  { id: 'rules', label: 'RULES', state: 'pass', message: '无规则命中' },
 ]
 const promoteParties: readonly ConsensusParty[] = [
-  { key: 'gates', label: 'GATES', state: 'blocked', message: '偏离门未过 19.4%', detail: '偏离门要求 ≤ 15%（示例）。' },
-  { key: 'cap', label: 'CAPACITY', state: 'pass', message: '0.9 / 5 亿' },
-  { key: 'acct', label: 'ACCOUNT', state: 'unknown', message: '未指定' },
+  { id: 'gates', label: 'GATES', state: 'blocked', message: '偏离门未过 19.4%', detail: '偏离门要求 ≤ 15%（示例）。' },
+  { id: 'cap', label: 'CAPACITY', state: 'pass', message: '0.9 / 5 亿' },
+  { id: 'acct', label: 'ACCOUNT', state: 'unknown', message: '未指定' },
 ]
 const countText = (parties: readonly ConsensusParty[]) => {
   const n = countConsensus(parties)
@@ -1001,7 +1004,7 @@ export function ConsensusBlockDemo() {
         <div style={{ width: 340 }} data-testid="consensus-ok">
           <ConsensusBlock
             label="下单必要条件"
-            intent="下单 · 账户 A · 买 300750 × 2,000"
+            subject="下单 · 账户 A · 买 300750 × 2,000"
             parties={orderParties}
             verdict="warn"
             verdictText="可提交"
@@ -1016,7 +1019,7 @@ export function ConsensusBlockDemo() {
         <div style={{ width: 340 }} data-testid="consensus-blocked">
           <ConsensusBlock
             label="推进必要条件"
-            intent="推进 · alice-rev → LIVE"
+            subject="推进 · alice-rev → LIVE"
             parties={promoteParties}
             verdict="blocked"
             verdictText="不可推进"
@@ -1031,9 +1034,9 @@ export function ConsensusBlockDemo() {
           <ConsensusBlock
             label="重检必要条件"
             parties={[
-              { key: 'gw', label: 'GATEWAY', state: 'timeout', message: '超时' },
-              { key: 'acct', label: 'ACCOUNT', state: 'stale', message: '需重检' },
-              { key: 'rules', label: 'RULES', state: 'pending', message: '评估中' },
+              { id: 'gw', label: 'GATEWAY', state: 'timeout', message: '超时' },
+              { id: 'acct', label: 'ACCOUNT', state: 'stale', message: '需重检' },
+              { id: 'rules', label: 'RULES', state: 'pending', message: '评估中' },
             ]}
             verdict="blocked"
             verdictText="不可提交"

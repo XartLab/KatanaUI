@@ -323,7 +323,7 @@ export function LiveStatusBarDemo() {
       id: 'quote',
       label: 'QUOTE',
       value: down ? '已断开' : LATENCY(state.ms),
-      led: down ? 'danger' : 'ok',
+      tone: down ? 'danger' : 'ok',
       ledLabel: down ? '断线' : '正常',
       priority: 3,
       onClick: () => {},
@@ -332,12 +332,12 @@ export function LiveStatusBarDemo() {
       id: 'exec',
       label: 'EXEC',
       value: LATENCY(state.execMs),
-      led: state.execMs > 150 ? 'warn' : 'ok',
+      tone: state.execMs > 150 ? 'warn' : 'ok',
       ledLabel: state.execMs > 150 ? '偏慢' : '正常',
       priority: 3,
       onClick: () => {},
     },
-    { id: 'live', label: 'LIVE', value: 'IBKR U123', live: true, led: 'on', ledLabel: '实盘账户' },
+    { id: 'live', label: 'LIVE', value: 'IBKR U123', live: true, tone: 'accent', ledLabel: '实盘账户' },
     { id: 'mode', label: 'MODE', value: 'QUIET', priority: 0 },
     { id: 'clock', value: `09:30:${String(state.sec).padStart(2, '0')}`, priority: 4 },
   ]
@@ -346,7 +346,7 @@ export function LiveStatusBarDemo() {
       <div style={{ width: 720 }}>
         <StatusBar
           label="实时状态栏"
-          moreLabel="更多状态项"
+          labels={{ more: '更多状态项' }}
           left={items.slice(0, 3)}
           center={items.slice(3, 4)}
           right={items.slice(4)}

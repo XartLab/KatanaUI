@@ -1,4 +1,8 @@
 // SPDX-License-Identifier: MIT
+/**
+ * Order-flow gauges in one row: signed pressure bars, depth columns and a divergence LED matrix.
+ * 体检 §2：从 src/quant 挪到 blocks（G6）；件只画算好的数，不放算法。
+ */
 // 组件卡 FlowGauges（design/katana-console/project/components/FlowGauges，#1929）：订单流四个仪表排成一行。
 // 口径照卡里引的 ATAS 8.0.12 Widgets 帮助页（Market Pressure、Price Change、DOM Pressure、Delta Divergence；只看它们读什么、给什么范围，2026-11-14 读卡内的引用，页面本身待核对）。
 // 这个包只收算好的数与区间，怎么算（窗口、逐笔方向、档位）不在这里：算法在应用的 Worker 里，包里不放。
@@ -54,13 +58,22 @@ export type FlowDivergenceGauge = {
 
 export type FlowGaugeData = FlowSignedGauge | FlowDomGauge | FlowDivergenceGauge
 
+/** Texts of FlowGauges. */
+export type FlowGaugesLabels = {
+  /** 没有数的位置写什么，默认 N/A。 */
+  na?: string
+  /** 估算标记的字，默认 est.。 */
+  estimate?: string
+}
+
 export type FlowGaugesProps = {
   gauges: readonly FlowGaugeData[]
   /** 整行的读屏名。 */
   label: string
-  /** 没有数的位置写什么，默认 N/A。 */
+  labels?: FlowGaugesLabels
+  /** @deprecated Use `labels.na`; kept for one version. */
   naText?: string
-  /** 估算标记的字，默认 est.。 */
+  /** @deprecated Use `labels.estimate`; kept for one version. */
   estimateText?: string
   className?: string
 }
@@ -146,7 +159,14 @@ function Divergence({ gauge, naText }: { gauge: FlowDivergenceGauge; naText: str
   )
 }
 
-export function FlowGauges({ gauges, label, naText = 'N/A', estimateText = 'est.', className }: FlowGaugesProps) {
+export function FlowGauges({
+  gauges,
+  label,
+  labels,
+  naText = labels?.na ?? 'N/A',
+  estimateText = labels?.estimate ?? 'est.',
+  className,
+}: FlowGaugesProps) {
   return (
     <div className={`k-flow${className ? ` ${className}` : ''}`} role="group" aria-label={label}>
       {gauges.map((gauge) => (

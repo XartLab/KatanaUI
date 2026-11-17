@@ -13,11 +13,13 @@ const itemSchema = z
     id: z.string().min(1).describe('Stable id of the item. The host gets it back when the item is pressed.'),
     label: z.string().describe('The key name in small caps, for example "QUOTE".').optional(),
     value: z.string().describe('The value, already formatted as text.').optional(),
-    led: z
-      .enum(['off', 'on', 'ok', 'warn', 'danger'])
-      .describe('A status light before the item. Needs ledLabel. Use it only for a real state.')
+    tone: z
+      .enum(['neutral', 'off', 'accent', 'ok', 'warn', 'danger'])
+      .describe(
+        "Tone of a status light before the item: 'ok', 'warn', 'danger', 'accent' (lit, e.g. live), 'off' or 'neutral' (unlit). Needs ledLabel. Use it only for a real state.",
+      )
       .optional(),
-    ledLabel: z.string().describe('Accessible name of the light. Required when led is given.').optional(),
+    ledLabel: z.string().describe('Accessible name of the light. Required when tone is given.').optional(),
     pressable: z.boolean().describe('Make the item a button that dispatches onItem.').optional(),
     title: z.string().describe('Hover text.').optional(),
     priority: z.number().int().describe('Higher stays longer when the bar is too narrow. Defaults to 0.').optional(),
@@ -39,7 +41,10 @@ export const KatanaStatusBarApi = {
       center: segment('Items in the center segment.'),
       right: segment('Items in the right segment.'),
       label: CommonSchemas.DynamicString.describe('Accessible name of the bar.'),
-      moreLabel: text('Accessible name of the "more" button that holds folded items.'),
+      labels: z
+        .object({ more: text('Accessible name of the "more" button that holds folded items.') })
+        .strict()
+        .describe('All screen-reader text, in the language of the user.'),
       onItem: actionSchema(
         'Dispatched when the user presses an item with pressable set. metadata.extensions.katanaStatus carries {id}.',
       ).optional(),
@@ -54,7 +59,7 @@ export const KatanaStatusBar = createComponentImplementation(KatanaStatusBarApi,
       id: item.id,
       ...(item.label === undefined ? {} : { label: item.label }),
       ...(item.value === undefined ? {} : { value: item.value }),
-      ...(item.led === undefined ? {} : { led: item.led, ledLabel: item.ledLabel ?? '' }),
+      ...(item.tone === undefined ? {} : { tone: item.tone, ledLabel: item.ledLabel ?? '' }),
       ...(item.title === undefined ? {} : { title: item.title }),
       ...(item.priority === undefined ? {} : { priority: item.priority }),
       ...(item.pinned === undefined ? {} : { pinned: item.pinned }),
@@ -71,7 +76,7 @@ export const KatanaStatusBar = createComponentImplementation(KatanaStatusBarApi,
         center={convert(props.center)}
         right={convert(props.right)}
         label={props.label ?? ''}
-        moreLabel={props.moreLabel}
+        labels={{ more: props.labels.more }}
       />
     </Cell>
   )

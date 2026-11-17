@@ -67,7 +67,7 @@ export type LimitLadderProps = {
   labels: LimitLadderLabels
   /** 选中的个股代码。 */
   selected?: string | null
-  onSelect?: (code: string) => void
+  onSelect?: (item: LadderItem) => void
   /** 行快捷操作（#23，一般传 symbolMenu(...)）：悬停或键盘落到这一行时右端浮出前几颗带图标的按钮，右键（菜单键、Shift+F10）出整份菜单；不传就没有。 */
   rowActions?: (item: LadderItem) => readonly RowAction[]
   className?: string
@@ -90,7 +90,7 @@ function LadderRow({
   labels: LimitLadderLabels
   selected: boolean
   tabbable: boolean
-  onSelect?: (code: string) => void
+  onSelect?: (item: LadderItem) => void
   rowActions?: (item: LadderItem) => readonly RowAction[]
   entering: boolean
   moved: boolean
@@ -118,11 +118,11 @@ function LadderRow({
       data-code={item.code}
       data-live-id={item.code}
       data-status={item.status}
-      onClick={() => onSelect?.(item.code)}
+      onClick={() => onSelect?.(item)}
       onKeyDown={(event) => {
         if (event.key === 'Enter' || event.key === ' ') {
           event.preventDefault()
-          onSelect?.(item.code)
+          onSelect?.(item)
         }
       }}
     >

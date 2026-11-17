@@ -46,7 +46,7 @@ export const KatanaNewsReaderApi = {
       onClose: actionSchema('Dispatched when the user closes the reader.').optional(),
       onReport: actionSchema('Dispatched when the user presses report.').optional(),
       onCopyLink: actionSchema('Dispatched when the user presses copy link; the host knows the link.').optional(),
-      onSymbolPick: actionSchema(
+      onSymbolSelect: actionSchema(
         'Dispatched when the user presses an instrument. metadata.extensions.katanaSymbol carries {code}.',
       ).optional(),
       weight: weightSchema,
@@ -69,9 +69,9 @@ export const KatanaNewsReader = createComponentImplementation(KatanaNewsReaderAp
         onClose={props.onClose ? () => void props.onClose?.() : undefined}
         onReport={props.onReport ? () => void props.onReport?.() : undefined}
         onCopyLink={props.onCopyLink ? () => void props.onCopyLink?.() : undefined}
-        onSymbolPick={
-          props.onSymbolPick
-            ? (symbol) => void props.onSymbolPick?.(withExtension('katanaSymbol', { code: symbol.code }))
+        onSymbolSelect={
+          props.onSymbolSelect
+            ? (symbol) => void props.onSymbolSelect?.(withExtension('katanaSymbol', { code: symbol.code }))
             : undefined
         }
       >

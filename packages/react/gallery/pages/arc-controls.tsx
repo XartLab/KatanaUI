@@ -217,8 +217,8 @@ export function TreeViewDemo() {
             label="品种分类"
             items={TREE_ITEMS}
             defaultExpandedKeys={['cn', 'cn-main']}
-            selectedKeys={selected}
-            onSelectionChange={setSelected}
+            value={selected}
+            onValueChange={setSelected}
             onAction={setOpened}
           />
         </div>
@@ -406,7 +406,7 @@ export function EventTimelineDemo() {
             now={live.state.now}
             scope="300750 · 账户 A、B"
             labels={TIMELINE_LABELS}
-            onPick={(event) => setPicked(event.id)}
+            onSelect={(event) => setPicked(event.id)}
             onBrush={({ from, to }) =>
               setBrushed(`${new Date(from).toISOString().slice(11, 16)}–${new Date(to).toISOString().slice(11, 16)}`)
             }

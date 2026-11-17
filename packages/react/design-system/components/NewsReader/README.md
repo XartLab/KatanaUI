@@ -16,7 +16,7 @@ NewsFeed 点开一条后的阅读窗：来源与操作（复制链接、举报�
 | `children` | `ReactNode` | — | 正文。 |
 | `version` | `string \| number` | — | 内容版本（修订号或更新时间）：正文改了但标题、要点没变时，靠它让件知道这一条被更新了。 |
 | `labels` | `NewsReaderLabels` | — | 读屏名与「要点」「关闭」「举报」「复制链接」；updated（「已更新」）传了，这一条被更新时标题闪一次并留标记，不传就不闪。 |
-| `onClose / onReport / onCopyLink / onSymbolPick` | `function` | — | 给了才画对应的按钮；点品种胶囊回调。 |
+| `onClose / onReport / onCopyLink / onSymbolSelect` | `function` | — | 给了才画对应的按钮；点品种胶囊回调。 |
 
 ## Usage
 
@@ -56,6 +56,8 @@ export function NewsReaderUsage() {
 ## Don't
 
 - 不要在件里取数或翻译：文字由调用方传。
+- 品种胶囊的涨跌不要用橙色或蓝色：只用涨跌色（pnl token，跟 data-updown 互换）。
+- 「已更新」不要当警告：只在同一条被改了时闪一次（新信息的蓝），不要拿它提示别的条。
 
 ## Composition
 

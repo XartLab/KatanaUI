@@ -14,8 +14,7 @@
 | `current` | `string` | — | 当前项的 id；轨迹画到它。 |
 | `header` | `ReactNode` | — | 顶部（品牌、面包屑、收起按钮）。 |
 | `footer` | `ReactNode` | — | 底部。 |
-| `searchLabel` | `string` | — | 过滤框的占位与读屏名；不给就没有过滤框。 |
-| `emptyLabel` | `string` | — | 过滤没有结果时的文字。 |
+| `labels` | `{ search?, empty? }` | — | 过滤框的占位与读屏名（不给就没有过滤框）、过滤没有结果时的文字；旧名 searchLabel / emptyLabel 留一个版本。 |
 
 ## Usage
 
@@ -59,7 +58,12 @@ export function SideNavUsage() {
         }
       }}
     >
-      <SideNav groups={GROUPS} current={current} searchLabel="Search" emptyLabel="No match" aria-label="Workspace" />
+      <SideNav
+        groups={GROUPS}
+        current={current}
+        labels={{ search: 'Search', empty: 'No match' }}
+        aria-label="Workspace"
+      />
     </div>
   )
 }

@@ -129,7 +129,7 @@ const EXAMPLES: Record<string, Record<string, unknown>> = {
     channels: [{ value: 'macro', label: 'Macro' }],
     sources: [{ value: 'reuters', label: 'Reuters' }],
     labels: wordsOf('KatanaNewsFeed'),
-    onOpen: { event: { name: 'news.open' } },
+    onSelect: { event: { name: 'news.open' } },
   },
   KatanaNewsReader: {
     title: 'Headline',
@@ -148,13 +148,13 @@ const EXAMPLES: Record<string, Record<string, unknown>> = {
     ],
     label: 'Events today',
     labels: wordsOf('KatanaEventTimeline'),
-    onPick: { event: { name: 'event.pick' } },
+    onSelect: { event: { name: 'event.pick' } },
   },
   KatanaStatusBar: {
-    left: [{ id: 'quote', label: 'QUOTE', value: 'OK', led: 'ok', ledLabel: 'Quote feed healthy', pressable: true }],
+    left: [{ id: 'quote', label: 'QUOTE', value: 'OK', tone: 'ok', ledLabel: 'Quote feed healthy', pressable: true }],
     right: [{ id: 'clock', value: '09:30' }],
     label: 'Status',
-    moreLabel: 'More',
+    labels: { more: 'More' },
     onItem: { event: { name: 'status.open' } },
   },
   KatanaSystemMonitor: {
@@ -187,8 +187,8 @@ const EXAMPLES: Record<string, Record<string, unknown>> = {
   },
   KatanaConsensusBlock: {
     label: 'Pre-trade check',
-    intent: 'Order · Buy 300750 x 2,000',
-    parties: [{ key: 'gw', label: 'Gateway', state: 'pass', message: 'Lot size ok' }],
+    subject: 'Order · Buy 300750 x 2,000',
+    parties: [{ id: 'gw', label: 'Gateway', state: 'pass', message: 'Lot size ok' }],
     verdict: 'ok',
     verdictText: 'Ready to submit',
     stateLabels: wordsOf('KatanaConsensusBlock', 'stateLabels'),
@@ -247,8 +247,7 @@ const EXAMPLES: Record<string, Record<string, unknown>> = {
     children: ['body'],
     toolbar: ['tool'],
     collapsible: true,
-    collapseLabel: 'Fold',
-    expandLabel: 'Unfold',
+    labels: { collapse: 'Fold', expand: 'Unfold' },
   },
   KatanaSplitter: {
     axis: 'row',
@@ -746,16 +745,15 @@ const EXAMPLES: Record<string, Record<string, unknown>> = {
       },
     ],
     label: 'Order flow',
-    naText: 'N/A',
-    estimateText: 'est.',
+    labels: { na: 'N/A', estimate: 'est.' },
   },
   KatanaRegimeStrip: {
     states: [{ id: 'calm', name: 'Calm', color: 1, detail: '60%' }],
     segments: [{ from: 0, to: 10, state: 'calm', estimated: false }],
     label: 'Market regimes over the last year',
-    estimateText: 'est.',
+    labels: { estimate: 'est.' },
     activeState: { '@path': '/regime/active' },
-    onPickState: { event: { name: 'regime.pick' } },
+    onSelect: { event: { name: 'regime.pick' } },
   },
 }
 

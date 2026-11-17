@@ -1,14 +1,15 @@
 /* SPDX-License-Identifier: MIT */
+/* G6 token 迁移：alpha-white-2 / -8 / -13 的框、底与滚动条色没有对应的 characteristics，先留着；mask 里的 #000 只取不透明度。 */
 /* SideNav（patterns/side-nav.tsx）：照 rareui.com 组件站左栏（2026-11-17 实测：链接 14px、上下 6px、左 20px，组名 11px 600 大写 0.14em，
    没选中 50% 亮度、悬停 80%、当前 100%；轨迹 1px 虚线 2px 实 2px 空，6px 半径弯钩，top / height 200ms 过渡）。数值换成我们的 token。
-   轨迹颜色走 --k-sidenav-trail（默认品牌橙 --accent，跟参照一致）；要中性就在外层设成 var(--ink-200)。 */
+   轨迹颜色走 --k-sidenav-trail（默认品牌橙 --accent，跟参照一致）；要中性就在外层设成 var(--k-content-body-foreground)。 */
 .k-sidenav {
   --k-sidenav-trail: var(--accent);
   display: flex;
   flex-direction: column;
   min-height: 0;
   height: 100%;
-  color: var(--ink-100);
+  color: var(--k-content-primary-foreground);
 }
 .k-sidenav-head {
   padding: 0 4px 12px;
@@ -25,15 +26,15 @@
   border: 1px solid var(--alpha-white-8);
   border-radius: 8px;
   background: var(--alpha-white-2);
-  color: var(--ink-100);
+  color: var(--k-content-primary-foreground);
   font: var(--text-data) var(--font-sans);
   outline: none;
 }
 .k-sidenav-search input::placeholder {
-  color: var(--ink-400);
+  color: var(--k-content-tertiary-foreground);
 }
 .k-sidenav-search input:focus-visible {
-  border-color: var(--alpha-white-13);
+  border-color: var(--k-separable-primary-borderColor);
   box-shadow: 0 0 0 2px var(--focus-ring);
 }
 .k-sidenav-search kbd {
@@ -43,8 +44,8 @@
   translate: 0 round(nearest, -50%, 1px);
   padding: 2px 5px;
   border-radius: 5px;
-  background: var(--alpha-white-6);
-  color: var(--ink-300);
+  background: var(--k-actionable-background-hover);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-micro) var(--font-sans-small);
   pointer-events: none;
 }
@@ -70,7 +71,7 @@
   gap: 6px;
   align-items: center;
   margin: 0 0 6px;
-  color: color-mix(in srgb, var(--ink-100) 40%, transparent);
+  color: color-mix(in srgb, var(--k-content-primary-foreground) 40%, transparent);
   font: 600 11px/16px var(--font-sans-small);
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -91,7 +92,7 @@
   place-items: center;
   width: 14px;
   height: 14px;
-  color: color-mix(in srgb, var(--ink-100) 65%, transparent);
+  color: color-mix(in srgb, var(--k-content-primary-foreground) 65%, transparent);
 }
 .k-sidenav-title-icon svg {
   width: 14px;
@@ -104,7 +105,7 @@
   align-items: center;
   padding: 6px 8px 6px 20px;
   border-radius: 8px;
-  color: color-mix(in srgb, var(--ink-100) 50%, transparent);
+  color: color-mix(in srgb, var(--k-content-primary-foreground) 50%, transparent);
   font: calc(400 + var(--k-weight-adjust, 0)) round(nearest, calc(14px * var(--k-text-scale, 1)), 1px) /
     round(nearest, calc(20px * var(--k-text-scale, 1)), 1px) var(--font-sans);
   overflow: hidden;
@@ -132,10 +133,10 @@
   text-overflow: ellipsis;
 }
 .k-sidenav-link:hover {
-  color: color-mix(in srgb, var(--ink-100) 80%, transparent);
+  color: color-mix(in srgb, var(--k-content-primary-foreground) 80%, transparent);
 }
 .k-sidenav-link[aria-current='page'] {
-  color: var(--ink-100);
+  color: var(--k-content-primary-foreground);
 }
 .k-sidenav-link:focus-visible {
   outline: 2px solid var(--focus-ring);
@@ -148,7 +149,7 @@
   transition: opacity 200ms;
 }
 .k-sidenav-trail[data-kind='hover'] {
-  color: color-mix(in srgb, var(--ink-100) 30%, transparent);
+  color: color-mix(in srgb, var(--k-content-primary-foreground) 30%, transparent);
 }
 .k-sidenav-trail[data-kind='active'] {
   color: var(--k-sidenav-trail);
@@ -169,7 +170,7 @@
 .k-sidenav-empty {
   margin: 0;
   padding: 6px 8px;
-  color: var(--ink-400);
+  color: var(--k-content-tertiary-foreground);
   font: var(--text-data) var(--font-sans);
 }
 .k-sidenav-foot {

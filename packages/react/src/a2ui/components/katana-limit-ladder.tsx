@@ -135,7 +135,7 @@ export const KatanaLimitLadder = createComponentImplementation(KatanaLimitLadder
       <LimitLadder
         levels={levels}
         selected={selected}
-        onSelect={(code) => {
+        onSelect={({ code }) => {
           setSelected(code)
           void props.onSelect?.(withExtension('katanaStock', { code }))
         }}

@@ -168,8 +168,8 @@ export const KatanaSystemMonitorApi = {
       onEmergencyStop: actionSchema(
         'Dispatched when the user holds the emergency stop to the end. Without it there is no emergency stop button. The host must confirm.',
       ).optional(),
-      onLinkPick: actionSchema(
-        'Dispatched when the user presses a connection. metadata.extensions.katanaLink carries {id}.',
+      onSelect: actionSchema(
+        'Dispatched when the user selects a connection. metadata.extensions.katanaLink carries {id}.',
       ).optional(),
       weight: weightSchema,
     })
@@ -258,8 +258,8 @@ export const KatanaSystemMonitor = createComponentImplementation(KatanaSystemMon
             : undefined
         }
         onEmergencyStop={props.onEmergencyStop ? () => void props.onEmergencyStop?.() : undefined}
-        onLinkPick={
-          props.onLinkPick ? (link) => void props.onLinkPick?.(withExtension('katanaLink', { id: link.id })) : undefined
+        onSelect={
+          props.onSelect ? (link) => void props.onSelect?.(withExtension('katanaLink', { id: link.id })) : undefined
         }
         labels={{
           monitor: t.monitor,

@@ -15,8 +15,8 @@
 | `items` | `{ id: string; label: string; icon?: ReactNode; count?: number; disabled?: boolean; children?: TreeNode[] }[]` | — | 树。id 在整棵树里唯一；有 children 才能展开；count 写在字后。 |
 | `label` | `string` | — | 整棵树的读屏名。 |
 | `selectionMode` | `'none' \| 'single' \| 'multiple'` | `'single'` | none 只展开收起，点行不选。 |
-| `selectedKeys / defaultSelectedKeys` | `string[]` | — | 选中的 id，受控 / 非受控。 |
-| `onSelectionChange` | `(keys: string[]) => void` | — | 选中变了。 |
+| `value / defaultValue` | `string[]` | — | 选中的 id，受控 / 非受控（旧名 selectedKeys / defaultSelectedKeys 留一个版本）。 |
+| `onValueChange` | `(value: string[]) => void` | — | 选中变了（旧名 onSelectionChange）。 |
 | `expandedKeys / defaultExpandedKeys` | `string[]` | — | 展开的 id，受控 / 非受控。 |
 | `onExpandedChange` | `(keys: string[]) => void` | — | 展开变了。 |
 | `onAction` | `(id: string) => void` | — | 激活一行（Enter 或双击）：打开这个数据集之类。给了它，点行是「选中这一行」（多选按 Ctrl / Shift 加减），方向键走到哪选到哪；不给，点行是切换选中，方向键只移焦点。 |
@@ -69,8 +69,8 @@ export function TreeViewUsage() {
           label="品种分类"
           items={TREE_ITEMS}
           defaultExpandedKeys={['cn', 'cn-main']}
-          selectedKeys={selected}
-          onSelectionChange={setSelected}
+          value={selected}
+          onValueChange={setSelected}
           onAction={setOpened}
         />
       </div>

@@ -6,6 +6,7 @@ import { ReadoutFlash, parseReadout } from '../../lib/live-readout.tsx'
 import { useStatusFlash } from '../../lib/live.ts'
 import { fontFor, measureText } from '../../lib/text-measure.ts'
 import { Led, type LedState } from '../../katana/led.tsx'
+import { ledOf, type SeverityExt } from '../../lib/severity.ts'
 import { Popover, PopoverContent, PopoverTrigger } from '../../primitives/popover.tsx'
 import { collapsedItems } from './status-bar-model.ts'
 
@@ -22,7 +23,9 @@ export type StatusItem = {
   label?: string
   /** 值（等宽，亮）。 */
   value?: ReactNode
-  /** 前面的状态灯；给了就必须给 ledLabel。LED 只表达真实状态，发光体预算整条栏不超过两盏（组件卡）。 */
+  /** 前面状态灯的语气（灯用 ledOf 取）；给了就必须给 ledLabel。LED 只表达真实状态，发光体预算整条栏不超过两盏（组件卡）。 */
+  tone?: SeverityExt
+  /** @deprecated Use `tone`; kept for one version. */
   led?: LedState
   ledLabel?: string
   /** 点击：整项是个按钮（QUOTE → 数据源……）。不给就是纯读数。 */
@@ -39,14 +42,24 @@ export type StatusItem = {
   hidden?: boolean
 }
 
+/** Texts of StatusBar. */
+export type StatusBarLabels = {
+  /** 「…」按钮的名字（读屏念）；有项可能被收起时要给。 */
+  more: string
+}
+
+/** 一项的灯：tone 优先，旧的 led 原样用。 */
+const ledFor = (item: StatusItem): LedState | undefined => (item.tone ? ledOf(item.tone) : item.led)
+
 export type StatusBarProps = {
   left?: readonly StatusItem[]
   center?: readonly StatusItem[]
   right?: readonly StatusItem[]
   /** 状态栏的名字（读屏念）。 */
   label: string
-  /** 「…」按钮的名字（读屏念）。 */
-  moreLabel: string
+  labels?: StatusBarLabels
+  /** @deprecated Use `labels.more`; kept for one version. */
+  moreLabel?: string
   className?: string
 }
 
@@ -78,7 +91,7 @@ function itemWidth(item: StatusItem): number {
   const scale = rootNumber('--k-text-scale', 1)
   const weight = 500 + rootNumber('--k-weight-adjust', 0)
   const parts: number[] = []
-  if (item.led) parts.push(LED_WIDTH)
+  if (ledFor(item)) parts.push(LED_WIDTH)
   if (item.label)
     parts.push(
       measureText(
@@ -97,11 +110,12 @@ function Segment({ item }: { item: StatusItem }) {
   const text = item.value === undefined ? '' : textOf(item.value)
   const numeric = parseReadout(text) !== null
   // 状态 = 灯的状态加非数值的文字：「已连接」变「已断开」、灯 ok 变 danger 都算；数值的变化走 ReadoutFlash，不在这里。
-  const status = useStatusFlash(`${item.led ?? ''}|${numeric ? '' : text}`)
-  const bad = item.led === 'warn' || item.led === 'danger'
+  const led = ledFor(item)
+  const status = useStatusFlash(`${led ?? ''}|${numeric ? '' : text}`)
+  const bad = led === 'warn' || led === 'danger'
   const body = (
     <>
-      {item.led && <Led state={item.led} label={item.ledLabel ?? ''} />}
+      {led && <Led state={led} label={item.ledLabel ?? ''} />}
       {item.label && <span className="k-status-key">{item.label}</span>}
       {item.value !== undefined && (
         <span className="k-status-value">
@@ -117,7 +131,7 @@ function Segment({ item }: { item: StatusItem }) {
         <i
           key={status.key}
           className={cn('k-status-flash', bad ? 'k-live-alert' : 'k-live-flash')}
-          data-tone={item.led === 'danger' ? 'negative' : undefined}
+          data-tone={led === 'danger' ? 'negative' : undefined}
           data-flash={bad ? undefined : 'up'}
           aria-hidden="true"
         />
@@ -139,7 +153,15 @@ function Segment({ item }: { item: StatusItem }) {
   return <div {...common}>{body}</div>
 }
 
-export function StatusBar({ left = [], center = [], right = [], label, moreLabel, className }: StatusBarProps) {
+export function StatusBar({
+  left = [],
+  center = [],
+  right = [],
+  label,
+  labels,
+  moreLabel = labels?.more ?? '',
+  className,
+}: StatusBarProps) {
   const groups = { left, center, right }
   const all = [...left, ...center, ...right].filter((item) => !item.hidden)
   const bar = useRef<HTMLDivElement>(null)
