@@ -5,6 +5,7 @@
 import { useRef, useState, type KeyboardEvent, type ReactNode } from 'react'
 import { ChartActions } from './chart-kit/chart-actions.tsx'
 import { ChartTable, type ChartViewProps } from './chart-kit/chart-table.tsx'
+import { fontFor, measureText, truncateText } from '../lib/text-measure.ts'
 import { slopeLayout, type SlopeItem, type SlopeMode } from './slope-model.ts'
 
 const W = 560
@@ -86,16 +87,24 @@ export function SlopeChart({
   const marks = (i: number) => {
     const row = rows[i]!
     const item = items[i]!
+    // SVG 里的字没有 text-overflow：名字只能写在两侧 LABEL 宽的栏里，扣掉数字与空格后放不下就截尾加省略号，全文留在 <title>。
+    const font = fontFor(400, 11, '--font-sans-small')
+    const space = measureText(' ', font)
+    const room = (value: number) => LABEL - 10 - measureText(formatValue(value), font) - space
+    const before = truncateText(item.label, font, room(item.before))
+    const after = truncateText(item.label, font, room(item.after))
     return (
       <>
         <line className="k-slope-line" x1={x0} y1={row.y0} x2={x1} y2={row.y1} />
         <circle className="k-slope-dot" cx={x0} cy={row.y0} r={3.5} />
         <circle className="k-slope-dot" cx={x1} cy={row.y1} r={3.5} />
         <text className="k-slope-text" x={x0 - 10} y={row.label0} dy="0.35em" textAnchor="end">
-          {item.label} {formatValue(item.before)}
+          {before} {formatValue(item.before)}
+          {before !== item.label && <title>{item.label}</title>}
         </text>
         <text className="k-slope-text" x={x1 + 10} y={row.label1} dy="0.35em" textAnchor="start">
-          <tspan className="k-slope-num">{formatValue(item.after)}</tspan> {item.label}
+          <tspan className="k-slope-num">{formatValue(item.after)}</tspan> {after}
+          {after !== item.label && <title>{item.label}</title>}
         </text>
       </>
     )

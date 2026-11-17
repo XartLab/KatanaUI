@@ -3,6 +3,8 @@
 // 轴按交易时段排，午休压成一小段（看的是顺序不是斜率）；同一分钟的事件聚成一个带计数的标记；可见标记 ≤ 60，更多先聚合；标签上下交错。
 // 时区由调用方传（应用的显示时区，IANA 名）：同一刻在上海与纽约可能落在不同的「天」，件里不猜、不读系统时区。
 
+import { fontFor, measureText } from '../lib/text-measure.ts'
+
 /** 类别：异动 / 公告 / 成交 / 警报 / run；形状与状态色见 event-timeline.css。 */
 export type EventKind = 'anomaly' | 'notice' | 'fill' | 'alert' | 'run'
 
@@ -179,11 +181,9 @@ export type LabelItem = {
 /** 标签之间留的空隙（px）。 */
 export const LABEL_GAP = 6
 
-/** 估计 9px 标签的宽度：汉字与全角 9px，其余按 6px（含数字、字母、空格的最宽情形，宁大勿小；实测核对见 e2e）。 */
+/** 9px 标签的宽度：用 pretext 量真实字宽（2026-11-17），不再按汉字 9、其余 6 估；量不了的环境（单测、SSR）里 measureText 自己退回估计。 */
 export function estimateLabelWidth(text: string): number {
-  let width = 0
-  for (const ch of text) width += /[⺀-鿿＀-￯]/.test(ch) ? 9 : 6
-  return width
+  return Math.ceil(measureText(text, fontFor(400, 9, '--font-sans')))
 }
 
 /**

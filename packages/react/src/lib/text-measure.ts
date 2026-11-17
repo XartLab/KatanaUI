@@ -34,6 +34,13 @@ const remember = <T>(map: Map<string, T>, key: string, make: () => T): T => {
   return value
 }
 
+const resetListeners = new Set<() => void>()
+/** 订阅「缓存被清了」：算过的宽高（如虚拟列表的行高）要跟着重算。返回取消订阅。 */
+export function onTextMeasureReset(listener: () => void) {
+  resetListeners.add(listener)
+  return () => void resetListeners.delete(listener)
+}
+
 /** 字体变了（Web 字体加载完、换了渲染设置的字体、缩放改了 DPR）时清掉所有缓存。 */
 export function resetTextMeasure() {
   plain.clear()
@@ -43,6 +50,7 @@ export function resetTextMeasure() {
   } catch {
     // 没有 canvas 的环境里 pretext 也可能没初始化，忽略。
   }
+  for (const listener of resetListeners) listener()
 }
 
 if (typeof window !== 'undefined') {
@@ -87,14 +95,19 @@ export function fontFor(weight: number, sizePx: number, familyVar = '--font-sans
   return `${weight} ${sizePx}px ${family}`
 }
 
-/** 一行字的宽度（像素，像 CSS max-content）。 */
-export function measureText(text: string, font: string): number {
+/** 一行字的宽度（像素，像 CSS max-content）。letterSpacing 对应 CSS 的 letter-spacing（px，每个字后面都加，含最后一个）。 */
+export function measureText(text: string, font: string, letterSpacing = 0): number {
   if (!text) return 0
-  if (!canMeasure()) return estimate(text, sizeOf(font))
+  const extra = () => Array.from(text).length * letterSpacing
+  if (!canMeasure()) return estimate(text, sizeOf(font)) + extra()
   try {
-    return measureNaturalWidth(remember(segmented, `${font}\u0000${text}`, () => prepareWithSegments(text, font)))
+    return measureNaturalWidth(
+      remember(segmented, `${font}\u0000${letterSpacing}\u0000${text}`, () =>
+        prepareWithSegments(text, font, letterSpacing ? { letterSpacing } : undefined),
+      ),
+    )
   } catch {
-    return estimate(text, sizeOf(font))
+    return estimate(text, sizeOf(font)) + extra()
   }
 }
 

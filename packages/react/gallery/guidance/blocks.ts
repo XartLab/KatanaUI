@@ -41,6 +41,8 @@ const blocks: GuidanceMap = {
       '逐行的行情、持仓、委托，要排序、选中、复制导出。',
       '列要能调宽、隐藏、固定、存成视图。',
       '一行下面要挂一小段说明或表单（子行）。',
+      '双击列头右缘或右键「适应内容」：列宽取列头与前 1000 行最宽格子，24–480px；自画列（cell、render、custom）不改宽。',
+      '「全部列适应内容」优先走 onLayoutChange；只给 onResize 时 setter 要用函数式更新。',
     ],
     avoid: [
       '几行静态数据，用 interactive=false 的只读表或 strategy-report 里的表。',
@@ -75,18 +77,23 @@ const blocks: GuidanceMap = {
   },
   'status-bar': {
     aliases: ['Footer bar', 'Status line', 'Info bar', 'Bottom bar'],
-    use: ['窗口底部常驻的连接、时钟、实盘等读数。', '宽度不够时按优先级把次要项收进「…」。'],
+    use: [
+      '窗口底部常驻的连接、时钟、实盘等读数。',
+      '宽度不够时按优先级把次要项收进「…」；每项宽度按字体预先算，不渲染量尺。',
+    ],
     avoid: ['需要提醒用户的事件，用 toast 或 alert。', '要放大量指标，用 system-monitor。'],
     a11y: [
       '外层是 role=group，读屏名取自 label。',
       '可点的项是 button，纯读数不是控件。',
       '「…」按钮的读屏名取自 moreLabel。',
-      '用来量宽度的隐藏副本是 inert 且 aria-hidden，不会被读到。',
     ],
   },
   'workspace-tabs': {
     aliases: ['Document tabs', 'Editor tabs', 'Browser tabs', 'Workspace switcher'],
-    use: ['多个工作区或布局之间切换，用户会新建、关闭、排序。', '标签多到放不下时，自动收进「…」。'],
+    use: [
+      '多个工作区或布局之间切换，用户会新建、关闭、排序。',
+      '标签多到放不下时，自动收进「…」；标签宽按字体预先算，单个最宽 200px。',
+    ],
     avoid: ['固定的几个视图，用 tabs。', '站内导航，用 side-nav。'],
     a11y: [
       'role=tablist，每个标签是 role=tab，选中项带 aria-selected。',
@@ -134,13 +141,18 @@ const blocks: GuidanceMap = {
   },
   'news-feed': {
     aliases: ['Activity feed', 'Ticker', 'Newsfeed', 'Live stream'],
-    use: ['实时滚入的消息流，要筛选、暂停、搜索。', '用户滚离顶部时不被新消息打断。'],
-    avoid: ['要读全文，点进 news-reader。', '成千上万条的历史，要分段加载，不适合这里。'],
+    use: [
+      '实时滚入的消息流，要筛选、暂停、搜索。',
+      '用户滚离顶部时不被新消息打断。',
+      '列表标题最多折两行；超过 50 条自动虚拟滚动，行高按标题折行预先算，滚动不跳。',
+    ],
+    avoid: ['要读全文，点进 news-reader。', '几万条以上的历史，要分段加载。'],
     a11y: [
       '外层是 section，读屏名取自 labels.feed。',
       '暂停按钮带 aria-pressed，折叠按钮带 aria-expanded。',
       '重要条目的琥珀方块读屏名是「重要」，不只靠颜色。',
       '时间悬停给绝对时间。',
+      '虚拟滚动时每行带 aria-setsize、aria-posinset，读屏知道总条数。',
     ],
   },
   'transmission-chain': {

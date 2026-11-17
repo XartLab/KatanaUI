@@ -242,6 +242,7 @@ const quant: GuidanceMap = {
       '图头有「表格视图」。',
       '节点可聚焦并钉住上下游；钉住的按钮用 aria-pressed。',
       '价格重估是斜纹带，图例分开写，不只靠颜色。',
+      '节点名放不下时截断加省略号，全文在 title 里。',
     ],
   },
   'vintage-series': {

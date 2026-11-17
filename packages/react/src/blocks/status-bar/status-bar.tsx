@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: MIT
 import { Ellipsis } from 'lucide-react'
-import { useLayoutEffect, useRef, useState, type ReactNode } from 'react'
+import { isValidElement, useLayoutEffect, useRef, useState, type ReactNode } from 'react'
 import { cn } from '../../lib/cn.ts'
+import { fontFor, measureText } from '../../lib/text-measure.ts'
 import { Led, type LedState } from '../../katana/led.tsx'
 import { Popover, PopoverContent, PopoverTrigger } from '../../primitives/popover.tsx'
 import { collapsedItems } from './status-bar-model.ts'
@@ -48,7 +49,48 @@ export type StatusBarProps = {
 
 const MORE_WIDTH = 28
 
-function Segment({ item, measure = false }: { item: StatusItem; measure?: boolean }) {
+// 项的固定宽（px），来源 theme/status-bar.css：左 padding 14、右 padding 10（第 35 行）、子元素 gap 6（第 32 行）；LED 8px（theme/led.css 第 7–8 行）。
+// 键名 --text-tag-md（500 12px）--font-num、字距 --text-tag-md-tracking 0.08em 且大写（第 61–63 行）；值 12px --font-num（第 66 行，字重 400）。
+// 字号字重随根节点的 --k-text-scale / --k-weight-adjust（tokens.css 的 --text-tag-md 里 round(12px × scale)），这里同样读出来。
+const ITEM_PADDING = 24
+const ITEM_GAP = 6
+const LED_WIDTH = 8
+const KEY_TRACKING = 0.08
+
+/** 值是 ReactNode：只数其中的文字（字符串、数字、元素里的子文字），量不了的节点按没有算。 */
+function textOf(node: ReactNode): string {
+  if (typeof node === 'string' || typeof node === 'number') return String(node)
+  if (Array.isArray(node)) return node.map(textOf).join('')
+  if (isValidElement<{ children?: ReactNode }>(node)) return textOf(node.props.children)
+  return ''
+}
+
+const rootNumber = (name: string, fallback: number) => {
+  const value = Number.parseFloat(getComputedStyle(document.documentElement).getPropertyValue(name))
+  return Number.isFinite(value) ? value : fallback
+}
+
+/** 一项排出来的宽度：用 pretext 按字体预先算，不渲染出来量。 */
+function itemWidth(item: StatusItem): number {
+  const scale = rootNumber('--k-text-scale', 1)
+  const weight = 500 + rootNumber('--k-weight-adjust', 0)
+  const parts: number[] = []
+  if (item.led) parts.push(LED_WIDTH)
+  if (item.label)
+    parts.push(
+      measureText(
+        item.label.toUpperCase(),
+        fontFor(weight, Math.round(12 * scale), '--font-num'),
+        KEY_TRACKING * Math.round(12 * scale),
+      ),
+    )
+  const value = item.value === undefined ? undefined : textOf(item.value)
+  if (item.value !== undefined) parts.push(measureText(value!, fontFor(400, 12, '--font-num')))
+  const gaps = Math.max(0, parts.length - 1) * ITEM_GAP
+  return Math.ceil(parts.reduce((sum, w) => sum + w, 0)) + gaps + ITEM_PADDING
+}
+
+function Segment({ item }: { item: StatusItem }) {
   const body = (
     <>
       {item.led && <Led state={item.led} label={item.ledLabel ?? ''} />}
@@ -64,7 +106,7 @@ function Segment({ item, measure = false }: { item: StatusItem; measure?: boolea
   }
   if (item.onClick)
     return (
-      <button type="button" {...common} onClick={item.onClick} tabIndex={measure ? -1 : undefined}>
+      <button type="button" {...common} onClick={item.onClick}>
         {body}
       </button>
     )
@@ -75,20 +117,16 @@ export function StatusBar({ left = [], center = [], right = [], label, moreLabel
   const groups = { left, center, right }
   const all = [...left, ...center, ...right].filter((item) => !item.hidden)
   const bar = useRef<HTMLDivElement>(null)
-  const ruler = useRef<HTMLDivElement>(null)
   const [folded, setFolded] = useState<readonly string[]>([])
 
   const fit = () => {
     const box = bar.current
-    const rule = ruler.current
-    if (!box || !rule) return
-    const widths = new Map<string, number>()
-    for (const node of rule.querySelectorAll<HTMLElement>('[data-id]')) widths.set(node.dataset.id!, node.offsetWidth)
+    if (!box) return
     const available = box.clientWidth
     const next = collapsedItems(
       all.map((item) => ({
         id: item.id,
-        width: widths.get(item.id) ?? 0,
+        width: itemWidth(item),
         priority: item.priority ?? 0,
         pinned: !!item.pinned || !!item.live,
       })),
@@ -99,15 +137,25 @@ export function StatusBar({ left = [], center = [], right = [], label, moreLabel
     setFolded((prev) => (prev.join('|') === next.join('|') ? prev : next))
   }
   // 每次渲染后量一遍（项是数据，变了就重算）；条自己变宽变窄时也量。
-  useLayoutEffect(fit)
+  const latestFit = useRef(fit)
+  // 渲染后再换成最新的 fit：观察者回调里拿到的是最新数据，又不在渲染中写 ref
+  useLayoutEffect(() => {
+    latestFit.current = fit
+    fit()
+  })
   useLayoutEffect(() => {
     const box = bar.current
     if (!box) return
-    const observer = new ResizeObserver(fit)
+    const run = () => latestFit.current()
+    const observer = new ResizeObserver(run)
     observer.observe(box)
-    return () => observer.disconnect()
+    // Web 字体加载完字宽会变，预算宽度要跟着重算（text-measure 已先清缓存）
+    document.fonts?.addEventListener?.('loadingdone', run)
+    return () => {
+      observer.disconnect()
+      document.fonts?.removeEventListener?.('loadingdone', run)
+    }
     // fit 每次渲染都是新的，但只读 ref 与 all；观察者只需建一次，内容变化由上面的 useLayoutEffect 管
-    // oxlint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const shown = (items: readonly StatusItem[]) => items.filter((item) => !item.hidden && !folded.includes(item.id))
@@ -133,12 +181,6 @@ export function StatusBar({ left = [], center = [], right = [], label, moreLabel
           )}
         </div>
       ))}
-      {/* 量宽度用的影子：把所有没隐藏的项排成一行，读每项的自然宽度（收起的项也要知道能不能放回来）。 */}
-      <div className="k-status-ruler" aria-hidden="true" ref={ruler} inert>
-        {all.map((item) => (
-          <Segment key={item.id} item={item} measure />
-        ))}
-      </div>
     </div>
   )
 }

@@ -150,8 +150,10 @@ describe('placeLabels 标签避让', () => {
     expect(out.get('y')).toBe('down')
     expect(out.has('cl')).toBe(false)
   })
-  it('estimateLabelWidth：汉字 9、其余 6', () => {
-    expect(estimateLabelWidth('上破')).toBe(18)
-    expect(estimateLabelWidth('RUN 2e52')).toBe(48)
+  it('estimateLabelWidth：按字宽量（量不了时退回估计），长的比短的宽、汉字比字母宽', () => {
+    expect(estimateLabelWidth('')).toBe(0)
+    expect(estimateLabelWidth('上破')).toBeGreaterThan(estimateLabelWidth('上'))
+    expect(estimateLabelWidth('上破')).toBeGreaterThan(estimateLabelWidth('ab'))
+    expect(Number.isInteger(estimateLabelWidth('RUN 2e52'))).toBe(true)
   })
 })

@@ -98,15 +98,3 @@ button.k-status-item:hover {
   justify-content: flex-start;
   height: 28px;
 }
-.k-status-ruler {
-  position: absolute;
-  top: 0;
-  left: 0;
-  display: flex;
-  visibility: hidden;
-  pointer-events: none;
-}
-.k-status-ruler .k-status-item {
-  margin: 0;
-  clip-path: none;
-}

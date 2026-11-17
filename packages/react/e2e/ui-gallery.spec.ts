@@ -2018,6 +2018,42 @@ for (const theme of THEMES) {
       await expect(grid.getByRole('row').nth(1).locator('[data-col="symbol"]')).toContainText('600519')
     })
 
+    test('积木：数据表双击列头右缘把手、或右键「适应内容」，列宽按列头与数据里最宽的字调整，文字不被截断', async ({
+      page,
+    }) => {
+      await open(page, theme, 'data-grid')
+      const grid = section(page, 'data-grid').getByTestId('grid-columns')
+      const head = (name: string) => grid.getByRole('columnheader', { name })
+      const width = async (name: string) => (await head(name).boundingBox())!.width
+      // 内容被省略号截掉时 scrollWidth 大于 clientWidth：格子、品种代码、列头名都查。
+      const clipped = () =>
+        grid.locator('.k-grid-cell, .k-grid-name, .k-grid-head-name > span').evaluateAll((els) =>
+          els
+            .filter((el) => el.scrollWidth > el.clientWidth)
+            .map((el) => `${el.className}|${el.textContent}|${el.scrollWidth}>${el.clientWidth}`)
+            .join(';'),
+        )
+      // 先把「Chg %」拖到最窄，再双击把手：宽度应该长回来，刚好放下内容。
+      const handle = grid.getByRole('separator', { name: /Chg %/ })
+      const box = (await handle.boundingBox())!
+      await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2)
+      await page.mouse.down()
+      await page.mouse.move(box.x - 200, box.y + box.height / 2, { steps: 5 })
+      await page.mouse.up()
+      await expect.poll(() => width('Chg %')).toBeLessThan(40)
+      await handle.dblclick()
+      await expect.poll(() => width('Chg %')).toBeGreaterThan(40)
+      await expect.poll(() => width('Chg %')).toBeLessThan(120)
+      // 右键「适应内容」：Time 列原本 160 宽，内容只要一百出头。
+      await head('Time (UTC)').click({ button: 'right' })
+      await page.getByRole('menuitem', { name: 'Fit column to content' }).click()
+      await expect.poll(() => width('Time (UTC)')).toBeLessThan(160)
+      // 全部列适应内容：任何格子、列头都不被截断。
+      await head('Symbol').click({ button: 'right' })
+      await page.getByRole('menuitem', { name: 'Fit all columns to content' }).click()
+      await expect.poll(clipped).toBe('')
+    })
+
     test('量化：日历——周条选日、合并同时同国、现在线、类别与国家筛选、行详情、财报意外与排序', async ({ page }) => {
       await open(page, theme, 'event-calendar')
       const cal = section(page, 'event-calendar').locator('[data-slot="event-calendar"]')
@@ -4214,7 +4250,8 @@ for (const theme of THEMES) {
     const item = (name: string) => bar.locator(`.k-status-item:not(.k-status-ruler *)`).filter({ hasText: name })
     for (const name of ['QUOTE', 'EXEC', 'LIVE', 'LINK', 'MODE']) await expect(item(name)).toBeVisible()
     await expect(bar.getByRole('button', { name: 'More status items' })).toHaveCount(0)
-    expect((await item('LIVE').boundingBox())!.height).toBe(28)
+    // 条高 28 含 1px 上边线（border-box），项撑满边线以内，所以是 27。
+    expect((await item('LIVE').boundingBox())!.height).toBe(await bar.evaluate((node) => node.clientHeight))
     await expect(item('LIVE')).toHaveCSS('box-shadow', new RegExp(`inset`))
     await area.getByRole('button', { name: '260', exact: true }).click()
     const more = bar.getByRole('button', { name: 'More status items' })
@@ -5323,6 +5360,81 @@ for (const theme of THEMES) {
     const narrow = (await feed.locator('[data-slot="news-reader-pane"]').boundingBox())!
     const main = (await feed.locator('.k-news-main').boundingBox())!
     expect(narrow.x).toBeLessThanOrEqual(main.x + 2)
+  })
+
+  test(`新闻流（${theme}）：1000 条虚拟滚动——只渲染可见行、滚到底最后一条可见、滚动条长度对、滚动中行的 top 单调、算的行高等于渲染出来的`, async ({
+    page,
+  }) => {
+    await open(page, theme, 'news-feed')
+    const doc = section(page, 'news-feed')
+    const frame = doc.getByTestId('news-frame')
+    await doc.getByTestId('news-many').click()
+    const scroll = frame.locator('.k-news-scroll')
+    const list = frame.locator('.k-news-items')
+    await expect(list).toHaveAttribute('data-virtual', '')
+    const rows = frame.locator('.k-news-item')
+    // 只渲染可见行（远少于 1000），读屏知道总条数。
+    const rendered = await rows.count()
+    expect(rendered).toBeGreaterThan(3)
+    expect(rendered).toBeLessThan(80)
+    await expect(rows.first()).toHaveAttribute('aria-setsize', '1000')
+    await expect(rows.first()).toHaveAttribute('aria-posinset', '1')
+    // 算的行高 = 渲染出来的自然高度（去掉固定高度量内容）：标题折行、元信息折行、胶囊都算对。
+    const mismatch = await rows.evaluateAll((nodes) =>
+      nodes
+        .map((node) => {
+          const el = node as HTMLElement
+          const set = el.getBoundingClientRect().height
+          const keep = el.style.height
+          el.style.height = 'auto'
+          el.style.minHeight = '32px'
+          const natural = el.getBoundingClientRect().height
+          el.style.height = keep
+          el.style.minHeight = ''
+          return { id: el.dataset.newsId, set, natural }
+        })
+        .filter((row) => Math.abs(row.set - row.natural) > 0.6),
+    )
+    expect(mismatch).toEqual([])
+    // 行高不一（有折两行的）。
+    const heights = new Set(
+      await rows.evaluateAll((nodes) => nodes.map((n) => Math.round(n.getBoundingClientRect().height))),
+    )
+    expect(heights.size).toBeGreaterThan(1)
+    // 滚动中每次采样：可见行的 top 随下标单调递增（不跳动）。
+    const monotonic = await scroll.evaluate(async (el) => {
+      const seen: string[] = []
+      for (let step = 0; step < 30; step++) {
+        el.scrollTop += 700
+        await new Promise((resolve) => requestAnimationFrame(() => resolve(null)))
+        const tops = [...el.querySelectorAll<HTMLElement>('.k-news-item')]
+          .map((n) => ({ index: Number(n.getAttribute('aria-posinset')), top: n.getBoundingClientRect().top }))
+          .sort((a, b) => a.index - b.index)
+        for (let i = 1; i < tops.length; i++)
+          if (tops[i]!.top < tops[i - 1]!.top) seen.push(`step ${step}: ${tops[i - 1]!.index}>${tops[i]!.index}`)
+      }
+      return seen
+    })
+    expect(monotonic).toEqual([])
+    // 滚到底：最后一条可见；滚动条总长 = 所有行高之和（容器 scrollHeight 与最后一行的底对齐）。
+    await scroll.evaluate((el) => (el.scrollTop = el.scrollHeight))
+    const last = frame.locator('.k-news-item[aria-posinset="1000"]')
+    await expect(last).toBeVisible()
+    await expect(last.locator('.k-news-title')).toContainText('1000.')
+    // 滚动条走到底：行的底边贴着滚动区的底边（滚动区底部没有多余空白，也没有被截掉）。
+    await expect
+      .poll(async () => {
+        const [scrollBox, lastBox] = [(await scroll.boundingBox())!, (await last.boundingBox())!]
+        return scrollBox.y + scrollBox.height - (lastBox.y + lastBox.height)
+      })
+      .toBeLessThanOrEqual(1)
+    const total = await list.evaluate((el) => el.getBoundingClientRect().height)
+    // 滚动条长度：scrollHeight 就是全部 1000 行的高度之和（ol 的高），不多不少。
+    expect(Math.abs((await scroll.evaluate((el) => el.scrollHeight)) - total)).toBeLessThanOrEqual(1)
+    // 筛选仍然有效：搜到少于阈值的结果就回到不虚拟化的老写法。
+    await frame.getByRole('searchbox', { name: '搜索关键词' }).fill('99.')
+    await expect(list).not.toHaveAttribute('data-virtual', '')
+    await expect(rows.first()).not.toHaveAttribute('aria-setsize', /.*/)
   })
 
   test(`新闻阅读窗（${theme}）：品种涨跌上色、要点、操作按钮`, async ({ page }) => {

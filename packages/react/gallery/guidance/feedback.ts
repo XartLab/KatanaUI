@@ -46,7 +46,11 @@ const feedback: GuidanceMap = {
   },
   'ai-status': {
     aliases: ['Typing indicator', 'Thinking status', 'Agent status', 'Progress text'],
-    use: ['一行说明 AI 在思考、检索、书写、完成或出错。', '长任务里显示耗时。'],
+    use: [
+      '一行说明 AI 在思考、检索、书写、完成或出错。',
+      '长任务里显示耗时。',
+      '换文字时宽度在同一帧算好交给弹簧，不先跳一帧。',
+    ],
     avoid: ['有真实百分比用 progress。', '只想要状态球用 matrix-orb。', '步骤清单用 task-list。'],
     a11y: ['整行是 role=status，状态变了读屏会播报。', '图标对读屏隐藏，文字是唯一的读法。'],
   },

@@ -10,7 +10,9 @@ import {
   Search,
   Trash2Icon,
 } from 'lucide-react'
-import { useMemo, useRef, useState, type ReactNode } from 'react'
+import { defaultRangeExtractor, useVirtualizer } from '@tanstack/react-virtual'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react'
+import { onTextMeasureReset } from '../../lib/text-measure.ts'
 import { cn } from '../../lib/cn.ts'
 import { SymbolMark } from '../../katana/symbol-mark.tsx'
 import { ChipGroup, type ChipItem } from '../../patterns/chip-group.tsx'
@@ -21,6 +23,7 @@ import { Input } from '../../primitives/input.tsx'
 import { ToggleGroup, ToggleGroupItem } from '../../primitives/toggle-group.tsx'
 import { Checkbox } from '../../primitives/checkbox.tsx'
 import { Popover, PopoverContent, PopoverTrigger } from '../../primitives/popover.tsx'
+import { listRowHeight, readRowFonts, VIRTUAL_THRESHOLD, type RowFonts } from './news-feed-rows.ts'
 import { filterNews, sortNews, type NewsFacet, type NewsItem, type NewsSymbol } from './news-feed-model.ts'
 
 // 新闻流（#29）：列表（时间、来源、标题、相关品种胶囊、重要标记）与卡片网格（来源 + 时间、标题、两行摘要、品种胶囊）两种排法；
@@ -176,14 +179,132 @@ export function NewsFeed({
   ).length
 
   const sourceName = (value: string) => sources.find((s) => s.value === value)?.label ?? value
-  const chips: ChipItem[] = sources.map((s) => ({ value: s.value, label: s.label }))
 
   const opened = reader && openId !== null ? items.find((i) => i.id === openId) : undefined
   const selectedId = reader ? (opened?.id ?? null) : selected
+
+  // 虚拟化只管「列表」排法且条目多于阈值；少了完全走老写法（卡片是自适应网格，行高本来就不是一行一高，不虚拟化）。
+  const virtual = layout === 'list' && visible.length > VIRTUAL_THRESHOLD
+  // 滚动区宽度与字体（字号、行高、具名字体）：行高只依赖它们；宽度变了只重算高度，prepare 在 text-measure 里按「字体+文本」缓存。
+  const [width, setWidth] = useState(0)
+  const [fonts, setFonts] = useState<RowFonts | null>(null)
+  const [epoch, setEpoch] = useState(0)
+  // 字体缓存被清（Web 字体加载完、换渲染字体、DPR 变）后行高要重算。
+  useEffect(() => onTextMeasureReset(() => setEpoch((n) => n + 1)), [])
+  useLayoutEffect(() => {
+    const el = scroller.current
+    if (!virtual || !el) return
+    setFonts(readRowFonts(el))
+    setWidth(el.clientWidth)
+    // 用 clientWidth（不含滚动条）而不是 contentRect：行宽就是它。
+    const observer = new ResizeObserver(() => setWidth(el.clientWidth))
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [virtual, epoch])
+
+  const sizes = useMemo(() => {
+    if (!virtual || !fonts) return []
+    return visible.map((item) =>
+      listRowHeight(
+        {
+          title: item.title,
+          source: sourceName(item.source),
+          time: labels.ago(Math.max(0, Math.floor((now - item.time) / 1000))),
+          read: labels.read && item.readMinutes !== undefined ? labels.read(item.readMinutes) : undefined,
+          important: !!item.important,
+          symbolCodes: item.symbols?.map((symbol) => symbol.code) ?? [],
+          symbolStyle,
+          hasActions: !!itemActions,
+        },
+        fonts,
+        width,
+      ),
+    )
+    // oxlint-disable-next-line react/exhaustive-deps -- sourceName 由 sources 决定，依赖写 sources
+  }, [virtual, fonts, width, visible, now, labels, sources, symbolStyle, itemActions, epoch])
+
+  const selectedIndex = virtual && selectedId !== null ? visible.findIndex((i) => i.id === selectedId) : -1
+  // 返回的函数不能被 React Compiler 记忆化，只在这个组件里用。
+  const virtualizer = useVirtualizer({
+    count: virtual ? visible.length : 0,
+    getScrollElement: () => scroller.current,
+    estimateSize: (index) => sizes[index] ?? 32,
+    overscan: 8,
+    initialRect: { width: 0, height: 600 },
+    getItemKey: (index) => visible[index]?.id ?? index,
+    // 阅读窗开着的那条即使滚出去也留着：键盘焦点在它的标题按钮上，卸掉焦点就丢了。
+    rangeExtractor: (range) => {
+      const indexes = defaultRangeExtractor(range)
+      return selectedIndex >= 0 && !indexes.includes(selectedIndex)
+        ? [...indexes, selectedIndex].sort((a, b) => a - b)
+        : indexes
+    },
+  })
+  // estimateSize 不是 virtualizer 缓存的依赖，高度变了要显式 measure()；内容没变就不动，免得 labels 每次新对象造成循环。
+  const lastSizes = useRef<number[]>([])
+  useLayoutEffect(() => {
+    const last = lastSizes.current
+    if (last.length === sizes.length && last.every((size, i) => size === sizes[i])) return
+    lastSizes.current = sizes
+    virtualizer.measure()
+  }, [sizes, virtualizer])
+  const chips: ChipItem[] = sources.map((s) => ({ value: s.value, label: s.label }))
+
   const open = (item: NewsItem) => {
     if (reader) setOpenId(item.id)
     onOpen?.(item)
   }
+  // 一条的 DOM：虚拟化与否共用；虚拟化时多带 aria-setsize / aria-posinset（读屏要知道总条数）与绝对定位的 top、height。
+  const renderRow = (
+    item: NewsItem,
+    position?: { 'aria-setsize': number; 'aria-posinset': number; style: CSSProperties },
+  ) => (
+    <li
+      {...position}
+      key={item.id}
+      className={cn('k-news-item', fresh.has(item.id) && 'is-fresh')}
+      data-important={item.important ? '' : undefined}
+      data-news-id={item.id}
+      data-selected={item.id === selectedId ? '' : undefined}
+      data-actions={itemActions ? '' : undefined}
+    >
+      <div className="k-news-meta">
+        <span className="k-news-source">{sourceName(item.source)}</span>
+        <time className="k-news-time" dateTime={new Date(item.time).toISOString()} title={labels.absolute(item.time)}>
+          {labels.ago(Math.max(0, Math.floor((now - item.time) / 1000)))}
+        </time>
+        {labels.read && item.readMinutes !== undefined ? (
+          <span className="k-news-read">{labels.read(item.readMinutes)}</span>
+        ) : null}
+        {item.important && (
+          <span className="k-news-flag" role="img" aria-label={labels.important} title={labels.important} />
+        )}
+      </div>
+      <div className="k-news-body">
+        <Title item={item} onOpen={reader || onOpen ? open : undefined} />
+        {item.summary && layout === 'card' && <p className="k-news-summary">{item.summary}</p>}
+      </div>
+      {itemActions && <RowActions items={itemActions(item)} label={itemActionsLabel} />}
+      {item.symbols && item.symbols.length > 0 && (
+        <div className="k-news-symbols" data-style={symbolStyle}>
+          {item.symbols.map((symbol) => (
+            <button
+              key={symbol.code}
+              type="button"
+              className="k-news-symbol"
+              aria-label={symbolStyle === 'stack' ? symbol.code : undefined}
+              title={symbolStyle === 'stack' ? `${symbol.code} ${symbol.name ?? ''}`.trim() : undefined}
+              onClick={() => onSymbolPick?.(symbol, item)}
+            >
+              <SymbolMark code={symbol.code} name={symbol.name} size={symbolStyle === 'stack' ? 18 : 14} />
+              {symbolStyle === 'chips' ? <span>{symbol.code}</span> : null}
+            </button>
+          ))}
+        </div>
+      )}
+    </li>
+  )
+
   const headed = (views && views.length > 0 && labels.views) || labels.collapse
 
   return (
@@ -421,65 +542,21 @@ export function NewsFeed({
                 label={itemActionsLabel}
                 keyAttribute="data-news-id"
               >
-                <ol className="k-news-items" aria-label={labels.feed}>
-                  {visible.map((item) => (
-                    <li
-                      key={item.id}
-                      className={cn('k-news-item', fresh.has(item.id) && 'is-fresh')}
-                      data-important={item.important ? '' : undefined}
-                      data-news-id={item.id}
-                      data-selected={item.id === selectedId ? '' : undefined}
-                      data-actions={itemActions ? '' : undefined}
-                    >
-                      <div className="k-news-meta">
-                        <span className="k-news-source">{sourceName(item.source)}</span>
-                        <time
-                          className="k-news-time"
-                          dateTime={new Date(item.time).toISOString()}
-                          title={labels.absolute(item.time)}
-                        >
-                          {labels.ago(Math.max(0, Math.floor((now - item.time) / 1000)))}
-                        </time>
-                        {labels.read && item.readMinutes !== undefined ? (
-                          <span className="k-news-read">{labels.read(item.readMinutes)}</span>
-                        ) : null}
-                        {item.important && (
-                          <span
-                            className="k-news-flag"
-                            role="img"
-                            aria-label={labels.important}
-                            title={labels.important}
-                          />
-                        )}
-                      </div>
-                      <div className="k-news-body">
-                        <Title item={item} onOpen={reader || onOpen ? open : undefined} />
-                        {item.summary && layout === 'card' && <p className="k-news-summary">{item.summary}</p>}
-                      </div>
-                      {itemActions && <RowActions items={itemActions(item)} label={itemActionsLabel} />}
-                      {item.symbols && item.symbols.length > 0 && (
-                        <div className="k-news-symbols" data-style={symbolStyle}>
-                          {item.symbols.map((symbol) => (
-                            <button
-                              key={symbol.code}
-                              type="button"
-                              className="k-news-symbol"
-                              aria-label={symbolStyle === 'stack' ? symbol.code : undefined}
-                              title={symbolStyle === 'stack' ? `${symbol.code} ${symbol.name ?? ''}`.trim() : undefined}
-                              onClick={() => onSymbolPick?.(symbol, item)}
-                            >
-                              <SymbolMark
-                                code={symbol.code}
-                                name={symbol.name}
-                                size={symbolStyle === 'stack' ? 18 : 14}
-                              />
-                              {symbolStyle === 'chips' ? <span>{symbol.code}</span> : null}
-                            </button>
-                          ))}
-                        </div>
-                      )}
-                    </li>
-                  ))}
+                <ol
+                  className="k-news-items"
+                  aria-label={labels.feed}
+                  data-virtual={virtual ? '' : undefined}
+                  style={virtual ? { height: virtualizer.getTotalSize() } : undefined}
+                >
+                  {virtual
+                    ? virtualizer.getVirtualItems().map((row) =>
+                        renderRow(visible[row.index]!, {
+                          'aria-setsize': visible.length,
+                          'aria-posinset': row.index + 1,
+                          style: { top: row.start, height: sizes[row.index] },
+                        }),
+                      )
+                    : visible.map((item) => renderRow(item))}
                 </ol>
               </RowContextMenu>
             )}

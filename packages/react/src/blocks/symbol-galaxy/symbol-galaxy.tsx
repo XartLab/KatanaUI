@@ -10,6 +10,7 @@ import { ChartTable, type ChartViewProps } from '../../quant/chart-kit/chart-tab
 import { divHotThreshold } from '../../quant/chart-kit/series-colors.ts'
 import { LcdTooltip, type LcdTooltipRow } from '../../quant/chart-kit/lcd-tooltip.tsx'
 import { ToggleGroup, ToggleGroupItem } from '../../primitives/toggle-group.tsx'
+import { onTextMeasureReset } from '../../lib/text-measure.ts'
 import { galaxyStep, hitNode, layoutGalaxy, stepNode, type GalaxyNode, type GalaxyPlace } from './galaxy-model.ts'
 
 export const GALAXY_W = 800
@@ -80,10 +81,13 @@ export function SymbolGalaxy({
   const mode = groupBy ?? inner
   const hotAt = useMemo(() => divHotThreshold(nodes.map((node) => node.change ?? Number.NaN)), [nodes])
   const [scale, setScale] = useState(1)
-  const layout = useMemo(
-    () => layoutGalaxy(nodes, mode, { ...FRAME, headroom: Math.ceil(FRAME.headroom / scale), scale }),
-    [nodes, mode, scale],
-  )
+  // 团名宽度是量出来的：网页字体加载完、换字体后测量缓存会清，布局要跟着重排，否则还是用加载前的回退字宽。
+  const [fontEpoch, setFontEpoch] = useState(0)
+  useEffect(() => onTextMeasureReset(() => setFontEpoch((n) => n + 1)), [])
+  const layout = useMemo(() => {
+    void fontEpoch // 只用来触发重排
+    return layoutGalaxy(nodes, mode, { ...FRAME, headroom: Math.ceil(FRAME.headroom / scale), scale })
+  }, [nodes, mode, scale, fontEpoch])
   useEffect(() => {
     const el = svg.current
     if (!el) return

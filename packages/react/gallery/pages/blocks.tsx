@@ -44,7 +44,15 @@ import {
   type WorkspaceTab,
 } from '../../src/blocks/index.ts'
 import { ConsensusBlock } from '../../src/quant/index.ts'
-import { Button, Splitter, ToggleGroup, ToggleGroupItem, symbolMenu, usePersistedState } from '../../src/index.ts'
+import {
+  Button,
+  Splitter,
+  Switch,
+  ToggleGroup,
+  ToggleGroupItem,
+  symbolMenu,
+  usePersistedState,
+} from '../../src/index.ts'
 import { ActionLog, Row, SAMPLE_MARK_SRC, demoSymbolActions } from './parts.tsx'
 
 // 积木层（@katana-ui/react/blocks，#1869）的演示。表里的数据都是写死的示例数据，不是行情。
@@ -197,6 +205,7 @@ function ColumnsDemo() {
               columns={COLUMNS}
               layout={layout}
               onLayoutChange={setLayout}
+              onResize={(id, width) => setLayout((current) => current.map((c) => (c.id === id ? { ...c, width } : c)))}
               rows={EXAMPLES}
               rowId={(row) => row.id}
               label="Example columns"
@@ -707,8 +716,21 @@ function NewsFeedSplit() {
   )
 }
 
+/** 1000 条演示数据：标题长短不一（从一句到三句），用来演示虚拟滚动按文字折行预先算行高。 */
+const NEWS_MANY: NewsItem[] = Array.from({ length: 1000 }, (_, i) => {
+  const base = NEWS_ITEMS[i % NEWS_ITEMS.length]!
+  const tail = '，演示用的补充说明文字用来拉长标题'.repeat(i % 4 === 3 ? 3 : i % 4 === 1 ? 1 : 0)
+  return {
+    ...base,
+    id: `big-${i}`,
+    time: NEWS_NOW - (i + 1) * 20_000,
+    title: `${i + 1}. ${base.title}${tail}`,
+  }
+})
+
 export function NewsFeedDemo() {
   const [items, setItems] = useState(NEWS_ITEMS)
+  const [many, setMany] = useState(false)
   const [picked, setPicked] = useState('—')
   const push = () =>
     setItems((prev) => [
@@ -727,16 +749,20 @@ export function NewsFeedDemo() {
       <p className="gal-note">
         演示数据（标题与来源都是虚构的，时间固定）。点「模拟新消息」看新到条目；点品种胶囊：{picked}。
       </p>
-      <Button data-testid="news-push" onClick={push}>
+      <Button data-testid="news-push" onClick={push} disabled={many}>
         模拟新消息
       </Button>
+      <label className="gal-note" style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+        <Switch aria-label="1000 条" checked={many} onCheckedChange={setMany} data-testid="news-many" />
+        1000 条（超过 50 条列表自动虚拟滚动，行高按标题折行预先算出）
+      </label>
       <div style={{ height: 420 }} data-testid="news-frame">
         <PanelFrame aria-label="News panel">
           <PanelFrameHeader heading="News" object="· 演示数据" />
           <PanelFrameBody>
             <div style={{ height: '100%', padding: 8 }}>
               <NewsFeed
-                items={items}
+                items={many ? NEWS_MANY : items}
                 channels={NEWS_CHANNELS}
                 sources={NEWS_SOURCES}
                 now={NEWS_NOW}

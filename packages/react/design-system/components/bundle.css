@@ -4709,9 +4709,11 @@ button.k-news-title:hover, a.k-news-title:hover {
 }
 
 .k-news[data-layout="list"] .k-news-title {
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  display: block;
+  -webkit-line-clamp: 2;
+  white-space: normal;
+  overflow-wrap: break-word;
+  -webkit-box-orient: vertical;
+  display: -webkit-box;
   overflow: hidden;
 }
 
@@ -5050,6 +5052,16 @@ button.k-news-title:hover, a.k-news-title:hover {
 
 .k-news[data-layout="list"] .k-news-item[data-actions] .k-news-symbols {
   margin-inline-end: 64px;
+}
+
+.k-news-items[data-virtual] {
+  position: relative;
+}
+
+.k-news[data-layout="list"] .k-news-items[data-virtual] > .k-news-item {
+  box-sizing: border-box;
+  position: absolute;
+  inset-inline: 0;
 }
 
 .k-sr {
@@ -8386,20 +8398,6 @@ button.k-status-item:hover {
   margin: 0;
 }
 
-.k-status-ruler {
-  visibility: hidden;
-  pointer-events: none;
-  display: flex;
-  position: absolute;
-  top: 0;
-  left: 0;
-}
-
-.k-status-ruler .k-status-item {
-  clip-path: none;
-  margin: 0;
-}
-
 .k-wtabs {
   min-width: 0;
   height: var(--rail-h, 48px);
@@ -8471,15 +8469,6 @@ button.k-status-item:hover {
   transition: left var(--dur-snappy, .333s) var(--ease-snappy), width var(--dur-snappy, .333s) var(--ease-snappy);
   position: absolute;
   bottom: 0;
-}
-
-.k-wtabs-ruler {
-  visibility: hidden;
-  pointer-events: none;
-  display: flex;
-  position: absolute;
-  top: 0;
-  left: 0;
 }
 
 .k-wtabs-more, .k-wtabs-create {

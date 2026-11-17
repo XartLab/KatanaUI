@@ -67,14 +67,6 @@
     left var(--dur-snappy, 333ms) var(--ease-snappy),
     width var(--dur-snappy, 333ms) var(--ease-snappy);
 }
-.k-wtabs-ruler {
-  position: absolute;
-  top: 0;
-  left: 0;
-  display: flex;
-  visibility: hidden;
-  pointer-events: none;
-}
 .k-wtabs-more,
 .k-wtabs-create {
   display: inline-flex;

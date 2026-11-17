@@ -148,11 +148,14 @@ a.k-news-title:hover {
   order: -1;
   min-width: 52px;
 }
+/* 列表标题最多折两行（TradingView 新闻列表的做法），条数多少都一样；虚拟列表的行高按同一规则预先算（news-feed-rows.ts 的 TITLE_MAX_LINES）。 */
 .k-news[data-layout='list'] .k-news-title {
-  display: block;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
   overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  white-space: normal;
+  overflow-wrap: break-word;
 }
 
 /* 卡片：自适应列数。 */
@@ -453,4 +456,15 @@ a.k-news-title:hover {
 /* 悬停的快捷操作条浮在行右端：有操作的列表行，把品种徽标让到它左边，免得被盖住点不到。待定：64px 是两颗图标按钮加内距的估值，没实测。 */
 .k-news[data-layout='list'] .k-news-item[data-actions] .k-news-symbols {
   margin-inline-end: 64px;
+}
+
+/* 虚拟列表（列表排法且条目多于 VIRTUAL_THRESHOLD，见 news-feed-rows.ts）：每行高度由 pretext 预先算好、绝对定位；
+   标题折行规则与非虚拟时相同。数字与 news-feed-rows.ts 的常量同源。 */
+.k-news-items[data-virtual] {
+  position: relative;
+}
+.k-news[data-layout='list'] .k-news-items[data-virtual] > .k-news-item {
+  position: absolute;
+  inset-inline: 0;
+  box-sizing: border-box;
 }

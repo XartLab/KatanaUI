@@ -58,6 +58,10 @@ export type DataGridTexts = {
     hide: string
     moveLeft: string
     moveRight: string
+    /** 「适应内容」：这一列宽度设成列头与数据里最宽的字（可省，省略用英文默认）。 */
+    fitContent?: string
+    /** 「全部列适应内容」（可省，省略用英文默认）。 */
+    fitAll?: string
     /** 菜单的读屏名。 */
     label: (column: { id: string; label: string }) => string
   }
@@ -97,7 +101,9 @@ export const DataGridHostProvider = Context.Provider
 export const useDataGridHost = (): DataGridHost | undefined => useContext(Context)
 
 /** 没有宿主文案时的英文（表头提示这类不能空）。 */
-export const DEFAULT_TEXTS: Omit<DataGridTexts, 'copy' | 'save' | 'resetColumns'> = {
+export const DEFAULT_TEXTS: Omit<DataGridTexts, 'copy' | 'save' | 'resetColumns' | 'columnMenu'> & {
+  columnMenu: Required<DataGridTexts['columnMenu']>
+} = {
   gridLabel: (label) => label,
   menuLabel: (label) => `${label} menu`,
   rowActions: 'Row actions',
@@ -113,6 +119,8 @@ export const DEFAULT_TEXTS: Omit<DataGridTexts, 'copy' | 'save' | 'resetColumns'
     hide: 'Hide column',
     moveLeft: 'Move left',
     moveRight: 'Move right',
+    fitContent: 'Fit column to content',
+    fitAll: 'Fit all columns to content',
     label: (column) => `${column.label} column menu`,
   },
 }

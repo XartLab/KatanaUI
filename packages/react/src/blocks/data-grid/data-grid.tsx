@@ -25,6 +25,7 @@ import {
   type ReactNode,
 } from 'react'
 import { cn } from '../../lib/cn.ts'
+import { fontFor } from '../../lib/text-measure.ts'
 import { SymbolMark } from '../../katana/symbol-mark.tsx'
 import { ContextMenu, ContextMenuContent, ContextMenuTrigger } from '../../primitives/context-menu.tsx'
 import { useMenuParts } from '../../primitives/menu-any.tsx'
@@ -32,6 +33,7 @@ import { MenuItemHint, MenuItemLabel } from '../../primitives/menu-parts.tsx'
 import { RowActions, type RowAction } from '../../patterns/row-actions.tsx'
 import { ToneText } from '../../quant/tone-text.tsx'
 import { defaultAlign, resolveCell, sortComparator, type GridColumn } from './columns.ts'
+import { FIT_MAX_ROWS, fitColumnWidth, type FitFonts } from './fit-width.ts'
 import { moveColumn, reorderColumn, setColumnFixed, setColumnVisible } from './layout-model.ts'
 import { DEFAULT_TEXTS, useDataGridHost, type GridMenuEntry } from './host.tsx'
 import {
@@ -380,7 +382,12 @@ export function DataGrid<Row extends object>({
   classNames = {},
 }: DataGridProps<Row>) {
   const host = useDataGridHost()
-  const texts = { ...DEFAULT_TEXTS, ...host?.texts }
+  // columnMenu 要逐键合并：宿主只翻旧的几项时，新加的「适应内容」仍有默认英文。
+  const texts = {
+    ...DEFAULT_TEXTS,
+    ...host?.texts,
+    columnMenu: { ...DEFAULT_TEXTS.columnMenu, ...host?.texts?.columnMenu },
+  }
   const id = useId()
   const rowHeight = ROW_HEIGHTS[density]
   const headHeight = layout.some((column) => column.visible && column.sub)
@@ -698,6 +705,13 @@ export function DataGrid<Row extends object>({
             },
           ] as const)
         : []),
+      ...(canFit
+        ? [
+            SEP,
+            { type: 'item', label: t.fitContent, onSelect: () => fitColumns([columnId]) } as const,
+            { type: 'item', label: t.fitAll, onSelect: () => fitColumns(shown.map((column) => column.id)) } as const,
+          ]
+        : []),
       ...(reset ? [SEP, reset] : []),
     ]
   }
@@ -739,6 +753,64 @@ export function DataGrid<Row extends object>({
       ...body,
       ...(info ? [SEP, { type: 'item', label: info, disabled: true, onSelect: () => {} } as const] : []),
     ]
+  }
+
+  // 适应内容要读字体：字号字重取自画出来的格子 / 列头的 computed style（读样式不是量尺寸），family 走 --font-sans 变量。
+  const fitFonts = (): FitFonts => {
+    const root = scroller.current
+    const look = (
+      selector: string,
+      fallbackWeight: number,
+      fallbackSize: number,
+      family = '--font-sans',
+      weight?: number,
+    ) => {
+      const node = root?.querySelector<HTMLElement>(selector) ?? undefined
+      const style = node ? getComputedStyle(node) : undefined
+      const size = Number.parseFloat(style?.fontSize ?? '') || fallbackSize
+      return fontFor(
+        weight ?? (Number.parseFloat(style?.fontWeight ?? '') || fallbackWeight),
+        size,
+        family,
+        node ?? root ?? undefined,
+      )
+    }
+    return {
+      // 列头按排序态的 600 量，排序后字变粗也放得下；小字固定 400 10px（见 .k-grid-head-sub）。
+      head: look('.k-grid-col button, .k-grid-head-text', 600, 12, '--font-sans', 600),
+      sub: fontFor(400, 10, '--font-sans', root ?? undefined),
+      cell: look('.k-grid-cell', 500, 12),
+      tag: look('.k-grid-tag', 500, 11, '--font-sans-small'),
+    }
+  }
+  const canFit = onResize !== undefined || onLayoutChange !== undefined
+  const fitColumns = (ids: readonly string[]) => {
+    const fonts = fitFonts()
+    const rowsToFit = modelRows.slice(0, FIT_MAX_ROWS).map((row) => row.original)
+    const next = new Map<string, number>()
+    for (const columnId of ids) {
+      const spec = byId.get(columnId)
+      const at = layoutOf.get(columnId)
+      if (!spec || !at) continue
+      const width = fitColumnWidth({
+        column: spec,
+        label: at.label,
+        sub: at.sub,
+        rows: rowsToFit,
+        env,
+        fonts,
+        sortable: interactive && onSortChange !== undefined,
+        minWidth: MIN_WIDTH,
+      })
+      if (width !== undefined && width !== at.width) next.set(columnId, width)
+    }
+    if (next.size === 0) return
+    // 多列一次写：用 onLayoutChange 整体换，逐列调 onResize 会让调用方用旧 layout 互相覆盖。单列优先走 onResize（跟拖宽同一条路）。
+    if (onLayoutChange && (next.size > 1 || !onResize))
+      onLayoutChange(
+        layout.map((column) => (next.has(column.id) ? { ...column, width: next.get(column.id)! } : column)),
+      )
+    else for (const [columnId, width] of next) onResize?.(columnId, width)
   }
 
   const startResize = (event: PointerEvent<HTMLElement>, columnId: string, width: number) => {
@@ -922,6 +994,7 @@ export function DataGrid<Row extends object>({
                           aria-orientation="vertical"
                           aria-label={texts.resizeLabel({ id: column.id, label: name })}
                           onPointerDown={(event) => startResize(event, column.id, column.getSize())}
+                          onDoubleClick={() => fitColumns([column.id])}
                         />
                       )}
                     </div>

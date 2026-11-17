@@ -1039,7 +1039,8 @@
       "registryDependencies": [
         "@katana/cn",
         "@katana/motion",
-        "@katana/spring"
+        "@katana/spring",
+        "@katana/text-measure"
       ],
       "files": [
         {
@@ -2487,7 +2488,8 @@
       "description": "资金从来源（央行、银行信贷、财政、海外……）经通道到用途（偿债、消费、投资、资产配置）再到受益方的桑基图，节点与流量由调用方给，列由节点的 column 定。悬停节点或链路出 LCD 读数：金额、占来源流出、占总量；点节点（或聚焦后 Enter / 空格）钉住它的全部上游与下游，其余压暗，再点或 Esc 取消。「交易流量」与「价格重估」分开：交易流量是实色带，价格重估（估值变了、没有资金移动）是斜纹带，占比与总量只算交易流量，右上有开关可以把重估整条拿掉；图例分开写。链路与节点是中性灰，不用橙与蓝，节点想着色由调用方给 color。排布用 d3-sankey 0.12.3（BSD-3-Clause，见 NOTICE），有环时不画、写 labels.cycle（先把回流拆成另一个节点）。需求稿是 issue #45，没有读到可对照的参照产品页面，待核对；演示数据全部虚构。",
       "registryDependencies": [
         "@katana/chart-kit",
-        "@katana/flow-sankey-model"
+        "@katana/flow-sankey-model",
+        "@katana/text-measure"
       ],
       "files": [
         {
@@ -2864,7 +2866,8 @@
       "description": "每项一条线连「前」「后」两列，看再平衡前后的权重、因子排名的变化。线与点是中性墨色，涨跌色只上变化后的那个数字（跟 data-updown 走），悬停与聚焦的线用强调色，两侧写名字与数，标签互相不重叠；rank 模式纵轴是名次，涨跌看名次升降。悬停或聚焦一条，其余变暗。功能参照 Arc Slope chart，实现原创。",
       "registryDependencies": [
         "@katana/chart-kit",
-        "@katana/slope-model"
+        "@katana/slope-model",
+        "@katana/text-measure"
       ],
       "files": [
         {
@@ -3095,6 +3098,7 @@
         "@katana/quant-format",
         "@katana/row-actions",
         "@katana/symbol-mark",
+        "@katana/text-measure",
         "@katana/tone-text"
       ],
       "files": [
@@ -3112,6 +3116,11 @@
           "path": "src/blocks/data-grid/data-grid.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/blocks/data-grid/data-grid.tsx"
+        },
+        {
+          "path": "src/blocks/data-grid/fit-width.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/data-grid/fit-width.ts"
         },
         {
           "path": "src/blocks/data-grid/host.tsx",
@@ -3245,6 +3254,7 @@
       ],
       "registryDependencies": [
         "@katana/chart-kit",
+        "@katana/text-measure",
         "@katana/toggle-group"
       ],
       "files": [
@@ -3293,7 +3303,8 @@
       "registryDependencies": [
         "@katana/cn",
         "@katana/led",
-        "@katana/popover"
+        "@katana/popover",
+        "@katana/text-measure"
       ],
       "files": [
         {
@@ -3318,7 +3329,8 @@
       ],
       "registryDependencies": [
         "@katana/cn",
-        "@katana/dropdown-menu"
+        "@katana/dropdown-menu",
+        "@katana/text-measure"
       ],
       "files": [
         {
@@ -3339,6 +3351,7 @@
       "title": "News Feed",
       "description": "快讯与要闻的流：列表（时间、来源、标题、相关品种胶囊、重要标记）与卡片网格（来源 + 时间、标题、两行摘要、胶囊）两种排法；顶上频道分段、来源多选、关键词搜索、暂停。新到的不打断阅读：在顶部且没暂停时淡入插入，否则出「n 条新消息」，点了才插入。功能参照 TradingView News Flow 帮助页（只读到：新闻集中在一处、可设多种过滤）与 uiarc.dev 的卡片结构（待核对），实现原创。演示数据是虚构的。",
       "dependencies": [
+        "@tanstack/react-virtual@3.14.25",
         "lucide-react@1.67.0"
       ],
       "registryDependencies": [
@@ -3350,6 +3363,7 @@
         "@katana/popover",
         "@katana/row-actions",
         "@katana/symbol-mark",
+        "@katana/text-measure",
         "@katana/toggle-group",
         "@katana/view-switcher"
       ],
@@ -3358,6 +3372,11 @@
           "path": "src/blocks/news-feed/news-feed-model.ts",
           "type": "registry:component",
           "target": "~/src/katana/ui/blocks/news-feed/news-feed-model.ts"
+        },
+        {
+          "path": "src/blocks/news-feed/news-feed-rows.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/news-feed/news-feed-rows.ts"
         },
         {
           "path": "src/blocks/news-feed/news-feed.tsx",
@@ -3568,6 +3587,9 @@
       "type": "registry:component",
       "title": "Event Timeline Model",
       "description": "EventTimeline 的分组规则：按显示时区的自然日分组、新的在前，钟点格式（纯函数）。",
+      "registryDependencies": [
+        "@katana/text-measure"
+      ],
       "files": [
         {
           "path": "src/blocks/event-timeline-model.ts",
