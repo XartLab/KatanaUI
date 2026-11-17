@@ -1,9 +1,13 @@
 // SPDX-License-Identifier: MIT
 // 组件卡 SparkTile（design/katana-console/project/components/SparkTile，#1929）。KPI 瓦片：点阵小标签 + LCD 数值 + 24px 迷你折线 + 一行变化说明。
 // 迷你线的折点与纵坐标用 katana/sparkline 的 sparkPoints、sparkY，所以阈值线与折线落在同一个刻度上。
+// 实时刷新：数值变了闪涨跌色（有 rollValue 的走 RollingText 的滚轮加闪），新点追加时线平滑延伸、末点放一圈光晕闪一次（共用层 lib/live-*.ts）。
 // 数据全由调用方给（数组、当前值、变化）：没有数据就是空态（数值「—」、线的位置写「—」），不补样本。文案（标签、说明、读屏名）一律由调用方传，包里不写。
-import type { AriaAttributes, ReactNode } from 'react'
-import { sparkPoints, sparkY } from '../katana/sparkline.tsx'
+import { useRef, type AriaAttributes, type ReactNode } from 'react'
+import { pointsText, sparkCoords, sparkY } from '../katana/sparkline.tsx'
+import { useLineExtend } from '../lib/live-line.ts'
+import { ReadoutFlash } from '../lib/live-readout.tsx'
+import { useValueFlash } from '../lib/live.ts'
 import { RollingText } from '../katana/rolling-text.tsx'
 import { ChangeText } from './change-text.tsx'
 
@@ -47,8 +51,10 @@ export function sparkTileShape(series: readonly number[], threshold?: number) {
   const all = threshold === undefined ? series : [...series, threshold]
   const lo = Math.min(...all)
   const hi = Math.max(...all)
+  const coords = sparkCoords(series, W, H, [lo, hi])
   return {
-    points: sparkPoints(series, W, H, [lo, hi]),
+    coords,
+    points: pointsText(coords),
     endY: sparkY(series[series.length - 1]!, lo, hi, H),
     thresholdY: threshold === undefined ? null : sparkY(threshold, lo, hi, H),
   }
@@ -71,6 +77,10 @@ export function SparkTile({
   ...rest
 }: SparkTileProps) {
   const shape = sparkTileShape(series, threshold)
+  const line = useRef<SVGPolylineElement>(null)
+  useLineExtend(line, 'points', series, shape?.coords ?? [], pointsText)
+  // 末点的光晕：最新一点比上一点高闪涨色、低闪跌色。
+  const end = useValueFlash(series[series.length - 1])
   const body = (
     <>
       <span className="k-spark-tile-tag">{label}</span>
@@ -78,7 +88,7 @@ export function SparkTile({
         {value === null ? (
           '—'
         ) : rollValue === undefined ? (
-          value
+          <ReadoutFlash text={value} />
         ) : (
           <RollingText text={value} value={rollValue} animate />
         )}
@@ -90,8 +100,15 @@ export function SparkTile({
             {shape.thresholdY !== null && (
               <line className="k-spark-tile-limit" x1="0" x2={W} y1={shape.thresholdY} y2={shape.thresholdY} />
             )}
-            <polyline className={`k-spark-tile-line is-${trendTone}`} points={shape.points} />
+            <polyline ref={line} className={`k-spark-tile-line is-${trendTone}`} points={shape.points} />
           </svg>
+          <i
+            key={end.key}
+            className="k-spark-tile-halo k-live-flash"
+            data-flash={end.flash ?? undefined}
+            style={{ top: `${(shape.endY / H) * 100}%` }}
+            aria-hidden="true"
+          />
           <i className={`k-spark-tile-end is-${trendTone}`} style={{ top: `${(shape.endY / H) * 100}%` }} />
         </span>
       ) : (
@@ -100,7 +117,7 @@ export function SparkTile({
         </span>
       )}
       <span className="k-spark-tile-delta">
-        {delta === undefined ? null : <ChangeText value={delta} arrow />}
+        {delta === undefined ? null : <ChangeText value={delta} arrow flash />}
         {note ? <span className="k-spark-tile-note">{note}</span> : null}
       </span>
     </>

@@ -3461,7 +3461,8 @@ for (const theme of THEMES) {
       expect(Math.max(...(await run).map(Math.abs)), '变少不摆').toBeLessThan(0.5)
       // 清零：角标收起，不摆。
       run = sample(page, swing, 800)
-      await area.getByRole('button', { name: '全部已读' }).click()
+      // 同一节下面还有实时演示（也有「全部已读」），这里点的是第一个、原来那个铃。
+      await area.getByRole('button', { name: '全部已读' }).first().click()
       await expect(badge).toHaveCount(0)
       expect(Math.max(...(await run).map(Math.abs)), '清零不摆').toBeLessThan(0.5)
       // 超过上限：写「99+」；第二个铃上限 9 写「9+」；圆点没有数字。
@@ -5646,7 +5647,8 @@ for (const theme of THEMES) {
   test(`品种概览：关键数据三列，标签可点，徽标是中性胶囊，没有值写「—」 · ${theme}`, async ({ page }) => {
     await open(page, theme, 'key-stats')
     const demo = section(page, 'key-stats')
-    const items = demo.locator('[data-slot="key-stat"]')
+    // 限定在静态示例里：页尾还有一块实时刷新的示例，也有 key-stat。
+    const items = demo.locator('[data-gallery-keystats] [data-slot="key-stat"]')
     await expect(items).toHaveCount(6)
     const xs = await items.evaluateAll((nodes) => nodes.map((n) => Math.round(n.getBoundingClientRect().x)))
     expect(new Set(xs).size, '三列').toBe(3)
@@ -5855,6 +5857,257 @@ for (const theme of THEMES) {
     await expect.poll(price, { timeout: 5000 }).not.toEqual(before)
     await area.getByRole('button', { name: '暂停' }).click()
   })
+
+  // ---- 打板与行情表的实时刷新（LimitLadder、DataGrid、QuoteTable、Watchlist、TechnicalRating）：window.__liveStep 步进，推进后等两个 rAF 再断言 ----
+  test(`连板天梯 LimitLadder 实时刷新：封单额变了闪、炸板行琥珀警示、回封闪涨色、升板整行移到新层且有位移动画并闪涨色、新首板蓝线高亮、汇总读数滚动 · ${theme}`, async ({
+    page,
+  }) => {
+    await open(page, theme, 'limit-ladder')
+    const area = section(page, 'limit-ladder')
+    await expect(area.getByRole('button', { name: '暂停' })).toHaveAttribute('aria-pressed', 'true')
+    await expect(area.locator('[data-slot="ladder-row"]')).toHaveCount(10)
+    const seen = await page.evaluate(async () => {
+      const root = document.querySelector('[data-gallery="limit-ladder"] [data-slot="limit-ladder"]')!
+      const rows = () => [...root.querySelectorAll<HTMLElement>('[data-slot="ladder-row"]')]
+      const boardOf = () =>
+        new Map(rows().map((row) => [row.dataset.code!, row.closest<HTMLElement>('[data-board]')!.dataset.board!]))
+      const frame = () => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)))
+      const out = {
+        seal: '',
+        sealName: '',
+        alert: '',
+        alertName: '',
+        resealed: false,
+        promoted: false,
+        promotedInNewTier: false,
+        promotedAnimated: false,
+        promotedFlash: '',
+        enter: false,
+        enterTier: '',
+        summary: false,
+      }
+      for (let i = 0; i < 150 && !(out.seal && out.alert && out.resealed && out.promoted && out.enter); i += 1) {
+        const before = boardOf()
+        window.__liveStep!()
+        await frame()
+        const seal = root.querySelector<HTMLElement>('[data-slot="ladder-seal"][data-flash]')
+        if (seal && !out.seal) {
+          out.seal = seal.dataset.flash!
+          out.sealName = getComputedStyle(seal).animationName
+        }
+        const alert = root.querySelector<HTMLElement>('[data-slot="ladder-row"].k-live-alert')
+        if (alert && !out.alert) {
+          out.alert = alert.dataset.status!
+          out.alertName = getComputedStyle(alert).animationName
+        }
+        const reseal = root.querySelector<HTMLElement>(
+          '[data-slot="ladder-row"][data-status="sealed"][data-flash="up"]',
+        )
+        if (reseal) out.resealed = true
+        const enter = root.querySelector<HTMLElement>('[data-slot="ladder-row"].k-live-enter')
+        if (enter && !out.enter) {
+          out.enter = true
+          out.enterTier = enter.closest<HTMLElement>('[data-board]')!.dataset.board!
+        }
+        for (const [code, board] of boardOf()) {
+          const was = before.get(code)
+          if (was === undefined || Number(board) <= Number(was) || out.promoted) continue
+          out.promoted = true
+          const row = root.querySelector<HTMLElement>(`[data-code="${code}"]`)!
+          out.promotedInNewTier = row.closest<HTMLElement>('[data-board]')!.dataset.board === board
+          out.promotedAnimated = row
+            .getAnimations()
+            .some((a) => String((a.effect as KeyframeEffect).getKeyframes()[0]?.transform).startsWith('translate'))
+          out.promotedFlash = `${row.dataset.flash}|${row.className}`
+        }
+        if (root.querySelector('[data-slot="ladder-summary"] .k-roll')) out.summary = true
+      }
+      return out
+    })
+    expect(seen.seal, '封单额变了有 data-flash').toMatch(/^(up|down)$/)
+    expect(seen.sealName).toBe('k-live-flash')
+    expect(['broken', 'down']).toContain(seen.alert)
+    expect(seen.alertName, '炸板行用共用层的警示闪').toBe('k-live-alert')
+    expect(seen.resealed, '回封的行闪涨色').toBe(true)
+    expect(seen.promoted, '碰到过升板').toBe(true)
+    expect(seen.promotedInNewTier, '升板后行出现在新层').toBe(true)
+    expect(seen.promotedAnimated, '升板的行上有位移动画（FLIP）').toBe(true)
+    expect(seen.promotedFlash).toContain('up|')
+    expect(seen.promotedFlash).toContain('k-live-flash')
+    expect(seen.enter, '来过新首板').toBe(true)
+    expect(seen.enterTier, '新首板落在 1 板层').toBe('1')
+    expect(seen.summary, '汇总读数是滚动的数字').toBe(true)
+  })
+
+  test(`数据表 DataGrid live：数值格值变了 data-flash、文本列不闪、按涨跌幅排序时行换位（有位移动画）、新增行高亮；不开 live 的表不闪 · ${theme}`, async ({
+    page,
+  }) => {
+    await open(page, theme, 'data-grid')
+    const frame = page.locator('[data-testid="grid-live"]')
+    await expect(frame.locator('[data-row]')).toHaveCount(6)
+    const seen = await page.evaluate(async () => {
+      const root = document.querySelector('[data-testid="grid-live"]')!
+      const order = () =>
+        [...root.querySelectorAll<HTMLElement>('[data-row]')]
+          .sort((a, b) => a.getBoundingClientRect().top - b.getBoundingClientRect().top)
+          .map((row) => row.dataset.row)
+          .join(',')
+      const tick = () => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)))
+      const out = {
+        cols: new Set<string>(),
+        textFlash: false,
+        reordered: false,
+        animated: false,
+        enter: false,
+        name: '',
+      }
+      for (let i = 0; i < 80 && !(out.reordered && out.animated && out.enter); i += 1) {
+        const before = order()
+        window.__liveStep!()
+        await tick()
+        for (const cell of root.querySelectorAll<HTMLElement>('[data-col][data-flash]')) {
+          out.cols.add(`${cell.dataset.col}:${cell.dataset.flash}`)
+          out.name = getComputedStyle(cell).animationName
+        }
+        if (root.querySelector('[data-col="code"][data-flash]')) out.textFlash = true
+        if (root.querySelector('[data-row].k-live-enter')) out.enter = true
+        if (order() !== before) {
+          out.reordered = true
+          const moved = [...root.querySelectorAll<HTMLElement>('[data-row]')].flatMap((row) => row.getAnimations())
+          if (
+            moved.some((a) => String((a.effect as KeyframeEffect).getKeyframes()[0]?.transform).startsWith('translate'))
+          )
+            out.animated = true
+        }
+      }
+      return { ...out, cols: [...out.cols] }
+    })
+    const flashed = new Set(seen.cols.map((entry) => entry.split(':')[0]))
+    expect([...flashed].sort(), '数值类的列闪').toEqual(expect.arrayContaining(['price', 'change']))
+    expect(seen.cols.every((entry) => /:(up|down)$/.test(entry))).toBe(true)
+    expect(seen.name).toBe('k-live-flash')
+    expect(seen.textFlash, '文本列不闪').toBe(false)
+    expect(seen.reordered, '行按涨跌幅换过位').toBe(true)
+    expect(seen.animated, '换位的行上有 transform 动画（FLIP）').toBe(true)
+    expect(seen.enter, '新增过一行，带 .k-live-enter').toBe(true)
+    // 没开 live 的另一张表（示例数据）：步进不会让它闪。
+    await expect(page.locator('[data-testid="grid-demo"] [data-flash]')).toHaveCount(0)
+  })
+
+  test(`报价表 QuoteTable 实时刷新：价格与涨跌幅变了闪、第一组按涨跌幅换位（有位移动画）、第二组新行高亮（<tr> 上的蓝线真的画出来） · ${theme}`, async ({
+    page,
+  }) => {
+    await open(page, theme, 'quote-table')
+    const table = page.locator('[data-gallery-qtable]')
+    const first = await page.evaluate(async () => {
+      const root = document.querySelector('[data-gallery-qtable]')!
+      const names = () => [...root.querySelectorAll('tbody tr th')].map((n) => n.textContent).join(',')
+      const tick = () => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)))
+      const out = { flash: '', name: '', reordered: false, animated: false }
+      for (let i = 0; i < 60 && !(out.flash && out.animated); i += 1) {
+        const before = names()
+        window.__liveStep!()
+        await tick()
+        const cell = root.querySelector<HTMLElement>('tbody td[data-flash]')
+        if (cell && !out.flash) {
+          out.flash = cell.dataset.flash!
+          out.name = getComputedStyle(cell).animationName
+        }
+        if (names() !== before) {
+          out.reordered = true
+          const moved = [...root.querySelectorAll<HTMLElement>('tbody tr')].flatMap((row) => row.getAnimations())
+          if (
+            moved.some((a) => String((a.effect as KeyframeEffect).getKeyframes()[0]?.transform).startsWith('translate'))
+          )
+            out.animated = true
+        }
+      }
+      return out
+    })
+    expect(first.flash).toMatch(/^(up|down)$/)
+    expect(first.name).toBe('k-live-flash')
+    expect(first.reordered, '第一组行换过位').toBe(true)
+    expect(first.animated, '换位的行上有 transform 动画').toBe(true)
+    // 第二组：切过去再步进，新来的行带 .k-live-enter，<tr> 上的 inset 阴影（蓝线）算得出来。
+    await table.getByRole('tab', { name: '示例二组' }).click()
+    const entered = await page.evaluate(async () => {
+      for (let i = 0; i < 80; i += 1) {
+        window.__liveStep!()
+        await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)))
+        const row = document.querySelector<HTMLElement>('[data-gallery-qtable] tbody tr.k-live-enter')
+        if (row) return { shadow: getComputedStyle(row).boxShadow, name: getComputedStyle(row).animationName }
+      }
+      return null
+    })
+    expect(entered, '来过新行').not.toBeNull()
+    expect(entered!.name).toBe('k-live-enter')
+    expect(entered!.shadow).toContain('inset')
+  })
+
+  test(`自选 Watchlist 实时刷新：按涨跌幅排序后价格变了行换位（有位移动画）、新来的行蓝线高亮、涨跌幅闪 · ${theme}`, async ({
+    page,
+  }) => {
+    await open(page, theme, 'watchlist')
+    const demo = section(page, 'watchlist')
+    await demo.locator('[data-slot="watch-sort"][data-key="chgPct"]').click()
+    const seen = await page.evaluate(async () => {
+      const root = document.querySelector('[data-gallery="watchlist"]')!
+      const codes = () =>
+        [...root.querySelectorAll('[data-slot="watch-row"] .k-watch-code')].map((n) => n.textContent).join()
+      const tick = () => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)))
+      const out = { reordered: false, animated: false, enter: '', pct: '' }
+      for (let i = 0; i < 100 && !(out.animated && out.enter && out.pct); i += 1) {
+        const before = codes()
+        window.__liveStep!()
+        await tick()
+        const row = root.querySelector<HTMLElement>('tr.k-live-enter')
+        if (row && !out.enter) out.enter = getComputedStyle(row).boxShadow
+        const pct = root.querySelector<HTMLElement>('[data-slot="change-text"][data-flash]')
+        if (pct && !out.pct) out.pct = pct.dataset.flash!
+        if (codes() !== before) {
+          out.reordered = true
+          const moved = [...root.querySelectorAll<HTMLElement>('tr[data-live-id]')].flatMap((r) => r.getAnimations())
+          if (
+            moved.some((a) => String((a.effect as KeyframeEffect).getKeyframes()[0]?.transform).startsWith('translate'))
+          )
+            out.animated = true
+        }
+      }
+      return out
+    })
+    expect(seen.reordered, '排序下价格变了行换过位').toBe(true)
+    expect(seen.animated, '换位的行上有 transform 动画').toBe(true)
+    expect(seen.enter, '新行带 inset 蓝线').toContain('inset')
+    expect(seen.pct).toMatch(/^(up|down)$/)
+  })
+
+  test(`技术评级 TechnicalRating 实时刷新：评级变了档位与单项结论闪（升涨色、降跌色），个数变了闪 · ${theme}`, async ({
+    page,
+  }) => {
+    await open(page, theme, 'technical-rating')
+    const seen = await page.evaluate(async () => {
+      const root = document.querySelector('[data-gallery="technical-rating"]')!
+      const tick = () => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)))
+      const out = { verdict: '', word: '', count: '', name: '' }
+      for (let i = 0; i < 120 && !(out.verdict && out.count); i += 1) {
+        window.__liveStep!()
+        await tick()
+        const verdict = root.querySelector<HTMLElement>('[data-slot="rating-verdict"][data-flash]')
+        if (verdict && !out.verdict) {
+          out.verdict = verdict.dataset.flash!
+          out.name = getComputedStyle(verdict).animationName
+        }
+        const word = root.querySelector<HTMLElement>('[data-slot="rating-word"][data-flash]')
+        if (word && !out.word) out.word = word.dataset.flash!
+        const count = root.querySelector<HTMLElement>('[data-slot="rating-counts"] b[data-flash]')
+        if (count && !out.count) out.count = count.dataset.flash!
+      }
+      return out
+    })
+    expect(seen.verdict, '单项结论变了闪').toMatch(/^(up|down)$/)
+    expect(seen.name).toBe('k-live-flash')
+    expect(seen.count, '买 / 卖个数变了闪').toMatch(/^(up|down)$/)
+  })
 }
 
 // 属性表读生成的数据、每页有「用法」（#1902）。
@@ -5865,7 +6118,8 @@ test('每一页的「用法」：最小例子渲染出来，下面是它的源�
     const usage = page.locator('[data-usage]')
     await expect(usage.getByRole('heading', { name: '用法' })).toBeVisible()
     const live = usage.locator('[data-usage-live]')
-    await expect(live, `${doc.id} 的用法例子`).toBeVisible()
+    // 一个用例连开 120 多页，并发跑时重的图（如 ridgeline）首帧可能超过默认 5 秒：放宽等待，断言不变。
+    await expect(live, `${doc.id} 的用法例子`).toBeVisible({ timeout: 15_000 })
     expect((await live.boundingBox())!.height, `${doc.id} 的用法例子有高度`).toBeGreaterThan(20)
     await expect(usage.locator('[data-usage-code] [data-slot="code-block-pre"]')).toContainText('@katana-ui/react')
     await expect(usage.getByRole('button', { name: '复制用法代码' })).toBeVisible()
@@ -6012,4 +6266,351 @@ test('A2UI 目录：图表 surface 渲染权益曲线、归因、可用率与矩
   await expect(page.getByTestId('a2ui-host')).toContainText('Host received uptime.select')
   await charts.getByRole('button', { name: 'ACME +2.10%' }).click()
   await expect(page.getByTestId('a2ui-host')).toContainText('Host received treemap.select')
+})
+
+// 新闻与事件的实时刷新（共用层 src/lib/live.ts）：自动化浏览器里模拟器默认暂停，用 window.__liveStep 推，推完等两个 rAF 再断言。
+/** 推进前挂上：记下属性是否出现过。过场只有 240ms，机器忙时等到断言时可能已经播完，所以不按「此刻有没有」判断。 */
+const watchAttr = (locator: Locator, name: string) =>
+  locator.evaluate((el, attr) => {
+    const host = el as Element & { __saw?: boolean }
+    host.__saw = false
+    new MutationObserver(() => {
+      if (el.hasAttribute(attr)) host.__saw = true
+    }).observe(el, { attributes: true, attributeFilter: [attr] })
+  }, name)
+const sawAttr = (locator: Locator) => locator.evaluate((el) => (el as Element & { __saw?: boolean }).__saw === true)
+const liveStep = (page: Page, count = 1) =>
+  page.evaluate(async (n) => {
+    window.__liveStep!(n)
+    await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)))
+  }, count)
+
+test('新闻流刷新（NewsFeed）：在顶部新条直接插入并高亮，卡片排法同样高亮', async ({ page }) => {
+  await open(page, THEMES[0], 'news-feed')
+  const doc = section(page, 'news-feed')
+  const frame = doc.getByTestId('news-frame')
+  const rows = frame.locator('.k-news-item')
+  await expect(rows).toHaveCount(6)
+  await expect(frame.locator('.k-live-enter')).toHaveCount(0)
+  await liveStep(page)
+  // 高亮只有 1.2 秒：推进后立刻在同一次读取里看列表与卡片两边，机器忙时也不会在断言之间摘掉。
+  const marks = await doc.evaluate((root) => {
+    const list = root.querySelectorAll('[data-testid="news-frame"] .k-news-item')
+    const card = root.querySelectorAll('[data-testid="news-cards"] .k-news-item')
+    const has = (el: Element | undefined) => el?.classList.contains('k-live-enter') ?? null
+    return {
+      count: list.length,
+      list: [has(list[0]), has(list[1])],
+      card: [has(card[0]), has(card[1])],
+      duration: list[0] ? getComputedStyle(list[0]).animationDuration : '',
+    }
+  })
+  expect(marks.count).toBe(7)
+  expect(marks.list, '列表：首条高亮、第二条不').toEqual([true, false])
+  expect(marks.card, '卡片：首条高亮、第二条不').toEqual([true, false])
+  expect(marks.duration).toBe('1.2s')
+  await expect(rows.first().locator('.k-news-title')).toContainText('演示')
+  // 1.2 秒后高亮自己摘掉。
+  await expect(rows.first()).not.toHaveClass(/k-live-enter/, { timeout: 3000 })
+})
+
+test('新闻流刷新（NewsFeed）：虚拟列表滚离顶部只计数、点了再合入并回顶；在顶部插入时看着的那条不动', async ({
+  page,
+}) => {
+  await open(page, THEMES[0], 'news-feed')
+  const doc = section(page, 'news-feed')
+  const frame = doc.getByTestId('news-frame')
+  await doc.getByTestId('news-many').click()
+  const scroller = frame.locator('.k-news-scroll')
+  await expect(frame.locator('[data-virtual]')).toHaveCount(1)
+  // 整批换数据不算新消息：不高亮。
+  await expect(frame.locator('.k-live-enter')).toHaveCount(0)
+  await scroller.evaluate((el) => {
+    el.scrollTop = 600
+  })
+  // 等件认定「已离开顶部」再推进，否则滚动事件还没处理完，新条会被当成在顶部直接插入。
+  await expect(scroller).not.toHaveAttribute('data-at-top', /.*/)
+  await expect(frame.locator('.k-news-item').first()).toBeVisible()
+  await liveStep(page)
+  const badge = frame.getByTestId('news-new')
+  await expect(badge).toHaveText(/^\d+ 条新消息$/)
+  await expect(frame.locator('[data-news-id^="live-"]')).toHaveCount(0)
+  // 读屏播报只读条数。
+  await expect(frame.locator('.k-news-live')).toHaveText((await badge.textContent())!)
+  await badge.click()
+  await expect.poll(() => scroller.evaluate((el) => el.scrollTop)).toBe(0)
+  const first = frame.locator('.k-news-item').first()
+  await expect(first).toHaveAttribute('data-news-id', /^live-/)
+  await expect(first).toHaveClass(/k-live-enter/)
+  await expect(badge).toHaveCount(0)
+})
+
+test('新闻流刷新（NewsFeed）：虚拟列表在顶部附近插入新行，滚动锚定让看着的那条不动', async ({ page }) => {
+  await open(page, THEMES[0], 'news-feed')
+  const doc = section(page, 'news-feed')
+  const frame = doc.getByTestId('news-frame')
+  await doc.getByTestId('news-many').click()
+  const scroller = frame.locator('.k-news-scroll')
+  await expect(frame.locator('[data-virtual]')).toHaveCount(1)
+  await scroller.evaluate((el) => {
+    el.scrollTop = 3
+  })
+  const rows = frame.locator('.k-news-item')
+  const watched = rows.nth(1)
+  await expect(watched).toBeVisible()
+  const id = (await watched.getAttribute('data-news-id'))!
+  const before = (await watched.boundingBox())!.y
+  await liveStep(page)
+  await expect(frame.locator('[data-news-id^="live-"]')).not.toHaveCount(0)
+  const after = (await frame.locator(`[data-news-id="${id}"]`).boundingBox())!.y
+  expect(Math.abs(after - before)).toBeLessThan(1.5)
+})
+
+test('阅读窗刷新（NewsReader）：被更新时标题亮一次蓝色提示并标「已更新」，读屏播报', async ({ page }) => {
+  await open(page, THEMES[0], 'news-reader')
+  const reader = section(page, 'news-reader').locator('[data-slot="news-reader"]')
+  const title = reader.locator('[data-slot="news-reader-title"]')
+  await expect(reader.locator('[data-slot="news-reader-updated"]')).toHaveCount(0)
+  await liveStep(page)
+  await expect(title).toHaveClass(/k-live-enter/)
+  await expect(title).toContainText('更新 1')
+  await expect(reader.locator('[data-slot="news-reader-updated"]')).toHaveText('已更新')
+  await expect(reader.locator('.k-news-live')).toHaveText('已更新')
+  // 在新闻流里同样：打开一条，被更新才闪；切到另一条不闪（重新挂载）。
+  await open(page, THEMES[0], 'news-feed')
+  const feed = section(page, 'news-feed').getByTestId('news-split').locator('.k-news')
+  await feed.locator('.k-news-item').nth(1).locator('.k-news-title').click()
+  const pane = feed.locator('[data-slot="news-reader-pane"]')
+  await expect(pane.locator('[data-slot="news-reader-updated"]')).toHaveCount(0)
+  await liveStep(page)
+  await expect(pane.locator('[data-slot="news-reader-title"]')).toHaveClass(/k-live-enter/)
+  await expect(pane.locator('[data-slot="news-reader-updated"]')).toHaveText('已更新')
+  await feed.locator('.k-news-item').nth(2).locator('.k-news-title').click()
+  await expect(pane.locator('[data-slot="news-reader-updated"]')).toHaveCount(0)
+})
+
+test('事件时间线刷新（EventTimeline）：新事件的标记高亮、事件数加一，「现在」线往前走', async ({ page }) => {
+  await open(page, THEMES[0], 'event-timeline')
+  const area = section(page, 'event-timeline')
+  const lane = area.locator('.k-tl-lane').first()
+  const total = area.locator('.k-tl-total').first()
+  await expect(total).toHaveText('11 条')
+  await expect(lane.locator('.k-live-enter')).toHaveCount(0)
+  const nowLeft = () =>
+    lane.locator('[data-slot="event-timeline-now"]').evaluate((el) => (el as HTMLElement).style.left)
+  const before = parseFloat(await nowLeft())
+  await liveStep(page)
+  await expect(total).toHaveText('12 条')
+  await expect(lane.locator('.k-tl-marker.k-live-enter')).toHaveCount(1)
+  expect(parseFloat(await nowLeft())).toBeGreaterThan(before)
+  await expect(lane.locator('.k-tl-marker.k-live-enter')).toHaveCount(0, { timeout: 3000 })
+})
+
+test('通知铃刷新（NotificationBell）：新通知来时铃的底色闪、未读数加一、列表新条高亮', async ({ page }) => {
+  await open(page, THEMES[0], 'notification-bell')
+  const live = section(page, 'notification-bell').getByTestId('bell-live')
+  const bell = live.locator('[data-slot="notification-bell"]')
+  await expect(bell).toHaveAccessibleName('实时提醒，0 条未读')
+  await liveStep(page)
+  await expect(bell).toHaveAccessibleName('实时提醒，1 条未读')
+  await expect(bell.locator('[data-slot="notification-bell-flash"]')).toHaveAttribute('data-flash', 'up')
+  const items = live.locator('[data-slot="live-notices"] li')
+  await expect(items).toHaveCount(1)
+  await expect(items.first()).toHaveClass(/k-live-enter/)
+  // 全部已读：数归零，不闪。
+  await live.getByRole('button', { name: '全部已读' }).click()
+  await expect(bell).toHaveAccessibleName('实时提醒，0 条未读')
+  await expect(bell.locator('[data-slot="notification-bell-flash"]')).not.toHaveAttribute('data-flash', 'up')
+})
+
+// ---- 读数与图表的实时刷新（MetricCard、QuoteCard、PriceTag、SparkTile、KeyStats、StatusBar、Lcd、Led、Sparkline、EquityCurve、Treemap、UptimeBars）：window.__liveStep 步进，推进后等两个 rAF 再断言 ----
+const liveDemo = (page: Page, id: string) => page.locator(`[data-gallery-live="${id}"]`)
+/** 折线 polyline 的点数。 */
+const pointCount = (line: Locator) =>
+  line.evaluate((el) => (el.getAttribute('points') ?? '').trim().split(/\s+/).length)
+
+test('读数刷新（MetricCard）：大号数值变了闪涨跌色，走势线新点进来时在延伸过场里，播完摘掉标记', async ({ page }) => {
+  await open(page, THEMES[0], 'metric-card')
+  const demo = liveDemo(page, 'metric-card')
+  const card = demo.locator('[data-slot="metric-card"]').first()
+  const value = card.locator('[data-slot="metric-value"] .k-live-flash')
+  await expect(value).not.toHaveAttribute('data-flash', /.+/)
+  const line = card.locator('.k-spark polyline')
+  await expect(line).not.toHaveAttribute('data-extending', /.*/)
+  await watchAttr(line, 'data-extending')
+  await liveStep(page)
+  await expect(value).toHaveAttribute('data-flash', /^(up|down)$/)
+  expect(await value.evaluate((el) => getComputedStyle(el).animationName)).toBe('k-live-flash')
+  await expect.poll(() => sawAttr(line)).toBe(true)
+  await expect(line).not.toHaveAttribute('data-extending', /.*/, { timeout: 2000 })
+})
+
+test('读数刷新（QuoteCard、PriceTag）：价格变了闪涨跌色，迷你图点数加一并走延伸过场', async ({ page }) => {
+  await open(page, THEMES[0], 'quote-card')
+  const demo = liveDemo(page, 'quote')
+  const price = demo.locator('.k-quote-price .k-live-flash')
+  const line = demo.locator('.k-quote-card .k-spark polyline')
+  const before = await pointCount(line)
+  await expect(price).not.toHaveAttribute('data-flash', /.+/)
+  await watchAttr(line, 'data-extending')
+  await liveStep(page)
+  await expect(price).toHaveAttribute('data-flash', /^(up|down)$/)
+  await expect(demo.locator('.k-price-tag-price .k-live-flash')).toHaveAttribute('data-flash', /^(up|down)$/)
+  expect(await pointCount(line)).toBe(before + 1)
+  await expect.poll(() => sawAttr(line)).toBe(true)
+  await expect(line).not.toHaveAttribute('data-extending', /.*/, { timeout: 2000 })
+  expect(await pointCount(line)).toBe(before + 1)
+})
+
+test('状态栏刷新（StatusBar）：行情断线整项闪跌红警示，重连闪涨色，数值变了闪涨跌色', async ({ page }) => {
+  await open(page, THEMES[0], 'status-bar')
+  const demo = liveDemo(page, 'status-bar')
+  const quote = demo.locator('[data-id="quote"]')
+  await expect(demo.locator('.k-status-flash')).toHaveCount(0)
+  await liveStep(page, 1)
+  await expect(quote.locator('.k-status-value .k-live-flash')).toHaveAttribute('data-flash', /^(up|down)$/)
+  await liveStep(page, 3)
+  // 第 4 拍行情断开：led 变 danger，整项上盖一层跌红的警示闪。
+  await expect(quote.locator('.k-status-value')).toHaveText('已断开')
+  const alert = quote.locator('.k-status-flash.k-live-alert')
+  await expect(alert).toHaveAttribute('data-tone', 'negative')
+  expect(await alert.evaluate((el) => getComputedStyle(el).animationName)).toBe('k-live-alert')
+  await expect(quote.locator('.k-led-halo.k-live-alert')).toHaveCount(1)
+  await expect(alert).toHaveCount(0, { timeout: 2000 })
+  // 第 6 拍重连：闪涨色。
+  await liveStep(page, 2)
+  await expect(quote.locator('.k-status-value')).toContainText('ms')
+  await expect(quote.locator('.k-status-flash.k-live-flash')).toHaveAttribute('data-flash', 'up')
+})
+
+test('走势线刷新（Sparkline）：新点追加，点数加一，线走延伸过场、播完点数仍是加一后的', async ({ page }) => {
+  await open(page, THEMES[0], 'sparkline')
+  const line = liveDemo(page, 'sparkline').locator('.k-spark polyline')
+  const before = await pointCount(line)
+  await watchAttr(line, 'data-extending')
+  await liveStep(page)
+  await expect.poll(() => sawAttr(line)).toBe(true)
+  await expect(line).not.toHaveAttribute('data-extending', /.*/, { timeout: 2000 })
+  expect(await pointCount(line)).toBe(before + 1)
+  // 攒到窗口上限（30 个点）后窗口左移：点数不再增加，仍然走过场。
+  await liveStep(page, 20)
+  await expect.poll(() => pointCount(line)).toBe(30)
+  await watchAttr(line, 'data-extending')
+  await liveStep(page)
+  await expect.poll(() => sawAttr(line)).toBe(true)
+  expect(await pointCount(line)).toBe(30)
+})
+
+test('读数刷新（SparkTile）：数值闪涨跌色，走势线延伸，末点外圈的光晕闪一次', async ({ page }) => {
+  await open(page, THEMES[0], 'spark-tile')
+  const tile = liveDemo(page, 'spark-tile').locator('.k-spark-tile').first()
+  const line = tile.locator('polyline')
+  await expect(tile.locator('.k-spark-tile-halo')).not.toHaveAttribute('data-flash', /.+/)
+  await watchAttr(line, 'data-extending')
+  await liveStep(page)
+  await expect(tile.locator('.k-spark-tile-value .k-live-flash')).toHaveAttribute('data-flash', /^(up|down)$/)
+  await expect(tile.locator('.k-spark-tile-halo')).toHaveAttribute('data-flash', /^(up|down)$/)
+  await expect.poll(() => sawAttr(line)).toBe(true)
+  // 末点跟着线一起滑（top 有过渡，时长是 --dur-reorder）。
+  expect(await tile.locator('.k-spark-tile-end').evaluate((el) => getComputedStyle(el).transitionProperty)).toContain(
+    'top',
+  )
+})
+
+test('读数刷新（Lcd、Led）：LCD 数字闪涨跌色，灯换状态时灯外闪一圈光晕', async ({ page }) => {
+  await open(page, THEMES[0], 'lcd')
+  const demo = liveDemo(page, 'lcd')
+  await liveStep(page)
+  await expect(demo.locator('.k-lcd .v .k-live-flash')).toHaveAttribute('data-flash', /^(up|down)$/)
+  // 灯随机换状态：推到换了为止（种子固定，次数固定）。
+  const halo = demo.locator('.k-led .k-led-halo')
+  let seen = false
+  for (let i = 0; i < 40 && !seen; i += 1) {
+    await liveStep(page)
+    seen = (await halo.count()) > 0
+  }
+  expect(seen, '灯换状态时出现光晕').toBe(true)
+  expect(await halo.first().evaluate((el) => /k-live-(alert|flash)/.test(el.className))).toBe(true)
+})
+
+test('读数刷新（KeyStats、ChangeText）：数值变了闪涨跌色；涨跌文字要显式 flash 才闪', async ({ page }) => {
+  await open(page, THEMES[0], 'key-stats')
+  const stats = liveDemo(page, 'key-stats')
+  await liveStep(page)
+  await expect(stats.locator('[data-key="cap"] .k-keystats-value .k-live-flash')).toHaveAttribute(
+    'data-flash',
+    /^(up|down)$/,
+  )
+  // 没有数的「—」不闪。
+  await expect(stats.locator('[data-key="beta"] .k-live-flash')).not.toHaveAttribute('data-flash', /.+/)
+  await open(page, THEMES[0], 'change-text')
+  const change = liveDemo(page, 'pnl').locator('[data-slot="change-text"]')
+  await liveStep(page)
+  await expect(change).toHaveAttribute('data-flash', /^(up|down)$/)
+  // 页上原来那几个没传 flash 的，值不变也没有闪烁类。
+  await expect(page.getByTestId('quant-up')).not.toHaveClass(/k-live-flash/)
+})
+
+test('权益曲线刷新（EquityCurve）：新点追加，线延伸、末点闪光晕，窗口跟着最新点走', async ({ page }) => {
+  await open(page, THEMES[0], 'equity-curve')
+  const demo = liveDemo(page, 'equity-curve')
+  const line = demo.locator('[data-slot="equity-line"]')
+  const segments = () => line.evaluate((el) => (el.getAttribute('d') ?? '').match(/[ML]/g)!.length)
+  const before = await segments()
+  await expect(demo.locator('.k-ck-end-halo')).toHaveCount(0)
+  await watchAttr(line, 'data-extending')
+  await liveStep(page)
+  await expect.poll(() => sawAttr(line)).toBe(true)
+  await expect(demo.locator('.k-ck-end-halo')).toHaveAttribute('data-flash', /^(up|down)$/)
+  await expect(line).not.toHaveAttribute('data-extending', /.*/, { timeout: 2000 })
+  expect(await segments()).toBe(before + 1)
+  // 窗口原来是全程，新点来了仍是全程：滑块的最大值跟着加一。
+  await expect(demo.locator('[data-slot="equity-main"]')).toHaveAttribute('aria-valuemax', String(before))
+})
+
+test('矩形树图刷新（Treemap）：颜色走线性过渡、换位与改大小走 --dur-reorder 的过渡，涨跌翻了方向的格子闪一次', async ({
+  page,
+}) => {
+  await open(page, THEMES[0], 'treemap')
+  const demo = liveDemo(page, 'treemap')
+  const cells = demo.locator('.k-treemap-cell')
+  await expect(cells).toHaveCount(8)
+  const transition = await cells.first().evaluate((el) => {
+    const css = getComputedStyle(el)
+    return {
+      props: css.transitionProperty.split(',').map((s) => s.trim()),
+      durations: css.transitionDuration.split(',').map((s) => s.trim()),
+    }
+  })
+  const durationOf = (prop: string) => transition.durations[transition.props.indexOf(prop)]
+  expect(durationOf('background-color')).toBe('0.6s')
+  for (const prop of ['left', 'top', 'width', 'height']) expect(durationOf(prop)).toBe('0.24s')
+  // 步进后格子的位置与大小变了（过渡里会看到中间值，终点是新排布），推到有格子翻了涨跌方向为止。
+  const box = () => cells.first().evaluate((el) => (el as HTMLElement).style.width)
+  const w0 = await box()
+  let flashed = ''
+  for (let i = 0; i < 40 && !flashed; i += 1) {
+    await liveStep(page)
+    flashed =
+      (await demo
+        .locator('.k-treemap-flash')
+        .first()
+        .getAttribute('data-flash')
+        .catch(() => null)) ?? ''
+  }
+  expect(await box()).not.toBe(w0)
+  expect(flashed).toMatch(/^(up|down)$/)
+  await expect(demo.locator('.k-treemap-flash').first()).toHaveClass(/k-live-flash/)
+})
+
+test('可用条刷新（UptimeBars）：新格子进来高亮，格数不变，高亮播完摘掉', async ({ page }) => {
+  await open(page, THEMES[0], 'uptime-bars')
+  const demo = liveDemo(page, 'uptime')
+  const cells = demo.locator('.k-uptime-cell')
+  await expect(cells).toHaveCount(30)
+  await expect(demo.locator('.k-live-enter')).toHaveCount(0)
+  await liveStep(page)
+  await expect(cells).toHaveCount(30)
+  await expect(cells.last()).toHaveClass(/k-live-enter/)
+  await expect(demo.locator('.k-live-enter')).toHaveCount(0, { timeout: 3000 })
 })

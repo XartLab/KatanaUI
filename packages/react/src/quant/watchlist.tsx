@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: MIT
 // 自选列表：列 Symbol / Last / Chg / Chg%，行首小旗标与圆徽标；最新价变动时只有变了的尾数闪涨跌色底（共用层 lib/live.ts，--dur-flash 内落回）；列头可点排序。
+// 排序或数据变化让行的顺序变了，行用 FLIP 平滑换位；新加的行高亮一阵（都走共用层 lib/live.ts）。
 // 布局与交互参照 TradingView 右侧自选栏（主会话 2026-11-15 在真实浏览器里实测，只取布局与行为，不抄代码）：升序 → 降序 → 原顺序循环、
 // 价格尾数闪色。颜色走涨跌语义色。数、列名与读屏名都由调用方传；价格怎么写（位数）由 formatPrice 定，不给就两位小数。
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { cn } from '../lib/cn.ts'
-import { useValueFlash } from '../lib/live.ts'
+import { useEnterMarks, useFlipList, useValueFlash } from '../lib/live.ts'
 import { SymbolMark } from '../katana/symbol-mark.tsx'
 import { ChangeText } from './change-text.tsx'
 import { toneOf } from './format/index.ts'
@@ -89,6 +90,10 @@ export function Watchlist({
   const [innerSort, setInnerSort] = useState<WatchlistSort | null>(null)
   const active = sort === undefined ? innerSort : sort
   const shown = sortRows(rows, active)
+  const table = useRef<HTMLTableElement>(null)
+  const keys = shown.map((row) => row.key)
+  const entering = useEnterMarks(keys)
+  useFlipList(table, keys)
   const click = (key: WatchlistSortKey) => {
     const next = nextSort(active, key)
     if (sort === undefined) setInnerSort(next)
@@ -101,7 +106,7 @@ export function Watchlist({
       </p>
     )
   return (
-    <table className={cn('k-watch', className)} data-slot="watchlist" aria-label={labels.list}>
+    <table ref={table} className={cn('k-watch', className)} data-slot="watchlist" aria-label={labels.list}>
       <thead>
         <tr>
           {KEYS.map((key) => (
@@ -129,8 +134,9 @@ export function Watchlist({
               key={row.key}
               data-slot="watch-row"
               data-key={row.key}
+              data-live-id={row.key}
               data-tone={tone}
-              className={onRow ? 'is-link' : undefined}
+              className={cn(onRow && 'is-link', entering.has(row.key) && 'k-live-enter')}
               onClick={onRow ? () => onRow(row) : undefined}
             >
               <th scope="row">
@@ -161,7 +167,7 @@ export function Watchlist({
                 {signed(row.change, formatPrice)}
               </td>
               <td className="is-num">
-                <ChangeText value={row.changePct} />
+                <ChangeText value={row.changePct} flash />
               </td>
             </tr>
           )

@@ -14,6 +14,16 @@
     background-color 60ms linear,
     box-shadow 60ms linear;
 }
+/* 状态变了的那一圈光晕（k-led 里的子元素）：闪色由共用层 live.css 给，灯自己的底色就是状态色，闪在底色上看不见。 */
+.k-led {
+  position: relative;
+}
+.k-led-halo {
+  position: absolute;
+  inset: -4px;
+  border-radius: var(--radius-pill);
+  pointer-events: none;
+}
 .k-led.bare {
   box-shadow: inset 0 0 0 1px var(--ink-300);
 }

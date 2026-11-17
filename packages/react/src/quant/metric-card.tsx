@@ -3,9 +3,11 @@
 // 可选阶段带（如 极度恐惧…极度贪婪，边界与文案由调用方给）、来源与更新时间一行。
 // 结构参照 uiarc 的 Metric explorer（uiarc.dev，2026-11-15 读，只取结构：标题加大数、变化行、走势线加分段、来源行），实现原创。
 // 走势线复用 katana/sparkline 的 Sparkline，分段控件复用 ToggleGroup，变化复用 ChangeText；组件只画不算，数据与文字都由调用方传，没有数据就是空态。
+// 实时刷新：大号当前值变了闪涨跌色（ReadoutFlash），走势线新点追加时由 Sparkline 平滑延伸；换区间不做过场。
 // 颜色：涨跌色只给变化与走势线；阶段带是从跌色到涨色的渐变加中间灰（类别靠文字，不只靠颜色），不用橙色画数据，不用蓝。
 import { createContext, useContext, useState, type ReactNode } from 'react'
 import { cn } from '../lib/cn.ts'
+import { ReadoutFlash } from '../lib/live-readout.tsx'
 import { Sparkline, sparkTone } from '../katana/sparkline.tsx'
 import type { QuoteTone } from '../katana/quote-tone.ts'
 import { ToggleGroup, ToggleGroupItem } from '../primitives/toggle-group.tsx'
@@ -168,7 +170,7 @@ export function MetricCard({
         ) : null}
       </header>
       <div className={cn('k-metric-value', value === null && 'is-empty')} data-slot="metric-value">
-        {value === null ? '—' : value}
+        {value === null ? '—' : <ReadoutFlash text={value} />}
         {unit && value !== null ? <small>{unit}</small> : null}
       </div>
       {changes && changes.length > 0 ? (
@@ -176,7 +178,7 @@ export function MetricCard({
           {changes.map((c) => (
             <div key={c.key} className="k-metric-change">
               <dt>{c.label}</dt>
-              <dd>{c.value === null ? '—' : <ChangeText value={c.value} arrow />}</dd>
+              <dd>{c.value === null ? '—' : <ChangeText value={c.value} arrow flash />}</dd>
             </div>
           ))}
         </dl>

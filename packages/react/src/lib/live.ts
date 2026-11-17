@@ -140,7 +140,8 @@ export function useStatusFlash(status: string | null | undefined): { flash: bool
   const { key, flash } = state
   useEffect(() => {
     if (!flash) return
-    expire(() => setState((s) => (s.key === key ? { ...s, flash: false } : s)), LIVE_FLASH_MS)
+    // 持续 1200ms（不是 600）：状态闪可能挂 .k-live-alert，它要闪两下共 1200ms，摘早了第二下会被截断；普通的 .k-live-flash 600ms 播完就停，多挂一会儿无害。
+    expire(() => setState((s) => (s.key === key ? { ...s, flash: false } : s)), LIVE_ENTER_MS)
   }, [key, flash, expire])
   return { flash, key }
 }

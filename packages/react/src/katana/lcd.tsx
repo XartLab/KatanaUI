@@ -3,6 +3,9 @@
 // 搬自 src/ui（#1860）：样子与行为没改，皮肤在 ../theme/lcd.css。
 // 数值颜色：中性、涨跌（涨跌用 pnl-up / pnl-down，组件卡 PerformanceReport 里只有收益与回撤用），以及组件卡给的当前关注（signal-orange）
 // 与警告（signal-amber，指标的 HUD 读数卡用，#589）；没有数据显示「—」，用 ink-300（ink-400 不当文字色，#473）。
+// 数字变了闪一下涨跌色（共用层 lib/live-readout.tsx）。
+
+import { ReadoutFlash } from '../lib/live-readout.tsx'
 
 export type LcdTone = 'neutral' | 'up' | 'down' | 'accent' | 'warn'
 
@@ -35,7 +38,7 @@ export function Lcd({
   return (
     <span className={classes.filter(Boolean).join(' ')}>
       <span className="t">{label}</span>
-      <span className="v">{value ?? '—'}</span>
+      <span className="v">{value === null ? '—' : <ReadoutFlash text={value} />}</span>
       {note !== undefined && <span className="n">{note}</span>}
     </span>
   )

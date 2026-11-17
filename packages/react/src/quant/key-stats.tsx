@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: MIT
 // 关键数据：标题（带「›」，可点）加三列网格，每项一个灰色小标签（带「›」，可点）、一个大号数值（可带单位小字）、可选一枚徽标。
 // 布局参照 TradingView 品种页的 Key stats（主会话 2026-11-15 在真实浏览器里实测 /symbols/NASDAQ-AAPL/，只取布局，不抄代码）；
-// 徽标（如 MEGA CAP）用中性灰胶囊，不用 TV 的紫色。文字、数值与单位都由调用方写好传来，件不算。
+// 数值是字符串或数字时，变了闪一下涨跌色（共用层 lib/live-readout.tsx）；徽标（如 MEGA CAP）用中性灰胶囊，不用 TV 的紫色。文字、数值与单位都由调用方写好传来，件不算。
 import type { ReactNode } from 'react'
 import { cn } from '../lib/cn.ts'
+import { ReadoutFlash } from '../lib/live-readout.tsx'
 
 export type KeyStatItem = {
   key: string
@@ -59,7 +60,13 @@ export function KeyStats({ title, items, onTitle, onItem, columns = 3, className
               )}
             </dt>
             <dd>
-              <span className="k-keystats-value">{item.value ?? '—'}</span>
+              <span className="k-keystats-value">
+                {typeof item.value === 'string' || typeof item.value === 'number' ? (
+                  <ReadoutFlash text={item.value} />
+                ) : (
+                  (item.value ?? '—')
+                )}
+              </span>
               {item.unit ? <small>{item.unit}</small> : null}
               {item.badge ? <span className="k-keystats-badge">{item.badge}</span> : null}
             </dd>

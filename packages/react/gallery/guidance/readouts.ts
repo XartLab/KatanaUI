@@ -5,13 +5,21 @@ import type { GuidanceMap } from './types'
 const readouts: GuidanceMap = {
   led: {
     aliases: ['Status indicator', 'Status dot', 'Badge dot', 'Pulse'],
-    use: ['连接、数据源、任务是否在线的一点小标记。', '多个面板按联动组着色，表示它们同步。'],
+    use: [
+      '连接、数据源、任务是否在线的一点小标记。',
+      '多个面板按联动组着色，表示它们同步。',
+      '状态变了（如行情断线）在灯外闪一圈光晕：变坏用警示色，变好用涨色，各一次。',
+    ],
     avoid: ['要读出具体状态词时用 StatusIcon 或文字，不要只放灯。', '表示未读数用 notification-bell 的角标。'],
     a11y: ['role=img，读屏名取 label；只有灯没有文字时 label 必传。', '颜色不单独传意，旁边写状态文字。'],
   },
   lcd: {
     aliases: ['Stat', 'Metric', 'Readout', 'Display value'],
-    use: ['面板顶部的一个关键读数（净值、持仓数）。', '需要标签、数值、注释三层的小读数窗。'],
+    use: [
+      '面板顶部的一个关键读数（净值、持仓数）。',
+      '需要标签、数值、注释三层的小读数窗。',
+      '数字变大闪涨色、变小闪跌色，约 600ms，同一处 1 秒内最多一次。',
+    ],
     avoid: ['带涨跌与迷你图的读数用 metric-card。', '行内的价格用 price-tag。'],
     a11y: ['是普通文本，标签、数字、小字按 DOM 顺序读出。', '没有数据时读到「—」，不会读成 0。'],
   },
@@ -47,7 +55,11 @@ const readouts: GuidanceMap = {
   },
   'notification-bell': {
     aliases: ['Notification', 'Bell icon', 'Alert indicator', 'Badge'],
-    use: ['顶栏放提醒入口并显示未读数。', '只想提示「有新内容」不报数时用 dot 变体。'],
+    use: [
+      '顶栏放提醒入口并显示未读数。',
+      '只想提示「有新内容」不报数时用 dot 变体。',
+      '未读数变多时按钮底色闪一下（橙色，600ms），变少不闪；列表里的新通知由调用方用 useEnterMarks 高亮 1.2 秒。',
+    ],
     avoid: ['不是未读数而是状态时用 led。', '要列出提醒内容用 popover 或 sheet 接在它后面。'],
     a11y: ['本身是按钮，读屏名取 label，必传。', '带一个 role=status、aria-live=polite 的隐藏播报，未读数变了会读。'],
   },
@@ -93,7 +105,11 @@ const readouts: GuidanceMap = {
   },
   'uptime-bars': {
     aliases: ['Status history', 'Uptime bar', 'Heartbeat', 'Availability chart'],
-    use: ['数据源、连接按天或按小时的健康历史。', '一眼看哪天断过流。'],
+    use: [
+      '数据源、连接按天或按小时的健康历史。',
+      '一眼看哪天断过流。',
+      '新进来的格子高亮 1200ms（按格子的 id 认新旧）。',
+    ],
     avoid: ['连续数值（延迟、用量）用 spark-tile 或 sparkline。', '当前状态一个点用 led。'],
     a11y: ['整条是 role=group，每格 role=img，读屏名取该格的 label。', '状态用颜色加高度两路表达，不靠颜色单独传意。'],
   },

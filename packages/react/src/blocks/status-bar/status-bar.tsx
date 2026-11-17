@@ -2,6 +2,8 @@
 import { Ellipsis } from 'lucide-react'
 import { isValidElement, useLayoutEffect, useRef, useState, type ReactNode } from 'react'
 import { cn } from '../../lib/cn.ts'
+import { ReadoutFlash, parseReadout } from '../../lib/live-readout.tsx'
+import { useStatusFlash } from '../../lib/live.ts'
 import { fontFor, measureText } from '../../lib/text-measure.ts'
 import { Led, type LedState } from '../../katana/led.tsx'
 import { Popover, PopoverContent, PopoverTrigger } from '../../primitives/popover.tsx'
@@ -11,6 +13,7 @@ import { collapsedItems } from './status-bar-model.ts'
 // 组件卡 StatusBar：分段模型参考 oh-my-posh（MIT）、上下文显隐参考 Starship（ISC），只取结构，不引代码（2026-11-14 读组件卡）。
 // 项：LED（可选）· 键名（点阵、灰）· 值（等宽、亮）；可点的项是按钮；实盘这类 `live` 项有琥珀内描边且不可收起。
 // 宽度不够时按优先级收起：先收优先级最低的，收起的项进右端的「…」弹层；pinned 的项永远留在条上。
+// 实时刷新：数值（延迟、时钟）变了闪涨跌色；灯的状态或非数值的文字变了（断线、重连）在整项上盖一层一次性的闪：变坏（警告、危险）警示色，变好涨色。
 // 没做：模板语法与主题 JSON（{{led}}、hideWhen）——「无事则隐藏」由宿主给数据时省掉那一项（`hidden`）；右键编辑主题是产品决定，留给宿主。
 
 export type StatusItem = {
@@ -91,11 +94,34 @@ function itemWidth(item: StatusItem): number {
 }
 
 function Segment({ item }: { item: StatusItem }) {
+  const text = item.value === undefined ? '' : textOf(item.value)
+  const numeric = parseReadout(text) !== null
+  // 状态 = 灯的状态加非数值的文字：「已连接」变「已断开」、灯 ok 变 danger 都算；数值的变化走 ReadoutFlash，不在这里。
+  const status = useStatusFlash(`${item.led ?? ''}|${numeric ? '' : text}`)
+  const bad = item.led === 'warn' || item.led === 'danger'
   const body = (
     <>
       {item.led && <Led state={item.led} label={item.ledLabel ?? ''} />}
       {item.label && <span className="k-status-key">{item.label}</span>}
-      {item.value !== undefined && <span className="k-status-value">{item.value}</span>}
+      {item.value !== undefined && (
+        <span className="k-status-value">
+          {numeric && (typeof item.value === 'string' || typeof item.value === 'number') ? (
+            <ReadoutFlash text={item.value} />
+          ) : (
+            item.value
+          )}
+        </span>
+      )}
+      {status.flash && (
+        // 盖在整项上的一层，不换项自己的 key：项是按钮时换 key 会丢焦点。
+        <i
+          key={status.key}
+          className={cn('k-status-flash', bad ? 'k-live-alert' : 'k-live-flash')}
+          data-tone={item.led === 'danger' ? 'negative' : undefined}
+          data-flash={bad ? undefined : 'up'}
+          aria-hidden="true"
+        />
+      )}
     </>
   )
   const common = {

@@ -43,6 +43,7 @@ const blocks: GuidanceMap = {
       '一行下面要挂一小段说明或表单（子行）。',
       '双击列头右缘或右键「适应内容」：列宽取列头与前 1000 行最宽格子，24–480px；自画列（cell、render、custom）不改宽。',
       '「全部列适应内容」优先走 onLayoutChange；只给 onResize 时 setter 要用函数式更新。',
+      '实时刷新：live 为 true 时数值类列（price、quantity、pnl、change、number）值变了闪涨跌色，文本列不闪；排序顺序变了已渲染的行平滑换位，新增的行蓝线高亮 1.2 秒；默认 false，静态表不闪。',
     ],
     avoid: [
       '几行静态数据，用 interactive=false 的只读表或 strategy-report 里的表。',
@@ -80,6 +81,7 @@ const blocks: GuidanceMap = {
     use: [
       '窗口底部常驻的连接、时钟、实盘等读数。',
       '宽度不够时按优先级把次要项收进「…」；每项宽度按字体预先算，不渲染量尺。',
+      '数值变了闪涨跌色；灯的状态或文字变了（断线、重连）整项闪一次：变坏警示色，变好涨色。',
     ],
     avoid: ['需要提醒用户的事件，用 toast 或 alert。', '要放大量指标，用 system-monitor。'],
     a11y: [
@@ -131,10 +133,15 @@ const blocks: GuidanceMap = {
   },
   'news-reader': {
     aliases: ['Article view', 'Reading pane', 'Detail pane', 'News detail'],
-    use: ['在 news-feed 里点一条，右边展开全文与要点。', '要点出关联品种，并可点进去。'],
+    use: [
+      '在 news-feed 里点一条，右边展开全文与要点。',
+      '要点出关联品种，并可点进去。',
+      '阅读中的这一条被更新（标题、要点或 version 变了）时，标题亮一次蓝色提示（新信息不是警告，不用琥珀）并标「已更新」（labels.updated）；不传这句话就不闪不标。',
+    ],
     avoid: ['要滚动看一串消息，用 news-feed。', '要翻译或取数，这里不做，由调用方传文字。'],
     a11y: [
       '外层是 article，读屏名取自 labels.reader。',
+      '这一条被更新时，一个 role=status、aria-live=polite 的隐藏播报读「已更新」，不重读全文。',
       '要点列表是带名字的 section，图标按钮的读屏名取自 labels。',
       '品种标签是按钮，读屏名取自品种文字。',
     ],
@@ -144,11 +151,13 @@ const blocks: GuidanceMap = {
     use: [
       '实时滚入的消息流，要筛选、暂停、搜索。',
       '用户滚离顶部时不被新消息打断。',
+      '新消息到达：用户在顶部时直接插入并高亮 1.2 秒，滚离顶部（或已暂停）只在顶上计数「n 条新消息」，点了再合入、高亮并回到顶部；列表与卡片一样，虚拟列表插入时看着的那条不动。',
       '列表标题最多折两行；超过 50 条自动虚拟滚动，行高按标题折行预先算，滚动不跳。',
     ],
     avoid: ['要读全文，点进 news-reader。', '几万条以上的历史，要分段加载。'],
     a11y: [
       '外层是 section，读屏名取自 labels.feed。',
+      '新消息到达由一个 role=status、aria-live=polite 的隐藏播报读条数（labels.newItems），不逐条读。',
       '暂停按钮带 aria-pressed，折叠按钮带 aria-expanded。',
       '重要条目的琥珀方块读屏名是「重要」，不只靠颜色。',
       '时间悬停给绝对时间。',
@@ -212,9 +221,14 @@ const blocks: GuidanceMap = {
   },
   'event-timeline': {
     aliases: ['Timeline', 'Activity log', 'Session timeline', 'Audit trail'],
-    use: ['按交易时段排下委托、成交等事件，看先后与聚集。', '想拖选一段，或切到表格逐条核对。'],
+    use: [
+      '按交易时段排下委托、成交等事件，看先后与聚集。',
+      '想拖选一段，或切到表格逐条核对。',
+      '新事件进来时对应标记（表格里是那一行）高亮 1.2 秒；「现在」线跟着传入的 now 走，调用方定时更新它。',
+    ],
     avoid: ['要看行情或逐笔成交，用 data-grid。', '要读文字的消息流，用 news-feed。'],
     a11y: [
+      '事件数「共 n 条」是 output（隐含 role=status、polite），新事件进来时读条数，不逐条读。',
       '外层是 role=region，读屏名取自 label；类别筛选是带名字的 group，按钮带 aria-pressed。',
       '标记是按钮，读屏名是「类别 名称」；悬停的 tooltip 是 role=tooltip。',
       '「切到表格」按钮给读屏一份逐条的数据。',

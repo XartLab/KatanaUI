@@ -11,8 +11,18 @@ import {
   Trash2Icon,
 } from 'lucide-react'
 import { defaultRangeExtractor, useVirtualizer } from '@tanstack/react-virtual'
-import { useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react'
+import {
+  Fragment,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+  type CSSProperties,
+  type ReactNode,
+} from 'react'
 import { onTextMeasureReset } from '../../lib/text-measure.ts'
+import { useEnterMarks } from '../../lib/live.ts'
 import { cn } from '../../lib/cn.ts'
 import { MeasuredSkeleton } from '../../katana/measured-skeleton.tsx'
 import { Skeleton } from '../../katana/skeleton.tsx'
@@ -33,7 +43,8 @@ import { filterNews, sortNews, type NewsFacet, type NewsItem, type NewsSymbol } 
 // uiarc.dev 的新闻卡结构（来源 + 时间、标题、两行摘要、品种胶囊），只取功能与结构，实现原创；uiarc 的部分待核对。
 // TradingView News Flow 帮助页（https://www.tradingview.com/support/solutions/43000728828-news-flow-your-daily-hub-for-financial-news/ ，
 // 2026-11-15 主会话读到：News Flow 像一种筛选器，新闻集中在一处，可设多种过滤并保存为一个 flow；快讯、要闻、头条）；其余细节没读到，待核对。
-// 新到的条目不打断阅读：没暂停且列表在顶部时直接淡入插入，其余情况在顶上出「n 条新消息」，点了才插入。
+// 新到的条目不打断阅读：没暂停且列表在顶部时直接插入并高亮（共用层 live.ts 的 useEnterMarks，1.2 秒），其余情况在顶上出「n 条新消息」，点了才插入并回到顶部；
+// 到达时读屏播一次计数（polite，不逐条读）；虚拟列表里行是绝对定位，浏览器的滚动锚定管不到，插在上面时件自己补偿 scrollTop。
 // 数据与字全由调用方传（频道、来源、文案、当前时间 now），件不认识任何应用；筛选状态在件内，用 on*Change 通知。
 
 export type NewsFeedLabels = {
@@ -120,6 +131,8 @@ export type NewsFeedProps = {
 
 /** 离顶部多少像素以内算「在顶部」：留一点余量给触控板的回弹。 */
 const TOP_SLACK = 4
+/** 一次放进来超过这么多条就当作整批换数据（换数据集、首次加载），不是「新消息」，不高亮。 */
+const BULK_ARRIVALS = 20
 
 export function NewsFeed({
   items,
@@ -162,9 +175,11 @@ export function NewsFeed({
   const [openId, setOpenId] = useState<string | null>(null)
   const [paused, setPaused] = useState(false)
   const [atTop, setAtTop] = useState(true)
-  // shown：已放进列表的条目 id；其余（来自 items）就是「新消息」。fresh：刚插入的，用来播淡入。
+  // shown：已放进列表的条目 id；其余（来自 items）就是「新消息」。quiet：整批放进来的，不当新消息高亮。
   const [shown, setShown] = useState<ReadonlySet<string>>(() => new Set(items.map((i) => i.id)))
-  const [fresh, setFresh] = useState<ReadonlySet<string>>(() => new Set())
+  const [quiet, setQuiet] = useState<ReadonlySet<string>>(() => new Set())
+  // 读屏播报的话：放进来或在等的新消息数；只写计数，不逐条读。
+  const [arrived, setArrived] = useState(0)
   const [prevItems, setPrevItems] = useState(items)
   const scroller = useRef<HTMLDivElement | null>(null)
 
@@ -172,7 +187,8 @@ export function NewsFeed({
     const added = items.filter((i) => !shown.has(i.id)).map((i) => i.id)
     if (added.length === 0) return
     setShown(new Set([...shown, ...added]))
-    setFresh(new Set(added))
+    if (added.length > BULK_ARRIVALS) setQuiet(new Set([...quiet, ...added]))
+    else setArrived(added.length)
   }
   // 条目变了：没暂停且在顶部就直接放进来（渲染时调整状态，不用 effect）。
   if (items !== prevItems) {
@@ -190,6 +206,7 @@ export function NewsFeed({
     items.filter((i) => !shown.has(i.id)),
     filter,
   ).length
+  const entering = useEnterMarks(items.filter((i) => shown.has(i.id) && !quiet.has(i.id)).map((i) => i.id))
 
   const sourceName = (value: string) => sources.find((s) => s.value === value)?.label ?? value
 
@@ -261,6 +278,33 @@ export function NewsFeed({
     lastSizes.current = sizes
     virtualizer.measure()
   }, [sizes, virtualizer])
+  // 滚动锚定：行是绝对定位，新行插在上面时用户正看的那条会被顶下去；记下首个可见行的位置，放进新行后把 scrollTop 补回去。
+  // 只在 scrollTop > 0 且是放进新条目（shown 变了）时补：在最顶上（0）就是要看见最新的，筛选条件变了也不跟。
+  const starts = useMemo(() => {
+    let total = 0
+    return sizes.map((size) => {
+      const start = total
+      total += size
+      return start
+    })
+  }, [sizes])
+  const anchor = useRef<{ id: string; start: number } | null>(null)
+  const anchoredShown = useRef(shown)
+  useLayoutEffect(() => {
+    const el = scroller.current
+    const ready = virtual && el && starts.length === visible.length
+    if (ready) {
+      const previous = anchor.current
+      if (previous && anchoredShown.current !== shown && el.scrollTop > 0) {
+        const index = visible.findIndex((i) => i.id === previous.id)
+        if (index >= 0 && starts[index] !== previous.start) el.scrollTop += starts[index]! - previous.start
+      }
+      const top = el.scrollTop
+      const first = starts.findIndex((start, i) => start + sizes[i]! > top)
+      anchor.current = first >= 0 ? { id: visible[first]!.id, start: starts[first]! } : null
+    } else anchor.current = null
+    anchoredShown.current = shown
+  })
   const chips: ChipItem[] = sources.map((s) => ({ value: s.value, label: s.label }))
 
   const open = (item: NewsItem) => {
@@ -275,7 +319,7 @@ export function NewsFeed({
     <li
       {...position}
       key={item.id}
-      className={cn('k-news-item', fresh.has(item.id) && 'is-fresh')}
+      className={cn('k-news-item', entering.has(item.id) && 'k-live-enter')}
       data-important={item.important ? '' : undefined}
       data-news-id={item.id}
       data-selected={item.id === selectedId ? '' : undefined}
@@ -561,6 +605,10 @@ export function NewsFeed({
               clearLabel={labels.clearSources}
             />
           )}
+          {/* 新消息到达的播报：一直在，文字变了读屏才读；只读条数。 */}
+          <span className="k-news-live" role="status" aria-live="polite">
+            {pending > 0 ? labels.newItems(pending) : arrived > 0 ? labels.newItems(arrived) : ''}
+          </span>
           {pending > 0 && (
             <button
               type="button"
@@ -577,6 +625,8 @@ export function NewsFeed({
           <div
             ref={scroller}
             className="k-news-scroll"
+            // 是否在顶部决定新消息插入还是只计数；挂在 DOM 上便于调试与测试等它落定。
+            data-at-top={atTop ? '' : undefined}
             onScroll={(e) => setAtTop(e.currentTarget.scrollTop <= TOP_SLACK)}
           >
             {loadingLabel !== undefined && measured ? (
@@ -598,7 +648,8 @@ export function NewsFeed({
         </div>
         {opened && reader ? (
           <aside className="k-news-pane" data-slot="news-reader-pane">
-            {reader(opened, { close: () => setOpenId(null) })}
+            {/* 换一条重新挂载：阅读窗里的「已更新」只说同一条被改了，不是切到了别的条。 */}
+            <Fragment key={opened.id}>{reader(opened, { close: () => setOpenId(null) })}</Fragment>
           </aside>
         ) : null}
       </div>

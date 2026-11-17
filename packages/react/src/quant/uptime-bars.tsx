@@ -1,9 +1,12 @@
 // SPDX-License-Identifier: MIT
 // 逐格可用条：一格一天或一小时，颜色加高度一起表达状态（绿满格可用、琥珀半高降级、红满格中断、虚线底无数据），
 // 悬停或聚焦一格，条下面的读数行写那一格的整句；左右键在格间走。
+// 实时刷新：新进来的格子高亮一阵（共用层 useEnterMarks，1200ms），按格子的 id 认新旧。
 // 功能参照 Arc Uptime status（uiarc.dev/llms.txt 目录，2026-11-14 读，页面只写了「逐日可用条」），实现原创；
 // 用在数据源 / 连接健康（对 DataSources、SystemHealth 的缺口）。文字全由 props 传。
 import { useRef, useState, type ReactNode } from 'react'
+import { cn } from '../lib/cn.ts'
+import { useEnterMarks } from '../lib/live.ts'
 import { ChartActions } from './chart-kit/chart-actions.tsx'
 import { ChartValue, type ChartValueText } from './chart-kit/chart-value.tsx'
 import { ChartTable, type ChartViewProps } from './chart-kit/chart-table.tsx'
@@ -51,6 +54,7 @@ export function UptimeBars({
   const stop = Math.min(Math.max(tab, 0), cells.length - 1)
   const shown = hover ?? focus
   const counts = countStatuses(cells)
+  const entering = useEnterMarks(cells.map((cell) => cell.id))
   return (
     <div className={`k-uptime${className ? ` ${className}` : ''}`} data-slot="uptime-bars">
       {(statusLabels || availability !== undefined) && (
@@ -112,7 +116,7 @@ export function UptimeBars({
             ref={(node) => {
               refs.current[index] = node
             }}
-            className={`k-uptime-cell${onSelect ? ' is-link' : ''}`}
+            className={cn('k-uptime-cell', onSelect && 'is-link', entering.has(cell.id) && 'k-live-enter')}
             data-status={cell.status}
             role="img"
             aria-label={cell.label}

@@ -1,8 +1,11 @@
 // SPDX-License-Identifier: MIT
 // 矩形树图：一格一项，颜色按涨跌分七档（跟涨跌配色走），格子够大写名字和数，点组头下钻，底部色例。
 // 画法从应用的分析视图 TreemapView 提来（#1884，调用方零改动；原来照 TradingView 股票市场热图，#443）。
+// 实时刷新：颜色走 CSS transition（--dur-flash 线性），格子换位与改大小走 left / top / width / height 的 transition（--dur-reorder，缓动 --ease-snappy），涨跌方向翻了的格子闪一次新方向的涨跌色（同 MarketHeatmap 的规则：同一格 1 秒内最多一次）。
+// 换位的过渡要认得是同一格：传 cellKey（默认按序号，序号不稳时过渡会张冠李戴）。
 // 工具条（大小、颜色、分组的下拉、返回钮）是应用的事，从 toolbar 传进来；排布在 treemap-model.ts，调用方先排好再传 blocks。
-import type { ReactNode } from 'react'
+import type { CSSProperties, ReactNode } from 'react'
+import { useValueFlash } from '../lib/live.ts'
 import { colorStep, TREEMAP_H, TREEMAP_W, type TreemapBlock } from './treemap-model.ts'
 
 /** 格子多小就不写字（排布单位的宽、高）。 */
@@ -40,6 +43,11 @@ export type TreemapProps<T> = {
   legendText: (step: number) => string
   /** A row above the cells. */
   toolbar?: ReactNode
+  /**
+   * A stable key per cell (a symbol code, say), so a cell that moves or resizes keeps its identity and glides to the new place; the index is used when omitted.
+   * 每格的稳定标识（品种代码之类）：格子换位、改大小时认得是同一格、平滑过去；不给就按序号。
+   */
+  cellKey?: (data: T) => string
   /** Called when a group header is clicked. */
   onGroup?: (name: string) => void
   /** Called when a cell is clicked; when given, cells are focusable buttons that trigger on Enter. */
@@ -51,6 +59,54 @@ export type TreemapProps<T> = {
 const join = (base: string, extra?: string) => (extra ? `${base} ${extra}` : base)
 const STEPS = [-3, -2, -1, 0, 1, 2, 3]
 
+type CellProps = {
+  step: number | null
+  /** 涨跌的符号（−1、0、1）：翻了方向才闪。 */
+  sign: number
+  className: string
+  style: CSSProperties
+  name: string
+  text: string
+  big: boolean
+  nameClass: string
+  valueClass: string
+  onItem?: () => void
+}
+
+function Cell({ step, sign, className, style, name, text, big, nameClass, valueClass, onItem }: CellProps) {
+  // 平（0）不算方向：从涨到平、从平到涨都不闪，只有涨与跌之间翻了才闪。
+  const turned = useValueFlash(sign === 0 ? null : sign)
+  return (
+    <div
+      className={`${className} is-step${step === null ? 'na' : step}${onItem ? ' is-link' : ''}`}
+      style={style}
+      title={`${name} ${text}`}
+      role={onItem ? 'button' : undefined}
+      tabIndex={onItem ? 0 : undefined}
+      aria-label={`${name} ${text}`}
+      onClick={onItem}
+      onKeyDown={
+        onItem
+          ? (event) => {
+              if (event.key === 'Enter') onItem()
+            }
+          : undefined
+      }
+    >
+      {big && (
+        <>
+          <span className={nameClass}>{name}</span>
+          <span className={valueClass}>{text}</span>
+        </>
+      )}
+      {turned.flash && (
+        // 盖在格子上的一层，不换格子自己的 key：换 key 会让格子重新挂载、丢掉位置的过渡。
+        <i key={turned.key} className="k-treemap-flash k-live-flash" data-flash={turned.flash} aria-hidden="true" />
+      )}
+    </div>
+  )
+}
+
 export function Treemap<T>({
   blocks,
   heads = false,
@@ -60,6 +116,7 @@ export function Treemap<T>({
   toolbar,
   onGroup,
   onItem,
+  cellKey,
   classes = {},
 }: TreemapProps<T>) {
   return (
@@ -84,38 +141,26 @@ export function Treemap<T>({
             )}
             {block.cells.map((cell, i) => {
               const { name, text, change } = describe(cell.data)
-              const step = colorStep(change, limit)
               const big = cell.x1 - cell.x0 >= MIN_TEXT_W && cell.y1 - cell.y0 >= MIN_TEXT_H
               return (
-                <div
-                  key={i}
-                  className={`${join('k-treemap-cell', classes.cell)} is-step${step === null ? 'na' : step}${onItem ? ' is-link' : ''}`}
+                <Cell
+                  key={cellKey ? cellKey(cell.data) : i}
+                  step={colorStep(change, limit)}
+                  sign={change === null || !Number.isFinite(change) ? 0 : Math.sign(change)}
+                  className={join('k-treemap-cell', classes.cell)}
                   style={{
                     left: pct(cell.x0, TREEMAP_W),
                     top: pct(cell.y0, TREEMAP_H),
                     width: pct(cell.x1 - cell.x0, TREEMAP_W),
                     height: pct(cell.y1 - cell.y0, TREEMAP_H),
                   }}
-                  title={`${name} ${text}`}
-                  role={onItem ? 'button' : undefined}
-                  tabIndex={onItem ? 0 : undefined}
-                  aria-label={`${name} ${text}`}
-                  onClick={onItem ? () => onItem(cell.data) : undefined}
-                  onKeyDown={
-                    onItem
-                      ? (event) => {
-                          if (event.key === 'Enter') onItem(cell.data)
-                        }
-                      : undefined
-                  }
-                >
-                  {big && (
-                    <>
-                      <span className={join('k-treemap-name', classes.name)}>{name}</span>
-                      <span className={join('k-treemap-value', classes.value)}>{text}</span>
-                    </>
-                  )}
-                </div>
+                  name={name}
+                  text={text}
+                  big={big}
+                  nameClass={join('k-treemap-name', classes.name)}
+                  valueClass={join('k-treemap-value', classes.value)}
+                  onItem={onItem ? () => onItem(cell.data) : undefined}
+                />
               )
             })}
           </div>

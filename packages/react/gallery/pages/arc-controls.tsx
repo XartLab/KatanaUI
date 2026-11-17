@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: MIT
 import { useState } from 'react'
+import { LiveToggle } from '../LiveToggle.tsx'
+import { chance, pick, useLiveTicker, type Rng } from '../live-sim.ts'
 import {
   ChipGroup,
   DateRangePicker,
@@ -364,11 +366,33 @@ const TIMELINE_LABELS: EventTimelineLabels = {
   empty: '还没有事件',
 }
 
+// 实时模拟（演示）：每拍「现在」走两分钟（封顶 14:58，不出交易时段），约一半的拍来一个新事件；第一拍必来，手动步进有确定结果。
+const LIVE_EVENTS: readonly { kind: TimelineEvent['kind']; label: string }[] = [
+  { kind: 'anomaly', label: '放量拉升' },
+  { kind: 'alert', label: '触及价位提醒' },
+  { kind: 'notice', label: '新增公告' },
+  { kind: 'run', label: 'RUN 完成' },
+]
+type LiveTimeline = { now: number; events: readonly TimelineEvent[] }
+function timelineStep(state: LiveTimeline, rng: Rng, tick: number): LiveTimeline {
+  const now = Math.min(state.now + 2 * 60_000, cst(D1, '14:58'))
+  if (tick > 0 && !chance(rng, 0.5)) return { ...state, now }
+  const made = pick(rng, LIVE_EVENTS)
+  return {
+    now,
+    events: [...state.events, { id: `live-${tick}`, at: now, kind: made.kind, label: made.label, symbol: '300750' }],
+  }
+}
+
 export function EventTimelineDemo() {
+  const live = useLiveTicker<LiveTimeline>({ now: cst(D1, '14:30'), events: [] }, timelineStep, { intervalMs: 3000 })
   const [picked, setPicked] = useState<string | null>(null)
   const [brushed, setBrushed] = useState<string | null>(null)
   return (
     <>
+      <Row>
+        <LiveToggle labels={{ group: '数据刷新', live: '实时', paused: '暂停' }} />
+      </Row>
       <Row>
         <span className="gal-cap" style={{ width: '100%' }}>
           单日 · 现在 · 可点可拖选
@@ -376,10 +400,10 @@ export function EventTimelineDemo() {
         <div style={{ width: 640 }}>
           <EventTimeline
             label="事件流"
-            events={TIMELINE_EVENTS}
+            events={[...TIMELINE_EVENTS, ...live.state.events]}
             timeZone="Asia/Shanghai"
             session={SESSION}
-            now={cst(D1, '14:30')}
+            now={live.state.now}
             scope="300750 · 账户 A、B"
             labels={TIMELINE_LABELS}
             onPick={(event) => setPicked(event.id)}

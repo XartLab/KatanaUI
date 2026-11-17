@@ -1474,6 +1474,13 @@
           "type": "boolean",
           "required": false,
           "description": "Put an up or down triangle before the text (none for flat) so direction does not rely on color alone."
+        },
+        {
+          "name": "flash",
+          "type": "boolean",
+          "required": false,
+          "default": "false",
+          "description": "Flash up or down color when value changes (for numbers that update live; off by default so static tables stay still)."
         }
       ]
     },
@@ -3035,6 +3042,13 @@
           "description": "Largest height in px when fit is set."
         },
         {
+          "name": "live",
+          "type": "boolean",
+          "required": false,
+          "default": "false",
+          "description": "Live data mode (default false): numeric cells (number, price, quantity, pnl, change) flash the up or down color when their value changes, rows glide to their new place when the sort order changes, and newly added rows are highlighted briefly."
+        },
+        {
           "name": "classNames",
           "type": "Partial<Record<GridSlot, string>>",
           "required": false,
@@ -3357,6 +3371,12 @@
           "type": "number",
           "required": false,
           "description": "Largest height in px when fit is set."
+        },
+        {
+          "name": "live",
+          "type": "boolean",
+          "required": false,
+          "description": "Live data mode (default false): numeric cells (number, price, quantity, pnl, change) flash the up or down color when their value changes, rows glide to their new place when the sort order changes, and newly added rows are highlighted briefly."
         },
         {
           "name": "classNames",
@@ -11835,6 +11855,12 @@
           "description": "正文。"
         },
         {
+          "name": "version",
+          "type": "string | number",
+          "required": false,
+          "description": "内容版本（修订号或更新时间）：正文改了但标题、要点没变时，靠它让件知道这一条被更新了。"
+        },
+        {
           "name": "loading",
           "type": "boolean",
           "required": false,
@@ -11923,6 +11949,12 @@
           "type": "string",
           "required": false,
           "description": "正文加载时读屏读的话；不给就读 reader。"
+        },
+        {
+          "name": "updated",
+          "type": "string",
+          "required": false,
+          "description": "「已更新」：阅读中的这一条被改过（标题、要点或 version 变了）后，标题旁留的标记；不传就不标、也不闪。"
         }
       ]
     },
@@ -11971,6 +12003,12 @@
           "type": "ReactNode",
           "required": true,
           "description": "正文。"
+        },
+        {
+          "name": "version",
+          "type": "string | number",
+          "required": false,
+          "description": "内容版本（修订号或更新时间）：正文改了但标题、要点没变时，靠它让件知道这一条被更新了。"
         },
         {
           "name": "loading",
@@ -13336,6 +13374,13 @@
           "description": "Put an up or down triangle before the text."
         },
         {
+          "name": "flash",
+          "type": "boolean",
+          "required": false,
+          "default": "false",
+          "description": "Flash up or down color when value changes (for numbers that update live; off by default so static tables stay still)."
+        },
+        {
           "name": "as",
           "type": "'span' | 'strong'",
           "required": false,
@@ -14032,6 +14077,12 @@
           "type": "string",
           "required": true,
           "description": "已经格式化好的价与涨跌幅。"
+        },
+        {
+          "name": "value",
+          "type": "number",
+          "required": false,
+          "description": "Numeric value of price, used to decide the direction of a flash; read from the price text when omitted."
         },
         {
           "name": "percent",
@@ -21021,6 +21072,12 @@
           "description": "A row above the cells."
         },
         {
+          "name": "cellKey",
+          "type": "(data: T) => string",
+          "required": false,
+          "description": "A stable key per cell (a symbol code, say), so a cell that moves or resizes keeps its identity and glides to the new place; the index is used when omitted."
+        },
+        {
           "name": "onGroup",
           "type": "(name: string) => void",
           "required": false,
@@ -21211,6 +21268,12 @@
           "type": "ReactNode",
           "required": false,
           "description": "A row above the cells."
+        },
+        {
+          "name": "cellKey",
+          "type": "(data: T) => string",
+          "required": false,
+          "description": "A stable key per cell (a symbol code, say), so a cell that moves or resizes keeps its identity and glides to the new place; the index is used when omitted."
         },
         {
           "name": "onGroup",

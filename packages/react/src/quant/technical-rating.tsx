@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 import { type CSSProperties, type ReactNode } from 'react'
 import { cn } from '../lib/cn.ts'
+import { useValueFlash, type FlashDirection } from '../lib/live.ts'
 import { GAUGE_CX, GAUGE_CY, ratingAngle, ratingZone, RATING_BOUNDS, zoneArc } from '../katana/rating-gauge-model.ts'
 import { ToggleGroup, ToggleGroupItem } from '../primitives/toggle-group.tsx'
 
@@ -10,6 +11,7 @@ import { ToggleGroup, ToggleGroupItem } from '../primitives/toggle-group.tsx'
 // 组件只画，不算：每组的 −1…1 分数与卖 / 中性 / 买个数、每个指标的读数与单项结论都由调用方算好传来；包里不带语言，档名、列名、免责一句也由调用方传。
 // 2026-11-15 #53 对齐 TradingView 技术页（主会话同日实测 /symbols/NASDAQ-AAPL/technicals/，只取布局与功能）：周期条、三个仪表（两端信号色、中段灰）、
 // 圆角三列计数框、两张并排明细表（每组一张，标题带「›」）、整宽 Pivots 表；颜色用 Graphite 涨跌色，不用 TV 的蓝。
+// 评级变化的刷新动效走共用层 lib/live.ts：档位升了（偏买）闪涨色、降了闪跌色；买 / 卖个数变了与明细里的单项结论变了同理，档位与结论都按「卖 < 中性 < 买」当序数比。
 // 样子（用户 2026-11-15 的校准）：表格手感取 TradingView（无衬线 tabular-nums、右对齐、极淡分隔线、悬停整行提亮、纯文字加低饱和胶囊），
 // 卡片结构取 Arc（读数在上、明细在下、组间留白），不加工业装饰；颜色走涨跌语义色与中性灰，不用橙色。放在 PanelFrame 里用。
 
@@ -90,6 +92,35 @@ const VB = { x: -14, y: -16, w: SPAN, h: 130 }
 
 const zoneMid = (index: number) => ratingAngle((RATING_BOUNDS[index]! + RATING_BOUNDS[index + 1]!) / 2)
 
+/** 卖 < 中性 < 买 的序数：评级变化的方向就是它变大还是变小。 */
+const VERDICT_ORDER: Record<RatingVerdict, number> = { sell: -1, neutral: 0, buy: 1 }
+
+/** 评级读数：值变了闪一下（方向反过来的读数，例如卖的个数变多是偏空，用 invert）。 */
+function FlashText({
+  as: Tag = 'span',
+  value,
+  invert,
+  children,
+  ...rest
+}: {
+  as?: 'span' | 'b' | 'div'
+  value: number
+  invert?: boolean
+  children: ReactNode
+  className?: string
+  'data-slot'?: string
+  'data-verdict'?: string
+}) {
+  const { flash, key } = useValueFlash(value)
+  const direction: FlashDirection | undefined =
+    flash === null ? undefined : invert ? (flash === 'up' ? 'down' : 'up') : flash
+  return (
+    <Tag key={key} {...rest} className={cn(rest.className, 'k-live-flash')} data-flash={direction}>
+      {children}
+    </Tag>
+  )
+}
+
 function Dial({ group, labels, primary }: { group: RatingGroup; labels: TechnicalRatingLabels; primary: boolean }) {
   const active = ratingZone(group.value)
   const { sell, neutral, buy } = group.counts
@@ -140,14 +171,20 @@ function Dial({ group, labels, primary }: { group: RatingGroup; labels: Technica
           )
         })}
       </div>
-      <div className="k-trating-word" data-slot="rating-word">
+      <FlashText as="div" value={active} className="k-trating-word" data-slot="rating-word">
         {word}
-      </div>
+      </FlashText>
       <div className="k-trating-counts" data-slot="rating-counts">
         {(['sell', 'neutral', 'buy'] as const).map((v) => (
           <span key={v} data-verdict={v}>
             <small>{labels.verdict[v]}</small>
-            <b>{group.counts[v]}</b>
+            {v === 'neutral' ? (
+              <b>{group.counts[v]}</b>
+            ) : (
+              <FlashText as="b" value={group.counts[v]} invert={v === 'sell'}>
+                {group.counts[v]}
+              </FlashText>
+            )}
           </span>
         ))}
       </div>
@@ -241,9 +278,14 @@ export function TechnicalRating({
                       <th scope="row">{row.name}</th>
                       <td className="is-num">{row.reading ?? DASH}</td>
                       <td className="is-end">
-                        <span className="k-trating-verdict" data-verdict={row.verdict}>
+                        <FlashText
+                          value={VERDICT_ORDER[row.verdict]}
+                          className="k-trating-verdict"
+                          data-slot="rating-verdict"
+                          data-verdict={row.verdict}
+                        >
                           {labels.verdict[row.verdict]}
-                        </span>
+                        </FlashText>
                       </td>
                     </tr>
                   ))}

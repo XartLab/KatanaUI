@@ -86,6 +86,17 @@
   align-items: center;
   pointer-events: none;
 }
+.k-ck-end-halo {
+  /* 实时刷新的光晕：以点为圆心的一圈，平时不画，新点来了由共用层 .k-live-flash 闪一次涨跌色。 */
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 22px;
+  height: 22px;
+  translate: -50% -50%;
+  border-radius: var(--radius-pill);
+  pointer-events: none;
+}
 .k-ck-end-dot {
   width: var(--chart-end-size, 8px);
   height: var(--chart-end-size, 8px);

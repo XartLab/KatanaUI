@@ -2,6 +2,8 @@
 // 迷你图：一列数从旧到新，整宽铺开、上下按这列的高低，一根线。线色按头尾涨跌（涨绿跌红，跟涨跌配色走）。
 // 画法从应用的分析视图 SparklineView 提来（#1884，调用方零改动）；功能参照 TradingView 小组件 Mini Chart / Symbol Overview
 //（tradingview.com/widget-docs，2026-11-14 读：页面只列出组件名，没写交互，所以只取「一眼看走势」这一条），不嵌、不抄其代码与样式。
+import { useRef } from 'react'
+import { useLineExtend, type LinePoint } from '../lib/live-line.ts'
 import { quoteTone, type QuoteTone } from './quote-tone.ts'
 
 const W = 200
@@ -22,13 +24,25 @@ export function sparkPoints(
   height = H,
   extent?: readonly [number, number],
 ): string {
-  if (values.length < 2) return ''
+  return pointsText(sparkCoords(values, width, height, extent))
+}
+
+/** 折线的坐标（sparkPoints 的数值版，给走势延伸的过场用）；少于两个数返回空数组。纯函数。 */
+export function sparkCoords(
+  values: readonly number[],
+  width = W,
+  height = H,
+  extent?: readonly [number, number],
+): LinePoint[] {
+  if (values.length < 2) return []
   const lo = extent ? extent[0] : Math.min(...values)
   const hi = extent ? extent[1] : Math.max(...values)
-  return values
-    .map((value, i) => `${((i / (values.length - 1)) * width).toFixed(2)},${sparkY(value, lo, hi, height).toFixed(2)}`)
-    .join(' ')
+  return values.map((value, i) => [(i / (values.length - 1)) * width, sparkY(value, lo, hi, height)] as const)
 }
+
+/** 坐标写成 polyline 的 points（保留 2 位小数）。 */
+export const pointsText = (coords: readonly LinePoint[]): string =>
+  coords.map(([x, y]) => `${x.toFixed(2)},${y.toFixed(2)}`).join(' ')
 
 /** 头尾比：涨、跌、持平；少于两个数算持平。 */
 export const sparkTone = (values: readonly number[]): QuoteTone =>
@@ -63,7 +77,11 @@ export type SparklineProps = {
 }
 
 export function Sparkline({ values, label, tone, className, emptyClassName }: SparklineProps) {
-  const points = sparkPoints(values)
+  const coords = sparkCoords(values)
+  const points = pointsText(coords)
+  const line = useRef<SVGPolylineElement>(null)
+  // 新点追加时线平滑延伸，不整条重画（共用层 lib/live-line.ts）。
+  useLineExtend(line, 'points', values, coords, pointsText)
   if (!points)
     return (
       <span className={`k-spark-empty${emptyClassName ? ` ${emptyClassName}` : ''}`} role="img" aria-label={label}>
@@ -78,7 +96,7 @@ export function Sparkline({ values, label, tone, className, emptyClassName }: Sp
       role="img"
       aria-label={label}
     >
-      <polyline points={points} />
+      <polyline ref={line} points={points} />
     </svg>
   )
 }

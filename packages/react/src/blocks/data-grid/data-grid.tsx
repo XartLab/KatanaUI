@@ -23,8 +23,10 @@ import {
   type MouseEvent,
   type PointerEvent,
   type ReactNode,
+  type CSSProperties,
 } from 'react'
 import { cn } from '../../lib/cn.ts'
+import { useEnterMarks, useFlipList, useValueFlash } from '../../lib/live.ts'
 import { fontFor } from '../../lib/text-measure.ts'
 import { SymbolMark } from '../../katana/symbol-mark.tsx'
 import { ContextMenu, ContextMenuContent, ContextMenuTrigger } from '../../primitives/context-menu.tsx'
@@ -321,8 +323,40 @@ export type DataGridProps<Row extends object> = {
   fit?: boolean
   /** Largest height in px when fit is set. */
   maxHeight?: number
+  /**
+   * Live data mode (default false): numeric cells (number, price, quantity, pnl, change) flash the up or down color when their value changes, rows glide to their new place when the sort order changes, and newly added rows are highlighted briefly.
+   * 实时数据模式（默认 false，向后兼容）：数值类列（number、price、quantity、pnl、change）的格子值变了闪涨跌色；排序顺序变了行平滑换位（只对已渲染的行）；新增的行高亮一阵。文本列不闪。
+   */
+  live?: boolean
   /** Extra class names per part. */
   classNames?: Partial<Record<GridSlot, string>>
+}
+
+/** 数值类的列才闪：文本、时间、买卖、品种变了不闪（闪色只表达涨跌）。 */
+const FLASH_TYPES: ReadonlySet<string> = new Set(['number', 'price', 'quantity', 'pnl', 'change'])
+
+/** 一个数值格：值变了闪涨跌色（共用层 useValueFlash，1 秒节流）；格子是定位与滚动的最小单元，key 换掉让 CSS 动画重放。 */
+function FlashCell({
+  value,
+  className,
+  children,
+  ...rest
+}: {
+  value: number | null
+  className: string
+  children: ReactNode
+  role: string
+  style: CSSProperties
+  title: string | undefined
+  'data-col': string
+  'data-type': string
+}) {
+  const { flash, key } = useValueFlash(value)
+  return (
+    <div key={key} {...rest} className={cn(className, 'k-live-flash')} data-flash={flash ?? undefined}>
+      {children}
+    </div>
+  )
 }
 
 /** 行快捷按钮条贴在行尾；表横向滚开时行尾在可视区外，把滚出去的那段宽度写成变量让条往里挪（theme/row-actions.css 读它）。 */
@@ -379,6 +413,7 @@ export function DataGrid<Row extends object>({
   fit,
   stretch,
   maxHeight,
+  live = false,
   classNames = {},
 }: DataGridProps<Row>) {
   const host = useDataGridHost()
@@ -467,6 +502,9 @@ export function DataGrid<Row extends object>({
   const keyboardMenu = useRef(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const scroller = useRef<HTMLDivElement>(null)
+  // 实时模式：新增的行高亮、顺序变了行换位；hooks 一直在跑（只是比较一遍 id），只有 live 时才往行上挂类名与 data-live-id。
+  const enterMarks = useEnterMarks(order)
+  useFlipList(scroller, order)
   const cursor = selection.cursor !== null && order.includes(selection.cursor) ? selection.cursor : null
   const rowDomId = (rowKey: string) => `${id}-${order.indexOf(rowKey)}`
 
@@ -1048,6 +1086,7 @@ export function DataGrid<Row extends object>({
                   ref={measure ? virtualizer.measureElement : undefined}
                   data-index={measure ? item.index : undefined}
                   data-row={row.id}
+                  data-live-id={live ? row.id : undefined}
                   role="row"
                   aria-rowindex={item.index + 2 - (hideHeader ? 1 : 0)}
                   aria-selected={interactive && selectable ? selected : undefined}
@@ -1059,6 +1098,7 @@ export function DataGrid<Row extends object>({
                     autoRowHeight && 'is-auto',
                     selected && 'is-selected',
                     row.id === cursor && 'is-cursor',
+                    live && enterMarks.has(row.id) && 'k-live-enter',
                     isOpened?.(row.original) && 'is-opened',
                     rowClass?.(row.original),
                     extraClass,
@@ -1075,33 +1115,42 @@ export function DataGrid<Row extends object>({
                     const column = byId.get(cell.column.id)!
                     const resolved = resolveCell(column, row.original, env)
                     const fill = column.fill?.(row.original)
+                    const body = column.cell ? (
+                      column.cell(row.original)
+                    ) : column.render ? (
+                      column.render(row.original)
+                    ) : (
+                      <CellBody resolved={resolved} />
+                    )
+                    const box = {
+                      role: column.rowHeader ? 'rowheader' : cellRole,
+                      'data-col': column.id,
+                      'data-type': column.type ?? 'text',
+                      className: cn(
+                        'k-grid-cell',
+                        alignOf(column.id) === 'end' && 'is-end',
+                        resolved.tone && `is-${resolved.tone}`,
+                        fill && `fill-${fill}`,
+                        stickClass(column.id),
+                        classNames.cell,
+                      ),
+                      style: {
+                        ...stickStyle(column.id),
+                        ...(autoRowHeight ? undefined : { lineHeight: `${rowHeight}px` }),
+                      },
+                      title: column.title?.(row.original),
+                    }
+                    if (live && FLASH_TYPES.has(column.type ?? 'text')) {
+                      const number = resolved.sort === undefined ? null : Number(resolved.sort)
+                      return (
+                        <FlashCell key={cell.id} value={number} {...box}>
+                          {body}
+                        </FlashCell>
+                      )
+                    }
                     return (
-                      <div
-                        key={cell.id}
-                        role={column.rowHeader ? 'rowheader' : cellRole}
-                        data-col={column.id}
-                        data-type={column.type ?? 'text'}
-                        className={cn(
-                          'k-grid-cell',
-                          alignOf(column.id) === 'end' && 'is-end',
-                          resolved.tone && `is-${resolved.tone}`,
-                          fill && `fill-${fill}`,
-                          stickClass(column.id),
-                          classNames.cell,
-                        )}
-                        style={{
-                          ...stickStyle(column.id),
-                          ...(autoRowHeight ? undefined : { lineHeight: `${rowHeight}px` }),
-                        }}
-                        title={column.title?.(row.original)}
-                      >
-                        {column.cell ? (
-                          column.cell(row.original)
-                        ) : column.render ? (
-                          column.render(row.original)
-                        ) : (
-                          <CellBody resolved={resolved} />
-                        )}
+                      <div key={cell.id} {...box}>
+                        {body}
                       </div>
                     )
                   })}

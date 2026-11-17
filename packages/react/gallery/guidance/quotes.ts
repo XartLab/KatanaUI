@@ -5,7 +5,11 @@ import type { GuidanceMap } from './types'
 const quotes: GuidanceMap = {
   sparkline: {
     aliases: ['Mini chart', 'Trend line', 'Spark chart', 'Inline chart'],
-    use: ['表格行、卡片里一眼看走势。', '没有空间放坐标轴的小图。'],
+    use: [
+      '表格行、卡片里一眼看走势。',
+      '没有空间放坐标轴的小图。',
+      '新点追加时线平滑延伸 240ms，不整条重画；换一列数直接换。',
+    ],
     avoid: ['要读具体数值或交互用 equity-curve 或 spark-tile。', '多条线对比用 small-multiples。'],
     a11y: [
       'svg 是 role=img，读屏名由调用方按界面语言传。',
@@ -21,7 +25,11 @@ const quotes: GuidanceMap = {
   },
   treemap: {
     aliases: ['Heatmap', 'Market map', 'Squarified treemap', 'Block chart'],
-    use: ['看一个板块或持仓里谁大谁涨谁跌。', '需要从组下钻到组内成员。'],
+    use: [
+      '看一个板块或持仓里谁大谁涨谁跌。',
+      '需要从组下钻到组内成员。',
+      '数据实时变时：颜色线性渐变，换位与改大小平滑过渡，涨跌方向翻了的格子闪一次；传 cellKey 让格子认得自己。',
+    ],
     avoid: ['带涨停、连板的热力格用 market-heatmap。', '项目很少时用 attribution-bars。'],
     a11y: [
       '给了 onItem 的格子是 role=button，读屏名为「名字 数」。',
@@ -31,13 +39,21 @@ const quotes: GuidanceMap = {
   },
   'price-tag': {
     aliases: ['Inline price', 'Ticker chip', 'Quote chip', 'Price label'],
-    use: ['一句话或一行里提到品种，附价格与涨跌。', '新闻、对话正文里的行内引用。'],
+    use: [
+      '一句话或一行里提到品种，附价格与涨跌。',
+      '新闻、对话正文里的行内引用。',
+      '价格变了闪一下涨跌色，约 600ms，同一处 1 秒内最多一次。',
+    ],
     avoid: ['需要卡片版面用 quote-card。', '只显示盈亏数用 pnl-text。'],
     a11y: ['外层 aria-label 读成完整的一句，三角符号对读屏隐藏。', '涨跌靠三角与带符号的文字，不只靠颜色。'],
   },
   'quote-card': {
     aliases: ['Ticker card', 'Stock card', 'Stat card', 'Quote tile'],
-    use: ['看一只品种的价、涨跌与走势。', '顶部一排指数行情，用 QuoteStrip 横向滚动。'],
+    use: [
+      '看一只品种的价、涨跌与走势。',
+      '顶部一排指数行情，用 QuoteStrip 横向滚动。',
+      '价格变了闪涨跌色，迷你图新点追加时平滑延伸。',
+    ],
     avoid: ['要比较很多指标用 metric-card。', '多品种列表用 quote-table 或 watchlist。'],
     a11y: [
       '给了 onSelect 整张卡是一个原生按钮，不含其它可点元素。',
@@ -63,13 +79,21 @@ const quotes: GuidanceMap = {
   },
   'key-stats': {
     aliases: ['Stat grid', 'Description list', 'Fundamentals', 'Key metrics'],
-    use: ['品种页上市值、市盈率等一屏基本数据。', '指标要点开看详情时给 onItem。'],
+    use: [
+      '品种页上市值、市盈率等一屏基本数据。',
+      '指标要点开看详情时给 onItem。',
+      '数值是字符串或数字时，变了闪一下涨跌色。',
+    ],
     avoid: ['单个重点指标用 metric-card 或 lcd。', '随时间变化的数用 sparkline 类件。'],
     a11y: ['用 dl 结构，标签是 dt，数值是 dd，读屏能成对读。', '「›」装饰符号对读屏隐藏。', '没有值读到「—」。'],
   },
   watchlist: {
     aliases: ['Symbol list', 'Quote list', 'Market watch', 'Portfolio table'],
-    use: ['右侧自选栏，看一批品种的最新价与涨跌。', '要点列头排序、标旗。'],
+    use: [
+      '右侧自选栏，看一批品种的最新价与涨跌。',
+      '要点列头排序、标旗。',
+      '价格变了只有变了的尾数闪涨跌色，涨跌幅也闪；排序下价格变了行平滑换位，新加的行蓝线高亮 1.2 秒。',
+    ],
     avoid: ['需要几十列与大量行时用 data-grid。', '只要一屏概览用 quote-table。'],
     a11y: [
       '是真表格，列头是按钮，当前排序列 th 带 aria-sort。',
@@ -105,7 +129,11 @@ const quotes: GuidanceMap = {
   },
   'quote-table': {
     aliases: ['Market table', 'Tabbed list', 'Index table', 'Quote list'],
-    use: ['首页总览：指数、自选、热门分组一屏看。', '行可点进入品种。'],
+    use: [
+      '首页总览：指数、自选、热门分组一屏看。',
+      '行可点进入品种。',
+      '最新价与涨跌幅变了闪涨跌色（方向由 value 或价格文字读出），调用方重排行时行平滑换位，新加的行蓝线高亮 1.2 秒。',
+    ],
     avoid: ['要排序、筛选、很多行用 data-grid 或 watchlist。', '只有一组时不用页签，直接用 quote-card 的一排。'],
     a11y: [
       '分组页签底座是 Radix Tabs（role=tablist），内容是 role=tabpanel。',

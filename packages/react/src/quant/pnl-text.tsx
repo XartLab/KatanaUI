@@ -1,5 +1,8 @@
 // SPDX-License-Identifier: MIT
 import type { ComponentProps, ReactNode } from 'react'
+import { cn } from '../lib/cn.ts'
+import { useValueFlash } from '../lib/live.ts'
+import { parseReadout } from '../lib/live-readout.tsx'
 import { toneOf, type Tone } from './format/index.ts'
 import { ToneText } from './tone-text.tsx'
 
@@ -11,6 +14,7 @@ export function PnlText({
   value,
   tone,
   arrow,
+  flash = false,
   as,
   children,
   ...rest
@@ -23,13 +27,26 @@ export function PnlText({
   tone?: Tone
   /** Put an up or down triangle before the text. */
   arrow?: boolean
+  /** Flash up or down color when value changes (for numbers that update live; off by default so static tables stay still). */
+  flash?: boolean
   /** Which element to render. */
   as?: 'span' | 'strong'
   /** The text to show. */
   children: ReactNode
 } & Omit<ComponentProps<'span'>, 'children'>) {
+  // 默认不闪：静态表格里排序、翻页换值不该闪；实时更新的数调用方显式开。
+  const live = useValueFlash(parseReadout(value), { enabled: flash })
   return (
-    <ToneText tone={tone ?? toneOf(value)} arrow={arrow} as={as} data-slot="pnl-text" {...rest}>
+    <ToneText
+      key={live.key}
+      tone={tone ?? toneOf(value)}
+      arrow={arrow}
+      as={as}
+      data-slot="pnl-text"
+      {...rest}
+      className={cn(flash && 'k-live-flash', rest.className)}
+      data-flash={live.flash ?? undefined}
+    >
       {children}
     </ToneText>
   )

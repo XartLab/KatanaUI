@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 // 组件卡 StatusLED。LED 默认 off；只表达真实状态，必须配文字或 aria-label。
 // 搬自 src/ui（#1860）：样子与行为没改，皮肤在 ../theme/led.css。
+// 状态变了在灯外画一圈光晕闪一次（共用层 useStatusFlash；灯自己的底色就是状态色，闪底色看不见，所以闪外圈）：变坏（警告、危险）用警示闪，变好用涨色闪。
+import { useStatusFlash } from '../lib/live.ts'
 
 export type LedState = 'off' | 'on' | 'ok' | 'warn' | 'danger'
 
@@ -36,11 +38,22 @@ export function Led({
   label: string
 }) {
   const tone = group ? `link-${group.toLowerCase()}` : state === 'off' ? '' : state
+  const changed = useStatusFlash(state)
   return (
     <span
       className={`k-led${tone ? ` ${tone}` : ''}${hollow ? ' hollow' : ''}${bare ? ' bare' : ''}${small ? ' sm' : ''}`}
       role="img"
       aria-label={label}
-    />
+    >
+      {changed.flash && (
+        <i
+          key={changed.key}
+          className={state === 'warn' || state === 'danger' ? 'k-led-halo k-live-alert' : 'k-led-halo k-live-flash'}
+          data-tone={state === 'danger' ? 'negative' : undefined}
+          data-flash={state === 'warn' || state === 'danger' ? undefined : 'up'}
+          aria-hidden="true"
+        />
+      )}
+    </span>
   )
 }

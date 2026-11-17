@@ -18,6 +18,7 @@
 | `limit` | `number` | `0.03` | Where the color scale ends (as a decimal); changes are cut at plus or minus limit into seven steps from -3 to +3. |
 | `legendText` * | `(step: number) => string` | — | Text for each step of the color scale (-3 to +3). |
 | `toolbar` | `ReactNode` | — | A row above the cells. |
+| `cellKey` | `(data: T) => string` | — | A stable key per cell (a symbol code, say), so a cell that moves or resizes keeps its identity and glides to the new place; the index is used when omitted. |
 | `onGroup` | `(name: string) => void` | — | Called when a group header is clicked. |
 | `onItem` | `(data: T) => void` | — | Called when a cell is clicked; when given, cells are focusable buttons that trigger on Enter. |
 | `classes` | `TreemapClasses` | `{}` | Extra class names per part. |

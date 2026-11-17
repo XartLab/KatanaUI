@@ -19,19 +19,21 @@
   min-width: 2px;
   height: 100%;
   border-radius: var(--radius-sm);
-  background: var(--signal-green);
+  /* 格子自己的底色放进 --k-live-base：新格子的高亮（.k-live-enter）才是混在格子色上、不是盖成透明。 */
+  --k-live-base: var(--signal-green);
+  background: var(--k-live-base);
   outline: none;
 }
 .k-uptime-cell[data-status='degraded'] {
   height: 60%;
-  background: var(--signal-amber);
+  --k-live-base: var(--signal-amber);
 }
 .k-uptime-cell[data-status='down'] {
-  background: var(--signal-red);
+  --k-live-base: var(--signal-red);
 }
 .k-uptime-cell[data-status='none'] {
   height: 3px;
-  background: var(--ink-400);
+  --k-live-base: var(--ink-400);
 }
 .k-uptime-cell.is-link {
   cursor: pointer;

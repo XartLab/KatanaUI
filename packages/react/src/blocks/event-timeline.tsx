@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 import { useCallback, useId, useRef, useState, type PointerEvent, type ReactNode } from 'react'
 import { cn } from '../lib/cn.ts'
+import { useEnterMarks } from '../lib/live.ts'
 import {
   EVENT_KINDS,
   clock,
@@ -102,11 +103,14 @@ function Lane({
   events,
   props,
   active,
+  fresh,
 }: {
   day: string
   events: readonly TimelineEvent[]
   props: EventTimelineProps
   active: ReadonlySet<EventKind>
+  /** 刚到的事件 id（高亮 1.2 秒）。 */
+  fresh: ReadonlySet<string>
 }) {
   const { timeZone, session, now, labels, onPick, onBrush } = props
   const markers = clusterMarkers(
@@ -203,7 +207,7 @@ function Lane({
             <button
               key={marker.key}
               type="button"
-              className="k-tl-marker"
+              className={cn('k-tl-marker', marker.events.some((e) => fresh.has(e.id)) && 'k-live-enter')}
               data-kind={marker.kind}
               data-side={placement.get(marker.key) ?? undefined}
               style={{ left: `${marker.x * 100}%` }}
@@ -255,6 +259,8 @@ export function EventTimeline(props: EventTimelineProps) {
   const [active, setActive] = useState<ReadonlySet<EventKind>>(() => new Set(EVENT_KINDS))
   const [table, setTable] = useState(false)
   const id = useId()
+  // 新事件高亮：事件 id 上一次没有、这一次有的算新（首次渲染的全算旧）；聚合标记里有新事件就整个标记高亮。
+  const fresh = useEnterMarks(events.map((e) => e.id))
   const visible = events.filter((e) => active.has(e.kind))
   const days = [
     ...new Set([...events.map((e) => dayKey(e.at, timeZone)), ...(props.now ? [dayKey(props.now, timeZone)] : [])]),
@@ -311,7 +317,7 @@ export function EventTimeline(props: EventTimelineProps) {
               {[...visible]
                 .sort((a, b) => a.at - b.at)
                 .map((e) => (
-                  <tr key={e.id}>
+                  <tr key={e.id} className={fresh.has(e.id) ? 'k-live-enter' : undefined}>
                     <td className="k-tl-num">
                       {dayKey(e.at, timeZone)} {clock(e.at, timeZone)}
                     </td>
@@ -335,6 +341,7 @@ export function EventTimeline(props: EventTimelineProps) {
                 events={events.filter((e) => dayKey(e.at, timeZone) === day)}
                 props={props}
                 active={active}
+                fresh={fresh}
               />
             </div>
           ))

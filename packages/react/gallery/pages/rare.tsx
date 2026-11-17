@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: MIT
 import { useEffect, useState } from 'react'
+import { LiveToggle } from '../LiveToggle.tsx'
+import { chance, pick, useLiveTicker, type Rng } from '../live-sim.ts'
 import {
   AiStatus,
   ARCADE_SPRITES,
@@ -17,6 +19,7 @@ import {
   type ArcadePixelAnimate,
   type OrbState,
   type StatusIconStatus,
+  useEnterMarks,
 } from '../../src/index'
 import { Cell, Row } from './parts'
 
@@ -79,6 +82,48 @@ export function DeleteButtonDemo() {
   )
 }
 
+// 实时模拟（演示）：每 3 秒一拍，约四成来一条通知，第一拍必来；铃的未读数 = 列表里没读的条数，来新的铃闪、列表新条高亮。
+const LIVE_NOTICES = [
+  '成交回报：600001 买入 200 股',
+  '价位提醒：300750 上破 202.00',
+  'run 2e52 已完成',
+  '公告：回购进展',
+]
+type LiveNotice = { id: string; text: string }
+function noticeStep(list: readonly LiveNotice[], rng: Rng, tick: number): readonly LiveNotice[] {
+  if (tick > 0 && !chance(rng, 0.4)) return list
+  return [{ id: `live-${tick}`, text: pick(rng, LIVE_NOTICES) }, ...list].slice(0, 6)
+}
+
+function LiveNotifications() {
+  const { state: list } = useLiveTicker<readonly LiveNotice[]>([], noticeStep, { intervalMs: 3000 })
+  const [read, setRead] = useState<ReadonlySet<string>>(new Set())
+  const unread = list.filter((n) => !read.has(n.id)).length
+  const entering = useEnterMarks(list.map((n) => n.id))
+  return (
+    <div data-testid="bell-live" style={{ display: 'grid', gap: 8, width: 320 }}>
+      <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+        <LiveToggle labels={{ group: '数据刷新', live: '实时', paused: '暂停' }} />
+        <NotificationBell count={unread} label={`实时提醒，${unread} 条未读`} />
+        <Button size="sm" onClick={() => setRead(new Set(list.map((n) => n.id)))}>
+          全部已读
+        </Button>
+      </div>
+      <ul aria-label="通知列表" data-slot="live-notices" style={{ margin: 0, padding: 0, listStyle: 'none' }}>
+        {list.map((n) => (
+          <li
+            key={n.id}
+            className={entering.has(n.id) ? 'k-live-enter' : undefined}
+            style={{ padding: '4px 8px', font: 'var(--text-data) var(--font-sans)' }}
+          >
+            {n.text}
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
+}
+
 export function NotificationBellDemo() {
   const [count, setCount] = useState(0)
   return (
@@ -99,6 +144,9 @@ export function NotificationBellDemo() {
         <Button onClick={() => setCount((n) => Math.max(0, n - 1))}>读 1 条</Button>
         <Button onClick={() => setCount(0)}>全部已读</Button>
         <Button onClick={() => setCount(120)}>120 条</Button>
+      </Row>
+      <Row name="实时">
+        <LiveNotifications />
       </Row>
       <p className="gal-note">数变多铃摆一下，力度跟增量走；变少、清零不摆。数字按增减方向滚。</p>
     </>

@@ -16,6 +16,9 @@ import {
   type QuoteTone,
   type TreemapItem,
 } from '../../src/index'
+import { LiveToggle } from '../LiveToggle'
+import { LiveQuoteDemo, LiveSparklineDemo, LiveTreemapDemo } from './live-readouts'
+import { chance, randomWalk, useLiveTicker, type Rng } from '../live-sim'
 import { ActionLog, Row, demoSymbolActions } from './parts'
 
 // #1884：报价与行情类的件的演示。下面所有数据都是演示用的示例（在这个展示页里构造，不是行情），页上也写明了；应用里没有样本数据。
@@ -100,6 +103,7 @@ export function SparklineDemo() {
         </div>
       </Row>
       <p className="gal-note">{SAMPLE}。线色按头尾比：涨跌色跟涨跌配色走，持平用中性灰。</p>
+      <LiveSparklineDemo />
     </>
   )
 }
@@ -158,6 +162,7 @@ export function TreemapDemo() {
         />
       </div>
       <p className="gal-note">{SAMPLE}。点板块名下钻到那个板块；格子够大才写字；色例两端是 ±3%。</p>
+      <LiveTreemapDemo />
     </>
   )
 }
@@ -178,6 +183,7 @@ export function PriceTagDemo() {
         </p>
       </Row>
       <p className="gal-note">{SAMPLE}。</p>
+      <LiveQuoteDemo />
     </>
   )
 }
@@ -219,6 +225,7 @@ export function QuoteCardDemo() {
         </div>
       </Row>
       <p className="gal-note">{SAMPLE}。给了 onSelect 整张卡是一个按钮；一排放不下就横向滚动。</p>
+      <LiveQuoteDemo />
     </>
   )
 }
@@ -273,10 +280,61 @@ export function RatingGaugeDemo() {
   )
 }
 
+// 实时：价格随机走一步、涨跌幅跟着算，第一组按涨跌幅从高到低排（节拍一走就换位），第二组偶尔来一只新的；初始状态与静态示例一致。
+type LiveQuote = { id: string; name: string; symbol: string; prev: number; price: number; spark?: number[] }
+const QUOTE_START: { first: LiveQuote[]; second: LiveQuote[] } = {
+  first: [
+    { id: 'a', name: '示例甲', symbol: 'AAA', prev: 10, price: 11.8, spark: [...rise] },
+    { id: 'b', name: '示例乙', symbol: 'BBB', prev: 12, price: 10.2, spark: [...fall] },
+    { id: 'c', name: '示例丙', symbol: 'CCC', prev: 10, price: 10, spark: [...level] },
+  ],
+  second: [{ id: 'd', name: '示例丁', symbol: 'DDD', prev: 23, price: 23.45 }],
+}
+const QUOTE_SECOND_MAX = 5
+function quoteStep(state: typeof QUOTE_START, rng: Rng, tick: number): typeof QUOTE_START {
+  const walk = (q: LiveQuote): LiveQuote => {
+    const moved = randomWalk(q.price, rng, 0.03)
+    const price = moved === q.price ? Math.round((q.price + 0.01) * 100) / 100 : moved
+    return { ...q, price, spark: q.spark && [...q.spark.slice(1), price] }
+  }
+  const pct = (q: LiveQuote) => (q.price - q.prev) / q.prev
+  const first = state.first.map(walk).sort((x, y) => pct(y) - pct(x))
+  const second = state.second.map(walk)
+  if (chance(rng, 0.25) && second.length < QUOTE_SECOND_MAX) {
+    const prev = Math.round((8 + rng() * 40) * 100) / 100
+    second.push({
+      id: `n${tick}`,
+      name: `示例新${tick}`,
+      symbol: `N${String(tick).padStart(2, '0')}`,
+      prev,
+      price: prev,
+    })
+  }
+  return { first, second }
+}
+function quoteRow(q: LiveQuote) {
+  const pct = ((q.price - q.prev) / q.prev) * 100
+  const tone: QuoteTone = Math.abs(pct) < 0.005 ? 'flat' : pct > 0 ? 'up' : 'down'
+  return {
+    id: q.id,
+    name: q.name,
+    symbol: q.symbol,
+    price: q.price.toFixed(2),
+    percent: `${tone === 'up' ? '+' : ''}${pct.toFixed(2)}%`,
+    tone,
+    spark: q.spark,
+    sparkLabel: q.spark ? '示例走势' : undefined,
+  }
+}
+
 export function QuoteTableDemo() {
   const [opened, setOpened] = useState('—')
+  const { state } = useLiveTicker(QUOTE_START, quoteStep, { intervalMs: 1800 })
   return (
     <>
+      <div style={{ paddingBottom: 8 }}>
+        <LiveToggle labels={{ group: '数据刷新', live: '实时', paused: '暂停' }} />
+      </div>
       <div className="gal-wide" data-gallery-qtable style={{ maxWidth: 520 }}>
         <QuoteTable
           label="示例分组"
@@ -284,18 +342,17 @@ export function QuoteTableDemo() {
           empty="这一组没有品种"
           onRow={(row) => setOpened(row.name)}
           groups={[
-            {
-              id: 'g1',
-              label: '示例一组',
-              rows: cards.slice(0, 3).map((card) => ({ ...card, sparkLabel: '示例走势' })),
-            },
-            { id: 'g2', label: '示例二组', rows: cards.slice(3).map(({ spark: _spark, ...row }) => row) },
+            { id: 'g1', label: '示例一组', rows: state.first.map(quoteRow) },
+            { id: 'g2', label: '示例二组', rows: state.second.map(quoteRow) },
             { id: 'g3', label: '空的一组', rows: [] },
           ]}
         />
       </div>
       <output data-gallery-opened>点开：{opened}</output>
-      <p className="gal-note">{SAMPLE}。页签切组；行可点（回车也行）。</p>
+      <p className="gal-note">
+        {SAMPLE}
+        。页签切组；行可点（回车也行）。开着实时：价格与涨跌幅变了闪涨跌色，第一组按涨跌幅换位，第二组偶尔来一只新的。
+      </p>
     </>
   )
 }

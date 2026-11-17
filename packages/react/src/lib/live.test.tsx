@@ -163,12 +163,14 @@ describe('useEnterMarks', () => {
 })
 
 describe('useStatusFlash', () => {
-  it('首次不闪，状态变了闪一次，LIVE_FLASH_MS 后落回；null 不算状态', () => {
+  it('首次不闪，状态变了闪一次，LIVE_ENTER_MS 后落回（警示要闪两下共 1200ms）；null 不算状态', () => {
     const view = mount(useStatusFlash, '涨停' as string | null)
     expect(view.out.current).toEqual({ flash: false, key: 0 })
     view.render('炸板')
     expect(view.out.current).toEqual({ flash: true, key: 1 })
     act(() => void vi.advanceTimersByTime(LIVE_FLASH_MS))
+    expect(view.out.current).toEqual({ flash: true, key: 1 })
+    act(() => void vi.advanceTimersByTime(LIVE_ENTER_MS - LIVE_FLASH_MS))
     expect(view.out.current).toEqual({ flash: false, key: 1 })
     view.render(null)
     expect(view.out.current.key).toBe(1)

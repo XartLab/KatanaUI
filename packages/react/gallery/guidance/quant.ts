@@ -5,7 +5,11 @@ import type { GuidanceMap } from './types'
 const quant: GuidanceMap = {
   'change-text': {
     aliases: ['Change %', 'Chg%', 'Delta text', 'Price change'],
-    use: ['行情表、自选列表里的涨跌幅列。', '盘中看板的指标旁标日内变化。'],
+    use: [
+      '行情表、自选列表里的涨跌幅列。',
+      '盘中看板的指标旁标日内变化。',
+      '实时更新的数传 flash：变大闪涨色、变小闪跌色；默认不闪，静态表格排序翻页不该闪。',
+    ],
     avoid: ['带币种的盈亏金额用 pnl-text。', '要画走势而不只是一个数时用 spark-tile。'],
     a11y: ['符号 + / - 写在字里，不只靠红绿区分。', '零不着色也不带号，读屏照读数字。'],
   },
@@ -21,7 +25,11 @@ const quant: GuidanceMap = {
   },
   'limit-ladder': {
     aliases: ['涨停梯队', 'Limit-up ladder', 'Streak board', '连板榜'],
-    use: ['A 股盘中看各板位的涨停只数与晋级率。', '复盘时对照炸板、跌停的分布。'],
+    use: [
+      'A 股盘中看各板位的涨停只数与晋级率。',
+      '复盘时对照炸板、跌停的分布。',
+      '刷新：封单额与涨幅变了闪涨跌色，汇总读数滚动；封板转炸板整行琥珀警示闪（跌停用跌红），回封闪涨色；升板时整行移到新层并闪涨色，新晋的票蓝线高亮 1.2 秒。',
+    ],
     avoid: ['非 A 股市场没有连板概念，用 market-heatmap。', '只看某一只票的状态用 rating-text 或 change-text。'],
     a11y: [
       '列表是 listbox，每行是 option，选中状态由读屏报出。',
@@ -41,7 +49,11 @@ const quant: GuidanceMap = {
   },
   'metric-card': {
     aliases: ['Metric explorer', 'KPI card', 'Stat card', 'Scorecard'],
-    use: ['研究页展示一个宏观或市场指标的当前值与区间变化。', '多个指标排成卡片墙做宏观看板。'],
+    use: [
+      '研究页展示一个宏观或市场指标的当前值与区间变化。',
+      '多个指标排成卡片墙做宏观看板。',
+      '大号当前值与变化变了闪涨跌色；走势线新点追加时平滑延伸，换区间直接换。',
+    ],
     avoid: ['一行放多个小指标用 spark-tile。', '要读完整时间序列与扫读时用 brush-chart 或 vintage-series。'],
     a11y: [
       '走势线有读屏名，数值与变化都是文字。',
@@ -57,7 +69,11 @@ const quant: GuidanceMap = {
   },
   'technical-rating': {
     aliases: ['Technicals', 'Technical Analysis gauge', 'Summary gauge', 'Technical Ratings'],
-    use: ['看一只票在各时间周期的技术面总评。', '单品种详情页里并列振荡指标与均线的结论。'],
+    use: [
+      '看一只票在各时间周期的技术面总评。',
+      '单品种详情页里并列振荡指标与均线的结论。',
+      '评级变了闪：总评档位升了闪涨色、降了闪跌色，买 / 卖个数与明细里的单项结论变了同理（卖的个数变多算偏空）。',
+    ],
     avoid: ['只要一个评级标签时用 rating-text。', '它是读数不是买卖信号，下单前走 consensus-block。'],
     a11y: [
       '仪表有读屏名，档名、买 / 中性 / 卖计数都是文字。',
@@ -66,7 +82,11 @@ const quant: GuidanceMap = {
   },
   'pnl-text': {
     aliases: ['P&L', 'PnL cell', 'Profit/Loss text', 'Gain/Loss'],
-    use: ['持仓、订单表里的浮动与已实现盈亏。', '账户摘要里的当日盈亏。'],
+    use: [
+      '持仓、订单表里的浮动与已实现盈亏。',
+      '账户摘要里的当日盈亏。',
+      '实时更新的盈亏传 flash，按 value 的增减闪涨跌色；默认不闪。',
+    ],
     avoid: ['百分比涨跌幅用 change-text。', '格式化（币种、位数、符号）由调用方做，不要指望它格式化。'],
     a11y: ['符号由调用方写进字里，不只靠颜色。', '颜色跟 data-updown，红涨绿跌互换时文字不变。'],
   },
@@ -111,7 +131,11 @@ const quant: GuidanceMap = {
   },
   'equity-curve': {
     aliases: ['Equity Curve', 'Cumulative P&L', 'Strategy Report', 'Drawdown chart'],
-    use: ['回测结束后看权益线、基准与回撤。', '实盘监控账户权益与最大回撤。'],
+    use: [
+      '回测结束后看权益线、基准与回撤。',
+      '实盘监控账户权益与最大回撤。',
+      '新点追加时权益线与基准线平滑延伸、末点闪一圈光晕；窗口停在最新点时跟着走，拖到别处就不动。',
+    ],
     avoid: ['要看分层累计收益用 quantile-layers。', '多策略同图对比用 series-explorer。'],
     a11y: [
       '图头有「表格视图」，可切到逐点的表格读数。',
@@ -121,7 +145,11 @@ const quant: GuidanceMap = {
   },
   'spark-tile': {
     aliases: ['Sparkline card', 'KPI tile', 'Stat tile', 'Mini chart'],
-    use: ['盘中监控一排关键指标（延迟、敞口、成交率）。', '回测摘要里并排放几个核心数。'],
+    use: [
+      '盘中监控一排关键指标（延迟、敞口、成交率）。',
+      '回测摘要里并排放几个核心数。',
+      '数值变了闪涨跌色（有 rollValue 时滚轮加闪）；新点追加时线平滑延伸，末点闪一圈光晕。',
+    ],
     avoid: ['超过 5 个指标改用表格。', '要读历史序列细节时用 metric-card 或 brush-chart。'],
     a11y: ['迷你线是 role="img" 加读屏名，没有数据时写 —。', '接近阈值要在说明里写字，不只靠边框变色。'],
   },

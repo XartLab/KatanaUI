@@ -14,7 +14,8 @@ NewsFeed 点开一条后的阅读窗：来源与操作（复制链接、举报�
 | `symbols` | `NewsReaderSymbol[]` | — | { code, name?, logo?, change?（涨跌幅百分数） }；涨跌色走 pnl token。 |
 | `keyPoints` | `string[]` | — | 要点；空数组不画这一块。 |
 | `children` | `ReactNode` | — | 正文。 |
-| `labels` | `NewsReaderLabels` | — | 读屏名与「要点」「关闭」「举报」「复制链接」。 |
+| `version` | `string \| number` | — | 内容版本（修订号或更新时间）：正文改了但标题、要点没变时，靠它让件知道这一条被更新了。 |
+| `labels` | `NewsReaderLabels` | — | 读屏名与「要点」「关闭」「举报」「复制链接」；updated（「已更新」）传了，这一条被更新时标题闪一次并留标记，不传就不闪。 |
 | `onClose / onReport / onCopyLink / onSymbolPick` | `function` | — | 给了才画对应的按钮；点品种胶囊回调。 |
 
 ## Usage
@@ -50,6 +51,7 @@ export function NewsReaderUsage() {
 ## States
 
 - 品种涨跌：正涨色、负跌色，0 不上色。
+- 被更新：标题闪警示色，旁边留「已更新」。
 
 ## Don't
 

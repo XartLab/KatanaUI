@@ -127,6 +127,19 @@
   font-variant-numeric: tabular-nums;
   line-height: 14px;
   text-align: center;
+  /* 实时刷新：颜色线性渐变（--dur-flash），换位与改大小用弹簧（--dur-reorder）；第一次出现不过渡（transition 只在值变时播）。 */
+  transition:
+    background-color var(--dur-flash) linear,
+    left var(--dur-reorder) var(--ease-snappy),
+    top var(--dur-reorder) var(--ease-snappy),
+    width var(--dur-reorder) var(--ease-snappy),
+    height var(--dur-reorder) var(--ease-snappy);
+}
+/* 涨跌翻了方向的那一闪：盖在格子上的一层，底色透明，闪色由 .k-live-flash 给。 */
+.k-treemap-flash {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
 }
 .k-treemap-cell.is-link {
   cursor: pointer;

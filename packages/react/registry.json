@@ -356,6 +356,39 @@
       ]
     },
     {
+      "name": "live-line",
+      "type": "registry:lib",
+      "title": "Live Line",
+      "description": "走势线新点追加时的延伸过场（钩子加纯函数）：旧线各点平滑走到新位置，新点从末端长出来，Sparkline、SparkTile、EquityCurve 用。",
+      "registryDependencies": [
+        "@katana/live"
+      ],
+      "files": [
+        {
+          "path": "src/lib/live-line.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/lib/live-line.ts"
+        }
+      ]
+    },
+    {
+      "name": "live-readout",
+      "type": "registry:lib",
+      "title": "Live Readout",
+      "description": "读数变了闪涨跌色的外壳与取数：从已格式化的文字里取开头的数，走 live 的 useValueFlash。MetricCard、QuoteCard、PriceTag、KeyStats、Lcd、StatusBar 用。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/live"
+      ],
+      "files": [
+        {
+          "path": "src/lib/live-readout.tsx",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/lib/live-readout.tsx"
+        }
+      ]
+    },
+    {
       "name": "live",
       "type": "registry:lib",
       "title": "Live",
@@ -1325,6 +1358,9 @@
       "type": "registry:component",
       "title": "Lcd",
       "description": "点阵小标签在上、LCD 数字在中、一行灰色小字在下的读数窗；没有数据显示「—」。",
+      "registryDependencies": [
+        "@katana/live-readout"
+      ],
       "files": [
         {
           "path": "src/katana/lcd.tsx",
@@ -1338,6 +1374,9 @@
       "type": "registry:component",
       "title": "Led",
       "description": "8px 的 StatusLED：默认熄灭，只表达真实状态；必须配文字或读屏名，不单靠颜色说话。",
+      "registryDependencies": [
+        "@katana/live"
+      ],
       "files": [
         {
           "path": "src/katana/led.tsx",
@@ -1475,6 +1514,7 @@
       "registryDependencies": [
         "@katana/cn",
         "@katana/focus",
+        "@katana/live",
         "@katana/motion",
         "@katana/spring"
       ],
@@ -1561,6 +1601,7 @@
       "title": "Price Tag",
       "description": "夹在一句话或一行里的「名字 价格 涨跌」，数字等宽对齐，涨跌带三角与颜色，跟着周围的字号走。",
       "registryDependencies": [
+        "@katana/live-readout",
         "@katana/quote-tone"
       ],
       "files": [
@@ -1577,6 +1618,7 @@
       "title": "Quote Card",
       "description": "一只品种一张卡：名字与代码、最新价（大）、涨跌与涨跌幅、可选的迷你图与底部一行；QuoteStrip 是一排小号的卡，放不下横向滚动。",
       "registryDependencies": [
+        "@katana/live-readout",
         "@katana/quote-tone",
         "@katana/sparkline"
       ],
@@ -1715,6 +1757,7 @@
       "title": "Sparkline",
       "description": "一列数从旧到新，整宽铺开、上下按这列的高低，一根线。线色按头尾涨跌（涨跌色跟涨跌配色走），没有数据只留「—」。从应用的分析视图提来。",
       "registryDependencies": [
+        "@katana/live-line",
         "@katana/quote-tone"
       ],
       "files": [
@@ -1886,6 +1929,7 @@
       "title": "Treemap",
       "description": "一格一项，面积按大小，颜色按涨跌分七档（跟涨跌配色走），格子够大才写名字和数；点组头下钻，底部是色例。排布用 d3-hierarchy 的 squarify。从应用的分析视图提来。",
       "registryDependencies": [
+        "@katana/live",
         "@katana/treemap-model"
       ],
       "files": [
@@ -2070,6 +2114,8 @@
       "title": "Quote Table",
       "description": "上面一排页签（指数、自选、热门……），下面是当前这组的行情表：名称与代码、迷你图、最新价、涨跌幅。由 Tabs 与 Sparkline 组出来。",
       "registryDependencies": [
+        "@katana/cn",
+        "@katana/live",
         "@katana/quote-tone",
         "@katana/sparkline",
         "@katana/tabs"
@@ -2217,6 +2263,7 @@
       ],
       "registryDependencies": [
         "@katana/cn",
+        "@katana/live",
         "@katana/series-geometry"
       ],
       "files": [
@@ -2332,6 +2379,8 @@
       "title": "Change Text",
       "description": "百分数的涨跌幅文字，写成「+1.23%」；颜色只读 --pnl-up / --pnl-down，根上设 data-updown=\"cn\" 就互换成红涨绿跌；零不着色。",
       "registryDependencies": [
+        "@katana/cn",
+        "@katana/live",
         "@katana/quant-format",
         "@katana/tone-text"
       ],
@@ -2436,6 +2485,8 @@
         "@katana/chart-kit",
         "@katana/cn",
         "@katana/equity-curve-model",
+        "@katana/live",
+        "@katana/live-line",
         "@katana/series-geometry",
         "@katana/toggle-group",
         "@katana/use-scrubber"
@@ -2578,7 +2629,8 @@
       "title": "Key Stats",
       "description": "照 TradingView 品种页的 Key stats（2026-11-15 实测）：标题带「›」，三列网格，每项一个灰色小标签（带「›」，给了 onItem 就可点）、一个大号数值（带单位小字）、可选徽标（中性灰胶囊，不用 TV 的紫色）。数值与文字由调用方传。",
       "registryDependencies": [
-        "@katana/cn"
+        "@katana/cn",
+        "@katana/live-readout"
       ],
       "files": [
         {
@@ -2596,7 +2648,9 @@
       "registryDependencies": [
         "@katana/change-text",
         "@katana/cn",
+        "@katana/live",
         "@katana/quant-format",
+        "@katana/rolling-text",
         "@katana/row-actions",
         "@katana/symbol-mark"
       ],
@@ -2674,6 +2728,7 @@
       "registryDependencies": [
         "@katana/change-text",
         "@katana/cn",
+        "@katana/live-readout",
         "@katana/quote-tone",
         "@katana/sparkline",
         "@katana/toggle-group"
@@ -2761,6 +2816,9 @@
       "title": "Pnl Text",
       "description": "盈亏文字：字由调用方格式化好（币种、位数、符号都由调用方定），本件只按方向着色，颜色规则同 ChangeText。",
       "registryDependencies": [
+        "@katana/cn",
+        "@katana/live",
+        "@katana/live-readout",
         "@katana/quant-format",
         "@katana/tone-text"
       ],
@@ -2939,6 +2997,9 @@
       "description": "KPI 瓦片：点阵小标签、LCD 数值、24px 迷你折线（可画阈值虚线）、一行变化说明；数据由调用方给，没有数据是空态，一行最多放 5 个。",
       "registryDependencies": [
         "@katana/change-text",
+        "@katana/live",
+        "@katana/live-line",
+        "@katana/live-readout",
         "@katana/rolling-text",
         "@katana/sparkline"
       ],
@@ -2957,6 +3018,7 @@
       "description": "照 TradingView 技术页（2026-11-15 实测）：顶上十个时间周期（选中是灰底胶囊），三个半圆仪表（振荡指标、总评、均线，总评居中放大；弧两端取涨跌色、中段灰；刻度字只写中间三档），指针按 −1…1 的分数转到所在档（分界 −0.5、−0.1、0.1、0.5），下面是档名大字、圆角三列「卖 / 中性 / 买」计数框与指标总数；再下面每组一张并排明细表（名称、读数、结论文字上色，标题带「›」），最底下是整宽的 Pivots 表（R3…S3 × Classic、Fibonacci、Camarilla、Woodie、DM，缺值「—」）。组件只画不算：分数、个数、读数与结论都由调用方传；档名、列名、免责一句也由调用方传，件只留位置。颜色走涨跌语义色与中性灰，不用橙色。放在 PanelFrame 里用。",
       "registryDependencies": [
         "@katana/cn",
+        "@katana/live",
         "@katana/rating-gauge-model",
         "@katana/toggle-group"
       ],
@@ -3005,6 +3067,8 @@
       "description": "一格一天或一小时的可用条，用于数据源与连接健康：颜色加高度一起表达状态（绿满格可用、琥珀半高降级、红满格中断、虚线底无数据）；悬停或聚焦一格，条下的读数行写那一格的整句（如断流次数）。功能参照 Arc Uptime status，实现原创。",
       "registryDependencies": [
         "@katana/chart-kit",
+        "@katana/cn",
+        "@katana/live",
         "@katana/uptime-bars-model"
       ],
       "files": [
@@ -3135,6 +3199,7 @@
         "@katana/chip-group",
         "@katana/cn",
         "@katana/context-menu",
+        "@katana/live",
         "@katana/menu-any",
         "@katana/menu-parts",
         "@katana/popover",
@@ -3346,6 +3411,8 @@
       "registryDependencies": [
         "@katana/cn",
         "@katana/led",
+        "@katana/live",
+        "@katana/live-readout",
         "@katana/popover",
         "@katana/text-measure"
       ],
@@ -3403,6 +3470,7 @@
         "@katana/chip-group",
         "@katana/cn",
         "@katana/input",
+        "@katana/live",
         "@katana/measured-skeleton",
         "@katana/popover",
         "@katana/row-actions",
@@ -3589,6 +3657,7 @@
       "registryDependencies": [
         "@katana/button",
         "@katana/cn",
+        "@katana/live",
         "@katana/measured-skeleton",
         "@katana/quant-format",
         "@katana/skeleton",
@@ -3657,7 +3726,8 @@
       "description": "发现区的统一事件流（公告、告警、成交、数据源事件）：按显示时区的自然日分组，新的在前，每条一个钟点、一个按类型上色的圆点、标题加来源标签与说明。对设计稿的 EventTimeline 卡。功能参照 Arc，实现原创。",
       "registryDependencies": [
         "@katana/cn",
-        "@katana/event-timeline-model"
+        "@katana/event-timeline-model",
+        "@katana/live"
       ],
       "files": [
         {

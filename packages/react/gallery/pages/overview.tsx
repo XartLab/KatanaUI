@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import {
   KeyStats,
   PeerCards,
@@ -9,6 +9,9 @@ import {
   type WatchlistRow,
 } from '../../src/quant/index.ts'
 import { CompareBar, RangeBar } from '../../src/index'
+import { LiveToggle } from '../LiveToggle'
+import { chance, useLiveTicker, type Rng } from '../live-sim'
+import { LiveKeyStatsDemo } from './live-readouts'
 import { Row } from './parts'
 
 // #53：对齐 TradingView 品种页（主会话 2026-11-15 实测）的一组件的演示。品种、公司与数字全是虚构的演示数据，不是行情，也不放真实公司标志（徽标是字母圆）。
@@ -110,6 +113,7 @@ export function KeyStatsDemo() {
         <output data-gallery-picked>{log}</output>
       </Row>
       <p className="gal-note">{SAMPLE}。徽标是中性灰胶囊；没有值写「—」。</p>
+      <LiveKeyStatsDemo />
     </>
   )
 }
@@ -171,21 +175,42 @@ const WATCH: readonly WatchlistRow[] = [
   { key: 'e', code: 'ECH', name: 'Echo Networks', last: 57.9, change: 2.5, changePct: 4.5 },
 ]
 
+// 实时：每个节拍各行价格随机走一步（涨跌额、涨跌幅跟着算），偶尔来一只新的；点列头排序后，价格变了行会换位。
+type WatchMove = { walk: number[]; add: WatchlistRow | null }
+const WATCH_MAX = 8
+const watchStep = (_: WatchMove, rng: Rng, tick: number): WatchMove => ({
+  walk: Array.from({ length: WATCH_MAX }, () => (rng() * 2 - 1) * 0.012),
+  add: chance(rng, 0.2)
+    ? {
+        key: `n${tick}`,
+        code: `NEW${tick}`,
+        name: 'New Listing',
+        last: 30 + Math.round(rng() * 200),
+        change: 0.4,
+        changePct: 1.2,
+      }
+    : null,
+})
+const cents = (n: number) => Math.round(n * 100) / 100
+function applyWatchMove(rows: readonly WatchlistRow[], move: WatchMove): WatchlistRow[] {
+  const next = rows.map((row, i) => {
+    const close = cents(row.last - row.change)
+    const last = cents(row.last * (1 + move.walk[i % move.walk.length]!))
+    const change = cents(last - close)
+    return { ...row, last, change, changePct: cents((change / close) * 100) }
+  })
+  return move.add && next.length < WATCH_MAX ? [...next, move.add] : next
+}
+
 export function WatchlistDemo() {
   const [rows, setRows] = useState(WATCH)
-  const [live, setLive] = useState(false)
-  useEffect(() => {
-    if (!live) return
-    const id = window.setInterval(() => {
-      setRows((prev) =>
-        prev.map((r, i) => {
-          const step = ((Date.now() / 1000 + i) % 2 < 1 ? 1 : -1) * 0.07
-          return { ...r, last: +(r.last + step).toFixed(2), change: +(r.change + step).toFixed(2) }
-        }),
-      )
-    }, 1500)
-    return () => window.clearInterval(id)
-  }, [live])
+  const { state: move, tick } = useLiveTicker<WatchMove>({ walk: [], add: null }, watchStep, { intervalMs: 1800 })
+  // 节拍走了一步就把这一步的随机量落到 rows 上（渲染时由 props 推导的状态，不走 effect）；手动改价的按钮仍然直接改 rows。
+  const [applied, setApplied] = useState(0)
+  if (tick !== applied) {
+    setApplied(tick)
+    setRows((prev) => applyWatchMove(prev, move))
+  }
   return (
     <>
       <Row name="自选列表">
@@ -216,13 +241,12 @@ export function WatchlistDemo() {
           >
             BRV 跌到 1043.90
           </button>
-          <button type="button" onClick={() => setLive((v) => !v)}>
-            {live ? '停止跳动' : '开始跳动'}
-          </button>
+          <LiveToggle labels={{ group: '数据刷新', live: '实时', paused: '暂停' }} />
         </div>
       </Row>
       <p className="gal-note">
-        {SAMPLE}。点列头：升序、降序、回原顺序；价格变动时只有变了的尾数闪涨跌色，约 1 秒落回。
+        {SAMPLE}。点列头：升序、降序、回原顺序；价格变动时只有变了的尾数闪涨跌色，约 1
+        秒落回。开着实时再点列头排序，价格一变行就平滑换位，偶尔来一只新的蓝线高亮。
       </p>
     </>
   )

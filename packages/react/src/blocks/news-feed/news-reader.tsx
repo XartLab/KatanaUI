@@ -2,6 +2,7 @@
 import { CopyIcon, FlagIcon, XIcon, ZapIcon } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { cn } from '../../lib/cn.ts'
+import { useStatusFlash } from '../../lib/live.ts'
 import { MeasuredSkeleton } from '../../katana/measured-skeleton.tsx'
 import { Skeleton } from '../../katana/skeleton.tsx'
 import { SymbolMark } from '../../katana/symbol-mark.tsx'
@@ -27,6 +28,8 @@ export type NewsReaderLabels = {
   copyLink: string
   /** 正文加载时读屏读的话；不给就读 reader。 */
   loading?: string
+  /** 「已更新」：阅读中的这一条被改过（标题、要点或 version 变了）后，标题旁留的标记；不传就不标、也不闪。 */
+  updated?: string
 }
 
 export type NewsReaderProps = {
@@ -40,6 +43,8 @@ export type NewsReaderProps = {
   keyPoints?: readonly string[]
   /** 正文。 */
   children: ReactNode
+  /** 内容版本（修订号或更新时间）：正文改了但标题、要点没变时，靠它让件知道这一条被更新了。 */
+  version?: string | number
   /** 正文在加载：给了（含 false）正文就走量出来的骨架，false 时骨架退场、children 淡入；不传和以前一样。 */
   loading?: boolean
   /** 加载时拿来量骨架的示例正文（段数、有没有图跟真的差不多就行）；不给画几行条。 */
@@ -82,6 +87,7 @@ export function NewsReader({
   symbols = [],
   keyPoints = [],
   children,
+  version,
   loading,
   sample,
   labels,
@@ -91,6 +97,8 @@ export function NewsReader({
   onSymbolPick,
   className,
 }: NewsReaderProps) {
+  // 同一条被改了（标题、要点、version 任一变）就在标题处闪一次警示色并留「已更新」；不传 labels.updated 就不闪（不拿没文字的标记去吓人）。
+  const status = useStatusFlash(labels.updated ? JSON.stringify([title, keyPoints, version ?? null]) : null)
   return (
     <article className={cn('k-news-reader', className)} aria-label={labels.reader} data-slot="news-reader">
       <header className="k-news-reader-head">
@@ -122,7 +130,23 @@ export function NewsReader({
           )}
         </span>
       </header>
-      <h2 className="k-news-reader-title">{title}</h2>
+      <h2
+        key={`title-${status.key}`}
+        // 文章更新是新信息不是警告：用新条目那档蓝色提示（只亮一次），不用琥珀警示。
+        className={cn('k-news-reader-title', status.flash && 'k-live-enter')}
+        data-slot="news-reader-title"
+      >
+        {title}
+        {labels.updated && status.key > 0 && (
+          <span className="k-news-reader-updated" data-slot="news-reader-updated">
+            {labels.updated}
+          </span>
+        )}
+      </h2>
+      {/* 更新播报：polite，只读「已更新」，不重读整篇；一直在，文字出现读屏才读。 */}
+      <span className="k-news-live" role="status" aria-live="polite">
+        {labels.updated && status.key > 0 ? labels.updated : ''}
+      </span>
       <p className="k-news-reader-meta">{meta}</p>
       {symbols.length > 0 && (
         <div className="k-news-reader-symbols">

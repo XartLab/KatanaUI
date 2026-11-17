@@ -11,6 +11,7 @@ import {
   SymbolMark,
   type LedState,
 } from '../../src/index.ts'
+import { LiveLedLcdDemo } from './live-readouts.tsx'
 import { Cell, Row, SAMPLE_MARK_SRC } from './parts.tsx'
 
 // KATANA 自有的读数件的演示（#1860 从 src/ui 搬进包）：状态灯、LCD 读数、点阵、滚动数字、徽标、快捷键方块。数据和文案都是演示用的。
@@ -45,6 +46,7 @@ export function LedDemo() {
           <Led small state="on" label="小灯" />
         </Cell>
       </Row>
+      <LiveLedLcdDemo />
     </>
   )
 }
@@ -70,6 +72,7 @@ export function LcdDemo() {
       <div className="gal-wide">
         <Lcd label="FILL" value="撑满所在的格子" fill />
       </div>
+      <LiveLedLcdDemo />
     </>
   )
 }

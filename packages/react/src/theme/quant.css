@@ -85,6 +85,21 @@ button.k-spark-tile:focus-visible {
   stroke-dasharray: 2 2;
   vector-effect: non-scaling-stroke;
 }
+.k-spark-tile-end,
+.k-spark-tile-halo {
+  /* 新点来了末点随线一起滑到新高度（和线的延伸同一档时长）。 */
+  transition: top var(--dur-reorder) var(--ease-snappy);
+}
+/* 末点的光晕：平时透明，新点来了由共用层 .k-live-flash 闪一次涨跌色。 */
+.k-spark-tile-halo {
+  position: absolute;
+  right: -4px;
+  width: 13px;
+  height: 13px;
+  margin-top: -6.5px;
+  border-radius: var(--radius-pill);
+  pointer-events: none;
+}
 .k-spark-tile-end {
   position: absolute;
   right: 0;

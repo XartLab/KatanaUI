@@ -51,6 +51,10 @@ import {
 } from '../../src/quant/index.ts'
 import { symbolMenu } from '../../src/patterns/row-actions.tsx'
 import { ToggleGroup, ToggleGroupItem } from '../../src/primitives/toggle-group.tsx'
+import { LiveToggle } from '../LiveToggle.tsx'
+import { ladderFrom, ladderLevels, ladderStep } from '../ladder-sim.ts'
+import { useLiveTicker } from '../live-sim.ts'
+import { LiveMetricCardDemo, LivePnlTextDemo, LiveSparkTileDemo } from './live-readouts.tsx'
 import { ActionLog, Cell, Row, SAMPLE_MARK_SRC, demoSymbolActions } from './parts.tsx'
 
 // 量化层（@katana-ui/react/quant，#1862、#1929）的演示。数值都是示例，不是行情，页上也写明。根元素设 data-updown="cn" 时涨跌色互换（红涨绿跌）。
@@ -99,24 +103,28 @@ export function ChangeTextDemo() {
           <ChangeText data-testid="quant-arrow-down" value={-1.1} arrow />
         </Cell>
       </Row>
+      <LivePnlTextDemo />
     </>
   )
 }
 
 export function PnlTextDemo() {
   return (
-    <Row name="盈亏">
-      <Cell name="盈">
-        <PnlText data-testid="quant-pnl-up" value="12.5">
-          +12.5 USDT
-        </PnlText>
-      </Cell>
-      <Cell name="亏">
-        <PnlText data-testid="quant-pnl-down" value="-3">
-          {'−3 USDT'}
-        </PnlText>
-      </Cell>
-    </Row>
+    <>
+      <Row name="盈亏">
+        <Cell name="盈">
+          <PnlText data-testid="quant-pnl-up" value="12.5">
+            +12.5 USDT
+          </PnlText>
+        </Cell>
+        <Cell name="亏">
+          <PnlText data-testid="quant-pnl-down" value="-3">
+            {'−3 USDT'}
+          </PnlText>
+        </Cell>
+      </Row>
+      <LivePnlTextDemo />
+    </>
   )
 }
 
@@ -276,14 +284,20 @@ const LADDER_LABELS: LimitLadderLabels = {
 export function LimitLadderDemo() {
   const [selected, setSelected] = useState<string | null>('300004')
   const [log, setLog] = useState('')
+  // 实时：每 2 秒随机让某只封单量变、炸板、回封，偶尔升板换层、来一只新首板；自动化浏览器里默认暂停，用 window.__liveStep 步进。
+  const { state: sim } = useLiveTicker(() => ladderFrom(LADDER_LEVELS), ladderStep, { intervalMs: 2000 })
   return (
     <div style={{ width: '100%', maxWidth: 640 }}>
+      <div style={{ display: 'flex', gap: 8, alignItems: 'center', paddingBottom: 8 }}>
+        <LiveToggle labels={{ group: '数据刷新', live: '实时', paused: '暂停' }} />
+        <span className="gal-note">封单量变化闪、炸板琥珀警示、回封与升板闪涨色、新首板蓝线高亮</span>
+      </div>
       <div style={{ height: 660 }}>
         <PanelFrame focused aria-label="连板天梯">
           <PanelFrameHeader heading="连板天梯" object="演示数据" />
           <PanelFrameBody>
             <LimitLadder
-              levels={LADDER_LEVELS}
+              levels={ladderLevels(sim)}
               labels={LADDER_LABELS}
               selected={selected}
               onSelect={setSelected}
@@ -623,7 +637,7 @@ function indicators(close: readonly number[]) {
   return [...osc.map(row('osc')), ...avg.map(row('ma'))]
 }
 
-function makeRating(frame: number) {
+function makeRating(frame: number, extra: readonly number[] = []) {
   const rand = seeded(20 + frame * 7)
   const drift = (rand() - 0.45) * 0.6
   const close: number[] = []
@@ -632,7 +646,12 @@ function makeRating(frame: number) {
     price += drift + Math.sin(i / (9 + frame * 3)) * 0.9 + (rand() - 0.5) * 2.4
     close.push(price)
   }
-  const rows = indicators(close)
+  // 实时：在固定的合成行情后面接上节拍器给的新价（每步一个涨跌量），评级窗口保持 260 根，读数与结论就跟着慢慢变。
+  for (const step of extra) {
+    price += step
+    close.push(price)
+  }
+  const rows = indicators(close.slice(-260))
   const tally = (list: readonly RatingRow[]) => ({
     sell: list.filter((r) => r.verdict === 'sell').length,
     neutral: list.filter((r) => r.verdict === 'neutral').length,
@@ -655,7 +674,7 @@ function makeRating(frame: number) {
       rows.filter((r) => r.group === 'ma'),
     ),
   ]
-  return { rows, groups, pivots: makePivots(close) }
+  return { rows, groups, pivots: makePivots(close.slice(-260)) }
 }
 
 // 枢轴点：高低收取最近 20 根，规则照常见定义（Classic、Fibonacci、Camarilla、Woodie、DM）；Woodie 与 DM 只有一部分档位，缺的传 null 画「—」。演示用，不是行情。
@@ -695,25 +714,37 @@ function makePivots(close: readonly number[]): PivotTable {
 
 export function TechnicalRatingDemo() {
   const [frame, setFrame] = useState('1d')
-  const { rows, groups, pivots } = makeRating(RATING_TIMEFRAMES.findIndex((tf) => tf.value === frame))
+  // 实时：每个节拍给合成行情接一根新价（涨跌量随机，幅度比历史大一些，评级才看得出变）；档位升了闪涨色、降了闪跌色。
+  const { state: extra } = useLiveTicker<number[]>([], (steps, rng) => [...steps, (rng() - 0.5) * 6], {
+    intervalMs: 2500,
+  })
+  const { rows, groups, pivots } = makeRating(
+    RATING_TIMEFRAMES.findIndex((tf) => tf.value === frame),
+    extra,
+  )
   return (
-    <div style={{ width: '100%', maxWidth: 760, height: 900 }}>
-      <PanelFrame focused aria-label="技术评级">
-        <PanelFrameHeader heading="Technicals" object="演示数据" />
-        <PanelFrameBody>
-          <TechnicalRating
-            groups={groups}
-            rows={rows}
-            labels={RATING_LABELS}
-            primary="all"
-            pivots={pivots}
-            timeframes={RATING_TIMEFRAMES}
-            timeframe={frame}
-            onTimeframeChange={setFrame}
-            disclaimer="Ratings only summarise indicator readings; they are not trading advice."
-          />
-        </PanelFrameBody>
-      </PanelFrame>
+    <div style={{ width: '100%', maxWidth: 760 }}>
+      <div style={{ paddingBottom: 8 }}>
+        <LiveToggle labels={{ group: '数据刷新', live: '实时', paused: '暂停' }} />
+      </div>
+      <div style={{ height: 900 }}>
+        <PanelFrame focused aria-label="技术评级">
+          <PanelFrameHeader heading="Technicals" object="演示数据" />
+          <PanelFrameBody>
+            <TechnicalRating
+              groups={groups}
+              rows={rows}
+              labels={RATING_LABELS}
+              primary="all"
+              pivots={pivots}
+              timeframes={RATING_TIMEFRAMES}
+              timeframe={frame}
+              onTimeframeChange={setFrame}
+              disclaimer="Ratings only summarise indicator readings; they are not trading advice."
+            />
+          </PanelFrameBody>
+        </PanelFrame>
+      </div>
     </div>
   )
 }
@@ -774,6 +805,7 @@ export function SparkTileDemo() {
           />
         </div>
       </Row>
+      <LiveSparkTileDemo />
     </>
   )
 }
@@ -1655,6 +1687,9 @@ export function MetricCardDemo() {
                   source="未连接"
                 />
               </MetricCardGrid>
+            </section>
+            <section data-testid="metric-live">
+              <LiveMetricCardDemo />
             </section>
           </div>
         </PanelFrameBody>

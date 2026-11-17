@@ -5,9 +5,10 @@
 // ③ 角标 0 时不画，有数时弹出，超过上限显示「99+」；④ 数字位变化时按增减方向滚；⑤ 铃的名字带未读数，数变了读屏要播报。
 // 我们的取舍：包里的三条弹簧都是近临界阻尼（不过冲），所以「摆」做成给 settle 弹簧一个初速度：一个来回，不连续震荡。
 import { AnimatePresence, animate, motion, useMotionValue } from 'motion/react'
-import { useEffect, useRef, useState, type ComponentProps } from 'react'
+import { useEffect, useRef, useState, type ComponentProps, type CSSProperties } from 'react'
 import { cn } from '../lib/cn.ts'
 import { focusRing } from '../lib/focus.ts'
+import { useValueFlash } from '../lib/live.ts'
 import { settle, snappy } from '../lib/motion.ts'
 import { unit } from '../lib/spring.ts'
 
@@ -76,6 +77,8 @@ export function NotificationBell({
   const swing = useMotionValue(0)
   const previous = useRef(total)
   const side = useRef(1)
+  // 未读数变多时按钮底色闪一下（共用层 live.ts）；变少不闪，读掉了不是要人看的事。
+  const flash = useValueFlash(total)
   // 数变多就摆：交替往左右两个方向踢，连着来几条时顺着正在摆的方向再推。
   useEffect(() => {
     const delta = total - previous.current
@@ -101,6 +104,15 @@ export function NotificationBell({
       )}
       {...props}
     >
+      {/* 闪色铺在按钮底下：不动角标的橙色底，色取 --signal-orange（未读不是涨跌，不用 pnl 色）。 */}
+      <span
+        key={`flash-${flash.key}`}
+        aria-hidden="true"
+        className="k-live-flash pointer-events-none absolute inset-0 rounded-[var(--radius-control)]"
+        data-flash={flash.flash === 'up' ? 'up' : undefined}
+        data-slot="notification-bell-flash"
+        style={{ '--k-live-tone': 'var(--signal-orange)' } as CSSProperties}
+      />
       <BellIcon swing={swing} />
       <AnimatePresence initial={false}>
         {total > 0 && (

@@ -3777,7 +3777,16 @@ export const PAGES: readonly DocPage[] = [
           },
           { name: 'keyPoints', type: 'string[]', desc: '要点；空数组不画这一块。' },
           { name: 'children', type: 'ReactNode', desc: '正文。' },
-          { name: 'labels', type: 'NewsReaderLabels', desc: '读屏名与「要点」「关闭」「举报」「复制链接」。' },
+          {
+            name: 'version',
+            type: 'string | number',
+            desc: '内容版本（修订号或更新时间）：正文改了但标题、要点没变时，靠它让件知道这一条被更新了。',
+          },
+          {
+            name: 'labels',
+            type: 'NewsReaderLabels',
+            desc: '读屏名与「要点」「关闭」「举报」「复制链接」；updated（「已更新」）传了，这一条被更新时标题闪一次并留标记，不传就不闪。',
+          },
           {
             name: 'onClose / onReport / onCopyLink / onSymbolPick',
             type: 'function',
@@ -3786,7 +3795,7 @@ export const PAGES: readonly DocPage[] = [
         ],
       },
     ],
-    states: ['品种涨跌：正涨色、负跌色，0 不上色。'],
+    states: ['品种涨跌：正涨色、负跌色，0 不上色。', '被更新：标题闪警示色，旁边留「已更新」。'],
     donts: ['不要在件里取数或翻译：文字由调用方传。'],
     composition: 'NewsReader（article）\n  header：来源 + 操作\n  标题、元信息\n  品种胶囊\n  要点\n  正文',
     keys: [['Tab', '在操作与品种胶囊间移动']],

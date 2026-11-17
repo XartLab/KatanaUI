@@ -53,6 +53,9 @@ import {
   symbolMenu,
   usePersistedState,
 } from '../../src/index.ts'
+import { LiveToggle } from '../LiveToggle.tsx'
+import { chance, pick, randomWalk, useLiveTicker, type Rng } from '../live-sim.ts'
+import { LiveStatusBarDemo } from './live-readouts.tsx'
 import { ActionLog, Row, SAMPLE_MARK_SRC, demoSymbolActions } from './parts.tsx'
 
 // 积木层（@katana-ui/react/blocks，#1869）的演示。表里的数据都是写死的示例数据，不是行情。
@@ -224,6 +227,74 @@ function ColumnsDemo() {
   )
 }
 
+// 实时行情表：价格随机游走，按涨跌幅从高到低排，所以每个节拍行会换位；偶尔新增一行。live 开着数值格才闪，新行蓝线高亮（示例数据，不是行情）。
+type LiveRow = { id: string; code: string; prev: number; price: number; qty: number }
+const LIVE_COLUMNS: readonly GridColumn<LiveRow>[] = [
+  { id: 'code', type: 'text', value: (row) => row.code },
+  { id: 'price', type: 'price', value: (row) => row.price, format: { precision: 2 } },
+  { id: 'change', type: 'change', value: (row) => ((row.price - row.prev) / row.prev) * 100 },
+  { id: 'qty', type: 'quantity', value: (row) => row.qty },
+  { id: 'pnl', type: 'pnl', value: (row) => (row.price - row.prev) * row.qty, format: { suffix: 'CNY' } },
+]
+const LIVE_LAYOUT: readonly GridColumnLayout[] = [
+  { id: 'code', label: '代码', width: 110, visible: true },
+  { id: 'price', label: '最新价', width: 100, visible: true },
+  { id: 'change', label: '涨跌幅', width: 90, visible: true },
+  { id: 'qty', label: '持仓', width: 90, visible: true },
+  { id: 'pnl', label: '浮动盈亏', width: 130, visible: true },
+]
+const LIVE_ROWS: LiveRow[] = [
+  { id: 'l1', code: '600101', prev: 12.4, price: 12.52, qty: 1200 },
+  { id: 'l2', code: '600202', prev: 8.9, price: 8.86, qty: 3000 },
+  { id: 'l3', code: '600303', prev: 21.3, price: 21.58, qty: 500 },
+  { id: 'l4', code: '600404', prev: 33.8, price: 33.49, qty: 800 },
+  { id: 'l5', code: '600505', prev: 5.6, price: 5.63, qty: 6000 },
+  { id: 'l6', code: '600606', prev: 17.2, price: 17.31, qty: 900 },
+]
+const LIVE_MAX = 10
+function liveGridStep(rows: LiveRow[], rng: Rng, tick: number): LiveRow[] {
+  const next = rows.map((row) => {
+    const moved = randomWalk(row.price, rng, 0.006)
+    return {
+      ...row,
+      price: moved === row.price ? Math.round((row.price + (rng() < 0.5 ? -0.01 : 0.01)) * 100) / 100 : moved,
+    }
+  })
+  if (chance(rng, 0.2) && next.length < LIVE_MAX) {
+    const prev = Math.round((4 + rng() * 40) * 100) / 100
+    next.push({ id: `n${tick}`, code: String(600700 + tick), prev, price: prev, qty: Math.round(1 + rng() * 40) * 100 })
+  }
+  return next
+}
+
+function LiveGridDemo() {
+  const [sort, setSort] = useState<SortSpec | null>({ id: 'change', desc: true })
+  const { state: rows } = useLiveTicker(LIVE_ROWS, liveGridStep, { intervalMs: 1600 })
+  return (
+    <>
+      <p className="gal-note">
+        live：数值类的格子（价格、涨跌幅、持仓、盈亏）值变了闪涨跌色，文本列不闪；按涨跌幅排序时行会平滑换位；新增的行蓝线高亮。
+      </p>
+      <div style={{ paddingBottom: 6 }}>
+        <LiveToggle labels={{ group: '数据刷新', live: '实时', paused: '暂停' }} />
+      </div>
+      <div data-testid="grid-live" style={{ display: 'flex', height: 260, width: '100%', maxWidth: 560 }}>
+        <DataGrid
+          columns={LIVE_COLUMNS}
+          layout={LIVE_LAYOUT}
+          rows={rows}
+          rowId={(row) => row.id}
+          label="Live rows"
+          sort={sort}
+          onSortChange={setSort}
+          sortRemovable={false}
+          live
+        />
+      </div>
+    </>
+  )
+}
+
 export function DataGridDemo() {
   const [sort, setSort] = useState<SortSpec | null>(null)
   const [log, setLog] = useState('')
@@ -253,6 +324,7 @@ export function DataGridDemo() {
       </div>
       <ActionLog text={log} />
       <ColumnsDemo />
+      <LiveGridDemo />
       <p className="gal-note">无表头、只读、紧凑行高的变体：</p>
       <div style={{ width: 300 }}>
         <DataGrid
@@ -444,6 +516,7 @@ export function StatusBarDemo() {
         <Button onClick={() => setWidth(420)}>420</Button>
         <Button onClick={() => setWidth(260)}>260</Button>
       </Row>
+      <LiveStatusBarDemo />
     </div>
   )
 }
@@ -664,6 +737,67 @@ const NEWS_VIEWS = [
   { key: 'stocks', label: '只看股票' },
 ]
 
+// 实时模拟（演示）：新闻流隔 2 秒一个节拍、约六成概率来一条（偶尔一次来三条），平均 3 秒左右；时间排在固定的演示时间之后，所以总在最前。
+const LIVE_HEADLINES = [
+  '云端科技发布新一代数据中心方案',
+  '蓝海能源与电网公司签订长期供电协议',
+  '启明半导体披露先进封装产线进度',
+  '远山医药三期临床达到主要终点',
+  '北辰新材获得海外大额订单',
+  '听雨软件推出面向券商的研究助手',
+]
+type LiveNews = { items: NewsItem[] }
+function newsStep(state: LiveNews, rng: Rng, tick: number): LiveNews {
+  // 第一拍必来一条：手动步进（e2e）有确定的结果；之后按概率来。
+  if (tick > 0 && !chance(rng, 0.6)) return state
+  const count = tick > 0 && chance(rng, 0.15) ? 3 : 1
+  const made: NewsItem[] = Array.from({ length: count }, (_, k) => {
+    const n = state.items.length + k
+    return {
+      id: `live-${n}`,
+      time: NEWS_NOW + 100_000 + n * 1000,
+      channel: pick(rng, ['flash', 'top']),
+      source: pick(rng, ['wire', 'desk', 'exch']),
+      title: `${pick(rng, LIVE_HEADLINES)}（演示 ${n + 1}）`,
+      symbols: [{ code: '600001', name: '星河锂业' }],
+    }
+  })
+  return { items: [...made.reverse(), ...state.items] }
+}
+
+/** 阅读窗里的实时模拟：这一条偶尔被改（标题加「更新 n」、多一段更正）。换一条会重新挂载（NewsFeed 给阅读窗加了 key），所以是「这一条」被改。 */
+function LiveReader({ item, close }: { item: NewsItem; close: () => void }) {
+  const { state } = useLiveTicker(
+    { rev: 0 },
+    (s, rng, tick) => (tick === 0 || chance(rng, 0.35) ? { rev: s.rev + 1 } : s),
+    {
+      intervalMs: 4000,
+    },
+  )
+  return (
+    <NewsReader
+      title={state.rev > 0 ? `${item.title}（更新 ${state.rev}）` : item.title}
+      version={state.rev}
+      source="演示通讯社"
+      meta={`${NEWS_LABELS.ago(Math.floor((NEWS_NOW - item.time) / 1000))} · 演示通讯社 · ${NEWS_LABELS.read!(item.readMinutes ?? 2)}`}
+      symbols={(item.symbols ?? []).map((s, i) => ({ ...s, change: i === 0 ? 1.24 : -0.59 }))}
+      keyPoints={item.summary ? [item.summary] : []}
+      labels={{
+        reader: '新闻阅读',
+        keyPoints: '要点',
+        close: '关闭',
+        report: '举报',
+        copyLink: '复制链接',
+        updated: '已更新',
+      }}
+      onClose={close}
+    >
+      <p>以上内容是演示文字，公司、数字与来源都是虚构的。</p>
+      {state.rev > 0 && <p>更正：第 {state.rev} 次修订，数字与表述已更新（演示）。</p>}
+    </NewsReader>
+  )
+}
+
 /** 并排阅读窗（宽度够时左列表右阅读窗，不够时盖在列表上）：已保存视图下拉、收起过滤、阅读分钟数、重叠的品种徽标。 */
 function NewsFeedSplit() {
   const [saved, setSaved] = useState(NEWS_VIEWS)
@@ -697,19 +831,7 @@ function NewsFeedSplit() {
             setSaved([...saved, { key, label: `未命名过滤 ${saved.length - 1}` }])
             setView(key)
           }}
-          reader={(item, { close }) => (
-            <NewsReader
-              title={item.title}
-              source="演示通讯社"
-              meta={`${NEWS_LABELS.ago(Math.floor((NEWS_NOW - item.time) / 1000))} · 演示通讯社 · ${NEWS_LABELS.read!(item.readMinutes ?? 2)}`}
-              symbols={(item.symbols ?? []).map((s, i) => ({ ...s, change: i === 0 ? 1.24 : -0.59 }))}
-              keyPoints={item.summary ? [item.summary] : []}
-              labels={{ reader: '新闻阅读', keyPoints: '要点', close: '关闭', report: '举报', copyLink: '复制链接' }}
-              onClose={close}
-            >
-              <p>以上内容是演示文字，公司、数字与来源都是虚构的。</p>
-            </NewsReader>
-          )}
+          reader={(item, { close }) => <LiveReader item={item} close={close} />}
         />
       </div>
     </div>
@@ -732,6 +854,7 @@ export function NewsFeedDemo() {
   const [items, setItems] = useState(NEWS_ITEMS)
   const [many, setMany] = useState(false)
   const [picked, setPicked] = useState('—')
+  const live = useLiveTicker<LiveNews>({ items: [] }, newsStep, { intervalMs: 2000 }).state.items
   const push = () =>
     setItems((prev) => [
       {
@@ -749,9 +872,12 @@ export function NewsFeedDemo() {
       <p className="gal-note">
         演示数据（标题与来源都是虚构的，时间固定）。点「模拟新消息」看新到条目；点品种胶囊：{picked}。
       </p>
-      <Button data-testid="news-push" onClick={push} disabled={many}>
-        模拟新消息
-      </Button>
+      <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+        <LiveToggle labels={{ group: '数据刷新', live: '实时', paused: '暂停' }} />
+        <Button data-testid="news-push" onClick={push} disabled={many}>
+          模拟新消息
+        </Button>
+      </div>
       <label className="gal-note" style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
         <Switch aria-label="1000 条" checked={many} onCheckedChange={setMany} data-testid="news-many" />
         1000 条（超过 50 条列表自动虚拟滚动，行高按标题折行预先算出）
@@ -762,7 +888,7 @@ export function NewsFeedDemo() {
           <PanelFrameBody>
             <div style={{ height: '100%', padding: 8 }}>
               <NewsFeed
-                items={many ? NEWS_MANY : items}
+                items={[...live, ...(many ? NEWS_MANY : items)]}
                 channels={NEWS_CHANNELS}
                 sources={NEWS_SOURCES}
                 now={NEWS_NOW}
@@ -788,7 +914,7 @@ export function NewsFeedDemo() {
       </div>
       <div style={{ height: 420 }} data-testid="news-cards">
         <NewsFeed
-          items={NEWS_ITEMS}
+          items={[...live, ...NEWS_ITEMS]}
           channels={NEWS_CHANNELS}
           sources={NEWS_SOURCES}
           now={NEWS_NOW}

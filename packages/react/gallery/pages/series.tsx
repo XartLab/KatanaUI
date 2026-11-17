@@ -19,6 +19,7 @@ import {
   type CalendarEvent,
   type HorizonRow,
 } from '../../src/quant/index.ts'
+import { LiveEquityCurveDemo } from './live-readouts.tsx'
 import { Row, SAMPLE_MARK_SRC } from './parts.tsx'
 
 // #1917：时间序列与盈亏的件的演示。下面所有数据都是演示用的合成数据（在这个展示页里按固定种子生成，不是行情、不是账户），每页也写明了；应用里没有样本数据。
@@ -557,6 +558,7 @@ export function EquityCurveDemo() {
         {DEMO_NOTE}90
         笔平仓，间隔不等，点按各自的时刻摆；基准是一条均匀上行的虚线。拖底下的概览条只看一段，对数轴按需切换。
       </p>
+      <LiveEquityCurveDemo />
     </>
   )
 }

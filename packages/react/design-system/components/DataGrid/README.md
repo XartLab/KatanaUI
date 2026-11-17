@@ -57,6 +57,7 @@
 | `stretch` | `boolean` | — | Treat column widths as proportions: when the container is wider than the sum, the extra space is shared by width ratio; by default widths are fixed pixels. |
 | `fit` | `boolean` | — | Height follows the content (a small table in a dialog): no scrollbar up to maxHeight px. |
 | `maxHeight` | `number` | — | Largest height in px when fit is set. |
+| `live` | `boolean` | `false` | Live data mode (default false): numeric cells (number, price, quantity, pnl, change) flash the up or down color when their value changes, rows glide to their new place when the sort order changes, and newly added rows are highlighted briefly. |
 | `classNames` | `Partial<Record<GridSlot, string>>` | `{}` | Extra class names per part. |
 
 ### 列类型 ColumnType
