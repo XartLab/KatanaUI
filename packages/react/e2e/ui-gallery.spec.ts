@@ -5791,3 +5791,37 @@ test('属性表：Button 页的行就是 TS 类型生成的（名、类型、默
     .filter({ hasText: 'Accessible name of the trigger.' })
   await expect(label.locator('abbr')).toHaveCount(0)
 })
+
+test('A2UI 目录：智能体的消息渲染成 KatanaUI 的件，点「接受」后宿主收到 Action', async ({ page }) => {
+  await page.goto('/#/a2ui-catalog')
+  await page.locator('[data-gallery="a2ui-catalog"]').waitFor()
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('A2UI 目录')
+  // 左边是消息 JSON（只读代码块），里面写着目录 id 与三种消息。
+  const json = page.getByTestId('a2ui-json')
+  await expect(json).toContainText('createSurface')
+  await expect(json).toContainText('updateComponents')
+  await expect(json).toContainText('updateDataModel')
+  await expect(json).toContainText('https://xartlab.github.io/KatanaUI/a2ui/katana/v1.json')
+  // 右边渲染出建议卡、两个读数、盈亏与两个按钮；绑定的文字来自数据模型。
+  const surface = page.getByTestId('a2ui-surface')
+  await expect(surface.getByText('Buy ACME 600001, 3% of the book')).toBeVisible()
+  await expect(surface.locator('[data-slot="metric-card"], .k-metric').first()).toBeVisible()
+  await expect(surface.getByText('VIX', { exact: true })).toBeVisible()
+  await expect(surface.getByText('Basis', { exact: true })).toBeVisible()
+  await expect(surface.locator('[data-slot="pnl-text"]')).toContainText('+1,240.50 USDT')
+  await expect(surface.locator('[data-slot="pnl-text"]')).toHaveAttribute('data-tone', 'up')
+  await expect(surface.locator('[data-slot="change-text"]').first()).toContainText('+2.31%')
+  const host = page.getByTestId('a2ui-host')
+  await expect(host).toContainText('Host received nothing yet')
+  await surface.getByRole('button', { name: 'Reject' }).click()
+  await expect(host).toContainText('Host received suggestion.reject')
+  await expect(host).toContainText('{"suggestionId":"sg-1"}')
+  // 点「接受」：宿主收到 suggestion.accept，context 里的 symbol 是从数据模型读出来的。
+  await surface.getByRole('button', { name: 'Accept' }).click()
+  await expect(host).toContainText('Host received suggestion.accept')
+  await expect(host).toContainText('"symbol":"600001"')
+  // 已登记组件表读目录 JSON：十五个 Katana 件一行一个，另有一行排版件。
+  const table = page.getByTestId('a2ui-components')
+  await expect(table.locator('tbody tr')).toHaveCount(16)
+  await expect(table.locator('tbody tr', { hasText: 'KatanaDecisionQueue' })).toContainText('onAccept')
+})

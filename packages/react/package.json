@@ -55,7 +55,13 @@
       "types": "./lib/tokens-json.d.ts",
       "source": "./src/tokens-json.ts",
       "default": "./lib/tokens-json.js"
-    }
+    },
+    "./a2ui": {
+      "types": "./lib/a2ui/index.d.ts",
+      "source": "./src/a2ui/index.ts",
+      "default": "./lib/a2ui/index.js"
+    },
+    "./a2ui.css": "./src/a2ui/a2ui.css"
   },
   "scripts": {
     "dev": "pnpm --filter @katana-ui/tokens run tokens:sync && vp dev",
@@ -70,7 +76,8 @@
     "test:e2e": "playwright test",
     "test:happo": "E2E_HAPPO=1 happo -- playwright test",
     "build": "tsc -p tsconfig.build.json",
-    "prepare": "pnpm run build"
+    "prepare": "pnpm run build",
+    "a2ui:catalog": "node scripts/a2ui-catalog.mjs"
   },
   "dependencies": {
     "@chenglou/pretext": "1.0.0",
@@ -92,6 +99,8 @@
     "tailwindcss": "4.3.5"
   },
   "devDependencies": {
+    "@a2ui/react": "0.15.0",
+    "@a2ui/web_core": "0.15.0",
     "@axe-core/playwright": "4.13.0",
     "@chinese-fonts/dyh": "3.0.0",
     "@chinese-fonts/maple-mono-cn": "2.0.0",
@@ -119,6 +128,7 @@
     "@types/node": "22.20.5",
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
+    "ajv": "8.20.0",
     "happo": "7.2.3",
     "react": "19.3.1",
     "react-dom": "19.3.1",
@@ -126,12 +136,27 @@
     "typescript": "7.0.2",
     "typescript-classic": "npm:typescript@6.0.3",
     "vite": "npm:@voidzero-dev/vite-plus-core@1.4.0",
-    "vite-plus": "1.4.0"
+    "vite-plus": "1.4.0",
+    "zod": "3.25.76"
   },
   "peerDependencies": {
+    "@a2ui/react": "0.15.0",
+    "@a2ui/web_core": "0.15.0",
     "@katana-ui/tokens": "0.2.0",
     "react": "^19.3.1",
-    "react-dom": "^19.3.1"
+    "react-dom": "^19.3.1",
+    "zod": "3.25.76"
+  },
+  "peerDependenciesMeta": {
+    "@a2ui/react": {
+      "optional": true
+    },
+    "@a2ui/web_core": {
+      "optional": true
+    },
+    "zod": {
+      "optional": true
+    }
   },
   "engines": {
     "node": ">=22.13"

@@ -28,6 +28,9 @@ export default defineConfig({
       'dist/**',
       'lib/**',
       'r/**',
+      // A2UI 的 JSON Schema 是原样拷贝（Apache-2.0，不许改动格式）；目录 JSON 由 pnpm a2ui:catalog 生成，格式归生成器管。
+      'src/a2ui/__fixtures__/**',
+      'public/**',
     ],
   },
   // 代码检查（Oxlint，带类型信息）：有一条提示就不过；用不上的豁免注释也报。

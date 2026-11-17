@@ -67,3 +67,9 @@ This package is licensed under the MIT License (see LICENSE).
    它再依赖 d3-array 2.12.1、d3-shape 1.3.7、d3-path 1.0.9，核对过，都是 BSD-3-Clause。BSD-3-Clause 的条件：再分发时带着版权声明与许可条文、
    不用作者名字为衍生品背书；我们不分发它的代码，条文随它自己的包走。类型取自 DefinitelyTyped 的 `@types/d3-sankey`（MIT，只是开发依赖）。
    d3-sankey is used at runtime (installed from npm, not redistributed here); its BSD-3-Clause notice ships with its own package.
+
+8. A2UI v1.0 协议的 JSON Schema（https://github.com/a2ui-project/a2ui ，Apache-2.0，Copyright 2024 Google LLC；2026-11-17 读，提交 1cbef31）
+   `src/a2ui/__fixtures__/catalog_definition.json` 与 `common_types.json` 是它 `specification/v1_0/json/` 里同名文件的原样拷贝，只给单测校验目录 JSON 用；
+   许可全文在 `src/a2ui/__fixtures__/LICENSE-APACHE-2.0`，随文件一起分发。
+   `@katana-ui/react/a2ui` 入口依赖它的 `@a2ui/react`、`@a2ui/web_core` 0.15.0（Apache-2.0，可选 peer 依赖，代码不随本包分发，由使用者的包管理器安装）。
+   The A2UI v1.0 JSON Schemas under src/a2ui/__fixtures__/ are verbatim copies from the A2UI project (Apache-2.0); the licence text ships next to them.

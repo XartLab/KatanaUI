@@ -45,7 +45,7 @@ function List({ title, items }: { title: string; items: readonly string[] }) {
 }
 
 export function PatternPage({ pattern }: { pattern: Pattern }) {
-  const { Demo } = pattern
+  const { Demo, Reference } = pattern
   return (
     <article className="gal-doc" data-page={pattern.id}>
       <header className="gal-doc-head">
@@ -84,6 +84,7 @@ export function PatternPage({ pattern }: { pattern: Pattern }) {
           </tbody>
         </table>
       </section>
+      {Reference ? <Reference /> : null}
       <List title="怎么拼" items={pattern.rules} />
     </article>
   )

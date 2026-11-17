@@ -7526,7 +7526,7 @@ button.k-sysmon-link-body:focus-visible {
 }
 
 .k-measured {
-  --skullet-base: var(--bg-200);
+  --skullet-base: var(--line-200);
   --skullet-animation: none;
   --skullet-radius: var(--radius-control);
 }
