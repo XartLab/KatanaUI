@@ -21,7 +21,7 @@ import { useEffect, useId, useMemo, useRef, useState, type KeyboardEvent, type M
 import { cn } from '../../lib/cn.ts'
 import { useEnterMarks, useFlipList } from '../../lib/live.ts'
 import { ContextMenu, ContextMenuContent, ContextMenuTrigger } from '../../primitives/context-menu.tsx'
-import { RowActions } from '../../patterns/row-actions.tsx'
+import { RowActions } from '../../quotes/row-actions.tsx'
 import { defaultAlign, resolveCell, sortComparator } from './columns.ts'
 import { HEAD_HEIGHTS, ROW_HEIGHTS, type DataGridProps } from './data-grid-props.ts'
 import { CellBody, FLASH_TYPES, FlashCell, keepActionsInView } from './grid-cells.tsx'

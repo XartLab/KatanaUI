@@ -5,7 +5,7 @@
  */
 import { useMenuParts } from '../../primitives/menu-any.tsx'
 import { MenuItemHint, MenuItemLabel } from '../../primitives/menu-parts.tsx'
-import type { RowAction } from '../../patterns/row-actions.tsx'
+import type { RowAction } from '../../quotes/row-actions.tsx'
 import type { GridColumnLayout } from './data-grid-props.ts'
 import type { DataGridHost, GridMenuEntry, ResolvedGridLabels } from './host.tsx'
 import { moveColumn, setColumnFixed, setColumnVisible } from './layout-model.ts'

@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
 import { useState } from 'react'
-import { Watchlist, type WatchlistRow } from '../../src/quant'
+import { Watchlist, type WatchlistRow } from '../../src/quotes'
 
 const ROWS: readonly WatchlistRow[] = [
-  { key: 'a', code: 'AAA', name: 'Alpha Devices', last: 212.4, change: 1.77, changePct: 0.84, flagged: true },
-  { key: 'b', code: 'BRV', name: 'Bravo Semi', last: 1044.1, change: -24.7, changePct: -2.31 },
-  { key: 'c', code: 'CHL', name: 'Charlie Software', last: 418.77, change: 4.64, changePct: 1.12 },
+  { id: 'a', symbol: 'AAA', name: 'Alpha Devices', last: 212.4, change: 1.77, changePct: 0.84, flagged: true },
+  { id: 'b', symbol: 'BRV', name: 'Bravo Semi', last: 1044.1, change: -24.7, changePct: -2.31 },
+  { id: 'c', symbol: 'CHL', name: 'Charlie Software', last: 418.77, change: 4.64, changePct: 1.12 },
 ]
 
 export function WatchlistUsage() {
@@ -18,9 +18,9 @@ export function WatchlistUsage() {
           columns: { symbol: 'Symbol', last: 'Last', chg: 'Chg', chgPct: 'Chg%' },
           list: 'Watchlist',
           empty: 'No symbols',
-          flag: (row) => `Flag ${row.code}`,
+          flag: (row) => `Flag ${row.symbol}`,
         }}
-        onFlag={(row, flagged) => setRows((prev) => prev.map((r) => (r.key === row.key ? { ...r, flagged } : r)))}
+        onFlag={(row, flagged) => setRows((prev) => prev.map((r) => (r.id === row.id ? { ...r, flagged } : r)))}
       />
     </div>
   )

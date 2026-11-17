@@ -73,7 +73,7 @@ export const KatanaTechnicalRatingApi = {
         .max(12)
         .describe('The periods the user can switch between. Omit for no switch.')
         .optional(),
-      timeframe: z.string().describe('The current period value. Defaults to the first one.').optional(),
+      value: z.string().describe('The current period value. Defaults to the first one.').optional(),
       disclaimer: CommonSchemas.DynamicString.describe('A disclaimer line under the table.').optional(),
       labels: z
         .object({
@@ -95,7 +95,7 @@ export const KatanaTechnicalRatingApi = {
         })
         .strict()
         .describe('All visible and screen-reader text, in the language of the user.'),
-      onTimeframeChange: actionSchema(
+      onValueChange: actionSchema(
         'Dispatched when the user picks a period. metadata.extensions.katanaTimeframe carries {value}.',
       ).optional(),
       weight: weightSchema,
@@ -120,10 +120,10 @@ export const KatanaTechnicalRating = createComponentImplementation(KatanaTechnic
         primary={props.primary}
         pivots={pivots}
         timeframes={frames}
-        timeframe={frames ? (picked ?? props.timeframe ?? frames[0]?.value) : undefined}
-        onTimeframeChange={(value) => {
+        value={frames ? (picked ?? props.value ?? frames[0]?.value) : undefined}
+        onValueChange={(value) => {
           setPicked(value)
-          void props.onTimeframeChange?.(withExtension('katanaTimeframe', { value }))
+          void props.onValueChange?.(withExtension('katanaTimeframe', { value }))
         }}
         disclaimer={props.disclaimer}
         labels={{

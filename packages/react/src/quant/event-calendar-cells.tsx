@@ -4,8 +4,8 @@ import { MoonIcon, SunIcon } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { cn } from '../lib/cn.ts'
 import { formatPercentChange, formatVolume } from '../lib/chart/format/index.ts'
-import { Sparkline } from '../katana/sparkline.tsx'
-import { SymbolMark } from '../katana/symbol-mark.tsx'
+import { Sparkline } from '../quotes/sparkline.tsx'
+import { SymbolMark } from '../quotes/symbol-mark.tsx'
 import {
   minutesUntil,
   surprisePercent,
@@ -119,7 +119,7 @@ export type CellContext = {
 const company = (item: { code?: string; name: string; logo?: string; regionName: string }, lead?: ReactNode) => (
   <span role="cell" className="k-ecal-company" title={item.regionName}>
     {lead}
-    <SymbolMark code={item.code ?? item.name} name={item.name} src={item.logo} size={18} />
+    <SymbolMark symbol={item.code ?? item.name} name={item.name} src={item.logo} size="sm" />
     {item.code && <span className="k-ecal-code">{item.code}</span>}
     <span className={item.code ? 'k-ecal-sub' : 'k-ecal-code'}>{item.name}</span>
   </span>
@@ -153,7 +153,7 @@ export function rowCells(item: CalendarItem, repeat: boolean, ctx: CellContext):
         <span role="cell" className="k-ecal-region" title={event.regionName}>
           {repeat ? null : (
             <>
-              <SymbolMark code={event.region} name={event.regionName} src={event.flag} size={16} />
+              <SymbolMark symbol={event.region} name={event.regionName} src={event.flag} size={16} />
               <span>{event.regionName}</span>
             </>
           )}

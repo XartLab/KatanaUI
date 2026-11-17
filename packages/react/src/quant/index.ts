@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: MIT
 // @katana-ui/react/quant 的出口：量化领域的展示件与格式化函数（#1862）。只依赖包里下层（lib、primitives、patterns），不依赖行情、图表包与应用；
 // 品种、价格精度、小数位、单位由调用方传最小的普通类型。纯函数另有 `@katana-ui/react/quant/format` 出口（不带 React，画布与 Worker 里用）。
-export { ChangeText } from './change-text.tsx'
+// ChangeText、PnlText、RatingText、TechnicalRating、MetricCard、SparkTile、业绩条、同业卡、关键数据、自选列表 2026-11-18 搬到 src/quotes/（出口 @katana-ui/react/quotes），这里照旧再导出。
+export { ChangeText } from '../quotes/change-text.tsx'
 export { DecimalField, type DecimalFieldLabels, type DecimalFieldProps } from './decimal-field.tsx'
-export { PnlText } from './pnl-text.tsx'
+export { PnlText } from '../quotes/pnl-text.tsx'
 export {
   EventCalendar,
   type CalendarItem,
@@ -41,7 +42,7 @@ export {
   type MarketHeatmapLabels,
   type MarketHeatmapProps,
 } from './market-heatmap.tsx'
-export { RatingText, type RatingLevel, type RatingTextProps } from './rating-text.tsx'
+export { RatingText, type RatingLevel, type RatingTextProps } from '../quotes/rating-text.tsx'
 export {
   TechnicalRating,
   type PivotRow,
@@ -52,7 +53,7 @@ export {
   type TechnicalRatingLabels,
   type TechnicalRatingProps,
   type TechnicalRatingTimeframe,
-} from './technical-rating.tsx'
+} from '../quotes/technical-rating.tsx'
 export * from '../lib/chart/format/index.ts'
 
 // 时间序列与盈亏的件（#1917）。功能参照 Arc（uiarc.dev，2026-11-14 读），只取功能，实现原创。
@@ -89,7 +90,7 @@ export {
 } from './quantile-layers.tsx'
 export { isMonotonic, lastFinite, layerLevel, quantileRange, sortLayers, type QuantileLayer } from './quantile-model.ts'
 // 第二批（#1929）：KPI 瓦片、仪表、订单流仪表行、状态带、必要条件块。
-export { SparkTile, type SparkTileProps, type SparkTileState } from './spark-tile.tsx'
+export { SparkTile, type SparkTileProps, type SparkTileState } from '../quotes/spark-tile.tsx'
 // Meter、FlowGauges、RegimeStrip、ConsensusBlock 不是量化专有，G6 挪到 blocks（体检 §2）；这里转出留一个版本，新代码从 blocks 引。
 /** @deprecated Moved to `@katana-ui/react/blocks`; kept here for one version. */
 export { Meter, type MeterDisplay, type MeterProps, type MeterTone } from '../blocks/meter/meter.tsx'
@@ -133,7 +134,7 @@ export {
   type MetricRange,
   type MetricStage,
   type MetricTrendTone,
-} from './metric-card.tsx'
+} from '../quotes/metric-card.tsx'
 export { ParamScatter, type ParamScatterProps } from './param-scatter.tsx'
 export {
   bestIndex,
@@ -186,8 +187,26 @@ export {
   formatPerformance,
   type PerformanceItem,
   type PerformanceStripProps,
-} from './performance-strip.tsx'
-export { PeerCards, type PeerCardsLabels, type PeerCardsProps, type PeerItem } from './peer-cards.tsx'
-export { KeyStats, type KeyStatItem, type KeyStatsProps } from './key-stats.tsx'
-export { Watchlist, type WatchlistLabels, type WatchlistProps, type WatchlistRow } from './watchlist.tsx'
-export { changedTail, nextSort, sortRows, type WatchlistSort, type WatchlistSortKey } from './watchlist-model.ts'
+} from '../quotes/performance-strip.tsx'
+export {
+  PeerCards,
+  type LegacyPeerItem,
+  type PeerCardsLabels,
+  type PeerCardsProps,
+  type PeerItem,
+} from '../quotes/peer-cards.tsx'
+export { KeyStats, type KeyStatItem, type KeyStatsProps } from '../quotes/key-stats.tsx'
+export {
+  Watchlist,
+  type LegacyWatchlistRow,
+  type WatchlistLabels,
+  type WatchlistProps,
+  type WatchlistRow,
+} from '../quotes/watchlist.tsx'
+export {
+  changedTail,
+  nextSort,
+  sortRows,
+  type WatchlistSort,
+  type WatchlistSortKey,
+} from '../quotes/watchlist-model.ts'

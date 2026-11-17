@@ -213,8 +213,16 @@ export {
   type RowActionsProps,
   type RowContextMenuProps,
   type SymbolMenuInput,
-} from './patterns/row-actions.tsx'
-export { QuoteTable, type QuoteGroup, type QuoteRow, type QuoteTableProps } from './patterns/quote-table.tsx'
+} from './quotes/row-actions.tsx'
+export {
+  QuoteTable,
+  type LegacyQuoteRow,
+  type QuoteGroup,
+  type QuoteTableLabels,
+  type QuoteTableProps,
+  type QuoteTableRow,
+} from './quotes/quote-table.tsx'
+export { plainPrice, rowTone, type FormatPrice, type QuoteRow } from './quotes/quote-row.ts'
 export {
   Combobox,
   ComboboxContent,
@@ -240,7 +248,7 @@ export {
   type ShortcutRecorderLabels,
   type ShortcutRecorderProps,
 } from './patterns/shortcut-recorder.tsx'
-export { SymbolMark, symbolMarkLetters, type SymbolMarkProps } from './katana/symbol-mark.tsx'
+export { SymbolMark, symbolMarkLetters, type SymbolMarkProps } from './quotes/symbol-mark.tsx'
 export { BadgeGroup, type BadgeItem } from './katana/badge.tsx'
 export { RollingText, rollSlots, rollStrip } from './katana/rolling-text.tsx'
 export { Scrubber, scrubSnap, scrubValueAt, type ScrubberProps } from './katana/scrubber.tsx'
@@ -329,7 +337,7 @@ export { Splitter, type SplitterProps } from './primitives/splitter.tsx'
 export { clampSplitRatio, DEFAULT_SNAP_POINTS, snapSplitRatio, splitKeyRatio } from './primitives/splitter-model.ts'
 
 // 报价与行情类的件（#1884）：迷你图、进度条、矩形树图（后三件从应用的分析视图提来）；行内价格标签、报价卡与一排、区间条、评级仪表是新做的。
-// 功能参照 TradingView 小组件，只取「给用户看什么、怎么交互」，不嵌、不抄（用户 2026-11-14 定：我们做自己的）。分组页签行情表在 patterns/。
+// 功能参照 TradingView 小组件，只取「给用户看什么、怎么交互」，不嵌、不抄（用户 2026-11-14 定：我们做自己的）。2026-11-18 起这些件都在 src/quotes/（另有出口 @katana-ui/react/quotes）。
 export {
   Sparkline,
   sparkPoints,
@@ -337,10 +345,10 @@ export {
   type SparkAxis,
   type SparklineProps,
   type SparklineVariant,
-} from './katana/sparkline.tsx'
-export { MiniChart, type MiniChartProps } from './katana/mini-chart.tsx'
-export { GaugeBar, type GaugeBarClasses, type GaugeBarProps } from './katana/gauge-bar.tsx'
-export { Treemap, type TreemapClasses, type TreemapProps } from './katana/treemap.tsx'
+} from './quotes/sparkline.tsx'
+export { MiniChart, type MiniChartProps } from './quotes/mini-chart.tsx'
+export { GaugeBar, type GaugeBarClasses, type GaugeBarProps } from './quotes/gauge-bar.tsx'
+export { Treemap, type TreemapClasses, type TreemapProps } from './quotes/treemap.tsx'
 export {
   colorStep,
   layoutTreemap,
@@ -350,9 +358,15 @@ export {
   type TreemapCell,
   type TreemapItem,
   type TreemapLayoutOptions,
-} from './katana/treemap-model.ts'
-export { PriceTag, type PriceTagProps } from './katana/price-tag.tsx'
-export { QuoteCard, QuoteStrip, type QuoteCardProps, type QuoteStripProps } from './katana/quote-card.tsx'
+} from './quotes/treemap-model.ts'
+export { PriceTag, type PriceTagProps } from './quotes/price-tag.tsx'
+export {
+  QuoteCard,
+  QuoteStrip,
+  type QuoteCardLabels,
+  type QuoteCardProps,
+  type QuoteStripProps,
+} from './quotes/quote-card.tsx'
 export {
   CompareBar,
   RangeBar,
@@ -360,10 +374,10 @@ export {
   type CompareBarProps,
   type CompareBarSide,
   type RangeBarProps,
-} from './katana/range-bar.tsx'
-export { RatingGauge, type RatingGaugeProps } from './katana/rating-gauge.tsx'
-export { ratingAngle, ratingZone } from './katana/rating-gauge-model.ts'
-export { quoteTone, type QuoteTone } from './katana/quote-tone.ts'
+} from './quotes/range-bar.tsx'
+export { RatingGauge, type RatingGaugeProps } from './quotes/rating-gauge.tsx'
+export { ratingAngle, ratingZone } from './quotes/rating-gauge-model.ts'
+export { quoteTone, type QuoteTone } from './quotes/quote-tone.ts'
 
 // 分布与关系类的件（#1918）：功能参照 Arc（uiarc.dev，2026-11-14 读），实现原创。
 export { UptimeBars, type UptimeBarsProps } from './blocks/uptime-bars/uptime-bars.tsx'

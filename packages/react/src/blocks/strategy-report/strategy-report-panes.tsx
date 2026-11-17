@@ -4,7 +4,7 @@
  * StrategyReport 的零件与各页签（体检 §7 从 strategy-report.tsx 拆出）。
  */
 import { useMemo, useState } from 'react'
-import { ToneText } from '../../quant/tone-text.tsx'
+import { ToneText } from '../../quotes/tone-text.tsx'
 import { DataGrid, type GridColumnLayout } from '../data-grid/data-grid.tsx'
 import type { GridColumn } from '../data-grid/columns.ts'
 import type { SortSpec } from '../data-grid/model.ts'

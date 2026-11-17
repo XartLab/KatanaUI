@@ -6,7 +6,7 @@
 import { motion } from 'motion/react'
 import { useState } from 'react'
 import { cn } from '../lib/cn.ts'
-import { SymbolMark } from './symbol-mark.tsx'
+import { SymbolMark } from '../quotes/symbol-mark.tsx'
 
 // 弹簧参数来自 SmoothUI animated-avatar-group：bounce 0.1、0.25 秒；每枚晚 0.03 秒依次展开。
 const SPRING = { type: 'spring' as const, bounce: 0.1, duration: 0.25 }
@@ -79,7 +79,7 @@ export function AnimatedAvatarGroup({
           className="relative inline-flex rounded-full border-2 border-surface-0"
           style={{ zIndex: visible.length - index }}
         >
-          <SymbolMark code={item.code} name={item.name} src={item.src} size={size} />
+          <SymbolMark symbol={item.code} name={item.name} src={item.src} size={size} />
         </motion.span>
       ))}
       {hidden > 0 && (

@@ -214,17 +214,17 @@ export function SymbolMarkDemo() {
   return (
     <>
       <Row name="字母">
-        <SymbolMark code="AAPL" name="Apple" />
-        <SymbolMark code="600519" name="贵州茅台" />
-        <SymbolMark code="00700" name="腾讯控股" />
-        <SymbolMark code="BTCUSDT" name="Bitcoin" />
+        <SymbolMark symbol="AAPL" name="Apple" />
+        <SymbolMark symbol="600519" name="贵州茅台" />
+        <SymbolMark symbol="00700" name="腾讯控股" />
+        <SymbolMark symbol="BTCUSDT" name="Bitcoin" />
       </Row>
       <Row name="有图">
-        <SymbolMark code="BTC" name="Bitcoin" src={SAMPLE_MARK_SRC} />
-        <SymbolMark code="BTC" name="Bitcoin" src={SAMPLE_MARK_SRC} size={28} />
+        <SymbolMark symbol="BTC" name="Bitcoin" src={SAMPLE_MARK_SRC} />
+        <SymbolMark symbol="BTC" name="Bitcoin" src={SAMPLE_MARK_SRC} size="md" />
       </Row>
       <Row name="加载失败">
-        <SymbolMark code="ETH" name="Ethereum" src="data:image/png;base64,broken" />
+        <SymbolMark symbol="ETH" name="Ethereum" src="data:image/png;base64,broken" />
       </Row>
       <p className="gal-note">示意图标：自绘的 SVG，演示有图的样子；不是任何真实币种或公司的标志。</p>
     </>

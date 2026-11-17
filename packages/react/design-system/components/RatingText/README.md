@@ -19,7 +19,7 @@
 
 ```tsx
 // SPDX-License-Identifier: MIT
-import { RatingText } from '@katana-ui/react/quant'
+import { RatingText } from '@katana-ui/react/quotes'
 
 export function RatingTextUsage() {
   return (
@@ -40,6 +40,8 @@ export function RatingTextUsage() {
 ## Don't
 
 - 不要自己拼箭头字符着色；用这个件，涨跌色才会跟 data-updown。
+- 不要只写档名不给图标：方向与强弱靠箭头层数，不只靠颜色。
+- 不要拿它写涨跌幅：那是 ChangeText。
 
 ## Composition
 

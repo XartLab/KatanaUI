@@ -14,7 +14,8 @@ import {
   RowActions,
   Sparkline,
   Treemap,
-  type QuoteTone,
+  type QuoteRow,
+  type QuoteTableRow,
   type TreemapItem,
 } from '../../src/index'
 import { LiveToggle } from '../LiveToggle'
@@ -31,58 +32,14 @@ const rise = [10, 10.4, 10.2, 10.9, 11.3, 11.1, 11.8]
 const fall = [12, 11.6, 11.8, 11.1, 10.7, 10.9, 10.2]
 const level = [10, 10.2, 9.9, 10.1, 10, 10.2, 10]
 
-type Sample = {
-  id: string
-  name: string
-  symbol: string
-  price: string
-  change: string
-  percent: string
-  tone: QuoteTone
-  spark: readonly number[]
-}
+// 卡就是统一行情行（QuoteRow：id / symbol / name / last / change / changePct，数）加迷你图；文字由组件的 formatPrice 写（这里用默认的两位小数）。
+type Sample = QuoteRow & { name: string; spark: readonly number[] }
 
 const cards: readonly Sample[] = [
-  {
-    id: 'a',
-    name: '示例甲',
-    symbol: 'AAA',
-    price: '11.80',
-    change: '+1.80',
-    percent: '+18.00%',
-    tone: 'up',
-    spark: rise,
-  },
-  {
-    id: 'b',
-    name: '示例乙',
-    symbol: 'BBB',
-    price: '10.20',
-    change: '-1.80',
-    percent: '-15.00%',
-    tone: 'down',
-    spark: fall,
-  },
-  {
-    id: 'c',
-    name: '示例丙',
-    symbol: 'CCC',
-    price: '10.00',
-    change: '0.00',
-    percent: '0.00%',
-    tone: 'flat',
-    spark: level,
-  },
-  {
-    id: 'd',
-    name: '示例丁',
-    symbol: 'DDD',
-    price: '23.45',
-    change: '+0.45',
-    percent: '+1.96%',
-    tone: 'up',
-    spark: rise,
-  },
+  { id: 'a', name: '示例甲', symbol: 'AAA', last: 11.8, change: 1.8, changePct: 18, spark: rise },
+  { id: 'b', name: '示例乙', symbol: 'BBB', last: 10.2, change: -1.8, changePct: -15, spark: fall },
+  { id: 'c', name: '示例丙', symbol: 'CCC', last: 10, change: 0, changePct: 0, spark: level },
+  { id: 'd', name: '示例丁', symbol: 'DDD', last: 23.45, change: 0.45, changePct: 1.96, spark: rise },
 ]
 
 export function SparklineDemo() {
@@ -222,14 +179,14 @@ export function PriceTagDemo() {
   return (
     <>
       <Row name="涨 · 跌 · 平">
-        <PriceTag name="示例甲" price="11.80" change="+18.00%" tone="up" />
-        <PriceTag name="示例乙" price="10.20" change="-15.00%" tone="down" />
-        <PriceTag name="示例丙" price="10.00" change="0.00%" tone="flat" />
+        <PriceTag name="示例甲" last={11.8} changePct={18} />
+        <PriceTag name="示例乙" last={10.2} changePct={-15} />
+        <PriceTag name="示例丙" last={10} changePct={0} />
       </Row>
       <Row name="夹在一句话里">
         <p data-gallery-inline style={{ margin: 0 }}>
           今日示例：
-          <PriceTag price="11.80" change="+18.00%" tone="up" />
+          <PriceTag last={11.8} changePct={18} />
           ，比昨日高。
         </p>
       </Row>
@@ -246,14 +203,8 @@ export function QuoteCardDemo() {
       <Row name="单张">
         <div data-gallery-card style={{ width: 220 }}>
           <QuoteCard
-            name="示例甲"
-            symbol="AAA"
-            price="11.80"
-            change="+1.80"
-            percent="+18.00%"
-            tone="up"
-            spark={rise}
-            sparkLabel="示例走势"
+            {...cards[0]!}
+            labels={{ spark: '示例走势' }}
             footer={<RangeBar low={10} high={12} value={11.8} label="示例当日区间" lowLabel="低" highLabel="高" />}
           />
         </div>
@@ -261,10 +212,9 @@ export function QuoteCardDemo() {
           <QuoteCard
             name="示例乙"
             symbol="BBB"
-            price="10.20"
-            change="-1.80"
-            percent="-15.00%"
-            tone="down"
+            last={10.2}
+            change={-1.8}
+            changePct={-15}
             onSelect={() => setPicked('示例乙')}
           />
         </div>
@@ -272,7 +222,7 @@ export function QuoteCardDemo() {
       </Row>
       <Row name="一排">
         <div className="gal-wide" data-gallery-strip style={{ maxWidth: 420 }}>
-          <QuoteStrip label="示例报价条" items={cards.map((card) => ({ ...card, sparkLabel: '示例走势' }))} />
+          <QuoteStrip label="示例报价条" items={cards.map((card) => ({ ...card, labels: { spark: '示例走势' } }))} />
         </div>
       </Row>
       <p className="gal-note">{SAMPLE}。给了 onSelect 整张卡是一个按钮；一排放不下就横向滚动。</p>
@@ -363,16 +313,15 @@ function quoteStep(state: typeof QUOTE_START, rng: Rng, tick: number): typeof QU
   }
   return { first, second }
 }
-function quoteRow(q: LiveQuote) {
-  const pct = ((q.price - q.prev) / q.prev) * 100
-  const tone: QuoteTone = Math.abs(pct) < 0.005 ? 'flat' : pct > 0 ? 'up' : 'down'
+function quoteRow(q: LiveQuote): QuoteTableRow {
+  const change = Math.round((q.price - q.prev) * 100) / 100
   return {
     id: q.id,
     name: q.name,
     symbol: q.symbol,
-    price: q.price.toFixed(2),
-    percent: `${tone === 'up' ? '+' : ''}${pct.toFixed(2)}%`,
-    tone,
+    last: q.price,
+    change,
+    changePct: (change / q.prev) * 100,
     spark: q.spark,
     sparkLabel: q.spark ? '示例走势' : undefined,
   }
@@ -388,10 +337,12 @@ export function QuoteTableDemo() {
       </div>
       <div className="gal-wide" data-gallery-qtable style={{ maxWidth: 520 }}>
         <QuoteTable
-          label="示例分组"
-          columns={{ name: '名称', trend: '走势', price: '最新价', change: '涨跌幅' }}
-          empty="这一组没有品种"
-          onRow={(row) => setOpened(row.name)}
+          labels={{
+            list: '示例分组',
+            columns: { name: '名称', trend: '走势', price: '最新价', change: '涨跌幅' },
+            empty: '这一组没有品种',
+          }}
+          onSelect={(row) => setOpened(row.name ?? row.symbol ?? row.id)}
           groups={[
             { id: 'g1', label: '示例一组', rows: state.first.map(quoteRow) },
             { id: 'g2', label: '示例二组', rows: state.second.map(quoteRow) },

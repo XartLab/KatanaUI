@@ -8,22 +8,22 @@ import {
   type GridColumnLayout,
 } from '../../src/blocks'
 import { Sparkline } from '../../src/index'
-import { SparkTile } from '../../src/quant'
+import { MetricCard } from '../../src/quotes'
 import type { Pattern } from './types'
 
 // 演示数据：全是编的，不是行情或账户。
 const NAV = [100, 101.2, 100.6, 102.4, 103.1, 102.2, 104.0, 105.3, 104.8, 106.1]
 const TILES = [
-  { label: 'NET ASSET', value: '2.42M', series: NAV, delta: 1.31, note: '今日' },
+  { label: 'NET ASSET', value: '2.42M', series: NAV, changePct: 1.31, note: '今日' },
   {
     label: 'DRAWDOWN',
     value: '-3.1%',
     series: [4, 8, 6, 12, 10, 16, 12, 18, 14],
-    delta: undefined,
+    changePct: undefined,
     note: '峰值 -6.8%',
   },
-  { label: 'TURNOVER', value: '0.62', series: [10, 12, 9, 14, 11, 13, 10, 12, 11], delta: -0.8, note: '近 9 期' },
-  { label: 'EXPOSURE', value: '131%', series: [16, 14, 15, 10, 11, 8, 9, 5, 4], delta: 2.1, note: '上限 150%' },
+  { label: 'TURNOVER', value: '0.62', series: [10, 12, 9, 14, 11, 13, 10, 12, 11], changePct: -0.8, note: '近 9 期' },
+  { label: 'EXPOSURE', value: '131%', series: [16, 14, 15, 10, 11, 8, 9, 5, 4], changePct: 2.1, note: '上限 150%' },
 ]
 
 type Row = { id: string; symbol: string; pnl: number; qty: number }
@@ -49,7 +49,7 @@ function Demo() {
       <p className="gal-note">演示数据。</p>
       <div style={{ display: 'grid', gap: 12, gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))' }}>
         {TILES.map((t) => (
-          <SparkTile key={t.label} {...t} sparkLabel={`${t.label} 走势`} />
+          <MetricCard variant="tile" key={t.label} {...t} labels={{ spark: `${t.label} 走势` }} />
         ))}
       </div>
       <div style={{ display: 'grid', gap: 12, gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))' }}>

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// 序列探索积木：一排 KPI 瓦片（SparkTile），点一张展开成下面的图面板；面板顶上是指标页签 + 区间切换，图是该指标的序列。
+// 序列探索积木：一排 KPI 瓦片（MetricCard variant="tile"），点一张展开成下面的图面板；面板顶上是指标页签 + 区间切换，图是该指标的序列。
 // 交互参照 Arc 的 Metric explorer（uiarc.dev/components/blocks/metric-explorer，2026-11-14 读，只学交互不抄代码）与 Revenue explorer；样子与内容照设计稿
 // IntradayPnL、PnLLedger、EquityCurve 三张卡（design/katana-console/project/components）与 dataviz.md：线 2px 不填面、不用涨跌色，柱用 series / ink（费税 ink-100），
 // 限额线 signal-red 虚线，休市竖带 bg-100（时间轴不压缩），末点强调色，LCD tooltip，右上三件（表格视图、导出、全屏），顶行对账（期初 → 期末、差额、灯 + 词），页脚来源行。
@@ -19,7 +19,7 @@ import { EndMarker } from '../../lib/chart/chart-kit/end-marker.tsx'
 import { LcdTooltip } from '../../lib/chart/chart-kit/lcd-tooltip.tsx'
 import { PlotGrid, PlotYAxis } from '../../lib/chart/chart-kit/plot-axes.tsx'
 import { linePath, makePlot, pct, PLOT_W } from '../../lib/chart/series-geometry.ts'
-import { SparkTile } from '../../quant/spark-tile.tsx'
+import { MetricCard } from '../../quotes/metric-card.tsx'
 import {
   changeRatio,
   chartExtent,
@@ -181,20 +181,21 @@ export function SeriesExplorer({
           const itemDef = series.find((entry) => entry.key === item.series)
           const spark = shown.map((point) => pointValue(point, item.series)).filter((v): v is number => v !== null)
           return (
-            <SparkTile
+            <MetricCard
+              variant="tile"
               key={item.key}
               label={item.label}
               value={current === null ? null : item.format(current)}
               series={spark}
               threshold={item.limit}
               trendTone="neutral"
-              delta={ratio === null || itemDef?.cost ? undefined : ratio * 100}
+              changePct={ratio === null || itemDef?.cost ? undefined : ratio * 100}
               note={ratio === null || !itemDef?.cost ? undefined : formatChange(ratio)}
-              sparkLabel={labels.spark(item.label)}
+              labels={{ spark: labels.spark(item.label) }}
               aria-expanded={metric === item.key}
               data-expanded={metric === item.key ? 'true' : 'false'}
               data-key={item.key}
-              onClick={() => setMetric(metric === item.key ? null : item.key)}
+              onSelect={() => setMetric(metric === item.key ? null : item.key)}
             />
           )
         })}

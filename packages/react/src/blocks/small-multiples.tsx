@@ -5,7 +5,7 @@
 import { useState } from 'react'
 import { cn } from '../lib/cn.ts'
 import { useScrubber } from '../lib/use-scrubber.ts'
-import { quoteTone } from '../katana/quote-tone.ts'
+import { quoteTone } from '../quotes/quote-tone.ts'
 import { EndMarker } from '../lib/chart/chart-kit/end-marker.tsx'
 import { LcdTooltip } from '../lib/chart/chart-kit/lcd-tooltip.tsx'
 import { extent, linePath, makePlot, pct, PLOT_W } from '../lib/chart/series-geometry.ts'

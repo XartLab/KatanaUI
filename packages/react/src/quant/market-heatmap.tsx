@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 import { useCallback, useId, useMemo, useRef, useState, type KeyboardEvent, type PointerEvent } from 'react'
 import { cn } from '../lib/cn.ts'
-import { RowContextMenu } from '../patterns/row-actions.tsx'
-import { layoutTreemap, type TreemapBlock } from '../katana/treemap-model.ts'
+import { RowContextMenu } from '../quotes/row-actions.tsx'
+import { layoutTreemap, type TreemapBlock } from '../quotes/treemap-model.ts'
 import { formatPrice } from '../lib/chart/format/index.ts'
 import { formatMetric, neighbour, niceUnit, stepOf, type Direction } from './market-heatmap-model.ts'
 import { HeatmapCard, type Hover } from './market-heatmap-card.tsx'

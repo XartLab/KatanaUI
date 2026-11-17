@@ -7,7 +7,11 @@ import { cn } from '../lib/cn.ts'
 import { ReadoutFlash } from '../lib/live-readout.tsx'
 
 export type KeyStatItem = {
-  key: string
+  /** Stable item id. */
+  id?: string
+  /** Deprecated: use id. @deprecated Use id. */
+  key?: string
+  /** Small grey label above the value. */
   label: string
   /** 已经格式化好的数值；没有写「—」或不给（画「—」）。 */
   value?: ReactNode
@@ -18,14 +22,23 @@ export type KeyStatItem = {
 }
 
 export type KeyStatsProps = {
+  /** Section title (also the accessible name). */
   title: string
+  /** The stats, in reading order. */
   items: readonly KeyStatItem[]
-  /** 给了：标题与每一项的标签带「›」、可点。 */
+  /** When given the title gets a chevron and is clickable. */
   onTitle?: () => void
+  /** When given each label gets a chevron and is clickable. */
+  onSelect?: (item: KeyStatItem) => void
+  /** Deprecated: use onSelect. @deprecated Use onSelect. */
   onItem?: (item: KeyStatItem) => void
+  /** Number of grid columns, 3 by default. */
   columns?: number
+  /** Extra class name on the root. */
   className?: string
 }
+
+const idOf = (item: KeyStatItem) => item.id ?? item.key ?? item.label
 
 const Chevron = () => (
   <span className="k-keystats-chev" aria-hidden="true">
@@ -33,7 +46,16 @@ const Chevron = () => (
   </span>
 )
 
-export function KeyStats({ title, items, onTitle, onItem, columns = 3, className }: KeyStatsProps) {
+export function KeyStats({
+  title,
+  items,
+  onTitle,
+  onSelect,
+  onItem: legacyOnItem,
+  columns = 3,
+  className,
+}: KeyStatsProps) {
+  const onItem = onSelect ?? legacyOnItem
   return (
     <section className={cn('k-keystats', className)} data-slot="key-stats" aria-label={title}>
       <h3 className="k-keystats-title">
@@ -48,7 +70,7 @@ export function KeyStats({ title, items, onTitle, onItem, columns = 3, className
       </h3>
       <dl className="k-keystats-grid" style={{ gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` }}>
         {items.map((item) => (
-          <div key={item.key} className="k-keystats-item" data-slot="key-stat" data-key={item.key}>
+          <div key={idOf(item)} className="k-keystats-item" data-slot="key-stat" data-key={idOf(item)}>
             <dt>
               {onItem ? (
                 <button type="button" onClick={() => onItem(item)}>

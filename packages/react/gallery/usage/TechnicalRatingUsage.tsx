@@ -7,7 +7,7 @@ import {
   type RatingRow,
   type RatingVerdict,
   type TechnicalRatingLabels,
-} from '../../src/quant'
+} from '../../src/quotes'
 
 function seeded(seed: number) {
   let state = seed >>> 0
@@ -165,8 +165,8 @@ export function TechnicalRatingUsage() {
             labels={RATING_LABELS}
             primary="all"
             timeframes={RATING_TIMEFRAMES}
-            timeframe={frame}
-            onTimeframeChange={setFrame}
+            value={frame}
+            onValueChange={setFrame}
             disclaimer="评级只是指标读数的汇总，不是买卖建议。"
           />
         </PanelFrameBody>

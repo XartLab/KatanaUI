@@ -10,7 +10,7 @@ import type {
   EconomicImportance,
   IpoEvent,
 } from './event-calendar-model.ts'
-import type { RowAction } from '../patterns/row-actions.tsx'
+import type { RowAction } from '../quotes/row-actions.tsx'
 
 export type CalendarItem = EconomicEvent | EarningsEvent | DividendEvent | IpoEvent
 

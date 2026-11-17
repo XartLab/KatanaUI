@@ -2,7 +2,7 @@
 import { type CSSProperties, type ReactNode } from 'react'
 import { cn } from '../lib/cn.ts'
 import { useValueFlash, type FlashDirection } from '../lib/live.ts'
-import { GAUGE_CX, GAUGE_CY, ratingAngle, ratingZone, RATING_BOUNDS, zoneArc } from '../katana/rating-gauge-model.ts'
+import { GAUGE_CX, GAUGE_CY, ratingAngle, ratingZone, RATING_BOUNDS, zoneArc } from './rating-gauge-model.ts'
 import { ToggleGroup, ToggleGroupItem } from '../primitives/toggle-group.tsx'
 
 // 技术评级仪表（#20）：照 TradingView 的 Technicals 仪表（博客「Meet the new technicals tab」：振荡指标、均线、由全部评级合成的总评三组，
@@ -76,8 +76,15 @@ export type TechnicalRatingProps = {
   primary?: string
   /** 枢轴点表（整宽，放在明细表下面）；不给就不画。读数由调用方算。 */
   pivots?: PivotTable
+  /** Timeframe choices of the switch above the gauges; no switch when omitted. */
   timeframes?: readonly TechnicalRatingTimeframe[]
+  /** Selected timeframe value (controlled); the first one when omitted. */
+  value?: string
+  /** Called with the timeframe value when the switch changes. */
+  onValueChange?: (value: string) => void
+  /** Deprecated: use value. @deprecated Use value. */
   timeframe?: string
+  /** Deprecated: use onValueChange. @deprecated Use onValueChange. */
   onTimeframeChange?: (value: string) => void
   /** 免责一句，由调用方写；件只留位置。 */
   disclaimer?: ReactNode
@@ -200,7 +207,9 @@ export function TechnicalRating({
   primary,
   pivots,
   timeframes,
-  timeframe,
+  value,
+  onValueChange,
+  timeframe: legacyTimeframe,
   onTimeframeChange,
   disclaimer,
   className,
@@ -227,8 +236,8 @@ export function TechnicalRating({
           <ToggleGroup
             size="sm"
             aria-label={labels.timeframe}
-            value={timeframe ?? timeframes[0]!.value}
-            onValueChange={(next) => next && onTimeframeChange?.(next)}
+            value={value ?? legacyTimeframe ?? timeframes[0]!.value}
+            onValueChange={(next) => next && (onValueChange ?? onTimeframeChange)?.(next)}
           >
             {timeframes.map((tf) => (
               <ToggleGroupItem key={tf.value} value={tf.value}>

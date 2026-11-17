@@ -3,7 +3,7 @@
 // 从 market-heatmap.tsx 拆出（G5），行为不变。
 import { cn } from '../lib/cn.ts'
 import { formatVolume } from '../lib/chart/format/index.ts'
-import { SymbolMark } from '../katana/symbol-mark.tsx'
+import { SymbolMark } from '../quotes/symbol-mark.tsx'
 import { formatMetric } from './market-heatmap-model.ts'
 import type { PlotBox } from './market-heatmap-hooks.ts'
 import type { HeatmapColorBy, HeatmapEntry, HeatmapSizeBy, MarketHeatmapLabels } from './market-heatmap-types.ts'
@@ -58,7 +58,7 @@ export function HeatmapCard({
       style={{ left: cardLeft, top: cardTop, width: CARD_W }}
     >
       <div className="k-mheat-card-title">
-        <SymbolMark code={hovered.symbol} name={hovered.name} src={hovered.logo} size={18} />
+        <SymbolMark symbol={hovered.symbol} name={hovered.name} src={hovered.logo} size="sm" />
         <span className="k-mheat-card-code">{hovered.symbol}</span>
         <span className="k-mheat-card-name">{hovered.name}</span>
       </div>

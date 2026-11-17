@@ -2,7 +2,7 @@
 // EventCalendar 的国家选择：导航行上的触发按钮加模态框（搜索、「全世界」与「前 N 大经济体」两个预设、按地区分组两列复选、取消 / 应用）。
 // 从 event-calendar.tsx 拆出（G5），行为不变：打开时草稿从已选的国家起，取消不改，应用才交给 onValueChange。
 import { useState } from 'react'
-import { SymbolMark } from '../katana/symbol-mark.tsx'
+import { SymbolMark } from '../quotes/symbol-mark.tsx'
 import { Button } from '../primitives/button.tsx'
 import { Checkbox } from '../primitives/checkbox.tsx'
 import {
@@ -93,7 +93,7 @@ export function RegionPicker({ value, onValueChange, options, topRegions, labels
                   {list.map((r) => (
                     <label key={r.region} className="k-ecal-region-item">
                       <Checkbox checked={draft.includes(r.region)} onCheckedChange={() => toggleDraft(r.region)} />
-                      <SymbolMark code={r.region} name={r.regionName} src={r.flag} size={16} />
+                      <SymbolMark symbol={r.region} name={r.regionName} src={r.flag} size={16} />
                       <span>{r.regionName}</span>
                     </label>
                   ))}

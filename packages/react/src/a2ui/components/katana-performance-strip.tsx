@@ -4,12 +4,12 @@ import { createComponentImplementation } from '@a2ui/react'
 import type { ComponentApi } from '@a2ui/web_core'
 import { CommonSchemas } from '@a2ui/web_core/v1_0'
 import { z } from 'zod'
-import { PerformanceStrip } from '../../quant/index.ts'
+import { PerformanceStrip } from '../../quotes/index.ts'
 import { Cell, actionSchema, parseList, weightSchema } from '../support.tsx'
 
 const itemSchema = z
   .object({
-    key: z.string().min(1).describe('Stable id of the period (for example "1m").'),
+    id: z.string().min(1).describe('Stable id of the period (for example "1m").'),
     label: z.string().describe('The period name shown on the top row (for example "1 month").'),
     change: z
       .number()
@@ -31,7 +31,7 @@ export const KatanaPerformanceStripApi = {
         'Accessible name of the strip (for example "Performance by period").',
       ),
       value: CommonSchemas.DynamicString.describe(
-        'The key of the selected period. Bind it to the data model with {"@path": "/range"} so the choice is written back.',
+        'The id of the selected period. Bind it to the data model with {"@path": "/range"} so the choice is written back.',
       ).optional(),
       digits: z
         .number()
@@ -42,7 +42,7 @@ export const KatanaPerformanceStripApi = {
         .describe('Number of decimal places for the changes.')
         .optional(),
       onSelect: actionSchema(
-        'Dispatched when the user presses a period. metadata.extensions.katanaPeriod.key carries the period key.',
+        'Dispatched when the user presses a period. metadata.extensions.katanaPeriod.id carries the period id.',
       ).optional(),
       weight: weightSchema,
     })
@@ -58,9 +58,9 @@ export const KatanaPerformanceStrip = createComponentImplementation(KatanaPerfor
         label={props.label ?? ''}
         value={props.value || undefined}
         digits={props.digits}
-        onValueChange={(key) => {
-          props.setValue?.(key)
-          void onSelect?.({ metadata: { extensions: { katanaPeriod: { key } } } })
+        onValueChange={(id) => {
+          props.setValue?.(id)
+          void onSelect?.({ metadata: { extensions: { katanaPeriod: { id } } } })
         }}
       />
     </Cell>

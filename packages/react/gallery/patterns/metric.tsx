@@ -7,8 +7,8 @@ const VIX = Array.from({ length: 60 }, (_, i) => Number((17 + Math.sin(i / 5) * 
 const BASIS = Array.from({ length: 60 }, (_, i) => Number((52 + Math.cos(i / 7) * 6 - i * 0.05).toFixed(1)))
 
 const RANGES = [
-  { key: '1m', label: '1 月', n: 21 },
-  { key: '3m', label: '3 月', n: 60 },
+  { id: '1m', label: '1 月', n: 21 },
+  { id: '3m', label: '3 月', n: 60 },
 ] as const
 
 const since = (values: readonly number[], back: number) => {
@@ -27,18 +27,17 @@ function Demo() {
         {cards.map((c) => (
           <MetricCard
             key={c.title}
-            title={c.title}
+            label={c.title}
             value={c.values[c.values.length - 1]!.toFixed(c.digits)}
             unit={c.unit}
-            ranges={RANGES.map((r) => ({ key: r.key, label: r.label, values: c.values.slice(-r.n) }))}
+            ranges={RANGES.map((r) => ({ id: r.id, label: r.label, values: c.values.slice(-r.n) }))}
             changes={[
-              { key: 'd', label: '较前日', value: since(c.values, 1) },
-              { key: 'w', label: '较前周', value: since(c.values, 5) },
-              { key: 'm', label: '较前月', value: since(c.values, 21) },
+              { id: 'd', label: '较前日', value: since(c.values, 1) },
+              { id: 'w', label: '较前周', value: since(c.values, 5) },
+              { id: 'm', label: '较前月', value: since(c.values, 21) },
             ]}
             trendTone={c.tone}
-            rangeLabel={`${c.title}走势区间`}
-            sparkLabel={`${c.title}走势`}
+            labels={{ range: `${c.title}走势区间`, spark: `${c.title}走势` }}
             source="演示数据，不是行情"
             updatedAt="更新 2026-11-17 15:00"
           />

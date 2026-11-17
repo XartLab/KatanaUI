@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vite-plus/test'
-import { CompareBar, RangeBar } from '../katana/range-bar.tsx'
+import { CompareBar, RangeBar } from './range-bar.tsx'
 import { KeyStats } from './key-stats.tsx'
 import { formatPerformance, PerformanceStrip } from './performance-strip.tsx'
 import { changedTail, nextSort, sortRows } from './watchlist-model.ts'

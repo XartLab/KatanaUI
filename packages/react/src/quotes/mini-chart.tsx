@@ -6,9 +6,9 @@
 // 文字（读屏名、角标、单位）全由调用方传；颜色与字体走 token。
 import type { MouseEvent } from 'react'
 import { cn } from '../lib/cn.ts'
-import { ChangeText } from '../quant/change-text.tsx'
+import { ChangeText } from './change-text.tsx'
 import { quoteTone } from './quote-tone.ts'
-import { RollingText } from './rolling-text.tsx'
+import { RollingText } from '../katana/rolling-text.tsx'
 import { Sparkline, type SparklineProps } from './sparkline.tsx'
 import { SymbolMark } from './symbol-mark.tsx'
 
@@ -127,7 +127,7 @@ export function MiniChart({
   const body = (
     <>
       <span className="k-mini-head">
-        <SymbolMark code={symbol} name={name} src={logoSrc} size={20} />
+        <SymbolMark symbol={symbol} name={name} src={logoSrc} size={20} />
         <span className="k-mini-symbol">{symbol}</span>
         {badge && <span className="k-mini-badge">{badge}</span>}
       </span>

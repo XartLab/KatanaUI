@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 // MarketHeatmap 的公开类型：格子数据、大小与着色指标、文案、属性。从 market-heatmap.tsx 拆出（G5），名字与形状不变。
-import type { RowAction } from '../patterns/row-actions.tsx'
+import type { RowAction } from '../quotes/row-actions.tsx'
 
 type HeatmapItemFields = {
   name: string

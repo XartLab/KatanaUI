@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
-import { QuoteCard } from '../../src/index'
+import { QuoteCard, type QuoteRow } from '../../src/quotes'
+
+const ROW: QuoteRow = { id: 'a', symbol: 'AAA', name: 'Alpha', last: 11.8, change: 1.8, changePct: 18 }
 
 export function QuoteCardUsage() {
-  return <QuoteCard name="Alpha" symbol="AAA" price="11.80" change="+1.80" percent="+18.00%" tone="up" />
+  return <QuoteCard {...ROW} />
 }

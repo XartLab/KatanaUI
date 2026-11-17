@@ -10,11 +10,15 @@
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `rows` | `WatchlistRow[]` | — | { key, code, name?, last, change, changePct, flagged?, logoSrc? }。 |
+| `rows` | `WatchlistRow[]` | — | 统一行情行 QuoteRow { id, symbol, name?, last, change, changePct }（都是数）加 { flagged?, logoSrc? }；旧的 key / code 照认一个版本。 |
 | `labels` | `WatchlistLabels` | — | { columns: { symbol, last, chg, chgPct }, list, empty, flag(row) }。 |
 | `formatPrice` | `(n: number) => string` | `toFixed(2)` | 最新价与涨跌额怎么写；闪色按它写出来的文字比尾数。 |
 | `sort / onSortChange` | `WatchlistSort \| null` | — | 排序（受控）；不给就自己记。 |
-| `onRow / onFlag` | `callbacks` | — | 点行；点旗标（行 + 新状态）。 |
+| `onSelect / onFlag` | `callbacks` | — | 点行（旧名 onRow）；点旗标（行 + 新状态）。 |
+
+### QuoteRow · plainPrice · rowTone
+
+统一的行情行（2026-11-18）：Watchlist、QuoteTable、PeerCards、QuoteCard 都用 { id, symbol, name, last, change, changePct }，值是数，文字由 formatPrice 写；plainPrice 是不给 formatPrice 时的两位小数，rowTone(row) 由 change（再看 changePct）定涨跌。
 
 ### changedTail(prev, next)
 
@@ -29,12 +33,12 @@
 ```tsx
 // SPDX-License-Identifier: MIT
 import { useState } from 'react'
-import { Watchlist, type WatchlistRow } from '@katana-ui/react/quant'
+import { Watchlist, type WatchlistRow } from '@katana-ui/react/quotes'
 
 const ROWS: readonly WatchlistRow[] = [
-  { key: 'a', code: 'AAA', name: 'Alpha Devices', last: 212.4, change: 1.77, changePct: 0.84, flagged: true },
-  { key: 'b', code: 'BRV', name: 'Bravo Semi', last: 1044.1, change: -24.7, changePct: -2.31 },
-  { key: 'c', code: 'CHL', name: 'Charlie Software', last: 418.77, change: 4.64, changePct: 1.12 },
+  { id: 'a', symbol: 'AAA', name: 'Alpha Devices', last: 212.4, change: 1.77, changePct: 0.84, flagged: true },
+  { id: 'b', symbol: 'BRV', name: 'Bravo Semi', last: 1044.1, change: -24.7, changePct: -2.31 },
+  { id: 'c', symbol: 'CHL', name: 'Charlie Software', last: 418.77, change: 4.64, changePct: 1.12 },
 ]
 
 export function WatchlistUsage() {
@@ -47,9 +51,9 @@ export function WatchlistUsage() {
           columns: { symbol: 'Symbol', last: 'Last', chg: 'Chg', chgPct: 'Chg%' },
           list: 'Watchlist',
           empty: 'No symbols',
-          flag: (row) => `Flag ${row.code}`,
+          flag: (row) => `Flag ${row.symbol}`,
         }}
-        onFlag={(row, flagged) => setRows((prev) => prev.map((r) => (r.key === row.key ? { ...r, flagged } : r)))}
+        onFlag={(row, flagged) => setRows((prev) => prev.map((r) => (r.id === row.id ? { ...r, flagged } : r)))}
       />
     </div>
   )
@@ -66,6 +70,7 @@ export function WatchlistUsage() {
 
 - 不要给整个价格闪色：只有变了的尾数。
 - 不要放真实公司标志。
+- 不要传写好的价格字符串：行是数，位数交给 formatPrice。
 
 ## Composition
 

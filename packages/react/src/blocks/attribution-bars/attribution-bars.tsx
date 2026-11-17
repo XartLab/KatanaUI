@@ -10,7 +10,7 @@ import { useState, type KeyboardEvent } from 'react'
 import { cn } from '../../lib/cn.ts'
 import { pad } from '../../lib/num.ts'
 import { ToggleGroup, ToggleGroupItem } from '../../primitives/toggle-group.tsx'
-import { SymbolMark } from '../../katana/symbol-mark.tsx'
+import { SymbolMark } from '../../quotes/symbol-mark.tsx'
 import { LcdTooltip } from '../../lib/chart/chart-kit/lcd-tooltip.tsx'
 import { Toolbar, ToolbarGroup, ToolButton } from '../toolbar/toolbar.tsx'
 import {
@@ -250,7 +250,7 @@ export function AttributionBars({
                         {!row.icon && hasIcon && <span className="k-attr-mark-slot" aria-hidden="true" />}
                         {row.icon && (
                           <SymbolMark
-                            code={row.label.split(/\s+/)[0] ?? row.label}
+                            symbol={row.label.split(/\s+/)[0] ?? row.label}
                             name={row.label.split(/\s+/).slice(1).join(' ') || undefined}
                             src={row.icon.src}
                           />

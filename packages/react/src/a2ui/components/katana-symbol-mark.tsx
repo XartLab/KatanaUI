@@ -11,13 +11,17 @@ export const KatanaSymbolMarkApi = {
   name: 'KatanaSymbolMark',
   schema: z
     .object({
-      code: CommonSchemas.DynamicString.describe(
+      symbol: CommonSchemas.DynamicString.describe(
         'The instrument code, for example "BTCUSDT" or "600519". The letters on the mark come from it.',
       ),
       name: CommonSchemas.DynamicString.describe(
         'The instrument name. It is the accessible name, and gives the letter when the code has no Latin letters.',
       ).optional(),
-      size: z.number().int().min(12).max(64).default(18).describe('Diameter in px.').optional(),
+      size: z
+        .union([z.enum(['sm', 'md']), z.number().int().min(12).max(64)])
+        .default('sm')
+        .describe("'sm' is 18px (a list row), 'md' is 28px (a card); a number is a custom diameter in px.")
+        .optional(),
       weight: weightSchema,
     })
     .strict(),
@@ -25,6 +29,6 @@ export const KatanaSymbolMarkApi = {
 
 export const KatanaSymbolMark = createComponentImplementation(KatanaSymbolMarkApi, ({ props }) => (
   <Cell weight={props.weight}>
-    <SymbolMark code={props.code ?? ''} name={props.name} size={props.size} />
+    <SymbolMark symbol={props.symbol ?? ''} name={props.name} size={props.size} />
   </Cell>
 ))

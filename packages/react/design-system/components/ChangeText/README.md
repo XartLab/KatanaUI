@@ -21,7 +21,7 @@
 
 ```tsx
 // SPDX-License-Identifier: MIT
-import { ChangeText } from '@katana-ui/react/quant'
+import { ChangeText } from '@katana-ui/react/quotes'
 
 export function ChangeTextUsage() {
   return (

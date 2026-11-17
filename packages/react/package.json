@@ -36,6 +36,11 @@
       "source": "./src/lib/motion.ts",
       "default": "./lib/lib/motion.js"
     },
+    "./quotes": {
+      "types": "./lib/quotes/index.d.ts",
+      "source": "./src/quotes/index.ts",
+      "default": "./lib/quotes/index.js"
+    },
     "./quant": {
       "types": "./lib/quant/index.d.ts",
       "source": "./src/quant/index.ts",

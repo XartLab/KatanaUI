@@ -6,8 +6,8 @@
 import type { CSSProperties, ReactNode } from 'react'
 import { cn } from '../../lib/cn.ts'
 import { useValueFlash } from '../../lib/live.ts'
-import { SymbolMark } from '../../katana/symbol-mark.tsx'
-import { ToneText } from '../../quant/tone-text.tsx'
+import { SymbolMark } from '../../quotes/symbol-mark.tsx'
+import { ToneText } from '../../quotes/tone-text.tsx'
 import type { ResolvedCell } from './columns.ts'
 
 /** 数值类的列才闪：文本、时间、买卖、品种变了不闪（闪色只表达涨跌）。 */
@@ -44,7 +44,7 @@ export function CellBody({ resolved }: { resolved: ResolvedCell }) {
       <>
         {resolved.symbol.icon && (
           <SymbolMark
-            code={resolved.symbol.code}
+            symbol={resolved.symbol.code}
             name={resolved.symbol.name}
             src={resolved.symbol.icon.src}
             size={16}

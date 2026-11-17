@@ -417,7 +417,7 @@ function AssetsPage() {
       <h2>品种徽标</h2>
       <div className="gal-fd-icons">
         <span>
-          <SymbolMark code="AAPL" name="Apple" size={28} />
+          <SymbolMark symbol="AAPL" name="Apple" size="md" />
           <small>字母圆标</small>
         </span>
       </div>

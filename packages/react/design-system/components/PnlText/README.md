@@ -23,7 +23,7 @@
 
 ```tsx
 // SPDX-License-Identifier: MIT
-import { PnlText } from '@katana-ui/react/quant'
+import { PnlText } from '@katana-ui/react/quotes'
 
 export function PnlTextUsage() {
   return (

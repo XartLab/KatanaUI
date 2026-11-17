@@ -5,8 +5,8 @@
  */
 import type { CSSProperties } from 'react'
 import { cn } from '../../lib/cn.ts'
-import { SymbolMark } from '../../katana/symbol-mark.tsx'
-import { RowActions, type RowAction } from '../../patterns/row-actions.tsx'
+import { SymbolMark } from '../../quotes/symbol-mark.tsx'
+import { RowActions, type RowAction } from '../../quotes/row-actions.tsx'
 import type { NewsItem, NewsSymbol } from './news-feed-model.ts'
 
 /** 一条要的文案（NewsFeedLabels 的子集）。 */
@@ -88,7 +88,7 @@ export function NewsRow({
               title={symbolStyle === 'stack' ? `${symbol.code} ${symbol.name ?? ''}`.trim() : undefined}
               onClick={() => onSymbolSelect?.(symbol, item)}
             >
-              <SymbolMark code={symbol.code} name={symbol.name} size={symbolStyle === 'stack' ? 18 : 14} />
+              <SymbolMark symbol={symbol.code} name={symbol.name} size={symbolStyle === 'stack' ? 18 : 14} />
               {symbolStyle === 'chips' ? <span>{symbol.code}</span> : null}
             </button>
           ))}

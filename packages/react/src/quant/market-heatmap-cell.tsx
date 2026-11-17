@@ -5,8 +5,8 @@ import type { CSSProperties, FocusEvent, KeyboardEvent } from 'react'
 import { cn } from '../lib/cn.ts'
 import { formatVolume } from '../lib/chart/format/index.ts'
 import { fontFor, measureText } from '../lib/text-measure.ts'
-import { SymbolMark } from '../katana/symbol-mark.tsx'
-import type { TreemapCell } from '../katana/treemap-model.ts'
+import { SymbolMark } from '../quotes/symbol-mark.tsx'
+import type { TreemapCell } from '../quotes/treemap-model.ts'
 import { formatMetric } from './market-heatmap-model.ts'
 import type {
   HeatmapColorBy,
@@ -124,7 +124,7 @@ export function HeatmapCell({
       {showCode ? (
         <>
           {logo ? (
-            <SymbolMark className="k-mheat-logo" code={item.symbol} name={item.name} src={item.logo} size={logo.size} />
+            <SymbolMark className="k-mheat-logo" symbol={item.symbol} name={item.name} src={item.logo} size={logo.size} />
           ) : null}
           {titleMode === 'none' ? null : (
             <span className="k-mheat-code">{titleMode === 'name' ? item.name : item.symbol}</span>
@@ -133,7 +133,7 @@ export function HeatmapCell({
           {showValue && valueMode !== 'none' ? <span className="k-mheat-value">{cellValue}</span> : null}
         </>
       ) : logoOnly ? (
-        <SymbolMark code={item.symbol} name={item.name} src={item.logo} size={SMALL_LOGO} />
+        <SymbolMark symbol={item.symbol} name={item.name} src={item.logo} size={SMALL_LOGO} />
       ) : null}
     </div>
   )

@@ -5,7 +5,7 @@ import { cn } from '../../lib/cn.ts'
 import { useStatusFlash } from '../../lib/live.ts'
 import { MeasuredSkeleton } from '../../katana/measured-skeleton.tsx'
 import { Skeleton } from '../../katana/skeleton.tsx'
-import { SymbolMark } from '../../katana/symbol-mark.tsx'
+import { SymbolMark } from '../../quotes/symbol-mark.tsx'
 import { Button } from '../../primitives/button.tsx'
 import { formatPercentChange } from '../../lib/chart/format/index.ts'
 
@@ -74,7 +74,7 @@ export function NewsSymbolChip({
   const tone = symbol.change === undefined || symbol.change === 0 ? undefined : symbol.change > 0 ? 'up' : 'down'
   return (
     <button type="button" className="k-news-chip" data-symbol={symbol.code} onClick={() => onSelect?.(symbol)}>
-      <SymbolMark code={symbol.code} name={symbol.name} src={symbol.logo} size={14} />
+      <SymbolMark symbol={symbol.code} name={symbol.name} src={symbol.logo} size={14} />
       <span>{symbol.code}</span>
       {symbol.change !== undefined && (
         <span className="k-news-chip-change" data-tone={tone}>
@@ -110,7 +110,7 @@ export function NewsReader({
     <article className={cn('k-news-reader', className)} aria-label={labels.reader} data-slot="news-reader">
       <header className="k-news-reader-head">
         <span className="k-news-reader-source">
-          <SymbolMark code={source} name={source} src={sourceLogo} size={20} />
+          <SymbolMark symbol={source} name={source} src={sourceLogo} size={20} />
           <span>{source}</span>
         </span>
         <span className="k-news-reader-actions">

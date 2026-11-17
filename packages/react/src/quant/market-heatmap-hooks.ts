@@ -3,7 +3,7 @@
 // 从 market-heatmap.tsx 拆出（G5），行为不变。
 import { useEffect, useLayoutEffect, useRef, useState, type RefObject } from 'react'
 import { LIVE_FLASH_GAP_MS, LIVE_FLASH_MS } from '../lib/live.ts'
-import type { TreemapCell } from '../katana/treemap-model.ts'
+import type { TreemapCell } from '../quotes/treemap-model.ts'
 import type { HeatmapColorBy, HeatmapEntry, HeatmapScheme } from './market-heatmap-types.ts'
 
 // 手感的时长（用户 2026-11-15 看第二版后定方向：照 TradingView 热力图的交互手感；时长待定，没实测）：

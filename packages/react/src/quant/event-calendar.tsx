@@ -5,7 +5,7 @@ import { Fragment, useMemo, useState, type KeyboardEvent } from 'react'
 import { cn } from '../lib/cn.ts'
 import { Button } from '../primitives/button.tsx'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../primitives/select.tsx'
-import { RowActions, RowContextMenu } from '../patterns/row-actions.tsx'
+import { RowActions, RowContextMenu } from '../quotes/row-actions.tsx'
 import {
   ECONOMIC_CATEGORIES,
   dayKeyOf,

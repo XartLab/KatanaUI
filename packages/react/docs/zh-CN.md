@@ -9,7 +9,7 @@ KatanaConsole 自建的组件框架（决策记录 0049（KATANAview 的 docs/ar
 ## 分层
 
 ```
-tokens → theme → lib → primitives → katana → patterns → quant → blocks
+tokens → theme → lib → primitives → katana → patterns → quotes → quant → blocks
 ```
 
 只许往左依赖（`.dependency-cruiser.cjs` 的 `ui-*` 规则）。
@@ -20,9 +20,10 @@ tokens → theme → lib → primitives → katana → patterns → quant → bl
 | theme | `src/theme/` | `theme.css`：Tailwind v4 的 `@theme inline` 把 token 接成工具类；`motion.css`：入场、退场的关键帧与 `data-state` 动效 |
 | lib | `src/lib/` | `chart/`（图表共用底座，G5 从 quant 下沉：`chart-kit/` 零件与配色、`chart-scale` 比例尺与分位数、`series-geometry` 序列几何、`scatter-model`、`brush-model`、`format/` 价格涨跌幅数量的纯函数，出口仍是 `@katana-ui/react/quant/format`）、`cn`（`clsx` + `tailwind-merge`，认得 `k-text-*` 字号档）、`focus`（焦点环类）、`motion`（弹簧参数）、`use-scrubber`（序列图共用的扫读钩子，#1917） |
 | primitives | `src/primitives/` | 无业务的基础件：button（含 `icon` 变体）、input、select、toggle-group、slider、checkbox、switch、tooltip、popover、dialog、dropdown-menu、context-menu、tabs、accordion、sheet、hover-card、command（`cmdk`）、scroll-area、separator、progress、alert、field、label；`lib/opener-focus` 是 dialog 与 sheet 共用的「关上时焦点回开启处」 |
-| katana | `src/katana/` | KATANA 自有的件（见下）：led、lcd、dot-matrix、rolling-text、badge、kbd、skeleton 与加载态、toast（弹出提示的外观，计时与队列在应用里）、notification-bell、status-icon、ai-status、matrix-orb、arcade-pixel（取自 SmoothUI，MIT）、step-player、code-block、web-search（这几件交互学自 rare-ui，实现原创，文件头写明）、sparkline、gauge-bar、treemap（后三件从应用的分析视图提来，#1884）、price-tag、quote-card、range-bar、rating-gauge（功能参照 TradingView 小组件，只取给用户看什么、怎么交互，不嵌不抄）；json-viewer（#1919：功能参照 Arc，只取公开页面写出的功能与交互，实现原创）；表单与动作件 2026-11-18（G2）搬到了 patterns/；可以用 primitives，不是 shadcn 的衍生，所以单放一处（`scripts/check-license.mjs` 把 `primitives/` 整个当 MIT） |
-| patterns | `src/patterns/` | 由基础件组出来的固定搭法：multi-select（弹层加勾选）、combobox（弹层加 command：可搜索的单选或多选下拉）、quote-table（分组页签行情表：Tabs 加迷你图的行情行）、chip-group（分面筛选芯片组）、date-range-picker（双月日历加预设）、tree-view（react-aria 的 Tree，数据驱动）（后三件 #1919）；表单与动作件（G2，2026-11-18 从 katana/ 搬来）：number-input（算式输入与框内标签，#1919）、date-time-input、duration-picker、password-input、shortcut-recorder、theme-selector、hold-to-confirm、delete-button、task-list（password-input 到 task-list 中的六件交互学自 rare-ui，hold-to-confirm 与 shortcut-recorder 参照 Arc，实现都原创），连同 filter-bar、view-switcher、rendering-settings、font-catalog、range-histogram-slider。纯函数放同名的 `*-model.ts`。值回调一律 `value / defaultValue / onValueChange`，文案一律 `labels`（旧名留一个版本作 @deprecated）。可以依赖 primitives、lib 与 katana 的读数件（ShortcutRecorder 用 Kbd） |
-| quant | `src/quant/` | 量化领域的件与格式化（出口 `@katana-ui/react/quant`）：`ChangeText`（涨跌幅）、`PnlText`（盈亏）、格式化函数（源码在 `lib/chart/format/`：价格按精度或 tick、涨跌幅、数量缩写；纯函数另有 `@katana-ui/react/quant/format` 出口，画布与 Worker 里用）。只依赖下面几层，不依赖行情、图表包与应用；品种、精度、单位由调用方传。有两个及以上调用方的才进；时间序列与盈亏（#1917，图都画在 viewBox 里、文字与十字线叠成 HTML，比例尺与路径在 `lib/chart/series-geometry`，几何都是纯函数）：`BrushChart` 与 `BrushStrip`（概览刷选条加主图）、`SparkTile`（KPI 瓦片）、`lib/chart/chart-kit/`（图表共用底座）、`Meter`（条、刻度盘、同步率三种仪表，限额板用软限与硬限）、`CalendarHeatmap`（一年的日盈亏，涨跌发散色）、`HorizonChart`（地平线图）；`MarketHeatmap`（市场热力图，跨市场共用，#15：照 TradingView 股票热力图，排布用 `katana/treemap-model` 的 `layoutTreemap`，格子里的徽标是 `SymbolMark`，工具条是 `ToggleGroup`） |
+| katana | `src/katana/` | KATANA 自有的件（见下）：led、lcd、dot-matrix、rolling-text、badge、kbd、skeleton 与加载态、toast（弹出提示的外观，计时与队列在应用里）、notification-bell、status-icon、ai-status、matrix-orb、arcade-pixel（取自 SmoothUI，MIT）、step-player、code-block、web-search（这几件交互学自 rare-ui，实现原创，文件头写明）；json-viewer（#1919：功能参照 Arc，只取公开页面写出的功能与交互，实现原创）；表单与动作件 2026-11-18（G2）搬到了 patterns/，行情件（G4）搬到了 quotes/；可以用 primitives，不是 shadcn 的衍生，所以单放一处（`scripts/check-license.mjs` 把 `primitives/` 整个当 MIT） |
+| patterns | `src/patterns/` | 由基础件组出来的固定搭法：multi-select（弹层加勾选）、combobox（弹层加 command：可搜索的单选或多选下拉）、chip-group（分面筛选芯片组）、date-range-picker（双月日历加预设）、tree-view（react-aria 的 Tree，数据驱动）（后三件 #1919）；表单与动作件（G2，2026-11-18 从 katana/ 搬来）：number-input（算式输入与框内标签，#1919）、date-time-input、duration-picker、password-input、shortcut-recorder、theme-selector、hold-to-confirm、delete-button、task-list（password-input 到 task-list 中的六件交互学自 rare-ui，hold-to-confirm 与 shortcut-recorder 参照 Arc，实现都原创），连同 filter-bar、view-switcher、rendering-settings、font-catalog、range-histogram-slider。纯函数放同名的 `*-model.ts`。值回调一律 `value / defaultValue / onValueChange`，文案一律 `labels`（旧名留一个版本作 @deprecated）。可以依赖 primitives、lib 与 katana 的读数件（ShortcutRecorder 用 Kbd） |
+| quotes | `src/quotes/` | 行情套件（出口 `@katana-ui/react/quotes`；2026-11-18 G4 从 katana、quant、patterns 收拢，旧出口照旧再导出）：sparkline 与 mini-chart、treemap、price-tag、quote-card、range-bar、rating-gauge、gauge-bar、symbol-mark（从应用的分析视图提来 #1884，或功能参照 TradingView 小组件，只取给用户看什么、怎么交互，不嵌不抄），以及 change-text、pnl-text、tone-text、rating-text、technical-rating、metric-card（含 `variant="tile"`，即 SparkTile）、key-stats、peer-cards、performance-strip、watchlist、quote-table、row-actions。行情行统一一个模型 `QuoteRow`（`{ id, symbol, name, last, change, changePct }`，数字，文字由 `formatPrice` 写）。可以用 lib、primitives、katana、patterns 与纯函数的 `lib/chart/format`；quant、blocks 反过来用它 |
+| quant | `src/quant/` | 量化领域的件与格式化（出口 `@katana-ui/react/quant`）：格式化函数（源码在 `lib/chart/format/`：价格按精度或 tick、涨跌幅、数量缩写；纯函数另有 `@katana-ui/react/quant/format` 出口，画布与 Worker 里用）。只依赖下面几层，不依赖行情、图表包与应用；品种、精度、单位由调用方传。有两个及以上调用方的才进；时间序列与盈亏（#1917，图都画在 viewBox 里、文字与十字线叠成 HTML，比例尺与路径在 `lib/chart/series-geometry`，几何都是纯函数）：`BrushChart` 与 `BrushStrip`（概览刷选条加主图）、`lib/chart/chart-kit/`（图表共用底座）、`CalendarHeatmap`（一年的日盈亏，涨跌发散色）、`HorizonChart`（地平线图）；`MarketHeatmap`（市场热力图，跨市场共用，#15：照 TradingView 股票热力图，排布用 `quotes/treemap-model` 的 `layoutTreemap`，格子里的徽标是 `SymbolMark`，工具条是 `ToggleGroup`） |
 | blocks | `src/blocks/` | 拼面板用的积木（出口 `@katana-ui/react/blocks`，#1869）：`DataGrid`（数据表：TanStack 行为、虚拟滚动、列排序 / 改宽 / 拖序 / 显隐、键盘选择，列声明类型 price / quantity / pnl / change / side / time / symbol / text / number）、`EmptyState`（空态）、`Toolbar` 零件与 `ToolButton`、`EstimateBadge`、`EventTimeline`（#1919：按显示时区分天的事件流，对设计稿 EventTimeline 卡）、`SmallMultiples`（同步十字线的小图阵列）、`SeriesExplorer`（KPI 瓦片点开成图面板、对账、刷选条、表格视图的盈亏探索，#1917、#1931）、`AttributionBars`（盈亏归因：Toolbar 顶行、编号清单、零轴条形、合计读数）。可以用下面所有层，不依赖应用：快捷键表、文案、右键菜单怎么画、问 Agent 经 `DataGridHost`（`DataGridHostProvider`）注入，没提供时表照常能用（没有快捷键与标准右键项）。包里不带语言，文案都由调用方传 |
 
 ### KATANA 自有件（#1860）
@@ -72,6 +73,7 @@ import '@katana-ui/react/fonts.css' // 随包的字体声明（Barlow、DM Mono�
 import '@katana-ui/react/ui.css' // Tailwind 主题与动效，最后引
 import { snappy } from '@katana-ui/react/motion' // 弹簧参数（motion/react 用）
 import { ChangeText, formatPrice } from '@katana-ui/react/quant' // 量化层
+import { QuoteTable, Watchlist, MetricCard } from '@katana-ui/react/quotes' // 行情套件（旧的根出口与 quant 出口照旧可引）
 import { DataGrid, EmptyState } from '@katana-ui/react/blocks' // 积木层
 ```
 
@@ -108,7 +110,7 @@ pnpm --filter @katana-ui/react exec shadcn add <component>
 `registry.json` 是 shadcn registry 的清单（shadcn 4.22.2 的 schema），由 `scripts/registry-json.mjs` 从源码生成，不手写；每个源文件一项，`registryDependencies` 与 npm 依赖从 import 里扫出来。
 `pnpm --filter @katana-ui/react registry:build` 先生成清单，再 `shadcn build` 出到 `r/`（在 `.gitignore` 里，发版时生成）。
 
-- **type 的分法：** `primitives/` 的件是 `registry:ui`；`lib/`（含 `lib/chart/`、`lib/chart/format/`）是 `registry:lib`，`lib/chart/chart-kit/` 合成一项 `registry:component`；`patterns/`、`quant/` 与 `blocks/` 的件是 `registry:component`；`style`（token、Tailwind 主题、动效，共六个 CSS）是 `registry:style`。
+- **type 的分法：** `primitives/` 的件是 `registry:ui`；`lib/`（含 `lib/chart/`、`lib/chart/format/`）是 `registry:lib`，`lib/chart/chart-kit/` 合成一项 `registry:component`；`patterns/`、`quotes/`、`quant/` 与 `blocks/` 的件是 `registry:component`（`quotes/` 与 `patterns/` 里的纯函数是 `registry:lib`）；`style`（token、Tailwind 主题、动效，共六个 CSS）是 `registry:style`。
 - **命名：** `@katana/<文件名>`（`button`、`multi-select`、`change-text`）。每层的文件名要唯一，生成时查。
 - **落点：** 每个文件装到 `src/katana/ui/<层>/<文件>`，保持包内的相对结构，所以件之间的相对 import 与 `theme.css` 里 `@source` 的相对路径在别的项目里原样有效。
 
@@ -135,7 +137,7 @@ npx shadcn add @katana/style @katana/button @katana/change-text
 
 ### 行快捷操作与品种菜单（#23，TradingView 便利交互 #22 第 1 条）
 
-`patterns/row-actions.tsx`：`RowActions`（行右端浮出的图标按钮条，浮在行上不挤列宽）、`symbolMenu`（标准品种菜单段：开图、加自选、新建告警、复制代码，固定次序；调用方的项接在后面）、`RowContextMenu`（给一组行或格子包上同一份右键菜单，菜单键与 Shift+F10 也开）、`RowActionMenuItems`。
+`quotes/row-actions.tsx`：`RowActions`（行右端浮出的图标按钮条，浮在行上不挤列宽）、`symbolMenu`（标准品种菜单段：开图、加自选、新建告警、复制代码，固定次序；调用方的项接在后面）、`RowContextMenu`（给一组行或格子包上同一份右键菜单，菜单键与 Shift+F10 也开）、`RowActionMenuItems`。
 件只认 `{ key, label, icon?, shortcut?, onSelect }`，文案与动作都由调用方传。三处套用，各加一个可选 prop，不传就没有：`DataGrid.rowActions(row)`、`LimitLadder.rowActions(item)`、`MarketHeatmap.cellActions(item)`（格子小，只有右键菜单）。
 连板天梯的行是 `role=option`，里面不许有可聚焦子项（axe nested-interactive），所以它的按钮是 `pointerOnly` 的 span，键盘走菜单键。DataGrid 没有宿主键位表时，菜单键与 Shift+F10 也开右键菜单。
 出处：TradingView 品种搜索结果行悬停出开图与概览（帮助中心 Symbol search tips，2026-11-15 读）；自选行悬停显示哪些按钮与右键菜单的项，页面没写，待核对。

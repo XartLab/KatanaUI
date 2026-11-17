@@ -4,7 +4,7 @@
  * DataGrid 的 props 与列摆法类型（体检 §7：data-grid.tsx 拆分，类型单放一个文件）。
  */
 import type { ReactNode } from 'react'
-import type { RowAction } from '../../patterns/row-actions.tsx'
+import type { RowAction } from '../../quotes/row-actions.tsx'
 import type { GridColumn } from './columns.ts'
 import type { GridMenuEntry } from './host.tsx'
 import type { SortSpec } from './model.ts'
