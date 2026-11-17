@@ -154,6 +154,11 @@
           "target": "~/src/katana/ui/theme/limit-ladder.css"
         },
         {
+          "path": "src/theme/live.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/live.css"
+        },
+        {
           "path": "src/theme/loading.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/loading.css"
@@ -347,6 +352,19 @@
           "path": "src/lib/hover-open.ts",
           "type": "registry:lib",
           "target": "~/src/katana/ui/lib/hover-open.ts"
+        }
+      ]
+    },
+    {
+      "name": "live",
+      "type": "registry:lib",
+      "title": "Live",
+      "description": "数据在动时的四个钩子，照行情终端（TradingView、Bloomberg、同花顺）的做法：useValueFlash 数值变了给涨 / 跌方向（闪 600ms，同一格 1 秒内最多一次）；useEnterMarks 认出新来的条目（高亮 1200ms）；useFlipList 顺序变了让行平滑换位（FLIP，240ms）；useStatusFlash 状态变了给一次性的闪（炸板这类用警示色）。皮肤是 ui.css 里的 .k-live-flash / .k-live-enter / .k-live-alert，涨跌色跟「涨跌颜色」设置走；时长是 token --dur-flash / --dur-enter / --dur-reorder。RollingText、MarketHeatmap、Watchlist 已经走这一层。",
+      "files": [
+        {
+          "path": "src/lib/live.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/lib/live.ts"
         }
       ]
     },
@@ -1630,6 +1648,9 @@
       "type": "registry:component",
       "title": "Rolling Text",
       "description": "里程表式的数字滚动：变了的那几位像里程表一样把中间的数字依次转过去（7 到 9 会看到 8 掠过），涨往上、跌往下，整串闪一下涨色或跌色。转得越远用得越久，最远 300ms。",
+      "registryDependencies": [
+        "@katana/live"
+      ],
       "files": [
         {
           "path": "src/katana/rolling-text.tsx",
@@ -2613,6 +2634,7 @@
       ],
       "registryDependencies": [
         "@katana/cn",
+        "@katana/live",
         "@katana/market-heatmap-model",
         "@katana/quant-format",
         "@katana/row-actions",
@@ -3048,6 +3070,7 @@
       "registryDependencies": [
         "@katana/change-text",
         "@katana/cn",
+        "@katana/live",
         "@katana/quant-format",
         "@katana/symbol-mark",
         "@katana/watchlist-model"

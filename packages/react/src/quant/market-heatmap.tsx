@@ -13,6 +13,7 @@ import {
   type PointerEvent,
 } from 'react'
 import { cn } from '../lib/cn.ts'
+import { LIVE_FLASH_GAP_MS, LIVE_FLASH_MS } from '../lib/live.ts'
 import { RowContextMenu, type RowAction } from '../patterns/row-actions.tsx'
 import { SymbolMark } from '../katana/symbol-mark.tsx'
 import { layoutTreemap, type TreemapBlock } from '../katana/treemap-model.ts'
@@ -184,9 +185,9 @@ const CARD_ROW_H = 18
 type Hover = { code: string; x: number; y: number; open: boolean; snap: boolean }
 
 // 手感的时长（用户 2026-11-15 看第二版后定方向：照 TradingView 热力图的交互手感；时长待定，没实测）：
-// 卡片首次出现淡入 100ms、离开淡出 160ms（CSS）；数据变了颜色过渡 300ms（CSS）；涨跌方向变了的格子边框闪 700ms（CSS，这里的 FLASH_MS 只管多久后摘掉标记）。
+// 卡片首次出现淡入 100ms、离开淡出 160ms（CSS）；数据变了颜色过渡 300ms（CSS）；涨跌方向变了的格子闪一下新方向的涨跌色（共用层 live.css 的 .k-live-flash，时长 --dur-flash；FLASH_MS 只管多久后摘掉标记，同一格 1 秒内最多一次）。
 // 位置与大小的过渡用包里的弹簧缓动 --ease-snappy / --dur-snappy，放大与返回用 --ease-gentle / --dur-gentle（不新造曲线，不跟 prefers-reduced-motion）。
-const FLASH_MS = 700
+const FLASH_MS = LIVE_FLASH_MS
 
 type Rect = { l: number; t: number; w: number; h: number }
 const cssMs = (value: string, fallback: number) => (value.trim().endsWith('ms') ? parseFloat(value) : fallback)
@@ -239,7 +240,8 @@ export function MarketHeatmap({
   const [hover, setHover] = useState<Hover | null>(null)
   const [hoverGroup, setHoverGroup] = useState<string | null>(null)
   const [previewStep, setPreviewStep] = useState<number | null>(null)
-  const [flashing, setFlashing] = useState<ReadonlySet<string>>(new Set())
+  const [flashing, setFlashing] = useState<ReadonlyMap<string, 'up' | 'down'>>(new Map())
+  const flashedAt = useRef<Map<string, number>>(new Map())
   const rects = useRef<Map<string, Rect>>(new Map())
   const lastBox = useRef<{ width: number; height: number } | null>(null)
   const lastDrill = useRef<string | null>(null)
@@ -368,7 +370,7 @@ export function MarketHeatmap({
     lastDrill.current = drill
   }, [all, box, drill])
 
-  // 数据变了：同一个指标下，涨跌方向变了的格子边框闪一下（动效有原因：告诉人是哪几格翻了方向）。换指标不算。
+  // 数据变了：同一个指标下，涨跌方向变了的格子闪一下新方向的涨跌色（动效有原因：告诉人是哪几格翻了方向）。换指标不算。
   useEffect(() => {
     if (!color) return
     const map = new Map<string, number>()
@@ -379,17 +381,29 @@ export function MarketHeatmap({
     const old = signs.current
     signs.current = { key: color.key, map }
     if (!old || old.key !== color.key) return
+    // 同一格 1 秒内最多闪一次：行情密的时候不晃眼（节流常量在 lib/live.ts）。
+    const nowMs = Date.now()
     const turned = [...map].filter(([code, sign]) => {
       const before = old.map.get(code)
-      return before !== undefined && before !== sign && before !== 0 && sign !== 0
+      const quiet = nowMs - (flashedAt.current.get(code) ?? -Infinity) >= LIVE_FLASH_GAP_MS
+      return before !== undefined && before !== sign && before !== 0 && sign !== 0 && quiet
     })
     if (turned.length === 0) return
+    for (const [code] of turned) flashedAt.current.set(code, nowMs)
+    const raise = setTimeout(
+      () =>
+        setFlashing((now) => {
+          const next = new Map(now)
+          for (const [code, sign] of turned) next.set(code, sign > 0 ? 'up' : 'down')
+          return next
+        }),
+      0,
+    )
     const codes = turned.map(([code]) => code)
-    const raise = setTimeout(() => setFlashing((now) => new Set([...now, ...codes])), 0)
     const drop = setTimeout(
       () =>
         setFlashing((now) => {
-          const rest = new Set(now)
+          const rest = new Map(now)
           for (const code of codes) rest.delete(code)
           return rest
         }),
@@ -787,7 +801,7 @@ export function MarketHeatmap({
                       aria-label={`${item.name} ${item.code} ${text}`}
                       aria-pressed={item.code === selected}
                       aria-hidden={hidden || undefined}
-                      className="k-mheat-cell"
+                      className={cn('k-mheat-cell', flashing.has(item.code) && 'k-live-flash')}
                       data-slot="heatmap-cell"
                       data-code={item.code}
                       data-size={size.equal ? 1 : (item.size[size.key] ?? 0)}
@@ -800,7 +814,7 @@ export function MarketHeatmap({
                             ? 'group'
                             : undefined
                       }
-                      data-flash={flashing.has(item.code) || undefined}
+                      data-flash={flashing.get(item.code)}
                       data-selected={item.code === selected || undefined}
                       data-labelled={showCode}
                       data-logo={logo?.size ?? (logoOnly ? SMALL_LOGO : undefined)}

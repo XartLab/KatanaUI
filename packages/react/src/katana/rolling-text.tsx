@@ -1,15 +1,16 @@
 // SPDX-License-Identifier: MIT
 import { useState, type CSSProperties } from 'react'
+import { LIVE_FLASH_GAP_MS, useValueFlash } from '../lib/live.ts'
 // 搬自 src/ui（#1860），皮肤在 ../theme/rolling-text.css。
 // #1861 升级成里程表式：变了的那一位不再只是旧字滑出、新字滑入，而是像里程表一样把中间的数字依次转过去（7 到 9 会看到 8 一闪而过），
 // 位数没变的地方原样不动。学自 rare-ui 的 animated-counter（2026-11-14 读），实现为本仓库原创，未复制其代码。
 // 学到的事实（只取行为）：① 每一位是 0 到 9 的一条转轮，涨往上转、跌往下转，转过的是中间的数字，不是直接换；② 9 转回 0 要走一格而不是倒转九格；
 // ③ 读屏与复制拿到的只有当前的完整数字，转轮里的字不进文本；④ 位上用弹簧缓动，转得越远用得越久。
-// 我们保留的（来自 OpenMarket 图例的价格滚动，2026-10-06 读自其图表引擎）：整串数字同时闪 150ms 涨色或跌色；距上一次滚动不到 1 秒的变化直接换字不滚
+// 我们保留的（来自 OpenMarket 图例的价格滚动，2026-10-06 读自其图表引擎）：整串数字同时闪一下涨色或跌色（现在走共用层 lib/live.ts 的 useValueFlash，时长 --dur-flash）；距上一次滚动不到 1 秒的变化直接换字不滚
 // （行情密的时候不晃眼）；animate 为 false（十字线在看历史）时也直接换；位数变了直接换。
 // 做法：旧字与中间的数字画在伪元素里（data-strip，一行一个字），不进文本；新字在位上自己从远处滑回来。弹簧用 CSS 的 linear() 缓动（--ease-snappy）。
 
-const ROLL_QUIET_MS = 1000
+const ROLL_QUIET_MS = LIVE_FLASH_GAP_MS
 const NEWLINE = String.fromCharCode(10)
 
 type Roll = {
@@ -63,6 +64,8 @@ export function RollingText({
     generation: 0,
     rolledAt: -Infinity,
   })
+  // 闪色走共用层：方向与 key 由它给，滚不滚（位数、animate、1 秒内不重复）仍由下面的 roll 管，两边的 1 秒窗口是同一个常量。
+  const flash = useValueFlash(value, { enabled: animate })
   if (text !== roll.text) {
     // 由 props 推导的状态，照 React 文档在渲染时调整（不走 effect，避免先闪一帧旧字）。
     // 节流要看真实时间（距上一次滚动够不够 1 秒）。渲染被丢弃重来时最多多滚或少滚一次，看不出来。
@@ -81,7 +84,12 @@ export function RollingText({
   const { from, direction, generation } = roll
   // 每次变化换一个 key，滚动与闪色的 CSS 动画从头播。
   return (
-    <span className="k-roll" data-direction={direction ?? undefined} key={generation}>
+    <span
+      className="k-roll k-live-flash"
+      data-direction={direction ?? undefined}
+      data-flash={direction === null ? undefined : (flash.flash ?? undefined)}
+      key={generation}
+    >
       {rollSlots(text, from, direction !== null).map(({ char, out }, index) => {
         // 旧字与转轮上经过的字放在 data-from、data-strip 里，由 CSS 的 ::before 画：它们不在文本里，innerText、复制、读屏读到的只有当前的完整数字。
         const wheel = out === undefined || direction === null ? null : rollStrip(char, out, direction)

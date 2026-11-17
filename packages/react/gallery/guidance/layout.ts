@@ -3,6 +3,25 @@
 import type { GuidanceMap } from './types'
 
 const layout: GuidanceMap = {
+  live: {
+    aliases: ['Flash', 'Tick flash', 'Value flash', 'FLIP', 'Highlight on update', '数据刷新', '闪烁', '新消息高亮'],
+    use: [
+      '行情、新闻流、连板天梯、自选这类数据会自己更新的列表与读数：变了的地方要让人看得出。',
+      '数值变了：useValueFlash 给方向与 key，元素加 .k-live-flash 与 data-flash，key 放在元素上（同一父元素里有几个 key 就各加前缀，如 price-1 与 status-1，重了 React 会留下旧元素）。',
+      '来新条目：useEnterMarks 认出新 id，行加 .k-live-enter；用户滚离顶部时只计数不插入。',
+      '顺序变了（升板、炸板换位）：useFlipList 让行平滑换位，行上写 data-live-id。',
+      '状态变了（炸板）：useStatusFlash 给一次性的闪，炸板这类用 .k-live-alert 的警示色。',
+    ],
+    avoid: [
+      '一次性的状态切换（点开关、展开面板），那是弹簧动效，不是数据刷新。',
+      '用户自己改的值（输入框里打字）：他知道自己改了，不闪。',
+    ],
+    a11y: [
+      '动效只是辅助，变化本身要在文字里：数值有新数、状态写在字上，不靠闪色一个通道。',
+      '闪烁用背景色，不改字色，对比度不降到 4.5:1 以下；强调线 2px，不靠它传达唯一信息。',
+      '要读屏播报新消息，容器用 aria-live="polite"，不要给每一格都播。',
+    ],
+  },
   'text-measure': {
     aliases: ['pretext', 'Text measurement', 'measureText', 'Line clamp'],
     use: [

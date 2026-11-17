@@ -233,16 +233,9 @@
 .k-mheat-cell[data-dim='legend'] {
   opacity: 0.18;
 }
+/* 方向翻了的闪烁在共用层 live.css（.k-live-flash）：格子自己有底色，把它交给 --k-live-base，闪色才是混在格子色上、不是盖成透明。 */
 .k-mheat-cell[data-flash] {
-  animation: k-mheat-flash 700ms ease-out;
-}
-@keyframes k-mheat-flash {
-  from {
-    box-shadow: inset 0 0 0 2px var(--ink-100);
-  }
-  to {
-    box-shadow: inset 0 0 0 2px transparent;
-  }
+  --k-live-base: var(--mheat-bg);
 }
 .k-mheat-ring {
   position: absolute;

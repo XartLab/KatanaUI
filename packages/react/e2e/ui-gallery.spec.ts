@@ -1477,6 +1477,8 @@ for (const theme of THEMES) {
           durations: slots.map((slot) => getComputedStyle(slot.querySelector('.k-roll-in')!).animationDuration),
           direction: host.dataset.direction,
           flash: getComputedStyle(host).animationName,
+          flashDirection: host.dataset.flash,
+          flashDuration: getComputedStyle(host).animationDuration,
           inName: getComputedStyle(ones.querySelector('.k-roll-in')!).animationName,
           line,
           wheelY: read(ones, '::before'),
@@ -1489,7 +1491,10 @@ for (const theme of THEMES) {
       })
       expect(mid.text).toBe('106,985.4')
       expect(mid.direction).toBe('up')
-      expect(mid.flash).toBe('k-flash-up')
+      // 整串闪涨色走共用层（.k-live-flash，live.ts 的 useValueFlash）：方向在 data-flash，时长是 --dur-flash（600ms）。
+      expect(mid.flash).toBe('k-live-flash')
+      expect(mid.flashDirection).toBe('up')
+      expect(mid.flashDuration).toBe('0.6s')
       expect(mid.inName).toBe('k-roll-in-up')
       expect(mid.strips, '十位只经过旧字；个位从 7 往上数到 4，再落到新字 5').toEqual(['7', '7\n8\n9\n0\n1\n2\n3\n4'])
       expect(mid.steps).toEqual(['1', '8'])
@@ -1524,7 +1529,8 @@ for (const theme of THEMES) {
       expect(strip.at(-1), '旧字在最下').toBe('7')
       expect(strip[0]).toBe('0')
       await expect(roll.locator('.k-roll-in').first()).toHaveCSS('animation-name', 'k-roll-in-down')
-      await expect(roll).toHaveCSS('animation-name', 'k-flash-down')
+      await expect(roll).toHaveCSS('animation-name', 'k-live-flash')
+      await expect(roll).toHaveAttribute('data-flash', 'down')
     })
 
     test('徽标：上标小字，次要文字色，悬停写全称，读屏名是全称；没有徽标什么都不画', async ({ page }) => {
@@ -5703,35 +5709,151 @@ for (const theme of THEMES) {
     expect(await codes()).toEqual(['AAA', 'BRV', 'CHL', 'DLT', 'ECH'])
     await sortBtn('chgPct').click()
     expect(await codes()).toEqual(['BRV', 'DLT', 'AAA', 'CHL', 'ECH'])
-    // 闪色：AAA 212.40 → 212.46，只有末位「6」带 data-flash=up 且是涨色，头部不是；约 1 秒后落回。
+    // 闪色：AAA 212.40 → 212.46，只有末位「6」带 data-flash=up、是共用层的 .k-live-flash，头部不是；闪完（600ms）标记自己摘掉。
     const up = await rgba(page, await token(page, '--pnl-up'))
     const down = await rgba(page, await token(page, '--pnl-down'))
     const aaa = demo.locator('[data-key="a"] [data-slot="watch-last"]')
     await expect(aaa).toHaveText('212.40')
-    const plain = await colorAt(page, aaa, 'color')
     await demo.locator('[data-gallery-tick]').click()
     const flash = aaa.locator('[data-slot="watch-flash"]')
     await expect(flash).toHaveText('6')
     await expect(flash).toHaveAttribute('data-flash', 'up')
-    // 动画的起点色是涨色（读动画的第一帧，不读此刻的算出色：它已经在往回落了）。
-    const from = await flash.evaluate((n) =>
-      String((n.getAnimations()[0]!.effect as KeyframeEffect).getKeyframes()[0]!.color),
-    )
-    expect(await rgba(page, from)).toEqual(up)
-    expect(await colorAt(page, aaa, 'color')).toEqual(plain)
-    await expect.poll(() => colorAt(page, flash, 'color'), { timeout: 3000 }).toEqual(plain)
+    await expect(flash).toHaveClass(/k-live-flash/)
+    // 起点是涨色的弱化档：停在 0 处读那一帧的底色，rgb 是涨色、带透明度（比涨色本身淡）；字色不动。
+    const first = await flash.evaluate((n) => {
+      const a = n.getAnimations()[0]!
+      a.pause()
+      a.currentTime = 0
+      return {
+        name: (a as CSSAnimation).animationName,
+        ms: Number(a.effect!.getComputedTiming().duration),
+        bg: getComputedStyle(n).backgroundColor,
+      }
+    })
+    expect(first.name).toBe('k-live-flash')
+    expect(first.ms).toBe(600)
+    const [r, g, b, alpha] = await rgba(page, first.bg)
+    // 带透明度的色画进 8 位画布再取回，rgb 会有几个单位的量化误差。
+    expect(Math.max(...[r, g, b].map((v, i) => Math.abs((v as number) - (up[i] as number))))).toBeLessThanOrEqual(8)
+    expect(alpha as number).toBeGreaterThan(0)
+    expect(alpha as number).toBeLessThan(0.5)
+    await expect(flash).toHaveCount(0, { timeout: 3000 })
     // 下跌：BRV 1,044.10 → 1043.90 两种格式不同长度也只闪变了的尾部，用跌色。
+    // 1 秒节流是按行各自算的（BRV 这一行第一次变），所以不受上一下的影响。
     await demo.locator('[data-gallery-tick-down]').click()
     const brv = demo.locator('[data-key="b"] [data-slot="watch-flash"]')
     await expect(brv).toHaveAttribute('data-flash', 'down')
-    const fromDown = await brv.evaluate((n) =>
-      String((n.getAnimations()[0]!.effect as KeyframeEffect).getKeyframes()[0]!.color),
-    )
-    expect(await rgba(page, fromDown)).toEqual(down)
+    const fromDown = await brv.evaluate((n) => {
+      const a = n.getAnimations()[0]!
+      a.pause()
+      a.currentTime = 0
+      return getComputedStyle(n).backgroundColor
+    })
+    const dn = await rgba(page, fromDown)
+    expect(Math.max(...[0, 1, 2].map((i) => Math.abs((dn[i] as number) - (down[i] as number))))).toBeLessThanOrEqual(8)
     // 旗标：点一下翻转。
     const flag = demo.locator('[data-key="b"] [data-slot="watch-flag"]')
     await flag.click({ force: true })
     await expect(flag).toHaveAttribute('aria-pressed', 'true')
+  })
+
+  test(`live 数据刷新：步进后价格闪涨跌色、新行高亮、炸板警示闪、行按涨幅换位（FLIP）；涨跌色跟「涨跌颜色」互换 · ${theme}`, async ({
+    page,
+  }) => {
+    await open(page, theme, 'live')
+    const area = section(page, 'live')
+    const table = area.locator('[data-slot="live-table"]')
+    // 自动化浏览器里模拟器默认暂停（e2e 不靠等待）：用手动步进钩子推。
+    await expect(area.getByRole('button', { name: '暂停' })).toHaveAttribute('aria-pressed', 'true')
+    await expect(table.locator('[data-live-id]')).toHaveCount(5)
+    const seen = await page.evaluate(async () => {
+      const root = document.querySelector('[data-gallery="live"] [data-slot="live-table"]')!
+      const rows = () => [...root.querySelectorAll<HTMLElement>('[data-live-id]')]
+      const order = () =>
+        rows()
+          .map((row) => row.dataset.liveId)
+          .join(',')
+      const frame = () => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)))
+      const out = {
+        flash: '',
+        flashName: '',
+        enter: false,
+        enterName: '',
+        alert: false,
+        alertDuration: '',
+        reordered: false,
+        animated: false,
+      }
+      for (let i = 0; i < 80 && !(out.flash && out.enter && out.alert && out.animated); i += 1) {
+        const before = order()
+        window.__liveStep!()
+        await frame()
+        const flashing = root.querySelector<HTMLElement>('[data-slot="live-price"][data-flash]')
+        if (flashing && !out.flash) {
+          out.flash = flashing.dataset.flash!
+          out.flashName = getComputedStyle(flashing).animationName
+        }
+        const entering = root.querySelector<HTMLElement>('.k-live-enter')
+        if (entering && !out.enter) {
+          out.enter = true
+          out.enterName = getComputedStyle(entering).animationDuration
+        }
+        const alerting = root.querySelector<HTMLElement>('.k-live-alert')
+        if (alerting && !out.alert) {
+          out.alert = true
+          out.alertDuration = getComputedStyle(alerting).animationName
+        }
+        if (order() !== before) {
+          out.reordered = true
+          const moved = rows().flatMap((row) => row.getAnimations())
+          if (
+            moved.some((a) => String((a.effect as KeyframeEffect).getKeyframes()[0]?.transform).startsWith('translate'))
+          )
+            out.animated = true
+        }
+      }
+      return out
+    })
+    expect(seen.flash, '价格变了有 data-flash').toMatch(/^(up|down)$/)
+    expect(seen.flashName).toBe('k-live-flash')
+    expect(seen.enter, '来过新行，带 .k-live-enter').toBe(true)
+    expect(seen.enterName, '新行高亮时长是 --dur-enter').toBe('1.2s')
+    expect(seen.alert, '有行变成炸板，带 .k-live-alert').toBe(true)
+    expect(seen.alertDuration).toBe('k-live-alert')
+    expect(seen.reordered, '行按涨幅换过位').toBe(true)
+    expect(seen.animated, '换位的行上有 transform 动画（FLIP）').toBe(true)
+    // 涨跌色互换：红涨绿跌时 up 的闪色取的是互换后的 --pnl-up。
+    await page.evaluate(() => document.documentElement.setAttribute('data-updown', 'cn'))
+    const mix = await page.evaluate(async () => {
+      for (let i = 0; i < 40; i += 1) {
+        window.__liveStep!()
+        await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)))
+        const cell = document.querySelector<HTMLElement>(
+          '[data-gallery="live"] [data-slot="live-price"][data-flash="up"]',
+        )
+        if (cell) {
+          const a = cell.getAnimations()[0]!
+          a.pause()
+          a.currentTime = 0
+          return getComputedStyle(cell).backgroundColor
+        }
+      }
+      return ''
+    })
+    expect(mix).not.toBe('')
+    const upNow = await rgba(page, await token(page, '--pnl-up'))
+    const got = await rgba(page, mix)
+    expect(Math.max(...[0, 1, 2].map((i) => Math.abs((got[i] as number) - (upNow[i] as number))))).toBeLessThanOrEqual(
+      8,
+    )
+    // 打开实时：不步进，过一阵价格自己变。
+    await page.evaluate(() => document.documentElement.removeAttribute('data-updown'))
+    const price = () => table.locator('[data-slot="live-price"]').allTextContents()
+    const before = await price()
+    await area.getByRole('button', { name: '实时' }).click()
+    await expect(area.getByRole('button', { name: '实时' })).toHaveAttribute('aria-pressed', 'true')
+    await expect.poll(price, { timeout: 5000 }).not.toEqual(before)
+    await area.getByRole('button', { name: '暂停' }).click()
   })
 }
 

@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: MIT
-// 自选列表：列 Symbol / Last / Chg / Chg%，行首小旗标与圆徽标；最新价变动时只有变了的尾数闪涨跌色、约 1 秒落回；列头可点排序。
+// 自选列表：列 Symbol / Last / Chg / Chg%，行首小旗标与圆徽标；最新价变动时只有变了的尾数闪涨跌色底（共用层 lib/live.ts，--dur-flash 内落回）；列头可点排序。
 // 布局与交互参照 TradingView 右侧自选栏（主会话 2026-11-15 在真实浏览器里实测，只取布局与行为，不抄代码）：升序 → 降序 → 原顺序循环、
 // 价格尾数闪色。颜色走涨跌语义色。数、列名与读屏名都由调用方传；价格怎么写（位数）由 formatPrice 定，不给就两位小数。
 import { useState } from 'react'
 import { cn } from '../lib/cn.ts'
+import { useValueFlash } from '../lib/live.ts'
 import { SymbolMark } from '../katana/symbol-mark.tsx'
 import { ChangeText } from './change-text.tsx'
 import { toneOf } from './format/index.ts'
@@ -47,24 +48,26 @@ export type WatchlistProps = {
 const plain = (n: number) => n.toFixed(2)
 const signed = (n: number, fmt: (v: number) => string) => (n > 0 ? '+' : n < 0 ? '-' : '') + fmt(Math.abs(n))
 
-/** 最新价：数变了，从第一位不同的数字起到末尾闪一下涨跌色；key 换掉让动画重放。渲染时比较新旧值，不用 effect。 */
+/**
+ * 最新价：数变了，从第一位不同的数字起到末尾闪一下涨跌色底（共用层 useValueFlash：方向、1 秒节流、key 都由它给）；渲染时比较新旧值，不用 effect。
+ * 这里只多管一件事：尾数是哪几位（拿变化前的文字跟现在的比），被节流掉的变化不闪也不换尾数。
+ */
 function FlashPrice({ value, format }: { value: number; format: (v: number) => string }) {
-  const [seen, setSeen] = useState(value)
-  const [flash, setFlash] = useState<{ id: number; tone: 'up' | 'down'; tail: string } | null>(null)
+  const { flash, key } = useValueFlash(value)
   const text = format(value)
-  if (value !== seen) {
-    const { tail } = changedTail(format(seen), text)
-    setSeen(value)
-    setFlash(tail ? { id: (flash?.id ?? 0) + 1, tone: value > seen ? 'up' : 'down', tail } : flash)
-  }
-  const tail = flash && text.endsWith(flash.tail) ? flash : null
-  const head = tail ? text.slice(0, text.length - tail.tail.length) : text
+  // hist.prev 是变化前的文字：useValueFlash 与这里的 setState 在同一轮渲染里生效，第二遍渲染读到新 key 时，旧文字只能从 prev 拿。
+  const [hist, setHist] = useState({ value, text, prev: text })
+  const [mark, setMark] = useState({ key, tail: '' })
+  if (value !== hist.value) setHist({ value, text, prev: hist.text })
+  if (key !== mark.key) setMark({ key, tail: changedTail(hist.prev, text).tail })
+  const tail = flash && mark.key === key && mark.tail && text.endsWith(mark.tail) ? mark.tail : null
+  const head = tail ? text.slice(0, text.length - tail.length) : text
   return (
     <span className="k-watch-last" data-slot="watch-last">
       {head}
       {tail ? (
-        <span key={tail.id} className="k-watch-flash" data-slot="watch-flash" data-flash={tail.tone}>
-          {tail.tail}
+        <span key={key} className="k-watch-flash k-live-flash" data-slot="watch-flash" data-flash={flash ?? undefined}>
+          {tail}
         </span>
       ) : null}
     </span>

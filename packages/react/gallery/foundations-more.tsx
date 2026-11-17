@@ -13,6 +13,7 @@ type Token = { name: string; value: string | Record<string, string>; usage?: str
 const T = tokens as unknown as {
   color: { themes: { id: string; name: string; note?: string }[]; tokens: Token[] }
   density: { levels: string[]; tokens: Token[] }
+  motion: { tokens: Token[] }
 }
 
 const Lede = ({ children }: { children: ReactNode }) => <p className="gal-lede">{children}</p>
@@ -175,6 +176,53 @@ function DurationPage() {
         </li>
         <li>颜色、透明度用 120–200ms 线性过渡，不用弹簧。</li>
         <li>不跟系统的「减少动态效果」：动效只有三类原因（状态变了、东西进出、跟手），本来就克制（产品底线）。</li>
+      </ul>
+      <h2>数据刷新</h2>
+      <p>
+        数据会自己更新的地方（行情、新闻流、连板天梯、自选），变了的地方要让人看得出，但不能晃眼。五条规则，共用层在{' '}
+        {code('src/lib/live.ts')}，皮肤在 {code('src/theme/live.css')}，各件不再自己写闪烁。
+      </p>
+      <Table
+        head={['规则', '做法']}
+        rows={[
+          [
+            '数值变了，闪 600ms',
+            '涨 / 跌色的弱化档铺在背景上，线性淡到透明；字色不动，对比度不降。用 useValueFlash + .k-live-flash。',
+          ],
+          [
+            '新条目高亮 1200ms',
+            '左侧 2px 蓝线（--signal-blue，与选中的橙、涨跌色、炸板的琥珀都分开）加底色，前一半保持、后一半淡出。用户已经滚离顶部时，新条目只计数、不插入，点「新增 n 条」再合入。用 useEnterMarks + .k-live-enter。',
+          ],
+          [
+            '重排位移 240ms',
+            '行从旧位置平滑移到新位置（FLIP，只动 transform），缓动用 --ease-snappy。用 useFlipList。',
+          ],
+          [
+            '状态变化闪一次',
+            '状态字符串变了闪一次；炸板这类坏消息用警示色（琥珀，更糟用跌红）闪两下。用 useStatusFlash + .k-live-alert。',
+          ],
+          [
+            '同一格 1 秒最多闪一次',
+            '窗口里的变化直接换值、不补闪，行情密的时候不晃眼。常量 LIVE_FLASH_GAP_MS，只在 JS 里。',
+          ],
+        ]}
+      />
+      <Table
+        head={['名', '值', '什么时候']}
+        rows={[
+          ...T.motion.tokens.map((token) => [code(`--${token.name}`), token.value as string, token.usage ?? '']),
+          [code('LIVE_FLASH_GAP_MS'), '1000 ms', '同一格两次闪烁之间至少隔多久（节流，TS 常量，不是 CSS 变量）。'],
+          [code('--ease-snappy'), '弹簧', '重排位移的缓动；颜色与透明度的淡出用线性，不用弹簧。'],
+        ]}
+      />
+      <ul className="gal-list">
+        <li>涨跌色读 --pnl-up / --pnl-down，「涨跌颜色」设成红涨绿跌时跟着互换，闪烁不用再写一遍。</li>
+        <li>
+          tokens 里没有涨跌色的弱化档，所以用 color-mix 把涨跌色按 24% 混进底色；底下本来有色的件（热力图格子）用
+          --k-live-base 交出自己的底色。
+        </li>
+        <li>动效只是辅助：变化本身要写在文字里，不靠闪色一个通道。</li>
+        <li>用法与演示见「布局与导航」里的 live 页。</li>
       </ul>
     </>
   )

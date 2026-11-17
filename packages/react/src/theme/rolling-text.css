@@ -1,18 +1,12 @@
 /* SPDX-License-Identifier: MIT */
 /* 原样搬自 src/ui/ui.css（#1860，2026-11-14）；#1861 起位上的动效改成里程表式转轮（见 katana/rolling-text.tsx 的文件头），类名没改。 */
 
-/* 数字逐位滚动（RollingText）：整串数字同时闪 150ms 涨色 / 跌色（照 OpenMarket）；每一位像里程表那样转。 */
+/* 数字逐位滚动（RollingText）：整串数字同时闪涨色 / 跌色（共用层 live.css 的 .k-live-flash，时长 --dur-flash）；每一位像里程表那样转。 */
 .k-roll {
   /* inline-block 而不是 inline-flex：flex 容器里每一位是一个块，innerText 与复制会在每位之间插换行 */
   display: inline-block;
   white-space: nowrap;
   font-variant-numeric: tabular-nums;
-}
-.k-roll[data-direction='up'] {
-  animation: k-flash-up 0.15s linear;
-}
-.k-roll[data-direction='down'] {
-  animation: k-flash-down 0.15s linear;
 }
 .k-roll-slot {
   position: relative;
@@ -53,18 +47,6 @@
 }
 .k-roll[data-direction='down'] .k-roll-slot[data-from]::before {
   animation-name: k-roll-out-down;
-}
-@keyframes k-flash-up {
-  0%,
-  100% {
-    color: var(--pnl-up);
-  }
-}
-@keyframes k-flash-down {
-  0%,
-  100% {
-    color: var(--pnl-down);
-  }
 }
 @keyframes k-roll-in-up {
   from {

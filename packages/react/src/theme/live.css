@@ -1,0 +1,49 @@
+/* SPDX-License-Identifier: MIT */
+/* 数据刷新的共用皮肤（src/lib/live.ts）：数值闪、新条目高亮、状态警示闪。时长取 token（--dur-flash / --dur-enter），颜色取 token。
+   涨跌色读 --pnl-up / --pnl-down：根上 data-updown="cn" 时 token 自己互换，这里不用再写一遍。
+   tokens 里没有 pnl 的「弱化档」，所以用 color-mix 把涨跌色按 --k-live-mix（默认 24%）的比例混进底色：底色默认是透明，
+   底下本来有色的件（热力图的格子）把自己的底色放进 --k-live-base，混出来的才不会比格子本身更透。
+   动画只写起点：终点就是元素本来的样子，所以不会因为我们的 to 帧把底色盖掉。淡出用线性（颜色与透明度不用弹簧）。
+   产品不跟系统的「减少动态效果」（AGENTS.md 的产品底线），所以这里不写 prefers-reduced-motion。 */
+
+/* 数值闪：加 data-flash="up" | "down"，key 换掉让动画重放。 */
+.k-live-flash[data-flash] {
+  animation: k-live-flash var(--dur-flash) linear;
+}
+.k-live-flash[data-flash='up'] {
+  --k-live-tone: var(--pnl-up);
+}
+.k-live-flash[data-flash='down'] {
+  --k-live-tone: var(--pnl-down);
+}
+@keyframes k-live-flash {
+  from {
+    background-color: color-mix(in srgb, var(--k-live-tone) var(--k-live-mix, 24%), var(--k-live-base, transparent));
+  }
+}
+
+/* 新条目：左侧 2px 强调线加底色高亮，前一半时间保持，后一半淡出。强调线用 inset 阴影画，不占宽、不推内容，也不要求元素 position。 */
+.k-live-enter {
+  animation: k-live-enter var(--dur-enter) linear;
+}
+@keyframes k-live-enter {
+  from,
+  50% {
+    background-color: color-mix(in srgb, var(--signal-blue) 14%, var(--k-live-base, transparent));
+    box-shadow: inset 2px 0 0 var(--signal-blue);
+  }
+}
+
+/* 状态警示闪（炸板这类）：默认警示琥珀，data-tone="negative" 用跌红；闪两下，比数值闪更抢眼，因为这是要人去看的事。 */
+.k-live-alert {
+  --k-live-tone: var(--signal-amber);
+  animation: k-live-alert var(--dur-flash) linear 2;
+}
+.k-live-alert[data-tone='negative'] {
+  --k-live-tone: var(--signal-red);
+}
+@keyframes k-live-alert {
+  from {
+    background-color: color-mix(in srgb, var(--k-live-tone) 40%, var(--k-live-base, transparent));
+  }
+}

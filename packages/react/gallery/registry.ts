@@ -3418,6 +3418,71 @@ export const PAGES: readonly DocPage[] = [
     keys: [],
   },
   {
+    id: 'live',
+    group: 'layout',
+    cardHeight: 360,
+    title: 'live 数据刷新',
+    summary:
+      '数据在动时的四个钩子，照行情终端（TradingView、Bloomberg、同花顺）的做法：useValueFlash 数值变了给涨 / 跌方向（闪 600ms，同一格 1 秒内最多一次）；useEnterMarks 认出新来的条目（高亮 1200ms）；useFlipList 顺序变了让行平滑换位（FLIP，240ms）；useStatusFlash 状态变了给一次性的闪（炸板这类用警示色）。皮肤是 ui.css 里的 .k-live-flash / .k-live-enter / .k-live-alert，涨跌色跟「涨跌颜色」设置走；时长是 token --dur-flash / --dur-enter / --dur-reorder。RollingText、MarketHeatmap、Watchlist 已经走这一层。',
+    exports: [
+      'useValueFlash',
+      'useEnterMarks',
+      'useFlipList',
+      'useStatusFlash',
+      'LIVE_FLASH_MS',
+      'LIVE_ENTER_MS',
+      'LIVE_REORDER_MS',
+      'LIVE_FLASH_GAP_MS',
+    ],
+    props: [
+      {
+        part: 'live',
+        rows: [
+          {
+            name: 'useValueFlash(value, { enabled?, gapMs? })',
+            type: '{ flash: "up" | "down" | null, key: number }',
+            desc: '变大 up、变小 down；key 每闪一次加一，放在元素的 key 上让动画重放。首次渲染、null / NaN、1 秒内的第二次变化都不闪；闪完 flash 自己回到 null。',
+          },
+          {
+            name: 'useEnterMarks(ids)',
+            type: 'ReadonlySet<string>',
+            desc: '本次新出现的 id。首次渲染的全算旧的；1200ms 后自动清掉；走了又回来的算新的。',
+          },
+          {
+            name: 'useFlipList(containerRef, ids)',
+            type: 'void',
+            desc: 'ids 的顺序变了，让容器里带 data-live-id 的子元素从旧位置平滑移到新位置（transform，240ms，--ease-snappy）。没渲染的行与新行跳过。',
+          },
+          {
+            name: 'useStatusFlash(status)',
+            type: '{ flash: boolean, key: number }',
+            desc: '状态字符串变了，flash 为 true 约 600ms；key 每变一次加一。首次渲染与 null 不闪；不节流。',
+          },
+          {
+            name: 'LIVE_FLASH_MS / LIVE_ENTER_MS / LIVE_REORDER_MS / LIVE_FLASH_GAP_MS',
+            type: 'number',
+            desc: '600 / 1200 / 240 / 1000：毫秒数，与 token 一致（单测盯着）；最后一个只有 JS 用。',
+          },
+        ],
+      },
+    ],
+    states: [
+      '数值闪：data-flash="up" | "down" 的 .k-live-flash，背景从涨 / 跌色的弱化档淡到透明',
+      '新条目：.k-live-enter，左侧 2px 强调线加底色高亮，1200ms 淡出',
+      '状态警示：.k-live-alert，炸板这类用琥珀（data-tone="negative" 用跌红）闪两下',
+      '没有动画的环境（单测、服务端渲染）：钩子照常给出状态，只是没人播',
+    ],
+    donts: [
+      '不要自己再写一套 @keyframes 闪烁：时长与颜色都从这一层取',
+      '不要给每一格都加高亮：只有变了的才闪，同一格 1 秒内最多一次',
+      '用户滚离顶部时不要把新条目插进视野：只计数，点「新增 n 条」再合入（插入会把正在读的内容顶走）',
+      '不要为重排动画去改 DOM 顺序之外的东西：useFlipList 只写 transform，不碰 className 与 style',
+    ],
+    composition:
+      'useValueFlash / useStatusFlash（返回 flash 与 key）\n  .k-live-flash / .k-live-alert\nuseEnterMarks（返回新 id 集合）\n  .k-live-enter\nuseFlipList（容器 ref + ids，子元素 data-live-id）',
+    keys: [],
+  },
+  {
     id: 'side-nav',
     group: 'layout',
     cardHeight: 520,

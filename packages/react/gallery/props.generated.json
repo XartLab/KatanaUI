@@ -6550,6 +6550,11 @@
         }
       ]
     },
+    "FlashDirection": {
+      "kind": "type",
+      "source": "src/lib/live.ts",
+      "props": []
+    },
     "FlowCellState": {
       "kind": "type",
       "source": "src/quant/flow-gauges.tsx",
@@ -9026,6 +9031,26 @@
     "LINK_GROUPS": {
       "kind": "value",
       "source": "src/katana/led.tsx",
+      "props": []
+    },
+    "LIVE_ENTER_MS": {
+      "kind": "value",
+      "source": "src/lib/live.ts",
+      "props": []
+    },
+    "LIVE_FLASH_GAP_MS": {
+      "kind": "value",
+      "source": "src/lib/live.ts",
+      "props": []
+    },
+    "LIVE_FLASH_MS": {
+      "kind": "value",
+      "source": "src/lib/live.ts",
+      "props": []
+    },
+    "LIVE_REORDER_MS": {
+      "kind": "value",
+      "source": "src/lib/live.ts",
       "props": []
     },
     "LOADING_TIMEOUT_MS": {
@@ -21476,6 +21501,24 @@
         }
       ]
     },
+    "ValueFlash": {
+      "kind": "type",
+      "source": "src/lib/live.ts",
+      "props": [
+        {
+          "name": "flash",
+          "type": "FlashDirection | null",
+          "required": true,
+          "description": "这一次变化的方向；没有变化、被节流、首次渲染、非数值时是 null；闪完（约 LIVE_FLASH_MS 后）自己回到 null。"
+        },
+        {
+          "name": "key",
+          "type": "number",
+          "required": true,
+          "description": "每闪一次加一；放在元素的 key 上，CSS 动画才会重放。"
+        }
+      ]
+    },
     "ViewOption": {
       "kind": "type",
       "source": "src/patterns/view-switcher.tsx",
@@ -23698,9 +23741,19 @@
       "source": "src/quant/uptime-bars-model.ts",
       "props": []
     },
+    "useEnterMarks": {
+      "kind": "function",
+      "source": "src/lib/live.ts",
+      "props": []
+    },
     "useFieldControl": {
       "kind": "function",
       "source": "src/primitives/field.tsx",
+      "props": []
+    },
+    "useFlipList": {
+      "kind": "function",
+      "source": "src/lib/live.ts",
       "props": []
     },
     "useHoverIntent": {
@@ -23817,6 +23870,29 @@
         {
           "name": "onIndexChange",
           "type": "(index: number | null) => void",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "useStatusFlash": {
+      "kind": "function",
+      "source": "src/lib/live.ts",
+      "props": []
+    },
+    "useValueFlash": {
+      "kind": "function",
+      "source": "src/lib/live.ts",
+      "props": [
+        {
+          "name": "enabled",
+          "type": "boolean",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "gapMs",
+          "type": "number",
           "required": false,
           "description": ""
         }

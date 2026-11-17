@@ -145,6 +145,9 @@
   --warn-edge: 1px solid var(--signal-orange-dim);
   --chamfer-8: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
   --bracket: linear-gradient(#ffffff,#ffffff) 0 0/10px 1px no-repeat, linear-gradient(#ffffff,#ffffff) 0 0/1px 10px no-repeat, linear-gradient(#ffffff,#ffffff) 100% 0/10px 1px no-repeat, linear-gradient(#ffffff,#ffffff) 100% 0/1px 10px no-repeat, linear-gradient(#ffffff,#ffffff) 0 100%/10px 1px no-repeat, linear-gradient(#ffffff,#ffffff) 0 100%/1px 10px no-repeat, linear-gradient(#ffffff,#ffffff) 100% 100%/10px 1px no-repeat, linear-gradient(#ffffff,#ffffff) 100% 100%/1px 10px no-repeat;
+  --dur-flash: 600ms;
+  --dur-enter: 1200ms;
+  --dur-reorder: 240ms;
   --text-display: calc(400 + var(--k-weight-adjust, 0)) round(nearest, calc(28px * var(--k-text-scale, 1)), 1px)/round(nearest, calc(32px * var(--k-text-scale, 1)), 1px);
   --text-display-size: round(nearest, calc(28px * var(--k-text-scale, 1)), 1px);
   --text-display-tracking: -0.01em;
@@ -6987,18 +6990,54 @@ button.k-sysmon-link-body:focus-visible {
   line-height: 1;
 }
 
+.k-live-flash[data-flash] {
+  animation: k-live-flash var(--dur-flash) linear;
+}
+
+.k-live-flash[data-flash="up"] {
+  --k-live-tone: var(--pnl-up);
+}
+
+.k-live-flash[data-flash="down"] {
+  --k-live-tone: var(--pnl-down);
+}
+
+@keyframes k-live-flash {
+  from {
+    background-color: var(--ds-c-a4fdj0);
+  }
+}
+
+.k-live-enter {
+  animation: k-live-enter var(--dur-enter) linear;
+}
+
+@keyframes k-live-enter {
+  from, 50% {
+    background-color: var(--ds-c-a4ej4r);
+    box-shadow: inset 2px 0 0 var(--accent);
+  }
+}
+
+.k-live-alert {
+  --k-live-tone: var(--signal-amber);
+  animation: k-live-alert var(--dur-flash) linear 2;
+}
+
+.k-live-alert[data-tone="negative"] {
+  --k-live-tone: var(--signal-red);
+}
+
+@keyframes k-live-alert {
+  from {
+    background-color: var(--ds-c-13526if);
+  }
+}
+
 .k-roll {
   white-space: nowrap;
   font-variant-numeric: tabular-nums;
   display: inline-block;
-}
-
-.k-roll[data-direction="up"] {
-  animation: .15s linear k-flash-up;
-}
-
-.k-roll[data-direction="down"] {
-  animation: .15s linear k-flash-down;
 }
 
 .k-roll-slot {
@@ -7045,18 +7084,6 @@ button.k-sysmon-link-body:focus-visible {
 
 .k-roll[data-direction="down"] .k-roll-slot[data-from]:before {
   animation-name: k-roll-out-down;
-}
-
-@keyframes k-flash-up {
-  0%, 100% {
-    color: var(--pnl-up);
-  }
-}
-
-@keyframes k-flash-down {
-  0%, 100% {
-    color: var(--pnl-down);
-  }
 }
 
 @keyframes k-roll-in-up {
@@ -13449,17 +13476,7 @@ button.k-sm-head:focus-visible {
 }
 
 .k-mheat-cell[data-flash] {
-  animation: .7s ease-out k-mheat-flash;
-}
-
-@keyframes k-mheat-flash {
-  from {
-    box-shadow: inset 0 0 0 2px var(--ink-100);
-  }
-
-  to {
-    box-shadow: inset 0 0 0 2px var(--ds-c-2xn4aw);
-  }
+  --k-live-base: var(--mheat-bg);
 }
 
 .k-mheat-ring {
@@ -14471,24 +14488,8 @@ button.k-sm-head:focus-visible {
   color: var(--pnl-down);
 }
 
-.k-watch-flash[data-flash="up"] {
-  animation: 1s ease-out k-watch-flash-up;
-}
-
-.k-watch-flash[data-flash="down"] {
-  animation: 1s ease-out k-watch-flash-down;
-}
-
-@keyframes k-watch-flash-up {
-  from {
-    color: var(--pnl-up);
-  }
-}
-
-@keyframes k-watch-flash-down {
-  from {
-    color: var(--pnl-down);
-  }
+.k-watch-flash {
+  border-radius: 2px;
 }
 
 .k-watch-empty {
@@ -15890,6 +15891,9 @@ button.k-consensus-hash:focus-visible {
   --ds-c-3uduy7: #00000052;
   --ds-c-3udw59: #000000d1;
   --ds-c-3udw2n: #000000a6;
+  --ds-c-a4fdj0: color-mix(in srgb, var(--k-live-tone) var(--k-live-mix, 24%), var(--k-live-base, transparent));
+  --ds-c-a4ej4r: color-mix(in srgb, var(--accent) 14%, var(--k-live-base, transparent));
+  --ds-c-13526if: color-mix(in srgb, var(--k-live-tone) 40%, var(--k-live-base, transparent));
   --ds-c-d84amz: #ff5a5a8c;
   --ds-c-yj0hg8: #000;
   --ds-c-jjz0qz: color-mix(in srgb, var(--signal-amber) 10%, transparent);
@@ -15944,6 +15948,7 @@ button.k-consensus-hash:focus-visible {
   --k-in-y: initial;
   --k-json-level: initial;
   --k-len: initial;
+  --k-live-mix: initial;
   --k-rise: initial;
   --k-run: initial;
   --k-scatter-color: initial;

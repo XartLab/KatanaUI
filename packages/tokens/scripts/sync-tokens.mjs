@@ -61,7 +61,7 @@ const UPDOWN_SWAPS = [
   ['div-neg-200', 'div-pos-200'],
 ]
 
-const groups = [tokens.color, tokens.spacing, tokens.radius, tokens.shadow, tokens.border]
+const groups = [tokens.color, tokens.spacing, tokens.radius, tokens.shadow, tokens.border, tokens.motion]
 const lines = []
 const defaultReducedLines = []
 const themed = Object.fromEntries(THEMES.map((theme) => [theme, { values: [], reduced: [] }]))

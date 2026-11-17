@@ -393,22 +393,9 @@
 .k-watch td[data-tone='down'] {
   color: var(--pnl-down);
 }
-.k-watch-flash[data-flash='up'] {
-  animation: k-watch-flash-up 1s ease-out;
-}
-.k-watch-flash[data-flash='down'] {
-  animation: k-watch-flash-down 1s ease-out;
-}
-/* 只写起点：终点就是它本来的字色，所以「约 1 秒回落」。 */
-@keyframes k-watch-flash-up {
-  from {
-    color: var(--pnl-up);
-  }
-}
-@keyframes k-watch-flash-down {
-  from {
-    color: var(--pnl-down);
-  }
+/* 价格尾数的闪烁在共用层 live.css（.k-live-flash）；这里只给尾数块一点圆角，让底色不顶着字边。 */
+.k-watch-flash {
+  border-radius: 2px;
 }
 .k-watch-empty {
   margin: 0;

@@ -143,6 +143,9 @@
   --warn-edge: 1px solid var(--signal-orange-dim);
   --chamfer-8: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
   --bracket: linear-gradient(#ffffff,#ffffff) 0 0/10px 1px no-repeat, linear-gradient(#ffffff,#ffffff) 0 0/1px 10px no-repeat, linear-gradient(#ffffff,#ffffff) 100% 0/10px 1px no-repeat, linear-gradient(#ffffff,#ffffff) 100% 0/1px 10px no-repeat, linear-gradient(#ffffff,#ffffff) 0 100%/10px 1px no-repeat, linear-gradient(#ffffff,#ffffff) 0 100%/1px 10px no-repeat, linear-gradient(#ffffff,#ffffff) 100% 100%/10px 1px no-repeat, linear-gradient(#ffffff,#ffffff) 100% 100%/1px 10px no-repeat;
+  --dur-flash: 600ms;
+  --dur-enter: 1200ms;
+  --dur-reorder: 240ms;
   --text-display: calc(400 + var(--k-weight-adjust, 0)) round(nearest, calc(28px * var(--k-text-scale, 1)), 1px)/round(nearest, calc(32px * var(--k-text-scale, 1)), 1px);
   --text-display-size: round(nearest, calc(28px * var(--k-text-scale, 1)), 1px);
   --text-display-tracking: -0.01em;

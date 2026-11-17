@@ -162,6 +162,18 @@ export {
   truncateText,
   wrapText,
 } from './lib/text-measure.ts'
+export {
+  LIVE_ENTER_MS,
+  LIVE_FLASH_GAP_MS,
+  LIVE_FLASH_MS,
+  LIVE_REORDER_MS,
+  useEnterMarks,
+  useFlipList,
+  useStatusFlash,
+  useValueFlash,
+  type FlashDirection,
+  type ValueFlash,
+} from './lib/live.ts'
 export { ViewSwitcher, type ViewOption, type ViewSwitcherProps } from './patterns/view-switcher.tsx'
 export {
   applyFilters,

@@ -3,6 +3,7 @@ import type { ComponentType } from 'react'
 import { NewsReaderDemo, ScreenerDemo } from './pages/screener.tsx'
 import { RenderingSettingsDemo } from './rendering.tsx'
 import { SideNavUsage } from './usage/SideNavUsage.tsx'
+import { LiveUsage } from './usage/LiveUsage.tsx'
 import { TextMeasureUsage } from './usage/TextMeasureUsage.tsx'
 import { MeasuredSkeletonUsage } from './usage/MeasuredSkeletonUsage.tsx'
 import { DateTimeInputDemo, NumberInputDemo, SkeletonDemo } from './pages/fields.tsx'
@@ -194,6 +195,7 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'rendering-settings': RenderingSettingsDemo,
   'side-nav': SideNavUsage,
   'text-measure': TextMeasureUsage,
+  live: LiveUsage,
   'column-set-tabs': ScreenerDemo,
   'news-reader': NewsReaderDemo,
   'strategy-report': StrategyReportDemo,
