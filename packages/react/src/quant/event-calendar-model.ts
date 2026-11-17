@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: MIT
 // 日历（EventCalendar）的纯函数：按显示时区分天、周条的七天、筛选、倒计时、财报意外百分比。件里不读时钟，「现在」由调用方传。
+// 日期运算用 @internationalized/date（CalendarDate、时区换算），跟 DateRangePicker、DateTimeInput 同一套，不手写 Date.UTC。
 // 周从周一起（TradingView 日历的周条是周一到周日，主会话 2026-11-15 实测）；今天按「现在」所在的显示时区算。
 
 import type { Tone } from '../lib/tone.ts'
-import { dayKeyIn, isoDate } from '../lib/date.ts'
+import { fromAbsolute, parseDate, startOfWeek, toCalendarDate } from '@internationalized/date'
 
 export type EconomicImportance = 1 | 2 | 3
 /** @deprecated Use `Tone` from lib/tone.ts; same three values. */
@@ -138,19 +139,17 @@ export function releaseState(event: { at: number; actual?: unknown }, now: numbe
 
 /** 某一时刻在时区里的日期（YYYY-MM-DD）。 */
 export function dayKeyOf(at: number, timeZone: string): string {
-  return dayKeyIn(at, timeZone)
+  return toCalendarDate(fromAbsolute(at, timeZone)).toString()
 }
 
+/** 日历日（YYYY-MM-DD）加减几天，跨月跨年由 CalendarDate 算。 */
 export function addDays(key: string, days: number): string {
-  const [y, m, d] = key.split('-').map(Number)
-  return isoDate(Date.UTC(y!, m! - 1, d! + days))
+  return parseDate(key).add({ days }).toString()
 }
 
-/** 这天所在周的周一。 */
-export function weekStartOf(key: string): string {
-  const [y, m, d] = key.split('-').map(Number)
-  const dow = new Date(Date.UTC(y!, m! - 1, d!)).getUTCDay() // 0 = 周日
-  return addDays(key, -((dow + 6) % 7))
+/** 这天所在周的周一（周从周一起，与 locale 无关）。 */
+function weekStartOf(key: string): string {
+  return startOfWeek(parseDate(key), 'en-US', 'mon').toString()
 }
 
 export type DayRange = { start: string; end: string }
