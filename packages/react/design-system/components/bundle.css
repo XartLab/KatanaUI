@@ -13327,7 +13327,7 @@ button.k-sm-head:focus-visible {
   font-style: normal;
 }
 
-.k-sx-recon[data-state="warn"] .k-sx-recon-diff b {
+.k-sx-recon[data-tone="warn"] .k-sx-recon-diff b {
   color: var(--k-status-warn-foreground);
 }
 

@@ -167,9 +167,9 @@ for (const theme of THEMES) {
       await tiles.first().click()
       await ok.getByRole('button', { name: '表格视图' }).click()
       await expect(ok.locator('[data-slot="series-table"]')).toBeVisible()
-      await expect(ok.locator('[data-slot="series-reconcile"]')).toHaveAttribute('data-state', 'ok')
+      await expect(ok.locator('[data-slot="series-reconcile"]')).toHaveAttribute('data-tone', 'ok')
       await expect(sec.locator('[data-gallery-explorer="mismatch"] [data-slot="series-reconcile"]')).toHaveAttribute(
-        'data-state',
+        'data-tone',
         'warn',
       )
     })

@@ -131,7 +131,7 @@
   color: var(--k-content-secondary-foreground);
   font-style: normal;
 }
-.k-sx-recon[data-state='warn'] .k-sx-recon-diff b {
+.k-sx-recon[data-tone='warn'] .k-sx-recon-diff b {
   color: var(--k-status-warn-foreground);
 }
 .k-sx-recon-state {
