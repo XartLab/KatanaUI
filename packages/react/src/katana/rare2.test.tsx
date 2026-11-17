@@ -1,14 +1,11 @@
 // SPDX-License-Identifier: MIT
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vite-plus/test'
-import { CodeBlock, DurationPicker, StepPlayer, TaskList, ThemeSelector, WebSearch } from '../index.ts'
+import { CodeBlock, StepPlayer, WebSearch } from '../index.ts'
 import { highlight } from './code-highlight.ts'
 import { gutterWidth, trimCode } from './code-block.tsx'
-import { fieldText, parseField } from './duration-picker.tsx'
 import { rollSlots, rollStrip } from './rolling-text.tsx'
 import { arrive, clampStep, stepDuration } from './step-player-model.ts'
-import { orderTasks } from './task-list.tsx'
-import { nextThemeIndex } from './theme-selector.tsx'
 import { searchProgress, siteInitial } from './web-search.tsx'
 
 // #1861 第二批的纯逻辑与结构。动效、焦点、键盘在 e2e/ui-gallery.spec.ts 里用真浏览器验。
@@ -76,32 +73,6 @@ describe('StepPlayer', () => {
     expect(html.match(/data-state="past"/g)).toHaveLength(1)
     expect(html.match(/data-state="pending"/g)).toHaveLength(1)
     expect(html).not.toContain('step-player-seek')
-  })
-})
-
-describe('ThemeSelector', () => {
-  it('方向键与 Home / End：移动并循环，别的键不处理', () => {
-    expect(nextThemeIndex('ArrowRight', 1, 3)).toBe(2)
-    expect(nextThemeIndex('ArrowRight', 2, 3)).toBe(0)
-    expect(nextThemeIndex('ArrowLeft', 0, 3)).toBe(2)
-    expect(nextThemeIndex('Home', 2, 3)).toBe(0)
-    expect(nextThemeIndex('End', 0, 3)).toBe(2)
-    expect(nextThemeIndex('a', 0, 3)).toBeNull()
-    expect(nextThemeIndex('ArrowRight', 0, 0)).toBeNull()
-  })
-
-  it('没选中时 tab 停在第一张，选中时只停在选中那张', () => {
-    const colors = { rail: '#111', panel: '#222', line: '#333', strong: '#fff', muted: '#555', tile: '#444' }
-    const themes = [
-      { value: 'a', label: 'A', colors },
-      { value: 'b', label: 'B', colors },
-    ]
-    const none = renderToStaticMarkup(<ThemeSelector themes={themes} label="主题" value={null} />)
-    expect(none.match(/tabindex="0"/gi)).toHaveLength(1)
-    expect(none).toContain('aria-checked="false"')
-    const picked = renderToStaticMarkup(<ThemeSelector themes={themes} label="主题" defaultValue="b" />)
-    expect(picked).toContain('role="radiogroup"')
-    expect(picked).toMatch(/aria-checked="true"[^>]*aria-label="B"/)
   })
 })
 
@@ -209,57 +180,5 @@ describe('WebSearch', () => {
       <WebSearch sources={sources.slice(0, 1)} status="searching" label="检索中" moreLabel={() => ''} lessLabel="" />,
     )
     expect(searching.match(/data-slot="web-search-skeleton"/g)).toHaveLength(3)
-  })
-})
-
-describe('TaskList', () => {
-  const tasks = [
-    { id: 'a', label: 'A', done: true },
-    { id: 'b', label: 'B' },
-    { id: 'c', label: 'C', done: true },
-    { id: 'd', label: 'D' },
-  ]
-
-  it('划完（沉底）的行排到后面，没沉的保持原位，包括勾上但线没划完的', () => {
-    expect(orderTasks(tasks, ['c']).map((task) => task.id)).toEqual(['a', 'b', 'd', 'c'])
-    expect(orderTasks(tasks, ['a', 'c']).map((task) => task.id)).toEqual(['b', 'd', 'a', 'c'])
-    expect(orderTasks(tasks, []).map((task) => task.id)).toEqual(['a', 'b', 'c', 'd'])
-  })
-
-  it('沉了的行如果现在不是完成的、或已经不存在，当作没沉', () => {
-    expect(orderTasks(tasks, ['b', 'zzz']).map((task) => task.id)).toEqual(['a', 'b', 'c', 'd'])
-  })
-
-  it('结构：每行是 checkbox，起始就完成的在底部，屏外有播报区', () => {
-    const html = renderToStaticMarkup(
-      <TaskList defaultTasks={tasks} labels={{ completed: (l) => l, reopened: (l) => l }} />,
-    )
-    expect(html.match(/role="checkbox"/g)).toHaveLength(4)
-    expect(html.match(/aria-checked="true"/g)).toHaveLength(2)
-    expect(html.indexOf('>B<')).toBeLessThan(html.indexOf('>A<'))
-    expect(html).toContain('role="status"')
-  })
-})
-
-describe('DurationPicker', () => {
-  it('输入框的字：只认数字，空当 0，超出夹到上限并标记', () => {
-    expect(parseField('', 24)).toEqual({ value: 0, overflow: false })
-    expect(parseField('12', 24)).toEqual({ value: 12, overflow: false })
-    expect(parseField('99', 24)).toEqual({ value: 24, overflow: true })
-    expect(parseField('a3b', 24)).toEqual({ value: 3, overflow: false })
-    expect(fieldText(0)).toBe('')
-    expect(fieldText(7)).toBe('7')
-  })
-
-  it('结构：不编辑时两个数字只读、笔钮名字由调用方给；0 写成 0', () => {
-    const labels = { hours: '时', minutes: '分', edit: '编辑', save: '确认', hoursInput: '小时', minutesInput: '分钟' }
-    const html = renderToStaticMarkup(<DurationPicker defaultValue={{ hours: 2, minutes: 0 }} labels={labels} />)
-    expect(html).toContain('aria-label="编辑"')
-    expect(html).toContain('value="2"')
-    expect(html).toContain('value="0"')
-    expect(html.match(/readOnly=""/g)).toHaveLength(2)
-    const editing = renderToStaticMarkup(<DurationPicker defaultEditing labels={labels} />)
-    expect(editing).toContain('aria-label="确认"')
-    expect(editing).not.toContain('readOnly')
   })
 })

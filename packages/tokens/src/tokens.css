@@ -228,6 +228,18 @@
   --k-focused-outlineColor: var(--focus-ring);
   --k-focused-outlineWidth: 2px;
   --k-focused-outlineOffset: 2px;
+  --k-editable-background: var(--alpha-white-3);
+  --k-editable-borderColor: var(--alpha-white-7);
+  --k-editable-borderColor-active: var(--alpha-white-12);
+  --k-editable-bold-background: var(--alpha-white-2);
+  --k-editable-bold-background-hover: var(--alpha-white-4);
+  --k-editable-bold-background-active: var(--alpha-white-6);
+  --k-editable-bold-borderColor: var(--alpha-white-10);
+  --k-editable-bold-borderColor-active: var(--alpha-white-14);
+  --k-selectable-background: var(--alpha-white-10);
+  --k-selectable-background-selected: var(--ink-100);
+  --k-selectable-foreground-selected: var(--bg-000);
+  --k-focused-background: var(--alpha-white-10);
   --k-surface-sunken-background: var(--bg-000);
   --k-surface-base-background: var(--bg-100);
   --k-surface-raised-background: var(--bg-300);

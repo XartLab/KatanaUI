@@ -11,12 +11,7 @@ import { focusRingInset } from '../lib/focus.ts'
 import { snappy } from '../lib/motion.ts'
 import { unit } from '../lib/spring.ts'
 import { Input } from '../primitives/input.tsx'
-
-/** 眼睛的轮廓：open 为 1 是睁开的杏仁形，为 0 是压平的一条线（眼睑合上）。 */
-export function eyePath(open: number): string {
-  const lift = 8 * Math.min(1, Math.max(0, open))
-  return `M2 12C6 ${12 - lift} 18 ${12 - lift} 22 12C18 ${12 + lift} 6 ${12 + lift} 2 12Z`
-}
+import { eyePath } from './password-input-model.ts'
 
 function Eye({ open }: { open: boolean }) {
   const amount = useMotionValue(open ? 1 : 0)
@@ -50,21 +45,31 @@ function Eye({ open }: { open: boolean }) {
   )
 }
 
-export type PasswordInputProps = Omit<ComponentProps<'input'>, 'type' | 'size'> & {
+/** Texts of PasswordInput (the package ships no text). */
+export type PasswordInputLabels = {
   /**
-   * Accessible name of the show/hide button (required). It does not change with state; aria-pressed says whether the text is shown.
-   * 切换按钮的读屏名（必填：包里没有文字）。名字不随状态变，当前是不是显示着由 aria-pressed 表达。
+   * Accessible name of the show/hide button. It does not change with state; aria-pressed says whether the text is shown.
+   * 切换按钮的读屏名。名字不随状态变，当前是不是显示着由 aria-pressed 表达。
    */
-  toggleLabel: string
+  toggle: string
+}
+
+export type PasswordInputProps = Omit<ComponentProps<'input'>, 'type' | 'size'> & {
+  /** Texts: toggle (required unless the deprecated toggleLabel is given). */
+  labels?: PasswordInputLabels
+  /** Old name of labels.toggle, kept for one release. @deprecated Use labels.toggle. */
+  toggleLabel?: string
   /** Show the plain text from the start. */
   defaultVisible?: boolean
   /** Called when the visibility is toggled. */
   onVisibleChange?: (visible: boolean) => void
-  /** Same as Input: 30px and 26px. */
-  size?: 'default' | 'sm'
+  /** Same as Input: md is 30px (the default), sm is 26px; 'default' is the deprecated name of md. */
+  size?: 'sm' | 'md' | 'default'
 }
 
+/** Secret field: masked by default, with an eye button that shows or hides the text without stealing focus. */
 export function PasswordInput({
+  labels,
   toggleLabel,
   defaultVisible = false,
   onVisibleChange,
@@ -101,7 +106,7 @@ export function PasswordInput({
           else if (ref) ref.current = node
         }}
         type={visible ? 'text' : 'password'}
-        size={size}
+        size={size === 'sm' ? 'sm' : undefined}
         disabled={disabled}
         autoComplete={props.autoComplete ?? 'off'}
         autoCapitalize="none"
@@ -112,7 +117,7 @@ export function PasswordInput({
       <button
         type="button"
         data-slot="password-input-toggle"
-        aria-label={toggleLabel}
+        aria-label={labels?.toggle ?? toggleLabel}
         aria-pressed={visible}
         disabled={disabled}
         // 按下时不让输入框失焦：正在输入的人点一下眼睛，光标还在原处。

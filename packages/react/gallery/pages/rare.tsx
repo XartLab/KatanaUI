@@ -32,7 +32,7 @@ export function PasswordInputDemo() {
       <Row name="默认">
         <div className="gal-wide">
           <PasswordInput
-            toggleLabel="显示密钥"
+            labels={{ toggle: '显示密钥' }}
             defaultValue="demo-secret-0123456789"
             aria-label="API 密钥"
             onVisibleChange={setVisible}
@@ -42,12 +42,12 @@ export function PasswordInputDemo() {
       </Row>
       <Row name="sm · 空">
         <div className="gal-wide">
-          <PasswordInput toggleLabel="显示口令" size="sm" placeholder="代理口令" aria-label="代理口令" />
+          <PasswordInput labels={{ toggle: '显示口令' }} size="sm" placeholder="代理口令" aria-label="代理口令" />
         </div>
       </Row>
       <Row name="禁用">
         <div className="gal-wide">
-          <PasswordInput toggleLabel="显示" disabled defaultValue="locked" aria-label="已锁定" />
+          <PasswordInput labels={{ toggle: '显示' }} disabled defaultValue="locked" aria-label="已锁定" />
         </div>
       </Row>
       <p className="gal-note">点眼睛显示或遮住，输入框不丢焦点、选区还在；按钮的名字不变，状态看 aria-pressed。</p>
@@ -63,10 +63,7 @@ export function DeleteButtonDemo() {
       <Row name="默认">
         <DeleteButton
           label="删除工作区"
-          confirmLabel="确认删除"
-          cancelLabel="取消"
-          doneLabel="已删除"
-          keptLabel="已取消"
+          labels={{ confirm: '确认删除', cancel: '取消', done: '已删除', kept: '已取消' }}
           onConfirm={() => setDeleted((n) => n + 1)}
           onCancel={() => setKept((n) => n + 1)}
         />
@@ -75,7 +72,7 @@ export function DeleteButtonDemo() {
         </output>
       </Row>
       <Row name="禁用">
-        <DeleteButton label="删除（不可用）" confirmLabel="确认" cancelLabel="取消" disabled />
+        <DeleteButton label="删除（不可用）" labels={{ confirm: '确认', cancel: '取消' }} disabled />
       </Row>
       <p className="gal-note">点一下只展开，不执行；展开后焦点在「取消」上，Esc 或点外面都是取消，点勾才执行。</p>
     </>

@@ -90,16 +90,7 @@ const quant: GuidanceMap = {
     avoid: ['百分比涨跌幅用 change-text。', '格式化（币种、位数、符号）由调用方做，不要指望它格式化。'],
     a11y: ['符号由调用方写进字里，不只靠颜色。', '颜色跟 data-updown，红涨绿跌互换时文字不变。'],
   },
-  'decimal-field': {
-    aliases: ['Price input', 'Quantity stepper', 'Number input', 'Order entry field'],
-    use: ['下单面板输入价格与数量，按最小变动价位走一格。', '风控参数、止损止盈价位的输入。'],
-    avoid: ['不要求十进制精度的一般数字用普通输入框。', '价位在不在格子上由调用方与 Gateway 判，不在这里校验。'],
-    a11y: [
-      'error 状态设 aria-invalid；warning 只换边色，读屏不报无效。',
-      '− / + 按钮的读屏名由调用方传 buttons。',
-      '只读、禁用时方向键与按钮都不改值。',
-    ],
-  },
+
   'quant-format': {
     aliases: ['Number formatter', 'Intl.NumberFormat', 'Price formatter', 'Tick size format'],
     use: ['表格、图表、画布与 Worker 里统一价格、涨跌幅、数量的写法。', '回测报告输出前统一小数位。'],

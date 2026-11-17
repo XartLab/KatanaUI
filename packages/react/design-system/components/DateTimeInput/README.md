@@ -20,7 +20,7 @@
 | `seconds` | `boolean` | `false` | Include seconds in the time. |
 | `min` | `string` | — | Earliest selectable date (YYYY-MM-DD); days outside the range are disabled and typed dates outside it are marked invalid. |
 | `max` | `string` | — | Latest selectable date (YYYY-MM-DD). |
-| `size` | `'sm'` | — | sm is 26px high. |
+| `size` | `'sm' \| 'md'` | — | sm is 26px high; md (the default) is 30px. |
 | `autoFocus` | `boolean` | — | Focus the field on mount, like the native attribute. |
 | `className` | `string` | — | Extra class name on the root. |
 | `labels` * | `DateTimeLabels` | — | Accessible names and button names (the package ships no text; the caller passes them in the UI language). |
@@ -67,6 +67,8 @@ export function DateTimeInputUsage() {
 ## Don't
 
 - 不要依赖浏览器语言的日期格式：这个件不随它变。
+- 不要传 Date 对象或时间戳：值是字符串，时区由调用方换算好再传。
+- 选区间用 DateRangePicker，别并排放两个 DateTimeInput。
 
 ## Composition
 

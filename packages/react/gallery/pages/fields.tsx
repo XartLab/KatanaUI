@@ -21,21 +21,38 @@ export function NumberInputDemo() {
   return (
     <>
       <Row name="默认">
-        <NumberInput label="线宽" value={size} onValue={setSize} min={1} max={40} unit="px" />
+        <NumberInput label="线宽" value={size} onValueChange={setSize} min={1} max={40} unit="px" />
         <output data-gallery-number>{size}</output>
       </Row>
       <Row name="sm · 小数">
-        <NumberInput label="步长" value={price} onValue={setPrice} min={0} max={10} step={0.1} size="sm" width={80} />
+        <NumberInput
+          label="步长"
+          value={price}
+          onValueChange={setPrice}
+          min={0}
+          max={10}
+          step={0.1}
+          size="sm"
+          width={80}
+        />
       </Row>
       <Row name="自动">
-        <NumberInput label="根数" value={auto} onValue={setAuto} min={0} max={500} autoValue={0} autoText="自动" />
+        <NumberInput
+          label="根数"
+          value={auto}
+          onValueChange={setAuto}
+          min={0}
+          max={500}
+          autoValue={0}
+          autoText="自动"
+        />
       </Row>
       <Row name="标签 · 算式">
         <NumberInput
           label="数量"
           caption="数量"
           value={qty}
-          onValue={setQty}
+          onValueChange={setQty}
           min={0}
           max={100000}
           step={10}
@@ -45,8 +62,8 @@ export function NumberInputDemo() {
         <output data-gallery-qty>{qty}</output>
       </Row>
       <Row name="禁用 · 非法">
-        <NumberInput label="禁用" value={3} onValue={() => {}} disabled />
-        <NumberInput label="非法" value={3} onValue={() => {}} invalid />
+        <NumberInput label="禁用" value={3} onValueChange={() => {}} disabled />
+        <NumberInput label="非法" value={3} onValueChange={() => {}} invalid />
       </Row>
       <p className="gal-note">
         打字、↑↓、按住左右拖（Shift 粗调、Alt 精调）都能改值；越界夹进范围。「标签 · 算式」那个框还能写

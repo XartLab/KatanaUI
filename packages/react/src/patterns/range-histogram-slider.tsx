@@ -9,6 +9,14 @@ import { moveThumb, nearestThumb, ratioOf, snapValue, stepValue, valueAt, type T
 // 箱的高度越高颜色越亮（顺序色阶 seq-200..600，dataviz §2）。patterns 层在 quant 之下，不能取 quant/chart-kit 的 seqColor，这里只列 token 名。
 const SEQ = ['var(--seq-200)', 'var(--seq-300)', 'var(--seq-400)', 'var(--seq-500)', 'var(--seq-600)'] as const
 
+/** Texts of RangeHistogramSlider (the package ships no text). */
+export type RangeHistogramSliderLabels = {
+  /** Accessible name of the lower thumb (a full phrase, such as "Market cap minimum"). 下限把手的读屏名。 */
+  low: string
+  /** Accessible name of the upper thumb. 上限把手的读屏名。 */
+  high: string
+}
+
 export type RangeHistogramSliderProps = {
   /** 每一箱的个数，等宽分箱铺满 [min, max]；用 histogramBins 算。 */
   counts: readonly number[]
@@ -21,8 +29,8 @@ export type RangeHistogramSliderProps = {
   onValueChange?: (value: [number, number]) => void
   /** 数值怎么写（读数行、读屏的 aria-valuetext 都用它）。 */
   formatValue?: (value: number) => string
-  /** 两个把手的读屏名（整句，如「市值下限」「市值上限」）。 */
-  labels: { low: string; high: string }
+  /** Thumb names: low and high (required). 两个把手的读屏名。 */
+  labels: RangeHistogramSliderLabels
   /** 整条的读屏名。 */
   label: string
   /** 读数行：给了就写它的结果，不给写「下限 – 上限」。 */
@@ -30,6 +38,7 @@ export type RangeHistogramSliderProps = {
   className?: string
 }
 
+/** Range filter drawn over the distribution histogram: two APG multi-thumb sliders; bars inside the range light up. */
 export function RangeHistogramSlider({
   counts,
   min,

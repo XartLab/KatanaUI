@@ -91,7 +91,7 @@ export function RenderingPage() {
         改这里会写到页面根节点上，切到任何组件页都生效；应用里放在「设置 →
         渲染」。字样表放的是最容易糊、最容易认错的字，在你自己的屏幕上对比着调。
       </p>
-      <RenderingSettings value={value} onChange={change} />
+      <RenderingSettings value={value} onValueChange={change} />
 
       <h2>本机</h2>
       <dl className="gal-render-env">
@@ -192,7 +192,7 @@ export function RenderingSettingsDemo() {
   return (
     <RenderingSettings
       value={value}
-      onChange={(next) => {
+      onValueChange={(next) => {
         setValue(next)
         applyRendering(next)
       }}

@@ -68,7 +68,7 @@ export const KatanaDateRangePicker = createComponentImplementation(KatanaDateRan
         <FieldLabel>{props.label}</FieldLabel>
         <DateRangePicker
           value={DAY.test(start) && DAY.test(end) ? { start, end } : null}
-          onValue={(range) => {
+          onValueChange={(range) => {
             props.setStart?.(range.start)
             props.setEnd?.(range.end)
           }}

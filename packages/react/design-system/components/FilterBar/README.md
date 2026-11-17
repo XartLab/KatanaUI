@@ -12,7 +12,7 @@
 | --- | --- | --- | --- |
 | `fields` | `FilterField[]` | — | { key, label, group?, input?（number / text）, operators: {value,label}[], presets?: {key,label,hint?,op,value}[], shown? }。 |
 | `value` | `FilterCondition[]` | — | { id, field, op, value, label? }；同一字段只留最后设的一条。 |
-| `onChange` | `(next: FilterCondition[]) => void` | — | 条件变了（设、清除、移除字段、重置）。 |
+| `onValueChange` | `(next: FilterCondition[]) => void` | — | 条件变了（设、清除、移除字段、重置、撤销、重做）。旧名 onChange 留一个版本（@deprecated）。 |
 | `labels` | `FilterBarLabels` | — | 全部文字，由调用方传。传了 undo 与 redo 两个读屏名，条的最左多一对撤销 / 重做按钮（件自己记它改过的条件快照，最多 50 步；从外面换掉条件不进栈）。 |
 | `defaultShown` | `string[]` | — | 条上一开始有哪些字段；不给取 shown 为真的，再没有取前 6 个。 |
 
@@ -26,7 +26,7 @@
 | `value` | `string` | — | 当前视图的键。 |
 | `onValueChange` | `(key: string) => void` | — | 选了另一个视图。 |
 | `onSave` | `() => void` | — | 给了，列表底部多一项「另存为」（文字 labels.save）；命名对话框与存哪里归调用方。 |
-| `labels` | `{ trigger: string; save?: string }` | — | 读屏名与「另存为」文字。 |
+| `labels` | `ViewSwitcherLabels` | — | { trigger, save? }：读屏名与「另存为」文字。 |
 
 ### applyFilters / matchCondition
 
@@ -82,7 +82,7 @@ const LABELS: FilterBarLabels = {
 
 export function FilterBarUsage() {
   const [conditions, setConditions] = useState<FilterCondition[]>([])
-  return <FilterBar fields={FIELDS} value={conditions} onChange={setConditions} labels={LABELS} />
+  return <FilterBar fields={FIELDS} value={conditions} onValueChange={setConditions} labels={LABELS} />
 }
 ```
 

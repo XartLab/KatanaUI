@@ -1,6 +1,7 @@
-/* SPDX-License-Identifier: MIT */
+/* SPDX-License-Identifier: MIT 
+   G2（2026-11-18）：颜色改读 characteristics（--k-actionable-*、--k-status-*），静止态值与改前相等；neutral 的填充 10% → 9% 白（按下底），只在按住时看得到。 */
 /* HoldToConfirm：照我们的按钮（30 高 · 圆角 control · 4% 白底 8% 白边 · 12px 500，见 primitives/button.tsx），
-   底下一层按进度从左往右填满（transform: scaleX，进度由组件逐帧写），字压在填充上。danger 填红，default 填 10% 白。 */
+   底下一层按进度从左往右填满（transform: scaleX，进度由组件逐帧写），字压在填充上。tone 是 Severity：danger 填红（默认）、warn 琥珀、ok 绿（38% 语气色），neutral 填按钮按下底（9% 白）。 */
 .k-hold {
   position: relative;
   display: inline-flex;
@@ -10,10 +11,10 @@
   min-width: 96px;
   padding: 0 12px;
   overflow: hidden;
-  background: var(--alpha-white-3);
-  border: 1px solid var(--alpha-white-7);
+  background: var(--k-actionable-background);
+  border: 1px solid var(--k-actionable-borderColor);
   border-radius: var(--radius-control);
-  color: var(--ink-200);
+  color: var(--k-actionable-foreground);
   font: var(--text-data) var(--font-sans);
   font-weight: 500;
   cursor: pointer;
@@ -24,7 +25,7 @@
     border-color 0.15s;
 }
 .k-hold:hover:not(:disabled) {
-  color: var(--ink-100);
+  color: var(--k-content-primary-foreground);
 }
 .k-hold:disabled {
   opacity: 0.45;
@@ -35,22 +36,33 @@
   outline-offset: 2px;
 }
 .k-hold[data-tone='danger'] {
-  border-color: color-mix(in srgb, var(--signal-red) 30%, transparent);
-  color: var(--signal-red);
+  --k-hold-tone: var(--k-status-danger-foreground);
+  border-color: var(--k-status-danger-borderColor);
+  color: var(--k-status-danger-foreground);
+}
+.k-hold[data-tone='warn'] {
+  --k-hold-tone: var(--k-status-warn-foreground);
+  border-color: var(--k-status-warn-borderColor);
+  color: var(--k-status-warn-foreground);
+}
+.k-hold[data-tone='ok'] {
+  --k-hold-tone: var(--k-status-ok-foreground);
+  border-color: var(--k-status-ok-borderColor);
+  color: var(--k-status-ok-foreground);
 }
 .k-hold-fill {
   position: absolute;
   inset: 0;
-  background: var(--alpha-white-10);
+  background: var(--k-actionable-background-active);
   transform: scaleX(0);
   transform-origin: left center;
   pointer-events: none;
 }
-.k-hold[data-tone='danger'] .k-hold-fill {
-  background: color-mix(in srgb, var(--signal-red) 38%, transparent);
+.k-hold:is([data-tone='danger'], [data-tone='warn'], [data-tone='ok']) .k-hold-fill {
+  background: color-mix(in srgb, var(--k-hold-tone) 38%, transparent);
 }
 .k-hold[data-phase='done'] {
-  color: var(--ink-100);
+  color: var(--k-content-primary-foreground);
 }
 .k-hold-label {
   position: relative;

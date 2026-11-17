@@ -2,7 +2,7 @@
 import { Pause, Play, Square } from 'lucide-react'
 import { useState, type ReactNode } from 'react'
 import { cn } from '../../lib/cn.ts'
-import { HoldToConfirm } from '../../katana/hold-to-confirm.tsx'
+import { HoldToConfirm } from '../../patterns/hold-to-confirm.tsx'
 import { Led, type LedState } from '../../katana/led.tsx'
 import { ChipGroup } from '../../patterns/chip-group.tsx'
 import { Button } from '../../primitives/button.tsx'
@@ -150,8 +150,7 @@ export function SystemMonitor({
         {onEmergencyStop && (
           <HoldToConfirm
             onConfirm={onEmergencyStop}
-            hint={labels.emergencyHint}
-            confirmedLabel={labels.emergencyDone}
+            labels={{ hint: labels.emergencyHint, confirmed: labels.emergencyDone }}
             disabled={strategies.length === 0}
           >
             {labels.emergencyStop}
@@ -272,7 +271,7 @@ export function SystemMonitor({
                   value={kinds}
                   onValueChange={setKinds}
                   label={labels.eventKinds}
-                  clearLabel={labels.clearKinds}
+                  labels={{ clear: labels.clearKinds }}
                 />
               </div>
               {shownEvents.length === 0 ? (

@@ -2,7 +2,7 @@
 import { X } from 'lucide-react'
 import { useId, useState, type KeyboardEvent } from 'react'
 import { cn } from '../lib/cn.ts'
-import { Kbd } from './kbd.tsx'
+import { Kbd } from '../katana/kbd.tsx'
 import { comboFromEvent, comboParts, hasModifier, heldModifiers, isModifierCode } from './shortcut-model.ts'
 
 // 功能参照 Arc Shortcut recorder（uiarc.dev，2026-11-14 读：录键、冲突提示），实现原创；外观是我们的字段皮肤加 Kbd 方块（theme/shortcut-recorder.css）。
@@ -24,8 +24,10 @@ export type ShortcutRecorderLabels = {
 export type ShortcutRecorderProps = {
   /** 当前快捷键（规范串，见 shortcut-model）；null 是没设。 */
   value: string | null
-  /** 录到新的（规范串）或清除（null）。冲突与不合规的不回调。 */
-  onValue: (next: string | null) => void
+  /** Called with the new combo (canonical string) or null when cleared; conflicts and invalid combos do not call it. */
+  onValueChange?: (next: string | null) => void
+  /** Old name of onValueChange, kept for one release. @deprecated Use onValueChange. */
+  onValue?: (next: string | null) => void
   /** 读屏名：这是哪个动作的快捷键。 */
   label: string
   labels: ShortcutRecorderLabels
@@ -39,8 +41,10 @@ export type ShortcutRecorderProps = {
   className?: string
 }
 
+/** Hotkey recorder: click, press a combo, and it is stored unless it conflicts with the given table. */
 export function ShortcutRecorder({
   value,
+  onValueChange,
   onValue,
   label,
   labels,
@@ -50,6 +54,7 @@ export function ShortcutRecorder({
   disabled,
   className,
 }: ShortcutRecorderProps) {
+  const emit = (next: string | null) => (onValueChange ?? onValue)?.(next)
   const [recording, setRecording] = useState(false)
   // 录键中提示什么：冲突的动作名、要修饰键，或没有；held 是此刻按着的修饰键（实时显示在框里）。
   const [problem, setProblem] = useState<{ kind: 'conflict'; action: string } | { kind: 'modifier' } | null>(null)
@@ -72,7 +77,7 @@ export function ShortcutRecorder({
     const mods = heldModifiers(event.nativeEvent)
     if (isModifierCode(event.code)) return setHeld(mods)
     if (mods.length === 0 && (event.key === 'Backspace' || event.key === 'Delete')) {
-      onValue(null)
+      emit(null)
       return stop()
     }
     const combo = comboFromEvent(event.nativeEvent)
@@ -80,7 +85,7 @@ export function ShortcutRecorder({
     if (requireModifier && !hasModifier(combo)) return setProblem({ kind: 'modifier' })
     const owner = combo === value ? undefined : conflicts?.[combo]
     if (owner !== undefined) return setProblem({ kind: 'conflict', action: owner })
-    onValue(combo)
+    emit(combo)
     stop()
   }
   const onKeyUp = (event: KeyboardEvent<HTMLButtonElement>) => {
@@ -114,7 +119,7 @@ export function ShortcutRecorder({
         {valueText}
       </span>
       {value && !recording && !disabled && (
-        <button type="button" className="k-rec-clear" aria-label={labels.clear} onClick={() => onValue(null)}>
+        <button type="button" className="k-rec-clear" aria-label={labels.clear} onClick={() => emit(null)}>
           <X size={12} aria-hidden />
         </button>
       )}

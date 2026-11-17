@@ -7,7 +7,7 @@
 import { Check } from 'lucide-react'
 import { AnimatePresence, motion } from 'motion/react'
 import { useState, type ReactNode } from 'react'
-import { HoldToConfirm } from '../katana/hold-to-confirm.tsx'
+import { HoldToConfirm } from '../patterns/hold-to-confirm.tsx'
 import { Button } from '../primitives/button.tsx'
 import { cn } from '../lib/cn.ts'
 import { snappy } from '../lib/motion.ts'
@@ -134,8 +134,7 @@ export function AiApproval({ question, options, facts, children, onDecide, resol
                 >
                   {option.hold ? (
                     <HoldToConfirm
-                      hint={option.hold.hint}
-                      confirmedLabel={option.hold.confirmedLabel}
+                      labels={{ hint: option.hold.hint, confirmed: option.hold.confirmedLabel }}
                       tone={option.destructive ? 'danger' : 'default'}
                       onConfirm={() => decide(option)}
                       className="w-full"

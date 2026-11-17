@@ -7,7 +7,7 @@ import { CommonSchemas } from '@a2ui/web_core/v1_0'
 import { useEffect, useMemo, useState } from 'react'
 import { z } from 'zod'
 import { TaskList, type Task } from '../../index.ts'
-import { text, withExtension } from '../blocks-support.ts'
+import { withExtension } from '../blocks-support.ts'
 import { Cell, actionSchema, fill, parseList, weightSchema } from '../support.tsx'
 
 const taskSchema = z
@@ -28,10 +28,19 @@ export const KatanaTaskListApi = {
           'The tasks. Either a literal array or {"@path": "/tasks"} bound to a data-model array; write the new done flag back after onToggle.',
         ),
       label: CommonSchemas.DynamicString.describe('Accessible name of the list.'),
-      completedLabel: text('Announcement when a task is ticked; {label} is the task text, for example "{label} done".'),
-      reopenedLabel: text(
-        'Announcement when a tick is removed; {label} is the task text, for example "{label} reopened".',
-      ),
+      labels: z
+        .object({
+          completed: z
+            .string()
+            .describe('Announcement when a task is ticked; {label} is the task text, for example "{label} done".'),
+          reopened: z
+            .string()
+            .describe('Announcement when a tick is removed; {label} is the task text, for example "{label} reopened".'),
+        })
+        .strict()
+        .describe(
+          'All the texts, all required: the component carries no wording of its own. Write them in the language of the user.',
+        ),
       onToggle: actionSchema(
         'Dispatched when the user ticks or unticks a task. metadata.extensions.katanaTask carries {id, done}.',
       ).optional(),
@@ -53,13 +62,13 @@ export const KatanaTaskList = createComponentImplementation(KatanaTaskListApi, (
   return (
     <Cell weight={props.weight}>
       <TaskList
-        tasks={tasks}
+        value={tasks}
         label={props.label}
         labels={{
-          completed: (label) => fill(props.completedLabel, { label }),
-          reopened: (label) => fill(props.reopenedLabel, { label }),
+          completed: (label) => fill(props.labels.completed, { label }),
+          reopened: (label) => fill(props.labels.reopened, { label }),
         }}
-        onTasksChange={(next) => {
+        onValueChange={(next) => {
           const before = new Map(tasks.map((task) => [task.id, task.done === true]))
           const changed = next.find((task) => before.get(task.id) !== (task.done === true))
           if (!changed) return

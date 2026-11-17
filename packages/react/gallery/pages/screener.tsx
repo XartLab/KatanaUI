@@ -297,7 +297,7 @@ export function ScreenerDemo() {
         }}
         labels={{ trigger: '已保存的筛选', save: '另存为…' }}
       />
-      <FilterBar fields={FIELDS} value={conditions} onChange={setConditions} labels={BAR_LABELS} />
+      <FilterBar fields={FIELDS} value={conditions} onValueChange={setConditions} labels={BAR_LABELS} />
       <ColumnSetTabs layout={layout} onLayoutChange={setLayout} sets={SETS} label="列集" />
       <div style={{ display: 'flex', height: 320 }} data-testid="screener-grid">
         <DataGrid

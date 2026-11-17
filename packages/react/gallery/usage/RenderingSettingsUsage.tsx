@@ -8,7 +8,7 @@ export function RenderingSettingsUsage() {
   return (
     <RenderingSettings
       value={value}
-      onChange={(next) => {
+      onValueChange={(next) => {
         setValue(next)
         applyRendering(next)
       }}

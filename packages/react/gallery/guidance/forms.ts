@@ -169,7 +169,7 @@ const forms: GuidanceMap = {
     a11y: [
       '整组 role=group，名字取 label 属性。',
       '每个芯片是 aria-pressed 的开关；组内只有一个停靠点，方向键在芯片间走。',
-      '清除钮的读屏名取 clearLabel，图标本身 aria-hidden。',
+      '清除钮的读屏名取 labels.clear，图标本身 aria-hidden。',
     ],
   },
   slider: {
@@ -257,8 +257,8 @@ const forms: GuidanceMap = {
     avoid: ['可撤销的动作用 Button。', '要先预览内容再确认用 Dialog。'],
     a11y: [
       '原生 button，读屏名取按钮文字。',
-      'hint 写进屏外文字并挂在 aria-describedby 上，读屏用户靠它知道要按多久、做什么。',
-      '填满后文字换成 confirmedLabel，按钮上同步更新。',
+      'labels.hint 写进屏外文字并挂在 aria-describedby 上，读屏用户靠它知道要按多久、做什么。',
+      '填满后文字换成 labels.confirmed，按钮上同步更新。',
     ],
   },
   'password-input': {
@@ -267,7 +267,7 @@ const forms: GuidanceMap = {
     avoid: ['不需要遮住的内容用 Input。', '要强度提示时件里没有，自己在 Field 里写说明。'],
     a11y: [
       '遮住时是原生 password 输入框，读屏名来自关联的 Label 或 aria-label。',
-      '眼睛按钮读屏名取 toggleLabel（必传），名字不随状态变，是否显示由 aria-pressed 表达。',
+      '眼睛按钮读屏名取 labels.toggle（必传），名字不随状态变，是否显示由 aria-pressed 表达。',
       '切换后输入框保持焦点与选区。',
     ],
   },
@@ -277,7 +277,7 @@ const forms: GuidanceMap = {
     avoid: ['影响全局或资金的动作用 HoldToConfirm。', '确认前需要看详情用 Dialog。'],
     a11y: [
       '静止时是图标按钮，读屏名取 label，aria-expanded 表示是否已展开。',
-      '展开后的「确认」「取消」各是带读屏名的按钮（confirmLabel、cancelLabel）。',
+      '展开后的「确认」「取消」各是带读屏名的按钮（labels.confirm、labels.cancel）。',
       '屏外有 aria-live=polite 的 role=status 区，播报展开与完成。',
     ],
   },
@@ -326,6 +326,16 @@ const forms: GuidanceMap = {
       '每项一行：名称、说明、控件，控件读屏名取该项名称。',
       '各字体角色的下拉读屏名取角色标题。',
       '用的是 Select、Slider、ToggleGroup 等原件，读屏行为随各原件。',
+    ],
+  },
+  'decimal-field': {
+    aliases: ['Price input', 'Quantity stepper', 'Number input', 'Order entry field'],
+    use: ['下单面板输入价格与数量，按最小变动价位走一格。', '风控参数、止损止盈价位的输入。'],
+    avoid: ['不要求十进制精度的一般数字用普通输入框。', '价位在不在格子上由调用方与 Gateway 判，不在这里校验。'],
+    a11y: [
+      'error 状态设 aria-invalid；warning 只换边色，读屏不报无效。',
+      '− / + 按钮的读屏名由调用方传 labels（decrease、increase）。',
+      '只读、禁用时方向键与按钮都不改值。',
     ],
   },
   'range-histogram-slider': {

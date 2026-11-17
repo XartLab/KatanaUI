@@ -20,7 +20,7 @@ type Phase = 'idle' | 'armed' | 'done' | 'kept'
 
 const iconButton = cn(
   'grid size-7 flex-none cursor-pointer place-items-center rounded-[var(--radius-control)] text-ink-3',
-  'transition-colors duration-[120ms] hover:bg-alpha-white-6 hover:text-ink disabled:cursor-not-allowed disabled:opacity-45',
+  'transition-colors duration-[120ms] hover:bg-(--k-actionable-background-hover) hover:text-ink disabled:cursor-not-allowed disabled:opacity-45',
   '[&_svg]:size-[15px]',
   focusRingInset,
 )
@@ -74,22 +74,36 @@ function Check() {
   )
 }
 
+/** Texts of DeleteButton (the package ships no text). */
+export type DeleteButtonLabels = {
+  /** Accessible name of the confirm button after it expands. 展开后「确认」的读屏名。 */
+  confirm: string
+  /** Accessible name of the cancel button after it expands. 展开后「取消」的读屏名。 */
+  cancel: string
+  /**
+   * Announced to screen readers after confirming; nothing is announced when omitted.
+   * 确认之后读屏播报的话；不给就不播。
+   */
+  done?: string
+  /** Announced to screen readers after cancelling. 取消之后读屏播报的话。 */
+  kept?: string
+}
+
 export type DeleteButtonProps = {
   /**
    * Accessible name of the original button, for example "Delete workspace" (required).
    * 原按钮的读屏名，如「删除工作区」。
    */
   label: string
-  /** Accessible name of the confirm button after it expands (required). */
-  confirmLabel: string
-  /** Accessible name of the cancel button after it expands (required). */
-  cancelLabel: string
-  /**
-   * Announced to screen readers after confirming or cancelling; nothing is announced when omitted.
-   * 确认、取消之后读屏播报的话；不给就不播。
-   */
+  /** Texts: confirm and cancel (required unless the deprecated confirmLabel / cancelLabel are given), done and kept. */
+  labels?: DeleteButtonLabels
+  /** Old name of labels.confirm, kept for one release. @deprecated Use labels.confirm. */
+  confirmLabel?: string
+  /** Old name of labels.cancel, kept for one release. @deprecated Use labels.cancel. */
+  cancelLabel?: string
+  /** Old name of labels.done, kept for one release. @deprecated Use labels.done. */
   doneLabel?: string
-  /** Announced to screen readers after cancelling. */
+  /** Old name of labels.kept, kept for one release. @deprecated Use labels.kept. */
   keptLabel?: string
   /** Called when the confirm button is clicked; the first click on the original button does not call it. */
   onConfirm?: () => void
@@ -101,8 +115,10 @@ export type DeleteButtonProps = {
   className?: string
 }
 
+/** Danger button that confirms in place: the first click expands confirm and cancel buttons instead of opening a dialog. */
 export function DeleteButton({
   label,
+  labels,
   confirmLabel,
   cancelLabel,
   doneLabel,
@@ -112,6 +128,12 @@ export function DeleteButton({
   disabled,
   className,
 }: DeleteButtonProps) {
+  const text = {
+    confirm: labels?.confirm ?? confirmLabel ?? '',
+    cancel: labels?.cancel ?? cancelLabel ?? '',
+    done: labels?.done ?? doneLabel,
+    kept: labels?.kept ?? keptLabel,
+  }
   const [phase, setPhase] = useState<Phase>('idle')
   const root = useRef<HTMLDivElement>(null)
   const trigger = useRef<HTMLButtonElement>(null)
@@ -164,7 +186,7 @@ export function DeleteButton({
         if (event.key === 'Tab' && leaving) resolve('kept', false)
       }}
       className={cn(
-        'box-border inline-flex h-[30px] flex-none items-center overflow-hidden rounded-[var(--radius-control)] border border-alpha-white-7 bg-alpha-white-3',
+        'box-border inline-flex h-[30px] flex-none items-center overflow-hidden rounded-[var(--radius-control)] border border-(--k-actionable-borderColor) bg-(--k-actionable-background)',
         phase === 'done' && 'text-danger',
         className,
       )}
@@ -193,11 +215,11 @@ export function DeleteButton({
             <button
               type="button"
               data-slot="delete-button-confirm"
-              aria-label={confirmLabel}
+              aria-label={text.confirm}
               onClick={() => resolve('done', true)}
               className={cn(
                 iconButton,
-                'text-danger hover:bg-[color-mix(in_srgb,var(--signal-red)_14%,transparent)] hover:text-danger',
+                'text-danger hover:bg-(--k-actionable-negative-background-active) hover:text-danger',
               )}
             >
               <svg
@@ -216,7 +238,7 @@ export function DeleteButton({
               ref={cancel}
               type="button"
               data-slot="delete-button-cancel"
-              aria-label={cancelLabel}
+              aria-label={text.cancel}
               onClick={() => resolve('kept', true)}
               className={iconButton}
             >
@@ -236,7 +258,7 @@ export function DeleteButton({
         )}
       </AnimatePresence>
       <span role="status" aria-live="polite" className="sr-only">
-        {phase === 'done' ? doneLabel : phase === 'kept' ? keptLabel : ''}
+        {phase === 'done' ? text.done : phase === 'kept' ? text.kept : ''}
       </span>
     </motion.div>
   )

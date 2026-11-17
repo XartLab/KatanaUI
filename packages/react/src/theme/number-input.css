@@ -1,14 +1,16 @@
 /* SPDX-License-Identifier: MIT */
-/* 原样搬自 src/ui/ui.css（#1860，2026-11-14）：类名与规则都没改，应用里的件（src/ui/*.tsx）是这里的件外面包的一层。 */
+/* 原样搬自 src/ui/ui.css（#1860，2026-11-14）：类名没改，应用里的件（src/ui/*.tsx）是这里的件外面包的一层。
+   G2（2026-11-18）：颜色改读 characteristics（--k-editable-bold-*、--k-content-*），值与改前相等；错误边改成与 Input 相同的危险色
+   （原来写死一个 55% 的浅红，不跟主题走）；删掉早已没有的 −/+ 按钮的规则与重复的 .sm / .k-unit。 */
 
-/* 数字框：外形照 OpenMarket custom-number-input（30 高 · 圆角 7 · 3% 白底 12% 白边；值 12.5px 500），去掉右侧 − / + 两个按钮（#352：
+/* 数字框：外形照 OpenMarket custom-number-input（30 高 · 圆角 7 · 2% 白底 10% 白边；值 12.5px 500），去掉右侧 − / + 两个按钮（#352：
    设置栏里数值只留一个框，改法是打字、方向键、按住左右拖）。没有焦点时指针是左右箭头（提示能拖），有焦点是打字的 I 形；拖动中整页不选字 */
 .k-num {
   display: inline-flex;
   align-items: stretch;
   height: 30px;
-  background: var(--alpha-white-2);
-  border: 1px solid var(--alpha-white-10);
+  background: var(--k-editable-bold-background);
+  border: 1px solid var(--k-editable-bold-borderColor);
   border-radius: var(--radius-control);
   overflow: hidden;
   cursor: ew-resize;
@@ -18,15 +20,15 @@
     background-color 0.12s;
 }
 .k-num:hover {
-  background: var(--alpha-white-4);
+  background: var(--k-editable-bold-background-hover);
 }
 .k-num:focus-within {
-  border-color: var(--alpha-white-12);
+  border-color: var(--k-editable-borderColor-active);
   cursor: text;
 }
 .k-num.scrubbing {
-  border-color: var(--alpha-white-14);
-  background: var(--alpha-white-6);
+  border-color: var(--k-editable-bold-borderColor-active);
+  background: var(--k-editable-bold-background-active);
   user-select: none;
 }
 .k-num.dis {
@@ -34,10 +36,10 @@
   cursor: not-allowed;
 }
 .k-num.dis:hover {
-  background: var(--alpha-white-2);
+  background: var(--k-editable-bold-background);
 }
 .k-num.err {
-  border-color: rgba(255, 90, 90, 0.55);
+  border-color: var(--k-status-danger-foreground);
 }
 .k-num input {
   flex: 1;
@@ -46,7 +48,7 @@
   background: transparent;
   border: 0;
   outline: 0;
-  color: var(--ink-100);
+  color: var(--k-content-primary-foreground);
   font: var(--text-body) var(--font-sans);
   font-weight: 500;
   font-variant-numeric: tabular-nums;
@@ -55,59 +57,22 @@
 .k-num.scrubbing input {
   pointer-events: none;
 }
-.k-num .k-unit {
-  align-self: center;
-  padding-right: 8px;
-  user-select: none;
-}
 .k-num.sm {
   height: 26px;
 }
 .k-unit {
   align-self: center;
   padding-right: 8px;
-}
-.k-num button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex: none;
-  width: 30px;
-  padding: 0;
-  background: transparent;
-  border: 0;
-  border-left: 1px solid var(--alpha-white-9);
-  color: var(--ink-300);
-  cursor: pointer;
-  transition:
-    background-color 0.1s,
-    color 0.1s;
-}
-.k-num button:hover:not(:disabled) {
-  background: var(--alpha-white-5);
-  color: var(--ink-100);
-}
-.k-num button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-.k-num button svg.lucide {
-  width: 13px;
-  height: 13px;
-}
-.k-num.sm {
-  height: 26px;
-}
-.k-unit {
   font: var(--text-caption) var(--font-sans-small);
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
+  user-select: none;
 }
 
 /* 框内左边的文字标签：和框一起是拖动区；有标签时输入框左内边收窄，值紧贴标签 */
 .k-num .k-cap {
   align-self: center;
   padding-left: 10px;
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-sans-small);
   user-select: none;
   white-space: nowrap;

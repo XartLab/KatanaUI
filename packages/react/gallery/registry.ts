@@ -278,15 +278,19 @@ export const PAGES: readonly DocPage[] = [
             default: "'multiple'",
             desc: 'single 最多选一个，点已选的就取消（取消 = 不筛）。',
           },
-          { name: 'clearLabel', type: 'string', desc: '给了，有选中项时末尾出现清除钮，读屏名与提示用它。' },
+          {
+            name: 'labels',
+            type: 'ChipGroupLabels',
+            desc: '{ clear? }：给了 clear，有选中项时末尾出现清除钮，读屏名与提示用它。旧名 clearLabel 留一个版本（@deprecated）。',
+          },
         ],
       },
     ],
     states: [
-      '未选：4% 白底。',
+      '未选：3% 白底 7% 白边（同按钮的 actionable）。',
       '选中：实心浅底深字（同分段切换）。',
       '禁用：降到 35% 不透明度。',
-      '有选中项且给了 clearLabel：末尾出现 ×。',
+      '有选中项且给了 labels.clear：末尾出现 ×。',
     ],
     donts: [
       '不要拿它当导航：它筛数据，不换页面。',
@@ -763,7 +767,11 @@ export const PAGES: readonly DocPage[] = [
         note: '值是规范串：修饰键按 Ctrl、Alt、Shift、Meta 的次序再加主键，如 Ctrl+Shift+K；主键取物理键（event.code），Mac 的 Option 变形不影响。',
         rows: [
           { name: 'value', type: 'string | null', desc: '当前快捷键（规范串）；null 是没设。' },
-          { name: 'onValue', type: '(next: string | null) => void', desc: '录到新的或清除。冲突与不合规的不回调。' },
+          {
+            name: 'onValueChange',
+            type: '(next: string | null) => void',
+            desc: '录到新的或清除。冲突与不合规的不回调。旧名 onValue 留一个版本（@deprecated）。',
+          },
           { name: 'label', type: 'string', desc: '读屏名：哪个动作的快捷键。' },
           {
             name: 'labels',
@@ -853,7 +861,11 @@ export const PAGES: readonly DocPage[] = [
       },
     ],
     states: ['默认、聚焦、错误（日期或时间不合法）。', '日期框右边的日历按钮打开日历。'],
-    donts: ['不要依赖浏览器语言的日期格式：这个件不随它变。'],
+    donts: [
+      '不要依赖浏览器语言的日期格式：这个件不随它变。',
+      '不要传 Date 对象或时间戳：值是字符串，时区由调用方换算好再传。',
+      '选区间用 DateRangePicker，别并排放两个 DateTimeInput。',
+    ],
     composition: 'DateTimeInput\n  DateField（年 月 日各一段）\n  Popover\n    Calendar\n  TimeField（时 分 [秒]）',
     keys: [
       ['0–9', '在当前段打字，满了跳到下一段'],
@@ -878,9 +890,9 @@ export const PAGES: readonly DocPage[] = [
         rows: [
           { name: 'value', type: '{ start: string; end: string } | null', desc: '当前区间；null 是没选。' },
           {
-            name: 'onValue',
+            name: 'onValueChange',
             type: '(range: DateRange) => void',
-            desc: '凑成合法区间（起点不晚于终点）才回调；只填了一头不回调。',
+            desc: '凑成合法区间（起点不晚于终点）才回调；只填了一头不回调。旧名 onValue 留一个版本（@deprecated）。',
           },
           {
             name: 'today',
@@ -1387,7 +1399,7 @@ export const PAGES: readonly DocPage[] = [
   },
   {
     id: 'decimal-field',
-    group: 'quant',
+    group: 'forms',
     cardHeight: 300,
     title: 'DecimalField 十进制框',
     summary:
@@ -1400,9 +1412,9 @@ export const PAGES: readonly DocPage[] = [
         rows: [
           { name: 'value', type: 'string', desc: '框里的字，十进制写法；打字自由，合不合法由调用方与 Gateway 判。' },
           {
-            name: 'onValue',
+            name: 'onValueChange',
             type: '(value: string) => void',
-            desc: '打字与走格都回调；走格给的是 toFixed() 的规范字符串。',
+            desc: '打字与走格都回调；走格给的是 toFixed() 的规范字符串。旧名 onValue 留一个版本（@deprecated）。',
           },
           {
             name: 'step',
@@ -1426,9 +1438,9 @@ export const PAGES: readonly DocPage[] = [
             desc: 'error：aria-invalid 并换危险色边；warning：只换琥珀色边，不设 aria-invalid。',
           },
           {
-            name: 'buttons',
-            type: '{ decrease: string; increase: string }',
-            desc: '给了才显示 − / + 按钮；两个字符串是读屏名，也是悬停提示。包里不带语言。',
+            name: 'labels',
+            type: 'DecimalFieldLabels',
+            desc: '{ decrease, increase }：给了才显示 − / + 按钮；两个字符串是读屏名，也是悬停提示。包里不带语言。旧名 buttons 留一个版本（@deprecated）。',
           },
         ],
       },
@@ -1441,7 +1453,7 @@ export const PAGES: readonly DocPage[] = [
     ],
     donts: [
       '不要把值转成 number 再传：价格与数量不经浮点。',
-      '不要在包里写按钮文字，buttons 由调用方传。',
+      '不要在包里写按钮文字，labels 由调用方传。',
       '不要在这里校验价位：在不在格子上由调用方与 Gateway 判。',
     ],
     composition: 'DecimalField\n  Input\n  Button（icon，− / +，带悬停提示）\n  stepDecimal（format 子出口）',
@@ -1914,9 +1926,9 @@ export const PAGES: readonly DocPage[] = [
           { name: 'children', type: 'ReactNode', desc: '按钮上的字。' },
           { name: 'onConfirm', type: '() => void', desc: '填满时回调，一次按住只一次；松手再按才能再触发。' },
           {
-            name: 'hint',
-            type: 'string',
-            desc: '读屏与悬停提示，如「按住 2 秒，全部平仓」。必填：没有它读屏用户不知道要按住。',
+            name: 'labels',
+            type: 'HoldToConfirmLabels',
+            desc: '{ hint, confirmed? }。hint 是读屏与悬停提示，如「按住 2 秒，全部平仓」，必填：没有它读屏用户不知道要按住；confirmed 是填满后的字，原地换掉 children，直到松手退完。旧名 hint、confirmedLabel 留一个版本（@deprecated）。',
           },
           {
             name: 'holdMs',
@@ -1925,22 +1937,26 @@ export const PAGES: readonly DocPage[] = [
             desc: '按住多久填满。2000 取自 Emil Kowalski 的 hold-to-delete 写法（2026-11-14 读），对交易动作是否合适没有实测，默认值待定；越不可撤越长。',
           },
           { name: 'releaseMs', type: 'number', default: '200', desc: '松手后从满格退回空格要多久（同一出处）。' },
-          { name: 'confirmedLabel', type: 'ReactNode', desc: '填满后的字，原地换掉 children，直到松手退完。' },
-          { name: 'tone', type: "'danger' | 'default'", default: "'danger'", desc: '填充色：红，或中性。' },
+          {
+            name: 'tone',
+            type: 'Severity',
+            default: "'danger'",
+            desc: '填充色：danger 红、warn 琥珀、ok 绿（38% 语气色），neutral 中性（9% 白）。旧值 default 等于 neutral，留一个版本。',
+          },
           { name: 'disabled', type: 'boolean', desc: '灰掉，按不动。' },
         ],
       },
     ],
     states: [
       '空闲：和普通按钮一样。',
-      '按住：填充从左往右走；到 holdMs 填满并触发，字换成 confirmedLabel。',
+      '按住：填充从左往右走；到 holdMs 填满并触发，字换成 labels.confirmed。',
       '松手：填充在 releaseMs 内退回；填满后手还按着，填充停在满格，松手才退。',
       '焦点移走或指针被抢走：按松手处理，退回。',
     ],
     donts: [
       '不要拿它做可撤销的动作：那些直接用 Button，确认框和按住都是摩擦。',
       '不要缩短 holdMs 到几百毫秒：那和单击没有区别。',
-      'hint 要写清按多久、做什么，读屏用户靠它。',
+      'labels.hint 要写清按多久、做什么，读屏用户靠它。',
     ],
     composition:
       'HoldToConfirm\n  button\n    span.k-hold-fill（scaleX 填充）\n    span.k-hold-label\n    span.sr-only（hint）',
@@ -1968,7 +1984,10 @@ export const PAGES: readonly DocPage[] = [
       '点眼睛：显示明文，输入框不丢焦点与选区，眼睑睁开；再点遮回去。',
       '禁用：按钮不可点。',
     ],
-    donts: ['眼睛按钮的读屏名 toggleLabel 必须传，包里不写文案。', '不要用它放不需要遮住的普通文本。'],
+    donts: [
+      '眼睛按钮的读屏名 labels.toggle 必须传，包里不写文案（旧名 toggleLabel 留一个版本）。',
+      '不要用它放不需要遮住的普通文本。',
+    ],
     composition: 'PasswordInput\n  Input\n  button（眼睛，aria-pressed）',
     keys: [
       ['Tab', '从输入框到眼睛按钮'],
@@ -1983,7 +2002,12 @@ export const PAGES: readonly DocPage[] = [
     summary:
       '危险操作不弹对话框：点一下按钮在原地展开出「确认」「取消」，垃圾桶的盖子掀开。Esc、点外面、Tab 走开都是取消。学自 rare-ui。',
     exports: ['DeleteButton'],
-    propParts: [{ part: 'DeleteButton' }],
+    propParts: [
+      {
+        part: 'DeleteButton',
+        note: '外层是 div（data-phase：idle / armed / done / kept）；原按钮 aria-expanded 表达是否展开。文字都在 label 与 labels 里，包里不带语言。',
+      },
+    ],
     states: [
       '静止：垃圾桶图标按钮。',
       '展开：原地出现「确认」「取消」，垃圾桶的盖子掀开。',
@@ -3014,7 +3038,11 @@ export const PAGES: readonly DocPage[] = [
       { part: 'ThemeSelector', note: 'role=radiogroup；tab 只停在选中那张。value 传 null 表示受控但还没选。' },
     ],
     states: ['选中的那张加一圈环，环在选项之间用弹簧滑过去。', '禁用：不响应。'],
-    donts: ['缩略颜色由调用方传，不要在包里写死主题色。'],
+    donts: [
+      '缩略颜色由调用方传，不要在包里写死主题色。',
+      '不要拿它选主题以外的东西：缩略图画的是一块控制台，别的选项用 ToggleGroup 或 Select。',
+      '主题超过四五个时别全摆成缩略：改成下拉，缩略只放常用的。',
+    ],
     composition: 'ThemeSelector\n  button role=radio（缩略 SVG + 选中环）\n  span（名字）',
     keys: [
       ['Tab', '进入 / 离开整组（停在选中那张）'],
@@ -3088,7 +3116,11 @@ export const PAGES: readonly DocPage[] = [
     exports: ['TaskList'],
     propParts: [{ part: 'TaskList', note: '每行是 role=checkbox 的按钮；屏外有 role=status 的区播报勾上与取消。' }],
     states: ['未勾：空圈。', '已勾：圆圈填强调色、对勾画出、文字划掉，沉到底部。', '再点取消，回到原位。'],
-    donts: ['任务文案与标签由调用方传。'],
+    donts: [
+      '任务文案与标签由调用方传。',
+      '不要拿它做多选筛选：勾上的行会沉底换位置，筛选用 ChipGroup 或 Checkbox。',
+      '任务的真实状态以数据为准：勾选只回调 onValueChange，写不写回由调用方定。',
+    ],
     composition:
       'TaskList\n  li（layout 动画）\n    button role=checkbox（圆圈 + 对勾 + 划线文字）\n  li role=status（播报）',
     keys: [
@@ -3104,14 +3136,23 @@ export const PAGES: readonly DocPage[] = [
     summary:
       '平时是连成一整条的药丸「2 时 30 分」加笔钮；点笔钮三段用弹簧分开、内侧圆角长出来，数字变成可输入的框，笔变对勾；点对勾确认。输入超上限夹住并抖一下。学自 rare-ui。',
     exports: ['DurationPicker'],
-    propParts: [{ part: 'DurationPicker' }],
+    propParts: [
+      {
+        part: 'DurationPicker',
+        note: '可受控（value）也可不受控（defaultValue）；打字时立刻回调夹好的值，确认另走 onConfirm。data-editing 表示在编辑。',
+      },
+    ],
     states: [
       '平时：连成一整条的药丸加笔钮。',
       '编辑中：三段分开，数字变成输入框，笔变对勾。',
       '输入超上限：夹住并抖一下。',
       '禁用：笔点不动。',
     ],
-    donts: ['上限 maxHours、maxMinutes 由调用方定，不要省略。'],
+    donts: [
+      '上限 maxHours、maxMinutes 由调用方定，不要省略。',
+      '不要拿它输入时刻（几点几分）：那是 DateTimeInput 的时间段。',
+      '要秒或天时别硬塞：它只有时、分两段。',
+    ],
     composition: 'DurationPicker\n  div（时 + 数字框）\n  div（分 + 数字框）\n  button（笔 / 对勾）',
     keys: [
       ['Enter', '确认'],
@@ -3690,9 +3731,9 @@ export const PAGES: readonly DocPage[] = [
             desc: '{ id, field, op, value, label? }；同一字段只留最后设的一条。',
           },
           {
-            name: 'onChange',
+            name: 'onValueChange',
             type: '(next: FilterCondition[]) => void',
-            desc: '条件变了（设、清除、移除字段、重置）。',
+            desc: '条件变了（设、清除、移除字段、重置、撤销、重做）。旧名 onChange 留一个版本（@deprecated）。',
           },
           {
             name: 'labels',
@@ -3718,7 +3759,7 @@ export const PAGES: readonly DocPage[] = [
             type: '() => void',
             desc: '给了，列表底部多一项「另存为」（文字 labels.save）；命名对话框与存哪里归调用方。',
           },
-          { name: 'labels', type: '{ trigger: string; save?: string }', desc: '读屏名与「另存为」文字。' },
+          { name: 'labels', type: 'ViewSwitcherLabels', desc: '{ trigger, save? }：读屏名与「另存为」文字。' },
         ],
       },
       {
@@ -3770,9 +3811,9 @@ export const PAGES: readonly DocPage[] = [
             desc: '{ smoothing, pixelSnap, weightAdjust, textScale, slashedZero, cjkAdjust, fonts }；fonts 是按角色（ui、cjk、num、mono）选的字体 id，见 FONT_CATALOG。默认值是 DEFAULT_RENDERING。',
           },
           {
-            name: 'onChange',
+            name: 'onValueChange',
             type: '(next: RenderingSettingsValue) => void',
-            desc: '改了任一项；一般在这里 applyRendering(next) 并存盘。',
+            desc: '改了任一项或按了恢复默认，给整份新值；一般在这里 applyRendering(next) 并存盘。旧名 onChange 留一个版本（@deprecated）。',
           },
           { name: 'labels', type: 'RenderingSettingsLabels', desc: '全部文字，默认 RENDERING_LABELS_ZH。' },
         ],
@@ -3780,8 +3821,14 @@ export const PAGES: readonly DocPage[] = [
     ],
     states: ['默认值：灰度、像素对齐开、字重 0、字号 100%、斜线零关、中英对齐关', '改任一项立刻生效（写在根节点上）'],
     donts: ['不要在件里存值：存盘交给调用方', '不要只在某个面板上改这些属性：渲染设置是整个应用一份'],
-    composition: 'RenderingSettings\n  行 × 6（名称、说明、ToggleGroup 或 Slider）\n  恢复默认（Button）',
-    keys: [],
+    composition:
+      'RenderingSettings\n  行 × 6（名称、说明、ToggleGroup 或 Slider）\n  字体小节\n    行 × 4（界面、汉字、数据字、代码：Select）\n  恢复默认（Button）',
+    keys: [
+      ['Tab', '按行的次序走过每个控件，最后是恢复默认'],
+      ['← →', '开关与平滑方式（分段切换）里换一段'],
+      ['← → / ↑ ↓', '字重、字号滑块走一格（字重 10，字号 5%）；Home / End 到两头'],
+      ['Enter / Space', '打开字体下拉；下拉里 ↑ ↓ 选、Enter 确定、Esc 收起'],
+    ],
   },
   {
     id: 'column-set-tabs',
@@ -4896,7 +4943,7 @@ export const PAGES: readonly DocPage[] = [
             default: 'String',
             desc: '数值怎么写（读数行与 aria-valuetext）。',
           },
-          { name: 'labels', type: '{ low: string; high: string }', desc: '两个把手的读屏名（必填）。' },
+          { name: 'labels', type: 'RangeHistogramSliderLabels', desc: '{ low, high }：两个把手的读屏名（必填）。' },
           { name: 'label', type: 'string', desc: '整条的读屏名（必填）。' },
           { name: 'describe', type: '(range) => ReactNode', desc: '读数行；不给写「下限 – 上限」。' },
         ],

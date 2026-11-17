@@ -25,7 +25,7 @@ export const KatanaChipGroupApi = {
         )
         .min(1)
         .describe('The chips, in display order.'),
-      values: CommonSchemas.DynamicStringList.describe(
+      value: CommonSchemas.DynamicStringList.describe(
         'The values of the chips that are on. Bind it to the data model with {"@path": "/filters"} so the choice is written back as an array.',
       ),
       selection: z
@@ -35,25 +35,34 @@ export const KatanaChipGroupApi = {
           "'multiple' lets several chips be on; 'single' allows at most one, and pressing it again turns it off.",
         )
         .optional(),
-      clearLabel: CommonSchemas.DynamicString.describe(
-        'When given, a clear button appears while a chip is on, with this as its accessible name and tooltip.',
-      ).optional(),
+      labels: z
+        .object({
+          clear: z
+            .string()
+            .describe(
+              'When given, a clear button appears while a chip is on, with this as its accessible name and tooltip.',
+            )
+            .optional(),
+        })
+        .strict()
+        .describe('Texts of the group. Write them in the language of the user.')
+        .optional(),
       weight: weightSchema,
     })
     .strict(),
 } satisfies ComponentApi
 
 export const KatanaChipGroup = createComponentImplementation(KatanaChipGroupApi, ({ props }) => {
-  const values = Array.isArray(props.values) ? props.values.filter((item) => typeof item === 'string') : []
+  const value = Array.isArray(props.value) ? props.value.filter((item) => typeof item === 'string') : []
   return (
     <Cell weight={props.weight}>
       <ChipGroup
         label={props.label ?? ''}
         items={props.items}
-        value={values}
-        onValueChange={(next) => props.setValues?.(next)}
+        value={value}
+        onValueChange={(next) => props.setValue?.(next)}
         selection={props.selection}
-        clearLabel={props.clearLabel}
+        labels={props.labels}
       />
     </Cell>
   )

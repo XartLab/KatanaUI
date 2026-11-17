@@ -525,6 +525,21 @@ function NamingPage() {
           ；件里不写 rgba。除 Paper 外各主题同值（就是改前写死的值），Paper 轻一档。
         </li>
         <li>
+          输入件（G2，2026-11-18）：文本框、日期框、日期区间框读 {code('--k-editable-background')}（3% 白）、
+          {code('--k-editable-borderColor')}（7% 白），聚焦边 {code('--k-editable-borderColor-active')}（12% 白）；
+          以拖与按键为主的带框数值件（NumberInput、ShortcutRecorder）读 {code('--k-editable-bold-*')}：底更淡（2%
+          白）边更重（10% 白），悬停底 4%、拖动中底 6% 边 14%。不合法一律是 {code('--k-status-danger-foreground')}{' '}
+          的实色边（同 Input 的 aria-invalid）；原来 NumberInput 与 DateTimeInput 写死的 55% 浅红不跟主题，去掉了。
+        </li>
+        <li>
+          选中与键盘位置：日历选中的日子、区间两端是 {code('--k-selectable-background-selected')} 实心底配{' '}
+          {code('--k-selectable-foreground-selected')} 字，区间中段 {code('--k-selectable-background')}（10%
+          白）；日期框里正在打的那一段是 {code('--k-focused-background')}
+          。无框小按钮（日历翻月、清除钮、预设项）的悬停底统一 {code('--k-actionable-subtle-background-hover')}
+          （4% 白，原来各写 5%）；胶囊（ChipGroup、FilterBar）的边统一按钮的 {code('--k-actionable-borderColor')}（7%
+          白，原来 8%）。
+        </li>
+        <li>
           状态语气在代码里是 {code("Severity = 'neutral' | 'ok' | 'warn' | 'danger'")}（状态灯与仪表多
           off、accent），涨跌是 {code("Tone = 'up' | 'down' | 'flat'")}，都在 src/lib；状态灯用{' '}
           {code('ledOf(severity)')}，不再各写映射表。
@@ -536,7 +551,7 @@ function NamingPage() {
         rows={[
           [
             '特征',
-            'actionable（可点的）· content（文字）· separable（分隔线）· container（容器）· focused（焦点）· surface（面：sunken / base / raised / overlay）· status（状态语气）· tone（涨跌）· chart（图）· overlay（浮层影子）',
+            'actionable（可点的）· editable（可输入的）· selectable（可选中的）· content（文字）· separable（分隔线）· container（容器）· focused（焦点）· surface（面：sunken / base / raised / overlay）· status（状态语气）· tone（涨跌）· chart（图）· overlay（浮层影子）',
           ],
           ['强调', 'bold · subtle（中间那档不写）'],
           ['属性', 'background · foreground · borderColor · outlineColor · outlineWidth · outlineOffset · shadow'],

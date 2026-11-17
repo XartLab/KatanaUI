@@ -12,10 +12,11 @@
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `toggleLabel` * | `string` | — | Accessible name of the show/hide button (required). |
+| `labels` | `PasswordInputLabels` | — | Texts: toggle (required unless the deprecated toggleLabel is given). |
+| `toggleLabel` | `string` | — | Old name of labels.toggle, kept for one release. |
 | `defaultVisible` | `boolean` | `false` | Show the plain text from the start. |
 | `onVisibleChange` | `(visible: boolean) => void` | — | Called when the visibility is toggled. |
-| `size` | `'default' \| 'sm'` | — | Same as Input: 30px and 26px. |
+| `size` | `'sm' \| 'md' \| 'default'` | — | Same as Input: md is 30px (the default), sm is 26px; 'default' is the deprecated name of md. |
 
 ## Usage
 
@@ -24,7 +25,7 @@
 import { PasswordInput } from '@katana-ui/react'
 
 export function PasswordInputUsage() {
-  return <PasswordInput toggleLabel="Show password" aria-label="Proxy password" />
+  return <PasswordInput labels={{ toggle: 'Show password' }} aria-label="Proxy password" />
 }
 ```
 
@@ -36,7 +37,7 @@ export function PasswordInputUsage() {
 
 ## Don't
 
-- 眼睛按钮的读屏名 toggleLabel 必须传，包里不写文案。
+- 眼睛按钮的读屏名 labels.toggle 必须传，包里不写文案（旧名 toggleLabel 留一个版本）。
 - 不要用它放不需要遮住的普通文本。
 
 ## Composition

@@ -53,9 +53,11 @@
 @import './theme/series.css';
 @import './theme/equity-curve.css';
 @import './theme/distribution.css';
+@import './theme/range-histogram-slider.css';
 @import './theme/limit-ladder.css';
 @import './theme/event-calendar.css';
 @import './theme/filter-bar.css';
+@import './theme/view-switcher.css';
 @import './theme/market-heatmap.css';
 @import './theme/technical-rating.css';
 @import './theme/symbol-overview.css';

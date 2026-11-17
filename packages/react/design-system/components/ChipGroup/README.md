@@ -17,7 +17,7 @@
 | `onValueChange` | `(value: string[]) => void` | — | 选中项变了。 |
 | `label` | `string` | — | 整组的读屏名。 |
 | `selection` | `'multiple' \| 'single'` | `'multiple'` | single 最多选一个，点已选的就取消（取消 = 不筛）。 |
-| `clearLabel` | `string` | — | 给了，有选中项时末尾出现清除钮，读屏名与提示用它。 |
+| `labels` | `ChipGroupLabels` | — | { clear? }：给了 clear，有选中项时末尾出现清除钮，读屏名与提示用它。旧名 clearLabel 留一个版本（@deprecated）。 |
 
 ## Usage
 
@@ -39,7 +39,13 @@ export function ChipGroupUsage() {
   const [one, setOne] = useState<string[]>(['hk'])
   return (
     <>
-      <ChipGroup label="市场" items={CHIP_ITEMS} value={markets} onValueChange={setMarkets} clearLabel="清除筛选" />
+      <ChipGroup
+        label="市场"
+        items={CHIP_ITEMS}
+        value={markets}
+        onValueChange={setMarkets}
+        labels={{ clear: '清除筛选' }}
+      />
       <output data-gallery-chips>{markets.join(',') || '无'}</output>
 
       <ChipGroup
@@ -57,10 +63,10 @@ export function ChipGroupUsage() {
 
 ## States
 
-- 未选：4% 白底。
+- 未选：3% 白底 7% 白边（同按钮的 actionable）。
 - 选中：实心浅底深字（同分段切换）。
 - 禁用：降到 35% 不透明度。
-- 有选中项且给了 clearLabel：末尾出现 ×。
+- 有选中项且给了 labels.clear：末尾出现 ×。
 
 ## Don't
 
