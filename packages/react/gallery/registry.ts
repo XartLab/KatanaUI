@@ -1981,12 +1981,12 @@ export const PAGES: readonly DocPage[] = [
     cardHeight: 261,
     title: 'MatrixOrb 点阵状态球',
     summary:
-      '一盘方点排成圆：待命慢呼吸，聆听同心波跟音量走，思考几个热点绕着转。点阵签名件的动态版，用来表达 Agent 在做什么。学自 rare-ui。',
+      '一盘方点排成圆：待命慢呼吸，聆听同心波跟输入电平（麦克风音量）走，思考几个热点绕着转。点阵签名件的动态版，用来表达 Agent 在做什么。学自 rare-ui。',
     exports: ['MatrixOrb'],
     propParts: [
       { part: 'MatrixOrb', note: '画在 canvas 上，role=img；状态用文字另外读出。颜色取元素的 color，跟主题走。' },
     ],
-    states: ['待命：慢呼吸。', '聆听：同心波跟 level 音量走。', '思考：几个热点绕着转。'],
+    states: ['待命：慢呼吸。', '聆听：同心波跟 level（输入电平）走。', '思考：几个热点绕着转。'],
     donts: ['只表达 Agent 真实在做的事，不当装饰。', 'label 要传（读屏名字）。'],
     composition: 'MatrixOrb\n  canvas（requestAnimationFrame 循环）',
     keys: [],

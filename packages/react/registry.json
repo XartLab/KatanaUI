@@ -1394,7 +1394,7 @@
       "name": "matrix-orb",
       "type": "registry:component",
       "title": "Matrix Orb",
-      "description": "一盘方点排成圆：待命慢呼吸，聆听同心波跟音量走，思考几个热点绕着转。点阵签名件的动态版，用来表达 Agent 在做什么。学自 rare-ui。",
+      "description": "一盘方点排成圆：待命慢呼吸，聆听同心波跟输入电平（麦克风音量）走，思考几个热点绕着转。点阵签名件的动态版，用来表达 Agent 在做什么。学自 rare-ui。",
       "registryDependencies": [
         "@katana/cn",
         "@katana/dot-matrix",

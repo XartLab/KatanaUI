@@ -3452,7 +3452,7 @@ for (const theme of THEMES) {
       await expect(row.locator('[data-slot="ai-status-detail"]')).toHaveText('docs/product/README.md')
     })
 
-    test('点阵状态球：画布缓冲跟缩放走；待命左右对称、思考不对称且在转、聆听音量大亮得多；颜色是主题的强调色', async ({
+    test('点阵状态球：画布缓冲跟缩放走；待命左右对称、思考不对称且在转、聆听电平高亮得多；颜色是主题的强调色', async ({
       page,
     }) => {
       await open(page, theme, 'matrix-orb')
@@ -3492,7 +3492,7 @@ for (const theme of THEMES) {
       const before = (await read()).total
       await expect.poll(async () => (await read()).total).not.toBe(before)
       // 思考：热点绕圈，左右两侧都偏重过。
-      await area.getByRole('button', { name: 'thinking', exact: true }).click()
+      await area.getByRole('button', { name: '思考', exact: true }).click()
       await expect(orb).toHaveAttribute('data-state', 'thinking')
       let high = 0
       let low = 0
@@ -3507,10 +3507,10 @@ for (const theme of THEMES) {
           { timeout: 8000, intervals: [60] },
         )
         .toBe(true)
-      // 聆听：音量拉满比压低亮得多（同一个球，只改 level）；透明度之和随缓冲像素数（ratio 的平方）涨，阈值跟着乘。
-      await area.getByRole('button', { name: 'listening', exact: true }).click()
+      // 聆听：输入电平拉满比压低亮得多（同一个球，只改 level）；透明度之和随缓冲像素数（ratio 的平方）涨，阈值跟着乘。
+      await area.getByRole('button', { name: '聆听', exact: true }).click()
       await expect(orb).toHaveAttribute('data-state', 'listening')
-      const slider = area.getByRole('slider', { name: '音量' })
+      const slider = area.getByRole('slider', { name: '输入电平' })
       await slider.focus()
       await page.keyboard.press('Home')
       await expect.poll(async () => (await read()).total, { timeout: 4000 }).toBeLessThan(60000 * ratio * ratio)

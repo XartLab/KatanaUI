@@ -9,7 +9,10 @@ import {
   MatrixOrb,
   NotificationBell,
   PasswordInput,
+  Slider,
   StatusIcon,
+  ToggleGroup,
+  ToggleGroupItem,
   type AiStatusState,
   type ArcadePixelAnimate,
   type OrbState,
@@ -194,33 +197,41 @@ export function MatrixOrbDemo() {
         <div data-gallery-orb>
           <MatrixOrb state={state} level={state === 'listening' ? level : undefined} label={`状态球：${state}`} />
         </div>
-        {ORB_STATES.map((item) => (
-          <Button key={item.state} onClick={() => setState(item.state)}>
-            {item.state}
-          </Button>
-        ))}
-        <label>
-          音量{' '}
-          <input
-            type="range"
-            min={0}
-            max={1}
-            step={0.05}
-            value={level}
-            aria-label="音量"
-            onChange={(event) => setLevel(Number(event.target.value))}
-          />
-        </label>
+        <ToggleGroup
+          variant="sm"
+          value={state}
+          onValueChange={(next) => next && setState(next as OrbState)}
+          aria-label="状态"
+        >
+          {ORB_STATES.map((item) => (
+            <ToggleGroupItem key={item.state} value={item.state}>
+              {item.label}
+            </ToggleGroupItem>
+          ))}
+        </ToggleGroup>
+        {state === 'listening' ? (
+          <div className="gal-orb-level">
+            <span>输入电平</span>
+            <Slider
+              value={[level]}
+              min={0}
+              max={1}
+              step={0.05}
+              onValueChange={(next) => setLevel(next[0] ?? 0)}
+              thumbLabels={['输入电平']}
+            />
+          </div>
+        ) : null}
       </Row>
       <Row name="三种">
         {ORB_STATES.map((item) => (
-          <Cell key={item.state} name={item.state}>
+          <Cell key={item.state} name={item.label}>
             <MatrixOrb state={item.state} label={`状态球：${item.label}`} cells={12} />
           </Cell>
         ))}
       </Row>
       <p className="gal-note">
-        方点排成圆：待命慢呼吸、聆听同心波跟音量走、思考几个热点绕着转；换状态时权重插值，整个球按弹簧缩放。
+        方点排成圆：待命慢呼吸、聆听同心波跟输入电平走、思考几个热点绕着转；换状态时权重插值，整个球按弹簧缩放。
       </p>
     </>
   )

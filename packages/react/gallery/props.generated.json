@@ -16662,6 +16662,12 @@
           "description": ""
         },
         {
+          "name": "icon",
+          "type": "ReactNode",
+          "required": false,
+          "description": ""
+        },
+        {
           "name": "items",
           "type": "readonly SideNavItem[]",
           "required": true,
@@ -16690,6 +16696,12 @@
           "type": "string",
           "required": true,
           "description": ""
+        },
+        {
+          "name": "icon",
+          "type": "ReactNode",
+          "required": false,
+          "description": "16px 图标（如 lucide 的图标）；同一组里有的有、有的没有时，没有的留出同宽的空位，字对齐。"
         },
         {
           "name": "keywords",

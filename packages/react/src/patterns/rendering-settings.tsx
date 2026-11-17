@@ -208,7 +208,7 @@ export function RenderingSettings({ value, onChange, labels = RENDERING_LABELS_Z
             max={60}
             step={10}
             onValueChange={(next) => patch({ weightAdjust: next[0] ?? 0 })}
-            aria-label={labels.weight}
+            thumbLabels={[labels.weight]}
           />
           <output className="k-render-out">
             {value.weightAdjust > 0 ? `+${value.weightAdjust}` : value.weightAdjust}
@@ -223,7 +223,7 @@ export function RenderingSettings({ value, onChange, labels = RENDERING_LABELS_Z
             max={1.3}
             step={0.05}
             onValueChange={(next) => patch({ textScale: Math.round((next[0] ?? 1) * 100) / 100 })}
-            aria-label={labels.scale}
+            thumbLabels={[labels.scale]}
           />
           <output className="k-render-out">{Math.round(value.textScale * 100)}%</output>
         </div>
