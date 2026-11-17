@@ -2,15 +2,19 @@
 import { useEffect, useState, useSyncExternalStore } from 'react'
 import {
   CodeBlock,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
   SideNav,
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
-  ToggleGroup,
-  ToggleGroupItem,
   type SideNavGroup,
 } from '../src/index'
+import tokensJson from '../src/tokens-json'
 import { guidanceOf } from './guidance'
 import { PATTERN_GROUPS, PatternPage, patternById } from './patterns'
 import { packageOf, sourceOf } from './source-map'
@@ -31,15 +35,33 @@ import { usageName, usageOf } from './usage'
 /** 「覆盖」页的地址 `#/coverage`：不是组件页，在目录里单列一组「总览」。 */
 export const COVERAGE_ID = 'coverage'
 
-export type ThemeName = 'console' | 'graphite'
+export type ThemeName = string
 
+/** 主题清单读 tokens.json（color.themes）：加主题只改 token 源头，文档站自己跟上。默认 Graphite 排第一。 */
 const THEMES: readonly { id: ThemeName; label: string }[] = [
-  { id: 'console', label: 'Console' },
-  { id: 'graphite', label: 'Graphite' },
+  ...(tokensJson as { color: { themes: { id: string; name: string }[] } }).color.themes,
 ]
+  .sort((a, b) => (a.id === 'graphite' ? -1 : b.id === 'graphite' ? 1 : 0))
+  .map((theme) => ({ id: theme.id, label: theme.name }))
 
-export const themeFromUrl = (): ThemeName =>
-  new URLSearchParams(location.search).get('theme') === 'console' ? 'console' : 'graphite'
+/** 下拉里的小色样：每个主题的底色、文字、强调与涨跌色（直接从 tokens.json 读值，不靠 CSS 变量——那只对当前主题生效）。 */
+const COLOR_TOKENS = (tokensJson as { color: { tokens: { name: string; value: Record<string, string> }[] } }).color
+  .tokens
+function themeColor(name: string, theme: string): string {
+  let value = COLOR_TOKENS.find((token) => token.name === name)?.value[theme] ?? '#000'
+  for (let i = 0; i < 4 && value.startsWith('{'); i++) {
+    value = COLOR_TOKENS.find((token) => token.name === value.slice(1, -1))?.value[theme] ?? '#000'
+  }
+  return value
+}
+const swatchStyle = (theme: string) => ({
+  background: `linear-gradient(90deg, ${themeColor('bg-300', theme)} 0 40%, ${themeColor('ink-100', theme)} 40% 55%, ${themeColor('accent', theme)} 55% 70%, ${themeColor('pnl-up', theme)} 70% 85%, ${themeColor('pnl-down', theme)} 85%)`,
+})
+
+export const themeFromUrl = (): ThemeName => {
+  const asked = new URLSearchParams(location.search).get('theme')
+  return THEMES.some((theme) => theme.id === asked) ? asked! : 'graphite'
+}
 
 const subscribe = (listener: () => void) => {
   window.addEventListener('hashchange', listener)
@@ -354,18 +376,19 @@ export function Docs({ theme, onTheme }: { theme: ThemeName; onTheme: (theme: Th
             </button>
           )}
           <span>组件文档 · 演示数据</span>
-          <ToggleGroup
-            variant="sm"
-            value={theme}
-            onValueChange={(next) => onTheme(next as ThemeName)}
-            aria-label="主题"
-          >
-            {THEMES.map((item) => (
-              <ToggleGroupItem key={item.id} value={item.id}>
-                {item.label}
-              </ToggleGroupItem>
-            ))}
-          </ToggleGroup>
+          <Select value={theme} onValueChange={(next) => onTheme(next)}>
+            <SelectTrigger aria-label="主题" className="gal-theme-select">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {THEMES.map((item) => (
+                <SelectItem key={item.id} value={item.id}>
+                  <span className="gal-theme-swatch" style={swatchStyle(item.id)} aria-hidden="true" />
+                  {item.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
         <main>
           {onCoverage ? (

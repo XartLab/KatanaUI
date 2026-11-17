@@ -528,3 +528,15 @@ body {
 .gal-fd-table a:hover {
   text-decoration-color: var(--ink-300);
 }
+.gal-theme-select {
+  min-width: 168px;
+}
+.gal-theme-swatch {
+  display: inline-block;
+  width: 28px;
+  height: 12px;
+  margin-right: 8px;
+  vertical-align: -1px;
+  border: 1px solid var(--line-200);
+  border-radius: 3px;
+}

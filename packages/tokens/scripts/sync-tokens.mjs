@@ -46,7 +46,8 @@ function springEasing({ stiffness, damping, mass }) {
 /** 默认主题：它的值在 :root，没写 data-theme 的地方就是它。 */
 const DEFAULT_THEME = 'graphite'
 /** 已实装、要出样式块的非默认主题。 */
-const THEMES = ['console']
+// 其余主题读 tokens.json 的 color.themes（2026-11-17 起：Console、Paper、Midnight、Dim、High contrast）。
+const THEMES = tokens.color.themes.map((theme) => theme.id).filter((id) => id !== DEFAULT_THEME)
 
 /**
  * 「红涨绿跌」（#456、决策记录 0019）：data-updown="cn" 时互换的 token 对。每个主题各出一块（-100/-200 档是写死的色值，两个主题不一样），

@@ -119,3 +119,11 @@
   scrollbar-width: thin;
   scrollbar-color: var(--alpha-white-13) transparent;
 }
+
+/* 原生控件（滚动条、日期框、复选框）的明暗跟主题走：Paper 是亮色，其余是暗色。 */
+:root {
+  color-scheme: dark;
+}
+:root[data-theme='paper'] {
+  color-scheme: light;
+}

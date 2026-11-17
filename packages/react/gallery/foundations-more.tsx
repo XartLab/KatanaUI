@@ -11,7 +11,7 @@ import { GROUP_ICONS, KatanaMark } from './nav-icons'
 
 type Token = { name: string; value: string | Record<string, string>; usage?: string }
 const T = tokens as unknown as {
-  color: { themes: { id: string; name: string }[]; tokens: Token[] }
+  color: { themes: { id: string; name: string; note?: string }[]; tokens: Token[] }
   density: { levels: string[]; tokens: Token[] }
 }
 
@@ -168,12 +168,17 @@ function ModesPage() {
       <Lede>一套 token 名，多套值。组件不知道当前是哪套主题。</Lede>
       <Table
         head={['主题', '怎么开', '说明']}
-        rows={[
-          ['Graphite（默认）', '根节点不写 data-theme', '中性纯灰，信号色是油画颜料色；工作台默认'],
-          ['Console', code('data-theme="console"'), '暖灰与品牌橙的旧主题，留作可切'],
-          ['Paper（亮）', '未接入', 'tokens.json 里有值，tokens.css 还没生成这一块'],
-        ]}
+        rows={T.color.themes.map((theme) => [
+          theme.name,
+          theme.id === 'graphite' ? '根节点不写 data-theme（默认）' : code(`data-theme="${theme.id}"`),
+          theme.note ?? '',
+        ])}
       />
+      <ul className="gal-list">
+        <li>新主题 = 以 Graphite 为底、只改底色、灰阶、线与信号色；阴影、圆角、材质跟底主题走。</li>
+        <li>每套主题都过对比度：正文灰（ink-300）与涨跌色在面板底（bg-300）上 ≥ 4.5:1。</li>
+        <li>加主题只改 tokens.json 的 color.themes 与各 token 的值，生成脚本与文档站自动跟上。</li>
+      </ul>
       <h2>叠加在主题上的开关</h2>
       <Table
         head={['开关', '值', '作用']}
