@@ -4,6 +4,7 @@ import { CodeBlock, ToggleGroup, ToggleGroupItem } from '../src/index'
 import { CopyButton } from './CopyButton'
 import { CoveragePage } from './coverage'
 import { RENDERING_ID, RenderingPage } from './rendering'
+import { FOUNDATION_PAGES, FoundationPage, isFoundation } from './foundations'
 import { DEMOS } from './demos'
 import { resolveParts, type ResolvedPart } from './props'
 import { GROUPS, PAGES, pageById, type DocPage } from './registry'
@@ -177,12 +178,25 @@ export function Docs({ theme, onTheme }: { theme: ThemeName; onTheme: (theme: Th
   const shown = page ?? (id === '' ? PAGES[0] : undefined)
   const onCoverage = id === COVERAGE_ID
   const onRendering = id === RENDERING_ID
+  const onFoundation = isFoundation(id)
   return (
     <div className="gal-shell" data-gallery-theme={theme}>
       <nav className="gal-nav" aria-label="组件">
         <a className="gal-brand" href={`#/${PAGES[0].id}`}>
           @katana-ui/react
         </a>
+        <section>
+          <h2>基础</h2>
+          <ul>
+            {FOUNDATION_PAGES.map((item) => (
+              <li key={item.id}>
+                <a href={`#/${item.id}`} aria-current={item.id === id ? 'page' : undefined}>
+                  {item.id}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
         {GROUPS.map((group) => {
           const pages = PAGES.filter((item) => item.group === group.id)
           if (pages.length === 0) return null
@@ -238,6 +252,8 @@ export function Docs({ theme, onTheme }: { theme: ThemeName; onTheme: (theme: Th
             <CoveragePage />
           ) : onRendering ? (
             <RenderingPage />
+          ) : onFoundation ? (
+            <FoundationPage id={id} />
           ) : shown ? (
             <DocBody key={shown.id} page={shown} />
           ) : (
