@@ -95,7 +95,6 @@ const INTERNAL = {
   'shortcut-model': 'ShortcutRecorder 的规则：一次按键变成规范组合串（修饰键次序、物理键）。',
   'date-range-model': 'DateRangePicker 的预设规则：今天、本周、本月、年初至今（截至今天）与区间认预设（纯函数）。',
   'json-viewer-model': 'JsonViewer 的数据模型：把任意值建成带稳定 id 的节点树，查找命中与要展开的祖先（纯函数）。',
-  'event-timeline-model': 'EventTimeline 的分组规则：按显示时区的自然日分组、新的在前，钟点格式（纯函数）。',
   'hold-model': 'HoldToConfirm 的进度规则：按住填满、松手退回的时长与每帧推进（纯函数）。',
   'duration-picker-model': 'DurationPicker 的输入规则：框里的字与数互转，空当 0，超上限夹住并标记要抖一下（纯函数）。',
   'password-input-model': 'PasswordInput 的眼睛轮廓：睁开程度 0..1 到 SVG 路径（纯函数）。',
@@ -239,6 +238,13 @@ function collectItems() {
       'system-monitor',
       'strategy-report',
       'transmission-chain',
+      // G6：事件时间线挪进子目录；仪表、必要条件块、状态带、订单流仪表、可用条从 src/quant 挪来（体检 §2）。
+      'event-timeline',
+      'meter',
+      'consensus-block',
+      'regime-strip',
+      'flow-gauges',
+      'uptime-bars',
     ])
       add(
         dir,

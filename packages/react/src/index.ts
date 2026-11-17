@@ -158,7 +158,13 @@ export {
   type FontOption,
   type FontRole,
 } from './patterns/font-catalog.ts'
-export { SideNav, type SideNavGroup, type SideNavItem, type SideNavProps } from './patterns/side-nav.tsx'
+export {
+  SideNav,
+  type SideNavGroup,
+  type SideNavItem,
+  type SideNavLabels,
+  type SideNavProps,
+} from './patterns/side-nav.tsx'
 export {
   fitsWidth,
   fontFor,
@@ -360,8 +366,8 @@ export { ratingAngle, ratingZone } from './katana/rating-gauge-model.ts'
 export { quoteTone, type QuoteTone } from './katana/quote-tone.ts'
 
 // 分布与关系类的件（#1918）：功能参照 Arc（uiarc.dev，2026-11-14 读），实现原创。
-export { UptimeBars, type UptimeBarsProps } from './quant/uptime-bars.tsx'
-export { uptimeShare, type UptimeCell, type UptimeStatus } from './quant/uptime-bars-model.ts'
+export { UptimeBars, type UptimeBarsProps } from './blocks/uptime-bars/uptime-bars.tsx'
+export { uptimeShare, type UptimeCell, type UptimeStatus } from './blocks/uptime-bars/uptime-bars-model.ts'
 export {
   RangeHistogramSlider,
   type RangeHistogramSliderLabels,

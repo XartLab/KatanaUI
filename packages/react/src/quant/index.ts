@@ -90,7 +90,10 @@ export {
 export { isMonotonic, lastFinite, layerLevel, quantileRange, sortLayers, type QuantileLayer } from './quantile-model.ts'
 // 第二批（#1929）：KPI 瓦片、仪表、订单流仪表行、状态带、必要条件块。
 export { SparkTile, type SparkTileProps, type SparkTileState } from './spark-tile.tsx'
-export { Meter, type MeterDisplay, type MeterProps, type MeterTone } from './meter.tsx'
+// Meter、FlowGauges、RegimeStrip、ConsensusBlock 不是量化专有，G6 挪到 blocks（体检 §2）；这里转出留一个版本，新代码从 blocks 引。
+/** @deprecated Moved to `@katana-ui/react/blocks`; kept here for one version. */
+export { Meter, type MeterDisplay, type MeterProps, type MeterTone } from '../blocks/meter/meter.tsx'
+/** @deprecated Moved to `@katana-ui/react/blocks`; kept here for one version. */
 export {
   FlowGauges,
   type FlowCellState,
@@ -99,7 +102,8 @@ export {
   type FlowGaugeData,
   type FlowGaugesProps,
   type FlowSignedGauge,
-} from './flow-gauges.tsx'
+} from '../blocks/flow-gauges/flow-gauges.tsx'
+/** @deprecated Moved to `@katana-ui/react/blocks`; kept here for one version. */
 export {
   RegimeBand,
   RegimeStrip,
@@ -108,7 +112,8 @@ export {
   type RegimeSegment,
   type RegimeState,
   type RegimeStripProps,
-} from './regime-strip.tsx'
+} from '../blocks/regime-strip/regime-strip.tsx'
+/** @deprecated Moved to `@katana-ui/react/blocks`; kept here for one version. */
 export {
   ConsensusBlock,
   countConsensus,
@@ -116,7 +121,7 @@ export {
   type ConsensusParty,
   type ConsensusState,
   type ConsensusVerdict,
-} from './consensus-block.tsx'
+} from '../blocks/consensus-block/consensus-block.tsx'
 export {
   MetricCard,
   MetricCardGrid,

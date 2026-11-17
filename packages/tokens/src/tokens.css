@@ -224,6 +224,7 @@
   --k-separable-tertiary-borderColor: var(--line-100);
   --k-container-primary-background: var(--bg-300);
   --k-container-secondary-background: var(--bg-200);
+  --k-container-tertiary-background: var(--alpha-white-3);
   --k-container-borderColor: var(--line-100);
   --k-focused-outlineColor: var(--focus-ring);
   --k-focused-outlineWidth: 2px;

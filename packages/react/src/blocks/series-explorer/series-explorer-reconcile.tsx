@@ -11,7 +11,7 @@ export type SeriesReconcileProps = {
 
 export function SeriesReconcile({ recon, text, format }: SeriesReconcileProps) {
   return (
-    <div className="k-sx-recon" data-slot="series-reconcile" data-state={recon.diff === 0 ? 'ok' : 'warn'}>
+    <div className="k-sx-recon" data-slot="series-reconcile" data-tone={recon.diff === 0 ? 'ok' : 'warn'}>
       <span className="k-sx-recon-line" data-slot="series-reconcile-lcd">
         <span className="k-sx-kv">
           <small>{text.open}</small>
@@ -31,7 +31,7 @@ export function SeriesReconcile({ recon, text, format }: SeriesReconcileProps) {
         </span>
       </span>
       <span className="k-sx-recon-state">
-        <Led state={recon.diff === 0 ? 'ok' : 'warn'} label={recon.diff === 0 ? text.ok : text.warn} />
+        <Led tone={recon.diff === 0 ? 'ok' : 'warn'} label={recon.diff === 0 ? text.ok : text.warn} />
         {recon.diff === 0 ? text.ok : text.warn}
       </span>
     </div>

@@ -187,7 +187,7 @@ export const KatanaDataGrid = createComponentImplementation(KatanaDataGridApi, (
     () =>
       labels
         ? {
-            texts: {
+            labels: {
               rowActions: labels.rowActions,
               selectedRows: (selected: { size: number }) => fill(labels.selectedRows, { count: selected.size }),
             },

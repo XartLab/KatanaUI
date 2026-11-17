@@ -4,7 +4,7 @@ import { createComponentImplementation } from '@a2ui/react'
 import type { ComponentApi } from '@a2ui/web_core'
 import { CommonSchemas } from '@a2ui/web_core/v1_0'
 import { z } from 'zod'
-import { Meter } from '../../quant/index.ts'
+import { Meter } from '../../blocks/index.ts'
 import { Cell, weightSchema } from '../support.tsx'
 
 const TONES = ['accent', 'ok', 'warn', 'danger', 'off'] as const

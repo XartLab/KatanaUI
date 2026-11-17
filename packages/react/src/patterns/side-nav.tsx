@@ -19,6 +19,14 @@ export type SideNavItem = {
 }
 export type SideNavGroup = { id: string; title: string; icon?: ReactNode; items: readonly SideNavItem[] }
 
+/** Texts of SideNav. */
+export type SideNavLabels = {
+  /** 搜索框的占位与读屏名；不给就不显示搜索框。 */
+  search?: string
+  /** 搜索没有结果时的文字。 */
+  empty?: string
+}
+
 export type SideNavProps = {
   groups: readonly SideNavGroup[]
   /** 当前项的 id。 */
@@ -27,9 +35,10 @@ export type SideNavProps = {
   header?: ReactNode
   /** 底部（版本、链接等）。 */
   footer?: ReactNode
-  /** 搜索框的占位与读屏名；不给就不显示搜索框。 */
+  labels?: SideNavLabels
+  /** @deprecated Use `labels.search`; kept for one version. */
   searchLabel?: string
-  /** 搜索没有结果时的文字。 */
+  /** @deprecated Use `labels.empty`; kept for one version. */
   emptyLabel?: string
   'aria-label'?: string
 }
@@ -123,7 +132,16 @@ function Group({ group, current }: { group: SideNavGroup; current?: string }) {
 const text = (node: ReactNode): string => (typeof node === 'string' || typeof node === 'number' ? String(node) : '')
 
 /** 侧栏导航：分组链接 + 当前项轨迹 + 悬停轨迹 + 过滤框。 */
-export function SideNav({ groups, current, header, footer, searchLabel, emptyLabel, ...rest }: SideNavProps) {
+export function SideNav({
+  groups,
+  current,
+  header,
+  footer,
+  labels,
+  searchLabel = labels?.search,
+  emptyLabel = labels?.empty,
+  ...rest
+}: SideNavProps) {
   const [query, setQuery] = useState('')
   const input = useRef<HTMLInputElement>(null)
   const scroller = useRef<HTMLDivElement>(null)

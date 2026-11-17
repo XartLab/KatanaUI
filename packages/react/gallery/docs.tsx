@@ -369,8 +369,7 @@ export function Docs({ theme, onTheme }: { theme: ThemeName; onTheme: (theme: Th
             aria-label="文档目录"
             groups={navGroups}
             current={currentNav}
-            searchLabel="搜索组件与文档"
-            emptyLabel="没有匹配的页"
+            labels={{ search: '搜索组件与文档', empty: '没有匹配的页' }}
             header={
               <div className="gal-side-head">
                 <button

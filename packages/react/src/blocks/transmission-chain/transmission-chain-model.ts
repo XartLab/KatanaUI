@@ -35,7 +35,7 @@ export type ChainDirection = 'LR' | 'TB'
 
 export const NODE_WIDTH = 168
 export const NODE_HEIGHT = 48
-export const LABEL_HEIGHT = 22
+const LABEL_HEIGHT = 22
 
 export type LaidNode = { id: string; x: number; y: number; width: number; height: number }
 export type LaidEdge = {
@@ -193,8 +193,8 @@ export function smoothPath(points: readonly { x: number; y: number }[]): string 
 }
 
 export type View = { x: number; y: number; k: number }
-export const MIN_ZOOM = 0.25
-export const MAX_ZOOM = 3
+const MIN_ZOOM = 0.25
+const MAX_ZOOM = 3
 
 const clampZoom = (k: number) => clamp(k, MIN_ZOOM, MAX_ZOOM)
 

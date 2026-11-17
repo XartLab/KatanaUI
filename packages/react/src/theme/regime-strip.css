@@ -1,0 +1,85 @@
+/* SPDX-License-Identifier: MIT */
+/* G6 token 迁移：估算段斜纹用 ink-300、阴影 rgba(0,0,0,.45)：没有对应的 characteristics 或 --shadow-*（纹理色），先留着。 */
+/* RegimeStrip（#1929；G6 从 theme/quant.css 拆出，每件一个 css）：市场状态带与图例；颜色是类别，只读 --series-*。
+   尺寸与层次照 design/katana-console/project/components/RegimeStrip/preview.html；颜色只读 characteristics（--k-*）与语义 token；动效只用弹簧的 CSS 形式（--dur-* / --ease-*）。 */
+
+.k-regime {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  font-family: var(--font-num-small);
+  font-size: var(--text-micro-size);
+}
+.k-regime-title {
+  color: var(--k-content-secondary-foreground);
+}
+.k-regime-band {
+  position: relative;
+  height: 14px;
+  background: var(--k-surface-sunken-background);
+}
+.k-regime-band i {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  transition: opacity var(--dur-snappy) var(--ease-snappy);
+}
+.k-regime-band i[data-dim] {
+  opacity: 0.25;
+}
+.k-regime-band i[data-estimated] {
+  /* 估的那段：斜纹叠在状态色上，不是换个颜色 */
+  background-image: repeating-linear-gradient(135deg, rgba(0, 0, 0, 0.45) 0 2px, transparent 2px 5px);
+  background-blend-mode: multiply;
+}
+.k-regime-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--k-content-body-foreground);
+}
+.k-regime-legend li,
+.k-regime-legend button {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.k-regime-legend button {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+.k-regime-legend button[aria-pressed='true'] {
+  color: var(--k-content-primary-foreground);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.k-regime-legend button:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+.k-regime-swatch {
+  width: 8px;
+  height: 8px;
+  flex: none;
+}
+.k-regime-swatch.is-estimate {
+  background: repeating-linear-gradient(135deg, var(--ink-300) 0 2px, transparent 2px 4px);
+}
+.k-regime-detail {
+  color: var(--k-content-secondary-foreground);
+}
+.k-regime-current {
+  font-weight: 400;
+  color: var(--k-content-primary-foreground);
+}
+.k-regime-current::before {
+  content: '◂ ';
+}

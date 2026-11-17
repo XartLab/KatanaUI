@@ -3,20 +3,23 @@ import { Pause, Play, Square } from 'lucide-react'
 import { useState, type ReactNode } from 'react'
 import { cn } from '../../lib/cn.ts'
 import { HoldToConfirm } from '../../patterns/hold-to-confirm.tsx'
-import { Led, type LedState } from '../../katana/led.tsx'
+import { Led } from '../../katana/led.tsx'
 import { ChipGroup } from '../../patterns/chip-group.tsx'
 import { Button } from '../../primitives/button.tsx'
 import { ToggleGroup, ToggleGroupItem } from '../../primitives/toggle-group.tsx'
 import { PnlText } from '../../quant/pnl-text.tsx'
 import { SparkTile, type SparkTileProps } from '../../quant/spark-tile.tsx'
-import { meterShare } from '../../quant/meter.tsx'
+import { meterShare } from '../meter/meter.tsx'
 import {
+  eventSeverity,
   filterEvents,
+  linkSeverity,
   quotaTone,
   sortEvents,
   sortLinks,
   sortStrategies,
   strategyActions,
+  strategySeverity,
   summarize,
   type EventSeverity,
   type LinkState,
@@ -105,14 +108,13 @@ export type SystemMonitorProps = {
   onEmergencyStop?: () => void
   /** 额度条转琥珀的占用比（0 到 1）；不给不预警，越界（≥ 1）总是红。预警线属于账户风控，由调用方给。 */
   quotaWarnAt?: number
-  /** 连接条上点一个连接。 */
+  /** 选中一个连接（点连接条上的一项）；给了连接才是按钮。 */
+  onSelect?: (link: MonitorLink) => void
+  /** @deprecated Use `onSelect`; kept for one version. */
   onLinkPick?: (link: MonitorLink) => void
   className?: string
 }
 
-const LINK_LED: Record<LinkState, LedState> = { ok: 'ok', degraded: 'warn', error: 'danger', offline: 'off' }
-const STATUS_LED: Record<StrategyStatus, LedState> = { running: 'ok', paused: 'warn', stopped: 'off', error: 'danger' }
-const SEVERITY_LED: Record<EventSeverity, LedState> = { info: 'off', warn: 'warn', error: 'danger' }
 const ACTION_ICON: Record<StrategyAction, ReactNode> = {
   start: <Play aria-hidden />,
   pause: <Pause aria-hidden />,
@@ -134,6 +136,7 @@ export function SystemMonitor({
   onEmergencyStop,
   quotaWarnAt,
   onLinkPick,
+  onSelect = onLinkPick,
   className,
 }: SystemMonitorProps) {
   const [kinds, setKinds] = useState<string[]>([])
@@ -168,7 +171,7 @@ export function SystemMonitor({
                 const text = labels.linkState[link.state]
                 const body = (
                   <>
-                    <Led state={LINK_LED[link.state]} label={text} bare={link.state === 'offline'} />
+                    <Led tone={linkSeverity(link.state)} label={text} bare={link.state === 'offline'} />
                     <span className="k-sysmon-link-name">{link.name}</span>
                     <span className="k-sysmon-link-state">{text}</span>
                     <span className="k-sysmon-link-num">
@@ -184,8 +187,8 @@ export function SystemMonitor({
                 const title = [link.group, link.detail].filter(Boolean).join(' · ') || undefined
                 return (
                   <li key={link.id} className="k-sysmon-link" data-state={link.state} title={title}>
-                    {onLinkPick ? (
-                      <button type="button" className="k-sysmon-link-body" onClick={() => onLinkPick(link)}>
+                    {onSelect ? (
+                      <button type="button" className="k-sysmon-link-body" onClick={() => onSelect(link)}>
                         {body}
                       </button>
                     ) : (
@@ -281,7 +284,7 @@ export function SystemMonitor({
                   {shownEvents.map((e) => (
                     <li key={e.id} className="k-sysmon-event" data-severity={e.severity}>
                       <Led
-                        state={SEVERITY_LED[e.severity]}
+                        tone={eventSeverity(e.severity)}
                         label={labels.severity[e.severity]}
                         bare={e.severity === 'info'}
                       />
@@ -328,7 +331,7 @@ function StrategyRow({
       <td>{s.symbol}</td>
       <td>
         <span className="k-sysmon-status">
-          <Led state={STATUS_LED[s.status]} label={statusText} bare={s.status === 'stopped'} />
+          <Led tone={strategySeverity(s.status)} label={statusText} bare={s.status === 'stopped'} />
           {statusText}
         </span>
       </td>

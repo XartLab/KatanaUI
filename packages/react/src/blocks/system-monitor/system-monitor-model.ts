@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MIT
+import type { Severity, SeverityExt } from '../../lib/severity.ts'
 
 /** 连接状态：ok 正常、degraded 变慢或部分可用、error 出错、offline 断开。名字与颜色由件定，字由调用方给。 */
 export type LinkState = 'ok' | 'degraded' | 'error' | 'offline'
@@ -93,7 +94,24 @@ export function strategyActions(status: StrategyStatus): StrategyAction[] {
   return ['start']
 }
 
-export type QuotaTone = 'ok' | 'warn' | 'danger'
+/** @deprecated Use `Severity`; kept for one version. */
+export type QuotaTone = Exclude<Severity, 'neutral'>
+
+const LINK_SEVERITY: Record<LinkState, SeverityExt> = { ok: 'ok', degraded: 'warn', error: 'danger', offline: 'off' }
+const STRATEGY_SEVERITY: Record<StrategyStatus, SeverityExt> = {
+  running: 'ok',
+  paused: 'warn',
+  stopped: 'off',
+  error: 'danger',
+}
+const EVENT_SEVERITY: Record<EventSeverity, SeverityExt> = { info: 'neutral', warn: 'warn', error: 'danger' }
+
+/** 连接状态的语气：变慢琥珀、出错红、断开不亮（灯用 ledOf 取）。 */
+export const linkSeverity = (state: LinkState): SeverityExt => LINK_SEVERITY[state]
+/** 策略状态的语气：运行绿、暂停琥珀、出错红、停止不亮。 */
+export const strategySeverity = (status: StrategyStatus): SeverityExt => STRATEGY_SEVERITY[status]
+/** 事件级别的语气：info 不带判断。 */
+export const eventSeverity = (severity: EventSeverity): SeverityExt => EVENT_SEVERITY[severity]
 
 /** 额度条的色：≥ 1 越界为 danger；warnAt 由调用方给（≥ warnAt 为 warn），不给就不预警——预警线属于账户风控，件不替它定。 */
 export function quotaTone(quota: number, warnAt?: number): QuotaTone {

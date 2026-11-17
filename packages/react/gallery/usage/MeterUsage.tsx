@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-import { Meter } from '../../src/quant'
+import { Meter } from '../../src/blocks'
 
 export function MeterUsage() {
   return (

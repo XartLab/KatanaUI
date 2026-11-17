@@ -25,8 +25,7 @@ function Demo() {
             workspaces={tabs}
             activeId={active}
             label="工作区"
-            createLabel="新建工作区"
-            moreLabel="更多工作区"
+            labels={{ create: '新建工作区', more: '更多工作区' }}
             onSelect={setActive}
             onRename={() => {}}
             onCreate={() => setTabs((prev) => [...prev, { id: `ws${prev.length}`, name: `工作区 ${prev.length}` }])}

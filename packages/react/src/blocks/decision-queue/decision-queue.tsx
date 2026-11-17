@@ -3,7 +3,7 @@ import { ChevronRight, ExternalLink } from 'lucide-react'
 import { useId, useState, type ReactNode } from 'react'
 import { cn } from '../../lib/cn.ts'
 import { HoldToConfirm } from '../../patterns/hold-to-confirm.tsx'
-import { Led, type LedState } from '../../katana/led.tsx'
+import { Led } from '../../katana/led.tsx'
 import { MeasuredSkeleton } from '../../katana/measured-skeleton.tsx'
 import { Skeleton } from '../../katana/skeleton.tsx'
 import { Button } from '../../primitives/button.tsx'
@@ -11,6 +11,7 @@ import { ToggleGroup, ToggleGroupItem } from '../../primitives/toggle-group.tsx'
 import {
   DECISION_FILTERS,
   countByFilter,
+  decisionSeverity,
   effectiveStatus,
   secondsLeft,
   visibleDecisions,
@@ -81,14 +82,6 @@ export type DecisionQueueProps = {
   /** 按住多久才算接受（毫秒），传给 HoldToConfirm。 */
   holdMs?: number
   className?: string
-}
-
-const LED: Record<DecisionStatus, LedState> = {
-  pending: 'on',
-  snoozed: 'warn',
-  accepted: 'ok',
-  rejected: 'danger',
-  expired: 'off',
 }
 
 export function DecisionQueue({
@@ -248,7 +241,7 @@ function OpenCard({
   return (
     <article className="k-dq-card" aria-label={`${item.action} ${item.target}`}>
       <div className="k-dq-meta">
-        <Led state={LED[status]} small label={labels.status[status]} />
+        <Led tone={decisionSeverity(status)} small label={labels.status[status]} />
         {status === 'snoozed' && <span className="k-dq-snoozed">{labels.snoozed}</span>}
         <time
           className="k-dq-time"
@@ -315,7 +308,7 @@ function DoneRow({ item, status, now, labels, renderTarget }: { item: DecisionIt
         onClick={() => setOpen(!open)}
       >
         <ChevronRight size={12} aria-hidden className="k-dq-chevron" />
-        <Led state={LED[status]} small label={labels.status[status]} />
+        <Led tone={decisionSeverity(status)} small label={labels.status[status]} />
         <span className="k-dq-result">{labels.status[status]}</span>
         <span className="k-dq-action">{item.action}</span>
         {renderTarget?.(item)}

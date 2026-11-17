@@ -40,6 +40,7 @@
 @import './theme/loading.css';
 @import './theme/data-grid.css';
 @import './theme/empty-state.css';
+@import './theme/toolbar.css';
 @import './theme/splitter.css';
 @import './theme/panel-frame.css';
 @import './theme/status-bar.css';
@@ -75,6 +76,10 @@
 @import './theme/metric-card.css';
 @import './theme/row-actions.css';
 @import './theme/quant.css';
+@import './theme/meter.css';
+@import './theme/flow-gauges.css';
+@import './theme/regime-strip.css';
+@import './theme/consensus-block.css';
 @import './theme/sui-motion.css';
 @import './theme/form-motion.css';
 @import './theme/motion-text.css';

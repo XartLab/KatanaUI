@@ -4,7 +4,7 @@ import { createComponentImplementation } from '@a2ui/react'
 import type { ComponentApi } from '@a2ui/web_core'
 import { CommonSchemas } from '@a2ui/web_core/v1_0'
 import { z } from 'zod'
-import { FlowGauges, type FlowGaugeData } from '../../quant/index.ts'
+import { FlowGauges, type FlowGaugeData } from '../../blocks/index.ts'
 import { Cell, parseList, weightSchema } from '../support.tsx'
 
 const signed = (kind: 'pressure' | 'priceChange', what: string) =>
@@ -80,8 +80,13 @@ export const KatanaFlowGaugesApi = {
           'The gauges, in display order. Either a literal array or {"@path": "/flow"} bound to a data-model array. Each is told apart by kind. Items that do not fit are dropped. Values are never calculated here.',
         ),
       label: CommonSchemas.DynamicString.describe('Accessible name of the whole row.'),
-      naText: CommonSchemas.DynamicString.describe('The text drawn where there is no number (for example "N/A").'),
-      estimateText: CommonSchemas.DynamicString.describe('The text of the estimate mark (for example "est.").'),
+      labels: z
+        .object({
+          na: z.string().describe('The text drawn where there is no number (for example "N/A").'),
+          estimate: z.string().describe('The text of the estimate mark (for example "est.").'),
+        })
+        .strict()
+        .describe('All visible text, in the language of the user.'),
       weight: weightSchema,
     })
     .strict(),
@@ -92,8 +97,7 @@ export const KatanaFlowGauges = createComponentImplementation(KatanaFlowGaugesAp
     <FlowGauges
       gauges={parseList(itemSchema, props.gauges) as FlowGaugeData[]}
       label={props.label ?? ''}
-      naText={props.naText ?? ''}
-      estimateText={props.estimateText ?? ''}
+      labels={props.labels}
     />
   </Cell>
 ))

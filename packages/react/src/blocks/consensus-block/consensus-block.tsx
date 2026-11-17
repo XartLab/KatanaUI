@@ -1,4 +1,8 @@
 // SPDX-License-Identifier: MIT
+/**
+ * Necessary-conditions block: what a command will do, which checks pass, which one blocks and the final verdict.
+ * 体检 §2：不是量化专有，从 src/quant 挪到 blocks（G6）；§4：intent（其实是文字）改名 subject，各方的 key 改 id。
+ */
 // 组件卡 ConsensusBlock（design/katana-console/project/components/ConsensusBlock，#1929）：必要条件块。
 // 名字沿用「三方表决」，但不是投票：写命令提交前，说清「当前意图是什么、哪些必要条件满足、哪个条件阻止、最终由谁裁决」。
 // 任一方 blocked / unknown / timeout / stale 即不可执行；多方同意不等于授权，裁决永远在执行网关与账户服务（卡引的 engineering.md §4.1，待核对）。
@@ -10,8 +14,12 @@ import { useId, useState, type ReactNode } from 'react'
 /** pass 满足；warn 接近（不阻止，但提交前要列出）；blocked 未过；unknown 未返回；timeout 超时；stale 已失效要重检；pending 评估中。 */
 export type ConsensusState = 'pass' | 'warn' | 'blocked' | 'unknown' | 'timeout' | 'stale' | 'pending'
 
-export type ConsensusParty = {
-  key: string
+/** 一方的标识：id（旧名 key 留一个版本）。 */
+export type ConsensusPartyId =
+  | { id: string; /** @deprecated Use `id`; kept for one version. */ key?: string }
+  | { /** @deprecated Use `id`; kept for one version. */ key: string; id?: string }
+
+export type ConsensusParty = ConsensusPartyId & {
   /** 点阵小标题（如 GATEWAY）。 */
   label: string
   state: ConsensusState
@@ -27,7 +35,9 @@ export type ConsensusVerdict = 'ok' | 'warn' | 'blocked'
 export type ConsensusBlockProps = {
   /** 整块的读屏名。 */
   label: string
-  /** 当前意图（如「下单 · 账户 A · 买 300750 × 2,000」）。 */
+  /** 要提交的是什么（如「下单 · 账户 A · 买 300750 × 2,000」），画在块的最上面。 */
+  subject?: ReactNode
+  /** @deprecated Use `subject`; kept for one version. */
   intent?: ReactNode
   parties: readonly ConsensusParty[]
   verdict: ConsensusVerdict
@@ -73,6 +83,7 @@ export function countConsensus(parties: readonly ConsensusParty[]): {
 
 export function ConsensusBlock({
   label,
+  subject,
   intent,
   parties,
   verdict,
@@ -86,10 +97,12 @@ export function ConsensusBlock({
   const id = useId()
   const [open, setOpen] = useState<string | null>(null)
   const labels = { ...DEFAULT_LABELS, ...stateLabels }
-  const expanded = parties.find((party) => party.key === open && party.detail)
+  const idOf = (party: ConsensusParty) => party.id ?? party.key ?? ''
+  const head = subject ?? intent
+  const expanded = parties.find((party) => idOf(party) === open && party.detail)
   return (
     <div className={`k-consensus${className ? ` ${className}` : ''}`}>
-      {intent ? <div className="k-consensus-intent">{intent}</div> : null}
+      {head ? <div className="k-consensus-intent">{head}</div> : null}
       <div className="k-consensus-shell" role="group" aria-label={label}>
         {parties.map((party) => {
           const body = (
@@ -102,20 +115,21 @@ export function ConsensusBlock({
               <span className="k-consensus-msg">{party.message}</span>
             </>
           )
+          const partyId = idOf(party)
           return party.detail ? (
             <button
               type="button"
-              key={party.key}
+              key={partyId}
               className="k-consensus-party"
               data-state={party.state}
-              aria-expanded={open === party.key}
+              aria-expanded={open === partyId}
               aria-controls={`${id}-detail`}
-              onClick={() => setOpen(open === party.key ? null : party.key)}
+              onClick={() => setOpen(open === partyId ? null : partyId)}
             >
               {body}
             </button>
           ) : (
-            <div key={party.key} className="k-consensus-party" data-state={party.state}>
+            <div key={partyId} className="k-consensus-party" data-state={party.state}>
               {body}
             </div>
           )

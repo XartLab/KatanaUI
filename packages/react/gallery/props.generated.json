@@ -6284,7 +6284,7 @@
     },
     "ConsensusBlock": {
       "kind": "component",
-      "source": "src/quant/consensus-block.tsx",
+      "source": "src/blocks/consensus-block/consensus-block.tsx",
       "props": [
         {
           "name": "label",
@@ -6293,10 +6293,16 @@
           "description": "整块的读屏名。"
         },
         {
+          "name": "subject",
+          "type": "ReactNode",
+          "required": false,
+          "description": "要提交的是什么（如「下单 · 账户 A · 买 300750 × 2,000」），画在块的最上面。"
+        },
+        {
           "name": "intent",
           "type": "ReactNode",
           "required": false,
-          "description": "当前意图（如「下单 · 账户 A · 买 300750 × 2,000」）。"
+          "description": ""
         },
         {
           "name": "parties",
@@ -6350,7 +6356,7 @@
     },
     "ConsensusBlockProps": {
       "kind": "type",
-      "source": "src/quant/consensus-block.tsx",
+      "source": "src/blocks/consensus-block/consensus-block.tsx",
       "props": [
         {
           "name": "label",
@@ -6359,10 +6365,16 @@
           "description": "整块的读屏名。"
         },
         {
+          "name": "subject",
+          "type": "ReactNode",
+          "required": false,
+          "description": "要提交的是什么（如「下单 · 账户 A · 买 300750 × 2,000」），画在块的最上面。"
+        },
+        {
           "name": "intent",
           "type": "ReactNode",
           "required": false,
-          "description": "当前意图（如「下单 · 账户 A · 买 300750 × 2,000」）。"
+          "description": ""
         },
         {
           "name": "parties",
@@ -6416,48 +6428,17 @@
     },
     "ConsensusParty": {
       "kind": "type",
-      "source": "src/quant/consensus-block.tsx",
-      "props": [
-        {
-          "name": "key",
-          "type": "string",
-          "required": true,
-          "description": ""
-        },
-        {
-          "name": "label",
-          "type": "string",
-          "required": true,
-          "description": "点阵小标题（如 GATEWAY）。"
-        },
-        {
-          "name": "state",
-          "type": "ConsensusState",
-          "required": true,
-          "description": ""
-        },
-        {
-          "name": "message",
-          "type": "string",
-          "required": true,
-          "description": "一句话（≤ 10 字为宜：可用 ✓ 整手 ✓ / 集中度 58 / 60）。"
-        },
-        {
-          "name": "detail",
-          "type": "ReactNode",
-          "required": false,
-          "description": "点开才看的详情（限额值、规则 id、预检原因）；有就整格是按钮。"
-        }
-      ]
+      "source": "src/blocks/consensus-block/consensus-block.tsx",
+      "props": []
     },
     "ConsensusState": {
       "kind": "type",
-      "source": "src/quant/consensus-block.tsx",
+      "source": "src/blocks/consensus-block/consensus-block.tsx",
       "props": []
     },
     "ConsensusVerdict": {
       "kind": "type",
-      "source": "src/quant/consensus-block.tsx",
+      "source": "src/blocks/consensus-block/consensus-block.tsx",
       "props": []
     },
     "ContextMenu": {
@@ -7192,10 +7173,16 @@
           "description": "How an action's shortcut is written (shown at the right of menu items and in the table name)."
         },
         {
-          "name": "texts",
-          "type": "Partial<DataGridTexts>",
+          "name": "labels",
+          "type": "Partial<DataGridLabels>",
           "required": false,
           "description": "Texts of the menu items and accessible names; the standard menu items appear only when copy, save and resetColumns are all given."
+        },
+        {
+          "name": "texts",
+          "type": "Partial<DataGridLabels>",
+          "required": false,
+          "description": "Old name of labels."
         },
         {
           "name": "renderMenu",
@@ -7216,9 +7203,81 @@
       "source": "src/blocks/data-grid/host.tsx",
       "props": []
     },
+    "DataGridLabels": {
+      "kind": "type",
+      "source": "src/blocks/data-grid/host.tsx",
+      "props": [
+        {
+          "name": "copy",
+          "type": "string",
+          "required": true,
+          "description": "菜单项。三项都给了，菜单里才有标准项。"
+        },
+        {
+          "name": "save",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "resetColumns",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "askAgent",
+          "type": "string",
+          "required": false,
+          "description": "「问 Agent」菜单项；没给就没有这一项。"
+        },
+        {
+          "name": "gridLabel",
+          "type": "(label: string) => string",
+          "required": true,
+          "description": "屏幕阅读器念的表名：label 是调用方给的表名；宿主可以在后面接上操作提示（上下键挑一行、快捷键）。"
+        },
+        {
+          "name": "menuLabel",
+          "type": "(label: string) => string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "rowActions",
+          "type": "string",
+          "required": true,
+          "description": "行快捷操作按钮条的名字（屏幕阅读器念）。"
+        },
+        {
+          "name": "sortTitle",
+          "type": "(column: { id: string; label: string }) => string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "resizeLabel",
+          "type": "(column: { id: string; label: string }) => string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "selectedRows",
+          "type": "(selected: { size: number }) => string",
+          "required": true,
+          "description": "选了几行（多于一行时读出来）；给对象而不是数，宿主的复数写法好跟原来的文案对上。"
+        },
+        {
+          "name": "columnMenu",
+          "type": "{ sortAsc: string sortDesc: string clearSort: string pin: string unpin: string hide: string moveLeft: string moveRight: string /** 「适应内容」：这一列宽度设成列头与数据里最宽的字（可省，省略用英文默认）。 */ fitContent?: string /** 「全部列适应内容」（可省，省略用英文默认）。 */ fitAll?: string /** 菜单的读屏名。 */ label: (column: { id: string; label: string }) => string }",
+          "required": true,
+          "description": "列头右键菜单的项（#27）。"
+        }
+      ]
+    },
     "DataGridProps": {
       "kind": "type",
-      "source": "src/blocks/data-grid/data-grid.tsx",
+      "source": "src/blocks/data-grid/data-grid-props.ts",
       "props": [
         {
           "name": "columns",
@@ -11071,7 +11130,7 @@
     },
     "EventKind": {
       "kind": "type",
-      "source": "src/blocks/event-timeline-model.ts",
+      "source": "src/blocks/event-timeline/event-timeline-model.ts",
       "props": []
     },
     "EventSeverity": {
@@ -11081,7 +11140,7 @@
     },
     "EventTimeline": {
       "kind": "component",
-      "source": "src/blocks/event-timeline.tsx",
+      "source": "src/blocks/event-timeline/event-timeline.tsx",
       "props": [
         {
           "name": "events",
@@ -11126,10 +11185,16 @@
           "description": "整条时间线的读屏名。"
         },
         {
+          "name": "onSelect",
+          "type": "(event: TimelineEvent) => void",
+          "required": false,
+          "description": "选中一个事件（点击；聚合标记给其中最早的一条）：调用方去定位回放与高亮对应面板。"
+        },
+        {
           "name": "onPick",
           "type": "(event: TimelineEvent) => void",
           "required": false,
-          "description": "点击事件（聚合标记给其中最早的一条）：调用方去定位回放与高亮对应面板。"
+          "description": ""
         },
         {
           "name": "onBrush",
@@ -11147,7 +11212,7 @@
     },
     "EventTimelineLabels": {
       "kind": "type",
-      "source": "src/blocks/event-timeline.tsx",
+      "source": "src/blocks/event-timeline/event-timeline.tsx",
       "props": [
         {
           "name": "kinds",
@@ -11237,7 +11302,7 @@
     },
     "EventTimelineProps": {
       "kind": "type",
-      "source": "src/blocks/event-timeline.tsx",
+      "source": "src/blocks/event-timeline/event-timeline.tsx",
       "props": [
         {
           "name": "events",
@@ -11282,10 +11347,16 @@
           "description": "整条时间线的读屏名。"
         },
         {
+          "name": "onSelect",
+          "type": "(event: TimelineEvent) => void",
+          "required": false,
+          "description": "选中一个事件（点击；聚合标记给其中最早的一条）：调用方去定位回放与高亮对应面板。"
+        },
+        {
           "name": "onPick",
           "type": "(event: TimelineEvent) => void",
           "required": false,
-          "description": "点击事件（聚合标记给其中最早的一条）：调用方去定位回放与高亮对应面板。"
+          "description": ""
         },
         {
           "name": "onBrush",
@@ -12579,12 +12650,12 @@
     },
     "FlowCellState": {
       "kind": "type",
-      "source": "src/quant/flow-gauges.tsx",
+      "source": "src/blocks/flow-gauges/flow-gauges.tsx",
       "props": []
     },
     "FlowDivergenceGauge": {
       "kind": "type",
-      "source": "src/quant/flow-gauges.tsx",
+      "source": "src/blocks/flow-gauges/flow-gauges.tsx",
       "props": [
         {
           "name": "kind",
@@ -12620,7 +12691,7 @@
     },
     "FlowDomGauge": {
       "kind": "type",
-      "source": "src/quant/flow-gauges.tsx",
+      "source": "src/blocks/flow-gauges/flow-gauges.tsx",
       "props": [
         {
           "name": "kind",
@@ -12668,12 +12739,12 @@
     },
     "FlowGaugeData": {
       "kind": "type",
-      "source": "src/quant/flow-gauges.tsx",
+      "source": "src/blocks/flow-gauges/flow-gauges.tsx",
       "props": []
     },
     "FlowGauges": {
       "kind": "component",
-      "source": "src/quant/flow-gauges.tsx",
+      "source": "src/blocks/flow-gauges/flow-gauges.tsx",
       "props": [
         {
           "name": "gauges",
@@ -12688,18 +12759,24 @@
           "description": "整行的读屏名。"
         },
         {
+          "name": "labels",
+          "type": "FlowGaugesLabels",
+          "required": false,
+          "description": ""
+        },
+        {
           "name": "naText",
           "type": "string",
           "required": false,
-          "default": "'N/A'",
-          "description": "没有数的位置写什么，默认 N/A。"
+          "default": "labels?.na ?? 'N/A'",
+          "description": ""
         },
         {
           "name": "estimateText",
           "type": "string",
           "required": false,
-          "default": "'est.'",
-          "description": "估算标记的字，默认 est.。"
+          "default": "labels?.estimate ?? 'est.'",
+          "description": ""
         },
         {
           "name": "className",
@@ -12709,9 +12786,27 @@
         }
       ]
     },
+    "FlowGaugesLabels": {
+      "kind": "type",
+      "source": "src/blocks/flow-gauges/flow-gauges.tsx",
+      "props": [
+        {
+          "name": "na",
+          "type": "string",
+          "required": false,
+          "description": "没有数的位置写什么，默认 N/A。"
+        },
+        {
+          "name": "estimate",
+          "type": "string",
+          "required": false,
+          "description": "估算标记的字，默认 est.。"
+        }
+      ]
+    },
     "FlowGaugesProps": {
       "kind": "type",
-      "source": "src/quant/flow-gauges.tsx",
+      "source": "src/blocks/flow-gauges/flow-gauges.tsx",
       "props": [
         {
           "name": "gauges",
@@ -12726,16 +12821,22 @@
           "description": "整行的读屏名。"
         },
         {
+          "name": "labels",
+          "type": "FlowGaugesLabels",
+          "required": false,
+          "description": ""
+        },
+        {
           "name": "naText",
           "type": "string",
           "required": false,
-          "description": "没有数的位置写什么，默认 N/A。"
+          "description": ""
         },
         {
           "name": "estimateText",
           "type": "string",
           "required": false,
-          "description": "估算标记的字，默认 est.。"
+          "description": ""
         },
         {
           "name": "className",
@@ -13211,7 +13312,7 @@
     },
     "FlowSignedGauge": {
       "kind": "type",
-      "source": "src/quant/flow-gauges.tsx",
+      "source": "src/blocks/flow-gauges/flow-gauges.tsx",
       "props": [
         {
           "name": "kind",
@@ -14500,7 +14601,7 @@
     },
     "GridColumnLayout": {
       "kind": "type",
-      "source": "src/blocks/data-grid/data-grid.tsx",
+      "source": "src/blocks/data-grid/data-grid-props.ts",
       "props": [
         {
           "name": "id",
@@ -14548,7 +14649,7 @@
     },
     "GridDensity": {
       "kind": "type",
-      "source": "src/blocks/data-grid/data-grid.tsx",
+      "source": "src/blocks/data-grid/data-grid-props.ts",
       "props": []
     },
     "GridLoader": {
@@ -14719,7 +14820,7 @@
     },
     "GridRowProps": {
       "kind": "type",
-      "source": "src/blocks/data-grid/data-grid.tsx",
+      "source": "src/blocks/data-grid/data-grid-props.ts",
       "props": [
         {
           "name": "className",
@@ -14742,7 +14843,7 @@
     },
     "GridSlot": {
       "kind": "type",
-      "source": "src/blocks/data-grid/data-grid.tsx",
+      "source": "src/blocks/data-grid/data-grid-props.ts",
       "props": []
     },
     "GridTone": {
@@ -17010,7 +17111,7 @@
         },
         {
           "name": "onSelect",
-          "type": "(code: string) => void",
+          "type": "(item: LadderItem) => void",
           "required": false,
           "description": ""
         },
@@ -17118,7 +17219,7 @@
         },
         {
           "name": "onSelect",
-          "type": "(code: string) => void",
+          "type": "(item: LadderItem) => void",
           "required": false,
           "description": ""
         },
@@ -18732,7 +18833,7 @@
     },
     "Meter": {
       "kind": "component",
-      "source": "src/quant/meter.tsx",
+      "source": "src/blocks/meter/meter.tsx",
       "props": [
         {
           "name": "label",
@@ -18761,10 +18862,10 @@
         },
         {
           "name": "tone",
-          "type": "MeterTone",
+          "type": "SeverityExt",
           "required": false,
           "default": "'accent'",
-          "description": "accent 进行中（橙）、ok 健康（绿）、warn 受限或越界（琥珀）、danger 弱势（红）、off 停用。默认 accent。"
+          "description": "accent 进行中（橙）、ok 健康（绿）、warn 受限或越界（琥珀）、danger 弱势（红）、off / neutral 停用。默认 accent。"
         },
         {
           "name": "display",
@@ -18795,12 +18896,12 @@
     },
     "MeterDisplay": {
       "kind": "type",
-      "source": "src/quant/meter.tsx",
+      "source": "src/blocks/meter/meter.tsx",
       "props": []
     },
     "MeterProps": {
       "kind": "type",
-      "source": "src/quant/meter.tsx",
+      "source": "src/blocks/meter/meter.tsx",
       "props": [
         {
           "name": "label",
@@ -18828,9 +18929,9 @@
         },
         {
           "name": "tone",
-          "type": "MeterTone",
+          "type": "SeverityExt",
           "required": false,
-          "description": "accent 进行中（橙）、ok 健康（绿）、warn 受限或越界（琥珀）、danger 弱势（红）、off 停用。默认 accent。"
+          "description": "accent 进行中（橙）、ok 健康（绿）、warn 受限或越界（琥珀）、danger 弱势（红）、off / neutral 停用。默认 accent。"
         },
         {
           "name": "display",
@@ -18860,7 +18961,7 @@
     },
     "MeterTone": {
       "kind": "type",
-      "source": "src/quant/meter.tsx",
+      "source": "src/blocks/meter/meter.tsx",
       "props": []
     },
     "MetricCard": {
@@ -19215,7 +19316,7 @@
     },
     "MetricKey": {
       "kind": "type",
-      "source": "src/blocks/strategy-report/strategy-report.tsx",
+      "source": "src/blocks/strategy-report/strategy-report-metrics.ts",
       "props": []
     },
     "MetricRange": {
@@ -20248,6 +20349,12 @@
           "description": ""
         },
         {
+          "name": "onSymbolSelect",
+          "type": "(symbol: NewsSymbol, item: NewsItem) => void",
+          "required": false,
+          "description": "点了一条的相关品种。"
+        },
+        {
           "name": "onSymbolPick",
           "type": "(symbol: NewsSymbol, item: NewsItem) => void",
           "required": false,
@@ -20263,14 +20370,19 @@
           "name": "itemActionsLabel",
           "type": "string",
           "required": false,
-          "default": "''",
-          "description": "快捷操作的读屏名与右键菜单名。"
+          "description": ""
+        },
+        {
+          "name": "onSelect",
+          "type": "(item: NewsItem) => void",
+          "required": false,
+          "description": "选中一条（点标题）：给了，标题是按钮；没给且条目有 href 时标题是链接。"
         },
         {
           "name": "onOpen",
           "type": "(item: NewsItem) => void",
           "required": false,
-          "description": "给了，标题是按钮，点击回调；没给且条目有 href 时标题是链接。"
+          "description": ""
         },
         {
           "name": "onChannelChange",
@@ -20400,7 +20512,7 @@
         },
         {
           "name": "facets",
-          "type": "{ group: string; add: string; reset: string; remove: string; none: string }",
+          "type": "NewsFacetsLabels",
           "required": false,
           "description": "组合过滤（传了 facets 才用）：「+ 添加过滤」、浮层里的重置与移除、读屏名。"
         },
@@ -20433,6 +20545,12 @@
           "type": "string",
           "required": false,
           "description": "加载中读屏读的话；不给就读 feed。"
+        },
+        {
+          "name": "itemActions",
+          "type": "string",
+          "required": false,
+          "description": "每条快捷操作的读屏名与右键菜单名（itemActions 给了才用）。"
         }
       ]
     },
@@ -20543,6 +20661,12 @@
           "description": ""
         },
         {
+          "name": "onSymbolSelect",
+          "type": "(symbol: NewsSymbol, item: NewsItem) => void",
+          "required": false,
+          "description": "点了一条的相关品种。"
+        },
+        {
           "name": "onSymbolPick",
           "type": "(symbol: NewsSymbol, item: NewsItem) => void",
           "required": false,
@@ -20558,13 +20682,19 @@
           "name": "itemActionsLabel",
           "type": "string",
           "required": false,
-          "description": "快捷操作的读屏名与右键菜单名。"
+          "description": ""
+        },
+        {
+          "name": "onSelect",
+          "type": "(item: NewsItem) => void",
+          "required": false,
+          "description": "选中一条（点标题）：给了，标题是按钮；没给且条目有 href 时标题是链接。"
         },
         {
           "name": "onOpen",
           "type": "(item: NewsItem) => void",
           "required": false,
-          "description": "给了，标题是按钮，点击回调；没给且条目有 href 时标题是链接。"
+          "description": ""
         },
         {
           "name": "onChannelChange",
@@ -20755,6 +20885,13 @@
           "description": ""
         },
         {
+          "name": "onSymbolSelect",
+          "type": "(symbol: NewsReaderSymbol) => void",
+          "required": false,
+          "default": "onSymbolPick",
+          "description": "点了一个品种胶囊。"
+        },
+        {
           "name": "onSymbolPick",
           "type": "(symbol: NewsReaderSymbol) => void",
           "required": false,
@@ -20905,6 +21042,12 @@
           "description": ""
         },
         {
+          "name": "onSymbolSelect",
+          "type": "(symbol: NewsReaderSymbol) => void",
+          "required": false,
+          "description": "点了一个品种胶囊。"
+        },
+        {
           "name": "onSymbolPick",
           "type": "(symbol: NewsReaderSymbol) => void",
           "required": false,
@@ -20974,6 +21117,13 @@
           "name": "symbol",
           "type": "NewsReaderSymbol",
           "required": true,
+          "description": ""
+        },
+        {
+          "name": "onSelect",
+          "type": "(symbol: NewsReaderSymbol) => void",
+          "required": false,
+          "default": "onPick",
           "description": ""
         },
         {
@@ -21989,18 +22139,30 @@
       "source": "src/blocks/panel-frame/panel-frame.tsx",
       "props": [
         {
+          "name": "status",
+          "type": "PanelFrameState",
+          "required": false,
+          "default": "legacyState ?? 'ready'",
+          "description": "内容区的状态：ready 画 children；loading 画骨架；empty、disconnected 画空态（不画假数据）。"
+        },
+        {
           "name": "state",
           "type": "PanelFrameState",
           "required": false,
-          "default": "'ready'",
-          "description": "内容区的状态：ready 画 children；loading 画骨架；empty、disconnected 画空态（不画假数据）。"
+          "description": ""
+        },
+        {
+          "name": "labels",
+          "type": "PanelFrameBodyLabels",
+          "required": false,
+          "description": ""
         },
         {
           "name": "loadingLabel",
           "type": "string",
           "required": false,
-          "default": "''",
-          "description": "loading 时骨架的名字（读屏念，包里没有文字）。"
+          "default": "labels?.loading ?? ''",
+          "description": ""
         },
         {
           "name": "view",
@@ -22010,21 +22172,45 @@
         }
       ]
     },
+    "PanelFrameBodyLabels": {
+      "kind": "type",
+      "source": "src/blocks/panel-frame/panel-frame.tsx",
+      "props": [
+        {
+          "name": "loading",
+          "type": "string",
+          "required": false,
+          "description": "loading 时骨架的名字（读屏念，包里没有文字）。"
+        }
+      ]
+    },
     "PanelFrameBodyProps": {
       "kind": "type",
       "source": "src/blocks/panel-frame/panel-frame.tsx",
       "props": [
         {
-          "name": "state",
+          "name": "status",
           "type": "PanelFrameState",
           "required": false,
           "description": "内容区的状态：ready 画 children；loading 画骨架；empty、disconnected 画空态（不画假数据）。"
         },
         {
+          "name": "state",
+          "type": "PanelFrameState",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "labels",
+          "type": "PanelFrameBodyLabels",
+          "required": false,
+          "description": ""
+        },
+        {
           "name": "loadingLabel",
           "type": "string",
           "required": false,
-          "description": "loading 时骨架的名字（读屏念，包里没有文字）。"
+          "description": ""
         },
         {
           "name": "view",
@@ -22064,11 +22250,17 @@
           "description": "联动组的色点：给组名画那一组的颜色；null 画熄灭的环；不传不画。"
         },
         {
+          "name": "labels",
+          "type": "PanelFrameHeaderLabels",
+          "required": false,
+          "description": ""
+        },
+        {
           "name": "linkLabel",
           "type": "string",
           "required": false,
-          "default": "''",
-          "description": "色点的名字（读屏念，包里没有文字）。有 linkGroup 时必填。"
+          "default": "labels?.link ?? ''",
+          "description": ""
         },
         {
           "name": "pinned",
@@ -22094,18 +22286,20 @@
           "type": "boolean",
           "required": false,
           "default": "false",
-          "description": "画折叠按钮；两个名字由调用方传。"
+          "description": "画折叠按钮；两个名字由调用方经 labels 传。"
         },
         {
           "name": "collapseLabel",
           "type": "string",
           "required": false,
+          "default": "labels?.collapse",
           "description": ""
         },
         {
           "name": "expandLabel",
           "type": "string",
           "required": false,
+          "default": "labels?.expand",
           "description": ""
         },
         {
@@ -22113,6 +22307,30 @@
           "type": "Partial<Record<PanelFrameSlot, string>>",
           "required": false,
           "default": "{}",
+          "description": ""
+        }
+      ]
+    },
+    "PanelFrameHeaderLabels": {
+      "kind": "type",
+      "source": "src/blocks/panel-frame/panel-frame.tsx",
+      "props": [
+        {
+          "name": "link",
+          "type": "string",
+          "required": false,
+          "description": "色点的名字。有 linkGroup 时必填。"
+        },
+        {
+          "name": "collapse",
+          "type": "string",
+          "required": false,
+          "description": "折叠按钮展开时与收起时的名字（collapsible 时要给）。"
+        },
+        {
+          "name": "expand",
+          "type": "string",
+          "required": false,
           "description": ""
         }
       ]
@@ -22146,10 +22364,16 @@
           "description": "联动组的色点：给组名画那一组的颜色；null 画熄灭的环；不传不画。"
         },
         {
+          "name": "labels",
+          "type": "PanelFrameHeaderLabels",
+          "required": false,
+          "description": ""
+        },
+        {
           "name": "linkLabel",
           "type": "string",
           "required": false,
-          "description": "色点的名字（读屏念，包里没有文字）。有 linkGroup 时必填。"
+          "description": ""
         },
         {
           "name": "pinned",
@@ -22173,7 +22397,7 @@
           "name": "collapsible",
           "type": "boolean",
           "required": false,
-          "description": "画折叠按钮；两个名字由调用方传。"
+          "description": "画折叠按钮；两个名字由调用方经 labels 传。"
         },
         {
           "name": "collapseLabel",
@@ -25756,7 +25980,7 @@
     },
     "RegimeBand": {
       "kind": "component",
-      "source": "src/quant/regime-strip.tsx",
+      "source": "src/blocks/regime-strip/regime-strip.tsx",
       "props": [
         {
           "name": "segments",
@@ -25804,7 +26028,7 @@
     },
     "RegimeBandProps": {
       "kind": "type",
-      "source": "src/quant/regime-strip.tsx",
+      "source": "src/blocks/regime-strip/regime-strip.tsx",
       "props": [
         {
           "name": "segments",
@@ -25852,12 +26076,12 @@
     },
     "RegimeColor": {
       "kind": "type",
-      "source": "src/quant/regime-strip.tsx",
+      "source": "src/blocks/regime-strip/regime-strip-model.ts",
       "props": []
     },
     "RegimeSegment": {
       "kind": "type",
-      "source": "src/quant/regime-strip.tsx",
+      "source": "src/blocks/regime-strip/regime-strip-model.ts",
       "props": [
         {
           "name": "from",
@@ -25887,7 +26111,7 @@
     },
     "RegimeState": {
       "kind": "type",
-      "source": "src/quant/regime-strip.tsx",
+      "source": "src/blocks/regime-strip/regime-strip-model.ts",
       "props": [
         {
           "name": "id",
@@ -25917,7 +26141,7 @@
     },
     "RegimeStrip": {
       "kind": "component",
-      "source": "src/quant/regime-strip.tsx",
+      "source": "src/blocks/regime-strip/regime-strip.tsx",
       "props": [
         {
           "name": "segments",
@@ -25965,26 +26189,39 @@
           "name": "current",
           "type": "string",
           "required": false,
-          "description": "当前所处的状态 id：图例里它前面加 currentMarker 一类的标记。"
+          "description": "当前所处的状态 id：图例里它后面加 labels.current 的标记。"
+        },
+        {
+          "name": "labels",
+          "type": "RegimeStripLabels",
+          "required": false,
+          "description": ""
         },
         {
           "name": "currentText",
           "type": "string",
           "required": false,
-          "description": "「当前」的字。给了 current 就要给。"
+          "default": "labels?.current",
+          "description": ""
         },
         {
           "name": "estimateText",
           "type": "string",
           "required": false,
-          "default": "'est.'",
-          "description": "估算标记的字（有 estimated 的段时写在图例末尾），默认 est.。"
+          "default": "labels?.estimate ?? 'est.'",
+          "description": ""
+        },
+        {
+          "name": "onSelect",
+          "type": "(state: RegimeState | null) => void",
+          "required": false,
+          "description": "给了图例的每项就是按钮：点选某状态（高亮由调用方回传 activeState），再点同一项传 null 取消。"
         },
         {
           "name": "onPickState",
           "type": "(state: string | null) => void",
           "required": false,
-          "description": "给了图例的每项就是按钮：点选某状态高亮，再点取消（传 null）。"
+          "description": ""
         },
         {
           "name": "title",
@@ -25994,9 +26231,27 @@
         }
       ]
     },
+    "RegimeStripLabels": {
+      "kind": "type",
+      "source": "src/blocks/regime-strip/regime-strip.tsx",
+      "props": [
+        {
+          "name": "current",
+          "type": "string",
+          "required": false,
+          "description": "「当前」的字。给了 current 就要给。"
+        },
+        {
+          "name": "estimate",
+          "type": "string",
+          "required": false,
+          "description": "估算标记的字（有 estimated 的段时写在图例末尾），默认 est.。"
+        }
+      ]
+    },
     "RegimeStripProps": {
       "kind": "type",
-      "source": "src/quant/regime-strip.tsx",
+      "source": "src/blocks/regime-strip/regime-strip.tsx",
       "props": [
         {
           "name": "segments",
@@ -26044,25 +26299,37 @@
           "name": "current",
           "type": "string",
           "required": false,
-          "description": "当前所处的状态 id：图例里它前面加 currentMarker 一类的标记。"
+          "description": "当前所处的状态 id：图例里它后面加 labels.current 的标记。"
+        },
+        {
+          "name": "labels",
+          "type": "RegimeStripLabels",
+          "required": false,
+          "description": ""
         },
         {
           "name": "currentText",
           "type": "string",
           "required": false,
-          "description": "「当前」的字。给了 current 就要给。"
+          "description": ""
         },
         {
           "name": "estimateText",
           "type": "string",
           "required": false,
-          "description": "估算标记的字（有 estimated 的段时写在图例末尾），默认 est.。"
+          "description": ""
+        },
+        {
+          "name": "onSelect",
+          "type": "(state: RegimeState | null) => void",
+          "required": false,
+          "description": "给了图例的每项就是按钮：点选某状态（高亮由调用方回传 activeState），再点同一项传 null 取消。"
         },
         {
           "name": "onPickState",
           "type": "(state: string | null) => void",
           "required": false,
-          "description": "给了图例的每项就是按钮：点选某状态高亮，再点取消（传 null）。"
+          "description": ""
         },
         {
           "name": "title",
@@ -28632,7 +28899,7 @@
     },
     "SessionMinutes": {
       "kind": "type",
-      "source": "src/blocks/event-timeline-model.ts",
+      "source": "src/blocks/event-timeline/event-timeline-model.ts",
       "props": []
     },
     "Severity": {
@@ -29107,16 +29374,24 @@
           "description": "底部（版本、链接等）。"
         },
         {
+          "name": "labels",
+          "type": "SideNavLabels",
+          "required": false,
+          "description": ""
+        },
+        {
           "name": "searchLabel",
           "type": "string",
           "required": false,
-          "description": "搜索框的占位与读屏名；不给就不显示搜索框。"
+          "default": "labels?.search",
+          "description": ""
         },
         {
           "name": "emptyLabel",
           "type": "string",
           "required": false,
-          "description": "搜索没有结果时的文字。"
+          "default": "labels?.empty",
+          "description": ""
         },
         {
           "name": "aria-label",
@@ -29198,6 +29473,24 @@
         }
       ]
     },
+    "SideNavLabels": {
+      "kind": "type",
+      "source": "src/patterns/side-nav.tsx",
+      "props": [
+        {
+          "name": "search",
+          "type": "string",
+          "required": false,
+          "description": "搜索框的占位与读屏名；不给就不显示搜索框。"
+        },
+        {
+          "name": "empty",
+          "type": "string",
+          "required": false,
+          "description": "搜索没有结果时的文字。"
+        }
+      ]
+    },
     "SideNavProps": {
       "kind": "type",
       "source": "src/patterns/side-nav.tsx",
@@ -29227,16 +29520,22 @@
           "description": "底部（版本、链接等）。"
         },
         {
+          "name": "labels",
+          "type": "SideNavLabels",
+          "required": false,
+          "description": ""
+        },
+        {
           "name": "searchLabel",
           "type": "string",
           "required": false,
-          "description": "搜索框的占位与读屏名；不给就不显示搜索框。"
+          "description": ""
         },
         {
           "name": "emptyLabel",
           "type": "string",
           "required": false,
-          "description": "搜索没有结果时的文字。"
+          "description": ""
         },
         {
           "name": "aria-label",
@@ -30756,16 +31055,35 @@
           "description": "状态栏的名字（读屏念）。"
         },
         {
+          "name": "labels",
+          "type": "StatusBarLabels",
+          "required": false,
+          "description": ""
+        },
+        {
           "name": "moreLabel",
           "type": "string",
-          "required": true,
-          "description": "「…」按钮的名字（读屏念）。"
+          "required": false,
+          "default": "labels?.more ?? ''",
+          "description": ""
         },
         {
           "name": "className",
           "type": "string",
           "required": false,
           "description": ""
+        }
+      ]
+    },
+    "StatusBarLabels": {
+      "kind": "type",
+      "source": "src/blocks/status-bar/status-bar.tsx",
+      "props": [
+        {
+          "name": "more",
+          "type": "string",
+          "required": true,
+          "description": "「…」按钮的名字（读屏念）；有项可能被收起时要给。"
         }
       ]
     },
@@ -30798,10 +31116,16 @@
           "description": "状态栏的名字（读屏念）。"
         },
         {
+          "name": "labels",
+          "type": "StatusBarLabels",
+          "required": false,
+          "description": ""
+        },
+        {
           "name": "moreLabel",
           "type": "string",
-          "required": true,
-          "description": "「…」按钮的名字（读屏念）。"
+          "required": false,
+          "description": ""
         },
         {
           "name": "className",
@@ -30874,10 +31198,16 @@
           "description": "值（等宽，亮）。"
         },
         {
+          "name": "tone",
+          "type": "SeverityExt",
+          "required": false,
+          "description": "前面状态灯的语气（灯用 ledOf 取）；给了就必须给 ledLabel。LED 只表达真实状态，发光体预算整条栏不超过两盏（组件卡）。"
+        },
+        {
           "name": "led",
           "type": "LedState",
           "required": false,
-          "description": "前面的状态灯；给了就必须给 ledLabel。LED 只表达真实状态，发光体预算整条栏不超过两盏（组件卡）。"
+          "description": ""
         },
         {
           "name": "ledLabel",
@@ -31285,7 +31615,7 @@
     },
     "StrategyReportFormat": {
       "kind": "type",
-      "source": "src/blocks/strategy-report/strategy-report.tsx",
+      "source": "src/blocks/strategy-report/strategy-report-types.ts",
       "props": [
         {
           "name": "money",
@@ -31339,7 +31669,7 @@
     },
     "StrategyReportLabels": {
       "kind": "type",
-      "source": "src/blocks/strategy-report/strategy-report.tsx",
+      "source": "src/blocks/strategy-report/strategy-report-types.ts",
       "props": [
         {
           "name": "report",
@@ -31399,7 +31729,7 @@
     },
     "StrategyReportProperty": {
       "kind": "type",
-      "source": "src/blocks/strategy-report/strategy-report.tsx",
+      "source": "src/blocks/strategy-report/strategy-report-types.ts",
       "props": [
         {
           "name": "label",
@@ -31417,7 +31747,7 @@
     },
     "StrategyReportPropertyGroup": {
       "kind": "type",
-      "source": "src/blocks/strategy-report/strategy-report.tsx",
+      "source": "src/blocks/strategy-report/strategy-report-types.ts",
       "props": [
         {
           "name": "id",
@@ -31441,7 +31771,7 @@
     },
     "StrategyReportProps": {
       "kind": "type",
-      "source": "src/blocks/strategy-report/strategy-report.tsx",
+      "source": "src/blocks/strategy-report/strategy-report-types.ts",
       "props": [
         {
           "name": "trades",
@@ -31543,7 +31873,7 @@
     },
     "StrategyReportTab": {
       "kind": "type",
-      "source": "src/blocks/strategy-report/strategy-report.tsx",
+      "source": "src/blocks/strategy-report/strategy-report-metrics.ts",
       "props": []
     },
     "StrategyStatus": {
@@ -32664,10 +32994,17 @@
           "description": "额度条转琥珀的占用比（0 到 1）；不给不预警，越界（≥ 1）总是红。预警线属于账户风控，由调用方给。"
         },
         {
+          "name": "onSelect",
+          "type": "(link: MonitorLink) => void",
+          "required": false,
+          "default": "onLinkPick",
+          "description": "选中一个连接（点连接条上的一项）；给了连接才是按钮。"
+        },
+        {
           "name": "onLinkPick",
           "type": "(link: MonitorLink) => void",
           "required": false,
-          "description": "连接条上点一个连接。"
+          "description": ""
         },
         {
           "name": "className",
@@ -32964,10 +33301,16 @@
           "description": "额度条转琥珀的占用比（0 到 1）；不给不预警，越界（≥ 1）总是红。预警线属于账户风控，由调用方给。"
         },
         {
+          "name": "onSelect",
+          "type": "(link: MonitorLink) => void",
+          "required": false,
+          "description": "选中一个连接（点连接条上的一项）；给了连接才是按钮。"
+        },
+        {
           "name": "onLinkPick",
           "type": "(link: MonitorLink) => void",
           "required": false,
-          "description": "连接条上点一个连接。"
+          "description": ""
         },
         {
           "name": "className",
@@ -34426,7 +34769,7 @@
     },
     "TimelineEvent": {
       "kind": "type",
-      "source": "src/blocks/event-timeline-model.ts",
+      "source": "src/blocks/event-timeline/event-timeline-model.ts",
       "props": [
         {
           "name": "id",
@@ -35105,6 +35448,27 @@
           "description": "选择方式，默认单选；none 只展开收起，点行不选。"
         },
         {
+          "name": "value",
+          "type": "readonly string[]",
+          "required": false,
+          "default": "selectedKeys",
+          "description": "选中的 id（受控）。"
+        },
+        {
+          "name": "defaultValue",
+          "type": "readonly string[]",
+          "required": false,
+          "default": "defaultSelectedKeys",
+          "description": "选中的 id 初值（不受控）。"
+        },
+        {
+          "name": "onValueChange",
+          "type": "(value: string[]) => void",
+          "required": false,
+          "default": "onSelectionChange",
+          "description": "选中变了：给出整份 id。"
+        },
+        {
           "name": "selectedKeys",
           "type": "readonly string[]",
           "required": false,
@@ -35175,6 +35539,24 @@
           "type": "'none' | 'single' | 'multiple'",
           "required": false,
           "description": "选择方式，默认单选；none 只展开收起，点行不选。"
+        },
+        {
+          "name": "value",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "选中的 id（受控）。"
+        },
+        {
+          "name": "defaultValue",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "选中的 id 初值（不受控）。"
+        },
+        {
+          "name": "onValueChange",
+          "type": "(value: string[]) => void",
+          "required": false,
+          "description": "选中变了：给出整份 id。"
         },
         {
           "name": "selectedKeys",
@@ -35581,7 +35963,7 @@
     },
     "UptimeBars": {
       "kind": "component",
-      "source": "src/quant/uptime-bars.tsx",
+      "source": "src/blocks/uptime-bars/uptime-bars.tsx",
       "props": [
         {
           "name": "actionLabels",
@@ -35671,7 +36053,7 @@
     },
     "UptimeBarsProps": {
       "kind": "type",
-      "source": "src/quant/uptime-bars.tsx",
+      "source": "src/blocks/uptime-bars/uptime-bars.tsx",
       "props": [
         {
           "name": "actionLabels",
@@ -35761,7 +36143,7 @@
     },
     "UptimeCell": {
       "kind": "type",
-      "source": "src/quant/uptime-bars-model.ts",
+      "source": "src/blocks/uptime-bars/uptime-bars-model.ts",
       "props": [
         {
           "name": "id",
@@ -35785,7 +36167,7 @@
     },
     "UptimeStatus": {
       "kind": "type",
-      "source": "src/quant/uptime-bars-model.ts",
+      "source": "src/blocks/uptime-bars/uptime-bars-model.ts",
       "props": []
     },
     "UseSavedViewsOptions": {
@@ -37121,27 +37503,51 @@
           "name": "label",
           "type": "string",
           "required": true,
-          "description": "条的名字（读屏念）与「+」的名字。"
+          "description": "条的名字（读屏念）。"
+        },
+        {
+          "name": "labels",
+          "type": "WorkspaceTabsLabels",
+          "required": false,
+          "description": ""
         },
         {
           "name": "createLabel",
           "type": "string",
           "required": false,
-          "default": "''",
+          "default": "labels?.create ?? ''",
           "description": ""
         },
         {
           "name": "moreLabel",
           "type": "string",
           "required": false,
-          "default": "''",
-          "description": "「更多」下拉按钮的名字（读屏念）。"
+          "default": "labels?.more ?? ''",
+          "description": ""
         },
         {
           "name": "className",
           "type": "string",
           "required": false,
           "description": ""
+        }
+      ]
+    },
+    "WorkspaceTabsLabels": {
+      "kind": "type",
+      "source": "src/blocks/workspace-tabs/workspace-tabs.tsx",
+      "props": [
+        {
+          "name": "create",
+          "type": "string",
+          "required": false,
+          "description": "「+」的名字（给了 onCreate 时要给）。"
+        },
+        {
+          "name": "more",
+          "type": "string",
+          "required": false,
+          "description": "「更多」下拉按钮的名字。"
         }
       ]
     },
@@ -37189,7 +37595,13 @@
           "name": "label",
           "type": "string",
           "required": true,
-          "description": "条的名字（读屏念）与「+」的名字。"
+          "description": "条的名字（读屏念）。"
+        },
+        {
+          "name": "labels",
+          "type": "WorkspaceTabsLabels",
+          "required": false,
+          "description": ""
         },
         {
           "name": "createLabel",
@@ -37201,7 +37613,7 @@
           "name": "moreLabel",
           "type": "string",
           "required": false,
-          "description": "「更多」下拉按钮的名字（读屏念）。"
+          "description": ""
         },
         {
           "name": "className",
@@ -37428,7 +37840,7 @@
     },
     "countConsensus": {
       "kind": "function",
-      "source": "src/quant/consensus-block.tsx",
+      "source": "src/blocks/consensus-block/consensus-block.tsx",
       "props": []
     },
     "createSeededRandom": {
@@ -38357,7 +38769,7 @@
     },
     "uptimeShare": {
       "kind": "function",
-      "source": "src/quant/uptime-bars-model.ts",
+      "source": "src/blocks/uptime-bars/uptime-bars-model.ts",
       "props": []
     },
     "useAvatarSize": {

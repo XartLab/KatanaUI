@@ -2,7 +2,7 @@
 import { ChevronRight, ExternalLink } from 'lucide-react'
 import { useId, useState, type ReactNode } from 'react'
 import { cn } from '../../lib/cn.ts'
-import { Led, type LedState } from '../../katana/led.tsx'
+import { Led } from '../../katana/led.tsx'
 import { MeasuredSkeleton } from '../../katana/measured-skeleton.tsx'
 import { Skeleton } from '../../katana/skeleton.tsx'
 import { ChipGroup } from '../../patterns/chip-group.tsx'
@@ -15,6 +15,7 @@ import {
   countEvidence,
   daysLeft,
   effectiveStatus,
+  hypothesisSeverity,
   visibleHypotheses,
   type EvidenceKind,
   type Hypothesis,
@@ -81,8 +82,6 @@ export type HypothesisLedgerProps = {
   defaultView?: 'ledger' | 'watch'
   className?: string
 }
-
-const LED: Record<HypothesisStatus, LedState> = { pending: 'on', supported: 'ok', refuted: 'danger', expired: 'warn' }
 
 export function HypothesisLedger({
   items,
@@ -227,7 +226,7 @@ function Row({
         onClick={() => setOpen(!open)}
       >
         <ChevronRight size={12} aria-hidden className="k-hl-chevron" />
-        <Led state={LED[status]} small label={labels.status[status]} />
+        <Led tone={hypothesisSeverity(status)} small label={labels.status[status]} />
         <span className="k-hl-status">{labels.status[status]}</span>
         <span className="k-hl-layer">{labels.layer[h.layer]}</span>
         <span className="k-hl-claim">{h.claim}</span>

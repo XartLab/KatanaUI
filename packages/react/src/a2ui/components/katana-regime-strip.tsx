@@ -5,7 +5,8 @@ import type { ComponentApi } from '@a2ui/web_core'
 import { CommonSchemas } from '@a2ui/web_core/v1_0'
 import { useState } from 'react'
 import { z } from 'zod'
-import { RegimeStrip } from '../../quant/index.ts'
+import { RegimeStrip } from '../../blocks/index.ts'
+import { text } from '../blocks-support.ts'
 import { Cell, actionSchema, parseList, weightSchema } from '../support.tsx'
 
 const stateSchema = z
@@ -52,16 +53,19 @@ export const KatanaRegimeStripApi = {
       current: CommonSchemas.DynamicString.describe(
         'The id of the state the market is in now. It is marked in the legend.',
       ).optional(),
-      currentText: CommonSchemas.DynamicString.describe(
-        'The word that marks the current state (for example "Now"). Required when current is given.',
-      ).optional(),
-      estimateText: CommonSchemas.DynamicString.describe(
-        'The legend text for striped, unconfirmed segments (for example "est.").',
-      ),
+      labels: z
+        .object({
+          current: text(
+            'The word that marks the current state (for example "Now"). Required when current is given.',
+          ).optional(),
+          estimate: text('The legend text for striped, unconfirmed segments (for example "est.").'),
+        })
+        .strict()
+        .describe('All visible text, in the language of the user.'),
       activeState: CommonSchemas.DynamicString.describe(
         'The id of the highlighted state; the others fade. Bind it with {"@path": "/regime/active"} so a press on the legend is written back. Empty means none.',
       ).optional(),
-      onPickState: actionSchema(
+      onSelect: actionSchema(
         'Dispatched when the user presses a legend item to highlight a state. metadata.extensions.katanaRegime.state carries the id, or null when the highlight is cleared.',
       ).optional(),
       weight: weightSchema,
@@ -70,7 +74,7 @@ export const KatanaRegimeStripApi = {
 } satisfies ComponentApi
 
 export const KatanaRegimeStrip = createComponentImplementation(KatanaRegimeStripApi, ({ props }) => {
-  const { onPickState } = props
+  const { onSelect } = props
   // 高亮先留在本地（没绑数据模型时点了也有反应），智能体改了 activeState 就跟着它。
   const incoming = props.activeState || null
   const [active, setActive] = useState<string | null>(incoming)
@@ -87,13 +91,13 @@ export const KatanaRegimeStrip = createComponentImplementation(KatanaRegimeStrip
         label={props.label ?? ''}
         title={props.title}
         current={props.current || undefined}
-        currentText={props.currentText}
-        estimateText={props.estimateText ?? ''}
+        labels={props.labels}
         activeState={active}
-        onPickState={(state) => {
+        onSelect={(picked) => {
+          const state = picked?.id ?? null
           setActive(state)
           props.setActiveState?.(state ?? '')
-          void onPickState?.({ metadata: { extensions: { katanaRegime: { state } } } })
+          void onSelect?.({ metadata: { extensions: { katanaRegime: { state } } } })
         }}
       />
     </Cell>

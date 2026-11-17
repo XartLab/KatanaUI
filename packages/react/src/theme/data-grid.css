@@ -1,4 +1,5 @@
 /* SPDX-License-Identifier: MIT */
+/* G6 token 迁移：行底色 alpha-white-2_5 / -6_5 与渐变里的 ink-100 没有对应的 characteristics，先留着。 */
 /* DataGrid（blocks/data-grid）的皮肤（#1869）。规则从应用 styles/panel.css 的 .kc-dt-* 搬来，换成 .k-grid-*，值没改；
    行高与表头高由组件按 density 写在行内样式上。颜色与字体都取 token，涨跌色读 --pnl-up / --pnl-down（根上 data-updown="cn" 互换）。 */
 .k-grid {
@@ -21,7 +22,7 @@
   flex: none;
 }
 .k-grid-body:focus-visible {
-  box-shadow: inset 0 0 0 1px var(--line-200);
+  box-shadow: inset 0 0 0 1px var(--k-separable-bold-borderColor);
 }
 .k-grid-scroll {
   flex: 1;
@@ -44,8 +45,8 @@
   top: 0;
   z-index: 2;
   height: 26px;
-  border-bottom: 1px solid var(--line-100);
-  background: var(--bg-100);
+  border-bottom: 1px solid var(--k-separable-tertiary-borderColor);
+  background: var(--k-surface-base-background);
 }
 .k-grid-col {
   position: relative;
@@ -64,10 +65,10 @@
   z-index: 1;
 }
 .k-grid-col.is-fixed {
-  background: var(--bg-100);
+  background: var(--k-surface-base-background);
 }
 .k-grid-scroll[data-scrolled] .k-grid-cell.is-fixed {
-  background-color: var(--bg-300);
+  background-color: var(--k-surface-raised-background);
   background-image: linear-gradient(var(--dt-tint), var(--dt-tint));
 }
 .k-grid-scroll[data-scrolled] .is-fixed-last::after {
@@ -76,7 +77,7 @@
   right: 0;
   bottom: 0;
   width: 1px;
-  background: var(--line-100);
+  background: var(--k-separable-tertiary-borderColor);
   content: '';
 }
 .k-grid-col button,
@@ -90,7 +91,7 @@
   overflow: hidden;
   border: 0;
   background: none;
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-data) var(--font-sans);
   line-height: 1;
   text-overflow: ellipsis;
@@ -103,7 +104,7 @@
 }
 .k-grid-col button:hover,
 .k-grid-col button.is-sorted {
-  color: var(--ink-100);
+  color: var(--k-content-primary-foreground);
 }
 .k-grid-col button.is-sorted {
   font-weight: 600;
@@ -129,7 +130,7 @@
 .k-grid-row {
   position: absolute;
   inset-inline: 0;
-  color: var(--ink-100);
+  color: var(--k-content-primary-foreground);
   box-shadow: inset 2px 0 0 transparent;
   scroll-margin-top: 27px;
   --dt-tint: transparent;
@@ -146,14 +147,14 @@
   background: var(--dt-tint);
 }
 .k-grid-row.is-opened {
-  box-shadow: inset 2px 0 0 var(--ink-100);
+  box-shadow: inset 2px 0 0 var(--k-content-primary-foreground);
 }
 /* 粘住的第一列盖住了行左边的强调色，自己再画一道。 */
 .k-grid-row.is-opened .k-grid-cell.is-fixed-first {
-  box-shadow: inset 2px 0 0 var(--ink-100);
+  box-shadow: inset 2px 0 0 var(--k-content-primary-foreground);
 }
 .k-grid-body:focus-visible .k-grid-row.is-cursor {
-  outline: 1px solid var(--line-200);
+  outline: 1px solid var(--k-separable-bold-borderColor);
   outline-offset: -1px;
 }
 .k-grid-cell {
@@ -182,7 +183,7 @@
   color: var(--pnl-down);
 }
 .k-grid-cell.is-muted {
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
 }
 .k-grid-cell.fill-up {
   background: color-mix(in srgb, var(--pnl-up) 22%, transparent);
@@ -198,15 +199,15 @@
 }
 .k-grid-tag {
   flex: none;
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-sans-small);
   line-height: 1;
 }
 .k-grid-foot {
   flex: none;
   padding: 4px var(--inset-x);
-  border-top: 1px solid var(--line-100);
-  color: var(--ink-300);
+  border-top: 1px solid var(--k-separable-tertiary-borderColor);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-sans-small);
 }
 /* 行高跟着内容走（autoRowHeight）：density 的行高是最小高度，格子里的字可以折行，内容多高行就多高，行与行之间留点气。 */
@@ -222,16 +223,16 @@
 }
 /* 行间细线（ruled）画在格子上：粘住的格子有自己的底，线不会被盖掉。 */
 .k-grid.is-ruled .k-grid-cell {
-  border-bottom: 1px solid var(--line-100);
+  border-bottom: 1px solid var(--k-separable-tertiary-borderColor);
 }
 /* 子行（renderSubRow）：跨满整行宽，高度跟着内容走；底色与内边距由调用方经 classNames.subrow 给。 */
 .k-grid-subrow {
   position: absolute;
   inset-inline: 0;
-  color: var(--ink-100);
+  color: var(--k-content-primary-foreground);
 }
 .k-grid.is-ruled .k-grid-subrow {
-  border-bottom: 1px solid var(--line-100);
+  border-bottom: 1px solid var(--k-separable-tertiary-borderColor);
 }
 .k-grid-subcell {
   min-width: 0;
@@ -251,7 +252,7 @@
   left: 0;
   z-index: 3;
   width: 2px;
-  background: var(--ink-100);
+  background: var(--k-actionable-bold-background);
   content: '';
 }
 
@@ -263,7 +264,7 @@
   min-width: 220px;
 }
 .k-colpick-heading {
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-sans-small);
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -281,13 +282,13 @@
   height: 26px;
   padding: 0 4px;
   border-radius: var(--radius-sm);
-  color: var(--ink-200);
+  color: var(--k-content-body-foreground);
   font: var(--text-data) var(--font-sans);
   cursor: pointer;
 }
 .k-colpick-item:hover {
-  background: var(--alpha-white-6);
-  color: var(--ink-100);
+  background: var(--k-actionable-background-hover);
+  color: var(--k-content-primary-foreground);
 }
 
 /* 表头两行：名字与它下面的小字口径 / 总数；排序箭头在名字前（TradingView 选股器，主会话 2026-11-15 实测）；最右的「+ 加列」浮在表头右端。 */
@@ -307,7 +308,7 @@
   white-space: nowrap;
 }
 .k-grid-head-sub {
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   font: 400 10px/12px var(--font-sans);
   opacity: 0.8;
 }
@@ -320,10 +321,10 @@
   display: flex;
   align-items: center;
   padding: 0 4px;
-  background: var(--bg-100);
+  background: var(--k-surface-base-background);
 }
 .k-grid-head-icon {
   display: inline-flex;
   margin-left: 4px;
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
 }

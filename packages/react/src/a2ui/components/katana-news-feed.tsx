@@ -82,8 +82,8 @@ export const KatanaNewsFeedApi = {
         })
         .strict()
         .describe('All visible and screen-reader text, in the language of the user.'),
-      onOpen: actionSchema(
-        'Dispatched when the user opens an item. metadata.extensions.katanaNews carries {id, href}; href is null when the item has none.',
+      onSelect: actionSchema(
+        'Dispatched when the user selects (opens) an item. metadata.extensions.katanaNews carries {id, href}; href is null when the item has none.',
       ).optional(),
       weight: weightSchema,
     })
@@ -128,9 +128,9 @@ export const KatanaNewsFeed = createComponentImplementation(KatanaNewsFeedApi, (
         sources={props.sources ?? []}
         now={fixed ?? Date.now()}
         defaultLayout={props.layout}
-        // 不给 href、永远传 onOpen：标题是按钮，真实链接留在这里，只经 Action 交给宿主。
-        onOpen={(item) =>
-          void props.onOpen?.(withExtension('katanaNews', { id: item.id, href: hrefs.get(item.id) ?? null }))
+        // 不给 href、永远传 onSelect：标题是按钮，真实链接留在这里，只经 Action 交给宿主。
+        onSelect={(item) =>
+          void props.onSelect?.(withExtension('katanaNews', { id: item.id, href: hrefs.get(item.id) ?? null }))
         }
         labels={{
           all: t.all,

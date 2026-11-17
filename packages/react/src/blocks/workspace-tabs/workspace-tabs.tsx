@@ -43,6 +43,14 @@ export type WorkspaceTab = {
   hotkey?: string
 }
 
+/** Texts of WorkspaceTabs (screen-reader names). */
+export type WorkspaceTabsLabels = {
+  /** 「+」的名字（给了 onCreate 时要给）。 */
+  create?: string
+  /** 「更多」下拉按钮的名字。 */
+  more?: string
+}
+
 export type WorkspaceTabsProps = {
   workspaces: readonly WorkspaceTab[]
   activeId: string
@@ -53,10 +61,12 @@ export type WorkspaceTabsProps = {
   onRename?: (id: string) => void
   /** 新建；不给就不画「+」。 */
   onCreate?: () => void
-  /** 条的名字（读屏念）与「+」的名字。 */
+  /** 条的名字（读屏念）。 */
   label: string
+  labels?: WorkspaceTabsLabels
+  /** @deprecated Use `labels.create`; kept for one version. */
   createLabel?: string
-  /** 「更多」下拉按钮的名字（读屏念）。 */
+  /** @deprecated Use `labels.more`; kept for one version. */
   moreLabel?: string
   className?: string
 }
@@ -69,8 +79,9 @@ export function WorkspaceTabs({
   onRename,
   onCreate,
   label,
-  createLabel = '',
-  moreLabel = '',
+  labels,
+  createLabel = labels?.create ?? '',
+  moreLabel = labels?.more ?? '',
   className,
 }: WorkspaceTabsProps) {
   const root = useRef<HTMLDivElement>(null)

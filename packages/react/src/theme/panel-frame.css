@@ -1,4 +1,5 @@
 /* SPDX-License-Identifier: MIT */
+/* G6 token 迁移：alpha-white-5 的分隔线没有对应的 characteristics，先留着。 */
 /* PanelFrame 的皮肤（#1901）：规则从应用 styles/shell.css 的 .kc-panel*、.kc-pane-* 搬来，换成 .k-panel*。
    全部包在 :where() 里（优先级 0）：应用给它挂了旧类名（.kc-panel 等），应用自己的规则要能压过这里（应用的标题栏 40 高是照 OpenMarket 的图表工具条量的）；
    单独用时这里就是全部样子，标题栏 32 高照组件卡 PanelFrame。普通面板只有 1px 高光与阴影，不斜切；四角括号只给焦点面板。 */
@@ -12,7 +13,7 @@
   min-height: 0;
   border: var(--hairline);
   border-radius: var(--radius-panel);
-  background: var(--bg-300);
+  background: var(--k-surface-raised-background);
   box-shadow: var(--plate);
 }
 :where(.k-panel[data-collapsed]) {
@@ -27,7 +28,7 @@
   height: 32px;
   padding: 0 var(--inset-x);
   border-bottom: 1px solid var(--alpha-white-5);
-  background: var(--bg-300);
+  background: var(--k-surface-raised-background);
   cursor: default;
 }
 :where(.k-panel[data-collapsed] .k-panel-header) {
@@ -38,7 +39,7 @@
   min-width: 0;
   margin: 0 4px;
   overflow: hidden;
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   text-overflow: ellipsis;
   white-space: nowrap;
   font: var(--text-data) var(--font-sans);
@@ -49,13 +50,13 @@
   flex: 0 1 120px;
 }
 :where(.k-panel.is-focused .k-panel-header > h2) {
-  color: var(--ink-100);
+  color: var(--k-content-primary-foreground);
 }
 :where(.k-panel-object) {
   flex: 0 1 auto;
   min-width: 0;
   overflow: hidden;
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   text-overflow: ellipsis;
   white-space: nowrap;
   font: 11px/16px var(--font-num);
@@ -80,12 +81,12 @@
   padding: 0;
   border: 0;
   background: none;
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   cursor: pointer;
 }
 :where(.k-panel-collapse:hover) {
-  background: var(--bg-400);
-  color: var(--ink-100);
+  background: var(--k-surface-overlay-background);
+  color: var(--k-content-primary-foreground);
 }
 :where(.k-panel-collapse svg) {
   width: 14px;
@@ -115,7 +116,7 @@
   position: absolute;
   width: 10px;
   height: 10px;
-  border-color: var(--signal-orange);
+  border-color: var(--accent);
   border-style: solid;
 }
 :where(.k-panel-brackets i:nth-child(1)) {
