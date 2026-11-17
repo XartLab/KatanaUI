@@ -6,8 +6,7 @@ import { CoveragePage } from './coverage'
 import { RENDERING_ID, RenderingPage } from './rendering'
 import { FOUNDATION_PAGES, FoundationPage, isFoundation } from './foundations'
 import { GUIDES, GUIDE_GROUPS, GuidePage, guideBySlug } from './guides'
-import { ListChecks, Palette, SlidersHorizontal, type LucideIcon } from 'lucide-react'
-import { FOUNDATION_ICONS, GROUP_ICONS, KatanaMark, iconFor } from './nav-icons'
+import { GROUP_ICONS, KatanaMark } from './nav-icons'
 import { DEMOS } from './demos'
 import { resolveParts, type ResolvedPart } from './props'
 import { GROUPS, PAGES, pageById, type DocPage } from './registry'
@@ -171,12 +170,12 @@ function DocBody({ page }: { page: DocPage }) {
   )
 }
 
-/** 左栏目录：基础 → 各组组件 → 文档 → 总览；组件页的名字用页标题（英文名 + 中文名），按 id 与标题都能搜到。 */
+/** 左栏目录：基础 → 各组组件 → 文档 → 总览；组件页的名字用页标题（英文名 + 中文名），按 id 与标题都能搜到。
+ * 图标只给大分组（用户 2026-11-17：「大分组有，小分组没 logo」），条目不带图标。 */
 const groupIcon = (id: string) => {
   const Icon = GROUP_ICONS[id]
   return Icon ? <Icon aria-hidden /> : undefined
 }
-const itemIcon = (Icon: LucideIcon) => <Icon aria-hidden />
 
 const navGroups: readonly SideNavGroup[] = [
   {
@@ -188,7 +187,6 @@ const navGroups: readonly SideNavGroup[] = [
       label: item.title,
       href: `#/${item.id}`,
       keywords: item.id,
-      icon: itemIcon(FOUNDATION_ICONS[item.id] ?? Palette),
     })),
   },
   ...GROUPS.map((group) => ({
@@ -207,7 +205,6 @@ const navGroups: readonly SideNavGroup[] = [
         ),
         href: `#/${item.id}`,
         keywords: `${item.id} ${item.title}`,
-        icon: itemIcon(iconFor(item.id, group.id)),
       }
     }),
   })).filter((group) => group.items.length > 0),
@@ -233,14 +230,12 @@ const navGroups: readonly SideNavGroup[] = [
         label: '设计稿覆盖表',
         href: `#/${COVERAGE_ID}`,
         keywords: COVERAGE_ID,
-        icon: itemIcon(ListChecks),
       },
       {
         id: RENDERING_ID,
         label: '渲染设置',
         href: `#/${RENDERING_ID}`,
         keywords: RENDERING_ID,
-        icon: itemIcon(SlidersHorizontal),
       },
     ],
   },
