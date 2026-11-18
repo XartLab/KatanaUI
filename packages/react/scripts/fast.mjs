@@ -14,6 +14,10 @@ const args = process.argv.slice(2)
 const has = (name) => args.includes(name)
 const base = has('--base') ? args[args.indexOf('--base') + 1] : 'HEAD'
 
+// 预算：快速模式一分钟跑不完就是 bug（用户 2026-11-18）。超了照样报通过与否，但退出码非 0，并点名最慢的一步。
+const BUDGET_S = 60
+const startedAll = Date.now()
+const timings = []
 const run = (label, cmd, cmdArgs, extraEnv = {}) => {
   const started = Date.now()
   process.stdout.write(`\n== ${label} ==\n`)
@@ -23,6 +27,7 @@ const run = (label, cmd, cmdArgs, extraEnv = {}) => {
     process.stdout.write(`✗ ${label} 失败（${secs}s）\n`)
     process.exit(result.status ?? 1)
   }
+  timings.push([label, Number(secs)])
   process.stdout.write(`✓ ${label}（${secs}s）\n`)
 }
 const capture = (cmd, cmdArgs) => spawnSync(cmd, cmdArgs, { cwd: pkgDir, encoding: 'utf8' }).stdout ?? ''
@@ -62,16 +67,19 @@ if (plan.browserTestsChanged)
   run('组件截图（改了截图测试：整套）', 'pnpm', [...shotArgs, ...browserTests.map((f) => `browser/${f}`)])
 else if (plan.names.size) {
   const names = [...plan.names]
+  const themed = changed.some((f) => /^src\/theme\/(theme|tokens)\.css$/.test(f) || f.includes('tokens'))
+  const themes = themed ? 'graphite|console' : 'graphite'
   const files = browserTests.filter((f) =>
     names.some((n) =>
       new RegExp(`['"\`]${n}['"\`]|^\\s*${n}\\s*:`, 'm').test(readFileSync(join(pkgDir, 'browser', f), 'utf8')),
     ),
   )
-  run(`组件截图（${names.length} 个件）`, 'pnpm', [
+  // 快速模式只截 Graphite；改了主题或令牌才两个主题都截（Console 留给合并前的整套）。
+  run(`组件截图（${names.length} 个件 · ${themes.replace('|', ' + ')}）`, 'pnpm', [
     ...shotArgs,
     ...files.map((f) => `browser/${f}`),
     '-t',
-    `(^| )(${names.join('|')})$`,
+    `^(${themes}) (${names.join('|')})$`,
   ])
 }
 
@@ -132,4 +140,14 @@ if (!has('--no-vr') && !has('--pages') && plan.covered)
   process.stdout.write('\n改动都在有组件截图的件上：跳过整页 vr:fast（--pages 强制跑；合并前全量 pnpm vr 会跑）。\n')
 else if (!has('--no-vr'))
   run('视觉回归（vr:fast）', 'node', ['scripts/vr-fast.mjs', ...(has('--base') ? ['--base', base] : [])])
-process.stdout.write('\n快速模式通过。合并前再跑一次全量：pnpm test && pnpm test:e2e && pnpm vr\n')
+const total = (Date.now() - startedAll) / 1000
+if (total > BUDGET_S) {
+  const [slowLabel, slowSecs] = timings.toSorted((a, b) => b[1] - a[1])[0] ?? ['?', 0]
+  process.stdout.write(
+    `\n✗ 快速模式用了 ${total.toFixed(1)} 秒，超过 ${BUDGET_S} 秒预算——这是 bug。最慢的一步：${slowLabel}（${slowSecs}s）。\n`,
+  )
+  process.exit(1)
+}
+process.stdout.write(
+  `\n快速模式通过（${total.toFixed(1)} 秒，预算 ${BUDGET_S} 秒）。合并前再跑一次全量：pnpm test && pnpm test:e2e && pnpm vr\n`,
+)

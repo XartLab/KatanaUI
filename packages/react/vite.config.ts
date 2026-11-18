@@ -13,6 +13,9 @@ export default defineConfig({
   // 单测：Node 环境；组件用 react-dom/server 渲染成字符串测结构。浏览器里的行为在 e2e/（`pnpm test:e2e`，Playwright）。
   test: {
     environment: 'node',
+    // 不隔离：同一 worker 里的测试文件共用模块缓存。测试多半经 src/index 引件，隔离时每个文件都重新加载整个库（导入占八成时间）；
+    // 关掉后全量从约 43 秒降到约 12 秒，快速模式受影响的单测从约 20 秒降到约 5 秒（2026-11-18 实测）。测试之间不共享可变状态是前提。
+    isolate: false,
     include: ['src/**/*.test.{ts,tsx}', 'gallery/**/*.test.{ts,tsx}', 'scripts/**/*.test.ts', 'ds/**/*.test.{ts,tsx}'],
   },
   // 格式化（Oxfmt）：无分号、单引号、行宽 120；Markdown 与生成文件不格式化。

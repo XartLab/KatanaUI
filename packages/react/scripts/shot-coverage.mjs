@@ -13,7 +13,7 @@ const listFiles = (dir) =>
   )
 const importsOf = (file) =>
   [...readFileSync(file, 'utf8').matchAll(IMPORT)].map((m) => resolve(dirname(file), m[1] ?? m[2]))
-// 从桶文件（src/index.ts 这类）引的名字：`import { Lcd, Kbd } from '../../src/index'`。
+// 从桶文件（src/index.ts 这类）引的名字：（演示文件从 src 的 index 引名字）。
 const NAMED_IMPORT = /import\s*(?:type\s*)?\{([^}]*)\}\s*from\s*['"](\.[^'"]*)['"]/g
 // `export { Dialog, DialogContent }` 这种列表式导出（原语多半这样写）。
 const LIST = /export\s*\{([^}]*)\}(?!\s*from)/g
