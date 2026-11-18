@@ -254,6 +254,8 @@ function collectItems() {
       'regime-strip',
       'flow-gauges',
       'uptime-bars',
+      // #77：品种搜索（组件与纯函数一起装）。
+      'symbol-search',
     ])
       add(
         dir,
