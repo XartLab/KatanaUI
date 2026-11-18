@@ -106,6 +106,30 @@ const blocks: GuidanceMap = {
       '读屏名取自标签文字；新建与「…」按钮的名字取自 createLabel、moreLabel。',
     ],
   },
+  'symbol-search': {
+    aliases: ['Symbol search', 'Ticker search', 'Instrument picker', 'Quick symbol lookup', 'Type to search'],
+    use: [
+      '在图表、行情表上换品种：容器挂 useTypeToSearch，敲字直接弹出，不用先点搜索按钮（照 TradingView 图表，2026-11-18 实测）。',
+      '分段由调用方给，第一项是「全部」；最近搜索按当前分段过滤，选中的挪到最前，最多 8 条（recentLimit）。',
+      '行高 44：徽标 SymbolMark md（28）、代码 k-text-data 中等字重、下面一行名称 caption + 类型 Tag sm 描边、右侧交易所 caption。',
+      'onQuery 默认停 80ms 再调（debounceMs），换词时上一次的 signal abort，晚回来的结果不认。',
+      '对话框在视口顶部 12dvh 处、宽 640，列表最高 min(420px, 60dvh)，overscroll-behavior: contain，滚到底不带动后面的页（modern-web-guidance dialog）。',
+      '跟 TradingView 不同的地方：它按 ↑↓ 时把行的「交易所:代码」写回输入框，我们不写回（写回会重新触发搜索、打乱结果）；它的命中段是蓝字，我们只用字重与亮度。',
+    ],
+    avoid: [
+      '命令、页面的跳转，用 CommandDialog。',
+      '表单里从固定的几项挑一个品种，用 combobox。',
+      '数字键已经被「打数字开周期框」占用时，给 useTypeToSearch 传 accept 把数字排除掉。',
+    ],
+    a11y: [
+      '输入框是 combobox，列表是 listbox，行是 option（cmdk）；高亮行用 aria-selected，焦点不离开输入框。',
+      '对话框的名字取 labels.title（DialogTitle，只给读屏），说明取 placeholder。',
+      '市场分段是一组 aria-pressed 按钮，组名取 labels.segments；点了分段焦点回到输入框。',
+      '结果稳定 400ms 后在 role=status 里报一次个数（labels.resultCount），打字过程中不刷屏；加载中列表带 aria-busy。',
+      '徽标是 role=img，名字取品种名称；命中段是 mark 元素。',
+      '待定：对话框用的是包里 Radix 的 Dialog（与其它浮层共用一套焦点归还与动效），没有换成原生 <dialog> + showModal()；要不要整套浮层迁到原生 dialog 等用户定。',
+    ],
+  },
   toolbar: {
     aliases: ['Action bar', 'Command bar', 'Button group', 'Icon toolbar'],
     use: ['面板头里放一排图标按钮，整条只占一个 Tab 停靠点。', '空间不够时把次要按钮折叠进溢出菜单。'],
