@@ -14,6 +14,7 @@
 @import './theme/kbd.css';
 @import './theme/hold-to-confirm.css';
 @import './theme/shortcut-recorder.css';
+@import './theme/shortcut-sheet.css';
 @import './theme/chip-group.css';
 @import './theme/date-range.css';
 @import './theme/tree-view.css';
