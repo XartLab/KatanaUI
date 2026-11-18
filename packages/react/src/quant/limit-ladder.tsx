@@ -15,7 +15,8 @@ import { CompactValue } from '../quotes/cell-type.tsx'
 // 包里不带语言、不认任何数据集：层号单位、晋级率文字、状态名、列名都由调用方传；数字、涨跌幅的格式在件里。
 // 刷新动效全走共用层 lib/live.ts（皮肤在 theme/live.css）：涨幅、封单额变了闪涨跌色，汇总读数滚动；封板→炸板整行警示琥珀闪，炸板→回封闪涨色；
 // 升板时整行 FLIP 移到新层并闪涨色；新晋的票用蓝色强调线高亮。数据不变就一动不动，首次渲染也不闪。
-// 封单额（#92）：按 locale 缩写（zh-CN 是 万 / 亿，en-US 是 K / M / B），单位（labels.sealUnit）写成次要色小字，跟 DataGrid 的单位同一份（quotes/cell-type.tsx）；行高照旧 30。
+// 封单额（#92）：按 locale 缩写（zh-CN 是 万 / 亿，en-US 是 K / M / B）；中文缩写自带量级，不再挂币种（用户 2026-11-18 定），
+// 只有非中文时才把 labels.sealUnit 写成次要色小字（跟 DataGrid 的单位同一份，quotes/cell-type.tsx）；行高照旧 30。
 
 export type LadderStatus = 'sealed' | 'broken' | 'down' | 'none'
 
@@ -53,7 +54,7 @@ export type LimitLadderLabels = {
   count: (n: number) => string
   status: Record<LadderStatus, string>
   columns: { name: string; change: string; firstSeal: string; sealAmount: string; opens: string; industry: string }
-  /** 封单额后的单位小字（「CNY」「元」）；省略不写单位。 */
+  /** 封单额后的单位小字（「CNY」）；locale 是中文（万 / 亿）时不写，中文缩写自带量级。省略不写单位。 */
   sealUnit?: string
   /** 顶部汇总读数的名字：涨停只数、最高板、整体晋级率。 */
   summary: { sealed: string; highest: string; promoteRate: string }
@@ -79,6 +80,7 @@ export type LimitLadderProps = {
 }
 
 const DASH = '—'
+const zhLocale = (locale: string | undefined) => locale?.toLowerCase().startsWith('zh') ?? false
 
 /** 一行个股：数值、状态的刷新动效挂在这里；换层时这一行会在新的层容器里重新挂载，所以「刚升板」由外面按 代码@板位 判断后传进来（moved）。 */
 function LadderRow({
@@ -146,7 +148,11 @@ function LadderRow({
         data-flash={seal.flash ?? undefined}
         data-slot="ladder-seal"
       >
-        {!item.sealAmount ? DASH : <CompactValue value={item.sealAmount} locale={locale} unit={labels.sealUnit} />}
+        {!item.sealAmount ? (
+          DASH
+        ) : (
+          <CompactValue value={item.sealAmount} locale={locale} unit={zhLocale(locale) ? undefined : labels.sealUnit} />
+        )}
       </span>
       <span className="k-ladder-num">{item.opens ?? DASH}</span>
       <span className="k-ladder-industry">{item.industry ?? DASH}</span>

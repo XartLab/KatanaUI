@@ -51,7 +51,7 @@ const blocks: GuidanceMap = {
       '整页的表（选股器、持仓、报告）用 density="comfortable"：行 40、表头 48、格内左右 12、首列左 20、正文 14px w400、表头 13px 次要色，默认画行间 1px 横线、不画竖线（照 TradingView 选股器，#90）。',
       '面板里的密表（自选栏、盘口）留在 compact（行 20）或 default（行 24）；这两档与 relaxed（32）的值不变。',
       '单位与数分开写：format.unit（USD、USDT）渲染成 10px w500 次要色小字，跟在数后空一格；复制与导出仍是「4.53 T USD」。pnl 的 suffix 同 unit。',
-      '大数用 compact 列：两位小数加缩写字，缩写字由 locale 定（en-US 是 K / M / B / T，zh-CN 是 万 / 亿 / 万亿），列的 format.locale 优先于 DataGrid 的 locale，组件不带语言。',
+      '大数用 compact 列：缩写字由 locale 定，en-US 是 K / M / B / T 两位小数（对齐 TradingView）；zh-CN ≥1 亿写「x.xx 亿」（万亿同理），1 万–1 亿写千分位整数「8,800 万」，去掉无意义的 .00（#92）。列的 format.locale 优先于 DataGrid 的 locale，组件不带语言。',
       '品种格用 format.symbolParts 选段：logo（18px 圆标，没图画字母）、chip（代码芯片 12px w600、面底 container-subtle、圆角 radius-control、高 24、左右 6）、name（全称）、code、venue；整页表用 [logo, chip, name]。',
       '评级用 rating 列：值是五档名或 −1…1 分数（与 TechnicalRating 同一把尺子 ±0.1 / ±0.5），画 RatingText（图标加档名，买涨色卖跌色，中性不着色）；档名经 format.ratingLabels 传。',
       '有大小没正负的量（相对成交量）用 bar 列：数字左边一条 4px 高、最长 48px 的中性灰横条（次要前景 75% 混透明），满格值是 format.barMax（不给 barMax 是以 0 为中线、带涨跌色的居中条）；不用涨跌色，不用品牌橙。',
@@ -60,6 +60,7 @@ const blocks: GuidanceMap = {
       '两行表头（#92）：只要有一列带 sub，所有列头的名字都顶到同一条线——上边距 =（表头高 − 两行块高）/ 2，两行块高默认 14 + 12 = 26、comfortable 16 + 2 + 16 = 34；单行列头与两行的第一行同一基线，第二行在下，排序箭头与列头图标跟第一行走。',
       '代码芯片、全称与单位小字是共用的 .k-code-chip / .k-code-name / .k-num-unit（theme/cell-type.css，#92）：QuoteTable、Watchlist、LimitLadder、EventCalendar 用的是同一份，改样子只改那一处。',
       '报告类的原生表（SeriesExplorer 表格视图、HypothesisLedger 观察表、StrategyReport 指标表、图的表格视图）给 <table> 加 .k-table-comfortable，跟 comfortable 档同一套数（--k-table-*：行 40、表头 48、格内 12、首列左 20、正文 14px、表头 13px 次要色、行间 1px 横线）；字折行时行跟着长。',
+      '整页表的数字用 sans 加 tabular-nums，不用 --font-num 的等宽字（TradingView 选股器同样做法，用户 2026-11-18 定）；报告类原生表随 #92 从 --font-num 换成 sans。',
     ],
     avoid: [
       '几行静态数据，用 interactive=false 的只读表或 strategy-report 里的表。',

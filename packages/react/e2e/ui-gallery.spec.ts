@@ -2493,13 +2493,10 @@ for (const theme of THEMES) {
       expect(boards).toEqual(['5', '4', '3', '1'])
       await expect(ladder.locator('[data-board="4"] [data-slot="ladder-promote"]')).toContainText('晋级 1/2')
       await expect(ladder.locator('[data-board="1"] [data-slot="ladder-promote"]')).toContainText('晋级 6/31')
-      // 封单额按 zh-CN 缩写（#92）：5.2e8 写「5.20 亿」，单位 CNY 是 10px 次要色小字（与 DataGrid 同一份 .k-num-unit）。
+      // 封单额按 zh-CN 缩写（#92）：≥1 亿写「5.20 亿」，1 万–1 亿写千分位整数「8,800 万」；中文缩写自带量级，不挂单位小字。
       const seal = ladder.locator('[data-code="600001"] [data-slot="ladder-seal"]')
-      await expect(seal.locator('.k-num-unit')).toHaveCSS('font-size', '10px')
-      await expect(seal.locator('.k-num-unit')).toHaveCSS(
-        'color',
-        await token(page, '--k-content-secondary-foreground'),
-      )
+      await expect(seal.locator('.k-num-unit')).toHaveCount(0)
+      await expect(ladder.locator('[data-code="002005"] [data-slot="ladder-seal"]')).toHaveText('8,800 万')
       // 晋级条的填充宽度按比例：1/2 约一半。
       const fill = ladder.locator('[data-board="4"] .k-ladder-promote-bar i')
       const [bar, filled] = await Promise.all([
@@ -2526,14 +2523,14 @@ for (const theme of THEMES) {
       expect(await colorOf('000003', '.k-ladder-symbol')).toBe(await ink('--ink-300'))
       expect(await colorOf('603007', '.k-ladder-symbol')).toBe(await ink('--ink-300'))
       // 数值列是界面无衬线加等宽数字，不是等宽字体族。
-      // 品种格：代码是主、名称是次（名称更淡更小）；封单额按 zh-CN 缩写写成「5.20 亿」加单位小字 CNY（#92，原来是「520.00 M」），缺数据写「—」。
+      // 品种格：代码是主、名称是次（名称更淡更小）；封单额按 zh-CN 缩写写成「5.20 亿」、不挂单位（#92，原来是「520.00 M」），缺数据写「—」。
       const sym = ladder.locator('[data-code="600002"]')
       await expect(sym.locator('.k-ladder-symbol')).toHaveText('600002')
       await expect(sym.locator('.k-ladder-sub')).toHaveText('示例电力')
       expect(
         await sym.locator('.k-ladder-sub').evaluate((el) => parseFloat(getComputedStyle(el).fontSize)),
       ).toBeLessThan(await sym.locator('.k-ladder-symbol').evaluate((el) => parseFloat(getComputedStyle(el).fontSize)))
-      await expect(ladder.locator('[data-code="600001"] .k-ladder-num').nth(2)).toHaveText('5.20 亿 CNY')
+      await expect(ladder.locator('[data-code="600001"] .k-ladder-num').nth(2)).toHaveText('5.20 亿')
       await expect(ladder.locator('[data-code="603007"] .k-ladder-num').nth(2)).toHaveText('—')
       await expect(ladder.locator('[data-code="600001"] .k-ladder-num').first()).toHaveText('+10.00%')
       const numStyle = await ladder

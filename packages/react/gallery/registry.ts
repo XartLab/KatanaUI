@@ -5295,8 +5295,12 @@ export const PAGES: readonly DocPage[] = [
     title: 'QuoteTable 分组页签行情表',
     summary:
       '上面一排页签（指数、自选、热门……），下面是当前这组的行情表：名称与代码、迷你图、最新价、涨跌幅。由 Tabs 与 Sparkline 组出来；行就是 Watchlist 的行（统一行情行加 spark），值是数，价格文字由 formatPrice 写。',
-    exports: ['QuoteTable'],
+    exports: ['QuoteTable', 'CodeChip', 'CodeName', 'UnitValue', 'CompactValue'],
     propParts: [
+      {
+        part: 'CodeChip · CodeName · UnitValue · CompactValue',
+        note: '表格格内排版的共用件（#92，DataGrid、QuoteTable、Watchlist、LimitLadder、EventCalendar 同一份）：CodeChip 代码芯片（12px w600、面底、圆角 6、高 24）；CodeName 芯片后的全称；UnitValue 数后的单位小字（10px w500 次要色，空一格）；CompactValue 按 locale 缩写（en-US 是 K/M/B/T 两位小数；zh-CN ≥1 亿写 x.xx 亿，1 万–1 亿写千分位整数「8,800 万」，去掉 .00）。',
+      },
       {
         part: 'QuoteTable',
         note: '页签值可受控（value / onValueChange）也可不受控（defaultValue，默认第一组）。文字在 labels（{ list, columns, empty }）；点行 onSelect。行有 symbol 与 name 时代码画成芯片、后跟全称（#92）；labels.columns.volume 给了才画成交量列，行的 volume 按 locale 缩写（K / M / B ↔ 万 / 亿），volumeUnit 写成单位小字。旧的 label / columns / empty / onRow 与字符串行（price / percent / tone）照认一个版本（@deprecated）。',
