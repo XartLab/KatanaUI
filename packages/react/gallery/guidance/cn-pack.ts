@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: MIT
 // A 股面板几件（#11，开盘啦对照）的「怎么用 / 无障碍」。设计决定（2026-11-18，#11 第二批）：
 // 口径（情绪分、阶段、强度）一律调用方传，件不带算法；样子照 TradingView 小组件与列表的手感，配色是工作台 Graphite，不用 TradingView 蓝；
-// 涨跌色只读 --k-tone-* / ChangeText，A 股面板在根上设 data-updown="cn" 得红涨绿跌，件里不写死红绿。
+// 涨跌色只读 --k-tone-* / ChangeText，A 股面板在根上设 data-updown="cn" 得红涨绿跌，件里不写死红绿；这一组的文档站演示与组件截图都按 cn。
+// 评审改动（2026-11-18，#78）：数据上不用品牌橙（#50：橙只给焦点角括号）——情绪分项小线图改中性前景色，题材热度底色改中性浓度五档；
+// 情绪阶段色从类别色（紫蓝橙粉）改成状态语气 --k-status-*（Graphite 的油画颜料信号色）。
 import type { GuidanceMap } from './types'
 
 const cnPack: GuidanceMap = {
@@ -11,6 +13,8 @@ const cnPack: GuidanceMap = {
       'A 股盘中、复盘看当日情绪分与近 20 日处在周期的哪一段。',
       '分项（涨停数、连板高度、亏钱数、封板率）一起看，十字线同步对日。',
       'A 股面板在根上设 data-updown="cn"：昨日差红涨绿跌。',
+      '阶段语气按演示的划分：冰点 neutral（灰）、修复 warn（土黄）、发酵 ok（铬绿）、高潮 danger（玫瑰茜红，过热即风险）；口径与划分由调用方定。',
+      '分项小线图与主走势线一样用主文字色，不用 series-1 橙。',
     ],
     avoid: ['只看一个读数用 meter 或 lcd。', '状态模型的长历史用 regime-strip 叠在净值图下。'],
     a11y: [
@@ -21,7 +25,11 @@ const cnPack: GuidanceMap = {
   },
   'theme-heat-matrix': {
     aliases: ['题材轮动', 'Theme heatmap', 'Sector rotation matrix', '板块热度'],
-    use: ['复盘看近一到两周哪些题材持续有涨停、哪些退潮。', '点格子联动板块与个股列表（onSelect 给题材与第几天）。'],
+    use: [
+      '复盘看近一到两周哪些题材持续有涨停、哪些退潮。',
+      '点格子联动板块与个股列表（onSelect 给题材与第几天）。',
+      '底色：主文字色 10% / 20% / 34% / 52% / 74% 混透明五档。tokens 里只有品牌橙系的 seq-*，没有不含橙的语义顺序档，先用中性浓度；要不要加一组语义顺序 token（如 --k-heat-1…5）待定。',
+    ],
     avoid: ['一年的逐日格用 calendar-heatmap。', '市场全景的面积图用 market-heatmap。'],
     a11y: [
       '整张是 role="grid"，题材名是 rowheader，日期是 columnheader。',

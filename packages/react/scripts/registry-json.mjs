@@ -78,7 +78,7 @@ const INTERNAL = {
   'market-heatmap-model':
     'MarketHeatmap 的纯函数：色阶七档的档宽取好数、值落在哪一档、图例的值边界、方向键找邻居的格子。',
   'theme-heat-model':
-    'ThemeHeatMatrix 的数据形状、seq 档位（与 CalendarHeatmap 换手视图同一条规则）与键盘走格（纯函数）。',
+    'ThemeHeatMatrix 的数据形状、五档档位（与 CalendarHeatmap 换手视图同一条规则）与键盘走格（纯函数）。',
   'calendar-model': 'CalendarHeatmap 的格子排布、档位与键盘（纯函数）：日历日按 UTC 算，一周一列。',
   'horizon-model': 'HorizonChart 的分带（纯函数）：把带正负的一列数折成几条叠起来的窄带。',
   'live-line':

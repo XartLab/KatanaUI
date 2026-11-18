@@ -4,10 +4,10 @@ import { SentimentGauge, type SentimentDay, type SentimentMetric, type Sentiment
 // 演示数据：20 个交易日的情绪分、阶段与四项小线图都是编出来的（闭式公式），不是行情，也不是任何口径的真实结果。
 // 阶段与阈值是演示用的划分：调用方自己定口径，件不带算法。
 export const SENTIMENT_STAGES: readonly SentimentStage[] = [
-  { id: 'ice', name: '冰点', color: 4, tone: 'danger' },
-  { id: 'repair', name: '修复', color: 2, tone: 'warn' },
-  { id: 'ferment', name: '发酵', color: 1, tone: 'ok' },
-  { id: 'climax', name: '高潮', color: 7, tone: 'accent' },
+  { id: 'ice', name: '冰点', tone: 'neutral' },
+  { id: 'repair', name: '修复', tone: 'warn' },
+  { id: 'ferment', name: '发酵', tone: 'ok' },
+  { id: 'climax', name: '高潮', tone: 'danger' },
 ]
 
 const stageOf = (score: number) => (score < 25 ? 'ice' : score < 50 ? 'repair' : score < 75 ? 'ferment' : 'climax')

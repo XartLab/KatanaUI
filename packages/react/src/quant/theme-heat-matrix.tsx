@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 /**
- * Theme heat matrix: themes by trading days, each cell the limit-up count and rank, shaded on the sequential scale.
+ * Theme heat matrix: themes by trading days, each cell the limit-up count and rank, shaded by a neutral five-step ramp.
  * 题材热度矩阵（#11，开盘啦「题材库 / 板块强度」对照）：行是题材，列是近 5 到 10 个交易日，格内大字写涨停只数、右上小字写当日名次，
- * 底色按只数落在 seq 五档（色阶与 CalendarHeatmap 的换手视图同一套：大小用 seq，不用涨跌色上面积）；最右一列是最近一天。
+ * 底色按只数落在五档（分档规则与 CalendarHeatmap 的换手视图同一条；颜色是中性前景色的五档浓度，不用品牌橙（#50），也不用涨跌色上面积）；最右一列是最近一天。
  * 题材的次序、只数、名次都由调用方给，件不排序、不算热度；日期文字、读屏句子也由调用方写。
  * 表格手感取 TradingView 的列表（无衬线 + tabular-nums、紧凑行、极淡分隔），格子取工作台的方格热力图；选中格画 1px 主色描边。
  * 键盘照 APG Grid：方向键走格、Home / End 到行首行尾、Enter / Space 选中，Tab 只停一个格子（roving tabindex）。

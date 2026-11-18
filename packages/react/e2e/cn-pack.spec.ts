@@ -12,7 +12,9 @@ const open = async (page: Page, id: string) => {
   return area
 }
 
-test('SentimentGauge：读数、昨日差着涨跌色、阶段带与图例、点图例高亮一个阶段', async ({ page }) => {
+test('SentimentGauge：读数、昨日差着涨跌色、阶段带用状态语气色、分项线不用品牌橙、点图例高亮一个阶段', async ({
+  page,
+}) => {
   const area = await open(page, 'sentiment-gauge')
   const gauge = area.locator('[data-slot="sentiment-gauge"]').first()
   await expect(gauge.locator('[data-slot="sentiment-score"]')).toHaveText(/^\d+$/)
@@ -36,6 +38,29 @@ test('SentimentGauge：读数、昨日差着涨跌色、阶段带与图例、点
   await expect(gauge.getByRole('meter')).toHaveAttribute('aria-valuemax', '100')
   await expect(gauge.locator('.k-regime-legend li[data-current]')).toHaveCount(1)
   await expect(gauge.locator('[data-slot="small-multiple"]')).toHaveCount(4)
+  // 分项小线图是主文字色，不是 series-1 橙；阶段带的色块是 --k-status-*。
+  const probe = (value: string) =>
+    page.evaluate((v) => {
+      const el = document.createElement('span')
+      el.style.color = v
+      document.body.append(el)
+      const out = getComputedStyle(el).color
+      el.remove()
+      return out
+    }, value)
+  expect(
+    await gauge
+      .locator('[data-slot="small-multiple-line"]')
+      .first()
+      .evaluate((el) => getComputedStyle(el).stroke),
+  ).toBe(await probe('var(--k-content-primary-foreground)'))
+  const allowed = await Promise.all(
+    ['neutral', 'ok', 'warn', 'danger'].map((tone) => probe(`var(--k-status-${tone}-foreground)`)),
+  )
+  for (const fill of await gauge
+    .locator('.k-regime-band i')
+    .evaluateAll((els) => els.map((el) => getComputedStyle(el).backgroundColor)))
+    expect(allowed).toContain(fill)
   await gauge.getByRole('button', { name: /冰点/ }).click()
   await expect(gauge.getByRole('button', { name: /冰点/ })).toHaveAttribute('aria-pressed', 'true')
   const dim = await gauge.locator('.k-regime-band i[data-dim]').count()
@@ -105,6 +130,23 @@ test('BoardStrengthRank：按强度排名次，名次变化带箭头与涨跌色
 test('NetBuyBar：净买往右净卖往左，点行展开席位，机构席位带标签', async ({ page }) => {
   const area = await open(page, 'net-buy-bar')
   const box = area.locator('[data-slot="net-buy-bar"]')
+  // A 股演示按红涨绿跌：根上 data-updown="cn"，涨（+20%）与净买取红。
+  await expect(page.locator('html')).toHaveAttribute('data-updown', 'cn')
+  const colorOf = (selector: string) =>
+    box
+      .locator(selector)
+      .first()
+      .evaluate((el) => getComputedStyle(el).color)
+  const red = await page.evaluate(() => {
+    const probe = document.createElement('span')
+    probe.style.color = 'var(--signal-red)'
+    document.body.append(probe)
+    const out = getComputedStyle(probe).color
+    probe.remove()
+    return out
+  })
+  expect(await colorOf('[data-code="300401"] [data-slot="change-text"]')).toBe(red)
+  expect(await colorOf('[data-code="300401"] [data-slot="netbuy-net"]')).toBe(red)
   const barOf = (code: string) => box.locator(`[data-code="${code}"] [data-slot="netbuy-bar"]`)
   const track = await box.locator('[data-code="300401"] .k-netbuy-track').boundingBox()
   const buy = await barOf('300401').boundingBox()

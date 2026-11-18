@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: MIT */
 /* SentimentGauge 情绪周期读数（#11）。版式：TradingView 小组件的读数手感（大号无衬线 + tabular-nums、次要灰一档、细线），配色 Graphite。
-   颜色只读 characteristics（--k-*）与语义 token：走势线 ink 主色、中线 chart-grid、阶段 series 类别色（由 RegimeStrip 画）、昨日差 --k-tone-*（跟 data-updown 换红绿）。
+   颜色只读 characteristics（--k-*）与语义 token：走势线与分项小线图中性前景色（不用品牌橙，#50：橙只给焦点角括号）、中线 chart-grid、阶段状态语气色 --k-status-*（由 RegimeStrip 画）、昨日差 --k-tone-*（跟 data-updown 换红绿）。
    小线图的值不是涨跌，这里统一用主文字色，盖掉 SmallMultiples 按序列方向着色的默认。 */
 .k-senti {
   display: flex;
@@ -97,6 +97,9 @@
 .k-senti-metrics .k-sm-value,
 .k-senti-metrics .k-sm-value[data-tone] {
   color: var(--k-content-primary-foreground);
+}
+.k-senti-metrics .k-sm-line {
+  stroke: var(--k-content-primary-foreground);
 }
 .k-senti-empty {
   margin: auto;

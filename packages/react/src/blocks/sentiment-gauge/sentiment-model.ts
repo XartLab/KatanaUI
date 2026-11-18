@@ -3,17 +3,18 @@
  * Data types of SentimentGauge and the pure helpers that turn days into band segments.
  * 情绪周期读数（#11）的数据形状与纯函数。情绪分与阶段都由调用方算好传进来，件里不带口径：这里只把逐日的阶段并成连续的段，算昨日差。
  */
-import type { RegimeColor, RegimeSegment } from '../regime-strip/regime-strip-model.ts'
-import type { SeverityExt } from '../../lib/severity.ts'
+import type { RegimeSegment } from '../regime-strip/regime-strip-model.ts'
+import type { Severity } from '../../lib/severity.ts'
 
-/** One stage of the sentiment cycle (冰点、修复、发酵、高潮、退潮…), defined by the caller. 一个阶段：名字、带上的类别色，可选读数仪表的语气。 */
+/** One stage of the sentiment cycle (冰点、修复、发酵、高潮…), defined by the caller. 一个阶段：名字与状态语气。 */
 export type SentimentStage = {
   id: string
   name: string
-  /** Band color: series-1…7 (a category, not good or bad). 带上的类别色。 */
-  color: RegimeColor
-  /** Tone of the gauge needle while today is in this stage; defaults to accent. 今天落在这一阶段时仪表的语气。 */
-  tone?: SeverityExt
+  /**
+   * Severity tone of the stage: colors the band, the legend swatch and the gauge needle (--k-status-*).
+   * 阶段的语气（--k-status-*，Graphite 的油画颜料信号色）：带、图例色块与仪表指针都用它；不用类别色，也不用涨跌色。
+   */
+  tone: Severity
 }
 
 /** One trading day: the caller's score and the stage the caller assigned. 一个交易日：调用方算的情绪分与调用方判的阶段。 */

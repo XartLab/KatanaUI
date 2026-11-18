@@ -4,7 +4,7 @@
  * 情绪周期读数（#11，开盘啦「市场情绪」对照）：左上大号情绪分与昨日差、当前阶段，右上 0–100 刻度仪表（Meter gauge）；
  * 中间近 N 日走势线，线下叠阶段带（RegimeStrip，颜色是类别不是好坏）；底下一排小线图（SmallMultiples：涨停数、连板高度、亏钱数、封板率这类，同步十字线）。
  * 口径不在件里：情绪分、每天落在哪个阶段、阶段有几个叫什么，全由调用方算好传；件只画。数字写法、文字也由调用方传，包里不带语言。
- * 版式取 TradingView 小组件的读数手感（大号无衬线加 tabular-nums、次要信息灰一档、细线），配色走工作台 Graphite：走势线 ink 色，阶段用 series 类别色，昨日差走涨跌 tone（跟 data-updown 换红绿）。
+ * 版式取 TradingView 小组件的读数手感（大号无衬线加 tabular-nums、次要信息灰一档、细线），配色走工作台 Graphite：走势线与分项小线图都是中性前景色（橙只给焦点，#50），阶段用状态语气色（--k-status-*），昨日差走涨跌 tone（跟 data-updown 换红绿）。
  */
 import { cn } from '../../lib/cn.ts'
 import { EndMarker } from '../../lib/chart/chart-kit/end-marker.tsx'
@@ -62,15 +62,12 @@ export type SentimentGaugeProps = {
 }
 
 const TREND_H = 64
-// 颜色只用字面量写 token（主题检查按字面量认），不拼模板字符串；跟 RegimeStrip 同一张表。
-const STAGE_COLOR: Record<SentimentStage['color'], string> = {
-  1: 'var(--series-1)',
-  2: 'var(--series-2)',
-  3: 'var(--series-3)',
-  4: 'var(--series-4)',
-  5: 'var(--series-5)',
-  6: 'var(--series-6)',
-  7: 'var(--series-7)',
+// 阶段色读状态语气（--k-status-*）：#11 第二批评审，类别色（紫蓝橙粉）偏艳、跟 Graphite 的油画颜料信号色不搭。字面量写 token，主题检查按字面量认。
+const STAGE_COLOR: Record<SentimentStage['tone'], string> = {
+  neutral: 'var(--k-status-neutral-foreground)',
+  ok: 'var(--k-status-ok-foreground)',
+  warn: 'var(--k-status-warn-foreground)',
+  danger: 'var(--k-status-danger-foreground)',
 }
 const DASH = '—'
 
@@ -117,7 +114,7 @@ export function SentimentGauge({
           </span>
           {stage ? (
             <span className="k-senti-stage" data-slot="sentiment-stage" data-stage={stage.id}>
-              <i style={{ background: STAGE_COLOR[stage.color] }} aria-hidden="true" />
+              <i style={{ background: STAGE_COLOR[stage.tone] }} aria-hidden="true" />
               {stage.name}
             </span>
           ) : null}
@@ -128,7 +125,7 @@ export function SentimentGauge({
           value={Number.isFinite(today.score) ? today.score : 0}
           valueText={Number.isFinite(today.score) ? formatScore(today.score) : DASH}
           display="gauge"
-          tone={stage?.tone ?? 'accent'}
+          tone={stage?.tone ?? 'neutral'}
         />
       </div>
       <div className="k-senti-trend" data-slot="sentiment-trend">
@@ -147,7 +144,7 @@ export function SentimentGauge({
         </div>
         <RegimeStrip
           segments={stageSegments(days)}
-          states={stages}
+          states={stages.map((item) => ({ id: item.id, name: item.name, color: 1 as const, tone: item.tone }))}
           scale={(t) => t / days.length}
           label={labels.band}
           describe={(segment, state) =>

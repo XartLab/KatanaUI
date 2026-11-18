@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: MIT
 // A 股面板的几件（#11，开盘啦对照）的文档站预览：数据都是编出来的演示数据（见 usage/ 里各自的说明），不是行情。
-// 涨跌色跟根上的 data-updown 走：A 股面板在根上设 data-updown="cn" 就是红涨绿跌，件里不写死；文档站默认是绿涨红跌。
-import { useState } from 'react'
+// 涨跌色跟根上的 data-updown 走：A 股面板在根上设 data-updown="cn" 就是红涨绿跌，件里不写死。
+// 文档站默认是绿涨红跌；这一组是 A 股件，演示挂上时把根切到 cn、离开这一页还原（评审 #78：A 股用户看绿涨是反的）。
+import { useLayoutEffect, useState } from 'react'
 import {
   BoardStrengthRank,
   NetBuyBar,
@@ -20,7 +21,20 @@ import { REASON_GROUPS } from '../usage/ReasonGroupListUsage.tsx'
 import { SENTIMENT_DAYS, SENTIMENT_METRICS, SENTIMENT_STAGES } from '../usage/SentimentGaugeUsage.tsx'
 import { HEAT_DATES, HEAT_ROWS } from '../usage/ThemeHeatMatrixUsage.tsx'
 
-const NOTE = '演示数据：编出来的，不是行情；口径由调用方定。'
+const NOTE = '演示数据：编出来的，不是行情；口径由调用方定。本页根上设了 data-updown="cn"（红涨绿跌）。'
+
+/** 这一页挂着时根上是 data-updown="cn"，离开还原成原来的值。 */
+function useCnUpdown() {
+  useLayoutEffect(() => {
+    const root = document.documentElement
+    const before = root.dataset.updown
+    root.dataset.updown = 'cn'
+    return () => {
+      if (before === undefined) delete root.dataset.updown
+      else root.dataset.updown = before
+    }
+  }, [])
+}
 
 function Frame({ heading, height, children }: { heading: string; height?: number; children: React.ReactNode }) {
   return (
@@ -45,6 +59,7 @@ const SENTIMENT_LABELS = {
 }
 
 export function SentimentGaugeDemo() {
+  useCnUpdown()
   const [active, setActive] = useState<string | null>(null)
   return (
     <div className="gal-stack" style={{ width: '100%', maxWidth: 720 }}>
@@ -68,6 +83,7 @@ export function SentimentGaugeDemo() {
 }
 
 export function ThemeHeatMatrixDemo() {
+  useCnUpdown()
   const [selected, setSelected] = useState<ThemeHeatPos | null>({ row: 0, col: HEAT_DATES.length - 1 })
   const picked = selected ? `${HEAT_ROWS[selected.row]?.name} · ${HEAT_DATES[selected.col]}` : '没选'
   return (
@@ -98,6 +114,7 @@ export function ThemeHeatMatrixDemo() {
 }
 
 export function ReasonGroupListDemo() {
+  useCnUpdown()
   const [picked, setPicked] = useState<ReasonStock | null>(null)
   return (
     <div className="gal-stack" style={{ width: '100%', maxWidth: 720 }}>
@@ -134,6 +151,7 @@ export function ReasonGroupListDemo() {
 }
 
 export function BoardStrengthRankDemo() {
+  useCnUpdown()
   const [selected, setSelected] = useState<RankedBoard | null>(null)
   return (
     <div className="gal-stack" style={{ width: '100%', maxWidth: 720 }}>
@@ -187,6 +205,7 @@ function BoardStrengthRankLimit() {
 }
 
 export function NetBuyBarDemo() {
+  useCnUpdown()
   const [open, setOpen] = useState<string | null>(DRAGON_ITEMS[0]!.code)
   return (
     <div className="gal-stack" style={{ width: '100%', maxWidth: 720 }}>

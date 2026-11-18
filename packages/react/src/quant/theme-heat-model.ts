@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 /**
  * Data types and pure helpers of ThemeHeatMatrix.
- * 题材热度矩阵（#11）的数据形状与纯函数：色阶与日历热力图的换手视图同一套（seq 五档，档位 = ⌊只数 / 最大只数 × 5⌋，封顶 4），键盘走格。
+ * 题材热度矩阵（#11）的数据形状与纯函数：分档与日历热力图的换手视图同一条（五档，档位 = ⌊只数 / 最大只数 × 5⌋，封顶 4），键盘走格。
  */
 
 /** One cell: the caller's count for this theme on this day, and its rank that day. 一格：当天这个题材的涨停只数与名次。 */
@@ -22,7 +22,7 @@ export type ThemeHeatRow = {
 /** Position of a cell: row index and day index. 格子的位置。 */
 export type ThemeHeatPos = { row: number; col: number }
 
-/** Seq level 0–4 of a count against the matrix max (same rule as CalendarHeatmap's turnover view); null for no data or zero. */
+/** Heat level 0–4 of a count against the matrix max (same rule as CalendarHeatmap's turnover view); null for no data or zero. */
 export function heatLevel(count: number | undefined, max: number): number | null {
   if (count === undefined || !Number.isFinite(count) || count <= 0 || !(max > 0)) return null
   return Math.min(4, Math.floor((count / max) * 5))

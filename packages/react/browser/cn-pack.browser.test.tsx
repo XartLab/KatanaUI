@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 // A-share panel pieces (#11): one screenshot per component, from the gallery usage demos (demo data). Test name = file name.
-import { describe, expect, test } from 'vite-plus/test'
+// A 股件按 A 股的涨跌约定截：根上 data-updown="cn"（红涨绿跌，评审 #78），这个文件跑完还原。
+import { afterAll, beforeAll, describe, expect, test } from 'vite-plus/test'
 import { page } from 'vite-plus/test/browser'
 import { BoardStrengthRankUsage } from '../gallery/usage/BoardStrengthRankUsage.tsx'
 import { NetBuyBarUsage } from '../gallery/usage/NetBuyBarUsage.tsx'
@@ -16,6 +17,13 @@ const items: Record<string, React.ReactNode> = {
   'board-strength-rank': <BoardStrengthRankUsage />,
   'net-buy-bar': <NetBuyBarUsage />,
 }
+
+beforeAll(() => {
+  document.documentElement.dataset.updown = 'cn'
+})
+afterAll(() => {
+  delete document.documentElement.dataset.updown
+})
 
 for (const theme of ['graphite', 'console'] as const) {
   describe(theme, () => {

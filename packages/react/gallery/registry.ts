@@ -1308,7 +1308,7 @@ export const PAGES: readonly DocPage[] = [
     cardHeight: 380,
     title: 'SentimentGauge 情绪周期读数（A 股）',
     summary:
-      '开盘啦「市场情绪」对照（#11）：左上大号情绪分（28px 600 无衬线、tabular-nums）与昨日差（涨跌 tone）、当前阶段（类别色方块 + 名字）；右上 0–100 刻度仪表（Meter gauge，语气取当前阶段的 tone）；中间近 N 日走势线（ink 主色 1.5px，50 分处一根虚中线），线下叠阶段带与图例（RegimeStrip，series 类别色，今天的阶段标「当前」）；底下一排小线图（SmallMultiples，同步十字线，每项自己的写法）。情绪分、阶段的划分与阈值都由调用方算好传，件里不带口径。',
+      '开盘啦「市场情绪」对照（#11）：左上大号情绪分（28px 600 无衬线、tabular-nums）与昨日差（涨跌 tone）、当前阶段（语气色方块 + 名字）；右上 0–100 刻度仪表（Meter gauge，语气取当前阶段的 tone）；中间近 N 日走势线（ink 主色 1.5px，50 分处一根虚中线），线下叠阶段带与图例（RegimeStrip，阶段色取状态语气 --k-status-*：Graphite 的油画颜料信号色，不用偏艳的类别色；今天的阶段标「当前」）；底下一排小线图（SmallMultiples，同步十字线，每项自己的写法，线与值都是中性前景色，不用品牌橙）。A 股面板在根上设 data-updown="cn"，文档站这一组的演示与组件截图都按 cn（红涨绿跌）。情绪分、阶段的划分与阈值都由调用方算好传，件里不带口径。',
     exports: ['SentimentGauge'],
     propParts: [
       {
@@ -1319,13 +1319,13 @@ export const PAGES: readonly DocPage[] = [
     states: [
       '默认：读数、仪表、走势、阶段带、分项五块都在；分项不传就不画那一排。',
       '昨日差：涨取 --k-tone-up、跌取 --k-tone-down（根上 data-updown="cn" 时红涨绿跌），取整后为 0 不着色；不够两天写「—」。',
-      '分项小线图的值统一主文字色：涨停数、亏钱数这类不是涨跌，不按序列方向着色（盖掉 SmallMultiples 的默认）。',
+      '分项小线图的线与值统一主文字色：涨停数、亏钱数这类不是涨跌，不按序列方向着色，线也不用 SmallMultiples 默认的 series-1 橙（#50：橙只给焦点角括号）。',
       '选阶段：给了 onStageSelect，图例每项是开关，选中后带上别的阶段降到 25% 不透明。',
       '空：days 为空数组时只画一行空态文字。',
     ],
     donts: [
       '不要在件里算情绪分或判阶段；口径由调用方定并写明依据（[T] 的 75/25 是第三方示例，不能当口径）。',
-      '阶段色只用 series 类别色，不用涨跌色表示「好坏」。',
+      '阶段色只用状态语气（neutral / ok / warn / danger），不用类别色，也不用涨跌色表示「好坏」（cn 下涨跌色会对调，状态色不会）。',
       '情绪分按 0 到 100 传：仪表刻度固定 0 / 25 / 50 / 75 / 100。',
     ],
     composition:
@@ -1338,7 +1338,7 @@ export const PAGES: readonly DocPage[] = [
     cardHeight: 300,
     title: 'ThemeHeatMatrix 题材热度矩阵（A 股）',
     summary:
-      '开盘啦「题材库 / 板块强度」对照（#11）：行是题材、列是近 5 到 10 个交易日（最新一列的日期主文字色），格内大字写涨停只数、右上角 9px 写当日名次；底色是 seq 五档（与 CalendarHeatmap 换手视图同一条规则：档位 = ⌊只数 / 全表最大 × 5⌋，封顶 4），0 只与没有数据不着色。表格手感照 TradingView 列表：28px 格高、2px 格距、tabular-nums。题材次序、只数、名次都由调用方给，件不排序、不算热度。',
+      '开盘啦「题材库 / 板块强度」对照（#11）：行是题材、列是近 5 到 10 个交易日（最新一列的日期主文字色），格内大字写涨停只数、右上角 9px 写当日名次；底色是五档（分档与 CalendarHeatmap 换手视图同一条规则：档位 = ⌊只数 / 全表最大 × 5⌋，封顶 4），颜色是主文字色 10% / 20% / 34% / 52% / 74% 混透明的中性浓度，不用品牌橙（#50：橙只给焦点角括号；tokens 里的 seq-* 是橙系，没有不含橙的顺序档），0 只与没有数据不着色。表格手感照 TradingView 列表：28px 格高、2px 格距、tabular-nums。题材次序、只数、名次都由调用方给，件不排序、不算热度。',
     exports: ['ThemeHeatMatrix'],
     propParts: [
       {
@@ -1347,13 +1347,13 @@ export const PAGES: readonly DocPage[] = [
       },
     ],
     states: [
-      '字色按档换：0–1 档主文字色，2–4 档（亮橙）换深色字（selectable-bold-foreground-selected），Graphite 与 Console 都过 4.5:1。',
+      '字色按档换：0–2 档主文字色，3–4 档（浅灰底）换深色字（selectable-bold-foreground-selected），Graphite 与 Console 都过 4.5:1。',
       '悬停：格子内描 1px 分隔粗线；选中：内描 1px 主文字色；键盘焦点：外描 1px，偏移 1px。',
       '没有数据的格不写字，读屏读调用方写的「没有数据」句子。',
       '空：rows 或 dates 为空时画空态文字。',
     ],
     donts: [
-      '不要用涨跌色给只数上底色：大小用 seq，涨跌色只给方向。',
+      '不要用涨跌色或品牌橙给只数上底色：大小用中性浓度，涨跌色只给方向，橙只给焦点。',
       '不要把名次当只数排序依据塞进件里，次序由调用方定。',
     ],
     composition:

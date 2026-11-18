@@ -3,6 +3,7 @@
  * Data types and span layout of RegimeStrip.
  * RegimeStrip 的数据类型与段的排布（纯函数，G6 从 regime-strip.tsx 拆出）。
  */
+import type { Severity } from '../../lib/severity.ts'
 
 /** 状态的色：series-1…7 之一（≤ 6 态，挑色距大的几个，如 1、2、4、7）。 */
 export type RegimeColor = 1 | 2 | 3 | 4 | 5 | 6 | 7
@@ -11,6 +12,8 @@ export type RegimeState = {
   id: string
   name: string
   color: RegimeColor
+  /** 有好坏之分的状态（情绪周期的冰点、过热这类）改用状态语气色（--k-status-*），给了就盖掉 color；类别状态不给。 */
+  tone?: Severity
   /** 图例里名字后面的小字（如占比「47%」），已格式化。 */
   detail?: string
 }
