@@ -6,24 +6,44 @@
 //   katana-logos fetch --symbols list.txt --provider url --template 'https://img.logo.dev/ticker/{code}?token={token}&format=png' \
 //     --param token=$LOGO_DEV_KEY --ext png --out public/logos
 //
+//   katana-logos fetch --symbols a-shares.txt --provider companieslogo --token $COMPANIESLOGO_KEY --out public/logos
+//   katana-logos fetch --symbols a-shares.txt --provider logodev --token $LOGO_DEV_KEY --domains domains.json --out public/logos
+//
 // 清单：一行一个，`代码[,场所[,类别[,名称[,域名]]]]`，# 开头是注释；或 JSON 数组（LogoQuery）。
-// 来源：web3icons（本地包里的 SVG，不联网）、cryptocurrency-icons（jsDelivr 上的 CC0 SVG）、url（--template 给模板）。
+// --domains：JSON 对象，「代码.场所」→ 官网域名（{"600519.XSHG": "moutaichina.com"}），清单行没写域名时从这里补。
+// 来源：web3icons（本地包里的 SVG，不联网）、cryptocurrency-icons（jsDelivr 上的 CC0 SVG）、url（--template 给模板）、
+// companieslogo（companieslogo.com，A 股 .SS / .SZ、港股、美股；付费，条款允许下载后自托管）、
+// logodev（Logo.dev：有域名按域名，美股按代码）、domain（--template 带 {domain} 的通用模板）。key 用 --token 或 --param token=…。
+// 文件扩展名默认按返回的 content-type（svg、png、jpg、webp），--ext 可强制。
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 import type { AssetClass } from './normalize.ts'
-import { fillTemplate, logoContext, type LogoQuery, selfHostedPath, templateValues } from './resolve.ts'
+import {
+  type DomainMap,
+  fillTemplate,
+  type LogoContext,
+  logoContext,
+  type LogoQuery,
+  selfHostedPath,
+  templateValues,
+} from './resolve.ts'
+import { byDomain, companiesLogoApiUrl, logoDev, pickCompaniesLogoImage } from './services.ts'
 import { web3ExchangeSvg, web3TokenSvg } from './web3icons.ts'
 
 export const CRYPTOCURRENCY_ICONS_TEMPLATE =
   'https://cdn.jsdelivr.net/npm/cryptocurrency-icons@0.18.1/svg/color/{code_lower}.svg'
 
+export const CLI_PROVIDERS = ['web3icons', 'cryptocurrency-icons', 'url', 'companieslogo', 'logodev', 'domain'] as const
+
 export type FetchOptions = {
   queries: readonly LogoQuery[]
-  provider: 'web3icons' | 'cryptocurrency-icons' | 'url'
+  provider: (typeof CLI_PROVIDERS)[number]
   out: string
+  /** 「代码.场所」→ 官网域名。 */
+  domainMap?: DomainMap
   template?: string
   params?: Readonly<Record<string, string>>
-  /** 文件扩展名（url 来源给 png 时用），默认 svg。 */
+  /** 强制文件扩展名；不给就按返回的 content-type。 */
   ext?: string
   concurrency?: number
   timeoutMs?: number
@@ -71,33 +91,87 @@ function redact(url: string, params: Readonly<Record<string, string>>): string {
   return out
 }
 
-async function download(
-  query: LogoQuery,
-  options: FetchOptions,
-  deps: Deps,
-): Promise<{ body: Uint8Array; contentType: string; source: string }> {
-  const ctx = logoContext(query)
-  if (!ctx) throw new Error('清单里这一行没有代码')
+const EXT: Readonly<Record<string, string>> = {
+  'image/svg+xml': 'svg',
+  'image/png': 'png',
+  'image/jpeg': 'jpg',
+  'image/webp': 'webp',
+  'image/gif': 'gif',
+  'image/x-icon': 'ico',
+  'image/vnd.microsoft.icon': 'ico',
+}
+
+type Got = { body: Uint8Array; contentType: string; source: string }
+
+async function fetchImage(url: string, options: FetchOptions, deps: Deps): Promise<Got> {
+  const res = await deps.fetch(url, { signal: AbortSignal.timeout(options.timeoutMs ?? 15_000) })
+  if (!res.ok) throw new Error(`HTTP ${res.status}`)
+  const contentType = (res.headers.get('content-type') ?? 'application/octet-stream').split(';')[0]!.trim()
+  if (!contentType.startsWith('image/')) throw new Error(`不是图片：${contentType}`)
+  return { body: new Uint8Array(await res.arrayBuffer()), contentType, source: redact(url, options.params ?? {}) }
+}
+
+/** 地址类来源给出的候选地址（按序试）。 */
+function candidateUrls(ctx: LogoContext, options: FetchOptions): string[] {
+  const params = options.params ?? {}
+  switch (options.provider) {
+    case 'logodev': {
+      if (!params.token) throw new Error('--provider logodev 要给 --token')
+      return logoDev({ token: params.token }).candidates(ctx) as string[]
+    }
+    case 'domain': {
+      if (!options.template) throw new Error('--provider domain 要给带 {domain} 的 --template')
+      return byDomain(options.template, { params }).candidates(ctx) as string[]
+    }
+    case 'url':
+    case 'cryptocurrency-icons': {
+      const template = options.provider === 'url' ? options.template : CRYPTOCURRENCY_ICONS_TEMPLATE
+      if (!template) throw new Error('--provider url 要给 --template')
+      const url = fillTemplate(template, templateValues(ctx, params))
+      return url ? [url] : []
+    }
+    default:
+      return []
+  }
+}
+
+async function download(ctx: LogoContext, options: FetchOptions, deps: Deps): Promise<Got> {
   if (options.provider === 'web3icons') {
     const svg = ctx.kind === 'venue' ? await web3ExchangeSvg(ctx.ref.code) : await web3TokenSvg(ctx.ref.code)
     if (svg === undefined) throw new Error(`web3icons 里没有 ${ctx.ref.code}`)
     return { body: new TextEncoder().encode(svg), contentType: 'image/svg+xml', source: 'package:@web3icons/core' }
   }
-  const template = options.provider === 'url' ? options.template : CRYPTOCURRENCY_ICONS_TEMPLATE
-  if (!template) throw new Error('--provider url 要给 --template')
-  const params = options.params ?? {}
-  const url = fillTemplate(template, templateValues(ctx, params))
-  if (!url) throw new Error('模板里有占位没有值')
-  const res = await deps.fetch(url, { signal: AbortSignal.timeout(options.timeoutMs ?? 15_000) })
-  if (!res.ok) throw new Error(`HTTP ${res.status}`)
-  const contentType = res.headers.get('content-type') ?? 'application/octet-stream'
-  if (!contentType.startsWith('image/')) throw new Error(`不是图片：${contentType}`)
-  return { body: new Uint8Array(await res.arrayBuffer()), contentType, source: redact(url, params) }
+  if (options.provider === 'companieslogo') {
+    const token = options.params?.token
+    if (!token) throw new Error('--provider companieslogo 要给 --token')
+    const api = companiesLogoApiUrl(ctx, token)
+    if (!api) throw new Error(`companieslogo 不支持这个品种（${ctx.ref.key}；北交所暂不支持）`)
+    const res = await deps.fetch(api, { signal: AbortSignal.timeout(options.timeoutMs ?? 15_000) })
+    if (!res.ok) throw new Error(`HTTP ${res.status}`)
+    const image = pickCompaniesLogoImage(await res.json())
+    if (!image) throw new Error('companieslogo 没有这家的图')
+    return fetchImage(image, options, deps)
+  }
+  const urls = candidateUrls(ctx, options)
+  if (!urls.length)
+    throw new Error(
+      options.provider === 'domain' || options.provider === 'logodev'
+        ? '没有可用的地址（缺官网域名？）'
+        : '模板里有占位没有值',
+    )
+  let last: unknown
+  for (const url of urls) {
+    try {
+      return await fetchImage(url, options, deps)
+    } catch (error) {
+      last = error
+    }
+  }
+  throw last
 }
 
 /** 下载清单里的每一项；失败的记下原因，不中断。 */
 export async function runFetch(options: FetchOptions, deps: Deps = { fetch, log: console.log }): Promise<FetchReport> {
-  const ext = options.ext ?? 'svg'
   const ok: ManifestEntry[] = []
   const failed: FetchFailure[] = []
   const queue = [...options.queries]
@@ -105,14 +179,15 @@ export async function runFetch(options: FetchOptions, deps: Deps = { fetch, log:
     for (let q = queue.shift(); q; q = queue.shift()) {
       const query = q
       try {
+        const ctx = logoContext(query, options.domainMap ? { domainMap: options.domainMap } : {})
         const path = selfHostedPath(query)
-        if (!path) throw new Error('清单里这一行没有代码')
-        const file = ext === 'svg' ? path : path.replace(/\.svg$/, `.${ext}`)
-        const got = await download(query, options, deps)
+        if (!ctx || !path) throw new Error('清单里这一行没有代码')
+        const got = await download(ctx, options, deps)
+        const ext = options.ext ?? EXT[got.contentType] ?? 'img'
+        const file = path.replace(/\.svg$/, `.${ext}`)
         const target = join(options.out, file)
         await mkdir(dirname(target), { recursive: true })
         await writeFile(target, got.body)
-        const ctx = logoContext(query)!
         ok.push({
           query,
           key: ctx.ref.key,
@@ -150,8 +225,8 @@ export async function runFetch(options: FetchOptions, deps: Deps = { fetch, log:
   return { ok, failed, manifest }
 }
 
-const USAGE = `用法：katana-logos fetch --symbols <清单> --provider <web3icons|cryptocurrency-icons|url> --out <目录>
-  [--template <地址模板>] [--param 名=值 ...] [--ext svg|png] [--concurrency 4] [--strict]
+const USAGE = `用法：katana-logos fetch --symbols <清单> --provider <${CLI_PROVIDERS.join('|')}> --out <目录>
+  [--token <key>] [--domains <代码.场所→域名.json>] [--template <地址模板>] [--param 名=值 ...] [--ext svg|png] [--concurrency 4] [--strict]
   模板占位：{code} {code_lower} {mic} {venue} {key} {quote} {symbol} {name} {domain}，加 --param 给的。`
 
 /** 命令行入口；返回退出码。--strict 时有失败就返回 1，默认只汇报。 */
@@ -173,13 +248,17 @@ export async function main(argv: readonly string[], deps?: Deps): Promise<number
   const symbols = one('symbols')
   const provider = one('provider') as FetchOptions['provider'] | undefined
   const out = one('out')
-  if (!symbols || !out || !provider || !['web3icons', 'cryptocurrency-icons', 'url'].includes(provider)) {
+  if (!symbols || !out || !provider || !(CLI_PROVIDERS as readonly string[]).includes(provider)) {
     log(USAGE)
     return 2
   }
-  const params = Object.fromEntries(
+  const params: Record<string, string> = Object.fromEntries(
     (flags.get('param') ?? []).map((p) => [p.slice(0, p.indexOf('=')), p.slice(p.indexOf('=') + 1)]),
   )
+  const token = one('token')
+  if (token) params.token = token
+  const domains = one('domains')
+  const domainMap = domains ? (JSON.parse(await readFile(domains, 'utf8')) as DomainMap) : undefined
   const template = one('template')
   const ext = one('ext')
   const concurrency = one('concurrency')
@@ -190,6 +269,7 @@ export async function main(argv: readonly string[], deps?: Deps): Promise<number
       out,
       params,
       ...(template ? { template } : {}),
+      ...(domainMap ? { domainMap } : {}),
       ...(ext ? { ext } : {}),
       ...(concurrency ? { concurrency: Number(concurrency) } : {}),
     },

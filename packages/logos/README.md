@@ -7,6 +7,12 @@ One place to resolve logos for symbols, companies, coins and venues. Code plus l
   - `web3icons()` (`@katana-ui/logos/web3icons`): coins and exchanges from [`@web3icons/core`](https://github.com/0xa3k5/web3icons) (MIT, 1,790 coins and 30 exchanges). Each SVG is a dynamic import, so the bundler splits it into its own chunk and only loads it when shown.
   - `selfHosted({ baseUrl, pattern })`: the app's own directory, named `{code}.{mic}.svg` then `{code}.svg` (`600519.XSHG.svg`), `crypto/{code}.svg`, `venues/{venue}.svg`.
   - `urlTemplate({ template, params })`: any logo service or CDN, for example Logo.dev: `https://img.logo.dev/ticker/{code}?token={token}`. The key comes from the app; this package never holds one.
+- **Logo-service presets** (URLs and requests only; the app supplies the key):
+  - `companiesLogo({ token })`: companieslogo.com API. Shanghai `600519.SS`, Shenzhen `000001.SZ`, Hong Kong `0700.HK`, US bare tickers; Beijing (BJSE) is not supported yet. The API returns JSON, so the candidate is a loader. Its terms allow downloading and self-hosting, so prefer the CLI.
+  - `logoDev({ token })`: Logo.dev. With a domain, `img.logo.dev/{domain}` (works worldwide, including A-shares); US stocks also get `img.logo.dev/ticker/{code}` (NYSE / NASDAQ only).
+  - `byDomain(template, { params })`: any "logo by company domain" template containing `{domain}`.
+  - `domainMap` (`resolveLogo(query, providers, { domainMap })`, `<LogoProvider domainMap>`): `{ '600519.XSHG': 'example.com' }`, keyed by `code.MIC`, filled in when a query has no `domain`.
+  - Do not use a platform's private CDN (for example TradingView's logo files): it is not licensed for reuse.
 - **Cache**: an in-memory cache per `LogoProvider`. A loader runs once, a failed URL is never requested again, a URL that loaded is tried first next time.
 - **React** (`@katana-ui/logos/react`): `LogoProvider` and `useLogo`. `SymbolMark` from `@katana-ui/react` reads it when it has no `src`, tries each candidate and falls back to letters.
 - **CLI** `katana-logos fetch`: download logos into the app's own directory and write `manifest.json`.
@@ -47,7 +53,13 @@ katana-logos fetch --symbols list.txt --provider url \
 
 `list.txt` has one `symbol[,venue[,assetClass[,name[,domain]]]]` per line (`#` comments), or is a JSON array of queries. A failed download does not stop the run; the summary lists failures and `--strict` makes them exit 1. `manifest.json` is merged with the existing one and never contains parameter values (keys are written as `*`).
 
-`web3icons` exports from the installed package and needs no network. `cryptocurrency-icons` (CC0) downloads from jsDelivr.
+```
+katana-logos fetch --symbols a-shares.txt --provider companieslogo --token $COMPANIESLOGO_KEY --out public/logos
+katana-logos fetch --symbols a-shares.txt --provider logodev --token $LOGO_DEV_KEY --domains domains.json --out public/logos
+katana-logos fetch --symbols a-shares.txt --provider domain --template 'https://logos.example.com/{domain}.png' --domains domains.json --out public/logos
+```
+
+`web3icons` exports from the installed package and needs no network. `cryptocurrency-icons` (CC0) downloads from jsDelivr. `--domains` is a JSON object from `code.MIC` to company domain. The file extension follows the response content type unless `--ext` is given; `--token` values never reach `manifest.json`.
 
 ## Licence
 

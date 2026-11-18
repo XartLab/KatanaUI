@@ -465,9 +465,27 @@ function AssetsPage() {
           <code>venues/binance.svg</code>。
         </li>
         <li>
-          A 股、港股没有开源合集：应用用{' '}
-          <code>katana-logos fetch --symbols list.txt --provider url --out public/logos</code>{' '}
-          下载到自己的目录，失败的不中断，写 manifest.json。
+          A 股、港股没有开源合集，三条路，都按「代码.场所」存进应用自己的目录，失败的不中断、写 manifest.json：
+          <ul>
+            <li>
+              付费包下载后自托管：<code>companiesLogo({'{ token }'})</code>（companieslogo.com，沪{' '}
+              <code>600519.SS</code>、深 <code>000001.SZ</code>、港股 <code>0700.HK</code>
+              ，条款允许下载后自托管；北交所暂不支持），
+              <code>katana-logos fetch --provider companieslogo --token …</code>；EODHD 也有 60 多个交易所的徽标包。
+            </li>
+            <li>
+              按官网域名取：<code>logoDev({'{ token }'})</code>（Logo.dev 按代码的接口只收 NYSE /
+              NASDAQ，按域名的接口全球通用）或 <code>byDomain(模板)</code>；域名由应用的 <code>domainMap</code>
+              （「代码.场所」→ 官网域名，如数据层从公司资料里拿）给， 命令行用 <code>--domains map.json</code>。
+            </li>
+            <li>
+              自己整理：按 <code>600519.XSHG.svg</code> 命名放进自托管目录，用 <code>selfHosted</code> 读。
+            </li>
+          </ul>
+        </li>
+        <li>
+          不用 TradingView 等平台自己的 CDN 上的图（如它的 moutai.svg）：那是它的私有资源，没有授权；key
+          一律由应用给，包里不写死。
         </li>
         <li>
           代码规范化：BTCUSDT / BTC-USDT / BTC/USDT / BTCUSDT.P → BTC；600519.SH、sh600519 → 600519.XSHG；0700.HK →
@@ -478,8 +496,8 @@ function AssetsPage() {
       </ul>
       <p className="gal-note">
         与上面「不抓别人的
-        logo」的关系：仍不抓、不收进仓库；应用自己有授权（自托管或徽标服务的条款）时由它配来源。待定：要不要默认接
-        Logo.dev（要用户自己注册 key）。
+        logo」的关系：仍不抓、不收进仓库；应用自己有授权（自托管或徽标服务的条款）时由它配来源。Logo.dev
+        不默认接（2026-11-19 定），要用时应用自己给 key。
       </p>
     </>
   )
