@@ -1756,6 +1756,49 @@ export const PAGES: readonly DocPage[] = [
     ],
   },
   {
+    id: 'copy-toast',
+    group: 'feedback',
+    cardHeight: 300,
+    title: 'CopyToast 复制图与结果提示',
+    summary:
+      '图右上的相机钮把整张图拍成 PNG 写进剪贴板（ClipboardItem），剪贴板不支持或被拒就退回下载文件；结果（已复制 / 已改为下载 / 失败与原因）用一条 Toast 说。copyImage、copyText 不抛错，返回 CopyResult；提示的计时由 useCopyFeedback 管。',
+    exports: ['CopyToast', 'useCopyFeedback', 'copyImage', 'copyText', 'canCopyImage', 'elementToPng'],
+    propParts: [
+      {
+        part: 'CopyToast',
+        note: 'toast 来自 useCopyFeedback；viewport=false 只画这一条（文档与截图）。文案全在 labels（CopyToastLabels）。',
+      },
+      {
+        part: 'useCopyFeedback({ duration? })',
+        note: '返回 { toast, report, dismiss, pause, resume }：report(结果或 Promise) 插一条新的（新 key，读屏会再读），默认 2400ms 后收；pause / resume 接到 CopyToast 的 onPause / onResume，指针或焦点在上面时不收。',
+      },
+      {
+        part: 'copyImage(node, { filename?, background?, scale?, noDownload? })',
+        note: '拍 node（ChartActions 交来的是图的 figure）：逐元素抄计算样式、canvas 换成图片，放进 SVG foreignObject 画到 canvas 上，转 PNG；data-copy-image="skip" 的元素（工具条）不进图。默认倍数 devicePixelRatio（1–3），底色取最近一个不透明的祖先背景。',
+      },
+      {
+        part: 'copyText(text) / canCopyImage() / elementToPng(node)',
+        note: 'copyText 写文字（复制代码、直链）；canCopyImage 判剪贴板能不能写图（ClipboardItem、安全上下文、supports("image/png")）；elementToPng 只拍不写。',
+      },
+    ],
+    states: [
+      '已复制（copied）：ok 语气、勾，标题「已复制图片」或「已复制」。',
+      '已改为下载（downloaded）：warn 语气、下载图标，说明写原因（不支持 / 被拒）。',
+      '失败（failed）：danger 语气、警示图标；拍图失败（render）不会下载。',
+    ],
+    donts: [
+      '不要在点击处理里先 await 别的再调 copyImage：浏览器会认为不是用户手势，剪贴板被拒。',
+      '不要因为复制在进行就禁用相机钮：复制可以重来，禁用会丢焦点（modern-web-guidance copy-button）。',
+      '不要在包里造直链：复制链接只给回调，地址由宿主给。',
+    ],
+    composition:
+      'ChartActions\n  表格视图 · 导出 CSV · 复制图（相机） · 全屏\nCopyToast（ToastViewport）\n  Toast（tone 按结果）\n    ToastIcon · ToastTitle · ToastDescription · ToastClose',
+    keys: [
+      ['Tab', '走到相机钮'],
+      ['Enter / Space', '复制图'],
+    ],
+  },
+  {
     id: 'alert',
     group: 'feedback',
     cardHeight: 288,
@@ -3508,6 +3551,45 @@ export const PAGES: readonly DocPage[] = [
       ['拖动列头', '重排列（放在目标列的位置）'],
       ['菜单键 / Shift+F10', '开右键菜单（宿主的 matchKey 提供）'],
       ['Ctrl+C / Ctrl+S / Ctrl+R', '复制所选行 / 导出 CSV / 重置列（宿主的键位表）'],
+    ],
+  },
+  {
+    id: 'use-undo-stack',
+    group: 'blocks',
+    cardHeight: 240,
+    title: 'useUndoStack 撤销与重做',
+    summary:
+      '通用的撤销 / 重做栈：存整份快照，值由调用方定。push 带 kind，同种操作在 800ms 内合并成一步（拖一次滑块只撤一次）；最多 100 步；可选绑定 Mod+Z 撤销、Mod+Shift+Z 与 Ctrl+Y 重做。用于列布局、行序、分组这类「拖错了」的恢复，不进存档。',
+    exports: ['useUndoStack', 'undoInit', 'undoPush', 'undoBack', 'undoForward', 'undoKeyOf'],
+    propParts: [
+      {
+        part: 'useUndoStack(initial, { limit?, mergeMs?, hotkeys? })',
+        note: '返回 { value, push, undo, redo, reset, canUndo, canRedo, undoCount, redoCount, undoKind, redoKind }，函数引用稳定。hotkeys：true 绑在 document，给 ref 只在那块有焦点时接；焦点在输入框、文本域、contenteditable 里不接（让浏览器的文字撤销生效）。',
+      },
+      {
+        part: 'undoPush / undoBack / undoForward / undoInit',
+        note: '钩子用的纯函数（状态是 { past, present, future }），单测与不用 React 的地方直接用。撤销或重做回来的那步封住，不再跟下一次 push 合并。',
+      },
+      {
+        part: 'undoKeyOf(event, isMac)',
+        note: '一次按键是 undo、redo 还是 null：Mac 上 ⌘Z / ⇧⌘Z，别处 Ctrl+Z / Ctrl+Shift+Z / Ctrl+Y；带 Alt 的不算。',
+      },
+    ],
+    states: [
+      '没有可撤：canUndo=false，撤销钮 disabled。',
+      '撤过之后：canRedo=true；再 push 一步就清掉重做。',
+      '合并中：同 kind 连续 push，undoCount 不涨。',
+    ],
+    donts: [
+      '不要把它存进 localStorage：历史只活在这一次打开里（存档用 usePersistedState 存当前值）。',
+      '不要每次按键都 push 不带 kind：连续输入要给 kind 合并，否则撤一次只退一个字。',
+      '不要在两个地方同时绑 Mod+Z：用了 useHotkeys 注册表就关掉这里的 hotkeys。',
+    ],
+    composition: 'useUndoStack\n  { past[], present, future[] }\n  键盘：Mod+Z · Mod+Shift+Z · Ctrl+Y（可选）',
+    keys: [
+      ['Mod+Z', '撤销（Mac 是 ⌘Z）'],
+      ['Mod+Shift+Z', '重做'],
+      ['Ctrl+Y', '重做（非 Mac）'],
     ],
   },
   {

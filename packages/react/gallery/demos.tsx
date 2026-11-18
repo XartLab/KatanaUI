@@ -43,6 +43,7 @@ import {
   SvgDrawOnScrollDemo,
 } from './pages/motion-effects.tsx'
 import { RenderingSettingsDemo } from './rendering.tsx'
+import { CopyToastDemo, UseUndoStackDemo } from './pages/undo-copy.tsx'
 import { SideNavUsage } from './usage/SideNavUsage.tsx'
 import { LiveUsage } from './usage/LiveUsage.tsx'
 import { TextMeasureUsage } from './usage/TextMeasureUsage.tsx'
@@ -285,6 +286,8 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   loading: LoadingDemo,
   'measured-skeleton': MeasuredSkeletonUsage,
   toast: ToastDemo,
+  'copy-toast': CopyToastDemo,
+  'use-undo-stack': UseUndoStackDemo,
   alert: AlertDemo,
   progress: ProgressDemo,
   sheet: SheetDemo,
