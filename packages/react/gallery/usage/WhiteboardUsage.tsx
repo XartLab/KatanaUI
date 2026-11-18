@@ -49,7 +49,7 @@ export function WhiteboardUsage() {
   const [doc, setDoc] = useState(START)
   return (
     <div style={{ width: '100%', height: 360 }}>
-      <Whiteboard nodes={doc.nodes} edges={doc.edges} onChange={setDoc} labels={LABELS} />
+      <Whiteboard nodes={doc.nodes} edges={doc.edges} layout={doc.layout} onChange={setDoc} labels={LABELS} />
     </div>
   )
 }

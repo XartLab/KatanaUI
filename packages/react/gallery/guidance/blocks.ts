@@ -190,6 +190,7 @@ const blocks: GuidanceMap = {
       '橙色只给键盘焦点的四角括号（10px 长、2px 粗，外扩 4px，--k-focused-outlineColor）；选中是 --k-content-primary-foreground 的亮边。',
       '对齐吸附阈值 6px（画布坐标），辅助线 1px --k-content-secondary-foreground；粘贴每次错开 32px。',
       '撤销历史最多 100 步，存整份文档快照；拖动与改大小松手才记一步。',
+      '连接点朝向存在文档的 layout 字段（TB 缺省 / LR）：点自动布局时随 onChange 回来，调用方存下并作为 layout 传回，打开时按它还原（2026-11-18 定）。',
     ],
     avoid: [
       '只读的传导链（带证据详情），用 transmission-chain。',

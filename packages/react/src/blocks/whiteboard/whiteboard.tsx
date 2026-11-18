@@ -91,8 +91,8 @@ export type WhiteboardProps = {
   renderCard?: (node: WhiteboardCardNode) => ReactNode
   /** 选中变化（节点 id 列表）。 */
   onSelectionChange?: (nodeIds: string[]) => void
-  /** 连线与自动布局的起始方向，默认 TB。 */
-  defaultDirection?: WhiteboardDirection
+  /** 连接点朝向（文档的 layout，受控）：TB 从上到下（缺省）、LR 从左到右；点自动布局时随 onChange 回新值。 */
+  layout?: WhiteboardDirection
   /** 小地图起始开着没有，默认关。 */
   defaultMinimap?: boolean
   className?: string
@@ -121,15 +121,15 @@ function Board({
   labels,
   renderCard,
   onSelectionChange,
-  defaultDirection = 'TB',
+  layout = 'TB',
   defaultMinimap = false,
   className,
 }: WhiteboardProps) {
   const flow = useReactFlow()
   const uid = useId().replaceAll(':', '')
   const doc = useMemo<WhiteboardDoc>(
-    () => ({ nodes: [...nodes], edges: validEdges({ nodes: [...nodes], edges: [...edges] }) }),
-    [nodes, edges],
+    () => ({ nodes: [...nodes], edges: validEdges({ nodes: [...nodes], edges: [...edges] }), layout }),
+    [nodes, edges, layout],
   )
   // 最新的文档：调用方还没把上一次 onChange 送回来时（同一拍里的连续改动），以它为底。
   const latest = useRef(doc)
@@ -141,7 +141,7 @@ function Board({
   const [selectedEdges, setSelectedEdges] = useState<ReadonlySet<string>>(new Set())
   const [anchor, setAnchor] = useState<string | null>(null)
   const [measured, setMeasured] = useState<ReadonlyMap<string, { width?: number; height?: number }>>(new Map())
-  const [direction, setDirection] = useState<WhiteboardDirection>(defaultDirection)
+  const direction = layout
   const [minimap, setMinimap] = useState(defaultMinimap)
   const [guides, setGuides] = useState<{ x?: number; y?: number }>({})
   // 历史放 ref 给事件处理读最新的，另存一份 state 给按钮的可用与否。
@@ -389,7 +389,6 @@ function Board({
   }
   const fit = () => void flow.fitView({ padding: FIT_PADDING, duration: 0 })
   const relayout = (dir: WhiteboardDirection) => {
-    setDirection(dir)
     commit(layoutWhiteboard(latest.current, dir, sizeOf))
     requestAnimationFrame(() => fit())
   }

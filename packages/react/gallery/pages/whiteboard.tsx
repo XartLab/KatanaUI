@@ -97,6 +97,7 @@ export function WhiteboardDemo() {
         <Whiteboard
           nodes={doc.nodes}
           edges={doc.edges}
+          layout={doc.layout}
           onChange={setDoc}
           onSelectionChange={setPicked}
           labels={LABELS}

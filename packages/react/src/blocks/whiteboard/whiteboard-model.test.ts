@@ -63,6 +63,8 @@ describe('layoutWhiteboard', () => {
     expect(at(tb, 'inside')).toEqual({ x: 10, y: 10 })
     const lr = layoutWhiteboard(doc, 'LR')
     expect(at(lr, 'a').x).toBeLessThan(at(lr, 'b').x)
+    expect(tb.layout).toBe('TB')
+    expect(lr.layout).toBe('LR')
   })
 })
 
