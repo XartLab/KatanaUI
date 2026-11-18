@@ -200,3 +200,41 @@ export { uptimeShare, type UptimeCell, type UptimeStatus } from './uptime-bars/u
 
 // 兑换面板（改自 SmoothUI swap-panel，MIT）。
 export { SwapPanel, type SwapAsset, type SwapPanelLabels, type SwapQuote, type SwapStatus } from './swap-panel.tsx'
+
+// 下单面板、仓位计算器与仓位计算的纯函数（#96）。
+export {
+  OrderTicket,
+  type ExitTemplate,
+  type MarginMode,
+  type OrderDraft,
+  type OrderTicketAccount,
+  type OrderTicketInstrument,
+  type OrderTicketLabels,
+  type OrderTicketMarket,
+  type OrderType,
+  type StopCustody,
+} from './order-ticket.tsx'
+export {
+  PositionCalculator,
+  PositionCalculatorPanel,
+  type PositionCalculatorLabels,
+  type PositionCalculatorProps,
+} from './position-calculator.tsx'
+export {
+  breakevenPrice,
+  computeSizing,
+  contractsForCost,
+  contractsForRisk,
+  exitPnl,
+  floorToStep,
+  liquidationPrice,
+  type ExitEstimate,
+  type FeeRates,
+  type HeldPosition,
+  type InstrumentSpec,
+  type OrderSide,
+  type SizingInput,
+  type SizingIssue,
+  type SizingMode,
+  type SizingResult,
+} from './sizing-model.ts'

@@ -15,7 +15,9 @@ import { HypothesisLedgerUsage } from '../gallery/usage/HypothesisLedgerUsage.ts
 import { MeterUsage } from '../gallery/usage/MeterUsage.tsx'
 import { NewsFeedUsage } from '../gallery/usage/NewsFeedUsage.tsx'
 import { NewsReaderUsage } from '../gallery/usage/NewsReaderUsage.tsx'
+import { OrderTicketUsage } from '../gallery/usage/OrderTicketUsage.tsx'
 import { PanelFrameUsage } from '../gallery/usage/PanelFrameUsage.tsx'
+import { PositionCalculatorUsage } from '../gallery/usage/PositionCalculatorUsage.tsx'
 import { RegimeStripUsage } from '../gallery/usage/RegimeStripUsage.tsx'
 import { SeriesExplorerUsage } from '../gallery/usage/SeriesExplorerUsage.tsx'
 import { SmallMultiplesUsage } from '../gallery/usage/SmallMultiplesUsage.tsx'
@@ -44,7 +46,9 @@ const items: Record<string, React.ReactNode> = {
   meter: <MeterUsage />,
   'news-feed': <NewsFeedUsage />,
   'news-reader': <NewsReaderUsage />,
+  'order-ticket': <OrderTicketUsage />,
   'panel-frame': <PanelFrameUsage />,
+  'position-calculator': <PositionCalculatorUsage />,
   'regime-strip': <RegimeStripUsage />,
   'series-explorer': <SeriesExplorerUsage />,
   'small-multiples': <SmallMultiplesUsage />,

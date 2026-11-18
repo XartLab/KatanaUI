@@ -7452,6 +7452,50 @@ for (const theme of THEMES) {
       await expect(panel.getByRole('textbox', { name: '卖出' })).toHaveValue('25000')
     })
 
+    test('OrderTicket：按成本算张数，改杠杆成本不变，换方向清空止盈止损，按风险要止损，超可用报错', async ({
+      page,
+    }) => {
+      await open(page, theme, 'order-ticket')
+      const ticket = section(page, 'order-ticket').locator('[data-slot="order-ticket"]').first()
+      const slot = (name: string) => ticket.locator(`[data-slot="${name}"]`)
+      // 10 USDT、100 倍、开平各 0.05%：10 / 0.011 = 909.09 → 1.51 张，占用 9.97。
+      await expect(slot('ticket-size')).toContainText('1.51 Cont')
+      await expect(slot('ticket-cost')).toContainText('9.97 USDT')
+      await expect(slot('ticket-rr')).toContainText('3.17 : 1')
+      // 改杠杆到 10：成本框还是 10，张数变成 0.16（10 / 0.101 = 99.01 → 0.165 → 0.16）。
+      await slot('ticket-leverage').fill('10')
+      await expect(slot('ticket-amount')).toHaveValue('10')
+      await expect(slot('ticket-size')).toContainText('0.16 Cont')
+      await slot('ticket-leverage').fill('100')
+      // 超过可用 250：报错、提交钮禁用。
+      await slot('ticket-amount').fill('300')
+      await expect(slot('ticket-issue')).toContainText('available balance')
+      await expect(slot('ticket-submit')).toBeDisabled()
+      await slot('ticket-amount').fill('10')
+      await expect(slot('ticket-submit')).toBeEnabled()
+      // 换方向：止盈止损清空，方向标到面板上。
+      await ticket.getByRole('button', { name: 'Sell / Short' }).first().click()
+      await expect(ticket).toHaveAttribute('data-side', 'sell')
+      await expect(slot('ticket-take-profit')).toHaveValue('')
+      await expect(slot('ticket-stop-loss')).toHaveValue('')
+      // 出场模板按方向填：空头止盈在下、止损在上（1% / 0.5%）。
+      await ticket.getByRole('combobox', { name: 'Exit template' }).click()
+      await page.getByRole('option', { name: /Scalp/ }).click()
+      await expect(slot('ticket-take-profit')).toHaveValue('59400.0')
+      await expect(slot('ticket-stop-loss')).toHaveValue('60300.0')
+      // 按风险：止损填在盈利一侧报错；填对了按风险算张数（50 / (3 + 0.3 + 0.3015) = 13.88）。
+      await ticket.getByRole('combobox', { name: 'Size by' }).click()
+      await page.getByRole('option', { name: 'Risk' }).click()
+      await slot('ticket-amount').fill('50')
+      await slot('ticket-stop-loss').fill('59000')
+      await expect(slot('ticket-issue')).toContainText('profit side')
+      await slot('ticket-stop-loss').fill('60300')
+      await expect(slot('ticket-size')).toContainText('13.88 Cont')
+      // 提交：回调拿到方向与张数。
+      await slot('ticket-submit').click()
+      await expect(section(page, 'order-ticket').locator('output').first()).toContainText('sell 13.88')
+    })
+
     test('Button effect：dot-morph 悬停点拉成竖条，clip-corners 悬停切口变大，magnetic 靠近时偏向指针、离开回位', async ({
       page,
     }) => {

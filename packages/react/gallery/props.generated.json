@@ -11377,6 +11377,54 @@
       "source": "src/blocks/hypothesis-ledger/hypothesis-ledger-model.ts",
       "props": []
     },
+    "ExitEstimate": {
+      "kind": "type",
+      "source": "src/blocks/sizing-model.ts",
+      "props": [
+        {
+          "name": "price",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "pnl",
+          "type": "number",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "ExitTemplate": {
+      "kind": "type",
+      "source": "src/blocks/order-ticket.tsx",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "takeProfit",
+          "type": "number",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "stopLoss",
+          "type": "number",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
     "ExpandableCard": {
       "kind": "type",
       "source": "src/patterns/expandable-cards.tsx",
@@ -11808,6 +11856,24 @@
       "kind": "value",
       "source": "src/patterns/font-catalog.ts",
       "props": []
+    },
+    "FeeRates": {
+      "kind": "type",
+      "source": "src/blocks/sizing-model.ts",
+      "props": [
+        {
+          "name": "open",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "close",
+          "type": "number",
+          "required": true,
+          "description": ""
+        }
+      ]
     },
     "Field": {
       "kind": "component",
@@ -14972,6 +15038,30 @@
       "source": "src/quant/market-heatmap-types.ts",
       "props": []
     },
+    "HeldPosition": {
+      "kind": "type",
+      "source": "src/blocks/sizing-model.ts",
+      "props": [
+        {
+          "name": "side",
+          "type": "OrderSide",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "size",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "entryPrice",
+          "type": "number",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
     "Histogram": {
       "kind": "type",
       "source": "src/blocks/strategy-report/strategy-report-model.ts",
@@ -16160,6 +16250,30 @@
       "kind": "type",
       "source": "src/primitives/input.tsx",
       "props": []
+    },
+    "InstrumentSpec": {
+      "kind": "type",
+      "source": "src/blocks/sizing-model.ts",
+      "props": [
+        {
+          "name": "contractValue",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "lotSize",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "minSize",
+          "type": "number",
+          "required": false,
+          "description": ""
+        }
+      ]
     },
     "IpoEvent": {
       "kind": "type",
@@ -18327,6 +18441,11 @@
           "description": "How strongly the pointer pulls or pushes, from 0 to 1."
         }
       ]
+    },
+    "MarginMode": {
+      "kind": "type",
+      "source": "src/blocks/order-ticket.tsx",
+      "props": []
     },
     "MarketHeatmap": {
       "kind": "component",
@@ -22037,6 +22156,526 @@
       "source": "src/katana/matrix-orb-model.ts",
       "props": []
     },
+    "OrderDraft": {
+      "kind": "type",
+      "source": "src/blocks/order-ticket.tsx",
+      "props": [
+        {
+          "name": "side",
+          "type": "OrderSide",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "type",
+          "type": "OrderType",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "price",
+          "type": "number",
+          "required": false,
+          "description": "Limit price; undefined for a market order."
+        },
+        {
+          "name": "contracts",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "leverage",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "marginMode",
+          "type": "MarginMode",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "takeProfit",
+          "type": "number",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "stopLoss",
+          "type": "number",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "sizing",
+          "type": "SizingResult",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "OrderSide": {
+      "kind": "type",
+      "source": "src/blocks/sizing-model.ts",
+      "props": []
+    },
+    "OrderTicket": {
+      "kind": "component",
+      "source": "src/blocks/order-ticket.tsx",
+      "props": [
+        {
+          "name": "instrument",
+          "type": "OrderTicketInstrument",
+          "required": true,
+          "description": "Contract spec and display names."
+        },
+        {
+          "name": "account",
+          "type": "OrderTicketAccount",
+          "required": true,
+          "description": "Balance, fee rates, maintenance margin rate and any held position."
+        },
+        {
+          "name": "market",
+          "type": "OrderTicketMarket",
+          "required": true,
+          "description": "Last price and best bid / ask."
+        },
+        {
+          "name": "maxLeverage",
+          "type": "number",
+          "required": false,
+          "description": "Highest leverage allowed; leave out for spot and unlevered venues, which hides the leverage controls."
+        },
+        {
+          "name": "defaultLeverage",
+          "type": "number",
+          "required": false,
+          "default": "1",
+          "description": "Starting leverage."
+        },
+        {
+          "name": "marginModes",
+          "type": "readonly MarginMode[]",
+          "required": false,
+          "description": "Margin modes on offer; leave out to hide the selector."
+        },
+        {
+          "name": "defaultSide",
+          "type": "OrderSide",
+          "required": false,
+          "default": "'buy'",
+          "description": "Starting side."
+        },
+        {
+          "name": "defaultSizingMode",
+          "type": "SizingMode",
+          "required": false,
+          "default": "'cost'",
+          "description": "How the size box is read at first: cost (default), quantity or risk."
+        },
+        {
+          "name": "defaultAmount",
+          "type": "string",
+          "required": false,
+          "default": "''",
+          "description": "Starting text of the size box."
+        },
+        {
+          "name": "defaultExits",
+          "type": "{ takeProfit?: string; stopLoss?: string }",
+          "required": false,
+          "description": "Starting take-profit and stop-loss prices; giving either opens the exits section."
+        },
+        {
+          "name": "includeCloseFee",
+          "type": "boolean",
+          "required": false,
+          "default": "true",
+          "description": "Count the estimated closing fee in the cost."
+        },
+        {
+          "name": "exitTemplates",
+          "type": "readonly ExitTemplate[]",
+          "required": false,
+          "description": "Saved exit templates, as percent distances from the entry."
+        },
+        {
+          "name": "stopCustody",
+          "type": "StopCustody",
+          "required": false,
+          "default": "'venue'",
+          "description": "Where stops live: held by the venue, or triggered locally."
+        },
+        {
+          "name": "labels",
+          "type": "OrderTicketLabels",
+          "required": true,
+          "description": "All visible text and accessible names."
+        },
+        {
+          "name": "locale",
+          "type": "string",
+          "required": false,
+          "description": "BCP 47 tag for number formatting, defaults to the browser language."
+        },
+        {
+          "name": "onSubmit",
+          "type": "(order: OrderDraft) => void",
+          "required": true,
+          "description": "Called with the order when the submit button is clicked."
+        },
+        {
+          "name": "onLeverageChange",
+          "type": "(leverage: number) => void",
+          "required": false,
+          "description": "Called when the leverage changes."
+        },
+        {
+          "name": "onMarginModeChange",
+          "type": "(mode: MarginMode) => void",
+          "required": false,
+          "description": "Called when the margin mode changes."
+        },
+        {
+          "name": "onOpenCalculator",
+          "type": "() => void",
+          "required": false,
+          "description": "Called when the calculator button is clicked; leave out to hide the button."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the panel."
+        }
+      ]
+    },
+    "OrderTicketAccount": {
+      "kind": "type",
+      "source": "src/blocks/order-ticket.tsx",
+      "props": [
+        {
+          "name": "available",
+          "type": "number",
+          "required": true,
+          "description": "Funds available for new orders, in quote currency."
+        },
+        {
+          "name": "fees",
+          "type": "FeeRates",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "maintenanceMarginRate",
+          "type": "number",
+          "required": false,
+          "description": "Maintenance margin rate as a fraction; without it no liquidation price is shown."
+        },
+        {
+          "name": "position",
+          "type": "HeldPosition",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "OrderTicketInstrument": {
+      "kind": "type",
+      "source": "src/blocks/order-ticket.tsx",
+      "props": [
+        {
+          "name": "contractValue",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "lotSize",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "minSize",
+          "type": "number",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "symbol",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "base",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "quote",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "tickSize",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "sizeUnit",
+          "type": "string",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "OrderTicketLabels": {
+      "kind": "type",
+      "source": "src/blocks/order-ticket.tsx",
+      "props": [
+        {
+          "name": "side",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "buy",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "sell",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "marginMode",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "marginModes",
+          "type": "Record<MarginMode, string>",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "leverage",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "orderType",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "orderTypes",
+          "type": "Record<OrderType, string>",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "price",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "marketPrice",
+          "type": "string",
+          "required": true,
+          "description": "Shown in the price box for a market order."
+        },
+        {
+          "name": "best",
+          "type": "string",
+          "required": true,
+          "description": "The button that fills the best bid / ask."
+        },
+        {
+          "name": "sizingMode",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "sizingModes",
+          "type": "Record<SizingMode, string>",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "percent",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the percent slider."
+        },
+        {
+          "name": "available",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "exits",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "exitTemplate",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "noTemplate",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "takeProfit",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "stopLoss",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "custody",
+          "type": "Record<StopCustody, string>",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "size",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "notional",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "margin",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "fees",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "cost",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "liquidation",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "estimate",
+          "type": "string",
+          "required": true,
+          "description": "Appended to figures that are approximations."
+        },
+        {
+          "name": "breakeven",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "rewardRisk",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "averageAfter",
+          "type": "string",
+          "required": true,
+          "description": "Average entry after the fill, shown when a position is held."
+        },
+        {
+          "name": "issues",
+          "type": "Record<Exclude<SizingIssue, 'no-price' | 'no-amount'>, string>",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "submit",
+          "type": "Record<OrderSide, string>",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "calculator",
+          "type": "string",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "OrderTicketMarket": {
+      "kind": "type",
+      "source": "src/blocks/order-ticket.tsx",
+      "props": [
+        {
+          "name": "last",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "bid",
+          "type": "number",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "ask",
+          "type": "number",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "OrderType": {
+      "kind": "type",
+      "source": "src/blocks/order-ticket.tsx",
+      "props": []
+    },
     "OtpField": {
       "kind": "component",
       "source": "src/primitives/otp-field.tsx",
@@ -24598,6 +25237,327 @@
       "kind": "component",
       "source": "src/primitives/popover.tsx",
       "props": []
+    },
+    "PositionCalculator": {
+      "kind": "component",
+      "source": "src/blocks/position-calculator.tsx",
+      "props": [
+        {
+          "name": "instrument",
+          "type": "InstrumentSpec & { tickSize: number; quote: string; sizeUnit: string }",
+          "required": true,
+          "description": "Contract spec plus tick size and unit names."
+        },
+        {
+          "name": "fees",
+          "type": "FeeRates",
+          "required": true,
+          "description": "Fee rates as fractions."
+        },
+        {
+          "name": "maintenanceMarginRate",
+          "type": "number",
+          "required": false,
+          "description": "Maintenance margin rate as a fraction; without it no liquidation price is shown."
+        },
+        {
+          "name": "defaultSide",
+          "type": "OrderSide",
+          "required": false,
+          "description": "Starting side."
+        },
+        {
+          "name": "defaultEntry",
+          "type": "number",
+          "required": true,
+          "description": "Starting entry price, normally the current price."
+        },
+        {
+          "name": "defaultExit",
+          "type": "number",
+          "required": false,
+          "description": "Starting exit price."
+        },
+        {
+          "name": "defaultContracts",
+          "type": "number",
+          "required": false,
+          "description": "Starting size in contracts."
+        },
+        {
+          "name": "defaultLeverage",
+          "type": "number",
+          "required": false,
+          "description": "Starting leverage."
+        },
+        {
+          "name": "labels",
+          "type": "PositionCalculatorLabels",
+          "required": true,
+          "description": "All visible text and accessible names."
+        },
+        {
+          "name": "locale",
+          "type": "string",
+          "required": false,
+          "description": "BCP 47 tag for number formatting, defaults to the browser language."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the panel."
+        },
+        {
+          "name": "open",
+          "type": "boolean",
+          "required": true,
+          "description": "Whether the dialog is open."
+        },
+        {
+          "name": "onOpenChange",
+          "type": "(open: boolean) => void",
+          "required": true,
+          "description": "Called when the dialog asks to open or close."
+        },
+        {
+          "name": "title",
+          "type": "string",
+          "required": true,
+          "description": "Dialog title."
+        },
+        {
+          "name": "closeLabel",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the close button."
+        }
+      ]
+    },
+    "PositionCalculatorLabels": {
+      "kind": "type",
+      "source": "src/blocks/position-calculator.tsx",
+      "props": [
+        {
+          "name": "side",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "buy",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "sell",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "entry",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "exit",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "size",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "leverage",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "pnl",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "roe",
+          "type": "string",
+          "required": true,
+          "description": "Return on the margin put up."
+        },
+        {
+          "name": "liquidation",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "estimate",
+          "type": "string",
+          "required": true,
+          "description": "Appended to figures that are approximations."
+        },
+        {
+          "name": "breakeven",
+          "type": "string",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "PositionCalculatorPanel": {
+      "kind": "component",
+      "source": "src/blocks/position-calculator.tsx",
+      "props": [
+        {
+          "name": "instrument",
+          "type": "InstrumentSpec & { tickSize: number; quote: string; sizeUnit: string }",
+          "required": true,
+          "description": "Contract spec plus tick size and unit names."
+        },
+        {
+          "name": "fees",
+          "type": "FeeRates",
+          "required": true,
+          "description": "Fee rates as fractions."
+        },
+        {
+          "name": "maintenanceMarginRate",
+          "type": "number",
+          "required": false,
+          "description": "Maintenance margin rate as a fraction; without it no liquidation price is shown."
+        },
+        {
+          "name": "defaultSide",
+          "type": "OrderSide",
+          "required": false,
+          "default": "'buy'",
+          "description": "Starting side."
+        },
+        {
+          "name": "defaultEntry",
+          "type": "number",
+          "required": true,
+          "description": "Starting entry price, normally the current price."
+        },
+        {
+          "name": "defaultExit",
+          "type": "number",
+          "required": false,
+          "description": "Starting exit price."
+        },
+        {
+          "name": "defaultContracts",
+          "type": "number",
+          "required": false,
+          "default": "1",
+          "description": "Starting size in contracts."
+        },
+        {
+          "name": "defaultLeverage",
+          "type": "number",
+          "required": false,
+          "default": "1",
+          "description": "Starting leverage."
+        },
+        {
+          "name": "labels",
+          "type": "PositionCalculatorLabels",
+          "required": true,
+          "description": "All visible text and accessible names."
+        },
+        {
+          "name": "locale",
+          "type": "string",
+          "required": false,
+          "description": "BCP 47 tag for number formatting, defaults to the browser language."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the panel."
+        }
+      ]
+    },
+    "PositionCalculatorProps": {
+      "kind": "type",
+      "source": "src/blocks/position-calculator.tsx",
+      "props": [
+        {
+          "name": "instrument",
+          "type": "InstrumentSpec & { tickSize: number; quote: string; sizeUnit: string }",
+          "required": true,
+          "description": "Contract spec plus tick size and unit names."
+        },
+        {
+          "name": "fees",
+          "type": "FeeRates",
+          "required": true,
+          "description": "Fee rates as fractions."
+        },
+        {
+          "name": "maintenanceMarginRate",
+          "type": "number",
+          "required": false,
+          "description": "Maintenance margin rate as a fraction; without it no liquidation price is shown."
+        },
+        {
+          "name": "defaultSide",
+          "type": "OrderSide",
+          "required": false,
+          "description": "Starting side."
+        },
+        {
+          "name": "defaultEntry",
+          "type": "number",
+          "required": true,
+          "description": "Starting entry price, normally the current price."
+        },
+        {
+          "name": "defaultExit",
+          "type": "number",
+          "required": false,
+          "description": "Starting exit price."
+        },
+        {
+          "name": "defaultContracts",
+          "type": "number",
+          "required": false,
+          "description": "Starting size in contracts."
+        },
+        {
+          "name": "defaultLeverage",
+          "type": "number",
+          "required": false,
+          "description": "Starting leverage."
+        },
+        {
+          "name": "labels",
+          "type": "PositionCalculatorLabels",
+          "required": true,
+          "description": "All visible text and accessible names."
+        },
+        {
+          "name": "locale",
+          "type": "string",
+          "required": false,
+          "description": "BCP 47 tag for number formatting, defaults to the browser language."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the panel."
+        }
+      ]
     },
     "PowerOffSlide": {
       "kind": "component",
@@ -30096,6 +31056,190 @@
         }
       ]
     },
+    "SizingInput": {
+      "kind": "type",
+      "source": "src/blocks/sizing-model.ts",
+      "props": [
+        {
+          "name": "side",
+          "type": "OrderSide",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "price",
+          "type": "number",
+          "required": true,
+          "description": "Entry price: the limit price, or the best bid / ask for a market order."
+        },
+        {
+          "name": "leverage",
+          "type": "number",
+          "required": true,
+          "description": "1 for spot and unlevered venues."
+        },
+        {
+          "name": "fees",
+          "type": "FeeRates",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "includeCloseFee",
+          "type": "boolean",
+          "required": false,
+          "description": "Count the estimated closing fee in the cost."
+        },
+        {
+          "name": "spec",
+          "type": "InstrumentSpec",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "mode",
+          "type": "SizingMode",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "amount",
+          "type": "number",
+          "required": true,
+          "description": "The number typed in the size box: cost or risk in quote currency, or contracts."
+        },
+        {
+          "name": "takeProfit",
+          "type": "number",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "stopLoss",
+          "type": "number",
+          "required": false,
+          "description": "Required in risk mode."
+        },
+        {
+          "name": "maintenanceMarginRate",
+          "type": "number",
+          "required": false,
+          "description": "Maintenance margin rate as a fraction; without it no liquidation price is estimated."
+        },
+        {
+          "name": "available",
+          "type": "number",
+          "required": false,
+          "description": "Funds available for new orders, in quote currency."
+        },
+        {
+          "name": "position",
+          "type": "HeldPosition",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "SizingIssue": {
+      "kind": "type",
+      "source": "src/blocks/sizing-model.ts",
+      "props": []
+    },
+    "SizingMode": {
+      "kind": "type",
+      "source": "src/blocks/sizing-model.ts",
+      "props": []
+    },
+    "SizingResult": {
+      "kind": "type",
+      "source": "src/blocks/sizing-model.ts",
+      "props": [
+        {
+          "name": "contracts",
+          "type": "number",
+          "required": true,
+          "description": "Order size in contracts, floored to the lot size."
+        },
+        {
+          "name": "baseQuantity",
+          "type": "number",
+          "required": true,
+          "description": "The same size in base currency."
+        },
+        {
+          "name": "notional",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "margin",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "openFee",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "closeFee",
+          "type": "number",
+          "required": true,
+          "description": "Estimated fee to close at the entry price."
+        },
+        {
+          "name": "cost",
+          "type": "number",
+          "required": true,
+          "description": "Margin plus the fees counted in the cost."
+        },
+        {
+          "name": "breakeven",
+          "type": "number",
+          "required": true,
+          "description": "Exit price at which fees are just covered."
+        },
+        {
+          "name": "liquidationPrice",
+          "type": "number",
+          "required": false,
+          "description": "Isolated-margin approximation; undefined without a maintenance margin rate or when it cannot be reached."
+        },
+        {
+          "name": "takeProfit",
+          "type": "ExitEstimate",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "stopLoss",
+          "type": "ExitEstimate",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "rewardRisk",
+          "type": "number",
+          "required": false,
+          "description": "Net take-profit gain over net stop-loss loss."
+        },
+        {
+          "name": "after",
+          "type": "HeldPosition",
+          "required": false,
+          "description": "The position after this order fills."
+        },
+        {
+          "name": "issue",
+          "type": "SizingIssue",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
     "Skeleton": {
       "kind": "component",
       "source": "src/katana/skeleton.tsx",
@@ -32029,6 +33173,11 @@
           "description": "可跳时这一步圆点的读屏名；不写用 labels.step。"
         }
       ]
+    },
+    "StopCustody": {
+      "kind": "type",
+      "source": "src/blocks/order-ticket.tsx",
+      "props": []
     },
     "StorageLike": {
       "kind": "type",
@@ -38287,6 +39436,24 @@
       "source": "src/quant/param-scatter-model.ts",
       "props": []
     },
+    "breakevenPrice": {
+      "kind": "function",
+      "source": "src/blocks/sizing-model.ts",
+      "props": [
+        {
+          "name": "open",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "close",
+          "type": "number",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
     "buildPageRange": {
       "kind": "function",
       "source": "src/primitives/pagination.tsx",
@@ -38348,6 +39515,90 @@
           "type": "number",
           "required": false,
           "description": "年化无风险利率（小数），默认 0。"
+        }
+      ]
+    },
+    "computeSizing": {
+      "kind": "function",
+      "source": "src/blocks/sizing-model.ts",
+      "props": [
+        {
+          "name": "side",
+          "type": "OrderSide",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "price",
+          "type": "number",
+          "required": true,
+          "description": "Entry price: the limit price, or the best bid / ask for a market order."
+        },
+        {
+          "name": "leverage",
+          "type": "number",
+          "required": true,
+          "description": "1 for spot and unlevered venues."
+        },
+        {
+          "name": "fees",
+          "type": "FeeRates",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "includeCloseFee",
+          "type": "boolean",
+          "required": false,
+          "description": "Count the estimated closing fee in the cost."
+        },
+        {
+          "name": "spec",
+          "type": "InstrumentSpec",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "mode",
+          "type": "SizingMode",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "amount",
+          "type": "number",
+          "required": true,
+          "description": "The number typed in the size box: cost or risk in quote currency, or contracts."
+        },
+        {
+          "name": "takeProfit",
+          "type": "number",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "stopLoss",
+          "type": "number",
+          "required": false,
+          "description": "Required in risk mode."
+        },
+        {
+          "name": "maintenanceMarginRate",
+          "type": "number",
+          "required": false,
+          "description": "Maintenance margin rate as a fraction; without it no liquidation price is estimated."
+        },
+        {
+          "name": "available",
+          "type": "number",
+          "required": false,
+          "description": "Funds available for new orders, in quote currency."
+        },
+        {
+          "name": "position",
+          "type": "HeldPosition",
+          "required": false,
+          "description": ""
         }
       ]
     },
@@ -38429,6 +39680,78 @@
         }
       ]
     },
+    "contractsForCost": {
+      "kind": "function",
+      "source": "src/blocks/sizing-model.ts",
+      "props": [
+        {
+          "name": "open",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "close",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "contractValue",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "lotSize",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "minSize",
+          "type": "number",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "contractsForRisk": {
+      "kind": "function",
+      "source": "src/blocks/sizing-model.ts",
+      "props": [
+        {
+          "name": "open",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "close",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "contractValue",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "lotSize",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "minSize",
+          "type": "number",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
     "countConsensus": {
       "kind": "function",
       "source": "src/blocks/consensus-block/consensus-block.tsx",
@@ -38444,6 +39767,42 @@
       "source": "src/lib/chart/format/price.ts",
       "props": []
     },
+    "exitPnl": {
+      "kind": "function",
+      "source": "src/blocks/sizing-model.ts",
+      "props": [
+        {
+          "name": "contractValue",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "lotSize",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "minSize",
+          "type": "number",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "open",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "close",
+          "type": "number",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
     "falloff": {
       "kind": "function",
       "source": "src/patterns/dock.tsx",
@@ -38457,6 +39816,11 @@
     "fitsWidth": {
       "kind": "function",
       "source": "src/lib/text-measure.ts",
+      "props": []
+    },
+    "floorToStep": {
+      "kind": "function",
+      "source": "src/blocks/sizing-model.ts",
       "props": []
     },
     "focusRing": {
@@ -38799,6 +40163,11 @@
           "description": ""
         }
       ]
+    },
+    "liquidationPrice": {
+      "kind": "function",
+      "source": "src/blocks/sizing-model.ts",
+      "props": []
     },
     "litIndexes": {
       "kind": "function",
