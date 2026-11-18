@@ -66,7 +66,46 @@ const shotArgs = ['exec', 'vp', 'test', 'run', '-c', 'vitest.browser.config.ts']
 if (plan.browserTestsChanged)
   run('组件截图（改了截图测试：整套）', 'pnpm', [...shotArgs, ...browserTests.map((f) => `browser/${f}`)])
 else if (plan.names.size) {
-  const names = [...plan.names]
+  // 预算：一张约 0.6 秒，最多截 MAX_SHOTS 个件。波及更多（改了 lib、原语这类底层）就截代表件（与波及的取交集，不够再从波及的里补），
+  // 其余留给合并前的整套。
+  const MAX_SHOTS = 40
+  const REPRESENTATIVE = [
+    'button',
+    'input',
+    'select',
+    'dialog',
+    'tabs',
+    'toggle-group',
+    'tag',
+    'kbd',
+    'led',
+    'lcd',
+    'toast',
+    'chip-group',
+    'date-range-picker',
+    'data-grid',
+    'news-feed',
+    'status-bar',
+    'panel-frame',
+    'sparkline',
+    'metric-card',
+    'quote-table',
+    'watchlist',
+    'market-heatmap',
+    'event-calendar',
+    'equity-curve',
+    'treemap',
+    'ai-approval',
+  ]
+  const all = [...plan.names]
+  const names =
+    all.length <= MAX_SHOTS
+      ? all
+      : [...new Set([...REPRESENTATIVE.filter((n) => plan.names.has(n)), ...all])].slice(0, MAX_SHOTS)
+  if (names.length < all.length)
+    process.stdout.write(
+      `\n（波及 ${all.length} 个件，快速模式截其中 ${names.length} 个代表件；合并前整套截图会全截）\n`,
+    )
   const themed = changed.some((f) => /^src\/theme\/(theme|tokens)\.css$/.test(f) || f.includes('tokens'))
   const themes = themed ? 'graphite|console' : 'graphite'
   const files = browserTests.filter((f) =>
@@ -75,22 +114,38 @@ else if (plan.names.size) {
     ),
   )
   // 快速模式只截 Graphite；改了主题或令牌才两个主题都截（Console 留给合并前的整套）。
+  // Vitest 拼全名用 ' > '（「graphite > lcd」）。另写一份 JSON 报告：一张都没跑到算失败，免得名字对不上时假通过。
+  const report = join(pkgDir, 'node_modules', '.cache', 'fast-shots.json')
   run(`组件截图（${names.length} 个件 · ${themes.replace('|', ' + ')}）`, 'pnpm', [
     ...shotArgs,
     ...files.map((f) => `browser/${f}`),
     '-t',
-    `^(${themes}) (${names.join('|')})$`,
+    `(${themes}) > (${names.join('|')})$`,
+    '--reporter=default',
+    '--reporter=json',
+    `--outputFile.json=${report}`,
   ])
+  const ran = JSON.parse(readFileSync(report, 'utf8')).numPassedTests
+  if (!ran) {
+    process.stdout.write(`✗ 组件截图一张都没跑到（测试名对不上：${names.join(', ')}）\n`)
+    process.exit(1)
+  }
 }
 
 // 受影响的页：复用 vr-fast 的映射（--dry 只打印页名，不截图）。
 const dry = capture('node', ['scripts/vr-fast.mjs', '--dry', ...(has('--base') ? ['--base', base] : [])])
-const ids = [...new Set([...dry.matchAll(/(?:graphite|console)--([a-z0-9-]+)/g)].map((m) => m[1]))].filter(
+const pageIds = [...new Set([...dry.matchAll(/(?:graphite|console)--([a-z0-9-]+)/g)].map((m) => m[1]))].filter(
   (id) => !id.startsWith('shell-'),
 )
+// e2e 只跑改动的件自己那页（页 id = 文件名）：引用它的那些页，样子已由组件截图查过，行为留给合并前的全量 e2e。
+// 认不出自己那页时（改的是 model、hook……）才退回波及的页，最多 3 页。
+const own = new Set(changed.map((f) => /([a-z0-9-]+?)(?:-model)?\.(?:tsx?|css)$/.exec(f)?.[1]).filter(Boolean))
+const ownIds = pageIds.filter((id) => own.has(id))
+const ids = ownIds.length ? ownIds : pageIds.length <= 3 ? pageIds : []
 
 // 共用层改动（vr-fast 提示「共用层」）波及面太大，快速模式不跑 e2e，提示合并前跑全量。
-const shared = dry.includes('共用层')
+// 改动的件自己有页时照跑那页的 e2e（Lcd 被很多页用到也算共用层，但它自己那页的行为要查）。
+const shared = dry.includes('共用层') && !ownIds.length
 if (shared) process.stdout.write('\n（共用层改动：快速模式跳过 e2e，合并前请跑 pnpm test:e2e）\n')
 if (!has('--no-e2e') && ids.length && !shared) {
   // e2e 用例名是中文，没法按页 id 过滤；在用例源码里找提到这些页 id 的 test(...)，取它们的标题拼成 -g。
@@ -112,7 +167,7 @@ if (!has('--no-e2e') && ids.length && !shared) {
     })
   }
   if (titles.size === 0) process.stdout.write('\n（受影响的页没有专属 e2e 用例，跳过 e2e）\n')
-  else if (titles.size > 40)
+  else if (titles.size > 15)
     process.stdout.write(`\n（波及 ${titles.size} 条 e2e，太多：快速模式跳过，合并前请跑 pnpm test:e2e）\n`)
   else {
     // 标题里的模板占位（如 ${theme}）当任意字符；其余字面量转义。
@@ -128,7 +183,7 @@ if (!has('--no-e2e') && ids.length && !shared) {
     run(
       `受影响的 e2e（${titles.size} 条，dpr-1）`,
       'pnpm',
-      ['exec', 'playwright', 'test', ...files, '--project=dpr-1', '--workers=4', '-g', grep],
+      ['exec', 'playwright', 'test', ...files, '--project=dpr-1', '--workers=2', '-g', grep],
       {
         PLAYWRIGHT_BROWSERS_PATH: process.env.PLAYWRIGHT_BROWSERS_PATH ?? '/opt/pw-browsers',
       },
