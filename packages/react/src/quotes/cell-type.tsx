@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 // 表格的格内排版（#92，接 #90）：代码芯片、芯片后的全称、数字后的单位小字、按 locale 缩写的数（K/M/B ↔ 万/亿）。
 // DataGrid、QuoteTable、Watchlist、LimitLadder、EventCalendar 共用这一份，样式在 theme/cell-type.css；行高各表照旧，只换格内排版。
+// 从 @katana-ui/react/quotes（与根出口）公开，应用自己的表也用这一份。
 // 数值照 TradingView 选股器（#90 记录的 2026-11-18 实测：芯片 12px w600、面底、圆角 6、高 24；单位 10px w500 次要色，跟在数后空一格），只取版式，颜色是我们的语义 token。
 import type { ReactNode } from 'react'
 import { cn } from '../lib/cn.ts'

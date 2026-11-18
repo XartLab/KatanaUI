@@ -279,7 +279,6 @@ const LADDER_LABELS: LimitLadderLabels = {
   count: (n) => `${n} 只`,
   status: { sealed: '封住', broken: '炸板', down: '跌停', none: '没涨停' },
   columns: { name: '名称', change: '涨跌幅', firstSeal: '首封', sealAmount: '封单额', opens: '开板', industry: '行业' },
-  sealUnit: 'CNY',
   summary: { sealed: '涨停', highest: '最高板', promoteRate: '晋级率' },
   list: '连板天梯',
   empty: '这一天没有涨停',
