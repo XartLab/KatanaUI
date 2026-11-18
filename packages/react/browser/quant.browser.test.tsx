@@ -38,6 +38,8 @@ const items: Record<string, React.ReactNode> = {
 }
 
 const settle: Record<string, number> = { 'page-preloader': 1500 }
+// A 股件按 A 股的涨跌约定截：根上 data-updown="cn"（红涨绿跌，照 #78 的 cn-pack），截完还原。
+const cnUpdown = new Set(['limit-ladder'])
 
 // Freeze the clock (Date only, so timers still run): today/relative-time cells must not drift between days.
 beforeAll(() => {
@@ -49,7 +51,13 @@ afterAll(() => vi.useRealTimers())
 for (const theme of ['graphite', 'console'] as const) {
   describe(theme, () => {
     for (const [name, node] of Object.entries(items)) {
-      test(name, async () => {
+      test(name, async ({ onTestFinished }) => {
+        if (cnUpdown.has(name)) {
+          document.documentElement.dataset.updown = 'cn'
+          onTestFinished(() => {
+            delete document.documentElement.dataset.updown
+          })
+        }
         await page.viewport(960, 1800)
         await mount(
           <div
@@ -66,6 +74,12 @@ for (const theme of ['graphite', 'console'] as const) {
         )
         await new Promise((r) => setTimeout(r, settle[name] ?? 250)) // let measuring / enter transitions finish
         await expect(page.getByTestId('frame')).toMatchScreenshot(`${theme}-quant-${name}`)
+        // 日历热力图再截一张「换手」视图：序数格用 --k-heat-1…5（中性灰浓度）与配套字色。
+        if (name === 'calendar-heatmap') {
+          await page.getByRole('button', { name: '换手' }).click()
+          await new Promise((r) => setTimeout(r, 400))
+          await expect(page.getByTestId('frame')).toMatchScreenshot(`${theme}-quant-${name}-turnover`)
+        }
       })
     }
   })

@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: MIT */
-/* 权益曲线（#1931）：颜色全走 token；涨跌色不用在面上（回撤面是纹理，色是 seq-300）。 */
+/* 权益曲线（#1931）：颜色全走 token；涨跌色不用在面上（回撤面是纹理，色是跌色混 60%）。 */
 /* 橙色只给状态灯与焦点角括号：权益线与末点用 ink-100，末点不发光。 */
 .k-eq {
   --chart-accent: var(--k-content-primary-foreground);

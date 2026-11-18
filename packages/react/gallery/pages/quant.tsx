@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useState } from 'react'
 import {
   ConsensusBlock,
   countConsensus,
@@ -284,7 +284,21 @@ const LADDER_LABELS: LimitLadderLabels = {
   empty: '这一天没有涨停',
 }
 
+/** A 股件的演示挂着时根上是 data-updown="cn"（红涨绿跌，照 #78 的 cn-pack 页），离开这一页还原成原来的值。 */
+function useCnUpdown() {
+  useLayoutEffect(() => {
+    const root = document.documentElement
+    const before = root.dataset.updown
+    root.dataset.updown = 'cn'
+    return () => {
+      if (before === undefined) delete root.dataset.updown
+      else root.dataset.updown = before
+    }
+  }, [])
+}
+
 export function LimitLadderDemo() {
+  useCnUpdown()
   const [selected, setSelected] = useState<string | null>('300004')
   const [log, setLog] = useState('')
   // 实时：每 2 秒随机让某只封单量变、炸板、回封，偶尔升板换层、来一只新首板；自动化浏览器里默认暂停，用 window.__liveStep 步进。
@@ -293,7 +307,9 @@ export function LimitLadderDemo() {
     <div style={{ width: '100%', maxWidth: 640 }}>
       <div style={{ display: 'flex', gap: 8, alignItems: 'center', paddingBottom: 8 }}>
         <LiveToggle labels={{ group: '数据刷新', live: '实时', paused: '暂停' }} />
-        <span className="gal-note">封单量变化闪、炸板琥珀警示、回封与升板闪涨色、新首板蓝线高亮</span>
+        <span className="gal-note">
+          封单量变化闪、炸板琥珀警示、回封与升板闪涨色、新首板蓝线高亮；本页根上设了 data-updown="cn"（红涨绿跌）
+        </span>
       </div>
       <div style={{ height: 660 }}>
         <PanelFrame focused aria-label="连板天梯">

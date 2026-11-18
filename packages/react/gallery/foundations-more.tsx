@@ -16,6 +16,9 @@ const T = tokens as unknown as {
   motion: { tokens: Token[] }
 }
 
+/** 数据浓度档（tokens.json 的 characteristics k-heat-*），数据可视化页与语义特征页都画这一排。 */
+export const HEAT = ['k-heat-0', 'k-heat-1', 'k-heat-2', 'k-heat-3', 'k-heat-4', 'k-heat-5'] as const
+
 const Lede = ({ children }: { children: ReactNode }) => <p className="gal-lede">{children}</p>
 const Src = ({ href, children }: { href: string; children: ReactNode }) => (
   <p className="gal-fd-source">
@@ -460,9 +463,37 @@ function DataVizPage() {
       <h2>分类色（series）</h2>
       {swatches(pick('series-'))}
       <p>不同的东西（策略、品种）。最多 7 个，再多合进「其他」。</p>
-      <h2>顺序色阶（seq）</h2>
+      <h2>数据浓度（heat）</h2>
+      <div className="gal-fd-ramp">
+        {HEAT.map((name) => (
+          <span key={name}>
+            <i style={{ background: `var(--${name})` }} />
+            <small>{name}</small>
+          </span>
+        ))}
+      </div>
+      <ul className="gal-list">
+        <li>
+          有大小、没有正负的数据（热力格、直方柱、分层次序、成交量、密度、点阵面）一律用
+          --k-heat-1…5，越大越亮；--k-heat-0 是空档（没数据或零值的格）。
+        </li>
+        <li>数值：主文字色混透明 6 / 16 / 30 / 46 / 64 / 84%（heat-0…5），换主题跟着主文字色走，不另写色值。</li>
+        <li>
+          Graphite 压在 bg-100 上约 #161616 / #2f2f2f / #515151 / #797979 / #a6a6a6 / #d7d7d7；Console 约 #21201d /
+          #373531 / #55524c / #78746c / #9f9a8f / #cac4b6。
+        </li>
+        <li>
+          格上的字：heat-0…2 用 --k-heat-fg-low（主文字色，Graphite 在 heat-2 上 7.9:1），heat-3…5 用
+          --k-heat-fg-high（最底层底色，Graphite 在 heat-3 上 4.8:1、Console 4.2:1）。
+        </li>
+        <li>
+          品牌橙只给焦点角括号（#50）：顺序色阶 seq-100…600 是橙系，不再给数据用，token
+          留着只为别的项目兼容（2026-11-18，评审 #78 定）。
+        </li>
+      </ul>
+      <h2>顺序色阶（seq，不用于数据）</h2>
       {swatches(pick('seq-'))}
-      <p>有大小、没有正负（成交量、密度）。</p>
+      <p>旧的橙系顺序色阶，数据浓度改用上面的 heat；新代码不读。</p>
       <h2>发散色阶（div）</h2>
       {swatches(pick('div-'))}
       <p>有正负、有中点（涨跌幅、偏离）；跟 data-updown 走。</p>
