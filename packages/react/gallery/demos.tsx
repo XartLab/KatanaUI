@@ -9,6 +9,7 @@ import {
   SentimentCycleDemo,
   ThemeHeatMatrixDemo,
 } from './pages/cn-pack.tsx'
+import { FlagMarkDemo } from './pages/watchlist-order.tsx'
 import {
   AgentAvatarDemo,
   AiApprovalDemo,
@@ -322,6 +323,7 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   badge: BadgeDemo,
   tag: TagDemo,
   kbd: KbdDemo,
+  'flag-mark': FlagMarkDemo,
   'shortcut-recorder': ShortcutRecorderDemo,
   hotkeys: HotkeysDemo,
   'shortcut-sheet': ShortcutSheetDemo,

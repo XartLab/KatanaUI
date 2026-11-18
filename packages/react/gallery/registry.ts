@@ -849,6 +849,42 @@ export const PAGES: readonly DocPage[] = [
     keys: [],
   },
   {
+    id: 'flag-mark',
+    group: 'readouts',
+    cardHeight: 200,
+    title: 'FlagMark 行旗标',
+    summary:
+      '自选表行最左端的彩色小旗（照 TradingView 自选表，主会话 2026-11-18 实看）：点一下插上最近用过的那面、再点拔掉；右键菜单里选色；表上方一排旗标按钮按旗过滤。颜色只用状态色（danger / warn / ok / neutral），几面旗、各叫什么由调用方给；不用品牌橙。',
+    exports: ['FlagMark', 'FlagGlyph', 'FlagFilter', 'useFlags', 'setFlagIn', 'countFlags'],
+    propParts: [
+      {
+        part: 'FlagMark',
+        note: '插着是实心状态色旗，没插是空心灰旗、平时藏着（行悬停或键盘落在这一行才出）。没给 onToggle 是只读标记。',
+      },
+      { part: 'FlagFilter', note: '只出插了至少一行的旗与正在过滤的那面；按下的那面是当前过滤，再点取消。' },
+      {
+        part: 'useFlags({ flags, value?, defaultValue?, onValueChange?, filter?, defaultFilter?, onFilterChange? })',
+        note: '受控或不受控：value 是「行 id → 旗 id」。返回 flagOf、setFlag、toggle（插最近用过的那面，头一次是第一面）、clearAll、counts、filter / setFilter、filterRows(rows, rowId)、menu(id, unflagLabel)（接 DataGrid 的 rowActions 或 menu）。',
+      },
+      { part: 'setFlagIn / countFlags', note: '插旗、数旗的纯函数，存盘与服务端同步用。' },
+    ],
+    states: [
+      '插着：实心旗，颜色是这面旗的状态色。',
+      '没插：空心三级灰，平时透明；行悬停或键盘落在这一行时出现。',
+      '过滤中：过滤按钮浅底加描边，表里只剩插了这面旗的行。',
+    ],
+    donts: [
+      '不要自己造旗的颜色：只在 danger / warn / ok / neutral 里挑，名字由调用方起。',
+      '不要用品牌橙当旗色：橙只给焦点角括号。',
+      '不要只靠颜色区分旗：菜单与过滤按钮都带旗名，读屏念名字。',
+    ],
+    composition: 'FlagMark（button | span）\n  FlagGlyph（svg 燕尾旗）\nFlagFilter（group）\n  按钮 × n（旗 + 个数）',
+    keys: [
+      ['Enter / Space', '在旗上：插上 / 拔掉（DataGrid 里旗不进 Tab 顺序，键盘走行菜单）'],
+      ['Tab', '在过滤按钮间移动；Enter 切换过滤'],
+    ],
+  },
+  {
     id: 'symbol-mark',
     group: 'quotes',
     cardHeight: 370,
@@ -3788,6 +3824,13 @@ export const PAGES: readonly DocPage[] = [
       'setColumnFixed',
       'applyColumnSet',
       'activeColumnSet',
+      'useRowOrder',
+      'moveRows',
+      'moveRowsBy',
+      'normalizeOrder',
+      'expandMoving',
+      'applyRowOrder',
+      'mergeVisibleOrder',
     ],
     propParts: [
       {
@@ -3825,6 +3868,14 @@ export const PAGES: readonly DocPage[] = [
         note: '列摆法（layout）的纯函数，列头菜单、拖动重排与 ColumnPicker 用的同一份，都返回新数组。reorderColumn(layout, from, to) 拖到目标位置；moveColumn(layout, id, ±1) 跳过藏起来的列移一格；setColumnVisible 不许藏最后一列；setColumnFixed 固定的列挨着排在最前；applyColumnSet(layout, columns) 套列集；activeColumnSet(layout, sets) 返回看得见的列恰好等于的那个列集 id。',
       },
       {
+        part: 'useRowOrder({ ids, value?, defaultValue?, onValueChange?, isSection? })',
+        note: '手动行序（#77 G7，照 TradingView 自选表拖放排序）：返回 order、move(ids, before)、moveBy(ids, ±1)、reset 与 gridProps（rowOrder、onRowOrderChange，直接摊到 DataGrid 上）。要存盘把 value 接 usePersistedState。DataGrid 上配 rowSection 就有分节标题行：拖标题带整节走。',
+      },
+      {
+        part: 'moveRows / moveRowsBy / normalizeOrder / expandMoving / applyRowOrder / mergeVisibleOrder',
+        note: '行序的纯函数：moveRows(order, ids, before | null, isSection?) 挪到某行之前或最后、多选保持相对次序、拖整节时落点吸到节边界；moveRowsBy 上下一格（普通行跨过标题就换节，整节跨过相邻一节）；normalizeOrder 去掉不在的行、新行接最后；mergeVisibleOrder 过滤中挪完填回整份次序，藏起来的行不动（DataGrid 给了 rowOrder 时自己做）。',
+      },
+      {
         part: 'tableCsv(header, rows)',
         symbol: 'tableCsv',
         note: '导出的 CSV：含逗号、引号、换行的格子加引号，公式开头的补单引号。',
@@ -3857,6 +3908,8 @@ export const PAGES: readonly DocPage[] = [
       ['Esc', '清掉选择（右键菜单开着时归菜单）'],
       ['列头右键', '列头菜单：排序、固定、隐藏、左右移、重置列'],
       ['拖动列头', '重排列（放在目标列的位置）'],
+      ['拖动行', '挪行（给了 onRowOrderChange、没按列排序时；选中的几行一起走；拖到一半 Esc 取消）'],
+      ['Alt+↑ / Alt+↓', '把选中的行（没选就是键盘所在的行）上下挪一格；按列排序时读出原因'],
       ['菜单键 / Shift+F10', '开右键菜单（宿主的 matchKey 提供）'],
       ['Ctrl+C / Ctrl+S / Ctrl+R', '复制所选行 / 导出 CSV / 重置列（宿主的键位表）'],
     ],

@@ -100,6 +100,7 @@
 @import './theme/cn-timeline.css';
 @import './theme/cn-sentiment.css';
 @import './theme/row-actions.css';
+@import './theme/flag-mark.css';
 @import './theme/spark-tile.css';
 @import './theme/meter.css';
 @import './theme/flow-gauges.css';

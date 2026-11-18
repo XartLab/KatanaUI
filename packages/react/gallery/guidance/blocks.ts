@@ -66,6 +66,11 @@ const blocks: GuidanceMap = {
       '一行下面要挂一小段说明或表单（子行）。',
       '双击列头右缘或右键「适应内容」：列宽取列头与前 1000 行最宽格子，24–480px；自画列（cell、render、custom）不改宽。',
       '「全部列适应内容」优先走 onLayoutChange；只给 onResize 时 setter 要用函数式更新。',
+      '挪行（#77 G7，照 TradingView 自选表拖放排序）：给 rowOrder / onRowOrderChange（一般摊 useRowOrder(...).gridProps）；整行可拖，按下挪过 4px 才算拖，行里的按钮上按下不起拖；拖的时候别的行不动，落点画一道 2px 主文字色的线，被拖的行留原处淡到 45%，靠近上下边自动滚；拖回原处不算。做法照 modern-web-guidance drag-and-drop，跟它不同的是没有把手（照 TradingView）。',
+      '键盘挪行：Alt+↑ / Alt+↓ 把选中的行（没选就是键盘所在行）挪一格；右键菜单另有上移、下移、移到顶、移到底。TradingView 快捷键表里没有挪行的键（2026-11-18 看过），Alt+↑↓ 沿用应用自选表的写法。',
+      '按列排序时不能挪行：拖不起来，Alt+↑↓ 读出 labels.rowOrder.sorted，菜单四项灰掉并写原因。',
+      '分节标题行：rowSection(row) 返回标题就是标题行，跨满整行、次级色大写小字、上面一道分隔线；拖标题整节走，落点吸到节边界不拆别的节；把行拖到标题下面就进了那一节。折叠、个数、组内汇总还没做（待定，G7 的 GridSectionRow 建议）。',
+      '触屏不起拖（整行拖会抢走滚动）：触屏用右键菜单的上移下移。',
       '实时刷新：live 为 true 时数值类列（price、quantity、pnl、change、number）值变了闪涨跌色，文本列不闪；排序顺序变了已渲染的行平滑换位，新增的行蓝线高亮 1.2 秒；默认 false，静态表不闪。',
     ],
     avoid: [
@@ -77,6 +82,7 @@ const blocks: GuidanceMap = {
       '键盘所在行用 aria-activedescendant，整张表只占一个 Tab 停靠点。',
       '排序列带 aria-sort；列宽拖柄是带名字的 separator。',
       '读屏名取自 label。',
+      '挪完一个隐藏的 role=status 读「挪到第 n 位，共 m 行」（labels.rowOrder.moved），拖到一半 Esc 读「已取消」；只在位置真变了才读。',
     ],
   },
   'empty-state': {

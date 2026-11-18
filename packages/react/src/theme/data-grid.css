@@ -492,3 +492,48 @@
 .k-grid[data-emphasis='hero'] .k-grid-cell {
   font-size: var(--text-body-size);
 }
+
+/* 挪行（#77 G7，做法照 modern-web-guidance drag-and-drop）：拖的时候别的行不动，只在落点画一道 2px 的中性亮线（不用品牌橙，橙只给焦点角括号）；
+   被拖的行留在原处、淡到 45%，表示从哪儿拿起；拖动期间整张表是 grabbing 指针。高对比模式下线用系统 Highlight。 */
+.k-grid-row.is-movable {
+  user-select: none;
+}
+.k-grid-row.is-dragged {
+  opacity: 0.45;
+}
+.k-grid-body.is-row-dragging,
+.k-grid-body.is-row-dragging * {
+  cursor: grabbing;
+}
+.k-grid-drop {
+  position: absolute;
+  inset-inline: 0;
+  z-index: 3;
+  height: 2px;
+  margin-top: -1px;
+  background: var(--k-content-primary-foreground);
+  pointer-events: none;
+}
+@media (forced-colors: active) {
+  .k-grid-drop {
+    background: Highlight;
+  }
+}
+/* 分节标题行（rowSection）：跨满整行，次级色小号大写字，上面一道分隔线（照 TradingView 自选表的 section）。 */
+.k-grid-row.is-section {
+  border-top: 1px solid var(--k-separable-tertiary-borderColor);
+}
+.k-grid-section-cell {
+  display: flex;
+  grid-column: 1 / -1;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  padding: 0 8px;
+  overflow: hidden;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
