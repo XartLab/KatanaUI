@@ -123,9 +123,9 @@ export function SvgClipMask({
 
   return (
     <div
-      // 默认按内容收宽：裁切路径按 objectBoundingBox 算，外框被 flex / 块级撑宽时形状跟着拉宽，内容只露出左边一截。
-      // 要铺满时调用方传 w-full。
-      className={cn('relative w-fit', className)}
+      // 不定宽：裁切路径按 objectBoundingBox 算，形状跟着外框走，外框的尺寸由调用方给（className 或父级）。
+      // 加 w-fit 会压过调用方的普通类（工具类不分层），文档站的 .gal-fx-sq 就被撑成内容宽、形状被拉扁（2026-11-18 退回）。
+      className={cn('relative', className)}
       onPointerEnter={() => setIsHovered(true)}
       onPointerLeave={() => setIsHovered(false)}
       ref={ref}
