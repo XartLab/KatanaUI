@@ -132,7 +132,7 @@ beforeAll(async () => {
 
 for (const theme of ['graphite', 'console'] as const) {
   const shot = async (name: string, node: React.ReactNode) => {
-    await mount(<div style={{ display: 'contents', font: 'var(--text-body) var(--font-sans)', color: 'var(--ink-100)' }}>{node}</div>, theme)
+    await mount(node, theme)
     await expect(page.getByTestId('frame')).toMatchScreenshot(`${theme}-${name}`)
   }
   describe(theme, () => {
@@ -258,29 +258,31 @@ for (const theme of ['graphite', 'console'] as const) {
       ))
     test('context-menu', async () => {
       await mount(
-        <div style={{ display: 'contents', font: 'var(--text-body) var(--font-sans)', color: 'var(--ink-100)' }}>
-          <OpenFrame width={260} height={200}>
-            <ContextMenu modal={false}>
-              <ContextMenuTrigger asChild>
-                <div>Right-click here</div>
-              </ContextMenuTrigger>
-              <ContextMenuContent aria-label="Panel menu">
-                <ContextMenuLabel>Panel</ContextMenuLabel>
-                <ContextMenuItem>
-                  Clone panel <ContextMenuShortcut>C</ContextMenuShortcut>
-                </ContextMenuItem>
-                <ContextMenuItem disabled>Disabled item</ContextMenuItem>
-                <ContextMenuSeparator />
-                <ContextMenuCheckboxItem checked>Show grid</ContextMenuCheckboxItem>
-              </ContextMenuContent>
-            </ContextMenu>
-          </OpenFrame>
-        </div>,
+        <OpenFrame width={260} height={200}>
+          <ContextMenu modal={false}>
+            <ContextMenuTrigger asChild>
+              <div>Right-click here</div>
+            </ContextMenuTrigger>
+            <ContextMenuContent aria-label="Panel menu">
+              <ContextMenuLabel>Panel</ContextMenuLabel>
+              <ContextMenuItem>
+                Clone panel <ContextMenuShortcut>C</ContextMenuShortcut>
+              </ContextMenuItem>
+              <ContextMenuItem disabled>Disabled item</ContextMenuItem>
+              <ContextMenuSeparator />
+              <ContextMenuCheckboxItem checked>Show grid</ContextMenuCheckboxItem>
+            </ContextMenuContent>
+          </ContextMenu>
+        </OpenFrame>,
         theme,
       )
       document
-        .querySelector('[data-testid="frame"] [data-slot="context-menu-trigger"], [data-testid="frame"] .shot-open > div')!
-        .dispatchEvent(new MouseEvent('contextmenu', { bubbles: true, cancelable: true, button: 2, clientX: 20, clientY: 20 }))
+        .querySelector(
+          '[data-testid="frame"] [data-slot="context-menu-trigger"], [data-testid="frame"] .shot-open > div',
+        )!
+        .dispatchEvent(
+          new MouseEvent('contextmenu', { bubbles: true, cancelable: true, button: 2, clientX: 20, clientY: 20 }),
+        )
       await new Promise((r) => setTimeout(r, 500))
       await expect(page.getByTestId('frame')).toMatchScreenshot(`${theme}-context-menu`)
     })
@@ -551,7 +553,14 @@ for (const theme of ['graphite', 'console'] as const) {
     test('splitter', () =>
       shot(
         'splitter',
-        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 0.4fr) 8px minmax(0, 0.6fr)', width: 420, height: 120 }}>
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'minmax(0, 0.4fr) 8px minmax(0, 0.6fr)',
+            width: 420,
+            height: 120,
+          }}
+        >
           <div style={{ background: 'var(--bg-200)' }}>40%</div>
           <Splitter
             axis="row"

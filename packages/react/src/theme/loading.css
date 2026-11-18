@@ -116,13 +116,15 @@
 }
 
 /* 量出来的骨架（MeasuredSkeleton，skullet 的主题变量）：底色同 .k-loading-line 的 bg-200，不闪不脉冲（animation none），
-   文字条圆角取同一个 radius-control，图片与头像、按钮的圆角跟随内容自己的。出现前（is-wait）不可见层照样占位，只是不露骨架条。 */
+   文字条圆角取同一个 radius-control，图片与头像、按钮的圆角跟随内容自己的。出现前（is-wait）整块不可见、照样占位：不露骨架条，也不露卡片自己的边框底色。 */
 /* 骨架条画在 skullet 的 Shadow DOM 里，外面的边框与点阵纹进不去；只能给底色：用 k-loading-line 描边那档 line-200，bg-200 在面板底上几乎看不见。 */
 .k-measured {
   --skullet-base: var(--k-separable-bold-borderColor);
   --skullet-animation: none;
   --skullet-radius: var(--radius-control);
 }
-.k-measured.is-wait [skullet-layer] {
+/* 等待期整块不可见、只占位：只藏骨架条（[skullet-layer]）不够，skullet 让容器「保留表面」，带边框、底色的卡片
+   会先露出一个空框，500ms 后才填进骨架条。整块 visibility: hidden，量版照样进行（量的是盒子，不看可见性）。 */
+.k-measured.is-wait {
   visibility: hidden;
 }

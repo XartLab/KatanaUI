@@ -2,7 +2,7 @@
 // 改自 SmoothUI perspective-text-3d（https://github.com/educlopez/smoothui ，MIT，© 2024 Eduardo Calvo）
 // 文字摆在一个 3D 平面上，行或词沿 Z 轴错开深度，整个平面随滚动进度、指针位置倾斜，或固定一个角度。
 import { motion, useScroll, useSpring, useTransform } from 'motion/react'
-import { useEffect, useRef, useState, type RefObject } from 'react'
+import { Fragment, useEffect, useRef, useState, type RefObject } from 'react'
 import { cn } from '../../lib/cn.ts'
 
 export type PerspectiveTextDriver = 'scroll' | 'pointer' | 'static'
@@ -88,7 +88,8 @@ export function PerspectiveText3D({
     driver === 'pointer' ? { rotateX: tilt.x, rotateY: tilt.y } : driver === 'static' ? { rotateX, rotateY } : undefined
   return (
     <div
-      className={cn('inline-block', className)}
+      // w-fit：透视原点是这个框的中心。框被 flex / grid 拉宽时原点偏到文字外，前后错开的词往一边挤、叠成一团；按文字收宽原点才落在文字中间。
+      className={cn('inline-block w-fit', className)}
       data-driver={driver}
       data-slot="perspective-text-3d"
       ref={wrapper}
@@ -105,17 +106,19 @@ export function PerspectiveText3D({
         transition={SPRING}
       >
         {segments.map((segment, index) => (
-          <div
-            aria-hidden="true"
-            key={`${index}-${segment}`}
-            style={{
-              display: split === 'lines' ? 'block' : 'inline-block',
-              transform: `translateZ(${(index - mid) * depth}px)`,
-            }}
-          >
-            {segment}
-            {split === 'words' && index < segments.length - 1 ? ' ' : null}
-          </div>
+          <Fragment key={`${index}-${segment}`}>
+            {/* 词间空格放在 inline-block 外面：放在里面是行尾空白，排版时被吞掉，词就贴在一起（原件同样的问题）。 */}
+            {split === 'words' && index > 0 ? ' ' : null}
+            <div
+              aria-hidden="true"
+              style={{
+                display: split === 'lines' ? 'block' : 'inline-block',
+                transform: `translateZ(${(index - mid) * depth}px)`,
+              }}
+            >
+              {segment}
+            </div>
+          </Fragment>
         ))}
       </motion.div>
     </div>

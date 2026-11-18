@@ -25,14 +25,11 @@ import { LiquidMetalUsage } from '../gallery/usage/LiquidMetalUsage.tsx'
 import { AuroraCurtainUsage } from '../gallery/usage/AuroraCurtainUsage.tsx'
 import { OrbUsage } from '../gallery/usage/OrbUsage.tsx'
 import { MorphSurfaceUsage } from '../gallery/usage/MorphSurfaceUsage.tsx'
-import { GooeyPopoverUsage } from '../gallery/usage/GooeyPopoverUsage.tsx'
 import { GlowHoverCardUsage } from '../gallery/usage/GlowHoverCardUsage.tsx'
 import { GlassCardUsage } from '../gallery/usage/GlassCardUsage.tsx'
 import { TiltCardUsage } from '../gallery/usage/TiltCardUsage.tsx'
 import { FolderRevealUsage } from '../gallery/usage/FolderRevealUsage.tsx'
 import { PixelBrushCanvasUsage } from '../gallery/usage/PixelBrushCanvasUsage.tsx'
-import { AsciiRenderUsage } from '../gallery/usage/AsciiRenderUsage.tsx'
-import { DitherImageUsage } from '../gallery/usage/DitherImageUsage.tsx'
 import { DrawingCursorUsage } from '../gallery/usage/DrawingCursorUsage.tsx'
 import { HolographicFoilUsage } from '../gallery/usage/HolographicFoilUsage.tsx'
 import { EmbossSurfaceUsage } from '../gallery/usage/EmbossSurfaceUsage.tsx'
@@ -40,7 +37,6 @@ import { MagneticFieldUsage } from '../gallery/usage/MagneticFieldUsage.tsx'
 import { BorderBeamUsage } from '../gallery/usage/BorderBeamUsage.tsx'
 import { SvgDrawOnScrollUsage } from '../gallery/usage/SvgDrawOnScrollUsage.tsx'
 import { ParallaxLayersUsage } from '../gallery/usage/ParallaxLayersUsage.tsx'
-import { ScrollImageRevealUsage } from '../gallery/usage/ScrollImageRevealUsage.tsx'
 import { CursorImageTrailUsage } from '../gallery/usage/CursorImageTrailUsage.tsx'
 import { SvgClipMaskUsage } from '../gallery/usage/SvgClipMaskUsage.tsx'
 import { ProgressiveBlurUsage } from '../gallery/usage/ProgressiveBlurUsage.tsx'
@@ -67,29 +63,7 @@ const settle = () => new Promise((r) => setTimeout(r, 800))
 
 for (const theme of ['graphite', 'console'] as const) {
   const shot = async (name: string, node: React.ReactNode, open = false) => {
-    await mount(
-      <div
-        style={{
-          display: 'contents',
-          font: 'var(--text-body) var(--font-sans)',
-          color: 'var(--ink-100)',
-        }}
-      >
-        {/* the app's base.css resets box-sizing; the browser page has no such reset */}
-        <style>{'*,*::before,*::after{box-sizing:border-box}'}</style>
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 12,
-            width: 420,
-          }}
-        >
-          {node}
-        </div>
-      </div>,
-      theme,
-    )
+    await mount(<div style={{ display: 'flex', flexDirection: 'column', gap: 12, width: 420 }}>{node}</div>, theme)
     if (name === 'svg-draw-on-scroll' || name === 'scroll-image-reveal')
       document.querySelector<HTMLElement>('[data-testid="frame"] [style*="overflow-y"]')!.scrollTop = 100
     if (open) document.querySelector<HTMLElement>('[data-testid="frame"] button')?.click()
