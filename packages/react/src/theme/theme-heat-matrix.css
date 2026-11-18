@@ -1,0 +1,126 @@
+/* SPDX-License-Identifier: MIT */
+/* ThemeHeatMatrix 题材热度矩阵（#11）。色阶与 CalendarHeatmap 的换手视图同一套 seq-200…600（大小用 seq，不用涨跌色上面积）；
+   0 只与没有数据都不着色（容器底色），没有数据的格不写字。格内字色按档换：0–1 档主文字色，2–4 档（亮橙）换深色字，两个主题都过 4.5:1。
+   表格手感取 TradingView 的列表：无衬线 + tabular-nums、28px 行、极淡分隔；选中格 1px 主色描边，键盘焦点 1px 分隔粗线。 */
+.k-theme-heat {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+  padding: var(--space-3) var(--inset-x);
+  color: var(--k-content-primary-foreground);
+  font: var(--text-data) var(--font-sans);
+}
+.k-theme-heat-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.k-theme-heat-row {
+  display: grid;
+  grid-template-columns: var(--heat-cols);
+  gap: 2px;
+  align-items: stretch;
+}
+.k-theme-heat-row.is-head {
+  height: 20px;
+  align-items: center;
+  color: var(--k-content-secondary-foreground);
+  font: 500 11px/14px var(--font-sans);
+}
+.k-theme-heat-date {
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+.k-theme-heat-date[data-latest] {
+  color: var(--k-content-primary-foreground);
+}
+.k-theme-heat-name {
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  min-width: 0;
+  padding-right: 8px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.k-theme-heat-cell {
+  --k-cell: var(--k-container-secondary-background);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 28px;
+  border-radius: 2px;
+  background: var(--k-cell);
+  color: var(--k-content-primary-foreground);
+  cursor: pointer;
+  outline: none;
+}
+.k-theme-heat-cell[data-seq='0'],
+.k-theme-heat i[data-seq='0'] {
+  --k-cell: var(--seq-200);
+}
+.k-theme-heat-cell[data-seq='1'],
+.k-theme-heat i[data-seq='1'] {
+  --k-cell: var(--seq-300);
+}
+.k-theme-heat-cell[data-seq='2'],
+.k-theme-heat i[data-seq='2'] {
+  --k-cell: var(--seq-400);
+}
+.k-theme-heat-cell[data-seq='3'],
+.k-theme-heat i[data-seq='3'] {
+  --k-cell: var(--seq-500);
+}
+.k-theme-heat-cell[data-seq='4'],
+.k-theme-heat i[data-seq='4'] {
+  --k-cell: var(--seq-600);
+}
+.k-theme-heat-cell:is([data-seq='2'], [data-seq='3'], [data-seq='4']) {
+  color: var(--k-selectable-bold-foreground-selected);
+}
+.k-theme-heat-count {
+  font: 600 13px/16px var(--font-sans);
+  font-variant-numeric: tabular-nums;
+}
+.k-theme-heat-rank {
+  position: absolute;
+  top: 1px;
+  right: 3px;
+  font: 500 9px/11px var(--font-sans);
+  font-variant-numeric: tabular-nums;
+}
+.k-theme-heat-cell:hover {
+  box-shadow: inset 0 0 0 1px var(--k-separable-bold-borderColor);
+}
+.k-theme-heat-cell.is-selected {
+  box-shadow: inset 0 0 0 1px var(--k-content-primary-foreground);
+}
+.k-theme-heat-cell:focus-visible {
+  outline: 1px solid var(--k-separable-bold-borderColor);
+  outline-offset: 1px;
+}
+.k-theme-heat-legend {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  align-self: flex-end;
+  color: var(--k-content-secondary-foreground);
+  font: 500 11px/14px var(--font-sans);
+}
+.k-theme-heat-legend span {
+  padding: 0 4px;
+}
+.k-theme-heat-legend i {
+  width: 14px;
+  height: 8px;
+  border-radius: 1px;
+  background: var(--k-cell);
+}
+.k-theme-heat-empty {
+  margin: auto;
+  padding: var(--space-6);
+  color: var(--k-content-secondary-foreground);
+}

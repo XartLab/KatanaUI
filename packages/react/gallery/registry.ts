@@ -1303,6 +1303,159 @@ export const PAGES: readonly DocPage[] = [
     ],
   },
   {
+    id: 'sentiment-gauge',
+    group: 'quant',
+    cardHeight: 380,
+    title: 'SentimentGauge 情绪周期读数（A 股）',
+    summary:
+      '开盘啦「市场情绪」对照（#11）：左上大号情绪分（28px 600 无衬线、tabular-nums）与昨日差（涨跌 tone）、当前阶段（类别色方块 + 名字）；右上 0–100 刻度仪表（Meter gauge，语气取当前阶段的 tone）；中间近 N 日走势线（ink 主色 1.5px，50 分处一根虚中线），线下叠阶段带与图例（RegimeStrip，series 类别色，今天的阶段标「当前」）；底下一排小线图（SmallMultiples，同步十字线，每项自己的写法）。情绪分、阶段的划分与阈值都由调用方算好传，件里不带口径。',
+    exports: ['SentimentGauge'],
+    propParts: [
+      {
+        part: 'SentimentGauge',
+        note: '数据形状 SentimentDay、SentimentStage、SentimentMetric 见类型；文字全在 labels。',
+      },
+    ],
+    states: [
+      '默认：读数、仪表、走势、阶段带、分项五块都在；分项不传就不画那一排。',
+      '昨日差：涨取 --k-tone-up、跌取 --k-tone-down（根上 data-updown="cn" 时红涨绿跌），取整后为 0 不着色；不够两天写「—」。',
+      '分项小线图的值统一主文字色：涨停数、亏钱数这类不是涨跌，不按序列方向着色（盖掉 SmallMultiples 的默认）。',
+      '选阶段：给了 onStageSelect，图例每项是开关，选中后带上别的阶段降到 25% 不透明。',
+      '空：days 为空数组时只画一行空态文字。',
+    ],
+    donts: [
+      '不要在件里算情绪分或判阶段；口径由调用方定并写明依据（[T] 的 75/25 是第三方示例，不能当口径）。',
+      '阶段色只用 series 类别色，不用涨跌色表示「好坏」。',
+      '情绪分按 0 到 100 传：仪表刻度固定 0 / 25 / 50 / 75 / 100。',
+    ],
+    composition:
+      'SentimentGauge\n  读数（role=status）：名字 | 情绪分 + 昨日差 | 阶段\n  Meter（gauge）\n  走势：标题与起止日 | 折线 + 末点 | RegimeStrip（带 + 图例）\n  SmallMultiples（分项）',
+    keys: [['← / →', '在分项小线图上逐日扫读（SmallMultiples）']],
+  },
+  {
+    id: 'theme-heat-matrix',
+    group: 'quant',
+    cardHeight: 300,
+    title: 'ThemeHeatMatrix 题材热度矩阵（A 股）',
+    summary:
+      '开盘啦「题材库 / 板块强度」对照（#11）：行是题材、列是近 5 到 10 个交易日（最新一列的日期主文字色），格内大字写涨停只数、右上角 9px 写当日名次；底色是 seq 五档（与 CalendarHeatmap 换手视图同一条规则：档位 = ⌊只数 / 全表最大 × 5⌋，封顶 4），0 只与没有数据不着色。表格手感照 TradingView 列表：28px 格高、2px 格距、tabular-nums。题材次序、只数、名次都由调用方给，件不排序、不算热度。',
+    exports: ['ThemeHeatMatrix'],
+    propParts: [
+      {
+        part: 'ThemeHeatMatrix',
+        note: '一行是 ThemeHeatRow { id, name, cells }，cells 跟 dates 一一对应，没有数据给 null。',
+      },
+    ],
+    states: [
+      '字色按档换：0–1 档主文字色，2–4 档（亮橙）换深色字（selectable-bold-foreground-selected），Graphite 与 Console 都过 4.5:1。',
+      '悬停：格子内描 1px 分隔粗线；选中：内描 1px 主文字色；键盘焦点：外描 1px，偏移 1px。',
+      '没有数据的格不写字，读屏读调用方写的「没有数据」句子。',
+      '空：rows 或 dates 为空时画空态文字。',
+    ],
+    donts: [
+      '不要用涨跌色给只数上底色：大小用 seq，涨跌色只给方向。',
+      '不要把名次当只数排序依据塞进件里，次序由调用方定。',
+    ],
+    composition:
+      'ThemeHeatMatrix\n  grid\n    列头行：题材 | 日期 × N\n    行：题材名（rowheader）| 格 × N（只数 + 名次）\n  图例：少 | 五档 | 多',
+    keys: [
+      ['← → ↑ ↓', '在格子间移动'],
+      ['Home / End', '到这一行的第一天 / 最新一天'],
+      ['Enter / Space', '选中当前格（onSelect）'],
+    ],
+  },
+  {
+    id: 'reason-group-list',
+    group: 'quant',
+    cardHeight: 360,
+    title: 'ReasonGroupList 涨停原因分组（A 股）',
+    summary:
+      '复盘啦「涨停原因」对照（#11）：顶上一排原因芯片（ChipGroup，多选，不选是全部，芯片写家数）；下面是 DataGrid（treegrid）：组头行（展开箭头、粗体原因、次要灰的家数与「最高 N 板」，底色 selectable 组底色），展开后是组内个股（徽标 + 代码 + 名称、连板、涨跌幅、首封、封单、成交额、其他原因 Tag）。分组与次序照调用方给的，件不归类、不排序。',
+    exports: ['ReasonGroupList'],
+    propParts: [
+      {
+        part: 'ReasonGroupList',
+        note: '分组 ReasonGroup { id, reason, items }，个股 ReasonStock 见类型；金额写法 formatAmount 由调用方传（亿 / 万）。',
+      },
+    ],
+    states: [
+      '展开 / 收起：点组头或在组头上按 Enter；箭头朝右是收起，展开转 90°（snappy 弹簧）；组头带 aria-expanded。',
+      '筛选：选了芯片只留这些原因的组；清除钮在有选中时出现。',
+      '涨跌幅走 ChangeText（跟 data-updown 换红绿）；没有封单、成交额写「—」。',
+      '空：筛完没有组时画空态文字。',
+    ],
+    donts: [
+      '不要在件里按原因归类个股；一只票属于几个原因由调用方定，别的原因放 tags。',
+      '金额不要写死「亿」，由 formatAmount 传。',
+    ],
+    composition:
+      'ReasonGroupList\n  ChipGroup（原因筛选）\n  DataGrid（treegrid，presorted）\n    组头行（level 1）：箭头 | 原因 | 家数 | 最高板\n      个股行（level 2）：徽标 + 代码 + 名称 | 连板 | 涨跌幅 | 首封 | 封单 | 成交额 | 其他原因',
+    keys: [
+      ['↑ / ↓', '在行间移动（DataGrid）'],
+      ['Enter', '组头：收起 / 展开；个股：打开（onSelect）'],
+      ['← / →', '在芯片间移动（ChipGroup）'],
+    ],
+  },
+  {
+    id: 'board-strength-rank',
+    group: 'quant',
+    cardHeight: 300,
+    title: 'BoardStrengthRank 板块强度排名（A 股）',
+    summary:
+      '开盘啦「板块强度」对照（#11）：DataGrid 一行一个板块，按调用方给的强度从高到低（同分保持传入次序）：名次（粗体）与名次变化（▲n 升、▼n 降、新上榜，跟上一期名次比）、板块名、强度数值、行内强度线（Sparkline line 画法、96 × 20、不交互）、涨停只数、涨跌幅。强度口径不在件里。',
+    exports: ['BoardStrengthRank'],
+    propParts: [
+      {
+        part: 'BoardStrengthRank',
+        note: '板块 BoardStrength { id, name, strength, series?, prevRank?, limitUps?, change? }；名次与变化由件按 strength 排出。',
+      },
+    ],
+    states: [
+      '名次变化：升 --k-tone-up、降 --k-tone-down（跟 data-updown），持平与新上榜次要灰；文字带 ▲ / ▼，不只靠颜色。',
+      '强度线颜色按头尾涨跌（Sparkline 默认），少于两个点写「—」。',
+      '选中：selected 那一行左侧强调条（DataGrid 的 isOpened）。',
+      'limit：只显示前 n 名。',
+    ],
+    donts: [
+      '不要在件里合成强度（权重表现 + 涨停数怎么加权由调用方定并写成可检验的规则）。',
+      '行内强度线不要开交互，一行一根时扫读归表格。',
+    ],
+    composition:
+      'BoardStrengthRank\n  DataGrid（presorted）\n    行：名次 + 变化 | 板块 | 强度 | Sparkline | 涨停 | 涨跌幅',
+    keys: [
+      ['↑ / ↓', '在行间移动（DataGrid）'],
+      ['Enter', '打开当前行（onSelect）'],
+    ],
+  },
+  {
+    id: 'net-buy-bar',
+    group: 'quant',
+    cardHeight: 400,
+    title: 'NetBuyBar 龙虎榜净买居中条（A 股）',
+    summary:
+      '开盘啦「实时 / 深度龙虎榜」对照（#11）：一行一只上榜票：徽标与代码、涨跌幅、零轴居中的净买条（净买往右、净卖往左，6px 高）、净买额（带正负号）、买入与卖出合计，行下一行小字写上榜原因；点开一行摊开席位对照：左买入前几、右卖出前几，每席一根 4px 条（按这只票的席位最大额）与金额，机构席位带「机构」描边 Tag。零轴条与对称刻度照 AttributionBars 的模型（刻度 = 最大 |净买| 向上取到一位有效数字）。',
+    exports: ['NetBuyBar'],
+    propParts: [
+      {
+        part: 'NetBuyBar',
+        note: '上榜个股 DragonTigerItem、席位 DragonSeat 见类型；净买额由调用方给（买入 − 卖出），件不重算。',
+      },
+    ],
+    states: [
+      '颜色：净买与买入席位 --k-tone-up，净卖与卖出席位 --k-tone-down；根上 data-updown="cn" 时就是买红卖绿。条用 60% 混透明，数字实色。',
+      '展开：行底换选中色、左侧 2px 主文字色竖条，aria-expanded 报状态；没有席位数据的行点了不展开。',
+      '刻度说明写在列头中间（labels.scale），只写一处。',
+      '空：items 为空时画空态文字。',
+    ],
+    donts: ['买卖颜色不要写死红绿，走 tone（data-updown 切）。', '不要把席位排序塞进件里，席位次序照调用方给的。'],
+    composition:
+      'NetBuyBar\n  列头：名称 | 涨跌幅 | 刻度说明 | 净买 | 买入 | 卖出\n  list\n    行（button，aria-expanded）：徽标 + 代码 + 名称 | 涨跌幅 | 零轴条 | 净买 | 买入 | 卖出\n    上榜原因\n    席位对照：买入前五 | 卖出前五（席位名 + 机构 Tag | 条 | 金额）',
+    keys: [
+      ['Tab', '在行间移动'],
+      ['Enter / Space', '展开或收起这一行的席位'],
+    ],
+  },
+  {
     id: 'market-heatmap',
     group: 'quant',
     cardHeight: 700,

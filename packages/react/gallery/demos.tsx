@@ -2,6 +2,13 @@
 import type { ComponentType } from 'react'
 import { NewsReaderDemo, ScreenerDemo } from './pages/screener.tsx'
 import {
+  BoardStrengthRankDemo,
+  NetBuyBarDemo,
+  ReasonGroupListDemo,
+  SentimentGaugeDemo,
+  ThemeHeatMatrixDemo,
+} from './pages/cn-pack.tsx'
+import {
   AgentAvatarDemo,
   AiApprovalDemo,
   AiArtifactDemo,
@@ -298,6 +305,11 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'pnl-text': PnlTextDemo,
   'event-calendar': EventCalendarDemo,
   'limit-ladder': LimitLadderDemo,
+  'theme-heat-matrix': ThemeHeatMatrixDemo,
+  'sentiment-gauge': SentimentGaugeDemo,
+  'reason-group-list': ReasonGroupListDemo,
+  'board-strength-rank': BoardStrengthRankDemo,
+  'net-buy-bar': NetBuyBarDemo,
   'market-heatmap': MarketHeatmapDemo,
   'rating-text': RatingTextDemo,
   'technical-rating': TechnicalRatingDemo,

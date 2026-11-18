@@ -200,3 +200,34 @@ export { uptimeShare, type UptimeCell, type UptimeStatus } from './uptime-bars/u
 
 // 兑换面板（改自 SmoothUI swap-panel，MIT）。
 export { SwapPanel, type SwapAsset, type SwapPanelLabels, type SwapQuote, type SwapStatus } from './swap-panel.tsx'
+
+// A 股面板（#11，开盘啦对照）：口径（情绪分、强度、阶段）由调用方传，件只画；涨跌色走 --k-tone-*（data-updown="cn" 红涨绿跌）。
+export {
+  SentimentGauge,
+  type SentimentDay,
+  type SentimentGaugeLabels,
+  type SentimentGaugeProps,
+  type SentimentMetric,
+  type SentimentStage,
+} from './sentiment-gauge/sentiment-gauge.tsx'
+export {
+  ReasonGroupList,
+  type ReasonGroup,
+  type ReasonGroupListLabels,
+  type ReasonGroupListProps,
+  type ReasonStock,
+} from './reason-group-list/reason-group-list.tsx'
+export {
+  BoardStrengthRank,
+  type BoardStrength,
+  type BoardStrengthRankLabels,
+  type BoardStrengthRankProps,
+  type RankedBoard,
+} from './board-strength-rank/board-strength-rank.tsx'
+export {
+  NetBuyBar,
+  type DragonSeat,
+  type DragonTigerItem,
+  type NetBuyBarLabels,
+  type NetBuyBarProps,
+} from './net-buy-bar/net-buy-bar.tsx'
