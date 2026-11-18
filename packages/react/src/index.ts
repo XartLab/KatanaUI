@@ -223,6 +223,7 @@ export {
   type QuoteTableRow,
 } from './quotes/quote-table.tsx'
 export { plainPrice, rowTone, type FormatPrice, type QuoteRow } from './quotes/quote-row.ts'
+export { CodeChip, CodeName, CompactValue, UnitValue } from './quotes/cell-type.tsx'
 export {
   Combobox,
   ComboboxContent,

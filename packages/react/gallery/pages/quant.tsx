@@ -302,6 +302,7 @@ export function LimitLadderDemo() {
             <LimitLadder
               levels={ladderLevels(sim)}
               labels={LADDER_LABELS}
+              locale="zh-CN"
               selected={selected}
               onSelect={(item) => setSelected(item.code)}
               rowActions={(item) => demoSymbolActions(item.code, setLog)}
