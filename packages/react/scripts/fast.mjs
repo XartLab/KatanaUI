@@ -2,11 +2,12 @@
 // SPDX-License-Identifier: MIT
 // 快速模式（用户 2026-11-18：「速度太慢，得要 fast 模式」）：平时改完只查改动波及的那一圈，全量留到合并前（pnpm test、pnpm test:e2e、pnpm vr）。
 // 步骤：改动文件的格式与 lint → 类型检查（全量，约 9 秒）→ 受影响的单测（vitest --changed）→ 受影响页的 e2e（按页 id 在用例源码里挑）→ vr:fast。
-// 用法：pnpm fast [--base <ref>] [--no-e2e] [--no-vr]；任何一步失败就停，退出码非 0。
+// 用法：pnpm fast [--base <ref>] [--no-e2e] [--no-vr] [--pages]（--pages：有组件截图也照跑整页 vr:fast）；任何一步失败就停，退出码非 0。
 import { spawnSync } from 'node:child_process'
 import { readFileSync, readdirSync } from 'node:fs'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { coveredByShots } from './shot-coverage.mjs'
 
 const pkgDir = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const args = process.argv.slice(2)
@@ -117,6 +118,9 @@ if (!has('--no-e2e') && ids.length && !shared) {
     )
   }
 }
-if (!has('--no-vr'))
+// 改动全落在有组件截图的件上：组件截图已经比过像素，整页 vr:fast（先构建整站，约 50 秒）留给合并前的全量。
+if (!has('--no-vr') && !has('--pages') && coveredByShots(pkgDir, changed))
+  process.stdout.write('\n改动都在有组件截图的件上：跳过整页 vr:fast（--pages 强制跑；合并前全量 pnpm vr 会跑）。\n')
+else if (!has('--no-vr'))
   run('视觉回归（vr:fast）', 'node', ['scripts/vr-fast.mjs', ...(has('--base') ? ['--base', base] : [])])
 process.stdout.write('\n快速模式通过。合并前再跑一次全量：pnpm test && pnpm test:e2e && pnpm vr\n')
