@@ -2,7 +2,7 @@
 import { selfHosted } from '@katana-ui/logos'
 import { LogoProvider } from '@katana-ui/logos/react'
 import { web3icons } from '@katana-ui/logos/web3icons'
-import { useState } from 'react'
+import { type ReactNode, useState } from 'react'
 import {
   BadgeGroup,
   DotMatrix,
@@ -242,26 +242,36 @@ const DEMO_LOGO_PROVIDERS = [
   selfHosted({ baseUrl: `${import.meta.env.BASE_URL}logos-demo`, assetClasses: ['stock'] }),
 ]
 
+/** 演示行：标签与图标之间 8px、图标之间 6px（写在行内，组件截图里没有文档站的 preview.css 也一样）。 */
+function LogoRow({ name, children }: { name: string; children: ReactNode }) {
+  return (
+    <div className="gal-row" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+      <span className="gal-cap">{name}</span>
+      <span style={{ display: 'inline-flex', flexWrap: 'wrap', alignItems: 'center', gap: 6 }}>{children}</span>
+    </div>
+  )
+}
+
 /** 包在 LogoProvider 里的 SymbolMark：没给 src，按来源逐个试，都失败退回字母。 */
 export function SymbolMarkLogosDemo() {
   return (
     <LogoProvider providers={DEMO_LOGO_PROVIDERS}>
-      <Row name="加密币 · web3icons">
+      <LogoRow name="加密币 · web3icons">
         {['BTCUSDT', 'ETH-USDT', 'SOL/USDT', 'BNBUSDT.P', 'XRP-PERP', 'DOGEUSDT'].map((symbol) => (
           <SymbolMark key={symbol} symbol={symbol} />
         ))}
         <SymbolMark symbol="BTCUSDT" name="Bitcoin" size="md" />
-      </Row>
-      <Row name="股票 · 自托管">
+      </LogoRow>
+      <LogoRow name="股票 · 自托管">
         <SymbolMark symbol="600519.SH" name="示例甲" />
         <SymbolMark symbol="00700.HK" name="示例乙" />
         <SymbolMark symbol="AAPL.O" name="示例丙" />
         <SymbolMark symbol="600519.SH" name="示例甲" size="md" />
-      </Row>
-      <Row name="找不到 → 字母">
-        <SymbolMark symbol="601318" venue="XSHG" name="示例丁" />
+      </LogoRow>
+      <LogoRow name="找不到 → 字母">
+        <SymbolMark symbol="601318.SH" name="示例丁" />
         <SymbolMark symbol="NOSUCHCOIN-USDT" />
-      </Row>
+      </LogoRow>
       <p className="gal-note">
         股票的图是文档站自绘的示意图（public/logos-demo/600519.XSHG.svg 这类「代码.场所」命名），不是这些公司的标志。
       </p>

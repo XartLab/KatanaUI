@@ -6,8 +6,9 @@
 // 没有 LogoProvider 时行为与以前一样（只认 src）。
 // 字母用界面无衬线（--font-sans，照 TradingView 的字母圆标，2026-11-17 改），整数字号 12（直径 28 以上 16，在 symbol-mark.css 里按 data-size 取 token）、不加字距。
 // 尺寸统一 sm（18，行高 28 的一行）| md（28，卡片），2026-11-18；热力图格子、新闻芯片这类要别的直径的仍可传数。
-// 字母规则：代码里的拉丁字母取前 2 个（大写）；代码里没有字母（A 股的 600519、港股的 00700）取名称首字；都没有取代码首字符。
-import type { AssetClass } from '@katana-ui/logos'
+// 字母规则：代码先过 normalizeSymbol（@katana-ui/logos）去掉场所与计价币（600519.SH → 600519、BINANCE:BTCUSDT → BTC，#95），
+// 再取拉丁字母前 2 个（大写）；代码里没有字母（A 股的 600519、港股的 00700）取名称首字；都没有取代码首字符。
+import { type AssetClass, normalizeSymbol } from '@katana-ui/logos'
 import { useLogo } from '@katana-ui/logos/react'
 import { useState } from 'react'
 import { cn } from '../lib/cn.ts'
@@ -68,6 +69,11 @@ export function SymbolMark({
           ...(name ? { name } : {}),
         },
   )
+  // 字母按规整后的代码取：带场所后缀的 A 股（600519.SH）不再写成「SH」。
+  const letters = symbolMarkLetters(
+    code ? normalizeSymbol(code, { ...(venue ? { venue } : {}), ...(assetClass ? { assetClass } : {}) }).code : code,
+    name,
+  )
   const image = own ? src : logo.src
   const showImage = image !== undefined && (!own || failed !== src)
   return (
@@ -89,7 +95,7 @@ export function SymbolMark({
           {...(own ? {} : { onLoad: logo.onLoad })}
         />
       ) : (
-        <span aria-hidden="true">{symbolMarkLetters(code, name)}</span>
+        <span aria-hidden="true">{letters}</span>
       )}
     </span>
   )
