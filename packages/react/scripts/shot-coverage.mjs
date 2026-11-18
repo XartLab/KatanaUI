@@ -15,6 +15,8 @@ const importsOf = (file) =>
   [...readFileSync(file, 'utf8').matchAll(IMPORT)].map((m) => resolve(dirname(file), m[1] ?? m[2]))
 // 从桶文件（src/index.ts 这类）引的名字：`import { Lcd, Kbd } from '../../src/index'`。
 const NAMED_IMPORT = /import\s*(?:type\s*)?\{([^}]*)\}\s*from\s*['"](\.[^'"]*)['"]/g
+// `export { Dialog, DialogContent }` 这种列表式导出（原语多半这样写）。
+const LIST = /export\s*\{([^}]*)\}(?!\s*from)/g
 const DECL = /export\s+(?:default\s+)?(?:function|const|class)\s+([A-Z]\w*)/g
 
 /** Component files the screenshot tests render (package-relative): imported by a browser test, directly or through gallery demo files. */
@@ -25,8 +27,15 @@ export function shotTargets(pkgDir) {
   const declared = new Map()
   for (const f of listFiles(srcDir))
     if (f.endsWith('.tsx') && !f.endsWith('.test.tsx'))
-      for (const m of readFileSync(f, 'utf8').matchAll(DECL))
-        if (!declared.has(m[1])) declared.set(m[1], relative(pkgDir, f))
+      for (const m of [...readFileSync(f, 'utf8').matchAll(DECL), ...readFileSync(f, 'utf8').matchAll(LIST)])
+        for (const name of m[1].split(',').map((n) =>
+          n
+            .trim()
+            .replace(/^type\s+/, '')
+            .split(/\s+as\s+/)
+            .at(-1),
+        ))
+          if (/^[A-Z]\w*$/.test(name) && !declared.has(name)) declared.set(name, relative(pkgDir, f))
   const out = new Set()
   const seen = new Set()
   // 截图测试常直接引 gallery 的 *Usage.tsx 演示：穿过 browser/ 与 gallery/ 的文件，落到 src 的第一个文件就是被截的件。
@@ -113,10 +122,12 @@ export function shotPlan(pkgDir, changed) {
           seen.add(d)
           queue.push(d)
         }
+    // 被截过的件按名字跑；没截过的件只有在它是「顶层」（src 里没有别的件再引它）时才算缺口——
+    // 内部子件（grid-cells、market-heatmap-cell……）由引它的父件的截图覆盖。
     for (const f of seen)
       if (!f.endsWith('.tsx')) continue
       else if (targets.has(f)) names.add(basename(f, '.tsx'))
-      else covered = false
+      else if (!(dependents.get(f) ?? []).length) covered = false
   }
   return { covered, names, browserTestsChanged: changed.some((f) => f.startsWith('browser/')) }
 }
