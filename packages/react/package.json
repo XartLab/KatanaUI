@@ -88,7 +88,8 @@
     "build": "tsc -p tsconfig.build.json",
     "prepare": "pnpm run build",
     "a2ui:catalog": "node scripts/a2ui-catalog.mjs",
-    "fast": "node scripts/fast.mjs"
+    "fast": "node scripts/fast.mjs",
+    "full": "pnpm test && vp test run -c vitest.browser.config.ts && pnpm vr && playwright test --workers=2"
   },
   "dependencies": {
     "@chenglou/pretext": "1.0.0",

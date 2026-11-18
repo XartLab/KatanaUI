@@ -18,7 +18,8 @@
     "vr:fast": "pnpm --filter @katana-ui/react vr:fast",
     "vr:update": "pnpm --filter @katana-ui/react vr:update",
     "vr:approve": "pnpm --filter @katana-ui/react vr:approve",
-    "vr:summary": "pnpm --filter @katana-ui/react vr:summary"
+    "vr:summary": "pnpm --filter @katana-ui/react vr:summary",
+    "full": "pnpm --filter @katana-ui/react full"
   },
   "engines": {
     "node": ">=22.13"

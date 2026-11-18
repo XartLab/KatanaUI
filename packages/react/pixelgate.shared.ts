@@ -1,8 +1,24 @@
 // SPDX-License-Identifier: MIT
 // 视觉回归（pixelgate，自研、MIT、本地跑）的共用部分：主配置与高清配置都从这里取，免得两份各写一遍。
 // 用法与取舍写在文档站「开发接入 → 视觉回归」一节；这里只留代码里该有的「为什么」。
+import { readdirSync } from 'node:fs'
 import type { Config, PageSnap } from 'pixelgate-cli'
 import { PAGES } from './gallery/registry.ts'
+
+/**
+ * 有组件截图的页（browser/*.browser.test.tsx 里有以页 id 为名的截图，2026-11-18 起）：件的像素由组件截图管
+ * （直接在浏览器里渲染件，几秒），整页回归不再重复截它的预览区。整页回归只留：没有组件截图的页（多件组合的演示、
+ * 基础与说明页）、Paper 浮层页、文档站外壳。全量从 423 张降下来，见文档站「开发接入 → 视觉回归」。
+ */
+// 截过的件名取自组件截图的基线文件名（<测试文件>_graphite-[目录-]<件名>.png），不靠在测试源码里搜字串（'color' 这类会误中样式键）。
+const shotNames = new Set(
+  readdirSync(new URL('./.pixelgate-unit/baseline/chromium-linux/', import.meta.url)).flatMap((file) => {
+    const name = /_graphite-(.+)\.png$/.exec(file)?.[1]
+    // 有的文件给名字加了目录前缀（graphite-quotes-price-tag），也有件名本身以目录开头（ai-approval）：两种都收。
+    return name === undefined ? [] : [name, name.replace(/^(?:katana|blocks|quotes|quant|ai|gaps)-/, '')]
+  }),
+)
+export const SHOT_COVERED: ReadonlySet<string> = new Set(PAGES.map((page) => page.id).filter((id) => shotNames.has(id)))
 
 export type ThemeId = 'graphite' | 'console' | 'paper'
 
@@ -51,7 +67,10 @@ export const EXCLUDED: Readonly<Record<string, string>> = {
 }
 
 /** 组件页：只截预览容器 [data-gallery="<页 id>"]，不带侧栏与顶栏，别处改了不会让所有页一起红。 */
-export const componentPages = (theme: ThemeId, ids: readonly string[] = PAGES.map((page) => page.id)): PageSnap[] =>
+export const componentPages = (
+  theme: ThemeId,
+  ids: readonly string[] = PAGES.map((page) => page.id).filter((id) => !SHOT_COVERED.has(id)),
+): PageSnap[] =>
   ids
     .filter((id) => !(id in EXCLUDED))
     .map((id) => ({

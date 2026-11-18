@@ -115,30 +115,44 @@ import { EquityCurve } from '@katana-ui/react/quant'`}
       />
       <h2>视觉回归</h2>
       <p>
-        用自研的 pixelgate（MIT，本地跑，没有云服务）把文档站每个组件页的预览截下来，跟提交进仓库的基线逐像素比；
-        有变化就退出码 1，给 CI、推送前和 worker 自查用。
+        用自研的 pixelgate（MIT，本地跑，没有云服务）做两层像素比对，都跟提交进仓库的基线逐像素比，有变化就退出码 1：
+        组件截图（Vitest
+        浏览器模式里直接渲染件，每个件一张，两个主题）管件本身；整页回归管文档站外壳和没有组件截图的页。
       </p>
       <Table
         head={['规则', '做法']}
         rows={[
           [
             '平时改了组件',
-            <>{code('pnpm vr:fast')}：只截这次改动影响到的页（graphite、dpr 1、开发服务器），改一个组件约半分钟</>,
+            <>
+              {code('pnpm fast')}：一分钟内跑完（超过就算 bug）。只截改动的件和引用它的件（Graphite，最多 30
+              个，波及更多截代表件）； 改动全有组件截图时不跑整页
+            </>,
           ],
           [
-            '合并前、改了共用层',
+            '组件截图',
             <>
-              {code('pnpm vr')}：全量，两个主题 × 每个组件页（1440x900、dpr 1），Paper（浅色）只截 11
-              个带阴影的浮层页（tooltip、popover、
-              hover-card、dropdown-menu、select、combobox、multi-select、dialog、sheet、toast、switch，浅底上阴影最显眼），外加文档站外壳三张与
-              dpr 2 的几页关键页；改了令牌、theme 样式、lib、primitives 一定跑它
+              {code('browser/*.browser.test.tsx')}，测试名等于件的文件名（lcd.tsx → lcd）；基线在
+              .pixelgate-unit/baseline/。 新件要配一张，不然快速模式认不出，只能退回整页
             </>,
+          ],
+          [
+            '整页回归（pnpm vr）',
+            <>
+              有组件截图的页不再截预览区（2026-11-18：423 张降到 30 张，5 分半降到 35
+              秒）；留下没有组件截图的页、Paper（浅色）的 11 个浮层页（阴影在浅底上最显眼）、文档站外壳三张与 dpr 2
+              的几页关键页
+            </>,
+          ],
+          [
+            '全量在哪跑',
+            'CI 上并行：单测、组件截图、整页回归、e2e（切 4 片）各一个 job；runner 由仓库变量 KATANAUI_RUNNER 指到自建机，没设用 GitHub 托管机。本地只在必要时跑全量',
           ],
           ['看什么', '只看报告（.pixelgate/report/index.html）里 changed 的图，并排、滑块、红色标出变化的像素'],
           ['确认是预期改动', <>{code('pnpm vr:approve')} 收为新基线，连同代码一起提交；不预期就改代码</>],
           [
             'CI',
-            '只在 PR 上跑 pnpm vr --ci：不写基线，缺基线算失败；失败时 report 作为 artifact 上传，摘要写进 job summary',
+            '整页回归只在 PR 上跑 pnpm vr --ci：不写基线，缺基线算失败；失败时 report 作为 artifact 上传，摘要写进 job summary',
           ],
           [
             '基线在哪',

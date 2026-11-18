@@ -560,7 +560,8 @@ body {
   gap: 8px;
 }
 .gal-fd-values dt {
-  color: var(--ink-400);
+  /* 主题名是要读的标签：ink-4 是装饰灰（约 2.5:1），改用次要字色（≥4.5:1）。整页 a11y 扫出来的（2026-11-18）。 */
+  color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-sans-small);
 }
 .gal-fd-values dd {

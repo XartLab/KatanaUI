@@ -34,6 +34,8 @@ KatanaUI 是设计系统的**源头仓库**（2026-11-14 用户定，#2）：tok
 
 Vite+ 用足（2026-11-18）：根目录直接 `pnpm fast` / `pnpm vr` / `pnpm vr:fast`（转给 @katana-ui/react）。类型检查、单测、文档自检是 `vite.config.ts` 里 `run.tasks` 的带缓存任务（`vp run tsc` / `unit` / `docs-check`），输入没变秒命中。提交时 `.vite-hooks/pre-commit` 跑 `vp staged`，只对暂存文件 `vp check --fix`；新克隆后跑一次 `vp hooks enable`。语法直接写最新的：tsconfig target/lib 都是 ESNext，`Object.groupBy`、`Array.prototype.toSorted/findLast`、`using`、`Promise.withResolvers` 等随便用，不写兼容垫片。
 
+全量门禁在 CI 上并行跑（单测、组件截图、整页回归、e2e 切 4 片，runner 由仓库变量 KATANAUI_RUNNER 指到自建机）；本地全量是 `pnpm full`，约 20 分钟，只在必要时跑。整页回归不再截有组件截图的页（423 → 30 张）。
+
 快速模式的预算是 60 秒（2026-11-18）：`pnpm fast` 超过一分钟就算 bug，它会以非 0 退出并点名最慢的一步——去修那一步，不要调大预算。现在的做法：单测不隔离（isolate: false）；组件截图（browser/*.browser.test.tsx，Vitest 浏览器模式 + pixelgate）只截 Graphite、最多 30 个件，波及更多时截代表件；e2e 只跑改动的件自己那页、最多 15 条；改动全有组件截图时跳过整页 vr:fast。新组件要配组件截图，测试名等于文件名（lcd.tsx → 'lcd'），否则快速模式认不出、只能退回整页。
 
 并行派发的规矩（2026-11-18，G1–G6 一轮用了约 7 小时的教训）：这台机器 2 核 7G，同时最多 2 个 worker；worker 只跑 `pnpm fast`，不跑全量 e2e / vr（全量只在合并后跑一次）；worker 不提交生成物（registry.json、props.generated.json、design-system/**、a2ui v1.json、tokens.css），合并后统一重新生成；按文件边界切批（共享的 tokens.json、ui.css、registry.ts、index.ts 由我在合并时一次改），批次间先约定好新 token 名，免得各造一份。
