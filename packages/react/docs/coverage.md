@@ -56,7 +56,7 @@
 | EquityCurve | 图表 | 量化 | `EquityCurve` | 已做 | quant 层的 EquityCurve（时间轴、基准线、镜像回撤、对数轴、概览刷选条、表格视图）；应用的回放概览页已改用它（#1931） |
 | EventStudy | 研究 | 面板 | — | 没做 | 研究层，还没有对应面板 |
 | EventTimeline | 发现 | 积木 | `EventTimeline` | 已做 | 件（按显示时区分天、新的在前）已做，发现区的面板还没有接它（#1919 不动 src/） |
-| ExitStrategy | 交易 | 面板 | `src/panels/order-ticket` | 部分 | 下单面板里有止盈止损，自动退出两种模式没有 |
+| ExitStrategy | 交易 | 面板 | `src/panels/order-ticket`、`OrderTicket` | 部分 | 下单面板里有止盈止损，自动退出两种模式没有 |
 | ExposureTimeline | 盈亏 | 面板 | — | 没做 | 盈亏，还没有对应面板 |
 | FactorDecay | 研究 | 面板 | — | 没做 | 研究层，还没有对应面板 |
 | FactorExposure | 资产管理 | 面板 | — | 没做 | 资产管理，还没有对应面板 |

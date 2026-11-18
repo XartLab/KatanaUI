@@ -177,6 +177,8 @@ import {
   TextareaDemo,
   ToggleDemo,
 } from './pages/smoothui-forms.tsx'
+import { OrderTicketUsage } from './usage/OrderTicketUsage.tsx'
+import { PositionCalculatorUsage } from './usage/PositionCalculatorUsage.tsx'
 import { AccordionDemo, TabsDemo } from './pages/layout.tsx'
 import {
   GravityLettersDemo,
@@ -478,6 +480,8 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'morph-toggle': MorphToggleDemo,
   'morph-icon': MorphIconDemo,
   'swap-panel': SwapPanelDemo,
+  'order-ticket': OrderTicketUsage,
+  'position-calculator': PositionCalculatorUsage,
   avatar: AvatarDemo,
   breadcrumb: BreadcrumbDemo,
   pagination: PaginationDemo,
