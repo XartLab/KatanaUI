@@ -9441,7 +9441,7 @@ button.k-sysmon-link-body:focus-visible {
   --skullet-radius: var(--radius-control);
 }
 
-.k-measured.is-wait [skullet-layer] {
+.k-measured.is-wait {
   visibility: hidden;
 }
 
