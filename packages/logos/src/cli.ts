@@ -28,6 +28,8 @@ import {
   templateValues,
 } from './resolve.ts'
 import { byDomain, companiesLogoApiUrl, logoDev, pickCompaniesLogoImage } from './services.ts'
+import { parseMarketList } from './sync/list.ts'
+import { DEFAULT_SYNC_CONFIG, runSync, type SyncConfig } from './sync/sync.ts'
 import { web3ExchangeSvg, web3TokenSvg } from './web3icons.ts'
 
 export const CRYPTOCURRENCY_ICONS_TEMPLATE =
@@ -225,25 +227,80 @@ export async function runFetch(options: FetchOptions, deps: Deps = { fetch, log:
   return { ok, failed, manifest }
 }
 
+function parseFlags(rest: readonly string[]): Map<string, string[]> {
+  const flags = new Map<string, string[]>()
+  for (let i = 0; i < rest.length; i++) {
+    const flag = rest[i]!
+    if (!flag.startsWith('--')) continue
+    const next = rest[i + 1]
+    const value = next !== undefined && !next.startsWith('--') ? (i++, next) : 'true'
+    flags.set(flag.slice(2), [...(flags.get(flag.slice(2)) ?? []), value])
+  }
+  return flags
+}
+
 const USAGE = `用法：katana-logos fetch --symbols <清单> --provider <${CLI_PROVIDERS.join('|')}> --out <目录>
   [--token <key>] [--domains <代码.场所→域名.json>] [--template <地址模板>] [--param 名=值 ...] [--ext svg|png] [--concurrency 4] [--strict]
   模板占位：{code} {code_lower} {mic} {venue} {key} {quote} {symbol} {name} {domain}，加 --param 给的。`
 
-/** 命令行入口；返回退出码。--strict 时有失败就返回 1，默认只汇报。 */
-export async function main(argv: readonly string[], deps?: Deps): Promise<number> {
+const SYNC_USAGE = `用法：katana-logos sync --list <全市场清单.csv|.json> --out <目录>
+  [--config katana-logos.config.json] [--refresh <天>] [--concurrency 6] [--domains <代码.场所→域名.json>]
+  清单列：symbol,venue(ISO MIC),name,domain[,assetClass]。没给 --config 时读当前目录的 katana-logos.config.json，再没有用免费默认（官网图标 → Wikidata → web3icons）。`
+
+type SyncCliDeps = Deps & {
+  now?: () => Date
+  sleep?: (ms: number) => Promise<void>
+  env?: Record<string, string | undefined>
+}
+
+async function sync(flags: Map<string, string[]>, deps: SyncCliDeps): Promise<number> {
+  const one = (name: string) => flags.get(name)?.at(-1)
+  const list = one('list')
+  const out = one('out')
+  if (!list || !out) {
+    deps.log(SYNC_USAGE)
+    return 2
+  }
+  const configPath = one('config') ?? 'katana-logos.config.json'
+  let config: SyncConfig = DEFAULT_SYNC_CONFIG
+  try {
+    config = JSON.parse(await readFile(configPath, 'utf8')) as SyncConfig
+  } catch (error) {
+    if (one('config')) throw error
+  }
+  const domains = one('domains')
+  const refresh = one('refresh')
+  const concurrency = one('concurrency')
+  const report = await runSync(
+    {
+      items: parseMarketList(await readFile(list, 'utf8')),
+      out,
+      config,
+      ...(domains ? { domainMap: JSON.parse(await readFile(domains, 'utf8')) as Record<string, string> } : {}),
+      ...(refresh ? { refreshDays: Number(refresh) } : {}),
+      ...(concurrency ? { concurrency: Number(concurrency) } : {}),
+    },
+    {
+      fetch: deps.fetch,
+      log: deps.log,
+      now: deps.now ?? (() => new Date()),
+      ...(deps.sleep ? { sleep: deps.sleep } : {}),
+      ...(deps.env ? { env: deps.env } : {}),
+    },
+  )
+  return report.coverage.total.total > 0 || report.skipped > 0 ? 0 : 1
+}
+
+/** 命令行入口；返回退出码。fetch 的 --strict 时有失败就返回 1，默认只汇报。 */
+export async function main(argv: readonly string[], deps?: SyncCliDeps): Promise<number> {
   const log = deps?.log ?? console.log
   const [command, ...rest] = argv
+  if (command === 'sync') return sync(parseFlags(rest), deps ?? { fetch, log })
   if (command !== 'fetch') {
-    log(USAGE)
+    log(`${USAGE}\n\n${SYNC_USAGE}`)
     return command === undefined || command === '--help' ? 0 : 2
   }
-  const flags = new Map<string, string[]>()
-  for (let i = 0; i < rest.length; i++) {
-    const flag = rest[i]
-    if (!flag.startsWith('--')) continue
-    const value = rest[i + 1] !== undefined && !rest[i + 1].startsWith('--') ? rest[++i] : 'true'
-    flags.set(flag.slice(2), [...(flags.get(flag.slice(2)) ?? []), value])
-  }
+  const flags = parseFlags(rest)
   const one = (name: string) => flags.get(name)?.at(-1)
   const symbols = one('symbols')
   const provider = one('provider') as FetchOptions['provider'] | undefined

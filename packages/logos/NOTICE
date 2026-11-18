@@ -20,3 +20,8 @@ service the app configures with its own key.
 2. cryptocurrency-icons 0.18.1（https://github.com/spothq/cryptocurrency-icons ，CC0-1.0）
    不是依赖，也不拷贝：命令行 `katana-logos fetch --provider cryptocurrency-icons` 从 jsDelivr 下载它的 SVG 到应用的目录。
    Not a dependency; the CLI can download its SVGs from jsDelivr into the app's own directory.
+
+3. katana-logos sync 用到的外部服务（不带进本包，只在应用自己跑命令时请求，图存进应用的目录）：
+   Wikidata 查询服务（数据 CC0；徽标文件在 Wikimedia Commons，各自的许可与商标权见文件页）、各公司官网的图标、
+   Google favicon 服务；可选 companieslogo.com、LogoKit（只热链）。不抓任何行情平台的徽标 CDN。
+   External services used only when the app runs `katana-logos sync`; nothing is bundled.

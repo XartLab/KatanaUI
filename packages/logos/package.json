@@ -17,6 +17,7 @@
     "lib",
     "bin",
     "LICENSE",
+    "katana-logos.config.example.json",
     "NOTICE",
     "README.md"
   ],

@@ -62,6 +62,30 @@ katana-logos fetch --symbols a-shares.txt --provider domain --template 'https://
 
 `web3icons` exports from the installed package and needs no network. `cryptocurrency-icons` (CC0) downloads from jsDelivr. `--domains` is a JSON object from `code.MIC` to company domain. The file extension follows the response content type unless `--ext` is given; `--token` values never reach `manifest.json`.
 
+## Sync the whole market
+
+`katana-logos sync` fills the app's logo directory for a whole market list in one run (A-shares, US, Hong Kong and crypto in one file):
+
+```
+katana-logos sync --list market.csv --out public/logos                  # free sources only
+katana-logos sync --list market.csv --out public/logos --config katana-logos.config.json --refresh 30 --concurrency 6
+katana-logos sync --list market.csv --out public/logos --domains domains.json
+```
+
+`market.csv` has the header `symbol,venue,name,domain[,assetClass]` (`venue` is the ISO MIC; `XBSE` is accepted for Beijing and normalised to `BJSE`), or is a JSON array of the same objects.
+
+Sources are tried in the configured order. The default (no config file) is free only:
+
+1. `website`: the company site (the list's `domain` first, then Wikidata P856). The SVG icon, then `apple-touch-icon`, then the largest `icon` by `sizes`, then `/apple-touch-icon.png`, `/favicon.ico` (largest frame), and finally Google's favicon service.
+2. `wikidata`: logo image (P154), looked up by exchange (P414, matched on the exchange's MIC property, default P7534) and ticker (P249), up to 200 per SPARQL batch.
+3. `web3icons`: coins, from the installed package.
+
+Optional: `companieslogo` (paid; its terms allow download and self-hosting), `pack` (a paid logo pack already on disk, e.g. EODHD), `logokit` (hotlink only: the URL goes into the manifest's `hotlink` field with `{token}` in place of the key; nothing is downloaded). Keys are written as `env:NAME` in the config. See `katana-logos.config.example.json`.
+
+Every image passes a quality filter: smaller than 32px, Google's 16px globe placeholder, wider than 2.2:1 (wordmarks), or blank / one flat colour is rejected with a reason, and the next candidate is tried. Output: images named `code.MIC.ext` (`600519.XSHG.svg`, `crypto/BTC.svg`), `manifest.json` (source, size, time and rejection reasons per symbol), and `coverage.json` / `coverage.md` by market (XSHG, XSHE, BJSE, US, XHKG, crypto): totals, hits, share by source, rejections by reason, and the missing list. Re-runs skip symbols whose sources are unchanged and not older than `--refresh` days; failed requests are retried twice; one symbol failing never stops the run.
+
+Not done on purpose: scraping logos from any platform's CDN (TradingView, Eastmoney, Xueqiu, Futu and others). Those are the platforms' own assets and their terms do not allow it.
+
 ## Licence
 
 MIT. See `NOTICE` for third-party sources. Company logos are trademarks: host them yourself under your own licence, or use a logo service under its terms.
