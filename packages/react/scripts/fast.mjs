@@ -140,7 +140,13 @@ const pageIds = [...new Set([...dry.matchAll(/(?:graphite|console)--([a-z0-9-]+)
 // e2e 只跑改动的件自己那页（页 id = 文件名）：引用它的那些页，样子已由组件截图查过，行为留给合并前的全量 e2e。
 // 认不出自己那页时（改的是 model、hook……）才退回波及的页，最多 3 页。
 const own = new Set(changed.map((f) => /([a-z0-9-]+?)(?:-model)?\.(?:tsx?|css)$/.exec(f)?.[1]).filter(Boolean))
-const ownIds = [...own] // 不经 vr-fast 的页单：共用层时它只列代表页；用例里没提到这个 id 的自然挑不出来
+// 页 id 取文档站目录（registry.ts 里的 id: '…'），不经 vr-fast 的页单（共用层时它只列代表页）。
+const registryIds = new Set(
+  [...readFileSync(join(pkgDir, 'gallery', 'registry.ts'), 'utf8').matchAll(/^\s+id: '([a-z0-9-]+)',/gm)].map(
+    (m) => m[1],
+  ),
+)
+const ownIds = [...own].filter((id) => registryIds.has(id))
 const ids = ownIds.length ? ownIds : pageIds.length <= 3 ? pageIds : []
 
 // 共用层改动（vr-fast 提示「共用层」）波及面太大，快速模式不跑 e2e，提示合并前跑全量。
