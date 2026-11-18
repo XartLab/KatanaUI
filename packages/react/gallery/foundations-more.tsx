@@ -476,6 +476,13 @@ function AssetsPage() {
               （「代码.场所」→ 官网域名，如数据层从公司资料里拿）给， 命令行用 <code>--domains map.json</code>。
             </li>
             <li>
+              只能热链：<code>logoKit({'{ token }'})</code>（LogoKit，
+              <code>img.logokit.com/ticker/…&amp;fallback=404</code>，没标回 404 由我们退回字母）；免费档
+              64px、要放署名链接、条款不许下载自托管（命令行拒绝它），每个应用 / 用户用自己的 publishable key。A
+              股后缀默认 <code>.SZ</code> / <code>.SS</code>（它的文档没写，待拿 key 实测后再定，可用{' '}
+              <code>suffix</code> 改），北交所不映射。
+            </li>
+            <li>
               自己整理：按 <code>600519.XSHG.svg</code> 命名放进自托管目录，用 <code>selfHosted</code> 读。
             </li>
           </ul>

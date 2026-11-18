@@ -10,6 +10,7 @@ One place to resolve logos for symbols, companies, coins and venues. Code plus l
 - **Logo-service presets** (URLs and requests only; the app supplies the key):
   - `companiesLogo({ token })`: companieslogo.com API. Shanghai `600519.SS`, Shenzhen `000001.SZ`, Hong Kong `0700.HK`, US bare tickers; Beijing (BJSE) is not supported yet. The API returns JSON, so the candidate is a loader. Its terms allow downloading and self-hosting, so prefer the CLI.
   - `logoDev({ token })`: Logo.dev. With a domain, `img.logo.dev/{domain}` (works worldwide, including A-shares); US stocks also get `img.logo.dev/ticker/{code}` (NYSE / NASDAQ only).
+  - `logoKit({ token, suffix })`: LogoKit, `img.logokit.com/ticker/{symbol}?token=…&fallback=404` (404 instead of its monogram, so we draw letters). US bare tickers; A-shares get a suffix from `suffix` (default `.SZ` / `.SS`, not documented by LogoKit, to be verified with a real key); Beijing is not mapped. Hotlink only: its terms forbid caching or storing images, so the CLI refuses it. Free tier is 64px and needs an attribution link; each app or user uses its own publishable key.
   - `byDomain(template, { params })`: any "logo by company domain" template containing `{domain}`.
   - `domainMap` (`resolveLogo(query, providers, { domainMap })`, `<LogoProvider domainMap>`): `{ '600519.XSHG': 'example.com' }`, keyed by `code.MIC`, filled in when a query has no `domain`.
   - Do not use a platform's private CDN (for example TradingView's logo files): it is not licensed for reuse.
