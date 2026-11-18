@@ -24,6 +24,8 @@ import { TechnicalRatingUsage } from '../gallery/usage/TechnicalRatingUsage.tsx'
 import { TreemapUsage } from '../gallery/usage/TreemapUsage.tsx'
 import { WatchlistUsage } from '../gallery/usage/WatchlistUsage.tsx'
 import { CompareBar, QuoteStrip } from '../src/index'
+import { RefreshControlUsage } from '../gallery/usage/RefreshControlUsage.tsx'
+import { TickerTapeUsage } from '../gallery/usage/TickerTapeUsage.tsx'
 import { mount } from './render.tsx'
 
 const items: Record<string, React.ReactNode> = {
@@ -48,6 +50,9 @@ const items: Record<string, React.ReactNode> = {
   'technical-rating': <TechnicalRatingUsage />,
   treemap: <TreemapUsage />,
   watchlist: <WatchlistUsage />,
+  // 跑马灯停在起点截（paused），不然每帧位置不同；RefreshControl 靠上面冻住的 Date，倒计时是定值。
+  'ticker-tape': <TickerTapeUsage paused />,
+  'refresh-control': <RefreshControlUsage />,
   'compare-bar': (
     <div style={{ maxWidth: 320 }}>
       <CompareBar

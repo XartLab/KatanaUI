@@ -28,6 +28,7 @@ import { ToolbarUsage } from '../gallery/usage/ToolbarUsage.tsx'
 import { TransmissionChainUsage } from '../gallery/usage/TransmissionChainUsage.tsx'
 import { UptimeBarsUsage } from '../gallery/usage/UptimeBarsUsage.tsx'
 import { WorkspaceTabsUsage } from '../gallery/usage/WorkspaceTabsUsage.tsx'
+import { GridSummaryRowUsage } from '../gallery/usage/GridSummaryRowUsage.tsx'
 import { mount } from './render.tsx'
 
 const items: Record<string, React.ReactNode> = {
@@ -56,6 +57,7 @@ const items: Record<string, React.ReactNode> = {
   toolbar: <ToolbarUsage />,
   'transmission-chain': <TransmissionChainUsage />,
   'uptime-bars': <UptimeBarsUsage />,
+  'grid-summary-row': <GridSummaryRowUsage />,
   'workspace-tabs': <WorkspaceTabsUsage />,
 }
 

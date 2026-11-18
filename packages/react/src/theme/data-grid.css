@@ -328,3 +328,26 @@
   margin-left: 4px;
   color: var(--k-content-secondary-foreground);
 }
+
+/* 表尾合计 / 均值行（#77，GridSummaryRow）：跟表体同一份列模板与固定列，横向滚动跟着走，纵向粘在滚动区底边。
+   上面一道 separable-secondary 分隔线、底色 surface-raised 与表体分开；字是主文字色加 600 字重，行首的「合计」是次要文字色。 */
+.k-grid-summary {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  border-top: 1px solid var(--k-separable-secondary-borderColor);
+  background: var(--k-surface-raised-background);
+}
+.k-grid-summary-row {
+  display: grid;
+  align-items: center;
+  color: var(--k-content-primary-foreground);
+  font-weight: 600;
+}
+.k-grid-summary .k-grid-cell.is-fixed {
+  background: var(--k-surface-raised-background);
+}
+.k-grid-summary-label {
+  color: var(--k-content-secondary-foreground);
+  font-weight: 500;
+}

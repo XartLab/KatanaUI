@@ -39,6 +39,25 @@ const blocks: GuidanceMap = {
       '右上角第一个按钮切到明细表，图里的数在表里都有。',
     ],
   },
+  'grid-summary-row': {
+    aliases: ['Totals row', 'Summary row', 'Footer aggregates', 'Pinned bottom row', '合计行', '汇总行'],
+    use: [
+      '持仓、成交、自选表的合计与均值：TradingView 自选「高级视图」给最小、最大、均值、中位数（#22）；这里内置 sum、avg、min、max、median、count，也能给函数。',
+      '一行一种汇总（合计、均值、中位数各一行），行名写在第一个没配聚合的列（通常是品种列）。',
+      '对全部行算，不只看得见的几十行；字照列类型写（价格按精度、盈亏带符号与涨跌色），跟上面的行对齐。',
+      '样子：上面一道 separable-secondary 分隔线，底色 surface-raised，600 字重；行名 500 字重次要文字色；行高同表体（20 / 24 / 32）。',
+      '跟表体同一份列模板：拖列宽、隐藏、重排、固定列都跟着；横向滚动时固定格粘左，纵向粘在滚动区底边。',
+      '待定：TradingView 是按分组汇总（分组 / 币种 / 板块），这里先做整表；分组小计等 useRowOrder 的分节合进来再接。',
+    ],
+    avoid: [
+      '价格、涨跌幅不要求和（没意义），用 avg / median。',
+      '要按维度透视的用别的件（PivotTable 还没有），不要堆十几行汇总。',
+    ],
+    a11y: [
+      '汇总行在一个单独的 rowgroup 里，aria-rowindex 接在表体后面，aria-rowcount 算上它们。',
+      '行名格是 rowheader：读屏读「合计：市值 …」；行名不在格里时挂在行的 aria-label 上。',
+    ],
+  },
   'data-grid': {
     aliases: ['Table', 'Data table', 'Grid', 'Spreadsheet'],
     use: [
