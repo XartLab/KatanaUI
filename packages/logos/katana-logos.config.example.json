@@ -1,0 +1,15 @@
+{
+  "concurrency": 6,
+  "retries": 2,
+  "refreshDays": 30,
+  "sources": [
+    { "type": "website" },
+    { "type": "wikidata", "micProperty": "P7534", "micAliases": { "BJSE": "XBSE" } },
+    { "type": "web3icons" }
+  ],
+  "optionalSources": [
+    { "type": "companieslogo", "token": "env:COMPANIESLOGO_KEY" },
+    { "type": "pack", "id": "eodhd", "dir": "vendor/eodhd-logos", "pattern": ["{code}.{mic}.png", "{code}.png"] },
+    { "type": "logokit", "token": "env:LOGOKIT_KEY", "suffix": { "XSHE": ".SZ", "XSHG": ".SS" } }
+  ]
+}

@@ -169,6 +169,37 @@ importers:
 
   .: {}
 
+  packages/logos:
+    dependencies:
+      '@web3icons/core':
+        specifier: 4.0.60
+        version: 4.0.60
+    devDependencies:
+      '@types/node':
+        specifier: 22.20.5
+        version: 22.20.5
+      '@types/react':
+        specifier: 19.3.0
+        version: 19.3.0
+      '@types/react-dom':
+        specifier: 19.3.0
+        version: 19.3.0(@types/react@19.3.0)
+      react:
+        specifier: 19.3.1
+        version: 19.3.1
+      react-dom:
+        specifier: 19.3.1
+        version: 19.3.1(react@19.3.1)
+      typescript:
+        specifier: 7.0.2
+        version: 7.0.2
+      vite:
+        specifier: npm:@voidzero-dev/vite-plus-core@1.4.0
+        version: '@voidzero-dev/vite-plus-core@1.4.0(@types/node@22.20.5)(jiti@2.7.0)(typescript@7.0.2)'
+      vite-plus:
+        specifier: 1.4.0
+        version: 1.4.0(@types/node@22.20.5)(@vitest/browser-playwright@5.0.5)(@vitest/ui@5.0.5)(jiti@2.7.0)(playwright@1.56.1)(typescript@7.0.2)
+
   packages/react:
     dependencies:
       '@chenglou/pretext':
@@ -286,6 +317,9 @@ importers:
       '@fontsource/iosevka':
         specifier: 5.3.0
         version: 5.3.0
+      '@katana-ui/logos':
+        specifier: 0.2.0
+        version: link:../logos
       '@katana-ui/tokens':
         specifier: 0.2.0
         version: link:../tokens
@@ -2141,6 +2175,12 @@ packages:
     engines: {node: '>=20.0.0'}
     cpu: [x64]
     os: [win32]
+
+  '@web3icons/common@0.11.55':
+    resolution: {integrity: sha512-fwwoWmA1gAxCElRBsPP/y7S1i7yJBzd5X3v9wJmcVZ5AzKoRXQp4iho5uazdSFzz6Jrriu8gZ0RAWC/dUDQZuw==}
+
+  '@web3icons/core@4.0.60':
+    resolution: {integrity: sha512-ycV7X2vpRUN/VLHv88BWG4S0KlmLL2xD0KxtdL8H1VHdEA3pjn7C6oEr69DCn6Iz6vlrYweHInWi5Q2VjRVoaA==}
 
   '@yuku-core/binding-android-arm64@0.19.0':
     resolution: {integrity: sha512-wdL2XmTiZixAOaHk9Z0JJZ8u9Qm8d333Zjpc6gaxXFX+UR5BlsfxZ7a2+2Rm71pamppsPYGUGFq2oVLbh6DISw==}
@@ -5571,6 +5611,12 @@ snapshots:
 
   '@voidzero-dev/vite-plus-win32-x64-msvc@1.4.0':
     optional: true
+
+  '@web3icons/common@0.11.55': {}
+
+  '@web3icons/core@4.0.60':
+    dependencies:
+      '@web3icons/common': 0.11.55
 
   '@yuku-core/binding-android-arm64@0.19.0':
     optional: true

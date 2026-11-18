@@ -23,6 +23,7 @@ import { SymbolMarkUsage } from '../gallery/usage/SymbolMarkUsage.tsx'
 import { TechnicalRatingUsage } from '../gallery/usage/TechnicalRatingUsage.tsx'
 import { TreemapUsage } from '../gallery/usage/TreemapUsage.tsx'
 import { WatchlistUsage } from '../gallery/usage/WatchlistUsage.tsx'
+import { SymbolMarkLogosDemo } from '../gallery/pages/readouts.tsx'
 import { CompareBar, QuoteStrip } from '../src/index'
 import { mount } from './render.tsx'
 
@@ -120,3 +121,32 @@ for (const theme of ['graphite', 'console'] as const) {
     }
   })
 }
+
+// SymbolMark 包在 LogoProvider 里（#94）：加密币是 web3icons 的真标、股票是文档站 public/logos-demo 的自绘示意图、找不到的退回字母。
+// 外层 describe 叫 logo-provider，全名「logo-provider > graphite > symbol-mark」，快速模式按「graphite > symbol-mark」认得出来。
+describe('logo-provider', () => {
+  for (const theme of ['graphite', 'console'] as const) {
+    describe(theme, () => {
+      test('symbol-mark', async () => {
+        await page.viewport(960, 1800)
+        const frame = await mount(
+          <div style={{ width: 720, display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <SymbolMarkLogosDemo />
+          </div>,
+          theme,
+        )
+        // 等图：7 个币标 + 4 个股票示意图载入完，2 个找不到的退回字母。
+        await vi.waitFor(
+          () => {
+            const imgs = [...frame.querySelectorAll<HTMLImageElement>('[data-kind="image"] img')]
+            expect(imgs.length).toBe(11)
+            expect(imgs.every((img) => img.complete && img.naturalWidth > 0)).toBe(true)
+            expect(frame.querySelectorAll('[data-kind="letters"]').length).toBe(2)
+          },
+          { timeout: 15_000, interval: 100 },
+        )
+        await expect(page.getByTestId('frame')).toMatchScreenshot(`${theme}-quotes-symbol-mark-logos`)
+      })
+    })
+  }
+})
