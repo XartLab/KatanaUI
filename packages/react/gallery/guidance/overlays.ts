@@ -72,6 +72,21 @@ const overlays: GuidanceMap = {
       '键盘聚焦触发器也会打开，Esc 收起。',
     ],
   },
+  'command-palette': {
+    aliases: ['Quick search', 'Command palette with recent', 'Spotlight', '快速搜索'],
+    use: [
+      '全局命令搜索（照 TradingView 的 Ctrl/Cmd+K 快速搜索）：CommandDialog 加「最近」分组，选过的命令放最前、去重、最多 5 条（recentLimit）。',
+      '「最近」只在没输入时出现；一输入就按全部命令过滤，同一条不会出现两次；删掉的命令不在最近里显示。',
+      '最近记录：受控（recent / onRecentChange）、recentKey 存 localStorage（usePersistedState，版本 1），都不给只记在页内存里。',
+      '选中一条：先关面板、清掉搜索词，再执行；打开它的键一般用 useHotkeys 登记 Mod+K（allowInInput）。',
+    ],
+    avoid: ['选一个表单值用 combobox。', '品种搜索带市场页签与过滤，用 SymbolSearch（另一个模块）。'],
+    a11y: [
+      '同 command：输入框是 combobox、列表是 listbox、行是 option，焦点留在输入框里。',
+      '「最近」是带标题的 group，读屏会念组名。',
+      'Esc 关闭，焦点回打开前的元素（Dialog 的行为）。',
+    ],
+  },
   command: {
     aliases: ['Command palette', 'Command menu', 'Spotlight', 'Quick switcher'],
     use: ['全局搜命令、跳页面、切品种。', '很长的可搜索列表。'],

@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 import type { ComponentType } from 'react'
 import { NewsReaderDemo, ScreenerDemo } from './pages/screener.tsx'
+import { CommandPaletteDemo, HotkeysDemo, ShortcutSheetDemo } from './pages/hotkeys.tsx'
 import {
   AgentAvatarDemo,
   AiApprovalDemo,
@@ -277,6 +278,9 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   tag: TagDemo,
   kbd: KbdDemo,
   'shortcut-recorder': ShortcutRecorderDemo,
+  hotkeys: HotkeysDemo,
+  'shortcut-sheet': ShortcutSheetDemo,
+  'command-palette': CommandPaletteDemo,
   'symbol-mark': SymbolMarkDemo,
   'number-input': NumberInputDemo,
   'date-time-input': DateTimeInputDemo,
