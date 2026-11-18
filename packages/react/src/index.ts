@@ -244,6 +244,22 @@ export type { Severity, SeverityExt } from './lib/severity.ts'
 export { Tag, type TagProps, type TagSize } from './katana/tag.tsx'
 export { Kbd } from './katana/kbd.tsx'
 export {
+  countFlags,
+  FlagFilter,
+  FlagGlyph,
+  FlagMark,
+  setFlagIn,
+  useFlags,
+  type FlagDef,
+  type FlagFilterProps,
+  type FlagGlyphProps,
+  type FlagMap,
+  type FlagMarkProps,
+  type FlagMenuItem,
+  type Flags,
+  type UseFlagsOptions,
+} from './katana/flag-mark.tsx'
+export {
   ShortcutRecorder,
   type ShortcutRecorderLabels,
   type ShortcutRecorderProps,

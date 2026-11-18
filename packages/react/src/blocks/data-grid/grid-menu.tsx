@@ -41,7 +41,12 @@ export type GridMenuContext<Row> = {
   menuTail?: () => readonly GridMenuEntry[]
   panelMenu?: () => readonly GridMenuEntry[]
   rowInfo?: (row: Row) => string
+  /** 挪行（#77 G7）：给了它，行菜单里多「上移 / 下移 / 移到顶 / 移到底」；canMove 为 false（按列排序时）四项灰掉并带原因。 */
+  rowOrder?: { canMove: boolean; move: (to: RowMoveTo) => void }
 }
+
+/** 右键菜单里挪行的去处。 */
+export type RowMoveTo = 'up' | 'down' | 'top' | 'bottom'
 
 const SEP = { type: 'separator' } as const
 
@@ -162,7 +167,23 @@ export function gridMenuEntries<Row>(c: GridMenuContext<Row>): readonly GridMenu
     c.canAsk && c.labels.askAgent
       ? [{ type: 'item', label: c.labels.askAgent, keys: c.host?.keysOf?.('askAgent'), onSelect: () => c.ask(target) }]
       : []
-  const extra = [...(c.menu?.(target) ?? []), ...ask]
+  const order = c.rowOrder
+  const moves: GridMenuEntry[] = order
+    ? (['up', 'down', 'top', 'bottom'] as const).map((to) => ({
+        type: 'item',
+        label: {
+          up: c.labels.rowOrder.moveUp,
+          down: c.labels.rowOrder.moveDown,
+          top: c.labels.rowOrder.moveTop,
+          bottom: c.labels.rowOrder.moveBottom,
+        }[to],
+        keys: to === 'up' ? 'Alt+↑' : to === 'down' ? 'Alt+↓' : undefined,
+        hint: order.canMove ? undefined : c.labels.rowOrder.sorted,
+        disabled: !order.canMove,
+        onSelect: () => order.move(to),
+      }))
+    : []
+  const extra = [...moves, ...(moves.length && c.menu ? [SEP] : []), ...(c.menu?.(target) ?? []), ...ask]
   const info = target.length === 1 ? c.rowInfo?.(target[0]) : undefined
   const base = standard(c, true)
   const body: readonly GridMenuEntry[] = c.extrasFirst
