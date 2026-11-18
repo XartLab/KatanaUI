@@ -156,7 +156,7 @@ for (const theme of ['graphite', 'console'] as const) {
       shot(
         'alert',
         <div style={col}>
-          {(['info', 'ok', 'warn', 'danger'] as const).map((tone) => (
+          {(['neutral', 'ok', 'warn', 'danger'] as const).map((tone) => (
             <Alert key={tone} tone={tone}>
               <AlertTitle>Close to the daily loss limit ({tone})</AlertTitle>
               <AlertDescription>80% used; trading locks at 100%.</AlertDescription>
@@ -597,7 +597,7 @@ for (const theme of ['graphite', 'console'] as const) {
             <Toggle defaultPressed>Follow latest</Toggle>
             <Toggle>Idle</Toggle>
           </div>
-          <ToggleGroup aria-label="Timeframe" defaultValue="d">
+          <ToggleGroup aria-label="Timeframe" value="d" onValueChange={() => {}}>
             <ToggleGroupItem value="d">Day</ToggleGroupItem>
             <ToggleGroupItem value="w">Week</ToggleGroupItem>
             <ToggleGroupItem value="m">Month</ToggleGroupItem>
