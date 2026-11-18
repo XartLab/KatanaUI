@@ -13,20 +13,68 @@ const listFiles = (dir) =>
   )
 const importsOf = (file) =>
   [...readFileSync(file, 'utf8').matchAll(IMPORT)].map((m) => resolve(dirname(file), m[1] ?? m[2]))
+// 从桶文件（src/index.ts 这类）引的名字：`import { Lcd, Kbd } from '../../src/index'`。
+const NAMED_IMPORT = /import\s*(?:type\s*)?\{([^}]*)\}\s*from\s*['"](\.[^'"]*)['"]/g
+const DECL = /export\s+(?:default\s+)?(?:function|const|class)\s+([A-Z]\w*)/g
 
-/** Component files the screenshot tests render directly (package-relative). */
+/** Component files the screenshot tests render (package-relative): imported by a browser test, directly or through gallery demo files. */
 export function shotTargets(pkgDir) {
   const dir = join(pkgDir, 'browser')
+  const srcDir = join(pkgDir, 'src')
+  // 组件名 → 声明它的文件（桶文件转出的名字靠它落到具体的件）。
+  const declared = new Map()
+  for (const f of listFiles(srcDir))
+    if (f.endsWith('.tsx') && !f.endsWith('.test.tsx'))
+      for (const m of readFileSync(f, 'utf8').matchAll(DECL))
+        if (!declared.has(m[1])) declared.set(m[1], relative(pkgDir, f))
   const out = new Set()
-  for (const f of existsSync(dir) ? readdirSync(dir) : [])
-    if (f.endsWith('.browser.test.tsx'))
-      for (const t of importsOf(join(dir, f))) if (t.startsWith(join(pkgDir, 'src'))) out.add(relative(pkgDir, t))
+  const seen = new Set()
+  // 截图测试常直接引 gallery 的 *Usage.tsx 演示：穿过 browser/ 与 gallery/ 的文件，落到 src 的第一个文件就是被截的件。
+  const walk = (file) => {
+    if (seen.has(file)) return
+    seen.add(file)
+    for (const m of readFileSync(file, 'utf8').matchAll(NAMED_IMPORT)) {
+      const target = resolve(dirname(file), m[2])
+      const barrel = basename(target).startsWith('index') || existsSync(join(target, 'index.ts'))
+      if (!barrel || !target.startsWith(srcDir)) continue
+      for (const name of m[1].split(',').map(
+        (n) =>
+          n
+            .trim()
+            .replace(/^type\s+/, '')
+            .split(/\s+as\s+/)[0],
+      ))
+        if (declared.has(name)) out.add(declared.get(name))
+    }
+    for (const raw of importsOf(file)) {
+      const t = [raw, `${raw}.tsx`, `${raw}.ts`].find((c) => existsSync(c) && /\.(tsx?|mts)$/.test(c))
+      if (!t || basename(t).startsWith('index.')) continue
+      if (t.startsWith(srcDir)) out.add(relative(pkgDir, t))
+      else if (t.startsWith(join(pkgDir, 'gallery')) || t.startsWith(dir)) walk(t)
+    }
+  }
+  for (const f of existsSync(dir) ? readdirSync(dir) : []) if (f.endsWith('.browser.test.tsx')) walk(join(dir, f))
   return out
 }
 
 /** True when the component screenshots alone cover every changed file. */
-export function coveredByShots(pkgDir, changed) {
-  const targets = shotTargets(pkgDir)
+/**
+ * Which component screenshots a change needs, and whether they are enough.
+ * names: test names (component file basenames) to run; covered: every changed file, and every component that
+ * (transitively) imports it, has a screenshot test named after it, so page-level vr:fast can be skipped.
+ */
+export function shotPlan(pkgDir, changed) {
+  // 截图测试名约定 = 件的文件名（kbd.tsx → 'kbd'）：只有名字对得上的件才算截过，快速模式按名字挑测试跑。
+  const dir = join(pkgDir, 'browser')
+  const tests = (existsSync(dir) ? readdirSync(dir) : [])
+    .filter((f) => f.endsWith('.browser.test.tsx'))
+    .map((f) => readFileSync(join(dir, f), 'utf8'))
+    .join('\n')
+  const named = (f) => {
+    const n = basename(f, '.tsx')
+    return new RegExp(`['"\`]${n}['"\`]|^\\s*${n}\\s*:`, 'm').test(tests)
+  }
+  const targets = new Set([...shotTargets(pkgDir)].filter(named))
   // src 的反向引用图；桶文件（index.ts）与 a2ui 包装只转出，不算「引用它的组件」。
   const src = listFiles(join(pkgDir, 'src')).filter((f) => /\.(tsx?|mts)$/.test(f) && !/\.test\.tsx?$/.test(f))
   const dependents = new Map()
@@ -38,11 +86,24 @@ export function coveredByShots(pkgDir, changed) {
       dependents.set(to, [...(dependents.get(to) ?? []), from])
     }
   }
-  const ok = (file) => {
-    if (/\.test\.tsx?$/.test(file) || file.startsWith('browser/') || file.startsWith('.pixelgate-unit/')) return true
+  const names = new Set()
+  let covered = true
+  for (const file of changed) {
+    if (/\.test\.tsx?$/.test(file) || file.startsWith('.pixelgate-unit/')) continue
+    if (file.startsWith('browser/')) {
+      covered = false // 改了截图测试本身：整套跑，见 fast.mjs
+      continue
+    }
     const css = /^src\/theme\/(.+)\.css$/.exec(file)
-    if (css) return [...targets].some((t) => basename(t, '.tsx') === css[1])
-    if (!file.startsWith('src/') || !/\.(tsx?|mts)$/.test(file)) return false
+    if (css) {
+      if ([...targets].some((t) => basename(t, '.tsx') === css[1])) names.add(css[1])
+      else covered = false
+      continue
+    }
+    if (!file.startsWith('src/') || !/\.(tsx?|mts)$/.test(file)) {
+      covered = false
+      continue
+    }
     // 自己和所有传递引用者里，凡是组件（.tsx）都得被截过。
     const seen = new Set([file])
     const queue = [file]
@@ -52,7 +113,13 @@ export function coveredByShots(pkgDir, changed) {
           seen.add(d)
           queue.push(d)
         }
-    return [...seen].filter((f) => f.endsWith('.tsx')).every((f) => targets.has(f))
+    for (const f of seen)
+      if (!f.endsWith('.tsx')) continue
+      else if (targets.has(f)) names.add(basename(f, '.tsx'))
+      else covered = false
   }
-  return changed.every(ok)
+  return { covered, names, browserTestsChanged: changed.some((f) => f.startsWith('browser/')) }
 }
+
+/** True when the component screenshots alone cover every changed file. */
+export const coveredByShots = (pkgDir, changed) => shotPlan(pkgDir, changed).covered

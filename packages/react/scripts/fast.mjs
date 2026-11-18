@@ -7,7 +7,7 @@ import { spawnSync } from 'node:child_process'
 import { readFileSync, readdirSync } from 'node:fs'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { coveredByShots } from './shot-coverage.mjs'
+import { shotPlan } from './shot-coverage.mjs'
 
 const pkgDir = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const args = process.argv.slice(2)
@@ -53,18 +53,27 @@ else if (lintable.length)
   run('格式（只改了 CSS / JSON，没有可 lint 的文件）', 'pnpm', ['exec', 'vp', 'fmt', '--check', ...lintable])
 run('类型检查（Vite+ 任务缓存，没改就秒过）', 'pnpm', ['exec', 'vp', 'run', 'tsc'])
 run('受影响的单测', 'pnpm', ['exec', 'vp', 'test', 'run', '--changed', base, '--passWithNoTests'])
-// 组件级截图（Vitest 浏览器模式 + pixelgate，browser/*.browser.test.tsx）：只跑导入了改动文件的截图测试，直接在浏览器里渲染件，不构建整站，几秒。
-run('组件截图（Vitest 浏览器模式）', 'pnpm', [
-  'exec',
-  'vp',
-  'test',
-  'run',
-  '-c',
-  'vitest.browser.config.ts',
-  '--changed',
-  base,
-  '--passWithNoTests',
-])
+// 组件级截图（Vitest 浏览器模式 + pixelgate，browser/*.browser.test.tsx）：直接在浏览器里渲染件，不构建整站。
+// 不用 vitest --changed：演示文件从 src/index 这类桶引件，桶一动所有截图都算「相关」。按件名挑：改动的件与（传递）引用它的件。
+const plan = shotPlan(pkgDir, changed)
+const browserTests = readdirSync(join(pkgDir, 'browser')).filter((f) => f.endsWith('.browser.test.tsx'))
+const shotArgs = ['exec', 'vp', 'test', 'run', '-c', 'vitest.browser.config.ts']
+if (plan.browserTestsChanged)
+  run('组件截图（改了截图测试：整套）', 'pnpm', [...shotArgs, ...browserTests.map((f) => `browser/${f}`)])
+else if (plan.names.size) {
+  const names = [...plan.names]
+  const files = browserTests.filter((f) =>
+    names.some((n) =>
+      new RegExp(`['"\`]${n}['"\`]|^\\s*${n}\\s*:`, 'm').test(readFileSync(join(pkgDir, 'browser', f), 'utf8')),
+    ),
+  )
+  run(`组件截图（${names.length} 个件）`, 'pnpm', [
+    ...shotArgs,
+    ...files.map((f) => `browser/${f}`),
+    '-t',
+    `(^| )(${names.join('|')})$`,
+  ])
+}
 
 // 受影响的页：复用 vr-fast 的映射（--dry 只打印页名，不截图）。
 const dry = capture('node', ['scripts/vr-fast.mjs', '--dry', ...(has('--base') ? ['--base', base] : [])])
@@ -119,7 +128,7 @@ if (!has('--no-e2e') && ids.length && !shared) {
   }
 }
 // 改动全落在有组件截图的件上：组件截图已经比过像素，整页 vr:fast（先构建整站，约 50 秒）留给合并前的全量。
-if (!has('--no-vr') && !has('--pages') && coveredByShots(pkgDir, changed))
+if (!has('--no-vr') && !has('--pages') && plan.covered)
   process.stdout.write('\n改动都在有组件截图的件上：跳过整页 vr:fast（--pages 强制跑；合并前全量 pnpm vr 会跑）。\n')
 else if (!has('--no-vr'))
   run('视觉回归（vr:fast）', 'node', ['scripts/vr-fast.mjs', ...(has('--base') ? ['--base', base] : [])])
