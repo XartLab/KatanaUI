@@ -248,6 +248,37 @@ export {
   type ShortcutRecorderLabels,
   type ShortcutRecorderProps,
 } from './patterns/shortcut-recorder.tsx'
+export {
+  createHotkeyRegistry,
+  HotkeysProvider,
+  useHotkeyEntries,
+  useHotkeyRegistry,
+  useHotkeys,
+  type HotkeyBinding,
+  type HotkeyRegistry,
+} from './patterns/hotkeys.tsx'
+export {
+  comboKeys,
+  comboOfEvent,
+  detectPlatform,
+  findConflicts,
+  GLOBAL_SCOPE,
+  isEditableTarget,
+  normalizeCombo,
+  partLabelFor,
+  type HotkeyConflict,
+  type HotkeyEntry,
+  type HotkeyPlatform,
+} from './patterns/hotkeys-model.ts'
+export { ShortcutSheet, type ShortcutSheetLabels, type ShortcutSheetProps } from './patterns/shortcut-sheet.tsx'
+export {
+  CommandPalette,
+  pushRecent,
+  recentCommands,
+  type CommandPaletteLabels,
+  type CommandPaletteProps,
+  type PaletteCommand,
+} from './patterns/command-palette.tsx'
 export { SymbolMark, symbolMarkLetters, type SymbolMarkProps } from './quotes/symbol-mark.tsx'
 export { BadgeGroup, type BadgeItem } from './katana/badge.tsx'
 export { RollingText, rollSlots, rollStrip } from './katana/rolling-text.tsx'
