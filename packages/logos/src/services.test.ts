@@ -113,3 +113,29 @@ describe('Logo.dev 与按域名', () => {
     expect(() => byDomain('https://x/{code}.png')).toThrow('{domain}')
   })
 })
+
+describe('LogoKit', () => {
+  it('美股裸代码、A 股按后缀表（默认 .SZ / .SS，可改）、北交所与加密币不出候选；fallback=404', async () => {
+    const { logoKit } = await import('./services.ts')
+    const p = [logoKit({ token: 'pk' })]
+    expect(urls(resolveLogo({ symbol: 'AAPL.O' }, p))).toEqual([
+      'https://img.logokit.com/ticker/AAPL?token=pk&fallback=404',
+    ])
+    expect(urls(resolveLogo({ symbol: '600519.SH' }, p))).toEqual([
+      'https://img.logokit.com/ticker/600519.SS?token=pk&fallback=404',
+    ])
+    expect(urls(resolveLogo({ symbol: 'sz000001' }, p))).toEqual([
+      'https://img.logokit.com/ticker/000001.SZ?token=pk&fallback=404',
+    ])
+    expect(urls(resolveLogo({ symbol: '430047.BJ' }, p))).toEqual([])
+    expect(urls(resolveLogo({ symbol: 'BTCUSDT' }, p))).toEqual([])
+    expect(urls(resolveLogo({ symbol: 'AAPL' }, p))).toEqual([])
+    const custom = [logoKit({ token: 'pk', suffix: { XSHG: '.SH', XHKG: '.HK' } })]
+    expect(urls(resolveLogo({ symbol: '600519.SH' }, custom))).toEqual([
+      'https://img.logokit.com/ticker/600519.SH?token=pk&fallback=404',
+    ])
+    expect(urls(resolveLogo({ symbol: '00700.HK' }, custom))).toEqual([
+      'https://img.logokit.com/ticker/00700.HK?token=pk&fallback=404',
+    ])
+  })
+})

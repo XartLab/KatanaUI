@@ -37,11 +37,14 @@ export {
   type ByDomainOptions,
   type CompaniesLogoOptions,
   type LogoDevOptions,
+  type LogoKitOptions,
+  LOGOKIT_DEFAULT_SUFFIX,
   byDomain,
   companiesLogo,
   companiesLogoApiUrl,
   companiesLogoSymbol,
   logoDev,
+  logoKit,
   pickCompaniesLogoImage,
 } from './services.ts'
 export { LogoCache, type LogoStatus, svgDataUrl } from './cache.ts'

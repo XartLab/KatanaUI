@@ -248,6 +248,12 @@ export async function main(argv: readonly string[], deps?: Deps): Promise<number
   const symbols = one('symbols')
   const provider = one('provider') as FetchOptions['provider'] | undefined
   const out = one('out')
+  if (one('provider') === 'logokit') {
+    log(
+      'katana-logos fetch 不支持 logokit：LogoKit 的条款只许热链，不许缓存或把图存到本地。在界面里用 logoKit({ token }) 来源直接热链。',
+    )
+    return 2
+  }
   if (!symbols || !out || !provider || !(CLI_PROVIDERS as readonly string[]).includes(provider)) {
     log(USAGE)
     return 2
