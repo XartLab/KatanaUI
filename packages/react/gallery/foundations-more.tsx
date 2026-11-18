@@ -491,6 +491,21 @@ function AssetsPage() {
           </ul>
         </li>
         <li>
+          全市场一次铺满用 <code>katana-logos sync --list market.csv --out public/logos</code>（清单列
+          symbol、venue（ISO MIC）、name、domain，A 股、美股、港股、加密币放一份）。推荐：免费源为主（2026-11-19
+          定，不付费）——官网图标（清单的 domain，其次 Wikidata 的官网；SVG → apple-touch-icon → 最大的 icon →
+          /apple-touch-icon.png → /favicon.ico → Google） → Wikidata 徽标（P154，按交易所 + 代码批量查，每批 200）→
+          web3icons → 都没有画字母；companieslogo（沪深 .SS / .SZ，许下载自托管）、
+          付费包、LogoKit（只登记热链）写进配置才用。
+        </li>
+        <li>
+          质量过滤：小于 32px、Google 的 16px 地球占位、宽高比大于 2.2
+          的横向字标、全透明或一整块单色都丢，记原因，接着试下一个来源； coverage.md
+          按市场列命中率、来源占比、被丢原因与缺失清单。
+        </li>
+        <li>增量：来源没变、没过 --refresh 天的跳过；并发默认 6，失败重试 2 次，一个品种出错不影响别的。</li>
+        <li>不抓任何平台（TradingView、东方财富、雪球、富途等）的徽标 CDN：那是平台自有资产，条款不允许转用。</li>
+        <li>
           不用 TradingView 等平台自己的 CDN 上的图（如它的 moutai.svg）：那是它的私有资源，没有授权；key
           一律由应用给，包里不写死。
         </li>

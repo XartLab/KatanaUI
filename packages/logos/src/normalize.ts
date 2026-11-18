@@ -30,6 +30,7 @@ const MIC_ALIASES: Readonly<Record<string, string>> = {
   SZ: 'XSHE',
   SZSE: 'XSHE',
   BJSE: 'BJSE',
+  XBSE: 'BJSE',
   BJ: 'BJSE',
   BSE: 'BJSE',
   XHKG: 'XHKG',
