@@ -4825,7 +4825,7 @@ export const PAGES: readonly DocPage[] = [
           {
             name: 'onChange',
             type: '(doc: WhiteboardDoc) => void',
-            desc: '每次改动回整份新文档；拖动中逐帧回，松手记一步撤销历史。',
+            desc: '每次改动回整份新文档 { nodes, edges, layout }；拖动中逐帧回，松手记一步撤销历史。',
           },
           { name: 'labels', type: 'WhiteboardLabels', desc: '工具条、菜单、状态名、计数与小折线读屏名的全部文字。' },
           {
@@ -4834,7 +4834,11 @@ export const PAGES: readonly DocPage[] = [
             desc: '卡片节点的插槽里画什么（按 data.slot 分）。',
           },
           { name: 'onSelectionChange', type: '(nodeIds: string[]) => void', desc: '选中的节点变了。' },
-          { name: 'defaultDirection', type: "'TB' | 'LR'", desc: '连接点朝向与自动布局的起始方向，默认 TB。' },
+          {
+            name: 'layout',
+            type: "'TB' | 'LR'",
+            desc: '连接点朝向（文档的 layout 字段，受控）：缺省 TB；点自动布局时 onChange 回的文档带新的 layout，存下来，打开时按它还原。',
+          },
           { name: 'defaultMinimap', type: 'boolean', desc: '小地图起始开着没有，默认关。' },
         ],
       },

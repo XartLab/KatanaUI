@@ -56,7 +56,12 @@ export type WhiteboardEdge = {
   label?: string
 }
 
-export type WhiteboardDoc = { nodes: WhiteboardNode[]; edges: WhiteboardEdge[] }
+export type WhiteboardDoc = {
+  nodes: WhiteboardNode[]
+  edges: WhiteboardEdge[]
+  /** 连接点朝向与上一次自动布局的方向：TB 从上到下（缺省）、LR 从左到右。随文档存，打开时按它还原。 */
+  layout?: WhiteboardDirection
+}
 export type WhiteboardDirection = 'TB' | 'LR'
 
 /** 节点没量到尺寸时的估计（自动布局与吸附用）。 */
@@ -133,7 +138,7 @@ export function layoutWhiteboard(
   }),
 ): WhiteboardDoc {
   const free = doc.nodes.filter((n) => n.type !== 'group' && !n.parentId)
-  if (free.length === 0) return doc
+  if (free.length === 0) return { ...doc, layout: direction }
   const ids = new Set(free.map((n) => n.id))
   const g = new Graph({ multigraph: true })
   g.setGraph({ rankdir: direction, nodesep: 40, ranksep: 64, marginx: 0, marginy: 0, acyclicer: 'greedy' })
@@ -155,7 +160,11 @@ export function layoutWhiteboard(
       ]
     }),
   )
-  return { ...doc, nodes: doc.nodes.map((n) => (placed.has(n.id) ? { ...n, position: placed.get(n.id)! } : n)) }
+  return {
+    ...doc,
+    layout: direction,
+    nodes: doc.nodes.map((n) => (placed.has(n.id) ? { ...n, position: placed.get(n.id)! } : n)),
+  }
 }
 
 export type GuideRect = { x: number; y: number; width: number; height: number }

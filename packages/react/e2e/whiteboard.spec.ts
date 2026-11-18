@@ -64,4 +64,9 @@ test('白板：拖动节点位置变化、连线边数加一、撤销回退、�
   // 点空白取消选中，高亮撤掉。
   await blank()
   await expect(node('house').locator('.k-wb-node')).not.toHaveAttribute('data-mark', /.+/)
+
+  // 连接点朝向随文档：点「从左到右」布局后 layout 变 LR，连接点到左右两侧。
+  await board.getByRole('button', { name: '自动布局：从左到右' }).click()
+  await expect(board).toHaveAttribute('data-direction', 'LR')
+  await expect(node('fx').locator('.react-flow__handle.source')).toHaveClass(/react-flow__handle-right/)
 })
