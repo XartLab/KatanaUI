@@ -68,7 +68,7 @@ if (plan.browserTestsChanged)
 else if (plan.names.size) {
   // 预算：一张约 0.6 秒，最多截 MAX_SHOTS 个件。波及更多（改了 lib、原语这类底层）就截代表件（与波及的取交集，不够再从波及的里补），
   // 其余留给合并前的整套。
-  const MAX_SHOTS = 40
+  const MAX_SHOTS = 30
   const REPRESENTATIVE = [
     'button',
     'input',
@@ -140,7 +140,7 @@ const pageIds = [...new Set([...dry.matchAll(/(?:graphite|console)--([a-z0-9-]+)
 // e2e 只跑改动的件自己那页（页 id = 文件名）：引用它的那些页，样子已由组件截图查过，行为留给合并前的全量 e2e。
 // 认不出自己那页时（改的是 model、hook……）才退回波及的页，最多 3 页。
 const own = new Set(changed.map((f) => /([a-z0-9-]+?)(?:-model)?\.(?:tsx?|css)$/.exec(f)?.[1]).filter(Boolean))
-const ownIds = pageIds.filter((id) => own.has(id))
+const ownIds = [...own] // 不经 vr-fast 的页单：共用层时它只列代表页；用例里没提到这个 id 的自然挑不出来
 const ids = ownIds.length ? ownIds : pageIds.length <= 3 ? pageIds : []
 
 // 共用层改动（vr-fast 提示「共用层」）波及面太大，快速模式不跑 e2e，提示合并前跑全量。
