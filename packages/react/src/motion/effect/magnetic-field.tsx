@@ -392,7 +392,8 @@ export const MagneticField = ({
     : children
 
   return (
-    <div className={cn('relative', className)} ref={containerRef}>
+    // items 模式由这里排版：每项一个 inline-block 的 motion.div，彼此之间没有空白，不给间距就贴成一串（原件把排版全交给 className）。
+    <div className={cn('relative', items && 'flex flex-wrap items-center gap-3', className)} ref={containerRef}>
       {content}
     </div>
   )

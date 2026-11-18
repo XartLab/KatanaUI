@@ -121,7 +121,10 @@ const motionText: GuidanceMap = {
   },
   'perspective-text-3d': {
     aliases: ['perspective-text-3d', '3D text', 'Depth text', 'Parallax text'],
-    use: ['大标题的景深装饰，随指针或滚动倾斜。'],
+    use: [
+      '大标题的景深装饰，随指针或滚动倾斜。',
+      '根默认按文字收宽（w-fit）：透视原点在文字中心，放进 flex / grid 也不会被拉宽；要铺满自己传 w-full。',
+    ],
     avoid: ['小字号和表格里不要用，透视会让字发虚。'],
     a11y: ['整句在 sr-only，各段 aria-hidden。', '指针驱动没有键盘等价，它只是装饰。'],
   },

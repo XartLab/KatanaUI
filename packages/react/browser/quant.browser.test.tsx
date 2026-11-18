@@ -58,7 +58,6 @@ for (const theme of ['graphite', 'console'] as const) {
               display: 'flex',
               flexDirection: 'column',
               gap: 8,
-              fontFamily: 'var(--font-sans, sans-serif)',
             }}
           >
             {node}

@@ -123,7 +123,9 @@ export function SvgClipMask({
 
   return (
     <div
-      className={cn('relative', className)}
+      // 默认按内容收宽：裁切路径按 objectBoundingBox 算，外框被 flex / 块级撑宽时形状跟着拉宽，内容只露出左边一截。
+      // 要铺满时调用方传 w-full。
+      className={cn('relative w-fit', className)}
       onPointerEnter={() => setIsHovered(true)}
       onPointerLeave={() => setIsHovered(false)}
       ref={ref}

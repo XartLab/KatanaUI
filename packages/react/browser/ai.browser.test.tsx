@@ -25,14 +25,7 @@ beforeAll(async () => {
 
 for (const theme of ['graphite', 'console'] as const) {
   const shot = async (name: string, node: React.ReactNode, act?: () => void) => {
-    await mount(
-      <div style={{ display: 'contents', font: 'var(--text-body) var(--font-sans)', color: 'var(--ink-100)' }}>
-        {/* the app's base.css resets box-sizing; the browser page has no such reset */}
-        <style>{'*,*::before,*::after{box-sizing:border-box}'}</style>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12, width: 480 }}>{node}</div>
-      </div>,
-      theme,
-    )
+    await mount(<div style={{ display: 'flex', flexDirection: 'column', gap: 12, width: 480 }}>{node}</div>, theme)
     act?.()
     await settle()
     await expect(page.getByTestId('frame')).toMatchScreenshot(`${theme}-${name}`)
@@ -61,7 +54,11 @@ for (const theme of ['graphite', 'console'] as const) {
         <AiReasoning
           defaultOpen
           duration={4.2}
-          labels={{ thinking: '思考中', reasoning: '推理过程', thought: (seconds) => `思考了 ${seconds.toFixed(1)} 秒` }}
+          labels={{
+            thinking: '思考中',
+            reasoning: '推理过程',
+            thought: (seconds) => `思考了 ${seconds.toFixed(1)} 秒`,
+          }}
         >
           先看是个股事件还是板块行情，再查新闻与资金流向。
         </AiReasoning>,
@@ -71,6 +68,8 @@ for (const theme of ['graphite', 'console'] as const) {
     test('ai-suggestions', () => shot('ai-suggestions', <AiSuggestionsUsage />))
     test('ai-task-list', () => shot('ai-task-list', <AiTaskListUsage />))
     test('ai-tool-call', () =>
-      shot('ai-tool-call', <AiToolCallUsage />, () => document.querySelector<HTMLElement>('[aria-expanded="false"]')?.click()))
+      shot('ai-tool-call', <AiToolCallUsage />, () =>
+        document.querySelector<HTMLElement>('[aria-expanded="false"]')?.click(),
+      ))
   })
 }

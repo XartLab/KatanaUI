@@ -89,12 +89,7 @@ beforeAll(async () => {
 
 for (const theme of ['graphite', 'console'] as const) {
   const shot = async (name: string, node: React.ReactNode, act?: () => Promise<void>) => {
-    await mount(
-      <div style={{ display: 'contents', font: 'var(--text-body) var(--font-sans)', color: 'var(--ink-100)' }}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12, minWidth: 320 }}>{node}</div>
-      </div>,
-      theme,
-    )
+    await mount(<div style={{ display: 'flex', flexDirection: 'column', gap: 12, minWidth: 320 }}>{node}</div>, theme)
     await act?.()
     await settle()
     await expect(page.getByTestId('frame')).toMatchScreenshot(`${theme}-${name}`)
@@ -129,10 +124,12 @@ for (const theme of ['graphite', 'console'] as const) {
     test('delete-button', () => shot('delete-button', <DeleteButtonUsage />))
     test('dock', () => shot('dock', <DockUsage />))
     test('duration-picker', () => shot('duration-picker', <DurationPickerUsage />))
-    test('expandable-cards', () => shot('expandable-cards', <ExpandableCardsUsage />, async () => {
+    test('expandable-cards', () =>
+      shot('expandable-cards', <ExpandableCardsUsage />, async () => {
         document.querySelector<HTMLElement>('[aria-expanded]')?.click()
       }))
-    test('expandable-navbar', () => shot('expandable-navbar', <ExpandableNavbarUsage />, async () => {
+    test('expandable-navbar', () =>
+      shot('expandable-navbar', <ExpandableNavbarUsage />, async () => {
         document.querySelector<HTMLElement>('[aria-expanded]')?.click()
       }))
     test('file-tree', () => shot('file-tree', <FileTreeUsage />))
@@ -143,7 +140,12 @@ for (const theme of ['graphite', 'console'] as const) {
     test('number-input', () => shot('number-input', <NumberInputUsage />))
     test('password-input', () => shot('password-input', <PasswordInputUsage />))
     test('range-histogram-slider', () =>
-      shot('range-histogram-slider', <div style={{ width: 420 }}><RangeHistogramSliderUsage /></div>))
+      shot(
+        'range-histogram-slider',
+        <div style={{ width: 420 }}>
+          <RangeHistogramSliderUsage />
+        </div>,
+      ))
     test('rendering-settings', () => shot('rendering-settings', <RenderingSettingsUsage />))
     test('rich-popover', () =>
       shot(
@@ -181,7 +183,9 @@ for (const theme of ['graphite', 'console'] as const) {
         async () => {
           document
             .querySelector<HTMLButtonElement>('.shot-open button')!
-            .dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, button: 0, ctrlKey: false, pointerType: 'mouse' }))
+            .dispatchEvent(
+              new PointerEvent('pointerdown', { bubbles: true, button: 0, ctrlKey: false, pointerType: 'mouse' }),
+            )
         },
       ))
   })

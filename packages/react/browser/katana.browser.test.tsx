@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 // src/katana: one screenshot per public component, from the gallery usage demos (minimal data).
+import { MeasuredSkeletonUsage } from '../gallery/usage/MeasuredSkeletonUsage.tsx'
 import { beforeAll, afterAll, describe, expect, test, vi } from 'vite-plus/test'
 import { page } from 'vite-plus/test/browser'
 import { AiStatusUsage } from '../gallery/usage/AiStatusUsage.tsx'
@@ -88,7 +89,6 @@ const items: Record<string, React.ReactNode> = {
   loading: <LoadingUsage />,
   'mac-terminal': <MacTerminalUsage />,
   'matrix-orb': <MatrixOrbUsage />,
-  // Loaded state; the loading state paints only near-invisible bars (reported, see commit notes).
   'measured-skeleton': (
     <div style={{ width: 320 }}>
       <MeasuredSkeleton
@@ -97,6 +97,20 @@ const items: Record<string, React.ReactNode> = {
         label="Loading card"
       >
         {(post) => <h3 style={{ margin: 0, font: 'inherit', fontWeight: 600 }}>{post.title}</h3>}
+      </MeasuredSkeleton>
+    </div>
+  ),
+  // Loading state (the gallery demo opens in it): bars appear after the 500ms gate.
+  'measured-skeleton-loading': <MeasuredSkeletonUsage />,
+  // Inside the 500ms gate the whole skeleton is invisible and only holds the space: no bars, and no empty card border.
+  'measured-skeleton-wait': (
+    <div style={{ width: 320 }}>
+      <MeasuredSkeleton data={null} sample={{ title: 'Sample title text here' }} label="Loading card" delay={60_000}>
+        {(post: { title: string }) => (
+          <article style={{ padding: 12, border: '1px solid var(--line-100)', borderRadius: 'var(--radius-control)' }}>
+            <h3 style={{ margin: 0, font: 'inherit', fontWeight: 600 }}>{post.title}</h3>
+          </article>
+        )}
       </MeasuredSkeleton>
     </div>
   ),
@@ -144,7 +158,7 @@ const items: Record<string, React.ReactNode> = {
   ),
 }
 
-const settle: Record<string, number> = { 'page-preloader': 1500 }
+const settle: Record<string, number> = { 'page-preloader': 1500, 'measured-skeleton-loading': 900 }
 
 // Freeze the clock (Date only, so timers still run): today/relative-time cells must not drift between days.
 beforeAll(() => {
@@ -165,7 +179,6 @@ for (const theme of ['graphite', 'console'] as const) {
               display: 'flex',
               flexDirection: 'column',
               gap: 8,
-              fontFamily: 'var(--font-sans, sans-serif)',
             }}
           >
             {node}

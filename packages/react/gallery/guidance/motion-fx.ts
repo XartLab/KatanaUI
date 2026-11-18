@@ -138,7 +138,11 @@ const motionFx: GuidanceMap = {
   },
   'magnetic-field': {
     aliases: ['magnetic-field', 'Magnetic effect', 'Gravity tags'],
-    use: ['首页的板块标签云：指针靠近时被吸、被推或绕着转。', '三种：attract、repel、orbit。'],
+    use: [
+      '首页的板块标签云：指针靠近时被吸、被推或绕着转。',
+      '三种：attract、repel、orbit。',
+      '传 items 时由组件排版：横排换行、间距 12px（gap-3），className 可改；传 children 时排版归调用方。',
+    ],
     avoid: ['不要用在按钮、输入框上：它们会跑开，点不到。'],
     a11y: ['只在有精细指针的设备上启用；元素本身仍是普通 DOM，键盘与读屏照常。'],
   },
@@ -165,6 +169,7 @@ const motionFx: GuidanceMap = {
     use: [
       '头像、封面图的异形裁切：blob、拱、菱形、波浪，或自己的路径（0 到 1 的坐标）。',
       '变形用的路径要有相同的命令结构。',
+      '默认按内容收宽（w-fit）：路径按外框算，外框被拉宽形状就跟着变形；要铺满（如横幅波浪）传 w-full。',
     ],
     avoid: ['数据图表不裁。', '被裁掉的角上别放可点的东西。'],
     a11y: ['裁切只是视觉，children 是普通 DOM；被裁掉的部分看不到也点不到。'],
