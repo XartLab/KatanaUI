@@ -11,6 +11,10 @@ playwright-report/
 /packages/react/.pixelgate/hidpi/current/
 /packages/react/.pixelgate/hidpi/diff/
 /packages/react/.pixelgate/hidpi/report/
+/packages/react/.pixelgate-unit/current/
+/packages/react/.pixelgate-unit/diff/
+/packages/react/.pixelgate-unit/report/
+/packages/react/.vitest/
 
 # Vite+ 的 hook 分发器由 vp hooks enable 生成，不提交；.vite-hooks/pre-commit 要提交
 /.vite-hooks/_/

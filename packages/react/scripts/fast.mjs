@@ -52,6 +52,18 @@ else if (lintable.length)
   run('格式（只改了 CSS / JSON，没有可 lint 的文件）', 'pnpm', ['exec', 'vp', 'fmt', '--check', ...lintable])
 run('类型检查（Vite+ 任务缓存，没改就秒过）', 'pnpm', ['exec', 'vp', 'run', 'tsc'])
 run('受影响的单测', 'pnpm', ['exec', 'vp', 'test', 'run', '--changed', base, '--passWithNoTests'])
+// 组件级截图（Vitest 浏览器模式 + pixelgate，browser/*.browser.test.tsx）：只跑导入了改动文件的截图测试，直接在浏览器里渲染件，不构建整站，几秒。
+run('组件截图（Vitest 浏览器模式）', 'pnpm', [
+  'exec',
+  'vp',
+  'test',
+  'run',
+  '-c',
+  'vitest.browser.config.ts',
+  '--changed',
+  base,
+  '--passWithNoTests',
+])
 
 // 受影响的页：复用 vr-fast 的映射（--dry 只打印页名，不截图）。
 const dry = capture('node', ['scripts/vr-fast.mjs', '--dry', ...(has('--base') ? ['--base', base] : [])])

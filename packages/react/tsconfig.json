@@ -20,6 +20,8 @@
     "ds",
     "scripts",
     "e2e",
+    "browser",
+    "vitest.browser.config.ts",
     "vite.config.ts",
     "playwright.config.ts",
     "happo.config.ts",
