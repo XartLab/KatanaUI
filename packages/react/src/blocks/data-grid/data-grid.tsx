@@ -23,7 +23,7 @@ import { useEnterMarks, useFlipList } from '../../lib/live.ts'
 import { ContextMenu, ContextMenuContent, ContextMenuTrigger } from '../../primitives/context-menu.tsx'
 import { RowActions } from '../../quotes/row-actions.tsx'
 import { defaultAlign, resolveCell, sortComparator } from './columns.ts'
-import { HEAD_HEIGHTS, ROW_HEIGHTS, type DataGridProps } from './data-grid-props.ts'
+import { HEAD_HEIGHTS, HEAD_SUB_EXTRA, ROW_HEIGHTS, type DataGridProps } from './data-grid-props.ts'
 import { CellBody, FLASH_TYPES, FlashCell, keepActionsInView } from './grid-cells.tsx'
 import { GridHead } from './grid-head.tsx'
 import { DefaultMenu, gridMenuEntries, type GridMenuOn } from './grid-menu.tsx'
@@ -90,11 +90,12 @@ export function DataGrid<Row extends object>({
   timeZone,
   sortLocale,
   density = 'default',
+  locale,
   hideHeader,
   headExtra,
   headEnd,
   autoRowHeight,
-  ruled,
+  ruled = density === 'comfortable',
   selectable = true,
   interactive = true,
   fit,
@@ -108,20 +109,20 @@ export function DataGrid<Row extends object>({
   const id = useId()
   const rowHeight = ROW_HEIGHTS[density]
   const headHeight = layout.some((column) => column.visible && column.sub)
-    ? HEAD_HEIGHTS[density] + 14
+    ? HEAD_HEIGHTS[density] + HEAD_SUB_EXTRA[density]
     : HEAD_HEIGHTS[density]
   const byId = useMemo(() => new Map(columns.map((column) => [column.id, column])), [columns])
   const layoutOf = useMemo(() => new Map(layout.map((entry) => [entry.id, entry])), [layout])
   const labelOf = (column: string) => layoutOf.get(column)?.label ?? column
   const alignOf = (column: string) => layoutOf.get(column)?.align ?? defaultAlign(byId.get(column)?.type)
-  const env = { timeZone }
+  const env = { timeZone, locale }
 
   const defs = useMemo(() => {
     const helper = createColumnHelper<typeof features, Row>()
     return helper.columns(
       columns.map((column) => {
         const compare = sortComparator(column.type, sortLocale)
-        return helper.accessor((row) => resolveCell(column, row, { timeZone }).sort, {
+        return helper.accessor((row) => resolveCell(column, row, { timeZone, locale }).sort, {
           id: column.id,
           header: column.id,
           sortUndefined: 'last',
@@ -130,7 +131,7 @@ export function DataGrid<Row extends object>({
         })
       }),
     )
-  }, [columns, sortLocale, timeZone])
+  }, [columns, sortLocale, timeZone, locale])
 
   const sorting: SortingState = sort ? [{ id: sort.id, desc: sort.desc }] : []
   const visibility: ColumnVisibilityState = Object.fromEntries(layout.map((column) => [column.id, column.visible]))
