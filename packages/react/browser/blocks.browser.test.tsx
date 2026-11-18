@@ -31,6 +31,7 @@ import { SystemMonitorUsage } from '../gallery/usage/SystemMonitorUsage.tsx'
 import { ToolbarUsage } from '../gallery/usage/ToolbarUsage.tsx'
 import { TransmissionChainUsage } from '../gallery/usage/TransmissionChainUsage.tsx'
 import { UptimeBarsUsage } from '../gallery/usage/UptimeBarsUsage.tsx'
+import { WhiteboardUsage } from '../gallery/usage/WhiteboardUsage.tsx'
 import { WorkspaceTabsUsage } from '../gallery/usage/WorkspaceTabsUsage.tsx'
 import { UseUndoStackUsage } from '../gallery/usage/UseUndoStackUsage.tsx'
 import { mount } from './render.tsx'
@@ -66,10 +67,11 @@ const items: Record<string, React.ReactNode> = {
   'transmission-chain': <TransmissionChainUsage />,
   'uptime-bars': <UptimeBarsUsage />,
   'use-undo-stack': <UseUndoStackUsage />,
+  whiteboard: <WhiteboardUsage />,
   'workspace-tabs': <WorkspaceTabsUsage />,
 }
 
-const settle: Record<string, number> = { 'page-preloader': 1500 }
+const settle: Record<string, number> = { 'page-preloader': 1500, whiteboard: 600 }
 
 // Freeze the clock (Date only, so timers still run): today/relative-time cells must not drift between days.
 beforeAll(() => {
