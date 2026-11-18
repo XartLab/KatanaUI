@@ -143,3 +143,36 @@ export function byDomain(template: string, options: ByDomainOptions = {}): LogoP
     ...(options.params ? { params: options.params } : {}),
   })
 }
+
+/** LogoKit 的 A 股 / 港股后缀表（MIC → 后缀）。默认值是猜的：LogoKit 文档没写 A 股后缀，要拿 key 实测后再定。北交所不映射。 */
+export const LOGOKIT_DEFAULT_SUFFIX: Readonly<Record<string, string>> = { XSHE: '.SZ', XSHG: '.SS' }
+
+export type LogoKitOptions = {
+  id?: string
+  /** LogoKit 的 publishable key（每个应用 / 用户用自己的，应用给）。 */
+  token: string
+  /** MIC → 代码后缀，盖过默认表（默认 XSHE → .SZ、XSHG → .SS，待实测）。 */
+  suffix?: Readonly<Record<string, string>>
+}
+
+/**
+ * LogoKit（https://logokit.com）：`img.logokit.com/ticker/{代码}?token=…&fallback=404`。
+ * fallback=404：没有标时回 404，由我们自己退回字母，不用它的字母图（monogram）。
+ * 美股裸代码；A 股按 suffix 表加后缀（默认 .SZ / .SS，文档没写，待用户拿 key 实测）；北交所与表里没有的场所不出候选。
+ * 条款只许热链：不许缓存或本地存图，所以命令行 katana-logos fetch 不支持它；免费档 64px，要放署名链接。
+ */
+export function logoKit(options: LogoKitOptions): LogoProvider {
+  const suffix = { ...LOGOKIT_DEFAULT_SUFFIX, ...options.suffix }
+  return {
+    id: options.id ?? 'logokit',
+    candidates(ctx) {
+      if (ctx.kind !== 'symbol' || ctx.ref.assetClass === 'crypto') return []
+      const { code, venue } = ctx.ref
+      const symbol = isUsStock(ctx) ? code : venue && suffix[venue] ? `${code}${suffix[venue]}` : undefined
+      if (!symbol) return []
+      return [
+        `https://img.logokit.com/ticker/${encodeURIComponent(symbol)}?token=${encodeURIComponent(options.token)}&fallback=404`,
+      ]
+    },
+  }
+}

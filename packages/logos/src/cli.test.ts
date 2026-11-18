@@ -167,3 +167,19 @@ describe('katana-logos fetch：A 股的三条路（#95）', () => {
     ])
   })
 })
+
+describe('katana-logos fetch 拒绝 logokit', () => {
+  it('条款只许热链：返回 2 并说明原因，不发请求', async () => {
+    const lines: string[] = []
+    const noFetch = (() => {
+      throw new Error('不该请求')
+    }) as typeof fetch
+    expect(
+      await main(['fetch', '--symbols', 'x.txt', '--provider', 'logokit', '--out', out], {
+        fetch: noFetch,
+        log: (l) => lines.push(l),
+      }),
+    ).toBe(2)
+    expect(lines.join('\n')).toContain('只许热链')
+  })
+})
