@@ -2177,6 +2177,58 @@ for (const theme of THEMES) {
       await expect(grid.getByRole('row').nth(1).locator('[data-col="symbol"]')).toContainText('600519')
     })
 
+    test('积木：数据表 comfortable 档（#90）——行 40、表头 48、首列左 20、格内 12、正文 14px、行间横线；代码芯片、单位小字、缩写、评级、横条、迷你图、区间；compact 面板行 20', async ({
+      page,
+    }) => {
+      await open(page, theme, 'data-grid')
+      const grid = section(page, 'data-grid').getByTestId('grid-comfortable')
+      const first = grid.getByRole('row').nth(1)
+      const cell = (name: string) => first.locator(`[data-col="${name}"]`)
+      const css = (locator: Locator, prop: string) =>
+        locator.evaluate((el, p) => getComputedStyle(el).getPropertyValue(p), prop)
+      // 尺寸：行 40、表头 48；首列左 20、其余左右 12；正文 14px w400、表头 13px。
+      expect((await first.boundingBox())!.height).toBe(40)
+      expect((await grid.locator('.k-grid-head').boundingBox())!.height).toBe(48)
+      expect(await css(cell('symbol'), 'padding-left')).toBe('20px')
+      expect(await css(cell('price'), 'padding-right')).toBe('12px')
+      expect(await css(cell('price'), 'font-size')).toBe('14px')
+      expect(await css(cell('price'), 'font-weight')).toBe('400')
+      expect(await css(grid.getByRole('columnheader', { name: /价格/ }).getByRole('button'), 'font-size')).toBe('13px')
+      // 只有横线：格子底边 1px，左右没有边。
+      expect(await css(cell('price'), 'border-bottom-width')).toBe('1px')
+      expect(await css(cell('price'), 'border-left-width')).toBe('0px')
+      // 排序列（市值，降序）亮一档、500、带箭头。
+      const sorted = grid.getByRole('columnheader', { name: /市值/ })
+      await expect(sorted).toHaveAttribute('aria-sort', 'descending')
+      expect(await css(sorted.getByRole('button'), 'font-weight')).toBe('500')
+      await expect(sorted.locator('.k-grid-sort')).toHaveText('▼')
+      // 品种格：徽标 18、代码芯片高 24 / 12px w600、全称。
+      await expect(cell('symbol').locator('[data-slot="symbol-mark"]')).toHaveCSS('width', '18px')
+      const chip = cell('symbol').locator('.k-grid-chip')
+      await expect(chip).toHaveText('ALFA')
+      expect((await chip.boundingBox())!.height).toBe(24)
+      expect(await css(chip, 'font-size')).toBe('12px')
+      expect(await css(chip, 'font-weight')).toBe('600')
+      await expect(cell('symbol').locator('.k-grid-fullname')).toHaveText('示例阿尔法科技')
+      // 单位小字 10px、次要色；缩写 K/M/B/T；复制出来的字连着单位。
+      await expect(cell('mcap')).toHaveText('5.18 T USD')
+      const unit = cell('mcap').locator('.k-grid-unit')
+      expect(await css(unit, 'font-size')).toBe('10px')
+      expect(await css(unit, 'color')).toBe(await token(page, '--k-content-secondary-foreground'))
+      await expect(cell('volume')).toHaveText('42.80 M')
+      // 评级、标签、横条、迷你图、区间、日期复用现有件。
+      await expect(cell('rating').locator('[data-slot="rating-text"]')).toHaveAttribute('data-level', 'strong-buy')
+      await expect(cell('sector').locator('[data-slot="tag"]')).toHaveText('科技')
+      await expect(cell('rvol').locator('.k-grid-bar > span')).toHaveAttribute('style', /inline-size: 37\.33/)
+      await expect(cell('trend').locator('svg.k-spark')).toBeVisible()
+      await expect(cell('range').locator('[role="meter"]')).toHaveAttribute('aria-label', 'ALFA 52 周区间')
+      await expect(cell('earnings')).toHaveText(/^2026-\d\d-\d\d$/)
+      // compact 面板：行 20，字仍是 12px 数据字。
+      const panel = section(page, 'data-grid').getByTestId('grid-compact-panel')
+      expect((await panel.getByRole('row').nth(1).boundingBox())!.height).toBe(20)
+      expect(await css(panel.getByRole('row').nth(1).locator('[data-col="price"]'), 'font-size')).toBe('12px')
+    })
+
     test('积木：数据表双击列头右缘把手、或右键「适应内容」，列宽按列头与数据里最宽的字调整，文字不被截断', async ({
       page,
     }) => {
@@ -5803,21 +5855,21 @@ for (const theme of THEMES) {
         .locator('[data-col="symbol"]')
         .allTextContents()
         .then((all) => all.filter((t) => !t.startsWith('代码')))
-    expect(await codes()).toHaveLength(8)
-    // 预设：价格「高于 100」，副标题「高价股」在浮层里；选了以后胶囊带条件文字，表只剩价格大于 100 的 5 只。
+    expect(await codes()).toHaveLength(16)
+    // 预设：价格「高于 100」，副标题「高价股」在浮层里；选了以后胶囊带条件文字，表只剩价格大于 100 的 7 只（16 只演示股票）。
     await bar.locator('[data-slot="filter-pill"][data-field="price"]').click()
     const pop = page.getByRole('dialog', { name: '价格' })
     await expect(pop.getByText('高价股')).toBeVisible()
     await pop.locator('[data-preset="p-high"]').click()
     await expect(bar.locator('[data-field="price"]')).toContainText('高于 100')
-    await expect.poll(async () => (await codes()).length).toBe(4)
+    await expect.poll(async () => (await codes()).length).toBe(7)
     // 手动设置：涨跌幅 大于 1，应用后与价格条件相且。
     await bar.locator('[data-field="change"]').click()
     const pop2 = page.getByRole('dialog', { name: '涨跌幅' })
     await pop2.getByLabel('值').fill('1')
     await pop2.getByRole('button', { name: '应用' }).click()
     await expect(bar.locator('[data-field="change"]')).toContainText('大于 1')
-    await expect.poll(async () => (await codes()).length).toBe(2)
+    await expect.poll(async () => (await codes()).length).toBe(4)
     // 「+」：加一个字段（分组带计数，进组再选）；移除字段连它的条件一起清。
     await bar.getByRole('button', { name: '添加过滤' }).click()
     const add = page.getByRole('dialog', { name: '添加过滤' })
@@ -5828,11 +5880,11 @@ for (const theme of THEMES) {
     await bar.locator('[data-field="change"]').click()
     await page.getByRole('dialog', { name: '涨跌幅' }).getByRole('button', { name: '移除过滤 涨跌幅' }).click()
     await expect(bar.locator('[data-field="change"]')).toHaveCount(0)
-    await expect.poll(async () => (await codes()).length).toBe(4)
+    await expect.poll(async () => (await codes()).length).toBe(7)
     // 「⋯」重置全部。
     await bar.getByRole('button', { name: '更多' }).click()
     await page.getByRole('button', { name: '重置全部过滤' }).click()
-    await expect.poll(async () => (await codes()).length).toBe(8)
+    await expect.poll(async () => (await codes()).length).toBe(16)
     // 列集标签：概览亮着，点「估值」换成四列（代码、价格、市盈率、市值），涨跌幅列消失。
     const tabs = doc.getByRole('tablist', { name: '列集' })
     await expect(tabs.getByRole('tab', { name: '概览' })).toHaveAttribute('aria-selected', 'true')
@@ -5850,7 +5902,7 @@ for (const theme of THEMES) {
     const rowsOf = () => grid.locator('[data-slot="rating-text"]')
     // 表头：代码列第二行写总数，搜索图标在名字后；市盈率第二行是口径 TTM；排序箭头画在名字前。
     const symbolHead = grid.getByRole('columnheader', { name: /代码/ })
-    await expect(symbolHead.locator('.k-grid-head-sub')).toHaveText('8 / 8')
+    await expect(symbolHead.locator('.k-grid-head-sub')).toHaveText('16 / 16')
     await expect(grid.getByRole('columnheader', { name: /市盈率/ }).locator('.k-grid-head-sub')).toHaveText('TTM')
     await expect(grid.getByRole('img', { name: '搜索代码' })).toBeVisible()
     await grid
@@ -5868,7 +5920,7 @@ for (const theme of THEMES) {
       .boundingBox())!
     expect(arrowBox.x + arrowBox.width).toBeLessThanOrEqual(nameBox.x + 1)
     // 评级列：五种图标加文字，强力买入取涨色，强力卖出取跌色。
-    await expect(rowsOf()).toHaveCount(8)
+    await expect(rowsOf()).toHaveCount(16)
     const tone = (level: string) =>
       grid
         .locator(`[data-slot="rating-text"][data-level="${level}"]`)
@@ -5876,24 +5928,24 @@ for (const theme of THEMES) {
         .evaluate((el) => getComputedStyle(el).color)
     expect(await tone('strong-buy')).not.toBe(await tone('strong-sell'))
     await expect(grid.locator('[data-slot="rating-text"][data-level="strong-buy"]').first()).toHaveText('强力买入')
-    expect(await grid.locator('[data-slot="rating-text"][data-level="strong-buy"] svg').count()).toBe(2)
-    // 撤销 / 重做：设一个预设，撤销回到 8 行，重做回到筛过的。
+    expect(await grid.locator('[data-slot="rating-text"][data-level="strong-buy"] svg').count()).toBe(3)
+    // 撤销 / 重做：设一个预设，撤销回到 16 行，重做回到筛过的。
     const undo = bar.getByRole('button', { name: '撤销' })
     const redo = bar.getByRole('button', { name: '重做' })
     await expect(undo).toBeDisabled()
     await bar.locator('[data-slot="filter-pill"][data-field="price"]').click()
     await page.getByRole('dialog', { name: '价格' }).locator('[data-preset="p-high"]').click()
-    await expect(rowsOf()).toHaveCount(4)
+    await expect(rowsOf()).toHaveCount(7)
     await undo.click()
-    await expect(rowsOf()).toHaveCount(8)
+    await expect(rowsOf()).toHaveCount(16)
     await expect(redo).toBeEnabled()
     await redo.click()
-    await expect(rowsOf()).toHaveCount(4)
+    await expect(rowsOf()).toHaveCount(7)
     // 标题下拉：切到「高股息」换一组条件；另存为多一项并选中。
     const title = doc.getByRole('button', { name: '已保存的筛选' })
     await title.click()
     await page.getByRole('menuitemradio', { name: '高股息' }).click()
-    await expect(rowsOf()).toHaveCount(4)
+    await expect(rowsOf()).toHaveCount(7)
     await expect(title).toContainText('高股息')
     await title.click()
     await page.getByRole('menuitem', { name: '另存为…' }).click()

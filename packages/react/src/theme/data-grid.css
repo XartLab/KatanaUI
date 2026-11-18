@@ -107,7 +107,8 @@
   color: var(--k-content-primary-foreground);
 }
 .k-grid-col button.is-sorted {
-  font-weight: 600;
+  /* 排序列亮一档（主前景色）并加到 500，照 TradingView 选股器（#90，原来 600）。 */
+  font-weight: 500;
 }
 /* 列头右缘的拖动把手：窄而可抓，悬停时亮出一道线。 */
 .k-grid-resize {
@@ -327,4 +328,115 @@
   display: inline-flex;
   margin-left: 4px;
   color: var(--k-content-secondary-foreground);
+}
+
+/* —— #90 去电子表格感：照 TradingView 选股器（#90 记录的 2026-11-18 实测），颜色仍是 Graphite 的语义 token —— */
+/* 数字与单位分开：单位 10px w500 次要色，跟在数后空一格（复制出来是「4.53 T USD」）。 */
+.k-grid-val {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.k-grid-unit {
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-micro) var(--font-sans);
+  font-weight: 500;
+  letter-spacing: 0;
+}
+/* 代码芯片：12px w600、面底、圆角 6（--radius-control）、高 24、左右 6。 */
+.k-grid-chip {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  block-size: 24px;
+  padding: 0 6px;
+  border-radius: var(--radius-control);
+  background: var(--k-container-subtle-background);
+  color: var(--k-content-primary-foreground);
+  font: var(--text-data) var(--font-sans);
+  font-weight: 600;
+  line-height: 1;
+}
+/* 芯片后的全称：正文色，放不下省略。 */
+.k-grid-fullname {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--k-content-body-foreground);
+  text-overflow: ellipsis;
+}
+/* 格内横条（相对成交量这类有大小没正负的量）：中性色，不用涨跌色，也不用品牌橙。轨道 4px 高、最长 48px，数字在它右边。 */
+.k-grid-bar {
+  display: block;
+  flex: 0 1 48px;
+  min-inline-size: 16px;
+  block-size: 4px;
+  overflow: hidden;
+  border-radius: var(--radius-pill);
+  background: var(--k-container-track-background);
+}
+.k-grid-bar > span {
+  display: block;
+  block-size: 100%;
+  background: color-mix(in srgb, var(--k-content-secondary-foreground) 75%, transparent);
+}
+/* 行内迷你图：高 24，宽跟列宽；只画线、不画末端环。 */
+.k-grid-spark {
+  display: block;
+  flex: 1;
+  min-inline-size: 0;
+  block-size: 24px;
+}
+.k-grid-spark .k-spark {
+  height: 24px;
+}
+.k-grid-range {
+  flex: 1;
+  min-width: 0;
+}
+/* 两端的数定宽（7 个等宽数字位），各行的轨道才对得齐；低端靠右贴着轨道。 */
+.k-grid-range .k-range-end {
+  flex: 0 0 7ch;
+}
+.k-grid-range .k-range-end.is-low {
+  align-items: flex-end;
+}
+.k-grid-range .k-range-end.is-high {
+  align-items: flex-start;
+}
+.k-grid-cell .k-tag {
+  line-height: 18px;
+}
+
+/* comfortable 档：整页的表。行 40、表头 48（组件写在行内样式）；格内左右 12、首列左 20；正文 14px w400、表头 13px 次要色两行；行间 1px 横线（ruled 默认开），没有竖线。
+   14px 没有对应的文字档，照文字档的写法跟 --k-text-scale 缩放。 */
+.k-grid[data-density='comfortable'] .k-grid-cell {
+  gap: 8px;
+  padding: 0 12px;
+  font-weight: calc(400 + var(--k-weight-adjust, 0));
+  font-size: round(nearest, calc(14px * var(--k-text-scale, 1)), 1px);
+}
+.k-grid[data-density='comfortable'] .k-grid-row {
+  scroll-margin-top: 49px;
+}
+.k-grid[data-density='comfortable'] .k-grid-col button,
+.k-grid[data-density='comfortable'] .k-grid-head-text {
+  padding: 0 12px;
+  font-weight: calc(400 + var(--k-weight-adjust, 0));
+  font-size: round(nearest, calc(13px * var(--k-text-scale, 1)), 1px);
+}
+.k-grid[data-density='comfortable'] .k-grid-col button.is-sorted {
+  font-weight: calc(500 + var(--k-weight-adjust, 0));
+}
+.k-grid[data-density='comfortable'] .k-grid-row > .k-grid-cell:first-child,
+.k-grid[data-density='comfortable'] .k-grid-col:first-child button,
+.k-grid[data-density='comfortable'] .k-grid-col:first-child .k-grid-head-text {
+  padding-inline-start: 20px;
+}
+.k-grid[data-density='comfortable'] .k-grid-head-name {
+  gap: 2px;
+  line-height: 16px;
+}
+.k-grid[data-density='comfortable'] .k-grid-head-sub {
+  font-size: inherit;
+  line-height: 16px;
 }

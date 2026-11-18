@@ -1664,6 +1664,8 @@ export const PAGES: readonly DocPage[] = [
       'formatPrice',
       'formatQuantity',
       'formatVolume',
+      'compactNumber',
+      'formatCompactNumber',
       'stepDecimal',
       'toneOf',
     ],
@@ -1691,6 +1693,11 @@ export const PAGES: readonly DocPage[] = [
       {
         part: 'formatVolume(value)',
         note: '列表里的量与金额（照 TradingView 涨幅榜页，2026-11-15 读）：835.49 K、2.95 M、7.29 B，两位小数、数字与单位之间空一格；不到 1,000 取整；不带币种符号。',
+      },
+      {
+        part: 'compactNumber(value, { locale, digits }) / formatCompactNumber',
+        symbol: 'compactNumber',
+        note: '跟 locale 走的缩写（#90，DataGrid 的 compact 列用它）：Intl.NumberFormat 的 compact 记数法，en-US 是 K / M / B / T，zh-CN 是 万 / 亿 / 万亿；两位小数，数字与缩写字之间空一格；不到第一档照写、不补零。',
       },
     ],
     states: [
@@ -3443,11 +3450,11 @@ export const PAGES: readonly DocPage[] = [
     propParts: [
       {
         part: 'DataGrid',
-        note: '示例数据写死在页里，不是行情。行高档：compact 20、default 24、relaxed 32。没有 DataGridHost 时能点、能排序、能键盘选行，只是没有快捷键与标准右键项。',
+        note: '示例数据写死在页里，不是行情。行高档：compact 20、default 24、relaxed 32（面板密表）、comfortable 40（整页表，表头 48、正文 14px、默认行间线，#90）。没有 DataGridHost 时能点、能排序、能键盘选行，只是没有快捷键与标准右键项。',
       },
       {
         part: '列类型 ColumnType',
-        note: '数字类默认靠右，用等宽数字；pnl、change、side 用 ToneText 跟 data-updown 着色（红涨绿跌时互换）。',
+        note: '数字类默认靠右，用等宽数字；pnl、change、side 用 ToneText 跟 data-updown 着色（红涨绿跌时互换）。#90 新增 percent、compact（K/M/B/T 或 万/亿）、rating、bar、spark、tag、range、date，复用 RatingText、Sparkline、Tag、RangeBar；format.unit 写小字单位。',
       },
       {
         part: 'DataGridHost（经 DataGridHostProvider 提供）',
