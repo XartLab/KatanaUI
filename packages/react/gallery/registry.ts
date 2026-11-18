@@ -3984,6 +3984,57 @@ export const PAGES: readonly DocPage[] = [
     ],
   },
   {
+    id: 'symbol-search',
+    group: 'blocks',
+    cardHeight: 400,
+    title: 'SymbolSearch 品种搜索',
+    summary:
+      '品种搜索：输入框、市场分段、结果列表；空查询先列最近搜索。焦点在图表这类容器里直接打字（useTypeToSearch）就弹出 SymbolSearchDialog，框里带着打的字。每行 SymbolMark 徽标 + 代码 + 名称与类型标签 + 右侧交易所，命中段加粗提亮。↑↓ 走行、回车选中、Esc 关。数据与搜索都由调用方传（onQuery 可异步，换词时上一次 abort），组件不带行情。功能参照 TradingView 图表的品种搜索（2026-11-18 实测），实现原创。',
+    exports: ['SymbolSearch', 'SymbolSearchDialog', 'useTypeToSearch', 'typeToSearchKey'],
+    propParts: [
+      {
+        part: 'SymbolSearch',
+        note: '面板本体，可以直接摆进页里。底座是 Command（cmdk），过滤关掉，行的先后照 onQuery 返回的。最近搜索：传 recent + onRecentChange 受控；不传时有 recentKey 就经 usePersistedState 存进 localStorage（版本 1，形状不对当没存过），没有就只在内存里。',
+      },
+      {
+        part: 'SymbolSearchDialog',
+        note: 'Dialog 的 bare 皮：顶部 12dvh、宽 min(640px, 100vw−24px)、圆角 14。选中后默认关上（keepOpen 留着）；每次打开重新挂载面板，defaultQuery 就是这次打的字。',
+      },
+      {
+        part: 'useTypeToSearch(ref, { onOpen, enabled?, accept? })',
+        symbol: 'useTypeToSearch',
+        note: '在 ref 指的容器上听 keydown：打出一个字（不是空格，没按 Ctrl / ⌘ / Alt，不在输入框里，不在输入法组字中，不是自动重复，没被别人 preventDefault）就 preventDefault 并调 onOpen(字)。容器要能拿焦点（tabIndex={0}）。',
+      },
+      {
+        part: 'typeToSearchKey(event)',
+        symbol: 'typeToSearchKey',
+        note: '上面那条判断的纯函数：该打开就返回那个字，否则 null。',
+      },
+    ],
+    states: [
+      '空查询：先「最近搜索」（按当前分段过滤，最多 recentLimit 条，默认 8），再接 onQuery("") 返回的（调用方可以给热门）；两组都有时才写组名。',
+      '有查询：只列结果；代码与名称里命中查询的第一段加粗、用主文字色，其余是正文 / 次要色；输入框里显示成大写，传给 onQuery 的是原样。',
+      '加载中：这次的词还没回来时列表 aria-busy；没有旧行可显示时写 labels.loading；有旧行就先留着旧行，不闪空。',
+      '没有结果：labels.empty；onQuery 抛错或 reject：labels.error（role=alert）。',
+      '高亮行：选中底色 --k-selectable-subtle-background-hover，默认第一行，回车就开它。',
+    ],
+    donts: [
+      '不要在包里写搜索逻辑或行情：onQuery 由调用方给，排序也是。',
+      '不要用颜色单独标命中段：已经用字重区分了，别再加 TradingView 蓝或品牌橙。',
+      '不要在输入框、文本域里挂 useTypeToSearch：它本来就跳过可编辑元素，挂了也不响应。',
+      '不要拿它做命令面板：命令搜索用 CommandDialog。',
+    ],
+    composition:
+      'SymbolSearchDialog（Dialog bare）\n  SymbolSearch（Command）\n    CommandInput（combobox，清空钮）\n    ToggleGroup（市场分段）\n    CommandList（listbox）\n      CommandGroup「最近搜索」\n        行：SymbolMark · 代码 · 名称 + Tag · 交易所\n      CommandGroup「结果」\n    role=status（结果个数）',
+    keys: [
+      ['任意字母 / 数字（焦点在容器里）', '打开搜索，框里带上这个字'],
+      ['↑ ↓', '在结果间移动高亮（首尾循环）'],
+      ['Enter', '选中高亮行：记进最近搜索、回调 onSelect、关上对话框'],
+      ['Esc', '关上对话框，焦点回到打开前的地方'],
+      ['Tab', '从输入框到清空钮、市场分段'],
+    ],
+  },
+  {
     id: 'toolbar',
     group: 'blocks',
     cardHeight: 150,
