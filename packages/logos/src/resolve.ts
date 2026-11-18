@@ -34,8 +34,22 @@ export type LogoProvider = {
   candidates(ctx: LogoContext): LogoSource[]
 }
 
-/** 规整查询：venue 查询时 ref.code 是规整后的场所名（XNAS、BINANCE）。 */
-export function logoContext(query: LogoQuery): LogoContext | undefined {
+/**
+ * 代码 → 公司官网域名（调用方给，比如 katana 数据层从公司资料里拿）：键写「代码.场所」（600519.XSHG），也认原样代码与裸代码。
+ * 查询没带 domain 时从这里补，byDomain、logoDev、companiesLogo 按域名取标用。
+ */
+export type DomainMap = Readonly<Record<string, string>>
+
+/** 从域名表里找这个品种的官网域名：先「代码.场所」，再原样输入，再裸代码。 */
+export function domainFor(ref: SymbolRef, domainMap: DomainMap | undefined): string | undefined {
+  if (!domainMap) return undefined
+  return domainMap[ref.key] ?? domainMap[ref.input] ?? domainMap[ref.input.toUpperCase()] ?? domainMap[ref.code]
+}
+
+export type ResolveOptions = { domainMap?: DomainMap }
+
+/** 规整查询：venue 查询时 ref.code 是规整后的场所名（XNAS、BINANCE）。查询没带 domain 时按 domainMap 补。 */
+export function logoContext(query: LogoQuery, options: ResolveOptions = {}): LogoContext | undefined {
   const kind = query.kind ?? (query.symbol ? 'symbol' : 'venue')
   if (kind === 'venue') {
     if (!query.venue) return undefined
@@ -47,12 +61,18 @@ export function logoContext(query: LogoQuery): LogoContext | undefined {
     ...(query.venue ? { venue: query.venue } : {}),
     ...(query.assetClass ? { assetClass: query.assetClass } : {}),
   }
-  return { query, kind, ref: normalizeSymbol(query.symbol, hint) }
+  const ref = normalizeSymbol(query.symbol, hint)
+  const domain = query.domain ?? domainFor(ref, options.domainMap)
+  return { query: domain ? { ...query, domain } : query, kind, ref }
 }
 
 /** 按来源顺序列出候选；同一个地址只出现一次。 */
-export function resolveLogo(query: LogoQuery, providers: readonly LogoProvider[]): LogoCandidate[] {
-  const ctx = logoContext(query)
+export function resolveLogo(
+  query: LogoQuery,
+  providers: readonly LogoProvider[],
+  options: ResolveOptions = {},
+): LogoCandidate[] {
+  const ctx = logoContext(query, options)
   if (!ctx) return []
   const seen = new Set<string>()
   const out: LogoCandidate[] = []

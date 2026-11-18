@@ -96,3 +96,74 @@ describe('katana-logos fetch', () => {
     expect(await main(['nope'], deps)).toBe(2)
   })
 })
+
+describe('katana-logos fetch：A 股的三条路（#95）', () => {
+  const svg = '<svg xmlns="http://www.w3.org/2000/svg"/>'
+
+  it('companieslogo：请求 API（.SS / .SZ）再下图，按「代码.场所」命名、按 content-type 定扩展名；北交所记失败', async () => {
+    const asked: string[] = []
+    const fakeFetch = (async (url: string) => {
+      asked.push(url)
+      if (url.includes('api/1.0') && url.includes('600519.SS'))
+        return Response.json({ svg: { icon: { for_dark_background: { orig: '/img/svg/600519.SS-icon.svg' } } } })
+      if (url.includes('api/1.0') && url.includes('000001.SZ'))
+        return Response.json({ png: { icon: { for_dark_background: { 128: '/img/png/000001.SZ.png' } } } })
+      if (url.endsWith('.svg'))
+        return new Response(svg, { headers: { 'content-type': 'image/svg+xml; charset=utf-8' } })
+      if (url.endsWith('.png')) return new Response(png, { headers: { 'content-type': 'image/png' } })
+      return new Response('x', { status: 500 })
+    }) as typeof fetch
+    const report = await runFetch(
+      {
+        queries: parseList('600519.SH\nsz000001\n430047.BJ'),
+        provider: 'companieslogo',
+        params: { token: 'secret-key' },
+        out,
+      },
+      { fetch: fakeFetch, log: quiet },
+    )
+    expect(report.ok.map((e) => e.file).toSorted()).toEqual(['000001.XSHE.png', '600519.XSHG.svg'])
+    expect(report.failed.map((f) => f.reason)).toEqual(['companieslogo 不支持这个品种（430047.BJSE；北交所暂不支持）'])
+    expect(asked.some((u) => u.includes('api_key=secret-key'))).toBe(true)
+    expect(await readFile(join(out, '600519.XSHG.svg'), 'utf8')).toBe(svg)
+    expect(await readFile(report.manifest, 'utf8')).not.toContain('secret-key')
+  })
+
+  it('logodev + --domains：A 股按官网域名取，没域名的记失败；--token 进 params、不进 manifest', async () => {
+    const { writeFile } = await import('node:fs/promises')
+    const list = join(out, 'a.txt')
+    const domains = join(out, 'domains.json')
+    await writeFile(list, '600519.SH\n000001.SZ\n')
+    await writeFile(domains, JSON.stringify({ '600519.XSHG': 'moutaichina.com' }))
+    const asked: string[] = []
+    const fakeFetch = (async (url: string) => {
+      asked.push(url)
+      return new Response(png, { headers: { 'content-type': 'image/jpeg' } })
+    }) as typeof fetch
+    const code = await main(
+      ['fetch', '--symbols', list, '--provider', 'logodev', '--token', 'pk_live', '--domains', domains, '--out', out],
+      { fetch: fakeFetch, log: quiet },
+    )
+    expect(code).toBe(0)
+    expect(asked).toEqual(['https://img.logo.dev/moutaichina.com?token=pk_live'])
+    const manifest = await readFile(join(out, 'manifest.json'), 'utf8')
+    expect(JSON.parse(manifest).entries.map((e: { file: string }) => e.file)).toEqual(['600519.XSHG.jpg'])
+    expect(manifest).not.toContain('pk_live')
+  })
+
+  it('domain：通用模板按域名取；多个候选按序试', async () => {
+    const fakeFetch = (async () => new Response(png, { headers: { 'content-type': 'image/png' } })) as typeof fetch
+    const report = await runFetch(
+      {
+        queries: [{ symbol: '00700.HK', domain: 'tencent.com' }],
+        provider: 'domain',
+        template: 'https://logos.example.com/{domain}.png',
+        out,
+      },
+      { fetch: fakeFetch, log: quiet },
+    )
+    expect(report.ok.map((e) => [e.file, e.source])).toEqual([
+      ['00700.XHKG.png', 'https://logos.example.com/tencent.com.png'],
+    ])
+  })
+})

@@ -12,16 +12,19 @@ export {
   splitCryptoPair,
 } from './normalize.ts'
 export {
+  type DomainMap,
   type LogoCandidate,
   type LogoContext,
   type LogoProvider,
   type LogoQuery,
   type LogoSource,
+  type ResolveOptions,
   type SelfHostedOptions,
   type UrlTemplateOptions,
   SELF_HOSTED_CRYPTO_PATTERN,
   SELF_HOSTED_DEFAULT_PATTERN,
   SELF_HOSTED_VENUE_PATTERN,
+  domainFor,
   fillTemplate,
   logoContext,
   resolveLogo,
@@ -30,4 +33,15 @@ export {
   templateValues,
   urlTemplate,
 } from './resolve.ts'
+export {
+  type ByDomainOptions,
+  type CompaniesLogoOptions,
+  type LogoDevOptions,
+  byDomain,
+  companiesLogo,
+  companiesLogoApiUrl,
+  companiesLogoSymbol,
+  logoDev,
+  pickCompaniesLogoImage,
+} from './services.ts'
 export { LogoCache, type LogoStatus, svgDataUrl } from './cache.ts'
