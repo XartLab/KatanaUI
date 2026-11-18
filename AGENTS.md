@@ -34,6 +34,8 @@ KatanaUI 是设计系统的**源头仓库**（2026-11-14 用户定，#2）：tok
 
 Vite+ 用足（2026-11-18）：根目录直接 `pnpm fast` / `pnpm vr` / `pnpm vr:fast`（转给 @katana-ui/react）。类型检查、单测、文档自检是 `vite.config.ts` 里 `run.tasks` 的带缓存任务（`vp run tsc` / `unit` / `docs-check`），输入没变秒命中。提交时 `.vite-hooks/pre-commit` 跑 `vp staged`，只对暂存文件 `vp check --fix`；新克隆后跑一次 `vp hooks enable`。语法直接写最新的：tsconfig target/lib 都是 ESNext，`Object.groupBy`、`Array.prototype.toSorted/findLast`、`using`、`Promise.withResolvers` 等随便用，不写兼容垫片。
 
+并行派发的规矩（2026-11-18，G1–G6 一轮用了约 7 小时的教训）：这台机器 2 核 7G，同时最多 2 个 worker；worker 只跑 `pnpm fast`，不跑全量 e2e / vr（全量只在合并后跑一次）；worker 不提交生成物（registry.json、props.generated.json、design-system/**、a2ui v1.json、tokens.css），合并后统一重新生成；按文件边界切批（共享的 tokens.json、ui.css、registry.ts、index.ts 由我在合并时一次改），批次间先约定好新 token 名，免得各造一份。
+
 **视觉回归（pixelgate，自研）**：改了视觉相关的件，交付前在 `packages/react` 跑 `pnpm vr:fast`（只截受影响的页，约半分钟），在汇报里附 changed 列表与 report 路径（`.pixelgate/report/index.html`）；合并前、或改了令牌 / theme 样式 / lib / primitives 这类共用层，跑全量 `pnpm vr`。预期的变化用 `pnpm vr:approve` 收为新基线并随代码提交，规则写在文档站「开发接入 → 视觉回归」。
 
 读 token：新代码只读 characteristics（`--k-*`）与语义 token（`--pnl-up`、`--chart-grid`、`--shadow-overlay` 这类），不直接读色阶（`--bg-*`、`--ink-*`、`--signal-*`、`--alpha-white-*`）；阴影不写 rgba，用 `--shadow-*`；状态与涨跌的类型用 `src/lib/severity.ts`、`src/lib/tone.ts`（2026-11-18，G0）。

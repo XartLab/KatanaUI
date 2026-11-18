@@ -47,7 +47,11 @@ export function coveredByShots(pkgDir, changed) {
     const seen = new Set([file])
     const queue = [file]
     while (queue.length)
-      for (const d of dependents.get(queue.shift()) ?? []) if (!seen.has(d)) (seen.add(d), queue.push(d))
+      for (const d of dependents.get(queue.shift()) ?? [])
+        if (!seen.has(d)) {
+          seen.add(d)
+          queue.push(d)
+        }
     return [...seen].filter((f) => f.endsWith('.tsx')).every((f) => targets.has(f))
   }
   return changed.every(ok)
