@@ -54,14 +54,24 @@ export function AiConversation({ children, label, jumpLabel, contentKey, classNa
     if (pinned) scrollToBottom('auto')
   }, [contentKey, pinned, scrollToBottom])
 
+  // 跟随状态存 ref：ResizeObserver 回调里要的是「变高之前」读者在不在底部。
+  const pinnedRef = useRef(pinned)
+  useLayoutEffect(() => {
+    pinnedRef.current = pinned
+  }, [pinned])
+
   useEffect(() => {
     const el = viewport.current
     if (!el) return
-    // 内容没经过 contentKey 也会变高（图加载完、折叠区展开），ResizeObserver 兜住。
-    const observer = new ResizeObserver(measure)
+    // 内容没经过 contentKey 也会变高（图加载完、折叠区展开），ResizeObserver 兜住：
+    // 原来在底部就继续贴底，不能把内容变高当成读者上翻（Codex #73）。
+    const observer = new ResizeObserver(() => {
+      if (pinnedRef.current) scrollToBottom('auto')
+      else measure()
+    })
     for (const child of Array.from(el.children)) observer.observe(child)
     return () => observer.disconnect()
-  }, [measure])
+  }, [measure, scrollToBottom])
 
   return (
     <div data-slot="ai-conversation" data-pinned={pinned} className={cn('relative min-h-0 w-full', className)}>

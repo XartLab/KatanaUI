@@ -14,7 +14,8 @@ export function FlashPrice({ value, text, className }: { value: number; text: st
   // hist.prev 是变化前的文字：useValueFlash 与这里的 setState 在同一轮渲染里生效，第二遍渲染读到新 key 时，旧文字只能从 prev 拿。
   const [hist, setHist] = useState({ value, text, prev: text })
   const [mark, setMark] = useState({ key, tail: '' })
-  if (value !== hist.value) setHist({ value, text, prev: hist.text })
+  // Object.is：NaN 与 NaN 视为同值，否则每轮渲染都 setState，React 报 Too many re-renders（Codex #73）。
+  if (!Object.is(value, hist.value)) setHist({ value, text, prev: hist.text })
   if (key !== mark.key) setMark({ key, tail: changedTail(hist.prev, text).tail })
   const tail = flash && mark.key === key && mark.tail && text.endsWith(mark.tail) ? mark.tail : null
   const head = tail ? text.slice(0, text.length - tail.length) : text
