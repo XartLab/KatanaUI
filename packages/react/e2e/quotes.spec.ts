@@ -77,6 +77,34 @@ test.describe('SymbolMark 品种徽标', () => {
   })
 })
 
+test.describe('SymbolMark 徽标来源（LogoProvider，#94）', () => {
+  test('币标按需载入、股票走自托管、找不到的退回字母；失败的地址不重复请求', async ({ page }) => {
+    const misses: string[] = []
+    page.on('request', (req) => {
+      if (req.url().includes('601318')) misses.push(req.url())
+    })
+    await open(page, 'graphite', 'symbol-mark')
+    const root = page.locator('[data-gallery="symbol-mark"]')
+    // 加密币：web3icons 的 SVG 是 data URL（按需 import 的小块），不是外链。
+    const btc = root.getByRole('img', { name: 'BTCUSDT' })
+    await expect(btc).toHaveAttribute('data-kind', 'image')
+    expect(await btc.locator('img').getAttribute('src')).toMatch(/^data:image\/svg\+xml/)
+    for (const name of ['ETH-USDT', 'SOL/USDT', 'BNBUSDT.P', 'XRP-PERP', 'DOGEUSDT'])
+      await expect(root.getByRole('img', { name }), name).toHaveAttribute('data-kind', 'image')
+    // 股票：自托管目录按「代码.场所」命名。
+    const a = root.getByRole('img', { name: '示例甲' }).first()
+    await expect(a).toHaveAttribute('data-kind', 'image')
+    expect(await a.locator('img').getAttribute('src')).toMatch(/logos-demo\/600519\.XSHG\.svg$/)
+    await expect(root.getByRole('img', { name: '示例乙' })).toHaveAttribute('data-kind', 'image')
+    // 找不到：两个候选（601318.XSHG.svg、601318.svg）都失败，退回字母（名称首字）。
+    const miss = root.getByRole('img', { name: '示例丁' })
+    await expect(miss).toHaveAttribute('data-kind', 'letters')
+    await expect(miss).toContainText('示')
+    await expect(root.getByRole('img', { name: 'NOSUCHCOIN-USDT' })).toHaveAttribute('data-kind', 'letters')
+    expect(new Set(misses).size).toBe(misses.length)
+  })
+})
+
 test.describe('RatingText 五档评级', () => {
   test('买入档涨色、卖出档跌色、中性不着色；强档两层箭头', async ({ page }) => {
     await open(page, 'graphite', 'rating-text')

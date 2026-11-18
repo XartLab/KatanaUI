@@ -58,6 +58,11 @@ tokens → theme → lib → primitives → katana → patterns → quotes → q
 - **没换：交易所多选（`SymbolSearch.tsx` 的 `VenueFilter`）→ `Combobox`。** 它是两列网格带 LOGO、状态灯和底部「全选 / 全部清除 / 完成」，行是 `role=checkbox`；`Combobox` 是单列的 listbox。要换得先给 `Combobox` 加两列与底栏，不然样子会变。现在包里的 `Combobox` 没有应用里的调用方，只在包与文档站里。
 - **没换：4px 滚动条（#1799）→ `ScrollArea`。** #1800 把滚动条做成了全局的原生 CSS（`scrollbar-width` 与 `::-webkit-scrollbar`），所有滚动容器自动带上；换成 `ScrollArea` 要给每个滚动容器套一层，还会带来自绘滚动条与原生滚动条并存的问题。`ScrollArea` 留给需要自绘滚动条的地方（比如要在滚动条上放标记）。
 
+## 徽标（#94）
+
+`SymbolMark` 没给 `src` 时读外层的 `LogoProvider`（`@katana-ui/logos/react`，另一个包 `packages/logos`）：来源、代码规范化、缓存、命令行都在那个包，本包只在 `quotes/symbol-mark.tsx` 用 `useLogo`。没有 Provider 时行为不变。
+同仓库开发读 logos 的 TS 源码：它的 exports 有 `katana-source` 条件，本包 `tsconfig.json` 的 `customConditions`、`vite.config.ts` 的 `sourceConditions`（截图配置与 `ds-build` 也用）开着它；`tsconfig.build.json` 关掉它，构建 lib 时读 logos 的 lib（logos 的 `prepare` 先构建）。不用通用的 `source` 条件名：`@internationalized/date` 等第三方包也用它指向自己的 TS 源码。来源与许可规则写在文档站「基础 → 图标与资源 → 徽标」。
+
 ## 三层 token 与密度（#1943）
 
 组件只读 characteristics（`--k-actionable-*`、`--k-focused-*` …）与密度变量（`--k-size-base`、`--k-spacing-*`），不读 palette（`ink-*`、`alpha-white-*` …）；高度与内距随容器上的 `data-density="high|medium|low"` 变，默认 medium。照 Salt 的 Foundation → Palette → Characteristics 分层，三层各是什么、密度表、命名规则见 [theming.md](theming.md#三层-token-与密度1943)。目前只有 Button 迁过来（`src/characteristics.test.ts` 守着），其余件后续逐个迁。

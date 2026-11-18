@@ -1,6 +1,7 @@
 node_modules/
 dist/
 /packages/react/lib/
+/packages/logos/lib/
 r/
 test-results/
 playwright-report/
