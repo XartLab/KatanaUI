@@ -39,6 +39,25 @@ const blocks: GuidanceMap = {
       '右上角第一个按钮切到明细表，图里的数在表里都有。',
     ],
   },
+  'use-undo-stack': {
+    aliases: ['Undo / Redo', 'History', 'useHistory', 'Ctrl+Z', '撤销'],
+    use: [
+      '「拖错了」的恢复：列宽、列序、行序、分组、旗标这类布局改动；TradingView 顶栏的撤销 / 重做（Ctrl+Z / Ctrl+Y）同一件事。',
+      '每次改动 push 一份完整的新值；连续同种的（拖列宽、拖滑块）给同一个 kind，800ms 内合并成一步。',
+      '最多留 100 步，再多丢最旧的；新 push 清掉重做。',
+      '撤销钮的提示写「撤销 <kind>」，kind 用给人看的词（列宽、列序）；数字写可撤的步数。',
+      '快捷键：Mac 上 ⌘Z / ⇧⌘Z，别处 Ctrl+Z / Ctrl+Shift+Z / Ctrl+Y；给 hotkeys 一个 ref 就只在那块面板有焦点时接，不抢别的面板的撤销。',
+    ],
+    avoid: [
+      '文字输入框自己的撤销交给浏览器：焦点在输入框、文本域、contenteditable 里时钩子不接 Mod+Z。',
+      '历史不进存档；要记住当前布局用 usePersistedState 存当前值。',
+      '用了 useHotkeys 注册表的面板，关掉这里的 hotkeys，改由注册表调 undo / redo，免得一次按键撤两步。',
+    ],
+    a11y: [
+      '撤销、重做钮没得撤时 disabled；改动后的结果要在界面上看得见（列宽、列序真的变回去），不另发读屏通知。',
+      '快捷键跳过输入法组字中的按键（isComposing）。',
+    ],
+  },
   'data-grid': {
     aliases: ['Table', 'Data table', 'Grid', 'Spreadsheet'],
     use: [
