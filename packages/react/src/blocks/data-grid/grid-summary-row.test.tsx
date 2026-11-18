@@ -73,6 +73,7 @@ describe('DataGrid summary', () => {
         summary={[
           { id: 'sum', label: '合计', columns: { qty: 'sum', pnl: 'sum' } },
           { id: 'avg', label: '均值', columns: { pnl: 'avg' } },
+          { id: 'hidden', label: '空', columns: { nope: 'sum' } },
         ]}
       />,
     )
@@ -81,5 +82,6 @@ describe('DataGrid summary', () => {
     expect(html).toContain('aria-rowcount="6"')
     expect(html).toMatch(/role="rowheader"[^>]*>合计</)
     expect(html).toContain('-20.00')
+    expect(html).not.toContain('data-summary="hidden"') // 看得见的列都没配聚合：不画
   })
 })

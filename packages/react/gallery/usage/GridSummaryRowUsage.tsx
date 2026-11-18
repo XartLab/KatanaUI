@@ -39,17 +39,17 @@ const LAYOUT: readonly GridColumnLayout[] = [
   { id: 'pnl', label: '浮动盈亏', width: 140, visible: true },
   { id: 'change', label: '涨跌幅', width: 90, visible: true },
 ]
-// 合计：市值与盈亏求和、品种计数；均值：涨跌幅取均值、中位数另起一行。行名由调用方按界面语言给。
+// 合计：市值与盈亏求和；均值、中位数：市值、盈亏、涨跌幅各取均值与中位数。行名由调用方按界面语言给。
 const SUMMARY: readonly GridSummary<Row>[] = [
   { id: 'total', label: '合计', columns: { value: 'sum', pnl: 'sum' } },
   { id: 'mean', label: '均值', columns: { value: 'avg', pnl: 'avg', change: 'avg' } },
-  { id: 'median', label: '中位数', columns: { change: 'median' } },
+  { id: 'median', label: '中位数', columns: { value: 'median', pnl: 'median', change: 'median' } },
 ]
 
 export function GridSummaryRowUsage() {
   const [sort, setSort] = useState<SortSpec | null>(null)
   return (
-    <div style={{ width: 520 }} data-gallery-summary>
+    <div style={{ width: 660 }} data-gallery-summary>
       <DataGrid
         columns={COLUMNS}
         layout={LAYOUT}
