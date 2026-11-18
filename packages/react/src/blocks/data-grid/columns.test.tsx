@@ -24,6 +24,119 @@ const col = (type: GridColumn<Row>['type'], format?: GridColumn<Row>['format']):
 })
 const cell = (column: GridColumn<Row>, v: unknown, env = {}) => resolveCell(column, { v }, env)
 
+describe('#90 新列类型与单位', () => {
+  it('单位另起一段：main 是数字、unit 是单位，text 连起来（复制与导出用）', () => {
+    expect(cell(col('pnl', { suffix: 'USDT' }), 12.5)).toMatchObject({ main: '+12.50', unit: 'USDT' })
+    expect(cell(col('price', { tick: 0.01, unit: 'USD' }), 3)).toMatchObject({ text: '3.00 USD', unit: 'USD' })
+    expect(cell(col('price', { unit: 'USD' }), null)).toMatchObject({ text: '—', unit: undefined })
+  })
+
+  it('compact：K/M/B/T 缩写，locale 换成 万/亿，单位小字', () => {
+    expect(cell(col('compact', { unit: 'USD' }), 4.53e12)).toMatchObject({
+      main: '4.53 T',
+      unit: 'USD',
+      text: '4.53 T USD',
+      sort: 4.53e12,
+    })
+    expect(cell(col('compact'), 123_456_789, { locale: 'zh-CN' }).text).toBe('1.23 亿')
+    expect(cell(col('compact', { locale: 'en-US' }), 123_456_789, { locale: 'zh-CN' }).text).toBe('123.46 M')
+    expect(defaultAlign('compact')).toBe('end')
+  })
+
+  it('percent：不带符号、不着色', () => {
+    expect(cell(col('percent'), 2.456)).toMatchObject({ text: '2.46%', direction: undefined, sort: 2.456 })
+    expect(cell(col('percent', { digits: 1 }), 0.4).text).toBe('0.4%')
+  })
+
+  it('rating：档名或 −1…1 的分数（technical-rating 的分档），文案可换，方向按档', () => {
+    expect(cell(col('rating'), 'strong-buy')).toMatchObject({
+      text: 'Strong buy',
+      direction: 'up',
+      visual: { kind: 'rating', level: 'strong-buy' },
+      sort: 4,
+    })
+    expect(cell(col('rating'), -0.3)).toMatchObject({ visual: { level: 'sell' }, direction: 'down', sort: -0.3 })
+    expect(cell(col('rating'), 0)).toMatchObject({ text: 'Neutral', direction: 'flat' })
+    const labels = { 'strong-sell': '强卖', sell: '卖', neutral: '中性', buy: '买', 'strong-buy': '强买' }
+    expect(cell(col('rating', { ratingLabels: labels }), 0.7).text).toBe('强买')
+    expect(cell(col('rating'), 'x').text).toBe('—')
+  })
+
+  it('bar 给了 barMax：数字不带符号，加 0…1 的满格比例（barMax 满格），越界贴边；不给是带符号的居中条', () => {
+    expect(cell(col('bar', { barMax: 3 }), 1.5)).toMatchObject({ text: '1.50', bar: 1.5, barShare: 0.5 })
+    expect(cell(col('bar', { barMax: 3 }), 9).barShare).toBe(1)
+    expect(cell(col('bar', { barMax: 3 }), null)).toMatchObject({ text: '—', barShare: undefined })
+    expect(cell(col('bar'), 1.5)).toMatchObject({ text: '+1.50', bar: 1.5, barShare: undefined })
+  })
+
+  it('spark：最后一个值作字，排序按头尾涨跌；不到两个点不画', () => {
+    const spark = cell(col('spark', { label: 'trend' }), [10, 11, 12.5])
+    expect(spark).toMatchObject({ text: '12.50', visual: { kind: 'spark', label: 'trend' } })
+    expect(spark.sort).toBeCloseTo(0.25)
+    expect(cell(col('spark'), [3]).visual).toBeUndefined()
+  })
+
+  it('range：两端写成字，排序按区间里的位置', () => {
+    expect(cell(col('range'), { low: 10, high: 20, value: 15 })).toMatchObject({
+      text: '10.00 – 20.00',
+      sort: 0.5,
+      visual: { kind: 'range', low: 10, high: 20, value: 15 },
+    })
+  })
+
+  it('date：只写日期，按毫秒排', () => {
+    const at = Date.UTC(2026, 10, 14, 23, 0, 0)
+    expect(cell(col('date'), at, { timeZone: 'utc' })).toMatchObject({ text: '2026-11-14', sort: at })
+    expect(sortComparator('date', undefined)(1, 2)).toBeLessThan(0)
+  })
+
+  it('symbol：symbolParts 定画哪几段；省略照旧（有 icon 才有 logo）', () => {
+    expect(cell(col('symbol'), { code: 'A', icon: {} }).symbol?.parts).toEqual(['logo', 'code', 'venue'])
+    expect(cell(col('symbol'), { code: 'A' }).symbol?.parts).toEqual(['code', 'venue'])
+    expect(cell(col('symbol', { symbolParts: ['logo', 'chip', 'name'] }), 'A').symbol?.parts).toEqual([
+      'logo',
+      'chip',
+      'name',
+    ])
+  })
+
+  it('渲染：芯片、全称、单位小字、评级、pill 标签、单边横条、comfortable 档与默认横线', () => {
+    type S = { code: string; name: string; cap: number; rating: string; sector: string; rvol: number }
+    const html = renderToStaticMarkup(
+      <DataGrid<S>
+        columns={[
+          {
+            id: 's',
+            type: 'symbol',
+            value: (r) => ({ code: r.code, name: r.name, icon: {} }),
+            format: { symbolParts: ['logo', 'chip', 'name'] },
+          },
+          { id: 'cap', type: 'compact', value: (r) => r.cap, format: { unit: 'USD' } },
+          { id: 'r', type: 'rating', value: (r) => r.rating },
+          { id: 'sec', type: 'pill', value: (r) => r.sector },
+          { id: 'rv', type: 'bar', value: (r) => r.rvol, format: { barMax: 3 } },
+        ]}
+        layout={['s', 'cap', 'r', 'sec', 'rv'].map((id) => ({ id, label: id, width: 120, visible: true }))}
+        rows={[{ code: 'ALFA', name: 'Alpha Inc', cap: 4.53e12, rating: 'buy', sector: 'Tech', rvol: 1.5 }]}
+        rowId={(r) => r.code}
+        label="t"
+        density="comfortable"
+      />,
+    )
+    expect(html).toContain('data-density="comfortable"')
+    expect(html).toContain('is-ruled')
+    expect(html).toContain('<span class="k-grid-chip">ALFA</span>')
+    expect(html).toContain('<span class="k-grid-fullname">Alpha Inc</span>')
+    expect(html).toContain('4.53 T <span class="k-grid-unit">USD</span>')
+    expect(html).toContain('data-slot="rating-text"')
+    expect(html).toContain('data-slot="grid-pills"')
+    expect(html).toContain('k-grid-bar is-share')
+    expect(html).toContain('width:50%')
+    expect(html).toMatch(/height:40px/)
+    expect(html).toMatch(/height:48px/)
+  })
+})
+
 describe('列类型的格式化与方向', () => {
   it('price：按 tick 或精度定小数位，空写 —', () => {
     expect(cell(col('price', { tick: 0.01 }), 1688).text).toBe('1,688.00')
@@ -77,7 +190,7 @@ describe('列类型的格式化与方向', () => {
       text: 'BTCUSDT.BINANCE',
       symbol: { code: 'BTCUSDT', venue: 'BINANCE' },
     })
-    expect(cell(col('symbol'), 'ES').symbol).toEqual({ code: 'ES', venue: undefined })
+    expect(cell(col('symbol'), 'ES').symbol).toMatchObject({ code: 'ES', venue: undefined })
     expect(cell(col('symbol'), undefined)).toMatchObject({ text: '—', symbol: undefined })
   })
 

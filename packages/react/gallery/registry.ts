@@ -1697,6 +1697,8 @@ export const PAGES: readonly DocPage[] = [
       'formatPrice',
       'formatQuantity',
       'formatVolume',
+      'compactNumber',
+      'formatCompactNumber',
       'stepDecimal',
       'toneOf',
     ],
@@ -1724,6 +1726,11 @@ export const PAGES: readonly DocPage[] = [
       {
         part: 'formatVolume(value)',
         note: '列表里的量与金额（照 TradingView 涨幅榜页，2026-11-15 读）：835.49 K、2.95 M、7.29 B，两位小数、数字与单位之间空一格；不到 1,000 取整；不带币种符号。',
+      },
+      {
+        part: 'compactNumber(value, { locale, digits }) / formatCompactNumber',
+        symbol: 'compactNumber',
+        note: '跟 locale 走的缩写（#90，DataGrid 的 compact 列用它）：Intl.NumberFormat 的 compact 记数法，en-US 是 K / M / B / T，zh-CN 是 万 / 亿 / 万亿；两位小数，数字与缩写字之间空一格；不到第一档照写、不补零。',
       },
     ],
     states: [
@@ -3482,11 +3489,11 @@ export const PAGES: readonly DocPage[] = [
     propParts: [
       {
         part: 'DataGrid',
-        note: '示例数据写死在页里，不是行情。行高档：compact 20、default 24、relaxed 32。没有 DataGridHost 时能点、能排序、能键盘选行，只是没有快捷键与标准右键项。',
+        note: '示例数据写死在页里，不是行情。行高档：compact 20、default 24、relaxed 32（面板密表）、comfortable 40（整页表，表头 48、正文 14px、默认行间线，#90）。没有 DataGridHost 时能点、能排序、能键盘选行，只是没有快捷键与标准右键项。',
       },
       {
         part: '列类型 ColumnType',
-        note: '数字类默认靠右，用等宽数字；pnl、change、side 用 ToneText 跟 data-updown 着色（红涨绿跌时互换）。bar 是以 0 为中线的居中条（正在右用涨色、负在左用跌色，长度按本列绝对值最大者归一，数字写在条旁；format 的 digits 与 suffix 同 pnl）。pill 是一格多枚短标签（值是字符串或 { label, tone } 的数组，tone 只有 up / down / muted / accent 四种，不传色值），一行放不下的按格子宽度收成「+n」、悬停的 title 写全部，format.maxPills 可再限个数。progress 是分子 / 分母加一条 3px 细条（值是 { done, total } 或 [done, total]，分母不是正数不画条，排序按比例）。任何列都可以再声明 heat: { domain, rank? }：格子底色按值深浅（跨 0 的 domain 里正数用涨色、负数用跌色，不跨 0 的按单边从最小到最大），rank 给了就在格子右上角写名次小字，不占行高行宽；颜色只由 token 给，不传色值。',
+        note: '数字类默认靠右，用等宽数字；pnl、change、side 用 ToneText 跟 data-updown 着色（红涨绿跌时互换）。bar 是以 0 为中线的居中条（正在右用涨色、负在左用跌色，长度按本列绝对值最大者归一，数字写在条旁；format 的 digits 与 suffix 同 pnl）。pill 是一格多枚短标签（值是字符串或 { label, tone } 的数组，tone 只有 up / down / muted / accent 四种，不传色值），一行放不下的按格子宽度收成「+n」、悬停的 title 写全部，format.maxPills 可再限个数。progress 是分子 / 分母加一条 3px 细条（值是 { done, total } 或 [done, total]，分母不是正数不画条，排序按比例）。任何列都可以再声明 heat: { domain, rank? }：格子底色按值深浅（跨 0 的 domain 里正数用涨色、负数用跌色，不跨 0 的按单边从最小到最大），rank 给了就在格子右上角写名次小字，不占行高行宽；颜色只由 token 给，不传色值。#90 新增 percent、compact（K/M/B/T 或 万/亿）、rating、spark、range、date，复用 RatingText、Sparkline、RangeBar；bar 给了 format.barMax 改画单边中性横条（满格 = barMax，给相对成交量这类有大小没正负的量）；分类标签用 pill；format.unit 写小字单位。',
       },
       {
         part: 'DataGridHost（经 DataGridHostProvider 提供）',

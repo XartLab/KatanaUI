@@ -57,6 +57,7 @@ import {
 import { LiveToggle } from '../LiveToggle.tsx'
 import { chance, pick, randomWalk, useLiveTicker, type Rng } from '../live-sim.ts'
 import { LiveStatusBarDemo } from './live-readouts.tsx'
+import { STOCKS, STOCK_COLUMNS, STOCK_LAYOUT, type Stock } from './screener-data.tsx'
 import { ActionLog, Row, SAMPLE_MARK_SRC, demoSymbolActions } from './parts.tsx'
 
 // 积木层（@katana-ui/react/blocks，#1869）的演示。表里的数据都是写死的示例数据，不是行情。
@@ -111,7 +112,154 @@ const EXAMPLES: readonly Example[] = [
     note: 'hedge',
     fills: '1',
   },
+  {
+    id: 'd',
+    symbol: { code: 'ETHUSDT', venue: 'BINANCE', name: 'Ethereum', icon: { src: SAMPLE_MARK_SRC } },
+    side: 'sell',
+    price: 3120.4,
+    qty: 4.5,
+    pnl: -86.2,
+    change: -1.92,
+    at: Date.UTC(2026, 10, 14, 10, 0, 0),
+    note: 'swing',
+    fills: '5',
+  },
+  {
+    id: 'e',
+    symbol: { code: '000001', venue: 'SZSE', name: '平安银行', icon: {} },
+    side: 'buy',
+    price: 11.32,
+    qty: 20000,
+    pnl: 412.0,
+    change: 0.71,
+    at: Date.UTC(2026, 10, 14, 10, 7, 13),
+    note: 'value',
+    fills: '2',
+  },
+  {
+    id: 'f',
+    symbol: { code: '00700', venue: 'HKEX', name: '腾讯控股', icon: {} },
+    side: 'buy',
+    price: 402.6,
+    qty: 800,
+    pnl: 958.4,
+    change: 2.36,
+    at: Date.UTC(2026, 10, 14, 11, 14, 26),
+    note: 'core',
+    fills: '4',
+  },
+  {
+    id: 'g',
+    symbol: { code: 'AAPL', venue: 'NASDAQ', name: 'Apple', icon: {} },
+    side: 'sell',
+    price: 228.15,
+    qty: 150,
+    pnl: -42.75,
+    change: -0.38,
+    at: Date.UTC(2026, 10, 14, 11, 21, 39),
+    note: 'trim',
+    fills: '1',
+  },
+  {
+    id: 'h',
+    symbol: { code: 'NQ', venue: 'CME' },
+    side: 'buy',
+    price: 20450.75,
+    qty: 2,
+    pnl: 1210.5,
+    change: 0.84,
+    at: Date.UTC(2026, 10, 14, 12, 28, 52),
+    note: 'hedge',
+    fills: '6',
+  },
+  {
+    id: 'i',
+    symbol: { code: 'SOLUSDT', venue: 'BINANCE', name: 'Solana', icon: { src: SAMPLE_MARK_SRC } },
+    side: 'buy',
+    price: 186.42,
+    qty: 40,
+    pnl: 264.8,
+    change: 3.58,
+    at: Date.UTC(2026, 10, 14, 12, 35, 5),
+    note: 'momo',
+    fills: '9',
+  },
+  {
+    id: 'j',
+    symbol: { code: '300750', venue: 'SZSE', name: '宁德时代', icon: {} },
+    side: 'sell',
+    price: 248.9,
+    qty: 600,
+    pnl: -198.3,
+    change: -1.12,
+    at: Date.UTC(2026, 10, 14, 13, 42, 18),
+    note: 'swing',
+    fills: '3',
+  },
+  {
+    id: 'k',
+    symbol: { code: 'CL', venue: 'NYMEX' },
+    side: 'sell',
+    price: 71.84,
+    qty: 10,
+    pnl: 355.0,
+    change: -0.95,
+    at: Date.UTC(2026, 10, 14, 13, 49, 31),
+    note: 'spread',
+    fills: '2',
+  },
+  {
+    id: 'l',
+    symbol: { code: 'GC', venue: 'COMEX' },
+    side: 'buy',
+    price: 2648.3,
+    qty: 3,
+    pnl: -124.6,
+    change: 0.12,
+    at: Date.UTC(2026, 10, 14, 14, 56, 44),
+    note: 'hedge',
+    fills: '1',
+  },
+  {
+    id: 'm',
+    symbol: { code: 'XRPUSDT', venue: 'BINANCE', name: 'XRP', icon: { src: SAMPLE_MARK_SRC } },
+    side: 'buy',
+    price: 0.6234,
+    qty: 25000,
+    pnl: 73.5,
+    change: 5.07,
+    at: Date.UTC(2026, 10, 14, 14, 3, 57),
+    note: 'scalp',
+    fills: '14',
+  },
+  {
+    id: 'n',
+    symbol: { code: 'EURUSD', venue: 'FX' },
+    side: 'sell',
+    price: 1.0842,
+    qty: 100000,
+    pnl: -55.0,
+    change: -0.21,
+    at: Date.UTC(2026, 10, 14, 15, 10, 10),
+    note: 'macro',
+    fills: '2',
+  },
+  {
+    id: 'o',
+    symbol: { code: '601318', venue: 'SSE', name: '中国平安', icon: {} },
+    side: 'buy',
+    price: 52.36,
+    qty: 3000,
+    pnl: 186.9,
+    change: 0.64,
+    at: Date.UTC(2026, 10, 14, 15, 17, 23),
+    note: 'value',
+    fills: '3',
+  },
 ]
+
+/** 示例品种的最小变动价位（演示用）。 */
+const TICKS: Record<string, number> = { ES: 0.25, NQ: 0.25, EURUSD: 0.0001, XRPUSDT: 0.0001 }
 
 const COLUMNS: readonly GridColumn<Example>[] = [
   { id: 'symbol', type: 'symbol', value: (row) => row.symbol },
@@ -120,7 +268,7 @@ const COLUMNS: readonly GridColumn<Example>[] = [
     id: 'price',
     type: 'price',
     value: (row) => row.price,
-    format: (row) => ({ tick: row.symbol.code === 'ES' ? 0.25 : 0.01 }),
+    format: (row) => ({ tick: TICKS[row.symbol.code] ?? 0.01 }),
   },
   { id: 'qty', type: 'quantity', value: (row) => row.qty },
   { id: 'pnl', type: 'pnl', value: (row) => row.pnl, format: { suffix: 'USDT' } },
@@ -408,16 +556,72 @@ function AShareColumnsDemo() {
   )
 }
 
+// 两种密度并排（#90）：comfortable 是整页的表（列覆盖全部新类型），compact 是面板里的密表（同一份演示数据只留四列，代码不用芯片）。
+const FULL_LAYOUT: readonly GridColumnLayout[] = STOCK_LAYOUT.map((column) => ({ ...column, visible: true }))
+const PANEL_COLUMNS: readonly GridColumn<Stock>[] = STOCK_COLUMNS.map((column) =>
+  column.id === 'symbol' ? { ...column, format: { symbolParts: ['logo', 'code'] } } : column,
+)
+const PANEL_LAYOUT: readonly GridColumnLayout[] = [
+  { id: 'symbol', label: 'Symbol', width: 110, visible: true },
+  { id: 'price', label: 'Last', width: 90, visible: true },
+  { id: 'change', label: 'Chg %', width: 70, visible: true },
+  { id: 'volume', label: 'Vol', width: 80, visible: true },
+]
+
+function DensityDemo() {
+  const [sort, setSort] = useState<SortSpec | null>({ id: 'mcap', desc: true })
+  const [panelSort, setPanelSort] = useState<SortSpec | null>(null)
+  return (
+    <>
+      <p className="gal-note">
+        comfortable 档（整页的表：选股器、持仓、报告）：行 40、表头 48、首列左 20、格内 12、正文
+        14px，只有行间横线。演示数据（16 只虚构股票，徽标是自绘示意图），列覆盖全部列类型：代码芯片加全称、单位小字、K /
+        M / B 缩写、相对成交量横条、评级、板块标签、30 日迷你图、52 周区间、财报日。
+      </p>
+      <div data-testid="grid-comfortable" style={{ display: 'flex', height: 520, width: '100%' }}>
+        <DataGrid
+          columns={STOCK_COLUMNS}
+          layout={FULL_LAYOUT}
+          rows={STOCKS}
+          rowId={(row) => row.code}
+          label="Comfortable screener"
+          sort={sort}
+          onSortChange={setSort}
+          density="comfortable"
+          timeZone="utc"
+        />
+      </div>
+      <p className="gal-note">
+        compact 档（面板里的密表：自选栏、盘口）：行 20、表头 22、格内 8、数据字
+        12px。同一份演示数据只留四列，代码不用芯片。
+      </p>
+      <div data-testid="grid-compact-panel" style={{ display: 'flex', height: 240, width: 360 }}>
+        <DataGrid
+          columns={PANEL_COLUMNS}
+          layout={PANEL_LAYOUT}
+          rows={STOCKS}
+          rowId={(row) => row.code}
+          label="Compact watchlist"
+          sort={panelSort}
+          onSortChange={setPanelSort}
+          density="compact"
+        />
+      </div>
+    </>
+  )
+}
+
 export function DataGridDemo() {
   const [sort, setSort] = useState<SortSpec | null>(null)
   const [log, setLog] = useState('')
   return (
     <>
       <p className="gal-note">
-        示例数据：每种列类型一列；点表头排序，右键看菜单；悬停或用上下键走到一行，右端浮出行快捷按钮（rowActions，#23）。品种列前是徽标：BTCUSDT
+        示例数据（15 行，不是行情）：default
+        档，每种老列类型一列；点表头排序，右键看菜单；悬停或用上下键走到一行，右端浮出行快捷按钮（rowActions，#23）。品种列前是徽标：BTCUSDT
         用自绘的示意图标（不是真实标志），600519 是字母圆标。
       </p>
-      <div data-testid="grid-demo" style={{ display: 'flex', height: 190, width: '100%', maxWidth: 780 }}>
+      <div data-testid="grid-demo" style={{ display: 'flex', height: 380, width: '100%', maxWidth: 780 }}>
         <DataGridHostProvider value={HOST}>
           <DataGrid
             columns={COLUMNS}
@@ -445,7 +649,7 @@ export function DataGridDemo() {
         <DataGrid
           columns={COLUMNS.filter((column) => column.id === 'symbol' || column.id === 'pnl')}
           layout={LAYOUT.filter((column) => column.id === 'symbol' || column.id === 'pnl')}
-          rows={EXAMPLES}
+          rows={EXAMPLES.slice(0, 3)}
           rowId={(row) => row.id}
           label="Compact example"
           sort={null}
@@ -484,7 +688,7 @@ export function DataGridDemo() {
         <DataGrid
           columns={DETAIL_COLUMNS}
           layout={DETAIL_LAYOUT}
-          rows={EXAMPLES}
+          rows={EXAMPLES.slice(0, 3)}
           rowId={(row) => row.id}
           label="Example rows with detail"
           rowProps={(row) => ({ 'data-example': row.id, title: row.symbol.code })}
@@ -503,6 +707,7 @@ export function DataGridDemo() {
           fit
         />
       </div>
+      <DensityDemo />
     </>
   )
 }

@@ -28,13 +28,45 @@ import { ToolbarUsage } from '../gallery/usage/ToolbarUsage.tsx'
 import { TransmissionChainUsage } from '../gallery/usage/TransmissionChainUsage.tsx'
 import { UptimeBarsUsage } from '../gallery/usage/UptimeBarsUsage.tsx'
 import { WorkspaceTabsUsage } from '../gallery/usage/WorkspaceTabsUsage.tsx'
+import { DataGrid } from '../src/blocks/index.ts'
+import { STOCKS, STOCK_COLUMNS, STOCK_LAYOUT } from '../gallery/pages/screener-data.tsx'
 import { mount } from './render.tsx'
+
+// comfortable 档的整页选股器（#90）：16 行演示数据，列覆盖代码芯片、单位小字、缩写、横条、评级、标签、迷你图、区间。
+const COMFORTABLE_COLUMNS = [
+  'symbol',
+  'price',
+  'change',
+  'volume',
+  'rvol',
+  'mcap',
+  'rating',
+  'sector',
+  'trend',
+  'range',
+]
+const comfortable = (
+  <div style={{ display: 'flex', height: 700 }}>
+    <DataGrid
+      columns={STOCK_COLUMNS}
+      layout={STOCK_LAYOUT.map((column) => ({ ...column, visible: COMFORTABLE_COLUMNS.includes(column.id) }))}
+      rows={STOCKS}
+      rowId={(row) => row.code}
+      label="Screener"
+      sort={{ id: 'mcap', desc: true }}
+      onSortChange={() => {}}
+      density="comfortable"
+      timeZone="utc"
+    />
+  </div>
+)
 
 const items: Record<string, React.ReactNode> = {
   'attribution-bars': <AttributionBarsUsage />,
   'column-set-tabs': <ColumnSetTabsUsage />,
   'consensus-block': <ConsensusBlockUsage />,
   'data-grid': <DataGridUsage />,
+  'data-grid-comfortable': comfortable,
   'decision-queue': <DecisionQueueUsage />,
   'empty-state': <EmptyStateUsage />,
   'estimate-badge': <EstimateBadgeUsage />,
@@ -60,6 +92,8 @@ const items: Record<string, React.ReactNode> = {
 }
 
 const settle: Record<string, number> = { 'page-preloader': 1500 }
+/** 默认框宽 720；整页的表要更宽。 */
+const widths: Record<string, number> = { 'data-grid-comfortable': 1480 }
 
 // Freeze the clock (Date only, so timers still run): today/relative-time cells must not drift between days.
 beforeAll(() => {
@@ -72,11 +106,11 @@ for (const theme of ['graphite', 'console'] as const) {
   describe(theme, () => {
     for (const [name, node] of Object.entries(items)) {
       test(name, async () => {
-        await page.viewport(960, 1800)
+        await page.viewport(Math.max(960, (widths[name] ?? 720) + 60), 1800)
         await mount(
           <div
             style={{
-              width: 720,
+              width: widths[name] ?? 720,
               display: 'flex',
               flexDirection: 'column',
               gap: 8,
