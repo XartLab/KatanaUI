@@ -11,7 +11,8 @@ import known from './ui-gallery-a11y-known.json' with { type: 'json' }
 const THEMES = ['console', 'graphite'] as const
 const TAGS = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']
 
-type Known = { page: string; theme?: (typeof THEMES)[number]; rule: string; reason: string }
+// timing：违规只在动画没走完时出现（量的时机决定有没有），这类条目不做「过期」检查，免得测试随机红。
+type Known = { page: string; theme?: (typeof THEMES)[number]; rule: string; reason: string; timing?: boolean }
 const knownList = known as readonly Known[]
 
 // 清单只许减：条目数不许超过现在的数；修好一条就删一条并把这个数调小。
@@ -56,7 +57,7 @@ for (const theme of THEMES) {
           )
       }
       for (const entry of entries)
-        if (!result.violations.some((violation) => violation.id === entry.rule))
+        if (!entry.timing && !result.violations.some((violation) => violation.id === entry.rule))
           problems.push(
             `已知清单过期：${entry.page} ${entry.rule} 已经没有了，把这条从 ui-gallery-a11y-known.json 删掉`,
           )

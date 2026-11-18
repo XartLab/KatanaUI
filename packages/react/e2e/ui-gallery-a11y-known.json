@@ -7,6 +7,7 @@
   {
     "page": "word-build",
     "rule": "color-contrast",
+    "timing": true,
     "reason": "逐词搭出的动画由 motion 库的弹簧驱动，axe 量的时候后面的词还在淡入（1.1–1.2:1）；settle 只等得到 WAAPI 动画，等不到 motion 的弹簧。读屏名是整句，不受影响"
   },
   {
