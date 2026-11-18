@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 import type { ComponentType } from 'react'
 import { NewsReaderDemo, ScreenerDemo } from './pages/screener.tsx'
+import { FlagMarkDemo } from './pages/watchlist-order.tsx'
 import {
   AgentAvatarDemo,
   AiApprovalDemo,
@@ -276,6 +277,7 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   badge: BadgeDemo,
   tag: TagDemo,
   kbd: KbdDemo,
+  'flag-mark': FlagMarkDemo,
   'shortcut-recorder': ShortcutRecorderDemo,
   'symbol-mark': SymbolMarkDemo,
   'number-input': NumberInputDemo,

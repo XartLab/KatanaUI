@@ -83,6 +83,23 @@ const readouts: GuidanceMap = {
     avoid: ['要让用户录入快捷键用 shortcut-recorder。'],
     a11y: ['外层 span 带 aria-label，读成完整组合而不是一串单键。', '只是展示，不可聚焦。'],
   },
+  'flag-mark': {
+    aliases: ['Flag', 'Color label', 'Marker', 'Watchlist flag'],
+    use: [
+      '自选、筛选结果里给行做私人标记（要盯、待入场、已持有），再按旗过滤。照 TradingView 自选表（2026-11-18 实看）。',
+      '旗在行最左端，10×12 燕尾旗，格子 16×18；没插时空心三级灰，平时透明，行悬停或键盘落在这一行才出。',
+      '点旗：插着就拔掉，没插就插上最近用过的那面（头一次是第一面）；选别的颜色走右键菜单（useFlags 的 menu(id)，每面旗一项，最后「拔掉」）。',
+      '颜色只用状态色：danger 玫瑰茜红、warn 土黄、ok 铬绿、neutral 灰，最多 4 面；名字由调用方给。TradingView 有 7 色，我们不为它造新色（待用户定是否要更多）。',
+      '按旗过滤：FlagFilter 一排旗加个数的按钮，按下的那面是浅底加描边，再点取消；过滤中挪行，藏起来的行留在原位。',
+    ],
+    avoid: ['表达状态好坏（成交、告警），用 status-icon 或 tag。', '不要用品牌橙当旗色：橙只给焦点角括号。'],
+    a11y: [
+      '可点的旗是 button，aria-pressed 表示插没插，读屏名由调用方给（「给 BTCUSDT 插旗」），插着时 title 带旗名。',
+      '在 DataGrid 里设 focusable={false}：表只占一个 Tab 停靠点，键盘用户从行的右键菜单（菜单键 / Shift+F10）插旗、换色。',
+      '过滤按钮是 role=group 里的 aria-pressed 按钮，读屏名是旗名加个数，不只靠颜色。',
+      'TradingView 的 Alt+Enter 插旗在包里没接（DataGrid 不认识旗），待定：要的话由宿主键位表接。',
+    ],
+  },
   'notification-bell': {
     aliases: ['Notification', 'Bell icon', 'Alert indicator', 'Badge'],
     use: [

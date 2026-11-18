@@ -57,6 +57,7 @@ import { LiveToggle } from '../LiveToggle.tsx'
 import { chance, pick, randomWalk, useLiveTicker, type Rng } from '../live-sim.ts'
 import { LiveStatusBarDemo } from './live-readouts.tsx'
 import { ActionLog, Row, SAMPLE_MARK_SRC, demoSymbolActions } from './parts.tsx'
+import { WatchlistOrderDemo } from './watchlist-order.tsx'
 
 // 积木层（@katana-ui/react/blocks，#1869）的演示。表里的数据都是写死的示例数据，不是行情。
 
@@ -325,6 +326,7 @@ export function DataGridDemo() {
       <ActionLog text={log} />
       <ColumnsDemo />
       <LiveGridDemo />
+      <WatchlistOrderDemo />
       <p className="gal-note">无表头、只读、紧凑行高的变体：</p>
       <div style={{ width: 300 }}>
         <DataGrid

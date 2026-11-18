@@ -20,6 +20,17 @@ export {
   type ColumnSet,
 } from './data-grid/column-picker.tsx'
 export { ColumnSetTabs, type ColumnSetTabsProps } from './data-grid/column-set-tabs.tsx'
+export { useRowOrder, type RowOrder, type UseRowOrderOptions } from './data-grid/use-row-order.ts'
+export {
+  applyRowOrder,
+  expandMoving,
+  mergeVisibleOrder,
+  moveRows,
+  moveRowsBy,
+  normalizeOrder,
+  type IsSection,
+} from './data-grid/row-order-model.ts'
+export type { RowMoveTo } from './data-grid/grid-menu.tsx'
 export {
   activeColumnSet,
   applyColumnSet,

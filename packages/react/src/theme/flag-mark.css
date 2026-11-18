@@ -1,0 +1,70 @@
+/* SPDX-License-Identifier: MIT */
+/* 行的彩色旗标（katana/flag-mark，#77 G7）：照 TradingView 自选表，旗在行最左端，10×12 燕尾旗。
+   插着：实心，颜色是状态色（--k-status-*，由件写在 style 上）；没插：空心三级灰，平时透明，行悬停、键盘落在这一行或自己获得焦点时出现。
+   不用品牌橙；焦点环用 --k-focused-*（同 lib/focus）。 */
+.k-flag-mark {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 18px;
+  padding: 0;
+  border: 0;
+  border-radius: 3px;
+  background: transparent;
+  color: var(--k-content-tertiary-foreground);
+  cursor: pointer;
+}
+span.k-flag-mark {
+  cursor: default;
+}
+.k-flag-mark.is-empty {
+  opacity: 0;
+  transition: opacity 100ms var(--ease-snappy, ease-out);
+}
+.k-flag-mark.is-empty:hover {
+  color: var(--k-content-secondary-foreground);
+}
+.k-grid-row:hover .k-flag-mark.is-empty,
+.k-grid-body:focus-visible .k-grid-row.is-cursor .k-flag-mark.is-empty,
+.k-flag-mark.is-empty:focus-visible,
+.k-flag-mark.is-empty.is-shown {
+  opacity: 1;
+}
+.k-flag-mark:focus-visible,
+.k-flag-filter-item:focus-visible {
+  outline: var(--k-focused-outlineWidth) solid var(--k-focused-outlineColor);
+  outline-offset: var(--k-focused-outlineOffset);
+}
+.k-flag-glyph {
+  display: block;
+}
+/* 按旗过滤：一排小按钮（旗加个数），按下的那面是浅底（--k-selectable-background-selected），不加描边色。 */
+.k-flag-filter {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+.k-flag-filter-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 22px;
+  padding: 0 6px;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+}
+.k-flag-filter-item:hover {
+  background: var(--k-selectable-background-hover);
+}
+.k-flag-filter-item[aria-pressed='true'] {
+  border-color: var(--k-selectable-border);
+  background: var(--k-selectable-background-selected);
+  color: var(--k-content-primary-foreground);
+}
