@@ -26,6 +26,7 @@ import { defaultAlign, resolveCell, sortComparator } from './columns.ts'
 import { HEAD_HEIGHTS, ROW_HEIGHTS, type DataGridProps } from './data-grid-props.ts'
 import { CellBody, FLASH_TYPES, FlashCell, keepActionsInView } from './grid-cells.tsx'
 import { GridHead } from './grid-head.tsx'
+import { GridSummaryRow } from './grid-summary-row.tsx'
 import { DefaultMenu, gridMenuEntries, type GridMenuOn } from './grid-menu.tsx'
 import { resolveLabels, useDataGridHost } from './host.tsx'
 import { EMPTY_SELECTION, clickSelection, moveCursor, tableCsv, tableTsv, type Selection } from './model.ts'
@@ -85,6 +86,7 @@ export function DataGrid<Row extends object>({
   exportName = 'table',
   onExport,
   foot,
+  summary,
   presorted,
   rowTree,
   timeZone,
@@ -225,6 +227,10 @@ export function DataGrid<Row extends object>({
     stuck.set(column.id, left)
     left += column.getSize()
   }
+  // 汇总行：一个看得见的列都没配聚合的整行不画（只剩行名的空行没有信息）。
+  const shownSummary = (summary ?? []).filter((entry) =>
+    visibleColumns.some((column) => entry.columns[column.id] !== undefined),
+  )
   const stuckIds = visibleColumns.filter((column) => stuck.has(column.id)).map((column) => column.id)
   const stickClass = (columnId: string) =>
     stuck.has(columnId)
@@ -431,7 +437,7 @@ export function DataGrid<Row extends object>({
       tabIndex={interactive ? 0 : undefined}
       role={tabular}
       aria-multiselectable={interactive && selectable ? 'true' : undefined}
-      aria-rowcount={items.length + 1}
+      aria-rowcount={items.length + 1 + shownSummary.length}
       aria-label={interactive ? texts.gridLabel(label) : label}
       aria-activedescendant={cursor !== null ? rowDomId(cursor) : undefined}
       data-slot="data-grid-body"
@@ -600,6 +606,26 @@ export function DataGrid<Row extends object>({
               )
             })}
           </div>
+          {shownSummary.length > 0 && (
+            <div className="k-grid-summary" role="rowgroup" data-slot="grid-summary">
+              {shownSummary.map((entry, index) => (
+                <GridSummaryRow
+                  key={entry.id}
+                  summary={entry}
+                  columns={visibleColumns.map((column) => byId.get(column.id)!)}
+                  rows={modelRows.map((row) => row.original)}
+                  env={env}
+                  template={template}
+                  height={rowHeight}
+                  cellRole={cellRole}
+                  ariaRowIndex={items.length + 2 - (hideHeader ? 1 : 0) + index}
+                  alignOf={alignOf}
+                  stickClass={stickClass}
+                  stickStyle={stickStyle}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

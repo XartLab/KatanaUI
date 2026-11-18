@@ -311,6 +311,22 @@ const forms: GuidanceMap = {
       '整份清单的名字取 label。',
     ],
   },
+  'refresh-control': {
+    aliases: ['Auto refresh', 'Refresh interval', 'Polling control', '自动刷新'],
+    use: [
+      '筛选器、行情表、新闻流这类轮询的数据：TradingView 筛选器是「10 秒 / 1 分钟 / 不刷新」三档（#22 G12），演示照这三档；档位由调用方给。',
+      '次序：间隔分段（ToggleGroup sm，26 高）· 立即刷新钮（24 × 24，图标 14px）· 「上次 HH:MM:SS」· 「下次 12s」；时刻主文字色，前缀次要文字色，等宽数字。',
+      '倒计时从 lastRefreshed + interval 算，每秒一格；60 秒以内写 12s，以上写 1:05。',
+      '在刷（refreshing）：图标转圈（1.2s 一圈），倒计时不显示，到点不重复调。',
+      '标签页隐藏时停（不白拉数据），回到前台已过点就马上刷一次。',
+    ],
+    avoid: ['推送来的实时数据（WebSocket）不需要它：用 live 的连接状态。', '一次性的手动刷新只要一个钮，用 Button。'],
+    a11y: [
+      '间隔是 ToggleGroup（读屏名 labels.interval，当前档 aria-pressed）；刷新钮读屏名 labels.refresh。',
+      '在刷时刷新钮是 aria-disabled，不是 disabled：焦点不丢。',
+      '倒计时不放 aria-live（每秒读太吵）；上次时刻用 <time datetime>。',
+    ],
+  },
   'duration-picker': {
     aliases: ['Time duration input', 'Duration field', '时长输入'],
     use: ['订单有效时长、冷却时间、回放步长。', '值在一天以内，用「时 + 分」表达。'],
