@@ -3620,6 +3620,7 @@ export const PAGES: readonly DocPage[] = [
       '有汇总：表尾一组 rowgroup，上面一道分隔线、底色 surface-raised、600 字重；行名次要文字色。',
       '固定列：汇总行的固定格同样粘在左边。',
       '没有有效值：sum / avg 这类写 —，count 写 0。',
+      '看得见的列都没配聚合的汇总行不画。',
     ],
     donts: [
       '不要对涨跌幅、价格求和：用 avg 或 median。',
