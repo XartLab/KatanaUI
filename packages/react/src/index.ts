@@ -258,6 +258,8 @@ export {
   type ShortcutRecorderProps,
 } from './patterns/shortcut-recorder.tsx'
 export { SymbolMark, symbolMarkLetters, type SymbolMarkProps } from './quotes/symbol-mark.tsx'
+// 跑马灯（#77 第 5 条）。
+export { TickerTape, type TickerItem, type TickerTapeLabels, type TickerTapeProps } from './quotes/ticker-tape.tsx'
 export { BadgeGroup, type BadgeItem } from './katana/badge.tsx'
 export { RollingText, rollSlots, rollStrip } from './katana/rolling-text.tsx'
 export { Scrubber, scrubSnap, scrubValueAt, type ScrubberProps } from './katana/scrubber.tsx'
@@ -331,6 +333,17 @@ export {
   type DurationPickerProps,
   type DurationValue,
 } from './patterns/duration-picker.tsx'
+// 自动刷新控件（#77 第 5 条，#22 G12）。
+export {
+  RefreshControl,
+  formatClock,
+  formatRemaining,
+  useAutoRefresh,
+  type RefreshControlLabels,
+  type RefreshControlProps,
+  type RefreshOption,
+  type UseAutoRefreshOptions,
+} from './patterns/refresh-control.tsx'
 export { useHoverIntent } from './lib/hover-intent.ts'
 export { useScrubber, type UseScrubberOptions } from './lib/use-scrubber.ts'
 export {

@@ -123,6 +123,27 @@ const quotes: GuidanceMap = {
     avoid: ['单个重点指标用 metric-card 或 lcd。', '随时间变化的数用 sparkline 类件。'],
     a11y: ['用 dl 结构，标签是 dt，数值是 dd，读屏能成对读。', '「›」装饰符号对读屏隐藏。', '没有值读到「—」。'],
   },
+  'ticker-tape': {
+    aliases: ['Ticker tape', 'Marquee', 'Ticker bar', 'Scrolling ticker', '跑马灯', '行情条'],
+    use: [
+      '页顶或面板顶一条指数、主流币的行情：布局照 TradingView Ticker Tape 小组件（2026-11-18 在 Chrome 实测）——stacked 两行（上行徽标 18px + 代码 600 字重，下行价 + 币种小字 + 涨跌幅），右侧走势 64 × 28；项之间 1px 竖分隔线。',
+      'inline：一行 32 高（徽标 代码 价 涨跌幅），放在状态栏、窄面板里。',
+      '速度默认 40px/s（时长 = 一遍的宽度 / speed）；匀速线性，循环接缝看不出（同一排画两遍、平移 -50%）。',
+      '停：指针停在条上（那一项底色提到 surface-raised，同 TV 悬停）、键盘焦点在条里、按右端 24px 宽的暂停钮。',
+      '点一项联动（onSelect：开图、切品种）；给了 onSelect 每项是按钮。',
+      'mode="static"：固定不滚（TV 的「滚动或固定」），超出部分横向滚动。',
+      '待定：系统「减少动态效果」时这里不动（派发 #77 要求）；theme/motion.css 头部写着「产品不跟减少动态效果」，那条管的是进出场过渡，持续的跑马灯是否例外待用户定。',
+    ],
+    avoid: [
+      '几十个品种、要排序比较的用 watchlist 或 quote-table。',
+      '要用户盯住某个数的地方别用：滚走了就看不到，用 metric-card 或 quote-card。',
+    ],
+    a11y: [
+      'section 带读屏名（labels.region）；第一遍是 list / listitem，第二遍 aria-hidden + inert，键盘与读屏只走一遍。',
+      '暂停钮必有（WCAG 2.2.2），文字在「暂停 / 继续」间换，不加 aria-pressed；减少动态效果不代替它。',
+      '涨跌幅带 + / − 号，不只靠颜色；价格只闪变了的尾数，一秒最多一次（不超 WCAG 2.3.1 的三次）。',
+    ],
+  },
   watchlist: {
     aliases: ['Symbol list', 'Quote list', 'Market watch', 'Portfolio table'],
     use: [

@@ -1,0 +1,143 @@
+/* SPDX-License-Identifier: MIT */
+/* 跑马灯 TickerTape（#77）。布局照 TradingView Ticker Tape 小组件（2026-11-18 实测，只取布局）：项之间 1px 竖分隔线；stacked 两行（徽标 18 + 代码 600 字重；价 + 币种小字 + 涨跌幅），右侧走势 64 × 28；
+   inline 一行 32 高。悬停那一项底色提到 surface-raised；颜色只用涨跌语义色（ChangeText 的 data-updown）与中性灰，不用 TV 蓝。焦点环读 --k-focused-*。
+   动画只写在 prefers-reduced-motion: no-preference 里；时长由组件按「一遍的宽度 / speed」算好写进 --k-ticker-duration。 */
+.k-ticker {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  min-width: 0;
+  border-block: 1px solid var(--k-separable-tertiary-borderColor);
+  background: var(--k-surface-base-background);
+  font: var(--text-data) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+}
+.k-ticker-viewport {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  outline: 0;
+}
+.k-ticker[data-mode='static'] .k-ticker-viewport {
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+.k-ticker-viewport:focus-visible {
+  outline: var(--k-focused-outlineWidth) solid var(--k-focused-outlineColor);
+  outline-offset: -2px;
+}
+.k-ticker-track {
+  display: flex;
+  width: max-content;
+}
+.k-ticker-lane {
+  display: flex;
+  flex: none;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .k-ticker[data-mode='scroll'] .k-ticker-track {
+    animation: k-ticker-scroll var(--k-ticker-duration, 30s) linear infinite;
+  }
+}
+.k-ticker[data-paused] .k-ticker-track,
+.k-ticker-viewport:hover .k-ticker-track,
+.k-ticker-viewport:focus-within .k-ticker-track {
+  animation-play-state: paused;
+}
+@keyframes k-ticker-scroll {
+  to {
+    translate: -50% 0;
+  }
+}
+.k-ticker-cell {
+  display: flex;
+  border-right: 1px solid var(--k-separable-tertiary-borderColor);
+}
+.k-ticker-item {
+  display: grid;
+  grid-template-columns: auto auto;
+  grid-template-rows: auto auto;
+  align-items: center;
+  column-gap: 12px;
+  row-gap: 2px;
+  margin: 0;
+  padding: 6px 12px;
+  border: 0;
+  background: transparent;
+  color: var(--k-content-primary-foreground);
+  font: inherit;
+  text-align: left;
+  white-space: nowrap;
+}
+button.k-ticker-item {
+  cursor: pointer;
+}
+.k-ticker-item:hover {
+  background: var(--k-surface-raised-background);
+}
+.k-ticker-item:focus-visible {
+  outline: var(--k-focused-outlineWidth) solid var(--k-focused-outlineColor);
+  outline-offset: -2px;
+}
+.k-ticker-head {
+  display: inline-flex;
+  grid-column: 1;
+  grid-row: 1;
+  align-items: center;
+  gap: 6px;
+}
+.k-ticker-code {
+  font-weight: 600;
+}
+.k-ticker-quote {
+  display: inline-flex;
+  grid-column: 1;
+  grid-row: 2;
+  align-items: baseline;
+  gap: 4px;
+}
+.k-ticker-last {
+  color: var(--k-content-primary-foreground);
+}
+.k-ticker-ccy {
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans);
+}
+.k-ticker-change {
+  margin-left: 2px;
+}
+.k-ticker-trend {
+  display: block;
+  grid-column: 2;
+  grid-row: 1 / 3;
+  width: 64px;
+  height: 28px;
+}
+/* inline：一行（徽标 代码 价 涨跌幅），32 高。 */
+.k-ticker[data-layout='inline'] .k-ticker-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 32px;
+  padding-block: 0;
+}
+.k-ticker-toggle {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 24px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-left: 1px solid var(--k-separable-tertiary-borderColor);
+  background: var(--k-surface-base-background);
+  color: var(--k-content-secondary-foreground);
+  cursor: pointer;
+}
+.k-ticker-toggle:hover {
+  color: var(--k-content-primary-foreground);
+}
+.k-ticker-toggle:focus-visible {
+  outline: var(--k-focused-outlineWidth) solid var(--k-focused-outlineColor);
+  outline-offset: -2px;
+}
