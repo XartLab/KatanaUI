@@ -8,16 +8,18 @@
 // 所以用 devDependency `typescript-classic`（npm:typescript@6.0.3，与根目录 pnpm-workspace.yaml 给 dependency-cruiser 配的同一份 6.x）。
 // 用法：node scripts/docs-props.mjs            重新生成
 //       node scripts/docs-props.mjs --check    只比对：生成的与已提交的不一样就退出 1（pnpm lint:ds 先跑它）
-import { readFileSync, writeFileSync } from 'node:fs'
+import { readFileSync, renameSync, rmSync, writeFileSync } from 'node:fs'
 import { dirname, join, relative, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import ts from 'typescript-classic'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const pkg = resolve(here, '..')
-const OUT = join(pkg, 'gallery/props.generated.json')
 /** package.json 的 exports 里有代码的几个入口（quant/format 已被 quant 再导出）。 */
-const ENTRIES = ['src/index.ts', 'src/quotes/index.ts', 'src/quant/index.ts', 'src/blocks/index.ts']
+export const ENTRIES = ['src/index.ts', 'src/quotes/index.ts', 'src/quant/index.ts', 'src/blocks/index.ts']
+
+/** 路径统一成正斜杠：TS 的 fileName 在 Windows 上是 `C:/…`，path.resolve 出的包根是 `C:\\…`，直接比前缀永远不等（#59）。 */
+export const toPosix = (path) => path.replaceAll('\\', '/')
 
 const squash = (text) => text.replace(/\s+/g, ' ').trim()
 
@@ -28,14 +30,18 @@ export function firstSentence(text) {
   return hit ? hit[1] : flat
 }
 
-function createProgram() {
-  const configPath = join(pkg, 'tsconfig.json')
+function createProgram(root, entries) {
+  const configPath = join(root, 'tsconfig.json')
   const config = ts.readConfigFile(configPath, ts.sys.readFile)
-  const parsed = ts.parseJsonConfigFileContent(config.config, ts.sys, pkg)
-  return ts.createProgram({ rootNames: ENTRIES.map((entry) => join(pkg, entry)), options: parsed.options })
+  const parsed = ts.parseJsonConfigFileContent(config.config, ts.sys, root)
+  return ts.createProgram({ rootNames: entries.map((entry) => join(root, entry)), options: parsed.options })
 }
 
-const inPackage = (file) => !file.fileName.includes('/node_modules/') && file.fileName.startsWith(`${pkg}/src/`)
+/** 声明是否在包的 src/ 里（不含 node_modules）；两边先统一分隔符再比前缀。 */
+export const inPackage = (file, root = pkg) => {
+  const fileName = toPosix(file.fileName)
+  return !fileName.includes('/node_modules/') && fileName.startsWith(`${toPosix(root)}/src/`)
+}
 
 /** 形参解构里的默认值：`{ variant = 'default' }` → { variant: "'default'" }。 */
 function destructuringDefaults(declaration) {
@@ -81,34 +87,43 @@ function describeProp(checker, prop, defaults) {
   return entry
 }
 
-function ownProps(checker, type, defaults) {
+function ownProps(checker, type, defaults, root) {
   if (!type.getProperties) return []
   return type
     .getProperties()
-    .filter((prop) => prop.declarations?.some((decl) => inPackage(decl.getSourceFile())))
+    .filter((prop) => prop.declarations?.some((decl) => inPackage(decl.getSourceFile(), root)))
     .map((prop) => describeProp(checker, prop, defaults))
 }
 
-/** 生成全部条目（对象：导出名 → { kind, source, props }）。 */
-export function generate() {
-  const program = createProgram()
+/**
+ * 生成全部条目（对象：导出名 → { kind, source, props }）。
+ * 入口缺失、不是模块、一个导出都没有、或全部导出的属性表都空，一律抛出可诊断的错误：
+ * 这几种都说明包路径或 TS 声明没读对（#59：Windows 上前缀比不上，生成了全空的表，--check 还说最新）。
+ */
+export function generate({ root = pkg, entries = ENTRIES } = {}) {
+  const program = createProgram(root, entries)
   const checker = program.getTypeChecker()
   const exports = {}
-  for (const entry of ENTRIES) {
-    const file = program.getSourceFile(join(pkg, entry))
+  for (const entry of entries) {
+    const file = program.getSourceFile(join(root, entry))
+    if (!file)
+      throw new Error(
+        `docs-props：入口 ${entry} 不在程序里（${toPosix(join(root, entry))}），检查文件是否存在与 tsconfig`,
+      )
     const moduleSymbol = checker.getSymbolAtLocation(file)
+    if (!moduleSymbol) throw new Error(`docs-props：入口 ${entry} 不是模块（没有 import / export）`)
     for (const exported of checker.getExportsOfModule(moduleSymbol)) {
       const name = exported.getName()
       const symbol = exported.flags & ts.SymbolFlags.Alias ? checker.getAliasedSymbol(exported) : exported
       const declaration = symbol.valueDeclaration ?? symbol.declarations?.[0]
       if (!declaration) continue
-      const source = relative(pkg, declaration.getSourceFile().fileName).replaceAll('\\', '/')
+      const source = toPosix(relative(root, declaration.getSourceFile().fileName))
       let kind = 'value'
       let props = []
       if (!(symbol.flags & ts.SymbolFlags.Value)) {
         kind = 'type'
         const declared = checker.getDeclaredTypeOfSymbol(symbol)
-        if (!declared.isUnion()) props = ownProps(checker, declared, {})
+        if (!declared.isUnion()) props = ownProps(checker, declared, {}, root)
       } else {
         const type = checker.getTypeOfSymbolAtLocation(symbol, declaration)
         const signature = type.getCallSignatures()[0]
@@ -117,7 +132,7 @@ export function generate() {
           // 每个形参里的自有属性都收（formatPrice(value, { precision, tick }) 的选项在第二个形参）；默认值只认第一个形参的解构。
           signature.parameters.forEach((param, index) => {
             const paramType = checker.getTypeOfSymbolAtLocation(param, declaration)
-            props.push(...ownProps(checker, paramType, index === 0 ? destructuringDefaults(declaration) : {}))
+            props.push(...ownProps(checker, paramType, index === 0 ? destructuringDefaults(declaration) : {}, root))
           })
         }
       }
@@ -128,30 +143,61 @@ export function generate() {
       exports[name] = next
     }
   }
+  const names = Object.keys(exports)
+  if (names.length === 0) {
+    throw new Error(`docs-props：${entries.join('、')} 一个导出都没有，拒绝生成；检查包路径与入口`)
+  }
+  if (names.every((name) => exports[name].props.length === 0)) {
+    throw new Error(
+      `docs-props：${names.length} 个导出的属性表全为空，拒绝生成；多半是声明没认成包内的（包根 ${toPosix(root)}/src/，` +
+        `示例声明 ${toPosix(join(root, exports[names[0]].source))}），检查路径分隔符与 TS 声明`,
+    )
+  }
   return Object.fromEntries(Object.entries(exports).toSorted(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0)))
 }
 
-export const render = () =>
+export const COMMENT =
+  '生成文件（pnpm docs:props）：各导出的自有 props，取自 TS 类型与 JSDoc，不手改。继承来的 DOM / Radix 属性不列。'
+
+export const render = (options) =>
   `${JSON.stringify(
     {
-      $comment:
-        '生成文件（pnpm docs:props）：各导出的自有 props，取自 TS 类型与 JSDoc，不手改。继承来的 DOM / Radix 属性不列。',
-      exports: generate(),
+      $comment: COMMENT,
+      exports: generate(options),
     },
     null,
     2,
   )}\n`
 
-if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-  const next = render()
-  if (process.argv.includes('--check')) {
+/** 先写同目录的临时文件再改名：写到一半失败不会留下半截的表，已有文件保持原样。 */
+function writeAtomic(path, text) {
+  const temp = `${path}.${process.pid}.tmp`
+  try {
+    writeFileSync(temp, text)
+    renameSync(temp, path)
+  } catch (error) {
+    rmSync(temp, { force: true })
+    throw error
+  }
+}
+
+/** 命令行：返回退出码。`root` 与 `out` 只给测试换夹具用。 */
+export function main(argv, { root = pkg, out = join(root, 'gallery/props.generated.json') } = {}) {
+  let next
+  try {
+    next = render({ root })
+  } catch (error) {
+    console.error(error instanceof Error ? error.message : String(error))
+    return 1
+  }
+  if (argv.includes('--check')) {
     let current = ''
     try {
-      current = readFileSync(OUT, 'utf8')
+      current = readFileSync(out, 'utf8')
     } catch {
       // 文件还没有：下面按不一样处理。
     }
-    if (current !== next) {
+    if (current.replaceAll('\r\n', '\n') !== next) {
       const was = current ? JSON.parse(current).exports : {}
       const now = JSON.parse(next).exports
       const changed = Object.keys({ ...was, ...now }).filter(
@@ -161,11 +207,23 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
         `docs-props：gallery/props.generated.json 过期（${changed.slice(0, 12).join('、')}${changed.length > 12 ? ' 等' : ''}）。` +
           '\n  跑 pnpm docs:props 重新生成并提交。',
       )
-      process.exit(1)
+      return 1
     }
     console.log('docs-props：props.generated.json 是最新的')
-  } else {
-    writeFileSync(OUT, next)
-    console.log(`docs-props：写了 ${relative(process.cwd(), OUT)}`)
+    return 0
   }
+  try {
+    writeAtomic(out, next)
+  } catch (error) {
+    console.error(
+      `docs-props：写 ${toPosix(out)} 失败，已有文件未改：${error instanceof Error ? error.message : String(error)}`,
+    )
+    return 1
+  }
+  console.log(`docs-props：写了 ${toPosix(relative(process.cwd(), out))}`)
+  return 0
+}
+
+if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  process.exitCode = main(process.argv.slice(2))
 }
