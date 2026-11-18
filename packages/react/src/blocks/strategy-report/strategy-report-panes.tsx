@@ -64,7 +64,7 @@ export function MetricTable({
   caption: string
 }) {
   return (
-    <table className="k-sr-table" data-slot="strategy-report-table">
+    <table className="k-sr-table k-table-comfortable" data-slot="strategy-report-table">
       <caption className="k-sr-sr">{caption}</caption>
       <thead>
         <tr>
@@ -317,15 +317,15 @@ export function TradesPane({
     const widths: [string, string, number][] = [
       ['index', c.index, 48],
       ['side', c.side, 56],
-      ['entryTime', c.entryTime, 150],
-      ['exitTime', c.exitTime, 150],
-      ['entryPrice', c.entryPrice, 92],
-      ['exitPrice', c.exitPrice, 92],
-      ['quantity', c.quantity, 80],
-      ['pnl', c.pnl, 100],
-      ['cumulative', c.cumulative, 110],
-      ['runup', c.runup, 100],
-      ['drawdown', c.drawdown, 100],
+      ['entryTime', c.entryTime, 172],
+      ['exitTime', c.exitTime, 172],
+      ['entryPrice', c.entryPrice, 100],
+      ['exitPrice', c.exitPrice, 100],
+      ['quantity', c.quantity, 88],
+      ['pnl', c.pnl, 112],
+      ['cumulative', c.cumulative, 120],
+      ['runup', c.runup, 112],
+      ['drawdown', c.drawdown, 112],
     ]
     return widths.map(([id, label, width]) => ({ id, label, width, visible: true }))
   }, [labels.list.columns])
@@ -353,8 +353,8 @@ export function TradesPane({
       onExport={onExport}
       exportName="trades"
       timeZone="utc"
-      density="default"
-      ruled
+      // 整页的报告表（#92）：comfortable 档，行 40、正文 14px、默认行间线；列宽随 14px 的字加宽一档。
+      density="comfortable"
       expanded={expanded}
       onExpandedChange={setOpen}
       // 点行展开 / 收起（键盘 → ← 同样）：每笔的信号与收益率在展开行里。

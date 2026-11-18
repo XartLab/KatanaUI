@@ -167,6 +167,11 @@ for (const theme of THEMES) {
       await tiles.first().click()
       await ok.getByRole('button', { name: '表格视图' }).click()
       await expect(ok.locator('[data-slot="series-table"]')).toBeVisible()
+      // 表格视图是整页表的一套数（#92，.k-table-comfortable）：行 40、表头 48、正文 14px。
+      const seriesTable = ok.locator('[data-slot="series-table"] table')
+      expect(Math.round((await seriesTable.locator('tbody tr').first().boundingBox())!.height)).toBe(40)
+      expect(Math.round((await seriesTable.locator('thead tr').boundingBox())!.height)).toBe(48)
+      await expect(seriesTable.locator('tbody td').first()).toHaveCSS('font-size', '14px')
       await expect(ok.locator('[data-slot="series-reconcile"]')).toHaveAttribute('data-tone', 'ok')
       await expect(sec.locator('[data-gallery-explorer="mismatch"] [data-slot="series-reconcile"]')).toHaveAttribute(
         'data-tone',

@@ -94,3 +94,5 @@
 @import './theme/sui-motion.css';
 @import './theme/form-motion.css';
 @import './theme/motion-text.css';
+/* 表格格内排版与整页表的数值（#92）：排在各件样式之后，报告类原生表同权重时以它为准。 */
+@import './theme/cell-type.css';

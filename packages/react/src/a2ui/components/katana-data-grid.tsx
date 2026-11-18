@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 // KatanaDataGrid：数据表。列由智能体按 schema 给（类型决定格式、对齐与涨跌色），行是数据模型里的一列对象；
 // 不暴露 cell / render 函数。点行与行快捷动作只发 Action，并带行 id；真正的操作由宿主决定。
+// #92：认 comfortable 档（整页表）与 #90 的八种列类型（percent / compact / rating / bar / spark / tag / range / date），格式选项照 GridColumn.format 的同名字段。
 import { createComponentImplementation } from '@a2ui/react'
 import type { ComponentApi } from '@a2ui/web_core'
 import { CommonSchemas } from '@a2ui/web_core/v1_0'
@@ -20,7 +21,27 @@ import { Cell, actionSchema, fill, isoToMs, weightSchema } from '../support.tsx'
 /** 行数上限：再多的行由智能体分页，别一次塞进数据模型。 */
 const MAX_ROWS = 2000
 
-const COLUMN_TYPES = ['text', 'number', 'price', 'quantity', 'pnl', 'change', 'side', 'time', 'symbol'] as const
+const COLUMN_TYPES = [
+  'text',
+  'number',
+  'price',
+  'quantity',
+  'pnl',
+  'change',
+  'side',
+  'time',
+  'symbol',
+  'percent',
+  'compact',
+  'rating',
+  'bar',
+  'spark',
+  'tag',
+  'range',
+  'date',
+] as const
+const SYMBOL_PARTS = ['logo', 'code', 'chip', 'name', 'venue'] as const
+const SEVERITIES = ['neutral', 'ok', 'warn', 'danger'] as const
 
 const columnSchema = z
   .object({
@@ -29,7 +50,7 @@ const columnSchema = z
     type: z
       .enum(COLUMN_TYPES)
       .describe(
-        "How the raw value is read and written: 'text' string; 'number' number or decimal string; 'price' number (fixed digits via precision); 'quantity' number; 'pnl' signed number, colored by direction; 'change' percent already (1.5 is +1.50%), colored; 'side' 'buy' or 'sell'; 'time' ISO 8601 string or epoch milliseconds; 'symbol' a code string or {code, venue, name}.",
+        "How the raw value is read and written: 'text' string; 'number' number or decimal string; 'price' number (fixed digits via precision); 'quantity' number; 'pnl' signed number, colored by direction; 'change' percent already (1.5 is +1.50%), colored; 'side' 'buy' or 'sell'; 'time' ISO 8601 string or epoch milliseconds; 'symbol' a code string or {code, venue, name}; 'percent' a percent without sign or color (12.3 is 12.30%); 'compact' a number abbreviated by locale (K/M/B/T for en-US, CJK myriad units such as 1.2 yi for zh-CN); 'rating' one of strong-sell, sell, neutral, buy, strong-buy or a score from -1 to 1; 'bar' a non-negative number drawn as a neutral bar, full at max; 'spark' an array of numbers, oldest first, drawn as a mini line; 'tag' a string or {text, tone}; 'range' {low, high, value}; 'date' ISO 8601 string or epoch milliseconds, date only.",
       ),
     align: z
       .enum(['start', 'end'])
@@ -39,7 +60,42 @@ const columnSchema = z
     sub: z.string().describe('A small second header line, for example a basis such as "TTM".').optional(),
     digits: z.number().int().min(0).max(8).describe("Decimal places for 'number', 'pnl' and 'change'.").optional(),
     precision: z.number().int().min(0).max(12).describe("Decimal places for 'price'.").optional(),
-    suffix: z.string().describe("Unit written after a 'pnl' value, for example USDT.").optional(),
+    suffix: z.string().describe("Unit written after a 'pnl' value, for example USDT. Same as unit.").optional(),
+    unit: z
+      .string()
+      .describe(
+        "Unit written small after a number, for example USD; read by 'number', 'price', 'quantity', 'pnl', 'compact' and 'bar'.",
+      )
+      .optional(),
+    locale: z
+      .string()
+      .describe("Locale of 'compact' abbreviations and 'date' values for this column; defaults to the table locale.")
+      .optional(),
+    max: z.number().min(0.000001).describe("Value at which a 'bar' is full. Defaults to 1.").optional(),
+    label: z
+      .string()
+      .describe("Accessible name of the 'spark', 'range' or 'bar' graphic. Defaults to the cell text.")
+      .optional(),
+    tagTone: z.enum(SEVERITIES).describe("Tone of a 'tag' whose value carries none. Defaults to neutral.").optional(),
+    ratingLabels: z
+      .object({
+        'strong-sell': text('Text for strong sell.'),
+        sell: text('Text for sell.'),
+        neutral: text('Text for neutral.'),
+        buy: text('Text for buy.'),
+        'strong-buy': text('Text for strong buy.'),
+      })
+      .strict()
+      .describe("The five words of a 'rating' column. Defaults to English.")
+      .optional(),
+    symbolParts: z
+      .array(z.enum(SYMBOL_PARTS))
+      .min(1)
+      .max(5)
+      .describe(
+        'Which parts of a \'symbol\' cell are drawn, in order: logo (round mark), code (plain text), chip (code on a chip), name (full name), venue (small text). Full-page tables usually take ["logo", "chip", "name"].',
+      )
+      .optional(),
     timeStyle: z.enum(['datetime', 'time', 'date']).describe("How much of a 'time' value is written.").optional(),
     sideLabels: z
       .object({ buy: text('Text for a buy.'), sell: text('Text for a sell.') })
@@ -67,7 +123,19 @@ export const KatanaDataGridApi = {
         .describe(
           `The rows: an array of objects, each with an "id" and one value per column id. Either literal or {"@path": "/rows"} bound to a data-model array, so updateDataModel can refresh it. At most ${MAX_ROWS} rows are shown.`,
         ),
-      density: z.enum(['compact', 'default', 'relaxed']).default('default').describe('Row height.').optional(),
+      density: z
+        .enum(['compact', 'default', 'relaxed', 'comfortable'])
+        .default('default')
+        .describe(
+          'Row height: compact 20, default 24, relaxed 32 for dense panel tables; comfortable 40 (14px text, 48px header, ruled) for full-page tables such as screeners and reports.',
+        )
+        .optional(),
+      locale: z
+        .string()
+        .describe(
+          "Locale of 'compact' abbreviations and 'date' values (en-US: K/M/B/T, zh-CN: CJK myriad units). Defaults to en-US.",
+        )
+        .optional(),
       maxHeight: z
         .number()
         .min(80)
@@ -136,7 +204,7 @@ const columnsOf = (columns: readonly Column[]): GridColumn<Row>[] =>
     type: column.type as ColumnType,
     value: (row) => {
       const raw = row[column.id]
-      if (column.type !== 'time') return raw
+      if (column.type !== 'time' && column.type !== 'date') return raw
       if (typeof raw === 'number') return raw
       return typeof raw === 'string' ? isoToMs(raw) : undefined
     },
@@ -144,6 +212,13 @@ const columnsOf = (columns: readonly Column[]): GridColumn<Row>[] =>
       ...(column.digits === undefined ? {} : { digits: column.digits }),
       ...(column.precision === undefined ? {} : { precision: column.precision }),
       ...(column.suffix === undefined ? {} : { suffix: column.suffix }),
+      ...(column.unit === undefined ? {} : { unit: column.unit }),
+      ...(column.locale === undefined ? {} : { locale: column.locale }),
+      ...(column.max === undefined ? {} : { max: column.max }),
+      ...(column.label === undefined ? {} : { label: column.label }),
+      ...(column.tagTone === undefined ? {} : { tagTone: column.tagTone }),
+      ...(column.ratingLabels === undefined ? {} : { ratingLabels: column.ratingLabels }),
+      ...(column.symbolParts === undefined ? {} : { symbolParts: column.symbolParts }),
       ...(column.timeStyle === undefined ? {} : { timeStyle: column.timeStyle }),
       ...(column.sideLabels === undefined ? {} : { labels: column.sideLabels }),
     },
@@ -204,6 +279,7 @@ export const KatanaDataGrid = createComponentImplementation(KatanaDataGridApi, (
       rowId={(row) => row.id}
       label={props.label ?? ''}
       density={props.density}
+      locale={props.locale}
       interactive={interactive}
       fit
       maxHeight={props.maxHeight ?? 360}

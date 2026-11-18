@@ -5,7 +5,11 @@ import type { GuidanceMap } from './types'
 const quant: GuidanceMap = {
   'event-calendar': {
     aliases: ['Economic Calendar', 'Earnings Calendar', 'ECO', 'Events calendar'],
-    use: ['盘前看当天与本周的宏观数据发布、财报、分红、IPO。', '回测或研究时核对某个事件落在哪一天。'],
+    use: [
+      '盘前看当天与本周的宏观数据发布、财报、分红、IPO。',
+      '回测或研究时核对某个事件落在哪一天。',
+      '营收与市值后的币种是共用的单位小字（.k-num-unit：10px w500 次要色，跟在数后空一格，#92），跟 DataGrid 的 format.unit 一样。',
+    ],
     avoid: ['按日看收益或成交的月历格用 calendar-heatmap。', '没有数据时传空数组，别拿它放占位样本。'],
     a11y: [
       '经济与财报表用 table 语义，列头可被读屏关联。',
@@ -19,6 +23,7 @@ const quant: GuidanceMap = {
       'A 股盘中看各板位的涨停只数与晋级率。',
       '复盘时对照炸板、跌停的分布。',
       '刷新：封单额与涨幅变了闪涨跌色，汇总读数滚动；封板转炸板整行琥珀警示闪（跌停用跌红），回封闪涨色；升板时整行移到新层并闪涨色，新晋的票蓝线高亮 1.2 秒。',
+      '封单额按 locale 缩写（#92）：A 股传 locale="zh-CN" 写成「5.20 亿」，单位 labels.sealUnit 写成 10px 次要色小字；封单额列宽 92；行高照旧 30。',
     ],
     avoid: ['非 A 股市场没有连板概念，用 market-heatmap。', '只看某一只票的状态用 rating-text 或 change-text。'],
     a11y: [

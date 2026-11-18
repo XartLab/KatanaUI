@@ -324,6 +324,8 @@ function quoteRow(q: LiveQuote): QuoteTableRow {
     changePct: (change / q.prev) * 100,
     spark: q.spark,
     sparkLabel: q.spark ? '示例走势' : undefined,
+    // 成交量是编的：跟昨收挂钩的固定数，不随刷新变。
+    volume: Math.round(q.prev * 24_000_000),
   }
 }
 
@@ -339,9 +341,11 @@ export function QuoteTableDemo() {
         <QuoteTable
           labels={{
             list: '示例分组',
-            columns: { name: '名称', trend: '走势', price: '最新价', change: '涨跌幅' },
+            columns: { name: '名称', trend: '走势', price: '最新价', change: '涨跌幅', volume: '成交量' },
             empty: '这一组没有品种',
           }}
+          locale="zh-CN"
+          volumeUnit="股"
           onSelect={(row) => setOpened(row.name ?? row.symbol ?? row.id)}
           groups={[
             { id: 'g1', label: '示例一组', rows: state.first.map(quoteRow) },
@@ -353,7 +357,8 @@ export function QuoteTableDemo() {
       <output data-gallery-opened>点开：{opened}</output>
       <p className="gal-note">
         {SAMPLE}
-        。页签切组；行可点（回车也行）。开着实时：价格与涨跌幅变了闪涨跌色，第一组按涨跌幅换位，第二组偶尔来一只新的。
+        。页签切组；行可点（回车也行）；代码是芯片、成交量按 万 / 亿
+        缩写加单位小字（#92）。开着实时：价格与涨跌幅变了闪涨跌色，第一组按涨跌幅换位，第二组偶尔来一只新的。
       </p>
     </>
   )
