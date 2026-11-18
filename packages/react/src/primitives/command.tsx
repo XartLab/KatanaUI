@@ -69,7 +69,7 @@ function CommandInput({ className, ...props }: ComponentProps<typeof CommandPrim
       <CommandPrimitive.Input
         data-slot="command-input"
         className={cn(
-          'k-text-body h-full w-full bg-transparent text-(color:--k-content-primary-foreground) outline-0 placeholder:text-(color:--k-content-secondary-foreground) disabled:cursor-not-allowed disabled:opacity-45',
+          'k-text-body h-full w-full border-0 bg-transparent text-(color:--k-content-primary-foreground) outline-0 placeholder:text-(color:--k-content-secondary-foreground) disabled:cursor-not-allowed disabled:opacity-45',
           className,
         )}
         {...props}

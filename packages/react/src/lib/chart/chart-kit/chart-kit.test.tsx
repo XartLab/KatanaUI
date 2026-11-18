@@ -21,11 +21,11 @@ describe('图表配色', () => {
     expect(assignSeries(keys).s2).toBe(colors.s2)
   })
 
-  it('大小用 seq-200..600，越界取两端', () => {
-    expect(seqColor(0)).toBe('var(--seq-200)')
-    expect(seqColor(4)).toBe('var(--seq-600)')
-    expect(seqColor(-3)).toBe('var(--seq-200)')
-    expect(seqColor(99)).toBe('var(--seq-600)')
+  it('大小用 --k-heat-1..5，越界取两端', () => {
+    expect(seqColor(0)).toBe('var(--k-heat-1)')
+    expect(seqColor(4)).toBe('var(--k-heat-5)')
+    expect(seqColor(-3)).toBe('var(--k-heat-1)')
+    expect(seqColor(99)).toBe('var(--k-heat-5)')
   })
 
   it('正负用 div：0 是中点，-200 只给 hot；全饱和档不出现', () => {
