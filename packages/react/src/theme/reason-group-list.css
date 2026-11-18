@@ -1,0 +1,70 @@
+/* SPDX-License-Identifier: MIT */
+/* ReasonGroupList 涨停原因分组（#11）。表格本身是 DataGrid 的皮肤；这里只加：原因芯片行、组头（粗体原因 + 次要灰的家数与最高板 + 展开箭头）、个股名（徽标 + 代码主 + 名称次）、原因标签。
+   组头行底色取 selectable 的组底色（--k-selectable-subtle-groupBackground），收起时箭头朝右、展开转 90°（transform 过渡用 snappy 弹簧的 CSS 形式）。颜色只读 --k-*。 */
+.k-reason {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+  padding: var(--space-3) 0;
+  color: var(--k-content-primary-foreground);
+  font: var(--text-data) var(--font-sans);
+}
+.k-reason-chips {
+  padding: 0 var(--inset-x);
+}
+.k-reason-grid .k-grid-row[data-kind='group'] {
+  background: var(--k-selectable-subtle-groupBackground);
+}
+.k-reason-head {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  white-space: nowrap;
+}
+.k-reason-chevron {
+  flex: none;
+  color: var(--k-content-secondary-foreground);
+  transition: transform var(--dur-snappy) var(--ease-snappy);
+}
+.k-grid-row[aria-expanded='true'] .k-reason-chevron {
+  transform: rotate(90deg);
+}
+.k-reason-name {
+  font-weight: 600;
+}
+.k-reason-count,
+.k-reason-highest {
+  color: var(--k-content-secondary-foreground);
+  font: 500 12px/16px var(--font-sans);
+  font-variant-numeric: tabular-nums;
+}
+.k-reason-stock {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  padding-left: 18px;
+}
+.k-reason-code {
+  font-variant-numeric: tabular-nums;
+}
+.k-reason-sub {
+  overflow: hidden;
+  min-width: 0;
+  color: var(--k-content-secondary-foreground);
+  font: 400 11px/14px var(--font-sans);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.k-reason-tags {
+  display: inline-flex;
+  gap: 4px;
+  overflow: hidden;
+}
+.k-reason-empty {
+  margin: auto;
+  padding: var(--space-6);
+  color: var(--k-content-secondary-foreground);
+}
