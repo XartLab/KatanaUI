@@ -2,7 +2,7 @@
 // 日历（组件卡 Calendar，2026-11-14 读 design/katana-console/project/components/Calendar）：月历格，底色是收益（或换手）的低饱和发散热力，
 // 格内日期左上、数值右下，左下点阵事件点（≤ 3 个，更多写 +n）；休市日 bg-100 加「休」；今天强调色描边；周标 W40；格 34px。
 // 收益色：div-pos / div-neg 的 -100 档是大多数，-200 档只给 |收益| 超月内 80 分位的格，全饱和不出现（涨跌色不上面积）。
-// 视图：pnl（收益，发散）/ turnover（换手，序数 seq 单色）/ events（格子不着色，事件按类别列出）。mode="year" 是整年的格子（一周一列、一天一格，格只有色没有字）。
+// 视图：pnl（收益，发散）/ turnover（换手，序数 --k-heat-1…5 中性灰）/ events（格子不着色，事件按类别列出）。mode="year" 是整年的格子（一周一列、一天一格，格只有色没有字）。
 // 功能参照 Arc 的 Activity heatmap（uiarc.dev/components/charts，2026-11-14 读，只取功能）；样子与内容照 Calendar 卡，实现原创。
 // 交互：指针悬停或键盘选中一天，LCD tooltip 列这一天的数值与事件；点或 Enter 触发 onSelect（写联动 range）。键盘：←→ 前后一天、↑↓ 前后一周、Home / End、Esc。
 // 并入 SmoothUI contribution-graph（2026-11-17 读，MIT，© 2024 Eduardo Calvo；https://github.com/educlopez/smoothui ）里更好的几处，都是 CSS 与可选 prop，现有 API 与外观不变：

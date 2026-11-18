@@ -86,10 +86,10 @@ export function DotMatrixDemo() {
     <svg width="220" height="72" role="img" aria-label="点阵纹理的演示">
       <defs>
         <DotMatrix id="gal-dots-default" />
-        <DotMatrix id="gal-dots-orange" color="var(--signal-orange)" />
+        <DotMatrix id="gal-dots-deep" color="var(--k-heat-5)" />
       </defs>
       <rect x="0" y="0" width="100" height="72" fill="url(#gal-dots-default)" />
-      <rect x="120" y="0" width="100" height="72" fill="url(#gal-dots-orange)" />
+      <rect x="120" y="0" width="100" height="72" fill="url(#gal-dots-deep)" />
     </svg>
   )
 }

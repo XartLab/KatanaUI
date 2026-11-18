@@ -6,7 +6,7 @@
 import type { ReactNode } from 'react'
 import tokens from '../src/tokens-json'
 import { Button } from '../src/index'
-import { MORE_PAGES } from './foundations-more'
+import { HEAT, MORE_PAGES } from './foundations-more'
 
 type Valued = string | Record<string, string>
 type Token = {
@@ -237,6 +237,23 @@ function CharacteristicsPage() {
         characteristics）：按「这是什么」命名——actionable（可点的）、content（文字）、separable（分隔线）、container（容器）、focused（焦点环）、surface（面）、status（状态语气）、tone（涨跌）、chart（图）、overlay（浮层影子）——值引用调色层与语义
         token。组件只该读这一层、语义 token 与密度变量，不直接读色阶；换主题只改调色层。
       </p>
+      <h2>数据浓度 heat（2026-11-18，评审 #78 定）</h2>
+      <div className="gal-fd-ramp">
+        {HEAT.map((name) => (
+          <span key={name}>
+            <i style={{ background: `var(--${name})` }} />
+            <small>{name}</small>
+          </span>
+        ))}
+      </div>
+      <ul className="gal-list">
+        <li>
+          --k-heat-0…5 = 主文字色混透明 6 / 16 / 30 / 46 / 64 / 84%：数据浓度一律用 heat（0 是空档），seq
+          橙不再给数据用（#50）。
+        </li>
+        <li>格上的字：heat-0…2 用 --k-heat-fg-low（主文字色），heat-3…5 用 --k-heat-fg-high（bg-000）。</li>
+        <li>各档在两个主题里的约值与对比度见下表的用途列与「数据可视化」页。</li>
+      </ul>
       <TokenTable
         rows={T.characteristics.tokens}
         preview={(token) => (colorish(token.name) ? swatch(token.name) : <code>{token.name.split('-').at(-1)}</code>)}

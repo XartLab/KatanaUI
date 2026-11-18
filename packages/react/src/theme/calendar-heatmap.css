@@ -34,7 +34,7 @@
 .k-heat-stage {
   position: relative;
 }
-/* 格色：正负用发散色 -100 / -200（涨跌色不上面积），持平是中点灰，休市 bg-100，没有数据是底色；换手视图用序数 seq。 */
+/* 格色：正负用发散色 -100 / -200（涨跌色不上面积），持平是中点灰，休市 bg-100，没有数据是底色；换手视图用序数档 --k-heat-1…5（中性灰浓度，seq 橙不给数据用，#50）。 */
 .k-heat-cell {
   --k-cell: var(--k-container-secondary-background);
 }
@@ -54,19 +54,19 @@
   --k-cell: var(--div-mid);
 }
 .k-heat-cell[data-seq='0'] {
-  --k-cell: var(--seq-200);
+  --k-cell: var(--k-heat-1);
 }
 .k-heat-cell[data-seq='1'] {
-  --k-cell: var(--seq-300);
+  --k-cell: var(--k-heat-2);
 }
 .k-heat-cell[data-seq='2'] {
-  --k-cell: var(--seq-400);
+  --k-cell: var(--k-heat-3);
 }
 .k-heat-cell[data-seq='3'] {
-  --k-cell: var(--seq-500);
+  --k-cell: var(--k-heat-4);
 }
 .k-heat-cell[data-seq='4'] {
-  --k-cell: var(--seq-600);
+  --k-cell: var(--k-heat-5);
 }
 .k-heat-cell[data-closed='true'] {
   --k-cell: var(--k-surface-base-background);
@@ -207,6 +207,13 @@ button.k-heat-cell {
 .k-heat-cell[data-tone='neg2'] .k-heat-date,
 .k-heat-cell[data-tone='neg2'] .k-heat-num {
   color: var(--k-on);
+}
+/* 换手视图的序数格：浅两档（heat-1、2）用浅字，深三档（heat-3…5）用深字（--k-heat-fg-low / --k-heat-fg-high）。 */
+.k-heat-cell[data-seq] :is(.k-heat-date, .k-heat-num) {
+  color: var(--k-heat-fg-low);
+}
+.k-heat-cell:is([data-seq='2'], [data-seq='3'], [data-seq='4']) :is(.k-heat-date, .k-heat-num) {
+  color: var(--k-heat-fg-high);
 }
 .k-heat-cell[data-closed='true'] .k-heat-num {
   color: var(--k-content-secondary-foreground);

@@ -264,7 +264,7 @@ export function BrushChart({
       >
         <svg viewBox={`0 0 ${PLOT_W} ${height}`} preserveAspectRatio="none" aria-hidden="true">
           <defs>
-            <DotFill id={dotId} color="var(--seq-300)" />
+            <DotFill id={dotId} color="var(--k-heat-3)" />
           </defs>
           <PlotGrid plot={plot} />
           <path className="k-brush-area" fill={`url(#${dotId})`} d={areaPath(slice, plot, plot.domain[0])} />
