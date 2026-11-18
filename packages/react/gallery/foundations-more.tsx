@@ -405,7 +405,7 @@ function CursorPage() {
 function AssetsPage() {
   return (
     <>
-      <Lede>图标、品牌标与品种徽标。</Lede>
+      <Lede>图标、品牌标、品种徽标与徽标来源。</Lede>
       <h2>图标</h2>
       <ul className="gal-list">
         <li>只用 lucide-react（ISC）；控制台专用的少数图标自己画，同样 24 栅格、1.75 线宽。</li>
@@ -441,6 +441,46 @@ function AssetsPage() {
         </span>
       </div>
       <p>没有授权的公司标一律用字母圆标（SymbolMark），不抓别人的 logo。</p>
+      <h2>徽标</h2>
+      <p>
+        品种、公司、币种、交易所的图由 <code>@katana-ui/logos</code> 解析（#94，2026-11-19）：应用根上包一次
+        LogoProvider，SymbolMark 没给 src 时按来源顺序逐个试，都失败退回字母。
+      </p>
+      <ul className="gal-list">
+        <li>
+          加密币用许可清楚的开源包：内置 <code>web3icons()</code> 取 @web3icons/core（MIT，1790 个币、30
+          个交易所），每个 SVG 按需载入（1–3 KB 一个）；cryptocurrency-icons（CC0）用命令行下载补缺。
+        </li>
+        <li>
+          币标只配 assetClass crypto：BTCUSDT、BTC-PERP、BINANCE:BTC 这类写法自动认出，裸代码 META
+          不配币标（可能是股票）。
+        </li>
+        <li>
+          企业徽标是商标，不进本仓库也不进包：应用自托管（selfHosted），或用徽标服务（urlTemplate，如 Logo.dev），key
+          由应用给。
+        </li>
+        <li>
+          自托管按「代码.场所」命名，场所用 ISO MIC：<code>600519.XSHG.svg</code>、<code>00700.XHKG.svg</code>、
+          <code>AAPL.XNAS.svg</code>，再退到 <code>AAPL.svg</code>；币在 <code>crypto/BTC.svg</code>，交易所在{' '}
+          <code>venues/binance.svg</code>。
+        </li>
+        <li>
+          A 股、港股没有开源合集：应用用{' '}
+          <code>katana-logos fetch --symbols list.txt --provider url --out public/logos</code>{' '}
+          下载到自己的目录，失败的不中断，写 manifest.json。
+        </li>
+        <li>
+          代码规范化：BTCUSDT / BTC-USDT / BTC/USDT / BTCUSDT.P → BTC；600519.SH、sh600519 → 600519.XSHG；0700.HK →
+          00700.XHKG。
+        </li>
+        <li>没有图就画字母圆标；同一个地址失败一次就不再请求（失败缓存），成功的下次先用。</li>
+        <li>文档站的股票图是自绘示意图（public/logos-demo/），不是这些公司的标志。</li>
+      </ul>
+      <p className="gal-note">
+        与上面「不抓别人的
+        logo」的关系：仍不抓、不收进仓库；应用自己有授权（自托管或徽标服务的条款）时由它配来源。待定：要不要默认接
+        Logo.dev（要用户自己注册 key）。
+      </p>
     </>
   )
 }

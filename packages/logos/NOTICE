@@ -1,0 +1,22 @@
+@katana-ui/logos
+Copyright (c) 2026 Curry
+
+本包按 MIT 许可证发布（见 LICENSE）。版权行待用户确认署名（#1876，与 @katana-ui/react 一致）。
+This package is licensed under the MIT License (see LICENSE).
+
+本包不带任何企业徽标（商标）图片：股票的徽标由应用自托管或经调用方配置的徽标服务取，key 由应用给。
+This package ships no company logos (trademarks). Stock logos come from the app's own hosting or from a logo
+service the app configures with its own key.
+
+第三方 / Third-party:
+
+1. @web3icons/core 4.0.60（https://github.com/0xa3k5/web3icons ，MIT，作者 0xa3k5）
+   依赖（dependencies），不拷贝进本包：`src/web3icons-map.ts` 只是从它的目录生成的「代码 → 动态 import」表（名字与路径，
+   不含图形）；SVG 在应用打包时从这个依赖按需拆成小块。npm 包里没有附许可证全文，许可证见其 package.json 的
+   "license": "MIT" 与上面的仓库。币种与交易所的标志本身归各项目 / 交易所所有，web3icons 以 MIT 发布它整理的 SVG。
+   A dependency, not vendored: `src/web3icons-map.ts` is a generated table of names and import paths. The SVGs
+   are split into small chunks by the app's bundler. Licence: MIT (package.json "license", upstream repository).
+
+2. cryptocurrency-icons 0.18.1（https://github.com/spothq/cryptocurrency-icons ，CC0-1.0）
+   不是依赖，也不拷贝：命令行 `katana-logos fetch --provider cryptocurrency-icons` 从 jsDelivr 下载它的 SVG 到应用的目录。
+   Not a dependency; the CLI can download its SVGs from jsDelivr into the app's own directory.

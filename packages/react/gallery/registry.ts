@@ -851,7 +851,7 @@ export const PAGES: readonly DocPage[] = [
   {
     id: 'symbol-mark',
     group: 'quotes',
-    cardHeight: 220,
+    cardHeight: 370,
     title: 'SymbolMark 品种徽标',
     summary:
       '品种名前的小圆标（学 TradingView 列表里企业 / 币种标志）：有图显示圆形裁切的图片，加载失败退回字母；没有图就是字母圆标，底 bg-400、字 ink-200，不按代码随机上色。尺寸两档：sm 18（行高 28 的一行，默认）、md 28（卡片）；热力图格子这类要别的直径的仍可传数。字号跟直径走（28 以上 16，其余 12），在 css 里按 data-size 取字号 token，不内联。',
@@ -859,11 +859,21 @@ export const PAGES: readonly DocPage[] = [
     props: [
       {
         part: 'SymbolMark',
-        note: '图片从哪来由调用方给；件里不带任何企业或币种的标志（商标）。读屏名用 name，没有就用 symbol。旧名 code 照认一个版本（@deprecated）。',
+        note: '图片从哪来由调用方给：直接给 src，或在外面包 LogoProvider（@katana-ui/logos，#94）配来源；件里不带任何企业或币种的标志（商标）。读屏名用 name，没有就用 symbol。旧名 code 照认一个版本（@deprecated）。',
         rows: [
           { name: 'symbol', type: 'string', desc: '品种代码；字母圆标取其中的拉丁字母前 2 个（旧名 code）。' },
           { name: 'name', type: 'string', desc: '名称：读屏名；代码里没有字母（600519、00700）时取名称首字。' },
-          { name: 'src', type: 'string', desc: '图片地址；不给或加载失败就画字母。' },
+          {
+            name: 'src',
+            type: 'string',
+            desc: '图片地址；加载失败画字母。不给时问外层的 LogoProvider（@katana-ui/logos/react），没有 Provider 或都失败画字母。',
+          },
+          { name: 'venue', type: 'string', desc: '场所（XSHG、XNAS、BINANCE）：代码里没带场所时交给 LogoProvider。' },
+          {
+            name: 'assetClass',
+            type: "'crypto' | 'stock' | 'fund' | 'index' | 'forex' | 'future' | 'unknown'",
+            desc: '类别：交给 LogoProvider；币标只配 crypto（BTCUSDT、BTC-PERP 这类写法会自动认出）。',
+          },
           {
             name: 'size',
             type: "'sm' | 'md' | number",
@@ -889,13 +899,15 @@ export const PAGES: readonly DocPage[] = [
       '有图：圆形裁切、铺满；图加载失败退回字母，换了 src 会重新尝试。',
       '代码里没有拉丁字母（600519、00700）：取名称首字，再没有取代码首字符。',
       'sm（18）字号 12，md（28）及以上字号 16；data-size 标出档位。',
+      '包在 LogoProvider 里、没给 src：按来源顺序逐个试候选（加载失败记进失败缓存、换下一个），全失败退回字母；载入中先画字母。',
     ],
     donts: [
       '不要按代码随机上色：颜色留给数据。',
       '不要在件里内置真实公司或币种的标志。',
       '不要拿它当按钮：它是 role=img 的徽标，可点的是它所在的行或卡。',
     ],
-    composition: 'SymbolMark\n  span[role=img][aria-label][data-size]\n    img（有图且没失败）| span 字母',
+    composition:
+      'LogoProvider（可选，@katana-ui/logos/react）\n  SymbolMark\n    span[role=img][aria-label][data-size]\n      img（src 或 Provider 的候选，没失败）| span 字母',
     keys: [],
   },
   {
