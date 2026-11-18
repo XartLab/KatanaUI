@@ -427,6 +427,25 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+/* 两行表头（#92，#91 截图里「走势 / 30 日」比单行列头高半行）：有列带 sub 时（.has-sub），所有列头的名字顶对齐到同一条线，
+   上边距 = (表头高 − 两行块高) / 2，单行列头的字与两行的第一行同一基线，第二行在下；排序箭头的行高等于第一行，跟着第一行走。
+   两行块高：默认 14 + 12 = 26；comfortable 16 + 2 + 16 = 34。表头高由组件写进 --k-grid-head-h。 */
+.k-grid-head {
+  --k-grid-head-line: 14px;
+  --k-grid-head-block: 26px;
+}
+.k-grid-head.has-sub .k-grid-col button,
+.k-grid-head.has-sub .k-grid-head-text {
+  align-items: flex-start;
+  padding-top: calc((var(--k-grid-head-h) - var(--k-grid-head-block)) / 2);
+}
+.k-grid-head.has-sub .k-grid-sort {
+  line-height: var(--k-grid-head-line);
+}
+.k-grid-head.has-sub .k-grid-head-icon {
+  align-items: flex-start;
+  padding-top: calc((var(--k-grid-head-h) - var(--k-grid-head-block)) / 2 + (var(--k-grid-head-line) - 12px) / 2);
+}
 .k-grid-head-sub {
   color: var(--k-content-secondary-foreground);
   font: 400 10px/12px var(--font-sans);
@@ -445,6 +464,7 @@
 }
 .k-grid-head-icon {
   display: inline-flex;
+  align-items: center;
   margin-left: 4px;
   color: var(--k-content-secondary-foreground);
 }
@@ -495,39 +515,7 @@
 }
 
 /* —— #90 去电子表格感：照 TradingView 选股器（#90 记录的 2026-11-18 实测），颜色仍是 Graphite 的语义 token —— */
-/* 数字与单位分开：单位 10px w500 次要色，跟在数后空一格（复制出来是「4.53 T USD」）。 */
-.k-grid-val {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.k-grid-unit {
-  color: var(--k-content-secondary-foreground);
-  font: var(--text-micro) var(--font-sans);
-  font-weight: 500;
-  letter-spacing: 0;
-}
-/* 代码芯片：12px w600、面底、圆角 6（--radius-control）、高 24、左右 6。 */
-.k-grid-chip {
-  display: inline-flex;
-  flex: none;
-  align-items: center;
-  block-size: 24px;
-  padding: 0 6px;
-  border-radius: var(--radius-control);
-  background: var(--k-container-subtle-background);
-  color: var(--k-content-primary-foreground);
-  font: var(--text-data) var(--font-sans);
-  font-weight: 600;
-  line-height: 1;
-}
-/* 芯片后的全称：正文色，放不下省略。 */
-.k-grid-fullname {
-  min-width: 0;
-  overflow: hidden;
-  color: var(--k-content-body-foreground);
-  text-overflow: ellipsis;
-}
+/* 代码芯片、全称、单位小字是共用层 theme/cell-type.css 的 .k-code-chip / .k-code-name / .k-num-unit（#92，QuoteTable 等密表共用一份）。 */
 /* bar 列给了 format.barMax（#90）：单边中性横条，给相对成交量这类有大小没正负的量；不用涨跌色，也不用品牌橙。
    轨道 4px 高、最长 48px，数字在它右边；没给 barMax 的仍是上面以 0 为中线的居中条。 */
 .k-grid-bar.is-share {
@@ -567,22 +555,22 @@
   align-items: flex-start;
 }
 
-/* comfortable 档：整页的表。行 40、表头 48（组件写在行内样式）；格内左右 12、首列左 20；正文 14px w400、表头 13px 次要色两行；行间 1px 横线（ruled 默认开），没有竖线。
-   14px 没有对应的文字档，照文字档的写法跟 --k-text-scale 缩放。 */
+/* comfortable 档：整页的表。行 40、表头 48（组件写在行内样式）；格内左右、首列左、正文与表头字号读 theme/cell-type.css 的 --k-table-*（报告类原生表共用同一套数）；
+   行间 1px 横线（ruled 默认开），没有竖线。 */
 .k-grid[data-density='comfortable'] .k-grid-cell {
   gap: 8px;
-  padding: 0 12px;
-  font-weight: calc(400 + var(--k-weight-adjust, 0));
-  font-size: round(nearest, calc(14px * var(--k-text-scale, 1)), 1px);
+  padding: 0 var(--k-table-cell-x);
+  font-weight: var(--k-table-weight);
+  font-size: var(--k-table-body-size);
 }
 .k-grid[data-density='comfortable'] .k-grid-row {
   scroll-margin-top: 49px;
 }
 .k-grid[data-density='comfortable'] .k-grid-col button,
 .k-grid[data-density='comfortable'] .k-grid-head-text {
-  padding: 0 12px;
-  font-weight: calc(400 + var(--k-weight-adjust, 0));
-  font-size: round(nearest, calc(13px * var(--k-text-scale, 1)), 1px);
+  padding: 0 var(--k-table-cell-x);
+  font-weight: var(--k-table-weight);
+  font-size: var(--k-table-head-size);
 }
 .k-grid[data-density='comfortable'] .k-grid-col button.is-sorted {
   font-weight: calc(500 + var(--k-weight-adjust, 0));
@@ -590,7 +578,11 @@
 .k-grid[data-density='comfortable'] .k-grid-row > .k-grid-cell:first-child,
 .k-grid[data-density='comfortable'] .k-grid-col:first-child button,
 .k-grid[data-density='comfortable'] .k-grid-col:first-child .k-grid-head-text {
-  padding-inline-start: 20px;
+  padding-inline-start: var(--k-table-first-x);
+}
+.k-grid[data-density='comfortable'] .k-grid-head {
+  --k-grid-head-line: 16px;
+  --k-grid-head-block: 34px;
 }
 .k-grid[data-density='comfortable'] .k-grid-head-name {
   gap: 2px;

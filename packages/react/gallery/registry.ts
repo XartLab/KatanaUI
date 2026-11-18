@@ -1270,12 +1270,18 @@ export const PAGES: readonly DocPage[] = [
           {
             name: 'levels[].items',
             type: 'LadderItem[]',
-            desc: '{ code, name, change（百分数）, firstSeal?, sealAmount?（元，写成 520.00 M）, opens?, industry?, logo?, status }；没有的值写「—」。',
+            desc: '{ code, name, change（百分数）, firstSeal?, sealAmount?（元，按 locale 缩写：zh-CN 写成 5.20 亿，en-US 写成 520.00 M，单位 labels.sealUnit 写成小字）, opens?, industry?, logo?, status }；没有的值写「—」。',
           },
           {
             name: 'labels',
             type: 'LimitLadderLabels',
-            desc: '板位单位、晋级率与只数文字、状态名、汇总读数名、列名、读屏名、空态文字，由调用方传。',
+            desc: '板位单位、晋级率与只数文字、状态名、汇总读数名、列名、封单额单位（sealUnit，可选，写成 10px 次要色小字）、读屏名、空态文字，由调用方传。',
+          },
+          {
+            name: 'locale',
+            type: 'string',
+            default: "'en-US'",
+            desc: '封单额缩写的语言（#92）：zh-CN 是 万 / 亿，en-US 是 K / M / B；跟 DataGrid compact 列同一个 compactNumber。',
           },
           { name: 'selected', type: 'string | null', desc: '选中个股的代码；选中行左侧画 2px 强调条。' },
           {
@@ -5078,18 +5084,24 @@ export const PAGES: readonly DocPage[] = [
           {
             name: 'rows',
             type: 'WatchlistRow[]',
-            desc: '统一行情行 QuoteRow { id, symbol, name?, last, change, changePct }（都是数）加 { flagged?, logoSrc? }；旧的 key / code 照认一个版本。',
+            desc: '统一行情行 QuoteRow { id, symbol, name?, last, change, changePct }（都是数）加 { flagged?, logoSrc?, volume? }；旧的 key / code 照认一个版本。',
           },
           {
             name: 'labels',
             type: 'WatchlistLabels',
-            desc: '{ columns: { symbol, last, chg, chgPct }, list, empty, flag(row) }。',
+            desc: '{ columns: { symbol, last, chg, chgPct, vol? }, list, empty, flag(row) }；给了 columns.vol 才画成交量列（可排序）。',
           },
           {
             name: 'formatPrice',
             type: '(n: number) => string',
             default: 'toFixed(2)',
             desc: '最新价与涨跌额怎么写；闪色按它写出来的文字比尾数。',
+          },
+          {
+            name: 'locale / volumeUnit',
+            type: 'string',
+            default: "'en-US' / 无",
+            desc: '成交量列（#92）：按 locale 缩写（en-US 是 K / M / B，zh-CN 是 万 / 亿），volumeUnit 写成 10px 次要色小字。',
           },
           { name: 'sort / onSortChange', type: 'WatchlistSort | null', desc: '排序（受控）；不给就自己记。' },
           { name: 'onSelect / onFlag', type: 'callbacks', desc: '点行（旧名 onRow）；点旗标（行 + 新状态）。' },
@@ -5287,7 +5299,7 @@ export const PAGES: readonly DocPage[] = [
     propParts: [
       {
         part: 'QuoteTable',
-        note: '页签值可受控（value / onValueChange）也可不受控（defaultValue，默认第一组）。文字在 labels（{ list, columns, empty }）；点行 onSelect。旧的 label / columns / empty / onRow 与字符串行（price / percent / tone）照认一个版本（@deprecated）。',
+        note: '页签值可受控（value / onValueChange）也可不受控（defaultValue，默认第一组）。文字在 labels（{ list, columns, empty }）；点行 onSelect。行有 symbol 与 name 时代码画成芯片、后跟全称（#92）；labels.columns.volume 给了才画成交量列，行的 volume 按 locale 缩写（K / M / B ↔ 万 / 亿），volumeUnit 写成单位小字。旧的 label / columns / empty / onRow 与字符串行（price / percent / tone）照认一个版本（@deprecated）。',
       },
     ],
     states: [
@@ -5299,7 +5311,7 @@ export const PAGES: readonly DocPage[] = [
     ],
     donts: ['不要在包里写死列名与空态文案，由调用方传。', '不要把几十个品种塞进一组不分页：这是总览，不是完整自选表。'],
     composition:
-      'QuoteTable\n  Tabs\n    TabsList > TabsTrigger（一组一个）\n    TabsContent\n      table（表头 · 行：名称 · Sparkline · 价 · 涨跌幅）',
+      'QuoteTable\n  Tabs\n    TabsList > TabsTrigger（一组一个）\n    TabsContent\n      table（表头 · 行：代码芯片 + 名称 · Sparkline · 价 · 涨跌幅 · 成交量（可选））',
     keys: [
       ['← →', '在页签间移动（Radix Tabs）'],
       ['Tab / Enter', '到可点的行、触发'],

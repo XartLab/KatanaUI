@@ -169,7 +169,7 @@ export function HypothesisLedger({
         </>
       ) : (
         <div className="k-hl-scroll">
-          <table className="k-hl-watch">
+          <table className="k-hl-watch k-table-comfortable">
             <thead>
               <tr>
                 <th scope="col">{labels.watchLayer}</th>

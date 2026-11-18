@@ -36,10 +36,12 @@
 .k-quote-rows-name {
   color: var(--k-content-primary-foreground);
 }
-.k-quote-rows-name small {
-  margin-left: 6px;
-  color: var(--k-content-secondary-foreground);
-  font: var(--text-caption) var(--font-sans-small);
+/* 有代码时：代码芯片 + 全称（共用 theme/cell-type.css，#92）；行高照旧（迷你图 22 + 上下 6），芯片 24 放得下。 */
+.k-quote-rows-sym {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
 }
 .k-quote-rows-trend {
   width: 96px;

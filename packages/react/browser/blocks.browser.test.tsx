@@ -28,7 +28,9 @@ import { ToolbarUsage } from '../gallery/usage/ToolbarUsage.tsx'
 import { TransmissionChainUsage } from '../gallery/usage/TransmissionChainUsage.tsx'
 import { UptimeBarsUsage } from '../gallery/usage/UptimeBarsUsage.tsx'
 import { WorkspaceTabsUsage } from '../gallery/usage/WorkspaceTabsUsage.tsx'
-import { DataGrid } from '../src/blocks/index.ts'
+import { DataGrid, type SeriesExplorerColumn } from '../src/blocks/index.ts'
+import { SeriesTable } from '../src/blocks/series-explorer/series-explorer-table.tsx'
+import { ChartTable } from '../src/lib/chart/chart-kit/chart-table.tsx'
 import { STOCKS, STOCK_COLUMNS, STOCK_LAYOUT } from '../gallery/pages/screener-data.tsx'
 import { mount } from './render.tsx'
 
@@ -61,12 +63,59 @@ const comfortable = (
   </div>
 )
 
+// 报告类的原生表（#92）：跟 comfortable 同一套数（.k-table-comfortable）。数据是编的。
+const SX_COLUMNS: readonly SeriesExplorerColumn[] = [
+  {
+    key: 'net',
+    label: '净盈亏',
+    text: (p) => (p.values.net ?? 0).toLocaleString('en-US'),
+    tone: (p) => p.values.net ?? null,
+  },
+  { key: 'fee', label: '费税', text: (p) => (p.values.fee ?? 0).toLocaleString('en-US') },
+  { key: 'equity', label: '权益', text: (p) => (p.values.equity ?? 0).toLocaleString('en-US') },
+]
+const SX_ROWS = [3, 2, 1, 0].map((i) => ({
+  i,
+  point: {
+    at: Date.UTC(2025, i, 1),
+    values: { net: [1240, -380, 2210, 0][i]!, fee: -120 - 10 * i, equity: 50_000 + 1000 * i },
+  },
+}))
+const seriesTable = (
+  <SeriesTable
+    rows={SX_ROWS}
+    columns={SX_COLUMNS}
+    labels={{ table: '明细表', time: '月份' } as Parameters<typeof SeriesTable>[0]['labels']}
+    formatAt={(at) => new Date(at).toISOString().slice(0, 7)}
+    active={2}
+  />
+)
+const chartTable = (
+  <ChartTable
+    label="分组收益表"
+    head={['分组', '中位数', '25%', '75%']}
+    numeric={[1, 2, 3]}
+    slot="chart-table"
+    rows={[
+      ['价值', '1.20%', '-0.80%', '3.10%'],
+      ['成长', '0.80%', '-1.00%', '2.60%'],
+      ['动量', '0.40%', '-1.20%', '2.10%'],
+      ['低波', '0.10%', '-1.40%', '1.60%'],
+    ].map((cells) => ({ key: cells[0]!, cells }))}
+  />
+)
+
 const items: Record<string, React.ReactNode> = {
   'attribution-bars': <AttributionBarsUsage />,
   'column-set-tabs': <ColumnSetTabsUsage />,
   'consensus-block': <ConsensusBlockUsage />,
   'data-grid': <DataGridUsage />,
   'data-grid-comfortable': comfortable,
+  'chart-table': chartTable,
+  'series-explorer-table': seriesTable,
+  'strategy-report-panes': <StrategyReportUsage defaultTab="performance" />,
+  'strategy-report-trades': <StrategyReportUsage defaultTab="trades" />,
+  'hypothesis-ledger-watch': <HypothesisLedgerUsage defaultView="watch" />,
   'decision-queue': <DecisionQueueUsage />,
   'empty-state': <EmptyStateUsage />,
   'estimate-badge': <EstimateBadgeUsage />,

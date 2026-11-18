@@ -8,6 +8,7 @@ import { cn } from '../../lib/cn.ts'
 import { useValueFlash } from '../../lib/live.ts'
 import { LimitStatus } from '../../cn/limit-status.tsx'
 import { StreakBadge } from '../../cn/streak-badge.tsx'
+import { CodeChip, CodeName, UnitValue } from '../../quotes/cell-type.tsx'
 import { RangeBar } from '../../quotes/range-bar.tsx'
 import { RatingText } from '../../quotes/rating-text.tsx'
 import { Sparkline } from '../../quotes/sparkline.tsx'
@@ -51,7 +52,7 @@ export function FlashCell({
   )
 }
 
-/** 品种格（#90）：按 parts 依次画徽标、代码（纯字或芯片）、全称、场所小字；芯片样式照 TradingView 选股器，见 theme/data-grid.css。 */
+/** 品种格（#90）：按 parts 依次画徽标、代码（纯字或芯片）、全称、场所小字；芯片与全称是共用件 quotes/cell-type.tsx（#92），样式在 theme/cell-type.css。 */
 function SymbolCell({ symbol }: { symbol: NonNullable<ResolvedCell['symbol']> }) {
   const chip = symbol.parts.includes('chip')
   return symbol.parts.map((part) => {
@@ -73,17 +74,9 @@ function SymbolCell({ symbol }: { symbol: NonNullable<ResolvedCell['symbol']> })
           </span>
         )
       case 'chip':
-        return (
-          <span key={part} className="k-grid-chip">
-            {symbol.code}
-          </span>
-        )
+        return <CodeChip key={part}>{symbol.code}</CodeChip>
       case 'name':
-        return symbol.name ? (
-          <span key={part} className="k-grid-fullname">
-            {symbol.name}
-          </span>
-        ) : null
+        return symbol.name ? <CodeName key={part}>{symbol.name}</CodeName> : null
       case 'venue':
         return symbol.venue ? (
           <span key={part} className="k-grid-tag">
@@ -106,12 +99,7 @@ function Value({ resolved, ellipsis }: { resolved: ResolvedCell; ellipsis?: bool
     ) : (
       resolved.main
     )
-  if (!resolved.unit) return main
-  return (
-    <span className="k-grid-val">
-      {main} <span className="k-grid-unit">{resolved.unit}</span>
-    </span>
-  )
+  return <UnitValue unit={resolved.unit}>{main}</UnitValue>
 }
 
 /**

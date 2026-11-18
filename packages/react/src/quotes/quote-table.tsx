@@ -5,11 +5,13 @@
 // 行就是自选列表的行（WatchlistRow，即统一行情行 { id, symbol, name, last, change, changePct } 加迷你图，2026-11-18）：值是数，价格文字由 formatPrice 写，
 // 最新价变了只闪变了的尾数（与 Watchlist 共用 FlashPrice），涨跌幅变了整格闪涨跌色，行的顺序变了平滑换位，新加的行高亮一阵（共用层 lib/live.ts）。
 // 由 Tabs 与 Sparkline 组出来，文字全由调用方传，包里没有文案。旧的字符串行（price / percent / tone）照旧认一个版本。
+// 格内排版跟 DataGrid 的 comfortable 档同一份（#92，共用件 cell-type.tsx）：有代码时代码画成芯片、后跟全称；成交量按 locale 缩写（K/M/B ↔ 万/亿）、单位小字。行高照旧。
 import { useRef } from 'react'
 import { cn } from '../lib/cn.ts'
 import { useEnterMarks, useFlipList, useValueFlash } from '../lib/live.ts'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../primitives/tabs.tsx'
 import { formatPercentChange } from '../lib/chart/format/index.ts'
+import { CodeChip, CodeName, CompactValue } from './cell-type.tsx'
 import { FlashPrice } from './flash-price.tsx'
 import { plainPrice, readNumber, rowTone, type FormatPrice } from './quote-row.ts'
 import { TONE_GLYPH, type QuoteTone } from './quote-tone.ts'
@@ -22,6 +24,8 @@ export type QuoteTableRow = Omit<WatchlistRow, 'flagged'> & {
   spark?: readonly number[]
   /** Accessible name of the mini chart. */
   sparkLabel?: string
+  /** Volume, abbreviated by locale (K/M/B or 万/亿); the column shows when labels.columns.volume is given. */
+  volume?: number
 }
 
 /**
@@ -53,8 +57,8 @@ export type QuoteGroup = {
 }
 
 export type QuoteTableLabels = {
-  /** Text of the four header columns (name, trend, price, change). */
-  columns: { name: string; trend: string; price: string; change: string }
+  /** Text of the header columns (name, trend, price, change, and an optional volume column). */
+  columns: { name: string; trend: string; price: string; change: string; volume?: string }
   /** Text written when a group has no rows. */
   empty: string
   /** Accessible name of the tab strip. */
@@ -74,6 +78,10 @@ export type QuoteTableProps = {
   label?: string
   /** Writes the last price; two decimals when omitted. */
   formatPrice?: FormatPrice
+  /** Locale of the volume abbreviations (en-US K/M/B/T, zh-CN 万/亿); defaults to en-US. */
+  locale?: string
+  /** Unit written small after the volume (shares, USD). */
+  volumeUnit?: string
   /** The selected group id when controlled. */
   value?: string
   /** The initially selected group id when uncontrolled. */
@@ -93,6 +101,7 @@ type Line = {
   row: QuoteTableRow | LegacyQuoteRow
   name: string
   symbol?: string
+  volume?: number
   last: number | null
   lastText: string
   pct: number | null
@@ -123,19 +132,25 @@ function lineOf(row: QuoteTableRow | LegacyQuoteRow, format: FormatPrice): Line 
     pct: row.changePct,
     pctText: Number.isFinite(row.changePct) ? formatPercentChange(row.changePct) : undefined,
     tone: rowTone(row),
+    volume: row.volume,
   }
 }
 
 /** 一组的行：<tr> 上要用 FLIP 换位与新行高亮，所以每一组一个组件放 hooks。 */
+type VolumeFormat = { locale?: string; unit?: string }
+
 function QuoteRows({
   rows,
   labels,
   format,
+  volume,
   onSelect,
 }: {
   rows: QuoteGroup['rows']
   labels: QuoteTableLabels
   format: FormatPrice
+  /** 有成交量列时的缩写语言与单位；没有成交量列是 undefined。 */
+  volume?: VolumeFormat
   onSelect?: QuoteTableProps['onSelect']
 }) {
   const table = useRef<HTMLTableElement>(null)
@@ -154,11 +169,22 @@ function QuoteRows({
           <th scope="col" className="is-num">
             {labels.columns.change}
           </th>
+          {volume && (
+            <th scope="col" className="is-num">
+              {labels.columns.volume}
+            </th>
+          )}
         </tr>
       </thead>
       <tbody>
         {rows.map((row) => (
-          <QuoteLine key={row.id} line={lineOf(row, format)} onSelect={onSelect} entering={entering.has(row.id)} />
+          <QuoteLine
+            key={row.id}
+            line={lineOf(row, format)}
+            volume={volume}
+            onSelect={onSelect}
+            entering={entering.has(row.id)}
+          />
         ))}
       </tbody>
     </table>
@@ -167,10 +193,12 @@ function QuoteRows({
 
 function QuoteLine({
   line,
+  volume,
   onSelect,
   entering,
 }: {
   line: Line
+  volume?: VolumeFormat
   onSelect?: QuoteTableProps['onSelect']
   entering: boolean
 }) {
@@ -191,14 +219,20 @@ function QuoteLine({
       }
     >
       <th scope="row" className="k-quote-rows-name">
-        <span>{line.name}</span>
-        {line.symbol && <small>{line.symbol}</small>}
+        {line.symbol ? (
+          <span className="k-quote-rows-sym">
+            <CodeChip>{line.symbol}</CodeChip>
+            <CodeName>{line.name}</CodeName>
+          </span>
+        ) : (
+          <span>{line.name}</span>
+        )}
       </th>
       <td className="k-quote-rows-trend">
         {/* 行高只有 22px：不画末端点（价格格自己会闪，再脉动一个点只会吵）。 */}
         {row.spark && <Sparkline values={row.spark} label={row.sparkLabel ?? ''} tone={tone} showLast={false} />}
       </td>
-      <td className="is-num">
+      <td className="is-num k-quote-rows-price">
         {line.last === null ? line.lastText : <FlashPrice value={line.last} text={line.lastText} />}
       </td>
       <td
@@ -215,6 +249,11 @@ function QuoteLine({
           </>
         )}
       </td>
+      {volume && (
+        <td className="is-num k-quote-rows-volume">
+          <CompactValue value={line.volume} locale={volume.locale} unit={volume.unit} />
+        </td>
+      )}
     </tr>
   )
 }
@@ -226,6 +265,8 @@ export function QuoteTable({
   empty,
   label,
   formatPrice = plainPrice,
+  locale,
+  volumeUnit,
   value,
   defaultValue,
   onValueChange,
@@ -239,6 +280,7 @@ export function QuoteTable({
     list: label ?? '',
   }
   const select = onSelect ?? onRow
+  const volume = labels.columns.volume === undefined ? undefined : { locale, unit: volumeUnit }
   return (
     <Tabs
       className={`k-quote-table${className ? ` ${className}` : ''}`}
@@ -258,7 +300,7 @@ export function QuoteTable({
           {group.rows.length === 0 ? (
             <p className="k-quote-table-empty">{labels.empty}</p>
           ) : (
-            <QuoteRows rows={group.rows} labels={labels} format={formatPrice} onSelect={select} />
+            <QuoteRows rows={group.rows} labels={labels} format={formatPrice} volume={volume} onSelect={select} />
           )}
         </TabsContent>
       ))}

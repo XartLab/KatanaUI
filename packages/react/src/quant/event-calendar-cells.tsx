@@ -4,6 +4,7 @@ import { MoonIcon, SunIcon } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { cn } from '../lib/cn.ts'
 import { formatPercentChange, formatVolume } from '../lib/chart/format/index.ts'
+import { UnitValue } from '../quotes/cell-type.tsx'
 import { Sparkline } from '../quotes/sparkline.tsx'
 import { SymbolMark } from '../quotes/symbol-mark.tsx'
 import {
@@ -129,14 +130,9 @@ const cell = (key: string, content: ReactNode, tone?: string, extra?: string) =>
     {content}
   </span>
 )
+// 数后的单位（币种）：跟 DataGrid 同一份单位小字（quotes/cell-type.tsx 的 UnitValue，10px w500 次要色，#92）。
 const withUnit = (text: string, unit?: string) =>
-  text === DASH || !unit ? (
-    text
-  ) : (
-    <>
-      {text} <small className="k-ecal-unit">{unit}</small>
-    </>
-  )
+  text === DASH || !unit ? text : <UnitValue unit={unit}>{text}</UnitValue>
 const surprise = (value: number | undefined) => (value === undefined ? DASH : formatPercentChange(value))
 
 /** 一行的单元格（按当前类别的列集）；repeat：经济事件同一时间同一国家的后续行，时间与国家留空。 */

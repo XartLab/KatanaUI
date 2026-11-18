@@ -2204,15 +2204,15 @@ for (const theme of THEMES) {
       await expect(sorted.locator('.k-grid-sort')).toHaveText('▼')
       // 品种格：徽标 18、代码芯片高 24 / 12px w600、全称。
       await expect(cell('symbol').locator('[data-slot="symbol-mark"]')).toHaveCSS('width', '18px')
-      const chip = cell('symbol').locator('.k-grid-chip')
+      const chip = cell('symbol').locator('.k-code-chip')
       await expect(chip).toHaveText('ALFA')
       expect((await chip.boundingBox())!.height).toBe(24)
       expect(await css(chip, 'font-size')).toBe('12px')
       expect(await css(chip, 'font-weight')).toBe('600')
-      await expect(cell('symbol').locator('.k-grid-fullname')).toHaveText('示例阿尔法科技')
+      await expect(cell('symbol').locator('.k-code-name')).toHaveText('示例阿尔法科技')
       // 单位小字 10px、次要色；缩写 K/M/B/T；复制出来的字连着单位。
       await expect(cell('mcap')).toHaveText('5.18 T USD')
-      const unit = cell('mcap').locator('.k-grid-unit')
+      const unit = cell('mcap').locator('.k-num-unit')
       expect(await css(unit, 'font-size')).toBe('10px')
       expect(await css(unit, 'color')).toBe(await token(page, '--k-content-secondary-foreground'))
       await expect(cell('volume')).toHaveText('42.80 M')
@@ -2493,6 +2493,13 @@ for (const theme of THEMES) {
       expect(boards).toEqual(['5', '4', '3', '1'])
       await expect(ladder.locator('[data-board="4"] [data-slot="ladder-promote"]')).toContainText('晋级 1/2')
       await expect(ladder.locator('[data-board="1"] [data-slot="ladder-promote"]')).toContainText('晋级 6/31')
+      // 封单额按 zh-CN 缩写（#92）：5.2e8 写「5.20 亿」，单位 CNY 是 10px 次要色小字（与 DataGrid 同一份 .k-num-unit）。
+      const seal = ladder.locator('[data-code="600001"] [data-slot="ladder-seal"]')
+      await expect(seal.locator('.k-num-unit')).toHaveCSS('font-size', '10px')
+      await expect(seal.locator('.k-num-unit')).toHaveCSS(
+        'color',
+        await token(page, '--k-content-secondary-foreground'),
+      )
       // 晋级条的填充宽度按比例：1/2 约一半。
       const fill = ladder.locator('[data-board="4"] .k-ladder-promote-bar i')
       const [bar, filled] = await Promise.all([
@@ -2519,14 +2526,14 @@ for (const theme of THEMES) {
       expect(await colorOf('000003', '.k-ladder-symbol')).toBe(await ink('--ink-300'))
       expect(await colorOf('603007', '.k-ladder-symbol')).toBe(await ink('--ink-300'))
       // 数值列是界面无衬线加等宽数字，不是等宽字体族。
-      // 品种格：代码是主、名称是次（名称更淡更小）；封单额写成「520.00 M」，缺数据写「—」。
+      // 品种格：代码是主、名称是次（名称更淡更小）；封单额按 zh-CN 缩写写成「5.20 亿」加单位小字 CNY（#92，原来是「520.00 M」），缺数据写「—」。
       const sym = ladder.locator('[data-code="600002"]')
       await expect(sym.locator('.k-ladder-symbol')).toHaveText('600002')
       await expect(sym.locator('.k-ladder-sub')).toHaveText('示例电力')
       expect(
         await sym.locator('.k-ladder-sub').evaluate((el) => parseFloat(getComputedStyle(el).fontSize)),
       ).toBeLessThan(await sym.locator('.k-ladder-symbol').evaluate((el) => parseFloat(getComputedStyle(el).fontSize)))
-      await expect(ladder.locator('[data-code="600001"] .k-ladder-num').nth(2)).toHaveText('520.00 M')
+      await expect(ladder.locator('[data-code="600001"] .k-ladder-num').nth(2)).toHaveText('5.20 亿 CNY')
       await expect(ladder.locator('[data-code="603007"] .k-ladder-num').nth(2)).toHaveText('—')
       await expect(ladder.locator('[data-code="600001"] .k-ladder-num').first()).toHaveText('+10.00%')
       const numStyle = await ladder
@@ -4725,9 +4732,23 @@ for (const theme of THEMES) {
       const rows = table.locator('tbody tr')
       await expect(rows).toHaveCount(3)
       const rights = await table
-        .locator('tbody td.is-num:not(.k-quote-rows-change)')
+        .locator('tbody td.k-quote-rows-price')
         .evaluateAll((nodes) => nodes.map((node) => Math.round(node.getBoundingClientRect().right)))
+      expect(rights, '每行都有价格格').toHaveLength(3)
       expect(new Set(rights).size, '价格列右缘对齐').toBe(1)
+      // 格内排版跟 DataGrid 同一份（#92）：代码芯片高 24、12px w600；成交量按 zh-CN 缩写（万 / 亿），单位「股」是 10px 次要色小字。
+      const chip = rows.nth(0).locator('.k-code-chip')
+      await expect(chip).toBeVisible()
+      expect((await chip.boundingBox())!.height).toBe(24)
+      await expect(chip).toHaveCSS('font-size', '12px')
+      await expect(chip).toHaveCSS('font-weight', '600')
+      const volume = rows.nth(0).locator('.k-quote-rows-volume')
+      await expect(volume).toHaveText(/^\d+(\.\d\d)? (万|亿) 股$/)
+      await expect(volume.locator('.k-num-unit')).toHaveCSS('font-size', '10px')
+      await expect(volume.locator('.k-num-unit')).toHaveCSS(
+        'color',
+        await token(page, '--k-content-secondary-foreground'),
+      )
       await expect
         .poll(() => paint(rows.nth(0).locator('.k-quote-rows-change'), 'color'))
         .toEqual(await swatch(page, 'var(--pnl-up)'))
@@ -5175,6 +5196,11 @@ for (const theme of THEMES) {
     const row = (key: string) => frame.locator(`.k-sr-table tr[data-metric="${key}"]`)
     const cell = (key: string, side: string) => row(key).locator(`td[data-side="${side}"]`)
     await expect(frame.locator('.k-sr-table thead th[data-side]')).toHaveText(['全部', '多', '空'])
+    // 指标表是整页表的一套数（#92，.k-table-comfortable）：行 40、表头 48、正文 14px、首列左 20。
+    expect(Math.round((await row('tradeCount').boundingBox())!.height)).toBe(40)
+    expect(Math.round((await frame.locator('.k-sr-table thead tr').first().boundingBox())!.height)).toBe(48)
+    await expect(cell('tradeCount', 'all')).toHaveCSS('font-size', '14px')
+    await expect(row('tradeCount').locator('th')).toHaveCSS('padding-left', '20px')
     const n = async (side: string) => Number(await cell('tradeCount', side).innerText())
     expect((await n('long')) + (await n('short'))).toBe(await n('all'))
     await expect(cell('tradeCount', 'all')).toHaveAttribute('data-active', '')
@@ -5208,6 +5234,8 @@ for (const theme of THEMES) {
     await expect(grid.getByRole('columnheader', { name: '累计盈亏' })).toBeVisible()
     const first = grid.getByRole('row').nth(1)
     await expect(first).toContainText('140')
+    // 交易列表是 DataGrid comfortable（#92）：行 40。
+    expect((await first.boundingBox())!.height).toBe(40)
     await expect(first).toHaveAttribute('aria-expanded', 'false')
     await first.click()
     await expect(first).toHaveAttribute('aria-expanded', 'true')
@@ -5839,6 +5867,11 @@ for (const theme of THEMES) {
     await expect(frame.locator('.k-hl-row')).toHaveCount(0)
     const table = frame.locator('.k-hl-watch')
     await expect(table.locator('thead th')).toHaveText(['传导层', '核心证据', '最容易混淆的地方'])
+    // 观察表是整页表的一套数（#92）：表头 48、13px 次要色；正文 14px，行至少 40（文字会折行）。
+    expect(Math.round((await table.locator('thead tr').boundingBox())!.height)).toBe(48)
+    await expect(table.locator('thead th').first()).toHaveCSS('font-size', '13px')
+    await expect(table.locator('tbody td').first()).toHaveCSS('font-size', '14px')
+    expect((await table.locator('tbody tr').first().boundingBox())!.height).toBeGreaterThanOrEqual(40)
     await expect(table.locator('tbody tr')).toHaveCount(8)
     await expect(table.locator('tbody tr').first()).toContainText('口号式表述和有预算的安排不是一回事')
     await frame.getByRole('group', { name: '视图' }).getByRole('button', { name: '假说', exact: true }).click()
@@ -5905,6 +5938,15 @@ for (const theme of THEMES) {
     await expect(symbolHead.locator('.k-grid-head-sub')).toHaveText('16 / 16')
     await expect(grid.getByRole('columnheader', { name: /市盈率/ }).locator('.k-grid-head-sub')).toHaveText('TTM')
     await expect(grid.getByRole('img', { name: '搜索代码' })).toBeVisible()
+    // 两行表头与单行表头对齐（#92）：两行的第一行与单行列头同一条线（顶边与基线都相差不到 1px），第二行在第一行下面。
+    const firstLine = async (name: RegExp) =>
+      (await grid.getByRole('columnheader', { name }).locator('.k-grid-head-name > span').first().boundingBox())!
+    const twoLine = await firstLine(/代码/)
+    const oneLine = await firstLine(/价格/)
+    expect(Math.abs(twoLine.y - oneLine.y)).toBeLessThan(1)
+    expect(Math.abs(twoLine.y + twoLine.height - (oneLine.y + oneLine.height))).toBeLessThan(1)
+    const subBox = (await symbolHead.locator('.k-grid-head-sub').boundingBox())!
+    expect(subBox.y).toBeGreaterThanOrEqual(twoLine.y + twoLine.height - 0.5)
     await grid
       .getByRole('columnheader', { name: /价格/ })
       .getByRole('button')
