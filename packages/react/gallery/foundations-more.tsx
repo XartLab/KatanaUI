@@ -19,7 +19,7 @@ const T = tokens as unknown as {
 /** 数据浓度档（tokens.json 的 characteristics k-heat-*），数据可视化页与语义特征页都画这一排。 */
 export const HEAT = ['k-heat-0', 'k-heat-1', 'k-heat-2', 'k-heat-3', 'k-heat-4', 'k-heat-5'] as const
 
-const Lede = ({ children }: { children: ReactNode }) => <p className="gal-lede">{children}</p>
+export const Lede = ({ children }: { children: ReactNode }) => <p className="gal-lede">{children}</p>
 const Src = ({ href, children }: { href: string; children: ReactNode }) => (
   <p className="gal-fd-source">
     出处：
@@ -29,7 +29,7 @@ const Src = ({ href, children }: { href: string; children: ReactNode }) => (
   </p>
 )
 
-function Table({ head, rows }: { head: readonly string[]; rows: readonly (readonly ReactNode[])[] }) {
+export function Table({ head, rows }: { head: readonly string[]; rows: readonly (readonly ReactNode[])[] }) {
   return (
     <table className="gal-fd-table">
       <thead>

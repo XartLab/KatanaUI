@@ -6,7 +6,10 @@
 import type { ReactNode } from 'react'
 import tokens from '../src/tokens-json'
 import { Button } from '../src/index'
-import { HEAT, MORE_PAGES } from './foundations-more'
+import { DECISION_PAGES } from './decisions'
+import { HEAT, MORE_PAGES as BASE_PAGES } from './foundations-more'
+
+const MORE_PAGES = { ...BASE_PAGES, ...DECISION_PAGES }
 
 type Valued = string | Record<string, string>
 type Token = {
@@ -59,12 +62,16 @@ export const FOUNDATION_PAGES = [
   { id: 'characteristics', title: '语义特征', section: 'tokens' },
   { id: 'token-naming', title: 'Token 命名', section: 'tokens' },
   { id: 'theming', title: '主题接入', section: 'tokens' },
+  { id: 'choosing-chart', title: '选图', section: 'decisions' },
+  { id: 'choosing-container', title: '读数、卡片还是表', section: 'decisions' },
+  { id: 'choosing-overlay', title: '弹层怎么选', section: 'decisions' },
 ] as const
 export type FoundationId = (typeof FOUNDATION_PAGES)[number]['id']
 export const FOUNDATION_SECTIONS = [
   { id: 'start', title: '入门' },
   { id: 'foundations', title: '基础' },
   { id: 'tokens', title: 'Token 与主题' },
+  { id: 'decisions', title: '设计决策' },
 ] as const
 export const isFoundation = (id: string): id is FoundationId => FOUNDATION_PAGES.some((page) => page.id === id)
 
