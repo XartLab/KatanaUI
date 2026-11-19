@@ -8,13 +8,16 @@
 
 ### DeleteButton
 
+外层是 div（data-phase：idle / armed / done / kept）；原按钮 aria-expanded 表达是否展开。文字都在 label 与 labels 里，包里不带语言。
+
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
 | `label` * | `string` | — | Accessible name of the original button, for example "Delete workspace" (required). |
-| `confirmLabel` * | `string` | — | Accessible name of the confirm button after it expands (required). |
-| `cancelLabel` * | `string` | — | Accessible name of the cancel button after it expands (required). |
-| `doneLabel` | `string` | — | Announced to screen readers after confirming or cancelling; nothing is announced when omitted. |
-| `keptLabel` | `string` | — | Announced to screen readers after cancelling. |
+| `labels` | `DeleteButtonLabels` | — | Texts: confirm and cancel (required unless the deprecated confirmLabel / cancelLabel are given), done and kept. |
+| `confirmLabel` | `string` | — | Old name of labels.confirm, kept for one release. |
+| `cancelLabel` | `string` | — | Old name of labels.cancel, kept for one release. |
+| `doneLabel` | `string` | — | Old name of labels.done, kept for one release. |
+| `keptLabel` | `string` | — | Old name of labels.kept, kept for one release. |
 | `onConfirm` | `() => void` | — | Called when the confirm button is clicked; the first click on the original button does not call it. |
 | `onCancel` | `() => void` | — | Called on cancel (including Esc, a click outside, and tabbing away). |
 | `disabled` | `boolean` | — | Disable the original button. |
@@ -28,7 +31,11 @@ import { DeleteButton } from '@katana-ui/react'
 
 export function DeleteButtonUsage() {
   return (
-    <DeleteButton label="Delete workspace" confirmLabel="Confirm delete" cancelLabel="Cancel" onConfirm={() => {}} />
+    <DeleteButton
+      label="Delete workspace"
+      labels={{ confirm: 'Confirm delete', cancel: 'Cancel' }}
+      onConfirm={() => {}}
+    />
   )
 }
 ```

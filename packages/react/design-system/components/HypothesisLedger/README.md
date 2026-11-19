@@ -224,6 +224,7 @@ export function HypothesisLedgerUsage() {
 - 过了检验期限还没结论：自动按「过期」画（调用方不必先改状态），倒计时换成已过期天数。
 - 有支持 / 被否定：人下了结论，行上显示期限日期；一行上的「n 支持 · m 反对」是证据对比。
 - 筛选：状态与传导层叠加，两边的计数各自不被对方的筛选影响；没有结果出空态。
+- 灯的语气（hypothesisSeverity → ledOf，G6）：待验证 accent（点亮的强调色）、支持 ok、证伪 danger、过期 warn；不再在件里手写灯表。
 
 ## Don't
 

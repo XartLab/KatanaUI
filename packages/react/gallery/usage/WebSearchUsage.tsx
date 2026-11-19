@@ -12,8 +12,7 @@ export function WebSearchUsage() {
       sources={SOURCES}
       status="done"
       label="Searched 2 sites"
-      moreLabel={(count) => `${count} more`}
-      lessLabel="Collapse"
+      labels={{ more: (count) => `${count} more`, less: 'Collapse' }}
     />
   )
 }

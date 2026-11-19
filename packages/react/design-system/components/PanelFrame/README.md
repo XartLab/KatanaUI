@@ -28,11 +28,11 @@
 | `headingHidden` | `boolean` | `false` | 标题只给读屏、不画出来（工具条占着标题栏时）。 |
 | `object` | `ReactNode` | — | 标题后的当前对象（品种、过滤条件），等宽小字。 |
 | `linkGroup` | `'A' \| 'B' \| 'C' \| 'D' \| null` | — | 联动色点：给组名画那组的颜色；null 画熄灭的环；不传不画。 |
-| `linkLabel` | `string` | — | 色点的名字（读屏念）；有 linkGroup 时必填。 |
+| `labels` | `{ link?, collapse?, expand? }` | — | 色点的名字（有 linkGroup 时必填）、折叠按钮两态的名字（collapsible 时必填）；旧名 linkLabel / collapseLabel / expandLabel 留一个版本。 |
 | `pinned` | `boolean` | `false` | 固定（不跟随联动）：色点变空心圆。 |
 | `toolbar` | `ReactNode` | — | 标题后的局部工具条（Toolbar）。 |
 | `actions` | `ReactNode` | — | 右侧动作槽（设置、最大化、关闭）；不超过三个，更多进设置。 |
-| `collapsible` | `boolean` | `false` | 画折叠按钮（collapseLabel、expandLabel 由调用方传）。 |
+| `collapsible` | `boolean` | `false` | 画折叠按钮（名字经 labels.collapse、labels.expand 传）。 |
 
 ### PanelFrameBody
 
@@ -40,8 +40,8 @@
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `state` | `'ready' \| 'loading' \| 'empty' \| 'disconnected'` | `'ready'` | ready 画 children；loading 画骨架；empty、disconnected 画空态。 |
-| `loadingLabel` | `string` | — | loading 时骨架的名字（读屏念）。 |
+| `status` | `'ready' \| 'loading' \| 'empty' \| 'disconnected'` | `'ready'` | ready 画 children；loading 画骨架；empty、disconnected 画空态（旧名 state 留一个版本）。 |
+| `labels` | `{ loading? }` | — | loading 时骨架的名字（读屏念；旧名 loadingLabel）。 |
 | `view` | `{ tag?, title, description?, actions? }` | — | empty、disconnected 时空态的文字与动作。 |
 
 ## Usage
@@ -64,7 +64,7 @@ export function PanelFrameUsage() {
               heading="Chart"
               object="· BTCUSDT · 1h"
               linkGroup="A"
-              linkLabel="Link group A"
+              labels={{ link: 'Link group A' }}
               actions={
                 <>
                   <Button variant="icon" aria-label="Maximize">
@@ -89,11 +89,9 @@ export function PanelFrameUsage() {
               heading="Watchlist"
               object="· Core · 24"
               linkGroup="B"
-              linkLabel="Link group B, pinned"
+              labels={{ link: 'Link group B, pinned', collapse: 'Collapse', expand: 'Expand' }}
               pinned
               collapsible
-              collapseLabel="Collapse"
-              expandLabel="Expand"
             />
             <PanelFrameBody>
               <p className="gal-note" style={{ padding: 8 }}>
@@ -104,9 +102,9 @@ export function PanelFrameUsage() {
         </div>
         <div style={{ width: 270, height: 150 }}>
           <PanelFrame aria-label="Orders panel">
-            <PanelFrameHeader heading="Orders" linkGroup={null} linkLabel="No link group" />
+            <PanelFrameHeader heading="Orders" linkGroup={null} labels={{ link: 'No link group' }} />
             <PanelFrameBody
-              state="disconnected"
+              status="disconnected"
               view={{ tag: 'OFFLINE', title: 'Not connected', description: 'Connect an account to see orders.' }}
             />
           </PanelFrame>
@@ -114,7 +112,7 @@ export function PanelFrameUsage() {
         <div style={{ width: 270, height: 150 }}>
           <PanelFrame aria-label="Trades panel">
             <PanelFrameHeader heading="Trades" />
-            <PanelFrameBody state="loading" loadingLabel="Loading" />
+            <PanelFrameBody status="loading" labels={{ loading: 'Loading' }} />
           </PanelFrame>
         </div>
       </div>

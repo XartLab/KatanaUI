@@ -2,12 +2,12 @@
 // 起步代码取自 shadcn/ui（https://ui.shadcn.com ，MIT，Copyright (c) 2023 shadcn），2026-11-14 用 `shadcn add` 生成（#1870）；
 // 行为底座是 cmdk 1.1.1（https://github.com/pacocoursey/cmdk ，MIT，Copyright (c) 2022 Paco Coursey，2026-11-14 读）：搜索过滤、↑↓ 走行、回车选中、分组都是它做的。
 // 拷进来以后归我们改：尺寸、颜色按我们的 token 重写（决策记录 0049）。
-import { Command as CommandPrimitive } from 'cmdk'
+import { Command as CommandPrimitive, useCommandState } from 'cmdk'
 import { SearchIcon } from 'lucide-react'
 import type { ComponentProps } from 'react'
 import { cn } from '../lib/cn.ts'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from './dialog.tsx'
-import { menuRowClass } from './menu-parts.tsx'
+import { menuRowBaseClass } from './menu-parts.tsx'
 
 // 命令面板与可搜索列表的底座：一个输入框加一串过滤出来的行，焦点一直在输入框里，↑↓ 移动高亮（data-selected），回车选中。
 // 过滤是 cmdk 的（按行的 value 与 keywords 模糊匹配）；自己排名的（应用里的命令搜索）传 shouldFilter={false}，行的先后照传进来的。
@@ -17,7 +17,10 @@ function Command({ className, ...props }: ComponentProps<typeof CommandPrimitive
   return (
     <CommandPrimitive
       data-slot="command"
-      className={cn('k-text-body flex h-full w-full flex-col overflow-hidden text-ink-2', className)}
+      className={cn(
+        'k-text-body flex h-full w-full flex-col overflow-hidden text-(color:--k-content-body-foreground)',
+        className,
+      )}
       {...props}
     />
   )
@@ -60,13 +63,13 @@ function CommandInput({ className, ...props }: ComponentProps<typeof CommandPrim
   return (
     <div
       data-slot="command-input-wrapper"
-      className="flex h-10 shrink-0 items-center gap-2 border-b border-alpha-white-5 px-3"
+      className="flex h-10 shrink-0 items-center gap-2 border-b border-(color:--k-separable-subtle-borderColor) px-3"
     >
-      <SearchIcon aria-hidden="true" className="size-4 shrink-0 text-ink-3" />
+      <SearchIcon aria-hidden="true" className="size-4 shrink-0 text-(color:--k-content-secondary-foreground)" />
       <CommandPrimitive.Input
         data-slot="command-input"
         className={cn(
-          'k-text-body h-full w-full bg-transparent text-ink outline-0 placeholder:text-ink-3 disabled:cursor-not-allowed disabled:opacity-45',
+          'k-text-body h-full w-full bg-transparent text-(color:--k-content-primary-foreground) outline-0 placeholder:text-(color:--k-content-secondary-foreground) disabled:cursor-not-allowed disabled:opacity-45',
           className,
         )}
         {...props}
@@ -89,7 +92,7 @@ function CommandEmpty({ className, ...props }: ComponentProps<typeof CommandPrim
   return (
     <CommandPrimitive.Empty
       data-slot="command-empty"
-      className={cn('k-text-data py-6 text-center text-ink-3', className)}
+      className={cn('k-text-data py-6 text-center text-(color:--k-content-secondary-foreground)', className)}
       {...props}
     />
   )
@@ -100,7 +103,7 @@ function CommandGroup({ className, ...props }: ComponentProps<typeof CommandPrim
     <CommandPrimitive.Group
       data-slot="command-group"
       className={cn(
-        'overflow-hidden [&_[cmdk-group-heading]]:k-text-micro [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:pt-2 [&_[cmdk-group-heading]]:pb-1 [&_[cmdk-group-heading]]:leading-normal [&_[cmdk-group-heading]]:text-ink-2 [&_[cmdk-group-heading]]:uppercase',
+        'overflow-hidden [&_[cmdk-group-heading]]:k-text-micro [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:pt-2 [&_[cmdk-group-heading]]:pb-1 [&_[cmdk-group-heading]]:leading-normal [&_[cmdk-group-heading]]:text-(color:--k-content-body-foreground) [&_[cmdk-group-heading]]:uppercase',
         className,
       )}
       {...props}
@@ -108,11 +111,24 @@ function CommandGroup({ className, ...props }: ComponentProps<typeof CommandPrim
   )
 }
 
-function CommandSeparator({ className, ...props }: ComponentProps<typeof CommandPrimitive.Separator>) {
+// 分隔线不用 cmdk 的 Separator：它写死 role="separator"，放在 listbox 里不合 ARIA（listbox 只许 option 与 group，axe aria-required-children）。
+// 这里是纯装饰的 role="none"，行为照 cmdk：有搜索词时不画（alwaysRender 除外）。
+function CommandSeparator({
+  className,
+  alwaysRender = false,
+  ...props
+}: ComponentProps<'div'> & {
+  /** Keep the line while a search is typed (cmdk hides separators during a search by default). */
+  alwaysRender?: boolean
+}) {
+  const searching = useCommandState((state) => state.search !== '')
+  if (searching && !alwaysRender) return null
   return (
-    <CommandPrimitive.Separator
+    <div
       data-slot="command-separator"
-      className={cn('-mx-1.5 my-1 h-px bg-alpha-white-6', className)}
+      cmdk-separator=""
+      role="none"
+      className={cn('-mx-1.5 my-1 h-px bg-(--k-overlay-borderColor)', className)}
       {...props}
     />
   )
@@ -123,8 +139,9 @@ function CommandItem({ className, ...props }: ComponentProps<typeof CommandPrimi
     <CommandPrimitive.Item
       data-slot="command-item"
       className={cn(
-        menuRowClass,
-        'justify-start data-[selected=true]:bg-alpha-white-3 data-[selected=true]:text-ink data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-45 [&_svg:not([class*=size-])]:size-4',
+        menuRowBaseClass,
+        // cmdk 的行总带 data-disabled（"true" / "false"），禁用态只认 ="true"。
+        'justify-start data-[selected=true]:bg-(--k-selectable-subtle-background-hover) data-[selected=true]:text-(color:--k-content-primary-foreground) data-[disabled=true]:pointer-events-none data-[disabled=true]:text-(color:--k-content-secondary-foreground) data-[disabled=true]:opacity-45 [&_svg:not([class*=size-])]:size-4',
         className,
       )}
       {...props}
@@ -133,7 +150,13 @@ function CommandItem({ className, ...props }: ComponentProps<typeof CommandPrimi
 }
 
 function CommandShortcut({ className, ...props }: ComponentProps<'span'>) {
-  return <span data-slot="command-shortcut" className={cn('k-text-caption ml-auto text-ink-3', className)} {...props} />
+  return (
+    <span
+      data-slot="command-shortcut"
+      className={cn('k-text-caption ml-auto text-(color:--k-content-secondary-foreground)', className)}
+      {...props}
+    />
+  )
 }
 
 export {

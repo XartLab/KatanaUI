@@ -20,12 +20,12 @@ export function DateRangePickerUsage() {
   const [range, setRange] = useState<DateRange | null>({ start: '2026-11-09', end: '2026-11-14' })
   return (
     <>
-      <DateRangePicker value={range} onValue={setRange} today="2026-11-14" labels={RANGE_LABELS} locale="zh-CN" />
+      <DateRangePicker value={range} onValueChange={setRange} today="2026-11-14" labels={RANGE_LABELS} locale="zh-CN" />
       <output data-gallery-range>{range ? `${range.start} ~ ${range.end}` : '未选'}</output>
 
       <DateRangePicker
         value={null}
-        onValue={() => {}}
+        onValueChange={() => {}}
         today="2026-11-14"
         min="2026-01-01"
         max="2026-12-31"

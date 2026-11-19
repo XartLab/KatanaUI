@@ -2,7 +2,7 @@
 // 市场热力图的纯函数（#15）：色阶的区段、图例的值边界、格子的键盘邻居。排布与着色档用包里矩形树图的 layoutTreemap、colorStep，不另写。
 // 区段的做法照 TradingView 帮助中心「Range calculation and color logic of the Heatmaps」（2026-11-15 读）：载入或改参数时取所选指标的最小最大值，
 // 切成若干区段各一色，格子取所在区段的颜色；那页没写固定区间、段数与中性色，所以下面的段数与取整是我们自己定的（见 HEAT_STEPS 的注释）。
-import { colorStep } from '../katana/treemap-model.ts'
+import { colorStep } from '../quotes/treemap-model.ts'
 
 /**
  * 区段数：7 段，档号 −3…+3，档 0 是以零为中心的中性段。

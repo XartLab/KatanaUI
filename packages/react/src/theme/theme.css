@@ -10,35 +10,41 @@
 @source '../primitives';
 @source '../lib';
 @source '../patterns';
+@source '../quotes';
 @source '../katana';
 @source '../quant';
 @source '../blocks';
+@source '../motion';
+@source '../ai';
 
 /* shadcn 的组件里有 dark: 开头的类（`shadcn add` 新拷来的件会带）。Tailwind 默认按系统的深浅色决定它们生不生效，
    同一个产品在两台电脑上长得不一样；我们现有两个主题都是深色，所以 dark: 一直生效，做浅色主题（Paper）时再改成按 data-theme 判断。 */
 @custom-variant dark (&:where(*));
 
 /* 名字不能跟 tokens.css 里的变量同名（--radius-control、--font-sans 这些）：@theme 里写 `--x: var(--x)` 会自己引用自己，变量就空了（#1774 试过）。
-   所以圆角、字体、阴影在件里直接写 rounded-[var(--radius-control)] 这样的任意值，下面只接颜色。 */
+   所以圆角、字体、阴影在件里直接写 rounded-[var(--radius-control)] 这样的任意值，下面只接颜色。
+   颜色只接 characteristics（--k-*，G0 起）：调色层换值，这里跟着走；值与改前逐个相等（surface-0…4 = bg-000…400，ink…ink-4 = ink-100…400），像素不变。 */
 @theme inline {
   /* Tailwind 的间距刻度默认是 0.25rem，而应用的根字号是 13px（tokens.css），px-2 会变成 6.5px、size-7 变成 22.75px。
      件里的数字都是按 4px 一格写的（shadcn 的原值，OpenMarket 实测的 px 值也一样），所以钉死成 4px。 */
   --spacing: 4px;
-  --color-surface-0: var(--bg-000);
-  --color-surface-1: var(--bg-100);
-  --color-surface-2: var(--bg-200);
-  --color-surface-3: var(--bg-300);
-  --color-surface-4: var(--bg-400);
-  --color-line: var(--line-100);
-  --color-line-strong: var(--line-200);
-  --color-ink: var(--ink-100);
-  --color-ink-2: var(--ink-200);
-  --color-ink-3: var(--ink-300);
-  --color-ink-4: var(--ink-400);
-  --color-brand: var(--ink-100);
-  --color-brand-dim: var(--ink-300);
-  --color-ok: var(--signal-green);
-  --color-danger: var(--signal-red);
+  --color-surface-0: var(--k-surface-sunken-background);
+  --color-surface-1: var(--k-surface-base-background);
+  --color-surface-2: var(--k-container-secondary-background);
+  --color-surface-3: var(--k-surface-raised-background);
+  --color-surface-4: var(--k-surface-overlay-background);
+  --color-line: var(--k-separable-tertiary-borderColor);
+  --color-line-strong: var(--k-separable-bold-borderColor);
+  --color-ink: var(--k-content-primary-foreground);
+  --color-ink-2: var(--k-content-body-foreground);
+  --color-ink-3: var(--k-content-secondary-foreground);
+  --color-ink-4: var(--k-content-tertiary-foreground);
+  --color-brand: var(--k-content-primary-foreground);
+  --color-brand-dim: var(--k-content-secondary-foreground);
+  --color-ok: var(--k-status-ok-foreground);
+  --color-danger: var(--k-status-danger-foreground);
+  /* 半透明白（Paper 下是半透明黑）这一列是调色层的刻度，没有用途可言，不进 characteristics：
+     迁移时件里的 bg-alpha-white-N 换成 --k-actionable-* / --k-status-neutral-* 这类按用途的变量（G1–G6），这一列随之退场。 */
   --color-alpha-white-1: var(--alpha-white-1);
   --color-alpha-white-2: var(--alpha-white-2);
   --color-alpha-white-2_5: var(--alpha-white-2_5);
@@ -57,24 +63,24 @@
   --color-alpha-white-14: var(--alpha-white-14);
   /* shadcn 的组件认的那一套名字，接到我们的 token 上。shadcn 的 accent 是「悬停底色」，不是强调色；强调色是 primary。
      primary-foreground 是压在强调色上的字：两个主题的强调色都是暖的亮色，用近黑。 */
-  --color-background: var(--bg-000);
-  --color-foreground: var(--ink-100);
-  --color-card: var(--bg-100);
-  --color-card-foreground: var(--ink-100);
-  --color-popover: var(--bg-400);
-  --color-popover-foreground: var(--ink-100);
-  --color-primary: var(--ink-100);
-  --color-primary-foreground: var(--bg-000);
-  --color-secondary: var(--bg-300);
-  --color-secondary-foreground: var(--ink-100);
-  --color-muted: var(--bg-300);
-  --color-muted-foreground: var(--ink-300);
-  --color-accent: var(--bg-300);
-  --color-accent-foreground: var(--ink-100);
-  --color-destructive: var(--signal-red);
-  --color-border: var(--line-100);
-  --color-input: var(--line-200);
-  --color-ring: var(--focus-ring);
+  --color-background: var(--k-surface-sunken-background);
+  --color-foreground: var(--k-content-primary-foreground);
+  --color-card: var(--k-surface-base-background);
+  --color-card-foreground: var(--k-content-primary-foreground);
+  --color-popover: var(--k-surface-overlay-background);
+  --color-popover-foreground: var(--k-content-primary-foreground);
+  --color-primary: var(--k-actionable-bold-background);
+  --color-primary-foreground: var(--k-actionable-bold-foreground-hover);
+  --color-secondary: var(--k-surface-raised-background);
+  --color-secondary-foreground: var(--k-content-primary-foreground);
+  --color-muted: var(--k-surface-raised-background);
+  --color-muted-foreground: var(--k-content-secondary-foreground);
+  --color-accent: var(--k-surface-raised-background);
+  --color-accent-foreground: var(--k-content-primary-foreground);
+  --color-destructive: var(--k-status-danger-foreground);
+  --color-border: var(--k-separable-tertiary-borderColor);
+  --color-input: var(--k-separable-bold-borderColor);
+  --color-ring: var(--k-focused-outlineColor);
 }
 
 /* 字号档：`font` 简写（字重 字号/行高 字体族），档位表在 design/tokens.json 的 type.scale，生成的变量在 tokens.css。
@@ -94,8 +100,8 @@
   font: var(--text-data) var(--font-sans);
 }
 @utility k-text-caption {
-  font-family: var(--font-sans);
-  font: var(--text-caption) var(--font-sans);
+  font-family: var(--font-sans-small);
+  font: var(--text-caption) var(--font-sans-small);
 }
 @utility k-text-micro {
   font-family: var(--font-sans);

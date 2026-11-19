@@ -21,9 +21,9 @@
   gap: var(--space-2);
   min-width: 0;
   padding: var(--space-3);
-  background: var(--bg-200);
+  background: var(--k-container-secondary-background);
   border: var(--hairline);
-  color: var(--ink-100);
+  color: var(--k-content-primary-foreground);
   font: var(--text-data) var(--font-sans);
   font-variant-numeric: tabular-nums;
 }
@@ -37,28 +37,28 @@
 .k-metric-title {
   margin: 0;
   overflow: hidden;
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   font: inherit;
   font-weight: 500;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 .k-metric-value {
-  color: var(--ink-100);
-  font-size: 28px;
+  color: var(--k-content-primary-foreground);
+  font-size: var(--text-display-size);
   font-weight: 500;
-  line-height: 1.1;
+  line-height: round(nearest, 1.1em, 1px);
   letter-spacing: -0.01em;
 }
 .k-metric-value small {
   margin-left: 4px;
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   font: 400 12px/1 var(--font-sans);
   letter-spacing: 0;
   vertical-align: baseline;
 }
 .k-metric-value.is-empty {
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
 }
 .k-metric-changes {
   display: flex;
@@ -72,7 +72,7 @@
   gap: 6px;
 }
 .k-metric-change dt {
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
 }
 .k-metric-change dd {
   margin: 0;
@@ -104,7 +104,7 @@
   background: color-mix(
     in srgb,
     color-mix(in srgb, var(--pnl-down) calc((1 - var(--t)) * 100%), var(--pnl-up) calc(var(--t) * 100%)) 70%,
-    var(--ink-300)
+    var(--k-content-secondary-foreground)
   );
   opacity: 0.35;
   transition: opacity var(--dur-gentle) var(--ease-gentle);
@@ -118,7 +118,7 @@
   bottom: -3px;
   width: 2px;
   margin-left: -1px;
-  background: var(--ink-100);
+  background: var(--k-content-primary-foreground);
   transition: left var(--dur-gentle) var(--ease-gentle);
 }
 .k-metric-stage-names {
@@ -126,12 +126,13 @@
   align-items: baseline;
   justify-content: space-between;
   gap: var(--space-2);
-  color: var(--ink-300);
-  font-size: 11px;
+  color: var(--k-content-secondary-foreground);
+  font-size: var(--text-caption-size);
 }
 .k-metric-stage-now {
-  color: var(--ink-100);
-  font-size: var(--text-data);
+  color: var(--k-content-primary-foreground);
+  /* 原来写成 var(--text-data)（那是 font 简写，放进 font-size 无效，落回继承的 11px）；2026-11-18 改成字号 token。 */
+  font-size: var(--text-data-size);
   font-weight: 500;
 }
 .k-metric-foot {
@@ -142,6 +143,6 @@
   margin-top: auto;
   padding-top: var(--space-2);
   border-top: var(--hairline);
-  color: var(--ink-300);
-  font-size: 11px;
+  color: var(--k-content-secondary-foreground);
+  font-size: var(--text-caption-size);
 }

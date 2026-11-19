@@ -46,7 +46,8 @@ function springEasing({ stiffness, damping, mass }) {
 /** 默认主题：它的值在 :root，没写 data-theme 的地方就是它。 */
 const DEFAULT_THEME = 'graphite'
 /** 已实装、要出样式块的非默认主题。 */
-const THEMES = ['console']
+// 其余主题读 tokens.json 的 color.themes（2026-11-17 起：Console、Paper、Midnight、Dim、High contrast）。
+const THEMES = tokens.color.themes.map((theme) => theme.id).filter((id) => id !== DEFAULT_THEME)
 
 /**
  * 「红涨绿跌」（#456、决策记录 0019）：data-updown="cn" 时互换的 token 对。每个主题各出一块（-100/-200 档是写死的色值，两个主题不一样），
@@ -60,7 +61,7 @@ const UPDOWN_SWAPS = [
   ['div-neg-200', 'div-pos-200'],
 ]
 
-const groups = [tokens.color, tokens.spacing, tokens.radius, tokens.shadow, tokens.border]
+const groups = [tokens.color, tokens.spacing, tokens.radius, tokens.shadow, tokens.border, tokens.motion]
 const lines = []
 const defaultReducedLines = []
 const themed = Object.fromEntries(THEMES.map((theme) => [theme, { values: [], reduced: [] }]))
@@ -97,7 +98,12 @@ for (const theme of Object.keys(updown)) {
 // 文字样式表：--text-<档> 是 font 简写的前三项（字重 字号/行高），组件写 font: var(--text-档) var(--font-角色)；
 // --text-<档>-size 给只要字号的地方（继承字重与行高的小件、画布取字号）；有字距的档另出 --text-<档>-tracking。
 for (const { name, weight, size, line, tracking } of tokens.type.scale.tokens) {
-  lines.push(`  --text-${name}: ${weight} ${size}/${line};`, `  --text-${name}-size: ${size};`)
+  // 字重加 --k-weight-adjust（渲染设置的字重补偿，默认 0）；字号与行高乘 --k-text-scale（默认 1）后取整到整像素，缩放后文字仍落在像素格上。
+  const px = (v) => `round(nearest, calc(${v} * var(--k-text-scale, 1)), 1px)`
+  lines.push(
+    `  --text-${name}: calc(${weight} + var(--k-weight-adjust, 0)) ${px(size)}/${px(line)};`,
+    `  --text-${name}-size: ${px(size)};`,
+  )
   if (tracking) lines.push(`  --text-${name}-tracking: ${tracking};`)
 }
 for (const [name, family] of Object.entries(tokens.type.families)) lines.push(`  --font-${name}: ${family.value};`)

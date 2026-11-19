@@ -41,5 +41,5 @@ const LABELS: FilterBarLabels = {
 
 export function FilterBarUsage() {
   const [conditions, setConditions] = useState<FilterCondition[]>([])
-  return <FilterBar fields={FIELDS} value={conditions} onChange={setConditions} labels={LABELS} />
+  return <FilterBar fields={FIELDS} value={conditions} onValueChange={setConditions} labels={LABELS} />
 }

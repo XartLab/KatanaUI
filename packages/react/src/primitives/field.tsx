@@ -8,7 +8,9 @@ import {
   useContext,
   useId,
   useLayoutEffect,
+  useEffect,
   useMemo,
+  useRef,
   useState,
   type ComponentProps,
 } from 'react'
@@ -34,22 +36,26 @@ type FieldState = {
 
 const FieldContext = createContext<FieldState | null>(null)
 
-const fieldVariants = cva('group/field flex w-full gap-1.5 data-[invalid=true]:text-danger', {
-  variants: {
-    /** Label above the control, or label and description on the left with the control on the right. */
-    orientation: {
-      vertical: 'flex-col [&>*]:w-full',
-      horizontal: 'flex-row items-center justify-between gap-3',
+const fieldVariants = cva(
+  'group/field flex w-full gap-1.5 data-[invalid=true]:text-(color:--k-status-danger-foreground)',
+  {
+    variants: {
+      /** Label above the control, or label and description on the left with the control on the right. */
+      orientation: {
+        vertical: 'flex-col [&>*]:w-full',
+        horizontal: 'flex-row items-center justify-between gap-3',
+      },
     },
+    defaultVariants: { orientation: 'vertical' },
   },
-  defaultVariants: { orientation: 'vertical' },
-})
+)
 
 function Field({
   className,
   orientation,
   invalid = false,
   disabled = false,
+  shakeOnInvalid = false,
   ...props
 }: ComponentProps<'div'> &
   VariantProps<typeof fieldVariants> & {
@@ -57,8 +63,24 @@ function Field({
     invalid?: boolean
     /** Dims the label to 45% and disables the control. */
     disabled?: boolean
+    /**
+     * Shake the whole field once (3px) when it turns invalid.
+     * 变成无效的那一刻左右抖一下（改自 SmoothUI form 的 shake，幅度压小）。
+     */
+    shakeOnInvalid?: boolean
   }) {
   const base = useId()
+  // 只在「无效」由假变真的那一刻抖：data-shake 挂 400ms，动画在 theme/form-motion.css。
+  const [shaking, setShaking] = useState(false)
+  const wasInvalid = useRef(invalid)
+  useEffect(() => {
+    const turned = invalid && !wasInvalid.current
+    wasInvalid.current = invalid
+    if (!shakeOnInvalid || !turned) return
+    setShaking(true)
+    const timer = window.setTimeout(() => setShaking(false), 400)
+    return () => window.clearTimeout(timer)
+  }, [invalid, shakeOnInvalid])
   const [parts, setParts] = useState<{ description: number; error: number }>({ description: 0, error: 0 })
   const register = useCallback((part: 'description' | 'error') => {
     setParts((current) => ({ ...current, [part]: current[part] + 1 }))
@@ -88,6 +110,7 @@ function Field({
         data-orientation={orientation ?? 'vertical'}
         data-invalid={invalid}
         data-disabled={disabled}
+        data-shake={shaking ? '' : undefined}
         className={cn(fieldVariants({ orientation }), className)}
         {...props}
       />
@@ -118,7 +141,13 @@ function FieldSet({ className, ...props }: ComponentProps<'fieldset'>) {
 }
 
 function FieldLegend({ className, ...props }: ComponentProps<'legend'>) {
-  return <legend data-slot="field-legend" className={cn('k-text-title mb-2 p-0 text-ink', className)} {...props} />
+  return (
+    <legend
+      data-slot="field-legend"
+      className={cn('k-text-title mb-2 p-0 text-(color:--k-content-primary-foreground)', className)}
+      {...props}
+    />
+  )
 }
 
 function FieldGroup({ className, ...props }: ComponentProps<'div'>) {
@@ -137,7 +166,7 @@ function FieldLabel({ className, ...props }: ComponentProps<typeof Label>) {
       data-slot="field-label"
       htmlFor={field?.controlId}
       className={cn(
-        'w-fit group-data-[disabled=true]/field:opacity-45 group-data-[invalid=true]/field:text-danger',
+        'w-fit group-data-[disabled=true]/field:opacity-45 group-data-[invalid=true]/field:text-(color:--k-status-danger-foreground)',
         className,
       )}
       {...props}
@@ -153,7 +182,7 @@ function FieldDescription({ className, id, ...props }: ComponentProps<'p'>) {
     <p
       data-slot="field-description"
       id={id ?? field?.descriptionId}
-      className={cn('k-text-caption m-0 text-ink-3', className)}
+      className={cn('k-text-caption m-0 text-(color:--k-content-secondary-foreground)', className)}
       {...props}
     />
   )
@@ -171,7 +200,7 @@ function FieldError({ className, id, children, ...props }: ComponentProps<'div'>
       role="alert"
       data-slot="field-error"
       id={id ?? field?.errorId}
-      className={cn('k-text-caption text-danger', className)}
+      className={cn('k-text-caption text-(color:--k-status-danger-foreground)', className)}
       {...props}
     >
       {children}
@@ -192,7 +221,7 @@ function FieldSeparator({ children, className, ...props }: ComponentProps<'div'>
       {children ? (
         <span
           data-slot="field-separator-content"
-          className="k-text-caption relative mx-auto block w-fit bg-surface-3 px-2 text-ink-3"
+          className="k-text-caption relative mx-auto block w-fit bg-(--k-surface-raised-background) px-2 text-(color:--k-content-secondary-foreground)"
         >
           {children}
         </span>

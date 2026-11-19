@@ -43,8 +43,8 @@ export function TreeViewUsage() {
           label="品种分类"
           items={TREE_ITEMS}
           defaultExpandedKeys={['cn', 'cn-main']}
-          selectedKeys={selected}
-          onSelectionChange={setSelected}
+          value={selected}
+          onValueChange={setSelected}
           onAction={setOpened}
         />
       </div>

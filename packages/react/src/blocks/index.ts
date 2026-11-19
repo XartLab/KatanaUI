@@ -7,6 +7,7 @@ export type { ColumnFormat, ColumnType, GridColumn, GridSide, GridTone, SymbolVa
 export {
   DataGridHostProvider,
   type DataGridHost,
+  type DataGridLabels,
   type DataGridTexts,
   type GridAction,
   type GridMenuEntry,
@@ -29,8 +30,8 @@ export {
 } from './data-grid/layout-model.ts'
 export { EmptyState, type EmptyStateSlot } from './empty-state.tsx'
 export { EstimateBadge } from './estimate-badge.tsx'
-export { EventTimeline, type EventTimelineLabels, type EventTimelineProps } from './event-timeline.tsx'
-export type { EventKind, SessionMinutes, TimelineEvent } from './event-timeline-model.ts'
+export { EventTimeline, type EventTimelineLabels, type EventTimelineProps } from './event-timeline/event-timeline.tsx'
+export type { EventKind, SessionMinutes, TimelineEvent } from './event-timeline/event-timeline-model.ts'
 export { DecisionQueue, type DecisionQueueLabels, type DecisionQueueProps } from './decision-queue/decision-queue.tsx'
 export type {
   DecisionFilter,
@@ -104,8 +105,10 @@ export type { KpiDef, RangeDef, SeriesDef, SeriesPoint } from './series-explorer
 // 盈亏归因（#1917，#1931 从 quant 挪到这里：顶行用了 blocks 的 Toolbar）。
 export {
   AttributionBars,
+  type AttributionBarsLabels,
   type AttributionBarsProps,
   type AttributionChoice,
+  type AttributionSwitch,
 } from './attribution-bars/attribution-bars.tsx'
 export type { AttributionItem } from './attribution-bars/attribution-model.ts'
 
@@ -124,15 +127,22 @@ export {
   PanelFrame,
   PanelFrameBody,
   PanelFrameHeader,
+  type PanelFrameBodyLabels,
   type PanelFrameBodyProps,
+  type PanelFrameHeaderLabels,
   type PanelFrameHeaderProps,
   type PanelFrameProps,
   type PanelFrameSlot,
   type PanelFrameState,
 } from './panel-frame/panel-frame.tsx'
-export { StatusBar, type StatusBarProps, type StatusItem } from './status-bar/status-bar.tsx'
+export { StatusBar, type StatusBarLabels, type StatusBarProps, type StatusItem } from './status-bar/status-bar.tsx'
 export { collapsedItems, type FitItem } from './status-bar/status-bar-model.ts'
-export { WorkspaceTabs, type WorkspaceTab, type WorkspaceTabsProps } from './workspace-tabs/workspace-tabs.tsx'
+export {
+  WorkspaceTabs,
+  type WorkspaceTab,
+  type WorkspaceTabsLabels,
+  type WorkspaceTabsProps,
+} from './workspace-tabs/workspace-tabs.tsx'
 export {
   StrategyReport,
   type MetricKey,
@@ -154,3 +164,39 @@ export {
   type ReportTrade,
   type SideFilter,
 } from './strategy-report/strategy-report-model.ts'
+
+// 不是量化专有的读数件（G6 从 src/quant 挪来，体检 §2）：仪表、订单流仪表行、状态带、必要条件块、逐格可用条。
+export { Meter, type MeterDisplay, type MeterProps, type MeterTone } from './meter/meter.tsx'
+export {
+  FlowGauges,
+  type FlowCellState,
+  type FlowDivergenceGauge,
+  type FlowDomGauge,
+  type FlowGaugeData,
+  type FlowGaugesLabels,
+  type FlowGaugesProps,
+  type FlowSignedGauge,
+} from './flow-gauges/flow-gauges.tsx'
+export {
+  RegimeBand,
+  RegimeStrip,
+  type RegimeBandProps,
+  type RegimeColor,
+  type RegimeSegment,
+  type RegimeState,
+  type RegimeStripLabels,
+  type RegimeStripProps,
+} from './regime-strip/regime-strip.tsx'
+export {
+  ConsensusBlock,
+  countConsensus,
+  type ConsensusBlockProps,
+  type ConsensusParty,
+  type ConsensusState,
+  type ConsensusVerdict,
+} from './consensus-block/consensus-block.tsx'
+export { UptimeBars, type UptimeBarsProps } from './uptime-bars/uptime-bars.tsx'
+export { uptimeShare, type UptimeCell, type UptimeStatus } from './uptime-bars/uptime-bars-model.ts'
+
+// 兑换面板（改自 SmoothUI swap-panel，MIT）。
+export { SwapPanel, type SwapAsset, type SwapPanelLabels, type SwapQuote, type SwapStatus } from './swap-panel.tsx'

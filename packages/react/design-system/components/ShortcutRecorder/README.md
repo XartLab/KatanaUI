@@ -13,7 +13,7 @@
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
 | `value` | `string \| null` | — | 当前快捷键（规范串）；null 是没设。 |
-| `onValue` | `(next: string \| null) => void` | — | 录到新的或清除。冲突与不合规的不回调。 |
+| `onValueChange` | `(next: string \| null) => void` | — | 录到新的或清除。冲突与不合规的不回调。旧名 onValue 留一个版本（@deprecated）。 |
 | `label` | `string` | — | 读屏名：哪个动作的快捷键。 |
 | `labels` | `ShortcutRecorderLabels` | — | 文字：empty、recording、clear、conflict(action)、needModifier；包里不带语言。 |
 | `conflicts` | `Record<string, string>` | — | 已被占用的组合：组合串 → 占着它的动作名。自己当前的值不算冲突。 |
@@ -48,7 +48,7 @@ export function ShortcutRecorderUsage() {
       <ShortcutRecorder
         label="全部平仓快捷键"
         value={flatten}
-        onValue={setFlatten}
+        onValueChange={setFlatten}
         labels={RECORDER_LABELS}
         conflicts={TAKEN}
       />
@@ -57,13 +57,13 @@ export function ShortcutRecorderUsage() {
       <ShortcutRecorder
         label="切换品种快捷键"
         value={bare}
-        onValue={setBare}
+        onValueChange={setBare}
         labels={RECORDER_LABELS}
         requireModifier
       />
       <output data-gallery-recorder-mod>{bare ?? '未设置'}</output>
 
-      <ShortcutRecorder label="只读快捷键" value="F5" onValue={() => {}} labels={RECORDER_LABELS} disabled />
+      <ShortcutRecorder label="只读快捷键" value="F5" onValueChange={() => {}} labels={RECORDER_LABELS} disabled />
     </>
   )
 }

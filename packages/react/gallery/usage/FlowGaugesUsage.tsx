@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-import { FlowGauges, type FlowGaugeData } from '../../src/quant'
+import { FlowGauges, type FlowGaugeData } from '../../src/blocks'
 
 const flowGauges: readonly FlowGaugeData[] = [
   {
@@ -63,7 +63,7 @@ export function FlowGaugesUsage() {
               note: '无逐笔方向',
             },
           ]}
-          estimateText="估算"
+          labels={{ estimate: '估算' }}
         />
       </div>
     </>

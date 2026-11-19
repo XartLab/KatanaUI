@@ -47,8 +47,12 @@ export type DateRangeLabels = {
 }
 
 export type DateRangePickerProps = {
+  /** The current range (inclusive YYYY-MM-DD pair); null means nothing picked. */
   value: DateRange | null
-  onValue: (range: DateRange) => void
+  /** Called with a valid range once both ends are filled and start ≤ end (typing, calendar or a preset). */
+  onValueChange?: (range: DateRange) => void
+  /** Old name of onValueChange, kept for one release. @deprecated Use onValueChange. */
+  onValue?: (range: DateRange) => void
   /** 今天（YYYY-MM-DD，按应用的显示时区算好）：预设从它算。 */
   today: string
   /** 一周从哪天起，默认周一。 */
@@ -74,9 +78,11 @@ function Segments({ segment }: { segment: DateSegmentProps['segment'] }) {
   return <DateSegment segment={segment} className="k-dt-seg" />
 }
 
+/** Date range field: two typed date fields, a two-month calendar and presets (today, this week, this month, year to date). */
 export function DateRangePicker({
   value,
-  onValue,
+  onValueChange,
+  onValue: legacyOnValue,
   today,
   weekStart = 'mon',
   min,
@@ -85,6 +91,7 @@ export function DateRangePicker({
   locale,
   className,
 }: DateRangePickerProps) {
+  const onValue = (range: DateRange) => (onValueChange ?? legacyOnValue)?.(range)
   const [open, setOpen] = useState(false)
   // 两个框是分开打字的：只填了一头、或起点晚于终点时，先存在这里，凑成合法区间才上报。
   const [pending, setPending] = useState<{ start: CalendarDate | null; end: CalendarDate | null } | null>(null)

@@ -22,8 +22,7 @@ export function WorkspaceTabsUsage() {
           workspaces={tabs}
           activeId={active}
           label="Workspaces"
-          createLabel="New workspace"
-          moreLabel="More workspaces"
+          labels={{ create: 'New workspace', more: 'More workspaces' }}
           onSelect={setActive}
           onRename={setRenamed}
           onCreate={() => setTabs((prev) => [...prev, { id: `ws${prev.length}`, name: `Workspace ${prev.length}` }])}

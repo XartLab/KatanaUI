@@ -2,6 +2,7 @@
 import { Ellipsis, Plus } from 'lucide-react'
 import { useLayoutEffect, useRef, useState, type DragEvent, type KeyboardEvent } from 'react'
 import { cn } from '../../lib/cn.ts'
+import { fontFor, measureText } from '../../lib/text-measure.ts'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -19,11 +20,35 @@ import { visibleTabs } from './workspace-tabs-model.ts'
 
 const MORE_WIDTH = 40
 
+// 标签的固定宽（px），来源 theme/workspace-tabs.css：左右 padding 各 16（第 27 行）、右边线 1（第 29 行）、名字与快捷键的 gap 8（第 24 行）、
+// 最宽 200（第 26 行，按钮是 border-box，含 padding 与边线）。名字 600 14px --font-sans、字距 0.06em 且大写（第 32–34 行）；
+// 快捷键 9px --font-num、字距 0（第 57–58 行）。
+const TAB_PADDING = 32
+const TAB_BORDER = 1
+const TAB_GAP = 8
+const TAB_MAX = 200
+const NAME_TRACKING = 0.06 * 14
+
+/** 一个标签排出来的宽度：用 pretext 按字体预先算，不渲染出来量（换字体时由 fit 重算）。 */
+function tabWidth(item: WorkspaceTab): number {
+  const name = measureText(item.name.toUpperCase(), fontFor(600, 14, '--font-sans'), NAME_TRACKING)
+  const key = item.hotkey ? TAB_GAP + measureText(item.hotkey, fontFor(400, 9, '--font-num')) : 0
+  return Math.min(Math.ceil(name + key) + TAB_PADDING + TAB_BORDER, TAB_MAX)
+}
+
 export type WorkspaceTab = {
   id: string
   name: string
   /** 快捷键提示（如 ⌘1），只显示，不绑定。 */
   hotkey?: string
+}
+
+/** Texts of WorkspaceTabs (screen-reader names). */
+export type WorkspaceTabsLabels = {
+  /** 「+」的名字（给了 onCreate 时要给）。 */
+  create?: string
+  /** 「更多」下拉按钮的名字。 */
+  more?: string
 }
 
 export type WorkspaceTabsProps = {
@@ -36,10 +61,12 @@ export type WorkspaceTabsProps = {
   onRename?: (id: string) => void
   /** 新建；不给就不画「+」。 */
   onCreate?: () => void
-  /** 条的名字（读屏念）与「+」的名字。 */
+  /** 条的名字（读屏念）。 */
   label: string
+  labels?: WorkspaceTabsLabels
+  /** @deprecated Use `labels.create`; kept for one version. */
   createLabel?: string
-  /** 「更多」下拉按钮的名字（读屏念）。 */
+  /** @deprecated Use `labels.more`; kept for one version. */
   moreLabel?: string
   className?: string
 }
@@ -52,13 +79,13 @@ export function WorkspaceTabs({
   onRename,
   onCreate,
   label,
-  createLabel = '',
-  moreLabel = '',
+  labels,
+  createLabel = labels?.create ?? '',
+  moreLabel = labels?.more ?? '',
   className,
 }: WorkspaceTabsProps) {
   const root = useRef<HTMLDivElement>(null)
   const list = useRef<HTMLDivElement>(null)
-  const ruler = useRef<HTMLDivElement>(null)
   const [shownIds, setShownIds] = useState<readonly string[] | null>(null)
   const [mark, setMark] = useState<{ left: number; width: number } | null>(null)
   const [over, setOver] = useState<string | null>(null)
@@ -67,11 +94,8 @@ export function WorkspaceTabs({
 
   const fit = () => {
     const box = root.current
-    const rule = ruler.current
-    if (!box || !rule) return
-    const widths = workspaces.map(
-      (item) => rule.querySelector<HTMLElement>(`[data-id="${CSS.escape(item.id)}"]`)?.offsetWidth ?? 0,
-    )
+    if (!box) return
+    const widths = workspaces.map(tabWidth)
     const aside = [...box.querySelectorAll<HTMLElement>('.k-wtabs-create')].reduce(
       (sum, node) => sum + node.offsetWidth,
       0,
@@ -84,15 +108,25 @@ export function WorkspaceTabs({
     ).map((index) => workspaces[index]!.id)
     setShownIds((prev) => (prev && prev.join('|') === next.join('|') ? prev : next))
   }
-  useLayoutEffect(fit)
+  const latestFit = useRef(fit)
+  // 渲染后再换成最新的 fit：观察者回调里拿到的是最新数据，又不在渲染中写 ref
+  useLayoutEffect(() => {
+    latestFit.current = fit
+    fit()
+  })
   useLayoutEffect(() => {
     const box = root.current
     if (!box) return
-    const observer = new ResizeObserver(fit)
+    const run = () => latestFit.current()
+    const observer = new ResizeObserver(run)
     observer.observe(box)
-    return () => observer.disconnect()
+    // Web 字体加载完字宽会变，预算宽度要跟着重算（text-measure 已先清缓存）
+    document.fonts?.addEventListener?.('loadingdone', run)
+    return () => {
+      observer.disconnect()
+      document.fonts?.removeEventListener?.('loadingdone', run)
+    }
     // fit 只读 ref 与当前数据，每次渲染后的量由上面的 useLayoutEffect 管
-    // oxlint-disable-next-line react-hooks/exhaustive-deps
   }, [])
   const shown =
     shownIds === null ? workspaces : shownIds.map((id) => workspaces.find((item) => item.id === id)!).filter(Boolean)
@@ -236,15 +270,6 @@ export function WorkspaceTabs({
           <Plus aria-hidden="true" />
         </button>
       )}
-      {/* 量宽度用的影子：所有标签排成一行读自然宽度（被收起的标签也要知道放不放得回来）。 */}
-      <div className="k-wtabs-ruler" aria-hidden="true" ref={ruler} inert>
-        {workspaces.map((item) => (
-          <span key={item.id} className="k-wtab" data-id={item.id}>
-            <span className="k-wtab-name">{item.name}</span>
-            {item.hotkey && <span className="k-wtab-key">{item.hotkey}</span>}
-          </span>
-        ))}
-      </div>
     </div>
   )
 }

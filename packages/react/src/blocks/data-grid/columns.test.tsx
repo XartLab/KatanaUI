@@ -135,7 +135,7 @@ describe('表的渲染', () => {
 
   it('提供宿主文案后也能渲染', () => {
     const out = renderToStaticMarkup(
-      <DataGridHostProvider value={{ texts: { gridLabel: (name) => `${name}!` } }}>
+      <DataGridHostProvider value={{ labels: { gridLabel: (name) => `${name}!` } }}>
         <DataGrid
           columns={columns}
           layout={layout}

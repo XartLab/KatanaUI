@@ -149,7 +149,9 @@
 }
 /* 滑块：松手后把手与填充走 settle 弹簧落到步进位置（slider.tsx 在松手后的一小段时间里挂 data-settling）；拖动中不带过渡，跟手。 */
 [data-slot='slider'][data-settling] [data-slot='slider-thumb'] {
-  transition: translate var(--dur-settle) var(--ease-settle);
+  transition:
+    translate var(--dur-settle) var(--ease-settle),
+    scale 160ms var(--ease-snappy);
 }
 [data-slot='slider'][data-settling] [data-slot='slider-fill'] {
   transition: width var(--dur-settle) var(--ease-settle);

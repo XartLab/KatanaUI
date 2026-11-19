@@ -14,32 +14,32 @@
   overflow: visible;
 }
 .k-pscatter-dot {
-  fill: var(--k-dot, var(--ink-400));
+  fill: var(--k-dot, var(--k-content-tertiary-foreground));
   cursor: pointer;
   outline: none;
   transition: r var(--dur-snappy) var(--ease-snappy);
 }
 .k-pscatter-dot[data-empty] {
   fill: none;
-  stroke: var(--ink-400);
+  stroke: var(--k-content-tertiary-foreground);
   stroke-width: 1;
 }
 .k-pscatter-dot[data-best] {
-  stroke: var(--signal-amber);
+  stroke: var(--k-status-warn-foreground);
   stroke-width: 2;
 }
 .k-pscatter-dot:hover,
 .k-pscatter-dot:focus-visible,
 .k-pscatter-dot[data-selected] {
-  stroke: var(--ink-100);
+  stroke: var(--k-content-primary-foreground);
   stroke-width: 2;
 }
 .k-pscatter-bar {
   display: flex;
   align-items: center;
   gap: 8px;
-  color: var(--ink-300);
-  font: var(--text-caption) var(--font-sans);
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
   font-variant-numeric: tabular-nums;
 }
 .k-pscatter-ramp {
@@ -54,8 +54,8 @@
   align-items: center;
   gap: 4px 16px;
   min-height: 20px;
-  color: var(--ink-200);
-  font: var(--text-caption) var(--font-sans);
+  color: var(--k-content-body-foreground);
+  font: var(--text-caption) var(--font-sans-small);
   font-variant-numeric: tabular-nums;
 }
 .k-pscatter-readout dl {
@@ -69,25 +69,25 @@
   gap: 6px;
 }
 .k-pscatter-readout dt {
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
 }
 .k-pscatter-readout dd {
   margin: 0;
-  color: var(--ink-100);
+  color: var(--k-content-primary-foreground);
 }
 .k-pscatter-best {
   padding: 0 6px;
-  border: 1px solid var(--signal-amber);
+  border: 1px solid var(--k-status-warn-foreground);
   border-radius: var(--radius-pill);
-  color: var(--signal-amber);
+  color: var(--k-status-warn-foreground);
 }
 .k-pscatter-jump {
   align-self: flex-start;
   padding: 0;
   border: 0;
   background: none;
-  color: var(--ink-200);
-  font: var(--text-caption) var(--font-sans);
+  color: var(--k-content-body-foreground);
+  font: var(--text-caption) var(--font-sans-small);
   text-decoration: underline;
   cursor: pointer;
 }

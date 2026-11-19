@@ -72,6 +72,8 @@ export function DropdownMenuUsage() {
 ## Don't
 
 - 菜单项不超过一屏，更长的换命令面板。
+- 不要拿它选表单里的一个值，那是 Select。
+- 二级菜单不要超过一层。
 
 ## Composition
 

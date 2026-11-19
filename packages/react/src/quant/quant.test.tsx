@@ -53,7 +53,7 @@ describe('PnlText', () => {
 })
 
 describe('DecimalField', () => {
-  const base = { label: '价格', value: '100.5', onValue: () => {}, step: '0.5' }
+  const base = { label: '价格', value: '100.5', onValueChange: () => {}, step: '0.5' }
   it('十进制键盘，读屏名在输入框上；没给 buttons 就没有按钮', () => {
     const html = renderToStaticMarkup(<DecimalField {...base} />)
     expect(html).toContain('inputMode="decimal"')
@@ -61,7 +61,7 @@ describe('DecimalField', () => {
     expect(html).not.toContain('<button')
   })
   it('给了 buttons 才有 − / +，名字由调用方传', () => {
-    const html = renderToStaticMarkup(<DecimalField {...base} buttons={{ decrease: '减', increase: '加' }} />)
+    const html = renderToStaticMarkup(<DecimalField {...base} labels={{ decrease: '减', increase: '加' }} />)
     expect(html).toContain('aria-label="减"')
     expect(html).toContain('aria-label="加"')
   })
@@ -74,8 +74,8 @@ describe('DecimalField', () => {
   it('只读与禁用：按钮禁用', () => {
     const buttons = { decrease: '减', increase: '加' }
     expect(
-      renderToStaticMarkup(<DecimalField {...base} readOnly buttons={buttons} />).match(/disabled=""/g),
+      renderToStaticMarkup(<DecimalField {...base} readOnly labels={buttons} />).match(/disabled=""/g),
     ).toHaveLength(2)
-    expect(renderToStaticMarkup(<DecimalField {...base} buttons={buttons} />)).not.toContain('disabled=""')
+    expect(renderToStaticMarkup(<DecimalField {...base} labels={buttons} />)).not.toContain('disabled=""')
   })
 })

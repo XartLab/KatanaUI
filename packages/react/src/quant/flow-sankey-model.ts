@@ -93,7 +93,7 @@ type SLink = {
   note?: string
 }
 
-export const linkId = (link: Pick<FlowLink, 'id' | 'source' | 'target' | 'kind'>): string =>
+const linkId = (link: Pick<FlowLink, 'id' | 'source' | 'target' | 'kind'>): string =>
   link.id ?? `${link.source}>${link.target}>${link.kind ?? 'flow'}`
 
 const ratio = (part: number, whole: number): number | null => (whole > 0 ? part / whole : null)
@@ -254,7 +254,8 @@ export function moveNode(
 ): string | null {
   const here = nodes.find((node) => node.id === from)
   if (!here) return null
-  const order = [...nodes].sort((a, b) => a.layer - b.layer || a.y0 - b.y0)
+  // js/copying-array-methods：toSorted 替代「展开复制再 sort」。
+  const order = nodes.toSorted((a, b) => a.layer - b.layer || a.y0 - b.y0)
   if (key === 'Home') return order[0]!.id
   if (key === 'End') return order[order.length - 1]!.id
   if (key === 'ArrowUp' || key === 'ArrowDown') {

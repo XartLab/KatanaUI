@@ -8,13 +8,15 @@
 
 ### Lcd
 
+数字由调用方格式化好传字符串，件不算；变了闪一下涨跌色（ReadoutFlash）。fill 撑满格子（KPI 行），inline 标签与数字同一行。
+
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
 | `label` * | `string` | — | Small dot-matrix label. |
 | `value` * | `string \| null` | — | The reading; pass null when there is no data and it shows a dash. |
 | `inline` | `boolean` | — | Put the label and the number on one line. |
 | `fill` | `boolean` | — | Fill the cell it sits in (one per cell in a KPI row); by default it shrinks to its content. |
-| `tone` | `LcdTone` | `'neutral'` | Number color: neutral, up, down, focus (orange) or warning (amber). |
+| `tone` | `LcdTone` | `'neutral'` | Number color: neutral, ok, warn, danger; up, down, flat (price direction, follows data-updown); accent (current focus). |
 | `note` | `string` | — | A 10px line under the number (unit, basis); do not put a second value here. |
 
 ## Usage
@@ -37,7 +39,7 @@ export function LcdUsage() {
 
 - 有值：标签在上、数字在中、小字在下。
 - 没有数据：数字位置写「—」，不写 0。
-- 色调：up、down、accent、warn，或不着色。
+- tone：neutral 不着色；ok、warn、danger 取 --k-status-*；up、down、flat 取 --k-tone-*（跟 data-updown 换红绿）；accent 是当前关注。
 
 ## Don't
 

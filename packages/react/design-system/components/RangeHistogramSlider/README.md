@@ -17,7 +17,7 @@
 | `step` | `number` | `(max - min) / 箱数` | 步长，拖动与键盘都取整到它。 |
 | `value / defaultValue / onValueChange` | `[number, number]` | — | 当前区间；不给 value 就是不受控。 |
 | `formatValue` | `(value: number) => string` | `String` | 数值怎么写（读数行与 aria-valuetext）。 |
-| `labels` | `{ low: string; high: string }` | — | 两个把手的读屏名（必填）。 |
+| `labels` | `RangeHistogramSliderLabels` | — | { low, high }：两个把手的读屏名（必填）。 |
 | `label` | `string` | — | 整条的读屏名（必填）。 |
 | `describe` | `(range) => ReactNode` | — | 读数行；不给写「下限 – 上限」。 |
 

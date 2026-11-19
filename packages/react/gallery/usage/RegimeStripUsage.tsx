@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 import { useState } from 'react'
-import { RegimeBand, RegimeStrip, type RegimeSegment, type RegimeState } from '../../src/quant'
+import { RegimeBand, RegimeStrip, type RegimeSegment, type RegimeState } from '../../src/blocks'
 
 const regimeStates: readonly RegimeState[] = [
   { id: 'trend', name: '趋势上', color: 1, detail: '47%' },
@@ -37,10 +37,9 @@ export function RegimeStripUsage() {
             `${state.name} · ${segment.from}–${segment.to}${segment.estimated ? '（估）' : ''}`
           }
           current="trend"
-          currentText="当前"
-          estimateText="估（尚未确认）"
+          labels={{ current: '当前', estimate: '估（尚未确认）' }}
           activeState={active}
-          onPickState={setActive}
+          onSelect={(state) => setActive(state?.id ?? null)}
         />
       </div>
 

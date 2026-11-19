@@ -49,6 +49,9 @@ export function TooltipUsage() {
 ## States
 
 - 触发器静止；悬停或聚焦后浮出提示（默认没有延迟）。
+- 浮出：最深底 + 1px 分隔线色边 + --k-overlay-tooltip-shadow，没有小箭头。
+- 内容里有键帽（.k-kbd）：压成实心浅色块，字用最深底色。
+- 移开或 Esc：直接消失，不播退场动画（#1849）。
 
 ## Don't
 

@@ -5,11 +5,11 @@
 // 悬停或聚焦一条，其余变暗，读数行写这一条的整句；上下键在条间走。带宽默认 Silverman 经验规则（见 ridgeline-model.ts）。
 // 功能参照 Arc Ridgeline（uiarc.dev，2026-11-14 读，页面只写了这个名字），实现原创。文字全由 props 传。
 import { useRef, useState, type KeyboardEvent, type ReactNode } from 'react'
-import { linearScale, niceTicks } from './chart-scale.ts'
-import { ChartActions } from './chart-kit/chart-actions.tsx'
-import { ChartTable, type ChartViewProps } from './chart-kit/chart-table.tsx'
-import { DotFill, useDotId } from './chart-kit/dot-fill.tsx'
-import { seqColor } from './chart-kit/series-colors.ts'
+import { linearScale, niceTicks } from '../lib/chart/chart-scale.ts'
+import { ChartActions } from '../lib/chart/chart-kit/chart-actions.tsx'
+import { ChartTable, type ChartViewProps } from '../lib/chart/chart-kit/chart-table.tsx'
+import { DotFill, useDotId } from '../lib/chart/chart-kit/dot-fill.tsx'
+import { seqColor } from '../lib/chart/chart-kit/series-colors.ts'
 import { layerLevel } from './quantile-model.ts'
 import { gaussianKde, ridgelines, type RidgeGroup, type RidgeStats } from './ridgeline-model.ts'
 

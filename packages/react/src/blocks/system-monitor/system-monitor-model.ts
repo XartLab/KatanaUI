@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MIT
+import type { Severity, SeverityExt } from '../../lib/severity.ts'
 
 /** 连接状态：ok 正常、degraded 变慢或部分可用、error 出错、offline 断开。名字与颜色由件定，字由调用方给。 */
 export type LinkState = 'ok' | 'degraded' | 'error' | 'offline'
@@ -58,17 +59,20 @@ const SEVERITY_RANK: Record<EventSeverity, number> = { error: 2, warn: 1, info: 
 
 /** 异常的排前面（出错、断开、变慢、正常），同级保持传入顺序。 */
 export function sortLinks(links: readonly MonitorLink[]): MonitorLink[] {
-  return [...links].sort((a, b) => LINK_RANK[a.state] - LINK_RANK[b.state])
+  // js/copying-array-methods：toSorted 替代「展开复制再 sort」。
+  return links.toSorted((a, b) => LINK_RANK[a.state] - LINK_RANK[b.state])
 }
 
 /** 出错的排前面，其余保持传入顺序（运行中的不因状态抖动而换位）。 */
 export function sortStrategies(strategies: readonly MonitorStrategy[]): MonitorStrategy[] {
-  return [...strategies].sort((a, b) => Number(b.status === 'error') - Number(a.status === 'error'))
+  // js/copying-array-methods：toSorted 替代「展开复制再 sort」。
+  return strategies.toSorted((a, b) => Number(b.status === 'error') - Number(a.status === 'error'))
 }
 
 /** 新的在前；同一时间按 id 定序。 */
 export function sortEvents(events: readonly MonitorEvent[]): MonitorEvent[] {
-  return [...events].sort((a, b) => b.at - a.at || (a.id < b.id ? -1 : 1))
+  // js/copying-array-methods：toSorted 替代「展开复制再 sort」。
+  return events.toSorted((a, b) => b.at - a.at || (a.id < b.id ? -1 : 1))
 }
 
 /** 事件筛选：kinds 空 = 全部类别；minSeverity 是「这一级及以上」。 */
@@ -90,7 +94,24 @@ export function strategyActions(status: StrategyStatus): StrategyAction[] {
   return ['start']
 }
 
-export type QuotaTone = 'ok' | 'warn' | 'danger'
+/** @deprecated Use `Severity`; kept for one version. */
+export type QuotaTone = Exclude<Severity, 'neutral'>
+
+const LINK_SEVERITY: Record<LinkState, SeverityExt> = { ok: 'ok', degraded: 'warn', error: 'danger', offline: 'off' }
+const STRATEGY_SEVERITY: Record<StrategyStatus, SeverityExt> = {
+  running: 'ok',
+  paused: 'warn',
+  stopped: 'off',
+  error: 'danger',
+}
+const EVENT_SEVERITY: Record<EventSeverity, SeverityExt> = { info: 'neutral', warn: 'warn', error: 'danger' }
+
+/** 连接状态的语气：变慢琥珀、出错红、断开不亮（灯用 ledOf 取）。 */
+export const linkSeverity = (state: LinkState): SeverityExt => LINK_SEVERITY[state]
+/** 策略状态的语气：运行绿、暂停琥珀、出错红、停止不亮。 */
+export const strategySeverity = (status: StrategyStatus): SeverityExt => STRATEGY_SEVERITY[status]
+/** 事件级别的语气：info 不带判断。 */
+export const eventSeverity = (severity: EventSeverity): SeverityExt => EVENT_SEVERITY[severity]
 
 /** 额度条的色：≥ 1 越界为 danger；warnAt 由调用方给（≥ warnAt 为 warn），不给就不预警——预警线属于账户风控，件不替它定。 */
 export function quotaTone(quota: number, warnAt?: number): QuotaTone {

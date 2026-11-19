@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-import { formatCompact, formatPercentChange, formatPrice } from '../../src/quant/format'
+import { formatCompact, formatPercentChange, formatPrice } from '../../src/lib/chart/format'
 
 export function QuantFormatUsage() {
   return (

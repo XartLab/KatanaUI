@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-import { ChangeText } from '../../src/quant'
+import { ChangeText } from '../../src/quotes'
 
 export function ChangeTextUsage() {
   return (

@@ -12,7 +12,14 @@
     "tokens:sync": "pnpm --filter @katana-ui/tokens tokens:sync",
     "ui:coverage": "pnpm --filter @katana-ui/react ui:coverage",
     "ds:build": "pnpm --filter @katana-ui/react ds:build",
-    "test:e2e": "pnpm --filter @katana-ui/react test:e2e"
+    "test:e2e": "pnpm --filter @katana-ui/react test:e2e",
+    "fast": "pnpm --filter @katana-ui/react fast",
+    "vr": "pnpm --filter @katana-ui/react vr",
+    "vr:fast": "pnpm --filter @katana-ui/react vr:fast",
+    "vr:update": "pnpm --filter @katana-ui/react vr:update",
+    "vr:approve": "pnpm --filter @katana-ui/react vr:approve",
+    "vr:summary": "pnpm --filter @katana-ui/react vr:summary",
+    "full": "pnpm --filter @katana-ui/react full"
   },
   "engines": {
     "node": ">=22.13"

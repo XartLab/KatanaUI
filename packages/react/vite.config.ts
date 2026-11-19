@@ -13,6 +13,9 @@ export default defineConfig({
   // 单测：Node 环境；组件用 react-dom/server 渲染成字符串测结构。浏览器里的行为在 e2e/（`pnpm test:e2e`，Playwright）。
   test: {
     environment: 'node',
+    // 不隔离：同一 worker 里的测试文件共用模块缓存。测试多半经 src/index 引件，隔离时每个文件都重新加载整个库（导入占八成时间）；
+    // 关掉后全量从约 43 秒降到约 12 秒，快速模式受影响的单测从约 20 秒降到约 5 秒（2026-11-18 实测）。测试之间不共享可变状态是前提。
+    isolate: false,
     include: ['src/**/*.test.{ts,tsx}', 'gallery/**/*.test.{ts,tsx}', 'scripts/**/*.test.ts', 'ds/**/*.test.{ts,tsx}'],
   },
   // 格式化（Oxfmt）：无分号、单引号、行宽 120；Markdown 与生成文件不格式化。
@@ -28,6 +31,9 @@ export default defineConfig({
       'dist/**',
       'lib/**',
       'r/**',
+      // A2UI 的 JSON Schema 是原样拷贝（Apache-2.0，不许改动格式）；目录 JSON 由 pnpm a2ui:catalog 生成，格式归生成器管。
+      'src/a2ui/__fixtures__/**',
+      'public/**',
     ],
   },
   // 代码检查（Oxlint，带类型信息）：有一条提示就不过；用不上的豁免注释也报。
@@ -41,5 +47,23 @@ export default defineConfig({
       'no-unused-vars': ['warn', { argsIgnorePattern: '^_', ignoreRestSiblings: true }],
       'typescript/restrict-template-expressions': ['warn', { allowArray: true }],
     },
+  },
+  // 带缓存的任务（`vp run <名>`，Vite+ 任务缓存）：输入文件没变就直接命中，不重跑——快速模式与全量都走它们。
+  run: {
+    tasks: {
+      tsc: { command: 'tsc -p tsconfig.json' },
+      unit: { command: 'vp test run' },
+      'docs-check': {
+        command: [
+          'node scripts/ui-coverage.mjs --check',
+          'node scripts/docs-props.mjs --check',
+          'node scripts/ds-build.mjs --check',
+        ],
+      },
+    },
+  },
+  // 提交前只查暂存的文件（`vp staged`，由 .vite-hooks/pre-commit 调用）：格式与 lint 能自动修的就修。
+  staged: {
+    '*.{ts,tsx,mts,js,mjs,css,json}': 'vp check --fix',
   },
 })

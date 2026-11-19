@@ -1,0 +1,104 @@
+/* SPDX-License-Identifier: MIT */
+/* BrushChart 与 BrushStrip（#1917）：概览刷选条加主图。图画在 viewBox 里，文字与十字线是叠在上面的 HTML；数字等宽。颜色只用语义 token。 */
+
+.k-brush {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  min-width: 0;
+  color: var(--k-content-body-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+  font-variant-numeric: tabular-nums;
+}
+.k-brush-main,
+.k-brush-strip {
+  position: relative;
+  touch-action: pan-y;
+}
+.k-brush-main {
+  /* 纵轴刻度字放在绘图区左侧留白里，不压到线上。 */
+  margin-left: var(--k-plot-gutter, 56px);
+  outline-offset: 2px;
+}
+.k-brush-main:focus-visible {
+  outline: 1px solid var(--focus-ring);
+}
+.k-brush-main > svg,
+.k-brush-strip > svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.k-brush-line,
+.k-brush-strip-line {
+  fill: none;
+  stroke: var(--k-content-primary-foreground);
+  stroke-width: 2;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+.k-brush-strip-line {
+  stroke-width: 1.5;
+}
+.k-brush-area,
+.k-brush-strip-area {
+  stroke: none;
+}
+.k-brush .k-plot-xaxis {
+  margin-left: var(--k-plot-gutter, 56px);
+}
+.k-brush-strip {
+  border: 1px solid var(--k-separable-tertiary-borderColor);
+  border-radius: var(--radius-inner, 6px);
+  background: var(--k-surface-sunken-background);
+  overflow: hidden;
+  cursor: pointer;
+}
+.k-brush-dim {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background: var(--k-surface-sunken-background);
+  opacity: 0.6;
+  pointer-events: none;
+}
+.k-brush-window {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border-block: 1px solid var(--k-content-secondary-foreground);
+  background: color-mix(in srgb, var(--k-content-primary-foreground) 8%, transparent);
+  cursor: grab;
+  outline: none;
+}
+.k-brush-strip[data-dragging='move'] .k-brush-window {
+  cursor: grabbing;
+}
+.k-brush-window:focus-visible,
+.k-brush-handle:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: -2px;
+}
+.k-brush-handle {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  /* 命中区 12px 宽，看得见的是中间 2px 的线（触屏上细线抓不到）。 */
+  width: 12px;
+  margin-left: -6px;
+  cursor: ew-resize;
+  outline: none;
+}
+.k-brush-handle::after {
+  content: '';
+  position: absolute;
+  top: 25%;
+  bottom: 25%;
+  left: 5px;
+  width: 2px;
+  border-radius: 1px;
+  background: var(--k-content-body-foreground);
+}

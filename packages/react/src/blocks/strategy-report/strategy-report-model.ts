@@ -4,7 +4,7 @@
 // 2026-11-15 读到：绩效图以平仓笔为点、可叠买入持有、可切绝对值与百分比；回报明细含净盈亏、总盈利、总亏损、盈亏因子、预期收益、夏普、索提诺；
 // 交易分析含 ROI 分布直方图、盈亏笔数、平均持仓 K 线数；回撤与上冲；资金效率含 CAGR）。其余页签（绩效摘要多空列、交易列表、属性）没读到页面，
 // 只按用户给的 issue 结构做，指标口径是通用做法，写在各函数注释里。
-import { niceTicks } from '../../quant/chart-scale.ts'
+import { niceTicks } from '../../lib/chart/chart-scale.ts'
 
 export type ReportSide = 'long' | 'short'
 export type SideFilter = 'all' | ReportSide

@@ -1,0 +1,146 @@
+/* SPDX-License-Identifier: MIT */
+/* 还直接读色阶的（2026-11-18 G4 迁 token 时留下）：--signal-orange-dim——characteristics 里没有同值、同语义的（轨道、徽标底、悬停的半透明灰档，暗橙边框），等 G0 补齐再换。 */
+/* KPI 瓦片 SparkTile（MetricCard variant="tile"，#1929）。尺寸与层次照 design/katana-console/project/components/SparkTile/preview.html；2026-11-18 从 quant.css 拆出。
+   颜色只用 token（涨跌读 --pnl-up / --pnl-down，跟 data-updown 互换）；数字等宽；动效只用弹簧的 CSS 形式（--dur-* / --ease-*）。点阵字（--font-dot）保持 -webkit-font-smoothing: none。 */
+
+/* —— SparkTile —— */
+.k-spark-tile {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  margin: 0;
+  padding: 8px 10px;
+  background: var(--k-container-secondary-background);
+  border: var(--hairline);
+  color: var(--k-content-primary-foreground);
+  font: inherit;
+  text-align: left;
+  font-variant-numeric: tabular-nums;
+}
+button.k-spark-tile {
+  cursor: pointer;
+}
+button.k-spark-tile:hover {
+  background: var(--k-container-primary-background);
+}
+button.k-spark-tile:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: -2px;
+}
+.k-spark-tile-tag {
+  font-family: var(--font-num-small);
+  font-size: var(--text-tag-size);
+  letter-spacing: 0.12em;
+  color: var(--k-content-secondary-foreground);
+}
+.k-spark-tile-value {
+  font-family: var(--font-num);
+  font-size: var(--text-lcd-size);
+  line-height: 20px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+.k-spark-tile-value.is-empty {
+  color: var(--k-content-secondary-foreground);
+}
+.k-spark-tile-value small {
+  margin-left: 4px;
+  font-size: var(--text-micro-size);
+  letter-spacing: 0;
+  color: var(--k-content-secondary-foreground);
+}
+.k-spark-tile-chart {
+  position: relative;
+  display: block;
+  height: 24px;
+  /* 末点的圆要有地方放，线收在右边 3px 以内 */
+  padding-right: 3px;
+}
+.k-spark-tile-chart.is-empty {
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-data) var(--font-sans);
+  line-height: 24px;
+}
+.k-spark-tile-chart svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.k-spark-tile-line {
+  fill: none;
+  stroke: var(--k-spark-color, var(--k-content-primary-foreground));
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+.k-spark-tile-line.is-neutral {
+  stroke: var(--k-content-secondary-foreground);
+}
+.k-spark-tile-limit {
+  stroke: var(--k-status-warn-foreground);
+  stroke-width: 1;
+  stroke-dasharray: 2 2;
+  vector-effect: non-scaling-stroke;
+}
+.k-spark-tile-end,
+.k-spark-tile-halo {
+  /* 新点来了末点随线一起滑到新高度（和线的延伸同一档时长）。 */
+  transition: top var(--dur-reorder) var(--ease-snappy);
+}
+/* 末点的光晕：平时透明，新点来了由共用层 .k-live-flash 闪一次涨跌色。 */
+.k-spark-tile-halo {
+  position: absolute;
+  right: -4px;
+  width: 13px;
+  height: 13px;
+  margin-top: -6.5px;
+  border-radius: var(--radius-pill);
+  pointer-events: none;
+}
+.k-spark-tile-end {
+  position: absolute;
+  right: 0;
+  width: 5px;
+  height: 5px;
+  margin-top: -2.5px;
+  border-radius: var(--radius-pill);
+  background: var(--k-spark-color, var(--k-content-primary-foreground));
+}
+.k-spark-tile-end.is-neutral {
+  background: var(--k-content-secondary-foreground);
+}
+.k-spark-tile-delta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 6px;
+  font-size: var(--text-micro-size);
+  line-height: 14px;
+}
+.k-spark-tile-note {
+  color: var(--k-content-secondary-foreground);
+}
+.k-spark-tile[data-state='near'],
+.k-spark-tile[data-state='over'] {
+  border-color: var(--signal-orange-dim);
+}
+.k-spark-tile[data-state='near'] .k-spark-tile-note,
+.k-spark-tile[data-state='over'] .k-spark-tile-note {
+  color: var(--k-status-warn-foreground);
+}
+.k-spark-tile[data-state='over'] {
+  animation: k-tile-pulse var(--dur-gentle) var(--ease-gentle) 1;
+}
+@keyframes k-tile-pulse {
+  0% {
+    box-shadow: 0 0 0 0 var(--k-status-warn-foreground);
+  }
+  40% {
+    box-shadow: 0 0 0 2px var(--k-status-warn-foreground);
+  }
+  100% {
+    box-shadow: 0 0 0 0 transparent;
+  }
+}

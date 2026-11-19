@@ -12,9 +12,12 @@
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `tasks` | `readonly Task[]` | — | The tasks, each with id, label and optional done; controlled. |
-| `defaultTasks` | `readonly Task[]` | `[]` | Initial tasks when uncontrolled. |
-| `onTasksChange` | `(tasks: Task[]) => void` | — | Called with the new task list. |
+| `value` | `readonly Task[]` | — | The tasks, each with id, label and optional done; controlled. |
+| `defaultValue` | `readonly Task[]` | — | Initial tasks when uncontrolled. |
+| `onValueChange` | `(tasks: Task[]) => void` | — | Called with the new task list after a row is checked or unchecked. |
+| `tasks` | `readonly Task[]` | — | Old name of value, kept for one release. |
+| `defaultTasks` | `readonly Task[]` | — | Old name of defaultValue, kept for one release. |
+| `onTasksChange` | `(tasks: Task[]) => void` | — | Old name of onValueChange, kept for one release. |
 | `labels` * | `TaskListLabels` | — | Announcement texts: completed(label) and reopened(label) (required). |
 | `label` | `string` | — | Accessible name of the list. |
 | `className` | `string` | — | Extra class name on the root. |
@@ -33,8 +36,8 @@ export function TaskListUsage() {
   ])
   return (
     <TaskList
-      tasks={tasks}
-      onTasksChange={setTasks}
+      value={tasks}
+      onValueChange={setTasks}
       label="Plan"
       labels={{ completed: (label) => `${label} done`, reopened: (label) => `${label} reopened` }}
     />
@@ -51,6 +54,8 @@ export function TaskListUsage() {
 ## Don't
 
 - 任务文案与标签由调用方传。
+- 不要拿它做多选筛选：勾上的行会沉底换位置，筛选用 ChipGroup 或 Checkbox。
+- 任务的真实状态以数据为准：勾选只回调 onValueChange，写不写回由调用方定。
 
 ## Composition
 

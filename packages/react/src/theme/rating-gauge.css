@@ -1,0 +1,62 @@
+/* SPDX-License-Identifier: MIT */
+/* 评级仪表 RatingGauge。2026-11-18 从 quote.css 拆出。 颜色只用 token（--pnl-up / --pnl-down 跟涨跌配色走）；数字一律等宽（tabular-nums）；动效只用三条弹簧的 CSS 形式（--dur-* / --ease-*）。 */
+
+/* —— 评级仪表 —— */
+.k-rating {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+  max-width: 240px;
+  margin: 0;
+}
+.k-rating svg {
+  display: block;
+  width: 100%;
+  overflow: visible;
+}
+.k-rating-zone {
+  fill: none;
+  stroke-width: 12;
+  stroke-linecap: butt;
+  opacity: 0.35;
+  transition: opacity var(--dur-gentle) var(--ease-gentle);
+}
+.k-rating-zone.is-active {
+  opacity: 1;
+}
+.k-rating-zone.is-z0 {
+  stroke: var(--pnl-down);
+}
+.k-rating-zone.is-z1 {
+  stroke: color-mix(in srgb, var(--pnl-down) 55%, var(--k-content-secondary-foreground));
+}
+.k-rating-zone.is-z2 {
+  stroke: var(--k-content-secondary-foreground);
+}
+.k-rating-zone.is-z3 {
+  stroke: color-mix(in srgb, var(--pnl-up) 55%, var(--k-content-secondary-foreground));
+}
+.k-rating-zone.is-z4 {
+  stroke: var(--pnl-up);
+}
+.k-rating-needle {
+  transform-origin: 100px 100px;
+  transition: transform var(--dur-gentle) var(--ease-gentle);
+  fill: var(--k-content-primary-foreground);
+}
+.k-rating-hub {
+  fill: var(--k-content-primary-foreground);
+}
+.k-rating-word {
+  color: var(--k-content-primary-foreground);
+  font: var(--text-title) var(--font-sans);
+}
+.k-rating-extra {
+  display: flex;
+  gap: 12px;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+  font-variant-numeric: tabular-nums;
+}

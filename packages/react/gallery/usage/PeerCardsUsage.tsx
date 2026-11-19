@@ -1,11 +1,12 @@
 // SPDX-License-Identifier: MIT
-import { PeerCards, type PeerItem } from '../../src/quant'
+import { formatPrice } from '../../src/quant'
+import { PeerCards, type PeerItem } from '../../src/quotes'
 
 const PEERS: readonly PeerItem[] = [
-  { key: 'AAA', code: 'AAA', name: 'Alpha Devices Incorporated', price: '212.40', unit: 'USD', change: 0.84 },
-  { key: 'BRV', code: 'BRV', name: 'Bravo Semiconductor Holdings', price: '1,044.10', unit: 'USD', change: -2.31 },
-  { key: 'CHL', code: 'CHL', name: 'Charlie Software', price: '418.77', unit: 'USD', change: 1.12 },
-  { key: 'DLT', code: 'DLT', name: 'Delta Cloud Systems Ltd', price: '96.05', unit: 'USD', change: -0.2 },
+  { id: 'AAA', symbol: 'AAA', name: 'Alpha Devices Incorporated', last: 212.4, unit: 'USD', changePct: 0.84 },
+  { id: 'BRV', symbol: 'BRV', name: 'Bravo Semiconductor Holdings', last: 1044.1, unit: 'USD', changePct: -2.31 },
+  { id: 'CHL', symbol: 'CHL', name: 'Charlie Software', last: 418.77, unit: 'USD', changePct: 1.12 },
+  { id: 'DLT', symbol: 'DLT', name: 'Delta Cloud Systems Ltd', last: 96.05, unit: 'USD', changePct: -0.2 },
 ]
 
 export function PeerCardsUsage() {
@@ -13,12 +14,13 @@ export function PeerCardsUsage() {
     <div style={{ width: '100%', maxWidth: 560 }}>
       <PeerCards
         items={PEERS}
+        formatPrice={(value) => formatPrice(value, { precision: 2 })}
         labels={{
           list: 'Peers',
           prev: 'Previous',
           next: 'Next',
           compare: 'Select to compare',
-          add: (item) => `Add ${item.code} to compare`,
+          add: (item) => `Add ${item.symbol} to compare`,
         }}
         onSelect={() => undefined}
         onAdd={() => undefined}

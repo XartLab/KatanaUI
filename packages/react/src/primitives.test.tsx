@@ -1,7 +1,21 @@
 // SPDX-License-Identifier: MIT
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vite-plus/test'
-import { Button, Checkbox, Switch, Tabs, TabsContent, TabsList, TabsTrigger, buttonVariants } from './index.ts'
+import {
+  Alert,
+  Button,
+  Checkbox,
+  Input,
+  Progress,
+  Switch,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+  ToggleGroup,
+  ToggleGroupItem,
+  buttonVariants,
+} from './index.ts'
 
 // 件的结构：用 react-dom/server 渲染成字符串，断言用户和读屏器碰到的东西（role、aria、type、变体标记）。
 // 看得见的样子（尺寸、悬停、动效）在 e2e/ui-gallery.spec.ts 里用真浏览器量。
@@ -12,7 +26,13 @@ describe('Button', () => {
     expect(html).toContain('type="button"')
     expect(html).toContain('data-slot="button"')
     expect(html).toContain('data-variant="default"')
-    expect(html).toContain('data-size="default"')
+    expect(html).toContain('data-size="md"')
+  })
+
+  it('尺寸统一 sm | md：旧名 default 等于 md（留一个版本）', () => {
+    expect(renderToStaticMarkup(<Button size="default">x</Button>)).toContain('data-size="md"')
+    expect(renderToStaticMarkup(<Input size="default" />)).toContain('data-size="md"')
+    expect(renderToStaticMarkup(<Input size="sm" />)).toContain('data-size="sm"')
   })
 
   it('变体：primary 是实心浅色，danger 的字是危险色；调用方的 className 排在最后', () => {
@@ -67,5 +87,44 @@ describe('Tabs', () => {
     expect(html).toMatch(/aria-selected="true"[^>]*>甲|>甲<\/button>/)
     expect(html).toContain('甲的内容')
     expect(html).not.toContain('乙的内容')
+  })
+})
+
+describe('Alert / Progress / ToggleGroup：新名与旧名', () => {
+  it('Alert 与 Progress 的 tone 是 Severity，旧名 default 等于 neutral', () => {
+    expect(renderToStaticMarkup(<Alert>x</Alert>)).toContain('data-tone="neutral"')
+    expect(renderToStaticMarkup(<Alert tone="default">x</Alert>)).toContain('data-tone="neutral"')
+    expect(renderToStaticMarkup(<Alert tone="danger">x</Alert>)).toContain('role="alert"')
+    const neutral = renderToStaticMarkup(<Progress aria-label="p" value={10} tone="default" />)
+    expect(neutral).toContain('bg-(--k-status-neutral-bold-background)')
+    expect(renderToStaticMarkup(<Progress aria-label="p" value={10} tone="warn" />)).toContain(
+      'bg-(--k-status-warn-foreground)',
+    )
+  })
+
+  it('ToggleGroup：size 取代 variant，旧的 variant="sm" 照样是 sm', () => {
+    const item = <ToggleGroupItem value="a">A</ToggleGroupItem>
+    const noop = () => {}
+    expect(
+      renderToStaticMarkup(
+        <ToggleGroup aria-label="g" value="a" onValueChange={noop}>
+          {item}
+        </ToggleGroup>,
+      ),
+    ).toContain('data-size="md"')
+    expect(
+      renderToStaticMarkup(
+        <ToggleGroup aria-label="g" size="sm" value="a" onValueChange={noop}>
+          {item}
+        </ToggleGroup>,
+      ),
+    ).toContain('data-size="sm"')
+    expect(
+      renderToStaticMarkup(
+        <ToggleGroup aria-label="g" variant="sm" value="a" onValueChange={noop}>
+          {item}
+        </ToggleGroup>,
+      ),
+    ).toContain('data-size="sm"')
   })
 })

@@ -12,16 +12,18 @@ const raws = import.meta.glob('./usage/*.tsx', { eager: true, query: '?raw', imp
 
 const PUBLIC_NAME: Readonly<Record<string, string>> = {
   index: '@katana-ui/react',
+  quotes: '@katana-ui/react/quotes',
   quant: '@katana-ui/react/quant',
-  'quant/format': '@katana-ui/react/quant/format',
+  'lib/chart/format': '@katana-ui/react/quant/format',
   blocks: '@katana-ui/react/blocks',
+  a2ui: '@katana-ui/react/a2ui',
 }
 
 /** 包内的相对引入换成包外的写法。 */
 export function publicSource(raw: string): string {
   return raw
     .replaceAll(
-      /'\.\.\/\.\.\/src\/(index|quant\/format|quant|blocks)'/g,
+      /'\.\.\/\.\.\/src\/(index|quotes|lib\/chart\/format|quant|blocks|a2ui)'/g,
       (_, entry: string) => `'${PUBLIC_NAME[entry]}'`,
     )
     .trimEnd()

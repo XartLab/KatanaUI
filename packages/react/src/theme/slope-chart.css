@@ -1,0 +1,72 @@
+/* SPDX-License-Identifier: MIT */
+/* SlopeChart（#1918）：前后两期对比的斜率图。颜色只用语义 token。 */
+
+.k-slope {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  min-width: 0;
+}
+.k-slope-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+.k-slope-head {
+  fill: var(--k-content-secondary-foreground);
+  font: var(--text-micro) var(--font-sans);
+  letter-spacing: var(--text-micro-tracking);
+}
+.k-slope-item {
+  outline: none;
+  transition: opacity var(--dur-snappy) var(--ease-snappy);
+}
+.k-slope-item.is-link {
+  cursor: pointer;
+}
+.k-slope-item[data-dim='true'] {
+  opacity: 0.3;
+}
+.k-slope-hit {
+  stroke: transparent;
+  stroke-width: 10;
+}
+.k-slope-line {
+  stroke: var(--k-content-secondary-foreground);
+  stroke-width: 1.5;
+}
+.k-slope-dot {
+  fill: var(--k-content-secondary-foreground);
+}
+.k-slope-text {
+  fill: var(--k-content-body-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+  font-variant-numeric: tabular-nums;
+}
+/* 涨跌色只上数字（dataviz §2）：线与点是中性墨色，变化后的那个数按涨跌上色；悬停与聚焦的线是强调色。 */
+.k-slope-item[data-tone='up'] .k-slope-num {
+  fill: var(--pnl-up);
+}
+.k-slope-item[data-tone='down'] .k-slope-num {
+  fill: var(--pnl-down);
+}
+.k-slope-item:hover .k-slope-line,
+.k-slope-item:focus-visible .k-slope-line {
+  stroke: var(--chart-accent, var(--k-content-primary-foreground));
+  stroke-width: 2.5;
+}
+.k-slope-item:focus-visible .k-slope-text {
+  fill: var(--k-content-primary-foreground);
+  font-weight: 600;
+}
+.k-slope-readout {
+  min-height: 16px;
+  color: var(--k-content-body-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+  font-variant-numeric: tabular-nums;
+}
+.k-slope-over {
+  pointer-events: none;
+}

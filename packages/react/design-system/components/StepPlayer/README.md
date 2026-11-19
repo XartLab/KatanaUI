@@ -22,7 +22,7 @@
 | `duration` | `number` | `4000` | Default duration of each step in milliseconds. |
 | `loop` | `boolean` | `false` | Go back to the first step after the last one finishes and keep playing. |
 | `onComplete` | `() => void` | — | Called once when the last step finishes (also when looping). |
-| `size` | `number` | `32` | Height of the button and the bar in px. |
+| `size` | `StepPlayerSize \| number` | `'md'` | Height of the button and the bar: sm 24px, md 32px (default). |
 | `seekable` | `boolean` | `false` | Click a dot to jump to that step; the hit area is at least 44px high. |
 | `labels` * | `StepPlayerLabels` | — | Texts for the buttons and announcements: play, pause, replay, group and step (required). |
 | `className` | `string` | — | Extra class name on the root. |
@@ -58,7 +58,9 @@ export function StepPlayerUsage() {
 
 ## Don't
 
-- 它是按时间走的演示进度，不要拿它表示真实任务进度。
+- 它是按时间走的演示进度，不要拿它表示真实任务进度（用 Progress）。
+- 尺寸只用 sm（24）与 md（32）：直接写像素数的旧写法留一个版本。
+- 可跳时每个圆点都要有读屏名：步上写 label，或给 labels.step。
 
 ## Composition
 

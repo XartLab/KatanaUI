@@ -1,0 +1,203 @@
+/* SPDX-License-Identifier: MIT */
+/* 改自 SmoothUI（https://github.com/educlopez/smoothui ，MIT，© 2024 Eduardo Calvo）的几件的动效：折叠单项、菜单栏、导航菜单。
+   曲线与时长用 token（--ease-snappy / --dur-snappy）；产品不跟系统的「减少动态效果」，所以不写 prefers-reduced-motion（见 motion.css 头部）。 */
+
+@keyframes kc-collapsible-down {
+  from {
+    height: 0;
+  }
+  to {
+    height: var(--radix-collapsible-content-height);
+  }
+}
+@keyframes kc-collapsible-up {
+  from {
+    height: var(--radix-collapsible-content-height);
+  }
+  to {
+    height: 0;
+  }
+}
+[data-slot='collapsible-content'][data-state='open'] {
+  animation: kc-collapsible-down var(--dur-snappy) var(--ease-snappy);
+}
+[data-slot='collapsible-content'][data-state='closed'] {
+  animation: kc-collapsible-up 120ms linear;
+}
+
+/* 菜单栏的面板：与下拉菜单同一条入场（kc-pop-in / kc-pop-out 在 motion.css）。 */
+[data-slot='menubar-content'] {
+  transform-origin: var(--radix-menubar-content-transform-origin);
+}
+[data-slot='menubar-content'][data-state='open'] {
+  animation: kc-pop-in var(--dur-snappy) var(--ease-snappy) both;
+}
+/* 菜单栏的面板没有退场动画：Radix 的 Presence 要等退场动画放完才卸载，期间旧面板的焦点陷阱还在，
+   在顶层菜单间用方向键切换时它把焦点抢回去，新开的那个面板立刻被判成「焦点在外面」而关掉（2026-11-17 实测，去掉退场动画就好）。 */
+
+/* 导航菜单：视口宽高跟着内容平滑变，面板按划动方向滑入（原件 slide-in-from-*-52 的距离换成 40px）。 */
+@keyframes kc-nav-in-end {
+  from {
+    opacity: 0;
+    translate: 40px 0;
+  }
+}
+@keyframes kc-nav-in-start {
+  from {
+    opacity: 0;
+    translate: -40px 0;
+  }
+}
+@keyframes kc-nav-out-end {
+  to {
+    opacity: 0;
+    translate: 40px 0;
+  }
+}
+@keyframes kc-nav-out-start {
+  to {
+    opacity: 0;
+    translate: -40px 0;
+  }
+}
+[data-slot='navigation-menu-viewport'] {
+  transition:
+    width var(--dur-snappy) var(--ease-snappy),
+    height var(--dur-snappy) var(--ease-snappy);
+}
+[data-slot='navigation-menu-viewport'][data-state='open'] {
+  animation: kc-pop-in var(--dur-snappy) var(--ease-snappy) both;
+}
+[data-slot='navigation-menu-viewport'][data-state='closed'] {
+  animation: kc-pop-out 120ms linear both;
+}
+[data-slot='navigation-menu-content'][data-motion='from-end'] {
+  animation: kc-nav-in-end var(--dur-snappy) var(--ease-snappy) both;
+}
+[data-slot='navigation-menu-content'][data-motion='from-start'] {
+  animation: kc-nav-in-start var(--dur-snappy) var(--ease-snappy) both;
+}
+[data-slot='navigation-menu-content'][data-motion='to-end'] {
+  animation: kc-nav-out-end 120ms linear both;
+}
+[data-slot='navigation-menu-content'][data-motion='to-start'] {
+  animation: kc-nav-out-start 120ms linear both;
+}
+
+/* 富提示：模糊 + 缩放 + 上移一起收敛（原件 rich-popover 的入场：blur 8px · scale 0.95 · y 5px），退场用 120ms 直线淡出。 */
+@keyframes kc-rich-in {
+  from {
+    opacity: 0;
+    scale: 0.95;
+    translate: 0 5px;
+    filter: blur(8px);
+  }
+}
+@keyframes kc-rich-out {
+  to {
+    opacity: 0;
+    scale: 0.95;
+    filter: blur(8px);
+  }
+}
+[data-slot='rich-popover-content'] {
+  transform-origin: var(--radix-popover-content-transform-origin);
+}
+[data-slot='rich-popover-content'][data-state='open'] {
+  animation: kc-rich-in var(--dur-snappy) var(--ease-snappy) both;
+}
+[data-slot='rich-popover-content'][data-state='closed'] {
+  animation: kc-rich-out 120ms linear both;
+}
+
+/* 终端的光标：1s 一闪，steps(1) 不渐变（原件 mac-terminal-caret-blink）。 */
+@keyframes kc-terminal-caret {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+[data-slot='mac-terminal-caret'] {
+  animation: kc-terminal-caret 1s steps(1) infinite;
+}
+
+/* 悬停辉光卡的光斑：底色与边线都用同一个径向渐变，边线靠 mask 只露出 1px 的环（原件是复制一层覆盖层，这里改成单层）。 */
+[data-slot='glow-hover-card'] {
+  --glow-o: 0;
+}
+[data-slot='glow-hover-card-spot'] {
+  opacity: var(--glow-o);
+  transition: opacity var(--dur-snappy) var(--ease-snappy);
+  background: radial-gradient(
+    var(--glow-size) circle at var(--glow-x, 50%) var(--glow-y, 50%),
+    color-mix(in oklab, var(--glow-color) var(--glow-strength), transparent),
+    transparent 70%
+  );
+}
+[data-slot='glow-hover-card']::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  pointer-events: none;
+  opacity: var(--glow-o);
+  transition: opacity var(--dur-snappy) var(--ease-snappy);
+  background: radial-gradient(
+    calc(var(--glow-size) * 0.75) circle at var(--glow-x, 50%) var(--glow-y, 50%),
+    var(--glow-color),
+    transparent 70%
+  );
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+}
+
+/* ── 并入已有件的动效（对齐 SmoothUI，不改任何 API）──
+   页签内容：切换时淡入（SmoothUI tabs 的 animated 面板：opacity 0 到 1）。 */
+[data-slot='tabs-content'][data-state='active'] {
+  animation: kc-fade-in 150ms linear both;
+}
+
+/* 对话框：头、身、脚依次从下面轻升进来（SmoothUI dialog 的 stagger：4px / 8px、错开一拍）。
+   只在打开那一刻播，终点是原位，不影响布局测量；bare 的对话框自己管版式，不加。 */
+@keyframes kc-dialog-part-in {
+  from {
+    opacity: 0;
+    translate: 0 8px;
+  }
+}
+[data-slot='dialog-content']:not([data-bare])[data-state='open'] > [data-slot='dialog-header'] {
+  animation: kc-dialog-part-in var(--dur-snappy) var(--ease-snappy) 20ms both;
+}
+[data-slot='dialog-content']:not([data-bare])[data-state='open'] > [data-slot='dialog-body'] {
+  animation: kc-dialog-part-in var(--dur-snappy) var(--ease-snappy) 60ms both;
+}
+[data-slot='dialog-content']:not([data-bare])[data-state='open'] > [data-slot='dialog-footer'] {
+  animation: kc-dialog-part-in var(--dur-snappy) var(--ease-snappy) 100ms both;
+}
+
+/* 滚动条：出现 160ms 淡入、消失前等 160ms 再 120ms 淡出（SmoothUI scroll-area 的 delay-160 与 duration），悬停时变宽一档。 */
+[data-slot='scroll-area-scrollbar'][data-state='visible'] {
+  animation: kc-fade-in 160ms linear both;
+}
+[data-slot='scroll-area-scrollbar'][data-state='hidden'] {
+  animation: kc-fade-out 120ms linear 160ms both;
+}
+[data-slot='scroll-area-scrollbar'][data-orientation='vertical'] {
+  transition: width 160ms ease-in-out;
+}
+[data-slot='scroll-area-scrollbar'][data-orientation='vertical']:hover {
+  width: 6px;
+}
+[data-slot='scroll-area-scrollbar'][data-orientation='horizontal'] {
+  transition: height 160ms ease-in-out;
+}
+[data-slot='scroll-area-scrollbar'][data-orientation='horizontal']:hover {
+  height: 6px;
+}
