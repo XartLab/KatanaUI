@@ -129,8 +129,7 @@ function SourceCard({ source, onOpen }: { source: WebSource; onOpen?: (source: W
       <span className="k-text-data mt-1.5 line-clamp-2 text-left text-ink">{source.title}</span>
     </>
   )
-  const base =
-    'flex h-[76px] w-full flex-col rounded-[var(--radius-control)] border border-line bg-surface-2 p-2.5 text-left transition-colors duration-[120ms]'
+  const base = 'flex h-[76px] w-full flex-col k-mat-inset p-2.5 text-left transition-colors duration-[120ms]'
   return onOpen ? (
     <button
       type="button"
@@ -152,7 +151,7 @@ function SkeletonCard() {
     <div
       aria-hidden="true"
       data-slot="web-search-skeleton"
-      className="flex h-[76px] w-full flex-col gap-2 rounded-[var(--radius-control)] border border-line bg-surface-1 p-2.5"
+      className="flex h-[76px] w-full flex-col gap-2 k-mat-card p-2.5"
     >
       <span className="h-3 w-1/2 rounded-full bg-surface-4" />
       <span className="h-3 w-5/6 rounded-full bg-surface-3" />

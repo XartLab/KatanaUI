@@ -220,10 +220,7 @@ export function SwapPanel({
     <div
       data-slot="swap-panel"
       data-status={status}
-      className={cn(
-        'flex w-full max-w-sm flex-col gap-3 rounded-[var(--radius-control)] border border-line bg-surface-1 p-3',
-        className,
-      )}
+      className={cn('flex w-full max-w-sm flex-col gap-3 k-mat-card p-3', className)}
     >
       <div className="flex flex-col gap-2">
         <div>

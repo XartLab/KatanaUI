@@ -114,7 +114,7 @@ export function SwitchboardCard({
     <div
       data-slot="switchboard-card"
       className={cn(
-        'flex w-full flex-col gap-(--space-4) overflow-hidden rounded-[var(--radius-control)] border border-line bg-surface-1 p-(--space-5) text-left',
+        'flex w-full flex-col gap-(--space-4) overflow-hidden k-mat-card p-(--space-5) text-left',
         className,
       )}
     >

@@ -72,7 +72,7 @@ function TaskRow({
       data-state={done ? 'checked' : 'unchecked'}
       onClick={() => onToggle(!done)}
       className={cn(
-        'flex w-full cursor-pointer items-start gap-2.5 rounded-[var(--radius-control)] border border-line bg-surface-2 px-3 py-2 text-left',
+        'flex w-full cursor-pointer items-start gap-2.5 k-mat-inset px-3 py-2 text-left',
         'transition-colors duration-[120ms] hover:bg-surface-3 active:bg-surface-3',
         focusRing,
       )}

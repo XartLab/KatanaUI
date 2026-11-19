@@ -4757,6 +4757,31 @@
   margin: 0;
 }
 
+:where(.k-mat-card) {
+  border: 1px solid var(--k-separable-tertiary-borderColor);
+  border-radius: var(--radius-control);
+  background: var(--k-surface-base-background);
+}
+
+:where(.k-mat-block) {
+  border: 1px solid var(--k-separable-tertiary-borderColor);
+  border-radius: var(--radius-overlay);
+  background: var(--k-surface-base-background);
+}
+
+:where(.k-mat-inset) {
+  border: 1px solid var(--k-separable-tertiary-borderColor);
+  border-radius: var(--radius-control);
+  background: var(--k-container-secondary-background);
+}
+
+:where(.k-mat-overlay) {
+  border: 1px solid var(--k-overlay-borderColor);
+  border-radius: var(--radius-overlay);
+  background: var(--k-surface-overlay-background);
+  box-shadow: var(--k-overlay-shadow);
+}
+
 .k-pop:has(.k-pop-check) .k-pop-item:not(:has(.k-pop-check)) .k-pop-label {
   --k-pop-pad-check: 22px;
 }

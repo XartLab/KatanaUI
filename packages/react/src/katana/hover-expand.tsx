@@ -103,7 +103,7 @@ export function HoverExpand({
             }}
             onKeyDown={(event) => onKey(event, index)}
             className={cn(
-              'relative min-h-0 min-w-0 cursor-pointer overflow-hidden rounded-[var(--radius-control)] border border-line bg-surface-1 p-(--space-3) text-left text-ink',
+              'relative min-h-0 min-w-0 cursor-pointer overflow-hidden k-mat-card p-(--space-3) text-left text-ink',
               open && 'border-line-strong bg-surface-2',
               focusRing,
             )}

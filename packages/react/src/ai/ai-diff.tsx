@@ -76,10 +76,7 @@ export function AiDiff({ lines, labels, title, onAccept, onReject, className }: 
       // 决定后才带上 data-flash，CSS 的一次性闪色动画此时才开始播。
       data-flash={decision ? (decision === 'accepted' ? 'ok' : 'no') : undefined}
       transition={unit(snappy)}
-      className={cn(
-        'k-ai-flash w-full overflow-hidden rounded-[var(--radius-overlay)] border border-line bg-surface-1',
-        className,
-      )}
+      className={cn('k-ai-flash w-full overflow-hidden k-mat-block', className)}
     >
       <div className="flex items-center gap-2 border-b border-line px-3 py-2">
         {title ? <span className="k-text-caption min-w-0 truncate font-mono text-ink">{title}</span> : null}

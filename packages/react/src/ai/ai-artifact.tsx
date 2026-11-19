@@ -88,14 +88,7 @@ export function AiArtifact({
   }
 
   return (
-    <div
-      data-slot="ai-artifact"
-      data-pane={pane}
-      className={cn(
-        'w-full overflow-hidden rounded-[var(--radius-overlay)] border border-line bg-surface-1',
-        className,
-      )}
-    >
+    <div data-slot="ai-artifact" data-pane={pane} className={cn('w-full overflow-hidden k-mat-block', className)}>
       <div className="flex items-center gap-2 border-b border-line px-2 py-1.5">
         <span className="k-text-caption min-w-0 truncate px-1 font-semibold text-ink">{title}</span>
         {available.length > 1 ? (
