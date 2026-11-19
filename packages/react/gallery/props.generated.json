@@ -6308,84 +6308,6 @@
         }
       ]
     },
-    "ComponentManifest": {
-      "kind": "type",
-      "source": "src/blocks/workspace-model/component-manifest.ts",
-      "props": [
-        {
-          "name": "id",
-          "type": "string",
-          "required": true,
-          "description": ""
-        },
-        {
-          "name": "name",
-          "type": "string",
-          "required": true,
-          "description": ""
-        },
-        {
-          "name": "category",
-          "type": "string",
-          "required": true,
-          "description": "Id of a catalog category."
-        },
-        {
-          "name": "kind",
-          "type": "CatalogKind",
-          "required": true,
-          "description": ""
-        },
-        {
-          "name": "keywords",
-          "type": "readonly string[]",
-          "required": false,
-          "description": "Extra words the catalog search matches."
-        },
-        {
-          "name": "pairsWith",
-          "type": "readonly string[]",
-          "required": false,
-          "description": "Kinds of component this one goes well beside."
-        },
-        {
-          "name": "minSize",
-          "type": "{ width: number; height: number }",
-          "required": false,
-          "description": "Smallest size in px at which it is still usable; the layout engine should not shrink it further."
-        },
-        {
-          "name": "markets",
-          "type": "readonly string[]",
-          "required": false,
-          "description": "Markets it applies to (crypto-perp, us-stock, cn-stock…); leave out for all markets."
-        },
-        {
-          "name": "needs",
-          "type": "readonly string[]",
-          "required": false,
-          "description": "Capabilities it cannot work without (account, l2, options-chain…)."
-        },
-        {
-          "name": "consumes",
-          "type": "readonly LinkParam[]",
-          "required": false,
-          "description": "Link parameters it follows when its panel is in a link group."
-        },
-        {
-          "name": "emits",
-          "type": "readonly LinkParam[]",
-          "required": false,
-          "description": "Link parameters it can set for its link group."
-        },
-        {
-          "name": "singleton",
-          "type": "boolean",
-          "required": false,
-          "description": "Only one instance makes sense in a workspace (an order ticket per account, say)."
-        }
-      ]
-    },
     "ConnectedScatter": {
       "kind": "component",
       "source": "src/quant/connected-scatter.tsx",
@@ -17725,35 +17647,6 @@
       "source": "src/katana/led.tsx",
       "props": []
     },
-    "LinkGroupsState": {
-      "kind": "type",
-      "source": "src/blocks/workspace-model/link-groups.ts",
-      "props": [
-        {
-          "name": "groups",
-          "type": "Readonly<Record<string, Readonly<Record<string, string>>>>",
-          "required": true,
-          "description": "每个组现在的参数值：组 id → 参数 → 值。"
-        },
-        {
-          "name": "members",
-          "type": "Readonly<Record<string, string | null>>",
-          "required": true,
-          "description": "每个面板在哪个组；不在这张表里或值是 null 就是没联动。"
-        },
-        {
-          "name": "own",
-          "type": "Readonly<Record<string, Readonly<Record<string, string>>>>",
-          "required": true,
-          "description": "没联动的面板自己的参数值：面板 id → 参数 → 值。"
-        }
-      ]
-    },
-    "LinkParam": {
-      "kind": "type",
-      "source": "src/blocks/workspace-model/component-manifest.ts",
-      "props": []
-    },
     "LinkState": {
       "kind": "type",
       "source": "src/blocks/system-monitor/system-monitor-model.ts",
@@ -18652,24 +18545,6 @@
           "type": "number",
           "required": false,
           "description": "How strongly the pointer pulls or pushes, from 0 to 1."
-        }
-      ]
-    },
-    "ManifestIssue": {
-      "kind": "type",
-      "source": "src/blocks/workspace-model/component-manifest.ts",
-      "props": [
-        {
-          "name": "id",
-          "type": "string",
-          "required": true,
-          "description": ""
-        },
-        {
-          "name": "problem",
-          "type": "'duplicate-id' | 'unknown-category' | 'empty-name' | 'bad-min-size'",
-          "required": true,
-          "description": ""
         }
       ]
     },
@@ -37118,24 +36993,6 @@
         }
       ]
     },
-    "UnavailableReasons": {
-      "kind": "type",
-      "source": "src/blocks/workspace-model/component-manifest.ts",
-      "props": [
-        {
-          "name": "market",
-          "type": "(manifest: ComponentManifest, market: string) => string",
-          "required": true,
-          "description": "The component does not apply to this market."
-        },
-        {
-          "name": "needs",
-          "type": "(manifest: ComponentManifest, capability: string) => string",
-          "required": true,
-          "description": "A required capability is missing; `capability` is the first one missing."
-        }
-      ]
-    },
     "UptimeBars": {
       "kind": "component",
       "source": "src/blocks/uptime-bars/uptime-bars.tsx",
@@ -38622,36 +38479,6 @@
         }
       ]
     },
-    "WorkspaceContext": {
-      "kind": "type",
-      "source": "src/blocks/workspace-model/component-manifest.ts",
-      "props": [
-        {
-          "name": "market",
-          "type": "string",
-          "required": false,
-          "description": ""
-        },
-        {
-          "name": "capabilities",
-          "type": "readonly string[]",
-          "required": false,
-          "description": ""
-        },
-        {
-          "name": "activeKind",
-          "type": "string",
-          "required": false,
-          "description": ""
-        },
-        {
-          "name": "inUse",
-          "type": "readonly string[]",
-          "required": false,
-          "description": ""
-        }
-      ]
-    },
     "WorkspaceTab": {
       "kind": "type",
       "source": "src/blocks/workspace-tabs/workspace-tabs.tsx",
@@ -38923,48 +38750,6 @@
       "source": "src/primitives/button.tsx",
       "props": []
     },
-    "catalogFromManifests": {
-      "kind": "function",
-      "source": "src/blocks/workspace-model/component-manifest.ts",
-      "props": [
-        {
-          "name": "market",
-          "type": "string",
-          "required": false,
-          "description": ""
-        },
-        {
-          "name": "capabilities",
-          "type": "readonly string[]",
-          "required": false,
-          "description": ""
-        },
-        {
-          "name": "activeKind",
-          "type": "string",
-          "required": false,
-          "description": ""
-        },
-        {
-          "name": "inUse",
-          "type": "readonly string[]",
-          "required": false,
-          "description": ""
-        },
-        {
-          "name": "market",
-          "type": "(manifest: ComponentManifest, market: string) => string",
-          "required": true,
-          "description": "The component does not apply to this market."
-        },
-        {
-          "name": "needs",
-          "type": "(manifest: ComponentManifest, capability: string) => string",
-          "required": true,
-          "description": "A required capability is missing; `capability` is the first one missing."
-        }
-      ]
-    },
     "changedTail": {
       "kind": "function",
       "source": "src/quotes/watchlist-model.ts",
@@ -39110,11 +38895,6 @@
     "decimalsOfTick": {
       "kind": "function",
       "source": "src/lib/chart/format/price.ts",
-      "props": []
-    },
-    "emptyLinkState": {
-      "kind": "value",
-      "source": "src/blocks/workspace-model/link-groups.ts",
       "props": []
     },
     "falloff": {
@@ -39288,30 +39068,6 @@
       "kind": "function",
       "source": "src/quant/quantile-model.ts",
       "props": []
-    },
-    "joinLinkGroup": {
-      "kind": "function",
-      "source": "src/blocks/workspace-model/link-groups.ts",
-      "props": [
-        {
-          "name": "groups",
-          "type": "Readonly<Record<string, Readonly<Record<string, string>>>>",
-          "required": true,
-          "description": "每个组现在的参数值：组 id → 参数 → 值。"
-        },
-        {
-          "name": "members",
-          "type": "Readonly<Record<string, string | null>>",
-          "required": true,
-          "description": "每个面板在哪个组；不在这张表里或值是 null 就是没联动。"
-        },
-        {
-          "name": "own",
-          "type": "Readonly<Record<string, Readonly<Record<string, string>>>>",
-          "required": true,
-          "description": "没联动的面板自己的参数值：面板 id → 参数 → 值。"
-        }
-      ]
     },
     "knownAt": {
       "kind": "function",
@@ -39524,54 +39280,6 @@
           "type": "string",
           "required": true,
           "description": ""
-        }
-      ]
-    },
-    "linkFollowers": {
-      "kind": "function",
-      "source": "src/blocks/workspace-model/link-groups.ts",
-      "props": [
-        {
-          "name": "groups",
-          "type": "Readonly<Record<string, Readonly<Record<string, string>>>>",
-          "required": true,
-          "description": "每个组现在的参数值：组 id → 参数 → 值。"
-        },
-        {
-          "name": "members",
-          "type": "Readonly<Record<string, string | null>>",
-          "required": true,
-          "description": "每个面板在哪个组；不在这张表里或值是 null 就是没联动。"
-        },
-        {
-          "name": "own",
-          "type": "Readonly<Record<string, Readonly<Record<string, string>>>>",
-          "required": true,
-          "description": "没联动的面板自己的参数值：面板 id → 参数 → 值。"
-        }
-      ]
-    },
-    "linkValues": {
-      "kind": "function",
-      "source": "src/blocks/workspace-model/link-groups.ts",
-      "props": [
-        {
-          "name": "groups",
-          "type": "Readonly<Record<string, Readonly<Record<string, string>>>>",
-          "required": true,
-          "description": "每个组现在的参数值：组 id → 参数 → 值。"
-        },
-        {
-          "name": "members",
-          "type": "Readonly<Record<string, string | null>>",
-          "required": true,
-          "description": "每个面板在哪个组；不在这张表里或值是 null 就是没联动。"
-        },
-        {
-          "name": "own",
-          "type": "Readonly<Record<string, Readonly<Record<string, string>>>>",
-          "required": true,
-          "description": "没联动的面板自己的参数值：面板 id → 参数 → 值。"
         }
       ]
     },
@@ -39936,30 +39644,6 @@
       "kind": "function",
       "source": "src/blocks/data-grid/layout-model.ts",
       "props": []
-    },
-    "setLinkParam": {
-      "kind": "function",
-      "source": "src/blocks/workspace-model/link-groups.ts",
-      "props": [
-        {
-          "name": "groups",
-          "type": "Readonly<Record<string, Readonly<Record<string, string>>>>",
-          "required": true,
-          "description": "每个组现在的参数值：组 id → 参数 → 值。"
-        },
-        {
-          "name": "members",
-          "type": "Readonly<Record<string, string | null>>",
-          "required": true,
-          "description": "每个面板在哪个组；不在这张表里或值是 null 就是没联动。"
-        },
-        {
-          "name": "own",
-          "type": "Readonly<Record<string, Readonly<Record<string, string>>>>",
-          "required": true,
-          "description": "没联动的面板自己的参数值：面板 id → 参数 → 值。"
-        }
-      ]
     },
     "sheetVariants": {
       "kind": "function",
@@ -40346,11 +40030,6 @@
           "description": ""
         }
       ]
-    },
-    "validateManifests": {
-      "kind": "function",
-      "source": "src/blocks/workspace-model/component-manifest.ts",
-      "props": []
     },
     "valueRange": {
       "kind": "function",
