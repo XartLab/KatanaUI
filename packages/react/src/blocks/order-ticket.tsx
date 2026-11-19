@@ -15,6 +15,8 @@ import { Button } from '../primitives/button.tsx'
 import { Checkbox } from '../primitives/checkbox.tsx'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../primitives/select.tsx'
 import { Slider } from '../primitives/slider.tsx'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../primitives/tabs.tsx'
+import { ToggleGroup, ToggleGroupItem } from '../primitives/toggle-group.tsx'
 import { ReadoutRow, SideSwitch, TicketField, parseAmount, ticketFormat, toTick } from './order-ticket-parts.tsx'
 import {
   computeSizing,
@@ -509,59 +511,6 @@ function TicketSide({
   )
 }
 
-/** 一组并排的开关（aria-pressed）：segmented 是整宽分段（开仓 / 平仓），tabs 是带下划线的文字页签（委托类型）。 */
-function Choice<T extends string>({
-  look,
-  label,
-  value,
-  options,
-  onValueChange,
-  slot,
-}: {
-  look: 'segmented' | 'tabs'
-  label: string
-  value: T
-  options: readonly (readonly [T, string])[]
-  onValueChange: (value: T) => void
-  slot: string
-}) {
-  return (
-    <div
-      role="group"
-      aria-label={label}
-      data-slot={slot}
-      className={
-        look === 'segmented'
-          ? 'grid auto-cols-fr grid-flow-col gap-0.5 rounded-[8px] bg-surface-2 p-0.5'
-          : 'flex gap-4 border-b border-line'
-      }
-    >
-      {options.map(([option, text]) => (
-        <button
-          key={option}
-          type="button"
-          aria-pressed={value === option}
-          onClick={() => onValueChange(option)}
-          className={cn(
-            'cursor-pointer border-0 bg-transparent transition-[background-color,color] duration-[120ms]',
-            look === 'segmented'
-              ? 'k-text-body h-7 rounded-[6px] font-semibold'
-              : 'k-text-caption -mb-px border-b-2 border-solid border-transparent px-0 pb-1.5',
-            value === option
-              ? look === 'segmented'
-                ? 'bg-surface-4 text-ink'
-                : 'border-(color:--k-content-primary-foreground) font-semibold text-ink'
-              : 'text-ink-3 hover:text-ink',
-            focusRing,
-          )}
-        >
-          {text}
-        </button>
-      ))}
-    </div>
-  )
-}
-
 /**
  * Order ticket laid out like an exchange panel: open / close, margin mode and leverage, limit or market, then a buy column and a
  * sell column, each with its own price, size (read as cost, contracts or risk), take-profit / stop-loss, submit button and figures.
@@ -666,17 +615,19 @@ export function OrderTicket({
       )}
     >
       {hedged ? (
-        <Choice
-          look="segmented"
-          slot="ticket-action"
-          label={labels.action}
+        <ToggleGroup
+          data-slot="ticket-action"
+          aria-label={labels.action}
+          className="flex w-full"
           value={action}
-          onValueChange={setAction}
-          options={[
-            ['open', labels.actions.open],
-            ['close', labels.actions.close],
-          ]}
-        />
+          onValueChange={(value) => setAction(value as OrderAction)}
+        >
+          {(['open', 'close'] as const).map((value) => (
+            <ToggleGroupItem key={value} value={value} className="flex-1 justify-center">
+              {labels.actions[value]}
+            </ToggleGroupItem>
+          ))}
+        </ToggleGroup>
       ) : null}
 
       {maxLeverage ? (
@@ -718,34 +669,33 @@ export function OrderTicket({
         </div>
       ) : null}
 
-      <Choice
-        look="tabs"
-        slot="ticket-type"
-        label={labels.orderType}
-        value={type}
-        onValueChange={setType}
-        options={[
-          ['limit', labels.orderTypes.limit],
-          ['market', labels.orderTypes.market],
-        ]}
-      />
-
-      <div className="@min-[560px]:hidden">
-        <SideSwitch side={side} onSideChange={setSide} buy={labels.buy} sell={labels.sell} label={labels.side} />
-      </div>
-
-      <div className="grid gap-x-6 gap-y-2 @min-[560px]:grid-cols-2">
-        {(['buy', 'sell'] as const).map((value) => (
-          <TicketSide
-            key={value}
-            side={value}
-            hidden={side !== value}
-            defaultAmount={defaultAmount}
-            defaultExits={defaultExits?.[value]}
-            {...shared}
-          />
-        ))}
-      </div>
+      <Tabs value={type} onValueChange={(value) => setType(value as OrderType)}>
+        <TabsList variant="line" aria-label={labels.orderType} data-slot="ticket-type">
+          {(['limit', 'market'] as const).map((value) => (
+            <TabsTrigger key={value} value={value}>
+              {labels.orderTypes[value]}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+        {/* 一个常驻的页签面板：两种委托类型共用同一份表单，换页签不重建，填过的数留着。 */}
+        <TabsContent value={type} forceMount className="flex flex-col gap-2">
+          <div className="@min-[560px]:hidden">
+            <SideSwitch side={side} onSideChange={setSide} buy={labels.buy} sell={labels.sell} label={labels.side} />
+          </div>
+          <div className="grid gap-x-6 gap-y-2 @min-[560px]:grid-cols-2">
+            {(['buy', 'sell'] as const).map((value) => (
+              <TicketSide
+                key={value}
+                side={value}
+                hidden={side !== value}
+                defaultAmount={defaultAmount}
+                defaultExits={defaultExits?.[value]}
+                {...shared}
+              />
+            ))}
+          </div>
+        </TabsContent>
+      </Tabs>
 
       <div className="k-text-caption flex items-center gap-3 border-t border-line pt-2 text-ink-3 tabular-nums">
         <span data-slot="ticket-fee-rate">

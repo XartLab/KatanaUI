@@ -151,9 +151,9 @@ export function OrderTicketUsage() {
 
 ```
 OrderTicket
-  开仓 / 平仓
+  ToggleGroup（开仓 / 平仓）
   Select（保证金模式）· 杠杆框
-  限价 / 市价（文字页签）
+  Tabs · TabsList line（限价 / 市价）
   买栏 · 卖栏（各一份）
     价格框 · Button（最优价）
     Select（填法）· 仓位框 · Slider（0–100%）
@@ -169,4 +169,5 @@ OrderTicket
 - `Tab`：开平、保证金模式、杠杆、委托类型，然后买栏从上到下、再卖栏从上到下
 - `← →`：在滑杆上按 1% 调仓位
 - `Space`：在止盈止损的勾选框上展开或收起
-- `Enter`：在开平、委托类型、最优价、下单钮上触发
+- `← →`：在委托类型页签间移动
+- `Enter`：在开平、最优价、下单钮上触发

@@ -7274,7 +7274,9 @@
         "@katana/order-ticket-parts",
         "@katana/select",
         "@katana/sizing-model",
-        "@katana/slider"
+        "@katana/slider",
+        "@katana/tabs",
+        "@katana/toggle-group"
       ],
       "files": [
         {
