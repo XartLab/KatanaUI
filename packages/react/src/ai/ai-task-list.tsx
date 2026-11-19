@@ -127,10 +127,7 @@ export type AiTaskListProps = {
 export function AiTaskList({ tasks, label, statusLabels, className }: AiTaskListProps) {
   const { done, total } = taskProgress(tasks)
   return (
-    <div
-      data-slot="ai-task-list"
-      className={cn('w-full rounded-[var(--radius-overlay)] border border-line bg-surface-1 p-3', className)}
-    >
+    <div data-slot="ai-task-list" className={cn('w-full k-mat-block p-3', className)}>
       <div className="mb-1.5 flex items-baseline justify-between">
         <p className="k-text-data m-0 font-semibold text-ink">{label}</p>
         <p className="k-text-caption m-0 text-ink-3 tabular-nums" data-slot="ai-task-count">

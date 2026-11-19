@@ -189,7 +189,7 @@ export function AiPromptInput({
                 key={attachment.id}
                 layout
                 data-slot="ai-prompt-attachment"
-                className="k-text-caption flex items-center gap-1.5 rounded-[var(--radius-control)] border border-line bg-surface-2 py-1 pr-1 pl-2"
+                className="k-text-caption flex items-center gap-1.5 k-mat-inset py-1 pr-1 pl-2"
                 initial={{ opacity: 0, scale: 0.9, y: 4 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.9 }}

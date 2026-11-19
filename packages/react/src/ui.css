@@ -5,6 +5,7 @@
       Tailwind 的类不分层，要靠引入顺序压过应用里没分层的旧样式。
    2. 应用自己的代码里要用 Tailwind 的类时，在应用的入口样式里加一句 `@source` 指到那些目录。 */
 @import './theme/theme.css';
+@import './theme/materials.css';
 @import './theme/menu.css';
 @import './theme/dialog.css';
 @import './theme/motion.css';

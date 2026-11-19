@@ -48,6 +48,7 @@ export const FOUNDATION_PAGES = [
   { id: 'radius', title: '圆角', section: 'foundations' },
   { id: 'border', title: '边框', section: 'foundations' },
   { id: 'shadow', title: '层级与阴影', section: 'foundations' },
+  { id: 'materials', title: '材质', section: 'foundations' },
   { id: 'duration', title: '时长与动效', section: 'foundations' },
   { id: 'modes', title: '主题与模式', section: 'foundations' },
   { id: 'responsiveness', title: '响应式', section: 'foundations' },

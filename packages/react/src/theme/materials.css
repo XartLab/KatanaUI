@@ -1,0 +1,26 @@
+/* SPDX-License-Identifier: MIT */
+/* 材质配方（2026-11-19，用户：样式体系要把描边、圆角、底色、阴影整合成固定的样式，组件与它们建立映射）。
+   一个类 = 底色 + 描边 + 圆角（+ 阴影）的固定组合，只读 characteristics 与圆角、阴影 token。
+   数值取自改前各件手拼得最多的那几种组合（见文档站「材质」页的出处表），所以换上去像素不变。
+   全部包在 :where() 里（优先级 0）：调用处的工具类与应用自己的规则都能压过。 */
+:where(.k-mat-card) {
+  border: 1px solid var(--k-separable-tertiary-borderColor);
+  border-radius: var(--radius-control);
+  background: var(--k-surface-base-background);
+}
+:where(.k-mat-block) {
+  border: 1px solid var(--k-separable-tertiary-borderColor);
+  border-radius: var(--radius-overlay);
+  background: var(--k-surface-base-background);
+}
+:where(.k-mat-inset) {
+  border: 1px solid var(--k-separable-tertiary-borderColor);
+  border-radius: var(--radius-control);
+  background: var(--k-container-secondary-background);
+}
+:where(.k-mat-overlay) {
+  border: 1px solid var(--k-overlay-borderColor);
+  border-radius: var(--radius-overlay);
+  background: var(--k-surface-overlay-background);
+  box-shadow: var(--k-overlay-shadow);
+}

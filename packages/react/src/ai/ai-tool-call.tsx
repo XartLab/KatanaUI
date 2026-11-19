@@ -131,14 +131,7 @@ export function AiToolCall({
   const hasDetail = Boolean(args || result)
   const heading = 'k-text-micro m-0 mb-1 text-ink-3 uppercase'
   return (
-    <div
-      data-slot="ai-tool-call"
-      data-status={status}
-      className={cn(
-        'w-full overflow-hidden rounded-[var(--radius-overlay)] border border-line bg-surface-1',
-        className,
-      )}
-    >
+    <div data-slot="ai-tool-call" data-status={status} className={cn('w-full overflow-hidden k-mat-block', className)}>
       <button
         type="button"
         data-slot="ai-tool-call-trigger"

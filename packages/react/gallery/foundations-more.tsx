@@ -623,6 +623,98 @@ function ThemingPage() {
   )
 }
 
+const MATERIALS = [
+  [
+    'k-mat-card',
+    '卡片',
+    '--radius-control',
+    'surface-base',
+    'separable-tertiary',
+    '—',
+    '页面里的一张独立小卡：SwapPanel、SwitchboardCard、HoverExpand',
+  ],
+  [
+    'k-mat-block',
+    '内容块',
+    '--radius-overlay',
+    'surface-base',
+    'separable-tertiary',
+    '—',
+    '对话流与文档里的一整块：AiDiff、AiToolCall、AiArtifact、CodeBlock',
+  ],
+  [
+    'k-mat-inset',
+    '内嵌区',
+    '--radius-control',
+    'container-secondary',
+    'separable-tertiary',
+    '—',
+    '卡片里再圈出的一块、输入区：AiPromptInput、TaskList',
+  ],
+  [
+    'k-mat-overlay',
+    '浮层',
+    '--radius-overlay',
+    'surface-overlay',
+    'overlay',
+    '--k-overlay-shadow',
+    '浮在页面上面的：Popover、菜单、HoverCard',
+  ],
+  ['k-panel', '面板', '--radius-panel', 'surface-raised', '--hairline', '--plate', '工作台里的一个面板：PanelFrame'],
+] as const
+
+function MaterialsPage() {
+  return (
+    <>
+      <Lede>材质 = 底色 + 描边 + 圆角（+ 阴影）的固定组合。做容器时挑一个材质类，不再手拼这四样。</Lede>
+      <Table
+        head={['类', '名字', '圆角', '底色', '描边', '阴影', '用在']}
+        rows={MATERIALS.map(([cls, name, radius, bg, border, shadow, use]) => [
+          <code key="c">{cls}</code>,
+          name,
+          <code key="r">{radius}</code>,
+          bg,
+          border,
+          shadow,
+          use,
+        ])}
+      />
+      <h2>样子</h2>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16 }}>
+        {MATERIALS.map(([cls, name]) => (
+          <div key={cls} className={cls} style={{ width: 150, height: 84, padding: 12, position: 'relative' }}>
+            <span className="k-text-caption">{name}</span>
+          </div>
+        ))}
+      </div>
+      <h2>规则</h2>
+      <ul className="gal-list">
+        <li>强弱从低到高：内嵌区 → 卡片 / 内容块 → 面板 → 浮层。只有面板与浮层带阴影，页面里的卡片不加阴影。</li>
+        <li>
+          嵌套时里面的圆角比外面小一档：内容块（overlay 圆角）里放卡片或内嵌区（control 圆角），再往里用
+          --radius-inner。
+        </li>
+        <li>材质类只定这四样；内边距、宽高、排布照旧用工具类写在调用处。</li>
+        <li>类都包在 :where() 里（优先级 0），调用处的工具类能压过；要改整套样子去改 token，不在各件里另调。</li>
+        <li>输入框的材质在 Input（editable 特征），不在这张表里；读数窗在 Lcd。</li>
+      </ul>
+      <h2>出处与没收进来的</h2>
+      <ul className="gal-list">
+        <li>
+          2026-11-19 清点 src/ 里手拼「圆角 + 描边 + 底色」的容器共 19 处、8 种组合；前三种占 14
+          处，原样收成上面三个类，换上后像素不变。
+        </li>
+        <li>
+          还有 5 处不在配方里，没动，待用户定是并进配方还是保留：WebSearch 结果卡（--radius-md、surface-overlay）、 a2ui
+          的 Command（overlay 圆角、container-secondary）、PixelBrushCanvas、HolographicFoil 两处。
+        </li>
+        <li>浮层材质现在各浮层件里还是各写一遍同样的四样（Popover、菜单、HoverCard 等），下一步换成 k-mat-overlay。</li>
+        <li>待用户定：间距在中密度是 3 / 6 / 9 / 12 / 18，高密度是 2 / 4 / 6 / 8 / 12，要不要统一成 4px 体系。</li>
+      </ul>
+    </>
+  )
+}
+
 export const MORE_PAGES = {
   developing: { title: '开发接入', section: 'start', Body: DevelopingPage },
   styling: { title: '样式引入', section: 'start', Body: StylingPage },
@@ -633,6 +725,7 @@ export const MORE_PAGES = {
   cursor: { title: '光标', section: 'foundations', Body: CursorPage },
   assets: { title: '图标与资源', section: 'foundations', Body: AssetsPage },
   dataviz: { title: '数据可视化', section: 'foundations', Body: DataVizPage },
+  materials: { title: '材质', section: 'foundations', Body: MaterialsPage },
   'token-naming': { title: 'Token 命名', section: 'tokens', Body: NamingPage },
   theming: { title: '主题接入', section: 'tokens', Body: ThemingPage },
 } as const

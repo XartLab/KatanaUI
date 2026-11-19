@@ -67,7 +67,7 @@ export function AiApproval({ question, options, facts, children, onDecide, resol
       data-slot="ai-approval"
       data-resolved={chosen?.id}
       transition={unit(snappy)}
-      className={cn('w-full rounded-[var(--radius-overlay)] border border-line bg-surface-1 p-3.5', className)}
+      className={cn('w-full k-mat-block p-3.5', className)}
     >
       <motion.div layout="position" transition={unit(snappy)}>
         <p className="k-text-data m-0 font-semibold text-ink" data-slot="ai-approval-question">

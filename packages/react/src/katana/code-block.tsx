@@ -187,10 +187,7 @@ export function CodeBlock({
       data-slot="code-block"
       data-language={language}
       style={style}
-      className={cn(
-        'relative flex min-w-0 flex-col overflow-hidden rounded-[var(--radius-overlay)] border border-line bg-surface-1',
-        className,
-      )}
+      className={cn('relative flex min-w-0 flex-col overflow-hidden k-mat-block', className)}
     >
       {showHeader ? (
         <div

@@ -60,7 +60,7 @@ export function AnimatedTags({ tags, selected, defaultSelected = [], onChange, l
         <span className="k-text-caption text-ink-3">{labels.selected}</span>
         <div
           data-slot="animated-tags-selected"
-          className="flex min-h-12 flex-wrap items-center gap-(--space-1) rounded-[var(--radius-control)] border border-line bg-surface-1 p-(--space-2)"
+          className="flex min-h-12 flex-wrap items-center gap-(--space-1) k-mat-card p-(--space-2)"
         >
           <AnimatePresence initial={false}>
             {chosen.map((tag) => (
