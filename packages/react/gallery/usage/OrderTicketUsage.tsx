@@ -3,9 +3,11 @@ import { useState } from 'react'
 import { OrderTicket, type OrderDraft, type OrderTicketLabels } from '../../src/blocks'
 
 const LABELS: OrderTicketLabels = {
+  action: 'Open or close',
+  actions: { open: 'Open', close: 'Close' },
   side: 'Side',
-  buy: 'Buy / Long',
-  sell: 'Sell / Short',
+  buy: 'Long',
+  sell: 'Short',
   marginMode: 'Margin mode',
   marginModes: { cross: 'Cross', isolated: 'Isolated' },
   leverage: 'Leverage',
@@ -18,6 +20,7 @@ const LABELS: OrderTicketLabels = {
   sizingModes: { cost: 'Cost', quantity: 'Quantity', risk: 'Risk' },
   percent: 'Percent of available',
   available: 'Available',
+  maxOpen: { buy: 'Max long', sell: 'Max short' },
   exits: 'TP / SL',
   exitTemplate: 'Exit template',
   noTemplate: 'No template',
@@ -40,8 +43,10 @@ const LABELS: OrderTicketLabels = {
     'no-stop': 'Sizing by risk needs a stop-loss price',
     'stop-wrong-side': 'The stop loss is on the profit side of the entry',
   },
-  submit: { buy: 'Buy / Long', sell: 'Sell / Short' },
-  calculator: 'Open calculator',
+  submit: { buy: 'Open long', sell: 'Open short' },
+  submitClose: { buy: 'Close short', sell: 'Close long' },
+  feeRate: 'Fees',
+  calculator: 'Calculator',
 }
 
 // Demo numbers, not live data: a BTCUSDT perpetual where one contract is 0.01 BTC.
@@ -65,8 +70,9 @@ export function OrderTicketUsage() {
         maxLeverage={125}
         defaultLeverage={100}
         marginModes={['isolated', 'cross']}
+        hedged
         defaultAmount="10"
-        defaultExits={{ takeProfit: '61200', stopLoss: '59700' }}
+        defaultExits={{ buy: { takeProfit: '61200', stopLoss: '59700' } }}
         exitTemplates={[
           { id: 'scalp', name: 'Scalp · TP 1% / SL 0.5%', takeProfit: 0.01, stopLoss: 0.005 },
           { id: 'swing', name: 'Swing · TP 6% / SL 2%', takeProfit: 0.06, stopLoss: 0.02 },
@@ -78,7 +84,7 @@ export function OrderTicketUsage() {
       />
       {last ? (
         <output className="k-text-caption text-ink-3">
-          {last.side} {last.contracts} @ {last.price ?? 'market'}
+          {last.reduceOnly ? 'close' : 'open'} {last.side} {last.contracts} @ {last.price ?? 'market'}
         </output>
       ) : null}
     </div>

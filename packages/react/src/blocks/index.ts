@@ -227,6 +227,7 @@ export {
   OrderTicket,
   type ExitTemplate,
   type MarginMode,
+  type OrderAction,
   type OrderDraft,
   type OrderTicketAccount,
   type OrderTicketInstrument,

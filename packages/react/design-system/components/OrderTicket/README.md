@@ -1,6 +1,6 @@
 # OrderTicket
 
-买卖切换、保证金模式与杠杆、限价 / 市价、带「最优价」的价格框、可按成本 / 数量 / 风险三种填法的仓位框与百分比滑杆、勾选后原地展开的止盈止损（可选出场模板，标明交易所托管还是本机触发），下面实时列出张数、名义价值、保证金、开平手续费、总占用、预估强平价、保本价、止盈止损盈亏与盈亏比。按成本：名义价值 = 成本 ÷（1/杠杆 + 开仓费率 + 平仓费率），数量向下取整，改杠杆成本不变。面板只算和显示，账户、费率、规格由调用方传，下单是 onSubmit。功能参照 OKX 下单面板与 ATAS 出场策略、按风险算仓位（2026-11-19 读），实现原创。
+版式照 OKX 的下单面板：顶上开仓 / 平仓（双向持仓时），一条保证金模式与杠杆，文字页签的限价 / 市价；下面买、卖两栏并排，每栏自己的价格（带「最优价」）、仓位框、0–100% 滑杆、可用与可开、勾选后原地展开的止盈止损、整宽的下单钮（买用涨色、卖用跌色），钮下列出张数、保证金、订单价值、开平手续费、总占用、预估强平价、保本价、止盈止损盈亏与盈亏比；底部费率与计算器。面板窄于 560px 时改成买 / 卖切换、一次一栏。仓位框可按成本 / 数量 / 风险三种填法：按成本时名义价值 = 成本 ÷（1/杠杆 + 开仓费率 + 平仓费率），数量向下取整，改杠杆成本不变。面板只算和显示，账户、费率、规格由调用方传，下单是 onSubmit。OKX 与 ATAS 的页面 2026-11-19 读，实现原创。
 
 ## Provide
 
@@ -16,16 +16,17 @@
 | `maxLeverage` | `number` | — | Highest leverage allowed; leave out for spot and unlevered venues, which hides the leverage controls. |
 | `defaultLeverage` | `number` | `1` | Starting leverage. |
 | `marginModes` | `readonly MarginMode[]` | — | Margin modes on offer; leave out to hide the selector. |
-| `defaultSide` | `OrderSide` | `'buy'` | Starting side. |
+| `hedged` | `boolean` | `false` | Long / short (hedge) position mode: shows the Open / Close switch; Close orders are reduce-only. |
+| `defaultSide` | `OrderSide` | `'buy'` | The column shown first when the panel is too narrow for two. |
 | `defaultSizingMode` | `SizingMode` | `'cost'` | How the size box is read at first: cost (default), quantity or risk. |
-| `defaultAmount` | `string` | `''` | Starting text of the size box. |
-| `defaultExits` | `{ takeProfit?: string; stopLoss?: string }` | — | Starting take-profit and stop-loss prices; giving either opens the exits section. |
+| `defaultAmount` | `string` | `''` | Starting text of both size boxes. |
+| `defaultExits` | `Partial<Record<OrderSide, { takeProfit?: string; stopLoss?: string }>>` | — | Starting take-profit and stop-loss prices per side; giving either opens that column's exits section. |
 | `includeCloseFee` | `boolean` | `true` | Count the estimated closing fee in the cost. |
 | `exitTemplates` | `readonly ExitTemplate[]` | — | Saved exit templates, as percent distances from the entry. |
 | `stopCustody` | `StopCustody` | `'venue'` | Where stops live: held by the venue, or triggered locally. |
 | `labels` * | `OrderTicketLabels` | — | All visible text and accessible names. |
 | `locale` | `string` | — | BCP 47 tag for number formatting, defaults to the browser language. |
-| `onSubmit` * | `(order: OrderDraft) => void` | — | Called with the order when the submit button is clicked. |
+| `onSubmit` * | `(order: OrderDraft) => void` | — | Called with the order when a submit button is clicked. |
 | `onLeverageChange` | `(leverage: number) => void` | — | Called when the leverage changes. |
 | `onMarginModeChange` | `(mode: MarginMode) => void` | — | Called when the margin mode changes. |
 | `onOpenCalculator` | `() => void` | — | Called when the calculator button is clicked; leave out to hide the button. |
@@ -39,9 +40,11 @@ import { useState } from 'react'
 import { OrderTicket, type OrderDraft, type OrderTicketLabels } from '@katana-ui/react/blocks'
 
 const LABELS: OrderTicketLabels = {
+  action: 'Open or close',
+  actions: { open: 'Open', close: 'Close' },
   side: 'Side',
-  buy: 'Buy / Long',
-  sell: 'Sell / Short',
+  buy: 'Long',
+  sell: 'Short',
   marginMode: 'Margin mode',
   marginModes: { cross: 'Cross', isolated: 'Isolated' },
   leverage: 'Leverage',
@@ -54,6 +57,7 @@ const LABELS: OrderTicketLabels = {
   sizingModes: { cost: 'Cost', quantity: 'Quantity', risk: 'Risk' },
   percent: 'Percent of available',
   available: 'Available',
+  maxOpen: { buy: 'Max long', sell: 'Max short' },
   exits: 'TP / SL',
   exitTemplate: 'Exit template',
   noTemplate: 'No template',
@@ -76,8 +80,10 @@ const LABELS: OrderTicketLabels = {
     'no-stop': 'Sizing by risk needs a stop-loss price',
     'stop-wrong-side': 'The stop loss is on the profit side of the entry',
   },
-  submit: { buy: 'Buy / Long', sell: 'Sell / Short' },
-  calculator: 'Open calculator',
+  submit: { buy: 'Open long', sell: 'Open short' },
+  submitClose: { buy: 'Close short', sell: 'Close long' },
+  feeRate: 'Fees',
+  calculator: 'Calculator',
 }
 
 // Demo numbers, not live data: a BTCUSDT perpetual where one contract is 0.01 BTC.
@@ -101,8 +107,9 @@ export function OrderTicketUsage() {
         maxLeverage={125}
         defaultLeverage={100}
         marginModes={['isolated', 'cross']}
+        hedged
         defaultAmount="10"
-        defaultExits={{ takeProfit: '61200', stopLoss: '59700' }}
+        defaultExits={{ buy: { takeProfit: '61200', stopLoss: '59700' } }}
         exitTemplates={[
           { id: 'scalp', name: 'Scalp · TP 1% / SL 0.5%', takeProfit: 0.01, stopLoss: 0.005 },
           { id: 'swing', name: 'Swing · TP 6% / SL 2%', takeProfit: 0.06, stopLoss: 0.02 },
@@ -114,7 +121,7 @@ export function OrderTicketUsage() {
       />
       {last ? (
         <output className="k-text-caption text-ink-3">
-          {last.side} {last.contracts} @ {last.price ?? 'market'}
+          {last.reduceOnly ? 'close' : 'open'} {last.side} {last.contracts} @ {last.price ?? 'market'}
         </output>
       ) : null}
     </div>
@@ -127,6 +134,8 @@ export function OrderTicketUsage() {
 - 没填数量：读数全是 0，提交钮禁用，不报错。
 - 不足最小下单量 / 超过可用：仓位框红边，下面一行 role=alert 写原因，提交钮禁用。
 - 按风险：止盈止损一栏强制展开；没填止损或止损填在盈利一侧，止损框红边并写原因。
+- 平仓页（hedged）：仓位只按数量填，没有滑杆、止盈止损与保证金，钮上的字是平空 / 平多，onSubmit 的 reduceOnly 为 true。
+- 窄于 560px：两栏并不下，顶上出现买 / 卖切换，只显示选中的一栏。
 - 市价：价格框灰掉写 labels.marketPrice，按对手价（买看卖一、卖看买一）算。
 - 没给 maxLeverage（现货、A 股）：杠杆与保证金模式不显示，保证金与强平价两行不显示，等于「按金额买」。
 - stopCustody=local：止盈止损栏右上写「本机触发」并用警示色；venue 写「交易所托管」。
@@ -142,19 +151,22 @@ export function OrderTicketUsage() {
 
 ```
 OrderTicket
-  SideSwitch（买 / 卖）
+  开仓 / 平仓
   Select（保证金模式）· 杠杆框
-  ToggleGroup（限价 / 市价）
-  价格框 · Button（最优价）
-  Select（填法）· 仓位框 · Slider（0–100%）
-  Checkbox（止盈止损）· Select（出场模板）· 止盈框 · 止损框
-  读数（dl）
-  提交钮 · Button（计算器）
+  限价 / 市价（文字页签）
+  买栏 · 卖栏（各一份）
+    价格框 · Button（最优价）
+    Select（填法）· 仓位框 · Slider（0–100%）
+    可用 · 可开
+    Checkbox（止盈止损）· Select（出场模板）· 止盈框 · 止损框
+    下单钮
+    读数（dl）
+  费率 · Button（计算器）
 ```
 
 ## Keyboard
 
-- `Tab`：买卖、保证金模式、杠杆、委托类型、价格、最优价、填法、仓位、滑杆、止盈止损、提交，依次走
+- `Tab`：开平、保证金模式、杠杆、委托类型，然后买栏从上到下、再卖栏从上到下
 - `← →`：在滑杆上按 1% 调仓位
 - `Space`：在止盈止损的勾选框上展开或收起
-- `Enter`：在买卖钮、最优价、提交钮上触发
+- `Enter`：在开平、委托类型、最优价、下单钮上触发

@@ -53,7 +53,7 @@ export function parseAmount(text: string): number {
   return text.trim() !== '' && Number.isFinite(value) ? value : Number.NaN
 }
 
-/** 买 / 卖两个并排的开关（aria-pressed），选中的一边填方向色。 */
+/** 买 / 卖两个并排的开关（aria-pressed），选中的一边填涨跌色（买 --pnl-up、卖 --pnl-down，随主题的红涨绿跌设置走）。 */
 export function SideSwitch({
   side,
   onSideChange,
@@ -81,7 +81,7 @@ export function SideSwitch({
             side !== value &&
               'border-line bg-transparent text-ink-3 hover:bg-(--k-actionable-background-hover) hover:text-ink',
             side === value && 'border-transparent text-(color:--k-surface-sunken-background)',
-            side === value && (value === 'buy' ? 'bg-(--side-buy)' : 'bg-(--side-sell)'),
+            side === value && (value === 'buy' ? 'bg-(--pnl-up)' : 'bg-(--pnl-down)'),
             focusRing,
           )}
         >
