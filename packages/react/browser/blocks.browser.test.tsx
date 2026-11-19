@@ -4,6 +4,7 @@ import { beforeAll, afterAll, describe, expect, test, vi } from 'vite-plus/test'
 import { page } from 'vite-plus/test/browser'
 import { AttributionBarsUsage } from '../gallery/usage/AttributionBarsUsage.tsx'
 import { ColumnSetTabsUsage } from '../gallery/usage/ColumnSetTabsUsage.tsx'
+import { ComponentCatalogUsage } from '../gallery/usage/ComponentCatalogUsage.tsx'
 import { ConsensusBlockUsage } from '../gallery/usage/ConsensusBlockUsage.tsx'
 import { DataGridUsage } from '../gallery/usage/DataGridUsage.tsx'
 import { DecisionQueueUsage } from '../gallery/usage/DecisionQueueUsage.tsx'
@@ -18,6 +19,7 @@ import { NewsReaderUsage } from '../gallery/usage/NewsReaderUsage.tsx'
 import { OrderTicketUsage } from '../gallery/usage/OrderTicketUsage.tsx'
 import { PanelFrameUsage } from '../gallery/usage/PanelFrameUsage.tsx'
 import { PositionCalculatorUsage } from '../gallery/usage/PositionCalculatorUsage.tsx'
+import { PanelTabsUsage } from '../gallery/usage/PanelTabsUsage.tsx'
 import { RegimeStripUsage } from '../gallery/usage/RegimeStripUsage.tsx'
 import { SeriesExplorerUsage } from '../gallery/usage/SeriesExplorerUsage.tsx'
 import { SmallMultiplesUsage } from '../gallery/usage/SmallMultiplesUsage.tsx'
@@ -50,6 +52,8 @@ const items: Record<string, React.ReactNode> = {
   'order-ticket': <OrderTicketUsage />,
   'panel-frame': <PanelFrameUsage />,
   'position-calculator': <PositionCalculatorUsage />,
+  'panel-tabs': <PanelTabsUsage />,
+  'component-catalog': <ComponentCatalogUsage />,
   'regime-strip': <RegimeStripUsage />,
   'series-explorer': <SeriesExplorerUsage />,
   'small-multiples': <SmallMultiplesUsage />,

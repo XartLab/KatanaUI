@@ -260,3 +260,23 @@ export {
   type SizingMode,
   type SizingResult,
 } from './sizing-model.ts'
+// 面板页签组与添加组件的目录（照 OKX 面板的页签栏做法，2026-11-19）。
+export {
+  PANEL_TAB_MIME,
+  PanelTabs,
+  type PanelTab,
+  type PanelTabsLabels,
+  type PanelTabsProps,
+} from './panel-tabs/panel-tabs.tsx'
+export {
+  CATALOG_ITEM_MIME,
+  ComponentCatalog,
+  type ComponentCatalogLabels,
+} from './component-catalog/component-catalog.tsx'
+export {
+  groupCatalog,
+  type CatalogCategory,
+  type CatalogGroup,
+  type CatalogItem,
+  type CatalogKind,
+} from './component-catalog/component-catalog-model.ts'

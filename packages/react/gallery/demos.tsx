@@ -179,6 +179,8 @@ import {
 } from './pages/smoothui-forms.tsx'
 import { OrderTicketUsage } from './usage/OrderTicketUsage.tsx'
 import { PositionCalculatorUsage } from './usage/PositionCalculatorUsage.tsx'
+import { ComponentCatalogUsage } from './usage/ComponentCatalogUsage.tsx'
+import { PanelTabsUsage } from './usage/PanelTabsUsage.tsx'
 import { AccordionDemo, TabsDemo } from './pages/layout.tsx'
 import {
   GravityLettersDemo,
@@ -482,6 +484,8 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'swap-panel': SwapPanelDemo,
   'order-ticket': OrderTicketUsage,
   'position-calculator': PositionCalculatorUsage,
+  'panel-tabs': PanelTabsUsage,
+  'component-catalog': ComponentCatalogUsage,
   avatar: AvatarDemo,
   breadcrumb: BreadcrumbDemo,
   pagination: PaginationDemo,

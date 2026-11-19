@@ -7519,6 +7519,87 @@ for (const theme of THEMES) {
       await expect(out).toContainText('close buy 2')
     })
 
+    test('PanelTabs：悬停出「×」移除，「+」加页签并选中，Delete 移除，固定的页签关不掉，窄了收进「…」', async ({
+      page,
+    }) => {
+      await open(page, theme, 'panel-tabs')
+      const bar = section(page, 'panel-tabs').locator('[data-slot="panel-tabs"]').first()
+      const tab = (name: string) => bar.getByRole('tab', { name, exact: true })
+      await expect(bar.getByRole('tab')).toHaveCount(4)
+      await expect(tab('Trading data')).toHaveAttribute('aria-selected', 'true')
+      // 悬停才出「×」；点它移除这个页签。
+      const close = bar.getByRole('button', { name: 'Remove Feed' })
+      await expect(close).toHaveCSS('opacity', '0')
+      await tab('Feed').hover()
+      await expect(close).toHaveCSS('opacity', '1')
+      await close.click()
+      await expect(tab('Feed')).toHaveCount(0)
+      // 固定的页签没有「×」。
+      await expect(bar.getByRole('button', { name: 'Remove Chart' })).toHaveCount(0)
+      // 「+」加一个并选中。
+      await bar.getByRole('button', { name: 'Add component' }).click()
+      await expect(tab('Feed')).toHaveAttribute('aria-selected', 'true')
+      // 键盘：← 移焦点不切换，Enter 切换，Delete 移除并把焦点给相邻的页签。
+      await tab('Feed').focus()
+      await page.keyboard.press('ArrowLeft')
+      await expect(tab('Trading data')).toBeFocused()
+      await expect(tab('Feed')).toHaveAttribute('aria-selected', 'true')
+      await page.keyboard.press('Enter')
+      await expect(tab('Trading data')).toHaveAttribute('aria-selected', 'true')
+      await page.keyboard.press('Delete')
+      await expect(tab('Trading data')).toHaveCount(0)
+      await expect(tab('Feed')).toBeFocused()
+      // Delete 关不掉固定的页签。
+      await tab('Chart').focus()
+      await page.keyboard.press('Delete')
+      await expect(tab('Chart')).toHaveCount(1)
+      // 栏变窄：放不下的收进「…」，当前页签留在栏上。
+      await bar.getByRole('button', { name: 'Add component' }).click()
+      await bar.getByRole('button', { name: 'Add component' }).click()
+      await bar.evaluate((el) => ((el.parentElement as HTMLElement).style.width = '220px'))
+      const more = bar.getByRole('button', { name: 'More tabs' })
+      await expect(more).toBeVisible()
+      await expect(bar.getByRole('tab', { selected: true })).toBeVisible()
+      await more.click()
+      await expect(page.getByRole('menuitem').first()).toBeVisible()
+      await page.keyboard.press('Escape')
+    })
+
+    test('ComponentCatalog：推荐在最前，点卡片加进或移出，用不了的点不动，按类别与搜索筛', async ({ page }) => {
+      await open(page, theme, 'component-catalog')
+      const catalog = section(page, 'component-catalog').locator('[data-slot="component-catalog"]').first()
+      const card = (id: string) => catalog.locator(`[data-slot="catalog-item"][data-id="${id}"]`)
+      const groups = catalog.locator('[data-slot="catalog-group"]')
+      await expect(groups.first()).toHaveAttribute('data-group', 'recommended')
+      await expect(card('chart')).toHaveAttribute('aria-pressed', 'true')
+      await expect(card('book')).toHaveAttribute('aria-pressed', 'false')
+      await card('book').click()
+      await expect(card('book')).toHaveAttribute('aria-pressed', 'true')
+      await card('book').click()
+      await expect(card('book')).toHaveAttribute('aria-pressed', 'false')
+      // 用不了的：置灰、带原因、点了不变。
+      await expect(card('company')).toHaveAttribute('aria-disabled', 'true')
+      await expect(card('company')).toContainText('Stocks only')
+      await card('company').click({ force: true })
+      await expect(card('company')).toHaveAttribute('aria-pressed', 'false')
+      // 选类别：只剩这一类，没有推荐组。
+      await catalog.getByRole('tab', { name: 'Trading' }).click()
+      await expect(groups).toHaveCount(1)
+      await expect(card('ticket')).toBeVisible()
+      await catalog.getByRole('tab', { name: 'All' }).click()
+      // 搜索按别名找，搜不到写空态。
+      await catalog.getByRole('searchbox').fill('depth')
+      await expect(catalog.locator('[data-slot="catalog-item"]')).toHaveCount(1)
+      await expect(card('book')).toBeVisible()
+      await catalog.getByRole('searchbox').fill('zzz')
+      await expect(catalog.locator('[data-slot="catalog-empty"]')).toBeVisible()
+      // 重置：回到起始的三个。
+      await catalog.getByRole('searchbox').fill('')
+      await card('trades').click()
+      await catalog.getByRole('button', { name: 'Reset layout' }).click()
+      await expect(card('trades')).toHaveAttribute('aria-pressed', 'false')
+    })
+
     test('Button effect：dot-morph 悬停点拉成竖条，clip-corners 悬停切口变大，magnetic 靠近时偏向指针、离开回位', async ({
       page,
     }) => {
