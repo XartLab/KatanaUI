@@ -254,6 +254,9 @@ function collectItems() {
       'regime-strip',
       'flow-gauges',
       'uptime-bars',
+      // 面板页签组与添加组件的目录（2026-11-19）。
+      'panel-tabs',
+      'component-catalog',
     ])
       add(
         dir,

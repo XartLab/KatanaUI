@@ -4,6 +4,7 @@ import { beforeAll, afterAll, describe, expect, test, vi } from 'vite-plus/test'
 import { page } from 'vite-plus/test/browser'
 import { AttributionBarsUsage } from '../gallery/usage/AttributionBarsUsage.tsx'
 import { ColumnSetTabsUsage } from '../gallery/usage/ColumnSetTabsUsage.tsx'
+import { ComponentCatalogUsage } from '../gallery/usage/ComponentCatalogUsage.tsx'
 import { ConsensusBlockUsage } from '../gallery/usage/ConsensusBlockUsage.tsx'
 import { DataGridUsage } from '../gallery/usage/DataGridUsage.tsx'
 import { DecisionQueueUsage } from '../gallery/usage/DecisionQueueUsage.tsx'
@@ -16,6 +17,7 @@ import { MeterUsage } from '../gallery/usage/MeterUsage.tsx'
 import { NewsFeedUsage } from '../gallery/usage/NewsFeedUsage.tsx'
 import { NewsReaderUsage } from '../gallery/usage/NewsReaderUsage.tsx'
 import { PanelFrameUsage } from '../gallery/usage/PanelFrameUsage.tsx'
+import { PanelTabsUsage } from '../gallery/usage/PanelTabsUsage.tsx'
 import { RegimeStripUsage } from '../gallery/usage/RegimeStripUsage.tsx'
 import { SeriesExplorerUsage } from '../gallery/usage/SeriesExplorerUsage.tsx'
 import { SmallMultiplesUsage } from '../gallery/usage/SmallMultiplesUsage.tsx'
@@ -45,6 +47,8 @@ const items: Record<string, React.ReactNode> = {
   'news-feed': <NewsFeedUsage />,
   'news-reader': <NewsReaderUsage />,
   'panel-frame': <PanelFrameUsage />,
+  'panel-tabs': <PanelTabsUsage />,
+  'component-catalog': <ComponentCatalogUsage />,
   'regime-strip': <RegimeStripUsage />,
   'series-explorer': <SeriesExplorerUsage />,
   'small-multiples': <SmallMultiplesUsage />,
