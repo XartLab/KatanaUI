@@ -6093,12 +6093,13 @@ export const PAGES: readonly DocPage[] = [
       '账户级风控（日亏线、连亏次数）不放进这里。',
     ],
     composition:
-      'OrderTicket\n  开仓 / 平仓\n  Select（保证金模式）· 杠杆框\n  限价 / 市价（文字页签）\n  买栏 · 卖栏（各一份）\n    价格框 · Button（最优价）\n    Select（填法）· 仓位框 · Slider（0–100%）\n    可用 · 可开\n    Checkbox（止盈止损）· Select（出场模板）· 止盈框 · 止损框\n    下单钮\n    读数（dl）\n  费率 · Button（计算器）',
+      'OrderTicket\n  ToggleGroup（开仓 / 平仓）\n  Select（保证金模式）· 杠杆框\n  Tabs · TabsList line（限价 / 市价）\n  买栏 · 卖栏（各一份）\n    价格框 · Button（最优价）\n    Select（填法）· 仓位框 · Slider（0–100%）\n    可用 · 可开\n    Checkbox（止盈止损）· Select（出场模板）· 止盈框 · 止损框\n    下单钮\n    读数（dl）\n  费率 · Button（计算器）',
     keys: [
       ['Tab', '开平、保证金模式、杠杆、委托类型，然后买栏从上到下、再卖栏从上到下'],
       ['← →', '在滑杆上按 1% 调仓位'],
       ['Space', '在止盈止损的勾选框上展开或收起'],
-      ['Enter', '在开平、委托类型、最优价、下单钮上触发'],
+      ['← →', '在委托类型页签间移动'],
+      ['Enter', '在开平、最优价、下单钮上触发'],
     ],
   },
   {
