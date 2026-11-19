@@ -5026,6 +5026,12 @@
           "type": "boolean",
           "required": false,
           "description": "Fits what the user is looking at now; listed first under the recommended heading."
+        },
+        {
+          "name": "pairsWith",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Kinds of component this one goes well beside (an order book beside a chart); recommended when the context is one of them."
         }
       ]
     },
@@ -6215,6 +6221,12 @@
           "type": "Readonly<Record<string, ReactNode>>",
           "required": false,
           "description": "Thumbnail node per item id; items without one get a stock drawing by kind."
+        },
+        {
+          "name": "context",
+          "type": "string",
+          "required": false,
+          "description": "Kind of the component the user is adding next to (the selected panel tab's kind); items that pair with it are recommended."
         },
         {
           "name": "onToggle",
@@ -23033,6 +23045,30 @@
           "type": "boolean",
           "required": false,
           "description": "False keeps the tab from being removed (no × and Delete does nothing)."
+        },
+        {
+          "name": "kind",
+          "type": "string",
+          "required": false,
+          "description": "What sort of component this is (chart, table, form…); passed to onAdd so the catalog can recommend companions."
+        },
+        {
+          "name": "tools",
+          "type": "ReactNode",
+          "required": false,
+          "description": "This component's own tools, shown in the bar only while its tab is selected."
+        },
+        {
+          "name": "context",
+          "type": "string",
+          "required": false,
+          "description": "What it is showing now, drawn after the name while selected (a symbol and interval, say)."
+        },
+        {
+          "name": "status",
+          "type": "PanelTabStatus",
+          "required": false,
+          "description": "Data state, drawn as a dot before the name: live, stale (not updating) or error."
         }
       ]
     },
@@ -23066,9 +23102,9 @@
         },
         {
           "name": "onAdd",
-          "type": "() => void",
+          "type": "(kind: string | undefined) => void",
           "required": false,
-          "description": "Called when the + is clicked, to open the component catalog; leave out to hide it."
+          "description": "Called when the + is clicked, with the selected tab's kind, to open the component catalog; leave out to hide it."
         },
         {
           "name": "onReorder",
@@ -23123,6 +23159,18 @@
           "type": "string",
           "required": false,
           "description": "Accessible name of the overflow button."
+        },
+        {
+          "name": "tools",
+          "type": "string",
+          "required": false,
+          "description": "Accessible name of the selected tab's tools group, with {name}."
+        },
+        {
+          "name": "status",
+          "type": "Partial<Record<PanelTabStatus, string>>",
+          "required": false,
+          "description": "Accessible names of the status dots."
         }
       ]
     },
@@ -23156,9 +23204,9 @@
         },
         {
           "name": "onAdd",
-          "type": "() => void",
+          "type": "(kind: string | undefined) => void",
           "required": false,
-          "description": "Called when the + is clicked, to open the component catalog; leave out to hide it."
+          "description": "Called when the + is clicked, with the selected tab's kind, to open the component catalog; leave out to hide it."
         },
         {
           "name": "onReorder",
@@ -38984,6 +39032,12 @@
         },
         {
           "name": "recommendedName",
+          "type": "string",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "context",
           "type": "string",
           "required": false,
           "description": ""

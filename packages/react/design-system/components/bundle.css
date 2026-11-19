@@ -1138,6 +1138,10 @@
   margin-left: 2px;
 }
 
+.ml-1 {
+  margin-left: 4px;
+}
+
 .ml-3 {
   margin-left: 12px;
 }
@@ -1240,6 +1244,11 @@
 .size-1 {
   width: 4px;
   height: 4px;
+}
+
+.size-1\.5 {
+  width: 6px;
+  height: 6px;
 }
 
 .size-2 {

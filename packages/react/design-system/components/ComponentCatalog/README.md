@@ -1,6 +1,6 @@
 # ComponentCatalog
 
-PanelTabs 的「+」打开的目录（照 OKX 的「添加组件」抽屉，2026-11-19 实测）：标题与「重置布局」、一句说明、搜索框、类别页签，下面按类别分组的卡片，每张一个缩略图加名字；已在工作区里的打勾，当前品种用不了的置灰并写明原因；卡片可拖（带 CATALOG_ITEM_MIME）。我们加的：搜索（名字与别名）、最前面一组「推荐」（宿主按当前品种与市场包标 recommended）。点卡片回调 onToggle（加或移除）。没给缩略图时按 kind 画一张示意。只是目录本身，放进 Sheet 还是侧栏由宿主定。
+PanelTabs 的「+」打开的目录（照 OKX 的「添加组件」抽屉，2026-11-19 实测）：标题与「重置布局」、一句说明、搜索框、类别页签，下面按类别分组的卡片，每张一个缩略图加名字；已在工作区里的打勾，当前品种用不了的置灰并写明原因；卡片可拖（带 CATALOG_ITEM_MIME）。我们加的：搜索（名字与别名）、最前面一组「推荐」：宿主按当前品种与市场包标 recommended，或组件自己声明 pairsWith（适合放在哪种组件旁边），传入 context（当前页签的 kind）后自动推荐，已在用的不再推荐。点卡片回调 onToggle（加或移除）。没给缩略图时按 kind 画一张示意。只是目录本身，放进 Sheet 还是侧栏由宿主定。
 
 ## Provide
 
@@ -13,6 +13,7 @@ PanelTabs 的「+」打开的目录（照 OKX 的「添加组件」抽屉，2026
 | `items` * | `readonly CatalogItem[]` | — | Everything that can be added, with its category, in-use and availability flags. |
 | `categories` * | `readonly CatalogCategory[]` | — | The categories, in the order their groups appear. |
 | `thumbnails` | `Readonly<Record<string, ReactNode>>` | — | Thumbnail node per item id; items without one get a stock drawing by kind. |
+| `context` | `string` | — | Kind of the component the user is adding next to (the selected panel tab's kind); items that pair with it are recommended. |
 | `onToggle` * | `(id: string, add: boolean) => void` | — | Called when a card is clicked: `add` is true for a card not yet in the workspace, false to remove one that is. |
 | `onReset` | `() => void` | — | Called when the reset button is clicked; leave out to hide it. |
 | `labels` * | `ComponentCatalogLabels` | — | All visible text and accessible names. |
@@ -34,8 +35,8 @@ const CATEGORIES = [
 // Demo catalog, not a list of what the library ships.
 const ITEMS: CatalogItem[] = [
   { id: 'chart', name: 'Chart', category: 'market', kind: 'chart', recommended: true },
-  { id: 'book', name: 'Order book', category: 'market', kind: 'table', keywords: ['depth'], recommended: true },
-  { id: 'trades', name: 'Trades', category: 'market', kind: 'list' },
+  { id: 'book', name: 'Order book', category: 'market', kind: 'table', keywords: ['depth'], pairsWith: ['chart'] },
+  { id: 'trades', name: 'Trades', category: 'market', kind: 'list', pairsWith: ['chart'] },
   { id: 'funding', name: 'Funding', category: 'market', kind: 'gauge', recommended: true },
   { id: 'company', name: 'Company', category: 'market', kind: 'text', unavailable: 'Stocks only' },
   { id: 'open-orders', name: 'Open orders', category: 'orders', kind: 'table' },
@@ -51,6 +52,7 @@ export function ComponentCatalogUsage() {
       <ComponentCatalog
         items={ITEMS.map((item) => ({ ...item, inUse: used.includes(item.id) }))}
         categories={CATEGORIES}
+        context="chart"
         onToggle={(id, add) => setUsed((list) => (add ? [...list, id] : list.filter((item) => item !== id)))}
         onReset={() => setUsed(['chart', 'ticket', 'positions'])}
         labels={{
@@ -59,7 +61,7 @@ export function ComponentCatalogUsage() {
           reset: 'Reset layout',
           search: 'Search components',
           all: 'All',
-          recommended: 'For BTC-USDT-SWAP',
+          recommended: 'Next to the chart · BTC-USDT-SWAP',
           empty: 'No component matches.',
           inUse: 'in workspace',
         }}

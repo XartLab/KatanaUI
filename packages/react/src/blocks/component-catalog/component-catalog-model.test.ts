@@ -23,6 +23,24 @@ describe('groupCatalog', () => {
     ])
   })
 
+  test('context recommends what pairs with it, and skips what is already in use', () => {
+    const paired: CatalogItem[] = [
+      { id: 'chart', name: 'Chart', category: 'market', inUse: true, recommended: true },
+      { id: 'book', name: 'Order book', category: 'market', pairsWith: ['chart'] },
+      { id: 'trades', name: 'Trades', category: 'market', pairsWith: ['chart'] },
+      { id: 'history', name: 'Order history', category: 'orders', pairsWith: ['table'] },
+    ]
+    expect(ids(groupCatalog(paired, categories, { recommendedName: 'Next to the chart', context: 'chart' }))).toEqual([
+      ['recommended', ['book', 'trades']],
+      ['market', ['chart']],
+      ['orders', ['history']],
+    ])
+    expect(ids(groupCatalog(paired, categories, { recommendedName: 'Next to the table', context: 'table' }))).toEqual([
+      ['recommended', ['history']],
+      ['market', ['chart', 'book', 'trades']],
+    ])
+  })
+
   test('without a recommended heading everything stays under its category', () => {
     expect(ids(groupCatalog(items, categories))).toEqual([
       ['market', ['chart', 'book', 'company', 'news']],

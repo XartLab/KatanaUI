@@ -11,8 +11,8 @@ const CATEGORIES = [
 // Demo catalog, not a list of what the library ships.
 const ITEMS: CatalogItem[] = [
   { id: 'chart', name: 'Chart', category: 'market', kind: 'chart', recommended: true },
-  { id: 'book', name: 'Order book', category: 'market', kind: 'table', keywords: ['depth'], recommended: true },
-  { id: 'trades', name: 'Trades', category: 'market', kind: 'list' },
+  { id: 'book', name: 'Order book', category: 'market', kind: 'table', keywords: ['depth'], pairsWith: ['chart'] },
+  { id: 'trades', name: 'Trades', category: 'market', kind: 'list', pairsWith: ['chart'] },
   { id: 'funding', name: 'Funding', category: 'market', kind: 'gauge', recommended: true },
   { id: 'company', name: 'Company', category: 'market', kind: 'text', unavailable: 'Stocks only' },
   { id: 'open-orders', name: 'Open orders', category: 'orders', kind: 'table' },
@@ -28,6 +28,7 @@ export function ComponentCatalogUsage() {
       <ComponentCatalog
         items={ITEMS.map((item) => ({ ...item, inUse: used.includes(item.id) }))}
         categories={CATEGORIES}
+        context="chart"
         onToggle={(id, add) => setUsed((list) => (add ? [...list, id] : list.filter((item) => item !== id)))}
         onReset={() => setUsed(['chart', 'ticket', 'positions'])}
         labels={{
@@ -36,7 +37,7 @@ export function ComponentCatalogUsage() {
           reset: 'Reset layout',
           search: 'Search components',
           all: 'All',
-          recommended: 'For BTC-USDT-SWAP',
+          recommended: 'Next to the chart · BTC-USDT-SWAP',
           empty: 'No component matches.',
           inUse: 'in workspace',
         }}
