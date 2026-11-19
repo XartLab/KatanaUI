@@ -221,3 +221,22 @@ export {
   type CatalogItem,
   type CatalogKind,
 } from './component-catalog/component-catalog-model.ts'
+
+// 工作区的纯模型（#107）：组件清单 → 目录条目与校验；联动组。
+export {
+  catalogFromManifests,
+  validateManifests,
+  type ComponentManifest,
+  type LinkParam,
+  type ManifestIssue,
+  type UnavailableReasons,
+  type WorkspaceContext,
+} from './workspace-model/component-manifest.ts'
+export {
+  emptyLinkState,
+  joinLinkGroup,
+  linkFollowers,
+  linkValues,
+  setLinkParam,
+  type LinkGroupsState,
+} from './workspace-model/link-groups.ts'
