@@ -24,8 +24,7 @@ function PopoverClose({ ...props }: ComponentProps<typeof PopoverPrimitive.Close
 }
 
 const skin = {
-  panel:
-    'k-text-body z-50 w-72 rounded-[var(--radius-overlay)] border border-(color:--k-overlay-borderColor) bg-(--k-surface-overlay-background) p-3 text-(color:--k-content-body-foreground) outline-0 shadow-(--k-overlay-shadow)',
+  panel: 'k-text-body z-50 w-72 k-mat-overlay p-3 text-(color:--k-content-body-foreground) outline-0',
   menu: menuContainerClass,
   bare: 'z-50 outline-0',
 } as const

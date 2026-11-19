@@ -19,7 +19,7 @@ function NavigationMenu({ className, children, ...props }: ComponentProps<typeof
       <div className="absolute top-full left-0 flex w-full justify-center">
         <NavigationMenuPrimitive.Viewport
           data-slot="navigation-menu-viewport"
-          className="relative mt-1 shrink-0 h-[var(--radix-navigation-menu-viewport-height)] origin-top overflow-hidden rounded-[var(--radius-overlay)] border border-(color:--k-overlay-borderColor) bg-(--k-surface-overlay-background) shadow-(--k-overlay-shadow) w-(--radix-navigation-menu-viewport-width) max-w-[100vw]"
+          className="relative mt-1 shrink-0 h-[var(--radix-navigation-menu-viewport-height)] origin-top overflow-hidden k-mat-overlay w-(--radix-navigation-menu-viewport-width) max-w-[100vw]"
         />
       </div>
     </NavigationMenuPrimitive.Root>

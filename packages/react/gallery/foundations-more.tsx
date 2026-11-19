@@ -705,11 +705,19 @@ function MaterialsPage() {
           处，原样收成上面三个类，换上后像素不变。
         </li>
         <li>
-          还有 5 处不在配方里，没动，待用户定是并进配方还是保留：WebSearch 结果卡（--radius-md、surface-overlay）、 a2ui
-          的 Command（overlay 圆角、container-secondary）、PixelBrushCanvas、HolographicFoil 两处。
+          还有 5 处不在配方里，保留原样（2026-11-19 定，用户交给 Claude 判断）：PixelBrushCanvas 与 HolographicFoil
+          两处是效果演示件，外框是效果的一部分；WebSearch 结果卡与 a2ui 的 Command
+          各只有一处，并进来要改样子，等它们下次改版时再并。
         </li>
-        <li>浮层材质现在各浮层件里还是各写一遍同样的四样（Popover、菜单、HoverCard 等），下一步换成 k-mat-overlay。</li>
-        <li>待用户定：间距在中密度是 3 / 6 / 9 / 12 / 18，高密度是 2 / 4 / 6 / 8 / 12，要不要统一成 4px 体系。</li>
+        <li>
+          浮层材质：Popover、菜单（下拉、右键、菜单栏、Select 共用的 menu-parts）、HoverCard、NavigationMenu 已改用
+          k-mat-overlay，像素不变。
+        </li>
+        <li>
+          间距不改成 4px 体系（2026-11-19 定，同上）：现在是按密度定一个单位（高 4、中 6、低 8），各档取 0.5 / 1 / 1.5 /
+          2 / 3 倍，结构照 Salt 的密度体系；控件高度 30 / 26 也是照这个单位排的。改成固定 4px
+          要重排全部组件与基线，换不来看得见的好处。
+        </li>
       </ul>
     </>
   )

@@ -2334,10 +2334,6 @@
   border-color: var(--k-editable-subtle-borderColor);
 }
 
-.border-\(color\:--k-overlay-borderColor\) {
-  border-color: var(--k-overlay-borderColor);
-}
-
 .border-\(color\:--k-overlay-compact-borderColor\) {
   border-color: var(--k-overlay-compact-borderColor);
 }
@@ -3396,11 +3392,6 @@
 
 .shadow-\(--k-overlay-dialog-shadow\) {
   --tw-shadow: var(--k-overlay-dialog-shadow);
-  box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
-}
-
-.shadow-\(--k-overlay-shadow\) {
-  --tw-shadow: var(--k-overlay-shadow);
   box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
 }
 
