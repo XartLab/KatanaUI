@@ -288,9 +288,6 @@ function collectItems() {
           .filter((f) => !(dir === 'news-feed' && f === 'news-reader.tsx'))
           .map((f) => `src/blocks/${dir}/${f}`),
       )
-    // 工作区的纯模型（#107）：组件清单与联动组，两个文件各一项。
-    add('component-manifest', 'registry:lib', ['src/blocks/workspace-model/component-manifest.ts'])
-    add('link-groups', 'registry:lib', ['src/blocks/workspace-model/link-groups.ts'])
     // 阅读窗有自己的文档页，页的说明要有归属：单独一项。
     add('news-reader', 'registry:component', ['src/blocks/news-feed/news-reader.tsx'])
     byFile('src/blocks', 'registry:component', (f) => isCode(f) && f !== 'index.ts')
