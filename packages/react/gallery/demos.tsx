@@ -164,6 +164,8 @@ import {
   TextareaDemo,
   ToggleDemo,
 } from './pages/smoothui-forms.tsx'
+import { ComponentCatalogUsage } from './usage/ComponentCatalogUsage.tsx'
+import { PanelTabsUsage } from './usage/PanelTabsUsage.tsx'
 import { AccordionDemo, TabsDemo } from './pages/layout.tsx'
 import {
   GravityLettersDemo,
@@ -429,6 +431,8 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'morph-toggle': MorphToggleDemo,
   'morph-icon': MorphIconDemo,
   'swap-panel': SwapPanelDemo,
+  'panel-tabs': PanelTabsUsage,
+  'component-catalog': ComponentCatalogUsage,
   avatar: AvatarDemo,
   breadcrumb: BreadcrumbDemo,
   pagination: PaginationDemo,

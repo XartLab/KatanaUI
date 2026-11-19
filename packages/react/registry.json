@@ -6584,6 +6584,57 @@
       ]
     },
     {
+      "name": "panel-tabs",
+      "type": "registry:component",
+      "title": "Panel Tabs",
+      "description": "一个面板格子里叠几个组件，各一个页签（照 OKX 交易页每个面板顶上的页签栏，2026-11-19 实测）：文字页签、当前页签底下一道线；悬停或聚焦页签出「×」移除；末尾「+」打开添加组件；放不下的收进「…」下拉且当前页签始终可见；栏右端是这个面板自己的动作（设置、浮窗）。拖动或 Alt+方向键排序，拖出去的页签带 PANEL_TAB_MIME，跨面板的落点由宿主接。与 PanelFrame（一个面板一个固定标题）并存，两种做法都支持。宿主给数据与回调。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/dropdown-menu",
+        "@katana/focus",
+        "@katana/text-measure",
+        "@katana/workspace-tabs"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/panel-tabs/panel-tabs.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/panel-tabs/panel-tabs.tsx"
+        }
+      ]
+    },
+    {
+      "name": "component-catalog",
+      "type": "registry:component",
+      "title": "Component Catalog",
+      "description": "PanelTabs 的「+」打开的目录（照 OKX 的「添加组件」抽屉，2026-11-19 实测）：标题与「重置布局」、一句说明、搜索框、类别页签，下面按类别分组的卡片，每张一个缩略图加名字；已在工作区里的打勾，当前品种用不了的置灰并写明原因；卡片可拖（带 CATALOG_ITEM_MIME）。我们加的：搜索（名字与别名）、最前面一组「推荐」（宿主按当前品种与市场包标 recommended）。点卡片回调 onToggle（加或移除）。没给缩略图时按 kind 画一张示意。只是目录本身，放进 Sheet 还是侧栏由宿主定。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/button",
+        "@katana/cn",
+        "@katana/focus",
+        "@katana/input",
+        "@katana/tabs"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/component-catalog/component-catalog-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/component-catalog/component-catalog-model.ts"
+        },
+        {
+          "path": "src/blocks/component-catalog/component-catalog.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/component-catalog/component-catalog.tsx"
+        }
+      ]
+    },
+    {
       "name": "news-reader",
       "type": "registry:component",
       "title": "News Reader",

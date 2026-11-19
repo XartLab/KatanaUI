@@ -6059,6 +6059,65 @@ export const PAGES: readonly DocPage[] = [
     ],
   },
   {
+    id: 'panel-tabs',
+    group: 'blocks',
+    cardHeight: 150,
+    title: 'PanelTabs 面板页签组',
+    summary:
+      '一个面板格子里叠几个组件，各一个页签（照 OKX 交易页每个面板顶上的页签栏，2026-11-19 实测）：文字页签、当前页签底下一道线；悬停或聚焦页签出「×」移除；末尾「+」打开添加组件；放不下的收进「…」下拉且当前页签始终可见；栏右端是这个面板自己的动作（设置、浮窗）。拖动或 Alt+方向键排序，拖出去的页签带 PANEL_TAB_MIME，跨面板的落点由宿主接。与 PanelFrame（一个面板一个固定标题）并存，两种做法都支持。宿主给数据与回调。',
+    exports: ['PanelTabs', 'PANEL_TAB_MIME'],
+    propParts: [{ part: 'PanelTabs' }],
+    states: [
+      '放得下：全部页签在栏上。',
+      '放不下：末尾的页签收进「…」下拉；当前页签在被收起的一段时，与最后一个看得见的换位。',
+      'closable=false 或没给 onClose：这个页签没有「×」，Delete 也不动它。',
+      '没给 onAdd：不画「+」。',
+      '拖到另一个页签上：那个页签左边出一道竖线，松手换到它的位置。',
+    ],
+    donts: [
+      '面板里只有一个组件、也不让用户加时，用 PanelFrame 的固定标题，不要摆一个只有一项的页签栏。',
+      '页签名不要超过四五个字；放不下靠「…」，不要截断成看不懂的半截。',
+      '顶层的工作区切换用 WorkspaceTabs，不是它。',
+    ],
+    composition:
+      'PanelTabs\n  role=tablist · 页签（button role=tab）· 「×」\n  DropdownMenu（「…」）\n  「+」\n  actions（宿主给的按钮）',
+    keys: [
+      ['← → Home End', '在页签间移焦点'],
+      ['Enter / 空格', '切到聚焦的页签'],
+      ['Delete / Backspace', '移除聚焦的页签，焦点落到相邻的页签'],
+      ['Alt + ← →', '把聚焦的页签往前 / 往后挪一位'],
+    ],
+  },
+  {
+    id: 'component-catalog',
+    group: 'blocks',
+    cardHeight: 620,
+    title: 'ComponentCatalog 添加组件',
+    summary:
+      'PanelTabs 的「+」打开的目录（照 OKX 的「添加组件」抽屉，2026-11-19 实测）：标题与「重置布局」、一句说明、搜索框、类别页签，下面按类别分组的卡片，每张一个缩略图加名字；已在工作区里的打勾，当前品种用不了的置灰并写明原因；卡片可拖（带 CATALOG_ITEM_MIME）。我们加的：搜索（名字与别名）、最前面一组「推荐」（宿主按当前品种与市场包标 recommended）。点卡片回调 onToggle（加或移除）。没给缩略图时按 kind 画一张示意。只是目录本身，放进 Sheet 还是侧栏由宿主定。',
+    exports: ['ComponentCatalog', 'CATALOG_ITEM_MIME', 'groupCatalog'],
+    propParts: [{ part: 'ComponentCatalog' }],
+    states: [
+      '没搜索、没选类别：先「推荐」一组，再按类别各一组；推荐过的不在类别里重复出现。',
+      '选了类别：只看这一类，没有「推荐」。',
+      '在搜索：按名字与别名筛，不分「推荐」；搜不到写 labels.empty。',
+      '已在工作区：缩略图上盖一层并打勾，名字加粗，aria-pressed=true；再点是移除。',
+      '用不了：整张置灰、不可拖、点了不回调，名字下面写原因。',
+    ],
+    donts: [
+      '缩略图是示意，不要拿它当真实数据的预览；要真截图由宿主经 thumbnails 传。',
+      '不要把「用不了」的项直接藏掉：留着并写原因，用户才知道有这个组件、为什么现在加不了。',
+      '「重置布局」是不可撤的，宿主要自己再确认一次（HoldToConfirm 或对话框）。',
+    ],
+    composition:
+      'ComponentCatalog\n  标题 · Button（重置布局）\n  Input（搜索）\n  Tabs · TabsList line（类别）\n  分组 · 卡片（button aria-pressed：缩略图 · 名字 · 原因）',
+    keys: [
+      ['Tab', '搜索框、类别页签、各卡片，依次走'],
+      ['← →', '在类别页签间移动'],
+      ['Enter / 空格', '在卡片上加进工作区或移除'],
+    ],
+  },
+  {
     id: 'text-reveal',
     group: 'motion',
     cardHeight: 520,
