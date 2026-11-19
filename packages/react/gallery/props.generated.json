@@ -22156,6 +22156,11 @@
       "source": "src/katana/matrix-orb-model.ts",
       "props": []
     },
+    "OrderAction": {
+      "kind": "type",
+      "source": "src/blocks/order-ticket.tsx",
+      "props": []
+    },
     "OrderDraft": {
       "kind": "type",
       "source": "src/blocks/order-ticket.tsx",
@@ -22195,6 +22200,12 @@
           "type": "MarginMode",
           "required": false,
           "description": ""
+        },
+        {
+          "name": "reduceOnly",
+          "type": "boolean",
+          "required": true,
+          "description": "True for an order placed from the Close tab."
         },
         {
           "name": "takeProfit",
@@ -22263,11 +22274,18 @@
           "description": "Margin modes on offer; leave out to hide the selector."
         },
         {
+          "name": "hedged",
+          "type": "boolean",
+          "required": false,
+          "default": "false",
+          "description": "Long / short (hedge) position mode: shows the Open / Close switch; Close orders are reduce-only."
+        },
+        {
           "name": "defaultSide",
           "type": "OrderSide",
           "required": false,
           "default": "'buy'",
-          "description": "Starting side."
+          "description": "The column shown first when the panel is too narrow for two."
         },
         {
           "name": "defaultSizingMode",
@@ -22281,13 +22299,13 @@
           "type": "string",
           "required": false,
           "default": "''",
-          "description": "Starting text of the size box."
+          "description": "Starting text of both size boxes."
         },
         {
           "name": "defaultExits",
-          "type": "{ takeProfit?: string; stopLoss?: string }",
+          "type": "Partial<Record<OrderSide, { takeProfit?: string; stopLoss?: string }>>",
           "required": false,
-          "description": "Starting take-profit and stop-loss prices; giving either opens the exits section."
+          "description": "Starting take-profit and stop-loss prices per side; giving either opens that column's exits section."
         },
         {
           "name": "includeCloseFee",
@@ -22325,7 +22343,7 @@
           "name": "onSubmit",
           "type": "(order: OrderDraft) => void",
           "required": true,
-          "description": "Called with the order when the submit button is clicked."
+          "description": "Called with the order when a submit button is clicked."
         },
         {
           "name": "onLeverageChange",
@@ -22442,6 +22460,18 @@
       "source": "src/blocks/order-ticket.tsx",
       "props": [
         {
+          "name": "action",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "actions",
+          "type": "Record<OrderAction, string>",
+          "required": true,
+          "description": ""
+        },
+        {
           "name": "side",
           "type": "string",
           "required": true,
@@ -22530,6 +22560,12 @@
           "type": "string",
           "required": true,
           "description": ""
+        },
+        {
+          "name": "maxOpen",
+          "type": "Record<OrderSide, string>",
+          "required": true,
+          "description": "Largest order the balance allows, per side."
         },
         {
           "name": "exits",
@@ -22636,6 +22672,18 @@
         {
           "name": "submit",
           "type": "Record<OrderSide, string>",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "submitClose",
+          "type": "Record<OrderSide, string>",
+          "required": true,
+          "description": "Submit button text on the Close tab: buy closes a short, sell closes a long."
+        },
+        {
+          "name": "feeRate",
+          "type": "string",
           "required": true,
           "description": ""
         },

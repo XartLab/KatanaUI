@@ -744,6 +744,10 @@
   }
 }
 
+.\@container {
+  container-type: inline-size;
+}
+
 .pointer-events-auto {
   pointer-events: auto;
 }
@@ -1096,6 +1100,10 @@
 
 .mr-\[0\.25em\] {
   margin-right: .25em;
+}
+
+.-mb-px {
+  margin-bottom: -1px;
 }
 
 .mb-1 {
@@ -1884,6 +1892,14 @@
   list-style-type: none;
 }
 
+.auto-cols-fr {
+  grid-auto-columns: minmax(0, 1fr);
+}
+
+.grid-flow-col {
+  grid-auto-flow: column;
+}
+
 .grid-cols-2 {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
@@ -2044,6 +2060,10 @@
   column-gap: 16px;
 }
 
+.gap-x-6 {
+  column-gap: 24px;
+}
+
 .gap-x-\[0\.3em\] {
   column-gap: .3em;
 }
@@ -2068,6 +2088,10 @@
 
 .gap-y-1 {
   row-gap: 4px;
+}
+
+.gap-y-2 {
+  row-gap: 8px;
 }
 
 .gap-y-\[0\.3em\] {
@@ -2290,6 +2314,11 @@
   border-bottom-width: 0;
 }
 
+.border-b-2 {
+  border-bottom-style: var(--tw-border-style);
+  border-bottom-width: 2px;
+}
+
 .border-l {
   border-left-style: var(--tw-border-style);
   border-left-width: 1px;
@@ -2310,6 +2339,11 @@
   border-style: dashed;
 }
 
+.border-solid {
+  --tw-border-style: solid;
+  border-style: solid;
+}
+
 .border-\(--accent\) {
   border-color: var(--accent);
 }
@@ -2328,6 +2362,10 @@
 
 .border-\(color\:--k-content-kbd-borderColor\) {
   border-color: var(--k-content-kbd-borderColor);
+}
+
+.border-\(color\:--k-content-primary-foreground\) {
+  border-color: var(--k-content-primary-foreground);
 }
 
 .border-\(color\:--k-editable-bold-borderColor-active\) {
@@ -2572,16 +2610,16 @@
   background-color: var(--k-surface-sunken-background);
 }
 
+.bg-\(--pnl-down\) {
+  background-color: var(--pnl-down);
+}
+
+.bg-\(--pnl-up\) {
+  background-color: var(--pnl-up);
+}
+
 .bg-\(--seg-on-bg\) {
   background-color: var(--seg-on-bg);
-}
-
-.bg-\(--side-buy\) {
-  background-color: var(--side-buy);
-}
-
-.bg-\(--side-sell\) {
-  background-color: var(--side-sell);
 }
 
 .bg-\[color-mix\(in_srgb\,var\(--cb-accent\)_12\%\,transparent\)\] {
@@ -2944,6 +2982,10 @@
 
 .pb-1 {
   padding-bottom: 4px;
+}
+
+.pb-1\.5 {
+  padding-bottom: 6px;
 }
 
 .pb-2 {
@@ -4579,6 +4621,20 @@
 
   .md\:w-auto {
     width: auto;
+  }
+}
+
+@container (min-width: 560px) {
+  .\@min-\[560px\]\:flex {
+    display: flex;
+  }
+
+  .\@min-\[560px\]\:hidden {
+    display: none;
+  }
+
+  .\@min-\[560px\]\:grid-cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
