@@ -7521,6 +7521,98 @@ for (const theme of THEMES) {
       await page.keyboard.press('Escape')
     })
 
+    test('DockWorkspace：工具随格子里的组件不同，「+」开目录并带种类，点卡片加进当前格子，关页签，最大化与还原，浮起，重置', async ({
+      page,
+    }) => {
+      await open(page, theme, 'dock-workspace')
+      const area = section(page, 'dock-workspace')
+      const tab = (id: string) => area.locator(`[data-slot="dock-tab"][data-component="${id}"]`)
+      const group = (id: string) =>
+        area.locator('.dv-groupview').filter({ has: page.locator(`[data-slot="dock-tab"][data-component="${id}"]`) })
+      const card = (id: string) => area.locator(`[data-slot="catalog-item"][data-id="${id}"]`)
+      // 起始布局三格：K 线、订单表、委托。
+      await expect(area.locator('[data-slot="dock-tab"]')).toHaveCount(3)
+      await expect(tab('chart')).toContainText('BTCUSDT · 15m')
+      // 每格的工具是它自己的：K 线是周期，委托是列，订单表没有。
+      await expect(group('chart').locator('[data-slot="dock-tools"]').getByRole('button', { name: '1H' })).toBeVisible()
+      await expect(
+        group('orders').locator('[data-slot="dock-tools"]').getByRole('button', { name: 'Columns' }),
+      ).toBeVisible()
+      await expect(group('book').locator('[data-slot="dock-tools"]')).toHaveCount(0)
+      await group('chart').getByRole('button', { name: '1H', exact: true }).click()
+      await expect(tab('chart')).toContainText('BTCUSDT · 1H')
+      // K 线格的「+」：目录打开，知道是加在 K 线旁边，推荐成交明细（订单表已经在用，不再推荐）。
+      await group('chart').locator('[data-slot="dock-add"]').click()
+      await expect(area.getByText('Adding next to: chart')).toBeVisible()
+      const recommended = area.locator('[data-slot="catalog-group"][data-group="recommended"]')
+      await expect(recommended.locator('[data-id="trades"]')).toHaveCount(1)
+      await expect(recommended.locator('[data-id="book"]')).toHaveCount(0)
+      await expect(card('positions')).toHaveAttribute('aria-disabled', 'true')
+      // 点卡片：成交明细成了 K 线那一格的新页签，目录里打勾。
+      await card('trades').click()
+      await expect(group('chart').locator('[data-slot="dock-tab"]')).toHaveCount(2)
+      await expect(card('trades')).toHaveAttribute('aria-pressed', 'true')
+      // 关页签：目录里的勾去掉。
+      await tab('trades').hover()
+      await area.getByRole('button', { name: 'Close Trades' }).click()
+      await expect(tab('trades')).toHaveCount(0)
+      await expect(card('trades')).toHaveAttribute('aria-pressed', 'false')
+      // 最大化 K 线格：它铺满整个工作区；还原后回到原来的宽度。
+      const widthOf = async (target: ReturnType<typeof group>) => (await target.boundingBox())!.width
+      const whole = await widthOf(area.locator('.dv-dockview').first())
+      const before = await widthOf(group('chart'))
+      expect(before).toBeLessThan(whole - 100)
+      await group('chart').locator('[data-slot="dock-maximize"]').click()
+      await expect(area.getByRole('button', { name: 'Restore' })).toBeVisible()
+      await expect.poll(() => widthOf(group('chart'))).toBeGreaterThan(whole - 4)
+      await area.getByRole('button', { name: 'Restore' }).click()
+      await expect.poll(() => widthOf(group('chart'))).toBeCloseTo(before, 0)
+      // 浮起订单表：它那一组不再有「浮起」钮（已经是浮窗）。
+      await expect(area.locator('[data-slot="dock-float"]')).toHaveCount(3)
+      await group('book').locator('[data-slot="dock-float"]').click()
+      await expect(area.locator('[data-slot="dock-float"]')).toHaveCount(2)
+      await expect(tab('book')).toBeVisible()
+      // 重置：回到起始的三格，都在网格里。
+      await area.getByRole('button', { name: 'Reset layout' }).click()
+      await expect(area.locator('[data-slot="dock-tab"]')).toHaveCount(3)
+      await expect(area.locator('[data-slot="dock-float"]')).toHaveCount(3)
+    })
+
+    test('DockWorkspace 拖放：页签拖到别的格子的下半边就分在它下面；目录的卡片拖到格子左边就加在它左边', async ({
+      page,
+    }) => {
+      await open(page, theme, 'dock-workspace')
+      const area = section(page, 'dock-workspace')
+      const tab = (id: string) => area.locator(`[data-slot="dock-tab"][data-component="${id}"]`)
+      const panel = (id: string) => area.locator(`[data-slot="dock-panel"][data-component="${id}"]`)
+      const box = async (id: string) => (await panel(id).boundingBox())!
+      await expect(area.locator('.dv-groupview')).toHaveCount(3)
+      // 把「委托」页签拖到订单表的下半边：松手后它在订单表正下方，订单表变矮。
+      const book = await box('book')
+      await tab('orders').hover()
+      await page.mouse.down()
+      await page.mouse.move(book.x + book.width / 2, book.y + book.height / 2, { steps: 8 })
+      await page.mouse.move(book.x + book.width / 2, book.y + book.height - 12, { steps: 8 })
+      await page.mouse.up()
+      await expect.poll(async () => (await box('book')).height).toBeLessThan(book.height)
+      const [orders, bookAfter] = [await box('orders'), await box('book')]
+      expect(Math.abs(orders.x - bookAfter.x)).toBeLessThan(2)
+      expect(orders.y).toBeGreaterThan(bookAfter.y)
+      // 从目录把「成交明细」的卡片拖到 K 线格的左边：多出一格，在 K 线左边。
+      await area.locator('[data-slot="dock-add"]').first().click()
+      const card = area.locator('[data-slot="catalog-item"][data-id="trades"]')
+      await card.scrollIntoViewIfNeeded()
+      const chart = await box('chart')
+      await card.hover()
+      await page.mouse.down()
+      await page.mouse.move(chart.x + chart.width / 2, chart.y + chart.height / 2, { steps: 10 })
+      await page.mouse.move(chart.x + 16, chart.y + chart.height / 2, { steps: 10 })
+      await page.mouse.up()
+      await expect(tab('trades')).toHaveCount(1)
+      expect((await box('trades')).x).toBeLessThan((await box('chart')).x)
+      await expect(card).toHaveAttribute('aria-pressed', 'true')
+    })
+
     test('ComponentCatalog：推荐在最前，点卡片加进或移出，用不了的点不动，按类别与搜索筛', async ({ page }) => {
       await open(page, theme, 'component-catalog')
       const catalog = section(page, 'component-catalog').locator('[data-slot="component-catalog"]').first()

@@ -109,6 +109,11 @@
           "target": "~/src/katana/ui/theme/dialog.css"
         },
         {
+          "path": "src/theme/dock-workspace.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/dock-workspace.css"
+        },
+        {
           "path": "src/theme/empty-state.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/empty-state.css"
@@ -6631,6 +6636,30 @@
           "path": "src/blocks/component-catalog/component-catalog.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/blocks/component-catalog/component-catalog.tsx"
+        }
+      ]
+    },
+    {
+      "name": "dock-workspace",
+      "type": "registry:component",
+      "title": "Dock Workspace",
+      "description": "可以自己摆的工作区：每个格子是一组页签；把页签拖到别的格子的上、下、左、右、中五个落点就分屏或并组，拖动时实时预览落在哪；格子之间拖分隔条改大小；页签组可以浮起来、最大化再还原；整个布局存成 JSON 再还原。引擎是 Dockview（MIT），我们接上自己的几层：面板由组件清单定义（最小尺寸、只许一个的组件）；页签带状态点、当前对象与角标；页签栏右端只放当前页签那个组件的工具；左端「+」把当前组件的种类带给宿主去开目录；ComponentCatalog 的卡片可以直接拖进来落在任意落点。手感参照 Blender 4.x 的区域停靠。",
+      "dependencies": [
+        "dockview-react@8.9.1",
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/button",
+        "@katana/cn",
+        "@katana/component-catalog",
+        "@katana/component-manifest",
+        "@katana/panel-tabs"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/dock-workspace/dock-workspace.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/dock-workspace/dock-workspace.tsx"
         }
       ]
     },

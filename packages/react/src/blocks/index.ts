@@ -240,3 +240,13 @@ export {
   setLinkParam,
   type LinkGroupsState,
 } from './workspace-model/link-groups.ts'
+
+// 停靠工作区（引擎 Dockview，MIT；#107 第 2 层）。
+export {
+  DockWorkspace,
+  type DockDirection,
+  type DockPanelMeta,
+  type DockPanelSeed,
+  type DockWorkspaceHandle,
+  type DockWorkspaceLabels,
+} from './dock-workspace/dock-workspace.tsx'

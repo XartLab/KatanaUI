@@ -299,6 +299,34 @@ const blocks: GuidanceMap = {
       '缩略图对读屏隐藏。',
     ],
   },
+  'dock-workspace': {
+    aliases: [
+      'Docking layout',
+      'Dock manager',
+      'Tiling workspace',
+      'Dashboard layout',
+      '停靠布局',
+      '工作区',
+      '拖拽分屏',
+    ],
+    use: [
+      '引擎用 Dockview（MIT，2026-11-19 用户同意加依赖）：页签组、五个落点、浮窗、最大化、布局存取都是它的，不自己写。',
+      '面板不手写注册：每个组件一份 ComponentManifest，DockWorkspace 按 id 建面板；最小尺寸与「只许一个」从清单读。',
+      '页签栏的三段固定：左「+」，中间页签，右边先是当前组件的工具、再是浮起与最大化。和 PanelTabs 同一套规矩。',
+      '加组件有三条路，结果一样：点格子的「+」再在目录里点；从目录把卡片拖到落点；命令或代码调 add()。',
+      '布局每次变化回调 onLayoutChange，宿主存起来，下次用 layout 还原；按任务存几套就是布局模板。',
+      '手感照 Blender 4.x：拖动时先看到落点预览再松手；最大化是一个钮来回，不丢布局。',
+    ],
+    avoid: [
+      '企业版才有的功能（自动隐藏的边栏组、智能参考线）不用；要用先问用户。',
+      '不要在面板内容里再嵌一个 DockWorkspace。',
+    ],
+    a11y: [
+      '「+」、「×」、浮起、最大化都是按钮，读屏名由 labels 给（「×」带组件名）。',
+      '页签的状态点是 role=img，名字取 labels.status；当前组件的工具是 role=group。',
+      '拖放之外要留键盘能走的路：加组件走目录的点击，关走「×」，移动面板由宿主接命令面板（还没做，见 #107 第 6 层）。',
+    ],
+  },
 }
 
 export default blocks

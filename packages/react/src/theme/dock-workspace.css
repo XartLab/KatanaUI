@@ -1,0 +1,129 @@
+/* SPDX-License-Identifier: MIT */
+/* DockWorkspace 的皮（#107 第 2 层）：停靠引擎是 Dockview（https://github.com/mathuo/dockview ，MIT），这里只把它的 --dv-* 变量接到我们的 token，
+   再给页签与页签栏动作写样子。页签的样子与 PanelTabs 一致：12px、500，当前页签底下 2px 线，悬停出「×」。 */
+@import 'dockview-react/dist/styles/dockview.css';
+
+.dockview-theme-katana {
+  --dv-group-view-background-color: var(--k-surface-base-background);
+  --dv-tabs-and-actions-container-background-color: var(--k-surface-base-background);
+  --dv-tabs-and-actions-container-height: 32px;
+  --dv-tabs-and-actions-container-font-size: 12px;
+  --dv-activegroup-visiblepanel-tab-background-color: transparent;
+  --dv-activegroup-hiddenpanel-tab-background-color: transparent;
+  --dv-inactivegroup-visiblepanel-tab-background-color: transparent;
+  --dv-inactivegroup-hiddenpanel-tab-background-color: transparent;
+  --dv-activegroup-visiblepanel-tab-color: var(--k-content-primary-foreground);
+  --dv-activegroup-hiddenpanel-tab-color: var(--k-content-secondary-foreground);
+  --dv-inactivegroup-visiblepanel-tab-color: var(--k-content-body-foreground);
+  --dv-inactivegroup-hiddenpanel-tab-color: var(--k-content-secondary-foreground);
+  --dv-tab-divider-color: transparent;
+  --dv-separator-border: var(--k-separable-tertiary-borderColor);
+  --dv-paneview-header-border-color: var(--k-separable-tertiary-borderColor);
+  --dv-sash-color: var(--k-separable-tertiary-borderColor);
+  --dv-active-sash-color: var(--k-content-secondary-foreground);
+  --dv-drag-over-background-color: color-mix(in srgb, var(--k-content-primary-foreground) 10%, transparent);
+  --dv-drag-over-border-color: var(--k-content-primary-foreground);
+  --dv-icon-hover-background-color: var(--k-actionable-subtle-background-hover);
+  --dv-floating-box-shadow: var(--k-overlay-shadow);
+  --dv-floating-border: 1px solid var(--k-overlay-borderColor);
+  --dv-border-radius: 0px;
+  --dv-tab-border-radius: 0px;
+  --dv-context-menu-background-color: var(--k-surface-overlay-background);
+  --dv-context-menu-color: var(--k-content-body-foreground);
+  background: var(--k-surface-sunken-background);
+  color: var(--k-content-body-foreground);
+}
+.dockview-theme-katana .dv-tabs-and-actions-container {
+  border-bottom: 1px solid var(--k-separable-tertiary-borderColor);
+}
+.dockview-theme-katana .dv-tab {
+  padding: 0 8px;
+}
+:where(.k-dock-tab) {
+  position: relative;
+  display: flex;
+  height: 100%;
+  align-items: center;
+  gap: 6px;
+  font: 500 12px/1 var(--font-sans);
+  white-space: nowrap;
+}
+:where(.k-dock-tab)::after {
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 2px;
+  background: var(--k-content-primary-foreground);
+  content: '';
+  opacity: 0;
+}
+:where(.dv-active-tab .k-dock-tab)::after {
+  opacity: 1;
+}
+:where(.dv-inactivegroup .dv-active-tab .k-dock-tab)::after {
+  opacity: 0.45;
+}
+:where(.k-dock-tab-context) {
+  color: var(--k-content-secondary-foreground);
+  font-weight: 400;
+}
+:where(.dv-inactive-tab .k-dock-tab-context) {
+  display: none;
+}
+:where(.k-dock-tab-dot) {
+  width: 6px;
+  height: 6px;
+  flex: none;
+  border-radius: 50%;
+}
+:where(.k-dock-tab-dot[data-status='live']) {
+  background: var(--k-status-ok-foreground);
+}
+:where(.k-dock-tab-dot[data-status='stale']) {
+  background: var(--k-status-warn-foreground);
+}
+:where(.k-dock-tab-dot[data-status='error']) {
+  background: var(--k-status-danger-foreground);
+}
+:where(.k-dock-tab-badge) {
+  color: var(--k-content-tertiary-foreground);
+  font: 400 11px/1 var(--font-num);
+}
+:where(.k-dock-tab-close) {
+  display: grid;
+  width: 14px;
+  height: 14px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--k-content-secondary-foreground);
+  cursor: pointer;
+  opacity: 0;
+  place-items: center;
+}
+:where(.k-dock-tab-close) svg {
+  width: 10px;
+  height: 10px;
+}
+:where(.dv-tab:hover .k-dock-tab-close, .k-dock-tab-close:focus-visible) {
+  opacity: 1;
+}
+:where(.k-dock-tab-close:hover) {
+  background: var(--k-actionable-subtle-background-hover);
+  color: var(--k-content-primary-foreground);
+}
+:where(.k-dock-actions) {
+  display: flex;
+  height: 100%;
+  align-items: center;
+  gap: 2px;
+  padding: 0 6px;
+}
+:where(.k-dock-tools) {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding-right: 8px;
+  margin-right: 4px;
+  border-right: 1px solid var(--k-separable-tertiary-borderColor);
+}

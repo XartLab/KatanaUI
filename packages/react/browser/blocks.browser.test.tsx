@@ -8,6 +8,7 @@ import { ComponentCatalogUsage } from '../gallery/usage/ComponentCatalogUsage.ts
 import { ConsensusBlockUsage } from '../gallery/usage/ConsensusBlockUsage.tsx'
 import { DataGridUsage } from '../gallery/usage/DataGridUsage.tsx'
 import { DecisionQueueUsage } from '../gallery/usage/DecisionQueueUsage.tsx'
+import { DockWorkspaceUsage } from '../gallery/usage/DockWorkspaceUsage.tsx'
 import { EmptyStateUsage } from '../gallery/usage/EmptyStateUsage.tsx'
 import { EstimateBadgeUsage } from '../gallery/usage/EstimateBadgeUsage.tsx'
 import { EventTimelineUsage } from '../gallery/usage/EventTimelineUsage.tsx'
@@ -46,6 +47,7 @@ const items: Record<string, React.ReactNode> = {
   meter: <MeterUsage />,
   'news-feed': <NewsFeedUsage />,
   'news-reader': <NewsReaderUsage />,
+  'dock-workspace': <DockWorkspaceUsage />,
   'panel-frame': <PanelFrameUsage />,
   'panel-tabs': <PanelTabsUsage />,
   'component-catalog': <ComponentCatalogUsage />,

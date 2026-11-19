@@ -165,6 +165,7 @@ import {
   ToggleDemo,
 } from './pages/smoothui-forms.tsx'
 import { ComponentCatalogUsage } from './usage/ComponentCatalogUsage.tsx'
+import { DockWorkspaceUsage } from './usage/DockWorkspaceUsage.tsx'
 import { PanelTabsUsage } from './usage/PanelTabsUsage.tsx'
 import { AccordionDemo, TabsDemo } from './pages/layout.tsx'
 import {
@@ -432,6 +433,7 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'morph-icon': MorphIconDemo,
   'swap-panel': SwapPanelDemo,
   'panel-tabs': PanelTabsUsage,
+  'dock-workspace': DockWorkspaceUsage,
   'component-catalog': ComponentCatalogUsage,
   avatar: AvatarDemo,
   breadcrumb: BreadcrumbDemo,

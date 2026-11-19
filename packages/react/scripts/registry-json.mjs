@@ -257,6 +257,7 @@ function collectItems() {
       // 面板页签组与添加组件的目录（2026-11-19）。
       'panel-tabs',
       'component-catalog',
+      'dock-workspace',
     ])
       add(
         dir,

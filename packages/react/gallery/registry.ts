@@ -6101,6 +6101,35 @@ export const PAGES: readonly DocPage[] = [
     ],
   },
   {
+    id: 'dock-workspace',
+    group: 'blocks',
+    cardHeight: 480,
+    title: 'DockWorkspace 停靠工作区',
+    summary:
+      '可以自己摆的工作区：每个格子是一组页签；把页签拖到别的格子的上、下、左、右、中五个落点就分屏或并组，拖动时实时预览落在哪；格子之间拖分隔条改大小；页签组可以浮起来、最大化再还原；整个布局存成 JSON 再还原。引擎是 Dockview（MIT），我们接上自己的几层：面板由组件清单定义（最小尺寸、只许一个的组件）；页签带状态点、当前对象与角标；页签栏右端只放当前页签那个组件的工具；左端「+」把当前组件的种类带给宿主去开目录；ComponentCatalog 的卡片可以直接拖进来落在任意落点。手感参照 Blender 4.x 的区域停靠。',
+    exports: ['DockWorkspace'],
+    propParts: [{ part: 'DockWorkspace' }],
+    states: [
+      '起始：按 defaultPanels 搭；给了 layout 就还原它，读不了退回默认布局。',
+      '拖页签到别的格子：落点高亮预览（上、下、左、右是分屏，中间是并进那一组）。',
+      '最大化：这一组铺满工作区，按钮换成还原；再点回到原来的布局。',
+      '浮起：这一组变成浮在工作区上的小窗，可拖动与改大小；浮窗的页签栏上没有浮起钮。',
+      '加一个 singleton 的组件而它已经在：不新建，切到已有的那个页签。',
+      '同一个组件放第二份：面板 id 自动加序号（chart、chart-2）。',
+    ],
+    donts: [
+      '不要自己再写一套拖放分屏：页签的拖动、落点、分隔条都交给引擎。',
+      '不要把固定不变的页面做成它；内容固定的用 PanelFrame 加 Splitter。',
+      '「重置布局」会丢掉用户摆好的布局，宿主要先确认。',
+    ],
+    composition:
+      'DockWorkspace（DockviewReact）\n  每组的页签栏：「+」· 页签（状态点 · 名字 · 当前对象 · 角标 · 「×」）· 当前组件的 tools · 浮起 · 最大化\n  面板内容（render 给的）',
+    keys: [
+      ['Tab', '进到页签栏与面板内容'],
+      ['Enter / 空格', '在「+」、「×」、浮起、最大化上触发'],
+    ],
+  },
+  {
     id: 'component-catalog',
     group: 'blocks',
     cardHeight: 620,

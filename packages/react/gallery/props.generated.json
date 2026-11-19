@@ -9700,6 +9700,11 @@
         }
       ]
     },
+    "DockDirection": {
+      "kind": "type",
+      "source": "src/blocks/dock-workspace/dock-workspace.tsx",
+      "props": []
+    },
     "DockItem": {
       "kind": "type",
       "source": "src/patterns/dock.tsx",
@@ -9733,6 +9738,66 @@
           "type": "() => void",
           "required": false,
           "description": ""
+        }
+      ]
+    },
+    "DockPanelMeta": {
+      "kind": "type",
+      "source": "src/blocks/dock-workspace/dock-workspace.tsx",
+      "props": [
+        {
+          "name": "status",
+          "type": "PanelTabStatus",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "context",
+          "type": "string",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "badge",
+          "type": "string",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "DockPanelSeed": {
+      "kind": "type",
+      "source": "src/blocks/dock-workspace/dock-workspace.tsx",
+      "props": [
+        {
+          "name": "component",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "id",
+          "type": "string",
+          "required": false,
+          "description": "Panel id; defaults to the component id (give one to place the same component twice)."
+        },
+        {
+          "name": "beside",
+          "type": "string",
+          "required": false,
+          "description": "Panel id this one is placed against."
+        },
+        {
+          "name": "direction",
+          "type": "DockDirection",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "size",
+          "type": "number",
+          "required": false,
+          "description": "Starting size in px along the split."
         }
       ]
     },
@@ -9787,6 +9852,168 @@
           "type": "string",
           "required": false,
           "description": "Extra classes for the root element."
+        }
+      ]
+    },
+    "DockWorkspace": {
+      "kind": "component",
+      "source": "src/blocks/dock-workspace/dock-workspace.tsx",
+      "props": [
+        {
+          "name": "ref",
+          "type": "Ref<DockWorkspaceHandle>",
+          "required": false,
+          "description": "Imperative handle: add, reset, save and the raw Dockview API."
+        },
+        {
+          "name": "manifests",
+          "type": "readonly ComponentManifest[]",
+          "required": true,
+          "description": "Everything that can be placed; panels are created from these by id."
+        },
+        {
+          "name": "render",
+          "type": "(component: string, panelId: string) => ReactNode",
+          "required": true,
+          "description": "Draws a component's content."
+        },
+        {
+          "name": "tools",
+          "type": "(component: string, panelId: string) => ReactNode",
+          "required": false,
+          "description": "Draws a component's own tools, shown in its group's tab bar while its tab is selected."
+        },
+        {
+          "name": "meta",
+          "type": "(panelId: string, component: string) => DockPanelMeta | undefined",
+          "required": false,
+          "description": "Live tab details per panel: status dot, current object, badge."
+        },
+        {
+          "name": "defaultPanels",
+          "type": "readonly DockPanelSeed[]",
+          "required": true,
+          "description": "The layout used at first and after reset."
+        },
+        {
+          "name": "layout",
+          "type": "SerializedDockview",
+          "required": false,
+          "description": "A saved layout to restore instead of the default; falls back to the default if it cannot be read."
+        },
+        {
+          "name": "onLayoutChange",
+          "type": "(layout: SerializedDockview) => void",
+          "required": false,
+          "description": "Called with the layout JSON whenever it changes."
+        },
+        {
+          "name": "onPlacedChange",
+          "type": "(components: string[]) => void",
+          "required": false,
+          "description": "Called with the component ids currently placed whenever panels are added or removed."
+        },
+        {
+          "name": "onRequestAdd",
+          "type": "(panelId: string | undefined, kind: string | undefined) => void",
+          "required": false,
+          "description": "Called when a group's + is clicked, with the active panel id and its component kind; leave out to hide the +."
+        },
+        {
+          "name": "labels",
+          "type": "DockWorkspaceLabels",
+          "required": true,
+          "description": "Accessible names."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the workspace."
+        }
+      ]
+    },
+    "DockWorkspaceHandle": {
+      "kind": "type",
+      "source": "src/blocks/dock-workspace/dock-workspace.tsx",
+      "props": [
+        {
+          "name": "api",
+          "type": "DockviewApi | null",
+          "required": true,
+          "description": "The Dockview API, for anything not wrapped here (null before the layout is ready)."
+        },
+        {
+          "name": "add",
+          "type": "(component: string, where?: { groupOf?: string; direction?: DockDirection }) => string | undefined",
+          "required": true,
+          "description": "Adds a component: into `groupOf`'s group, or beside it in `direction`; with neither, into the active group."
+        },
+        {
+          "name": "placed",
+          "type": "() => string[]",
+          "required": true,
+          "description": "Ids of the components currently placed."
+        },
+        {
+          "name": "reset",
+          "type": "() => void",
+          "required": true,
+          "description": "Throws the layout away and rebuilds the default one."
+        },
+        {
+          "name": "save",
+          "type": "() => SerializedDockview | undefined",
+          "required": true,
+          "description": "The layout as JSON, for saving."
+        }
+      ]
+    },
+    "DockWorkspaceLabels": {
+      "kind": "type",
+      "source": "src/blocks/dock-workspace/dock-workspace.tsx",
+      "props": [
+        {
+          "name": "add",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the + in a group's tab bar."
+        },
+        {
+          "name": "close",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of a tab's close button, with {name}."
+        },
+        {
+          "name": "maximize",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "restore",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "float",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "tools",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the active component's tools group, with {name}."
+        },
+        {
+          "name": "status",
+          "type": "Partial<Record<PanelTabStatus, string>>",
+          "required": false,
+          "description": ""
         }
       ]
     },
