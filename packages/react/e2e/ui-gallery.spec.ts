@@ -7519,44 +7519,67 @@ for (const theme of THEMES) {
       await expect(out).toContainText('close buy 2')
     })
 
-    test('PanelTabs：悬停出「×」移除，「+」加页签并选中，Delete 移除，固定的页签关不掉，窄了收进「…」', async ({
+    test('PanelTabs：工具跟着当前页签换，「+」带上当前页签的种类，移除与键盘，窄了工具落到第二行、页签收进「…」', async ({
       page,
     }) => {
       await open(page, theme, 'panel-tabs')
-      const bar = section(page, 'panel-tabs').locator('[data-slot="panel-tabs"]').first()
-      const tab = (name: string) => bar.getByRole('tab', { name, exact: true })
-      await expect(bar.getByRole('tab')).toHaveCount(4)
-      await expect(tab('Trading data')).toHaveAttribute('aria-selected', 'true')
-      // 悬停才出「×」；点它移除这个页签。
+      const area = section(page, 'panel-tabs')
+      const bar = area.locator('[data-slot="panel-tabs"]').first()
+      const tab = (name: string | RegExp) => bar.getByRole('tab', { name })
+      const tools = bar.locator('[data-slot="panel-tab-tools"]')
+      await bar.evaluate((el) => ((el.parentElement as HTMLElement).style.width = '720px'))
+      await expect(bar.getByRole('tab')).toHaveCount(3)
+      // 当前是 K 线：栏上是 K 线的工具（周期、指标、画线），页签带状态点与当前对象。
+      await expect(tab(/^Live Chart/)).toHaveAttribute('aria-selected', 'true')
+      await expect(bar).toHaveAttribute('data-kind', 'chart')
+      await expect(tools.getByRole('button', { name: 'Indicators' })).toBeVisible()
+      await expect(bar.locator('[data-slot="panel-tab-context"]')).toHaveText('BTCUSDT · 15m')
+      await tools.getByRole('button', { name: '1H', exact: true }).click()
+      await expect(bar.locator('[data-slot="panel-tab-context"]')).toHaveText('BTCUSDT · 1H')
+      // 宽度够：工具与页签同一行。
+      await expect(bar).not.toHaveAttribute('data-stacked', '')
+      // 切到委托表：工具换成表的那一套，K 线的没了。
+      await tab(/Open orders/).click()
+      await expect(bar).toHaveAttribute('data-kind', 'table')
+      await expect(tools.getByRole('button', { name: 'Columns' })).toBeVisible()
+      await expect(bar.getByRole('button', { name: 'Indicators' })).toHaveCount(0)
+      // 没有工具的页签：不留空的工具区。
+      await tab('Info').click()
+      await expect(tools).toHaveCount(0)
+      // 「+」把当前页签的种类带给宿主。
+      await tab(/Open orders/).click()
+      await bar.getByRole('button', { name: 'Add component' }).click()
+      await expect(area.locator('output').first()).toHaveText('catalog asked next to: table')
+      await expect(tab(/Feed/)).toHaveAttribute('aria-selected', 'true')
+      // 悬停才出「×」；固定的页签没有「×」，Delete 也关不掉。
       const close = bar.getByRole('button', { name: 'Remove Feed' })
+      await page.mouse.move(0, 0) // 新页签正好长在指针底下，先挪开
       await expect(close).toHaveCSS('opacity', '0')
-      await tab('Feed').hover()
+      await tab(/Feed/).hover()
       await expect(close).toHaveCSS('opacity', '1')
       await close.click()
-      await expect(tab('Feed')).toHaveCount(0)
-      // 固定的页签没有「×」。
+      await expect(tab(/Feed/)).toHaveCount(0)
       await expect(bar.getByRole('button', { name: 'Remove Chart' })).toHaveCount(0)
-      // 「+」加一个并选中。
-      await bar.getByRole('button', { name: 'Add component' }).click()
-      await expect(tab('Feed')).toHaveAttribute('aria-selected', 'true')
-      // 键盘：← 移焦点不切换，Enter 切换，Delete 移除并把焦点给相邻的页签。
-      await tab('Feed').focus()
-      await page.keyboard.press('ArrowLeft')
-      await expect(tab('Trading data')).toBeFocused()
-      await expect(tab('Feed')).toHaveAttribute('aria-selected', 'true')
+      await tab(/Chart/).focus()
+      await page.keyboard.press('Delete')
+      await expect(tab(/Chart/)).toHaveCount(1)
+      // 键盘：→ 移焦点不切换，Enter 切换，Delete 移除并把焦点给相邻的页签。
+      await page.keyboard.press('ArrowRight')
+      await expect(tab(/Open orders/)).toBeFocused()
+      await expect(tab(/Chart/)).toHaveAttribute('aria-selected', 'true')
       await page.keyboard.press('Enter')
-      await expect(tab('Trading data')).toHaveAttribute('aria-selected', 'true')
+      await expect(tab(/Open orders/)).toHaveAttribute('aria-selected', 'true')
       await page.keyboard.press('Delete')
-      await expect(tab('Trading data')).toHaveCount(0)
-      await expect(tab('Feed')).toBeFocused()
-      // Delete 关不掉固定的页签。
-      await tab('Chart').focus()
-      await page.keyboard.press('Delete')
-      await expect(tab('Chart')).toHaveCount(1)
-      // 栏变窄：放不下的收进「…」，当前页签留在栏上。
-      await bar.getByRole('button', { name: 'Add component' }).click()
-      await bar.getByRole('button', { name: 'Add component' }).click()
-      await bar.evaluate((el) => ((el.parentElement as HTMLElement).style.width = '220px'))
+      await expect(tab(/Open orders/)).toHaveCount(0)
+      await expect(tab('Info')).toBeFocused()
+      // 变窄：K 线的工具一行放不下，落到第二行，页签留在第一行。
+      await tab(/Chart/).click()
+      await bar.evaluate((el) => ((el.parentElement as HTMLElement).style.width = '380px'))
+      await expect(bar).toHaveAttribute('data-stacked', '')
+      const [tabBox, toolBox] = [await tab(/Chart/).boundingBox(), await tools.boundingBox()]
+      expect(toolBox!.y).toBeGreaterThan(tabBox!.y + tabBox!.height - 2)
+      // 再窄：放不下的页签收进「…」，当前页签留在栏上。
+      await bar.evaluate((el) => ((el.parentElement as HTMLElement).style.width = '260px'))
       const more = bar.getByRole('button', { name: 'More tabs' })
       await expect(more).toBeVisible()
       await expect(bar.getByRole('tab', { selected: true })).toBeVisible()
@@ -7593,11 +7616,16 @@ for (const theme of THEMES) {
       await expect(card('book')).toBeVisible()
       await catalog.getByRole('searchbox').fill('zzz')
       await expect(catalog.locator('[data-slot="catalog-empty"]')).toBeVisible()
-      // 重置：回到起始的三个。
+      // 搭配推荐：订单表声明适合放在 K 线旁边，所以在推荐组；加进工作区后就不再推荐，回到自己的类别。
       await catalog.getByRole('searchbox').fill('')
-      await card('trades').click()
+      await expect(groups.first().locator('[data-id="book"]')).toHaveCount(1)
+      await card('book').click()
+      await expect(groups.first().locator('[data-id="book"]')).toHaveCount(0)
+      await expect(card('book')).toHaveAttribute('aria-pressed', 'true')
+      // 重置：回到起始的三个。
       await catalog.getByRole('button', { name: 'Reset layout' }).click()
-      await expect(card('trades')).toHaveAttribute('aria-pressed', 'false')
+      await expect(card('book')).toHaveAttribute('aria-pressed', 'false')
+      await expect(groups.first().locator('[data-id="book"]')).toHaveCount(1)
     })
 
     test('Button effect：dot-morph 悬停点拉成竖条，clip-corners 悬停切口变大，magnetic 靠近时偏向指针、离开回位', async ({

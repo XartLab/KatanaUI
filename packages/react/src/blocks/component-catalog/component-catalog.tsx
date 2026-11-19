@@ -92,6 +92,7 @@ export function ComponentCatalog({
   items,
   categories,
   thumbnails,
+  context,
   onToggle,
   onReset,
   labels,
@@ -103,6 +104,8 @@ export function ComponentCatalog({
   categories: readonly CatalogCategory[]
   /** Thumbnail node per item id; items without one get a stock drawing by kind. */
   thumbnails?: Readonly<Record<string, ReactNode>>
+  /** Kind of the component the user is adding next to (the selected panel tab's kind); items that pair with it are recommended. */
+  context?: string
   /** Called when a card is clicked: `add` is true for a card not yet in the workspace, false to remove one that is. */
   onToggle: (id: string, add: boolean) => void
   /** Called when the reset button is clicked; leave out to hide it. */
@@ -118,6 +121,7 @@ export function ComponentCatalog({
     category: category === 'all' ? null : category,
     query,
     recommendedName: query ? undefined : labels.recommended,
+    context,
   })
 
   return (

@@ -6416,10 +6416,14 @@ export const PAGES: readonly DocPage[] = [
     cardHeight: 150,
     title: 'PanelTabs 面板页签组',
     summary:
-      '一个面板格子里叠几个组件，各一个页签（照 OKX 交易页每个面板顶上的页签栏，2026-11-19 实测）：文字页签、当前页签底下一道线；悬停或聚焦页签出「×」移除；末尾「+」打开添加组件；放不下的收进「…」下拉且当前页签始终可见；栏右端是这个面板自己的动作（设置、浮窗）。拖动或 Alt+方向键排序，拖出去的页签带 PANEL_TAB_MIME，跨面板的落点由宿主接。与 PanelFrame（一个面板一个固定标题）并存，两种做法都支持。宿主给数据与回调。',
+      '一个面板格子里叠几个组件，各一个页签（照 OKX 交易页每个面板顶上的页签栏，2026-11-19 实测）：文字页签、当前页签底下一道线；悬停或聚焦页签出「×」移除；末尾「+」打开添加组件；放不下的收进「…」下拉且当前页签始终可见；栏右端是这个面板自己的动作（设置、浮窗）。拖动或 Alt+方向键排序，拖出去的页签带 PANEL_TAB_MIME，跨面板的落点由宿主接。智能的部分：每个页签声明自己的 kind 与 tools，栏上只显示当前页签的工具（K 线是品种、周期、指标、画线；表是筛选、列、导出），切页签工具跟着换；一行放不下时工具落到第二行，页签不被挤掉；「+」把当前页签的 kind 带给宿主，目录按它推荐；页签可带状态点与当前对象。与 PanelFrame（一个面板一个固定标题）并存，两种做法都支持。宿主给数据与回调。',
     exports: ['PanelTabs', 'PANEL_TAB_MIME'],
     propParts: [{ part: 'PanelTabs' }],
     states: [
+      '当前页签有 tools：画在页签右边、一道竖线隔开；没有 tools 的页签不留空位。',
+      '页签加工具一行放不下：工具落到第二行（data-stacked），页签用整行；宽度够了再回到一行。',
+      '当前页签有 context：名字后面淡一档写当前对象（BTCUSDT · 15m）；没选中的页签不写。',
+      'status：名字前一个小点，live 绿、stale 琥珀、error 红，读屏名取 labels.status。',
       '放得下：全部页签在栏上。',
       '放不下：末尾的页签收进「…」下拉；当前页签在被收起的一段时，与最后一个看得见的换位。',
       'closable=false 或没给 onClose：这个页签没有「×」，Delete 也不动它。',
@@ -6432,7 +6436,7 @@ export const PAGES: readonly DocPage[] = [
       '顶层的工作区切换用 WorkspaceTabs，不是它。',
     ],
     composition:
-      'PanelTabs\n  role=tablist · 页签（button role=tab）· 「×」\n  DropdownMenu（「…」）\n  「+」\n  actions（宿主给的按钮）',
+      'PanelTabs\n  role=tablist · 页签（状态点 · 图标 · 名字 · 当前对象 · 角标）· 「×」\n  DropdownMenu（「…」）\n  「+」\n  当前页签的 tools（role=group，放不下落到第二行）\n  actions（宿主给的按钮）',
     keys: [
       ['← → Home End', '在页签间移焦点'],
       ['Enter / 空格', '切到聚焦的页签'],
@@ -6446,7 +6450,7 @@ export const PAGES: readonly DocPage[] = [
     cardHeight: 620,
     title: 'ComponentCatalog 添加组件',
     summary:
-      'PanelTabs 的「+」打开的目录（照 OKX 的「添加组件」抽屉，2026-11-19 实测）：标题与「重置布局」、一句说明、搜索框、类别页签，下面按类别分组的卡片，每张一个缩略图加名字；已在工作区里的打勾，当前品种用不了的置灰并写明原因；卡片可拖（带 CATALOG_ITEM_MIME）。我们加的：搜索（名字与别名）、最前面一组「推荐」（宿主按当前品种与市场包标 recommended）。点卡片回调 onToggle（加或移除）。没给缩略图时按 kind 画一张示意。只是目录本身，放进 Sheet 还是侧栏由宿主定。',
+      'PanelTabs 的「+」打开的目录（照 OKX 的「添加组件」抽屉，2026-11-19 实测）：标题与「重置布局」、一句说明、搜索框、类别页签，下面按类别分组的卡片，每张一个缩略图加名字；已在工作区里的打勾，当前品种用不了的置灰并写明原因；卡片可拖（带 CATALOG_ITEM_MIME）。我们加的：搜索（名字与别名）、最前面一组「推荐」：宿主按当前品种与市场包标 recommended，或组件自己声明 pairsWith（适合放在哪种组件旁边），传入 context（当前页签的 kind）后自动推荐，已在用的不再推荐。点卡片回调 onToggle（加或移除）。没给缩略图时按 kind 画一张示意。只是目录本身，放进 Sheet 还是侧栏由宿主定。',
     exports: ['ComponentCatalog', 'CATALOG_ITEM_MIME', 'groupCatalog'],
     propParts: [{ part: 'ComponentCatalog' }],
     states: [
