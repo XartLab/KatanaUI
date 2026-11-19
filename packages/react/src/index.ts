@@ -275,6 +275,23 @@ export {
   type ToastPhase,
   type ToastPosition,
 } from './katana/toast.tsx'
+// 复制图 / 复制文字与结果提示（#77 第 4 条，#22 G11）。
+export {
+  CopyToast,
+  useCopyFeedback,
+  type CopyToastItem,
+  type CopyToastLabels,
+  type CopyToastProps,
+} from './katana/copy-toast.tsx'
+export {
+  canCopyImage,
+  copyImage,
+  copyText,
+  elementToPng,
+  type CopyFailReason,
+  type CopyImageOptions,
+  type CopyResult,
+} from './lib/copy-image.ts'
 // 加载态的唯一入口是 Loading（G3）：LoadingBoundary（= 不给 pending）与 LoadingView（= 给 phase）留一个版本作兼容。
 export { Loading, LoadingBoundary, type LoadingProps } from './katana/loading.tsx'
 export { LoadingView, type LoadingLabels, type LoadingTexts } from './katana/loading-view.tsx'
@@ -331,6 +348,20 @@ export {
   type StorageLike,
 } from './lib/use-persisted-state.ts'
 export { useSavedViews, type SavedView, type UseSavedViewsOptions } from './lib/use-saved-views.ts'
+// 撤销 / 重做栈（#77 第 4 条，#22 G10）。
+export {
+  useUndoStack,
+  undoInit,
+  undoPush,
+  undoBack,
+  undoForward,
+  undoKeyOf,
+  type UndoEntry,
+  type UndoPushOptions,
+  type UndoStack,
+  type UndoStackOptions,
+  type UndoState,
+} from './lib/use-undo-stack.ts'
 
 // 分割线（#1901）：一条 role=separator 的线，键盘、拖动、吸附、双击复位；工作区的格子分割线用它。
 export { Splitter, type SplitterProps } from './primitives/splitter.tsx'

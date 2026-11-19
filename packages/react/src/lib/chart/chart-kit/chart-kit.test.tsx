@@ -81,6 +81,26 @@ describe('图表底座的结构', () => {
     expect(full).toContain('data-action="export"')
     expect(full).toContain('data-action="fullscreen"')
     expect(full).toContain('aria-pressed="true"')
+    expect(full).not.toContain('data-action="copy-image"')
+  })
+
+  it('复制图：onCopyImage 与 labels.copyImage 都给了才画相机钮；这一组不进截图', () => {
+    const labels = { group: '图工具', table: '表格视图', exportCsv: '导出 CSV', fullscreen: '全屏' }
+    const noLabel = renderToStaticMarkup(
+      <ChartActions labels={labels} tableView={false} onTableView={() => {}} onCopyImage={() => {}} />,
+    )
+    expect(noLabel).not.toContain('data-action="copy-image"')
+    const html = renderToStaticMarkup(
+      <ChartActions
+        labels={{ ...labels, copyImage: '复制图片' }}
+        tableView={false}
+        onTableView={() => {}}
+        onCopyImage={() => {}}
+      />,
+    )
+    expect(html).toContain('data-action="copy-image"')
+    expect(html).toContain('aria-label="复制图片"')
+    expect(html).toContain('data-copy-image="skip"')
   })
 })
 
