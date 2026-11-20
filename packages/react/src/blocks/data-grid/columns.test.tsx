@@ -288,3 +288,39 @@ describe('pill 列：一格多枚标签', () => {
     expect(html(['甲', '乙'], { maxPills: 5 })).not.toContain('grid-pill-more')
   })
 })
+
+describe('progress 列：分子 / 分母加细条', () => {
+  const html = (v: unknown) =>
+    renderToStaticMarkup(
+      <DataGrid
+        columns={[{ ...col('progress'), id: 'p' }]}
+        layout={[{ id: 'p', label: 'P', width: 160, visible: true }]}
+        rows={[{ v }]}
+        rowId={() => 'r'}
+        label="t"
+        sort={null}
+        onSortChange={() => {}}
+      />,
+    )
+
+  it('两种写法都认；比例是排序值；分母不是正数没有比例；坏值写 —', () => {
+    expect(cell(col('progress'), { done: 3, total: 12 })).toMatchObject({
+      text: '3/12',
+      sort: 0.25,
+      progress: { done: 3, total: 12, ratio: 0.25 },
+    })
+    expect(cell(col('progress'), [5, 4]).progress?.ratio).toBe(1)
+    expect(cell(col('progress'), [0, 0])).toMatchObject({ text: '0/0', sort: undefined })
+    expect(cell(col('progress'), 'x')).toMatchObject({ text: '—', progress: undefined })
+    expect(defaultAlign('progress')).toBe('end')
+  })
+
+  it('渲染成「3/12」加一条宽度等于比例的细条', () => {
+    const out = html([3, 12])
+    expect(out).toContain('k-grid-progress-text')
+    expect(out).toContain('3/12')
+    expect(out).toContain('data-slot="grid-progress"')
+    expect(out).toContain('width:25%')
+    expect(html([0, 0])).not.toContain('<i ')
+  })
+})

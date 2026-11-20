@@ -27,6 +27,7 @@ export type ColumnType =
   | 'symbol'
   | 'bar'
   | 'pill'
+  | 'progress'
   | 'custom'
 
 /** 字的颜色：涨 / 跌（跟 data-updown，红涨绿跌时互换）、次要灰。 */
@@ -37,6 +38,9 @@ export type GridPillTone = 'up' | 'down' | 'muted' | 'accent'
 
 /** pill 列的一枚标签：只写字，或字加色调（不写色调是 muted）。 */
 export type PillValue = string | { label: string; tone?: GridPillTone }
+
+/** progress 列的值：分子与分母。 */
+export type ProgressValue = { done: number; total: number } | readonly [done: number, total: number]
 
 /** 买卖方向。 */
 export type GridSide = 'buy' | 'sell'
@@ -72,7 +76,7 @@ export type GridColumn<Row> = {
   type?: ColumnType
   /**
    * 原始值，由类型决定怎么读：price / quantity / pnl / change / number / bar 是数字或十进制字符串（空、不是数写 —）；
-   * pill 是 PillValue 或 PillValue[]；
+   * pill 是 PillValue 或 PillValue[]；progress 是 ProgressValue；
    * time 是毫秒时间戳；side 是 'buy' | 'sell'；symbol 是 SymbolValue；text 是字符串；custom 不读（内容全由 `cell` 画，要排序、复制就给 `text` 与 `sort`）。
    */
   value?: (row: Row) => unknown
@@ -118,13 +122,15 @@ export type ResolvedCell = {
   bar: number | undefined
   /** pill 列拆好的标签，没有标签是 undefined。 */
   pills: { label: string; tone: GridPillTone }[] | undefined
+  /** progress 列的分子、分母与比例（分母不是正数时比例是 undefined）。 */
+  progress: { done: number; total: number; ratio: number | undefined } | undefined
   /** symbol 列拆好的两段。 */
   symbol:
     | { code: string; venue: string | undefined; name: string | undefined; icon: { src?: string } | undefined }
     | undefined
 }
 
-const NUMERIC: ReadonlySet<ColumnType> = new Set(['number', 'price', 'quantity', 'pnl', 'change', 'bar'])
+const NUMERIC: ReadonlySet<ColumnType> = new Set(['number', 'price', 'quantity', 'pnl', 'change', 'bar', 'progress'])
 
 /** 数字类的列默认靠右（等宽数字对得齐小数点）。列布局里写了 align 就听它的。 */
 export const defaultAlign = (type: ColumnType | undefined): 'start' | 'end' =>
@@ -187,6 +193,7 @@ export function resolveCell<Row>(column: GridColumn<Row>, row: Row, env: CellEnv
   let symbol: ResolvedCell['symbol']
   let bar: ResolvedCell['bar']
   let pills: ResolvedCell['pills']
+  let progress: ResolvedCell['progress']
   switch (type) {
     case 'price': {
       const number = toNumber(raw)
@@ -260,6 +267,15 @@ export function resolveCell<Row>(column: GridColumn<Row>, row: Row, env: CellEnv
       sort = pills ? pills[0]!.label : undefined
       break
     }
+    case 'progress': {
+      const value = toProgress(raw)
+      progress = value
+        ? { ...value, ratio: value.total > 0 ? clamp01(value.done / value.total) : undefined }
+        : undefined
+      text = value ? `${value.done}/${value.total}` : DASH
+      sort = progress?.ratio
+      break
+    }
     case 'symbol': {
       const value = raw as SymbolValue | null | undefined
       const code = typeof value === 'string' ? value : (value?.code ?? '')
@@ -285,6 +301,7 @@ export function resolveCell<Row>(column: GridColumn<Row>, row: Row, env: CellEnv
     direction,
     bar,
     pills,
+    progress,
     symbol,
   }
 }
@@ -299,6 +316,17 @@ function toPills(raw: unknown): ResolvedCell['pills'] {
     return [{ label, tone: (typeof item === 'string' ? undefined : item.tone) ?? 'muted' }]
   })
   return pills.length > 0 ? pills : undefined
+}
+
+function toProgress(raw: unknown): { done: number; total: number } | undefined {
+  const pair = Array.isArray(raw)
+    ? [raw[0], raw[1]]
+    : raw !== null && typeof raw === 'object'
+      ? [(raw as { done?: unknown }).done, (raw as { total?: unknown }).total]
+      : undefined
+  const done = toNumber(pair?.[0])
+  const total = toNumber(pair?.[1])
+  return done === null || total === null || done === undefined || total === undefined ? undefined : { done, total }
 }
 
 /** bar 列的条：带符号的值除以列的最大绝对值，落在 -1 到 1；没有值或最大值不是正数是 0。纯函数，DataGrid 与单测共用。 */

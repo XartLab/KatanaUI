@@ -7607,6 +7607,26 @@ button.k-sysmon-link-body:focus-visible {
   justify-content: center;
 }
 
+.k-grid-progress-text {
+  flex: none;
+}
+
+.k-grid-progress {
+  background: var(--alpha-white-7);
+  border-radius: 2px;
+  flex: 1;
+  min-width: 24px;
+  height: 3px;
+  position: relative;
+  overflow: hidden;
+}
+
+.k-grid-progress > i {
+  background: var(--ink-100);
+  position: absolute;
+  inset: 0 auto 0 0;
+}
+
 .k-grid-name {
   text-overflow: ellipsis;
   overflow: hidden;

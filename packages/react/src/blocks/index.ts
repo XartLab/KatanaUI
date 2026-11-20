@@ -11,6 +11,7 @@ export type {
   GridSide,
   GridTone,
   PillValue,
+  ProgressValue,
   SymbolValue,
 } from './data-grid/columns.ts'
 export {

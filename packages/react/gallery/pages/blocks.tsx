@@ -217,22 +217,30 @@ function ColumnsDemo() {
 }
 
 // A 股看板用的列类型（#109）：板块排行的净买居中条。示例数据写死，不是行情。
-type Sector = { id: string; name: string; net: number; tags: PillValue[] }
+type Sector = { id: string; name: string; net: number; tags: PillValue[]; promoted: [number, number] }
 const SECTORS: readonly Sector[] = [
-  { id: 's1', name: '示例板块甲', tags: ['题材一', { label: '龙头', tone: 'up' }, '题材二', '题材三'], net: 12.4 },
-  { id: 's2', name: '示例板块乙', tags: [{ label: '连板', tone: 'accent' }, '题材二'], net: 5.1 },
-  { id: 's3', name: '示例板块丙', tags: [{ label: '炸板', tone: 'down' }], net: -3.2 },
-  { id: 's4', name: '示例板块丁', tags: ['题材一'], net: -9.8 },
-  { id: 's5', name: '示例板块戊', tags: [], net: 0 },
+  {
+    id: 's1',
+    name: '示例板块甲',
+    promoted: [3, 12],
+    tags: ['题材一', { label: '龙头', tone: 'up' }, '题材二', '题材三'],
+    net: 12.4,
+  },
+  { id: 's2', name: '示例板块乙', promoted: [5, 8], tags: [{ label: '连板', tone: 'accent' }, '题材二'], net: 5.1 },
+  { id: 's3', name: '示例板块丙', promoted: [0, 4], tags: [{ label: '炸板', tone: 'down' }], net: -3.2 },
+  { id: 's4', name: '示例板块丁', promoted: [2, 2], tags: ['题材一'], net: -9.8 },
+  { id: 's5', name: '示例板块戊', promoted: [0, 0], tags: [], net: 0 },
 ]
 const SECTOR_COLUMNS: readonly GridColumn<Sector>[] = [
   { id: 'name', type: 'text', value: (row) => row.name },
   { id: 'tags', type: 'pill', value: (row) => row.tags },
+  { id: 'promoted', type: 'progress', value: (row) => row.promoted },
   { id: 'net', type: 'bar', value: (row) => row.net, format: { digits: 1, suffix: '亿' } },
 ]
 const SECTOR_LAYOUT: readonly GridColumnLayout[] = [
   { id: 'name', label: '板块', width: 120, visible: true },
   { id: 'tags', label: '题材与状态', width: 190, visible: true },
+  { id: 'promoted', label: '晋级', width: 110, visible: true },
   { id: 'net', label: '主力净买', width: 220, visible: true },
 ]
 
@@ -241,7 +249,8 @@ function AShareColumnsDemo() {
     <>
       <p className="gal-note">
         bar 列：以 0 为中线，正在右（涨色）、负在左（跌色），长度按本列绝对值最大者归一，数字写在条旁。pill
-        列：一格多枚短标签，色调只有涨 / 跌 / 弱 / 强调四种，一行放不下的收成「+n」，悬停看全部。示例数据，不是行情。
+        列：一格多枚短标签，色调只有涨 / 跌 / 弱 / 强调四种，一行放不下的收成「+n」，悬停看全部。progress 列：分子 /
+        分母加一条细条（晋级率 3/12）。示例数据，不是行情。
       </p>
       <div data-testid="grid-ashare" style={{ display: 'flex', width: '100%', maxWidth: 640 }}>
         <DataGrid

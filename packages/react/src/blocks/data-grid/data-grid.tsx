@@ -1107,6 +1107,19 @@ function CellBody({
   maxPills?: number
 }) {
   if (resolved.pills) return <PillCell pills={resolved.pills} max={maxPills} />
+  if (resolved.progress) {
+    const { done, total, ratio } = resolved.progress
+    return (
+      <>
+        <span className="k-grid-progress-text">
+          {done}/{total}
+        </span>
+        <span className="k-grid-progress" data-slot="grid-progress" aria-hidden="true">
+          {ratio !== undefined && <i style={{ width: `${ratio * 100}%` }} />}
+        </span>
+      </>
+    )
+  }
   if (resolved.bar !== undefined) {
     const ratio = barRatio(resolved.bar, extent)
     return (
