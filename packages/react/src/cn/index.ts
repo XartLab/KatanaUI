@@ -56,3 +56,11 @@ export {
   type ThemeCatalyst,
   type ThemeMember,
 } from './theme-card.tsx'
+export {
+  MarketPulse,
+  dialArc,
+  pulseShare,
+  type MarketPulseCounts,
+  type MarketPulseProps,
+  type MarketPulseReadings,
+} from './market-pulse.tsx'
