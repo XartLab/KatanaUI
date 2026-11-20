@@ -244,6 +244,32 @@ const SECTOR_LAYOUT: readonly GridColumnLayout[] = [
   { id: 'net', label: '主力净买', width: 220, visible: true },
 ]
 
+// 题材 × 交易日热力格表（#109 heat）：格子按涨幅深浅铺底色，右上角是当日名次。示例数据，不是行情。
+type ThemeRow = { id: string; name: string; days: readonly number[] }
+const THEME_DAYS = ['D1', 'D2', 'D3', 'D4', 'D5']
+const THEMES: readonly ThemeRow[] = [
+  { id: 't1', name: '示例题材甲', days: [4.2, 6.8, 9.1, 2.3, -1.2] },
+  { id: 't2', name: '示例题材乙', days: [-2.1, 1.4, 3.3, 5.6, 7.4] },
+  { id: 't3', name: '示例题材丙', days: [0.6, -3.8, -6.2, -1.5, 0] },
+  { id: 't4', name: '示例题材丁', days: [1.9, 0.4, -0.8, 3.1, 2.2] },
+]
+const dayRank = (index: number, row: ThemeRow) =>
+  1 + THEMES.filter((other) => (other.days[index] ?? 0) > (row.days[index] ?? 0)).length
+const THEME_COLUMNS: readonly GridColumn<ThemeRow>[] = [
+  { id: 'name', type: 'text', value: (row) => row.name },
+  ...THEME_DAYS.map((day, index): GridColumn<ThemeRow> => ({
+    id: day,
+    type: 'change',
+    value: (row) => row.days[index],
+    format: { digits: 1 },
+    heat: { domain: [-10, 10], rank: (row) => dayRank(index, row) },
+  })),
+]
+const THEME_LAYOUT: readonly GridColumnLayout[] = [
+  { id: 'name', label: '题材', width: 120, visible: true },
+  ...THEME_DAYS.map((day) => ({ id: day, label: day, width: 82, visible: true })),
+]
+
 function AShareColumnsDemo() {
   return (
     <>
@@ -259,6 +285,23 @@ function AShareColumnsDemo() {
           rows={SECTORS}
           rowId={(row) => row.id}
           label="Example sector ranking"
+          sort={null}
+          onSortChange={() => {}}
+          interactive={false}
+          fit
+        />
+      </div>
+      <p className="gal-note">
+        heat：列声明 heat: {'{'} domain, rank? {'}'}，格子底色按值深浅（跨 0
+        时正数涨色、负数跌色），右上角放名次小字，不占行高行宽。
+      </p>
+      <div data-testid="grid-heat" style={{ display: 'flex', width: '100%', maxWidth: 640 }}>
+        <DataGrid
+          columns={THEME_COLUMNS}
+          layout={THEME_LAYOUT}
+          rows={THEMES}
+          rowId={(row) => row.id}
+          label="Example theme heat table"
           sort={null}
           onSortChange={() => {}}
           interactive={false}

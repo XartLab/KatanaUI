@@ -7,6 +7,7 @@ export type {
   ColumnFormat,
   ColumnType,
   GridColumn,
+  GridHeat,
   GridPillTone,
   GridSide,
   GridTone,

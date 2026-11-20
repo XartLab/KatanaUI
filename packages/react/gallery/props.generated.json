@@ -7501,6 +7501,12 @@
           "description": "整格的底色（ATAS 的盈亏是整格绿底 / 红底）。"
         },
         {
+          "name": "heat",
+          "type": "GridHeat<Row>",
+          "required": false,
+          "description": "强度底色：格子底色按这一格的数深浅（读 `value`）。domain 是 [最小, 最大]：跨 0 时正数用涨色、负数用跌色，各自以 0 到端点的距离定深浅； 不跨 0 时全按涨色、从最小到最大。rank 给了就在格子右上角写一个名次小字（不占行高行宽）。颜色只由 token 给，调用方不传色值。"
+        },
+        {
           "name": "title",
           "type": "(row: Row) => string | undefined",
           "required": false,
@@ -7590,6 +7596,24 @@
       "kind": "type",
       "source": "src/blocks/data-grid/data-grid.tsx",
       "props": []
+    },
+    "GridHeat": {
+      "kind": "type",
+      "source": "src/blocks/data-grid/columns.ts",
+      "props": [
+        {
+          "name": "domain",
+          "type": "readonly [number, number]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "rank",
+          "type": "(row: Row) => string | number | undefined",
+          "required": false,
+          "description": ""
+        }
+      ]
     },
     "GridMenuEntry": {
       "kind": "type",

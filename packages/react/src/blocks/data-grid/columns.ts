@@ -90,6 +90,11 @@ export type GridColumn<Row> = {
   tone?: (row: Row) => GridTone | undefined
   /** 整格的底色（ATAS 的盈亏是整格绿底 / 红底）。 */
   fill?: (row: Row) => 'up' | 'down' | undefined
+  /**
+   * 强度底色：格子底色按这一格的数深浅（读 `value`）。domain 是 [最小, 最大]：跨 0 时正数用涨色、负数用跌色，各自以 0 到端点的距离定深浅；
+   * 不跨 0 时全按涨色、从最小到最大。rank 给了就在格子右上角写一个名次小字（不占行高行宽）。颜色只由 token 给，调用方不传色值。
+   */
+  heat?: GridHeat<Row>
   title?: (row: Row) => string | undefined
   /**
    * custom 列的内容：这一格画什么都行（多行的字、使用度条、按钮）。按钮之类要点的东西放在里面，表不把它当整行的点击。
@@ -103,6 +108,11 @@ export type GridColumn<Row> = {
   csvHeader?: () => string
   /** 这一列是行的标题（指标表的第一列）：这一格读作 rowheader，屏幕阅读器念「指标名：值」。 */
   rowHeader?: boolean
+}
+
+export type GridHeat<Row> = {
+  domain: readonly [number, number]
+  rank?: (row: Row) => string | number | undefined
 }
 
 export type CellEnv = {
@@ -327,6 +337,36 @@ function toProgress(raw: unknown): { done: number; total: number } | undefined {
   const done = toNumber(pair?.[0])
   const total = toNumber(pair?.[1])
   return done === null || total === null || done === undefined || total === undefined ? undefined : { done, total }
+}
+
+/**
+ * 强度底色：这一格按 heat.domain 落在哪一边、多深。跨 0 的 domain 里正数取涨色、负数取跌色，深浅是到 0 的距离占端点距离的比例；
+ * 不跨 0 的 domain 全在 0 以上取涨色（最小到最大）、全在 0 以下取跌色（最大到最小）。没有数、等于 0 的格子没有底色。纯函数。
+ */
+export function resolveHeat<Row>(
+  column: GridColumn<Row>,
+  row: Row,
+): { tone: 'up' | 'down'; level: number; rank: string | undefined } | undefined {
+  const heat = column.heat
+  if (!heat) return undefined
+  const value = toNumber(column.value?.(row))
+  if (value === null || value === 0) return undefined
+  const [lo, hi] = heat.domain
+  const span = (from: number, to: number) => (to === from ? 1 : clamp01((value - from) / (to - from)))
+  let tone: 'up' | 'down'
+  let level: number
+  if (lo < 0 && hi > 0) {
+    tone = value > 0 ? 'up' : 'down'
+    level = value > 0 ? clamp01(value / hi) : clamp01(value / lo)
+  } else if (hi <= 0) {
+    tone = 'down'
+    level = span(hi, lo)
+  } else {
+    tone = 'up'
+    level = span(lo, hi)
+  }
+  const rank = heat.rank?.(row)
+  return { tone, level, rank: rank === undefined ? undefined : String(rank) }
 }
 
 /** bar 列的条：带符号的值除以列的最大绝对值，落在 -1 到 1；没有值或最大值不是正数是 0。纯函数，DataGrid 与单测共用。 */

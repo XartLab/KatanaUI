@@ -280,6 +280,29 @@
   inset: 0 auto 0 0;
   background: var(--ink-100);
 }
+/* 强度底色（#109）：列声明 heat 后，格子按值深浅铺涨 / 跌色的淡底；--heat 是 0 到 1，最深 40%（和 fill 的 22% 同一套 color-mix 写法）。
+   名次小字在格子右上角，绝对定位，不占行高行宽。 */
+.k-grid-cell[data-heat] {
+  background: color-mix(in srgb, var(--heat-color) calc(var(--heat, 0) * 40%), transparent);
+}
+.k-grid-cell[data-heat='up'] {
+  --heat-color: var(--pnl-up);
+}
+.k-grid-cell[data-heat='down'] {
+  --heat-color: var(--pnl-down);
+}
+.k-grid-cell.has-rank:not(.is-fixed) {
+  position: relative;
+}
+.k-grid-rank {
+  position: absolute;
+  top: 1px;
+  right: 3px;
+  color: var(--ink-300);
+  font: var(--text-caption) var(--font-sans);
+  line-height: 1;
+  pointer-events: none;
+}
 .k-grid-name {
   overflow: hidden;
   text-overflow: ellipsis;

@@ -7627,6 +7627,38 @@ button.k-sysmon-link-body:focus-visible {
   inset: 0 auto 0 0;
 }
 
+.k-grid-cell[data-heat] {
+  background: var(--heat-color);
+}
+
+@supports (color: color-mix(in lab, red, red)) {
+  .k-grid-cell[data-heat] {
+    background: var(--ds-c-1nl2xey);
+  }
+}
+
+.k-grid-cell[data-heat="up"] {
+  --heat-color: var(--pnl-up);
+}
+
+.k-grid-cell[data-heat="down"] {
+  --heat-color: var(--pnl-down);
+}
+
+.k-grid-cell.has-rank:not(.is-fixed) {
+  position: relative;
+}
+
+.k-grid-rank {
+  color: var(--ink-300);
+  font: var(--text-caption) var(--font-sans);
+  pointer-events: none;
+  line-height: 1;
+  position: absolute;
+  top: 1px;
+  right: 3px;
+}
+
 .k-grid-name {
   text-overflow: ellipsis;
   overflow: hidden;
@@ -15452,6 +15484,7 @@ button.k-consensus-hash:focus-visible {
   --ds-c-1onh62z: color-mix(in srgb, var(--pnl-down) 22%, transparent);
   --ds-c-t6f6aj: color-mix(in srgb, var(--pnl-up) 16%, transparent);
   --ds-c-xgdj0u: color-mix(in srgb, var(--pnl-down) 16%, transparent);
+  --ds-c-1nl2xey: color-mix(in srgb, var(--heat-color) calc(var(--heat, 0) * 40%), transparent);
   --ds-c-clc5nk: color-mix(in srgb, var(--pnl-down) 100%, var(--bg-000));
   --ds-c-1v6dr3q: color-mix(in srgb, var(--pnl-down) 70%, var(--bg-000));
   --ds-c-1g34po5: color-mix(in srgb, var(--pnl-down) 42%, var(--bg-000));
@@ -15487,6 +15520,7 @@ button.k-consensus-hash:focus-visible {
   --chart-grid-color: initial;
   --chart-grid-dash: initial;
   --chart-line-glow: initial;
+  --heat: initial;
   --k-deg: initial;
   --k-grid-hidden-right: initial;
   --k-in-dur: initial;

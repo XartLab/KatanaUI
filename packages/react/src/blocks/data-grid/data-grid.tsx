@@ -20,6 +20,7 @@ import {
   useMemo,
   useRef,
   useState,
+  type CSSProperties,
   type KeyboardEvent,
   type MouseEvent,
   type PointerEvent,
@@ -32,7 +33,15 @@ import { useMenuParts } from '../../primitives/menu-any.tsx'
 import { MenuItemHint, MenuItemLabel } from '../../primitives/menu-parts.tsx'
 import { RowActions, type RowAction } from '../../patterns/row-actions.tsx'
 import { ToneText } from '../../quant/tone-text.tsx'
-import { barExtent, barRatio, defaultAlign, resolveCell, sortComparator, type GridColumn } from './columns.ts'
+import {
+  barExtent,
+  barRatio,
+  defaultAlign,
+  resolveCell,
+  resolveHeat,
+  sortComparator,
+  type GridColumn,
+} from './columns.ts'
 import { moveColumn, reorderColumn, setColumnFixed, setColumnVisible } from './layout-model.ts'
 import { DEFAULT_TEXTS, useDataGridHost, type GridMenuEntry } from './host.tsx'
 import {
@@ -1013,22 +1022,26 @@ export function DataGrid<Row extends object>({
                     const column = byId.get(cell.column.id)!
                     const resolved = resolveCell(column, row.original, env)
                     const fill = column.fill?.(row.original)
+                    const heat = resolveHeat(column, row.original)
                     return (
                       <div
                         key={cell.id}
                         role={column.rowHeader ? 'rowheader' : cellRole}
                         data-col={column.id}
                         data-type={column.type ?? 'text'}
+                        data-heat={heat?.tone}
                         className={cn(
                           'k-grid-cell',
                           alignOf(column.id) === 'end' && 'is-end',
                           resolved.tone && `is-${resolved.tone}`,
                           fill && `fill-${fill}`,
+                          heat?.rank !== undefined && 'has-rank',
                           stickClass(column.id),
                           classNames.cell,
                         )}
                         style={{
                           ...stickStyle(column.id),
+                          ...(heat ? ({ '--heat': heat.level } as CSSProperties) : undefined),
                           ...(autoRowHeight ? undefined : { lineHeight: `${rowHeight}px` }),
                         }}
                         title={column.title?.(row.original)}
@@ -1046,6 +1059,11 @@ export function DataGrid<Row extends object>({
                                 ?.maxPills
                             }
                           />
+                        )}
+                        {heat?.rank !== undefined && (
+                          <span className="k-grid-rank" data-slot="grid-rank">
+                            {heat.rank}
+                          </span>
                         )}
                       </div>
                     )

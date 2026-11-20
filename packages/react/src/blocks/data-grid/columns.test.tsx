@@ -1,7 +1,15 @@
 // SPDX-License-Identifier: MIT
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vite-plus/test'
-import { barRatio, defaultAlign, formatTimestamp, resolveCell, sortComparator, type GridColumn } from './columns.ts'
+import {
+  barRatio,
+  defaultAlign,
+  resolveHeat,
+  formatTimestamp,
+  resolveCell,
+  sortComparator,
+  type GridColumn,
+} from './columns.ts'
 import { DataGrid } from './data-grid.tsx'
 import { DataGridHostProvider } from './host.tsx'
 
@@ -322,5 +330,49 @@ describe('progress 列：分子 / 分母加细条', () => {
     expect(out).toContain('data-slot="grid-progress"')
     expect(out).toContain('width:25%')
     expect(html([0, 0])).not.toContain('<i ')
+  })
+})
+
+describe('heat：强度底色与名次小字', () => {
+  const heated = (heat: GridColumn<Row>['heat']): GridColumn<Row> => ({ ...col('change'), id: 'h', heat })
+  const html = (heat: GridColumn<Row>['heat'], values: number[]) =>
+    renderToStaticMarkup(
+      <DataGrid
+        columns={[heated(heat)]}
+        layout={[{ id: 'h', label: 'H', width: 100, visible: true }]}
+        rows={values.map((v) => ({ v }))}
+        rowId={(row) => String(row.v)}
+        label="t"
+        sort={null}
+        onSortChange={() => {}}
+      />,
+    )
+
+  it('跨 0：正数涨色、负数跌色，深浅是到端点的比例；0 与空没有底色', () => {
+    const column = heated({ domain: [-10, 5] })
+    expect(resolveHeat(column, { v: 5 })).toMatchObject({ tone: 'up', level: 1 })
+    expect(resolveHeat(column, { v: 2.5 })).toMatchObject({ tone: 'up', level: 0.5 })
+    expect(resolveHeat(column, { v: -5 })).toMatchObject({ tone: 'down', level: 0.5 })
+    expect(resolveHeat(column, { v: -20 })).toMatchObject({ tone: 'down', level: 1 })
+    expect(resolveHeat(column, { v: 0 })).toBeUndefined()
+    expect(resolveHeat(column, { v: null })).toBeUndefined()
+    expect(resolveHeat(col('change'), { v: 5 })).toBeUndefined()
+  })
+
+  it('不跨 0 的 domain：全在 0 以上按涨色从最小到最大，全在 0 以下按跌色', () => {
+    expect(resolveHeat(heated({ domain: [10, 30] }), { v: 20 })).toMatchObject({ tone: 'up', level: 0.5 })
+    expect(resolveHeat(heated({ domain: [-30, -10] }), { v: -20 })).toMatchObject({ tone: 'down', level: 0.5 })
+  })
+
+  it('格子带 data-heat 与 --heat；rank 写在格子右上角的小字里；没声明 heat 的列不带', () => {
+    const out = html({ domain: [-10, 10], rank: (row) => (row.v > 0 ? `#${row.v}` : undefined) }, [10, -5, 0])
+    expect(out).toContain('data-heat="up"')
+    expect(out).toContain('--heat:1')
+    expect(out).toContain('data-heat="down"')
+    expect(out).toContain('--heat:0.5')
+    expect(out.match(/data-heat=/g)).toHaveLength(2)
+    expect(out).toContain('<span class="k-grid-rank" data-slot="grid-rank">#10</span>')
+    expect(out.match(/k-grid-rank/g)).toHaveLength(1)
+    expect(out).toContain('has-rank')
   })
 })
