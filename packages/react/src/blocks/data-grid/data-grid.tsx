@@ -16,9 +16,11 @@ import { useVirtualizer } from '@tanstack/react-virtual'
 import {
   useEffect,
   useId,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
+  type CSSProperties,
   type KeyboardEvent,
   type MouseEvent,
   type PointerEvent,
@@ -31,7 +33,15 @@ import { useMenuParts } from '../../primitives/menu-any.tsx'
 import { MenuItemHint, MenuItemLabel } from '../../primitives/menu-parts.tsx'
 import { RowActions, type RowAction } from '../../patterns/row-actions.tsx'
 import { ToneText } from '../../quant/tone-text.tsx'
-import { defaultAlign, resolveCell, sortComparator, type GridColumn } from './columns.ts'
+import {
+  barExtent,
+  barRatio,
+  defaultAlign,
+  resolveCell,
+  resolveHeat,
+  sortComparator,
+  type GridColumn,
+} from './columns.ts'
 import { moveColumn, reorderColumn, setColumnFixed, setColumnVisible } from './layout-model.ts'
 import { DEFAULT_TEXTS, useDataGridHost, type GridMenuEntry } from './host.tsx'
 import {
@@ -391,6 +401,16 @@ export function DataGrid<Row extends object>({
   const labelOf = (column: string) => layoutOf.get(column)?.label ?? column
   const alignOf = (column: string) => layoutOf.get(column)?.align ?? defaultAlign(byId.get(column)?.type)
   const env = { timeZone }
+  // bar 列的条按整列归一：本列所有行里绝对值最大者当满格（虚拟滚动只画看得见的行，但基准看全部行）。
+  const extents = useMemo(
+    () =>
+      new Map(
+        columns
+          .filter((column) => column.type === 'bar')
+          .map((column) => [column.id, barExtent(column, rows, { timeZone })] as const),
+      ),
+    [columns, rows, timeZone],
+  )
 
   const defs = useMemo(() => {
     const helper = createColumnHelper<typeof features, Row>()
@@ -1002,22 +1022,26 @@ export function DataGrid<Row extends object>({
                     const column = byId.get(cell.column.id)!
                     const resolved = resolveCell(column, row.original, env)
                     const fill = column.fill?.(row.original)
+                    const heat = resolveHeat(column, row.original)
                     return (
                       <div
                         key={cell.id}
                         role={column.rowHeader ? 'rowheader' : cellRole}
                         data-col={column.id}
                         data-type={column.type ?? 'text'}
+                        data-heat={heat?.tone}
                         className={cn(
                           'k-grid-cell',
                           alignOf(column.id) === 'end' && 'is-end',
                           resolved.tone && `is-${resolved.tone}`,
                           fill && `fill-${fill}`,
+                          heat?.rank !== undefined && 'has-rank',
                           stickClass(column.id),
                           classNames.cell,
                         )}
                         style={{
                           ...stickStyle(column.id),
+                          ...(heat ? ({ '--heat': heat.level } as CSSProperties) : undefined),
                           ...(autoRowHeight ? undefined : { lineHeight: `${rowHeight}px` }),
                         }}
                         title={column.title?.(row.original)}
@@ -1027,7 +1051,19 @@ export function DataGrid<Row extends object>({
                         ) : column.render ? (
                           column.render(row.original)
                         ) : (
-                          <CellBody resolved={resolved} />
+                          <CellBody
+                            resolved={resolved}
+                            extent={extents.get(column.id) ?? 0}
+                            maxPills={
+                              (typeof column.format === 'function' ? column.format(row.original) : column.format)
+                                ?.maxPills
+                            }
+                          />
+                        )}
+                        {heat?.rank !== undefined && (
+                          <span className="k-grid-rank" data-slot="grid-rank">
+                            {heat.rank}
+                          </span>
                         )}
                       </div>
                     )
@@ -1079,7 +1115,40 @@ export function DataGrid<Row extends object>({
 }
 
 /** 一格里的内容：品种拆成代码加场所，有方向的类型（盈亏、涨跌幅、买卖）用 ToneText 跟 data-updown，别的直接写字。 */
-function CellBody({ resolved }: { resolved: ReturnType<typeof resolveCell> }) {
+function CellBody({
+  resolved,
+  extent,
+  maxPills,
+}: {
+  resolved: ReturnType<typeof resolveCell>
+  extent: number
+  maxPills?: number
+}) {
+  if (resolved.pills) return <PillCell pills={resolved.pills} max={maxPills} />
+  if (resolved.progress) {
+    const { done, total, ratio } = resolved.progress
+    return (
+      <>
+        <span className="k-grid-progress-text">
+          {done}/{total}
+        </span>
+        <span className="k-grid-progress" data-slot="grid-progress" aria-hidden="true">
+          {ratio !== undefined && <i style={{ width: `${ratio * 100}%` }} />}
+        </span>
+      </>
+    )
+  }
+  if (resolved.bar !== undefined) {
+    const ratio = barRatio(resolved.bar, extent)
+    return (
+      <>
+        <span className="k-grid-bar" data-slot="grid-bar" data-dir={ratio > 0 ? 'up' : ratio < 0 ? 'down' : 'flat'}>
+          <i style={{ width: `${Math.abs(ratio) * 50}%`, [ratio < 0 ? 'right' : 'left']: '50%' }} />
+        </span>
+        <span className="k-grid-bar-text">{resolved.text}</span>
+      </>
+    )
+  }
   if (resolved.symbol) {
     return (
       <>
@@ -1142,5 +1211,70 @@ function DefaultMenu({ entries }: { entries: readonly GridMenuEntry[] }) {
         )
       })}
     </>
+  )
+}
+
+/** 胶囊的「+n」预留的宽度（px）与胶囊之间的间距，跟 data-grid.css 的 .k-grid-pill 一致。 */
+const PILL_MORE_WIDTH = 32
+const PILL_GAP = 4
+
+/**
+ * pill 列的一格：多枚短标签排成一行，装不下的收成「+n」（悬停的 title 写全部）。
+ * 先按 maxPills 截（服务端渲染与首帧就是这个数），挂载后量每枚的宽，按格子宽度再往下收；格子变宽变窄时重算。
+ */
+function PillCell({ pills, max }: { pills: NonNullable<ReturnType<typeof resolveCell>['pills']>; max?: number }) {
+  const box = useRef<HTMLSpanElement | null>(null)
+  const cap = Math.min(pills.length, max ?? pills.length)
+  const [fit, setFit] = useState(cap)
+  const key = pills.map((pill) => pill.label).join('\u0000')
+  useLayoutEffect(() => {
+    const el = box.current
+    if (!el) return
+    const measure = () => {
+      const nodes = Array.from(el.querySelectorAll<HTMLElement>('[data-pill]'))
+      const widths = nodes.map((node) => {
+        const was = node.hidden
+        node.hidden = false
+        const width = node.offsetWidth
+        node.hidden = was
+        return width
+      })
+      const room = el.clientWidth
+      const total = widths.length
+      let count = 0
+      for (let k = Math.min(cap, total); k >= 0; k--) {
+        const used = widths.slice(0, k).reduce((sum, width) => sum + width, 0) + Math.max(0, k - 1) * PILL_GAP
+        const more = k < total ? (k > 0 ? PILL_GAP : 0) + PILL_MORE_WIDTH : 0
+        if (used + more <= room) {
+          count = k
+          break
+        }
+      }
+      setFit(room > 0 ? count : cap)
+    }
+    measure()
+    const observer = new ResizeObserver(measure)
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [key, cap])
+  const shown = Math.min(fit, cap)
+  const rest = pills.length - shown
+  return (
+    <span ref={box} className="k-grid-pills" data-slot="grid-pills">
+      {pills.map((pill, i) => (
+        <span key={`${i}-${pill.label}`} className="k-grid-pill" data-pill="" data-tone={pill.tone} hidden={i >= shown}>
+          {pill.label}
+        </span>
+      ))}
+      {rest > 0 && (
+        <span
+          className="k-grid-pill k-grid-pill-more"
+          data-slot="grid-pill-more"
+          title={pills.map((pill) => pill.label).join(' · ')}
+        >
+          +{rest}
+        </span>
+      )}
+    </span>
   )
 }

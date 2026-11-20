@@ -23,12 +23,15 @@ import { EndMarker } from '../../quant/chart-kit/end-marker.tsx'
 import { LcdTooltip } from '../../quant/chart-kit/lcd-tooltip.tsx'
 import { PlotGrid, PlotYAxis } from '../../quant/chart-kit/plot-axes.tsx'
 import { linePath, makePlot, pct, PLOT_W } from '../../quant/series-geometry.ts'
+import { RegimeStrip, type RegimeStripProps } from '../../quant/regime-strip.tsx'
 import { SparkTile } from '../../quant/spark-tile.tsx'
 import {
   changeRatio,
   chartExtent,
   pointValue,
   previousWindow,
+  regimeAt,
+  regimeScale,
   rangeWindow,
   reconcileWindow,
   reduceWindow,
@@ -106,6 +109,12 @@ export type SeriesExplorerProps = {
   meta?: string
   /** 图上的事件点：按时间落在序列的点上，画编号引线（01、02……按给的次序编号）。 */
   events?: readonly { at: number; label: string }[]
+  /**
+   * Market regime strip under the time axis (a RegimeStrip without `scale`): it shares the x axis and the crosshair with the series,
+   * and the tooltip gets a row with the regime at the hovered point. Segments are half-open [from, to) in the same unit as `points[].at`.
+   * 状态带：画在时间轴下，跟序列共用横轴与十字线，悬停框多一行当前所处的状态；段是左闭右开 [from, to)，单位同 points 的 at。
+   */
+  regimes?: Omit<RegimeStripProps, 'scale'>
   /** 导出与全屏回调不给就不画那个按钮。 */
   onExport?: () => void
   onFullscreen?: () => void
@@ -135,6 +144,7 @@ export function SeriesExplorer({
   reconcile,
   meta,
   events,
+  regimes,
   onExport,
   onFullscreen,
   defaultMetric,
@@ -593,6 +603,12 @@ export function SeriesExplorer({
                               },
                             ]
                           : []),
+                        ...(() => {
+                          const state = regimes
+                            ? regimes.states.find((item) => item.id === regimeAt(regimes.segments, activePoint.at))
+                            : undefined
+                          return regimes && state ? [{ key: 'regime', label: regimes.label, value: state.name }] : []
+                        })(),
                         ...(kpi.limit === undefined
                           ? []
                           : [{ key: 'limit', label: labels.limit, value: formatValue(kpi.limit) }]),
@@ -615,6 +631,12 @@ export function SeriesExplorer({
                   )
                 })}
               </div>
+              {regimes && (
+                <div className="k-sx-regimes" data-slot="series-regimes">
+                  <RegimeStrip {...regimes} scale={regimeScale(shown.map((point) => point.at))} />
+                  {active !== null && <span className="k-plot-cross" style={{ left: pct(plot.xAt(active)) }} />}
+                </div>
+              )}
             </>
           )}
 

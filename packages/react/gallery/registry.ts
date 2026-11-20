@@ -1217,6 +1217,33 @@ export const PAGES: readonly DocPage[] = [
     keys: [['Tab', '到分段控件（← → 移动，Space / Enter 选）']],
   },
   {
+    id: 'distribution-bars',
+    group: 'quant',
+    cardHeight: 220,
+    title: 'DistributionBars 分档分布柱',
+    summary:
+      '把一批品种按涨跌幅分成 9 或 11 档（跌停…涨停），每档一根柱，柱顶标家数，底部一行汇总（涨 x / 平 y / 跌 z）。档的边界、档名与汇总的名字都由调用方传，件只按家数画柱、按色调汇总；没有数据显示空态，不画样本。',
+    exports: ['DistributionBars', 'distributionTotals', 'distributionBarHeight'],
+    propParts: [
+      { part: 'DistributionBars', note: '示例数据写死在页里，不是行情。柱高按最大档归一，有家数的至少 1px。' },
+      { part: 'distributionTotals', note: '纯函数：各色调（up / muted / down）的家数之和，汇总行用它。' },
+      { part: 'distributionBarHeight', note: '纯函数：柱高（px），按最大档归一并扣掉柱顶那一行。' },
+    ],
+    states: [
+      '有数据：每档一列，柱色跟档的色调（up / down / muted / accent），柱顶是家数。',
+      '某档没有数（count 为 null）：不画柱，柱顶写「—」。',
+      '汇总：给了 totals 才有，按 up / muted / down 的次序，没写名字的项不出现。',
+      '没有数据（空数组或全是 null）：只写 empty 的字，不画样本。',
+    ],
+    donts: [
+      '不要给柱传色值：只选色调名。',
+      '不要在包里写档名或汇总的字：都由调用方传。',
+      '不要用它画连续分布（直方图拖区间用 RangeHistogramSlider）：它画的是已经分好档的家数。',
+    ],
+    composition: 'DistributionBars\n  柱区（每档：家数 + 柱）\n  档名行\n  汇总行',
+    keys: [],
+  },
+  {
     id: 'rating-text',
     group: 'quant',
     cardHeight: 140,
@@ -2816,6 +2843,11 @@ export const PAGES: readonly DocPage[] = [
             desc: '导出与全屏回调不给就不画按钮；初始展开哪个指标，null 是收起。',
           },
           { name: 'chartHeight', type: 'number', default: '220', desc: '图高（px）。' },
+          {
+            name: 'regimes',
+            type: 'Omit<RegimeStripProps, "scale">',
+            desc: '市场状态带：画在时间轴下，跟序列共用横轴与十字线，悬停框多一行当前所处的状态。段是左闭右开 [from, to)，单位同 points 的 at；不给就没有这一块。十字线按 14px 的带画，所以不要传 title（它会把带挤下去一行）。',
+          },
         ],
       },
     ],
@@ -2827,6 +2859,7 @@ export const PAGES: readonly DocPage[] = [
       '对比上一期：窗口前面够长才可开，画同一序列的上一期（灰色虚线，按下标对齐）；不够长开关禁用。',
       '对账对不上：灯转琥珀，差额写在后面。',
       '表格视图：右上角第一个按钮切到明细表（键盘可达）。',
+      '给了 regimes：图和时间轴下多一条状态带与图例，状态段与图里的一格一点对齐；悬停某点时带上也有十字线，悬停框多一行当前状态。',
     ],
     donts: [
       '不要在包里算盈亏：已实现、手续费、净值都由调用方在 points 里给好。',
@@ -3064,7 +3097,7 @@ export const PAGES: readonly DocPage[] = [
       },
       {
         part: '列类型 ColumnType',
-        note: '数字类默认靠右，用等宽数字；pnl、change、side 用 ToneText 跟 data-updown 着色（红涨绿跌时互换）。',
+        note: '数字类默认靠右，用等宽数字；pnl、change、side 用 ToneText 跟 data-updown 着色（红涨绿跌时互换）。bar 是以 0 为中线的居中条（正在右用涨色、负在左用跌色，长度按本列绝对值最大者归一，数字写在条旁；format 的 digits 与 suffix 同 pnl）。pill 是一格多枚短标签（值是字符串或 { label, tone } 的数组，tone 只有 up / down / muted / accent 四种，不传色值），一行放不下的按格子宽度收成「+n」、悬停的 title 写全部，format.maxPills 可再限个数。progress 是分子 / 分母加一条 3px 细条（值是 { done, total } 或 [done, total]，分母不是正数不画条，排序按比例）。任何列都可以再声明 heat: { domain, rank? }：格子底色按值深浅（跨 0 的 domain 里正数用涨色、负数用跌色，不跨 0 的按单边从最小到最大），rank 给了就在格子右上角写名次小字，不占行高行宽；颜色只由 token 给，不传色值。',
       },
       {
         part: 'DataGridHost（经 DataGridHostProvider 提供）',
@@ -3617,6 +3650,11 @@ export const PAGES: readonly DocPage[] = [
             type: 'NewsFacet[]',
             desc: '组合过滤（照 TradingView News Flow，主会话 2026-11-15 实测）：{ key, label, options, single?, shown? }；条目用 NewsItem.facets 带取值。每个分面一个胶囊，浮层里复选、可重置、可移除，「+ 添加过滤」再加；取值之间「或」，分面之间「且」。需要 labels.facets 的文字。',
           },
+          {
+            name: 'categories / onCategoriesChange / NewsItem.category / labels.categories',
+            type: '{ value, label }[] / (values) => void / string / string',
+            desc: '类别筛选：条目带 category，来源行下面多一行类别芯片（多选，复用 ChipGroup，不选是全部，选了之后没带类别的条目被筛掉）；不传 categories 或没写 labels.categories（读屏名，labels.clearCategories 是清除钮）就没有这一行。',
+          },
           { name: 'selected', type: 'string | null', desc: '阅读窗开着的那条：行底色加深。' },
           { name: 'onSymbolPick', type: '(symbol, item) => void', desc: '点品种胶囊。' },
           {
@@ -4097,7 +4135,7 @@ export const PAGES: readonly DocPage[] = [
   {
     id: 'gauge-bar',
     group: 'quotes',
-    cardHeight: 78,
+    cardHeight: 300,
     title: 'GaugeBar 进度条',
     summary:
       '上面一行名字、数和档位词，中间一条进度条标出数的位置，下面一句说明数是怎么来的。取不到时不画填充，数那里写原因。从应用的分析视图提来。',
@@ -4107,9 +4145,15 @@ export const PAGES: readonly DocPage[] = [
       '有位置：填充占轨道的 share，宽度按 snappy 弹簧变。',
       '取不到（share 为 null）：不画填充，数换成弱色小字并写原因。',
       '越界的 share 按边画。',
+      '分段（给了 segments）：轨道按各段的量切成色块（色调只有 up / down / muted / accent），段间 1px 缝，标签（含家数）写在条下面；不看 share。',
     ],
-    donts: ['不要用它表达多段或多值：它只标一个数在区间里的位置。', '不要省掉说明一句：数怎么来的要写在 note 里。'],
-    composition: 'GaugeBar\n  figcaption（label · value · level）\n  div（轨道）\n    span（填充）\n  p（note）',
+    donts: [
+      '不要用单段的 share 表达多值：多值给 segments。',
+      '不要省掉说明一句：数怎么来的要写在 note 里。',
+      '不要给 segments 传色值：只选色调名。',
+    ],
+    composition:
+      'GaugeBar\n  figcaption（label · value · level）\n  div（轨道）\n    span（填充）| span × n（分段）\n  ul（分段标签）\n  p（note）',
     keys: [],
   },
   {

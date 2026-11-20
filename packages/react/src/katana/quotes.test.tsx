@@ -55,6 +55,44 @@ describe('进度条', () => {
   })
 })
 
+describe('进度条的分段（#109）', () => {
+  const segments = [
+    { value: 2310, tone: 'up' as const, label: 'A 2310' },
+    { value: 120, tone: 'muted' as const, label: 'B 120' },
+    { value: 1570, tone: 'down' as const, label: 'C 1570' },
+  ]
+
+  it('每段一个色调的块，宽度按量成比例，标签写在条下面', () => {
+    const html = renderToStaticMarkup(<GaugeBar label="a" value="1" segments={segments} />)
+    expect(html).toContain('data-segmented=""')
+    expect(html.match(/class="k-gauge-seg"/g)).toHaveLength(3)
+    expect(html).toContain('data-tone="up" style="flex-grow:2310"')
+    expect(html).toContain('data-tone="muted" style="flex-grow:120"')
+    expect(html).toContain('data-tone="down" style="flex-grow:1570"')
+    expect(html).toContain('<ul class="k-gauge-legend">')
+    expect(html).toContain('<li data-tone="up">A 2310</li>')
+    expect(html).not.toContain('k-gauge-fill')
+  })
+
+  it('负数与非数当 0；没有标签的段不进图例；全没有标签就没有图例；旧的单段用法不变', () => {
+    const odd = renderToStaticMarkup(
+      <GaugeBar
+        label="a"
+        value="1"
+        segments={[
+          { value: -3, tone: 'up' },
+          { value: Number.NaN, tone: 'down' },
+        ]}
+      />,
+    )
+    expect(odd.match(/flex-grow:0/g)).toHaveLength(2)
+    expect(odd).not.toContain('k-gauge-legend')
+    const single = renderToStaticMarkup(<GaugeBar label="a" value="1" share={0.5} />)
+    expect(single).toContain('style="width:50%"')
+    expect(single).not.toContain('data-segmented')
+  })
+})
+
 describe('矩形树图', () => {
   const items = [
     { data: 'A', size: 600, group: 'T' },

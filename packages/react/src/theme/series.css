@@ -1030,6 +1030,16 @@ button.k-sm-head:focus-visible {
 .k-sx-xaxis {
   margin-left: var(--k-plot-gutter, 56px);
 }
+/* 状态带（#109）：缩进跟图一样（--k-plot-gutter），带的横轴就是上面图的横轴；十字线只画在带那一行（14px）。 */
+.k-sx-regimes {
+  position: relative;
+  margin-left: var(--k-plot-gutter, 56px);
+  margin-top: 6px;
+}
+.k-sx-regimes > .k-plot-cross {
+  bottom: auto;
+  height: 14px;
+}
 .k-sx-closed {
   fill: var(--bg-100);
 }

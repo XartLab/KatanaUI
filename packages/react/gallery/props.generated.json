@@ -1815,6 +1815,12 @@
           "type": "'datetime' | 'time' | 'date'",
           "required": false,
           "description": "time：写到哪一级。默认 datetime（YYYY-MM-DD HH:MM:SS）。"
+        },
+        {
+          "name": "maxPills",
+          "type": "number",
+          "required": false,
+          "description": "pill：最多画几枚，多出的收成「+n」；没给就只按格子宽度收。"
         }
       ]
     },
@@ -4518,6 +4524,145 @@
     "DialogTrigger": {
       "kind": "component",
       "source": "src/primitives/dialog.tsx",
+      "props": []
+    },
+    "DistributionBars": {
+      "kind": "component",
+      "source": "src/quant/distribution-bars.tsx",
+      "props": [
+        {
+          "name": "bins",
+          "type": "readonly DistributionBin[]",
+          "required": true,
+          "description": "The bins in display order (9 or 11 are typical); edges and names are the caller's."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "Screen-reader name of the whole chart (a full sentence)."
+        },
+        {
+          "name": "totals",
+          "type": "DistributionTotals",
+          "required": false,
+          "description": "Names for the totals line (up / muted / down); the numbers are the counts summed by tone."
+        },
+        {
+          "name": "formatCount",
+          "type": "(count: number) => string",
+          "required": false,
+          "default": "defaultFormat",
+          "description": "How a count is written; thousands separators by default."
+        },
+        {
+          "name": "empty",
+          "type": "ReactNode",
+          "required": false,
+          "default": "'—'",
+          "description": "Text shown when there is no data; a dash by default."
+        },
+        {
+          "name": "height",
+          "type": "number",
+          "required": false,
+          "default": "96",
+          "description": "Height of the bar area in px, including the count row; 96 by default."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class names on the root."
+        }
+      ]
+    },
+    "DistributionBarsProps": {
+      "kind": "type",
+      "source": "src/quant/distribution-bars.tsx",
+      "props": [
+        {
+          "name": "bins",
+          "type": "readonly DistributionBin[]",
+          "required": true,
+          "description": "The bins in display order (9 or 11 are typical); edges and names are the caller's."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "Screen-reader name of the whole chart (a full sentence)."
+        },
+        {
+          "name": "totals",
+          "type": "DistributionTotals",
+          "required": false,
+          "description": "Names for the totals line (up / muted / down); the numbers are the counts summed by tone."
+        },
+        {
+          "name": "formatCount",
+          "type": "(count: number) => string",
+          "required": false,
+          "description": "How a count is written; thousands separators by default."
+        },
+        {
+          "name": "empty",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Text shown when there is no data; a dash by default."
+        },
+        {
+          "name": "height",
+          "type": "number",
+          "required": false,
+          "description": "Height of the bar area in px, including the count row; 96 by default."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class names on the root."
+        }
+      ]
+    },
+    "DistributionBin": {
+      "kind": "type",
+      "source": "src/quant/distribution-bars.tsx",
+      "props": [
+        {
+          "name": "key",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "label",
+          "type": "ReactNode",
+          "required": true,
+          "description": "The bin name under the bar (e.g."
+        },
+        {
+          "name": "count",
+          "type": "number | null",
+          "required": true,
+          "description": "The count in this bin; null means no number (no bar, a dash above)."
+        },
+        {
+          "name": "tone",
+          "type": "DistributionTone",
+          "required": true,
+          "description": "Semantic tone of the bar; the totals line groups by it."
+        }
+      ]
+    },
+    "DistributionTone": {
+      "kind": "type",
+      "source": "src/quant/distribution-bars.tsx",
+      "props": []
+    },
+    "DistributionTotals": {
+      "kind": "type",
+      "source": "src/quant/distribution-bars.tsx",
       "props": []
     },
     "DividendEvent": {
@@ -7360,8 +7505,15 @@
         {
           "name": "share",
           "type": "number | null",
-          "required": true,
+          "required": false,
+          "default": "null",
           "description": "Position of the number between the minimum and maximum (0 to 1, clamped to the ends); null draws no fill."
+        },
+        {
+          "name": "segments",
+          "type": "readonly GaugeSegment[]",
+          "required": false,
+          "description": "Multi-segment proportion bar (up · flat · down; limit-up · broken · limit-down): the track is split by the segment values and the labels are written under it."
         },
         {
           "name": "level",
@@ -7414,8 +7566,14 @@
         {
           "name": "share",
           "type": "number | null",
-          "required": true,
+          "required": false,
           "description": "Position of the number between the minimum and maximum (0 to 1, clamped to the ends); null draws no fill."
+        },
+        {
+          "name": "segments",
+          "type": "readonly GaugeSegment[]",
+          "required": false,
+          "description": "Multi-segment proportion bar (up · flat · down; limit-up · broken · limit-down): the track is split by the segment values and the labels are written under it."
         },
         {
           "name": "level",
@@ -7436,6 +7594,35 @@
           "description": "Extra class names per part, written after the package ones."
         }
       ]
+    },
+    "GaugeSegment": {
+      "kind": "type",
+      "source": "src/katana/gauge-bar.tsx",
+      "props": [
+        {
+          "name": "value",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "tone",
+          "type": "GaugeTone",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "label",
+          "type": "ReactNode",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "GaugeTone": {
+      "kind": "type",
+      "source": "src/katana/gauge-bar.tsx",
+      "props": []
     },
     "GridAction": {
       "kind": "type",
@@ -7462,7 +7649,7 @@
           "name": "value",
           "type": "(row: Row) => unknown",
           "required": false,
-          "description": "原始值，由类型决定怎么读：price / quantity / pnl / change / number 是数字或十进制字符串（空、不是数写 —）； time 是毫秒时间戳；side 是 'buy' | 'sell'；symbol 是 SymbolValue；text 是字符串；custom 不读（内容全由 `cell` 画，要排序、复制就给 `text` 与 `sort`）。"
+          "description": "原始值，由类型决定怎么读：price / quantity / pnl / change / number / bar 是数字或十进制字符串（空、不是数写 —）； pill 是 PillValue 或 PillValue[]；progress 是 ProgressValue； time 是毫秒时间戳；side 是 'buy' | 'sell'；symbol 是 SymbolValue；text 是字符串；custom 不读（内容全由 `cell` 画，要排序、复制就给 `text` 与 `sort`）。"
         },
         {
           "name": "format",
@@ -7493,6 +7680,12 @@
           "type": "(row: Row) => 'up' | 'down' | undefined",
           "required": false,
           "description": "整格的底色（ATAS 的盈亏是整格绿底 / 红底）。"
+        },
+        {
+          "name": "heat",
+          "type": "GridHeat<Row>",
+          "required": false,
+          "description": "强度底色：格子底色按这一格的数深浅（读 `value`）。domain 是 [最小, 最大]：跨 0 时正数用涨色、负数用跌色，各自以 0 到端点的距离定深浅； 不跨 0 时全按涨色、从最小到最大。rank 给了就在格子右上角写一个名次小字（不占行高行宽）。颜色只由 token 给，调用方不传色值。"
         },
         {
           "name": "title",
@@ -7585,9 +7778,32 @@
       "source": "src/blocks/data-grid/data-grid.tsx",
       "props": []
     },
+    "GridHeat": {
+      "kind": "type",
+      "source": "src/blocks/data-grid/columns.ts",
+      "props": [
+        {
+          "name": "domain",
+          "type": "readonly [number, number]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "rank",
+          "type": "(row: Row) => string | number | undefined",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
     "GridMenuEntry": {
       "kind": "type",
       "source": "src/blocks/data-grid/host.tsx",
+      "props": []
+    },
+    "GridPillTone": {
+      "kind": "type",
+      "source": "src/blocks/data-grid/columns.ts",
       "props": []
     },
     "GridRowProps": {
@@ -10935,6 +11151,19 @@
           "description": "组合过滤（照 TradingView News Flow：多个可增删、可重置的多选过滤，条目用 NewsItem.facets 带取值；主会话 2026-11-15 实测）。"
         },
         {
+          "name": "categories",
+          "type": "readonly { value: string; label: string }[]",
+          "required": false,
+          "default": "[]",
+          "description": "Category chips (multi-select, ChipGroup) under the sources row; items carry `category`."
+        },
+        {
+          "name": "onCategoriesChange",
+          "type": "(categories: string[]) => void",
+          "required": false,
+          "description": ""
+        },
+        {
           "name": "onFacetsChange",
           "type": "(picked: Record<string, string[]>) => void",
           "required": false,
@@ -11089,6 +11318,18 @@
           "description": ""
         },
         {
+          "name": "categories",
+          "type": "string",
+          "required": false,
+          "description": "类别芯片组的读屏名；传了且 categories 不空才有这一行。"
+        },
+        {
+          "name": "clearCategories",
+          "type": "string",
+          "required": false,
+          "description": "类别芯片组的清除钮读屏名。"
+        },
+        {
           "name": "search",
           "type": "string",
           "required": true,
@@ -11213,6 +11454,18 @@
           "type": "readonly NewsFacet[]",
           "required": false,
           "description": "组合过滤（照 TradingView News Flow：多个可增删、可重置的多选过滤，条目用 NewsItem.facets 带取值；主会话 2026-11-15 实测）。"
+        },
+        {
+          "name": "categories",
+          "type": "readonly { value: string; label: string }[]",
+          "required": false,
+          "description": "Category chips (multi-select, ChipGroup) under the sources row; items carry `category`."
+        },
+        {
+          "name": "onCategoriesChange",
+          "type": "(categories: string[]) => void",
+          "required": false,
+          "description": ""
         },
         {
           "name": "onFacetsChange",
@@ -11393,6 +11646,12 @@
           "type": "string",
           "required": false,
           "description": "有链接就把标题渲染成链接（新窗口打开）。"
+        },
+        {
+          "name": "category",
+          "type": "string",
+          "required": false,
+          "description": "类别的 value（对应 NewsFeedProps.categories，如公告类别、增减持）；不带就不在任何类别里，选了类别时会被筛掉。"
         },
         {
           "name": "facets",
@@ -12851,6 +13110,11 @@
         }
       ]
     },
+    "PillValue": {
+      "kind": "type",
+      "source": "src/blocks/data-grid/columns.ts",
+      "props": []
+    },
     "PivotRow": {
       "kind": "type",
       "source": "src/quant/technical-rating.tsx",
@@ -13114,6 +13378,11 @@
           "description": "Only changes the fill color; do not rely on color alone for status, write text beside it."
         }
       ]
+    },
+    "ProgressValue": {
+      "kind": "type",
+      "source": "src/blocks/data-grid/columns.ts",
+      "props": []
     },
     "QuantileLayer": {
       "kind": "type",
@@ -15753,6 +16022,12 @@
           "description": "图上的事件点：按时间落在序列的点上，画编号引线（01、02……按给的次序编号）。"
         },
         {
+          "name": "regimes",
+          "type": "Omit<RegimeStripProps, 'scale'>",
+          "required": false,
+          "description": "Market regime strip under the time axis (a RegimeStrip without `scale`): it shares the x axis and the crosshair with the series, and the tooltip gets a row with the regime at the hovered point."
+        },
+        {
           "name": "onExport",
           "type": "() => void",
           "required": false,
@@ -15986,6 +16261,12 @@
           "type": "readonly { at: number; label: string }[]",
           "required": false,
           "description": "图上的事件点：按时间落在序列的点上，画编号引线（01、02……按给的次序编号）。"
+        },
+        {
+          "name": "regimes",
+          "type": "Omit<RegimeStripProps, 'scale'>",
+          "required": false,
+          "description": "Market regime strip under the time axis (a RegimeStrip without `scale`): it shares the x axis and the crosshair with the series, and the tooltip gets a row with the regime at the hovered point."
         },
         {
           "name": "onExport",
@@ -21980,6 +22261,16 @@
     "decimalsOfTick": {
       "kind": "function",
       "source": "src/quant/format/price.ts",
+      "props": []
+    },
+    "distributionBarHeight": {
+      "kind": "function",
+      "source": "src/quant/distribution-bars.tsx",
+      "props": []
+    },
+    "distributionTotals": {
+      "kind": "function",
+      "source": "src/quant/distribution-bars.tsx",
       "props": []
     },
     "filterTrades": {

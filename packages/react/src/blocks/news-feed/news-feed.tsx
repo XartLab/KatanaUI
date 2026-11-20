@@ -38,6 +38,10 @@ export type NewsFeedLabels = {
   channels: string
   sources: string
   clearSources: string
+  /** 类别芯片组的读屏名；传了且 categories 不空才有这一行。 */
+  categories?: string
+  /** 类别芯片组的清除钮读屏名。 */
+  clearCategories?: string
   search: string
   layout: string
   layoutList: string
@@ -72,6 +76,12 @@ export type NewsFeedProps = {
    * 类别与取值由调用方传；没传就没有这一排。过滤条上哪些分面在是件里的状态（NewsFacet.shown 给初值）。
    */
   facets?: readonly NewsFacet[]
+  /**
+   * Category chips (multi-select, ChipGroup) under the sources row; items carry `category`. Without categories (or without labels.categories) there is no such row.
+   * 类别芯片（多选，复用 ChipGroup）：条目带 category 取值（公告类别、增减持）；不传就没有这一行。
+   */
+  categories?: readonly { value: string; label: string }[]
+  onCategoriesChange?: (categories: string[]) => void
   onFacetsChange?: (picked: Record<string, string[]>) => void
   /** 选中的那条（阅读窗开着的那条）：行底色加深。给了 reader 时件自己管这一条，不用传。 */
   selected?: string | null
@@ -112,6 +122,8 @@ export function NewsFeed({
   channels,
   sources,
   facets = [],
+  categories = [],
+  onCategoriesChange,
   onFacetsChange,
   selected = null,
   reader,
@@ -134,6 +146,7 @@ export function NewsFeed({
 }: NewsFeedProps) {
   const [channel, setChannel] = useState('')
   const [picked, setPicked] = useState<string[]>([])
+  const [pickedCategories, setPickedCategories] = useState<string[]>([])
   const [query, setQuery] = useState('')
   const [facetShown, setFacetShown] = useState<string[]>(() => facets.filter((f) => f.shown).map((f) => f.key))
   const [facetPicked, setFacetPicked] = useState<Record<string, string[]>>({})
@@ -164,11 +177,11 @@ export function NewsFeed({
     if (!paused && atTop) release()
   }
 
-  const filter = { channel, sources: picked, query, facets: facetPicked }
+  const filter = { channel, sources: picked, categories: pickedCategories, query, facets: facetPicked }
   const visible = useMemo(
     () => filterNews(sortNews(items.filter((i) => shown.has(i.id))), filter),
     // oxlint-disable-next-line react/exhaustive-deps -- filter 是三个值拼出来的新对象，依赖写成三个值
-    [items, shown, channel, picked, query, facetPicked],
+    [items, shown, channel, picked, pickedCategories, query, facetPicked],
   )
   const pending = filterNews(
     items.filter((i) => !shown.has(i.id)),
@@ -393,6 +406,19 @@ export function NewsFeed({
               }}
               label={labels.sources}
               clearLabel={labels.clearSources}
+            />
+          )}
+          {categories.length > 0 && labels.categories && !collapsed && (
+            <ChipGroup
+              className="k-news-categories"
+              items={categories.map((c) => ({ value: c.value, label: c.label }))}
+              value={pickedCategories}
+              onValueChange={(next) => {
+                setPickedCategories(next)
+                onCategoriesChange?.(next)
+              }}
+              label={labels.categories}
+              clearLabel={labels.clearCategories}
             />
           )}
           {pending > 0 && (

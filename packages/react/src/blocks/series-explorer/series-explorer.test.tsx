@@ -9,6 +9,8 @@ import {
   rangeWindow,
   reconcileWindow,
   reduceWindow,
+  regimeAt,
+  regimeScale,
   stackPoint,
   type SeriesPoint,
 } from './series-explorer-model.ts'
@@ -192,5 +194,72 @@ describe('SeriesExplorer 渲染', () => {
     const html = render({ points: [] })
     expect(html).toContain('data-empty="true"')
     expect(html).toContain('没有数据')
+  })
+})
+
+describe('状态带（#109）', () => {
+  const ats = points.map((point) => point.at)
+  const segments = [
+    { from: month(2026, 1), to: month(2026, 4), state: 'calm' },
+    { from: month(2026, 4), to: month(2026, 9), state: 'hot', estimated: true },
+  ]
+  const states = [
+    { id: 'calm', name: '平静', color: 1 as const },
+    { id: 'hot', name: '过热', color: 4 as const },
+  ]
+
+  it('比例尺：段是左闭右开，相邻的段严丝合缝，跟一格一点的横轴同一份刻度', () => {
+    const scale = regimeScale(ats)
+    expect(scale(month(2026, 1))).toBe(0)
+    expect(scale(month(2026, 4))).toBe(3 / 8)
+    expect(scale(month(2026, 9))).toBe(1)
+    expect(scale(month(2025, 1))).toBe(0)
+    expect(regimeScale([])(5)).toBe(0)
+    expect(regimeAt(segments, month(2026, 3))).toBe('calm')
+    expect(regimeAt(segments, month(2026, 4))).toBe('hot')
+    expect(regimeAt(segments, month(2026, 9))).toBeNull()
+  })
+
+  const render = (extra: Record<string, unknown> = {}) =>
+    renderToStaticMarkup(
+      <SeriesExplorer
+        points={points}
+        series={[{ key: 'a', label: '甲', kind: 'bar' }]}
+        ranges={[{ key: 'all', label: '全部', months: null }]}
+        kpis={[{ key: 'a', label: '甲合计', series: 'a', reduce: 'sum', format: String }]}
+        columns={[{ key: 'a', label: '甲', text: (p) => String(p.values.a) }]}
+        labels={{
+          chart: '图',
+          ranges: '区间',
+          metrics: '指标',
+          compare: '对比',
+          previous: '上期',
+          table: '表',
+          time: '时间',
+          empty: '没有数据',
+          spark: (metric: string) => metric,
+          limit: '限额',
+          actions: { group: '操作', table: '表格视图', exportCsv: '导出', fullscreen: '全屏' },
+          brush: { start: '起', end: '止', window: '窗' },
+        }}
+        formatAt={(at) => new Date(at).toISOString().slice(0, 7)}
+        formatValue={String}
+        formatChange={String}
+        {...extra}
+      />,
+    )
+
+  it('给了 regimes 就在图和时间轴下画状态带与图例，段的位置按窗口里的格子算；不给就没有这一块', () => {
+    const html = render({ regimes: { segments, states, label: '情绪状态' } })
+    expect(html).toContain('data-slot="series-regimes"')
+    expect(html).toContain('role="img" aria-label="情绪状态"')
+    expect(html).toContain('data-state="calm"')
+    expect(html).toContain('left:0%;width:37.5%')
+    expect(html).toContain('left:37.5%;width:62.5%')
+    expect(html).toContain('平静')
+    expect(html).toContain('过热')
+    expect(render()).not.toContain('series-regimes')
+    // 表格视图里没有图，也就没有状态带（展开的是图面板，这里用收起指标检查：没有面板就没有带）。
+    expect(render({ regimes: { segments, states, label: 'x' }, defaultMetric: null })).not.toContain('series-regimes')
   })
 })

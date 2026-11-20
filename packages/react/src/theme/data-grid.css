@@ -192,6 +192,117 @@
   background: color-mix(in srgb, var(--pnl-down) 22%, transparent);
   color: var(--pnl-down);
 }
+/* bar 列（#109）：居中条，以 0 为中线，正在右（涨色）负在左（跌色）；条在字前，字靠右等宽。条高 8px，不加行高。 */
+.k-grid-bar {
+  position: relative;
+  flex: 1;
+  min-width: 24px;
+  height: 8px;
+  background: linear-gradient(var(--line-200), var(--line-200)) center / 1px 100% no-repeat;
+}
+.k-grid-bar > i {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+}
+.k-grid-bar[data-dir='up'] > i {
+  background: var(--pnl-up);
+}
+.k-grid-bar[data-dir='down'] > i {
+  background: var(--pnl-down);
+}
+.k-grid-bar-text {
+  flex: none;
+  min-width: 6ch;
+  text-align: right;
+}
+/* pill 列（#109）：一格多枚短标签，一行排不下的收成「+n」。胶囊 16px 高，在 24px 的行里不加行高；
+   色调只有四种：涨 / 跌用涨跌色的淡底，弱用中性淡底，强调用 Graphite 的中性亮（--seg-on-*，不用橙）。 */
+.k-grid-pills {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  overflow: hidden;
+}
+.k-grid-pill {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  height: 16px;
+  padding: 0 6px;
+  border-radius: var(--radius-pill);
+  background: var(--alpha-white-6);
+  color: var(--ink-200);
+  font: var(--text-caption) var(--font-sans);
+  line-height: 1;
+  white-space: nowrap;
+}
+.k-grid-pill[hidden] {
+  display: none;
+}
+.k-grid-pill[data-tone='up'] {
+  background: color-mix(in srgb, var(--pnl-up) 16%, transparent);
+  color: var(--pnl-up);
+}
+.k-grid-pill[data-tone='down'] {
+  background: color-mix(in srgb, var(--pnl-down) 16%, transparent);
+  color: var(--pnl-down);
+}
+.k-grid-pill[data-tone='accent'] {
+  background: var(--seg-on-bg);
+  color: var(--seg-on-ink);
+}
+.k-grid-pill-more {
+  min-width: 28px;
+  justify-content: center;
+  background: none;
+  box-shadow: inset 0 0 0 1px var(--line-200);
+  color: var(--ink-300);
+  cursor: default;
+}
+/* progress 列（#109）：分子 / 分母写在前，后面一条 3px 细条（分母不是正数不画填充）；比例用 ink-100，不用涨跌色。 */
+.k-grid-progress-text {
+  flex: none;
+}
+.k-grid-progress {
+  position: relative;
+  flex: 1;
+  min-width: 24px;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--alpha-white-7);
+  overflow: hidden;
+}
+.k-grid-progress > i {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: var(--ink-100);
+}
+/* 强度底色（#109）：列声明 heat 后，格子按值深浅铺涨 / 跌色的淡底；--heat 是 0 到 1，最深 25%（再深，涨跌色的字压在底色上对比度不到 4.5:1，axe 过不了；跟 fill 的 22% 同一套 color-mix 写法）。
+   名次小字在格子右上角，绝对定位，不占行高行宽。 */
+.k-grid-cell[data-heat] {
+  background: color-mix(in srgb, var(--heat-color) calc(var(--heat, 0) * 25%), transparent);
+}
+.k-grid-cell[data-heat='up'] {
+  --heat-color: var(--pnl-up);
+}
+.k-grid-cell[data-heat='down'] {
+  --heat-color: var(--pnl-down);
+}
+.k-grid-cell.has-rank:not(.is-fixed) {
+  position: relative;
+}
+.k-grid-rank {
+  position: absolute;
+  top: 1px;
+  right: 3px;
+  color: var(--ink-300);
+  font: var(--text-caption) var(--font-sans);
+  line-height: 1;
+  pointer-events: none;
+}
 .k-grid-name {
   overflow: hidden;
   text-overflow: ellipsis;

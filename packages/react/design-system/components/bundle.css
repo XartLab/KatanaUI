@@ -7510,6 +7510,155 @@ button.k-sysmon-link-body:focus-visible {
   color: var(--pnl-down);
 }
 
+.k-grid-bar {
+  background: linear-gradient(var(--line-200), var(--line-200)) center / 1px 100% no-repeat;
+  flex: 1;
+  min-width: 24px;
+  height: 8px;
+  position: relative;
+}
+
+.k-grid-bar > i {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+}
+
+.k-grid-bar[data-dir="up"] > i {
+  background: var(--pnl-up);
+}
+
+.k-grid-bar[data-dir="down"] > i {
+  background: var(--pnl-down);
+}
+
+.k-grid-bar-text {
+  text-align: right;
+  flex: none;
+  min-width: 6ch;
+}
+
+.k-grid-pills {
+  flex: 1;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  display: flex;
+  overflow: hidden;
+}
+
+.k-grid-pill {
+  border-radius: var(--radius-pill);
+  background: var(--alpha-white-6);
+  height: 16px;
+  color: var(--ink-200);
+  font: var(--text-caption) var(--font-sans);
+  white-space: nowrap;
+  flex: none;
+  align-items: center;
+  padding: 0 6px;
+  line-height: 1;
+  display: inline-flex;
+}
+
+.k-grid-pill[hidden] {
+  display: none;
+}
+
+.k-grid-pill[data-tone="up"] {
+  background: var(--pnl-up);
+}
+
+@supports (color: color-mix(in lab, red, red)) {
+  .k-grid-pill[data-tone="up"] {
+    background: var(--ds-c-t6f6aj);
+  }
+}
+
+.k-grid-pill[data-tone="up"] {
+  color: var(--pnl-up);
+}
+
+.k-grid-pill[data-tone="down"] {
+  background: var(--pnl-down);
+}
+
+@supports (color: color-mix(in lab, red, red)) {
+  .k-grid-pill[data-tone="down"] {
+    background: var(--ds-c-xgdj0u);
+  }
+}
+
+.k-grid-pill[data-tone="down"] {
+  color: var(--pnl-down);
+}
+
+.k-grid-pill[data-tone="accent"] {
+  background: var(--seg-on-bg);
+  color: var(--seg-on-ink);
+}
+
+.k-grid-pill-more {
+  min-width: 28px;
+  box-shadow: inset 0 0 0 1px var(--line-200);
+  color: var(--ink-300);
+  cursor: default;
+  background: none;
+  justify-content: center;
+}
+
+.k-grid-progress-text {
+  flex: none;
+}
+
+.k-grid-progress {
+  background: var(--alpha-white-7);
+  border-radius: 2px;
+  flex: 1;
+  min-width: 24px;
+  height: 3px;
+  position: relative;
+  overflow: hidden;
+}
+
+.k-grid-progress > i {
+  background: var(--ink-100);
+  position: absolute;
+  inset: 0 auto 0 0;
+}
+
+.k-grid-cell[data-heat] {
+  background: var(--heat-color);
+}
+
+@supports (color: color-mix(in lab, red, red)) {
+  .k-grid-cell[data-heat] {
+    background: var(--ds-c-1o5vtkd);
+  }
+}
+
+.k-grid-cell[data-heat="up"] {
+  --heat-color: var(--pnl-up);
+}
+
+.k-grid-cell[data-heat="down"] {
+  --heat-color: var(--pnl-down);
+}
+
+.k-grid-cell.has-rank:not(.is-fixed) {
+  position: relative;
+}
+
+.k-grid-rank {
+  color: var(--ink-300);
+  font: var(--text-caption) var(--font-sans);
+  pointer-events: none;
+  line-height: 1;
+  position: absolute;
+  top: 1px;
+  right: 3px;
+}
+
 .k-grid-name {
   text-overflow: ellipsis;
   overflow: hidden;
@@ -8466,6 +8615,55 @@ button.k-status-item:hover {
   border-radius: 3px;
   position: absolute;
   inset: 0 auto 0 0;
+}
+
+.k-gauge-track[data-segmented] {
+  gap: 1px;
+  display: flex;
+}
+
+.k-gauge-seg {
+  background: var(--ink-400);
+  min-width: 0;
+  transition: flex-grow var(--dur-snappy) var(--ease-snappy);
+  flex: 0 1 0;
+}
+
+.k-gauge-seg[data-tone="up"] {
+  background: var(--pnl-up);
+}
+
+.k-gauge-seg[data-tone="down"] {
+  background: var(--pnl-down);
+}
+
+.k-gauge-seg[data-tone="accent"] {
+  background: var(--ink-100);
+}
+
+.k-gauge-legend {
+  color: var(--ink-300);
+  font: var(--text-caption) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+  flex-wrap: wrap;
+  gap: 2px 12px;
+  margin: 0;
+  padding: 0;
+  line-height: 16px;
+  list-style: none;
+  display: flex;
+}
+
+.k-gauge-legend li[data-tone="up"] {
+  color: var(--pnl-up);
+}
+
+.k-gauge-legend li[data-tone="down"] {
+  color: var(--pnl-down);
+}
+
+.k-gauge-legend li[data-tone="accent"] {
+  color: var(--ink-100);
 }
 
 .k-gauge-note {
@@ -10269,6 +10467,17 @@ button.k-sm-head:focus-visible {
 
 .k-sx-xaxis {
   margin-left: var(--k-plot-gutter, 56px);
+}
+
+.k-sx-regimes {
+  margin-left: var(--k-plot-gutter, 56px);
+  margin-top: 6px;
+  position: relative;
+}
+
+.k-sx-regimes > .k-plot-cross {
+  height: 14px;
+  bottom: auto;
 }
 
 .k-sx-closed {
@@ -14105,6 +14314,104 @@ button.k-sm-head:focus-visible {
   display: flex;
 }
 
+.k-dist {
+  min-width: 0;
+  color: var(--ink-200);
+  font: var(--text-caption) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+  flex-direction: column;
+  gap: 4px;
+  display: flex;
+}
+
+.k-dist-plot, .k-dist-axis {
+  grid-auto-columns: minmax(0, 1fr);
+  grid-auto-flow: column;
+  gap: 4px;
+  display: grid;
+}
+
+.k-dist-plot {
+  border-bottom: 1px solid var(--line-200);
+  align-items: end;
+}
+
+.k-dist-col {
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  min-width: 0;
+  height: 100%;
+  display: flex;
+}
+
+.k-dist-count {
+  height: 16px;
+  color: var(--ink-200);
+  white-space: nowrap;
+  line-height: 16px;
+}
+
+.k-dist-bar {
+  background: var(--ink-400);
+  width: 100%;
+  transition: height var(--dur-snappy) var(--ease-snappy);
+  display: block;
+}
+
+.k-dist-col[data-tone="up"] .k-dist-bar {
+  background: var(--pnl-up);
+}
+
+.k-dist-col[data-tone="down"] .k-dist-bar {
+  background: var(--pnl-down);
+}
+
+.k-dist-col[data-tone="accent"] .k-dist-bar {
+  background: var(--ink-100);
+}
+
+.k-dist-label {
+  min-width: 0;
+  color: var(--ink-300);
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.k-dist-totals {
+  color: var(--ink-300);
+  flex-wrap: wrap;
+  gap: 0 6px;
+  margin: 0;
+  display: flex;
+}
+
+.k-dist-totals > span + span:before {
+  color: var(--ink-400);
+  content: "/";
+  margin-right: 6px;
+}
+
+.k-dist-totals b {
+  color: var(--ink-100);
+  font-weight: 600;
+}
+
+.k-dist-totals > span[data-tone="up"] b {
+  color: var(--pnl-up);
+}
+
+.k-dist-totals > span[data-tone="down"] b {
+  color: var(--pnl-down);
+}
+
+.k-dist-empty {
+  color: var(--ink-300);
+  margin: 0;
+}
+
 .k-row-actions {
   z-index: 1;
   background: linear-gradient(to right, transparent, var(--bg-300) 12px);
@@ -15333,6 +15640,9 @@ button.k-consensus-hash:focus-visible {
   --ds-c-1ay9f5e: color-mix(in srgb, var(--signal-amber) 35%, transparent);
   --ds-c-1kditco: color-mix(in srgb, var(--pnl-up) 22%, transparent);
   --ds-c-1onh62z: color-mix(in srgb, var(--pnl-down) 22%, transparent);
+  --ds-c-t6f6aj: color-mix(in srgb, var(--pnl-up) 16%, transparent);
+  --ds-c-xgdj0u: color-mix(in srgb, var(--pnl-down) 16%, transparent);
+  --ds-c-1o5vtkd: color-mix(in srgb, var(--heat-color) calc(var(--heat, 0) * 25%), transparent);
   --ds-c-clc5nk: color-mix(in srgb, var(--pnl-down) 100%, var(--bg-000));
   --ds-c-1v6dr3q: color-mix(in srgb, var(--pnl-down) 70%, var(--bg-000));
   --ds-c-1g34po5: color-mix(in srgb, var(--pnl-down) 42%, var(--bg-000));
@@ -15368,6 +15678,7 @@ button.k-consensus-hash:focus-visible {
   --chart-grid-color: initial;
   --chart-grid-dash: initial;
   --chart-line-glow: initial;
+  --heat: initial;
   --k-deg: initial;
   --k-grid-hidden-right: initial;
   --k-in-dur: initial;

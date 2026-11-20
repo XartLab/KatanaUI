@@ -25,10 +25,22 @@ export type ColumnType =
   | 'side'
   | 'time'
   | 'symbol'
+  | 'bar'
+  | 'pill'
+  | 'progress'
   | 'custom'
 
 /** 字的颜色：涨 / 跌（跟 data-updown，红涨绿跌时互换）、次要灰。 */
 export type GridTone = 'up' | 'down' | 'muted'
+
+/** 语义色调：涨 / 跌 / 弱 / 强调（Graphite 里强调是中性亮，不是橙）。调用方只选名字，色值由包里的 token 给。 */
+export type GridPillTone = 'up' | 'down' | 'muted' | 'accent'
+
+/** pill 列的一枚标签：只写字，或字加色调（不写色调是 muted）。 */
+export type PillValue = string | { label: string; tone?: GridPillTone }
+
+/** progress 列的值：分子与分母。 */
+export type ProgressValue = { done: number; total: number } | readonly [done: number, total: number]
 
 /** 买卖方向。 */
 export type GridSide = 'buy' | 'sell'
@@ -54,6 +66,8 @@ export type ColumnFormat = {
   labels?: { buy: string; sell: string }
   /** time：写到哪一级。默认 datetime（YYYY-MM-DD HH:MM:SS）。 */
   timeStyle?: 'datetime' | 'time' | 'date'
+  /** pill：最多画几枚，多出的收成「+n」；没给就只按格子宽度收。 */
+  maxPills?: number
 }
 
 export type GridColumn<Row> = {
@@ -61,7 +75,8 @@ export type GridColumn<Row> = {
   /** 列类型；省略是 text。 */
   type?: ColumnType
   /**
-   * 原始值，由类型决定怎么读：price / quantity / pnl / change / number 是数字或十进制字符串（空、不是数写 —）；
+   * 原始值，由类型决定怎么读：price / quantity / pnl / change / number / bar 是数字或十进制字符串（空、不是数写 —）；
+   * pill 是 PillValue 或 PillValue[]；progress 是 ProgressValue；
    * time 是毫秒时间戳；side 是 'buy' | 'sell'；symbol 是 SymbolValue；text 是字符串；custom 不读（内容全由 `cell` 画，要排序、复制就给 `text` 与 `sort`）。
    */
   value?: (row: Row) => unknown
@@ -75,6 +90,11 @@ export type GridColumn<Row> = {
   tone?: (row: Row) => GridTone | undefined
   /** 整格的底色（ATAS 的盈亏是整格绿底 / 红底）。 */
   fill?: (row: Row) => 'up' | 'down' | undefined
+  /**
+   * 强度底色：格子底色按这一格的数深浅（读 `value`）。domain 是 [最小, 最大]：跨 0 时正数用涨色、负数用跌色，各自以 0 到端点的距离定深浅；
+   * 不跨 0 时全按涨色、从最小到最大。rank 给了就在格子右上角写一个名次小字（不占行高行宽）。颜色只由 token 给，调用方不传色值。
+   */
+  heat?: GridHeat<Row>
   title?: (row: Row) => string | undefined
   /**
    * custom 列的内容：这一格画什么都行（多行的字、使用度条、按钮）。按钮之类要点的东西放在里面，表不把它当整行的点击。
@@ -90,6 +110,11 @@ export type GridColumn<Row> = {
   rowHeader?: boolean
 }
 
+export type GridHeat<Row> = {
+  domain: readonly [number, number]
+  rank?: (row: Row) => string | number | undefined
+}
+
 export type CellEnv = {
   /** time 列用的时区：'local'（默认，跟电脑一致）、'utc'，或 IANA 时区名。 */
   timeZone?: string
@@ -103,13 +128,19 @@ export type ResolvedCell = {
   sort: string | number | undefined
   /** 类型决定的方向（pnl / change / side），渲染时用 ToneText；没有方向是 undefined。 */
   direction: 'up' | 'down' | 'flat' | undefined
+  /** bar 列的带符号数值（条的长度按列的最大绝对值归一，由 DataGrid 在 barRatio 里算）；别的类型是 undefined。 */
+  bar: number | undefined
+  /** pill 列拆好的标签，没有标签是 undefined。 */
+  pills: { label: string; tone: GridPillTone }[] | undefined
+  /** progress 列的分子、分母与比例（分母不是正数时比例是 undefined）。 */
+  progress: { done: number; total: number; ratio: number | undefined } | undefined
   /** symbol 列拆好的两段。 */
   symbol:
     | { code: string; venue: string | undefined; name: string | undefined; icon: { src?: string } | undefined }
     | undefined
 }
 
-const NUMERIC: ReadonlySet<ColumnType> = new Set(['number', 'price', 'quantity', 'pnl', 'change'])
+const NUMERIC: ReadonlySet<ColumnType> = new Set(['number', 'price', 'quantity', 'pnl', 'change', 'bar', 'progress'])
 
 /** 数字类的列默认靠右（等宽数字对得齐小数点）。列布局里写了 align 就听它的。 */
 export const defaultAlign = (type: ColumnType | undefined): 'start' | 'end' =>
@@ -170,6 +201,9 @@ export function resolveCell<Row>(column: GridColumn<Row>, row: Row, env: CellEnv
   let sort: string | number | undefined
   let direction: ResolvedCell['direction']
   let symbol: ResolvedCell['symbol']
+  let bar: ResolvedCell['bar']
+  let pills: ResolvedCell['pills']
+  let progress: ResolvedCell['progress']
   switch (type) {
     case 'price': {
       const number = toNumber(raw)
@@ -229,6 +263,29 @@ export function resolveCell<Row>(column: GridColumn<Row>, row: Row, env: CellEnv
       sort = time ?? undefined
       break
     }
+    case 'bar': {
+      const number = toNumber(raw)
+      const digits = format.digits ?? 2
+      text = number === null ? DASH : `${signed(number, digits)}${format.suffix ? ` ${format.suffix}` : ''}`
+      bar = number ?? undefined
+      sort = number ?? undefined
+      break
+    }
+    case 'pill': {
+      pills = toPills(raw)
+      text = pills ? pills.map((pill) => pill.label).join(' ') : DASH
+      sort = pills ? pills[0]!.label : undefined
+      break
+    }
+    case 'progress': {
+      const value = toProgress(raw)
+      progress = value
+        ? { ...value, ratio: value.total > 0 ? clamp01(value.done / value.total) : undefined }
+        : undefined
+      text = value ? `${value.done}/${value.total}` : DASH
+      sort = progress?.ratio
+      break
+    }
     case 'symbol': {
       const value = raw as SymbolValue | null | undefined
       const code = typeof value === 'string' ? value : (value?.code ?? '')
@@ -252,8 +309,79 @@ export function resolveCell<Row>(column: GridColumn<Row>, row: Row, env: CellEnv
     tone,
     sort: column.sort ? column.sort(row) : column.value ? sort : text,
     direction,
+    bar,
+    pills,
+    progress,
     symbol,
   }
+}
+
+const clamp01 = (value: number) => Math.min(1, Math.max(0, value))
+
+function toPills(raw: unknown): ResolvedCell['pills'] {
+  const list = Array.isArray(raw) ? raw : raw === null || raw === undefined ? [] : [raw]
+  const pills = list.flatMap((item: PillValue) => {
+    const label = typeof item === 'string' ? item : (item?.label ?? '')
+    if (label === '') return []
+    return [{ label, tone: (typeof item === 'string' ? undefined : item.tone) ?? 'muted' }]
+  })
+  return pills.length > 0 ? pills : undefined
+}
+
+function toProgress(raw: unknown): { done: number; total: number } | undefined {
+  const pair = Array.isArray(raw)
+    ? [raw[0], raw[1]]
+    : raw !== null && typeof raw === 'object'
+      ? [(raw as { done?: unknown }).done, (raw as { total?: unknown }).total]
+      : undefined
+  const done = toNumber(pair?.[0])
+  const total = toNumber(pair?.[1])
+  return done === null || total === null || done === undefined || total === undefined ? undefined : { done, total }
+}
+
+/**
+ * 强度底色：这一格按 heat.domain 落在哪一边、多深。跨 0 的 domain 里正数取涨色、负数取跌色，深浅是到 0 的距离占端点距离的比例；
+ * 不跨 0 的 domain 全在 0 以上取涨色（最小到最大）、全在 0 以下取跌色（最大到最小）。没有数、等于 0 的格子没有底色。纯函数。
+ */
+export function resolveHeat<Row>(
+  column: GridColumn<Row>,
+  row: Row,
+): { tone: 'up' | 'down'; level: number; rank: string | undefined } | undefined {
+  const heat = column.heat
+  if (!heat) return undefined
+  const value = toNumber(column.value?.(row))
+  if (value === null || value === 0) return undefined
+  const [lo, hi] = heat.domain
+  const span = (from: number, to: number) => (to === from ? 1 : clamp01((value - from) / (to - from)))
+  let tone: 'up' | 'down'
+  let level: number
+  if (lo < 0 && hi > 0) {
+    tone = value > 0 ? 'up' : 'down'
+    level = value > 0 ? clamp01(value / hi) : clamp01(value / lo)
+  } else if (hi <= 0) {
+    tone = 'down'
+    level = span(hi, lo)
+  } else {
+    tone = 'up'
+    level = span(lo, hi)
+  }
+  const rank = heat.rank?.(row)
+  return { tone, level, rank: rank === undefined ? undefined : String(rank) }
+}
+
+/** bar 列的条：带符号的值除以列的最大绝对值，落在 -1 到 1；没有值或最大值不是正数是 0。纯函数，DataGrid 与单测共用。 */
+export function barRatio(value: number | undefined, extent: number): number {
+  return value === undefined || !(extent > 0) ? 0 : Math.max(-1, Math.min(1, value / extent))
+}
+
+/** bar 列的归一基准：这一列所有行里绝对值最大的那个数。 */
+export function barExtent<Row>(column: GridColumn<Row>, rows: readonly Row[], env: CellEnv = {}): number {
+  let max = 0
+  for (const row of rows) {
+    const value = resolveCell(column, row, env).bar
+    if (value !== undefined) max = Math.max(max, Math.abs(value))
+  }
+  return max
 }
 
 /** 带符号的数：正数带 +，负数带 -，舍入成零不带号；千分位 en-US。 */

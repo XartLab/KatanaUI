@@ -26,6 +26,7 @@ import {
   type DecisionItem,
   type DecisionQueueLabels,
   type GridColumn,
+  type PillValue,
   type GridColumnLayout,
   type Hypothesis,
   type HypothesisLedgerLabels,
@@ -215,6 +216,102 @@ function ColumnsDemo() {
   )
 }
 
+// A 股看板用的列类型（#109）：板块排行的净买居中条。示例数据写死，不是行情。
+type Sector = { id: string; name: string; net: number; tags: PillValue[]; promoted: [number, number] }
+const SECTORS: readonly Sector[] = [
+  {
+    id: 's1',
+    name: '示例板块甲',
+    promoted: [3, 12],
+    tags: ['题材一', { label: '龙头', tone: 'up' }, '题材二', '题材三'],
+    net: 12.4,
+  },
+  { id: 's2', name: '示例板块乙', promoted: [5, 8], tags: [{ label: '连板', tone: 'accent' }, '题材二'], net: 5.1 },
+  { id: 's3', name: '示例板块丙', promoted: [0, 4], tags: [{ label: '炸板', tone: 'down' }], net: -3.2 },
+  { id: 's4', name: '示例板块丁', promoted: [2, 2], tags: ['题材一'], net: -9.8 },
+  { id: 's5', name: '示例板块戊', promoted: [0, 0], tags: [], net: 0 },
+]
+const SECTOR_COLUMNS: readonly GridColumn<Sector>[] = [
+  { id: 'name', type: 'text', value: (row) => row.name },
+  { id: 'tags', type: 'pill', value: (row) => row.tags },
+  { id: 'promoted', type: 'progress', value: (row) => row.promoted },
+  { id: 'net', type: 'bar', value: (row) => row.net, format: { digits: 1, suffix: '亿' } },
+]
+const SECTOR_LAYOUT: readonly GridColumnLayout[] = [
+  { id: 'name', label: '板块', width: 120, visible: true },
+  { id: 'tags', label: '题材与状态', width: 190, visible: true },
+  { id: 'promoted', label: '晋级', width: 110, visible: true },
+  { id: 'net', label: '主力净买', width: 220, visible: true },
+]
+
+// 题材 × 交易日热力格表（#109 heat）：格子按涨幅深浅铺底色，右上角是当日名次。示例数据，不是行情。
+type ThemeRow = { id: string; name: string; days: readonly number[] }
+const THEME_DAYS = ['D1', 'D2', 'D3', 'D4', 'D5']
+const THEMES: readonly ThemeRow[] = [
+  { id: 't1', name: '示例题材甲', days: [4.2, 6.8, 9.1, 2.3, -1.2] },
+  { id: 't2', name: '示例题材乙', days: [-2.1, 1.4, 3.3, 5.6, 7.4] },
+  { id: 't3', name: '示例题材丙', days: [0.6, -3.8, -6.2, -1.5, 0] },
+  { id: 't4', name: '示例题材丁', days: [1.9, 0.4, -0.8, 3.1, 2.2] },
+]
+const dayRank = (index: number, row: ThemeRow) =>
+  1 + THEMES.filter((other) => (other.days[index] ?? 0) > (row.days[index] ?? 0)).length
+const THEME_COLUMNS: readonly GridColumn<ThemeRow>[] = [
+  { id: 'name', type: 'text', value: (row) => row.name },
+  ...THEME_DAYS.map((day, index): GridColumn<ThemeRow> => ({
+    id: day,
+    type: 'change',
+    value: (row) => row.days[index],
+    format: { digits: 1 },
+    heat: { domain: [-10, 10], rank: (row) => dayRank(index, row) },
+  })),
+]
+const THEME_LAYOUT: readonly GridColumnLayout[] = [
+  { id: 'name', label: '题材', width: 120, visible: true },
+  ...THEME_DAYS.map((day) => ({ id: day, label: day, width: 82, visible: true })),
+]
+
+function AShareColumnsDemo() {
+  return (
+    <>
+      <p className="gal-note">
+        bar 列：以 0 为中线，正在右（涨色）、负在左（跌色），长度按本列绝对值最大者归一，数字写在条旁。pill
+        列：一格多枚短标签，色调只有涨 / 跌 / 弱 / 强调四种，一行放不下的收成「+n」，悬停看全部。progress 列：分子 /
+        分母加一条细条（晋级率 3/12）。示例数据，不是行情。
+      </p>
+      <div data-testid="grid-ashare" style={{ display: 'flex', width: '100%', maxWidth: 640 }}>
+        <DataGrid
+          columns={SECTOR_COLUMNS}
+          layout={SECTOR_LAYOUT}
+          rows={SECTORS}
+          rowId={(row) => row.id}
+          label="Example sector ranking"
+          sort={null}
+          onSortChange={() => {}}
+          interactive={false}
+          fit
+        />
+      </div>
+      <p className="gal-note">
+        heat：列声明 heat: {'{'} domain, rank? {'}'}，格子底色按值深浅（跨 0
+        时正数涨色、负数跌色），右上角放名次小字，不占行高行宽。
+      </p>
+      <div data-testid="grid-heat" style={{ display: 'flex', width: '100%', maxWidth: 640 }}>
+        <DataGrid
+          columns={THEME_COLUMNS}
+          layout={THEME_LAYOUT}
+          rows={THEMES}
+          rowId={(row) => row.id}
+          label="Example theme heat table"
+          sort={null}
+          onSortChange={() => {}}
+          interactive={false}
+          fit
+        />
+      </div>
+    </>
+  )
+}
+
 export function DataGridDemo() {
   const [sort, setSort] = useState<SortSpec | null>(null)
   const [log, setLog] = useState('')
@@ -244,6 +341,7 @@ export function DataGridDemo() {
       </div>
       <ActionLog text={log} />
       <ColumnsDemo />
+      <AShareColumnsDemo />
       <p className="gal-note">无表头、只读、紧凑行高的变体：</p>
       <div style={{ width: 300 }}>
         <DataGrid
@@ -707,6 +805,48 @@ function NewsFeedSplit() {
   )
 }
 
+// 公告类别筛选（#109）：条目带 category，头部多一行类别芯片（多选）。演示数据，公司与公告都是虚构的。
+const NEWS_CATEGORIES = [
+  { value: 'buy', label: '增持' },
+  { value: 'sell', label: '减持' },
+  { value: 'report', label: '定期报告' },
+]
+const NEWS_CATEGORY_ITEMS: NewsItem[] = [
+  {
+    id: 'c1',
+    time: NEWS_NOW - 60_000,
+    channel: 'top',
+    source: 'exch',
+    category: 'buy',
+    title: '星河锂业：控股股东拟增持不超过 2%',
+  },
+  {
+    id: 'c2',
+    time: NEWS_NOW - 5 * 60_000,
+    channel: 'top',
+    source: 'exch',
+    category: 'sell',
+    title: '远山科技：董事拟减持不超过 0.5%',
+  },
+  {
+    id: 'c3',
+    time: NEWS_NOW - 9 * 60_000,
+    channel: 'top',
+    source: 'exch',
+    category: 'report',
+    title: '北辰能源：披露三季度报告',
+  },
+  {
+    id: 'c4',
+    time: NEWS_NOW - 14 * 60_000,
+    channel: 'top',
+    source: 'exch',
+    category: 'buy',
+    title: '青禾农业：高管合计增持 30 万股',
+  },
+  { id: 'c5', time: NEWS_NOW - 20 * 60_000, channel: 'top', source: 'exch', title: '海岚传媒：召开临时股东大会' },
+]
+
 export function NewsFeedDemo() {
   const [items, setItems] = useState(NEWS_ITEMS)
   const [picked, setPicked] = useState('—')
@@ -768,6 +908,19 @@ export function NewsFeedDemo() {
           now={NEWS_NOW}
           labels={NEWS_LABELS}
           defaultLayout="card"
+        />
+      </div>
+      <p className="gal-note">
+        类别筛选：条目带 category，头部多一行类别芯片（多选，不选是全部）；不传 categories 就没有这一行。
+      </p>
+      <div style={{ height: 340 }} data-testid="news-categories">
+        <NewsFeed
+          items={NEWS_CATEGORY_ITEMS}
+          channels={NEWS_CHANNELS}
+          sources={NEWS_SOURCES}
+          categories={NEWS_CATEGORIES}
+          now={NEWS_NOW}
+          labels={{ ...NEWS_LABELS, categories: '公告类别', clearCategories: '清除类别筛选' }}
         />
       </div>
     </div>
