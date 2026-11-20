@@ -179,6 +179,31 @@ const blocks: GuidanceMap = {
       '状态用颜色加图标与文字，不只靠颜色。',
     ],
   },
+  whiteboard: {
+    aliases: ['Canvas', 'Node editor', 'Flow editor', 'Mind map', 'Dependency graph'],
+    use: [
+      '推演：把指标、假说、便签摆在一块画布上连起来，选一个节点看它的下游。',
+      '指标依赖图：改一个指标只重算下游，名单用 getDownstream 取，计算在调用方。',
+      '底座是 React Flow（@xyflow/react，MIT）；它自带的 style.css 不引，只引 base.css，颜色变量 --xy-* 全在 .k-wb 上改成 --k-* 与语义 token。',
+      '边的状态色与线型同 TransmissionChain：支持 --pnl-up 实线、反对 --pnl-down 实线、部分琥珀点划线 9 3 2 3、未检验灰虚线 5 4；反馈边点线 2 4，标签带回环图标。',
+      '节点：圆角 6px、1px 边、内距 8px 10px、宽 140–260px；便签是虚线边；分组框是虚线框、圆角 8px、左上角 11px 粗体标题。',
+      '橙色只给键盘焦点的四角括号（10px 长、2px 粗，外扩 4px，--k-focused-outlineColor）；选中是 --k-content-primary-foreground 的亮边。',
+      '对齐吸附阈值 6px（画布坐标），辅助线 1px --k-content-secondary-foreground；粘贴每次错开 32px。',
+      '撤销历史最多 100 步，存整份文档快照；拖动与改大小松手才记一步。',
+      '连接点朝向存在文档的 layout 字段（TB 缺省 / LR）：点自动布局时随 onChange 回来，调用方存下并作为 layout 传回，打开时按它还原（2026-11-18 定）。',
+    ],
+    avoid: [
+      '只读的传导链（带证据详情），用 transmission-chain。',
+      '只画资金或量的流向，用 flow-sankey。',
+      '自由手绘：这次不做（Excalidraw 留作以后）。',
+    ],
+    a11y: [
+      '外层是 role=group，读屏名取自 labels.board；工具条是 role=toolbar（← → 在按钮间移动）。',
+      '节点与边都能 Tab 到；节点的读屏名是标题或便签的字，方向键挪动选中的节点（React Flow 自带）。',
+      '右键菜单也能用菜单键或 Shift+F10 在聚焦的节点上打开。',
+      '状态用颜色加图标与文字，不只靠颜色；下游高亮另有加粗的边。',
+    ],
+  },
   'strategy-report': {
     aliases: ['Backtest report', 'Performance summary', 'Tear sheet', 'Strategy tester report'],
     use: ['回测完看概览、绩效、交易分析与逐笔列表。', '多空分开看，指标由逐笔平仓现算。'],
