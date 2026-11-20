@@ -54,6 +54,11 @@
           "target": "~/src/katana/ui/theme/chip-group.css"
         },
         {
+          "path": "src/theme/cn-pulse.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/cn-pulse.css"
+        },
+        {
           "path": "src/theme/cn-theme-card.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/cn-theme-card.css"
@@ -3113,6 +3118,26 @@
           "path": "src/cn/limit-status.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/cn/limit-status.tsx"
+        }
+      ]
+    },
+    {
+      "name": "cn-market-pulse",
+      "type": "registry:component",
+      "title": "Cn Market Pulse",
+      "description": "一行横条：上涨占比半圆表盘（中间写百分比，下注「上涨占比」）、五个大数（上涨 / 下跌 / 涨停 / 跌停 / 平盘，涨红跌绿，平盘中性）、大数下两行小字读数（涨停池、昨日口径、成交额与主力净流入），最右嵌涨跌分布柱（DistributionBars）。读数只占三行高；取不到写「—」并可带原因（悬停），不写 0。信息结构取自复盘吧的看盘工作台，样子是 Graphite 的。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/cn-format",
+        "@katana/cn-labels",
+        "@katana/cn-value",
+        "@katana/distribution-bars"
+      ],
+      "files": [
+        {
+          "path": "src/cn/market-pulse.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/cn/market-pulse.tsx"
         }
       ]
     },

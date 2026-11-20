@@ -5361,6 +5361,42 @@ export const PAGES: readonly DocPage[] = [
       ['Enter / Space', '触发'],
     ],
   },
+  {
+    id: 'market-pulse',
+    group: 'cn',
+    cardHeight: 150,
+    title: 'MarketPulse 市场全景条',
+    summary:
+      '一行横条：上涨占比半圆表盘（中间写百分比，下注「上涨占比」）、五个大数（上涨 / 下跌 / 涨停 / 跌停 / 平盘，涨红跌绿，平盘中性）、大数下两行小字读数（涨停池、昨日口径、成交额与主力净流入），最右嵌涨跌分布柱（DistributionBars）。读数只占三行高；取不到写「—」并可带原因（悬停），不写 0。信息结构取自复盘吧的看盘工作台，样子是 Graphite 的。',
+    exports: ['MarketPulse', 'pulseShare', 'dialArc'],
+    propParts: [
+      { part: 'MarketPulse', note: '渲染一个 div（role=group），不透传别的属性。' },
+      {
+        part: 'MarketPulseCounts',
+        note: '五个大数：rising、falling、limitUp、limitDown、flat；各自是数或 { value, reason }。',
+      },
+      {
+        part: 'MarketPulseReadings',
+        note: '小字读数，都可选：缺的写「—」。金额单位是元，按万 / 亿写；highestBoard 是板数。',
+      },
+      { part: 'pulseShare(counts)', note: '纯函数：上涨 /（上涨 + 下跌 + 平盘），任何一项取不到是 null。' },
+      { part: 'dialArc(share)', note: '纯函数：半圆表盘的弧路径（viewBox 100×54）。' },
+    ],
+    states: [
+      '占比由三个家数算；任何一个取不到，表盘不画弧、中间写「—」。也可以直接传 share。',
+      '读数取不到：写「—」，悬停写 reason（没给就写默认文案里的说明），不写 0。',
+      '主力净流入带正负号，涨色 / 跌色跟 data-updown。',
+      '给了 distribution 才在最右画分布柱；不给就不画。',
+    ],
+    donts: [
+      '不要传色值：涨跌只靠语义色调。',
+      '不要在包里取数：数据源由调用方接，这里只摆。',
+      '不要加第四行读数：条的高度就是三行。',
+    ],
+    composition:
+      'MarketPulse\n  表盘（半圆 · 占比 · 说明）\n  五个大数\n  小字读数 × 2 行\n  涨跌分布（DistributionBars）',
+    keys: [],
+  },
 ]
 
 export const pageById = (id: string): DocPage | undefined => PAGES.find((page) => page.id === id)

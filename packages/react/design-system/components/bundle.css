@@ -14733,6 +14733,161 @@ button.k-theme-open:focus-visible {
   outline-offset: 2px;
 }
 
+.k-pulse {
+  align-items: center;
+  gap: var(--space-4);
+  min-width: 0;
+  padding: var(--space-3);
+  background: var(--bg-200);
+  border: var(--hairline);
+  color: var(--ink-200);
+  font: var(--text-caption) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+  display: flex;
+}
+
+.k-pulse-dial {
+  flex: none;
+  width: 96px;
+  height: 68px;
+  position: relative;
+}
+
+.k-pulse-dial svg {
+  width: 96px;
+  height: 52px;
+  display: block;
+  overflow: visible;
+}
+
+.k-pulse-dial-track, .k-pulse-dial-fill {
+  fill: none;
+  stroke-linecap: butt;
+  stroke-width: 7px;
+}
+
+.k-pulse-dial-track {
+  stroke: var(--alpha-white-8);
+}
+
+.k-pulse-dial-fill {
+  stroke: var(--pnl-up);
+}
+
+.k-pulse-share {
+  color: var(--ink-100);
+  font: 600 17px/20px var(--font-sans);
+  text-align: center;
+  position: absolute;
+  inset: 22px 0 auto;
+}
+
+.k-pulse-dial-caption {
+  color: var(--ink-300);
+  text-align: center;
+  position: absolute;
+  inset: auto 0 0;
+}
+
+.k-pulse-main {
+  flex-direction: column;
+  flex: 1;
+  gap: 2px;
+  min-width: 0;
+  display: flex;
+}
+
+.k-pulse-counts {
+  gap: var(--space-5);
+  margin: 0;
+  display: flex;
+}
+
+.k-pulse-count {
+  flex-direction: column;
+  min-width: 0;
+  display: flex;
+}
+
+.k-pulse-count dt {
+  color: var(--ink-300);
+}
+
+.k-pulse-count dd {
+  color: var(--ink-100);
+  font: 600 26px/30px var(--font-sans);
+  white-space: nowrap;
+  margin: 0;
+}
+
+.k-pulse-count dd small {
+  color: var(--ink-300);
+  font: var(--text-caption) var(--font-sans);
+  margin-left: 2px;
+}
+
+.k-pulse-count[data-tone="up"] dd {
+  color: var(--pnl-up);
+}
+
+.k-pulse-count[data-tone="down"] dd {
+  color: var(--pnl-down);
+}
+
+.k-pulse-line {
+  gap: 0 var(--space-3);
+  flex-wrap: wrap;
+  min-width: 0;
+  line-height: 18px;
+  display: flex;
+}
+
+.k-pulse-read {
+  white-space: nowrap;
+  gap: 4px;
+  display: inline-flex;
+}
+
+.k-pulse-read-name {
+  color: var(--ink-300);
+}
+
+.k-pulse-read b {
+  color: var(--ink-100);
+  font-weight: 600;
+}
+
+.k-pulse-read[data-unavailable] b, .k-pulse-read b [data-unavailable] {
+  color: var(--ink-300);
+  font-weight: 400;
+}
+
+.k-pulse-read[data-tone="up"] b {
+  color: var(--pnl-up);
+}
+
+.k-pulse-read[data-tone="down"] b {
+  color: var(--pnl-down);
+}
+
+.k-pulse-basis {
+  color: var(--ink-300);
+}
+
+.k-pulse-dist {
+  flex-direction: column;
+  flex: none;
+  gap: 2px;
+  width: 300px;
+  min-width: 0;
+  display: flex;
+}
+
+.k-pulse-dist-title {
+  color: var(--ink-300);
+  margin: 0;
+}
+
 .k-row-actions {
   z-index: 1;
   background: linear-gradient(to right, transparent, var(--bg-300) 12px);

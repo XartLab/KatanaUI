@@ -10530,6 +10530,212 @@
         }
       ]
     },
+    "MarketPulse": {
+      "kind": "component",
+      "source": "src/cn/market-pulse.tsx",
+      "props": [
+        {
+          "name": "counts",
+          "type": "MarketPulseCounts",
+          "required": true,
+          "description": "The five big counts: rising, falling, limit-up, limit-down and flat."
+        },
+        {
+          "name": "readings",
+          "type": "MarketPulseReadings",
+          "required": false,
+          "default": "{}",
+          "description": "The small readings under the counts; a missing one is written as a dash with its reason on hover."
+        },
+        {
+          "name": "share",
+          "type": "number | null",
+          "required": false,
+          "description": "Share of rising stocks (0 to 1) for the half-dial; worked out from the counts when omitted, null writes a dash."
+        },
+        {
+          "name": "basis",
+          "type": "ReactNode",
+          "required": false,
+          "description": "A caller-written note after the yesterday readings (the basis date, for example)."
+        },
+        {
+          "name": "distribution",
+          "type": "Pick<DistributionBarsProps, 'bins' | 'totals' | 'formatCount' | 'empty'>",
+          "required": false,
+          "description": "The change distribution on the right; leave it out to draw none."
+        },
+        {
+          "name": "labels",
+          "type": "PulseLabels",
+          "required": false,
+          "default": "cnLabelsZh.pulse",
+          "description": "Text pack; the Simplified Chinese default is used when omitted."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class names."
+        }
+      ]
+    },
+    "MarketPulseCounts": {
+      "kind": "type",
+      "source": "src/cn/market-pulse.tsx",
+      "props": [
+        {
+          "name": "rising",
+          "type": "CnValue",
+          "required": true,
+          "description": "Number of rising stocks."
+        },
+        {
+          "name": "falling",
+          "type": "CnValue",
+          "required": true,
+          "description": "Number of falling stocks."
+        },
+        {
+          "name": "limitUp",
+          "type": "CnValue",
+          "required": true,
+          "description": "Number of limit-up stocks."
+        },
+        {
+          "name": "limitDown",
+          "type": "CnValue",
+          "required": true,
+          "description": "Number of limit-down stocks."
+        },
+        {
+          "name": "flat",
+          "type": "CnValue",
+          "required": true,
+          "description": "Number of flat stocks."
+        }
+      ]
+    },
+    "MarketPulseProps": {
+      "kind": "type",
+      "source": "src/cn/market-pulse.tsx",
+      "props": [
+        {
+          "name": "counts",
+          "type": "MarketPulseCounts",
+          "required": true,
+          "description": "The five big counts: rising, falling, limit-up, limit-down and flat."
+        },
+        {
+          "name": "readings",
+          "type": "MarketPulseReadings",
+          "required": false,
+          "description": "The small readings under the counts; a missing one is written as a dash with its reason on hover."
+        },
+        {
+          "name": "share",
+          "type": "number | null",
+          "required": false,
+          "description": "Share of rising stocks (0 to 1) for the half-dial; worked out from the counts when omitted, null writes a dash."
+        },
+        {
+          "name": "basis",
+          "type": "ReactNode",
+          "required": false,
+          "description": "A caller-written note after the yesterday readings (the basis date, for example)."
+        },
+        {
+          "name": "distribution",
+          "type": "Pick<DistributionBarsProps, 'bins' | 'totals' | 'formatCount' | 'empty'>",
+          "required": false,
+          "description": "The change distribution on the right; leave it out to draw none."
+        },
+        {
+          "name": "labels",
+          "type": "PulseLabels",
+          "required": false,
+          "description": "Text pack; the Simplified Chinese default is used when omitted."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class names."
+        }
+      ]
+    },
+    "MarketPulseReadings": {
+      "kind": "type",
+      "source": "src/cn/market-pulse.tsx",
+      "props": [
+        {
+          "name": "nonStLimitUp",
+          "type": "CnValue",
+          "required": false,
+          "description": "Limit-up stocks excluding ST, in the pool."
+        },
+        {
+          "name": "broken",
+          "type": "CnValue",
+          "required": false,
+          "description": "Stocks that touched the limit and opened."
+        },
+        {
+          "name": "highestBoard",
+          "type": "CnValue",
+          "required": false,
+          "description": "The highest board count."
+        },
+        {
+          "name": "limitUpAmount",
+          "type": "CnValue",
+          "required": false,
+          "description": "Turnover of the limit-up stocks, in yuan."
+        },
+        {
+          "name": "sealEstimate",
+          "type": "CnValue",
+          "required": false,
+          "description": "Estimated seal amount of the limit-up stocks, in yuan."
+        },
+        {
+          "name": "yesterdayLimitUp",
+          "type": "CnValue",
+          "required": false,
+          "description": "Yesterday's limit-up count."
+        },
+        {
+          "name": "yesterdayLimitDown",
+          "type": "CnValue",
+          "required": false,
+          "description": "Yesterday's limit-down count."
+        },
+        {
+          "name": "yesterdayBroken",
+          "type": "CnValue",
+          "required": false,
+          "description": "Yesterday's broken-limit count."
+        },
+        {
+          "name": "turnover",
+          "type": "CnValue",
+          "required": false,
+          "description": "Turnover of both markets, in yuan."
+        },
+        {
+          "name": "turnoverForecast",
+          "type": "CnValue",
+          "required": false,
+          "description": "Forecast turnover of both markets, in yuan."
+        },
+        {
+          "name": "mainNetInflow",
+          "type": "CnValue",
+          "required": false,
+          "description": "Main-force net inflow, in yuan (signed)."
+        }
+      ]
+    },
     "MatrixOrb": {
       "kind": "component",
       "source": "src/katana/matrix-orb.tsx",
@@ -23267,6 +23473,11 @@
       "source": "src/quant/format/price.ts",
       "props": []
     },
+    "dialArc": {
+      "kind": "function",
+      "source": "src/cn/market-pulse.tsx",
+      "props": []
+    },
     "distributionBarHeight": {
       "kind": "function",
       "source": "src/quant/distribution-bars.tsx",
@@ -23760,6 +23971,42 @@
       "kind": "function",
       "source": "src/cn/session.ts",
       "props": []
+    },
+    "pulseShare": {
+      "kind": "function",
+      "source": "src/cn/market-pulse.tsx",
+      "props": [
+        {
+          "name": "rising",
+          "type": "CnValue",
+          "required": true,
+          "description": "Number of rising stocks."
+        },
+        {
+          "name": "falling",
+          "type": "CnValue",
+          "required": true,
+          "description": "Number of falling stocks."
+        },
+        {
+          "name": "limitUp",
+          "type": "CnValue",
+          "required": true,
+          "description": "Number of limit-up stocks."
+        },
+        {
+          "name": "limitDown",
+          "type": "CnValue",
+          "required": true,
+          "description": "Number of limit-down stocks."
+        },
+        {
+          "name": "flat",
+          "type": "CnValue",
+          "required": true,
+          "description": "Number of flat stocks."
+        }
+      ]
     },
     "quantileRange": {
       "kind": "function",

@@ -3,6 +3,7 @@ import { DataGrid, type GridColumn, type GridColumnLayout } from '../../src/bloc
 import {
   BoardMark,
   LimitStatus,
+  MarketPulse,
   StreakBadge,
   ThemeCards,
   CN_SESSIONS,
@@ -240,6 +241,49 @@ export function ThemeCardDemo() {
       <p className="gal-note">示例数据：多张卡横排，排序由调用方排；催化一行省略号，悬停看全文与来源。</p>
       <div className="gal-wide" data-testid="theme-cards" style={{ maxWidth: 960 }}>
         <ThemeCards themes={THEME_DATA} onOpen={() => {}} onSelectMember={() => {}} />
+      </div>
+    </>
+  )
+}
+
+// 市场全景条（#110）：示例数据，不是行情。
+const PULSE_BINS = [
+  { key: 'b0', label: '<-10', count: 119, tone: 'down' },
+  { key: 'b1', label: '-10', count: 946, tone: 'down' },
+  { key: 'b2', label: '-7', count: 1761, tone: 'down' },
+  { key: 'b3', label: '-5', count: 1381, tone: 'down' },
+  { key: 'b4', label: '-3', count: 1032, tone: 'down' },
+  { key: 'b5', label: '0', count: 31, tone: 'muted' },
+  { key: 'b6', label: '0+', count: 211, tone: 'up' },
+  { key: 'b7', label: '3', count: 37, tone: 'up' },
+  { key: 'b8', label: '5', count: 8, tone: 'up' },
+  { key: 'b9', label: '7', count: 28, tone: 'up' },
+  { key: 'b10', label: '>10', count: 18, tone: 'up' },
+] as const
+
+export function MarketPulseDemo() {
+  return (
+    <>
+      <p className="gal-note">示例数据：占比由三个家数算出；取不到的读数写「—」，悬停看原因。</p>
+      <div className="gal-wide" data-testid="market-pulse" style={{ maxWidth: 1180 }}>
+        <MarketPulse
+          counts={{ rising: 302, falling: 5239, limitUp: 30, limitDown: 62, flat: 31 }}
+          readings={{
+            nonStLimitUp: 28,
+            broken: 10,
+            highestBoard: 4,
+            limitUpAmount: { value: null, reason: '示例：日内未知' },
+            sealEstimate: 2.283e9,
+            yesterdayLimitUp: 23,
+            yesterdayLimitDown: 68,
+            yesterdayBroken: 24,
+            turnover: { value: null, reason: '示例：成交额还没给' },
+            turnoverForecast: null,
+            mainNetInflow: null,
+          }}
+          basis="示例基准日"
+          distribution={{ bins: PULSE_BINS }}
+        />
       </div>
     </>
   )
