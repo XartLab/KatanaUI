@@ -4526,6 +4526,145 @@
       "source": "src/primitives/dialog.tsx",
       "props": []
     },
+    "DistributionBars": {
+      "kind": "component",
+      "source": "src/quant/distribution-bars.tsx",
+      "props": [
+        {
+          "name": "bins",
+          "type": "readonly DistributionBin[]",
+          "required": true,
+          "description": "The bins in display order (9 or 11 are typical); edges and names are the caller's."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "Screen-reader name of the whole chart (a full sentence)."
+        },
+        {
+          "name": "totals",
+          "type": "DistributionTotals",
+          "required": false,
+          "description": "Names for the totals line (up / muted / down); the numbers are the counts summed by tone."
+        },
+        {
+          "name": "formatCount",
+          "type": "(count: number) => string",
+          "required": false,
+          "default": "defaultFormat",
+          "description": "How a count is written; thousands separators by default."
+        },
+        {
+          "name": "empty",
+          "type": "ReactNode",
+          "required": false,
+          "default": "'—'",
+          "description": "Text shown when there is no data; a dash by default."
+        },
+        {
+          "name": "height",
+          "type": "number",
+          "required": false,
+          "default": "96",
+          "description": "Height of the bar area in px, including the count row; 96 by default."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class names on the root."
+        }
+      ]
+    },
+    "DistributionBarsProps": {
+      "kind": "type",
+      "source": "src/quant/distribution-bars.tsx",
+      "props": [
+        {
+          "name": "bins",
+          "type": "readonly DistributionBin[]",
+          "required": true,
+          "description": "The bins in display order (9 or 11 are typical); edges and names are the caller's."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "Screen-reader name of the whole chart (a full sentence)."
+        },
+        {
+          "name": "totals",
+          "type": "DistributionTotals",
+          "required": false,
+          "description": "Names for the totals line (up / muted / down); the numbers are the counts summed by tone."
+        },
+        {
+          "name": "formatCount",
+          "type": "(count: number) => string",
+          "required": false,
+          "description": "How a count is written; thousands separators by default."
+        },
+        {
+          "name": "empty",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Text shown when there is no data; a dash by default."
+        },
+        {
+          "name": "height",
+          "type": "number",
+          "required": false,
+          "description": "Height of the bar area in px, including the count row; 96 by default."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class names on the root."
+        }
+      ]
+    },
+    "DistributionBin": {
+      "kind": "type",
+      "source": "src/quant/distribution-bars.tsx",
+      "props": [
+        {
+          "name": "key",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "label",
+          "type": "ReactNode",
+          "required": true,
+          "description": "The bin name under the bar (e.g."
+        },
+        {
+          "name": "count",
+          "type": "number | null",
+          "required": true,
+          "description": "The count in this bin; null means no number (no bar, a dash above)."
+        },
+        {
+          "name": "tone",
+          "type": "DistributionTone",
+          "required": true,
+          "description": "Semantic tone of the bar; the totals line groups by it."
+        }
+      ]
+    },
+    "DistributionTone": {
+      "kind": "type",
+      "source": "src/quant/distribution-bars.tsx",
+      "props": []
+    },
+    "DistributionTotals": {
+      "kind": "type",
+      "source": "src/quant/distribution-bars.tsx",
+      "props": []
+    },
     "DividendEvent": {
       "kind": "type",
       "source": "src/quant/event-calendar-model.ts",
@@ -22067,6 +22206,16 @@
     "decimalsOfTick": {
       "kind": "function",
       "source": "src/quant/format/price.ts",
+      "props": []
+    },
+    "distributionBarHeight": {
+      "kind": "function",
+      "source": "src/quant/distribution-bars.tsx",
+      "props": []
+    },
+    "distributionTotals": {
+      "kind": "function",
+      "source": "src/quant/distribution-bars.tsx",
       "props": []
     },
     "filterTrades": {

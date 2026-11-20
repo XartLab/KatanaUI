@@ -1217,6 +1217,33 @@ export const PAGES: readonly DocPage[] = [
     keys: [['Tab', '到分段控件（← → 移动，Space / Enter 选）']],
   },
   {
+    id: 'distribution-bars',
+    group: 'quant',
+    cardHeight: 220,
+    title: 'DistributionBars 分档分布柱',
+    summary:
+      '把一批品种按涨跌幅分成 9 或 11 档（跌停…涨停），每档一根柱，柱顶标家数，底部一行汇总（涨 x / 平 y / 跌 z）。档的边界、档名与汇总的名字都由调用方传，件只按家数画柱、按色调汇总；没有数据显示空态，不画样本。',
+    exports: ['DistributionBars', 'distributionTotals', 'distributionBarHeight'],
+    propParts: [
+      { part: 'DistributionBars', note: '示例数据写死在页里，不是行情。柱高按最大档归一，有家数的至少 1px。' },
+      { part: 'distributionTotals', note: '纯函数：各色调（up / muted / down）的家数之和，汇总行用它。' },
+      { part: 'distributionBarHeight', note: '纯函数：柱高（px），按最大档归一并扣掉柱顶那一行。' },
+    ],
+    states: [
+      '有数据：每档一列，柱色跟档的色调（up / down / muted / accent），柱顶是家数。',
+      '某档没有数（count 为 null）：不画柱，柱顶写「—」。',
+      '汇总：给了 totals 才有，按 up / muted / down 的次序，没写名字的项不出现。',
+      '没有数据（空数组或全是 null）：只写 empty 的字，不画样本。',
+    ],
+    donts: [
+      '不要给柱传色值：只选色调名。',
+      '不要在包里写档名或汇总的字：都由调用方传。',
+      '不要用它画连续分布（直方图拖区间用 RangeHistogramSlider）：它画的是已经分好档的家数。',
+    ],
+    composition: 'DistributionBars\n  柱区（每档：家数 + 柱）\n  档名行\n  汇总行',
+    keys: [],
+  },
+  {
     id: 'rating-text',
     group: 'quant',
     cardHeight: 140,

@@ -79,6 +79,11 @@
           "target": "~/src/katana/ui/theme/dialog.css"
         },
         {
+          "path": "src/theme/distribution-bars.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/distribution-bars.css"
+        },
+        {
           "path": "src/theme/distribution.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/distribution.css"
@@ -2292,6 +2297,23 @@
           "path": "src/quant/decimal-field.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/quant/decimal-field.tsx"
+        }
+      ]
+    },
+    {
+      "name": "distribution-bars",
+      "type": "registry:component",
+      "title": "Distribution Bars",
+      "description": "把一批品种按涨跌幅分成 9 或 11 档（跌停…涨停），每档一根柱，柱顶标家数，底部一行汇总（涨 x / 平 y / 跌 z）。档的边界、档名与汇总的名字都由调用方传，件只按家数画柱、按色调汇总；没有数据显示空态，不画样本。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/gauge-bar"
+      ],
+      "files": [
+        {
+          "path": "src/quant/distribution-bars.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/distribution-bars.tsx"
         }
       ]
     },
