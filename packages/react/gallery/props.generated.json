@@ -20064,6 +20064,97 @@
         }
       ]
     },
+    "ThemeCard": {
+      "kind": "component",
+      "source": "src/cn/theme-card.tsx",
+      "props": [
+        {
+          "name": "theme",
+          "type": "ThemeCardData",
+          "required": true,
+          "description": "The theme to show: name, counts, catalyst and members."
+        },
+        {
+          "name": "index",
+          "type": "number",
+          "required": false,
+          "description": "Position number shown before the name (written 01, 02…); omit for none."
+        },
+        {
+          "name": "onOpen",
+          "type": "(key: string) => void",
+          "required": false,
+          "description": "Called by the footer button with the theme key; without it the footer is plain text."
+        },
+        {
+          "name": "onSelectMember",
+          "type": "(member: ThemeMember, theme: ThemeCardData) => void",
+          "required": false,
+          "description": "Called when a member row is picked; without it the rows are plain."
+        },
+        {
+          "name": "labels",
+          "type": "ThemeCardLabels",
+          "required": false,
+          "default": "cnLabelsZh.themeCard",
+          "description": "Text pack; the Simplified Chinese default is used when omitted."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class names."
+        }
+      ]
+    },
+    "ThemeCardData": {
+      "kind": "type",
+      "source": "src/cn/theme-card.tsx",
+      "props": [
+        {
+          "name": "key",
+          "type": "string",
+          "required": true,
+          "description": "Stable key of the theme."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": "Theme name."
+        },
+        {
+          "name": "limitUpCount",
+          "type": "number | null",
+          "required": false,
+          "description": "Number of limit-up stocks; counted from the members when omitted, null writes a dash."
+        },
+        {
+          "name": "highestBoard",
+          "type": "number | null",
+          "required": false,
+          "description": "Highest board; taken from the members when omitted, and nothing is drawn below two boards."
+        },
+        {
+          "name": "catalyst",
+          "type": "ThemeCatalyst | null",
+          "required": false,
+          "description": "The catalyst line with its source; null or empty writes a dash."
+        },
+        {
+          "name": "catalystReason",
+          "type": "string",
+          "required": false,
+          "description": "Why the catalyst is unavailable (shown on hover)."
+        },
+        {
+          "name": "members",
+          "type": "readonly ThemeMember[]",
+          "required": true,
+          "description": "Member stocks in display order."
+        }
+      ]
+    },
     "ThemeCardLabels": {
       "kind": "type",
       "source": "src/cn/labels.ts",
@@ -20120,6 +20211,169 @@
           "name": "row",
           "type": "string",
           "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "ThemeCardProps": {
+      "kind": "type",
+      "source": "src/cn/theme-card.tsx",
+      "props": [
+        {
+          "name": "theme",
+          "type": "ThemeCardData",
+          "required": true,
+          "description": "The theme to show: name, counts, catalyst and members."
+        },
+        {
+          "name": "index",
+          "type": "number",
+          "required": false,
+          "description": "Position number shown before the name (written 01, 02…); omit for none."
+        },
+        {
+          "name": "onOpen",
+          "type": "(key: string) => void",
+          "required": false,
+          "description": "Called by the footer button with the theme key; without it the footer is plain text."
+        },
+        {
+          "name": "onSelectMember",
+          "type": "(member: ThemeMember, theme: ThemeCardData) => void",
+          "required": false,
+          "description": "Called when a member row is picked; without it the rows are plain."
+        },
+        {
+          "name": "labels",
+          "type": "ThemeCardLabels",
+          "required": false,
+          "description": "Text pack; the Simplified Chinese default is used when omitted."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class names."
+        }
+      ]
+    },
+    "ThemeCards": {
+      "kind": "component",
+      "source": "src/cn/theme-card.tsx",
+      "props": [
+        {
+          "name": "themes",
+          "type": "readonly ThemeCardData[]",
+          "required": true,
+          "description": "The themes in display order; the caller sorts (by limit-up count, time, boards or change)."
+        },
+        {
+          "name": "onOpen",
+          "type": "(key: string) => void",
+          "required": false,
+          "description": "Called by each card's footer button with the theme key."
+        },
+        {
+          "name": "onSelectMember",
+          "type": "(member: ThemeMember, theme: ThemeCardData) => void",
+          "required": false,
+          "description": "Called when a member row is picked."
+        },
+        {
+          "name": "labels",
+          "type": "ThemeCardLabels",
+          "required": false,
+          "default": "cnLabelsZh.themeCard",
+          "description": "Text pack shared by the cards; the Simplified Chinese default is used when omitted."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class names."
+        }
+      ]
+    },
+    "ThemeCardsProps": {
+      "kind": "type",
+      "source": "src/cn/theme-card.tsx",
+      "props": [
+        {
+          "name": "themes",
+          "type": "readonly ThemeCardData[]",
+          "required": true,
+          "description": "The themes in display order; the caller sorts (by limit-up count, time, boards or change)."
+        },
+        {
+          "name": "onOpen",
+          "type": "(key: string) => void",
+          "required": false,
+          "description": "Called by each card's footer button with the theme key."
+        },
+        {
+          "name": "onSelectMember",
+          "type": "(member: ThemeMember, theme: ThemeCardData) => void",
+          "required": false,
+          "description": "Called when a member row is picked."
+        },
+        {
+          "name": "labels",
+          "type": "ThemeCardLabels",
+          "required": false,
+          "description": "Text pack shared by the cards; the Simplified Chinese default is used when omitted."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class names."
+        }
+      ]
+    },
+    "ThemeCatalyst": {
+      "kind": "type",
+      "source": "src/cn/theme-card.tsx",
+      "props": [
+        {
+          "name": "text",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "source",
+          "type": "string",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "ThemeMember": {
+      "kind": "type",
+      "source": "src/cn/theme-card.tsx",
+      "props": [
+        {
+          "name": "code",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "time",
+          "type": "string | null",
+          "required": false,
+          "description": "涨停（首次封板）时刻，「09:36」；取不到写 —。"
+        },
+        {
+          "name": "streak",
+          "type": "number | StreakValue | null",
+          "required": false,
           "description": ""
         }
       ]
@@ -23947,6 +24201,54 @@
       "kind": "function",
       "source": "src/primitives/tabs.tsx",
       "props": []
+    },
+    "themeCardFigures": {
+      "kind": "function",
+      "source": "src/cn/theme-card.tsx",
+      "props": [
+        {
+          "name": "key",
+          "type": "string",
+          "required": true,
+          "description": "Stable key of the theme."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": "Theme name."
+        },
+        {
+          "name": "limitUpCount",
+          "type": "number | null",
+          "required": false,
+          "description": "Number of limit-up stocks; counted from the members when omitted, null writes a dash."
+        },
+        {
+          "name": "highestBoard",
+          "type": "number | null",
+          "required": false,
+          "description": "Highest board; taken from the members when omitted, and nothing is drawn below two boards."
+        },
+        {
+          "name": "catalyst",
+          "type": "ThemeCatalyst | null",
+          "required": false,
+          "description": "The catalyst line with its source; null or empty writes a dash."
+        },
+        {
+          "name": "catalystReason",
+          "type": "string",
+          "required": false,
+          "description": "Why the catalyst is unavailable (shown on hover)."
+        },
+        {
+          "name": "members",
+          "type": "readonly ThemeMember[]",
+          "required": true,
+          "description": "Member stocks in display order."
+        }
+      ]
     },
     "toggleGroupVariants": {
       "kind": "function",

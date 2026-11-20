@@ -5326,6 +5326,41 @@ export const PAGES: readonly DocPage[] = [
     composition: 'BoardMark',
     keys: [],
   },
+  {
+    id: 'theme-card',
+    group: 'cn',
+    cardHeight: 360,
+    title: 'ThemeCard 题材卡',
+    summary:
+      '卡头是序号、题材名与两枚小胶囊（几只涨停、最高几板），一行催化（省略号截断，悬停看全文与来源），成员表（涨停时间、名称、连板徽标），卡脚「查看 n 只涨停」。ThemeCards 把多张卡横排；按涨停家数 / 时间 / 连板 / 涨幅排，由调用方排。信息结构取自复盘吧的题材异动，样子是 Graphite 的。',
+    exports: ['ThemeCard', 'ThemeCards', 'themeCardFigures'],
+    propParts: [
+      { part: 'ThemeCard', note: '渲染一个 section；成员行与卡脚在给了回调时才是按钮。' },
+      { part: 'ThemeCards', note: '横排的容器：一行排不下就横向滚动，卡最窄 220px，有空就均分。' },
+      {
+        part: 'ThemeCardData',
+        note: '题材：key、name、可选 limitUpCount / highestBoard / catalyst / catalystReason，成员 members。',
+      },
+      {
+        part: 'themeCardFigures(theme)',
+        note: '纯函数：涨停家数（不给就数成员）与最高板（两板以下是 null，不画胶囊）。',
+      },
+    ],
+    states: [
+      '催化有内容：一行省略号，悬停写全文与来源；没有：写「—」，悬停写原因。',
+      '涨停家数取不到（null）：胶囊与卡脚写「—」，不写 0。',
+      '最高板不到两板：不画「n板」胶囊。',
+      '没有成员：写「暂无涨停成员」。',
+      '给了 onOpen：卡脚是按钮；给了 onSelectMember：成员行是按钮，可 Tab、Enter。',
+    ],
+    donts: ['不要在包里排序：多张卡的次序由调用方给。', '不要传色值或固定卡宽：卡宽跟容器走。'],
+    composition:
+      'ThemeCards\n  ThemeCard\n    卡头（序号 · 题材名 · 涨停数 · 最高板）\n    催化\n    成员行（时间 · 名称 · StreakBadge）\n    卡脚',
+    keys: [
+      ['Tab', '到成员行与卡脚按钮（给了回调时）'],
+      ['Enter / Space', '触发'],
+    ],
+  },
 ]
 
 export const pageById = (id: string): DocPage | undefined => PAGES.find((page) => page.id === id)
