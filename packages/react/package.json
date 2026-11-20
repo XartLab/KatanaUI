@@ -96,7 +96,7 @@
   "devDependencies": {
     "@axe-core/playwright": "4.13.0",
     "@katana-ui/tokens": "0.3.0",
-    "@playwright/test": "1.56.1",
+    "@playwright/test": "1.65.1",
     "@tailwindcss/vite": "4.3.5",
     "@types/d3-hierarchy": "3.1.7",
     "@types/d3-sankey": "0.12.5",
