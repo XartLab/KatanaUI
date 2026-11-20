@@ -5367,7 +5367,7 @@ export const PAGES: readonly DocPage[] = [
     cardHeight: 150,
     title: 'MarketPulse 市场全景条',
     summary:
-      '一行横条：上涨占比半圆表盘（中间写百分比，下注「上涨占比」）、五个大数（上涨 / 下跌 / 涨停 / 跌停 / 平盘，涨红跌绿，平盘中性）、大数下两行小字读数（涨停池、昨日口径、成交额与主力净流入），最右嵌涨跌分布柱（DistributionBars）。读数只占三行高；取不到写「—」并可带原因（悬停），不写 0。信息结构取自复盘吧的看盘工作台，样子是 Graphite 的。',
+      '一行横条：上涨占比半圆表盘（中间写百分比，下注「上涨占比」）、五个大数（上涨 / 下跌 / 涨停 / 跌停 / 平盘，涨红跌绿，平盘中性）、大数下两行小字读数（涨停池、昨日口径、成交额与主力净流入），最右嵌涨跌分布柱（DistributionBars）。读数只占三行高（小字最多两行，放不下的收进「+n」点开看全部；容器窄于 900px 分布柱移到第二行最右）；取不到写「—」并可带原因（悬停），不写 0。信息结构取自复盘吧的看盘工作台，样子是 Graphite 的。',
     exports: ['MarketPulse', 'pulseShare', 'dialArc'],
     propParts: [
       { part: 'MarketPulse', note: '渲染一个 div（role=group），不透传别的属性。' },
@@ -5391,7 +5391,7 @@ export const PAGES: readonly DocPage[] = [
     donts: [
       '不要传色值：涨跌只靠语义色调。',
       '不要在包里取数：数据源由调用方接，这里只摆。',
-      '不要加第四行读数：条的高度就是三行。',
+      '不要加第四行读数：条的高度就是三行，多出的读数进「+n」。',
     ],
     composition:
       'MarketPulse\n  表盘（半圆 · 占比 · 说明）\n  五个大数\n  小字读数 × 2 行\n  涨跌分布（DistributionBars）',
@@ -5403,7 +5403,7 @@ export const PAGES: readonly DocPage[] = [
     cardHeight: 520,
     title: 'LimitUpTimeline 涨停时间线',
     summary:
-      '蛇形时刻轴：按分钟聚合封板时刻成站点（时间胶囊），一行 perRow 站，奇数行左到右、偶数行右到左，行尾拐弯、箭头指向较新的时刻、标「越来越早」；站点下挂小卡（名称、连板徽标、题材、成交额万 / 亿，20cm 等标板块）；站点按时段着色（集合竞价 / 早盘 / 午盘 / 尾盘）。顶上有排序（最新在前 / 最早在前）、时段图例（站数与只数）、题材 chip 筛。站点等距，午休与 09:25–09:30 不占宽度。梯队表用 LimitLadder，不在这里。',
+      '蛇形时刻轴：按分钟聚合封板时刻成站点（时间胶囊），一行放几站跟着容器宽度走（每站最少 136px，perRow 是上限），奇数行左到右、偶数行右到左，行尾拐弯、箭头指向较新的时刻、标「越来越早」；站点下挂小卡（名称、连板徽标、题材、成交额万 / 亿，20cm 等标板块）；站点按时段着色（集合竞价 / 早盘 / 午盘 / 尾盘）。顶上有排序（最新在前 / 最早在前）、时段图例（站数与只数）、题材 chip 筛。站点等距，午休与 09:25–09:30 不占宽度。梯队表用 LimitLadder，不在这里。',
     exports: ['LimitUpTimeline', 'groupStations', 'phaseSummary', 'themeCounts', 'filterByTheme', 'snakeRows'],
     propParts: [
       { part: 'LimitUpTimeline', note: '渲染一个 section；排序与题材筛选都可受控也可不受控。' },

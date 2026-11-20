@@ -123,22 +123,19 @@
   position: relative;
   padding-top: 18px;
 }
-.k-tl-range,
-.k-tl-hint {
+/* 行头：R 标签固定在左边；「越来越早」提示在流向的终点——左到右的行在右端，右到左的行紧跟在 R 标签后面（箭头那一端也是左边）。 */
+.k-tl-rowhead {
   position: absolute;
-  top: 0;
+  inset: 0 0 auto;
+  display: flex;
+  gap: var(--space-2);
+  justify-content: space-between;
   color: var(--ink-300);
   font: var(--text-micro) var(--font-sans);
   white-space: nowrap;
 }
-/* 标签放在流向的起点（range）与终点（hint）两端：左到右的行 range 在左、hint 在右，右到左的行反过来。 */
-.k-tl-row[data-flow='ltr'] .k-tl-range,
-.k-tl-row[data-flow='rtl'] .k-tl-hint {
-  left: 0;
-}
-.k-tl-row[data-flow='ltr'] .k-tl-hint,
-.k-tl-row[data-flow='rtl'] .k-tl-range {
-  right: 0;
+.k-tl-row[data-flow='rtl'] .k-tl-rowhead {
+  justify-content: flex-start;
 }
 .k-tl-stations {
   display: grid;
@@ -226,6 +223,7 @@ button.k-tl-card:focus-visible {
   min-width: 0;
 }
 .k-tl-card-name {
+  flex: 1;
   min-width: 0;
   overflow: hidden;
   font-weight: 600;
@@ -242,6 +240,7 @@ button.k-tl-card:focus-visible {
   white-space: nowrap;
 }
 .k-tl-card-amount {
+  flex: none;
   color: var(--ink-200);
   font: var(--text-caption) var(--font-sans);
 }

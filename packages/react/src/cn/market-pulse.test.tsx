@@ -66,9 +66,11 @@ describe('MarketPulse', () => {
     expect(html).not.toMatch(/<b>0<\/b>/)
   })
 
-  it('读数只有两行小字（加一行大数），共三行', () => {
+  it('小字读数在一个最多两行的容器里，放不下的收进「+n」（浏览器里量，这里断言容器与全部九项）', () => {
     const html = renderToStaticMarkup(<MarketPulse counts={COUNTS} />)
-    expect(html.match(/data-slot="pulse-line"/g)).toHaveLength(2)
+    expect(html.match(/data-slot="pulse-readings"/g)).toHaveLength(1)
+    expect(html.match(/data-slot="pulse-reading"/g)).toHaveLength(9)
+    expect(html).not.toContain('pulse-more')
   })
 
   it('最右嵌涨跌分布柱（DistributionBars）；不给就不画', () => {

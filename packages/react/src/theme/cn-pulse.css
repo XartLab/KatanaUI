@@ -2,7 +2,9 @@
 /* 市场全景条（MarketPulse，#110）：一行三块——半圆表盘、五个大数加两行小字、涨跌分布柱。读数共 3 行高（大数一行、小字两行），不加行高行宽；够宽（约 1200px 以上）时小字各占一行，共三行；窄了小字折行，不裁掉信息。
    颜色只读语义 token：涨 / 跌读 --pnl-up / --pnl-down（根上 data-updown 互换，红涨绿跌），平盘读 ink；表盘填充用涨色。 */
 .k-pulse {
+  container-type: inline-size;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: var(--space-4);
   min-width: 0;
@@ -52,7 +54,7 @@
 }
 .k-pulse-main {
   display: flex;
-  flex: 1;
+  flex: 1 1 360px;
   flex-direction: column;
   gap: 2px;
   min-width: 0;
@@ -87,12 +89,40 @@
 .k-pulse-count[data-tone='down'] dd {
   color: var(--pnl-down);
 }
-.k-pulse-line {
+.k-pulse-readings {
+  position: relative;
   display: flex;
   flex-wrap: wrap;
   gap: 0 var(--space-3);
   min-width: 0;
+  max-height: 36px;
+  overflow: hidden;
   line-height: 18px;
+}
+.k-pulse-readings [hidden] {
+  display: none;
+}
+.k-pulse-more {
+  height: 16px;
+  margin-top: 1px;
+  padding: 0 6px;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: var(--alpha-white-6);
+  color: var(--ink-200);
+  cursor: pointer;
+  font: var(--text-caption) var(--font-sans);
+}
+.k-pulse-more:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 1px;
+}
+.k-pulse-more-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: auto;
+  font: var(--text-caption) var(--font-sans);
 }
 .k-pulse-read {
   display: inline-flex;
@@ -131,4 +161,31 @@
 .k-pulse-dist-title {
   margin: 0;
   color: var(--ink-300);
+}
+/* 容器窄于 900px：分布柱掉到第二行最右，不再挤压大数；窄于 520px：表盘收起，五个大数占满一行。 */
+@container (max-width: 899px) {
+  .k-pulse-main {
+    flex-basis: calc(100% - 112px);
+  }
+  .k-pulse-dist {
+    margin-left: auto;
+  }
+}
+@container (max-width: 519px) {
+  .k-pulse-dial {
+    display: none;
+  }
+  .k-pulse-counts {
+    gap: var(--space-3);
+  }
+  .k-pulse-count dd {
+    font-size: 20px;
+    line-height: 24px;
+  }
+  .k-pulse-main {
+    flex-basis: 100%;
+  }
+  .k-pulse-dist {
+    width: 100%;
+  }
 }

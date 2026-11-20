@@ -9976,8 +9976,8 @@
           "name": "perRow",
           "type": "number",
           "required": false,
-          "default": "7",
-          "description": "How many stations fit in one row of the snake; 7 by default."
+          "default": "12",
+          "description": "Upper limit of stations in one row of the snake; the row count follows the container width (each station needs at least 136px) and never exceeds it."
         },
         {
           "name": "onSelect",
@@ -10050,7 +10050,7 @@
           "name": "perRow",
           "type": "number",
           "required": false,
-          "description": "How many stations fit in one row of the snake; 7 by default."
+          "description": "Upper limit of stations in one row of the snake; the row count follows the container width (each station needs at least 136px) and never exceeds it."
         },
         {
           "name": "onSelect",
