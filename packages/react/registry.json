@@ -3132,6 +3132,7 @@
         "@katana/chart-kit",
         "@katana/cn",
         "@katana/led",
+        "@katana/regime-strip",
         "@katana/series-geometry",
         "@katana/spark-tile",
         "@katana/switch",

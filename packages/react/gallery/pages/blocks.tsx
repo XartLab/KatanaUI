@@ -913,11 +913,11 @@ export function NewsFeedDemo() {
       <p className="gal-note">
         类别筛选：条目带 category，头部多一行类别芯片（多选，不选是全部）；不传 categories 就没有这一行。
       </p>
-      <div style={{ height: 300 }} data-testid="news-categories">
+      <div style={{ height: 340 }} data-testid="news-categories">
         <NewsFeed
           items={NEWS_CATEGORY_ITEMS}
           channels={NEWS_CHANNELS}
-          sources={[]}
+          sources={NEWS_SOURCES}
           categories={NEWS_CATEGORIES}
           now={NEWS_NOW}
           labels={{ ...NEWS_LABELS, categories: '公告类别', clearCategories: '清除类别筛选' }}

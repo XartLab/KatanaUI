@@ -489,7 +489,6 @@ const SX_PROPS = {
 // 情绪状态带（#109 regimes）：三种状态按月切 24 个点，最后一段是估的。演示数据。
 const SX_REGIMES = {
   label: '情绪周期状态',
-  title: '情绪日趋势',
   current: 'warm',
   currentText: '当前',
   estimateText: '估算',
