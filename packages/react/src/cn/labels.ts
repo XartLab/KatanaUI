@@ -84,6 +84,8 @@ export type ThemeCardLabels = {
 export type TimelineLabels = {
   region: string
   title: string
+  /** 标题旁的汇总，例「共 25 只 · 20 个封板时刻」。 */
+  summary: (stocks: number, stations: number) => string
   sort: { label: string; latestFirst: string; earliestFirst: string }
   /** 时段图例里的计数，例「1站 1只」。 */
   phaseCount: (stations: number, stocks: number) => string
@@ -193,6 +195,7 @@ export const cnLabelsZh: CnLabels = {
   timeline: {
     region: '涨停时间线',
     title: '同分钟聚合时刻轴',
+    summary: (stocks, stations) => `共 ${stocks} 只 · ${stations} 个封板时刻`,
     sort: { label: '排序', latestFirst: '最新在前', earliestFirst: '最早在前' },
     phaseCount: (stations, stocks) => `${stations}站 ${stocks}只`,
     phases: { auction: '集合竞价', morning: '早盘', afternoon: '午盘', late: '尾盘' },
