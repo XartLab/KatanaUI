@@ -110,6 +110,8 @@ export type SentimentLabels = {
   region: string
   /** 五档，从低到高。 */
   levels: readonly [string, string, string, string, string]
+  /** 今昨对比的四行名字。 */
+  rows: { limitUp: string; limitDown: string; sealRate: string; broken: string }
   today: string
   yesterday: string
   scoreCaption: string
@@ -213,6 +215,7 @@ export const cnLabelsZh: CnLabels = {
   sentiment: {
     region: '情绪温度',
     levels: ['冰点', '低迷', '中性', '升温', '高潮'],
+    rows: { limitUp: '涨停', limitDown: '跌停', sealRate: '封率', broken: '开板' },
     today: '今日',
     yesterday: '昨日',
     scoreCaption: '情绪分',

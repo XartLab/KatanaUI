@@ -16640,6 +16640,103 @@
       "source": "src/primitives/select.tsx",
       "props": []
     },
+    "SentimentGauge": {
+      "kind": "component",
+      "source": "src/cn/sentiment-gauge.tsx",
+      "props": [
+        {
+          "name": "score",
+          "type": "number | null | undefined",
+          "required": true,
+          "description": "The score from 0 to 100; null or missing writes a dash."
+        },
+        {
+          "name": "reason",
+          "type": "string",
+          "required": false,
+          "description": "Why the score is unavailable (shown on hover)."
+        },
+        {
+          "name": "basis",
+          "type": "ReactNode",
+          "required": false,
+          "description": "A caller-written line about how the score is made, such as its basis and whether it is calibrated."
+        },
+        {
+          "name": "today",
+          "type": "SentimentStats",
+          "required": false,
+          "description": "Today's figures for the comparison; leave both sides out to draw no comparison."
+        },
+        {
+          "name": "yesterday",
+          "type": "SentimentStats",
+          "required": false,
+          "description": "Yesterday's figures for the comparison."
+        },
+        {
+          "name": "labels",
+          "type": "SentimentLabels",
+          "required": false,
+          "default": "cnLabelsZh.sentiment",
+          "description": "Text pack; the Simplified Chinese default is used when omitted."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class names."
+        }
+      ]
+    },
+    "SentimentGaugeProps": {
+      "kind": "type",
+      "source": "src/cn/sentiment-gauge.tsx",
+      "props": [
+        {
+          "name": "score",
+          "type": "number | null | undefined",
+          "required": true,
+          "description": "The score from 0 to 100; null or missing writes a dash."
+        },
+        {
+          "name": "reason",
+          "type": "string",
+          "required": false,
+          "description": "Why the score is unavailable (shown on hover)."
+        },
+        {
+          "name": "basis",
+          "type": "ReactNode",
+          "required": false,
+          "description": "A caller-written line about how the score is made, such as its basis and whether it is calibrated."
+        },
+        {
+          "name": "today",
+          "type": "SentimentStats",
+          "required": false,
+          "description": "Today's figures for the comparison; leave both sides out to draw no comparison."
+        },
+        {
+          "name": "yesterday",
+          "type": "SentimentStats",
+          "required": false,
+          "description": "Yesterday's figures for the comparison."
+        },
+        {
+          "name": "labels",
+          "type": "SentimentLabels",
+          "required": false,
+          "description": "Text pack; the Simplified Chinese default is used when omitted."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class names."
+        }
+      ]
+    },
     "SentimentLabels": {
       "kind": "type",
       "source": "src/cn/labels.ts",
@@ -16655,6 +16752,12 @@
           "type": "readonly [string, string, string, string, string]",
           "required": true,
           "description": "五档，从低到高。"
+        },
+        {
+          "name": "rows",
+          "type": "{ limitUp: string; limitDown: string; sealRate: string; broken: string }",
+          "required": true,
+          "description": "今昨对比的四行名字。"
         },
         {
           "name": "today",
@@ -16685,6 +16788,36 @@
           "type": "(score: string, level: string) => string",
           "required": true,
           "description": ""
+        }
+      ]
+    },
+    "SentimentStats": {
+      "kind": "type",
+      "source": "src/cn/sentiment-gauge.tsx",
+      "props": [
+        {
+          "name": "limitUp",
+          "type": "CnValue",
+          "required": false,
+          "description": "Limit-up count."
+        },
+        {
+          "name": "limitDown",
+          "type": "CnValue",
+          "required": false,
+          "description": "Limit-down count."
+        },
+        {
+          "name": "sealRate",
+          "type": "CnValue",
+          "required": false,
+          "description": "Seal rate as a percentage (62.5 means 62.5%)."
+        },
+        {
+          "name": "broken",
+          "type": "CnValue",
+          "required": false,
+          "description": "Count of stocks that touched the limit and opened."
         }
       ]
     },
@@ -24494,6 +24627,11 @@
     "selectTriggerVariants": {
       "kind": "function",
       "source": "src/primitives/select.tsx",
+      "props": []
+    },
+    "sentimentLevel": {
+      "kind": "function",
+      "source": "src/cn/sentiment-gauge.tsx",
       "props": []
     },
     "setColumnFixed": {

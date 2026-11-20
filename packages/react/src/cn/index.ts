@@ -76,3 +76,4 @@ export {
   type TimelineOrder,
   type TimelineStation,
 } from './timeline-model.ts'
+export { SentimentGauge, sentimentLevel, type SentimentGaugeProps, type SentimentStats } from './sentiment-gauge.tsx'
