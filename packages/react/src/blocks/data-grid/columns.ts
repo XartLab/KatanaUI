@@ -9,6 +9,17 @@ import {
   type QuantityUnits,
   type SizeFormat,
 } from '../../quant/format/index.ts'
+import {
+  LIMIT_STATUS_ORDER,
+  limitStatusText,
+  normalizeLimitStatus,
+  normalizeStreak,
+  streakSortKey,
+  streakText,
+  type LimitStatusValue,
+  type StreakValue,
+} from '../../cn/badge-model.ts'
+import { cnLabelsZh, type LimitStatusLabels, type StreakLabels } from '../../cn/labels.ts'
 import { compareDecimal } from './model.ts'
 
 // 列类型（#1869）：列声明一个类型，格式化、对齐、着色、排序由类型给，不每列手写。
@@ -28,6 +39,8 @@ export type ColumnType =
   | 'bar'
   | 'pill'
   | 'progress'
+  | 'streak'
+  | 'limitStatus'
   | 'custom'
 
 /** 字的颜色：涨 / 跌（跟 data-updown，红涨绿跌时互换）、次要灰。 */
@@ -66,6 +79,11 @@ export type ColumnFormat = {
   labels?: { buy: string; sell: string }
   /** time：写到哪一级。默认 datetime（YYYY-MM-DD HH:MM:SS）。 */
   timeStyle?: 'datetime' | 'time' | 'date'
+  /** streak：写法（首板 / 2板 / 5天3板，或晋级口径「一进二」）与文案（默认简体中文，可整份换，#110）。 */
+  streakForm?: 'boards' | 'promotion'
+  streakLabels?: StreakLabels
+  /** limitStatus：文案（默认简体中文，可整份换，#110）。 */
+  limitStatusLabels?: LimitStatusLabels
   /** pill：最多画几枚，多出的收成「+n」；没给就只按格子宽度收。 */
   maxPills?: number
 }
@@ -76,7 +94,7 @@ export type GridColumn<Row> = {
   type?: ColumnType
   /**
    * 原始值，由类型决定怎么读：price / quantity / pnl / change / number / bar 是数字或十进制字符串（空、不是数写 —）；
-   * pill 是 PillValue 或 PillValue[]；progress 是 ProgressValue；
+   * pill 是 PillValue 或 PillValue[]；progress 是 ProgressValue；streak 是板数或 StreakValue（A 股连板，#110）；limitStatus 是状态名或 { status, sealAmount, reason }；
    * time 是毫秒时间戳；side 是 'buy' | 'sell'；symbol 是 SymbolValue；text 是字符串；custom 不读（内容全由 `cell` 画，要排序、复制就给 `text` 与 `sort`）。
    */
   value?: (row: Row) => unknown
@@ -134,6 +152,10 @@ export type ResolvedCell = {
   pills: { label: string; tone: GridPillTone }[] | undefined
   /** progress 列的分子、分母与比例（分母不是正数时比例是 undefined）。 */
   progress: { done: number; total: number; ratio: number | undefined } | undefined
+  /** streak 列：拆好的连板（取不到是 boards 为 null）、写法与文案，DataGrid 用 StreakBadge 画；别的类型是 undefined。 */
+  streak: { value: StreakValue; form: 'boards' | 'promotion' | undefined; labels: StreakLabels } | undefined
+  /** limitStatus 列：原样的值与文案，DataGrid 用 LimitStatus 画；别的类型是 undefined。 */
+  limitStatus: { value: LimitStatusValue | undefined; labels: LimitStatusLabels } | undefined
   /** symbol 列拆好的两段。 */
   symbol:
     | { code: string; venue: string | undefined; name: string | undefined; icon: { src?: string } | undefined }
@@ -204,6 +226,8 @@ export function resolveCell<Row>(column: GridColumn<Row>, row: Row, env: CellEnv
   let bar: ResolvedCell['bar']
   let pills: ResolvedCell['pills']
   let progress: ResolvedCell['progress']
+  let streak: ResolvedCell['streak']
+  let limitStatus: ResolvedCell['limitStatus']
   switch (type) {
     case 'price': {
       const number = toNumber(raw)
@@ -286,6 +310,23 @@ export function resolveCell<Row>(column: GridColumn<Row>, row: Row, env: CellEnv
       sort = progress?.ratio
       break
     }
+    case 'streak': {
+      const value = normalizeStreak(raw as number | StreakValue | null | undefined)
+      const labels = format.streakLabels ?? cnLabelsZh.streak
+      streak = { value, form: format.streakForm, labels }
+      text = streakText(value, labels, format.streakForm)
+      sort = streakSortKey(value)
+      break
+    }
+    case 'limitStatus': {
+      const value = raw as LimitStatusValue | undefined
+      const labels = format.limitStatusLabels ?? cnLabelsZh.limitStatus
+      limitStatus = { value, labels }
+      const { status } = normalizeLimitStatus(value)
+      text = limitStatusText(value, labels)
+      sort = status === null ? undefined : LIMIT_STATUS_ORDER.indexOf(status)
+      break
+    }
     case 'symbol': {
       const value = raw as SymbolValue | null | undefined
       const code = typeof value === 'string' ? value : (value?.code ?? '')
@@ -312,6 +353,8 @@ export function resolveCell<Row>(column: GridColumn<Row>, row: Row, env: CellEnv
     bar,
     pills,
     progress,
+    streak,
+    limitStatus,
     symbol,
   }
 }
@@ -393,7 +436,8 @@ function signed(value: number, digits: number): string {
 
 /** 一列的排序比较：数字类按数（十进制字符串按十进制），time 按毫秒，别的按字（numeric 的自然序，locale 由调用方给）。 */
 export function sortComparator(type: ColumnType | undefined, locale: string | undefined) {
-  const numeric = type !== undefined && (NUMERIC.has(type) || type === 'time')
+  const numeric =
+    type !== undefined && (NUMERIC.has(type) || type === 'time' || type === 'streak' || type === 'limitStatus')
   const collator = new Intl.Collator(locale, { numeric: true })
   return (a: unknown, b: unknown): number => {
     if (numeric) {

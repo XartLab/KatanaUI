@@ -12,6 +12,7 @@
 @source '../patterns';
 @source '../katana';
 @source '../quant';
+@source '../cn';
 @source '../blocks';
 
 /* shadcn 的组件里有 dark: 开头的类（`shadcn add` 新拷来的件会带）。Tailwind 默认按系统的深浅色决定它们生不生效，

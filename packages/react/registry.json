@@ -54,6 +54,31 @@
           "target": "~/src/katana/ui/theme/chip-group.css"
         },
         {
+          "path": "src/theme/cn-pulse.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/cn-pulse.css"
+        },
+        {
+          "path": "src/theme/cn-sentiment.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/cn-sentiment.css"
+        },
+        {
+          "path": "src/theme/cn-theme-card.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/cn-theme-card.css"
+        },
+        {
+          "path": "src/theme/cn-timeline.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/cn-timeline.css"
+        },
+        {
+          "path": "src/theme/cn.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/cn.css"
+        },
+        {
           "path": "src/theme/data-grid.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/data-grid.css"
@@ -3023,6 +3048,236 @@
       ]
     },
     {
+      "name": "cn-badge-model",
+      "type": "registry:lib",
+      "title": "Cn Badge Model",
+      "description": "首板 / 2板 / 「5天3板」，或晋级口径「一进二」；高度越高越醒目（只靠语义色调升四档，不传色值），涨色跟 data-updown。也是 DataGrid 的列类型 streak，可按板数排序。文字由 labels 给（默认简体中文，可整份换），取不到写「—」并可带原因（悬停）。",
+      "registryDependencies": [
+        "@katana/cn-format",
+        "@katana/cn-labels",
+        "@katana/cn-value"
+      ],
+      "files": [
+        {
+          "path": "src/cn/badge-model.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/cn/badge-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "cn-board-mark",
+      "type": "registry:component",
+      "title": "Cn Board Mark",
+      "description": "主板 / 创业板（20cm）/ 科创板（20cm）/ 北交所（30cm）/ ST。默认只标有特殊涨跌幅限制的写「20cm」「30cm」「ST」，主板不画；display 选写板块名或都写。boardKindOf 从代码（与名称）判断板块。取不到写「—」。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/cn-badge-model",
+        "@katana/cn-labels"
+      ],
+      "files": [
+        {
+          "path": "src/cn/board-mark.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/cn/board-mark.tsx"
+        }
+      ]
+    },
+    {
+      "name": "cn-format",
+      "type": "registry:lib",
+      "title": "Cn Format",
+      "description": "A 股件包的第 0 层（纯函数，不带 React）：formatCnAmount 把金额写成万 / 亿；时段轴认 09:15–09:25 竞价、09:30–11:30、13:00–15:00，午休与 09:25–09:30 不占宽度；cnLabelsZh 是随包的简体中文默认文案，可以整份换；取不到的数写「—」并可带原因（readCnValue）。不带数据源与交易日历数据。",
+      "files": [
+        {
+          "path": "src/cn/format.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/cn/format.ts"
+        }
+      ]
+    },
+    {
+      "name": "cn-labels",
+      "type": "registry:lib",
+      "title": "Cn Labels",
+      "description": "A 股件包的第 0 层（纯函数，不带 React）：formatCnAmount 把金额写成万 / 亿；时段轴认 09:15–09:25 竞价、09:30–11:30、13:00–15:00，午休与 09:25–09:30 不占宽度；cnLabelsZh 是随包的简体中文默认文案，可以整份换；取不到的数写「—」并可带原因（readCnValue）。不带数据源与交易日历数据。",
+      "registryDependencies": [
+        "@katana/cn-session"
+      ],
+      "files": [
+        {
+          "path": "src/cn/labels.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/cn/labels.ts"
+        }
+      ]
+    },
+    {
+      "name": "cn-limit-status",
+      "type": "registry:component",
+      "title": "Cn Limit Status",
+      "description": "封板 / 炸板 / 回封 / 跌停 / 一字 / 竞价涨停六种状态胶囊，涨停一族可带封单额（按万 / 亿写）。状态不只靠颜色，字就是状态名；色调：涨停涨色（跟 data-updown）、炸板警示、跌停跌色。也是 DataGrid 的列类型 limitStatus，可按状态排序。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/cn-badge-model",
+        "@katana/cn-format",
+        "@katana/cn-labels"
+      ],
+      "files": [
+        {
+          "path": "src/cn/limit-status.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/cn/limit-status.tsx"
+        }
+      ]
+    },
+    {
+      "name": "cn-limit-up-timeline",
+      "type": "registry:component",
+      "title": "Cn Limit Up Timeline",
+      "description": "蛇形时刻轴：按分钟聚合封板时刻成站点（时间胶囊），一行放几站跟着容器宽度走（每站最少 136px，perRow 是上限），奇数行左到右、偶数行右到左，行尾拐弯、箭头指向较新的时刻、标「越来越早」；站点下挂小卡（名称、连板徽标、题材、成交额万 / 亿，20cm 等标板块）；站点按时段着色（集合竞价 / 早盘 / 午盘 / 尾盘）。顶上有排序（最新在前 / 最早在前）、时段图例（站数与只数）、题材 chip 筛。站点等距，午休与 09:25–09:30 不占宽度。梯队表用 LimitLadder，不在这里。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/cn-board-mark",
+        "@katana/cn-format",
+        "@katana/cn-labels",
+        "@katana/cn-session",
+        "@katana/cn-streak-badge",
+        "@katana/cn-timeline-model",
+        "@katana/cn-value",
+        "@katana/toggle-group"
+      ],
+      "files": [
+        {
+          "path": "src/cn/limit-up-timeline.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/cn/limit-up-timeline.tsx"
+        }
+      ]
+    },
+    {
+      "name": "cn-market-pulse",
+      "type": "registry:component",
+      "title": "Cn Market Pulse",
+      "description": "一行横条：上涨占比半圆表盘（中间写百分比，下注「上涨占比」）、五个大数（上涨 / 下跌 / 涨停 / 跌停 / 平盘，涨红跌绿，平盘中性）、大数下两行小字读数（涨停池、昨日口径、成交额与主力净流入），最右嵌涨跌分布柱（DistributionBars）。读数只占三行高（小字最多两行，放不下的收进「+n」点开看全部；容器窄于 900px 分布柱移到第二行最右）；取不到写「—」并可带原因（悬停），不写 0。信息结构取自复盘吧的看盘工作台，样子是 Graphite 的。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/cn-format",
+        "@katana/cn-labels",
+        "@katana/cn-value",
+        "@katana/distribution-bars",
+        "@katana/popover"
+      ],
+      "files": [
+        {
+          "path": "src/cn/market-pulse.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/cn/market-pulse.tsx"
+        }
+      ]
+    },
+    {
+      "name": "cn-sentiment-gauge",
+      "type": "registry:component",
+      "title": "Cn Sentiment Gauge",
+      "description": "0–100 的读数加五档色带（冰点 / 低迷 / 中性 / 升温 / 高潮，各占 20 分），读数落在哪一档那一档全亮；色带下面是调用方写的口径说明（如「规则评分 · 未历史校准」）；再下面是今昨对比两列（涨停、跌停、封率、开板）。评分怎么算、口径、历史校准都不在包里：分数与说明由调用方给。冰点取跌色、高潮取涨色（跟 data-updown）。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/cn-labels",
+        "@katana/cn-value"
+      ],
+      "files": [
+        {
+          "path": "src/cn/sentiment-gauge.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/cn/sentiment-gauge.tsx"
+        }
+      ]
+    },
+    {
+      "name": "cn-session",
+      "type": "registry:lib",
+      "title": "Cn Session",
+      "description": "A 股件包的第 0 层（纯函数，不带 React）：formatCnAmount 把金额写成万 / 亿；时段轴认 09:15–09:25 竞价、09:30–11:30、13:00–15:00，午休与 09:25–09:30 不占宽度；cnLabelsZh 是随包的简体中文默认文案，可以整份换；取不到的数写「—」并可带原因（readCnValue）。不带数据源与交易日历数据。",
+      "files": [
+        {
+          "path": "src/cn/session.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/cn/session.ts"
+        }
+      ]
+    },
+    {
+      "name": "cn-streak-badge",
+      "type": "registry:component",
+      "title": "Cn Streak Badge",
+      "description": "首板 / 2板 / 「5天3板」，或晋级口径「一进二」；高度越高越醒目（只靠语义色调升四档，不传色值），涨色跟 data-updown。也是 DataGrid 的列类型 streak，可按板数排序。文字由 labels 给（默认简体中文，可整份换），取不到写「—」并可带原因（悬停）。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/cn-badge-model",
+        "@katana/cn-labels"
+      ],
+      "files": [
+        {
+          "path": "src/cn/streak-badge.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/cn/streak-badge.tsx"
+        }
+      ]
+    },
+    {
+      "name": "cn-theme-card",
+      "type": "registry:component",
+      "title": "Cn Theme Card",
+      "description": "卡头是序号、题材名与两枚小胶囊（几只涨停、最高几板），一行催化（省略号截断，悬停看全文与来源），成员表（涨停时间、名称、连板徽标），卡脚「查看 n 只涨停」。ThemeCards 把多张卡横排；按涨停家数 / 时间 / 连板 / 涨幅排，由调用方排。信息结构取自复盘吧的题材异动，样子是 Graphite 的。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/cn-badge-model",
+        "@katana/cn-labels",
+        "@katana/cn-session",
+        "@katana/cn-streak-badge",
+        "@katana/cn-value"
+      ],
+      "files": [
+        {
+          "path": "src/cn/theme-card.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/cn/theme-card.tsx"
+        }
+      ]
+    },
+    {
+      "name": "cn-timeline-model",
+      "type": "registry:lib",
+      "title": "Cn Timeline Model",
+      "description": "蛇形时刻轴：按分钟聚合封板时刻成站点（时间胶囊），一行放几站跟着容器宽度走（每站最少 136px，perRow 是上限），奇数行左到右、偶数行右到左，行尾拐弯、箭头指向较新的时刻、标「越来越早」；站点下挂小卡（名称、连板徽标、题材、成交额万 / 亿，20cm 等标板块）；站点按时段着色（集合竞价 / 早盘 / 午盘 / 尾盘）。顶上有排序（最新在前 / 最早在前）、时段图例（站数与只数）、题材 chip 筛。站点等距，午休与 09:25–09:30 不占宽度。梯队表用 LimitLadder，不在这里。",
+      "registryDependencies": [
+        "@katana/cn-badge-model",
+        "@katana/cn-labels",
+        "@katana/cn-session"
+      ],
+      "files": [
+        {
+          "path": "src/cn/timeline-model.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/cn/timeline-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "cn-value",
+      "type": "registry:lib",
+      "title": "Cn Value",
+      "description": "A 股件包的第 0 层（纯函数，不带 React）：formatCnAmount 把金额写成万 / 亿；时段轴认 09:15–09:25 竞价、09:30–11:30、13:00–15:00，午休与 09:25–09:30 不占宽度；cnLabelsZh 是随包的简体中文默认文案，可以整份换；取不到的数写「—」并可带原因（readCnValue）。不带数据源与交易日历数据。",
+      "files": [
+        {
+          "path": "src/cn/value.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/cn/value.ts"
+        }
+      ]
+    },
+    {
       "name": "data-grid",
       "type": "registry:component",
       "title": "Data Grid",
@@ -3037,6 +3292,10 @@
         "@katana/checkbox",
         "@katana/chip-group",
         "@katana/cn",
+        "@katana/cn-badge-model",
+        "@katana/cn-labels",
+        "@katana/cn-limit-status",
+        "@katana/cn-streak-badge",
         "@katana/context-menu",
         "@katana/menu-any",
         "@katana/menu-parts",

@@ -4,7 +4,7 @@
 // 属性表不手写（#1902）：页上只记「哪几个部件、各一句说明」（propParts），每个部件的自有属性由 pnpm docs:props 从 TS 类型与 JSDoc 生成到 props.generated.json；
 // 继承来的 DOM / Radix 属性不逐条列，note 里写透传给谁。每页的「用法」是 usage/<页 id>.tsx：真实可运行的最小例子，页上渲染它也展示它的源码（Vite ?raw）。
 
-export type GroupId = 'forms' | 'overlays' | 'layout' | 'readouts' | 'feedback' | 'quotes' | 'quant' | 'blocks'
+export type GroupId = 'forms' | 'overlays' | 'layout' | 'readouts' | 'feedback' | 'quotes' | 'quant' | 'cn' | 'blocks'
 
 export const GROUPS: readonly { id: GroupId; title: string }[] = [
   { id: 'forms', title: '表单控件' },
@@ -14,6 +14,7 @@ export const GROUPS: readonly { id: GroupId; title: string }[] = [
   { id: 'feedback', title: '反馈' },
   { id: 'quotes', title: '报价与行情' },
   { id: 'quant', title: '量化' },
+  { id: 'cn', title: 'A 股' },
   { id: 'blocks', title: '积木' },
 ]
 
@@ -5157,6 +5158,311 @@ export const PAGES: readonly DocPage[] = [
       ['← ↑ ↓ →', '在团内跳到那个方向最近的点，那一侧没有点就不动'],
       ['Enter / Space', '给了 onSelect 时选中团内当前点'],
     ],
+  },
+  // A 股件包（#110，@katana-ui/react/cn）：中国市场才有的概念。文字都由调用方传，cnLabelsZh 是随包的简体中文默认。
+  {
+    id: 'cn-basics',
+    group: 'cn',
+    cardHeight: 340,
+    title: 'cn 基础：金额、时段、文案',
+    summary:
+      'A 股件包的第 0 层（纯函数，不带 React）：formatCnAmount 把金额写成万 / 亿；时段轴认 09:15–09:25 竞价、09:30–11:30、13:00–15:00，午休与 09:25–09:30 不占宽度；cnLabelsZh 是随包的简体中文默认文案，可以整份换；取不到的数写「—」并可带原因（readCnValue）。不带数据源与交易日历数据。',
+    exports: [
+      'formatCnAmount',
+      'CN_SESSIONS',
+      'CN_AXIS_MINUTES',
+      'CN_LATE_FROM',
+      'cnAxisPosition',
+      'cnPhaseOf',
+      'cnTradingMinutesBetween',
+      'formatClock',
+      'parseClock',
+      'cnLabelsZh',
+      'readCnValue',
+    ],
+    propParts: [
+      {
+        part: 'formatCnAmount(value, { abbreviate, digits, signed }, units)',
+        note: '≥1 亿写「x.xx亿」，≥1 万写「x万」（不到 100 万保留一位小数，之后取整），否则原样；null、NaN 写「—」，不写 0。接口跟 formatQuantity 同一套。',
+      },
+      {
+        part: 'cnAxisPosition(minutes)',
+        symbol: 'cnAxisPosition',
+        note: '时刻在时间轴上的位置 0–1；早于 09:15、晚于 15:00 返回 null。',
+      },
+      { part: 'cnPhaseOf(minutes)', symbol: 'cnPhaseOf', note: '集合竞价 / 早盘 / 午盘 / 尾盘（14:30 起）。' },
+      {
+        part: 'cnTradingMinutesBetween(from, to)',
+        symbol: 'cnTradingMinutesBetween',
+        note: '两个时刻之间实际交易的分钟数。',
+      },
+      {
+        part: 'parseClock(text) / formatClock(minutes)',
+        symbol: 'parseClock',
+        note: '「09:31」「09:31:05」与自 0 点起的分钟数互转。',
+      },
+      {
+        part: 'CN_SESSIONS、CN_AXIS_MINUTES、CN_LATE_FROM',
+        symbol: 'CN_SESSIONS',
+        note: '时段表、时间轴总宽（250 分钟）、尾盘起点常量。',
+      },
+      {
+        part: 'cnLabelsZh',
+        symbol: 'cnLabelsZh',
+        note: '默认文案；每个件的 labels 属性读它的一段，整份换掉就是别的语言。',
+      },
+      {
+        part: 'readCnValue(value)',
+        symbol: 'readCnValue',
+        note: '读数：数，或 null，或 { value, reason }；非有限数当作取不到。',
+      },
+    ],
+    states: [
+      '金额：≥1 亿「1.23亿」，≥1 万「12.5万」，否则原样；负数带 -，signed 给正数带 +。',
+      '时间轴：竞价 10 分钟、上午 120、下午 120，共 250 分钟；落在 09:25–09:30 或午休里的时刻贴到前一段末尾。',
+      '取不到：null 写「—」，原因放悬停，不写 0。',
+    ],
+    donts: [
+      '不要在包里放交易日历或数据源：哪天开市、数从哪来由调用方传。',
+      '不要把文字写死在调用处：从 cnLabelsZh 取，或整份换成自己的语言。',
+    ],
+    composition: 'formatCnAmount\ncnAxisPosition · cnPhaseOf · cnTradingMinutesBetween\ncnLabelsZh',
+    keys: [],
+  },
+  {
+    id: 'streak-badge',
+    group: 'cn',
+    cardHeight: 330,
+    title: 'StreakBadge 连板徽标',
+    summary:
+      '首板 / 2板 / 「5天3板」，或晋级口径「一进二」；高度越高越醒目（只靠语义色调升四档，不传色值），涨色跟 data-updown。也是 DataGrid 的列类型 streak，可按板数排序。文字由 labels 给（默认简体中文，可整份换），取不到写「—」并可带原因（悬停）。',
+    exports: ['StreakBadge', 'normalizeStreak', 'streakLevel', 'streakSortKey', 'streakText'],
+    propParts: [
+      { part: 'StreakBadge', note: '渲染一个 span，不透传别的属性。' },
+      { part: 'StreakValue', note: '连板：{ boards, days?, promotedFrom?, reason? }；也可以直接传数字当板数。' },
+      { part: 'streakText(streak, labels, form)', note: '屏幕上的字：首板、2板、5天3板、一进二；取不到「—」。' },
+      { part: 'streakLevel(boards)', symbol: 'streakLevel', note: '醒目程度 0–4（0 取不到，4 是四板及以上）。' },
+      {
+        part: 'streakSortKey(streak)',
+        symbol: 'streakSortKey',
+        note: '排序值：板数为主、天数为次；取不到 undefined。',
+      },
+      {
+        part: 'normalizeStreak(streak)',
+        symbol: 'normalizeStreak',
+        note: '数字或对象规整成 StreakValue；小于 1 或非有限数当取不到。',
+      },
+    ],
+    states: [
+      '首板：弱灰底；2 板：涨色淡底；3 板：加描边；4 板及以上：更深的底加涨色描边、字加粗。',
+      '晋级口径：form="promotion" 且给了 promotedFrom 才写「一进二」，否则退回板数写法。',
+      '几天几板：days 大于 boards 才写「5天3板」。',
+      '取不到：写「—」，悬停写 reason（没给就写默认文案里的说明）。',
+    ],
+    donts: ['不要传色值：醒目程度由件按板数定。', '不要在调用处拼「x板」：走 labels，换语言时整份换。'],
+    composition: 'StreakBadge',
+    keys: [],
+  },
+  {
+    id: 'limit-status',
+    group: 'cn',
+    cardHeight: 300,
+    title: 'LimitStatus 涨停状态',
+    summary:
+      '封板 / 炸板 / 回封 / 跌停 / 一字 / 竞价涨停六种状态胶囊，涨停一族可带封单额（按万 / 亿写）。状态不只靠颜色，字就是状态名；色调：涨停涨色（跟 data-updown）、炸板警示、跌停跌色。也是 DataGrid 的列类型 limitStatus，可按状态排序。',
+    exports: ['LimitStatus', 'LIMIT_STATUS_ORDER', 'limitStatusText', 'limitStatusTone', 'normalizeLimitStatus'],
+    propParts: [
+      { part: 'LimitStatus', note: '渲染一个 span，不透传别的属性。' },
+      { part: 'LimitStatusValue', note: '状态名，或 { status, sealAmount?, reason? }；status 为 null 是取不到。' },
+      { part: 'limitStatusText(status, labels)', note: '屏幕上的字：「封板」「封板 3.20亿」；取不到「—」。' },
+      { part: 'limitStatusTone(status)', symbol: 'limitStatusTone', note: 'up / warn / down。' },
+      {
+        part: 'normalizeLimitStatus(status)',
+        symbol: 'normalizeLimitStatus',
+        note: '规整成 { status, sealAmount, reason }；炸板不带封单额。',
+      },
+      {
+        part: 'LIMIT_STATUS_ORDER',
+        symbol: 'LIMIT_STATUS_ORDER',
+        note: '排序次序：竞价涨停、一字、封板、回封、炸板、跌停。',
+      },
+    ],
+    states: [
+      '涨停一族（封板、回封、一字、竞价涨停）：涨色淡底；炸板：警示色；跌停：跌色。',
+      '带封单额：字后接「3.20亿」，悬停写「封单 3.20亿」；炸板不带封单额。',
+      '取不到：写「—」，悬停写 reason。',
+    ],
+    donts: ['不要只靠颜色区分状态：胶囊里的字就是状态名。', '不要给炸板传封单额：件会忽略。'],
+    composition: 'LimitStatus\n  状态名\n  封单额（可选）',
+    keys: [],
+  },
+  {
+    id: 'board-mark',
+    group: 'cn',
+    cardHeight: 330,
+    title: 'BoardMark 板块标记',
+    summary:
+      '主板 / 创业板（20cm）/ 科创板（20cm）/ 北交所（30cm）/ ST。默认只标有特殊涨跌幅限制的写「20cm」「30cm」「ST」，主板不画；display 选写板块名或都写。boardKindOf 从代码（与名称）判断板块。取不到写「—」。',
+    exports: ['BoardMark', 'BOARD_LIMIT_PERCENT', 'boardKindOf'],
+    propParts: [
+      { part: 'BoardMark', note: '渲染一个 span，不透传别的属性。' },
+      {
+        part: 'boardKindOf(code, name?)',
+        symbol: 'boardKindOf',
+        note: 'ST 优先；300/301/302 创业板，688/689 科创板，4/8 开头与 920 北交所，其余主板；不是六位数字返回 null。',
+      },
+      {
+        part: 'BOARD_LIMIT_PERCENT',
+        symbol: 'BOARD_LIMIT_PERCENT',
+        note: '各板块涨跌幅限制（%）：主板 10、ST 5、创业板与科创板 20、北交所 30。',
+      },
+    ],
+    states: [
+      'cm（默认）：创业板、科创板写「20cm」，北交所「30cm」，ST 写「ST」；主板什么都不画。',
+      'name：写板块名；both：「创业板 20cm」。',
+      '取不到：写「—」。',
+    ],
+    donts: ['不要把主板也标上：卡片上的标记是为了提醒涨跌幅限制不同。'],
+    composition: 'BoardMark',
+    keys: [],
+  },
+  {
+    id: 'theme-card',
+    group: 'cn',
+    cardHeight: 360,
+    title: 'ThemeCard 题材卡',
+    summary:
+      '卡头是序号、题材名与两枚小胶囊（几只涨停、最高几板），一行催化（省略号截断，悬停看全文与来源），成员表（涨停时间、名称、连板徽标），卡脚「查看 n 只涨停」。ThemeCards 把多张卡横排；按涨停家数 / 时间 / 连板 / 涨幅排，由调用方排。信息结构取自复盘吧的题材异动，样子是 Graphite 的。',
+    exports: ['ThemeCard', 'ThemeCards', 'themeCardFigures'],
+    propParts: [
+      { part: 'ThemeCard', note: '渲染一个 section；成员行与卡脚在给了回调时才是按钮。' },
+      { part: 'ThemeCards', note: '横排的容器：一行排不下就横向滚动，卡最窄 220px，有空就均分。' },
+      {
+        part: 'ThemeCardData',
+        note: '题材：key、name、可选 limitUpCount / highestBoard / catalyst / catalystReason，成员 members。',
+      },
+      {
+        part: 'themeCardFigures(theme)',
+        note: '纯函数：涨停家数（不给就数成员）与最高板（两板以下是 null，不画胶囊）。',
+      },
+    ],
+    states: [
+      '催化有内容：一行省略号，悬停写全文与来源；没有：写「—」，悬停写原因。',
+      '涨停家数取不到（null）：胶囊与卡脚写「—」，不写 0。',
+      '最高板不到两板：不画「n板」胶囊。',
+      '没有成员：写「暂无涨停成员」。',
+      '给了 onOpen：卡脚是按钮；给了 onSelectMember：成员行是按钮，可 Tab、Enter。',
+    ],
+    donts: ['不要在包里排序：多张卡的次序由调用方给。', '不要传色值或固定卡宽：卡宽跟容器走。'],
+    composition:
+      'ThemeCards\n  ThemeCard\n    卡头（序号 · 题材名 · 涨停数 · 最高板）\n    催化\n    成员行（时间 · 名称 · StreakBadge）\n    卡脚',
+    keys: [
+      ['Tab', '到成员行与卡脚按钮（给了回调时）'],
+      ['Enter / Space', '触发'],
+    ],
+  },
+  {
+    id: 'market-pulse',
+    group: 'cn',
+    cardHeight: 150,
+    title: 'MarketPulse 市场全景条',
+    summary:
+      '一行横条：上涨占比半圆表盘（中间写百分比，下注「上涨占比」）、五个大数（上涨 / 下跌 / 涨停 / 跌停 / 平盘，涨红跌绿，平盘中性）、大数下两行小字读数（涨停池、昨日口径、成交额与主力净流入），最右嵌涨跌分布柱（DistributionBars）。读数只占三行高（小字最多两行，放不下的收进「+n」点开看全部；容器窄于 900px 分布柱移到第二行最右）；取不到写「—」并可带原因（悬停），不写 0。信息结构取自复盘吧的看盘工作台，样子是 Graphite 的。',
+    exports: ['MarketPulse', 'pulseShare', 'dialArc'],
+    propParts: [
+      { part: 'MarketPulse', note: '渲染一个 div（role=group），不透传别的属性。' },
+      {
+        part: 'MarketPulseCounts',
+        note: '五个大数：rising、falling、limitUp、limitDown、flat；各自是数或 { value, reason }。',
+      },
+      {
+        part: 'MarketPulseReadings',
+        note: '小字读数，都可选：缺的写「—」。金额单位是元，按万 / 亿写；highestBoard 是板数。',
+      },
+      { part: 'pulseShare(counts)', note: '纯函数：上涨 /（上涨 + 下跌 + 平盘），任何一项取不到是 null。' },
+      { part: 'dialArc(share)', note: '纯函数：半圆表盘的弧路径（viewBox 100×54）。' },
+    ],
+    states: [
+      '占比由三个家数算；任何一个取不到，表盘不画弧、中间写「—」。也可以直接传 share。',
+      '读数取不到：写「—」，悬停写 reason（没给就写默认文案里的说明），不写 0。',
+      '主力净流入带正负号，涨色 / 跌色跟 data-updown。',
+      '给了 distribution 才在最右画分布柱；不给就不画。',
+    ],
+    donts: [
+      '不要传色值：涨跌只靠语义色调。',
+      '不要在包里取数：数据源由调用方接，这里只摆。',
+      '不要加第四行读数：条的高度就是三行，多出的读数进「+n」。',
+    ],
+    composition:
+      'MarketPulse\n  表盘（半圆 · 占比 · 说明）\n  五个大数\n  小字读数 × 2 行\n  涨跌分布（DistributionBars）',
+    keys: [],
+  },
+  {
+    id: 'limit-up-timeline',
+    group: 'cn',
+    cardHeight: 520,
+    title: 'LimitUpTimeline 涨停时间线',
+    summary:
+      '蛇形时刻轴：按分钟聚合封板时刻成站点（时间胶囊），一行放几站跟着容器宽度走（每站最少 136px，perRow 是上限），奇数行左到右、偶数行右到左，行尾拐弯、箭头指向较新的时刻、标「越来越早」；站点下挂小卡（名称、连板徽标、题材、成交额万 / 亿，20cm 等标板块）；站点按时段着色（集合竞价 / 早盘 / 午盘 / 尾盘）。顶上有排序（最新在前 / 最早在前）、时段图例（站数与只数）、题材 chip 筛。站点等距，午休与 09:25–09:30 不占宽度。梯队表用 LimitLadder，不在这里。',
+    exports: ['LimitUpTimeline', 'groupStations', 'phaseSummary', 'themeCounts', 'filterByTheme', 'snakeRows'],
+    propParts: [
+      { part: 'LimitUpTimeline', note: '渲染一个 section；排序与题材筛选都可受控也可不受控。' },
+      {
+        part: 'TimelineItem',
+        note: '一只票：code、name、time（首次封板时刻）、可选 streak、themes、amount（元）、board。',
+      },
+      {
+        part: 'groupStations(items, order)',
+        note: '纯函数：同一分钟并成一站，排好序；没有时刻或不在交易时间内的放 untimed。',
+      },
+      { part: 'phaseSummary(stations)', note: '纯函数：四个时段各自的站数与只数。' },
+      { part: 'themeCounts(items)', note: '纯函数：题材 chip，按票数从多到少。' },
+      { part: 'filterByTheme(items, theme)', note: '纯函数：按题材筛，null 是全部。' },
+      { part: 'snakeRows(stations, perRow)', note: '纯函数：蛇形分行，奇数行 ltr、偶数行 rtl。' },
+    ],
+    states: [
+      '最新在前（默认）：第一行从最新的站开始，箭头指向较新的一侧，行尾写「越来越早」；最早在前时反过来写「越来越晚」。',
+      '时段图例带计数（n 站 m 只），按当前筛选算；题材 chip 带票数，点一下筛，再点「全部」恢复。',
+      '没有封板时刻、或不在 09:15–15:00 的票不上轴，上面一行字报数。',
+      '没有票：写空态；成交额取不到写「—」。',
+      '给了 onSelect：小卡是按钮，可 Tab、Enter。',
+    ],
+    donts: [
+      '不要按时间比例拉开站点：午休不占宽度，站点等距排。',
+      '不要传色值：时段色是 token。',
+      '不要在包里取数：封板时刻与成交额由调用方给。',
+    ],
+    composition:
+      'LimitUpTimeline\n  标题与汇总\n  顶栏（排序 ToggleGroup · 时段图例 · 题材 chip）\n  蛇形行\n    站点（时间胶囊 · 轨道 · 小卡）\n      小卡（名称 · StreakBadge · BoardMark · 题材 · 成交额）',
+    keys: [
+      ['Tab', '到排序、题材 chip、小卡（给了 onSelect 时）'],
+      ['Enter / Space', '切换排序与题材，或选中小卡'],
+    ],
+  },
+  {
+    id: 'sentiment-gauge',
+    group: 'cn',
+    cardHeight: 300,
+    title: 'SentimentGauge 情绪温度',
+    summary:
+      '0–100 的读数加五档色带（冰点 / 低迷 / 中性 / 升温 / 高潮，各占 20 分），读数落在哪一档那一档全亮；色带下面是调用方写的口径说明（如「规则评分 · 未历史校准」）；再下面是今昨对比两列（涨停、跌停、封率、开板）。评分怎么算、口径、历史校准都不在包里：分数与说明由调用方给。冰点取跌色、高潮取涨色（跟 data-updown）。',
+    exports: ['SentimentGauge', 'sentimentLevel'],
+    propParts: [
+      { part: 'SentimentGauge', note: '渲染一个 section，不透传别的属性。' },
+      {
+        part: 'SentimentStats',
+        note: '今日或昨日的四项：limitUp、limitDown、sealRate（百分数）、broken；各自是数或 { value, reason }。',
+      },
+      { part: 'sentimentLevel(score)', note: '纯函数：档位 0–4，每档 20 分；取不到是 null。' },
+    ],
+    states: [
+      '有评分：读数、档名、色带当前档全亮、标记落在分数位置。',
+      '评分取不到：读数写「—」，不画标记、没有当前档，悬停写 reason，不写 0。',
+      '给了 basis 才有口径说明；给了 today 或 yesterday 才有今昨对比，缺的格写「—」。',
+    ],
+    donts: ['不要在包里算评分：口径与校准由调用方负责，basis 里写明。', '不要传色值：档的颜色是语义 token。'],
+    composition: 'SentimentGauge\n  读数 · 档名\n  五档色带（含标记）\n  口径说明\n  今昨对比表',
+    keys: [],
   },
 ]
 
