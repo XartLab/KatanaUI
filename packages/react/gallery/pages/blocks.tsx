@@ -805,6 +805,48 @@ function NewsFeedSplit() {
   )
 }
 
+// 公告类别筛选（#109）：条目带 category，头部多一行类别芯片（多选）。演示数据，公司与公告都是虚构的。
+const NEWS_CATEGORIES = [
+  { value: 'buy', label: '增持' },
+  { value: 'sell', label: '减持' },
+  { value: 'report', label: '定期报告' },
+]
+const NEWS_CATEGORY_ITEMS: NewsItem[] = [
+  {
+    id: 'c1',
+    time: NEWS_NOW - 60_000,
+    channel: 'top',
+    source: 'exch',
+    category: 'buy',
+    title: '星河锂业：控股股东拟增持不超过 2%',
+  },
+  {
+    id: 'c2',
+    time: NEWS_NOW - 5 * 60_000,
+    channel: 'top',
+    source: 'exch',
+    category: 'sell',
+    title: '远山科技：董事拟减持不超过 0.5%',
+  },
+  {
+    id: 'c3',
+    time: NEWS_NOW - 9 * 60_000,
+    channel: 'top',
+    source: 'exch',
+    category: 'report',
+    title: '北辰能源：披露三季度报告',
+  },
+  {
+    id: 'c4',
+    time: NEWS_NOW - 14 * 60_000,
+    channel: 'top',
+    source: 'exch',
+    category: 'buy',
+    title: '青禾农业：高管合计增持 30 万股',
+  },
+  { id: 'c5', time: NEWS_NOW - 20 * 60_000, channel: 'top', source: 'exch', title: '海岚传媒：召开临时股东大会' },
+]
+
 export function NewsFeedDemo() {
   const [items, setItems] = useState(NEWS_ITEMS)
   const [picked, setPicked] = useState('—')
@@ -866,6 +908,19 @@ export function NewsFeedDemo() {
           now={NEWS_NOW}
           labels={NEWS_LABELS}
           defaultLayout="card"
+        />
+      </div>
+      <p className="gal-note">
+        类别筛选：条目带 category，头部多一行类别芯片（多选，不选是全部）；不传 categories 就没有这一行。
+      </p>
+      <div style={{ height: 300 }} data-testid="news-categories">
+        <NewsFeed
+          items={NEWS_CATEGORY_ITEMS}
+          channels={NEWS_CHANNELS}
+          sources={[]}
+          categories={NEWS_CATEGORIES}
+          now={NEWS_NOW}
+          labels={{ ...NEWS_LABELS, categories: '公告类别', clearCategories: '清除类别筛选' }}
         />
       </div>
     </div>

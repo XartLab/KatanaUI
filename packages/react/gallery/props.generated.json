@@ -11151,6 +11151,19 @@
           "description": "组合过滤（照 TradingView News Flow：多个可增删、可重置的多选过滤，条目用 NewsItem.facets 带取值；主会话 2026-11-15 实测）。"
         },
         {
+          "name": "categories",
+          "type": "readonly { value: string; label: string }[]",
+          "required": false,
+          "default": "[]",
+          "description": "Category chips (multi-select, ChipGroup) under the sources row; items carry `category`."
+        },
+        {
+          "name": "onCategoriesChange",
+          "type": "(categories: string[]) => void",
+          "required": false,
+          "description": ""
+        },
+        {
           "name": "onFacetsChange",
           "type": "(picked: Record<string, string[]>) => void",
           "required": false,
@@ -11305,6 +11318,18 @@
           "description": ""
         },
         {
+          "name": "categories",
+          "type": "string",
+          "required": false,
+          "description": "类别芯片组的读屏名；传了且 categories 不空才有这一行。"
+        },
+        {
+          "name": "clearCategories",
+          "type": "string",
+          "required": false,
+          "description": "类别芯片组的清除钮读屏名。"
+        },
+        {
           "name": "search",
           "type": "string",
           "required": true,
@@ -11429,6 +11454,18 @@
           "type": "readonly NewsFacet[]",
           "required": false,
           "description": "组合过滤（照 TradingView News Flow：多个可增删、可重置的多选过滤，条目用 NewsItem.facets 带取值；主会话 2026-11-15 实测）。"
+        },
+        {
+          "name": "categories",
+          "type": "readonly { value: string; label: string }[]",
+          "required": false,
+          "description": "Category chips (multi-select, ChipGroup) under the sources row; items carry `category`."
+        },
+        {
+          "name": "onCategoriesChange",
+          "type": "(categories: string[]) => void",
+          "required": false,
+          "description": ""
         },
         {
           "name": "onFacetsChange",
@@ -11609,6 +11646,12 @@
           "type": "string",
           "required": false,
           "description": "有链接就把标题渲染成链接（新窗口打开）。"
+        },
+        {
+          "name": "category",
+          "type": "string",
+          "required": false,
+          "description": "类别的 value（对应 NewsFeedProps.categories，如公告类别、增减持）；不带就不在任何类别里，选了类别时会被筛掉。"
         },
         {
           "name": "facets",
