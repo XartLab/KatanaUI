@@ -19,7 +19,7 @@
 | `theme` | `string \| null` | — | The theme filter (controlled); null means all themes. |
 | `defaultTheme` | `string \| null` | `null` | Initial theme filter when uncontrolled; all themes by default. |
 | `onThemeChange` | `(theme: string \| null) => void` | — | Called with the new theme filter. |
-| `perRow` | `number` | `7` | How many stations fit in one row of the snake; 7 by default. |
+| `perRow` | `number` | `12` | Upper limit of stations in one row of the snake; the row count follows the container width (each station needs at least 136px) and never exceeds it. |
 | `onSelect` | `(item: TimelineItem) => void` | — | Called when a stock card is picked; without it the cards are plain. |
 | `labels` | `TimelineLabels` | `cnLabelsZh.timeline` | Text pack; the Simplified Chinese default is used when omitted. |
 | `className` | `string` | — | Extra class names. |
