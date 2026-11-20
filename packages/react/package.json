@@ -45,6 +45,11 @@
       "source": "./src/quant/format/index.ts",
       "default": "./lib/quant/format/index.js"
     },
+    "./cn": {
+      "types": "./lib/cn/index.d.ts",
+      "source": "./src/cn/index.ts",
+      "default": "./lib/cn/index.js"
+    },
     "./blocks": {
       "types": "./lib/blocks/index.d.ts",
       "source": "./src/blocks/index.ts",

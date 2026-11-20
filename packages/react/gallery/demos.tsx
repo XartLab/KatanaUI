@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 import type { ComponentType } from 'react'
 import { NewsReaderDemo, ScreenerDemo } from './pages/screener.tsx'
+import { BoardMarkDemo, CnBasicsDemo, LimitStatusDemo, StreakBadgeDemo } from './pages/cn.tsx'
 import { DateTimeInputDemo, NumberInputDemo, SkeletonDemo } from './pages/fields.tsx'
 import {
   BadgeDemo,
@@ -173,6 +174,10 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   watchlist: WatchlistDemo,
   'metric-card': MetricCardDemo,
   'distribution-bars': DistributionBarsDemo,
+  'cn-basics': CnBasicsDemo,
+  'streak-badge': StreakBadgeDemo,
+  'limit-status': LimitStatusDemo,
+  'board-mark': BoardMarkDemo,
   'decimal-field': DecimalFieldDemo,
   'quant-format': QuantFormatDemo,
   'spark-tile': SparkTileDemo,

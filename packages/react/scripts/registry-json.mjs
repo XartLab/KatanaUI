@@ -20,6 +20,12 @@ const TARGET_ROOT = '~/src/katana/ui'
  * 有页的件，说明读页数据（gallery/registry.ts 的 PAGES.summary），这里不写第二份。
  */
 const INTERNAL = {
+  'cn-session':
+    'A 股件包的时段轴（纯函数）：09:15–09:25 竞价、09:30–11:30、13:00–15:00，午休不占宽度；时刻解析、时段归类。',
+  'cn-labels': 'A 股件包的文案结构与随包的简体中文默认（cnLabelsZh），可整份换。',
+  'cn-value': 'A 股件包的「取不到写 —」读数写法：数或 { value, reason }。',
+  'cn-badge-model':
+    'StreakBadge、LimitStatus、BoardMark 与 DataGrid 的 streak / limitStatus 列共用的纯函数：连板写法与排序、涨停状态、板块判断。',
   style: '设计 token（Console 与 Graphite 两个主题、红涨绿跌切换）、Tailwind v4 主题与动效 CSS。ui.css 最后引。',
   cn: 'shadcn-ui/cn 引擎（替 clsx 加 tailwind-merge），认得 k-text-* 字号档。',
   focus: '各控件共用的焦点环类名。',
@@ -126,6 +132,14 @@ function collectItems() {
         'registry:lib',
         format.map((f) => `src/quant/format/${f}`),
       )
+  }
+  // cn/：A 股件包（#110）。带 JSX 的是 component，纯函数（金额、时段、模型、文案）是 lib；文件名加 cn- 前缀避开别的层。
+  if (existsSync(join(pkgDir, 'src/cn'))) {
+    for (const f of listDir('src/cn').filter((f) => isCode(f) && f !== 'index.ts')) {
+      add(`cn-${f.replace(/\.[^.]+$/, '')}`, f.endsWith('.tsx') ? 'registry:component' : 'registry:lib', [
+        `src/cn/${f}`,
+      ])
+    }
   }
   // blocks/：拼面板用的积木（#1869）。数据表与工具条各自一个子目录合成一项，空态、估算标记一文件一项。
   if (existsSync(join(pkgDir, 'src/blocks'))) {

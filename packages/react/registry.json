@@ -54,6 +54,11 @@
           "target": "~/src/katana/ui/theme/chip-group.css"
         },
         {
+          "path": "src/theme/cn.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/cn.css"
+        },
+        {
           "path": "src/theme/data-grid.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/data-grid.css"
@@ -3023,6 +3028,134 @@
       ]
     },
     {
+      "name": "cn-badge-model",
+      "type": "registry:lib",
+      "title": "Cn Badge Model",
+      "description": "首板 / 2板 / 「5天3板」，或晋级口径「一进二」；高度越高越醒目（只靠语义色调升四档，不传色值），涨色跟 data-updown。也是 DataGrid 的列类型 streak，可按板数排序。文字由 labels 给（默认简体中文，可整份换），取不到写「—」并可带原因（悬停）。",
+      "registryDependencies": [
+        "@katana/cn-format",
+        "@katana/cn-labels",
+        "@katana/cn-value"
+      ],
+      "files": [
+        {
+          "path": "src/cn/badge-model.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/cn/badge-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "cn-board-mark",
+      "type": "registry:component",
+      "title": "Cn Board Mark",
+      "description": "主板 / 创业板（20cm）/ 科创板（20cm）/ 北交所（30cm）/ ST。默认只标有特殊涨跌幅限制的写「20cm」「30cm」「ST」，主板不画；display 选写板块名或都写。boardKindOf 从代码（与名称）判断板块。取不到写「—」。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/cn-badge-model",
+        "@katana/cn-labels"
+      ],
+      "files": [
+        {
+          "path": "src/cn/board-mark.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/cn/board-mark.tsx"
+        }
+      ]
+    },
+    {
+      "name": "cn-format",
+      "type": "registry:lib",
+      "title": "Cn Format",
+      "description": "A 股件包的第 0 层（纯函数，不带 React）：formatCnAmount 把金额写成万 / 亿；时段轴认 09:15–09:25 竞价、09:30–11:30、13:00–15:00，午休与 09:25–09:30 不占宽度；cnLabelsZh 是随包的简体中文默认文案，可以整份换；取不到的数写「—」并可带原因（readCnValue）。不带数据源与交易日历数据。",
+      "files": [
+        {
+          "path": "src/cn/format.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/cn/format.ts"
+        }
+      ]
+    },
+    {
+      "name": "cn-labels",
+      "type": "registry:lib",
+      "title": "Cn Labels",
+      "description": "A 股件包的第 0 层（纯函数，不带 React）：formatCnAmount 把金额写成万 / 亿；时段轴认 09:15–09:25 竞价、09:30–11:30、13:00–15:00，午休与 09:25–09:30 不占宽度；cnLabelsZh 是随包的简体中文默认文案，可以整份换；取不到的数写「—」并可带原因（readCnValue）。不带数据源与交易日历数据。",
+      "registryDependencies": [
+        "@katana/cn-session"
+      ],
+      "files": [
+        {
+          "path": "src/cn/labels.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/cn/labels.ts"
+        }
+      ]
+    },
+    {
+      "name": "cn-limit-status",
+      "type": "registry:component",
+      "title": "Cn Limit Status",
+      "description": "封板 / 炸板 / 回封 / 跌停 / 一字 / 竞价涨停六种状态胶囊，涨停一族可带封单额（按万 / 亿写）。状态不只靠颜色，字就是状态名；色调：涨停涨色（跟 data-updown）、炸板警示、跌停跌色。也是 DataGrid 的列类型 limitStatus，可按状态排序。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/cn-badge-model",
+        "@katana/cn-format",
+        "@katana/cn-labels"
+      ],
+      "files": [
+        {
+          "path": "src/cn/limit-status.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/cn/limit-status.tsx"
+        }
+      ]
+    },
+    {
+      "name": "cn-session",
+      "type": "registry:lib",
+      "title": "Cn Session",
+      "description": "A 股件包的第 0 层（纯函数，不带 React）：formatCnAmount 把金额写成万 / 亿；时段轴认 09:15–09:25 竞价、09:30–11:30、13:00–15:00，午休与 09:25–09:30 不占宽度；cnLabelsZh 是随包的简体中文默认文案，可以整份换；取不到的数写「—」并可带原因（readCnValue）。不带数据源与交易日历数据。",
+      "files": [
+        {
+          "path": "src/cn/session.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/cn/session.ts"
+        }
+      ]
+    },
+    {
+      "name": "cn-streak-badge",
+      "type": "registry:component",
+      "title": "Cn Streak Badge",
+      "description": "首板 / 2板 / 「5天3板」，或晋级口径「一进二」；高度越高越醒目（只靠语义色调升四档，不传色值），涨色跟 data-updown。也是 DataGrid 的列类型 streak，可按板数排序。文字由 labels 给（默认简体中文，可整份换），取不到写「—」并可带原因（悬停）。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/cn-badge-model",
+        "@katana/cn-labels"
+      ],
+      "files": [
+        {
+          "path": "src/cn/streak-badge.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/cn/streak-badge.tsx"
+        }
+      ]
+    },
+    {
+      "name": "cn-value",
+      "type": "registry:lib",
+      "title": "Cn Value",
+      "description": "A 股件包的第 0 层（纯函数，不带 React）：formatCnAmount 把金额写成万 / 亿；时段轴认 09:15–09:25 竞价、09:30–11:30、13:00–15:00，午休与 09:25–09:30 不占宽度；cnLabelsZh 是随包的简体中文默认文案，可以整份换；取不到的数写「—」并可带原因（readCnValue）。不带数据源与交易日历数据。",
+      "files": [
+        {
+          "path": "src/cn/value.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/cn/value.ts"
+        }
+      ]
+    },
+    {
       "name": "data-grid",
       "type": "registry:component",
       "title": "Data Grid",
@@ -3037,6 +3170,10 @@
         "@katana/checkbox",
         "@katana/chip-group",
         "@katana/cn",
+        "@katana/cn-badge-model",
+        "@katana/cn-labels",
+        "@katana/cn-limit-status",
+        "@katana/cn-streak-badge",
         "@katana/context-menu",
         "@katana/menu-any",
         "@katana/menu-parts",

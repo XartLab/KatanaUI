@@ -1,0 +1,72 @@
+/* SPDX-License-Identifier: MIT */
+/* A 股件包（#110）的小标记：连板徽标、涨停状态、板块标记。胶囊 16px 高，跟 DataGrid 的 pill 列同一套，放进 24px 的行里不加行高。
+   颜色只用语义 token：涨 / 跌读 --pnl-up / --pnl-down（根上 data-updown 互换，红涨绿跌），警示读 --signal-amber，中性读 --ink-* 与 --alpha-white-*。
+   连板越高越醒目：靠底色加深加描边加粗，不靠换色值；底色上限 25%（再深涨跌色的字对比度不够，跟 data-grid 的 heat 同一个上限）。 */
+.k-cn-chip {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 4px;
+  height: 16px;
+  padding: 0 6px;
+  border-radius: var(--radius-pill);
+  background: var(--alpha-white-6);
+  color: var(--ink-200);
+  font: var(--text-caption) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  white-space: nowrap;
+}
+.k-cn-streak[data-level='0'] {
+  background: none;
+  color: var(--ink-300);
+}
+.k-cn-streak[data-level='2'] {
+  background: color-mix(in srgb, var(--pnl-up) 12%, transparent);
+  color: var(--pnl-up);
+}
+.k-cn-streak[data-level='3'] {
+  background: color-mix(in srgb, var(--pnl-up) 18%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--pnl-up) 40%, transparent);
+  color: var(--pnl-up);
+  font-weight: 500;
+}
+.k-cn-streak[data-level='4'] {
+  background: color-mix(in srgb, var(--pnl-up) 24%, transparent);
+  box-shadow: inset 0 0 0 1px var(--pnl-up);
+  color: var(--pnl-up);
+  font-weight: 700;
+}
+.k-cn-limit[data-unavailable] {
+  background: none;
+  color: var(--ink-300);
+}
+.k-cn-limit[data-tone='up'] {
+  background: color-mix(in srgb, var(--pnl-up) 12%, transparent);
+  color: var(--pnl-up);
+}
+.k-cn-limit[data-tone='warn'] {
+  background: color-mix(in srgb, var(--signal-amber) 12%, transparent);
+  color: var(--signal-amber);
+}
+.k-cn-limit[data-tone='down'] {
+  background: color-mix(in srgb, var(--pnl-down) 12%, transparent);
+  color: var(--pnl-down);
+}
+.k-cn-limit[data-status='oneWord'],
+.k-cn-limit[data-status='auctionLimit'] {
+  font-weight: 500;
+}
+.k-cn-limit-amount {
+  color: inherit;
+  opacity: 0.85;
+}
+.k-cn-board {
+  background: none;
+  box-shadow: inset 0 0 0 1px var(--line-200);
+  color: var(--ink-200);
+}
+.k-cn-board[data-kind='st'] {
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--signal-amber) 50%, transparent);
+  color: var(--signal-amber);
+}

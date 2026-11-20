@@ -379,3 +379,49 @@ describe('heat：强度底色与名次小字', () => {
     expect(out).toContain('has-rank')
   })
 })
+
+// A 股件包（#110）：streak 与 limitStatus 两种列类型。
+describe('列类型 streak 与 limitStatus', () => {
+  it('streak：字、排序值（板数为主、天数为次）与取不到写 —', () => {
+    expect(cell(col('streak'), 1).text).toBe('首板')
+    expect(cell(col('streak'), { boards: 3, days: 5 }).text).toBe('5天3板')
+    expect(cell(col('streak', { streakForm: 'promotion' }), { boards: 2, promotedFrom: 1 }).text).toBe('一进二')
+    expect(cell(col('streak'), null).text).toBe('—')
+    expect(cell(col('streak'), null).sort).toBeUndefined()
+    expect(cell(col('streak'), 4).sort).toBeGreaterThan(Number(cell(col('streak'), 3).sort))
+    const compare = sortComparator('streak', undefined)
+    expect(compare(cell(col('streak'), 4).sort, cell(col('streak'), 2).sort)).toBeGreaterThan(0)
+  })
+
+  it('limitStatus：字带封单额，排序按状态次序', () => {
+    expect(cell(col('limitStatus'), 'broken').text).toBe('炸板')
+    expect(cell(col('limitStatus'), { status: 'sealed', sealAmount: 3.2e8 }).text).toBe('封板 3.20亿')
+    expect(cell(col('limitStatus'), null).text).toBe('—')
+    expect(Number(cell(col('limitStatus'), 'limitDown').sort)).toBeGreaterThan(
+      Number(cell(col('limitStatus'), 'sealed').sort),
+    )
+  })
+
+  it('DataGrid 把两种列画成 StreakBadge 与 LimitStatus', () => {
+    const rows = [{ id: 'a', v: { boards: 4 } }]
+    const html = renderToStaticMarkup(
+      <DataGrid
+        columns={[
+          { ...col('streak'), id: 's' },
+          { id: 'l', type: 'limitStatus', value: () => 'sealed' },
+        ]}
+        layout={[
+          { id: 's', label: 'S', width: 100, visible: true },
+          { id: 'l', label: 'L', width: 100, visible: true },
+        ]}
+        rows={rows}
+        rowId={(row) => row.id}
+        label="t"
+        sort={null}
+        onSortChange={() => {}}
+      />,
+    )
+    expect(html).toContain('data-slot="streak-badge"')
+    expect(html).toContain('data-slot="limit-status"')
+  })
+})

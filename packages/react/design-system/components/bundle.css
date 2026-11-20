@@ -14412,6 +14412,158 @@ button.k-sm-head:focus-visible {
   margin: 0;
 }
 
+.k-cn-chip {
+  border-radius: var(--radius-pill);
+  background: var(--alpha-white-6);
+  height: 16px;
+  color: var(--ink-200);
+  font: var(--text-caption) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  flex: none;
+  align-items: center;
+  gap: 4px;
+  padding: 0 6px;
+  line-height: 1;
+  display: inline-flex;
+}
+
+.k-cn-streak[data-level="0"] {
+  color: var(--ink-300);
+  background: none;
+}
+
+.k-cn-streak[data-level="2"] {
+  background: var(--pnl-up);
+}
+
+@supports (color: color-mix(in lab, red, red)) {
+  .k-cn-streak[data-level="2"] {
+    background: var(--ds-c-fmo1lj);
+  }
+}
+
+.k-cn-streak[data-level="2"] {
+  color: var(--pnl-up);
+}
+
+.k-cn-streak[data-level="3"] {
+  background: var(--pnl-up);
+}
+
+@supports (color: color-mix(in lab, red, red)) {
+  .k-cn-streak[data-level="3"] {
+    background: var(--ds-c-zyaqn1);
+  }
+}
+
+.k-cn-streak[data-level="3"] {
+  box-shadow: inset 0 0 0 1px var(--pnl-up);
+}
+
+@supports (color: color-mix(in lab, red, red)) {
+  .k-cn-streak[data-level="3"] {
+    box-shadow: inset 0 0 0 1px var(--ds-c-1o28qjc);
+  }
+}
+
+.k-cn-streak[data-level="3"] {
+  color: var(--pnl-up);
+  font-weight: 500;
+}
+
+.k-cn-streak[data-level="4"] {
+  background: var(--pnl-up);
+}
+
+@supports (color: color-mix(in lab, red, red)) {
+  .k-cn-streak[data-level="4"] {
+    background: var(--ds-c-1r5edp6);
+  }
+}
+
+.k-cn-streak[data-level="4"] {
+  box-shadow: inset 0 0 0 1px var(--pnl-up);
+  color: var(--pnl-up);
+  font-weight: 700;
+}
+
+.k-cn-limit[data-unavailable] {
+  color: var(--ink-300);
+  background: none;
+}
+
+.k-cn-limit[data-tone="up"] {
+  background: var(--pnl-up);
+}
+
+@supports (color: color-mix(in lab, red, red)) {
+  .k-cn-limit[data-tone="up"] {
+    background: var(--ds-c-fmo1lj);
+  }
+}
+
+.k-cn-limit[data-tone="up"] {
+  color: var(--pnl-up);
+}
+
+.k-cn-limit[data-tone="warn"] {
+  background: var(--signal-amber);
+}
+
+@supports (color: color-mix(in lab, red, red)) {
+  .k-cn-limit[data-tone="warn"] {
+    background: var(--ds-c-qbul3h);
+  }
+}
+
+.k-cn-limit[data-tone="warn"] {
+  color: var(--signal-amber);
+}
+
+.k-cn-limit[data-tone="down"] {
+  background: var(--pnl-down);
+}
+
+@supports (color: color-mix(in lab, red, red)) {
+  .k-cn-limit[data-tone="down"] {
+    background: var(--ds-c-jwmebu);
+  }
+}
+
+.k-cn-limit[data-tone="down"] {
+  color: var(--pnl-down);
+}
+
+.k-cn-limit[data-status="oneWord"], .k-cn-limit[data-status="auctionLimit"] {
+  font-weight: 500;
+}
+
+.k-cn-limit-amount {
+  color: inherit;
+  opacity: .85;
+}
+
+.k-cn-board {
+  box-shadow: inset 0 0 0 1px var(--line-200);
+  color: var(--ink-200);
+  background: none;
+}
+
+.k-cn-board[data-kind="st"] {
+  box-shadow: inset 0 0 0 1px var(--signal-amber);
+}
+
+@supports (color: color-mix(in lab, red, red)) {
+  .k-cn-board[data-kind="st"] {
+    box-shadow: inset 0 0 0 1px var(--ds-c-14h5ztb);
+  }
+}
+
+.k-cn-board[data-kind="st"] {
+  color: var(--signal-amber);
+}
+
 .k-row-actions {
   z-index: 1;
   background: linear-gradient(to right, transparent, var(--bg-300) 12px);
@@ -15661,6 +15813,10 @@ button.k-consensus-hash:focus-visible {
   --ds-c-qbul3h: color-mix(in srgb, var(--signal-amber) 12%, transparent);
   --ds-c-jwmebu: color-mix(in srgb, var(--pnl-down) 12%, transparent);
   --ds-c-1twsk1: color-mix(in srgb, color-mix(in srgb, var(--pnl-down) calc((1 - var(--t)) * 100%), var(--pnl-up) calc(var(--t) * 100%)) 70%, var(--ink-300));
+  --ds-c-zyaqn1: color-mix(in srgb, var(--pnl-up) 18%, transparent);
+  --ds-c-1o28qjc: color-mix(in srgb, var(--pnl-up) 40%, transparent);
+  --ds-c-1r5edp6: color-mix(in srgb, var(--pnl-up) 24%, transparent);
+  --ds-c-14h5ztb: color-mix(in srgb, var(--signal-amber) 50%, transparent);
   --ds-c-2xn4b5: #0009;
   --ds-c-yj1s8q: #fff;
 }

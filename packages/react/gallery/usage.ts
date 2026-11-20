@@ -14,6 +14,7 @@ const PUBLIC_NAME: Readonly<Record<string, string>> = {
   index: '@katana-ui/react',
   quant: '@katana-ui/react/quant',
   'quant/format': '@katana-ui/react/quant/format',
+  cn: '@katana-ui/react/cn',
   blocks: '@katana-ui/react/blocks',
 }
 
@@ -21,7 +22,7 @@ const PUBLIC_NAME: Readonly<Record<string, string>> = {
 export function publicSource(raw: string): string {
   return raw
     .replaceAll(
-      /'\.\.\/\.\.\/src\/(index|quant\/format|quant|blocks)'/g,
+      /'\.\.\/\.\.\/src\/(index|quant\/format|quant|cn|blocks)'/g,
       (_, entry: string) => `'${PUBLIC_NAME[entry]}'`,
     )
     .trimEnd()
