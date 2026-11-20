@@ -32,6 +32,8 @@ import { ContextMenu, ContextMenuContent, ContextMenuTrigger } from '../../primi
 import { useMenuParts } from '../../primitives/menu-any.tsx'
 import { MenuItemHint, MenuItemLabel } from '../../primitives/menu-parts.tsx'
 import { RowActions, type RowAction } from '../../patterns/row-actions.tsx'
+import { LimitStatus } from '../../cn/limit-status.tsx'
+import { StreakBadge } from '../../cn/streak-badge.tsx'
 import { ToneText } from '../../quant/tone-text.tsx'
 import {
   barExtent,
@@ -1125,6 +1127,13 @@ function CellBody({
   maxPills?: number
 }) {
   if (resolved.pills) return <PillCell pills={resolved.pills} max={maxPills} />
+  if (resolved.streak) {
+    const { value, form, labels } = resolved.streak
+    return <StreakBadge streak={value} form={form} labels={labels} />
+  }
+  if (resolved.limitStatus) {
+    return <LimitStatus status={resolved.limitStatus.value} labels={resolved.limitStatus.labels} />
+  }
   if (resolved.progress) {
     const { done, total, ratio } = resolved.progress
     return (

@@ -3,6 +3,7 @@ import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vite-plus/test'
 import * as base from '../src/index'
 import * as blocks from '../src/blocks'
+import * as cn from '../src/cn'
 import * as quant from '../src/quant'
 import { DEMOS } from './demos'
 import { GENERATED, resolveParts } from './props'
@@ -11,7 +12,7 @@ import { GROUPS, NON_COMPONENT_EXPORTS, PAGES } from './registry'
 
 // 文档站与包的出口对账（#1860）：每个导出的件都有页，每页写的件都存在，每页都有预览。属性表读 props.generated.json（pnpm docs:props 生成，过期由 lint:ds 拦），每页还要有「用法」例子（#1902）。
 
-const exported = [...Object.keys(base), ...Object.keys(quant), ...Object.keys(blocks)]
+const exported = [...Object.keys(base), ...Object.keys(quant), ...Object.keys(cn), ...Object.keys(blocks)]
 const documented = PAGES.flatMap((page) => page.exports)
 
 describe('组件文档站的目录', () => {
