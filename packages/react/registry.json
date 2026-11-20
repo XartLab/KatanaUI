@@ -54,6 +54,11 @@
           "target": "~/src/katana/ui/theme/chip-group.css"
         },
         {
+          "path": "src/theme/cn-theme-card.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/cn-theme-card.css"
+        },
+        {
           "path": "src/theme/cn.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/cn.css"
@@ -3139,6 +3144,27 @@
           "path": "src/cn/streak-badge.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/cn/streak-badge.tsx"
+        }
+      ]
+    },
+    {
+      "name": "cn-theme-card",
+      "type": "registry:component",
+      "title": "Cn Theme Card",
+      "description": "卡头是序号、题材名与两枚小胶囊（几只涨停、最高几板），一行催化（省略号截断，悬停看全文与来源），成员表（涨停时间、名称、连板徽标），卡脚「查看 n 只涨停」。ThemeCards 把多张卡横排；按涨停家数 / 时间 / 连板 / 涨幅排，由调用方排。信息结构取自复盘吧的题材异动，样子是 Graphite 的。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/cn-badge-model",
+        "@katana/cn-labels",
+        "@katana/cn-session",
+        "@katana/cn-streak-badge",
+        "@katana/cn-value"
+      ],
+      "files": [
+        {
+          "path": "src/cn/theme-card.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/cn/theme-card.tsx"
         }
       ]
     },

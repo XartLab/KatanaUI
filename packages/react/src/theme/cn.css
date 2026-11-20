@@ -17,6 +17,10 @@
   line-height: 1;
   white-space: nowrap;
 }
+.k-cn-chip[data-tone='up'] {
+  background: color-mix(in srgb, var(--pnl-up) 12%, transparent);
+  color: var(--pnl-up);
+}
 .k-cn-streak[data-level='0'] {
   background: none;
   color: var(--ink-300);

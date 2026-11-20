@@ -46,3 +46,13 @@ export {
 export { StreakBadge, type StreakBadgeProps } from './streak-badge.tsx'
 export { LimitStatus, type LimitStatusProps } from './limit-status.tsx'
 export { BoardMark, type BoardMarkProps } from './board-mark.tsx'
+export {
+  ThemeCard,
+  ThemeCards,
+  themeCardFigures,
+  type ThemeCardData,
+  type ThemeCardProps,
+  type ThemeCardsProps,
+  type ThemeCatalyst,
+  type ThemeMember,
+} from './theme-card.tsx'

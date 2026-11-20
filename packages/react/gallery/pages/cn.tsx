@@ -4,6 +4,7 @@ import {
   BoardMark,
   LimitStatus,
   StreakBadge,
+  ThemeCards,
   CN_SESSIONS,
   cnAxisPosition,
   cnLabelsZh,
@@ -15,6 +16,7 @@ import {
   type BoardKind,
   type LimitStatusValue,
   type StreakValue,
+  type ThemeCardData,
 } from '../../src/cn/index.ts'
 import { Cell, Row } from './parts.tsx'
 
@@ -191,6 +193,54 @@ export function BoardMarkDemo() {
           </Cell>
         ))}
       </Row>
+    </>
+  )
+}
+
+// 题材卡（#110）：示例数据，题材、个股、催化都是虚构的，不是行情。
+const THEME_DATA: readonly ThemeCardData[] = [
+  {
+    key: 't1',
+    name: '示例题材甲',
+    catalyst: { text: '示例催化：某行业协会发布面向全行业的供应链警报，上游价格联动上调', source: '示例来源' },
+    members: [
+      { code: '000001', name: '示例股一', time: '09:36', streak: 2 },
+      { code: '000002', name: '示例股二', time: '09:36', streak: 1 },
+      { code: '000003', name: '示例股三', time: '10:00', streak: 1 },
+      { code: '000004', name: '示例股四', time: '10:04', streak: 1 },
+      { code: '000005', name: '示例股五', time: '11:20', streak: { boards: 3, days: 4 } },
+    ],
+  },
+  {
+    key: 't2',
+    name: '示例题材乙',
+    catalyst: { text: '示例催化：行业新品发布，规划年内量产', source: '示例来源' },
+    members: [
+      { code: '000011', name: '示例股六', time: '10:14', streak: 1 },
+      { code: '000012', name: '示例股七', time: '10:34', streak: 1 },
+      { code: '000013', name: '示例股八', time: '11:06', streak: 1 },
+    ],
+  },
+  {
+    key: 't3',
+    name: '示例题材丙',
+    catalyst: null,
+    catalystReason: '示例：今日没有可核对的催化',
+    members: [
+      { code: '000021', name: '示例股九', time: '09:42', streak: 1 },
+      { code: '000022', name: '示例股十', time: '14:49', streak: 1 },
+    ],
+  },
+  { key: 't4', name: '示例题材丁', limitUpCount: null, catalyst: null, members: [] },
+]
+
+export function ThemeCardDemo() {
+  return (
+    <>
+      <p className="gal-note">示例数据：多张卡横排，排序由调用方排；催化一行省略号，悬停看全文与来源。</p>
+      <div className="gal-wide" data-testid="theme-cards" style={{ maxWidth: 960 }}>
+        <ThemeCards themes={THEME_DATA} onOpen={() => {}} onSelectMember={() => {}} />
+      </div>
     </>
   )
 }
