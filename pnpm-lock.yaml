@@ -218,7 +218,7 @@ importers:
         specifier: 4.13.0
         version: 4.13.0(playwright-core@1.56.1)
       '@katana-ui/tokens':
-        specifier: 0.2.0
+        specifier: 0.3.0
         version: link:../tokens
       '@playwright/test':
         specifier: 1.56.1
