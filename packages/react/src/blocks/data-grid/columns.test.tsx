@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vite-plus/test'
-import { defaultAlign, formatTimestamp, resolveCell, sortComparator, type GridColumn } from './columns.ts'
+import { barRatio, defaultAlign, formatTimestamp, resolveCell, sortComparator, type GridColumn } from './columns.ts'
 import { DataGrid } from './data-grid.tsx'
 import { DataGridHostProvider } from './host.tsx'
 
@@ -206,5 +206,44 @@ describe('自定义列、行属性与子行', () => {
     expect(out).not.toContain('<button')
     expect(out).not.toContain('is-interactive')
     expect(out).not.toContain('aria-selected')
+  })
+})
+
+// #109：A 股看板的列类型（居中条、胶囊、进度）与强度底色。
+describe('bar 列：以 0 为中线的居中条', () => {
+  const columns: GridColumn<Row>[] = [{ ...col('bar', { digits: 1 }), id: 'net' }]
+  const layout = [{ id: 'net', label: 'Net', width: 200, visible: true }]
+  const html = (values: unknown[]) =>
+    renderToStaticMarkup(
+      <DataGrid
+        columns={columns}
+        layout={layout}
+        rows={values.map((v) => ({ v }))}
+        rowId={(row) => String(row.v)}
+        label="t"
+        sort={null}
+        onSortChange={() => {}}
+      />,
+    )
+
+  it('文字带符号；排序用数；空写 —', () => {
+    expect(cell(col('bar', { digits: 1 }), 12.34)).toMatchObject({ text: '+12.3', bar: 12.34, sort: 12.34 })
+    expect(cell(col('bar'), -3)).toMatchObject({ text: '-3.00', bar: -3 })
+    expect(cell(col('bar'), null)).toMatchObject({ text: '—', bar: undefined })
+  })
+
+  it('条长按本列绝对值最大者归一：正在右、负在左，各占半边', () => {
+    expect(barRatio(10, 10)).toBe(1)
+    expect(barRatio(-5, 10)).toBe(-0.5)
+    expect(barRatio(undefined, 10)).toBe(0)
+    expect(barRatio(5, 0)).toBe(0)
+    const out = html([10, -5, 0])
+    expect(out.match(/class="k-grid-bar"/g)).toHaveLength(3)
+    expect(out).toContain('data-dir="up"')
+    expect(out).toContain('data-dir="down"')
+    expect(out).toContain('data-dir="flat"')
+    expect(out).toContain('width:50%;left:50%')
+    expect(out).toContain('width:25%;right:50%')
+    expect(out).toContain('+10.0')
   })
 })

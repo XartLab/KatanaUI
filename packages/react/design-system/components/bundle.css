@@ -7510,6 +7510,34 @@ button.k-sysmon-link-body:focus-visible {
   color: var(--pnl-down);
 }
 
+.k-grid-bar {
+  background: linear-gradient(var(--line-200), var(--line-200)) center / 1px 100% no-repeat;
+  flex: 1;
+  min-width: 24px;
+  height: 8px;
+  position: relative;
+}
+
+.k-grid-bar > i {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+}
+
+.k-grid-bar[data-dir="up"] > i {
+  background: var(--pnl-up);
+}
+
+.k-grid-bar[data-dir="down"] > i {
+  background: var(--pnl-down);
+}
+
+.k-grid-bar-text {
+  text-align: right;
+  flex: none;
+  min-width: 6ch;
+}
+
 .k-grid-name {
   text-overflow: ellipsis;
   overflow: hidden;

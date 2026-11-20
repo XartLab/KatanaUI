@@ -192,6 +192,30 @@
   background: color-mix(in srgb, var(--pnl-down) 22%, transparent);
   color: var(--pnl-down);
 }
+/* bar 列（#109）：居中条，以 0 为中线，正在右（涨色）负在左（跌色）；条在字前，字靠右等宽。条高 8px，不加行高。 */
+.k-grid-bar {
+  position: relative;
+  flex: 1;
+  min-width: 24px;
+  height: 8px;
+  background: linear-gradient(var(--line-200), var(--line-200)) center / 1px 100% no-repeat;
+}
+.k-grid-bar > i {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+}
+.k-grid-bar[data-dir='up'] > i {
+  background: var(--pnl-up);
+}
+.k-grid-bar[data-dir='down'] > i {
+  background: var(--pnl-down);
+}
+.k-grid-bar-text {
+  flex: none;
+  min-width: 6ch;
+  text-align: right;
+}
 .k-grid-name {
   overflow: hidden;
   text-overflow: ellipsis;

@@ -31,7 +31,7 @@ import { useMenuParts } from '../../primitives/menu-any.tsx'
 import { MenuItemHint, MenuItemLabel } from '../../primitives/menu-parts.tsx'
 import { RowActions, type RowAction } from '../../patterns/row-actions.tsx'
 import { ToneText } from '../../quant/tone-text.tsx'
-import { defaultAlign, resolveCell, sortComparator, type GridColumn } from './columns.ts'
+import { barExtent, barRatio, defaultAlign, resolveCell, sortComparator, type GridColumn } from './columns.ts'
 import { moveColumn, reorderColumn, setColumnFixed, setColumnVisible } from './layout-model.ts'
 import { DEFAULT_TEXTS, useDataGridHost, type GridMenuEntry } from './host.tsx'
 import {
@@ -391,6 +391,16 @@ export function DataGrid<Row extends object>({
   const labelOf = (column: string) => layoutOf.get(column)?.label ?? column
   const alignOf = (column: string) => layoutOf.get(column)?.align ?? defaultAlign(byId.get(column)?.type)
   const env = { timeZone }
+  // bar 列的条按整列归一：本列所有行里绝对值最大者当满格（虚拟滚动只画看得见的行，但基准看全部行）。
+  const extents = useMemo(
+    () =>
+      new Map(
+        columns
+          .filter((column) => column.type === 'bar')
+          .map((column) => [column.id, barExtent(column, rows, { timeZone })] as const),
+      ),
+    [columns, rows, timeZone],
+  )
 
   const defs = useMemo(() => {
     const helper = createColumnHelper<typeof features, Row>()
@@ -1027,7 +1037,7 @@ export function DataGrid<Row extends object>({
                         ) : column.render ? (
                           column.render(row.original)
                         ) : (
-                          <CellBody resolved={resolved} />
+                          <CellBody resolved={resolved} extent={extents.get(column.id) ?? 0} />
                         )}
                       </div>
                     )
@@ -1079,7 +1089,18 @@ export function DataGrid<Row extends object>({
 }
 
 /** 一格里的内容：品种拆成代码加场所，有方向的类型（盈亏、涨跌幅、买卖）用 ToneText 跟 data-updown，别的直接写字。 */
-function CellBody({ resolved }: { resolved: ReturnType<typeof resolveCell> }) {
+function CellBody({ resolved, extent }: { resolved: ReturnType<typeof resolveCell>; extent: number }) {
+  if (resolved.bar !== undefined) {
+    const ratio = barRatio(resolved.bar, extent)
+    return (
+      <>
+        <span className="k-grid-bar" data-slot="grid-bar" data-dir={ratio > 0 ? 'up' : ratio < 0 ? 'down' : 'flat'}>
+          <i style={{ width: `${Math.abs(ratio) * 50}%`, [ratio < 0 ? 'right' : 'left']: '50%' }} />
+        </span>
+        <span className="k-grid-bar-text">{resolved.text}</span>
+      </>
+    )
+  }
   if (resolved.symbol) {
     return (
       <>

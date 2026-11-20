@@ -3064,7 +3064,7 @@ export const PAGES: readonly DocPage[] = [
       },
       {
         part: '列类型 ColumnType',
-        note: '数字类默认靠右，用等宽数字；pnl、change、side 用 ToneText 跟 data-updown 着色（红涨绿跌时互换）。',
+        note: '数字类默认靠右，用等宽数字；pnl、change、side 用 ToneText 跟 data-updown 着色（红涨绿跌时互换）。bar 是以 0 为中线的居中条（正在右用涨色、负在左用跌色，长度按本列绝对值最大者归一，数字写在条旁；format 的 digits 与 suffix 同 pnl）。',
       },
       {
         part: 'DataGridHost（经 DataGridHostProvider 提供）',

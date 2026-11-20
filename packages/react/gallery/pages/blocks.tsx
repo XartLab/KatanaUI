@@ -215,6 +215,48 @@ function ColumnsDemo() {
   )
 }
 
+// A 股看板用的列类型（#109）：板块排行的净买居中条。示例数据写死，不是行情。
+type Sector = { id: string; name: string; net: number }
+const SECTORS: readonly Sector[] = [
+  { id: 's1', name: '示例板块甲', net: 12.4 },
+  { id: 's2', name: '示例板块乙', net: 5.1 },
+  { id: 's3', name: '示例板块丙', net: -3.2 },
+  { id: 's4', name: '示例板块丁', net: -9.8 },
+  { id: 's5', name: '示例板块戊', net: 0 },
+]
+const SECTOR_COLUMNS: readonly GridColumn<Sector>[] = [
+  { id: 'name', type: 'text', value: (row) => row.name },
+  { id: 'net', type: 'bar', value: (row) => row.net, format: { digits: 1, suffix: '亿' } },
+]
+const SECTOR_LAYOUT: readonly GridColumnLayout[] = [
+  { id: 'name', label: '板块', width: 120, visible: true },
+  { id: 'net', label: '主力净买', width: 220, visible: true },
+]
+
+function AShareColumnsDemo() {
+  return (
+    <>
+      <p className="gal-note">
+        bar 列：以 0
+        为中线，正在右（涨色）、负在左（跌色），长度按本列绝对值最大者归一，数字写在条旁。示例数据，不是行情。
+      </p>
+      <div data-testid="grid-ashare" style={{ display: 'flex', width: '100%', maxWidth: 480 }}>
+        <DataGrid
+          columns={SECTOR_COLUMNS}
+          layout={SECTOR_LAYOUT}
+          rows={SECTORS}
+          rowId={(row) => row.id}
+          label="Example sector ranking"
+          sort={null}
+          onSortChange={() => {}}
+          interactive={false}
+          fit
+        />
+      </div>
+    </>
+  )
+}
+
 export function DataGridDemo() {
   const [sort, setSort] = useState<SortSpec | null>(null)
   const [log, setLog] = useState('')
@@ -244,6 +286,7 @@ export function DataGridDemo() {
       </div>
       <ActionLog text={log} />
       <ColumnsDemo />
+      <AShareColumnsDemo />
       <p className="gal-note">无表头、只读、紧凑行高的变体：</p>
       <div style={{ width: 300 }}>
         <DataGrid

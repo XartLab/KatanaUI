@@ -25,6 +25,7 @@ export type ColumnType =
   | 'side'
   | 'time'
   | 'symbol'
+  | 'bar'
   | 'custom'
 
 /** 字的颜色：涨 / 跌（跟 data-updown，红涨绿跌时互换）、次要灰。 */
@@ -61,7 +62,8 @@ export type GridColumn<Row> = {
   /** 列类型；省略是 text。 */
   type?: ColumnType
   /**
-   * 原始值，由类型决定怎么读：price / quantity / pnl / change / number 是数字或十进制字符串（空、不是数写 —）；
+   * 原始值，由类型决定怎么读：price / quantity / pnl / change / number / bar 是数字或十进制字符串（空、不是数写 —）；
+   *
    * time 是毫秒时间戳；side 是 'buy' | 'sell'；symbol 是 SymbolValue；text 是字符串；custom 不读（内容全由 `cell` 画，要排序、复制就给 `text` 与 `sort`）。
    */
   value?: (row: Row) => unknown
@@ -103,13 +105,15 @@ export type ResolvedCell = {
   sort: string | number | undefined
   /** 类型决定的方向（pnl / change / side），渲染时用 ToneText；没有方向是 undefined。 */
   direction: 'up' | 'down' | 'flat' | undefined
+  /** bar 列的带符号数值（条的长度按列的最大绝对值归一，由 DataGrid 在 barRatio 里算）；别的类型是 undefined。 */
+  bar: number | undefined
   /** symbol 列拆好的两段。 */
   symbol:
     | { code: string; venue: string | undefined; name: string | undefined; icon: { src?: string } | undefined }
     | undefined
 }
 
-const NUMERIC: ReadonlySet<ColumnType> = new Set(['number', 'price', 'quantity', 'pnl', 'change'])
+const NUMERIC: ReadonlySet<ColumnType> = new Set(['number', 'price', 'quantity', 'pnl', 'change', 'bar'])
 
 /** 数字类的列默认靠右（等宽数字对得齐小数点）。列布局里写了 align 就听它的。 */
 export const defaultAlign = (type: ColumnType | undefined): 'start' | 'end' =>
@@ -170,6 +174,7 @@ export function resolveCell<Row>(column: GridColumn<Row>, row: Row, env: CellEnv
   let sort: string | number | undefined
   let direction: ResolvedCell['direction']
   let symbol: ResolvedCell['symbol']
+  let bar: ResolvedCell['bar']
   switch (type) {
     case 'price': {
       const number = toNumber(raw)
@@ -229,6 +234,14 @@ export function resolveCell<Row>(column: GridColumn<Row>, row: Row, env: CellEnv
       sort = time ?? undefined
       break
     }
+    case 'bar': {
+      const number = toNumber(raw)
+      const digits = format.digits ?? 2
+      text = number === null ? DASH : `${signed(number, digits)}${format.suffix ? ` ${format.suffix}` : ''}`
+      bar = number ?? undefined
+      sort = number ?? undefined
+      break
+    }
     case 'symbol': {
       const value = raw as SymbolValue | null | undefined
       const code = typeof value === 'string' ? value : (value?.code ?? '')
@@ -252,8 +265,26 @@ export function resolveCell<Row>(column: GridColumn<Row>, row: Row, env: CellEnv
     tone,
     sort: column.sort ? column.sort(row) : column.value ? sort : text,
     direction,
+    bar,
     symbol,
   }
+}
+
+const clamp01 = (value: number) => Math.min(1, Math.max(0, value))
+
+/** bar 列的条：带符号的值除以列的最大绝对值，落在 -1 到 1；没有值或最大值不是正数是 0。纯函数，DataGrid 与单测共用。 */
+export function barRatio(value: number | undefined, extent: number): number {
+  return value === undefined || !(extent > 0) ? 0 : Math.max(-1, Math.min(1, value / extent))
+}
+
+/** bar 列的归一基准：这一列所有行里绝对值最大的那个数。 */
+export function barExtent<Row>(column: GridColumn<Row>, rows: readonly Row[], env: CellEnv = {}): number {
+  let max = 0
+  for (const row of rows) {
+    const value = resolveCell(column, row, env).bar
+    if (value !== undefined) max = Math.max(max, Math.abs(value))
+  }
+  return max
 }
 
 /** 带符号的数：正数带 +，负数带 -，舍入成零不带号；千分位 en-US。 */
