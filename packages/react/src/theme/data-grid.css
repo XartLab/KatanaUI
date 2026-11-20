@@ -280,10 +280,10 @@
   inset: 0 auto 0 0;
   background: var(--ink-100);
 }
-/* 强度底色（#109）：列声明 heat 后，格子按值深浅铺涨 / 跌色的淡底；--heat 是 0 到 1，最深 40%（和 fill 的 22% 同一套 color-mix 写法）。
+/* 强度底色（#109）：列声明 heat 后，格子按值深浅铺涨 / 跌色的淡底；--heat 是 0 到 1，最深 25%（再深，涨跌色的字压在底色上对比度不到 4.5:1，axe 过不了；跟 fill 的 22% 同一套 color-mix 写法）。
    名次小字在格子右上角，绝对定位，不占行高行宽。 */
 .k-grid-cell[data-heat] {
-  background: color-mix(in srgb, var(--heat-color) calc(var(--heat, 0) * 40%), transparent);
+  background: color-mix(in srgb, var(--heat-color) calc(var(--heat, 0) * 25%), transparent);
 }
 .k-grid-cell[data-heat='up'] {
   --heat-color: var(--pnl-up);
