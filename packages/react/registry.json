@@ -59,6 +59,11 @@
           "target": "~/src/katana/ui/theme/cn-pulse.css"
         },
         {
+          "path": "src/theme/cn-sentiment.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/cn-sentiment.css"
+        },
+        {
           "path": "src/theme/cn-theme-card.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/cn-theme-card.css"
@@ -3167,6 +3172,24 @@
           "path": "src/cn/market-pulse.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/cn/market-pulse.tsx"
+        }
+      ]
+    },
+    {
+      "name": "cn-sentiment-gauge",
+      "type": "registry:component",
+      "title": "Cn Sentiment Gauge",
+      "description": "0–100 的读数加五档色带（冰点 / 低迷 / 中性 / 升温 / 高潮，各占 20 分），读数落在哪一档那一档全亮；色带下面是调用方写的口径说明（如「规则评分 · 未历史校准」）；再下面是今昨对比两列（涨停、跌停、封率、开板）。评分怎么算、口径、历史校准都不在包里：分数与说明由调用方给。冰点取跌色、高潮取涨色（跟 data-updown）。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/cn-labels",
+        "@katana/cn-value"
+      ],
+      "files": [
+        {
+          "path": "src/cn/sentiment-gauge.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/cn/sentiment-gauge.tsx"
         }
       ]
     },

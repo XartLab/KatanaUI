@@ -5,6 +5,7 @@ import {
   LimitStatus,
   LimitUpTimeline,
   MarketPulse,
+  SentimentGauge,
   StreakBadge,
   ThemeCards,
   CN_SESSIONS,
@@ -339,6 +340,36 @@ export function LimitUpTimelineDemo() {
       <div className="gal-wide" data-testid="limit-up-timeline" style={{ maxWidth: 1000 }}>
         <LimitUpTimeline items={TIMELINE_ITEMS} onSelect={() => {}} />
       </div>
+    </>
+  )
+}
+
+// 情绪温度（#110）：示例数据，评分与口径都是演示，不是行情。
+export function SentimentGaugeDemo() {
+  return (
+    <>
+      <p className="gal-note">示例数据：评分与口径由调用方给；取不到写「—」。</p>
+      <Row>
+        <div className="gal-wide" data-testid="sentiment" style={{ maxWidth: 300 }}>
+          <SentimentGauge
+            score={62}
+            basis="示例口径 · 规则评分 · 未历史校准"
+            today={{ limitUp: 30, limitDown: 62, sealRate: 62.5, broken: 10 }}
+            yesterday={{
+              limitUp: 23,
+              limitDown: 68,
+              sealRate: 48,
+              broken: { value: null, reason: '示例：昨日未记录' },
+            }}
+          />
+        </div>
+        <div className="gal-wide" data-testid="sentiment-cold" style={{ maxWidth: 300 }}>
+          <SentimentGauge score={12} basis="示例口径" />
+        </div>
+        <div className="gal-wide" data-testid="sentiment-none" style={{ maxWidth: 300 }}>
+          <SentimentGauge score={null} reason="示例：评分数据没到" />
+        </div>
+      </Row>
     </>
   )
 }

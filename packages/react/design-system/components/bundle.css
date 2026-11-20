@@ -15201,6 +15201,143 @@ button.k-tl-card:focus-visible {
   border-left: 8px solid var(--ink-200);
 }
 
+.k-sentiment {
+  gap: var(--space-2);
+  min-width: 0;
+  padding: var(--space-3);
+  background: var(--bg-200);
+  border: var(--hairline);
+  color: var(--ink-200);
+  font: var(--text-caption) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+  flex-direction: column;
+  display: flex;
+}
+
+.k-sentiment-head {
+  align-items: baseline;
+  gap: var(--space-2);
+  display: flex;
+}
+
+.k-sentiment-score {
+  color: var(--ink-100);
+  font: 600 28px/32px var(--font-sans);
+}
+
+.k-sentiment-caption {
+  color: var(--ink-300);
+}
+
+.k-sentiment-level {
+  color: var(--ink-100);
+  font: var(--text-data) var(--font-sans);
+  margin-left: auto;
+}
+
+.k-sentiment-band {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 2px;
+  height: 8px;
+  display: grid;
+  position: relative;
+}
+
+.k-sentiment-seg {
+  background: var(--seg-color);
+  opacity: .35;
+}
+
+.k-sentiment-seg[data-current="true"] {
+  opacity: 1;
+}
+
+.k-sentiment-seg[data-seg="0"], .k-sentiment-seg[data-seg="1"] {
+  --seg-color: var(--pnl-down);
+}
+
+@supports (color: color-mix(in lab, red, red)) {
+  .k-sentiment-seg[data-seg="1"] {
+    --seg-color: color-mix(in srgb, var(--pnl-down) 55%, var(--ink-400));
+  }
+}
+
+.k-sentiment-seg[data-seg="2"] {
+  --seg-color: var(--ink-400);
+}
+
+.k-sentiment-seg[data-seg="3"] {
+  --seg-color: var(--pnl-up);
+}
+
+@supports (color: color-mix(in lab, red, red)) {
+  .k-sentiment-seg[data-seg="3"] {
+    --seg-color: color-mix(in srgb, var(--pnl-up) 55%, var(--ink-400));
+  }
+}
+
+.k-sentiment-seg[data-seg="4"] {
+  --seg-color: var(--pnl-up);
+}
+
+.k-sentiment-marker {
+  background: var(--ink-100);
+  width: 2px;
+  height: 14px;
+  box-shadow: 0 0 0 1px var(--bg-200);
+  margin-left: -1px;
+  position: absolute;
+  top: -3px;
+}
+
+.k-sentiment-names {
+  color: var(--ink-300);
+  text-align: center;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 2px;
+  display: grid;
+}
+
+.k-sentiment-basis {
+  color: var(--ink-300);
+  margin: 0;
+}
+
+.k-sentiment-compare {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.k-sentiment-compare th, .k-sentiment-compare td {
+  text-align: right;
+  height: 20px;
+  padding: 0;
+  font-weight: 400;
+}
+
+.k-sentiment-compare th[scope="row"] {
+  color: var(--ink-300);
+  text-align: left;
+}
+
+.k-sentiment-compare thead th {
+  color: var(--ink-300);
+}
+
+.k-sentiment-compare td {
+  color: var(--ink-100);
+  font: var(--text-data) var(--font-sans);
+}
+
+.k-sentiment-compare td[data-col="yesterday"] {
+  color: var(--ink-200);
+}
+
+.k-sentiment-compare td[data-unavailable] {
+  color: var(--ink-300);
+  font-weight: 400;
+}
+
 .k-row-actions {
   z-index: 1;
   background: linear-gradient(to right, transparent, var(--bg-300) 12px);

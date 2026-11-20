@@ -7,6 +7,7 @@ import {
   LimitStatusDemo,
   LimitUpTimelineDemo,
   MarketPulseDemo,
+  SentimentGaugeDemo,
   StreakBadgeDemo,
   ThemeCardDemo,
 } from './pages/cn.tsx'
@@ -189,6 +190,7 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'theme-card': ThemeCardDemo,
   'market-pulse': MarketPulseDemo,
   'limit-up-timeline': LimitUpTimelineDemo,
+  'sentiment-gauge': SentimentGaugeDemo,
   'decimal-field': DecimalFieldDemo,
   'quant-format': QuantFormatDemo,
   'spark-tile': SparkTileDemo,

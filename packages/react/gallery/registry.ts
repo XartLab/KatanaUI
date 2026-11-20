@@ -5439,6 +5439,31 @@ export const PAGES: readonly DocPage[] = [
       ['Enter / Space', '切换排序与题材，或选中小卡'],
     ],
   },
+  {
+    id: 'sentiment-gauge',
+    group: 'cn',
+    cardHeight: 300,
+    title: 'SentimentGauge 情绪温度',
+    summary:
+      '0–100 的读数加五档色带（冰点 / 低迷 / 中性 / 升温 / 高潮，各占 20 分），读数落在哪一档那一档全亮；色带下面是调用方写的口径说明（如「规则评分 · 未历史校准」）；再下面是今昨对比两列（涨停、跌停、封率、开板）。评分怎么算、口径、历史校准都不在包里：分数与说明由调用方给。冰点取跌色、高潮取涨色（跟 data-updown）。',
+    exports: ['SentimentGauge', 'sentimentLevel'],
+    propParts: [
+      { part: 'SentimentGauge', note: '渲染一个 section，不透传别的属性。' },
+      {
+        part: 'SentimentStats',
+        note: '今日或昨日的四项：limitUp、limitDown、sealRate（百分数）、broken；各自是数或 { value, reason }。',
+      },
+      { part: 'sentimentLevel(score)', note: '纯函数：档位 0–4，每档 20 分；取不到是 null。' },
+    ],
+    states: [
+      '有评分：读数、档名、色带当前档全亮、标记落在分数位置。',
+      '评分取不到：读数写「—」，不画标记、没有当前档，悬停写 reason，不写 0。',
+      '给了 basis 才有口径说明；给了 today 或 yesterday 才有今昨对比，缺的格写「—」。',
+    ],
+    donts: ['不要在包里算评分：口径与校准由调用方负责，basis 里写明。', '不要传色值：档的颜色是语义 token。'],
+    composition: 'SentimentGauge\n  读数 · 档名\n  五档色带（含标记）\n  口径说明\n  今昨对比表',
+    keys: [],
+  },
 ]
 
 export const pageById = (id: string): DocPage | undefined => PAGES.find((page) => page.id === id)
