@@ -4097,7 +4097,7 @@ export const PAGES: readonly DocPage[] = [
   {
     id: 'gauge-bar',
     group: 'quotes',
-    cardHeight: 78,
+    cardHeight: 300,
     title: 'GaugeBar 进度条',
     summary:
       '上面一行名字、数和档位词，中间一条进度条标出数的位置，下面一句说明数是怎么来的。取不到时不画填充，数那里写原因。从应用的分析视图提来。',
@@ -4107,9 +4107,15 @@ export const PAGES: readonly DocPage[] = [
       '有位置：填充占轨道的 share，宽度按 snappy 弹簧变。',
       '取不到（share 为 null）：不画填充，数换成弱色小字并写原因。',
       '越界的 share 按边画。',
+      '分段（给了 segments）：轨道按各段的量切成色块（色调只有 up / down / muted / accent），段间 1px 缝，标签（含家数）写在条下面；不看 share。',
     ],
-    donts: ['不要用它表达多段或多值：它只标一个数在区间里的位置。', '不要省掉说明一句：数怎么来的要写在 note 里。'],
-    composition: 'GaugeBar\n  figcaption（label · value · level）\n  div（轨道）\n    span（填充）\n  p（note）',
+    donts: [
+      '不要用单段的 share 表达多值：多值给 segments。',
+      '不要省掉说明一句：数怎么来的要写在 note 里。',
+      '不要给 segments 传色值：只选色调名。',
+    ],
+    composition:
+      'GaugeBar\n  figcaption（label · value · level）\n  div（轨道）\n    span（填充）| span × n（分段）\n  ul（分段标签）\n  p（note）',
     keys: [],
   },
   {

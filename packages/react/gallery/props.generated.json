@@ -7366,8 +7366,15 @@
         {
           "name": "share",
           "type": "number | null",
-          "required": true,
+          "required": false,
+          "default": "null",
           "description": "Position of the number between the minimum and maximum (0 to 1, clamped to the ends); null draws no fill."
+        },
+        {
+          "name": "segments",
+          "type": "readonly GaugeSegment[]",
+          "required": false,
+          "description": "Multi-segment proportion bar (up · flat · down; limit-up · broken · limit-down): the track is split by the segment values and the labels are written under it."
         },
         {
           "name": "level",
@@ -7420,8 +7427,14 @@
         {
           "name": "share",
           "type": "number | null",
-          "required": true,
+          "required": false,
           "description": "Position of the number between the minimum and maximum (0 to 1, clamped to the ends); null draws no fill."
+        },
+        {
+          "name": "segments",
+          "type": "readonly GaugeSegment[]",
+          "required": false,
+          "description": "Multi-segment proportion bar (up · flat · down; limit-up · broken · limit-down): the track is split by the segment values and the labels are written under it."
         },
         {
           "name": "level",
@@ -7442,6 +7455,35 @@
           "description": "Extra class names per part, written after the package ones."
         }
       ]
+    },
+    "GaugeSegment": {
+      "kind": "type",
+      "source": "src/katana/gauge-bar.tsx",
+      "props": [
+        {
+          "name": "value",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "tone",
+          "type": "GaugeTone",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "label",
+          "type": "ReactNode",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "GaugeTone": {
+      "kind": "type",
+      "source": "src/katana/gauge-bar.tsx",
+      "props": []
     },
     "GridAction": {
       "kind": "type",
