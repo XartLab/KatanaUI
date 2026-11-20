@@ -3,6 +3,7 @@ import { DataGrid, type GridColumn, type GridColumnLayout } from '../../src/bloc
 import {
   BoardMark,
   LimitStatus,
+  LimitUpTimeline,
   MarketPulse,
   StreakBadge,
   ThemeCards,
@@ -18,6 +19,7 @@ import {
   type LimitStatusValue,
   type StreakValue,
   type ThemeCardData,
+  type TimelineItem,
 } from '../../src/cn/index.ts'
 import { Cell, Row } from './parts.tsx'
 
@@ -284,6 +286,58 @@ export function MarketPulseDemo() {
           basis="示例基准日"
           distribution={{ bins: PULSE_BINS }}
         />
+      </div>
+    </>
+  )
+}
+
+// 涨停时间线（#110）：示例数据，股票、题材与时刻都是虚构的，不是行情。
+const TL_THEMES = ['示例题材甲', '示例题材乙', '示例题材丙', '示例题材丁']
+const TL_TIMES = [
+  '09:20',
+  '09:31',
+  '09:36',
+  '09:36',
+  '09:42',
+  '09:56',
+  '10:00',
+  '10:04',
+  '10:14',
+  '10:17',
+  '10:30',
+  '10:34',
+  '10:47',
+  '11:06',
+  '11:17',
+  '11:20',
+  '11:20',
+  '13:00',
+  '13:04',
+  '13:11',
+  '14:07',
+  '14:40',
+  '14:45',
+  '14:49',
+]
+const TIMELINE_ITEMS: readonly TimelineItem[] = TL_TIMES.map((time, i) => ({
+  code: String(600000 + i * 7),
+  name: `示例股${i + 1}`,
+  time,
+  streak: i % 9 === 3 ? { boards: 4, days: 5 } : i % 5 === 1 ? 2 : 1,
+  themes: [TL_THEMES[i % 4]!],
+  amount: i % 7 === 6 ? null : (i + 1) * 3.7e7,
+  board: i % 6 === 2 ? 'gem' : i % 11 === 5 ? 'star' : undefined,
+}))
+
+export function LimitUpTimelineDemo() {
+  return (
+    <>
+      <p className="gal-note">
+        示例数据：同一分钟封板的票并成一站，站点等距排（午休不占宽度），按时段着色；点排序、点题材 chip
+        试试。没有封板时刻的票不上轴。
+      </p>
+      <div className="gal-wide" data-testid="limit-up-timeline" style={{ maxWidth: 1000 }}>
+        <LimitUpTimeline items={TIMELINE_ITEMS} onSelect={() => {}} />
       </div>
     </>
   )

@@ -9924,6 +9924,154 @@
       "source": "src/cn/badge-model.ts",
       "props": []
     },
+    "LimitUpTimeline": {
+      "kind": "component",
+      "source": "src/cn/limit-up-timeline.tsx",
+      "props": [
+        {
+          "name": "items",
+          "type": "readonly TimelineItem[]",
+          "required": true,
+          "description": "The limit-up stocks with their first-seal time; the timeline groups them by minute."
+        },
+        {
+          "name": "order",
+          "type": "TimelineOrder",
+          "required": false,
+          "description": "Sort order (controlled): latest first or earliest first."
+        },
+        {
+          "name": "defaultOrder",
+          "type": "TimelineOrder",
+          "required": false,
+          "default": "'latest'",
+          "description": "Initial sort order when uncontrolled; latest first by default."
+        },
+        {
+          "name": "onOrderChange",
+          "type": "(order: TimelineOrder) => void",
+          "required": false,
+          "description": "Called with the new order."
+        },
+        {
+          "name": "theme",
+          "type": "string | null",
+          "required": false,
+          "description": "The theme filter (controlled); null means all themes."
+        },
+        {
+          "name": "defaultTheme",
+          "type": "string | null",
+          "required": false,
+          "default": "null",
+          "description": "Initial theme filter when uncontrolled; all themes by default."
+        },
+        {
+          "name": "onThemeChange",
+          "type": "(theme: string | null) => void",
+          "required": false,
+          "description": "Called with the new theme filter."
+        },
+        {
+          "name": "perRow",
+          "type": "number",
+          "required": false,
+          "default": "7",
+          "description": "How many stations fit in one row of the snake; 7 by default."
+        },
+        {
+          "name": "onSelect",
+          "type": "(item: TimelineItem) => void",
+          "required": false,
+          "description": "Called when a stock card is picked; without it the cards are plain."
+        },
+        {
+          "name": "labels",
+          "type": "TimelineLabels",
+          "required": false,
+          "default": "cnLabelsZh.timeline",
+          "description": "Text pack; the Simplified Chinese default is used when omitted."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class names."
+        }
+      ]
+    },
+    "LimitUpTimelineProps": {
+      "kind": "type",
+      "source": "src/cn/limit-up-timeline.tsx",
+      "props": [
+        {
+          "name": "items",
+          "type": "readonly TimelineItem[]",
+          "required": true,
+          "description": "The limit-up stocks with their first-seal time; the timeline groups them by minute."
+        },
+        {
+          "name": "order",
+          "type": "TimelineOrder",
+          "required": false,
+          "description": "Sort order (controlled): latest first or earliest first."
+        },
+        {
+          "name": "defaultOrder",
+          "type": "TimelineOrder",
+          "required": false,
+          "description": "Initial sort order when uncontrolled; latest first by default."
+        },
+        {
+          "name": "onOrderChange",
+          "type": "(order: TimelineOrder) => void",
+          "required": false,
+          "description": "Called with the new order."
+        },
+        {
+          "name": "theme",
+          "type": "string | null",
+          "required": false,
+          "description": "The theme filter (controlled); null means all themes."
+        },
+        {
+          "name": "defaultTheme",
+          "type": "string | null",
+          "required": false,
+          "description": "Initial theme filter when uncontrolled; all themes by default."
+        },
+        {
+          "name": "onThemeChange",
+          "type": "(theme: string | null) => void",
+          "required": false,
+          "description": "Called with the new theme filter."
+        },
+        {
+          "name": "perRow",
+          "type": "number",
+          "required": false,
+          "description": "How many stations fit in one row of the snake; 7 by default."
+        },
+        {
+          "name": "onSelect",
+          "type": "(item: TimelineItem) => void",
+          "required": false,
+          "description": "Called when a stock card is picked; without it the cards are plain."
+        },
+        {
+          "name": "labels",
+          "type": "TimelineLabels",
+          "required": false,
+          "description": "Text pack; the Simplified Chinese default is used when omitted."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class names."
+        }
+      ]
+    },
     "LinkGroup": {
       "kind": "type",
       "source": "src/katana/led.tsx",
@@ -17704,6 +17852,36 @@
         }
       ]
     },
+    "SnakeRow": {
+      "kind": "type",
+      "source": "src/cn/timeline-model.ts",
+      "props": [
+        {
+          "name": "index",
+          "type": "number",
+          "required": true,
+          "description": "第几行，从 1 数。"
+        },
+        {
+          "name": "flow",
+          "type": "'ltr' | 'rtl'",
+          "required": true,
+          "description": "这一行的流向：奇数行从左往右，偶数行从右往左（蛇形）。"
+        },
+        {
+          "name": "sequence",
+          "type": "T[]",
+          "required": true,
+          "description": "按序列次序（流向的先后）排的站点。"
+        },
+        {
+          "name": "display",
+          "type": "T[]",
+          "required": true,
+          "description": "按屏幕从左到右的次序排的站点（rtl 行是序列反过来）。"
+        }
+      ]
+    },
     "SortSpec": {
       "kind": "type",
       "source": "src/blocks/data-grid/model.ts",
@@ -20813,6 +20991,54 @@
         }
       ]
     },
+    "TimelineItem": {
+      "kind": "type",
+      "source": "src/cn/timeline-model.ts",
+      "props": [
+        {
+          "name": "code",
+          "type": "string",
+          "required": true,
+          "description": "Stock code, unique within the timeline."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": "Stock name."
+        },
+        {
+          "name": "time",
+          "type": "string | null",
+          "required": false,
+          "description": "First-seal time (\"09:31\" or \"09:31:05\"); one that is missing or outside trading hours is left off the axis."
+        },
+        {
+          "name": "streak",
+          "type": "number | StreakValue | null",
+          "required": false,
+          "description": "Boards in a row, shown as a StreakBadge."
+        },
+        {
+          "name": "themes",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Themes of the stock; the first is written on the card and the filter chips use all of them."
+        },
+        {
+          "name": "amount",
+          "type": "number | null",
+          "required": false,
+          "description": "Turnover in yuan (written in wan or yi); a dash when unavailable."
+        },
+        {
+          "name": "board",
+          "type": "BoardKind | null",
+          "required": false,
+          "description": "Board kind; a mark is drawn for the 20cm and 30cm boards and ST."
+        }
+      ]
+    },
     "TimelineLabels": {
       "kind": "type",
       "source": "src/cn/labels.ts",
@@ -20828,6 +21054,12 @@
           "type": "string",
           "required": true,
           "description": ""
+        },
+        {
+          "name": "summary",
+          "type": "(stocks: number, stations: number) => string",
+          "required": true,
+          "description": "标题旁的汇总，例「共 25 只 · 20 个封板时刻」。"
         },
         {
           "name": "sort",
@@ -20906,6 +21138,41 @@
           "type": "string",
           "required": true,
           "description": ""
+        }
+      ]
+    },
+    "TimelineOrder": {
+      "kind": "type",
+      "source": "src/cn/timeline-model.ts",
+      "props": []
+    },
+    "TimelineStation": {
+      "kind": "type",
+      "source": "src/cn/timeline-model.ts",
+      "props": [
+        {
+          "name": "key",
+          "type": "string",
+          "required": true,
+          "description": "「14:49」，也是站点的 key。"
+        },
+        {
+          "name": "minutes",
+          "type": "number",
+          "required": true,
+          "description": "自 0 点起的整分钟数。"
+        },
+        {
+          "name": "phase",
+          "type": "CnPhase",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "items",
+          "type": "TimelineItem[]",
+          "required": true,
+          "description": "这一分钟封板的票，按封板的先后（含秒）排。"
         }
       ]
     },
@@ -23488,6 +23755,11 @@
       "source": "src/quant/distribution-bars.tsx",
       "props": []
     },
+    "filterByTheme": {
+      "kind": "function",
+      "source": "src/cn/timeline-model.ts",
+      "props": []
+    },
     "filterTrades": {
       "kind": "function",
       "source": "src/blocks/strategy-report/strategy-report-model.ts",
@@ -23614,6 +23886,11 @@
     "gaussianKde": {
       "kind": "function",
       "source": "src/quant/ridgeline-model.ts",
+      "props": []
+    },
+    "groupStations": {
+      "kind": "function",
+      "source": "src/cn/timeline-model.ts",
       "props": []
     },
     "histogram": {
@@ -23972,6 +24249,11 @@
       "source": "src/cn/session.ts",
       "props": []
     },
+    "phaseSummary": {
+      "kind": "function",
+      "source": "src/cn/timeline-model.ts",
+      "props": []
+    },
     "pulseShare": {
       "kind": "function",
       "source": "src/cn/market-pulse.tsx",
@@ -24264,6 +24546,11 @@
         }
       ]
     },
+    "snakeRows": {
+      "kind": "function",
+      "source": "src/cn/timeline-model.ts",
+      "props": []
+    },
     "snapSplitRatio": {
       "kind": "function",
       "source": "src/primitives/splitter-model.ts",
@@ -24496,6 +24783,11 @@
           "description": "Member stocks in display order."
         }
       ]
+    },
+    "themeCounts": {
+      "kind": "function",
+      "source": "src/cn/timeline-model.ts",
+      "props": []
     },
     "toggleGroupVariants": {
       "kind": "function",

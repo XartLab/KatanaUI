@@ -5397,6 +5397,48 @@ export const PAGES: readonly DocPage[] = [
       'MarketPulse\n  表盘（半圆 · 占比 · 说明）\n  五个大数\n  小字读数 × 2 行\n  涨跌分布（DistributionBars）',
     keys: [],
   },
+  {
+    id: 'limit-up-timeline',
+    group: 'cn',
+    cardHeight: 520,
+    title: 'LimitUpTimeline 涨停时间线',
+    summary:
+      '蛇形时刻轴：按分钟聚合封板时刻成站点（时间胶囊），一行 perRow 站，奇数行左到右、偶数行右到左，行尾拐弯、箭头指向较新的时刻、标「越来越早」；站点下挂小卡（名称、连板徽标、题材、成交额万 / 亿，20cm 等标板块）；站点按时段着色（集合竞价 / 早盘 / 午盘 / 尾盘）。顶上有排序（最新在前 / 最早在前）、时段图例（站数与只数）、题材 chip 筛。站点等距，午休与 09:25–09:30 不占宽度。梯队表用 LimitLadder，不在这里。',
+    exports: ['LimitUpTimeline', 'groupStations', 'phaseSummary', 'themeCounts', 'filterByTheme', 'snakeRows'],
+    propParts: [
+      { part: 'LimitUpTimeline', note: '渲染一个 section；排序与题材筛选都可受控也可不受控。' },
+      {
+        part: 'TimelineItem',
+        note: '一只票：code、name、time（首次封板时刻）、可选 streak、themes、amount（元）、board。',
+      },
+      {
+        part: 'groupStations(items, order)',
+        note: '纯函数：同一分钟并成一站，排好序；没有时刻或不在交易时间内的放 untimed。',
+      },
+      { part: 'phaseSummary(stations)', note: '纯函数：四个时段各自的站数与只数。' },
+      { part: 'themeCounts(items)', note: '纯函数：题材 chip，按票数从多到少。' },
+      { part: 'filterByTheme(items, theme)', note: '纯函数：按题材筛，null 是全部。' },
+      { part: 'snakeRows(stations, perRow)', note: '纯函数：蛇形分行，奇数行 ltr、偶数行 rtl。' },
+    ],
+    states: [
+      '最新在前（默认）：第一行从最新的站开始，箭头指向较新的一侧，行尾写「越来越早」；最早在前时反过来写「越来越晚」。',
+      '时段图例带计数（n 站 m 只），按当前筛选算；题材 chip 带票数，点一下筛，再点「全部」恢复。',
+      '没有封板时刻、或不在 09:15–15:00 的票不上轴，上面一行字报数。',
+      '没有票：写空态；成交额取不到写「—」。',
+      '给了 onSelect：小卡是按钮，可 Tab、Enter。',
+    ],
+    donts: [
+      '不要按时间比例拉开站点：午休不占宽度，站点等距排。',
+      '不要传色值：时段色是 token。',
+      '不要在包里取数：封板时刻与成交额由调用方给。',
+    ],
+    composition:
+      'LimitUpTimeline\n  标题与汇总\n  顶栏（排序 ToggleGroup · 时段图例 · 题材 chip）\n  蛇形行\n    站点（时间胶囊 · 轨道 · 小卡）\n      小卡（名称 · StreakBadge · BoardMark · 题材 · 成交额）',
+    keys: [
+      ['Tab', '到排序、题材 chip、小卡（给了 onSelect 时）'],
+      ['Enter / Space', '切换排序与题材，或选中小卡'],
+    ],
+  },
 ]
 
 export const pageById = (id: string): DocPage | undefined => PAGES.find((page) => page.id === id)
