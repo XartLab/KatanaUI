@@ -242,8 +242,8 @@ importers:
         specifier: 19.3.0
         version: 19.3.0(@types/react@19.3.0)
       happo:
-        specifier: 7.2.3
-        version: 7.2.3(typescript@7.0.2)
+        specifier: 7.5.1
+        version: 7.5.1(typescript@7.0.2)
       react:
         specifier: 19.3.1
         version: 19.3.1
@@ -2544,8 +2544,8 @@ packages:
   graceful-fs@4.2.12:
     resolution: {integrity: sha512-iuyGF2E4oafQfPsRrG2wtY2ILupMhvtdrhzrxB+0VcjsPpSPttpfYdjnGFGsTi5MaJFjI1jOKHPQ6UTbTj9TAw==}
 
-  happo@7.2.3:
-    resolution: {integrity: sha512-AfM0ykAoU0fLkMZyjF+KOzMmWbsc5kdcsiV/sfoU+RKVqgwJNvE+zEbgjdNESDrvasP3V3J0VrEJs7BQJ93LrA==}
+  happo@7.5.1:
+    resolution: {integrity: sha512-cj1Q4nkJ0JovFbFzChdMSRS5DbmP3hK2OG8z/A13hde2BCrVnevAoxIAfiR5Mkr5vPhtr6DDD6/ctWAXWiZiYQ==}
     engines: {node: ^22.18.0 || >=24.0.0}
     hasBin: true
 
@@ -5702,7 +5702,7 @@ snapshots:
 
   graceful-fs@4.2.12: {}
 
-  happo@7.2.3(typescript@7.0.2):
+  happo@7.5.1(typescript@7.0.2):
     dependencies:
       base64-stream: 1.0.0
       empathic: 2.1.0
