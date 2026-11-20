@@ -1815,6 +1815,12 @@
           "type": "'datetime' | 'time' | 'date'",
           "required": false,
           "description": "time：写到哪一级。默认 datetime（YYYY-MM-DD HH:MM:SS）。"
+        },
+        {
+          "name": "maxPills",
+          "type": "number",
+          "required": false,
+          "description": "pill：最多画几枚，多出的收成「+n」；没给就只按格子宽度收。"
         }
       ]
     },
@@ -7462,7 +7468,7 @@
           "name": "value",
           "type": "(row: Row) => unknown",
           "required": false,
-          "description": "原始值，由类型决定怎么读：price / quantity / pnl / change / number / bar 是数字或十进制字符串（空、不是数写 —）； time 是毫秒时间戳；side 是 'buy' | 'sell'；symbol 是 SymbolValue；text 是字符串；custom 不读（内容全由 `cell` 画，要排序、复制就给 `text` 与 `sort`）。"
+          "description": "原始值，由类型决定怎么读：price / quantity / pnl / change / number / bar 是数字或十进制字符串（空、不是数写 —）； pill 是 PillValue 或 PillValue[]； time 是毫秒时间戳；side 是 'buy' | 'sell'；symbol 是 SymbolValue；text 是字符串；custom 不读（内容全由 `cell` 画，要排序、复制就给 `text` 与 `sort`）。"
         },
         {
           "name": "format",
@@ -7588,6 +7594,11 @@
     "GridMenuEntry": {
       "kind": "type",
       "source": "src/blocks/data-grid/host.tsx",
+      "props": []
+    },
+    "GridPillTone": {
+      "kind": "type",
+      "source": "src/blocks/data-grid/columns.ts",
       "props": []
     },
     "GridRowProps": {
@@ -12850,6 +12861,11 @@
           "description": "读出来的值形状不对就返回 false，当没存过。"
         }
       ]
+    },
+    "PillValue": {
+      "kind": "type",
+      "source": "src/blocks/data-grid/columns.ts",
+      "props": []
     },
     "PivotRow": {
       "kind": "type",

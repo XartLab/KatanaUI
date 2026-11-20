@@ -26,10 +26,17 @@ export type ColumnType =
   | 'time'
   | 'symbol'
   | 'bar'
+  | 'pill'
   | 'custom'
 
 /** 字的颜色：涨 / 跌（跟 data-updown，红涨绿跌时互换）、次要灰。 */
 export type GridTone = 'up' | 'down' | 'muted'
+
+/** 语义色调：涨 / 跌 / 弱 / 强调（Graphite 里强调是中性亮，不是橙）。调用方只选名字，色值由包里的 token 给。 */
+export type GridPillTone = 'up' | 'down' | 'muted' | 'accent'
+
+/** pill 列的一枚标签：只写字，或字加色调（不写色调是 muted）。 */
+export type PillValue = string | { label: string; tone?: GridPillTone }
 
 /** 买卖方向。 */
 export type GridSide = 'buy' | 'sell'
@@ -55,6 +62,8 @@ export type ColumnFormat = {
   labels?: { buy: string; sell: string }
   /** time：写到哪一级。默认 datetime（YYYY-MM-DD HH:MM:SS）。 */
   timeStyle?: 'datetime' | 'time' | 'date'
+  /** pill：最多画几枚，多出的收成「+n」；没给就只按格子宽度收。 */
+  maxPills?: number
 }
 
 export type GridColumn<Row> = {
@@ -63,7 +72,7 @@ export type GridColumn<Row> = {
   type?: ColumnType
   /**
    * 原始值，由类型决定怎么读：price / quantity / pnl / change / number / bar 是数字或十进制字符串（空、不是数写 —）；
-   *
+   * pill 是 PillValue 或 PillValue[]；
    * time 是毫秒时间戳；side 是 'buy' | 'sell'；symbol 是 SymbolValue；text 是字符串；custom 不读（内容全由 `cell` 画，要排序、复制就给 `text` 与 `sort`）。
    */
   value?: (row: Row) => unknown
@@ -107,6 +116,8 @@ export type ResolvedCell = {
   direction: 'up' | 'down' | 'flat' | undefined
   /** bar 列的带符号数值（条的长度按列的最大绝对值归一，由 DataGrid 在 barRatio 里算）；别的类型是 undefined。 */
   bar: number | undefined
+  /** pill 列拆好的标签，没有标签是 undefined。 */
+  pills: { label: string; tone: GridPillTone }[] | undefined
   /** symbol 列拆好的两段。 */
   symbol:
     | { code: string; venue: string | undefined; name: string | undefined; icon: { src?: string } | undefined }
@@ -175,6 +186,7 @@ export function resolveCell<Row>(column: GridColumn<Row>, row: Row, env: CellEnv
   let direction: ResolvedCell['direction']
   let symbol: ResolvedCell['symbol']
   let bar: ResolvedCell['bar']
+  let pills: ResolvedCell['pills']
   switch (type) {
     case 'price': {
       const number = toNumber(raw)
@@ -242,6 +254,12 @@ export function resolveCell<Row>(column: GridColumn<Row>, row: Row, env: CellEnv
       sort = number ?? undefined
       break
     }
+    case 'pill': {
+      pills = toPills(raw)
+      text = pills ? pills.map((pill) => pill.label).join(' ') : DASH
+      sort = pills ? pills[0]!.label : undefined
+      break
+    }
     case 'symbol': {
       const value = raw as SymbolValue | null | undefined
       const code = typeof value === 'string' ? value : (value?.code ?? '')
@@ -266,11 +284,22 @@ export function resolveCell<Row>(column: GridColumn<Row>, row: Row, env: CellEnv
     sort: column.sort ? column.sort(row) : column.value ? sort : text,
     direction,
     bar,
+    pills,
     symbol,
   }
 }
 
 const clamp01 = (value: number) => Math.min(1, Math.max(0, value))
+
+function toPills(raw: unknown): ResolvedCell['pills'] {
+  const list = Array.isArray(raw) ? raw : raw === null || raw === undefined ? [] : [raw]
+  const pills = list.flatMap((item: PillValue) => {
+    const label = typeof item === 'string' ? item : (item?.label ?? '')
+    if (label === '') return []
+    return [{ label, tone: (typeof item === 'string' ? undefined : item.tone) ?? 'muted' }]
+  })
+  return pills.length > 0 ? pills : undefined
+}
 
 /** bar 列的条：带符号的值除以列的最大绝对值，落在 -1 到 1；没有值或最大值不是正数是 0。纯函数，DataGrid 与单测共用。 */
 export function barRatio(value: number | undefined, extent: number): number {

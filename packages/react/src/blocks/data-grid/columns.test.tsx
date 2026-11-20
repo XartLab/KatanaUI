@@ -247,3 +247,44 @@ describe('bar 列：以 0 为中线的居中条', () => {
     expect(out).toContain('+10.0')
   })
 })
+
+describe('pill 列：一格多枚标签', () => {
+  const layout = [{ id: 'tags', label: 'Tags', width: 220, visible: true }]
+  const html = (v: unknown, format?: { maxPills?: number }) =>
+    renderToStaticMarkup(
+      <DataGrid
+        columns={[{ ...col('pill', format), id: 'tags' }]}
+        layout={layout}
+        rows={[{ v }]}
+        rowId={() => 'r'}
+        label="t"
+        sort={null}
+        onSortChange={() => {}}
+      />,
+    )
+
+  it('值可以是一个或一串，每枚只认语义色调，没写色调是 muted', () => {
+    expect(cell(col('pill'), ['a', { label: 'b', tone: 'up' }])).toMatchObject({
+      text: 'a b',
+      pills: [
+        { label: 'a', tone: 'muted' },
+        { label: 'b', tone: 'up' },
+      ],
+    })
+    expect(cell(col('pill'), 'solo').pills).toEqual([{ label: 'solo', tone: 'muted' }])
+    expect(cell(col('pill'), [])).toMatchObject({ text: '—', pills: undefined })
+  })
+
+  it('每枚渲染成 data-tone 的胶囊；超过 maxPills 的收成 +n，title 写全部', () => {
+    const out = html(['甲', { label: '乙', tone: 'down' }, { label: '丙', tone: 'accent' }, '丁'], { maxPills: 2 })
+    expect(out.match(/data-pill=""/g)).toHaveLength(4)
+    expect(out.match(/ hidden=""/g)).toHaveLength(2)
+    expect(out).toContain('data-tone="down"')
+    expect(out).toContain('>+2</span>')
+    expect(out).toContain('title="甲 · 乙 · 丙 · 丁"')
+  })
+
+  it('不超过就没有 +n', () => {
+    expect(html(['甲', '乙'], { maxPills: 5 })).not.toContain('grid-pill-more')
+  })
+})

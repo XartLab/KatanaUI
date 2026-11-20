@@ -16,6 +16,7 @@ import { useVirtualizer } from '@tanstack/react-virtual'
 import {
   useEffect,
   useId,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -1037,7 +1038,14 @@ export function DataGrid<Row extends object>({
                         ) : column.render ? (
                           column.render(row.original)
                         ) : (
-                          <CellBody resolved={resolved} extent={extents.get(column.id) ?? 0} />
+                          <CellBody
+                            resolved={resolved}
+                            extent={extents.get(column.id) ?? 0}
+                            maxPills={
+                              (typeof column.format === 'function' ? column.format(row.original) : column.format)
+                                ?.maxPills
+                            }
+                          />
                         )}
                       </div>
                     )
@@ -1089,7 +1097,16 @@ export function DataGrid<Row extends object>({
 }
 
 /** 一格里的内容：品种拆成代码加场所，有方向的类型（盈亏、涨跌幅、买卖）用 ToneText 跟 data-updown，别的直接写字。 */
-function CellBody({ resolved, extent }: { resolved: ReturnType<typeof resolveCell>; extent: number }) {
+function CellBody({
+  resolved,
+  extent,
+  maxPills,
+}: {
+  resolved: ReturnType<typeof resolveCell>
+  extent: number
+  maxPills?: number
+}) {
+  if (resolved.pills) return <PillCell pills={resolved.pills} max={maxPills} />
   if (resolved.bar !== undefined) {
     const ratio = barRatio(resolved.bar, extent)
     return (
@@ -1163,5 +1180,70 @@ function DefaultMenu({ entries }: { entries: readonly GridMenuEntry[] }) {
         )
       })}
     </>
+  )
+}
+
+/** 胶囊的「+n」预留的宽度（px）与胶囊之间的间距，跟 data-grid.css 的 .k-grid-pill 一致。 */
+const PILL_MORE_WIDTH = 32
+const PILL_GAP = 4
+
+/**
+ * pill 列的一格：多枚短标签排成一行，装不下的收成「+n」（悬停的 title 写全部）。
+ * 先按 maxPills 截（服务端渲染与首帧就是这个数），挂载后量每枚的宽，按格子宽度再往下收；格子变宽变窄时重算。
+ */
+function PillCell({ pills, max }: { pills: NonNullable<ReturnType<typeof resolveCell>['pills']>; max?: number }) {
+  const box = useRef<HTMLSpanElement | null>(null)
+  const cap = Math.min(pills.length, max ?? pills.length)
+  const [fit, setFit] = useState(cap)
+  const key = pills.map((pill) => pill.label).join('\u0000')
+  useLayoutEffect(() => {
+    const el = box.current
+    if (!el) return
+    const measure = () => {
+      const nodes = Array.from(el.querySelectorAll<HTMLElement>('[data-pill]'))
+      const widths = nodes.map((node) => {
+        const was = node.hidden
+        node.hidden = false
+        const width = node.offsetWidth
+        node.hidden = was
+        return width
+      })
+      const room = el.clientWidth
+      const total = widths.length
+      let count = 0
+      for (let k = Math.min(cap, total); k >= 0; k--) {
+        const used = widths.slice(0, k).reduce((sum, width) => sum + width, 0) + Math.max(0, k - 1) * PILL_GAP
+        const more = k < total ? (k > 0 ? PILL_GAP : 0) + PILL_MORE_WIDTH : 0
+        if (used + more <= room) {
+          count = k
+          break
+        }
+      }
+      setFit(room > 0 ? count : cap)
+    }
+    measure()
+    const observer = new ResizeObserver(measure)
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [key, cap])
+  const shown = Math.min(fit, cap)
+  const rest = pills.length - shown
+  return (
+    <span ref={box} className="k-grid-pills" data-slot="grid-pills">
+      {pills.map((pill, i) => (
+        <span key={`${i}-${pill.label}`} className="k-grid-pill" data-pill="" data-tone={pill.tone} hidden={i >= shown}>
+          {pill.label}
+        </span>
+      ))}
+      {rest > 0 && (
+        <span
+          className="k-grid-pill k-grid-pill-more"
+          data-slot="grid-pill-more"
+          title={pills.map((pill) => pill.label).join(' · ')}
+        >
+          +{rest}
+        </span>
+      )}
+    </span>
   )
 }

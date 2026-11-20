@@ -216,6 +216,52 @@
   min-width: 6ch;
   text-align: right;
 }
+/* pill 列（#109）：一格多枚短标签，一行排不下的收成「+n」。胶囊 16px 高，在 24px 的行里不加行高；
+   色调只有四种：涨 / 跌用涨跌色的淡底，弱用中性淡底，强调用 Graphite 的中性亮（--seg-on-*，不用橙）。 */
+.k-grid-pills {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  overflow: hidden;
+}
+.k-grid-pill {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  height: 16px;
+  padding: 0 6px;
+  border-radius: var(--radius-pill);
+  background: var(--alpha-white-6);
+  color: var(--ink-200);
+  font: var(--text-caption) var(--font-sans);
+  line-height: 1;
+  white-space: nowrap;
+}
+.k-grid-pill[hidden] {
+  display: none;
+}
+.k-grid-pill[data-tone='up'] {
+  background: color-mix(in srgb, var(--pnl-up) 16%, transparent);
+  color: var(--pnl-up);
+}
+.k-grid-pill[data-tone='down'] {
+  background: color-mix(in srgb, var(--pnl-down) 16%, transparent);
+  color: var(--pnl-down);
+}
+.k-grid-pill[data-tone='accent'] {
+  background: var(--seg-on-bg);
+  color: var(--seg-on-ink);
+}
+.k-grid-pill-more {
+  min-width: 28px;
+  justify-content: center;
+  background: none;
+  box-shadow: inset 0 0 0 1px var(--line-200);
+  color: var(--ink-300);
+  cursor: default;
+}
 .k-grid-name {
   overflow: hidden;
   text-overflow: ellipsis;

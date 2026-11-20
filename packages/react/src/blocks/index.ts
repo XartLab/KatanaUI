@@ -3,7 +3,16 @@
 // 不依赖应用：应用才有的能力（快捷键表、文案、右键菜单怎么画、问 Agent）经 DataGridHost 这类 context 或 props 传进来，没提供时件照常能用。
 export { DataGrid } from './data-grid/data-grid.tsx'
 export type { DataGridProps, GridColumnLayout, GridDensity, GridRowProps, GridSlot } from './data-grid/data-grid.tsx'
-export type { ColumnFormat, ColumnType, GridColumn, GridSide, GridTone, SymbolValue } from './data-grid/columns.ts'
+export type {
+  ColumnFormat,
+  ColumnType,
+  GridColumn,
+  GridPillTone,
+  GridSide,
+  GridTone,
+  PillValue,
+  SymbolValue,
+} from './data-grid/columns.ts'
 export {
   DataGridHostProvider,
   type DataGridHost,

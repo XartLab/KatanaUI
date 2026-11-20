@@ -7538,6 +7538,75 @@ button.k-sysmon-link-body:focus-visible {
   min-width: 6ch;
 }
 
+.k-grid-pills {
+  flex: 1;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  display: flex;
+  overflow: hidden;
+}
+
+.k-grid-pill {
+  border-radius: var(--radius-pill);
+  background: var(--alpha-white-6);
+  height: 16px;
+  color: var(--ink-200);
+  font: var(--text-caption) var(--font-sans);
+  white-space: nowrap;
+  flex: none;
+  align-items: center;
+  padding: 0 6px;
+  line-height: 1;
+  display: inline-flex;
+}
+
+.k-grid-pill[hidden] {
+  display: none;
+}
+
+.k-grid-pill[data-tone="up"] {
+  background: var(--pnl-up);
+}
+
+@supports (color: color-mix(in lab, red, red)) {
+  .k-grid-pill[data-tone="up"] {
+    background: var(--ds-c-t6f6aj);
+  }
+}
+
+.k-grid-pill[data-tone="up"] {
+  color: var(--pnl-up);
+}
+
+.k-grid-pill[data-tone="down"] {
+  background: var(--pnl-down);
+}
+
+@supports (color: color-mix(in lab, red, red)) {
+  .k-grid-pill[data-tone="down"] {
+    background: var(--ds-c-xgdj0u);
+  }
+}
+
+.k-grid-pill[data-tone="down"] {
+  color: var(--pnl-down);
+}
+
+.k-grid-pill[data-tone="accent"] {
+  background: var(--seg-on-bg);
+  color: var(--seg-on-ink);
+}
+
+.k-grid-pill-more {
+  min-width: 28px;
+  box-shadow: inset 0 0 0 1px var(--line-200);
+  color: var(--ink-300);
+  cursor: default;
+  background: none;
+  justify-content: center;
+}
+
 .k-grid-name {
   text-overflow: ellipsis;
   overflow: hidden;
@@ -15361,6 +15430,8 @@ button.k-consensus-hash:focus-visible {
   --ds-c-1ay9f5e: color-mix(in srgb, var(--signal-amber) 35%, transparent);
   --ds-c-1kditco: color-mix(in srgb, var(--pnl-up) 22%, transparent);
   --ds-c-1onh62z: color-mix(in srgb, var(--pnl-down) 22%, transparent);
+  --ds-c-t6f6aj: color-mix(in srgb, var(--pnl-up) 16%, transparent);
+  --ds-c-xgdj0u: color-mix(in srgb, var(--pnl-down) 16%, transparent);
   --ds-c-clc5nk: color-mix(in srgb, var(--pnl-down) 100%, var(--bg-000));
   --ds-c-1v6dr3q: color-mix(in srgb, var(--pnl-down) 70%, var(--bg-000));
   --ds-c-1g34po5: color-mix(in srgb, var(--pnl-down) 42%, var(--bg-000));
