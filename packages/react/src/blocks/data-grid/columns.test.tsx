@@ -365,7 +365,10 @@ describe('heat：强度底色与名次小字', () => {
   })
 
   it('格子带 data-heat 与 --heat；rank 写在格子右上角的小字里；没声明 heat 的列不带', () => {
-    const out = html({ domain: [-10, 10], rank: (row) => (row.v > 0 ? `#${row.v}` : undefined) }, [10, -5, 0])
+    const out = html(
+      { domain: [-10, 10], rank: (row) => (Number(row.v) > 0 ? `#${String(row.v)}` : undefined) },
+      [10, -5, 0],
+    )
     expect(out).toContain('data-heat="up"')
     expect(out).toContain('--heat:1')
     expect(out).toContain('data-heat="down"')
