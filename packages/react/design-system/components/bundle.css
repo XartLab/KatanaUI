@@ -10469,6 +10469,17 @@ button.k-sm-head:focus-visible {
   margin-left: var(--k-plot-gutter, 56px);
 }
 
+.k-sx-regimes {
+  margin-left: var(--k-plot-gutter, 56px);
+  margin-top: 6px;
+  position: relative;
+}
+
+.k-sx-regimes > .k-plot-cross {
+  height: 14px;
+  bottom: auto;
+}
+
 .k-sx-closed {
   fill: var(--bg-100);
 }

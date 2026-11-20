@@ -15979,6 +15979,12 @@
           "description": "图上的事件点：按时间落在序列的点上，画编号引线（01、02……按给的次序编号）。"
         },
         {
+          "name": "regimes",
+          "type": "Omit<RegimeStripProps, 'scale'>",
+          "required": false,
+          "description": "Market regime strip under the time axis (a RegimeStrip without `scale`): it shares the x axis and the crosshair with the series, and the tooltip gets a row with the regime at the hovered point."
+        },
+        {
           "name": "onExport",
           "type": "() => void",
           "required": false,
@@ -16212,6 +16218,12 @@
           "type": "readonly { at: number; label: string }[]",
           "required": false,
           "description": "图上的事件点：按时间落在序列的点上，画编号引线（01、02……按给的次序编号）。"
+        },
+        {
+          "name": "regimes",
+          "type": "Omit<RegimeStripProps, 'scale'>",
+          "required": false,
+          "description": "Market regime strip under the time axis (a RegimeStrip without `scale`): it shares the x axis and the crosshair with the series, and the tooltip gets a row with the regime at the hovered point."
         },
         {
           "name": "onExport",

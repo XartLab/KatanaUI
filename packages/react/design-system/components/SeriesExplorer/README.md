@@ -21,6 +21,7 @@
 | `formatAt / formatValue / formatChange` | `functions` | — | 时间（ISO 次序）、图上的数、相对上一期的变化各写成什么。 |
 | `onExport / onFullscreen / defaultMetric` | `callbacks / string \| null` | — | 导出与全屏回调不给就不画按钮；初始展开哪个指标，null 是收起。 |
 | `chartHeight` | `number` | `220` | 图高（px）。 |
+| `regimes` | `Omit<RegimeStripProps, "scale">` | — | 市场状态带：画在时间轴下，跟序列共用横轴与十字线，悬停框多一行当前所处的状态。段是左闭右开 [from, to)，单位同 points 的 at；不给就没有这一块。十字线按 14px 的带画，所以不要传 title（它会把带挤下去一行）。 |
 
 ## Usage
 
@@ -168,6 +169,7 @@ export function SeriesExplorerUsage() {
 - 对比上一期：窗口前面够长才可开，画同一序列的上一期（灰色虚线，按下标对齐）；不够长开关禁用。
 - 对账对不上：灯转琥珀，差额写在后面。
 - 表格视图：右上角第一个按钮切到明细表（键盘可达）。
+- 给了 regimes：图和时间轴下多一条状态带与图例，状态段与图里的一格一点对齐；悬停某点时带上也有十字线，悬停框多一行当前状态。
 
 ## Don't
 
