@@ -1,13 +1,14 @@
 // SPDX-License-Identifier: MIT
-import type { ReactNode } from 'react'
+import { useLayoutEffect, useRef, useState, type ReactNode } from 'react'
 import { cn } from '../lib/cn.ts'
+import { Popover, PopoverContent, PopoverTrigger } from '../primitives/popover.tsx'
 import { DistributionBars, type DistributionBarsProps } from '../quant/distribution-bars.tsx'
 import { formatCnAmount } from './format.ts'
 import { cnLabelsZh, type PulseLabels } from './labels.ts'
 import { DASH, readCnValue, type CnValue } from './value.ts'
 
 // 市场全景条（#110，信息结构取自复盘吧看盘工作台的首屏，样子是 Graphite 的）：一行横条，从左到右是上涨占比半圆表盘、五个大数（上涨 / 下跌 / 涨停 / 跌停 / 平盘）、
-// 大数下面两行小字读数（涨停池、昨日口径、成交额与资金），最右嵌一块涨跌分布柱（DistributionBars）。高度不超过 3 行读数。
+// 大数下面两行小字读数（涨停池、昨日口径、成交额与资金），最右嵌一块涨跌分布柱（DistributionBars）。高度不超过 3 行读数：小字读数最多两行，放不下的收进行尾「+n」（点开浮层看全部）；容器窄于 900px 时分布柱移到第二行最右，窄于 520px 时表盘收起。
 // 涨红跌绿沿用 data-updown，件里不写死颜色。取不到的数写「—」，原因放悬停，不写 0。文字走 labels（默认简体中文），不带数据源。
 
 export type MarketPulseCounts = {
@@ -127,34 +128,107 @@ export function MarketPulse({
 }: MarketPulseProps) {
   const ratio = share === undefined ? pulseShare(counts) : share
   const percent = ratio === null ? DASH : `${(ratio * 100).toFixed(1)}%`
+  const box = useRef<HTMLDivElement>(null)
+  const [hidden, setHidden] = useState<readonly string[]>([])
 
-  const reading = (
-    key: Exclude<keyof PulseLabels['readings'], 'yesterday'>,
-    format: (value: number) => string,
-    tone?: (value: number) => 'up' | 'down' | undefined,
-  ) => {
-    const { value, reason } = readCnValue(readings[key])
-    return (
-      <span
-        key={key}
-        className="k-pulse-read"
-        data-slot="pulse-reading"
-        data-key={key}
-        data-unavailable={value === null ? 'true' : undefined}
-        data-tone={value === null ? undefined : tone?.(value)}
-        title={value === null ? (reason ?? labels.unavailable) : undefined}
-      >
-        <span className="k-pulse-read-name">{labels.readings[key]}</span>
-        <b>{value === null ? DASH : format(value)}</b>
-      </span>
-    )
+  type Item = {
+    key: string
+    tone?: 'up' | 'down'
+    unavailable: boolean
+    title?: string
+    name: string
+    value: ReactNode
   }
   const count = (value: number) => `${value.toLocaleString('en-US')}${labels.suffix.count}`
   const amount = (value: number) => formatCnAmount(value)
-  const sign = (value: number) => (value > 0 ? 'up' : value < 0 ? 'down' : undefined)
+  const sign = (value: number): 'up' | 'down' | undefined => (value > 0 ? 'up' : value < 0 ? 'down' : undefined)
+  const one = (
+    key: Exclude<keyof PulseLabels['readings'], 'yesterday'>,
+    format: (value: number) => string,
+    tone?: (value: number) => 'up' | 'down' | undefined,
+  ): Item => {
+    const { value, reason } = readCnValue(readings[key])
+    return {
+      key,
+      unavailable: value === null,
+      tone: value === null ? undefined : tone?.(value),
+      title: value === null ? (reason ?? labels.unavailable) : undefined,
+      name: labels.readings[key],
+      value: value === null ? DASH : format(value),
+    }
+  }
   const yesterday = (['yesterdayLimitUp', 'yesterdayLimitDown', 'yesterdayBroken'] as const).map((key) =>
     readCnValue(readings[key]),
   )
+  const items: Item[] = [
+    one('nonStLimitUp', count),
+    one('broken', count),
+    one('highestBoard', (value) => `${value}${labels.suffix.boards}`),
+    one('limitUpAmount', amount),
+    one('sealEstimate', amount),
+    {
+      key: 'yesterday',
+      unavailable: false,
+      name: labels.readings.yesterday,
+      value: (
+        <>
+          {yesterday.map((item, position) => (
+            <span
+              key={position}
+              data-unavailable={item.value === null ? 'true' : undefined}
+              title={item.value === null ? (item.reason ?? labels.unavailable) : undefined}
+            >
+              {position > 0 && ' / '}
+              {countText(item.value)}
+            </span>
+          ))}
+          {basis !== undefined && <small className="k-pulse-basis">{basis}</small>}
+        </>
+      ),
+    },
+    one('turnover', amount),
+    one('turnoverForecast', amount),
+    one('mainNetInflow', (value) => formatCnAmount(value, { signed: true }), sign),
+  ]
+  const render = (item: Item, inPopover = false) => (
+    <span
+      key={item.key}
+      className="k-pulse-read"
+      data-slot={inPopover ? 'pulse-reading-more' : 'pulse-reading'}
+      data-key={item.key}
+      data-unavailable={item.unavailable ? 'true' : undefined}
+      data-tone={item.tone}
+      title={item.title}
+      hidden={!inPopover && hidden.includes(item.key)}
+    >
+      <span className="k-pulse-read-name">{item.name}</span>
+      <b>{item.value}</b>
+    </span>
+  )
+
+  // 小字读数最多两行：测出第三行起的读数收进「+n」（给「+n」让出一项的位置）。服务端渲染时全部可见。
+  const itemKeys = items.map((item) => item.key).join('|')
+  useLayoutEffect(() => {
+    const el = box.current
+    if (!el) return
+    const measure = () => {
+      const nodes = Array.from(el.querySelectorAll<HTMLElement>('[data-slot="pulse-reading"]'))
+      for (const node of nodes) node.hidden = false
+      const limit = 2 * 18
+      let first = nodes.findIndex((node) => node.offsetTop >= limit)
+      if (first >= 0) first = Math.max(0, first - 1)
+      const keys = first < 0 ? [] : nodes.slice(first).map((node) => node.dataset.key!)
+      nodes.forEach((node, index) => {
+        node.hidden = first >= 0 && index >= first
+      })
+      setHidden((prev) => (prev.join('|') === keys.join('|') ? prev : keys))
+    }
+    measure()
+    const observer = new ResizeObserver(measure)
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [itemKeys, labels, basis])
+  const rest = items.filter((item) => hidden.includes(item.key))
 
   return (
     <div className={cn('k-pulse', className)} data-slot="market-pulse" role="group" aria-label={labels.region}>
@@ -190,33 +264,20 @@ export function MarketPulse({
             )
           })}
         </dl>
-        <div className="k-pulse-line" data-slot="pulse-line">
-          {reading('nonStLimitUp', count)}
-          {reading('broken', count)}
-          {reading('highestBoard', (value) => `${value}${labels.suffix.boards}`)}
-          {reading('limitUpAmount', amount)}
-          {reading('sealEstimate', amount)}
-          <span className="k-pulse-read" data-slot="pulse-reading" data-key="yesterday">
-            <span className="k-pulse-read-name">{labels.readings.yesterday}</span>
-            <b>
-              {yesterday.map((item, position) => (
-                <span
-                  key={position}
-                  data-unavailable={item.value === null ? 'true' : undefined}
-                  title={item.value === null ? (item.reason ?? labels.unavailable) : undefined}
-                >
-                  {position > 0 && ' / '}
-                  {countText(item.value)}
-                </span>
-              ))}
-            </b>
-            {basis !== undefined && <small className="k-pulse-basis">{basis}</small>}
-          </span>
-        </div>
-        <div className="k-pulse-line" data-slot="pulse-line">
-          {reading('turnover', amount)}
-          {reading('turnoverForecast', amount)}
-          {reading('mainNetInflow', (value) => formatCnAmount(value, { signed: true }), sign)}
+        <div className="k-pulse-readings" data-slot="pulse-readings" ref={box}>
+          {items.map((item) => render(item))}
+          {rest.length > 0 && (
+            <Popover>
+              <PopoverTrigger asChild>
+                <button type="button" className="k-pulse-more" data-slot="pulse-more">
+                  +{rest.length}
+                </button>
+              </PopoverTrigger>
+              <PopoverContent align="end" className="k-pulse-more-list">
+                {rest.map((item) => render(item, true))}
+              </PopoverContent>
+            </Popover>
+          )}
         </div>
       </div>
       {distribution && (

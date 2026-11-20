@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-import { useState, type CSSProperties } from 'react'
+import { useLayoutEffect, useRef, useState, type CSSProperties } from 'react'
 import { cn } from '../lib/cn.ts'
 import { ToggleGroup, ToggleGroupItem } from '../primitives/toggle-group.tsx'
 import { BoardMark } from './board-mark.tsx'
@@ -60,8 +60,8 @@ export type LimitUpTimelineProps = {
    */
   onThemeChange?: (theme: string | null) => void
   /**
-   * How many stations fit in one row of the snake; 7 by default.
-   * 蛇形一行放几站；默认 7。
+   * Upper limit of stations in one row of the snake; the row count follows the container width (each station needs at least 136px) and never exceeds it. 12 by default.
+   * 蛇形一行最多放几站；实际站数跟着容器宽度走（每站最少 136px），不超过它；默认 12。
    */
   perRow?: number
   /**
@@ -78,6 +78,13 @@ export type LimitUpTimelineProps = {
   className?: string
 }
 
+/** 每站最少宽度（px）：容得下一张小卡。 */
+export const TIMELINE_STATION_MIN = 136
+
+/** 容器宽度能放几站：宽度除以每站最少宽度，夹在 1 与上限之间。纯函数。 */
+export const stationsFitting = (width: number, cap: number): number =>
+  Math.max(1, Math.min(Math.max(1, Math.floor(cap)), Math.floor(width / TIMELINE_STATION_MIN)))
+
 const PHASES: readonly CnPhase[] = ['auction', 'morning', 'afternoon', 'late']
 
 export function LimitUpTimeline({
@@ -88,7 +95,7 @@ export function LimitUpTimeline({
   theme: themeProp,
   defaultTheme = null,
   onThemeChange,
-  perRow = 7,
+  perRow = 12,
   onSelect,
   labels = cnLabelsZh.timeline,
   className,
@@ -101,8 +108,21 @@ export function LimitUpTimeline({
   const shown = filterByTheme(items, theme)
   const { stations, untimed } = groupStations(shown, order)
   const summary = phaseSummary(stations)
-  const rows = snakeRows(stations, perRow)
-  const size = Math.max(1, Math.floor(perRow))
+  // 一行放几站跟着容器宽度走；还没量到（服务端渲染、首帧）时按上限的 7 站摆。
+  const root = useRef<HTMLElement>(null)
+  const cap = Math.max(1, Math.floor(perRow))
+  const [fit, setFit] = useState<number | null>(null)
+  useLayoutEffect(() => {
+    const el = root.current
+    if (!el) return
+    const measure = () => setFit(stationsFitting(el.clientWidth - 24, cap))
+    measure()
+    const observer = new ResizeObserver(measure)
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [cap])
+  const size = Math.min(cap, fit ?? 7)
+  const rows = snakeRows(stations, size)
 
   const pickTheme = (next: string | null) => {
     setThemeState(next)
@@ -110,7 +130,7 @@ export function LimitUpTimeline({
   }
 
   return (
-    <section className={cn('k-tl', className)} data-slot="limit-up-timeline" aria-label={labels.region}>
+    <section ref={root} className={cn('k-tl', className)} data-slot="limit-up-timeline" aria-label={labels.region}>
       <header className="k-tl-head">
         <h3 className="k-tl-title">{labels.title}</h3>
         <span className="k-tl-summary" data-slot="timeline-summary">
@@ -190,11 +210,13 @@ export function LimitUpTimeline({
                 data-flow={row.flow}
                 data-last={position === rows.length - 1 ? 'true' : undefined}
               >
-                <span className="k-tl-range">{labels.rowRange(row.index, first.key, last.key)}</span>
-                <span className="k-tl-hint" aria-hidden="true">
-                  {row.flow === 'ltr' ? '' : '← '}
-                  {order === 'latest' ? labels.towardsEarlier : labels.towardsLater}
-                  {row.flow === 'ltr' ? ' →' : ''}
+                <span className="k-tl-rowhead">
+                  <span className="k-tl-range">{labels.rowRange(row.index, first.key, last.key)}</span>
+                  <span className="k-tl-hint" aria-hidden="true">
+                    {row.flow === 'ltr' ? '' : '← '}
+                    {order === 'latest' ? labels.towardsEarlier : labels.towardsLater}
+                    {row.flow === 'ltr' ? ' →' : ''}
+                  </span>
                 </span>
                 {row.display.length >= 2 && (
                   <i
@@ -229,11 +251,11 @@ export function LimitUpTimeline({
                               <span className="k-tl-card-line">
                                 <b className="k-tl-card-name">{item.name}</b>
                                 {item.board ? <BoardMark kind={item.board} /> : null}
+                                <span className="k-tl-card-amount">{formatCnAmount(item.amount)}</span>
                               </span>
                               <span className="k-tl-card-line">
                                 <StreakBadge streak={item.streak} />
                                 <span className="k-tl-card-theme">{item.themes?.[0] ?? DASH}</span>
-                                <span className="k-tl-card-amount">{formatCnAmount(item.amount)}</span>
                               </span>
                             </>
                           )
