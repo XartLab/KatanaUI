@@ -214,6 +214,9 @@ importers:
         specifier: 4.3.5
         version: 4.3.5
     devDependencies:
+      '@antithesishq/bombadil':
+        specifier: 0.8.0
+        version: 0.8.0
       '@axe-core/playwright':
         specifier: 4.13.0
         version: 4.13.0(playwright-core@1.56.1)
@@ -282,6 +285,10 @@ importers:
         version: 1.4.0(@types/node@22.20.5)(@vitest/ui@5.0.5)(jiti@2.7.0)(playwright@1.56.1)(typescript@7.0.2)
 
 packages:
+
+  '@antithesishq/bombadil@0.8.0':
+    resolution: {integrity: sha512-BVMjC4vDR2wOhSS0uWMiS3KqVWb8Y9BdN+KiJwBSXi7+vZ5HkLkBfTCk83Dal5E0Evb3wSOT46SFxLgNCGXbmQ==}
+    hasBin: true
 
   '@axe-core/playwright@4.13.0':
     resolution: {integrity: sha512-6YLx+kxXu5GJceG4ozFg+33a2EMTdjYwWGloJ3sb9Kta5pp+ZNS53uxGVog5JetIY8s++P5UrtX+cri+u0VAVg==}
@@ -3611,6 +3618,8 @@ packages:
     resolution: {integrity: sha512-g8W2D2kU6a8untc053fX1uVBKzM7yqAxW/3zwk83+6RyF2+SKOuV+c0wBDhUwzV1PaGapmZH+rmcUzPf+3CGwg==}
 
 snapshots:
+
+  '@antithesishq/bombadil@0.8.0': {}
 
   '@axe-core/playwright@4.13.0(playwright-core@1.56.1)':
     dependencies:

@@ -7,6 +7,7 @@
     "dev": "pnpm --filter @katana-ui/react dev",
     "check": "pnpm -r --workspace-concurrency=1 run check",
     "test": "pnpm -r --workspace-concurrency=1 run check && pnpm -r --workspace-concurrency=1 run test",
+    "explore": "pnpm --filter @katana-ui/react explore",
     "typecheck": "pnpm -r run typecheck",
     "build:site": "pnpm --filter @katana-ui/react build:site",
     "tokens:sync": "pnpm --filter @katana-ui/tokens tokens:sync",
