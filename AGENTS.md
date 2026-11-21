@@ -36,6 +36,8 @@ KatanaUI 是设计系统的**源头仓库**（2026-11-14 用户定，#2）：tok
 还没有 npm（仓库私有，见 #2「发布与消费」）。发版就是在 main 上打标签 `vX.Y.Z`，同时改 `packages/*/package.json` 的 version；
 消费方写 `git+https://github.com/XartLab/KatanaUI.git#vX.Y.Z&path:packages/react`。破坏性改动在 PR 正文写清怎么改。
 
+**按批发版（2026-11-21 用户定，《人月神话》：团队之间的接口按版本走）**：一批改动（用户点头的几件，或一天里给 KATANAview 用的组件 PR）合完打一个标签，不为每个 PR 打。KATANAview 只升到标签、一批升一次（它的 AGENTS.md「组件库已搬出」）；它被这边某个修复卡住时可以先升到提交号，下一批打标签时换回。改了 `dependencies` 的批次在发版说明里写明，KATANAview 那边要正常 `pnpm install` 重算锁文件。
+
 ## 提交
 
 - 每件事先开 issue，每个改动走 PR（`Closes #N`），squash 合并；不直推 main。
