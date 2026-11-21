@@ -16,7 +16,7 @@ const T = tokens as unknown as {
   motion: { tokens: Token[] }
 }
 
-const Lede = ({ children }: { children: ReactNode }) => <p className="gal-lede">{children}</p>
+export const Lede = ({ children }: { children: ReactNode }) => <p className="gal-lede">{children}</p>
 const Src = ({ href, children }: { href: string; children: ReactNode }) => (
   <p className="gal-fd-source">
     出处：
@@ -26,7 +26,7 @@ const Src = ({ href, children }: { href: string; children: ReactNode }) => (
   </p>
 )
 
-function Table({ head, rows }: { head: readonly string[]; rows: readonly (readonly ReactNode[])[] }) {
+export function Table({ head, rows }: { head: readonly string[]; rows: readonly (readonly ReactNode[])[] }) {
   return (
     <table className="gal-fd-table">
       <thead>
