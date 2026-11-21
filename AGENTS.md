@@ -18,6 +18,7 @@ KatanaUI 是设计系统的**源头仓库**（2026-11-14 用户定，#2）：tok
 - 默认主题是 Graphite（用户 2026-11-14 定，KATANAview #1775；已落地：`tokens.css` 的 `:root` 就是 Graphite，Console 是 `data-theme="console"` 的覆盖块，文档站默认也是 Graphite）。Graphite 是中性色纯灰，信号色是油画颜料色（土黄 `#d6a548`、铬绿 `#5fae8c`、玫瑰茜红 `#f2607c`）；Console 留作可切主题。不用 TradingView 蓝，不用暖白配高亮黄。
 - 组件的样子以 KATANAview 工作台现在的样式为准；Salt 学 token 结构（原值 → 调色 → 语义特征）、密度、文档组织，Salt 是 Apache-2.0，能照搬的实现可以照搬，写出处。
 - 包名 `@katana-ui/*`，不带 `katanaview`：要能用在别的量化项目里。
+- **pixelgate 视觉回归试点（2026-11-17 用户定）**：对 2026-10-28「不比截图基线」的试点例外，与 Happo 试用并存、不替换任何现有测试。范围：`packages/react/visual/` 的 14 张图（文档站 6 页 × Graphite/Console 加打开的对话框各一张）；只提交 Linux 基线（CI 产出，进 `packages/react/.pixelgate/baseline/`），Windows/macOS 基线不进库。状态：只报告——`.github/workflows/visual.yml` 设 `continue-on-error`，红了不挡 PR，也不进 `pnpm test` 门禁。两周后（2026-12-01）复审：看误报率与审图成本，再定转正、扩页还是撤掉。
 
 ## 门禁
 
