@@ -4,18 +4,31 @@
 // 属性表不手写（#1902）：页上只记「哪几个部件、各一句说明」（propParts），每个部件的自有属性由 pnpm docs:props 从 TS 类型与 JSDoc 生成到 props.generated.json；
 // 继承来的 DOM / Radix 属性不逐条列，note 里写透传给谁。每页的「用法」是 usage/<页 id>.tsx：真实可运行的最小例子，页上渲染它也展示它的源码（Vite ?raw）。
 
-export type GroupId = 'forms' | 'overlays' | 'layout' | 'readouts' | 'feedback' | 'quotes' | 'quant' | 'cn' | 'blocks'
+export type GroupId =
+  | 'forms'
+  | 'overlays'
+  | 'layout'
+  | 'layout-primitives'
+  | 'readouts'
+  | 'feedback'
+  | 'quotes'
+  | 'quant'
+  | 'cn'
+  | 'blocks'
+  | 'decisions'
 
 export const GROUPS: readonly { id: GroupId; title: string }[] = [
   { id: 'forms', title: '表单控件' },
   { id: 'overlays', title: '浮层' },
   { id: 'layout', title: '布局与导航' },
+  { id: 'layout-primitives', title: '排版原语' },
   { id: 'readouts', title: '读数与状态' },
   { id: 'feedback', title: '反馈' },
   { id: 'quotes', title: '报价与行情' },
   { id: 'quant', title: '量化' },
   { id: 'cn', title: 'A 股' },
   { id: 'blocks', title: '积木' },
+  { id: 'decisions', title: '设计决策' },
 ]
 
 /** 旧的手写属性表（#1902 过渡：页上有 propParts 就不读它；三个并行 PR 合完后删，见 PR 说明）。 */
@@ -5462,6 +5475,188 @@ export const PAGES: readonly DocPage[] = [
     ],
     donts: ['不要在包里算评分：口径与校准由调用方负责，basis 里写明。', '不要传色值：档的颜色是语义 token。'],
     composition: 'SentimentGauge\n  读数 · 档名\n  五档色带（含标记）\n  口径说明\n  今昨对比表',
+    keys: [],
+  },
+  {
+    id: 'layout-rules',
+    group: 'layout-primitives',
+    cardHeight: 560,
+    title: '排版 · 四条规则',
+    summary:
+      '排版（结构、表现形式）的四条规则：数字用等宽数字；数字右对齐、文字左对齐；块与块之间靠细线和留白、不加框；字号随分量走、不随位置乱改。后面六个排版原语（Stack、Cluster、Sidebar、Switcher、Grid、Reel）管「放在哪、隔多远」，分量（EmphasisProvider）管「这一块多重」，这四条管剩下的细节。',
+    exports: [],
+    propParts: [
+      {
+        part: '四条规则',
+        note: '没有属性：这一页是规则，不是组件。每条都配了一个小样，样子都是用本页之后的件与 token 摆出来的。',
+      },
+    ],
+    states: [
+      '等宽数字：数字列、读数、价格都开 tabular-nums（件里已经开了），自己写的数字也要开。',
+      '对齐：表里数字列靠右、文字列靠左，列头跟着本列；卡片里的读数单列，靠左。',
+      '分组：块与块之间用 Stack、Cluster 的 gap 留白，必要时一条 1px 细线（--line-100），不套框、不上底色。',
+      '字号：由 EmphasisProvider 的分量决定（hero 用 display 档，standard 用 data 档，compact 降一档），不因为它摆在哪一格而改。',
+    ],
+    donts: [
+      '不要给原语加边框或底色去「分块」：要分就加间距，或一条细线。',
+      '不要用比例数字写数字列：位数对不齐，读串价位。',
+      '不要居中对齐数字列，也不要把文字列靠右。',
+      '不要在件外面单独写 font-size 去放大或缩小它：调分量。',
+    ],
+    composition: 'Stack\n  四条规则各一段（标题、小样、一句说明）',
+    keys: [],
+  },
+  {
+    id: 'stack',
+    group: 'layout-primitives',
+    cardHeight: 220,
+    title: 'Stack 竖排',
+    summary:
+      '竖排：子节点自上而下，之间留同一个间距。间距只收间距刻度名（space-1、space-3 …），不收数字。只管位置与间距，不画边框、不带底色。模式借自 Every Layout 的 Stack，代码自己写。什么时候用：一个面板里的几块、表单的几行、一列读数。',
+    exports: ['Stack'],
+    propParts: [{ part: 'Stack', note: '其余属性（className、style、aria-*）透传给渲染出的元素。' }],
+    states: ['默认：间距 space-3（12px）。', 'as 换成 ul、ol、section 等语义元素。'],
+    donts: ['不要给它加边框或底色：它只管位置与间距。', '不要传数字间距：只收刻度名。'],
+    composition: 'Stack\n  任意子节点',
+    keys: [],
+  },
+  {
+    id: 'cluster',
+    group: 'layout-primitives',
+    cardHeight: 200,
+    title: 'Cluster 横排换行',
+    summary:
+      '横排，放不下就换行，行与行、块与块用同一个间距。align 管同一行里上下对齐（居中、基线……），justify 管左右分布（靠左、居中、靠右、两端）。什么时候用：一排标签、一排按钮、一排筛选芯片、标题加读数。只管位置与间距。',
+    exports: ['Cluster'],
+    propParts: [{ part: 'Cluster', note: '其余属性透传给渲染出的元素。' }],
+    states: [
+      '默认：间距 space-3，纵向居中，靠左。',
+      'justify 为 between 时首尾贴边、中间均分（两个子节点就是左右各一个）。',
+    ],
+    donts: ['不要用它做整页的栅格：等宽的格用 Grid。', '不要给它加边框或底色。'],
+    composition: 'Cluster\n  任意子节点',
+    keys: [],
+  },
+  {
+    id: 'sidebar',
+    group: 'layout-primitives',
+    cardHeight: 410,
+    title: 'Sidebar 一窄一宽',
+    summary:
+      '一窄一宽并排，放不下时上下叠。恰好两个子节点：side 是 start 时第一个是窄的，是 end 时最后一个是窄的。窄的固定一个宽度（sideWidth），宽的拿走剩下的；宽的不到 contentMin（容器的一半，起始值）就整体叠成上下两块。sideWidth 收间距刻度名或像素数：刻度最大才 32px，放不下一块侧栏，所以也收数字。预览里的框右下角能拖宽窄。',
+    exports: ['Sidebar'],
+    propParts: [{ part: 'Sidebar', note: '其余属性透传给渲染出的元素。子节点恰好两个。' }],
+    states: [
+      '放得下：窄的在 side 指的那一边，宽的占满其余。',
+      '放不下（宽的不到 contentMin）：两块各占一整行，上下叠。',
+      '默认窄的 240px、contentMin 50%：都是待定的起始值，看 KATANAview 样板时量。',
+    ],
+    donts: ['不要放两个以上的子节点：多的块要自己包一层。', '不要用它做三栏：嵌两层 Sidebar，或用 Grid。'],
+    composition: 'Sidebar\n  窄的一块\n  宽的一块',
+    keys: [],
+  },
+  {
+    id: 'switcher',
+    group: 'layout-primitives',
+    cardHeight: 360,
+    title: 'Switcher 并排或竖排',
+    summary:
+      '一行放几块；容器窄于 threshold（px）时整体变成竖排，不是一块一块地往下掉：要么全在一行，要么全竖着。靠的是容器宽度，不是视口宽度，所以放在窄边栏里也对。什么时候用：两三张并列的卡、一对图表。预览里的框右下角能拖宽窄。',
+    exports: ['Switcher'],
+    propParts: [{ part: 'Switcher', note: '其余属性透传给渲染出的元素。' }],
+    states: [
+      '容器宽于 threshold：子节点平分一行。',
+      '容器窄于 threshold：子节点各占一行，上下叠。',
+      '默认 threshold 480px：待定的起始值，看 KATANAview 样板时量。',
+    ],
+    donts: ['不要拿它做块数很多的网格：多了用 Grid。', '不要把 threshold 当视口断点：它量的是容器。'],
+    composition: 'Switcher\n  两个或更多子节点',
+    keys: [],
+  },
+  {
+    id: 'grid',
+    group: 'layout-primitives',
+    cardHeight: 410,
+    title: 'Grid 等宽格',
+    summary:
+      '等宽格：每格至少 min 宽（默认 240，照 KATANAview 的「面板最小 240」），放得下几列就几列；最后一行不够也保持同宽。容器比一格还窄时一列、不溢出。什么时候用：一排题材卡、一组指标卡。预览里的框右下角能拖宽窄。',
+    exports: ['Grid'],
+    propParts: [{ part: 'Grid', note: '其余属性透传给渲染出的元素。' }],
+    states: ['宽的时候多列，窄的时候少列，最窄一列。', '格数不是列数的整数倍：最后一行靠左，格宽不变。'],
+    donts: ['不要拿它做表格：对齐靠列的是 DataGrid。', '不要给格子写死宽度：宽度由 min 与容器定。'],
+    composition: 'Grid\n  任意子节点（一个一格）',
+    keys: [],
+  },
+  {
+    id: 'reel',
+    group: 'layout-primitives',
+    cardHeight: 140,
+    title: 'Reel 横向滚动',
+    summary:
+      '一行横向滚动：子节点不缩、不换行，放不下就滚。滚动条照 KATANAview 已定的 4px、平时不可见，悬停或键盘聚焦时才显出来。自己是可聚焦的滚动区（方向键能滚），所以要用 aria-label 给它一个名字。什么时候用：一排题材卡、一排报价卡。预览里的框右下角能拖宽窄。',
+    exports: ['Reel'],
+    propParts: [{ part: 'Reel', note: '其余属性透传给渲染出的元素；tabIndex 默认 0。' }],
+    states: [
+      '放得下：不滚，没有滚动条。',
+      '放不下：横向滚动，滚动条 4px，悬停或聚焦才显出。',
+      '焦点：键盘聚焦时画焦点环，方向键滚动。',
+    ],
+    donts: ['不要给它写死高度去裁内容。', '不要嵌套横向滚动：里面再放一个 Reel 滚不动。'],
+    composition: 'Reel\n  任意子节点（每个不缩）',
+    keys: [
+      ['Tab', '聚焦滚动区，画焦点环'],
+      ['← →', '横向滚动'],
+    ],
+  },
+  {
+    id: 'emphasis',
+    group: 'layout-primitives',
+    cardHeight: 1520,
+    title: 'Emphasis 分量',
+    summary:
+      '分量：同一个组件放在看板顶上当主角、放在中间当正文、放在边栏当一行，该画成什么样。三档：hero（主角：大数用 display 档，配迷你线；一个区里最多一处）、standard（正文，默认：完整的表、图、列表，数据用 data 档）、compact（一行：标签加读数并排，表只留前几行且不出表头，列表一行一条）。用 EmphasisProvider 包一层，里面的件各自读 useEmphasis()，往下继承，里层盖住外层。分量只改字号档、显示多少、要不要表头；不改颜色，不改密度（密度仍由 data-density 管）。现在认分量的：QuoteCard、PriceTag、GaugeBar、DataGrid、NewsFeed；别的件照 standard 画。',
+    exports: ['EmphasisProvider', 'useEmphasis'],
+    propParts: [
+      { part: 'EmphasisProvider', note: '只渲染 context，不渲染元素。' },
+      {
+        part: 'useEmphasis',
+        note: '钩子：读最近一层 EmphasisProvider 给的分量（hero、standard 或 compact），没有就是 standard。',
+      },
+    ],
+    states: [
+      'hero：QuoteCard、PriceTag、GaugeBar 的数用 display 档（QuoteCard 的迷你图加高）；DataGrid、NewsFeed 内容不变、字上一档。',
+      'standard：不包 Provider 时的样子。',
+      'compact：QuoteCard 名字、价格、涨跌并排，不画迷你图与下面一行；GaugeBar 只留名字、数、档位词；DataGrid 不出表头、只留排好序之后的前 5 行；NewsFeed 一行一条（时间加标题），不画标题行、频道、搜索、过滤、来源、品种、快捷操作。',
+    ],
+    donts: [
+      '不要在一个区里放两个 hero：主角只有一个。',
+      '不要用分量去改颜色或密度：颜色看语义 token，密度看 data-density。',
+      '不要给件单独传「小一点」之类的样式：包一层 EmphasisProvider。',
+    ],
+    composition: 'EmphasisProvider（value）\n  认分量的件（读 useEmphasis）\n  EmphasisProvider（里层盖住外层）',
+    keys: [],
+  },
+  {
+    id: 'emphasis-guide',
+    group: 'decisions',
+    cardHeight: 310,
+    title: '这一块用哪档分量',
+    summary:
+      '三档分量各什么时候用：hero 给这个区里用户第一眼要看的那一个数（一个区最多一处），standard 给区里读、比、点的主体内容（拿不准就用它），compact 给看一眼就走的边角（边栏、列表项里）。选档看这一块在这个区里的重要程度，不看它摆在哪个位置。表里的件名链到各自的组件页；档位的具体样子见 Emphasis 分量页。',
+    exports: [],
+    propParts: [{ part: '三档', note: '没有属性：这一页是选法，不是组件。用法见 Emphasis 分量页。' }],
+    states: [
+      'hero：指数、账户权益、当前品种的价。一个区里最多一处。',
+      'standard：完整的表、图、列表；不确定时用它，也是不包 Provider 时的样子。',
+      'compact：边栏、列表项里、卡片的角落：标签加读数并排、表前几行、列表一行一条。',
+    ],
+    donts: [
+      '不要把所有块都设成 hero：什么都是主角就没有主角。',
+      '不要因为「空间小」就把应该读的表设成 compact：compact 的表只有前几行、没有表头。',
+      '不要为了换个样子去改件的字号：改分量。',
+    ],
+    composition:
+      'EmphasisProvider（hero，一个区一处）\nEmphasisProvider（standard，默认）\nEmphasisProvider（compact，边栏里的一行）',
     keys: [],
   },
 ]

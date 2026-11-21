@@ -121,3 +121,91 @@
   gap: 8px;
   width: 320px;
 }
+
+/* 排版原语与分量页（#115）的预览：色块、可拖宽的框、三档并排的小标题、决策表、四条规则的小样。只用 token。 */
+.gal-block {
+  padding: var(--space-dense) var(--space-3);
+  background: var(--bg-300);
+  color: var(--ink-200);
+  font: var(--text-caption) var(--font-sans);
+}
+.gal-block[data-tall] {
+  padding-block: var(--space-4);
+}
+.gal-frame-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin-bottom: var(--space-3);
+}
+.gal-frame-cap {
+  color: var(--ink-300);
+  font: var(--text-caption) var(--font-mono);
+}
+.gal-frame {
+  max-width: 100%;
+  padding: var(--space-2);
+  overflow: auto;
+  border: 1px dashed var(--ink-400);
+  resize: horizontal;
+}
+.gal-levels-title {
+  margin: 0 0 var(--space-2);
+  color: var(--ink-200);
+  font: var(--text-title) var(--font-sans);
+}
+.gal-decision,
+.gal-align {
+  border-collapse: collapse;
+  font: var(--text-body) var(--font-sans);
+}
+.gal-decision th,
+.gal-decision td,
+.gal-align th,
+.gal-align td {
+  padding: var(--space-2) var(--space-3);
+  border-bottom: 1px solid var(--line-100);
+  text-align: left;
+  vertical-align: top;
+}
+.gal-decision th[scope='row'] {
+  white-space: nowrap;
+}
+.gal-align th:not(:first-child),
+.gal-align td:not(:first-child) {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.gal-rules h3 {
+  margin: 0 0 var(--space-2);
+  color: var(--ink-100);
+  font: var(--text-title) var(--font-sans);
+}
+.gal-num {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-end;
+  color: var(--ink-100);
+  font: var(--text-body) var(--font-sans);
+}
+.gal-num[data-tabular] {
+  font-variant-numeric: tabular-nums;
+}
+.gal-num:not([data-tabular]) {
+  font-variant-numeric: proportional-nums;
+}
+.gal-hairlines hr {
+  width: 100%;
+  margin: 0;
+  border: 0;
+  border-top: 1px solid var(--line-100);
+}
+.gal-decision a {
+  color: var(--ink-100);
+  text-decoration: underline;
+  text-decoration-color: var(--ink-400);
+  text-underline-offset: 2px;
+}
+.gal-decision a:hover {
+  text-decoration-color: var(--ink-100);
+}

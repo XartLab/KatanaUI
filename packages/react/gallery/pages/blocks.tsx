@@ -625,18 +625,18 @@ export function WorkspaceTabsDemo() {
 }
 
 // 新闻流的演示数据是虚构的（标题、来源都不是真实机构），时间固定在 NEWS_NOW，不随真实时钟走。
-const NEWS_NOW = Date.UTC(2026, 10, 15, 9, 30, 0)
+export const NEWS_NOW = Date.UTC(2026, 10, 15, 9, 30, 0)
 const MIN = 60_000
-const NEWS_SOURCES = [
+export const NEWS_SOURCES = [
   { value: 'wire', label: '演示通讯社' },
   { value: 'desk', label: '演示研究台' },
   { value: 'exch', label: '演示交易所公告' },
 ]
-const NEWS_CHANNELS = [
+export const NEWS_CHANNELS = [
   { value: 'flash', label: '快讯' },
   { value: 'top', label: '要闻' },
 ]
-const NEWS_ITEMS: NewsItem[] = [
+export const NEWS_ITEMS: NewsItem[] = [
   {
     id: 'n1',
     time: NEWS_NOW - 3 * MIN,
@@ -696,7 +696,7 @@ const NEWS_ITEMS: NewsItem[] = [
     summary: '新版日历自下月起适用，不影响已挂出的合约。',
   },
 ]
-const NEWS_LABELS: NewsFeedLabels = {
+export const NEWS_LABELS: NewsFeedLabels = {
   all: '全部',
   feed: '新闻流',
   channels: '频道',

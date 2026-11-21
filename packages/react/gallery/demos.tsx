@@ -117,6 +117,17 @@ import {
   UptimeBarsDemo,
 } from './pages/distribution.tsx'
 import { AccordionDemo, TabsDemo } from './pages/layout.tsx'
+import {
+  ClusterDemo,
+  EmphasisDemo,
+  EmphasisGuideDemo,
+  GridDemo,
+  LayoutRulesDemo,
+  ReelDemo,
+  SidebarDemo,
+  StackDemo,
+  SwitcherDemo,
+} from './pages/typesetting.tsx'
 import { ContextMenuDemo, DialogDemo, DropdownMenuDemo, PopoverDemo, TooltipDemo } from './pages/overlays.tsx'
 import {
   ButtonDemo,
@@ -132,6 +143,15 @@ import {
 /** 每一页的实时预览，键是 registry.ts 里的页 id（registry.test.ts 核对两边一一对应）。 */
 export const DEMOS: Readonly<Record<string, ComponentType>> = {
   button: ButtonDemo,
+  'layout-rules': LayoutRulesDemo,
+  stack: StackDemo,
+  cluster: ClusterDemo,
+  sidebar: SidebarDemo,
+  switcher: SwitcherDemo,
+  grid: GridDemo,
+  reel: ReelDemo,
+  emphasis: EmphasisDemo,
+  'emphasis-guide': EmphasisGuideDemo,
   input: InputDemo,
   select: SelectDemo,
   'multi-select': MultiSelectDemo,
