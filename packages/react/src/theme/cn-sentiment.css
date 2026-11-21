@@ -1,0 +1,110 @@
+/* SPDX-License-Identifier: MIT */
+/* 情绪温度（SentimentGauge，#110）：读数、五档色带、口径说明、今昨对比。色带五段等宽：冰点用跌色、高潮用涨色（都读 --pnl-down / --pnl-up，
+   根上 data-updown 互换），中间三档从跌色经中性灰到涨色逐级混；当前档全亮、其余 35%（同 MetricCard 的阶段带）。不写色值。 */
+.k-sentiment {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+  padding: var(--space-3);
+  background: var(--bg-200);
+  border: var(--hairline);
+  color: var(--ink-200);
+  font: var(--text-caption) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+}
+.k-sentiment-head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+}
+.k-sentiment-score {
+  color: var(--ink-100);
+  font: 600 28px/32px var(--font-sans);
+}
+.k-sentiment-caption {
+  color: var(--ink-300);
+}
+.k-sentiment-level {
+  margin-left: auto;
+  color: var(--ink-100);
+  font: var(--text-data) var(--font-sans);
+}
+.k-sentiment-band {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 2px;
+  height: 8px;
+}
+.k-sentiment-seg {
+  background: var(--seg-color);
+  opacity: 0.35;
+}
+.k-sentiment-seg[data-current='true'] {
+  opacity: 1;
+}
+.k-sentiment-seg[data-seg='0'] {
+  --seg-color: var(--pnl-down);
+}
+.k-sentiment-seg[data-seg='1'] {
+  --seg-color: color-mix(in srgb, var(--pnl-down) 55%, var(--ink-400));
+}
+.k-sentiment-seg[data-seg='2'] {
+  --seg-color: var(--ink-400);
+}
+.k-sentiment-seg[data-seg='3'] {
+  --seg-color: color-mix(in srgb, var(--pnl-up) 55%, var(--ink-400));
+}
+.k-sentiment-seg[data-seg='4'] {
+  --seg-color: var(--pnl-up);
+}
+.k-sentiment-marker {
+  position: absolute;
+  top: -3px;
+  width: 2px;
+  height: 14px;
+  margin-left: -1px;
+  background: var(--ink-100);
+  box-shadow: 0 0 0 1px var(--bg-200);
+}
+.k-sentiment-names {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 2px;
+  color: var(--ink-300);
+  text-align: center;
+}
+.k-sentiment-basis {
+  margin: 0;
+  color: var(--ink-300);
+}
+.k-sentiment-compare {
+  width: 100%;
+  border-collapse: collapse;
+}
+.k-sentiment-compare th,
+.k-sentiment-compare td {
+  height: 20px;
+  padding: 0;
+  font-weight: 400;
+  text-align: right;
+}
+.k-sentiment-compare th[scope='row'] {
+  color: var(--ink-300);
+  text-align: left;
+}
+.k-sentiment-compare thead th {
+  color: var(--ink-300);
+}
+.k-sentiment-compare td {
+  color: var(--ink-100);
+  font: var(--text-data) var(--font-sans);
+}
+.k-sentiment-compare td[data-col='yesterday'] {
+  color: var(--ink-200);
+}
+.k-sentiment-compare td[data-unavailable] {
+  color: var(--ink-300);
+  font-weight: 400;
+}

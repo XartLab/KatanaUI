@@ -494,6 +494,25 @@ const SX_PROPS = {
   },
 } as const
 
+// 情绪状态带（#109 regimes）：三种状态按月切 24 个点，最后一段是估的。演示数据。
+const SX_REGIMES = {
+  label: '情绪周期状态',
+  current: 'warm',
+  currentText: '当前',
+  estimateText: '估算',
+  states: [
+    { id: 'cold', name: '冰点', color: 1 },
+    { id: 'warm', name: '升温', color: 2 },
+    { id: 'peak', name: '高潮', color: 4 },
+  ],
+  segments: [
+    { from: Date.UTC(2025, 0, 1), to: Date.UTC(2025, 7, 1), state: 'cold' },
+    { from: Date.UTC(2025, 7, 1), to: Date.UTC(2026, 2, 1), state: 'warm' },
+    { from: Date.UTC(2026, 2, 1), to: Date.UTC(2026, 8, 1), state: 'peak' },
+    { from: Date.UTC(2026, 8, 1), to: Date.UTC(2027, 0, 1), state: 'warm', estimated: true },
+  ],
+} as const
+
 export function SeriesExplorerDemo() {
   return (
     <>
@@ -503,6 +522,11 @@ export function SeriesExplorerDemo() {
       <Row name="对账对不上">
         <div className="gal-wide" data-gallery-explorer="mismatch" style={{ maxWidth: 760 }}>
           <SeriesExplorer {...SX_PROPS} points={SX_POINTS_UNRECORDED} defaultMetric={null} />
+        </div>
+      </Row>
+      <Row name="叠状态带（regimes）">
+        <div className="gal-wide" data-gallery-explorer="regimes" style={{ maxWidth: 760 }}>
+          <SeriesExplorer {...SX_PROPS} points={SX_POINTS} defaultMetric="net" regimes={SX_REGIMES} />
         </div>
       </Row>
       <p className="gal-note">

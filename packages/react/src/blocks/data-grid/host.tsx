@@ -43,6 +43,12 @@ export type DataGridLabels = {
   /** 屏幕阅读器念的表名：label 是调用方给的表名；宿主可以在后面接上操作提示（上下键挑一行、快捷键）。 */
   gridLabel: (label: string) => string
   menuLabel: (label: string) => string
+  /** compact 分量只留前几行时，表下面写没显示的行数：「另有 7 行」（不静默截断）。 */
+  moreRows: (hidden: number) => string
+  /** 列放不下被收起时，表头右端胶囊上的字：「+4 列」（不静默截断，#122）；点开显示全部列后胶囊写 collapseColumns。 */
+  moreColumns: (hidden: number) => string
+  /** 全部列展开（横向滚动）后，胶囊上的字：点了回到收起。 */
+  collapseColumns: string
   /** 行快捷操作按钮条的名字（屏幕阅读器念）。 */
   rowActions: string
   sortTitle: (column: { id: string; label: string }) => string
@@ -116,6 +122,9 @@ export const DEFAULT_LABELS: Omit<DataGridLabels, 'copy' | 'save' | 'resetColumn
   gridLabel: (label) => label,
   menuLabel: (label) => `${label} menu`,
   rowActions: 'Row actions',
+  moreRows: (hidden) => `${hidden} more rows`,
+  moreColumns: (hidden) => `+${hidden} cols`,
+  collapseColumns: 'Collapse',
   sortTitle: (column) => `${column.label}: click to sort, again to reverse`,
   resizeLabel: (column) => `Resize column ${column.label}`,
   selectedRows: (selected) => `${selected.size} rows selected`,

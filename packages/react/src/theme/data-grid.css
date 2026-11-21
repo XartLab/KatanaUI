@@ -3,9 +3,11 @@
 /* DataGrid（blocks/data-grid）的皮肤（#1869）。规则从应用 styles/panel.css 的 .kc-dt-* 搬来，换成 .k-grid-*，值没改；
    行高与表头高由组件按 density 写在行内样式上。颜色与字体都取 token，涨跌色读 --pnl-up / --pnl-down（根上 data-updown="cn" 互换）。 */
 .k-grid {
+  position: relative;
   display: flex;
   flex: 1;
   flex-direction: column;
+  min-width: 0;
   min-height: 0;
 }
 .k-grid.is-fit {
@@ -193,6 +195,117 @@
   background: color-mix(in srgb, var(--pnl-down) 22%, transparent);
   color: var(--pnl-down);
 }
+/* bar 列（#109）：居中条，以 0 为中线，正在右（涨色）负在左（跌色）；条在字前，字靠右等宽。条高 8px，不加行高。 */
+.k-grid-bar {
+  position: relative;
+  flex: 1;
+  min-width: 24px;
+  height: 8px;
+  background: linear-gradient(var(--line-200), var(--line-200)) center / 1px 100% no-repeat;
+}
+.k-grid-bar > i {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+}
+.k-grid-bar[data-dir='up'] > i {
+  background: var(--pnl-up);
+}
+.k-grid-bar[data-dir='down'] > i {
+  background: var(--pnl-down);
+}
+.k-grid-bar-text {
+  flex: none;
+  min-width: 6ch;
+  text-align: right;
+}
+/* pill 列（#109）：一格多枚短标签，一行排不下的收成「+n」。胶囊 16px 高，在 24px 的行里不加行高；
+   色调只有四种：涨 / 跌用涨跌色的淡底，弱用中性淡底，强调用 Graphite 的中性亮（--seg-on-*，不用橙）。 */
+.k-grid-pills {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  overflow: hidden;
+}
+.k-grid-pill {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  height: 16px;
+  padding: 0 6px;
+  border-radius: var(--radius-pill);
+  background: var(--alpha-white-6);
+  color: var(--ink-200);
+  font: var(--text-caption) var(--font-sans);
+  line-height: 1;
+  white-space: nowrap;
+}
+.k-grid-pill[hidden] {
+  display: none;
+}
+.k-grid-pill[data-tone='up'] {
+  background: color-mix(in srgb, var(--pnl-up) 16%, transparent);
+  color: var(--pnl-up);
+}
+.k-grid-pill[data-tone='down'] {
+  background: color-mix(in srgb, var(--pnl-down) 16%, transparent);
+  color: var(--pnl-down);
+}
+.k-grid-pill[data-tone='accent'] {
+  background: var(--seg-on-bg);
+  color: var(--seg-on-ink);
+}
+.k-grid-pill-more {
+  min-width: 28px;
+  justify-content: center;
+  background: none;
+  box-shadow: inset 0 0 0 1px var(--line-200);
+  color: var(--ink-300);
+  cursor: default;
+}
+/* progress 列（#109）：分子 / 分母写在前，后面一条 3px 细条（分母不是正数不画填充）；比例用 ink-100，不用涨跌色。 */
+.k-grid-progress-text {
+  flex: none;
+}
+.k-grid-progress {
+  position: relative;
+  flex: 1;
+  min-width: 24px;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--alpha-white-7);
+  overflow: hidden;
+}
+.k-grid-progress > i {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: var(--ink-100);
+}
+/* 强度底色（#109）：列声明 heat 后，格子按值深浅铺涨 / 跌色的淡底；--heat 是 0 到 1，最深 25%（再深，涨跌色的字压在底色上对比度不到 4.5:1，axe 过不了；跟 fill 的 22% 同一套 color-mix 写法）。
+   名次小字在格子右上角，绝对定位，不占行高行宽。 */
+.k-grid-cell[data-heat] {
+  background: color-mix(in srgb, var(--heat-color) calc(var(--heat, 0) * 25%), transparent);
+}
+.k-grid-cell[data-heat='up'] {
+  --heat-color: var(--pnl-up);
+}
+.k-grid-cell[data-heat='down'] {
+  --heat-color: var(--pnl-down);
+}
+.k-grid-cell.has-rank:not(.is-fixed) {
+  position: relative;
+}
+.k-grid-rank {
+  position: absolute;
+  top: 1px;
+  right: 3px;
+  color: var(--ink-300);
+  font: var(--text-caption) var(--font-sans);
+  line-height: 1;
+  pointer-events: none;
+}
 .k-grid-name {
   overflow: hidden;
   text-overflow: ellipsis;
@@ -202,6 +315,12 @@
   color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-sans-small);
   line-height: 1;
+}
+.k-grid-more {
+  flex: none;
+  padding: 2px 8px 0;
+  color: var(--ink-300);
+  font: var(--text-data) var(--font-sans);
 }
 .k-grid-foot {
   flex: none;
@@ -327,4 +446,49 @@
   display: inline-flex;
   margin-left: 4px;
   color: var(--k-content-secondary-foreground);
+}
+
+/* 列优先级（#122）：放不下时低优先级的列收起，表头右端出「+N 列」胶囊（点了展开成横向滚动，再点收起）。
+   胶囊在 .k-grid 里、表格外，右边缘贴着滚动区的可视宽度（left 由组件按量到的宽度给，translate 把它的右边缘放到那里），
+   所以展开后表头横向滚动它也不会滚走；有 headEnd 时 headEnd 跟它排在一起，不重叠。样子跟 pill 列的「+n」同一族（描边小胶囊）。 */
+.k-grid-cols-end {
+  position: absolute;
+  top: 0;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  width: max-content;
+  padding: 0 4px;
+  background: var(--bg-100);
+  transform: translateX(-100%);
+}
+.k-grid-cols-toggle {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  height: 16px;
+  padding: 0 6px;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: none;
+  box-shadow: inset 0 0 0 1px var(--line-200);
+  color: var(--ink-200);
+  font: var(--text-caption) var(--font-sans);
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.k-grid-cols-toggle:hover {
+  background: var(--alpha-white-6);
+  color: var(--ink-100);
+}
+.k-grid-cols-toggle:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 1px;
+}
+
+/* 分量（#115，layout/emphasis.tsx）：hero 格子里的字上一档（data → body）；行高仍由 density 管，不动。compact 不出表头、只留前几行，在 JSX 里；被截掉的行数写在表下面（.k-grid-more，data 档、次一级颜色）。 */
+.k-grid[data-emphasis='hero'] .k-grid-cell {
+  font-size: var(--text-body-size);
 }

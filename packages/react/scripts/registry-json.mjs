@@ -2,7 +2,7 @@
 // 生成 registry.json（shadcn registry 的清单，shadcn 4.22.2 的 schema；`pnpm --filter @katana-ui/react registry:build` 先跑它再跑 `shadcn build`）。
 // 清单由脚本从源码与文档站的页数据（gallery/registry.ts：每个 item 的说明读它的页）生成，不手写：每个源文件一项（文件名短横线小写就是 item 名），registryDependencies 与 npm dependencies 从 import 扫出来，不会漏。
 // 约定（#1862 定）：
-//   type：primitives/ → registry:ui；lib/（含 lib/chart/ 与 lib/chart/format/）、katana/、patterns/、quotes/ 的纯函数 → registry:lib；patterns/、quotes/、quant/、katana/、blocks/ 的件 → registry:component；`style`（token、主题、动效）→ registry:style。
+//   type：primitives/ → registry:ui；layout/ 的件 → registry:component、间距刻度 → registry:lib；lib/（含 lib/chart/ 与 lib/chart/format/）、katana/、patterns/、quotes/ 的纯函数 → registry:lib；patterns/、quotes/、quant/、katana/、cn/、blocks/ 的件 → registry:component；`style`（token、主题、动效）→ registry:style。
 //   命名：`@katana/<文件名>`；同名冲突在源码里就不许有（每层文件名唯一，单测查）。
 //   落点：每个文件的 target 保持包内的相对结构（~/src/katana/ui/<层>/<文件>），所以件之间的相对 import 与 theme.css 里的 @source 路径在别的项目里原样有效。
 // 用法：node scripts/registry-json.mjs           写 registry.json
@@ -39,6 +39,12 @@ const INTERNAL = {
   'ai-response-model': 'AiResponse 的纯逻辑：按 Intl.Segmenter 切词（中文一词一词进场）与 [n] 引用切分。',
   'ai-task-model': 'AiTaskList 的纯逻辑：计划与子步骤的状态汇总、进度。',
   'fine-pointer': '判断是否精细指针（鼠标、触控板）的钩子，倾斜卡、玻璃卡、光斑卡这类跟手装饰件用，触屏上不开。',
+  'cn-session':
+    'A 股件包的时段轴（纯函数）：09:15–09:25 竞价、09:30–11:30、13:00–15:00，午休不占宽度；时刻解析、时段归类。',
+  'cn-labels': 'A 股件包的文案结构与随包的简体中文默认（cnLabelsZh），可整份换。',
+  'cn-value': 'A 股件包的「取不到写 —」读数写法：数或 { value, reason }。',
+  'cn-badge-model':
+    'StreakBadge、LimitStatus、BoardMark 与 DataGrid 的 streak / limitStatus 列共用的纯函数：连板写法与排序、涨停状态、板块判断。',
   style: '设计 token（Console 与 Graphite 两个主题、红涨绿跌切换）、Tailwind v4 主题与动效 CSS。ui.css 最后引。',
   cn: 'shadcn-ui/cn 引擎（替 clsx 加 tailwind-merge），认得 k-text-* 字号档。',
   focus: '各控件共用的焦点环类名。',
@@ -112,6 +118,7 @@ const INTERNAL = {
   'chart-scale':
     '分布与关系类的图（Ridgeline、SlopeChart、ConnectedScatter）共用的纯函数：线性比例尺、好看的刻度、分位数。',
   'loading-wait': 'Loading 的计时外壳：500ms、2s、10s 三个阶段。',
+  space: '排版原语共用：间距刻度名（对应 tokens 的 space-*）、它们的 CSS 值，与原语可以渲染成的元素。',
 }
 
 const read = (rel) => readFileSync(join(pkgDir, rel), 'utf8')
@@ -172,6 +179,10 @@ function collectItems() {
       .map((f) => `src/lib/chart/format/${f}`),
   )
   byFile('src/primitives', 'registry:ui')
+  // layout/：排版原语（#115）与分量。带 JSX 的是 component，间距刻度（纯函数与类型）是 lib。
+  for (const f of listDir('src/layout').filter(isCode)) {
+    add(f.replace(/\.[^.]+$/, ''), f.endsWith('.tsx') ? 'registry:component' : 'registry:lib', [`src/layout/${f}`])
+  }
   // katana/ 自有的件：带 JSX 的是 component，纯函数（解析、计时）是 lib。
   for (const f of listDir('src/katana').filter(isCode)) {
     add(f.replace(/\.[^.]+$/, ''), f.endsWith('.tsx') ? 'registry:component' : 'registry:lib', [`src/katana/${f}`])
@@ -203,6 +214,14 @@ function collectItems() {
       add(f.replace(/\.[^.]+$/, ''), 'registry:component', [`src/motion/${dir}/${f}`])
   if (existsSync(join(pkgDir, 'src/quant'))) {
     byFile('src/quant', 'registry:component', (f) => isCode(f) && f !== 'index.ts')
+  }
+  // cn/：A 股件包（#110）。带 JSX 的是 component，纯函数（金额、时段、模型、文案）是 lib；文件名加 cn- 前缀避开别的层。
+  if (existsSync(join(pkgDir, 'src/cn'))) {
+    for (const f of listDir('src/cn').filter((f) => isCode(f) && f !== 'index.ts')) {
+      add(`cn-${f.replace(/\.[^.]+$/, '')}`, f.endsWith('.tsx') ? 'registry:component' : 'registry:lib', [
+        `src/cn/${f}`,
+      ])
+    }
   }
   // blocks/：拼面板用的积木（#1869）。数据表与工具条各自一个子目录合成一项，空态、估算标记一文件一项。
   if (existsSync(join(pkgDir, 'src/blocks'))) {

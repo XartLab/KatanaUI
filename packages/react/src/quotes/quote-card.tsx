@@ -3,7 +3,9 @@
 // 功能参照 TradingView 小组件 Single Ticker / Ticker Tape / Symbol Info（tradingview.com/widget-docs，2026-11-14 读：卡上有价与涨跌幅，条带是一排卡；
 // 页面没写版式与交互，看不到的部分我们自己定：给了 onSelect 整张卡就是一个按钮，键盘可达；价格变了自动闪涨跌色，要滚轮就由调用方用 RollingText 自己加；迷你图新点追加时线平滑延伸）。不嵌、不抄其代码与样式。
 // 值是数（统一行情行 QuoteRow 的 last / change / changePct，2026-11-18），文字由 formatPrice 写；整行 {...row} 直接摊进来就行。旧的字符串属性照旧认一个版本。
+// 认分量（#115，layout/emphasis.tsx）：hero 价格用 display 档、迷你图加高；compact 标签加读数并排成一行，不画迷你图与下面一行。
 import type { ReactNode } from 'react'
+import { useEmphasis } from '../layout/emphasis.tsx'
 import { ReadoutFlash } from '../lib/live-readout.tsx'
 import { signed } from '../lib/num.ts'
 import { formatPercentChange, toneOf } from '../lib/chart/format/index.ts'
@@ -111,6 +113,8 @@ export function QuoteCard({
     tone: givenTone,
     formatPrice,
   })
+  const emphasis = useEmphasis()
+  const compact = emphasis === 'compact'
   const body = (
     <>
       <span className="k-quote-head">
@@ -129,19 +133,21 @@ export function QuoteCard({
           {percent && <span>{percent}</span>}
         </span>
       )}
-      {spark && (
+      {!compact && spark && (
         <Sparkline values={spark} label={labels?.spark ?? sparkLabel ?? ''} tone={tone} className="k-quote-spark" />
       )}
-      {footer && <span className="k-quote-footer">{footer}</span>}
+      {!compact && footer && <span className="k-quote-footer">{footer}</span>}
     </>
   )
   const classes = `k-quote-card is-${tone} is-${size}${onSelect ? ' is-link' : ''}${className ? ` ${className}` : ''}`
   return onSelect ? (
-    <button type="button" className={classes} onClick={onSelect}>
+    <button type="button" className={classes} data-emphasis={emphasis} onClick={onSelect}>
       {body}
     </button>
   ) : (
-    <div className={classes}>{body}</div>
+    <div className={classes} data-emphasis={emphasis}>
+      {body}
+    </div>
   )
 }
 

@@ -7,6 +7,15 @@ export { focusRing, focusRingInset } from './lib/focus.ts'
 export { useHoverOpen } from './lib/hover-open.ts'
 export { InlineOverlays } from './lib/overlay.tsx'
 
+export { Cluster, type ClusterProps } from './layout/cluster.tsx'
+export { EmphasisProvider, useEmphasis, type Emphasis, type EmphasisProviderProps } from './layout/emphasis.tsx'
+export { Grid, type GridProps } from './layout/grid.tsx'
+export { Reel, type ReelProps } from './layout/reel.tsx'
+export { Sidebar, type SidebarProps } from './layout/sidebar.tsx'
+export type { LayoutTag, SpaceStep } from './layout/space.ts'
+export { Stack, type StackProps } from './layout/stack.tsx'
+export { Switcher, type SwitcherProps } from './layout/switcher.tsx'
+
 export { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from './primitives/accordion.tsx'
 export { Alert, AlertDescription, AlertTitle, alertVariants } from './primitives/alert.tsx'
 export { Button, buttonVariants, type ButtonSize } from './primitives/button.tsx'
@@ -347,7 +356,13 @@ export {
   type SparklineVariant,
 } from './quotes/sparkline.tsx'
 export { MiniChart, type MiniChartProps } from './quotes/mini-chart.tsx'
-export { GaugeBar, type GaugeBarClasses, type GaugeBarProps } from './quotes/gauge-bar.tsx'
+export {
+  GaugeBar,
+  type GaugeBarClasses,
+  type GaugeBarProps,
+  type GaugeSegment,
+  type GaugeTone,
+} from './quotes/gauge-bar.tsx'
 export { Treemap, type TreemapClasses, type TreemapProps } from './quotes/treemap.tsx'
 export {
   colorStep,

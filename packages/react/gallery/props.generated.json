@@ -3835,6 +3835,11 @@
       "source": "src/primitives/avatar.tsx",
       "props": []
     },
+    "BOARD_LIMIT_PERCENT": {
+      "kind": "value",
+      "source": "src/cn/badge-model.ts",
+      "props": []
+    },
     "BadgeGroup": {
       "kind": "component",
       "source": "src/katana/badge.tsx",
@@ -3874,6 +3879,97 @@
           "type": "Severity",
           "required": false,
           "description": "语气：风险标记（如 ST）给 warn 或 danger；不给是 neutral。"
+        }
+      ]
+    },
+    "BoardKind": {
+      "kind": "type",
+      "source": "src/cn/labels.ts",
+      "props": []
+    },
+    "BoardMark": {
+      "kind": "component",
+      "source": "src/cn/board-mark.tsx",
+      "props": [
+        {
+          "name": "kind",
+          "type": "BoardKind | null | undefined",
+          "required": true,
+          "description": "The board; null or missing means unavailable."
+        },
+        {
+          "name": "display",
+          "type": "'cm' | 'name' | 'both'",
+          "required": false,
+          "default": "'cm'",
+          "description": "Writes the price-limit width (and nothing for the main board), the board name, or both."
+        },
+        {
+          "name": "labels",
+          "type": "BoardMarkLabels",
+          "required": false,
+          "default": "cnLabelsZh.board",
+          "description": "Text pack; the Simplified Chinese default is used when omitted."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class names."
+        }
+      ]
+    },
+    "BoardMarkLabels": {
+      "kind": "type",
+      "source": "src/cn/labels.ts",
+      "props": [
+        {
+          "name": "kind",
+          "type": "Record<BoardKind, string>",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "limit",
+          "type": "(percent: number) => string",
+          "required": true,
+          "description": "涨跌幅限制，例「20cm」。"
+        },
+        {
+          "name": "unavailable",
+          "type": "string",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "BoardMarkProps": {
+      "kind": "type",
+      "source": "src/cn/board-mark.tsx",
+      "props": [
+        {
+          "name": "kind",
+          "type": "BoardKind | null | undefined",
+          "required": true,
+          "description": "The board; null or missing means unavailable."
+        },
+        {
+          "name": "display",
+          "type": "'cm' | 'name' | 'both'",
+          "required": false,
+          "description": "Writes the price-limit width (and nothing for the main board), the board name, or both."
+        },
+        {
+          "name": "labels",
+          "type": "BoardMarkLabels",
+          "required": false,
+          "description": "Text pack; the Simplified Chinese default is used when omitted."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class names."
         }
       ]
     },
@@ -4546,6 +4642,21 @@
     "ButtonSize": {
       "kind": "type",
       "source": "src/primitives/button.tsx",
+      "props": []
+    },
+    "CN_AXIS_MINUTES": {
+      "kind": "value",
+      "source": "src/cn/session.ts",
+      "props": []
+    },
+    "CN_LATE_FROM": {
+      "kind": "value",
+      "source": "src/cn/session.ts",
+      "props": []
+    },
+    "CN_SESSIONS": {
+      "kind": "value",
+      "source": "src/cn/session.ts",
       "props": []
     },
     "CalendarCategory": {
@@ -5383,6 +5494,175 @@
         }
       ]
     },
+    "Cluster": {
+      "kind": "component",
+      "source": "src/layout/cluster.tsx",
+      "props": [
+        {
+          "name": "gap",
+          "type": "SpaceStep",
+          "required": false,
+          "default": "'space-3'",
+          "description": "Gap between children, both across and down, a spacing step name."
+        },
+        {
+          "name": "align",
+          "type": "'start' | 'center' | 'end' | 'baseline' | 'stretch'",
+          "required": false,
+          "default": "'center'",
+          "description": "Cross-axis alignment of the children in a row."
+        },
+        {
+          "name": "justify",
+          "type": "'start' | 'center' | 'end' | 'between'",
+          "required": false,
+          "default": "'start'",
+          "description": "Main-axis distribution of the children in a row."
+        },
+        {
+          "name": "as",
+          "type": "LayoutTag",
+          "required": false,
+          "default": "'div'",
+          "description": "Element to render."
+        }
+      ]
+    },
+    "ClusterProps": {
+      "kind": "type",
+      "source": "src/layout/cluster.tsx",
+      "props": [
+        {
+          "name": "gap",
+          "type": "SpaceStep",
+          "required": false,
+          "description": "Gap between children, both across and down, a spacing step name."
+        },
+        {
+          "name": "align",
+          "type": "'start' | 'center' | 'end' | 'baseline' | 'stretch'",
+          "required": false,
+          "description": "Cross-axis alignment of the children in a row."
+        },
+        {
+          "name": "justify",
+          "type": "'start' | 'center' | 'end' | 'between'",
+          "required": false,
+          "description": "Main-axis distribution of the children in a row."
+        },
+        {
+          "name": "as",
+          "type": "LayoutTag",
+          "required": false,
+          "description": "Element to render."
+        }
+      ]
+    },
+    "CnAmountSize": {
+      "kind": "type",
+      "source": "src/cn/format.ts",
+      "props": [
+        {
+          "name": "abbreviate",
+          "type": "boolean",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "digits",
+          "type": "number",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "signed",
+          "type": "boolean",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "CnAmountUnits": {
+      "kind": "type",
+      "source": "src/cn/format.ts",
+      "props": [
+        {
+          "name": "wan",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "yi",
+          "type": "string",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "CnLabels": {
+      "kind": "type",
+      "source": "src/cn/labels.ts",
+      "props": [
+        {
+          "name": "streak",
+          "type": "StreakLabels",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "limitStatus",
+          "type": "LimitStatusLabels",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "board",
+          "type": "BoardMarkLabels",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "pulse",
+          "type": "PulseLabels",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "themeCard",
+          "type": "ThemeCardLabels",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "timeline",
+          "type": "TimelineLabels",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "sentiment",
+          "type": "SentimentLabels",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "CnPhase": {
+      "kind": "type",
+      "source": "src/cn/session.ts",
+      "props": []
+    },
+    "CnSessionKey": {
+      "kind": "type",
+      "source": "src/cn/session.ts",
+      "props": []
+    },
+    "CnValue": {
+      "kind": "type",
+      "source": "src/cn/value.ts",
+      "props": []
+    },
     "CodeBlock": {
       "kind": "component",
       "source": "src/katana/code-block.tsx",
@@ -5634,6 +5914,30 @@
           "type": "'datetime' | 'time' | 'date'",
           "required": false,
           "description": "time：写到哪一级。默认 datetime（YYYY-MM-DD HH:MM:SS）。"
+        },
+        {
+          "name": "streakForm",
+          "type": "'boards' | 'promotion'",
+          "required": false,
+          "description": "streak：写法（首板 / 2板 / 5天3板，或晋级口径「一进二」）与文案（默认简体中文，可整份换，#110）。"
+        },
+        {
+          "name": "streakLabels",
+          "type": "StreakLabels",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "limitStatusLabels",
+          "type": "LimitStatusLabels",
+          "required": false,
+          "description": "limitStatus：文案（默认简体中文，可整份换，#110）。"
+        },
+        {
+          "name": "maxPills",
+          "type": "number",
+          "required": false,
+          "description": "pill：最多画几枚，多出的收成「+n」；没给就只按格子宽度收。"
         }
       ]
     },
@@ -7072,6 +7376,19 @@
           "description": "Locale for sorting text columns (Intl.Collator); follows the runtime when omitted."
         },
         {
+          "name": "collapseColumns",
+          "type": "boolean",
+          "required": false,
+          "default": "true",
+          "description": "Priority columns (default true): at standard and hero emphasis, when the visible columns do not fit the container, the lowest-priority columns (GridColumn.priority; undeclared ones count up in declaration order) are collapsed and a \"+N cols\" capsule appears at the right end of the header; clicking it switches to horizontal scrolling with every column."
+        },
+        {
+          "name": "containerWidth",
+          "type": "number",
+          "required": false,
+          "description": "Container width in px for the priority columns; measured with a ResizeObserver when omitted."
+        },
+        {
           "name": "density",
           "type": "GridDensity",
           "required": false,
@@ -7242,6 +7559,24 @@
           "type": "(label: string) => string",
           "required": true,
           "description": ""
+        },
+        {
+          "name": "moreRows",
+          "type": "(hidden: number) => string",
+          "required": true,
+          "description": "compact 分量只留前几行时，表下面写没显示的行数：「另有 7 行」（不静默截断）。"
+        },
+        {
+          "name": "moreColumns",
+          "type": "(hidden: number) => string",
+          "required": true,
+          "description": "列放不下被收起时，表头右端胶囊上的字：「+4 列」（不静默截断，#122）；点开显示全部列后胶囊写 collapseColumns。"
+        },
+        {
+          "name": "collapseColumns",
+          "type": "string",
+          "required": true,
+          "description": "全部列展开（横向滚动）后，胶囊上的字：点了回到收起。"
         },
         {
           "name": "rowActions",
@@ -7484,6 +7819,18 @@
           "description": "Locale for sorting text columns (Intl.Collator); follows the runtime when omitted."
         },
         {
+          "name": "collapseColumns",
+          "type": "boolean",
+          "required": false,
+          "description": "Priority columns (default true): at standard and hero emphasis, when the visible columns do not fit the container, the lowest-priority columns (GridColumn.priority; undeclared ones count up in declaration order) are collapsed and a \"+N cols\" capsule appears at the right end of the header; clicking it switches to horizontal scrolling with every column."
+        },
+        {
+          "name": "containerWidth",
+          "type": "number",
+          "required": false,
+          "description": "Container width in px for the priority columns; measured with a ResizeObserver when omitted."
+        },
+        {
           "name": "density",
           "type": "GridDensity",
           "required": false,
@@ -7602,6 +7949,24 @@
           "type": "(label: string) => string",
           "required": true,
           "description": ""
+        },
+        {
+          "name": "moreRows",
+          "type": "(hidden: number) => string",
+          "required": true,
+          "description": "compact 分量只留前几行时，表下面写没显示的行数：「另有 7 行」（不静默截断）。"
+        },
+        {
+          "name": "moreColumns",
+          "type": "(hidden: number) => string",
+          "required": true,
+          "description": "列放不下被收起时，表头右端胶囊上的字：「+4 列」（不静默截断，#122）；点开显示全部列后胶囊写 collapseColumns。"
+        },
+        {
+          "name": "collapseColumns",
+          "type": "string",
+          "required": true,
+          "description": "全部列展开（横向滚动）后，胶囊上的字：点了回到收起。"
         },
         {
           "name": "rowActions",
@@ -8935,6 +9300,145 @@
     "DialogTrigger": {
       "kind": "component",
       "source": "src/primitives/dialog.tsx",
+      "props": []
+    },
+    "DistributionBars": {
+      "kind": "component",
+      "source": "src/quant/distribution-bars.tsx",
+      "props": [
+        {
+          "name": "bins",
+          "type": "readonly DistributionBin[]",
+          "required": true,
+          "description": "The bins in display order (9 or 11 are typical); edges and names are the caller's."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "Screen-reader name of the whole chart (a full sentence)."
+        },
+        {
+          "name": "totals",
+          "type": "DistributionTotals",
+          "required": false,
+          "description": "Names for the totals line (up / muted / down); the numbers are the counts summed by tone."
+        },
+        {
+          "name": "formatCount",
+          "type": "(count: number) => string",
+          "required": false,
+          "default": "defaultFormat",
+          "description": "How a count is written; thousands separators by default."
+        },
+        {
+          "name": "empty",
+          "type": "ReactNode",
+          "required": false,
+          "default": "'—'",
+          "description": "Text shown when there is no data; a dash by default."
+        },
+        {
+          "name": "height",
+          "type": "number",
+          "required": false,
+          "default": "96",
+          "description": "Height of the bar area in px, including the count row; 96 by default."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class names on the root."
+        }
+      ]
+    },
+    "DistributionBarsProps": {
+      "kind": "type",
+      "source": "src/quant/distribution-bars.tsx",
+      "props": [
+        {
+          "name": "bins",
+          "type": "readonly DistributionBin[]",
+          "required": true,
+          "description": "The bins in display order (9 or 11 are typical); edges and names are the caller's."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "Screen-reader name of the whole chart (a full sentence)."
+        },
+        {
+          "name": "totals",
+          "type": "DistributionTotals",
+          "required": false,
+          "description": "Names for the totals line (up / muted / down); the numbers are the counts summed by tone."
+        },
+        {
+          "name": "formatCount",
+          "type": "(count: number) => string",
+          "required": false,
+          "description": "How a count is written; thousands separators by default."
+        },
+        {
+          "name": "empty",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Text shown when there is no data; a dash by default."
+        },
+        {
+          "name": "height",
+          "type": "number",
+          "required": false,
+          "description": "Height of the bar area in px, including the count row; 96 by default."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class names on the root."
+        }
+      ]
+    },
+    "DistributionBin": {
+      "kind": "type",
+      "source": "src/quant/distribution-bars.tsx",
+      "props": [
+        {
+          "name": "key",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "label",
+          "type": "ReactNode",
+          "required": true,
+          "description": "The bin name under the bar (e.g."
+        },
+        {
+          "name": "count",
+          "type": "number | null",
+          "required": true,
+          "description": "The count in this bin; null means no number (no bar, a dash above)."
+        },
+        {
+          "name": "tone",
+          "type": "DistributionTone",
+          "required": true,
+          "description": "Semantic tone of the bar; the totals line groups by it."
+        }
+      ]
+    },
+    "DistributionTone": {
+      "kind": "type",
+      "source": "src/quant/distribution-bars.tsx",
+      "props": []
+    },
+    "DistributionTotals": {
+      "kind": "type",
+      "source": "src/quant/distribution-bars.tsx",
       "props": []
     },
     "DitherAlgorithm": {
@@ -10460,6 +10964,47 @@
       "kind": "type",
       "source": "src/motion/effect/emboss-surface.tsx",
       "props": []
+    },
+    "Emphasis": {
+      "kind": "type",
+      "source": "src/layout/emphasis.tsx",
+      "props": []
+    },
+    "EmphasisProvider": {
+      "kind": "component",
+      "source": "src/layout/emphasis.tsx",
+      "props": [
+        {
+          "name": "value",
+          "type": "Emphasis",
+          "required": true,
+          "description": "The emphasis of everything inside."
+        },
+        {
+          "name": "children",
+          "type": "ReactNode",
+          "required": false,
+          "description": "The content."
+        }
+      ]
+    },
+    "EmphasisProviderProps": {
+      "kind": "type",
+      "source": "src/layout/emphasis.tsx",
+      "props": [
+        {
+          "name": "value",
+          "type": "Emphasis",
+          "required": true,
+          "description": "The emphasis of everything inside."
+        },
+        {
+          "name": "children",
+          "type": "ReactNode",
+          "required": false,
+          "description": "The content."
+        }
+      ]
     },
     "EmptyState": {
       "kind": "component",
@@ -13772,8 +14317,15 @@
         {
           "name": "share",
           "type": "number | null",
-          "required": true,
+          "required": false,
+          "default": "null",
           "description": "Position of the number between the minimum and maximum (0 to 1, clamped to the ends); null draws no fill."
+        },
+        {
+          "name": "segments",
+          "type": "readonly GaugeSegment[]",
+          "required": false,
+          "description": "Multi-segment proportion bar (up · flat · down; limit-up · broken · limit-down): the track is split by the segment values and the labels are written under it."
         },
         {
           "name": "level",
@@ -13826,8 +14378,14 @@
         {
           "name": "share",
           "type": "number | null",
-          "required": true,
+          "required": false,
           "description": "Position of the number between the minimum and maximum (0 to 1, clamped to the ends); null draws no fill."
+        },
+        {
+          "name": "segments",
+          "type": "readonly GaugeSegment[]",
+          "required": false,
+          "description": "Multi-segment proportion bar (up · flat · down; limit-up · broken · limit-down): the track is split by the segment values and the labels are written under it."
         },
         {
           "name": "level",
@@ -13848,6 +14406,35 @@
           "description": "Extra class names per part, written after the package ones."
         }
       ]
+    },
+    "GaugeSegment": {
+      "kind": "type",
+      "source": "src/quotes/gauge-bar.tsx",
+      "props": [
+        {
+          "name": "value",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "tone",
+          "type": "GaugeTone",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "label",
+          "type": "ReactNode",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "GaugeTone": {
+      "kind": "type",
+      "source": "src/quotes/gauge-bar.tsx",
+      "props": []
     },
     "GlassCard": {
       "kind": "component",
@@ -14509,6 +15096,33 @@
         }
       ]
     },
+    "Grid": {
+      "kind": "component",
+      "source": "src/layout/grid.tsx",
+      "props": [
+        {
+          "name": "min",
+          "type": "number",
+          "required": false,
+          "default": "GRID_MIN",
+          "description": "Smallest width of a cell in pixels; as many columns as fit are used."
+        },
+        {
+          "name": "gap",
+          "type": "SpaceStep",
+          "required": false,
+          "default": "'space-3'",
+          "description": "Gap between cells, a spacing step name."
+        },
+        {
+          "name": "as",
+          "type": "LayoutTag",
+          "required": false,
+          "default": "'div'",
+          "description": "Element to render."
+        }
+      ]
+    },
     "GridAction": {
       "kind": "type",
       "source": "src/blocks/data-grid/host.tsx",
@@ -14534,7 +15148,7 @@
           "name": "value",
           "type": "(row: Row) => unknown",
           "required": false,
-          "description": "原始值，由类型决定怎么读：price / quantity / pnl / change / number 是数字或十进制字符串（空、不是数写 —）； time 是毫秒时间戳；side 是 'buy' | 'sell'；symbol 是 SymbolValue；text 是字符串；custom 不读（内容全由 `cell` 画，要排序、复制就给 `text` 与 `sort`）。"
+          "description": "原始值，由类型决定怎么读：price / quantity / pnl / change / number / bar 是数字或十进制字符串（空、不是数写 —）； pill 是 PillValue 或 PillValue[]；progress 是 ProgressValue；streak 是板数或 StreakValue（A 股连板，#110）；limitStatus 是状态名或 { status, sealAmount, reason }； time 是毫秒时间戳；side 是 'buy' | 'sell'；symbol 是 SymbolValue；text 是字符串；custom 不读（内容全由 `cell` 画，要排序、复制就给 `text` 与 `sort`）。"
         },
         {
           "name": "format",
@@ -14567,6 +15181,12 @@
           "description": "整格的底色（ATAS 的盈亏是整格绿底 / 红底）。"
         },
         {
+          "name": "heat",
+          "type": "GridHeat<Row>",
+          "required": false,
+          "description": "强度底色：格子底色按这一格的数深浅（读 `value`）。domain 是 [最小, 最大]：跨 0 时正数用涨色、负数用跌色，各自以 0 到端点的距离定深浅； 不跨 0 时全按涨色、从最小到最大。rank 给了就在格子右上角写一个名次小字（不占行高行宽）。颜色只由 token 给，调用方不传色值。"
+        },
+        {
           "name": "title",
           "type": "(row: Row) => string | undefined",
           "required": false,
@@ -14595,6 +15215,18 @@
           "type": "() => string",
           "required": false,
           "description": ""
+        },
+        {
+          "name": "compact",
+          "type": "boolean",
+          "required": false,
+          "description": "compact 分量（#117）下留这一列：compact 一行只剩名字和一个主数。整张表里有任何一列标了就只画标了的那几列； 一列都没标就留前两个可见列。别的分量不看它。"
+        },
+        {
+          "name": "priority",
+          "type": "number",
+          "required": false,
+          "description": "列优先级（#122）：standard 与 hero 分量下容器放不下全部可见列时，数大的先收起，表头右端出「+N 列」胶囊，点了切成横向滚动、显示全部。"
         },
         {
           "name": "rowHeader",
@@ -14656,6 +15288,24 @@
       "kind": "type",
       "source": "src/blocks/data-grid/data-grid-props.ts",
       "props": []
+    },
+    "GridHeat": {
+      "kind": "type",
+      "source": "src/blocks/data-grid/columns.ts",
+      "props": [
+        {
+          "name": "domain",
+          "type": "readonly [number, number]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "rank",
+          "type": "(row: Row) => string | number | undefined",
+          "required": false,
+          "description": ""
+        }
+      ]
     },
     "GridLoader": {
       "kind": "component",
@@ -14822,6 +15472,35 @@
       "kind": "type",
       "source": "src/blocks/data-grid/host.tsx",
       "props": []
+    },
+    "GridPillTone": {
+      "kind": "type",
+      "source": "src/blocks/data-grid/columns.ts",
+      "props": []
+    },
+    "GridProps": {
+      "kind": "type",
+      "source": "src/layout/grid.tsx",
+      "props": [
+        {
+          "name": "min",
+          "type": "number",
+          "required": false,
+          "description": "Smallest width of a cell in pixels; as many columns as fit are used."
+        },
+        {
+          "name": "gap",
+          "type": "SpaceStep",
+          "required": false,
+          "description": "Gap between cells, a spacing step name."
+        },
+        {
+          "name": "as",
+          "type": "LayoutTag",
+          "required": false,
+          "description": "Element to render."
+        }
+      ]
     },
     "GridRowProps": {
       "kind": "type",
@@ -16728,6 +17407,11 @@
         }
       ]
     },
+    "LIMIT_STATUS_ORDER": {
+      "kind": "value",
+      "source": "src/cn/badge-model.ts",
+      "props": []
+    },
     "LINK_GROUPS": {
       "kind": "value",
       "source": "src/katana/led.tsx",
@@ -17007,6 +17691,11 @@
           "description": "占总量的比例（交易流量，取流入流出较大者）；总量为 0 是 null。"
         }
       ]
+    },
+    "LayoutTag": {
+      "kind": "type",
+      "source": "src/layout/space.ts",
+      "props": []
     },
     "Lcd": {
       "kind": "component",
@@ -17419,6 +18108,237 @@
           "type": "string",
           "required": false,
           "description": ""
+        }
+      ]
+    },
+    "LimitStatus": {
+      "kind": "component",
+      "source": "src/cn/limit-status.tsx",
+      "props": [
+        {
+          "name": "status",
+          "type": "LimitStatusValue | null | undefined",
+          "required": true,
+          "description": "The status key, or an object with the seal amount (yuan) and a reason; null status means unavailable."
+        },
+        {
+          "name": "labels",
+          "type": "LimitStatusLabels",
+          "required": false,
+          "default": "cnLabelsZh.limitStatus",
+          "description": "Text pack; the Simplified Chinese default is used when omitted."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class names."
+        }
+      ]
+    },
+    "LimitStatusKey": {
+      "kind": "type",
+      "source": "src/cn/labels.ts",
+      "props": []
+    },
+    "LimitStatusLabels": {
+      "kind": "type",
+      "source": "src/cn/labels.ts",
+      "props": [
+        {
+          "name": "status",
+          "type": "Record<LimitStatusKey, string>",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "sealAmount",
+          "type": "(amount: string) => string",
+          "required": true,
+          "description": "封单额文字，例「封单 3.20亿」；amount 是已经写好的金额。"
+        },
+        {
+          "name": "unavailable",
+          "type": "string",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "LimitStatusProps": {
+      "kind": "type",
+      "source": "src/cn/limit-status.tsx",
+      "props": [
+        {
+          "name": "status",
+          "type": "LimitStatusValue | null | undefined",
+          "required": true,
+          "description": "The status key, or an object with the seal amount (yuan) and a reason; null status means unavailable."
+        },
+        {
+          "name": "labels",
+          "type": "LimitStatusLabels",
+          "required": false,
+          "description": "Text pack; the Simplified Chinese default is used when omitted."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class names."
+        }
+      ]
+    },
+    "LimitStatusValue": {
+      "kind": "type",
+      "source": "src/cn/badge-model.ts",
+      "props": []
+    },
+    "LimitUpTimeline": {
+      "kind": "component",
+      "source": "src/cn/limit-up-timeline.tsx",
+      "props": [
+        {
+          "name": "items",
+          "type": "readonly TimelineItem[]",
+          "required": true,
+          "description": "The limit-up stocks with their first-seal time; the timeline groups them by minute."
+        },
+        {
+          "name": "order",
+          "type": "TimelineOrder",
+          "required": false,
+          "description": "Sort order (controlled): latest first or earliest first."
+        },
+        {
+          "name": "defaultOrder",
+          "type": "TimelineOrder",
+          "required": false,
+          "default": "'latest'",
+          "description": "Initial sort order when uncontrolled; latest first by default."
+        },
+        {
+          "name": "onOrderChange",
+          "type": "(order: TimelineOrder) => void",
+          "required": false,
+          "description": "Called with the new order."
+        },
+        {
+          "name": "theme",
+          "type": "string | null",
+          "required": false,
+          "description": "The theme filter (controlled); null means all themes."
+        },
+        {
+          "name": "defaultTheme",
+          "type": "string | null",
+          "required": false,
+          "default": "null",
+          "description": "Initial theme filter when uncontrolled; all themes by default."
+        },
+        {
+          "name": "onThemeChange",
+          "type": "(theme: string | null) => void",
+          "required": false,
+          "description": "Called with the new theme filter."
+        },
+        {
+          "name": "perRow",
+          "type": "number",
+          "required": false,
+          "default": "12",
+          "description": "Upper limit of stations in one row of the snake; the row count follows the container width (each station needs at least 136px) and never exceeds it."
+        },
+        {
+          "name": "onSelect",
+          "type": "(item: TimelineItem) => void",
+          "required": false,
+          "description": "Called when a stock card is picked; without it the cards are plain."
+        },
+        {
+          "name": "labels",
+          "type": "TimelineLabels",
+          "required": false,
+          "default": "cnLabelsZh.timeline",
+          "description": "Text pack; the Simplified Chinese default is used when omitted."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class names."
+        }
+      ]
+    },
+    "LimitUpTimelineProps": {
+      "kind": "type",
+      "source": "src/cn/limit-up-timeline.tsx",
+      "props": [
+        {
+          "name": "items",
+          "type": "readonly TimelineItem[]",
+          "required": true,
+          "description": "The limit-up stocks with their first-seal time; the timeline groups them by minute."
+        },
+        {
+          "name": "order",
+          "type": "TimelineOrder",
+          "required": false,
+          "description": "Sort order (controlled): latest first or earliest first."
+        },
+        {
+          "name": "defaultOrder",
+          "type": "TimelineOrder",
+          "required": false,
+          "description": "Initial sort order when uncontrolled; latest first by default."
+        },
+        {
+          "name": "onOrderChange",
+          "type": "(order: TimelineOrder) => void",
+          "required": false,
+          "description": "Called with the new order."
+        },
+        {
+          "name": "theme",
+          "type": "string | null",
+          "required": false,
+          "description": "The theme filter (controlled); null means all themes."
+        },
+        {
+          "name": "defaultTheme",
+          "type": "string | null",
+          "required": false,
+          "description": "Initial theme filter when uncontrolled; all themes by default."
+        },
+        {
+          "name": "onThemeChange",
+          "type": "(theme: string | null) => void",
+          "required": false,
+          "description": "Called with the new theme filter."
+        },
+        {
+          "name": "perRow",
+          "type": "number",
+          "required": false,
+          "description": "Upper limit of stations in one row of the snake; the row count follows the container width (each station needs at least 136px) and never exceeds it."
+        },
+        {
+          "name": "onSelect",
+          "type": "(item: TimelineItem) => void",
+          "required": false,
+          "description": "Called when a stock card is picked; without it the cards are plain."
+        },
+        {
+          "name": "labels",
+          "type": "TimelineLabels",
+          "required": false,
+          "description": "Text pack; the Simplified Chinese default is used when omitted."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class names."
         }
       ]
     },
@@ -18672,6 +19592,212 @@
           "type": "string",
           "required": false,
           "description": ""
+        }
+      ]
+    },
+    "MarketPulse": {
+      "kind": "component",
+      "source": "src/cn/market-pulse.tsx",
+      "props": [
+        {
+          "name": "counts",
+          "type": "MarketPulseCounts",
+          "required": true,
+          "description": "The five big counts: rising, falling, limit-up, limit-down and flat."
+        },
+        {
+          "name": "readings",
+          "type": "MarketPulseReadings",
+          "required": false,
+          "default": "{}",
+          "description": "The small readings under the counts; a missing one is written as a dash with its reason on hover."
+        },
+        {
+          "name": "share",
+          "type": "number | null",
+          "required": false,
+          "description": "Share of rising stocks (0 to 1) for the half-dial; worked out from the counts when omitted, null writes a dash."
+        },
+        {
+          "name": "basis",
+          "type": "ReactNode",
+          "required": false,
+          "description": "A caller-written note after the yesterday readings (the basis date, for example)."
+        },
+        {
+          "name": "distribution",
+          "type": "Pick<DistributionBarsProps, 'bins' | 'totals' | 'formatCount' | 'empty'>",
+          "required": false,
+          "description": "The change distribution on the right; leave it out to draw none."
+        },
+        {
+          "name": "labels",
+          "type": "PulseLabels",
+          "required": false,
+          "default": "cnLabelsZh.pulse",
+          "description": "Text pack; the Simplified Chinese default is used when omitted."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class names."
+        }
+      ]
+    },
+    "MarketPulseCounts": {
+      "kind": "type",
+      "source": "src/cn/market-pulse.tsx",
+      "props": [
+        {
+          "name": "rising",
+          "type": "CnValue",
+          "required": true,
+          "description": "Number of rising stocks."
+        },
+        {
+          "name": "falling",
+          "type": "CnValue",
+          "required": true,
+          "description": "Number of falling stocks."
+        },
+        {
+          "name": "limitUp",
+          "type": "CnValue",
+          "required": true,
+          "description": "Number of limit-up stocks."
+        },
+        {
+          "name": "limitDown",
+          "type": "CnValue",
+          "required": true,
+          "description": "Number of limit-down stocks."
+        },
+        {
+          "name": "flat",
+          "type": "CnValue",
+          "required": true,
+          "description": "Number of flat stocks."
+        }
+      ]
+    },
+    "MarketPulseProps": {
+      "kind": "type",
+      "source": "src/cn/market-pulse.tsx",
+      "props": [
+        {
+          "name": "counts",
+          "type": "MarketPulseCounts",
+          "required": true,
+          "description": "The five big counts: rising, falling, limit-up, limit-down and flat."
+        },
+        {
+          "name": "readings",
+          "type": "MarketPulseReadings",
+          "required": false,
+          "description": "The small readings under the counts; a missing one is written as a dash with its reason on hover."
+        },
+        {
+          "name": "share",
+          "type": "number | null",
+          "required": false,
+          "description": "Share of rising stocks (0 to 1) for the half-dial; worked out from the counts when omitted, null writes a dash."
+        },
+        {
+          "name": "basis",
+          "type": "ReactNode",
+          "required": false,
+          "description": "A caller-written note after the yesterday readings (the basis date, for example)."
+        },
+        {
+          "name": "distribution",
+          "type": "Pick<DistributionBarsProps, 'bins' | 'totals' | 'formatCount' | 'empty'>",
+          "required": false,
+          "description": "The change distribution on the right; leave it out to draw none."
+        },
+        {
+          "name": "labels",
+          "type": "PulseLabels",
+          "required": false,
+          "description": "Text pack; the Simplified Chinese default is used when omitted."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class names."
+        }
+      ]
+    },
+    "MarketPulseReadings": {
+      "kind": "type",
+      "source": "src/cn/market-pulse.tsx",
+      "props": [
+        {
+          "name": "nonStLimitUp",
+          "type": "CnValue",
+          "required": false,
+          "description": "Limit-up stocks excluding ST, in the pool."
+        },
+        {
+          "name": "broken",
+          "type": "CnValue",
+          "required": false,
+          "description": "Stocks that touched the limit and opened."
+        },
+        {
+          "name": "highestBoard",
+          "type": "CnValue",
+          "required": false,
+          "description": "The highest board count."
+        },
+        {
+          "name": "limitUpAmount",
+          "type": "CnValue",
+          "required": false,
+          "description": "Turnover of the limit-up stocks, in yuan."
+        },
+        {
+          "name": "sealEstimate",
+          "type": "CnValue",
+          "required": false,
+          "description": "Estimated seal amount of the limit-up stocks, in yuan."
+        },
+        {
+          "name": "yesterdayLimitUp",
+          "type": "CnValue",
+          "required": false,
+          "description": "Yesterday's limit-up count."
+        },
+        {
+          "name": "yesterdayLimitDown",
+          "type": "CnValue",
+          "required": false,
+          "description": "Yesterday's limit-down count."
+        },
+        {
+          "name": "yesterdayBroken",
+          "type": "CnValue",
+          "required": false,
+          "description": "Yesterday's broken-limit count."
+        },
+        {
+          "name": "turnover",
+          "type": "CnValue",
+          "required": false,
+          "description": "Turnover of both markets, in yuan."
+        },
+        {
+          "name": "turnoverForecast",
+          "type": "CnValue",
+          "required": false,
+          "description": "Forecast turnover of both markets, in yuan."
+        },
+        {
+          "name": "mainNetInflow",
+          "type": "CnValue",
+          "required": false,
+          "description": "Main-force net inflow, in yuan (signed)."
         }
       ]
     },
@@ -20596,6 +21722,19 @@
           "description": "组合过滤（照 TradingView News Flow：多个可增删、可重置的多选过滤，条目用 NewsItem.facets 带取值；主会话 2026-11-15 实测）。"
         },
         {
+          "name": "categories",
+          "type": "readonly { value: string; label: string }[]",
+          "required": false,
+          "default": "[]",
+          "description": "Category chips (multi-select, ChipGroup) under the sources row; items carry `category`."
+        },
+        {
+          "name": "onCategoriesChange",
+          "type": "(categories: string[]) => void",
+          "required": false,
+          "description": ""
+        },
+        {
           "name": "onFacetsChange",
           "type": "(picked: Record<string, string[]>) => void",
           "required": false,
@@ -20761,6 +21900,18 @@
           "description": ""
         },
         {
+          "name": "categories",
+          "type": "string",
+          "required": false,
+          "description": "类别芯片组的读屏名；传了且 categories 不空才有这一行。"
+        },
+        {
+          "name": "clearCategories",
+          "type": "string",
+          "required": false,
+          "description": "类别芯片组的清除钮读屏名。"
+        },
+        {
           "name": "search",
           "type": "string",
           "required": true,
@@ -20909,6 +22060,18 @@
           "type": "readonly NewsFacet[]",
           "required": false,
           "description": "组合过滤（照 TradingView News Flow：多个可增删、可重置的多选过滤，条目用 NewsItem.facets 带取值；主会话 2026-11-15 实测）。"
+        },
+        {
+          "name": "categories",
+          "type": "readonly { value: string; label: string }[]",
+          "required": false,
+          "description": "Category chips (multi-select, ChipGroup) under the sources row; items carry `category`."
+        },
+        {
+          "name": "onCategoriesChange",
+          "type": "(categories: string[]) => void",
+          "required": false,
+          "description": ""
         },
         {
           "name": "onFacetsChange",
@@ -21101,6 +22264,12 @@
           "type": "string",
           "required": false,
           "description": "有链接就把标题渲染成链接（新窗口打开）。"
+        },
+        {
+          "name": "category",
+          "type": "string",
+          "required": false,
+          "description": "类别的 value（对应 NewsFeedProps.categories，如公告类别、增减持）；不带就不在任何类别里，选了类别时会被筛掉。"
         },
         {
           "name": "facets",
@@ -23808,6 +24977,11 @@
       "source": "src/motion/text/perspective-text-3d.tsx",
       "props": []
     },
+    "PillValue": {
+      "kind": "type",
+      "source": "src/blocks/data-grid/columns.ts",
+      "props": []
+    },
     "PinnedList": {
       "kind": "component",
       "source": "src/katana/pinned-list.tsx",
@@ -24865,6 +26039,11 @@
         }
       ]
     },
+    "ProgressValue": {
+      "kind": "type",
+      "source": "src/blocks/data-grid/columns.ts",
+      "props": []
+    },
     "ProgressiveBlur": {
       "kind": "component",
       "source": "src/motion/effect/progressive-blur.tsx",
@@ -24968,6 +26147,72 @@
           "type": "number",
           "required": false,
           "description": "Number of stacked layers."
+        }
+      ]
+    },
+    "PulseLabels": {
+      "kind": "type",
+      "source": "src/cn/labels.ts",
+      "props": [
+        {
+          "name": "region",
+          "type": "string",
+          "required": true,
+          "description": "整条的读屏名。"
+        },
+        {
+          "name": "shareCaption",
+          "type": "string",
+          "required": true,
+          "description": "半圆表盘下的字。"
+        },
+        {
+          "name": "shareAria",
+          "type": "(percent: string) => string",
+          "required": true,
+          "description": "表盘的读屏名，例「上涨占比 5.4%」。"
+        },
+        {
+          "name": "unit",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "counts",
+          "type": "{ rising: string; falling: string; limitUp: string; limitDown: string; flat: string }",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "readings",
+          "type": "{ nonStLimitUp: string broken: string highestBoard: string limitUpAmount: string sealEstimate: string yesterday: string yesterdayLimitUp: string yesterdayLimitDown: string yesterdayBroken: string turnover: string turnoverForecast: string mainNetInflow: string }",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "suffix",
+          "type": "{ count: string; boards: string }",
+          "required": true,
+          "description": "各档数字后的单位，例「家」「板」。"
+        },
+        {
+          "name": "unavailable",
+          "type": "string",
+          "required": true,
+          "description": "取不到又没给原因时悬停写的字。"
+        },
+        {
+          "name": "distribution",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "distributionTotals",
+          "type": "{ up: string; muted: string; down: string }",
+          "required": true,
+          "description": ""
         }
       ]
     },
@@ -26510,6 +27755,44 @@
       "kind": "type",
       "source": "src/quotes/technical-rating.tsx",
       "props": []
+    },
+    "Reel": {
+      "kind": "component",
+      "source": "src/layout/reel.tsx",
+      "props": [
+        {
+          "name": "gap",
+          "type": "SpaceStep",
+          "required": false,
+          "default": "'space-2'",
+          "description": "Gap between children, a spacing step name."
+        },
+        {
+          "name": "as",
+          "type": "LayoutTag",
+          "required": false,
+          "default": "'div'",
+          "description": "Element to render."
+        }
+      ]
+    },
+    "ReelProps": {
+      "kind": "type",
+      "source": "src/layout/reel.tsx",
+      "props": [
+        {
+          "name": "gap",
+          "type": "SpaceStep",
+          "required": false,
+          "description": "Gap between children, a spacing step name."
+        },
+        {
+          "name": "as",
+          "type": "LayoutTag",
+          "required": false,
+          "description": "Element to render."
+        }
+      ]
     },
     "RegimeBand": {
       "kind": "component",
@@ -29016,6 +30299,187 @@
       "source": "src/primitives/select.tsx",
       "props": []
     },
+    "SentimentGauge": {
+      "kind": "component",
+      "source": "src/cn/sentiment-gauge.tsx",
+      "props": [
+        {
+          "name": "score",
+          "type": "number | null | undefined",
+          "required": true,
+          "description": "The score from 0 to 100; null or missing writes a dash."
+        },
+        {
+          "name": "reason",
+          "type": "string",
+          "required": false,
+          "description": "Why the score is unavailable (shown on hover)."
+        },
+        {
+          "name": "basis",
+          "type": "ReactNode",
+          "required": false,
+          "description": "A caller-written line about how the score is made, such as its basis and whether it is calibrated."
+        },
+        {
+          "name": "today",
+          "type": "SentimentStats",
+          "required": false,
+          "description": "Today's figures for the comparison; leave both sides out to draw no comparison."
+        },
+        {
+          "name": "yesterday",
+          "type": "SentimentStats",
+          "required": false,
+          "description": "Yesterday's figures for the comparison."
+        },
+        {
+          "name": "labels",
+          "type": "SentimentLabels",
+          "required": false,
+          "default": "cnLabelsZh.sentiment",
+          "description": "Text pack; the Simplified Chinese default is used when omitted."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class names."
+        }
+      ]
+    },
+    "SentimentGaugeProps": {
+      "kind": "type",
+      "source": "src/cn/sentiment-gauge.tsx",
+      "props": [
+        {
+          "name": "score",
+          "type": "number | null | undefined",
+          "required": true,
+          "description": "The score from 0 to 100; null or missing writes a dash."
+        },
+        {
+          "name": "reason",
+          "type": "string",
+          "required": false,
+          "description": "Why the score is unavailable (shown on hover)."
+        },
+        {
+          "name": "basis",
+          "type": "ReactNode",
+          "required": false,
+          "description": "A caller-written line about how the score is made, such as its basis and whether it is calibrated."
+        },
+        {
+          "name": "today",
+          "type": "SentimentStats",
+          "required": false,
+          "description": "Today's figures for the comparison; leave both sides out to draw no comparison."
+        },
+        {
+          "name": "yesterday",
+          "type": "SentimentStats",
+          "required": false,
+          "description": "Yesterday's figures for the comparison."
+        },
+        {
+          "name": "labels",
+          "type": "SentimentLabels",
+          "required": false,
+          "description": "Text pack; the Simplified Chinese default is used when omitted."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class names."
+        }
+      ]
+    },
+    "SentimentLabels": {
+      "kind": "type",
+      "source": "src/cn/labels.ts",
+      "props": [
+        {
+          "name": "region",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "levels",
+          "type": "readonly [string, string, string, string, string]",
+          "required": true,
+          "description": "五档，从低到高。"
+        },
+        {
+          "name": "rows",
+          "type": "{ limitUp: string; limitDown: string; sealRate: string; broken: string }",
+          "required": true,
+          "description": "今昨对比的四行名字。"
+        },
+        {
+          "name": "today",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "yesterday",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "scoreCaption",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "unavailable",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "scoreAria",
+          "type": "(score: string, level: string) => string",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "SentimentStats": {
+      "kind": "type",
+      "source": "src/cn/sentiment-gauge.tsx",
+      "props": [
+        {
+          "name": "limitUp",
+          "type": "CnValue",
+          "required": false,
+          "description": "Limit-up count."
+        },
+        {
+          "name": "limitDown",
+          "type": "CnValue",
+          "required": false,
+          "description": "Limit-down count."
+        },
+        {
+          "name": "sealRate",
+          "type": "CnValue",
+          "required": false,
+          "description": "Seal rate as a percentage (62.5 means 62.5%)."
+        },
+        {
+          "name": "broken",
+          "type": "CnValue",
+          "required": false,
+          "description": "Count of stocks that touched the limit and opened."
+        }
+      ]
+    },
     "Separator": {
       "kind": "component",
       "source": "src/primitives/separator.tsx",
@@ -29138,6 +30602,12 @@
           "type": "readonly { at: number; label: string }[]",
           "required": false,
           "description": "图上的事件点：按时间落在序列的点上，画编号引线（01、02……按给的次序编号）。"
+        },
+        {
+          "name": "regimes",
+          "type": "Omit<RegimeStripProps, 'scale'>",
+          "required": false,
+          "description": "Market regime strip under the time axis (a RegimeStrip without `scale`): it shares the x axis and the crosshair with the series, and the tooltip gets a row with the regime at the hovered point."
         },
         {
           "name": "onExport",
@@ -29375,6 +30845,12 @@
           "description": "图上的事件点：按时间落在序列的点上，画编号引线（01、02……按给的次序编号）。"
         },
         {
+          "name": "regimes",
+          "type": "Omit<RegimeStripProps, 'scale'>",
+          "required": false,
+          "description": "Market regime strip under the time axis (a RegimeStrip without `scale`): it shares the x axis and the crosshair with the series, and the tooltip gets a row with the regime at the hovered point."
+        },
+        {
           "name": "onExport",
           "type": "() => void",
           "required": false,
@@ -29429,6 +30905,11 @@
           "description": "休市（午休、夜盘间隙、节假日）：图上画 bg-100 竖带，时间轴不压缩（压缩会让斜率失真）。"
         }
       ]
+    },
+    "SessionLabels": {
+      "kind": "type",
+      "source": "src/cn/labels.ts",
+      "props": []
     },
     "SessionMinutes": {
       "kind": "type",
@@ -30078,6 +31559,83 @@
         }
       ]
     },
+    "Sidebar": {
+      "kind": "component",
+      "source": "src/layout/sidebar.tsx",
+      "props": [
+        {
+          "name": "side",
+          "type": "'start' | 'end'",
+          "required": false,
+          "default": "'start'",
+          "description": "Which child is the narrow one: the first (start) or the last (end)."
+        },
+        {
+          "name": "sideWidth",
+          "type": "SpaceStep | number",
+          "required": false,
+          "default": "SIDEBAR_SIDE_WIDTH",
+          "description": "Width of the narrow child: a spacing step name or a number of pixels."
+        },
+        {
+          "name": "contentMin",
+          "type": "number",
+          "required": false,
+          "default": "SIDEBAR_CONTENT_MIN",
+          "description": "Smallest share of the container the wide child keeps before the two stack (0 to 1)."
+        },
+        {
+          "name": "gap",
+          "type": "SpaceStep",
+          "required": false,
+          "default": "'space-3'",
+          "description": "Gap between the two children, a spacing step name."
+        },
+        {
+          "name": "as",
+          "type": "LayoutTag",
+          "required": false,
+          "default": "'div'",
+          "description": "Element to render."
+        }
+      ]
+    },
+    "SidebarProps": {
+      "kind": "type",
+      "source": "src/layout/sidebar.tsx",
+      "props": [
+        {
+          "name": "side",
+          "type": "'start' | 'end'",
+          "required": false,
+          "description": "Which child is the narrow one: the first (start) or the last (end)."
+        },
+        {
+          "name": "sideWidth",
+          "type": "SpaceStep | number",
+          "required": false,
+          "description": "Width of the narrow child: a spacing step name or a number of pixels."
+        },
+        {
+          "name": "contentMin",
+          "type": "number",
+          "required": false,
+          "description": "Smallest share of the container the wide child keeps before the two stack (0 to 1)."
+        },
+        {
+          "name": "gap",
+          "type": "SpaceStep",
+          "required": false,
+          "description": "Gap between the two children, a spacing step name."
+        },
+        {
+          "name": "as",
+          "type": "LayoutTag",
+          "required": false,
+          "description": "Element to render."
+        }
+      ]
+    },
     "SizeFormat": {
       "kind": "type",
       "source": "src/lib/chart/format/quantity.ts",
@@ -30575,6 +32133,36 @@
         }
       ]
     },
+    "SnakeRow": {
+      "kind": "type",
+      "source": "src/cn/timeline-model.ts",
+      "props": [
+        {
+          "name": "index",
+          "type": "number",
+          "required": true,
+          "description": "第几行，从 1 数。"
+        },
+        {
+          "name": "flow",
+          "type": "'ltr' | 'rtl'",
+          "required": true,
+          "description": "这一行的流向：奇数行从左往右，偶数行从右往左（蛇形）。"
+        },
+        {
+          "name": "sequence",
+          "type": "T[]",
+          "required": true,
+          "description": "按序列次序（流向的先后）排的站点。"
+        },
+        {
+          "name": "display",
+          "type": "T[]",
+          "required": true,
+          "description": "按屏幕从左到右的次序排的站点（rtl 行是序列反过来）。"
+        }
+      ]
+    },
     "SortSpec": {
       "kind": "type",
       "source": "src/blocks/data-grid/model.ts",
@@ -30592,6 +32180,11 @@
           "description": ""
         }
       ]
+    },
+    "SpaceStep": {
+      "kind": "type",
+      "source": "src/layout/space.ts",
+      "props": []
     },
     "SparkAxis": {
       "kind": "type",
@@ -31554,6 +33147,44 @@
         }
       ]
     },
+    "Stack": {
+      "kind": "component",
+      "source": "src/layout/stack.tsx",
+      "props": [
+        {
+          "name": "gap",
+          "type": "SpaceStep",
+          "required": false,
+          "default": "'space-3'",
+          "description": "Gap between children, a spacing step name."
+        },
+        {
+          "name": "as",
+          "type": "LayoutTag",
+          "required": false,
+          "default": "'div'",
+          "description": "Element to render."
+        }
+      ]
+    },
+    "StackProps": {
+      "kind": "type",
+      "source": "src/layout/stack.tsx",
+      "props": [
+        {
+          "name": "gap",
+          "type": "SpaceStep",
+          "required": false,
+          "description": "Gap between children, a spacing step name."
+        },
+        {
+          "name": "as",
+          "type": "LayoutTag",
+          "required": false,
+          "description": "Element to render."
+        }
+      ]
+    },
     "StatusBar": {
       "kind": "component",
       "source": "src/blocks/status-bar/status-bar.tsx",
@@ -32412,6 +34043,134 @@
       "source": "src/blocks/system-monitor/system-monitor-model.ts",
       "props": []
     },
+    "StreakBadge": {
+      "kind": "component",
+      "source": "src/cn/streak-badge.tsx",
+      "props": [
+        {
+          "name": "streak",
+          "type": "number | StreakValue | null | undefined",
+          "required": true,
+          "description": "Boards in a row (1 is the first board); a number, or an object with days, yesterday's boards and a reason."
+        },
+        {
+          "name": "form",
+          "type": "'boards' | 'promotion'",
+          "required": false,
+          "default": "'boards'",
+          "description": "Writes first board, N boards or N days M boards; `promotion` writes the promotion form (one-to-two) when the previous boards are known."
+        },
+        {
+          "name": "labels",
+          "type": "StreakLabels",
+          "required": false,
+          "default": "cnLabelsZh.streak",
+          "description": "Text pack; the Simplified Chinese default is used when omitted."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class names."
+        }
+      ]
+    },
+    "StreakBadgeProps": {
+      "kind": "type",
+      "source": "src/cn/streak-badge.tsx",
+      "props": [
+        {
+          "name": "streak",
+          "type": "number | StreakValue | null | undefined",
+          "required": true,
+          "description": "Boards in a row (1 is the first board); a number, or an object with days, yesterday's boards and a reason."
+        },
+        {
+          "name": "form",
+          "type": "'boards' | 'promotion'",
+          "required": false,
+          "description": "Writes first board, N boards or N days M boards; `promotion` writes the promotion form (one-to-two) when the previous boards are known."
+        },
+        {
+          "name": "labels",
+          "type": "StreakLabels",
+          "required": false,
+          "description": "Text pack; the Simplified Chinese default is used when omitted."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class names."
+        }
+      ]
+    },
+    "StreakLabels": {
+      "kind": "type",
+      "source": "src/cn/labels.ts",
+      "props": [
+        {
+          "name": "first",
+          "type": "string",
+          "required": true,
+          "description": "首板。"
+        },
+        {
+          "name": "boards",
+          "type": "(boards: number) => string",
+          "required": true,
+          "description": "几板，例「2板」。"
+        },
+        {
+          "name": "daysBoards",
+          "type": "(days: number, boards: number) => string",
+          "required": true,
+          "description": "几天几板，例「5天3板」。"
+        },
+        {
+          "name": "promotion",
+          "type": "(from: number, to: number) => string",
+          "required": true,
+          "description": "晋级口径，例「一进二」。"
+        },
+        {
+          "name": "unavailable",
+          "type": "string",
+          "required": true,
+          "description": "取不到连板数时悬停写的原因（缺省不写）。"
+        }
+      ]
+    },
+    "StreakValue": {
+      "kind": "type",
+      "source": "src/cn/badge-model.ts",
+      "props": [
+        {
+          "name": "boards",
+          "type": "number | null",
+          "required": true,
+          "description": "Boards in a row; null means unavailable."
+        },
+        {
+          "name": "days",
+          "type": "number",
+          "required": false,
+          "description": "Days since the run started (writes N days M boards when larger than boards)."
+        },
+        {
+          "name": "promotedFrom",
+          "type": "number",
+          "required": false,
+          "description": "Boards yesterday, for the promotion form."
+        },
+        {
+          "name": "reason",
+          "type": "string",
+          "required": false,
+          "description": "Why the number is unavailable (shown on hover)."
+        }
+      ]
+    },
     "SvgClipMask": {
       "kind": "component",
       "source": "src/motion/effect/svg-clip-mask.tsx",
@@ -33067,6 +34826,57 @@
       "kind": "type",
       "source": "src/katana/switchboard-card.tsx",
       "props": []
+    },
+    "Switcher": {
+      "kind": "component",
+      "source": "src/layout/switcher.tsx",
+      "props": [
+        {
+          "name": "threshold",
+          "type": "number",
+          "required": false,
+          "default": "SWITCHER_THRESHOLD",
+          "description": "Container width in pixels below which all children stack."
+        },
+        {
+          "name": "gap",
+          "type": "SpaceStep",
+          "required": false,
+          "default": "'space-3'",
+          "description": "Gap between children, a spacing step name."
+        },
+        {
+          "name": "as",
+          "type": "LayoutTag",
+          "required": false,
+          "default": "'div'",
+          "description": "Element to render."
+        }
+      ]
+    },
+    "SwitcherProps": {
+      "kind": "type",
+      "source": "src/layout/switcher.tsx",
+      "props": [
+        {
+          "name": "threshold",
+          "type": "number",
+          "required": false,
+          "description": "Container width in pixels below which all children stack."
+        },
+        {
+          "name": "gap",
+          "type": "SpaceStep",
+          "required": false,
+          "description": "Gap between children, a spacing step name."
+        },
+        {
+          "name": "as",
+          "type": "LayoutTag",
+          "required": false,
+          "description": "Element to render."
+        }
+      ]
     },
     "SymbolGalaxy": {
       "kind": "component",
@@ -34866,6 +36676,320 @@
         }
       ]
     },
+    "ThemeCard": {
+      "kind": "component",
+      "source": "src/cn/theme-card.tsx",
+      "props": [
+        {
+          "name": "theme",
+          "type": "ThemeCardData",
+          "required": true,
+          "description": "The theme to show: name, counts, catalyst and members."
+        },
+        {
+          "name": "index",
+          "type": "number",
+          "required": false,
+          "description": "Position number shown before the name (written 01, 02…); omit for none."
+        },
+        {
+          "name": "onOpen",
+          "type": "(key: string) => void",
+          "required": false,
+          "description": "Called by the footer button with the theme key; without it the footer is plain text."
+        },
+        {
+          "name": "onSelectMember",
+          "type": "(member: ThemeMember, theme: ThemeCardData) => void",
+          "required": false,
+          "description": "Called when a member row is picked; without it the rows are plain."
+        },
+        {
+          "name": "labels",
+          "type": "ThemeCardLabels",
+          "required": false,
+          "default": "cnLabelsZh.themeCard",
+          "description": "Text pack; the Simplified Chinese default is used when omitted."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class names."
+        }
+      ]
+    },
+    "ThemeCardData": {
+      "kind": "type",
+      "source": "src/cn/theme-card.tsx",
+      "props": [
+        {
+          "name": "key",
+          "type": "string",
+          "required": true,
+          "description": "Stable key of the theme."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": "Theme name."
+        },
+        {
+          "name": "limitUpCount",
+          "type": "number | null",
+          "required": false,
+          "description": "Number of limit-up stocks; counted from the members when omitted, null writes a dash."
+        },
+        {
+          "name": "highestBoard",
+          "type": "number | null",
+          "required": false,
+          "description": "Highest board; taken from the members when omitted, and nothing is drawn below two boards."
+        },
+        {
+          "name": "catalyst",
+          "type": "ThemeCatalyst | null",
+          "required": false,
+          "description": "The catalyst line with its source; null or empty writes a dash."
+        },
+        {
+          "name": "catalystReason",
+          "type": "string",
+          "required": false,
+          "description": "Why the catalyst is unavailable (shown on hover)."
+        },
+        {
+          "name": "members",
+          "type": "readonly ThemeMember[]",
+          "required": true,
+          "description": "Member stocks in display order."
+        }
+      ]
+    },
+    "ThemeCardLabels": {
+      "kind": "type",
+      "source": "src/cn/labels.ts",
+      "props": [
+        {
+          "name": "limitUpCount",
+          "type": "(count: number) => string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "highestBoard",
+          "type": "(boards: number) => string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "viewAll",
+          "type": "(count: number) => string",
+          "required": true,
+          "description": "卡脚，例「查看 6 只涨停」。"
+        },
+        {
+          "name": "catalystSource",
+          "type": "(source: string) => string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "noCatalyst",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "noMembers",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "unavailable",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "card",
+          "type": "(name: string) => string",
+          "required": true,
+          "description": "卡的读屏名，例「题材 PCB板」。"
+        },
+        {
+          "name": "row",
+          "type": "string",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "ThemeCardProps": {
+      "kind": "type",
+      "source": "src/cn/theme-card.tsx",
+      "props": [
+        {
+          "name": "theme",
+          "type": "ThemeCardData",
+          "required": true,
+          "description": "The theme to show: name, counts, catalyst and members."
+        },
+        {
+          "name": "index",
+          "type": "number",
+          "required": false,
+          "description": "Position number shown before the name (written 01, 02…); omit for none."
+        },
+        {
+          "name": "onOpen",
+          "type": "(key: string) => void",
+          "required": false,
+          "description": "Called by the footer button with the theme key; without it the footer is plain text."
+        },
+        {
+          "name": "onSelectMember",
+          "type": "(member: ThemeMember, theme: ThemeCardData) => void",
+          "required": false,
+          "description": "Called when a member row is picked; without it the rows are plain."
+        },
+        {
+          "name": "labels",
+          "type": "ThemeCardLabels",
+          "required": false,
+          "description": "Text pack; the Simplified Chinese default is used when omitted."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class names."
+        }
+      ]
+    },
+    "ThemeCards": {
+      "kind": "component",
+      "source": "src/cn/theme-card.tsx",
+      "props": [
+        {
+          "name": "themes",
+          "type": "readonly ThemeCardData[]",
+          "required": true,
+          "description": "The themes in display order; the caller sorts (by limit-up count, time, boards or change)."
+        },
+        {
+          "name": "onOpen",
+          "type": "(key: string) => void",
+          "required": false,
+          "description": "Called by each card's footer button with the theme key."
+        },
+        {
+          "name": "onSelectMember",
+          "type": "(member: ThemeMember, theme: ThemeCardData) => void",
+          "required": false,
+          "description": "Called when a member row is picked."
+        },
+        {
+          "name": "labels",
+          "type": "ThemeCardLabels",
+          "required": false,
+          "default": "cnLabelsZh.themeCard",
+          "description": "Text pack shared by the cards; the Simplified Chinese default is used when omitted."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class names."
+        }
+      ]
+    },
+    "ThemeCardsProps": {
+      "kind": "type",
+      "source": "src/cn/theme-card.tsx",
+      "props": [
+        {
+          "name": "themes",
+          "type": "readonly ThemeCardData[]",
+          "required": true,
+          "description": "The themes in display order; the caller sorts (by limit-up count, time, boards or change)."
+        },
+        {
+          "name": "onOpen",
+          "type": "(key: string) => void",
+          "required": false,
+          "description": "Called by each card's footer button with the theme key."
+        },
+        {
+          "name": "onSelectMember",
+          "type": "(member: ThemeMember, theme: ThemeCardData) => void",
+          "required": false,
+          "description": "Called when a member row is picked."
+        },
+        {
+          "name": "labels",
+          "type": "ThemeCardLabels",
+          "required": false,
+          "description": "Text pack shared by the cards; the Simplified Chinese default is used when omitted."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class names."
+        }
+      ]
+    },
+    "ThemeCatalyst": {
+      "kind": "type",
+      "source": "src/cn/theme-card.tsx",
+      "props": [
+        {
+          "name": "text",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "source",
+          "type": "string",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "ThemeMember": {
+      "kind": "type",
+      "source": "src/cn/theme-card.tsx",
+      "props": [
+        {
+          "name": "code",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "time",
+          "type": "string | null",
+          "required": false,
+          "description": "涨停（首次封板）时刻，「09:36」；取不到写 —。"
+        },
+        {
+          "name": "streak",
+          "type": "number | StreakValue | null",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
     "ThemeOption": {
       "kind": "type",
       "source": "src/patterns/theme-selector.tsx",
@@ -35385,6 +37509,191 @@
           "type": "string",
           "required": false,
           "description": ""
+        }
+      ]
+    },
+    "TimelineItem": {
+      "kind": "type",
+      "source": "src/cn/timeline-model.ts",
+      "props": [
+        {
+          "name": "code",
+          "type": "string",
+          "required": true,
+          "description": "Stock code, unique within the timeline."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": "Stock name."
+        },
+        {
+          "name": "time",
+          "type": "string | null",
+          "required": false,
+          "description": "First-seal time (\"09:31\" or \"09:31:05\"); one that is missing or outside trading hours is left off the axis."
+        },
+        {
+          "name": "streak",
+          "type": "number | StreakValue | null",
+          "required": false,
+          "description": "Boards in a row, shown as a StreakBadge."
+        },
+        {
+          "name": "themes",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Themes of the stock; the first is written on the card and the filter chips use all of them."
+        },
+        {
+          "name": "amount",
+          "type": "number | null",
+          "required": false,
+          "description": "Turnover in yuan (written in wan or yi); a dash when unavailable."
+        },
+        {
+          "name": "board",
+          "type": "BoardKind | null",
+          "required": false,
+          "description": "Board kind; a mark is drawn for the 20cm and 30cm boards and ST."
+        }
+      ]
+    },
+    "TimelineLabels": {
+      "kind": "type",
+      "source": "src/cn/labels.ts",
+      "props": [
+        {
+          "name": "region",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "title",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "summary",
+          "type": "(stocks: number, stations: number) => string",
+          "required": true,
+          "description": "标题旁的汇总，例「共 25 只 · 20 个封板时刻」。"
+        },
+        {
+          "name": "sort",
+          "type": "{ label: string; latestFirst: string; earliestFirst: string }",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "phaseCount",
+          "type": "(stations: number, stocks: number) => string",
+          "required": true,
+          "description": "时段图例里的计数，例「1站 1只」。"
+        },
+        {
+          "name": "phases",
+          "type": "SessionLabels",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "themeFilter",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "allThemes",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "themeChip",
+          "type": "(name: string, count: number) => string",
+          "required": true,
+          "description": "题材 chip 上的计数文字。"
+        },
+        {
+          "name": "rowRange",
+          "type": "(index: number, from: string, to: string) => string",
+          "required": true,
+          "description": "一行的标记，例「R1 14:49 — 13:00」。"
+        },
+        {
+          "name": "towardsEarlier",
+          "type": "string",
+          "required": true,
+          "description": "行尾提示，例「越来越早」。"
+        },
+        {
+          "name": "towardsLater",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "station",
+          "type": "(time: string, count: number) => string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "noTime",
+          "type": "(count: number) => string",
+          "required": true,
+          "description": "没有封板时刻的票数提示，例「3 只没有封板时刻」。"
+        },
+        {
+          "name": "empty",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "unavailable",
+          "type": "string",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "TimelineOrder": {
+      "kind": "type",
+      "source": "src/cn/timeline-model.ts",
+      "props": []
+    },
+    "TimelineStation": {
+      "kind": "type",
+      "source": "src/cn/timeline-model.ts",
+      "props": [
+        {
+          "name": "key",
+          "type": "string",
+          "required": true,
+          "description": "「14:49」，也是站点的 key。"
+        },
+        {
+          "name": "minutes",
+          "type": "number",
+          "required": true,
+          "description": "自 0 点起的整分钟数。"
+        },
+        {
+          "name": "phase",
+          "type": "CnPhase",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "items",
+          "type": "TimelineItem[]",
+          "required": true,
+          "description": "这一分钟封板的票，按封板的先后（含秒）排。"
         }
       ]
     },
@@ -38287,6 +40596,11 @@
       "source": "src/quant/param-scatter-model.ts",
       "props": []
     },
+    "boardKindOf": {
+      "kind": "function",
+      "source": "src/cn/badge-model.ts",
+      "props": []
+    },
     "buildPageRange": {
       "kind": "function",
       "source": "src/primitives/pagination.tsx",
@@ -38310,6 +40624,26 @@
     "cn": {
       "kind": "function",
       "source": "src/lib/cn.ts",
+      "props": []
+    },
+    "cnAxisPosition": {
+      "kind": "function",
+      "source": "src/cn/session.ts",
+      "props": []
+    },
+    "cnLabelsZh": {
+      "kind": "value",
+      "source": "src/cn/labels.ts",
+      "props": []
+    },
+    "cnPhaseOf": {
+      "kind": "function",
+      "source": "src/cn/session.ts",
+      "props": []
+    },
+    "cnTradingMinutesBetween": {
+      "kind": "function",
+      "source": "src/cn/session.ts",
       "props": []
     },
     "collapsedItems": {
@@ -38444,9 +40778,29 @@
       "source": "src/lib/chart/format/price.ts",
       "props": []
     },
+    "dialArc": {
+      "kind": "function",
+      "source": "src/cn/market-pulse.tsx",
+      "props": []
+    },
+    "distributionBarHeight": {
+      "kind": "function",
+      "source": "src/quant/distribution-bars.tsx",
+      "props": []
+    },
+    "distributionTotals": {
+      "kind": "function",
+      "source": "src/quant/distribution-bars.tsx",
+      "props": []
+    },
     "falloff": {
       "kind": "function",
       "source": "src/patterns/dock.tsx",
+      "props": []
+    },
+    "filterByTheme": {
+      "kind": "function",
+      "source": "src/cn/timeline-model.ts",
       "props": []
     },
     "filterTrades": {
@@ -38488,6 +40842,47 @@
       "kind": "function",
       "source": "src/patterns/animated-file-upload.tsx",
       "props": []
+    },
+    "formatClock": {
+      "kind": "function",
+      "source": "src/cn/session.ts",
+      "props": []
+    },
+    "formatCnAmount": {
+      "kind": "function",
+      "source": "src/cn/format.ts",
+      "props": [
+        {
+          "name": "abbreviate",
+          "type": "boolean",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "digits",
+          "type": "number",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "signed",
+          "type": "boolean",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "wan",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "yi",
+          "type": "string",
+          "required": true,
+          "description": ""
+        }
+      ]
     },
     "formatCompact": {
       "kind": "function",
@@ -38559,6 +40954,11 @@
     "gaussianKde": {
       "kind": "function",
       "source": "src/quant/ridgeline-model.ts",
+      "props": []
+    },
+    "groupStations": {
+      "kind": "function",
+      "source": "src/cn/timeline-model.ts",
       "props": []
     },
     "histogram": {
@@ -38776,6 +41176,35 @@
         }
       ]
     },
+    "limitStatusText": {
+      "kind": "function",
+      "source": "src/cn/badge-model.ts",
+      "props": [
+        {
+          "name": "status",
+          "type": "Record<LimitStatusKey, string>",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "sealAmount",
+          "type": "(amount: string) => string",
+          "required": true,
+          "description": "封单额文字，例「封单 3.20亿」；amount 是已经写好的金额。"
+        },
+        {
+          "name": "unavailable",
+          "type": "string",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "limitStatusTone": {
+      "kind": "function",
+      "source": "src/cn/badge-model.ts",
+      "props": []
+    },
     "linkEnds": {
       "kind": "function",
       "source": "src/quant/flow-sankey-model.ts",
@@ -38888,9 +41317,29 @@
       "source": "src/quotes/watchlist-model.ts",
       "props": []
     },
+    "normalizeLimitStatus": {
+      "kind": "function",
+      "source": "src/cn/badge-model.ts",
+      "props": []
+    },
+    "normalizeStreak": {
+      "kind": "function",
+      "source": "src/cn/badge-model.ts",
+      "props": []
+    },
     "normalizeVintages": {
       "kind": "function",
       "source": "src/quant/vintage-series-model.ts",
+      "props": []
+    },
+    "parseClock": {
+      "kind": "function",
+      "source": "src/cn/session.ts",
+      "props": []
+    },
+    "phaseSummary": {
+      "kind": "function",
+      "source": "src/cn/timeline-model.ts",
       "props": []
     },
     "plainPrice": {
@@ -38902,6 +41351,42 @@
       "kind": "function",
       "source": "src/katana/page-preloader.tsx",
       "props": []
+    },
+    "pulseShare": {
+      "kind": "function",
+      "source": "src/cn/market-pulse.tsx",
+      "props": [
+        {
+          "name": "rising",
+          "type": "CnValue",
+          "required": true,
+          "description": "Number of rising stocks."
+        },
+        {
+          "name": "falling",
+          "type": "CnValue",
+          "required": true,
+          "description": "Number of falling stocks."
+        },
+        {
+          "name": "limitUp",
+          "type": "CnValue",
+          "required": true,
+          "description": "Number of limit-up stocks."
+        },
+        {
+          "name": "limitDown",
+          "type": "CnValue",
+          "required": true,
+          "description": "Number of limit-down stocks."
+        },
+        {
+          "name": "flat",
+          "type": "CnValue",
+          "required": true,
+          "description": "Number of flat stocks."
+        }
+      ]
     },
     "quantileRange": {
       "kind": "function",
@@ -38959,6 +41444,11 @@
     "ratingZone": {
       "kind": "function",
       "source": "src/quotes/rating-gauge-model.ts",
+      "props": []
+    },
+    "readCnValue": {
+      "kind": "function",
+      "source": "src/cn/value.ts",
       "props": []
     },
     "readPersisted": {
@@ -39152,6 +41642,11 @@
       "source": "src/primitives/select.tsx",
       "props": []
     },
+    "sentimentLevel": {
+      "kind": "function",
+      "source": "src/cn/sentiment-gauge.tsx",
+      "props": []
+    },
     "setColumnFixed": {
       "kind": "function",
       "source": "src/blocks/data-grid/layout-model.ts",
@@ -39201,6 +41696,11 @@
           "description": ""
         }
       ]
+    },
+    "snakeRows": {
+      "kind": "function",
+      "source": "src/cn/timeline-model.ts",
+      "props": []
     },
     "snapSplitRatio": {
       "kind": "function",
@@ -39300,6 +41800,52 @@
       "source": "src/blocks/symbol-galaxy/galaxy-model.ts",
       "props": []
     },
+    "streakLevel": {
+      "kind": "function",
+      "source": "src/cn/badge-model.ts",
+      "props": []
+    },
+    "streakSortKey": {
+      "kind": "function",
+      "source": "src/cn/badge-model.ts",
+      "props": []
+    },
+    "streakText": {
+      "kind": "function",
+      "source": "src/cn/badge-model.ts",
+      "props": [
+        {
+          "name": "first",
+          "type": "string",
+          "required": true,
+          "description": "首板。"
+        },
+        {
+          "name": "boards",
+          "type": "(boards: number) => string",
+          "required": true,
+          "description": "几板，例「2板」。"
+        },
+        {
+          "name": "daysBoards",
+          "type": "(days: number, boards: number) => string",
+          "required": true,
+          "description": "几天几板，例「5天3板」。"
+        },
+        {
+          "name": "promotion",
+          "type": "(from: number, to: number) => string",
+          "required": true,
+          "description": "晋级口径，例「一进二」。"
+        },
+        {
+          "name": "unavailable",
+          "type": "string",
+          "required": true,
+          "description": "取不到连板数时悬停写的原因（缺省不写）。"
+        }
+      ]
+    },
     "symbolMarkLetters": {
       "kind": "function",
       "source": "src/quotes/symbol-mark.tsx",
@@ -39356,6 +41902,59 @@
       "source": "src/lib/text-measure.ts",
       "props": []
     },
+    "themeCardFigures": {
+      "kind": "function",
+      "source": "src/cn/theme-card.tsx",
+      "props": [
+        {
+          "name": "key",
+          "type": "string",
+          "required": true,
+          "description": "Stable key of the theme."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": "Theme name."
+        },
+        {
+          "name": "limitUpCount",
+          "type": "number | null",
+          "required": false,
+          "description": "Number of limit-up stocks; counted from the members when omitted, null writes a dash."
+        },
+        {
+          "name": "highestBoard",
+          "type": "number | null",
+          "required": false,
+          "description": "Highest board; taken from the members when omitted, and nothing is drawn below two boards."
+        },
+        {
+          "name": "catalyst",
+          "type": "ThemeCatalyst | null",
+          "required": false,
+          "description": "The catalyst line with its source; null or empty writes a dash."
+        },
+        {
+          "name": "catalystReason",
+          "type": "string",
+          "required": false,
+          "description": "Why the catalyst is unavailable (shown on hover)."
+        },
+        {
+          "name": "members",
+          "type": "readonly ThemeMember[]",
+          "required": true,
+          "description": "Member stocks in display order."
+        }
+      ]
+    },
+    "themeCounts": {
+      "kind": "function",
+      "source": "src/cn/timeline-model.ts",
+      "props": []
+    },
     "toggleGroupVariants": {
       "kind": "function",
       "source": "src/primitives/toggle-group.tsx",
@@ -39389,6 +41988,11 @@
     "useAvatarSize": {
       "kind": "function",
       "source": "src/primitives/avatar.tsx",
+      "props": []
+    },
+    "useEmphasis": {
+      "kind": "function",
+      "source": "src/layout/emphasis.tsx",
       "props": []
     },
     "useEnterMarks": {

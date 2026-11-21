@@ -129,7 +129,35 @@ export function GaugeBarDemo() {
           <GaugeBar label="示例比率" value="还没有数据" unavailable share={null} />
         </div>
       </Row>
-      <p className="gal-note">{SAMPLE}。share 越界按边画；null 不画填充。</p>
+      <Row name="分段占比（涨 · 平 · 跌）">
+        <div className="gal-wide" data-gallery-gauge="segments">
+          <GaugeBar
+            label="示例涨跌家数"
+            value="5000"
+            segments={[
+              { value: 2310, tone: 'up', label: '上涨 2310' },
+              { value: 120, tone: 'muted', label: '平 120' },
+              { value: 2570, tone: 'down', label: '下跌 2570' },
+            ]}
+          />
+        </div>
+      </Row>
+      <Row name="分段占比（涨停 · 炸板 · 跌停）">
+        <div className="gal-wide" data-gallery-gauge="limits">
+          <GaugeBar
+            label="示例涨停生态"
+            value="96"
+            segments={[
+              { value: 62, tone: 'up', label: '涨停 62' },
+              { value: 24, tone: 'accent', label: '炸板 24' },
+              { value: 10, tone: 'down', label: '跌停 10' },
+            ]}
+          />
+        </div>
+      </Row>
+      <p className="gal-note">
+        {SAMPLE}。share 越界按边画；null 不画填充；给了 segments 就按各段的量切开，不看 share。
+      </p>
     </>
   )
 }

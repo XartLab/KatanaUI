@@ -135,6 +135,15 @@ export {
   type MetricStage,
   type MetricTrendTone,
 } from '../quotes/metric-card.tsx'
+export {
+  DistributionBars,
+  distributionBarHeight,
+  distributionTotals,
+  type DistributionBarsProps,
+  type DistributionBin,
+  type DistributionTone,
+  type DistributionTotals,
+} from './distribution-bars.tsx'
 export { ParamScatter, type ParamScatterProps } from './param-scatter.tsx'
 export {
   bestIndex,

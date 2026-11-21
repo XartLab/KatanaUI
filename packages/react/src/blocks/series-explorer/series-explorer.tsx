@@ -20,11 +20,14 @@ import { LcdTooltip } from '../../lib/chart/chart-kit/lcd-tooltip.tsx'
 import { PlotGrid, PlotYAxis } from '../../lib/chart/chart-kit/plot-axes.tsx'
 import { linePath, makePlot, pct, PLOT_W } from '../../lib/chart/series-geometry.ts'
 import { MetricCard } from '../../quotes/metric-card.tsx'
+import { RegimeStrip } from '../regime-strip/regime-strip.tsx'
 import {
   changeRatio,
   chartExtent,
   pointValue,
   previousWindow,
+  regimeAt,
+  regimeScale,
   rangeWindow,
   reconcileWindow,
   reduceWindow,
@@ -58,6 +61,7 @@ export function SeriesExplorer({
   reconcile,
   meta,
   events,
+  regimes,
   onExport,
   onFullscreen,
   defaultMetric,
@@ -375,6 +379,12 @@ export function SeriesExplorer({
                               },
                             ]
                           : []),
+                        ...(() => {
+                          const state = regimes
+                            ? regimes.states.find((item) => item.id === regimeAt(regimes.segments, activePoint.at))
+                            : undefined
+                          return regimes && state ? [{ key: 'regime', label: regimes.label, value: state.name }] : []
+                        })(),
                         ...(kpi.limit === undefined
                           ? []
                           : [{ key: 'limit', label: labels.limit, value: formatValue(kpi.limit) }]),
@@ -397,6 +407,12 @@ export function SeriesExplorer({
                   )
                 })}
               </div>
+              {regimes && (
+                <div className="k-sx-regimes" data-slot="series-regimes">
+                  <RegimeStrip {...regimes} scale={regimeScale(shown.map((point) => point.at))} />
+                  {active !== null && <span className="k-plot-cross" style={{ left: pct(plot.xAt(active)) }} />}
+                </div>
+              )}
             </>
           )}
 

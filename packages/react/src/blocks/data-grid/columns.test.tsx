@@ -1,7 +1,15 @@
 // SPDX-License-Identifier: MIT
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vite-plus/test'
-import { defaultAlign, formatTimestamp, resolveCell, sortComparator, type GridColumn } from './columns.ts'
+import {
+  barRatio,
+  defaultAlign,
+  resolveHeat,
+  formatTimestamp,
+  resolveCell,
+  sortComparator,
+  type GridColumn,
+} from './columns.ts'
 import { DataGrid } from './data-grid.tsx'
 import { DataGridHostProvider } from './host.tsx'
 
@@ -206,5 +214,214 @@ describe('自定义列、行属性与子行', () => {
     expect(out).not.toContain('<button')
     expect(out).not.toContain('is-interactive')
     expect(out).not.toContain('aria-selected')
+  })
+})
+
+// #109：A 股看板的列类型（居中条、胶囊、进度）与强度底色。
+describe('bar 列：以 0 为中线的居中条', () => {
+  const columns: GridColumn<Row>[] = [{ ...col('bar', { digits: 1 }), id: 'net' }]
+  const layout = [{ id: 'net', label: 'Net', width: 200, visible: true }]
+  const html = (values: unknown[]) =>
+    renderToStaticMarkup(
+      <DataGrid
+        columns={columns}
+        layout={layout}
+        rows={values.map((v) => ({ v }))}
+        rowId={(row) => String(row.v)}
+        label="t"
+        sort={null}
+        onSortChange={() => {}}
+      />,
+    )
+
+  it('文字带符号；排序用数；空写 —', () => {
+    expect(cell(col('bar', { digits: 1 }), 12.34)).toMatchObject({ text: '+12.3', bar: 12.34, sort: 12.34 })
+    expect(cell(col('bar'), -3)).toMatchObject({ text: '-3.00', bar: -3 })
+    expect(cell(col('bar'), null)).toMatchObject({ text: '—', bar: undefined })
+  })
+
+  it('条长按本列绝对值最大者归一：正在右、负在左，各占半边', () => {
+    expect(barRatio(10, 10)).toBe(1)
+    expect(barRatio(-5, 10)).toBe(-0.5)
+    expect(barRatio(undefined, 10)).toBe(0)
+    expect(barRatio(5, 0)).toBe(0)
+    const out = html([10, -5, 0])
+    expect(out.match(/class="k-grid-bar"/g)).toHaveLength(3)
+    expect(out).toContain('data-dir="up"')
+    expect(out).toContain('data-dir="down"')
+    expect(out).toContain('data-dir="flat"')
+    expect(out).toContain('width:50%;left:50%')
+    expect(out).toContain('width:25%;right:50%')
+    expect(out).toContain('+10.0')
+  })
+})
+
+describe('pill 列：一格多枚标签', () => {
+  const layout = [{ id: 'tags', label: 'Tags', width: 220, visible: true }]
+  const html = (v: unknown, format?: { maxPills?: number }) =>
+    renderToStaticMarkup(
+      <DataGrid
+        columns={[{ ...col('pill', format), id: 'tags' }]}
+        layout={layout}
+        rows={[{ v }]}
+        rowId={() => 'r'}
+        label="t"
+        sort={null}
+        onSortChange={() => {}}
+      />,
+    )
+
+  it('值可以是一个或一串，每枚只认语义色调，没写色调是 muted', () => {
+    expect(cell(col('pill'), ['a', { label: 'b', tone: 'up' }])).toMatchObject({
+      text: 'a b',
+      pills: [
+        { label: 'a', tone: 'muted' },
+        { label: 'b', tone: 'up' },
+      ],
+    })
+    expect(cell(col('pill'), 'solo').pills).toEqual([{ label: 'solo', tone: 'muted' }])
+    expect(cell(col('pill'), [])).toMatchObject({ text: '—', pills: undefined })
+  })
+
+  it('每枚渲染成 data-tone 的胶囊；超过 maxPills 的收成 +n，title 写全部', () => {
+    const out = html(['甲', { label: '乙', tone: 'down' }, { label: '丙', tone: 'accent' }, '丁'], { maxPills: 2 })
+    expect(out.match(/data-pill=""/g)).toHaveLength(4)
+    expect(out.match(/ hidden=""/g)).toHaveLength(2)
+    expect(out).toContain('data-tone="down"')
+    expect(out).toContain('>+2</span>')
+    expect(out).toContain('title="甲 · 乙 · 丙 · 丁"')
+  })
+
+  it('不超过就没有 +n', () => {
+    expect(html(['甲', '乙'], { maxPills: 5 })).not.toContain('grid-pill-more')
+  })
+})
+
+describe('progress 列：分子 / 分母加细条', () => {
+  const html = (v: unknown) =>
+    renderToStaticMarkup(
+      <DataGrid
+        columns={[{ ...col('progress'), id: 'p' }]}
+        layout={[{ id: 'p', label: 'P', width: 160, visible: true }]}
+        rows={[{ v }]}
+        rowId={() => 'r'}
+        label="t"
+        sort={null}
+        onSortChange={() => {}}
+      />,
+    )
+
+  it('两种写法都认；比例是排序值；分母不是正数没有比例；坏值写 —', () => {
+    expect(cell(col('progress'), { done: 3, total: 12 })).toMatchObject({
+      text: '3/12',
+      sort: 0.25,
+      progress: { done: 3, total: 12, ratio: 0.25 },
+    })
+    expect(cell(col('progress'), [5, 4]).progress?.ratio).toBe(1)
+    expect(cell(col('progress'), [0, 0])).toMatchObject({ text: '0/0', sort: undefined })
+    expect(cell(col('progress'), 'x')).toMatchObject({ text: '—', progress: undefined })
+    expect(defaultAlign('progress')).toBe('end')
+  })
+
+  it('渲染成「3/12」加一条宽度等于比例的细条', () => {
+    const out = html([3, 12])
+    expect(out).toContain('k-grid-progress-text')
+    expect(out).toContain('3/12')
+    expect(out).toContain('data-slot="grid-progress"')
+    expect(out).toContain('width:25%')
+    expect(html([0, 0])).not.toContain('<i ')
+  })
+})
+
+describe('heat：强度底色与名次小字', () => {
+  const heated = (heat: GridColumn<Row>['heat']): GridColumn<Row> => ({ ...col('change'), id: 'h', heat })
+  const html = (heat: GridColumn<Row>['heat'], values: number[]) =>
+    renderToStaticMarkup(
+      <DataGrid
+        columns={[heated(heat)]}
+        layout={[{ id: 'h', label: 'H', width: 100, visible: true }]}
+        rows={values.map((v) => ({ v }))}
+        rowId={(row) => String(row.v)}
+        label="t"
+        sort={null}
+        onSortChange={() => {}}
+      />,
+    )
+
+  it('跨 0：正数涨色、负数跌色，深浅是到端点的比例；0 与空没有底色', () => {
+    const column = heated({ domain: [-10, 5] })
+    expect(resolveHeat(column, { v: 5 })).toMatchObject({ tone: 'up', level: 1 })
+    expect(resolveHeat(column, { v: 2.5 })).toMatchObject({ tone: 'up', level: 0.5 })
+    expect(resolveHeat(column, { v: -5 })).toMatchObject({ tone: 'down', level: 0.5 })
+    expect(resolveHeat(column, { v: -20 })).toMatchObject({ tone: 'down', level: 1 })
+    expect(resolveHeat(column, { v: 0 })).toBeUndefined()
+    expect(resolveHeat(column, { v: null })).toBeUndefined()
+    expect(resolveHeat(col('change'), { v: 5 })).toBeUndefined()
+  })
+
+  it('不跨 0 的 domain：全在 0 以上按涨色从最小到最大，全在 0 以下按跌色', () => {
+    expect(resolveHeat(heated({ domain: [10, 30] }), { v: 20 })).toMatchObject({ tone: 'up', level: 0.5 })
+    expect(resolveHeat(heated({ domain: [-30, -10] }), { v: -20 })).toMatchObject({ tone: 'down', level: 0.5 })
+  })
+
+  it('格子带 data-heat 与 --heat；rank 写在格子右上角的小字里；没声明 heat 的列不带', () => {
+    const out = html(
+      { domain: [-10, 10], rank: (row) => (Number(row.v) > 0 ? `#${String(row.v)}` : undefined) },
+      [10, -5, 0],
+    )
+    expect(out).toContain('data-heat="up"')
+    expect(out).toContain('--heat:1')
+    expect(out).toContain('data-heat="down"')
+    expect(out).toContain('--heat:0.5')
+    expect(out.match(/data-heat=/g)).toHaveLength(2)
+    expect(out).toContain('<span class="k-grid-rank" data-slot="grid-rank">#10</span>')
+    expect(out.match(/k-grid-rank/g)).toHaveLength(1)
+    expect(out).toContain('has-rank')
+  })
+})
+
+// A 股件包（#110）：streak 与 limitStatus 两种列类型。
+describe('列类型 streak 与 limitStatus', () => {
+  it('streak：字、排序值（板数为主、天数为次）与取不到写 —', () => {
+    expect(cell(col('streak'), 1).text).toBe('首板')
+    expect(cell(col('streak'), { boards: 3, days: 5 }).text).toBe('5天3板')
+    expect(cell(col('streak', { streakForm: 'promotion' }), { boards: 2, promotedFrom: 1 }).text).toBe('一进二')
+    expect(cell(col('streak'), null).text).toBe('—')
+    expect(cell(col('streak'), null).sort).toBeUndefined()
+    expect(cell(col('streak'), 4).sort).toBeGreaterThan(Number(cell(col('streak'), 3).sort))
+    const compare = sortComparator('streak', undefined)
+    expect(compare(cell(col('streak'), 4).sort, cell(col('streak'), 2).sort)).toBeGreaterThan(0)
+  })
+
+  it('limitStatus：字带封单额，排序按状态次序', () => {
+    expect(cell(col('limitStatus'), 'broken').text).toBe('炸板')
+    expect(cell(col('limitStatus'), { status: 'sealed', sealAmount: 3.2e8 }).text).toBe('封板 3.20亿')
+    expect(cell(col('limitStatus'), null).text).toBe('—')
+    expect(Number(cell(col('limitStatus'), 'limitDown').sort)).toBeGreaterThan(
+      Number(cell(col('limitStatus'), 'sealed').sort),
+    )
+  })
+
+  it('DataGrid 把两种列画成 StreakBadge 与 LimitStatus', () => {
+    const rows = [{ id: 'a', v: { boards: 4 } }]
+    const html = renderToStaticMarkup(
+      <DataGrid
+        columns={[
+          { ...col('streak'), id: 's' },
+          { id: 'l', type: 'limitStatus', value: () => 'sealed' },
+        ]}
+        layout={[
+          { id: 's', label: 'S', width: 100, visible: true },
+          { id: 'l', label: 'L', width: 100, visible: true },
+        ]}
+        rows={rows}
+        rowId={(row) => row.id}
+        label="t"
+        sort={null}
+        onSortChange={() => {}}
+      />,
+    )
+    expect(html).toContain('data-slot="streak-badge"')
+    expect(html).toContain('data-slot="limit-status"')
   })
 })

@@ -42,9 +42,57 @@
   background: var(--k-content-primary-foreground);
   transition: width var(--dur-snappy) var(--ease-snappy);
 }
+/* 分段（#109）：轨道里按量切段，段间 1px 缝；标签在条下面，字色跟段的色调，家数等宽数字。 */
+.k-gauge-track[data-segmented] {
+  display: flex;
+  gap: 1px;
+}
+.k-gauge-seg {
+  flex: 0 1 0;
+  min-width: 0;
+  background: var(--ink-400);
+  transition: flex-grow var(--dur-snappy) var(--ease-snappy);
+}
+.k-gauge-seg[data-tone='up'] {
+  background: var(--pnl-up);
+}
+.k-gauge-seg[data-tone='down'] {
+  background: var(--pnl-down);
+}
+.k-gauge-seg[data-tone='accent'] {
+  background: var(--ink-100);
+}
+.k-gauge-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--ink-300);
+  font: var(--text-caption) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+  line-height: 16px;
+}
+.k-gauge-legend li[data-tone='up'] {
+  color: var(--pnl-up);
+}
+.k-gauge-legend li[data-tone='down'] {
+  color: var(--pnl-down);
+}
+.k-gauge-legend li[data-tone='accent'] {
+  color: var(--ink-100);
+}
 .k-gauge-note {
   margin: 0;
   color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-sans-small);
   line-height: 16px;
+}
+
+/* —— 分量（#115，layout/emphasis.tsx）：只改字号档，不改颜色、不改密度 —— */
+.k-gauge[data-emphasis='hero'] .k-gauge-value:not(.is-unavailable) {
+  font: var(--text-display) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: var(--text-display-tracking);
 }

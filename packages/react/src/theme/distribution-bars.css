@@ -1,0 +1,86 @@
+/* SPDX-License-Identifier: MIT */
+/* DistributionBars（#109）：分档分布柱。柱区按档等分，每档一列：柱顶一行家数（等宽数字）、下面是柱；档名在柱区下面一行，汇总在最底。
+   颜色只用语义色调映到 token：涨 --pnl-up、跌 --pnl-down、弱 --ink-400、强调 --ink-100（Graphite 的中性亮，不用橙）。 */
+.k-dist {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  color: var(--ink-200);
+  font: var(--text-caption) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+}
+.k-dist-plot,
+.k-dist-axis {
+  display: grid;
+  grid-auto-columns: minmax(0, 1fr);
+  grid-auto-flow: column;
+  gap: 4px;
+}
+.k-dist-plot {
+  align-items: end;
+  border-bottom: 1px solid var(--line-200);
+}
+.k-dist-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  min-width: 0;
+  height: 100%;
+}
+.k-dist-count {
+  height: 16px;
+  color: var(--ink-200);
+  line-height: 16px;
+  white-space: nowrap;
+}
+.k-dist-bar {
+  display: block;
+  width: 100%;
+  background: var(--ink-400);
+  transition: height var(--dur-snappy) var(--ease-snappy);
+}
+.k-dist-col[data-tone='up'] .k-dist-bar {
+  background: var(--pnl-up);
+}
+.k-dist-col[data-tone='down'] .k-dist-bar {
+  background: var(--pnl-down);
+}
+.k-dist-col[data-tone='accent'] .k-dist-bar {
+  background: var(--ink-100);
+}
+.k-dist-label {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--ink-300);
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.k-dist-totals {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 6px;
+  margin: 0;
+  color: var(--ink-300);
+}
+.k-dist-totals > span + span::before {
+  margin-right: 6px;
+  color: var(--ink-400);
+  content: '/';
+}
+.k-dist-totals b {
+  color: var(--ink-100);
+  font-weight: 600;
+}
+.k-dist-totals > span[data-tone='up'] b {
+  color: var(--pnl-up);
+}
+.k-dist-totals > span[data-tone='down'] b {
+  color: var(--pnl-down);
+}
+.k-dist-empty {
+  margin: 0;
+  color: var(--ink-300);
+}

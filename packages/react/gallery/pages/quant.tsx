@@ -18,6 +18,7 @@ import {
 import {
   ChangeText,
   DecimalField,
+  DistributionBars,
   EventCalendar,
   LimitLadder,
   MarketHeatmap,
@@ -1728,5 +1729,36 @@ export function MetricCardDemo() {
         </PanelFrameBody>
       </PanelFrame>
     </div>
+  )
+}
+
+// 分档分布柱（#109）：A 股涨跌幅 11 档，家数是示例数据，不是行情。档名、汇总的名字都在这里写（包里不带文案）。
+const DIST_BINS = [
+  { key: 'd0', label: '跌停', count: 38, tone: 'down' },
+  { key: 'd1', label: '<-7%', count: 120, tone: 'down' },
+  { key: 'd2', label: '-7~-5', count: 210, tone: 'down' },
+  { key: 'd3', label: '-5~-3', count: 480, tone: 'down' },
+  { key: 'd4', label: '-3~-1', count: 920, tone: 'down' },
+  { key: 'd5', label: '平', count: 260, tone: 'muted' },
+  { key: 'd6', label: '1~3', count: 1180, tone: 'up' },
+  { key: 'd7', label: '3~5', count: 640, tone: 'up' },
+  { key: 'd8', label: '5~7', count: 310, tone: 'up' },
+  { key: 'd9', label: '>7%', count: 140, tone: 'up' },
+  { key: 'd10', label: '涨停', count: 62, tone: 'up' },
+] as const
+
+export function DistributionBarsDemo() {
+  return (
+    <>
+      <div className="gal-wide" data-testid="dist-bars" style={{ maxWidth: 560 }}>
+        <DistributionBars bins={DIST_BINS} label="示例涨跌幅分布" totals={{ up: '涨', muted: '平', down: '跌' }} />
+      </div>
+      <p className="gal-note">
+        示例数据：11 档（9 档同理），柱顶是家数，底部一行汇总；档的边界与文字都由调用方传。没有数据显示空态：
+      </p>
+      <div className="gal-wide" data-testid="dist-empty" style={{ maxWidth: 560 }}>
+        <DistributionBars bins={[]} label="示例空态" empty="暂无数据" />
+      </div>
+    </>
   )
 }

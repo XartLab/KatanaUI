@@ -7,6 +7,7 @@ import { ChevronDownIcon, ChevronUpIcon, LayoutGrid, List, Pause, Play, Search }
 import { Fragment, useMemo, useRef, useState, type ReactNode } from 'react'
 import { useEnterMarks } from '../../lib/live.ts'
 import { cn } from '../../lib/cn.ts'
+import { useEmphasis } from '../../layout/emphasis.tsx'
 import { MeasuredSkeleton } from '../../katana/measured-skeleton.tsx'
 import { Skeleton } from '../../katana/skeleton.tsx'
 import { ChipGroup, type ChipItem } from '../../patterns/chip-group.tsx'
@@ -29,6 +30,8 @@ import { useNewsVirtual } from './use-news-virtual.ts'
 // 新到的条目不打断阅读：没暂停且列表在顶部时直接插入并高亮（共用层 live.ts 的 useEnterMarks，1.2 秒），其余情况在顶上出「n 条新消息」，点了才插入并回到顶部；
 // 到达时读屏播一次计数（polite，不逐条读）；虚拟列表里行是绝对定位，浏览器的滚动锚定管不到，插在上面时件自己补偿 scrollTop。
 // 数据与字全由调用方传（频道、来源、文案、当前时间 now），件不认识任何应用；筛选状态在件内，用 on*Change 通知。
+// 认分量（#115，layout/emphasis.tsx）：compact 一行一条——只留「时间 标题」，不画标题行、频道、搜索、过滤、来源、品种与快捷操作，卡片排法也退回列表；
+// hero 标题字上一档（样子在 news-feed.css）；standard 就是上面写的完整版。
 
 export type NewsFeedLabels = {
   all: string
@@ -37,6 +40,10 @@ export type NewsFeedLabels = {
   channels: string
   sources: string
   clearSources: string
+  /** 类别芯片组的读屏名；传了且 categories 不空才有这一行。 */
+  categories?: string
+  /** 类别芯片组的清除钮读屏名。 */
+  clearCategories?: string
   search: string
   layout: string
   layoutList: string
@@ -82,6 +89,12 @@ export type NewsFeedProps = {
    * 类别与取值由调用方传；没传就没有这一排。过滤条上哪些分面在是件里的状态（NewsFacet.shown 给初值）。
    */
   facets?: readonly NewsFacet[]
+  /**
+   * Category chips (multi-select, ChipGroup) under the sources row; items carry `category`. Without categories (or without labels.categories) there is no such row.
+   * 类别芯片（多选，复用 ChipGroup）：条目带 category 取值（公告类别、增减持）；不传就没有这一行。
+   */
+  categories?: readonly { value: string; label: string }[]
+  onCategoriesChange?: (categories: string[]) => void
   onFacetsChange?: (picked: Record<string, string[]>) => void
   /** 选中的那条（阅读窗开着的那条）：行底色加深。给了 reader 时件自己管这一条，不用传。 */
   selected?: string | null
@@ -131,6 +144,8 @@ export function NewsFeed({
   channels,
   sources,
   facets = [],
+  categories = [],
+  onCategoriesChange,
   onFacetsChange,
   selected = null,
   reader,
@@ -156,8 +171,11 @@ export function NewsFeed({
   const onSelect = onSelectProp ?? onOpen
   const onSymbolSelect = onSymbolSelectProp ?? onSymbolPick
   const actionsLabel = labels.itemActions ?? itemActionsLabel ?? ''
+  const emphasis = useEmphasis()
+  const compact = emphasis === 'compact'
   const [channel, setChannel] = useState('')
   const [picked, setPicked] = useState<string[]>([])
+  const [pickedCategories, setPickedCategories] = useState<string[]>([])
   const [query, setQuery] = useState('')
   const [facetShown, setFacetShown] = useState<string[]>(() => facets.filter((f) => f.shown).map((f) => f.key))
   const [facetPicked, setFacetPicked] = useState<Record<string, string[]>>({})
@@ -165,7 +183,8 @@ export function NewsFeed({
     setFacetPicked(next)
     onFacetsChange?.(next)
   }
-  const [layout, setLayout] = useState(defaultLayout)
+  const [chosenLayout, setLayout] = useState(defaultLayout)
+  const layout = compact ? 'list' : chosenLayout
   const [collapsed, setCollapsed] = useState(false)
   const [openId, setOpenId] = useState<string | null>(null)
   const [paused, setPaused] = useState(false)
@@ -191,11 +210,11 @@ export function NewsFeed({
     if (!paused && atTop) release()
   }
 
-  const filter = { channel, sources: picked, query, facets: facetPicked }
+  const filter = { channel, sources: picked, categories: pickedCategories, query, facets: facetPicked }
   const visible = useMemo(
     () => filterNews(sortNews(items.filter((i) => shown.has(i.id))), filter),
     // oxlint-disable-next-line react/exhaustive-deps -- filter 是三个值拼出来的新对象，依赖写成三个值
-    [items, shown, channel, picked, query, facetPicked],
+    [items, shown, channel, picked, pickedCategories, query, facetPicked],
   )
   const pending = filterNews(
     items.filter((i) => !shown.has(i.id)),
@@ -249,6 +268,7 @@ export function NewsFeed({
       symbolStyle={symbolStyle}
       actions={itemActions?.(item)}
       actionsLabel={actionsLabel}
+      compact={compact}
       onSelect={reader || onSelect ? open : undefined}
       onSymbolSelect={onSymbolSelect}
     />
@@ -286,13 +306,14 @@ export function NewsFeed({
   // 只有卡片排法且给了示例条目才量；列表排法是一行一条，按行高画条就够。
   const measured = layout === 'card' && sample !== undefined && sample.length > 0
 
-  const headed = (views && views.length > 0 && labels.views) || labels.collapse
+  const headed = !compact && ((views && views.length > 0 && labels.views) || labels.collapse)
 
   return (
     <section
       className={cn('k-news', className)}
       aria-label={labels.feed}
       data-layout={layout}
+      data-emphasis={emphasis}
       data-reader={opened ? '' : undefined}
     >
       {headed ? (
@@ -323,62 +344,64 @@ export function NewsFeed({
       ) : null}
       <div className="k-news-split">
         <div className="k-news-main">
-          <div className="k-news-top" data-collapsed={collapsed ? '' : undefined}>
-            <ToggleGroup
-              size="sm"
-              aria-label={labels.channels}
-              value={channel === '' ? 'all' : channel}
-              onValueChange={(v) => {
-                const next = v === 'all' ? '' : v
-                setChannel(next)
-                onChannelChange?.(next)
-              }}
-            >
-              <ToggleGroupItem value="all">{labels.all}</ToggleGroupItem>
-              {channels.map((c) => (
-                <ToggleGroupItem key={c.value} value={c.value}>
-                  {c.label}
-                </ToggleGroupItem>
-              ))}
-            </ToggleGroup>
-            <label className="k-news-search">
-              <Search size={13} aria-hidden />
-              <Input
+          {!compact && (
+            <div className="k-news-top" data-collapsed={collapsed ? '' : undefined}>
+              <ToggleGroup
                 size="sm"
-                type="search"
-                aria-label={labels.search}
-                placeholder={labels.search}
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-              />
-            </label>
-            <ToggleGroup
-              size="sm"
-              aria-label={labels.layout}
-              value={layout}
-              onValueChange={(v) => setLayout(v as 'list' | 'card')}
-            >
-              <ToggleGroupItem value="list" aria-label={labels.layoutList} title={labels.layoutList}>
-                <List size={14} aria-hidden />
-              </ToggleGroupItem>
-              <ToggleGroupItem value="card" aria-label={labels.layoutCard} title={labels.layoutCard}>
-                <LayoutGrid size={14} aria-hidden />
-              </ToggleGroupItem>
-            </ToggleGroup>
-            <Button
-              variant="icon"
-              aria-label={paused ? labels.resume : labels.pause}
-              title={paused ? labels.resume : labels.pause}
-              aria-pressed={paused}
-              onClick={() => {
-                setPaused(!paused)
-                onPausedChange?.(!paused)
-              }}
-            >
-              {paused ? <Play aria-hidden /> : <Pause aria-hidden />}
-            </Button>
-          </div>
-          {facets.length > 0 && labels.facets && !collapsed && (
+                aria-label={labels.channels}
+                value={channel === '' ? 'all' : channel}
+                onValueChange={(v) => {
+                  const next = v === 'all' ? '' : v
+                  setChannel(next)
+                  onChannelChange?.(next)
+                }}
+              >
+                <ToggleGroupItem value="all">{labels.all}</ToggleGroupItem>
+                {channels.map((c) => (
+                  <ToggleGroupItem key={c.value} value={c.value}>
+                    {c.label}
+                  </ToggleGroupItem>
+                ))}
+              </ToggleGroup>
+              <label className="k-news-search">
+                <Search size={13} aria-hidden />
+                <Input
+                  size="sm"
+                  type="search"
+                  aria-label={labels.search}
+                  placeholder={labels.search}
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                />
+              </label>
+              <ToggleGroup
+                size="sm"
+                aria-label={labels.layout}
+                value={layout}
+                onValueChange={(v) => setLayout(v as 'list' | 'card')}
+              >
+                <ToggleGroupItem value="list" aria-label={labels.layoutList} title={labels.layoutList}>
+                  <List size={14} aria-hidden />
+                </ToggleGroupItem>
+                <ToggleGroupItem value="card" aria-label={labels.layoutCard} title={labels.layoutCard}>
+                  <LayoutGrid size={14} aria-hidden />
+                </ToggleGroupItem>
+              </ToggleGroup>
+              <Button
+                variant="icon"
+                aria-label={paused ? labels.resume : labels.pause}
+                title={paused ? labels.resume : labels.pause}
+                aria-pressed={paused}
+                onClick={() => {
+                  setPaused(!paused)
+                  onPausedChange?.(!paused)
+                }}
+              >
+                {paused ? <Play aria-hidden /> : <Pause aria-hidden />}
+              </Button>
+            </div>
+          )}
+          {facets.length > 0 && labels.facets && !collapsed && !compact && (
             <NewsFacets
               facets={facets}
               shown={facetShown}
@@ -388,7 +411,7 @@ export function NewsFeed({
               labels={labels.facets}
             />
           )}
-          {sources.length > 0 && !collapsed && (
+          {sources.length > 0 && !collapsed && !compact && (
             <ChipGroup
               items={chips}
               value={picked}
@@ -398,6 +421,19 @@ export function NewsFeed({
               }}
               label={labels.sources}
               labels={{ clear: labels.clearSources }}
+            />
+          )}
+          {categories.length > 0 && labels.categories && !collapsed && !compact && (
+            <ChipGroup
+              className="k-news-categories"
+              items={categories.map((c) => ({ value: c.value, label: c.label }))}
+              value={pickedCategories}
+              onValueChange={(next) => {
+                setPickedCategories(next)
+                onCategoriesChange?.(next)
+              }}
+              label={labels.categories}
+              labels={{ clear: labels.clearCategories }}
             />
           )}
           {/* 新消息到达的播报：一直在，文字变了读屏才读；只读条数。 */}

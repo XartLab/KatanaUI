@@ -32,6 +32,8 @@ type NewsRowProps = {
   symbolStyle: 'stack' | 'chips'
   actions?: readonly RowAction[]
   actionsLabel: string
+  /** 分量 compact（#115）：只留「时间 标题」，不画来源、阅读时长、快捷操作与品种。 */
+  compact?: boolean
   onSelect?: (item: NewsItem) => void
   onSymbolSelect?: (symbol: NewsSymbol, item: NewsItem) => void
 }
@@ -48,6 +50,7 @@ export function NewsRow({
   symbolStyle,
   actions,
   actionsLabel,
+  compact = false,
   onSelect,
   onSymbolSelect,
 }: NewsRowProps) {
@@ -58,14 +61,14 @@ export function NewsRow({
       data-important={item.important ? '' : undefined}
       data-news-id={item.id}
       data-selected={selected ? '' : undefined}
-      data-actions={actions ? '' : undefined}
+      data-actions={actions && !compact ? '' : undefined}
     >
       <div className="k-news-meta">
-        <span className="k-news-source">{source}</span>
+        {!compact && <span className="k-news-source">{source}</span>}
         <time className="k-news-time" dateTime={new Date(item.time).toISOString()} title={labels.absolute(item.time)}>
           {labels.ago(Math.max(0, Math.floor((now - item.time) / 1000)))}
         </time>
-        {labels.read && item.readMinutes !== undefined ? (
+        {!compact && labels.read && item.readMinutes !== undefined ? (
           <span className="k-news-read">{labels.read(item.readMinutes)}</span>
         ) : null}
         {item.important && (
@@ -76,8 +79,8 @@ export function NewsRow({
         <NewsTitle item={item} onSelect={onSelect} />
         {item.summary && layout === 'card' && <p className="k-news-summary">{item.summary}</p>}
       </div>
-      {actions && <RowActions items={actions} label={actionsLabel} />}
-      {item.symbols && item.symbols.length > 0 && (
+      {!compact && actions && <RowActions items={actions} label={actionsLabel} />}
+      {!compact && item.symbols && item.symbols.length > 0 && (
         <div className="k-news-symbols" data-style={symbolStyle}>
           {item.symbols.map((symbol) => (
             <button

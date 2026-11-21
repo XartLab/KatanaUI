@@ -17,18 +17,31 @@ import {
   type SortingState,
 } from '@tanstack/react-table'
 import { useVirtualizer } from '@tanstack/react-virtual'
-import { useEffect, useId, useMemo, useRef, useState, type KeyboardEvent, type MouseEvent, type ReactNode } from 'react'
+import {
+  useEffect,
+  useId,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+  type CSSProperties,
+  type KeyboardEvent,
+  type MouseEvent,
+  type ReactNode,
+} from 'react'
 import { cn } from '../../lib/cn.ts'
+import { useEmphasis } from '../../layout/emphasis.tsx'
 import { useEnterMarks, useFlipList } from '../../lib/live.ts'
 import { ContextMenu, ContextMenuContent, ContextMenuTrigger } from '../../primitives/context-menu.tsx'
 import { RowActions } from '../../quotes/row-actions.tsx'
-import { defaultAlign, resolveCell, sortComparator } from './columns.ts'
+import { barExtent, defaultAlign, exportTable, resolveCell, resolveHeat, sortComparator } from './columns.ts'
 import { HEAD_HEIGHTS, ROW_HEIGHTS, type DataGridProps } from './data-grid-props.ts'
 import { CellBody, FLASH_TYPES, FlashCell, keepActionsInView } from './grid-cells.tsx'
 import { GridHead } from './grid-head.tsx'
 import { DefaultMenu, gridMenuEntries, type GridMenuOn } from './grid-menu.tsx'
 import { resolveLabels, useDataGridHost } from './host.tsx'
 import { EMPTY_SELECTION, clickSelection, moveCursor, tableCsv, tableTsv, type Selection } from './model.ts'
+import { COLUMNS_TOGGLE_RESERVE, fitPriorityColumns, priorityOf, type PriorityColumn } from './priority-columns.ts'
 import { useColumnSizing } from './use-column-sizing.ts'
 
 export type { DataGridProps, GridColumnLayout, GridDensity, GridRowProps, GridSlot } from './data-grid-props.ts'
@@ -45,6 +58,12 @@ const hasContent = (node: ReactNode): boolean => node !== null && node !== undef
 
 /** 虚拟滚动给没量过的子行的估高（像素）；量到以后以真实高度为准。 */
 const SUBROW_ESTIMATE = 96
+
+/** compact 分量（#115）只留表的前几行；待定：起始值，看 KATANAview 样板时量。 */
+const COMPACT_ROW_LIMIT = 5
+
+/** compact 分量（#117）里没有列标 `compact: true` 时留几个可见列：名称加一个主数。 */
+const COMPACT_DEFAULT_COLUMNS = 2
 
 const features = tableFeatures({
   rowSortingFeature,
@@ -89,6 +108,8 @@ export function DataGrid<Row extends object>({
   rowTree,
   timeZone,
   sortLocale,
+  collapseColumns = true,
+  containerWidth,
   density = 'default',
   hideHeader,
   headExtra,
@@ -105,6 +126,10 @@ export function DataGrid<Row extends object>({
 }: DataGridProps<Row>) {
   const host = useDataGridHost()
   const texts = resolveLabels(host)
+  // 分量（#115）：compact 不出表头、只留排好序之后的前几行；hero 字上一档（样子在 data-grid.css）；密度（行高）仍由 density 管。
+  const emphasis = useEmphasis()
+  const compact = emphasis === 'compact'
+  const noHeader = hideHeader === true || compact
   const id = useId()
   const rowHeight = ROW_HEIGHTS[density]
   const headHeight = layout.some((column) => column.visible && column.sub)
@@ -115,6 +140,16 @@ export function DataGrid<Row extends object>({
   const labelOf = (column: string) => layoutOf.get(column)?.label ?? column
   const alignOf = (column: string) => layoutOf.get(column)?.align ?? defaultAlign(byId.get(column)?.type)
   const env = { timeZone }
+  // bar 列的条按整列归一：本列所有行里绝对值最大者当满格（虚拟滚动只画看得见的行，但基准看全部行）。
+  const extents = useMemo(
+    () =>
+      new Map(
+        columns
+          .filter((column) => column.type === 'bar')
+          .map((column) => [column.id, barExtent(column, rows, { timeZone })] as const),
+      ),
+    [columns, rows, timeZone],
+  )
 
   const defs = useMemo(() => {
     const helper = createColumnHelper<typeof features, Row>()
@@ -133,7 +168,49 @@ export function DataGrid<Row extends object>({
   }, [columns, sortLocale, timeZone])
 
   const sorting: SortingState = sort ? [{ id: sort.id, desc: sort.desc }] : []
-  const visibility: ColumnVisibilityState = Object.fromEntries(layout.map((column) => [column.id, column.visible]))
+  // compact 分量（#117）只画名称与主数：有列标了 compact: true 就只留那几列，一列都没标就留前两个可见列（都是显隐之上再收一道，layout 本身不动）。
+  const compactKept = useMemo(() => {
+    const shown = layout.filter((column) => column.visible).map((column) => column.id)
+    const marked = shown.filter((columnId) => byId.get(columnId)?.compact === true)
+    return new Set(marked.length > 0 ? marked : shown.slice(0, COMPACT_DEFAULT_COLUMNS))
+  }, [layout, byId])
+  // 列优先级（#122）：放不下就按优先级收列，只在 standard / hero、有表头时。宽度用 layout 的列宽（拖列宽时不跟着算，免得拖到一半列被收走）；
+  // 没量到之前（第一帧、服务端渲染）当放得下，量到以后在绘制前重算。
+  const priorityOn = collapseColumns && !compact && !noHeader
+  const [measuredWidth, setMeasuredWidth] = useState(0)
+  const [toggleWidth, setToggleWidth] = useState(0)
+  const [columnsOpen, setColumnsOpen] = useState(false)
+  const viewportWidth = containerWidth ?? measuredWidth
+  const priorityFit = priorityOn
+    ? fitPriorityColumns(
+        layout
+          .filter((column) => column.visible && byId.has(column.id))
+          .map((column): PriorityColumn => {
+            const declared = columns.findIndex((entry) => entry.id === column.id)
+            return {
+              id: column.id,
+              width: column.width,
+              priority: priorityOf(byId.get(column.id)?.priority, declared),
+              fixed: column.fixed,
+            }
+          }),
+        viewportWidth,
+        toggleWidth || COLUMNS_TOGGLE_RESERVE,
+      )
+    : null
+  const hiddenColumns = priorityFit?.hidden ?? 0
+  const collapsed = hiddenColumns > 0 && !columnsOpen
+  // 出胶囊时表头与数据行的右端都让出胶囊的宽度（#128）：胶囊不透明、贴在可视区右端，不让位就盖住最后一列的表头。
+  // 用 toggleBox 量到的真实宽度，没量到的第一帧用预留值（与上面收列用的同一个数，所以让位后不会多出半列）。
+  const toggleReserve = hiddenColumns > 0 ? toggleWidth || COLUMNS_TOGGLE_RESERVE : 0
+  const visibility: ColumnVisibilityState = Object.fromEntries(
+    layout.map((column) => [
+      column.id,
+      column.visible &&
+        (!compact || compactKept.has(column.id)) &&
+        (!collapsed || priorityFit?.kept.has(column.id) === true),
+    ]),
+  )
   const scroller = useRef<HTMLDivElement>(null)
   const { drag, resizing, canFit, fitRows, startResize } = useColumnSizing<Row>({
     scroller,
@@ -162,7 +239,10 @@ export function DataGrid<Row extends object>({
     },
   })
 
-  const modelRows = table.getRowModel().rows
+  const sortedRows = table.getRowModel().rows
+  const modelRows = compact ? sortedRows.slice(0, COMPACT_ROW_LIMIT) : sortedRows
+  // 不静默截断（KATANAview 决策记录 0030）：被 compact 截掉的行数写在表下面。
+  const hiddenRows = sortedRows.length - modelRows.length
   // 适应内容按排好序的前若干行量。
   const fitColumns = (ids: readonly string[]) =>
     fitRows(
@@ -214,8 +294,21 @@ export function DataGrid<Row extends object>({
 
   const visibleColumns = table.getVisibleLeafColumns()
   const totalWidth = visibleColumns.reduce((sum, column) => sum + column.getSize(), 0)
+  // compact 下不出横向滚动条：名称列（第一个靠左的列，没有就第一列）吃掉剩下的宽度，其余列按自己的宽度，名称超长省略号截断。
+  const flexColumn = compact
+    ? (visibleColumns.find((column) => alignOf(column.id) === 'start') ?? visibleColumns[0])?.id
+    : undefined
   const template = visibleColumns
-    .map((column) => (stretch ? `minmax(${column.getSize()}px, ${column.getSize()}fr)` : `${column.getSize()}px`))
+    .map((column) =>
+      compact
+        ? column.id === flexColumn
+          ? 'minmax(0, 1fr)'
+          : `${column.getSize()}px`
+        : stretch
+          ? `minmax(${column.getSize()}px, ${column.getSize()}fr)`
+          : `${column.getSize()}px`,
+    )
+    .concat(toggleReserve > 0 ? [`${toggleReserve}px`] : [])
     .join(' ')
   // 标了 fixed 的列横向滚动时粘在左边：靠前的固定列挨着排，每列的 left 是它前面固定列的宽度之和。
   const stuck = new Map<string, number>()
@@ -238,28 +331,26 @@ export function DataGrid<Row extends object>({
     const at = cursor !== null ? modelRows.find((row) => row.id === cursor) : undefined
     return at ? [at.original] : []
   }
-  const cellText = (column: string, row: Row) => {
-    const spec = byId.get(column)
-    return spec ? resolveCell(spec, row, env).text : ''
-  }
-  const header = visibleColumns.map((column) => labelOf(column.id))
-  const lines = (list: readonly Row[]) => list.map((row) => visibleColumns.map((column) => cellText(column.id, row)))
+  // 分量只管显示，不管数据（#117）：复制与导出照 standard，带全部可见列；导出带全部行（排好序的），不受 compact 的列筛选与前几行影响。
+  const dataColumnIds = layout.filter((column) => column.visible && byId.has(column.id)).map((column) => column.id)
 
   const copy = () => {
     const target = targetRows()
     if (target.length === 0) return
-    void navigator.clipboard?.writeText(tableTsv(header, lines(target))).catch(() => {})
+    const { header, lines } = exportTable(byId, dataColumnIds, labelOf, target, env, false)
+    void navigator.clipboard?.writeText(tableTsv(header, lines)).catch(() => {})
   }
   const save = () => {
     if (!onExport) return
-    const csvHeader = visibleColumns.map((column) => byId.get(column.id)?.csvHeader?.() ?? labelOf(column.id))
-    const csvLines = modelRows.map(({ original }) =>
-      visibleColumns.map((column) => {
-        const spec = byId.get(column.id)
-        return spec?.csv ? spec.csv(original) : cellText(column.id, original)
-      }),
+    const { header, lines } = exportTable(
+      byId,
+      dataColumnIds,
+      labelOf,
+      sortedRows.map((row) => row.original),
+      env,
+      true,
     )
-    onExport(tableCsv(csvHeader, csvLines), `${exportName}.csv`)
+    onExport(tableCsv(header, lines), `${exportName}.csv`)
   }
   const resetColumns = () => onResetColumns?.()
 
@@ -366,6 +457,27 @@ export function DataGrid<Row extends object>({
       selected: new Set([...selection.selected].filter((key) => present.has(key))),
     })
 
+  const toggleBox = useRef<HTMLDivElement>(null)
+  useLayoutEffect(() => {
+    const node = scroller.current
+    if (!priorityOn || containerWidth !== undefined || !node) return
+    const read = () => setMeasuredWidth(node.clientWidth)
+    read()
+    const watch = new ResizeObserver(read)
+    watch.observe(node)
+    return () => watch.disconnect()
+  }, [priorityOn, containerWidth])
+  const toggling = hiddenColumns > 0
+  useLayoutEffect(() => {
+    const node = toggleBox.current
+    if (!toggling || !node) return
+    const read = () => setToggleWidth(node.offsetWidth)
+    read()
+    const watch = new ResizeObserver(read)
+    watch.observe(node)
+    return () => watch.disconnect()
+  }, [toggling])
+
   const hasRowActions = rowActions !== undefined
   useEffect(() => {
     const node = scroller.current
@@ -449,8 +561,11 @@ export function DataGrid<Row extends object>({
           keepActionsInView(event.currentTarget)
         }}
       >
-        <div className={cn('k-grid-inner', classNames.inner)} style={{ width: totalWidth, minWidth: '100%' }}>
-          {!hideHeader && (
+        <div
+          className={cn('k-grid-inner', classNames.inner)}
+          style={compact ? { width: '100%' } : { width: totalWidth + toggleReserve, minWidth: '100%' }}
+        >
+          {!noHeader && (
             <GridHead
               columns={visibleColumns.map((column) => ({
                 id: column.id,
@@ -470,7 +585,7 @@ export function DataGrid<Row extends object>({
               stickStyle={stickStyle}
               resizing={resizing}
               headExtra={headExtra}
-              headEnd={headEnd}
+              headEnd={toggling ? undefined : headEnd}
               onLayoutChange={onLayoutChange}
               onResize={onResize}
               startResize={startResize}
@@ -498,7 +613,7 @@ export function DataGrid<Row extends object>({
                     data-index={item.index}
                     data-subrow={row.id}
                     role="row"
-                    aria-rowindex={item.index + 2 - (hideHeader ? 1 : 0)}
+                    aria-rowindex={item.index + 2 - (noHeader ? 1 : 0)}
                     aria-level={level + 1}
                     className={cn('k-grid-subrow', classNames.subrow)}
                     style={{ top: item.start }}
@@ -522,7 +637,7 @@ export function DataGrid<Row extends object>({
                   data-row={row.id}
                   data-live-id={live ? row.id : undefined}
                   role="row"
-                  aria-rowindex={item.index + 2 - (hideHeader ? 1 : 0)}
+                  aria-rowindex={item.index + 2 - (noHeader ? 1 : 0)}
                   aria-selected={interactive && selectable ? selected : undefined}
                   aria-level={tree || renderSubRow ? level : undefined}
                   aria-expanded={tree ? tree.expanded : expandable ? isExpanded(row.id, row.original) : undefined}
@@ -549,30 +664,51 @@ export function DataGrid<Row extends object>({
                     const column = byId.get(cell.column.id)!
                     const resolved = resolveCell(column, row.original, env)
                     const fill = column.fill?.(row.original)
-                    const body = column.cell ? (
-                      column.cell(row.original)
-                    ) : column.render ? (
-                      column.render(row.original)
-                    ) : (
-                      <CellBody resolved={resolved} />
+                    const heat = resolveHeat(column, row.original)
+                    const body = (
+                      <>
+                        {column.cell ? (
+                          column.cell(row.original)
+                        ) : column.render ? (
+                          column.render(row.original)
+                        ) : (
+                          <CellBody
+                            resolved={resolved}
+                            extent={extents.get(column.id) ?? 0}
+                            ellipsis={column.id === flexColumn}
+                            maxPills={
+                              (typeof column.format === 'function' ? column.format(row.original) : column.format)
+                                ?.maxPills
+                            }
+                          />
+                        )}
+                        {heat?.rank !== undefined && (
+                          <span className="k-grid-rank" data-slot="grid-rank">
+                            {heat.rank}
+                          </span>
+                        )}
+                      </>
                     )
                     const box = {
                       role: column.rowHeader ? 'rowheader' : cellRole,
                       'data-col': column.id,
                       'data-type': column.type ?? 'text',
+                      'data-heat': heat?.tone,
                       className: cn(
                         'k-grid-cell',
                         alignOf(column.id) === 'end' && 'is-end',
                         resolved.tone && `is-${resolved.tone}`,
                         fill && `fill-${fill}`,
+                        heat?.rank !== undefined && 'has-rank',
                         stickClass(column.id),
                         classNames.cell,
                       ),
                       style: {
                         ...stickStyle(column.id),
+                        ...(heat ? ({ '--heat': heat.level } as CSSProperties) : undefined),
                         ...(autoRowHeight ? undefined : { lineHeight: `${rowHeight}px` }),
                       },
-                      title: column.title?.(row.original),
+                      title: column.title?.(row.original) ?? (column.id === flexColumn ? resolved.text : undefined),
                     }
                     if (live && FLASH_TYPES.has(column.type ?? 'text')) {
                       const number = resolved.sort === undefined ? null : Number(resolved.sort)
@@ -611,9 +747,36 @@ export function DataGrid<Row extends object>({
         className={cn('k-grid', fit && 'is-fit', ruled && 'is-ruled', autoRowHeight && 'is-auto', classNames.root)}
         data-slot="data-grid"
         data-density={density}
+        data-emphasis={emphasis}
         data-interactive={interactive}
+        data-columns-hidden={collapsed ? hiddenColumns : undefined}
       >
         {withMenu ? <ContextMenuTrigger asChild>{body}</ContextMenuTrigger> : body}
+        {toggling && (
+          // 胶囊在表格外（grid 的子元素只能是行），贴在表头右端的可视区边上：展开后表头横向滚动，它也不跟着滚走。
+          <div
+            ref={toggleBox}
+            className="k-grid-cols-end"
+            data-slot="grid-cols-end"
+            style={{ left: viewportWidth, height: headHeight }}
+          >
+            <button
+              type="button"
+              className="k-grid-cols-toggle"
+              data-slot="grid-cols-toggle"
+              aria-expanded={columnsOpen}
+              onClick={() => setColumnsOpen(!columnsOpen)}
+            >
+              {columnsOpen ? texts.collapseColumns : texts.moreColumns(hiddenColumns)}
+            </button>
+            {headEnd}
+          </div>
+        )}
+        {hiddenRows > 0 && (
+          <div className="k-grid-more" data-slot="grid-more">
+            {texts.moreRows(hiddenRows)}
+          </div>
+        )}
         {foot && <div className={cn('k-grid-foot', classNames.foot)}>{foot}</div>}
       </div>
       {withMenu && menuEntries.length > 0 && (

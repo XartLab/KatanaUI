@@ -49,6 +49,16 @@ import { TextMeasureUsage } from './usage/TextMeasureUsage.tsx'
 import { MeasuredSkeletonUsage } from './usage/MeasuredSkeletonUsage.tsx'
 import { DateTimeInputDemo, LoadingDemo, NumberInputDemo, SkeletonDemo } from './pages/fields.tsx'
 import {
+  BoardMarkDemo,
+  CnBasicsDemo,
+  LimitStatusDemo,
+  LimitUpTimelineDemo,
+  MarketPulseDemo,
+  SentimentGaugeDemo,
+  StreakBadgeDemo,
+  ThemeCardDemo,
+} from './pages/cn.tsx'
+import {
   BadgeDemo,
   DotMatrixDemo,
   KbdDemo,
@@ -67,6 +77,7 @@ import {
   EventCalendarDemo,
   LimitLadderDemo,
   MarketHeatmapDemo,
+  DistributionBarsDemo,
   MetricCardDemo,
   MeterDemo,
   PnlTextDemo,
@@ -180,6 +191,17 @@ import {
   WaveTextDemo,
   WordBuildDemo,
 } from './pages/motion-text.tsx'
+import {
+  ClusterDemo,
+  EmphasisDemo,
+  EmphasisGuideDemo,
+  GridDemo,
+  LayoutRulesDemo,
+  ReelDemo,
+  SidebarDemo,
+  StackDemo,
+  SwitcherDemo,
+} from './pages/typesetting.tsx'
 import { ContextMenuDemo, DialogDemo, DropdownMenuDemo, PopoverDemo, TooltipDemo } from './pages/overlays.tsx'
 import {
   ButtonDemo,
@@ -240,6 +262,15 @@ import { ScrubberDemo } from './pages/smoothui-scrub.tsx'
 /** 每一页的实时预览，键是 registry.ts 里的页 id（registry.test.ts 核对两边一一对应）。 */
 export const DEMOS: Readonly<Record<string, ComponentType>> = {
   button: ButtonDemo,
+  'layout-rules': LayoutRulesDemo,
+  stack: StackDemo,
+  cluster: ClusterDemo,
+  sidebar: SidebarDemo,
+  switcher: SwitcherDemo,
+  grid: GridDemo,
+  reel: ReelDemo,
+  emphasis: EmphasisDemo,
+  'emphasis-guide': EmphasisGuideDemo,
   input: InputDemo,
   select: SelectDemo,
   'multi-select': MultiSelectDemo,
@@ -306,6 +337,15 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'key-stats': KeyStatsDemo,
   watchlist: WatchlistDemo,
   'metric-card': MetricCardDemo,
+  'distribution-bars': DistributionBarsDemo,
+  'cn-basics': CnBasicsDemo,
+  'streak-badge': StreakBadgeDemo,
+  'limit-status': LimitStatusDemo,
+  'board-mark': BoardMarkDemo,
+  'theme-card': ThemeCardDemo,
+  'market-pulse': MarketPulseDemo,
+  'limit-up-timeline': LimitUpTimelineDemo,
+  'sentiment-gauge': SentimentGaugeDemo,
   'decimal-field': DecimalFieldDemo,
   'quant-format': QuantFormatDemo,
   'spark-tile': SparkTileDemo,

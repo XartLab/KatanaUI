@@ -306,6 +306,8 @@ export function ScreenerDemo() {
           rows={rows}
           rowId={(row) => row.code}
           label="选股结果"
+          // 列由用户用列集与「加列」自己挑：不替他按优先级收起（#122），放不下就横向滚动
+          collapseColumns={false}
           sort={sort}
           onSortChange={setSort}
           headExtra={(id) =>

@@ -33,3 +33,14 @@
 .k-quote-rows tr.is-flat .k-quote-rows-change {
   color: var(--k-content-secondary-foreground);
 }
+
+/* —— 分量（#115，layout/emphasis.tsx）—— */
+.k-price-tag[data-emphasis='hero'] .k-price-tag-price {
+  font: var(--text-display) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: var(--text-display-tracking);
+}
+.k-price-tag[data-emphasis='compact'] {
+  font: var(--text-caption) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+}

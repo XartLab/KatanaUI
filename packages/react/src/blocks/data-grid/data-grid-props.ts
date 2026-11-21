@@ -217,6 +217,23 @@ export type DataGridProps<Row extends object> = {
    * 文字列排序的语言（Intl.Collator）；省略跟运行环境。
    */
   sortLocale?: string
+  /**
+   * Priority columns (default true): at standard and hero emphasis, when the visible columns do not fit the container, the lowest-priority
+   * columns (GridColumn.priority; undeclared ones count up in declaration order) are collapsed and a "+N cols" capsule appears at the right end
+   * of the header; clicking it switches to horizontal scrolling with every column. Display only: copy and export still take all visible columns.
+   * The header and the rows leave the capsule's width free at the right end, so it never covers the last column (with `stretch` the kept columns fill the container minus the capsule).
+   * Needs a header; at least two columns stay. false keeps plain horizontal scrolling.
+   * 列优先级（默认 true，#122）：standard 与 hero 分量下，可见列放不下容器时按 GridColumn.priority 从低到高收起（没写的按声明顺序），
+   * 表头右端出「+N 列」胶囊，点了切成横向滚动、显示全部列。胶囊出现时表头与数据行在右端让出它的宽度（#128），不盖住最后一列；stretch 的表，保留的列撑满的是容器宽减胶囊宽。
+   * 只影响显示：复制与导出仍是全部可见列。要有表头；至少留两列。false 是一直横向滚动。
+   */
+  collapseColumns?: boolean
+  /**
+   * Container width in px for the priority columns; measured with a ResizeObserver when omitted.
+   * Give it where the width is known and nothing can be measured (server rendering).
+   * 列优先级用的容器宽度（像素）；省略时自己用 ResizeObserver 量。服务端渲染这类量不了、宽度又已知的地方给。
+   */
+  containerWidth?: number
   /** Row height tier. */
   density?: GridDensity
   /**

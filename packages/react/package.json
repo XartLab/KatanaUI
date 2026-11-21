@@ -1,6 +1,6 @@
 {
   "name": "@katana-ui/react",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
   "description": "Katana UI 的 React 组件：设计 token、Tailwind 主题、动效，以及 Radix 底座的基础件（起步代码取自 shadcn/ui）。不依赖任何应用。",
   "license": "MIT",
@@ -50,6 +50,11 @@
       "types": "./lib/lib/chart/format/index.d.ts",
       "source": "./src/lib/chart/format/index.ts",
       "default": "./lib/lib/chart/format/index.js"
+    },
+    "./cn": {
+      "types": "./lib/cn/index.d.ts",
+      "source": "./src/cn/index.ts",
+      "default": "./lib/cn/index.js"
     },
     "./blocks": {
       "types": "./lib/blocks/index.d.ts",
@@ -132,7 +137,7 @@
     "@fontsource/ibm-plex-mono": "5.3.0",
     "@fontsource/ibm-plex-sans": "5.3.0",
     "@fontsource/iosevka": "5.3.0",
-    "@katana-ui/tokens": "0.2.0",
+    "@katana-ui/tokens": "0.3.0",
     "@playwright/test": "1.56.1",
     "@tailwindcss/vite": "4.3.5",
     "@types/d3-hierarchy": "3.1.7",
@@ -157,7 +162,7 @@
   "peerDependencies": {
     "@a2ui/react": "0.15.0",
     "@a2ui/web_core": "0.15.0",
-    "@katana-ui/tokens": "0.2.0",
+    "@katana-ui/tokens": "0.3.0",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
     "zod": "3.25.76"

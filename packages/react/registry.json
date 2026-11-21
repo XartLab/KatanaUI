@@ -9,7 +9,7 @@
       "title": "Style",
       "description": "设计 token（Console 与 Graphite 两个主题、红涨绿跌切换）、Tailwind v4 主题与动效 CSS。ui.css 最后引。",
       "dependencies": [
-        "@katana-ui/tokens@0.2.0",
+        "@katana-ui/tokens@0.3.0",
         "tailwindcss@4.3.5"
       ],
       "files": [
@@ -74,6 +74,31 @@
           "target": "~/src/katana/ui/theme/chip-group.css"
         },
         {
+          "path": "src/theme/cn-pulse.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/cn-pulse.css"
+        },
+        {
+          "path": "src/theme/cn-sentiment.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/cn-sentiment.css"
+        },
+        {
+          "path": "src/theme/cn-theme-card.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/cn-theme-card.css"
+        },
+        {
+          "path": "src/theme/cn-timeline.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/cn-timeline.css"
+        },
+        {
+          "path": "src/theme/cn.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/cn.css"
+        },
+        {
           "path": "src/theme/connected-scatter.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/connected-scatter.css"
@@ -107,6 +132,11 @@
           "path": "src/theme/dialog.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/dialog.css"
+        },
+        {
+          "path": "src/theme/distribution-bars.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/distribution-bars.css"
         },
         {
           "path": "src/theme/empty-state.css",
@@ -187,6 +217,11 @@
           "path": "src/theme/key-stats.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/key-stats.css"
+        },
+        {
+          "path": "src/theme/layout.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/layout.css"
         },
         {
           "path": "src/theme/lcd.css",
@@ -616,7 +651,7 @@
       "title": "Motion",
       "description": "三条弹簧参数（snappy、gentle、settle），给 motion/react 用。",
       "dependencies": [
-        "@katana-ui/tokens@0.2.0"
+        "@katana-ui/tokens@0.3.0"
       ],
       "files": [
         {
@@ -1745,6 +1780,134 @@
           "path": "src/primitives/tooltip.tsx",
           "type": "registry:ui",
           "target": "~/src/katana/ui/primitives/tooltip.tsx"
+        }
+      ]
+    },
+    {
+      "name": "cluster",
+      "type": "registry:component",
+      "title": "Cluster",
+      "description": "横排，放不下就换行，行与行、块与块用同一个间距。align 管同一行里上下对齐（居中、基线……），justify 管左右分布（靠左、居中、靠右、两端）。什么时候用：一排标签、一排按钮、一排筛选芯片、标题加读数。只管位置与间距。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/space"
+      ],
+      "files": [
+        {
+          "path": "src/layout/cluster.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/layout/cluster.tsx"
+        }
+      ]
+    },
+    {
+      "name": "emphasis",
+      "type": "registry:component",
+      "title": "Emphasis",
+      "description": "分量：同一个组件放在看板顶上当主角、放在中间当正文、放在边栏当一行，该画成什么样。三档：hero（主角：大数用 display 档，配迷你线；一个区里最多一处）、standard（正文，默认：完整的表、图、列表，数据用 data 档）、compact（一行：标签加读数并排，表只留前几行且不出表头，列表一行一条）。用 EmphasisProvider 包一层，里面的件各自读 useEmphasis()，往下继承，里层盖住外层。分量只改字号档、显示多少、要不要表头；不改颜色，不改密度（密度仍由 data-density 管）。现在认分量的：QuoteCard、PriceTag、GaugeBar、DataGrid、NewsFeed；别的件照 standard 画。",
+      "files": [
+        {
+          "path": "src/layout/emphasis.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/layout/emphasis.tsx"
+        }
+      ]
+    },
+    {
+      "name": "grid",
+      "type": "registry:component",
+      "title": "Grid",
+      "description": "等宽格：每格至少 min 宽（默认 240，照 KATANAview 的「面板最小 240」），放得下几列就几列；最后一行不够也保持同宽。容器比一格还窄时一列、不溢出。什么时候用：一排题材卡、一组指标卡。预览里的框右下角能拖宽窄。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/space"
+      ],
+      "files": [
+        {
+          "path": "src/layout/grid.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/layout/grid.tsx"
+        }
+      ]
+    },
+    {
+      "name": "reel",
+      "type": "registry:component",
+      "title": "Reel",
+      "description": "一行横向滚动：子节点不缩、不换行，放不下就滚。滚动条照 KATANAview 已定的 4px、平时不可见，悬停或键盘聚焦时才显出来。自己是可聚焦的滚动区（方向键能滚），所以要用 aria-label 给它一个名字。什么时候用：一排题材卡、一排报价卡。预览里的框右下角能拖宽窄。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/space"
+      ],
+      "files": [
+        {
+          "path": "src/layout/reel.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/layout/reel.tsx"
+        }
+      ]
+    },
+    {
+      "name": "sidebar",
+      "type": "registry:component",
+      "title": "Sidebar",
+      "description": "一窄一宽并排，放不下时上下叠。恰好两个子节点：side 是 start 时第一个是窄的，是 end 时最后一个是窄的。窄的固定一个宽度（sideWidth），宽的拿走剩下的；宽的不到 contentMin（容器的一半，起始值）就整体叠成上下两块。sideWidth 收间距刻度名或像素数：刻度最大才 32px，放不下一块侧栏，所以也收数字。预览里的框右下角能拖宽窄。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/space"
+      ],
+      "files": [
+        {
+          "path": "src/layout/sidebar.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/layout/sidebar.tsx"
+        }
+      ]
+    },
+    {
+      "name": "space",
+      "type": "registry:lib",
+      "title": "Space",
+      "description": "排版原语共用：间距刻度名（对应 tokens 的 space-*）、它们的 CSS 值，与原语可以渲染成的元素。",
+      "files": [
+        {
+          "path": "src/layout/space.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/layout/space.ts"
+        }
+      ]
+    },
+    {
+      "name": "stack",
+      "type": "registry:component",
+      "title": "Stack",
+      "description": "竖排：子节点自上而下，之间留同一个间距。间距只收间距刻度名（space-1、space-3 …），不收数字。只管位置与间距，不画边框、不带底色。模式借自 Every Layout 的 Stack，代码自己写。什么时候用：一个面板里的几块、表单的几行、一列读数。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/space"
+      ],
+      "files": [
+        {
+          "path": "src/layout/stack.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/layout/stack.tsx"
+        }
+      ]
+    },
+    {
+      "name": "switcher",
+      "type": "registry:component",
+      "title": "Switcher",
+      "description": "一行放几块；容器窄于 threshold（px）时整体变成竖排，不是一块一块地往下掉：要么全在一行，要么全竖着。靠的是容器宽度，不是视口宽度，所以放在窄边栏里也对。什么时候用：两三张并列的卡、一对图表。预览里的框右下角能拖宽窄。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/space"
+      ],
+      "files": [
+        {
+          "path": "src/layout/switcher.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/layout/switcher.tsx"
         }
       ]
     },
@@ -3424,6 +3587,9 @@
       "type": "registry:component",
       "title": "Gauge Bar",
       "description": "上面一行名字、数和档位词，中间一条进度条标出数的位置，下面一句说明数是怎么来的。取不到时不画填充，数那里写原因。从应用的分析视图提来。",
+      "registryDependencies": [
+        "@katana/emphasis"
+      ],
       "files": [
         {
           "path": "src/quotes/gauge-bar.tsx",
@@ -3574,6 +3740,7 @@
       "title": "Price Tag",
       "description": "夹在一句话或一行里的「名字 价格 涨跌」，数字等宽对齐，涨跌带三角与颜色，跟着周围的字号走。值是数（last、changePct，跟统一行情行同名），价格文字由 formatPrice 写。",
       "registryDependencies": [
+        "@katana/emphasis",
         "@katana/live-readout",
         "@katana/quant-format",
         "@katana/quote-row",
@@ -3593,6 +3760,7 @@
       "title": "Quote Card",
       "description": "一只品种一张卡：名字与代码、最新价（大）、涨跌与涨跌幅、可选的迷你图与底部一行；QuoteStrip 是一排小号的卡，放不下横向滚动。值是数（统一行情行的 last / change / changePct），整行 {...row} 直接摊进来，价格文字由 formatPrice 写。",
       "registryDependencies": [
+        "@katana/emphasis",
         "@katana/live-readout",
         "@katana/num",
         "@katana/quant-format",
@@ -5356,6 +5524,23 @@
       ]
     },
     {
+      "name": "distribution-bars",
+      "type": "registry:component",
+      "title": "Distribution Bars",
+      "description": "把一批品种按涨跌幅分成 9 或 11 档（跌停…涨停），每档一根柱，柱顶标家数，底部一行汇总（涨 x / 平 y / 跌 z）。档的边界、档名与汇总的名字都由调用方传，件只按家数画柱、按色调汇总；没有数据显示空态，不画样本。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/gauge-bar"
+      ],
+      "files": [
+        {
+          "path": "src/quant/distribution-bars.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/distribution-bars.tsx"
+        }
+      ]
+    },
+    {
       "name": "equity-curve-model",
       "type": "registry:component",
       "title": "Equity Curve Model",
@@ -5921,6 +6106,236 @@
       ]
     },
     {
+      "name": "cn-badge-model",
+      "type": "registry:lib",
+      "title": "Cn Badge Model",
+      "description": "首板 / 2板 / 「5天3板」，或晋级口径「一进二」；高度越高越醒目（只靠语义色调升四档，不传色值），涨色跟 data-updown。也是 DataGrid 的列类型 streak，可按板数排序。文字由 labels 给（默认简体中文，可整份换），取不到写「—」并可带原因（悬停）。",
+      "registryDependencies": [
+        "@katana/cn-format",
+        "@katana/cn-labels",
+        "@katana/cn-value"
+      ],
+      "files": [
+        {
+          "path": "src/cn/badge-model.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/cn/badge-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "cn-board-mark",
+      "type": "registry:component",
+      "title": "Cn Board Mark",
+      "description": "主板 / 创业板（20cm）/ 科创板（20cm）/ 北交所（30cm）/ ST。默认只标有特殊涨跌幅限制的写「20cm」「30cm」「ST」，主板不画；display 选写板块名或都写。boardKindOf 从代码（与名称）判断板块。取不到写「—」。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/cn-badge-model",
+        "@katana/cn-labels"
+      ],
+      "files": [
+        {
+          "path": "src/cn/board-mark.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/cn/board-mark.tsx"
+        }
+      ]
+    },
+    {
+      "name": "cn-format",
+      "type": "registry:lib",
+      "title": "Cn Format",
+      "description": "A 股件包的第 0 层（纯函数，不带 React）：formatCnAmount 把金额写成万 / 亿；时段轴认 09:15–09:25 竞价、09:30–11:30、13:00–15:00，午休与 09:25–09:30 不占宽度；cnLabelsZh 是随包的简体中文默认文案，可以整份换；取不到的数写「—」并可带原因（readCnValue）。不带数据源与交易日历数据。",
+      "files": [
+        {
+          "path": "src/cn/format.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/cn/format.ts"
+        }
+      ]
+    },
+    {
+      "name": "cn-labels",
+      "type": "registry:lib",
+      "title": "Cn Labels",
+      "description": "A 股件包的第 0 层（纯函数，不带 React）：formatCnAmount 把金额写成万 / 亿；时段轴认 09:15–09:25 竞价、09:30–11:30、13:00–15:00，午休与 09:25–09:30 不占宽度；cnLabelsZh 是随包的简体中文默认文案，可以整份换；取不到的数写「—」并可带原因（readCnValue）。不带数据源与交易日历数据。",
+      "registryDependencies": [
+        "@katana/cn-session"
+      ],
+      "files": [
+        {
+          "path": "src/cn/labels.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/cn/labels.ts"
+        }
+      ]
+    },
+    {
+      "name": "cn-limit-status",
+      "type": "registry:component",
+      "title": "Cn Limit Status",
+      "description": "封板 / 炸板 / 回封 / 跌停 / 一字 / 竞价涨停六种状态胶囊，涨停一族可带封单额（按万 / 亿写）。状态不只靠颜色，字就是状态名；色调：涨停涨色（跟 data-updown）、炸板警示、跌停跌色。也是 DataGrid 的列类型 limitStatus，可按状态排序。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/cn-badge-model",
+        "@katana/cn-format",
+        "@katana/cn-labels"
+      ],
+      "files": [
+        {
+          "path": "src/cn/limit-status.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/cn/limit-status.tsx"
+        }
+      ]
+    },
+    {
+      "name": "cn-limit-up-timeline",
+      "type": "registry:component",
+      "title": "Cn Limit Up Timeline",
+      "description": "蛇形时刻轴：按分钟聚合封板时刻成站点（时间胶囊），一行放几站跟着容器宽度走（每站最少 136px，perRow 是上限），奇数行左到右、偶数行右到左，行尾拐弯、箭头指向较新的时刻、标「越来越早」；站点下挂小卡（名称、连板徽标、题材、成交额万 / 亿，20cm 等标板块）；站点按时段着色（集合竞价 / 早盘 / 午盘 / 尾盘）。顶上有排序（最新在前 / 最早在前）、时段图例（站数与只数）、题材 chip 筛。站点等距，午休与 09:25–09:30 不占宽度。梯队表用 LimitLadder，不在这里。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/cn-board-mark",
+        "@katana/cn-format",
+        "@katana/cn-labels",
+        "@katana/cn-session",
+        "@katana/cn-streak-badge",
+        "@katana/cn-timeline-model",
+        "@katana/cn-value",
+        "@katana/toggle-group"
+      ],
+      "files": [
+        {
+          "path": "src/cn/limit-up-timeline.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/cn/limit-up-timeline.tsx"
+        }
+      ]
+    },
+    {
+      "name": "cn-market-pulse",
+      "type": "registry:component",
+      "title": "Cn Market Pulse",
+      "description": "一行横条：上涨占比半圆表盘（中间写百分比，下注「上涨占比」）、五个大数（上涨 / 下跌 / 涨停 / 跌停 / 平盘，涨红跌绿，平盘中性）、大数下两行小字读数（涨停池、昨日口径、成交额与主力净流入），最右嵌涨跌分布柱（DistributionBars）。读数只占三行高（小字最多两行，放不下的收进「+n」点开看全部；容器窄于 900px 分布柱移到第二行最右）；取不到写「—」并可带原因（悬停），不写 0。信息结构取自复盘吧的看盘工作台，样子是 Graphite 的。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/cn-format",
+        "@katana/cn-labels",
+        "@katana/cn-value",
+        "@katana/distribution-bars",
+        "@katana/popover"
+      ],
+      "files": [
+        {
+          "path": "src/cn/market-pulse.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/cn/market-pulse.tsx"
+        }
+      ]
+    },
+    {
+      "name": "cn-sentiment-gauge",
+      "type": "registry:component",
+      "title": "Cn Sentiment Gauge",
+      "description": "0–100 的读数加五档色带（冰点 / 低迷 / 中性 / 升温 / 高潮，各占 20 分），读数落在哪一档那一档全亮；色带下面是调用方写的口径说明（如「规则评分 · 未历史校准」）；再下面是今昨对比两列（涨停、跌停、封率、开板）。评分怎么算、口径、历史校准都不在包里：分数与说明由调用方给。冰点取跌色、高潮取涨色（跟 data-updown）。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/cn-labels",
+        "@katana/cn-value"
+      ],
+      "files": [
+        {
+          "path": "src/cn/sentiment-gauge.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/cn/sentiment-gauge.tsx"
+        }
+      ]
+    },
+    {
+      "name": "cn-session",
+      "type": "registry:lib",
+      "title": "Cn Session",
+      "description": "A 股件包的第 0 层（纯函数，不带 React）：formatCnAmount 把金额写成万 / 亿；时段轴认 09:15–09:25 竞价、09:30–11:30、13:00–15:00，午休与 09:25–09:30 不占宽度；cnLabelsZh 是随包的简体中文默认文案，可以整份换；取不到的数写「—」并可带原因（readCnValue）。不带数据源与交易日历数据。",
+      "files": [
+        {
+          "path": "src/cn/session.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/cn/session.ts"
+        }
+      ]
+    },
+    {
+      "name": "cn-streak-badge",
+      "type": "registry:component",
+      "title": "Cn Streak Badge",
+      "description": "首板 / 2板 / 「5天3板」，或晋级口径「一进二」；高度越高越醒目（只靠语义色调升四档，不传色值），涨色跟 data-updown。也是 DataGrid 的列类型 streak，可按板数排序。文字由 labels 给（默认简体中文，可整份换），取不到写「—」并可带原因（悬停）。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/cn-badge-model",
+        "@katana/cn-labels"
+      ],
+      "files": [
+        {
+          "path": "src/cn/streak-badge.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/cn/streak-badge.tsx"
+        }
+      ]
+    },
+    {
+      "name": "cn-theme-card",
+      "type": "registry:component",
+      "title": "Cn Theme Card",
+      "description": "卡头是序号、题材名与两枚小胶囊（几只涨停、最高几板），一行催化（省略号截断，悬停看全文与来源），成员表（涨停时间、名称、连板徽标），卡脚「查看 n 只涨停」。ThemeCards 把多张卡横排；按涨停家数 / 时间 / 连板 / 涨幅排，由调用方排。信息结构取自复盘吧的题材异动，样子是 Graphite 的。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/cn-badge-model",
+        "@katana/cn-labels",
+        "@katana/cn-session",
+        "@katana/cn-streak-badge",
+        "@katana/cn-value"
+      ],
+      "files": [
+        {
+          "path": "src/cn/theme-card.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/cn/theme-card.tsx"
+        }
+      ]
+    },
+    {
+      "name": "cn-timeline-model",
+      "type": "registry:lib",
+      "title": "Cn Timeline Model",
+      "description": "蛇形时刻轴：按分钟聚合封板时刻成站点（时间胶囊），一行放几站跟着容器宽度走（每站最少 136px，perRow 是上限），奇数行左到右、偶数行右到左，行尾拐弯、箭头指向较新的时刻、标「越来越早」；站点下挂小卡（名称、连板徽标、题材、成交额万 / 亿，20cm 等标板块）；站点按时段着色（集合竞价 / 早盘 / 午盘 / 尾盘）。顶上有排序（最新在前 / 最早在前）、时段图例（站数与只数）、题材 chip 筛。站点等距，午休与 09:25–09:30 不占宽度。梯队表用 LimitLadder，不在这里。",
+      "registryDependencies": [
+        "@katana/cn-badge-model",
+        "@katana/cn-labels",
+        "@katana/cn-session"
+      ],
+      "files": [
+        {
+          "path": "src/cn/timeline-model.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/cn/timeline-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "cn-value",
+      "type": "registry:lib",
+      "title": "Cn Value",
+      "description": "A 股件包的第 0 层（纯函数，不带 React）：formatCnAmount 把金额写成万 / 亿；时段轴认 09:15–09:25 竞价、09:30–11:30、13:00–15:00，午休与 09:25–09:30 不占宽度；cnLabelsZh 是随包的简体中文默认文案，可以整份换；取不到的数写「—」并可带原因（readCnValue）。不带数据源与交易日历数据。",
+      "files": [
+        {
+          "path": "src/cn/value.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/cn/value.ts"
+        }
+      ]
+    },
+    {
       "name": "data-grid",
       "type": "registry:component",
       "title": "Data Grid",
@@ -5935,7 +6350,12 @@
         "@katana/checkbox",
         "@katana/chip-group",
         "@katana/cn",
+        "@katana/cn-badge-model",
+        "@katana/cn-labels",
+        "@katana/cn-limit-status",
+        "@katana/cn-streak-badge",
         "@katana/context-menu",
+        "@katana/emphasis",
         "@katana/live",
         "@katana/menu-any",
         "@katana/menu-parts",
@@ -6004,6 +6424,11 @@
           "target": "~/src/katana/ui/blocks/data-grid/model.ts"
         },
         {
+          "path": "src/blocks/data-grid/priority-columns.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/data-grid/priority-columns.ts"
+        },
+        {
           "path": "src/blocks/data-grid/use-column-sizing.ts",
           "type": "registry:component",
           "target": "~/src/katana/ui/blocks/data-grid/use-column-sizing.ts"
@@ -6064,6 +6489,7 @@
         "@katana/cn",
         "@katana/led",
         "@katana/metric-card",
+        "@katana/regime-strip",
         "@katana/series-geometry",
         "@katana/switch",
         "@katana/text-measure",
@@ -6259,6 +6685,7 @@
         "@katana/checkbox",
         "@katana/chip-group",
         "@katana/cn",
+        "@katana/emphasis",
         "@katana/input",
         "@katana/live",
         "@katana/measured-skeleton",

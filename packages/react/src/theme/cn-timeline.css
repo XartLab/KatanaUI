@@ -1,0 +1,276 @@
+/* SPDX-License-Identifier: MIT */
+/* 涨停时间线（LimitUpTimeline，#110）：蛇形时刻轴。一行 --tl-cols 站，站点等宽（午休不占宽度），时间胶囊在轨道上方，小卡挂在轨道下方。
+   站点按时段着色：集合竞价读 ink-300，早盘 series-1，午盘 series-4，尾盘 series-2（都是已有 token，不用涨跌色，免得跟红涨绿跌混）；
+   轨道在行末拐弯，用一条竖线接到下一行的轨道上，箭头指向较新的时刻。 */
+.k-tl {
+  --tl-gap: 12px;
+  --tl-track-y: 48px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-width: 0;
+  padding: var(--space-3);
+  background: var(--bg-200);
+  border: var(--hairline);
+  color: var(--ink-100);
+  font: var(--text-data) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+}
+.k-tl-head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+}
+.k-tl-title {
+  margin: 0;
+  font: var(--text-title) var(--font-sans);
+}
+.k-tl-summary {
+  color: var(--ink-300);
+  font: var(--text-caption) var(--font-sans);
+}
+.k-tl-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-4);
+}
+.k-tl-field {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+.k-tl-field-label {
+  color: var(--ink-300);
+  font: var(--text-caption) var(--font-sans);
+}
+.k-tl-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font: var(--text-caption) var(--font-sans);
+}
+.k-tl-legend li {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--ink-200);
+}
+.k-tl-legend i {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--tl-color);
+}
+.k-tl-legend b {
+  color: var(--ink-100);
+  font-weight: 500;
+}
+[data-phase='auction'] {
+  --tl-color: var(--ink-300);
+}
+[data-phase='morning'] {
+  --tl-color: var(--series-1);
+}
+[data-phase='afternoon'] {
+  --tl-color: var(--series-4);
+}
+[data-phase='late'] {
+  --tl-color: var(--series-2);
+}
+.k-tl-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+.k-tl-chip {
+  height: 20px;
+  padding: 0 8px;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: var(--alpha-white-5);
+  color: var(--ink-200);
+  cursor: pointer;
+  font: var(--text-caption) var(--font-sans);
+  white-space: nowrap;
+}
+.k-tl-chip:hover {
+  background: var(--alpha-white-8);
+}
+.k-tl-chip[aria-pressed='true'] {
+  background: var(--seg-on-bg);
+  color: var(--seg-on-ink);
+}
+.k-tl-chip:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 1px;
+}
+.k-tl-untimed,
+.k-tl-empty {
+  margin: 0;
+  color: var(--ink-300);
+  font: var(--text-caption) var(--font-sans);
+}
+.k-tl-rows {
+  display: flex;
+  flex-direction: column;
+  gap: var(--tl-gap);
+}
+.k-tl-row {
+  position: relative;
+  padding-top: 18px;
+}
+/* 行头：R 标签固定在左边；「越来越早」提示在流向的终点——左到右的行在右端，右到左的行紧跟在 R 标签后面（箭头那一端也是左边）。 */
+.k-tl-rowhead {
+  position: absolute;
+  inset: 0 0 auto;
+  display: flex;
+  gap: var(--space-2);
+  justify-content: space-between;
+  color: var(--ink-300);
+  font: var(--text-micro) var(--font-sans);
+  white-space: nowrap;
+}
+.k-tl-row[data-flow='rtl'] .k-tl-rowhead {
+  justify-content: flex-start;
+}
+.k-tl-stations {
+  display: grid;
+  grid-template-columns: repeat(var(--tl-cols), minmax(0, 1fr));
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.k-tl-station {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  min-width: 0;
+}
+.k-tl-time {
+  align-self: center;
+  height: 20px;
+  padding: 0 8px;
+  border: 1px solid var(--tl-color);
+  border-radius: var(--radius-pill);
+  color: var(--ink-100);
+  font: var(--text-data) var(--font-sans);
+  line-height: 18px;
+}
+.k-tl-track {
+  position: relative;
+  display: block;
+  height: 8px;
+  margin: 4px 0;
+}
+.k-tl-track::before {
+  position: absolute;
+  inset: 3px 0;
+  background: var(--tl-color);
+  content: '';
+}
+.k-tl-track i {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 8px;
+  height: 8px;
+  margin-left: -4px;
+  border-radius: 50%;
+  background: var(--tl-color);
+  box-shadow: 0 0 0 2px var(--bg-200);
+}
+.k-tl-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  padding: 0 4px;
+  list-style: none;
+}
+.k-tl-card {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  padding: 4px 6px;
+  border: var(--hairline);
+  background: var(--bg-000);
+  color: inherit;
+  font: inherit;
+  text-align: left;
+}
+button.k-tl-card {
+  cursor: pointer;
+}
+button.k-tl-card:hover {
+  background: var(--alpha-white-4);
+}
+button.k-tl-card:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: -2px;
+}
+.k-tl-card-line {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+.k-tl-card-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.k-tl-card-theme {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  color: var(--ink-300);
+  font: var(--text-caption) var(--font-sans);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.k-tl-card-amount {
+  flex: none;
+  color: var(--ink-200);
+  font: var(--text-caption) var(--font-sans);
+}
+/* 行末的拐弯：从这一行轨道的中线，沿流向一端的边竖直接到下一行轨道的中线。 */
+.k-tl-turn {
+  position: absolute;
+  top: var(--tl-track-y);
+  bottom: calc(-1 * (var(--tl-gap) + var(--tl-track-y)));
+  width: 2px;
+  background: var(--ink-400);
+}
+.k-tl-row[data-flow='ltr'] .k-tl-turn {
+  right: 0;
+}
+.k-tl-row[data-flow='rtl'] .k-tl-turn {
+  left: 0;
+}
+/* 箭头：压在轨道中段两个站点之间（left 由件按站数算），指向较新的时刻。 */
+.k-tl-arrow {
+  position: absolute;
+  top: calc(var(--tl-track-y) - 5px);
+  z-index: 1;
+  margin-left: -4px;
+  width: 0;
+  height: 0;
+  border-block: 5px solid transparent;
+}
+.k-tl-arrow[data-dir='left'] {
+  border-right: 8px solid var(--ink-200);
+}
+.k-tl-arrow[data-dir='right'] {
+  border-left: 8px solid var(--ink-200);
+}

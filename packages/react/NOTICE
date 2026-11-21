@@ -96,3 +96,7 @@ This package is licensed under the MIT License (see LICENSE).
    EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
    IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
    USE OR OTHER DEALINGS IN THE SOFTWARE.
+10. Every Layout（Heydon Pickering、Andy Bell，https://every-layout.dev/layouts/ ，2026-11-21 读 13 个排版原语的目录页）
+   `src/layout/` 的 Stack、Cluster、Sidebar、Switcher、Grid、Reel 只借它们的模式（竖排加统一间距、换行的横排、一窄一宽、容器窄了整体竖排、等宽格、横向滚动条带）；
+   站点没写明代码许可证，所以没有取它的任何代码、类名与文字，实现都是自己写的通用 flex / grid 规则。
+   Only the layout patterns of Every Layout are borrowed; none of its code, class names or text is used (the site states no code licence).
