@@ -378,7 +378,8 @@ export function DataGridDemo() {
       <p className="gal-note">
         列优先级（#122）：下面这张八列的表放在 300px 宽的容器里，放不下就按优先级从低到高收起，表头右端出「+N
         cols」；点它切成横向滚动、显示全部列，再点收起。PnL 写了 priority: 2，比声明在它前面的 Price
-        更晚收；没写的列按声明顺序。 只影响显示，复制与导出仍是全部列。
+        更晚收；没写的列按声明顺序。 只影响显示，复制与导出仍是全部列。这张表加了
+        stretch：保留的列撑满容器，但右端给胶囊让出它的宽度（#128）， 不盖住最后一列的表头。
       </p>
       <div data-testid="grid-priority" style={{ width: 300 }}>
         <DataGrid
@@ -390,6 +391,7 @@ export function DataGridDemo() {
           sort={null}
           onSortChange={() => {}}
           timeZone="utc"
+          stretch
           fit
         />
       </div>

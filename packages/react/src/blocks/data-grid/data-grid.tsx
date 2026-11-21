@@ -295,9 +295,11 @@ export type DataGridProps<Row extends object> = {
    * Priority columns (default true): at standard and hero emphasis, when the visible columns do not fit the container, the lowest-priority
    * columns (GridColumn.priority; undeclared ones count up in declaration order) are collapsed and a "+N cols" capsule appears at the right end
    * of the header; clicking it switches to horizontal scrolling with every column. Display only: copy and export still take all visible columns.
+   * The header and the rows leave the capsule's width free at the right end, so it never covers the last column (with `stretch` the kept columns fill the container minus the capsule).
    * Needs a header; at least two columns stay. false keeps plain horizontal scrolling.
    * 列优先级（默认 true，#122）：standard 与 hero 分量下，可见列放不下容器时按 GridColumn.priority 从低到高收起（没写的按声明顺序），
-   * 表头右端出「+N 列」胶囊，点了切成横向滚动、显示全部列。只影响显示：复制与导出仍是全部可见列。要有表头；至少留两列。false 是一直横向滚动。
+   * 表头右端出「+N 列」胶囊，点了切成横向滚动、显示全部列。胶囊出现时表头与数据行在右端让出它的宽度（#128），不盖住最后一列；stretch 的表，保留的列撑满的是容器宽减胶囊宽。
+   * 只影响显示：复制与导出仍是全部可见列。要有表头；至少留两列。false 是一直横向滚动。
    */
   collapseColumns?: boolean
   /**
@@ -493,6 +495,9 @@ export function DataGrid<Row extends object>({
     : null
   const hiddenColumns = priorityFit?.hidden ?? 0
   const collapsed = hiddenColumns > 0 && !columnsOpen
+  // 出胶囊时表头与数据行的右端都让出胶囊的宽度（#128）：胶囊不透明、贴在可视区右端，不让位就盖住最后一列的表头。
+  // 用 toggleBox 量到的真实宽度，没量到的第一帧用预留值（与上面收列用的同一个数，所以让位后不会多出半列）。
+  const toggleReserve = hiddenColumns > 0 ? toggleWidth || COLUMNS_TOGGLE_RESERVE : 0
   const visibility: ColumnVisibilityState = Object.fromEntries(
     layout.map((column) => [
       column.id,
@@ -584,6 +589,7 @@ export function DataGrid<Row extends object>({
           ? `minmax(${column.getSize()}px, ${column.getSize()}fr)`
           : `${column.getSize()}px`,
     )
+    .concat(toggleReserve > 0 ? [`${toggleReserve}px`] : [])
     .join(' ')
   // 标了 fixed 的列横向滚动时粘在左边：靠前的固定列挨着排，每列的 left 是它前面固定列的宽度之和。
   const stuck = new Map<string, number>()
@@ -957,7 +963,7 @@ export function DataGrid<Row extends object>({
       >
         <div
           className={cn('k-grid-inner', classNames.inner)}
-          style={compact ? { width: '100%' } : { width: totalWidth, minWidth: '100%' }}
+          style={compact ? { width: '100%' } : { width: totalWidth + toggleReserve, minWidth: '100%' }}
         >
           {!noHeader &&
             table.getHeaderGroups().map((group) => (

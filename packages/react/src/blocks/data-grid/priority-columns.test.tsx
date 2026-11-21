@@ -175,6 +175,55 @@ describe('DataGrid 的列优先级', () => {
     )
   })
 
+  // 胶囊让位（#128）：stretch 时保留的列被撑满容器，胶囊不透明、贴在右端，不让位就盖住最后一列的表头。
+  // 静态渲染量不了像素，所以从行的 grid-template-columns 与内层宽度算最后一个保留列的右缘；真实盒子的位置在 e2e/data-grid-columns.spec.ts。
+  describe('胶囊让位（stretch）', () => {
+    const tracks = (html: string) =>
+      html
+        .match(/role="row"[^>]*style="[^"]*grid-template-columns:([^;"]+)/)![1]
+        .trim()
+        .split(/\s+(?![^(]*\))/)
+    const innerWidth = (html: string) => Number(html.match(/class="k-grid-inner"[^>]*style="[^"]*width:(\d+)px/)![1])
+    /** 最后一个保留列的右缘：内层宽度（不小于容器）减去尾部让位的那一格。 */
+    const lastKeptRight = (html: string, container: number) => {
+      const list = tracks(html)
+      const reserve = Number(list.at(-1)!.replace('px', ''))
+      return Math.max(innerWidth(html), container) - reserve
+    }
+
+    it('stretch 加窄容器：最后一个保留列的右缘不越过胶囊的左缘', () => {
+      const html = render({ containerWidth: FOUR, stretch: true })
+      expect(heads(html)).toEqual(['c0', 'c1', 'c2', 'c3'])
+      const list = tracks(html)
+      // 四个保留列的比例轨道，后面跟一格胶囊宽度的定宽轨道
+      expect(list).toHaveLength(5)
+      expect(list.slice(0, 4).every((track) => track.startsWith('minmax('))).toBe(true)
+      expect(list[4]).toBe(`${COLUMNS_TOGGLE_RESERVE}px`)
+      // 胶囊的右缘贴容器右端、宽 COLUMNS_TOGGLE_RESERVE，所以它的左缘是 FOUR - COLUMNS_TOGGLE_RESERVE
+      expect(lastKeptRight(html, FOUR)).toBeLessThanOrEqual(FOUR - COLUMNS_TOGGLE_RESERVE)
+      // 数据行与表头用同一份轨道，数据格也让位
+      expect(
+        html
+          .match(/grid-template-columns:[^;"]+/g)!
+          .every((text) => text === html.match(/grid-template-columns:[^;"]+/)![0]),
+      ).toBe(true)
+    })
+
+    it('没写 stretch 的表也让位：内层宽度含让位的一格，展开后横向滚到头最后一列也不被盖', () => {
+      const html = render({ containerWidth: FOUR })
+      expect(innerWidth(html)).toBe(4 * 70 + COLUMNS_TOGGLE_RESERVE)
+      expect(tracks(html).at(-1)).toBe(`${COLUMNS_TOGGLE_RESERVE}px`)
+    })
+
+    it('不出胶囊：列照旧撑满，没有让位的轨道', () => {
+      const html = render({ containerWidth: 8 * 70, stretch: true })
+      const list = tracks(html)
+      expect(list).toHaveLength(8)
+      expect(list.every((track) => track.startsWith('minmax('))).toBe(true)
+      expect(innerWidth(html)).toBe(8 * 70)
+    })
+  })
+
   it('收起只影响显示：复制与导出取的列不看优先级（用源码钉住，别回到 visibleColumns）', () => {
     const source = readFileSync(new URL('./data-grid.tsx', import.meta.url), 'utf8')
     const line = source.split('\n').find((text) => text.includes('const dataColumnIds = layout.filter'))
