@@ -7682,6 +7682,13 @@ button.k-sysmon-link-body:focus-visible {
   line-height: 1;
 }
 
+.k-grid-more {
+  color: var(--ink-300);
+  font: var(--text-data) var(--font-sans);
+  flex: none;
+  padding: 2px 8px 0;
+}
+
 .k-grid-foot {
   padding: 4px var(--inset-x);
   border-top: 1px solid var(--line-100);

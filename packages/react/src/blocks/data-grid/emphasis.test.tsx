@@ -5,6 +5,7 @@ import { describe, expect, it } from 'vite-plus/test'
 import { EmphasisProvider, type Emphasis } from '../../layout/emphasis.tsx'
 import type { GridColumn } from './columns.ts'
 import { DataGrid, type GridColumnLayout } from './data-grid.tsx'
+import { DataGridHostProvider } from './host.tsx'
 
 // DataGrid 认分量（#115）：compact 不出表头、只留排好序之后的前几行；hero 字上一档；standard 是完整的表。密度（行高）不受分量影响。
 
@@ -50,6 +51,29 @@ describe('DataGrid 的分量', () => {
     expect(html).toContain('品种00')
     expect(html).toContain('品种04')
     expect(html).not.toContain('品种05')
+  })
+
+  it('compact 截掉行时，表下面写「另有 N 行」（宿主给文案，不给用英文默认）；没截就不出这一行', () => {
+    const hostTexts = { moreRows: (n: number) => `另有 ${n} 行` }
+    const withHost = (rowsIn: Row[]) =>
+      renderToStaticMarkup(
+        <EmphasisProvider value="compact">
+          <DataGridHostProvider value={{ texts: hostTexts }}>
+            <DataGrid columns={columns} layout={layout} rows={rowsIn} rowId={(row) => row.id} label="自选" />
+          </DataGridHostProvider>
+        </EmphasisProvider>,
+      )
+    const cut = withHost(rows)
+    expect(shown(cut)).toBe(5)
+    expect(cut).toContain('class="k-grid-more"')
+    expect(cut).toContain('另有 7 行')
+    expect(render('compact')).toContain('7 more rows')
+    const whole = withHost(rows.slice(0, 5))
+    expect(whole).not.toContain('k-grid-more')
+    expect(whole).not.toContain('另有')
+    // 别的分量不截，也就没有这一行
+    expect(render(null)).not.toContain('k-grid-more')
+    expect(render('hero')).not.toContain('k-grid-more')
   })
 
   it('compact 的「前几行」是排好序之后的前几行', () => {

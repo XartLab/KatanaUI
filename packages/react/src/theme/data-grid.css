@@ -313,6 +313,12 @@
   font: var(--text-caption) var(--font-sans);
   line-height: 1;
 }
+.k-grid-more {
+  flex: none;
+  padding: 2px 8px 0;
+  color: var(--ink-300);
+  font: var(--text-data) var(--font-sans);
+}
 .k-grid-foot {
   flex: none;
   padding: 4px var(--inset-x);
@@ -439,7 +445,7 @@
   color: var(--ink-300);
 }
 
-/* 分量（#115，layout/emphasis.tsx）：hero 格子里的字上一档（data → body）；行高仍由 density 管，不动。compact 不出表头、只留前几行，在 JSX 里。 */
+/* 分量（#115，layout/emphasis.tsx）：hero 格子里的字上一档（data → body）；行高仍由 density 管，不动。compact 不出表头、只留前几行，在 JSX 里；被截掉的行数写在表下面（.k-grid-more，data 档、次一级颜色）。 */
 .k-grid[data-emphasis='hero'] .k-grid-cell {
   font-size: var(--text-body-size);
 }

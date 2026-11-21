@@ -5626,7 +5626,7 @@ export const PAGES: readonly DocPage[] = [
     states: [
       'hero：QuoteCard、PriceTag、GaugeBar 的数用 display 档（QuoteCard 的迷你图加高）；DataGrid、NewsFeed 内容不变、字上一档。',
       'standard：不包 Provider 时的样子。',
-      'compact：QuoteCard 名字、价格、涨跌并排，不画迷你图与下面一行；GaugeBar 只留名字、数、档位词；DataGrid 不出表头、只留排好序之后的前 5 行；NewsFeed 一行一条（时间加标题），不画标题行、频道、搜索、过滤、来源、品种、快捷操作。',
+      'compact：QuoteCard 名字、价格、涨跌并排，不画迷你图与下面一行；GaugeBar 只留名字、数、档位词；DataGrid 不出表头、只留排好序之后的前 5 行，表下面写「另有 N 行」（文案由宿主 texts.moreRows 给，不静默截断）；NewsFeed 一行一条（时间加标题），不画标题行、频道、搜索、过滤、来源、品种、快捷操作。',
     ],
     donts: [
       '不要在一个区里放两个 hero：主角只有一个。',

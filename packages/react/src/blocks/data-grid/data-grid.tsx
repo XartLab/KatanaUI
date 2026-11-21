@@ -460,6 +460,8 @@ export function DataGrid<Row extends object>({
 
   const sortedRows = table.getRowModel().rows
   const modelRows = compact ? sortedRows.slice(0, COMPACT_ROW_LIMIT) : sortedRows
+  // 不静默截断（KATANAview 决策记录 0030）：被 compact 截掉的行数写在表下面。
+  const hiddenRows = sortedRows.length - modelRows.length
   const order = modelRows.map((row) => row.id)
   // 展开：受控时听调用方，不然自己记「用户展开或收起过的行」，没动过的行看 defaultExpanded。
   const [toggled, setToggled] = useState<ReadonlyMap<string, boolean>>(new Map())
@@ -1106,6 +1108,11 @@ export function DataGrid<Row extends object>({
         data-interactive={interactive}
       >
         {withMenu ? <ContextMenuTrigger asChild>{body}</ContextMenuTrigger> : body}
+        {hiddenRows > 0 && (
+          <div className="k-grid-more" data-slot="grid-more">
+            {texts.moreRows(hiddenRows)}
+          </div>
+        )}
         {foot && <div className={cn('k-grid-foot', classNames.foot)}>{foot}</div>}
       </div>
       {withMenu && menuEntries.length > 0 && (

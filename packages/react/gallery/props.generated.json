@@ -3701,6 +3701,12 @@
           "description": ""
         },
         {
+          "name": "moreRows",
+          "type": "(hidden: number) => string",
+          "required": true,
+          "description": "compact 分量只留前几行时，表下面写没显示的行数：「另有 7 行」（不静默截断）。"
+        },
+        {
           "name": "rowActions",
           "type": "string",
           "required": true,

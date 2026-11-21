@@ -1,6 +1,13 @@
 // SPDX-License-Identifier: MIT
 import type { ReactNode } from 'react'
-import { DataGrid, NewsFeed, type GridColumn, type GridColumnLayout } from '../../src/blocks/index.ts'
+import {
+  DataGrid,
+  DataGridHostProvider,
+  NewsFeed,
+  type DataGridHost,
+  type GridColumn,
+  type GridColumnLayout,
+} from '../../src/blocks/index.ts'
 import {
   Cluster,
   EmphasisProvider,
@@ -211,17 +218,22 @@ const QUOTE_LAYOUT: readonly GridColumnLayout[] = [
   { id: 'change', label: '涨跌幅', width: 80, visible: true },
 ]
 
+/** 文案由宿主给：compact 截掉行时表下面写「另有 N 行」。 */
+const QUOTE_HOST: DataGridHost = { texts: { moreRows: (hidden) => `另有 ${hidden} 行` } }
+
 function GridAt({ emphasis }: { emphasis: Emphasis }) {
   return (
     <EmphasisProvider value={emphasis}>
-      <div style={{ height: emphasis === 'compact' ? 120 : 220, display: 'flex' }} data-emphasis-demo={emphasis}>
-        <DataGrid
-          columns={QUOTE_COLUMNS}
-          layout={QUOTE_LAYOUT}
-          rows={QUOTES}
-          rowId={(row) => row.id}
-          label="示例行情"
-        />
+      <div style={{ height: emphasis === 'compact' ? 148 : 220, display: 'flex' }} data-emphasis-demo={emphasis}>
+        <DataGridHostProvider value={QUOTE_HOST}>
+          <DataGrid
+            columns={QUOTE_COLUMNS}
+            layout={QUOTE_LAYOUT}
+            rows={QUOTES}
+            rowId={(row) => row.id}
+            label="示例行情"
+          />
+        </DataGridHostProvider>
       </div>
     </EmphasisProvider>
   )
@@ -271,7 +283,7 @@ export function EmphasisDemo() {
       <ThreeLevels title="读数类：QuoteCard、PriceTag、GaugeBar">
         {(level) => <ReadoutsAt emphasis={level} />}
       </ThreeLevels>
-      <ThreeLevels title="DataGrid：compact 不出表头、只留前 5 行">
+      <ThreeLevels title="DataGrid：compact 不出表头、只留前 5 行，表下面写「另有 3 行」">
         {(level) => <GridAt emphasis={level} />}
       </ThreeLevels>
       <ThreeLevels title="NewsFeed：compact 一行一条">{(level) => <NewsAt emphasis={level} />}</ThreeLevels>
