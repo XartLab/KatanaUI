@@ -8,6 +8,7 @@ export { useHoverOpen } from './lib/hover-open.ts'
 export { InlineOverlays } from './lib/overlay.tsx'
 
 export { Cluster, type ClusterProps } from './layout/cluster.tsx'
+export { EmphasisProvider, useEmphasis, type Emphasis, type EmphasisProviderProps } from './layout/emphasis.tsx'
 export { Grid, type GridProps } from './layout/grid.tsx'
 export { Reel, type ReelProps } from './layout/reel.tsx'
 export { Sidebar, type SidebarProps } from './layout/sidebar.tsx'

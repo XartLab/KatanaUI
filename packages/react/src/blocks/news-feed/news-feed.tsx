@@ -12,6 +12,7 @@ import {
 } from 'lucide-react'
 import { useMemo, useRef, useState, type ReactNode } from 'react'
 import { cn } from '../../lib/cn.ts'
+import { useEmphasis } from '../../layout/emphasis.tsx'
 import { SymbolMark } from '../../katana/symbol-mark.tsx'
 import { ChipGroup, type ChipItem } from '../../patterns/chip-group.tsx'
 import { RowActions, RowContextMenu, type RowAction } from '../../patterns/row-actions.tsx'
@@ -30,6 +31,8 @@ import { filterNews, sortNews, type NewsFacet, type NewsItem, type NewsSymbol } 
 // 2026-11-15 主会话读到：News Flow 像一种筛选器，新闻集中在一处，可设多种过滤并保存为一个 flow；快讯、要闻、头条）；其余细节没读到，待核对。
 // 新到的条目不打断阅读：没暂停且列表在顶部时直接淡入插入，其余情况在顶上出「n 条新消息」，点了才插入。
 // 数据与字全由调用方传（频道、来源、文案、当前时间 now），件不认识任何应用；筛选状态在件内，用 on*Change 通知。
+// 认分量（#115，layout/emphasis.tsx）：compact 一行一条——只留「时间 标题」，不画标题行、频道、搜索、过滤、来源、品种与快捷操作，卡片排法也退回列表；
+// hero 标题字上一档（样子在 news-feed.css）；standard 就是上面写的完整版。
 
 export type NewsFeedLabels = {
   all: string
@@ -144,6 +147,8 @@ export function NewsFeed({
   onPausedChange,
   className,
 }: NewsFeedProps) {
+  const emphasis = useEmphasis()
+  const compact = emphasis === 'compact'
   const [channel, setChannel] = useState('')
   const [picked, setPicked] = useState<string[]>([])
   const [pickedCategories, setPickedCategories] = useState<string[]>([])
@@ -154,7 +159,8 @@ export function NewsFeed({
     setFacetPicked(next)
     onFacetsChange?.(next)
   }
-  const [layout, setLayout] = useState(defaultLayout)
+  const [chosenLayout, setLayout] = useState(defaultLayout)
+  const layout = compact ? 'list' : chosenLayout
   const [collapsed, setCollapsed] = useState(false)
   const [openId, setOpenId] = useState<string | null>(null)
   const [paused, setPaused] = useState(false)
@@ -197,13 +203,14 @@ export function NewsFeed({
     if (reader) setOpenId(item.id)
     onOpen?.(item)
   }
-  const headed = (views && views.length > 0 && labels.views) || labels.collapse
+  const headed = !compact && ((views && views.length > 0 && labels.views) || labels.collapse)
 
   return (
     <section
       className={cn('k-news', className)}
       aria-label={labels.feed}
       data-layout={layout}
+      data-emphasis={emphasis}
       data-reader={opened ? '' : undefined}
     >
       {headed ? (
@@ -234,62 +241,64 @@ export function NewsFeed({
       ) : null}
       <div className="k-news-split">
         <div className="k-news-main">
-          <div className="k-news-top" data-collapsed={collapsed ? '' : undefined}>
-            <ToggleGroup
-              variant="sm"
-              aria-label={labels.channels}
-              value={channel === '' ? 'all' : channel}
-              onValueChange={(v) => {
-                const next = v === 'all' ? '' : v
-                setChannel(next)
-                onChannelChange?.(next)
-              }}
-            >
-              <ToggleGroupItem value="all">{labels.all}</ToggleGroupItem>
-              {channels.map((c) => (
-                <ToggleGroupItem key={c.value} value={c.value}>
-                  {c.label}
+          {!compact && (
+            <div className="k-news-top" data-collapsed={collapsed ? '' : undefined}>
+              <ToggleGroup
+                variant="sm"
+                aria-label={labels.channels}
+                value={channel === '' ? 'all' : channel}
+                onValueChange={(v) => {
+                  const next = v === 'all' ? '' : v
+                  setChannel(next)
+                  onChannelChange?.(next)
+                }}
+              >
+                <ToggleGroupItem value="all">{labels.all}</ToggleGroupItem>
+                {channels.map((c) => (
+                  <ToggleGroupItem key={c.value} value={c.value}>
+                    {c.label}
+                  </ToggleGroupItem>
+                ))}
+              </ToggleGroup>
+              <label className="k-news-search">
+                <Search size={13} aria-hidden />
+                <Input
+                  size="sm"
+                  type="search"
+                  aria-label={labels.search}
+                  placeholder={labels.search}
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                />
+              </label>
+              <ToggleGroup
+                variant="sm"
+                aria-label={labels.layout}
+                value={layout}
+                onValueChange={(v) => setLayout(v as 'list' | 'card')}
+              >
+                <ToggleGroupItem value="list" aria-label={labels.layoutList} title={labels.layoutList}>
+                  <List size={14} aria-hidden />
                 </ToggleGroupItem>
-              ))}
-            </ToggleGroup>
-            <label className="k-news-search">
-              <Search size={13} aria-hidden />
-              <Input
-                size="sm"
-                type="search"
-                aria-label={labels.search}
-                placeholder={labels.search}
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-              />
-            </label>
-            <ToggleGroup
-              variant="sm"
-              aria-label={labels.layout}
-              value={layout}
-              onValueChange={(v) => setLayout(v as 'list' | 'card')}
-            >
-              <ToggleGroupItem value="list" aria-label={labels.layoutList} title={labels.layoutList}>
-                <List size={14} aria-hidden />
-              </ToggleGroupItem>
-              <ToggleGroupItem value="card" aria-label={labels.layoutCard} title={labels.layoutCard}>
-                <LayoutGrid size={14} aria-hidden />
-              </ToggleGroupItem>
-            </ToggleGroup>
-            <Button
-              variant="icon"
-              aria-label={paused ? labels.resume : labels.pause}
-              title={paused ? labels.resume : labels.pause}
-              aria-pressed={paused}
-              onClick={() => {
-                setPaused(!paused)
-                onPausedChange?.(!paused)
-              }}
-            >
-              {paused ? <Play aria-hidden /> : <Pause aria-hidden />}
-            </Button>
-          </div>
-          {facets.length > 0 && labels.facets && !collapsed && (
+                <ToggleGroupItem value="card" aria-label={labels.layoutCard} title={labels.layoutCard}>
+                  <LayoutGrid size={14} aria-hidden />
+                </ToggleGroupItem>
+              </ToggleGroup>
+              <Button
+                variant="icon"
+                aria-label={paused ? labels.resume : labels.pause}
+                title={paused ? labels.resume : labels.pause}
+                aria-pressed={paused}
+                onClick={() => {
+                  setPaused(!paused)
+                  onPausedChange?.(!paused)
+                }}
+              >
+                {paused ? <Play aria-hidden /> : <Pause aria-hidden />}
+              </Button>
+            </div>
+          )}
+          {facets.length > 0 && labels.facets && !collapsed && !compact && (
             <div className="k-news-facets" role="group" aria-label={labels.facets.group} data-slot="news-facets">
               {facetShown.flatMap((key) => {
                 const facet = facets.find((f) => f.key === key)
@@ -396,7 +405,7 @@ export function NewsFeed({
               ) : null}
             </div>
           )}
-          {sources.length > 0 && !collapsed && (
+          {sources.length > 0 && !collapsed && !compact && (
             <ChipGroup
               items={chips}
               value={picked}
@@ -408,7 +417,7 @@ export function NewsFeed({
               clearLabel={labels.clearSources}
             />
           )}
-          {categories.length > 0 && labels.categories && !collapsed && (
+          {categories.length > 0 && labels.categories && !collapsed && !compact && (
             <ChipGroup
               className="k-news-categories"
               items={categories.map((c) => ({ value: c.value, label: c.label }))}
@@ -455,10 +464,10 @@ export function NewsFeed({
                       data-important={item.important ? '' : undefined}
                       data-news-id={item.id}
                       data-selected={item.id === selectedId ? '' : undefined}
-                      data-actions={itemActions ? '' : undefined}
+                      data-actions={itemActions && !compact ? '' : undefined}
                     >
                       <div className="k-news-meta">
-                        <span className="k-news-source">{sourceName(item.source)}</span>
+                        {!compact && <span className="k-news-source">{sourceName(item.source)}</span>}
                         <time
                           className="k-news-time"
                           dateTime={new Date(item.time).toISOString()}
@@ -466,7 +475,7 @@ export function NewsFeed({
                         >
                           {labels.ago(Math.max(0, Math.floor((now - item.time) / 1000)))}
                         </time>
-                        {labels.read && item.readMinutes !== undefined ? (
+                        {!compact && labels.read && item.readMinutes !== undefined ? (
                           <span className="k-news-read">{labels.read(item.readMinutes)}</span>
                         ) : null}
                         {item.important && (
@@ -482,8 +491,8 @@ export function NewsFeed({
                         <Title item={item} onOpen={reader || onOpen ? open : undefined} />
                         {item.summary && layout === 'card' && <p className="k-news-summary">{item.summary}</p>}
                       </div>
-                      {itemActions && <RowActions items={itemActions(item)} label={itemActionsLabel} />}
-                      {item.symbols && item.symbols.length > 0 && (
+                      {!compact && itemActions && <RowActions items={itemActions(item)} label={itemActionsLabel} />}
+                      {!compact && item.symbols && item.symbols.length > 0 && (
                         <div className="k-news-symbols" data-style={symbolStyle}>
                           {item.symbols.map((symbol) => (
                             <button

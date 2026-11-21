@@ -438,3 +438,8 @@
   margin-left: 4px;
   color: var(--ink-300);
 }
+
+/* 分量（#115，layout/emphasis.tsx）：hero 格子里的字上一档（data → body）；行高仍由 density 管，不动。compact 不出表头、只留前几行，在 JSX 里。 */
+.k-grid[data-emphasis='hero'] .k-grid-cell {
+  font-size: var(--text-body-size);
+}

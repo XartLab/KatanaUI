@@ -27,6 +27,7 @@ import {
   type ReactNode,
 } from 'react'
 import { cn } from '../../lib/cn.ts'
+import { useEmphasis } from '../../layout/emphasis.tsx'
 import { SymbolMark } from '../../katana/symbol-mark.tsx'
 import { ContextMenu, ContextMenuContent, ContextMenuTrigger } from '../../primitives/context-menu.tsx'
 import { useMenuParts } from '../../primitives/menu-any.tsx'
@@ -105,6 +106,9 @@ export type GridRowProps = {
   [attribute: `data-${string}`]: string | number | boolean | undefined
   [attribute: `aria-${string}`]: string | number | boolean | undefined
 }
+
+/** compact 分量（#115）只留表的前几行；待定：起始值，看 KATANAview 样板时量。 */
+const COMPACT_ROW_LIMIT = 5
 
 /** 子行没有内容的写法（null、undefined、false）：这一行不能展开。 */
 const hasContent = (node: ReactNode): boolean => node !== null && node !== undefined && node !== false
@@ -393,6 +397,10 @@ export function DataGrid<Row extends object>({
 }: DataGridProps<Row>) {
   const host = useDataGridHost()
   const texts = { ...DEFAULT_TEXTS, ...host?.texts }
+  // 分量（#115）：compact 不出表头、只留排好序之后的前几行；hero 字上一档（样子在 data-grid.css）；密度（行高）仍由 density 管。
+  const emphasis = useEmphasis()
+  const compact = emphasis === 'compact'
+  const noHeader = hideHeader === true || compact
   const id = useId()
   const rowHeight = ROW_HEIGHTS[density]
   const headHeight = layout.some((column) => column.visible && column.sub)
@@ -450,7 +458,8 @@ export function DataGrid<Row extends object>({
     },
   })
 
-  const modelRows = table.getRowModel().rows
+  const sortedRows = table.getRowModel().rows
+  const modelRows = compact ? sortedRows.slice(0, COMPACT_ROW_LIMIT) : sortedRows
   const order = modelRows.map((row) => row.id)
   // 展开：受控时听调用方，不然自己记「用户展开或收起过的行」，没动过的行看 defaultExpanded。
   const [toggled, setToggled] = useState<ReadonlyMap<string, boolean>>(new Map())
@@ -853,7 +862,7 @@ export function DataGrid<Row extends object>({
         }}
       >
         <div className={cn('k-grid-inner', classNames.inner)} style={{ width: totalWidth, minWidth: '100%' }}>
-          {!hideHeader &&
+          {!noHeader &&
             table.getHeaderGroups().map((group) => (
               <div
                 key={group.id}
@@ -975,7 +984,7 @@ export function DataGrid<Row extends object>({
                     data-index={item.index}
                     data-subrow={row.id}
                     role="row"
-                    aria-rowindex={item.index + 2 - (hideHeader ? 1 : 0)}
+                    aria-rowindex={item.index + 2 - (noHeader ? 1 : 0)}
                     aria-level={level + 1}
                     className={cn('k-grid-subrow', classNames.subrow)}
                     style={{ top: item.start }}
@@ -998,7 +1007,7 @@ export function DataGrid<Row extends object>({
                   data-index={measure ? item.index : undefined}
                   data-row={row.id}
                   role="row"
-                  aria-rowindex={item.index + 2 - (hideHeader ? 1 : 0)}
+                  aria-rowindex={item.index + 2 - (noHeader ? 1 : 0)}
                   aria-selected={interactive && selectable ? selected : undefined}
                   aria-level={tree || renderSubRow ? level : undefined}
                   aria-expanded={tree ? tree.expanded : expandable ? isExpanded(row.id, row.original) : undefined}
@@ -1093,6 +1102,7 @@ export function DataGrid<Row extends object>({
         className={cn('k-grid', fit && 'is-fit', ruled && 'is-ruled', autoRowHeight && 'is-auto', classNames.root)}
         data-slot="data-grid"
         data-density={density}
+        data-emphasis={emphasis}
         data-interactive={interactive}
       >
         {withMenu ? <ContextMenuTrigger asChild>{body}</ContextMenuTrigger> : body}
