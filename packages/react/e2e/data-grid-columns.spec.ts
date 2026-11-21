@@ -86,7 +86,20 @@ test('列优先级：窄容器收起低优先级的列，「+N cols」点开显�
   // 胶囊在表头最右，不压在最后一列的表头上
   const lastHead = (await heads(demo).last().boundingBox())!
   const toggleBox = (await toggle.boundingBox())!
-  expect(toggleBox.x).toBeGreaterThanOrEqual(lastHead.x + lastHead.width)
+  expect(toggleBox.x).toBeGreaterThanOrEqual(lastHead.x + lastHead.width - 0.5)
+  // stretch 的表：保留的列撑满的是「容器宽 - 胶囊宽」，最后一列的表头与数据格都不越过胶囊左缘（#128）；表头文字没被盖住
+  const lastId = await heads(demo).last().getAttribute('data-col')
+  const lastCell = (await demo.locator(`[role="gridcell"][data-col="${lastId}"]`).first().boundingBox())!
+  expect(lastCell.x + lastCell.width).toBeLessThanOrEqual(toggleBox.x + 0.5)
+  const lastHeadAt = await heads(demo).last().boundingBox()
+  const covered = await demo.evaluate(
+    (root, point) => {
+      const hit = document.elementFromPoint(point.x, point.y)
+      return !!hit?.closest('.k-grid-cols-end')
+    },
+    { x: lastHeadAt!.x + lastHeadAt!.width - 4, y: lastHeadAt!.y + lastHeadAt!.height / 2 },
+  )
+  expect(covered).toBe(false)
 
   // 点开：全部八列，横向滚动，胶囊写「Collapse」
   await toggle.click()
