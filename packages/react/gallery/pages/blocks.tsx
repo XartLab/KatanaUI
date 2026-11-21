@@ -131,6 +131,21 @@ const LAYOUT: readonly GridColumnLayout[] = [
   { id: 'note', label: 'Note', width: 80, visible: true },
 ]
 
+// 列优先级（#122）：窄容器里的八列表。pnl 写了 priority: 2，比声明在它前面的价格（没写，按声明顺序是 3）更晚收；没写的列按声明顺序。
+const NARROW_COLUMNS: readonly GridColumn<Example>[] = COLUMNS.slice(0, 8).map((column) =>
+  column.id === 'pnl' ? { ...column, priority: 2, format: { digits: 2 } } : column,
+)
+const NARROW_LAYOUT: readonly GridColumnLayout[] = [
+  { id: 'symbol', label: 'Symbol', width: 112, visible: true },
+  { id: 'side', label: 'Side', width: 44, visible: true },
+  { id: 'price', label: 'Price', width: 72, visible: true },
+  { id: 'qty', label: 'Qty', width: 60, visible: true },
+  { id: 'pnl', label: 'PnL', width: 72, visible: true },
+  { id: 'change', label: 'Chg %', width: 64, visible: true },
+  { id: 'at', label: 'Time (UTC)', width: 160, visible: true },
+  { id: 'fills', label: 'Fills', width: 48, visible: true },
+]
+
 // 自定义列与子行：fills 列画任意内容（标签加成交笔数、按钮），点不到整行；有成交的行按 → 展开成交明细（示例数据）。
 const DETAIL_COLUMNS: readonly GridColumn<Example>[] = [
   { id: 'symbol', type: 'symbol', value: (row) => row.symbol },
@@ -201,6 +216,7 @@ function ColumnsDemo() {
               rows={EXAMPLES}
               rowId={(row) => row.id}
               label="Example columns"
+              collapseColumns={false}
               sort={sort}
               onSortChange={setSort}
               onResetColumns={() => {
@@ -329,6 +345,7 @@ export function DataGridDemo() {
             rows={EXAMPLES}
             rowId={(row) => row.id}
             label="Example rows"
+            collapseColumns={false}
             sort={sort}
             onSortChange={setSort}
             onResetColumns={() => setSort(null)}
@@ -355,6 +372,24 @@ export function DataGridDemo() {
           density="compact"
           hideHeader
           interactive={false}
+          fit
+        />
+      </div>
+      <p className="gal-note">
+        列优先级（#122）：下面这张八列的表放在 300px 宽的容器里，放不下就按优先级从低到高收起，表头右端出「+N
+        cols」；点它切成横向滚动、显示全部列，再点收起。PnL 写了 priority: 2，比声明在它前面的 Price
+        更晚收；没写的列按声明顺序。 只影响显示，复制与导出仍是全部列。
+      </p>
+      <div data-testid="grid-priority" style={{ width: 300 }}>
+        <DataGrid
+          columns={NARROW_COLUMNS}
+          layout={NARROW_LAYOUT}
+          rows={EXAMPLES}
+          rowId={(row) => row.id}
+          label="Example narrow table"
+          sort={null}
+          onSortChange={() => {}}
+          timeZone="utc"
           fit
         />
       </div>

@@ -3152,9 +3152,11 @@ export const PAGES: readonly DocPage[] = [
       '只读（interactive=false）：table 语义，表头不是按钮。',
       '子行：有子行的行带 aria-expanded（true 摊开、false 收起）；没有子行的行没有这个属性，按 → 没反应。',
       'custom 列没有 text 时复制与导出是空字；有按钮的格子别指望整行点击。',
+      '列优先级（standard 与 hero 分量，有表头）：可见列放不下容器时按 GridColumn.priority 从低到高收起（没写的按声明顺序，第一列 1、第二列 2……），至少留两列，固定在左边的列不收；表头右端出「+N 列」胶囊（文案 texts.moreColumns，默认英文 +N cols），点了切成横向滚动、显示全部列，胶囊变 texts.collapseColumns，再点收起。状态只在组件里，不存；容器变宽放得下了胶囊就消失。只影响显示：复制与导出仍是全部可见列。compact 分量与不画表头的表不走这一套；collapseColumns={false} 关掉，一直横向滚动。',
     ],
     donts: [
       '不要把例子里的数据当真实行情；调用方要传真实行。',
+      '不要为了放进窄容器自己去藏列或截断：给列写 priority，放不下的由表收起并写出收了几列。',
       '不要给数值列自己写 text-align；列类型决定对齐。',
       '不要靠颜色以外没有符号的方式表达涨跌。',
       '不要在 custom 列里重画 price、pnl 这类有类型的格子；有类型的用类型，custom 留给类型表达不了的。',

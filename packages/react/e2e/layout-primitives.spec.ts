@@ -131,7 +131,14 @@ test('分量：三档的读数、表、新闻流在浏览器里的模样', async
   const grids = ['hero', 'standard', 'compact'].map((level) => demo.locator(`.k-grid[data-emphasis="${level}"]`))
   await expect(grids[2]!.locator('[role="columnheader"]')).toHaveCount(0)
   await expect(grids[2]!.locator('[role="row"]')).toHaveCount(5)
-  await expect(grids[1]!.locator('[role="columnheader"]')).toHaveCount(8)
+  // standard 的八列表放在这么窄的格子里放不下：按优先级收起低的列，表头右端的胶囊写收了几列（#122）；hero 同理
+  const standardToggle = grids[1]!.locator('.k-grid-cols-toggle')
+  await expect(standardToggle).toBeVisible()
+  const standardKept = await grids[1]!.locator('[role="columnheader"]').count()
+  expect(standardKept).toBeGreaterThanOrEqual(2)
+  expect(standardKept).toBeLessThan(8)
+  await expect(standardToggle).toHaveText(`+${8 - standardKept} cols`)
+  await expect(grids[2]!.locator('.k-grid-cols-toggle')).toHaveCount(0)
   // compact 一行只剩名称与主数：八列的表只出两列，名称列吃掉剩下的宽度，没有横向滚动
   const compactCols = await grids[2]!
     .locator('[role="row"]')

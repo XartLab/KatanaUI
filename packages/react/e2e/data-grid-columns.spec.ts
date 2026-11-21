@@ -69,3 +69,45 @@ test('ColumnPicker：切列集、逐列勾选', async ({ page }) => {
   expect(await names(demo)).toContain('Note')
   await expect(picker.getByRole('button', { name: 'Execution' })).toHaveAttribute('aria-pressed', 'false')
 })
+
+test('列优先级：窄容器收起低优先级的列，「+N cols」点开显示全部、再点收起（#122）', async ({ page }) => {
+  await page.goto('/?theme=graphite#/data-grid')
+  const demo = page.getByTestId('grid-priority')
+  await demo.waitFor()
+  const scroll = demo.locator('.k-grid-scroll')
+  const overflow = () => scroll.evaluate((el) => el.scrollWidth - el.clientWidth)
+  const toggle = demo.locator('.k-grid-cols-toggle')
+
+  // 300px 放不下八列：留名称、方向与 PnL（PnL 写了 priority: 2，比声明在前的 Price 晚收），胶囊写收起了 5 列，不出横向滚动
+  await expect(toggle).toHaveText('+5 cols')
+  expect(await names(demo)).toEqual(['Symbol', 'Side', 'PnL'])
+  await expect(toggle).toHaveAttribute('aria-expanded', 'false')
+  expect(await overflow()).toBeLessThanOrEqual(0)
+  // 胶囊在表头最右，不压在最后一列的表头上
+  const lastHead = (await heads(demo).last().boundingBox())!
+  const toggleBox = (await toggle.boundingBox())!
+  expect(toggleBox.x).toBeGreaterThanOrEqual(lastHead.x + lastHead.width)
+
+  // 点开：全部八列，横向滚动，胶囊写「Collapse」
+  await toggle.click()
+  expect(await names(demo)).toHaveLength(8)
+  await expect(toggle).toHaveText('Collapse')
+  await expect(toggle).toHaveAttribute('aria-expanded', 'true')
+  expect(await overflow()).toBeGreaterThan(0)
+  // 横向滚到头，胶囊还在可视区里（不跟着滚走）
+  await scroll.evaluate((el) => (el.scrollLeft = el.scrollWidth))
+  const view = (await scroll.boundingBox())!
+  const after = (await toggle.boundingBox())!
+  expect(after.x + after.width).toBeLessThanOrEqual(view.x + view.width + 1)
+  expect(after.x).toBeGreaterThanOrEqual(view.x)
+
+  // 再点：回到收起
+  await toggle.click()
+  expect(await names(demo)).toEqual(['Symbol', 'Side', 'PnL'])
+  await expect(toggle).toHaveText('+5 cols')
+
+  // 容器变宽放得下全部：没有胶囊，八列都在
+  await demo.evaluate((el) => (el.style.width = '700px'))
+  await expect(toggle).toHaveCount(0)
+  expect(await names(demo)).toHaveLength(8)
+})
