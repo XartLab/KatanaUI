@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vite-plus/test'
 import { EmphasisProvider, type Emphasis } from '../../layout/emphasis.tsx'
-import type { GridColumn } from './columns.ts'
+import { exportTable, type GridColumn } from './columns.ts'
 import { DataGrid, type GridColumnLayout } from './data-grid.tsx'
 import { DataGridHostProvider } from './host.tsx'
 
@@ -187,6 +187,33 @@ describe('DataGrid 的分量', () => {
       const html = renderWide('compact', ['name', 'a'])
       const numberCell = /<div[^>]*data-col="a"[^>]*class="([^"]*)"/.exec(html)?.[1] ?? ''
       expect(numberCell).toContain('is-end')
+    })
+  })
+  describe('复制与导出不看分量（#117）', () => {
+    type Wide = { id: string; [key: `c${number}`]: number | string }
+    const ids = Array.from({ length: 8 }, (_, index) => `c${index}`)
+    const specs = new Map<string, GridColumn<Wide>>(
+      ids.map((id) => [id, { id, type: 'text', value: (row: Wide) => row[id as `c${number}`] }]),
+    )
+    const data: Wide[] = Array.from({ length: 12 }, (_, index) => ({
+      id: `r${index}`,
+      ...Object.fromEntries(ids.map((id) => [id, `${id}-${index}`])),
+    }))
+
+    it('12 行 8 列的表导出 12 行 8 列（含表头），compact 的前 5 行、前两列不进来', () => {
+      const { header, lines } = exportTable(specs, ids, (id) => id.toUpperCase(), data, {}, true)
+      expect(header).toHaveLength(8)
+      expect(lines).toHaveLength(12)
+      expect(lines.every((line) => line.length === 8)).toBe(true)
+      expect(lines[11]![7]).toBe('c7-11')
+    })
+
+    it('DataGrid 的复制与导出接的是全部可见列与全部行，不是 compact 的那一块', () => {
+      // 组件里只有这一处取行取列：分量不参与（用源码钉住，避免回到 modelRows / visibleColumns）
+      const source = readFileSync(new URL('./data-grid.tsx', import.meta.url), 'utf8')
+      expect(source).toContain('const dataColumnIds = layout.filter')
+      expect(source).toMatch(/exportTable\(\s*byId,\s*dataColumnIds,\s*labelOf,\s*sortedRows\.map/)
+      expect(source).toMatch(/exportTable\(byId, dataColumnIds, labelOf, target, env, false\)/)
     })
   })
 })

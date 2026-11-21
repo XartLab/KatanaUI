@@ -40,6 +40,7 @@ import {
   barExtent,
   barRatio,
   defaultAlign,
+  exportTable,
   resolveCell,
   resolveHeat,
   sortComparator,
@@ -556,28 +557,26 @@ export function DataGrid<Row extends object>({
     const at = cursor !== null ? modelRows.find((row) => row.id === cursor) : undefined
     return at ? [at.original] : []
   }
-  const cellText = (column: string, row: Row) => {
-    const spec = byId.get(column)
-    return spec ? resolveCell(spec, row, env).text : ''
-  }
-  const header = visibleColumns.map((column) => labelOf(column.id))
-  const lines = (list: readonly Row[]) => list.map((row) => visibleColumns.map((column) => cellText(column.id, row)))
+  // 分量只管显示，不管数据（#117）：复制与导出照 standard，带全部可见列；导出带全部行（排好序的），不受 compact 的列筛选与前几行影响。
+  const dataColumnIds = layout.filter((column) => column.visible && byId.has(column.id)).map((column) => column.id)
 
   const copy = () => {
     const target = targetRows()
     if (target.length === 0) return
-    void navigator.clipboard?.writeText(tableTsv(header, lines(target))).catch(() => {})
+    const { header, lines } = exportTable(byId, dataColumnIds, labelOf, target, env, false)
+    void navigator.clipboard?.writeText(tableTsv(header, lines)).catch(() => {})
   }
   const save = () => {
     if (!onExport) return
-    const csvHeader = visibleColumns.map((column) => byId.get(column.id)?.csvHeader?.() ?? labelOf(column.id))
-    const csvLines = modelRows.map(({ original }) =>
-      visibleColumns.map((column) => {
-        const spec = byId.get(column.id)
-        return spec?.csv ? spec.csv(original) : cellText(column.id, original)
-      }),
+    const { header, lines } = exportTable(
+      byId,
+      dataColumnIds,
+      labelOf,
+      sortedRows.map((row) => row.original),
+      env,
+      true,
     )
-    onExport(tableCsv(csvHeader, csvLines), `${exportName}.csv`)
+    onExport(tableCsv(header, lines), `${exportName}.csv`)
   }
   const resetColumns = () => onResetColumns?.()
 

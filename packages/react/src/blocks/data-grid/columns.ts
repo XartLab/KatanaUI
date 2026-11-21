@@ -452,3 +452,27 @@ export function sortComparator(type: ColumnType | undefined, locale: string | un
     return collator.compare(asText(a), asText(b))
   }
 }
+
+/**
+ * 复制与导出要的表头与行（#117）：分量只管显示，不管数据，所以调用方传全部可见列的 id 与要带的行，不看 compact 的列筛选与前几行。
+ * csv 为 true 时用列声明的 csvHeader / csv（原始数值、带单位的表头），否则是屏幕上的字。
+ */
+export function exportTable<Row>(
+  specs: ReadonlyMap<string, GridColumn<Row>>,
+  ids: readonly string[],
+  labelOf: (id: string) => string,
+  rows: readonly Row[],
+  env: CellEnv,
+  csv: boolean,
+): { header: string[]; lines: string[][] } {
+  const text = (spec: GridColumn<Row> | undefined, row: Row) => (spec ? resolveCell(spec, row, env).text : '')
+  return {
+    header: ids.map((id) => (csv ? specs.get(id)?.csvHeader?.() : undefined) ?? labelOf(id)),
+    lines: rows.map((row) =>
+      ids.map((id) => {
+        const spec = specs.get(id)
+        return csv && spec?.csv ? spec.csv(row) : text(spec, row)
+      }),
+    ),
+  }
+}
