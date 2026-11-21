@@ -4818,6 +4818,17 @@ button.k-news-title:hover, a.k-news-title:hover {
   margin-inline-end: 64px;
 }
 
+.k-news[data-emphasis="hero"] .k-news-title {
+  font-size: var(--text-title-size);
+}
+
+.k-news[data-emphasis="compact"][data-layout="list"] .k-news-item {
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 8px;
+  min-height: 24px;
+  padding: 2px 0;
+}
+
 .k-sr {
   min-width: 0;
   height: 100%;
@@ -7671,6 +7682,13 @@ button.k-sysmon-link-body:focus-visible {
   line-height: 1;
 }
 
+.k-grid-more {
+  color: var(--ink-300);
+  font: var(--text-data) var(--font-sans);
+  flex: none;
+  padding: 2px 8px 0;
+}
+
 .k-grid-foot {
   padding: 4px var(--inset-x);
   border-top: 1px solid var(--line-100);
@@ -7806,6 +7824,10 @@ button.k-sysmon-link-body:focus-visible {
   color: var(--ink-300);
   margin-left: 4px;
   display: inline-flex;
+}
+
+.k-grid[data-emphasis="hero"] .k-grid-cell {
+  font-size: var(--text-body-size);
 }
 
 .k-empty {
@@ -9153,6 +9175,45 @@ button.k-quote-card.is-link:focus-visible {
 .k-quote-rows tbody tr.is-link:focus-visible {
   outline: 2px solid var(--focus-ring);
   outline-offset: -2px;
+}
+
+.k-quote-card[data-emphasis="hero"] .k-quote-price {
+  font: var(--text-display) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: var(--text-display-tracking);
+}
+
+.k-quote-card[data-emphasis="hero"] .k-quote-spark {
+  height: 44px;
+}
+
+.k-quote-card[data-emphasis="compact"] {
+  flex-direction: row;
+  align-items: baseline;
+  gap: 8px;
+  padding: 4px 8px;
+}
+
+.k-quote-card[data-emphasis="compact"] .k-quote-price {
+  font: var(--text-data) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+}
+
+.k-price-tag[data-emphasis="hero"] .k-price-tag-price {
+  font: var(--text-display) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: var(--text-display-tracking);
+}
+
+.k-price-tag[data-emphasis="compact"] {
+  font: var(--text-caption) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+}
+
+.k-gauge[data-emphasis="hero"] .k-gauge-value:not(.is-unavailable) {
+  font: var(--text-display) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: var(--text-display-tracking);
 }
 
 :root {
@@ -15465,6 +15526,135 @@ button.k-tl-card:focus-visible {
   pointer-events: auto;
 }
 
+.k-stack {
+  gap: var(--k-gap);
+  flex-direction: column;
+  display: flex;
+}
+
+.k-cluster {
+  gap: var(--k-gap);
+  flex-wrap: wrap;
+  display: flex;
+}
+
+.k-cluster[data-align="start"] {
+  align-items: flex-start;
+}
+
+.k-cluster[data-align="center"] {
+  align-items: center;
+}
+
+.k-cluster[data-align="end"] {
+  align-items: flex-end;
+}
+
+.k-cluster[data-align="baseline"] {
+  align-items: baseline;
+}
+
+.k-cluster[data-align="stretch"] {
+  align-items: stretch;
+}
+
+.k-cluster[data-justify="start"] {
+  justify-content: flex-start;
+}
+
+.k-cluster[data-justify="center"] {
+  justify-content: center;
+}
+
+.k-cluster[data-justify="end"] {
+  justify-content: flex-end;
+}
+
+.k-cluster[data-justify="between"] {
+  justify-content: space-between;
+}
+
+.k-sidebar {
+  gap: var(--k-gap);
+  flex-wrap: wrap;
+  display: flex;
+}
+
+.k-sidebar > * {
+  box-sizing: border-box;
+}
+
+.k-sidebar[data-side="start"] > :first-child, .k-sidebar[data-side="end"] > :last-child {
+  flex-grow: 1;
+  flex-basis: var(--k-side-width);
+}
+
+.k-sidebar[data-side="start"] > :last-child, .k-sidebar[data-side="end"] > :first-child {
+  min-inline-size: var(--k-content-min);
+  flex-grow: 999;
+  flex-basis: 0;
+}
+
+.k-switcher {
+  gap: var(--k-gap);
+  flex-wrap: wrap;
+  display: flex;
+}
+
+.k-switcher > * {
+  flex-grow: 1;
+  flex-basis: calc((var(--k-threshold) - 100%) * 999);
+}
+
+.k-grid-layout {
+  grid-template-columns: repeat(auto-fit, minmax(min(var(--k-grid-min), 100%), 1fr));
+  gap: var(--k-gap);
+  display: grid;
+}
+
+.k-reel {
+  gap: var(--k-gap);
+  display: flex;
+  overflow-x: auto;
+}
+
+.k-reel::-webkit-scrollbar {
+  height: 4px;
+}
+
+.k-reel::-webkit-scrollbar-thumb {
+  background: none;
+  border-radius: 2px;
+}
+
+.k-reel:hover::-webkit-scrollbar-thumb {
+  background: var(--line-200);
+}
+
+.k-reel:focus-visible::-webkit-scrollbar-thumb {
+  background: var(--line-200);
+}
+
+@supports not selector(::-webkit-scrollbar) {
+  .k-reel {
+    scrollbar-width: thin;
+    scrollbar-color: transparent transparent;
+  }
+
+  .k-reel:hover, .k-reel:focus-visible {
+    scrollbar-color: var(--line-200) transparent;
+  }
+}
+
+.k-reel > * {
+  flex: none;
+}
+
+.k-reel:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 1px;
+}
+
 .k-spark-tile {
   background: var(--bg-200);
   border: var(--hairline);
@@ -16602,6 +16792,94 @@ button.k-consensus-hash:focus-visible {
   width: 320px;
 }
 
+/* 排版原语与分量页（#115）的预览：色块、可拖宽的框、三档并排的小标题、决策表、四条规则的小样。只用 token。 */
+.gal-block {
+  padding: var(--space-dense) var(--space-3);
+  background: var(--bg-300);
+  color: var(--ink-200);
+  font: var(--text-caption) var(--font-sans);
+}
+.gal-block[data-tall] {
+  padding-block: var(--space-4);
+}
+.gal-frame-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin-bottom: var(--space-3);
+}
+.gal-frame-cap {
+  color: var(--ink-300);
+  font: var(--text-caption) var(--font-mono);
+}
+.gal-frame {
+  max-width: 100%;
+  padding: var(--space-2);
+  overflow: auto;
+  border: 1px dashed var(--ink-400);
+  resize: horizontal;
+}
+.gal-levels-title {
+  margin: 0 0 var(--space-2);
+  color: var(--ink-200);
+  font: var(--text-title) var(--font-sans);
+}
+.gal-decision,
+.gal-align {
+  border-collapse: collapse;
+  font: var(--text-body) var(--font-sans);
+}
+.gal-decision th,
+.gal-decision td,
+.gal-align th,
+.gal-align td {
+  padding: var(--space-2) var(--space-3);
+  border-bottom: 1px solid var(--line-100);
+  text-align: left;
+  vertical-align: top;
+}
+.gal-decision th[scope='row'] {
+  white-space: nowrap;
+}
+.gal-align th:not(:first-child),
+.gal-align td:not(:first-child) {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.gal-rules h3 {
+  margin: 0 0 var(--space-2);
+  color: var(--ink-100);
+  font: var(--text-title) var(--font-sans);
+}
+.gal-num {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-end;
+  color: var(--ink-100);
+  font: var(--text-body) var(--font-sans);
+}
+.gal-num[data-tabular] {
+  font-variant-numeric: tabular-nums;
+}
+.gal-num:not([data-tabular]) {
+  font-variant-numeric: proportional-nums;
+}
+.gal-hairlines hr {
+  width: 100%;
+  margin: 0;
+  border: 0;
+  border-top: 1px solid var(--line-100);
+}
+.gal-decision a {
+  color: var(--ink-100);
+  text-decoration: underline;
+  text-decoration-color: var(--ink-400);
+  text-underline-offset: 2px;
+}
+.gal-decision a:hover {
+  text-decoration-color: var(--ink-100);
+}
+
 /* 组件里白色、黑色的透明度层：ui.css 的类里原来是裸色值，这里提成变量（值不变），换主题时从这里改。 */
 :root {
   --ds-c-2xn4aw: #0000;
@@ -16677,8 +16955,11 @@ button.k-consensus-hash:focus-visible {
   --chart-grid-dash: initial;
   --chart-line-glow: initial;
   --heat: initial;
+  --k-content-min: initial;
   --k-deg: initial;
+  --k-gap: initial;
   --k-grid-hidden-right: initial;
+  --k-grid-min: initial;
   --k-in-dur: initial;
   --k-in-ease: initial;
   --k-in-scale: initial;
@@ -16688,8 +16969,10 @@ button.k-consensus-hash:focus-visible {
   --k-rise: initial;
   --k-run: initial;
   --k-scatter-color: initial;
+  --k-side-width: initial;
   --k-spark-color: initial;
   --k-sy: initial;
+  --k-threshold: initial;
   --k-tree-level: initial;
   --line-300: initial;
   --mheat-ink-0: initial;

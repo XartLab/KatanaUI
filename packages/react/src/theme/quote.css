@@ -497,3 +497,39 @@ button.k-quote-card.is-link:focus-visible {
   outline: 2px solid var(--focus-ring);
   outline-offset: -2px;
 }
+
+/* —— 分量（#115，layout/emphasis.tsx）：只改字号档与显示多少，不改颜色、不改密度 —— */
+/* hero：价格 display 档（每个面板最多一处），迷你图加高。 */
+.k-quote-card[data-emphasis='hero'] .k-quote-price {
+  font: var(--text-display) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: var(--text-display-tracking);
+}
+.k-quote-card[data-emphasis='hero'] .k-quote-spark {
+  height: 44px;
+}
+/* compact：名字、价格、涨跌并排成一行（迷你图与下面一行 JSX 里就不画）。 */
+.k-quote-card[data-emphasis='compact'] {
+  flex-direction: row;
+  align-items: baseline;
+  gap: 8px;
+  padding: 4px 8px;
+}
+.k-quote-card[data-emphasis='compact'] .k-quote-price {
+  font: var(--text-data) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+}
+.k-price-tag[data-emphasis='hero'] .k-price-tag-price {
+  font: var(--text-display) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: var(--text-display-tracking);
+}
+.k-price-tag[data-emphasis='compact'] {
+  font: var(--text-caption) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+}
+.k-gauge[data-emphasis='hero'] .k-gauge-value:not(.is-unavailable) {
+  font: var(--text-display) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: var(--text-display-tracking);
+}

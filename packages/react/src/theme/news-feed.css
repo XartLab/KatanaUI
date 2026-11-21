@@ -454,3 +454,14 @@ a.k-news-title:hover {
 .k-news[data-layout='list'] .k-news-item[data-actions] .k-news-symbols {
   margin-inline-end: 64px;
 }
+
+/* 分量（#115，layout/emphasis.tsx）：hero 标题上一档（data → title）；compact 一行一条，只有「时间 标题」。 */
+.k-news[data-emphasis='hero'] .k-news-title {
+  font-size: var(--text-title-size);
+}
+.k-news[data-emphasis='compact'][data-layout='list'] .k-news-item {
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 8px;
+  min-height: 24px;
+  padding: 2px 0;
+}

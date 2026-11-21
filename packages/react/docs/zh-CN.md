@@ -9,7 +9,7 @@ KatanaConsole 自建的组件框架（决策记录 0049（KATANAview 的 docs/ar
 ## 分层
 
 ```
-tokens → theme → lib → primitives → katana → patterns → quant → blocks
+tokens → theme → lib → layout → primitives → katana → patterns → quant → blocks
 ```
 
 只许往左依赖（`.dependency-cruiser.cjs` 的 `ui-*` 规则）。
@@ -19,6 +19,7 @@ tokens → theme → lib → primitives → katana → patterns → quant → bl
 | tokens | 另一个包 `@katana-ui/tokens`（`packages/tokens/`） | `src/tokens.json`（token 源头，手改这份）、`src/tokens.css`（`pnpm tokens:sync` 从 `tokens.json` 与 `motion.tokens.json` 生成，不手改）、`src/motion.tokens.json`（三条弹簧）；本包的 `src/tokens.css` 与 `src/tokens-json.ts` 只是把 `./tokens.css`、`./tokens.json` 出口转发过去 |
 | theme | `src/theme/` | `theme.css`：Tailwind v4 的 `@theme inline` 把 token 接成工具类；`motion.css`：入场、退场的关键帧与 `data-state` 动效 |
 | lib | `src/lib/` | `cn`（`clsx` + `tailwind-merge`，认得 `k-text-*` 字号档）、`focus`（焦点环类）、`motion`（弹簧参数）、`use-scrubber`（序列图共用的扫读钩子，#1917） |
+| layout | `src/layout/` | 排版原语与分量（#115）：`Stack`（竖排）、`Cluster`（横排换行）、`Sidebar`（一窄一宽，放不下上下叠）、`Switcher`（容器窄于阈值整体竖排）、`Grid`（等宽格）、`Reel`（横向滚动）。间距只收 `space-*` 刻度名（`space.ts`，单测跟 tokens.json 对账），原语只管位置与间距，不画边框、不带底色，样式在 `theme/layout.css`；模式借自 Every Layout，只借模式不取代码（见 `NOTICE`）。`EmphasisProvider` / `useEmphasis`（`emphasis.tsx`）：三档分量 hero / standard / compact，默认 standard，往下继承；分量只改字号档、显示多少、要不要表头，不改颜色与密度。认分量的件：`QuoteCard`、`PriceTag`、`GaugeBar`（katana 层）、`DataGrid`、`NewsFeed`（blocks 层），其余件照 standard 画；这些件读 `useEmphasis()`，所以 layout 在它们下面。没有依据的数（`SIDEBAR_CONTENT_MIN`、`SIDEBAR_SIDE_WIDTH`、`SWITCHER_THRESHOLD`、DataGrid 的 `COMPACT_ROW_LIMIT`）写成具名常量并标「待定」；`GRID_MIN` 240 取自 KATANAview layout.md「面板最小 240」 |
 | primitives | `src/primitives/` | 无业务的基础件：button（含 `icon` 变体）、input、select、toggle-group、slider、checkbox、switch、tooltip、popover、dialog、dropdown-menu、context-menu、tabs、accordion、sheet、hover-card、command（`cmdk`）、scroll-area、separator、progress、alert、field、label；`lib/opener-focus` 是 dialog 与 sheet 共用的「关上时焦点回开启处」 |
 | katana | `src/katana/` | KATANA 自有的件（见下）：led、lcd、dot-matrix、rolling-text、badge、kbd、number-input、date-time-input、skeleton 与加载态、toast（弹出提示的外观，计时与队列在应用里）、password-input、delete-button、notification-bell、status-icon、ai-status、matrix-orb、arcade-pixel（取自 SmoothUI，MIT）、step-player、theme-selector、code-block、web-search、task-list、duration-picker（后十二件交互学自 rare-ui，实现原创，文件头写明）、sparkline、gauge-bar、treemap（后三件从应用的分析视图提来，#1884）、price-tag、quote-card、range-bar、rating-gauge（功能参照 TradingView 小组件，只取给用户看什么、怎么交互，不嵌不抄）；hold-to-confirm、shortcut-recorder、json-viewer（#1919：功能参照 Arc，只取公开页面写出的功能与交互，实现原创；number-input 同批加了算式输入与框内标签）；可以用 primitives，不是 shadcn 的衍生，所以单放一处（`scripts/check-license.mjs` 把 `primitives/` 整个当 MIT） |
 | patterns | `src/patterns/` | 由基础件组出来的固定搭法：multi-select（弹层加勾选）、combobox（弹层加 command：可搜索的单选或多选下拉）、quote-table（分组页签行情表：Tabs 加迷你图的行情行）、chip-group（分面筛选芯片组）、date-range-picker（双月日历加预设）、tree-view（react-aria 的 Tree，数据驱动）（后三件 #1919） |

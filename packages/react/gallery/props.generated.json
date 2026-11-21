@@ -1720,6 +1720,70 @@
         }
       ]
     },
+    "Cluster": {
+      "kind": "component",
+      "source": "src/layout/cluster.tsx",
+      "props": [
+        {
+          "name": "gap",
+          "type": "SpaceStep",
+          "required": false,
+          "default": "'space-3'",
+          "description": "Gap between children, both across and down, a spacing step name."
+        },
+        {
+          "name": "align",
+          "type": "'start' | 'center' | 'end' | 'baseline' | 'stretch'",
+          "required": false,
+          "default": "'center'",
+          "description": "Cross-axis alignment of the children in a row."
+        },
+        {
+          "name": "justify",
+          "type": "'start' | 'center' | 'end' | 'between'",
+          "required": false,
+          "default": "'start'",
+          "description": "Main-axis distribution of the children in a row."
+        },
+        {
+          "name": "as",
+          "type": "LayoutTag",
+          "required": false,
+          "default": "'div'",
+          "description": "Element to render."
+        }
+      ]
+    },
+    "ClusterProps": {
+      "kind": "type",
+      "source": "src/layout/cluster.tsx",
+      "props": [
+        {
+          "name": "gap",
+          "type": "SpaceStep",
+          "required": false,
+          "description": "Gap between children, both across and down, a spacing step name."
+        },
+        {
+          "name": "align",
+          "type": "'start' | 'center' | 'end' | 'baseline' | 'stretch'",
+          "required": false,
+          "description": "Cross-axis alignment of the children in a row."
+        },
+        {
+          "name": "justify",
+          "type": "'start' | 'center' | 'end' | 'between'",
+          "required": false,
+          "description": "Main-axis distribution of the children in a row."
+        },
+        {
+          "name": "as",
+          "type": "LayoutTag",
+          "required": false,
+          "description": "Element to render."
+        }
+      ]
+    },
     "CnAmountSize": {
       "kind": "type",
       "source": "src/cn/format.ts",
@@ -3635,6 +3699,12 @@
           "type": "(label: string) => string",
           "required": true,
           "description": ""
+        },
+        {
+          "name": "moreRows",
+          "type": "(hidden: number) => string",
+          "required": true,
+          "description": "compact 分量只留前几行时，表下面写没显示的行数：「另有 7 行」（不静默截断）。"
         },
         {
           "name": "rowActions",
@@ -5565,6 +5635,47 @@
       "kind": "type",
       "source": "src/quant/event-calendar-model.ts",
       "props": []
+    },
+    "Emphasis": {
+      "kind": "type",
+      "source": "src/layout/emphasis.tsx",
+      "props": []
+    },
+    "EmphasisProvider": {
+      "kind": "component",
+      "source": "src/layout/emphasis.tsx",
+      "props": [
+        {
+          "name": "value",
+          "type": "Emphasis",
+          "required": true,
+          "description": "The emphasis of everything inside."
+        },
+        {
+          "name": "children",
+          "type": "ReactNode",
+          "required": false,
+          "description": "The content."
+        }
+      ]
+    },
+    "EmphasisProviderProps": {
+      "kind": "type",
+      "source": "src/layout/emphasis.tsx",
+      "props": [
+        {
+          "name": "value",
+          "type": "Emphasis",
+          "required": true,
+          "description": "The emphasis of everything inside."
+        },
+        {
+          "name": "children",
+          "type": "ReactNode",
+          "required": false,
+          "description": "The content."
+        }
+      ]
     },
     "EmptyState": {
       "kind": "component",
@@ -7858,6 +7969,33 @@
       "source": "src/katana/gauge-bar.tsx",
       "props": []
     },
+    "Grid": {
+      "kind": "component",
+      "source": "src/layout/grid.tsx",
+      "props": [
+        {
+          "name": "min",
+          "type": "number",
+          "required": false,
+          "default": "GRID_MIN",
+          "description": "Smallest width of a cell in pixels; as many columns as fit are used."
+        },
+        {
+          "name": "gap",
+          "type": "SpaceStep",
+          "required": false,
+          "default": "'space-3'",
+          "description": "Gap between cells, a spacing step name."
+        },
+        {
+          "name": "as",
+          "type": "LayoutTag",
+          "required": false,
+          "default": "'div'",
+          "description": "Element to render."
+        }
+      ]
+    },
     "GridAction": {
       "kind": "type",
       "source": "src/blocks/data-grid/host.tsx",
@@ -8039,6 +8177,30 @@
       "kind": "type",
       "source": "src/blocks/data-grid/columns.ts",
       "props": []
+    },
+    "GridProps": {
+      "kind": "type",
+      "source": "src/layout/grid.tsx",
+      "props": [
+        {
+          "name": "min",
+          "type": "number",
+          "required": false,
+          "description": "Smallest width of a cell in pixels; as many columns as fit are used."
+        },
+        {
+          "name": "gap",
+          "type": "SpaceStep",
+          "required": false,
+          "description": "Gap between cells, a spacing step name."
+        },
+        {
+          "name": "as",
+          "type": "LayoutTag",
+          "required": false,
+          "description": "Element to render."
+        }
+      ]
     },
     "GridRowProps": {
       "kind": "type",
@@ -9593,6 +9755,11 @@
           "description": "占总量的比例（交易流量，取流入流出较大者）；总量为 0 是 null。"
         }
       ]
+    },
+    "LayoutTag": {
+      "kind": "type",
+      "source": "src/layout/space.ts",
+      "props": []
     },
     "Lcd": {
       "kind": "component",
@@ -15333,6 +15500,44 @@
       "source": "src/quant/technical-rating.tsx",
       "props": []
     },
+    "Reel": {
+      "kind": "component",
+      "source": "src/layout/reel.tsx",
+      "props": [
+        {
+          "name": "gap",
+          "type": "SpaceStep",
+          "required": false,
+          "default": "'space-2'",
+          "description": "Gap between children, a spacing step name."
+        },
+        {
+          "name": "as",
+          "type": "LayoutTag",
+          "required": false,
+          "default": "'div'",
+          "description": "Element to render."
+        }
+      ]
+    },
+    "ReelProps": {
+      "kind": "type",
+      "source": "src/layout/reel.tsx",
+      "props": [
+        {
+          "name": "gap",
+          "type": "SpaceStep",
+          "required": false,
+          "description": "Gap between children, a spacing step name."
+        },
+        {
+          "name": "as",
+          "type": "LayoutTag",
+          "required": false,
+          "description": "Element to render."
+        }
+      ]
+    },
     "RegimeBand": {
       "kind": "component",
       "source": "src/quant/regime-strip.tsx",
@@ -17488,6 +17693,83 @@
       "source": "src/blocks/strategy-report/strategy-report-model.ts",
       "props": []
     },
+    "Sidebar": {
+      "kind": "component",
+      "source": "src/layout/sidebar.tsx",
+      "props": [
+        {
+          "name": "side",
+          "type": "'start' | 'end'",
+          "required": false,
+          "default": "'start'",
+          "description": "Which child is the narrow one: the first (start) or the last (end)."
+        },
+        {
+          "name": "sideWidth",
+          "type": "SpaceStep | number",
+          "required": false,
+          "default": "SIDEBAR_SIDE_WIDTH",
+          "description": "Width of the narrow child: a spacing step name or a number of pixels."
+        },
+        {
+          "name": "contentMin",
+          "type": "number",
+          "required": false,
+          "default": "SIDEBAR_CONTENT_MIN",
+          "description": "Smallest share of the container the wide child keeps before the two stack (0 to 1)."
+        },
+        {
+          "name": "gap",
+          "type": "SpaceStep",
+          "required": false,
+          "default": "'space-3'",
+          "description": "Gap between the two children, a spacing step name."
+        },
+        {
+          "name": "as",
+          "type": "LayoutTag",
+          "required": false,
+          "default": "'div'",
+          "description": "Element to render."
+        }
+      ]
+    },
+    "SidebarProps": {
+      "kind": "type",
+      "source": "src/layout/sidebar.tsx",
+      "props": [
+        {
+          "name": "side",
+          "type": "'start' | 'end'",
+          "required": false,
+          "description": "Which child is the narrow one: the first (start) or the last (end)."
+        },
+        {
+          "name": "sideWidth",
+          "type": "SpaceStep | number",
+          "required": false,
+          "description": "Width of the narrow child: a spacing step name or a number of pixels."
+        },
+        {
+          "name": "contentMin",
+          "type": "number",
+          "required": false,
+          "description": "Smallest share of the container the wide child keeps before the two stack (0 to 1)."
+        },
+        {
+          "name": "gap",
+          "type": "SpaceStep",
+          "required": false,
+          "description": "Gap between the two children, a spacing step name."
+        },
+        {
+          "name": "as",
+          "type": "LayoutTag",
+          "required": false,
+          "description": "Element to render."
+        }
+      ]
+    },
     "SizeFormat": {
       "kind": "type",
       "source": "src/quant/format/quantity.ts",
@@ -18033,6 +18315,11 @@
         }
       ]
     },
+    "SpaceStep": {
+      "kind": "type",
+      "source": "src/layout/space.ts",
+      "props": []
+    },
     "SparkTile": {
       "kind": "component",
       "source": "src/quant/spark-tile.tsx",
@@ -18499,6 +18786,44 @@
           "type": "CSSProperties",
           "required": false,
           "description": ""
+        }
+      ]
+    },
+    "Stack": {
+      "kind": "component",
+      "source": "src/layout/stack.tsx",
+      "props": [
+        {
+          "name": "gap",
+          "type": "SpaceStep",
+          "required": false,
+          "default": "'space-3'",
+          "description": "Gap between children, a spacing step name."
+        },
+        {
+          "name": "as",
+          "type": "LayoutTag",
+          "required": false,
+          "default": "'div'",
+          "description": "Element to render."
+        }
+      ]
+    },
+    "StackProps": {
+      "kind": "type",
+      "source": "src/layout/stack.tsx",
+      "props": [
+        {
+          "name": "gap",
+          "type": "SpaceStep",
+          "required": false,
+          "description": "Gap between children, a spacing step name."
+        },
+        {
+          "name": "as",
+          "type": "LayoutTag",
+          "required": false,
+          "description": "Element to render."
         }
       ]
     },
@@ -19427,6 +19752,57 @@
       "kind": "component",
       "source": "src/primitives/switch.tsx",
       "props": []
+    },
+    "Switcher": {
+      "kind": "component",
+      "source": "src/layout/switcher.tsx",
+      "props": [
+        {
+          "name": "threshold",
+          "type": "number",
+          "required": false,
+          "default": "SWITCHER_THRESHOLD",
+          "description": "Container width in pixels below which all children stack."
+        },
+        {
+          "name": "gap",
+          "type": "SpaceStep",
+          "required": false,
+          "default": "'space-3'",
+          "description": "Gap between children, a spacing step name."
+        },
+        {
+          "name": "as",
+          "type": "LayoutTag",
+          "required": false,
+          "default": "'div'",
+          "description": "Element to render."
+        }
+      ]
+    },
+    "SwitcherProps": {
+      "kind": "type",
+      "source": "src/layout/switcher.tsx",
+      "props": [
+        {
+          "name": "threshold",
+          "type": "number",
+          "required": false,
+          "description": "Container width in pixels below which all children stack."
+        },
+        {
+          "name": "gap",
+          "type": "SpaceStep",
+          "required": false,
+          "description": "Gap between children, a spacing step name."
+        },
+        {
+          "name": "as",
+          "type": "LayoutTag",
+          "required": false,
+          "description": "Element to render."
+        }
+      ]
     },
     "SymbolGalaxy": {
       "kind": "component",
@@ -24950,6 +25326,11 @@
     "uptimeShare": {
       "kind": "function",
       "source": "src/quant/uptime-bars-model.ts",
+      "props": []
+    },
+    "useEmphasis": {
+      "kind": "function",
+      "source": "src/layout/emphasis.tsx",
       "props": []
     },
     "useFieldControl": {
