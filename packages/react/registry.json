@@ -3474,6 +3474,11 @@
           "path": "src/blocks/data-grid/model.ts",
           "type": "registry:component",
           "target": "~/src/katana/ui/blocks/data-grid/model.ts"
+        },
+        {
+          "path": "src/blocks/data-grid/priority-columns.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/data-grid/priority-columns.ts"
         }
       ]
     },

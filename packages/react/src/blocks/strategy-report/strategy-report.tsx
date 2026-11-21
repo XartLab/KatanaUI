@@ -727,6 +727,8 @@ export function StrategyReport({
                 rows={rows}
                 rowId={(row) => row.id}
                 label={labels.list.label}
+                // 交易列表的每一列都是读数，放不下横向滚动；不套列优先级（#122，另议）
+                collapseColumns={false}
                 sort={sort}
                 onSortChange={setSort}
                 onResetColumns={() => setSort(null)}

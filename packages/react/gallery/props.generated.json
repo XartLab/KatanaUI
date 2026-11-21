@@ -3260,6 +3260,19 @@
           "description": "Locale for sorting text columns (Intl.Collator); follows the runtime when omitted."
         },
         {
+          "name": "collapseColumns",
+          "type": "boolean",
+          "required": false,
+          "default": "true",
+          "description": "Priority columns (default true): at standard and hero emphasis, when the visible columns do not fit the container, the lowest-priority columns (GridColumn.priority; undeclared ones count up in declaration order) are collapsed and a \"+N cols\" capsule appears at the right end of the header; clicking it switches to horizontal scrolling with every column."
+        },
+        {
+          "name": "containerWidth",
+          "type": "number",
+          "required": false,
+          "description": "Container width in px for the priority columns; measured with a ResizeObserver when omitted."
+        },
+        {
           "name": "density",
           "type": "GridDensity",
           "required": false,
@@ -3587,6 +3600,18 @@
           "description": "Locale for sorting text columns (Intl.Collator); follows the runtime when omitted."
         },
         {
+          "name": "collapseColumns",
+          "type": "boolean",
+          "required": false,
+          "description": "Priority columns (default true): at standard and hero emphasis, when the visible columns do not fit the container, the lowest-priority columns (GridColumn.priority; undeclared ones count up in declaration order) are collapsed and a \"+N cols\" capsule appears at the right end of the header; clicking it switches to horizontal scrolling with every column."
+        },
+        {
+          "name": "containerWidth",
+          "type": "number",
+          "required": false,
+          "description": "Container width in px for the priority columns; measured with a ResizeObserver when omitted."
+        },
+        {
           "name": "density",
           "type": "GridDensity",
           "required": false,
@@ -3705,6 +3730,18 @@
           "type": "(hidden: number) => string",
           "required": true,
           "description": "compact 分量只留前几行时，表下面写没显示的行数：「另有 7 行」（不静默截断）。"
+        },
+        {
+          "name": "moreColumns",
+          "type": "(hidden: number) => string",
+          "required": true,
+          "description": "列放不下被收起时，表头右端胶囊上的字：「+4 列」（不静默截断，#122）；点开显示全部列后胶囊写 collapseColumns。"
+        },
+        {
+          "name": "collapseColumns",
+          "type": "string",
+          "required": true,
+          "description": "全部列展开（横向滚动）后，胶囊上的字：点了回到收起。"
         },
         {
           "name": "rowActions",
@@ -8094,6 +8131,12 @@
           "type": "boolean",
           "required": false,
           "description": "compact 分量（#117）下留这一列：compact 一行只剩名字和一个主数。整张表里有任何一列标了就只画标了的那几列； 一列都没标就留前两个可见列。别的分量不看它。"
+        },
+        {
+          "name": "priority",
+          "type": "number",
+          "required": false,
+          "description": "列优先级（#122）：standard 与 hero 分量下容器放不下全部可见列时，数大的先收起，表头右端出「+N 列」胶囊，点了切成横向滚动、显示全部。"
         },
         {
           "name": "rowHeader",

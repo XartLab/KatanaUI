@@ -48,6 +48,7 @@ import {
 } from './columns.ts'
 import { moveColumn, reorderColumn, setColumnFixed, setColumnVisible } from './layout-model.ts'
 import { DEFAULT_TEXTS, useDataGridHost, type GridMenuEntry } from './host.tsx'
+import { COLUMNS_TOGGLE_RESERVE, fitPriorityColumns, priorityOf, type PriorityColumn } from './priority-columns.ts'
 import {
   EMPTY_SELECTION,
   clickSelection,
@@ -290,6 +291,21 @@ export type DataGridProps<Row extends object> = {
    * 文字列排序的语言（Intl.Collator）；省略跟运行环境。
    */
   sortLocale?: string
+  /**
+   * Priority columns (default true): at standard and hero emphasis, when the visible columns do not fit the container, the lowest-priority
+   * columns (GridColumn.priority; undeclared ones count up in declaration order) are collapsed and a "+N cols" capsule appears at the right end
+   * of the header; clicking it switches to horizontal scrolling with every column. Display only: copy and export still take all visible columns.
+   * Needs a header; at least two columns stay. false keeps plain horizontal scrolling.
+   * 列优先级（默认 true，#122）：standard 与 hero 分量下，可见列放不下容器时按 GridColumn.priority 从低到高收起（没写的按声明顺序），
+   * 表头右端出「+N 列」胶囊，点了切成横向滚动、显示全部列。只影响显示：复制与导出仍是全部可见列。要有表头；至少留两列。false 是一直横向滚动。
+   */
+  collapseColumns?: boolean
+  /**
+   * Container width in px for the priority columns; measured with a ResizeObserver when omitted.
+   * Give it where the width is known and nothing can be measured (server rendering).
+   * 列优先级用的容器宽度（像素）；省略时自己用 ResizeObserver 量。服务端渲染这类量不了、宽度又已知的地方给。
+   */
+  containerWidth?: number
   /** Row height tier. */
   density?: GridDensity
   /**
@@ -386,6 +402,8 @@ export function DataGrid<Row extends object>({
   rowTree,
   timeZone,
   sortLocale,
+  collapseColumns = true,
+  containerWidth,
   density = 'default',
   hideHeader,
   headExtra,
@@ -449,8 +467,39 @@ export function DataGrid<Row extends object>({
     const marked = shown.filter((columnId) => byId.get(columnId)?.compact === true)
     return new Set(marked.length > 0 ? marked : shown.slice(0, COMPACT_DEFAULT_COLUMNS))
   }, [layout, byId])
+  // 列优先级（#122）：放不下就按优先级收列，只在 standard / hero、有表头时。宽度用 layout 的列宽（拖列宽时不跟着算，免得拖到一半列被收走）；
+  // 没量到之前（第一帧、服务端渲染）当放得下，量到以后在绘制前重算。
+  const priorityOn = collapseColumns && !compact && !noHeader
+  const [measuredWidth, setMeasuredWidth] = useState(0)
+  const [toggleWidth, setToggleWidth] = useState(0)
+  const [columnsOpen, setColumnsOpen] = useState(false)
+  const viewportWidth = containerWidth ?? measuredWidth
+  const priorityFit = priorityOn
+    ? fitPriorityColumns(
+        layout
+          .filter((column) => column.visible && byId.has(column.id))
+          .map((column): PriorityColumn => {
+            const declared = columns.findIndex((entry) => entry.id === column.id)
+            return {
+              id: column.id,
+              width: column.width,
+              priority: priorityOf(byId.get(column.id)?.priority, declared),
+              fixed: column.fixed,
+            }
+          }),
+        viewportWidth,
+        toggleWidth || COLUMNS_TOGGLE_RESERVE,
+      )
+    : null
+  const hiddenColumns = priorityFit?.hidden ?? 0
+  const collapsed = hiddenColumns > 0 && !columnsOpen
   const visibility: ColumnVisibilityState = Object.fromEntries(
-    layout.map((column) => [column.id, column.visible && (!compact || compactKept.has(column.id))]),
+    layout.map((column) => [
+      column.id,
+      column.visible &&
+        (!compact || compactKept.has(column.id)) &&
+        (!collapsed || priorityFit?.kept.has(column.id) === true),
+    ]),
   )
   const [drag, setDrag] = useState<{ id: string; width: number } | null>(null)
   const sizing: ColumnSizingState = Object.fromEntries(
@@ -829,6 +878,27 @@ export function DataGrid<Row extends object>({
       selected: new Set([...selection.selected].filter((key) => present.has(key))),
     })
 
+  const toggleBox = useRef<HTMLDivElement>(null)
+  useLayoutEffect(() => {
+    const node = scroller.current
+    if (!priorityOn || containerWidth !== undefined || !node) return
+    const read = () => setMeasuredWidth(node.clientWidth)
+    read()
+    const watch = new ResizeObserver(read)
+    watch.observe(node)
+    return () => watch.disconnect()
+  }, [priorityOn, containerWidth])
+  const toggling = hiddenColumns > 0
+  useLayoutEffect(() => {
+    const node = toggleBox.current
+    if (!toggling || !node) return
+    const read = () => setToggleWidth(node.offsetWidth)
+    read()
+    const watch = new ResizeObserver(read)
+    watch.observe(node)
+    return () => watch.disconnect()
+  }, [toggling])
+
   const hasRowActions = rowActions !== undefined
   useEffect(() => {
     const node = scroller.current
@@ -985,7 +1055,7 @@ export function DataGrid<Row extends object>({
                     </div>
                   )
                 })}
-                {headEnd ? (
+                {headEnd && !toggling ? (
                   <div className="k-grid-head-end" role="columnheader" data-slot="grid-head-end">
                     {headEnd}
                   </div>
@@ -1132,8 +1202,29 @@ export function DataGrid<Row extends object>({
         data-density={density}
         data-emphasis={emphasis}
         data-interactive={interactive}
+        data-columns-hidden={collapsed ? hiddenColumns : undefined}
       >
         {withMenu ? <ContextMenuTrigger asChild>{body}</ContextMenuTrigger> : body}
+        {toggling && (
+          // 胶囊在表格外（grid 的子元素只能是行），贴在表头右端的可视区边上：展开后表头横向滚动，它也不跟着滚走。
+          <div
+            ref={toggleBox}
+            className="k-grid-cols-end"
+            data-slot="grid-cols-end"
+            style={{ left: viewportWidth, height: headHeight }}
+          >
+            <button
+              type="button"
+              className="k-grid-cols-toggle"
+              data-slot="grid-cols-toggle"
+              aria-expanded={columnsOpen}
+              onClick={() => setColumnsOpen(!columnsOpen)}
+            >
+              {columnsOpen ? texts.collapseColumns : texts.moreColumns(hiddenColumns)}
+            </button>
+            {headEnd}
+          </div>
+        )}
         {hiddenRows > 0 && (
           <div className="k-grid-more" data-slot="grid-more">
             {texts.moreRows(hiddenRows)}

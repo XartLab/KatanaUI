@@ -2,6 +2,7 @@
 /* DataGrid（blocks/data-grid）的皮肤（#1869）。规则从应用 styles/panel.css 的 .kc-dt-* 搬来，换成 .k-grid-*，值没改；
    行高与表头高由组件按 density 写在行内样式上。颜色与字体都取 token，涨跌色读 --pnl-up / --pnl-down（根上 data-updown="cn" 互换）。 */
 .k-grid {
+  position: relative;
   display: flex;
   flex: 1;
   flex-direction: column;
@@ -444,6 +445,46 @@
   display: inline-flex;
   margin-left: 4px;
   color: var(--ink-300);
+}
+
+/* 列优先级（#122）：放不下时低优先级的列收起，表头右端出「+N 列」胶囊（点了展开成横向滚动，再点收起）。
+   胶囊在 .k-grid 里、表格外，右边缘贴着滚动区的可视宽度（left 由组件按量到的宽度给，translate 把它的右边缘放到那里），
+   所以展开后表头横向滚动它也不会滚走；有 headEnd 时 headEnd 跟它排在一起，不重叠。样子跟 pill 列的「+n」同一族（描边小胶囊）。 */
+.k-grid-cols-end {
+  position: absolute;
+  top: 0;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  width: max-content;
+  padding: 0 4px;
+  background: var(--bg-100);
+  transform: translateX(-100%);
+}
+.k-grid-cols-toggle {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  height: 16px;
+  padding: 0 6px;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: none;
+  box-shadow: inset 0 0 0 1px var(--line-200);
+  color: var(--ink-200);
+  font: var(--text-caption) var(--font-sans);
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.k-grid-cols-toggle:hover {
+  background: var(--alpha-white-6);
+  color: var(--ink-100);
+}
+.k-grid-cols-toggle:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 1px;
 }
 
 /* 分量（#115，layout/emphasis.tsx）：hero 格子里的字上一档（data → body）；行高仍由 density 管，不动。compact 不出表头、只留前几行，在 JSX 里；被截掉的行数写在表下面（.k-grid-more，data 档、次一级颜色）。 */
