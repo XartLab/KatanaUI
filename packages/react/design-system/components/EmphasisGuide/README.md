@@ -47,7 +47,7 @@ export function EmphasisGuideUsage() {
 ## Don't
 
 - 不要把所有块都设成 hero：什么都是主角就没有主角。
-- 不要因为「空间小」就把应该读的表设成 compact：compact 的表只有前几行、没有表头。
+- 不要因为「空间小」就把应该读的表设成 compact：compact 的表只有前几行、没有表头、只剩两列。
 - 不要为了换个样子去改件的字号：改分量。
 
 ## Composition

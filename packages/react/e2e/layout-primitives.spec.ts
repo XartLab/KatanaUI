@@ -131,7 +131,20 @@ test('分量：三档的读数、表、新闻流在浏览器里的模样', async
   const grids = ['hero', 'standard', 'compact'].map((level) => demo.locator(`.k-grid[data-emphasis="${level}"]`))
   await expect(grids[2]!.locator('[role="columnheader"]')).toHaveCount(0)
   await expect(grids[2]!.locator('[role="row"]')).toHaveCount(5)
-  await expect(grids[1]!.locator('[role="columnheader"]')).toHaveCount(3)
+  await expect(grids[1]!.locator('[role="columnheader"]')).toHaveCount(8)
+  // compact 一行只剩名称与主数：八列的表只出两列，名称列吃掉剩下的宽度，没有横向滚动
+  const compactCols = await grids[2]!
+    .locator('[role="row"]')
+    .first()
+    .locator('[role="gridcell"]')
+    .evaluateAll((cells) => cells.map((cell) => (cell as HTMLElement).dataset.col))
+  expect(compactCols).toEqual(['name', 'change'])
+  const compactScroll = await grids[2]!.locator('.k-grid-scroll').evaluate((el) => el.scrollWidth - el.clientWidth)
+  expect(compactScroll).toBeLessThanOrEqual(0)
+  const [nameBox, changeBox] = await Promise.all(
+    compactCols.map((col) => grids[2]!.locator(`[data-col="${col}"]`).first().boundingBox()),
+  )
+  expect(nameBox!.width).toBeGreaterThan(changeBox!.width)
   expect(await grids[1]!.locator('[role="row"]').count()).toBe(9)
   const cellSizes = await Promise.all(grids.slice(0, 2).map((grid) => size(grid.locator('.k-grid-cell').first())))
   expect(cellSizes).toEqual([13, 12])

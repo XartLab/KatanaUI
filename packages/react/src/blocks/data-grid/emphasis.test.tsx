@@ -3,11 +3,12 @@ import { readFileSync } from 'node:fs'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vite-plus/test'
 import { EmphasisProvider, type Emphasis } from '../../layout/emphasis.tsx'
-import type { GridColumn } from './columns.ts'
+import { exportTable, type GridColumn } from './columns.ts'
 import { DataGrid, type GridColumnLayout } from './data-grid.tsx'
 import { DataGridHostProvider } from './host.tsx'
 
 // DataGrid 认分量（#115）：compact 不出表头、只留排好序之后的前几行；hero 字上一档；standard 是完整的表。密度（行高）不受分量影响。
+// compact 的列（#117）：一行只剩名字和一个主数；标了 compact: true 的列才留，一列都没标就留前两个可见列。
 
 type Row = { id: string; name: string; price: number }
 const columns: GridColumn<Row>[] = [
@@ -31,7 +32,7 @@ const render = (emphasis: Emphasis | null, extra: Record<string, unknown> = {}) 
   )
   return renderToStaticMarkup(emphasis ? <EmphasisProvider value={emphasis}>{grid}</EmphasisProvider> : grid)
 }
-const shown = (html: string) => (html.match(/品种\d\d/g) ?? []).length
+const shown = (html: string) => (html.match(/>品种\d\d</g) ?? []).length
 
 describe('DataGrid 的分量', () => {
   it('standard（默认）：有表头、行都在（虚拟滚动给的初始窗口以内）', () => {
@@ -100,5 +101,119 @@ describe('DataGrid 的分量', () => {
     )
     expect(html).toContain('data-density="default"')
     expect(render('hero', { density: 'compact' })).toContain('data-density="compact"')
+  })
+
+  describe('compact 的列（#117）', () => {
+    type Wide = { id: string; name: string; a: number; b: number; c: number; d: number; e: number; f: number }
+    const names = ['name', 'a', 'b', 'c', 'd', 'e', 'f'] as const
+    const wideRows: Wide[] = Array.from({ length: 3 }, (_, index) => ({
+      id: `w${index}`,
+      name: `品种${String(index).padStart(2, '0')}`,
+      a: 1,
+      b: 2,
+      c: 3,
+      d: 4,
+      e: 5,
+      f: 6,
+    }))
+    // 七列：名称加六个数，8 列里去掉一列隐藏的（第 8 列 hidden 不算数）
+    const wideColumns = (marked: readonly string[] = []): GridColumn<Wide>[] => [
+      ...names.map((key): GridColumn<Wide> => ({
+        id: key,
+        type: key === 'name' ? 'text' : 'number',
+        value: (row) => row[key],
+        ...(marked.includes(key) ? { compact: true } : {}),
+      })),
+      { id: 'hidden', type: 'number', value: () => 9 },
+    ]
+    const wideLayout: GridColumnLayout[] = [
+      ...names.map((key) => ({ id: key, label: `列${key}`, width: key === 'name' ? 120 : 70, visible: true })),
+      { id: 'hidden', label: '列hidden', width: 70, visible: false },
+    ]
+    const renderWide = (emphasis: Emphasis | null, marked?: readonly string[], layoutIn = wideLayout) => {
+      const grid = (
+        <DataGrid
+          columns={wideColumns(marked)}
+          layout={layoutIn}
+          rows={wideRows}
+          rowId={(row) => row.id}
+          label="宽表"
+        />
+      )
+      return renderToStaticMarkup(emphasis ? <EmphasisProvider value={emphasis}>{grid}</EmphasisProvider> : grid)
+    }
+    const cols = (html: string) => [...new Set([...html.matchAll(/data-col="([^"]+)"/g)].map((match) => match[1]))]
+
+    it('没标 compact 的列：留前两个可见列（名称加第一个数）', () => {
+      expect(cols(renderWide('compact'))).toEqual(['name', 'a'])
+    })
+
+    it('前两个看的是可见列：layout 里隐藏的列不占名额', () => {
+      const hiddenFirst = wideLayout.map((entry) => (entry.id === 'name' ? { ...entry, visible: false } : entry))
+      expect(cols(renderWide('compact', [], hiddenFirst))).toEqual(['a', 'b'])
+    })
+
+    it('标了 compact: true 的列：只出那几列，次序仍按 layout', () => {
+      expect(cols(renderWide('compact', ['f', 'name']))).toEqual(['name', 'f'])
+    })
+
+    it('标了 compact 但 layout 里隐藏的列仍然不画', () => {
+      expect(cols(renderWide('compact', ['name', 'hidden']))).toEqual(['name'])
+    })
+
+    it('standard 与 hero 不受影响：列一个不少，不看 compact 标记', () => {
+      for (const level of [null, 'standard', 'hero'] as const) {
+        expect(cols(renderWide(level, ['name', 'a']))).toEqual([...names])
+      }
+    })
+
+    it('compact 的格子宽度：名称列吃剩下的，数值列按自己的宽度，不出横向滚动', () => {
+      const html = renderWide('compact', ['name', 'f'])
+      expect(html).toContain('grid-template-columns:minmax(0, 1fr) 70px')
+      expect(html).toContain('width:100%')
+      // standard 仍是全部列的定宽
+      expect(renderWide(null)).toContain('grid-template-columns:120px 70px 70px 70px 70px 70px 70px')
+    })
+
+    it('compact 的名称列超长省略号截断、悬停看全；数值列不带', () => {
+      const html = renderWide('compact', ['name', 'a'])
+      expect(html).toContain('<span class="k-grid-name">品种00</span>')
+      expect(html).toContain('title="品种00"')
+      expect(html).not.toContain('title="1"')
+      expect(renderWide(null)).not.toContain('k-grid-name')
+    })
+
+    it('compact 下数值列靠右', () => {
+      const html = renderWide('compact', ['name', 'a'])
+      const numberCell = /<div[^>]*data-col="a"[^>]*class="([^"]*)"/.exec(html)?.[1] ?? ''
+      expect(numberCell).toContain('is-end')
+    })
+  })
+  describe('复制与导出不看分量（#117）', () => {
+    type Wide = { id: string; [key: `c${number}`]: number | string }
+    const ids = Array.from({ length: 8 }, (_, index) => `c${index}`)
+    const specs = new Map<string, GridColumn<Wide>>(
+      ids.map((id) => [id, { id, type: 'text', value: (row: Wide) => row[id as `c${number}`] }]),
+    )
+    const data: Wide[] = Array.from({ length: 12 }, (_, index) => ({
+      id: `r${index}`,
+      ...Object.fromEntries(ids.map((id) => [id, `${id}-${index}`])),
+    }))
+
+    it('12 行 8 列的表导出 12 行 8 列（含表头），compact 的前 5 行、前两列不进来', () => {
+      const { header, lines } = exportTable(specs, ids, (id) => id.toUpperCase(), data, {}, true)
+      expect(header).toHaveLength(8)
+      expect(lines).toHaveLength(12)
+      expect(lines.every((line) => line.length === 8)).toBe(true)
+      expect(lines[11]![7]).toBe('c7-11')
+    })
+
+    it('DataGrid 的复制与导出接的是全部可见列与全部行，不是 compact 的那一块', () => {
+      // 组件里只有这一处取行取列：分量不参与（用源码钉住，避免回到 modelRows / visibleColumns）
+      const source = readFileSync(new URL('./data-grid.tsx', import.meta.url), 'utf8')
+      expect(source).toContain('const dataColumnIds = layout.filter')
+      expect(source).toMatch(/exportTable\(\s*byId,\s*dataColumnIds,\s*labelOf,\s*sortedRows\.map/)
+      expect(source).toMatch(/exportTable\(byId, dataColumnIds, labelOf, target, env, false\)/)
+    })
   })
 })

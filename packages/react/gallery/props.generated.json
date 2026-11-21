@@ -8090,6 +8090,12 @@
           "description": ""
         },
         {
+          "name": "compact",
+          "type": "boolean",
+          "required": false,
+          "description": "compact 分量（#117）下留这一列：compact 一行只剩名字和一个主数。整张表里有任何一列标了就只画标了的那几列； 一列都没标就留前两个可见列。别的分量不看它。"
+        },
+        {
           "name": "rowHeader",
           "type": "boolean",
           "required": false,
