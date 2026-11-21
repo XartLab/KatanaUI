@@ -67,3 +67,8 @@ This package is licensed under the MIT License (see LICENSE).
    它再依赖 d3-array 2.12.1、d3-shape 1.3.7、d3-path 1.0.9，核对过，都是 BSD-3-Clause。BSD-3-Clause 的条件：再分发时带着版权声明与许可条文、
    不用作者名字为衍生品背书；我们不分发它的代码，条文随它自己的包走。类型取自 DefinitelyTyped 的 `@types/d3-sankey`（MIT，只是开发依赖）。
    d3-sankey is used at runtime (installed from npm, not redistributed here); its BSD-3-Clause notice ships with its own package.
+
+8. Every Layout（Heydon Pickering、Andy Bell，https://every-layout.dev/layouts/ ，2026-11-21 读 13 个排版原语的目录页）
+   `src/layout/` 的 Stack、Cluster、Sidebar、Switcher、Grid、Reel 只借它们的模式（竖排加统一间距、换行的横排、一窄一宽、容器窄了整体竖排、等宽格、横向滚动条带）；
+   站点没写明代码许可证，所以没有取它的任何代码、类名与文字，实现都是自己写的通用 flex / grid 规则。
+   Only the layout patterns of Every Layout are borrowed; none of its code, class names or text is used (the site states no code licence).

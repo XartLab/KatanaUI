@@ -1,0 +1,119 @@
+/* SPDX-License-Identifier: MIT */
+/* 排版原语（src/layout/）：Stack、Cluster、Sidebar、Switcher、Grid、Reel。只管位置与间距，不画边框、不带底色。
+   间距都从 --k-gap 来（原语把间距刻度名写成 var(--space-*)），所以这里没有一个数字间距。 */
+.k-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--k-gap);
+}
+
+.k-cluster {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--k-gap);
+}
+.k-cluster[data-align='start'] {
+  align-items: flex-start;
+}
+.k-cluster[data-align='center'] {
+  align-items: center;
+}
+.k-cluster[data-align='end'] {
+  align-items: flex-end;
+}
+.k-cluster[data-align='baseline'] {
+  align-items: baseline;
+}
+.k-cluster[data-align='stretch'] {
+  align-items: stretch;
+}
+.k-cluster[data-justify='start'] {
+  justify-content: flex-start;
+}
+.k-cluster[data-justify='center'] {
+  justify-content: center;
+}
+.k-cluster[data-justify='end'] {
+  justify-content: flex-end;
+}
+.k-cluster[data-justify='between'] {
+  justify-content: space-between;
+}
+
+/* 一窄一宽：窄的固定宽度、能长；宽的从 0 起长（权重大得多，几乎吃掉全部剩余），但宽度不能低于 contentMin，
+   不够就换行，两块各占一整行（flex-basis 到顶的窄块拉满，宽块拉满）。 */
+.k-sidebar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--k-gap);
+}
+.k-sidebar > * {
+  box-sizing: border-box;
+}
+.k-sidebar[data-side='start'] > :first-child,
+.k-sidebar[data-side='end'] > :last-child {
+  flex-grow: 1;
+  flex-basis: var(--k-side-width);
+}
+.k-sidebar[data-side='start'] > :last-child,
+.k-sidebar[data-side='end'] > :first-child {
+  flex-grow: 999;
+  flex-basis: 0;
+  min-inline-size: var(--k-content-min);
+}
+
+/* Switcher：每块的 flex-basis 是 (阈值 - 容器宽) × 999。容器比阈值宽，结果是负数（按 0 算），几块平分一行；
+   容器比阈值窄，结果是个很大的正数，每块独占一行。 */
+.k-switcher {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--k-gap);
+}
+.k-switcher > * {
+  flex-grow: 1;
+  flex-basis: calc((var(--k-threshold) - 100%) * 999);
+}
+
+/* Grid：放得下几列就几列；min(…, 100%) 让容器比一格还窄时也不溢出。 */
+.k-grid-layout {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(var(--k-grid-min), 100%), 1fr));
+  gap: var(--k-gap);
+}
+
+/* Reel：一行横向滚。滚动条 4px（KATANAview #1799 已定），平时透明，悬停或键盘聚焦时才显出来。
+   Chrome 121 起，写了 scrollbar-width 或 scrollbar-color 就不再认 ::-webkit-scrollbar（标准属性优先，2026-11-21 实测），
+   所以 Chrome 与 Safari 只写 ::-webkit-scrollbar 才得到 4px；标准属性只给没有它的浏览器（Firefox）退而求其次。 */
+.k-reel {
+  display: flex;
+  gap: var(--k-gap);
+  overflow-x: auto;
+}
+.k-reel::-webkit-scrollbar {
+  height: 4px;
+}
+.k-reel::-webkit-scrollbar-thumb {
+  background: transparent;
+  border-radius: 2px;
+}
+.k-reel:hover::-webkit-scrollbar-thumb,
+.k-reel:focus-visible::-webkit-scrollbar-thumb {
+  background: var(--line-200);
+}
+@supports not selector(::-webkit-scrollbar) {
+  .k-reel {
+    scrollbar-width: thin;
+    scrollbar-color: transparent transparent;
+  }
+  .k-reel:hover,
+  .k-reel:focus-visible {
+    scrollbar-color: var(--line-200) transparent;
+  }
+}
+.k-reel > * {
+  flex: 0 0 auto;
+}
+.k-reel:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 1px;
+}
