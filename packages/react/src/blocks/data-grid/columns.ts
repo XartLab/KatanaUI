@@ -124,6 +124,11 @@ export type GridColumn<Row> = {
   /** 导出 CSV 用的格与表头（原始数值、带单位的表头）；省略时导出屏幕上的字与列名。复制仍是屏幕上的字。 */
   csv?: (row: Row) => string
   csvHeader?: () => string
+  /**
+   * compact 分量（#117）下留这一列：compact 一行只剩名字和一个主数。整张表里有任何一列标了就只画标了的那几列；
+   * 一列都没标就留前两个可见列。别的分量不看它。
+   */
+  compact?: boolean
   /** 这一列是行的标题（指标表的第一列）：这一格读作 rowheader，屏幕阅读器念「指标名：值」。 */
   rowHeader?: boolean
 }

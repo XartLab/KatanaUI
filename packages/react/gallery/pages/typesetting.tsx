@@ -200,22 +200,48 @@ function ReadoutsAt({ emphasis }: { emphasis: Emphasis }) {
   )
 }
 
-type Quote = { id: string; name: string; price: number; change: number }
+type Quote = {
+  id: string
+  name: string
+  price: number
+  change: number
+  turnover: number
+  turnoverRate: number
+  amplitude: number
+  pe: number
+  volumeRatio: number
+}
 const QUOTES: readonly Quote[] = Array.from({ length: 8 }, (_, index) => ({
   id: `q${index}`,
   name: `示例${'甲乙丙丁戊己庚辛'[index]}`,
   price: 10 + index * 1.37,
   change: (index % 2 === 0 ? 1 : -1) * (0.4 + index * 0.35),
+  turnover: 1.2e8 + index * 3.4e7,
+  turnoverRate: 1.1 + index * 0.6,
+  amplitude: 2.3 + index * 0.4,
+  pe: 18 + index * 3.5,
+  volumeRatio: 0.8 + index * 0.15,
 }))
 const QUOTE_COLUMNS: readonly GridColumn<Quote>[] = [
-  { id: 'name', type: 'text', value: (row) => row.name },
+  { id: 'name', type: 'text', value: (row) => row.name, compact: true },
   { id: 'price', type: 'price', value: (row) => row.price, format: { precision: 2 } },
-  { id: 'change', type: 'change', value: (row) => row.change },
+  { id: 'change', type: 'change', value: (row) => row.change, compact: true },
+  // 八列的表（边栏放不下）：compact 只留名称加「涨跌幅」这个主数，standard 八列全出。
+  { id: 'turnover', type: 'quantity', value: (row) => row.turnover },
+  { id: 'turnoverRate', type: 'number', value: (row) => row.turnoverRate, format: { digits: 2 } },
+  { id: 'amplitude', type: 'number', value: (row) => row.amplitude, format: { digits: 2 } },
+  { id: 'pe', type: 'number', value: (row) => row.pe, format: { digits: 1 } },
+  { id: 'volumeRatio', type: 'number', value: (row) => row.volumeRatio, format: { digits: 2 } },
 ]
 const QUOTE_LAYOUT: readonly GridColumnLayout[] = [
   { id: 'name', label: '名称', width: 100, visible: true },
   { id: 'price', label: '最新', width: 80, visible: true },
   { id: 'change', label: '涨跌幅', width: 80, visible: true },
+  { id: 'turnover', label: '成交额', width: 80, visible: true },
+  { id: 'turnoverRate', label: '换手率', width: 72, visible: true },
+  { id: 'amplitude', label: '振幅', width: 72, visible: true },
+  { id: 'pe', label: '市盈率', width: 72, visible: true },
+  { id: 'volumeRatio', label: '量比', width: 72, visible: true },
 ]
 
 /** 文案由宿主给：compact 截掉行时表下面写「另有 N 行」。 */
@@ -283,7 +309,7 @@ export function EmphasisDemo() {
       <ThreeLevels title="读数类：QuoteCard、PriceTag、GaugeBar">
         {(level) => <ReadoutsAt emphasis={level} />}
       </ThreeLevels>
-      <ThreeLevels title="DataGrid：compact 不出表头、只留前 5 行，表下面写「另有 3 行」">
+      <ThreeLevels title="DataGrid：compact 不出表头、只留前 5 行，表下面写「另有 3 行」；八列的表 compact 只剩名称与主数两列">
         {(level) => <GridAt emphasis={level} />}
       </ThreeLevels>
       <ThreeLevels title="NewsFeed：compact 一行一条">{(level) => <NewsAt emphasis={level} />}</ThreeLevels>
@@ -324,7 +350,8 @@ export function EmphasisGuideDemo() {
       parts: (
         <>
           <a href="#/quote-card">QuoteCard</a>、<a href="#/gauge-bar">GaugeBar</a>（标签加读数并排）；
-          <a href="#/data-grid">DataGrid</a>（不出表头、前 5 行）；<a href="#/news-feed">NewsFeed</a>（时间加标题）
+          <a href="#/data-grid">DataGrid</a>（不出表头、前 5 行、只剩名称与主数两列）；
+          <a href="#/news-feed">NewsFeed</a>（时间加标题）
         </>
       ),
     },

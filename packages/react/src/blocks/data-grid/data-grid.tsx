@@ -110,6 +110,9 @@ export type GridRowProps = {
 /** compact 分量（#115）只留表的前几行；待定：起始值，看 KATANAview 样板时量。 */
 const COMPACT_ROW_LIMIT = 5
 
+/** compact 分量（#117）里没有列标 `compact: true` 时留几个可见列：名称加一个主数。 */
+const COMPACT_DEFAULT_COLUMNS = 2
+
 /** 子行没有内容的写法（null、undefined、false）：这一行不能展开。 */
 const hasContent = (node: ReactNode): boolean => node !== null && node !== undefined && node !== false
 
@@ -439,7 +442,15 @@ export function DataGrid<Row extends object>({
   }, [columns, sortLocale, timeZone])
 
   const sorting: SortingState = sort ? [{ id: sort.id, desc: sort.desc }] : []
-  const visibility: ColumnVisibilityState = Object.fromEntries(layout.map((column) => [column.id, column.visible]))
+  // compact 分量（#117）只画名称与主数：有列标了 compact: true 就只留那几列，一列都没标就留前两个可见列（都是显隐之上再收一道，layout 本身不动）。
+  const compactKept = useMemo(() => {
+    const shown = layout.filter((column) => column.visible).map((column) => column.id)
+    const marked = shown.filter((columnId) => byId.get(columnId)?.compact === true)
+    return new Set(marked.length > 0 ? marked : shown.slice(0, COMPACT_DEFAULT_COLUMNS))
+  }, [layout, byId])
+  const visibility: ColumnVisibilityState = Object.fromEntries(
+    layout.map((column) => [column.id, column.visible && (!compact || compactKept.has(column.id))]),
+  )
   const [drag, setDrag] = useState<{ id: string; width: number } | null>(null)
   const sizing: ColumnSizingState = Object.fromEntries(
     layout.map((column) => [column.id, drag?.id === column.id ? drag.width : column.width]),
@@ -509,8 +520,20 @@ export function DataGrid<Row extends object>({
 
   const visibleColumns = table.getVisibleLeafColumns()
   const totalWidth = visibleColumns.reduce((sum, column) => sum + column.getSize(), 0)
+  // compact 下不出横向滚动条：名称列（第一个靠左的列，没有就第一列）吃掉剩下的宽度，其余列按自己的宽度，名称超长省略号截断。
+  const flexColumn = compact
+    ? (visibleColumns.find((column) => alignOf(column.id) === 'start') ?? visibleColumns[0])?.id
+    : undefined
   const template = visibleColumns
-    .map((column) => (stretch ? `minmax(${column.getSize()}px, ${column.getSize()}fr)` : `${column.getSize()}px`))
+    .map((column) =>
+      compact
+        ? column.id === flexColumn
+          ? 'minmax(0, 1fr)'
+          : `${column.getSize()}px`
+        : stretch
+          ? `minmax(${column.getSize()}px, ${column.getSize()}fr)`
+          : `${column.getSize()}px`,
+    )
     .join(' ')
   // 标了 fixed 的列横向滚动时粘在左边：靠前的固定列挨着排，每列的 left 是它前面固定列的宽度之和。
   const stuck = new Map<string, number>()
@@ -863,7 +886,10 @@ export function DataGrid<Row extends object>({
           keepActionsInView(event.currentTarget)
         }}
       >
-        <div className={cn('k-grid-inner', classNames.inner)} style={{ width: totalWidth, minWidth: '100%' }}>
+        <div
+          className={cn('k-grid-inner', classNames.inner)}
+          style={compact ? { width: '100%' } : { width: totalWidth, minWidth: '100%' }}
+        >
           {!noHeader &&
             table.getHeaderGroups().map((group) => (
               <div
@@ -1057,7 +1083,7 @@ export function DataGrid<Row extends object>({
                           ...(heat ? ({ '--heat': heat.level } as CSSProperties) : undefined),
                           ...(autoRowHeight ? undefined : { lineHeight: `${rowHeight}px` }),
                         }}
-                        title={column.title?.(row.original)}
+                        title={column.title?.(row.original) ?? (column.id === flexColumn ? resolved.text : undefined)}
                       >
                         {column.cell ? (
                           column.cell(row.original)
@@ -1067,6 +1093,7 @@ export function DataGrid<Row extends object>({
                           <CellBody
                             resolved={resolved}
                             extent={extents.get(column.id) ?? 0}
+                            ellipsis={column.id === flexColumn}
                             maxPills={
                               (typeof column.format === 'function' ? column.format(row.original) : column.format)
                                 ?.maxPills
@@ -1137,10 +1164,13 @@ export function DataGrid<Row extends object>({
 function CellBody({
   resolved,
   extent,
+  ellipsis,
   maxPills,
 }: {
   resolved: ReturnType<typeof resolveCell>
   extent: number
+  /** 纯文字写进 .k-grid-name，超长时省略号截断（cell 是 flex，文字本身不出省略号）。 */
+  ellipsis?: boolean
   maxPills?: number
 }) {
   if (resolved.pills) return <PillCell pills={resolved.pills} max={maxPills} />
@@ -1192,7 +1222,7 @@ function CellBody({
     )
   }
   if (resolved.direction !== undefined) return <ToneText tone={resolved.direction}>{resolved.text}</ToneText>
-  return resolved.text
+  return ellipsis ? <span className="k-grid-name">{resolved.text}</span> : resolved.text
 }
 
 /** 宿主没给 renderMenu 时的菜单：item、二级、分隔线；快捷键写成右边的字。 */
