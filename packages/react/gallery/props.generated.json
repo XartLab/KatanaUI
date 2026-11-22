@@ -8240,6 +8240,24 @@
           "description": "Live data mode (default false): numeric cells (number, price, quantity, pnl, change) flash the up or down color when their value changes, rows glide to their new place when the sort order changes, and newly added rows are highlighted briefly."
         },
         {
+          "name": "rowOrder",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Manual row order (controlled): row ids in display order; ids not in it go last."
+        },
+        {
+          "name": "onRowOrderChange",
+          "type": "(next: string[]) => void",
+          "required": false,
+          "description": "Called with the whole new order after a drag, Alt+Up / Alt+Down or a move item in the row menu."
+        },
+        {
+          "name": "rowSection",
+          "type": "(row: Row) => ReactNode",
+          "required": false,
+          "description": "Section header rows (watchlist sections): return the heading for a row that is a section header, null / undefined for a normal row."
+        },
+        {
           "name": "classNames",
           "type": "Partial<Record<GridSlot, string>>",
           "required": false,
@@ -8376,6 +8394,12 @@
           "type": "(selected: { size: number }) => string",
           "required": true,
           "description": "选了几行（多于一行时读出来）；给对象而不是数，宿主的复数写法好跟原来的文案对上。"
+        },
+        {
+          "name": "rowOrder",
+          "type": "{ moveUp?: string moveDown?: string moveTop?: string moveBottom?: string /** 按列排序时为什么不能挪（Alt+↑/↓ 读出、菜单项的提示）。 */ sorted?: string /** 挪完读出新位置。 */ moved?: (info: { count: number; position: number; total: number }) => string /** 拖到一半按 Esc。 */ cancelled?: string }",
+          "required": false,
+          "description": "挪行（#77 G7）：右键菜单的四项与读屏播报；可省，省略用英文默认。"
         },
         {
           "name": "columnMenu",
@@ -8678,6 +8702,24 @@
           "description": "Live data mode (default false): numeric cells (number, price, quantity, pnl, change) flash the up or down color when their value changes, rows glide to their new place when the sort order changes, and newly added rows are highlighted briefly."
         },
         {
+          "name": "rowOrder",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Manual row order (controlled): row ids in display order; ids not in it go last."
+        },
+        {
+          "name": "onRowOrderChange",
+          "type": "(next: string[]) => void",
+          "required": false,
+          "description": "Called with the whole new order after a drag, Alt+Up / Alt+Down or a move item in the row menu."
+        },
+        {
+          "name": "rowSection",
+          "type": "(row: Row) => ReactNode",
+          "required": false,
+          "description": "Section header rows (watchlist sections): return the heading for a row that is a section header, null / undefined for a normal row."
+        },
+        {
           "name": "classNames",
           "type": "Partial<Record<GridSlot, string>>",
           "required": false,
@@ -8766,6 +8808,12 @@
           "type": "(selected: { size: number }) => string",
           "required": true,
           "description": "选了几行（多于一行时读出来）；给对象而不是数，宿主的复数写法好跟原来的文案对上。"
+        },
+        {
+          "name": "rowOrder",
+          "type": "{ moveUp?: string moveDown?: string moveTop?: string moveBottom?: string /** 按列排序时为什么不能挪（Alt+↑/↓ 读出、菜单项的提示）。 */ sorted?: string /** 挪完读出新位置。 */ moved?: (info: { count: number; position: number; total: number }) => string /** 拖到一半按 Esc。 */ cancelled?: string }",
+          "required": false,
+          "description": "挪行（#77 G7）：右键菜单的四项与读屏播报；可省，省略用英文默认。"
         },
         {
           "name": "columnMenu",
@@ -13955,6 +14003,330 @@
         }
       ]
     },
+    "FlagDef": {
+      "kind": "type",
+      "source": "src/katana/flag-mark.tsx",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "color",
+          "type": "Severity",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "FlagFilter": {
+      "kind": "component",
+      "source": "src/katana/flag-mark.tsx",
+      "props": [
+        {
+          "name": "flags",
+          "type": "Flags",
+          "required": true,
+          "description": "The store returned by useFlags."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the group (e.g."
+        },
+        {
+          "name": "itemLabel",
+          "type": "(flag: FlagDef, count: number) => string",
+          "required": false,
+          "description": "Name of one flag button; defaults to the flag label and its count."
+        },
+        {
+          "name": "showEmpty",
+          "type": "boolean",
+          "required": false,
+          "description": "Also show flags that no row carries; by default only used flags and the active filter show."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name."
+        }
+      ]
+    },
+    "FlagFilterProps": {
+      "kind": "type",
+      "source": "src/katana/flag-mark.tsx",
+      "props": [
+        {
+          "name": "flags",
+          "type": "Flags",
+          "required": true,
+          "description": "The store returned by useFlags."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the group (e.g."
+        },
+        {
+          "name": "itemLabel",
+          "type": "(flag: FlagDef, count: number) => string",
+          "required": false,
+          "description": "Name of one flag button; defaults to the flag label and its count."
+        },
+        {
+          "name": "showEmpty",
+          "type": "boolean",
+          "required": false,
+          "description": "Also show flags that no row carries; by default only used flags and the active filter show."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name."
+        }
+      ]
+    },
+    "FlagGlyph": {
+      "kind": "component",
+      "source": "src/katana/flag-mark.tsx",
+      "props": [
+        {
+          "name": "color",
+          "type": "Severity",
+          "required": false,
+          "description": "Status color of the flag; omit to inherit the text color."
+        },
+        {
+          "name": "hollow",
+          "type": "boolean",
+          "required": false,
+          "description": "Draw the outline only (no flag on the row)."
+        }
+      ]
+    },
+    "FlagGlyphProps": {
+      "kind": "type",
+      "source": "src/katana/flag-mark.tsx",
+      "props": [
+        {
+          "name": "color",
+          "type": "Severity",
+          "required": false,
+          "description": "Status color of the flag; omit to inherit the text color."
+        },
+        {
+          "name": "hollow",
+          "type": "boolean",
+          "required": false,
+          "description": "Draw the outline only (no flag on the row)."
+        }
+      ]
+    },
+    "FlagMap": {
+      "kind": "type",
+      "source": "src/katana/flag-mark.tsx",
+      "props": []
+    },
+    "FlagMark": {
+      "kind": "component",
+      "source": "src/katana/flag-mark.tsx",
+      "props": [
+        {
+          "name": "flag",
+          "type": "FlagDef",
+          "required": false,
+          "description": "The flag on this row; omit for none (a hollow gray flag shows only on row hover or focus)."
+        },
+        {
+          "name": "onToggle",
+          "type": "() => void",
+          "required": false,
+          "description": "Click handler, usually toggle(id) from useFlags; without it the mark is read-only."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name written by the caller (e.g."
+        },
+        {
+          "name": "focusable",
+          "type": "boolean",
+          "required": false,
+          "default": "true",
+          "description": "Set false inside single-tab-stop containers such as DataGrid; keyboard users flag through the row menu."
+        },
+        {
+          "name": "alwaysShown",
+          "type": "boolean",
+          "required": false,
+          "description": "Keep the hollow flag visible when unflagged (outside a hover row); by default it shows only on row hover or focus."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name."
+        }
+      ]
+    },
+    "FlagMarkProps": {
+      "kind": "type",
+      "source": "src/katana/flag-mark.tsx",
+      "props": [
+        {
+          "name": "flag",
+          "type": "FlagDef",
+          "required": false,
+          "description": "The flag on this row; omit for none (a hollow gray flag shows only on row hover or focus)."
+        },
+        {
+          "name": "onToggle",
+          "type": "() => void",
+          "required": false,
+          "description": "Click handler, usually toggle(id) from useFlags; without it the mark is read-only."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name written by the caller (e.g."
+        },
+        {
+          "name": "focusable",
+          "type": "boolean",
+          "required": false,
+          "description": "Set false inside single-tab-stop containers such as DataGrid; keyboard users flag through the row menu."
+        },
+        {
+          "name": "alwaysShown",
+          "type": "boolean",
+          "required": false,
+          "description": "Keep the hollow flag visible when unflagged (outside a hover row); by default it shows only on row hover or focus."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name."
+        }
+      ]
+    },
+    "FlagMenuItem": {
+      "kind": "type",
+      "source": "src/katana/flag-mark.tsx",
+      "props": [
+        {
+          "name": "key",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "icon",
+          "type": "ReactNode",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "onSelect",
+          "type": "() => void",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "Flags": {
+      "kind": "type",
+      "source": "src/katana/flag-mark.tsx",
+      "props": [
+        {
+          "name": "flags",
+          "type": "readonly FlagDef[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "value",
+          "type": "FlagMap",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "flagOf",
+          "type": "(id: string) => FlagDef | undefined",
+          "required": true,
+          "description": "这一行插的旗。"
+        },
+        {
+          "name": "setFlag",
+          "type": "(id: string, flag: string | null) => void",
+          "required": true,
+          "description": "插旗（null 是拔掉）。"
+        },
+        {
+          "name": "toggle",
+          "type": "(id: string) => void",
+          "required": true,
+          "description": "点旗：插着就拔掉，没插就插上最近用过的那面（头一次是第一面）；照 TradingView 的 Flag/Unflag。"
+        },
+        {
+          "name": "clearAll",
+          "type": "() => void",
+          "required": true,
+          "description": "拔掉所有旗（TradingView 的 Unflag all symbols）。"
+        },
+        {
+          "name": "counts",
+          "type": "Readonly<Record<string, number>>",
+          "required": true,
+          "description": "每面旗插了几行。"
+        },
+        {
+          "name": "filter",
+          "type": "string | null",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "setFilter",
+          "type": "(flag: string | null) => void",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "filterRows",
+          "type": "<Row>(rows: readonly Row[], rowId: (row: Row) => string) => readonly Row[]",
+          "required": true,
+          "description": "按当前过滤留下的行（不过滤时原样返回）。"
+        },
+        {
+          "name": "menu",
+          "type": "(id: string, unflagLabel?: string) => FlagMenuItem[]",
+          "required": true,
+          "description": "一行的旗标菜单：每面旗一项（插着的那面再点是拔掉），最后「拔掉」；unflagLabel 不给就没有最后一项。"
+        }
+      ]
+    },
     "FlashDirection": {
       "kind": "type",
       "source": "src/lib/live.ts",
@@ -18110,6 +18482,11 @@
           "description": ""
         }
       ]
+    },
+    "IsSection": {
+      "kind": "type",
+      "source": "src/blocks/data-grid/row-order-model.ts",
+      "props": []
     },
     "JsonViewer": {
       "kind": "component",
@@ -32267,6 +32644,47 @@
         }
       ]
     },
+    "RowMoveTo": {
+      "kind": "type",
+      "source": "src/blocks/data-grid/grid-menu.tsx",
+      "props": []
+    },
+    "RowOrder": {
+      "kind": "type",
+      "source": "src/blocks/data-grid/use-row-order.ts",
+      "props": [
+        {
+          "name": "order",
+          "type": "string[]",
+          "required": true,
+          "description": "对着现在的行整理过的次序。"
+        },
+        {
+          "name": "move",
+          "type": "(ids: readonly string[], before: string | null) => void",
+          "required": true,
+          "description": "把几行挪到 before 之前（null 是最后）。"
+        },
+        {
+          "name": "moveBy",
+          "type": "(ids: readonly string[], delta: -1 | 1) => void",
+          "required": true,
+          "description": "上下挪一格。"
+        },
+        {
+          "name": "reset",
+          "type": "() => void",
+          "required": true,
+          "description": "回到 ids 的先后。"
+        },
+        {
+          "name": "gridProps",
+          "type": "{ rowOrder: string[]; onRowOrderChange: (next: string[]) => void }",
+          "required": true,
+          "description": "摊到 DataGrid 上的两个 prop。"
+        }
+      ]
+    },
     "SavedView": {
       "kind": "type",
       "source": "src/lib/use-saved-views.ts",
@@ -43416,6 +43834,90 @@
       "source": "src/blocks/uptime-bars/uptime-bars-model.ts",
       "props": []
     },
+    "UseFlagsOptions": {
+      "kind": "type",
+      "source": "src/katana/flag-mark.tsx",
+      "props": [
+        {
+          "name": "flags",
+          "type": "readonly FlagDef[]",
+          "required": true,
+          "description": "有哪几面旗（次序就是菜单与过滤按钮的次序）。"
+        },
+        {
+          "name": "value",
+          "type": "FlagMap",
+          "required": false,
+          "description": "受控：哪一行插了哪面旗。"
+        },
+        {
+          "name": "defaultValue",
+          "type": "FlagMap",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "onValueChange",
+          "type": "(next: FlagMap) => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "filter",
+          "type": "string | null",
+          "required": false,
+          "description": "受控：按哪面旗过滤（null 是不过滤）。"
+        },
+        {
+          "name": "defaultFilter",
+          "type": "string | null",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "onFilterChange",
+          "type": "(next: string | null) => void",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "UseRowOrderOptions": {
+      "kind": "type",
+      "source": "src/blocks/data-grid/use-row-order.ts",
+      "props": [
+        {
+          "name": "ids",
+          "type": "readonly string[]",
+          "required": true,
+          "description": "现在所有行的 id（按数据源的先后）。"
+        },
+        {
+          "name": "value",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "受控的次序；给了它，挪动只经 onValueChange 通知。"
+        },
+        {
+          "name": "defaultValue",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "不受控时的初始次序；省略是 ids 的先后。"
+        },
+        {
+          "name": "onValueChange",
+          "type": "(next: string[]) => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "isSection",
+          "type": "IsSection",
+          "required": false,
+          "description": "分节标题行：拖它带着整节走。"
+        }
+      ]
+    },
     "UseSavedViewsOptions": {
       "kind": "type",
       "source": "src/lib/use-saved-views.ts",
@@ -45516,6 +46018,11 @@
         }
       ]
     },
+    "applyRowOrder": {
+      "kind": "function",
+      "source": "src/blocks/data-grid/row-order-model.ts",
+      "props": []
+    },
     "bestIndex": {
       "kind": "function",
       "source": "src/quant/param-scatter-model.ts",
@@ -45954,6 +46461,11 @@
       "source": "src/blocks/consensus-block/consensus-block.tsx",
       "props": []
     },
+    "countFlags": {
+      "kind": "function",
+      "source": "src/katana/flag-mark.tsx",
+      "props": []
+    },
     "createHotkeyRegistry": {
       "kind": "function",
       "source": "src/patterns/hotkeys.tsx",
@@ -46056,6 +46568,11 @@
           "description": ""
         }
       ]
+    },
+    "expandMoving": {
+      "kind": "function",
+      "source": "src/blocks/data-grid/row-order-model.ts",
+      "props": []
     },
     "falloff": {
       "kind": "function",
@@ -46622,6 +47139,11 @@
       "source": "src/primitives/menu-parts.tsx",
       "props": []
     },
+    "mergeVisibleOrder": {
+      "kind": "function",
+      "source": "src/blocks/data-grid/row-order-model.ts",
+      "props": []
+    },
     "metricStageIndex": {
       "kind": "function",
       "source": "src/quotes/metric-card.tsx",
@@ -46652,6 +47174,16 @@
       "source": "src/quant/param-scatter-model.ts",
       "props": []
     },
+    "moveRows": {
+      "kind": "function",
+      "source": "src/blocks/data-grid/row-order-model.ts",
+      "props": []
+    },
+    "moveRowsBy": {
+      "kind": "function",
+      "source": "src/blocks/data-grid/row-order-model.ts",
+      "props": []
+    },
     "navigationMenuTriggerClass": {
       "kind": "value",
       "source": "src/primitives/navigation-menu.tsx",
@@ -46675,6 +47207,11 @@
     "normalizeLimitStatus": {
       "kind": "function",
       "source": "src/cn/badge-model.ts",
+      "props": []
+    },
+    "normalizeOrder": {
+      "kind": "function",
+      "source": "src/blocks/data-grid/row-order-model.ts",
       "props": []
     },
     "normalizeStreak": {
@@ -47097,6 +47634,11 @@
     "setColumnVisible": {
       "kind": "function",
       "source": "src/blocks/data-grid/layout-model.ts",
+      "props": []
+    },
+    "setFlagIn": {
+      "kind": "function",
+      "source": "src/katana/flag-mark.tsx",
       "props": []
     },
     "sheetVariants": {
@@ -47601,6 +48143,56 @@
       "source": "src/primitives/field.tsx",
       "props": []
     },
+    "useFlags": {
+      "kind": "function",
+      "source": "src/katana/flag-mark.tsx",
+      "props": [
+        {
+          "name": "flags",
+          "type": "readonly FlagDef[]",
+          "required": true,
+          "description": "有哪几面旗（次序就是菜单与过滤按钮的次序）。"
+        },
+        {
+          "name": "value",
+          "type": "FlagMap",
+          "required": false,
+          "description": "受控：哪一行插了哪面旗。"
+        },
+        {
+          "name": "defaultValue",
+          "type": "FlagMap",
+          "required": false,
+          "default": "{}",
+          "description": ""
+        },
+        {
+          "name": "onValueChange",
+          "type": "(next: FlagMap) => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "filter",
+          "type": "string | null",
+          "required": false,
+          "description": "受控：按哪面旗过滤（null 是不过滤）。"
+        },
+        {
+          "name": "defaultFilter",
+          "type": "string | null",
+          "required": false,
+          "default": "null",
+          "description": ""
+        },
+        {
+          "name": "onFilterChange",
+          "type": "(next: string | null) => void",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
     "useFlipList": {
       "kind": "function",
       "source": "src/lib/live.ts",
@@ -47677,6 +48269,42 @@
       "kind": "function",
       "source": "src/blocks/toolbar/use-roving-toolbar.ts",
       "props": []
+    },
+    "useRowOrder": {
+      "kind": "function",
+      "source": "src/blocks/data-grid/use-row-order.ts",
+      "props": [
+        {
+          "name": "ids",
+          "type": "readonly string[]",
+          "required": true,
+          "description": "现在所有行的 id（按数据源的先后）。"
+        },
+        {
+          "name": "value",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "受控的次序；给了它，挪动只经 onValueChange 通知。"
+        },
+        {
+          "name": "defaultValue",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "不受控时的初始次序；省略是 ids 的先后。"
+        },
+        {
+          "name": "onValueChange",
+          "type": "(next: string[]) => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "isSection",
+          "type": "IsSection",
+          "required": false,
+          "description": "分节标题行：拖它带着整节走。"
+        }
+      ]
     },
     "useSavedViews": {
       "kind": "function",
