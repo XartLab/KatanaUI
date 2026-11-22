@@ -11235,6 +11235,54 @@ button.k-sysmon-link-body:focus-visible {
   font-size: var(--text-body-size);
 }
 
+.k-grid-row.is-movable {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.k-grid-row.is-dragged {
+  opacity: .45;
+}
+
+.k-grid-body.is-row-dragging, .k-grid-body.is-row-dragging * {
+  cursor: grabbing;
+}
+
+.k-grid-drop {
+  z-index: 3;
+  background: var(--k-content-primary-foreground);
+  pointer-events: none;
+  height: 2px;
+  margin-top: -1px;
+  position: absolute;
+  inset-inline: 0;
+}
+
+@media (forced-colors: active) {
+  .k-grid-drop {
+    background: highlight;
+  }
+}
+
+.k-grid-row.is-section {
+  border-top: 1px solid var(--k-separable-tertiary-borderColor);
+}
+
+.k-grid-section-cell {
+  min-width: 0;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  grid-column: 1 / -1;
+  align-items: center;
+  gap: 6px;
+  padding: 0 8px;
+  display: flex;
+  overflow: hidden;
+}
+
 .k-empty {
   justify-content: center;
   align-items: center;
@@ -20404,6 +20452,78 @@ button.k-tl-card:focus-visible {
   pointer-events: auto;
 }
 
+.k-flag-mark {
+  width: 16px;
+  height: 18px;
+  color: var(--k-content-tertiary-foreground);
+  cursor: pointer;
+  background: none;
+  border: 0;
+  border-radius: 3px;
+  flex: none;
+  justify-content: center;
+  align-items: center;
+  padding: 0;
+  display: inline-flex;
+}
+
+span.k-flag-mark {
+  cursor: default;
+}
+
+.k-flag-mark.is-empty {
+  opacity: 0;
+  transition: opacity .1s var(--ease-snappy, ease-out);
+}
+
+.k-flag-mark.is-empty:hover {
+  color: var(--k-content-secondary-foreground);
+}
+
+.k-grid-row:hover .k-flag-mark.is-empty, .k-grid-body:focus-visible .k-grid-row.is-cursor .k-flag-mark.is-empty, .k-flag-mark.is-empty:focus-visible, .k-flag-mark.is-empty.is-shown {
+  opacity: 1;
+}
+
+.k-flag-mark:focus-visible, .k-flag-filter-item:focus-visible {
+  outline: var(--k-focused-outlineWidth) solid var(--k-focused-outlineColor);
+  outline-offset: var(--k-focused-outlineOffset);
+}
+
+.k-flag-glyph {
+  display: block;
+}
+
+.k-flag-filter {
+  align-items: center;
+  gap: 2px;
+  display: inline-flex;
+}
+
+.k-flag-filter-item {
+  height: 22px;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  background: none;
+  border: 1px solid var(--ds-c-2xn4aw);
+  border-radius: 5px;
+  align-items: center;
+  gap: 4px;
+  padding: 0 6px;
+  display: inline-flex;
+}
+
+.k-flag-filter-item:hover {
+  background: var(--k-selectable-background-hover);
+}
+
+.k-flag-filter-item[aria-pressed="true"] {
+  border-color: var(--k-selectable-border);
+  background: var(--k-selectable-background-selected);
+  color: var(--k-content-primary-foreground);
+}
+
 .k-spark-tile {
   background: var(--k-container-secondary-background);
   border: var(--hairline);
@@ -22443,6 +22563,7 @@ button.k-consensus-hash:focus-visible {
   --k-rise: initial;
   --k-run: initial;
   --k-scatter-color: initial;
+  --k-selectable-border: initial;
   --k-side-width: initial;
   --k-spark-lw: initial;
   --k-sy: initial;
