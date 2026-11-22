@@ -6346,6 +6346,71 @@ export const PAGES: readonly DocPage[] = [
     ],
   },
   {
+    id: 'order-ticket',
+    group: 'blocks',
+    cardHeight: 620,
+    title: 'OrderTicket 下单面板',
+    summary:
+      '版式照 OKX 的下单面板：顶上开仓 / 平仓（双向持仓时），一条保证金模式与杠杆，文字页签的限价 / 市价；下面买、卖两栏并排，每栏自己的价格（带「最优价」）、仓位框、0–100% 滑杆、可用与可开、勾选后原地展开的止盈止损、整宽的下单钮（买用涨色、卖用跌色），钮下列出张数、保证金、订单价值、开平手续费、总占用、预估强平价、保本价、止盈止损盈亏与盈亏比；底部费率与计算器。面板窄于 560px 时改成买 / 卖切换、一次一栏。仓位框可按成本 / 数量 / 风险三种填法：按成本时名义价值 = 成本 ÷（1/杠杆 + 开仓费率 + 平仓费率），数量向下取整，改杠杆成本不变。面板只算和显示，账户、费率、规格由调用方传，下单是 onSubmit。OKX 与 ATAS 的页面 2026-11-19 读，实现原创。',
+    exports: [
+      'OrderTicket',
+      'computeSizing',
+      'contractsForCost',
+      'contractsForRisk',
+      'exitPnl',
+      'breakevenPrice',
+      'liquidationPrice',
+      'floorToStep',
+    ],
+    propParts: [{ part: 'OrderTicket' }],
+    states: [
+      '没填数量：读数全是 0，提交钮禁用，不报错。',
+      '不足最小下单量 / 超过可用：仓位框红边，下面一行 role=alert 写原因，提交钮禁用。',
+      '按风险：止盈止损一栏强制展开；没填止损或止损填在盈利一侧，止损框红边并写原因。',
+      '平仓页（hedged）：仓位只按数量填，没有滑杆、止盈止损与保证金，钮上的字是平空 / 平多，onSubmit 的 reduceOnly 为 true。',
+      '窄于 560px：两栏并不下，顶上出现买 / 卖切换，只显示选中的一栏。',
+      '市价：价格框灰掉写 labels.marketPrice，按对手价（买看卖一、卖看买一）算。',
+      '没给 maxLeverage（现货、A 股）：杠杆与保证金模式不显示，保证金与强平价两行不显示，等于「按金额买」。',
+      'stopCustody=local：止盈止损栏右上写「本机触发」并用警示色；venue 写「交易所托管」。',
+    ],
+    donts: [
+      '不要在面板里取账户或下单：数据由调用方传，onSubmit 里走自己的执行网关。',
+      '强平价是单仓逐仓的近似，标着「预估」；全仓或交易所给了精确值时，不要拿这个数当准。',
+      '币本位（反向）合约不要用它算，公式只对正向合约与现货成立。',
+      '账户级风控（日亏线、连亏次数）不放进这里。',
+    ],
+    composition:
+      'OrderTicket\n  ToggleGroup（开仓 / 平仓）\n  Select（保证金模式）· 杠杆框\n  Tabs · TabsList line（限价 / 市价）\n  买栏 · 卖栏（各一份）\n    价格框 · Button（最优价）\n    Select（填法）· 仓位框 · Slider（0–100%）\n    可用 · 可开\n    Checkbox（止盈止损）· Select（出场模板）· 止盈框 · 止损框\n    下单钮\n    读数（dl）\n  费率 · Button（计算器）',
+    keys: [
+      ['Tab', '开平、保证金模式、杠杆、委托类型，然后买栏从上到下、再卖栏从上到下'],
+      ['← →', '在滑杆上按 1% 调仓位'],
+      ['Space', '在止盈止损的勾选框上展开或收起'],
+      ['← →', '在委托类型页签间移动'],
+      ['Enter', '在开平、最优价、下单钮上触发'],
+    ],
+  },
+  {
+    id: 'position-calculator',
+    group: 'blocks',
+    cardHeight: 330,
+    title: 'PositionCalculator 仓位计算器',
+    summary:
+      '简化的计算器：方向、开仓价、平仓价、数量、杠杆五个输入，答三件事——平在这个价赚或亏多少（含开平手续费，另给保证金回报率）、预估强平价、保本价。打开时由调用方带入当前价格、杠杆、数量与费率，不用从头手填。PositionCalculator 是弹窗，PositionCalculatorPanel 是可内嵌的主体。',
+    exports: ['PositionCalculator', 'PositionCalculatorPanel'],
+    propParts: [{ part: 'PositionCalculatorPanel' }, { part: 'PositionCalculator' }],
+    states: [
+      '没填平仓价：盈亏与回报率写「—」，强平价与保本价照算。',
+      '没给 maintenanceMarginRate，或多头不加杠杆：强平价写「—」。',
+    ],
+    donts: ['不要拿它下单，它只算数；下单用 OrderTicket。', '强平价是近似，标着「预估」。'],
+    composition:
+      'PositionCalculator\n  Dialog · DialogHeader · DialogTitle\n  PositionCalculatorPanel\n    SideSwitch · 开仓价 · 平仓价 · 数量 · 杠杆\n    读数（dl）',
+    keys: [
+      ['Tab', '方向、开仓价、平仓价、数量、杠杆，依次走'],
+      ['Esc', '关掉弹窗'],
+    ],
+  },
+  {
     id: 'text-reveal',
     group: 'motion',
     cardHeight: 520,

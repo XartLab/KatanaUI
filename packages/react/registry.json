@@ -7240,6 +7240,85 @@
       ]
     },
     {
+      "name": "order-ticket-parts",
+      "type": "registry:component",
+      "title": "Order Ticket Parts",
+      "description": "OrderTicket 与 PositionCalculator 共用的小件：买卖切换、带标签与单位的数字框、读数行、数字格式。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/focus",
+        "@katana/input",
+        "@katana/sizing-model"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/order-ticket-parts.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/order-ticket-parts.tsx"
+        }
+      ]
+    },
+    {
+      "name": "order-ticket",
+      "type": "registry:component",
+      "title": "Order Ticket",
+      "description": "版式照 OKX 的下单面板：顶上开仓 / 平仓（双向持仓时），一条保证金模式与杠杆，文字页签的限价 / 市价；下面买、卖两栏并排，每栏自己的价格（带「最优价」）、仓位框、0–100% 滑杆、可用与可开、勾选后原地展开的止盈止损、整宽的下单钮（买用涨色、卖用跌色），钮下列出张数、保证金、订单价值、开平手续费、总占用、预估强平价、保本价、止盈止损盈亏与盈亏比；底部费率与计算器。面板窄于 560px 时改成买 / 卖切换、一次一栏。仓位框可按成本 / 数量 / 风险三种填法：按成本时名义价值 = 成本 ÷（1/杠杆 + 开仓费率 + 平仓费率），数量向下取整，改杠杆成本不变。面板只算和显示，账户、费率、规格由调用方传，下单是 onSubmit。OKX 与 ATAS 的页面 2026-11-19 读，实现原创。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/button",
+        "@katana/checkbox",
+        "@katana/cn",
+        "@katana/focus",
+        "@katana/order-ticket-parts",
+        "@katana/select",
+        "@katana/sizing-model",
+        "@katana/slider",
+        "@katana/tabs",
+        "@katana/toggle-group"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/order-ticket.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/order-ticket.tsx"
+        }
+      ]
+    },
+    {
+      "name": "position-calculator",
+      "type": "registry:component",
+      "title": "Position Calculator",
+      "description": "简化的计算器：方向、开仓价、平仓价、数量、杠杆五个输入，答三件事——平在这个价赚或亏多少（含开平手续费，另给保证金回报率）、预估强平价、保本价。打开时由调用方带入当前价格、杠杆、数量与费率，不用从头手填。PositionCalculator 是弹窗，PositionCalculatorPanel 是可内嵌的主体。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/dialog",
+        "@katana/order-ticket-parts",
+        "@katana/sizing-model"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/position-calculator.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/position-calculator.tsx"
+        }
+      ]
+    },
+    {
+      "name": "sizing-model",
+      "type": "registry:component",
+      "title": "Sizing Model",
+      "description": "版式照 OKX 的下单面板：顶上开仓 / 平仓（双向持仓时），一条保证金模式与杠杆，文字页签的限价 / 市价；下面买、卖两栏并排，每栏自己的价格（带「最优价」）、仓位框、0–100% 滑杆、可用与可开、勾选后原地展开的止盈止损、整宽的下单钮（买用涨色、卖用跌色），钮下列出张数、保证金、订单价值、开平手续费、总占用、预估强平价、保本价、止盈止损盈亏与盈亏比；底部费率与计算器。面板窄于 560px 时改成买 / 卖切换、一次一栏。仓位框可按成本 / 数量 / 风险三种填法：按成本时名义价值 = 成本 ÷（1/杠杆 + 开仓费率 + 平仓费率），数量向下取整，改杠杆成本不变。面板只算和显示，账户、费率、规格由调用方传，下单是 onSubmit。OKX 与 ATAS 的页面 2026-11-19 读，实现原创。",
+      "files": [
+        {
+          "path": "src/blocks/sizing-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/sizing-model.ts"
+        }
+      ]
+    },
+    {
       "name": "small-multiples",
       "type": "registry:component",
       "title": "Small Multiples",
