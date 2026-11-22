@@ -3,6 +3,13 @@ import type { ComponentType } from 'react'
 import { NewsReaderDemo, ScreenerDemo } from './pages/screener.tsx'
 import { CommandPaletteDemo, HotkeysDemo, ShortcutSheetDemo } from './pages/hotkeys.tsx'
 import {
+  BoardStrengthRankDemo,
+  NetBuyBarDemo,
+  ReasonGroupListDemo,
+  SentimentCycleDemo,
+  ThemeHeatMatrixDemo,
+} from './pages/cn-pack.tsx'
+import {
   AgentAvatarDemo,
   AiApprovalDemo,
   AiArtifactDemo,
@@ -341,6 +348,11 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'pnl-text': PnlTextDemo,
   'event-calendar': EventCalendarDemo,
   'limit-ladder': LimitLadderDemo,
+  'theme-heat-matrix': ThemeHeatMatrixDemo,
+  'sentiment-cycle': SentimentCycleDemo,
+  'reason-group-list': ReasonGroupListDemo,
+  'board-strength-rank': BoardStrengthRankDemo,
+  'net-buy-bar': NetBuyBarDemo,
   'market-heatmap': MarketHeatmapDemo,
   'rating-text': RatingTextDemo,
   'technical-rating': TechnicalRatingDemo,

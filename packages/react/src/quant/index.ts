@@ -30,6 +30,15 @@ export {
   type LimitLadderLabels,
   type LimitLadderProps,
 } from './limit-ladder.tsx'
+// 题材热度矩阵（#11，开盘啦对照）：分档与 CalendarHeatmap 的换手视图同一条，颜色是中性浓度（不用品牌橙）。
+export {
+  ThemeHeatMatrix,
+  type ThemeHeatCell,
+  type ThemeHeatMatrixLabels,
+  type ThemeHeatMatrixProps,
+  type ThemeHeatPos,
+  type ThemeHeatRow,
+} from './theme-heat-matrix.tsx'
 export {
   MarketHeatmap,
   type HeatmapColorBy,

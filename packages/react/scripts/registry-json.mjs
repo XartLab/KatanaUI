@@ -85,6 +85,8 @@ const INTERNAL = {
     'EventCalendar 的国家选择：触发按钮加模态框（搜索、两个预设、按地区分组复选、取消 / 应用）。',
   'market-heatmap-model':
     'MarketHeatmap 的纯函数：色阶七档的档宽取好数、值落在哪一档、图例的值边界、方向键找邻居的格子。',
+  'theme-heat-model':
+    'ThemeHeatMatrix 的数据形状、五档档位（与 CalendarHeatmap 换手视图同一条规则）与键盘走格（纯函数）。',
   'calendar-model': 'CalendarHeatmap 的格子排布、档位与键盘（纯函数）：日历日按 UTC 算，一周一列。',
   'horizon-model': 'HorizonChart 的分带（纯函数）：把带正负的一列数折成几条叠起来的窄带。',
   'live-line':
@@ -280,6 +282,11 @@ function collectItems() {
       // 面板页签组与添加组件的目录（2026-11-19）。
       'panel-tabs',
       'component-catalog',
+      // #11 A 股面板：情绪周期、涨停原因分组、板块强度、龙虎榜净买，各一个子目录（组件与它的纯函数一起装）。
+      'sentiment-cycle',
+      'reason-group-list',
+      'board-strength-rank',
+      'net-buy-bar',
     ])
       add(
         dir,
