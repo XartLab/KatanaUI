@@ -801,6 +801,19 @@
       ]
     },
     {
+      "name": "use-type-to-search",
+      "type": "registry:lib",
+      "title": "Use Type To Search",
+      "description": "品种搜索：输入框、市场分段、结果列表；空查询先列最近搜索。焦点在图表这类容器里直接打字（useTypeToSearch）就弹出 SymbolSearchDialog，框里带着打的字。每行 SymbolMark 徽标 + 代码 + 名称与类型标签 + 右侧交易所，命中段加粗提亮。↑↓ 走行、回车选中、Esc 关。数据与搜索都由调用方传（onQuery 可异步，换词时上一次 abort），组件不带行情。功能参照 TradingView 图表的品种搜索（2026-11-18 实测），实现原创。",
+      "files": [
+        {
+          "path": "src/lib/use-type-to-search.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/lib/use-type-to-search.ts"
+        }
+      ]
+    },
+    {
       "name": "brush-model",
       "type": "registry:lib",
       "title": "Brush Model",
@@ -7012,6 +7025,37 @@
           "path": "src/blocks/uptime-bars/uptime-bars.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/blocks/uptime-bars/uptime-bars.tsx"
+        }
+      ]
+    },
+    {
+      "name": "symbol-search",
+      "type": "registry:component",
+      "title": "Symbol Search",
+      "description": "品种搜索：输入框、市场分段、结果列表；空查询先列最近搜索。焦点在图表这类容器里直接打字（useTypeToSearch）就弹出 SymbolSearchDialog，框里带着打的字。每行 SymbolMark 徽标 + 代码 + 名称与类型标签 + 右侧交易所，命中段加粗提亮。↑↓ 走行、回车选中、Esc 关。数据与搜索都由调用方传（onQuery 可异步，换词时上一次 abort），组件不带行情。功能参照 TradingView 图表的品种搜索（2026-11-18 实测），实现原创。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/command",
+        "@katana/dialog",
+        "@katana/focus",
+        "@katana/symbol-mark",
+        "@katana/tag",
+        "@katana/toggle-group",
+        "@katana/use-persisted-state"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/symbol-search/symbol-search-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/symbol-search/symbol-search-model.ts"
+        },
+        {
+          "path": "src/blocks/symbol-search/symbol-search.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/symbol-search/symbol-search.tsx"
         }
       ]
     },
