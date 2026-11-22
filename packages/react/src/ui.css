@@ -77,6 +77,11 @@
 @import './theme/symbol-galaxy.css';
 @import './theme/quantile-layers.css';
 @import './theme/limit-ladder.css';
+@import './theme/theme-heat-matrix.css';
+@import './theme/sentiment-cycle.css';
+@import './theme/reason-group-list.css';
+@import './theme/board-strength-rank.css';
+@import './theme/net-buy-bar.css';
 @import './theme/event-calendar.css';
 @import './theme/filter-bar.css';
 @import './theme/view-switcher.css';

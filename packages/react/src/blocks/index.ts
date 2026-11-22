@@ -280,3 +280,33 @@ export {
   type CatalogItem,
   type CatalogKind,
 } from './component-catalog/component-catalog-model.ts'
+// A 股面板（#11，开盘啦对照）：口径（情绪分、强度、阶段）由调用方传，件只画；涨跌色走 --k-tone-*（data-updown="cn" 红涨绿跌）。
+export {
+  SentimentCycle,
+  type SentimentDay,
+  type SentimentCycleLabels,
+  type SentimentCycleProps,
+  type SentimentMetric,
+  type SentimentStage,
+} from './sentiment-cycle/sentiment-cycle.tsx'
+export {
+  ReasonGroupList,
+  type ReasonGroup,
+  type ReasonGroupListLabels,
+  type ReasonGroupListProps,
+  type ReasonStock,
+} from './reason-group-list/reason-group-list.tsx'
+export {
+  BoardStrengthRank,
+  type BoardStrength,
+  type BoardStrengthRankLabels,
+  type BoardStrengthRankProps,
+  type RankedBoard,
+} from './board-strength-rank/board-strength-rank.tsx'
+export {
+  NetBuyBar,
+  type DragonSeat,
+  type DragonTigerItem,
+  type NetBuyBarLabels,
+  type NetBuyBarProps,
+} from './net-buy-bar/net-buy-bar.tsx'
