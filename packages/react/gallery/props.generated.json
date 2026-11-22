@@ -6290,6 +6290,157 @@
       "source": "src/primitives/command.tsx",
       "props": []
     },
+    "CommandPalette": {
+      "kind": "component",
+      "source": "src/patterns/command-palette.tsx",
+      "props": [
+        {
+          "name": "open",
+          "type": "boolean",
+          "required": true,
+          "description": "Whether the palette is open (controlled)."
+        },
+        {
+          "name": "onOpenChange",
+          "type": "(open: boolean) => void",
+          "required": true,
+          "description": "Called when the palette opens or closes; selecting a command closes it."
+        },
+        {
+          "name": "commands",
+          "type": "readonly PaletteCommand[]",
+          "required": true,
+          "description": "All commands."
+        },
+        {
+          "name": "labels",
+          "type": "CommandPaletteLabels",
+          "required": true,
+          "description": "Texts written by the caller."
+        },
+        {
+          "name": "recent",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Recent command ids, newest first (controlled)."
+        },
+        {
+          "name": "onRecentChange",
+          "type": "(next: string[]) => void",
+          "required": false,
+          "description": "Called with the new recent list after a command is selected."
+        },
+        {
+          "name": "recentKey",
+          "type": "string",
+          "required": false,
+          "description": "localStorage key to keep the recent list when it is not controlled."
+        },
+        {
+          "name": "recentLimit",
+          "type": "number",
+          "required": false,
+          "default": "5",
+          "description": "How many recent commands to keep and show."
+        }
+      ]
+    },
+    "CommandPaletteLabels": {
+      "kind": "type",
+      "source": "src/patterns/command-palette.tsx",
+      "props": [
+        {
+          "name": "title",
+          "type": "string",
+          "required": true,
+          "description": "Dialog title for screen readers (not shown)."
+        },
+        {
+          "name": "description",
+          "type": "string",
+          "required": true,
+          "description": "Dialog description for screen readers (not shown)."
+        },
+        {
+          "name": "placeholder",
+          "type": "string",
+          "required": true,
+          "description": "Placeholder of the search box."
+        },
+        {
+          "name": "empty",
+          "type": "string",
+          "required": true,
+          "description": "Text when nothing matches."
+        },
+        {
+          "name": "recent",
+          "type": "string",
+          "required": true,
+          "description": "Heading of the recent group."
+        },
+        {
+          "name": "ungrouped",
+          "type": "string",
+          "required": false,
+          "description": "Heading of commands without a group; defaults to none."
+        }
+      ]
+    },
+    "CommandPaletteProps": {
+      "kind": "type",
+      "source": "src/patterns/command-palette.tsx",
+      "props": [
+        {
+          "name": "open",
+          "type": "boolean",
+          "required": true,
+          "description": "Whether the palette is open (controlled)."
+        },
+        {
+          "name": "onOpenChange",
+          "type": "(open: boolean) => void",
+          "required": true,
+          "description": "Called when the palette opens or closes; selecting a command closes it."
+        },
+        {
+          "name": "commands",
+          "type": "readonly PaletteCommand[]",
+          "required": true,
+          "description": "All commands."
+        },
+        {
+          "name": "labels",
+          "type": "CommandPaletteLabels",
+          "required": true,
+          "description": "Texts written by the caller."
+        },
+        {
+          "name": "recent",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Recent command ids, newest first (controlled)."
+        },
+        {
+          "name": "onRecentChange",
+          "type": "(next: string[]) => void",
+          "required": false,
+          "description": "Called with the new recent list after a command is selected."
+        },
+        {
+          "name": "recentKey",
+          "type": "string",
+          "required": false,
+          "description": "localStorage key to keep the recent list when it is not controlled."
+        },
+        {
+          "name": "recentLimit",
+          "type": "number",
+          "required": false,
+          "description": "How many recent commands to keep and show."
+        }
+      ]
+    },
     "CommandSeparator": {
       "kind": "component",
       "source": "src/primitives/command.tsx",
@@ -14137,6 +14288,11 @@
       "source": "src/quotes/quote-row.ts",
       "props": []
     },
+    "GLOBAL_SCOPE": {
+      "kind": "value",
+      "source": "src/patterns/hotkeys-model.ts",
+      "props": []
+    },
     "GRID_LOADER_PATTERNS": {
       "kind": "value",
       "source": "src/katana/grid-loader.tsx",
@@ -16109,6 +16265,191 @@
           "name": "values",
           "type": "readonly number[]",
           "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "HotkeyBinding": {
+      "kind": "type",
+      "source": "src/patterns/hotkeys.tsx",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "稳定的 id（改键、冲突提示认它）。"
+        },
+        {
+          "name": "combo",
+          "type": "string | readonly string[]",
+          "required": true,
+          "description": "组合串，可写 Mod（Mac 是 ⌘，别处 Ctrl）；数组是几种按法「或」。"
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "总览表里的名字（调用方按界面语言写）。"
+        },
+        {
+          "name": "scope",
+          "type": "string",
+          "required": false,
+          "description": "作用域（总览表按它分组）；省略是 global。"
+        },
+        {
+          "name": "handler",
+          "type": "(event: KeyboardEvent) => void",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "enabled",
+          "type": "boolean",
+          "required": false,
+          "description": "false 时不触发、总览表里灰着；默认 true。"
+        },
+        {
+          "name": "allowInInput",
+          "type": "boolean",
+          "required": false,
+          "description": "在输入框里也触发（Esc、Mod+K 这类）；默认 false。"
+        },
+        {
+          "name": "preventDefault",
+          "type": "boolean",
+          "required": false,
+          "description": "触发后 preventDefault；默认 true。"
+        }
+      ]
+    },
+    "HotkeyConflict": {
+      "kind": "type",
+      "source": "src/patterns/hotkeys-model.ts",
+      "props": [
+        {
+          "name": "combo",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "ids",
+          "type": "readonly string[]",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "HotkeyEntry": {
+      "kind": "type",
+      "source": "src/patterns/hotkeys-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "combos",
+          "type": "readonly string[]",
+          "required": true,
+          "description": "规范串（已按平台换掉 Mod）；多个是「或」。"
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "scope",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "enabled",
+          "type": "boolean",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "HotkeyPlatform": {
+      "kind": "type",
+      "source": "src/patterns/hotkeys-model.ts",
+      "props": []
+    },
+    "HotkeyRegistry": {
+      "kind": "type",
+      "source": "src/patterns/hotkeys.tsx",
+      "props": [
+        {
+          "name": "platform",
+          "type": "HotkeyPlatform",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "register",
+          "type": "(binding: HotkeyBinding) => () => void",
+          "required": true,
+          "description": "登记一条，返回注销函数。"
+        },
+        {
+          "name": "entries",
+          "type": "() => readonly HotkeyEntry[]",
+          "required": true,
+          "description": "现在登记着的（按登记先后）。"
+        },
+        {
+          "name": "conflicts",
+          "type": "() => readonly HotkeyConflict[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "setActiveScopes",
+          "type": "(scopes: readonly string[] | null) => void",
+          "required": true,
+          "description": "只让这些作用域生效（global 总在）；null 是全开。"
+        },
+        {
+          "name": "activeScopes",
+          "type": "() => readonly string[] | null",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "dispatch",
+          "type": "(event: KeyboardEvent) => boolean",
+          "required": true,
+          "description": "把一次按键交给注册表；触发了返回 true（测试与宿主自己的监听用）。"
+        },
+        {
+          "name": "subscribe",
+          "type": "(listener: () => void) => () => void",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "HotkeysProvider": {
+      "kind": "component",
+      "source": "src/patterns/hotkeys.tsx",
+      "props": [
+        {
+          "name": "registry",
+          "type": "HotkeyRegistry",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "children",
+          "type": "ReactNode",
+          "required": false,
           "description": ""
         }
       ]
@@ -23570,6 +23911,60 @@
           "type": "string",
           "required": false,
           "description": "Extra classes for the root element."
+        }
+      ]
+    },
+    "PaletteCommand": {
+      "kind": "type",
+      "source": "src/patterns/command-palette.tsx",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "稳定的 id（「最近」记它）。"
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "group",
+          "type": "string",
+          "required": false,
+          "description": "分组名（调用方写好的字）；同名的排在一组，按第一次出现的先后。"
+        },
+        {
+          "name": "keywords",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "搜索时也认的词（别名、英文名）。"
+        },
+        {
+          "name": "shortcut",
+          "type": "ReactNode",
+          "required": false,
+          "description": "行尾的快捷键提示（写好的字或 Kbd）。"
+        },
+        {
+          "name": "icon",
+          "type": "ReactNode",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "onSelect",
+          "type": "() => void",
+          "required": true,
+          "description": ""
         }
       ]
     },
@@ -31351,6 +31746,127 @@
           "type": "string",
           "required": false,
           "description": ""
+        }
+      ]
+    },
+    "ShortcutSheet": {
+      "kind": "component",
+      "source": "src/patterns/shortcut-sheet.tsx",
+      "props": [
+        {
+          "name": "labels",
+          "type": "ShortcutSheetLabels",
+          "required": true,
+          "description": "Texts written by the caller."
+        },
+        {
+          "name": "scopeOrder",
+          "type": "readonly string[]",
+          "required": false,
+          "default": "[]",
+          "description": "Scope order of the sections; scopes not listed follow in first-registered order."
+        },
+        {
+          "name": "registry",
+          "type": "HotkeyRegistry",
+          "required": false,
+          "description": "Registry to read; defaults to the one from HotkeysProvider or the module default."
+        },
+        {
+          "name": "onComboChange",
+          "type": "(id: string, combo: string | null) => void",
+          "required": false,
+          "description": "Turns each row into a ShortcutRecorder; called with the action id and the new combo (null clears)."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name."
+        }
+      ]
+    },
+    "ShortcutSheetLabels": {
+      "kind": "type",
+      "source": "src/patterns/shortcut-sheet.tsx",
+      "props": [
+        {
+          "name": "search",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the search box (e.g."
+        },
+        {
+          "name": "searchPlaceholder",
+          "type": "string",
+          "required": false,
+          "description": "Placeholder of the search box; defaults to the search label."
+        },
+        {
+          "name": "empty",
+          "type": "string",
+          "required": true,
+          "description": "Text when nothing matches."
+        },
+        {
+          "name": "or",
+          "type": "string",
+          "required": true,
+          "description": "Word between alternative combos (e.g."
+        },
+        {
+          "name": "conflict",
+          "type": "(others: string) => string",
+          "required": true,
+          "description": "Conflict note on a row: names of the other actions on the same combo."
+        },
+        {
+          "name": "scope",
+          "type": "(scope: string) => string",
+          "required": false,
+          "description": "Heading of a scope; defaults to the scope id."
+        },
+        {
+          "name": "recorder",
+          "type": "ShortcutRecorderLabels",
+          "required": false,
+          "description": "Texts of the recorder when rebinding is on."
+        }
+      ]
+    },
+    "ShortcutSheetProps": {
+      "kind": "type",
+      "source": "src/patterns/shortcut-sheet.tsx",
+      "props": [
+        {
+          "name": "labels",
+          "type": "ShortcutSheetLabels",
+          "required": true,
+          "description": "Texts written by the caller."
+        },
+        {
+          "name": "scopeOrder",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Scope order of the sections; scopes not listed follow in first-registered order."
+        },
+        {
+          "name": "registry",
+          "type": "HotkeyRegistry",
+          "required": false,
+          "description": "Registry to read; defaults to the one from HotkeysProvider or the module default."
+        },
+        {
+          "name": "onComboChange",
+          "type": "(id: string, combo: string | null) => void",
+          "required": false,
+          "description": "Turns each row into a ShortcutRecorder; called with the action id and the new combo (null clears)."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name."
         }
       ]
     },
@@ -41266,6 +41782,29 @@
       "source": "src/quotes/treemap-model.ts",
       "props": []
     },
+    "comboKeys": {
+      "kind": "function",
+      "source": "src/patterns/hotkeys-model.ts",
+      "props": []
+    },
+    "comboOfEvent": {
+      "kind": "function",
+      "source": "src/patterns/hotkeys-model.ts",
+      "props": [
+        {
+          "name": "isComposing",
+          "type": "boolean",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "keyCode",
+          "type": "number",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
     "compactParts": {
       "kind": "function",
       "source": "src/lib/chart/format/quantity.ts",
@@ -41378,6 +41917,25 @@
       "source": "src/blocks/consensus-block/consensus-block.tsx",
       "props": []
     },
+    "createHotkeyRegistry": {
+      "kind": "function",
+      "source": "src/patterns/hotkeys.tsx",
+      "props": [
+        {
+          "name": "platform",
+          "type": "HotkeyPlatform",
+          "required": false,
+          "default": "detectPlatform()",
+          "description": ""
+        },
+        {
+          "name": "target",
+          "type": "EventTarget",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
     "createSeededRandom": {
       "kind": "function",
       "source": "src/motion/text/ransom-note.tsx",
@@ -41386,6 +41944,11 @@
     "decimalsOfTick": {
       "kind": "function",
       "source": "src/lib/chart/format/price.ts",
+      "props": []
+    },
+    "detectPlatform": {
+      "kind": "function",
+      "source": "src/patterns/hotkeys-model.ts",
       "props": []
     },
     "dialArc": {
@@ -41416,6 +41979,11 @@
     "filterTrades": {
       "kind": "function",
       "source": "src/blocks/strategy-report/strategy-report-model.ts",
+      "props": []
+    },
+    "findConflicts": {
+      "kind": "function",
+      "source": "src/patterns/hotkeys-model.ts",
       "props": []
     },
     "fitsWidth": {
@@ -41589,6 +42157,11 @@
     "inputVariants": {
       "kind": "function",
       "source": "src/primitives/input.tsx",
+      "props": []
+    },
+    "isEditableTarget": {
+      "kind": "function",
+      "source": "src/patterns/hotkeys-model.ts",
       "props": []
     },
     "isMonotonic": {
@@ -41927,6 +42500,11 @@
       "source": "src/quotes/watchlist-model.ts",
       "props": []
     },
+    "normalizeCombo": {
+      "kind": "function",
+      "source": "src/patterns/hotkeys-model.ts",
+      "props": []
+    },
     "normalizeLimitStatus": {
       "kind": "function",
       "source": "src/cn/badge-model.ts",
@@ -41945,6 +42523,11 @@
     "parseClock": {
       "kind": "function",
       "source": "src/cn/session.ts",
+      "props": []
+    },
+    "partLabelFor": {
+      "kind": "function",
+      "source": "src/patterns/hotkeys-model.ts",
       "props": []
     },
     "phaseSummary": {
@@ -41997,6 +42580,11 @@
           "description": "Number of flat stocks."
         }
       ]
+    },
+    "pushRecent": {
+      "kind": "function",
+      "source": "src/patterns/command-palette.tsx",
+      "props": []
     },
     "quantileRange": {
       "kind": "function",
@@ -42088,6 +42676,11 @@
     "readRendering": {
       "kind": "function",
       "source": "src/patterns/rendering-settings.tsx",
+      "props": []
+    },
+    "recentCommands": {
+      "kind": "function",
+      "source": "src/patterns/command-palette.tsx",
       "props": []
     },
     "reorderColumn": {
@@ -42623,6 +43216,21 @@
     "useFlipList": {
       "kind": "function",
       "source": "src/lib/live.ts",
+      "props": []
+    },
+    "useHotkeyEntries": {
+      "kind": "function",
+      "source": "src/patterns/hotkeys.tsx",
+      "props": []
+    },
+    "useHotkeyRegistry": {
+      "kind": "function",
+      "source": "src/patterns/hotkeys.tsx",
+      "props": []
+    },
+    "useHotkeys": {
+      "kind": "function",
+      "source": "src/patterns/hotkeys.tsx",
       "props": []
     },
     "useHoverIntent": {

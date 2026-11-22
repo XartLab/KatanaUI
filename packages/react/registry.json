@@ -399,6 +399,11 @@
           "target": "~/src/katana/ui/theme/shortcut-recorder.css"
         },
         {
+          "path": "src/theme/shortcut-sheet.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/shortcut-sheet.css"
+        },
+        {
           "path": "src/theme/side-nav.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/side-nav.css"
@@ -804,7 +809,7 @@
       "name": "use-type-to-search",
       "type": "registry:lib",
       "title": "Use Type To Search",
-      "description": "品种搜索：输入框、市场分段、结果列表；空查询先列最近搜索。焦点在图表这类容器里直接打字（useTypeToSearch）就弹出 SymbolSearchDialog，框里带着打的字。每行 SymbolMark 徽标 + 代码 + 名称与类型标签 + 右侧交易所，命中段加粗提亮。↑↓ 走行、回车选中、Esc 关。数据与搜索都由调用方传（onQuery 可异步，换词时上一次 abort），组件不带行情。功能参照 TradingView 图表的品种搜索（2026-11-18 实测），实现原创。",
+      "description": "组件里声明快捷键：useHotkeys 挂上登记、卸下注销，注册表一个 window 监听分发。作用域、冲突检测、平台 Mod 映射（Mac ⌘、别处 Ctrl）、输入框与输入法组字里不误触发。ShortcutSheet 列出来，CommandPalette 用它开。没有 HotkeysProvider 时用默认注册表。",
       "files": [
         {
           "path": "src/lib/use-type-to-search.ts",
@@ -2883,6 +2888,23 @@
       ]
     },
     {
+      "name": "command-palette",
+      "type": "registry:component",
+      "title": "Command Palette",
+      "description": "CommandDialog 加「最近」分组：选过的命令放最前（去重、最多 5 条），没输入时显示；记录可受控、存 localStorage 或只在页内存。照 TradingView 的 Ctrl/Cmd+K 快速搜索。",
+      "registryDependencies": [
+        "@katana/command",
+        "@katana/use-persisted-state"
+      ],
+      "files": [
+        {
+          "path": "src/patterns/command-palette.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/patterns/command-palette.tsx"
+        }
+      ]
+    },
+    {
       "name": "date-range-model",
       "type": "registry:lib",
       "title": "Date Range Model",
@@ -3200,6 +3222,38 @@
       ]
     },
     {
+      "name": "hotkeys-model",
+      "type": "registry:lib",
+      "title": "Hotkeys Model",
+      "description": "组件里声明快捷键：useHotkeys 挂上登记、卸下注销，注册表一个 window 监听分发。作用域、冲突检测、平台 Mod 映射（Mac ⌘、别处 Ctrl）、输入框与输入法组字里不误触发。ShortcutSheet 列出来，CommandPalette 用它开。没有 HotkeysProvider 时用默认注册表。",
+      "registryDependencies": [
+        "@katana/shortcut-model"
+      ],
+      "files": [
+        {
+          "path": "src/patterns/hotkeys-model.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/patterns/hotkeys-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "hotkeys",
+      "type": "registry:component",
+      "title": "Hotkeys",
+      "description": "组件里声明快捷键：useHotkeys 挂上登记、卸下注销，注册表一个 window 监听分发。作用域、冲突检测、平台 Mod 映射（Mac ⌘、别处 Ctrl）、输入框与输入法组字里不误触发。ShortcutSheet 列出来，CommandPalette 用它开。没有 HotkeysProvider 时用默认注册表。",
+      "registryDependencies": [
+        "@katana/hotkeys-model"
+      ],
+      "files": [
+        {
+          "path": "src/patterns/hotkeys.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/patterns/hotkeys.tsx"
+        }
+      ]
+    },
+    {
       "name": "multi-select",
       "type": "registry:component",
       "title": "Multi Select",
@@ -3412,6 +3466,27 @@
           "path": "src/patterns/shortcut-recorder.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/patterns/shortcut-recorder.tsx"
+        }
+      ]
+    },
+    {
+      "name": "shortcut-sheet",
+      "type": "registry:component",
+      "title": "Shortcut Sheet",
+      "description": "按作用域分组列出注册表里现在的快捷键，可搜索，冲突标出来，可接 ShortcutRecorder 改键。照 TradingView 的 Keyboard shortcuts 面板（Ctrl/Cmd+/）。件只是内容，放进 Dialog 或侧栏由调用方定。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/hotkeys",
+        "@katana/hotkeys-model",
+        "@katana/input",
+        "@katana/kbd",
+        "@katana/shortcut-recorder"
+      ],
+      "files": [
+        {
+          "path": "src/patterns/shortcut-sheet.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/patterns/shortcut-sheet.tsx"
         }
       ]
     },

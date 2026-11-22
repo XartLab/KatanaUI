@@ -899,6 +899,83 @@ export const PAGES: readonly DocPage[] = [
     keys: [],
   },
   {
+    id: 'hotkeys',
+    group: 'forms',
+    cardHeight: 220,
+    title: 'useHotkeys 快捷键注册表',
+    summary:
+      '组件里声明快捷键：useHotkeys 挂上登记、卸下注销，注册表一个 window 监听分发。作用域、冲突检测、平台 Mod 映射（Mac ⌘、别处 Ctrl）、输入框与输入法组字里不误触发。ShortcutSheet 列出来，CommandPalette 用它开。没有 HotkeysProvider 时用默认注册表。',
+    exports: [
+      'useHotkeys',
+      'HotkeysProvider',
+      'createHotkeyRegistry',
+      'useHotkeyRegistry',
+      'useHotkeyEntries',
+      'normalizeCombo',
+      'comboOfEvent',
+      'comboKeys',
+      'partLabelFor',
+      'detectPlatform',
+      'isEditableTarget',
+      'findConflicts',
+      'GLOBAL_SCOPE',
+    ],
+    propParts: [
+      {
+        part: 'useHotkeys(bindings)',
+        note: '每条 HotkeyBinding：id、combo（可写 Mod，数组是几种按法）、label、scope（省略 global）、handler、enabled、allowInInput、preventDefault（默认 true）。handler 总读最新的，不用 useCallback。',
+      },
+      {
+        part: 'createHotkeyRegistry({ platform?, target? }) / HotkeysProvider',
+        note: '注册表：register、entries、conflicts、setActiveScopes（null 全开，global 总在）、dispatch（测试与宿主自己的监听用）、subscribe。有登记才挂 keydown 监听。',
+      },
+      { part: 'useHotkeyEntries(registry?)', note: '读现在的登记与冲突（变了会重画），ShortcutSheet 用它。' },
+      {
+        part: 'normalizeCombo / comboOfEvent / comboKeys / partLabelFor / detectPlatform / isEditableTarget / findConflicts',
+        note: '纯函数：声明串规范化（Mod、cmd、option、esc 这类别名）、按键的规范串（组字中返回 null）、按平台写成键帽字、可打字的目标、冲突（同作用域或碰上 global）。',
+      },
+    ],
+    states: ['作用域关掉：它的快捷键不触发，总览里灰着。', '冲突：同组合两条以上都开着，总览两行都标出。'],
+    donts: [
+      '不要在 global 里登记单个无修饰键：会跟读屏和表单的键撞。',
+      '不要只给快捷键不给可点的入口。',
+      '不要在包里写死键位：默认键位与改过的键位都是调用方的。',
+    ],
+    composition: 'HotkeysProvider（可省）\n  组件 × n（useHotkeys 登记）\n注册表（window keydown → 匹配 → handler）',
+    keys: [
+      ['Mod+/', '（演示）打开快捷键总览'],
+      ['Mod+Shift+P', '（演示）打开命令面板；文档站目录的搜索占着 Mod+K（连带 Mod+Shift+K）'],
+      ['Alt+R', '（演示）图表作用域：重置图表；在输入框里不触发'],
+    ],
+  },
+  {
+    id: 'shortcut-sheet',
+    group: 'forms',
+    cardHeight: 420,
+    title: 'ShortcutSheet 快捷键总览',
+    summary:
+      '按作用域分组列出注册表里现在的快捷键，可搜索，冲突标出来，可接 ShortcutRecorder 改键。照 TradingView 的 Keyboard shortcuts 面板（Ctrl/Cmd+/）。件只是内容，放进 Dialog 或侧栏由调用方定。',
+    exports: ['ShortcutSheet'],
+    propParts: [
+      {
+        part: 'ShortcutSheet',
+        note: '读 useHotkeyEntries；文案（搜索、空态、或、冲突、作用域名、改键用的录键文案）全由调用方传。',
+      },
+    ],
+    states: [
+      '搜索：按名字、作用域、按键过滤；没有匹配显示空态。',
+      '冲突：名字下一行 warn 色小字。',
+      '改键：每行是 ShortcutRecorder。',
+    ],
+    donts: ['不要自己另写一份快捷键清单：总览读注册表，跟实际生效的一致。'],
+    composition:
+      'ShortcutSheet\n  搜索框\n  section × 作用域\n    h3\n    ul\n      li（名字 | Kbd 或 ShortcutRecorder）',
+    keys: [
+      ['打字', '在搜索框里过滤'],
+      ['Tab', '（改键时）在各行的录键框之间移动'],
+    ],
+  },
+  {
     id: 'shortcut-recorder',
     group: 'forms',
     cardHeight: 193,
@@ -1892,6 +1969,31 @@ export const PAGES: readonly DocPage[] = [
     keys: [
       ['Tab', '焦点到触发器时卡也出来'],
       ['Esc', '收起'],
+    ],
+  },
+  {
+    id: 'command-palette',
+    group: 'overlays',
+    cardHeight: 375,
+    title: 'CommandPalette 命令面板（带最近）',
+    summary:
+      'CommandDialog 加「最近」分组：选过的命令放最前（去重、最多 5 条），没输入时显示；记录可受控、存 localStorage 或只在页内存。照 TradingView 的 Ctrl/Cmd+K 快速搜索。',
+    exports: ['CommandPalette', 'pushRecent', 'recentCommands'],
+    propParts: [
+      {
+        part: 'CommandPalette',
+        note: '命令 PaletteCommand：id、label、group、keywords、shortcut、icon、disabled、onSelect。',
+      },
+      { part: 'pushRecent / recentCommands', note: '最近列表的纯函数：放最前去重截断；id 换成还在的命令。' },
+    ],
+    states: ['没输入：最近（有记录时）+ 各分组。', '有输入：按全部命令过滤，不显示最近。', '没有匹配：空态文字。'],
+    donts: ['不要把最近的命令再塞进别的分组：最近只在没输入时出。', '不要在包里写占位与标题文字。'],
+    composition:
+      'CommandPalette\n  CommandDialog\n    CommandInput\n    CommandList\n      CommandEmpty\n      CommandGroup（最近）\n      CommandGroup × 分组\n        CommandItem（图标、名字、CommandShortcut）',
+    keys: [
+      ['Mod+K', '（调用方用 useHotkeys 登记）打开'],
+      ['↑ ↓ / Enter', '移动高亮 / 执行并记进最近'],
+      ['Esc', '关闭，焦点回原处'],
     ],
   },
   {
