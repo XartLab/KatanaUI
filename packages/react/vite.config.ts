@@ -1,6 +1,15 @@
 // SPDX-License-Identifier: MIT
 import tailwindcss from '@tailwindcss/vite'
-import { defineConfig } from 'vite-plus'
+import { defaultClientConditions, defaultServerConditions, defineConfig } from 'vite-plus'
+
+// 同仓库的包（@katana-ui/logos）在 exports 里给了 katana-source 条件（不用通用的 source：@internationalized/date 等第三方包也用它指向自己的 TS 源码）指向 TS 源码：开发、单测、文档站构建都读源码，不等它先构建 lib/（#94）。
+// 装好的包没有这个条件也能用（落到 default 的 lib/）。浏览器截图的配置与 ds-build 也引这两个。
+export const sourceConditions = {
+  resolve: { conditions: ['katana-source', ...defaultClientConditions] },
+  ssr: {
+    resolve: { conditions: ['katana-source', ...defaultServerConditions], externalConditions: ['katana-source'] },
+  },
+}
 
 // 组件库自己的 Vite+ 配置。XartLab/KatanaUI 是组件库的源头仓库（#2），文档站、测试、格式化、代码检查都在包里配，不靠仓库根目录。
 // 格式化与代码检查的规则跟 packages/tokens 一致，改的时候两边一起改。
@@ -9,6 +18,7 @@ export default defineConfig({
   base: process.env.SITE_BASE ?? '/',
   // 样式用 Tailwind v4（决策记录 0049）。JSX 由 tsconfig 的 jsx: react-jsx 交给 Vite+ 自带的转换，不用 React 插件。
   plugins: [tailwindcss()],
+  ...sourceConditions,
   build: { outDir: 'dist', emptyOutDir: true },
   // 单测：Node 环境；组件用 react-dom/server 渲染成字符串测结构。浏览器里的行为在 e2e/（`pnpm test:e2e`，Playwright）。
   test: {

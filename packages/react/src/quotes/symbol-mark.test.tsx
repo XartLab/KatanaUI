@@ -34,4 +34,15 @@ describe('品种徽标', () => {
     expect(md).toContain('width:28px')
     expect(renderToStaticMarkup(<SymbolMark code="TSLA" size={14} />)).toContain('data-size="sm"')
   })
+
+  it('字母按规整后的代码取（#95）：600519.SH → 名称首字，BINANCE:BTCUSDT → BT', () => {
+    const a = renderToStaticMarkup(<SymbolMark symbol="600519.SH" name="贵州茅台" />)
+    expect(a).toContain('>贵</span>')
+    expect(a).toContain('aria-label="贵州茅台"')
+    expect(renderToStaticMarkup(<SymbolMark symbol="BINANCE:BTCUSDT" />)).toContain('>BT</span>')
+    expect(renderToStaticMarkup(<SymbolMark symbol="sh600519" />)).toContain('>6</span>')
+    expect(renderToStaticMarkup(<SymbolMark symbol="AAPL.O" />)).toContain('>AA</span>')
+    // 读屏名仍是原样代码。
+    expect(renderToStaticMarkup(<SymbolMark symbol="AAPL.O" />)).toContain('aria-label="AAPL.O"')
+  })
 })

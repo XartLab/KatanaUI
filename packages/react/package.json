@@ -138,6 +138,7 @@
     "@fontsource/ibm-plex-mono": "5.3.0",
     "@fontsource/ibm-plex-sans": "5.3.0",
     "@fontsource/iosevka": "5.3.0",
+    "@katana-ui/logos": "0.2.0",
     "@katana-ui/tokens": "0.3.0",
     "@playwright/test": "1.56.1",
     "@tailwindcss/vite": "4.3.5",
@@ -163,6 +164,7 @@
   "peerDependencies": {
     "@a2ui/react": "0.15.0",
     "@a2ui/web_core": "0.15.0",
+    "@katana-ui/logos": "0.2.0",
     "@katana-ui/tokens": "0.3.0",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",

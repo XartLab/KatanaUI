@@ -4,7 +4,7 @@
 
 KatanaConsole 自建的组件框架（决策记录 0049（KATANAview 的 docs/architecture/adr/0049-self-built-ui-framework.md））：Radix 做行为底座，shadcn 的代码做起步，Tailwind v4 写样式，颜色、字体、间距、动效全部取自 `tokens.json` 生成的 token。
 私有包（还没发 npm），许可证 **MIT**（用户 2026-11-14 定，#1876），好复用到别的量化项目，包括不是 AGPL 的项目；KATANAview 应用与它的 `@katanaview/*` 包仍是 AGPL-3.0。`src/primitives/` 里的文件是 shadcn/ui 的衍生（MIT，文件头写着出处），我们自己写的件在 `src/katana/`（也是 MIT）。
-不依赖任何应用代码，所以 MIT 的包里不会混进 AGPL 的代码（单独成仓库后，物理上就引不到）。包里每个源文件头写 `SPDX-License-Identifier: MIT`，`node scripts/check-license.mjs --fix` 会补上缺的、改掉写成 AGPL 的头。
+不依赖任何应用代码，所以 MIT 的包里不会混进 AGPL 的代码（单独成仓库后，物理上就引不到）。包里每个源文件头写 `SPDX-License-Identifier: MIT`。现在没有脚本自动查（KATANAview 时的检查脚本没搬过来）：新文件照现有文件写头，提交前用 `grep -rLE 'SPDX-License-Identifier: MIT' src --include='*.ts' --include='*.tsx' --include='*.css'` 找漏写的，再 `grep -rn AGPL src` 确认没混进 AGPL。
 
 ## 分层
 
@@ -21,7 +21,7 @@ tokens → theme → lib → layout → primitives → katana → patterns → q
 | lib | `src/lib/` | `chart/`（图表共用底座，G5 从 quant 下沉：`chart-kit/` 零件与配色、`chart-scale` 比例尺与分位数、`series-geometry` 序列几何、`scatter-model`、`brush-model`、`format/` 价格涨跌幅数量的纯函数，出口仍是 `@katana-ui/react/quant/format`）、`cn`（`clsx` + `tailwind-merge`，认得 `k-text-*` 字号档）、`focus`（焦点环类）、`motion`（弹簧参数）、`use-scrubber`（序列图共用的扫读钩子，#1917） |
 | layout | `src/layout/` | 排版原语与分量（#115）：`Stack`（竖排）、`Cluster`（横排换行）、`Sidebar`（一窄一宽，放不下上下叠）、`Switcher`（容器窄于阈值整体竖排）、`Grid`（等宽格）、`Reel`（横向滚动）。间距只收 `space-*` 刻度名（`space.ts`，单测跟 tokens.json 对账），原语只管位置与间距，不画边框、不带底色，样式在 `theme/layout.css`；模式借自 Every Layout，只借模式不取代码（见 `NOTICE`）。`EmphasisProvider` / `useEmphasis`（`emphasis.tsx`）：三档分量 hero / standard / compact，默认 standard，往下继承；分量只改字号档、显示多少、要不要表头，不改颜色与密度。认分量的件：`QuoteCard`、`PriceTag`、`GaugeBar`（katana 层）、`DataGrid`、`NewsFeed`（blocks 层），其余件照 standard 画；这些件读 `useEmphasis()`，所以 layout 在它们下面。没有依据的数（`SIDEBAR_CONTENT_MIN`、`SIDEBAR_SIDE_WIDTH`、`SWITCHER_THRESHOLD`、DataGrid 的 `COMPACT_ROW_LIMIT`）写成具名常量并标「待定」；`GRID_MIN` 240 取自 KATANAview layout.md「面板最小 240」 |
 | primitives | `src/primitives/` | 无业务的基础件：button（含 `icon` 变体）、input、select、toggle-group、slider、checkbox、switch、tooltip、popover、dialog、dropdown-menu、context-menu、tabs、accordion、sheet、hover-card、command（`cmdk`）、scroll-area、separator、progress、alert、field、label；`lib/opener-focus` 是 dialog 与 sheet 共用的「关上时焦点回开启处」 |
-| katana | `src/katana/` | KATANA 自有的件（见下）：led、lcd、dot-matrix、rolling-text、badge、kbd、skeleton 与加载态、toast（弹出提示的外观，计时与队列在应用里）、notification-bell、status-icon、ai-status、matrix-orb、arcade-pixel（取自 SmoothUI，MIT）、step-player、code-block、web-search（这几件交互学自 rare-ui，实现原创，文件头写明）；json-viewer（#1919：功能参照 Arc，只取公开页面写出的功能与交互，实现原创）；表单与动作件 2026-11-18（G2）搬到了 patterns/，行情件（G4）搬到了 quotes/；可以用 primitives，不是 shadcn 的衍生，所以单放一处（`scripts/check-license.mjs` 把 `primitives/` 整个当 MIT） |
+| katana | `src/katana/` | KATANA 自有的件（见下）：led、lcd、dot-matrix、rolling-text、badge、kbd、skeleton 与加载态、toast（弹出提示的外观，计时与队列在应用里）、notification-bell、status-icon、ai-status、matrix-orb、arcade-pixel（取自 SmoothUI，MIT）、step-player、code-block、web-search（这几件交互学自 rare-ui，实现原创，文件头写明）；json-viewer（#1919：功能参照 Arc，只取公开页面写出的功能与交互，实现原创）；表单与动作件 2026-11-18（G2）搬到了 patterns/，行情件（G4）搬到了 quotes/；可以用 primitives，不是 shadcn 的衍生，所以单放一处（`primitives/` 的文件头另写 shadcn/ui 的出处） |
 | patterns | `src/patterns/` | 由基础件组出来的固定搭法：multi-select（弹层加勾选）、combobox（弹层加 command：可搜索的单选或多选下拉）、chip-group（分面筛选芯片组）、date-range-picker（双月日历加预设）、tree-view（react-aria 的 Tree，数据驱动）（后三件 #1919）；表单与动作件（G2，2026-11-18 从 katana/ 搬来）：number-input（算式输入与框内标签，#1919）、date-time-input、duration-picker、password-input、shortcut-recorder、theme-selector、hold-to-confirm、delete-button、task-list（password-input 到 task-list 中的六件交互学自 rare-ui，hold-to-confirm 与 shortcut-recorder 参照 Arc，实现都原创），连同 filter-bar、view-switcher、rendering-settings、font-catalog、range-histogram-slider。纯函数放同名的 `*-model.ts`。值回调一律 `value / defaultValue / onValueChange`，文案一律 `labels`（旧名留一个版本作 @deprecated）。可以依赖 primitives、lib 与 katana 的读数件（ShortcutRecorder 用 Kbd） |
 | quotes | `src/quotes/` | 行情套件（出口 `@katana-ui/react/quotes`；2026-11-18 G4 从 katana、quant、patterns 收拢，旧出口照旧再导出）：sparkline 与 mini-chart、treemap、price-tag、quote-card、range-bar、rating-gauge、gauge-bar、symbol-mark（从应用的分析视图提来 #1884，或功能参照 TradingView 小组件，只取给用户看什么、怎么交互，不嵌不抄），以及 change-text、pnl-text、tone-text、rating-text、technical-rating、metric-card（含 `variant="tile"`，即 SparkTile）、key-stats、peer-cards、performance-strip、watchlist、quote-table、row-actions。行情行统一一个模型 `QuoteRow`（`{ id, symbol, name, last, change, changePct }`，数字，文字由 `formatPrice` 写）。可以用 lib、primitives、katana、patterns 与纯函数的 `lib/chart/format`；quant、blocks 反过来用它 |
 | quant | `src/quant/` | 量化领域的件与格式化（出口 `@katana-ui/react/quant`）：格式化函数（源码在 `lib/chart/format/`：价格按精度或 tick、涨跌幅、数量缩写；纯函数另有 `@katana-ui/react/quant/format` 出口，画布与 Worker 里用）。只依赖下面几层，不依赖行情、图表包与应用；品种、精度、单位由调用方传。有两个及以上调用方的才进；时间序列与盈亏（#1917，图都画在 viewBox 里、文字与十字线叠成 HTML，比例尺与路径在 `lib/chart/series-geometry`，几何都是纯函数）：`BrushChart` 与 `BrushStrip`（概览刷选条加主图）、`lib/chart/chart-kit/`（图表共用底座）、`CalendarHeatmap`（一年的日盈亏，涨跌发散色）、`HorizonChart`（地平线图）；`MarketHeatmap`（市场热力图，跨市场共用，#15：照 TradingView 股票热力图，排布用 `quotes/treemap-model` 的 `layoutTreemap`，格子里的徽标是 `SymbolMark`，工具条是 `ToggleGroup`） |
@@ -59,6 +59,11 @@ tokens → theme → lib → layout → primitives → katana → patterns → q
 - **没换：交易所多选（`SymbolSearch.tsx` 的 `VenueFilter`）→ `Combobox`。** 它是两列网格带 LOGO、状态灯和底部「全选 / 全部清除 / 完成」，行是 `role=checkbox`；`Combobox` 是单列的 listbox。要换得先给 `Combobox` 加两列与底栏，不然样子会变。现在包里的 `Combobox` 没有应用里的调用方，只在包与文档站里。
 - **没换：4px 滚动条（#1799）→ `ScrollArea`。** #1800 把滚动条做成了全局的原生 CSS（`scrollbar-width` 与 `::-webkit-scrollbar`），所有滚动容器自动带上；换成 `ScrollArea` 要给每个滚动容器套一层，还会带来自绘滚动条与原生滚动条并存的问题。`ScrollArea` 留给需要自绘滚动条的地方（比如要在滚动条上放标记）。
 
+## 徽标（#94）
+
+`SymbolMark` 没给 `src` 时读外层的 `LogoProvider`（`@katana-ui/logos/react`，另一个包 `packages/logos`）：来源、代码规范化、缓存、命令行都在那个包，本包只在 `quotes/symbol-mark.tsx` 用 `useLogo`。没有 Provider 时行为不变。
+同仓库开发读 logos 的 TS 源码：它的 exports 有 `katana-source` 条件，本包 `tsconfig.json` 的 `customConditions`、`vite.config.ts` 的 `sourceConditions`（截图配置与 `ds-build` 也用）开着它；`tsconfig.build.json` 关掉它，构建 lib 时读 logos 的 lib（logos 的 `prepare` 先构建）。不用通用的 `source` 条件名：`@internationalized/date` 等第三方包也用它指向自己的 TS 源码。来源与许可规则写在文档站「基础 → 图标与资源 → 徽标」。
+
 ## 三层 token 与密度（#1943）
 
 组件只读 characteristics（`--k-actionable-*`、`--k-focused-*` …）与密度变量（`--k-size-base`、`--k-spacing-*`），不读 palette（`ink-*`、`alpha-white-*` …）；高度与内距随容器上的 `data-density="high|medium|low"` 变，默认 medium。照 Salt 的 Foundation → Palette → Characteristics 分层，三层各是什么、密度表、命名规则见 [theming.md](theming.md#三层-token-与密度1943)。目前只有 Button 迁过来（`src/characteristics.test.ts` 守着），其余件后续逐个迁。
@@ -90,7 +95,7 @@ pnpm --filter @katana-ui/react exec shadcn add <component>
 
 `shadcn` 命令行钉在 4.22.2，配置在本目录的 `components.json`（文件落到 `src/primitives/`，`cn` 用 `src/lib/cn`）。生成之后要做：
 
-1. 文件头补上 MIT 与出处，格式照现有文件（`scripts/check-license.mjs` 查）。
+1. 文件头补上 MIT 与出处，格式照现有文件（没有脚本查，用上面「许可证」那段的 grep 自查）。
 2. 尺寸、圆角、颜色、动效改成我们的：取 token，不写色值；字号用 `k-text-*`；焦点环用 `lib/focus`；动效写进 `theme/motion.css`，缓动取 `--ease-snappy` 等。
 3. 文案不写死在组件里（需要的文字由调用方传，比如 Dialog 的 `closeLabel`），包里不出现中文。
 4. 在 `src/index.ts` 导出；在文档站加它的页（见下一节）；在 `e2e/ui-gallery.spec.ts`（本包内）加断言用户看得见的行为。
