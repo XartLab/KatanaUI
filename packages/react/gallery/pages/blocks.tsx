@@ -595,7 +595,7 @@ function DensityDemo() {
         compact 档（面板里的密表：自选栏、盘口）：行 20、表头 22、格内 8、数据字
         12px。同一份演示数据只留四列，代码不用芯片。
       </p>
-      <div data-testid="grid-compact-panel" style={{ display: 'flex', height: 240, width: 360 }}>
+      <div data-testid="grid-compact-panel" style={{ display: 'flex', height: 240, width: 380 }}>
         <DataGrid
           columns={PANEL_COLUMNS}
           layout={PANEL_LAYOUT}
