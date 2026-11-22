@@ -42,6 +42,7 @@
 | `exportName` | `string` | `'table'` | File name for the export, without extension. |
 | `onExport` | `(csv: string, fileName: string) => void` | — | Called with the CSV text and file name; without it there is no export item. |
 | `foot` | `ReactNode` | — | A line of text under the table. |
+| `summary` | `readonly GridSummary<Row>[]` | — | Summary rows at the foot (totals, averages): per-column aggregates over all rows, on the same column template and pinned columns; they stick to the bottom while scrolling. |
 | `presorted` | `boolean` | — | Rows are already sorted by the caller (group rows with children): the header still shows the sort marker but the table does not sort. |
 | `rowTree` | `(row: Row) => { level: number; expanded?: boolean }` | — | Tree rows: the table reads as an ARIA treegrid and rows carry aria-level and aria-expanded. |
 | `timeZone` | `string` | — | Time zone of time columns: 'local' (default), 'utc' or an IANA name. |

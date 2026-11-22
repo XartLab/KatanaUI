@@ -10,11 +10,24 @@
 
 options 每项 { value 毫秒（0 是不刷新）, label }；文字都在 labels。refreshing 时图标转圈、倒计时停、钮 aria-disabled（不丢焦点）。
 
+| 属性 | 类型 | 默认 | 说明 |
+| --- | --- | --- | --- |
+| `options` * | `readonly RefreshOption[]` | — | Segments to pick from; each value is milliseconds, 0 is off. |
+| `interval` * | `number` | — | Current interval in milliseconds (controlled); 0 is off. |
+| `onIntervalChange` * | `(interval: number) => void` | — | Called with the picked interval in milliseconds. |
+| `lastRefreshed` * | `number \| null` | — | When the data was last refreshed (epoch ms); null before the first refresh. |
+| `onRefresh` * | `() => void` | — | Refresh now (the button, and each time the countdown runs out). |
+| `refreshing` | `boolean` | `false` | A refresh is in flight: the icon spins and the countdown waits. |
+| `labels` * | `RefreshControlLabels` | — | All text: interval group name, refresh button name, the last / next prefixes. |
+| `formatTime` | `(time: number) => string` | `formatRefreshClock` | Writes the last-refresh time; default local HH:MM:SS. |
+| `pauseWhenHidden` | `boolean` | `true` | Stop counting while the tab is hidden; default true. |
+| `className` | `string` | — | Extra class name on the root. |
+
 ### useAutoRefresh({ interval, lastRefreshed, onRefresh, refreshing?, pauseWhenHidden? })
 
 只要计时不要界面时用：返回离下次刷新的毫秒数（关着、在刷、标签页隐藏时是 null）；同一个到点时刻只调一次 onRefresh。
 
-### formatRemaining / formatClock
+### formatRemaining / formatRefreshClock
 
 倒计时写 12s / 1:05；时刻写本地 HH:MM:SS。
 

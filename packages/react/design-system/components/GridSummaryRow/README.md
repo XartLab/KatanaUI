@@ -10,6 +10,12 @@ DataGrid 的 summary 属性：表尾一到几行合计 / 均值 / 中位数，�
 
 每行 { id, label, columns: { 列 id: 聚合 | { aggregate, text? } } }；label（合计、均值）写在第一个没配聚合的列，都配了就挂在行的读屏名上。
 
+| 属性 | 类型 | 默认 | 说明 |
+| --- | --- | --- | --- |
+| `id` * | `string` | — | Stable id of this summary row. |
+| `label` * | `string` | — | Row name (Total, Average), in the UI language. |
+| `columns` * | `Readonly<Partial<Record<string, SummaryColumn<Row>>>>` | — | Aggregate per column id; columns left out stay empty. |
+
 ### aggregateValues(aggregate, values, rows?)
 
 一组数的聚合：空的是 null（count 是 0）；median 取中间两个的平均。
@@ -21,6 +27,21 @@ DataGrid 的 summary 属性：表尾一到几行合计 / 均值 / 中位数，�
 ### GridSummaryRow
 
 DataGrid 内部画汇总行的件（列模板、固定列、aria-rowindex 由表给）；一般经 DataGrid 的 summary 用，不单摆。
+
+| 属性 | 类型 | 默认 | 说明 |
+| --- | --- | --- | --- |
+| `summary` * | `GridSummary<Row>` | — | The summary row to draw. |
+| `columns` * | `readonly GridColumn<Row>[]` | — | The grid's visible columns, in display order. |
+| `rows` * | `readonly Row[]` | — | All rows (not only the rendered ones). |
+| `env` * | `CellEnv` | — | Cell environment (time zone). |
+| `template` * | `string` | — | The grid's column template (same as the body rows). |
+| `height` * | `number` | — | Row height in pixels. |
+| `cellRole` * | `string` | — | gridcell in an interactive grid, cell otherwise. |
+| `ariaRowIndex` * | `number` | — | aria-rowindex of this row. |
+| `alignOf` * | `(columnId: string) => 'start' \| 'end'` | — | Alignment of a column. |
+| `stickClass` * | `(columnId: string) => string` | — | Class names of a pinned column cell. |
+| `stickStyle` * | `(columnId: string) => CSSProperties \| undefined` | — | Inline style (left offset) of a pinned column cell. |
+| `className` | `string` | — | Extra class name on the row. |
 
 ## Usage
 

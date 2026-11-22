@@ -10,6 +10,19 @@
 
 items 是 QuoteRow 加 logo / currency / series；价格文字由 formatPrice 写（可拿到这一项按品种定位数）。labels 必填：整条的读屏名、暂停与继续两种字，trend 给了才画走势。
 
+| 属性 | 类型 | 默认 | 说明 |
+| --- | --- | --- | --- |
+| `items` * | `readonly TickerItem[]` | — | The symbols, in order. |
+| `labels` * | `TickerTapeLabels` | — | All text: region name, pause and resume, trend names. |
+| `formatPrice` | `FormatPrice \| ((value: number, item: TickerItem) => string)` | — | Price text; the caller knows each symbol's precision. |
+| `layout` | `'stacked' \| 'inline'` | `'stacked'` | stacked: two lines per item with an optional trend (TradingView's current tape); inline: one compact line. |
+| `mode` | `'scroll' \| 'static'` | `'scroll'` | scroll (default) loops; static stands still and scrolls by hand. |
+| `speed` | `number` | `40` | Scroll speed in pixels per second; default 40. |
+| `paused` | `boolean` | — | Paused from outside (controlled); the pause button then calls onPausedChange. |
+| `onPausedChange` | `(paused: boolean) => void` | — | Called when the pause button is pressed. |
+| `onSelect` | `(item: TickerItem) => void` | — | Clicking an item (link to a chart, a watchlist); items become buttons when given. |
+| `className` | `string` | — | Extra class name on the root. |
+
 ## Usage
 
 ```tsx
