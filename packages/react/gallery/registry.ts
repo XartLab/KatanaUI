@@ -117,7 +117,10 @@ export const PAGES: readonly DocPage[] = [
       '单行文本框：30 高（sm 26 高），4% 白底 8% 白边；聚焦边变亮，禁用降到 45%。可选 floatingLabel：标签从框里升到框上。',
     exports: ['Input', 'inputVariants'],
     propParts: [
-      { part: 'Input', note: '其余属性透传给原生 input；type 默认 text。' },
+      {
+        part: 'Input',
+        note: '其余属性透传给原生 input；type 默认 text。caption / unit / align / wrapperClassName 见属性表与状态。',
+      },
       { part: 'inputVariants', note: '返回类名的函数，给 textarea 等非 input 元素用。' },
     ],
     states: [
@@ -125,6 +128,7 @@ export const PAGES: readonly DocPage[] = [
       '尺寸：md（默认，30 高）、sm（26 高，字 12）；旧名 size="default" 等于 md。',
       'aria-invalid 时边框变危险色。',
       '焦点：边框提亮（focus-ring）。',
+      'caption / unit / align：框内左边的标签、右边的单位、值靠右（下单面板的数字框，#104）。外面一个有边有底的框，里面的 input 去掉自己的边与底；焦点、无效、禁用都画在外框上。caption 传字串就是这个输入框的 label，传节点（如填法下拉）原样画、读屏名自己给；wrapperClassName 调外框（如高度）。',
       'floatingLabel：标签静止时盖在框里，聚焦或有内容时缩小升到框上面一条 14px 的留白里（改自 SmoothUI float-input，MIT）。',
     ],
     donts: [
@@ -269,8 +273,11 @@ export const PAGES: readonly DocPage[] = [
     summary: '一组互斥的按钮，选中块是一块跟着滑的底（弹簧）。default 是设置页样式，sm 是工具条样式。',
     exports: ['ToggleGroup', 'ToggleGroupItem', 'toggleGroupVariants', 'toggleItemVariants'],
     propParts: [
-      { part: 'ToggleGroup', note: '其余属性透传给 Radix ToggleGroup.Root。单选语义：点已选中的项不会取消。' },
-      { part: 'ToggleGroupItem', note: '其余属性透传给 Radix ToggleGroup.Item。' },
+      {
+        part: 'ToggleGroup',
+        note: '其余属性透传给 Radix ToggleGroup.Root。单选语义：点已选中的项不会取消。fullWidth、split 见状态。',
+      },
+      { part: 'ToggleGroupItem', note: '其余属性透传给 Radix ToggleGroup.Item。split 组里用 tone 给选中项涨跌色。' },
       {
         part: 'toggleGroupVariants / toggleItemVariants',
         symbol: 'toggleGroupVariants',
@@ -280,6 +287,8 @@ export const PAGES: readonly DocPage[] = [
     states: [
       '选中、未选、禁用项。',
       'size：md（默认，有边框、按钮 24 高、选中 700）与 sm（工具条：无边框、选中块随选中项滑动）；旧名 variant 留一个版本。',
+      'fullWidth：撑满整行，各项等分宽度（开仓 / 平仓这类两三项的整宽分段，#104）。',
+      'split：各项分开成钮、自带边、项间 4px；选中整格填色，没有滑块。配合 ToggleGroupItem 的 tone（up 取 --pnl-up、down 取 --pnl-down，随主题红涨绿跌）做买卖开关。',
       '键盘 Tab 到每个按钮，Space 或 Enter 选中。',
     ],
     donts: [
@@ -630,7 +639,10 @@ export const PAGES: readonly DocPage[] = [
       { part: 'TabsTrigger', note: '其余属性透传给 Radix Tabs.Trigger。' },
       { part: 'TabsContent', note: '其余属性透传给 Radix Tabs.Content。' },
     ],
-    states: ['选中、未选、禁用页签。', '默认与 line 两种样式。'],
+    states: [
+      '选中、未选、禁用页签。',
+      '默认（药丸底）与 line（文字页签、当前项下划线，下单面板的委托类型就用它；只有文字，不带底块）两种样式。',
+    ],
     donts: [
       '页签名保持短，一行放得下。',
       '只切换一个值、不换内容时用 ToggleGroup。',
