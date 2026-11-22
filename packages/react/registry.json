@@ -54,6 +54,11 @@
           "target": "~/src/katana/ui/theme/badge.css"
         },
         {
+          "path": "src/theme/board-strength-rank.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/board-strength-rank.css"
+        },
+        {
           "path": "src/theme/brush-chart.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/brush-chart.css"
@@ -294,6 +299,11 @@
           "target": "~/src/katana/ui/theme/motion.css"
         },
         {
+          "path": "src/theme/net-buy-bar.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/net-buy-bar.css"
+        },
+        {
           "path": "src/theme/news-feed.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/news-feed.css"
@@ -359,6 +369,11 @@
           "target": "~/src/katana/ui/theme/rating-gauge.css"
         },
         {
+          "path": "src/theme/reason-group-list.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/reason-group-list.css"
+        },
+        {
           "path": "src/theme/regime-strip.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/regime-strip.css"
@@ -387,6 +402,11 @@
           "path": "src/theme/scrubber.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/scrubber.css"
+        },
+        {
+          "path": "src/theme/sentiment-cycle.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/sentiment-cycle.css"
         },
         {
           "path": "src/theme/series-explorer.css",
@@ -472,6 +492,11 @@
           "path": "src/theme/technical-rating.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/technical-rating.css"
+        },
+        {
+          "path": "src/theme/theme-heat-matrix.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/theme-heat-matrix.css"
         },
         {
           "path": "src/theme/toolbar.css",
@@ -6207,6 +6232,36 @@
       ]
     },
     {
+      "name": "theme-heat-matrix",
+      "type": "registry:component",
+      "title": "Theme Heat Matrix",
+      "description": "开盘啦「题材库 / 板块强度」对照（#11）：行是题材、列是近 5 到 10 个交易日（最新一列的日期主文字色），格内大字写涨停只数、右上角 9px 写当日名次；底色是五档（分档与 CalendarHeatmap 换手视图同一条规则：档位 = ⌊只数 / 全表最大 × 5⌋，封顶 4），颜色是主文字色 10% / 20% / 34% / 52% / 74% 混透明的中性浓度，不用品牌橙（#50：橙只给焦点角括号；tokens 里的 seq-* 是橙系，没有不含橙的顺序档），0 只与没有数据不着色。表格手感照 TradingView 列表：28px 格高、2px 格距、tabular-nums。题材次序、只数、名次都由调用方给，件不排序、不算热度。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/theme-heat-model"
+      ],
+      "files": [
+        {
+          "path": "src/quant/theme-heat-matrix.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/theme-heat-matrix.tsx"
+        }
+      ]
+    },
+    {
+      "name": "theme-heat-model",
+      "type": "registry:component",
+      "title": "Theme Heat Model",
+      "description": "ThemeHeatMatrix 的数据形状、五档档位（与 CalendarHeatmap 换手视图同一条规则）与键盘走格（纯函数）。",
+      "files": [
+        {
+          "path": "src/quant/theme-heat-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/theme-heat-model.ts"
+        }
+      ]
+    },
+    {
       "name": "vintage-series-model",
       "type": "registry:component",
       "title": "Vintage Series Model",
@@ -7096,6 +7151,9 @@
       "type": "registry:component",
       "title": "Regime Strip",
       "description": "市场状态带：状态模型把历史分成几种状态，画成无缝色带叠在任何时间轴下，配图例；颜色是类别（series-1…7）不是好坏；RegimeBand 只画带。",
+      "registryDependencies": [
+        "@katana/severity"
+      ],
       "files": [
         {
           "path": "src/blocks/regime-strip/regime-strip-model.ts",
@@ -7229,6 +7287,114 @@
           "path": "src/blocks/component-catalog/component-catalog.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/blocks/component-catalog/component-catalog.tsx"
+        }
+      ]
+    },
+    {
+      "name": "sentiment-cycle",
+      "type": "registry:component",
+      "title": "Sentiment Cycle",
+      "description": "开盘啦「市场情绪」对照（#11）：左上大号情绪分（28px 600 无衬线、tabular-nums）与昨日差（涨跌 tone）、当前阶段（语气色方块 + 名字）；右上 0–100 刻度仪表（Meter gauge，语气取当前阶段的 tone）；中间近 N 日走势线（ink 主色 1.5px，50 分处一根虚中线），线下叠阶段带与图例（RegimeStrip，阶段色取状态语气 --k-status-*：Graphite 的油画颜料信号色，不用偏艳的类别色；今天的阶段标「当前」）；底下一排小线图（SmallMultiples，同步十字线，每项自己的写法，线与值都是中性前景色，不用品牌橙）。A 股面板在根上设 data-updown=\"cn\"，文档站这一组的演示与组件截图都按 cn（红涨绿跌）。情绪分、阶段的划分与阈值都由调用方算好传，件里不带口径。",
+      "registryDependencies": [
+        "@katana/chart-kit",
+        "@katana/cn",
+        "@katana/meter",
+        "@katana/regime-strip",
+        "@katana/series-geometry",
+        "@katana/severity",
+        "@katana/small-multiples"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/sentiment-cycle/sentiment-cycle.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/sentiment-cycle/sentiment-cycle.tsx"
+        },
+        {
+          "path": "src/blocks/sentiment-cycle/sentiment-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/sentiment-cycle/sentiment-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "reason-group-list",
+      "type": "registry:component",
+      "title": "Reason Group List",
+      "description": "复盘啦「涨停原因」对照（#11）：顶上一排原因芯片（ChipGroup，多选，不选是全部，芯片写家数）；下面是 DataGrid（treegrid）：组头行（展开箭头、粗体原因、次要灰的家数与「最高 N 板」，底色 selectable 组底色），展开后是组内个股（徽标 + 代码 + 名称、连板、涨跌幅、首封、封单、成交额、其他原因 Tag）。分组与次序照调用方给的，件不归类、不排序。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/change-text",
+        "@katana/chip-group",
+        "@katana/cn",
+        "@katana/data-grid",
+        "@katana/quant-format",
+        "@katana/symbol-mark",
+        "@katana/tag"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/reason-group-list/reason-group-list.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/reason-group-list/reason-group-list.tsx"
+        },
+        {
+          "path": "src/blocks/reason-group-list/reason-group-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/reason-group-list/reason-group-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "board-strength-rank",
+      "type": "registry:component",
+      "title": "Board Strength Rank",
+      "description": "开盘啦「板块强度」对照（#11）：DataGrid 一行一个板块，按调用方给的强度从高到低（同分保持传入次序）：名次（粗体）与名次变化（▲n 升、▼n 降、新上榜，跟上一期名次比）、板块名、强度数值、行内强度线（Sparkline line 画法、96 × 20、不交互）、涨停只数、涨跌幅。强度口径不在件里。",
+      "registryDependencies": [
+        "@katana/change-text",
+        "@katana/cn",
+        "@katana/data-grid",
+        "@katana/quant-format",
+        "@katana/sparkline"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/board-strength-rank/board-strength-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/board-strength-rank/board-strength-model.ts"
+        },
+        {
+          "path": "src/blocks/board-strength-rank/board-strength-rank.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/board-strength-rank/board-strength-rank.tsx"
+        }
+      ]
+    },
+    {
+      "name": "net-buy-bar",
+      "type": "registry:component",
+      "title": "Net Buy Bar",
+      "description": "开盘啦「实时 / 深度龙虎榜」对照（#11）：一行一只上榜票：徽标与代码、涨跌幅、零轴居中的净买条（净买往右、净卖往左，6px 高）、净买额（带正负号）、买入与卖出合计，行下一行小字写上榜原因；点开一行摊开席位对照：左买入前几、右卖出前几，每席一根 4px 条（按这只票的席位最大额）与金额，机构席位带「机构」描边 Tag。零轴条与对称刻度照 AttributionBars 的模型（刻度 = 最大 |净买| 向上取到一位有效数字）。",
+      "registryDependencies": [
+        "@katana/attribution-bars",
+        "@katana/change-text",
+        "@katana/cn",
+        "@katana/quant-format",
+        "@katana/symbol-mark",
+        "@katana/tag"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/net-buy-bar/net-buy-bar.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/net-buy-bar/net-buy-bar.tsx"
+        },
+        {
+          "path": "src/blocks/net-buy-bar/net-buy-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/net-buy-bar/net-buy-model.ts"
         }
       ]
     },
