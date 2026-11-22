@@ -6153,6 +6153,328 @@ export const PAGES: readonly DocPage[] = [
     ],
   },
   {
+    id: 'mae-mfe-scatter',
+    group: 'quant',
+    cardHeight: 760,
+    title: 'MaeMfeScatter MAE / MFE 散点',
+    summary:
+      '每笔交易一个点：横轴是持仓期间的最大浮亏（MAE）或最大浮盈（MFE）的大小，纵轴是这笔最终盈亏，赢是圆、亏是方（不只靠颜色），可切百分比与金额。看 MAE：赢单从没亏多深、亏单一路亏穿，止损就能收紧；看 MFE：亏单曾浮盈很多，止盈放得太远。每笔的 MAE、MFE 两套单位由调用方给（件不算，要逐笔行情）；移到点上或方向键走点，读数区写这一笔，底下是赢亏两侧的平均偏移。新做；参照 MultiCharts 的 Strategy Performance Report，演示数据是固定种子合成的。',
+    exports: ['MaeMfeScatter', 'excursionPoints', 'summarizeExcursions', 'outwardDomain'],
+    props: [
+      {
+        part: 'MaeMfeScatter',
+        note: '文字与数值写法全由 props 传。横轴与单位都可受控（axis / unit + 回调），不给用内部状态。',
+        rows: [
+          {
+            name: 'trades',
+            type: 'ExcursionTrade[]',
+            desc: '{ id, pnl, pnlPct, mae, maePct, mfe, mfePct }：金额与百分比（小数）两套都要；mae ≤ 0、mfe ≥ 0，画图取绝对值。',
+          },
+          { name: 'label', type: 'string', desc: '整张图的读屏名。' },
+          { name: 'axis / onAxisChange', type: "'mae' | 'mfe'", default: 'mae', desc: '横轴看哪个。' },
+          { name: 'unit / onUnitChange', type: "'amount' | 'percent'", default: 'percent', desc: '金额还是百分比。' },
+          {
+            name: 'formatAmount / formatPercent',
+            type: '(value: number) => string',
+            desc: '两种单位的写法（带不带币种、正负号）。',
+          },
+          { name: 'labels', type: 'MaeMfeScatterLabels', desc: '开关、纵轴名、赢亏、平均偏移、空读数的文字。' },
+          {
+            name: 'actionLabels / tableLabel / tableHead / source / onExport / onFullscreen',
+            type: 'ChartViewProps',
+            desc: '同其他图：三个图工具的名字、表格视图、来源一行、导出与全屏的回调。',
+          },
+        ],
+      },
+    ],
+    states: [
+      '默认：横轴 MAE，百分比；赢是圆、亏是方，持平是空心圆。',
+      '悬停或聚焦后方向键：选中最近的点，白环加粗，读数区写这一笔的盈亏、MAE、MFE（金额与百分比）。',
+      '切横轴或单位：选中清空，点与刻度重算。',
+      '某一侧没有单（比如全是赢单）：那一侧的平均偏移不写。',
+    ],
+    donts: [
+      '不要在件里算 MAE / MFE：它要逐笔行情，由回测内核给。',
+      '不要只靠颜色分赢亏：形状不同，读数里也有数。',
+      '不要超过几千笔：每笔是一个 SVG 元素，更多的先在调用方聚合。',
+    ],
+    composition:
+      'MaeMfeScatter\n  头（横轴开关 · 单位开关 · 赢亏图例与笔数 · 表格视图/导出/全屏）\n  svg role=group（网格 · 零线 · 点）\n  读数区（选中那一笔）· 赢亏平均偏移\n  来源行',
+    keys: [
+      ['Tab', '进图'],
+      ['← →', '沿横轴走到上一个 / 下一个点'],
+      ['Home / End', '到最左 / 最右的点'],
+      ['Esc', '取消选中'],
+    ],
+  },
+  {
+    id: 'underwater-chart',
+    group: 'quant',
+    cardHeight: 760,
+    title: 'UnderwaterChart 水下回撤图',
+    summary:
+      '权益距历史最高的回撤百分比随时间的面积图（点阵纹理，不用实色），标出最大回撤段（前高到恢复的一块底色）、谷底读数，顶上写深度、前高到谷底与恢复用时；到末点还没回到前高时写「尚未恢复」，这一段改琥珀底。横轴复用 EquityCurve 的 timeX 与默认刻度、同样的 xDomain / xTicks / formatTime 写法，左侧留白一致，叠着放时同一时刻落在同一列。EquityCurve 里已有镜像回撤，但没有最大回撤段与恢复时长，所以这里新做一件，不改它。数据由调用方给（drawdown 小数 ≤ 0）。',
+    exports: ['UnderwaterChart', 'maxDrawdownSegment', 'underwaterShare'],
+    props: [
+      {
+        part: 'UnderwaterChart',
+        note: '文字与数值写法全由 props 传。与 EquityCurve 对齐：两边传同一对 xDomain、同一个 formatTime（和 xTicks）。',
+        rows: [
+          { name: 'points', type: '{ time, drawdown }[]', desc: 'time 是毫秒时刻；drawdown 是小数，≤ 0，创新高时 0。' },
+          { name: 'title / label', type: 'string', desc: '标题与整张图的读屏名。' },
+          { name: 'xDomain', type: '[start, end]', desc: '横轴定义域（毫秒）；不给取 points 首末。落在外面的点不画。' },
+          { name: 'xTicks', type: '(start, end) => { time, label }[]', desc: '同 EquityCurve；不给均分 5 个。' },
+          {
+            name: 'formatTime / formatPercent / formatDuration',
+            type: 'function',
+            desc: '横轴与读数、回撤百分比、时长的写法。',
+          },
+          {
+            name: 'labels',
+            type: 'UnderwaterChartLabels',
+            desc: '回撤、最大回撤、前高到谷底、恢复、尚未恢复、没有回撤的文字。',
+          },
+          {
+            name: 'actionLabels / tableLabel / tableHead / source / onExport / onFullscreen',
+            type: 'ChartViewProps',
+            desc: '同其他图。',
+          },
+        ],
+      },
+    ],
+    states: [
+      '默认：点阵面加细线，最大回撤段淡底色，谷底标读数。',
+      '悬停或聚焦后 ← →：十字线与 LCD tooltip 写时刻与回撤。',
+      '到末点还没恢复：恢复一栏写「尚未恢复」，段底色改琥珀。',
+      '一直创新高：只留 0 线，头里写「没有回撤」。',
+    ],
+    donts: [
+      '不要把回撤画成实色面：用纹理。',
+      '不要在面上用涨跌色：跌色只混进纹理与细线。',
+      '不要自己换横轴写法：和权益曲线用同一组 xDomain 与 formatTime，才对得齐。',
+    ],
+    composition:
+      'UnderwaterChart\n  头（标题 · 图例 · 最大回撤 / 前高到谷底 / 恢复 · 表格视图/导出/全屏）\n  图（网格 · 最大回撤段 · 回撤面 · 谷底读数 · 十字线与 LCD tooltip）\n  横轴 · 来源行',
+    keys: [
+      ['← →', '在图上扫读一点（Shift 三点）'],
+      ['Home / End', '扫读到头 / 尾'],
+      ['Esc', '清除扫读点'],
+    ],
+  },
+  {
+    id: 'period-returns-table',
+    group: 'quant',
+    cardHeight: 760,
+    title: 'PeriodReturnsTable 周期收益表',
+    summary:
+      '年 × 月的收益热力表，可切季与周，行尾是年度合计。调用方给细粒度的收益样本（日收益或逐笔），件按周期复利聚合（时区由调用方给，周按 ISO 周）。色阶是涨跌发散色，两端是发散色 token、零附近中性灰，没有彩虹色阶；涨跌色只给年度合计与读数的字。周视图格子窄，数字收进读数区与 title。日历热力图（CalendarHeatmap）是按日的月历格，没有年度合计也不聚合，所以这里新做一件，色用同一套发散 token。',
+    exports: ['PeriodReturnsTable', 'aggregateReturns', 'compound', 'isoWeek'],
+    props: [
+      {
+        part: 'PeriodReturnsTable',
+        note: '文字与数值写法全由 props 传；周期可受控。',
+        rows: [
+          {
+            name: 'samples',
+            type: '{ time, value }[]',
+            desc: 'time 毫秒时刻，value 小数收益；件把同一周期的样本复利。',
+          },
+          { name: 'unit / onUnitChange', type: "'month' | 'quarter' | 'week'", default: 'month', desc: '周期。' },
+          {
+            name: 'utcOffsetMinutes',
+            type: 'number',
+            default: '0',
+            desc: '时区相对 UTC 的分钟数（东八区 480）；决定样本落进哪个月。',
+          },
+          {
+            name: 'formatPercent / formatPeriod',
+            type: 'function',
+            desc: '收益的写法、读数里一格的名字（如「2026 年 3 月」）。',
+          },
+          {
+            name: 'scaleLimit',
+            type: 'number',
+            desc: '着色上限（绝对值，小数）；不给取表里最大格。固定它几张表可用同一把尺。',
+          },
+          { name: 'labels', type: 'PeriodReturnsLabels', desc: '开关、列头（月名、季名、第几周）、全年、空态的文字。' },
+        ],
+      },
+    ],
+    states: [
+      '默认：月视图，每格写收益，行尾加粗写全年合计。',
+      '没有样本的周期是空格（不是 0%）；收益在零附近的格子中性灰。',
+      '周视图：52 列放不下数字，格子只留颜色，表格自己横向滚动，数在读数区与 title。',
+      '悬停或聚焦一格：读数区写它的名字与收益。',
+    ],
+    donts: [
+      '不要用彩虹色阶：只有涨跌两端和中间灰。',
+      '不要把年度合计画进色阶的上限：一年的合计会把月份压成灰。',
+      '不要在件里猜时区：样本归哪个月由 utcOffsetMinutes 定。',
+    ],
+    composition:
+      'PeriodReturnsTable\n  头（月/季/周开关 · 色条）\n  table（年 × 周期的格 · 行尾全年合计）\n  读数区 · 来源行',
+    keys: [
+      ['Tab', '进表，停在一格上'],
+      ['方向键', '在格间走'],
+      ['Home / End', '到行首 / 行尾'],
+    ],
+  },
+  {
+    id: 'param-surface-heatmap',
+    group: 'quant',
+    cardHeight: 900,
+    title: 'ParamSurfaceHeatmap 参数曲面热力图',
+    summary:
+      '优化结果的参数平面：两个参数为横纵轴、目标值（可切）为色，悬停或聚焦一格，右侧读数区列出这一格全部参数与全部指标；最优格加琥珀环，周围一圈用细框标出，并算最优格邻域的均值、方差与保留率（邻均值 ÷ 最优值）——孤峰过拟合一眼能看出来（调用方给 spikeBelow 就标「孤峰」）。参数多于两个时选两轴，其余固定为切片，每个一个下拉。ParamScatter 是自由散点（点没有网格邻接关系、没有切片与邻域），这里要的是格子邻接，所以新做一件；最优与色阶的做法与它一致（暗灰到亮灰、跨 0 用涨跌发散色）。',
+    exports: ['ParamSurfaceHeatmap', 'sliceGrid', 'bestCell', 'surfaceNeighborhood', 'isSpike', 'resolveSlice'],
+    props: [
+      {
+        part: 'ParamSurfaceHeatmap',
+        note: '数据（每组参数的各项指标）由调用方给，件不算优化。轴、目标值、切片都可受控。',
+        rows: [
+          {
+            name: 'points',
+            type: 'SurfacePoint[]',
+            desc: '{ id, params: {key: 数}, metrics: {key: 数 | null} }；没跑出结果的指标传 null。',
+          },
+          { name: 'params', type: '{ key, name, format? }[]', desc: '参数表：可选做轴的、切片的都在这里。' },
+          {
+            name: 'metrics',
+            type: '{ key, name, format, goal, formatSpread? }[]',
+            desc: '指标表：goal 决定最优格与色阶方向（max 越大越好、min 越小越好）。',
+          },
+          {
+            name: 'axes / onAxesChange',
+            type: '[xKey, yKey]',
+            desc: '两根轴的参数；选到另一根轴在用的参数时两轴对调。',
+          },
+          { name: 'metric / onMetricChange', type: 'string', desc: '当前目标值的 key。' },
+          {
+            name: 'slice / onSliceChange',
+            type: 'Record<string, number>',
+            desc: '其余参数固定在哪；不给各取第一个取值。',
+          },
+          { name: 'radius', type: 'number', default: '1', desc: '邻域半径（格）：1 即八邻。' },
+          {
+            name: 'spikeBelow',
+            type: 'number',
+            desc: '保留率低于它标「孤峰」；不给就不判，只显示数（阈值是策略判断，件里不写死）。',
+          },
+          {
+            name: 'formatRatio / labels',
+            type: 'function / ParamSurfaceLabels',
+            desc: '保留率的写法；轴名、读数区各项、空态的文字。',
+          },
+        ],
+      },
+    ],
+    states: [
+      '默认：前两个参数为轴，第一个指标为色；最优格琥珀环，它的邻格细琥珀框。',
+      '悬停、聚焦或点一格（再点取消）：读数区列这格全部参数与指标；没选时读数区看最优格。',
+      '右下「最优格的邻域」：邻格数、邻域均值、邻域方差、保留率；保留率低于 spikeBelow 标「孤峰」。',
+      '格子多于 14 列时只留颜色不写字；没有结果的格是空心框。',
+    ],
+    donts: [
+      '不要只看最优值：旁边的邻域稳定度才说明它是平台还是孤峰。',
+      '不要在件里写死孤峰阈值：由调用方按策略定。',
+      '不要在这里跑优化：件只画结果。',
+    ],
+    composition:
+      'ParamSurfaceHeatmap\n  头（横轴 · 纵轴 · 目标值开关 · 各切片下拉）\n  网格 role=grid（行头 · 格 role=gridcell · 横轴刻度）· 色条\n  读数区（这一格全部参数与指标）· 最优格的邻域\n  来源行',
+    keys: [
+      ['Tab', '进图，停在一格上'],
+      ['方向键', '走格（到头不绕回）'],
+      ['Home / End', '到行首 / 行尾'],
+      ['Enter / 空格', '钉住或取消当前格'],
+      ['Esc', '取消钉住'],
+    ],
+  },
+  {
+    id: 'walk-forward-matrix',
+    group: 'quant',
+    cardHeight: 840,
+    title: 'WalkForwardMatrix 步进窗口矩阵',
+    summary:
+      '步进（Walk-Forward）优化的窗口表：每个窗口一行——样本内与样本外区间、这个窗口里选中的参数、样本外收益、通过与否，行首一条共用时间轴的小条（灰是样本内、亮而高是样本外），锚定模式样本内条都从同一处起，滚动模式整条后移。底部汇总通过窗口、样本外盈利占比、样本内与样本外年化与步进效率（样本外年化 ÷ 样本内年化；年化取各窗口的平均，不把重叠的样本内区间复利）。锚定与滚动各一套窗口由调用方给，件里切换；「通过」的判据是调用方的策略。新做。',
+    exports: ['WalkForwardMatrix', 'summarizeWindows', 'annualize'],
+    props: [
+      {
+        part: 'WalkForwardMatrix',
+        note: '件只汇总调用方给的每窗口结果，不切窗口、不优化。',
+        rows: [
+          {
+            name: 'modes',
+            type: '{ rolling?: WalkForwardWindow[]; anchored?: WalkForwardWindow[] }',
+            desc: '两种模式的窗口集；只给一种就不显示切换。窗口：{ id, inStart, inEnd, outStart, outEnd, params, inReturn, outReturn, passed }。',
+          },
+          {
+            name: 'mode / onModeChange',
+            type: "'rolling' | 'anchored'",
+            desc: '当前模式；不给用内部状态（有锚定先显示锚定）。',
+          },
+          {
+            name: 'formatDate / formatPercent / formatRatio',
+            type: 'function',
+            desc: '区间端点、收益、占比与效率的写法。',
+          },
+          { name: 'labels', type: 'WalkForwardMatrixLabels', desc: '表头、通过与否、汇总各项与空态的文字。' },
+        ],
+      },
+    ],
+    states: [
+      '默认：表头加每窗口一行；通过用对勾加「通过」，没通过用叉加「未通过」，不只靠颜色。',
+      '样本外收益的涨跌色只给这一格的字。',
+      '样本内年化不为正：步进效率没有意义，写 noValue。',
+      '没有窗口：写 empty。',
+    ],
+    donts: [
+      '不要在件里定「通过」的判据：它是策略的判断，由调用方给 passed。',
+      '不要拿首尾相接复利代替各窗口年化的平均：锚定模式的样本内区间重叠。',
+      '不要拿步进效率单独当结论：和稳健性门的其他判定一起看。',
+    ],
+    composition:
+      'WalkForwardMatrix\n  头（锚定/滚动开关 · 图例）\n  table（窗口 · 时间轴小条 · 样本内 · 样本外 · 选中参数 · 样本外收益 · 结果）\n  汇总（窗口数 · 通过 · 盈利占比 · 样本内年化 · 样本外年化 · 步进效率）\n  来源行',
+    keys: [['Tab', '进表后按表格语义读；开关用方向键切换']],
+  },
+  {
+    id: 'robustness-gate',
+    group: 'quant',
+    cardHeight: 520,
+    title: 'RobustnessGate 稳健性门',
+    summary:
+      '一组判定条：每条一行写名字、实测值、比较符号与阈值、一根小条（条长是实测值、一道刻线是阈值）与通过状态；全部通过才过门，有一条失败或没测出来就不过（未知不当通过放行）。阈值、比较方向（≥ ≤ > <）与数值写法全由调用方传，件里没有任何写死的数字。状态用文字加图标，不只靠颜色。新做；设计卡在 KATANAview 的 RobustnessGate。',
+    exports: ['RobustnessGate', 'evaluateCheck', 'summarizeGate'],
+    props: [
+      {
+        part: 'RobustnessGate',
+        note: '阈值与口径全由调用方给。',
+        rows: [
+          {
+            name: 'checks',
+            type: 'RobustnessCheck[]',
+            desc: '{ id, name, value, threshold, op, format?, hint? }：op 是 gte / gt / lte / lt；value 为 null 是「未测出」。',
+          },
+          { name: 'label / title', type: 'string / ReactNode', desc: '整组读屏名与标题。' },
+          {
+            name: 'labels',
+            type: 'RobustnessGateLabels',
+            desc: '三列小标题、通过 / 未通过 / 未测出、过门 / 未过门、汇总写法（函数）、空态。',
+          },
+        ],
+      },
+    ],
+    states: [
+      '全部通过：头里「过门」加对勾。',
+      '有失败：「未过门」加叉，失败的行写「未通过」。',
+      '有未测出：那行写「未测出」，整组不过门。',
+      '没有判定条：写 empty，不过门。',
+    ],
+    donts: ['不要在件里写死阈值：它们是策略判断。', '不要把未测出当通过。', '不要只靠颜色：状态有字有图标。'],
+    composition:
+      'RobustnessGate\n  头（标题 · 过门/未过门 · 通过计数）\n  列表（名字 · 实测值 比较符 阈值 · 小条与阈值刻线 · 状态）\n  来源行',
+    keys: [],
+  },
+  {
     id: 'param-scatter',
     group: 'quant',
     cardHeight: 800,

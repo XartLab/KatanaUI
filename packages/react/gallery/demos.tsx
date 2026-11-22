@@ -101,6 +101,14 @@ import { FlowSankeyDemo, VintageSeriesDemo } from './pages/flows.tsx'
 import { KeyStatsDemo, PeerCardsDemo, PerformanceStripDemo, RangeBarTvDemo, WatchlistDemo } from './pages/overview.tsx'
 import { ParamScatterDemo, StrategyReportDemo } from './pages/strategy.tsx'
 import { TransmissionChainDemo } from './pages/research.tsx'
+import {
+  MaeMfeScatterDemo,
+  ParamSurfaceHeatmapDemo,
+  PeriodReturnsTableDemo,
+  RobustnessGateDemo,
+  UnderwaterChartDemo,
+  WalkForwardMatrixDemo,
+} from './pages/research-report.tsx'
 import { WhiteboardDemo } from './pages/whiteboard.tsx'
 import {
   DataGridDemo,
@@ -398,6 +406,12 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'transmission-chain': TransmissionChainDemo,
   whiteboard: WhiteboardDemo,
   'param-scatter': ParamScatterDemo,
+  'mae-mfe-scatter': MaeMfeScatterDemo,
+  'underwater-chart': UnderwaterChartDemo,
+  'period-returns-table': PeriodReturnsTableDemo,
+  'param-surface-heatmap': ParamSurfaceHeatmapDemo,
+  'walk-forward-matrix': WalkForwardMatrixDemo,
+  'robustness-gate': RobustnessGateDemo,
   'flow-sankey': FlowSankeyDemo,
   'vintage-series': VintageSeriesDemo,
   'system-monitor': SystemMonitorDemo,
