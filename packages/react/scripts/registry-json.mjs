@@ -277,6 +277,9 @@ function collectItems() {
       'uptime-bars',
       // #77：品种搜索（组件与纯函数一起装）。
       'symbol-search',
+      // 面板页签组与添加组件的目录（2026-11-19）。
+      'panel-tabs',
+      'component-catalog',
     ])
       add(
         dir,

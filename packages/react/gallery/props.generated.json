@@ -4644,6 +4644,11 @@
       "source": "src/primitives/button.tsx",
       "props": []
     },
+    "CATALOG_ITEM_MIME": {
+      "kind": "value",
+      "source": "src/blocks/component-catalog/component-catalog.tsx",
+      "props": []
+    },
     "CN_AXIS_MINUTES": {
       "kind": "value",
       "source": "src/cn/session.ts",
@@ -5037,6 +5042,113 @@
     "CalendarItem": {
       "kind": "type",
       "source": "src/quant/event-calendar-types.ts",
+      "props": []
+    },
+    "CatalogCategory": {
+      "kind": "type",
+      "source": "src/blocks/component-catalog/component-catalog-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "CatalogGroup": {
+      "kind": "type",
+      "source": "src/blocks/component-catalog/component-catalog-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "items",
+          "type": "readonly CatalogItem[]",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "CatalogItem": {
+      "kind": "type",
+      "source": "src/blocks/component-catalog/component-catalog-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "category",
+          "type": "string",
+          "required": true,
+          "description": "Id of one of the categories."
+        },
+        {
+          "name": "kind",
+          "type": "CatalogKind",
+          "required": false,
+          "description": "Which stock thumbnail to draw when no thumbnail node is given."
+        },
+        {
+          "name": "keywords",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Extra words the search matches (aliases, English names)."
+        },
+        {
+          "name": "inUse",
+          "type": "boolean",
+          "required": false,
+          "description": "Already placed in the workspace: drawn with a tick."
+        },
+        {
+          "name": "unavailable",
+          "type": "string",
+          "required": false,
+          "description": "Why it cannot be added here (no data for this market, say); drawn greyed with this as its hint."
+        },
+        {
+          "name": "recommended",
+          "type": "boolean",
+          "required": false,
+          "description": "Fits what the user is looking at now; listed first under the recommended heading."
+        },
+        {
+          "name": "pairsWith",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Kinds of component this one goes well beside (an order book beside a chart); recommended when the context is one of them."
+        }
+      ]
+    },
+    "CatalogKind": {
+      "kind": "type",
+      "source": "src/blocks/component-catalog/component-catalog-model.ts",
       "props": []
     },
     "ChainDirection": {
@@ -6540,6 +6652,114 @@
           "type": "string",
           "required": true,
           "description": "写好的读数（59.2M）。"
+        }
+      ]
+    },
+    "ComponentCatalog": {
+      "kind": "component",
+      "source": "src/blocks/component-catalog/component-catalog.tsx",
+      "props": [
+        {
+          "name": "items",
+          "type": "readonly CatalogItem[]",
+          "required": true,
+          "description": "Everything that can be added, with its category, in-use and availability flags."
+        },
+        {
+          "name": "categories",
+          "type": "readonly CatalogCategory[]",
+          "required": true,
+          "description": "The categories, in the order their groups appear."
+        },
+        {
+          "name": "thumbnails",
+          "type": "Readonly<Record<string, ReactNode>>",
+          "required": false,
+          "description": "Thumbnail node per item id; items without one get a stock drawing by kind."
+        },
+        {
+          "name": "context",
+          "type": "string",
+          "required": false,
+          "description": "Kind of the component the user is adding next to (the selected panel tab's kind); items that pair with it are recommended."
+        },
+        {
+          "name": "onToggle",
+          "type": "(id: string, add: boolean) => void",
+          "required": true,
+          "description": "Called when a card is clicked: `add` is true for a card not yet in the workspace, false to remove one that is."
+        },
+        {
+          "name": "onReset",
+          "type": "() => void",
+          "required": false,
+          "description": "Called when the reset button is clicked; leave out to hide it."
+        },
+        {
+          "name": "labels",
+          "type": "ComponentCatalogLabels",
+          "required": true,
+          "description": "All visible text and accessible names."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the catalog."
+        }
+      ]
+    },
+    "ComponentCatalogLabels": {
+      "kind": "type",
+      "source": "src/blocks/component-catalog/component-catalog.tsx",
+      "props": [
+        {
+          "name": "title",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "hint",
+          "type": "string",
+          "required": false,
+          "description": "One line under the title."
+        },
+        {
+          "name": "reset",
+          "type": "string",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "search",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "all",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "recommended",
+          "type": "string",
+          "required": false,
+          "description": "Heading of the recommended group; leave out to not show one."
+        },
+        {
+          "name": "empty",
+          "type": "string",
+          "required": true,
+          "description": "Shown when the search finds nothing."
+        },
+        {
+          "name": "inUse",
+          "type": "string",
+          "required": true,
+          "description": "Appended to the accessible name of a card that is already in the workspace."
         }
       ]
     },
@@ -24564,6 +24784,11 @@
       "source": "src/katana/page-preloader.tsx",
       "props": []
     },
+    "PANEL_TAB_MIME": {
+      "kind": "value",
+      "source": "src/blocks/panel-tabs/panel-tabs.tsx",
+      "props": []
+    },
     "PagePreloader": {
       "kind": "component",
       "source": "src/katana/page-preloader.tsx",
@@ -25271,6 +25496,234 @@
       "kind": "type",
       "source": "src/blocks/panel-frame/panel-frame.tsx",
       "props": []
+    },
+    "PanelTab": {
+      "kind": "type",
+      "source": "src/blocks/panel-tabs/panel-tabs.tsx",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "icon",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Small node before the name (an icon or a status dot)."
+        },
+        {
+          "name": "badge",
+          "type": "string",
+          "required": false,
+          "description": "Small text after the name, for example a count."
+        },
+        {
+          "name": "closable",
+          "type": "boolean",
+          "required": false,
+          "description": "False keeps the tab from being removed (no × and Delete does nothing)."
+        },
+        {
+          "name": "kind",
+          "type": "string",
+          "required": false,
+          "description": "What sort of component this is (chart, table, form…); passed to onAdd so the catalog can recommend companions."
+        },
+        {
+          "name": "tools",
+          "type": "ReactNode",
+          "required": false,
+          "description": "This component's own tools, shown in the bar only while its tab is selected."
+        },
+        {
+          "name": "context",
+          "type": "string",
+          "required": false,
+          "description": "What it is showing now, drawn after the name while selected (a symbol and interval, say)."
+        },
+        {
+          "name": "status",
+          "type": "PanelTabStatus",
+          "required": false,
+          "description": "Data state, drawn as a dot before the name: live, stale (not updating) or error."
+        }
+      ]
+    },
+    "PanelTabs": {
+      "kind": "component",
+      "source": "src/blocks/panel-tabs/panel-tabs.tsx",
+      "props": [
+        {
+          "name": "tabs",
+          "type": "readonly PanelTab[]",
+          "required": true,
+          "description": "The tabs, in order."
+        },
+        {
+          "name": "activeId",
+          "type": "string",
+          "required": true,
+          "description": "Id of the selected tab."
+        },
+        {
+          "name": "onSelect",
+          "type": "(id: string) => void",
+          "required": true,
+          "description": "Called when a tab is chosen."
+        },
+        {
+          "name": "onClose",
+          "type": "(id: string) => void",
+          "required": false,
+          "description": "Called when a tab's × is clicked or Delete is pressed on it; leave out to make tabs permanent."
+        },
+        {
+          "name": "onAdd",
+          "type": "(kind: string | undefined) => void",
+          "required": false,
+          "description": "Called when the + is clicked, with the selected tab's kind, to open the component catalog; leave out to hide it."
+        },
+        {
+          "name": "onReorder",
+          "type": "(id: string, targetId: string) => void",
+          "required": false,
+          "description": "Moves tab `id` to where `targetId` is (drag within the bar, Alt+arrows); leave out to fix the order."
+        },
+        {
+          "name": "actions",
+          "type": "ReactNode",
+          "required": false,
+          "description": "This panel's own actions at the right end (settings, pop out)."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the tab list."
+        },
+        {
+          "name": "labels",
+          "type": "PanelTabsLabels",
+          "required": false,
+          "description": "Accessible names of the buttons."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the bar."
+        }
+      ]
+    },
+    "PanelTabsLabels": {
+      "kind": "type",
+      "source": "src/blocks/panel-tabs/panel-tabs.tsx",
+      "props": [
+        {
+          "name": "close",
+          "type": "string",
+          "required": false,
+          "description": "Accessible name of a tab's remove button, with {name}."
+        },
+        {
+          "name": "add",
+          "type": "string",
+          "required": false,
+          "description": "Accessible name of the add button."
+        },
+        {
+          "name": "more",
+          "type": "string",
+          "required": false,
+          "description": "Accessible name of the overflow button."
+        },
+        {
+          "name": "tools",
+          "type": "string",
+          "required": false,
+          "description": "Accessible name of the selected tab's tools group, with {name}."
+        },
+        {
+          "name": "status",
+          "type": "Partial<Record<PanelTabStatus, string>>",
+          "required": false,
+          "description": "Accessible names of the status dots."
+        }
+      ]
+    },
+    "PanelTabsProps": {
+      "kind": "type",
+      "source": "src/blocks/panel-tabs/panel-tabs.tsx",
+      "props": [
+        {
+          "name": "tabs",
+          "type": "readonly PanelTab[]",
+          "required": true,
+          "description": "The tabs, in order."
+        },
+        {
+          "name": "activeId",
+          "type": "string",
+          "required": true,
+          "description": "Id of the selected tab."
+        },
+        {
+          "name": "onSelect",
+          "type": "(id: string) => void",
+          "required": true,
+          "description": "Called when a tab is chosen."
+        },
+        {
+          "name": "onClose",
+          "type": "(id: string) => void",
+          "required": false,
+          "description": "Called when a tab's × is clicked or Delete is pressed on it; leave out to make tabs permanent."
+        },
+        {
+          "name": "onAdd",
+          "type": "(kind: string | undefined) => void",
+          "required": false,
+          "description": "Called when the + is clicked, with the selected tab's kind, to open the component catalog; leave out to hide it."
+        },
+        {
+          "name": "onReorder",
+          "type": "(id: string, targetId: string) => void",
+          "required": false,
+          "description": "Moves tab `id` to where `targetId` is (drag within the bar, Alt+arrows); leave out to fix the order."
+        },
+        {
+          "name": "actions",
+          "type": "ReactNode",
+          "required": false,
+          "description": "This panel's own actions at the right end (settings, pop out)."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the tab list."
+        },
+        {
+          "name": "labels",
+          "type": "PanelTabsLabels",
+          "required": false,
+          "description": "Accessible names of the buttons."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the bar."
+        }
+      ]
     },
     "ParallaxDirection": {
       "kind": "type",
@@ -44005,6 +44458,36 @@
       "kind": "function",
       "source": "src/quant/ridgeline-model.ts",
       "props": []
+    },
+    "groupCatalog": {
+      "kind": "function",
+      "source": "src/blocks/component-catalog/component-catalog-model.ts",
+      "props": [
+        {
+          "name": "category",
+          "type": "string | null",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "query",
+          "type": "string",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "recommendedName",
+          "type": "string",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "context",
+          "type": "string",
+          "required": false,
+          "description": ""
+        }
+      ]
     },
     "groupStations": {
       "kind": "function",
