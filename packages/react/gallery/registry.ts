@@ -5008,6 +5008,103 @@ export const PAGES: readonly DocPage[] = [
     ],
   },
   {
+    id: 'portfolio-run-grid',
+    group: 'blocks',
+    cardHeight: 420,
+    title: 'PortfolioRunGrid 组合运行表',
+    summary:
+      '前向测试的主表：一个策略跑在一组品种上，每个品种一行——持仓、浮动盈亏、已实现盈亏、占用风险资金、权益贡献、状态（灯加文字：运行 / 暂停 / 停新开 / 断流），行内「暂停 / 恢复」与「平掉这个品种」；顶上一行组合汇总（权益、可用资金、购买力、回撤，LCD 读数）。暂停的行整行变琥珀色、按钮换成「恢复」，「平掉」仍可点；空仓的行「平掉」灰掉。底座是 DataGrid 的只读表。动作只把被点的那一行交给调用方，件不下单、不认识任何引擎或交易所。功能参照 MultiCharts Portfolio Trader 的 Forward Testing 窗口（2026-11-21 读官方页面，界面细节未实看，待核对）。演示数据是编的。',
+    exports: ['PortfolioRunGrid'],
+    propParts: [
+      {
+        part: 'PortfolioRunGrid',
+        note: '数据、数字格式与全部文字由调用方传，包里没有语言与币种。onPause / onResume / onClose 收到被点的那一行（PortfolioRunRow）；没给对应回调，那个按钮灰掉。format 与 labels 要稳定的引用，换了就重建列。',
+      },
+    ],
+    states: [
+      '运行：绿灯加「运行」，行是普通底色。',
+      '暂停：琥珀灯、行底与左条变琥珀，按钮由「暂停」换成「恢复」；「平掉」照常可点。',
+      '停新开：强调色灯，行左一道强调色条；不再开新仓、已有仓位照常管理。',
+      '断流：红灯，行底与左条变红；暂停与平掉仍可点。',
+      '空仓：持仓为 0 的行「平掉」灰掉。',
+      '汇总项为 null：读数写「—」；回撤为负数时走跌色。',
+      '没有品种：表下面写 labels.empty。',
+    ],
+    donts: [
+      '不要指望件去下单或平仓：它只发回调，下单与确认在调用方。',
+      '不要只靠灯色表达状态：状态格永远带文字。',
+      '要看回测结果用 StrategyReport；这里是正在运行的品种。',
+      '不要把品种之外的东西（账户、策略）塞进行里；一行就是一个品种。',
+    ],
+    composition:
+      'PortfolioRunGrid\n  div（汇总，role=group）\n    Lcd × 4\n  DataGrid（只读表）\n    Led + 状态文字\n    Button × 2（暂停 / 恢复、平掉）',
+    keys: [
+      ['Tab', '在各行的按钮间依次移动'],
+      ['Enter / Space', '触发聚焦的按钮'],
+    ],
+  },
+  {
+    id: 'replay-transport',
+    group: 'blocks',
+    cardHeight: 300,
+    title: 'ReplayTransport 回放控制条',
+    summary:
+      '历史回放的操作条：播放 / 暂停、逐根、倍速选择（倍数列表由调用方传，件不写死）、可拖的进度条（Scrubber）、当前回放时刻读数（LCD）、「跳到时刻」输入、「按 N 个 tick 跳过」；多图共用一个时钟时写「同步中 · N 个面板」。件不走时钟：当前时刻与是否在播由 props 回来，用户的意图（播放、跳到哪、几倍速、跳几个 tick）经回调发出，时钟与数据在调用方的引擎里。时刻默认按 UTC 写 YYYY-MM-DD HH:MM:SS，formatTime / parseTime 可换。功能参照 MultiCharts Data Replay（2026-11-21 读官方功能页，控制条细节未实看，待核对）。演示的时钟与时间都是编的。',
+    exports: ['ReplayTransport'],
+    propParts: [
+      {
+        part: 'ReplayTransport',
+        note: 'time / start / end 是毫秒时间戳。onSeek 在拖动时连续触发，调用方按需节流。syncedPanels 大于 1 才显示「同步中」。全部文字经 labels 传。',
+      },
+    ],
+    states: [
+      '暂停：主按钮写「播放」。',
+      '播放中：主按钮写「暂停」，根上带 data-playing。',
+      '倍速：当前档按下；speed 不在 speeds 里时一档都不按下。',
+      '多图同步：syncedPanels > 1 时出灯加「同步中 · N 个面板」。',
+      '跳到时刻读不出：输入框标红并出提示（role=alert），不发 onSeek。',
+      '跳过 tick 数不是正整数：输入框标红，「跳过」灰掉。',
+      '禁用：整条按钮、输入与进度条不可操作，键位不响应。',
+    ],
+    donts: [
+      '不要在件里加定时器推进时间：时钟只有调用方一个，免得和引擎各算一份。',
+      '不要把倍速写死 1 2 5 10：能跑几倍是引擎的事，从 speeds 传。',
+      '要看一个品种当下的运行状态用 PortfolioRunGrid，不用它。',
+    ],
+    composition:
+      'ReplayTransport\n  Button × 2（播放 / 暂停、逐根）\n  ToggleGroup（倍速）\n  Lcd（时刻）\n  Led + 文字（同步中）\n  Scrubber（进度）\n  Input + Button × 2（跳到时刻、跳过 tick）',
+    keys: [
+      ['k', '播放 / 暂停（焦点不在输入框与进度条上时）'],
+      ['.', '逐根前进'],
+      ['[ / ]', '减速 / 加速一档'],
+      ['← →（在进度条上）', '走一小步；Shift 走十步'],
+      ['Home / End（在进度条上）', '到起点 / 终点'],
+      ['Enter（在输入框里）', '提交「跳到时刻」或「跳过 tick」'],
+    ],
+  },
+  {
+    id: 'run-mode-badge',
+    group: 'blocks',
+    cardHeight: 200,
+    title: 'RunModeBadge 运行模式徽标',
+    summary:
+      '一块小牌写清现在是哪种模式：模拟、回放、前向测试、实盘。四种样子分明、不混：模拟是虚线灰框，回放是蓝色细框加倒带图形，前向测试是绿色框加淡底与前进箭头，实盘是强调色实心底、粗字与外圈（最醒目，点缓缓呼吸，减弱动效偏好下不动）。每种带自己的图形，灰度或色盲下也分得出。可在词后带一小段补充文字（回放日期、账户名）。文字由调用方传。',
+    exports: ['RunModeBadge'],
+    propParts: [{ part: 'RunModeBadge', note: 'labels 给四种模式各一个词；同一个徽标只有一种模式。' }],
+    states: [
+      '模拟（paper）：灰、虚线框。',
+      '回放（replay）：蓝、倒带图形。',
+      '前向测试（forward）：绿、前进箭头、淡底。',
+      '实盘（live）：强调色实心底、粗字、外圈与呼吸的点。',
+    ],
+    donts: [
+      '不要让 fixture、模拟、回放、实盘共用一块牌或一种样子：用户必须一眼分出现在动的是真钱还是假的。',
+      '不要用它表达连接是否正常：那是状态灯的事。',
+    ],
+    composition: 'RunModeBadge\n  svg（图形，对读屏隐藏）\n  span（词）\n  span（补充文字，可省）',
+    keys: [],
+  },
+  {
     id: 'hypothesis-ledger',
     group: 'blocks',
     cardHeight: 640,
