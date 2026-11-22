@@ -84,7 +84,7 @@ function Panel({ id, front, top, zIndex, children, ...motionProps }: PanelProps)
       aria-hidden={present ? undefined : true}
       {...motionProps}
       transition={SPRING}
-      className="absolute inset-x-0 bottom-0 overflow-hidden rounded-[var(--radius-overlay)] border border-alpha-white-8 bg-surface-3 shadow-[0_18px_45px_-20px_rgba(0,0,0,0.6)]"
+      className="absolute inset-x-0 bottom-0 overflow-hidden rounded-[var(--radius-overlay)] border border-(color:--k-separable-secondary-borderColor) bg-(--k-surface-overlay-background) shadow-(--shadow-overlay)"
       style={{ top, zIndex }}
     >
       {children}
