@@ -937,6 +937,11 @@
           "target": "~/src/katana/ui/lib/chart/format/change.ts"
         },
         {
+          "path": "src/lib/chart/format/compact.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/lib/chart/format/compact.ts"
+        },
+        {
           "path": "src/lib/chart/format/decimal-step.ts",
           "type": "registry:lib",
           "target": "~/src/katana/ui/lib/chart/format/decimal-step.ts"
@@ -6362,9 +6367,14 @@
         "@katana/num",
         "@katana/popover",
         "@katana/quant-format",
+        "@katana/range-bar",
+        "@katana/rating-gauge-model",
+        "@katana/rating-text",
         "@katana/row-actions",
+        "@katana/sparkline",
         "@katana/symbol-mark",
         "@katana/text-measure",
+        "@katana/tone",
         "@katana/tone-text"
       ],
       "files": [

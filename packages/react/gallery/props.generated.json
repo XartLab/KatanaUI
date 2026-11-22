@@ -5901,7 +5901,43 @@
           "name": "suffix",
           "type": "string",
           "required": false,
-          "description": "pnl：写在数字后面的单位（USDT）。"
+          "description": "pnl、bar：写在数字后面的单位（USDT）；同 unit，留着向后兼容。"
+        },
+        {
+          "name": "unit",
+          "type": "string",
+          "required": false,
+          "description": "数字后面的单位（USD、USDT、倍）：单独渲染成小一号的次要色字（10px w500，照 TradingView 选股器），复制与导出时跟数字之间空一格。"
+        },
+        {
+          "name": "locale",
+          "type": "string",
+          "required": false,
+          "description": "compact、date：缩写与日期用哪种语言（en-US 是 K/M/B/T，zh-CN 是 万/亿）；省略时用 DataGrid 的 locale，再没有是 en-US。"
+        },
+        {
+          "name": "ratingLabels",
+          "type": "Readonly<Record<RatingLevel, string>>",
+          "required": false,
+          "description": "rating：五档的名字（文案由调用方传）；默认 Strong sell / Sell / Neutral / Buy / Strong buy。"
+        },
+        {
+          "name": "barMax",
+          "type": "number",
+          "required": false,
+          "description": "bar：给了就改画单边横条，满格对应这个值（相对成交量写 3 就是 3 倍满格），中性色、不分涨跌，给有大小没正负的量（#90）； 不给是带正负的居中条，长度按本列绝对值最大者归一（#109）。"
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": false,
+          "description": "spark、range：读屏名（「ALFA 30 日走势」）；省略时用格子的字。"
+        },
+        {
+          "name": "symbolParts",
+          "type": "readonly SymbolPart[]",
+          "required": false,
+          "description": "symbol：画哪几段，见 SymbolPart。"
         },
         {
           "name": "labels",
@@ -6307,6 +6343,42 @@
       "kind": "component",
       "source": "src/primitives/command.tsx",
       "props": []
+    },
+    "CompactFormat": {
+      "kind": "type",
+      "source": "src/lib/chart/format/compact.ts",
+      "props": [
+        {
+          "name": "locale",
+          "type": "string",
+          "required": false,
+          "description": "BCP 47 locale that picks the abbreviations (en-US: K/M/B/T, zh-CN: CJK myriad units); defaults to en-US."
+        },
+        {
+          "name": "digits",
+          "type": "number",
+          "required": false,
+          "description": "Decimal places of an abbreviated number; defaults to 2."
+        }
+      ]
+    },
+    "CompactNumber": {
+      "kind": "type",
+      "source": "src/lib/chart/format/compact.ts",
+      "props": [
+        {
+          "name": "number",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "suffix",
+          "type": "string",
+          "required": true,
+          "description": ""
+        }
+      ]
     },
     "CompareBar": {
       "kind": "component",
@@ -7393,7 +7465,13 @@
           "type": "GridDensity",
           "required": false,
           "default": "'default'",
-          "description": "Row height tier."
+          "description": "Row height tier: compact, default, relaxed for dense panel tables; comfortable (40px rows, 14px text, ruled) for full-page tables."
+        },
+        {
+          "name": "locale",
+          "type": "string",
+          "required": false,
+          "description": "Locale of compact numbers (K/M/B/T for en-US, CJK myriad units for zh-CN) and date columns; a column's format.locale wins."
         },
         {
           "name": "hideHeader",
@@ -7423,7 +7501,8 @@
           "name": "ruled",
           "type": "boolean",
           "required": false,
-          "description": "Draw a thin rule between rows."
+          "default": "density === 'comfortable'",
+          "description": "Draw a thin rule between rows; on by default for density comfortable."
         },
         {
           "name": "selectable",
@@ -7834,7 +7913,13 @@
           "name": "density",
           "type": "GridDensity",
           "required": false,
-          "description": "Row height tier."
+          "description": "Row height tier: compact, default, relaxed for dense panel tables; comfortable (40px rows, 14px text, ruled) for full-page tables."
+        },
+        {
+          "name": "locale",
+          "type": "string",
+          "required": false,
+          "description": "Locale of compact numbers (K/M/B/T for en-US, CJK myriad units for zh-CN) and date columns; a column's format.locale wins."
         },
         {
           "name": "hideHeader",
@@ -7864,7 +7949,7 @@
           "name": "ruled",
           "type": "boolean",
           "required": false,
-          "description": "Draw a thin rule between rows."
+          "description": "Draw a thin rule between rows; on by default for density comfortable."
         },
         {
           "name": "selectable",
@@ -27440,6 +27525,30 @@
       "source": "src/patterns/date-range-model.ts",
       "props": []
     },
+    "RangeValue": {
+      "kind": "type",
+      "source": "src/blocks/data-grid/columns.ts",
+      "props": [
+        {
+          "name": "low",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "high",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "value",
+          "type": "number",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
     "RansomNote": {
       "kind": "component",
       "source": "src/motion/text/ransom-note.tsx",
@@ -35277,6 +35386,11 @@
         }
       ]
     },
+    "SymbolPart": {
+      "kind": "type",
+      "source": "src/blocks/data-grid/columns.ts",
+      "props": []
+    },
     "SymbolValue": {
       "kind": "type",
       "source": "src/blocks/data-grid/columns.ts",
@@ -40656,6 +40770,24 @@
       "source": "src/quotes/treemap-model.ts",
       "props": []
     },
+    "compactNumber": {
+      "kind": "function",
+      "source": "src/lib/chart/format/compact.ts",
+      "props": [
+        {
+          "name": "locale",
+          "type": "string",
+          "required": false,
+          "description": "BCP 47 locale that picks the abbreviations (en-US: K/M/B/T, zh-CN: CJK myriad units); defaults to en-US."
+        },
+        {
+          "name": "digits",
+          "type": "number",
+          "required": false,
+          "description": "Decimal places of an abbreviated number; defaults to 2."
+        }
+      ]
+    },
     "compactParts": {
       "kind": "function",
       "source": "src/lib/chart/format/quantity.ts",
@@ -40887,6 +41019,11 @@
     "formatCompact": {
       "kind": "function",
       "source": "src/lib/chart/format/quantity.ts",
+      "props": []
+    },
+    "formatCompactNumber": {
+      "kind": "function",
+      "source": "src/lib/chart/format/compact.ts",
       "props": []
     },
     "formatCount": {

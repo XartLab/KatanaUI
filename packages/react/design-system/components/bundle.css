@@ -9597,7 +9597,7 @@ button.k-sysmon-link-body:focus-visible {
 }
 
 .k-grid-col button.is-sorted {
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .k-grid-resize {
@@ -10058,6 +10058,123 @@ button.k-sysmon-link-body:focus-visible {
 
 .k-grid[data-emphasis="hero"] .k-grid-cell {
   font-size: var(--text-body-size);
+}
+
+.k-grid-val {
+  text-overflow: ellipsis;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.k-grid-unit {
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-micro) var(--font-sans);
+  letter-spacing: 0;
+  font-weight: 500;
+}
+
+.k-grid-chip {
+  border-radius: var(--radius-control);
+  background: var(--k-container-subtle-background);
+  block-size: 24px;
+  color: var(--k-content-primary-foreground);
+  font: var(--text-data) var(--font-sans);
+  flex: none;
+  align-items: center;
+  padding: 0 6px;
+  font-weight: 600;
+  line-height: 1;
+  display: inline-flex;
+}
+
+.k-grid-fullname {
+  min-width: 0;
+  color: var(--k-content-body-foreground);
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.k-grid-bar.is-share {
+  border-radius: var(--radius-pill);
+  background: var(--k-container-track-background);
+  flex: 0 48px;
+  min-width: 16px;
+  height: 4px;
+  overflow: hidden;
+}
+
+.k-grid-bar.is-share > i {
+  background: var(--k-content-secondary-foreground);
+  left: 0;
+}
+
+@supports (color: color-mix(in lab, red, red)) {
+  .k-grid-bar.is-share > i {
+    background: var(--ds-c-111iv2s);
+  }
+}
+
+.k-grid-spark {
+  flex: 1;
+  block-size: 24px;
+  min-inline-size: 0;
+  display: block;
+}
+
+.k-grid-spark .k-spark {
+  height: 24px;
+}
+
+.k-grid-range {
+  flex: 1;
+  min-width: 0;
+}
+
+.k-grid-range .k-range-end {
+  flex: 0 0 7ch;
+}
+
+.k-grid-range .k-range-end.is-low {
+  align-items: flex-end;
+}
+
+.k-grid-range .k-range-end.is-high {
+  align-items: flex-start;
+}
+
+.k-grid[data-density="comfortable"] .k-grid-cell {
+  font-weight: calc(400 + var(--k-weight-adjust, 0));
+  font-size: round(nearest, calc(14px * var(--k-text-scale, 1)), 1px);
+  gap: 8px;
+  padding: 0 12px;
+}
+
+.k-grid[data-density="comfortable"] .k-grid-row {
+  scroll-margin-top: 49px;
+}
+
+.k-grid[data-density="comfortable"] .k-grid-col button, .k-grid[data-density="comfortable"] .k-grid-head-text {
+  font-weight: calc(400 + var(--k-weight-adjust, 0));
+  font-size: round(nearest, calc(13px * var(--k-text-scale, 1)), 1px);
+  padding: 0 12px;
+}
+
+.k-grid[data-density="comfortable"] .k-grid-col button.is-sorted {
+  font-weight: calc(500 + var(--k-weight-adjust, 0));
+}
+
+.k-grid[data-density="comfortable"] .k-grid-row > .k-grid-cell:first-child, .k-grid[data-density="comfortable"] .k-grid-col:first-child button, .k-grid[data-density="comfortable"] .k-grid-col:first-child .k-grid-head-text {
+  padding-inline-start: 20px;
+}
+
+.k-grid[data-density="comfortable"] .k-grid-head-name {
+  gap: 2px;
+  line-height: 16px;
+}
+
+.k-grid[data-density="comfortable"] .k-grid-head-sub {
+  font-size: inherit;
+  line-height: 16px;
 }
 
 .k-empty {
@@ -20528,6 +20645,7 @@ button.k-consensus-hash:focus-visible {
   --ds-c-t6f6aj: color-mix(in srgb, var(--pnl-up) 16%, transparent);
   --ds-c-xgdj0u: color-mix(in srgb, var(--pnl-down) 16%, transparent);
   --ds-c-1o5vtkd: color-mix(in srgb, var(--heat-color) calc(var(--heat, 0) * 25%), transparent);
+  --ds-c-111iv2s: color-mix(in srgb, var(--k-content-secondary-foreground) 75%, transparent);
   --ds-c-xr40fv: color-mix(in srgb, var(--signal-green) 16%, transparent);
   --ds-c-2bvhsz: color-mix(in srgb, var(--signal-red) 14%, transparent);
   --ds-c-19o6dqr: oklch(from var(--treemap-cell, var(--k-surface-sunken-background)) clamp(0, (.565 - l) * 1000, 1) 0 0);

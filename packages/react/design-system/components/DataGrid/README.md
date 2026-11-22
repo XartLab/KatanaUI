@@ -8,7 +8,7 @@
 
 ### DataGrid
 
-示例数据写死在页里，不是行情。行高档：compact 20、default 24、relaxed 32。没有 DataGridHost 时能点、能排序、能键盘选行，只是没有快捷键与标准右键项。
+示例数据写死在页里，不是行情。行高档：compact 20、default 24、relaxed 32（面板密表）、comfortable 40（整页表，表头 48、正文 14px、默认行间线，#90）。没有 DataGridHost 时能点、能排序、能键盘选行，只是没有快捷键与标准右键项。
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
@@ -48,12 +48,13 @@
 | `sortLocale` | `string` | — | Locale for sorting text columns (Intl.Collator); follows the runtime when omitted. |
 | `collapseColumns` | `boolean` | `true` | Priority columns (default true): at standard and hero emphasis, when the visible columns do not fit the container, the lowest-priority columns (GridColumn.priority; undeclared ones count up in declaration order) are collapsed and a "+N cols" capsule appears at the right end of the header; clicking it switches to horizontal scrolling with every column. |
 | `containerWidth` | `number` | — | Container width in px for the priority columns; measured with a ResizeObserver when omitted. |
-| `density` | `GridDensity` | `'default'` | Row height tier. |
+| `density` | `GridDensity` | `'default'` | Row height tier: compact, default, relaxed for dense panel tables; comfortable (40px rows, 14px text, ruled) for full-page tables. |
+| `locale` | `string` | — | Locale of compact numbers (K/M/B/T for en-US, CJK myriad units for zh-CN) and date columns; a column's format.locale wins. |
 | `hideHeader` | `boolean` | — | Do not draw the header (a two-column metrics table, say). |
 | `headExtra` | `(columnId: string) => ReactNode` | — | Extra content after the sort button in each column head (a search icon on the Symbol head, say): given per column id, null for none. |
 | `headEnd` | `ReactNode` | — | Content at the far right of the header (the "+ add column" button, wired to ColumnPicker); floats over the header end and takes no column. |
 | `autoRowHeight` | `boolean` | — | Row height follows the content (multi-line cells, buttons in rows): the density height is a minimum and the measured height wins; cell text may wrap. |
-| `ruled` | `boolean` | — | Draw a thin rule between rows. |
+| `ruled` | `boolean` | `density === 'comfortable'` | Draw a thin rule between rows; on by default for density comfortable. |
 | `selectable` | `boolean` | `true` | When false, clicking a row neither selects nor opens it and there is no hover tint; only keyboard movement and expanding remain (for tables of mostly buttons). |
 | `interactive` | `boolean` | `true` | Interactive (default true): rows can be clicked, selected and moved with the keyboard, with a context menu. |
 | `stretch` | `boolean` | — | Treat column widths as proportions: when the container is wider than the sum, the extra space is shared by width ratio; by default widths are fixed pixels. |
@@ -64,7 +65,7 @@
 
 ### 列类型 ColumnType
 
-数字类默认靠右，用等宽数字；pnl、change、side 用 ToneText 跟 data-updown 着色（红涨绿跌时互换）。bar 是以 0 为中线的居中条（正在右用涨色、负在左用跌色，长度按本列绝对值最大者归一，数字写在条旁；format 的 digits 与 suffix 同 pnl）。pill 是一格多枚短标签（值是字符串或 { label, tone } 的数组，tone 只有 up / down / muted / accent 四种，不传色值），一行放不下的按格子宽度收成「+n」、悬停的 title 写全部，format.maxPills 可再限个数。progress 是分子 / 分母加一条 3px 细条（值是 { done, total } 或 [done, total]，分母不是正数不画条，排序按比例）。任何列都可以再声明 heat: { domain, rank? }：格子底色按值深浅（跨 0 的 domain 里正数用涨色、负数用跌色，不跨 0 的按单边从最小到最大），rank 给了就在格子右上角写名次小字，不占行高行宽；颜色只由 token 给，不传色值。
+数字类默认靠右，用等宽数字；pnl、change、side 用 ToneText 跟 data-updown 着色（红涨绿跌时互换）。bar 是以 0 为中线的居中条（正在右用涨色、负在左用跌色，长度按本列绝对值最大者归一，数字写在条旁；format 的 digits 与 suffix 同 pnl）。pill 是一格多枚短标签（值是字符串或 { label, tone } 的数组，tone 只有 up / down / muted / accent 四种，不传色值），一行放不下的按格子宽度收成「+n」、悬停的 title 写全部，format.maxPills 可再限个数。progress 是分子 / 分母加一条 3px 细条（值是 { done, total } 或 [done, total]，分母不是正数不画条，排序按比例）。任何列都可以再声明 heat: { domain, rank? }：格子底色按值深浅（跨 0 的 domain 里正数用涨色、负数用跌色，不跨 0 的按单边从最小到最大），rank 给了就在格子右上角写名次小字，不占行高行宽；颜色只由 token 给，不传色值。#90 新增 percent、compact（K/M/B/T 或 万/亿）、rating、spark、range、date，复用 RatingText、Sparkline、RangeBar；bar 给了 format.barMax 改画单边中性横条（满格 = barMax，给相对成交量这类有大小没正负的量）；分类标签用 pill；format.unit 写小字单位。
 
 ### DataGridHost（经 DataGridHostProvider 提供）
 
