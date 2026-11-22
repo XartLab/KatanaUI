@@ -6411,6 +6411,7 @@
         "@katana/cn-streak-badge",
         "@katana/context-menu",
         "@katana/emphasis",
+        "@katana/grid-summary-row",
         "@katana/live",
         "@katana/menu-any",
         "@katana/menu-parts",
@@ -6464,11 +6465,6 @@
           "target": "~/src/katana/ui/blocks/data-grid/grid-menu.tsx"
         },
         {
-          "path": "src/blocks/data-grid/grid-summary-row.tsx",
-          "type": "registry:component",
-          "target": "~/src/katana/ui/blocks/data-grid/grid-summary-row.tsx"
-        },
-        {
           "path": "src/blocks/data-grid/host.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/blocks/data-grid/host.tsx"
@@ -6509,6 +6505,24 @@
           "path": "src/blocks/data-grid/column-set-tabs.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/blocks/data-grid/column-set-tabs.tsx"
+        }
+      ]
+    },
+    {
+      "name": "grid-summary-row",
+      "type": "registry:component",
+      "title": "Grid Summary Row",
+      "description": "DataGrid 的 summary 属性：表尾一到几行合计 / 均值 / 中位数，按列配聚合（sum、avg、min、max、median、count 或自己的函数），对全部行算；跟表同一份列宽与固定列，横向滚动跟着走、纵向粘在底边。字照列类型写，跟上面的行对得齐。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/data-grid",
+        "@katana/tone-text"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/data-grid/grid-summary-row.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/data-grid/grid-summary-row.tsx"
         }
       ]
     },
