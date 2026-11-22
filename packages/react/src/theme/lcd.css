@@ -1,15 +1,16 @@
 /* SPDX-License-Identifier: MIT */
-/* 原样搬自 src/ui/ui.css（#1860，2026-11-14）：类名与规则都没改，应用里的件（src/ui/*.tsx）是这里的件外面包的一层。 */
+/* 搬自 src/ui/ui.css（#1860，2026-11-14）。G3 起颜色只读 characteristics 与语义 token（--lcd-bg/--lcd-fg、--k-tone-*、--k-status-*），间距读 --space-*，值与改前相同；
+   tone 收成 Severity（neutral/ok/warn/danger）+ 涨跌（up/down/flat）+ accent（当前关注），ok、danger、flat 是 G3 新增。 */
 
 /* LCDReadout */
 .k-lcd {
   display: inline-flex;
   flex-direction: column;
-  gap: 2px;
-  background: var(--bg-000);
+  gap: var(--space-hair);
+  background: var(--lcd-bg);
   border: var(--hairline);
   box-shadow: var(--recess);
-  padding: 6px 12px;
+  padding: var(--space-dense) var(--space-3);
   letter-spacing: var(--text-lcd-tracking);
   font-family: var(--font-lcd);
   font-variant-numeric: tabular-nums;
@@ -19,51 +20,60 @@
   font-size: var(--text-tag-size);
   /* 点阵字不加字距（readability.md §3），也不继承 .k-lcd 给数字的字距 */
   letter-spacing: 0;
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
 }
 .k-lcd .v {
   font-size: var(--text-lcd-size);
   line-height: 20px;
   font-weight: 500;
-  color: var(--ink-100);
+  color: var(--lcd-fg);
 }
 .k-lcd .n {
   font-family: var(--font-mono);
   font-size: var(--text-micro-size);
   line-height: 14px;
   letter-spacing: 0;
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   white-space: nowrap;
 }
 .k-lcd .v {
   white-space: nowrap;
 }
 .k-lcd.tone-up .v {
-  color: var(--pnl-up);
+  color: var(--k-tone-up-foreground);
 }
 .k-lcd.tone-down .v {
-  color: var(--pnl-down);
+  color: var(--k-tone-down-foreground);
+}
+.k-lcd.tone-flat .v {
+  color: var(--k-tone-flat-foreground);
+}
+.k-lcd.tone-ok .v {
+  color: var(--k-status-ok-foreground);
+}
+.k-lcd.tone-danger .v {
+  color: var(--k-status-danger-foreground);
 }
 .k-lcd.tone-accent .v {
-  color: var(--signal-orange);
+  color: var(--accent);
 }
 .k-lcd.tone-warn .v {
-  color: var(--signal-amber);
+  color: var(--k-status-warn-foreground);
 }
 .k-lcd.is-empty .v {
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
 }
 .k-lcd.fill {
   display: flex;
   min-width: 0;
-  padding: 6px 8px;
+  padding: var(--space-dense) var(--space-2);
   letter-spacing: 0.06em;
 }
 .k-lcd.inline {
   flex-direction: row;
   align-items: baseline;
-  gap: 6px;
-  padding: 2px 6px;
+  gap: var(--space-dense);
+  padding: var(--space-hair) var(--space-dense);
 }
 .k-lcd.inline .v {
   font-size: var(--text-data-size);

@@ -2,21 +2,25 @@
 import { Pause, Play, Square } from 'lucide-react'
 import { useState, type ReactNode } from 'react'
 import { cn } from '../../lib/cn.ts'
-import { HoldToConfirm } from '../../katana/hold-to-confirm.tsx'
-import { Led, type LedState } from '../../katana/led.tsx'
+import { HoldToConfirm } from '../../patterns/hold-to-confirm.tsx'
+import { Led } from '../../katana/led.tsx'
 import { ChipGroup } from '../../patterns/chip-group.tsx'
 import { Button } from '../../primitives/button.tsx'
 import { ToggleGroup, ToggleGroupItem } from '../../primitives/toggle-group.tsx'
-import { PnlText } from '../../quant/pnl-text.tsx'
-import { SparkTile, type SparkTileProps } from '../../quant/spark-tile.tsx'
-import { meterShare } from '../../quant/meter.tsx'
+import { PnlText } from '../../quotes/pnl-text.tsx'
+import { MetricCard } from '../../quotes/metric-card.tsx'
+import type { SparkTileProps } from '../../quotes/spark-tile.tsx'
+import { meterShare } from '../meter/meter.tsx'
 import {
+  eventSeverity,
   filterEvents,
+  linkSeverity,
   quotaTone,
   sortEvents,
   sortLinks,
   sortStrategies,
   strategyActions,
+  strategySeverity,
   summarize,
   type EventSeverity,
   type LinkState,
@@ -28,7 +32,7 @@ import {
 } from './system-monitor-model.ts'
 
 // 交易系统监控（#36）：一眼看出系统是否正常。四块：顶上连接状态条（每个连接 / 交易所 API / 行情源 / 引擎一盏 StatusLED + 名称 + 延迟 + 最后心跳，异常的排前面）；
-// 策略实例表；延迟与错误率小图（SparkTile）；事件流（按严重程度着色，可按类别与严重程度筛）。急停放面板头，按住确认（HoldToConfirm）。
+// 策略实例表；延迟与错误率小图（MetricCard variant="tile"）；事件流（按严重程度着色，可按类别与严重程度筛）。急停放面板头，按住确认（HoldToConfirm）。
 // 出处：NinjaTrader 8 帮助页 Control Center 的 Strategies 页签（https://static.ninjatrader.com/support/helpGuides/nt8/strategies_tab.htm ，2026-11-15 读到：
 // 每个策略一行，列有账户、品种、持仓、已实现与未实现盈亏、成交笔数、连接、Enabled 勾选；右键有启用 / 停用、全部同步、按账户与「只看活动策略」过滤）；
 // Hummingbot 状态文档（https://www.hummingbot.org/client/status/ ，2026-11-15 读到：status 命令给出交易所连接状态与错误信息、活动订单与余额，
@@ -105,14 +109,13 @@ export type SystemMonitorProps = {
   onEmergencyStop?: () => void
   /** 额度条转琥珀的占用比（0 到 1）；不给不预警，越界（≥ 1）总是红。预警线属于账户风控，由调用方给。 */
   quotaWarnAt?: number
-  /** 连接条上点一个连接。 */
+  /** 选中一个连接（点连接条上的一项）；给了连接才是按钮。 */
+  onSelect?: (link: MonitorLink) => void
+  /** @deprecated Use `onSelect`; kept for one version. */
   onLinkPick?: (link: MonitorLink) => void
   className?: string
 }
 
-const LINK_LED: Record<LinkState, LedState> = { ok: 'ok', degraded: 'warn', error: 'danger', offline: 'off' }
-const STATUS_LED: Record<StrategyStatus, LedState> = { running: 'ok', paused: 'warn', stopped: 'off', error: 'danger' }
-const SEVERITY_LED: Record<EventSeverity, LedState> = { info: 'off', warn: 'warn', error: 'danger' }
 const ACTION_ICON: Record<StrategyAction, ReactNode> = {
   start: <Play aria-hidden />,
   pause: <Pause aria-hidden />,
@@ -134,6 +137,7 @@ export function SystemMonitor({
   onEmergencyStop,
   quotaWarnAt,
   onLinkPick,
+  onSelect = onLinkPick,
   className,
 }: SystemMonitorProps) {
   const [kinds, setKinds] = useState<string[]>([])
@@ -150,8 +154,7 @@ export function SystemMonitor({
         {onEmergencyStop && (
           <HoldToConfirm
             onConfirm={onEmergencyStop}
-            hint={labels.emergencyHint}
-            confirmedLabel={labels.emergencyDone}
+            labels={{ hint: labels.emergencyHint, confirmed: labels.emergencyDone }}
             disabled={strategies.length === 0}
           >
             {labels.emergencyStop}
@@ -169,7 +172,7 @@ export function SystemMonitor({
                 const text = labels.linkState[link.state]
                 const body = (
                   <>
-                    <Led state={LINK_LED[link.state]} label={text} bare={link.state === 'offline'} />
+                    <Led tone={linkSeverity(link.state)} label={text} bare={link.state === 'offline'} />
                     <span className="k-sysmon-link-name">{link.name}</span>
                     <span className="k-sysmon-link-state">{text}</span>
                     <span className="k-sysmon-link-num">
@@ -185,8 +188,8 @@ export function SystemMonitor({
                 const title = [link.group, link.detail].filter(Boolean).join(' · ') || undefined
                 return (
                   <li key={link.id} className="k-sysmon-link" data-state={link.state} title={title}>
-                    {onLinkPick ? (
-                      <button type="button" className="k-sysmon-link-body" onClick={() => onLinkPick(link)}>
+                    {onSelect ? (
+                      <button type="button" className="k-sysmon-link-body" onClick={() => onSelect(link)}>
                         {body}
                       </button>
                     ) : (
@@ -203,7 +206,16 @@ export function SystemMonitor({
           {metrics.length === 0 ? (
             <div className="k-sysmon-empty">{labels.notConnected}</div>
           ) : (
-            metrics.map(({ key, ...tile }) => <SparkTile key={key} trendTone="neutral" {...tile} />)
+            metrics.map(({ key, sparkLabel, state, ...tile }) => (
+              <MetricCard
+                variant="tile"
+                key={key}
+                trendTone="neutral"
+                {...tile}
+                labels={{ spark: sparkLabel }}
+                status={state}
+              />
+            ))
           )}
         </section>
 
@@ -258,7 +270,7 @@ export function SystemMonitor({
             <>
               <div className="k-sysmon-filters">
                 <ToggleGroup
-                  variant="sm"
+                  size="sm"
                   aria-label={labels.eventSeverity}
                   value={minSeverity}
                   onValueChange={(v) => setMinSeverity(v as EventSeverity)}
@@ -272,7 +284,7 @@ export function SystemMonitor({
                   value={kinds}
                   onValueChange={setKinds}
                   label={labels.eventKinds}
-                  clearLabel={labels.clearKinds}
+                  labels={{ clear: labels.clearKinds }}
                 />
               </div>
               {shownEvents.length === 0 ? (
@@ -282,7 +294,7 @@ export function SystemMonitor({
                   {shownEvents.map((e) => (
                     <li key={e.id} className="k-sysmon-event" data-severity={e.severity}>
                       <Led
-                        state={SEVERITY_LED[e.severity]}
+                        tone={eventSeverity(e.severity)}
                         label={labels.severity[e.severity]}
                         bare={e.severity === 'info'}
                       />
@@ -329,7 +341,7 @@ function StrategyRow({
       <td>{s.symbol}</td>
       <td>
         <span className="k-sysmon-status">
-          <Led state={STATUS_LED[s.status]} label={statusText} bare={s.status === 'stopped'} />
+          <Led tone={strategySeverity(s.status)} label={statusText} bare={s.status === 'stopped'} />
           {statusText}
         </span>
       </td>

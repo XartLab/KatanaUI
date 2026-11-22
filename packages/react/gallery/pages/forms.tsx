@@ -87,18 +87,42 @@ export function ButtonDemo() {
           带图标
         </Button>
       </Row>
+      <Row name="effect（SmoothUI）">
+        <Button effect="magnetic" variant="primary" data-gallery-magnet>
+          买入 600519
+        </Button>
+        <Button effect="dot-morph" data-gallery-dot>
+          新建委托
+        </Button>
+        <Button effect="clip-corners" variant="primary" data-gallery-clip>
+          一键平仓
+        </Button>
+      </Row>
     </>
   )
 }
 
 export function InputDemo() {
   return (
-    <Row>
-      <Input aria-label="输入" placeholder="默认" style={{ width: 160 }} />
-      <Input aria-label="输入 sm" size="sm" placeholder="sm" style={{ width: 120 }} />
-      <Input aria-label="输入 禁用" disabled defaultValue="禁用" style={{ width: 120 }} />
-      <Input aria-label="输入 有值" defaultValue="1,234.50" style={{ width: 120 }} />
-    </Row>
+    <>
+      <Row>
+        <Input aria-label="输入" placeholder="默认" style={{ width: 160 }} />
+        <Input aria-label="输入 sm" size="sm" placeholder="sm" style={{ width: 120 }} />
+        <Input aria-label="输入 禁用" disabled defaultValue="禁用" style={{ width: 120 }} />
+        <Input aria-label="输入 有值" defaultValue="1,234.50" style={{ width: 120 }} />
+      </Row>
+      <Row name="floatingLabel">
+        <div data-gallery-float style={{ width: 180 }}>
+          <Input floatingLabel="限价" />
+        </div>
+        <div style={{ width: 140 }}>
+          <Input floatingLabel="数量" size="sm" defaultValue="500" />
+        </div>
+        <div style={{ width: 140 }}>
+          <Input floatingLabel="止损价" aria-invalid defaultValue="abc" />
+        </div>
+      </Row>
+    </>
   )
 }
 
@@ -154,24 +178,48 @@ export function MultiSelectDemo() {
 }
 
 export function CheckboxDemo() {
+  const [drawn, setDrawn] = useState(true)
   return (
-    <Row>
-      <label className="gal-label">
-        <Checkbox aria-label="未勾" /> 未勾
-      </label>
-      <label className="gal-label">
-        <Checkbox defaultChecked aria-label="已勾" /> 已勾
-      </label>
-      <label className="gal-label">
-        <Checkbox disabled aria-label="禁用" /> 禁用
-      </label>
-      <label className="gal-label">
-        <Checkbox disabled defaultChecked aria-label="禁用已勾" /> 禁用已勾
-      </label>
-      <label className="gal-label">
-        <Checkbox aria-invalid aria-label="错误" /> 错误
-      </label>
-    </Row>
+    <>
+      <Row>
+        <label className="gal-label">
+          <Checkbox aria-label="未勾" /> 未勾
+        </label>
+        <label className="gal-label">
+          <Checkbox defaultChecked aria-label="已勾" /> 已勾
+        </label>
+        <label className="gal-label">
+          <Checkbox disabled aria-label="禁用" /> 禁用
+        </label>
+        <label className="gal-label">
+          <Checkbox disabled defaultChecked aria-label="禁用已勾" /> 禁用已勾
+        </label>
+        <label className="gal-label">
+          <Checkbox aria-invalid aria-label="错误" /> 错误
+        </label>
+      </Row>
+      <Row name="indicator=check">
+        <label className="gal-label">
+          <Checkbox
+            indicator="check"
+            checked={drawn}
+            onCheckedChange={(next) => setDrawn(next === true)}
+            aria-label="描边勾"
+            data-gallery-draw
+          />{' '}
+          描边勾
+        </label>
+        <label className="gal-label">
+          <Checkbox indicator="check" checked="indeterminate" aria-label="半选" /> 半选
+        </label>
+        <label className="gal-label">
+          <Checkbox checked="indeterminate" aria-label="半选方块" /> 半选（默认符号）
+        </label>
+        <Button size="sm" onClick={() => setDrawn((value) => !value)}>
+          重播
+        </Button>
+      </Row>
+    </>
   )
 }
 
@@ -213,7 +261,7 @@ export function ToggleGroupDemo() {
           禁用
         </ToggleGroupItem>
       </ToggleGroup>
-      <ToggleGroup variant="sm" value={toolbar} onValueChange={setToolbar} aria-label="周期（工具条样式）">
+      <ToggleGroup size="sm" value={toolbar} onValueChange={setToolbar} aria-label="周期（工具条样式）">
         {TIMEFRAMES.map(([id, text]) => (
           <ToggleGroupItem key={id} value={id}>
             {text}

@@ -8,6 +8,8 @@
 
 ### RangeBar
 
+low / high / value 是数，两端的字由 digits 或调用方的 lowLabel / highLabel 写；role=meter 要 label。
+
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
 | `low` * | `number` | — | Lowest value; no marker is drawn when high is not greater than low. |

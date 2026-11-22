@@ -19,12 +19,16 @@ describe('ChipGroup', () => {
     expect(html).toContain('<span class="k-chip-count">3</span>')
     expect(html).toContain('disabled')
   })
-  it('清除钮：给了 clearLabel 且有选中项才出现', () => {
+  it('清除钮：给了 labels.clear 且有选中项才出现', () => {
     const on = renderToStaticMarkup(
+      <ChipGroup label="x" items={items} value={['a']} onValueChange={() => {}} labels={{ clear: '清除' }} />,
+    )
+    const legacy = renderToStaticMarkup(
       <ChipGroup label="x" items={items} value={['a']} onValueChange={() => {}} clearLabel="清除" />,
     )
+    expect(legacy).toBe(on)
     const off = renderToStaticMarkup(
-      <ChipGroup label="x" items={items} value={[]} onValueChange={() => {}} clearLabel="清除" />,
+      <ChipGroup label="x" items={items} value={[]} onValueChange={() => {}} labels={{ clear: '清除' }} />,
     )
     const none = renderToStaticMarkup(<ChipGroup label="x" items={items} value={['a']} onValueChange={() => {}} />)
     expect(on).toContain('k-chip-clear')

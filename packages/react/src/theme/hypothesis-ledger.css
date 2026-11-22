@@ -1,4 +1,5 @@
 /* SPDX-License-Identifier: MIT */
+/* G6 token 迁移：alpha-white-6 / -8 的边线没有对应的 characteristics（separable 只有 -7、-13），先留着。 */
 /* HypothesisLedger：假说账。一行一条、状态靠灯加字；证据类型与支持 / 反对靠字，不单靠颜色；橙色不画数据。全用语义 token。 */
 .k-hl {
   display: flex;
@@ -6,7 +7,7 @@
   gap: 8px;
   height: 100%;
   min-height: 0;
-  color: var(--ink-200);
+  color: var(--k-content-body-foreground);
   font: var(--text-data) var(--font-sans);
 }
 .k-hl-bar {
@@ -16,7 +17,7 @@
 }
 .k-hl-count {
   margin-inline-start: 6px;
-  color: var(--ink-200);
+  color: var(--k-content-body-foreground);
   font-variant-numeric: tabular-nums;
 }
 .k-hl-scroll {
@@ -26,7 +27,7 @@
 }
 .k-hl-empty {
   padding: 24px 12px;
-  color: var(--ink-200);
+  color: var(--k-content-body-foreground);
   text-align: center;
 }
 .k-hl-list {
@@ -44,13 +45,13 @@
   background: none;
   border: 0;
   border-bottom: 1px solid var(--alpha-white-6);
-  color: var(--ink-200);
+  color: var(--k-content-body-foreground);
   font: inherit;
   text-align: left;
   cursor: pointer;
 }
 .k-hl-row:hover {
-  background: var(--alpha-white-3);
+  background: var(--k-actionable-background);
 }
 .k-hl-row:focus-visible {
   outline: 2px solid var(--focus-ring);
@@ -62,24 +63,24 @@
 .k-hl-status {
   flex: none;
   min-width: 44px;
-  color: var(--ink-200);
+  color: var(--k-content-body-foreground);
 }
 .k-hl-layer,
 .k-hl-tag,
 .k-hl-kind {
   flex: none;
   padding: 0 6px;
-  background: var(--alpha-white-3);
+  background: var(--k-container-tertiary-background);
   border: 1px solid var(--alpha-white-8);
   border-radius: var(--radius-pill);
-  color: var(--ink-200);
+  color: var(--k-content-body-foreground);
   white-space: nowrap;
 }
 .k-hl-claim {
   flex: 1 1 auto;
   min-width: 0;
   overflow: hidden;
-  color: var(--ink-100);
+  color: var(--k-content-primary-foreground);
   font-weight: 600;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -87,29 +88,29 @@
 .k-hl-tally,
 .k-hl-due {
   flex: none;
-  color: var(--ink-200);
+  color: var(--k-content-body-foreground);
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
 .k-hl-due {
   min-width: 64px;
-  color: var(--ink-200);
+  color: var(--k-content-body-foreground);
   text-align: right;
 }
 .k-hl-due[data-urgent],
 .k-hl-row-wrap[data-status='expired'] .k-hl-due {
-  color: var(--signal-amber);
+  color: var(--k-status-warn-foreground);
 }
 .k-hl-body {
   display: flex;
   flex-direction: column;
   gap: 8px;
   padding: 10px 12px 12px 28px;
-  background: var(--alpha-white-3);
+  background: var(--k-container-tertiary-background);
   border-bottom: 1px solid var(--alpha-white-6);
 }
 .k-hl-label {
-  color: var(--ink-200);
+  color: var(--k-content-body-foreground);
   font-weight: 600;
 }
 .k-hl-failure {
@@ -117,11 +118,11 @@
   padding: 6px 8px;
   border: 1px solid var(--alpha-white-8);
   border-radius: 6px;
-  color: var(--ink-100);
+  color: var(--k-content-primary-foreground);
 }
 .k-hl-none {
   margin: 0;
-  color: var(--ink-200);
+  color: var(--k-content-body-foreground);
 }
 .k-hl-evidence {
   display: flex;
@@ -137,7 +138,7 @@
   align-items: center;
   gap: 4px 8px;
   padding: 6px 8px;
-  background: var(--alpha-white-3);
+  background: var(--k-container-tertiary-background);
   border: 1px solid var(--alpha-white-8);
   border-radius: 8px;
 }
@@ -145,30 +146,30 @@
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  color: var(--ink-100);
+  color: var(--k-content-primary-foreground);
 }
 .k-hl-stance i {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: var(--signal-green);
+  background: var(--k-status-ok-foreground);
 }
 .k-hl-ev[data-stance='oppose'] .k-hl-stance i {
-  background: var(--signal-red);
+  background: var(--k-status-danger-foreground);
 }
 .k-hl-time {
-  color: var(--ink-200);
+  color: var(--k-content-body-foreground);
   font-variant-numeric: tabular-nums;
 }
 .k-hl-source {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  color: var(--ink-200);
+  color: var(--k-content-body-foreground);
   text-decoration: none;
 }
 .k-hl-source:hover {
-  color: var(--ink-100);
+  color: var(--k-content-primary-foreground);
   text-decoration: underline;
 }
 .k-hl-source:focus-visible {
@@ -177,7 +178,7 @@
 }
 .k-hl-summary {
   flex-basis: 100%;
-  color: var(--ink-200);
+  color: var(--k-content-body-foreground);
 }
 .k-hl-assets {
   display: flex;
@@ -189,7 +190,7 @@
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  color: var(--ink-100);
+  color: var(--k-content-primary-foreground);
 }
 
 /* 观察表：传导层 × 核心证据 × 最容易混淆的地方。 */
@@ -205,12 +206,12 @@
   vertical-align: top;
 }
 .k-hl-watch thead th {
-  color: var(--ink-200);
+  color: var(--k-content-body-foreground);
   font-weight: 600;
 }
 .k-hl-watch tbody th {
   width: 88px;
-  color: var(--ink-100);
+  color: var(--k-content-primary-foreground);
   font-weight: 600;
   white-space: nowrap;
 }

@@ -2,7 +2,7 @@
 // 生成 registry.json（shadcn registry 的清单，shadcn 4.22.2 的 schema；`pnpm --filter @katana-ui/react registry:build` 先跑它再跑 `shadcn build`）。
 // 清单由脚本从源码与文档站的页数据（gallery/registry.ts：每个 item 的说明读它的页）生成，不手写：每个源文件一项（文件名短横线小写就是 item 名），registryDependencies 与 npm dependencies 从 import 扫出来，不会漏。
 // 约定（#1862 定）：
-//   type：primitives/ → registry:ui；layout/ 的件 → registry:component、间距刻度 → registry:lib；lib/、quant/format/、katana/ 的纯函数 → registry:lib；patterns/、quant/、katana/、blocks/ 的件 → registry:component；`style`（token、主题、动效）→ registry:style。
+//   type：primitives/ → registry:ui；layout/ 的件 → registry:component、间距刻度 → registry:lib；lib/（含 lib/chart/ 与 lib/chart/format/）、katana/、patterns/、quotes/ 的纯函数 → registry:lib；patterns/、quotes/、quant/、katana/、cn/、blocks/ 的件 → registry:component；`style`（token、主题、动效）→ registry:style。
 //   命名：`@katana/<文件名>`；同名冲突在源码里就不许有（每层文件名唯一，单测查）。
 //   落点：每个文件的 target 保持包内的相对结构（~/src/katana/ui/<层>/<文件>），所以件之间的相对 import 与 theme.css 里的 @source 路径在别的项目里原样有效。
 // 用法：node scripts/registry-json.mjs           写 registry.json
@@ -20,6 +20,25 @@ const TARGET_ROOT = '~/src/katana/ui'
  * 有页的件，说明读页数据（gallery/registry.ts 的 PAGES.summary），这里不写第二份。
  */
 const INTERNAL = {
+  'arcade-pixel-sprites': 'ArcadePixel 的数据：5x7 点阵字形、现成精灵与把文字排成格子的纯函数。',
+  'arcade-pixel-paint': 'ArcadePixel 的画法：把调色板里的 var(--token) 读成颜色、画一帧（亮点、荧光、熄灭的点阵）。',
+  'sparkline-ascii': 'Sparkline 的 ascii 画风：方块或盲文字形画走势，一个 pre，新列乱码落定。',
+  'sparkline-instrument': 'Sparkline 的 instrument 画风：点阵、对位角标、投影谱、极值十字与批注、档案编号与 SOURCES。',
+  'sparkline-shared': 'Sparkline 各画风共用的钩子：量容器、设备像素比、文字测量重置。',
+  'flash-price': '最新价只闪变了的尾数（照 TradingView 自选栏）：Watchlist 与 QuoteTable 的价格格共用。',
+  'readout-value': '读数壳里的数值一格：没有数据写「—」，变了闪涨跌色或滚轮，单位小字；MetricCard 的卡与瓦片共用。',
+  'metric-tile': 'MetricCard variant="tile" 的瓦片本体（原 SparkTile 的画法）与它的几何 sparkTileShape。',
+  'gravity-model':
+    'GravityLetters 的纯物理：掉落（重力、地面与墙的反弹、摩擦、静止判定）与回位（弹簧把每个字拉回原位）。',
+  split: '文字动效共用的切分：按字、词（Intl.Segmenter，中文按词）、行切成片段，保留空白。',
+  'agent-avatar-model': 'AgentAvatar 的纯逻辑：名字取首字、按 id 稳定取色调、状态到光环的映射。',
+  'ai-context-model': 'AiContextMeter 的纯逻辑：用量比例、80% 琥珀与 95% 红的分档、数字缩写。',
+  'ai-core': 'AI 件共用的状态名（与 MatrixOrb 的 OrbState 同一组）与各态动效参数、语义色。',
+  'ai-diff-model': 'AiDiff 的纯逻辑：前后两版逐行比对出增删与上下文行。',
+  'ai-prompt-model': 'AiPromptInput 的纯逻辑：回车发送与输入法选词判断、字数上限。',
+  'ai-response-model': 'AiResponse 的纯逻辑：按 Intl.Segmenter 切词（中文一词一词进场）与 [n] 引用切分。',
+  'ai-task-model': 'AiTaskList 的纯逻辑：计划与子步骤的状态汇总、进度。',
+  'fine-pointer': '判断是否精细指针（鼠标、触控板）的钩子，倾斜卡、玻璃卡、光斑卡这类跟手装饰件用，触屏上不开。',
   'cn-session':
     'A 股件包的时段轴（纯函数）：09:15–09:25 竞价、09:30–11:30、13:00–15:00，午休不占宽度；时刻解析、时段归类。',
   'cn-labels': 'A 股件包的文案结构与随包的简体中文默认（cnLabelsZh），可整份换。',
@@ -29,21 +48,47 @@ const INTERNAL = {
   style: '设计 token（Console 与 Graphite 两个主题、红涨绿跌切换）、Tailwind v4 主题与动效 CSS。ui.css 最后引。',
   cn: 'shadcn-ui/cn 引擎（替 clsx 加 tailwind-merge），认得 k-text-* 字号档。',
   focus: '各控件共用的焦点环类名。',
+  tone: '涨跌三态 Tone（up / down / flat）的唯一定义与 --k-tone-* 取色；QuoteTone、EconomicTone 是它的旧名。',
+  severity:
+    '状态语气 Severity（neutral / ok / warn / danger，加 off / accent 为 SeverityExt）、ledOf 映射到状态灯、--k-status-* 取色。',
+  num: '数字小工具：clamp、pad（补零）、signed（带正负号）、extent（最低最高）、pct（百分比字符串）。',
+  date: '日期与钟点的文字：UTC 的 YYYY-MM-DD、时区里的日期键、HH:MM、M:SS。',
+  'font-catalog':
+    '字体目录（纯数据与函数）：界面、汉字、数据字、代码四个角色可选的系统、开源、本机字体，与选择算出的字体变量。RenderingSettings 用。',
   motion: '三条弹簧参数（snappy、gentle、settle），给 motion/react 用。',
+  'motion-shared':
+    '过场、背景、特效、媒体共用的小工具：DPR 封顶、CSS 颜色解析成画布能用的数值、离屏与标签页隐藏时暂停的钩子。',
   spring: '把三条弹簧的停止阈值收到 0.001，给 scale、opacity、pathLength 这类 0 到 1 的量用。',
   'series-geometry':
     '序列图共用的几何（纯函数）：好看的刻度、比例尺、折线与面积路径，BrushChart、HorizonChart、SmallMultiples、SeriesExplorer 都用。',
-  'brush-model': 'BrushChart 的窗口几何（纯函数）：夹取、平移、缩放、居中。',
+  'brush-model': 'BrushChart 与 SeriesExplorer 共用的刷选窗口几何（纯函数，lib/chart）：夹取、平移、缩放、居中。',
   'event-calendar-model': 'EventCalendar 的纯函数：按显示时区分天、今天 / 本周 / 下周区间、筛选、倒计时分钟。',
   'attribution-model':
     'AttributionBars 的排序与折叠（纯函数）：正负分组降序、超 7 项折「其他 ×n」、费用·税放底、对称刻度。',
   'equity-curve-model': 'EquityCurve 的纯逻辑：按时刻摆的横轴、线性 / 对数纵轴、镜像回撤的纵轴、默认横轴刻度。',
   'chart-kit':
     '图表共用底座：配色分配（series / seq / div）、点阵纹理、LCD tooltip、末点、轴与网格、图右上三件（表格视图、导出、全屏）。',
+  'market-heatmap-types': 'MarketHeatmap 的公开类型：格子数据、大小与着色指标、文案、属性。',
+  'market-heatmap-toolbar':
+    'MarketHeatmap 的工具条：数据集、大小、颜色、分组（下拉或分段），全屏，显示开关，「在选股器打开」。',
+  'market-heatmap-cell':
+    'MarketHeatmap 的一格：按格子真实像素分四档写字（徽标 + 代码 + 读数 / 代码 + 读数 / 只有徽标 / 只有色块）。',
+  'market-heatmap-card': 'MarketHeatmap 的悬停卡片：跟着鼠标，写价格、各着色指标、大小指标与分组，不伸出图外。',
+  'market-heatmap-legend': 'MarketHeatmap 的图例：七档色块与值边界，悬停预览、点一档隐藏。',
+  'market-heatmap-hooks':
+    'MarketHeatmap 的副作用钩子：量绘图区尺寸、放大返回的焦点、按底色现算字色、格子位置的弹簧过渡、涨跌翻向时闪一下。',
+  'event-calendar-types': 'EventCalendar 的公开类型：四类事件的行、文案（labels）、财报行下的链接、属性。',
+  'event-calendar-cells': 'EventCalendar 的表格部分：四个类别的列集、一行的单元格、重要程度格条、经济事件的详情行。',
+  'event-calendar-regions':
+    'EventCalendar 的国家选择：触发按钮加模态框（搜索、两个预设、按地区分组复选、取消 / 应用）。',
   'market-heatmap-model':
     'MarketHeatmap 的纯函数：色阶七档的档宽取好数、值落在哪一档、图例的值边界、方向键找邻居的格子。',
   'calendar-model': 'CalendarHeatmap 的格子排布、档位与键盘（纯函数）：日历日按 UTC 算，一周一列。',
   'horizon-model': 'HorizonChart 的分带（纯函数）：把带正负的一列数折成几条叠起来的窄带。',
+  'live-line':
+    '走势线新点追加时的延伸过场（钩子加纯函数）：旧线各点平滑走到新位置，新点从末端长出来，Sparkline、SparkTile、EquityCurve 用。',
+  'live-readout':
+    '读数变了闪涨跌色的外壳与取数：从已格式化的文字里取开头的数，走 live 的 useValueFlash。MetricCard、QuoteCard、PriceTag、KeyStats、Lcd、StatusBar 用。',
   'hover-intent': '悬停意图：停一会儿才开、离开等一会儿再收、键盘聚焦立即开的钩子。',
   'code-highlight': 'CodeBlock 用的小型词法切分：注释、字符串、数字、关键字、函数、标点（纯函数，不加依赖）。',
   'matrix-orb-model': 'MatrixOrb 的纯数学：某状态下圆盘上一点在某一时刻的亮度。',
@@ -56,12 +101,17 @@ const INTERNAL = {
   'tone-text': 'ChangeText 与 PnlText 共用的底：方向到颜色与箭头。',
   'date-time-model': 'DateTimeInput 的解析与格式化（纯函数）。',
   'number-field-model': 'NumberInput 的解析与取整（纯函数）。',
+  'sparkline-model':
+    'Sparkline 的几何（纯函数）：断点分段、刻度、设备像素对齐、单调曲线、基准切分、最高最低、标签放左放右、悬停取点。',
   'number-expression': 'NumberInput 的算式输入：+10%、*2、100*1.5 按当前值算（纯函数，不用 eval）。',
   'shortcut-model': 'ShortcutRecorder 的规则：一次按键变成规范组合串（修饰键次序、物理键）。',
   'date-range-model': 'DateRangePicker 的预设规则：今天、本周、本月、年初至今（截至今天）与区间认预设（纯函数）。',
   'json-viewer-model': 'JsonViewer 的数据模型：把任意值建成带稳定 id 的节点树，查找命中与要展开的祖先（纯函数）。',
-  'event-timeline-model': 'EventTimeline 的分组规则：按显示时区的自然日分组、新的在前，钟点格式（纯函数）。',
   'hold-model': 'HoldToConfirm 的进度规则：按住填满、松手退回的时长与每帧推进（纯函数）。',
+  'duration-picker-model': 'DurationPicker 的输入规则：框里的字与数互转，空当 0，超上限夹住并标记要抖一下（纯函数）。',
+  'password-input-model': 'PasswordInput 的眼睛轮廓：睁开程度 0..1 到 SVG 路径（纯函数）。',
+  'task-list-model': 'TaskList 的任务形状与次序：没完成的保持原位，划完的按沉下去的先后排到底部（纯函数）。',
+  'theme-selector-model': 'ThemeSelector 的键盘规则：方向键与 Home / End 移到哪一张，到头循环（纯函数）。',
   'loading-gate': 'Loading 的计时与行数量取（纯函数）。',
   'opener-focus': '对话框与抽屉共用：关闭后把焦点还给打开前拿着它的元素。',
   label: 'Radix Label，Field 用它做标签（文档站在 field 页）。',
@@ -110,6 +160,24 @@ function collectItems() {
     const name = f.replace(/\.tsx?$/, '')
     add(name, 'registry:lib', [`src/lib/${f}`])
   }
+  // lib/chart/：图表共用底座（G5 从 quant 下沉，blocks 与 quant 都用）。比例尺、几何、刷选窗口一文件一项；
+  // chart-kit/（带 JSX 的零件与配色）合成一项；format/（价格、涨跌幅、数量的纯函数）合成 quant-format 一项。
+  for (const f of listDir('src/lib/chart').filter((f) => /\.tsx?$/.test(f) && !/\.test\./.test(f)))
+    add(f.replace(/\.tsx?$/, ''), 'registry:lib', [`src/lib/chart/${f}`])
+  add(
+    'chart-kit',
+    'registry:component',
+    listDir('src/lib/chart/chart-kit')
+      .filter((f) => /\.tsx?$/.test(f) && !/\.test\./.test(f))
+      .map((f) => `src/lib/chart/chart-kit/${f}`),
+  )
+  add(
+    'quant-format',
+    'registry:lib',
+    listDir('src/lib/chart/format')
+      .filter((f) => f.endsWith('.ts') && !/\.test\./.test(f))
+      .map((f) => `src/lib/chart/format/${f}`),
+  )
   byFile('src/primitives', 'registry:ui')
   // layout/：排版原语（#115）与分量。带 JSX 的是 component，间距刻度（纯函数与类型）是 lib。
   for (const f of listDir('src/layout').filter(isCode)) {
@@ -119,24 +187,33 @@ function collectItems() {
   for (const f of listDir('src/katana').filter(isCode)) {
     add(f.replace(/\.[^.]+$/, ''), f.endsWith('.tsx') ? 'registry:component' : 'registry:lib', [`src/katana/${f}`])
   }
-  byFile('src/patterns', 'registry:component')
+  // patterns/ 同 katana/：带 JSX 的是 component，纯函数（模型、目录数据）是 lib。
+  for (const f of listDir('src/patterns').filter(isCode)) {
+    add(f.replace(/\.[^.]+$/, ''), f.endsWith('.tsx') ? 'registry:component' : 'registry:lib', [`src/patterns/${f}`])
+  }
+  // quotes/：行情套件（G4 从 katana、quant、patterns 收拢）：带 JSX 的是 component，纯函数（模型、涨跌三态）是 lib。
+  for (const f of listDir('src/quotes').filter((f) => isCode(f) && f !== 'index.ts'))
+    add(f.replace(/\.[^.]+$/, ''), f.endsWith('.tsx') ? 'registry:component' : 'registry:lib', [`src/quotes/${f}`])
+  // AI 对话类件（改自 SmoothUI）：一文件一项，带 JSX 的是 component，纯函数（切词、计数、种子散列）与状态约定是 lib。
+  for (const f of listDir('src/ai').filter(isCode))
+    add(f.replace(/\.[^.]+$/, ''), f.endsWith('.tsx') ? 'registry:component' : 'registry:lib', [`src/ai/${f}`])
+  // 文字动效（改自 SmoothUI）：一文件一项，带 JSX 的是 component，纯函数（切分、物理）是 lib。
+  for (const f of listDir('src/motion/text').filter(isCode))
+    add(f.replace(/\.[^.]+$/, ''), f.endsWith('.tsx') ? 'registry:component' : 'registry:lib', [`src/motion/text/${f}`])
+  // 过场、背景、特效、媒体（改自 SmoothUI）：共用的 shared.ts 一项；着色器过场的引擎（shader-reveal/ 子目录）合成一项，其余一文件一项。
+  add('motion-shared', 'registry:lib', ['src/motion/shared.ts'])
+  add(
+    'shader-reveal',
+    'registry:component',
+    listDir('src/motion/transition/shader-reveal')
+      .filter(isCode)
+      .map((f) => `src/motion/transition/shader-reveal/${f}`),
+  )
+  for (const dir of ['transition', 'background', 'effect', 'media', 'icon', 'surface'])
+    for (const f of listDir(`src/motion/${dir}`).filter((f) => isCode(f) && f.endsWith('.tsx')))
+      add(f.replace(/\.[^.]+$/, ''), 'registry:component', [`src/motion/${dir}/${f}`])
   if (existsSync(join(pkgDir, 'src/quant'))) {
-    add(
-      'chart-kit',
-      'registry:component',
-      listDir('src/quant/chart-kit')
-        .filter((f) => /\.tsx?$/.test(f) && !/\.test\./.test(f))
-        .map((f) => `src/quant/chart-kit/${f}`),
-    )
     byFile('src/quant', 'registry:component', (f) => isCode(f) && f !== 'index.ts')
-    // 格式化函数：src/quant/format/*.ts 合成一项，件依赖它。
-    const format = listDir('src/quant/format').filter((f) => f.endsWith('.ts') && !/\.test\./.test(f))
-    if (format.length)
-      add(
-        'quant-format',
-        'registry:lib',
-        format.map((f) => `src/quant/format/${f}`),
-      )
   }
   // cn/：A 股件包（#110）。带 JSX 的是 component，纯函数（金额、时段、模型、文案）是 lib；文件名加 cn- 前缀避开别的层。
   if (existsSync(join(pkgDir, 'src/cn'))) {
@@ -189,6 +266,13 @@ function collectItems() {
       'system-monitor',
       'strategy-report',
       'transmission-chain',
+      // G6：事件时间线挪进子目录；仪表、必要条件块、状态带、订单流仪表、可用条从 src/quant 挪来（体检 §2）。
+      'event-timeline',
+      'meter',
+      'consensus-block',
+      'regime-strip',
+      'flow-gauges',
+      'uptime-bars',
     ])
       add(
         dir,

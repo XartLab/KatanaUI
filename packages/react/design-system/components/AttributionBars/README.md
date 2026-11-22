@@ -14,9 +14,9 @@
 | --- | --- | --- | --- |
 | `items` | `{ key, label, value, kind?, detail? }[]` | — | kind 为 fee 的是费用·税，永远单独一行放最底；closed 是名称后的点阵小标签（整行删除线）；detail 是 tooltip 里多写的几行。 |
 | `formatValue / formatShare` | `(n) => string` | — | 贡献与占比写成什么字。 |
-| `otherLabel / shareLabel` | `(n) => string / string` | — | 「其他 ×n」与占比那一行的标签。 |
+| `labels` | `{ other: (n) => string, share: string }` | — | 「其他 ×n」与占比那一行的字。旧名 otherLabel / shareLabel 留一个版本（@deprecated）。 |
 | `title / meta` | `string / (scale) => string` | — | 标题（宽体大写英文）与下一行点阵元信息；刻度 ±max 只在元信息里写一次。 |
-| `dimensions / ranges` | `{ label, options, value, onChange }` | — | 顶行的两组分段；换了就换 items，同一位置的条长会过渡。 |
+| `dimensions / ranges` | `{ label, options, value, onValueChange }` | — | 顶行的两组分段；换了就换 items，同一位置的条长会过渡。旧名 onChange 留一个版本。 |
 | `readouts` | `{ key, label, text, value? }[]` | — | 汇总行：第一个是合计（大号，左 2px 强调竖条），其余小一号跟在右边；标签点阵小字，value 决定涨跌色。 |
 | `focusKey / onSelect` | `string / (key) => void` | — | 联动的品种：它的条转强调色纹理；点击或 Enter 写联动上下文。 |
 | `footer` | `{ count, source?, note? }` | — | 页脚一行：左边点阵 SOURCE，右端「项数 · 声明」（研究账本不计入）。 |
@@ -104,7 +104,7 @@ export function AttributionBarsUsage() {
           dimensions={{
             label: '维度',
             value: dim,
-            onChange: (key) => key && setDim(key),
+            onValueChange: (key) => key && setDim(key),
             options: [
               { key: 'symbol', label: '品种' },
               { key: 'account', label: '账户' },
@@ -115,7 +115,7 @@ export function AttributionBarsUsage() {
           ranges={{
             label: '区间',
             value: range,
-            onChange: (key) => key && setRange(key),
+            onValueChange: (key) => key && setRange(key),
             options: [
               { key: 'today', label: '今日' },
               { key: 'week', label: '本周' },
@@ -123,9 +123,8 @@ export function AttributionBarsUsage() {
             ],
           }}
           formatValue={money}
-          otherLabel={(n) => `其他 ×${n}`}
+          labels={{ other: (n) => `其他 ×${n}`, share: '占比' }}
           formatShare={(x) => `${(x * 100).toFixed(1)}%`}
-          shareLabel="占比"
           readouts={[
             { key: 'sum', label: '今日合计', text: money(pos + neg), value: pos + neg },
             { key: 'pos', label: '正贡献', text: money(pos), value: pos },

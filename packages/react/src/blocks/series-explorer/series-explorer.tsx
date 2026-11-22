@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// 序列探索积木：一排 KPI 瓦片（SparkTile），点一张展开成下面的图面板；面板顶上是指标页签 + 区间切换，图是该指标的序列。
+// 序列探索积木：一排 KPI 瓦片（MetricCard variant="tile"），点一张展开成下面的图面板；面板顶上是指标页签 + 区间切换，图是该指标的序列。
 // 交互参照 Arc 的 Metric explorer（uiarc.dev/components/blocks/metric-explorer，2026-11-14 读，只学交互不抄代码）与 Revenue explorer；样子与内容照设计稿
 // IntradayPnL、PnLLedger、EquityCurve 三张卡（design/katana-console/project/components）与 dataviz.md：线 2px 不填面、不用涨跌色，柱用 series / ink（费税 ink-100），
 // 限额线 signal-red 虚线，休市竖带 bg-100（时间轴不压缩），末点强调色，LCD tooltip，右上三件（表格视图、导出、全屏），顶行对账（期初 → 期末、差额、灯 + 词），页脚来源行。
@@ -8,23 +8,19 @@
 // 决定（Arc 的页面没写，照同类产品定）：默认展开第一个指标、默认区间是 ranges 里最后一个；拖刷选条改窗口后区间按钮不再亮，再点回到它；
 //   「对比上一期」画紧挨在窗口前面、一样长的那一段的同一序列，按下标对齐，灰色虚线（基准永远灰）；前面不够长就不画、开关禁用；
 //   KPI 变化 = (这期 − 上期) / |上期|，上期没有或为 0 写破折号。数值语法照 precision-instrument.md §2.2（等宽、右对齐、来源行）。
-import { DownloadIcon, ExpandIcon, TableIcon } from 'lucide-react'
 import { useState, type CSSProperties, type KeyboardEvent } from 'react'
 import { cn } from '../../lib/cn.ts'
 import { useScrubber } from '../../lib/use-scrubber.ts'
-import { Led } from '../../katana/led.tsx'
 import { Switch } from '../../primitives/switch.tsx'
 import { ToggleGroup, ToggleGroupItem } from '../../primitives/toggle-group.tsx'
-import { Toolbar, ToolbarGroup, ToolButton } from '../toolbar/toolbar.tsx'
-import { BrushStrip, type BrushLabels } from '../../quant/brush-chart.tsx'
-import { clampWindow, type BrushWindow } from '../../quant/brush-model.ts'
-import type { ChartActionsLabels } from '../../quant/chart-kit/chart-actions.tsx'
-import { EndMarker } from '../../quant/chart-kit/end-marker.tsx'
-import { LcdTooltip } from '../../quant/chart-kit/lcd-tooltip.tsx'
-import { PlotGrid, PlotYAxis } from '../../quant/chart-kit/plot-axes.tsx'
-import { linePath, makePlot, pct, PLOT_W } from '../../quant/series-geometry.ts'
-import { RegimeStrip, type RegimeStripProps } from '../../quant/regime-strip.tsx'
-import { SparkTile } from '../../quant/spark-tile.tsx'
+import { BrushStrip } from '../../quant/brush-chart.tsx'
+import { clampWindow, type BrushWindow } from '../../lib/chart/brush-model.ts'
+import { EndMarker } from '../../lib/chart/chart-kit/end-marker.tsx'
+import { LcdTooltip } from '../../lib/chart/chart-kit/lcd-tooltip.tsx'
+import { PlotGrid, PlotYAxis } from '../../lib/chart/chart-kit/plot-axes.tsx'
+import { linePath, makePlot, pct, PLOT_W } from '../../lib/chart/series-geometry.ts'
+import { MetricCard } from '../../quotes/metric-card.tsx'
+import { RegimeStrip } from '../regime-strip/regime-strip.tsx'
 import {
   changeRatio,
   chartExtent,
@@ -36,99 +32,20 @@ import {
   reconcileWindow,
   reduceWindow,
   stackPoint,
-  type KpiDef,
-  type RangeDef,
-  type SeriesDef,
-  type SeriesPoint,
 } from './series-explorer-model.ts'
+import { SeriesEvents } from './series-explorer-events.tsx'
+import { SeriesHead } from './series-explorer-head.tsx'
+import { SeriesReconcile } from './series-explorer-reconcile.tsx'
+import { SeriesTable } from './series-explorer-table.tsx'
+import type { SeriesExplorerProps } from './series-explorer-types.ts'
 
-export type SeriesExplorerColumn = {
-  key: string
-  label: string
-  /** 这一行这一格写什么字。 */
-  text: (point: SeriesPoint) => string
-  /** 给了就按正负着涨跌色（盈亏列）；不给中性色。费税列别给：成本不是亏损。 */
-  tone?: (point: SeriesPoint) => number | null
-}
+export type { SeriesExplorerColumn, SeriesExplorerLabels, SeriesExplorerProps } from './series-explorer-types.ts'
 
-export type SeriesExplorerLabels = {
-  /** 图的读屏名。 */
-  chart: string
-  /** 区间按钮那一组的读屏名。 */
-  ranges: string
-  /** 指标页签那一组的读屏名。 */
-  metrics: string
-  /** 「对比上一期」开关的字。 */
-  compare: string
-  /** 悬停框里上一期那一行的名字。 */
-  previous: string
-  /** 明细表的读屏名。 */
-  table: string
-  /** 明细表第一列（时间）的表头。 */
-  time: string
-  /** 一个点都没有时写的字。 */
-  empty: string
-  /** 迷你线的读屏名（整句，拿到指标名）。 */
-  spark: (metric: string) => string
-  /** 限额线的名字（悬停框里与读屏）。 */
-  limit: string
-  /** 页脚来源行（例「来源 / 账户服务日结 · 09-30 收盘」）；不给不画。 */
-  source?: string
-  /** 图右上三件。 */
-  actions: ChartActionsLabels
-  brush: BrushLabels
-  /** 对账顶行的字；不给 reconcile 时用不到。 */
-  reconcile?: { open: string; close: string; diff: string; ok: string; warn: string; unit?: string }
-}
-
-export type SeriesExplorerProps = {
-  points: readonly SeriesPoint[]
-  series: readonly SeriesDef[]
-  ranges: readonly RangeDef[]
-  /** 不给取 ranges 的最后一个。 */
-  defaultRange?: string
-  /** 指标：每个是一张瓦片、一个页签。 */
-  kpis: readonly KpiDef[]
-  columns: readonly SeriesExplorerColumn[]
-  labels: SeriesExplorerLabels
-  /** 时间戳写成什么：横轴、悬停框、明细表第一列都用它（ISO 次序）；时区与语言由调用方定。 */
-  formatAt: (at: number) => string
-  /** 图上的数写成什么：纵轴刻度与悬停框。 */
-  formatValue: (value: number) => string
-  /** 相对上一期的变化（比例，0.12 是涨 12%）写成什么。 */
-  formatChange: (ratio: number) => string
-  /** 对账：权益序列、净盈亏序列（可选出入金序列）的键，与区间前的期初权益。期末 − 期初 = Σ净盈亏 + 出入金，对不上就亮 warn 灯并写差额。 */
-  reconcile?: {
-    net: string
-    equity: string
-    cashflow?: string
-    openingEquity: number
-    format: (value: number) => string
-  }
-  /** 标题下一行的元信息（等宽大写小字，例「RUN 2C91 · 2025-01 → 2026-12 · CNY」）；不给不画。 */
-  meta?: string
-  /** 图上的事件点：按时间落在序列的点上，画编号引线（01、02……按给的次序编号）。 */
-  events?: readonly { at: number; label: string }[]
-  /**
-   * Market regime strip under the time axis (a RegimeStrip without `scale`): it shares the x axis and the crosshair with the series,
-   * and the tooltip gets a row with the regime at the hovered point. Segments are half-open [from, to) in the same unit as `points[].at`.
-   * 状态带：画在时间轴下，跟序列共用横轴与十字线，悬停框多一行当前所处的状态；段是左闭右开 [from, to)，单位同 points 的 at。
-   */
-  regimes?: Omit<RegimeStripProps, 'scale'>
-  /** 导出与全屏回调不给就不画那个按钮。 */
-  onExport?: () => void
-  onFullscreen?: () => void
-  /** 初始展开哪个指标；null 是收起。不给展开第一个。 */
-  defaultMetric?: string | null
-  /** 图高（px）。 */
-  chartHeight?: number
-  className?: string
-}
+// 文件拆分（G5）：类型 -types、顶行 -head、对账行 -reconcile、表格视图 -table、事件点 -events；这里留状态、KPI 瓦片行与图。
 
 const X_TICKS = 5
 /** 柱宽占一格的比例（待定：没有出处，看过几组数据再调）。 */
 const BAR_SHARE = 0.6
-const toneOf = (value: number | null) => (value === null || value === 0 ? 'flat' : value > 0 ? 'up' : 'down')
 
 export function SeriesExplorer({
   points,
@@ -194,12 +111,12 @@ export function SeriesExplorer({
   // 线（净盈亏）用中性墨色：它是一条读数线，不是类别，也不用涨跌色（IntradayPnL 卡）；柱按序列配色，成本柱灰。
   const color =
     def === null
-      ? 'var(--ink-100)'
+      ? 'var(--k-content-primary-foreground)'
       : def.kind === 'line'
-        ? (def.color ?? 'var(--ink-100)')
+        ? (def.color ?? 'var(--k-content-primary-foreground)')
         : def.cost
-          ? 'var(--ink-300)'
-          : (def.color ?? 'var(--ink-200)')
+          ? 'var(--k-content-secondary-foreground)'
+          : (def.color ?? 'var(--k-content-body-foreground)')
   const recon = reconcile ? reconcileWindow(points, window, reconcile, reconcile.openingEquity) : null
   // 明细表最新的在最上面。
   const rows = shown.map((point, i) => ({ point, i })).reverse()
@@ -240,48 +157,20 @@ export function SeriesExplorer({
 
   return (
     <div className={cn('k-sx', className)} data-slot="series-explorer" data-range={rangeKey}>
-      <div className="k-sx-head" data-slot="series-head">
-        <Toolbar label={labels.actions.group}>
-          <ToolbarGroup side="left">
-            <h4 className="k-sx-title" data-slot="series-title">
-              {labels.chart}
-            </h4>
-            <span className="k-sx-span" data-slot="series-span">
-              {formatAt(shown[0]!.at)} – {formatAt(shown[length - 1]!.at)}
-            </span>
-          </ToolbarGroup>
-          <ToolbarGroup side="right">
-            <ToggleGroup
-              variant="sm"
-              aria-label={labels.ranges}
-              value={dragged !== null && dragged.range === rangeKey ? null : rangeKey}
-              onValueChange={(next) => {
-                setRangeKey(next)
-                setDragged(null)
-              }}
-            >
-              {ranges.map((item) => (
-                <ToggleGroupItem key={item.key} value={item.key}>
-                  {item.label}
-                </ToggleGroupItem>
-              ))}
-            </ToggleGroup>
-            <ToolButton label={labels.actions.table} pressed={table} onClick={() => setTable(!table)}>
-              <TableIcon size={16} aria-hidden="true" />
-            </ToolButton>
-            {onExport === undefined ? null : (
-              <ToolButton label={labels.actions.exportCsv} onClick={onExport}>
-                <DownloadIcon size={16} aria-hidden="true" />
-              </ToolButton>
-            )}
-            {onFullscreen === undefined ? null : (
-              <ToolButton label={labels.actions.fullscreen} onClick={onFullscreen}>
-                <ExpandIcon size={16} aria-hidden="true" />
-              </ToolButton>
-            )}
-          </ToolbarGroup>
-        </Toolbar>
-      </div>
+      <SeriesHead
+        labels={labels}
+        ranges={ranges}
+        rangeKey={dragged !== null && dragged.range === rangeKey ? null : rangeKey}
+        onRange={(next) => {
+          setRangeKey(next)
+          setDragged(null)
+        }}
+        span={`${formatAt(shown[0]!.at)} – ${formatAt(shown[length - 1]!.at)}`}
+        table={table}
+        onTable={() => setTable(!table)}
+        onExport={onExport}
+        onFullscreen={onFullscreen}
+      />
       {meta && (
         <p className="k-sx-meta" data-slot="series-meta">
           {meta}
@@ -296,60 +185,35 @@ export function SeriesExplorer({
           const itemDef = series.find((entry) => entry.key === item.series)
           const spark = shown.map((point) => pointValue(point, item.series)).filter((v): v is number => v !== null)
           return (
-            <SparkTile
+            <MetricCard
+              variant="tile"
               key={item.key}
               label={item.label}
               value={current === null ? null : item.format(current)}
               series={spark}
               threshold={item.limit}
               trendTone="neutral"
-              delta={ratio === null || itemDef?.cost ? undefined : ratio * 100}
+              changePct={ratio === null || itemDef?.cost ? undefined : ratio * 100}
               note={ratio === null || !itemDef?.cost ? undefined : formatChange(ratio)}
-              sparkLabel={labels.spark(item.label)}
+              labels={{ spark: labels.spark(item.label) }}
               aria-expanded={metric === item.key}
               data-expanded={metric === item.key ? 'true' : 'false'}
               data-key={item.key}
-              onClick={() => setMetric(metric === item.key ? null : item.key)}
+              onSelect={() => setMetric(metric === item.key ? null : item.key)}
             />
           )
         })}
       </div>
 
       {recon && labels.reconcile && reconcile && (
-        <div className="k-sx-recon" data-slot="series-reconcile" data-state={recon.diff === 0 ? 'ok' : 'warn'}>
-          <span className="k-sx-recon-line" data-slot="series-reconcile-lcd">
-            <span className="k-sx-kv">
-              <small>{labels.reconcile.open}</small>
-              <b>{reconcile.format(recon.open)}</b>
-              {labels.reconcile.unit ? <i>{labels.reconcile.unit}</i> : null}
-            </span>
-            <em aria-hidden="true">→</em>
-            <span className="k-sx-kv">
-              <small>{labels.reconcile.close}</small>
-              <b>{reconcile.format(recon.close)}</b>
-              {labels.reconcile.unit ? <i>{labels.reconcile.unit}</i> : null}
-            </span>
-            <span className="k-sx-kv k-sx-recon-diff" data-slot="series-reconcile-diff">
-              <small>{labels.reconcile.diff}</small>
-              <b>{reconcile.format(recon.diff)}</b>
-              {labels.reconcile.unit ? <i>{labels.reconcile.unit}</i> : null}
-            </span>
-          </span>
-          <span className="k-sx-recon-state">
-            <Led
-              state={recon.diff === 0 ? 'ok' : 'warn'}
-              label={recon.diff === 0 ? labels.reconcile.ok : labels.reconcile.warn}
-            />
-            {recon.diff === 0 ? labels.reconcile.ok : labels.reconcile.warn}
-          </span>
-        </div>
+        <SeriesReconcile recon={recon} text={labels.reconcile} format={reconcile.format} />
       )}
 
       {kpi !== null && (
         <div className="k-sx-panel" data-slot="series-panel" data-metric={kpi.key} onKeyDown={panelKey}>
           <div className="k-sx-bar">
             <ToggleGroup
-              variant="sm"
+              size="sm"
               aria-label={labels.metrics}
               value={metric}
               onValueChange={(next) => setMetric(next)}
@@ -373,32 +237,7 @@ export function SeriesExplorer({
           </div>
 
           {table ? (
-            <div className="k-sx-table" tabIndex={0} role="region" aria-label={labels.table} data-slot="series-table">
-              <table>
-                <thead>
-                  <tr>
-                    <th scope="col">{labels.time}</th>
-                    {columns.map((column) => (
-                      <th key={column.key} scope="col">
-                        {column.label}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {rows.map(({ point, i }) => (
-                    <tr key={point.at} data-active={active === i ? 'true' : undefined}>
-                      <th scope="row">{formatAt(point.at)}</th>
-                      {columns.map((column) => (
-                        <td key={column.key} data-tone={column.tone ? toneOf(column.tone(point)) : undefined}>
-                          {column.text(point)}
-                        </td>
-                      ))}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <SeriesTable rows={rows} columns={columns} labels={labels} formatAt={formatAt} active={active} />
           ) : (
             <>
               <div
@@ -506,72 +345,9 @@ export function SeriesExplorer({
                     <span className="k-sx-dim-label">{formatValue(kpi.limit)}</span>
                   </span>
                 )}
-                {def !== null &&
-                  (events ?? []).map((event, n) => {
-                    const i = shown.findIndex((point) => point.at === event.at)
-                    const value = i < 0 ? null : pointValue(shown[i]!, def.key)
-                    if (i < 0 || value === null) return null
-                    const x = plot.xAt(i)
-                    const y = plot.yAt(value)
-                    // 引线与标签的避让（简单版）：四个方向（上 / 下 × 右 / 左）按「空间大的一侧、靠右的往左」排好先后，
-                    // 取第一个标签框不压数据线的；都压就用第一个。不量宽度，按 700px 估（1px ≈ PLOT_W / 700）；
-                    // 长度取到边缘留 16px 为止（标签半行高 8px 加余量）（10–28px）。
-                    const run = 28
-                    const pxToX = PLOT_W / 700
-                    const textW = (event.label.length * 7 + 22) * pxToX
-                    const prefTop = y > chartHeight / 2
-                    const prefRight = x <= PLOT_W * 0.65
-                    const choices = [
-                      [prefRight, prefTop],
-                      [prefRight, !prefTop],
-                      [!prefRight, prefTop],
-                      [!prefRight, !prefTop],
-                    ].map(([right, top]) => {
-                      const room = top ? y - 16 : chartHeight - y - 16
-                      const rise = Math.max(10, Math.min(28, room))
-                      const endY = top ? y - rise : y + rise
-                      const from = right ? x + run * pxToX : x - run * pxToX - textW
-                      const clash = shown.some((point, j) => {
-                        const v = pointValue(point, def.key)
-                        if (v === null || def.kind !== 'line') return false
-                        const px = plot.xAt(j)
-                        return px >= from && px <= from + textW && Math.abs(plot.yAt(v) - endY) < 10
-                      })
-                      const inside = from >= 0 && from + textW <= PLOT_W && endY >= 10 && endY <= chartHeight - 10
-                      return { right, top, rise, ok: inside && !clash }
-                    })
-                    const pick = choices.find((choice) => choice.ok) ?? choices[0]!
-                    const rise = pick.rise
-                    const sx = pick.right ? 1 : -1
-                    const sy = pick.top ? -1 : 1
-                    return (
-                      <span
-                        key={event.at}
-                        className="k-sx-evt"
-                        data-slot="series-event"
-                        data-side={sx < 0 ? 'left' : 'right'}
-                        data-up={sy < 0 ? 'true' : undefined}
-                        style={
-                          {
-                            left: pct(x),
-                            top: y,
-                            '--k-run': `${run}px`,
-                            '--k-rise': `${rise}px`,
-                            '--k-sx': sx,
-                            '--k-sy': sy,
-                            '--k-len': `${Math.hypot(run, rise)}px`,
-                            '--k-deg': `${(Math.atan2(sy * rise, sx * run) * 180) / Math.PI}deg`,
-                          } as CSSProperties
-                        }
-                      >
-                        <i className="k-sx-evt-dot" />
-                        <b className="k-sx-evt-lead" />
-                        <span className="k-sx-evt-text">
-                          <em>{String(n + 1).padStart(2, '0')}</em> {event.label}
-                        </span>
-                      </span>
-                    )
-                  })}
+                {def !== null && events && (
+                  <SeriesEvents events={events} shown={shown} def={def} plot={plot} chartHeight={chartHeight} />
+                )}
                 {def?.kind === 'line' && markValue !== null && lastValue !== null && (
                   <EndMarker
                     x={plot.xAt(markAt)}
@@ -642,8 +418,8 @@ export function SeriesExplorer({
 
           <BrushStrip
             values={overview}
-            window={window}
-            onWindowChange={(next) => setDragged({ range: rangeKey, window: next })}
+            value={window}
+            onValueChange={(next) => setDragged({ range: rangeKey, window: next })}
             formatX={(index) => formatAt(points[index]!.at)}
             labels={labels.brush}
             height={44}

@@ -1,4 +1,5 @@
 /* SPDX-License-Identifier: MIT */
+/* G6 token 迁移：alpha-white-5 / -6 / -8 的边线与底色没有对应的 characteristics，先留着。 */
 /* NewsFeed：列表行（时间 · 来源 · 标题 · 品种胶囊）与卡片网格（uiarc 式：来源 + 时间、标题、两行摘要、胶囊）。
    全用语义 token；重要标记是 --signal-amber 的小方块（橙色留给数据，不用）；数字等宽。 */
 .k-news {
@@ -7,7 +8,7 @@
   gap: 8px;
   min-height: 0;
   height: 100%;
-  color: var(--ink-200);
+  color: var(--k-content-body-foreground);
   font: var(--text-data) var(--font-sans);
 }
 .k-news-top {
@@ -22,7 +23,7 @@
   align-items: center;
   gap: 6px;
   min-width: 120px;
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
 }
 .k-news-new {
   align-self: center;
@@ -50,7 +51,7 @@ a.k-news-title:focus-visible {
 }
 .k-news-empty {
   padding: 24px 12px;
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   text-align: center;
 }
 .k-news-items {
@@ -58,30 +59,29 @@ a.k-news-title:focus-visible {
   padding: 0;
   list-style: none;
 }
-.k-news-item.is-fresh {
-  animation: k-news-in 0.4s ease-out;
-}
-@keyframes k-news-in {
-  from {
-    opacity: 0;
-    transform: translateY(-6px);
-  }
+.k-news-live {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 .k-news-source {
-  color: var(--ink-200);
+  color: var(--k-content-body-foreground);
   font-weight: 600;
 }
 .k-news-time {
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   font-variant-numeric: tabular-nums;
 }
 .k-news-flag {
   width: 6px;
   height: 6px;
-  background: var(--signal-amber);
+  background: var(--k-status-warn-foreground);
 }
 .k-news-title {
-  color: var(--ink-100);
+  color: var(--k-content-primary-foreground);
   font: inherit;
   font-weight: 600;
   text-align: left;
@@ -100,7 +100,7 @@ a.k-news-title:hover {
 }
 .k-news-summary {
   margin: 4px 0 0;
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
@@ -117,16 +117,16 @@ a.k-news-title:hover {
   gap: 4px;
   height: 20px;
   padding: 0 8px 0 3px;
-  background: var(--alpha-white-3);
+  background: var(--k-actionable-background);
   border: 1px solid var(--alpha-white-8);
   border-radius: var(--radius-pill);
-  color: var(--ink-200);
-  font: var(--text-data) var(--font-mono);
+  color: var(--k-content-body-foreground);
+  font: var(--text-data) var(--font-num);
   cursor: pointer;
 }
 .k-news-symbol:hover {
-  background: var(--alpha-white-6);
-  color: var(--ink-100);
+  background: var(--k-actionable-background-hover);
+  color: var(--k-content-primary-foreground);
 }
 
 /* 列表：一行，来源与时间在左（固定宽，数字对齐），标题撑满，胶囊靠右。 */
@@ -148,11 +148,14 @@ a.k-news-title:hover {
   order: -1;
   min-width: 52px;
 }
+/* 列表标题最多折两行（TradingView 新闻列表的做法），条数多少都一样；虚拟列表的行高按同一规则预先算（news-feed-rows.ts 的 TITLE_MAX_LINES）。 */
 .k-news[data-layout='list'] .k-news-title {
-  display: block;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
   overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  white-space: normal;
+  overflow-wrap: break-word;
 }
 
 /* 卡片：自适应列数。 */
@@ -166,7 +169,7 @@ a.k-news-title:hover {
   flex-direction: column;
   gap: 8px;
   padding: 10px 12px;
-  background: var(--alpha-white-3);
+  background: var(--k-actionable-background);
   border: 1px solid var(--alpha-white-8);
   border-radius: 8px;
 }
@@ -201,7 +204,7 @@ a.k-news-title:hover {
   inset-block: 4px auto;
   inset-inline-end: 4px;
   padding-inline: 2px;
-  background: var(--bg-300);
+  background: var(--k-surface-raised-background);
   border-radius: 6px;
 }
 
@@ -220,22 +223,22 @@ a.k-news-title:hover {
   padding: 0 10px;
   border: 1px solid var(--alpha-white-8);
   border-radius: var(--radius-pill);
-  background: var(--alpha-white-3);
-  color: var(--ink-200);
+  background: var(--k-actionable-background);
+  color: var(--k-content-body-foreground);
   font: 500 12px/16px var(--font-sans);
   white-space: nowrap;
   cursor: pointer;
 }
 .k-news-facet:hover {
-  background: var(--alpha-white-6);
-  color: var(--ink-100);
+  background: var(--k-actionable-background-hover);
+  color: var(--k-content-primary-foreground);
 }
 .k-news-facet[data-active] {
   background: var(--alpha-white-8);
-  color: var(--ink-100);
+  color: var(--k-content-primary-foreground);
 }
 .k-news-facet:focus-visible {
-  outline: 1px solid var(--line-200);
+  outline: 1px solid var(--k-separable-bold-borderColor);
   outline-offset: 1px;
 }
 .k-news-facet-pop {
@@ -261,7 +264,7 @@ a.k-news-title:hover {
   border: 0;
   border-radius: 6px;
   background: transparent;
-  color: var(--ink-100);
+  color: var(--k-content-primary-foreground);
   font: 400 12px/16px var(--font-sans);
   text-align: left;
   cursor: pointer;
@@ -277,7 +280,7 @@ a.k-news-title:hover {
   font: 600 13px/18px var(--font-sans);
 }
 .k-news-item[data-selected] {
-  background: var(--alpha-white-6);
+  background: var(--k-actionable-background-hover);
 }
 
 /* 阅读窗：来源与操作一行，标题、元信息、品种胶囊、要点（闪电图标）、正文；涨跌色走 pnl token。 */
@@ -287,7 +290,7 @@ a.k-news-title:hover {
   gap: var(--space-3);
   min-width: 0;
   padding: var(--space-4);
-  color: var(--ink-100);
+  color: var(--k-content-primary-foreground);
   font: 400 13px/20px var(--font-sans);
 }
 .k-news-reader-head {
@@ -299,7 +302,7 @@ a.k-news-title:hover {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  color: var(--ink-200);
+  color: var(--k-content-body-foreground);
   font-weight: 500;
 }
 .k-news-reader-actions {
@@ -310,10 +313,20 @@ a.k-news-title:hover {
   margin: 0;
   font: 700 20px/28px var(--font-sans);
 }
+.k-news-reader-updated {
+  margin-left: 8px;
+  padding: 0 6px;
+  border: 1px solid var(--k-status-warn-foreground);
+  border-radius: var(--radius-control);
+  color: var(--k-status-warn-foreground);
+  font: 600 var(--text-caption-size) / 18px var(--font-sans);
+  vertical-align: 3px;
+  white-space: nowrap;
+}
 .k-news-reader-meta {
   margin: 0;
-  color: var(--ink-300);
-  font-size: 12px;
+  color: var(--k-content-secondary-foreground);
+  font-size: var(--text-data-size);
 }
 .k-news-reader-symbols {
   display: flex;
@@ -329,7 +342,7 @@ a.k-news-title:hover {
   border: 0;
   border-radius: 6px;
   background: var(--alpha-white-5);
-  color: var(--ink-100);
+  color: var(--k-content-primary-foreground);
   font: 600 12px/16px var(--font-sans);
   cursor: pointer;
 }
@@ -348,7 +361,7 @@ a.k-news-title:hover {
 }
 .k-news-reader-points h3 {
   margin: 0 0 6px;
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   font: 600 11px/14px var(--font-sans);
   letter-spacing: 0.06em;
 }
@@ -368,10 +381,10 @@ a.k-news-title:hover {
 .k-news-reader-points li svg {
   flex: none;
   margin-top: 4px;
-  color: var(--ink-200);
+  color: var(--k-content-body-foreground);
 }
 .k-news-reader-body {
-  color: var(--ink-200);
+  color: var(--k-content-body-foreground);
 }
 .k-news-reader-body p {
   margin: 0 0 var(--space-3);
@@ -415,11 +428,11 @@ a.k-news-title:hover {
     inset: 0;
     z-index: 3;
     border-left: 0;
-    background: var(--bg-300);
+    background: var(--k-surface-raised-background);
   }
 }
 .k-news-read {
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   white-space: nowrap;
 }
 .k-news-source {
@@ -438,7 +451,7 @@ a.k-news-title:hover {
   height: 22px;
   padding: 0;
   justify-content: center;
-  border: 2px solid var(--bg-300);
+  border: 2px solid var(--k-surface-raised-background);
   border-radius: 50%;
   background: transparent;
 }
@@ -455,6 +468,16 @@ a.k-news-title:hover {
   margin-inline-end: 64px;
 }
 
+/* 虚拟列表（列表排法且条目多于 VIRTUAL_THRESHOLD，见 news-feed-rows.ts）：每行高度由 pretext 预先算好、绝对定位；
+   标题折行规则与非虚拟时相同。数字与 news-feed-rows.ts 的常量同源。 */
+.k-news-items[data-virtual] {
+  position: relative;
+}
+.k-news[data-layout='list'] .k-news-items[data-virtual] > .k-news-item {
+  position: absolute;
+  inset-inline: 0;
+  box-sizing: border-box;
+}
 /* 分量（#115，layout/emphasis.tsx）：hero 标题上一档（data → title）；compact 一行一条，只有「时间 标题」。 */
 .k-news[data-emphasis='hero'] .k-news-title {
   font-size: var(--text-title-size);

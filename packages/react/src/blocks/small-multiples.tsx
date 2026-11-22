@@ -5,10 +5,10 @@
 import { useState } from 'react'
 import { cn } from '../lib/cn.ts'
 import { useScrubber } from '../lib/use-scrubber.ts'
-import { quoteTone } from '../katana/quote-tone.ts'
-import { EndMarker } from '../quant/chart-kit/end-marker.tsx'
-import { LcdTooltip } from '../quant/chart-kit/lcd-tooltip.tsx'
-import { extent, linePath, makePlot, pct, PLOT_W } from '../quant/series-geometry.ts'
+import { quoteTone } from '../quotes/quote-tone.ts'
+import { EndMarker } from '../lib/chart/chart-kit/end-marker.tsx'
+import { LcdTooltip } from '../lib/chart/chart-kit/lcd-tooltip.tsx'
+import { extent, linePath, makePlot, pct, PLOT_W } from '../lib/chart/series-geometry.ts'
 
 export type SmallMultiple = { key: string; label: string; values: readonly number[] }
 
@@ -65,7 +65,8 @@ export function SmallMultiples({
             exact: true,
           })
           const first = item.values.find((value) => Number.isFinite(value))
-          const last = [...item.values].reverse().find((value) => Number.isFinite(value))
+          // js/copying-array-methods：findLast 从后往前找，等价于原来的「复制 + reverse + find」，且不复制。
+          const last = item.values.findLast((value) => Number.isFinite(value))
           const tone = quoteTone(first === undefined || last === undefined ? null : last - first)
           const at = active === null ? item.values.length - 1 : Math.min(active, item.values.length - 1)
           const value = item.values[at]

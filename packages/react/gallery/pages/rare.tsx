@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: MIT
 import { useEffect, useState } from 'react'
+import { LiveToggle } from '../LiveToggle.tsx'
+import { chance, pick, useLiveTicker, type Rng } from '../live-sim.ts'
 import {
   AiStatus,
   ARCADE_SPRITES,
@@ -9,11 +11,15 @@ import {
   MatrixOrb,
   NotificationBell,
   PasswordInput,
+  Slider,
   StatusIcon,
-  type AiStatusState,
+  ToggleGroup,
+  ToggleGroupItem,
+  type AiStatusValue,
   type ArcadePixelAnimate,
   type OrbState,
-  type StatusIconStatus,
+  type StatusIconTone,
+  useEnterMarks,
 } from '../../src/index'
 import { Cell, Row } from './parts'
 
@@ -26,7 +32,7 @@ export function PasswordInputDemo() {
       <Row name="默认">
         <div className="gal-wide">
           <PasswordInput
-            toggleLabel="显示密钥"
+            labels={{ toggle: '显示密钥' }}
             defaultValue="demo-secret-0123456789"
             aria-label="API 密钥"
             onVisibleChange={setVisible}
@@ -36,12 +42,12 @@ export function PasswordInputDemo() {
       </Row>
       <Row name="sm · 空">
         <div className="gal-wide">
-          <PasswordInput toggleLabel="显示口令" size="sm" placeholder="代理口令" aria-label="代理口令" />
+          <PasswordInput labels={{ toggle: '显示口令' }} size="sm" placeholder="代理口令" aria-label="代理口令" />
         </div>
       </Row>
       <Row name="禁用">
         <div className="gal-wide">
-          <PasswordInput toggleLabel="显示" disabled defaultValue="locked" aria-label="已锁定" />
+          <PasswordInput labels={{ toggle: '显示' }} disabled defaultValue="locked" aria-label="已锁定" />
         </div>
       </Row>
       <p className="gal-note">点眼睛显示或遮住，输入框不丢焦点、选区还在；按钮的名字不变，状态看 aria-pressed。</p>
@@ -57,10 +63,7 @@ export function DeleteButtonDemo() {
       <Row name="默认">
         <DeleteButton
           label="删除工作区"
-          confirmLabel="确认删除"
-          cancelLabel="取消"
-          doneLabel="已删除"
-          keptLabel="已取消"
+          labels={{ confirm: '确认删除', cancel: '取消', done: '已删除', kept: '已取消' }}
           onConfirm={() => setDeleted((n) => n + 1)}
           onCancel={() => setKept((n) => n + 1)}
         />
@@ -69,10 +72,52 @@ export function DeleteButtonDemo() {
         </output>
       </Row>
       <Row name="禁用">
-        <DeleteButton label="删除（不可用）" confirmLabel="确认" cancelLabel="取消" disabled />
+        <DeleteButton label="删除（不可用）" labels={{ confirm: '确认', cancel: '取消' }} disabled />
       </Row>
       <p className="gal-note">点一下只展开，不执行；展开后焦点在「取消」上，Esc 或点外面都是取消，点勾才执行。</p>
     </>
+  )
+}
+
+// 实时模拟（演示）：每 3 秒一拍，约四成来一条通知，第一拍必来；铃的未读数 = 列表里没读的条数，来新的铃闪、列表新条高亮。
+const LIVE_NOTICES = [
+  '成交回报：600001 买入 200 股',
+  '价位提醒：300750 上破 202.00',
+  'run 2e52 已完成',
+  '公告：回购进展',
+]
+type LiveNotice = { id: string; text: string }
+function noticeStep(list: readonly LiveNotice[], rng: Rng, tick: number): readonly LiveNotice[] {
+  if (tick > 0 && !chance(rng, 0.4)) return list
+  return [{ id: `live-${tick}`, text: pick(rng, LIVE_NOTICES) }, ...list].slice(0, 6)
+}
+
+function LiveNotifications() {
+  const { state: list } = useLiveTicker<readonly LiveNotice[]>([], noticeStep, { intervalMs: 3000 })
+  const [read, setRead] = useState<ReadonlySet<string>>(new Set())
+  const unread = list.filter((n) => !read.has(n.id)).length
+  const entering = useEnterMarks(list.map((n) => n.id))
+  return (
+    <div data-testid="bell-live" style={{ display: 'grid', gap: 8, width: 320 }}>
+      <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+        <LiveToggle labels={{ group: '数据刷新', live: '实时', paused: '暂停' }} />
+        <NotificationBell count={unread} label={`实时提醒，${unread} 条未读`} />
+        <Button size="sm" onClick={() => setRead(new Set(list.map((n) => n.id)))}>
+          全部已读
+        </Button>
+      </div>
+      <ul aria-label="通知列表" data-slot="live-notices" style={{ margin: 0, padding: 0, listStyle: 'none' }}>
+        {list.map((n) => (
+          <li
+            key={n.id}
+            className={entering.has(n.id) ? 'k-live-enter' : undefined}
+            style={{ padding: '4px 8px', font: 'var(--text-data) var(--font-sans)' }}
+          >
+            {n.text}
+          </li>
+        ))}
+      </ul>
+    </div>
   )
 }
 
@@ -97,38 +142,41 @@ export function NotificationBellDemo() {
         <Button onClick={() => setCount(0)}>全部已读</Button>
         <Button onClick={() => setCount(120)}>120 条</Button>
       </Row>
+      <Row name="实时">
+        <LiveNotifications />
+      </Row>
       <p className="gal-note">数变多铃摆一下，力度跟增量走；变少、清零不摆。数字按增减方向滚。</p>
     </>
   )
 }
 
-const STATUSES: readonly StatusIconStatus[] = ['success', 'error', 'warning', 'info', 'pending']
+const STATUS_TONES: readonly StatusIconTone[] = ['ok', 'danger', 'warn', 'info', 'neutral', 'pending']
 
 export function StatusIconDemo() {
-  const [status, setStatus] = useState<StatusIconStatus>('pending')
+  const [tone, setTone] = useState<StatusIconTone>('pending')
   return (
     <>
-      <Row name="五种">
-        {STATUSES.map((item) => (
+      <Row name="语气">
+        {STATUS_TONES.map((item) => (
           <Cell key={item} name={item}>
-            <StatusIcon status={item} label={`状态 ${item}`} />
+            <StatusIcon tone={item} label={`状态 ${item}`} />
           </Cell>
         ))}
       </Row>
       <Row name="换状态">
         <div data-gallery-status>
-          <StatusIcon status={status} label={`当前 ${status}`} />
+          <StatusIcon tone={tone} label={`当前 ${tone}`} />
         </div>
-        <Button onClick={() => setStatus('pending')}>进行中</Button>
-        <Button onClick={() => setStatus('success')}>成功</Button>
-        <Button onClick={() => setStatus('error')}>失败</Button>
+        <Button onClick={() => setTone('pending')}>进行中</Button>
+        <Button onClick={() => setTone('ok')}>成功</Button>
+        <Button onClick={() => setTone('danger')}>失败</Button>
       </Row>
       <p className="gal-note">对勾与叉一笔一笔画出来；进行中的弧先退出，结果图标再弹入。</p>
     </>
   )
 }
 
-const AI_STATES: readonly { state: AiStatusState; label: string }[] = [
+const AI_STATES: readonly { state: AiStatusValue; label: string }[] = [
   { state: 'thinking', label: '思考中' },
   { state: 'searching', label: '检索中' },
   { state: 'writing', label: '编写中' },
@@ -137,7 +185,7 @@ const AI_STATES: readonly { state: AiStatusState; label: string }[] = [
 ]
 
 export function AiStatusDemo() {
-  const [state, setState] = useState<AiStatusState>('thinking')
+  const [state, setState] = useState<AiStatusValue>('thinking')
   const [elapsed, setElapsed] = useState(0)
   const active = state === 'thinking' || state === 'searching' || state === 'writing'
   useEffect(() => {
@@ -150,7 +198,7 @@ export function AiStatusDemo() {
     <>
       <Row name="当前">
         <AiStatus
-          state={state}
+          status={state}
           label={current.label}
           detail={state === 'searching' ? 'docs/product/README.md' : undefined}
           elapsed={elapsed}
@@ -171,7 +219,7 @@ export function AiStatusDemo() {
       </Row>
       <Row name="五种">
         {AI_STATES.map((item) => (
-          <AiStatus key={item.state} state={item.state} label={item.label} />
+          <AiStatus key={item.state} status={item.state} label={item.label} />
         ))}
       </Row>
       <p className="gal-note">进行中的文字有流光，结束就停；换状态时图标缩放着换、文字上下滑着换，整行宽度弹簧伸缩。</p>
@@ -183,6 +231,9 @@ const ORB_STATES: readonly { state: OrbState; label: string }[] = [
   { state: 'idle', label: '空闲' },
   { state: 'listening', label: '聆听' },
   { state: 'thinking', label: '思考' },
+  { state: 'streaming', label: '流式' },
+  { state: 'done', label: '完成' },
+  { state: 'error', label: '出错' },
 ]
 
 export function MatrixOrbDemo() {
@@ -192,35 +243,43 @@ export function MatrixOrbDemo() {
     <>
       <Row name="可切换">
         <div data-gallery-orb>
-          <MatrixOrb state={state} level={state === 'listening' ? level : undefined} label={`状态球：${state}`} />
+          <MatrixOrb status={state} level={state === 'listening' ? level : undefined} label={`状态球：${state}`} />
         </div>
-        {ORB_STATES.map((item) => (
-          <Button key={item.state} onClick={() => setState(item.state)}>
-            {item.state}
-          </Button>
-        ))}
-        <label>
-          音量{' '}
-          <input
-            type="range"
-            min={0}
-            max={1}
-            step={0.05}
-            value={level}
-            aria-label="音量"
-            onChange={(event) => setLevel(Number(event.target.value))}
-          />
-        </label>
+        <ToggleGroup
+          size="sm"
+          value={state}
+          onValueChange={(next) => next && setState(next as OrbState)}
+          aria-label="状态"
+        >
+          {ORB_STATES.map((item) => (
+            <ToggleGroupItem key={item.state} value={item.state}>
+              {item.label}
+            </ToggleGroupItem>
+          ))}
+        </ToggleGroup>
+        {state === 'listening' ? (
+          <div className="gal-orb-level">
+            <span>输入电平</span>
+            <Slider
+              value={[level]}
+              min={0}
+              max={1}
+              step={0.05}
+              onValueChange={(next) => setLevel(next[0] ?? 0)}
+              thumbLabels={['输入电平']}
+            />
+          </div>
+        ) : null}
       </Row>
       <Row name="三种">
         {ORB_STATES.map((item) => (
-          <Cell key={item.state} name={item.state}>
-            <MatrixOrb state={item.state} label={`状态球：${item.label}`} cells={12} />
+          <Cell key={item.state} name={item.label}>
+            <MatrixOrb status={item.state} label={`状态球：${item.label}`} cells={12} />
           </Cell>
         ))}
       </Row>
       <p className="gal-note">
-        方点排成圆：待命慢呼吸、聆听同心波跟音量走、思考几个热点绕着转；换状态时权重插值，整个球按弹簧缩放。
+        方点排成圆：待命慢呼吸、聆听同心波跟输入电平走、思考几个热点绕着转；换状态时权重插值，整个球按弹簧缩放。
       </p>
     </>
   )
@@ -237,15 +296,16 @@ export function ArcadePixelDemo() {
           <ArcadePixel text="KATANA" pixelSize={6} />
         </div>
         <ArcadePixel text="READY 01" pixelSize={4} />
-        <ArcadePixel text="GAME OVER" pixelSize={4} palette={['transparent', 'var(--ink-100)']} />
+        <ArcadePixel text="GAME OVER" pixelSize={4} palette={['transparent', 'var(--k-content-primary-foreground)']} />
       </Row>
       <Row name="精灵">
         {Object.entries(ARCADE_SPRITES).map(([name, sprite]) => (
           <Cell key={name} name={name}>
             <ArcadePixel
               sprite={sprite}
+              label={name}
               pixelSize={5}
-              palette={['transparent', 'var(--signal-orange)', 'var(--ink-100)']}
+              palette={['transparent', 'var(--accent)', 'var(--k-content-primary-foreground)']}
             />
           </Cell>
         ))}

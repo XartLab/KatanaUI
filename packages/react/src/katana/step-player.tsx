@@ -5,6 +5,12 @@
 // 播放中是暂停、暂停时是播放、全部放完是重放，点重放回到第一步并开始放；③ 每步可以有自己的时长；④ 可选「可跳」：点圆点直接去那一步，
 // 点击区比圆点大（至少 44px 高）；⑤ 放完可以循环，放完时触发一次回调。
 // 不学它的：用 flubber 把播放与暂停的路径变形（要加依赖）——我们让三个图标用弹簧缩放着换，不加依赖。
+// G3：size 收成 sm | md（体检 §4 尺寸统一）：sm 24px、md 32px（默认，等于改前的默认 32）；旧的数字写法留一个版本作兼容。
+// value / onValueChange 仍是步的下标（0 起）：steps 可以只给个数，步没有自己的 id，位置就是它的身份（体检 §4 建议改 key，这里不改，理由同上）。
+
+/** Height of the button and the bar: sm is 24px, md 32px. */
+export type StepPlayerSize = 'sm' | 'md'
+const SIZE_PX: Record<StepPlayerSize, number> = { sm: 24, md: 32 }
 import { AnimatePresence, motion, useMotionValue, useTransform } from 'motion/react'
 import { useEffect, useEffectEvent, useMemo, useState } from 'react'
 import { cn } from '../lib/cn.ts'
@@ -61,10 +67,10 @@ export type StepPlayerProps = {
    */
   onComplete?: () => void
   /**
-   * Height of the button and the bar in px.
-   * 钮与条的高（px）。
+   * Height of the button and the bar: sm 24px, md 32px (default). A number of px still works but is deprecated.
+   * 钮与条的高：sm 24、md 32（默认）；直接写像素数的旧写法留一个版本作兼容。
    */
-  size?: number
+  size?: StepPlayerSize | number
   /**
    * Click a dot to jump to that step; the hit area is at least 44px high.
    * 点圆点直接去那一步。
@@ -113,7 +119,7 @@ export function StepPlayer({
   duration = 4000,
   loop = false,
   onComplete,
-  size = 32,
+  size: sizeProp = 'md',
   seekable = false,
   labels,
   className,
@@ -131,6 +137,7 @@ export function StepPlayer({
   const progress = useMotionValue(0)
   const fill = useTransform(progress, (p) => `${p * 100}%`)
   const stepMs = stepDuration(items[index]?.duration, duration)
+  const size = typeof sizeProp === 'number' ? sizeProp : SIZE_PX[sizeProp]
 
   const dot = Math.max(4, Math.round(size * 0.2))
   const bar = dot * 6
@@ -192,6 +199,7 @@ export function StepPlayer({
       data-slot="step-player"
       data-playing={isPlaying || undefined}
       data-finished={finished || undefined}
+      data-size={typeof sizeProp === 'number' ? undefined : sizeProp}
       className={cn('inline-flex items-center gap-2 text-ink-3', className)}
     >
       <button

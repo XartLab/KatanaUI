@@ -5,7 +5,7 @@ import { cn } from '../lib/cn.ts'
 import { Button } from '../primitives/button.tsx'
 import { Input } from '../primitives/input.tsx'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../primitives/tooltip.tsx'
-import { stepDecimal } from './format/index.ts'
+import { stepDecimal } from '../lib/chart/format/index.ts'
 
 // 十进制字符串框（价格、数量）：值是字符串，不经 JS 数字（决策记录 0014），按品种的最小变动价位或最小下单量走一格。
 // 从下单面板的 StepField 收进来（#1955）；外观与行为照原来的样子：一个输入框 + 右边两个图标按钮，不给用户设步长
@@ -19,9 +19,21 @@ const SHIFT_STEPS = 10
 /** 悬停多久出按钮的提示：与应用里的图标按钮提示一致。 */
 const TIP_DELAY_MS = 500
 
+/** Texts of DecimalField (the package ships no text). */
+export type DecimalFieldLabels = {
+  /** Accessible name and hover tip of the − button. −钮的读屏名与悬停提示。 */
+  decrease: string
+  /** Accessible name and hover tip of the + button. +钮的读屏名与悬停提示。 */
+  increase: string
+}
+
 export type DecimalFieldProps = {
+  /** The value as a decimal string (never goes through a JS number). */
   value: string
-  onValue: (value: string) => void
+  /** Called with the new string on typing, arrow keys and the buttons. */
+  onValueChange?: (value: string) => void
+  /** Old name of onValueChange, kept for one release. @deprecated Use onValueChange. */
+  onValue?: (value: string) => void
   /** 一格有多大（最小变动价位或最小下单量）；'0' 按 1 走。 */
   step: string
   /** 空框时走格子从哪起（例：最新价）；没有就空框不动。 */
@@ -36,8 +48,10 @@ export type DecimalFieldProps = {
   readOnly?: boolean
   /** error 设 aria-invalid 并换危险色边；warning 只换琥珀色边，不设 aria-invalid。 */
   status?: 'error' | 'warning'
-  /** 给了才显示 − / + 按钮；文字由调用方传（读屏名，也是悬停提示）。 */
-  buttons?: { decrease: string; increase: string }
+  /** Given: − / + buttons appear; the texts are their accessible names and hover tips. 给了才显示 − / + 按钮。 */
+  labels?: DecimalFieldLabels
+  /** Old name of labels, kept for one release. @deprecated Use labels. */
+  buttons?: DecimalFieldLabels
   className?: string
 } & Omit<
   ComponentProps<'input'>,
@@ -85,9 +99,11 @@ function StepButton({
   )
 }
 
+/** Decimal-string field for prices and quantities: arrow keys and optional − / + buttons step by the instrument's tick or lot. */
 export function DecimalField({
   value,
-  onValue,
+  onValueChange,
+  onValue: legacyOnValue,
   step,
   base = null,
   label,
@@ -96,12 +112,15 @@ export function DecimalField({
   disabled,
   readOnly,
   status,
-  buttons,
+  labels,
+  buttons: legacyButtons,
   className,
   onKeyDown,
   style,
   ...rest
 }: DecimalFieldProps) {
+  const onValue = (next: string) => (onValueChange ?? legacyOnValue)?.(next)
+  const buttons = labels ?? legacyButtons
   const frozen = Boolean(disabled || readOnly)
   const nudge = (direction: 1 | -1, multiplier = 1) => {
     if (frozen) return
@@ -132,7 +151,7 @@ export function DecimalField({
           readOnly={readOnly}
           onChange={(event) => onValue(event.target.value)}
           onKeyDown={handleKeyDown}
-          className="aria-invalid:border-danger data-[status=warning]:border-(--signal-amber)"
+          className="aria-invalid:border-danger data-[status=warning]:border-(--k-status-warn-foreground)"
           style={unit ? { ...style, paddingRight: `${unit.length + 2}ch` } : style}
         />
         {unit ? (

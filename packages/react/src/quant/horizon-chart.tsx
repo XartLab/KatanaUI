@@ -6,7 +6,7 @@ import { useState } from 'react'
 import { cn } from '../lib/cn.ts'
 import { useScrubber } from '../lib/use-scrubber.ts'
 import { horizonBands, horizonMax, HORIZON_BANDS } from './horizon-model.ts'
-import { makePlot, pct, PLOT_W } from './series-geometry.ts'
+import { makePlot, pct, PLOT_W } from '../lib/chart/series-geometry.ts'
 
 export type HorizonRow = { key: string; label: string; values: readonly number[] }
 

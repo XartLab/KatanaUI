@@ -155,7 +155,7 @@ describe('SeriesExplorer 渲染', () => {
     const html = render()
     expect(html).toContain('data-range="all"')
     expect(html.match(/data-slot="series-bar"/g)).toHaveLength(8)
-    expect(html).toContain('fill:var(--ink-200)')
+    expect(html).toContain('fill:var(--k-content-body-foreground)')
     expect(html).toContain('aria-expanded="true"')
     expect(html).toContain('data-slot="series-tab"')
     expect(html).toContain('data-slot="toolbar"')
@@ -178,7 +178,7 @@ describe('SeriesExplorer 渲染', () => {
     const html = render({
       kpis: [{ key: 'b', label: '乙', series: 'b', reduce: 'sum', format: String }],
     })
-    expect(html).toContain('fill:var(--ink-300)')
+    expect(html).toContain('fill:var(--k-content-secondary-foreground)')
   })
 
   it('指定区间：3M 的瓦片值与变化相对上一期；上一期不够长（全部）没有变化数据，变化行不渲染', () => {

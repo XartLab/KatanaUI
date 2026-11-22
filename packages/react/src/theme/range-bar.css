@@ -1,0 +1,114 @@
+/* SPDX-License-Identifier: MIT */
+/* 还直接读色阶的（2026-11-18 G4 迁 token 时留下）：--alpha-white-5、--alpha-white-7——characteristics 里没有同值、同语义的（轨道、徽标底、悬停的半透明灰档，暗橙边框），等 G0 补齐再换。 */
+/* 区间条 RangeBar 与比较条 CompareBar。2026-11-18 由 quote.css 的区间条与 symbol-overview.css 的三角标、比较条（#53，对齐 TradingView 品种页右栏）合成。 颜色只用 token（--pnl-up / --pnl-down 跟涨跌配色走）；数字一律等宽（tabular-nums）；动效只用三条弹簧的 CSS 形式（--dur-* / --ease-*）。 */
+
+/* —— 区间条 —— */
+.k-range {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  color: var(--k-content-body-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+  font-variant-numeric: tabular-nums;
+}
+.k-range-end {
+  display: flex;
+  flex-direction: column;
+  flex: 0 0 auto;
+}
+.k-range-end.is-high {
+  align-items: flex-end;
+}
+.k-range-end small {
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-range-track {
+  position: relative;
+  flex: 1 1 auto;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--alpha-white-7);
+}
+.k-range-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  border-radius: 2px;
+  background: var(--k-content-secondary-foreground);
+  transition: width var(--dur-snappy) var(--ease-snappy);
+}
+.k-range-mark {
+  position: absolute;
+  top: 50%;
+  width: 4px;
+  height: 12px;
+  margin: -6px 0 0 -2px;
+  border-radius: 2px;
+  background: var(--k-content-primary-foreground);
+  transition: left var(--dur-snappy) var(--ease-snappy);
+}
+
+/* —— 区间条：TradingView 右栏的画法（标题在上、细轨道、轨道下方的三角）与比较条 —— */
+.k-range-block {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.k-range-title {
+  color: var(--k-content-secondary-foreground);
+  font: 400 12px/16px var(--font-sans);
+}
+.k-range[data-marker='triangle'] .k-range-fill {
+  display: none;
+}
+.k-range[data-marker='triangle'] .k-range-track {
+  height: 2px;
+  background: var(--k-content-tertiary-foreground);
+  overflow: visible;
+}
+.k-range[data-marker='triangle'] .k-range-mark {
+  top: 100%;
+  width: 0;
+  height: 0;
+  margin: 3px 0 0 -5px;
+  border-radius: 0;
+  border-right: 5px solid transparent;
+  border-bottom: 7px solid var(--k-content-primary-foreground);
+  border-left: 5px solid transparent;
+  background: transparent;
+}
+.k-compare {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font: var(--text-caption) var(--font-sans-small);
+  font-variant-numeric: tabular-nums;
+}
+.k-compare-head {
+  display: flex;
+  justify-content: space-between;
+  color: var(--k-content-secondary-foreground);
+}
+.k-compare-text {
+  color: var(--k-content-primary-foreground);
+}
+.k-compare-track {
+  display: block;
+  height: 4px;
+  margin-top: 4px;
+  border-radius: 2px;
+  background: var(--alpha-white-5);
+}
+.k-compare-fill {
+  display: block;
+  height: 100%;
+  border-radius: 2px;
+  transition: width var(--dur-snappy) var(--ease-snappy);
+}
+.k-compare-row[data-side='a'] .k-compare-fill {
+  background: var(--k-content-primary-foreground);
+}
+.k-compare-row[data-side='b'] .k-compare-fill {
+  background: var(--k-content-tertiary-foreground);
+}

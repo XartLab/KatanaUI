@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 import { describe, expect, it } from 'vitest'
 import {
+  hypothesisSeverity,
   countByLayer,
   countByStatus,
   countEvidence,
@@ -70,5 +71,17 @@ describe('hypothesis-ledger-model', () => {
   it('各状态与各层的计数互不串', () => {
     expect(countByStatus(items, ['credit'], NOW)).toMatchObject({ all: 2, pending: 1, supported: 1, expired: 0 })
     expect(countByLayer(items, 'pending', NOW)).toMatchObject({ strategy: 1, credit: 1, fiscal: 0 })
+  })
+})
+
+describe('hypothesisSeverity', () => {
+  it('待验证点亮强调色、支持绿、证伪红、过期琥珀（灯由 ledOf 取，G6）', async () => {
+    const { ledOf } = await import('../../lib/severity.ts')
+    expect(['pending', 'supported', 'refuted', 'expired'].map((s) => ledOf(hypothesisSeverity(s as never)))).toEqual([
+      'on',
+      'ok',
+      'danger',
+      'warn',
+    ])
   })
 })

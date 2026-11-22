@@ -59,6 +59,7 @@
 | `stretch` | `boolean` | — | Treat column widths as proportions: when the container is wider than the sum, the extra space is shared by width ratio; by default widths are fixed pixels. |
 | `fit` | `boolean` | — | Height follows the content (a small table in a dialog): no scrollbar up to maxHeight px. |
 | `maxHeight` | `number` | — | Largest height in px when fit is set. |
+| `live` | `boolean` | `false` | Live data mode (default false): numeric cells (number, price, quantity, pnl, change) flash the up or down color when their value changes, rows glide to their new place when the sort order changes, and newly added rows are highlighted briefly. |
 | `classNames` | `Partial<Record<GridSlot, string>>` | `{}` | Extra class names per part. |
 
 ### 列类型 ColumnType
@@ -67,13 +68,14 @@
 
 ### DataGridHost（经 DataGridHostProvider 提供）
 
-应用才有的能力；包里不带语言，文案都是宿主传的。
+应用才有的能力；包里不带语言，文案都是宿主经 labels（DataGridLabels）传的；旧名 texts / DataGridTexts 留一个版本（G6）。
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
 | `matchKey` | `(event: KeyboardEvent<HTMLElement>) => GridAction \| null` | — | Which table action a key press stands for; null if none. |
 | `keysOf` | `(action: GridAction) => string \| undefined` | — | How an action's shortcut is written (shown at the right of menu items and in the table name). |
-| `texts` | `Partial<DataGridTexts>` | — | Texts of the menu items and accessible names; the standard menu items appear only when copy, save and resetColumns are all given. |
+| `labels` | `Partial<DataGridLabels>` | — | Texts of the menu items and accessible names; the standard menu items appear only when copy, save and resetColumns are all given. |
+| `texts` | `Partial<DataGridLabels>` | — | Old name of labels. |
 | `renderMenu` | `(entries: readonly GridMenuEntry[]) => ReactNode` | — | What to draw in the menu: use it when the host's items go beyond GridMenuEntry; by default the package draws item, submenu and separator. |
 | `askAgent` | `(text: string \| null) => void` | — | Ask the agent: when given together with askText, rows get a context menu item and the key works while the table is focused. |
 

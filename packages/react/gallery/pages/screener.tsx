@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 import { SearchIcon } from 'lucide-react'
 import { useMemo, useState } from 'react'
+import { LiveToggle } from '../LiveToggle.tsx'
+import { chance, useLiveTicker } from '../live-sim.ts'
 import { RatingText, formatVolume, type RatingLevel } from '../../src/quant/index.ts'
 import {
   ColumnPicker,
@@ -295,7 +297,7 @@ export function ScreenerDemo() {
         }}
         labels={{ trigger: '已保存的筛选', save: '另存为…' }}
       />
-      <FilterBar fields={FIELDS} value={conditions} onChange={setConditions} labels={BAR_LABELS} />
+      <FilterBar fields={FIELDS} value={conditions} onValueChange={setConditions} labels={BAR_LABELS} />
       <ColumnSetTabs layout={layout} onLayoutChange={setLayout} sets={SETS} label="列集" />
       <div style={{ display: 'flex', height: 320 }} data-testid="screener-grid">
         <DataGrid
@@ -331,10 +333,18 @@ export function ScreenerDemo() {
 }
 
 export function NewsReaderDemo() {
+  // 实时模拟：阅读中的这一条偶尔被改（标题加「更新 n」、多一段更正）；第一拍必改，手动步进有确定结果。
+  const { state } = useLiveTicker(
+    { rev: 0 },
+    (s, rng, tick) => (tick === 0 || chance(rng, 0.35) ? { rev: s.rev + 1 } : s),
+    { intervalMs: 4000 },
+  )
   return (
-    <div style={{ width: '100%', maxWidth: 560 }}>
+    <div style={{ width: '100%', maxWidth: 560, display: 'grid', gap: 8 }}>
+      <LiveToggle labels={{ group: '数据刷新', live: '实时', paused: '暂停' }} />
       <NewsReader
-        title="演示：虚构公司公布季度业绩，营收好于预期"
+        title={`演示：虚构公司公布季度业绩，营收好于预期${state.rev > 0 ? `（更新 ${state.rev}）` : ''}`}
+        version={state.rev}
         source="演示通讯社"
         meta="7 分钟前 · 演示通讯社 · 2 分钟阅读"
         symbols={[
@@ -342,13 +352,21 @@ export function NewsReaderDemo() {
           { code: 'BETA', name: '示例贝塔零售', change: -0.59 },
         ]}
         keyPoints={['营收同比增长 12%，高于市场预期的 9%', '管理层上调全年指引', '盘后股价上涨']}
-        labels={{ reader: '新闻阅读', keyPoints: '要点', close: '关闭', report: '举报', copyLink: '复制链接' }}
+        labels={{
+          reader: '新闻阅读',
+          keyPoints: '要点',
+          close: '关闭',
+          report: '举报',
+          copyLink: '复制链接',
+          updated: '已更新',
+        }}
         onClose={() => undefined}
         onReport={() => undefined}
         onCopyLink={() => undefined}
       >
         <p>以上内容是演示文字，公司、数字与来源都是虚构的。</p>
         <p>正文由调用方传入，品种胶囊可以用 NewsSymbolChip 内联在正文里。</p>
+        {state.rev > 0 && <p>更正：第 {state.rev} 次修订，数字与表述已更新（演示）。</p>}
       </NewsReader>
     </div>
   )

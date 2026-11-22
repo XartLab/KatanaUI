@@ -8,7 +8,7 @@
 
 ### CalendarHeatmap
 
-日期是不带时区的日历日 YYYY-MM-DD，按 UTC 零点算。外观读 CSS 变量，见 theme/chart-kit.css 开头。年视图用的是整年的格子（一周一列），不是 12 个缩小月历（待定：第一版先做整年格子）。
+日期是不带时区的日历日 YYYY-MM-DD，用 @internationalized/date 的 CalendarDate 算（不碰本地时区）。样式在 theme/calendar-heatmap.css。年视图用的是整年的格子（一周一列），不是 12 个缩小月历（待定：第一版先做整年格子）。
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
@@ -22,6 +22,7 @@
 | `total / toolbar` | `{ text, value } / ReactNode` | — | 顶行右侧的月合计（按正负用涨跌色）；左边放视图切换与月份说明。 |
 | `actionLabels / tableHeads` | `object` | — | 右上角三件与表格视图的文字；导出与全屏回调不给就不画，表格视图总有。 |
 | `onSelect` | `(date: string) => void` | — | 点一天或选中后按 Enter（写联动 range）。 |
+| `reveal` | `boolean` | `false` | 进场时格子依次淡入长大（年视图一列一列、月历一天一天）；月份或区间变了会重播。 |
 
 ## Usage
 
@@ -151,6 +152,7 @@ export function CalendarHeatmapUsage() {
 - 换手视图：序数色，格从暗到亮。
 - 事件视图：格子不着色，每格最多列两条事件文字。
 - 没有数据的日子：只有日期与「·」，与持平（中点灰）不同。
+- 悬停：tooltip 从 0.8 倍弹到 1，格子的描边与色平滑过渡；reveal 开着时进场格子依次淡入。
 
 ## Don't
 

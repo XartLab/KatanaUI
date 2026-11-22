@@ -12,14 +12,15 @@ export function ArcadePixelUsage() {
         <ArcadePixel text="KATANA" pixelSize={6} />
       </div>
       <ArcadePixel text="READY 01" pixelSize={4} />
-      <ArcadePixel text="GAME OVER" pixelSize={4} palette={['transparent', 'var(--ink-100)']} />
+      <ArcadePixel text="GAME OVER" pixelSize={4} palette={['transparent', 'var(--k-content-primary-foreground)']} />
 
       {Object.entries(ARCADE_SPRITES).map(([name, sprite]) => (
         <ArcadePixel
           key={name}
           sprite={sprite}
+          label={name}
           pixelSize={5}
-          palette={['transparent', 'var(--signal-orange)', 'var(--ink-100)']}
+          palette={['transparent', 'var(--accent)', 'var(--k-content-primary-foreground)']}
         />
       ))}
 

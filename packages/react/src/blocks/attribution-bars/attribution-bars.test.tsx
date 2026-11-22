@@ -45,9 +45,8 @@ describe('盈亏归因', () => {
         meta={(max) => `归因 · 刻度 ±${max}`}
         label="归因"
         formatValue={String}
-        otherLabel={(n) => `其他 ×${n}`}
+        labels={{ other: (n) => `其他 ×${n}`, share: '占比' }}
         formatShare={String}
-        shareLabel="占比"
         readouts={[{ key: 'sum', label: '合计', text: '+120', value: 120 }]}
         focusKey="a"
         heads={{ index: 'IDX', item: '项', value: '值', share: '占比 |贡献|', shareTitle: '占总贡献绝对值之和' }}

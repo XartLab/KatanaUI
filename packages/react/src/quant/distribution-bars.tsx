@@ -5,7 +5,7 @@
 // 图是 HTML 柱不是 SVG：柱顶的家数是文字，要跟柱一起按列对齐。
 import type { ReactNode } from 'react'
 import { cn } from '../lib/cn.ts'
-import type { GaugeTone } from '../katana/gauge-bar.tsx'
+import type { GaugeTone } from '../quotes/gauge-bar.tsx'
 
 export type DistributionTone = GaugeTone
 

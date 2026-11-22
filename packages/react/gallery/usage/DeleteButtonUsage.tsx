@@ -3,6 +3,10 @@ import { DeleteButton } from '../../src/index'
 
 export function DeleteButtonUsage() {
   return (
-    <DeleteButton label="Delete workspace" confirmLabel="Confirm delete" cancelLabel="Cancel" onConfirm={() => {}} />
+    <DeleteButton
+      label="Delete workspace"
+      labels={{ confirm: 'Confirm delete', cancel: 'Cancel' }}
+      onConfirm={() => {}}
+    />
   )
 }

@@ -17,7 +17,7 @@ const here = dirname(fileURLToPath(import.meta.url))
 const pkg = resolve(here, '..')
 const OUT = join(pkg, 'gallery/props.generated.json')
 /** package.json 的 exports 里有代码的几个入口（quant/format 已被 quant 再导出）。 */
-const ENTRIES = ['src/index.ts', 'src/quant/index.ts', 'src/cn/index.ts', 'src/blocks/index.ts']
+const ENTRIES = ['src/index.ts', 'src/quotes/index.ts', 'src/quant/index.ts', 'src/cn/index.ts', 'src/blocks/index.ts']
 
 const squash = (text) => text.replace(/\s+/g, ' ').trim()
 

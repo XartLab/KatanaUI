@@ -1,33 +1,23 @@
 [
   {
-    "page": "toast",
-    "theme": "console",
+    "page": "sparkline",
     "rule": "color-contrast",
-    "reason": "说明文字 k-text-caption 用 ink-3（#8f887a）压在 surface 3 上是 4.45:1，差 0.05；要改 ink-3 令牌（全库都受影响），另开票定"
+    "reason": "ASCII / braille 迷你图里没点亮的点阵格（.is-dim）故意用 ink-4 画底纹（约 2:1），是图形不是要读的字；整张图有 role=img 与读屏名。要改成非文字的底纹另开票"
   },
   {
-    "page": "command",
+    "page": "word-build",
     "rule": "color-contrast",
-    "reason": "命令面板的占位与分组标题用 ink-4（#5e5950）只有 2.5:1；ink-4 是装饰灰，这里该换 ink-3，要连同令牌一起定，另开票"
+    "timing": true,
+    "reason": "逐词搭出的动画由 motion 库的弹簧驱动，axe 量的时候后面的词还在淡入（1.1–1.2:1）；settle 只等得到 WAAPI 动画，等不到 motion 的弹簧。读屏名是整句，不受影响"
   },
   {
-    "page": "command",
-    "rule": "aria-required-children",
-    "reason": "cmdk 的分隔线（role=separator）直接放在 listbox 里，axe 不认；来自 cmdk 库的结构，要换分隔写法，另开票"
+    "page": "scroll-reveal-paragraph",
+    "rule": "color-contrast",
+    "reason": "随滚动点亮的段落：没滚到的词按设计先暗着（ink-4，约 2:1），滚到才亮；axe 量的是没滚的初始态。完整文字在读屏名里"
   },
   {
-    "page": "code-block",
+    "page": "kinetic-type-scroll",
     "rule": "color-contrast",
-    "reason": "代码高亮主题里的注释色 ink-4（#4a453c）压在深底上只有 1.95:1；要换高亮主题的注释色，另开票"
-  },
-  {
-    "page": "web-search",
-    "rule": "color-contrast",
-    "reason": "虚线占位按钮的 ink-3 文字落在浅色预览底（#efefef）上 3.05:1：预览底与件的主题不配，另开票查是预览还是件"
-  },
-  {
-    "page": "treemap",
-    "rule": "color-contrast",
-    "reason": "热力图块用固定的涨跌色做底，白字压在亮绿 / 亮红上 1.5 到 4.4:1；要按底色明暗选字色，另开票"
+    "reason": "随滚动变形的大字：没滚到的字母按设计半透明（约 3.9:1），这些字母 aria-hidden，读屏读的是整句；axe 量的是没滚的初始态"
   }
 ]

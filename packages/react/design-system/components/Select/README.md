@@ -69,6 +69,8 @@ export function SelectUsage() {
 ## Don't
 
 - 不要把可以直接点的两三个选项藏进下拉。
+- 选项多到要找（十几项以上）用 Combobox，能搜。
+- 要选多个用 MultiSelect，不要拿单选下拉连选几次。
 
 ## Composition
 

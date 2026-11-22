@@ -15,7 +15,8 @@ role=radiogroup；tab 只停在选中那张。value 传 null 表示受控但还�
 | `themes` * | `readonly ThemeOption[]` | — | The themes to choose from, each with value, label and preview colors (required). |
 | `value` | `string \| null` | — | The current theme; null means controlled but nothing selected. |
 | `defaultValue` | `string` | — | Initial theme when uncontrolled. |
-| `onChange` | `(value: string) => void` | — | Called with the chosen theme value. |
+| `onValueChange` | `(value: string) => void` | — | Called with the chosen theme value. |
+| `onChange` | `(value: string) => void` | — | Old name of onValueChange, kept for one release. |
 | `label` * | `string` | — | Accessible name of the whole group (required). |
 | `showLabels` | `boolean` | `true` | Whether to write the name under each thumbnail (accessible names are not affected). |
 | `disabled` | `boolean` | — | Disable the whole group. |
@@ -46,6 +47,8 @@ export function ThemeSelectorUsage() {
 ## Don't
 
 - 缩略颜色由调用方传，不要在包里写死主题色。
+- 不要拿它选主题以外的东西：缩略图画的是一块控制台，别的选项用 ToggleGroup 或 Select。
+- 主题超过四五个时别全摆成缩略：改成下拉，缩略只放常用的。
 
 ## Composition
 

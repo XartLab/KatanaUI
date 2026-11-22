@@ -17,18 +17,18 @@
 | `formatX` | `(index: number) => string` | — | 第几个点写成什么：时间轴刻度、读数、手柄的读屏值都用它。 |
 | `formatValue` | `(value: number) => string` | — | 数值写成什么：纵轴刻度与读数。 |
 | `labels` | `{ start, end, window }` | — | 三个手柄的读屏名（起点、终点、整个窗口）。 |
-| `window / defaultWindow` | `[number, number]` | — | 受控 / 不受控的窗口，默认整段。 |
-| `onWindowChange` | `(window: [number, number]) => void` | — | 窗口变了（拖、键盘、点概览条）。 |
+| `value / defaultValue` | `[number, number]` | — | 受控 / 不受控的窗口，默认整段。旧名 window / defaultWindow 留一个版本（@deprecated）。 |
+| `onValueChange` | `(window: [number, number]) => void` | — | 窗口变了（拖、键盘、点概览条）。旧名 onWindowChange 留一个版本。 |
 | `minSpan` | `number` | `2` | 窗口最少几个点：折线至少两个点才画得出来。 |
 | `height / brushHeight` | `number` | `160 / 40` | 主图与概览条的高（px）。 |
 
 ### BrushStrip
 
-只有概览条（SeriesExplorer 这类自己画主图的件用它）。属性是 values、window、onWindowChange、formatX、labels、minSpan、height。
+只有概览条（SeriesExplorer 这类自己画主图的件用它）。属性是 values、value、onValueChange、formatX、labels、minSpan、height（旧名 window / onWindowChange 留一个版本）。
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `window / onWindowChange` | `[number, number]` | — | 必填：窗口由上层持有。 |
+| `value / onValueChange` | `[number, number]` | — | 窗口由上层持有（受控）。 |
 
 ## Usage
 
@@ -74,7 +74,7 @@ export function BrushChartUsage() {
           formatX={dayAt}
           formatValue={(v) => v.toFixed(0)}
           labels={{ start: '窗口起点', end: '窗口终点', window: '窗口位置' }}
-          defaultWindow={[60, 120]}
+          defaultValue={[60, 120]}
         />
       </div>
     </>
@@ -84,7 +84,7 @@ export function BrushChartUsage() {
 
 ## States
 
-- 默认：窗口整段（或 defaultWindow），概览条上窗口外变暗。
+- 默认：窗口整段（或 defaultValue），概览条上窗口外变暗。
 - 拖动中：窗口换成抓取手形，主图同步变。
 - 扫读：主图上出现竖线与点，下面一行写时间与值。
 - 窗口到了最小（minSpan）：继续缩小被夹住，不再变。

@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 import { useState } from 'react'
 import {
+  ConsensusBlock,
   DecisionQueue,
   PanelFrame,
   PanelFrameBody,
@@ -8,7 +9,6 @@ import {
   type DecisionItem,
   type DecisionQueueLabels,
 } from '../../src/blocks'
-import { ConsensusBlock } from '../../src/quant'
 import { Button } from '../../src/index'
 
 const DQ_NOW = Date.UTC(2026, 10, 15, 9, 30, 0)
@@ -163,10 +163,10 @@ export function DecisionQueueUsage() {
                   i.id === 'd1' ? (
                     <ConsensusBlock
                       label="执行前检查"
-                      intent="买入 · 600001 × 2,000"
+                      subject="买入 · 600001 × 2,000"
                       parties={[
-                        { key: 'gw', label: 'GATEWAY', state: 'pass', message: '整手 ✓' },
-                        { key: 'risk', label: 'RISK', state: 'warn', message: '集中度 58 / 60' },
+                        { id: 'gw', label: 'GATEWAY', state: 'pass', message: '整手 ✓' },
+                        { id: 'risk', label: 'RISK', state: 'warn', message: '集中度 58 / 60' },
                       ]}
                       verdict="warn"
                       verdictText="可提交"

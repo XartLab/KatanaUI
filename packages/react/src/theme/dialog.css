@@ -6,11 +6,11 @@
 :where(.k-dlg-head) {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--space-3);
   flex: 0 0 50px;
   height: 50px;
-  padding: 0 12px 0 16px;
-  border-bottom: 1px solid var(--alpha-white-5);
+  padding: 0 var(--space-3) 0 var(--space-4);
+  border-bottom: 1px solid var(--k-separable-subtle-borderColor);
 }
 :where(.k-dlg-head h2) {
   flex: 1;
@@ -19,37 +19,32 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  color: var(--ink-100);
+  color: var(--k-content-primary-foreground);
   font: var(--text-title) var(--font-sans);
   line-height: 1;
-}
-:where(.k-dlg-head .k-dlg-meta) {
-  color: var(--ink-300);
-  font: var(--text-data) var(--font-sans);
-  font-weight: 400;
 }
 :where(.k-dlg-body) {
   flex: 1;
   min-height: 0;
   overflow: auto;
-  padding: 16px 24px 24px;
+  padding: var(--space-4) var(--space-6) var(--space-6);
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--space-2);
 }
 :where(.k-dlg-foot) {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
   justify-content: flex-end;
   flex-wrap: wrap;
-  padding: 12px 16px;
-  border-top: 1px solid var(--alpha-white-5);
+  padding: var(--space-3) var(--space-4);
+  border-top: 1px solid var(--k-separable-subtle-borderColor);
 }
 :where(.k-dlg-foot .k-spacer) {
   flex: 1;
 }
-/* 确认类对话框：边是强调色的暗档。 */
+/* 确认类对话框：边换成粗一档的分隔色（line-200）。 */
 .k-dlg.confirm {
-  border-color: var(--line-200);
+  border-color: var(--k-separable-bold-borderColor);
 }

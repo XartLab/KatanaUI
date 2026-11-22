@@ -4,6 +4,7 @@
 // 学到的事实（只取行为）：① 换状态时三种状态的权重插值过去，中途被打断也从当前画面接着变，不跳；② 整个球的缩放跟弹簧走，聆听最大；
 // ③ 聆听态的亮度跟音量走，没有音量输入就用模拟包络；④ 缩放页面会改 devicePixelRatio，画布缓冲要跟着重建，不然被放大发糊；
 // ⑤ 小到不足半个设备像素的点不画（会变成一层雾）；⑥ 状态用文字另外读出。我们用方点不用圆点，颜色从 token 取（跟主题走）。
+// streaming / done / error 三态并入自 SmoothUI siri-orb 与 ai-core 的六态约定（https://github.com/educlopez/smoothui ，MIT，© 2024 Eduardo Calvo），用点阵自己的方式表达。
 // 循环由 requestAnimationFrame 驱动，状态变了只改目标不重启；缩放用 settle 弹簧的刚度与阻尼自己积分（画布上没有 motion 的值可用）。
 import { useEffect, useRef, useSyncExternalStore } from 'react'
 import { cn } from '../lib/cn.ts'
@@ -17,6 +18,16 @@ const BLEND = 0.16
 const ATTACK = 0.22
 const RELEASE = 0.08
 
+/** 没传 color 时按状态取色：完成是绿、出错是红，其余是强调色（状态靠色相也读得出，不只靠动）。 */
+const STATE_COLOR: Readonly<Record<OrbState, string>> = {
+  idle: 'var(--accent)',
+  listening: 'var(--accent)',
+  thinking: 'var(--accent)',
+  streaming: 'var(--accent)',
+  done: 'var(--k-status-ok-foreground)',
+  error: 'var(--k-status-danger-foreground)',
+}
+
 const subscribeResize = (onChange: () => void) => {
   window.addEventListener('resize', onChange)
   return () => window.removeEventListener('resize', onChange)
@@ -24,7 +35,15 @@ const subscribeResize = (onChange: () => void) => {
 const readRatio = () => Math.min(window.devicePixelRatio || 1, 4)
 
 export type MatrixOrbProps = {
-  /** The state; when it changes the weights of the three patterns interpolate, with no jump. */
+  /**
+   * What the agent is doing (a state machine, so status); when it changes the weights of the patterns interpolate, with no jump.
+   * 状态机（G3 起叫 status，体检 §4）：换状态时各图案的权重插值过去，不跳。默认 idle。
+   */
+  status?: OrbState
+  /**
+   * Old name kept for one release.
+   * @deprecated Use status.
+   */
   state?: OrbState
   /**
    * Volume of the listening state from 0 to 1; a simulated envelope is used when omitted.
@@ -42,22 +61,16 @@ export type MatrixOrbProps = {
    */
   label: string
   /**
-   * Color of the dots, a CSS color or a CSS variable reference; defaults to the theme accent.
-   * 点的颜色，默认是主题的强调色；传 CSS 颜色，或写成 var(token 名)。
+   * Color of the dots, a CSS color or a CSS variable reference; defaults to the theme accent (green when done, red on error).
+   * 点的颜色，默认是主题的强调色（完成绿、出错红）；传 CSS 颜色，或写成 var(token 名)。
    */
   color?: string
   /** Extra class name on the root. */
   className?: string
 }
 
-export function MatrixOrb({
-  state = 'idle',
-  level,
-  cells = 16,
-  label,
-  color = 'var(--signal-orange)',
-  className,
-}: MatrixOrbProps) {
+export function MatrixOrb({ status, state: legacy, level, cells = 16, label, color, className }: MatrixOrbProps) {
+  const state: OrbState = status ?? legacy ?? 'idle'
   const canvas = useRef<HTMLCanvasElement>(null)
   const stateRef = useRef(state)
   const levelRef = useRef(level)
@@ -78,7 +91,7 @@ export function MatrixOrb({
     el.width = el.height = buffer
     ctx.setTransform(buffer / side, 0, 0, buffer / side, 0, 0)
     const half = (grid - 1) / 2
-    const weights: Record<OrbState, number> = { idle: 0, listening: 0, thinking: 0 }
+    const weights = Object.fromEntries(ORB_STATES.map((s) => [s, 0])) as Record<OrbState, number>
     weights[stateRef.current] = 1
     let t = 0
     let amplitude = 0
@@ -136,7 +149,7 @@ export function MatrixOrb({
       data-slot="matrix-orb"
       data-state={state}
       className={cn('block flex-none', className)}
-      style={{ width: side, height: side, color }}
+      style={{ width: side, height: side, color: color ?? STATE_COLOR[state] }}
     />
   )
 }

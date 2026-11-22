@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 // Splitter 的纯函数：吸附与夹取。逻辑从应用 workspace/split-tree.ts 的 snapSplitRatio、clampSplitRatio 搬来（#1901），应用那边改成引这里，只留一份。
 
+import { clamp } from '../lib/num.ts'
+
 /** 默认吸附点：1/3、1/2、2/3（组件卡 Splitter：靠近这几处 6px 内吸附）。 */
 export const DEFAULT_SNAP_POINTS: readonly number[] = [1 / 3, 0.5, 2 / 3]
 
@@ -25,7 +27,8 @@ export function clampSplitRatio(ratio: number, span: number, firstMinimum: numbe
     return firstMinimum + secondMinimum > 0 ? firstMinimum / (firstMinimum + secondMinimum) : 0.5
   const minimum = firstMinimum / span
   const maximum = 1 - secondMinimum / span
-  return Math.max(minimum, Math.min(maximum, ratio))
+  // 原写法是 max 在外；上面已把「放不下」分支掉，这里 minimum ≤ maximum，两种先后结果相同。
+  return clamp(ratio, minimum, maximum)
 }
 
 /** 键盘：返回新比例，不是这个方向就返回 null。方向键按 stepPx 挪（Shift 用 fastStepPx），Home / End 到两端，Enter 回默认。 */

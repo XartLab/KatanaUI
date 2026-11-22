@@ -2,7 +2,7 @@
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vite-plus/test'
 import { ConnectedScatter } from './connected-scatter.tsx'
-import { arrowHead, moveScatter, scatterLayout, type ScatterSeries } from './scatter-model.ts'
+import { arrowHead, moveScatter, scatterLayout, type ScatterSeries } from '../lib/chart/scatter-model.ts'
 
 const view = {
   actionLabels: { group: '操作', table: '表格视图', exportCsv: '导出', fullscreen: '全屏' },

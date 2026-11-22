@@ -7,6 +7,8 @@
 // ⑥ 行内引用悬停停 300ms 才开、离开 150ms 才收，键盘聚焦立即开，鼠标点击不因聚焦而开（点击本来就要去链接）。
 // 我们的不同：不存也不开任何 URL（决策记录 0011），来源只有站名、标题、摘要；来源小标是站名首字母的方块，不去取网站图标（不发网络请求）；
 // 给了 onOpen 卡片才可点。文字全由调用方传。
+// G3：「还有 N 条」「收起」两句收进 labels（more / less，体检 §4），旧的 moreLabel / lessLabel 留一个版本作兼容；来源小标的字号不再按边长内联算，
+//   一律 micro 档（10px）；进度环读 --accent、底环读 --k-separable-bold-borderColor（改前直接读 signal-orange / line-200）。
 import { AnimatePresence, motion } from 'motion/react'
 import { useLayoutEffect, useRef, useState, type ReactNode } from 'react'
 import { cn } from '../lib/cn.ts'
@@ -24,6 +26,14 @@ export type WebSource = {
 }
 
 export type WebSearchStatus = 'searching' | 'done'
+
+/** Texts of the overflow cards (the package ships no text). */
+export type WebSearchLabels = {
+  /** The card that stands for the hidden sources, for example "3 more". */
+  more: (count: number) => string
+  /** The card that folds them back. */
+  less: string
+}
 
 /** 来源小标上的字：站名第一个字符，大写；空的写「·」。 */
 export function siteInitial(site: string): string {
@@ -46,8 +56,8 @@ function SiteTile({ site, size = 16 }: { site: string; size?: number }) {
     <span
       aria-hidden="true"
       data-slot="web-search-tile"
-      className="k-text-micro grid flex-none place-items-center rounded-[4px] border border-line bg-surface-4 text-ink-2"
-      style={{ width: size, height: size, fontSize: Math.round(size * 0.6) }}
+      className="k-text-micro grid flex-none place-items-center rounded-[var(--radius-md)] border border-line bg-surface-4 tracking-normal text-ink-2"
+      style={{ width: size, height: size }}
     >
       {siteInitial(site)}
     </span>
@@ -58,13 +68,13 @@ function Globe({ searching, ring }: { searching: boolean; ring: number }) {
   return (
     <span className="relative grid size-7 flex-none place-items-center text-ink-3" data-slot="web-search-globe">
       <svg aria-hidden="true" viewBox="0 0 28 28" className="absolute inset-0 size-7 -rotate-90" fill="none">
-        <circle cx={14} cy={14} r={12.5} stroke="var(--line-200)" strokeWidth={1.5} />
+        <circle cx={14} cy={14} r={12.5} stroke="var(--k-separable-bold-borderColor)" strokeWidth={1.5} />
         <motion.circle
           data-slot="web-search-ring"
           cx={14}
           cy={14}
           r={12.5}
-          stroke="var(--signal-orange)"
+          stroke="var(--accent)"
           strokeWidth={1.5}
           strokeLinecap="round"
           initial={false}
@@ -119,8 +129,7 @@ function SourceCard({ source, onOpen }: { source: WebSource; onOpen?: (source: W
       <span className="k-text-data mt-1.5 line-clamp-2 text-left text-ink">{source.title}</span>
     </>
   )
-  const base =
-    'flex h-[76px] w-full flex-col rounded-[var(--radius-control)] border border-line bg-surface-2 p-2.5 text-left transition-colors duration-[120ms]'
+  const base = 'flex h-[76px] w-full flex-col k-mat-inset p-2.5 text-left transition-colors duration-[120ms]'
   return onOpen ? (
     <button
       type="button"
@@ -142,7 +151,7 @@ function SkeletonCard() {
     <div
       aria-hidden="true"
       data-slot="web-search-skeleton"
-      className="flex h-[76px] w-full flex-col gap-2 rounded-[var(--radius-control)] border border-line bg-surface-1 p-2.5"
+      className="flex h-[76px] w-full flex-col gap-2 k-mat-card p-2.5"
     >
       <span className="h-3 w-1/2 rounded-full bg-surface-4" />
       <span className="h-3 w-5/6 rounded-full bg-surface-3" />
@@ -166,12 +175,20 @@ export type WebSearchProps = {
    */
   progress?: number
   /**
-   * Text of the "N more" card (required).
+   * Texts of the "N more" and "collapse" cards (required unless the deprecated moreLabel / lessLabel are given).
    * 「还有 N 条」卡片的文字与「收起」卡片的文字。
    */
-  moreLabel: (count: number) => string
-  /** Text of the "collapse" card (required). */
-  lessLabel: string
+  labels?: WebSearchLabels
+  /**
+   * Old name kept for one release.
+   * @deprecated Use labels.more.
+   */
+  moreLabel?: (count: number) => string
+  /**
+   * Old name kept for one release.
+   * @deprecated Use labels.less.
+   */
+  lessLabel?: string
   /** Whether the source area is expanded. */
   open?: boolean
   /** Initial expanded state when uncontrolled. */
@@ -192,6 +209,7 @@ export function WebSearch({
   status = 'done',
   label,
   progress,
+  labels: given,
   moreLabel,
   lessLabel,
   open,
@@ -200,6 +218,7 @@ export function WebSearch({
   onOpen,
   className,
 }: WebSearchProps) {
+  const labels: WebSearchLabels = given ?? { more: moreLabel ?? String, less: lessLabel ?? '' }
   const [innerOpen, setInnerOpen] = useState(defaultOpen)
   const [expanded, setExpanded] = useState(false)
   const [spread, setSpread] = useState(false)
@@ -342,7 +361,7 @@ export function WebSearch({
                         onClick={() => setExpanded(true)}
                         className={cn(moreCard, focusRing)}
                       >
-                        {moreLabel(hidden)}
+                        {labels.more(hidden)}
                       </button>,
                     )
                   : null}
@@ -356,7 +375,7 @@ export function WebSearch({
                         onClick={() => setExpanded(false)}
                         className={cn(moreCard, focusRing)}
                       >
-                        {lessLabel}
+                        {labels.less}
                       </button>,
                     )
                   : null}
@@ -421,7 +440,7 @@ export function WebSearchCitation({ source, index, className }: WebSearchCitatio
             exit={{ opacity: 0, y: 4, scale: 0.98 }}
             transition={unit(snappy)}
           >
-            <span className="block rounded-[var(--radius-overlay)] border border-alpha-white-6 bg-surface-4 p-3 text-left shadow-[0_16px_48px_rgba(0,0,0,0.55),0_2px_8px_rgba(0,0,0,0.3)]">
+            <span className="block rounded-[var(--radius-overlay)] border border-alpha-white-6 bg-surface-4 p-3 text-left shadow-[var(--shadow-overlay)]">
               <span className="flex items-center gap-1.5">
                 <SiteTile site={source.site} size={18} />
                 <span className="k-text-caption truncate text-ink-3">{source.site}</span>

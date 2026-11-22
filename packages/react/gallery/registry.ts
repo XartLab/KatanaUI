@@ -11,6 +11,8 @@ export type GroupId =
   | 'layout-primitives'
   | 'readouts'
   | 'feedback'
+  | 'motion'
+  | 'ai'
   | 'quotes'
   | 'quant'
   | 'cn'
@@ -24,6 +26,10 @@ export const GROUPS: readonly { id: GroupId; title: string }[] = [
   { id: 'layout-primitives', title: '排版原语' },
   { id: 'readouts', title: '读数与状态' },
   { id: 'feedback', title: '反馈' },
+  // 动效：文字进场、切换过场、背景与特效（多数照 SmoothUI 改，MIT）；信息流不只靠闪烁。
+  { id: 'motion', title: '动效' },
+  // AI：对话、推理、工具调用、审批、来源（交易里 AI 建议要人审，审批件是关键）。
+  { id: 'ai', title: 'AI' },
   { id: 'quotes', title: '报价与行情' },
   { id: 'quant', title: '量化' },
   { id: 'cn', title: 'A 股' },
@@ -85,10 +91,17 @@ export const PAGES: readonly DocPage[] = [
     ],
     states: [
       '默认：4% 白底 8% 白边，悬停提亮，按下缩到 0.97。',
+      '尺寸：md（默认，30 高）、sm（26 高、圆角 8、字 11 粗 600）、icon（28 见方，只放图标）；旧名 size="default" 等于 md。',
       '禁用：45% 不透明度，不响应指针。',
       '焦点：键盘 Tab 到时画 focus-ring 的外框。',
+      'effect（改自 SmoothUI，MIT）：magnetic 指针靠近时按钮朝它偏、离开弹回；dot-morph 前面一颗点悬停时拉成竖条；clip-corners 四个角切掉、悬停时切口变大。三种只在有精确指针的设备上动。',
     ],
-    donts: ['不要在一个区域放两个主要按钮。', '图标按钮必须带 aria-label。', '不要用颜色以外没有字的危险按钮。'],
+    donts: [
+      '不要在一个区域放两个主要按钮。',
+      '图标按钮必须带 aria-label。',
+      '不要用颜色以外没有字的危险按钮。',
+      'effect 一个界面里最多给一两个主操作用，不要成排；dot-morph 不能与 asChild 同用。',
+    ],
     composition: 'Button',
     keys: [
       ['Tab', '聚焦，焦点环 2px'],
@@ -100,14 +113,25 @@ export const PAGES: readonly DocPage[] = [
     group: 'forms',
     cardHeight: 62,
     title: 'Input 输入框',
-    summary: '单行文本框：30 高（sm 26 高），4% 白底 8% 白边；聚焦边变亮，禁用降到 45%。',
+    summary:
+      '单行文本框：30 高（sm 26 高），4% 白底 8% 白边；聚焦边变亮，禁用降到 45%。可选 floatingLabel：标签从框里升到框上。',
     exports: ['Input', 'inputVariants'],
     propParts: [
       { part: 'Input', note: '其余属性透传给原生 input；type 默认 text。' },
       { part: 'inputVariants', note: '返回类名的函数，给 textarea 等非 input 元素用。' },
     ],
-    states: ['默认、有值、禁用。', 'aria-invalid 时边框变危险色。', '焦点：边框提亮（focus-ring）。'],
-    donts: ['不要不带 label 就放出去。', '不要在占位符里放必须读的信息。'],
+    states: [
+      '默认、有值、禁用。',
+      '尺寸：md（默认，30 高）、sm（26 高，字 12）；旧名 size="default" 等于 md。',
+      'aria-invalid 时边框变危险色。',
+      '焦点：边框提亮（focus-ring）。',
+      'floatingLabel：标签静止时盖在框里，聚焦或有内容时缩小升到框上面一条 14px 的留白里（改自 SmoothUI float-input，MIT）。',
+    ],
+    donts: [
+      '不要不带 label 就放出去。',
+      '不要在占位符里放必须读的信息。',
+      '用 floatingLabel 时 placeholder 不显示，提示写进标签或说明。',
+    ],
     composition: 'Input',
     keys: [['Tab', '聚焦；聚焦时边框提亮']],
   },
@@ -141,7 +165,11 @@ export const PAGES: readonly DocPage[] = [
       },
     ],
     states: ['默认、已选、未选（占位）、禁用。', '展开：列表项左侧留一列放勾；当前项加粗。'],
-    donts: ['不要把可以直接点的两三个选项藏进下拉。'],
+    donts: [
+      '不要把可以直接点的两三个选项藏进下拉。',
+      '选项多到要找（十几项以上）用 Combobox，能搜。',
+      '要选多个用 MultiSelect，不要拿单选下拉连选几次。',
+    ],
     composition: 'Select\n  SelectTrigger\n    SelectValue\n    SelectArrow\n  SelectContent\n    SelectItem',
     keys: [
       ['Enter / Space / ↓', '在触发器上打开列表'],
@@ -158,13 +186,22 @@ export const PAGES: readonly DocPage[] = [
     title: 'MultiSelect 多选下拉',
     summary: '触发器写已选项的名字，列表项前面一列勾；点一项只切这一项，列表不收。由 Popover 加勾选组出来。',
     exports: ['MultiSelect'],
-    propParts: [{ part: 'MultiSelect' }],
+    propParts: [
+      {
+        part: 'MultiSelect',
+        note: '选项、已选值、文案全由调用方传；列表是 Radix Popover，点一项只切这一项、不收起。',
+      },
+    ],
     states: [
       '一个都没选：写 empty。',
       '已选若干：按选项的顺序写名字，separator 隔开。',
       '点一项只切这一项，列表不收。',
     ],
-    donts: ['不要在包里写死分隔符与空态文案，由调用方传。'],
+    donts: [
+      '不要在包里写死分隔符与空态文案，由调用方传。',
+      '只能选一个时用 Select。',
+      '已选很多时触发器会截断，选项多于十几项用可搜索的 Combobox（多选）。',
+    ],
     composition: 'MultiSelect（内部：Popover + PopoverTrigger + PopoverContent，列表项为 role=option）',
     keys: [
       ['Enter / Space / ↓', '在触发器上打开；焦点落在第一个已选项'],
@@ -180,11 +217,19 @@ export const PAGES: readonly DocPage[] = [
     group: 'forms',
     cardHeight: 48,
     title: 'Checkbox 勾选',
-    summary: '14px 凹陷方框；选中后中心一块 6px 橙色发光方块（像一颗 LED），框换暗橙边、暗橙底，不画勾。',
+    summary:
+      '14px 凹陷方框；选中后中心一块 6px 方块，框换亮中性底，符号弹进来。半选画 2px 横杠。可选 indicator="check"：一笔写出来的勾（改自 SmoothUI，MIT）。',
     exports: ['Checkbox'],
     propParts: [{ part: 'Checkbox', note: '其余属性透传给 Radix Checkbox.Root。' }],
-    states: ['未勾、已勾、禁用、禁用已勾、错误（aria-invalid）。'],
-    donts: ['不要让勾选框单独承载状态而不带文字。'],
+    states: [
+      '未勾、已勾、半选（indeterminate）、禁用、禁用已勾、错误（aria-invalid）。',
+      'indicator="check"：勾的路径从头画到尾，半选画横杠。',
+    ],
+    donts: [
+      '不要让勾选框单独承载状态而不带文字。',
+      '不要用勾选框做立刻生效的开关（那是 Switch），勾选框配「保存 / 应用」。',
+      '半选只给「部分子项已勾」的父项用，不要拿它表示「未知」。',
+    ],
     composition: 'Checkbox',
     keys: [
       ['Tab', '聚焦'],
@@ -199,8 +244,17 @@ export const PAGES: readonly DocPage[] = [
     summary: '34 × 18 的轨道画在 40 × 28 的布局盒里；开时轨道换强调色，圆钮挪过去。',
     exports: ['Switch'],
     propParts: [{ part: 'Switch', note: '其余属性透传给 Radix Switch.Root。' }],
-    states: ['关、开、禁用关、禁用开。'],
-    donts: ['不要用开关做「提交」这类一次性动作。'],
+    states: [
+      '关：10% 白轨道 + 9% 白内描边，圆钮 ink-300（--k-selectable-track-* / -thumb-background）。',
+      '开：轨道换实心亮中性（--k-selectable-bold-background-selected），圆钮换深色并滑 16px（snappy）。',
+      '悬停：关时轨道提到 18% 白，开时实心降到 ink-200。',
+      '禁用关、禁用开：45% 不透明度，不响应指针。',
+    ],
+    donts: [
+      '不要用开关做「提交」这类一次性动作。',
+      '不要把开关放进要点「保存」才生效的表单里，那用 Checkbox。',
+      '标签写开着时的意思（「显示成交量」），不要写成问句或「开 / 关」。',
+    ],
     composition: 'Switch',
     keys: [
       ['Tab', '聚焦'],
@@ -223,8 +277,16 @@ export const PAGES: readonly DocPage[] = [
         note: '外壳与按钮的类名函数。',
       },
     ],
-    states: ['选中、未选、禁用项。', '键盘 Tab 到每个按钮，Space 或 Enter 选中。'],
-    donts: ['超过五项换 Select。'],
+    states: [
+      '选中、未选、禁用项。',
+      'size：md（默认，有边框、按钮 24 高、选中 700）与 sm（工具条：无边框、选中块随选中项滑动）；旧名 variant 留一个版本。',
+      '键盘 Tab 到每个按钮，Space 或 Enter 选中。',
+    ],
+    donts: [
+      '超过五项换 Select。',
+      '不要拿它切换页面内容，那是 Tabs。',
+      '不要一组里混着文字项与纯图标项；纯图标项各自要 aria-label。',
+    ],
     composition: 'ToggleGroup\n  ToggleGroupItem',
     keys: [
       ['Tab', '每个按钮都是停靠点（不是方向键走的一组）'],
@@ -258,15 +320,19 @@ export const PAGES: readonly DocPage[] = [
             default: "'multiple'",
             desc: 'single 最多选一个，点已选的就取消（取消 = 不筛）。',
           },
-          { name: 'clearLabel', type: 'string', desc: '给了，有选中项时末尾出现清除钮，读屏名与提示用它。' },
+          {
+            name: 'labels',
+            type: 'ChipGroupLabels',
+            desc: '{ clear? }：给了 clear，有选中项时末尾出现清除钮，读屏名与提示用它。旧名 clearLabel 留一个版本（@deprecated）。',
+          },
         ],
       },
     ],
     states: [
-      '未选：4% 白底。',
+      '未选：3% 白底 7% 白边（同按钮的 actionable）。',
       '选中：实心浅底深字（同分段切换）。',
       '禁用：降到 35% 不透明度。',
-      '有选中项且给了 clearLabel：末尾出现 ×。',
+      '有选中项且给了 labels.clear：末尾出现 ×。',
     ],
     donts: [
       '不要拿它当导航：它筛数据，不换页面。',
@@ -285,11 +351,16 @@ export const PAGES: readonly DocPage[] = [
     group: 'forms',
     cardHeight: 60,
     title: 'Slider 滑块',
-    summary: '凹槽轨 + 点阵填充 + 发光圆把手；拖动跟手，松手 settle 弹簧吸附到步进；一个值或一段范围。',
+    summary:
+      '凹槽轨 + 点阵填充 + 圆把手；拖动跟手，松手 settle 弹簧吸附到步进，按住时把手放大到 1.12（改自 SmoothUI，MIT）；一个值或一段范围。',
     exports: ['Slider'],
     propParts: [{ part: 'Slider', note: '其余属性透传给 Radix Slider.Root。只做横向，受控。' }],
-    states: ['单值、区间、禁用。', '键盘 ← → 走一格。'],
-    donts: ['滑钮必须有 thumbLabels。'],
+    states: ['单值、区间、禁用。', '键盘 ← → 走一格。', '按住或拖动：把手放大 1.12，松手弹回。'],
+    donts: [
+      '滑钮必须有 thumbLabels。',
+      '要输入精确值（价格、数量）时旁边配 NumberInput，别只给滑杆。',
+      '区间的两个把手不要叠在一起还用同一个名字，读屏分不清。',
+    ],
     composition: 'Slider',
     keys: [
       ['← →', '走一个步进'],
@@ -311,7 +382,12 @@ export const PAGES: readonly DocPage[] = [
       { part: 'TooltipContent', note: '其余属性透传给 Radix Tooltip.Content。' },
       { part: 'tooltipContentClass', note: '提示的皮肤类名，应用里自己定位的提示（图表悬停）借它长一个样。' },
     ],
-    states: ['触发器静止；悬停或聚焦后浮出提示（默认没有延迟）。'],
+    states: [
+      '触发器静止；悬停或聚焦后浮出提示（默认没有延迟）。',
+      '浮出：最深底 + 1px 分隔线色边 + --k-overlay-tooltip-shadow，没有小箭头。',
+      '内容里有键帽（.k-kbd）：压成实心浅色块，字用最深底色。',
+      '移开或 Esc：直接消失，不播退场动画（#1849）。',
+    ],
     donts: ['提示里不放可点的东西，要放用 Popover。', '重要的信息不要只放在提示里。'],
     composition: 'TooltipProvider\n  Tooltip\n    TooltipTrigger\n    TooltipContent',
     keys: [
@@ -356,7 +432,11 @@ export const PAGES: readonly DocPage[] = [
       },
     ],
     states: ['收起；打开后焦点落进去，Esc 收起并还回焦点。', '三种皮肤：panel、menu、bare。'],
-    donts: ['不要在弹层里再开弹层。'],
+    donts: [
+      '不要在弹层里再开弹层。',
+      '只读的说明用 Tooltip 或 HoverCard，不要用 Popover。',
+      '要打断用户、必须裁决的事用 Dialog。',
+    ],
     composition:
       'Popover\n  PopoverTrigger\n  PopoverContent\n    PopoverHeader\n      PopoverTitle\n      PopoverDescription\n    PopoverClose',
     keys: [
@@ -399,7 +479,12 @@ export const PAGES: readonly DocPage[] = [
         note: '透传 Radix 同名部件。',
       },
     ],
-    states: ['收起；打开后焦点圈在对话框里，Esc 关闭并还回焦点。'],
+    states: [
+      '收起；打开后焦点圈在对话框里，Esc 关闭并还回焦点。',
+      '打开：surface-raised 底、9% 白边（--k-overlay-dialog-borderColor）、--k-overlay-dialog-shadow，背后压一层遮罩。',
+      '头脚：标题栏 50 高、按钮栏上下各一道 5% 白分隔（--k-separable-subtle-borderColor）；正文太长时只滚正文。',
+      '确认类（.k-dlg.confirm）：边换成 line-200。',
+    ],
     donts: ['不要用对话框放不重要的通知。', '对话框必须有标题。'],
     composition:
       'Dialog\n  DialogTrigger\n  DialogContent\n    DialogHeader\n      DialogTitle\n    DialogBody\n      DialogDescription\n    DialogFooter\n      DialogClose',
@@ -473,7 +558,11 @@ export const PAGES: readonly DocPage[] = [
       },
     ],
     states: ['行：默认、悬停、禁用、危险。', '勾选行左侧占一列放勾。'],
-    donts: ['菜单项不超过一屏，更长的换命令面板。'],
+    donts: [
+      '菜单项不超过一屏，更长的换命令面板。',
+      '不要拿它选表单里的一个值，那是 Select。',
+      '二级菜单不要超过一层。',
+    ],
     composition:
       'DropdownMenu\n  DropdownMenuTrigger\n  DropdownMenuContent\n    DropdownMenuLabel\n    DropdownMenuItem（含 DropdownMenuShortcut）\n    DropdownMenuSeparator\n    DropdownMenuCheckboxItem\n    DropdownMenuRadioGroup\n      DropdownMenuRadioItem\n    DropdownMenuSub\n      DropdownMenuSubTrigger\n      DropdownMenuSubContent',
     keys: [
@@ -542,7 +631,11 @@ export const PAGES: readonly DocPage[] = [
       { part: 'TabsContent', note: '其余属性透传给 Radix Tabs.Content。' },
     ],
     states: ['选中、未选、禁用页签。', '默认与 line 两种样式。'],
-    donts: ['页签名保持短，一行放得下。'],
+    donts: [
+      '页签名保持短，一行放得下。',
+      '只切换一个值、不换内容时用 ToggleGroup。',
+      '页签多到放不下时不要折两行，收进下拉或改导航。',
+    ],
     composition: 'Tabs\n  TabsList\n    TabsTrigger\n  TabsContent',
     keys: [
       ['← →', '在页签间走并选中'],
@@ -567,7 +660,11 @@ export const PAGES: readonly DocPage[] = [
       },
     ],
     states: ['展开、收起。', '键盘 ↑ ↓ 在标题间走，Enter 或 Space 展开。'],
-    donts: ['不要把用户必须读的内容收起来。'],
+    donts: [
+      '不要把用户必须读的内容收起来。',
+      '只有一段可收起时用 Collapsible。',
+      '标题里不放按钮或链接，整行就是展开的触发。',
+    ],
     composition: 'Accordion\n  AccordionItem\n    AccordionTrigger\n    AccordionContent',
     keys: [
       ['Enter / Space', '展开或收起'],
@@ -586,7 +683,11 @@ export const PAGES: readonly DocPage[] = [
       { part: 'Led', note: '一个 role=img 的 span，名字是 label。' },
       { part: 'LINK_GROUPS', note: '联动组名的列表 A、B、C、D；组的颜色是 token link-a 到 link-d。' },
     ],
-    states: ['熄灭（默认）、on、ok、warn、danger；联动组按组色。', '空心、小号两种形态；无文字的灯必须带读屏名。'],
+    states: [
+      'tone（SeverityExt）：off / neutral 熄灭（默认），accent 亮强调色，ok、warn、danger 亮状态色；联动组按组色。旧的 state（on 等于 accent）留一个版本。',
+      '空心、小号两种形态；无文字的灯必须带读屏名。',
+      '状态变了在灯外闪一圈：变坏（warn、danger）用警示闪，变好用涨色闪。',
+    ],
     donts: [
       '不要拿它当装饰：只表达真实状态。',
       '不要单靠颜色说话，旁边要有文字或读屏名。',
@@ -602,11 +703,16 @@ export const PAGES: readonly DocPage[] = [
     title: 'Lcd 读数窗',
     summary: '点阵小标签在上、LCD 数字在中、一行灰色小字在下的读数窗；没有数据显示「—」。',
     exports: ['Lcd'],
-    propParts: [{ part: 'Lcd' }],
+    propParts: [
+      {
+        part: 'Lcd',
+        note: '数字由调用方格式化好传字符串，件不算；变了闪一下涨跌色（ReadoutFlash）。fill 撑满格子（KPI 行），inline 标签与数字同一行。',
+      },
+    ],
     states: [
       '有值：标签在上、数字在中、小字在下。',
       '没有数据：数字位置写「—」，不写 0。',
-      '色调：up、down、accent、warn，或不着色。',
+      'tone：neutral 不着色；ok、warn、danger 取 --k-status-*；up、down、flat 取 --k-tone-*（跟 data-updown 换红绿）；accent 是当前关注。',
     ],
     donts: ['不要在没有数据时写 0。', '不要在件里写死币种与位数，由调用方传。'],
     composition: 'Lcd',
@@ -627,8 +733,15 @@ export const PAGES: readonly DocPage[] = [
         note: '点的边长 4 与点距 6（像素），给要自己算对齐的图表用。',
       },
     ],
-    states: ['静态纹理：4px 实、2px 空；颜色默认取中性，可传 token。'],
-    donts: ['不要用它代替需要读数的实色块；它只给面（回撤面等）。'],
+    states: [
+      '静态纹理：4px 实、2px 空；颜色默认 --seq-300，可传 token。',
+      '每张图一个 id：同页两张图共用一个 id 时后一张会读到前一张的颜色。',
+    ],
+    donts: [
+      '不要用它代替需要读数的实色块；它只给面（回撤面等）。',
+      '不要传写死的颜色值：传 var(--token)，换主题才跟着换。',
+      '不要改点的大小与点距：4 / 6 是点阵签名，跟 MatrixOrb、Loading 骨架是同一套。',
+    ],
     composition: 'svg\n  defs\n    DotMatrix\n  rect (fill="url(#id)")',
     keys: [],
   },
@@ -641,15 +754,27 @@ export const PAGES: readonly DocPage[] = [
       '里程表式的数字滚动：变了的那几位像里程表一样把中间的数字依次转过去（7 到 9 会看到 8 掠过），涨往上、跌往下，整串闪一下涨色或跌色。转得越远用得越久，最远 300ms。',
     exports: ['RollingText', 'rollSlots', 'rollStrip'],
     propParts: [
-      { part: 'RollingText', note: '旧字只在样式里画，不进文本：复制、读屏拿到的只有当前的完整数字。' },
+      {
+        part: 'RollingText',
+        note: '旧字只在样式里画，不进文本：复制、读屏拿到的只有当前的完整数字。ramp（并入 SmoothUI rolling-text 的做法）让品种代码这类字母位转过几个中间字再落下，默认 0 不转。stagger（SmoothUI price-flow）让变了的位从个位起一位一位错开；boxed（number-flow）给每一位一格带边的小窗；resize（digit-roll）让位数变了时变了的位淡入，三者默认都关。',
+      },
       { part: 'rollSlots', note: '纯函数 (text, from, rolling)：每一位的当前字，和滚出去的旧字。' },
       {
         part: 'rollStrip',
-        note: '纯函数 (char, out, direction)：一位从旧字转到新字时转轮上经过的字（一行一个）与格数；9 到 0 走一格，不是数字的位只走一格。',
+        note: '纯函数 (char, out, direction, ramp)：一位从旧字转到新字时转轮上经过的字（一行一个）与格数；9 到 0 走一格；不是数字的位默认只走一格，给了 ramp 的字母位会再转过 ramp 个中间字。',
       },
     ],
-    states: ['值没变：静止。', '值变了：变了的那几位滚动，涨往上、跌往下，整串闪一下涨色或跌色。'],
-    donts: ['值没变时不要滚；价格、盈亏的变化只用它给的一次闪，不再加别的动效。'],
+    states: [
+      '值没变：静止。',
+      '值变了：变了的那几位滚动，涨往上、跌往下，整串闪一下涨色或跌色。',
+      'stagger：个位先转，十位、百位依次晚一拍。',
+      'resize：位数变了（999 到 1,000），变了的位淡入并从涨跌方向滑一小段。',
+    ],
+    donts: [
+      '值没变时不要滚；价格、盈亏的变化只用它给的一次闪，不再加别的动效。',
+      '十字线在看历史时传 animate=false：回看的数不是新到的，不滚不闪。',
+      '不要把千分位、小数位交给它算：text 由调用方格式化好，value 只用来判涨跌方向。',
+    ],
     composition: 'RollingText',
     keys: [],
   },
@@ -663,12 +788,47 @@ export const PAGES: readonly DocPage[] = [
     propParts: [
       {
         part: 'BadgeGroup',
-        note: '没有徽标时什么都不画。每个徽标是一个 role=img，名字是全称，读屏读「科创板：涨跌幅 20%」。',
+        note: '没有徽标时什么都不画。每个徽标是一个 Tag（sm 档）、role=img，名字是全称，读屏读「科创板：涨跌幅 20%」。风险标记给 tone（warn、danger）。',
       },
     ],
-    states: ['次要文字色的上标小字；悬停写全称。'],
-    donts: ['不要用它放必须读的信息：它在品种名旁边，是次要的。'],
-    composition: 'BadgeGroup',
+    states: [
+      'Tag 的 sm 档：micro 小字、行高 1、一块 neutral 的浅底，贴在品种名右上；悬停写全称，指针是 help。',
+      '风险标记：item.tone 给 warn 或 danger，字与底换成状态色。',
+      '没有徽标：什么都不画（不留空位）。',
+    ],
+    donts: [
+      '不要用它放必须读的信息：它在品种名旁边，是次要的。',
+      '上标只放一个字：全称写在 text 里（读屏名与悬停）。',
+      '不要自己再画一种徽标：行内标记用 Tag，品种名后的上标用 BadgeGroup。',
+    ],
+    composition: 'BadgeGroup\n  Tag（sm）× n',
+    keys: [],
+  },
+  {
+    id: 'tag',
+    group: 'readouts',
+    cardHeight: 150,
+    title: 'Tag 小标签',
+    summary:
+      '小标签的底座：语气（Severity：neutral、ok、warn、danger）× 尺寸（sm、md）× 填充或描边。BadgeGroup 的上标徽标、EstimateBadge 的估算标记都是它；颜色只读 --k-status-*。',
+    exports: ['Tag'],
+    propParts: [
+      {
+        part: 'Tag',
+        note: '其余属性透传给 span。填充：字取 foreground、底取 background；outlined：底透明、1px 边取字色。sm 是 micro 字号、行高 1，md 是 caption 500。',
+      },
+    ],
+    states: [
+      'neutral（默认）、ok、warn、danger 四种语气。',
+      '填充（默认）或描边（outlined）。',
+      'sm：品种名后的上标；md：行内标记。',
+    ],
+    donts: [
+      '不要只靠颜色说语气：字本身要说清（「估算」「停牌」）。',
+      '不要拿它做按钮或可删的筛选项：它不可交互，可点的用 Button、可删的用 ChipGroup。',
+      '不要写死颜色：只有四种语气，要别的颜色说明语气不对。',
+    ],
+    composition: 'Tag（span）',
     keys: [],
   },
   {
@@ -679,28 +839,37 @@ export const PAGES: readonly DocPage[] = [
     summary: '把一个快捷键组合画成一串小方块：20 高、圆角 4、6% 白底 12% 白边。',
     exports: ['Kbd'],
     propParts: [{ part: 'Kbd', note: '怎么把「Mod+Shift+H」拆成块、Mod 在这个平台叫什么，是调用方的事。' }],
-    states: ['一个组合画成一串小方块；单键与多键。'],
-    donts: ['不要把快捷键写成普通文字加方括号。'],
+    states: ['一个组合画成一串小方块；单键与多键。', '读屏读 label（整串，如「Ctrl+Shift+H」），不逐块读。'],
+    donts: [
+      '不要把快捷键写成普通文字加方括号。',
+      '不要在件里拆「Mod」：平台上叫 Ctrl 还是 ⌘ 由调用方定好再传 parts。',
+      '不要拿它画可点的按钮：它只是标注，按键录入用 ShortcutRecorder。',
+    ],
     composition: 'Kbd',
     keys: [],
   },
   {
     id: 'symbol-mark',
-    group: 'readouts',
+    group: 'quotes',
     cardHeight: 220,
     title: 'SymbolMark 品种徽标',
     summary:
-      '品种名前的小圆标（学 TradingView 列表里企业 / 币种标志）：有图显示圆形裁切的图片，加载失败退回字母；没有图就是字母圆标，底 bg-400、字 ink-200，不按代码随机上色。尺寸默认 18（行高 28 的一行）。',
+      '品种名前的小圆标（学 TradingView 列表里企业 / 币种标志）：有图显示圆形裁切的图片，加载失败退回字母；没有图就是字母圆标，底 bg-400、字 ink-200，不按代码随机上色。尺寸两档：sm 18（行高 28 的一行，默认）、md 28（卡片）；热力图格子这类要别的直径的仍可传数。字号跟直径走（28 以上 16，其余 12），在 css 里按 data-size 取字号 token，不内联。',
     exports: ['SymbolMark', 'symbolMarkLetters'],
     props: [
       {
         part: 'SymbolMark',
-        note: '图片从哪来由调用方给；件里不带任何企业或币种的标志（商标）。读屏名用 name，没有就用 code。',
+        note: '图片从哪来由调用方给；件里不带任何企业或币种的标志（商标）。读屏名用 name，没有就用 symbol。旧名 code 照认一个版本（@deprecated）。',
         rows: [
-          { name: 'code', type: 'string', desc: '品种代码；字母圆标取其中的拉丁字母前 2 个。' },
+          { name: 'symbol', type: 'string', desc: '品种代码；字母圆标取其中的拉丁字母前 2 个（旧名 code）。' },
           { name: 'name', type: 'string', desc: '名称：读屏名；代码里没有字母（600519、00700）时取名称首字。' },
           { name: 'src', type: 'string', desc: '图片地址；不给或加载失败就画字母。' },
-          { name: 'size', type: 'number', default: '18', desc: '直径（像素）。' },
+          {
+            name: 'size',
+            type: "'sm' | 'md' | number",
+            default: "'sm'",
+            desc: 'sm 18px（列表行）、md 28px（卡片）；数是自定直径（像素）。',
+          },
         ],
       },
       {
@@ -715,9 +884,18 @@ export const PAGES: readonly DocPage[] = [
         ],
       },
     ],
-    states: ['字母圆标；有图；图加载失败退回字母。'],
-    donts: ['不要按代码随机上色：颜色留给数据。', '不要在件里内置真实公司或币种的标志。'],
-    composition: 'SymbolMark\n  span[role=img][aria-label]\n    img（有图且没失败）| span 字母',
+    states: [
+      '字母圆标：底 surface-overlay（bg-400）、字 content-body（ink-200），中性，不按代码上色。',
+      '有图：圆形裁切、铺满；图加载失败退回字母，换了 src 会重新尝试。',
+      '代码里没有拉丁字母（600519、00700）：取名称首字，再没有取代码首字符。',
+      'sm（18）字号 12，md（28）及以上字号 16；data-size 标出档位。',
+    ],
+    donts: [
+      '不要按代码随机上色：颜色留给数据。',
+      '不要在件里内置真实公司或币种的标志。',
+      '不要拿它当按钮：它是 role=img 的徽标，可点的是它所在的行或卡。',
+    ],
+    composition: 'SymbolMark\n  span[role=img][aria-label][data-size]\n    img（有图且没失败）| span 字母',
     keys: [],
   },
   {
@@ -734,7 +912,11 @@ export const PAGES: readonly DocPage[] = [
         note: '值是规范串：修饰键按 Ctrl、Alt、Shift、Meta 的次序再加主键，如 Ctrl+Shift+K；主键取物理键（event.code），Mac 的 Option 变形不影响。',
         rows: [
           { name: 'value', type: 'string | null', desc: '当前快捷键（规范串）；null 是没设。' },
-          { name: 'onValue', type: '(next: string | null) => void', desc: '录到新的或清除。冲突与不合规的不回调。' },
+          {
+            name: 'onValueChange',
+            type: '(next: string | null) => void',
+            desc: '录到新的或清除。冲突与不合规的不回调。旧名 onValue 留一个版本（@deprecated）。',
+          },
           { name: 'label', type: 'string', desc: '读屏名：哪个动作的快捷键。' },
           {
             name: 'labels',
@@ -824,7 +1006,11 @@ export const PAGES: readonly DocPage[] = [
       },
     ],
     states: ['默认、聚焦、错误（日期或时间不合法）。', '日期框右边的日历按钮打开日历。'],
-    donts: ['不要依赖浏览器语言的日期格式：这个件不随它变。'],
+    donts: [
+      '不要依赖浏览器语言的日期格式：这个件不随它变。',
+      '不要传 Date 对象或时间戳：值是字符串，时区由调用方换算好再传。',
+      '选区间用 DateRangePicker，别并排放两个 DateTimeInput。',
+    ],
     composition: 'DateTimeInput\n  DateField（年 月 日各一段）\n  Popover\n    Calendar\n  TimeField（时 分 [秒]）',
     keys: [
       ['0–9', '在当前段打字，满了跳到下一段'],
@@ -849,9 +1035,9 @@ export const PAGES: readonly DocPage[] = [
         rows: [
           { name: 'value', type: '{ start: string; end: string } | null', desc: '当前区间；null 是没选。' },
           {
-            name: 'onValue',
+            name: 'onValueChange',
             type: '(range: DateRange) => void',
-            desc: '凑成合法区间（起点不晚于终点）才回调；只填了一头不回调。',
+            desc: '凑成合法区间（起点不晚于终点）才回调；只填了一头不回调。旧名 onValue 留一个版本（@deprecated）。',
           },
           {
             name: 'today',
@@ -901,32 +1087,84 @@ export const PAGES: readonly DocPage[] = [
     cardHeight: 554,
     title: 'Skeleton 加载骨架',
     summary:
-      '等数据的那一块：500ms 内到了什么也不画；超过了出点阵骨架，2s 说「仍在加载」，10s 转琥珀条加重试。不脉冲、不转圈。',
-    exports: ['Skeleton', 'Loading', 'LoadingBoundary', 'LoadingView'],
+      '骨架条本身：12 高的点阵圆角条（bg-200 底、line-200 边），第一行 40%、最后一行 70%、中间满宽；不脉冲、不转圈。什么时候出、出多久由 Loading 管。',
+    exports: ['Skeleton'],
     propParts: [
-      { part: 'Skeleton' },
+      {
+        part: 'Skeleton',
+        note: 'role=status、aria-busy；读屏读 label（必填）。rows 为真时每行占一个表格行高（--row-base），撑满面板主体用；一般经 Loading 用，不单摆。',
+      },
+    ],
+    states: [
+      'lines 行：第一行 40%、最后一行 70%、中间满宽；只有一行时 70%。',
+      'rows：每行占一个表格行高，行数由 Loading 量。',
+    ],
+    donts: ['不要脉冲、不要转圈。', '不要自己判断什么时候摆它：500ms 延迟与 2s / 10s 两段在 Loading 里。'],
+    composition: 'Skeleton（role=status）\n  span.sr-only（label）\n  span.k-loading-line × lines',
+    keys: [],
+  },
+  {
+    id: 'loading',
+    group: 'feedback',
+    cardHeight: 554,
+    title: 'Loading 加载态',
+    summary:
+      '加载态的唯一入口：给 pending 等数据，不给 pending 当 Suspense 边界，给 phase 钉在某一段直接画。500ms 内到了什么也不画；超过了出点阵骨架，2s 说「仍在加载」，10s 转琥珀条加重试。',
+    exports: ['Loading', 'LoadingBoundary', 'LoadingView'],
+    propParts: [
       {
         part: 'Loading',
-        note: 'pending 为真时 children 不挂载；骨架出过的内容用 2px 模糊揭示，没出过的直接出现。只管显示，不管取数。',
+        note: 'pending 为真时 children 不挂载；骨架出过的内容用 2px 模糊揭示，没出过的直接出现。只管显示，不管取数。文字全在 labels（LoadingLabels，原 texts）。',
       },
-      {
-        part: 'LoadingBoundary',
-        note: 'Suspense 的写法：等的是 React.lazy 或 use() 的 promise；属性同 Loading，没有 pending、source、header。',
-      },
-      { part: 'LoadingView', note: '只管画「在等」这一块，计时与量高度不在这里；通常不直接用。' },
+      { part: 'LoadingBoundary', note: '@deprecated：等于不给 pending 的 Loading（Suspense 边界），留一个版本。' },
+      { part: 'LoadingView', note: '@deprecated：等于给 phase 的 Loading（只画、不计时），留一个版本。' },
     ],
     states: [
       '500ms 内：什么也不画。',
-      '超过 500ms：点阵骨架；2s：说「仍在加载」；10s：琥珀条加重试。',
+      '超过 500ms：caption（亮强调色灯 +「加载 <内容> · <来源>」）加点阵骨架；2s：说「仍在加载」。',
+      '10s：琥珀条（warn 灯 + 文案 + 重试），骨架留着、降到半透明；没给 onRetry 就没有重试钮。',
       '数据到了：骨架出过的内容用 2px 模糊揭示，没出过的直接出现。',
     ],
-    donts: ['不要脉冲、不要转圈。', '表头与外框已知时保留，骨架只占内容区。'],
-    composition: 'Loading\n  LoadingWait（计时）\n    LoadingView\n      Led\n      Button（重试）\n      Skeleton',
+    donts: [
+      '不要脉冲、不要转圈。',
+      '表头与外框已知时保留（header），骨架只占内容区。',
+      '不要再拼 LoadingView / LoadingBoundary：一个 Loading 全包了，按 pending 与 phase 选用法。',
+      '错误文案每句不超过 12 字，先说怎么办（「点重试」），再说原因。',
+    ],
+    composition:
+      'Loading\n  LoadingWait（计时，内部）\n    caption：Led + 文案 / 琥珀条：Led + 文案 + Button（重试）\n    Skeleton',
     keys: [['Tab', '10 秒后的重试按钮可聚焦；Enter / Space 触发']],
   },
   {
+    id: 'measured-skeleton',
+    group: 'feedback',
+    cardHeight: 340,
+    title: 'MeasuredSkeleton 量出来的骨架',
+    summary:
+      '卡片、文章这类形状复杂的加载占位：用真组件加示例数据在不可见层排一次版，量出每行文字、每张图、每个控件的位置再画骨架，内容到了位置不动。外观与 Skeleton 同色、不闪不脉冲。',
+    exports: ['MeasuredSkeleton'],
+    propParts: [
+      {
+        part: 'MeasuredSkeleton',
+        note: '包 skullet（MIT，锁精确版本）的 Skeleton，件里不直接引第三方；label 必填，读屏读 role=status。',
+      },
+    ],
+    states: [
+      '加载中：不到 500ms 不露骨架条（不可见层照样占位），超过了才出，快的请求不闪。',
+      '骨架：每行文字一条 line-200 的圆角条，图片、按钮、标签各一块，圆角跟随内容；不闪、不脉冲。',
+      '数据到了：真内容淡入到骨架的位置，onReveal 调一次；给了 id 的下次进来第一帧就是上次的形状。',
+    ],
+    donts: [
+      '示例数据的文字行数、有没有图要和真的一样，否则内容到了会跳。',
+      '表格与图表不用它：表格用按行高的 Skeleton，图表自己画占位。',
+      '图片要给宽高或 aspect-ratio，否则加载完才有大小，会跳一次。',
+    ],
+    composition: 'MeasuredSkeleton\n  span role=status（读屏名）\n  skullet Skeleton（不可见层 + 骨架条）',
+    keys: [],
+  },
+  {
     id: 'change-text',
-    group: 'quant',
+    group: 'quotes',
     cardHeight: 122,
     title: 'ChangeText 涨跌幅',
     summary:
@@ -1040,7 +1278,11 @@ export const PAGES: readonly DocPage[] = [
             desc: '板位单位、晋级率与只数文字、状态名、汇总读数名、列名、读屏名、空态文字，由调用方传。',
           },
           { name: 'selected', type: 'string | null', desc: '选中个股的代码；选中行左侧画 2px 强调条。' },
-          { name: 'onSelect', type: '(code: string) => void', desc: '点击或 Enter / Space 选一行。' },
+          {
+            name: 'onSelect',
+            type: '(item: LadderItem) => void',
+            desc: '点击或 Enter / Space 选一行；给出整条（G6 起不再只给代码）。',
+          },
           {
             name: 'rowActions',
             type: '(item: LadderItem) => RowAction[]',
@@ -1082,7 +1324,7 @@ export const PAGES: readonly DocPage[] = [
           {
             name: 'items',
             type: 'HeatmapItem[]',
-            desc: '{ code, name, group?, logo?, price?, size: Record<键, number>, value: Record<键, number | null> }。size 里不是正数的格子不画；value 是 null 画成灰（没有数）；没有 group 的品种归到 labels.other，所有品种都没有 group 就不分组、也不出视图切换。',
+            desc: '{ symbol, name, group?, logo?, price?, size: Record<键, number>, value: Record<键, number | null> }（旧名 code 留一个版本，@deprecated）。size 里不是正数的格子不画；value 是 null 画成灰（没有数）；没有 group 的品种归到 labels.other，所有品种都没有 group 就不分组、也不出视图切换。',
           },
           {
             name: 'sizeBy',
@@ -1113,7 +1355,7 @@ export const PAGES: readonly DocPage[] = [
           },
           { name: 'formatPrice', type: '(value: number) => string', desc: '悬停卡片上的价格写法；不给写 2 位小数。' },
           { name: 'selected', type: 'string | null', desc: '选中的代码；选中的格子画 2px 白色内圈。' },
-          { name: 'onSelect', type: '(code: string) => void', desc: '点格子，或焦点在格子上按 Enter / Space。' },
+          { name: 'onSelect', type: '(symbol: string) => void', desc: '点格子，或焦点在格子上按 Enter / Space。' },
           {
             name: 'cellActions',
             type: '(item: HeatmapItem) => RowAction[]',
@@ -1154,30 +1396,36 @@ export const PAGES: readonly DocPage[] = [
   },
   {
     id: 'metric-card',
-    group: 'quant',
+    group: 'quotes',
     cardHeight: 780,
     title: 'MetricCard 指标卡与卡片墙（跨市场共用）',
     summary:
-      '照 uiarc 的 Metric explorer 的结构：标题、大号当前值、较前日 / 周 / 月 / 年的变化（涨跌色）、迷你走势线（1 月 / 3 月 / 6 月 / 1 年分段）、可选阶段带（五档边界与文案由调用方给）、来源与更新时间一行；MetricCardGrid 把卡排成墙。组件只画不算，数据与文字都由调用方传，没有数据就是空态。',
+      '报价类读数卡的共用壳（2026-11-18）：variant="card" 照 uiarc 的 Metric explorer 的结构，variant="tile" 是 KPI 瓦片（原 SparkTile）。卡：标题、大号当前值、较前日 / 周 / 月 / 年的变化（涨跌色）、迷你走势线（1 月 / 3 月 / 6 月 / 1 年分段）、可选阶段带（五档边界与文案由调用方给）、来源与更新时间一行；MetricCardGrid 把卡排成墙。组件只画不算，数据与文字都由调用方传，没有数据就是空态。',
     exports: ['MetricCard', 'MetricCardGrid', 'metricTrendTone', 'metricStageIndex'],
     props: [
       {
         part: 'MetricCard',
         rows: [
           {
-            name: 'title / value / unit',
+            name: 'variant',
+            type: "'card' | 'tile'",
+            default: "'card'",
+            desc: 'card 是完整指标卡；tile 是 KPI 瓦片（原 SparkTile，字段见 SparkTile 页）。',
+          },
+          {
+            name: 'label / value / unit',
             type: 'string / string | null / string',
-            desc: '标题、已格式化的当前值（没有数据传 null，写 —）、数值后的小字。',
+            desc: '标题（旧名 title）、已格式化的当前值（没有数据传 null，写 —）、数值后的小字。',
           },
           {
-            name: 'changes',
-            type: 'MetricChange[]',
-            desc: '{ key, label, value（百分数，null 写 —） }，想放几个放几个，涨跌色带箭头。',
+            name: 'changePct / changes',
+            type: 'number / MetricChange[]',
+            desc: 'changePct 一个变化（百分数）；changes 多个：{ id, label, value（百分数，null 写 —） }，涨跌色带箭头。',
           },
           {
-            name: 'ranges',
-            type: 'MetricRange[]',
-            desc: '{ key, label, values }：每段的走势（从旧到新）；多于一段时出分段控件。',
+            name: 'series / ranges',
+            type: 'number[] / MetricRange[]',
+            desc: 'series 一段走势；ranges 多段：{ id, label, values }（从旧到新），多于一段时出分段控件。',
           },
           {
             name: 'range / defaultRange / onRangeChange',
@@ -1189,7 +1437,11 @@ export const PAGES: readonly DocPage[] = [
             type: "'direction' | 'neutral' | 'inverse'",
             desc: '走势线着色：direction 头尾涨跌（默认）；neutral 中性灰白（恐惧贪婪、情绪分这类没有好坏方向的）；inverse 涨是坏（如 VIX），涨取跌色。',
           },
-          { name: 'rangeLabel / sparkLabel', type: 'string', desc: '分段控件与走势线的读屏名（整句）。' },
+          {
+            name: 'labels',
+            type: '{ range?, spark }',
+            desc: '分段控件与走势线的读屏名（整句；旧名 rangeLabel / sparkLabel）。',
+          },
           {
             name: 'stages / current',
             type: 'MetricStage[] / number',
@@ -1204,8 +1456,8 @@ export const PAGES: readonly DocPage[] = [
           { name: 'label', type: 'string', desc: '整墙的读屏名。' },
           {
             name: 'ranges / range / defaultRange / onRangeChange / rangeLabel',
-            type: '{ key, label }[] / string / string / (key) => void / string',
-            desc: '共用区间分段，放在墙顶一次；传了它卡片不再各画分段控件，都按这个 key 取自己 ranges 里同 key 的一段。',
+            type: '{ id, label }[] / string / string / (id) => void / string',
+            desc: '共用区间分段，放在墙顶一次；传了它卡片不再各画分段控件，都按这个 id 取自己 ranges 里同 id 的一段。',
           },
           { name: 'minWidth', type: 'number', desc: '每张卡最小宽（px），默认 260；一行几张由容器宽决定。' },
         ],
@@ -1220,9 +1472,11 @@ export const PAGES: readonly DocPage[] = [
       '变化与走势线用涨跌色（跟 data-updown）；走势线颜色按所选区间的头尾涨跌。',
       '阶段带从跌色经灰到涨色，当前档全亮；档名写在带下面，不只靠颜色。',
       '没有数据：数值写 —，变化写 —，线的位置写 —，不画样本。',
+      'variant="tile"：DOM 与样子同原 SparkTile（k-spark-tile*），数值一格与卡共用 ReadoutValue（— / 闪色 / 滚轮 / 单位）。',
     ],
     donts: [
       '不要在件里算指标、写死中文或写死阶段边界；都由调用方传。',
+      '不要再新写 SparkTile：用 MetricCard variant="tile"，SparkTile 只是兼容的旧名。',
       '不要把阶段带当买卖信号；它只是读数落在哪一档。',
       '不要用橙色或蓝色画数据。',
     ],
@@ -1259,7 +1513,7 @@ export const PAGES: readonly DocPage[] = [
   },
   {
     id: 'rating-text',
-    group: 'quant',
+    group: 'quotes',
     cardHeight: 140,
     title: 'RatingText 五档评级',
     summary:
@@ -1279,13 +1533,17 @@ export const PAGES: readonly DocPage[] = [
       '买入、强力买入：涨色；卖出、强力卖出：跌色；中性：继承周围字色。',
       '方向不只靠颜色：图标一至两层箭头表示强弱。',
     ],
-    donts: ['不要自己拼箭头字符着色；用这个件，涨跌色才会跟 data-updown。'],
+    donts: [
+      '不要自己拼箭头字符着色；用这个件，涨跌色才会跟 data-updown。',
+      '不要只写档名不给图标：方向与强弱靠箭头层数，不只靠颜色。',
+      '不要拿它写涨跌幅：那是 ChangeText。',
+    ],
     composition: 'RatingText（内部：lucide 图标）；放在 DataGrid 的 custom 列 cell 里',
     keys: [],
   },
   {
     id: 'technical-rating',
-    group: 'quant',
+    group: 'quotes',
     cardHeight: 780,
     title: 'TechnicalRating 技术评级仪表（跨市场共用）',
     summary:
@@ -1316,9 +1574,9 @@ export const PAGES: readonly DocPage[] = [
             desc: '放大居中的那一组的 key；不给取中间那一组。窄于 440px 时它独占一行。',
           },
           {
-            name: 'timeframes / timeframe / onTimeframeChange',
+            name: 'timeframes / value / onValueChange',
             type: 'TechnicalRatingTimeframe[] / string / (value) => void',
-            desc: '时间周期分段控件的选项、当前值与回调；不给 timeframes 就没有这一条。切周期后传新的 groups 与 rows。',
+            desc: '时间周期分段控件的选项、当前值与回调（旧名 timeframe / onTimeframeChange）；不给 timeframes 就没有这一条。切周期后传新的 groups 与 rows。',
           },
           { name: 'disclaimer', type: 'ReactNode', desc: '免责一句，画在仪表与明细之间；不给就不画。' },
           {
@@ -1345,7 +1603,7 @@ export const PAGES: readonly DocPage[] = [
   },
   {
     id: 'pnl-text',
-    group: 'quant',
+    group: 'quotes',
     cardHeight: 70,
     title: 'PnlText 盈亏',
     summary: '盈亏文字：字由调用方格式化好（币种、位数、符号都由调用方定），本件只按方向着色，颜色规则同 ChangeText。',
@@ -1358,7 +1616,7 @@ export const PAGES: readonly DocPage[] = [
   },
   {
     id: 'decimal-field',
-    group: 'quant',
+    group: 'forms',
     cardHeight: 300,
     title: 'DecimalField 十进制框',
     summary:
@@ -1371,9 +1629,9 @@ export const PAGES: readonly DocPage[] = [
         rows: [
           { name: 'value', type: 'string', desc: '框里的字，十进制写法；打字自由，合不合法由调用方与 Gateway 判。' },
           {
-            name: 'onValue',
+            name: 'onValueChange',
             type: '(value: string) => void',
-            desc: '打字与走格都回调；走格给的是 toFixed() 的规范字符串。',
+            desc: '打字与走格都回调；走格给的是 toFixed() 的规范字符串。旧名 onValue 留一个版本（@deprecated）。',
           },
           {
             name: 'step',
@@ -1397,9 +1655,9 @@ export const PAGES: readonly DocPage[] = [
             desc: 'error：aria-invalid 并换危险色边；warning：只换琥珀色边，不设 aria-invalid。',
           },
           {
-            name: 'buttons',
-            type: '{ decrease: string; increase: string }',
-            desc: '给了才显示 − / + 按钮；两个字符串是读屏名，也是悬停提示。包里不带语言。',
+            name: 'labels',
+            type: 'DecimalFieldLabels',
+            desc: '{ decrease, increase }：给了才显示 − / + 按钮；两个字符串是读屏名，也是悬停提示。包里不带语言。旧名 buttons 留一个版本（@deprecated）。',
           },
         ],
       },
@@ -1412,7 +1670,7 @@ export const PAGES: readonly DocPage[] = [
     ],
     donts: [
       '不要把值转成 number 再传：价格与数量不经浮点。',
-      '不要在包里写按钮文字，buttons 由调用方传。',
+      '不要在包里写按钮文字，labels 由调用方传。',
       '不要在这里校验价位：在不在格子上由调用方与 Gateway 判。',
     ],
     composition: 'DecimalField\n  Input\n  Button（icon，− / +，带悬停提示）\n  stepDecimal（format 子出口）',
@@ -1503,7 +1761,7 @@ export const PAGES: readonly DocPage[] = [
       },
       {
         part: 'Toast',
-        note: '其余属性透传给 div。过渡的起点与终点由 data-starting-style、data-ending-style 给（phase 换的）。',
+        note: '其余属性透传给 div。过渡的起点与终点由 data-starting-style、data-ending-style 给（phase 换的）。tone（Severity）定色条与图标的颜色，neutral 是主文字色色条加强调色图标。',
       },
       { part: 'ToastClose', note: '其余属性透传给 Button（icon 变体）。' },
       {
@@ -1515,9 +1773,11 @@ export const PAGES: readonly DocPage[] = [
       '进入：从边上平移加淡入（phase=entering 画一帧再切 open）。',
       '收起：反向平移淡出，播完（TOAST_EXIT_MS）调用方再摘节点。',
       '多条：按位置叠，两条以上出「全部关掉」。',
+      '语气：neutral（默认）、ok、warn、danger，色条与图标取 --k-status-*-foreground；说明文字是 ink-2（console 主题下 ink-3 不到 4.5:1）。',
     ],
     donts: [
       '不要把需要用户处理的事只放在弹出提示里，它会自己消失。',
+      '不要只靠色条说语气：标题里写明（「下单被拒」而不是「出错了」）。',
       '不要在包里写死文案，关闭名与「全部关掉」都由调用方传。',
       '不要自己再做一套计时与队列放进 Toast，那是调用方的事。',
     ],
@@ -1539,7 +1799,10 @@ export const PAGES: readonly DocPage[] = [
       { part: 'Alert', note: '其余属性透传给 div。语气不能只靠颜色：标题或说明里要写字。' },
       { part: 'AlertTitle / AlertDescription', symbol: 'AlertTitle', note: '都是 div。' },
     ],
-    states: ['default、ok：role=status；warn、danger：role=alert。', '左边 2px 色条取语气的颜色。'],
+    states: [
+      'tone 是 Severity：neutral（默认）、ok 是 role=status；warn、danger 是 role=alert。旧名 default 等于 neutral。',
+      '左边 2px 色条与图标取 --k-status-<tone>-foreground；neutral 的色条是 --k-status-neutral-bold-borderColor（22% 白）。',
+    ],
     donts: [
       '不要用它代替弹出提示：Alert 是页面里一直在的说明。',
       '不要给一直在页面里的 Alert 保留 role=alert，传 role=note。',
@@ -1559,7 +1822,7 @@ export const PAGES: readonly DocPage[] = [
     states: [
       '确定：按 value 填充，aria-valuenow 跟值。',
       '不确定：value 缺省，来回滑动的条，不带 aria-valuenow。',
-      'tone：default、ok、warn、danger 换填充颜色。',
+      'tone（Severity）：neutral（默认，亮中性）、ok、warn、danger 换填充颜色；旧名 default 等于 neutral。',
     ],
     donts: ['不要在不知道进度时传一个假的 value。', '不要用它表示库存或额度的满格，用 Meter。', '不要省掉可访问名。'],
     composition: 'Progress\n  （内部：Progress.Indicator）',
@@ -1790,8 +2053,12 @@ export const PAGES: readonly DocPage[] = [
             default: "'single'",
             desc: 'none 只展开收起，点行不选。',
           },
-          { name: 'selectedKeys / defaultSelectedKeys', type: 'string[]', desc: '选中的 id，受控 / 非受控。' },
-          { name: 'onSelectionChange', type: '(keys: string[]) => void', desc: '选中变了。' },
+          {
+            name: 'value / defaultValue',
+            type: 'string[]',
+            desc: '选中的 id，受控 / 非受控（旧名 selectedKeys / defaultSelectedKeys 留一个版本）。',
+          },
+          { name: 'onValueChange', type: '(value: string[]) => void', desc: '选中变了（旧名 onSelectionChange）。' },
           { name: 'expandedKeys / defaultExpandedKeys', type: 'string[]', desc: '展开的 id，受控 / 非受控。' },
           { name: 'onExpandedChange', type: '(keys: string[]) => void', desc: '展开变了。' },
           {
@@ -1829,7 +2096,7 @@ export const PAGES: readonly DocPage[] = [
     cardHeight: 326,
     title: 'Field 表单字段',
     summary:
-      '标签加控件加说明加错误排成一组，并把它们的 ARIA 关联好：标签点一下聚焦控件，说明与错误进控件的 aria-describedby，出错时 aria-invalid、错误条 role=alert。',
+      '标签加控件加说明加错误排成一组，并把它们的 ARIA 关联好：标签点一下聚焦控件，说明与错误进控件的 aria-describedby，出错时 aria-invalid、错误条 role=alert。可选 shakeOnInvalid：变成无效的那一刻整组抖一下（改自 SmoothUI form，MIT）。',
     exports: [
       'Field',
       'FieldContent',
@@ -1885,9 +2152,9 @@ export const PAGES: readonly DocPage[] = [
           { name: 'children', type: 'ReactNode', desc: '按钮上的字。' },
           { name: 'onConfirm', type: '() => void', desc: '填满时回调，一次按住只一次；松手再按才能再触发。' },
           {
-            name: 'hint',
-            type: 'string',
-            desc: '读屏与悬停提示，如「按住 2 秒，全部平仓」。必填：没有它读屏用户不知道要按住。',
+            name: 'labels',
+            type: 'HoldToConfirmLabels',
+            desc: '{ hint, confirmed? }。hint 是读屏与悬停提示，如「按住 2 秒，全部平仓」，必填：没有它读屏用户不知道要按住；confirmed 是填满后的字，原地换掉 children，直到松手退完。旧名 hint、confirmedLabel 留一个版本（@deprecated）。',
           },
           {
             name: 'holdMs',
@@ -1896,22 +2163,26 @@ export const PAGES: readonly DocPage[] = [
             desc: '按住多久填满。2000 取自 Emil Kowalski 的 hold-to-delete 写法（2026-11-14 读），对交易动作是否合适没有实测，默认值待定；越不可撤越长。',
           },
           { name: 'releaseMs', type: 'number', default: '200', desc: '松手后从满格退回空格要多久（同一出处）。' },
-          { name: 'confirmedLabel', type: 'ReactNode', desc: '填满后的字，原地换掉 children，直到松手退完。' },
-          { name: 'tone', type: "'danger' | 'default'", default: "'danger'", desc: '填充色：红，或中性。' },
+          {
+            name: 'tone',
+            type: 'Severity',
+            default: "'danger'",
+            desc: '填充色：danger 红、warn 琥珀、ok 绿（38% 语气色），neutral 中性（9% 白）。旧值 default 等于 neutral，留一个版本。',
+          },
           { name: 'disabled', type: 'boolean', desc: '灰掉，按不动。' },
         ],
       },
     ],
     states: [
       '空闲：和普通按钮一样。',
-      '按住：填充从左往右走；到 holdMs 填满并触发，字换成 confirmedLabel。',
+      '按住：填充从左往右走；到 holdMs 填满并触发，字换成 labels.confirmed。',
       '松手：填充在 releaseMs 内退回；填满后手还按着，填充停在满格，松手才退。',
       '焦点移走或指针被抢走：按松手处理，退回。',
     ],
     donts: [
       '不要拿它做可撤销的动作：那些直接用 Button，确认框和按住都是摩擦。',
       '不要缩短 holdMs 到几百毫秒：那和单击没有区别。',
-      'hint 要写清按多久、做什么，读屏用户靠它。',
+      'labels.hint 要写清按多久、做什么，读屏用户靠它。',
     ],
     composition:
       'HoldToConfirm\n  button\n    span.k-hold-fill（scaleX 填充）\n    span.k-hold-label\n    span.sr-only（hint）',
@@ -1939,7 +2210,10 @@ export const PAGES: readonly DocPage[] = [
       '点眼睛：显示明文，输入框不丢焦点与选区，眼睑睁开；再点遮回去。',
       '禁用：按钮不可点。',
     ],
-    donts: ['眼睛按钮的读屏名 toggleLabel 必须传，包里不写文案。', '不要用它放不需要遮住的普通文本。'],
+    donts: [
+      '眼睛按钮的读屏名 labels.toggle 必须传，包里不写文案（旧名 toggleLabel 留一个版本）。',
+      '不要用它放不需要遮住的普通文本。',
+    ],
     composition: 'PasswordInput\n  Input\n  button（眼睛，aria-pressed）',
     keys: [
       ['Tab', '从输入框到眼睛按钮'],
@@ -1954,7 +2228,12 @@ export const PAGES: readonly DocPage[] = [
     summary:
       '危险操作不弹对话框：点一下按钮在原地展开出「确认」「取消」，垃圾桶的盖子掀开。Esc、点外面、Tab 走开都是取消。学自 rare-ui。',
     exports: ['DeleteButton'],
-    propParts: [{ part: 'DeleteButton' }],
+    propParts: [
+      {
+        part: 'DeleteButton',
+        note: '外层是 div（data-phase：idle / armed / done / kept）；原按钮 aria-expanded 表达是否展开。文字都在 label 与 labels 里，包里不带语言。',
+      },
+    ],
     states: [
       '静止：垃圾桶图标按钮。',
       '展开：原地出现「确认」「取消」，垃圾桶的盖子掀开。',
@@ -1980,7 +2259,11 @@ export const PAGES: readonly DocPage[] = [
       { part: 'NotificationBell', note: '其余属性透传给 button。角标对读屏隐藏，数变了由名字（label）播报。' },
     ],
     states: ['0：角标收起。', '有未读：角标弹出，数字按增减方向滚。', '数变多：铃从顶端摆一下。'],
-    donts: ['铃是图标，label 必须传（读屏名字）。'],
+    donts: [
+      '铃是图标，label 必须传（读屏名字），而且要带未读数：数变了就换这个字符串。',
+      '不要拿角标数表示别的量（价格、进度）：它只表示未读条数，超过 max 写「99+」。',
+      '不需要数字的场合用 variant=dot，不要传 1 假装。',
+    ],
     composition: 'NotificationBell\n  svg（铃，转轴在上）\n  span（角标）\n  span（role=status 播报）',
     keys: [['Enter / Space', '点击（按钮）']],
   },
@@ -1992,10 +2275,18 @@ export const PAGES: readonly DocPage[] = [
     summary:
       '提示条里的成功、失败、警告、说明、进行中：换状态时旧的缩小退出、新的弹入，对勾与叉一笔一笔画出来。学自 rare-ui 的 toast。',
     exports: ['StatusIcon'],
-    propParts: [{ part: 'StatusIcon', note: '16 见方，role=img。应用的提示条（AlertToasts）用它表达成功与警告。' }],
-    states: ['成功、失败、警告、说明、进行中五种。', '换状态时旧的缩小退出、新的弹入，对勾与叉一笔一笔画出来。'],
+    propParts: [
+      {
+        part: 'StatusIcon',
+        note: '16 见方，role=img。tone：Severity（ok 对勾、warn 叹号、danger 叉、neutral 说明）加 info（蓝的说明）与 pending（转圈）；旧的 status（success / error / warning）留一个版本。',
+      },
+    ],
+    states: [
+      'ok、danger、warn、info、neutral、pending 六种，颜色取 --k-status-*；pending 是一圈匀速转的弧。',
+      '换状态时旧的缩小退出、新的弹入，对勾与叉一笔一笔画出来。',
+    ],
     donts: ['不要单靠图标说话：旁边要有文字。', 'label 必须传（读屏名字）。'],
-    composition: 'StatusIcon\n  svg（按 status 换，笔画画出来）',
+    composition: 'StatusIcon\n  svg（按 tone 换，笔画画出来）',
     keys: [],
   },
   {
@@ -2008,12 +2299,16 @@ export const PAGES: readonly DocPage[] = [
     exports: ['AiStatus'],
     propParts: [{ part: 'AiStatus', note: '整行是 role=status，状态变了读屏播报。' }],
     states: [
-      '按 state 换图标与文字；进行中带流光。',
+      '按 status（状态机：thinking、searching、writing、done、error）换图标与文字；进行中带流光。旧的 state 留一个版本。',
       '可带 detail 与耗时 elapsed。',
       '换状态时图标缩放、文字上下滑、整行宽度弹簧伸缩。',
     ],
-    donts: ['没有真实进展时不要显示进行中。'],
-    composition: 'AiStatus\n  span（图标，按 state 换）\n  span（文字，按 label 换）\n  span（细节）\n  span（耗时）',
+    donts: [
+      '没有真实进展时不要显示进行中。',
+      '状态变了要换 label：图标换了文字没换，读屏听不到。',
+      '不要给 done、error 传耗时：只在进行中显示，结束就收起。',
+    ],
+    composition: 'AiStatus\n  span（图标，按 status 换）\n  span（文字，按 label 换）\n  span（细节）\n  span（耗时）',
     keys: [],
   },
   {
@@ -2022,13 +2317,23 @@ export const PAGES: readonly DocPage[] = [
     cardHeight: 261,
     title: 'MatrixOrb 点阵状态球',
     summary:
-      '一盘方点排成圆：待命慢呼吸，聆听同心波跟音量走，思考几个热点绕着转。点阵签名件的动态版，用来表达 Agent 在做什么。学自 rare-ui。',
+      '一盘方点排成圆：待命慢呼吸，聆听同心波跟输入电平（麦克风音量）走，思考几个热点绕着转；另有流式、完成、出错三态（并入自 SmoothUI siri-orb / ai-core 的六态约定，用点阵自己的方式表达）。点阵签名件的动态版，用来表达 Agent 在做什么。学自 rare-ui。',
     exports: ['MatrixOrb'],
     propParts: [
       { part: 'MatrixOrb', note: '画在 canvas 上，role=img；状态用文字另外读出。颜色取元素的 color，跟主题走。' },
     ],
-    states: ['待命：慢呼吸。', '聆听：同心波跟 level 音量走。', '思考：几个热点绕着转。'],
-    donts: ['只表达 Agent 真实在做的事，不当装饰。', 'label 要传（读屏名字）。'],
+    states: [
+      '待命：慢呼吸。',
+      '聆听：同心波跟 level（输入电平）走。',
+      '思考：几个热点绕着转。',
+      '流式：由内向外的脉冲环，节奏固定、不跟电平（并入自 SmoothUI 的六态约定）。',
+      '完成：亮而平，点变绿。',
+      '出错：亮斑在原地乱跳，点变红。',
+    ],
+    donts: [
+      '只表达 Agent 真实在做的事，不当装饰。',
+      'label 要传（读屏名字）；状态用 status 传（状态机，旧的 state 留一个版本）。',
+    ],
     composition: 'MatrixOrb\n  canvas（requestAnimationFrame 循环）',
     keys: [],
   },
@@ -2058,7 +2363,7 @@ export const PAGES: readonly DocPage[] = [
           {
             name: 'palette',
             type: 'string[]',
-            default: "['transparent', 'var(--signal-orange)']",
+            default: "['transparent', 'var(--accent)']",
             desc: '下标对应的颜色，CSS 颜色或 var(--token)；下标 0 是底。',
           },
           { name: 'pixelSize', type: 'number', default: '8', desc: '一个像素格的边长（CSS 像素）。' },
@@ -2080,6 +2385,11 @@ export const PAGES: readonly DocPage[] = [
           },
           { name: 'scanlines', type: 'boolean', default: 'false', desc: '缓慢上漂的扫描线。' },
           { name: 'crt', type: 'boolean', default: 'false', desc: '暗角、红蓝边色散、滚动亮带与轻微闪烁。' },
+          {
+            name: 'label',
+            type: 'string',
+            desc: '读屏名，不给用 text；纯精灵又没给就当装饰，整块对读屏隐藏（包里不带兜底文案）。',
+          },
         ],
       },
     ],
@@ -2092,6 +2402,7 @@ export const PAGES: readonly DocPage[] = [
       '没有中日韩字：5x7 字体只有拉丁字母、数字与几个标点，中文要用别的件。',
       '不要拿它画行情数字或价格；它是装饰与状态牌，读数用 Lcd。',
       '它不是可读的文本控件：文字在 sr-only 里，别指望复制画布上的字。',
+      '不要写死颜色：色板传 var(--token)；CRT 叠层的暗、亮、色散三色读 --lcd-bg / --lcd-fg / 状态色，可用 --arcade-* 覆盖。',
     ],
     composition: 'ArcadePixel\n  canvas（aria-hidden）\n  CRT 叠层（扫描线、暗角、色散、闪烁）\n  span.sr-only',
     keys: [],
@@ -2162,11 +2473,15 @@ export const PAGES: readonly DocPage[] = [
           },
           { name: 'formatValue', type: '(value: number) => string', desc: '数值写成什么：纵轴刻度与读数。' },
           { name: 'labels', type: '{ start, end, window }', desc: '三个手柄的读屏名（起点、终点、整个窗口）。' },
-          { name: 'window / defaultWindow', type: '[number, number]', desc: '受控 / 不受控的窗口，默认整段。' },
           {
-            name: 'onWindowChange',
+            name: 'value / defaultValue',
+            type: '[number, number]',
+            desc: '受控 / 不受控的窗口，默认整段。旧名 window / defaultWindow 留一个版本（@deprecated）。',
+          },
+          {
+            name: 'onValueChange',
             type: '(window: [number, number]) => void',
-            desc: '窗口变了（拖、键盘、点概览条）。',
+            desc: '窗口变了（拖、键盘、点概览条）。旧名 onWindowChange 留一个版本。',
           },
           { name: 'minSpan', type: 'number', default: '2', desc: '窗口最少几个点：折线至少两个点才画得出来。' },
           { name: 'height / brushHeight', type: 'number', default: '160 / 40', desc: '主图与概览条的高（px）。' },
@@ -2174,12 +2489,12 @@ export const PAGES: readonly DocPage[] = [
       },
       {
         part: 'BrushStrip',
-        note: '只有概览条（SeriesExplorer 这类自己画主图的件用它）。属性是 values、window、onWindowChange、formatX、labels、minSpan、height。',
-        rows: [{ name: 'window / onWindowChange', type: '[number, number]', desc: '必填：窗口由上层持有。' }],
+        note: '只有概览条（SeriesExplorer 这类自己画主图的件用它）。属性是 values、value、onValueChange、formatX、labels、minSpan、height（旧名 window / onWindowChange 留一个版本）。',
+        rows: [{ name: 'value / onValueChange', type: '[number, number]', desc: '窗口由上层持有（受控）。' }],
       },
     ],
     states: [
-      '默认：窗口整段（或 defaultWindow），概览条上窗口外变暗。',
+      '默认：窗口整段（或 defaultValue），概览条上窗口外变暗。',
       '拖动中：窗口换成抓取手形，主图同步变。',
       '扫读：主图上出现竖线与点，下面一行写时间与值。',
       '窗口到了最小（minSpan）：继续缩小被夹住，不再变。',
@@ -2217,7 +2532,11 @@ export const PAGES: readonly DocPage[] = [
             desc: 'kind 为 fee 的是费用·税，永远单独一行放最底；closed 是名称后的点阵小标签（整行删除线）；detail 是 tooltip 里多写的几行。',
           },
           { name: 'formatValue / formatShare', type: '(n) => string', desc: '贡献与占比写成什么字。' },
-          { name: 'otherLabel / shareLabel', type: '(n) => string / string', desc: '「其他 ×n」与占比那一行的标签。' },
+          {
+            name: 'labels',
+            type: '{ other: (n) => string, share: string }',
+            desc: '「其他 ×n」与占比那一行的字。旧名 otherLabel / shareLabel 留一个版本（@deprecated）。',
+          },
           {
             name: 'title / meta',
             type: 'string / (scale) => string',
@@ -2225,8 +2544,8 @@ export const PAGES: readonly DocPage[] = [
           },
           {
             name: 'dimensions / ranges',
-            type: '{ label, options, value, onChange }',
-            desc: '顶行的两组分段；换了就换 items，同一位置的条长会过渡。',
+            type: '{ label, options, value, onValueChange }',
+            desc: '顶行的两组分段；换了就换 items，同一位置的条长会过渡。旧名 onChange 留一个版本。',
           },
           {
             name: 'readouts',
@@ -2298,7 +2617,11 @@ export const PAGES: readonly DocPage[] = [
             desc: '宿主自己给整点 / 整日刻度（按显示时区）；不给就在窗口里均分 5 个。',
           },
           { name: 'labels', type: 'object', desc: '回撤、时刻列头、线性 / 对数、概览条三个手柄、右上三件的文字。' },
-          { name: 'onWindowChange', type: '(window) => void', desc: '拖概览条改窗口后回调，宿主可把别的表跟着筛。' },
+          {
+            name: 'onValueChange',
+            type: '(window) => void',
+            desc: '拖概览条改窗口后回调，宿主可把别的表跟着筛。旧名 onWindowChange 留一个版本。',
+          },
           { name: 'onExport / onFullscreen', type: '() => void', desc: '不给就不画那个按钮；表格视图总有。' },
         ],
       },
@@ -2320,16 +2643,16 @@ export const PAGES: readonly DocPage[] = [
   },
   {
     id: 'spark-tile',
-    group: 'quant',
+    group: 'quotes',
     cardHeight: 358,
     title: 'SparkTile KPI 瓦片',
     summary:
-      'KPI 瓦片：点阵小标签、LCD 数值、24px 迷你折线（可画阈值虚线）、一行变化说明；数据由调用方给，没有数据是空态，一行最多放 5 个。',
+      'KPI 瓦片：点阵小标签、LCD 数值、24px 迷你折线（可画阈值虚线）、一行变化说明；数据由调用方给，没有数据是空态，一行最多放 5 个。2026-11-18 起它就是 MetricCard variant="tile"，SparkTile 留作兼容的旧名。',
     exports: ['SparkTile'],
     props: [
       {
         part: 'SparkTile',
-        note: '给了 onClick 整块就是按钮（点开该指标的完整图），不给是普通块。文案（标签、说明、读屏名）都由调用方传。',
+        note: '等于 <MetricCard variant="tile">：delta → changePct、sparkLabel → labels.spark、state → status、onClick → onSelect，新代码写 MetricCard。给了 onClick（onSelect）整块就是按钮，不给是普通块。文案都由调用方传。',
         rows: [
           { name: 'label', type: 'string', desc: '点阵小标签。' },
           { name: 'value', type: 'string | null', desc: '已格式化的数值；null 是没有数据，写 —。' },
@@ -2372,7 +2695,8 @@ export const PAGES: readonly DocPage[] = [
       '不要用颜色区分瓦片类型，只用标签；接近阈值要在说明里写字，不只靠边框颜色。',
       '没有数据时不要传一列 0 凑数。',
     ],
-    composition: 'SparkTile\n  ChangeText\n  RollingText（给了 rollValue 时）',
+    composition:
+      'SparkTile = MetricCard variant="tile"\n  ReadoutValue（数值 · RollingText 给了 rollValue 时）\n  迷你线（svg）\n  ChangeText · note',
     keys: [['Enter / Space', '给了 onClick 时触发']],
   },
   {
@@ -2394,9 +2718,9 @@ export const PAGES: readonly DocPage[] = [
           { name: 'valueText', type: 'string', desc: '右边的数怎么写；不给就是四舍五入的百分数。' },
           {
             name: 'tone',
-            type: "'accent' | 'ok' | 'warn' | 'danger' | 'off'",
+            type: 'SeverityExt',
             default: "'accent'",
-            desc: '进行中（橙）、健康（绿）、受限或越界（琥珀）、弱势（红）、停用。',
+            desc: '进行中 accent（橙）、健康 ok（绿）、受限或越界 warn（琥珀）、弱势 danger（红）、停用 off / neutral。',
           },
           {
             name: 'display',
@@ -2414,6 +2738,7 @@ export const PAGES: readonly DocPage[] = [
       'gauge：34px 凹槽、中线、底部 0/25/50/75/100 刻度，指针带光；弱势用 danger（红）。',
       'sync：14px 带齿条，右侧大百分比（display-dense 字），琥珀刻度是评估点。',
       'warn：条与数转琥珀，条体脉冲一次；off：全部转灰。',
+      'tone 是 SeverityExt（G6）：neutral 画法同 off（没有判断就不着色）。',
     ],
     donts: [
       '不要传颜色，只传 tone。',
@@ -2443,8 +2768,11 @@ export const PAGES: readonly DocPage[] = [
             desc: '每格一个，kind 是 pressure | priceChange | dom | divergence。',
           },
           { name: 'label', type: 'string', desc: '整行的读屏名。' },
-          { name: 'naText', type: 'string', default: "'N/A'", desc: '没有数的位置写什么。' },
-          { name: 'estimateText', type: 'string', default: "'est.'", desc: '估算标记的字。' },
+          {
+            name: 'labels',
+            type: '{ na?, estimate? }',
+            desc: "没有数的位置写什么（默认 'N/A'）、估算标记的字（默认 'est.'）；旧名 naText / estimateText 留一个版本。",
+          },
         ],
       },
       {
@@ -2504,12 +2832,15 @@ export const PAGES: readonly DocPage[] = [
         rows: [
           { name: 'title', type: 'ReactNode', desc: '图例上方的标题行。' },
           { name: 'current', type: 'string', desc: '当前所处状态的 id。' },
-          { name: 'currentText', type: 'string', desc: '「当前」的字；给了 current 就要给。' },
-          { name: 'estimateText', type: 'string', default: "'est.'", desc: '有估算段时图例末尾的字。' },
           {
-            name: 'onPickState',
-            type: '(id: string | null) => void',
-            desc: '给了图例每项就是按钮：点选高亮，再点取消（传 null）。',
+            name: 'labels',
+            type: '{ current?, estimate? }',
+            desc: "「当前」的字（给了 current 就要给）、有估算段时图例末尾的字（默认 'est.'）；旧名 currentText / estimateText 留一个版本。",
+          },
+          {
+            name: 'onSelect',
+            type: '(state: RegimeState | null) => void',
+            desc: '给了图例每项就是按钮：点选高亮，再点同一项取消（传 null）；旧名 onPickState（给 id）留一个版本。',
           },
         ],
       },
@@ -2550,7 +2881,7 @@ export const PAGES: readonly DocPage[] = [
       '不要只靠颜色认状态，图例里一定有名字。',
     ],
     composition: 'RegimeStrip\n  RegimeBand\n  图例（色块 + 名字 + 小字）',
-    keys: [['Enter / Space', '给了 onPickState 时，图例项点选或取消高亮']],
+    keys: [['Enter / Space', '给了 onSelect 时，图例项点选或取消高亮']],
   },
   {
     id: 'consensus-block',
@@ -2566,7 +2897,11 @@ export const PAGES: readonly DocPage[] = [
         note: '各方的判定来自各自的权威，件只画不判，不合成第四种判断。一个表单只放一个。结构不皮肤化。',
         rows: [
           { name: 'label', type: 'string', desc: '整块的读屏名。' },
-          { name: 'intent', type: 'ReactNode', desc: '当前意图（下单 · 账户 A · 买 300750 × 2,000）。' },
+          {
+            name: 'subject',
+            type: 'ReactNode',
+            desc: '要提交的是什么（下单 · 账户 A · 买 300750 × 2,000）；旧名 intent 留一个版本。',
+          },
           {
             name: 'parties',
             type: 'readonly ConsensusParty[]',
@@ -2613,14 +2948,14 @@ export const PAGES: readonly DocPage[] = [
     id: 'calendar-heatmap',
     group: 'quant',
     cardHeight: 560,
-    title: 'CalendarHeatmap 日历',
+    title: 'CalendarHeatmap 日历热力图',
     summary:
       '月历格：底色是收益（或换手）的低饱和发散热力，格内日期左上、数值右下，左下点阵事件点（最多 3 个，更多写 +n）；休市日灰底写「休」，今天强调色描边，周标 W40。切「事件」视图时格子不着色。mode 为 year 是整年的格子。对设计稿的 Calendar 卡；功能参照 Arc 的 Activity heatmap。',
     exports: ['CalendarHeatmap'],
     props: [
       {
         part: 'CalendarHeatmap',
-        note: '日期是不带时区的日历日 YYYY-MM-DD，按 UTC 零点算。外观读 CSS 变量，见 theme/chart-kit.css 开头。年视图用的是整年的格子（一周一列），不是 12 个缩小月历（待定：第一版先做整年格子）。',
+        note: '日期是不带时区的日历日 YYYY-MM-DD，用 @internationalized/date 的 CalendarDate 算（不碰本地时区）。样式在 theme/calendar-heatmap.css。年视图用的是整年的格子（一周一列），不是 12 个缩小月历（待定：第一版先做整年格子）。',
         rows: [
           {
             name: 'days',
@@ -2662,6 +2997,12 @@ export const PAGES: readonly DocPage[] = [
             desc: '右上角三件与表格视图的文字；导出与全屏回调不给就不画，表格视图总有。',
           },
           { name: 'onSelect', type: '(date: string) => void', desc: '点一天或选中后按 Enter（写联动 range）。' },
+          {
+            name: 'reveal',
+            type: 'boolean',
+            default: 'false',
+            desc: '进场时格子依次淡入长大（年视图一列一列、月历一天一天）；月份或区间变了会重播。',
+          },
         ],
       },
     ],
@@ -2671,6 +3012,7 @@ export const PAGES: readonly DocPage[] = [
       '换手视图：序数色，格从暗到亮。',
       '事件视图：格子不着色，每格最多列两条事件文字。',
       '没有数据的日子：只有日期与「·」，与持平（中点灰）不同。',
+      '悬停：tooltip 从 0.8 倍弹到 1，格子的描边与色平滑过渡；reveal 开着时进场格子依次淡入。',
     ],
     donts: [
       '不要用涨跌色填格：涨跌色不上面积，只有月合计的数字用。',
@@ -2957,7 +3299,11 @@ export const PAGES: readonly DocPage[] = [
     exports: ['StepPlayer'],
     propParts: [{ part: 'StepPlayer', note: '值与播放状态都可受控，也可不受控。文字全由 labels 给，包里没有文案。' }],
     states: ['播放中：当前一步撑成长条，里面的填充随时间走。', '暂停、重放；可循环。', 'seekable 时可点圆点跳步。'],
-    donts: ['它是按时间走的演示进度，不要拿它表示真实任务进度。'],
+    donts: [
+      '它是按时间走的演示进度，不要拿它表示真实任务进度（用 Progress）。',
+      '尺寸只用 sm（24）与 md（32）：直接写像素数的旧写法留一个版本。',
+      '可跳时每个圆点都要有读屏名：步上写 label，或给 labels.step。',
+    ],
     composition:
       'StepPlayer\n  button（播放 / 暂停 / 重放，图标弹簧缩放着换）\n  div role=group（圆点条）\n    div（一步：长条 / 亮点 / 暗点）\n      button（可跳时的点击区）',
     keys: [
@@ -2977,7 +3323,11 @@ export const PAGES: readonly DocPage[] = [
       { part: 'ThemeSelector', note: 'role=radiogroup；tab 只停在选中那张。value 传 null 表示受控但还没选。' },
     ],
     states: ['选中的那张加一圈环，环在选项之间用弹簧滑过去。', '禁用：不响应。'],
-    donts: ['缩略颜色由调用方传，不要在包里写死主题色。'],
+    donts: [
+      '缩略颜色由调用方传，不要在包里写死主题色。',
+      '不要拿它选主题以外的东西：缩略图画的是一块控制台，别的选项用 ToggleGroup 或 Select。',
+      '主题超过四五个时别全摆成缩略：改成下拉，缩略只放常用的。',
+    ],
     composition: 'ThemeSelector\n  button role=radio（缩略 SVG + 选中环）\n  span（名字）',
     keys: [
       ['Tab', '进入 / 离开整组（停在选中那张）'],
@@ -2999,8 +3349,16 @@ export const PAGES: readonly DocPage[] = [
         note: '认得 ts / tsx / js / json / py / sh / css；别的语言当纯文本。开头的空行与结尾的空白会去掉。',
       },
     ],
-    states: ['带文件名头、行号、复制钮；复制后钮上写 copiedLabel。', '可高亮指定的行。'],
-    donts: ['复制钮的文案由调用方传（copyLabel、copiedLabel）。'],
+    states: [
+      '带文件名头、行号、复制钮；复制后钮变对勾、读屏名换成 labels.copied，1.8 秒复原。',
+      '可高亮指定的行（强调色 12% 的底）。',
+      '没有头：复制钮浮在右上角。',
+    ],
+    donts: [
+      '复制钮的文案由调用方传（labels.copy、labels.copied；旧的 copyLabel / copiedLabel 留一个版本）。',
+      '注释不要用 ink-4：深底上不到 3:1，注释色是 ink-3 斜体。',
+      '不要拿它执行或渲染代码：代码只当文字画。',
+    ],
     composition:
       'CodeBlock\n  div（头：名字 + 复制钮）\n  div role=region（滚动区，可聚焦）\n    pre > 每行一个 div（行号 + token）',
     keys: [
@@ -3033,7 +3391,11 @@ export const PAGES: readonly DocPage[] = [
       '点开是一排来源卡片；「还有 N 条」展开全部。',
       '行内引用：悬停或键盘聚焦弹出预览。',
     ],
-    donts: ['不存也不开 URL：要打开来源由调用方在 onOpen 里处理。'],
+    donts: [
+      '不存也不开 URL：要打开来源由调用方在 onOpen 里处理。',
+      '「还有 N 条」「收起」由调用方传（labels.more / labels.less；旧的 moreLabel / lessLabel 留一个版本）。',
+      '不要去取网站图标：来源小标是站名首字母（micro 字号），不发网络请求。',
+    ],
     composition:
       'WebSearch\n  button（药丸：地球 + 文字 + 小标 + 箭头）\n  ol（来源卡片 / 骨架 / 更多 / 收起）\nWebSearchCitation\n  button（行内小标）\n  span role=tooltip（预览）',
     keys: [
@@ -3051,7 +3413,11 @@ export const PAGES: readonly DocPage[] = [
     exports: ['TaskList'],
     propParts: [{ part: 'TaskList', note: '每行是 role=checkbox 的按钮；屏外有 role=status 的区播报勾上与取消。' }],
     states: ['未勾：空圈。', '已勾：圆圈填强调色、对勾画出、文字划掉，沉到底部。', '再点取消，回到原位。'],
-    donts: ['任务文案与标签由调用方传。'],
+    donts: [
+      '任务文案与标签由调用方传。',
+      '不要拿它做多选筛选：勾上的行会沉底换位置，筛选用 ChipGroup 或 Checkbox。',
+      '任务的真实状态以数据为准：勾选只回调 onValueChange，写不写回由调用方定。',
+    ],
     composition:
       'TaskList\n  li（layout 动画）\n    button role=checkbox（圆圈 + 对勾 + 划线文字）\n  li role=status（播报）',
     keys: [
@@ -3067,14 +3433,23 @@ export const PAGES: readonly DocPage[] = [
     summary:
       '平时是连成一整条的药丸「2 时 30 分」加笔钮；点笔钮三段用弹簧分开、内侧圆角长出来，数字变成可输入的框，笔变对勾；点对勾确认。输入超上限夹住并抖一下。学自 rare-ui。',
     exports: ['DurationPicker'],
-    propParts: [{ part: 'DurationPicker' }],
+    propParts: [
+      {
+        part: 'DurationPicker',
+        note: '可受控（value）也可不受控（defaultValue）；打字时立刻回调夹好的值，确认另走 onConfirm。data-editing 表示在编辑。',
+      },
+    ],
     states: [
       '平时：连成一整条的药丸加笔钮。',
       '编辑中：三段分开，数字变成输入框，笔变对勾。',
       '输入超上限：夹住并抖一下。',
       '禁用：笔点不动。',
     ],
-    donts: ['上限 maxHours、maxMinutes 由调用方定，不要省略。'],
+    donts: [
+      '上限 maxHours、maxMinutes 由调用方定，不要省略。',
+      '不要拿它输入时刻（几点几分）：那是 DateTimeInput 的时间段。',
+      '要秒或天时别硬塞：它只有时、分两段。',
+    ],
     composition: 'DurationPicker\n  div（时 + 数字框）\n  div（分 + 数字框）\n  button（笔 / 对勾）',
     keys: [
       ['Enter', '确认'],
@@ -3116,7 +3491,7 @@ export const PAGES: readonly DocPage[] = [
       {
         part: 'DataGridHost（经 DataGridHostProvider 提供）',
         symbol: 'DataGridHost',
-        note: '应用才有的能力；包里不带语言，文案都是宿主传的。',
+        note: '应用才有的能力；包里不带语言，文案都是宿主经 labels（DataGridLabels）传的；旧名 texts / DataGridTexts 留一个版本（G6）。',
       },
       {
         part: 'ColumnPicker',
@@ -3183,7 +3558,12 @@ export const PAGES: readonly DocPage[] = [
     title: 'EmptyState 空态',
     summary: '面板的「空」态：点阵小标签、一行标题、说明与动作。没有连接、没选品种、没有数据时摆它，不画假数据。',
     exports: ['EmptyState'],
-    propParts: [{ part: 'EmptyState' }],
+    propParts: [
+      {
+        part: 'EmptyState',
+        note: 'role=status；标题是 h3。点阵标签、说明、动作都可省；classNames 按部位挂额外的类。',
+      },
+    ],
     states: ['有操作：标题、说明下面带操作区。', '无操作：只有标题与说明。'],
     donts: ['不要拿空态当加载中；加载用 Loading。', '不要写没有下一步的空态说明。'],
     composition: 'EmptyState（role=status）\n  标签\n  标题（h3）\n  说明\n  动作',
@@ -3235,7 +3615,11 @@ export const PAGES: readonly DocPage[] = [
             type: "'A' | 'B' | 'C' | 'D' | null",
             desc: '联动色点：给组名画那组的颜色；null 画熄灭的环；不传不画。',
           },
-          { name: 'linkLabel', type: 'string', desc: '色点的名字（读屏念）；有 linkGroup 时必填。' },
+          {
+            name: 'labels',
+            type: '{ link?, collapse?, expand? }',
+            desc: '色点的名字（有 linkGroup 时必填）、折叠按钮两态的名字（collapsible 时必填）；旧名 linkLabel / collapseLabel / expandLabel 留一个版本。',
+          },
           { name: 'pinned', type: 'boolean', default: 'false', desc: '固定（不跟随联动）：色点变空心圆。' },
           { name: 'toolbar', type: 'ReactNode', desc: '标题后的局部工具条（Toolbar）。' },
           { name: 'actions', type: 'ReactNode', desc: '右侧动作槽（设置、最大化、关闭）；不超过三个，更多进设置。' },
@@ -3243,7 +3627,7 @@ export const PAGES: readonly DocPage[] = [
             name: 'collapsible',
             type: 'boolean',
             default: 'false',
-            desc: '画折叠按钮（collapseLabel、expandLabel 由调用方传）。',
+            desc: '画折叠按钮（名字经 labels.collapse、labels.expand 传）。',
           },
         ],
       },
@@ -3252,12 +3636,12 @@ export const PAGES: readonly DocPage[] = [
         note: '其余属性透传给 div（tabpanel 的 role、id 也走这里）。',
         rows: [
           {
-            name: 'state',
+            name: 'status',
             type: "'ready' | 'loading' | 'empty' | 'disconnected'",
             default: "'ready'",
-            desc: 'ready 画 children；loading 画骨架；empty、disconnected 画空态。',
+            desc: 'ready 画 children；loading 画骨架；empty、disconnected 画空态（旧名 state 留一个版本）。',
           },
-          { name: 'loadingLabel', type: 'string', desc: 'loading 时骨架的名字（读屏念）。' },
+          { name: 'labels', type: '{ loading? }', desc: 'loading 时骨架的名字（读屏念；旧名 loadingLabel）。' },
           {
             name: 'view',
             type: '{ tag?, title, description?, actions? }',
@@ -3295,7 +3679,7 @@ export const PAGES: readonly DocPage[] = [
         rows: [
           { name: 'left / center / right', type: 'StatusItem[]', desc: '三段各一组项。' },
           { name: 'label', type: 'string', desc: '状态栏的名字（读屏念）。' },
-          { name: 'moreLabel', type: 'string', desc: '「…」按钮的名字。' },
+          { name: 'labels', type: '{ more }', desc: '「…」按钮的名字（旧名 moreLabel 留一个版本）。' },
         ],
       },
       {
@@ -3304,7 +3688,11 @@ export const PAGES: readonly DocPage[] = [
         rows: [
           { name: 'id', type: 'string', desc: '稳定的 id。' },
           { name: 'label / value', type: 'string / ReactNode', desc: '点阵键名（灰）与等宽的值（亮）。' },
-          { name: 'led / ledLabel', type: 'LedState / string', desc: '前面的状态灯与它的名字（给了灯就必须给名字）。' },
+          {
+            name: 'tone / ledLabel',
+            type: 'SeverityExt / string',
+            desc: '前面状态灯的语气（灯由 ledOf 取，accent 是点亮的强调色）与它的名字（给了灯就必须给名字）；旧名 led（LedState）留一个版本。',
+          },
           { name: 'onClick', type: '() => void', desc: '给了整项是按钮（QUOTE → 数据源）。' },
           { name: 'priority', type: 'number', default: '0', desc: '越大越晚被收起。' },
           { name: 'pinned / live', type: 'boolean', desc: '永不收起；live 另外画琥珀内描边（实盘账户）。' },
@@ -3322,6 +3710,7 @@ export const PAGES: readonly DocPage[] = [
       '宽度不够：先收优先级最低的（同级收靠后的）进「…」弹层，pinned 与 live 不收。',
       '项可点：悬停提亮，是按钮；不可点是纯读数。',
       '实盘项：琥珀内描边，不能被隐藏策略收掉。',
+      '灯：项给 tone（Severity，加 off / accent），灯由 ledOf 取——neutral、off 不亮，accent 是点亮的强调色（实盘项用它）；旧的 led（LedState）留一个版本。',
     ],
     donts: [
       '段不要超过 8 个，更多进运行中心。',
@@ -3397,6 +3786,155 @@ export const PAGES: readonly DocPage[] = [
     ],
   },
   {
+    id: 'text-measure',
+    group: 'layout',
+    cardHeight: 300,
+    title: 'measureText 文字测量',
+    summary:
+      '不碰 DOM 量文字：一行多宽、放不放得下、放不下截尾加省略号、按宽度折成几行、一段字多高。包一层 @chenglou/pretext（MIT）：同一段字同一字体只准备一次，宽度变了只重算排版。给 SVG / canvas 里的字（没有自动换行与省略号）、按字宽决定写不写字的格子、按内容定列宽、虚拟列表预先定行高用。字体按 CSS 变量解析成具名字体（去掉 -apple-system 这类量不准的系统别名）；Web 字体加载完、缩放、换字体时自动清缓存；没有 canvas 的环境退回估宽。',
+    exports: ['measureText', 'fitsWidth', 'truncateText', 'wrapText', 'textHeight', 'fontFor', 'resetTextMeasure'],
+    props: [
+      {
+        part: 'measureText',
+        rows: [
+          { name: 'measureText(text, font)', type: 'number', desc: '一行字的宽度（像素，像 max-content）。' },
+          { name: 'fitsWidth(text, font, maxWidth)', type: 'boolean', desc: '放不放得下，留 2px 余量。' },
+          {
+            name: 'truncateText(text, font, maxWidth, ellipsis?)',
+            type: 'string',
+            desc: '放不下就按字素截尾加省略号。',
+          },
+          {
+            name: 'wrapText(text, font, maxWidth, lineHeight, maxLines?)',
+            type: '{ lines, height }',
+            desc: '折成多行；超过 maxLines 的折进最后一行加省略号。',
+          },
+          { name: 'textHeight(text, font, maxWidth, lineHeight)', type: 'number', desc: '一段字的高度，给虚拟列表。' },
+          {
+            name: 'fontFor(weight, sizePx, familyVar?, element?)',
+            type: 'string',
+            desc: '拼 canvas 字体串：读 CSS 字体变量（默认 --font-sans），去掉系统别名。',
+          },
+          { name: 'resetTextMeasure()', type: 'void', desc: '手动清缓存（字体变了而自动监听没覆盖到时）。' },
+        ],
+      },
+    ],
+    states: ['有 canvas：pretext 实测', '没有 canvas（单测、服务端渲染）：按全角 1em、半角 0.6em 估'],
+    donts: [
+      '不要在每次渲染里 prepare 新文本又丢掉：同一段字会缓存，别拼随机串',
+      '能用 CSS 的 text-overflow 解决的 HTML 文字不用它',
+    ],
+    composition:
+      'measureText / fitsWidth / truncateText / wrapText / textHeight\n  fontFor（字体串）\n  @chenglou/pretext（prepare → layout）',
+    keys: [],
+  },
+  {
+    id: 'live',
+    group: 'layout',
+    cardHeight: 360,
+    title: 'live 数据刷新',
+    summary:
+      '数据在动时的四个钩子，照行情终端（TradingView、Bloomberg、同花顺）的做法：useValueFlash 数值变了给涨 / 跌方向（闪 600ms，同一格 1 秒内最多一次）；useEnterMarks 认出新来的条目（高亮 1200ms）；useFlipList 顺序变了让行平滑换位（FLIP，240ms）；useStatusFlash 状态变了给一次性的闪（炸板这类用警示色）。皮肤是 ui.css 里的 .k-live-flash / .k-live-enter / .k-live-alert，涨跌色跟「涨跌颜色」设置走；时长是 token --dur-flash / --dur-enter / --dur-reorder。RollingText、MarketHeatmap、Watchlist 已经走这一层。',
+    exports: [
+      'useValueFlash',
+      'useEnterMarks',
+      'useFlipList',
+      'useStatusFlash',
+      'LIVE_FLASH_MS',
+      'LIVE_ENTER_MS',
+      'LIVE_REORDER_MS',
+      'LIVE_FLASH_GAP_MS',
+    ],
+    props: [
+      {
+        part: 'live',
+        rows: [
+          {
+            name: 'useValueFlash(value, { enabled?, gapMs? })',
+            type: '{ flash: "up" | "down" | null, key: number }',
+            desc: '变大 up、变小 down；key 每闪一次加一，放在元素的 key 上让动画重放。首次渲染、null / NaN、1 秒内的第二次变化都不闪；闪完 flash 自己回到 null。',
+          },
+          {
+            name: 'useEnterMarks(ids)',
+            type: 'ReadonlySet<string>',
+            desc: '本次新出现的 id。首次渲染的全算旧的；1200ms 后自动清掉；走了又回来的算新的。',
+          },
+          {
+            name: 'useFlipList(containerRef, ids)',
+            type: 'void',
+            desc: 'ids 的顺序变了，让容器里带 data-live-id 的子元素从旧位置平滑移到新位置（transform，240ms，--ease-snappy）。没渲染的行与新行跳过。',
+          },
+          {
+            name: 'useStatusFlash(status)',
+            type: '{ flash: boolean, key: number }',
+            desc: '状态字符串变了，flash 为 true 约 600ms；key 每变一次加一。首次渲染与 null 不闪；不节流。',
+          },
+          {
+            name: 'LIVE_FLASH_MS / LIVE_ENTER_MS / LIVE_REORDER_MS / LIVE_FLASH_GAP_MS',
+            type: 'number',
+            desc: '600 / 1200 / 240 / 1000：毫秒数，与 token 一致（单测盯着）；最后一个只有 JS 用。',
+          },
+        ],
+      },
+    ],
+    states: [
+      '数值闪：data-flash="up" | "down" 的 .k-live-flash，背景从涨 / 跌色的弱化档淡到透明',
+      '新条目：.k-live-enter，左侧 2px 强调线加底色高亮，1200ms 淡出',
+      '状态警示：.k-live-alert，炸板这类用琥珀（data-tone="negative" 用跌红）闪两下',
+      '没有动画的环境（单测、服务端渲染）：钩子照常给出状态，只是没人播',
+    ],
+    donts: [
+      '不要自己再写一套 @keyframes 闪烁：时长与颜色都从这一层取',
+      '不要给每一格都加高亮：只有变了的才闪，同一格 1 秒内最多一次',
+      '用户滚离顶部时不要把新条目插进视野：只计数，点「新增 n 条」再合入（插入会把正在读的内容顶走）',
+      '不要为重排动画去改 DOM 顺序之外的东西：useFlipList 只写 transform，不碰 className 与 style',
+    ],
+    composition:
+      'useValueFlash / useStatusFlash（返回 flash 与 key）\n  .k-live-flash / .k-live-alert\nuseEnterMarks（返回新 id 集合）\n  .k-live-enter\nuseFlipList（容器 ref + ids，子元素 data-live-id）',
+    keys: [],
+  },
+  {
+    id: 'side-nav',
+    group: 'layout',
+    cardHeight: 520,
+    title: 'SideNav 侧栏导航',
+    summary:
+      '分组的侧栏导航：组名小号大写；没选中的字淡，悬停变亮，当前项最亮。每组左边一条 1px 虚线从组顶走到当前项、用 6px 弯钩拐进去，悬停另一项时以淡色画一条到悬停项，切换时 200ms 滑过去。顶上过滤框（⌘K / Ctrl+K 聚焦，Enter 打开第一项，Esc 清空），底部淡出。照 rareui.com 组件站左栏（2026-11-17 实测），实现原创。件不管路由：链接给 href，当前项由调用方传。轨迹颜色走 --k-sidenav-trail，默认品牌橙。',
+    exports: ['SideNav'],
+    props: [
+      {
+        part: 'SideNav',
+        rows: [
+          {
+            name: 'groups',
+            type: 'SideNavGroup[]',
+            desc: '{ id, title, items: { id, label, href, keywords?, title? }[] }；keywords 只用来搜。',
+          },
+          { name: 'current', type: 'string', desc: '当前项的 id；轨迹画到它。' },
+          { name: 'header', type: 'ReactNode', desc: '顶部（品牌、面包屑、收起按钮）。' },
+          { name: 'footer', type: 'ReactNode', desc: '底部。' },
+          {
+            name: 'labels',
+            type: '{ search?, empty? }',
+            desc: '过滤框的占位与读屏名（不给就没有过滤框）、过滤没有结果时的文字；旧名 searchLabel / emptyLabel 留一个版本。',
+          },
+        ],
+      },
+    ],
+    states: [
+      '当前项：最亮，轨迹用 --k-sidenav-trail',
+      '悬停：变亮，淡色轨迹画到悬停项',
+      '过滤中：没命中的组整组隐藏，全没命中显示 emptyLabel',
+    ],
+    donts: ['不要一组放太多项：超过二十来项拆组', '不要把轨迹颜色设成跟正文一样亮：它是指引，不是内容'],
+    composition: 'SideNav\n  头部（header）\n  过滤框\n  分组 × n（组名、轨迹、链接）\n  底部（footer）',
+    keys: [
+      ['⌘K / Ctrl+K', '聚焦过滤框'],
+      ['Enter', '在过滤框里：打开第一项'],
+      ['Esc', '在过滤框里：清空'],
+    ],
+  },
+  {
     id: 'workspace-tabs',
     group: 'blocks',
     cardHeight: 260,
@@ -3414,9 +3952,9 @@ export const PAGES: readonly DocPage[] = [
           { name: 'onReorder', type: '(id, targetId) => void', desc: '把 id 挪到 targetId 的位置；不给就不能排序。' },
           { name: 'onRename', type: '(id) => void', desc: '进改名；输入框是宿主的事；不给就不能改名。' },
           {
-            name: 'onCreate / createLabel',
-            type: '() => void / string',
-            desc: '「+」与它的名字；不给 onCreate 就不画。',
+            name: 'onCreate / labels',
+            type: '() => void / { create?, more? }',
+            desc: '「+」与它的名字、「更多」下拉的名字；不给 onCreate 就不画「+」（旧名 createLabel / moreLabel 留一个版本）。',
           },
           { name: 'label', type: 'string', desc: '标签条的名字（读屏念）。' },
         ],
@@ -3478,12 +4016,18 @@ export const PAGES: readonly DocPage[] = [
     group: 'blocks',
     cardHeight: 90,
     title: 'EstimateBadge 估算标记',
-    summary: '琥珀色描边的小字标记（例如「按 K 线估算」），悬停写规则摘要；字与规则由调用方传。',
+    summary:
+      '琥珀色描边的小字标记（例如「按 K 线估算」），悬停写规则摘要；字与规则由调用方传。是 Tag 的 warn、描边、md 档。',
     exports: ['EstimateBadge'],
-    propParts: [{ part: 'EstimateBadge' }],
-    states: ['只有一种样子：小标，悬停给出估算依据。'],
-    donts: ['不要在精确值上挂估算标记。', '不要省略 title 里的依据。'],
-    composition: 'EstimateBadge',
+    propParts: [
+      {
+        part: 'EstimateBadge',
+        note: '就是 <Tag tone="warn" outlined>：caption 500、左右 6px、1px 同色边、圆角 radius-sm。',
+      },
+    ],
+    states: ['只有一种样子：琥珀字、同色描边的小标。', '悬停：title 写估算依据（浏览器原生提示）。'],
+    donts: ['不要在精确值上挂估算标记。', '不要省略 title 里的依据。', '别的语气的行内标记直接用 Tag，不要拿它改色。'],
+    composition: 'EstimateBadge\n  Tag（warn · outlined · md）',
     keys: [],
   },
   {
@@ -3509,9 +4053,9 @@ export const PAGES: readonly DocPage[] = [
             desc: '{ id, field, op, value, label? }；同一字段只留最后设的一条。',
           },
           {
-            name: 'onChange',
+            name: 'onValueChange',
             type: '(next: FilterCondition[]) => void',
-            desc: '条件变了（设、清除、移除字段、重置）。',
+            desc: '条件变了（设、清除、移除字段、重置、撤销、重做）。旧名 onChange 留一个版本（@deprecated）。',
           },
           {
             name: 'labels',
@@ -3537,7 +4081,7 @@ export const PAGES: readonly DocPage[] = [
             type: '() => void',
             desc: '给了，列表底部多一项「另存为」（文字 labels.save）；命名对话框与存哪里归调用方。',
           },
-          { name: 'labels', type: '{ trigger: string; save?: string }', desc: '读屏名与「另存为」文字。' },
+          { name: 'labels', type: 'ViewSwitcherLabels', desc: '{ trigger, save? }：读屏名与「另存为」文字。' },
         ],
       },
       {
@@ -3562,6 +4106,53 @@ export const PAGES: readonly DocPage[] = [
     ],
   },
   {
+    id: 'rendering-settings',
+    group: 'forms',
+    cardHeight: 560,
+    title: 'RenderingSettings 渲染设置',
+    summary:
+      '应用「设置 → 渲染」那一页：字体（界面、汉字、数据字、代码四个角色，各从字体目录 FONT_CATALOG 里挑：系统、开源、本机已装三类）、文字平滑（灰度 / 系统）、像素对齐、字重补偿（-60..+60，相当于终端的 font-thicken）、字号缩放（取整到整像素）、斜线零、中英对齐（font-size-adjust）。每项一行：名称、一句说明、控件。值写在根节点上（theme/rendering.css 读），件是受控的，调用方存值，启动时用 applyRendering 写回。字样表与本机字体检测见总览里的 rendering 页。',
+    exports: [
+      'RenderingSettings',
+      'applyRendering',
+      'readRendering',
+      'DEFAULT_RENDERING',
+      'RENDERING_LABELS_ZH',
+      'FONT_CATALOG',
+      'DEFAULT_FONTS',
+      'fontVariables',
+      'fontsFor',
+    ],
+    props: [
+      {
+        part: 'RenderingSettings',
+        rows: [
+          {
+            name: 'value',
+            type: 'RenderingSettingsValue',
+            desc: '{ smoothing, pixelSnap, weightAdjust, textScale, slashedZero, cjkAdjust, fonts }；fonts 是按角色（ui、cjk、num、mono）选的字体 id，见 FONT_CATALOG。默认值是 DEFAULT_RENDERING。',
+          },
+          {
+            name: 'onValueChange',
+            type: '(next: RenderingSettingsValue) => void',
+            desc: '改了任一项或按了恢复默认，给整份新值；一般在这里 applyRendering(next) 并存盘。旧名 onChange 留一个版本（@deprecated）。',
+          },
+          { name: 'labels', type: 'RenderingSettingsLabels', desc: '全部文字，默认 RENDERING_LABELS_ZH。' },
+        ],
+      },
+    ],
+    states: ['默认值：灰度、像素对齐开、字重 0、字号 100%、斜线零关、中英对齐关', '改任一项立刻生效（写在根节点上）'],
+    donts: ['不要在件里存值：存盘交给调用方', '不要只在某个面板上改这些属性：渲染设置是整个应用一份'],
+    composition:
+      'RenderingSettings\n  行 × 6（名称、说明、ToggleGroup 或 Slider）\n  字体小节\n    行 × 4（界面、汉字、数据字、代码：Select）\n  恢复默认（Button）',
+    keys: [
+      ['Tab', '按行的次序走过每个控件，最后是恢复默认'],
+      ['← →', '开关与平滑方式（分段切换）里换一段'],
+      ['← → / ↑ ↓', '字重、字号滑块走一格（字重 10，字号 5%）；Home / End 到两头'],
+      ['Enter / Space', '打开字体下拉；下拉里 ↑ ↓ 选、Enter 确定、Esc 收起'],
+    ],
+  },
+  {
     id: 'column-set-tabs',
     group: 'blocks',
     cardHeight: 520,
@@ -3581,7 +4172,11 @@ export const PAGES: readonly DocPage[] = [
       },
     ],
     states: ['选中：白底黑字小胶囊。', '手动改过列：没有页签选中。'],
-    donts: ['不要自己存「当前列集」：它由列推出来。'],
+    donts: [
+      '不要自己存「当前列集」：它由列推出来。',
+      '不要拿它代替 ColumnPicker：页签只套整套列，单列的显隐与次序在 ColumnPicker 里改。',
+      '页签不要超过一行能放下的数量（约 8 个）；更多的套用放进 ColumnPicker 的列集芯片。',
+    ],
     composition: 'ColumnSetTabs\n  tablist\n    tab × n\n  右侧按钮位',
     keys: [
       ['Tab', '在页签间移动'],
@@ -3612,17 +4207,30 @@ export const PAGES: readonly DocPage[] = [
           },
           { name: 'keyPoints', type: 'string[]', desc: '要点；空数组不画这一块。' },
           { name: 'children', type: 'ReactNode', desc: '正文。' },
-          { name: 'labels', type: 'NewsReaderLabels', desc: '读屏名与「要点」「关闭」「举报」「复制链接」。' },
           {
-            name: 'onClose / onReport / onCopyLink / onSymbolPick',
+            name: 'version',
+            type: 'string | number',
+            desc: '内容版本（修订号或更新时间）：正文改了但标题、要点没变时，靠它让件知道这一条被更新了。',
+          },
+          {
+            name: 'labels',
+            type: 'NewsReaderLabels',
+            desc: '读屏名与「要点」「关闭」「举报」「复制链接」；updated（「已更新」）传了，这一条被更新时标题闪一次并留标记，不传就不闪。',
+          },
+          {
+            name: 'onClose / onReport / onCopyLink / onSymbolSelect',
             type: 'function',
             desc: '给了才画对应的按钮；点品种胶囊回调。',
           },
         ],
       },
     ],
-    states: ['品种涨跌：正涨色、负跌色，0 不上色。'],
-    donts: ['不要在件里取数或翻译：文字由调用方传。'],
+    states: ['品种涨跌：正涨色、负跌色，0 不上色。', '被更新：标题闪警示色，旁边留「已更新」。'],
+    donts: [
+      '不要在件里取数或翻译：文字由调用方传。',
+      '品种胶囊的涨跌不要用橙色或蓝色：只用涨跌色（pnl token，跟 data-updown 互换）。',
+      '「已更新」不要当警告：只在同一条被改了时闪一次（新信息的蓝），不要拿它提示别的条。',
+    ],
     composition: 'NewsReader（article）\n  header：来源 + 操作\n  标题、元信息\n  品种胶囊\n  要点\n  正文',
     keys: [['Tab', '在操作与品种胶囊间移动']],
   },
@@ -3672,7 +4280,11 @@ export const PAGES: readonly DocPage[] = [
             desc: '类别筛选：条目带 category，来源行下面多一行类别芯片（多选，复用 ChipGroup，不选是全部，选了之后没带类别的条目被筛掉）；不传 categories 或没写 labels.categories（读屏名，labels.clearCategories 是清除钮）就没有这一行。',
           },
           { name: 'selected', type: 'string | null', desc: '阅读窗开着的那条：行底色加深。' },
-          { name: 'onSymbolPick', type: '(symbol, item) => void', desc: '点品种胶囊。' },
+          {
+            name: 'onSymbolSelect',
+            type: '(symbol, item) => void',
+            desc: '点品种胶囊（旧名 onSymbolPick 留一个版本）。',
+          },
           {
             name: 'reader',
             type: '(item, { close }) => ReactNode',
@@ -3697,9 +4309,13 @@ export const PAGES: readonly DocPage[] = [
           {
             name: 'itemActions',
             type: '(item) => RowAction[]',
-            desc: '每条的快捷操作：悬停出前几颗图标按钮，右键出同一份菜单；配 itemActionsLabel（读屏名）。',
+            desc: '每条的快捷操作：悬停出前几颗图标按钮，右键出同一份菜单；读屏名在 labels.itemActions（旧名 itemActionsLabel）。',
           },
-          { name: 'onOpen', type: '(item) => void', desc: '给了，标题是按钮；没给而条目有 href，标题是新窗口链接。' },
+          {
+            name: 'onSelect',
+            type: '(item) => void',
+            desc: '选中一条：给了，标题是按钮；没给而条目有 href，标题是新窗口链接（旧名 onOpen 留一个版本）。',
+          },
           {
             name: 'onChannelChange / onSourcesChange / onPausedChange',
             type: 'callback',
@@ -3906,6 +4522,7 @@ export const PAGES: readonly DocPage[] = [
       '过了检验期限还没结论：自动按「过期」画（调用方不必先改状态），倒计时换成已过期天数。',
       '有支持 / 被否定：人下了结论，行上显示期限日期；一行上的「n 支持 · m 反对」是证据对比。',
       '筛选：状态与传导层叠加，两边的计数各自不被对方的筛选影响；没有结果出空态。',
+      '灯的语气（hypothesisSeverity → ledOf，G6）：待验证 accent（点亮的强调色）、支持 ok、证伪 danger、过期 warn；不再在件里手写灯表。',
     ],
     donts: [
       '不要把学者观点当成已发生的事实：证据按类型打标，假说自己永远是命题。',
@@ -3973,6 +4590,7 @@ export const PAGES: readonly DocPage[] = [
       '稍后：仍在待处理页，带「已推后」标记，不再给「稍后」按钮。',
       '过了有效期没人处理：按已过期画，不能再接受或拒绝（调用方不必先改状态）。',
       '已接受 / 已拒绝 / 已过期：收成一行（灯、结果、动作、对象、谁与何时），点开看理由与来源。',
+      '灯的语气（decisionSeverity → ledOf，G6）：待处理 accent、稍后 warn、接受 ok、拒绝 danger、过期 off。',
     ],
     donts: [
       '不要把接受做成单击：它是不可撤的，必须按住。',
@@ -4045,7 +4663,11 @@ export const PAGES: readonly DocPage[] = [
             type: 'number',
             desc: '额度条转琥珀的占用比；不给不预警，≥ 1 总是红。预警线属于账户风控，由调用方给。',
           },
-          { name: 'onLinkPick', type: '(link) => void', desc: '给了，连接条上每个连接是按钮。' },
+          {
+            name: 'onSelect',
+            type: '(link) => void',
+            desc: '选中一个连接：给了，连接条上每个连接是按钮（旧名 onLinkPick 留一个版本）。',
+          },
         ],
       },
     ],
@@ -4055,6 +4677,7 @@ export const PAGES: readonly DocPage[] = [
       '策略出错：整行左侧红边，名字下写出错说明；排在最前。',
       '额度 ≥ 1：条贴边变红；达到 quotaWarnAt：琥珀。',
       '事件筛选没有命中：写 labels.noEvents。',
+      '灯的语气（linkSeverity / strategySeverity / eventSeverity → ledOf，G6）：连接 ok / degraded warn / error danger / offline off；策略 running ok / paused warn / error danger / stopped off；事件 info neutral（不亮）/ warn / error danger。',
     ],
     donts: [
       '不要用橙色画状态或数据：橙色不画数据，状态用绿、琥珀、红加文字。',
@@ -4128,25 +4751,78 @@ export const PAGES: readonly DocPage[] = [
     cardHeight: 60,
     title: 'Sparkline 迷你图',
     summary:
-      '一列数从旧到新，整宽铺开、上下按这列的高低，一根线。线色按头尾涨跌（涨跌色跟涨跌配色走），没有数据只留「—」。从应用的分析视图提来。',
+      '一列数从旧到新，按容器的真实像素画（不拉伸、线宽 1.5px，高 80 以上 2px、圆角连接）。默认是线加线下渐变（贴线 22% 渐到 0），最新值处是实心点加常驻空心环；给毫秒时间戳与 domain 时横轴是整个交易时段、线只画到现在（对齐 TradingView Markets 页的日内图），可加右侧价格刻度、底部时间刻度与最新价价签；另有 line、baseline（基准上涨色下跌色）、bars、winloss（胜负格）四种画法。look 给两种可选画风（默认外观不变）：instrument 是把数据当科学档案来排版的仪器档案页（细线、一个信号色、点阵与角标、投影谱、极值与研究员批注、档案编号与来源行），ascii 是终端字形（块字符或盲文点阵、可换点阵字体）。可加基准虚线、最高最低点、右端最新值、成交量、断点、单调曲线；interactive 时悬停出一根竖线、吸附点与紧挨光标的三行读数（数值、日期、时间），键盘左右键走点。线色按最后值对基准（没基准按头尾），涨跌色跟涨跌配色走，没有数据只留「—」。',
     exports: ['Sparkline', 'sparkPoints', 'sparkTone', 'quoteTone'],
     propParts: [
-      { part: 'Sparkline' },
+      {
+        part: 'Sparkline',
+        note: '值是数（从旧到新）；读数、标签、刻度字由调用方的 format 与 label 写。interactive 时才可聚焦、走点。',
+      },
       {
         part: '纯函数',
-        note: 'sparkPoints(values, width, height) 给 polyline 的点；sparkTone(values) 取头尾三态；quoteTone(change) 由一个涨跌数取三态（报价类的件共用）。',
+        note: 'sparkPoints(values, width, height) 给 polyline 的点；sparkTone(values) 取头尾三态；quoteTone(change) 由一个涨跌数取三态（报价类的件共用）。几何（断点分段、基准切分、单调插值、设备像素对齐、时间到横坐标与休市压缩、时间与价格刻度、读数框位置）在 quotes/sparkline-model.ts，都是纯函数。',
       },
     ],
     states: [
-      '有数据：一根折线，线色按头尾涨跌（涨、跌、平）。',
-      '没有数据（少于两个数）：只留「—」，读屏名说清没有数据。',
+      '有数据：默认 area，一根线加线下渐变，末端点在最新值处；线色按最后值对基准，没基准按头尾（涨、跌、平）。',
+      'line：只一根线；baseline：以基准为界，上面涨色、下面跌色，线与面积都分色；bars：每个值一根细柱；winloss：每个值只表示正负，等高小方块。',
+      '给了 baseline：画 1px 虚线（dash 2 2）；给了 lastLabel：右端写最新值，线留出位置不压字；showExtremes：最高最低各一个点，extremeLabels 在点旁写字，放不下自动换边。',
+      'values 里的 null 或 NaN 是断点：线与面积在那里断开（午休、停牌），末端点取最后一个有效值。',
+      '给了数字 times（毫秒）：按时间定横坐标；给了 domain 整个时段是横轴，线只画到最后一个点，右边留空；domain 之外与休市里的点裁掉。不给 times 与 domain 仍按序号铺满整宽。',
+      '给了 sessions（如 A 股上午、下午）：时段之间的休市在横轴上压成一道 4px 的细缝，线与面积在那里断开。',
+      '给了 axis（高度 60px 以上才生效）：右侧价格刻度（默认 4 档，从最低均分到最高）与底部时间刻度（自动挑放得下的间隔，或按分钟数），挤在一起的刻度字丢掉；lastTag：右轴上涨跌色实底的最新价价签，字用对比色。',
+      '值变化：末端环外的光晕从 0 放大淡出一次（环本身常驻），新点追加时线、面积与末端点一起平滑延伸；窗口左移不跳。',
+      'interactive：悬停出一根竖线（没有横线）、吸附到最近点的圆点和紧挨光标的读数框（HTML 三行：粗体数值、日期、时间，贴边左右翻转，不出容器；图太矮放不下时放到图上方）；只给了 times 没给 formatTime 时只显示数值；聚焦后左右键走点，Home / End 到头尾，Esc 退出。',
+      '有 volumes：底部四分之一高度画细量柱，价格线在它上方；volumeTone 为 updown 时按涨跌着色。',
+      '没有数据（有效值少于两个）：只留「—」，读屏名说清没有数据。',
+      'look="instrument"（仪器档案）：1px 中性墨色线（不用涨跌色），底上是很淡的 + 点阵，四角 6px 的 L 形对位角标（reticle 加中心十字）；全图只有末端点与批注用信号色（--accent，可传 signal）；刻度是 2 到 3px 的短线加宽字距（0.15em）等宽小字；baseline 画成细虚线，interactive 悬停是横竖两条细线的十字准星加读数框。',
+      'instrument 的大图（高 80 以上）：projection 在右侧画这列值的分布（默认高斯核密度、Silverman 带宽，projectionMode 可换直方图），与主图共享纵轴，横线标当前值，新点进来柱子平滑过渡；showExtremes 的最高最低是小十字加引线加 extremeLabels 写的 H / L；annotation 是一圈手绘圈（按下标播种，不随渲染变）加一句话；meta 是左上档案编号与左下 SOURCES 行。高度低于 80 时只画线、点阵与末端点。',
+      'look="ascii"（终端字形）：整幅是一个 pre（aria-hidden），外层 role=img；glyphs 取 blocks（每列一个 ▁▂▃▄▅▆▇█，高了多行、每行 8 级）或 braille（盲文 2 × 4 点连续折线）；列数按容器宽与字宽算；默认中性墨色、最新一列信号色，给 tone 着涨跌色；font="dot" 换点阵字体。',
+      'ascii 的断点那一列是空格，时段横轴按列映射、休市压成一列 ┊，baseline 是一行 ┄；新点进来整幅左移一列，新列先在字形集里乱跳几帧再落定（--dur-reorder）；interactive 的读数框照旧。',
     ],
     donts: [
-      '不要在折线上读具体数值：它只表达走势，要数请配价格文字。',
-      '不要把读屏名写死在包里，由调用方按界面语言传。',
+      '不要在静态的折线上读具体数值：要数请配价格文字，或开 interactive。',
+      '表格里一行一个时不要开 interactive；行高很矮（如 22px）时用 showLast={false}。',
+      '不要把读数、标签、读屏名写死在包里：format、extremeLabels、lastLabel、label 都由调用方按界面语言传。',
+      '不要拿 bars 或 winloss 表达趋势：它们是逐点的涨跌与正负，趋势用 area 或 line。',
+      '不要给一个根本没有基准意义的数列硬传 baseline：画出的虚线会被当成昨收。',
+      '不要在 instrument 里再加第二个信号色或涨跌色：信号色只标「此刻要看的地方」（末端点、批注）。',
+      '不要把 ascii 放进要读准数的地方：字符画只给走势的形状，要数配文字或开 interactive。',
     ],
-    composition: 'Sparkline\n  svg role=img\n    polyline（vector-effect: non-scaling-stroke，线宽不随拉伸变）',
-    keys: [],
+    composition:
+      'Sparkline\n  svg role=img（viewBox = 容器真实宽高；interactive 时 tabIndex=0）\n    defs（线下渐变、基准分色的两块裁剪）\n    量柱 · 基准虚线 · 面积 · 线（每段一个 M）· 柱 / 胜负格\n    最高最低点与字 · 光晕 · 末端点 · 右端最新值\n    价格刻度 · 时间刻度 · 最新价价签\n    悬停：竖线 · 吸附点 · 读数框（foreignObject 里的 HTML）\n  span[aria-live]（interactive 时，节流播报当前点的读数）\n\nlook="instrument"\n  svg role=img\n    + 点阵 · 四角角标 · 眉头与 SOURCES 行\n    价格刻度（短线 + 字）· 时间刻度 · 基准细虚线\n    投影谱（脊线 · 横向细柱 · 当前值横线）· 线 · 极值（小十字 + 引线 + 字）· 批注（手绘圈 + 引线 + 字）· 末端点 · 价签\n    悬停：横竖十字线 · 读数框\n\nlook="ascii"\n  span[role=img]\n    pre[aria-hidden]（每行一个 span，同色连续字符合并成一个节点）\n    悬停：列光标 · 读数框',
+    keys: [
+      ['左 / 右方向键（interactive，聚焦时）', '走到前一个 / 后一个有效点，读屏播报读数'],
+      ['Home / End', '走到第一个 / 最后一个有效点'],
+      ['Esc', '退出读数，焦点留在图上'],
+    ],
+  },
+  {
+    id: 'mini-chart',
+    group: 'quotes',
+    cardHeight: 260,
+    title: 'MiniChart 迷你行情卡',
+    summary:
+      '照 TradingView 的 Mini Chart 小组件（2026-11-18 在浏览器里看的）：卡片上一行「品种图标 + 代码 + 角标」，一行「最新价 单位 + 涨跌幅」，下面是走势（Sparkline 的 area：线 2px 圆角、线下很淡的同色渐变、末端实心点加空心环）。给了毫秒时间戳与 domain，线只画到现在、右边留空；live 时价格滚动、涨跌幅闪色。没有基准线与坐标轴，默认不开悬停。',
+    exports: ['MiniChart'],
+    propParts: [{ part: 'MiniChart' }],
+    states: [
+      '默认：图标、代码、价格、涨跌幅与走势；涨跌色按 change（涨、跌、平）。',
+      '给了 times 与 domain（可加 sessions）：横轴是整个交易时段，线只画到最后一个点，右边留空；午休被压缩、线在那里断开。',
+      'live：价格变了用 RollingText 滚动，涨跌幅闪一次涨跌色，走势新点追加时线平滑延伸、末端环放大淡出一次。',
+      '给了 onSelect：整张卡是按钮，悬停提亮、键盘焦点有环；不要同时开 interactive。',
+      'look：原样交给走势的 Sparkline（instrument、ascii），卡片本身与默认外观不变。',
+      '没有走势数据（有效值少于两个）：走势的位置只留「—」。',
+    ],
+    donts: [
+      '不要在包里写文字：角标、单位、读屏名都由调用方传。',
+      '不要给它加基准线与坐标轴：要它们用 Sparkline 的 baseline 与 axis。',
+      '不要在可点的卡上开 interactive：按钮里不该再有可聚焦的子元素。',
+      '不要拿它放进表格行：行内用 Sparkline，卡片用 MiniChart。',
+    ],
+    composition:
+      'MiniChart\n  div[role=group] | button\n    span（SymbolMark · 代码 · 角标）\n    span（价 RollingText · 单位 · ChangeText）\n    span > Sparkline',
+    keys: [['Tab / Enter', '有 onSelect 时到卡上、触发']],
   },
   {
     id: 'gauge-bar',
@@ -4156,7 +4832,12 @@ export const PAGES: readonly DocPage[] = [
     summary:
       '上面一行名字、数和档位词，中间一条进度条标出数的位置，下面一句说明数是怎么来的。取不到时不画填充，数那里写原因。从应用的分析视图提来。',
     exports: ['GaugeBar'],
-    propParts: [{ part: 'GaugeBar' }],
+    propParts: [
+      {
+        part: 'GaugeBar',
+        note: 'share 是 0 到 1 的位置（null 表示取不到）；名字、数、档位词与说明都是调用方写好的字。',
+      },
+    ],
     states: [
       '有位置：填充占轨道的 share，宽度按 snappy 弹簧变。',
       '取不到（share 为 null）：不画填充，数换成弱色小字并写原因。',
@@ -4183,7 +4864,7 @@ export const PAGES: readonly DocPage[] = [
     propParts: [
       {
         part: 'Treemap',
-        note: '排布由调用方先用 layoutTreemap 算好再传 blocks；工具条（下拉、返回钮）从 toolbar 传。',
+        note: '排布由调用方先用 layoutTreemap 算好再传 blocks；工具条（下拉、返回钮）从 toolbar 传。点格子 onSelect（旧名 onItem）。',
       },
       {
         part: 'layoutTreemap(items, grouped)',
@@ -4196,9 +4877,11 @@ export const PAGES: readonly DocPage[] = [
       '分组下钻：点组头只剩那一组，工具条里自己放返回钮。',
       '格子太小时只留色块，不写字。',
       '没有涨跌数的格子用中性色。',
+      '格子上的字按底色明暗选黑或白（oklch 亮度 0.565 为界，relative color 从底色算）：七档在八个主题与两种涨跌配色下都 ≥ 4.5:1（2026-11-18 修，原来一律白字压在亮绿亮红上只有 1.5 到 4.4:1）；色例同理。',
     ],
     donts: [
       '不要用于项目数很多又没法下钻的场景，小格会糊成一片。',
+      '不要用 classes 把格子的字色写死成白色：底色最亮的几档会掉到 4.5:1 以下。',
       '不要把排布放进渲染里重算：先用 layoutTreemap 排好再传 blocks。',
     ],
     composition:
@@ -4213,11 +4896,26 @@ export const PAGES: readonly DocPage[] = [
     group: 'quotes',
     cardHeight: 48,
     title: 'PriceTag 行内价格标签',
-    summary: '夹在一句话或一行里的「名字 价格 涨跌」，数字等宽对齐，涨跌带三角与颜色，跟着周围的字号走。',
+    summary:
+      '夹在一句话或一行里的「名字 价格 涨跌」，数字等宽对齐，涨跌带三角与颜色，跟着周围的字号走。值是数（last、changePct，跟统一行情行同名），价格文字由 formatPrice 写。',
     exports: ['PriceTag'],
-    propParts: [{ part: 'PriceTag' }],
-    states: ['涨、跌：涨跌文字带三角与对应颜色。', '平：没有三角，用弱色。', '只有价格：不写名字与涨跌。'],
-    donts: ['不要只靠颜色表达涨跌：三角与带符号的文字必须在。', '不要在包里格式化数字，价与涨跌由调用方传好。'],
+    propParts: [
+      {
+        part: 'PriceTag',
+        note: '方向由 changePct 的正负定（也可传 tone 盖过）；旧的 price / change 字符串照认一个版本（@deprecated）。不可交互，没有键盘操作。',
+      },
+    ],
+    states: [
+      '涨、跌：涨跌文字带三角与对应颜色。',
+      '平：没有三角，用弱色。',
+      '只有价格：不写名字与涨跌。',
+      '价格变了：闪一次涨跌色（ReadoutFlash），约 1 秒落回。',
+    ],
+    donts: [
+      '不要只靠颜色表达涨跌：三角与带符号的文字必须在。',
+      '不要传写好的价格字符串：传数与 formatPrice，品种精度由调用方定。',
+      '不要拿它当按钮：要可点用 QuoteCard 的 onSelect。',
+    ],
     composition: 'PriceTag\n  span（名字）\n  span（价）\n  span（三角 · 涨跌）',
     keys: [],
   },
@@ -4227,13 +4925,20 @@ export const PAGES: readonly DocPage[] = [
     cardHeight: 300,
     title: 'QuoteCard 报价卡',
     summary:
-      '一只品种一张卡：名字与代码、最新价（大）、涨跌与涨跌幅、可选的迷你图与底部一行；QuoteStrip 是一排小号的卡，放不下横向滚动。',
+      '一只品种一张卡：名字与代码、最新价（大）、涨跌与涨跌幅、可选的迷你图与底部一行；QuoteStrip 是一排小号的卡，放不下横向滚动。值是数（统一行情行的 last / change / changePct），整行 {...row} 直接摊进来，价格文字由 formatPrice 写。',
     exports: ['QuoteCard', 'QuoteStrip'],
-    propParts: [{ part: 'QuoteCard' }, { part: 'QuoteStrip' }],
+    propParts: [
+      {
+        part: 'QuoteCard',
+        note: '方向由 change 的正负定（没有 change 看 changePct，也可传 tone）；迷你图的读屏名在 labels.spark。旧的 price / percent 与字符串 change、sparkLabel 照认一个版本（@deprecated）。',
+      },
+      { part: 'QuoteStrip', note: 'items 是 QuoteCard 的属性加 id；每张卡用小号。' },
+    ],
     states: [
       '默认：名字、价、涨跌；可带迷你图与底部一行。',
       '可点：整张卡是按钮，悬停提亮、按下缩到 0.98、键盘焦点有环。',
       '小号（QuoteStrip 里）：148 宽，放不下横向滚动。',
+      '价格变了：闪一次涨跌色；迷你图新点追加时线平滑延伸。',
     ],
     donts: ['不要在卡里再放可点的子元素：给了 onSelect 整张卡已是按钮。', '不要把一排卡折行成网格：一排就是横向滚动。'],
     composition:
@@ -4252,10 +4957,14 @@ export const PAGES: readonly DocPage[] = [
       {
         part: 'PerformanceStrip',
         rows: [
-          { name: 'items', type: 'PerformanceItem[]', desc: '{ key, label, change（百分数；没有写 null，画「—」）}。' },
+          {
+            name: 'items',
+            type: 'PerformanceItem[]',
+            desc: '{ id（旧名 key）, label, change（百分数；没有写 null，画「—」）}。',
+          },
           {
             name: 'value / defaultValue / onValueChange',
-            type: 'string / string / (key) => void',
+            type: 'string / string / (id) => void',
             desc: '选中的格子；不给 value 就自己记。',
           },
           { name: 'label', type: 'string', desc: '读屏名（role=group），必填。' },
@@ -4292,7 +5001,13 @@ export const PAGES: readonly DocPage[] = [
           {
             name: 'items',
             type: 'PeerItem[]',
-            desc: '{ key, code, name, price（写好的）, unit?, change（百分数）, logoSrc? }。',
+            desc: '统一行情行的字段：{ id, symbol, name, last（数）, changePct（百分数）, unit?, logoSrc? }；旧的 { key, code, price 字符串, change } 照认一个版本。',
+          },
+          {
+            name: 'formatPrice',
+            type: '(n: number) => string',
+            default: 'toFixed(2)',
+            desc: '价格怎么写（品种精度由调用方定）。',
           },
           {
             name: 'labels',
@@ -4322,13 +5037,21 @@ export const PAGES: readonly DocPage[] = [
         part: 'KeyStats',
         rows: [
           { name: 'title', type: 'string', desc: '标题。' },
-          { name: 'items', type: 'KeyStatItem[]', desc: '{ key, label, value?, unit?, badge? }；没有值画「—」。' },
-          { name: 'onTitle / onItem', type: 'callbacks', desc: '给了标题与标签就变成按钮，带「›」。' },
+          {
+            name: 'items',
+            type: 'KeyStatItem[]',
+            desc: '{ id（旧名 key）, label, value?, unit?, badge? }；没有值画「—」。',
+          },
+          {
+            name: 'onTitle / onSelect',
+            type: 'callbacks',
+            desc: '给了标题与标签就变成按钮，带「›」（onSelect 旧名 onItem）。',
+          },
           { name: 'columns', type: 'number', default: '3', desc: '列数。' },
         ],
       },
     ],
-    states: ['没给 onItem：标签是普通文字，没有「›」。', '没有值：数值位写「—」。'],
+    states: ['没给 onSelect：标签是普通文字，没有「›」。', '没有值：数值位写「—」。', '数值变了：闪一次涨跌色。'],
     donts: ['不要在件里格式化数值；由调用方传。', '徽标不要用彩色。'],
     composition: 'KeyStats section\n  h3 标题（›）\n  dl 网格\n    div（dt 标签 › · dd 数值 · 单位 · 徽标）',
     keys: [['Tab / Enter', '给了回调时到标题、标签上、触发']],
@@ -4340,7 +5063,7 @@ export const PAGES: readonly DocPage[] = [
     title: 'Watchlist 自选列表',
     summary:
       '照 TradingView 右侧自选栏（2026-11-15 实测）：列 Symbol / Last / Chg / Chg%，行首小旗标与字母圆徽标；最新价变动时只有变了的尾数闪涨跌色、约 1 秒落回；点列头排序（升序、降序、回原顺序）。价格怎么写由 formatPrice 定，数与文字由调用方传。',
-    exports: ['Watchlist', 'changedTail', 'nextSort', 'sortRows'],
+    exports: ['Watchlist', 'changedTail', 'nextSort', 'sortRows', 'plainPrice', 'rowTone'],
     props: [
       {
         part: 'Watchlist',
@@ -4348,7 +5071,7 @@ export const PAGES: readonly DocPage[] = [
           {
             name: 'rows',
             type: 'WatchlistRow[]',
-            desc: '{ key, code, name?, last, change, changePct, flagged?, logoSrc? }。',
+            desc: '统一行情行 QuoteRow { id, symbol, name?, last, change, changePct }（都是数）加 { flagged?, logoSrc? }；旧的 key / code 照认一个版本。',
           },
           {
             name: 'labels',
@@ -4362,8 +5085,13 @@ export const PAGES: readonly DocPage[] = [
             desc: '最新价与涨跌额怎么写；闪色按它写出来的文字比尾数。',
           },
           { name: 'sort / onSortChange', type: 'WatchlistSort | null', desc: '排序（受控）；不给就自己记。' },
-          { name: 'onRow / onFlag', type: 'callbacks', desc: '点行；点旗标（行 + 新状态）。' },
+          { name: 'onSelect / onFlag', type: 'callbacks', desc: '点行（旧名 onRow）；点旗标（行 + 新状态）。' },
         ],
+      },
+      {
+        part: 'QuoteRow · plainPrice · rowTone',
+        note: '统一的行情行（2026-11-18）：Watchlist、QuoteTable、PeerCards、QuoteCard 都用 { id, symbol, name, last, change, changePct }，值是数，文字由 formatPrice 写；plainPrice 是不给 formatPrice 时的两位小数，rowTone(row) 由 change（再看 changePct）定涨跌。',
+        rows: [],
       },
       { part: 'changedTail(prev, next)', note: '新旧价格文字从哪一位开始不同：返回 { head, tail }。', rows: [] },
       { part: 'nextSort / sortRows', note: '列头点击的循环与排序，纯函数。', rows: [] },
@@ -4373,7 +5101,11 @@ export const PAGES: readonly DocPage[] = [
       '当前排序列的列头带 ▲ / ▼，th 的 aria-sort 跟着变。',
       '旗标：悬停才显示，标上的常亮；没有行画空态。',
     ],
-    donts: ['不要给整个价格闪色：只有变了的尾数。', '不要放真实公司标志。'],
+    donts: [
+      '不要给整个价格闪色：只有变了的尾数。',
+      '不要放真实公司标志。',
+      '不要传写好的价格字符串：行是数，位数交给 formatPrice。',
+    ],
     composition:
       'Watchlist table\n  thead：列头按钮 × 4\n  tbody tr：旗标 · SymbolMark · 代码 | 最新价（尾数闪色）| 涨跌额 | 涨跌幅',
     keys: [['Tab / Enter', '列头排序、旗标']],
@@ -4386,7 +5118,10 @@ export const PAGES: readonly DocPage[] = [
     summary: '一条横线从最低到最高，标记指着现价在区间里的位置，两端写最低与最高。用来看当日区间、52 周区间。',
     exports: ['RangeBar', 'rangeShare', 'CompareBar'],
     propParts: [
-      { part: 'RangeBar' },
+      {
+        part: 'RangeBar',
+        note: 'low / high / value 是数，两端的字由 digits 或调用方的 lowLabel / highLabel 写；role=meter 要 label。',
+      },
       {
         part: 'CompareBar',
         note: '两条同比例尺的细条，比成交量与 30 日均量；只用中性灰（没有方向，不上涨跌色）。',
@@ -4415,7 +5150,10 @@ export const PAGES: readonly DocPage[] = [
       '半圆分五段（强烈卖出到强烈买入），一根指针转到分数那一段，圆心下面写档位词，下面可再放卖出 / 中性 / 买入各几个。',
     exports: ['RatingGauge', 'ratingZone', 'ratingAngle'],
     propParts: [
-      { part: 'RatingGauge' },
+      {
+        part: 'RatingGauge',
+        note: 'score 是 −1 到 +1 的数，五个档位名由调用方传（zones）；children 放在档位词下面（常是卖出 / 中性 / 买入的个数）。',
+      },
       {
         part: 'ratingZone(score) / ratingAngle(score)',
         symbol: 'ratingZone',
@@ -4537,13 +5275,17 @@ export const PAGES: readonly DocPage[] = [
     cardHeight: 250,
     title: 'QuoteTable 分组页签行情表',
     summary:
-      '上面一排页签（指数、自选、热门……），下面是当前这组的行情表：名称与代码、迷你图、最新价、涨跌幅。由 Tabs 与 Sparkline 组出来。',
+      '上面一排页签（指数、自选、热门……），下面是当前这组的行情表：名称与代码、迷你图、最新价、涨跌幅。由 Tabs 与 Sparkline 组出来；行就是 Watchlist 的行（统一行情行加 spark），值是数，价格文字由 formatPrice 写。',
     exports: ['QuoteTable'],
     propParts: [
-      { part: 'QuoteTable', note: '页签值可受控（value / onValueChange）也可不受控（defaultValue，默认第一组）。' },
+      {
+        part: 'QuoteTable',
+        note: '页签值可受控（value / onValueChange）也可不受控（defaultValue，默认第一组）。文字在 labels（{ list, columns, empty }）；点行 onSelect。旧的 label / columns / empty / onRow 与字符串行（price / percent / tone）照认一个版本（@deprecated）。',
+      },
     ],
     states: [
       '默认：第一组页签选中，下面是该组行情表。',
+      '最新价变了：只闪变了的尾数（与 Watchlist 同一个 FlashPrice）；涨跌幅变了整格闪涨跌色。',
       '行可点：悬停提亮，键盘 Tab 到行、Enter 触发。',
       '空组：写调用方给的说明，不画表头。',
       '没有迷你图数据的行：走势列留空。',
@@ -4626,7 +5368,7 @@ export const PAGES: readonly DocPage[] = [
             default: 'String',
             desc: '数值怎么写（读数行与 aria-valuetext）。',
           },
-          { name: 'labels', type: '{ low: string; high: string }', desc: '两个把手的读屏名（必填）。' },
+          { name: 'labels', type: 'RangeHistogramSliderLabels', desc: '{ low, high }：两个把手的读屏名（必填）。' },
           { name: 'label', type: 'string', desc: '整条的读屏名（必填）。' },
           { name: 'describe', type: '(range) => ReactNode', desc: '读数行；不给写「下限 – 上限」。' },
         ],
@@ -5172,6 +5914,2172 @@ export const PAGES: readonly DocPage[] = [
       ['Tab', '在团间走（每团一个停靠点）'],
       ['← ↑ ↓ →', '在团内跳到那个方向最近的点，那一侧没有点就不动'],
       ['Enter / Space', '给了 onSelect 时选中团内当前点'],
+    ],
+  },
+  {
+    id: 'textarea',
+    group: 'forms',
+    cardHeight: 150,
+    title: 'Textarea 多行输入',
+    summary:
+      '多行文本框：与 Input 同一套皮肤（4% 白底 7% 白边，聚焦边提亮），默认三行高，竖向可拖。改自 SmoothUI（MIT）。',
+    exports: ['Textarea'],
+    propParts: [{ part: 'Textarea', note: '其余属性透传给原生 textarea。' }],
+    states: ['默认、有值、禁用。', 'aria-invalid 时边框变危险色。', '焦点：边框提亮，焦点环画在里面。'],
+    donts: ['单行文字用 Input。', '不要不带 label 就放出去。'],
+    composition: 'Textarea',
+    keys: [['Tab', '聚焦；聚焦时边框提亮']],
+  },
+  {
+    id: 'radio-group',
+    group: 'forms',
+    cardHeight: 150,
+    title: 'RadioGroup 单选',
+    summary:
+      '一组互斥的单选钮：14px 凹陷圆框，选中后框换亮中性，中心一颗深色点从小弹到位。方向键在选项间移动并选中。改自 SmoothUI（MIT）。',
+    exports: ['RadioGroup', 'RadioGroupItem'],
+    propParts: [
+      { part: 'RadioGroup', note: '其余属性透传给 Radix RadioGroup.Root。' },
+      { part: 'RadioGroupItem', note: '其余属性透传给 Radix RadioGroup.Item；文字用 Label 包在外面。' },
+    ],
+    states: [
+      '未选、已选、禁用、禁用已选。',
+      '错误（aria-invalid）：框变危险色。',
+      '竖排（默认）与横排（orientation=horizontal）。',
+    ],
+    donts: ['选项不超过五个才用；更多换 Select。', '只在两三个选项里切换的工具条，用 ToggleGroup。'],
+    composition: 'RadioGroup\n  RadioGroupItem\n  Label',
+    keys: [
+      ['Tab', '聚焦到选中项（没有选中项就到第一项）'],
+      ['↑ ↓ ← →', '移到上一项或下一项并选中'],
+      ['Space', '选中当前项'],
+    ],
+  },
+  {
+    id: 'toggle',
+    group: 'forms',
+    cardHeight: 66,
+    title: 'Toggle 开关按钮',
+    summary:
+      '单个按下即开的按钮（aria-pressed）：外形是 Button，开时换分段选中的底与字；按下缩到 0.97。改自 SmoothUI（MIT）。',
+    exports: ['Toggle'],
+    propParts: [{ part: 'Toggle', note: '其余属性透传给 Radix Toggle.Root。' }],
+    states: [
+      '关、开、禁用关、禁用开。',
+      'md（默认）30 高，sm 是 26 高，icon 是 28 见方；旧名 size="default" 等于 md。',
+    ],
+    donts: ['互斥的几项用 ToggleGroup。', '设置页里的开关用 Switch。'],
+    composition: 'Toggle',
+    keys: [
+      ['Tab', '聚焦'],
+      ['Space / Enter', '翻转'],
+    ],
+  },
+  {
+    id: 'checkbox-group',
+    group: 'forms',
+    cardHeight: 150,
+    title: 'CheckboxGroup 勾选组',
+    summary: '一组勾选框，值是被选项的数组；带「全选」父项，部分选中时父项半选。改自 SmoothUI（MIT）。',
+    exports: ['CheckboxGroup', 'CheckboxGroupItem'],
+    propParts: [
+      { part: 'CheckboxGroup', note: '其余属性透传给 div（role=group）；读屏名用 aria-label。' },
+      { part: 'CheckboxGroupItem' },
+    ],
+    states: ['未选、已选、禁用项。', '父项：全未选、部分选中（半选）、全选。'],
+    donts: ['只有一个勾选框不要包组。', '「全选」要把所有子项的值传给 allValues，组不会自己扫 children。'],
+    composition: 'CheckboxGroup\n  CheckboxGroupItem（parent）\n  CheckboxGroupItem',
+    keys: [
+      ['Tab', '在每个勾选框间走'],
+      ['Space', '翻转当前项；在父项上全选或清空'],
+    ],
+  },
+  {
+    id: 'input-group',
+    group: 'forms',
+    cardHeight: 150,
+    title: 'InputGroup 输入框组',
+    summary:
+      '一个外框包住输入框与前后附件（图标、币种、单位、按钮），里面的 Input 去掉自己的边与底；焦点环画在外框里。改自 SmoothUI（MIT）。',
+    exports: ['InputGroup', 'InputGroupAddon', 'InputGroupText'],
+    propParts: [
+      { part: 'InputGroup', note: '其余属性透传给 div（role=group）。' },
+      { part: 'InputGroupAddon', note: '其余属性透传给 div。' },
+      { part: 'InputGroupText', note: '其余属性透传给 span。' },
+    ],
+    states: ['默认、聚焦（外框边提亮并画焦点环）、禁用、里面的 Input aria-invalid（外框变危险色）。'],
+    donts: ['附件里的按钮必须有 aria-label。', '只要一个单位后缀的数字框用 NumberInput 的 unit。'],
+    composition: 'InputGroup\n  InputGroupAddon（start）\n    InputGroupText\n  Input\n  InputGroupAddon（end）',
+    keys: [['Tab', '聚焦输入框，再到附件里的按钮']],
+  },
+  {
+    id: 'otp-field',
+    group: 'forms',
+    cardHeight: 190,
+    title: 'OtpField 验证码输入',
+    summary:
+      '一次性验证码输入（交易二次验证、短信码）：每格一个字，当前格的外框用弹簧滑到下一格，字翻进来，空格里一根闪的光标。一个透明的真输入框接键盘、粘贴与自动填充。改自 SmoothUI（MIT）。',
+    exports: ['OtpField'],
+    propParts: [{ part: 'OtpField', note: '其余属性透传给里面真正的 input。' }],
+    states: [
+      '空：第一格显示光标；输入：字翻进格里，外框滑到下一格；填满：触发 onComplete。',
+      'mask：格里显示圆点。groupSize：分组之间留一道间隔。',
+      '错误（invalid）：格与外框变危险色，aria-invalid。禁用：降到 45%。',
+    ],
+    donts: [
+      '不要拿它收不定长的口令，长度固定才用。',
+      '它只在末尾输入与退格，不做格间方向键；输错了退格重来。',
+      '读屏名（aria-label）必须传，格子本身对读屏隐藏。',
+    ],
+    composition: 'OtpField\n  span（格子 × length，aria-hidden）\n  span（当前格的外框）\n  input（透明，真正的输入）',
+    keys: [
+      ['Tab', '聚焦'],
+      ['0-9', '输入一位（pattern=alphanumeric 时字母也行）'],
+      ['Backspace', '删最后一位'],
+      ['Ctrl/⌘ + V', '粘贴整串，超出长度的截掉'],
+    ],
+  },
+  {
+    id: 'morph-toggle',
+    group: 'forms',
+    cardHeight: 150,
+    title: 'MorphToggle 变形开关',
+    summary:
+      '带仪式感的单个开关：圆钮滑动时形状跟着变（方块变圆），或钮里两个图标转着换。底座是 Radix Switch，尺寸与颜色同 Switch。改自 SmoothUI（MIT）。',
+    exports: ['MorphToggle'],
+    propParts: [{ part: 'MorphToggle', note: '其余属性透传给 Radix Switch.Root。' }],
+    states: [
+      'plain、morph、icon 三种变体 × 关、开。',
+      'md（默认，与 Switch 同大）；lg 尺寸给带图标的圆钮；旧名 size="default" 等于 md。',
+      '禁用降到 45%。',
+    ],
+    donts: ['设置页里成排的开关用 Switch，别都换成它。', 'icon 变体的两个图标要一眼分得清开与关。'],
+    composition: 'MorphToggle\n  span（轨道）\n    motion.span（圆钮）\n      图标（icon 变体）',
+    keys: [
+      ['Tab', '聚焦'],
+      ['Space / Enter', '翻转'],
+    ],
+  },
+  {
+    id: 'morph-icon',
+    group: 'motion',
+    cardHeight: 120,
+    title: 'MorphIcon 变形图标',
+    summary:
+      '图标的线条与形状在两个状态间补间：侧栏收展、列表与网格、菜单与叉、搜索放大、播放与停止、勾选方块。改自 SmoothUI（MIT）。',
+    exports: ['MorphIcon', 'MORPH_ICON_VARIANTS'],
+    propParts: [
+      { part: 'MorphIcon' },
+      {
+        part: 'MORPH_ICON_VARIANTS',
+        note: '八个字形名的只读数组：sidebar、list、grid、compact、menu、search、play、check。',
+      },
+    ],
+    states: ['active 为假：第一个形状；为真：线条补间到第二个形状（时长 duration，默认 0.3 秒）。'],
+    donts: [
+      '不要拿它做纯装饰的循环动画，它只在状态变化时动。',
+      '图标放在按钮里时，名字写在按钮上，图标不要再传 label。',
+    ],
+    composition: 'MorphIcon\n  svg\n    motion 线条 / 矩形 / 路径',
+    keys: [],
+  },
+  {
+    id: 'swap-panel',
+    group: 'blocks',
+    cardHeight: 460,
+    title: 'SwapPanel 兑换面板',
+    summary:
+      '付出一栏（输入、余额、Max）、收到一栏（报价算出的数额，换了会往上滚；报价中扫光）、中间翻转钮、报价明细（汇率、费用、影响、滑点，有效期画成倒计时圆环）与提交钮。文案全走 labels。改自 SmoothUI（MIT）。',
+    exports: ['SwapPanel'],
+    propParts: [{ part: 'SwapPanel' }],
+    states: [
+      'idle / ready：显示报价明细，提交钮可点。',
+      'quoting：收到栏扫光，提交钮禁用。',
+      'submitting：提交钮写 submitting 的文字并禁用。',
+      'error：error 文字显示在报价下面（role=alert），提交钮写 retry 的文字。',
+    ],
+    donts: [
+      '报价要有时效：给 expiresAt，过期由调用方重新取价，面板不自己续。',
+      '数额不超过精度时再提交，校验与下单在调用方。',
+      '要两个以上币对的列表用 QuoteTable，这个件只做一对。',
+    ],
+    composition:
+      'SwapPanel\n  label · input · AssetChip（Button）\n  Button（翻转）\n  RollingFigure · AssetChip\n  CountdownRing · 报价明细\n  Button（提交）',
+    keys: [
+      ['Tab', '输入、币种钮、Max、翻转、提交，依次走'],
+      ['Enter', '在币种钮、翻转、提交上触发'],
+    ],
+  },
+  {
+    id: 'text-reveal',
+    group: 'motion',
+    cardHeight: 520,
+    title: 'TextReveal 文字进场',
+    summary:
+      '文字一块一块进场：整段、按行、按词或按字，从上下左右某一侧来，可带一点模糊与缩放，按顺序、从中间向外或从两头向中间错峰。SmoothUI 的 17 个文字进场原件（blur-out-up、bottom-up-letters、per-word-crossfade、soft-blur-in、stagger-from-center、mask-reveal-up 等）是同一个机制的不同参数，这里合成一个件：preset 取原件的参数，再改任一项就是自己的变体。新闻标题进场、结论句出现都用它。',
+    exports: ['TextReveal', 'TEXT_REVEAL_PRESETS', 'TEXT_REVEAL_EASES'],
+    propParts: [
+      {
+        part: 'TextReveal',
+        note: '读屏读完整的句子（sr-only 副本），逐块的字是 aria-hidden。by="all" 时整段就是一块，不拆。',
+      },
+      {
+        part: 'TEXT_REVEAL_PRESETS',
+        note: '17 个原件的参数表，键是原件名（短横线小写）；值只有时长、位移、模糊、缩放这些数，直接来自原件。',
+      },
+      {
+        part: 'TEXT_REVEAL_EASES',
+        note: '原件用到的六条三次贝塞尔缓动：out、steep、tv、calm、soft、overshoot（过冲）。',
+      },
+    ],
+    states: [
+      '进场前：每块透明，按 from 偏到一侧，带 blur 与 scale 的起点。',
+      '播放中：每块按 stagger 与 order 的次序到位，到位后不再动。',
+      'triggerOnView 且还没滚进视口：保持进场前的样子，进视口才播。',
+      'replayKey 变了：从头再播一遍。',
+    ],
+    donts: [
+      '不要给整页的表格或长段落按字进场：按字适合 40px 以上的短标题，长文用 by="word" 或 by="line"。',
+      '不要在行情刷新时反复用：它是出现一次的进场，数据变化用 TextMorph 或 RollingText。',
+    ],
+    composition: 'TextReveal\n  span.sr-only（整句）\n  motion.span（逐块，aria-hidden）',
+    keys: [],
+  },
+  {
+    id: 'text-swap',
+    group: 'motion',
+    cardHeight: 430,
+    title: 'TextSwap 文字换句',
+    summary:
+      '一句话换成下一句：旧的出、新的进。fade-through（Material 淡入淡出）、axis-x（向左滑出、从右滑入）、axis-z（缩放与景深）、word-cut（逐词硬切的阶梯）、slide-right（整句从左滑入、词依次显现）五种换法，对应 SmoothUI 的 fade-through、shared-axis-x/y/z、short-slide-right。自己轮播，或给 index 由外面控制（切换视图时让标签跟着换）。',
+    exports: ['TextSwap'],
+    propParts: [{ part: 'TextSwap', note: '外层是 aria-live=polite，换句时读屏播报新句。给了 index 就不再自己轮播。' }],
+    states: [
+      '没给 index：每 interval 毫秒换到下一句，循环。',
+      '给了 index：只跟着 index 换，interval 不起作用。',
+      'interval 为 0 或只有一句：不换。',
+    ],
+    donts: [
+      '不要用它显示价格这类每秒都在变的数字：aria-live 会不停播报，数字用 RollingText 或 TextMorph。',
+      '不要放很长的句子：换句期间会按最宽的一句撑开，长短差得多时版面会跳。',
+    ],
+    composition: 'TextSwap\n  AnimatePresence\n    motion.span（当前这一句，按 key 换）',
+    keys: [],
+  },
+  {
+    id: 'word-build',
+    group: 'motion',
+    cardHeight: 220,
+    title: 'WordBuild 逐词搭句',
+    summary:
+      '一句话一个词一个词地搭起来，停一会儿，整句退场，再搭下一句。from="right" 是新词从右边进来、把一行推到居中（SmoothUI kinetic-center-build）；from="top" 是新词从上方落下、叠成一列（short-slide-down）。适合一句话的市场摘要、AI 的一行结论。',
+    exports: ['WordBuild'],
+    propParts: [{ part: 'WordBuild', note: '外层是 aria-live=polite；读屏读到的是已经出现的词。' }],
+    states: [
+      '搭建中：每隔 wordInterval 毫秒多出一个词。',
+      '搭好：停 hold 毫秒。',
+      '退场：整句淡出并略位移，然后换下一句；只有一句时搭好就停住。',
+    ],
+    donts: ['不要用来显示需要一眼读完的关键数据：词是慢慢出现的，读完整句要等。'],
+    composition: 'WordBuild\n  AnimatePresence\n    motion.span（一个词）',
+    keys: [],
+  },
+  {
+    id: 'typewriter-text',
+    group: 'motion',
+    cardHeight: 200,
+    title: 'TypewriterText 打字机',
+    summary:
+      '一个字一个字地打出来，可以带光标、循环。文字变长（新文字以已打出的部分开头）时接着往下打，不从头重来，所以流式追加的 AI 回复和交易建议可以直接把累积的文字传进来。读屏读完整的句子，不读打到一半的字。',
+    exports: ['TypewriterText'],
+    propParts: [
+      { part: 'TypewriterText', note: '整句放在 sr-only 里，打字的过程是 aria-hidden，读屏不会读到半句话。' },
+    ],
+    states: [
+      '打字中：根上有 data-typing。',
+      '打完：触发一次 onComplete（循环时不触发）；loop 为真则停 1 秒后重打。',
+      '文字被换成别的（不是追加）：从头打。',
+    ],
+    donts: ['不要用它显示用户必须马上读到的告警：先出整句，再决定要不要动画。'],
+    composition: 'TypewriterText\n  span.sr-only\n  span（已打出的字，aria-hidden）\n  span.k-tw-caret（caret 时）',
+    keys: [],
+  },
+  {
+    id: 'scramble-text',
+    group: 'motion',
+    cardHeight: 300,
+    title: 'ScrambleText 乱码解码',
+    summary:
+      '文字先乱成随机字符再落回真字：trigger="hover" 在悬停或键盘聚焦时扰一次（SmoothUI scramble-hover）；trigger="change" 在文字变了时扰一次，代码、价格换了用它。数字只换成数字、字母只换成字母、标点不动，宽度跟着原字走；settle="left-to-right" 从左到右一位一位定下来，比整串一起定更好读。',
+    exports: ['ScrambleText', 'scrambleFrame'],
+    propParts: [
+      {
+        part: 'ScrambleText',
+        note: '读屏读真实文字（sr-only），乱码是 aria-hidden；hover 只在有悬停的指针设备上生效。',
+      },
+      {
+        part: 'scrambleFrame',
+        note: '纯函数 (原文, 进度, settle, glyphs)：算某一刻的一帧乱码，进度越大 left-to-right 定下的位越多。',
+      },
+    ],
+    states: [
+      '静止：显示真文字。',
+      '扰动中：根上有 data-scrambling，按 speed 一帧一帧换字符，duration 到了落回真字。',
+      '悬停中途移开或失焦：立刻回到真字。',
+    ],
+    donts: [
+      '不要在比例字体里扰数字：数字宽度不一样会晃，价格配等宽字体（--font-mono）。',
+      '不要拿它当唯一的变化提示：涨跌另有颜色和符号。',
+    ],
+    composition: 'ScrambleText\n  span.sr-only\n  span（当前一帧，aria-hidden）',
+    keys: [],
+  },
+  {
+    id: 'text-morph',
+    group: 'motion',
+    cardHeight: 220,
+    title: 'TextMorph 文字变形',
+    summary:
+      '把一串字变成另一串：按字（或词）对比，两边都有的沿用同一个 key、用布局动画滑到新位置，没了的缩着出去，新来的弹着进来。价格 106,977.4 变 107,011.0 时没变的位置不动；订单状态词整个换。',
+    exports: ['TextMorph', 'morphTokens'],
+    propParts: [
+      { part: 'TextMorph', note: '完整文字放在 sr-only，逐字是 aria-hidden；根元素用 as 换成标题或段落。' },
+      {
+        part: 'morphTokens',
+        note: '纯函数 (text, mode)：切成片并给 key，同一个字第二次出现是「字-1」，对比才能一一对上。',
+      },
+    ],
+    states: ['文字没变：静止。', '文字变了：共有的字滑到新位置，多出的字弹入，没了的字缩出。'],
+    donts: [
+      '不要用在要逐位翻滚方向的数字上：涨跌方向的里程表式滚动用 RollingText。',
+      '不要放整段正文：每个字一个动画节点，字多了会卡。',
+    ],
+    composition:
+      'TextMorph\n  span.sr-only\n  motion.span（排列容器，layout）\n    motion.span（一个字或词，aria-hidden）',
+    keys: [],
+  },
+  {
+    id: 'shine-text',
+    group: 'motion',
+    cardHeight: 150,
+    title: 'ShineText 流光文字',
+    summary:
+      '一道高光循环扫过文字：背景渐变裁进字形，再平移。AI 在分析、数据在加载这类「进行中」的文字用它；底色默认次要文字色，高光默认主文字色，都可传 token。',
+    exports: ['ShineText'],
+    propParts: [{ part: 'ShineText', note: '就是一个 span；文字对读屏照常可读。' }],
+    states: ['一直循环：每次扫过 duration 秒，之间停 repeatDelay 秒。'],
+    donts: ['不要给已经完成的状态用：流光表示「还在进行」，完成了就换成普通文字。'],
+    composition: 'ShineText\n  motion.span（背景渐变裁到字形）',
+    keys: [],
+  },
+  {
+    id: 'wave-text',
+    group: 'motion',
+    cardHeight: 150,
+    title: 'WaveText 波浪文字',
+    summary:
+      '每个字依次上下起伏，一道波在文字里循环走，表示「正在实时」。起伏高度、一个周期的时长、字与字的间隔都可调。',
+    exports: ['WaveText'],
+    propParts: [{ part: 'WaveText', note: '整句放在 sr-only，逐字是 aria-hidden。' }],
+    states: ['一直循环，没有静止态。'],
+    donts: ['不要放在密集的表格里：一整屏的字都在起伏会盖过数据本身。'],
+    composition: 'WaveText\n  span.sr-only\n  motion.span（一个字，aria-hidden）',
+    keys: [],
+  },
+  {
+    id: 'scroll-reveal-paragraph',
+    group: 'motion',
+    cardHeight: 300,
+    title: 'ScrollRevealParagraph 滚动逐词点亮',
+    summary:
+      '一段话随滚动一个词一个词地亮起来：每个词叠两层，底层是暗字，上层按滚动进度的一小段从 0 渐到 1。适合长篇研报摘要、说明页的导读。在某个滚动容器里滚时传 container。',
+    exports: ['ScrollRevealParagraph'],
+    propParts: [{ part: 'ScrollRevealParagraph', note: '整段放在 sr-only，读屏读到全文，与滚动位置无关。' }],
+    states: ['还没滚到：全是暗字。', '滚动中：按进度从前往后逐词变亮。', '滚过：全文亮着。'],
+    donts: ['不要用在需要一眼读完的重点：未点亮的暗字对比度低。'],
+    composition: 'ScrollRevealParagraph\n  p\n    span.sr-only\n    span（一个词：暗字 + 亮字叠层，aria-hidden）',
+    keys: [],
+  },
+  {
+    id: 'kinetic-type-scroll',
+    group: 'motion',
+    cardHeight: 300,
+    title: 'KineticTypeScroll 滚动波浪排版',
+    summary:
+      '随滚动，一道「波」从第一个词走到最后一个词：波峰上的词放大、拉开字距、上浮、变亮，过了就回落；字体是可变字体时还能随之变粗（给 weightRange）。标题与分段大字用。',
+    exports: ['KineticTypeScroll'],
+    propParts: [
+      {
+        part: 'KineticTypeScroll',
+        note: '整句放在 sr-only，逐词是 aria-hidden。字重默认不动，给了 weightRange 才随波变化（需要可变字体）。',
+      },
+    ],
+    states: [
+      '没滚到：所有词在静止值（略小、略暗）。',
+      '滚动中：波峰处的词到峰值，前后的词按距离过渡。',
+      '滚过：回到静止值。',
+    ],
+    donts: ['不要用在正文：字距与大小在变，正文阅读会被打断。'],
+    composition: 'KineticTypeScroll\n  div\n    span.sr-only\n    motion.span（一个词，aria-hidden）',
+    keys: [],
+  },
+  {
+    id: 'perspective-text-3d',
+    group: 'motion',
+    cardHeight: 300,
+    title: 'PerspectiveText3D 景深文字',
+    summary:
+      '文字摆在一个 3D 平面上，词或行沿 Z 轴错开深度；整个平面随滚动进度、指针位置倾斜（driver），或固定一个角度。大标题的装饰。',
+    exports: ['PerspectiveText3D', 'splitDepthSegments'],
+    propParts: [
+      { part: 'PerspectiveText3D', note: '整句放在 sr-only，各段是 aria-hidden；children 与 text 二选一。' },
+      { part: 'splitDepthSegments', note: '纯函数 (内容, split)：按词或按换行切成要错开深度的段。' },
+    ],
+    states: [
+      'static：固定倾斜 rotateX、rotateY。',
+      'pointer：随指针在上面的位置倾斜，移开回正。',
+      'scroll：随滚动进度在 ±rotate 之间倾斜。',
+    ],
+    donts: ['不要用在小字号或表格里：透视会让小字发虚。'],
+    composition:
+      'PerspectiveText3D\n  div（perspective）\n    span.sr-only\n    motion.div（preserve-3d，倾斜）\n      div（一段，translateZ，aria-hidden）',
+    keys: [],
+  },
+  {
+    id: 'gravity-letters',
+    group: 'motion',
+    cardHeight: 360,
+    title: 'GravityLetters 重力掉字',
+    summary:
+      '文字的每个字被放开后受重力掉到容器底、弹几下、静下来；再触发就被弹簧拉回原位。物理（掉落与回位）是纯函数。用于空状态、熔断提示这类带一点玩笑的场合。',
+    exports: ['GravityLetters'],
+    propParts: [
+      {
+        part: 'GravityLetters',
+        note: 'trigger 为 click 时根是 role=button，aria-pressed 表示是否已掉下；整句放在 sr-only。可以用 collapsed 受控。',
+      },
+    ],
+    states: [
+      '静止：字排在原位。',
+      '掉落：按 stagger 一个个放开，落地后反弹、摩擦，静止。',
+      '回位：弹簧把每个字拉回原位。',
+    ],
+    donts: ['不要用在需要读的警告上：字掉下去后就读不了了，警告用 Alert。'],
+    composition:
+      'GravityLetters\n  div（容器）\n    span.sr-only\n    div（隐藏的测量层）\n    div（可见层，每个字绝对定位）',
+    keys: [
+      ['Enter / Space', 'trigger 为 click 时掉下或收回'],
+      ['Tab', 'hover 与 click 时可聚焦；hover 时聚焦即掉下，失焦收回'],
+    ],
+  },
+  {
+    id: 'ransom-note',
+    group: 'motion',
+    cardHeight: 220,
+    title: 'RansomNote 剪报勒索信',
+    summary:
+      '文字像从报纸上剪下的纸片：每个字有自己的字体、底色、倾斜与大小，由种子决定（同种子同文字同排布）；可以飞进来拼好，或一直轻轻抖。纯装饰，与交易数据无关，给空状态和品牌页用；纸色与字体都取我们的 token。',
+    exports: ['RansomNote', 'createSeededRandom', 'ransomScraps'],
+    propParts: [
+      { part: 'RansomNote', note: '整句放在 sr-only，纸片是 aria-hidden。' },
+      { part: 'createSeededRandom', note: '纯函数 (seed)：返回一个同种子同序列的随机数函数（mulberry32）。' },
+      {
+        part: 'ransomScraps',
+        note: '纯函数 (文字, 种子, 强度, 角度, 字体, 纸色)：算每张纸片的字体、底色、倾斜、大小与进场偏移。',
+      },
+    ],
+    states: ['assemble：纸片从随机的位置与角度飞来拼好。', 'jitter：纸片在原位轻轻抖。', 'none：静止。'],
+    donts: ['不要放数据或需要认真读的内容：纸片的字体和倾斜是故意不统一的。'],
+    composition: 'RansomNote\n  div\n    span.sr-only\n    div（aria-hidden）\n      motion.span（一张纸片）',
+    keys: [],
+  },
+  // ---- AI 组：对话、推理、工具调用、审批、来源（多数改自 SmoothUI，MIT） ----
+  {
+    id: 'ai-conversation',
+    group: 'ai',
+    cardHeight: 640,
+    title: 'AiConversation 对话容器',
+    summary:
+      '对话的滚动容器：只在读者本来就贴着底部时才跟着往下，往上翻读东西时不拽人；不再跟时冒出「回到最新」药丸。页上是一整段交易助手的演示：问「600519 今天为什么跌」→ 推理 → 调工具 → 带来源的回答 → 一条减仓建议进审批。改自 SmoothUI。',
+    exports: ['AiConversation'],
+    propParts: [
+      {
+        part: 'AiConversation',
+        note: 'role=log，读屏名取 label；contentKey 变了（消息数或流式文字长度）且读者在底部时跟随。',
+      },
+    ],
+    states: [
+      '贴着底部：内容长高时即时滚到底（不用平滑，平滑滚动途中会把「贴底」误判成「已离开」）。',
+      '离开底部：冒出药丸，点击平滑滚回。',
+    ],
+    donts: ['不要在读者往上翻时把他拽回底部。', 'label 与 jumpLabel 必传。'],
+    composition: 'AiConversation\n  div role=log（滚动区，可聚焦）\n  button（回到最新药丸，离底时出现）',
+    keys: [
+      ['Tab', '聚焦滚动区'],
+      ['方向键 / PageUp / PageDown', '滚动'],
+    ],
+  },
+  {
+    id: 'ai-message',
+    group: 'ai',
+    cardHeight: 320,
+    title: 'AiMessage 对话消息',
+    summary:
+      '一条消息：气泡加不碍事的动作（复制、重试、赞踩）。动作从气泡自己的边上滑出来，悬停与键盘聚焦都显出，始终挂着只是淡掉，所以行高不跳。助手自带卡片的回合关掉气泡。改自 SmoothUI。',
+    exports: ['AiMessage'],
+    propParts: [{ part: 'AiMessage', note: '动作按钮用我们的 Button 图标款；哪个动作有 labels 里的名字才画哪个。' }],
+    states: [
+      '用户 / 助手：气泡朝向与底色不同。',
+      '悬停或聚焦：动作滑出；复制后图标换成对勾并弹一下。',
+      '赞踩只在助手消息上。',
+    ],
+    donts: ['别给自己的消息画赞踩。', '助手回合里有推理、工具、diff 卡片时用 bubble={false}。'],
+    composition: 'AiMessage\n  div（avatar）\n  div（气泡）\n  div（时间戳 + 动作按钮）',
+    keys: [
+      ['Tab', '进入消息后依次聚焦各动作（聚焦时动作显出）'],
+      ['Enter / Space', '触发动作'],
+    ],
+  },
+  {
+    id: 'ai-response',
+    group: 'ai',
+    cardHeight: 180,
+    title: 'AiResponse 流式回答',
+    summary:
+      '流式的助手文字：词到了才进场（淡入、去模糊、上移 2px），不是定时器逐字打；正文里的 [n] 换成行内引用小标，直接用 WebSearchCitation。切词用 Intl.Segmenter，中文也一词一词进。改自 SmoothUI。',
+    exports: ['AiResponse'],
+    propParts: [{ part: 'AiResponse', note: 'text 随流增长重新传入；citations 里没有的 [n] 保持普通文字。' }],
+    states: [
+      '流式中：末尾有明灭的光标。',
+      '新来的词进场，已画出的词不再动。',
+      '引用：悬停停一会儿或聚焦弹出站名、标题、摘要。',
+    ],
+    donts: [
+      '不要自己用定时器切 text 来模拟打字：节奏要跟真实的流走。',
+      'locale 不传时按页面语言切词，混排时建议显式传。',
+    ],
+    composition: 'AiResponse\n  p\n    span（词）\n    WebSearchCitation（引用小标）\n    span（光标）',
+    keys: [['Tab', '聚焦行内引用，立即弹出预览']],
+  },
+  {
+    id: 'ai-reasoning',
+    group: 'ai',
+    cardHeight: 230,
+    title: 'AiReasoning 推理过程',
+    summary:
+      '可折叠的推理过程：摘要行只在模型真在想的时候有流光；结束后停一拍自动收起并报耗时。手动开合过就不再替你决定。改自 SmoothUI。',
+    exports: ['AiReasoning'],
+    propParts: [{ part: 'AiReasoning', note: 'labels 三条文案必传；duration 不给就自己计时。' }],
+    states: ['流式中：展开，摘要流光。', '结束：停 600ms 后收起，摘要报耗时。', '手动开合后不再自动。'],
+    donts: ['流光只给「还在干活」，不要常亮。', '要展示最终回答别放在这里，用 AiResponse。'],
+    composition: 'AiReasoning\n  button（展开钮 + 摘要）\n  div（推理内容，左侧竖线）',
+    keys: [['Enter / Space', '展开或收起']],
+  },
+  {
+    id: 'ai-tool-call',
+    group: 'ai',
+    cardHeight: 360,
+    title: 'AiToolCall 工具调用',
+    summary:
+      '一次工具调用，默认一行：名字、右侧小注、状态环。环是一个会变脸的东西：排队呼吸、运行缺一口并转、成功画对勾、失败画叉。参数与结果展开才看。改自 SmoothUI。',
+    exports: ['AiToolCall'],
+    propParts: [{ part: 'AiToolCall', note: 'args 与 result 是 ReactNode，原样渲染；都没有时整行不可展开。' }],
+    states: [
+      'pending 排队：环呼吸。',
+      'running 运行：环缺一口并匀速转。',
+      'success / error：环变绿 / 红并画出对勾 / 叉。',
+    ],
+    donts: ['状态读屏词在 labels.status，必传，别只靠颜色。', '长结果别塞进 summary，放 result。'],
+    composition: 'AiToolCall\n  button（状态环 + 名字 + 小注 + 箭头）\n  div（参数 / 结果，展开时）',
+    keys: [['Enter / Space', '展开或收起详情']],
+  },
+  {
+    id: 'ai-diff',
+    group: 'ai',
+    cardHeight: 360,
+    title: 'AiDiff 改动对比',
+    summary:
+      '一份等人点头的修改：新增行从左往右擦进来，上下文行不动；接受闪一下绿，拒绝闪一下红并把各行收到零高让出版面。交易里用来展示 AI 改了哪些策略参数。改自 SmoothUI。',
+    exports: ['AiDiff'],
+    propParts: [
+      { part: 'AiDiff', note: '只有给了 onAccept / onReject 才画对应按钮；决定后按钮收起，状态词在 role=status 里。' },
+    ],
+    states: [
+      '待决定：标题栏 +N -M，底部两个按钮。',
+      '接受：绿色一闪，写「已接受」。',
+      '拒绝：红色一闪，行收起，写「已拒绝」。',
+    ],
+    donts: ['别用它做长文件的行级审阅：它没有折叠与跳转。', '改动要真的落地，调用方在 onAccept 里做，组件只记录决定。'],
+    composition:
+      'AiDiff\n  div（标题 + 增删计数）\n  div role=list（行：行号 + 符号 + 内容）\n  div（拒绝 / 接受）\n  p role=status',
+    keys: [
+      ['Tab', '依次聚焦拒绝、接受'],
+      ['Enter / Space', '触发'],
+    ],
+  },
+  {
+    id: 'ai-approval',
+    group: 'ai',
+    cardHeight: 620,
+    title: 'AiApproval 审批卡',
+    summary:
+      'Agent 动手之前摆出来的一张卡：问题、事实表（标的、方向、数量、理由）、几个选项。选中不是勾单选钮：选中的一项展开铺满，其余收没。高风险动作（真的下单）的选项带 hold，画成 HoldToConfirm，按住填满才批。改自 SmoothUI，hold 是我们加的。',
+    exports: ['AiApproval'],
+    propParts: [
+      {
+        part: 'AiApproval',
+        note: 'options 里 hold 有值的项画成「按住确认」；其余是普通按钮。facts 的 tone 读 --pnl-up / --pnl-down。',
+      },
+    ],
+    states: [
+      '待决定：事实表加选项，逐个错开进场。',
+      '按住确认：底色从左填满，松手退回，填满才触发 onDecide。',
+      '已决定：选中项铺满，其余收没；resolvedId 可直接画成已决定。',
+    ],
+    donts: [
+      '下单、撤单、停策略这类不可撤的动作必须给 hold，不要一次点击就批。',
+      '不要把被否的选项灰着留着。',
+      '一次只决定一次：决定后不能再改。',
+    ],
+    composition:
+      'AiApproval\n  p（问题）\n  dl（事实表）\n  div（理由）\n  div role=group\n    HoldToConfirm / Button（选项）\n    div role=status（已决定）',
+    keys: [
+      ['Tab', '依次聚焦各选项'],
+      ['Enter / Space（按住）', 'hold 项：按住到填满才触发；单击与松开都不触发'],
+      ['Enter / Space', '普通选项：触发'],
+    ],
+  },
+  {
+    id: 'ai-context-meter',
+    group: 'ai',
+    cardHeight: 220,
+    title: 'AiContextMeter 上下文用量',
+    summary:
+      '上下文窗口用掉了多少：一个小环加「已用/总量」；越过 80% 变琥珀、越过 95% 变红，几何不变只换色相。悬停、聚焦或点按弹出分项（什么在占窗口）。改自 SmoothUI。',
+    exports: ['AiContextMeter'],
+    propParts: [
+      { part: 'AiContextMeter', note: 'label 必传（读屏名，如「上下文已用 62%」）；有 breakdown 才可展开。' },
+    ],
+    states: ['常态：环与读数。', '越过 warningAt：环变琥珀；越过 dangerAt：变红。', '有分项：悬停、聚焦或点按弹出。'],
+    donts: ['越线不要放大环：放大读成「进展不错」。', '没有分项数据就别给 breakdown，按钮会保持禁用。'],
+    composition: 'AiContextMeter\n  button（环 + 读数）\n  div（分项，弹出时）',
+    keys: [
+      ['Tab', '聚焦，键盘聚焦时弹出分项'],
+      ['Enter / Space', '切换分项'],
+    ],
+  },
+  {
+    id: 'ai-prompt-input',
+    group: 'ai',
+    cardHeight: 380,
+    title: 'AiPromptInput 提示词输入框',
+    summary:
+      '多行自动长高（到 8 行封顶再滚）、回车发送、Shift+回车换行；流式中发送钮变停止；附件一排小标；字数到上限的 80% 才显示计数。中文输入法选词时的回车不发送。改自 SmoothUI。',
+    exports: ['AiPromptInput'],
+    propParts: [
+      {
+        part: 'AiPromptInput',
+        note: 'label 与 labels.send / labels.stop 必传；state 为 streaming 时发送钮是停止，error / done 画一圈语义色。',
+      },
+    ],
+    states: [
+      '空：发送钮禁用。',
+      'streaming：发送钮变停止（scale 与淡入淡出换字形）。',
+      'error / done：边上一圈红 / 绿。',
+      '附件：一排小标，可移除。',
+    ],
+    donts: ['别靠 placeholder 当读屏名：label 必传。', '不要在流式中禁用停止钮。'],
+    composition: 'AiPromptInput\n  ul（附件）\n  textarea\n  div（附件钮 + children + 计数 + 发送钮）',
+    keys: [
+      ['Enter', '发送（输入法选词中的回车不发送）'],
+      ['Shift + Enter', '换行'],
+    ],
+  },
+  {
+    id: 'ai-suggestions',
+    group: 'ai',
+    cardHeight: 170,
+    title: 'AiSuggestions 提示词建议',
+    summary:
+      '提示词建议的药丸：对话的空态与回答后的追问一行。从中间向两边错开进场，因为这些是同等分量的备选，不是从左到右的优先级。改自 SmoothUI。',
+    exports: ['AiSuggestions'],
+    propParts: [{ part: 'AiSuggestions', note: '药丸是我们的 Button；换一组 suggestions 时旧的淡出、新的进场。' }],
+    states: ['进场：中间先出，两边依次跟上。', '换组：旧的缩淡出，新的进场。'],
+    donts: ['不要超过一行半，太多就失去「建议」的意思。', '选中后由调用方决定是否清掉这一排。'],
+    composition: 'AiSuggestions\n  p（标题）\n  ul > li > Button',
+    keys: [
+      ['Tab', '依次聚焦'],
+      ['Enter / Space', '选中'],
+    ],
+  },
+  {
+    id: 'ai-artifact',
+    group: 'ai',
+    cardHeight: 260,
+    title: 'AiArtifact 产出框',
+    summary:
+      '模型产出的东西的框：标题、预览 / 代码两个视图、复制。两个视图沿同一条水平轴走，预览永远在代码左边，所以切换有方向；选中指示块是一个共享元素在页签间滑。改自 SmoothUI。',
+    exports: ['AiArtifact'],
+    propParts: [
+      { part: 'AiArtifact', note: '只给 preview 或只给 code 时不画页签；copyText 与 labels.copy 都给了才画复制钮。' },
+    ],
+    states: ['预览 / 代码：内容横向挪 24px 淡入淡出。', '复制：图标换对勾约 1.6 秒。'],
+    donts: ['两个视图内容要对得上：预览是代码的渲染结果。'],
+    composition: 'AiArtifact\n  div（标题 + role=tablist + 复制钮）\n  div role=tabpanel（预览 / 代码）',
+    keys: [
+      ['← →', '在页签间移动并切换'],
+      ['Tab', '页签、复制钮'],
+    ],
+  },
+  {
+    id: 'ai-branch',
+    group: 'ai',
+    cardHeight: 220,
+    title: 'AiBranch 对话分支',
+    summary:
+      '同一个问题重答出的几个版本，用上一个 / 下一个翻，到头绕回；换分支时新的从下面淡入上来；只有一个版本时翻页条不画。复合件。改自 SmoothUI。',
+    exports: ['AiBranch', 'AiBranchMessages', 'AiBranchNext', 'AiBranchPage', 'AiBranchPrevious', 'AiBranchSelector'],
+    propParts: [
+      { part: 'AiBranch', note: '容器，其余属性透传给 div。' },
+      { part: 'AiBranchMessages', note: '每个子元素是一个分支；只渲染当前那个。' },
+      { part: 'AiBranchSelector', note: 'from 指翻页条靠哪一侧；只有一个分支时不画。' },
+      { part: 'AiBranchPrevious', note: 'label 必传，读屏名。' },
+      { part: 'AiBranchNext', note: 'label 必传，读屏名。' },
+      { part: 'AiBranchPage', note: 'format(位置, 总数) 写页码文字，如「第 1 个，共 3 个」。' },
+    ],
+    states: ['多个分支：翻页条出现，到头绕回。', '只有一个分支：翻页条不画。'],
+    donts: ['不要在 AiBranch 之外用它的子件。', '分支内容变长时别用固定高度。'],
+    composition:
+      'AiBranch\n  AiBranchMessages（每个子元素一个分支）\n  AiBranchSelector\n    AiBranchPrevious\n    AiBranchPage\n    AiBranchNext',
+    keys: [
+      ['Tab', '上一个、下一个'],
+      ['Enter / Space', '翻页'],
+    ],
+  },
+  {
+    id: 'ai-task-list',
+    group: 'ai',
+    cardHeight: 320,
+    title: 'AiTaskList Agent 计划',
+    summary:
+      'Agent 要走完的一份计划，只读：每一步是 排队 / 进行中 / 完成 / 失败，可带一层子步骤与小注。表头计数从任务派生；完成的行安静下来，进行中的行有流光下划线。与 TaskList（人来勾的清单）是两回事。改自 SmoothUI。',
+    exports: ['AiTaskList'],
+    propParts: [{ part: 'AiTaskList', note: 'label 与 statusLabels 必传；读者不能改状态，调用方推进 tasks。' }],
+    states: [
+      'pending：空框。',
+      'running：流光下划线。',
+      'done：绿框、对勾被画出来、行淡到 65%。',
+      'failed：红框、叉被画出来。',
+    ],
+    donts: ['要让用户勾选用 TaskList。', '计数别手传，它是派生的。'],
+    composition: 'AiTaskList\n  div（标题 + n/m）\n  ul > li（框 + 文字 + 小注，子步骤缩进一层）',
+    keys: [],
+  },
+  {
+    id: 'agent-avatar',
+    group: 'ai',
+    cardHeight: 250,
+    title: 'AgentAvatar Agent 头像',
+    summary:
+      'Agent 的像素头像：由字符串种子确定地生成 6×6 的色块，同一个种子永远同一张脸；带呼吸、脉动、斜扫、闪点四种环境动效。多个 Agent（研究员、风控、执行）并存时一眼认出是谁说的话。改自 SmoothUI。',
+    exports: ['AgentAvatar'],
+    propParts: [
+      { part: 'AgentAvatar', note: '画在 canvas 上，role=img，读屏名取 label。颜色是按种子生成的身份色，不跟主题。' },
+    ],
+    states: ['动画：四种环境动效叠加。', 'animated=false：画静止的一帧。'],
+    donts: ['不要拿它当用户头像。', '同一个 Agent 的种子要稳定，别用随机数或时间。'],
+    composition: 'AgentAvatar\n  canvas（requestAnimationFrame）',
+    keys: [],
+  },
+  {
+    id: 'avatar',
+    group: 'readouts',
+    cardHeight: 120,
+    title: 'Avatar 头像',
+    summary:
+      '圆形头像：图片没到或失败时显示缩写，右下角可挂在线状态点，AvatarGroup 叠放并把多出的折成 +N；三档尺寸 24 / 32 / 40。',
+    exports: ['Avatar', 'AvatarGroup', 'useAvatarSize'],
+    propParts: [
+      { part: 'Avatar', note: '其余属性透传给 Radix Avatar.Root。' },
+      { part: 'AvatarGroup' },
+      { part: 'useAvatarSize', note: '返回最近一个头像的尺寸，给放在头像里的自定义部件用。' },
+    ],
+    states: [
+      '图片加载中或失败：显示 fallback（缩写），7% 白底、ink-200 字（ink-300 在 Console 下只有 4.42:1）。',
+      '有 status：右下角一个状态点（在线、离开、忙碌、离线），读屏名由 statusLabel 给。',
+      '在 AvatarGroup 里：叠放、环形描边，超过 max 的折成 +N。',
+    ],
+    donts: [
+      '不要单靠状态点的颜色传达在线与否：statusLabel 要给，旁边有文字更好。',
+      '不要在头像里放超过两个字符的缩写。',
+      '要显示一个人的完整信息用 RichPopover 或 HoverCard，不要塞进头像。',
+    ],
+    composition:
+      'AvatarGroup\n  Avatar\n    Radix Avatar.Image（有 src）\n    Radix Avatar.Fallback\n    span（status 点）\n  span（+N）',
+    keys: [],
+  },
+  {
+    id: 'breadcrumb',
+    group: 'layout',
+    cardHeight: 48,
+    title: 'Breadcrumb 面包屑',
+    summary: '路径导航：一节一节从左侧轻滑进来（错开 40ms），最后一节是当前页、不是链接；分隔符可换。',
+    exports: ['Breadcrumb'],
+    propParts: [{ part: 'Breadcrumb' }],
+    states: [
+      '有 href 的节：链接，悬停提亮。',
+      '没有 href 的中间节：纯文字。',
+      '最后一节：aria-current="page"，ink 色。',
+    ],
+    donts: [
+      '不要超过五节：太深的路径用折叠或换导航方式。',
+      '不要拿它当标签页：它只表达位置，不切换并列视图（那是 Tabs）。',
+    ],
+    composition: 'Breadcrumb\n  nav\n    ol\n      li（每节）\n        a / span',
+    keys: [],
+  },
+  {
+    id: 'pagination',
+    group: 'layout',
+    cardHeight: 48,
+    title: 'Pagination 分页',
+    summary:
+      '分页器：当前页的底块在页码之间用弹簧滑过去，页码错开 30ms 进场，页数多时首尾常驻、当前页两侧留 siblings 页、其余折成省略号。',
+    exports: ['Pagination', 'buildPageRange'],
+    propParts: [{ part: 'Pagination' }, { part: 'buildPageRange', note: '页码列表的算法，导出给单测与自定义渲染。' }],
+    states: [
+      '当前页：带底块，aria-current="page"。',
+      '第一页时上一页禁用，最后一页时下一页禁用。',
+      '总页数不超过 siblings*2+5：全部列出，没有省略号。',
+    ],
+    donts: ['不要用它翻无限流（行情、新闻流）：那是加载更多。', '不要把 siblings 设成 0：当前页与首尾页会连成一团。'],
+    composition:
+      'Pagination\n  nav\n    ul\n      li > Button（上一页）\n      li > Button（页码，当前页内含滑动底块）\n      li（省略号）\n      li > Button（下一页）',
+    keys: [
+      ['Tab', '在按钮间走'],
+      ['Enter / Space', '翻到该页'],
+    ],
+  },
+  {
+    id: 'collapsible',
+    group: 'layout',
+    cardHeight: 90,
+    title: 'Collapsible 单项折叠',
+    summary: '一个标题行加一块可收起的内容；内容高度从 0 长出来，箭头翻过来。成组、同时只开一项的用 Accordion。',
+    exports: ['Collapsible', 'CollapsibleContent', 'CollapsibleTrigger'],
+    propParts: [
+      { part: 'Collapsible', note: '其余属性透传给 Radix Collapsible.Root。' },
+      {
+        part: 'CollapsibleTrigger / CollapsibleContent',
+        symbol: 'CollapsibleTrigger',
+        note: '标题行（带箭头）与展开的内容，透传 Radix 同名部件。',
+      },
+    ],
+    states: ['收起、展开。', '禁用：标题行降到 45% 不透明度，不响应。'],
+    donts: ['不要把用户必须读的内容收起来。', '几项并列要互斥展开时用 Accordion。'],
+    composition: 'Collapsible\n  CollapsibleTrigger\n  CollapsibleContent',
+    keys: [['Enter / Space', '展开或收起']],
+  },
+  {
+    id: 'menubar',
+    group: 'overlays',
+    cardHeight: 48,
+    title: 'Menubar 菜单栏',
+    summary:
+      '一排顶层菜单（文件、视图、运行）：方向键在它们之间走，一个开着时划到别的自动换开；面板用下拉菜单同一套皮肤与入场。',
+    exports: ['Menubar', 'MenubarContent', 'MenubarItem', 'MenubarMenu', 'MenubarSeparator', 'MenubarTrigger'],
+    propParts: [
+      { part: 'Menubar', note: '其余属性透传给 Radix Menubar.Root。' },
+      {
+        part: 'MenubarMenu / MenubarTrigger / MenubarContent',
+        symbol: 'MenubarTrigger',
+        note: '一个顶层菜单的入口与面板，透传 Radix 同名部件。',
+      },
+      {
+        part: 'MenubarItem / MenubarSeparator',
+        symbol: 'MenubarItem',
+        note: '面板里的行与分隔线，透传 Radix 同名部件。',
+      },
+    ],
+    states: [
+      '关闭：只有触发器一排。',
+      '打开：面板从触发处轻升；再划到旁边的触发器，直接换开。',
+      '禁用的行不高亮、不可选。',
+    ],
+    donts: ['不要把它当应用导航：整页导航用 SideNav，带大块说明的顶栏用 NavigationMenu。', '不要嵌套超过两层。'],
+    composition:
+      'Menubar\n  MenubarMenu\n    MenubarTrigger\n    MenubarContent\n      MenubarItem\n      MenubarSeparator',
+    keys: [
+      ['← →', '在顶层菜单之间走'],
+      ['↓ / Enter', '打开菜单'],
+      ['Esc', '关闭'],
+    ],
+  },
+  {
+    id: 'navigation-menu',
+    group: 'layout',
+    cardHeight: 210,
+    title: 'NavigationMenu 导航菜单',
+    summary: '顶栏上一排带下拉面板的入口：面板共用一个视口，在入口之间划动时按方向滑入滑出，宽高平滑过渡。',
+    exports: [
+      'NavigationMenu',
+      'NavigationMenuContent',
+      'NavigationMenuItem',
+      'NavigationMenuLink',
+      'NavigationMenuList',
+      'NavigationMenuTrigger',
+      'navigationMenuTriggerClass',
+    ],
+    propParts: [
+      { part: 'NavigationMenu', note: '其余属性透传给 Radix NavigationMenu.Root；视口内建。' },
+      {
+        part: 'NavigationMenuList / NavigationMenuItem',
+        symbol: 'NavigationMenuList',
+        note: '入口的列表与单项，透传 Radix 同名部件。',
+      },
+      {
+        part: 'NavigationMenuTrigger / NavigationMenuContent / NavigationMenuLink',
+        symbol: 'NavigationMenuTrigger',
+        note: '入口按钮（带箭头）、面板内容与面板里的链接，透传 Radix 同名部件。',
+      },
+      { part: 'navigationMenuTriggerClass', note: '入口按钮的类名，给要做成链接外观的单项（没有面板的入口）用。' },
+    ],
+    states: [
+      '关闭：一排入口。',
+      '打开：面板在视口里长出来；换入口时按方向横向滑入。',
+      '当前链接（data-active）有底色。',
+    ],
+    donts: ['不要在面板里放要操作的表单：面板随指针离开会收起。', '入口只有一两个并且没有面板时不要用它，直接放链接。'],
+    composition:
+      'NavigationMenu\n  NavigationMenuList\n    NavigationMenuItem\n      NavigationMenuTrigger\n      NavigationMenuContent\n        NavigationMenuLink',
+    keys: [
+      ['← →', '在入口之间走'],
+      ['↓ / Enter', '打开面板'],
+      ['Esc', '关闭'],
+    ],
+  },
+  {
+    id: 'file-tree',
+    group: 'layout',
+    cardHeight: 200,
+    title: 'FileTree 文件树',
+    summary:
+      '策略目录、回测产物这类有文件夹也有文件的层级：行首是文件夹 / 文件图标、行尾可挂徽标；文件夹展开时子级高度弹出来、箭头转 90 度，可画纵向引导线。纯分类的树用 TreeView。',
+    exports: ['FileTree'],
+    propParts: [{ part: 'FileTree' }],
+    states: [
+      '文件夹收起：关闭的文件夹图标，箭头朝右。',
+      '文件夹展开：打开的图标、箭头朝下，子级高度弹出。',
+      '选中的行有底色；键盘焦点的行画焦点环。',
+      '有 badge 的行：行尾写改动标记或大小。',
+    ],
+    donts: ['不要拿它放几千个节点：它不做虚拟化。', '不要放没有文件语义的分类（品种分类用 TreeView）。'],
+    composition: 'FileTree\n  div role=tree\n    div role=treeitem（一行）\n    div role=group（展开的子级）',
+    keys: [
+      ['↑ ↓', '上下走'],
+      ['→', '展开，已展开则进入第一个子级'],
+      ['←', '收起，已收起则回父级'],
+      ['Home / End', '到首、末行'],
+      ['Enter / Space', '选中，文件夹同时开合'],
+    ],
+  },
+  {
+    id: 'dock',
+    group: 'layout',
+    cardHeight: 110,
+    title: 'Dock 坞',
+    summary:
+      '一排工具图标，指针靠近时按距离放大（升余弦衰减，邻居跟着长）；悬停或聚焦出标签；选中时往上弹跳；active 的在底下画一个点。',
+    exports: ['Dock', 'falloff'],
+    propParts: [{ part: 'Dock' }, { part: 'falloff', note: '放大的衰减曲线：指针正下是 1，影响半径外是 0。' }],
+    states: [
+      '静止：所有图标原大小。',
+      '指针靠近：按距离放大，标签出现。',
+      '键盘聚焦：标签出现。',
+      '选中：图标弹跳一次。',
+    ],
+    donts: [
+      '不要当主导航：它是工具坞，放四到八个常用动作。',
+      '不要在触屏为主的界面放它：放大靠指针。',
+      '没有简化的积分布局：整排的中心会随指针略有漂移。',
+    ],
+    composition: 'Dock\n  div role=toolbar\n    div（一格）\n      button（图标）\n      span（标签，隐藏时不进读屏）',
+    keys: [
+      ['← →', '在图标间走（竖排为 ↑ ↓）'],
+      ['Enter / Space', '选中'],
+    ],
+  },
+  {
+    id: 'rich-popover',
+    group: 'overlays',
+    cardHeight: 200,
+    title: 'RichPopover 富提示',
+    summary:
+      '点触发器弹出的一张小卡：标题（可带外链）、一段说明、一枚元信息小标和一个主动作，带小尖角；入场是模糊加缩放一起收敛。品种悬停预览用 HoverCard，需要带动作、要点开的用它。',
+    exports: ['RichPopover'],
+    propParts: [{ part: 'RichPopover' }],
+    states: [
+      '关闭：只有触发器。',
+      '打开：卡从触发处收敛进场，指向触发器的尖角。',
+      '没有 actionLabel：不画主动作；没有 meta：左边留空。',
+    ],
+    donts: [
+      '不要放表单：它是预览卡加一个动作。',
+      '不要用它代替 Tooltip：一句话的提示用 Tooltip。',
+      '不要放需要读屏读到的唯一信息：重要信息在页面里另有一份。',
+    ],
+    composition:
+      'RichPopover\n  Radix Popover.Root\n    Popover.Trigger（你的元素）\n    Popover.Content\n      标题 · 说明 · meta · Button\n      Popover.Arrow',
+    keys: [
+      ['Enter / Space', '在触发器上打开'],
+      ['Esc', '关闭'],
+    ],
+  },
+  {
+    id: 'animated-file-upload',
+    group: 'forms',
+    cardHeight: 210,
+    title: 'AnimatedFileUpload 文件上传区',
+    summary:
+      '拖文件进来时区块放大、图标上浮，放下后文件行错落滑入，删除时向右滑出、剩下的补位；整块是一个按钮，超限的文件过滤掉并提示。导入回测数据、策略文件用。',
+    exports: ['AnimatedFileUpload', 'formatBytes'],
+    propParts: [{ part: 'AnimatedFileUpload' }, { part: 'formatBytes', note: '字节数写成 B / KB / MB。' }],
+    states: [
+      '待机：虚线框与说明。',
+      '拖入：框放大、实线强调色、图标上浮、说明换成「松开」。',
+      '有文件：下面列出文件行，每行可移除。',
+      '超限：红字提示（role=alert），超限文件不进列表。',
+      '禁用：45% 不透明度，不响应拖放。',
+    ],
+    donts: [
+      '不要在这里做上传进度：它只收文件，上传由调用方做。',
+      '不要把 accept 当安全校验：它只是选择器的提示，要在服务端再验。',
+    ],
+    composition:
+      'AnimatedFileUpload\n  input[type=file]（隐藏）\n  div role=button（落点）\n  p role=alert（错误）\n  ul（文件行）',
+    keys: [['Enter / Space', '打开文件选择']],
+  },
+  {
+    id: 'expandable-cards',
+    group: 'layout',
+    cardHeight: 250,
+    title: 'ExpandableCards 展开卡片',
+    summary:
+      '横排卡片，点一张它横向撑开、露出右边的详情，其余保持窄卡，再点收回。并排比较几个版本或方案（策略 v1 到 v4）。',
+    exports: ['ExpandableCards'],
+    propParts: [{ part: 'ExpandableCards' }],
+    states: [
+      '全部收起：窄卡，只有标题与一行摘要。',
+      '展开一张：宽度弹开，详情带模糊淡入；点别的卡自动换开。',
+      '卡多了：横向滚动，点中的卡滚到中间。',
+    ],
+    donts: ['不要放超过一屏的详情：详情区自己滚，但长内容应另开页面。', '不要放必须同时看见的内容：同时只展开一张。'],
+    composition:
+      'ExpandableCards\n  div role=group\n    motion.div（一张卡）\n      h3 > button（标题，整张卡面可点）\n      face\n      detail（展开时）',
+    keys: [],
+  },
+  {
+    id: 'time-machine-stack',
+    group: 'layout',
+    cardHeight: 330,
+    title: 'TimeMachineStack 时间机器叠层',
+    summary:
+      '一摞面板按深度排开，只有最前一张可读；滚轮、拖动、方向键往后翻，前一张飞过观众、后一张补上。回看策略版本史：最前是当前版本，往后是更早的。',
+    exports: ['TimeMachineStack'],
+    propParts: [{ part: 'TimeMachineStack' }],
+    states: [
+      '静止：最前一张完整，后面的缩小、上移、往后推。',
+      '翻页：最前一张飞出，下一张升到最前；往回翻则从前面落下。',
+      '到头：滚轮交还给页面。',
+      '读屏：aria-live 播报位置。',
+    ],
+    donts: [
+      '不要放需要同时对比的东西：只有最前一张可读（要对比用 ExpandableCards）。',
+      '不要放超过几十项：每次只挂 visibleCount 张，但翻起来要很多下。',
+    ],
+    composition: 'TimeMachineStack\n  div role=listbox\n    motion.div role=option（一张面板）\n  div aria-live',
+    keys: [
+      ['↓ / ↑', '往后 / 往前翻一张'],
+      ['Home / End', '到最前 / 最后一张'],
+      ['滚轮 / 拖动', '翻页'],
+    ],
+  },
+  {
+    id: 'floating-navbar',
+    group: 'layout',
+    cardHeight: 230,
+    title: 'FloatingNavbar 悬浮导航条',
+    summary:
+      '一条胶囊浮在内容上，当前项的底块用弹簧滑到点中的项；往下滚时条淡出上移让路，往回滚立即出现，滚过 120px 后收紧。研究报告、长文档的页内跳转用。',
+    exports: ['FloatingNavbar'],
+    propParts: [{ part: 'FloatingNavbar' }],
+    states: [
+      '静止：胶囊在顶（或底）部居中。',
+      '往下滚：淡出上移，不接收指针。',
+      '往回滚：立即出现。',
+      '滚过 120px：内边距收紧。',
+    ],
+    donts: ['不要当整个应用的导航：那是 SideNav。', '不要在没有滚动的页面里设 hideOnScroll：它没有可隐藏的时机。'],
+    composition: 'FloatingNavbar\n  motion.nav\n    logo\n    ul > li > a / button（含滑动底块）\n    actions',
+    keys: [],
+  },
+  {
+    id: 'expandable-navbar',
+    group: 'layout',
+    cardHeight: 230,
+    title: 'ExpandableNavbar 可展开导航条',
+    summary:
+      '一排入口，悬停或点击一个，条的下沿长出一块面板把条撑高；在入口间移动时面板按方向横向交叉淡入，高度跟着内容变。',
+    exports: ['ExpandableNavbar'],
+    propParts: [{ part: 'ExpandableNavbar' }],
+    states: [
+      '关闭：一排入口。',
+      '打开：面板高度用弹簧撑开。',
+      '换入口：面板按方向横向交叉淡入，高度过渡到新内容。',
+      'Esc、点外面、焦点移出：收起；指针离开延迟 closeDelay 收起。',
+    ],
+    donts: ['不要在面板里放要填写的表单：指针离开会收起。', '入口多到一行放不下时不要用它。'],
+    composition:
+      'ExpandableNavbar\n  nav\n    ul > li > button（入口）\n    motion.div（高度）\n      role=region（面板）',
+    keys: [
+      ['Tab', '在入口间走'],
+      ['Enter / Space', '开合面板'],
+      ['Esc', '收起'],
+    ],
+  },
+  {
+    id: 'mac-terminal',
+    group: 'readouts',
+    cardHeight: 280,
+    title: 'MacTerminal 终端窗',
+    summary:
+      '一段「命令逐字敲入、输出逐行出现」的脚本回放，用来演示回测日志、部署输出、AI 的推理过程。是回放，不是真终端：没有输入。离开屏幕或标签页隐藏时暂停。',
+    exports: ['MacTerminal'],
+    propParts: [{ part: 'MacTerminal' }],
+    states: [
+      '播放：命令打字、输出按 delay 出现，光标闪烁，自动滚到底。',
+      'autoPlay 关：等点一下或按 Enter 开始。',
+      'loop：播完停 1.5 秒后重来。',
+      '成功、错误、注释行各用自己的 token 色。',
+    ],
+    donts: [
+      '不要拿它当日志查看器：真的日志用 CodeBlock 或表格，它只回放脚本。',
+      '不要把重要信息只放在逐字出现的行里：完整文本另有一份给读屏。',
+    ],
+    composition:
+      'MacTerminal\n  div role=group\n    顶栏（交通灯 · 标题）\n    pre aria-hidden（回放内容）\n    div sr-only（完整文本）',
+    keys: [],
+  },
+  {
+    id: 'folder-reveal',
+    group: 'motion',
+    cardHeight: 300,
+    title: 'FolderReveal 文件夹展开',
+    summary:
+      '一个合着的文件夹，悬停（或点击）时前盖翻开、里面几张卡扇形展开。装饰件：适用首页、营销页里「一组东西收在一起」的示意；不进交易主界面。',
+    exports: ['FolderReveal'],
+    propParts: [{ part: 'FolderReveal' }],
+    states: [
+      '合着：只露最上面一张卡的边。',
+      '悬停或聚焦：前盖翻开，卡依次扇出。',
+      'trigger=click：点开合；触屏一律点。',
+    ],
+    donts: ['不要放进交易主界面：它是插画式交互，不是数据容器。', '卡里不要放要点的东西：卡合着时 aria-hidden。'],
+    composition: 'FolderReveal\n  div（透视）\n    svg（后板）\n    div aria-hidden（卡）\n    button（前盖）',
+    keys: [],
+  },
+  {
+    id: 'glass-card',
+    group: 'motion',
+    cardHeight: 170,
+    title: 'GlassCard 玻璃卡',
+    summary:
+      '毛玻璃底、内沿高光、随指针的镜面高光，悬停轻轻抬起。装饰件：适用压在图片或渐变上的首页、营销页卡片；压在纯色底上没有意义，不进交易主界面。没有搬原件的 SVG 折射环。',
+    exports: ['GlassCard'],
+    propParts: [{ part: 'GlassCard' }],
+    states: [
+      '静止：毛玻璃与内沿高光。',
+      '悬停（精细指针）：抬起 3px，镜面高光跟着指针。',
+      '触屏：不抬起、没有镜面高光。',
+    ],
+    donts: ['不要放进交易主界面：背景模糊在大面积重绘时很贵。', '不要压在纯色底上：看不出玻璃。'],
+    composition: 'GlassCard\n  motion.div\n    span（色散边）\n    span（镜面高光）\n    div（内容）',
+    keys: [],
+  },
+  {
+    id: 'glow-hover-card',
+    group: 'motion',
+    cardHeight: 130,
+    title: 'GlowHoverCard 悬停辉光卡',
+    summary:
+      '指针在卡上移动时，一团强调色的光斑跟着它，边线在光斑处亮起来。装饰件：适用首页的功能入口卡；不进交易主界面。光斑不跨卡（与原件的差别）。',
+    exports: ['GlowHoverCard'],
+    propParts: [{ part: 'GlowHoverCard' }],
+    states: ['静止：没有光斑。', '悬停：光斑与边线亮起，渐入。', '离开：光斑渐出。'],
+    donts: ['不要放进交易主界面。', '不要把 color 写成会和涨跌色混淆的红绿。'],
+    composition: 'GlowHoverCard\n  div\n    span（光斑）\n    div（内容）',
+    keys: [],
+  },
+  {
+    id: 'gooey-popover',
+    group: 'motion',
+    cardHeight: 260,
+    title: 'GooeyPopover 软糖弹出层',
+    summary:
+      '圆钮点开，一块「液体」从圆钮里长出来变成内容面板，收起时缩回去；SVG goo 滤镜只画形状，文字在滤镜上层不糊。装饰件：适用首页、营销页的小彩蛋式入口；交易主界面的弹层用 Popover。',
+    exports: ['GooeyPopover'],
+    propParts: [{ part: 'GooeyPopover' }],
+    states: ['收起：一个圆钮。', '展开：形状从圆钮长到面板大小，内容在 57% 处淡入。', '点外面或按 Esc：缩回。'],
+    donts: ['不要放进交易主界面：圆钮到面板的形变没有语义。', '不要放要填的长表单：面板靠点外面收起。'],
+    composition:
+      'GooeyPopover\n  svg（goo 滤镜）\n  div（滤镜层）\n  button（圆钮）\n  motion.div（面板）\n  div（隐藏镜像，量高度）',
+    keys: [],
+  },
+  {
+    id: 'morph-surface',
+    group: 'motion',
+    cardHeight: 190,
+    title: 'MorphSurface 变形面',
+    summary:
+      '一颗小药丸点开后自己长成一张面板，宽、高、圆角一起弹簧过渡；点外面或按 Esc 收回。装饰件：适用首页浮在页面一角的「问 AI」入口；交易主界面提问走命令面板或 AI 输入件。',
+    exports: ['MorphSurface'],
+    propParts: [{ part: 'MorphSurface' }],
+    states: ['收起：药丸，圆角 20。', '展开：宽高圆角一起弹簧过渡到面板，内容淡入；收起时延迟 80ms 让内容先淡出。'],
+    donts: [
+      '不要放进交易主界面：面板盖在内容上，靠点外面收起，盯盘时容易误触。',
+      '原件写死的文案与输入框不在这里：外壳只管变形，内容由调用方传。',
+    ],
+    composition: 'MorphSurface\n  motion.div（变形的外壳）\n    button（药丸）\n    motion.div（面板内容）',
+    keys: [],
+  },
+  {
+    id: 'tilt-card',
+    group: 'motion',
+    cardHeight: 150,
+    title: 'TiltCard 倾斜卡',
+    summary:
+      '指针在卡上移动时，卡跟着转（最多 12 度），一道高光跟着走，可选让带 data-tilt-depth 的子元素按深度错位出视差。装饰件：适用首页、营销页的功能卡；行情与下单区要稳，不进交易主界面。',
+    exports: ['TiltCard'],
+    propParts: [{ part: 'TiltCard' }],
+    states: [
+      '静止：平放。',
+      '悬停（精细指针）：倾斜加放大，高光跟着指针。',
+      '键盘聚焦：固定的小倾斜。',
+      '触屏：不倾斜。',
+    ],
+    donts: ['不要放进交易主界面。', '不要在要读的长文字卡上用：转动时文字会糊。'],
+    composition: 'TiltCard\n  div（透视）\n    motion.div（倾斜）\n      内容\n      div（高光）',
+    keys: [],
+  },
+  {
+    id: 'animated-list',
+    group: 'feedback',
+    cardHeight: 420,
+    title: 'AnimatedList 信息流进场',
+    summary:
+      '新闻快讯、成交回报这类往上顶的信息流：新条目从上方弹性插入并带蓝线高亮，旧条目被挤着下移，超出 maxVisible 的从底部淡出。鼠标停在列表上时新条目先攒着、不往下挤，移开后一次进来，攒了几条可提示。递减（越旧越淡）默认关，信息流要让每一条都读得清。',
+    exports: ['AnimatedList'],
+    propParts: [
+      {
+        part: 'AnimatedList',
+        note: '条目按显示顺序从上到下给，id 稳定；列表自己比较前后两次的 id 决定谁进谁出。放进 NewsFeed 的列表前面做「新到」区，或给成交回报、炸板提醒这类短流用。',
+      },
+    ],
+    states: [
+      '新条目：从上方 14px 处缩放弹入（弹簧 0.25s），带 k-live-enter 的蓝线高亮；一次来几条依次落下。',
+      '被挤下移：layout 动画，位置平滑过渡。',
+      '悬停：新条目攒着，pendingLabel 给了就出「n 条新快讯」；移开后一起进来。',
+      '超出 maxVisible：最老的从底部淡出。',
+    ],
+    donts: [
+      '不要拿它画上千行的表格：每行是一个 layout 动画，行多了用 DataGrid 或 NewsFeed 的虚拟滚动。',
+      '不要在信息流上开 recede 再叠高亮：越旧越淡会让人漏读。',
+      'onItemClick 开着时每条要给 label。',
+    ],
+    composition:
+      'AnimatedList\n  div\n    span（pendingLabel，role=status）\n    ul（aria-live=polite）\n      motion.li（一条）',
+    keys: [
+      ['Tab', 'onItemClick 开着时在每条按钮间走'],
+      ['Enter / Space', '点中当前条'],
+    ],
+  },
+  {
+    id: 'infinite-slider',
+    group: 'quotes',
+    cardHeight: 300,
+    title: 'InfiniteSlider 行情跑马灯',
+    summary:
+      '无限滚动条，行情跑马灯（Ticker tape）的底座：内容复制一份首尾相接，匀速平移，没有接缝。速度按像素每秒，悬停可减速或停住，暂停与恢复都是平滑的变速，不跳。内容放 RollingText 价格与涨跌色，价格变了数字滚、整串闪一下。',
+    exports: ['InfiniteSlider'],
+    propParts: [
+      {
+        part: 'InfiniteSlider',
+        note: '只给一份内容，件自己复制第二份；第二份 aria-hidden，读屏只读一遍。paused 是受控的，接 LiveToggle 或页面可见性。',
+      },
+    ],
+    states: [
+      '滚动：按 speed 像素每秒匀速，reverse 反向，direction=vertical 竖向。',
+      '悬停：减速到 speedOnHover（0 就是停住），移开恢复，速度平滑趋近，不跳。',
+      'paused：减速到停，恢复时从原位继续。',
+    ],
+    donts: [
+      '不要在里面放要点击的小控件：它一直在动，目标不好点；要点的用 Watchlist 或 QuoteTable。',
+      '不要用它承载唯一的重要信息：读屏用户读到的是静态的一份。',
+      '速度别超过 100 像素每秒：读不清。',
+    ],
+    composition:
+      'InfiniteSlider\n  div（role=group）\n    motion.div（轨）\n      div（第一份）\n      div（第二份，aria-hidden）',
+    keys: [],
+  },
+  {
+    id: 'dynamic-island',
+    group: 'feedback',
+    cardHeight: 280,
+    title: 'DynamicIsland 通知岛',
+    summary:
+      '一个胶囊，内容换了它就弹着变成新内容的大小；旧内容模糊淡出、新内容从略小处模糊淡入。拿来放成交回报、炸板提醒、连接状态这类「一眼看到、过会儿退回」的通知。内容与切换时机都由调用方定，件只管那一下弹性变形。',
+    exports: ['DynamicIsland'],
+    propParts: [
+      {
+        part: 'DynamicIsland',
+        note: 'view 是当前内容的键，换了才触发过渡；内容变了读屏礼貌播报（role=status、aria-live=polite）。',
+      },
+    ],
+    states: [
+      '内容换了：胶囊弹簧变到新内容的大小（bounce 默认 0.4），内容模糊淡入。',
+      '同一 view 内内容变了：只改内容，不触发过渡。',
+    ],
+    donts: [
+      '不要同时放两座岛：一个窗口只有一个通知出口。',
+      '不要用它承载要处理的事（确认、拒绝）：它会被下一条通知顶掉，要处理的用 Toast 或 Dialog。',
+      '内容别比 360px 宽：胶囊拉太宽会盖住顶栏。',
+    ],
+    composition: 'DynamicIsland\n  div\n    motion.div（胶囊，role=status）\n      motion.div（内容，key=view）',
+    keys: [],
+  },
+  {
+    id: 'pinned-list',
+    group: 'quotes',
+    cardHeight: 520,
+    title: 'PinnedList 置顶列表',
+    summary:
+      '可置顶的列表（自选股、常用面板）：点一行把它钉到最上面，钉住的行落下时轻压一下，下面的行依次补位；左侧长出强调条，图钉转 45 度。置顶数有上限，满了其余行变灰不可点。键盘：方向键走、Home / End 到头尾、Enter / 空格 / P 切换。',
+    exports: ['PinnedList'],
+    propParts: [
+      {
+        part: 'PinnedList',
+        note: 'pinnedIds 受控；不传就用 items 里的 pinned 起头自己记。labels 四项必填（读屏名与空态）。renderItem 自画行内容，图钉与强调条仍是件画的。',
+      },
+    ],
+    states: [
+      '未钉住：透明底、线框，右侧灰图钉。',
+      '钉住：抬起（bg-300）、左侧强调条、图钉转 45 度填满；落下时压一下。',
+      '满额：其余行半透明、不可点，读屏为 aria-disabled。',
+      '没有钉住的：钉区显示 emptyPinned 虚线框。',
+    ],
+    donts: [
+      '不要用来做多选：置顶是排序，不是选择；多选用 MultiSelect 或 ChipGroup。',
+      '不要放几百行：每行是 layout 动画；长列表用 DataGrid。',
+    ],
+    composition:
+      'PinnedList\n  div\n    ul\n      motion.li（空态）\n      motion.li\n        motion.div（role=button）\n      li（分隔线）',
+    keys: [
+      ['↑ ↓ ← →', '在行间走（漫游 tabindex）'],
+      ['Home / End', '到第一行 / 最后一行'],
+      ['Enter / Space / P', '置顶或取消'],
+    ],
+  },
+  {
+    id: 'animated-avatar-group',
+    group: 'quotes',
+    cardHeight: 150,
+    title: 'AnimatedAvatarGroup 品种徽标堆',
+    summary:
+      '重叠的 SymbolMark 堆：ETF 前几大持仓、板块成分、相关品种一行放得下；悬停时拉开、略放大，超出的折成「+n」。外圈用底色描边把相邻两枚隔开。只有有鼠标的设备才展开。与 Avatar / AvatarGroup 的分工：那是人的头像，这是品种徽标。',
+    exports: ['AnimatedAvatarGroup'],
+    propParts: [{ part: 'AnimatedAvatarGroup', note: '每枚的 name 是读屏名与悬停提示；label 是整组的读屏名。' }],
+    states: [
+      '收拢：按 overlap 比例重叠，层级前高后低。',
+      '悬停（有鼠标）：拉开 4px 间隔、放大 1.05，依次错开 30ms。',
+      '超出 maxVisible：末尾一个「+n」圆。',
+    ],
+    donts: [
+      '不要用它放要点击的品种：徽标是装饰性的堆，要点的用 Watchlist。',
+      '不要超过 6 枚可见：再多就读不出谁是谁。',
+    ],
+    composition: 'AnimatedAvatarGroup\n  div（role=group）\n    motion.span\n      SymbolMark\n    motion.span（+n）',
+    keys: [],
+  },
+  {
+    id: 'hover-expand',
+    group: 'layout',
+    cardHeight: 230,
+    title: 'HoverExpand 悬停展开面板',
+    summary:
+      '并排的一组面板，鼠标移到哪块哪块撑开（flex-grow 弹簧 4 比 1），其余收窄、标题竖排；键盘聚焦与方向键同样展开。拿来放板块概览、策略卡、情景对比这类「同时只看一块细节」的并列项。触屏没有悬停，点击展开。',
+    exports: ['HoverExpand'],
+    propParts: [
+      { part: 'HoverExpand', note: 'activeIndex 受控；面板是 aria-pressed 的按钮，children 只在展开时渲染。' },
+    ],
+    states: ['展开：flex-grow 4，显示 children。', '收起：flex-grow 1，只剩竖排标题。', '聚焦：同悬停，立即展开。'],
+    donts: [
+      '展开区不要放可点击的控件：悬停到别的面板它就收起了；要交互的内容用 Tabs。',
+      '不要超过 5 个面板：收起后标题挤不下。',
+    ],
+    composition: 'HoverExpand\n  div（role=group）\n    motion.button\n      motion.div（标题与内容）',
+    keys: [
+      ['← → / ↑ ↓', '横排 / 竖排时切到相邻面板'],
+      ['Tab', '聚焦即展开'],
+    ],
+  },
+  {
+    id: 'dither-chart',
+    group: 'readouts',
+    cardHeight: 520,
+    title: 'DitherChart 抖动点阵图',
+    summary:
+      '整张图都由方点拼出来的小图：先在低分辨率画布上画线、柱、堆叠、环、仪表、漏斗或热力，再按 Bayer 矩阵把透明度量化成有点没点，放大成像素风。与 DotMatrix 的分工：DotMatrix 是 SVG 里的固定点阵纹理，DitherChart 是整图。装饰性的概览，不可取值，读准数用 Sparkline 与 EquityCurve。',
+    exports: ['DitherChart', 'DITHER_CHART_VARIANTS'],
+    propParts: [
+      {
+        part: 'DitherChart',
+        note: '画布图：读屏靠 description（必填）；颜色是 CSS 颜色，画前解析成实色，所以 token 也能用。',
+      },
+      { part: 'DITHER_CHART_VARIANTS', note: '常量：七种款式的名字。' },
+    ],
+    states: [
+      '进入视口：900ms 缓出画入（animate 为 false 直接画满）。',
+      '每个序列按 TONE_RAMP 取不同点阵密度，靠密度而不是只靠色相区分。',
+      'matrix 2、4、8：越大渐变越细。',
+    ],
+    donts: ['不要拿它读精确数值：没有悬停与坐标。', '不要放进要截图比对的页：画入动画与点阵都依赖设备像素比。'],
+    composition: 'DitherChart\n  figure\n    canvas（aria-hidden）\n    span.sr-only（description）',
+    keys: [],
+  },
+  {
+    id: 'count-badge',
+    group: 'readouts',
+    cardHeight: 300,
+    title: 'CountBadge 角标',
+    summary:
+      '贴在任何元素角上的角标：点、数字、状态点三种；数字变了按增减方向上下滚，0 时淡出，超过上限写「99+」；可选向外扩散的一圈。与 NotificationBell 的分工：铃是「铃 + 未读数」一个整件，CountBadge 是通用的、贴在头像、标签页、图标按钮上的那一颗。',
+    exports: ['CountBadge'],
+    propParts: [
+      { part: 'CountBadge', note: 'label 必填且要带数字（「3 条未读」），变了会播报；不给 children 就只画角标。' },
+    ],
+    states: [
+      'count：数字，0 时淡出（showZero 保留）；增减时数字上下滚。',
+      'dot：纯点，ping 时外扩一圈。',
+      'status：online 绿、away 琥珀、busy 红、offline 灰，带底色描边。',
+    ],
+    donts: ['不要只用颜色传状态：label 里写出状态词。', '不要在同一个元素上叠两颗角标。'],
+    composition:
+      'CountBadge\n  span\n    children\n    motion.span（role=status）\n      span（数字）\n      span（ping）',
+    keys: [],
+  },
+  {
+    id: 'switchboard-card',
+    group: 'readouts',
+    cardHeight: 620,
+    title: 'SwitchboardCard 灯板卡片',
+    summary:
+      '一块小灯阵加标题与说明：灯按 lit 矩阵常亮，或按种子随机明灭（灭、中、亮三档，像交换机面板）。拿来做「市场活跃度」「在线品种」这类带装饰意味的总览卡。随机用带种子的线性同余，同一个种子同一串，可暂停。',
+    exports: ['SwitchboardCard', 'litIndexes'],
+    propParts: [
+      { part: 'SwitchboardCard', note: '给 onClick 整卡就是按钮（读屏名是 title）；不给就是静态卡。' },
+      { part: 'litIndexes', note: '纯函数 (lit, columns, rows)：把一维或二维的 0/1 图案转成亮灯的序号。' },
+    ],
+    states: [
+      'lit 给定：图案常亮。',
+      'random：每 200ms 让约 20% 的灯推进一档（灭、中、亮）。',
+      'paused：随机的灯停在当下。',
+    ],
+    donts: ['不要拿灯阵读数：灯没有刻度，数要写在标题或说明里。', '同一页别放超过两块随机的：同时闪会分散注意。'],
+    composition:
+      'SwitchboardCard\n  button（有 onClick 时）\n    div\n      div（灯阵）\n        span（一盏灯）\n      h3\n      p',
+    keys: [['Enter / Space', '有 onClick 时点中整卡']],
+  },
+  {
+    id: 'animated-tags',
+    group: 'forms',
+    cardHeight: 320,
+    title: 'AnimatedTags 标签挑选',
+    summary:
+      '上面是「已选」，下面是「可选」，点一个标签它就飞到另一边（布局动画加模糊淡出淡入）。拿来选关注板块、策略标签、自选分组。与 ChipGroup 的分工：ChipGroup 是原地开关的筛选芯片，选中不换位置；AnimatedTags 把选中的拎出来单独放，适合要看清「我选了哪几个」。',
+    exports: ['AnimatedTags'],
+    propParts: [
+      { part: 'AnimatedTags', note: 'selected 受控；labels 五项必填（两个区的小标题、空态、移除与添加的读屏名）。' },
+    ],
+    states: ['已选区：标签带 ×，点一下移走；空时显示 empty。', '可选区：标签带 +，点一下加入。'],
+    donts: [
+      '不要超过 20 个标签：两个区都会换行成一堆；多的用 MultiSelect 带搜索。',
+      '不要拿它做互斥选择：互斥用 ToggleGroup 或 RadioGroup。',
+    ],
+    composition: 'AnimatedTags\n  div\n    div（已选）\n      motion.button\n    div（可选）\n      motion.button',
+    keys: [
+      ['Tab', '在标签间走'],
+      ['Enter / Space', '加入或移除'],
+    ],
+  },
+  {
+    id: 'exposure-slider',
+    group: 'forms',
+    cardHeight: 300,
+    title: 'ExposureSlider 双向刻度尺',
+    summary:
+      '刻度尺式的双向调节：中间一根定位线，左右拖动刻度尺，对准的刻度亮起，上方的环形读数左半圆表示负、右半圆表示正。拿来调净敞口、仓位偏移、杠杆这类中点是 0 的量；松手吸附到刻度。tone=pnl 时正负按涨跌色着色。',
+    exports: ['ExposureSlider'],
+    propParts: [
+      {
+        part: 'ExposureSlider',
+        note: 'role=slider：aria-valuenow 是当前值，aria-valuetext 是 format 的结果。受控 value 与 onValueChange。',
+      },
+    ],
+    states: [
+      '拖动：刻度尺跟手，弹簧平滑，松手吸附。',
+      '键盘：← → 一格，PageUp / PageDown 十格，Home / End 到两端。',
+      '值为 0：环不画弧，数字用中性色。',
+    ],
+    donts: ['不要用来输入精确数字：刻度尺适合粗调，精确值用 NumberInput。', '不要用于只有正数的量：用 Slider。'],
+    composition: 'ExposureSlider\n  div\n    div（环形读数）\n    div（role=slider）\n      motion.ul\n        Notch',
+    keys: [
+      ['← → / ↑ ↓', '一格'],
+      ['PageUp / PageDown', '十格'],
+      ['Home / End', '到最小 / 最大'],
+    ],
+  },
+  {
+    id: 'scrubber',
+    group: 'forms',
+    cardHeight: 380,
+    title: 'Scrubber 擦洗条',
+    summary:
+      '一条带填充的擦洗控件：左边写名字，右边写读数，在条上按下并拖动就把值擦到那里，松手停住，值按步长吸附。拿来擦回测的回看时间点、拖下单数量、调价格偏移。把手平时小而淡，悬停、聚焦与拖动时变实。',
+    exports: ['Scrubber', 'scrubSnap', 'scrubValueAt'],
+    propParts: [
+      {
+        part: 'Scrubber',
+        note: 'role=slider：名字取 label，aria-valuetext 是 format 的结果。受控 value 与 onValueChange；不给 value 就自己持有。',
+      },
+      { part: 'scrubSnap', note: '纯函数 (value, min, max, step)：夹进范围并吸附到步长。' },
+      { part: 'scrubValueAt', note: '纯函数 (x, width, min, max, step)：条上的横坐标换成值；宽为 0 返回 null。' },
+    ],
+    states: [
+      '静止：把手小而淡，填充到当前值。',
+      '悬停或聚焦：把手变实放大。',
+      '拖动：填充与把手跟手，没有过渡；松手停在吸附后的值。',
+      '到两端：值夹在最小或最大，不越界。',
+    ],
+    donts: [
+      '不要用来填表单里的必填数值：表单里的单值与区间用 Slider，精确数字用 NumberInput。',
+      '不要不写读数格式：调用方用 format 给单位或日期，条里只有一个读数。',
+    ],
+    composition: 'Scrubber\n  div（role=slider）\n    填充 · 刻度点 · 把手\n    名字 · 读数',
+    keys: [
+      ['← → / ↑ ↓', '走一步'],
+      ['Shift + 方向键 / PageUp / PageDown', '走十步'],
+      ['Home / End', '到最小 / 最大'],
+    ],
+  },
+  {
+    id: 'power-off-slide',
+    group: 'forms',
+    cardHeight: 220,
+    title: 'PowerOffSlide 滑动确认',
+    summary:
+      '把圆钮从左拖到头才算数，拖不到头松手就弹回。拿来做「全部平仓」「清仓」「关闭策略」这类不可轻易误触的操作。轨上的字有一道光扫过，圆钮拖远了字渐渐淡掉；确认后轨换成「执行中」文字，到点圆钮回位。键盘与读屏另有路：圆钮聚焦后按 Enter 或空格直接确认。',
+    exports: ['PowerOffSlide'],
+    propParts: [
+      { part: 'PowerOffSlide', note: 'label、busyLabel 与 icon 必填；onConfirm 只在拖到头或键盘确认时调一次。' },
+    ],
+    states: [
+      '待机：圆钮在左端，轨上字闪光。',
+      '拖动：圆钮跟手，超过 160px 松手算确认。',
+      '执行中：轨换成 busyLabel（role=status），duration 后回位。',
+      '禁用：圆钮半透明不可拖。',
+    ],
+    donts: [
+      '不要用来确认可撤销的小事：普通确认用 Dialog 或 Button。',
+      '不要把它当唯一的确认入口：键盘与读屏靠 Enter，要在文档里写出来。',
+    ],
+    composition:
+      'PowerOffSlide\n  div\n    div（轨）\n      motion.div（字）\n      motion.div（role=button，圆钮）\n    p（执行中）',
+    keys: [['Enter / Space', '圆钮聚焦时直接确认']],
+  },
+  {
+    id: 'animated-stepper',
+    group: 'layout',
+    cardHeight: 520,
+    title: 'AnimatedStepper 步骤条',
+    summary:
+      '步骤条：下单向导（选品种、填参数、确认）这类多步流程。当前步的圆点外扩一圈光环，完成的步打钩（笔画画出来），步与步之间的线随进度填满，下方内容按前进或后退方向滑入。横排与竖排两种。与 StepPlayer 的分工：StepPlayer 是回放控制，这个是用户自己填的流程进度。',
+    exports: ['AnimatedStepper'],
+    propParts: [
+      {
+        part: 'AnimatedStepper',
+        note: 'currentStep 受控；allowClickNavigation 关着时步骤只能从外面改，圆点是禁用的。',
+      },
+    ],
+    states: [
+      '未到：灰线圆点显示序号。',
+      '当前：强调色实心，外扩一圈光环。',
+      '完成：打钩，线填满。',
+      'allowClickNavigation：点或方向键走任意步。',
+    ],
+    donts: ['不要超过 6 步：横排标题挤不下。', '步骤互相独立可任意顺序时用 Tabs。'],
+    composition:
+      'AnimatedStepper\n  div\n    div（role=tablist）\n      motion.button（role=tab）\n    div（role=tabpanel）\n      motion.div（内容）',
+    keys: [
+      ['← → / ↑ ↓', '允许点击导航时在步骤间走'],
+      ['Tab', '焦点只停在当前步'],
+    ],
+  },
+  {
+    id: 'squircle',
+    group: 'layout',
+    cardHeight: 220,
+    title: 'Squircle 平滑圆角',
+    summary:
+      '把元素用 clip-path 裁成曲率连续的圆角矩形（苹果图标那种角）：比 border-radius 的圆弧过渡柔和。smoothing 为 0 就是普通圆角，1 把曲线推到很深。边框改成沿同一条曲线画的 SVG 描边（CSS 边框会被裁断）。本系统的面板默认直角，这件只给头像、徽标、图标底这类单个小方块用。',
+    exports: ['Squircle', 'squirclePath'],
+    propParts: [
+      { part: 'Squircle', note: '裁切会连阴影与焦点环一起裁掉：不要给它放要伸出去的东西。' },
+      { part: 'squirclePath', note: '纯函数 (宽, 高, 半径, 平滑度)：返回 clip-path: path() 用的 SVG 路径。' },
+    ],
+    states: [
+      'smoothing 0：与 border-radius 一样。',
+      'smoothing 0.6（默认）：柔和的连续曲率。',
+      'border：沿曲线的 1px 描边。',
+    ],
+    donts: [
+      '不要用在要带焦点环的可聚焦元素上：焦点环会被裁掉。',
+      '不要在一个面板里混用 Squircle 与直角：整块面板统一。',
+    ],
+    composition: 'Squircle\n  div（clip-path）\n    children\n    svg（描边，border 时）',
+    keys: [],
+  },
+  {
+    id: 'grid-loader',
+    group: 'feedback',
+    cardHeight: 360,
+    title: 'GridLoader 点阵加载',
+    summary:
+      '3×3 像素点阵的转圈：几何小方块按图案亮起、呼吸（pulse）、依次点亮（stagger）或整图案轮换（sequence），带一点辉光。与 Loading 的分工：Loading 是「等数据时先出骨架」的整块门，GridLoader 是小的、不定长等待指示（按钮里、面板角上、AI 在想）。图案有 15 个常用的，也可传自己的 3×3 矩阵。',
+    exports: ['GridLoader', 'GRID_LOADER_PATTERNS'],
+    propParts: [
+      { part: 'GridLoader', note: 'role=status，label 必填。颜色是任意 CSS 颜色，默认当前文字色。' },
+      { part: 'GRID_LOADER_PATTERNS', note: '常量：15 个预置图案（3×3 的 0/1 矩阵）。' },
+    ],
+    states: [
+      'pulse：亮的格 0.4 到 1 之间呼吸。',
+      'stagger：亮的格按顺序一个一个点亮再灭。',
+      'sequence：每个周期换下一个图案。',
+      'still：只画图案，不动。',
+    ],
+    donts: ['不要用来表示有进度的等待：有进度用 Progress。', '不要在一屏里放超过三个：同时闪烁抢注意。'],
+    composition: 'GridLoader\n  span（role=status）\n    motion.span（一格）',
+    keys: [],
+  },
+  {
+    id: 'motion-loader',
+    group: 'feedback',
+    cardHeight: 360,
+    title: 'MotionLoader 圆形加载',
+    summary:
+      '一组连续运动的小加载指示：轨道、彗星、雷达、波形条、点环、呼吸光、方块蛇、变形环；都从 size 一个数缩放，颜色跟文字色。波形条与行情的条形很搭，点环适合行内。与 GridLoader 的分工：GridLoader 是像素点阵，MotionLoader 是连续运动的圆形。',
+    exports: ['MotionLoader', 'MOTION_LOADER_VARIANTS'],
+    propParts: [
+      { part: 'MotionLoader', note: 'role=status，label 必填；speed 是倍率。' },
+      { part: 'MOTION_LOADER_VARIANTS', note: '常量：八个款式的名字。' },
+    ],
+    states: ['八个款式各自循环；size 缩放到 16px 也能读出。', 'speed 2 为两倍速。'],
+    donts: ['不要拿它当进度条：它不表示进度。', '不要给它加文字说明靠颜色：说明写在 label 里。'],
+    composition: 'MotionLoader\n  span（role=status）\n    （款式的运动层）',
+    keys: [],
+  },
+  {
+    id: 'page-preloader',
+    group: 'feedback',
+    cardHeight: 340,
+    title: 'PagePreloader 进场遮罩',
+    summary:
+      '面板或整页的进场遮罩：先盖住内容停一会儿，数据就绪后用幕布、阶梯、像素、文字四种方式之一揭开。用在切换工作区、冷启动首屏。默认只盖住父级，整页遮罩要显式 fullScreen。与 Loading 的分工：Loading 管等数据时的骨架与超时，PagePreloader 只管「揭开」这一下，两者可叠着用。',
+    exports: ['PagePreloader', 'PAGE_PRELOADER_VARIANTS', 'preloaderExitMs'],
+    propParts: [
+      {
+        part: 'PagePreloader',
+        note: 'active 受控：设为 false 播揭开；不传就停 duration 毫秒后自己揭开。揭开完成后卸载并调 onComplete。',
+      },
+      { part: 'PAGE_PRELOADER_VARIANTS', note: '常量：四个款式的名字。' },
+      { part: 'preloaderExitMs', note: '纯函数 (款式, 列数)：揭开这一下要多少毫秒。' },
+    ],
+    states: [
+      'hold：遮罩盖住，文字款循环换词。',
+      'exiting：按款式揭开（幕布向两侧、阶梯逐列下沉、像素乱序消失、文字上滑）。',
+      'idle：卸载，什么也不画。',
+    ],
+    donts: [
+      '不要用来掩盖慢：停留时间超过 1.5 秒就该显示真实的加载状态。',
+      '不要每次切页都用：只在工作区或整页冷启动时用一次。',
+    ],
+    composition: 'PagePreloader\n  div（role=status）\n    （款式层：幕布 / 阶梯 / 像素 / 文字）',
+    keys: [],
+  },
+  {
+    id: 'scroll-progress',
+    group: 'feedback',
+    cardHeight: 380,
+    title: 'ScrollProgress 滚动进度',
+    summary:
+      '读长文（研报、新闻正文、策略报告）时指示读到哪了：条、环、数字、分段四种；值经弹簧平滑，不跟着滚轮的颗粒抖。自己读滚动位置（窗口，或 container 指定的滚动容器），不用传值。与 Progress 的分工：Progress 是受控的任务进度，这个读滚动。',
+    exports: ['ScrollProgress'],
+    propParts: [
+      {
+        part: 'ScrollProgress',
+        note: 'role=progressbar，aria-valuenow 是百分比；label 必填。position=top 或 bottom 时是 sticky，钉在滚动容器的边上。',
+      },
+    ],
+    states: [
+      'bar：顶边一条，前端带亮头。',
+      'ring：圆环，showValue 时中间写百分比。',
+      'number：只有大数字。',
+      'segments：一排胶囊依次填满。',
+    ],
+    donts: ['不要用它表示任务进度：那是 Progress 的事。', '不要在内容短到不滚动的页面放：它永远是 0。'],
+    composition: 'ScrollProgress\n  div（role=progressbar）\n    motion.div / svg / span / 胶囊',
+    keys: [],
+  },
+  // —— 动效：过场、背景、特效、媒体（改自 SmoothUI，MIT）——
+  {
+    id: 'shader-reveal',
+    group: 'motion',
+    cardHeight: 256,
+    title: 'ShaderReveal 着色器过场',
+    summary:
+      '视图切换时，一层 WebGL 着色器的光带扫过，遮住的那一刻换内容，播完淡去；八种变体（noise、zoom、circle、wipe、luma、planetary、stripes、push）共用一个件。适用持仓、订单、成交这类整块视图的切换；表格里的行刷新不要用。颜色取主题 token，WebGL 不可用或标签页隐藏时退回普通淡入淡出。',
+    exports: ['ShaderReveal'],
+    propParts: [{ part: 'ShaderReveal' }],
+    states: [
+      '静止：画布全透明，不画、不占动画帧。',
+      '播放：transitionKey 一变就播，过半换内容，约 1 秒；播放中 data-transitioning=true。',
+      '被打断：新的 transitionKey 来了就取消上一次，从头再播。',
+      'WebGL 不可用：旧内容淡出、换内容、新内容淡入，总时长不变。',
+    ],
+    donts: [
+      '不要用在表格行或价格的刷新上：那是 LiveFlash 与 ReadoutFlash 的事。',
+      '不要在内容要读时反复触发：一次过场约 1 秒，用户切得比它快就取消上一次。',
+      '不要在动画期间依赖旧内容：换内容发生在过半时刻，之前读到的还是旧的。',
+    ],
+    composition: 'ShaderReveal\n  div（内容层，换内容时淡出淡入的是它）\n  canvas（aria-hidden，WebGL 光带）',
+    keys: [],
+  },
+  {
+    id: 'sdf-blob-transition',
+    group: 'motion',
+    cardHeight: 212,
+    title: 'SdfBlobTransition 融球过场',
+    summary:
+      '圆、扭环、两球相融、放射圆簇与全部叠加五种距离场形状，从中间长大，遮住的那一刻换内容。和 ShaderReveal 共用同一个 WebGL 引擎，形状更柔，适合首页与引导页的切换；盘中视图用更克制的 ShaderReveal 的 wipe。',
+    exports: ['SdfBlobTransition'],
+    propParts: [{ part: 'SdfBlobTransition' }],
+    states: ['静止：不画。', '播放：约 1.1 秒，过半换内容。', 'WebGL 不可用：普通淡入淡出。'],
+    donts: ['不要用在高频切换的视图上。', '不要拿它盖住需要立刻读的数据。'],
+    composition: 'SdfBlobTransition\n  div（内容层）\n  canvas（aria-hidden，WebGL）',
+    keys: [],
+  },
+  {
+    id: 'aperture-blur-transition',
+    group: 'motion',
+    cardHeight: 210,
+    title: 'ApertureBlurTransition 光圈过场',
+    summary:
+      '一圈光从中心像光圈一样扩开，带细微的边缘起伏与颗粒，约 0.76 秒，是几个着色器过场里最短的。适合对话框式的内容整体换一页；颜色取主题 token。',
+    exports: ['ApertureBlurTransition'],
+    propParts: [{ part: 'ApertureBlurTransition' }],
+    states: ['静止：不画。', '播放：约 0.76 秒，进度到 0.48 换内容。', 'WebGL 不可用：普通淡入淡出。'],
+    donts: ['不要用在盘中行情区。', '不要同时放几个：每个过场件占一个 WebGL 上下文，浏览器对上下文数有上限。'],
+    composition: 'ApertureBlurTransition\n  div（内容层）\n  canvas（aria-hidden，WebGL）',
+    keys: [],
+  },
+  {
+    id: 'chroma-blur-transition',
+    group: 'motion',
+    cardHeight: 210,
+    title: 'ChromaBlurTransition 色散过场',
+    summary:
+      '一道带色散的柔光帘子斜着扫过整块内容，约 1 秒；比光圈更柔、更慢。适合整页或整块视图的切换；颜色取主题 token。',
+    exports: ['ChromaBlurTransition'],
+    propParts: [{ part: 'ChromaBlurTransition' }],
+    states: ['静止：不画。', '播放：约 1.04 秒，过半换内容。', 'WebGL 不可用：普通淡入淡出。'],
+    donts: ['不要用在盘中行情区。', '不要同时放几个：每个过场件占一个 WebGL 上下文。'],
+    composition: 'ChromaBlurTransition\n  div（内容层）\n  canvas（aria-hidden，WebGL）',
+    keys: [],
+  },
+  {
+    id: 'aurora-curtain',
+    group: 'motion',
+    cardHeight: 260,
+    title: 'AuroraCurtain 极光背景',
+    summary:
+      'WebGL2 着色器在内容后面画几条缓缓飘动的光带，可调条数、柔度、亮度、方向与胶片颗粒。适用工作台的空状态、登录页、加载页的底；只当底，不承载数据，内容在它上面。屏外与标签页隐藏时停，WebGL2 不可用时退回 CSS 渐变。',
+    exports: ['AuroraCurtain'],
+    propParts: [{ part: 'AuroraCurtain' }],
+    states: [
+      '运行：屏内且标签页可见时每帧画；DPR 封顶 2。',
+      '暂停（paused）或屏外：停在当前帧。',
+      'WebGL2 不可用：CSS 径向渐变，不动。',
+    ],
+    donts: [
+      '不要在它上面放要读的小字而不加底色：光带亮处对比不够。',
+      '不要拿它承载数据或状态：颜色只是氛围，状态用 Led、Badge。',
+      '不要在一屏里放很多个：每个占一个 WebGL 上下文。',
+    ],
+    composition: 'AuroraCurtain\n  div（aria-hidden）\n    canvas\n  div（children）',
+    keys: [],
+  },
+  {
+    id: 'gravity-stars',
+    group: 'motion',
+    cardHeight: 300,
+    title: 'GravityStars 引力星空',
+    summary:
+      'canvas 上的一片星点，缓缓漂移、明暗闪烁，指针像一口引力井，星点被吸过去再带着动量甩出，近处的星更大更快；可连线成星座。适用文档站首页、未连接的占位页；只当底。屏外与标签页隐藏时停。',
+    exports: ['GravityStars'],
+    propParts: [{ part: 'GravityStars' }],
+    states: [
+      '运行：每帧步进并重画；窄屏自动减星。',
+      '指针在画面里：星点被吸引；离开：回到漂移。',
+      '暂停或屏外：停在当前帧。',
+      'canvas 不可用：CSS 点阵。',
+    ],
+    donts: ['不要放进行情区：连线会被读成关联关系。', '不要把 count 开到几百再放多个：每帧都要重算星点与连线。'],
+    composition: 'GravityStars\n  div（aria-hidden）\n    canvas\n  div（children）',
+    keys: [],
+  },
+  {
+    id: 'liquid-metal',
+    group: 'motion',
+    cardHeight: 262,
+    title: 'LiquidMetal 液态金属',
+    summary:
+      'WebGL2 着色器画一块流动的金属面（铬、金、水银、油膜四种），指针推动流场；maskText 时把材质裁进字形。金属的明、暗、色调三色由 token 混出，跟主题走。适用会员、高级功能的徽标与标题；不进行情与下单区。',
+    exports: ['LiquidMetal'],
+    propParts: [{ part: 'LiquidMetal' }],
+    states: [
+      '面：WebGL2 着色器，屏外停。',
+      'maskText：CSS 渐变裁进字形，横向缓扫。',
+      'WebGL2 不可用：CSS 圆锥渐变，不动。',
+    ],
+    donts: [
+      '不要拿 maskText 的字当唯一的信息：字形里是渐变，浅色主题下对比不稳。',
+      '不要在行情区用：金属反光会抢走涨跌色的注意力。',
+    ],
+    composition: 'LiquidMetal\n  div（aria-hidden）\n    canvas\n  div（children）',
+    keys: [],
+  },
+  {
+    id: 'orb',
+    group: 'motion',
+    cardHeight: 280,
+    title: 'Orb 着色球',
+    summary:
+      'WebGL2 画的一颗带光照的球，内部是 OkLab 混色的缓慢流动，循环首尾无缝；高光、边缘亮、内部散射、虹彩都可调。适合 AI 思考中、连接中的占位；要表达听与想的状态用 MatrixOrb。读屏看不到它：状态要用文字另外说。',
+    exports: ['Orb'],
+    propParts: [{ part: 'Orb' }],
+    states: ['运行：约 60 帧封顶，离开屏幕就停。', '暂停（paused）：停在当前帧。', 'WebGL2 不可用：一块径向渐变的圆。'],
+    donts: ['不要拿它表达数据：颜色只是氛围。', '不要不配文字：画布是 aria-hidden，状态要用文字说。'],
+    composition: 'Orb\n  canvas（aria-hidden）',
+    keys: [],
+  },
+  {
+    id: 'pixel-flow-field',
+    group: 'motion',
+    cardHeight: 280,
+    title: 'PixelFlowField 像素流场',
+    summary:
+      'canvas 上一片方、圆或十字的像素格随流场漂，格子取样一个词或一张图：被覆盖的格子亮、强调色、墨色三档，指针划过会推开格子，scatter 加一就把字炸开再聚拢。适用连接中、加载中的占位页；只当底。字在画布里，要读的内容另外放文字。',
+    exports: ['PixelFlowField'],
+    propParts: [{ part: 'PixelFlowField' }],
+    states: [
+      '运行：屏内且标签页可见时每帧画；格数封顶 1.4 万。',
+      'scatter 变化：格子重新随机散开再聚回。',
+      '暂停或屏外：停在当前帧。',
+      'canvas 不可用：CSS 点阵。',
+    ],
+    donts: [
+      '不要用它显示要读的字：画布里的字不能被读屏读到、也不能复制。',
+      'src 的图要允许跨域读取，读不了就退回 text。',
+    ],
+    composition: 'PixelFlowField\n  div（aria-hidden）\n    canvas\n  div（children）',
+    keys: [],
+  },
+  {
+    id: 'border-beam',
+    group: 'motion',
+    cardHeight: 142,
+    title: 'BorderBeam 边框光束',
+    summary:
+      '沿元素边框跑一圈带拖尾的彗星光，SVG 描边实现；可多束、反向、悬停暂停、屏外暂停，圆角可用像素或连续圆角。适用「等你处理」的卡片：AI 建议待审批、风控告警未确认；处理完关掉（active=false）。',
+    exports: ['BorderBeam'],
+    propParts: [{ part: 'BorderBeam' }],
+    states: [
+      '运行：一圈约 6 秒，beams 束均匀错开。',
+      'active=false：光束隐去，只剩一圈细边。',
+      '悬停（pauseOnHover）：精细指针下暂停。',
+    ],
+    donts: [
+      '不要同时让几张卡都在跑：谁都在喊就没有谁在被看见。',
+      '不要用它代替状态文字：它只提示「有待办」，内容要自己写清。',
+    ],
+    composition: 'BorderBeam\n  svg（aria-hidden，描边与彗星）\n  children',
+    keys: [],
+  },
+  {
+    id: 'cursor-image-trail',
+    group: 'motion',
+    cardHeight: 245,
+    title: 'CursorImageTrail 光标图迹',
+    summary:
+      '指针在区域里移动，每隔一段距离在光标处放一张图，带随机倾斜，弹出、停留、淡出；移动越快，图越大停得越久。只在有精确指针的设备上启用。适用首页、作品集式的页面；不进盯盘界面。',
+    exports: ['CursorImageTrail'],
+    propParts: [{ part: 'CursorImageTrail' }],
+    states: [
+      '指针在区域里：按 distance 放图，循环用 poolSize 张图。',
+      '指针离开且图都播完：停掉动画帧。',
+      '触屏或无精确指针：不启用，只渲染 children。',
+    ],
+    donts: [
+      '不要放进有操作的区域：图在内容上，会让人以为能点。',
+      '每张图都要写 alt（读屏会跳过这层，但是不写会让 lint 报错）。',
+    ],
+    composition: 'CursorImageTrail\n  children\n  div（aria-hidden）\n    img × poolSize',
+    keys: [],
+  },
+  {
+    id: 'drawing-cursor',
+    group: 'motion',
+    cardHeight: 262,
+    title: 'DrawingCursor 光标手绘',
+    summary:
+      '指针划过留下一条会渐渐消失的线，画布叠在内容上，线宽随速度变细；可选不消退，当作批注，ref 提供 clear 与 toDataURL。只在有精确指针的设备上启用。适用在图表截图上圈一下给同事看；不是正式的绘图工具。',
+    exports: ['DrawingCursor'],
+    propParts: [{ part: 'DrawingCursor' }],
+    states: [
+      '指针在区域里：留笔迹，decay 毫秒后消退。',
+      '没有笔迹：停掉动画帧。',
+      'decay=0：笔迹不消退，直到 clear 或指针离开（clearOnLeave）。',
+      '触屏：不启用。',
+    ],
+    donts: [
+      '不要当绘图工具：没有撤销与图层，笔迹只在画布里。',
+      '不要盖在可点击的图表上：它不挡指针事件，但划线会让人误以为在操作图表。',
+    ],
+    composition: 'DrawingCursor\n  children\n  div（aria-hidden）\n    canvas',
+    keys: [],
+  },
+  {
+    id: 'emboss-surface',
+    group: 'motion',
+    cardHeight: 176,
+    title: 'EmbossSurface 浮雕面',
+    summary:
+      '用多层 box-shadow 与 text-shadow 做出压凸、压凹、石膏、金属压印四种浮雕，深度、柔度与光源角度可调，interactive 时光源跟着指针转。适合会员徽章、奖牌卡的面；盘面上的控件用扁平的 token，不要浮雕。',
+    exports: ['EmbossSurface'],
+    propParts: [{ part: 'EmbossSurface' }],
+    states: [
+      '静态：光源在 lightAngle，阴影一次算好。',
+      'interactive 且有精细指针：光源跟指针转，过渡走 --dur-snappy。',
+      '石膏（plaster）：多一层 SVG 高光滤镜。',
+    ],
+    donts: [
+      '不要在行情区用：浮雕让单元格像按钮。',
+      '不要用 color 传半透明色：高光与阴影是往里混白、混黑，半透明会发灰。',
+    ],
+    composition: 'EmbossSurface\n  svg（plaster 才有，aria-hidden，高光滤镜）\n  as（默认 div）',
+    keys: [],
+  },
+  {
+    id: 'holographic-foil',
+    group: 'motion',
+    cardHeight: 204,
+    title: 'HolographicFoil 全息箔卡片',
+    summary:
+      '一张带全息箔的卡：条纹箔层随指针（或设备倾斜）漂移、色相偏转，上面掠过一道柔光，整张卡轻微 3D 倾斜；四种箔（prism、aurora、gold、oil），颜色全由 token 混出。适合年度最佳策略、里程碑这类奖牌卡；不进盯盘界面。',
+    exports: ['HolographicFoil'],
+    propParts: [{ part: 'HolographicFoil' }],
+    states: [
+      '无精细指针：箔层静止，只有一道缓慢的掠光。',
+      '有精细指针：箔、柔光与卡面按指针偏移，卡倾斜最多 9 度。',
+      'useDeviceOrientation：触屏设备按陀螺仪倾斜；iOS 要点 orientationLabel 那个按钮授权。',
+    ],
+    donts: [
+      '不要在卡里放要读的小字而不给底色：箔在内容下面也会透出来。',
+      '不要整页铺：每张卡都是一堆混合层，列表里放几十张会掉帧。',
+    ],
+    composition:
+      'HolographicFoil\n  motion.div（卡面，倾斜）\n    div（箔层）\n    div（children）\n    div（掠光、柔光）\n    button（orientationLabel，可选）',
+    keys: [],
+  },
+  {
+    id: 'magnetic-field',
+    group: 'motion',
+    cardHeight: 222,
+    title: 'MagneticField 磁场',
+    summary:
+      '指针靠近时，区域里的元素按弹簧被吸、被推或绕着转，离得越近越强；传 items 时件自己把每个元素放进弹簧容器，也可以给子元素加 data-magnetic。只在有精细指针的设备上启用。适合首页的板块标签云；不进有点击目标的操作区（会让人点不准）。',
+    exports: ['MagneticField'],
+    propParts: [{ part: 'MagneticField' }],
+    states: [
+      '指针在 radius 内：元素偏移，距离越近偏得越多。',
+      '指针离开：弹簧回位。',
+      '触屏或 paused：不启用，元素原位。',
+    ],
+    donts: ['不要用在按钮、输入框上：它们会跑开，点不到。', '不要给太多元素：每帧要为每个元素算一次。'],
+    composition: 'MagneticField\n  items 的每一项 motion.div > element\n  或 children（带 data-magnetic 的子元素）',
+    keys: [],
+  },
+  {
+    id: 'parallax-layers',
+    group: 'motion',
+    cardHeight: 285,
+    title: 'ParallaxLayers 视差层',
+    summary:
+      '多层内容随滚动（可选再随指针）按各自的深度错位移动，每层可加模糊与透明度；container 指向滚动容器时跟它滚。适合首页头图、章节引子；数据、表格不放进去。深度 0 不动，1 动得最多。',
+    exports: ['ParallaxLayers'],
+    propParts: [{ part: 'ParallaxLayers' }],
+    states: ['滚动：每层按 depth 乘以 range 平移，弹簧跟随。', 'pointerParallax：精细指针下再随指针偏移，最多 20px。'],
+    donts: ['不要把要读的正文放进最前面的层：它在动，读不稳。', '不要不给容器高度：层是绝对定位，容器高度要自己定。'],
+    composition: 'ParallaxLayers\n  div（relative，量滚动进度）\n    motion.div × layers（absolute，各自位移）',
+    keys: [],
+  },
+  {
+    id: 'progressive-blur',
+    group: 'motion',
+    cardHeight: 282,
+    title: 'ProgressiveBlur 渐进模糊',
+    summary:
+      '叠几层带渐变遮罩的背景模糊，从一边向另一边（或由中心向外）模糊越来越重，盖在滚动列表的边缘，提示「下面还有」。模糊层不挡指针，也不进读屏。适用新闻流、日志、侧栏的边缘；表格要读的行不要被它盖住。',
+    exports: ['ProgressiveBlur'],
+    propParts: [{ part: 'ProgressiveBlur' }],
+    states: ['挂载：整叠模糊淡入（fadeIn）。', 'direction 决定向哪一边变重；radial 由中心向外。'],
+    donts: [
+      '不要盖在需要点击的内容上：它不挡指针，用户看不清却点得到。',
+      '层数不要超过 12：每层是一个 backdrop-filter。',
+    ],
+    composition:
+      'ProgressiveBlur\n  div（aria-hidden）\n    div × layers（backdrop-filter 加渐变遮罩）\n  div（children，可选）',
+    keys: [],
+  },
+  {
+    id: 'scroll-image-reveal',
+    group: 'motion',
+    cardHeight: 305,
+    title: 'ScrollImageReveal 滚动揭图',
+    summary:
+      '图片随滚动进度揭开：擦除、帘子、圆形、百叶、缩放五种遮罩，里面的图再做反向视差；once 时揭开后不再合上。适合首页、策略介绍页配图；盘中界面里的图表不用它。必须写 alt。',
+    exports: ['ScrollImageReveal'],
+    propParts: [{ part: 'ScrollImageReveal' }],
+    states: ['滚动进入：遮罩随进度打开，弹簧跟随。', 'once：打开后停在全开。'],
+    donts: ['不要揭开需要立刻看到的图：滚到一半时图还是缺的。', 'alt 必填：图是内容，不是装饰。'],
+    composition: 'ScrollImageReveal\n  motion.div（clip-path 或 mask）\n    motion.img',
+    keys: [],
+  },
+  {
+    id: 'svg-clip-mask',
+    group: 'motion',
+    cardHeight: 324,
+    title: 'SvgClipMask 形状裁切',
+    summary:
+      '内容按一条 objectBoundingBox 路径（内置 blob、拱、菱形、波浪，或自定义）裁成异形；可循环变形、随滚动换形、悬停换形。变形的路径要有相同的命令结构。适合头像、封面图的异形裁切；数据图表不裁。',
+    exports: ['SvgClipMask'],
+    propParts: [{ part: 'SvgClipMask' }],
+    states: [
+      '静态：按 shape 或 path 裁。',
+      'morph：在 morphPaths 之间循环插值。',
+      'scroll：随滚动进度换下一条。',
+      'hover：悬停换成 morphPaths 的第二条（精细指针）。',
+    ],
+    donts: [
+      '不要用结构不同的路径做变形：浏览器按位置插值，结构不同会跳。',
+      '被裁掉的部分点不到，也看不到：别把可点的东西放在边角。',
+    ],
+    composition: 'SvgClipMask\n  svg（aria-hidden）> defs > clipPath > path\n  div（clip-path）> children',
+    keys: [],
+  },
+  {
+    id: 'svg-draw-on-scroll',
+    group: 'motion',
+    cardHeight: 305,
+    title: 'SvgDrawOnScroll 滚动描线',
+    summary:
+      'SVG 路径的笔画长度跟滚动进度走，多条路径依次画；marker 挂在笔尖，位置由路径本身的几何算出。适合策略复盘页的权益曲线入场、引导页的路线图；曲线要读数时用 EquityCurve。',
+    exports: ['SvgDrawOnScroll'],
+    propParts: [{ part: 'SvgDrawOnScroll' }],
+    states: ['滚动：按进度画出路径，弹簧跟随。', 'once：画完停在全长。', 'marker：笔尖的标记点随进度移动。'],
+    donts: ['不要拿它读数：画到一半的曲线没有刻度。', 'SVG 是 aria-hidden：曲线说明的内容要另外写成文字。'],
+    composition: 'SvgDrawOnScroll\n  svg（aria-hidden）> motion.path × 路径数\n  motion.div（marker，可选）',
+    keys: [],
+  },
+  {
+    id: 'ascii-render',
+    group: 'motion',
+    cardHeight: 254,
+    title: 'AsciiRender 字符画',
+    summary:
+      '把图片或视频按亮度采样成一屏字符，单色（读主题的墨色）或带原图着色；视频按 fps 重画，屏外与暂停时停。读屏读 alt。适合首页的氛围图、加载页的占位；图要允许跨域读取，读不了就退回原图。',
+    exports: ['AsciiRender'],
+    propParts: [{ part: 'AsciiRender' }],
+    states: [
+      '图片：画一次。',
+      '视频：按 fps 重画，屏外或 paused 时暂停播放。',
+      '读取失败（跨域或解码出错）：隐藏字符，显示原图。',
+    ],
+    donts: ['不要拿它显示要读的图表：字符化后看不出数。', 'columns 不要超过 240：字符越多，每帧越慢。'],
+    composition:
+      'AsciiRender\n  img 或 video（aria-hidden，取样源）\n  pre（aria-hidden，字符）\n  span.sr-only（alt）',
+    keys: [],
+  },
+  {
+    id: 'dither-image',
+    group: 'motion',
+    cardHeight: 460,
+    title: 'DitherImage 抖动图',
+    summary:
+      '把图片按 Bayer、Atkinson、Floyd-Steinberg 或阈值算法量化成 2 到 8 档，画成像素块；档位色默认取主题的墨色与底色，也可传色阶。progressive 时滚进视口再自上而下擦出。适合首页、文档的像素风配图；图要允许跨域读取。',
+    exports: ['DitherImage'],
+    propParts: [{ part: 'DitherImage' }],
+    states: [
+      '加载：先显示原图。',
+      '就绪：抖动层淡入盖住原图。',
+      'progressive：进入视口前抖动层被裁掉，进入后擦出。',
+      '读取失败：一直显示原图。',
+    ],
+    donts: ['不要拿它显示图表：量化后的数值读不出。', '不要给很大的尺寸：抖动在主线程里算，图越大越久。'],
+    composition: 'DitherImage\n  img（原图，alt）\n  motion.canvas（aria-hidden，抖动层）',
+    keys: [],
+  },
+  {
+    id: 'pixel-brush-canvas',
+    group: 'motion',
+    cardHeight: 316,
+    title: 'PixelBrushCanvas 像素画板',
+    summary:
+      '在小网格上画像素画：铅笔、橡皮、填充、直线、矩形，撤销最多 50 步，自带色板与工具条（showTools）。键盘可用：方向键移动，空格落笔，B、E、G 切笔，Ctrl 或 Cmd 加 Z 撤销。所有文案走必填的 labels。适合给头像、策略图标做像素风小图；不是通用绘图工具。',
+    exports: ['PixelBrushCanvas'],
+    propParts: [{ part: 'PixelBrushCanvas' }],
+    states: [
+      '空：全部透明。',
+      '落笔或拖动：onChange 收到整张像素缓冲的拷贝。',
+      '直线与矩形：按下起点、松开终点；键盘用空格设起点再按一次完成。',
+    ],
+    donts: ['不要当通用绘图工具：只有一层、最多九色、没有缩放。', 'labels 必填：读屏名与播报的文案由调用方给。'],
+    composition:
+      'PixelBrushCanvas\n  div[role=application]\n    canvas\n    div（光标框）\n    span[aria-live]\n  fieldset（色板）\n  fieldset（工具）',
+    keys: [
+      ['↑ ↓ ← →', '移动光标格'],
+      ['Space', '在光标格落笔（直线、矩形：设起点，再按一次完成）'],
+      ['B / E / G', '切到铅笔、橡皮、填充'],
+      ['Ctrl / Cmd + Z', '撤销'],
     ],
   },
   // A 股件包（#110，@katana-ui/react/cn）：中国市场才有的概念。文字都由调用方传，cnLabelsZh 是随包的简体中文默认。

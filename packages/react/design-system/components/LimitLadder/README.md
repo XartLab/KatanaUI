@@ -14,7 +14,7 @@ A 股专有件（连板、涨停、炸板是 A 股的概念）。按板位从高
 | `levels[].items` | `LadderItem[]` | — | { code, name, change（百分数）, firstSeal?, sealAmount?（元，写成 520.00 M）, opens?, industry?, logo?, status }；没有的值写「—」。 |
 | `labels` | `LimitLadderLabels` | — | 板位单位、晋级率与只数文字、状态名、汇总读数名、列名、读屏名、空态文字，由调用方传。 |
 | `selected` | `string \| null` | — | 选中个股的代码；选中行左侧画 2px 强调条。 |
-| `onSelect` | `(code: string) => void` | — | 点击或 Enter / Space 选一行。 |
+| `onSelect` | `(item: LadderItem) => void` | — | 点击或 Enter / Space 选一行；给出整条（G6 起不再只给代码）。 |
 | `rowActions` | `(item: LadderItem) => RowAction[]` | — | 行快捷操作（#23，一般传 symbolMenu(...)）：悬停或键盘落到这一行时右端浮出前三颗带图标的按钮，右键、菜单键、Shift+F10 出整份菜单。不传就没有。按钮条与菜单的读屏名取 labels.rowActions、labels.rowMenu（可选，省略用英文）。 |
 
 ## Usage
@@ -152,7 +152,12 @@ export function LimitLadderUsage() {
       <PanelFrame focused aria-label="连板天梯">
         <PanelFrameHeader heading="连板天梯" object="演示数据" />
         <PanelFrameBody>
-          <LimitLadder levels={LADDER_LEVELS} labels={LADDER_LABELS} selected={selected} onSelect={setSelected} />
+          <LimitLadder
+            levels={LADDER_LEVELS}
+            labels={LADDER_LABELS}
+            selected={selected}
+            onSelect={(item) => setSelected(item.code)}
+          />
         </PanelFrameBody>
       </PanelFrame>
     </div>

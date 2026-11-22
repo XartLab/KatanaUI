@@ -13,7 +13,7 @@
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
 | `value` | `{ start: string; end: string } \| null` | — | 当前区间；null 是没选。 |
-| `onValue` | `(range: DateRange) => void` | — | 凑成合法区间（起点不晚于终点）才回调；只填了一头不回调。 |
+| `onValueChange` | `(range: DateRange) => void` | — | 凑成合法区间（起点不晚于终点）才回调；只填了一头不回调。旧名 onValue 留一个版本（@deprecated）。 |
 | `today` | `string` | — | 今天（YYYY-MM-DD），预设从它算。由调用方按显示时区算好传进来，件里不读时钟。 |
 | `weekStart` | `'mon' \| 'sun'` | `'mon'` | 一周从哪天起；「本周」是它到今天。A 股与国际交易所都是周一。 |
 | `min / max` | `string` | — | 能选的最早、最晚日期。 |
@@ -45,12 +45,12 @@ export function DateRangePickerUsage() {
   const [range, setRange] = useState<DateRange | null>({ start: '2026-11-09', end: '2026-11-14' })
   return (
     <>
-      <DateRangePicker value={range} onValue={setRange} today="2026-11-14" labels={RANGE_LABELS} locale="zh-CN" />
+      <DateRangePicker value={range} onValueChange={setRange} today="2026-11-14" labels={RANGE_LABELS} locale="zh-CN" />
       <output data-gallery-range>{range ? `${range.start} ~ ${range.end}` : '未选'}</output>
 
       <DateRangePicker
         value={null}
-        onValue={() => {}}
+        onValueChange={() => {}}
         today="2026-11-14"
         min="2026-01-01"
         max="2026-12-31"

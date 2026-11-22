@@ -16,10 +16,11 @@
 
 ### Toast
 
-其余属性透传给 div。过渡的起点与终点由 data-starting-style、data-ending-style 给（phase 换的）。
+其余属性透传给 div。过渡的起点与终点由 data-starting-style、data-ending-style 给（phase 换的）。tone（Severity）定色条与图标的颜色，neutral 是主文字色色条加强调色图标。
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
+| `tone` | `Severity` | `'neutral'` | Tone of the color bar and the icon: neutral (default), ok, warn or danger. |
 | `phase` | `ToastPhase` | `'open'` | entering is just inserted (draw one frame, then switch to open so the transition has a start); closing is leaving, and the caller removes the node after TOAST_EXIT_MS. |
 
 ### ToastClose
@@ -29,8 +30,11 @@
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
 | `asChild` | `boolean` | — | Render the child element itself (a link, a menu trigger) instead of wrapping it in a button. |
-| `variant` | `"link" \| "default" \| "danger" \| "primary" \| "ghost" \| "icon"` | — | Visual style: primary is the solid light button, danger uses the danger text color, icon is a borderless 28px icon button. |
-| `size` | `"default" \| "icon" \| "sm"` | — | Height: default is 30px, sm is 26px with an 8px radius, icon is a 28px square. |
+| `variant` | `"link" \| "danger" \| "default" \| "primary" \| "ghost" \| "icon"` | — | Visual style: primary is the solid light button, danger uses the danger text color, icon is a borderless 28px icon button. |
+| `size` | `ButtonSize \| 'default' \| null` | — | Height: sm is 26px, md (default) is 30px, icon is a 28px square. |
+| `effect` | `ButtonEffect` | — | Optional hover effect from SmoothUI: magnetic leans toward the pointer, dot-morph stretches a leading dot into a bar, clip-corners cuts the corners wider. |
+| `magnetStrength` | `number` | — | How far a magnetic button leans: the fraction of the pointer offset it follows (0 to 1). |
+| `magnetRadius` | `number` | — | Distance in px from the button center within which a magnetic button reacts. |
 | `label` * | `string` | — | Accessible name (required; the package ships no text). |
 
 ### ToastClear / ToastIcon / ToastText / ToastTitle / ToastDescription / ToastContent
@@ -62,10 +66,12 @@ export function ToastUsage() {
 - 进入：从边上平移加淡入（phase=entering 画一帧再切 open）。
 - 收起：反向平移淡出，播完（TOAST_EXIT_MS）调用方再摘节点。
 - 多条：按位置叠，两条以上出「全部关掉」。
+- 语气：neutral（默认）、ok、warn、danger，色条与图标取 --k-status-*-foreground；说明文字是 ink-2（console 主题下 ink-3 不到 4.5:1）。
 
 ## Don't
 
 - 不要把需要用户处理的事只放在弹出提示里，它会自己消失。
+- 不要只靠色条说语气：标题里写明（「下单被拒」而不是「出错了」）。
 - 不要在包里写死文案，关闭名与「全部关掉」都由调用方传。
 - 不要自己再做一套计时与队列放进 Toast，那是调用方的事。
 

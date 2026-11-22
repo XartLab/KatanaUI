@@ -39,11 +39,14 @@ export function DotMatrixUsage() {
 
 ## States
 
-- 静态纹理：4px 实、2px 空；颜色默认取中性，可传 token。
+- 静态纹理：4px 实、2px 空；颜色默认 --seq-300，可传 token。
+- 每张图一个 id：同页两张图共用一个 id 时后一张会读到前一张的颜色。
 
 ## Don't
 
 - 不要用它代替需要读数的实色块；它只给面（回撤面等）。
+- 不要传写死的颜色值：传 var(--token)，换主题才跟着换。
+- 不要改点的大小与点距：4 / 6 是点阵签名，跟 MatrixOrb、Loading 骨架是同一套。
 
 ## Composition
 

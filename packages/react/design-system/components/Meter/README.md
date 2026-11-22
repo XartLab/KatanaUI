@@ -16,7 +16,7 @@
 | `value` | `number` | — | 当前值；越界贴边。 |
 | `max` | `number` | `100` | 满量程。 |
 | `valueText` | `string` | — | 右边的数怎么写；不给就是四舍五入的百分数。 |
-| `tone` | `'accent' \| 'ok' \| 'warn' \| 'danger' \| 'off'` | `'accent'` | 进行中（橙）、健康（绿）、受限或越界（琥珀）、弱势（红）、停用。 |
+| `tone` | `SeverityExt` | `'accent'` | 进行中 accent（橙）、健康 ok（绿）、受限或越界 warn（琥珀）、弱势 danger（红）、停用 off / neutral。 |
 | `display` | `'bar' \| 'gauge' \| 'sync'` | `'bar'` | sync 只给 paper 进度、容量使用、偏离门距离、回放进度。 |
 | `mark` | `number` | — | 刻度（跟 value 同单位）：琥珀竖线，sync 里是评估点；gauge 不画。 |
 | `markLabel` | `string` | — | 读屏用：刻度是什么（评估点、上限）；有 mark 时要给。 |
@@ -25,7 +25,7 @@
 
 ```tsx
 // SPDX-License-Identifier: MIT
-import { Meter } from '@katana-ui/react/quant'
+import { Meter } from '@katana-ui/react/blocks'
 
 export function MeterUsage() {
   return (
@@ -57,6 +57,7 @@ export function MeterUsage() {
 - gauge：34px 凹槽、中线、底部 0/25/50/75/100 刻度，指针带光；弱势用 danger（红）。
 - sync：14px 带齿条，右侧大百分比（display-dense 字），琥珀刻度是评估点。
 - warn：条与数转琥珀，条体脉冲一次；off：全部转灰。
+- tone 是 SeverityExt（G6）：neutral 画法同 off（没有判断就不着色）。
 
 ## Don't
 

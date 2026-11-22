@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 // RangeHistogramSlider 的纯逻辑：分箱、取整到步长、位置与数值互换、键盘步进。功能参照 Arc Range histogram slider（uiarc.dev，2026-11-14 读），实现原创。
 
+import { clamp } from '../lib/num.ts'
+
 /** 把一列数分进 bins 个等宽的箱（[min, max]，最后一箱含 max）；不是有限数或在范围外的丢掉。 */
 export function histogramBins(values: readonly number[], min: number, max: number, bins: number): number[] {
   const counts = Array.from({ length: Math.max(0, Math.floor(bins)) }, () => 0)
@@ -15,20 +17,19 @@ export function histogramBins(values: readonly number[], min: number, max: numbe
 
 /** 取整到最近的步长（从 min 起算），再夹在 [min, max] 里。浮点误差按步长的小数位收掉。 */
 export function snapValue(value: number, min: number, max: number, step: number): number {
-  const clamped = Math.min(max, Math.max(min, value))
+  const clamped = clamp(value, min, max)
   if (!(step > 0)) return clamped
   const snapped = min + Math.round((clamped - min) / step) * step
   const decimals = (String(step).split('.')[1] ?? '').length
-  return Math.min(max, Math.max(min, Number(snapped.toFixed(decimals))))
+  return clamp(Number(snapped.toFixed(decimals)), min, max)
 }
 
 /** 数值在 [min, max] 里的位置（0 到 1，越界夹住）。 */
 export const ratioOf = (value: number, min: number, max: number): number =>
-  max > min ? Math.min(1, Math.max(0, (value - min) / (max - min))) : 0
+  max > min ? clamp((value - min) / (max - min), 0, 1) : 0
 
 /** 位置（0 到 1）对应的数值，不取整。 */
-export const valueAt = (ratio: number, min: number, max: number): number =>
-  min + Math.min(1, Math.max(0, ratio)) * (max - min)
+export const valueAt = (ratio: number, min: number, max: number): number => min + clamp(ratio, 0, 1) * (max - min)
 
 export type Thumb = 'low' | 'high'
 

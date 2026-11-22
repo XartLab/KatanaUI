@@ -1,0 +1,22 @@
+/* SPDX-License-Identifier: MIT */
+/* ViewSwitcher：标题位置的下拉（当前视图名加小箭头），无底无框，悬停 4% 白底；字是标题档（text-title，15/20 600）。
+   G2（2026-11-18）从 filter-bar.css 拆出；颜色改读 characteristics，字号从写死的 14/20 改成 text-title（15/20）。 */
+.k-viewsw {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 6px;
+  border: 0;
+  border-radius: var(--radius-control);
+  background: transparent;
+  color: var(--k-content-primary-foreground);
+  font: var(--text-title) var(--font-sans);
+  cursor: pointer;
+}
+.k-viewsw:hover {
+  background: var(--k-actionable-subtle-background-hover);
+}
+.k-viewsw:focus-visible {
+  outline: 2px solid var(--k-focused-outlineColor);
+  outline-offset: 1px;
+}

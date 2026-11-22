@@ -1,0 +1,24 @@
+diff --git a/dist/capture.js b/dist/capture.js
+index 21bd8cf5e6de122fccd5f163fc9b83ec5c3a2ca2..a477e6b60df76d84da530f24cf8d1ccf0dd5aef8 100644
+--- a/dist/capture.js
++++ b/dist/capture.js
+@@ -193,8 +193,6 @@ export function forcePseudoClasses() {
+ }
+ async function navigate(page, snap, cfg) {
+     const { stabilize, timeoutMs } = cfg;
+-    if (stabilize.fixedTime)
+-        await page.clock.setFixedTime(new Date(stabilize.fixedTime));
+     await page.goto(snap.url, { waitUntil: 'load', timeout: timeoutMs });
+     // Best effort: apps with long-polling never go idle, so don't fail on it.
+     await page.waitForLoadState('networkidle', { timeout: Math.min(5_000, timeoutMs) }).catch(() => { });
+@@ -531,6 +529,10 @@ export async function captureAll(cfg, snaps, matcher, hooks) {
+                 continue;
+             }
+             const { context, blocked } = ctx;
++        // 本地补丁：时钟是整个 context 的，一开跑就在几个空白页上各装一遍会互相抛 "reading 'controller'" / "has been closed"；
++        // 改成 context 刚建好、还没有页的时候装一次，之后的页自动带上。
++        if (cfg.stabilize.fixedTime)
++            await context.clock.setFixedTime(new Date(cfg.stabilize.fixedTime));
+             await pool(snaps, cfg.concurrency, async (snap) => {
+                 const page = await context.newPage();
+                 const hosts = new Set();

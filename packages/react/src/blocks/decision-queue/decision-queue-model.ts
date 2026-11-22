@@ -1,7 +1,19 @@
 // SPDX-License-Identifier: MIT
+import type { SeverityExt } from '../../lib/severity.ts'
 
 /** pending 待处理；snoozed 稍后（仍算待处理，卡上带标记）；accepted / rejected 已处理；expired 过了有效期没人处理。 */
 export type DecisionStatus = 'pending' | 'snoozed' | 'accepted' | 'rejected' | 'expired'
+
+const STATUS_SEVERITY: Record<DecisionStatus, SeverityExt> = {
+  pending: 'accent',
+  snoozed: 'warn',
+  accepted: 'ok',
+  rejected: 'danger',
+  expired: 'off',
+}
+
+/** 决定状态的语气：待决是点亮的强调色，搁置琥珀，接受绿，拒绝红，过期不亮（灯用 ledOf 取）。 */
+export const decisionSeverity = (status: DecisionStatus): SeverityExt => STATUS_SEVERITY[status]
 
 /** 队列上的筛选页：待处理页含「稍后」的。 */
 export type DecisionFilter = 'pending' | 'accepted' | 'rejected' | 'expired'
@@ -41,7 +53,7 @@ export function effectiveStatus(item: DecisionItem, now: number): DecisionStatus
   return open && item.expiresAt !== undefined && item.expiresAt <= now ? 'expired' : item.status
 }
 
-export function filterOf(status: DecisionStatus): DecisionFilter {
+function filterOf(status: DecisionStatus): DecisionFilter {
   return status === 'snoozed' ? 'pending' : status
 }
 

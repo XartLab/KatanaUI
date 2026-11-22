@@ -2,6 +2,7 @@
 // SymbolGalaxy 的纯逻辑：按分组做圆堆积的布局、命中判断、团内方向键移动。功能参照 Arc Customer galaxy（uiarc.dev，2026-11-14 读），实现原创。
 // 布局用 d3-hierarchy 的 pack（ISC，包里已有的依赖）：同样的数据永远排出同样的位置（输入先按大小与 id 定序，不用随机、不跑力模拟），可测。
 import { hierarchy, pack } from 'd3-hierarchy'
+import { fontFor, measureText } from '../../lib/text-measure.ts'
 
 export type GalaxyNode = {
   id: string
@@ -33,15 +34,13 @@ type Datum = { id: string; key: string; size: number; children?: Datum[] }
 /** 团与团之间、团内点与点之间留的缝（布局单位，画布宽 800）。点多时点很小，缝大了就吃掉大半面积，所以团内取小。视觉取值，待定。 */
 const NODE_GAP = 1
 /** 团名一行的高度：11px 字（--text-caption）的行高，画布宽 800 时布局单位约等于像素。 */
-export const LABEL_H = 16
+const LABEL_H = 16
 /** 团名与它的圈之间的空；团与团之间的缝 = 一行团名 + 这个空 + 余量 2，这样团名放在圈上方的留白里不会碰到邻团。视觉取值，待定。 */
 const LABEL_GAP = 2
 const GROUP_GAP = LABEL_H + LABEL_GAP + 2
-/** 团名宽度的估计：中日韩字一格 11，其余 6.5，两端各留 4。字体度量要到浏览器里才有，布局是纯函数，只能估；偏差靠 GROUP_GAP 的余量吸收。 */
+/** 团名宽度：用 pretext 量 11px 半粗体的真实字宽（2026-11-17，不再按汉字 11、其余 6.5 估），两端各留 4；量不了的环境里 measureText 自己退回估计。 */
 function labelWidth(text: string): number {
-  let w = 8
-  for (const ch of text) w += /[\u2e80-\u9fff\uff00-\uffef]/.test(ch) ? 11 : 6.5
-  return w
+  return 8 + measureText(text, fontFor(600, 11, '--font-sans-small'))
 }
 /** 图实际画多宽决定团名占多少布局单位：团名是真实像素的字，图缩到 0.6 倍时它在布局里就是 1/0.6 倍大。 */
 const MIN_SCALE = 0.3
@@ -65,7 +64,8 @@ function placeLabels(
   unit: number,
 ): Map<string, LabelBox> {
   const out = new Map<string, LabelBox>()
-  for (const c of [...circles].sort((a, b) => b.r - a.r)) {
+  // js/copying-array-methods：toSorted 替代「展开复制再 sort」。
+  for (const c of circles.toSorted((a, b) => b.r - a.r)) {
     const w = labelWidth(c.key) * unit
     const lh = LABEL_H * unit
     const above = c.y - c.r - LABEL_GAP * unit - lh

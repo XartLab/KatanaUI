@@ -17,6 +17,7 @@ import {
   type UptimeCell,
   type UptimeStatus,
 } from '../../src/index.ts'
+import { LiveUptimeDemo } from './live-readouts.tsx'
 import { Row } from './parts.tsx'
 
 /** 图右上三件的演示 props；导出与全屏的回调留空（演示页没有可导出的东西）。 */
@@ -117,6 +118,7 @@ export function UptimeBarsDemo() {
           <p data-gallery-uptime-picked>{picked}</p>
         </div>
       </Row>
+      <LiveUptimeDemo />
     </>
   )
 }

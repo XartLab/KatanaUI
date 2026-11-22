@@ -7,6 +7,8 @@ import {
   type VintageObservation,
 } from '../../src/quant/index.ts'
 import { Row } from './parts.tsx'
+import { isoDate } from '../../src/lib/date.ts'
+import { pad } from '../../src/lib/num.ts'
 
 // 资金流向桑基图与按发布时间画的宏观序列的演示。下面所有数据都是虚构的演示数据（不是任何真实机构、市场或统计口径的数字），页上与小标都写明。
 
@@ -163,9 +165,8 @@ const VINTAGES: VintageObservation[] = (() => {
   })
 })()
 
-const pad = (n: number) => String(n).padStart(2, '0')
 const month = (at: number) => `${new Date(at).getUTCFullYear()}-${pad(new Date(at).getUTCMonth() + 1)}`
-const day = (at: number) => `${month(at)}-${pad(new Date(at).getUTCDate())}`
+const day = isoDate
 const signed = new Intl.NumberFormat('en-US', {
   minimumFractionDigits: 2,
   maximumFractionDigits: 2,

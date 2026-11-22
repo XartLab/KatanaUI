@@ -12,7 +12,7 @@
 | --- | --- | --- | --- |
 | `left / center / right` | `StatusItem[]` | — | 三段各一组项。 |
 | `label` | `string` | — | 状态栏的名字（读屏念）。 |
-| `moreLabel` | `string` | — | 「…」按钮的名字。 |
+| `labels` | `{ more }` | — | 「…」按钮的名字（旧名 moreLabel 留一个版本）。 |
 
 ### StatusItem
 
@@ -22,7 +22,7 @@
 | --- | --- | --- | --- |
 | `id` | `string` | — | 稳定的 id。 |
 | `label / value` | `string / ReactNode` | — | 点阵键名（灰）与等宽的值（亮）。 |
-| `led / ledLabel` | `LedState / string` | — | 前面的状态灯与它的名字（给了灯就必须给名字）。 |
+| `tone / ledLabel` | `SeverityExt / string` | — | 前面状态灯的语气（灯由 ledOf 取，accent 是点亮的强调色）与它的名字（给了灯就必须给名字）；旧名 led（LedState）留一个版本。 |
 | `onClick` | `() => void` | — | 给了整项是按钮（QUOTE → 数据源）。 |
 | `priority` | `number` | `0` | 越大越晚被收起。 |
 | `pinned / live` | `boolean` | — | 永不收起；live 另外画琥珀内描边（实盘账户）。 |
@@ -41,9 +41,9 @@ import { StatusBar, type StatusItem } from '@katana-ui/react/blocks'
 import { Button } from '@katana-ui/react'
 
 const STATUS_ITEMS: readonly StatusItem[] = [
-  { id: 'quote', label: 'QUOTE', value: '42 ms', led: 'ok', ledLabel: 'OK', priority: 3, onClick: () => {} },
-  { id: 'exec', label: 'EXEC', value: '118 ms', led: 'warn', ledLabel: 'Slow', priority: 3, onClick: () => {} },
-  { id: 'live', label: 'LIVE', value: 'IBKR U123', live: true, led: 'on', ledLabel: 'Live account' },
+  { id: 'quote', label: 'QUOTE', value: '42 ms', tone: 'ok', ledLabel: 'OK', priority: 3, onClick: () => {} },
+  { id: 'exec', label: 'EXEC', value: '118 ms', tone: 'warn', ledLabel: 'Slow', priority: 3, onClick: () => {} },
+  { id: 'live', label: 'LIVE', value: 'IBKR U123', live: true, tone: 'accent', ledLabel: 'Live account' },
   { id: 'link', label: 'LINK', value: 'A · BTCUSDT', priority: 1, onClick: () => {} },
   { id: 'mode', label: 'MODE', value: 'QUIET', priority: 0 },
   { id: 'clock', value: '09:30:12', priority: 4 },
@@ -57,7 +57,7 @@ export function StatusBarUsage() {
       <div style={{ width }} data-testid="status-demo">
         <StatusBar
           label="Status bar"
-          moreLabel="More status items"
+          labels={{ more: 'More status items' }}
           left={items.slice(0, 3)}
           center={items.slice(3, 5)}
           right={items.slice(5)}
@@ -77,6 +77,7 @@ export function StatusBarUsage() {
 - 宽度不够：先收优先级最低的（同级收靠后的）进「…」弹层，pinned 与 live 不收。
 - 项可点：悬停提亮，是按钮；不可点是纯读数。
 - 实盘项：琥珀内描边，不能被隐藏策略收掉。
+- 灯：项给 tone（Severity，加 off / accent），灯由 ledOf 取——neutral、off 不亮，accent 是点亮的强调色（实盘项用它）；旧的 led（LedState）留一个版本。
 
 ## Don't
 

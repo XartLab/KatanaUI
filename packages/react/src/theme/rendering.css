@@ -1,0 +1,135 @@
+/* SPDX-License-Identifier: MIT */
+/* 渲染：文字平滑与像素对齐（2026-11-17）。
+
+   不照哪一家网页抄，按原生渲染器与系统字体的成熟做法：Windows 11 / macOS 的界面字体与光学尺寸、Ghostty 的 font-thicken 与 alpha-blending、
+   Windows Terminal 的 antialiasingMode、变体字体的暗底字重补偿（暗底浅字显粗，web.dev / Adobe 的做法是降字重或 GRAD）。
+   - 正文默认 `-webkit-font-smoothing: antialiased`（灰度平滑）。只在 macOS 生效；Windows 的 ClearType / DirectWrite 由系统与浏览器管，CSS 改不了，
+     我们能做的是别让文字落在小数像素上、别无故把文字放进合成层（合成层上透明底的文字会退成灰度，Windows 下看着发虚）。
+   - 直线与矩形贴像素：网格、零线、基线、柱子与格子 `shape-rendering: crispEdges`，由浏览器把边吸到设备像素上，1px 线不再糊成两条半透明线。
+     曲线（净值、走势线）不吸，保持几何精度，不然出锯齿。
+   - 居中用的 -50% 平移改写成 `translate: round(nearest, -50%, 1px)`（见各件的样式），定位用的 px 在组件里 Math.round。
+
+   开关都挂在根节点上（跟 data-theme 一样），应用的「设置 → 渲染」用 RenderingSettings 件改它们：
+   - data-text-smoothing="grayscale"（默认）| "system"：system 交回系统默认平滑（macOS 上是子像素 / 系统设置）。
+   - data-pixel-snap="on"（默认）| "off"：off 关掉吸附，线与格子按几何位置画（缩放截图、导出时可能想要）。
+   - --k-weight-adjust（默认 0，-60..+60）：全部文字档的字重加减，相当于终端的 font-thicken；暗底、显示器、系统平滑不同，粗细观感不同，交给用户调。
+   - --k-text-scale（默认 1）：全部文字档的字号与行高缩放，取整到整像素。
+   - data-numerals="slashed"：数字 0 带斜线（OpenType zero），跟字母 O 区分。
+   - data-cjk-adjust="cap"：中英混排时按大写字母高度把回退字体（汉字字体）缩放到跟拉丁字体一致（font-size-adjust）。 */
+
+:root {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: auto;
+}
+:root[data-text-smoothing='system'] {
+  -webkit-font-smoothing: auto;
+  -moz-osx-font-smoothing: auto;
+}
+
+/* 直线与矩形贴像素（只挑水平 / 竖直的线与不带圆角的矩形；斜线和曲线不在这里）。 */
+:root:not([data-pixel-snap='off'])
+  :is(
+    .k-ck-grid,
+    .k-plot-zero,
+    .k-ql-zero,
+    .k-ql-cursor,
+    .k-ridge-baseline,
+    .k-ridge-base,
+    .k-spark-tile-limit,
+    .k-spark-base,
+    .k-spark-cursor,
+    .k-spark-vol,
+    .k-spark-bar,
+    .k-spark-cell,
+    .k-vs-latest
+  ),
+:root:not([data-pixel-snap='off']) [class^='k-'] svg rect:not([rx]) {
+  shape-rendering: crispEdges;
+}
+
+:root {
+  font-optical-sizing: auto;
+}
+:root[data-numerals='slashed'] {
+  font-feature-settings: 'lnum', 'tnum', 'zero';
+}
+:root[data-cjk-adjust='cap'] {
+  font-size-adjust: cap-height from-font;
+}
+
+/* RenderingSettings 件：每项一行，左边名称与说明，右边控件。G2（2026-11-18）：颜色改读 characteristics，值与改前相等。 */
+.k-render {
+  display: grid;
+  max-width: 720px;
+  border: 1px solid var(--k-separable-tertiary-borderColor);
+  border-radius: 8px;
+  background: var(--k-surface-base-background);
+}
+.k-render-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 220px;
+  gap: 24px;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--k-separable-tertiary-borderColor);
+}
+.k-render-title {
+  color: var(--k-content-primary-foreground);
+  font: var(--text-body) var(--font-sans);
+  font-weight: calc(600 + var(--k-weight-adjust, 0));
+}
+.k-render-hint {
+  margin: 2px 0 0;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-render-control {
+  display: flex;
+  justify-content: flex-end;
+}
+.k-render-slider {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 44px;
+  gap: 10px;
+  align-items: center;
+  width: 100%;
+}
+.k-render-out {
+  color: var(--k-content-body-foreground);
+  font: var(--text-data) var(--font-sans);
+  text-align: right;
+}
+.k-render-foot {
+  display: flex;
+  justify-content: flex-end;
+  padding: 8px 12px;
+}
+.k-render-section {
+  padding: 14px 16px 6px;
+  border-bottom: 1px solid var(--k-separable-tertiary-borderColor);
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-micro) var(--font-sans-small);
+  letter-spacing: var(--text-micro-tracking);
+}
+.k-render-select {
+  width: 220px;
+}
+.k-render-kind {
+  /* 下拉里「· 系统 / 开源 / 本机」的小字：原来 tertiary（ink-400）在 Graphite 上只有 3.8:1，axe 报对比度不足，改成 secondary（≥ 4.5:1）。 */
+  color: var(--k-content-secondary-foreground);
+}
+
+/* 滚动条（用户 2026-11-17：「滑条要小」）：全站细滚动条，滑块用半透明白，轨道透明；系统叠加滚动条（macOS）不受影响。 */
+:root {
+  scrollbar-width: thin;
+  scrollbar-color: var(--alpha-white-13) transparent;
+}
+
+/* 原生控件（滚动条、日期框、复选框）的明暗跟主题走：Paper 是亮色，其余是暗色。 */
+:root {
+  color-scheme: dark;
+}
+:root[data-theme='paper'] {
+  color-scheme: light;
+}
