@@ -537,6 +537,19 @@
       ]
     },
     {
+      "name": "copy-image",
+      "type": "registry:lib",
+      "title": "Copy Image",
+      "description": "图右上的相机钮把整张图拍成 PNG 写进剪贴板（ClipboardItem），剪贴板不支持或被拒就退回下载文件；结果（已复制 / 已改为下载 / 失败与原因）用一条 Toast 说。copyImage、copyText 不抛错，返回 CopyResult；提示的计时由 useCopyFeedback 管。",
+      "files": [
+        {
+          "path": "src/lib/copy-image.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/lib/copy-image.ts"
+        }
+      ]
+    },
+    {
       "name": "date",
       "type": "registry:lib",
       "title": "Date",
@@ -815,6 +828,19 @@
           "path": "src/lib/use-type-to-search.ts",
           "type": "registry:lib",
           "target": "~/src/katana/ui/lib/use-type-to-search.ts"
+        }
+      ]
+    },
+    {
+      "name": "use-undo-stack",
+      "type": "registry:lib",
+      "title": "Use Undo Stack",
+      "description": "通用的撤销 / 重做栈：存整份快照，值由调用方定。push 带 kind，同种操作在 800ms 内合并成一步（拖一次滑块只撤一次）；最多 100 步；可选绑定 Mod+Z 撤销、Mod+Shift+Z 与 Ctrl+Y 重做。用于列布局、行序、分组这类「拖错了」的恢复，不进存档。",
+      "files": [
+        {
+          "path": "src/lib/use-undo-stack.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/lib/use-undo-stack.ts"
         }
       ]
     },
@@ -2130,6 +2156,27 @@
           "path": "src/katana/code-highlight.ts",
           "type": "registry:lib",
           "target": "~/src/katana/ui/katana/code-highlight.ts"
+        }
+      ]
+    },
+    {
+      "name": "copy-toast",
+      "type": "registry:component",
+      "title": "Copy Toast",
+      "description": "图右上的相机钮把整张图拍成 PNG 写进剪贴板（ClipboardItem），剪贴板不支持或被拒就退回下载文件；结果（已复制 / 已改为下载 / 失败与原因）用一条 Toast 说。copyImage、copyText 不抛错，返回 CopyResult；提示的计时由 useCopyFeedback 管。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/copy-image",
+        "@katana/severity",
+        "@katana/toast"
+      ],
+      "files": [
+        {
+          "path": "src/katana/copy-toast.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/katana/copy-toast.tsx"
         }
       ]
     },

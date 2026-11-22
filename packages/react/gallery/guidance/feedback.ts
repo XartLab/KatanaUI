@@ -56,6 +56,27 @@ const feedback: GuidanceMap = {
       '语气（tone）只是色条与图标的颜色，标题里也要写明；说明文字用 ink-2，各主题都过 4.5:1。',
     ],
   },
+  'copy-toast': {
+    aliases: ['Copy image', 'Snapshot', 'Copy to clipboard', 'Take a snapshot', '复制图', '截图'],
+    use: [
+      '图右上的相机钮：TradingView 截图（相机）菜单里「复制图片」同一件事；我们只给一个钮直接复制，不另起菜单，下载与直链由宿主另加。',
+      '钮的位置固定：表格视图 · 导出 CSV · 复制图 · 全屏，24 × 24、图标 14px，跟另外三件同一套 .k-ck-action。',
+      '图里只有图：ChartActions 一组带 data-copy-image="skip" 不进图（TradingView 的截图同样不带工具条）；标题、图例、刻度、来源行都进图。',
+      '倍数取 devicePixelRatio（1–3），底色取最近一个不透明祖先的背景色（透明 PNG 贴进聊天会变黑底或白底）。',
+      '剪贴板不支持（非 https、浏览器不认 image/png）或被拒：自动改成下载 <图名>.png，提示写「已改为下载」和原因；拍不出图才算失败。',
+      '提示：一条 Toast，2400ms 后自己收，指针或焦点在上面时不收；再点一次是新的一条。语气 ok / warn / danger 对应已复制 / 已改为下载 / 失败。',
+      '复制文字（代码、直链）用 copyText，提示同一条 CopyToast（copiedText）。',
+    ],
+    avoid: [
+      '要用户确认的结果（导出了什么文件）不要只靠这条提示，它会自己消失。',
+      '网络字体在拍出的图里会退回系统字体（图片里取不到页面字体）；要字形一致的出版用图，宿主用服务端渲染。',
+    ],
+    a11y: [
+      '相机钮是普通 button，读屏名与悬停提示是 labels.copyImage；复制时不禁用钮（禁用会丢焦点、挡住重试）。',
+      '结果经 ToastViewport（aria-live=assertive）读出；每次是新插入的节点，同一句也会再读（modern-web-guidance copy-button）。',
+      '语气不只靠颜色：标题就是结果，原因写在说明里。',
+    ],
+  },
   alert: {
     aliases: ['Banner', 'Callout', 'Inline message', 'Notice'],
     use: [

@@ -6992,6 +6992,228 @@
       "source": "src/primitives/context-menu.tsx",
       "props": []
     },
+    "CopyFailReason": {
+      "kind": "type",
+      "source": "src/lib/copy-image.ts",
+      "props": []
+    },
+    "CopyImageOptions": {
+      "kind": "type",
+      "source": "src/lib/copy-image.ts",
+      "props": [
+        {
+          "name": "filename",
+          "type": "string",
+          "required": false,
+          "description": "退回下载时的文件名（不带也行，补 .png）；默认 chart.png。"
+        },
+        {
+          "name": "background",
+          "type": "string",
+          "required": false,
+          "description": "底色；默认取节点或最近一个有底色的祖先的背景色（图片默认透明，贴进聊天里会变成黑底或白底）。"
+        },
+        {
+          "name": "scale",
+          "type": "number",
+          "required": false,
+          "description": "像素倍数；默认 devicePixelRatio（至少 1，最多 3）。"
+        },
+        {
+          "name": "noDownload",
+          "type": "boolean",
+          "required": false,
+          "description": "剪贴板拿不到时不下载，直接返回 failed。默认 false（退回下载）。"
+        }
+      ]
+    },
+    "CopyResult": {
+      "kind": "type",
+      "source": "src/lib/copy-image.ts",
+      "props": []
+    },
+    "CopyToast": {
+      "kind": "component",
+      "source": "src/katana/copy-toast.tsx",
+      "props": [
+        {
+          "name": "toast",
+          "type": "CopyToastItem | null",
+          "required": true,
+          "description": "The toast to show, from useCopyFeedback (null shows nothing)."
+        },
+        {
+          "name": "labels",
+          "type": "CopyToastLabels",
+          "required": true,
+          "description": "All text (titles, reasons, close name); the package ships none."
+        },
+        {
+          "name": "onDismiss",
+          "type": "() => void",
+          "required": false,
+          "description": "Dismiss handler; renders the close button when given."
+        },
+        {
+          "name": "onPause",
+          "type": "() => void",
+          "required": false,
+          "description": "Pause the auto-dismiss while the pointer or focus is inside (useCopyFeedback pause)."
+        },
+        {
+          "name": "onResume",
+          "type": "() => void",
+          "required": false,
+          "description": "Resume the auto-dismiss when the pointer or focus leaves (useCopyFeedback resume)."
+        },
+        {
+          "name": "position",
+          "type": "ToastPosition",
+          "required": false,
+          "default": "'bottom-right'",
+          "description": "Window corner of the viewport; default bottom-right."
+        },
+        {
+          "name": "viewport",
+          "type": "boolean",
+          "required": false,
+          "default": "true",
+          "description": "Set false to render only the toast, without the fixed viewport (docs, screenshots, your own viewport)."
+        }
+      ]
+    },
+    "CopyToastItem": {
+      "kind": "type",
+      "source": "src/katana/copy-toast.tsx",
+      "props": [
+        {
+          "name": "id",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "result",
+          "type": "CopyResult",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "phase",
+          "type": "ToastPhase",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "CopyToastLabels": {
+      "kind": "type",
+      "source": "src/katana/copy-toast.tsx",
+      "props": [
+        {
+          "name": "region",
+          "type": "string",
+          "required": true,
+          "description": "视口的读屏名。"
+        },
+        {
+          "name": "copiedImage",
+          "type": "string",
+          "required": true,
+          "description": "写进剪贴板了：图、文字。"
+        },
+        {
+          "name": "copiedText",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "downloaded",
+          "type": "string",
+          "required": true,
+          "description": "改成下载了（标题）；说明取下面的原因。"
+        },
+        {
+          "name": "failed",
+          "type": "string",
+          "required": true,
+          "description": "没复制成（标题）。"
+        },
+        {
+          "name": "unsupported",
+          "type": "string",
+          "required": true,
+          "description": "原因：剪贴板不支持（非 https、浏览器不支持写图）、被拒（没给权限）、拍图失败。"
+        },
+        {
+          "name": "denied",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "render",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "close",
+          "type": "string",
+          "required": true,
+          "description": "关掉的读屏名。"
+        }
+      ]
+    },
+    "CopyToastProps": {
+      "kind": "type",
+      "source": "src/katana/copy-toast.tsx",
+      "props": [
+        {
+          "name": "toast",
+          "type": "CopyToastItem | null",
+          "required": true,
+          "description": "The toast to show, from useCopyFeedback (null shows nothing)."
+        },
+        {
+          "name": "labels",
+          "type": "CopyToastLabels",
+          "required": true,
+          "description": "All text (titles, reasons, close name); the package ships none."
+        },
+        {
+          "name": "onDismiss",
+          "type": "() => void",
+          "required": false,
+          "description": "Dismiss handler; renders the close button when given."
+        },
+        {
+          "name": "onPause",
+          "type": "() => void",
+          "required": false,
+          "description": "Pause the auto-dismiss while the pointer or focus is inside (useCopyFeedback pause)."
+        },
+        {
+          "name": "onResume",
+          "type": "() => void",
+          "required": false,
+          "description": "Resume the auto-dismiss when the pointer or focus leaves (useCopyFeedback resume)."
+        },
+        {
+          "name": "position",
+          "type": "ToastPosition",
+          "required": false,
+          "description": "Window corner of the viewport; default bottom-right."
+        },
+        {
+          "name": "viewport",
+          "type": "boolean",
+          "required": false,
+          "description": "Set false to render only the toast, without the fixed viewport (docs, screenshots, your own viewport)."
+        }
+      ]
+    },
     "CountBadge": {
       "kind": "component",
       "source": "src/katana/count-badge.tsx",
@@ -11288,6 +11510,12 @@
           "description": ""
         },
         {
+          "name": "onCopyImage",
+          "type": "(chart: HTMLElement) => void",
+          "required": false,
+          "description": "Copy-image handler (camera button; also give labels.actions.copyImage); receives this chart's figure for copyImage."
+        },
+        {
           "name": "source",
           "type": "string",
           "required": false,
@@ -11466,6 +11694,12 @@
           "type": "() => void",
           "required": false,
           "description": ""
+        },
+        {
+          "name": "onCopyImage",
+          "type": "(chart: HTMLElement) => void",
+          "required": false,
+          "description": "Copy-image handler (camera button; also give labels.actions.copyImage); receives this chart's figure for copyImage."
         },
         {
           "name": "source",
@@ -39975,6 +40209,174 @@
         }
       ]
     },
+    "UndoEntry": {
+      "kind": "type",
+      "source": "src/lib/use-undo-stack.ts",
+      "props": [
+        {
+          "name": "value",
+          "type": "T",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "kind",
+          "type": "string",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "at",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "sealed",
+          "type": "boolean",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "UndoPushOptions": {
+      "kind": "type",
+      "source": "src/lib/use-undo-stack.ts",
+      "props": [
+        {
+          "name": "kind",
+          "type": "string",
+          "required": false,
+          "description": "操作的种类：跟上一步同种且在 mergeMs 之内就合并成一步。不给不合并。"
+        },
+        {
+          "name": "at",
+          "type": "number",
+          "required": false,
+          "description": "时间戳（毫秒）；默认 Date.now()，单测里给。"
+        }
+      ]
+    },
+    "UndoStack": {
+      "kind": "type",
+      "source": "src/lib/use-undo-stack.ts",
+      "props": [
+        {
+          "name": "value",
+          "type": "T",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "push",
+          "type": "(value: T, options?: UndoPushOptions) => void",
+          "required": true,
+          "description": "记一步新值（同时就是当前值）。"
+        },
+        {
+          "name": "undo",
+          "type": "() => void",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "redo",
+          "type": "() => void",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "canUndo",
+          "type": "boolean",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "canRedo",
+          "type": "boolean",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "undoCount",
+          "type": "number",
+          "required": true,
+          "description": "可撤 / 可重做的步数（给按钮的提示：「撤销（3）」）。"
+        },
+        {
+          "name": "redoCount",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "undoKind",
+          "type": "string | undefined",
+          "required": true,
+          "description": "撤销会撤掉的那步、重做会重做的那步的 kind（给提示写「撤销 拖列宽」）。"
+        },
+        {
+          "name": "redoKind",
+          "type": "string | undefined",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "reset",
+          "type": "(value: T) => void",
+          "required": true,
+          "description": "换成新值并清空历史（载入存档、切换视图）。"
+        }
+      ]
+    },
+    "UndoStackOptions": {
+      "kind": "type",
+      "source": "src/lib/use-undo-stack.ts",
+      "props": [
+        {
+          "name": "limit",
+          "type": "number",
+          "required": false,
+          "description": "最多留几步可撤销；默认 100。"
+        },
+        {
+          "name": "mergeMs",
+          "type": "number",
+          "required": false,
+          "description": "同种操作隔多久以内算同一步（毫秒）；默认 800。给 Infinity 就只看 kind。"
+        },
+        {
+          "name": "hotkeys",
+          "type": "boolean | RefObject<HTMLElement | null>",
+          "required": false,
+          "description": "绑定 Mod+Z / Mod+Shift+Z / Ctrl+Y：true 绑在 document 上，给 ref 就只在那个元素（含子孙）有焦点时接。默认不绑。"
+        }
+      ]
+    },
+    "UndoState": {
+      "kind": "type",
+      "source": "src/lib/use-undo-stack.ts",
+      "props": [
+        {
+          "name": "past",
+          "type": "readonly UndoEntry<T>[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "present",
+          "type": "UndoEntry<T>",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "future",
+          "type": "readonly UndoEntry<T>[]",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
     "UptimeBars": {
       "kind": "component",
       "source": "src/blocks/uptime-bars/uptime-bars.tsx",
@@ -41737,6 +42139,11 @@
       "source": "src/primitives/button.tsx",
       "props": []
     },
+    "canCopyImage": {
+      "kind": "function",
+      "source": "src/lib/copy-image.ts",
+      "props": []
+    },
     "changedTail": {
       "kind": "function",
       "source": "src/quotes/watchlist-model.ts",
@@ -41912,6 +42319,41 @@
         }
       ]
     },
+    "copyImage": {
+      "kind": "function",
+      "source": "src/lib/copy-image.ts",
+      "props": [
+        {
+          "name": "filename",
+          "type": "string",
+          "required": false,
+          "description": "退回下载时的文件名（不带也行，补 .png）；默认 chart.png。"
+        },
+        {
+          "name": "background",
+          "type": "string",
+          "required": false,
+          "description": "底色；默认取节点或最近一个有底色的祖先的背景色（图片默认透明，贴进聊天里会变成黑底或白底）。"
+        },
+        {
+          "name": "scale",
+          "type": "number",
+          "required": false,
+          "description": "像素倍数；默认 devicePixelRatio（至少 1，最多 3）。"
+        },
+        {
+          "name": "noDownload",
+          "type": "boolean",
+          "required": false,
+          "description": "剪贴板拿不到时不下载，直接返回 failed。默认 false（退回下载）。"
+        }
+      ]
+    },
+    "copyText": {
+      "kind": "function",
+      "source": "src/lib/copy-image.ts",
+      "props": []
+    },
     "countConsensus": {
       "kind": "function",
       "source": "src/blocks/consensus-block/consensus-block.tsx",
@@ -41965,6 +42407,24 @@
       "kind": "function",
       "source": "src/quant/distribution-bars.tsx",
       "props": []
+    },
+    "elementToPng": {
+      "kind": "function",
+      "source": "src/lib/copy-image.ts",
+      "props": [
+        {
+          "name": "background",
+          "type": "string",
+          "required": false,
+          "description": "底色；默认取节点或最近一个有底色的祖先的背景色（图片默认透明，贴进聊天里会变成黑底或白底）。"
+        },
+        {
+          "name": "scale",
+          "type": "number",
+          "required": false,
+          "description": "像素倍数；默认 devicePixelRatio（至少 1，最多 3）。"
+        }
+      ]
     },
     "falloff": {
       "kind": "function",
@@ -43188,6 +43648,112 @@
       "source": "src/lib/use-type-to-search.ts",
       "props": []
     },
+    "undoBack": {
+      "kind": "function",
+      "source": "src/lib/use-undo-stack.ts",
+      "props": [
+        {
+          "name": "past",
+          "type": "readonly UndoEntry<T>[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "present",
+          "type": "UndoEntry<T>",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "future",
+          "type": "readonly UndoEntry<T>[]",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "undoForward": {
+      "kind": "function",
+      "source": "src/lib/use-undo-stack.ts",
+      "props": [
+        {
+          "name": "past",
+          "type": "readonly UndoEntry<T>[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "present",
+          "type": "UndoEntry<T>",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "future",
+          "type": "readonly UndoEntry<T>[]",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "undoInit": {
+      "kind": "function",
+      "source": "src/lib/use-undo-stack.ts",
+      "props": []
+    },
+    "undoKeyOf": {
+      "kind": "function",
+      "source": "src/lib/use-undo-stack.ts",
+      "props": []
+    },
+    "undoPush": {
+      "kind": "function",
+      "source": "src/lib/use-undo-stack.ts",
+      "props": [
+        {
+          "name": "past",
+          "type": "readonly UndoEntry<T>[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "present",
+          "type": "UndoEntry<T>",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "future",
+          "type": "readonly UndoEntry<T>[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "kind",
+          "type": "string",
+          "required": false,
+          "description": "操作的种类：跟上一步同种且在 mergeMs 之内就合并成一步。不给不合并。"
+        },
+        {
+          "name": "at",
+          "type": "number",
+          "required": false,
+          "description": "时间戳（毫秒）；默认 Date.now()，单测里给。"
+        },
+        {
+          "name": "limit",
+          "type": "number",
+          "required": false,
+          "description": "最多留几步可撤销；默认 100。"
+        },
+        {
+          "name": "mergeMs",
+          "type": "number",
+          "required": false,
+          "description": "同种操作隔多久以内算同一步（毫秒）；默认 800。给 Infinity 就只看 kind。"
+        }
+      ]
+    },
     "uptimeShare": {
       "kind": "function",
       "source": "src/blocks/uptime-bars/uptime-bars-model.ts",
@@ -43197,6 +43763,19 @@
       "kind": "function",
       "source": "src/primitives/avatar.tsx",
       "props": []
+    },
+    "useCopyFeedback": {
+      "kind": "function",
+      "source": "src/katana/copy-toast.tsx",
+      "props": [
+        {
+          "name": "duration",
+          "type": "number",
+          "required": false,
+          "default": "2400",
+          "description": ""
+        }
+      ]
     },
     "useEmphasis": {
       "kind": "function",
@@ -43378,6 +43957,30 @@
           "type": "(key: string, event: KeyboardEvent) => boolean",
           "required": false,
           "description": "Extra filter after the built-in checks: return false to leave a key alone (digits that open an interval box, say)."
+        }
+      ]
+    },
+    "useUndoStack": {
+      "kind": "function",
+      "source": "src/lib/use-undo-stack.ts",
+      "props": [
+        {
+          "name": "limit",
+          "type": "number",
+          "required": false,
+          "description": "最多留几步可撤销；默认 100。"
+        },
+        {
+          "name": "mergeMs",
+          "type": "number",
+          "required": false,
+          "description": "同种操作隔多久以内算同一步（毫秒）；默认 800。给 Infinity 就只看 kind。"
+        },
+        {
+          "name": "hotkeys",
+          "type": "boolean | RefObject<HTMLElement | null>",
+          "required": false,
+          "description": "绑定 Mod+Z / Mod+Shift+Z / Ctrl+Y：true 绑在 document 上，给 ref 就只在那个元素（含子孙）有焦点时接。默认不绑。"
         }
       ]
     },
