@@ -320,8 +320,8 @@ export function DataGrid<Row extends object>({
     stuck.set(column.id, left)
     left += column.getSize()
   }
-  // 汇总行：一个看得见的列都没配聚合的整行不画（只剩行名的空行没有信息）。
-  const shownSummary = (summary ?? []).filter((entry) =>
+  // 汇总行：一个看得见的列都没配聚合的整行不画（只剩行名的空行没有信息）；compact 只留前几行，不画汇总。
+  const shownSummary = (compact ? [] : (summary ?? [])).filter((entry) =>
     visibleColumns.some((column) => entry.columns[column.id] !== undefined),
   )
   const stuckIds = visibleColumns.filter((column) => stuck.has(column.id)).map((column) => column.id)
@@ -749,12 +749,12 @@ export function DataGrid<Row extends object>({
                   key={entry.id}
                   summary={entry}
                   columns={visibleColumns.map((column) => byId.get(column.id)!)}
-                  rows={modelRows.map((row) => row.original)}
+                  rows={sortedRows.map((row) => row.original)}
                   env={env}
                   template={template}
                   height={rowHeight}
                   cellRole={cellRole}
-                  ariaRowIndex={items.length + 2 - (hideHeader ? 1 : 0) + index}
+                  ariaRowIndex={items.length + 2 - (noHeader ? 1 : 0) + index}
                   alignOf={alignOf}
                   stickClass={stickClass}
                   stickStyle={stickStyle}
