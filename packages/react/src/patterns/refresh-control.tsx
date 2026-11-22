@@ -43,7 +43,7 @@ export function formatRemaining(ms: number): string {
 }
 
 /** 本地时刻 HH:MM:SS。 */
-export const formatClock = (time: number): string =>
+export const formatRefreshClock = (time: number): string =>
   new Intl.DateTimeFormat('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit', hourCycle: 'h23' }).format(
     time,
   )
@@ -130,7 +130,7 @@ export function RefreshControl({
   onRefresh,
   refreshing = false,
   labels,
-  formatTime = formatClock,
+  formatTime = formatRefreshClock,
   pauseWhenHidden = true,
   className,
 }: RefreshControlProps) {

@@ -3432,7 +3432,7 @@ export const PAGES: readonly DocPage[] = [
     title: 'RefreshControl 自动刷新',
     summary:
       '自动刷新的间隔分段（TradingView 筛选器是 10 秒 / 1 分钟 / 不刷新）+ 立即刷新钮 + 上次刷新时刻 + 下次倒计时。受控：间隔、上次时刻、在不在刷都由调用方给，到点调 onRefresh；标签页隐藏时停，回来过了点马上刷。',
-    exports: ['RefreshControl', 'useAutoRefresh', 'formatRemaining', 'formatClock'],
+    exports: ['RefreshControl', 'useAutoRefresh', 'formatRemaining', 'formatRefreshClock'],
     propParts: [
       {
         part: 'RefreshControl',
@@ -3443,7 +3443,7 @@ export const PAGES: readonly DocPage[] = [
         note: '只要计时不要界面时用：返回离下次刷新的毫秒数（关着、在刷、标签页隐藏时是 null）；同一个到点时刻只调一次 onRefresh。',
       },
       {
-        part: 'formatRemaining / formatClock',
+        part: 'formatRemaining / formatRefreshClock',
         note: '倒计时写 12s / 1:05；时刻写本地 HH:MM:SS。',
       },
     ],

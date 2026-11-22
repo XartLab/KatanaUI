@@ -336,7 +336,7 @@ export {
 // 自动刷新控件（#77 第 5 条，#22 G12）。
 export {
   RefreshControl,
-  formatClock,
+  formatRefreshClock,
   formatRemaining,
   useAutoRefresh,
   type RefreshControlLabels,
