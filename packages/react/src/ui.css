@@ -8,6 +8,8 @@
 @import './theme/materials.css';
 @import './theme/menu.css';
 @import './theme/dialog.css';
+/* Graphite 下浮层玻璃、圆角分档、菜单与对话框留白（#130）：排在材质、菜单、对话框之后。 */
+@import './theme/graphite.css';
 @import './theme/motion.css';
 @import './theme/led.css';
 @import './theme/lcd.css';
