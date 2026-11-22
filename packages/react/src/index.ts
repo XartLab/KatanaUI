@@ -557,6 +557,16 @@ export { AiApproval, type AiApprovalFact, type AiApprovalOption, type AiApproval
 export { AiContextMeter, type AiContextBreakdownItem, type AiContextMeterProps } from './ai/ai-context-meter.tsx'
 export { AiMessage, type AiMessageAuthor, type AiMessageLabels, type AiMessageProps } from './ai/ai-message.tsx'
 export { AiResponse, type AiResponseCitation, type AiResponseProps } from './ai/ai-response.tsx'
+export {
+  Markdown,
+  docHeadings,
+  markdownSlot,
+  renderDoc,
+  renderMarkdown,
+  type MarkdownHeading,
+  type MarkdownLabels,
+  type MarkdownProps,
+} from './ai/markdown.tsx'
 export { AiConversation, type AiConversationProps } from './ai/ai-conversation.tsx'
 export {
   AiPromptInput,

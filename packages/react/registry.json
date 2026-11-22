@@ -259,6 +259,11 @@
           "target": "~/src/katana/ui/theme/loading.css"
         },
         {
+          "path": "src/theme/markdown.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/markdown.css"
+        },
+        {
           "path": "src/theme/market-heatmap.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/market-heatmap.css"
@@ -4774,6 +4779,26 @@
           "path": "src/ai/ai-tool-call.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/ai/ai-tool-call.tsx"
+        }
+      ]
+    },
+    {
+      "name": "markdown",
+      "type": "registry:component",
+      "title": "Markdown",
+      "description": "模型写的话与帮助文档的正文：不渲染 HTML、不画图片（只写「[图片：说明]」）、外链只认 http(s) 并在新标签页打开，挡掉把数据带出去的路。占位符 markdownSlot(n) 的位置画调用方给的节点（引用小标）。传 resolveLink 进文档模式：标题带锚点，相对链接交给调用方。从 KATANAview 搬来。",
+      "dependencies": [
+        "github-slugger@2.0.0",
+        "markdown-it@15.0.3"
+      ],
+      "registryDependencies": [
+        "@katana/cn"
+      ],
+      "files": [
+        {
+          "path": "src/ai/markdown.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/ai/markdown.tsx"
         }
       ]
     },

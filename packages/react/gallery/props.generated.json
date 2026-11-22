@@ -20805,6 +20805,126 @@
       "source": "src/blocks/order-ticket.tsx",
       "props": []
     },
+    "Markdown": {
+      "kind": "component",
+      "source": "src/ai/markdown.tsx",
+      "props": [
+        {
+          "name": "text",
+          "type": "string",
+          "required": true,
+          "description": "The Markdown source."
+        },
+        {
+          "name": "slots",
+          "type": "readonly ReactNode[]",
+          "required": false,
+          "description": "Nodes drawn where the text has `markdownSlot(i)` placeholders (by index), such as citation marks."
+        },
+        {
+          "name": "resolveLink",
+          "type": "(href: string) => string | null",
+          "required": false,
+          "description": "Turns on document mode: headings get anchors and relative links go through this (see `renderDoc`)."
+        },
+        {
+          "name": "onOpenLink",
+          "type": "(target: string) => void",
+          "required": false,
+          "description": "Called with the target `resolveLink` returned when the reader clicks such a link (the page does not navigate)."
+        },
+        {
+          "name": "labels",
+          "type": "MarkdownLabels",
+          "required": false,
+          "description": "Text for the image placeholder; defaults to Chinese."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "MarkdownHeading": {
+      "kind": "type",
+      "source": "src/ai/markdown.tsx",
+      "props": [
+        {
+          "name": "level",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "text",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "anchor",
+          "type": "string",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "MarkdownLabels": {
+      "kind": "type",
+      "source": "src/ai/markdown.tsx",
+      "props": [
+        {
+          "name": "image",
+          "type": "(alt: string) => string",
+          "required": true,
+          "description": "Placeholder text written in place of an image; `alt` is empty when the image has none."
+        }
+      ]
+    },
+    "MarkdownProps": {
+      "kind": "type",
+      "source": "src/ai/markdown.tsx",
+      "props": [
+        {
+          "name": "text",
+          "type": "string",
+          "required": true,
+          "description": "The Markdown source."
+        },
+        {
+          "name": "slots",
+          "type": "readonly ReactNode[]",
+          "required": false,
+          "description": "Nodes drawn where the text has `markdownSlot(i)` placeholders (by index), such as citation marks."
+        },
+        {
+          "name": "resolveLink",
+          "type": "(href: string) => string | null",
+          "required": false,
+          "description": "Turns on document mode: headings get anchors and relative links go through this (see `renderDoc`)."
+        },
+        {
+          "name": "onOpenLink",
+          "type": "(target: string) => void",
+          "required": false,
+          "description": "Called with the target `resolveLink` returned when the reader clicks such a link (the page does not navigate)."
+        },
+        {
+          "name": "labels",
+          "type": "MarkdownLabels",
+          "required": false,
+          "description": "Text for the image placeholder; defaults to Chinese."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
     "MarketHeatmap": {
       "kind": "component",
       "source": "src/quant/market-heatmap.tsx",
@@ -46515,6 +46635,11 @@
       "source": "src/quant/distribution-bars.tsx",
       "props": []
     },
+    "docHeadings": {
+      "kind": "function",
+      "source": "src/ai/markdown.tsx",
+      "props": []
+    },
     "elementToPng": {
       "kind": "function",
       "source": "src/lib/copy-image.ts",
@@ -47101,6 +47226,11 @@
       "source": "src/katana/switchboard-card.tsx",
       "props": []
     },
+    "markdownSlot": {
+      "kind": "function",
+      "source": "src/ai/markdown.tsx",
+      "props": []
+    },
     "matchCondition": {
       "kind": "function",
       "source": "src/patterns/filter-bar-model.ts",
@@ -47458,6 +47588,16 @@
           "description": "连接点朝向与上一次自动布局的方向：TB 从上到下（缺省）、LR 从左到右。随文档存，打开时按它还原。"
         }
       ]
+    },
+    "renderDoc": {
+      "kind": "function",
+      "source": "src/ai/markdown.tsx",
+      "props": []
+    },
+    "renderMarkdown": {
+      "kind": "function",
+      "source": "src/ai/markdown.tsx",
+      "props": []
     },
     "reorderColumn": {
       "kind": "function",

@@ -50,6 +50,7 @@
 @import './theme/workspace-tabs.css';
 @import './theme/ai-status.css';
 @import './theme/ai.css';
+@import './theme/markdown.css';
 @import './theme/sparkline.css';
 @import './theme/mini-chart.css';
 @import './theme/gauge-bar.css';

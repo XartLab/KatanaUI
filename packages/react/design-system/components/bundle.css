@@ -12087,6 +12087,108 @@ button.k-status-item:hover {
   }
 }
 
+.k-md {
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+.k-md > :first-child {
+  margin-top: 0;
+}
+
+.k-md > :last-child {
+  margin-bottom: 0;
+}
+
+.k-md p, .k-md ul, .k-md ol, .k-md pre, .k-md table, .k-md blockquote {
+  margin: 0 0 8px;
+}
+
+.k-md ul, .k-md ol {
+  padding-left: 20px;
+}
+
+.k-md ul {
+  list-style: outside;
+}
+
+.k-md ol {
+  list-style: decimal;
+}
+
+.k-md li + li {
+  margin-top: 2px;
+}
+
+.k-md strong {
+  color: var(--ink-100);
+  font-weight: 600;
+}
+
+.k-md h1, .k-md h2, .k-md h3, .k-md h4 {
+  color: var(--ink-100);
+  font: var(--text-body) var(--font-sans);
+  margin: 12px 0 6px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.k-md a {
+  color: var(--signal-blue);
+  text-underline-offset: 2px;
+  text-decoration: underline;
+}
+
+.k-md code {
+  border-radius: var(--radius-inner);
+  background: var(--alpha-white-5);
+  font: var(--text-data) var(--font-mono);
+  padding: 2px 4px;
+  font-weight: 400;
+}
+
+.k-md pre {
+  border-radius: var(--radius-overlay);
+  background: var(--ds-c-3udux8);
+  padding: 8px 12px;
+  overflow-x: auto;
+}
+
+.k-md pre code {
+  background: none;
+  padding: 0;
+}
+
+.k-md blockquote {
+  border-left: 2px solid var(--line-200);
+  color: var(--ink-300);
+  padding-left: 12px;
+}
+
+.k-md table {
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+  max-width: 100%;
+  display: block;
+  overflow-x: auto;
+}
+
+.k-md th, .k-md td {
+  border-bottom: 1px solid var(--line-100);
+  text-align: left;
+  white-space: nowrap;
+  padding: 4px 8px;
+}
+
+.k-md th {
+  color: var(--ink-300);
+  font-weight: 500;
+}
+
+.k-md-image {
+  color: var(--ink-300);
+}
+
 .k-spark {
   --k-spark-color: var(--k-content-body-foreground);
   --k-spark-ring: var(--k-surface-base-background);
@@ -22497,6 +22599,7 @@ button.k-consensus-hash:focus-visible {
   --ds-c-1o5vtkd: color-mix(in srgb, var(--heat-color) calc(var(--heat, 0) * 25%), transparent);
   --ds-c-xr40fv: color-mix(in srgb, var(--signal-green) 16%, transparent);
   --ds-c-2bvhsz: color-mix(in srgb, var(--signal-red) 14%, transparent);
+  --ds-c-3udux8: #00000040;
   --ds-c-19o6dqr: oklch(from var(--treemap-cell, var(--k-surface-sunken-background)) clamp(0, (.565 - l) * 1000, 1) 0 0);
   --ds-c-1yxxpoj: color-mix(in srgb, var(--pnl-down) 55%, var(--k-content-secondary-foreground));
   --ds-c-nyok28: color-mix(in srgb, var(--pnl-up) 55%, var(--k-content-secondary-foreground));

@@ -25,6 +25,7 @@ import {
   AiSuggestionsDemo,
   AiTaskListDemo,
   AiToolCallDemo,
+  MarkdownDemo,
 } from './pages/ai.tsx'
 import {
   ApertureBlurTransitionDemo,
@@ -443,6 +444,7 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'ai-conversation': AiConversationDemo,
   'ai-message': AiMessageDemo,
   'ai-response': AiResponseDemo,
+  markdown: MarkdownDemo,
   'ai-reasoning': AiReasoningDemo,
   'ai-tool-call': AiToolCallDemo,
   'ai-diff': AiDiffDemo,
