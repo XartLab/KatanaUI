@@ -22,7 +22,7 @@
 | `empty` | `string` | — | Deprecated: use labels.empty. |
 | `label` | `string` | — | Deprecated: use labels.list. |
 | `formatPrice` | `FormatPrice` | `plainPrice` | Writes the last price; two decimals when omitted. |
-| `locale` | `string` | — | Locale of the volume abbreviations (en-US K/M/B/T, zh-CN 万/亿); defaults to en-US. |
+| `locale` | `string` | — | Locale of the volume abbreviations (en-US K/M/B/T, zh-CN CJK myriad units); defaults to en-US. |
 | `volumeUnit` | `string` | — | Unit written small after the volume (shares, USD). |
 | `value` | `string` | — | The selected group id when controlled. |
 | `defaultValue` | `string` | — | The initially selected group id when uncontrolled. |

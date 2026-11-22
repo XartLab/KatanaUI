@@ -27067,7 +27067,7 @@
           "name": "locale",
           "type": "string",
           "required": false,
-          "description": "Locale of the volume abbreviations (en-US K/M/B/T, zh-CN 万/亿); defaults to en-US."
+          "description": "Locale of the volume abbreviations (en-US K/M/B/T, zh-CN CJK myriad units); defaults to en-US."
         },
         {
           "name": "volumeUnit",
@@ -27181,7 +27181,7 @@
           "name": "locale",
           "type": "string",
           "required": false,
-          "description": "Locale of the volume abbreviations (en-US K/M/B/T, zh-CN 万/亿); defaults to en-US."
+          "description": "Locale of the volume abbreviations (en-US K/M/B/T, zh-CN CJK myriad units); defaults to en-US."
         },
         {
           "name": "volumeUnit",
