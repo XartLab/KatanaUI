@@ -6767,6 +6767,93 @@ export const PAGES: readonly DocPage[] = [
     ],
   },
   {
+    id: 'order-book',
+    group: 'blocks',
+    cardHeight: 520,
+    title: 'OrderBook 订单簿',
+    summary:
+      '买卖挂单的阶梯：买卖并列（卖在上买在下，中间一行是最新价与价差）、只看买、只看卖三种模式；档位按 tick 合并（选项由调用方给，合并在 model 里按整数算：买盘向下取整、卖盘向上取整，同档的量十进制精确相加，不会出现 0.30000000000000004）；每行底下一条累计量深度条；底部买卖占比条（买量 /（买 + 卖），保留一位小数，两个数相加恒为 100）；点一行回调 onPriceSelect(价, 买或卖)，下单面板拿去回填价格，件不认下单面板。变了量的档位闪一下涨跌色（共用层 live.ts）。只吃 props，快照与增量由调用方合并好整份传，不连交易所。',
+    exports: ['OrderBook'],
+    propParts: [
+      {
+        part: 'OrderBook',
+        note: 'priceDecimals / sizeDecimals 由调用方按品种给，价格与数量按它换成整数再算。模式与档位都可受控（mode / tick）也可不受控（defaultMode / defaultTick）。',
+      },
+    ],
+    states: [
+      '买卖并列：卖盘最远的在上、最优价贴着中间行，买盘最优价紧接在下；每侧 depth 行（默认 10）。',
+      '只看买 / 只看卖：行数翻倍，中间行贴着那一侧的最优价；底部占比仍只数并列模式能看到的前 depth 行，数不随模式跳。',
+      '合并档位：切到 0.5 时卖盘价都是 0.5 的整数倍（向上取整），买盘向下取整；行数随之变少。',
+      '深度条：这一行累计量占显示行里最大累计量的比例，买盘走涨色、卖盘走跌色。',
+      '占比条：买占比与卖占比各占条宽的一部分，写一位小数；买卖都没有量时不画。',
+      '没给 onPriceSelect：行不是按钮，不可点。没有任何档位：画 labels.empty。',
+    ],
+    donts: [
+      '不要在件里拼价格字符串或做数量加法：合并、累计、占比都用 model 的整数算法，要换写法传 formatPrice / formatSize。',
+      '不要把增量一条条塞进来：调用方先合并成当前整簿再传，量为 0 的档就是已经撤光。',
+      '点价回调只说「点了哪个价、哪一侧」，不要在回调里假设这是买单还是卖单：点卖盘可以是想买（吃单）也可以是想挂卖。',
+    ],
+    composition:
+      'OrderBook\n  ToggleGroup（模式）· ToggleGroup（合并档位）\n  列头（价格 | 数量 | 累计）\n  卖盘 list：行（深度条 + 价 + 量 + 累计）\n  中间行：FlashPrice（最新价）· 价差\n  买盘 list：行\n  占比条（买 | 卖）',
+    keys: [
+      ['Tab', '在模式、档位切换与可点的行之间走'],
+      ['Enter / 空格', '点选聚焦的行（回调 onPriceSelect）'],
+    ],
+  },
+  {
+    id: 'depth-chart',
+    group: 'blocks',
+    cardHeight: 380,
+    title: 'DepthChart 深度图',
+    summary:
+      '买卖累计量的阶梯面积图：买盘在中间价左边、卖盘在右边，中间价一条虚线分界，买卖价差处留空。可用 rangePct 把横轴限制在中间价上下各 x%（深处的大单不再把图压扁，纵轴跟着重新取整）。悬停读价格、累计量与距中间价的百分比（带符号），读数框贴着光标，靠右时翻到左边；键盘聚焦后左右方向键一档一档走，Esc 清掉。累计量按整数算，档位次序不限。只吃 props。',
+    exports: ['DepthChart'],
+    propParts: [
+      { part: 'DepthChart', note: '档位与 OrderBook 同一个形状（{ price, size }），同一份数据可以喂两个件。' },
+    ],
+    states: [
+      '默认：横轴是最远买价到最远卖价，纵轴取到刚好放下最大累计量的整齐刻度。',
+      'rangePct：横轴限制在中间价 ±x%，范围外的档不画，纵轴最大值按范围内的重算。',
+      '悬停 / 方向键：十字线、曲线上的圆点与读数框（价格、累计量、距中间价）；读屏从 role=status 读同一句。',
+      '只有一侧或一档：横轴留一点宽度，不会宽为 0；一侧都没有写 labels.empty。',
+    ],
+    donts: [
+      '不要在件外把档位累加成累计量再传：传原始档位，累计在 model 里按整数算。',
+      '不要用它读精确的下单价：读数落在鼠标位置的价上，要点价下单用 OrderBook 的 onPriceSelect。',
+      'rangePct 要选合理：太小买卖两侧都画不出来，写 labels.empty 之外不会补假数据。',
+    ],
+    composition:
+      'DepthChart\n  plot（role=group，可聚焦）\n    svg：网格 · 买卖面积与描边 · 中间价虚线\n    纵轴刻度 · 中间价标注\n    十字线 · 圆点 · LcdTooltip（读数）\n  横轴价格\n  role=status 读数（视觉隐藏）',
+    keys: [
+      ['← →', '读数在档位价上一档一档走（先聚焦图）'],
+      ['Esc', '清掉读数'],
+    ],
+  },
+  {
+    id: 'trade-tape',
+    group: 'blocks',
+    cardHeight: 520,
+    title: 'TradeTape 成交明细',
+    summary:
+      '最近的成交：时间、价格（按主动方向着涨跌色：主动买走涨色、主动卖走跌色）、数量。新成交从顶上滑入并带蓝线高亮一阵（共用层 live.ts），首次渲染的不闪；大单阈值 largeSize 由调用方传，量不小于它的行整行淡底加粗；aggregate 把紧挨着的同价同方向成交并成一行，右边写笔数（×3），量十进制精确相加，聚合行取最老那笔的 id 当标识，并进新成交时不会再当新行进场一次。只留最近 maxRows 行。只吃 props，调用方把增量并进列表、按从新到旧整份传。',
+    exports: ['TradeTape'],
+    propParts: [
+      { part: 'TradeTape', note: 'trades 从新到旧，id 要稳定；时间默认写 UTC 的时分秒，要本地时区传 formatTime。' },
+    ],
+    states: [
+      '逐笔：一笔一行。聚合：只并紧挨着、同价、同方向的成交，夹了别的价或方向就断开，次序不变。',
+      '大单：量不小于 largeSize（聚合行按合计量比）整行淡底、数量加粗，读屏多读一句 labels.large。',
+      '新成交：从顶上滑入，蓝线高亮约 1.2 秒；没有成交写 labels.empty。',
+    ],
+    donts: [
+      '不要靠颜色单独表达方向：件里已经带了读屏用的「主动买 / 主动卖」文字，自己换版式时保留它。',
+      '成交号要稳定且唯一：用数组下标当 id，每来一笔所有行都会被当成新行高亮。',
+      '不要在这里存历史：只留最近 maxRows 行，更早的走调用方的历史查询。',
+    ],
+    composition: 'TradeTape\n  列头（时间 | 价格 | 数量）\n  list：行（时间 · 价格 · ×n 徽标 + 数量）',
+    keys: [],
+  },
+  {
     id: 'text-reveal',
     group: 'motion',
     cardHeight: 520,

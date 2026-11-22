@@ -7,6 +7,7 @@ import { ColumnSetTabsUsage } from '../gallery/usage/ColumnSetTabsUsage.tsx'
 import { ComponentCatalogUsage } from '../gallery/usage/ComponentCatalogUsage.tsx'
 import { ConsensusBlockUsage } from '../gallery/usage/ConsensusBlockUsage.tsx'
 import { DataGridUsage } from '../gallery/usage/DataGridUsage.tsx'
+import { DepthChartUsage } from '../gallery/usage/DepthChartUsage.tsx'
 import { DecisionQueueUsage } from '../gallery/usage/DecisionQueueUsage.tsx'
 import { EmptyStateUsage } from '../gallery/usage/EmptyStateUsage.tsx'
 import { EstimateBadgeUsage } from '../gallery/usage/EstimateBadgeUsage.tsx'
@@ -16,6 +17,7 @@ import { HypothesisLedgerUsage } from '../gallery/usage/HypothesisLedgerUsage.ts
 import { MeterUsage } from '../gallery/usage/MeterUsage.tsx'
 import { NewsFeedUsage } from '../gallery/usage/NewsFeedUsage.tsx'
 import { NewsReaderUsage } from '../gallery/usage/NewsReaderUsage.tsx'
+import { OrderBookUsage } from '../gallery/usage/OrderBookUsage.tsx'
 import { OrderTicketUsage } from '../gallery/usage/OrderTicketUsage.tsx'
 import { PanelFrameUsage } from '../gallery/usage/PanelFrameUsage.tsx'
 import { PositionCalculatorUsage } from '../gallery/usage/PositionCalculatorUsage.tsx'
@@ -29,6 +31,7 @@ import { SwapPanelUsage } from '../gallery/usage/SwapPanelUsage.tsx'
 import { SymbolGalaxyUsage } from '../gallery/usage/SymbolGalaxyUsage.tsx'
 import { SystemMonitorUsage } from '../gallery/usage/SystemMonitorUsage.tsx'
 import { ToolbarUsage } from '../gallery/usage/ToolbarUsage.tsx'
+import { TradeTapeUsage } from '../gallery/usage/TradeTapeUsage.tsx'
 import { TransmissionChainUsage } from '../gallery/usage/TransmissionChainUsage.tsx'
 import { UptimeBarsUsage } from '../gallery/usage/UptimeBarsUsage.tsx'
 import { WhiteboardUsage } from '../gallery/usage/WhiteboardUsage.tsx'
@@ -42,6 +45,7 @@ const items: Record<string, React.ReactNode> = {
   'consensus-block': <ConsensusBlockUsage />,
   'data-grid': <DataGridUsage />,
   'decision-queue': <DecisionQueueUsage />,
+  'depth-chart': <DepthChartUsage />,
   'empty-state': <EmptyStateUsage />,
   'estimate-badge': <EstimateBadgeUsage />,
   'event-timeline': <EventTimelineUsage />,
@@ -50,6 +54,7 @@ const items: Record<string, React.ReactNode> = {
   meter: <MeterUsage />,
   'news-feed': <NewsFeedUsage />,
   'news-reader': <NewsReaderUsage />,
+  'order-book': <OrderBookUsage />,
   'order-ticket': <OrderTicketUsage />,
   'panel-frame': <PanelFrameUsage />,
   'position-calculator': <PositionCalculatorUsage />,
@@ -64,6 +69,7 @@ const items: Record<string, React.ReactNode> = {
   'symbol-galaxy': <SymbolGalaxyUsage />,
   'system-monitor': <SystemMonitorUsage />,
   toolbar: <ToolbarUsage />,
+  'trade-tape': <TradeTapeUsage />,
   'transmission-chain': <TransmissionChainUsage />,
   'uptime-bars': <UptimeBarsUsage />,
   'use-undo-stack': <UseUndoStackUsage />,

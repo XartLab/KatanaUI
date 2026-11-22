@@ -20,6 +20,8 @@ const TARGET_ROOT = '~/src/katana/ui'
  * 有页的件，说明读页数据（gallery/registry.ts 的 PAGES.summary），这里不写第二份。
  */
 const INTERNAL = {
+  'scaled-decimal':
+    '盘口三件（订单簿、深度图、成交明细）共用的十进制整数运算：价格与数量按小数位乘成整数再加减比，不经浮点累加。',
   'order-ticket-parts':
     'OrderTicket 与 PositionCalculator 共用的小件：买卖切换、带标签与单位的数字框、读数行、数字格式。',
   'arcade-pixel-sprites': 'ArcadePixel 的数据：5x7 点阵字形、现成精灵与把文字排成格子的纯函数。',
@@ -287,6 +289,10 @@ function collectItems() {
       'reason-group-list',
       'board-strength-rank',
       'net-buy-bar',
+      // #104 盘口三件：订单簿、深度图、成交明细，各一个子目录（组件与它的纯函数一起装；深度图用订单簿的档位合并）。
+      'order-book',
+      'depth-chart',
+      'trade-tape',
       // 白板（#51）：组件、节点与边、纯函数合成一项。
       'whiteboard',
     ])

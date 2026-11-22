@@ -4155,6 +4155,53 @@
         }
       ]
     },
+    "BookLevel": {
+      "kind": "type",
+      "source": "src/blocks/order-book/order-book-model.ts",
+      "props": [
+        {
+          "name": "price",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "size",
+          "type": "number",
+          "required": true,
+          "description": "这一档的挂单量；0 或负数当作这一档已经撤光，不进簿。"
+        }
+      ]
+    },
+    "BookRow": {
+      "kind": "type",
+      "source": "src/blocks/order-book/order-book-model.ts",
+      "props": [
+        {
+          "name": "price",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "size",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "total",
+          "type": "number",
+          "required": true,
+          "description": "从最优价到这一档的累计量。"
+        }
+      ]
+    },
+    "BookSide": {
+      "kind": "type",
+      "source": "src/blocks/order-book/order-book-model.ts",
+      "props": []
+    },
     "BorderBeam": {
       "kind": "component",
       "source": "src/motion/effect/border-beam.tsx",
@@ -10028,6 +10075,187 @@
           "type": "boolean",
           "required": false,
           "description": "Disable the original button."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "DepthChart": {
+      "kind": "component",
+      "source": "src/blocks/depth-chart/depth-chart.tsx",
+      "props": [
+        {
+          "name": "bids",
+          "type": "readonly BookLevel[]",
+          "required": true,
+          "description": "Bid levels in any order; a level with size 0 is treated as gone."
+        },
+        {
+          "name": "asks",
+          "type": "readonly BookLevel[]",
+          "required": true,
+          "description": "Ask levels in any order."
+        },
+        {
+          "name": "priceDecimals",
+          "type": "number",
+          "required": true,
+          "description": "Decimal places of a price."
+        },
+        {
+          "name": "sizeDecimals",
+          "type": "number",
+          "required": true,
+          "description": "Decimal places of a size."
+        },
+        {
+          "name": "labels",
+          "type": "DepthChartLabels",
+          "required": true,
+          "description": "Texts."
+        },
+        {
+          "name": "rangePct",
+          "type": "number | null",
+          "required": false,
+          "description": "Limit the horizontal domain to this many percent either side of the mid price; all levels when omitted."
+        },
+        {
+          "name": "height",
+          "type": "number",
+          "required": false,
+          "default": "DEFAULT_HEIGHT",
+          "description": "Plot height in px; default 220."
+        },
+        {
+          "name": "formatPrice",
+          "type": "(price: number) => string",
+          "required": false,
+          "description": "How a price is written; defaults to fixed priceDecimals places."
+        },
+        {
+          "name": "formatSize",
+          "type": "(size: number) => string",
+          "required": false,
+          "description": "How a size is written; defaults to fixed sizeDecimals places."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "DepthChartLabels": {
+      "kind": "type",
+      "source": "src/blocks/depth-chart/depth-chart.tsx",
+      "props": [
+        {
+          "name": "chart",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the chart."
+        },
+        {
+          "name": "bid",
+          "type": "string",
+          "required": true,
+          "description": "Name of the bid side (「买盘」), used in the hover readout."
+        },
+        {
+          "name": "ask",
+          "type": "string",
+          "required": true,
+          "description": "Name of the ask side (「卖盘」), used in the hover readout."
+        },
+        {
+          "name": "mid",
+          "type": "string",
+          "required": true,
+          "description": "Name of the mid price marker (「中间价」)."
+        },
+        {
+          "name": "total",
+          "type": "string",
+          "required": true,
+          "description": "Hover readout row name for the cumulative size."
+        },
+        {
+          "name": "offset",
+          "type": "string",
+          "required": true,
+          "description": "Hover readout row name for the distance from the mid price."
+        },
+        {
+          "name": "empty",
+          "type": "string",
+          "required": true,
+          "description": "Text when there are no levels."
+        }
+      ]
+    },
+    "DepthChartProps": {
+      "kind": "type",
+      "source": "src/blocks/depth-chart/depth-chart.tsx",
+      "props": [
+        {
+          "name": "bids",
+          "type": "readonly BookLevel[]",
+          "required": true,
+          "description": "Bid levels in any order; a level with size 0 is treated as gone."
+        },
+        {
+          "name": "asks",
+          "type": "readonly BookLevel[]",
+          "required": true,
+          "description": "Ask levels in any order."
+        },
+        {
+          "name": "priceDecimals",
+          "type": "number",
+          "required": true,
+          "description": "Decimal places of a price."
+        },
+        {
+          "name": "sizeDecimals",
+          "type": "number",
+          "required": true,
+          "description": "Decimal places of a size."
+        },
+        {
+          "name": "labels",
+          "type": "DepthChartLabels",
+          "required": true,
+          "description": "Texts."
+        },
+        {
+          "name": "rangePct",
+          "type": "number | null",
+          "required": false,
+          "description": "Limit the horizontal domain to this many percent either side of the mid price; all levels when omitted."
+        },
+        {
+          "name": "height",
+          "type": "number",
+          "required": false,
+          "description": "Plot height in px; default 220."
+        },
+        {
+          "name": "formatPrice",
+          "type": "(price: number) => string",
+          "required": false,
+          "description": "How a price is written; defaults to fixed priceDecimals places."
+        },
+        {
+          "name": "formatSize",
+          "type": "(size: number) => string",
+          "required": false,
+          "description": "How a size is written; defaults to fixed sizeDecimals places."
         },
         {
           "name": "className",
@@ -24907,6 +25135,314 @@
       "kind": "type",
       "source": "src/blocks/order-ticket.tsx",
       "props": []
+    },
+    "OrderBook": {
+      "kind": "component",
+      "source": "src/blocks/order-book/order-book.tsx",
+      "props": [
+        {
+          "name": "bids",
+          "type": "readonly BookLevel[]",
+          "required": true,
+          "description": "Bid levels in any order; a level with size 0 is treated as gone."
+        },
+        {
+          "name": "asks",
+          "type": "readonly BookLevel[]",
+          "required": true,
+          "description": "Ask levels in any order."
+        },
+        {
+          "name": "priceDecimals",
+          "type": "number",
+          "required": true,
+          "description": "Decimal places of a price, from the instrument's tick size; all price math is done on integers at this scale."
+        },
+        {
+          "name": "sizeDecimals",
+          "type": "number",
+          "required": true,
+          "description": "Decimal places of a size, from the instrument's lot size."
+        },
+        {
+          "name": "labels",
+          "type": "OrderBookLabels",
+          "required": true,
+          "description": "Texts."
+        },
+        {
+          "name": "tickOptions",
+          "type": "readonly number[]",
+          "required": false,
+          "default": "[]",
+          "description": "Merge ticks to offer (0.1, 0.5, 1, 10); no switch is drawn when empty."
+        },
+        {
+          "name": "tick",
+          "type": "number",
+          "required": false,
+          "description": "Selected merge tick (controlled); defaults to the first option, or the smallest price step."
+        },
+        {
+          "name": "defaultTick",
+          "type": "number",
+          "required": false,
+          "description": "Uncontrolled: the merge tick at first."
+        },
+        {
+          "name": "onTickChange",
+          "type": "(tick: number) => void",
+          "required": false,
+          "description": "Called when the merge tick is switched."
+        },
+        {
+          "name": "mode",
+          "type": "OrderBookMode",
+          "required": false,
+          "description": "Selected mode (controlled): both sides, bids only or asks only."
+        },
+        {
+          "name": "defaultMode",
+          "type": "OrderBookMode",
+          "required": false,
+          "default": "'both'",
+          "description": "Uncontrolled: the mode at first; defaults to both."
+        },
+        {
+          "name": "onModeChange",
+          "type": "(mode: OrderBookMode) => void",
+          "required": false,
+          "description": "Called when the mode is switched."
+        },
+        {
+          "name": "depth",
+          "type": "number",
+          "required": false,
+          "default": "DEFAULT_DEPTH",
+          "description": "Rows per side in both mode (a single-side mode shows twice as many); default 10."
+        },
+        {
+          "name": "last",
+          "type": "number",
+          "required": false,
+          "description": "Last traded price, drawn between the ladders; its changed trailing digits flash."
+        },
+        {
+          "name": "lastTone",
+          "type": "'up' | 'down'",
+          "required": false,
+          "description": "Direction of the last move, colors the last price."
+        },
+        {
+          "name": "onPriceSelect",
+          "type": "(price: number, side: BookSide) => void",
+          "required": false,
+          "description": "Called with the merged price and the side of the clicked row (the caller decides what order that means); rows are not clickable without it."
+        },
+        {
+          "name": "formatPrice",
+          "type": "(price: number) => string",
+          "required": false,
+          "description": "How a price is written; defaults to fixed priceDecimals places."
+        },
+        {
+          "name": "formatSize",
+          "type": "(size: number) => string",
+          "required": false,
+          "description": "How a size or cumulative size is written; defaults to fixed sizeDecimals places."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "OrderBookLabels": {
+      "kind": "type",
+      "source": "src/blocks/order-book/order-book.tsx",
+      "props": [
+        {
+          "name": "list",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the whole book."
+        },
+        {
+          "name": "modes",
+          "type": "{ group: string; both: string; bids: string; asks: string }",
+          "required": true,
+          "description": "The mode switch: group name and the three options."
+        },
+        {
+          "name": "tick",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the merge tick switch."
+        },
+        {
+          "name": "columns",
+          "type": "{ price: string; size: string; total: string }",
+          "required": true,
+          "description": "Column headers."
+        },
+        {
+          "name": "bid",
+          "type": "string",
+          "required": true,
+          "description": "Short name of the bid side (「买」), used on the share bar."
+        },
+        {
+          "name": "ask",
+          "type": "string",
+          "required": true,
+          "description": "Short name of the ask side (「卖」), used on the share bar."
+        },
+        {
+          "name": "spread",
+          "type": "string",
+          "required": true,
+          "description": "Name of the spread readout (「价差」)."
+        },
+        {
+          "name": "share",
+          "type": "(bid: string, ask: string) => string",
+          "required": true,
+          "description": "Accessible text of the share bar, gets the two percentage texts."
+        },
+        {
+          "name": "empty",
+          "type": "string",
+          "required": true,
+          "description": "Text when there is nothing to show."
+        }
+      ]
+    },
+    "OrderBookMode": {
+      "kind": "type",
+      "source": "src/blocks/order-book/order-book.tsx",
+      "props": []
+    },
+    "OrderBookProps": {
+      "kind": "type",
+      "source": "src/blocks/order-book/order-book.tsx",
+      "props": [
+        {
+          "name": "bids",
+          "type": "readonly BookLevel[]",
+          "required": true,
+          "description": "Bid levels in any order; a level with size 0 is treated as gone."
+        },
+        {
+          "name": "asks",
+          "type": "readonly BookLevel[]",
+          "required": true,
+          "description": "Ask levels in any order."
+        },
+        {
+          "name": "priceDecimals",
+          "type": "number",
+          "required": true,
+          "description": "Decimal places of a price, from the instrument's tick size; all price math is done on integers at this scale."
+        },
+        {
+          "name": "sizeDecimals",
+          "type": "number",
+          "required": true,
+          "description": "Decimal places of a size, from the instrument's lot size."
+        },
+        {
+          "name": "labels",
+          "type": "OrderBookLabels",
+          "required": true,
+          "description": "Texts."
+        },
+        {
+          "name": "tickOptions",
+          "type": "readonly number[]",
+          "required": false,
+          "description": "Merge ticks to offer (0.1, 0.5, 1, 10); no switch is drawn when empty."
+        },
+        {
+          "name": "tick",
+          "type": "number",
+          "required": false,
+          "description": "Selected merge tick (controlled); defaults to the first option, or the smallest price step."
+        },
+        {
+          "name": "defaultTick",
+          "type": "number",
+          "required": false,
+          "description": "Uncontrolled: the merge tick at first."
+        },
+        {
+          "name": "onTickChange",
+          "type": "(tick: number) => void",
+          "required": false,
+          "description": "Called when the merge tick is switched."
+        },
+        {
+          "name": "mode",
+          "type": "OrderBookMode",
+          "required": false,
+          "description": "Selected mode (controlled): both sides, bids only or asks only."
+        },
+        {
+          "name": "defaultMode",
+          "type": "OrderBookMode",
+          "required": false,
+          "description": "Uncontrolled: the mode at first; defaults to both."
+        },
+        {
+          "name": "onModeChange",
+          "type": "(mode: OrderBookMode) => void",
+          "required": false,
+          "description": "Called when the mode is switched."
+        },
+        {
+          "name": "depth",
+          "type": "number",
+          "required": false,
+          "description": "Rows per side in both mode (a single-side mode shows twice as many); default 10."
+        },
+        {
+          "name": "last",
+          "type": "number",
+          "required": false,
+          "description": "Last traded price, drawn between the ladders; its changed trailing digits flash."
+        },
+        {
+          "name": "lastTone",
+          "type": "'up' | 'down'",
+          "required": false,
+          "description": "Direction of the last move, colors the last price."
+        },
+        {
+          "name": "onPriceSelect",
+          "type": "(price: number, side: BookSide) => void",
+          "required": false,
+          "description": "Called with the merged price and the side of the clicked row (the caller decides what order that means); rows are not clickable without it."
+        },
+        {
+          "name": "formatPrice",
+          "type": "(price: number) => string",
+          "required": false,
+          "description": "How a price is written; defaults to fixed priceDecimals places."
+        },
+        {
+          "name": "formatSize",
+          "type": "(size: number) => string",
+          "required": false,
+          "description": "How a size or cumulative size is written; defaults to fixed sizeDecimals places."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
     },
     "OrderDraft": {
       "kind": "type",
@@ -42611,6 +43147,236 @@
       "kind": "component",
       "source": "src/primitives/tooltip.tsx",
       "props": []
+    },
+    "Trade": {
+      "kind": "type",
+      "source": "src/blocks/trade-tape/trade-tape-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string | number",
+          "required": true,
+          "description": "稳定的唯一标识（交易所成交号）；新成交靠它认出来，从顶上进。"
+        },
+        {
+          "name": "time",
+          "type": "number",
+          "required": true,
+          "description": "成交时刻，毫秒时间戳。"
+        },
+        {
+          "name": "price",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "size",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "side",
+          "type": "TradeSide",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "TradeSide": {
+      "kind": "type",
+      "source": "src/blocks/trade-tape/trade-tape-model.ts",
+      "props": []
+    },
+    "TradeTape": {
+      "kind": "component",
+      "source": "src/blocks/trade-tape/trade-tape.tsx",
+      "props": [
+        {
+          "name": "trades",
+          "type": "readonly Trade[]",
+          "required": true,
+          "description": "Trades newest first; ids must be stable so new ones can be told apart."
+        },
+        {
+          "name": "priceDecimals",
+          "type": "number",
+          "required": true,
+          "description": "Decimal places of a price."
+        },
+        {
+          "name": "sizeDecimals",
+          "type": "number",
+          "required": true,
+          "description": "Decimal places of a size."
+        },
+        {
+          "name": "labels",
+          "type": "TradeTapeLabels",
+          "required": true,
+          "description": "Texts."
+        },
+        {
+          "name": "largeSize",
+          "type": "number",
+          "required": false,
+          "description": "Highlight rows whose size is at least this; none when omitted."
+        },
+        {
+          "name": "aggregate",
+          "type": "boolean",
+          "required": false,
+          "default": "false",
+          "description": "Merge consecutive trades at the same price and side into one row."
+        },
+        {
+          "name": "maxRows",
+          "type": "number",
+          "required": false,
+          "default": "DEFAULT_MAX_ROWS",
+          "description": "Rows to keep, counted after merging; default 50."
+        },
+        {
+          "name": "formatTime",
+          "type": "(time: number) => string",
+          "required": false,
+          "default": "clockText",
+          "description": "How a timestamp is written; defaults to UTC HH:MM:SS."
+        },
+        {
+          "name": "formatPrice",
+          "type": "(price: number) => string",
+          "required": false,
+          "description": "How a price is written; defaults to fixed priceDecimals places."
+        },
+        {
+          "name": "formatSize",
+          "type": "(size: number) => string",
+          "required": false,
+          "description": "How a size is written; defaults to fixed sizeDecimals places."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "TradeTapeLabels": {
+      "kind": "type",
+      "source": "src/blocks/trade-tape/trade-tape.tsx",
+      "props": [
+        {
+          "name": "list",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the list."
+        },
+        {
+          "name": "columns",
+          "type": "{ time: string; price: string; size: string }",
+          "required": true,
+          "description": "Column headers."
+        },
+        {
+          "name": "sides",
+          "type": "Record<TradeSide, string>",
+          "required": true,
+          "description": "Names of the two aggressor sides, read out with each row (「主动买」「主动卖」)."
+        },
+        {
+          "name": "count",
+          "type": "(n: number) => string",
+          "required": true,
+          "description": "Text of the merged-count badge, gets the number of trades in the row (「×3」)."
+        },
+        {
+          "name": "large",
+          "type": "string",
+          "required": true,
+          "description": "Text for a large trade, read out with the row."
+        },
+        {
+          "name": "empty",
+          "type": "string",
+          "required": true,
+          "description": "Text when there are no trades."
+        }
+      ]
+    },
+    "TradeTapeProps": {
+      "kind": "type",
+      "source": "src/blocks/trade-tape/trade-tape.tsx",
+      "props": [
+        {
+          "name": "trades",
+          "type": "readonly Trade[]",
+          "required": true,
+          "description": "Trades newest first; ids must be stable so new ones can be told apart."
+        },
+        {
+          "name": "priceDecimals",
+          "type": "number",
+          "required": true,
+          "description": "Decimal places of a price."
+        },
+        {
+          "name": "sizeDecimals",
+          "type": "number",
+          "required": true,
+          "description": "Decimal places of a size."
+        },
+        {
+          "name": "labels",
+          "type": "TradeTapeLabels",
+          "required": true,
+          "description": "Texts."
+        },
+        {
+          "name": "largeSize",
+          "type": "number",
+          "required": false,
+          "description": "Highlight rows whose size is at least this; none when omitted."
+        },
+        {
+          "name": "aggregate",
+          "type": "boolean",
+          "required": false,
+          "description": "Merge consecutive trades at the same price and side into one row."
+        },
+        {
+          "name": "maxRows",
+          "type": "number",
+          "required": false,
+          "description": "Rows to keep, counted after merging; default 50."
+        },
+        {
+          "name": "formatTime",
+          "type": "(time: number) => string",
+          "required": false,
+          "description": "How a timestamp is written; defaults to UTC HH:MM:SS."
+        },
+        {
+          "name": "formatPrice",
+          "type": "(price: number) => string",
+          "required": false,
+          "description": "How a price is written; defaults to fixed priceDecimals places."
+        },
+        {
+          "name": "formatSize",
+          "type": "(size: number) => string",
+          "required": false,
+          "description": "How a size is written; defaults to fixed sizeDecimals places."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
     },
     "TransmissionChain": {
       "kind": "component",

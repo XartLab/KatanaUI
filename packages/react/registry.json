@@ -134,6 +134,11 @@
           "target": "~/src/katana/ui/theme/decision-queue.css"
         },
         {
+          "path": "src/theme/depth-chart.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/depth-chart.css"
+        },
+        {
           "path": "src/theme/dialog.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/dialog.css"
@@ -317,6 +322,11 @@
           "path": "src/theme/number-input.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/number-input.css"
+        },
+        {
+          "path": "src/theme/order-book.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/order-book.css"
         },
         {
           "path": "src/theme/panel-frame.css",
@@ -507,6 +517,11 @@
           "path": "src/theme/toolbar.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/toolbar.css"
+        },
+        {
+          "path": "src/theme/trade-tape.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/trade-tape.css"
         },
         {
           "path": "src/theme/transmission-chain.css",
@@ -750,6 +765,22 @@
           "path": "src/lib/overlay.tsx",
           "type": "registry:lib",
           "target": "~/src/katana/ui/lib/overlay.tsx"
+        }
+      ]
+    },
+    {
+      "name": "scaled-decimal",
+      "type": "registry:lib",
+      "title": "Scaled Decimal",
+      "description": "盘口三件（订单簿、深度图、成交明细）共用的十进制整数运算：价格与数量按小数位乘成整数再加减比，不经浮点累加。",
+      "registryDependencies": [
+        "@katana/quant-format"
+      ],
+      "files": [
+        {
+          "path": "src/lib/scaled-decimal.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/lib/scaled-decimal.ts"
         }
       ]
     },
@@ -7440,6 +7471,81 @@
           "path": "src/blocks/net-buy-bar/net-buy-model.ts",
           "type": "registry:component",
           "target": "~/src/katana/ui/blocks/net-buy-bar/net-buy-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "order-book",
+      "type": "registry:component",
+      "title": "Order Book",
+      "description": "买卖挂单的阶梯：买卖并列（卖在上买在下，中间一行是最新价与价差）、只看买、只看卖三种模式；档位按 tick 合并（选项由调用方给，合并在 model 里按整数算：买盘向下取整、卖盘向上取整，同档的量十进制精确相加，不会出现 0.30000000000000004）；每行底下一条累计量深度条；底部买卖占比条（买量 /（买 + 卖），保留一位小数，两个数相加恒为 100）；点一行回调 onPriceSelect(价, 买或卖)，下单面板拿去回填价格，件不认下单面板。变了量的档位闪一下涨跌色（共用层 live.ts）。只吃 props，快照与增量由调用方合并好整份传，不连交易所。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/flash-price",
+        "@katana/live",
+        "@katana/scaled-decimal",
+        "@katana/toggle-group"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/order-book/order-book-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/order-book/order-book-model.ts"
+        },
+        {
+          "path": "src/blocks/order-book/order-book.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/order-book/order-book.tsx"
+        }
+      ]
+    },
+    {
+      "name": "depth-chart",
+      "type": "registry:component",
+      "title": "Depth Chart",
+      "description": "买卖累计量的阶梯面积图：买盘在中间价左边、卖盘在右边，中间价一条虚线分界，买卖价差处留空。可用 rangePct 把横轴限制在中间价上下各 x%（深处的大单不再把图压扁，纵轴跟着重新取整）。悬停读价格、累计量与距中间价的百分比（带符号），读数框贴着光标，靠右时翻到左边；键盘聚焦后左右方向键一档一档走，Esc 清掉。累计量按整数算，档位次序不限。只吃 props。",
+      "registryDependencies": [
+        "@katana/chart-kit",
+        "@katana/cn",
+        "@katana/num",
+        "@katana/order-book",
+        "@katana/scaled-decimal",
+        "@katana/series-geometry"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/depth-chart/depth-chart-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/depth-chart/depth-chart-model.ts"
+        },
+        {
+          "path": "src/blocks/depth-chart/depth-chart.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/depth-chart/depth-chart.tsx"
+        }
+      ]
+    },
+    {
+      "name": "trade-tape",
+      "type": "registry:component",
+      "title": "Trade Tape",
+      "description": "最近的成交：时间、价格（按主动方向着涨跌色：主动买走涨色、主动卖走跌色）、数量。新成交从顶上滑入并带蓝线高亮一阵（共用层 live.ts），首次渲染的不闪；大单阈值 largeSize 由调用方传，量不小于它的行整行淡底加粗；aggregate 把紧挨着的同价同方向成交并成一行，右边写笔数（×3），量十进制精确相加，聚合行取最老那笔的 id 当标识，并进新成交时不会再当新行进场一次。只留最近 maxRows 行。只吃 props，调用方把增量并进列表、按从新到旧整份传。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/live",
+        "@katana/num",
+        "@katana/scaled-decimal"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/trade-tape/trade-tape-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/trade-tape/trade-tape-model.ts"
+        },
+        {
+          "path": "src/blocks/trade-tape/trade-tape.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/trade-tape/trade-tape.tsx"
         }
       ]
     },

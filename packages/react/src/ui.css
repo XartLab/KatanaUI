@@ -83,6 +83,9 @@
 @import './theme/reason-group-list.css';
 @import './theme/board-strength-rank.css';
 @import './theme/net-buy-bar.css';
+@import './theme/order-book.css';
+@import './theme/depth-chart.css';
+@import './theme/trade-tape.css';
 @import './theme/event-calendar.css';
 @import './theme/filter-bar.css';
 @import './theme/view-switcher.css';
