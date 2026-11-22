@@ -209,6 +209,27 @@ export {
 export { UptimeBars, type UptimeBarsProps } from './uptime-bars/uptime-bars.tsx'
 export { uptimeShare, type UptimeCell, type UptimeStatus } from './uptime-bars/uptime-bars-model.ts'
 
+// 白板（#51）：底座 React Flow（@xyflow/react，MIT）。
+export { Whiteboard, type WhiteboardLabels, type WhiteboardProps } from './whiteboard/whiteboard.tsx'
+export {
+  copySelection,
+  getDownstream,
+  layoutWhiteboard,
+  pasteClip,
+  removeItems,
+  snapToGuides,
+  type WhiteboardCardNode,
+  type WhiteboardDirection,
+  type WhiteboardDoc,
+  type WhiteboardEdge,
+  type WhiteboardGroupNode,
+  type WhiteboardHypothesisNode,
+  type WhiteboardMetricNode,
+  type WhiteboardNode,
+  type WhiteboardNodeType,
+  type WhiteboardNoteNode,
+} from './whiteboard/whiteboard-model.ts'
+
 // 兑换面板（改自 SmoothUI swap-panel，MIT）。
 export { SwapPanel, type SwapAsset, type SwapPanelLabels, type SwapQuote, type SwapStatus } from './swap-panel.tsx'
 

@@ -287,6 +287,8 @@ function collectItems() {
       'reason-group-list',
       'board-strength-rank',
       'net-buy-bar',
+      // 白板（#51）：组件、节点与边、纯函数合成一项。
+      'whiteboard',
     ])
       add(
         dir,

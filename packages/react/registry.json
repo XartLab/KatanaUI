@@ -539,6 +539,11 @@
           "target": "~/src/katana/ui/theme/watchlist.css"
         },
         {
+          "path": "src/theme/whiteboard.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/whiteboard.css"
+        },
+        {
           "path": "src/theme/workspace-tabs.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/workspace-tabs.css"
@@ -7395,6 +7400,42 @@
           "path": "src/blocks/net-buy-bar/net-buy-model.ts",
           "type": "registry:component",
           "target": "~/src/katana/ui/blocks/net-buy-bar/net-buy-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "whiteboard",
+      "type": "registry:component",
+      "title": "Whiteboard",
+      "description": "研究面板的传导链与 KATANAview #319「白板推演」共用的一块画布（#51）：节点有便签、分组框、指标 / 序列（标题 + 当前值 + 小折线，用 Sparkline）、卡片（插槽，调用方画）、假说（状态与证据计数）；边有普通、带验证状态（与 TransmissionChain 同一套线型 + 图标 + 色）、反馈边（点线 + 回环图标）。拖拽、从连接点拖出连线、框选、Delete 删除、撤销重做、复制粘贴、拖动时对齐吸附（左 / 中 / 右、上 / 中 / 下差 6px 以内贴上并画辅助线）、自动布局（dagre，TB / LR，只排顶层节点，反馈边不参与定层）、适应窗口、小地图开关、右键菜单、键盘可达。选中一个节点，沿边能到的下游节点与边加亮、其余淡到 35%；getDownstream(edges, id) 给同一份名单，「改一个指标只重算下游」由调用方按名单算。受控：nodes / edges 进、onChange 回整份新文档，纯 JSON，存哪由调用方管。底座 @xyflow/react（React Flow 13，MIT），布局 @dagrejs/dagre 3.1.3（MIT）；不用 tldraw（许可证不是开源许可，生产要密钥）。自动布局、自定义节点与边、右键菜单、节点工具条照 React Flow 官网的免费示例（MIT）；它的撤销重做、复制粘贴、辅助线是 Pro 示例（xyflow Pro License），没用，这几项是自己写的。页上的数值、折线与证据条数是演示数据。",
+      "dependencies": [
+        "@dagrejs/dagre@3.1.3",
+        "@xyflow/react@13.0.2",
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/context-menu",
+        "@katana/row-actions",
+        "@katana/sparkline",
+        "@katana/toolbar",
+        "@katana/transmission-chain"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/whiteboard/whiteboard-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/whiteboard/whiteboard-model.ts"
+        },
+        {
+          "path": "src/blocks/whiteboard/whiteboard-nodes.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/whiteboard/whiteboard-nodes.tsx"
+        },
+        {
+          "path": "src/blocks/whiteboard/whiteboard.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/whiteboard/whiteboard.tsx"
         }
       ]
     },

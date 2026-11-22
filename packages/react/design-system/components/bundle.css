@@ -8418,6 +8418,893 @@ button.k-sysmon-link-body:focus-visible {
   background: var(--k-surface-raised-background);
 }
 
+@layer xyflow {
+  .react-flow {
+    color-scheme: light dark;
+    --xy-edge-stroke-default: light-dark(#b1b1b7, #3e3e3e);
+    --xy-edge-stroke-width-default: 1;
+    --xy-edge-stroke-selected-default: light-dark(#555, #727272);
+    --xy-connectionline-stroke-default: #b1b1b7;
+    --xy-connectionline-stroke-width-default: 1;
+    --xy-attribution-background-color-default: light-dark(#ffffff80, #96969640);
+    --xy-minimap-background-color-default: light-dark(#fff, #141414);
+    --xy-minimap-mask-background-color-default: light-dark(#f0f0f099, #3c3c3c99);
+    --xy-minimap-mask-stroke-color-default: transparent;
+    --xy-minimap-mask-stroke-width-default: 1;
+    --xy-minimap-node-background-color-default: light-dark(#e2e2e2, #2b2b2b);
+    --xy-minimap-node-stroke-color-default: transparent;
+    --xy-minimap-node-stroke-width-default: 2;
+    --xy-background-color-default: light-dark(#0000, #141414);
+    --xy-background-pattern-dots-color-default: light-dark(#91919a, #555);
+    --xy-background-pattern-lines-color-default: light-dark(#eee, #333);
+    --xy-background-pattern-cross-color-default: light-dark(#e2e2e2, #333);
+    background-color: var(--xy-background-color, var(--xy-background-color-default));
+    --xy-node-color-default: light-dark(canvastext, #f8f8f8);
+    --xy-node-border-default: 1px solid #bbb;
+    --xy-node-border-selected-default: 1px solid #555;
+    --xy-handle-background-color-default: #333;
+    --xy-selection-background-color-default: #9696b41a;
+    --xy-selection-border-default: 1px dotted #9b9b9bcc;
+    --xy-resize-background-color-default: #3367d9;
+    direction: ltr;
+  }
+
+  [data-theme="dark"] .react-flow, .dark .react-flow {
+    color-scheme: dark;
+  }
+
+  [data-theme="light"] .react-flow, .light .react-flow {
+    color-scheme: light;
+  }
+
+  .react-flow.dark {
+    color-scheme: dark;
+  }
+
+  .react-flow.light {
+    color-scheme: light;
+  }
+
+  .react-flow__background {
+    background-color: var(--xy-background-color-props, var(--xy-background-color, var(--xy-background-color-default)));
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  .react-flow__container {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+
+  .react-flow__pane {
+    z-index: 1;
+    touch-action: none;
+  }
+
+  .react-flow__pane:before {
+    content: "";
+    position: absolute;
+    inset: 0;
+  }
+
+  .react-flow__pane.draggable:before {
+    cursor: grab;
+  }
+
+  .react-flow__pane.dragging:before {
+    cursor: grabbing;
+  }
+
+  .react-flow__pane.selection, .react-flow__pane.selection:before {
+    cursor: pointer;
+  }
+
+  .react-flow__viewport {
+    transform-origin: 0 0;
+    z-index: 2;
+    pointer-events: none;
+  }
+
+  .react-flow__renderer {
+    z-index: 4;
+  }
+
+  .react-flow__selection {
+    z-index: 6;
+  }
+
+  .react-flow__nodesselection-rect:focus, .react-flow__nodesselection-rect:focus-visible {
+    outline: none;
+  }
+
+  .react-flow__edge-path {
+    stroke: var(--xy-edge-stroke, var(--xy-edge-stroke-default));
+    stroke-width: var(--xy-edge-stroke-width, var(--xy-edge-stroke-width-default));
+    fill: none;
+  }
+
+  .react-flow__connection-path {
+    stroke: var(--xy-connectionline-stroke, var(--xy-connectionline-stroke-default));
+    stroke-width: var(--xy-connectionline-stroke-width, var(--xy-connectionline-stroke-width-default));
+    fill: none;
+  }
+
+  .react-flow .react-flow__edges {
+    position: absolute;
+  }
+
+  .react-flow .react-flow__edges svg {
+    pointer-events: none;
+    position: absolute;
+    overflow: visible;
+  }
+
+  .react-flow__edge {
+    pointer-events: visibleStroke;
+  }
+
+  .react-flow__edge.selectable {
+    cursor: pointer;
+  }
+
+  .react-flow__edge.animated path {
+    stroke-dasharray: 5;
+    animation: .5s linear infinite dashdraw;
+  }
+
+  .react-flow__edge.animated path.react-flow__edge-interaction {
+    stroke-dasharray: none;
+    animation: none;
+  }
+
+  .react-flow__edge.inactive {
+    pointer-events: none;
+  }
+
+  .react-flow__edge.selected, .react-flow__edge:focus, .react-flow__edge:focus-visible {
+    outline: none;
+  }
+
+  .react-flow__edge.selected .react-flow__edge-path, .react-flow__edge.selectable:focus .react-flow__edge-path, .react-flow__edge.selectable:focus-visible .react-flow__edge-path {
+    stroke: var(--xy-edge-stroke-selected, var(--xy-edge-stroke-selected-default));
+  }
+
+  .react-flow__edge-textwrapper {
+    pointer-events: all;
+  }
+
+  .react-flow__edge .react-flow__edge-text {
+    pointer-events: none;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  .react-flow__arrowhead polyline {
+    stroke: var(--xy-edge-stroke, var(--xy-edge-stroke-default));
+  }
+
+  .react-flow__arrowhead polyline.arrowclosed {
+    fill: var(--xy-edge-stroke, var(--xy-edge-stroke-default));
+  }
+
+  .react-flow__connection {
+    pointer-events: none;
+  }
+
+  .react-flow__connection .animated {
+    stroke-dasharray: 5;
+    animation: .5s linear infinite dashdraw;
+  }
+
+  svg.react-flow__connectionline {
+    z-index: 1001;
+    position: absolute;
+    overflow: visible;
+  }
+
+  .react-flow__nodes {
+    pointer-events: none;
+    transform-origin: 0 0;
+  }
+
+  .react-flow__node {
+    -webkit-user-select: none;
+    user-select: none;
+    pointer-events: all;
+    transform-origin: 0 0;
+    box-sizing: border-box;
+    cursor: default;
+    position: absolute;
+  }
+
+  .react-flow__node.selectable {
+    cursor: pointer;
+  }
+
+  .react-flow__node.draggable {
+    cursor: grab;
+    pointer-events: all;
+  }
+
+  .react-flow__node.draggable.dragging {
+    cursor: grabbing;
+  }
+
+  .react-flow__nodesselection {
+    z-index: 3;
+    transform-origin: 0 0;
+    pointer-events: none;
+  }
+
+  .react-flow__nodesselection-rect {
+    pointer-events: all;
+    cursor: grab;
+    position: absolute;
+  }
+
+  .react-flow__handle {
+    pointer-events: none;
+    background-color: var(--xy-handle-background-color, var(--xy-handle-background-color-default));
+    min-width: 5px;
+    min-height: 5px;
+    position: absolute;
+  }
+
+  .react-flow__handle.connectingfrom {
+    pointer-events: all;
+  }
+
+  .react-flow__handle.connectionindicator {
+    pointer-events: all;
+    cursor: crosshair;
+  }
+
+  .react-flow__handle-bottom {
+    top: auto;
+    bottom: 0;
+    left: 50%;
+    transform: translate(-50%, 50%);
+  }
+
+  .react-flow__handle-top {
+    top: 0;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .react-flow__handle-left {
+    top: 50%;
+    left: 0;
+    transform: translate(-50%, -50%);
+  }
+
+  .react-flow__handle-right {
+    top: 50%;
+    right: 0;
+    transform: translate(50%, -50%);
+  }
+
+  .react-flow__edgeupdater {
+    cursor: move;
+    pointer-events: all;
+  }
+
+  .react-flow__pane.selection .react-flow__panel {
+    pointer-events: none;
+  }
+
+  .react-flow__panel {
+    z-index: 5;
+    margin: 15px;
+    position: absolute;
+  }
+
+  .react-flow__panel.top {
+    top: 0;
+  }
+
+  .react-flow__panel.bottom {
+    bottom: 0;
+  }
+
+  .react-flow__panel.top.center, .react-flow__panel.bottom.center {
+    left: 50%;
+    transform: translateX(-15px) translateX(-50%);
+  }
+
+  .react-flow__panel.left {
+    left: 0;
+  }
+
+  .react-flow__panel.right {
+    right: 0;
+  }
+
+  .react-flow__panel.left.center, .react-flow__panel.right.center {
+    top: 50%;
+    transform: translateY(-15px) translateY(-50%);
+  }
+
+  .react-flow__attribution {
+    background: var(--xy-attribution-background-color, var(--xy-attribution-background-color-default));
+    margin: 0;
+    padding: 2px 3px;
+    font-size: 10px;
+  }
+
+  .react-flow__attribution a {
+    color: var(--ds-c-yj0p8z);
+    text-decoration: none;
+  }
+
+  @keyframes dashdraw {
+    from {
+      stroke-dashoffset: 10px;
+    }
+  }
+
+  .react-flow__edgelabel-renderer {
+    pointer-events: none;
+    -webkit-user-select: none;
+    user-select: none;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+
+  .react-flow__viewport-portal {
+    -webkit-user-select: none;
+    user-select: none;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+
+  .react-flow__minimap {
+    background: var(--xy-minimap-background-color-props, var(--xy-minimap-background-color, var(--xy-minimap-background-color-default)));
+  }
+
+  .react-flow__minimap-svg {
+    display: block;
+  }
+
+  .react-flow__minimap-mask {
+    fill: var(--xy-minimap-mask-background-color-props, var(--xy-minimap-mask-background-color, var(--xy-minimap-mask-background-color-default)));
+    stroke: var(--xy-minimap-mask-stroke-color-props, var(--xy-minimap-mask-stroke-color, var(--xy-minimap-mask-stroke-color-default)));
+    stroke-width: var(--xy-minimap-mask-stroke-width-props, var(--xy-minimap-mask-stroke-width, var(--xy-minimap-mask-stroke-width-default)));
+  }
+
+  .react-flow__minimap-node {
+    fill: var(--xy-minimap-node-background-color-props, var(--xy-minimap-node-background-color, var(--xy-minimap-node-background-color-default)));
+    stroke: var(--xy-minimap-node-stroke-color-props, var(--xy-minimap-node-stroke-color, var(--xy-minimap-node-stroke-color-default)));
+    stroke-width: var(--xy-minimap-node-stroke-width-props, var(--xy-minimap-node-stroke-width, var(--xy-minimap-node-stroke-width-default)));
+  }
+
+  .react-flow__background-pattern.dots {
+    fill: var(--xy-background-pattern-color-props, var(--xy-background-pattern-color, var(--xy-background-pattern-dots-color-default)));
+  }
+
+  .react-flow__background-pattern.lines {
+    stroke: var(--xy-background-pattern-color-props, var(--xy-background-pattern-color, var(--xy-background-pattern-lines-color-default)));
+  }
+
+  .react-flow__background-pattern.cross {
+    stroke: var(--xy-background-pattern-color-props, var(--xy-background-pattern-color, var(--xy-background-pattern-cross-color-default)));
+  }
+
+  .react-flow__controls {
+    flex-direction: column;
+    display: flex;
+  }
+
+  .react-flow__controls.horizontal {
+    flex-direction: row;
+  }
+
+  .react-flow__controls-button {
+    justify-content: center;
+    align-items: center;
+    width: 26px;
+    height: 26px;
+    padding: 4px;
+    display: flex;
+  }
+
+  .react-flow__controls-button svg {
+    fill: currentColor;
+    width: 100%;
+    max-width: 12px;
+    max-height: 12px;
+  }
+
+  .react-flow__node-input, .react-flow__node-default, .react-flow__node-output, .react-flow__node-group {
+    border: var(--xy-node-border, var(--xy-node-border-default));
+    color: var(--xy-node-color, var(--xy-node-color-default));
+  }
+
+  .react-flow__node-input.selected, .react-flow__node-input:focus, .react-flow__node-input:focus-visible, .react-flow__node-default.selected, .react-flow__node-default:focus, .react-flow__node-default:focus-visible, .react-flow__node-output.selected, .react-flow__node-output:focus, .react-flow__node-output:focus-visible, .react-flow__node-group.selected, .react-flow__node-group:focus, .react-flow__node-group:focus-visible {
+    border: var(--xy-node-border-selected, var(--xy-node-border-selected-default));
+    outline: none;
+  }
+
+  .react-flow__nodesselection-rect, .react-flow__selection {
+    background: var(--xy-selection-background-color, var(--xy-selection-background-color-default));
+    border: var(--xy-selection-border, var(--xy-selection-border-default));
+  }
+
+  .react-flow__resize-control {
+    position: absolute;
+  }
+
+  .react-flow__resize-control.left, .react-flow__resize-control.right {
+    cursor: ew-resize;
+  }
+
+  .react-flow__resize-control.top, .react-flow__resize-control.bottom {
+    cursor: ns-resize;
+  }
+
+  .react-flow__resize-control.top.left, .react-flow__resize-control.bottom.right {
+    cursor: nwse-resize;
+  }
+
+  .react-flow__resize-control.bottom.left, .react-flow__resize-control.top.right {
+    cursor: nesw-resize;
+  }
+
+  .react-flow__resize-control.handle {
+    background-color: var(--xy-resize-background-color, var(--xy-resize-background-color-default));
+    border: 1px solid var(--ds-c-yj1s8q);
+    border-radius: 1px;
+    width: 5px;
+    height: 5px;
+    translate: -50% -50%;
+  }
+
+  .react-flow__resize-control.handle.left {
+    top: 50%;
+    left: 0;
+  }
+
+  .react-flow__resize-control.handle.right {
+    top: 50%;
+    left: 100%;
+  }
+
+  .react-flow__resize-control.handle.top {
+    top: 0;
+    left: 50%;
+  }
+
+  .react-flow__resize-control.handle.bottom {
+    top: 100%;
+    left: 50%;
+  }
+
+  .react-flow__resize-control.handle.top.left, .react-flow__resize-control.handle.bottom.left {
+    left: 0;
+  }
+
+  .react-flow__resize-control.handle.top.right, .react-flow__resize-control.handle.bottom.right {
+    left: 100%;
+  }
+
+  .react-flow__resize-control.line {
+    border-color: var(--xy-resize-background-color, var(--xy-resize-background-color-default));
+    border-style: solid;
+    border-width: 0;
+  }
+
+  .react-flow__resize-control.line.left, .react-flow__resize-control.line.right {
+    width: 1px;
+    height: 100%;
+    top: 0;
+    transform: translate(-50%);
+  }
+
+  .react-flow__resize-control.line.left {
+    border-left-width: 1px;
+    left: 0;
+  }
+
+  .react-flow__resize-control.line.right {
+    border-right-width: 1px;
+    left: 100%;
+  }
+
+  .react-flow__resize-control.line.top, .react-flow__resize-control.line.bottom {
+    width: 100%;
+    height: 1px;
+    left: 0;
+    transform: translate(0, -50%);
+  }
+
+  .react-flow__resize-control.line.top {
+    border-top-width: 1px;
+    top: 0;
+  }
+
+  .react-flow__resize-control.line.bottom {
+    border-bottom-width: 1px;
+    top: 100%;
+  }
+}
+
+.k-wb {
+  border: var(--hairline);
+  background: var(--k-surface-base-background);
+  height: 100%;
+  min-height: 0;
+  color: var(--k-content-body-foreground);
+  font: var(--text-data) var(--font-sans);
+  --xy-background-color: var(--k-surface-base-background);
+  --xy-background-pattern-color: var(--k-separable-primary-borderColor);
+  --xy-node-color: var(--k-content-body-foreground);
+  --xy-node-border: none;
+  --xy-node-background-color: transparent;
+  --xy-node-border-radius: 0;
+  --xy-node-boxshadow-hover: none;
+  --xy-node-boxshadow-selected: none;
+  --xy-edge-stroke: var(--k-content-tertiary-foreground);
+  --xy-edge-stroke-selected: var(--k-content-primary-foreground);
+  --xy-edge-stroke-width: 1.5;
+  --xy-connectionline-stroke: var(--k-content-secondary-foreground);
+  --xy-connectionline-stroke-width: 1.5;
+  --xy-handle-background-color: var(--k-content-secondary-foreground);
+  --xy-handle-border-color: var(--k-surface-base-background);
+  --xy-selection-background-color: var(--k-selectable-subtle-background-selected);
+  --xy-selection-border: 1px dashed var(--k-separable-primary-borderColor);
+  --xy-resize-background-color: var(--k-content-secondary-foreground);
+  --xy-minimap-background-color: var(--k-container-secondary-background);
+  --xy-minimap-mask-background-color: var(--k-selectable-background-hover);
+  --xy-minimap-mask-stroke-color: var(--k-separable-primary-borderColor);
+  --xy-minimap-node-background-color: var(--k-separable-bold-borderColor);
+  --xy-minimap-node-stroke-color: transparent;
+  --xy-edge-label-background-color: var(--k-container-secondary-background);
+  --xy-edge-label-color: var(--k-content-body-foreground);
+  --xy-attribution-background-color: transparent;
+  position: relative;
+}
+
+.k-wb .react-flow {
+  background: var(--xy-background-color);
+}
+
+.k-wb-defs {
+  width: 0;
+  height: 0;
+  position: absolute;
+}
+
+.k-wb .k-wb-toolbar {
+  z-index: 5;
+  border: var(--hairline);
+  background: var(--k-container-secondary-background);
+  height: auto;
+  padding: 2px;
+  position: absolute;
+  top: 8px;
+  left: 8px;
+}
+
+.k-wb .react-flow__minimap {
+  border: var(--hairline);
+}
+
+.k-wb .react-flow__node {
+  outline: none;
+}
+
+.k-wb .react-flow__node:focus-visible:after {
+  content: "";
+  pointer-events: none;
+  --wb-b: var(--k-focused-outlineColor);
+  background: linear-gradient(var(--wb-b), var(--wb-b)) top left / 10px 2px, linear-gradient(var(--wb-b), var(--wb-b)) top left / 2px 10px, linear-gradient(var(--wb-b), var(--wb-b)) top right / 10px 2px, linear-gradient(var(--wb-b), var(--wb-b)) top right / 2px 10px, linear-gradient(var(--wb-b), var(--wb-b)) bottom left / 10px 2px, linear-gradient(var(--wb-b), var(--wb-b)) bottom left / 2px 10px, linear-gradient(var(--wb-b), var(--wb-b)) bottom right / 10px 2px, linear-gradient(var(--wb-b), var(--wb-b)) bottom right / 2px 10px;
+  background-repeat: no-repeat;
+  position: absolute;
+  inset: -4px;
+}
+
+.k-wb-node {
+  border: 1px solid var(--k-separable-bold-borderColor);
+  background: var(--k-container-secondary-background);
+  border-radius: 6px;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 140px;
+  max-width: 260px;
+  padding: 8px 10px;
+  transition: opacity .12s;
+  display: flex;
+}
+
+.k-wb .react-flow__node:hover .k-wb-node {
+  background: var(--k-surface-raised-background);
+}
+
+.k-wb .react-flow__node.selected .k-wb-node {
+  border-color: var(--k-content-primary-foreground);
+}
+
+.k-wb-node[data-mark="downstream"] {
+  border-color: var(--k-content-primary-foreground);
+  background: var(--k-selectable-background-selected);
+}
+
+.k-wb-node[data-mark="dim"] {
+  opacity: .35;
+}
+
+.k-wb-node[data-kind="note"] {
+  background: var(--k-surface-base-background);
+  border-style: dashed;
+}
+
+.k-wb-note-text {
+  color: var(--k-content-primary-foreground);
+  white-space: pre-wrap;
+  margin: 0;
+}
+
+.k-wb-note-edit {
+  border: var(--hairline);
+  background: var(--k-surface-base-background);
+  min-height: 48px;
+  color: var(--k-content-primary-foreground);
+  font: inherit;
+  field-sizing: content;
+  resize: none;
+  padding: 2px;
+}
+
+.k-wb-title {
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+  font-weight: 700;
+}
+
+.k-wb-metric-row {
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  display: flex;
+}
+
+.k-wb-value {
+  color: var(--k-content-primary-foreground);
+  font-variant-numeric: tabular-nums;
+  font-size: 16px;
+}
+
+.k-wb-value small {
+  color: var(--k-content-secondary-foreground);
+  margin-left: 2px;
+  font-size: 11px;
+  font-weight: 400;
+}
+
+.k-wb-spark {
+  width: 72px;
+  height: 24px;
+  display: block;
+}
+
+.k-wb-slot {
+  cursor: auto;
+  min-height: 24px;
+}
+
+.k-wb-hyp-meta {
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  display: flex;
+}
+
+.k-wb-badge {
+  border: 1px solid var(--wb-color);
+  border-radius: var(--radius-pill);
+  color: var(--k-content-primary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+  align-items: center;
+  gap: 4px;
+  padding: 1px 8px;
+  display: inline-flex;
+}
+
+.k-wb-badge svg {
+  color: var(--wb-color);
+}
+
+.k-wb-count {
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+  font-variant-numeric: tabular-nums;
+}
+
+.k-wb-node[data-kind="hypothesis"] {
+  border-left: 3px solid var(--wb-color);
+}
+
+.k-wb-group {
+  border: 1px dashed var(--k-separable-primary-borderColor);
+  background: var(--k-selectable-subtle-groupBackground);
+  border-radius: 8px;
+  width: 100%;
+  height: 100%;
+}
+
+.k-wb .react-flow__node.selected .k-wb-group {
+  border-color: var(--k-content-secondary-foreground);
+}
+
+.k-wb-group-title {
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+  font-weight: 700;
+  position: absolute;
+  top: 6px;
+  left: 10px;
+}
+
+.k-wb .k-wb-resize-handle {
+  border: 1px solid var(--k-surface-base-background);
+  background: var(--k-content-secondary-foreground);
+  border-radius: 0;
+  width: 7px;
+  height: 7px;
+}
+
+.k-wb .k-wb-resize-line {
+  border-color: var(--k-content-tertiary-foreground);
+}
+
+.k-wb .react-flow__handle {
+  opacity: 0;
+  width: 7px;
+  height: 7px;
+  transition: opacity .12s;
+}
+
+.k-wb .react-flow__node:hover .react-flow__handle, .k-wb .react-flow__node.selected .react-flow__handle, .k-wb .react-flow__handle.connectingfrom {
+  opacity: 1;
+}
+
+.k-wb-node-tools {
+  border: var(--hairline);
+  background: var(--k-container-secondary-background);
+  box-shadow: var(--shadow-overlay);
+  display: flex;
+}
+
+.k-wb-node-tools button {
+  width: 26px;
+  height: 26px;
+  color: var(--k-content-secondary-foreground);
+  cursor: pointer;
+  background: none;
+  border: 0;
+  place-items: center;
+  padding: 0;
+  display: inline-grid;
+}
+
+.k-wb-node-tools button:hover {
+  background: var(--k-selectable-background-hover);
+  color: var(--k-content-primary-foreground);
+}
+
+.k-wb-node-tools button:focus-visible {
+  outline: var(--k-focused-outlineWidth) solid var(--k-focused-outlineColor);
+  outline-offset: -2px;
+}
+
+.k-wb-node-tools svg {
+  width: 14px;
+  height: 14px;
+}
+
+.k-wb-edge-line[data-status="plain"], .k-wb-edge-chip[data-status="plain"], .k-wb-arrow[data-status="plain"] {
+  --wb-color: var(--k-content-tertiary-foreground);
+  --wb-dash: none;
+}
+
+.k-wb [data-status="supported"] {
+  --wb-color: var(--pnl-up);
+  --wb-dash: none;
+}
+
+.k-wb [data-status="contradicted"] {
+  --wb-color: var(--pnl-down);
+  --wb-dash: none;
+}
+
+.k-wb [data-status="partial"] {
+  --wb-color: var(--k-status-warn-foreground);
+  --wb-dash: 9 3 2 3;
+}
+
+.k-wb [data-status="untested"] {
+  --wb-color: var(--k-content-tertiary-foreground);
+  --wb-dash: 5 4;
+}
+
+.k-wb-arrow path {
+  fill: var(--wb-color);
+}
+
+.k-wb .react-flow__edge-path.k-wb-edge-line {
+  stroke: var(--wb-color);
+  stroke-width: 1.75px;
+  stroke-dasharray: var(--wb-dash);
+  transition: opacity .12s;
+}
+
+.k-wb .react-flow__edge-path.k-wb-edge-line[data-feedback="true"] {
+  stroke-dasharray: 2 4;
+  stroke-linecap: round;
+}
+
+.k-wb .react-flow__edge.selected .k-wb-edge-line, .k-wb .react-flow__edge:hover .k-wb-edge-line, .k-wb .k-wb-edge-line[data-mark="downstream"] {
+  stroke-width: 3px;
+}
+
+.k-wb [data-mark="dim"].k-wb-edge-line, .k-wb [data-mark="dim"].k-wb-edge-chip {
+  opacity: .35;
+}
+
+.k-wb .react-flow__edge:focus-visible .k-wb-edge-line {
+  stroke: var(--k-content-primary-foreground);
+}
+
+.k-wb-edge-chip {
+  border: 1px solid var(--wb-color);
+  border-radius: var(--radius-pill);
+  background: var(--k-container-secondary-background);
+  color: var(--k-content-body-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+  white-space: nowrap;
+  pointer-events: all;
+  align-items: center;
+  gap: 4px;
+  padding: 1px 8px;
+  display: inline-flex;
+  position: absolute;
+}
+
+.k-wb-edge-chip svg {
+  color: var(--wb-color);
+}
+
+.k-wb-guide {
+  pointer-events: none;
+  background: var(--k-content-secondary-foreground);
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.k-wb-guide.is-v {
+  width: 1px;
+  height: 100000px;
+}
+
+.k-wb-guide.is-h {
+  width: 100000px;
+  height: 1px;
+}
+
+.k-wb:focus {
+  outline: none;
+}
+
 .k-dq {
   height: 100%;
   min-height: 0;
@@ -21469,6 +22356,8 @@ button.k-consensus-hash:focus-visible {
   --ds-c-1mfxecf: color-mix(in srgb, var(--ink-100) 16%, transparent);
   --ds-c-1qo15dq: color-mix(in srgb, var(--k-content-tertiary-foreground) 55%, transparent);
   --ds-c-vl0tsn: color-mix(in srgb, var(--k-content-tertiary-foreground) 12%, transparent);
+  --ds-c-yj0p8z: #999;
+  --ds-c-yj1s8q: #fff;
   --ds-c-g9drgv: color-mix(in srgb, var(--arcade-dark) 44%, transparent);
   --ds-c-1vl7bn6: color-mix(in srgb, var(--arcade-light) 5%, transparent);
   --ds-c-1llrxil: color-mix(in srgb, var(--arcade-fringe-warm) 18%, transparent);
@@ -21513,7 +22402,6 @@ button.k-consensus-hash:focus-visible {
   --ds-c-14h5ztb: color-mix(in srgb, var(--signal-amber) 50%, transparent);
   --ds-c-2xn4b5: #0009;
   --ds-c-87ch24: color-mix(in oklab, var(--glow-color) var(--glow-strength), transparent);
-  --ds-c-yj1s8q: #fff;
 }
 
 /* 运行时才有值的变量：声明成 initial 等于没声明，带 fallback 的 var() 照常走 fallback；声明它们只是让设计系统的检查认得。 */
@@ -21595,4 +22483,16 @@ button.k-consensus-hash:focus-visible {
   --skullet-highlight: initial;
   --stage-t: initial;
   --tl-cols: initial;
+  --xy-background-color-props: initial;
+  --xy-background-pattern-color-props: initial;
+  --xy-minimap-background-color-props: initial;
+  --xy-minimap-mask-background-color-props: initial;
+  --xy-minimap-mask-stroke-color-props: initial;
+  --xy-minimap-mask-stroke-width: initial;
+  --xy-minimap-mask-stroke-width-props: initial;
+  --xy-minimap-node-background-color-props: initial;
+  --xy-minimap-node-stroke-color-props: initial;
+  --xy-minimap-node-stroke-width: initial;
+  --xy-minimap-node-stroke-width-props: initial;
+  --xy-node-border-selected: initial;
 }

@@ -100,6 +100,7 @@ import { FlowSankeyDemo, VintageSeriesDemo } from './pages/flows.tsx'
 import { KeyStatsDemo, PeerCardsDemo, PerformanceStripDemo, RangeBarTvDemo, WatchlistDemo } from './pages/overview.tsx'
 import { ParamScatterDemo, StrategyReportDemo } from './pages/strategy.tsx'
 import { TransmissionChainDemo } from './pages/research.tsx'
+import { WhiteboardDemo } from './pages/whiteboard.tsx'
 import {
   DataGridDemo,
   DecisionQueueDemo,
@@ -393,6 +394,7 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'news-reader': NewsReaderDemo,
   'strategy-report': StrategyReportDemo,
   'transmission-chain': TransmissionChainDemo,
+  whiteboard: WhiteboardDemo,
   'param-scatter': ParamScatterDemo,
   'flow-sankey': FlowSankeyDemo,
   'vintage-series': VintageSeriesDemo,
