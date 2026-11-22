@@ -1443,8 +1443,8 @@ for (const theme of THEMES) {
       await expect(area.locator('#gal-dots-default')).toHaveAttribute('width', '6')
       await expect(area.locator('#gal-dots-default')).toHaveAttribute('height', '6')
       await expect(area.locator('#gal-dots-default .k-dot-tile')).toHaveAttribute('width', '4')
-      await expect(area.locator('#gal-dots-default .k-dot-tile')).toHaveCSS('fill', await token(page, '--seq-300'))
-      await expect(area.locator('#gal-dots-orange .k-dot-tile')).toHaveCSS('fill', await token(page, '--signal-orange'))
+      await expect(area.locator('#gal-dots-default .k-dot-tile')).toHaveCSS('fill', await token(page, '--k-heat-3'))
+      await expect(area.locator('#gal-dots-deep .k-dot-tile')).toHaveCSS('fill', await token(page, '--k-heat-5'))
     })
 
     test('滚动数字（里程表式）：涨一下转轮上依次经过中间的数字、整串闪涨色，文本里只有新的整串数字；中途取样转轮与新字同步在动', async ({
@@ -2502,8 +2502,12 @@ for (const theme of THEMES) {
           probe.remove()
           return color
         }, name)
+      // A 股件：本页根上是 data-updown="cn"（红涨绿跌，评审 #78），封住是红、跌停是绿。
+      await expect(page.locator('html')).toHaveAttribute('data-updown', 'cn')
       expect(await labelColor('600002')).toBe(await tokenColor('--pnl-up'))
+      expect(await labelColor('600002')).toBe(await tokenColor('--signal-red'))
       expect(await labelColor('603007')).toBe(await tokenColor('--pnl-down'))
+      expect(await labelColor('603007')).toBe(await tokenColor('--signal-green'))
       expect(await labelColor('000003')).toBe(await tokenColor('--signal-amber'))
       // 选中行左侧 2px 强调条；点另一行，条跟着走。
       const shadow = (code: string) =>
@@ -2521,6 +2525,10 @@ for (const theme of THEMES) {
       await page.keyboard.press('ArrowDown')
       await page.keyboard.press('Enter')
       await expect(ladder.locator('[data-code="601006"]')).toHaveAttribute('aria-selected', 'true')
+      // 离开这一页，根上的 data-updown 还原（文档站默认绿涨红跌）。
+      await navLink(page, 'market-heatmap').click()
+      await page.locator('[data-gallery="market-heatmap"]').waitFor()
+      await expect(page.locator('html')).not.toHaveAttribute('data-updown', /.+/)
     })
 
     test('量化：市场热力图——显示开关：logo、标题（无 / 代码 / 全名）、格内数值（价格 / 成交额 / 涨跌幅 / 无）与全屏', async ({

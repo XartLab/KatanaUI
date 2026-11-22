@@ -268,6 +268,14 @@
   --k-chart-crosshair-borderColor: var(--chart-crosshair);
   --k-chart-bench-borderColor: var(--chart-bench);
   --k-chart-other-foreground: var(--series-other);
+  --k-heat-0: color-mix(in srgb, var(--ink-100) 6%, transparent);
+  --k-heat-1: color-mix(in srgb, var(--ink-100) 16%, transparent);
+  --k-heat-2: color-mix(in srgb, var(--ink-100) 30%, transparent);
+  --k-heat-3: color-mix(in srgb, var(--ink-100) 46%, transparent);
+  --k-heat-4: color-mix(in srgb, var(--ink-100) 64%, transparent);
+  --k-heat-5: color-mix(in srgb, var(--ink-100) 84%, transparent);
+  --k-heat-fg-low: var(--ink-100);
+  --k-heat-fg-high: var(--bg-000);
   --k-overlay-shadow: var(--shadow-overlay);
   --k-overlay-compact-shadow: var(--shadow-overlay-sm);
   --k-overlay-tooltip-shadow: var(--shadow-tooltip);

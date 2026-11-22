@@ -10010,7 +10010,7 @@
           "name": "color",
           "type": "string",
           "required": false,
-          "default": "'var(--seq-300)'",
+          "default": "'var(--k-heat-3)'",
           "description": "Fill color of the dots."
         }
       ]

@@ -5989,7 +5989,7 @@
       "name": "quantile-layers",
       "type": "registry:component",
       "title": "Quantile Layers",
-      "description": "因子分层累计收益（卡 QuantileLayers）：层号是序数，线色取 seq-200 到 seq-600（暗到亮，最高层最亮），不用类别色也不用涨跌色。多空差是点阵纹理面加 ink-100 细线，线尾标最高层与最低层，最高层末点是强调色。悬停一层其余变 40%，点击锁定；扫读出 LCD 提示；底部一行结论（单调性灯加词、各项统计、来源）。图右上三件，表格视图必有。",
+      "description": "因子分层累计收益（卡 QuantileLayers）：层号是序数，线色取 --k-heat-1 到 --k-heat-5（中性灰浓度，暗到亮，最高层最亮），不用类别色也不用涨跌色。多空差是点阵纹理面加 ink-100 细线，线尾标最高层与最低层，最高层末点是强调色。悬停一层其余变 40%，点击锁定；扫读出 LCD 提示；底部一行结论（单调性灯加词、各项统计、来源）。图右上三件，表格视图必有。",
       "registryDependencies": [
         "@katana/chart-kit",
         "@katana/cn",
@@ -6009,7 +6009,7 @@
       "name": "quantile-model",
       "type": "registry:component",
       "title": "Quantile Model",
-      "description": "因子分层累计收益（卡 QuantileLayers）：层号是序数，线色取 seq-200 到 seq-600（暗到亮，最高层最亮），不用类别色也不用涨跌色。多空差是点阵纹理面加 ink-100 细线，线尾标最高层与最低层，最高层末点是强调色。悬停一层其余变 40%，点击锁定；扫读出 LCD 提示；底部一行结论（单调性灯加词、各项统计、来源）。图右上三件，表格视图必有。",
+      "description": "因子分层累计收益（卡 QuantileLayers）：层号是序数，线色取 --k-heat-1 到 --k-heat-5（中性灰浓度，暗到亮，最高层最亮），不用类别色也不用涨跌色。多空差是点阵纹理面加 ink-100 细线，线尾标最高层与最低层，最高层末点是强调色。悬停一层其余变 40%，点击锁定；扫读出 LCD 提示；底部一行结论（单调性灯加词、各项统计、来源）。图右上三件，表格视图必有。",
       "files": [
         {
           "path": "src/quant/quantile-model.ts",

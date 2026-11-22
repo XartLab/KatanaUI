@@ -13,7 +13,7 @@
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
 | `id` * | `string` | — | Id of the pattern; it must differ for every chart on the same page. |
-| `color` | `string` | `'var(--seq-300)'` | Fill color of the dots. |
+| `color` | `string` | `'var(--k-heat-3)'` | Fill color of the dots. |
 
 ### DOT_SIZE / DOT_PITCH
 
@@ -39,7 +39,7 @@ export function DotMatrixUsage() {
 
 ## States
 
-- 静态纹理：4px 实、2px 空；颜色默认 --seq-300，可传 token。
+- 静态纹理：4px 实、2px 空；颜色默认 --k-heat-3（数据浓度的中间档），可传 token。
 - 每张图一个 id：同页两张图共用一个 id 时后一张会读到前一张的颜色。
 
 ## Don't

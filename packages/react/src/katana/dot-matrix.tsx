@@ -8,7 +8,7 @@ export const DOT_PITCH = 6
 
 export function DotMatrix({
   id,
-  color = 'var(--seq-300)',
+  color = 'var(--k-heat-3)',
 }: {
   /** Id of the pattern; it must differ for every chart on the same page. */
   id: string
