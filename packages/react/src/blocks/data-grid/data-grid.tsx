@@ -204,14 +204,16 @@ export function DataGrid<Row extends object>({
   // 出胶囊时表头与数据行的右端都让出胶囊的宽度（#128）：胶囊不透明、贴在可视区右端，不让位就盖住最后一列的表头。
   // 用 toggleBox 量到的真实宽度，没量到的第一帧用预留值（与上面收列用的同一个数，所以让位后不会多出半列）。
   const toggleReserve = hiddenColumns > 0 ? toggleWidth || COLUMNS_TOGGLE_RESERVE : 0
-  const visibility: ColumnVisibilityState = Object.fromEntries(
-    layout.map((column) => [
+  // 没写进 layout 的列不画（layout 管顺序与显隐；TanStack 对不在显隐表里的列默认显示，并排到最后）。
+  const visibility: ColumnVisibilityState = Object.fromEntries([
+    ...columns.filter((column) => !layoutOf.has(column.id)).map((column) => [column.id, false] as const),
+    ...layout.map((column) => [
       column.id,
       column.visible &&
         (!compact || compactKept.has(column.id)) &&
         (!collapsed || priorityFit?.kept.has(column.id) === true),
     ]),
-  )
+  ])
   const scroller = useRef<HTMLDivElement>(null)
   const { drag, resizing, canFit, fitRows, startResize } = useColumnSizing<Row>({
     scroller,
