@@ -274,6 +274,13 @@ import {
 } from './pages/smoothui-trading.tsx'
 import { ScrubberDemo } from './pages/smoothui-scrub.tsx'
 import { SymbolSearchDemo } from './pages/symbol-search.tsx'
+import {
+  AccountEquityDemo,
+  FundingRateDemo,
+  OptionsChainDemo,
+  OrdersTableDemo,
+  PositionsTableDemo,
+} from './pages/account.tsx'
 
 /** 每一页的实时预览，键是 registry.ts 里的页 id（registry.test.ts 核对两边一一对应）。 */
 export const DEMOS: Readonly<Record<string, ComponentType>> = {
@@ -356,6 +363,11 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'reason-group-list': ReasonGroupListDemo,
   'board-strength-rank': BoardStrengthRankDemo,
   'net-buy-bar': NetBuyBarDemo,
+  'positions-table': PositionsTableDemo,
+  'orders-table': OrdersTableDemo,
+  'account-equity': AccountEquityDemo,
+  'funding-rate': FundingRateDemo,
+  'options-chain': OptionsChainDemo,
   'market-heatmap': MarketHeatmapDemo,
   'rating-text': RatingTextDemo,
   'technical-rating': TechnicalRatingDemo,

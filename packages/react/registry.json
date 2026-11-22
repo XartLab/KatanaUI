@@ -29,6 +29,11 @@
           "target": "~/src/katana/ui/theme/theme.css"
         },
         {
+          "path": "src/theme/account-equity.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/account-equity.css"
+        },
+        {
           "path": "src/theme/ai-status.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/ai-status.css"
@@ -194,6 +199,11 @@
           "target": "~/src/katana/ui/theme/form-motion.css"
         },
         {
+          "path": "src/theme/funding-rate.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/funding-rate.css"
+        },
+        {
           "path": "src/theme/gauge-bar.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/gauge-bar.css"
@@ -319,6 +329,16 @@
           "target": "~/src/katana/ui/theme/number-input.css"
         },
         {
+          "path": "src/theme/options-chain.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/options-chain.css"
+        },
+        {
+          "path": "src/theme/orders-table.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/orders-table.css"
+        },
+        {
           "path": "src/theme/panel-frame.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/panel-frame.css"
@@ -337,6 +357,11 @@
           "path": "src/theme/performance-strip.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/performance-strip.css"
+        },
+        {
+          "path": "src/theme/positions-table.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/positions-table.css"
         },
         {
           "path": "src/theme/price-tag.css",
@@ -7440,6 +7465,143 @@
           "path": "src/blocks/net-buy-bar/net-buy-model.ts",
           "type": "registry:component",
           "target": "~/src/katana/ui/blocks/net-buy-bar/net-buy-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "positions-table",
+      "type": "registry:component",
+      "title": "Positions Table",
+      "description": "账户四件之一（#104，#103 持仓监控的表）：一行一个持仓，列出品种、方向（多 / 空，文字）、数量、开仓均价、标记价、强平价、强平距离（% 加进度条）、未实现盈亏（金额与 %）、保证金与杠杆；行内「平仓」「止盈止损」只发回调；表尾合计。强平距离近于调用方给的阈值（liquidationWarnPct）时整格换警示色并带图标，再近一半是危险档。同页的 PositionsOrdersTabs 把持仓表与委托表摆进同一个页签外壳。件不认识交易所，不下单。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/button",
+        "@katana/cn",
+        "@katana/data-grid",
+        "@katana/num",
+        "@katana/orders-table",
+        "@katana/pnl-text",
+        "@katana/quant-format",
+        "@katana/tabs"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/positions-table/positions-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/positions-table/positions-model.ts"
+        },
+        {
+          "path": "src/blocks/positions-table/positions-orders-tabs.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/positions-table/positions-orders-tabs.tsx"
+        },
+        {
+          "path": "src/blocks/positions-table/positions-table.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/positions-table/positions-table.tsx"
+        }
+      ]
+    },
+    {
+      "name": "orders-table",
+      "type": "registry:component",
+      "title": "Orders Table",
+      "description": "账户四件之一（#104）：一行一张在途委托：品种、方向（买 / 卖，文字）、类型（限价 / 市价 / 条件）、价格、数量、已成交（数量加进度条）、状态、时间；行内「撤单」；价格旁铅笔进入行内改价：回车提交 onAmend(order, price)，Esc 或失焦取消；表上方「全部撤单」发 onCancelAll(还能撤的单)。市价单与撤单中的单不能改价。件不下单，只发回调。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/button",
+        "@katana/cn",
+        "@katana/data-grid",
+        "@katana/input",
+        "@katana/num",
+        "@katana/tag"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/orders-table/orders-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/orders-table/orders-model.ts"
+        },
+        {
+          "path": "src/blocks/orders-table/orders-table.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/orders-table/orders-table.tsx"
+        }
+      ]
+    },
+    {
+      "name": "account-equity",
+      "type": "registry:component",
+      "title": "Account Equity",
+      "description": "账户四件之一（#104）：总权益、可用、已用保证金、未实现盈亏四个读数，下面是保证金率风险条：安全、警告、危险三段按调用方给的阈值切开（direction 默认越高越危险，维持保证金率那种越低越危险写 lower），指针标当前位置，档位同时写成文字；保证金率不传就按已用保证金 / 总权益算。可选 curve 画迷你权益曲线。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/lcd",
+        "@katana/num",
+        "@katana/quant-format",
+        "@katana/sparkline",
+        "@katana/tag"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/account-equity/account-equity-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/account-equity/account-equity-model.ts"
+        },
+        {
+          "path": "src/blocks/account-equity/account-equity.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/account-equity/account-equity.tsx"
+        }
+      ]
+    },
+    {
+      "name": "funding-rate",
+      "type": "registry:component",
+      "title": "Funding Rate",
+      "description": "账户四件之一（#104）：当前费率（带符号、正负着色，旁边写谁付谁）、预测费率、下次结算倒计时（HH:MM:SS，到点写 labels.due）、历史费率小柱状图（零线居中，按历史最大绝对值归一，悬停出时间与费率）。结算时间由调用方传，件里只算倒计时；now 可注入，不传就每秒读一次系统时钟。费率是百分数。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/lcd",
+        "@katana/num",
+        "@katana/quant-format"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/funding-rate/funding-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/funding-rate/funding-model.ts"
+        },
+        {
+          "path": "src/blocks/funding-rate/funding-rate.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/funding-rate/funding-rate.tsx"
+        }
+      ]
+    },
+    {
+      "name": "options-chain",
+      "type": "registry:component",
+      "title": "Options Chain",
+      "description": "账户四件之一（#104）：行权价居中，左认购右认沽；每翼的列可配（买价、卖价、最新、IV、Delta、持仓量），认购翼镜像排，第一个字段两翼都贴着行权价；离标的价最近的行权价是平值行，整行加亮并标「平值」，认购在平值之下、认沽在平值之上是实值区，铺淡底；上方是到期日切换（选项由调用方传，rows 由调用方换）；点任一格回调 onQuoteSelect(strike, side, field)。认购认沽靠位置区分，不用涨跌色。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/toggle-group"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/options-chain/options-chain.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/options-chain/options-chain.tsx"
+        },
+        {
+          "path": "src/blocks/options-chain/options-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/options-chain/options-model.ts"
         }
       ]
     },

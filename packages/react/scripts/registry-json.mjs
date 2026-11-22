@@ -287,6 +287,12 @@ function collectItems() {
       'reason-group-list',
       'board-strength-rank',
       'net-buy-bar',
+      // #104 账户四件：各一个子目录（组件与它的纯函数一起装）。
+      'positions-table',
+      'orders-table',
+      'account-equity',
+      'funding-rate',
+      'options-chain',
       // 白板（#51）：组件、节点与边、纯函数合成一项。
       'whiteboard',
     ])
