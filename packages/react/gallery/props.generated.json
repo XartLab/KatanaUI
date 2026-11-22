@@ -38551,7 +38551,19 @@
           "name": "src",
           "type": "string",
           "required": false,
-          "description": "Image URL; letters are drawn when omitted or when it fails to load."
+          "description": "Image URL; letters are drawn when it fails to load."
+        },
+        {
+          "name": "venue",
+          "type": "string",
+          "required": false,
+          "description": "Venue (XSHG, XNAS, BINANCE), passed to the LogoProvider when the symbol does not carry one."
+        },
+        {
+          "name": "assetClass",
+          "type": "AssetClass",
+          "required": false,
+          "description": "Asset class, passed to the LogoProvider (crypto logos only match crypto)."
         },
         {
           "name": "size",
@@ -38594,7 +38606,19 @@
           "name": "src",
           "type": "string",
           "required": false,
-          "description": "Image URL; letters are drawn when omitted or when it fails to load."
+          "description": "Image URL; letters are drawn when it fails to load."
+        },
+        {
+          "name": "venue",
+          "type": "string",
+          "required": false,
+          "description": "Venue (XSHG, XNAS, BINANCE), passed to the LogoProvider when the symbol does not carry one."
+        },
+        {
+          "name": "assetClass",
+          "type": "AssetClass",
+          "required": false,
+          "description": "Asset class, passed to the LogoProvider (crypto logos only match crypto)."
         },
         {
           "name": "size",

@@ -8,13 +8,15 @@
 
 ### SymbolMark
 
-图片从哪来由调用方给；件里不带任何企业或币种的标志（商标）。读屏名用 name，没有就用 symbol。旧名 code 照认一个版本（@deprecated）。
+图片从哪来由调用方给：直接给 src，或在外面包 LogoProvider（@katana-ui/logos，#94）配来源；件里不带任何企业或币种的标志（商标）。读屏名用 name，没有就用 symbol。旧名 code 照认一个版本（@deprecated）。
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
 | `symbol` | `string` | — | 品种代码；字母圆标取其中的拉丁字母前 2 个（旧名 code）。 |
 | `name` | `string` | — | 名称：读屏名；代码里没有字母（600519、00700）时取名称首字。 |
-| `src` | `string` | — | 图片地址；不给或加载失败就画字母。 |
+| `src` | `string` | — | 图片地址；加载失败画字母。不给时问外层的 LogoProvider（@katana-ui/logos/react），没有 Provider 或都失败画字母。 |
+| `venue` | `string` | — | 场所（XSHG、XNAS、BINANCE）：代码里没带场所时交给 LogoProvider。 |
+| `assetClass` | `'crypto' \| 'stock' \| 'fund' \| 'index' \| 'forex' \| 'future' \| 'unknown'` | — | 类别：交给 LogoProvider；币标只配 crypto（BTCUSDT、BTC-PERP 这类写法会自动认出）。 |
 | `size` | `'sm' \| 'md' \| number` | `'sm'` | sm 18px（列表行）、md 28px（卡片）；数是自定直径（像素）。 |
 
 ### symbolMarkLetters
@@ -58,6 +60,7 @@ export function SymbolMarkUsage() {
 - 有图：圆形裁切、铺满；图加载失败退回字母，换了 src 会重新尝试。
 - 代码里没有拉丁字母（600519、00700）：取名称首字，再没有取代码首字符。
 - sm（18）字号 12，md（28）及以上字号 16；data-size 标出档位。
+- 包在 LogoProvider 里、没给 src：按来源顺序逐个试候选（加载失败记进失败缓存、换下一个），全失败退回字母；载入中先画字母。
 
 ## Don't
 
@@ -68,7 +71,8 @@ export function SymbolMarkUsage() {
 ## Composition
 
 ```
-SymbolMark
-  span[role=img][aria-label][data-size]
-    img（有图且没失败）| span 字母
+LogoProvider（可选，@katana-ui/logos/react）
+  SymbolMark
+    span[role=img][aria-label][data-size]
+      img（src 或 Provider 的候选，没失败）| span 字母
 ```
