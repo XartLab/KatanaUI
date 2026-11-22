@@ -16,7 +16,13 @@ import ts from 'typescript-classic'
 const here = dirname(fileURLToPath(import.meta.url))
 const pkg = resolve(here, '..')
 /** package.json 的 exports 里有代码的几个入口（quant/format 已被 quant 再导出）。 */
-export const ENTRIES = ['src/index.ts', 'src/quotes/index.ts', 'src/quant/index.ts', 'src/cn/index.ts', 'src/blocks/index.ts']
+export const ENTRIES = [
+  'src/index.ts',
+  'src/quotes/index.ts',
+  'src/quant/index.ts',
+  'src/cn/index.ts',
+  'src/blocks/index.ts',
+]
 
 /** 路径统一成正斜杠：TS 的 fileName 在 Windows 上是 `C:/…`，path.resolve 出的包根是 `C:\\…`，直接比前缀永远不等（#59）。 */
 export const toPosix = (path) => path.replaceAll('\\', '/')
