@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // KatanaDataGrid：数据表。列由智能体按 schema 给（类型决定格式、对齐与涨跌色），行是数据模型里的一列对象；
 // 不暴露 cell / render 函数。点行与行快捷动作只发 Action，并带行 id；真正的操作由宿主决定。
-// #92：认 comfortable 档（整页表）与 #90 的八种列类型（percent / compact / rating / bar / spark / tag / range / date），格式选项照 GridColumn.format 的同名字段。
+// #92：认 comfortable 档（整页表）与 #90 的列类型（percent / compact / rating / bar / spark / pill / range / date；bar 的满格是 barMax，分类标签用 pill），格式选项照 GridColumn.format 的同名字段。
 import { createComponentImplementation } from '@a2ui/react'
 import type { ComponentApi } from '@a2ui/web_core'
 import { CommonSchemas } from '@a2ui/web_core/v1_0'
@@ -36,12 +36,11 @@ const COLUMN_TYPES = [
   'rating',
   'bar',
   'spark',
-  'tag',
+  'pill',
   'range',
   'date',
 ] as const
 const SYMBOL_PARTS = ['logo', 'code', 'chip', 'name', 'venue'] as const
-const SEVERITIES = ['neutral', 'ok', 'warn', 'danger'] as const
 
 const columnSchema = z
   .object({
@@ -50,7 +49,7 @@ const columnSchema = z
     type: z
       .enum(COLUMN_TYPES)
       .describe(
-        "How the raw value is read and written: 'text' string; 'number' number or decimal string; 'price' number (fixed digits via precision); 'quantity' number; 'pnl' signed number, colored by direction; 'change' percent already (1.5 is +1.50%), colored; 'side' 'buy' or 'sell'; 'time' ISO 8601 string or epoch milliseconds; 'symbol' a code string or {code, venue, name}; 'percent' a percent without sign or color (12.3 is 12.30%); 'compact' a number abbreviated by locale (K/M/B/T for en-US, CJK myriad units such as 1.2 yi for zh-CN); 'rating' one of strong-sell, sell, neutral, buy, strong-buy or a score from -1 to 1; 'bar' a non-negative number drawn as a neutral bar, full at max; 'spark' an array of numbers, oldest first, drawn as a mini line; 'tag' a string or {text, tone}; 'range' {low, high, value}; 'date' ISO 8601 string or epoch milliseconds, date only.",
+        "How the raw value is read and written: 'text' string; 'number' number or decimal string; 'price' number (fixed digits via precision); 'quantity' number; 'pnl' signed number, colored by direction; 'change' percent already (1.5 is +1.50%), colored; 'side' 'buy' or 'sell'; 'time' ISO 8601 string or epoch milliseconds; 'symbol' a code string or {code, venue, name}; 'percent' a percent without sign or color (12.3 is 12.30%); 'compact' a number abbreviated by locale (K/M/B/T for en-US, CJK myriad units such as 1.2 yi for zh-CN); 'rating' one of strong-sell, sell, neutral, buy, strong-buy or a score from -1 to 1; 'bar' a number drawn as a bar: with barMax a one-sided neutral bar full at barMax, without it a bar centered on 0 (up color right, down color left) scaled to the largest magnitude in the column; 'spark' an array of numbers, oldest first, drawn as a mini line; 'pill' one or more short labels: a string, {label, tone} or an array of them, tone up, down, muted or accent; 'range' {low, high, value}; 'date' ISO 8601 string or epoch milliseconds, date only.",
       ),
     align: z
       .enum(['start', 'end'])
@@ -71,12 +70,15 @@ const columnSchema = z
       .string()
       .describe("Locale of 'compact' abbreviations and 'date' values for this column; defaults to the table locale.")
       .optional(),
-    max: z.number().min(0.000001).describe("Value at which a 'bar' is full. Defaults to 1.").optional(),
+    barMax: z
+      .number()
+      .min(0.000001)
+      .describe("Value at which a 'bar' is full; given, the bar is one-sided and neutral. Omit for a bar centered on 0.")
+      .optional(),
     label: z
       .string()
-      .describe("Accessible name of the 'spark', 'range' or 'bar' graphic. Defaults to the cell text.")
+      .describe("Accessible name of the 'spark' or 'range' graphic. Defaults to the cell text.")
       .optional(),
-    tagTone: z.enum(SEVERITIES).describe("Tone of a 'tag' whose value carries none. Defaults to neutral.").optional(),
     ratingLabels: z
       .object({
         'strong-sell': text('Text for strong sell.'),
@@ -214,9 +216,8 @@ const columnsOf = (columns: readonly Column[]): GridColumn<Row>[] =>
       ...(column.suffix === undefined ? {} : { suffix: column.suffix }),
       ...(column.unit === undefined ? {} : { unit: column.unit }),
       ...(column.locale === undefined ? {} : { locale: column.locale }),
-      ...(column.max === undefined ? {} : { max: column.max }),
+      ...(column.barMax === undefined ? {} : { barMax: column.barMax }),
       ...(column.label === undefined ? {} : { label: column.label }),
-      ...(column.tagTone === undefined ? {} : { tagTone: column.tagTone }),
       ...(column.ratingLabels === undefined ? {} : { ratingLabels: column.ratingLabels }),
       ...(column.symbolParts === undefined ? {} : { symbolParts: column.symbolParts }),
       ...(column.timeStyle === undefined ? {} : { timeStyle: column.timeStyle }),

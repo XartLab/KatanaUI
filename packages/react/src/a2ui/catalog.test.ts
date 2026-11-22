@@ -763,7 +763,7 @@ describe('A2UI 目录', () => {
     }
   })
 
-  it('KatanaDataGrid 认 comfortable 档与 #90 的八种列类型及其格式选项（#92），不认的类型拒绝', () => {
+  it('KatanaDataGrid 认 comfortable 档与 #90 的新列类型（bar 用 barMax、分类用 pill）及其格式选项（#92），不认的类型拒绝', () => {
     const api = KATANA_APIS.find((item) => item.name === 'KatanaDataGrid')!
     const grid = {
       label: 'Screener',
@@ -779,9 +779,9 @@ describe('A2UI 目录', () => {
           type: 'rating',
           ratingLabels: { 'strong-sell': 'SS', sell: 'S', neutral: 'N', buy: 'B', 'strong-buy': 'SB' },
         },
-        { id: 'rvol', title: 'Rel volume', type: 'bar', max: 3 },
+        { id: 'rvol', title: 'Rel volume', type: 'bar', barMax: 3 },
         { id: 'trend', title: 'Trend', type: 'spark', label: '30 day trend', sub: '30D' },
-        { id: 'sector', title: 'Sector', type: 'tag', tagTone: 'ok' },
+        { id: 'sector', title: 'Sector', type: 'pill' },
         { id: 'range', title: '52W range', type: 'range' },
         { id: 'earnings', title: 'Earnings', type: 'date' },
       ],
@@ -794,7 +794,7 @@ describe('A2UI 目录', () => {
           rating: 0.7,
           rvol: 1.4,
           trend: [1, 2, 3],
-          sector: { text: 'Tech', tone: 'ok' },
+          sector: { label: 'Tech', tone: 'accent' },
           range: { low: 1, high: 3, value: 2 },
           earnings: '2026-11-20T00:00:00Z',
         },
@@ -805,7 +805,7 @@ describe('A2UI 目录', () => {
     expect(api.schema.safeParse({ ...grid, density: 'airy' }).success).toBe(false)
     expect(api.schema.safeParse({ ...grid, columns: [{ id: 'x', title: 'X', type: 'heatmap' }] }).success).toBe(false)
     expect(
-      api.schema.safeParse({ ...grid, columns: [{ id: 'x', title: 'X', type: 'tag', tagTone: 'pink' }] }).success,
+      api.schema.safeParse({ ...grid, columns: [{ id: 'x', title: 'X', type: 'bar', barMax: 0 }] }).success,
     ).toBe(false)
   })
 
