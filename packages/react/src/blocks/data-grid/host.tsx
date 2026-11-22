@@ -55,6 +55,19 @@ export type DataGridLabels = {
   resizeLabel: (column: { id: string; label: string }) => string
   /** 选了几行（多于一行时读出来）；给对象而不是数，宿主的复数写法好跟原来的文案对上。 */
   selectedRows: (selected: { size: number }) => string
+  /** 挪行（#77 G7）：右键菜单的四项与读屏播报；可省，省略用英文默认。 */
+  rowOrder?: {
+    moveUp?: string
+    moveDown?: string
+    moveTop?: string
+    moveBottom?: string
+    /** 按列排序时为什么不能挪（Alt+↑/↓ 读出、菜单项的提示）。 */
+    sorted?: string
+    /** 挪完读出新位置。 */
+    moved?: (info: { count: number; position: number; total: number }) => string
+    /** 拖到一半按 Esc。 */
+    cancelled?: string
+  }
   /** 列头右键菜单的项（#27）。 */
   columnMenu: {
     sortAsc: string
@@ -116,8 +129,9 @@ export const DataGridHostProvider = Context.Provider
 export const useDataGridHost = (): DataGridHost | undefined => useContext(Context)
 
 /** 没有宿主文案时的英文（表头提示这类不能空）。 */
-export const DEFAULT_LABELS: Omit<DataGridLabels, 'copy' | 'save' | 'resetColumns' | 'columnMenu'> & {
+export const DEFAULT_LABELS: Omit<DataGridLabels, 'copy' | 'save' | 'resetColumns' | 'columnMenu' | 'rowOrder'> & {
   columnMenu: Required<DataGridLabels['columnMenu']>
+  rowOrder: Required<NonNullable<DataGridLabels['rowOrder']>>
 } = {
   gridLabel: (label) => label,
   menuLabel: (label) => `${label} menu`,
@@ -128,6 +142,16 @@ export const DEFAULT_LABELS: Omit<DataGridLabels, 'copy' | 'save' | 'resetColumn
   sortTitle: (column) => `${column.label}: click to sort, again to reverse`,
   resizeLabel: (column) => `Resize column ${column.label}`,
   selectedRows: (selected) => `${selected.size} rows selected`,
+  rowOrder: {
+    moveUp: 'Move up',
+    moveDown: 'Move down',
+    moveTop: 'Move to top',
+    moveBottom: 'Move to bottom',
+    sorted: 'Clear the column sort to reorder rows',
+    moved: ({ count, position, total }) =>
+      `${count > 1 ? `${count} rows moved` : 'Moved'} to position ${position} of ${total}`,
+    cancelled: 'Move cancelled',
+  },
   columnMenu: {
     sortAsc: 'Sort ascending',
     sortDesc: 'Sort descending',
@@ -150,6 +174,7 @@ export function resolveLabels(host: DataGridHost | undefined) {
     ...DEFAULT_LABELS,
     ...given,
     columnMenu: { ...DEFAULT_LABELS.columnMenu, ...given?.columnMenu },
+    rowOrder: { ...DEFAULT_LABELS.rowOrder, ...given?.rowOrder },
   }
 }
 

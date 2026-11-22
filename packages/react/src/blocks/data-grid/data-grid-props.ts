@@ -288,6 +288,25 @@ export type DataGridProps<Row extends object> = {
    * 实时数据模式（默认 false，向后兼容）：数值类列（number、price、quantity、pnl、change）的格子值变了闪涨跌色；排序顺序变了行平滑换位（只对已渲染的行）；新增的行高亮一阵。文本列不闪。
    */
   live?: boolean
+  /**
+   * Manual row order (controlled): row ids in display order; ids not in it go last. Usually useRowOrder(...).gridProps.
+   * 手动行序（受控，#77 G7）：按显示次序的行 id，不在里面的行接在最后；一般摊 useRowOrder(...).gridProps。
+   */
+  rowOrder?: readonly string[]
+  /**
+   * Called with the whole new order after a drag, Alt+Up / Alt+Down or a move item in the row menu. Without it rows cannot be reordered.
+   * While a column sort is on, reordering is off and Alt+Up / Alt+Down announces why (labels.rowOrder.sorted).
+   * 拖行、Alt+↑/↓、右键「上移 / 下移 / 移到顶 / 移到底」之后给出新的整份次序。没给就不能挪行。
+   * 按列排序时不能挪（挪了也看不出来）：拖不起来，Alt+↑/↓ 读出原因（labels.rowOrder.sorted），菜单项灰掉。
+   */
+  onRowOrderChange?: (next: string[]) => void
+  /**
+   * Section header rows (watchlist sections): return the heading for a row that is a section header, null / undefined for a normal row.
+   * The header spans the full width; dragging it moves the whole section, and dropping rows below it puts them into the section.
+   * 分节标题行（自选表的分组）：这一行是标题时返回标题内容，普通行返回 null / undefined。
+   * 标题跨满整行；拖标题带着整节走，把行拖到它下面就进了这一节。
+   */
+  rowSection?: (row: Row) => ReactNode
   /** Extra class names per part. */
   classNames?: Partial<Record<GridSlot, string>>
 }

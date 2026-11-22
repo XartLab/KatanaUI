@@ -169,6 +169,11 @@
           "target": "~/src/katana/ui/theme/filter-bar.css"
         },
         {
+          "path": "src/theme/flag-mark.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/flag-mark.css"
+        },
+        {
           "path": "src/theme/flow-gauges.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/flow-gauges.css"
@@ -2297,6 +2302,23 @@
           "path": "src/katana/exposure-slider.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/katana/exposure-slider.tsx"
+        }
+      ]
+    },
+    {
+      "name": "flag-mark",
+      "type": "registry:component",
+      "title": "Flag Mark",
+      "description": "自选表行最左端的彩色小旗（照 TradingView 自选表，主会话 2026-11-18 实看）：点一下插上最近用过的那面、再点拔掉；右键菜单里选色；表上方一排旗标按钮按旗过滤。颜色只用状态色（danger / warn / ok / neutral），几面旗、各叫什么由调用方给；不用品牌橙。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/severity"
+      ],
+      "files": [
+        {
+          "path": "src/katana/flag-mark.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/katana/flag-mark.tsx"
         }
       ]
     },
@@ -6627,9 +6649,24 @@
           "target": "~/src/katana/ui/blocks/data-grid/priority-columns.ts"
         },
         {
+          "path": "src/blocks/data-grid/row-order-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/data-grid/row-order-model.ts"
+        },
+        {
           "path": "src/blocks/data-grid/use-column-sizing.ts",
           "type": "registry:component",
           "target": "~/src/katana/ui/blocks/data-grid/use-column-sizing.ts"
+        },
+        {
+          "path": "src/blocks/data-grid/use-row-drag.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/data-grid/use-row-drag.ts"
+        },
+        {
+          "path": "src/blocks/data-grid/use-row-order.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/data-grid/use-row-order.ts"
         }
       ]
     },
