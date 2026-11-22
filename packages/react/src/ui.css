@@ -99,6 +99,12 @@
 @import './theme/cn-pulse.css';
 @import './theme/cn-timeline.css';
 @import './theme/cn-sentiment.css';
+@import './theme/cn-seat.css';
+@import './theme/cn-auction.css';
+@import './theme/cn-date.css';
+@import './theme/cn-flow.css';
+@import './theme/cn-mini-k.css';
+@import './theme/cn-move.css';
 @import './theme/row-actions.css';
 @import './theme/flag-mark.css';
 @import './theme/spark-tile.css';
