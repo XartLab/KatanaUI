@@ -3973,6 +3973,188 @@
         }
       ]
     },
+    "BoardStrength": {
+      "kind": "type",
+      "source": "src/blocks/board-strength-rank/board-strength-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "strength",
+          "type": "number",
+          "required": true,
+          "description": "Strength now, in the caller's own measure."
+        },
+        {
+          "name": "series",
+          "type": "readonly number[]",
+          "required": false,
+          "description": "Strength history, oldest first, for the inline line."
+        },
+        {
+          "name": "prevRank",
+          "type": "number",
+          "required": false,
+          "description": "Rank in the previous period (1 is strongest); omit for a newcomer."
+        },
+        {
+          "name": "limitUps",
+          "type": "number",
+          "required": false,
+          "description": "Limit-up count in the board today."
+        },
+        {
+          "name": "change",
+          "type": "number",
+          "required": false,
+          "description": "Board change, already a percentage."
+        }
+      ]
+    },
+    "BoardStrengthRank": {
+      "kind": "component",
+      "source": "src/blocks/board-strength-rank/board-strength-rank.tsx",
+      "props": [
+        {
+          "name": "boards",
+          "type": "readonly BoardStrength[]",
+          "required": true,
+          "description": "Boards in any order; ranked by strength here."
+        },
+        {
+          "name": "labels",
+          "type": "BoardStrengthRankLabels",
+          "required": true,
+          "description": "Texts."
+        },
+        {
+          "name": "formatStrength",
+          "type": "(value: number) => string",
+          "required": false,
+          "default": "(value) => value.toFixed(1)",
+          "description": "How a strength value is written; defaults to one decimal."
+        },
+        {
+          "name": "limit",
+          "type": "number",
+          "required": false,
+          "description": "Show only the top n; all when omitted."
+        },
+        {
+          "name": "onSelect",
+          "type": "(board: RankedBoard) => void",
+          "required": false,
+          "description": "Open a board (click or Enter)."
+        },
+        {
+          "name": "selected",
+          "type": "string | null",
+          "required": false,
+          "default": "null",
+          "description": "The board currently open (accent stripe on its left)."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "BoardStrengthRankLabels": {
+      "kind": "type",
+      "source": "src/blocks/board-strength-rank/board-strength-rank.tsx",
+      "props": [
+        {
+          "name": "list",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the table."
+        },
+        {
+          "name": "columns",
+          "type": "{ rank: string; name: string; strength: string; trend: string; limitUps: string; change: string }",
+          "required": true,
+          "description": "Column headers."
+        },
+        {
+          "name": "move",
+          "type": "{ up: (n: number) => string; down: (n: number) => string; same: string; new: string }",
+          "required": true,
+          "description": "Rank move text: climbed n (「▲2」), fell n, or new."
+        },
+        {
+          "name": "trend",
+          "type": "(board: RankedBoard) => string",
+          "required": true,
+          "description": "Accessible sentence of a strength line (「机器人 强度走势」)."
+        },
+        {
+          "name": "empty",
+          "type": "string",
+          "required": true,
+          "description": "Text when there are no boards."
+        }
+      ]
+    },
+    "BoardStrengthRankProps": {
+      "kind": "type",
+      "source": "src/blocks/board-strength-rank/board-strength-rank.tsx",
+      "props": [
+        {
+          "name": "boards",
+          "type": "readonly BoardStrength[]",
+          "required": true,
+          "description": "Boards in any order; ranked by strength here."
+        },
+        {
+          "name": "labels",
+          "type": "BoardStrengthRankLabels",
+          "required": true,
+          "description": "Texts."
+        },
+        {
+          "name": "formatStrength",
+          "type": "(value: number) => string",
+          "required": false,
+          "description": "How a strength value is written; defaults to one decimal."
+        },
+        {
+          "name": "limit",
+          "type": "number",
+          "required": false,
+          "description": "Show only the top n; all when omitted."
+        },
+        {
+          "name": "onSelect",
+          "type": "(board: RankedBoard) => void",
+          "required": false,
+          "description": "Open a board (click or Enter)."
+        },
+        {
+          "name": "selected",
+          "type": "string | null",
+          "required": false,
+          "description": "The board currently open (accent stripe on its left)."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
     "BorderBeam": {
       "kind": "component",
       "source": "src/motion/effect/border-beam.tsx",
@@ -10605,6 +10787,90 @@
           "required": false,
           "default": "'var(--k-heat-3)'",
           "description": "Fill color of the dots."
+        }
+      ]
+    },
+    "DragonSeat": {
+      "kind": "type",
+      "source": "src/blocks/net-buy-bar/net-buy-model.ts",
+      "props": [
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "amount",
+          "type": "number",
+          "required": true,
+          "description": "Amount bought or sold by this seat (the side it is listed under)."
+        },
+        {
+          "name": "institution",
+          "type": "boolean",
+          "required": false,
+          "description": "Institutional seat (机构专用), tagged in the list."
+        }
+      ]
+    },
+    "DragonTigerItem": {
+      "kind": "type",
+      "source": "src/blocks/net-buy-bar/net-buy-model.ts",
+      "props": [
+        {
+          "name": "code",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "net",
+          "type": "number",
+          "required": true,
+          "description": "Net buy = buy − sell, given by the caller."
+        },
+        {
+          "name": "buy",
+          "type": "number",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "sell",
+          "type": "number",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "change",
+          "type": "number",
+          "required": false,
+          "description": "Change, already a percentage."
+        },
+        {
+          "name": "reason",
+          "type": "string",
+          "required": false,
+          "description": "Why it is listed (「日涨幅偏离 7%」)."
+        },
+        {
+          "name": "seats",
+          "type": "{ buy: readonly DragonSeat[]; sell: readonly DragonSeat[] }",
+          "required": false,
+          "description": "Top buy and sell seats in the caller's order (usually top five each)."
+        },
+        {
+          "name": "logo",
+          "type": "string",
+          "required": false,
+          "description": ""
         }
       ]
     },
@@ -22558,6 +22824,146 @@
       "source": "src/primitives/navigation-menu.tsx",
       "props": []
     },
+    "NetBuyBar": {
+      "kind": "component",
+      "source": "src/blocks/net-buy-bar/net-buy-bar.tsx",
+      "props": [
+        {
+          "name": "items",
+          "type": "readonly DragonTigerItem[]",
+          "required": true,
+          "description": "Stocks in the caller's order (usually by net buy)."
+        },
+        {
+          "name": "labels",
+          "type": "NetBuyBarLabels",
+          "required": true,
+          "description": "Texts."
+        },
+        {
+          "name": "formatAmount",
+          "type": "(value: number) => string",
+          "required": false,
+          "default": "formatVolume",
+          "description": "How an amount is written (sign included for net); defaults to the short volume form."
+        },
+        {
+          "name": "expanded",
+          "type": "string | null",
+          "required": false,
+          "description": "Code of the opened row (controlled); null for none."
+        },
+        {
+          "name": "defaultExpanded",
+          "type": "string | null",
+          "required": false,
+          "default": "null",
+          "description": "Uncontrolled: the row open at first."
+        },
+        {
+          "name": "onExpandedChange",
+          "type": "(code: string | null) => void",
+          "required": false,
+          "description": "Called when a row is opened or closed."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "NetBuyBarLabels": {
+      "kind": "type",
+      "source": "src/blocks/net-buy-bar/net-buy-bar.tsx",
+      "props": [
+        {
+          "name": "list",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the list."
+        },
+        {
+          "name": "columns",
+          "type": "{ name: string; change: string; net: string; buy: string; sell: string }",
+          "required": true,
+          "description": "Column headers."
+        },
+        {
+          "name": "seats",
+          "type": "{ buy: string; sell: string }",
+          "required": true,
+          "description": "Seat column titles (「买入前五」「卖出前五」)."
+        },
+        {
+          "name": "institution",
+          "type": "string",
+          "required": true,
+          "description": "Tag on an institutional seat (「机构」)."
+        },
+        {
+          "name": "scale",
+          "type": "(max: number) => string",
+          "required": false,
+          "description": "Scale note under the head, gets the symmetric max (「刻度 ±5 亿」)."
+        },
+        {
+          "name": "empty",
+          "type": "string",
+          "required": true,
+          "description": "Text when the list is empty."
+        }
+      ]
+    },
+    "NetBuyBarProps": {
+      "kind": "type",
+      "source": "src/blocks/net-buy-bar/net-buy-bar.tsx",
+      "props": [
+        {
+          "name": "items",
+          "type": "readonly DragonTigerItem[]",
+          "required": true,
+          "description": "Stocks in the caller's order (usually by net buy)."
+        },
+        {
+          "name": "labels",
+          "type": "NetBuyBarLabels",
+          "required": true,
+          "description": "Texts."
+        },
+        {
+          "name": "formatAmount",
+          "type": "(value: number) => string",
+          "required": false,
+          "description": "How an amount is written (sign included for net); defaults to the short volume form."
+        },
+        {
+          "name": "expanded",
+          "type": "string | null",
+          "required": false,
+          "description": "Code of the opened row (controlled); null for none."
+        },
+        {
+          "name": "defaultExpanded",
+          "type": "string | null",
+          "required": false,
+          "description": "Uncontrolled: the row open at first."
+        },
+        {
+          "name": "onExpandedChange",
+          "type": "(code: string | null) => void",
+          "required": false,
+          "description": "Called when a row is opened or closed."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
     "NewsFacet": {
       "kind": "type",
       "source": "src/blocks/news-feed/news-feed-model.ts",
@@ -29530,6 +29936,66 @@
       "source": "src/patterns/date-range-model.ts",
       "props": []
     },
+    "RankedBoard": {
+      "kind": "type",
+      "source": "src/blocks/board-strength-rank/board-strength-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "strength",
+          "type": "number",
+          "required": true,
+          "description": "Strength now, in the caller's own measure."
+        },
+        {
+          "name": "series",
+          "type": "readonly number[]",
+          "required": false,
+          "description": "Strength history, oldest first, for the inline line."
+        },
+        {
+          "name": "prevRank",
+          "type": "number",
+          "required": false,
+          "description": "Rank in the previous period (1 is strongest); omit for a newcomer."
+        },
+        {
+          "name": "limitUps",
+          "type": "number",
+          "required": false,
+          "description": "Limit-up count in the board today."
+        },
+        {
+          "name": "change",
+          "type": "number",
+          "required": false,
+          "description": "Board change, already a percentage."
+        },
+        {
+          "name": "rank",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "move",
+          "type": "number | null",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
     "RansomNote": {
       "kind": "component",
       "source": "src/motion/text/ransom-note.tsx",
@@ -29846,6 +30312,254 @@
       "source": "src/quotes/technical-rating.tsx",
       "props": []
     },
+    "ReasonGroup": {
+      "kind": "type",
+      "source": "src/blocks/reason-group-list/reason-group-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "reason",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "items",
+          "type": "readonly ReasonStock[]",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "ReasonGroupList": {
+      "kind": "component",
+      "source": "src/blocks/reason-group-list/reason-group-list.tsx",
+      "props": [
+        {
+          "name": "groups",
+          "type": "readonly ReasonGroup[]",
+          "required": true,
+          "description": "Groups in the caller's order."
+        },
+        {
+          "name": "labels",
+          "type": "ReasonGroupListLabels",
+          "required": true,
+          "description": "Texts."
+        },
+        {
+          "name": "formatAmount",
+          "type": "(value: number) => string",
+          "required": false,
+          "default": "formatVolume",
+          "description": "How an amount (seal, turnover) is written; defaults to the short volume form (520.00 M)."
+        },
+        {
+          "name": "filter",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Reason ids kept by the chips (controlled); empty keeps all."
+        },
+        {
+          "name": "onFilterChange",
+          "type": "(filter: string[]) => void",
+          "required": false,
+          "description": "Called when the chips change."
+        },
+        {
+          "name": "defaultCollapsed",
+          "type": "readonly string[]",
+          "required": false,
+          "default": "[]",
+          "description": "Group ids that start collapsed."
+        },
+        {
+          "name": "onSelect",
+          "type": "(stock: ReasonStock, group: ReasonGroup) => void",
+          "required": false,
+          "description": "Open a stock row (click or Enter)."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "ReasonGroupListLabels": {
+      "kind": "type",
+      "source": "src/blocks/reason-group-list/reason-group-list.tsx",
+      "props": [
+        {
+          "name": "list",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the table."
+        },
+        {
+          "name": "filter",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the reason chips."
+        },
+        {
+          "name": "clear",
+          "type": "string",
+          "required": false,
+          "description": "Clear button of the chips; no button without it."
+        },
+        {
+          "name": "count",
+          "type": "(n: number) => string",
+          "required": true,
+          "description": "Stock count in a group head (「6 家」)."
+        },
+        {
+          "name": "highest",
+          "type": "(board: number) => string",
+          "required": true,
+          "description": "Highest board in a group head (「最高 4 板」)."
+        },
+        {
+          "name": "board",
+          "type": "(board: number) => string",
+          "required": true,
+          "description": "Board cell (「3 板」, 「首板」)."
+        },
+        {
+          "name": "columns",
+          "type": "{ name: string board: string change: string firstSeal: string sealAmount: string turnover: string tags: string }",
+          "required": true,
+          "description": "Column headers."
+        },
+        {
+          "name": "empty",
+          "type": "string",
+          "required": true,
+          "description": "Text when no group is left."
+        }
+      ]
+    },
+    "ReasonGroupListProps": {
+      "kind": "type",
+      "source": "src/blocks/reason-group-list/reason-group-list.tsx",
+      "props": [
+        {
+          "name": "groups",
+          "type": "readonly ReasonGroup[]",
+          "required": true,
+          "description": "Groups in the caller's order."
+        },
+        {
+          "name": "labels",
+          "type": "ReasonGroupListLabels",
+          "required": true,
+          "description": "Texts."
+        },
+        {
+          "name": "formatAmount",
+          "type": "(value: number) => string",
+          "required": false,
+          "description": "How an amount (seal, turnover) is written; defaults to the short volume form (520.00 M)."
+        },
+        {
+          "name": "filter",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Reason ids kept by the chips (controlled); empty keeps all."
+        },
+        {
+          "name": "onFilterChange",
+          "type": "(filter: string[]) => void",
+          "required": false,
+          "description": "Called when the chips change."
+        },
+        {
+          "name": "defaultCollapsed",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Group ids that start collapsed."
+        },
+        {
+          "name": "onSelect",
+          "type": "(stock: ReasonStock, group: ReasonGroup) => void",
+          "required": false,
+          "description": "Open a stock row (click or Enter)."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "ReasonStock": {
+      "kind": "type",
+      "source": "src/blocks/reason-group-list/reason-group-model.ts",
+      "props": [
+        {
+          "name": "code",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "board",
+          "type": "number",
+          "required": true,
+          "description": "Consecutive limit-up count (1 is the first board)."
+        },
+        {
+          "name": "change",
+          "type": "number",
+          "required": true,
+          "description": "Change, already a percentage (10 means +10%)."
+        },
+        {
+          "name": "firstSeal",
+          "type": "string",
+          "required": false,
+          "description": "First seal time, formatted by the caller (「09:31」)."
+        },
+        {
+          "name": "sealAmount",
+          "type": "number",
+          "required": false,
+          "description": "Seal order amount."
+        },
+        {
+          "name": "turnover",
+          "type": "number",
+          "required": false,
+          "description": "Turnover amount."
+        },
+        {
+          "name": "tags",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Extra reason tags shown in the last column."
+        },
+        {
+          "name": "logo",
+          "type": "string",
+          "required": false,
+          "description": "Logo image URL; letters without it."
+        }
+      ]
+    },
     "Reel": {
       "kind": "component",
       "source": "src/layout/reel.tsx",
@@ -30036,6 +30750,12 @@
           "type": "RegimeColor",
           "required": true,
           "description": ""
+        },
+        {
+          "name": "tone",
+          "type": "Severity",
+          "required": false,
+          "description": "有好坏之分的状态（情绪周期的冰点、过热这类）改用状态语气色（--k-status-*），给了就盖掉 color；类别状态不给。"
         },
         {
           "name": "detail",
@@ -32389,6 +33109,195 @@
       "source": "src/primitives/select.tsx",
       "props": []
     },
+    "SentimentCycle": {
+      "kind": "component",
+      "source": "src/blocks/sentiment-cycle/sentiment-cycle.tsx",
+      "props": [
+        {
+          "name": "days",
+          "type": "readonly SentimentDay[]",
+          "required": true,
+          "description": "Days oldest first; the last one is today."
+        },
+        {
+          "name": "stages",
+          "type": "readonly SentimentStage[]",
+          "required": true,
+          "description": "Stages in legend order."
+        },
+        {
+          "name": "metrics",
+          "type": "readonly SentimentMetric[]",
+          "required": false,
+          "default": "[]",
+          "description": "Side metrics, one value per day."
+        },
+        {
+          "name": "labels",
+          "type": "SentimentCycleLabels",
+          "required": true,
+          "description": "Texts."
+        },
+        {
+          "name": "formatScore",
+          "type": "(score: number) => string",
+          "required": false,
+          "default": "(score) => String(Math.round(score))",
+          "description": "How a score is written; defaults to a whole number."
+        },
+        {
+          "name": "activeStage",
+          "type": "string | null",
+          "required": false,
+          "default": "null",
+          "description": "Highlight a stage on the band (others dim)."
+        },
+        {
+          "name": "onStageSelect",
+          "type": "(stage: SentimentStage | null) => void",
+          "required": false,
+          "description": "Legend items become toggles: pick a stage, null to clear."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "SentimentCycleLabels": {
+      "kind": "type",
+      "source": "src/blocks/sentiment-cycle/sentiment-cycle.tsx",
+      "props": [
+        {
+          "name": "title",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the whole readout."
+        },
+        {
+          "name": "score",
+          "type": "string",
+          "required": true,
+          "description": "Name over the big score (「情绪分」)."
+        },
+        {
+          "name": "gauge",
+          "type": "string",
+          "required": true,
+          "description": "Name of the gauge (「情绪温度」)."
+        },
+        {
+          "name": "trend",
+          "type": "string",
+          "required": true,
+          "description": "Name of the trend line (「近 20 日」)."
+        },
+        {
+          "name": "band",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the stage band."
+        },
+        {
+          "name": "metrics",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the side metrics."
+        },
+        {
+          "name": "current",
+          "type": "string",
+          "required": true,
+          "description": "Mark after today's stage in the legend (「当前」)."
+        },
+        {
+          "name": "empty",
+          "type": "string",
+          "required": true,
+          "description": "Text when there are no days."
+        }
+      ]
+    },
+    "SentimentCycleProps": {
+      "kind": "type",
+      "source": "src/blocks/sentiment-cycle/sentiment-cycle.tsx",
+      "props": [
+        {
+          "name": "days",
+          "type": "readonly SentimentDay[]",
+          "required": true,
+          "description": "Days oldest first; the last one is today."
+        },
+        {
+          "name": "stages",
+          "type": "readonly SentimentStage[]",
+          "required": true,
+          "description": "Stages in legend order."
+        },
+        {
+          "name": "metrics",
+          "type": "readonly SentimentMetric[]",
+          "required": false,
+          "description": "Side metrics, one value per day."
+        },
+        {
+          "name": "labels",
+          "type": "SentimentCycleLabels",
+          "required": true,
+          "description": "Texts."
+        },
+        {
+          "name": "formatScore",
+          "type": "(score: number) => string",
+          "required": false,
+          "description": "How a score is written; defaults to a whole number."
+        },
+        {
+          "name": "activeStage",
+          "type": "string | null",
+          "required": false,
+          "description": "Highlight a stage on the band (others dim)."
+        },
+        {
+          "name": "onStageSelect",
+          "type": "(stage: SentimentStage | null) => void",
+          "required": false,
+          "description": "Legend items become toggles: pick a stage, null to clear."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "SentimentDay": {
+      "kind": "type",
+      "source": "src/blocks/sentiment-cycle/sentiment-model.ts",
+      "props": [
+        {
+          "name": "date",
+          "type": "string",
+          "required": true,
+          "description": "Day label, already formatted (「11-18」)."
+        },
+        {
+          "name": "score",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "stage",
+          "type": "string",
+          "required": true,
+          "description": "SentimentStage.id."
+        }
+      ]
+    },
     "SentimentGauge": {
       "kind": "component",
       "source": "src/cn/sentiment-gauge.tsx",
@@ -32537,6 +33446,60 @@
           "type": "(score: string, level: string) => string",
           "required": true,
           "description": ""
+        }
+      ]
+    },
+    "SentimentMetric": {
+      "kind": "type",
+      "source": "src/blocks/sentiment-cycle/sentiment-model.ts",
+      "props": [
+        {
+          "name": "key",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "values",
+          "type": "readonly number[]",
+          "required": true,
+          "description": "One value per day, same order as days."
+        },
+        {
+          "name": "format",
+          "type": "(value: number) => string",
+          "required": true,
+          "description": "How a value of this metric is written (count, percent…)."
+        }
+      ]
+    },
+    "SentimentStage": {
+      "kind": "type",
+      "source": "src/blocks/sentiment-cycle/sentiment-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "tone",
+          "type": "Severity",
+          "required": true,
+          "description": "Severity tone of the stage: colors the band, the legend swatch and the gauge needle (--k-status-*)."
         }
       ]
     },
@@ -34402,6 +35365,12 @@
           "type": "readonly number[]",
           "required": true,
           "description": ""
+        },
+        {
+          "name": "format",
+          "type": "(value: number) => string",
+          "required": false,
+          "description": "Per-item value text, overriding formatValue (series with different units in one grid)."
         }
       ]
     },
@@ -39942,6 +40911,193 @@
           "name": "source",
           "type": "string",
           "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "ThemeHeatCell": {
+      "kind": "type",
+      "source": "src/quant/theme-heat-model.ts",
+      "props": [
+        {
+          "name": "count",
+          "type": "number",
+          "required": true,
+          "description": "Limit-up count (or whatever heat count the caller uses)."
+        },
+        {
+          "name": "rank",
+          "type": "number",
+          "required": false,
+          "description": "Rank among themes that day, 1 is hottest."
+        }
+      ]
+    },
+    "ThemeHeatMatrix": {
+      "kind": "component",
+      "source": "src/quant/theme-heat-matrix.tsx",
+      "props": [
+        {
+          "name": "dates",
+          "type": "readonly string[]",
+          "required": true,
+          "description": "Column headers, oldest first, already formatted (「11-12」)."
+        },
+        {
+          "name": "rows",
+          "type": "readonly ThemeHeatRow[]",
+          "required": true,
+          "description": "Theme rows in the caller's order."
+        },
+        {
+          "name": "labels",
+          "type": "ThemeHeatMatrixLabels",
+          "required": true,
+          "description": "Texts."
+        },
+        {
+          "name": "selected",
+          "type": "ThemeHeatPos | null",
+          "required": false,
+          "default": "null",
+          "description": "Selected cell (controlled); null for none."
+        },
+        {
+          "name": "onSelect",
+          "type": "(row: ThemeHeatRow, col: number) => void",
+          "required": false,
+          "description": "Pick a cell with click, Enter or Space: gets the row and the day index (link the board list to it)."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "ThemeHeatMatrixLabels": {
+      "kind": "type",
+      "source": "src/quant/theme-heat-matrix.tsx",
+      "props": [
+        {
+          "name": "grid",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the grid."
+        },
+        {
+          "name": "theme",
+          "type": "string",
+          "required": true,
+          "description": "Header of the theme column (「题材」)."
+        },
+        {
+          "name": "rank",
+          "type": "(rank: number) => string",
+          "required": true,
+          "description": "Rank text in a cell corner (「#3」)."
+        },
+        {
+          "name": "cell",
+          "type": "(row: ThemeHeatRow, date: string, count: number | null, rank: number | null) => string",
+          "required": true,
+          "description": "Accessible text of one cell (「机器人 11-18：涨停 6 只，第 1」)."
+        },
+        {
+          "name": "legend",
+          "type": "{ low: string; high: string }",
+          "required": true,
+          "description": "Legend ends (「少」「多」)."
+        },
+        {
+          "name": "empty",
+          "type": "string",
+          "required": true,
+          "description": "Text when there are no rows."
+        }
+      ]
+    },
+    "ThemeHeatMatrixProps": {
+      "kind": "type",
+      "source": "src/quant/theme-heat-matrix.tsx",
+      "props": [
+        {
+          "name": "dates",
+          "type": "readonly string[]",
+          "required": true,
+          "description": "Column headers, oldest first, already formatted (「11-12」)."
+        },
+        {
+          "name": "rows",
+          "type": "readonly ThemeHeatRow[]",
+          "required": true,
+          "description": "Theme rows in the caller's order."
+        },
+        {
+          "name": "labels",
+          "type": "ThemeHeatMatrixLabels",
+          "required": true,
+          "description": "Texts."
+        },
+        {
+          "name": "selected",
+          "type": "ThemeHeatPos | null",
+          "required": false,
+          "description": "Selected cell (controlled); null for none."
+        },
+        {
+          "name": "onSelect",
+          "type": "(row: ThemeHeatRow, col: number) => void",
+          "required": false,
+          "description": "Pick a cell with click, Enter or Space: gets the row and the day index (link the board list to it)."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "ThemeHeatPos": {
+      "kind": "type",
+      "source": "src/quant/theme-heat-model.ts",
+      "props": [
+        {
+          "name": "row",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "col",
+          "type": "number",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "ThemeHeatRow": {
+      "kind": "type",
+      "source": "src/quant/theme-heat-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "cells",
+          "type": "readonly (ThemeHeatCell | null)[]",
+          "required": true,
           "description": ""
         }
       ]
