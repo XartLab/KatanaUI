@@ -258,6 +258,7 @@ import {
   SwitchboardCardDemo,
 } from './pages/smoothui-trading.tsx'
 import { ScrubberDemo } from './pages/smoothui-scrub.tsx'
+import { SymbolSearchDemo } from './pages/symbol-search.tsx'
 
 /** 每一页的实时预览，键是 registry.ts 里的页 id（registry.test.ts 核对两边一一对应）。 */
 export const DEMOS: Readonly<Record<string, ComponentType>> = {
@@ -460,6 +461,7 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'status-bar': StatusBarDemo,
   splitter: SplitterDemo,
   'workspace-tabs': WorkspaceTabsDemo,
+  'symbol-search': SymbolSearchDemo,
   textarea: TextareaDemo,
   'radio-group': RadioGroupDemo,
   toggle: ToggleDemo,

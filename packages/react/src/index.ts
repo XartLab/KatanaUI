@@ -340,6 +340,8 @@ export {
   type StorageLike,
 } from './lib/use-persisted-state.ts'
 export { useSavedViews, type SavedView, type UseSavedViewsOptions } from './lib/use-saved-views.ts'
+// 打字即搜（#77 第 1 条）：焦点在容器里敲字就打开搜索并带上这个字；SymbolSearch 的伴件。
+export { useTypeToSearch, typeToSearchKey, type TypeToSearchOptions } from './lib/use-type-to-search.ts'
 
 // 分割线（#1901）：一条 role=separator 的线，键盘、拖动、吸附、双击复位；工作区的格子分割线用它。
 export { Splitter, type SplitterProps } from './primitives/splitter.tsx'

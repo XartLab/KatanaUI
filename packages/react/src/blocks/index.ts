@@ -211,3 +211,14 @@ export { uptimeShare, type UptimeCell, type UptimeStatus } from './uptime-bars/u
 
 // 兑换面板（改自 SmoothUI swap-panel，MIT）。
 export { SwapPanel, type SwapAsset, type SwapPanelLabels, type SwapQuote, type SwapStatus } from './swap-panel.tsx'
+
+// 品种搜索（#77 第 1 条，参照 TradingView）：Command 底座、市场分段、最近搜索、匹配高亮；数据与搜索由调用方传。
+export {
+  SymbolSearch,
+  SymbolSearchDialog,
+  type SymbolSearchDialogProps,
+  type SymbolSearchLabels,
+  type SymbolSearchProps,
+  type SymbolSearchQuery,
+} from './symbol-search/symbol-search.tsx'
+export type { SymbolSearchItem, SymbolSearchSegment } from './symbol-search/symbol-search-model.ts'

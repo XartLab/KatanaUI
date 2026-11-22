@@ -35277,6 +35277,592 @@
         }
       ]
     },
+    "SymbolSearch": {
+      "kind": "component",
+      "source": "src/blocks/symbol-search/symbol-search.tsx",
+      "props": [
+        {
+          "name": "onQuery",
+          "type": "SymbolSearchQuery",
+          "required": true,
+          "description": "Search: return matching items for the query and segment; may be async."
+        },
+        {
+          "name": "onSelect",
+          "type": "(item: SymbolSearchItem) => void",
+          "required": true,
+          "description": "Called when a row is chosen (Enter or click)."
+        },
+        {
+          "name": "segments",
+          "type": "readonly SymbolSearchSegment[]",
+          "required": false,
+          "description": "Market segments, in order; the first is the default."
+        },
+        {
+          "name": "segment",
+          "type": "string",
+          "required": false,
+          "description": "Controlled segment id."
+        },
+        {
+          "name": "defaultSegment",
+          "type": "string",
+          "required": false,
+          "description": "Initial segment id when uncontrolled."
+        },
+        {
+          "name": "onSegmentChange",
+          "type": "(segment: string) => void",
+          "required": false,
+          "description": "Called when the segment changes."
+        },
+        {
+          "name": "defaultQuery",
+          "type": "string",
+          "required": false,
+          "default": "''",
+          "description": "Initial text in the input (the character typed to open the search)."
+        },
+        {
+          "name": "recent",
+          "type": "readonly SymbolSearchItem[]",
+          "required": false,
+          "description": "Controlled recent searches, newest first."
+        },
+        {
+          "name": "onRecentChange",
+          "type": "(recent: SymbolSearchItem[]) => void",
+          "required": false,
+          "description": "Called with the new recent list after a selection."
+        },
+        {
+          "name": "recentKey",
+          "type": "string",
+          "required": false,
+          "description": "Storage key to persist recent searches (uncontrolled); without it they live in memory only."
+        },
+        {
+          "name": "recentStorage",
+          "type": "StorageLike",
+          "required": false,
+          "description": "Storage for recentKey; defaults to localStorage."
+        },
+        {
+          "name": "recentLimit",
+          "type": "number",
+          "required": false,
+          "default": "8",
+          "description": "Most recent searches kept."
+        },
+        {
+          "name": "allSegment",
+          "type": "string",
+          "required": false,
+          "default": "'all'",
+          "description": "Segment id that means \"every market\" for filtering recent searches."
+        },
+        {
+          "name": "debounceMs",
+          "type": "number",
+          "required": false,
+          "default": "80",
+          "description": "Delay before onQuery runs after typing, in ms."
+        },
+        {
+          "name": "labels",
+          "type": "SymbolSearchLabels",
+          "required": true,
+          "description": "Text."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "SymbolSearchDialog": {
+      "kind": "component",
+      "source": "src/blocks/symbol-search/symbol-search.tsx",
+      "props": [
+        {
+          "name": "onQuery",
+          "type": "SymbolSearchQuery",
+          "required": true,
+          "description": "Search: return matching items for the query and segment; may be async."
+        },
+        {
+          "name": "onSelect",
+          "type": "(item: SymbolSearchItem) => void",
+          "required": true,
+          "description": "Called when a row is chosen (Enter or click)."
+        },
+        {
+          "name": "segments",
+          "type": "readonly SymbolSearchSegment[]",
+          "required": false,
+          "description": "Market segments, in order; the first is the default."
+        },
+        {
+          "name": "segment",
+          "type": "string",
+          "required": false,
+          "description": "Controlled segment id."
+        },
+        {
+          "name": "defaultSegment",
+          "type": "string",
+          "required": false,
+          "description": "Initial segment id when uncontrolled."
+        },
+        {
+          "name": "onSegmentChange",
+          "type": "(segment: string) => void",
+          "required": false,
+          "description": "Called when the segment changes."
+        },
+        {
+          "name": "defaultQuery",
+          "type": "string",
+          "required": false,
+          "description": "Initial text in the input (the character typed to open the search)."
+        },
+        {
+          "name": "recent",
+          "type": "readonly SymbolSearchItem[]",
+          "required": false,
+          "description": "Controlled recent searches, newest first."
+        },
+        {
+          "name": "onRecentChange",
+          "type": "(recent: SymbolSearchItem[]) => void",
+          "required": false,
+          "description": "Called with the new recent list after a selection."
+        },
+        {
+          "name": "recentKey",
+          "type": "string",
+          "required": false,
+          "description": "Storage key to persist recent searches (uncontrolled); without it they live in memory only."
+        },
+        {
+          "name": "recentStorage",
+          "type": "StorageLike",
+          "required": false,
+          "description": "Storage for recentKey; defaults to localStorage."
+        },
+        {
+          "name": "recentLimit",
+          "type": "number",
+          "required": false,
+          "description": "Most recent searches kept."
+        },
+        {
+          "name": "allSegment",
+          "type": "string",
+          "required": false,
+          "description": "Segment id that means \"every market\" for filtering recent searches."
+        },
+        {
+          "name": "debounceMs",
+          "type": "number",
+          "required": false,
+          "description": "Delay before onQuery runs after typing, in ms."
+        },
+        {
+          "name": "labels",
+          "type": "SymbolSearchLabels",
+          "required": true,
+          "description": "Text."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        },
+        {
+          "name": "open",
+          "type": "boolean",
+          "required": true,
+          "description": "Whether the dialog is open."
+        },
+        {
+          "name": "onOpenChange",
+          "type": "(open: boolean) => void",
+          "required": true,
+          "description": "Called to open or close (Esc, click outside, after a selection)."
+        },
+        {
+          "name": "keepOpen",
+          "type": "boolean",
+          "required": false,
+          "default": "false",
+          "description": "Keep the dialog open after a selection."
+        }
+      ]
+    },
+    "SymbolSearchDialogProps": {
+      "kind": "type",
+      "source": "src/blocks/symbol-search/symbol-search.tsx",
+      "props": [
+        {
+          "name": "onQuery",
+          "type": "SymbolSearchQuery",
+          "required": true,
+          "description": "Search: return matching items for the query and segment; may be async."
+        },
+        {
+          "name": "onSelect",
+          "type": "(item: SymbolSearchItem) => void",
+          "required": true,
+          "description": "Called when a row is chosen (Enter or click)."
+        },
+        {
+          "name": "segments",
+          "type": "readonly SymbolSearchSegment[]",
+          "required": false,
+          "description": "Market segments, in order; the first is the default."
+        },
+        {
+          "name": "segment",
+          "type": "string",
+          "required": false,
+          "description": "Controlled segment id."
+        },
+        {
+          "name": "defaultSegment",
+          "type": "string",
+          "required": false,
+          "description": "Initial segment id when uncontrolled."
+        },
+        {
+          "name": "onSegmentChange",
+          "type": "(segment: string) => void",
+          "required": false,
+          "description": "Called when the segment changes."
+        },
+        {
+          "name": "defaultQuery",
+          "type": "string",
+          "required": false,
+          "description": "Initial text in the input (the character typed to open the search)."
+        },
+        {
+          "name": "recent",
+          "type": "readonly SymbolSearchItem[]",
+          "required": false,
+          "description": "Controlled recent searches, newest first."
+        },
+        {
+          "name": "onRecentChange",
+          "type": "(recent: SymbolSearchItem[]) => void",
+          "required": false,
+          "description": "Called with the new recent list after a selection."
+        },
+        {
+          "name": "recentKey",
+          "type": "string",
+          "required": false,
+          "description": "Storage key to persist recent searches (uncontrolled); without it they live in memory only."
+        },
+        {
+          "name": "recentStorage",
+          "type": "StorageLike",
+          "required": false,
+          "description": "Storage for recentKey; defaults to localStorage."
+        },
+        {
+          "name": "recentLimit",
+          "type": "number",
+          "required": false,
+          "description": "Most recent searches kept."
+        },
+        {
+          "name": "allSegment",
+          "type": "string",
+          "required": false,
+          "description": "Segment id that means \"every market\" for filtering recent searches."
+        },
+        {
+          "name": "debounceMs",
+          "type": "number",
+          "required": false,
+          "description": "Delay before onQuery runs after typing, in ms."
+        },
+        {
+          "name": "labels",
+          "type": "SymbolSearchLabels",
+          "required": true,
+          "description": "Text."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        },
+        {
+          "name": "open",
+          "type": "boolean",
+          "required": true,
+          "description": "Whether the dialog is open."
+        },
+        {
+          "name": "onOpenChange",
+          "type": "(open: boolean) => void",
+          "required": true,
+          "description": "Called to open or close (Esc, click outside, after a selection)."
+        },
+        {
+          "name": "keepOpen",
+          "type": "boolean",
+          "required": false,
+          "description": "Keep the dialog open after a selection."
+        }
+      ]
+    },
+    "SymbolSearchItem": {
+      "kind": "type",
+      "source": "src/blocks/symbol-search/symbol-search-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "Unique id (for example `BINANCE:BTCUSDT`); recent searches are keyed by it."
+        },
+        {
+          "name": "symbol",
+          "type": "string",
+          "required": true,
+          "description": "Symbol code shown in bold (BTCUSDT, 600519)."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "description": "Description under the code (Bitcoin / TetherUS)."
+        },
+        {
+          "name": "exchange",
+          "type": "string",
+          "required": false,
+          "description": "Exchange or source shown on the right (Binance, SSE)."
+        },
+        {
+          "name": "market",
+          "type": "string",
+          "required": false,
+          "description": "Segment id this item belongs to (stock, crypto…); used to filter recent searches by segment."
+        },
+        {
+          "name": "type",
+          "type": "string",
+          "required": false,
+          "description": "Short type tag after the name (spot, perpetual, ETF)."
+        },
+        {
+          "name": "logo",
+          "type": "string",
+          "required": false,
+          "description": "Logo URL for SymbolMark; letters are drawn when omitted."
+        }
+      ]
+    },
+    "SymbolSearchLabels": {
+      "kind": "type",
+      "source": "src/blocks/symbol-search/symbol-search.tsx",
+      "props": [
+        {
+          "name": "title",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the search (and the dialog title, read by screen readers only)."
+        },
+        {
+          "name": "placeholder",
+          "type": "string",
+          "required": false,
+          "description": "Input placeholder."
+        },
+        {
+          "name": "segments",
+          "type": "string",
+          "required": false,
+          "description": "Accessible name of the segment control."
+        },
+        {
+          "name": "recent",
+          "type": "string",
+          "required": false,
+          "description": "Heading of the recent-searches group."
+        },
+        {
+          "name": "results",
+          "type": "string",
+          "required": false,
+          "description": "Heading of the results group (shown only when recent searches are listed too)."
+        },
+        {
+          "name": "empty",
+          "type": "string",
+          "required": false,
+          "description": "Shown when the query found nothing."
+        },
+        {
+          "name": "loading",
+          "type": "string",
+          "required": false,
+          "description": "Shown while onQuery is pending."
+        },
+        {
+          "name": "error",
+          "type": "string",
+          "required": false,
+          "description": "Shown when onQuery threw or rejected."
+        },
+        {
+          "name": "clear",
+          "type": "string",
+          "required": false,
+          "description": "Accessible name of the clear button; the button is drawn only when this is given."
+        },
+        {
+          "name": "resultCount",
+          "type": "(count: number) => string",
+          "required": false,
+          "description": "Announcement for screen readers after results settle (for example `n => \\`${n} results\\``)."
+        }
+      ]
+    },
+    "SymbolSearchProps": {
+      "kind": "type",
+      "source": "src/blocks/symbol-search/symbol-search.tsx",
+      "props": [
+        {
+          "name": "onQuery",
+          "type": "SymbolSearchQuery",
+          "required": true,
+          "description": "Search: return matching items for the query and segment; may be async."
+        },
+        {
+          "name": "onSelect",
+          "type": "(item: SymbolSearchItem) => void",
+          "required": true,
+          "description": "Called when a row is chosen (Enter or click)."
+        },
+        {
+          "name": "segments",
+          "type": "readonly SymbolSearchSegment[]",
+          "required": false,
+          "description": "Market segments, in order; the first is the default."
+        },
+        {
+          "name": "segment",
+          "type": "string",
+          "required": false,
+          "description": "Controlled segment id."
+        },
+        {
+          "name": "defaultSegment",
+          "type": "string",
+          "required": false,
+          "description": "Initial segment id when uncontrolled."
+        },
+        {
+          "name": "onSegmentChange",
+          "type": "(segment: string) => void",
+          "required": false,
+          "description": "Called when the segment changes."
+        },
+        {
+          "name": "defaultQuery",
+          "type": "string",
+          "required": false,
+          "description": "Initial text in the input (the character typed to open the search)."
+        },
+        {
+          "name": "recent",
+          "type": "readonly SymbolSearchItem[]",
+          "required": false,
+          "description": "Controlled recent searches, newest first."
+        },
+        {
+          "name": "onRecentChange",
+          "type": "(recent: SymbolSearchItem[]) => void",
+          "required": false,
+          "description": "Called with the new recent list after a selection."
+        },
+        {
+          "name": "recentKey",
+          "type": "string",
+          "required": false,
+          "description": "Storage key to persist recent searches (uncontrolled); without it they live in memory only."
+        },
+        {
+          "name": "recentStorage",
+          "type": "StorageLike",
+          "required": false,
+          "description": "Storage for recentKey; defaults to localStorage."
+        },
+        {
+          "name": "recentLimit",
+          "type": "number",
+          "required": false,
+          "description": "Most recent searches kept."
+        },
+        {
+          "name": "allSegment",
+          "type": "string",
+          "required": false,
+          "description": "Segment id that means \"every market\" for filtering recent searches."
+        },
+        {
+          "name": "debounceMs",
+          "type": "number",
+          "required": false,
+          "description": "Delay before onQuery runs after typing, in ms."
+        },
+        {
+          "name": "labels",
+          "type": "SymbolSearchLabels",
+          "required": true,
+          "description": "Text."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "SymbolSearchQuery": {
+      "kind": "type",
+      "source": "src/blocks/symbol-search/symbol-search.tsx",
+      "props": []
+    },
+    "SymbolSearchSegment": {
+      "kind": "type",
+      "source": "src/blocks/symbol-search/symbol-search-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "Segment id passed to onQuery; `all` (or any id no item's market equals) shows every recent item."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "Visible label."
+        }
+      ]
+    },
     "SymbolValue": {
       "kind": "type",
       "source": "src/blocks/data-grid/columns.ts",
@@ -38762,6 +39348,30 @@
         }
       ]
     },
+    "TypeToSearchOptions": {
+      "kind": "type",
+      "source": "src/lib/use-type-to-search.ts",
+      "props": [
+        {
+          "name": "onOpen",
+          "type": "(initial: string) => void",
+          "required": true,
+          "description": "Called with the typed character; open the search and put the character in its input."
+        },
+        {
+          "name": "enabled",
+          "type": "boolean",
+          "required": false,
+          "description": "Turn the listener off (for example while the search is already open)."
+        },
+        {
+          "name": "accept",
+          "type": "(key: string, event: KeyboardEvent) => boolean",
+          "required": false,
+          "description": "Extra filter after the built-in checks: return false to leave a key alone (digits that open an interval box, say)."
+        }
+      ]
+    },
     "TypewriterText": {
       "kind": "component",
       "source": "src/motion/text/typewriter-text.tsx",
@@ -41980,6 +42590,11 @@
       "source": "src/lib/text-measure.ts",
       "props": []
     },
+    "typeToSearchKey": {
+      "kind": "function",
+      "source": "src/lib/use-type-to-search.ts",
+      "props": []
+    },
     "uptimeShare": {
       "kind": "function",
       "source": "src/blocks/uptime-bars/uptime-bars-model.ts",
@@ -42133,6 +42748,30 @@
       "kind": "function",
       "source": "src/lib/live.ts",
       "props": []
+    },
+    "useTypeToSearch": {
+      "kind": "function",
+      "source": "src/lib/use-type-to-search.ts",
+      "props": [
+        {
+          "name": "onOpen",
+          "type": "(initial: string) => void",
+          "required": true,
+          "description": "Called with the typed character; open the search and put the character in its input."
+        },
+        {
+          "name": "enabled",
+          "type": "boolean",
+          "required": false,
+          "description": "Turn the listener off (for example while the search is already open)."
+        },
+        {
+          "name": "accept",
+          "type": "(key: string, event: KeyboardEvent) => boolean",
+          "required": false,
+          "description": "Extra filter after the built-in checks: return false to leave a key alone (digits that open an interval box, say)."
+        }
+      ]
     },
     "useValueFlash": {
       "kind": "function",
