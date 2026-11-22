@@ -24,7 +24,7 @@ export type QuoteTableRow = Omit<WatchlistRow, 'flagged'> & {
   spark?: readonly number[]
   /** Accessible name of the mini chart. */
   sparkLabel?: string
-  /** Volume, abbreviated by locale (K/M/B or 万/亿); the column shows when labels.columns.volume is given. */
+  /** Volume, abbreviated by locale (K/M/B, or CJK myriad units for zh-CN); the column shows when labels.columns.volume is given. */
   volume?: number
 }
 
@@ -78,7 +78,7 @@ export type QuoteTableProps = {
   label?: string
   /** Writes the last price; two decimals when omitted. */
   formatPrice?: FormatPrice
-  /** Locale of the volume abbreviations (en-US K/M/B/T, zh-CN 万/亿); defaults to en-US. */
+  /** Locale of the volume abbreviations (en-US K/M/B/T, zh-CN CJK myriad units); defaults to en-US. */
   locale?: string
   /** Unit written small after the volume (shares, USD). */
   volumeUnit?: string

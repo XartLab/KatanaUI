@@ -73,7 +73,9 @@ const columnSchema = z
     barMax: z
       .number()
       .min(0.000001)
-      .describe("Value at which a 'bar' is full; given, the bar is one-sided and neutral. Omit for a bar centered on 0.")
+      .describe(
+        "Value at which a 'bar' is full; given, the bar is one-sided and neutral. Omit for a bar centered on 0.",
+      )
       .optional(),
     label: z
       .string()

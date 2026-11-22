@@ -804,9 +804,9 @@ describe('A2UI 目录', () => {
     expect(parsed.success, parsed.success ? '' : parsed.error.message).toBe(true)
     expect(api.schema.safeParse({ ...grid, density: 'airy' }).success).toBe(false)
     expect(api.schema.safeParse({ ...grid, columns: [{ id: 'x', title: 'X', type: 'heatmap' }] }).success).toBe(false)
-    expect(
-      api.schema.safeParse({ ...grid, columns: [{ id: 'x', title: 'X', type: 'bar', barMax: 0 }] }).success,
-    ).toBe(false)
+    expect(api.schema.safeParse({ ...grid, columns: [{ id: 'x', title: 'X', type: 'bar', barMax: 0 }] }).success).toBe(
+      false,
+    )
   })
 
   it('schema 是严格的：多写一个属性就拒绝', () => {
