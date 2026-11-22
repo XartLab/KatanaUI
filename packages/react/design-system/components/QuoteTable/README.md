@@ -6,9 +6,13 @@
 
 `*` marks a required prop.
 
+### CodeChip · CodeName · UnitValue · CompactValue
+
+表格格内排版的共用件（#92，DataGrid、QuoteTable、Watchlist、LimitLadder、EventCalendar 同一份）：CodeChip 代码芯片（12px w600、面底、圆角 6、高 24）；CodeName 芯片后的全称；UnitValue 数后的单位小字（10px w500 次要色，空一格）；CompactValue 按 locale 缩写（en-US 是 K/M/B/T 两位小数；zh-CN ≥1 亿写 x.xx 亿，1 万–1 亿写千分位整数「8,800 万」，去掉 .00）。
+
 ### QuoteTable
 
-页签值可受控（value / onValueChange）也可不受控（defaultValue，默认第一组）。文字在 labels（{ list, columns, empty }）；点行 onSelect。旧的 label / columns / empty / onRow 与字符串行（price / percent / tone）照认一个版本（@deprecated）。
+页签值可受控（value / onValueChange）也可不受控（defaultValue，默认第一组）。文字在 labels（{ list, columns, empty }）；点行 onSelect。行有 symbol 与 name 时代码画成芯片、后跟全称（#92）；labels.columns.volume 给了才画成交量列，行的 volume 按 locale 缩写（K / M / B ↔ 万 / 亿），volumeUnit 写成单位小字。旧的 label / columns / empty / onRow 与字符串行（price / percent / tone）照认一个版本（@deprecated）。
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
@@ -18,6 +22,8 @@
 | `empty` | `string` | — | Deprecated: use labels.empty. |
 | `label` | `string` | — | Deprecated: use labels.list. |
 | `formatPrice` | `FormatPrice` | `plainPrice` | Writes the last price; two decimals when omitted. |
+| `locale` | `string` | — | Locale of the volume abbreviations (en-US K/M/B/T, zh-CN 万/亿); defaults to en-US. |
+| `volumeUnit` | `string` | — | Unit written small after the volume (shares, USD). |
 | `value` | `string` | — | The selected group id when controlled. |
 | `defaultValue` | `string` | — | The initially selected group id when uncontrolled. |
 | `onValueChange` | `(id: string) => void` | — | Called with the group id when the tab changes. |
@@ -36,14 +42,18 @@ export function QuoteTableUsage() {
     <QuoteTable
       labels={{
         list: 'Watchlists',
-        columns: { name: 'Name', trend: 'Trend', price: 'Last', change: 'Chg %' },
+        columns: { name: 'Name', trend: 'Trend', price: 'Last', change: 'Chg %', volume: 'Volume' },
         empty: 'No symbols in this group',
       }}
+      volumeUnit="USD"
       groups={[
         {
           id: 'main',
           label: 'Main',
-          rows: [{ id: 'a', symbol: 'AAA', name: 'Alpha', last: 11.8, change: 1.8, changePct: 18 }],
+          rows: [
+            { id: 'a', symbol: 'AAA', name: 'Alpha', last: 11.8, change: 1.8, changePct: 18, volume: 42_800_000 },
+            { id: 'b', symbol: 'BRV', name: 'Bravo Semi', last: 10.2, change: -1.8, changePct: -15, volume: 835_490 },
+          ],
         },
       ]}
     />
@@ -71,7 +81,7 @@ QuoteTable
   Tabs
     TabsList > TabsTrigger（一组一个）
     TabsContent
-      table（表头 · 行：名称 · Sparkline · 价 · 涨跌幅）
+      table（表头 · 行：代码芯片 + 名称 · Sparkline · 价 · 涨跌幅 · 成交量（可选））
 ```
 
 ## Keyboard
