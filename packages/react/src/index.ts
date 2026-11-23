@@ -268,6 +268,16 @@ export {
   type Flags,
   type UseFlagsOptions,
 } from './katana/flag-mark.tsx'
+// 联动组（#150 G8，照 TradingView 符号联动）：同组的件跟着同一个值走；组名 LinkGroup / LINK_GROUPS 定义在 lib，经 led.tsx 转出。
+export {
+  LinkGroupProvider,
+  useLinkGroup,
+  type LinkGroupMember,
+  type LinkGroupProviderProps,
+  type LinkGroupValues,
+  type UseLinkGroupOptions,
+} from './lib/link-group.tsx'
+export { LinkGroupPicker, type LinkGroupPickerLabels, type LinkGroupPickerProps } from './katana/link-group-picker.tsx'
 export {
   ShortcutRecorder,
   type ShortcutRecorderLabels,

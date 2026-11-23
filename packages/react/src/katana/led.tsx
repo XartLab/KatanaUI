@@ -3,14 +3,14 @@
 // 搬自 src/ui（#1860），皮肤在 ../theme/led.css。G3 起语气是 tone: SeverityExt（lib/severity.ts，neutral/off 熄灭、accent 亮强调色、ok/warn/danger 状态色），
 // 旧的 state（off/on/ok/warn/danger）留一个版本作兼容，运行时经 ledOf 映射到同一套类名。
 // 状态变了在灯外画一圈光晕闪一次（共用层 useStatusFlash；灯自己的底色就是状态色，闪底色看不见，所以闪外圈）：变坏（警告、危险）用警示闪，变好用涨色闪。
+import { type LinkGroup } from '../lib/link-group.tsx'
 import { useStatusFlash } from '../lib/live.ts'
 import { ledOf, type SeverityExt } from '../lib/severity.ts'
 
 export type LedState = 'off' | 'on' | 'ok' | 'warn' | 'danger'
 
-/** 联动组：同组的面板跟着同一个品种走。组的颜色在组件卡里（theme/led.css 的 link-a…d），所以组名定义在这里。 */
-export type LinkGroup = 'A' | 'B' | 'C' | 'D'
-export const LINK_GROUPS: readonly LinkGroup[] = ['A', 'B', 'C', 'D']
+/** 联动组：同组的面板跟着同一个品种走。组名与联动的状态在 lib/link-group（#150 起，LinkGroupProvider 要用，lib 不能引件），这里照旧转出；灯的组色在 theme/led.css 的 link-a…d。 */
+export { LINK_GROUPS, type LinkGroup } from '../lib/link-group.tsx'
 
 export function Led({
   tone,
