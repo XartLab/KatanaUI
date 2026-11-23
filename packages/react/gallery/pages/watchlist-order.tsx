@@ -15,7 +15,6 @@ import {
   type SortSpec,
 } from '../../src/blocks'
 import { FlagFilter, FlagMark, useFlags, useHotkeys, type FlagDef, type Flags } from '../../src/index.ts'
-import { ChangeText } from '../../src/quotes/index.ts'
 import { FlagMarkUsage } from '../usage/FlagMarkUsage.tsx'
 
 type WatchRow = { id: string; symbol: string; last: number; chg: number; section?: string }
@@ -100,7 +99,8 @@ export function WatchlistOrderDemo() {
         示例数据：拖一行换位置（选中几行一起拖，拖到一半 Esc 取消），或选中后 Alt+↑ /
         Alt+↓；拖分节标题（CRYPTO、STOCKS）整节一起走。 行左端点一下插旗（再点拔掉），或选中一行按
         Alt+Enter；右键菜单里选色；上方旗标按钮按旗过滤。分节标题左端的三角收起这一节（键盘：在标题行上按 ← / → /
-        Enter），标题写行数与本节平均涨跌。点表头排序后不能挪行，标题行不跟着排、各节在节内排。
+        Enter），标题写行数，Chg%
+        列下写本节平均涨跌（sectionAggregates）。点表头排序后不能挪行，标题行不跟着排、各节在节内排。
       </p>
       <div
         data-testid="grid-order"
@@ -127,11 +127,7 @@ export function WatchlistOrderDemo() {
             onSortChange={setSort}
             {...rowOrder.gridProps}
             rowSection={(row) => row.section}
-            sectionSummary={(members) =>
-              members.length === 0 ? null : (
-                <ChangeText value={members.reduce((sum, row) => sum + row.chg, 0) / members.length} />
-              )
-            }
+            sectionAggregates={{ chg: 'avg' }}
             onCursorChange={setCursor}
             menu={flagMenu}
             extrasFirst

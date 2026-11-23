@@ -231,6 +231,23 @@ export {
   type GateSummary,
 } from './robustness-gate-model.ts'
 
+// 参照 affectUI 补的量化件（KATANAview #1908 第一批）：实验卡、并行尝试、变化摘要、KPI 图。
+export { ExperimentCard, type ExperimentCardLabels, type ExperimentCardProps } from './experiment-card.tsx'
+export {
+  baselineOf,
+  changeVerdict,
+  leaderOf,
+  relativeChange,
+  type ChangeVerdict,
+  type ExperimentMetric,
+  type ExperimentVariant,
+} from './experiment-model.ts'
+export { ParallelAttempts, type ParallelAttemptsLabels, type ParallelAttemptsProps } from './parallel-attempts.tsx'
+export { attemptFill, bestAttempt, countAttempts, type Attempt, type AttemptStatus } from './parallel-attempts-model.ts'
+export { ChangeSummary, type ChangeItem, type ChangeSummaryProps } from './change-summary.tsx'
+export { KpiChart, type KpiChartProps } from './kpi-chart.tsx'
+export { axisIndexes, kpiRange, normalizeValues, type KpiScale, type KpiSeries } from './kpi-chart-model.ts'
+
 // 资金流向桑基图与按发布时间画的宏观序列（#45）。
 export { FlowSankey, type FlowSankeyLabels, type FlowSankeyProps } from './flow-sankey.tsx'
 export {
@@ -294,3 +311,27 @@ export {
   type WatchlistSort,
   type WatchlistSortKey,
 } from '../quotes/watchlist-model.ts'
+// 对照 TradingView 小组件补缺的第二批（KatanaUI #147，KATANAview #1884）：报价类四件在 src/quotes/，这里照旧再导出；季节性图是量化层自己的。
+export {
+  SymbolInfo,
+  type SymbolInfoProps,
+  type SymbolInfoRange,
+  type SymbolInfoStatus,
+} from '../quotes/symbol-info.tsx'
+export {
+  SymbolOverview,
+  type SymbolOverviewItem,
+  type SymbolOverviewLabels,
+  type SymbolOverviewProps,
+  type SymbolOverviewRange,
+} from '../quotes/symbol-overview.tsx'
+export { CrossRates, type CrossRatesLabels, type CrossRatesProps } from '../quotes/cross-rates.tsx'
+export type { CrossRateQuote } from '../quotes/cross-rates-model.ts'
+export {
+  CompanyProfile,
+  type CompanyProfileFact,
+  type CompanyProfileLabels,
+  type CompanyProfileProps,
+} from '../quotes/company-profile.tsx'
+export { SeasonalChart, type SeasonalChartLabels, type SeasonalChartProps } from './seasonal-chart.tsx'
+export { seasonalSeries, type SeasonalPoint, type SeasonalYear } from './seasonal-model.ts'

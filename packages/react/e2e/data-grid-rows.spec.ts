@@ -112,7 +112,8 @@ test('data-grid 分节：三角收起整节、← / → 收起展开；按列排
   await open(page)
   const crypto = row(page, 'sec-crypto')
   await expect(crypto.locator('[data-slot="grid-section-count"]')).toHaveText('3')
-  await expect(crypto.locator('[data-slot="grid-section-summary"]')).toContainText('%')
+  // 本节平均涨跌写在标题行的 Chg% 列下（sectionAggregates）
+  await expect(crypto.locator('[data-col="chg"]')).toContainText('%')
   await crypto.getByRole('button', { name: 'Collapse section' }).click()
   await expect(crypto).toHaveAttribute('aria-expanded', 'false')
   await expect(row(page, 'BTCUSDT')).toHaveCount(0)

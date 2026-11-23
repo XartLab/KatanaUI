@@ -234,6 +234,7 @@ export {
   type QuoteTableRow,
 } from './quotes/quote-table.tsx'
 export { plainPrice, rowTone, type FormatPrice, type QuoteRow } from './quotes/quote-row.ts'
+export { CodeChip, CodeName, CompactValue, UnitValue } from './quotes/cell-type.tsx'
 export {
   Combobox,
   ComboboxContent,
@@ -308,6 +309,8 @@ export {
   type PaletteCommand,
 } from './patterns/command-palette.tsx'
 export { SymbolMark, symbolMarkLetters, type SymbolMarkProps } from './quotes/symbol-mark.tsx'
+// 跑马灯（#77 第 5 条）。
+export { TickerTape, type TickerItem, type TickerTapeLabels, type TickerTapeProps } from './quotes/ticker-tape.tsx'
 export { BadgeGroup, type BadgeItem } from './katana/badge.tsx'
 export { RollingText, rollSlots, rollStrip } from './katana/rolling-text.tsx'
 export { Scrubber, scrubSnap, scrubValueAt, type ScrubberProps } from './katana/scrubber.tsx'
@@ -360,6 +363,14 @@ export { LOADING_TIMEOUT_MS, type LoadingPhase } from './katana/loading-gate.ts'
 export { PasswordInput, type PasswordInputLabels, type PasswordInputProps } from './patterns/password-input.tsx'
 export { DeleteButton, type DeleteButtonLabels, type DeleteButtonProps } from './patterns/delete-button.tsx'
 export { HoldToConfirm, type HoldToConfirmLabels, type HoldToConfirmProps } from './patterns/hold-to-confirm.tsx'
+export {
+  SplitButton,
+  type SplitButtonAction,
+  type SplitButtonLabels,
+  type SplitButtonProps,
+} from './patterns/split-button.tsx'
+export { TagInput, type TagInputLabels, type TagInputProps } from './patterns/tag-input.tsx'
+export { InlineEdit, type InlineEditLabels, type InlineEditProps } from './patterns/inline-edit.tsx'
 export { NotificationBell, type NotificationBellProps } from './katana/notification-bell.tsx'
 export { StatusIcon, type StatusIconStatus, type StatusIconTone } from './katana/status-icon.tsx'
 export { AiStatus, type AiStatusProps, type AiStatusState, type AiStatusValue } from './katana/ai-status.tsx'
@@ -398,6 +409,17 @@ export {
   type DurationPickerProps,
   type DurationValue,
 } from './patterns/duration-picker.tsx'
+// 自动刷新控件（#77 第 5 条，#22 G12）。
+export {
+  RefreshControl,
+  formatRefreshClock,
+  formatRemaining,
+  useAutoRefresh,
+  type RefreshControlLabels,
+  type RefreshControlProps,
+  type RefreshOption,
+  type UseAutoRefreshOptions,
+} from './patterns/refresh-control.tsx'
 export { useHoverIntent } from './lib/hover-intent.ts'
 export { useScrubber, type UseScrubberOptions } from './lib/use-scrubber.ts'
 export {
@@ -588,6 +610,16 @@ export { AiApproval, type AiApprovalFact, type AiApprovalOption, type AiApproval
 export { AiContextMeter, type AiContextBreakdownItem, type AiContextMeterProps } from './ai/ai-context-meter.tsx'
 export { AiMessage, type AiMessageAuthor, type AiMessageLabels, type AiMessageProps } from './ai/ai-message.tsx'
 export { AiResponse, type AiResponseCitation, type AiResponseProps } from './ai/ai-response.tsx'
+// 计划对实际（KATANAview #1908 第三批，功能参照 affectUI 的 Plan vs Actual，实现原创）。
+export { PlanVsActual, type PlanVsActualLabels, type PlanVsActualProps } from './ai/plan-vs-actual.tsx'
+export {
+  planDomain,
+  planShift,
+  projectPlan,
+  type PlanStep,
+  type StepProjection,
+  type StepState,
+} from './ai/plan-actual-model.ts'
 export {
   Markdown,
   docHeadings,
@@ -726,6 +758,7 @@ export {
 } from './katana/switchboard-card.tsx'
 export { AnimatedTags, type AnimatedTagsLabels, type AnimatedTagsProps } from './katana/animated-tags.tsx'
 export { ExposureSlider, type ExposureSliderProps } from './katana/exposure-slider.tsx'
+export { RulerSlider, type RulerSliderProps } from './katana/ruler-slider.tsx'
 export { PowerOffSlide, type PowerOffSlideProps } from './katana/power-off-slide.tsx'
 export {
   AnimatedStepper,

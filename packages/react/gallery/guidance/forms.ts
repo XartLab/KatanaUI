@@ -344,6 +344,22 @@ const forms: GuidanceMap = {
       '整份清单的名字取 label。',
     ],
   },
+  'refresh-control': {
+    aliases: ['Auto refresh', 'Refresh interval', 'Polling control', '自动刷新'],
+    use: [
+      '筛选器、行情表、新闻流这类轮询的数据：TradingView 筛选器是「10 秒 / 1 分钟 / 不刷新」三档（#22 G12），演示照这三档；档位由调用方给。',
+      '次序：间隔分段（ToggleGroup sm，26 高）· 立即刷新钮（24 × 24，图标 14px）· 「上次 HH:MM:SS」· 「下次 12s」；时刻主文字色，前缀次要文字色，等宽数字。',
+      '倒计时从 lastRefreshed + interval 算，每秒一格；60 秒以内写 12s，以上写 1:05。',
+      '在刷（refreshing）：图标转圈（1.2s 一圈），倒计时不显示，到点不重复调。',
+      '标签页隐藏时停（不白拉数据），回到前台已过点就马上刷一次。',
+    ],
+    avoid: ['推送来的实时数据（WebSocket）不需要它：用 live 的连接状态。', '一次性的手动刷新只要一个钮，用 Button。'],
+    a11y: [
+      '间隔是 ToggleGroup（读屏名 labels.interval，当前档 aria-pressed）；刷新钮读屏名 labels.refresh。',
+      '在刷时刷新钮是 aria-disabled，不是 disabled：焦点不丢。',
+      '倒计时不放 aria-live（每秒读太吵）；上次时刻用 <time datetime>。',
+    ],
+  },
   'duration-picker': {
     aliases: ['Time duration input', 'Duration field', '时长输入'],
     use: ['订单有效时长、冷却时间、回放步长。', '值在一天以内，用「时 + 分」表达。'],
@@ -398,12 +414,26 @@ const forms: GuidanceMap = {
     a11y: ['每个标签是按钮，读屏名由 labels.add / labels.remove 给（带标签名）。', '焦点环取自全局 focus-ring。'],
   },
   'exposure-slider': {
-    aliases: ['Dial', 'Ruler slider', 'Bipolar slider', 'Tape measure'],
+    aliases: ['Dial', 'Bipolar slider', 'Tape measure'],
     use: ['调净敞口、仓位偏移、杠杆这类有正有负的量。', '手感想要拨盘。'],
-    avoid: ['单向数值用 slider。', '要输入精确数字用 number-input。'],
+    avoid: ['只有一侧的量（仓位比例、杠杆、数量占可用）用 ruler-slider。', '要输入精确数字用 number-input。'],
     a11y: [
       'role=slider，aria-valuemin / max / now 与 aria-valuetext 齐全。',
       '键盘 ← → 一格、PageUp / PageDown 十格、Home / End 到两端。',
+    ],
+  },
+  'ruler-slider': {
+    aliases: ['Ruler slider', 'Quantity slider', 'Tape measure', '单向刻度尺', '数量滑块'],
+    use: ['下单面板里调数量占可用的百分比、仓位比例。', '调杠杆这类从 min 往上走的量，手感想要拨盘。'],
+    avoid: [
+      '有正有负、中点是 0 的量用 exposure-slider。',
+      '表单里普通的单值与区间用 slider。',
+      '要输入精确数字用 number-input。',
+    ],
+    a11y: [
+      'role=slider，名字取 label，aria-valuemin / max / now 与 aria-valuetext（format 的结果）齐全。',
+      '键盘 ← → 一格、Shift + ← → 或 PageUp / PageDown 一大格、Home / End 到两端。',
+      '环形读数 aria-hidden，大刻度的数字在 role=slider 里面，读屏只读当前值。',
     ],
   },
   scrubber: {

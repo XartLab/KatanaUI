@@ -65,6 +65,34 @@ describe('DataGrid 分节', () => {
     expect(rowIds(controlled)).toEqual(['sec-a', 'btc', 'eth', 'sec-b'])
   })
 
+  it('按列的组内汇总（sectionAggregates）：写在标题行、对齐到列下；表尾合计不算标题行', () => {
+    const html = render({
+      sectionAggregates: { chg: 'avg' },
+      summary: [{ id: 'total', label: 'Total', columns: { chg: 'sum' } }],
+    })
+    // 两节各自的均值：(−1+3)/2 = 1，(2−4)/2 = −1
+    const cells = [
+      ...html.matchAll(/data-col="chg" class="k-grid-cell k-grid-section-aggregate[^"]*"[^>]*>(.*?)<\/div>/g),
+    ].map((m) => m[1]!.replace(/<[^>]+>/g, ''))
+    expect(cells).toHaveLength(2)
+    expect(cells[0]).toMatch(/1\.00/)
+    expect(cells[1]).toMatch(/1\.00/)
+    expect(cells[1]).toMatch(/[−-]/)
+    // 表尾计数只数数据行：4 行（两个标题行的 0 不算进去）
+    const count = renderToStaticMarkup(
+      <DataGrid
+        columns={columns}
+        layout={layout}
+        rows={ROWS}
+        rowId={(row) => row.id}
+        label="Watchlist"
+        rowSection={(row) => row.section}
+        summary={[{ id: 'n', label: 'Rows', columns: { chg: 'count' } }]}
+      />,
+    )
+    expect(count).toMatch(/data-summary="n"[\s\S]*?data-col="chg"[^>]*>4</)
+  })
+
   it('组内汇总拿到这一节的全部行（收起的也给全）', () => {
     const html = render({
       defaultCollapsedSections: ['sec-b'],
