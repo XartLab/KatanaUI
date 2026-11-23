@@ -357,6 +357,14 @@ export { LOADING_TIMEOUT_MS, type LoadingPhase } from './katana/loading-gate.ts'
 export { PasswordInput, type PasswordInputLabels, type PasswordInputProps } from './patterns/password-input.tsx'
 export { DeleteButton, type DeleteButtonLabels, type DeleteButtonProps } from './patterns/delete-button.tsx'
 export { HoldToConfirm, type HoldToConfirmLabels, type HoldToConfirmProps } from './patterns/hold-to-confirm.tsx'
+export {
+  SplitButton,
+  type SplitButtonAction,
+  type SplitButtonLabels,
+  type SplitButtonProps,
+} from './patterns/split-button.tsx'
+export { TagInput, type TagInputLabels, type TagInputProps } from './patterns/tag-input.tsx'
+export { InlineEdit, type InlineEditLabels, type InlineEditProps } from './patterns/inline-edit.tsx'
 export { NotificationBell, type NotificationBellProps } from './katana/notification-bell.tsx'
 export { StatusIcon, type StatusIconStatus, type StatusIconTone } from './katana/status-icon.tsx'
 export { AiStatus, type AiStatusProps, type AiStatusState, type AiStatusValue } from './katana/ai-status.tsx'
