@@ -5559,6 +5559,124 @@ export const PAGES: readonly DocPage[] = [
     ],
   },
   {
+    id: 'scheduled-runs',
+    group: 'blocks',
+    cardHeight: 470,
+    title: 'ScheduledRuns 定时运行',
+    summary:
+      '一周的定时任务（回补、新闻、因子重算）按「天 × 时段」排，每个时段一份额度（数据源配额、Agent 会话用量），一格最多 maxPerSession 张卡、格子等高。左边是待排栈，右边是周格子；自动模式按栈的次序从当前时段往后填，放不下就拆成几块（每块不小于 minPiece），手动模式栈里的不排、订好的与挪过的不动。卡能拖；键盘 Space 拿起、方向键瞄准（←→ 前后一天，↑↓ 上下一个时段）、Space 放下、Esc 放回，Enter 开合详情，每一步底栏播报有没有空位。过去的时段变淡、不收卡、里面的卡不能挪；当前时段顶上一道红线。功能参照 affectUI 的 Scheduled Runs（affectui.com/components/scheduled-runs，2026-11-23 读；Pro 件，页上没写许可证：只读说明、实现原创，不装它的 registry）；没有 Agent 头像筛选与循环演示。演示数据是示例。',
+    exports: ['ScheduledRuns', 'buildSchedule', 'canDrop', 'moveSlot'],
+    propParts: [
+      { part: 'ScheduledRuns', note: '件里记着用户挪过的块；onMove 把每次挪动交给调用方保存。模式受控或不受控。' },
+      { part: 'buildSchedule', note: '纯函数：订好的与挪过的先占位，栈里的按模式自动填（会拆）或留在栈里。' },
+      { part: 'canDrop', note: '纯函数：不是过去、卡数没满、额度够。' },
+      { part: 'moveSlot', note: '纯函数：拿着卡时方向键对准的格。' },
+    ],
+    states: [
+      '订好的：实线卡。自动排进去的：虚线卡；拆开的写块号（1/2）。',
+      '拿着：卡描强调色边，对准的格有空位描强调色、没有空位描 danger 虚线。',
+      '过去的格：变淡，里面的卡写「已过」，不能拿起。',
+      '当前格：顶上一道 danger 色线。',
+      '每格底下一道细条是这格已用的额度。',
+      '栈空：写 stackEmpty。',
+    ],
+    donts: [
+      '不要拿它看一天里请求的峰值：用 RateLimitPlanner。',
+      '不要拿它盯正在跑的任务：用 AgentQueue。',
+      '不要在件里写死额度：limit 由调用方从配置读。',
+    ],
+    composition:
+      'ScheduledRuns\n  头（标题 · 小注 · ToggleGroup 自动 / 手动）\n  栈（待排的卡）\n  周格子（天头 · 时段头 · 每格 group：额度细条 · 卡）\n  提示 · 播报',
+    keys: [
+      ['Tab', '先栈里的卡，再一天一天走格子里的卡'],
+      ['Space', '拿起；拿着时放下'],
+      ['← →（拿着）', '前一天 / 后一天'],
+      ['↑ ↓（拿着）', '同一天的上一个 / 下一个时段'],
+      ['Esc', '放回原处；没拿着时收起详情'],
+      ['Enter', '开合这张卡的详情'],
+    ],
+  },
+  {
+    id: 'agent-queue',
+    group: 'blocks',
+    cardHeight: 440,
+    title: 'AgentQueue 任务队列',
+    summary:
+      '抓取 / 回补任务的队列：四列从左到右是排队（高优先在前）、工位（并发槽，每槽一个在跑的任务，进度条，被限流时 warn 色倒计时）、完成、失败；头上四个数（排队超过 backpressure 变 warn 色），给了回调才有暂停 / 继续与并发步进（− N +）。下面是最近 window 毫秒的积压深度图（从任务记录推出来）与一道背压虚线，旁边写成字的摘要（现在、峰值、平均）。点一个任务或 Enter 钉住详情（排了多久、跑了多久、第几次、错误），里面有「提到最前」「取消」。件不走钟：now 由调用方给。功能参照 affectUI 的 Agent Queue（affectui.com/components/agent-queue，2026-11-23 读；Pro 件，页上没写许可证：只读说明、实现原创，不装它的 registry）；没有任务在区之间滑动的动画，详情是内嵌区。演示数据是示例。',
+    exports: ['AgentQueue', 'depthSummary', 'queueDepth', 'queueOrder', 'workerSlots'],
+    propParts: [
+      {
+        part: 'AgentQueue',
+        note: '钉住的任务受控或不受控（openId / defaultOpenId）；暂停、并发、提到最前、取消都是给了回调才出现。',
+      },
+      { part: 'queueOrder', note: '纯函数：排队的次序，高优先在前，同级按入队早晚。' },
+      { part: 'workerSlots', note: '纯函数：在跑的按开始早晚占槽，空槽是 null。' },
+      { part: 'queueDepth', note: '纯函数：一段时间里每一刻在排队的个数。' },
+      { part: 'depthSummary', note: '纯函数：现在、峰值、平均。' },
+    ],
+    states: [
+      '排队：写排了多久；高优先的标小字。',
+      '在跑：中性色进度条；被限流时条与字 warn 色，写倒计时。',
+      '空槽：虚线框写 idle。',
+      '失败：写错误，danger 色。',
+      '背压：排队数超过 backpressure 时 warn 色，深度图上有虚线。',
+      '暂停：按钮 aria-pressed 为真，写 resume。',
+    ],
+    donts: [
+      '不要拿它看几个 Agent 随时间的分工：用 AgentLanes。',
+      '不要拿它分析一次请求的耗时：用 TraceWaterfall。',
+      '不要让件自己走钟：now 由调用方按自己的节奏给。',
+    ],
+    composition:
+      'AgentQueue\n  头（标题 · 队列名 · dl 四个数 · Button 暂停 · 步进 group）\n  四列（排队 ol · 工位 ol · 完成 ul · 失败 ul；每个任务一个按钮）\n  region（详情 dl · Button × 2）\n  figure（深度图 svg · 摘要）\n  播报',
+    keys: [
+      ['Tab', '进任务列表（一个停点），再到详情里的按钮'],
+      ['↑ ↓ / ← →', '在跑的、排队的、失败的、完成的依次走'],
+      ['Home / End', '第一个 / 最后一个'],
+      ['Enter / Space', '钉住或放开这个任务的详情'],
+      ['Esc', '收起详情，焦点回到任务'],
+    ],
+  },
+  {
+    id: 'cost-waterfall',
+    group: 'blocks',
+    cardHeight: 420,
+    title: 'CostWaterfall 花费瀑布',
+    summary:
+      '一次 Agent 会话的钱和 token 花在哪：每一步（模型调用、工具调用、子 Agent）按调用次序一行，条从前面各步的累计处起、长度是这一步的花费或 token，最后一行的条尾就是合计；负的花费是抵扣，条往回走。子 Agent 可折叠，它的数是自己的加子步的（不用预先加）。头一行写会话状态与合计；花费 / token 切换；「最贵一步」一键跳过去（展开上级、打开详情、聚焦）。每行写名字、种类、模型、量、时长、输入输出 token；Enter 打开详情（提示与回答，或工具的输入与输出，错误）。不复用 AttributionBars：它按大小排序、折「其他」、零轴对称（组件卡明写不用瀑布），这里要守调用次序与累计基线；复用的是 TraceWaterfall 的树键盘 moveSpan、series 色与 niceTicks。功能参照 affectUI 的 Cost Waterfall（affectui.com/components/cost-waterfall，2026-11-23 读；Pro 件，页上没写许可证：只读说明、实现原创，不装它的 registry）。演示数据是示例。',
+    exports: ['CostWaterfall', 'costRows', 'priciestStep', 'stepTotals'],
+    propParts: [
+      { part: 'CostWaterfall', note: '模式、折叠、打开的详情都可受控；金额、token、时长的写法由调用方给。' },
+      { part: 'costRows', note: '纯函数：按折叠展开成可见行，每行带累计轴上的起止。' },
+      { part: 'priciestStep', note: '纯函数：叶子里最贵的一步与它的上级。' },
+      { part: 'stepTotals', note: '纯函数：一步连同子步的花费、token 与时长。' },
+    ],
+    states: [
+      '完成：条是种类色；子 Agent 的条淡一些（盖住它的子步）。',
+      '进行中：条带斜纹；头里写进行中（warn 色）。',
+      '失败：条 danger 色，详情里写错误。',
+      '抵扣：负花费，条是 ok 色虚线框、往回走。',
+      '最贵一步：条外一圈 warn 描边。',
+      '窄于 720px 藏输入输出两列；窄于 520px 条换到第二行。',
+    ],
+    donts: [
+      '不要拿它看耗时：用 TraceWaterfall。',
+      '不要拿它看几天、几周的用量与预算：用 Meter 或 AiContextMeter。',
+      '不要预先把子步的数加到子 Agent 上：件会再加一次。',
+    ],
+    composition:
+      'CostWaterfall\n  头（标题 · 任务 · 状态与合计）\n  ToggleGroup（花费 / token）· Button 最贵一步\n  列头（步骤 · 累计轴刻度 · 量 · 时长 · 输入 · 输出）\n  tree（每行 treeitem：折叠箭头 · 种类 · 名字 · 模型 · 条 · 数）\n  region（详情：pre 提示 / 回答 · 错误）',
+    keys: [
+      ['Tab', '切换、最贵一步、步骤树（一个停点）、详情里的长文本框'],
+      ['↑ ↓', '上一行 / 下一行'],
+      ['→', '收着的子 Agent 先展开，展开的到第一个子'],
+      ['←', '展开的先收起，否则回上级'],
+      ['Home / End', '第一行 / 最后一行'],
+      ['Enter / Space', '打开或收起这一步的详情'],
+      ['Esc', '收起详情，焦点回到这一行'],
+    ],
+  },
+  {
     id: 'hypothesis-ledger',
     group: 'blocks',
     cardHeight: 640,
@@ -8712,6 +8830,240 @@ export const PAGES: readonly DocPage[] = [
     composition:
       'PlanVsActual\n  头（标题 · dl 计划完成与推算完成 · 推移）\n  ol（每步一行：名字 · 状态 · 轨道（计划框 · 实际条 · 超时段 · 推算框 · now）· 时长）',
     keys: [],
+  },
+  {
+    id: 'agent-recap',
+    group: 'ai',
+    cardHeight: 420,
+    title: 'AgentRecap 离开期间回顾',
+    summary:
+      '隔夜或离开几小时回来，后台 Agent 做了什么：上面一条离开期间的分布（每段几件、每件一个点；装饰，对读屏隐藏，卡里都有），下面三列：要你拍板、失败、做完，列头写总数（含超出 limit 的）。每张卡写状态字、时间、标题、小注、数量与动作：要你的有查看与主动作（批准），失败的有查看与重试，做完的有查看与撤销。动作可以返回 Promise：等的时候写「处理中」，失败退回原状；做完换成状态字加撤销，撤销后可重做。悬停或聚焦一张卡，分布上它的点变亮。卡等高。主动作只把人的决定回调出去，件不替人做。功能参照 affectUI 的 Agent Recap（affectui.com/components/agent-recap，2026-11-23 读；Pro 件，页上没写许可证：只读说明、实现原创，不装它的 registry）；不做开场回放动画。演示数据是示例。',
+    exports: ['AgentRecap', 'recapBuckets', 'recapCounts', 'recapLanes'],
+    propParts: [
+      {
+        part: 'AgentRecap',
+        note: 'since 与 until 由调用方给（不在渲染里取时间）；onAction / onUndo / onRedo 可返回 Promise。',
+      },
+      { part: 'recapLanes', note: '纯函数：按类分开，每类新的在前。' },
+      { part: 'recapCounts', note: '纯函数：各类的个数。' },
+      { part: 'recapBuckets', note: '纯函数：since 到 until 等分，每段几件。' },
+    ],
+    states: [
+      '要你：状态字 warn 色，主动作是 primary 按钮。',
+      '失败：状态字 danger 色，主动作是重试。',
+      '做完：状态字 ok 色，有撤销（给了 onUndo）。',
+      '处理中：按钮写 working，aria-busy，仍可聚焦。',
+      '已处理 / 已撤销：状态字换成 doneLabel（或 acted）/ undone，按钮换成撤销 / 重做。',
+      '某列没有：写 empty。',
+    ],
+    donts: [
+      '不要拿它盯正在跑的：用 RunningNow 或 AgentLanes。',
+      '不要拿它当完整的变更记录：它只摘离开期间的几件。',
+      '不要在聊天里放三列：对话里用 AwaySummary。',
+    ],
+    composition:
+      'AgentRecap（section，标题命名）\n  分布 svg（每段柱 · 每件一个点）· 起止钟点\n  三列 section（列头与总数 · ul 卡：状态字 · time · 标题 · 小注与数量 · Button × 2）\n  播报',
+    keys: [
+      ['Tab', '一张一张走卡里的按钮：先查看，再主动作或撤销 / 重做'],
+      ['Enter / Space', '执行；做完焦点移到撤销，撤销后回到动作'],
+    ],
+  },
+  {
+    id: 'away-summary',
+    group: 'ai',
+    cardHeight: 300,
+    title: 'AwaySummary 离开摘要',
+    summary:
+      '回到对话或面板时的一张小卡：头一行写离开了多久（或从几点起，由调用方的 heading 写）与各类计数；下面一行一件：状态字（要你 / 失败 / 做完）、标题、小注、一个动作（默认决定 / 重试 / 打开，可改字，action 给 null 不要）。要你的排最前、失败其次、做完最后；超过 limit 的收进「再看 n 件」。「知道了」或 Esc 把卡折成一行分隔条，点分隔条再展开、焦点回到上次用的动作。动作可以返回 Promise，等的时候写「处理中」。行等高。件不走钟：now 由调用方给。功能参照 affectUI 的 Away Summary（affectui.com/components/away-summary，2026-11-23 读；Pro 件，页上没写许可证：只读说明、实现原创，不装它的 registry）。演示数据是示例。',
+    exports: ['AwaySummary', 'recapOrder'],
+    propParts: [
+      {
+        part: 'AwaySummary',
+        note: '折叠受控或不受控（collapsed / defaultCollapsed）；onDismiss 让调用方记下「看过了」。',
+      },
+      { part: 'recapOrder', note: '纯函数：要你的在前、失败其次、做完最后，同类新的在前。' },
+    ],
+    states: [
+      '展开：标题、计数、清单与底栏。',
+      '折起：只剩一行分隔条（aria-expanded 为假），折起的内容不在焦点里。',
+      '处理中：这一行的按钮写 working，仍可聚焦。',
+      '超出 limit：底栏有「再看 n 件」，展开后焦点到第一个新行的动作。',
+      '窄于 420px：计数换到标题下，长标题截断（title 里有全文）。',
+    ],
+    donts: [
+      '不要拿它放整夜的回顾与分布图：用 AgentRecap。',
+      '不要拿它批一个高风险动作：用 AiApproval 或 DecisionQueue（按住确认）。',
+    ],
+    composition:
+      'AwaySummary（section，标题命名）\n  头（标题 · 计数）\n  ul（每行：状态字 · 标题与小注 · Button）\n  底栏（再看 n 件 · 知道了）\n  折起时：button 分隔条',
+    keys: [
+      ['Tab', '按清单次序走每行的动作，再到「再看」「知道了」'],
+      ['Enter / Space', '执行；「知道了」折起并把焦点放到分隔条'],
+      ['Esc', '折起，焦点到分隔条；点分隔条展开、焦点回到上次用的动作'],
+    ],
+  },
+  {
+    id: 'running-now',
+    group: 'ai',
+    cardHeight: 120,
+    title: 'RunningNow 正在跑',
+    summary:
+      '标题栏或状态栏上的一颗胶囊，写「3 个在跑 · 2 个要你」（有要你的前面的点是 warn 色）；点开是任务清单，每行写进度环、标题、当前步与「第几 / 共几步」，一个图标钮：在跑的暂停、暂停的继续、要你的打开；点行本身也打开。行的次序不跟着状态变、行固定 52px；底下可选「打开任务」。很窄时胶囊只写数字（读屏名仍是全文）。弹层是我们的 Popover。功能参照 affectUI 的 Running Now（affectui.com/components/running-now，2026-11-23 读；Pro 件，页上没写许可证：只读说明、实现原创，不装它的 registry）。演示数据是示例。',
+    exports: ['RunningNow', 'runningCounts'],
+    propParts: [
+      { part: 'RunningNow', note: '弹层开合受控或不受控（open / defaultOpen）；暂停、继续、打开都是给了回调才出钮。' },
+      { part: 'runningCounts', note: '纯函数：各状态的个数。' },
+    ],
+    states: [
+      '有要你的：胶囊前的点 warn 色，那一行进度环 warn 色、右上一个小点。',
+      '没有任务：点是灰的，写 summary 给的空闲文字。',
+      '完成：进度环 ok 色、满圈，没有钮。',
+      '很窄（容器窄于 360px）：胶囊只写 short。',
+    ],
+    donts: [
+      '不要把它当任务管理页：清单只是一眼看；全部任务给 onOpenAll。',
+      '不要拿它看几个 Agent 的分工：用 AgentLanes。',
+    ],
+    composition:
+      'RunningNow\n  button 胶囊（点 · 全文 · 数字版）\n  Popover（ul：每行 button（进度环 · 标题与当前步 · 步数）· 图标 Button）· 底栏 Button\n  播报',
+    keys: [
+      ['Enter / Space / ↓', '在胶囊上：打开清单并聚焦第一行'],
+      ['↑ ↓', '行与行之间'],
+      ['Home / End', '第一行 / 最后一行'],
+      ['Tab', '这一行的钮，再到下一行'],
+      ['Esc', '关上，焦点回胶囊'],
+    ],
+  },
+  {
+    id: 'agent-lanes',
+    group: 'ai',
+    cardHeight: 260,
+    title: 'AgentLanes 多 Agent 泳道',
+    summary:
+      '几个 Agent 并行时，每个 Agent 一条泳道：左边头像缩写、名字、模型与标签（空闲 / 要你），右边最近 span 毫秒的时间轴上画它的任务块（完成中性、在跑斜纹、等人 warn、失败 danger），没结束的长到 now。一个 Agent 交给另一个时，从交出那一块的结束处画一道竖线到接手的泳道。点块或 Enter 打开：等人的块弹出问题与「批准」「拒绝」（焦点先到批准），别的块写做了什么、用了哪些工具、交给谁，给了 onOpen 有「打开」。头上写几个块等人（读屏会播）。件不走钟：now 由调用方给。批准与拒绝只回调人的决定；不给回调时件自己改块的状态（批准接着跑、拒绝算失败），只为文档站演示。功能参照 affectUI 的 Agent Lanes（affectui.com/components/agent-lanes，2026-11-23 读；Pro 件，页上没写许可证：只读说明、实现原创，不装它的 registry）。演示数据是示例。',
+    exports: ['AgentLanes', 'agentTag', 'blockSpan', 'handoffLinks'],
+    propParts: [
+      { part: 'AgentLanes', note: '窗口默认 30 分钟；时间写法由 formatTime 给。' },
+      { part: 'blockSpan', note: '纯函数：块在窗口里的位置，窗口外是 null。' },
+      { part: 'agentTag', note: '纯函数：泳道的标签（要你 / 在忙 / 空闲）。' },
+      { part: 'handoffLinks', note: '纯函数：交接线的位置与起止泳道。' },
+    ],
+    states: [
+      '完成：中性实心块。在跑：斜纹块，长到 now。',
+      '等人：warn 色块，泳道标签写「要你」，头上计数。',
+      '失败：danger 色块。',
+      '空闲：这个 Agent 没有在跑也没有等人，泳道标签写 idle。',
+      '窄于 520px：名字列只留头像。',
+    ],
+    donts: [
+      '不要拿它排将来的任务：它只看最近的窗口，排程用 ScheduledRuns。',
+      '不要拿它看一次运行的步骤：用 PlanVsActual 或 AiTaskList。',
+      '不要拿它看一个 Agent 分给很多 worker：用 FanOutGrid。',
+    ],
+    composition:
+      'AgentLanes\n  头（标题 · 等人计数 status）\n  轴（起 · 中 · now）\n  每条泳道（头像 · 名字与模型 · 标签 · ul 块：Popover 触发按钮）\n  交接线 svg',
+    keys: [
+      ['Tab', '一条泳道一条泳道地走每个块'],
+      ['Enter / Space', '打开这个块；等人的块弹出批准 / 拒绝'],
+      ['Esc', '关上弹层，焦点回到块'],
+    ],
+  },
+  {
+    id: 'fan-out-grid',
+    group: 'ai',
+    cardHeight: 260,
+    title: 'FanOutGrid 分发网格',
+    summary:
+      '一个 Agent 把一件大活（给 300 只票补资金流、给 240 篇研报打标签）拆给很多 worker，每个子任务一格，按状态着色：排队灰、在跑强调色、重试 warn、成功 ok、失败 danger。头一行写任务、进度、剩余时间（没跑完的 × 跑完的平均耗时 ÷ 并行数）与花费合计；悬停或聚焦一格，下面写它的 worker、耗时、第几次、结果与错误，Enter 钉住。底下一排状态计数是开关钮（一次亮一种，其余格变淡），有失败的出「重试失败的」。进度每过一成播报一次。功能参照 affectUI 的 Fan-out Grid（affectui.com/components/fan-out-grid，2026-11-23 读；Pro 件，页上没写许可证：只读说明、实现原创，不装它的 registry）；花费写法由调用方给，在跑的格不做流光动画。演示数据是示例。',
+    exports: ['FanOutGrid', 'fanCounts', 'fanEta', 'fanProgress'],
+    propParts: [
+      { part: 'FanOutGrid', note: '格子按 tasks 的次序摆；onSelect 收到钉住的任务或 null。' },
+      { part: 'fanCounts', note: '纯函数：各状态的个数。' },
+      { part: 'fanProgress', note: '纯函数：跑完（含失败）的占比。' },
+      { part: 'fanEta', note: '纯函数：剩余时间，估不出来是 null。' },
+    ],
+    states: [
+      '排队：轨道色。在跑：强调色。重试：warn。成功：ok。失败：danger。',
+      '钉住：格子一圈焦点色，aria-pressed 为真。',
+      '只看一种：那个计数钮按下，其余格降到 25%。',
+      '有失败：底栏出「重试失败的」（给了 onRetry）。',
+    ],
+    donts: [
+      '不要拿它看几个 Agent 各干什么：用 AgentLanes。',
+      '不要拿它看一个队列的积压：用 AgentQueue。',
+      '不要只靠格子颜色：详情与计数都写成字。',
+    ],
+    composition:
+      'FanOutGrid\n  头（标题 · 任务 · 进度 · 剩余 · 花费）· 进度细条\n  ul（每格一个按钮）\n  详情一行（aria-describedby）\n  底栏（计数开关 group · Button 重试）\n  播报',
+    keys: [
+      ['Tab', '进格子（一个停点），再到计数开关与重试'],
+      ['← →', '前一格 / 后一格'],
+      ['↑ ↓', '上一行 / 下一行'],
+      ['Home / End', '第一格 / 最后一格'],
+      ['Enter / Space', '钉住或放开这一格的详情'],
+      ['Esc', '放开钉住的格'],
+    ],
+  },
+  {
+    id: 'smart-recommendation',
+    group: 'ai',
+    cardHeight: 220,
+    title: 'SmartRecommendation 建议卡',
+    summary:
+      'Agent 给一个建议（options 的第一项是推荐）：写理由、来源与置信度（0–3 格，旁边写成字，不只靠格子）；「其他选项」是一个单选菜单，换了就显示那一项；「采用」把人选的回调出去，之后换成「已采用」与「撤销」。标题本身是开合钮（aria-expanded），默认展开。模型输出只是带来源的建议，人接受才生效，件不替人采用。菜单是我们的 DropdownMenu。功能参照 affectUI 的 Smart Recommendation（affectui.com/components/smart-recommendation，2026-11-23 读；页上标 MIT，这里也只学功能，代码原创）。演示数据是示例。',
+    exports: ['SmartRecommendation', 'clampSignal'],
+    propParts: [
+      { part: 'SmartRecommendation', note: '采用与撤销都只回调，状态由件记着；理由与来源由调用方给。' },
+      { part: 'clampSignal', note: '纯函数：置信度夹到 0–3 的整数。' },
+    ],
+    states: [
+      '默认：推荐项带「推荐」小标，置信度按级点亮。',
+      '换了一项：显示那一项的理由与置信度，没有「推荐」小标。',
+      '已采用：ok 色「已采用」加撤销，菜单与采用钮收起。',
+      '收起：只剩标题。',
+    ],
+    donts: [
+      '不要在没有明显更好的一项时用：把几项并排给人比（ExperimentCard）。',
+      '不要拿它批下单这种高风险动作：用 AiApproval（按住确认）。',
+    ],
+    composition:
+      'SmartRecommendation\n  h4 > button（开合）\n  内容（选中项 · 推荐小标 · 理由 · 来源 · 置信度格与字）\n  动作（DropdownMenu 单选 · Button 采用 / 已采用 · Button 撤销）',
+    keys: [
+      ['Enter / Space', '在标题上开合；在「其他选项」上打开菜单；在「采用」上采用'],
+      ['↑ ↓', '菜单里换一项'],
+      ['Esc', '关上菜单'],
+    ],
+  },
+  {
+    id: 'decision-tree',
+    group: 'ai',
+    cardHeight: 320,
+    title: 'DecisionTree 决策树',
+    summary:
+      'Agent 走到岔口要人拍板（清洗规则、回补范围、调仓幅度）：左边问题、背景、Agent 名与风险标（高 / 中）；中间两到四个分支挂在一道轨上（编号 1–4，Agent 倾向的那支标出来、轨线强调色）；每个分支右边是它的后果，一行一条，有风险的打标，聚焦或悬停（或按 F 依次跳过去）看注释与出处。最后一支是「其他…」：写一句指示，Enter 发出、Shift+Enter 换行，onChoose 返回的回话写在下面。选了分支这个决定就离开清单，接着看下一个；←→（或 K / J）在待定的决定之间走。件只回调人的选择，Agent 不会因为倾向某支就自动执行。功能参照 affectUI 的 Decision Tree（affectui.com/components/decision-tree，2026-11-23 读；Pro 件，页上没写许可证：只读说明、实现原创，不装它的 registry）；没有命令式句柄。演示数据是示例。',
+    exports: ['DecisionTree'],
+    propParts: [{ part: 'DecisionTree', note: 'onChoose 收到分支或指示；对指示可返回（Promise 的）回话字符串。' }],
+    states: [
+      'Agent 倾向：那支按钮是 primary，下面写 agentPick，轨线强调色。',
+      '风险：高 danger、中 warn 的小标在 Agent 名后。',
+      '有风险的后果：前面一个 warn 色「!」、虚下划线，聚焦或悬停出注释。',
+      '其他…展开：标了名的输入框与发出钮；回话写在下面。',
+      '没有待定的：写 empty。',
+    ],
+    donts: [
+      '不要拿它问只有是 / 否的问题：用 DecisionQueue 或 AiApproval。',
+      '不要拿它审做完的活：用 AgentRecap。',
+      '不要超过四个分支：拆成两个决定。',
+    ],
+    composition:
+      'DecisionTree\n  头（标题 · 上一个 · 位置 · 下一个）\n  问题（问题 · 背景 · Agent 名与模型 · 风险标）\n  ol 分支（Button 编号与名字 · 倾向小标 · 后果 ul：打标的带 tooltip）· 其他…（textarea · Button 发出 · 回话）\n  播报',
+    keys: [
+      ['1–4', '选这个分支；分支数加一打开「其他…」'],
+      ['Enter', '在「其他…」里发出；Shift+Enter 换行'],
+      ['← → / K J', '上一个 / 下一个决定'],
+      ['F', '跳到下一条有风险的后果，看它的注释'],
+      ['Esc', '关上「其他…」或注释'],
+    ],
   },
   {
     id: 'avatar',

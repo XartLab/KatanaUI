@@ -1,0 +1,305 @@
+/* SPDX-License-Identifier: MIT */
+/* SmartRecommendation 与 DecisionTree（KATANAview #1908）。
+   建议卡：标题是开合钮，置信度三格加一行字；采用后换成 ok 色的「已采用」与撤销。
+   决策树：宽时三段从左到右（问题 · 分支 · 后果），分支挂在一道竖轨上，每支一道横线接到轨上；Agent 倾向的那支轨线是强调色；
+   有风险的后果前一个 warn 色小标，聚焦或悬停出注释。窄于 640px 改成上下排，后果挂在各自的分支下面。 */
+.k-srec {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  padding: 8px 10px;
+  border: var(--hairline);
+  border-radius: 6px;
+  background: var(--k-container-secondary-background);
+  color: var(--k-content-body-foreground);
+  font: var(--text-data) var(--font-sans);
+}
+.k-srec-title {
+  margin: 0;
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-srec-title button {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--k-content-secondary-foreground);
+  font: inherit;
+  cursor: pointer;
+}
+.k-srec-title button:focus-visible {
+  outline: 1px solid var(--focus-ring);
+}
+.k-srec-body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.k-srec-body[hidden] {
+  display: none;
+}
+.k-srec-body p {
+  margin: 0;
+}
+.k-srec-pick {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  color: var(--k-content-primary-foreground);
+}
+.k-srec-tag {
+  color: var(--accent);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-srec-reason {
+  color: var(--k-content-secondary-foreground);
+}
+.k-srec-source {
+  color: var(--k-content-tertiary-foreground);
+  font: var(--text-caption) var(--font-mono);
+}
+.k-srec-signal {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-srec-bars {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 2px;
+}
+.k-srec-bars i {
+  width: 4px;
+  background: var(--k-container-track-background);
+}
+.k-srec-bars i:nth-child(1) {
+  height: 6px;
+}
+.k-srec-bars i:nth-child(2) {
+  height: 9px;
+}
+.k-srec-bars i:nth-child(3) {
+  height: 12px;
+}
+.k-srec-bars i[data-on] {
+  background: var(--k-content-primary-foreground);
+}
+.k-srec-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  margin-top: 2px;
+}
+.k-srec-accepted {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-right: auto;
+  color: var(--k-status-ok-foreground);
+}
+
+.k-dt {
+  container-type: inline-size;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  color: var(--k-content-body-foreground);
+  font: var(--text-data) var(--font-sans);
+}
+.k-dt-head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+.k-dt-title {
+  margin: 0;
+  color: var(--k-content-primary-foreground);
+  font: var(--text-data) var(--font-sans);
+}
+.k-dt-nav {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-num-small);
+}
+.k-dt-body {
+  display: grid;
+  grid-template-columns: minmax(160px, 1fr) minmax(0, 2.4fr);
+  gap: var(--space-4);
+}
+.k-dt-question p {
+  margin: 0 0 4px;
+}
+.k-dt-ask {
+  color: var(--k-content-primary-foreground);
+}
+.k-dt-context {
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-dt-agent {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-dt-agent small {
+  color: var(--k-content-tertiary-foreground);
+  font-family: var(--font-mono);
+}
+.k-dt-risk[data-risk='high'] {
+  color: var(--k-status-danger-foreground) !important;
+}
+.k-dt-risk[data-risk='medium'] {
+  color: var(--k-status-warn-foreground) !important;
+}
+.k-dt-branches {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding: 0 0 0 12px;
+  border-left: 1px solid var(--k-separable-primary-borderColor);
+  list-style: none;
+}
+.k-dt-branch {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(150px, auto) minmax(0, 1fr);
+  align-items: start;
+  gap: 2px var(--space-3);
+}
+.k-dt-branch::before {
+  content: '';
+  position: absolute;
+  top: 13px;
+  left: -12px;
+  width: 10px;
+  height: 1px;
+  background: var(--k-separable-primary-borderColor);
+}
+.k-dt-branch[data-pick]::before {
+  background: var(--accent);
+}
+.k-dt-choose {
+  justify-content: flex-start;
+}
+.k-dt-choose kbd {
+  color: var(--k-content-tertiary-foreground);
+  font: var(--text-caption) var(--font-num-small);
+}
+.k-dt-pick {
+  grid-column: 1;
+  color: var(--accent);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-dt-effects {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+  padding: 4px 0 0;
+  list-style: none;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-dt-flagged {
+  position: relative;
+}
+.k-dt-flagged [data-flag] {
+  border-bottom: 1px dashed var(--k-status-warn-foreground);
+  color: var(--k-content-primary-foreground);
+}
+.k-dt-flagged [data-flag]::before {
+  content: '!';
+  margin-right: 4px;
+  color: var(--k-status-warn-foreground);
+}
+.k-dt-flagged [data-flag]:focus-visible {
+  outline: 1px solid var(--focus-ring);
+}
+.k-dt-note {
+  position: absolute;
+  z-index: 1;
+  top: 100%;
+  left: 0;
+  display: none;
+  width: max-content;
+  max-width: 280px;
+  margin-top: 2px;
+  padding: 4px 8px;
+  border: var(--hairline);
+  border-radius: 4px;
+  background: var(--k-container-primary-background);
+  color: var(--k-content-body-foreground);
+}
+.k-dt-flagged:hover .k-dt-note,
+.k-dt-flagged:focus-within .k-dt-note {
+  display: block;
+}
+.k-dt-other {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 4px 6px;
+}
+.k-dt-other label {
+  grid-column: 1 / -1;
+  color: var(--k-content-tertiary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-dt-other textarea {
+  min-width: 0;
+  padding: 4px 8px;
+  border: var(--hairline);
+  border-radius: 6px;
+  background: var(--k-container-primary-background);
+  color: inherit;
+  font: inherit;
+  resize: vertical;
+}
+.k-dt-other textarea:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: -1px;
+}
+.k-dt-reply {
+  grid-column: 1 / -1;
+  margin: 0;
+  padding: 4px 8px;
+  border-left: 2px solid var(--accent);
+  color: var(--k-content-secondary-foreground);
+}
+.k-dt-empty,
+.k-dt-live {
+  margin: 0;
+  color: var(--k-content-tertiary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-dt-live {
+  min-height: 1lh;
+}
+@container (max-width: 640px) {
+  .k-dt-body {
+    grid-template-columns: 1fr;
+  }
+  .k-dt-branch {
+    grid-template-columns: 1fr;
+  }
+  .k-dt-effects {
+    grid-column: 1;
+    grid-row: auto;
+  }
+}
