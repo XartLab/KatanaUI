@@ -296,6 +296,14 @@ import {
 import { ScrubberDemo } from './pages/smoothui-scrub.tsx'
 import { SymbolSearchDemo } from './pages/symbol-search.tsx'
 import {
+  ChangeSummaryDemo,
+  ExperimentCardDemo,
+  KpiChartDemo,
+  ParallelAttemptsDemo,
+  RootCauseTreeDemo,
+} from './pages/affect-quant.tsx'
+import { FallbackChainDemo, PlanVsActualDemo, RateLimitPlannerDemo, TraceWaterfallDemo } from './pages/affect-data.tsx'
+import {
   AccountEquityDemo,
   FundingRateDemo,
   OptionsChainDemo,
@@ -474,6 +482,15 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'param-surface-heatmap': ParamSurfaceHeatmapDemo,
   'walk-forward-matrix': WalkForwardMatrixDemo,
   'robustness-gate': RobustnessGateDemo,
+  'experiment-card': ExperimentCardDemo,
+  'parallel-attempts': ParallelAttemptsDemo,
+  'change-summary': ChangeSummaryDemo,
+  'kpi-chart': KpiChartDemo,
+  'root-cause-tree': RootCauseTreeDemo,
+  'trace-waterfall': TraceWaterfallDemo,
+  'fallback-chain': FallbackChainDemo,
+  'rate-limit-planner': RateLimitPlannerDemo,
+  'plan-vs-actual': PlanVsActualDemo,
   'flow-sankey': FlowSankeyDemo,
   'vintage-series': VintageSeriesDemo,
   'system-monitor': SystemMonitorDemo,

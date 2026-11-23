@@ -39,7 +39,7 @@
 
 ### compactNumber(value, { locale, digits }) / formatCompactNumber
 
-跟 locale 走的缩写（#90，DataGrid 的 compact 列用它）：Intl.NumberFormat 的 compact 记数法，en-US 是 K / M / B / T，zh-CN 是 万 / 亿 / 万亿；两位小数，数字与缩写字之间空一格；不到第一档照写、不补零。
+跟 locale 走的缩写（#90，DataGrid 的 compact 列用它）：en-US 是 Intl.NumberFormat 的 compact 记数法 K / M / B / T，两位小数，数字与缩写字之间空一格，不到第一档照写、不补零；zh-CN 就是 formatCnAmount 的写法（「1.23亿」「4.6万」，#158），中文金额直接用 cnAmount 列。
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |

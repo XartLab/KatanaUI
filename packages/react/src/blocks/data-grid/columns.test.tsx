@@ -38,9 +38,20 @@ describe('#90 新列类型与单位', () => {
       text: '4.53 T USD',
       sort: 4.53e12,
     })
-    expect(cell(col('compact'), 123_456_789, { locale: 'zh-CN' }).text).toBe('1.23 亿')
+    expect(cell(col('compact'), 123_456_789, { locale: 'zh-CN' }).text).toBe('1.23亿')
     expect(cell(col('compact', { locale: 'en-US' }), 123_456_789, { locale: 'zh-CN' }).text).toBe('123.46 M')
     expect(defaultAlign('compact')).toBe('end')
+  })
+
+  it('compact 在 zh-CN 下跟 cnAmount 同一写法：同一个数两种列的字一致（#158）', () => {
+    const values = [9_999, 45_600, 2.5e6, 4.91e7, 88_000_000, 99_999_999, 123_456_789, 5e8, 1e11, 4.53e12, -12_345_678]
+    for (const value of values) {
+      expect(cell(col('compact'), value, { locale: 'zh-CN' }).text).toBe(cell(col('cnAmount'), value).text)
+      expect(cell(col('compact', { locale: 'zh-CN' }), value).text).toBe(cell(col('cnAmount'), value).text)
+    }
+    expect(cell(col('compact', { digits: 1 }), 3.2e8, { locale: 'zh-CN' }).text).toBe(
+      cell(col('cnAmount', { cnAmount: { digits: 1 } }), 3.2e8).text,
+    )
   })
 
   it('percent：不带符号、不着色', () => {

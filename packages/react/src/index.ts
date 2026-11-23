@@ -613,6 +613,16 @@ export { AiApproval, type AiApprovalFact, type AiApprovalOption, type AiApproval
 export { AiContextMeter, type AiContextBreakdownItem, type AiContextMeterProps } from './ai/ai-context-meter.tsx'
 export { AiMessage, type AiMessageAuthor, type AiMessageLabels, type AiMessageProps } from './ai/ai-message.tsx'
 export { AiResponse, type AiResponseCitation, type AiResponseProps } from './ai/ai-response.tsx'
+// 计划对实际（KATANAview #1908 第三批，功能参照 affectUI 的 Plan vs Actual，实现原创）。
+export { PlanVsActual, type PlanVsActualLabels, type PlanVsActualProps } from './ai/plan-vs-actual.tsx'
+export {
+  planDomain,
+  planShift,
+  projectPlan,
+  type PlanStep,
+  type StepProjection,
+  type StepState,
+} from './ai/plan-actual-model.ts'
 export {
   Markdown,
   docHeadings,

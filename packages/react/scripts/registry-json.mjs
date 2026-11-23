@@ -51,6 +51,8 @@ const INTERNAL = {
   'fine-pointer': '判断是否精细指针（鼠标、触控板）的钩子，倾斜卡、玻璃卡、光斑卡这类跟手装饰件用，触屏上不开。',
   'cn-session':
     'A 股件包的时段轴（纯函数）：09:15–09:25 竞价、09:30–11:30、13:00–15:00，午休不占宽度；时刻解析、时段归类。',
+  'cn-format':
+    'A 股件包的金额写法 formatCnAmount（万 / 亿），从 quant-format 再导出（#158：compact 在中文下也用它，源码挪到下层）。',
   'cn-labels': 'A 股件包的文案结构与随包的简体中文默认（cnLabelsZh），可整份换。',
   'cn-value': 'A 股件包的「取不到写 —」读数写法：数或 { value, reason }。',
   'cn-badge-model':
@@ -317,6 +319,11 @@ function collectItems() {
       'portfolio-run-grid',
       'replay-transport',
       'run-mode-badge',
+      // KATANAview #1908：参照 affectUI 补的数据处理件，各一个子目录（组件与它的纯函数一起装）。
+      'root-cause-tree',
+      'trace-waterfall',
+      'fallback-chain',
+      'rate-limit-planner',
     ])
       add(
         dir,
