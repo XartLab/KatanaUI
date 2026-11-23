@@ -109,7 +109,14 @@ $KUI stop
 
 ## Gotchas
 
-- **锁定的浏览器没装**：`@playwright/test` 1.56.1 要 chromium-1194，本机的 Playwright 缓存只有更新的版本，所以 `kui.mjs` 一律用 `executablePath` 指到系统 Chrome。换机器时设 `KUI_CHROME=<chrome 路径>`。仓库的 `pnpm test:e2e` 直接跑会报找不到浏览器，用 `$KUI e2e`。
+- **锁定的浏览器没装**：`@playwright/test` 1.56.1 要 chromium-1194，云会话沙箱的 `/opt/pw-browsers` 只有更新的 1243，组件截图（Vitest 浏览器模式）、整页回归（pixelgate）、`pnpm test:e2e` 直接跑会报找不到 headless shell。不要把 1243 软链成 1194 凑（`/tmp/pwb` 那种做法）：基线是 runner 镜像（playwright:v1.56.1，Chromium 141 即 1194）渲染的，换一版 Chromium 像素会有微小差别。一步装真的：
+
+  ```bash
+  eval "$(bash .claude/skills/verify-katanaui/scripts/pw-setup.sh)"   # 装 headless shell 到 ~/.cache/pw-browsers-katanaui（约 330 MB，首次约 15 秒），export PLAYWRIGHT_BROWSERS_PATH
+  ```
+
+  装好以后同一个 shell 里直接 `pnpm fast`、`pnpm vr:fast`、`pnpm test:e2e`。想换目录设 `KUI_PW_BROWSERS=<目录>`；要手动装就是 `PLAYWRIGHT_BROWSERS_PATH=<目录> npx playwright install chromium-headless-shell`（沙箱里还要清掉 `PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD`）。`kui.mjs` 自己借系统 Chrome（`KUI_CHROME`），不吃这一条。
+- **截图里的中文字形**：截图（组件截图、整页回归）里的中文只用仓库自带的 Noto Sans SC，不看机器上装了什么字体（#202，`packages/react/shot/`）。所以沙箱、自建机、本机的中文字形一致；某个新字体栈里的中文又变得因机器而异时，先看那条栈里还有没有 `PingFang SC` / `Microsoft YaHei UI` / `Noto Sans SC`。想验证「换字体环境不影响」：`FONTCONFIG_FILE=<只含另一套 CJK 字体的配置> pnpm fast`，与默认环境各跑一次，比较截图。`verify-katanaui` 驱动的文档站（`$KUI`）不加载这份字体，它不比像素。
 - **favicon 404 是噪声**：文档站没有 favicon，系统 Chrome 会去要 `/favicon.ico`（锁定的 headless_shell 不要），控制台就多一条 `Failed to load resource … 404`。`kui.mjs` 把它单列成 `noise`，不判失败；拿整套 e2e 判回归时也要先剔掉它（2026-11-22 整套 a11y 跑出 520 条红，全是这一条）。
 - **已知报错**：c9634db 上每页都报一条 React 告警 `Encountered two children with the same key, decisions`（文档站目录的 decisions 一组 key 重复）。`kui.mjs` 的 `KNOWN_CONSOLE` 把它记成 `known`、不判失败；修好以后从名单里删掉。加别的条目要写明在哪个提交上见到、票号。`dev.log` 里还有一条 Vite 的 `Assets in public directory cannot be imported from JavaScript`（a2ui 的 `v1.json`），也是 main 上就有的，不影响页面。
 - **无头模式藏滚动条**：无头 Chrome 默认带 `--hide-scrollbars`，量滚动条宽度、看滚动条有没有出来时要加 `--scrollbars`（`$KUI drive <流程> --scrollbars`，内部是 `ignoreDefaultArgs: ['--hide-scrollbars']`）。

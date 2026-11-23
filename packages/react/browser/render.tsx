@@ -5,6 +5,8 @@
  */
 import '@katana-ui/tokens/tokens.css'
 import '../src/fonts.css'
+// 中文只用仓库自带的字体，不看机器上装了什么（#202）；说明在这份 css 的开头。
+import '../shot/fonts.css'
 import '../src/ui.css'
 import type { ReactNode } from 'react'
 import { createRoot, type Root } from 'react-dom/client'

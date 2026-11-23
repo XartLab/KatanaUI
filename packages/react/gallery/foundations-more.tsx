@@ -163,6 +163,26 @@ import { EquityCurve } from '@katana-ui/react/quant'`}
             '.pixelgate/baseline/（Linux 渲染，要提交）；在别的系统上字体光栅不同，要接受 CI 的图时用 pnpm vr:approve --from <下载的 artifact 目录>',
           ],
           [
+            '字体固定（#202）',
+            <>
+              截图里的中文只用仓库自带的 Noto Sans SC（开发依赖 @fontsource-variable/noto-sans-sc，OFL
+              1.1）：字体栈里的中文回退名 PingFang SC、Microsoft YaHei UI、Noto Sans SC 都用 @font-face
+              指到它，网页字体优先于机器上的同名字体，所以沙箱、自建机、别人的 Linux 中文字形一样。组件截图在{' '}
+              {code('browser/render.tsx')} 里引 {code('shot/fonts.css')}，整页回归由 {code('pixelgate.vite.config.ts')}{' '}
+              写进 index.html；线上站点不带。以前没固定时，Chromium 按机器上装的 CJK 字体回退，页面没写 lang
+              时还会选日文字形，同一段中文换台机器就变
+            </>,
+          ],
+          [
+            '浏览器版本',
+            <>
+              基线用 runner 镜像里的 Chromium 141（Playwright 1.56.1 的
+              chromium-1194）渲染。云会话沙箱默认只有更新的版本，先跑{' '}
+              {code('eval "$(bash .claude/skills/verify-katanaui/scripts/pw-setup.sh)"')}
+              装上同一版的 headless shell（约 330 MB）
+            </>,
+          ],
+          [
             '比较方式',
             'pixelmatch，逐像素色差阈值 0.1，忽略抗锯齿；稳定化：固定时钟、关光标闪烁、动画归零、实时演示保持暂停',
           ],

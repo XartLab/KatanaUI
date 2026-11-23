@@ -5,10 +5,12 @@ import tailwindcss from '@tailwindcss/vite'
 import { playwright } from '@vitest/browser-playwright'
 import { PixelgateReporter, pixelgateScreenshots } from 'pixelgate-cli/vitest'
 import { defineConfig } from 'vite-plus'
+import { katanaShotFonts } from './shot/fonts-plugin.ts'
 import { sourceConditions } from './vite.config.ts'
 
 export default defineConfig({
-  plugins: [tailwindcss()],
+  // katanaShotFonts：browser/render.tsx 引的 shot/fonts.css 靠它变成真正的 @font-face（中文只用仓库自带的字体，#202）。
+  plugins: [tailwindcss(), katanaShotFonts()],
   ...sourceConditions,
   test: {
     include: ['browser/**/*.browser.test.tsx'],
