@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// 功能地图 features/rating-panel.md：切周期换数（点与键盘），悬停或 Tab 聚焦一个仪表出读数。
+// 功能地图 features/rating-panel.md：切周期换数（点与键盘），悬停或 Tab 聚焦一个仪表出读数；周期之间用方向键走。
 export default {
   title: 'RatingPanel 技术评级三联：切周期、悬停与聚焦出读数',
   page: 'rating-panel',
@@ -36,10 +36,10 @@ export default {
       await expect(meter('汇总')).toHaveAttribute('aria-valuetext', '强烈卖出, -0.58; 卖出 18, 中性 5, 买入 3')
       return { pressed: await pressed(), summary: await meter('汇总').getAttribute('aria-valuetext') }
     })
-    await step('焦点在「1m」上按 Tab 再按 Enter：焦点到 5m 并选中，数换成 5m 的', async () => {
+    await step('焦点在「1m」上按 → 再按 Enter：焦点到 5m 并选中，数换成 5m 的', async () => {
       await expect(frame('1m')).toBeFocused()
-      // 每个周期按钮都是一个 Tab 停靠点（ToggleGroup 关了 rovingFocus，方向键不在周期之间走）。
-      await page.keyboard.press('Tab')
+      // 周期一排是一个 Tab 停靠点，方向键在周期之间走。
+      await page.keyboard.press('ArrowRight')
       await expect(frame('5m')).toBeFocused()
       // 焦点过去不选中：Enter 才换周期。
       await expect(frame('1m')).toHaveAttribute('aria-pressed', 'true')
@@ -66,13 +66,9 @@ export default {
       await expect.poll(() => opacity(readout('汇总'))).toBe(0)
       return { opacity: await opacity(readout('汇总')) }
     })
-    await step('焦点还在「5m」上，一路 Tab 走过后面的周期：落到「摆动指标」，它出读数「-0.27 卖出」', async () => {
+    await step('焦点还在「5m」上按一下 Tab：跳出周期一排，落到「摆动指标」，它出读数「-0.27 卖出」', async () => {
       // 悬停不挪焦点：焦点仍在上一步按 Enter 的那个周期上。
       await expect(frame('5m')).toBeFocused()
-      for (const name of ['15m', '1h', '4h', '1D', '1W', '1M']) {
-        await page.keyboard.press('Tab')
-        await expect(frame(name)).toBeFocused()
-      }
       await page.keyboard.press('Tab')
       await expect(meter('摆动指标')).toBeFocused()
       await expect.poll(() => opacity(readout('摆动指标'))).toBe(1)

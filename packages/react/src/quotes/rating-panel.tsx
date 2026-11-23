@@ -92,8 +92,10 @@ export function RatingPanel({
     <div className={cn('k-rpanel', className)} data-slot="rating-panel" role="group" aria-label={labels.panel}>
       {timeframes && timeframes.length > 0 ? (
         <div className="k-rpanel-bar" data-slot="rating-panel-timeframe">
+          {/* 周期一排是一个 Tab 停靠点，← / → 在周期之间走（同 TradingView 的周期条）；共用的 ToggleGroup 默认关着 rovingFocus。 */}
           <ToggleGroup
             size="sm"
+            rovingFocus
             aria-label={labels.timeframe}
             value={value ?? timeframes[0]!.value}
             onValueChange={(next) => next && onValueChange?.(next)}
