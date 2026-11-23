@@ -22,6 +22,8 @@ const TARGET_ROOT = '~/src/katana/ui'
 const INTERNAL = {
   'tag-input-model':
     'TagInput 的纯逻辑：草稿与粘贴的拆分（逗号、分号、换行、制表符）、判重（不分大小写）、校验与上限，以及键盘在标签之间怎么走。',
+  'scaled-decimal':
+    '盘口三件（订单簿、深度图、成交明细）共用的十进制整数运算：价格与数量按小数位乘成整数再加减比，不经浮点累加。',
   'research-color':
     '研究报告件共用的色阶：涨跌发散色（零附近中性灰）与顺序色，周期收益表与参数曲面热力图用，只引用 token。',
   'order-ticket-parts':
@@ -292,6 +294,16 @@ function collectItems() {
       'reason-group-list',
       'board-strength-rank',
       'net-buy-bar',
+      // #104 账户四件：各一个子目录（组件与它的纯函数一起装）。
+      'positions-table',
+      'orders-table',
+      'account-equity',
+      'funding-rate',
+      'options-chain',
+      // #104 盘口三件：订单簿、深度图、成交明细，各一个子目录（组件与它的纯函数一起装；深度图用订单簿的档位合并）。
+      'order-book',
+      'depth-chart',
+      'trade-tape',
       // 白板（#51）：组件、节点与边、纯函数合成一项。
       'whiteboard',
       // #121：前向测试与回放的件，各一个子目录。

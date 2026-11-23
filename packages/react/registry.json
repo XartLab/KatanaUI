@@ -29,6 +29,11 @@
           "target": "~/src/katana/ui/theme/theme.css"
         },
         {
+          "path": "src/theme/account-equity.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/account-equity.css"
+        },
+        {
           "path": "src/theme/ai-status.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/ai-status.css"
@@ -164,6 +169,11 @@
           "target": "~/src/katana/ui/theme/decision-queue.css"
         },
         {
+          "path": "src/theme/depth-chart.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/depth-chart.css"
+        },
+        {
           "path": "src/theme/dialog.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/dialog.css"
@@ -222,6 +232,11 @@
           "path": "src/theme/form-motion.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/form-motion.css"
+        },
+        {
+          "path": "src/theme/funding-rate.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/funding-rate.css"
         },
         {
           "path": "src/theme/gauge-bar.css",
@@ -369,6 +384,21 @@
           "target": "~/src/katana/ui/theme/number-input.css"
         },
         {
+          "path": "src/theme/options-chain.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/options-chain.css"
+        },
+        {
+          "path": "src/theme/order-book.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/order-book.css"
+        },
+        {
+          "path": "src/theme/orders-table.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/orders-table.css"
+        },
+        {
           "path": "src/theme/panel-frame.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/panel-frame.css"
@@ -402,6 +432,11 @@
           "path": "src/theme/portfolio-run-grid.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/portfolio-run-grid.css"
+        },
+        {
+          "path": "src/theme/positions-table.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/positions-table.css"
         },
         {
           "path": "src/theme/price-tag.css",
@@ -597,6 +632,11 @@
           "path": "src/theme/toolbar.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/toolbar.css"
+        },
+        {
+          "path": "src/theme/trade-tape.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/trade-tape.css"
         },
         {
           "path": "src/theme/transmission-chain.css",
@@ -850,6 +890,22 @@
           "path": "src/lib/overlay.tsx",
           "type": "registry:lib",
           "target": "~/src/katana/ui/lib/overlay.tsx"
+        }
+      ]
+    },
+    {
+      "name": "scaled-decimal",
+      "type": "registry:lib",
+      "title": "Scaled Decimal",
+      "description": "盘口三件（订单簿、深度图、成交明细）共用的十进制整数运算：价格与数量按小数位乘成整数再加减比，不经浮点累加。",
+      "registryDependencies": [
+        "@katana/quant-format"
+      ],
+      "files": [
+        {
+          "path": "src/lib/scaled-decimal.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/lib/scaled-decimal.ts"
         }
       ]
     },
@@ -6806,7 +6862,7 @@
       "name": "cn-board-mark",
       "type": "registry:component",
       "title": "Cn Board Mark",
-      "description": "主板 / 创业板（20cm）/ 科创板（20cm）/ 北交所（30cm）/ ST。默认只标有特殊涨跌幅限制的写「20cm」「30cm」「ST」，主板不画；display 选写板块名或都写。boardKindOf 从代码（与名称）判断板块。取不到写「—」。",
+      "description": "主板 / 创业板（20cm）/ 科创板（20cm）/ 北交所（30cm）/ ST。默认只标有特殊涨跌幅限制的写「20cm」「30cm」「ST」，主板不画；display 选写板块名或都写。boardKindOf 从代码（与名称）判断板块。取不到写「—」。也是 DataGrid 的列类型 board：值给板块名、六位代码或 { code, name }，format.boardDisplay 选写法，按涨跌幅限制排序。",
       "registryDependencies": [
         "@katana/cn",
         "@katana/cn-badge-model",
@@ -6860,7 +6916,7 @@
       "name": "cn-format",
       "type": "registry:lib",
       "title": "Cn Format",
-      "description": "A 股件包的第 0 层（纯函数，不带 React）：formatCnAmount 把金额写成万 / 亿；时段轴认 09:15–09:25 竞价、09:30–11:30、13:00–15:00，午休与 09:25–09:30 不占宽度；cnLabelsZh 是随包的简体中文默认文案，可以整份换；取不到的数写「—」并可带原因（readCnValue）。不带数据源与交易日历数据。",
+      "description": "A 股件包的第 0 层（纯函数，不带 React）：formatCnAmount 把金额写成万 / 亿；时段轴认 09:15–09:25 竞价、09:30–11:30、13:00–15:00，午休与 09:25–09:30 不占宽度；cnLabelsZh 是随包的简体中文默认文案，可以整份换；取不到的数写「—」并可带原因（readCnValue）。不带数据源与交易日历数据。DataGrid 的列类型 cnAmount 用 formatCnAmount 写金额（靠右、按数排序；format.cnAmount.signed 为真时正数涨色、负数跌色，用于净流入）。",
       "files": [
         {
           "path": "src/cn/format.ts",
@@ -6873,7 +6929,7 @@
       "name": "cn-labels",
       "type": "registry:lib",
       "title": "Cn Labels",
-      "description": "A 股件包的第 0 层（纯函数，不带 React）：formatCnAmount 把金额写成万 / 亿；时段轴认 09:15–09:25 竞价、09:30–11:30、13:00–15:00，午休与 09:25–09:30 不占宽度；cnLabelsZh 是随包的简体中文默认文案，可以整份换；取不到的数写「—」并可带原因（readCnValue）。不带数据源与交易日历数据。",
+      "description": "A 股件包的第 0 层（纯函数，不带 React）：formatCnAmount 把金额写成万 / 亿；时段轴认 09:15–09:25 竞价、09:30–11:30、13:00–15:00，午休与 09:25–09:30 不占宽度；cnLabelsZh 是随包的简体中文默认文案，可以整份换；取不到的数写「—」并可带原因（readCnValue）。不带数据源与交易日历数据。DataGrid 的列类型 cnAmount 用 formatCnAmount 写金额（靠右、按数排序；format.cnAmount.signed 为真时正数涨色、负数跌色，用于净流入）。",
       "registryDependencies": [
         "@katana/cn-session"
       ],
@@ -7072,7 +7128,7 @@
       "name": "cn-session",
       "type": "registry:lib",
       "title": "Cn Session",
-      "description": "A 股件包的第 0 层（纯函数，不带 React）：formatCnAmount 把金额写成万 / 亿；时段轴认 09:15–09:25 竞价、09:30–11:30、13:00–15:00，午休与 09:25–09:30 不占宽度；cnLabelsZh 是随包的简体中文默认文案，可以整份换；取不到的数写「—」并可带原因（readCnValue）。不带数据源与交易日历数据。",
+      "description": "A 股件包的第 0 层（纯函数，不带 React）：formatCnAmount 把金额写成万 / 亿；时段轴认 09:15–09:25 竞价、09:30–11:30、13:00–15:00，午休与 09:25–09:30 不占宽度；cnLabelsZh 是随包的简体中文默认文案，可以整份换；取不到的数写「—」并可带原因（readCnValue）。不带数据源与交易日历数据。DataGrid 的列类型 cnAmount 用 formatCnAmount 写金额（靠右、按数排序；format.cnAmount.signed 为真时正数涨色、负数跌色，用于净流入）。",
       "files": [
         {
           "path": "src/cn/session.ts",
@@ -7179,7 +7235,7 @@
       "name": "cn-value",
       "type": "registry:lib",
       "title": "Cn Value",
-      "description": "A 股件包的第 0 层（纯函数，不带 React）：formatCnAmount 把金额写成万 / 亿；时段轴认 09:15–09:25 竞价、09:30–11:30、13:00–15:00，午休与 09:25–09:30 不占宽度；cnLabelsZh 是随包的简体中文默认文案，可以整份换；取不到的数写「—」并可带原因（readCnValue）。不带数据源与交易日历数据。",
+      "description": "A 股件包的第 0 层（纯函数，不带 React）：formatCnAmount 把金额写成万 / 亿；时段轴认 09:15–09:25 竞价、09:30–11:30、13:00–15:00，午休与 09:25–09:30 不占宽度；cnLabelsZh 是随包的简体中文默认文案，可以整份换；取不到的数写「—」并可带原因（readCnValue）。不带数据源与交易日历数据。DataGrid 的列类型 cnAmount 用 formatCnAmount 写金额（靠右、按数排序；format.cnAmount.signed 为真时正数涨色、负数跌色，用于净流入）。",
       "files": [
         {
           "path": "src/cn/value.ts",
@@ -7206,6 +7262,8 @@
         "@katana/cn-auction-model",
         "@katana/cn-auction-step",
         "@katana/cn-badge-model",
+        "@katana/cn-board-mark",
+        "@katana/cn-format",
         "@katana/cn-labels",
         "@katana/cn-limit-status",
         "@katana/cn-streak-badge",
@@ -7801,7 +7859,7 @@
       "name": "meter",
       "type": "registry:component",
       "title": "Meter",
-      "description": "横向仪表，三种形态：条（进度、负载、敞口）、刻度（0 到 100 的读数带指针）、同步率条（带齿分段加琥珀评估刻度与右侧大百分比）；颜色只传 tone。",
+      "description": "横向仪表，三种形态：条（进度、负载、敞口）、刻度（0 到 100 的读数带指针）、同步率条（带齿分段加琥珀评估刻度与右侧大百分比）；限额板传预警线与硬限，越线自己换色；颜色只传 tone。",
       "registryDependencies": [
         "@katana/severity"
       ],
@@ -8075,6 +8133,218 @@
           "path": "src/blocks/net-buy-bar/net-buy-model.ts",
           "type": "registry:component",
           "target": "~/src/katana/ui/blocks/net-buy-bar/net-buy-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "positions-table",
+      "type": "registry:component",
+      "title": "Positions Table",
+      "description": "账户四件之一（#104，#103 持仓监控的表）：一行一个持仓，列出品种、方向（多 / 空，文字）、数量、开仓均价、标记价、强平价、强平距离（% 加进度条）、未实现盈亏（金额与 %）、保证金与杠杆；行内「平仓」「止盈止损」只发回调；表尾合计。强平距离近于调用方给的阈值（liquidationWarnPct）时整格换警示色并带图标，再近一半是危险档。同页的 PositionsOrdersTabs 把持仓表与委托表摆进同一个页签外壳。件不认识交易所，不下单。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/button",
+        "@katana/cn",
+        "@katana/data-grid",
+        "@katana/num",
+        "@katana/orders-table",
+        "@katana/pnl-text",
+        "@katana/quant-format",
+        "@katana/tabs"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/positions-table/positions-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/positions-table/positions-model.ts"
+        },
+        {
+          "path": "src/blocks/positions-table/positions-orders-tabs.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/positions-table/positions-orders-tabs.tsx"
+        },
+        {
+          "path": "src/blocks/positions-table/positions-table.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/positions-table/positions-table.tsx"
+        }
+      ]
+    },
+    {
+      "name": "orders-table",
+      "type": "registry:component",
+      "title": "Orders Table",
+      "description": "账户四件之一（#104）：一行一张在途委托：品种、方向（买 / 卖，文字）、类型（限价 / 市价 / 条件）、价格、数量、已成交（数量加进度条）、状态、时间；行内「撤单」；价格旁铅笔进入行内改价：回车提交 onAmend(order, price)，Esc 或失焦取消；表上方「全部撤单」发 onCancelAll(还能撤的单)。市价单与撤单中的单不能改价。件不下单，只发回调。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/button",
+        "@katana/cn",
+        "@katana/data-grid",
+        "@katana/input",
+        "@katana/num",
+        "@katana/tag"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/orders-table/orders-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/orders-table/orders-model.ts"
+        },
+        {
+          "path": "src/blocks/orders-table/orders-table.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/orders-table/orders-table.tsx"
+        }
+      ]
+    },
+    {
+      "name": "account-equity",
+      "type": "registry:component",
+      "title": "Account Equity",
+      "description": "账户四件之一（#104）：总权益、可用、已用保证金、未实现盈亏四个读数，下面是保证金率风险条：安全、警告、危险三段按调用方给的阈值切开（direction 默认越高越危险，维持保证金率那种越低越危险写 lower），指针标当前位置，档位同时写成文字；保证金率不传就按已用保证金 / 总权益算。可选 curve 画迷你权益曲线。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/lcd",
+        "@katana/num",
+        "@katana/quant-format",
+        "@katana/sparkline",
+        "@katana/tag"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/account-equity/account-equity-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/account-equity/account-equity-model.ts"
+        },
+        {
+          "path": "src/blocks/account-equity/account-equity.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/account-equity/account-equity.tsx"
+        }
+      ]
+    },
+    {
+      "name": "funding-rate",
+      "type": "registry:component",
+      "title": "Funding Rate",
+      "description": "账户四件之一（#104）：当前费率（带符号、正负着色，旁边写谁付谁）、预测费率、下次结算倒计时（HH:MM:SS，到点写 labels.due）、历史费率小柱状图（零线居中，按历史最大绝对值归一，悬停出时间与费率）。结算时间由调用方传，件里只算倒计时；now 可注入，不传就每秒读一次系统时钟。费率是百分数。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/lcd",
+        "@katana/num",
+        "@katana/quant-format"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/funding-rate/funding-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/funding-rate/funding-model.ts"
+        },
+        {
+          "path": "src/blocks/funding-rate/funding-rate.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/funding-rate/funding-rate.tsx"
+        }
+      ]
+    },
+    {
+      "name": "options-chain",
+      "type": "registry:component",
+      "title": "Options Chain",
+      "description": "账户四件之一（#104）：行权价居中，左认购右认沽；每翼的列可配（买价、卖价、最新、IV、Delta、持仓量），认购翼镜像排，第一个字段两翼都贴着行权价；离标的价最近的行权价是平值行，整行加亮并标「平值」，认购在平值之下、认沽在平值之上是实值区，铺淡底；上方是到期日切换（选项由调用方传，rows 由调用方换）；点任一格回调 onQuoteSelect(strike, side, field)。认购认沽靠位置区分，不用涨跌色。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/toggle-group"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/options-chain/options-chain.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/options-chain/options-chain.tsx"
+        },
+        {
+          "path": "src/blocks/options-chain/options-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/options-chain/options-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "order-book",
+      "type": "registry:component",
+      "title": "Order Book",
+      "description": "买卖挂单的阶梯：买卖并列（卖在上买在下，中间一行是最新价与价差）、只看买、只看卖三种模式；档位按 tick 合并（选项由调用方给，合并在 model 里按整数算：买盘向下取整、卖盘向上取整，同档的量十进制精确相加，不会出现 0.30000000000000004）；每行底下一条累计量深度条；底部买卖占比条（买量 /（买 + 卖），保留一位小数，两个数相加恒为 100）；点一行回调 onPriceSelect(价, 买或卖)，下单面板拿去回填价格，件不认下单面板。变了量的档位闪一下涨跌色（共用层 live.ts）。只吃 props，快照与增量由调用方合并好整份传，不连交易所。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/flash-price",
+        "@katana/live",
+        "@katana/scaled-decimal",
+        "@katana/toggle-group"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/order-book/order-book-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/order-book/order-book-model.ts"
+        },
+        {
+          "path": "src/blocks/order-book/order-book.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/order-book/order-book.tsx"
+        }
+      ]
+    },
+    {
+      "name": "depth-chart",
+      "type": "registry:component",
+      "title": "Depth Chart",
+      "description": "买卖累计量的阶梯面积图：买盘在中间价左边、卖盘在右边，中间价一条虚线分界，买卖价差处留空。可用 rangePct 把横轴限制在中间价上下各 x%（深处的大单不再把图压扁，纵轴跟着重新取整）。悬停读价格、累计量与距中间价的百分比（带符号），读数框贴着光标，靠右时翻到左边；键盘聚焦后左右方向键一档一档走，Esc 清掉。累计量按整数算，档位次序不限。只吃 props。",
+      "registryDependencies": [
+        "@katana/chart-kit",
+        "@katana/cn",
+        "@katana/num",
+        "@katana/order-book",
+        "@katana/scaled-decimal",
+        "@katana/series-geometry"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/depth-chart/depth-chart-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/depth-chart/depth-chart-model.ts"
+        },
+        {
+          "path": "src/blocks/depth-chart/depth-chart.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/depth-chart/depth-chart.tsx"
+        }
+      ]
+    },
+    {
+      "name": "trade-tape",
+      "type": "registry:component",
+      "title": "Trade Tape",
+      "description": "最近的成交：时间、价格（按主动方向着涨跌色：主动买走涨色、主动卖走跌色）、数量。新成交从顶上滑入并带蓝线高亮一阵（共用层 live.ts），首次渲染的不闪；大单阈值 largeSize 由调用方传，量不小于它的行整行淡底加粗；aggregate 把紧挨着的同价同方向成交并成一行，右边写笔数（×3），量十进制精确相加，聚合行取最老那笔的 id 当标识，并进新成交时不会再当新行进场一次。只留最近 maxRows 行。只吃 props，调用方把增量并进列表、按从新到旧整份传。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/live",
+        "@katana/num",
+        "@katana/scaled-decimal"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/trade-tape/trade-tape-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/trade-tape/trade-tape-model.ts"
+        },
+        {
+          "path": "src/blocks/trade-tape/trade-tape.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/trade-tape/trade-tape.tsx"
         }
       ]
     },

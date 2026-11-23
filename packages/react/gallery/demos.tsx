@@ -11,6 +11,7 @@ import {
 } from './pages/cn-pack.tsx'
 import { FlagMarkDemo } from './pages/watchlist-order.tsx'
 import { InlineEditDemo, SplitButtonDemo, TagInputDemo } from './pages/arc-inputs.tsx'
+import { DepthChartDemo, OrderBookDemo, TradeTapeDemo } from './pages/market-depth.tsx'
 import {
   AgentAvatarDemo,
   AiApprovalDemo,
@@ -286,6 +287,13 @@ import {
 import { ScrubberDemo } from './pages/smoothui-scrub.tsx'
 import { SymbolSearchDemo } from './pages/symbol-search.tsx'
 import {
+  AccountEquityDemo,
+  FundingRateDemo,
+  OptionsChainDemo,
+  OrdersTableDemo,
+  PositionsTableDemo,
+} from './pages/account.tsx'
+import {
   AuctionStepDemo,
   FlowRaceDemo,
   MiniKCardGridDemo,
@@ -375,6 +383,14 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'reason-group-list': ReasonGroupListDemo,
   'board-strength-rank': BoardStrengthRankDemo,
   'net-buy-bar': NetBuyBarDemo,
+  'positions-table': PositionsTableDemo,
+  'orders-table': OrdersTableDemo,
+  'account-equity': AccountEquityDemo,
+  'funding-rate': FundingRateDemo,
+  'options-chain': OptionsChainDemo,
+  'order-book': OrderBookDemo,
+  'depth-chart': DepthChartDemo,
+  'trade-tape': TradeTapeDemo,
   'market-heatmap': MarketHeatmapDemo,
   'rating-text': RatingTextDemo,
   'technical-rating': TechnicalRatingDemo,
