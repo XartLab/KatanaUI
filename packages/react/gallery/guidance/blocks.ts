@@ -35,8 +35,28 @@ const blocks: GuidanceMap = {
     a11y: [
       '图上是 role=slider，aria-valuetext 念「日期 值」，读屏名取自 labels.chart。',
       '指标瓦片是按钮，展开状态用 aria-expanded。',
-      '明细表是 role=region 且可聚焦，读屏名取自 labels.table。',
+      '明细表是 role=region 且可聚焦，读屏名取自 labels.table；表是整页表的一套数（.k-table-comfortable：行 40、表头 48、正文 14px，#92），可视高 328（表头加 7 行）。',
       '右上角第一个按钮切到明细表，图里的数在表里都有。',
+    ],
+  },
+  'grid-summary-row': {
+    aliases: ['Totals row', 'Summary row', 'Footer aggregates', 'Pinned bottom row', '合计行', '汇总行'],
+    use: [
+      '持仓、成交、自选表的合计与均值：TradingView 自选「高级视图」给最小、最大、均值、中位数（#22）；这里内置 sum、avg、min、max、median、count，也能给函数。',
+      '一行一种汇总（合计、均值、中位数各一行），行名写在第一个没配聚合的列（通常是品种列）。',
+      '看得见的列里一列聚合都没配的汇总行不画（列被藏掉也算），不留只有行名的空行。',
+      '对全部行算，不只看得见的几十行；字照列类型写（价格按精度、盈亏带符号与涨跌色），跟上面的行对齐。',
+      '样子：上面一道 separable-secondary 分隔线，底色 surface-raised，600 字重；行名 500 字重次要文字色；行高同表体（20 / 24 / 32）。',
+      '跟表体同一份列模板：拖列宽、隐藏、重排、固定列都跟着；横向滚动时固定格粘左，纵向粘在滚动区底边。',
+      '按分节汇总（#87，TradingView 自选是按分组汇总）：DataGrid 的 sectionAggregates 用同一套聚合，写在每节的标题行里、对齐到列下；表尾这一行只算数据行，分节标题行不进合计。按币种 / 板块这类维度透视的分组还没有。',
+    ],
+    avoid: [
+      '价格、涨跌幅不要求和（没意义），用 avg / median。',
+      '要按维度透视的用别的件（PivotTable 还没有），不要堆十几行汇总。',
+    ],
+    a11y: [
+      '汇总行在一个单独的 rowgroup 里，aria-rowindex 接在表体后面，aria-rowcount 算上它们。',
+      '行名格是 rowheader：读屏读「合计：市值 …」；行名不在格里时挂在行的 aria-label 上。',
     ],
   },
   'use-undo-stack': {
@@ -51,11 +71,28 @@ const blocks: GuidanceMap = {
     avoid: [
       '文字输入框自己的撤销交给浏览器：焦点在输入框、文本域、contenteditable 里时钩子不接 Mod+Z。',
       '历史不进存档；要记住当前布局用 usePersistedState 存当前值。',
-      '用了 useHotkeys 注册表的面板，关掉这里的 hotkeys，改由注册表调 undo / redo，免得一次按键撤两步。',
+      '用了 useHotkeys 注册表的面板，关掉这里的 hotkeys，改用 useUndoHotkeys 把同一套组合登记进注册表（#87），免得一次按键撤两步；enabled 接面板的焦点，面板没焦点时 Mod+Z 留给别处。',
     ],
     a11y: [
       '撤销、重做钮没得撤时 disabled；改动后的结果要在界面上看得见（列宽、列序真的变回去），不另发读屏通知。',
       '快捷键跳过输入法组字中的按键（isComposing）。',
+    ],
+  },
+  'link-group': {
+    aliases: ['Symbol link', 'Chart sync', 'Linked panels', 'Link color', '联动'],
+    use: [
+      '自选、图、盘口、新闻这些面板跟着同一个品种走：照 TradingView 自选点一行联动的图换品种、多图布局同步品种 / 周期 / 十字线 / 时间 / 日期区间（#22 对齐表 L802–L808、L843；帮助中心没逐项写，待核对）。',
+      '组 id 用面板头色点的 LinkGroup（A–D），面板头的 Led 画同一个颜色，用户一眼看出谁跟谁一组；null 是不联动（面板头画熄灭的环）。',
+      '写的一方只写自己改了的字段：自选写 symbol，图的周期分段写 interval，十字线 pointermove 写 crosshairTime、离开写 null，拖动可见区间写 range。',
+      '读的一方 fields 只订阅要的：自选只要 symbol，图要全部。DataGrid 的 onCursorChange 接 set({ symbol })，就是「上下键在自选里走，联动的图跟着换」（TradingView 自选的空格 / 上下键，对齐表 L836）。',
+    ],
+    avoid: [
+      '跨窗口、跨设备的同步：这里只在一个页面里，要存盘或广播由宿主自己接。',
+      '下单相关的值（价格、数量）不走联动：联动只管看什么。',
+    ],
+    a11y: [
+      '联动的变化要看得见：面板头的 object 写当前品种，色点有读屏名（「联动组 A」）。',
+      '十字线同步只是视觉辅助，不发读屏通知；读数另有文字（图自己的读数行）。',
     ],
   },
   'data-grid': {
@@ -69,13 +106,33 @@ const blocks: GuidanceMap = {
       '挪行（#77 G7，照 TradingView 自选表拖放排序）：给 rowOrder / onRowOrderChange（一般摊 useRowOrder(...).gridProps）；整行可拖，按下挪过 4px 才算拖，行里的按钮上按下不起拖；拖的时候别的行不动，落点画一道 2px 主文字色的线，被拖的行留原处淡到 45%，靠近上下边自动滚；拖回原处不算。做法照 modern-web-guidance drag-and-drop，跟它不同的是没有把手（照 TradingView）。',
       '键盘挪行：Alt+↑ / Alt+↓ 把选中的行（没选就是键盘所在行）挪一格；右键菜单另有上移、下移、移到顶、移到底。TradingView 快捷键表里没有挪行的键（2026-11-18 看过），Alt+↑↓ 沿用应用自选表的写法。',
       '按列排序时不能挪行：拖不起来，Alt+↑↓ 读出 labels.rowOrder.sorted，菜单四项灰掉并写原因。',
-      '分节标题行：rowSection(row) 返回标题就是标题行，跨满整行、次级色大写小字、上面一道分隔线；拖标题整节走，落点吸到节边界不拆别的节；把行拖到标题下面就进了那一节。折叠、个数、组内汇总还没做（待定，G7 的 GridSectionRow 建议）。',
+      '分节标题行：rowSection(row) 返回标题就是标题行，跨满整行、次级色大写小字、上面一道分隔线；拖标题整节走，落点吸到节边界不拆别的节；把行拖到标题下面就进了那一节。',
+      '分节收起（#87，照 TradingView 自选表的分节三角）：标题左端 16px 的三角，朝右是收起、展开转 90°（160ms，--ease-snappy）；收起的节只留标题行，标题上照写行数，所以藏了几行看得见。收起的节整节挪动时藏着的行跟着标题走；把行挪进收起的节，接在这一节已有的行后面。要记住收起状态，把 collapsedSections 接 usePersistedState。',
+      '标题行的行数是三级色等宽数字。组内汇总两种写法：sectionAggregates（如 chg 列取 avg）按列写在标题行里、对齐到各自的列下，聚合跟表尾 summary 同一套（照 TradingView 自选高级视图按分组汇总，#87），标题占前面没配聚合的那几列；sectionSummary(rows, section) 是靠右的自由槽。两者拿到的都是这一节的全部行（收起的也算）。表尾 summary 只算数据行，分节标题行不进合计。',
+      '按列排序时标题行不参与排序：标题留在手动次序里的位置，各节里的行（与第一个标题之前没分节的行）在节内按列排；presorted 的表由调用方自己排。',
+      '宿主的行快捷键（Alt+Enter 插旗这类）作用在 onCursorChange 给的键盘所在行上，用 useHotkeys 登记，enabled 接表的 focus-within。',
       '触屏不起拖（整行拖会抢走滚动）：触屏用右键菜单的上移下移。',
-      '实时刷新：live 为 true 时数值类列（price、quantity、pnl、change、number）值变了闪涨跌色，文本列不闪；排序顺序变了已渲染的行平滑换位，新增的行蓝线高亮 1.2 秒；默认 false，静态表不闪。',
+      '实时刷新：live 为 true 时数值类列（price、quantity、pnl、change、number、percent、compact、cnAmount）值变了闪涨跌色，文本列不闪；排序顺序变了已渲染的行平滑换位，新增的行蓝线高亮 1.2 秒；默认 false，静态表不闪。',
+      '整页的表（选股器、持仓、报告）用 density="comfortable"：行 40、表头 48、格内左右 12、首列左 20、正文 14px w400、表头 13px 次要色，默认画行间 1px 横线、不画竖线（照 TradingView 选股器，#90）。',
+      '面板里的密表（自选栏、盘口）留在 compact（行 20）或 default（行 24）；这两档与 relaxed（32）的值不变。',
+      '单位与数分开写：format.unit（USD、USDT）渲染成 10px w500 次要色小字，跟在数后空一格；复制与导出仍是「4.53 T USD」。pnl 的 suffix 同 unit。',
+      '大数用 compact 列：缩写字由 locale 定，en-US 是 K / M / B / T 两位小数（对齐 TradingView）；列的 format.locale 优先于 DataGrid 的 locale，组件不带语言。',
+      '中文金额（成交额、市值、封单额、净流入）用 cnAmount 列：万 / 亿只有 formatCnAmount 一套写法（≥1 亿「49.10亿」，1 万–1 亿「4.6万」「4,600万」，单位字紧跟着数，signed 按正负着色）；compact 在 zh-CN 下也照它写，不另带一套（用户 2026-11-23 定，#158）。',
+      '品种格用 format.symbolParts 选段：logo（18px 圆标，没图画字母）、chip（代码芯片 12px w600、面底 container-subtle、圆角 radius-control、高 24、左右 6）、name（全称）、code、venue；整页表用 [logo, chip, name]。',
+      '评级用 rating 列：值是五档名或 −1…1 分数（与 TechnicalRating 同一把尺子 ±0.1 / ±0.5），画 RatingText（图标加档名，买涨色卖跌色，中性不着色）；档名经 format.ratingLabels 传。',
+      '有大小没正负的量（相对成交量）用 bar 列：数字左边一条 4px 高、最长 48px 的中性灰横条（次要前景 75% 混透明），满格值是 format.barMax（不给 barMax 是以 0 为中线、带涨跌色的居中条）；不用涨跌色，不用品牌橙。',
+      '行内走势用 spark 列（Sparkline 只画线、高 24、不画末端环，颜色按头尾涨跌）；分类用 pill 列（一格一到几枚短标签）；相对成交量这类有大小没正负的量用 bar 列加 format.barMax（单边中性横条）；区间用 range 列（RangeBar，两端写数）；日期用 date 列（YYYY-MM-DD）；比例用 percent 列（不带符号、不着色）。',
+      '排序的列头亮一档（主前景色）、字重 500，名字前画 ▲ / ▼；表头第二行（sub）写口径（TTM、30 日）或总数，comfortable 下两行都是 13px / 16px。',
+      '两行表头（#92）：只要有一列带 sub，所有列头的名字都顶到同一条线——上边距 =（表头高 − 两行块高）/ 2，两行块高默认 14 + 12 = 26、comfortable 16 + 2 + 16 = 34；单行列头与两行的第一行同一基线，第二行在下，排序箭头与列头图标跟第一行走。',
+      '代码芯片、全称与单位小字是共用的 .k-code-chip / .k-code-name / .k-num-unit（theme/cell-type.css，#92）：QuoteTable、Watchlist、LimitLadder、EventCalendar 用的是同一份，改样子只改那一处。',
+      '报告类的原生表（SeriesExplorer 表格视图、HypothesisLedger 观察表、StrategyReport 指标表、图的表格视图）给 <table> 加 .k-table-comfortable，跟 comfortable 档同一套数（--k-table-*：行 40、表头 48、格内 12、首列左 20、正文 14px、表头 13px 次要色、行间 1px 横线）；字折行时行跟着长。',
+      '整页表的数字用 sans 加 tabular-nums，不用 --font-num 的等宽字（TradingView 选股器同样做法，用户 2026-11-18 定）；报告类原生表随 #92 从 --font-num 换成 sans。',
     ],
     avoid: [
       '几行静态数据，用 interactive=false 的只读表或 strategy-report 里的表。',
       '需要拖动编辑单元格的电子表格，这里不做。',
+      '整页表别用 default 档加竖线：格子挤、没有层次，就是「电子表格感」（用户 2026-11-18）；用 comfortable。',
+      '别把单位拼进数字字符串（text 里写「1.2 B USD」）：单位不能变小变淡，用 format.unit。',
     ],
     a11y: [
       '可交互时是 grid，有子行时是 treegrid，只读是 table；行列号用 aria-rowindex / aria-rowcount。',
@@ -83,6 +140,9 @@ const blocks: GuidanceMap = {
       '排序列带 aria-sort；列宽拖柄是带名字的 separator。',
       '读屏名取自 label。',
       '挪完一个隐藏的 role=status 读「挪到第 n 位，共 m 行」（labels.rowOrder.moved），拖到一半 Esc 读「已取消」；只在位置真变了才读。',
+      '分节标题行带 aria-expanded；键盘落在标题行上 → 展开、← 收起、Enter 切换（跟子行同一套 treegrid 键位）。三角钮不进 Tab 次序（表只占一个停靠点），读屏名是 labels.sections 的 collapse / expand（默认英文）。',
+      '迷你图、区间条的读屏名取 format.label（「ALFA 30 日走势」）；横条只是装饰（aria-hidden），值读格子里的数字。',
+      '评级不只靠颜色：图标（双箭头、单箭头、等号）与档名都带档位。',
     ],
   },
   'empty-state': {
@@ -153,6 +213,51 @@ const blocks: GuidanceMap = {
       '结果稳定 400ms 后在 role=status 里报一次个数（labels.resultCount），打字过程中不刷屏；加载中列表带 aria-busy。',
       '徽标是 role=img，名字取品种名称；命中段是 mark 元素。',
       '待定：对话框用的是包里 Radix 的 Dialog（与其它浮层共用一套焦点归还与动效），没有换成原生 <dialog> + showModal()；要不要整套浮层迁到原生 dialog 等用户定。',
+    ],
+  },
+  'order-book': {
+    aliases: ['Order book', 'DOM', 'Depth of market', 'Level 2', 'Ladder', '盘口', '买卖盘'],
+    use: [
+      '看买卖挂单的分布与价差，点一档把价格交给下单面板（onPriceSelect 回填，件不耦合下单面板）。',
+      '价位密的品种合并档位看大格局（0.1 / 0.5 / 1 / 10 由调用方给）；合并在整数上做，买盘向下、卖盘向上取整。',
+      '底部买卖占比条看一眼多空倾向；只数并列模式能看到的前几行，单侧模式放大行数时这个数不变。',
+      '调用方把快照与增量合并成整簿再传；量变了的档位会闪一下。',
+    ],
+    avoid: [
+      '要看整条曲线的形状与大单墙，用 depth-chart。',
+      '逐笔成交流水用 trade-tape，不是订单簿。',
+      '要排序、改列、几千行的表格用 data-grid。',
+    ],
+    a11y: [
+      '整个件是 role=group，卖盘与买盘各是一个 list；可点的行是 button，不可点时是普通行。',
+      '模式与合并档位是两组 aria-pressed 的按钮，组名取 labels.modes.group 与 labels.tick。',
+      '占比条是 role=img，读屏文字取 labels.share；买卖色之外价格列还按侧分列（卖在上、买在下），不只靠颜色。',
+    ],
+  },
+  'depth-chart': {
+    aliases: ['Depth chart', 'Market depth', 'Cumulative depth', 'Depth map', '深度图'],
+    use: [
+      '看买卖累计量的形状：哪边有大单墙、两边是否对称。',
+      '横轴用 rangePct 限制在中间价上下几个点，免得极远处的挂单把图压扁。',
+      '悬停读某个价位吃到多少量、离中间价多远。',
+    ],
+    avoid: ['要逐档点选价格用 order-book。', '看资金随时间的变化不是它：深度图只有当下一个快照。'],
+    a11y: [
+      '绘图区是可聚焦的 group，左右方向键读数、Esc 清掉；读数同时写进 role=status（视觉隐藏）。',
+      '买卖用曲线形状（左右分居中间价）与读数里的「买盘 / 卖盘」文字区分，不只靠颜色。',
+    ],
+  },
+  'trade-tape': {
+    aliases: ['Time and sales', 'Trade tape', 'Tape', 'Recent trades', '成交明细', '逐笔成交'],
+    use: [
+      '看最近的逐笔成交与主动方向：主动买走涨色、主动卖走跌色。',
+      '大单阈值由调用方传（largeSize），超过的行整行高亮。',
+      '成交密时开 aggregate，把紧挨着的同价同方向成交并成一行，右边写笔数。',
+    ],
+    avoid: ['要看某一时刻的挂单分布用 order-book。', '要保存与回看长历史走调用方的历史查询，这里只留最近 maxRows 行。'],
+    a11y: [
+      '每行是 listitem，方向与大单写成读屏用的文字（视觉隐藏），不只靠颜色与加粗。',
+      '新成交只有视觉高亮，不朗读；要播报大单由调用方放 aria-live 区。',
     ],
   },
   toolbar: {
@@ -255,7 +360,11 @@ const blocks: GuidanceMap = {
   },
   'strategy-report': {
     aliases: ['Backtest report', 'Performance summary', 'Tear sheet', 'Strategy tester report'],
-    use: ['回测完看概览、绩效、交易分析与逐笔列表。', '多空分开看，指标由逐笔平仓现算。'],
+    use: [
+      '回测完看概览、绩效、交易分析与逐笔列表。',
+      '多空分开看，指标由逐笔平仓现算。',
+      '报告里的表都是整页表的一套数（#92）：交易列表是 DataGrid comfortable（行 40、正文 14px、行间线，列宽随 14px 加宽一档：时间 172、价格 100、盈亏 112），绩效与风险比率表是 .k-table-comfortable（行 40、表头 48）。',
+    ],
     avoid: ['只看净值曲线，用 equity-curve。', '实盘的运行监控，用 system-monitor。'],
     a11y: [
       '外层是 section，读屏名取自 labels.report；页签用 line 样式的 Tabs，多空切换是带名字的 toggle-group。',
@@ -264,9 +373,51 @@ const blocks: GuidanceMap = {
       '算不出的读数写「—」，不是 0。',
     ],
   },
+  'portfolio-run-grid': {
+    aliases: ['Portfolio trader', 'Forward test window', 'Strategy run table', 'Position monitor'],
+    use: [
+      '前向测试时一眼看每个品种的持仓、盈亏、风险占用与运行状态。',
+      '要暂停某个品种或平掉它，又不想进每个品种各自的页面。',
+    ],
+    avoid: ['回测完看绩效，用 strategy-report。', '要下单，用 order-ticket；这里的按钮只发回调。'],
+    a11y: [
+      '外层是带名字的只读表（role=table），品种是行标题；汇总是 role=group。',
+      '按钮的读屏名带品种（「暂停 DEMO-A」），读屏分得清是哪一行。',
+      '状态是灯加文字，不只靠颜色；暂停行的底色与左条是额外提示。',
+      '按钮是原生 button，Tab 依次到达，Enter 与 Space 触发。',
+    ],
+  },
+  'replay-transport': {
+    aliases: ['Data replay', 'Playback controls', 'Replay bar', 'Time machine'],
+    use: ['历史回放时控制播放、倍速与跳转，一条控制多个同步的图。', '把用户的回放意图发给引擎，当前时刻由引擎回传。'],
+    avoid: ['只想拖一个数值，用 scrubber。', '要在件里推进时间：时钟只在调用方。'],
+    a11y: [
+      '外层是 role=group，读屏名取自 labels.group。',
+      '进度条是 role=slider，带 aria-valuetext（当前时刻文字），方向键、Home、End、PageUp、PageDown 可用。',
+      '倍速是一组带 aria-pressed 的按钮；输入框都有读屏名，读不出时 aria-invalid 并出 role=alert 提示。',
+      '快捷键 k . [ ] 在焦点不在输入框与进度条时生效。',
+    ],
+  },
+  'run-mode-badge': {
+    aliases: ['Mode badge', 'Environment tag', 'Paper or live indicator', 'Trading mode pill'],
+    use: ['在界面角落写清现在是模拟、回放、前向测试还是实盘。', '放在会下单或会误导用户的页面头部。'],
+    avoid: [
+      '表达数据源是否连通，用 led 或 status-bar。',
+      '给 fixture 或样例数据用「模拟」徽标：那是另一回事，要单独标明。',
+    ],
+    a11y: [
+      '文字就是读屏读到的内容，图形对读屏隐藏。',
+      '四种模式靠图形、边框样式与颜色一起区分，不只靠颜色。',
+      '实盘点的呼吸动效在减弱动效偏好下关闭。',
+    ],
+  },
   'hypothesis-ledger': {
     aliases: ['Hypothesis tracker', 'Idea log', 'Research log', 'Claim register'],
-    use: ['记下每条研究假说、它的检验期限与证据，一眼看哪些快到期。', '人下结论后由调用方写回状态。'],
+    use: [
+      '记下每条研究假说、它的检验期限与证据，一眼看哪些快到期。',
+      '人下结论后由调用方写回状态。',
+      '观察表是整页表的一套数（.k-table-comfortable，#92：行至少 40、表头 48、正文 14px、表头 13px 次要色）；文字会折行，所以格子顶对齐、靠左，行头（传导层）主前景色 w600。',
+    ],
     avoid: ['要看传导关系，用 transmission-chain。', '给交易建议排队处理，用 decision-queue。'],
     a11y: [
       '外层是 section，读屏名取自 labels.ledger；列表是带名字的 ol。',

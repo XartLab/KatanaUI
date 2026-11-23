@@ -3,9 +3,11 @@
  * Keyboard shortcuts overview: the registered hotkeys grouped by scope, searchable, with conflict marks and optional rebinding.
  * 快捷键总览（#77 G9）：按作用域分组列出注册表里现在的快捷键，可搜索，冲突的行标出来，给了 onComboChange 时每行用 ShortcutRecorder 改键。
  * 照 TradingView 的「Keyboard shortcuts」面板（Ctrl+/，主会话 2026-11-18 实看）：上面一个「Find shortcut」搜索框，下面按类分节，
- * 每行左边动作名、右边按键方块，几种按法之间写「or」。TradingView 的分节是折叠的，我们直接摊开（快捷键少，搜索也不用先展开）。
+ * 每行左边动作名、右边按键方块，几种按法之间写「or」。分节跟 TradingView 一样默认收起，点节名展开（#87 第 3 条）；
+ * 搜索时命中的节自动展开、没命中的节不出，清空搜索回到用户自己展开过的样子。defaultOpenScopes 给一开始就展开的节。
  * 件只是内容，放进 Dialog、Sheet 还是侧栏由调用方定；文案都由调用方传。
  */
+import { ChevronRightIcon } from 'lucide-react'
 import { useId, useState } from 'react'
 import { cn } from '../lib/cn.ts'
 import { Kbd } from '../katana/kbd.tsx'
@@ -36,6 +38,8 @@ export type ShortcutSheetProps = {
   labels: ShortcutSheetLabels
   /** Scope order of the sections; scopes not listed follow in first-registered order. */
   scopeOrder?: readonly string[]
+  /** Sections open at first; the rest start collapsed (as in TradingView). While searching, every section with a match is open. */
+  defaultOpenScopes?: readonly string[]
   /** Registry to read; defaults to the one from HotkeysProvider or the module default. */
   registry?: HotkeyRegistry
   /** Turns each row into a ShortcutRecorder; called with the action id and the new combo (null clears). */
@@ -50,9 +54,24 @@ const matches = (query: string, ...texts: string[]) => {
   return q === '' || texts.some((text) => text.toLowerCase().includes(q))
 }
 
-export function ShortcutSheet({ labels, scopeOrder = [], registry, onComboChange, className }: ShortcutSheetProps) {
+export function ShortcutSheet({
+  labels,
+  scopeOrder = [],
+  defaultOpenScopes = [],
+  registry,
+  onComboChange,
+  className,
+}: ShortcutSheetProps) {
   const { entries, conflicts, platform } = useHotkeyEntries(registry)
   const [query, setQuery] = useState('')
+  const [open, setOpen] = useState<ReadonlySet<string>>(() => new Set(defaultOpenScopes))
+  const searching = query.trim() !== ''
+  const toggle = (scope: string) => {
+    const next = new Set(open)
+    if (next.has(scope)) next.delete(scope)
+    else next.add(scope)
+    setOpen(next)
+  }
   const searchId = useId()
   const scopeName = labels.scope ?? ((scope: string) => scope)
   const partLabel = partLabelFor(platform)
@@ -104,55 +123,78 @@ export function ShortcutSheet({ labels, scopeOrder = [], registry, onComboChange
           {labels.empty}
         </p>
       )}
-      {groups.map(({ scope, items }, index) => (
-        <section key={scope} className="k-shortcut-group" aria-labelledby={`${searchId}-g${index}`}>
-          <h3 id={`${searchId}-g${index}`} className="k-shortcut-heading">
-            {scopeName(scope)}
-          </h3>
-          <ul className="k-shortcut-list">
-            {items.map((entry) => {
-              const others = clash(entry.id)
-              return (
-                <li
-                  key={entry.id}
-                  className="k-shortcut-row"
-                  data-shortcut={entry.id}
-                  data-disabled={entry.enabled ? undefined : ''}
-                  data-conflict={others.length ? '' : undefined}
-                >
-                  <span className="k-shortcut-name">
-                    {entry.label}
-                    {others.length > 0 && (
-                      <span className="k-shortcut-conflict">
-                        {labels.conflict(others.map((other) => nameOf.get(other) ?? other).join(', '))}
+      {groups.map(({ scope, items }, index) => {
+        // 搜索时命中的节都展开（照 TradingView：边打字边看到结果，不用先点开）；不搜时看用户展开过哪几节。
+        const expanded = searching || open.has(scope)
+        return (
+          <section
+            key={scope}
+            className="k-shortcut-group"
+            aria-labelledby={`${searchId}-g${index}`}
+            data-scope={scope}
+            data-open={expanded ? '' : undefined}
+          >
+            <h3 className="k-shortcut-heading">
+              <button
+                type="button"
+                id={`${searchId}-g${index}`}
+                className="k-shortcut-toggle"
+                aria-expanded={expanded}
+                aria-controls={`${searchId}-l${index}`}
+                disabled={searching}
+                onClick={() => toggle(scope)}
+              >
+                <ChevronRightIcon size={12} aria-hidden="true" />
+                {scopeName(scope)}
+              </button>
+            </h3>
+            {expanded && (
+              <ul id={`${searchId}-l${index}`} className="k-shortcut-list">
+                {items.map((entry) => {
+                  const others = clash(entry.id)
+                  return (
+                    <li
+                      key={entry.id}
+                      className="k-shortcut-row"
+                      data-shortcut={entry.id}
+                      data-disabled={entry.enabled ? undefined : ''}
+                      data-conflict={others.length ? '' : undefined}
+                    >
+                      <span className="k-shortcut-name">
+                        {entry.label}
+                        {others.length > 0 && (
+                          <span className="k-shortcut-conflict">
+                            {labels.conflict(others.map((other) => nameOf.get(other) ?? other).join(', '))}
+                          </span>
+                        )}
                       </span>
-                    )}
-                  </span>
-                  <span className="k-shortcut-keys">
-                    {onComboChange && labels.recorder ? (
-                      <ShortcutRecorder
-                        value={entry.combos[0] ?? null}
-                        onValueChange={(next) => onComboChange(entry.id, next)}
-                        label={entry.label}
-                        labels={labels.recorder}
-                        conflicts={takenFor(entry.id, entry.scope)}
-                        partLabel={partLabel}
-                      />
-                    ) : (
-                      entry.combos.map((combo, at) => (
-                        <span key={combo} className="k-shortcut-combo">
-                          {at > 0 && <span className="k-shortcut-or">{labels.or}</span>}
-                          <Kbd parts={comboKeys(combo, platform)} label={comboKeys(combo, platform).join('+')} />
-                        </span>
-                      ))
-                    )}
-                  </span>
-                </li>
-              )
-            })}
-          </ul>
-        </section>
-      ))}
+                      <span className="k-shortcut-keys">
+                        {onComboChange && labels.recorder ? (
+                          <ShortcutRecorder
+                            value={entry.combos[0] ?? null}
+                            onValueChange={(next) => onComboChange(entry.id, next)}
+                            label={entry.label}
+                            labels={labels.recorder}
+                            conflicts={takenFor(entry.id, entry.scope)}
+                            partLabel={partLabel}
+                          />
+                        ) : (
+                          entry.combos.map((combo, at) => (
+                            <span key={combo} className="k-shortcut-combo">
+                              {at > 0 && <span className="k-shortcut-or">{labels.or}</span>}
+                              <Kbd parts={comboKeys(combo, platform)} label={comboKeys(combo, platform).join('+')} />
+                            </span>
+                          ))
+                        )}
+                      </span>
+                    </li>
+                  )
+                })}
+              </ul>
+            )}
+          </section>
+        )
+      })}
     </div>
   )
 }

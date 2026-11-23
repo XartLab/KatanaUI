@@ -1,0 +1,81 @@
+/* SPDX-License-Identifier: MIT */
+/* 公司简介卡 CompanyProfile（#147，KATANAview #1884：对 TradingView 的 Company Profile 小组件）。颜色只用 token；正文折叠用 line-clamp（行数由件写在行内）。 */
+
+.k-profile {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+  padding: 14px 16px;
+  border: 1px solid var(--k-separable-tertiary-borderColor);
+  border-radius: var(--radius-control);
+  background: var(--k-surface-base-background);
+  color: var(--k-content-primary-foreground);
+  font: var(--text-body) var(--font-sans);
+}
+.k-profile-name {
+  margin: 0;
+  font: var(--text-title) var(--font-sans);
+  font-weight: 600;
+}
+.k-profile-facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 10px 16px;
+  margin: 0;
+}
+.k-profile-fact {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.k-profile-fact dt {
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-profile-fact dd {
+  margin: 0;
+  overflow: hidden;
+  font: var(--text-data) var(--font-sans);
+  font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.k-profile-about {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+.k-profile-text {
+  margin: 0;
+  color: var(--k-content-body-foreground);
+}
+.k-profile-text[data-expanded='false'] {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+}
+.k-profile-toggle {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--k-content-primary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.k-profile-toggle:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+.k-profile-empty,
+.k-profile-source {
+  margin: 0;
+  color: var(--k-content-tertiary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}

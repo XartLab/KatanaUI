@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 // 自选表的行序与旗标（#77 G7）：DataGrid 的拖行 / Alt+↑↓ / 分节标题行，FlagMark + useFlags + FlagFilter。
 // 照 TradingView 自选表（主会话 2026-11-18 实看：行左端燕尾旗，右键菜单头一项 Flag/Unflag 加一排色点，列表上方旗标按钮过滤，Add section 分节）。
+// #87：分节可收起、标题写行数与本节平均涨跌、按列排序时标题不动；Alt+Enter 给键盘所在的行插旗 / 拔旗（经 useHotkeys，只在表有焦点时登记为可用）。
 // 数据是写死的示例，不是行情。
 import { useState } from 'react'
 import {
@@ -13,7 +14,7 @@ import {
   type GridMenuEntry,
   type SortSpec,
 } from '../../src/blocks'
-import { FlagFilter, FlagMark, useFlags, type FlagDef, type Flags } from '../../src/index.ts'
+import { FlagFilter, FlagMark, useFlags, useHotkeys, type FlagDef, type Flags } from '../../src/index.ts'
 import { FlagMarkUsage } from '../usage/FlagMarkUsage.tsx'
 
 type WatchRow = { id: string; symbol: string; last: number; chg: number; section?: string }
@@ -73,6 +74,21 @@ export function WatchlistOrderDemo() {
   const isSection = (id: string) => id.startsWith('sec-')
   const rowOrder = useRowOrder({ ids: ROWS.map((row) => row.id), isSection })
   const rows = flags.filter === null ? ROWS : flags.filterRows(ROWS, (row) => row.id)
+  // Alt+Enter 插旗（TradingView 自选表的键）：作用在键盘所在的行；表没焦点时这条不可用，键留给别处。
+  const [cursor, setCursor] = useState<string | null>(null)
+  const [focused, setFocused] = useState(false)
+  useHotkeys([
+    {
+      id: 'watchlist-flag',
+      combo: 'Alt+Enter',
+      label: 'Flag / unflag',
+      scope: 'watchlist',
+      enabled: focused && cursor !== null && !isSection(cursor),
+      handler: () => {
+        if (cursor !== null) flags.toggle(cursor)
+      },
+    },
+  ])
   const flagMenu = (target: WatchRow[]): GridMenuEntry[] =>
     target.length === 1 && !target[0].section
       ? flags.menu(target[0].id, 'Unflag').map((item) => ({ type: 'item', ...item }))
@@ -81,10 +97,19 @@ export function WatchlistOrderDemo() {
     <>
       <p className="gal-note">
         示例数据：拖一行换位置（选中几行一起拖，拖到一半 Esc 取消），或选中后 Alt+↑ /
-        Alt+↓；拖分节标题（CRYPTO、STOCKS）整节一起走。
-        行左端点一下插旗（再点拔掉），右键菜单里选色；上方旗标按钮按旗过滤。点表头排序后不能挪行。
+        Alt+↓；拖分节标题（CRYPTO、STOCKS）整节一起走。 行左端点一下插旗（再点拔掉），或选中一行按
+        Alt+Enter；右键菜单里选色；上方旗标按钮按旗过滤。分节标题左端的三角收起这一节（键盘：在标题行上按 ← / → /
+        Enter），标题写行数，Chg%
+        列下写本节平均涨跌（sectionAggregates）。点表头排序后不能挪行，标题行不跟着排、各节在节内排。
       </p>
-      <div data-testid="grid-order" style={{ width: '100%', maxWidth: 420 }}>
+      <div
+        data-testid="grid-order"
+        style={{ width: '100%', maxWidth: 420 }}
+        onFocus={() => setFocused(true)}
+        onBlur={(event) => {
+          if (!event.currentTarget.contains(event.relatedTarget)) setFocused(false)
+        }}
+      >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: 6 }}>
           <FlagFilter flags={flags} label="Filter by flag" showEmpty />
           <span className="gal-note" data-testid="grid-order-value" style={{ margin: 0 }}>
@@ -102,6 +127,8 @@ export function WatchlistOrderDemo() {
             onSortChange={setSort}
             {...rowOrder.gridProps}
             rowSection={(row) => row.section}
+            sectionAggregates={{ chg: 'avg' }}
+            onCursorChange={setCursor}
             menu={flagMenu}
             extrasFirst
             fit

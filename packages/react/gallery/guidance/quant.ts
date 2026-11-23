@@ -5,7 +5,11 @@ import type { GuidanceMap } from './types'
 const quant: GuidanceMap = {
   'event-calendar': {
     aliases: ['Economic Calendar', 'Earnings Calendar', 'ECO', 'Events calendar'],
-    use: ['盘前看当天与本周的宏观数据发布、财报、分红、IPO。', '回测或研究时核对某个事件落在哪一天。'],
+    use: [
+      '盘前看当天与本周的宏观数据发布、财报、分红、IPO。',
+      '回测或研究时核对某个事件落在哪一天。',
+      '营收与市值后的币种是共用的单位小字（.k-num-unit：10px w500 次要色，跟在数后空一格，#92），跟 DataGrid 的 format.unit 一样。',
+    ],
     avoid: ['按日看收益或成交的月历格用 calendar-heatmap。', '没有数据时传空数组，别拿它放占位样本。'],
     a11y: [
       '经济与财报表用 table 语义，列头可被读屏关联。',
@@ -20,6 +24,7 @@ const quant: GuidanceMap = {
       'A 股件按 A 股约定红涨绿跌：调用方在根上设 data-updown="cn"，件里不写死颜色；文档站这一页挂着时根上是 cn，离开还原（评审 #78）。',
       '复盘时对照炸板、跌停的分布。',
       '刷新：封单额与涨幅变了闪涨跌色，汇总读数滚动；封板转炸板整行琥珀警示闪（跌停用跌色），回封闪涨色；升板时整行移到新层并闪涨色，新晋的票蓝线高亮 1.2 秒。',
+      '封单额按 locale 缩写（#92）：A 股传 locale="zh-CN"，写法同 cnAmount（#158）：≥1 亿写「5.20亿」，1 万–1 亿写「8,800万」；中文缩写自带量级，不再挂币种（labels.sealUnit 只在非中文时写成小字）；封单额列宽 92；行高照旧 30。',
     ],
     avoid: ['非 A 股市场没有连板概念，用 market-heatmap。', '只看某一只票的状态用 rating-text 或 change-text。'],
     a11y: [
@@ -185,6 +190,66 @@ const quant: GuidanceMap = {
       '图头有「表格视图」。',
       '方向不靠颜色：起点空心圈，终点实心圈加箭头。',
       '每个点有整句读数，图例与读数里都有轨迹名。',
+    ],
+  },
+  'mae-mfe-scatter': {
+    aliases: ['MAE MFE chart', 'Excursion scatter', 'Trade excursion', 'Strategy Performance Report excursions'],
+    use: ['判断止损放得对不对：看亏单的最大浮亏（MAE）分布。', '判断止盈放得对不对：看亏单曾经有多大浮盈（MFE）。'],
+    avoid: ['看盈亏分布用 distribution-bars。', '没有逐笔 MAE / MFE（要逐笔行情）时别传，件不会替你算。'],
+    a11y: [
+      '图头有「表格视图」，同一份数据写成表。',
+      '赢是圆、亏是方，不只靠颜色；读数区写数字。',
+      '图可聚焦，← → 沿横轴走点，Esc 取消。',
+    ],
+  },
+  'underwater-chart': {
+    aliases: ['Underwater plot', 'Drawdown chart', 'Underwater equity', 'Drawdown periods'],
+    use: ['看回撤多深、持续多久、恢复了没有。', '与 equity-curve 叠放，两张图共用横轴。'],
+    avoid: ['只要一条曲线加镜像回撤用 equity-curve。', '没有时间的序列（逐笔）也要给每笔的时刻。'],
+    a11y: [
+      '图头有「表格视图」。',
+      '图是 slider，← → 扫读，读屏名里有时刻与回撤。',
+      '最大回撤的深度、前高到谷底、恢复用时都写成文字（头里一行），未恢复写「尚未恢复」。',
+    ],
+  },
+  'period-returns-table': {
+    aliases: ['Monthly returns table', 'Returns heatmap', 'Calendar returns', 'Period analysis'],
+    use: ['看策略各年各月的收益分布与季节性。', '切季、切周看收益是否集中在个别周期。'],
+    avoid: ['按日看收益的月历格用 calendar-heatmap。', '收益样本要给小数收益与毫秒时刻，别传已经按月汇总的数。'],
+    a11y: [
+      '用 table 语义，列头与行头可被读屏关联；每格仍写数字。',
+      '周视图格子窄只留颜色，数字在读数区与 title 里；格可聚焦，方向键走。',
+      '颜色是辅助：涨跌也写正负号（由 formatPercent 定）。',
+    ],
+  },
+  'param-surface-heatmap': {
+    aliases: ['Optimization heatmap', 'Parameter surface', '2D parameter sweep', 'Strategy optimization report'],
+    use: ['看两个参数下目标值的形状：平台还是孤峰。', '参数多于两个时选两轴、固定其余。'],
+    avoid: ['点不在规则网格上、或没有邻接关系用 param-scatter。', '格子超过几百个先聚合再画。'],
+    a11y: [
+      '网格是 role=grid，每格读屏名写两个参数、目标值与「最优」。',
+      '方向键走格，Enter 钉住；最优格琥珀环加「最优」字，孤峰有文字标记。',
+      '读数区列出该格全部指标，不只靠颜色。',
+    ],
+  },
+  'walk-forward-matrix': {
+    aliases: ['Walk-Forward Optimizer', 'WFO table', 'Rolling windows', 'Anchored windows'],
+    use: ['看步进优化每个窗口选了什么参数、样本外表现如何。', '用步进效率判断样本内的好成绩有多少带到了样本外。'],
+    avoid: ['单次样本内外切分用普通回测报告。', '步进效率单独不够，配稳健性门一起看。'],
+    a11y: [
+      '用 table 语义；通过与否有对勾、叉加文字。',
+      '时间轴小条是辅助（aria-hidden），区间日期写在文字里。',
+      '汇总用 dl 列出每一项。',
+    ],
+  },
+  'robustness-gate': {
+    aliases: ['Robustness checks', 'Go-live gate', 'Acceptance gate', 'Pass/fail checklist'],
+    use: ['上线前把一组稳健性判据摆在一起：实测值、阈值、通过与否。', '阈值由策略负责人定，调用方传进来。'],
+    avoid: ['只有一个数时用 metric-card。', '没测出的项传 null，不要拿 0 顶替。'],
+    a11y: [
+      '状态用对勾、叉、短横加文字，不只靠颜色。',
+      '每行实测值、比较符号、阈值都是文字；条只是辅助（aria-hidden）。',
+      '整组有读屏名，头里写过门与否和计数。',
     ],
   },
   'param-scatter': {

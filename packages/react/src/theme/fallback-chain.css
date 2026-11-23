@@ -1,0 +1,134 @@
+/* SPDX-License-Identifier: MIT */
+/* FallbackChain（KATANAview #1908）：请求、各级源、响应排成一列，左边一道竖线串起来；请求一路走到的那几级竖线是 ok 色，
+   失败的那一级竖线是 danger 虚线，没用上的源整行变淡。 */
+.k-fc {
+  --k-fc-rail: 14px;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  color: var(--k-content-body-foreground);
+  font: var(--text-data) var(--font-sans);
+}
+.k-fc-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px var(--space-3);
+  margin-bottom: 8px;
+}
+.k-fc-title {
+  margin: 0;
+  color: var(--k-content-primary-foreground);
+  font: var(--text-data) var(--font-sans);
+}
+.k-fc-summary {
+  margin-left: auto;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-num-small);
+}
+.k-fc-node {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px var(--space-3);
+  padding: 6px 10px;
+  border: var(--hairline);
+  background: var(--k-container-secondary-background);
+}
+.k-fc-request {
+  color: var(--k-content-primary-foreground);
+}
+.k-fc-route {
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-mono);
+}
+.k-fc-node[data-part='response'] {
+  justify-content: space-between;
+  color: var(--k-content-secondary-foreground);
+}
+.k-fc-node[data-part='response'][data-state='answered'] {
+  border-color: var(--k-status-ok-borderColor);
+  color: var(--k-status-ok-foreground);
+}
+.k-fc-node[data-part='response'][data-state='exhausted'] {
+  border-color: var(--k-status-danger-borderColor);
+  color: var(--k-status-danger-foreground);
+}
+.k-fc-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.k-fc-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: 18px 8px minmax(120px, 1fr) minmax(120px, 1.4fr) 64px;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 6px 10px 6px calc(var(--k-fc-rail) + 12px);
+}
+/* 竖线：每一行左侧一段，连起上一个节点与下一个节点。 */
+.k-fc-row::before {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: var(--k-fc-rail);
+  width: 0;
+  border-left: 1px solid var(--k-separable-primary-borderColor);
+  content: '';
+}
+.k-fc-row[data-lit]::before {
+  border-left-color: var(--k-status-ok-foreground);
+}
+.k-fc-row[data-status='failed']::before {
+  border-left: 1px dashed var(--k-status-danger-foreground);
+}
+.k-fc-row[data-status='skipped'],
+.k-fc-row[data-status='waiting'] {
+  color: var(--k-content-tertiary-foreground);
+}
+.k-fc-level {
+  color: var(--k-content-tertiary-foreground);
+  font: var(--text-caption) var(--font-num-small);
+  text-align: right;
+}
+.k-fc-name {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 6px;
+  min-width: 0;
+}
+.k-fc-row:not([data-status='skipped'], [data-status='waiting']) .k-fc-name {
+  color: var(--k-content-primary-foreground);
+}
+.k-fc-name small {
+  color: var(--k-content-tertiary-foreground);
+  font: var(--text-caption) var(--font-mono);
+}
+.k-fc-state {
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-fc-row[data-status='failed'] .k-fc-state {
+  color: var(--k-status-danger-foreground);
+}
+.k-fc-row[data-status='answered'] .k-fc-state {
+  color: var(--k-status-ok-foreground);
+}
+.k-fc-row[data-status='trying'] .k-fc-state {
+  color: var(--k-status-warn-foreground);
+}
+.k-fc-took {
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-num-small);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+@media (max-width: 560px) {
+  .k-fc-row {
+    grid-template-columns: 18px 8px 1fr auto;
+  }
+  .k-fc-state {
+    grid-column: 3 / -1;
+  }
+}

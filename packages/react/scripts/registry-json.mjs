@@ -20,6 +20,12 @@ const TARGET_ROOT = '~/src/katana/ui'
  * 有页的件，说明读页数据（gallery/registry.ts 的 PAGES.summary），这里不写第二份。
  */
 const INTERNAL = {
+  'tag-input-model':
+    'TagInput 的纯逻辑：草稿与粘贴的拆分（逗号、分号、换行、制表符）、判重（不分大小写）、校验与上限，以及键盘在标签之间怎么走。',
+  'scaled-decimal':
+    '盘口三件（订单簿、深度图、成交明细）共用的十进制整数运算：价格与数量按小数位乘成整数再加减比，不经浮点累加。',
+  'research-color':
+    '研究报告件共用的色阶：涨跌发散色（零附近中性灰）与顺序色，周期收益表与参数曲面热力图用，只引用 token。',
   'order-ticket-parts':
     'OrderTicket 与 PositionCalculator 共用的小件：买卖切换、带标签与单位的数字框、读数行、数字格式。',
   'arcade-pixel-sprites': 'ArcadePixel 的数据：5x7 点阵字形、现成精灵与把文字排成格子的纯函数。',
@@ -28,6 +34,8 @@ const INTERNAL = {
   'sparkline-instrument': 'Sparkline 的 instrument 画风：点阵、对位角标、投影谱、极值十字与批注、档案编号与 SOURCES。',
   'sparkline-shared': 'Sparkline 各画风共用的钩子：量容器、设备像素比、文字测量重置。',
   'flash-price': '最新价只闪变了的尾数（照 TradingView 自选栏）：Watchlist 与 QuoteTable 的价格格共用。',
+  'cell-type':
+    '表格的格内排版（#92）：代码芯片 CodeChip、全称 CodeName、单位小字 UnitValue、按 locale 缩写的 CompactValue；DataGrid、QuoteTable、Watchlist、LimitLadder、EventCalendar 共用，样式在 theme/cell-type.css。',
   'readout-value': '读数壳里的数值一格：没有数据写「—」，变了闪涨跌色或滚轮，单位小字；MetricCard 的卡与瓦片共用。',
   'metric-tile': 'MetricCard variant="tile" 的瓦片本体（原 SparkTile 的画法）与它的几何 sparkTileShape。',
   'gravity-model':
@@ -43,6 +51,8 @@ const INTERNAL = {
   'fine-pointer': '判断是否精细指针（鼠标、触控板）的钩子，倾斜卡、玻璃卡、光斑卡这类跟手装饰件用，触屏上不开。',
   'cn-session':
     'A 股件包的时段轴（纯函数）：09:15–09:25 竞价、09:30–11:30、13:00–15:00，午休不占宽度；时刻解析、时段归类。',
+  'cn-format':
+    'A 股件包的金额写法 formatCnAmount（万 / 亿），从 quant-format 再导出（#158：compact 在中文下也用它，源码挪到下层）。',
   'cn-labels': 'A 股件包的文案结构与随包的简体中文默认（cnLabelsZh），可整份换。',
   'cn-value': 'A 股件包的「取不到写 —」读数写法：数或 { value, reason }。',
   'cn-badge-model':
@@ -67,6 +77,9 @@ const INTERNAL = {
   'event-calendar-model': 'EventCalendar 的纯函数：按显示时区分天、今天 / 本周 / 下周区间、筛选、倒计时分钟。',
   'attribution-model':
     'AttributionBars 的排序与折叠（纯函数）：正负分组降序、超 7 项折「其他 ×n」、费用·税放底、对称刻度。',
+  'symbol-overview-model':
+    'SymbolOverview 的纯逻辑：相对起点的百分比口径、按时刻摆的横坐标、二分找最近的点、几条序列合起来的时间范围。',
+  'cross-rates-model': 'CrossRates 的纯逻辑：报价摆成货币矩阵、汇率的默认位数、方向键在格子间怎么走（照 APG grid）。',
   'equity-curve-model': 'EquityCurve 的纯逻辑：按时刻摆的横轴、线性 / 对数纵轴、镜像回撤的纵轴、默认横轴刻度。',
   'chart-kit':
     '图表共用底座：配色分配（series / seq / div）、点阵纹理、LCD tooltip、末点、轴与网格、图右上三件（表格视图、导出、全屏）。',
@@ -93,6 +106,7 @@ const INTERNAL = {
     '走势线新点追加时的延伸过场（钩子加纯函数）：旧线各点平滑走到新位置，新点从末端长出来，Sparkline、SparkTile、EquityCurve 用。',
   'live-readout':
     '读数变了闪涨跌色的外壳与取数：从已格式化的文字里取开头的数，走 live 的 useValueFlash。MetricCard、QuoteCard、PriceTag、KeyStats、Lcd、StatusBar 用。',
+  'scroll-dismiss': '非模态浮层的滚动即关：页面或装着锚点的容器把锚点滚走了就关（Popover 用）。',
   'hover-intent': '悬停意图：停一会儿才开、离开等一会儿再收、键盘聚焦立即开的钩子。',
   'code-highlight': 'CodeBlock 用的小型词法切分：注释、字符串、数字、关键字、函数、标点（纯函数，不加依赖）。',
   'matrix-orb-model': 'MatrixOrb 的纯数学：某状态下圆盘上一点在某一时刻的亮度。',
@@ -234,11 +248,13 @@ function collectItems() {
       'data-grid',
       'registry:component',
       codeIn('src/blocks/data-grid')
-        .filter((f) => f !== 'column-set-tabs.tsx')
+        .filter((f) => f !== 'column-set-tabs.tsx' && f !== 'grid-summary-row.tsx')
         .map((f) => `src/blocks/data-grid/${f}`),
     )
     // 列集标签行有自己的文档页，页的说明要有归属：单独一项，依赖 data-grid（引它的模型）。
     add('column-set-tabs', 'registry:component', ['src/blocks/data-grid/column-set-tabs.tsx'])
+    // 表尾合计行也有自己的页（#77），同样单独一项。
+    add('grid-summary-row', 'registry:component', ['src/blocks/data-grid/grid-summary-row.tsx'])
     add(
       'toolbar',
       'registry:component',
@@ -287,8 +303,27 @@ function collectItems() {
       'reason-group-list',
       'board-strength-rank',
       'net-buy-bar',
+      // #104 账户四件：各一个子目录（组件与它的纯函数一起装）。
+      'positions-table',
+      'orders-table',
+      'account-equity',
+      'funding-rate',
+      'options-chain',
+      // #104 盘口三件：订单簿、深度图、成交明细，各一个子目录（组件与它的纯函数一起装；深度图用订单簿的档位合并）。
+      'order-book',
+      'depth-chart',
+      'trade-tape',
       // 白板（#51）：组件、节点与边、纯函数合成一项。
       'whiteboard',
+      // #121：前向测试与回放的件，各一个子目录。
+      'portfolio-run-grid',
+      'replay-transport',
+      'run-mode-badge',
+      // KATANAview #1908：参照 affectUI 补的数据处理件，各一个子目录（组件与它的纯函数一起装）。
+      'root-cause-tree',
+      'trace-waterfall',
+      'fallback-chain',
+      'rate-limit-planner',
     ])
       add(
         dir,

@@ -1,6 +1,6 @@
 # HorizonChart
 
-十几个品种的日内收益叠成窄带，一屏看完：每行把正负值折成几条叠起来的带，颜色越深值越大，涨跌色跟涨跌配色走。所有行共用一个扫读位置。功能参照 Arc 的 Horizon chart。
+十几个品种的日内收益叠成窄带，一屏看完：每行把正负值折成几条叠起来的带，颜色越深值越大，正负用发散色（涨跌色只给右边的数）。所有行共用一个扫读位置，指针所在的那一行出 LCD 窗；右上有表格视图。功能参照 Arc 的 Horizon chart。
 
 ## Provide
 
@@ -20,6 +20,7 @@
 | `scale` | `'shared' \| 'row'` | `'shared'` | shared：所有行同一把满刻度，行与行可比；row：每行各用自己的最大值，只看形状。 |
 | `max` | `number` | — | 固定满刻度；不给按数据算。 |
 | `rowHeight` | `number` | `24` | 一行高（px）。 |
+| `actionLabels / tableLabel / tableXHead / source / onExport / onFullscreen` | `SeriesTableViewProps` | — | 三个图工具的名字、表格视图的读屏名与第一列（横轴位置）的列头（其余列头是各行的名字）、来源一行、导出与全屏的回调。 |
 
 ## Usage
 
@@ -40,6 +41,9 @@ export const HORIZON_DEMO_ROWS: readonly HorizonRow[] = [
 
 const pctText = (value: number) => `${value > 0 ? '+' : ''}${value.toFixed(2)}%`
 
+/** 图右上三件的文字（表格视图必须有，dataviz §4）。 */
+const ACTIONS = { group: '图工具', table: '表格视图', exportCsv: '导出 CSV', fullscreen: '全屏' }
+
 export function HorizonChartUsage() {
   return (
     <>
@@ -49,6 +53,9 @@ export function HorizonChartUsage() {
           label="示例：四个品种的日内收益（共用刻度）"
           formatValue={pctText}
           formatX={(i) => `第 ${i + 1} 点`}
+          actionLabels={ACTIONS}
+          tableLabel="四个品种的日内收益（表格视图）"
+          tableXHead="时点"
         />
       </div>
       <div className="gal-wide" data-gallery-horizon="row" style={{ maxWidth: 560 }}>
@@ -57,6 +64,9 @@ export function HorizonChartUsage() {
           label="示例：四个品种的日内收益（各自刻度）"
           formatValue={pctText}
           scale="row"
+          actionLabels={ACTIONS}
+          tableLabel="四个品种的日内收益（各自刻度，表格视图）"
+          tableXHead="序号"
         />
       </div>
     </>
@@ -68,8 +78,9 @@ export function HorizonChartUsage() {
 
 ## States
 
-- 默认：每行涨色带在基线上方叠起、跌色带同一基线叠起，右边写最新值。
-- 扫读：每行同一根竖线，右边一列写那一格的值，读数行写时间。
+- 默认：每行正值的带在基线上方叠起、负值的带同一基线叠起（发散色），右边写最新值。
+- 扫读：每行同一根竖线，右边一列写那一格的值，读数行写时间；指针所在的那一行出 LCD 窗。
+- 表格视图：一行一个横轴位置、一列一行序列。
 - 共用刻度：小行只有浅带；各自刻度：每行都填满。
 - 一行全是 0 或没数据：画成空行，值写「—」或 0。
 
@@ -83,9 +94,10 @@ export function HorizonChartUsage() {
 
 ```
 HorizonChart
+  右上三件（表格视图 · 导出 · 全屏）
   div[role=group]
-    每行：名字 · 窄带 svg（正、负各 bands 条 path）· 值
-  读数行（aria-live）
+    每行：名字 · 窄带 svg（正、负各 bands 条 path）· 十字线 · LCD 窗（指针所在行）· 值
+  读数行（aria-live）· 来源行
 ```
 
 ## Keyboard

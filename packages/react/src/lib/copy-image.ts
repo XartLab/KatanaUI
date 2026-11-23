@@ -4,7 +4,9 @@
 //   整棵放进 SVG 的 foreignObject，当图片画到 canvas 上再转 PNG。跟 html-to-image（MIT）同一个思路，实现是自己写的，没拷代码。
 //   不用 canvas 的 drawElementImage（只有一个内核在实验，modern-web-guidance 标为 volatile）。
 // 不进图：data-copy-image="skip" 的元素（ChartActions 自己带着，工具条不进截图，TradingView 的截图也不带工具条）。
-// 字体：图片里取不到页面的网络字体，退回系统字体（数字与字形略有差别）；要一模一样得把字体内嵌成 data URL，暂不做。
+// 字体（#87）：SVG 当图片画时取不到页面的网络字体，会退回系统字体；所以把图里用到的 @font-face 内嵌成 data URL 放进拷贝。
+//   只嵌用到的：族名出现在图里某个元素的 font-family 里，且 unicode-range 碰到图里的字（方舟像素这类按字段切片的中文字体只拉用到的几片）；
+//   跨源的样式表读不到规则、取字体失败的，都照旧退回系统字体。取过的字体按地址缓存，第二次复制不再下载。embedFonts: false 关掉。
 // 剪贴板：ClipboardItem 直接收 Promise<Blob>，在点击的同一拍里调用 write，Safari 才认用户手势；只在安全上下文（https、localhost）可用。
 
 export type CopyFailReason = 'unsupported' | 'denied' | 'render'
@@ -24,6 +26,85 @@ export type CopyImageOptions = {
   scale?: number
   /** 剪贴板拿不到时不下载，直接返回 failed。默认 false（退回下载）。 */
   noDownload?: boolean
+  /** 把图里用到的网页字体内嵌进图片（不嵌就退回系统字体）。默认 true。 */
+  embedFonts?: boolean
+}
+
+/** 一条 @font-face 的描述（嵌字体时照它重写一条，只把 src 换成 data URL）。 */
+export type FontFaceSource = {
+  family: string
+  src: string
+  unicodeRange: string
+  weight: string
+  style: string
+  stretch: string
+  /** 解析 src 里相对地址用的基准（样式表的地址）。 */
+  base: string
+}
+
+/** font-family 的值拆成族名（去引号、小写）。 */
+export function familyNames(value: string): string[] {
+  return value
+    .split(',')
+    .map((name) =>
+      name
+        .trim()
+        .replace(/^['"]|['"]$/g, '')
+        .toLowerCase(),
+    )
+    .filter(Boolean)
+}
+
+/** unicode-range 拆成闭区间：U+0-FF、U+4??（通配）、U+20AC；空串是全部。认不出的段丢掉。 */
+export function parseUnicodeRange(range: string): [number, number][] {
+  if (range.trim() === '') return [[0, 0x10ffff]]
+  return range.split(',').flatMap((part): [number, number][] => {
+    const match = /^\s*u\+([0-9a-f?]{1,6})(?:-([0-9a-f]{1,6}))?\s*$/i.exec(part)
+    if (!match) return []
+    const [, start, end] = match
+    if (start!.includes('?'))
+      return [[parseInt(start!.replaceAll('?', '0'), 16), parseInt(start!.replaceAll('?', 'f'), 16)]]
+    const from = parseInt(start!, 16)
+    return [[from, end ? parseInt(end, 16) : from]]
+  })
+}
+
+/** 这段文字里有没有字落在这些区间里。 */
+export function rangeCoversText(ranges: readonly (readonly [number, number])[], text: string): boolean {
+  for (const char of text) {
+    const code = char.codePointAt(0)!
+    if (ranges.some(([from, to]) => code >= from && code <= to)) return true
+  }
+  return false
+}
+
+/** src 里取一个地址：有 woff2 先用 woff2，没有取第一个 url()；local() 不算。 */
+export function fontUrlOf(src: string): string | null {
+  const urls = [...src.matchAll(/url\(\s*(['"]?)([^'")]+)\1\s*\)(?:\s*format\(\s*['"]?([\w-]+)['"]?\s*\))?/g)].map(
+    (match) => ({ url: match[2]!, format: match[3] }),
+  )
+  return (urls.find((entry) => entry.format === 'woff2' || /\.woff2([?#]|$)/i.test(entry.url)) ?? urls[0])?.url ?? null
+}
+
+/** 挑出要嵌的 @font-face：族名在 used 里，unicode-range 碰到 text 里的字。 */
+export function pickFontFaces(
+  faces: readonly FontFaceSource[],
+  used: ReadonlySet<string>,
+  text: string,
+): FontFaceSource[] {
+  return faces.filter(
+    (face) => used.has(face.family.toLowerCase()) && rangeCoversText(parseUnicodeRange(face.unicodeRange), text),
+  )
+}
+
+/** 照描述写一条 @font-face，src 换成给的地址（data URL）。 */
+export function fontFaceCss(face: FontFaceSource, url: string): string {
+  const parts = [`font-family:"${face.family}"`, `src:url("${url}")`]
+  if (face.weight) parts.push(`font-weight:${face.weight}`)
+  if (face.style) parts.push(`font-style:${face.style}`)
+  if (face.stretch) parts.push(`font-stretch:${face.stretch}`)
+  if (face.unicodeRange) parts.push(`unicode-range:${face.unicodeRange}`)
+  return `@font-face{${parts.join(';')}}`
 }
 
 const SVG_NS = 'http://www.w3.org/2000/svg'
@@ -95,8 +176,91 @@ function cloneForImage(node: Element): Element {
   return clone
 }
 
+/** 页面上所有读得到的 @font-face（跨源样式表读不到规则，跳过）；进 @media、@supports、@layer 与 @import 里找。 */
+function pageFontFaces(): FontFaceSource[] {
+  const out: FontFaceSource[] = []
+  const walk = (rules: CSSRuleList, base: string) => {
+    for (const rule of Array.from(rules)) {
+      if (rule instanceof CSSFontFaceRule) {
+        const style = rule.style
+        const family = style
+          .getPropertyValue('font-family')
+          .trim()
+          .replace(/^['"]|['"]$/g, '')
+        if (!family) continue
+        out.push({
+          family,
+          src: style.getPropertyValue('src'),
+          unicodeRange: style.getPropertyValue('unicode-range'),
+          weight: style.getPropertyValue('font-weight'),
+          style: style.getPropertyValue('font-style'),
+          stretch: style.getPropertyValue('font-stretch'),
+          base,
+        })
+      } else if (rule instanceof CSSImportRule) {
+        try {
+          if (rule.styleSheet) walk(rule.styleSheet.cssRules, rule.styleSheet.href ?? base)
+        } catch {
+          // 跨源的 @import 读不到规则。
+        }
+      } else if ('cssRules' in rule) walk((rule as CSSGroupingRule).cssRules, base)
+    }
+  }
+  for (const sheet of Array.from(document.styleSheets)) {
+    try {
+      walk(sheet.cssRules, sheet.href ?? document.baseURI)
+    } catch {
+      // 跨源样式表（如 Google Fonts）读 cssRules 会抛 SecurityError：这些字体照旧退回系统字体。
+    }
+  }
+  return out
+}
+
+/** 取过的字体（地址 → data URL）；取失败记 null，不再重试。 */
+const fontCache = new Map<string, Promise<string | null>>()
+
+const fontDataUrl = (url: string): Promise<string | null> => {
+  let cached = fontCache.get(url)
+  if (!cached) {
+    cached = fetch(url)
+      .then((response) => (response.ok ? response.blob() : Promise.reject(new Error(String(response.status)))))
+      .then(
+        (blob) =>
+          new Promise<string | null>((resolve) => {
+            const reader = new FileReader()
+            reader.onload = () => resolve(typeof reader.result === 'string' ? reader.result : null)
+            reader.onerror = () => resolve(null)
+            reader.readAsDataURL(blob)
+          }),
+      )
+      .catch(() => null)
+    fontCache.set(url, cached)
+  }
+  return cached
+}
+
+/** 图里用到的网页字体写成一段内嵌的 @font-face；没有可嵌的返回空串。不抛错。 */
+async function embeddedFontCss(node: Element): Promise<string> {
+  const used = new Set<string>()
+  for (const el of [node, ...Array.from(node.querySelectorAll('*'))])
+    for (const name of familyNames(getComputedStyle(el).fontFamily)) used.add(name)
+  const faces = pickFontFaces(pageFontFaces(), used, node.textContent ?? '')
+  const rules = await Promise.all(
+    faces.map(async (face) => {
+      const url = fontUrlOf(face.src)
+      if (!url) return null
+      const data = await fontDataUrl(new URL(url, face.base).href)
+      return data ? fontFaceCss(face, data) : null
+    }),
+  )
+  return rules.filter((rule): rule is string => rule !== null).join('\n')
+}
+
 /** 把元素拍成 PNG（不碰剪贴板）。拍不出来时抛错。 */
-export async function elementToPng(node: Element, options: Pick<CopyImageOptions, 'background' | 'scale'> = {}) {
+export async function elementToPng(
+  node: Element,
+  options: Pick<CopyImageOptions, 'background' | 'scale' | 'embedFonts'> = {},
+) {
   const box = node.getBoundingClientRect()
   const width = Math.max(1, Math.ceil(box.width))
   const height = Math.max(1, Math.ceil(box.height))
@@ -104,6 +268,12 @@ export async function elementToPng(node: Element, options: Pick<CopyImageOptions
   const clone = cloneForImage(node)
   ;(clone as HTMLElement).style.margin = '0'
   clone.setAttribute('xmlns', XHTML_NS)
+  const fontCss = options.embedFonts === false ? '' : await embeddedFontCss(node).catch(() => '')
+  if (fontCss) {
+    const style = document.createElementNS(XHTML_NS, 'style')
+    style.textContent = fontCss
+    clone.prepend(style)
+  }
 
   const svg = document.createElementNS(SVG_NS, 'svg')
   svg.setAttribute('xmlns', SVG_NS)

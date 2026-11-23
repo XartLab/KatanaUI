@@ -2177,6 +2177,58 @@ for (const theme of THEMES) {
       await expect(grid.getByRole('row').nth(1).locator('[data-col="symbol"]')).toContainText('600519')
     })
 
+    test('积木：数据表 comfortable 档（#90）——行 40、表头 48、首列左 20、格内 12、正文 14px、行间横线；代码芯片、单位小字、缩写、评级、横条、迷你图、区间；compact 面板行 20', async ({
+      page,
+    }) => {
+      await open(page, theme, 'data-grid')
+      const grid = section(page, 'data-grid').getByTestId('grid-comfortable')
+      const first = grid.getByRole('row').nth(1)
+      const cell = (name: string) => first.locator(`[data-col="${name}"]`)
+      const css = (locator: Locator, prop: string) =>
+        locator.evaluate((el, p) => getComputedStyle(el).getPropertyValue(p), prop)
+      // 尺寸：行 40、表头 48；首列左 20、其余左右 12；正文 14px w400、表头 13px。
+      expect((await first.boundingBox())!.height).toBe(40)
+      expect((await grid.locator('.k-grid-head').boundingBox())!.height).toBe(48)
+      expect(await css(cell('symbol'), 'padding-left')).toBe('20px')
+      expect(await css(cell('price'), 'padding-right')).toBe('12px')
+      expect(await css(cell('price'), 'font-size')).toBe('14px')
+      expect(await css(cell('price'), 'font-weight')).toBe('400')
+      expect(await css(grid.getByRole('columnheader', { name: /价格/ }).getByRole('button'), 'font-size')).toBe('13px')
+      // 只有横线：格子底边 1px，左右没有边。
+      expect(await css(cell('price'), 'border-bottom-width')).toBe('1px')
+      expect(await css(cell('price'), 'border-left-width')).toBe('0px')
+      // 排序列（市值，降序）亮一档、500、带箭头。
+      const sorted = grid.getByRole('columnheader', { name: /市值/ })
+      await expect(sorted).toHaveAttribute('aria-sort', 'descending')
+      expect(await css(sorted.getByRole('button'), 'font-weight')).toBe('500')
+      await expect(sorted.locator('.k-grid-sort')).toHaveText('▼')
+      // 品种格：徽标 18、代码芯片高 24 / 12px w600、全称。
+      await expect(cell('symbol').locator('[data-slot="symbol-mark"]')).toHaveCSS('width', '18px')
+      const chip = cell('symbol').locator('.k-code-chip')
+      await expect(chip).toHaveText('ALFA')
+      expect((await chip.boundingBox())!.height).toBe(24)
+      expect(await css(chip, 'font-size')).toBe('12px')
+      expect(await css(chip, 'font-weight')).toBe('600')
+      await expect(cell('symbol').locator('.k-code-name')).toHaveText('示例阿尔法科技')
+      // 单位小字 10px、次要色；缩写 K/M/B/T；复制出来的字连着单位。
+      await expect(cell('mcap')).toHaveText('5.18 T USD')
+      const unit = cell('mcap').locator('.k-num-unit')
+      expect(await css(unit, 'font-size')).toBe('10px')
+      expect(await css(unit, 'color')).toBe(await token(page, '--k-content-secondary-foreground'))
+      await expect(cell('volume')).toHaveText('42.80 M')
+      // 评级、标签、横条、迷你图、区间、日期复用现有件。
+      await expect(cell('rating').locator('[data-slot="rating-text"]')).toHaveAttribute('data-level', 'strong-buy')
+      await expect(cell('sector').locator('[data-slot="grid-pills"]')).toHaveText('科技')
+      await expect(cell('rvol').locator('.k-grid-bar.is-share > i')).toHaveAttribute('style', /width: 37\.33/)
+      await expect(cell('trend').locator('svg.k-spark')).toBeVisible()
+      await expect(cell('range').locator('[role="meter"]')).toHaveAttribute('aria-label', 'ALFA 52 周区间')
+      await expect(cell('earnings')).toHaveText(/^2026-\d\d-\d\d$/)
+      // compact 面板：行 20，字仍是 12px 数据字。
+      const panel = section(page, 'data-grid').getByTestId('grid-compact-panel')
+      expect((await panel.getByRole('row').nth(1).boundingBox())!.height).toBe(20)
+      expect(await css(panel.getByRole('row').nth(1).locator('[data-col="price"]'), 'font-size')).toBe('12px')
+    })
+
     test('积木：数据表双击列头右缘把手、或右键「适应内容」，列宽按列头与数据里最宽的字调整，文字不被截断', async ({
       page,
     }) => {
@@ -2441,6 +2493,10 @@ for (const theme of THEMES) {
       expect(boards).toEqual(['5', '4', '3', '1'])
       await expect(ladder.locator('[data-board="4"] [data-slot="ladder-promote"]')).toContainText('晋级 1/2')
       await expect(ladder.locator('[data-board="1"] [data-slot="ladder-promote"]')).toContainText('晋级 6/31')
+      // 封单额按 zh-CN 缩写，写法同 cnAmount（#158）：≥1 亿写「5.20亿」，1 万–1 亿写「8,800万」；中文缩写自带量级，不挂单位小字。
+      const seal = ladder.locator('[data-code="600001"] [data-slot="ladder-seal"]')
+      await expect(seal.locator('.k-num-unit')).toHaveCount(0)
+      await expect(ladder.locator('[data-code="002005"] [data-slot="ladder-seal"]')).toHaveText('8,800万')
       // 晋级条的填充宽度按比例：1/2 约一半。
       const fill = ladder.locator('[data-board="4"] .k-ladder-promote-bar i')
       const [bar, filled] = await Promise.all([
@@ -2467,14 +2523,14 @@ for (const theme of THEMES) {
       expect(await colorOf('000003', '.k-ladder-symbol')).toBe(await ink('--ink-300'))
       expect(await colorOf('603007', '.k-ladder-symbol')).toBe(await ink('--ink-300'))
       // 数值列是界面无衬线加等宽数字，不是等宽字体族。
-      // 品种格：代码是主、名称是次（名称更淡更小）；封单额写成「520.00 M」，缺数据写「—」。
+      // 品种格：代码是主、名称是次（名称更淡更小）；封单额按 zh-CN 缩写写成「5.20亿」（#158 同 cnAmount）、不挂单位（#92，原来是「520.00 M」），缺数据写「—」。
       const sym = ladder.locator('[data-code="600002"]')
       await expect(sym.locator('.k-ladder-symbol')).toHaveText('600002')
       await expect(sym.locator('.k-ladder-sub')).toHaveText('示例电力')
       expect(
         await sym.locator('.k-ladder-sub').evaluate((el) => parseFloat(getComputedStyle(el).fontSize)),
       ).toBeLessThan(await sym.locator('.k-ladder-symbol').evaluate((el) => parseFloat(getComputedStyle(el).fontSize)))
-      await expect(ladder.locator('[data-code="600001"] .k-ladder-num').nth(2)).toHaveText('520.00 M')
+      await expect(ladder.locator('[data-code="600001"] .k-ladder-num').nth(2)).toHaveText('5.20亿')
       await expect(ladder.locator('[data-code="603007"] .k-ladder-num').nth(2)).toHaveText('—')
       await expect(ladder.locator('[data-code="600001"] .k-ladder-num').first()).toHaveText('+10.00%')
       const numStyle = await ladder
@@ -4681,9 +4737,23 @@ for (const theme of THEMES) {
       const rows = table.locator('tbody tr')
       await expect(rows).toHaveCount(3)
       const rights = await table
-        .locator('tbody td.is-num:not(.k-quote-rows-change)')
+        .locator('tbody td.k-quote-rows-price')
         .evaluateAll((nodes) => nodes.map((node) => Math.round(node.getBoundingClientRect().right)))
+      expect(rights, '每行都有价格格').toHaveLength(3)
       expect(new Set(rights).size, '价格列右缘对齐').toBe(1)
+      // 格内排版跟 DataGrid 同一份（#92）：代码芯片高 24、12px w600；成交量按 zh-CN 缩写（万 / 亿，写法同 cnAmount，#158），单位「股」是 10px 次要色小字。
+      const chip = rows.nth(0).locator('.k-code-chip')
+      await expect(chip).toBeVisible()
+      expect((await chip.boundingBox())!.height).toBe(24)
+      await expect(chip).toHaveCSS('font-size', '12px')
+      await expect(chip).toHaveCSS('font-weight', '600')
+      const volume = rows.nth(0).locator('.k-quote-rows-volume')
+      await expect(volume).toHaveText(/^\d[\d,]*(\.\d{1,2})?(万|亿) 股$/)
+      await expect(volume.locator('.k-num-unit')).toHaveCSS('font-size', '10px')
+      await expect(volume.locator('.k-num-unit')).toHaveCSS(
+        'color',
+        await token(page, '--k-content-secondary-foreground'),
+      )
       await expect
         .poll(() => paint(rows.nth(0).locator('.k-quote-rows-change'), 'color'))
         .toEqual(await swatch(page, 'var(--pnl-up)'))
@@ -5131,6 +5201,11 @@ for (const theme of THEMES) {
     const row = (key: string) => frame.locator(`.k-sr-table tr[data-metric="${key}"]`)
     const cell = (key: string, side: string) => row(key).locator(`td[data-side="${side}"]`)
     await expect(frame.locator('.k-sr-table thead th[data-side]')).toHaveText(['全部', '多', '空'])
+    // 指标表是整页表的一套数（#92，.k-table-comfortable）：行 40、表头 48、正文 14px、首列左 20。
+    expect(Math.round((await row('tradeCount').boundingBox())!.height)).toBe(40)
+    expect(Math.round((await frame.locator('.k-sr-table thead tr').first().boundingBox())!.height)).toBe(48)
+    await expect(cell('tradeCount', 'all')).toHaveCSS('font-size', '14px')
+    await expect(row('tradeCount').locator('th')).toHaveCSS('padding-left', '20px')
     const n = async (side: string) => Number(await cell('tradeCount', side).innerText())
     expect((await n('long')) + (await n('short'))).toBe(await n('all'))
     await expect(cell('tradeCount', 'all')).toHaveAttribute('data-active', '')
@@ -5164,6 +5239,8 @@ for (const theme of THEMES) {
     await expect(grid.getByRole('columnheader', { name: '累计盈亏' })).toBeVisible()
     const first = grid.getByRole('row').nth(1)
     await expect(first).toContainText('140')
+    // 交易列表是 DataGrid comfortable（#92）：行 40。
+    expect((await first.boundingBox())!.height).toBe(40)
     await expect(first).toHaveAttribute('aria-expanded', 'false')
     await first.click()
     await expect(first).toHaveAttribute('aria-expanded', 'true')
@@ -5235,6 +5312,183 @@ for (const theme of THEMES) {
     await expect(chart.locator('[data-slot="param-scatter-table"]')).toBeVisible()
     await expect(chart.locator('[data-slot="param-scatter-table"]')).toHaveAttribute('data-rows', '120')
     await expect(chart.locator('[data-slot="param-scatter-table"]')).toContainText('f8-s40')
+  })
+
+  test(`参数曲面热力图（${theme}）：孤峰要靠邻域稳定度才看得出，切到平台切片后消失`, async ({ page }) => {
+    await open(page, theme, 'param-surface-heatmap')
+    const map = section(page, 'param-surface-heatmap').locator('[data-gallery-surface="main"]')
+    const cells = map.locator('[data-slot="param-surface-cell"]')
+    await expect(cells).toHaveCount(80)
+    // 止损 = 1 的切片里最优格是 f13/s80：只有一格带最优标记，它周围一圈有邻域框。
+    const best = map.locator('[data-slot="param-surface-cell"][data-best]')
+    await expect(best).toHaveCount(1)
+    await expect(best).toHaveAttribute('data-id', 'f13-s80-k1')
+    await expect(map.locator('[data-slot="param-surface-cell"][data-near]')).not.toHaveCount(0)
+    // 邻域稳定度：最优值 1.95，邻域均值约 0.2，保留率约 10%，标「孤峰」。删掉稳定度计算这几条断言会变红。
+    const stability = map.locator('[data-slot="param-surface-stability"]')
+    await expect(stability).toHaveAttribute('data-spike', '')
+    await expect(stability).toContainText('孤峰')
+    await expect(map.locator('[data-slot="param-surface-best"]')).toHaveText('1.95')
+    await expect(map.locator('[data-slot="param-surface-count"]')).toHaveText('8')
+    const mean = parseFloat((await map.locator('[data-slot="param-surface-mean"]').textContent()) ?? '')
+    expect(mean).toBeGreaterThan(0.1)
+    expect(mean).toBeLessThan(0.4)
+    const retention = parseFloat((await map.locator('[data-slot="param-surface-retention"]').textContent()) ?? '')
+    expect(retention).toBeGreaterThanOrEqual(5)
+    expect(retention).toBeLessThanOrEqual(15)
+    // 悬停一格：读数区列这一格全部参数与全部指标。
+    await best.hover()
+    // 纵轴名在网格上方（纵轴旁），不和横轴名并排在底部。
+    const yname = await map.locator('.k-ps-yname').boundingBox()
+    const xname = await map.locator('.k-ps-xname').boundingBox()
+    const gridBox = await map.locator('[role="grid"]').boundingBox()
+    expect(yname!.y + yname!.height).toBeLessThanOrEqual(gridBox!.y + 1)
+    expect(xname!.y).toBeGreaterThanOrEqual(gridBox!.y + gridBox!.height - 1)
+    const readout = map.locator('[data-slot="param-surface-readout"]')
+    for (const name of ['快线周期', '慢线周期', '止损', '夏普比率', '净利润', '最大回撤'])
+      await expect(readout).toContainText(name)
+    // 键盘：聚焦后方向键走格，Enter 钉住。
+    await best.focus()
+    await page.keyboard.press('ArrowLeft')
+    const moved = map.locator('[data-slot="param-surface-cell"]:focus')
+    await expect(moved).toHaveCount(1)
+    await expect(moved).not.toHaveAttribute('data-best', '')
+    await page.keyboard.press('Enter')
+    await expect(moved).toHaveAttribute('data-pinned', '')
+    await page.keyboard.press('Escape')
+    // 目标值切到净利润：色阶重算，最优格仍只有一个。
+    await map.getByRole('button', { name: '净利润' }).click()
+    await expect(map.locator('[data-slot="param-surface-cell"][data-best]')).toHaveCount(1)
+    await map.getByRole('button', { name: '夏普比率' }).click()
+    // 止损切到 2：最优落在平台上，保留率回到 70% 以上，不再标孤峰。
+    await heatPick(page, map, '固定 止损 %', '2')
+    await expect(stability).not.toHaveAttribute('data-spike', '')
+    const plateau = parseFloat((await map.locator('[data-slot="param-surface-retention"]').textContent()) ?? '')
+    expect(plateau).toBeGreaterThan(70)
+  })
+
+  test(`MAE / MFE 散点（${theme}）：赢圆亏方、切横轴与单位、点选读数、表格视图`, async ({ page }) => {
+    await open(page, theme, 'mae-mfe-scatter')
+    const chart = section(page, 'mae-mfe-scatter').locator('[data-gallery-maemfe="main"]')
+    const dots = chart.locator('[data-slot="mae-mfe-dot"]')
+    await expect(dots).toHaveCount(140)
+    // 赢是圆、亏是方：形状不同，不只靠颜色。
+    await expect(chart.locator('circle[data-slot="mae-mfe-dot"]').first()).toBeVisible()
+    await expect(chart.locator('rect[data-slot="mae-mfe-dot"]').first()).toBeVisible()
+    const fig = chart.locator('[data-slot="mae-mfe-scatter"]')
+    await expect(fig).toHaveAttribute('data-axis', 'mae')
+    await expect(fig).toHaveAttribute('data-unit', 'percent')
+    await expect(chart.locator('[data-slot="mae-mfe-means"]')).not.toBeEmpty()
+    // 最高与最低的点都在绘图区内，不压到纵轴标题上。
+    const frame = await chart.locator('svg.k-mm-svg').boundingBox()
+    const title = await chart.locator('svg.k-mm-svg text.k-scatter-axis').nth(1).boundingBox()
+    for (const d of await dots.all()) {
+      const b = (await d.boundingBox())!
+      expect(b.y).toBeGreaterThanOrEqual(title!.y + title!.height - 0.5)
+      expect(b.y + b.height).toBeLessThanOrEqual(frame!.y + frame!.height)
+    }
+    // 切横轴与单位。
+    await chart.getByRole('button', { name: '最大浮盈' }).click()
+    await expect(fig).toHaveAttribute('data-axis', 'mfe')
+    await chart.getByRole('button', { name: '金额' }).click()
+    await expect(fig).toHaveAttribute('data-unit', 'amount')
+    // 悬停一个点：读数区写这一笔，只有一个点带活动标记。
+    await dots.nth(3).hover()
+    await expect(chart.locator('[data-slot="mae-mfe-readout"]')).toContainText('T')
+    await expect(chart.locator('[data-slot="mae-mfe-dot"][data-active]')).toHaveCount(1)
+    // 表格视图。
+    await chart.getByRole('button', { name: '表格视图' }).click()
+    await expect(chart.locator('[data-slot="mae-mfe-table"]')).toBeVisible()
+  })
+
+  test(`水下回撤图（${theme}）：最大回撤段与恢复读数、与权益曲线共用时间轴`, async ({ page }) => {
+    await open(page, theme, 'underwater-chart')
+    const sec = section(page, 'underwater-chart')
+    const chart = sec.locator('[data-gallery-underwater="main"]')
+    await expect(chart.locator('[data-slot="underwater-segment"]')).toHaveCount(1)
+    await expect(chart.locator('[data-slot="underwater-trough"]')).toHaveCount(1)
+    await expect(chart.locator('[data-slot="underwater-area"]')).toHaveCount(1)
+    // 回撤面是点阵纹理，不是实色。
+    expect(await chart.locator('[data-slot="underwater-area"]').evaluate((e) => getComputedStyle(e).fill)).toMatch(
+      /^url\(/,
+    )
+    await expect(chart.locator('[data-slot="underwater-facts"]')).toContainText('16.7%')
+    await expect(chart.locator('[data-slot="underwater-segment"]')).not.toHaveAttribute('data-open', '')
+    // 与权益曲线叠放：两张图绘图区左缘与宽度一致（共用 xDomain 与左侧留白）。
+    const stack = sec.locator('[data-gallery-underwater="stack"]')
+    const eq = await stack.locator('.k-eq-main').first().boundingBox()
+    const uw = await stack.locator('[data-slot="underwater-main"]').boundingBox()
+    expect(Math.abs(eq!.x - uw!.x)).toBeLessThan(2)
+    expect(Math.abs(eq!.width - uw!.width)).toBeLessThan(2)
+  })
+
+  test(`周期收益表（${theme}）：年 × 月、行尾合计、切季与周、读数`, async ({ page }) => {
+    await open(page, theme, 'period-returns-table')
+    const chart = section(page, 'period-returns-table').locator('[data-gallery-period="main"]')
+    const fig = chart.locator('[data-slot="period-returns-table"]')
+    await expect(fig).toHaveAttribute('data-unit', 'month')
+    await expect(chart.locator('[data-slot="period-returns-colhead"]')).toHaveCount(12)
+    expect(await chart.locator('[data-slot="period-returns-total"]').count()).toBeGreaterThanOrEqual(2)
+    // 色阶：涨跌两端加中间，底色种类不止一两种，没有彩虹。
+    const cells = chart.locator('[data-slot="period-returns-cell"]')
+    const bg = await cells.evaluateAll((els) => new Set(els.map((e) => getComputedStyle(e).backgroundColor)).size)
+    expect(bg).toBeGreaterThan(3)
+    await cells.nth(2).hover()
+    await expect(chart.locator('[data-slot="period-returns-readout"]')).not.toBeEmpty()
+    await chart.getByRole('button', { name: '季' }).click()
+    await expect(fig).toHaveAttribute('data-unit', 'quarter')
+    await expect(chart.locator('[data-slot="period-returns-colhead"]')).toHaveCount(4)
+    await chart.getByRole('button', { name: '周' }).click()
+    await expect(fig).toHaveAttribute('data-unit', 'week')
+    expect(await chart.locator('[data-slot="period-returns-colhead"]').count()).toBeGreaterThanOrEqual(52)
+  })
+
+  test(`步进窗口矩阵（${theme}）：每窗口一行、通过与否带文字、汇总步进效率、锚定与滚动可切`, async ({ page }) => {
+    await open(page, theme, 'walk-forward-matrix')
+    const chart = section(page, 'walk-forward-matrix').locator('[data-gallery-walkforward="main"]')
+    const fig = chart.locator('[data-slot="walk-forward-matrix"]')
+    const rows = chart.locator('[data-slot="walk-forward-row"]')
+    await expect(rows).toHaveCount(8)
+    await expect(chart.locator('[data-slot="walk-forward-result"][data-state="pass"]')).toHaveCount(6)
+    await expect(chart.locator('[data-slot="walk-forward-result"][data-state="fail"]').first()).toContainText('未通过')
+    // 两套窗口都给时先显示锚定。步进效率 = 各窗口样本外年化的均值 ÷ 各窗口样本内年化的均值（年化 = (1+收益)^(1年/区间)-1）。
+    // 演示数据按这条定义算出：滚动 0.380（样本内年化均值 17.6%、样本外 6.7%），锚定 0.37。
+    await expect(fig).toHaveAttribute('data-mode', 'anchored')
+    await expect(chart.locator('[data-slot="walk-forward-efficiency"]')).toHaveText('37%')
+    await chart.getByRole('button', { name: '滚动' }).click()
+    await expect(fig).toHaveAttribute('data-mode', 'rolling')
+    await expect(rows).toHaveCount(8)
+    await expect(chart.locator('[data-slot="walk-forward-efficiency"]')).toHaveText('38%')
+    // 表不横向溢出、最右的结果列不被裁（视口 1200，面板宽度 ≥ 720）。
+    const scroll = chart.locator('.k-wf-scroll')
+    expect(await scroll.evaluate((e) => e.scrollWidth <= e.clientWidth)).toBe(true)
+    const resultBox = await chart.locator('[data-slot="walk-forward-result"]').first().boundingBox()
+    const scrollBox = await scroll.boundingBox()
+    expect(resultBox!.x + resultBox!.width).toBeLessThanOrEqual(scrollBox!.x + scrollBox!.width + 1)
+  })
+
+  test(`稳健性门（${theme}）：阈值与实测值都写出来、未测出不当通过、整组不过门`, async ({ page }) => {
+    await open(page, theme, 'robustness-gate')
+    const gate = section(page, 'robustness-gate').locator('[data-gallery-gate="main"]')
+    const checks = gate.locator('[data-slot="robustness-check"]')
+    await expect(checks).toHaveCount(5)
+    await expect(gate.locator('[data-slot="robustness-verdict"]')).toHaveAttribute('data-state', 'fail')
+    await expect(gate.locator('[data-slot="robustness-verdict"]')).toContainText('未过门')
+    // 邻域保留率约 10%、阈值 60%：不通过；没测出的那条写「未测出」，不当通过。
+    await expect(gate.locator('[data-slot="robustness-check"][data-id="retention"]')).toHaveAttribute(
+      'data-state',
+      'fail',
+    )
+    await expect(gate.locator('[data-slot="robustness-check"][data-id="trades"]')).toHaveAttribute(
+      'data-state',
+      'unknown',
+    )
+    await expect(gate.locator('[data-slot="robustness-check"][data-id="trades"]')).toContainText('未测出')
+    await expect(gate.locator('[data-slot="robustness-check"][data-id="drawdown"]')).toHaveAttribute(
+      'data-state',
+      'pass',
+    )
+    for (let i = 0; i < 5; i++) await expect(checks.nth(i)).toContainText(/通过|未测出/)
   })
 
   test(`资金流向桑基图（${theme}）：节点与链路、斜纹重估、悬停读数、点节点钉住上下游、键盘走、开关、表格视图、有环`, async ({
@@ -5795,6 +6049,11 @@ for (const theme of THEMES) {
     await expect(frame.locator('.k-hl-row')).toHaveCount(0)
     const table = frame.locator('.k-hl-watch')
     await expect(table.locator('thead th')).toHaveText(['传导层', '核心证据', '最容易混淆的地方'])
+    // 观察表是整页表的一套数（#92）：表头 48、13px 次要色；正文 14px，行至少 40（文字会折行）。
+    expect(Math.round((await table.locator('thead tr').boundingBox())!.height)).toBe(48)
+    await expect(table.locator('thead th').first()).toHaveCSS('font-size', '13px')
+    await expect(table.locator('tbody td').first()).toHaveCSS('font-size', '14px')
+    expect((await table.locator('tbody tr').first().boundingBox())!.height).toBeGreaterThanOrEqual(40)
     await expect(table.locator('tbody tr')).toHaveCount(8)
     await expect(table.locator('tbody tr').first()).toContainText('口号式表述和有预算的安排不是一回事')
     await frame.getByRole('group', { name: '视图' }).getByRole('button', { name: '假说', exact: true }).click()
@@ -5811,21 +6070,21 @@ for (const theme of THEMES) {
         .locator('[data-col="symbol"]')
         .allTextContents()
         .then((all) => all.filter((t) => !t.startsWith('代码')))
-    expect(await codes()).toHaveLength(8)
-    // 预设：价格「高于 100」，副标题「高价股」在浮层里；选了以后胶囊带条件文字，表只剩价格大于 100 的 5 只。
+    expect(await codes()).toHaveLength(16)
+    // 预设：价格「高于 100」，副标题「高价股」在浮层里；选了以后胶囊带条件文字，表只剩价格大于 100 的 7 只（16 只演示股票）。
     await bar.locator('[data-slot="filter-pill"][data-field="price"]').click()
     const pop = page.getByRole('dialog', { name: '价格' })
     await expect(pop.getByText('高价股')).toBeVisible()
     await pop.locator('[data-preset="p-high"]').click()
     await expect(bar.locator('[data-field="price"]')).toContainText('高于 100')
-    await expect.poll(async () => (await codes()).length).toBe(4)
+    await expect.poll(async () => (await codes()).length).toBe(7)
     // 手动设置：涨跌幅 大于 1，应用后与价格条件相且。
     await bar.locator('[data-field="change"]').click()
     const pop2 = page.getByRole('dialog', { name: '涨跌幅' })
     await pop2.getByLabel('值').fill('1')
     await pop2.getByRole('button', { name: '应用' }).click()
     await expect(bar.locator('[data-field="change"]')).toContainText('大于 1')
-    await expect.poll(async () => (await codes()).length).toBe(2)
+    await expect.poll(async () => (await codes()).length).toBe(4)
     // 「+」：加一个字段（分组带计数，进组再选）；移除字段连它的条件一起清。
     await bar.getByRole('button', { name: '添加过滤' }).click()
     const add = page.getByRole('dialog', { name: '添加过滤' })
@@ -5836,11 +6095,11 @@ for (const theme of THEMES) {
     await bar.locator('[data-field="change"]').click()
     await page.getByRole('dialog', { name: '涨跌幅' }).getByRole('button', { name: '移除过滤 涨跌幅' }).click()
     await expect(bar.locator('[data-field="change"]')).toHaveCount(0)
-    await expect.poll(async () => (await codes()).length).toBe(4)
+    await expect.poll(async () => (await codes()).length).toBe(7)
     // 「⋯」重置全部。
     await bar.getByRole('button', { name: '更多' }).click()
     await page.getByRole('button', { name: '重置全部过滤' }).click()
-    await expect.poll(async () => (await codes()).length).toBe(8)
+    await expect.poll(async () => (await codes()).length).toBe(16)
     // 列集标签：概览亮着，点「估值」换成四列（代码、价格、市盈率、市值），涨跌幅列消失。
     const tabs = doc.getByRole('tablist', { name: '列集' })
     await expect(tabs.getByRole('tab', { name: '概览' })).toHaveAttribute('aria-selected', 'true')
@@ -5858,9 +6117,18 @@ for (const theme of THEMES) {
     const rowsOf = () => grid.locator('[data-slot="rating-text"]')
     // 表头：代码列第二行写总数，搜索图标在名字后；市盈率第二行是口径 TTM；排序箭头画在名字前。
     const symbolHead = grid.getByRole('columnheader', { name: /代码/ })
-    await expect(symbolHead.locator('.k-grid-head-sub')).toHaveText('8 / 8')
+    await expect(symbolHead.locator('.k-grid-head-sub')).toHaveText('16 / 16')
     await expect(grid.getByRole('columnheader', { name: /市盈率/ }).locator('.k-grid-head-sub')).toHaveText('TTM')
     await expect(grid.getByRole('img', { name: '搜索代码' })).toBeVisible()
+    // 两行表头与单行表头对齐（#92）：两行的第一行与单行列头同一条线（顶边与基线都相差不到 1px），第二行在第一行下面。
+    const firstLine = async (name: RegExp) =>
+      (await grid.getByRole('columnheader', { name }).locator('.k-grid-head-name > span').first().boundingBox())!
+    const twoLine = await firstLine(/代码/)
+    const oneLine = await firstLine(/价格/)
+    expect(Math.abs(twoLine.y - oneLine.y)).toBeLessThan(1)
+    expect(Math.abs(twoLine.y + twoLine.height - (oneLine.y + oneLine.height))).toBeLessThan(1)
+    const subBox = (await symbolHead.locator('.k-grid-head-sub').boundingBox())!
+    expect(subBox.y).toBeGreaterThanOrEqual(twoLine.y + twoLine.height - 0.5)
     await grid
       .getByRole('columnheader', { name: /价格/ })
       .getByRole('button')
@@ -5876,7 +6144,7 @@ for (const theme of THEMES) {
       .boundingBox())!
     expect(arrowBox.x + arrowBox.width).toBeLessThanOrEqual(nameBox.x + 1)
     // 评级列：五种图标加文字，强力买入取涨色，强力卖出取跌色。
-    await expect(rowsOf()).toHaveCount(8)
+    await expect(rowsOf()).toHaveCount(16)
     const tone = (level: string) =>
       grid
         .locator(`[data-slot="rating-text"][data-level="${level}"]`)
@@ -5884,24 +6152,24 @@ for (const theme of THEMES) {
         .evaluate((el) => getComputedStyle(el).color)
     expect(await tone('strong-buy')).not.toBe(await tone('strong-sell'))
     await expect(grid.locator('[data-slot="rating-text"][data-level="strong-buy"]').first()).toHaveText('强力买入')
-    expect(await grid.locator('[data-slot="rating-text"][data-level="strong-buy"] svg').count()).toBe(2)
-    // 撤销 / 重做：设一个预设，撤销回到 8 行，重做回到筛过的。
+    expect(await grid.locator('[data-slot="rating-text"][data-level="strong-buy"] svg').count()).toBe(3)
+    // 撤销 / 重做：设一个预设，撤销回到 16 行，重做回到筛过的。
     const undo = bar.getByRole('button', { name: '撤销' })
     const redo = bar.getByRole('button', { name: '重做' })
     await expect(undo).toBeDisabled()
     await bar.locator('[data-slot="filter-pill"][data-field="price"]').click()
     await page.getByRole('dialog', { name: '价格' }).locator('[data-preset="p-high"]').click()
-    await expect(rowsOf()).toHaveCount(4)
+    await expect(rowsOf()).toHaveCount(7)
     await undo.click()
-    await expect(rowsOf()).toHaveCount(8)
+    await expect(rowsOf()).toHaveCount(16)
     await expect(redo).toBeEnabled()
     await redo.click()
-    await expect(rowsOf()).toHaveCount(4)
+    await expect(rowsOf()).toHaveCount(7)
     // 标题下拉：切到「高股息」换一组条件；另存为多一项并选中。
     const title = doc.getByRole('button', { name: '已保存的筛选' })
     await title.click()
     await page.getByRole('menuitemradio', { name: '高股息' }).click()
-    await expect(rowsOf()).toHaveCount(4)
+    await expect(rowsOf()).toHaveCount(7)
     await expect(title).toContainText('高股息')
     await title.click()
     await page.getByRole('menuitem', { name: '另存为…' }).click()

@@ -123,6 +123,27 @@ const quotes: GuidanceMap = {
     avoid: ['单个重点指标用 metric-card 或 lcd。', '随时间变化的数用 sparkline 类件。'],
     a11y: ['用 dl 结构，标签是 dt，数值是 dd，读屏能成对读。', '「›」装饰符号对读屏隐藏。', '没有值读到「—」。'],
   },
+  'ticker-tape': {
+    aliases: ['Ticker tape', 'Marquee', 'Ticker bar', 'Scrolling ticker', '跑马灯', '行情条'],
+    use: [
+      '页顶或面板顶一条指数、主流币的行情：布局照 TradingView Ticker Tape 小组件（2026-11-18 在 Chrome 实测）——stacked 两行（上行徽标 18px + 代码 600 字重，下行价 + 币种小字 + 涨跌幅），右侧走势 64 × 28；项之间 1px 竖分隔线。',
+      'inline：一行 32 高（徽标 代码 价 涨跌幅），放在状态栏、窄面板里。',
+      '速度默认 40px/s（时长 = 一遍的宽度 / speed）；匀速线性，循环接缝看不出（同一排画两遍、平移 -50%）。',
+      '停：指针停在条上（那一项底色提到 surface-raised，同 TV 悬停）、键盘焦点在条里、按右端 24px 宽的暂停钮。',
+      '点一项联动（onSelect：开图、切品种）；给了 onSelect 每项是按钮。',
+      'mode="static"：固定不滚（TV 的「滚动或固定」），超出部分横向滚动。',
+      '待定：系统「减少动态效果」时这里不动（派发 #77 要求）；theme/motion.css 头部写着「产品不跟减少动态效果」，那条管的是进出场过渡，持续的跑马灯是否例外待用户定。',
+    ],
+    avoid: [
+      '几十个品种、要排序比较的用 watchlist 或 quote-table。',
+      '要用户盯住某个数的地方别用：滚走了就看不到，用 metric-card 或 quote-card。',
+    ],
+    a11y: [
+      'section 带读屏名（labels.region）；第一遍是 list / listitem，第二遍 aria-hidden + inert，键盘与读屏只走一遍。',
+      '暂停钮必有（WCAG 2.2.2），文字在「暂停 / 继续」间换，不加 aria-pressed；减少动态效果不代替它。',
+      '涨跌幅带 + / − 号，不只靠颜色；价格只闪变了的尾数，一秒最多一次（不超 WCAG 2.3.1 的三次）。',
+    ],
+  },
   watchlist: {
     aliases: ['Symbol list', 'Quote list', 'Market watch', 'Portfolio table'],
     use: [
@@ -130,6 +151,8 @@ const quotes: GuidanceMap = {
       '要点列头排序、标旗。',
       '价格变了只有变了的尾数闪涨跌色，涨跌幅也闪；排序下价格变了行平滑换位，新加的行蓝线高亮 1.2 秒。',
       '行是统一行情行 { id, symbol, name, last, change, changePct }，跟 QuoteTable、PeerCards、QuoteCard 同一份数据。',
+      '格内排版跟 DataGrid comfortable 同一份（#92）：代码是代码芯片（12px w600、面底、圆角 6、高 24）；行高照旧 32，面板密表不换行高。',
+      '要看成交量就给 labels.columns.vol 与行的 volume：按 locale 缩写（en-US 是 K / M / B，zh-CN 是 万 / 亿），volumeUnit 写成 10px w500 次要色小字，列可排序。',
     ],
     avoid: ['需要几十列与大量行时用 data-grid。', '只要一屏概览用 quote-table。'],
     a11y: [
@@ -220,6 +243,8 @@ const quotes: GuidanceMap = {
       '首页总览：指数、自选、热门分组一屏看。',
       '行可点进入品种。',
       '行与 Watchlist 同一个模型（数 + formatPrice）：最新价变了只闪变了的尾数，涨跌幅变了整格闪，调用方重排行时行平滑换位，新加的行蓝线高亮 1.2 秒。',
+      '行有 symbol 与 name 时，名称格是代码芯片加全称（#92，跟 DataGrid 的 [chip, name] 同一份）；只有一个名字时照写纯字。行高照旧（迷你图 22 加上下 6）。',
+      '成交量列可选：给 labels.columns.volume 才画，行的 volume 按 locale 缩写（K / M / B ↔ 万 / 亿），volumeUnit 是单位小字。',
     ],
     avoid: ['要排序、筛选、很多行用 data-grid 或 watchlist。', '只有一组时不用页签，直接用 quote-card 的一排。'],
     a11y: [

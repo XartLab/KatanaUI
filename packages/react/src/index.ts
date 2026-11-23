@@ -19,6 +19,16 @@ export { Switcher, type SwitcherProps } from './layout/switcher.tsx'
 export { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from './primitives/accordion.tsx'
 export { Alert, AlertDescription, AlertTitle, alertVariants } from './primitives/alert.tsx'
 export { Button, buttonVariants, type ButtonSize } from './primitives/button.tsx'
+export {
+  Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+  cardVariants,
+} from './primitives/card.tsx'
 export { Checkbox } from './primitives/checkbox.tsx'
 export {
   Command,
@@ -213,6 +223,9 @@ export {
 export { DateRangePicker, type DateRangeLabels, type DateRangePickerProps } from './patterns/date-range-picker.tsx'
 export type { DateRange, RangePreset, WeekStart } from './patterns/date-range-model.ts'
 export { TreeView, type TreeNode, type TreeViewProps } from './patterns/tree-view.tsx'
+// #104 对照 Salt 补的两件：常驻页面的选项列表、单独摆放的月历。
+export { ListBox, type ListBoxGroup, type ListBoxOption, type ListBoxProps } from './patterns/list-box.tsx'
+export { Calendar, type CalendarLabels, type CalendarProps } from './patterns/calendar.tsx'
 export {
   RowActionMenuItems,
   RowActions,
@@ -223,6 +236,8 @@ export {
   type RowContextMenuProps,
   type SymbolMenuInput,
 } from './quotes/row-actions.tsx'
+// 自选表的文本导入导出（#22）：逗号分隔、带交易所前缀，###节名是分节。
+export { formatSymbolList, parseSymbolList, type ParsedSymbolList, type SymbolListEntry } from './quotes/symbol-list.ts'
 export {
   QuoteTable,
   type LegacyQuoteRow,
@@ -232,6 +247,7 @@ export {
   type QuoteTableRow,
 } from './quotes/quote-table.tsx'
 export { plainPrice, rowTone, type FormatPrice, type QuoteRow } from './quotes/quote-row.ts'
+export { CodeChip, CodeName, CompactValue, UnitValue } from './quotes/cell-type.tsx'
 export {
   Combobox,
   ComboboxContent,
@@ -251,6 +267,11 @@ export { Led, LINK_GROUPS, type LedState, type LinkGroup } from './katana/led.ts
 // 状态语气（G0 定义在 lib/severity.ts，G3 起 Led、StatusIcon、Toast、Tag、Lcd 的 tone 用它）：只导出类型。
 export type { Severity, SeverityExt } from './lib/severity.ts'
 export { Tag, type TagProps, type TagSize } from './katana/tag.tsx'
+// #104 对照 Salt 补的四件：可关的单个胶囊、全站系统消息条、行内文字链接、纯容器面板。
+export { Pill, type PillProps, type PillSize } from './katana/pill.tsx'
+export { SystemStatus, type SystemStatusProps, type SystemStatusTone } from './katana/system-status.tsx'
+export { Link, type LinkProps } from './katana/link.tsx'
+export { Panel, type PanelProps } from './katana/panel.tsx'
 export { Kbd } from './katana/kbd.tsx'
 export {
   countFlags,
@@ -296,6 +317,7 @@ export {
   type HotkeyPlatform,
 } from './patterns/hotkeys-model.ts'
 export { ShortcutSheet, type ShortcutSheetLabels, type ShortcutSheetProps } from './patterns/shortcut-sheet.tsx'
+export { undoHotkeyBindings, useUndoHotkeys, type UndoHotkeysOptions } from './patterns/use-undo-hotkeys.ts'
 export {
   CommandPalette,
   pushRecent,
@@ -305,6 +327,8 @@ export {
   type PaletteCommand,
 } from './patterns/command-palette.tsx'
 export { SymbolMark, symbolMarkLetters, type SymbolMarkProps } from './quotes/symbol-mark.tsx'
+// 跑马灯（#77 第 5 条）。
+export { TickerTape, type TickerItem, type TickerTapeLabels, type TickerTapeProps } from './quotes/ticker-tape.tsx'
 export { BadgeGroup, type BadgeItem } from './katana/badge.tsx'
 export { RollingText, rollSlots, rollStrip } from './katana/rolling-text.tsx'
 export { Scrubber, scrubSnap, scrubValueAt, type ScrubberProps } from './katana/scrubber.tsx'
@@ -357,6 +381,14 @@ export { LOADING_TIMEOUT_MS, type LoadingPhase } from './katana/loading-gate.ts'
 export { PasswordInput, type PasswordInputLabels, type PasswordInputProps } from './patterns/password-input.tsx'
 export { DeleteButton, type DeleteButtonLabels, type DeleteButtonProps } from './patterns/delete-button.tsx'
 export { HoldToConfirm, type HoldToConfirmLabels, type HoldToConfirmProps } from './patterns/hold-to-confirm.tsx'
+export {
+  SplitButton,
+  type SplitButtonAction,
+  type SplitButtonLabels,
+  type SplitButtonProps,
+} from './patterns/split-button.tsx'
+export { TagInput, type TagInputLabels, type TagInputProps } from './patterns/tag-input.tsx'
+export { InlineEdit, type InlineEditLabels, type InlineEditProps } from './patterns/inline-edit.tsx'
 export { NotificationBell, type NotificationBellProps } from './katana/notification-bell.tsx'
 export { StatusIcon, type StatusIconStatus, type StatusIconTone } from './katana/status-icon.tsx'
 export { AiStatus, type AiStatusProps, type AiStatusState, type AiStatusValue } from './katana/ai-status.tsx'
@@ -395,6 +427,17 @@ export {
   type DurationPickerProps,
   type DurationValue,
 } from './patterns/duration-picker.tsx'
+// 自动刷新控件（#77 第 5 条，#22 G12）。
+export {
+  RefreshControl,
+  formatRefreshClock,
+  formatRemaining,
+  useAutoRefresh,
+  type RefreshControlLabels,
+  type RefreshControlProps,
+  type RefreshOption,
+  type UseAutoRefreshOptions,
+} from './patterns/refresh-control.tsx'
 export { useHoverIntent } from './lib/hover-intent.ts'
 export { useScrubber, type UseScrubberOptions } from './lib/use-scrubber.ts'
 export {
@@ -420,6 +463,18 @@ export {
   type UndoStackOptions,
   type UndoState,
 } from './lib/use-undo-stack.ts'
+
+// 联动组（#22 G8）：同组的件共用品种、周期、十字线、可见区间。
+export {
+  LINK_FIELDS,
+  LinkGroupProvider,
+  createLinkHub,
+  useLinkGroup,
+  useLinkHub,
+  type LinkField,
+  type LinkGroupState,
+  type LinkHub,
+} from './lib/link-group.tsx'
 
 // 分割线（#1901）：一条 role=separator 的线，键盘、拖动、吸附、双击复位；工作区的格子分割线用它。
 export { Splitter, type SplitterProps } from './primitives/splitter.tsx'
@@ -482,6 +537,22 @@ export {
 } from './quotes/rating-panel.tsx'
 export { SymbolNote, type SymbolNoteLabels, type SymbolNoteProps } from './quotes/symbol-note.tsx'
 export { quoteTone, type QuoteTone } from './quotes/quote-tone.ts'
+
+// 前向测试与回放的件（#121）。
+export {
+  PortfolioRunGrid,
+  type PortfolioRunFormat,
+  type PortfolioRunGridProps,
+  type PortfolioRunLabels,
+  type PortfolioRunSummary,
+} from './blocks/portfolio-run-grid/portfolio-run-grid.tsx'
+export { type PortfolioRunRow, type RunStatus } from './blocks/portfolio-run-grid/portfolio-run-model.ts'
+export {
+  ReplayTransport,
+  type ReplayTransportLabels,
+  type ReplayTransportProps,
+} from './blocks/replay-transport/replay-transport.tsx'
+export { RunModeBadge, type RunMode, type RunModeBadgeProps } from './blocks/run-mode-badge/run-mode-badge.tsx'
 
 // 分布与关系类的件（#1918）：功能参照 Arc（uiarc.dev，2026-11-14 读），实现原创。
 export { UptimeBars, type UptimeBarsProps } from './blocks/uptime-bars/uptime-bars.tsx'
@@ -566,6 +637,26 @@ export { AiApproval, type AiApprovalFact, type AiApprovalOption, type AiApproval
 export { AiContextMeter, type AiContextBreakdownItem, type AiContextMeterProps } from './ai/ai-context-meter.tsx'
 export { AiMessage, type AiMessageAuthor, type AiMessageLabels, type AiMessageProps } from './ai/ai-message.tsx'
 export { AiResponse, type AiResponseCitation, type AiResponseProps } from './ai/ai-response.tsx'
+// 计划对实际（KATANAview #1908 第三批，功能参照 affectUI 的 Plan vs Actual，实现原创）。
+export { PlanVsActual, type PlanVsActualLabels, type PlanVsActualProps } from './ai/plan-vs-actual.tsx'
+export {
+  planDomain,
+  planShift,
+  projectPlan,
+  type PlanStep,
+  type StepProjection,
+  type StepState,
+} from './ai/plan-actual-model.ts'
+export {
+  Markdown,
+  docHeadings,
+  markdownSlot,
+  renderDoc,
+  renderMarkdown,
+  type MarkdownHeading,
+  type MarkdownLabels,
+  type MarkdownProps,
+} from './ai/markdown.tsx'
 export { AiConversation, type AiConversationProps } from './ai/ai-conversation.tsx'
 export {
   AiPromptInput,
@@ -694,6 +785,7 @@ export {
 } from './katana/switchboard-card.tsx'
 export { AnimatedTags, type AnimatedTagsLabels, type AnimatedTagsProps } from './katana/animated-tags.tsx'
 export { ExposureSlider, type ExposureSliderProps } from './katana/exposure-slider.tsx'
+export { RulerSlider, type RulerSliderProps } from './katana/ruler-slider.tsx'
 export { PowerOffSlide, type PowerOffSlideProps } from './katana/power-off-slide.tsx'
 export {
   AnimatedStepper,

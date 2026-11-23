@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // 第 1 层的纯函数（#110）：连板、涨停状态、板块的判断与写法。StreakBadge、LimitStatus、BoardMark 与 DataGrid 的 streak / limitStatus 列共用。
 import { formatCnAmount } from './format.ts'
-import type { BoardKind, LimitStatusKey, LimitStatusLabels, StreakLabels } from './labels.ts'
+import type { BoardKind, BoardMarkLabels, LimitStatusKey, LimitStatusLabels, StreakLabels } from './labels.ts'
 import { DASH } from './value.ts'
 
 /** 连板：几板（null 是取不到），可带几天几板的天数、昨天的板数（晋级口径）、取不到的原因。 */
@@ -109,4 +109,37 @@ export function boardKindOf(code: string | null | undefined, name?: string | nul
   if (/^68[89]/.test(digits)) return 'star'
   if (/^(920|[48])/.test(digits)) return 'bj'
   return 'main'
+}
+
+/** 板块的值：板块名（BoardKind）照用，六位代码或 { code, name } 用 boardKindOf 判断；认不出、空是 null。DataGrid 的 board 列用。 */
+export type BoardInput = string | { code: string; name?: string | null } | null | undefined
+
+export function toBoardKind(input: BoardInput): BoardKind | null {
+  if (input === null || input === undefined) return null
+  if (typeof input === 'string') return input in BOARD_LIMIT_PERCENT ? (input as BoardKind) : boardKindOf(input)
+  return boardKindOf(input.code, input.name)
+}
+
+/**
+ * BoardMark 上的字：cm 写涨跌幅限制（主板是空字），name 写板块名，both 都写；ST 总写「ST」。取不到写「—」。
+ * BoardMark 与 DataGrid 的 board 列共用，复制、导出的字跟屏幕上一致。
+ */
+export function boardText(
+  kind: BoardKind | null | undefined,
+  labels: BoardMarkLabels,
+  display: 'cm' | 'name' | 'both' = 'cm',
+): string {
+  if (kind === null || kind === undefined || !(kind in BOARD_LIMIT_PERCENT)) return DASH
+  if (kind === 'st') return labels.kind.st
+  const limit = labels.limit(BOARD_LIMIT_PERCENT[kind])
+  if (display === 'name') return labels.kind[kind]
+  if (display === 'both') return `${labels.kind[kind]} ${limit}`
+  return BOARD_LIMIT_PERCENT[kind] > 10 ? limit : ''
+}
+
+const BOARD_ORDER: readonly BoardKind[] = ['main', 'st', 'gem', 'star', 'bj']
+
+/** 排序值：按涨跌幅限制（ST 5、主板 10、创业板与科创板 20、北交所 30），同档按 BOARD_ORDER；取不到是 undefined（排在最后）。 */
+export function boardSortKey(kind: BoardKind | null): number | undefined {
+  return kind === null ? undefined : BOARD_LIMIT_PERCENT[kind] * 10 + BOARD_ORDER.indexOf(kind)
 }

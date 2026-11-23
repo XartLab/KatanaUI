@@ -165,6 +165,89 @@ export {
   type ParamRamp,
 } from './param-scatter-model.ts'
 
+// 研究报告件与优化结果件（#120，参照 MultiCharts 的策略报告、步进优化与优化报告）：件只画，数据由调用方给。
+export { MaeMfeScatter, type MaeMfeScatterLabels, type MaeMfeScatterProps } from './mae-mfe-scatter.tsx'
+export {
+  excursionPoints,
+  summarizeExcursions,
+  outwardDomain,
+  type ExcursionAxis,
+  type ExcursionKind,
+  type ExcursionPoint,
+  type ExcursionSummary,
+  type ExcursionTrade,
+  type ExcursionUnit,
+} from './mae-mfe-model.ts'
+export { UnderwaterChart, type UnderwaterChartLabels, type UnderwaterChartProps } from './underwater-chart.tsx'
+export { maxDrawdownSegment, underwaterShare, type DrawdownSegment, type UnderwaterPoint } from './underwater-model.ts'
+export { PeriodReturnsTable, type PeriodReturnsLabels, type PeriodReturnsTableProps } from './period-returns-table.tsx'
+export {
+  aggregateReturns,
+  compound,
+  isoWeek,
+  type PeriodCell,
+  type PeriodRow,
+  type PeriodUnit,
+  type ReturnSample,
+} from './period-returns-model.ts'
+export {
+  ParamSurfaceHeatmap,
+  type ParamSurfaceHeatmapProps,
+  type ParamSurfaceLabels,
+  type SurfaceMetric,
+  type SurfaceParam,
+} from './param-surface-heatmap.tsx'
+export {
+  bestCell,
+  isSpike,
+  resolveSlice,
+  sliceGrid,
+  surfaceNeighborhood,
+  type SurfaceGoal,
+  type SurfaceGrid,
+  type SurfaceNeighborhood,
+  type SurfacePoint,
+} from './param-surface-model.ts'
+export { WalkForwardMatrix, type WalkForwardMatrixLabels, type WalkForwardMatrixProps } from './walk-forward-matrix.tsx'
+export {
+  annualize,
+  summarizeWindows,
+  type WalkForwardMode,
+  type WalkForwardSummary,
+  type WalkForwardWindow,
+} from './walk-forward-model.ts'
+export {
+  RobustnessGate,
+  type RobustnessCheck,
+  type RobustnessGateLabels,
+  type RobustnessGateProps,
+} from './robustness-gate.tsx'
+export {
+  evaluateCheck,
+  summarizeGate,
+  type GateCheck,
+  type GateOp,
+  type GateState,
+  type GateSummary,
+} from './robustness-gate-model.ts'
+
+// 参照 affectUI 补的量化件（KATANAview #1908 第一批）：实验卡、并行尝试、变化摘要、KPI 图。
+export { ExperimentCard, type ExperimentCardLabels, type ExperimentCardProps } from './experiment-card.tsx'
+export {
+  baselineOf,
+  changeVerdict,
+  leaderOf,
+  relativeChange,
+  type ChangeVerdict,
+  type ExperimentMetric,
+  type ExperimentVariant,
+} from './experiment-model.ts'
+export { ParallelAttempts, type ParallelAttemptsLabels, type ParallelAttemptsProps } from './parallel-attempts.tsx'
+export { attemptFill, bestAttempt, countAttempts, type Attempt, type AttemptStatus } from './parallel-attempts-model.ts'
+export { ChangeSummary, type ChangeItem, type ChangeSummaryProps } from './change-summary.tsx'
+export { KpiChart, type KpiChartProps } from './kpi-chart.tsx'
+export { axisIndexes, kpiRange, normalizeValues, type KpiScale, type KpiSeries } from './kpi-chart-model.ts'
+
 // 资金流向桑基图与按发布时间画的宏观序列（#45）。
 export { FlowSankey, type FlowSankeyLabels, type FlowSankeyProps } from './flow-sankey.tsx'
 export {
@@ -228,3 +311,27 @@ export {
   type WatchlistSort,
   type WatchlistSortKey,
 } from '../quotes/watchlist-model.ts'
+// 对照 TradingView 小组件补缺的第二批（KatanaUI #147，KATANAview #1884）：报价类四件在 src/quotes/，这里照旧再导出；季节性图是量化层自己的。
+export {
+  SymbolInfo,
+  type SymbolInfoProps,
+  type SymbolInfoRange,
+  type SymbolInfoStatus,
+} from '../quotes/symbol-info.tsx'
+export {
+  SymbolOverview,
+  type SymbolOverviewItem,
+  type SymbolOverviewLabels,
+  type SymbolOverviewProps,
+  type SymbolOverviewRange,
+} from '../quotes/symbol-overview.tsx'
+export { CrossRates, type CrossRatesLabels, type CrossRatesProps } from '../quotes/cross-rates.tsx'
+export type { CrossRateQuote } from '../quotes/cross-rates-model.ts'
+export {
+  CompanyProfile,
+  type CompanyProfileFact,
+  type CompanyProfileLabels,
+  type CompanyProfileProps,
+} from '../quotes/company-profile.tsx'
+export { SeasonalChart, type SeasonalChartLabels, type SeasonalChartProps } from './seasonal-chart.tsx'
+export { seasonalSeries, type SeasonalPoint, type SeasonalYear } from './seasonal-model.ts'

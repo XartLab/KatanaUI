@@ -268,6 +268,10 @@
   overflow: auto;
   border: var(--hairline);
 }
+/* 里面是整页表（.k-table-comfortable，#92）时可视高放到表头 48 加 7 行 40。 */
+.k-sx-table:has(> .k-table-comfortable) {
+  max-height: 328px;
+}
 .k-sx-table:focus-visible {
   outline: 1px solid var(--focus-ring);
 }

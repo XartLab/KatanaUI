@@ -10,6 +10,9 @@ import {
   ThemeHeatMatrixDemo,
 } from './pages/cn-pack.tsx'
 import { FlagMarkDemo } from './pages/watchlist-order.tsx'
+import { InlineEditDemo, SplitButtonDemo, TagInputDemo } from './pages/arc-inputs.tsx'
+import { RulerSliderDemo } from './pages/ruler-slider.tsx'
+import { DepthChartDemo, OrderBookDemo, TradeTapeDemo } from './pages/market-depth.tsx'
 import {
   AgentAvatarDemo,
   AiApprovalDemo,
@@ -25,6 +28,7 @@ import {
   AiSuggestionsDemo,
   AiTaskListDemo,
   AiToolCallDemo,
+  MarkdownDemo,
 } from './pages/ai.tsx'
 import {
   ApertureBlurTransitionDemo,
@@ -52,7 +56,9 @@ import {
   SvgDrawOnScrollDemo,
 } from './pages/motion-effects.tsx'
 import { RenderingSettingsDemo } from './rendering.tsx'
+import { GridSummaryRowDemo, RefreshControlDemo, TickerTapeDemo } from './pages/ticker-refresh.tsx'
 import { CopyToastDemo, UseUndoStackDemo } from './pages/undo-copy.tsx'
+import { LinkGroupDemo } from './pages/link-group.tsx'
 import { SideNavUsage } from './usage/SideNavUsage.tsx'
 import { LiveUsage } from './usage/LiveUsage.tsx'
 import { TextMeasureUsage } from './usage/TextMeasureUsage.tsx'
@@ -99,8 +105,24 @@ import {
 } from './pages/quant.tsx'
 import { FlowSankeyDemo, VintageSeriesDemo } from './pages/flows.tsx'
 import { KeyStatsDemo, PeerCardsDemo, PerformanceStripDemo, RangeBarTvDemo, WatchlistDemo } from './pages/overview.tsx'
+import {
+  CompanyProfileDemo,
+  CrossRatesDemo,
+  SeasonalChartDemo,
+  SymbolInfoDemo,
+  SymbolOverviewDemo,
+} from './pages/tv-widgets.tsx'
 import { ParamScatterDemo, StrategyReportDemo } from './pages/strategy.tsx'
+import { PortfolioRunGridDemo, ReplayTransportDemo, RunModeBadgeDemo } from './pages/forward-replay.tsx'
 import { TransmissionChainDemo } from './pages/research.tsx'
+import {
+  MaeMfeScatterDemo,
+  ParamSurfaceHeatmapDemo,
+  PeriodReturnsTableDemo,
+  RobustnessGateDemo,
+  UnderwaterChartDemo,
+  WalkForwardMatrixDemo,
+} from './pages/research-report.tsx'
 import { WhiteboardDemo } from './pages/whiteboard.tsx'
 import { RatingPanelDemo } from './pages/rating-panel.tsx'
 import { SymbolNoteDemo } from './pages/symbol-note.tsx'
@@ -276,6 +298,38 @@ import {
 } from './pages/smoothui-trading.tsx'
 import { ScrubberDemo } from './pages/smoothui-scrub.tsx'
 import { SymbolSearchDemo } from './pages/symbol-search.tsx'
+import {
+  ChangeSummaryDemo,
+  ExperimentCardDemo,
+  KpiChartDemo,
+  ParallelAttemptsDemo,
+  RootCauseTreeDemo,
+} from './pages/affect-quant.tsx'
+import { FallbackChainDemo, PlanVsActualDemo, RateLimitPlannerDemo, TraceWaterfallDemo } from './pages/affect-data.tsx'
+import {
+  AccountEquityDemo,
+  FundingRateDemo,
+  OptionsChainDemo,
+  OrdersTableDemo,
+  PositionsTableDemo,
+} from './pages/account.tsx'
+import {
+  AuctionStepDemo,
+  FlowRaceDemo,
+  MiniKCardGridDemo,
+  MoveFeedDemo,
+  SeatTableDemo,
+  TradingDatePickerDemo,
+} from './pages/cn-batch2.tsx'
+import {
+  CalendarDemo,
+  CardDemo,
+  LinkDemo,
+  ListBoxDemo,
+  PanelDemo,
+  PillDemo,
+  SystemStatusDemo,
+} from './pages/salt-gaps.tsx'
 
 /** 每一页的实时预览，键是 registry.ts 里的页 id（registry.test.ts 核对两边一一对应）。 */
 export const DEMOS: Readonly<Record<string, ComponentType>> = {
@@ -338,8 +392,12 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   loading: LoadingDemo,
   'measured-skeleton': MeasuredSkeletonUsage,
   toast: ToastDemo,
+  'ticker-tape': TickerTapeDemo,
+  'refresh-control': RefreshControlDemo,
+  'grid-summary-row': GridSummaryRowDemo,
   'copy-toast': CopyToastDemo,
   'use-undo-stack': UseUndoStackDemo,
+  'link-group': LinkGroupDemo,
   alert: AlertDemo,
   progress: ProgressDemo,
   sheet: SheetDemo,
@@ -358,12 +416,25 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'reason-group-list': ReasonGroupListDemo,
   'board-strength-rank': BoardStrengthRankDemo,
   'net-buy-bar': NetBuyBarDemo,
+  'positions-table': PositionsTableDemo,
+  'orders-table': OrdersTableDemo,
+  'account-equity': AccountEquityDemo,
+  'funding-rate': FundingRateDemo,
+  'options-chain': OptionsChainDemo,
+  'order-book': OrderBookDemo,
+  'depth-chart': DepthChartDemo,
+  'trade-tape': TradeTapeDemo,
   'market-heatmap': MarketHeatmapDemo,
   'rating-text': RatingTextDemo,
   'technical-rating': TechnicalRatingDemo,
   'performance-strip': PerformanceStripDemo,
   'peer-cards': PeerCardsDemo,
   'key-stats': KeyStatsDemo,
+  'symbol-info': SymbolInfoDemo,
+  'symbol-overview': SymbolOverviewDemo,
+  'cross-rates': CrossRatesDemo,
+  'company-profile': CompanyProfileDemo,
+  'seasonal-chart': SeasonalChartDemo,
   watchlist: WatchlistDemo,
   'metric-card': MetricCardDemo,
   'distribution-bars': DistributionBarsDemo,
@@ -375,6 +446,12 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'market-pulse': MarketPulseDemo,
   'limit-up-timeline': LimitUpTimelineDemo,
   'sentiment-gauge': SentimentGaugeDemo,
+  'seat-table': SeatTableDemo,
+  'auction-step': AuctionStepDemo,
+  'trading-date-picker': TradingDatePickerDemo,
+  'flow-race': FlowRaceDemo,
+  'mini-k-card-grid': MiniKCardGridDemo,
+  'move-feed': MoveFeedDemo,
   'decimal-field': DecimalFieldDemo,
   'quant-format': QuantFormatDemo,
   'spark-tile': SparkTileDemo,
@@ -397,9 +474,27 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'column-set-tabs': ScreenerDemo,
   'news-reader': NewsReaderDemo,
   'strategy-report': StrategyReportDemo,
+  'portfolio-run-grid': PortfolioRunGridDemo,
+  'replay-transport': ReplayTransportDemo,
+  'run-mode-badge': RunModeBadgeDemo,
   'transmission-chain': TransmissionChainDemo,
   whiteboard: WhiteboardDemo,
   'param-scatter': ParamScatterDemo,
+  'mae-mfe-scatter': MaeMfeScatterDemo,
+  'underwater-chart': UnderwaterChartDemo,
+  'period-returns-table': PeriodReturnsTableDemo,
+  'param-surface-heatmap': ParamSurfaceHeatmapDemo,
+  'walk-forward-matrix': WalkForwardMatrixDemo,
+  'robustness-gate': RobustnessGateDemo,
+  'experiment-card': ExperimentCardDemo,
+  'parallel-attempts': ParallelAttemptsDemo,
+  'change-summary': ChangeSummaryDemo,
+  'kpi-chart': KpiChartDemo,
+  'root-cause-tree': RootCauseTreeDemo,
+  'trace-waterfall': TraceWaterfallDemo,
+  'fallback-chain': FallbackChainDemo,
+  'rate-limit-planner': RateLimitPlannerDemo,
+  'plan-vs-actual': PlanVsActualDemo,
   'flow-sankey': FlowSankeyDemo,
   'vintage-series': VintageSeriesDemo,
   'system-monitor': SystemMonitorDemo,
@@ -407,6 +502,9 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'hypothesis-ledger': HypothesisLedgerDemo,
   'password-input': PasswordInputDemo,
   'hold-to-confirm': HoldToConfirmDemo,
+  'split-button': SplitButtonDemo,
+  'tag-input': TagInputDemo,
+  'inline-edit': InlineEditDemo,
   'delete-button': DeleteButtonDemo,
   'notification-bell': NotificationBellDemo,
   'status-icon': StatusIconDemo,
@@ -445,6 +543,7 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'ai-conversation': AiConversationDemo,
   'ai-message': AiMessageDemo,
   'ai-response': AiResponseDemo,
+  markdown: MarkdownDemo,
   'ai-reasoning': AiReasoningDemo,
   'ai-tool-call': AiToolCallDemo,
   'ai-diff': AiDiffDemo,
@@ -538,6 +637,7 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'switchboard-card': SwitchboardCardDemo,
   'animated-tags': AnimatedTagsDemo,
   'exposure-slider': ExposureSliderDemo,
+  'ruler-slider': RulerSliderDemo,
   scrubber: ScrubberDemo,
   'power-off-slide': PowerOffSlideDemo,
   'animated-stepper': AnimatedStepperDemo,
@@ -546,6 +646,14 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'motion-loader': MotionLoaderDemo,
   'page-preloader': PagePreloaderDemo,
   'scroll-progress': ScrollProgressDemo,
+  // #104 对照 Salt 补的七件。
+  pill: PillDemo,
+  'system-status': SystemStatusDemo,
+  calendar: CalendarDemo,
+  'list-box': ListBoxDemo,
+  link: LinkDemo,
+  card: CardDemo,
+  panel: PanelDemo,
 }
 
 /**

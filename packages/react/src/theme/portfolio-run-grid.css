@@ -1,0 +1,46 @@
+/* SPDX-License-Identifier: MIT */
+/* 组合运行表：顶上汇总一行，下面是 DataGrid 的只读表。颜色只用 token。
+   行状态靠左边一道色条加底色表达；状态灯与文字在状态格里另写，所以色条不是唯一的表达。 */
+
+.k-prg {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+.k-prg-summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+.k-prg-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+.k-prg-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* 暂停：琥珀底加左条，整行字退一档（不再开新单的提示），「平掉」仍是原样可点。 */
+.k-prg-row.is-paused {
+  background: var(--k-status-warn-background);
+  box-shadow: inset 2px 0 0 var(--k-status-warn-foreground);
+  color: var(--k-content-secondary-foreground);
+}
+.k-prg-row.is-noNewEntries {
+  box-shadow: inset 2px 0 0 var(--accent);
+}
+.k-prg-row.is-disconnected {
+  background: var(--k-status-danger-background);
+  box-shadow: inset 2px 0 0 var(--k-status-danger-foreground);
+}
+
+@media (max-width: 560px) {
+  .k-prg-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

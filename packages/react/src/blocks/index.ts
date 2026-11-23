@@ -13,6 +13,8 @@ export type {
   GridTone,
   PillValue,
   ProgressValue,
+  RangeValue,
+  SymbolPart,
   SymbolValue,
 } from './data-grid/columns.ts'
 export {
@@ -24,6 +26,16 @@ export {
   type GridMenuEntry,
 } from './data-grid/host.tsx'
 export { tableCsv, type SortSpec } from './data-grid/model.ts'
+// 表尾合计 / 均值行（#77 第 5 条）：DataGrid 的 summary 属性；纯函数可单用。
+export {
+  GridSummaryRow,
+  aggregateValues,
+  summaryCells,
+  type GridSummary,
+  type GridSummaryRowProps,
+  type SummaryAggregate,
+  type SummaryColumn,
+} from './data-grid/grid-summary-row.tsx'
 export {
   ColumnPicker,
   type ColumnPickerLabels,
@@ -220,6 +232,22 @@ export {
 export { UptimeBars, type UptimeBarsProps } from './uptime-bars/uptime-bars.tsx'
 export { uptimeShare, type UptimeCell, type UptimeStatus } from './uptime-bars/uptime-bars-model.ts'
 
+// 前向测试与回放的件（#121）：组合运行表、回放控制条、运行模式徽标。功能参照 MultiCharts（2026-11-21 读官方页面），实现原创。
+export {
+  PortfolioRunGrid,
+  type PortfolioRunFormat,
+  type PortfolioRunGridProps,
+  type PortfolioRunLabels,
+  type PortfolioRunSummary,
+} from './portfolio-run-grid/portfolio-run-grid.tsx'
+export { type PortfolioRunRow, type RunStatus } from './portfolio-run-grid/portfolio-run-model.ts'
+export {
+  ReplayTransport,
+  type ReplayTransportLabels,
+  type ReplayTransportProps,
+} from './replay-transport/replay-transport.tsx'
+export { RunModeBadge, type RunMode, type RunModeBadgeProps } from './run-mode-badge/run-mode-badge.tsx'
+
 // 白板（#51）：底座 React Flow（@xyflow/react，MIT）。
 export { Whiteboard, type WhiteboardLabels, type WhiteboardProps } from './whiteboard/whiteboard.tsx'
 export {
@@ -342,3 +370,148 @@ export {
   type NetBuyBarLabels,
   type NetBuyBarProps,
 } from './net-buy-bar/net-buy-bar.tsx'
+
+// #104 账户四件：持仓表、委托表（共页签外壳）、账户权益概览、资金费率、期权 T 型报价。
+export {
+  PositionsTable,
+  type LiquidationRisk,
+  type Position,
+  type PositionSide,
+  type PositionTotals,
+  type PositionsTableLabels,
+  type PositionsTableProps,
+} from './positions-table/positions-table.tsx'
+export {
+  liquidationDistance,
+  liquidationFill,
+  liquidationRisk,
+  positionTotals,
+  unrealizedPercent,
+} from './positions-table/positions-model.ts'
+export {
+  PositionsOrdersTabs,
+  type PositionsOrdersTab,
+  type PositionsOrdersTabsLabels,
+  type PositionsOrdersTabsProps,
+} from './positions-table/positions-orders-tabs.tsx'
+export {
+  OrdersTable,
+  type Order,
+  type OrderSide as OpenOrderSide,
+  type OrderStatus,
+  type OrderType as OpenOrderType,
+  type OrdersTableLabels,
+  type OrdersTableProps,
+} from './orders-table/orders-table.tsx'
+export {
+  amendDecision,
+  canAmend,
+  canCancel,
+  cancellable,
+  fillRatio,
+  parseAmendPrice,
+} from './orders-table/orders-model.ts'
+export {
+  AccountEquity,
+  type AccountEquityLabels,
+  type AccountEquityProps,
+  type MarginLevel,
+  type MarginThresholds,
+} from './account-equity/account-equity.tsx'
+export { marginLevel, marginRatioOf, riskBands, riskPosition } from './account-equity/account-equity-model.ts'
+export {
+  FundingRate,
+  type FundingBar,
+  type FundingPoint,
+  type FundingRateLabels,
+  type FundingRateProps,
+} from './funding-rate/funding-rate.tsx'
+export { countdownTo, formatCountdown, formatRate, fundingBars, rateTone } from './funding-rate/funding-model.ts'
+export {
+  OptionsChain,
+  type OptionExpiry,
+  type OptionField,
+  type OptionQuote,
+  type OptionRow,
+  type OptionSide,
+  type OptionsChainLabels,
+  type OptionsChainProps,
+} from './options-chain/options-chain.tsx'
+export { atmStrike, isItm, sortedRows, wingFields } from './options-chain/options-model.ts'
+export {
+  OrderBook,
+  type BookLevel,
+  type BookRow,
+  type BookSide,
+  type OrderBookLabels,
+  type OrderBookMode,
+  type OrderBookProps,
+} from './order-book/order-book.tsx'
+export { DepthChart, type DepthChartLabels, type DepthChartProps } from './depth-chart/depth-chart.tsx'
+export {
+  TradeTape,
+  type Trade,
+  type TradeSide,
+  type TradeTapeLabels,
+  type TradeTapeProps,
+} from './trade-tape/trade-tape.tsx'
+// 参照 affectUI 补的数据处理件（KATANAview #1908）：排查树、链路瀑布、回落链、限额排程。
+export {
+  RootCauseTree,
+  type RootCauseAction,
+  type RootCauseTreeLabels,
+  type RootCauseTreeProps,
+} from './root-cause-tree/root-cause-tree.tsx'
+export {
+  flattenCauses,
+  isRootCause,
+  litPath,
+  moveCause,
+  type Cause,
+  type CauseEvidence,
+  type CauseFailure,
+  type CauseGate,
+  type CauseRow,
+  type CauseStatus,
+} from './root-cause-tree/root-cause-model.ts'
+export {
+  TraceWaterfall,
+  type TraceWaterfallLabels,
+  type TraceWaterfallProps,
+} from './trace-waterfall/trace-waterfall.tsx'
+export {
+  moveSpan,
+  slowestSpan,
+  spanEnd,
+  traceAxis,
+  traceExtent,
+  traceStatus,
+  visibleSpans,
+  type SpanMove,
+  type SpanRow,
+  type SpanStatus,
+  type TraceSpan,
+} from './trace-waterfall/trace-model.ts'
+export { FallbackChain, type FallbackChainLabels, type FallbackChainProps } from './fallback-chain/fallback-chain.tsx'
+export {
+  answeredLevel,
+  chainOutcome,
+  type FallbackAttempt,
+  type FallbackOutcome,
+  type FallbackStatus,
+} from './fallback-chain/fallback-model.ts'
+export {
+  RateLimitPlanner,
+  type RateLimitPlannerLabels,
+  type RateLimitPlannerProps,
+} from './rate-limit-planner/rate-limit-planner.tsx'
+export {
+  clampStart,
+  keyMove,
+  loadCurve,
+  peakOf,
+  planStatus,
+  spreadRuns,
+  type PlanStatus,
+  type PlannedRun,
+} from './rate-limit-planner/rate-limit-model.ts'

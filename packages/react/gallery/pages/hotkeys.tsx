@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 // 快捷键注册表、快捷键总览、命令面板「最近」（#77 G9）的演示。
 // 照 TradingView：Ctrl/Cmd+/ 开快捷键面板（按类分节、可搜索、几种按法写 or），Ctrl/Cmd+K 快速搜索带「最近」（主会话 2026-11-18 实看）。
+// 文档站目录（SideNav）的搜索也是 Mod+K，登记在默认注册表上（挂在 window）；演示的注册表挂在 document 上，按键先到这里，
+// 演示登记了 Mod+K 就由命令面板接走、目录搜索收不到（#87 第 2 条）。
 import { useState } from 'react'
 import {
   Button,
@@ -52,7 +54,7 @@ export const PALETTE_LABELS: CommandPaletteLabels = {
 
 /** 演示用的默认键位（动作 id → 组合串）。 */
 const DEFAULT_KEYS: Readonly<Record<string, string | readonly string[] | null>> = {
-  palette: 'Mod+Shift+P',
+  palette: 'Mod+K',
   sheet: 'Mod+/',
   'chart-reset': 'Alt+R',
   'chart-snapshot': 'Mod+Alt+S',
@@ -115,9 +117,14 @@ function useDemoKeys() {
   }
 }
 
-/** 每个演示一个自己的注册表：在文档站里切页时不跟别的页混。 */
+/**
+ * 每个演示一个自己的注册表：在文档站里切页时不跟别的页混。挂在 document 上：键先经过它再冒到 window 上的默认注册表，
+ * 演示占了的组合（Mod+K）就不会再被目录搜索接走。服务端渲染（设计系统包的预览）没有 document，不挂。
+ */
 function useOwnRegistry(): HotkeyRegistry {
-  const [registry] = useState(() => createHotkeyRegistry())
+  const [registry] = useState(() =>
+    createHotkeyRegistry({ target: typeof document === 'undefined' ? undefined : document }),
+  )
   return registry
 }
 
@@ -158,7 +165,7 @@ function Workbench({ registry }: { registry: HotkeyRegistry }) {
           快捷键总览 <Keys registry={registry} combo="Mod+/" />
         </Button>
         <Button size="sm" onClick={() => demo.setPaletteOpen(true)}>
-          命令面板 <Keys registry={registry} combo="Mod+Shift+P" />
+          命令面板 <Keys registry={registry} combo="Mod+K" />
         </Button>
       </Row>
       <p className="gal-note" data-testid="hotkey-log">
@@ -192,8 +199,8 @@ export function HotkeysDemo() {
     <HotkeysProvider registry={registry}>
       <p className="gal-note">
         演示：页上登记了通用、图表、自选表三组快捷键（Alt+A 故意登记两次，总览里标冲突）。按 Mod+/（Mac 是 ⌘/，别处
-        Ctrl+/）开总览，Mod+Shift+P 开命令面板（文档站目录的搜索占着 Mod+K（连带 Mod+Shift+K），演示让开；应用里照
-        TradingView 用 Mod+K）；Alt+R 触发「重置图表」。焦点在输入框里时普通快捷键不触发。
+        Ctrl+/）开总览（分节默认收起，搜索时命中的节自动展开），Mod+K 开命令面板（照
+        TradingView；这一页上它盖过文档站目录的搜索），Alt+R 触发「重置图表」。焦点在输入框里时普通快捷键不触发。
       </p>
       <Workbench registry={registry} />
       <Row name="输入框">
@@ -232,7 +239,7 @@ function SheetInline() {
   )
 }
 
-/** command-palette 页：按钮或 Mod+Shift+P 打开（文档站的搜索占着 Mod+K），选过的命令进「最近」（存在 localStorage）。 */
+/** command-palette 页：按钮或 Mod+K 打开（照 TradingView，这一页上盖过文档站目录的搜索），选过的命令进「最近」（存在 localStorage）。 */
 export function CommandPaletteDemo() {
   const registry = useOwnRegistry()
   return (
@@ -246,13 +253,13 @@ function PaletteOnly({ registry }: { registry: HotkeyRegistry }) {
   const [open, setOpen] = useState(false)
   const [log, setLog] = useState('')
   useHotkeys([
-    { id: 'palette', combo: 'Mod+Shift+P', label: '打开命令面板', allowInInput: true, handler: () => setOpen(true) },
+    { id: 'palette', combo: 'Mod+K', label: '打开命令面板', allowInInput: true, handler: () => setOpen(true) },
   ])
   return (
     <>
       <Row name="打开">
         <Button size="sm" onClick={() => setOpen(true)}>
-          命令面板 <Keys registry={registry} combo="Mod+Shift+P" />
+          命令面板 <Keys registry={registry} combo="Mod+K" />
         </Button>
       </Row>
       <p className="gal-note" data-testid="palette-log">

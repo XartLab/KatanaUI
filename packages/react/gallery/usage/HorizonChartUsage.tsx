@@ -14,6 +14,9 @@ export const HORIZON_DEMO_ROWS: readonly HorizonRow[] = [
 
 const pctText = (value: number) => `${value > 0 ? '+' : ''}${value.toFixed(2)}%`
 
+/** 图右上三件的文字（表格视图必须有，dataviz §4）。 */
+const ACTIONS = { group: '图工具', table: '表格视图', exportCsv: '导出 CSV', fullscreen: '全屏' }
+
 export function HorizonChartUsage() {
   return (
     <>
@@ -23,6 +26,9 @@ export function HorizonChartUsage() {
           label="示例：四个品种的日内收益（共用刻度）"
           formatValue={pctText}
           formatX={(i) => `第 ${i + 1} 点`}
+          actionLabels={ACTIONS}
+          tableLabel="四个品种的日内收益（表格视图）"
+          tableXHead="时点"
         />
       </div>
       <div className="gal-wide" data-gallery-horizon="row" style={{ maxWidth: 560 }}>
@@ -31,6 +37,9 @@ export function HorizonChartUsage() {
           label="示例：四个品种的日内收益（各自刻度）"
           formatValue={pctText}
           scale="row"
+          actionLabels={ACTIONS}
+          tableLabel="四个品种的日内收益（各自刻度，表格视图）"
+          tableXHead="序号"
         />
       </div>
     </>

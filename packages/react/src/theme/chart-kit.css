@@ -223,7 +223,8 @@
   text-align: left;
   white-space: normal;
 }
-.k-ck-table [data-num='true'] {
+/* 数字列连表头一起靠右（#92 前表头被上一条的 th:not(:first-child) 压成靠左）。 */
+.k-ck-table :is(th, td)[data-num='true'] {
   text-align: right;
   white-space: nowrap;
   font-variant-numeric: tabular-nums;
@@ -235,15 +236,18 @@
 }
 /* 表格视图打开时，图与读数用 hidden 收起：作者样式里的 display 会盖过 hidden，这里压回去。 */
 .k-ridge [hidden],
+.k-hz [hidden],
+.k-sm [hidden],
+.k-brush [hidden],
 .k-scatter [hidden],
 .k-slope [hidden],
 .k-uptime [hidden],
 .k-galaxy [hidden] {
   display: none !important;
 }
-/* 虚拟滚动：行高固定，单元格不换行（行高要等于 chart-table.tsx 的 ROW_H）。 */
+/* 虚拟滚动：行高固定，单元格不换行（行高要等于 chart-table.tsx 的 ROW_H，comfortable 的 40）。 */
 .k-ck-table[data-virtual='true'] tbody tr {
-  height: 28px;
+  height: 40px;
 }
 .k-ck-table[data-virtual='true'] th,
 .k-ck-table[data-virtual='true'] td {
