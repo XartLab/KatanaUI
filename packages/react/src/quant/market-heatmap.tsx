@@ -53,6 +53,7 @@ export function MarketHeatmap({
   dataset,
   onDatasetChange,
   onOpenInScreener,
+  onCopyImage,
   className,
 }: MarketHeatmapProps) {
   // 旧名 code 映射到 symbol（@deprecated，留一个版本）。
@@ -232,6 +233,13 @@ export function MarketHeatmap({
           if (document.fullscreenElement === root) void document.exitFullscreen()
           else void root.requestFullscreen?.()
         }}
+        onCopyImage={
+          onCopyImage
+            ? () => {
+                if (figure.current) onCopyImage(figure.current)
+              }
+            : undefined
+        }
         showLogo={showLogo}
         setShowLogo={setShowLogo}
         titleMode={titleMode}

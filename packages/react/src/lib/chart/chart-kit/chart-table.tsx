@@ -18,6 +18,8 @@ export type ChartViewProps = {
   source?: ReactNode
   onExport?: () => void
   onFullscreen?: () => void
+  /** Copy-image handler (camera button; also give actionLabels.copyImage); receives this chart's figure for copyImage. */
+  onCopyImage?: (chart: HTMLElement) => void
 }
 
 /** 行高（px）：.k-ck-table 在虚拟滚动时把行固定成这个高（单元格 4px 上下内边距加一行 16px 的字，再加 1px 底线，取整到 28 留余量）。 */

@@ -51,7 +51,7 @@ const blocks: GuidanceMap = {
     avoid: [
       '文字输入框自己的撤销交给浏览器：焦点在输入框、文本域、contenteditable 里时钩子不接 Mod+Z。',
       '历史不进存档；要记住当前布局用 usePersistedState 存当前值。',
-      '用了 useHotkeys 注册表的面板，关掉这里的 hotkeys，改由注册表调 undo / redo，免得一次按键撤两步。',
+      '用了 useHotkeys 注册表的面板，关掉这里的 hotkeys，改用 useUndoHotkeys 把同一套组合登记进注册表（#87），免得一次按键撤两步；enabled 接面板的焦点，面板没焦点时 Mod+Z 留给别处。',
     ],
     a11y: [
       '撤销、重做钮没得撤时 disabled；改动后的结果要在界面上看得见（列宽、列序真的变回去），不另发读屏通知。',
@@ -69,7 +69,11 @@ const blocks: GuidanceMap = {
       '挪行（#77 G7，照 TradingView 自选表拖放排序）：给 rowOrder / onRowOrderChange（一般摊 useRowOrder(...).gridProps）；整行可拖，按下挪过 4px 才算拖，行里的按钮上按下不起拖；拖的时候别的行不动，落点画一道 2px 主文字色的线，被拖的行留原处淡到 45%，靠近上下边自动滚；拖回原处不算。做法照 modern-web-guidance drag-and-drop，跟它不同的是没有把手（照 TradingView）。',
       '键盘挪行：Alt+↑ / Alt+↓ 把选中的行（没选就是键盘所在行）挪一格；右键菜单另有上移、下移、移到顶、移到底。TradingView 快捷键表里没有挪行的键（2026-11-18 看过），Alt+↑↓ 沿用应用自选表的写法。',
       '按列排序时不能挪行：拖不起来，Alt+↑↓ 读出 labels.rowOrder.sorted，菜单四项灰掉并写原因。',
-      '分节标题行：rowSection(row) 返回标题就是标题行，跨满整行、次级色大写小字、上面一道分隔线；拖标题整节走，落点吸到节边界不拆别的节；把行拖到标题下面就进了那一节。折叠、个数、组内汇总还没做（待定，G7 的 GridSectionRow 建议）。',
+      '分节标题行：rowSection(row) 返回标题就是标题行，跨满整行、次级色大写小字、上面一道分隔线；拖标题整节走，落点吸到节边界不拆别的节；把行拖到标题下面就进了那一节。',
+      '分节收起（#87，照 TradingView 自选表的分节三角）：标题左端 16px 的三角，朝右是收起、展开转 90°（160ms，--ease-snappy）；收起的节只留标题行，标题上照写行数，所以藏了几行看得见。收起的节整节挪动时藏着的行跟着标题走；把行挪进收起的节，接在这一节已有的行后面。要记住收起状态，把 collapsedSections 接 usePersistedState。',
+      '标题行的行数是三级色等宽数字；sectionSummary(rows, section) 给组内汇总（如本节平均涨跌，用 ChangeText），靠右放，拿到的是这一节的全部行（收起的也算）。TradingView 的标题行上没有个数与汇总（待核对），这是 #22 G7 的建议。',
+      '按列排序时标题行不参与排序：标题留在手动次序里的位置，各节里的行（与第一个标题之前没分节的行）在节内按列排；presorted 的表由调用方自己排。',
+      '宿主的行快捷键（Alt+Enter 插旗这类）作用在 onCursorChange 给的键盘所在行上，用 useHotkeys 登记，enabled 接表的 focus-within。',
       '触屏不起拖（整行拖会抢走滚动）：触屏用右键菜单的上移下移。',
       '实时刷新：live 为 true 时数值类列（price、quantity、pnl、change、number）值变了闪涨跌色，文本列不闪；排序顺序变了已渲染的行平滑换位，新增的行蓝线高亮 1.2 秒；默认 false，静态表不闪。',
     ],
@@ -83,6 +87,7 @@ const blocks: GuidanceMap = {
       '排序列带 aria-sort；列宽拖柄是带名字的 separator。',
       '读屏名取自 label。',
       '挪完一个隐藏的 role=status 读「挪到第 n 位，共 m 行」（labels.rowOrder.moved），拖到一半 Esc 读「已取消」；只在位置真变了才读。',
+      '分节标题行带 aria-expanded；键盘落在标题行上 → 展开、← 收起、Enter 切换（跟子行同一套 treegrid 键位）。三角钮不进 Tab 次序（表只占一个停靠点），读屏名是 labels.sections 的 collapse / expand（默认英文）。',
     ],
   },
   'empty-state': {

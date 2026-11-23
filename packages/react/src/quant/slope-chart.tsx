@@ -50,6 +50,7 @@ export function SlopeChart({
   tableHead,
   onExport,
   onFullscreen,
+  onCopyImage,
   source,
 }: SlopeChartProps) {
   const [tableView, setTableView] = useState(false)
@@ -119,6 +120,7 @@ export function SlopeChart({
           onTableView={setTableView}
           onExport={onExport}
           onFullscreen={onFullscreen}
+          onCopyImage={onCopyImage}
         />
       </div>
       {tableView && (

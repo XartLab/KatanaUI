@@ -537,3 +537,46 @@
   text-transform: uppercase;
   white-space: nowrap;
 }
+/* 分节的收起钮、行数与组内汇总（#87）：三角朝右是收起，展开时转 90°；行数用三级字色、不大写；汇总靠右、跟数据同一套数字字体。 */
+.k-grid-section-toggle {
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  margin-left: -4px;
+  padding: 0;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+.k-grid-section-toggle:hover {
+  background: var(--k-actionable-background-hover);
+  color: var(--k-content-primary-foreground);
+}
+.k-grid-section-toggle svg {
+  transition: rotate 160ms var(--ease-snappy);
+}
+.k-grid-section-toggle[aria-expanded='true'] svg {
+  rotate: 90deg;
+}
+.k-grid-section-heading {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.k-grid-section-count {
+  flex: none;
+  color: var(--k-content-tertiary-foreground);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+}
+.k-grid-section-summary {
+  flex: none;
+  margin-left: auto;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+  text-transform: none;
+}

@@ -63,6 +63,11 @@
 | `rowOrder` | `readonly string[]` | — | Manual row order (controlled): row ids in display order; ids not in it go last. |
 | `onRowOrderChange` | `(next: string[]) => void` | — | Called with the whole new order after a drag, Alt+Up / Alt+Down or a move item in the row menu. |
 | `rowSection` | `(row: Row) => ReactNode` | — | Section header rows (watchlist sections): return the heading for a row that is a section header, null / undefined for a normal row. |
+| `collapsedSections` | `ReadonlySet<string>` | — | Collapsed section ids (controlled); a collapsed section shows only its header row. |
+| `defaultCollapsedSections` | `readonly string[]` | — | Uncontrolled: section ids collapsed at first. |
+| `onSectionCollapsedChange` | `(id: string, collapsed: boolean) => void` | — | Called when a section is collapsed or expanded (the triangle, or ArrowLeft / ArrowRight / Enter on its header row). |
+| `sectionSummary` | `(rows: readonly Row[], section: Row) => ReactNode` | — | Summary at the right end of a section header (e.g. |
+| `onCursorChange` | `(id: string \| null) => void` | — | Called when the keyboard cursor moves to another row (click, arrow keys) or leaves the rows; lets host hotkeys act on the current row (Alt+Enter flags it). |
 | `classNames` | `Partial<Record<GridSlot, string>>` | `{}` | Extra class names per part. |
 
 ### 列类型 ColumnType
@@ -168,6 +173,7 @@ export function DataGridUsage() {
 - 键盘所在行：焦点环；排序列：表头带升降箭头。
 - 只读（interactive=false）：table 语义，表头不是按钮。
 - 子行：有子行的行带 aria-expanded（true 摊开、false 收起）；没有子行的行没有这个属性，按 → 没反应。
+- 分节（rowSection）：标题行跨满整行，左端三角收起 / 展开（collapsedSections 受控或 defaultCollapsedSections 不受控），写这一节的行数，sectionSummary 给组内汇总（靠右）；收起的节只留标题行，挪它时藏着的行跟着走。按列排序时标题行不参与排序，各节里的行在节内排（照 TradingView 自选表）。
 - custom 列没有 text 时复制与导出是空字；有按钮的格子别指望整行点击。
 - 列优先级（standard 与 hero 分量，有表头）：可见列放不下容器时按 GridColumn.priority 从低到高收起（没写的按声明顺序，第一列 1、第二列 2……），至少留两列，固定在左边的列不收；表头右端出「+N 列」胶囊（文案 texts.moreColumns，默认英文 +N cols），点了切成横向滚动、显示全部列，胶囊变 texts.collapseColumns，再点收起。出胶囊时表头与数据行在右端让出它的宽度，不盖住最后一列（stretch 的表，保留的列撑满的是容器宽减胶囊宽）。状态只在组件里，不存；容器变宽放得下了胶囊就消失。只影响显示：复制与导出仍是全部可见列。compact 分量与不画表头的表不走这一套；collapseColumns={false} 关掉，一直横向滚动。
 
@@ -195,7 +201,8 @@ DataGrid
 
 - `↑ / ↓`：移一行；Home / End 到头尾
 - `Enter`：打开键盘所在的行（onOpen）
-- `→ / ←`：展开 / 收起键盘所在行的子行（renderSubRow）
+- `→ / ←`：展开 / 收起键盘所在行的子行（renderSubRow）；在分节标题行上展开 / 收起这一节
+- `Enter（分节标题行）`：收起 / 展开这一节
 - `Shift / Ctrl 点击`：选一段 / 点选加减
 - `Esc`：清掉选择（右键菜单开着时归菜单）
 - `列头右键`：列头菜单：排序、固定、隐藏、左右移、重置列

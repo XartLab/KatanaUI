@@ -296,6 +296,7 @@ export {
   type HotkeyPlatform,
 } from './patterns/hotkeys-model.ts'
 export { ShortcutSheet, type ShortcutSheetLabels, type ShortcutSheetProps } from './patterns/shortcut-sheet.tsx'
+export { undoHotkeyBindings, useUndoHotkeys, type UndoHotkeysOptions } from './patterns/use-undo-hotkeys.ts'
 export {
   CommandPalette,
   pushRecent,

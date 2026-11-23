@@ -6,7 +6,8 @@ import { useCallback, useEffect, useMemo, useState, type RefObject } from 'react
 // 上限：过去的步数超过 limit 就丢最旧的。新 push 会清掉重做的那一截。
 // 快捷键（可选）：Mod+Z 撤销、Mod+Shift+Z 与 Ctrl+Y 重做（Mod 在 Mac 上是 ⌘、别处是 Ctrl；TradingView 同样是 Ctrl+Z / Ctrl+Y）。
 //   焦点在输入框、文本域、contenteditable 里时不接，让浏览器自己的文字撤销生效。
-//   库里录键的 patterns/shortcut-model 在右边的层，lib 引不到，这里只认这三个组合，自己判；等 useHotkeys 注册表（#77 第 3 条）合进来，宿主可以关掉这里的绑定、改由注册表调 undo / redo。
+//   库里录键的 patterns/shortcut-model 在右边的层，lib 引不到，这里只认这三个组合，自己判。用了 useHotkeys 注册表的面板不开这里的绑定，
+//   改用 patterns/use-undo-hotkeys 的 useUndoHotkeys 把同一套组合登记进注册表（#87）。
 
 /** 一步：值、产生它的操作种类、时刻；sealed 是撤销 / 重做回来的，不再跟下一次 push 合并。 */
 export type UndoEntry<T> = { value: T; kind?: string; at: number; sealed?: boolean }

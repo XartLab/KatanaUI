@@ -128,4 +128,20 @@ describe('MarketHeatmap 渲染结构', () => {
     )
     expect(legacy).toContain('data-code="OLD"')
   })
+  it('复制图（#87）：给了 onCopyImage 与 labels.copyImage 才出相机钮，它与全屏钮不进截图', () => {
+    const render = (extra: object) =>
+      renderToStaticMarkup(
+        <MarketHeatmap
+          items={items}
+          sizeBy={[{ key: 'cap', label: '市值' }]}
+          colorBy={[{ key: 'day', label: '涨跌' }]}
+          labels={{ ...labels, fullscreen: '全屏', copyImage: '复制图片' }}
+          {...extra}
+        />,
+      )
+    expect(render({})).not.toContain('data-slot="heatmap-copy-image"')
+    const html = render({ onCopyImage: () => {} })
+    expect(html).toMatch(/data-slot="heatmap-copy-image" data-copy-image="skip"/)
+    expect(html).toMatch(/data-copy-image="skip"[^>]*data-slot="heatmap-fullscreen"/)
+  })
 })

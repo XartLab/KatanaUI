@@ -86,6 +86,8 @@ export type MarketHeatmapLabels = {
   display?: HeatmapDisplayLabels
   /** 全屏按钮的读屏名与提示（容器 requestFullscreen，TradingView 热图有全屏）；不传就没有这个按钮。 */
   fullscreen?: string
+  /** 复制图按钮的读屏名与提示（相机钮，#87；照 TradingView 热图的相机按钮「复制图」）；连同 onCopyImage 都给了才有这个按钮。 */
+  copyImage?: string
   /** 数据集下拉的读屏名（传了 datasets 才用）。 */
   dataset?: string
   /** 「在选股器打开」按钮的字（传了 onOpenInScreener 才用）。 */
@@ -131,5 +133,10 @@ export type MarketHeatmapProps = {
   onDatasetChange?: (key: string) => void
   /** 工具条最右的「在选股器打开」按钮；调用方决定怎么打开。 */
   onOpenInScreener?: () => void
+  /**
+   * Copy-image handler (camera button in the toolbar; also give labels.copyImage); receives the heatmap's figure for copyImage.
+   * 复制图（#87）：参数是热力图的 figure，交给 copyImage；工具条的相机与全屏两颗钮不进截图。
+   */
+  onCopyImage?: (chart: HTMLElement) => void
   className?: string
 }

@@ -307,6 +307,27 @@ export type DataGridProps<Row extends object> = {
    * 标题跨满整行；拖标题带着整节走，把行拖到它下面就进了这一节。
    */
   rowSection?: (row: Row) => ReactNode
+  /**
+   * Collapsed section ids (controlled); a collapsed section shows only its header row. With it, toggling only notifies through onSectionCollapsedChange.
+   * While a column sort is on, section headers stay in place and the rows are sorted inside each section.
+   * 收起的分节（受控，#87）：收起的节只留标题行；给了它，收起展开只经 onSectionCollapsedChange 通知调用方，表自己不记。
+   * 按列排序时分节标题不参与排序，各节里的行在节内排（照 TradingView 自选表）。
+   */
+  collapsedSections?: ReadonlySet<string>
+  /** Uncontrolled: section ids collapsed at first. 不受控时一开始就收起的节。 */
+  defaultCollapsedSections?: readonly string[]
+  /** Called when a section is collapsed or expanded (the triangle, or ArrowLeft / ArrowRight / Enter on its header row). */
+  onSectionCollapsedChange?: (id: string, collapsed: boolean) => void
+  /**
+   * Summary at the right end of a section header (e.g. the average change of its rows); receives all the rows of the section, collapsed or not.
+   * 分节标题右端的组内汇总（如这一节的平均涨跌）：参数是这一节的全部行（收没收起都给全）。
+   */
+  sectionSummary?: (rows: readonly Row[], section: Row) => ReactNode
+  /**
+   * Called when the keyboard cursor moves to another row (click, arrow keys) or leaves the rows; lets host hotkeys act on the current row (Alt+Enter flags it).
+   * 键盘所在的行变了（点行、方向键）或没了；宿主的快捷键（Alt+Enter 插旗）作用在它上面。
+   */
+  onCursorChange?: (id: string | null) => void
   /** Extra class names per part. */
   classNames?: Partial<Record<GridSlot, string>>
 }
