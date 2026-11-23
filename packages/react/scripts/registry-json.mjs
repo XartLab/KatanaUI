@@ -292,6 +292,12 @@ function collectItems() {
       'reason-group-list',
       'board-strength-rank',
       'net-buy-bar',
+      // #104 账户四件：各一个子目录（组件与它的纯函数一起装）。
+      'positions-table',
+      'orders-table',
+      'account-equity',
+      'funding-rate',
+      'options-chain',
       // #104 盘口三件：订单簿、深度图、成交明细，各一个子目录（组件与它的纯函数一起装；深度图用订单簿的档位合并）。
       'order-book',
       'depth-chart',

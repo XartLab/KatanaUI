@@ -10060,6 +10060,161 @@ export const PAGES: readonly DocPage[] = [
       'EmphasisProvider（hero，一个区一处）\nEmphasisProvider（standard，默认）\nEmphasisProvider（compact，边栏里的一行）',
     keys: [],
   },
+  {
+    id: 'positions-table',
+    group: 'blocks',
+    cardHeight: 380,
+    title: 'PositionsTable 持仓表',
+    summary:
+      '账户四件之一（#104，#103 持仓监控的表）：一行一个持仓，列出品种、方向（多 / 空，文字）、数量、开仓均价、标记价、强平价、强平距离（% 加进度条）、未实现盈亏（金额与 %）、保证金与杠杆；行内「平仓」「止盈止损」只发回调；表尾合计。强平距离近于调用方给的阈值（liquidationWarnPct）时整格换警示色并带图标，再近一半是危险档。同页的 PositionsOrdersTabs 把持仓表与委托表摆进同一个页签外壳。件不认识交易所，不下单。',
+    exports: [
+      'PositionsTable',
+      'PositionsOrdersTabs',
+      'liquidationDistance',
+      'liquidationFill',
+      'liquidationRisk',
+      'positionTotals',
+      'unrealizedPercent',
+    ],
+    propParts: [
+      { part: 'PositionsTable', note: '持仓 Position 见类型；强平价与盈亏由调用方给，件只算强平距离、风险档与合计。' },
+      { part: 'PositionsOrdersTabs', note: 'positions 与 orders 两组属性原样传给两张表。' },
+      {
+        part: 'liquidationDistance',
+        note: '纯函数：多头 (标记价 − 强平价) / 标记价，空头反过来，百分数；无强平价为 null。',
+      },
+      { part: 'liquidationFill', note: '纯函数：距离在进度条上的填充，0 到 1。' },
+      { part: 'liquidationRisk', note: '纯函数：≤ danger 危险、≤ warn 警告、其余安全。' },
+      { part: 'positionTotals', note: '纯函数：表尾合计。' },
+      { part: 'unrealizedPercent', note: '纯函数：盈亏占保证金的百分比。' },
+    ],
+    states: [
+      '强平距离：安全是灰色进度条；≤ 警示阈值是警告色加三角图标；≤ 阈值一半是危险色加粗；已越过强平价也是危险。无强平价写「—」。',
+      '盈亏：金额带正负号，百分比跟在后面；颜色跟 data-updown。',
+      '没传 onClose / onSetTpsl 时对应按钮不画；空表写 labels.empty。',
+    ],
+    donts: [
+      '不要在件里下单：平仓全部还是部分、要不要确认，都在调用方回调里做。',
+      '不要让件算强平价：各家维持保证金规则不同，由调用方给。',
+      '不要只靠颜色表示风险：图标有读屏名，距离是文字。',
+    ],
+    composition: 'PositionsOrdersTabs\n  Tabs\n  PositionsTable\n    DataGrid\n    表尾合计\n  OrdersTable',
+    keys: [
+      ['Tab', '在行内按钮之间移动'],
+      ['Enter / Space', '触发当前按钮'],
+    ],
+  },
+  {
+    id: 'orders-table',
+    group: 'blocks',
+    cardHeight: 320,
+    title: 'OrdersTable 委托表',
+    summary:
+      '账户四件之一（#104）：一行一张在途委托：品种、方向（买 / 卖，文字）、类型（限价 / 市价 / 条件）、价格、数量、已成交（数量加进度条）、状态、时间；行内「撤单」；价格旁铅笔进入行内改价：回车提交 onAmend(order, price)，Esc 或失焦取消；表上方「全部撤单」发 onCancelAll(还能撤的单)。市价单与撤单中的单不能改价。件不下单，只发回调。',
+    exports: ['OrdersTable', 'amendDecision', 'canAmend', 'canCancel', 'cancellable', 'fillRatio', 'parseAmendPrice'],
+    propParts: [
+      { part: 'OrdersTable', note: '委托 Order 见类型；status 是调用方归好的四档。' },
+      { part: 'amendDecision', note: '纯函数：回车时提交、只关框还是留在框里。' },
+      { part: 'canAmend', note: '纯函数：能否改价。' },
+      { part: 'canCancel', note: '纯函数：能否撤单。' },
+      { part: 'cancellable', note: '纯函数：「全部撤单」的范围。' },
+      { part: 'fillRatio', note: '纯函数：已成交占比，0 到 1。' },
+      { part: 'parseAmendPrice', note: '纯函数：改价框文字转正的有限数。' },
+    ],
+    states: [
+      '改价：点铅笔，价格格换成输入框并全选；Enter 提交（价格没变只关框），Esc 或失焦取消，非法输入标红。',
+      '撤单中：状态标签变警告色，撤单按钮置灰，没有铅笔。',
+      '没传 onCancel / onAmend / onCancelAll 时对应控件不画；空表写 labels.empty。',
+    ],
+    donts: ['不要在件里等交易所回报：发出回调后由调用方改状态。', '不要做成点一下就提交的改价：回车才提交。'],
+    composition:
+      'OrdersTable\n  统计与「全部撤单」\n  DataGrid\n    行：品种 | 买卖 | 类型 | 价格 | 数量 | 已成交 | 状态 | 时间 | 撤单',
+    keys: [
+      ['Enter', '改价框里：提交新价'],
+      ['Esc', '改价框里：取消'],
+      ['Tab', '在行内按钮之间移动'],
+    ],
+  },
+  {
+    id: 'account-equity',
+    group: 'blocks',
+    cardHeight: 420,
+    title: 'AccountEquity 账户权益概览',
+    summary:
+      '账户四件之一（#104）：总权益、可用、已用保证金、未实现盈亏四个读数，下面是保证金率风险条：安全、警告、危险三段按调用方给的阈值切开（direction 默认越高越危险，维持保证金率那种越低越危险写 lower），指针标当前位置，档位同时写成文字；保证金率不传就按已用保证金 / 总权益算。可选 curve 画迷你权益曲线。',
+    exports: ['AccountEquity', 'marginLevel', 'marginRatioOf', 'riskBands', 'riskPosition'],
+    propParts: [
+      { part: 'AccountEquity', note: '读数都是调用方算好的数；阈值与方向见 MarginThresholds。' },
+      { part: 'marginLevel', note: '纯函数：保证金率落在哪一档，阈值上的值算更危险的一档。' },
+      { part: 'marginRatioOf', note: '纯函数：已用保证金 / 权益，百分数。' },
+      { part: 'riskBands', note: '纯函数：风险条的三段。' },
+      { part: 'riskPosition', note: '纯函数：指针位置，0 到 1。' },
+    ],
+    states: [
+      '安全 / 警告 / 危险：指针落在对应段，数字与档位标签同色。',
+      '越界：超出刻度时指针贴端点；权益不是正数时写「—」，不画指针。',
+      '没传 curve 或点数不足两个，不画曲线。',
+    ],
+    donts: ['不要在件里定阈值：各家口径不同，warn 与 danger 由调用方传。', '不要把档位只画成颜色：档位标签是文字。'],
+    composition: 'AccountEquity\n  Lcd × 4\n  风险条（三段 + 指针 + 档位）\n  曲线（可选）',
+    keys: [],
+  },
+  {
+    id: 'funding-rate',
+    group: 'blocks',
+    cardHeight: 360,
+    title: 'FundingRate 资金费率',
+    summary:
+      '账户四件之一（#104）：当前费率（带符号、正负着色，旁边写谁付谁）、预测费率、下次结算倒计时（HH:MM:SS，到点写 labels.due）、历史费率小柱状图（零线居中，按历史最大绝对值归一，悬停出时间与费率）。结算时间由调用方传，件里只算倒计时；now 可注入，不传就每秒读一次系统时钟。费率是百分数。',
+    exports: ['FundingRate', 'countdownTo', 'formatCountdown', 'formatRate', 'fundingBars', 'rateTone'],
+    propParts: [
+      { part: 'FundingRate', note: '费率与历史点都是百分数；nextSettlement 与 now 是毫秒时间戳。' },
+      { part: 'countdownTo', note: '纯函数：到结算还剩多少，过点给 0。' },
+      { part: 'formatCountdown', note: '纯函数：写成 HH:MM:SS。' },
+      { part: 'formatRate', note: '纯函数：费率写成带符号的百分数。' },
+      { part: 'fundingBars', note: '纯函数：历史柱归一高度。' },
+      { part: 'rateTone', note: '纯函数：费率方向。' },
+    ],
+    states: [
+      '正费率涨色、负费率跌色、零不着色；旁边的文字写谁付谁。',
+      '倒计时每秒走一格；传了 now 就不走；到点后写 00:00:00 与 labels.due。',
+      '没有预测费率写「—」；没有历史不画小柱图。',
+    ],
+    donts: [
+      '不要在件里读交易所结算时间表：由调用方算好传。',
+      '不要拿历史柱高度当绝对值比较：它按这段历史归一，悬停才是真值。',
+    ],
+    composition: 'FundingRate\n  Lcd × 3\n  历史小柱状图',
+    keys: [],
+  },
+  {
+    id: 'options-chain',
+    group: 'blocks',
+    cardHeight: 520,
+    title: 'OptionsChain 期权 T 型报价',
+    summary:
+      '账户四件之一（#104）：行权价居中，左认购右认沽；每翼的列可配（买价、卖价、最新、IV、Delta、持仓量），认购翼镜像排，第一个字段两翼都贴着行权价；离标的价最近的行权价是平值行，整行加亮并标「平值」，认购在平值之下、认沽在平值之上是实值区，铺淡底；上方是到期日切换（选项由调用方传，rows 由调用方换）；点任一格回调 onQuoteSelect(strike, side, field)。认购认沽靠位置区分，不用涨跌色。',
+    exports: ['OptionsChain', 'atmStrike', 'isItm', 'sortedRows', 'wingFields'],
+    propParts: [
+      { part: 'OptionsChain', note: '行 OptionRow 与每侧 OptionQuote 见类型；iv 是百分数。' },
+      { part: 'atmStrike', note: '纯函数：离标的价最近的行权价，一样近取低的。' },
+      { part: 'isItm', note: '纯函数：实值判定。' },
+      { part: 'sortedRows', note: '纯函数：按行权价从低到高排，不改输入。' },
+      { part: 'wingFields', note: '纯函数：一翼的列次序，认购翼镜像。' },
+    ],
+    states: [
+      '平值行：整行加亮并写「平值」；标的价变了平值跟着换。',
+      '实值区：认购在平值之下、认沽在平值之上的格子铺淡底。',
+      '没有值的格子写「—」，点了不发回调。',
+      '没有行时写 labels.empty。',
+    ],
+    donts: ['不要在件里定价：IV、Delta、买卖价都由调用方给。', '不要用涨跌色区分认购认沽：靠左右位置与表头。'],
+    composition: 'OptionsChain\n  到期日切换 + 标的价\n  grid\n    表头\n    行 × n：认购格 | 行权价 | 认沽格',
+    keys: [
+      ['↑ ↓ ← →', '在格子间移动'],
+      ['Enter / Space', '选中当前格'],
+    ],
+  },
 ]
 
 export const pageById = (id: string): DocPage | undefined => PAGES.find((page) => page.id === id)
