@@ -9217,6 +9217,92 @@ export const PAGES: readonly DocPage[] = [
     ],
   },
   {
+    id: 'agent-run-detail',
+    group: 'ai',
+    cardHeight: 700,
+    title: 'AgentRunDetail Agent 单次运行详情',
+    summary:
+      '一次 Agent 运行的详情页或抽屉：头（返回钮、运行名、右上一颗随状态变的动作钮）→ 大号百分比加分段刻度进度条加一行时间 → 阻塞时的问题卡 → 完成时的「接着跑」→ 可收起的「详情」键值对与「步骤」。状态五种：在跑、阻塞、完成、暂停、失败。时间（已用、约剩、阻塞多久、总用时、预估）都是毫秒、由调用方给，件不读钟；包里不带语言。交互与信息结构借自 Jamie Merrill 的 Agent workflow（in progress / blocked / complete）与 Agent drawer（x.com/jamiemerrill，2026-11-24 看截图）：只借信息结构与交互，样子是我们的 Graphite 风格，没有他的蓝橙绿原色，没抄任何素材。列表侧见 AgentRunList。演示数据是示例。',
+    exports: [
+      'AgentRunDetail',
+      'clampRunProgress',
+      'currentRunStep',
+      'runHeaderAction',
+      'runPercent',
+      'runSegments',
+      'runStepTone',
+      'runTimeLine',
+      'runTone',
+    ],
+    propParts: [
+      {
+        part: 'AgentRunDetail',
+        note: '状态、进度、各段时间、问题卡、建议动作、详情、步骤都由调用方给；返回、动作钮、确认、建议动作都是给了回调才出现或才起作用；折叠的分组用 defaultCollapsed。',
+      },
+      { part: 'runTone', note: '纯函数：状态的语气（在跑 accent、阻塞 warn、完成 ok、暂停 neutral、失败 danger）。' },
+      { part: 'runStepTone', note: '纯函数：步骤状态的语气（等待是 off）。' },
+      { part: 'runHeaderAction', note: '纯函数：右上动作钮是哪一个。' },
+      { part: 'runSegments', note: '纯函数：几根刻度亮、当前刻度是哪根。' },
+      { part: 'runTimeLine', note: '纯函数：这个状态的时间行写什么。' },
+      { part: 'runPercent', note: '纯函数：进度写成整数百分数。' },
+      { part: 'clampRunProgress', note: '纯函数：进度夹在 0 到 1，坏值当 0。' },
+      { part: 'currentRunStep', note: '纯函数：第一个在跑或阻塞的步骤。' },
+    ],
+    states: [
+      '进度条：约 40 根竖短刻度（ticks 可调），亮的是走过的整根（向下取整）、着状态色，暗的是同色 16%；刻度全部对读屏隐藏，条本身是 progressbar。',
+      '在跑：强调色刻度，第一根暗刻度是「当前刻度」，亮正文主色加一圈同色外框；时间行左写已用、右写约剩；右上「暂停」。',
+      '阻塞：warn 色刻度、没有当前刻度；时间行只写阻塞了多久；进度条下出一张 warn 语气的问题卡（标题、一句说明、一颗「确认」），阻塞的那步名字 warn 色；右上「取消」。',
+      '完成：100%、刻度全亮 ok 色，写总用时；出「接着跑」，每个建议是一颗钮分两段（图标加名字 | 预估时长）；右上「再跑一次」。',
+      '暂停：中性灰刻度、不画当前刻度；右上「继续」。失败：danger 色刻度；右上「再跑一次」。',
+      '状态永不单靠颜色：百分比右边一盏灯加状态词（role=status）；步骤图标形状各不同（勾、转圈、空圈、警示、叉），右边写耗时或状态字。',
+      '分组标题（接着跑、详情、步骤）是按钮，箭头朝上是展开、朝下是收起；收起的内容用 hidden="until-found"，浏览器内查找命中会自动展开。',
+      '没有给 onBack、onAction、onConfirm 的钮就不画；没有 details、steps、next 的分组就不画。',
+    ],
+    donts: [
+      '不要拿它看很多个运行的总览：用 AgentRunList（一行一个）、AgentFleet、AgentQueue。',
+      '不要拿它看一次编排的子 Agent 树：用 AgentTree。',
+      '不要让件自己走钟：已用时、约剩、阻塞多久都由调用方按自己的节奏给。',
+      '不要把状态色换成别的：在跑强调色、阻塞 warn、完成 ok、失败 danger 是全库统一的语气。',
+    ],
+    composition:
+      'AgentRunDetail（article）\n  头（Button 返回 · 运行名 h3 · Button 动作）\n  进度（百分比 · 状态灯与词 · progressbar（40 根 i，aria-hidden）· 时间行）\n  问题卡（阻塞时：标题 h4 · 说明 · Button 确认）\n  接着跑（完成时：标题按钮 · ul · 每个建议一个 button）\n  详情（标题按钮 · dl）\n  步骤（标题按钮 · ol（图标 · 名字 · 耗时或状态字））',
+    keys: [
+      ['Tab', '依次到返回、动作钮、确认钮、各分组标题、建议动作'],
+      ['Enter / Space', '按下聚焦的钮；在分组标题上是收起或展开'],
+    ],
+  },
+  {
+    id: 'agent-run-list',
+    group: 'ai',
+    cardHeight: 520,
+    title: 'AgentRunList Agent 运行列表',
+    summary:
+      'AgentRunDetail 的列表侧：分组的运行清单，一行一个运行：左上名字、左下副标题、右上状态字（灯加词，着状态色）、右下相对时间、行尾箭头；点一行回调 id，选中的行 aria-current。相对时间的文字（「6 分钟前开始」「昨天」）由调用方写好传进来，件不读钟。现有的 RunningNow 是标题栏胶囊加弹层、AgentFleet 是带状态环与子树的主卡，都不是平列表，所以补这一件。信息结构借自 Jamie Merrill 的 Agent tracker（x.com/jamiemerrill，2026-11-24 看截图）。演示数据是示例。',
+    exports: ['AgentRunList'],
+    propParts: [
+      {
+        part: 'AgentRunList',
+        note: '分组与行都由调用方给；title 与 actions（如「新建」钮）可选；selectedId 受调用方管，onOpen 收到点的那一行的 id。',
+      },
+    ],
+    states: [
+      '行：名字与副标题在左，状态字与相对时间在右，行尾一个箭头；名字与副标题过长截断成省略号。',
+      '状态字着状态色（在跑强调色、阻塞 warn、完成 ok、失败 danger、暂停中性），前面一盏灯，不单靠颜色。',
+      '悬停：行底变浅；选中（selectedId）：选中底色加 aria-current；键盘焦点：焦点环。',
+    ],
+    donts: [
+      '不要拿它看一个运行的步骤与进度：用 AgentRunDetail。',
+      '不要拿它放标题栏里的小胶囊：用 RunningNow。',
+      '不要让件自己算相对时间：由调用方写好文字。',
+    ],
+    composition:
+      'AgentRunList（section）\n  头（标题 h3 · 动作槽）\n  分组 × N（group · 小标题 h4 · ul）\n    li > button 行（名字 · 状态灯与词 · 副标题 · 相对时间 · 箭头）',
+    keys: [
+      ['Tab', '一行一个停点'],
+      ['Enter / Space', '打开这一行的运行'],
+    ],
+  },
+  {
     id: 'avatar',
     group: 'readouts',
     cardHeight: 120,

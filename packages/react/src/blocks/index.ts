@@ -599,3 +599,36 @@ export {
   type CrewStatus,
   type CrewSteer,
 } from './agent-crew/crew-model.ts'
+// Agent 单次运行详情与运行列表（KatanaUI #196）：借 Jamie Merrill 的 Agent workflow / tracker 的信息结构与交互。
+export {
+  AgentRunDetail,
+  type AgentRunDetailLabels,
+  type AgentRunDetailProps,
+  type RunDetailRow,
+  type RunNextAction,
+  type RunQuestion,
+} from './agent-run-detail/agent-run-detail.tsx'
+export {
+  AgentRunList,
+  type AgentRunListLabels,
+  type AgentRunListProps,
+  type RunListGroup,
+  type RunListItem,
+} from './agent-run-list/agent-run-list.tsx'
+export {
+  clampRunProgress,
+  currentRunStep,
+  runHeaderAction,
+  runPercent,
+  runTone,
+  runSegments,
+  runStepTone,
+  runTimeLine,
+  type RunDetailAction,
+  type RunDetailSection,
+  type RunDetailStatus,
+  type RunDetailStep,
+  type RunDetailStepStatus,
+  type RunSegments,
+  type RunTimeLine,
+} from './agent-run-detail/run-model.ts'

@@ -102,6 +102,7 @@
 @import './theme/flow-builder.css';
 @import './theme/agent-org.css';
 @import './theme/agent-crew.css';
+@import './theme/agent-run-detail.css';
 @import './theme/uptime-bars.css';
 @import './theme/range-histogram-slider.css';
 @import './theme/ridgeline.css';
