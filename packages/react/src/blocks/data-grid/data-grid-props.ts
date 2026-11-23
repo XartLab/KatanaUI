@@ -6,6 +6,7 @@
 import type { ReactNode } from 'react'
 import type { RowAction } from '../../quotes/row-actions.tsx'
 import type { GridColumn } from './columns.ts'
+import type { GridSummary } from './grid-summary-row.tsx'
 import type { GridMenuEntry } from './host.tsx'
 import type { SortSpec } from './model.ts'
 
@@ -218,6 +219,11 @@ export type DataGridProps<Row extends object> = {
    * 表下面的一行说明。
    */
   foot?: ReactNode
+  /**
+   * Summary rows at the foot (totals, averages): per-column aggregates over all rows, on the same column template and pinned columns; they stick to the bottom while scrolling.
+   * 表尾合计 / 均值行（#77）：按列配聚合，对全部行算，跟表同一份列宽与固定列，滚动时粘在底边。
+   */
+  summary?: readonly GridSummary<Row>[]
   /**
    * Rows are already sorted by the caller (group rows with children): the header still shows the sort marker but the table does not sort.
    * 行已经由调用方排好（分组行带子行）：表照样画表头的标记，但不再自己排。
