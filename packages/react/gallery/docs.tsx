@@ -20,6 +20,7 @@ import { PATTERN_GROUPS, PatternPage, patternById } from './patterns'
 import { packageOf, sourceOf } from './source-map'
 import { CopyButton } from './CopyButton'
 import { DocToc } from './DocToc'
+import { DemoCopyToast } from './pages/demo-copy'
 import { CoveragePage } from './coverage'
 import { RENDERING_ID, RenderingPage } from './rendering'
 import { FOUNDATION_PAGES, FOUNDATION_SECTIONS, FoundationPage, isFoundation } from './foundations'
@@ -447,6 +448,7 @@ export function Docs({ theme, onTheme }: { theme: ThemeName; onTheme: (theme: Th
           <DocToc key={id} root={body} />
         </main>
       </div>
+      <DemoCopyToast />
     </div>
   )
 }

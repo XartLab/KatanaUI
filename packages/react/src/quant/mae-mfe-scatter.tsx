@@ -76,6 +76,7 @@ export function MaeMfeScatter({
   source,
   onExport,
   onFullscreen,
+  onCopyImage,
   className,
 }: MaeMfeScatterProps) {
   const [axisState, setAxisState] = useState<ExcursionAxis>('mae')
@@ -175,6 +176,7 @@ export function MaeMfeScatter({
             onTableView={setTableView}
             onExport={onExport}
             onFullscreen={onFullscreen}
+            onCopyImage={onCopyImage}
           />
         </span>
       </div>

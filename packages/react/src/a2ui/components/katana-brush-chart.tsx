@@ -5,7 +5,17 @@ import type { ComponentApi } from '@a2ui/web_core'
 import { useMemo } from 'react'
 import { z } from 'zod'
 import { BrushChart } from '../../quant/index.ts'
-import { MAX_POINTS, dispatch, formatSchema, makeFormat, numbersCapped, seriesSchema, text } from '../chart-support.ts'
+import {
+  MAX_POINTS,
+  dispatch,
+  formatSchema,
+  makeFormat,
+  numbersCapped,
+  seriesSchema,
+  text,
+  viewProps,
+  viewShape,
+} from '../chart-support.ts'
 import { Cell, actionSchema, weightSchema } from '../support.tsx'
 
 export const KatanaBrushChartApi = {
@@ -43,6 +53,7 @@ export const KatanaBrushChartApi = {
         .describe('Deprecated: use defaultValue. Kept for one release.')
         .optional(),
       onWindowChange: actionSchema('Deprecated: use onValueChange. Kept for one release.').optional(),
+      ...viewShape,
       weight: weightSchema,
     })
     .strict(),
@@ -52,14 +63,15 @@ export const KatanaBrushChart = createComponentImplementation(KatanaBrushChartAp
   const values = useMemo(() => numbersCapped(props.values), [props.values])
   const format = useMemo(() => makeFormat(props.valueFormat), [props.valueFormat])
   const xLabels = props.xLabels ?? []
-  const { labels } = props
+  const { labels, actionLabels, tableLabel, tableHead } = props
+  const label = props.label ?? ''
   const initial = props.defaultValue ?? props.defaultWindow
-  if (!labels) return null
+  if (!labels || !actionLabels || !tableLabel || !tableHead) return null
   return (
     <Cell weight={props.weight}>
       <BrushChart
         values={values}
-        label={props.label ?? ''}
+        label={label}
         formatX={(index) => xLabels[index] ?? ''}
         formatValue={format}
         labels={labels}
@@ -72,6 +84,7 @@ export const KatanaBrushChart = createComponentImplementation(KatanaBrushChartAp
             to: xLabels[window[1] - 1] ?? '',
           })
         }
+        {...viewProps({ ...props, actionLabels, tableLabel, tableHead }, label)}
       />
     </Cell>
   )

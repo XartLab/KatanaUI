@@ -48,7 +48,7 @@ const blocks: GuidanceMap = {
       '对全部行算，不只看得见的几十行；字照列类型写（价格按精度、盈亏带符号与涨跌色），跟上面的行对齐。',
       '样子：上面一道 separable-secondary 分隔线，底色 surface-raised，600 字重；行名 500 字重次要文字色；行高同表体（20 / 24 / 32）。',
       '跟表体同一份列模板：拖列宽、隐藏、重排、固定列都跟着；横向滚动时固定格粘左，纵向粘在滚动区底边。',
-      '待定：TradingView 是按分组汇总（分组 / 币种 / 板块），这里先做整表；分组小计等 useRowOrder 的分节合进来再接。',
+      '按分节汇总（#87，TradingView 自选是按分组汇总）：DataGrid 的 sectionAggregates 用同一套聚合，写在每节的标题行里、对齐到列下；表尾这一行只算数据行，分节标题行不进合计。按币种 / 板块这类维度透视的分组还没有。',
     ],
     avoid: [
       '价格、涨跌幅不要求和（没意义），用 avg / median。',
@@ -71,11 +71,28 @@ const blocks: GuidanceMap = {
     avoid: [
       '文字输入框自己的撤销交给浏览器：焦点在输入框、文本域、contenteditable 里时钩子不接 Mod+Z。',
       '历史不进存档；要记住当前布局用 usePersistedState 存当前值。',
-      '用了 useHotkeys 注册表的面板，关掉这里的 hotkeys，改由注册表调 undo / redo，免得一次按键撤两步。',
+      '用了 useHotkeys 注册表的面板，关掉这里的 hotkeys，改用 useUndoHotkeys 把同一套组合登记进注册表（#87），免得一次按键撤两步；enabled 接面板的焦点，面板没焦点时 Mod+Z 留给别处。',
     ],
     a11y: [
       '撤销、重做钮没得撤时 disabled；改动后的结果要在界面上看得见（列宽、列序真的变回去），不另发读屏通知。',
       '快捷键跳过输入法组字中的按键（isComposing）。',
+    ],
+  },
+  'link-group': {
+    aliases: ['Symbol link', 'Chart sync', 'Linked panels', 'Link color', '联动'],
+    use: [
+      '自选、图、盘口、新闻这些面板跟着同一个品种走：照 TradingView 自选点一行联动的图换品种、多图布局同步品种 / 周期 / 十字线 / 时间 / 日期区间（#22 对齐表 L802–L808、L843；帮助中心没逐项写，待核对）。',
+      '组 id 用面板头色点的 LinkGroup（A–D），面板头的 Led 画同一个颜色，用户一眼看出谁跟谁一组；null 是不联动（面板头画熄灭的环）。',
+      '写的一方只写自己改了的字段：自选写 symbol，图的周期分段写 interval，十字线 pointermove 写 crosshairTime、离开写 null，拖动可见区间写 range。',
+      '读的一方 fields 只订阅要的：自选只要 symbol，图要全部。DataGrid 的 onCursorChange 接 set({ symbol })，就是「上下键在自选里走，联动的图跟着换」（TradingView 自选的空格 / 上下键，对齐表 L836）。',
+    ],
+    avoid: [
+      '跨窗口、跨设备的同步：这里只在一个页面里，要存盘或广播由宿主自己接。',
+      '下单相关的值（价格、数量）不走联动：联动只管看什么。',
+    ],
+    a11y: [
+      '联动的变化要看得见：面板头的 object 写当前品种，色点有读屏名（「联动组 A」）。',
+      '十字线同步只是视觉辅助，不发读屏通知；读数另有文字（图自己的读数行）。',
     ],
   },
   'data-grid': {
@@ -89,7 +106,11 @@ const blocks: GuidanceMap = {
       '挪行（#77 G7，照 TradingView 自选表拖放排序）：给 rowOrder / onRowOrderChange（一般摊 useRowOrder(...).gridProps）；整行可拖，按下挪过 4px 才算拖，行里的按钮上按下不起拖；拖的时候别的行不动，落点画一道 2px 主文字色的线，被拖的行留原处淡到 45%，靠近上下边自动滚；拖回原处不算。做法照 modern-web-guidance drag-and-drop，跟它不同的是没有把手（照 TradingView）。',
       '键盘挪行：Alt+↑ / Alt+↓ 把选中的行（没选就是键盘所在行）挪一格；右键菜单另有上移、下移、移到顶、移到底。TradingView 快捷键表里没有挪行的键（2026-11-18 看过），Alt+↑↓ 沿用应用自选表的写法。',
       '按列排序时不能挪行：拖不起来，Alt+↑↓ 读出 labels.rowOrder.sorted，菜单四项灰掉并写原因。',
-      '分节标题行：rowSection(row) 返回标题就是标题行，跨满整行、次级色大写小字、上面一道分隔线；拖标题整节走，落点吸到节边界不拆别的节；把行拖到标题下面就进了那一节。折叠、个数、组内汇总还没做（待定，G7 的 GridSectionRow 建议）。',
+      '分节标题行：rowSection(row) 返回标题就是标题行，跨满整行、次级色大写小字、上面一道分隔线；拖标题整节走，落点吸到节边界不拆别的节；把行拖到标题下面就进了那一节。',
+      '分节收起（#87，照 TradingView 自选表的分节三角）：标题左端 16px 的三角，朝右是收起、展开转 90°（160ms，--ease-snappy）；收起的节只留标题行，标题上照写行数，所以藏了几行看得见。收起的节整节挪动时藏着的行跟着标题走；把行挪进收起的节，接在这一节已有的行后面。要记住收起状态，把 collapsedSections 接 usePersistedState。',
+      '标题行的行数是三级色等宽数字。组内汇总两种写法：sectionAggregates（如 chg 列取 avg）按列写在标题行里、对齐到各自的列下，聚合跟表尾 summary 同一套（照 TradingView 自选高级视图按分组汇总，#87），标题占前面没配聚合的那几列；sectionSummary(rows, section) 是靠右的自由槽。两者拿到的都是这一节的全部行（收起的也算）。表尾 summary 只算数据行，分节标题行不进合计。',
+      '按列排序时标题行不参与排序：标题留在手动次序里的位置，各节里的行（与第一个标题之前没分节的行）在节内按列排；presorted 的表由调用方自己排。',
+      '宿主的行快捷键（Alt+Enter 插旗这类）作用在 onCursorChange 给的键盘所在行上，用 useHotkeys 登记，enabled 接表的 focus-within。',
       '触屏不起拖（整行拖会抢走滚动）：触屏用右键菜单的上移下移。',
       '实时刷新：live 为 true 时数值类列（price、quantity、pnl、change、number、percent、compact、cnAmount）值变了闪涨跌色，文本列不闪；排序顺序变了已渲染的行平滑换位，新增的行蓝线高亮 1.2 秒；默认 false，静态表不闪。',
       '整页的表（选股器、持仓、报告）用 density="comfortable"：行 40、表头 48、格内左右 12、首列左 20、正文 14px w400、表头 13px 次要色，默认画行间 1px 横线、不画竖线（照 TradingView 选股器，#90）。',
@@ -119,6 +140,7 @@ const blocks: GuidanceMap = {
       '排序列带 aria-sort；列宽拖柄是带名字的 separator。',
       '读屏名取自 label。',
       '挪完一个隐藏的 role=status 读「挪到第 n 位，共 m 行」（labels.rowOrder.moved），拖到一半 Esc 读「已取消」；只在位置真变了才读。',
+      '分节标题行带 aria-expanded；键盘落在标题行上 → 展开、← 收起、Enter 切换（跟子行同一套 treegrid 键位）。三角钮不进 Tab 次序（表只占一个停靠点），读屏名是 labels.sections 的 collapse / expand（默认英文）。',
       '迷你图、区间条的读屏名取 format.label（「ALFA 30 日走势」）；横条只是装饰（aria-hidden），值读格子里的数字。',
       '评级不只靠颜色：图标（双箭头、单箭头、等号）与档名都带档位。',
     ],

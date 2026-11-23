@@ -893,6 +893,10 @@ export const PAGES: readonly DocPage[] = [
     composition: 'FlagMark（button | span）\n  FlagGlyph（svg 燕尾旗）\nFlagFilter（group）\n  按钮 × n（旗 + 个数）',
     keys: [
       ['Enter / Space', '在旗上：插上 / 拔掉（DataGrid 里旗不进 Tab 顺序，键盘走行菜单）'],
+      [
+        'Alt+Enter',
+        '（DataGrid 演示）给键盘所在的行插旗 / 拔旗：照 TradingView 自选表，调用方用 useHotkeys 登记、作用在 onCursorChange 给的行上',
+      ],
       ['Tab', '在过滤按钮间移动；Enter 切换过滤'],
     ],
   },
@@ -1004,7 +1008,10 @@ export const PAGES: readonly DocPage[] = [
     composition: 'HotkeysProvider（可省）\n  组件 × n（useHotkeys 登记）\n注册表（window keydown → 匹配 → handler）',
     keys: [
       ['Mod+/', '（演示）打开快捷键总览'],
-      ['Mod+Shift+P', '（演示）打开命令面板；文档站目录的搜索占着 Mod+K（连带 Mod+Shift+K）'],
+      [
+        'Mod+K',
+        '（演示）打开命令面板（照 TradingView）；演示的注册表挂在 document 上，先于文档站目录搜索（window 上的默认注册表）接到这一下',
+      ],
       ['Alt+R', '（演示）图表作用域：重置图表；在输入框里不触发'],
     ],
   },
@@ -1014,24 +1021,26 @@ export const PAGES: readonly DocPage[] = [
     cardHeight: 420,
     title: 'ShortcutSheet 快捷键总览',
     summary:
-      '按作用域分组列出注册表里现在的快捷键，可搜索，冲突标出来，可接 ShortcutRecorder 改键。照 TradingView 的 Keyboard shortcuts 面板（Ctrl/Cmd+/）。件只是内容，放进 Dialog 或侧栏由调用方定。',
+      '按作用域分组列出注册表里现在的快捷键，可搜索，冲突标出来，可接 ShortcutRecorder 改键。照 TradingView 的 Keyboard shortcuts 面板（Ctrl/Cmd+/）：分节默认收起，点节名展开；搜索时命中的节自动展开。件只是内容，放进 Dialog 或侧栏由调用方定。',
     exports: ['ShortcutSheet'],
     propParts: [
       {
         part: 'ShortcutSheet',
-        note: '读 useHotkeyEntries；文案（搜索、空态、或、冲突、作用域名、改键用的录键文案）全由调用方传。',
+        note: '读 useHotkeyEntries；文案（搜索、空态、或、冲突、作用域名、改键用的录键文案）全由调用方传。defaultOpenScopes 给一开始就展开的节，其余收起。',
       },
     ],
     states: [
-      '搜索：按名字、作用域、按键过滤；没有匹配显示空态。',
+      '收起（默认）：只有节名，三角朝右；点了展开，三角转下。',
+      '搜索：按名字、作用域、按键过滤，命中的节都展开（节名钮这时不可点），没命中的节不出；清空回到用户展开过的样子；没有匹配显示空态。',
       '冲突：名字下一行 warn 色小字。',
       '改键：每行是 ShortcutRecorder。',
     ],
     donts: ['不要自己另写一份快捷键清单：总览读注册表，跟实际生效的一致。'],
     composition:
-      'ShortcutSheet\n  搜索框\n  section × 作用域\n    h3\n    ul\n      li（名字 | Kbd 或 ShortcutRecorder）',
+      'ShortcutSheet\n  搜索框\n  section × 作用域\n    h3 > button（aria-expanded，展开 / 收起）\n    ul（展开时）\n      li（名字 | Kbd 或 ShortcutRecorder）',
     keys: [
-      ['打字', '在搜索框里过滤'],
+      ['打字', '在搜索框里过滤（命中的节自动展开）'],
+      ['Enter / Space', '在节名上：展开 / 收起这一节'],
       ['Tab', '（改键时）在各行的录键框之间移动'],
     ],
   },
@@ -2109,8 +2118,8 @@ export const PAGES: readonly DocPage[] = [
         note: '返回 { toast, report, dismiss, pause, resume }：report(结果或 Promise) 插一条新的（新 key，读屏会再读），默认 2400ms 后收；pause / resume 接到 CopyToast 的 onPause / onResume，指针或焦点在上面时不收。',
       },
       {
-        part: 'copyImage(node, { filename?, background?, scale?, noDownload? })',
-        note: '拍 node（ChartActions 交来的是图的 figure）：逐元素抄计算样式、canvas 换成图片，放进 SVG foreignObject 画到 canvas 上，转 PNG；data-copy-image="skip" 的元素（工具条）不进图。默认倍数 devicePixelRatio（1–3），底色取最近一个不透明的祖先背景。',
+        part: 'copyImage(node, { filename?, background?, scale?, noDownload?, embedFonts? })',
+        note: '拍 node（ChartActions 交来的是图的 figure）：逐元素抄计算样式、canvas 换成图片，放进 SVG foreignObject 画到 canvas 上，转 PNG；data-copy-image="skip" 的元素（工具条）不进图。默认倍数 devicePixelRatio（1–3），底色取最近一个不透明的祖先背景。图里用到的同源网页字体内嵌成 data URL（#87，embedFonts 默认 true），拍出来字形跟页面一致。',
       },
       {
         part: 'copyText(text) / canCopyImage() / elementToPng(node)',
@@ -2962,6 +2971,11 @@ export const PAGES: readonly DocPage[] = [
           },
           { name: 'minSpan', type: 'number', default: '2', desc: '窗口最少几个点：折线至少两个点才画得出来。' },
           { name: 'height / brushHeight', type: 'number', default: '160 / 40', desc: '主图与概览条的高（px）。' },
+          {
+            name: 'actionLabels / tableLabel / tableHead / source / onExport / onFullscreen',
+            type: 'ChartViewProps',
+            desc: '同其他图：三个图工具的名字、表格视图（窗口里的那一段，一行一个点：横轴、值）、来源一行、导出与全屏的回调。',
+          },
         ],
       },
       {
@@ -2975,6 +2989,7 @@ export const PAGES: readonly DocPage[] = [
       '拖动中：窗口换成抓取手形，主图同步变。',
       '扫读：主图上出现竖线与点，下面一行写时间与值。',
       '窗口到了最小（minSpan）：继续缩小被夹住，不再变。',
+      '表格视图：主图换成窗口里那一段的表，概览条照旧能拖。',
     ],
     donts: [
       '不要用它画多条序列：它是单条权益线这类的概览加细看，多条走 SeriesExplorer 或 SmallMultiples。',
@@ -2982,7 +2997,7 @@ export const PAGES: readonly DocPage[] = [
       'values 里不要夹 NaN 想表示断点：窗口与概览条按下标走，断开会让下标对不上；先补好再传。',
     ],
     composition:
-      'BrushChart\n  div[role=group]（主图：svg 折线与面积 · 纵轴刻度 · 十字线与点）\n  横轴刻度 · 读数行（aria-live）\n  BrushStrip\n    svg 概览线\n    窗口（slider）· 起点手柄（slider）· 终点手柄（slider）',
+      'BrushChart\n  右上三件（表格视图 · 导出 · 全屏）\n  div[role=group]（主图：svg 折线与面积 · 纵轴刻度 · 十字线与点；表格视图时换成表）\n  横轴刻度 · 读数行（aria-live）\n  BrushStrip\n    svg 概览线\n    窗口（slider）· 起点手柄（slider）· 终点手柄（slider）',
     keys: [
       ['← →', '主图上：扫读前后一格；手柄上：窗口或该端移一点'],
       ['Shift + ← →', '一次三点'],
@@ -3531,7 +3546,7 @@ export const PAGES: readonly DocPage[] = [
     cardHeight: 360,
     title: 'HorizonChart 地平线图',
     summary:
-      '十几个品种的日内收益叠成窄带，一屏看完：每行把正负值折成几条叠起来的带，颜色越深值越大，涨跌色跟涨跌配色走。所有行共用一个扫读位置。功能参照 Arc 的 Horizon chart。',
+      '十几个品种的日内收益叠成窄带，一屏看完：每行把正负值折成几条叠起来的带，颜色越深值越大，正负用发散色（涨跌色只给右边的数）。所有行共用一个扫读位置，指针所在的那一行出 LCD 窗；右上有表格视图。功能参照 Arc 的 Horizon chart。',
     exports: ['HorizonChart'],
     props: [
       {
@@ -3560,12 +3575,18 @@ export const PAGES: readonly DocPage[] = [
           },
           { name: 'max', type: 'number', desc: '固定满刻度；不给按数据算。' },
           { name: 'rowHeight', type: 'number', default: '24', desc: '一行高（px）。' },
+          {
+            name: 'actionLabels / tableLabel / tableXHead / source / onExport / onFullscreen',
+            type: 'SeriesTableViewProps',
+            desc: '三个图工具的名字、表格视图的读屏名与第一列（横轴位置）的列头（其余列头是各行的名字）、来源一行、导出与全屏的回调。',
+          },
         ],
       },
     ],
     states: [
-      '默认：每行涨色带在基线上方叠起、跌色带同一基线叠起，右边写最新值。',
-      '扫读：每行同一根竖线，右边一列写那一格的值，读数行写时间。',
+      '默认：每行正值的带在基线上方叠起、负值的带同一基线叠起（发散色），右边写最新值。',
+      '扫读：每行同一根竖线，右边一列写那一格的值，读数行写时间；指针所在的那一行出 LCD 窗。',
+      '表格视图：一行一个横轴位置、一列一行序列。',
       '共用刻度：小行只有浅带；各自刻度：每行都填满。',
       '一行全是 0 或没数据：画成空行，值写「—」或 0。',
     ],
@@ -3575,7 +3596,7 @@ export const PAGES: readonly DocPage[] = [
       '不要超过十来行：行高 24px，几十行用 SmallMultiples 或表。',
     ],
     composition:
-      'HorizonChart\n  div[role=group]\n    每行：名字 · 窄带 svg（正、负各 bands 条 path）· 值\n  读数行（aria-live）',
+      'HorizonChart\n  右上三件（表格视图 · 导出 · 全屏）\n  div[role=group]\n    每行：名字 · 窄带 svg（正、负各 bands 条 path）· 十字线 · LCD 窗（指针所在行）· 值\n  读数行（aria-live）· 来源行',
     keys: [
       ['← →', '选中前后一格；没选中时先落到最新一格'],
       ['Shift + ← →', '一次三格'],
@@ -3617,11 +3638,16 @@ export const PAGES: readonly DocPage[] = [
             type: '(key: string) => void',
             desc: '给了标题就是按钮（可聚焦），点了拿到这一张的 key。',
           },
+          {
+            name: 'actionLabels / tableLabel / tableXHead / source / onExport / onFullscreen',
+            type: 'Partial<SeriesTableViewProps>',
+            desc: '给齐前三个才有右上三件与表格视图（一行一个横轴位置、一列一张）；单独用时要给，嵌在自带工具条的积木里（SentimentCycle）可以不给。',
+          },
         ],
       },
     ],
     states: [
-      '默认：每张画一条线，线色按头尾比（涨跌色跟涨跌配色走，持平中性色），标题写最新值。',
+      '默认：每张画一条线（series-1，不按涨跌着色），标题的值按头尾比上涨跌色，标题写最新值。',
       '扫读：所有张同一格画竖线与点，标题的值换成那一格。',
       '某张没数据：线不画，值写「—」。',
     ],
@@ -3631,7 +3657,7 @@ export const PAGES: readonly DocPage[] = [
       '不要在包里写品种名或单位：名字与值的写法都由调用方传。',
     ],
     composition:
-      'SmallMultiples\n  div[role=group]（网格）\n    每张：标题（名字 · 值；可点时是 button）· 折线区（svg 折线 · 竖线与点）\n  读数行（aria-live）',
+      'SmallMultiples\n  右上三件（给了 actionLabels 才有）\n  div[role=group]（网格；表格视图时换成表）\n    每张：标题（名字 · 值；可点时是 button）· 折线区（svg 折线 · 竖线与点）\n  读数行（aria-live）',
     keys: [
       ['← →', '选中前后一格；没选中时先落到最新一格'],
       ['Shift + ← →', '一次三格'],
@@ -4074,6 +4100,7 @@ export const PAGES: readonly DocPage[] = [
       '键盘所在行：焦点环；排序列：表头带升降箭头。',
       '只读（interactive=false）：table 语义，表头不是按钮。',
       '子行：有子行的行带 aria-expanded（true 摊开、false 收起）；没有子行的行没有这个属性，按 → 没反应。',
+      '分节（rowSection）：标题行跨满整行，左端三角收起 / 展开（collapsedSections 受控或 defaultCollapsedSections 不受控），写这一节的行数，sectionAggregates 按列写组内汇总（对齐到列下，聚合同表尾 summary），sectionSummary 是靠右的自由槽；表尾 summary 只算数据行；收起的节只留标题行，挪它时藏着的行跟着走。按列排序时标题行不参与排序，各节里的行在节内排（照 TradingView 自选表）。',
       'custom 列没有 text 时复制与导出是空字；有按钮的格子别指望整行点击。',
       '列优先级（standard 与 hero 分量，有表头）：可见列放不下容器时按 GridColumn.priority 从低到高收起（没写的按声明顺序，第一列 1、第二列 2……），至少留两列，固定在左边的列不收；表头右端出「+N 列」胶囊（文案 texts.moreColumns，默认英文 +N cols），点了切成横向滚动、显示全部列，胶囊变 texts.collapseColumns，再点收起。出胶囊时表头与数据行在右端让出它的宽度，不盖住最后一列（stretch 的表，保留的列撑满的是容器宽减胶囊宽）。状态只在组件里，不存；容器变宽放得下了胶囊就消失。只影响显示：复制与导出仍是全部可见列。compact 分量与不画表头的表不走这一套；collapseColumns={false} 关掉，一直横向滚动。',
     ],
@@ -4090,7 +4117,8 @@ export const PAGES: readonly DocPage[] = [
     keys: [
       ['↑ / ↓', '移一行；Home / End 到头尾'],
       ['Enter', '打开键盘所在的行（onOpen）'],
-      ['→ / ←', '展开 / 收起键盘所在行的子行（renderSubRow）'],
+      ['→ / ←', '展开 / 收起键盘所在行的子行（renderSubRow）；在分节标题行上展开 / 收起这一节'],
+      ['Enter（分节标题行）', '收起 / 展开这一节'],
       ['Shift / Ctrl 点击', '选一段 / 点选加减'],
       ['Esc', '清掉选择（右键菜单开着时归菜单）'],
       ['列头右键', '列头菜单：排序、固定、隐藏、左右移、重置列'],
@@ -4149,7 +4177,16 @@ export const PAGES: readonly DocPage[] = [
     title: 'useUndoStack 撤销与重做',
     summary:
       '通用的撤销 / 重做栈：存整份快照，值由调用方定。push 带 kind，同种操作在 800ms 内合并成一步（拖一次滑块只撤一次）；最多 100 步；可选绑定 Mod+Z 撤销、Mod+Shift+Z 与 Ctrl+Y 重做。用于列布局、行序、分组这类「拖错了」的恢复，不进存档。',
-    exports: ['useUndoStack', 'undoInit', 'undoPush', 'undoBack', 'undoForward', 'undoKeyOf'],
+    exports: [
+      'useUndoStack',
+      'undoInit',
+      'undoPush',
+      'undoBack',
+      'undoForward',
+      'undoKeyOf',
+      'useUndoHotkeys',
+      'undoHotkeyBindings',
+    ],
     propParts: [
       {
         part: 'useUndoStack(initial, { limit?, mergeMs?, hotkeys? })',
@@ -4163,6 +4200,10 @@ export const PAGES: readonly DocPage[] = [
         part: 'undoKeyOf(event, isMac)',
         note: '一次按键是 undo、redo 还是 null：Mac 上 ⌘Z / ⇧⌘Z，别处 Ctrl+Z / Ctrl+Shift+Z / Ctrl+Y；带 Alt 的不算。',
       },
+      {
+        part: 'useUndoHotkeys(stack, { labels, scope?, enabled?, id? })',
+        note: '用了 useHotkeys 注册表的面板用它（#87）：把同一套组合（Mod+Z；Mod+Shift+Z，非 Mac 加 Ctrl+Y）登记成两条，快捷键总览里列得出、能改键、一起查冲突；这时不开 useUndoStack 的 hotkeys。enabled 接面板的焦点，面板没焦点时键留给别处。undoHotkeyBindings(stack, options, platform) 是它的纯函数版。',
+      },
     ],
     states: [
       '没有可撤：canUndo=false，撤销钮 disabled。',
@@ -4172,7 +4213,7 @@ export const PAGES: readonly DocPage[] = [
     donts: [
       '不要把它存进 localStorage：历史只活在这一次打开里（存档用 usePersistedState 存当前值）。',
       '不要每次按键都 push 不带 kind：连续输入要给 kind 合并，否则撤一次只退一个字。',
-      '不要在两个地方同时绑 Mod+Z：用了 useHotkeys 注册表就关掉这里的 hotkeys。',
+      '不要在两个地方同时绑 Mod+Z：用了 useHotkeys 注册表就关掉这里的 hotkeys，改用 useUndoHotkeys。',
     ],
     composition: 'useUndoStack\n  { past[], present, future[] }\n  键盘：Mod+Z · Mod+Shift+Z · Ctrl+Y（可选）',
     keys: [
@@ -4180,6 +4221,38 @@ export const PAGES: readonly DocPage[] = [
       ['Mod+Shift+Z', '重做'],
       ['Ctrl+Y', '重做（非 Mac）'],
     ],
+  },
+  {
+    id: 'link-group',
+    group: 'blocks',
+    cardHeight: 260,
+    title: 'useLinkGroup 联动组',
+    summary:
+      '同一联动组的件共用品种、周期、十字线时刻、可见区间（#22 G8）：自选点一行，同组的图换品种；一张图上移动十字线，同组的图跟着画。照 TradingView 多图布局的同步（品种、周期、十字线、时间、日期区间）与自选联动。组 id 一般是面板头色点的 LinkGroup（A–D），null 不联动。纯 context，不带宿主、不存盘。',
+    exports: ['useLinkGroup', 'LinkGroupProvider', 'createLinkHub', 'useLinkHub', 'LINK_FIELDS'],
+    propParts: [
+      {
+        part: 'useLinkGroup(group, { fields?, initial? })',
+        note: '返回 [状态, 改]：状态是 { symbol?, interval?, crosshairTime?, range? }，改是合并几个字段。group 为 null 时不联动，状态只在这个件里（initial 起头）；联动时组里没设过的字段取 initial（件自己的默认品种、周期）。fields 只订阅这几个字段：十字线一直在变，只订阅 symbol 的自选不跟着重画。',
+      },
+      {
+        part: 'createLinkHub(initial?) / LinkGroupProvider / useLinkHub',
+        note: '联动表：get、set（值没变的字段不算改，什么都没变不通知；range 按 from / to 比）、select（订阅的字段没变时返回同一个对象）、subscribe（回调拿到改了哪些字段）。没有 Provider 时整个应用一张默认表；测试、多窗口、要隔开两套联动时自己建一张包上。',
+      },
+    ],
+    states: [
+      '联动：同组的件读写同一份状态，一边改另一边马上跟。',
+      '不联动（group 为 null）：件自己记，跟谁都不同步；面板头的色点画熄灭的环。',
+      '换组：读到新组的状态；新组没设过的字段用 initial。',
+    ],
+    donts: [
+      '不要把十字线时刻存进存档：它只活在指针移动的这一会儿（离开图写 null）。',
+      '不要让只关心品种的件订阅全部字段：十字线每帧都在变，会跟着重画。',
+      '不要拿它传下单参数：联动只管看什么，不管交易（下单走执行网关）。',
+    ],
+    composition:
+      'LinkGroupProvider（可省）\n  件 × n（useLinkGroup(组, 字段)）\n联动表：组 → { symbol, interval, crosshairTime, range }',
+    keys: [],
   },
   {
     id: 'empty-state',
@@ -4529,7 +4602,7 @@ export const PAGES: readonly DocPage[] = [
     cardHeight: 520,
     title: 'SideNav 侧栏导航',
     summary:
-      '分组的侧栏导航：组名小号大写；没选中的字淡，悬停变亮，当前项最亮。每组左边一条 1px 虚线从组顶走到当前项、用 6px 弯钩拐进去，悬停另一项时以淡色画一条到悬停项，切换时 200ms 滑过去。顶上过滤框（⌘K / Ctrl+K 聚焦，Enter 打开第一项，Esc 清空），底部淡出。照 rareui.com 组件站左栏（2026-11-17 实测），实现原创。件不管路由：链接给 href，当前项由调用方传。轨迹颜色走 --k-sidenav-trail，默认品牌橙。',
+      '分组的侧栏导航：组名小号大写；没选中的字淡，悬停变亮，当前项最亮。每组左边一条 1px 虚线从组顶走到当前项、用 6px 弯钩拐进去，悬停另一项时以淡色画一条到悬停项，切换时 200ms 滑过去。顶上过滤框（Mod+K 聚焦：经 useHotkeys 登记在快捷键注册表里，只认这一个组合、Ctrl+Shift+K 不拦，页上别处登记了 Mod+K 就让给它；searchHotkey 改键或给 null 关掉；Enter 打开第一项，Esc 清空），底部淡出。照 rareui.com 组件站左栏（2026-11-17 实测），实现原创。件不管路由：链接给 href，当前项由调用方传。轨迹颜色走 --k-sidenav-trail，默认品牌橙。',
     exports: ['SideNav'],
     props: [
       {
@@ -4559,7 +4632,7 @@ export const PAGES: readonly DocPage[] = [
     donts: ['不要一组放太多项：超过二十来项拆组', '不要把轨迹颜色设成跟正文一样亮：它是指引，不是内容'],
     composition: 'SideNav\n  头部（header）\n  过滤框\n  分组 × n（组名、轨迹、链接）\n  底部（footer）',
     keys: [
-      ['⌘K / Ctrl+K', '聚焦过滤框'],
+      ['Mod+K（Mac 是 ⌘K，别处 Ctrl+K）', '聚焦过滤框（经快捷键注册表；searchHotkey 可改）'],
       ['Enter', '在过滤框里：打开第一项'],
       ['Esc', '在过滤框里：清空'],
     ],
@@ -6228,7 +6301,16 @@ export const PAGES: readonly DocPage[] = [
     title: 'Watchlist 自选列表',
     summary:
       '照 TradingView 右侧自选栏（2026-11-15 实测）：列 Symbol / Last / Chg / Chg%，行首小旗标与字母圆徽标；最新价变动时只有变了的尾数闪涨跌色、约 1 秒落回；点列头排序（升序、降序、回原顺序）。价格怎么写由 formatPrice 定，数与文字由调用方传。',
-    exports: ['Watchlist', 'changedTail', 'nextSort', 'sortRows', 'plainPrice', 'rowTone'],
+    exports: [
+      'Watchlist',
+      'changedTail',
+      'nextSort',
+      'sortRows',
+      'plainPrice',
+      'rowTone',
+      'parseSymbolList',
+      'formatSymbolList',
+    ],
     props: [
       {
         part: 'Watchlist',
@@ -6266,6 +6348,11 @@ export const PAGES: readonly DocPage[] = [
       },
       { part: 'changedTail(prev, next)', note: '新旧价格文字从哪一位开始不同：返回 { head, tail }。', rows: [] },
       { part: 'nextSort / sortRows', note: '列头点击的循环与排序，纯函数。', rows: [] },
+      {
+        part: 'parseSymbolList(text) / formatSymbolList(entries)',
+        note: '自选表的 .txt 导入导出（#22，照 TradingView 自选「上传 .txt：带交易所前缀、逗号分隔」，帮助中心 2026-11-23 读）：项是 EXCHANGE:SYMBOL（转大写，重复的只收一次），###节名 是分节（TradingView 导出文件的写法，页面没写，待核对）；逗号与换行都能分。认不出的项（没前缀、有空格）原样进 unknown，由调用方列给用户，不静默丢。',
+        rows: [],
+      },
     ],
     states: [
       '最新价变大：变了的尾数起闪涨色；变小闪跌色；约 1 秒落回原色。',
@@ -10985,6 +11072,239 @@ export const PAGES: readonly DocPage[] = [
       ['↑ ↓ ← →', '在格子间移动'],
       ['Enter / Space', '选中当前格'],
     ],
+  },
+  // #104 对照 Salt 补的七件（docs/salt-map.json 里原来是「没有」或「部分」的几项）。
+  {
+    id: 'pill',
+    group: 'forms',
+    cardHeight: 200,
+    title: 'Pill 胶囊',
+    summary:
+      '单个可点、可关的小胶囊：本体是一个按钮（主动作，如点开改条件），给了 onDismiss 末尾多一个 × 钮只做「去掉」；24 高（sm 20）、圆角 pill、actionable 的底与边，与 ChipGroup 的芯片同一套数值。selected 时是开关，选中画法同分段切换。照 Salt Pill（Apache-2.0，只取结构）。',
+    exports: ['Pill'],
+    propParts: [
+      {
+        part: 'Pill',
+        note: 'className 给外层 span；其余属性透传给本体 button（本体只在有 onClick 或 selected 时是 button，否则是纯文字）。给了 onDismiss 必须给 dismissLabel。',
+      },
+    ],
+    states: [
+      '默认：actionable 底与 7% 白边，悬停提亮，按下整颗缩到 0.96。',
+      'selected：aria-pressed，底换 --seg-on-bg、字 --seg-on-ink、700 粗（同 ChipGroup 选中的芯片）。',
+      '可关：本体右内距收到 2px，后面一个 20 见方的 ×（点按区外扩到 24 见方），悬停换 subtle 底；焦点在本体上按 Backspace / Delete 也关。',
+      'sm：20 高、caption 字号，× 16 见方；md（默认）24 高。',
+      '禁用：整颗 35% 不透明度，两个按钮都不响应。',
+      '焦点：本体聚焦时焦点环套住整颗，× 聚焦时只套 ×。',
+    ],
+    donts: [
+      '不要拿它做不可交互的标记：只展示用 Tag。',
+      '一组互相关联的开关筛选用 ChipGroup，不要摆一排 selected 的 Pill。',
+      '不要整颗点了就删（Salt 例子的写法）：改和删分开，× 只做删。',
+      '× 的读屏名要说清删的是哪一条（「去掉条件 P/E < 20」），不要只写「关闭」。',
+    ],
+    composition: 'Pill（span）\n  本体（button | span）\n    图标（可选）\n    文字\n  ×（button，有 onDismiss 时）',
+    keys: [
+      ['Tab', '先到本体，再到 ×'],
+      ['Enter / Space', '本体：主动作；×：去掉'],
+      ['Backspace / Delete', '焦点在本体上时去掉这颗（有 onDismiss 时）'],
+    ],
+  },
+  {
+    id: 'system-status',
+    group: 'feedback',
+    cardHeight: 300,
+    title: 'SystemStatus 全站消息条',
+    summary:
+      '贴在应用顶上、占满宽的系统消息：维护、断线重连、数据延迟、新功能。最低 36 高，语气色 10% 叠在实底上、底下 1px 语气色的边；图标、可选的粗体标题、一两行字、末尾动作、可选的关闭钮。照 Salt SystemStatus（Apache-2.0，只取结构）。',
+    exports: ['SystemStatus'],
+    propParts: [
+      {
+        part: 'SystemStatus',
+        note: '其余属性透传给 div；children 是消息正文。给了 onDismiss 必须给 dismissLabel。',
+      },
+    ],
+    states: [
+      'tone：info（默认，蓝）、ok、warn、danger、neutral；图标形状各不同（信息 i、对勾、三角感叹、八角感叹，neutral 同 info），不只靠颜色。',
+      'role 默认按语气：warn、danger 是 alert，其余是 status；页面一打开就在的传 role="note"。',
+      '底是语气色叠在 container-primary 的实底上：吸顶时下面的内容不会透上来。',
+      '有动作时动作靠右；容器窄到放不下时动作换到下一行仍靠右，关闭钮固定在右上。',
+      'icon={null} 不画图标；传别的节点换掉默认图标。',
+    ],
+    donts: [
+      '只管全站的事：跟当前任务有关的提示用 Alert，要打断操作的用 Dialog，一次性的结果用 Toast。',
+      '一屏只放一条：多条同时来时由调用方挑最要紧的一条，其余收进通知中心。',
+      '不要放长段落：一两行字，详情放进动作里的链接。',
+      '关掉以后要不要再出现，是调用方记、调用方定；件不记。',
+    ],
+    composition:
+      'SystemStatus（div）\n  图标（span，aria-hidden）\n  内容\n    标题（strong，可选）\n    正文\n  动作（div，可选）\n  关闭（button，有 onDismiss 时）',
+    keys: [['Tab', '走到动作与关闭钮']],
+  },
+  {
+    id: 'calendar',
+    group: 'forms',
+    cardHeight: 300,
+    title: 'Calendar 月历',
+    summary:
+      '单独摆在页上的月历：选一天、翻月，非交易日用 unavailable 灰掉并加删除线。样子与 DateTimeInput 弹层里的日历同一套（.k-cal*），外面多一圈 container 的边与底；今天字提亮加下划线。行为底座是 react-aria 的 Calendar，日期一律 YYYY-MM-DD 字符串。',
+    exports: ['Calendar'],
+    propParts: [
+      {
+        part: 'Calendar',
+        note: '月份名、星期名按 locale 由 react-aria 写；两个翻页钮的读屏名由 labels 给。value 传空字符串表示没选。',
+      },
+    ],
+    states: [
+      '选中：selectable bold 的底、字 600 粗。',
+      '今天（没选中时）：字提到 primary、600 粗、下划线。',
+      'min / max 之外：降色、点不了，翻页钮到头变禁用。',
+      'unavailable 返回 true 的日子：降色加删除线、点不了（休市、周末）。',
+      'weekStart：mon（默认）或 sun 开头。',
+      '禁用：整张 45% 不透明度。',
+    ],
+    donts: [
+      '要输入框加弹层的用 DateTimeInput，选区间的用 DateRangePicker；这一件只给页面上常驻的日历。',
+      '不要在件里写交易日历：哪天休市由调用方给 unavailable。',
+      '不要只靠降色说不可选：删除线是件自带的，别用 className 去掉。',
+    ],
+    composition: 'Calendar（I18nProvider + react-aria Calendar）\n  头部：上个月 | 月份标题 | 下个月\n  日格表（grid）',
+    keys: [
+      ['← → ↑ ↓', '按天、按周移动焦点'],
+      ['PageUp / PageDown', '上一月 / 下一月'],
+      ['Shift + PageUp / PageDown', '上一年 / 下一年'],
+      ['Home / End', '到这一周的头 / 尾'],
+      ['Enter / Space', '选中焦点所在的那天'],
+    ],
+  },
+  {
+    id: 'list-box',
+    group: 'forms',
+    cardHeight: 330,
+    title: 'ListBox 选项列表',
+    summary:
+      '常驻页面的选项列表（listbox 角色）：单选或多选、可分组、每项可带图标、第二行说明与右端数值，选中的项右端出对勾。项高 28、圆角 --radius-inner，bordered 时外面一圈 container 的边与底；maxHeight 之后自己滚。行为底座是 react-aria 的 ListBox。',
+    exports: ['ListBox'],
+    propParts: [
+      {
+        part: 'ListBox',
+        note: '数据驱动：items 里有 options 的是分组。选中照统一约定 value / defaultValue / onValueChange，给出整份 id。',
+      },
+    ],
+    states: [
+      '悬停：selectable 的 hover 底、字提到 primary。',
+      '选中：selectable 的 selected 底、字 primary、右端对勾（不只靠底色）。',
+      '单选不许选空：点已选的项不取消；多选点一项切换。',
+      '给了 onAction：点一下只选这一项（多选按 Ctrl / Shift 扩），Enter 或双击触发 onAction（打开布局、切账户）。',
+      '分组：组名是 caption 600、secondary 色，组与组之间一道 secondary 的分隔线。',
+      '空：items 为空且给了 emptyLabel 时居中显示这句话。',
+      '禁用的项：40% 不透明度、跳过不选。',
+    ],
+    donts: [
+      '五个以内的单选用 RadioGroup；不需要一直摆着的用 Select；选项多又要搜的用 Combobox。',
+      '不要拿它做导航：侧栏导航用 SideNav。',
+      '项里不要再放可聚焦的东西（按钮、链接）：listbox 的项里不许有可交互的子项。',
+    ],
+    composition:
+      'ListBox（listbox）\n  分组（section，可选）\n    组名（header）\n  项（option）× n\n    图标 | 文字 + 说明 | 右端数值 | 对勾',
+    keys: [
+      ['↑ ↓', '在项之间移动'],
+      ['Home / End', '到第一项 / 最后一项'],
+      ['字母', '跳到以它开头的项'],
+      ['Space / Enter', '选中（给了 onAction 时 Enter 是激活）'],
+      ['Shift + ↑ ↓', '多选时连选'],
+      ['Ctrl + A', '多选时全选'],
+    ],
+  },
+  {
+    id: 'link',
+    group: 'layout',
+    cardHeight: 110,
+    title: 'Link 文字链接',
+    summary:
+      '行内文字链接：下划线一直在（颜色 separable-primary、偏移 3px），悬停字提亮、下划线换成字色；external 时新窗口打开、末尾一个 12px 外链图标并让读屏另读 externalLabel。数值与 Button 的 link 变体一样。照 Salt Link（Apache-2.0，只取结构）。',
+    exports: ['Link'],
+    propParts: [
+      {
+        part: 'Link',
+        note: '其余属性透传给 a；external 时 target 默认 _blank、rel 默认 noopener noreferrer。asChild 把样子交给唯一的子元素（路由库的 Link），不加外链图标。',
+      },
+    ],
+    states: [
+      'primary（默认）：primary 字色；secondary：secondary 字色（脚注、说明）。',
+      '悬停：字 primary、下划线换成字色。',
+      'external：末尾外链图标，读屏多读一句 externalLabel。',
+      '焦点：2px 焦点环贴着字。',
+    ],
+    donts: [
+      '不要拿它做动作（提交、删除）：动作用 Button，链接只做跳转。',
+      '不要去掉下划线：正文里只靠颜色认不出链接（WCAG 1.4.1）。',
+      '外链要给 externalLabel，告诉读屏会开新窗口。',
+    ],
+    composition: 'Link（a | 子元素）\n  文字\n  外链图标（external 时）',
+    keys: [
+      ['Tab', '聚焦'],
+      ['Enter', '跳转'],
+    ],
+  },
+  {
+    id: 'card',
+    group: 'layout',
+    cardHeight: 330,
+    title: 'Card 卡片',
+    summary:
+      '通用卡片容器：圆角 --radius-control、1px container-subtle 边、内距 12；头部（标题、说明、右上角动作）、内容、底部几个部件。四档底：secondary（默认）、primary、tertiary、ghost（无底无边）。interactive 配 asChild 让整张卡就是一个链接或按钮。部件划分取自 shadcn/ui（MIT），变体照 Salt Card（Apache-2.0）。',
+    exports: [
+      'Card',
+      'CardHeader',
+      'CardTitle',
+      'CardDescription',
+      'CardAction',
+      'CardContent',
+      'CardFooter',
+      'cardVariants',
+    ],
+    propParts: [
+      { part: 'Card', note: '其余属性透传给 div（asChild 时给子元素）。' },
+      {
+        part: 'CardHeader / CardTitle / CardDescription / CardAction / CardContent / CardFooter',
+        symbol: 'CardHeader',
+        note: '都是 div。CardHeader 里有 CardAction 时自动排成两栏，动作在右上角。',
+      },
+      { part: 'cardVariants', note: '返回类名的函数，给不是 Card 的元素画成卡。' },
+    ],
+    states: [
+      'variant：secondary（默认）、primary（最亮）、tertiary、ghost（透明、无边，只用来排版）。',
+      'interactive：悬停换 actionable 的 hover 底、边提到 container-bold，按下缩到 0.99，键盘焦点画焦点环。',
+      '标题 600 粗 primary 色，说明 caption、secondary 色。',
+    ],
+    donts: [
+      '指标与读数用 MetricCard，工作台面板用 PanelFrame；这一件只是通用的框。',
+      '可点的卡用 asChild 包一个 a 或 button：不要在 div 上挂 onClick。',
+      '可点的卡里不要再放按钮或链接：整张卡已经是一个目标。',
+    ],
+    composition:
+      'Card\n  CardHeader\n    CardTitle\n    CardDescription\n    CardAction（可选）\n  CardContent\n  CardFooter',
+    keys: [],
+  },
+  {
+    id: 'panel',
+    group: 'layout',
+    cardHeight: 150,
+    title: 'Panel 纯容器',
+    summary:
+      '不带标题栏、不画边的纯容器：一块 container 的底色占满格子的高度，内容超出自己滚，内距 12。用在分栏的一栏、对话框里的一块滚动区。三档底：primary（默认）、secondary、tertiary。照 Salt Panel（Apache-2.0，只取结构）。',
+    exports: ['Panel'],
+    propParts: [{ part: 'Panel', note: '其余属性透传给 div；高度跟着父元素，父元素要有确定的高度。' }],
+    states: [
+      'primary（默认）、secondary、tertiary 三档底色，同 Card 的三档。',
+      '内容超出：自己出滚动条（overflow: auto）。',
+    ],
+    donts: [
+      '要标题栏、折叠、工具条的用 PanelFrame；要边框和圆角的用 Card。',
+      '内容会超出时让里面有可聚焦的东西，或给 Panel 加 tabIndex={0} 与读屏名，键盘才滚得动。',
+    ],
+    composition: 'Panel（div）',
+    keys: [],
   },
 ]
 

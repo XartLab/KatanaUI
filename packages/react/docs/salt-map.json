@@ -57,16 +57,16 @@
     {
       "slug": "calendar",
       "name": "Calendar",
-      "status": "部分",
-      "pages": ["date-range-picker", "date-time-input"],
-      "note": "日历只出现在日期框与区间选择器的弹层里，没有可单独摆放的日历件。"
+      "status": "有",
+      "pages": ["calendar", "date-time-input", "date-range-picker"],
+      "note": "Calendar 单独摆在页上（#104 补）；日期框与区间选择器的弹层里是同一套日历。"
     },
     {
       "slug": "card",
       "name": "Card",
-      "status": "部分",
-      "pages": ["metric-card", "glass-card", "expandable-cards"],
-      "note": "只有指标卡、玻璃卡、可展开卡这几种专用卡，没有通用的基础 Card 容器。"
+      "status": "有",
+      "pages": ["card", "metric-card", "glass-card", "expandable-cards"],
+      "note": "通用 Card（#104 补）：四档底色，interactive 加 asChild 就是 Salt 的 InteractableCard；另有指标卡、玻璃卡、可展开卡这些专用卡。"
     },
     {
       "slug": "carousel",
@@ -232,9 +232,9 @@
     {
       "slug": "link",
       "name": "Link",
-      "status": "部分",
-      "pages": ["button"],
-      "note": "没有独立的 Link 件；行内文字链接靠 Button 的 variant=link 加 asChild。"
+      "status": "有",
+      "pages": ["link"],
+      "note": "Link（#104 补）：行内文字链接，下划线常在，external 带外链图标与读屏提示。"
     },
     {
       "slug": "link-button",
@@ -246,9 +246,9 @@
     {
       "slug": "list-box",
       "name": "List box",
-      "status": "部分",
-      "pages": ["select", "combobox", "command"],
-      "note": "选项列表只存在于下拉、可搜索下拉与命令面板里，没有常驻页面上的 ListBox。"
+      "status": "有",
+      "pages": ["list-box"],
+      "note": "ListBox（#104 补）：常驻页面，单选或多选，分组对应 Salt 的 OptionGroup。"
     },
     {
       "slug": "localization-provider",
@@ -304,16 +304,16 @@
     {
       "slug": "panel",
       "name": "Panel",
-      "status": "部分",
-      "pages": ["panel-frame"],
-      "note": "PanelFrame 是带标题栏的工作台面板壳，没有不带标题栏的纯容器面板。"
+      "status": "有",
+      "pages": ["panel", "panel-frame"],
+      "note": "Panel（#104 补）是不带标题栏的纯容器；带标题栏的工作台面板壳是 PanelFrame。"
     },
     {
       "slug": "pill",
       "name": "Pill",
-      "status": "部分",
-      "pages": ["chip-group", "tag"],
-      "note": "ChipGroup 是开关芯片（只有整组的清除钮），Tag 只展示；没有单个可关闭的 pill。"
+      "status": "有",
+      "pages": ["pill", "chip-group"],
+      "note": "Pill（#104 补）：单个可点、可关；一整组开关芯片是 ChipGroup（对应 Salt 的 PillGroup 多选）。"
     },
     {
       "slug": "progress",
@@ -427,9 +427,9 @@
     {
       "slug": "system-status",
       "name": "System status",
-      "status": "部分",
-      "pages": ["alert", "status-bar"],
-      "note": "有行内 Alert 与顶底状态栏；没有贴在页面顶部、可关闭的全站系统消息条。"
+      "status": "有",
+      "pages": ["system-status"],
+      "note": "SystemStatus（#104 补）：贴在应用顶上、可关的全站消息条；页内提示是 Alert。"
     },
     {
       "slug": "table",
@@ -478,9 +478,9 @@
     {
       "slug": "tokenized-input-next",
       "name": "Tokenized input",
-      "status": "没有",
-      "pages": [],
-      "note": "AnimatedTags 是从候选里挑；没有边打字边把输入变成标记的输入框。"
+      "status": "有",
+      "pages": ["tag-input"],
+      "note": "TagInput（#156，改自 Arc）：输入框里打字成标签，Enter 或逗号收下，粘贴一串拆成几个；AnimatedTags 是从候选里挑。"
     },
     {
       "slug": "toolbar",

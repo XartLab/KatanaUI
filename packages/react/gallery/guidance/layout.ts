@@ -104,7 +104,8 @@ const layout: GuidanceMap = {
     a11y: [
       '外层是 nav，读屏名取自 aria-label。',
       '当前项带 aria-current="page"。',
-      '搜索框有自己的 aria-label；⌘K 提示与图标对读屏隐藏。',
+      '搜索框有自己的 aria-label；按键提示（Mac 是 ⌘K，别处 Ctrl+K）与图标对读屏隐藏。',
+      '聚焦搜索的 Mod+K 经 useHotkeys 登记（#87），快捷键总览里列得出；只认这一个组合，Ctrl+Shift+K 这类留给别人。页里要把 Mod+K 给命令面板时，在更近的注册表（挂在 document 上）或非 global 作用域里登记就盖过它，或给 searchHotkey={null}。',
     ],
   },
   'hover-expand': {

@@ -58,6 +58,7 @@ import {
 import { RenderingSettingsDemo } from './rendering.tsx'
 import { GridSummaryRowDemo, RefreshControlDemo, TickerTapeDemo } from './pages/ticker-refresh.tsx'
 import { CopyToastDemo, UseUndoStackDemo } from './pages/undo-copy.tsx'
+import { LinkGroupDemo } from './pages/link-group.tsx'
 import { SideNavUsage } from './usage/SideNavUsage.tsx'
 import { LiveUsage } from './usage/LiveUsage.tsx'
 import { TextMeasureUsage } from './usage/TextMeasureUsage.tsx'
@@ -318,6 +319,15 @@ import {
   SeatTableDemo,
   TradingDatePickerDemo,
 } from './pages/cn-batch2.tsx'
+import {
+  CalendarDemo,
+  CardDemo,
+  LinkDemo,
+  ListBoxDemo,
+  PanelDemo,
+  PillDemo,
+  SystemStatusDemo,
+} from './pages/salt-gaps.tsx'
 
 /** 每一页的实时预览，键是 registry.ts 里的页 id（registry.test.ts 核对两边一一对应）。 */
 export const DEMOS: Readonly<Record<string, ComponentType>> = {
@@ -385,6 +395,7 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'grid-summary-row': GridSummaryRowDemo,
   'copy-toast': CopyToastDemo,
   'use-undo-stack': UseUndoStackDemo,
+  'link-group': LinkGroupDemo,
   alert: AlertDemo,
   progress: ProgressDemo,
   sheet: SheetDemo,
@@ -631,6 +642,14 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'motion-loader': MotionLoaderDemo,
   'page-preloader': PagePreloaderDemo,
   'scroll-progress': ScrollProgressDemo,
+  // #104 对照 Salt 补的七件。
+  pill: PillDemo,
+  'system-status': SystemStatusDemo,
+  calendar: CalendarDemo,
+  'list-box': ListBoxDemo,
+  link: LinkDemo,
+  card: CardDemo,
+  panel: PanelDemo,
 }
 
 /**

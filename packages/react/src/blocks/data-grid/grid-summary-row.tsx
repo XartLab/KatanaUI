@@ -2,7 +2,7 @@
 /**
  * Summary rows at the foot of DataGrid (totals, averages): per-column aggregates over all rows, laid out on the grid's own column template.
  * 表尾合计 / 均值行（#77 第 5 条，#22「分组汇总行」）：按列配聚合函数，对全部行（不只看得见的那几十行）算；跟表用同一份列模板与固定列，横向滚动时粘在底边。
- * 照 TradingView 自选「高级视图」的汇总：最小、最大、均值、中位数（自选页，2026-11-15 读；它按分组汇总，这里先做整表，分组汇总待定）。
+ * 照 TradingView 自选「高级视图」的汇总：最小、最大、均值、中位数（自选页，2026-11-15 读；它按分组汇总：这里是整表的，按分节汇总是 DataGrid 的 sectionAggregates，写在分节标题行里，#87）。表尾只算数据行，不算分节标题行。
  * 格子的字照列类型写（价格按精度、数量按单位、盈亏带符号与涨跌色），所以合计行跟上面的行对得齐；count 一律是整数。
  */
 import type { CSSProperties } from 'react'

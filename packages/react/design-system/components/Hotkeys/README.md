@@ -61,5 +61,5 @@ HotkeysProvider（可省）
 ## Keyboard
 
 - `Mod+/`：（演示）打开快捷键总览
-- `Mod+Shift+P`：（演示）打开命令面板；文档站目录的搜索占着 Mod+K（连带 Mod+Shift+K）
+- `Mod+K`：（演示）打开命令面板（照 TradingView）；演示的注册表挂在 document 上，先于文档站目录搜索（window 上的默认注册表）接到这一下
 - `Alt+R`：（演示）图表作用域：重置图表；在输入框里不触发

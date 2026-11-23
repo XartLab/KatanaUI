@@ -435,6 +435,10 @@
   outline: 1px solid var(--k-separable-bold-borderColor);
   outline-offset: -1px;
 }
+/* 相机钮在全屏钮前（#87）：两颗挨着靠右，auto 留给相机钮。 */
+.k-mheat-copy + .k-mheat-fullscreen {
+  margin-left: 0;
+}
 .k-mheat:fullscreen {
   padding: var(--space-4);
   background: var(--k-surface-base-background);

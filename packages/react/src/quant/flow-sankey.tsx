@@ -79,6 +79,7 @@ export function FlowSankey({
   source,
   onExport,
   onFullscreen,
+  onCopyImage,
 }: FlowSankeyProps) {
   const pattern = useId().replace(/:/g, '')
   const stage = useRef<HTMLDivElement>(null)
@@ -240,6 +241,7 @@ export function FlowSankey({
           onTableView={setTableView}
           onExport={onExport}
           onFullscreen={onFullscreen}
+          onCopyImage={onCopyImage}
         />
       </div>
       {tableView && (
