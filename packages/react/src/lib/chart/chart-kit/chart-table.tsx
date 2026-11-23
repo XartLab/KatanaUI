@@ -20,6 +20,15 @@ export type ChartViewProps = {
   onFullscreen?: () => void
 }
 
+/**
+ * 一行一个横轴位置、一列一条序列的表格视图（HorizonChart、SmallMultiples，照 QuantileLayers 的表）：列头是横轴那一列的名字加各序列的名字，
+ * 所以只给第一列的头，其余列头取序列的名字（KatanaUI #165）。
+ */
+export type SeriesTableViewProps = Omit<ChartViewProps, 'tableHead'> & {
+  /** 表格视图第一列（横轴位置）的列头；其余列头是各序列的名字。 */
+  tableXHead: string
+}
+
 /** 行高（px）：.k-ck-table 在虚拟滚动时把行固定成这个高（comfortable 的行高 40，含 1px 底线；#92 前是 28）。 */
 const ROW_H = 40
 /** 达到它才虚拟滚动：表的可视高是 328px（表头 48 加 7 行），这里取 50 行（约 7 屏）——再少全画，DOM 也就几十行；视觉取值，待定。 */
@@ -105,5 +114,48 @@ export function ChartTable({
         </tbody>
       </table>
     </div>
+  )
+}
+
+/** 表格视图里的一条序列：一列。 */
+export type SeriesTableColumn = {
+  key: string
+  label: string
+  values: readonly number[]
+  format: (value: number) => string
+}
+
+/** SeriesTableViewProps 的表：一行一个横轴位置（行头 formatX，不给写序号），一列一条序列，没有的值写破折号。 */
+export function SeriesChartTable({
+  slot,
+  label,
+  xHead,
+  columns,
+  formatX,
+}: {
+  slot: string
+  label: string
+  xHead: string
+  columns: readonly SeriesTableColumn[]
+  formatX?: (index: number) => string
+}) {
+  const count = columns.reduce((n, column) => Math.max(n, column.values.length), 0)
+  return (
+    <ChartTable
+      slot={slot}
+      label={label}
+      head={[xHead, ...columns.map((column) => column.label)]}
+      numeric={columns.map((_, i) => i + 1)}
+      rows={Array.from({ length: count }, (_, i) => ({
+        key: String(i),
+        cells: [
+          formatX ? formatX(i) : String(i + 1),
+          ...columns.map((column) => {
+            const value = column.values[i]
+            return value === undefined || !Number.isFinite(value) ? '—' : column.format(value)
+          }),
+        ],
+      }))}
+    />
   )
 }

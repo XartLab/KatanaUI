@@ -3,6 +3,7 @@ import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vite-plus/test'
 import { DotFill } from './dot-fill.tsx'
 import { ChartActions } from './chart-actions.tsx'
+import { SeriesChartTable } from './chart-table.tsx'
 import { ChartValue } from './chart-value.tsx'
 import { EndMarker } from './end-marker.tsx'
 import { LcdTooltip } from './lcd-tooltip.tsx'
@@ -110,5 +111,33 @@ describe('ChartValue', () => {
     expect(renderToStaticMarkup(<ChartValue text={{ value: '12.0', unit: '%' }} />)).toBe(
       '12.0 <span class="k-ck-unit">%</span>',
     )
+  })
+})
+
+describe('SeriesChartTable（HorizonChart、SmallMultiples 的表格视图，KatanaUI #165）', () => {
+  const html = renderToStaticMarkup(
+    <SeriesChartTable
+      slot="t"
+      label="两条序列"
+      xHead="时点"
+      formatX={(i) => `第${i + 1}点`}
+      columns={[
+        { key: 'a', label: 'A', values: [1, 2, 3], format: (v) => `a${v}` },
+        { key: 'b', label: 'B', values: [4, Number.NaN], format: (v) => `b${v}` },
+      ]}
+    />,
+  )
+
+  it('一行一个横轴位置、一列一条序列；列头是横轴名加序列名；缺的值写破折号', () => {
+    expect(html.match(/<th scope="col"/g)).toHaveLength(3)
+    expect(html).toContain('>时点</th>')
+    expect(html).toContain('data-num="true">A</th>')
+    expect(html.match(/<tr>/g)).toHaveLength(4)
+    expect(html).toContain('<th scope="row">第3点</th><td data-num="true">a3</td><td data-num="true">—</td>')
+    expect(html).toContain('<th scope="row">第2点</th><td data-num="true">a2</td><td data-num="true">—</td>')
+  })
+
+  it('滚动区可聚焦，带读屏名（键盘可达）', () => {
+    expect(html).toContain('tabindex="0" role="region" aria-label="两条序列"')
   })
 })

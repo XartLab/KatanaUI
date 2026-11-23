@@ -11,6 +11,9 @@ import { areaPath, extent, linePath, makePlot, niceTicks, PLOT_W } from '../lib/
 
 // #1917：时间序列与盈亏的件的几何与结构（纯函数）。拖拽、悬停、键盘与画出来的像素在 e2e/ui-gallery.spec.ts 里用真浏览器验。
 
+/** 图右上三件（表格视图必须有，dataviz §4，KatanaUI #165）。 */
+const ACTIONS = { group: '图工具', table: '表格视图', exportCsv: '导出', fullscreen: '全屏' }
+
 describe('序列几何', () => {
   it('好看的刻度：整齐步长，区间包住数据', () => {
     const { domain, ticks, step } = niceTicks(3, 97, 5)
@@ -96,8 +99,18 @@ describe('BrushChart', () => {
       formatValue={String}
       labels={labels}
       defaultValue={[10, 20]}
+      actionLabels={ACTIONS}
+      tableLabel="表"
+      tableHead={['日', '值']}
     />,
   )
+
+  it('右上有表格视图开关（键盘可达的按钮），默认关着；导出与全屏没给回调就不画', () => {
+    const actions = html.slice(html.indexOf('data-slot="chart-actions"'), html.indexOf('data-slot="brush-main"'))
+    expect(actions).toContain('<button type="button" class="k-ck-action" data-action="table" aria-pressed="false"')
+    expect(actions).not.toContain('data-action="export"')
+    expect(html).not.toContain('data-slot="brush-table"')
+  })
 
   it('主图只画窗口里的点；概览条画全部', () => {
     const line = /data-slot="brush-line" d="([^"]*)"/.exec(html)![1]!
@@ -301,11 +314,17 @@ describe('地平线图分带', () => {
       { key: 'a', label: 'A', values: [0, 3, -3, 1] },
       { key: 'b', label: 'B', values: [0, 1, -1, 0.5] },
     ]
-    const shared = renderToStaticMarkup(<HorizonChart rows={rows} label="示例" formatValue={String} />)
+    const view = { actionLabels: ACTIONS, tableLabel: '表', tableXHead: '点' }
+    const shared = renderToStaticMarkup(<HorizonChart rows={rows} label="示例" formatValue={String} {...view} />)
     expect(shared.match(/data-slot="horizon-band"/g)).toHaveLength(12)
     expect(shared).toMatch(/data-row="b"[\s\S]*data-band="2"(?: data-outer="true")? style="[^"]*" d=""/)
-    const own = renderToStaticMarkup(<HorizonChart rows={rows} label="示例" formatValue={String} scale="row" />)
+    const own = renderToStaticMarkup(
+      <HorizonChart rows={rows} label="示例" formatValue={String} scale="row" {...view} />,
+    )
     expect(own.match(/ d=""/g)?.length ?? 0).toBeLessThan(shared.match(/ d=""/g)!.length)
     expect(shared).toContain('data-tone="up"')
+    expect(shared).toContain('data-action="table" aria-pressed="false"')
+    expect(shared).not.toContain('data-slot="horizon-table"')
+    expect(shared).not.toContain('data-slot="lcd-tooltip"')
   })
 })
