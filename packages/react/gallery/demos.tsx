@@ -10,6 +10,7 @@ import {
   ThemeHeatMatrixDemo,
 } from './pages/cn-pack.tsx'
 import { FlagMarkDemo } from './pages/watchlist-order.tsx'
+import { InlineEditDemo, SplitButtonDemo, TagInputDemo } from './pages/arc-inputs.tsx'
 import { DepthChartDemo, OrderBookDemo, TradeTapeDemo } from './pages/market-depth.tsx'
 import {
   AgentAvatarDemo,
@@ -466,6 +467,9 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'hypothesis-ledger': HypothesisLedgerDemo,
   'password-input': PasswordInputDemo,
   'hold-to-confirm': HoldToConfirmDemo,
+  'split-button': SplitButtonDemo,
+  'tag-input': TagInputDemo,
+  'inline-edit': InlineEditDemo,
   'delete-button': DeleteButtonDemo,
   'notification-bell': NotificationBellDemo,
   'status-icon': StatusIconDemo,

@@ -274,6 +274,11 @@
           "target": "~/src/katana/ui/theme/hypothesis-ledger.css"
         },
         {
+          "path": "src/theme/inline-edit.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/inline-edit.css"
+        },
+        {
           "path": "src/theme/json-viewer.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/json-viewer.css"
@@ -579,6 +584,11 @@
           "target": "~/src/katana/ui/theme/sparkline.css"
         },
         {
+          "path": "src/theme/split-button.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/split-button.css"
+        },
+        {
           "path": "src/theme/splitter.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/splitter.css"
@@ -622,6 +632,11 @@
           "path": "src/theme/system-monitor.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/system-monitor.css"
+        },
+        {
+          "path": "src/theme/tag-input.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/tag-input.css"
         },
         {
           "path": "src/theme/tag.css",
@@ -3533,6 +3548,25 @@
       ]
     },
     {
+      "name": "inline-edit",
+      "type": "registry:component",
+      "title": "Inline Edit",
+      "description": "读得多、改得少的短字段（自选分组名、布局名、策略名、预警名）原地改：点一下字变成同样大小的输入框，光标落在点的那个字上（键盘激活是全选）；Enter 保存、Esc 放弃、点到外面也保存。保存是乐观的：字先换成新值，onSave 的 Promise 落定后打一个勾；reject 就退回上次存下的值，框下说为什么并给「重试」。字体字号都继承外面，as 让标题仍是标题。改自 Arc inline-edit（MIT），只做单行。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn"
+      ],
+      "files": [
+        {
+          "path": "src/patterns/inline-edit.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/patterns/inline-edit.tsx"
+        }
+      ]
+    },
+    {
       "name": "multi-select",
       "type": "registry:component",
       "title": "Multi Select",
@@ -3779,6 +3813,60 @@
           "path": "src/patterns/side-nav.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/patterns/side-nav.tsx"
+        }
+      ]
+    },
+    {
+      "name": "split-button",
+      "type": "registry:component",
+      "title": "Split Button",
+      "description": "一个按钮两个动作：左半执行主动作，右半的箭头开一份同类动作的菜单。下单「买入 · 限价」加菜单（市价、条件单），持仓「平仓」加菜单（平一半、反手），顶栏「保存」加菜单（另存为、重命名）。菜单里选了谁、主按钮就换成谁（TradingView 画图工具条的分组按钮那样）由调用方在 onSelect 里改 children 与 onClick。按主动作时整组一起缩，箭头开着时转 180°。改自 Arc split-button（MIT）。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/button",
+        "@katana/cn",
+        "@katana/dropdown-menu"
+      ],
+      "files": [
+        {
+          "path": "src/patterns/split-button.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/patterns/split-button.tsx"
+        }
+      ]
+    },
+    {
+      "name": "tag-input-model",
+      "type": "registry:lib",
+      "title": "Tag Input Model",
+      "description": "TagInput 的纯逻辑：草稿与粘贴的拆分（逗号、分号、换行、制表符）、判重（不分大小写）、校验与上限，以及键盘在标签之间怎么走。",
+      "files": [
+        {
+          "path": "src/patterns/tag-input-model.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/patterns/tag-input-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "tag-input",
+      "type": "registry:component",
+      "title": "Tag Input",
+      "description": "在一个输入框里打字成标签：品种代码清单、策略标签、日志检索的关键词。Enter 或逗号收下，重复的（不分大小写）不收、已有的那个跳一下；光标在框头时退格先选中最后一个、再按才删；粘贴「600519, 000001」这类一串一次拆开。normalize 先整理（如转大写），validate 不过的不收、框下写原因，max 封顶。与 AnimatedTags 的分工：那个是在给定的一组里挑，这个是自由输入。改自 Arc tag-input（MIT）。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/tag-input-model"
+      ],
+      "files": [
+        {
+          "path": "src/patterns/tag-input.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/patterns/tag-input.tsx"
         }
       ]
     },

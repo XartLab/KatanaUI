@@ -2550,6 +2550,112 @@ export const PAGES: readonly DocPage[] = [
     ],
   },
   {
+    id: 'split-button',
+    group: 'forms',
+    cardHeight: 220,
+    title: 'SplitButton 拆分按钮',
+    summary:
+      '一个按钮两个动作：左半执行主动作，右半的箭头开一份同类动作的菜单。下单「买入 · 限价」加菜单（市价、条件单），持仓「平仓」加菜单（平一半、反手），顶栏「保存」加菜单（另存为、重命名）。菜单里选了谁、主按钮就换成谁（TradingView 画图工具条的分组按钮那样）由调用方在 onSelect 里改 children 与 onClick。按主动作时整组一起缩，箭头开着时转 180°。改自 Arc split-button（MIT）。',
+    exports: ['SplitButton'],
+    propParts: [
+      {
+        part: 'SplitButton',
+        note: '两半都是我们的 Button，variant 与 size 同一份；菜单是 DropdownMenu（align=end），项的 danger、disabled、shortcut 照它的行。labels.menu 必填：箭头那半没有字，读屏靠它。',
+      },
+    ],
+    states: [
+      '静止：两半拼成一个，中缝一条边（primary 是一条 18% 字色的细线）。',
+      '按主动作：整组缩到 0.97；箭头那半按下只变色。',
+      '菜单开着：箭头转 180°，那半停在按下底。',
+      '没有菜单项：箭头那半灰掉，主按钮照常。',
+      '禁用：两半都灰。',
+    ],
+    donts: [
+      '菜单里不要放跟主动作无关的东西：那是 DropdownMenu 或工具条的事。',
+      '不要拿它做不可撤的主动作（全平、全撤）：那些用 HoldToConfirm；拆分按钮按一下就执行。',
+      '只有一个动作时用 Button。',
+    ],
+    composition:
+      'SplitButton\n  DropdownMenu\n    div.k-split\n      Button（主动作）\n      DropdownMenuTrigger → Button（箭头）\n    DropdownMenuContent\n      DropdownMenuItem × n（图标、字、DropdownMenuShortcut）',
+    keys: [
+      ['Enter / Space', '主按钮上：执行主动作；箭头上：开菜单'],
+      ['Alt + ↓', '主按钮上也开菜单（原生拆分按钮的键位）'],
+      ['↑ ↓ / Enter / Esc', '菜单里走、选、关（关上后焦点回箭头）'],
+    ],
+  },
+  {
+    id: 'tag-input',
+    group: 'forms',
+    cardHeight: 240,
+    title: 'TagInput 标签输入',
+    summary:
+      '在一个输入框里打字成标签：品种代码清单、策略标签、日志检索的关键词。Enter 或逗号收下，重复的（不分大小写）不收、已有的那个跳一下；光标在框头时退格先选中最后一个、再按才删；粘贴「600519, 000001」这类一串一次拆开。normalize 先整理（如转大写），validate 不过的不收、框下写原因，max 封顶。与 AnimatedTags 的分工：那个是在给定的一组里挑，这个是自由输入。改自 Arc tag-input（MIT）。',
+    exports: ['TagInput'],
+    propParts: [
+      {
+        part: 'TagInput',
+        note: 'value 受控或 defaultValue 非受控；label 是输入框的读屏名（要可见标签就配 Field 与 id）。labels.remove、labels.duplicate 必填，其余播报可选；播报走一个 aria-live=polite 的屏外区。',
+      },
+    ],
+    states: [
+      '空：显示占位。',
+      '有标签：标签在框里换行排，输入框跟在最后。',
+      '选中：退格或方向键选中的标签画一圈焦点色的环，再按退格删掉。',
+      '被拒：validate 或 max 拦下时框变红边、框下写原因，被拒的字留在框里好改。',
+      '禁用：整框半透明，标签的 × 也不能点。',
+    ],
+    donts: [
+      '选项是固定一组时不要用它：用 MultiSelect、ChipGroup 或 AnimatedTags。',
+      '标签不是自由文字（要从品种库里选）时，用 Combobox 的多选，或者给 validate 查库。',
+    ],
+    composition:
+      'TagInput\n  div.k-tagin-box\n    span.k-tagin-tag × n\n      span（字）\n      button（×，不进 Tab 序列）\n    input\n  p.k-tagin-error（被拒时）\n  span.sr-only（aria-live 播报）',
+    keys: [
+      ['Enter / ,', '收下草稿（逗号不进框；Enter 草稿空时交给表单）'],
+      ['Backspace', '光标在框头：先选中最后一个标签，再按删除'],
+      ['← →', '在标签间移选中；过了最后一个回到输入框'],
+      ['Delete', '删除选中的标签'],
+      ['Esc', '取消选中'],
+    ],
+  },
+  {
+    id: 'inline-edit',
+    group: 'forms',
+    cardHeight: 260,
+    title: 'InlineEdit 原地改名',
+    summary:
+      '读得多、改得少的短字段（自选分组名、布局名、策略名、预警名）原地改：点一下字变成同样大小的输入框，光标落在点的那个字上（键盘激活是全选）；Enter 保存、Esc 放弃、点到外面也保存。保存是乐观的：字先换成新值，onSave 的 Promise 落定后打一个勾；reject 就退回上次存下的值，框下说为什么并给「重试」。字体字号都继承外面，as 让标题仍是标题。改自 Arc inline-edit（MIT），只做单行。',
+    exports: ['InlineEdit'],
+    propParts: [
+      {
+        part: 'InlineEdit',
+        note: '静止时是一个 button（读屏名「label: 值」，描述是 labels.editHint），编辑时是 input（读屏名 label）。保存结果在 role=status 的屏外区播报。value 是存下的值：外面改了它，没在编辑或保存时直接换上。',
+      },
+    ],
+    states: [
+      '静止：透明边，悬停给按钮的悬停底，右边淡出一支铅笔。',
+      '编辑：输入框的皮，宽度跟着字长；右边是保存与取消两个图标钮。',
+      '校验不过：红边，框下写原因，留在编辑态。',
+      '保存中：字已是新值，右边转圈（只有加载才转）。',
+      '已保存：右边一个绿勾，1.8 秒后收起（Arc 的时长）。',
+      '保存失败：退回上次的值，右边红色叹号，框下说明并给「重试」。',
+      '禁用：只显示字，没有铅笔。',
+    ],
+    donts: [
+      '几个字段要一起存时不要用它：用表单和一个提交按钮。',
+      '不要拿它改价格、数量这类下单参数：那些用 NumberInput，改完要经下单确认。',
+      '长段描述不要用它：现在只做单行。',
+    ],
+    composition:
+      'InlineEdit\n  div.k-inedit\n    as（span / h1–h4）\n      button（静止）或 span.k-inedit-field（编辑：镜像字 + input）\n      span.k-inedit-slot（铅笔 / 保存与取消 / 转圈 / 勾 / 叹号）\n    p.k-inedit-message（校验或失败，失败带「重试」）\n    span.sr-only × 2（编辑提示、role=status 播报）',
+    keys: [
+      ['Enter / Space', '静止时：进编辑并全选'],
+      ['Enter', '编辑时：保存（输入法组字时不算）'],
+      ['Esc', '放弃，字回到原样，焦点回到字上'],
+      ['Tab', '焦点离开件就保存'],
+    ],
+  },
+  {
     id: 'password-input',
     group: 'forms',
     cardHeight: 171,

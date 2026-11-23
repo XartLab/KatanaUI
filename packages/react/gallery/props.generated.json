@@ -20251,6 +20251,176 @@
         }
       ]
     },
+    "InlineEdit": {
+      "kind": "component",
+      "source": "src/patterns/inline-edit.tsx",
+      "props": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": true,
+          "description": "The saved value; a new value from outside replaces the text while it is not being edited or saved."
+        },
+        {
+          "name": "onSave",
+          "type": "(next: string) => void | Promise<unknown>",
+          "required": true,
+          "description": "Persists the new value; return a promise to show the saving state, reject it to roll back."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the field, for example \"Watchlist name\"."
+        },
+        {
+          "name": "validate",
+          "type": "(next: string) => string | null | undefined",
+          "required": false,
+          "description": "Return a message when the draft cannot be saved; editing stays open and the message shows below."
+        },
+        {
+          "name": "placeholder",
+          "type": "string",
+          "required": false,
+          "default": "''",
+          "description": "Shown when the value is empty."
+        },
+        {
+          "name": "as",
+          "type": "'span' | 'p' | 'h1' | 'h2' | 'h3' | 'h4'",
+          "required": false,
+          "default": "'span'",
+          "description": "Element that holds the text, so a title can stay a heading."
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "required": false,
+          "description": "Show the text without letting it be edited."
+        },
+        {
+          "name": "labels",
+          "type": "InlineEditLabels",
+          "required": true,
+          "description": "Texts: editHint, save, cancel, failed and retry are required."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "InlineEditLabels": {
+      "kind": "type",
+      "source": "src/patterns/inline-edit.tsx",
+      "props": [
+        {
+          "name": "editHint",
+          "type": "string",
+          "required": true,
+          "description": "Read after the value on the text, for example \"Activate to edit\"."
+        },
+        {
+          "name": "save",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the save button shown while editing."
+        },
+        {
+          "name": "cancel",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the cancel button shown while editing."
+        },
+        {
+          "name": "saving",
+          "type": "string",
+          "required": false,
+          "description": "Announced while the save runs."
+        },
+        {
+          "name": "saved",
+          "type": "string",
+          "required": false,
+          "description": "Announced once the save lands."
+        },
+        {
+          "name": "failed",
+          "type": "(attempted: string) => string",
+          "required": true,
+          "description": "Message under the text after a failed save, given the value that could not be saved."
+        },
+        {
+          "name": "retry",
+          "type": "string",
+          "required": true,
+          "description": "Text of the button that reopens the failed value for another try."
+        }
+      ]
+    },
+    "InlineEditProps": {
+      "kind": "type",
+      "source": "src/patterns/inline-edit.tsx",
+      "props": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": true,
+          "description": "The saved value; a new value from outside replaces the text while it is not being edited or saved."
+        },
+        {
+          "name": "onSave",
+          "type": "(next: string) => void | Promise<unknown>",
+          "required": true,
+          "description": "Persists the new value; return a promise to show the saving state, reject it to roll back."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the field, for example \"Watchlist name\"."
+        },
+        {
+          "name": "validate",
+          "type": "(next: string) => string | null | undefined",
+          "required": false,
+          "description": "Return a message when the draft cannot be saved; editing stays open and the message shows below."
+        },
+        {
+          "name": "placeholder",
+          "type": "string",
+          "required": false,
+          "description": "Shown when the value is empty."
+        },
+        {
+          "name": "as",
+          "type": "'span' | 'p' | 'h1' | 'h2' | 'h3' | 'h4'",
+          "required": false,
+          "description": "Element that holds the text, so a title can stay a heading."
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "required": false,
+          "description": "Show the text without letting it be edited."
+        },
+        {
+          "name": "labels",
+          "type": "InlineEditLabels",
+          "required": true,
+          "description": "Texts: editHint, save, cancel, failed and retry are required."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
     "InlineOverlays": {
       "kind": "component",
       "source": "src/lib/overlay.tsx",
@@ -42711,6 +42881,176 @@
       "source": "src/quotes/sparkline.tsx",
       "props": []
     },
+    "SplitButton": {
+      "kind": "component",
+      "source": "src/patterns/split-button.tsx",
+      "props": [
+        {
+          "name": "children",
+          "type": "ReactNode",
+          "required": true,
+          "description": "Content of the main half."
+        },
+        {
+          "name": "onClick",
+          "type": "() => void",
+          "required": true,
+          "description": "Called when the main half is pressed."
+        },
+        {
+          "name": "actions",
+          "type": "readonly SplitButtonAction[]",
+          "required": true,
+          "description": "Entries of the menu half, in order."
+        },
+        {
+          "name": "labels",
+          "type": "SplitButtonLabels",
+          "required": true,
+          "description": "Texts: menu (required, names the arrow half)."
+        },
+        {
+          "name": "variant",
+          "type": "'default' | 'primary' | 'danger'",
+          "required": false,
+          "default": "'default'",
+          "description": "Look of both halves: default, primary (solid) or danger."
+        },
+        {
+          "name": "size",
+          "type": "'sm' | 'md'",
+          "required": false,
+          "default": "'md'",
+          "description": "Height of both halves: md is 30px (default), sm is 26px."
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "required": false,
+          "description": "Disable both halves."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "SplitButtonAction": {
+      "kind": "type",
+      "source": "src/patterns/split-button.tsx",
+      "props": [
+        {
+          "name": "key",
+          "type": "string",
+          "required": true,
+          "description": "Stable key of the entry."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "Text of the menu row."
+        },
+        {
+          "name": "onSelect",
+          "type": "() => void",
+          "required": true,
+          "description": "Called when the entry is chosen."
+        },
+        {
+          "name": "icon",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Icon before the label."
+        },
+        {
+          "name": "shortcut",
+          "type": "string",
+          "required": false,
+          "description": "Shortcut hint shown at the right edge of the row; display only, the caller binds the key."
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "required": false,
+          "description": "Grey the entry out."
+        },
+        {
+          "name": "danger",
+          "type": "boolean",
+          "required": false,
+          "description": "Draw the entry in the danger color (close all, reverse)."
+        }
+      ]
+    },
+    "SplitButtonLabels": {
+      "kind": "type",
+      "source": "src/patterns/split-button.tsx",
+      "props": [
+        {
+          "name": "menu",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the arrow half and of its menu, for example \"More order types\"."
+        }
+      ]
+    },
+    "SplitButtonProps": {
+      "kind": "type",
+      "source": "src/patterns/split-button.tsx",
+      "props": [
+        {
+          "name": "children",
+          "type": "ReactNode",
+          "required": true,
+          "description": "Content of the main half."
+        },
+        {
+          "name": "onClick",
+          "type": "() => void",
+          "required": true,
+          "description": "Called when the main half is pressed."
+        },
+        {
+          "name": "actions",
+          "type": "readonly SplitButtonAction[]",
+          "required": true,
+          "description": "Entries of the menu half, in order."
+        },
+        {
+          "name": "labels",
+          "type": "SplitButtonLabels",
+          "required": true,
+          "description": "Texts: menu (required, names the arrow half)."
+        },
+        {
+          "name": "variant",
+          "type": "'default' | 'primary' | 'danger'",
+          "required": false,
+          "description": "Look of both halves: default, primary (solid) or danger."
+        },
+        {
+          "name": "size",
+          "type": "'sm' | 'md'",
+          "required": false,
+          "description": "Height of both halves: md is 30px (default), sm is 26px."
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "required": false,
+          "description": "Disable both halves."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
     "Splitter": {
       "kind": "component",
       "source": "src/primitives/splitter.tsx",
@@ -46947,6 +47287,218 @@
           "required": false,
           "default": "false",
           "description": "Draw a 1px edge in the text color on a transparent fill instead of a tinted fill."
+        }
+      ]
+    },
+    "TagInput": {
+      "kind": "component",
+      "source": "src/patterns/tag-input.tsx",
+      "props": [
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the field."
+        },
+        {
+          "name": "value",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Tags (controlled)."
+        },
+        {
+          "name": "defaultValue",
+          "type": "readonly string[]",
+          "required": false,
+          "default": "[]",
+          "description": "Starting tags (uncontrolled)."
+        },
+        {
+          "name": "onValueChange",
+          "type": "(value: string[]) => void",
+          "required": false,
+          "description": "Called with the new list after a tag is added or removed."
+        },
+        {
+          "name": "placeholder",
+          "type": "string",
+          "required": false,
+          "description": "Hint shown while there are no tags and no draft."
+        },
+        {
+          "name": "normalize",
+          "type": "TagCommitOptions['normalize']",
+          "required": false,
+          "description": "Tidy a raw tag before it is checked, for example uppercasing a symbol."
+        },
+        {
+          "name": "validate",
+          "type": "TagCommitOptions['validate']",
+          "required": false,
+          "description": "Return a message to turn a tag down; the draft stays and the message shows under the field."
+        },
+        {
+          "name": "max",
+          "type": "number",
+          "required": false,
+          "description": "Largest number of tags."
+        },
+        {
+          "name": "size",
+          "type": "'sm' | 'md'",
+          "required": false,
+          "default": "'md'",
+          "description": "Height of the field: md is 30px (default), sm is 26px."
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "required": false,
+          "description": "Grey out the field and its tags."
+        },
+        {
+          "name": "id",
+          "type": "string",
+          "required": false,
+          "description": "Id of the text box, for a visible label's htmlFor."
+        },
+        {
+          "name": "labels",
+          "type": "TagInputLabels",
+          "required": true,
+          "description": "Texts: remove and duplicate are required; the other announcements are optional."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "TagInputLabels": {
+      "kind": "type",
+      "source": "src/patterns/tag-input.tsx",
+      "props": [
+        {
+          "name": "remove",
+          "type": "(tag: string) => string",
+          "required": true,
+          "description": "Accessible name of the remove button on a tag, for example (tag) => `Remove ${tag}`."
+        },
+        {
+          "name": "duplicate",
+          "type": "(tag: string) => string",
+          "required": true,
+          "description": "Announced when a typed tag repeats one already in the list."
+        },
+        {
+          "name": "added",
+          "type": "(tags: string[]) => string",
+          "required": false,
+          "description": "Announced after tags are added."
+        },
+        {
+          "name": "removed",
+          "type": "(tag: string) => string",
+          "required": false,
+          "description": "Announced after a tag is removed."
+        },
+        {
+          "name": "picked",
+          "type": "(tag: string) => string",
+          "required": false,
+          "description": "Announced when Backspace or an arrow key selects a tag, for example \"600519 selected, Backspace removes it\"."
+        },
+        {
+          "name": "full",
+          "type": "string",
+          "required": false,
+          "description": "Shown and announced when max is reached and a tag was turned away."
+        }
+      ]
+    },
+    "TagInputProps": {
+      "kind": "type",
+      "source": "src/patterns/tag-input.tsx",
+      "props": [
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the field."
+        },
+        {
+          "name": "value",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Tags (controlled)."
+        },
+        {
+          "name": "defaultValue",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Starting tags (uncontrolled)."
+        },
+        {
+          "name": "onValueChange",
+          "type": "(value: string[]) => void",
+          "required": false,
+          "description": "Called with the new list after a tag is added or removed."
+        },
+        {
+          "name": "placeholder",
+          "type": "string",
+          "required": false,
+          "description": "Hint shown while there are no tags and no draft."
+        },
+        {
+          "name": "normalize",
+          "type": "TagCommitOptions['normalize']",
+          "required": false,
+          "description": "Tidy a raw tag before it is checked, for example uppercasing a symbol."
+        },
+        {
+          "name": "validate",
+          "type": "TagCommitOptions['validate']",
+          "required": false,
+          "description": "Return a message to turn a tag down; the draft stays and the message shows under the field."
+        },
+        {
+          "name": "max",
+          "type": "number",
+          "required": false,
+          "description": "Largest number of tags."
+        },
+        {
+          "name": "size",
+          "type": "'sm' | 'md'",
+          "required": false,
+          "description": "Height of the field: md is 30px (default), sm is 26px."
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "required": false,
+          "description": "Grey out the field and its tags."
+        },
+        {
+          "name": "id",
+          "type": "string",
+          "required": false,
+          "description": "Id of the text box, for a visible label's htmlFor."
+        },
+        {
+          "name": "labels",
+          "type": "TagInputLabels",
+          "required": true,
+          "description": "Texts: remove and duplicate are required; the other announcements are optional."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
         }
       ]
     },
