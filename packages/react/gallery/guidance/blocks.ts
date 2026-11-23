@@ -85,6 +85,10 @@ const blocks: GuidanceMap = {
       '组 id 用面板头色点的 LinkGroup（A–D），面板头的 Led 画同一个颜色，用户一眼看出谁跟谁一组；null 是不联动（面板头画熄灭的环）。',
       '写的一方只写自己改了的字段：自选写 symbol，图的周期分段写 interval，十字线 pointermove 写 crosshairTime、离开写 null，拖动可见区间写 range。',
       '读的一方 fields 只订阅要的：自选只要 symbol，图要全部。DataGrid 的 onCursorChange 接 set({ symbol })，就是「上下键在自选里走，联动的图跟着换」（TradingView 自选的空格 / 上下键，对齐表 L836）。',
+      '四组 A–D，颜色是 token link-a…d：A 赭（signal-orange）、B 玫瑰茜红、C 铬绿、D 土黄，取自 Graphite 信号色（2026-11-15 用户定），不用 TradingView 蓝，也不为更多组造新色。',
+      '让用户自己换组用 LinkGroupPicker（#150，照 TradingView 符号联动，帮助中心 Symbol syncing between tabs，2026-11-23 读）：放在标题栏最左，即 PanelFrameHeader 静态色点的位置；22×22 透明按钮、8px 联动灯、圆角 4；悬停与菜单开着各深一档底色（--k-actionable-subtle-*）。',
+      '选组件的菜单最窄 140px：A–D 四项在上，分隔线下是「不联动」；当前那项打勾；每组行尾用小字写联动表里这组现在的品种，进组前就看得到会换成什么。',
+      '从选组件进组走 joinLinkGroup：进有品种的组，件改看组的；进空组，组取这件现在的品种、周期、可见区间（经 hub.set），件不跳回 initial；十字线时刻不交。不联动时件回到自己记的状态（useLinkGroup 的规则）。帮助中心没写进组、离组的细节，是我们定的，待在 TradingView 里实看核对。',
     ],
     avoid: [
       '跨窗口、跨设备的同步：这里只在一个页面里，要存盘或广播由宿主自己接。',
@@ -93,6 +97,9 @@ const blocks: GuidanceMap = {
     a11y: [
       '联动的变化要看得见：面板头的 object 写当前品种，色点有读屏名（「联动组 A」）。',
       '十字线同步只是视觉辅助，不发读屏通知；读数另有文字（图自己的读数行）。',
+      '选组件是 button（aria-haspopup=menu、aria-expanded），读屏名是「labels.trigger: 当前组名」；按钮里的灯对读屏隐藏，不读两遍。',
+      '选组件的菜单是单选菜单（menuitemradio + aria-checked，Radix），菜单名是 labels.trigger；组名由调用方给，没给的组读字母 A–D；组色不单独传意，每项都写组名。',
+      '选组件的焦点环画在按钮里面（outline-offset -2px），贴着标题栏边也不被裁掉。',
     ],
   },
   'data-grid': {

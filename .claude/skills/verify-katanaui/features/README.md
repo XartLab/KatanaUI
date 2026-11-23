@@ -44,6 +44,7 @@
 | [盘口三件](orderbook.md) | `drive orderbook` | 订单簿买卖两侧与三种模式、合并档位、占比条与累计、点价；深度图键盘与鼠标读数；成交明细逐笔与聚合 |
 | [Markdown 安全正文](markdown.md) | `drive markdown` | 粗体、列表、表格、代码与引用小标的渲染；HTML、图片被拦，外链新标签页；文档模式的锚点与相对链接 |
 | [TradingView 小组件四件](tv-widgets.md) | `drive tv-widgets` | SymbolInfo 报价与区间、SymbolOverview 页签 / 读数 / 区间 / percent 叠图、CrossRates 点格与键盘与热力、CompanyProfile 展开收起与空态 |
+| [联动组与选组件](link-group.md) | `drive link-group` | 同组同步、选组菜单（打勾与每组品种）、进有品种的组、进空组带着品种走、不联动、键盘选组与 Esc、自选联动、十字线联动 |
 | [对照 Salt 补的七件](salt-gaps.md) | 还没有流程（手走） | Pill 改与删、SystemStatus 关闭、Calendar 选日与不可选日、ListBox 单选与多选、Link / Card / Panel 的样子 |
 | [RatingPanel 技术评级三联](rating-panel.md) | `drive rating-panel` | 点周期与 Tab + Enter 切周期、悬停与 Tab 聚焦出读数 |
 | [SymbolNote 品种备注](symbol-note.md) | `drive symbol-note` | 悬停预览、点击与 Enter 钉住、编辑后保存、存空就是删除、Esc 收起与放弃草稿 |
@@ -63,3 +64,4 @@
 | 2026-11-23 | `c9634db` | 四条全走 | 全部 PASS | XartLab/KatanaUI#143 |
 | 2026-11-23 | `3ecfbf6` | 新补的 `orderbook`、`markdown`、`tv-widgets`，加了 `popover-scroll-close` 的 `overlays` | 四条全部 PASS（10 / 5 / 11 / 11 步）；每条各改坏一处组件代码都在对应那步变红，已还原 | XartLab/KatanaUI#143 |
 | 2026-11-23 | `3281e887`（`feat/150-rating-panel` 合入 main 后） | rating-panel、symbol-note | 两条 PASS；各做一次改坏，变红后还原 | XartLab/KatanaUI#159 |
+| 2026-11-23 | `c3eb2c28` | `link-group`（Graphite，十一步；合并前的工作树另走过一次 Console） | PASS；把选组件进组时的 joinLinkGroup 注释掉，第 06 步 FAIL（迷你图进空的组 C 后不再是 DDD） | XartLab/KatanaUI#162 |

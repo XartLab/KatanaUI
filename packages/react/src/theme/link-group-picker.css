@@ -1,0 +1,35 @@
+/* SPDX-License-Identifier: MIT */
+/* 联动组选择件（katana/link-group-picker，#150 G8）：标题栏里的一个 22×22 透明小按钮（同 PanelFrame 的折叠按钮），中间是 8px 联动灯。
+   悬停、菜单开着（data-state=open）各深一档底色，开着的那个看得出来；焦点环画在里面（贴边的小按钮，外移会被标题栏裁掉）。颜色只读 --k-*。 */
+.k-link-picker {
+  display: inline-flex;
+  flex: 0 0 22px;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-inner);
+  background: transparent;
+  cursor: pointer;
+  transition: background-color 120ms var(--ease-snappy, ease-out);
+}
+.k-link-picker:hover {
+  background: var(--k-actionable-subtle-background-hover);
+}
+.k-link-picker[data-state='open'] {
+  background: var(--k-actionable-subtle-background-active);
+}
+.k-link-picker:focus-visible {
+  outline: var(--k-focused-outlineWidth) solid var(--k-focused-outlineColor);
+  outline-offset: -2px;
+}
+.k-link-picker-dot {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 12px;
+  height: 12px;
+}
