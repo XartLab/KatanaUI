@@ -137,10 +137,12 @@ async function openBrowser({ headed = false, scrollbars = false } = {}) {
 }
 
 /** 打开文档站的一页（#/<id>），等它的预览容器 [data-gallery=<id>] 出来。 */
-async function openPage(page, id, theme = 'graphite') {
-  await page.goto(`${BASE}/?theme=${theme}#/${id}`)
+// 只等导航提交，不等 load：冷启动时 Vite 预构建依赖，load 事件可能几分钟才来，page.goto 默认 30 秒就超时，
+// 服务其实已经起来了。等待全交给「这页的预览画出来」，预算由调用方给（start 给冷启动的长预算）。
+async function openPage(page, id, theme = 'graphite', { timeout = 90_000 } = {}) {
+  await page.goto(`${BASE}/?theme=${theme}#/${id}`, { waitUntil: 'commit', timeout })
   const section = page.locator(`[data-gallery="${id}"]`).first()
-  await section.waitFor({ timeout: 90_000 })
+  await section.waitFor({ timeout })
   return section
 }
 
@@ -201,10 +203,14 @@ async function cmdStart() {
     process.exit(1)
   }
   // 能应答不等于能用：第一次打开要编译整个文档站，等第一页的预览真的画出来才算就绪。
+  // 新 worktree 第一次起还要预构建依赖（2 核机器上可到几分钟），给 5 分钟。
   const started = Date.now()
   const { browser, page, errors } = await openBrowser()
   try {
-    await openPage(page, 'button')
+    await openPage(page, 'button', 'graphite', { timeout: 300_000 })
+  } catch (error) {
+    console.error(`服务起了但 5 分钟内 #/button 没画出来：${error.message.split('\n')[0]}。日志 ${DEV_LOG}`)
+    process.exit(1)
   } finally {
     await browser.close()
   }
