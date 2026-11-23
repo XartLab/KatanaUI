@@ -136,3 +136,9 @@
 @import './theme/portfolio-run-grid.css';
 @import './theme/replay-transport.css';
 @import './theme/run-mode-badge.css';
+/* #104 对照 Salt 补的件：可关的胶囊、常驻选项列表、单独的月历（排在 date-time.css 之后）、全站系统消息条、行内链接。 */
+@import './theme/pill.css';
+@import './theme/list-box.css';
+@import './theme/calendar.css';
+@import './theme/system-status.css';
+@import './theme/link.css';

@@ -1,0 +1,95 @@
+/* SPDX-License-Identifier: MIT */
+/* SystemStatus（katana/system-status.tsx）：全站系统消息条，贴在应用顶上、占满宽。
+   最低 36 高、左 12 右 8 内距、底下 1px 语气色的边；底是语气的 10% 色叠在 container-primary 的实底上（不透：条吸顶时下面的内容不透上来）。
+   字是 primary，标题 600 粗；图标取语气色，五种语气的图标形状各不同。容器窄到放不下时动作换到下一行、靠右；关闭钮固定在右上，不跟着换行。 */
+.k-sysstat {
+  --k-sysstat-fg: var(--k-status-info-foreground);
+  --k-sysstat-bg: var(--k-status-info-background);
+  --k-sysstat-edge: var(--k-status-info-borderColor);
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 10px;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 36px;
+  padding: 6px 8px 6px 12px;
+  border-bottom: 1px solid var(--k-sysstat-edge);
+  background: linear-gradient(var(--k-sysstat-bg) 0 0) var(--k-container-primary-background);
+  color: var(--k-content-primary-foreground);
+  font: var(--text-body) var(--font-sans);
+}
+.k-sysstat[data-tone='neutral'] {
+  --k-sysstat-fg: var(--k-status-neutral-foreground);
+  --k-sysstat-bg: var(--k-status-neutral-background);
+  --k-sysstat-edge: var(--k-status-neutral-borderColor);
+}
+.k-sysstat[data-tone='ok'] {
+  --k-sysstat-fg: var(--k-status-ok-foreground);
+  --k-sysstat-bg: var(--k-status-ok-background);
+  --k-sysstat-edge: var(--k-status-ok-borderColor);
+}
+.k-sysstat[data-tone='warn'] {
+  --k-sysstat-fg: var(--k-status-warn-foreground);
+  --k-sysstat-bg: var(--k-status-warn-background);
+  --k-sysstat-edge: var(--k-status-warn-borderColor);
+}
+.k-sysstat[data-tone='danger'] {
+  --k-sysstat-fg: var(--k-status-danger-foreground);
+  --k-sysstat-bg: var(--k-status-danger-background);
+  --k-sysstat-edge: var(--k-status-danger-borderColor);
+}
+.k-sysstat[data-dismissible] {
+  padding-right: 40px;
+}
+.k-sysstat-icon {
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  color: var(--k-sysstat-fg);
+}
+.k-sysstat-content {
+  display: flex;
+  flex: 1 1 16em;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 8px;
+  min-width: 0;
+}
+.k-sysstat-title {
+  font-weight: 600;
+}
+.k-sysstat-message {
+  color: var(--k-content-body-foreground);
+}
+.k-sysstat-actions {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+}
+.k-sysstat-close {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  display: inline-grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-control);
+  background: transparent;
+  color: var(--k-content-secondary-foreground);
+  cursor: pointer;
+}
+.k-sysstat-close:hover {
+  background: var(--k-actionable-subtle-background-hover);
+  color: var(--k-content-primary-foreground);
+}
+.k-sysstat-close:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: -2px;
+}

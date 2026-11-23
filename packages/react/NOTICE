@@ -108,3 +108,8 @@ This package is licensed under the MIT License (see LICENSE).
    官网的撤销重做、复制粘贴、辅助线、Auto Layout 是 Pro 示例（xyflow Pro License，不是开源许可），没有用，那几项是自己写的。
    画布右下角的 React Flow 署名用 proOptions.hideAttribution 关掉了（MIT 允许），出处记在这里与文档站的白板页。
    React Flow is the runtime base of the whiteboard (MIT, installed from npm, not redistributed); its Pro examples were not used.
+
+12. Salt Design System（https://github.com/jpmorganchase/salt-ds ，https://www.saltdesignsystem.com ，Apache-2.0，Copyright JPMorgan Chase & Co.；2026-11-23 读用法页与 packages/core/src/pill/Pill.tsx）
+   #104 对照 Salt 的组件清单补的七件（`src/katana/pill.tsx`、`system-status.tsx`、`link.tsx`、`panel.tsx`，`src/patterns/calendar.tsx`、`list-box.tsx`，`src/primitives/card.tsx` 的变体）
+   只取它的结构与用法（部件划分、语气档、变体档、什么时候用 / 不用），没有搬它的代码、类名与样式；文件头逐个写明，文档站「对照 Salt」一节（`docs/salt-map.json`）列着对应关系。
+   Only the structure and usage guidance of these Salt components are followed; no Salt code, class names or styles are copied.

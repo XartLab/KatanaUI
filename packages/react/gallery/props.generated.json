@@ -5437,6 +5437,91 @@
       "source": "src/cn/session.ts",
       "props": []
     },
+    "Calendar": {
+      "kind": "component",
+      "source": "src/patterns/calendar.tsx",
+      "props": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": false,
+          "description": "Selected day, YYYY-MM-DD (controlled); '' for none."
+        },
+        {
+          "name": "defaultValue",
+          "type": "string",
+          "required": false,
+          "description": "Selected day at first (uncontrolled)."
+        },
+        {
+          "name": "onValueChange",
+          "type": "(day: string) => void",
+          "required": false,
+          "description": "Called with the picked day, YYYY-MM-DD."
+        },
+        {
+          "name": "min",
+          "type": "string",
+          "required": false,
+          "description": "Earliest day that can be picked (YYYY-MM-DD); earlier days are disabled and the previous button stops there."
+        },
+        {
+          "name": "max",
+          "type": "string",
+          "required": false,
+          "description": "Latest day that can be picked (YYYY-MM-DD)."
+        },
+        {
+          "name": "unavailable",
+          "type": "(day: string) => boolean",
+          "required": false,
+          "description": "Days that are shown but cannot be picked (non-trading days, holidays): return true for YYYY-MM-DD to grey it out."
+        },
+        {
+          "name": "defaultFocusedValue",
+          "type": "string",
+          "required": false,
+          "description": "Which month opens when nothing is selected (YYYY-MM-DD of any day in it); defaults to today's month."
+        },
+        {
+          "name": "weekStart",
+          "type": "WeekStart",
+          "required": false,
+          "default": "'mon'",
+          "description": "First column of the week: mon (default) or sun."
+        },
+        {
+          "name": "locale",
+          "type": "string",
+          "required": true,
+          "description": "BCP 47 locale for month and weekday names, for example 'zh-CN'."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the calendar."
+        },
+        {
+          "name": "labels",
+          "type": "CalendarLabels",
+          "required": true,
+          "description": "Accessible names of the two month buttons."
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "required": false,
+          "description": "Disable the whole calendar."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class names on the calendar's outer element."
+        }
+      ]
+    },
     "CalendarCategory": {
       "kind": "type",
       "source": "src/quant/event-calendar-model.ts",
@@ -5817,6 +5902,108 @@
       "source": "src/quant/event-calendar-types.ts",
       "props": []
     },
+    "CalendarLabels": {
+      "kind": "type",
+      "source": "src/patterns/calendar.tsx",
+      "props": [
+        {
+          "name": "previousMonth",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the previous-month button."
+        },
+        {
+          "name": "nextMonth",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the next-month button."
+        }
+      ]
+    },
+    "CalendarProps": {
+      "kind": "type",
+      "source": "src/patterns/calendar.tsx",
+      "props": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": false,
+          "description": "Selected day, YYYY-MM-DD (controlled); '' for none."
+        },
+        {
+          "name": "defaultValue",
+          "type": "string",
+          "required": false,
+          "description": "Selected day at first (uncontrolled)."
+        },
+        {
+          "name": "onValueChange",
+          "type": "(day: string) => void",
+          "required": false,
+          "description": "Called with the picked day, YYYY-MM-DD."
+        },
+        {
+          "name": "min",
+          "type": "string",
+          "required": false,
+          "description": "Earliest day that can be picked (YYYY-MM-DD); earlier days are disabled and the previous button stops there."
+        },
+        {
+          "name": "max",
+          "type": "string",
+          "required": false,
+          "description": "Latest day that can be picked (YYYY-MM-DD)."
+        },
+        {
+          "name": "unavailable",
+          "type": "(day: string) => boolean",
+          "required": false,
+          "description": "Days that are shown but cannot be picked (non-trading days, holidays): return true for YYYY-MM-DD to grey it out."
+        },
+        {
+          "name": "defaultFocusedValue",
+          "type": "string",
+          "required": false,
+          "description": "Which month opens when nothing is selected (YYYY-MM-DD of any day in it); defaults to today's month."
+        },
+        {
+          "name": "weekStart",
+          "type": "WeekStart",
+          "required": false,
+          "description": "First column of the week: mon (default) or sun."
+        },
+        {
+          "name": "locale",
+          "type": "string",
+          "required": true,
+          "description": "BCP 47 locale for month and weekday names, for example 'zh-CN'."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the calendar."
+        },
+        {
+          "name": "labels",
+          "type": "CalendarLabels",
+          "required": true,
+          "description": "Accessible names of the two month buttons."
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "required": false,
+          "description": "Disable the whole calendar."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class names on the calendar's outer element."
+        }
+      ]
+    },
     "Candle": {
       "kind": "type",
       "source": "src/cn/mini-k-model.ts",
@@ -5906,6 +6093,61 @@
           "description": ""
         }
       ]
+    },
+    "Card": {
+      "kind": "component",
+      "source": "src/primitives/card.tsx",
+      "props": [
+        {
+          "name": "variant",
+          "type": "\"primary\" | \"ghost\" | \"secondary\" | \"tertiary\"",
+          "required": false,
+          "description": "Fill of the card: secondary (default), primary, tertiary, or ghost (no fill, no edge)."
+        },
+        {
+          "name": "interactive",
+          "type": "false | true",
+          "required": false,
+          "description": "Hover and press feedback for a card that is itself a link or a button (use with asChild)."
+        },
+        {
+          "name": "asChild",
+          "type": "boolean",
+          "required": false,
+          "default": "false",
+          "description": "Render the single child (an a or a button, so the whole card is one target) with the card skin."
+        }
+      ]
+    },
+    "CardAction": {
+      "kind": "component",
+      "source": "src/primitives/card.tsx",
+      "props": []
+    },
+    "CardContent": {
+      "kind": "component",
+      "source": "src/primitives/card.tsx",
+      "props": []
+    },
+    "CardDescription": {
+      "kind": "component",
+      "source": "src/primitives/card.tsx",
+      "props": []
+    },
+    "CardFooter": {
+      "kind": "component",
+      "source": "src/primitives/card.tsx",
+      "props": []
+    },
+    "CardHeader": {
+      "kind": "component",
+      "source": "src/primitives/card.tsx",
+      "props": []
+    },
+    "CardTitle": {
+      "kind": "component",
+      "source": "src/primitives/card.tsx",
+      "props": []
     },
     "CatalogCategory": {
       "kind": "type",
@@ -21528,10 +21770,73 @@
         }
       ]
     },
+    "Link": {
+      "kind": "component",
+      "source": "src/katana/link.tsx",
+      "props": [
+        {
+          "name": "tone",
+          "type": "'primary' | 'secondary'",
+          "required": false,
+          "default": "'primary'",
+          "description": "primary (default): the primary text color; secondary: the secondary text color (footnotes, captions)."
+        },
+        {
+          "name": "external",
+          "type": "boolean",
+          "required": false,
+          "default": "false",
+          "description": "Opens in a new tab (target=_blank, rel=noopener noreferrer) and ends with an external-link icon."
+        },
+        {
+          "name": "externalLabel",
+          "type": "string",
+          "required": false,
+          "description": "Read after the text when external, for example \"(opens in a new tab)\"; the package ships no text."
+        },
+        {
+          "name": "asChild",
+          "type": "boolean",
+          "required": false,
+          "default": "false",
+          "description": "Render the single child (a router's Link) with this skin instead of an a."
+        }
+      ]
+    },
     "LinkGroup": {
       "kind": "type",
       "source": "src/katana/led.tsx",
       "props": []
+    },
+    "LinkProps": {
+      "kind": "type",
+      "source": "src/katana/link.tsx",
+      "props": [
+        {
+          "name": "tone",
+          "type": "'primary' | 'secondary'",
+          "required": false,
+          "description": "primary (default): the primary text color; secondary: the secondary text color (footnotes, captions)."
+        },
+        {
+          "name": "external",
+          "type": "boolean",
+          "required": false,
+          "description": "Opens in a new tab (target=_blank, rel=noopener noreferrer) and ends with an external-link icon."
+        },
+        {
+          "name": "externalLabel",
+          "type": "string",
+          "required": false,
+          "description": "Read after the text when external, for example \"(opens in a new tab)\"; the package ships no text."
+        },
+        {
+          "name": "asChild",
+          "type": "boolean",
+          "required": false,
+          "description": "Render the single child (a router's Link) with this skin instead of an a."
+        }
+      ]
     },
     "LinkState": {
       "kind": "type",
@@ -21661,6 +21966,218 @@
       "kind": "type",
       "source": "src/blocks/positions-table/positions-model.ts",
       "props": []
+    },
+    "ListBox": {
+      "kind": "component",
+      "source": "src/patterns/list-box.tsx",
+      "props": [
+        {
+          "name": "items",
+          "type": "readonly (ListBoxOption | ListBoxGroup)[]",
+          "required": true,
+          "description": "Options, or titled groups of options; the two can be mixed."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the list."
+        },
+        {
+          "name": "selectionMode",
+          "type": "'single' | 'multiple'",
+          "required": false,
+          "default": "'single'",
+          "description": "single (default): exactly one stays selected once picked; multiple: each click toggles."
+        },
+        {
+          "name": "value",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Selected option ids (controlled)."
+        },
+        {
+          "name": "defaultValue",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Selected option ids at first (uncontrolled)."
+        },
+        {
+          "name": "onValueChange",
+          "type": "(value: string[]) => void",
+          "required": false,
+          "description": "Called with the whole list of selected ids."
+        },
+        {
+          "name": "onAction",
+          "type": "(id: string) => void",
+          "required": false,
+          "description": "Called when an option is activated with Enter or a double click (open the layout, switch the account)."
+        },
+        {
+          "name": "bordered",
+          "type": "boolean",
+          "required": false,
+          "default": "false",
+          "description": "Draw an edge and a fill around the list (a standalone list); without it the list blends into its container."
+        },
+        {
+          "name": "maxHeight",
+          "type": "number | string",
+          "required": false,
+          "description": "Height after which the list scrolls inside itself (px or any CSS length)."
+        },
+        {
+          "name": "emptyLabel",
+          "type": "string",
+          "required": false,
+          "description": "Shown in place of the options when items is empty."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class names on the list."
+        }
+      ]
+    },
+    "ListBoxGroup": {
+      "kind": "type",
+      "source": "src/patterns/list-box.tsx",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "title",
+          "type": "string",
+          "required": true,
+          "description": "Heading of the group (announced as the group's name)."
+        },
+        {
+          "name": "options",
+          "type": "readonly ListBoxOption[]",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "ListBoxOption": {
+      "kind": "type",
+      "source": "src/patterns/list-box.tsx",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "The option's text; also what type-ahead matches."
+        },
+        {
+          "name": "description",
+          "type": "string",
+          "required": false,
+          "description": "A second line under the label, in the secondary color."
+        },
+        {
+          "name": "icon",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Icon before the label (decorative)."
+        },
+        {
+          "name": "trailing",
+          "type": "ReactNode",
+          "required": false,
+          "description": "A value at the right end, before the check (a count, a balance); tabular figures."
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "ListBoxProps": {
+      "kind": "type",
+      "source": "src/patterns/list-box.tsx",
+      "props": [
+        {
+          "name": "items",
+          "type": "readonly (ListBoxOption | ListBoxGroup)[]",
+          "required": true,
+          "description": "Options, or titled groups of options; the two can be mixed."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the list."
+        },
+        {
+          "name": "selectionMode",
+          "type": "'single' | 'multiple'",
+          "required": false,
+          "description": "single (default): exactly one stays selected once picked; multiple: each click toggles."
+        },
+        {
+          "name": "value",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Selected option ids (controlled)."
+        },
+        {
+          "name": "defaultValue",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Selected option ids at first (uncontrolled)."
+        },
+        {
+          "name": "onValueChange",
+          "type": "(value: string[]) => void",
+          "required": false,
+          "description": "Called with the whole list of selected ids."
+        },
+        {
+          "name": "onAction",
+          "type": "(id: string) => void",
+          "required": false,
+          "description": "Called when an option is activated with Enter or a double click (open the layout, switch the account)."
+        },
+        {
+          "name": "bordered",
+          "type": "boolean",
+          "required": false,
+          "description": "Draw an edge and a fill around the list (a standalone list); without it the list blends into its container."
+        },
+        {
+          "name": "maxHeight",
+          "type": "number | string",
+          "required": false,
+          "description": "Height after which the list scrolls inside itself (px or any CSS length)."
+        },
+        {
+          "name": "emptyLabel",
+          "type": "string",
+          "required": false,
+          "description": "Shown in place of the options when items is empty."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class names on the list."
+        }
+      ]
     },
     "Loading": {
       "kind": "component",
@@ -29350,6 +29867,19 @@
         }
       ]
     },
+    "Panel": {
+      "kind": "component",
+      "source": "src/katana/panel.tsx",
+      "props": [
+        {
+          "name": "variant",
+          "type": "'primary' | 'secondary' | 'tertiary'",
+          "required": false,
+          "default": "'primary'",
+          "description": "Fill: primary (default, the brightest container fill), secondary or tertiary."
+        }
+      ]
+    },
     "PanelFrame": {
       "kind": "component",
       "source": "src/blocks/panel-frame/panel-frame.tsx",
@@ -29732,6 +30262,18 @@
       "kind": "type",
       "source": "src/blocks/panel-frame/panel-frame.tsx",
       "props": []
+    },
+    "PanelProps": {
+      "kind": "type",
+      "source": "src/katana/panel.tsx",
+      "props": [
+        {
+          "name": "variant",
+          "type": "'primary' | 'secondary' | 'tertiary'",
+          "required": false,
+          "description": "Fill: primary (default, the brightest container fill), secondary or tertiary."
+        }
+      ]
     },
     "PanelTab": {
       "kind": "type",
@@ -31551,6 +32093,96 @@
     "PerspectiveTextSplit": {
       "kind": "type",
       "source": "src/motion/text/perspective-text-3d.tsx",
+      "props": []
+    },
+    "Pill": {
+      "kind": "component",
+      "source": "src/katana/pill.tsx",
+      "props": [
+        {
+          "name": "children",
+          "type": "ReactNode",
+          "required": true,
+          "description": "Text of the pill: one or two words."
+        },
+        {
+          "name": "icon",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Leading icon (13px); decorative, so give it aria-hidden."
+        },
+        {
+          "name": "selected",
+          "type": "boolean",
+          "required": false,
+          "description": "Pressed state (aria-pressed): the pill becomes a toggle drawn in the selected look."
+        },
+        {
+          "name": "onDismiss",
+          "type": "() => void",
+          "required": false,
+          "description": "Given: an × button at the end removes the pill; Backspace or Delete on the pill does the same."
+        },
+        {
+          "name": "dismissLabel",
+          "type": "string",
+          "required": false,
+          "description": "Accessible name of the × button, for example \"Remove P/E < 20\"; required with onDismiss (the package ships no text)."
+        },
+        {
+          "name": "size",
+          "type": "PillSize",
+          "required": false,
+          "default": "'md'",
+          "description": "md (24px, default) or sm (20px)."
+        }
+      ]
+    },
+    "PillProps": {
+      "kind": "type",
+      "source": "src/katana/pill.tsx",
+      "props": [
+        {
+          "name": "children",
+          "type": "ReactNode",
+          "required": true,
+          "description": "Text of the pill: one or two words."
+        },
+        {
+          "name": "icon",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Leading icon (13px); decorative, so give it aria-hidden."
+        },
+        {
+          "name": "selected",
+          "type": "boolean",
+          "required": false,
+          "description": "Pressed state (aria-pressed): the pill becomes a toggle drawn in the selected look."
+        },
+        {
+          "name": "onDismiss",
+          "type": "() => void",
+          "required": false,
+          "description": "Given: an × button at the end removes the pill; Backspace or Delete on the pill does the same."
+        },
+        {
+          "name": "dismissLabel",
+          "type": "string",
+          "required": false,
+          "description": "Accessible name of the × button, for example \"Remove P/E < 20\"; required with onDismiss (the package ships no text)."
+        },
+        {
+          "name": "size",
+          "type": "PillSize",
+          "required": false,
+          "description": "md (24px, default) or sm (20px)."
+        }
+      ]
+    },
+    "PillSize": {
+      "kind": "type",
+      "source": "src/katana/pill.tsx",
       "props": []
     },
     "PillValue": {
@@ -45809,6 +46441,96 @@
         }
       ]
     },
+    "SystemStatus": {
+      "kind": "component",
+      "source": "src/katana/system-status.tsx",
+      "props": [
+        {
+          "name": "tone",
+          "type": "SystemStatusTone",
+          "required": false,
+          "default": "'info'",
+          "description": "info (default), neutral, ok, warn or danger: the color of the bar and the shape of its icon."
+        },
+        {
+          "name": "title",
+          "type": "ReactNode",
+          "required": false,
+          "description": "A short bold lead before the message, for example \"Scheduled maintenance\"."
+        },
+        {
+          "name": "actions",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Buttons or links at the end of the bar (a small Button, a Link)."
+        },
+        {
+          "name": "icon",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Replace the tone's icon; pass null for no icon."
+        },
+        {
+          "name": "onDismiss",
+          "type": "() => void",
+          "required": false,
+          "description": "Given: a close button at the right end calls it."
+        },
+        {
+          "name": "dismissLabel",
+          "type": "string",
+          "required": false,
+          "description": "Accessible name of the close button; required with onDismiss (the package ships no text)."
+        }
+      ]
+    },
+    "SystemStatusProps": {
+      "kind": "type",
+      "source": "src/katana/system-status.tsx",
+      "props": [
+        {
+          "name": "tone",
+          "type": "SystemStatusTone",
+          "required": false,
+          "description": "info (default), neutral, ok, warn or danger: the color of the bar and the shape of its icon."
+        },
+        {
+          "name": "title",
+          "type": "ReactNode",
+          "required": false,
+          "description": "A short bold lead before the message, for example \"Scheduled maintenance\"."
+        },
+        {
+          "name": "actions",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Buttons or links at the end of the bar (a small Button, a Link)."
+        },
+        {
+          "name": "icon",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Replace the tone's icon; pass null for no icon."
+        },
+        {
+          "name": "onDismiss",
+          "type": "() => void",
+          "required": false,
+          "description": "Given: a close button at the right end calls it."
+        },
+        {
+          "name": "dismissLabel",
+          "type": "string",
+          "required": false,
+          "description": "Accessible name of the close button; required with onDismiss (the package ships no text)."
+        }
+      ]
+    },
+    "SystemStatusTone": {
+      "kind": "type",
+      "source": "src/katana/system-status.tsx",
+      "props": []
+    },
     "TEXT_REVEAL_EASES": {
       "kind": "value",
       "source": "src/motion/text/text-reveal.tsx",
@@ -53033,6 +53755,11 @@
           "description": "Closing price."
         }
       ]
+    },
+    "cardVariants": {
+      "kind": "function",
+      "source": "src/primitives/card.tsx",
+      "props": []
     },
     "changeText": {
       "kind": "function",
