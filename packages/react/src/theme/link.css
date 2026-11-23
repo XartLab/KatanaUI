@@ -1,0 +1,32 @@
+/* SPDX-License-Identifier: MIT */
+/* Link（katana/link.tsx）：行内文字链接，与 Button 的 link 变体同一套数值：
+   字取 primary（secondary 档取 secondary），下划线 1px、颜色 separable-primary、偏移 3px，一直在（WCAG 1.4.1 不只靠颜色）；
+   悬停字提到 primary、下划线换成字色；焦点环 2px、圆角 2px 贴着字。字号与字体继承正文，不另定。外链图标 12px，跟字基线对齐、左边 2px。 */
+.k-link {
+  border-radius: var(--radius-sm);
+  color: var(--k-content-primary-foreground);
+  text-decoration: underline;
+  text-decoration-color: var(--k-separable-primary-borderColor);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  cursor: pointer;
+  transition:
+    color 0.12s,
+    text-decoration-color 0.12s;
+}
+.k-link[data-tone='secondary'] {
+  color: var(--k-content-secondary-foreground);
+}
+.k-link:hover {
+  color: var(--k-content-primary-foreground);
+  text-decoration-color: currentColor;
+}
+.k-link:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 1px;
+}
+.k-link-mark {
+  display: inline;
+  margin-left: 2px;
+  vertical-align: -1px;
+}

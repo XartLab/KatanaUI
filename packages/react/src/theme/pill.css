@@ -1,0 +1,127 @@
+/* SPDX-License-Identifier: MIT */
+/* Pill（katana/pill.tsx）：单个可点、可关的小胶囊。数值与 ChipGroup 的芯片（chip-group.css）同一套：
+   24 高（sm 20）· 圆角 pill · actionable 的底与 1px 边 · data 字号 500；选中同分段切换的 --seg-on-bg / --seg-on-ink（对底 ≥ 3:1，#477）。
+   × 是 20 见方（sm 16）的圆钮，悬停换 subtle 的底；焦点环画在被聚焦的那个按钮上：本体的环套住整颗，× 的环只套 ×。 */
+.k-pill {
+  display: inline-flex;
+  align-items: center;
+  box-sizing: border-box;
+  max-width: 100%;
+  height: 24px;
+  border: 1px solid var(--k-actionable-borderColor);
+  border-radius: var(--radius-pill);
+  background: var(--k-actionable-background);
+  color: var(--k-content-body-foreground);
+  font: var(--text-data) var(--font-sans);
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+  vertical-align: middle;
+  transition:
+    color 0.12s,
+    background-color 0.12s,
+    border-color 0.12s,
+    scale 0.15s;
+}
+.k-pill[data-size='sm'] {
+  height: 20px;
+  font: var(--text-caption) var(--font-sans-small);
+  font-weight: 500;
+}
+.k-pill-main {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  height: 100%;
+  padding: 0 10px;
+  border: 0;
+  border-radius: inherit;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  outline: 0;
+}
+.k-pill[data-size='sm'] .k-pill-main {
+  gap: 4px;
+  padding: 0 8px;
+}
+.k-pill[data-dismissible] .k-pill-main {
+  padding-right: 2px;
+}
+button.k-pill-main {
+  cursor: pointer;
+}
+.k-pill-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.k-pill-icon {
+  display: inline-flex;
+  color: var(--k-content-secondary-foreground);
+}
+.k-pill-icon svg {
+  width: 13px;
+  height: 13px;
+}
+.k-pill:has(> button.k-pill-main:hover:not(:disabled)) {
+  background: var(--k-actionable-background-hover);
+  color: var(--k-content-primary-foreground);
+}
+.k-pill:has(> button.k-pill-main:active:not(:disabled)) {
+  scale: 0.96;
+}
+.k-pill[data-selected] {
+  border-color: transparent;
+  background: var(--seg-on-bg);
+  color: var(--seg-on-ink);
+  font-weight: 700;
+}
+.k-pill[data-selected] .k-pill-icon {
+  color: inherit;
+}
+.k-pill:has(> .k-pill-main:focus-visible) {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+.k-pill-x {
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  margin-right: 1px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--k-content-secondary-foreground);
+  cursor: pointer;
+}
+/* 点按区四边各外扩 2px：md 的 × 能点的范围是 24 见方（WCAG 2.5.8 的下限），画出来仍是 20。 */
+.k-pill-x {
+  position: relative;
+}
+.k-pill-x::before {
+  position: absolute;
+  inset: -2px;
+  content: '';
+}
+.k-pill[data-size='sm'] .k-pill-x {
+  width: 16px;
+  height: 16px;
+}
+.k-pill-x:hover:not(:disabled) {
+  background: var(--k-actionable-subtle-background-hover);
+  color: var(--k-content-primary-foreground);
+}
+.k-pill-x:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 0;
+}
+.k-pill[data-disabled] {
+  opacity: 0.35;
+}
+.k-pill[data-disabled] button {
+  cursor: not-allowed;
+}

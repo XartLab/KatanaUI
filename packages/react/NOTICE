@@ -134,3 +134,8 @@ This package is licensed under the MIT License (see LICENSE).
    EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
    IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
    USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+13. Salt Design System（https://github.com/jpmorganchase/salt-ds ，https://www.saltdesignsystem.com ，Apache-2.0，Copyright JPMorgan Chase & Co.；2026-11-23 读用法页与 packages/core/src/pill/Pill.tsx）
+   #104 对照 Salt 的组件清单补的七件（`src/katana/pill.tsx`、`system-status.tsx`、`link.tsx`、`panel.tsx`，`src/patterns/calendar.tsx`、`list-box.tsx`，`src/primitives/card.tsx` 的变体）
+   只取它的结构与用法（部件划分、语气档、变体档、什么时候用 / 不用），没有搬它的代码、类名与样式；文件头逐个写明，文档站「对照 Salt」一节（`docs/salt-map.json`）列着对应关系。
+   Only the structure and usage guidance of these Salt components are followed; no Salt code, class names or styles are copied.
