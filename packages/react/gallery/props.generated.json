@@ -6535,7 +6535,7 @@
     },
     "CnAmountSize": {
       "kind": "type",
-      "source": "src/cn/format.ts",
+      "source": "src/lib/chart/format/cn-amount.ts",
       "props": [
         {
           "name": "abbreviate",
@@ -6559,7 +6559,7 @@
     },
     "CnAmountUnits": {
       "kind": "type",
-      "source": "src/cn/format.ts",
+      "source": "src/lib/chart/format/cn-amount.ts",
       "props": [
         {
           "name": "wan",
@@ -56454,7 +56454,7 @@
     },
     "formatCnAmount": {
       "kind": "function",
-      "source": "src/cn/format.ts",
+      "source": "src/lib/chart/format/cn-amount.ts",
       "props": [
         {
           "name": "abbreviate",
