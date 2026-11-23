@@ -6347,7 +6347,7 @@
       "name": "cn-board-mark",
       "type": "registry:component",
       "title": "Cn Board Mark",
-      "description": "主板 / 创业板（20cm）/ 科创板（20cm）/ 北交所（30cm）/ ST。默认只标有特殊涨跌幅限制的写「20cm」「30cm」「ST」，主板不画；display 选写板块名或都写。boardKindOf 从代码（与名称）判断板块。取不到写「—」。",
+      "description": "主板 / 创业板（20cm）/ 科创板（20cm）/ 北交所（30cm）/ ST。默认只标有特殊涨跌幅限制的写「20cm」「30cm」「ST」，主板不画；display 选写板块名或都写。boardKindOf 从代码（与名称）判断板块。取不到写「—」。也是 DataGrid 的列类型 board：值给板块名、六位代码或 { code, name }，format.boardDisplay 选写法，按涨跌幅限制排序。",
       "registryDependencies": [
         "@katana/cn",
         "@katana/cn-badge-model",
@@ -6365,7 +6365,7 @@
       "name": "cn-format",
       "type": "registry:lib",
       "title": "Cn Format",
-      "description": "A 股件包的第 0 层（纯函数，不带 React）：formatCnAmount 把金额写成万 / 亿；时段轴认 09:15–09:25 竞价、09:30–11:30、13:00–15:00，午休与 09:25–09:30 不占宽度；cnLabelsZh 是随包的简体中文默认文案，可以整份换；取不到的数写「—」并可带原因（readCnValue）。不带数据源与交易日历数据。",
+      "description": "A 股件包的第 0 层（纯函数，不带 React）：formatCnAmount 把金额写成万 / 亿；时段轴认 09:15–09:25 竞价、09:30–11:30、13:00–15:00，午休与 09:25–09:30 不占宽度；cnLabelsZh 是随包的简体中文默认文案，可以整份换；取不到的数写「—」并可带原因（readCnValue）。不带数据源与交易日历数据。DataGrid 的列类型 cnAmount 用 formatCnAmount 写金额（靠右、按数排序；format.cnAmount.signed 为真时正数涨色、负数跌色，用于净流入）。",
       "files": [
         {
           "path": "src/cn/format.ts",
@@ -6378,7 +6378,7 @@
       "name": "cn-labels",
       "type": "registry:lib",
       "title": "Cn Labels",
-      "description": "A 股件包的第 0 层（纯函数，不带 React）：formatCnAmount 把金额写成万 / 亿；时段轴认 09:15–09:25 竞价、09:30–11:30、13:00–15:00，午休与 09:25–09:30 不占宽度；cnLabelsZh 是随包的简体中文默认文案，可以整份换；取不到的数写「—」并可带原因（readCnValue）。不带数据源与交易日历数据。",
+      "description": "A 股件包的第 0 层（纯函数，不带 React）：formatCnAmount 把金额写成万 / 亿；时段轴认 09:15–09:25 竞价、09:30–11:30、13:00–15:00，午休与 09:25–09:30 不占宽度；cnLabelsZh 是随包的简体中文默认文案，可以整份换；取不到的数写「—」并可带原因（readCnValue）。不带数据源与交易日历数据。DataGrid 的列类型 cnAmount 用 formatCnAmount 写金额（靠右、按数排序；format.cnAmount.signed 为真时正数涨色、负数跌色，用于净流入）。",
       "registryDependencies": [
         "@katana/cn-session"
       ],
@@ -6476,7 +6476,7 @@
       "name": "cn-session",
       "type": "registry:lib",
       "title": "Cn Session",
-      "description": "A 股件包的第 0 层（纯函数，不带 React）：formatCnAmount 把金额写成万 / 亿；时段轴认 09:15–09:25 竞价、09:30–11:30、13:00–15:00，午休与 09:25–09:30 不占宽度；cnLabelsZh 是随包的简体中文默认文案，可以整份换；取不到的数写「—」并可带原因（readCnValue）。不带数据源与交易日历数据。",
+      "description": "A 股件包的第 0 层（纯函数，不带 React）：formatCnAmount 把金额写成万 / 亿；时段轴认 09:15–09:25 竞价、09:30–11:30、13:00–15:00，午休与 09:25–09:30 不占宽度；cnLabelsZh 是随包的简体中文默认文案，可以整份换；取不到的数写「—」并可带原因（readCnValue）。不带数据源与交易日历数据。DataGrid 的列类型 cnAmount 用 formatCnAmount 写金额（靠右、按数排序；format.cnAmount.signed 为真时正数涨色、负数跌色，用于净流入）。",
       "files": [
         {
           "path": "src/cn/session.ts",
@@ -6546,7 +6546,7 @@
       "name": "cn-value",
       "type": "registry:lib",
       "title": "Cn Value",
-      "description": "A 股件包的第 0 层（纯函数，不带 React）：formatCnAmount 把金额写成万 / 亿；时段轴认 09:15–09:25 竞价、09:30–11:30、13:00–15:00，午休与 09:25–09:30 不占宽度；cnLabelsZh 是随包的简体中文默认文案，可以整份换；取不到的数写「—」并可带原因（readCnValue）。不带数据源与交易日历数据。",
+      "description": "A 股件包的第 0 层（纯函数，不带 React）：formatCnAmount 把金额写成万 / 亿；时段轴认 09:15–09:25 竞价、09:30–11:30、13:00–15:00，午休与 09:25–09:30 不占宽度；cnLabelsZh 是随包的简体中文默认文案，可以整份换；取不到的数写「—」并可带原因（readCnValue）。不带数据源与交易日历数据。DataGrid 的列类型 cnAmount 用 formatCnAmount 写金额（靠右、按数排序；format.cnAmount.signed 为真时正数涨色、负数跌色，用于净流入）。",
       "files": [
         {
           "path": "src/cn/value.ts",
@@ -6571,6 +6571,8 @@
         "@katana/chip-group",
         "@katana/cn",
         "@katana/cn-badge-model",
+        "@katana/cn-board-mark",
+        "@katana/cn-format",
         "@katana/cn-labels",
         "@katana/cn-limit-status",
         "@katana/cn-streak-badge",

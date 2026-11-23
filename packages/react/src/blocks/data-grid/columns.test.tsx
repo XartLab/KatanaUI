@@ -425,3 +425,74 @@ describe('列类型 streak 与 limitStatus', () => {
     expect(html).toContain('data-slot="limit-status"')
   })
 })
+
+// A 股件包（KATANAview #2194，KatanaUI #148）：board 与 cnAmount 两种列类型。
+describe('列类型 board 与 cnAmount', () => {
+  it('board：板块名、六位代码或 { code, name } 都认，默认写 cm，主板空、取不到写 —', () => {
+    expect(cell(col('board'), 'gem').text).toBe('20cm')
+    expect(cell(col('board'), '688001').text).toBe('20cm')
+    expect(cell(col('board'), '830001').text).toBe('30cm')
+    expect(cell(col('board'), { code: '600001', name: '*ST 示例' }).text).toBe('ST')
+    expect(cell(col('board'), '600001').text).toBe('')
+    expect(cell(col('board', { boardDisplay: 'both' }), 'star').text).toBe('科创板 20cm')
+    expect(cell(col('board', { boardDisplay: 'name' }), 'main').text).toBe('主板')
+    expect(cell(col('board'), null).text).toBe('—')
+    expect(cell(col('board'), 'abc').text).toBe('—')
+    expect(cell(col('board'), null).sort).toBeUndefined()
+  })
+
+  it('board：按涨跌幅限制排序（ST 5 < 主板 10 < 20cm < 北交所 30）', () => {
+    const order = ['bj', 'gem', 'main', 'st'].map((kind) => cell(col('board'), kind).sort)
+    expect(order.every((key) => typeof key === 'number')).toBe(true)
+    const compare = sortComparator('board', undefined)
+    expect([...order].sort(compare)).toEqual([order[3], order[2], order[1], order[0]])
+  })
+
+  it('cnAmount：写万 / 亿，不出现 M / B，靠右、按数排序', () => {
+    expect(cell(col('cnAmount'), 4.91e7).text).toBe('4,910万')
+    expect(cell(col('cnAmount'), 1e11).text).toBe('1,000.00亿')
+    expect(cell(col('cnAmount'), '320000000').text).toBe('3.20亿')
+    expect(cell(col('cnAmount'), 8600).text).toBe('8,600')
+    expect(cell(col('cnAmount'), null).text).toBe('—')
+    for (const value of [4.91e7, 1e11, 2.5e6, -3e9]) expect(cell(col('cnAmount'), value).text).not.toMatch(/[KMB]/)
+    expect(cell(col('cnAmount'), 1e11).sort).toBe(1e11)
+    expect(defaultAlign('cnAmount')).toBe('end')
+    const compare = sortComparator('cnAmount', undefined)
+    expect(compare(cell(col('cnAmount'), 1e9).sort, cell(col('cnAmount'), 5e8).sort)).toBeGreaterThan(0)
+  })
+
+  it('cnAmount：signed 带正负号并按方向着色（主力净流入），不 signed 不着色；单位字与小数位可换', () => {
+    const net = cell(col('cnAmount', { cnAmount: { signed: true } }), 5.4e7)
+    expect(net.text).toBe('+5,400万')
+    expect(net.tone).toBe('up')
+    expect(cell(col('cnAmount', { cnAmount: { signed: true } }), -1.2e8).tone).toBe('down')
+    expect(cell(col('cnAmount'), -1.2e8).tone).toBeUndefined()
+    expect(cell(col('cnAmount', { cnAmount: { digits: 1 }, cnUnits: { wan: '萬', yi: '億' } }), 3.2e8).text).toBe(
+      '3.2億',
+    )
+  })
+
+  it('DataGrid 把 board 画成 BoardMark，cnAmount 写万 / 亿', () => {
+    const rows = [{ id: 'a', code: '300001', amount: 4.91e7 }]
+    const html = renderToStaticMarkup(
+      <DataGrid
+        columns={[
+          { id: 'b', type: 'board', value: (row: (typeof rows)[number]) => row.code },
+          { id: 'm', type: 'cnAmount', value: (row: (typeof rows)[number]) => row.amount },
+        ]}
+        layout={[
+          { id: 'b', label: 'B', width: 100, visible: true },
+          { id: 'm', label: 'M', width: 100, visible: true },
+        ]}
+        rows={rows}
+        rowId={(row) => row.id}
+        label="t"
+        sort={null}
+        onSortChange={() => {}}
+      />,
+    )
+    expect(html).toContain('data-slot="board-mark"')
+    expect(html).toContain('data-kind="gem"')
+    expect(html).toContain('4,910万')
+  })
+})
