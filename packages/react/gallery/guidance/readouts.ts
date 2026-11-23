@@ -97,7 +97,7 @@ const readouts: GuidanceMap = {
       '可点的旗是 button，aria-pressed 表示插没插，读屏名由调用方给（「给 BTCUSDT 插旗」），插着时 title 带旗名。',
       '在 DataGrid 里设 focusable={false}：表只占一个 Tab 停靠点，键盘用户从行的右键菜单（菜单键 / Shift+F10）插旗、换色。',
       '过滤按钮是 role=group 里的 aria-pressed 按钮，读屏名是旗名加个数，不只靠颜色。',
-      'TradingView 的 Alt+Enter 插旗在包里没接（DataGrid 不认识旗），待定：要的话由宿主键位表接。',
+      'Alt+Enter 插旗 / 拔旗（照 TradingView 自选表，#87）：DataGrid 不认识旗，由调用方用 useHotkeys 登记（scope 写 watchlist），作用在 onCursorChange 给的键盘所在行上；enabled 接表的焦点（focus-within），表没焦点时这个键留给别处。分节标题行上不插。',
     ],
   },
   'notification-bell': {

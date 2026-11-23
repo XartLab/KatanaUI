@@ -222,7 +222,8 @@ const forms: GuidanceMap = {
   'shortcut-sheet': {
     aliases: ['Keyboard shortcuts dialog', 'Shortcut cheat sheet', 'Hotkey list', '快捷键总览'],
     use: [
-      '照 TradingView 的 Keyboard shortcuts 面板（Ctrl/Cmd+/，2026-11-18 实看）：顶上「查找快捷键」搜索框，下面按作用域分节，行左名右键，几种按法之间写「或」；TradingView 的分节默认折叠，我们直接摊开。',
+      '照 TradingView 的 Keyboard shortcuts 面板（Ctrl/Cmd+/，2026-11-18 实看）：顶上「查找快捷键」搜索框，下面按作用域分节，行左名右键，几种按法之间写「或」。',
+      '分节跟 TradingView 一样默认收起（#87）：节名是整行宽的展开钮，三角朝右是收起、展开转 90°；defaultOpenScopes 给一开始就展开的节。搜索时命中的节都展开、没命中的不出，节名钮这时不可点；清空搜索回到用户自己展开过的样子。',
       '行高 30、分节标题三级色小号大写；冲突的行名字下一行 warn 色小字写跟谁冲突；关掉的作用域整行 45% 透明。',
       '搜索认动作名、作用域名与按键（⌘K、Ctrl+K 都能搜到）。',
       '给 onComboChange 与 labels.recorder 时每行变成 ShortcutRecorder 改键，占用表是同作用域与 global 的别的动作；键位存哪由调用方定。',
@@ -230,7 +231,7 @@ const forms: GuidanceMap = {
     ],
     avoid: ['设置页里只改一两个键，直接用 shortcut-recorder。'],
     a11y: [
-      '搜索框有屏外 label；每节是带标题的 section（aria-labelledby），行是列表项。',
+      '搜索框有屏外 label；每节是带标题的 section（aria-labelledby 指向节名钮），节名钮带 aria-expanded 与 aria-controls（照 APG Accordion），行是列表项。',
       '按键用 Kbd，读屏念整串（「⌘+K」），不逐块念。',
       '没有匹配时 role=status 念空态文字。',
     ],

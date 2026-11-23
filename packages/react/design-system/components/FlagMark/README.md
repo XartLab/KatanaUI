@@ -99,4 +99,5 @@ FlagFilter（group）
 ## Keyboard
 
 - `Enter / Space`：在旗上：插上 / 拔掉（DataGrid 里旗不进 Tab 顺序，键盘走行菜单）
+- `Alt+Enter`：（DataGrid 演示）给键盘所在的行插旗 / 拔旗：照 TradingView 自选表，调用方用 useHotkeys 登记、作用在 onCursorChange 给的行上
 - `Tab`：在过滤按钮间移动；Enter 切换过滤

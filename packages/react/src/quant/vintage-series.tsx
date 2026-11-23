@@ -87,6 +87,7 @@ export function VintageSeries({
   source,
   onExport,
   onFullscreen,
+  onCopyImage,
 }: VintageSeriesProps) {
   const [mode, setMode] = useState<VintageMode>(defaultMode)
   const [tableView, setTableView] = useState(false)
@@ -157,6 +158,7 @@ export function VintageSeries({
           onTableView={setTableView}
           onExport={onExport}
           onFullscreen={onFullscreen}
+          onCopyImage={onCopyImage}
         />
       </div>
       <dl className="k-vs-stats" data-slot="vintage-stats">

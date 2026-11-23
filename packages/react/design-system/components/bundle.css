@@ -6282,6 +6282,46 @@
   padding: 6px 0 4px;
 }
 
+.k-shortcut-toggle {
+  width: 100%;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  text-align: start;
+  text-transform: inherit;
+  cursor: pointer;
+  background: none;
+  border: 0;
+  border-radius: 4px;
+  align-items: center;
+  gap: 4px;
+  margin: 0;
+  padding: 2px 0;
+  display: flex;
+}
+
+.k-shortcut-toggle:hover:enabled {
+  color: var(--k-content-primary-foreground);
+}
+
+.k-shortcut-toggle:focus-visible {
+  box-shadow: 0 0 0 2px var(--focus-ring);
+  outline: none;
+}
+
+.k-shortcut-toggle:disabled {
+  cursor: default;
+}
+
+.k-shortcut-toggle svg {
+  transition: rotate .16s var(--ease-snappy);
+  flex: none;
+}
+
+.k-shortcut-toggle[aria-expanded="true"] svg {
+  rotate: 90deg;
+}
+
 .k-shortcut-list {
   margin: 0;
   padding: 0;
@@ -11938,6 +11978,59 @@ button.k-sysmon-link-body:focus-visible {
   overflow: hidden;
 }
 
+.k-grid-section-aggregate {
+  color: var(--k-content-secondary-foreground);
+}
+
+.k-grid-section-toggle {
+  width: 16px;
+  height: 16px;
+  color: inherit;
+  cursor: pointer;
+  background: none;
+  border: 0;
+  border-radius: 4px;
+  flex: none;
+  place-items: center;
+  margin-left: -4px;
+  padding: 0;
+  display: inline-grid;
+}
+
+.k-grid-section-toggle:hover {
+  background: var(--k-actionable-background-hover);
+  color: var(--k-content-primary-foreground);
+}
+
+.k-grid-section-toggle svg {
+  transition: rotate .16s var(--ease-snappy);
+}
+
+.k-grid-section-toggle[aria-expanded="true"] svg {
+  rotate: 90deg;
+}
+
+.k-grid-section-heading {
+  text-overflow: ellipsis;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.k-grid-section-count {
+  color: var(--k-content-tertiary-foreground);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+  flex: none;
+}
+
+.k-grid-section-summary {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+  text-transform: none;
+  flex: none;
+  margin-left: auto;
+}
+
 .k-empty {
   justify-content: center;
   align-items: center;
@@ -14171,7 +14264,7 @@ button.k-quote-card.is-link:focus-visible {
   font: var(--text-data) var(--font-sans);
   border-radius: 8px;
   outline: none;
-  padding: 0 40px 0 10px;
+  padding: 0 52px 0 10px;
 }
 
 .k-sidenav-search input::placeholder {
@@ -24989,6 +25082,10 @@ button.k-book-row:focus-visible {
 .k-mheat-fullscreen:focus-visible {
   outline: 1px solid var(--k-separable-bold-borderColor);
   outline-offset: -1px;
+}
+
+.k-mheat-copy + .k-mheat-fullscreen {
+  margin-left: 0;
 }
 
 .k-mheat:fullscreen {
