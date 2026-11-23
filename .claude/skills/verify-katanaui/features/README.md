@@ -1,7 +1,7 @@
 # KatanaUI 功能地图
 
 从用户视角记文档站上组件的行为：是什么、怎么找到、怎么用 `kui.mjs` 走、看到什么算成功。实现细节不写在这里，走的时候现查。
-第一版（2026-11-23，main `c9634db`）只收 main 上已有、有行为可以驱动的四个件；别的件走到了再加，照同一个格式。
+第一版（2026-11-23，main `c9634db`）收 main 上已有、有行为可以驱动的四个件；订单簿、Markdown 与「弹出层滚动即关」合进 main（#140、#133、#135）以后补上，现在是六个流程。
 
 ## 基线
 
@@ -39,21 +39,18 @@
 | --- | --- | --- |
 | [DataGrid 数据表](data-grid.md) | `drive data-grid` | 点表头排序（升 / 降 / 取消）、窄容器按优先级收列与「+N cols」展开收起 |
 | [OrderTicket 下单面板](order-ticket.md) | `drive order-ticket` | 两栏算数、改杠杆、超可用报错、止盈止损模板、按风险算张数、开仓与平仓 |
-| [弹出层](overlays.md) | `drive overlays` | Popover 与 Dialog 的点开、Esc 关、点外面关、焦点回到触发处 |
+| [弹出层](overlays.md) | `drive overlays` | Popover 与 Dialog 的点开、Esc 关、点外面关、焦点回到触发处；「滚动即关」：页面滚就关、侧栏滚不关、滚过后再开不关 |
+| [订单簿](orderbook.md) | `drive orderbook` | 买卖 / 只看买 / 只看卖三种模式、按 tick 合并档位、点一行给回调、占比相加恰好 100 |
+| [Markdown 安全正文](markdown.md) | `drive markdown` | 回话渲染、HTML 当字、图片只写说明、外链新标签页、角标槽、文档模式的锚点与相对链接 |
 | [Tabs 页签](tabs.md) | `drive tabs` | 点页签换内容、底块跟随、方向键切换、禁用页签 |
 
 ## 待补
 
-这几个件还没合进 main，合并以后照同一格式补上：
-
-| 件 | 等哪个 PR | 合并后要补什么 |
-| --- | --- | --- |
-| 订单簿、深度图、成交明细 | XartLab/KatanaUI#140（`feat/104-orderbook`） | 新建 `orderbook.md` 与 `flows/orderbook.mjs`：合并档位、买卖两侧、占比 |
-| Markdown 安全正文 | XartLab/KatanaUI#133（`feat/132-markdown`） | 新建 `markdown.md` 与流程：渲染、危险内容被拦下 |
-| 弹出层滚动即关 | XartLab/KatanaUI#135（`fix/125-popover-scroll`） | 在 [弹出层](overlays.md) 加子功能 `popover-scroll-close`：页面或装着锚点的容器一滚就关；用 `el.click()` 开（见那份的 Gotchas） |
+三件（订单簿、Markdown、弹出层滚动即关）已随 #140、#133、#135 合进 main，地图与流程见上表。走查里撞到的两个走不到的路径记在各自地图的 Gotchas：订单簿的空簿状态（演示数据始终有档位）、弹出层自己里面滚（文档站上的浮层都装不满一屏）。
 
 ## 已走过的记录
 
 | 日期 | 提交 | 走了哪些 | 结果 | 记录 |
 | --- | --- | --- | --- | --- |
 | 2026-11-23 | `c9634db` | 四条全走 | 全部 PASS | XartLab/KatanaUI#143 |
+| 2026-11-23 | `ca45f81` | 六条全走（含新增的订单簿、Markdown、滚动即关） | 全部 PASS | XartLab/KatanaUI#143 |
