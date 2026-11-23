@@ -39,6 +39,7 @@ import { ReplayTransportUsage } from '../gallery/usage/ReplayTransportUsage.tsx'
 import { RunModeBadgeUsage } from '../gallery/usage/RunModeBadgeUsage.tsx'
 import { WhiteboardUsage } from '../gallery/usage/WhiteboardUsage.tsx'
 import { WorkspaceTabsUsage } from '../gallery/usage/WorkspaceTabsUsage.tsx'
+import { GridSummaryRowUsage } from '../gallery/usage/GridSummaryRowUsage.tsx'
 import { DataGrid, type SeriesExplorerColumn } from '../src/blocks/index.ts'
 import { SeriesTable } from '../src/blocks/series-explorer/series-explorer-table.tsx'
 import { ChartTable } from '../src/lib/chart/chart-kit/chart-table.tsx'
@@ -159,6 +160,7 @@ const items: Record<string, React.ReactNode> = {
   'trade-tape': <TradeTapeUsage />,
   'transmission-chain': <TransmissionChainUsage />,
   'uptime-bars': <UptimeBarsUsage />,
+  'grid-summary-row': <GridSummaryRowUsage />,
   'use-undo-stack': <UseUndoStackUsage />,
   whiteboard: <WhiteboardUsage />,
   'workspace-tabs': <WorkspaceTabsUsage />,

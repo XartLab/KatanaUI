@@ -494,6 +494,11 @@
           "target": "~/src/katana/ui/theme/reason-group-list.css"
         },
         {
+          "path": "src/theme/refresh-control.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/refresh-control.css"
+        },
+        {
           "path": "src/theme/regime-strip.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/regime-strip.css"
@@ -657,6 +662,11 @@
           "path": "src/theme/theme-heat-matrix.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/theme-heat-matrix.css"
+        },
+        {
+          "path": "src/theme/ticker-tape.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/ticker-tape.css"
         },
         {
           "path": "src/theme/toolbar.css",
@@ -3737,6 +3747,27 @@
       ]
     },
     {
+      "name": "refresh-control",
+      "type": "registry:component",
+      "title": "Refresh Control",
+      "description": "自动刷新的间隔分段（TradingView 筛选器是 10 秒 / 1 分钟 / 不刷新）+ 立即刷新钮 + 上次刷新时刻 + 下次倒计时。受控：间隔、上次时刻、在不在刷都由调用方给，到点调 onRefresh；标签页隐藏时停，回来过了点马上刷。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/focus",
+        "@katana/toggle-group"
+      ],
+      "files": [
+        {
+          "path": "src/patterns/refresh-control.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/patterns/refresh-control.tsx"
+        }
+      ]
+    },
+    {
       "name": "rendering-settings",
       "type": "registry:component",
       "title": "Rendering Settings",
@@ -4705,6 +4736,30 @@
           "path": "src/quotes/technical-rating.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/quotes/technical-rating.tsx"
+        }
+      ]
+    },
+    {
+      "name": "ticker-tape",
+      "type": "registry:component",
+      "title": "Ticker Tape",
+      "description": "一排品种（徽标 + 代码 + 最新价 + 涨跌幅，可带走势）横向无缝循环滚动：同一排画两遍、CSS 动画平移 -50%，速度按每秒像素算（默认 40）。悬停、聚焦或按右端暂停钮停住；点一项联动。系统「减少动态效果」或 mode=\"static\" 时不动、可横向滚动。布局照 TradingView Ticker Tape 小组件。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/change-text",
+        "@katana/cn",
+        "@katana/flash-price",
+        "@katana/quote-row",
+        "@katana/sparkline",
+        "@katana/symbol-mark"
+      ],
+      "files": [
+        {
+          "path": "src/quotes/ticker-tape.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quotes/ticker-tape.tsx"
         }
       ]
     },
@@ -7493,6 +7548,7 @@
         "@katana/cn-streak-badge",
         "@katana/context-menu",
         "@katana/emphasis",
+        "@katana/grid-summary-row",
         "@katana/live",
         "@katana/menu-any",
         "@katana/menu-parts",
@@ -7606,6 +7662,24 @@
           "path": "src/blocks/data-grid/column-set-tabs.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/blocks/data-grid/column-set-tabs.tsx"
+        }
+      ]
+    },
+    {
+      "name": "grid-summary-row",
+      "type": "registry:component",
+      "title": "Grid Summary Row",
+      "description": "DataGrid 的 summary 属性：表尾一到几行合计 / 均值 / 中位数，按列配聚合（sum、avg、min、max、median、count 或自己的函数），对全部行算；跟表同一份列宽与固定列，横向滚动跟着走、纵向粘在底边。字照列类型写，跟上面的行对得齐。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/data-grid",
+        "@katana/tone-text"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/data-grid/grid-summary-row.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/data-grid/grid-summary-row.tsx"
         }
       ]
     },

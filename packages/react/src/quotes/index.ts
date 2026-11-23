@@ -111,6 +111,8 @@ export {
   type WatchlistRow,
 } from './watchlist.tsx'
 export { changedTail, nextSort, sortRows, type WatchlistSort, type WatchlistSortKey } from './watchlist-model.ts'
+// 跑马灯（#77 第 5 条）。
+export { TickerTape, type TickerItem, type TickerTapeLabels, type TickerTapeProps } from './ticker-tape.tsx'
 // 对照 TradingView 小组件补缺的第二批（KatanaUI #147，KATANAview #1884）：品种报价头、多品种走势卡、交叉汇率矩阵、公司简介。
 export { SymbolInfo, type SymbolInfoProps, type SymbolInfoRange, type SymbolInfoStatus } from './symbol-info.tsx'
 export {

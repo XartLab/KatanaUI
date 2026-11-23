@@ -246,11 +246,13 @@ function collectItems() {
       'data-grid',
       'registry:component',
       codeIn('src/blocks/data-grid')
-        .filter((f) => f !== 'column-set-tabs.tsx')
+        .filter((f) => f !== 'column-set-tabs.tsx' && f !== 'grid-summary-row.tsx')
         .map((f) => `src/blocks/data-grid/${f}`),
     )
     // 列集标签行有自己的文档页，页的说明要有归属：单独一项，依赖 data-grid（引它的模型）。
     add('column-set-tabs', 'registry:component', ['src/blocks/data-grid/column-set-tabs.tsx'])
+    // 表尾合计行也有自己的页（#77），同样单独一项。
+    add('grid-summary-row', 'registry:component', ['src/blocks/data-grid/grid-summary-row.tsx'])
     add(
       'toolbar',
       'registry:component',

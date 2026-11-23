@@ -9355,6 +9355,12 @@
           "description": "A line of text under the table."
         },
         {
+          "name": "summary",
+          "type": "readonly GridSummary<Row>[]",
+          "required": false,
+          "description": "Summary rows at the foot (totals, averages): per-column aggregates over all rows, on the same column template and pinned columns; they stick to the bottom while scrolling."
+        },
+        {
           "name": "presorted",
           "type": "boolean",
           "required": false,
@@ -9827,6 +9833,12 @@
           "type": "ReactNode",
           "required": false,
           "description": "A line of text under the table."
+        },
+        {
+          "name": "summary",
+          "type": "readonly GridSummary<Row>[]",
+          "required": false,
+          "description": "Summary rows at the foot (totals, averages): per-column aggregates over all rows, on the same column template and pinned columns; they stick to the bottom while scrolling."
         },
         {
           "name": "presorted",
@@ -18946,6 +18958,186 @@
       "kind": "type",
       "source": "src/blocks/data-grid/data-grid-props.ts",
       "props": []
+    },
+    "GridSummary": {
+      "kind": "type",
+      "source": "src/blocks/data-grid/grid-summary-row.tsx",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "Stable id of this summary row."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "Row name (Total, Average), in the UI language."
+        },
+        {
+          "name": "columns",
+          "type": "Readonly<Partial<Record<string, SummaryColumn<Row>>>>",
+          "required": true,
+          "description": "Aggregate per column id; columns left out stay empty."
+        }
+      ]
+    },
+    "GridSummaryRow": {
+      "kind": "component",
+      "source": "src/blocks/data-grid/grid-summary-row.tsx",
+      "props": [
+        {
+          "name": "summary",
+          "type": "GridSummary<Row>",
+          "required": true,
+          "description": "The summary row to draw."
+        },
+        {
+          "name": "columns",
+          "type": "readonly GridColumn<Row>[]",
+          "required": true,
+          "description": "The grid's visible columns, in display order."
+        },
+        {
+          "name": "rows",
+          "type": "readonly Row[]",
+          "required": true,
+          "description": "All rows (not only the rendered ones)."
+        },
+        {
+          "name": "env",
+          "type": "CellEnv",
+          "required": true,
+          "description": "Cell environment (time zone)."
+        },
+        {
+          "name": "template",
+          "type": "string",
+          "required": true,
+          "description": "The grid's column template (same as the body rows)."
+        },
+        {
+          "name": "height",
+          "type": "number",
+          "required": true,
+          "description": "Row height in pixels."
+        },
+        {
+          "name": "cellRole",
+          "type": "string",
+          "required": true,
+          "description": "gridcell in an interactive grid, cell otherwise."
+        },
+        {
+          "name": "ariaRowIndex",
+          "type": "number",
+          "required": true,
+          "description": "aria-rowindex of this row."
+        },
+        {
+          "name": "alignOf",
+          "type": "(columnId: string) => 'start' | 'end'",
+          "required": true,
+          "description": "Alignment of a column."
+        },
+        {
+          "name": "stickClass",
+          "type": "(columnId: string) => string",
+          "required": true,
+          "description": "Class names of a pinned column cell."
+        },
+        {
+          "name": "stickStyle",
+          "type": "(columnId: string) => CSSProperties | undefined",
+          "required": true,
+          "description": "Inline style (left offset) of a pinned column cell."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the row."
+        }
+      ]
+    },
+    "GridSummaryRowProps": {
+      "kind": "type",
+      "source": "src/blocks/data-grid/grid-summary-row.tsx",
+      "props": [
+        {
+          "name": "summary",
+          "type": "GridSummary<Row>",
+          "required": true,
+          "description": "The summary row to draw."
+        },
+        {
+          "name": "columns",
+          "type": "readonly GridColumn<Row>[]",
+          "required": true,
+          "description": "The grid's visible columns, in display order."
+        },
+        {
+          "name": "rows",
+          "type": "readonly Row[]",
+          "required": true,
+          "description": "All rows (not only the rendered ones)."
+        },
+        {
+          "name": "env",
+          "type": "CellEnv",
+          "required": true,
+          "description": "Cell environment (time zone)."
+        },
+        {
+          "name": "template",
+          "type": "string",
+          "required": true,
+          "description": "The grid's column template (same as the body rows)."
+        },
+        {
+          "name": "height",
+          "type": "number",
+          "required": true,
+          "description": "Row height in pixels."
+        },
+        {
+          "name": "cellRole",
+          "type": "string",
+          "required": true,
+          "description": "gridcell in an interactive grid, cell otherwise."
+        },
+        {
+          "name": "ariaRowIndex",
+          "type": "number",
+          "required": true,
+          "description": "aria-rowindex of this row."
+        },
+        {
+          "name": "alignOf",
+          "type": "(columnId: string) => 'start' | 'end'",
+          "required": true,
+          "description": "Alignment of a column."
+        },
+        {
+          "name": "stickClass",
+          "type": "(columnId: string) => string",
+          "required": true,
+          "description": "Class names of a pinned column cell."
+        },
+        {
+          "name": "stickStyle",
+          "type": "(columnId: string) => CSSProperties | undefined",
+          "required": true,
+          "description": "Inline style (left offset) of a pinned column cell."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the row."
+        }
+      ]
     },
     "GridTone": {
       "kind": "type",
@@ -36511,6 +36703,195 @@
         }
       ]
     },
+    "RefreshControl": {
+      "kind": "component",
+      "source": "src/patterns/refresh-control.tsx",
+      "props": [
+        {
+          "name": "options",
+          "type": "readonly RefreshOption[]",
+          "required": true,
+          "description": "Segments to pick from; each value is milliseconds, 0 is off."
+        },
+        {
+          "name": "interval",
+          "type": "number",
+          "required": true,
+          "description": "Current interval in milliseconds (controlled); 0 is off."
+        },
+        {
+          "name": "onIntervalChange",
+          "type": "(interval: number) => void",
+          "required": true,
+          "description": "Called with the picked interval in milliseconds."
+        },
+        {
+          "name": "lastRefreshed",
+          "type": "number | null",
+          "required": true,
+          "description": "When the data was last refreshed (epoch ms); null before the first refresh."
+        },
+        {
+          "name": "onRefresh",
+          "type": "() => void",
+          "required": true,
+          "description": "Refresh now (the button, and each time the countdown runs out)."
+        },
+        {
+          "name": "refreshing",
+          "type": "boolean",
+          "required": false,
+          "default": "false",
+          "description": "A refresh is in flight: the icon spins and the countdown waits."
+        },
+        {
+          "name": "labels",
+          "type": "RefreshControlLabels",
+          "required": true,
+          "description": "All text: interval group name, refresh button name, the last / next prefixes."
+        },
+        {
+          "name": "formatTime",
+          "type": "(time: number) => string",
+          "required": false,
+          "default": "formatRefreshClock",
+          "description": "Writes the last-refresh time; default local HH:MM:SS."
+        },
+        {
+          "name": "pauseWhenHidden",
+          "type": "boolean",
+          "required": false,
+          "default": "true",
+          "description": "Stop counting while the tab is hidden; default true."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "RefreshControlLabels": {
+      "kind": "type",
+      "source": "src/patterns/refresh-control.tsx",
+      "props": [
+        {
+          "name": "interval",
+          "type": "string",
+          "required": true,
+          "description": "间隔分段的读屏名（「自动刷新」）。"
+        },
+        {
+          "name": "refresh",
+          "type": "string",
+          "required": true,
+          "description": "立即刷新钮的读屏名与提示。"
+        },
+        {
+          "name": "last",
+          "type": "string",
+          "required": true,
+          "description": "「上次」「下次」两段的前缀。"
+        },
+        {
+          "name": "next",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "never",
+          "type": "string",
+          "required": false,
+          "description": "还没刷过时上次那段写什么（「—」）。"
+        }
+      ]
+    },
+    "RefreshControlProps": {
+      "kind": "type",
+      "source": "src/patterns/refresh-control.tsx",
+      "props": [
+        {
+          "name": "options",
+          "type": "readonly RefreshOption[]",
+          "required": true,
+          "description": "Segments to pick from; each value is milliseconds, 0 is off."
+        },
+        {
+          "name": "interval",
+          "type": "number",
+          "required": true,
+          "description": "Current interval in milliseconds (controlled); 0 is off."
+        },
+        {
+          "name": "onIntervalChange",
+          "type": "(interval: number) => void",
+          "required": true,
+          "description": "Called with the picked interval in milliseconds."
+        },
+        {
+          "name": "lastRefreshed",
+          "type": "number | null",
+          "required": true,
+          "description": "When the data was last refreshed (epoch ms); null before the first refresh."
+        },
+        {
+          "name": "onRefresh",
+          "type": "() => void",
+          "required": true,
+          "description": "Refresh now (the button, and each time the countdown runs out)."
+        },
+        {
+          "name": "refreshing",
+          "type": "boolean",
+          "required": false,
+          "description": "A refresh is in flight: the icon spins and the countdown waits."
+        },
+        {
+          "name": "labels",
+          "type": "RefreshControlLabels",
+          "required": true,
+          "description": "All text: interval group name, refresh button name, the last / next prefixes."
+        },
+        {
+          "name": "formatTime",
+          "type": "(time: number) => string",
+          "required": false,
+          "description": "Writes the last-refresh time; default local HH:MM:SS."
+        },
+        {
+          "name": "pauseWhenHidden",
+          "type": "boolean",
+          "required": false,
+          "description": "Stop counting while the tab is hidden; default true."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "RefreshOption": {
+      "kind": "type",
+      "source": "src/patterns/refresh-control.tsx",
+      "props": [
+        {
+          "name": "value",
+          "type": "number",
+          "required": true,
+          "description": "Interval in milliseconds; 0 means off."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "Segment text (10s, 1m, Off)."
+        }
+      ]
+    },
     "RegimeBand": {
       "kind": "component",
       "source": "src/blocks/regime-strip/regime-strip.tsx",
@@ -44786,6 +45167,16 @@
         }
       ]
     },
+    "SummaryAggregate": {
+      "kind": "type",
+      "source": "src/blocks/data-grid/grid-summary-row.tsx",
+      "props": []
+    },
+    "SummaryColumn": {
+      "kind": "type",
+      "source": "src/blocks/data-grid/grid-summary-row.tsx",
+      "props": []
+    },
     "SurfaceGoal": {
       "kind": "type",
       "source": "src/quant/param-surface-model.ts",
@@ -49489,6 +49880,231 @@
         }
       ]
     },
+    "TickerItem": {
+      "kind": "type",
+      "source": "src/quotes/ticker-tape.tsx",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "Stable row id (used for keys, reordering and enter marks)."
+        },
+        {
+          "name": "symbol",
+          "type": "string",
+          "required": true,
+          "description": "Symbol code (BTCUSDT, 600519)."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "description": "Display name; the symbol is shown when omitted."
+        },
+        {
+          "name": "last",
+          "type": "number",
+          "required": true,
+          "description": "Last price."
+        },
+        {
+          "name": "change",
+          "type": "number",
+          "required": true,
+          "description": "Change amount, signed."
+        },
+        {
+          "name": "changePct",
+          "type": "number",
+          "required": true,
+          "description": "Change as a percentage (1.5 means 1.5%)."
+        },
+        {
+          "name": "logo",
+          "type": "string",
+          "required": false,
+          "description": "Logo image URL; letters are drawn when omitted."
+        },
+        {
+          "name": "currency",
+          "type": "string",
+          "required": false,
+          "description": "Currency written small after the price (USD)."
+        },
+        {
+          "name": "series",
+          "type": "readonly number[]",
+          "required": false,
+          "description": "Recent values for the mini trend on the right (stacked layout only)."
+        }
+      ]
+    },
+    "TickerTape": {
+      "kind": "component",
+      "source": "src/quotes/ticker-tape.tsx",
+      "props": [
+        {
+          "name": "items",
+          "type": "readonly TickerItem[]",
+          "required": true,
+          "description": "The symbols, in order."
+        },
+        {
+          "name": "labels",
+          "type": "TickerTapeLabels",
+          "required": true,
+          "description": "All text: region name, pause and resume, trend names."
+        },
+        {
+          "name": "formatPrice",
+          "type": "FormatPrice | ((value: number, item: TickerItem) => string)",
+          "required": false,
+          "description": "Price text; the caller knows each symbol's precision."
+        },
+        {
+          "name": "layout",
+          "type": "'stacked' | 'inline'",
+          "required": false,
+          "default": "'stacked'",
+          "description": "stacked: two lines per item with an optional trend (TradingView's current tape); inline: one compact line."
+        },
+        {
+          "name": "mode",
+          "type": "'scroll' | 'static'",
+          "required": false,
+          "default": "'scroll'",
+          "description": "scroll (default) loops; static stands still and scrolls by hand."
+        },
+        {
+          "name": "speed",
+          "type": "number",
+          "required": false,
+          "default": "40",
+          "description": "Scroll speed in pixels per second; default 40."
+        },
+        {
+          "name": "paused",
+          "type": "boolean",
+          "required": false,
+          "description": "Paused from outside (controlled); the pause button then calls onPausedChange."
+        },
+        {
+          "name": "onPausedChange",
+          "type": "(paused: boolean) => void",
+          "required": false,
+          "description": "Called when the pause button is pressed."
+        },
+        {
+          "name": "onSelect",
+          "type": "(item: TickerItem) => void",
+          "required": false,
+          "description": "Clicking an item (link to a chart, a watchlist); items become buttons when given."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "TickerTapeLabels": {
+      "kind": "type",
+      "source": "src/quotes/ticker-tape.tsx",
+      "props": [
+        {
+          "name": "region",
+          "type": "string",
+          "required": true,
+          "description": "整条的读屏名（「行情跑马灯」）。"
+        },
+        {
+          "name": "pause",
+          "type": "string",
+          "required": true,
+          "description": "暂停钮的两种字。"
+        },
+        {
+          "name": "resume",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "trend",
+          "type": "(item: TickerItem) => string",
+          "required": false,
+          "description": "走势图的读屏名：拿到这一项，返回一句话。不给就不画走势。"
+        }
+      ]
+    },
+    "TickerTapeProps": {
+      "kind": "type",
+      "source": "src/quotes/ticker-tape.tsx",
+      "props": [
+        {
+          "name": "items",
+          "type": "readonly TickerItem[]",
+          "required": true,
+          "description": "The symbols, in order."
+        },
+        {
+          "name": "labels",
+          "type": "TickerTapeLabels",
+          "required": true,
+          "description": "All text: region name, pause and resume, trend names."
+        },
+        {
+          "name": "formatPrice",
+          "type": "FormatPrice | ((value: number, item: TickerItem) => string)",
+          "required": false,
+          "description": "Price text; the caller knows each symbol's precision."
+        },
+        {
+          "name": "layout",
+          "type": "'stacked' | 'inline'",
+          "required": false,
+          "description": "stacked: two lines per item with an optional trend (TradingView's current tape); inline: one compact line."
+        },
+        {
+          "name": "mode",
+          "type": "'scroll' | 'static'",
+          "required": false,
+          "description": "scroll (default) loops; static stands still and scrolls by hand."
+        },
+        {
+          "name": "speed",
+          "type": "number",
+          "required": false,
+          "description": "Scroll speed in pixels per second; default 40."
+        },
+        {
+          "name": "paused",
+          "type": "boolean",
+          "required": false,
+          "description": "Paused from outside (controlled); the pause button then calls onPausedChange."
+        },
+        {
+          "name": "onPausedChange",
+          "type": "(paused: boolean) => void",
+          "required": false,
+          "description": "Called when the pause button is pressed."
+        },
+        {
+          "name": "onSelect",
+          "type": "(item: TickerItem) => void",
+          "required": false,
+          "description": "Clicking an item (link to a chart, a watchlist); items become buttons when given."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
     "TiltCard": {
       "kind": "component",
       "source": "src/motion/surface/tilt-card.tsx",
@@ -52286,6 +52902,42 @@
       "source": "src/blocks/uptime-bars/uptime-bars-model.ts",
       "props": []
     },
+    "UseAutoRefreshOptions": {
+      "kind": "type",
+      "source": "src/patterns/refresh-control.tsx",
+      "props": [
+        {
+          "name": "interval",
+          "type": "number",
+          "required": true,
+          "description": "Interval in milliseconds; 0 or less is off."
+        },
+        {
+          "name": "lastRefreshed",
+          "type": "number | null",
+          "required": true,
+          "description": "When the data was last refreshed (epoch ms); null before the first refresh (counts from mount)."
+        },
+        {
+          "name": "onRefresh",
+          "type": "() => void",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "refreshing",
+          "type": "boolean",
+          "required": false,
+          "description": "A refresh is in flight: the countdown waits."
+        },
+        {
+          "name": "pauseWhenHidden",
+          "type": "boolean",
+          "required": false,
+          "description": "Stop while the tab is hidden; default true."
+        }
+      ]
+    },
     "UseFlagsOptions": {
       "kind": "type",
       "source": "src/katana/flag-mark.tsx",
@@ -54831,6 +55483,11 @@
       "source": "src/quant/period-returns-model.ts",
       "props": []
     },
+    "aggregateValues": {
+      "kind": "function",
+      "source": "src/blocks/data-grid/grid-summary-row.tsx",
+      "props": []
+    },
     "alertVariants": {
       "kind": "function",
       "source": "src/primitives/alert.tsx",
@@ -55937,6 +56594,16 @@
     "formatRate": {
       "kind": "function",
       "source": "src/blocks/funding-rate/funding-model.ts",
+      "props": []
+    },
+    "formatRefreshClock": {
+      "kind": "function",
+      "source": "src/patterns/refresh-control.tsx",
+      "props": []
+    },
+    "formatRemaining": {
+      "kind": "function",
+      "source": "src/patterns/refresh-control.tsx",
       "props": []
     },
     "formatVolume": {
@@ -57400,6 +58067,42 @@
       "source": "src/quant/walk-forward-model.ts",
       "props": []
     },
+    "summaryCells": {
+      "kind": "function",
+      "source": "src/blocks/data-grid/grid-summary-row.tsx",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "Stable id of this summary row."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "Row name (Total, Average), in the UI language."
+        },
+        {
+          "name": "columns",
+          "type": "Readonly<Partial<Record<string, SummaryColumn<Row>>>>",
+          "required": true,
+          "description": "Aggregate per column id; columns left out stay empty."
+        },
+        {
+          "name": "timeZone",
+          "type": "string",
+          "required": false,
+          "description": "time 列用的时区：'local'（默认，跟电脑一致）、'utc'，或 IANA 时区名。"
+        },
+        {
+          "name": "locale",
+          "type": "string",
+          "required": false,
+          "description": "compact、date 列的默认语言（列的 format.locale 优先）。"
+        }
+      ]
+    },
     "surfaceNeighborhood": {
       "kind": "function",
       "source": "src/quant/param-surface-model.ts",
@@ -57735,6 +58438,44 @@
       "kind": "function",
       "source": "src/blocks/uptime-bars/uptime-bars-model.ts",
       "props": []
+    },
+    "useAutoRefresh": {
+      "kind": "function",
+      "source": "src/patterns/refresh-control.tsx",
+      "props": [
+        {
+          "name": "interval",
+          "type": "number",
+          "required": true,
+          "description": "Interval in milliseconds; 0 or less is off."
+        },
+        {
+          "name": "lastRefreshed",
+          "type": "number | null",
+          "required": true,
+          "description": "When the data was last refreshed (epoch ms); null before the first refresh (counts from mount)."
+        },
+        {
+          "name": "onRefresh",
+          "type": "() => void",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "refreshing",
+          "type": "boolean",
+          "required": false,
+          "default": "false",
+          "description": "A refresh is in flight: the countdown waits."
+        },
+        {
+          "name": "pauseWhenHidden",
+          "type": "boolean",
+          "required": false,
+          "default": "true",
+          "description": "Stop while the tab is hidden; default true."
+        }
+      ]
     },
     "useAvatarSize": {
       "kind": "function",

@@ -3921,6 +3921,44 @@ export const PAGES: readonly DocPage[] = [
     ],
   },
   {
+    id: 'refresh-control',
+    group: 'forms',
+    cardHeight: 80,
+    title: 'RefreshControl 自动刷新',
+    summary:
+      '自动刷新的间隔分段（TradingView 筛选器是 10 秒 / 1 分钟 / 不刷新）+ 立即刷新钮 + 上次刷新时刻 + 下次倒计时。受控：间隔、上次时刻、在不在刷都由调用方给，到点调 onRefresh；标签页隐藏时停，回来过了点马上刷。',
+    exports: ['RefreshControl', 'useAutoRefresh', 'formatRemaining', 'formatRefreshClock'],
+    propParts: [
+      {
+        part: 'RefreshControl',
+        note: 'options 每项 { value 毫秒（0 是不刷新）, label }；文字都在 labels。refreshing 时图标转圈、倒计时停、钮 aria-disabled（不丢焦点）。',
+      },
+      {
+        part: 'useAutoRefresh({ interval, lastRefreshed, onRefresh, refreshing?, pauseWhenHidden? })',
+        note: '只要计时不要界面时用：返回离下次刷新的毫秒数（关着、在刷、标签页隐藏时是 null）；同一个到点时刻只调一次 onRefresh。',
+      },
+      {
+        part: 'formatRemaining / formatRefreshClock',
+        note: '倒计时写 12s / 1:05；时刻写本地 HH:MM:SS。',
+      },
+    ],
+    states: [
+      '开着：「下次 12s」每秒走一格，到 0 调 onRefresh。',
+      '在刷：图标转圈，倒计时不显示。',
+      '不刷新：没有倒计时，只有上次时刻与立即刷新。',
+      '还没刷过：上次那段写 labels.never（默认 —）。',
+    ],
+    donts: [
+      '不要把倒计时放进 aria-live：每秒读一遍太吵。',
+      '不要在包里拉数据：onRefresh 里调用方自己拉，拉完更新 lastRefreshed。',
+    ],
+    composition: 'RefreshControl\n  ToggleGroup（间隔）\n  立即刷新钮\n  上次 <time> · 下次 倒计时',
+    keys: [
+      ['Tab', '走到间隔分段（按钮组，aria-pressed 标当前档）与刷新钮'],
+      ['Enter / Space', '选间隔；在刷新钮上立即刷新'],
+    ],
+  },
+  {
     id: 'duration-picker',
     group: 'forms',
     cardHeight: 141,
@@ -4062,6 +4100,47 @@ export const PAGES: readonly DocPage[] = [
       ['菜单键 / Shift+F10', '开右键菜单（宿主的 matchKey 提供）'],
       ['Ctrl+C / Ctrl+S / Ctrl+R', '复制所选行 / 导出 CSV / 重置列（宿主的键位表）'],
     ],
+  },
+  {
+    id: 'grid-summary-row',
+    group: 'blocks',
+    cardHeight: 300,
+    title: 'GridSummaryRow 表尾合计',
+    summary:
+      'DataGrid 的 summary 属性：表尾一到几行合计 / 均值 / 中位数，按列配聚合（sum、avg、min、max、median、count 或自己的函数），对全部行算；跟表同一份列宽与固定列，横向滚动跟着走、纵向粘在底边。字照列类型写，跟上面的行对得齐。',
+    exports: ['GridSummaryRow', 'aggregateValues', 'summaryCells'],
+    propParts: [
+      {
+        part: 'DataGrid summary: GridSummary[]',
+        symbol: 'GridSummary',
+        note: '每行 { id, label, columns: { 列 id: 聚合 | { aggregate, text? } } }；label（合计、均值）写在第一个没配聚合的列，都配了就挂在行的读屏名上。',
+      },
+      {
+        part: 'aggregateValues(aggregate, values, rows?)',
+        note: '一组数的聚合：空的是 null（count 是 0）；median 取中间两个的平均。',
+      },
+      {
+        part: 'summaryCells(columns, rows, summary, env?)',
+        note: '一行汇总各列的值与字（纯函数）：数值类照原类型写（价格按精度、盈亏带符号与方向），count 与非数值列按整数写；精度随行变的列取第一行的。',
+      },
+      {
+        part: 'GridSummaryRow',
+        note: 'DataGrid 内部画汇总行的件（列模板、固定列、aria-rowindex 由表给）；一般经 DataGrid 的 summary 用，不单摆。',
+      },
+    ],
+    states: [
+      '有汇总：表尾一组 rowgroup，上面一道分隔线、底色 surface-raised、600 字重；行名次要文字色。',
+      '固定列：汇总行的固定格同样粘在左边。',
+      '没有有效值：sum / avg 这类写 —，count 写 0。',
+      '看得见的列都没配聚合的汇总行不画。',
+    ],
+    donts: [
+      '不要对涨跌幅、价格求和：用 avg 或 median。',
+      '不要只汇总看得见的行：汇总对全部行算（虚拟滚动只画几十行）。',
+    ],
+    composition:
+      'DataGrid\n  表头\n  行\n  GridSummaryRow × n（rowgroup，粘在底边）\n    行名格 · 聚合格（ToneText 或字）',
+    keys: [],
   },
   {
     id: 'use-undo-stack',
@@ -5829,6 +5908,39 @@ export const PAGES: readonly DocPage[] = [
     donts: ['不要在件里格式化数值；由调用方传。', '徽标不要用彩色。'],
     composition: 'KeyStats section\n  h3 标题（›）\n  dl 网格\n    div（dt 标签 › · dd 数值 · 单位 · 徽标）',
     keys: [['Tab / Enter', '给了回调时到标题、标签上、触发']],
+  },
+  {
+    id: 'ticker-tape',
+    group: 'quotes',
+    cardHeight: 150,
+    title: 'TickerTape 跑马灯',
+    summary:
+      '一排品种（徽标 + 代码 + 最新价 + 涨跌幅，可带走势）横向无缝循环滚动：同一排画两遍、CSS 动画平移 -50%，速度按每秒像素算（默认 40）。悬停、聚焦或按右端暂停钮停住；点一项联动。系统「减少动态效果」或 mode="static" 时不动、可横向滚动。布局照 TradingView Ticker Tape 小组件。',
+    exports: ['TickerTape'],
+    propParts: [
+      {
+        part: 'TickerTape',
+        note: 'items 是 QuoteRow 加 logo / currency / series；价格文字由 formatPrice 写（可拿到这一项按品种定位数）。labels 必填：整条的读屏名、暂停与继续两种字，trend 给了才画走势。',
+      },
+    ],
+    states: [
+      '滚动（scroll）：整条匀速左移，循环接缝看不出；第二遍 aria-hidden + inert。',
+      '停住：指针在条上、焦点在条里或按了暂停钮；暂停钮换成「继续」。',
+      '静止（static，或系统减少动态效果）：只画一遍，没有暂停钮，条可以横向滚动（键盘可聚焦）。',
+      '某项悬停：底色提到 surface-raised。价变了只闪变了的尾数（FlashPrice）。',
+    ],
+    donts: [
+      '不要去掉暂停钮：自动动、超过 5 秒、跟别的内容并排就要能停（WCAG 2.2.2）。',
+      '不要用颜色以外没有符号的方式表达涨跌：涨跌幅带 + / − 号。',
+      '不要放几十项：一遍超过三四屏宽时用 Watchlist。',
+    ],
+    composition:
+      'TickerTape（section）\n  滚动区\n    轨道（两遍）\n      项（button 或 span）：SymbolMark · 代码 · FlashPrice · 币种 · ChangeText · Sparkline\n  暂停 / 继续钮',
+    keys: [
+      ['Tab', '走到各项（只走第一遍）与暂停钮；焦点在条里时停住'],
+      ['Enter / Space', '选这一项（给了 onSelect）；在暂停钮上切暂停 / 继续'],
+      ['← / →', '静止时滚动区有焦点，横向滚'],
+    ],
   },
   {
     id: 'symbol-info',
