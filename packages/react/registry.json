@@ -114,6 +114,11 @@
           "target": "~/src/katana/ui/theme/chip-group.css"
         },
         {
+          "path": "src/theme/cn-auction-bar.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/cn-auction-bar.css"
+        },
+        {
           "path": "src/theme/cn-auction.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/cn-auction.css"
@@ -144,6 +149,11 @@
           "target": "~/src/katana/ui/theme/cn-pulse.css"
         },
         {
+          "path": "src/theme/cn-range-scrubber.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/cn-range-scrubber.css"
+        },
+        {
           "path": "src/theme/cn-seat.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/cn-seat.css"
@@ -157,6 +167,11 @@
           "path": "src/theme/cn-theme-card.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/cn-theme-card.css"
+        },
+        {
+          "path": "src/theme/cn-threshold-gap.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/cn-threshold-gap.css"
         },
         {
           "path": "src/theme/cn-timeline.css",
@@ -3488,7 +3503,7 @@
       "name": "date-range-model",
       "type": "registry:lib",
       "title": "Date Range Model",
-      "description": "DateRangePicker 的预设规则：今天、本周、本月、年初至今（截至今天）与区间认预设（纯函数）。",
+      "description": "一条 09:30–15:00 的交易时段轴（午休不占宽度，中间一条竖虚线是 11:30/13:00，每半小时一根刻度），在上面拖出一个时段，调用方拿它去算板块与个股的区间涨幅、净额、强度并排序（功能参照开盘啦「区间统计」，交互照 TradingView 图表底部的区间选择）。按住选区中间整段平移，按两端改起止，按在选区外近的那个把手跳过去；「近 N 分钟」快捷钮从现在往回数交易分钟；口径切换（涨幅 / 净额 / 强度，键名由调用方给）。「现在」之后的时段盖一层斜纹、选不进去。背景柱（每分钟成交额之类）可不给，选区里的亮、外面的暗。回调给的是时刻：起点正好在午休那一点写 13:00，终点写 11:30。",
       "dependencies": [
         "@internationalized/date@3.12.4"
       ],
@@ -7714,6 +7729,42 @@
       ]
     },
     {
+      "name": "cn-auction-bar-cell",
+      "type": "registry:component",
+      "title": "Cn Auction Bar Cell",
+      "description": "表格里的一格（放进 DataGrid 列的 cell）：一条细轨，实心段是今日竞价额，一根竖刻度是昨日同期竞价额（量比的分母，实心过了刻度就是比昨天多），轨下一条涨色细线是涨停委买额；右边写量比（两位小数，≥ 1 加亮）。09:25 撮合之前（09:15–09:25 是虚拟匹配）整格变淡、字写「未出结果」。满刻度 max 给一列共用的一把，行与行就能比长短；不给按这一格里最大的。功能参照开盘啦「竞价」与「竞价涨停委买」，条的画法是我们定的。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/cn-auction-bar-model",
+        "@katana/cn-format",
+        "@katana/cn-labels"
+      ],
+      "files": [
+        {
+          "path": "src/cn/auction-bar-cell.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/cn/auction-bar-cell.tsx"
+        }
+      ]
+    },
+    {
+      "name": "cn-auction-bar-model",
+      "type": "registry:lib",
+      "title": "Cn Auction Bar Model",
+      "description": "表格里的一格（放进 DataGrid 列的 cell）：一条细轨，实心段是今日竞价额，一根竖刻度是昨日同期竞价额（量比的分母，实心过了刻度就是比昨天多），轨下一条涨色细线是涨停委买额；右边写量比（两位小数，≥ 1 加亮）。09:25 撮合之前（09:15–09:25 是虚拟匹配）整格变淡、字写「未出结果」。满刻度 max 给一列共用的一把，行与行就能比长短；不给按这一格里最大的。功能参照开盘啦「竞价」与「竞价涨停委买」，条的画法是我们定的。",
+      "registryDependencies": [
+        "@katana/cn-auction-model",
+        "@katana/cn-session"
+      ],
+      "files": [
+        {
+          "path": "src/cn/auction-bar-model.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/cn/auction-bar-model.ts"
+        }
+      ]
+    },
+    {
       "name": "cn-auction-model",
       "type": "registry:lib",
       "title": "Cn Auction Model",
@@ -7843,7 +7894,8 @@
       "title": "Cn Labels",
       "description": "A 股件包的第 0 层（纯函数，不带 React）：formatCnAmount 把金额写成万 / 亿；时段轴认 09:15–09:25 竞价、09:30–11:30、13:00–15:00，午休与 09:25–09:30 不占宽度；cnLabelsZh 是随包的简体中文默认文案，可以整份换；取不到的数写「—」并可带原因（readCnValue）。不带数据源与交易日历数据。DataGrid 的列类型 cnAmount 用 formatCnAmount 写金额（靠右、按数排序；format.cnAmount.signed 为真时正数涨色、负数跌色，用于净流入）。",
       "registryDependencies": [
-        "@katana/cn-session"
+        "@katana/cn-session",
+        "@katana/cn-threshold-gap-model"
       ],
       "files": [
         {
@@ -7986,6 +8038,45 @@
       ]
     },
     {
+      "name": "cn-range-scrubber-model",
+      "type": "registry:lib",
+      "title": "Cn Range Scrubber Model",
+      "description": "一条 09:30–15:00 的交易时段轴（午休不占宽度，中间一条竖虚线是 11:30/13:00，每半小时一根刻度），在上面拖出一个时段，调用方拿它去算板块与个股的区间涨幅、净额、强度并排序（功能参照开盘啦「区间统计」，交互照 TradingView 图表底部的区间选择）。按住选区中间整段平移，按两端改起止，按在选区外近的那个把手跳过去；「近 N 分钟」快捷钮从现在往回数交易分钟；口径切换（涨幅 / 净额 / 强度，键名由调用方给）。「现在」之后的时段盖一层斜纹、选不进去。背景柱（每分钟成交额之类）可不给，选区里的亮、外面的暗。回调给的是时刻：起点正好在午休那一点写 13:00，终点写 11:30。",
+      "registryDependencies": [
+        "@katana/cn-flow-race-model",
+        "@katana/cn-session",
+        "@katana/num"
+      ],
+      "files": [
+        {
+          "path": "src/cn/range-scrubber-model.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/cn/range-scrubber-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "cn-range-scrubber",
+      "type": "registry:component",
+      "title": "Cn Range Scrubber",
+      "description": "一条 09:30–15:00 的交易时段轴（午休不占宽度，中间一条竖虚线是 11:30/13:00，每半小时一根刻度），在上面拖出一个时段，调用方拿它去算板块与个股的区间涨幅、净额、强度并排序（功能参照开盘啦「区间统计」，交互照 TradingView 图表底部的区间选择）。按住选区中间整段平移，按两端改起止，按在选区外近的那个把手跳过去；「近 N 分钟」快捷钮从现在往回数交易分钟；口径切换（涨幅 / 净额 / 强度，键名由调用方给）。「现在」之后的时段盖一层斜纹、选不进去。背景柱（每分钟成交额之类）可不给，选区里的亮、外面的暗。回调给的是时刻：起点正好在午休那一点写 13:00，终点写 11:30。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/cn-flow-race-model",
+        "@katana/cn-labels",
+        "@katana/cn-range-scrubber-model",
+        "@katana/range-histogram-model",
+        "@katana/toggle-group"
+      ],
+      "files": [
+        {
+          "path": "src/cn/range-scrubber.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/cn/range-scrubber.tsx"
+        }
+      ]
+    },
+    {
       "name": "cn-seat-model",
       "type": "registry:lib",
       "title": "Cn Seat Model",
@@ -8085,6 +8176,40 @@
           "path": "src/cn/theme-card.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/cn/theme-card.tsx"
+        }
+      ]
+    },
+    {
+      "name": "cn-threshold-gap-model",
+      "type": "registry:lib",
+      "title": "Cn Threshold Gap Model",
+      "description": "一只票一行：上面是 Meter 的条（累计偏离值的绝对值对阈值，阈值是硬限红线、预警线是琥珀细线，越线条跟着变色），名字后面跟偏离口径的小字；下面是档位标签（监控中 / 临近 / 已触发 / 监管期结束）与「差 0.04%」「超出 1.20%」，末尾可放一句备注（监管期到哪天）。功能参照开盘啦「异动提醒」：列表显示离阈值差多少、已触发、监管期结束分开标。阈值与预警线是交易所规则与调用方的口径，包里不带；偏离值由调用方算好（百分点，可正可负，按绝对值比）。",
+      "files": [
+        {
+          "path": "src/cn/threshold-gap-model.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/cn/threshold-gap-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "cn-threshold-gap",
+      "type": "registry:component",
+      "title": "Cn Threshold Gap",
+      "description": "一只票一行：上面是 Meter 的条（累计偏离值的绝对值对阈值，阈值是硬限红线、预警线是琥珀细线，越线条跟着变色），名字后面跟偏离口径的小字；下面是档位标签（监控中 / 临近 / 已触发 / 监管期结束）与「差 0.04%」「超出 1.20%」，末尾可放一句备注（监管期到哪天）。功能参照开盘啦「异动提醒」：列表显示离阈值差多少、已触发、监管期结束分开标。阈值与预警线是交易所规则与调用方的口径，包里不带；偏离值由调用方算好（百分点，可正可负，按绝对值比）。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/cn-labels",
+        "@katana/cn-threshold-gap-model",
+        "@katana/meter",
+        "@katana/severity",
+        "@katana/tag"
+      ],
+      "files": [
+        {
+          "path": "src/cn/threshold-gap.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/cn/threshold-gap.tsx"
         }
       ]
     },

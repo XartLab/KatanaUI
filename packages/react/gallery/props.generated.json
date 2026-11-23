@@ -4669,6 +4669,147 @@
         }
       ]
     },
+    "AuctionBarCell": {
+      "kind": "component",
+      "source": "src/cn/auction-bar-cell.tsx",
+      "props": [
+        {
+          "name": "amount",
+          "type": "number | null",
+          "required": true,
+          "description": "Today's opening-auction turnover in yuan; null when not available."
+        },
+        {
+          "name": "previous",
+          "type": "number | null",
+          "required": false,
+          "default": "null",
+          "description": "Yesterday's opening-auction turnover at the same time in yuan, the base of the ratio."
+        },
+        {
+          "name": "limitBid",
+          "type": "number | null",
+          "required": false,
+          "default": "null",
+          "description": "Bids queued at the limit-up price in yuan; no line when omitted."
+        },
+        {
+          "name": "max",
+          "type": "number",
+          "required": false,
+          "description": "Full scale in yuan shared by the whole column so rows compare; the largest value in this cell when omitted."
+        },
+        {
+          "name": "time",
+          "type": "string",
+          "required": false,
+          "description": "Clock time of the data, such as \"09:22\"; before 09:25 the cell reads as pending."
+        },
+        {
+          "name": "labels",
+          "type": "AuctionBarLabels",
+          "required": false,
+          "default": "cnLabelsZh.auctionBar",
+          "description": "Text pack; the Simplified Chinese default is used when omitted."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class names."
+        }
+      ]
+    },
+    "AuctionBarCellProps": {
+      "kind": "type",
+      "source": "src/cn/auction-bar-cell.tsx",
+      "props": [
+        {
+          "name": "amount",
+          "type": "number | null",
+          "required": true,
+          "description": "Today's opening-auction turnover in yuan; null when not available."
+        },
+        {
+          "name": "previous",
+          "type": "number | null",
+          "required": false,
+          "description": "Yesterday's opening-auction turnover at the same time in yuan, the base of the ratio."
+        },
+        {
+          "name": "limitBid",
+          "type": "number | null",
+          "required": false,
+          "description": "Bids queued at the limit-up price in yuan; no line when omitted."
+        },
+        {
+          "name": "max",
+          "type": "number",
+          "required": false,
+          "description": "Full scale in yuan shared by the whole column so rows compare; the largest value in this cell when omitted."
+        },
+        {
+          "name": "time",
+          "type": "string",
+          "required": false,
+          "description": "Clock time of the data, such as \"09:22\"; before 09:25 the cell reads as pending."
+        },
+        {
+          "name": "labels",
+          "type": "AuctionBarLabels",
+          "required": false,
+          "description": "Text pack; the Simplified Chinese default is used when omitted."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class names."
+        }
+      ]
+    },
+    "AuctionBarLabels": {
+      "kind": "type",
+      "source": "src/cn/labels.ts",
+      "props": [
+        {
+          "name": "pending",
+          "type": "string",
+          "required": true,
+          "description": "09:25 之前格里写的字。"
+        },
+        {
+          "name": "aria",
+          "type": "(parts: { amount: string previous: string ratio: string limitBid: string | null pending: boolean }) => string",
+          "required": true,
+          "description": "整格的读屏名（也是悬停提示）；金额已写成万 / 亿，取不到是「—」，没有涨停委买是 null。"
+        }
+      ]
+    },
+    "AuctionBarShares": {
+      "kind": "type",
+      "source": "src/cn/auction-bar-model.ts",
+      "props": [
+        {
+          "name": "amount",
+          "type": "number | null",
+          "required": true,
+          "description": "今日竞价额占满刻度的比例（0 到 1）；取不到是 null。"
+        },
+        {
+          "name": "previous",
+          "type": "number | null",
+          "required": true,
+          "description": "昨日同期那根刻度的位置；取不到是 null。"
+        },
+        {
+          "name": "limitBid",
+          "type": "number | null",
+          "required": true,
+          "description": "涨停委买额那条细线的长度；没有是 null。"
+        }
+      ]
+    },
     "AuctionPoint": {
       "kind": "type",
       "source": "src/cn/auction-model.ts",
@@ -8390,6 +8531,24 @@
         {
           "name": "moveFeed",
           "type": "MoveFeedLabels",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "rangeScrubber",
+          "type": "RangeScrubberLabels",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "auctionBar",
+          "type": "AuctionBarLabels",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "thresholdGap",
+          "type": "ThresholdGapLabels",
           "required": true,
           "description": ""
         }
@@ -41081,6 +41240,223 @@
       "source": "src/patterns/date-range-model.ts",
       "props": []
     },
+    "RangeScrubber": {
+      "kind": "component",
+      "source": "src/cn/range-scrubber.tsx",
+      "props": [
+        {
+          "name": "value",
+          "type": "readonly [string, string]",
+          "required": false,
+          "description": "The selected session span as clock times, such as [\"09:30\", \"10:15\"] (controlled)."
+        },
+        {
+          "name": "defaultValue",
+          "type": "readonly [string, string]",
+          "required": false,
+          "description": "The initial span when uncontrolled; the whole elapsed session when omitted."
+        },
+        {
+          "name": "onValueChange",
+          "type": "(value: [string, string]) => void",
+          "required": false,
+          "description": "Called with the new span as clock times; a start on the lunch point reads 13:00, an end reads 11:30."
+        },
+        {
+          "name": "now",
+          "type": "string",
+          "required": false,
+          "description": "Clock time of the latest data, such as \"10:42\"; later minutes have not happened and cannot be selected."
+        },
+        {
+          "name": "bars",
+          "type": "readonly ScrubPoint[]",
+          "required": false,
+          "description": "Background bars (turnover per minute and the like), each drawn to the next point's time; none when omitted."
+        },
+        {
+          "name": "presets",
+          "type": "readonly number[]",
+          "required": false,
+          "description": "Quick spans in trading minutes back from now, such as [5, 15, 30, 60]; no buttons when omitted."
+        },
+        {
+          "name": "metrics",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Keys of the ranking measures to switch between, such as [\"change\", \"net\", \"strength\"]; names come from labels.metrics."
+        },
+        {
+          "name": "metric",
+          "type": "string",
+          "required": false,
+          "description": "The selected measure (controlled)."
+        },
+        {
+          "name": "defaultMetric",
+          "type": "string",
+          "required": false,
+          "description": "The initially selected measure when uncontrolled; the first of `metrics` when omitted."
+        },
+        {
+          "name": "onMetricChange",
+          "type": "(metric: string) => void",
+          "required": false,
+          "description": "Called with the newly selected measure key."
+        },
+        {
+          "name": "labels",
+          "type": "RangeScrubberLabels",
+          "required": false,
+          "default": "cnLabelsZh.rangeScrubber",
+          "description": "Text pack; the Simplified Chinese default is used when omitted."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class names."
+        }
+      ]
+    },
+    "RangeScrubberLabels": {
+      "kind": "type",
+      "source": "src/cn/labels.ts",
+      "props": [
+        {
+          "name": "region",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "low",
+          "type": "string",
+          "required": true,
+          "description": "起点、终点把手的读屏名。"
+        },
+        {
+          "name": "high",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "span",
+          "type": "(from: string, to: string, minutes: number) => string",
+          "required": true,
+          "description": "读数行，例「09:45–10:30 · 45 分钟」；minutes 是交易分钟（午休不算）。"
+        },
+        {
+          "name": "presetGroup",
+          "type": "string",
+          "required": true,
+          "description": "快捷钮组的读屏名与一个钮上的字，例「近 15 分」。"
+        },
+        {
+          "name": "preset",
+          "type": "(minutes: number) => string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "metricGroup",
+          "type": "string",
+          "required": true,
+          "description": "口径切换的读屏名与各口径的名字（键是调用方给的 metrics）。"
+        },
+        {
+          "name": "metrics",
+          "type": "Record<string, string>",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "future",
+          "type": "string",
+          "required": true,
+          "description": "「现在」之后那段斜纹的悬停提示。"
+        }
+      ]
+    },
+    "RangeScrubberProps": {
+      "kind": "type",
+      "source": "src/cn/range-scrubber.tsx",
+      "props": [
+        {
+          "name": "value",
+          "type": "readonly [string, string]",
+          "required": false,
+          "description": "The selected session span as clock times, such as [\"09:30\", \"10:15\"] (controlled)."
+        },
+        {
+          "name": "defaultValue",
+          "type": "readonly [string, string]",
+          "required": false,
+          "description": "The initial span when uncontrolled; the whole elapsed session when omitted."
+        },
+        {
+          "name": "onValueChange",
+          "type": "(value: [string, string]) => void",
+          "required": false,
+          "description": "Called with the new span as clock times; a start on the lunch point reads 13:00, an end reads 11:30."
+        },
+        {
+          "name": "now",
+          "type": "string",
+          "required": false,
+          "description": "Clock time of the latest data, such as \"10:42\"; later minutes have not happened and cannot be selected."
+        },
+        {
+          "name": "bars",
+          "type": "readonly ScrubPoint[]",
+          "required": false,
+          "description": "Background bars (turnover per minute and the like), each drawn to the next point's time; none when omitted."
+        },
+        {
+          "name": "presets",
+          "type": "readonly number[]",
+          "required": false,
+          "description": "Quick spans in trading minutes back from now, such as [5, 15, 30, 60]; no buttons when omitted."
+        },
+        {
+          "name": "metrics",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Keys of the ranking measures to switch between, such as [\"change\", \"net\", \"strength\"]; names come from labels.metrics."
+        },
+        {
+          "name": "metric",
+          "type": "string",
+          "required": false,
+          "description": "The selected measure (controlled)."
+        },
+        {
+          "name": "defaultMetric",
+          "type": "string",
+          "required": false,
+          "description": "The initially selected measure when uncontrolled; the first of `metrics` when omitted."
+        },
+        {
+          "name": "onMetricChange",
+          "type": "(metric: string) => void",
+          "required": false,
+          "description": "Called with the newly selected measure key."
+        },
+        {
+          "name": "labels",
+          "type": "RangeScrubberLabels",
+          "required": false,
+          "description": "Text pack; the Simplified Chinese default is used when omitted."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class names."
+        }
+      ]
+    },
     "RangeValue": {
       "kind": "type",
       "source": "src/blocks/data-grid/columns.ts",
@@ -45241,6 +45617,16 @@
       "source": "src/ai/running-now.tsx",
       "props": []
     },
+    "SCRUB_LUNCH": {
+      "kind": "value",
+      "source": "src/cn/range-scrubber-model.ts",
+      "props": []
+    },
+    "SCRUB_TICKS": {
+      "kind": "value",
+      "source": "src/cn/range-scrubber-model.ts",
+      "props": []
+    },
     "SavedView": {
       "kind": "type",
       "source": "src/lib/use-saved-views.ts",
@@ -46251,6 +46637,54 @@
           "type": "string",
           "required": true,
           "description": "The paragraph to reveal word by word."
+        }
+      ]
+    },
+    "ScrubBar": {
+      "kind": "type",
+      "source": "src/cn/range-scrubber-model.ts",
+      "props": [
+        {
+          "name": "x0",
+          "type": "number",
+          "required": true,
+          "description": "柱在轴上的起点与终点（0 到 1）。"
+        },
+        {
+          "name": "x1",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "share",
+          "type": "number",
+          "required": true,
+          "description": "柱高占最高那根的比例（0 到 1）。"
+        },
+        {
+          "name": "index",
+          "type": "number",
+          "required": true,
+          "description": "柱的起点（交易分钟），判断在不在选区里用。"
+        }
+      ]
+    },
+    "ScrubPoint": {
+      "kind": "type",
+      "source": "src/cn/range-scrubber-model.ts",
+      "props": [
+        {
+          "name": "time",
+          "type": "string",
+          "required": true,
+          "description": "Clock time of the bucket start, such as \"09:31\"."
+        },
+        {
+          "name": "value",
+          "type": "number | null",
+          "required": true,
+          "description": "The bar height (turnover, volume and the like); null leaves a gap."
         }
       ]
     },
@@ -56646,6 +57080,175 @@
         }
       ]
     },
+    "ThresholdGap": {
+      "kind": "component",
+      "source": "src/cn/threshold-gap.tsx",
+      "props": [
+        {
+          "name": "label",
+          "type": "ReactNode",
+          "required": true,
+          "description": "Name of the stock (a node, often name plus code)."
+        },
+        {
+          "name": "value",
+          "type": "number | null",
+          "required": true,
+          "description": "Cumulative price deviation over the rule's window in percentage points, signed; null when not available."
+        },
+        {
+          "name": "threshold",
+          "type": "number",
+          "required": true,
+          "description": "The trigger threshold in percentage points (positive), compared with the absolute deviation."
+        },
+        {
+          "name": "warnAt",
+          "type": "number",
+          "required": false,
+          "description": "Warning line in percentage points; reaching it reads as near."
+        },
+        {
+          "name": "ended",
+          "type": "boolean",
+          "required": false,
+          "default": "false",
+          "description": "The supervision period has ended (the caller knows the dates)."
+        },
+        {
+          "name": "period",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Which window the deviation covers, such as \"3-day deviation\"; written after the name."
+        },
+        {
+          "name": "note",
+          "type": "ReactNode",
+          "required": false,
+          "description": "A short note at the end of the bottom line, such as the end of the supervision period."
+        },
+        {
+          "name": "labels",
+          "type": "ThresholdGapLabels",
+          "required": false,
+          "default": "cnLabelsZh.thresholdGap",
+          "description": "Text pack; the Simplified Chinese default is used when omitted."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class names."
+        }
+      ]
+    },
+    "ThresholdGapLabels": {
+      "kind": "type",
+      "source": "src/cn/labels.ts",
+      "props": [
+        {
+          "name": "state",
+          "type": "Record<ThresholdGapState, string>",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "gap",
+          "type": "(percent: string) => string",
+          "required": true,
+          "description": "离阈值还差多少，例「差 0.04%」。"
+        },
+        {
+          "name": "over",
+          "type": "(percent: string) => string",
+          "required": true,
+          "description": "越过阈值多少，例「超出 1.20%」。"
+        },
+        {
+          "name": "threshold",
+          "type": "(percent: string) => string",
+          "required": true,
+          "description": "读屏里阈值与预警线的说法，例「阈值 20.00%」。"
+        },
+        {
+          "name": "warn",
+          "type": "(percent: string) => string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "unavailable",
+          "type": "string",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "ThresholdGapProps": {
+      "kind": "type",
+      "source": "src/cn/threshold-gap.tsx",
+      "props": [
+        {
+          "name": "label",
+          "type": "ReactNode",
+          "required": true,
+          "description": "Name of the stock (a node, often name plus code)."
+        },
+        {
+          "name": "value",
+          "type": "number | null",
+          "required": true,
+          "description": "Cumulative price deviation over the rule's window in percentage points, signed; null when not available."
+        },
+        {
+          "name": "threshold",
+          "type": "number",
+          "required": true,
+          "description": "The trigger threshold in percentage points (positive), compared with the absolute deviation."
+        },
+        {
+          "name": "warnAt",
+          "type": "number",
+          "required": false,
+          "description": "Warning line in percentage points; reaching it reads as near."
+        },
+        {
+          "name": "ended",
+          "type": "boolean",
+          "required": false,
+          "description": "The supervision period has ended (the caller knows the dates)."
+        },
+        {
+          "name": "period",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Which window the deviation covers, such as \"3-day deviation\"; written after the name."
+        },
+        {
+          "name": "note",
+          "type": "ReactNode",
+          "required": false,
+          "description": "A short note at the end of the bottom line, such as the end of the supervision period."
+        },
+        {
+          "name": "labels",
+          "type": "ThresholdGapLabels",
+          "required": false,
+          "description": "Text pack; the Simplified Chinese default is used when omitted."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class names."
+        }
+      ]
+    },
+    "ThresholdGapState": {
+      "kind": "type",
+      "source": "src/cn/threshold-gap-model.ts",
+      "props": []
+    },
     "TickerItem": {
       "kind": "type",
       "source": "src/quotes/ticker-tape.tsx",
@@ -62770,6 +63373,21 @@
         }
       ]
     },
+    "auctionBarShares": {
+      "kind": "function",
+      "source": "src/cn/auction-bar-model.ts",
+      "props": []
+    },
+    "auctionPending": {
+      "kind": "function",
+      "source": "src/cn/auction-bar-model.ts",
+      "props": []
+    },
+    "auctionRatio": {
+      "kind": "function",
+      "source": "src/cn/auction-bar-model.ts",
+      "props": []
+    },
     "auctionSteps": {
       "kind": "function",
       "source": "src/cn/auction-model.ts",
@@ -65053,6 +65671,11 @@
       "source": "src/katana/page-preloader.tsx",
       "props": []
     },
+    "presetRange": {
+      "kind": "function",
+      "source": "src/cn/range-scrubber-model.ts",
+      "props": []
+    },
     "priceDomain": {
       "kind": "function",
       "source": "src/cn/auction-model.ts",
@@ -65471,6 +66094,36 @@
       "source": "src/motion/text/scramble-text.tsx",
       "props": []
     },
+    "scrubBars": {
+      "kind": "function",
+      "source": "src/cn/range-scrubber-model.ts",
+      "props": []
+    },
+    "scrubClock": {
+      "kind": "function",
+      "source": "src/cn/range-scrubber-model.ts",
+      "props": []
+    },
+    "scrubIndex": {
+      "kind": "function",
+      "source": "src/cn/range-scrubber-model.ts",
+      "props": []
+    },
+    "scrubNow": {
+      "kind": "function",
+      "source": "src/cn/range-scrubber-model.ts",
+      "props": []
+    },
+    "scrubRange": {
+      "kind": "function",
+      "source": "src/cn/range-scrubber-model.ts",
+      "props": []
+    },
+    "scrubRangeOf": {
+      "kind": "function",
+      "source": "src/cn/range-scrubber-model.ts",
+      "props": []
+    },
     "scrubSnap": {
       "kind": "function",
       "source": "src/katana/scrubber.tsx",
@@ -65554,6 +66207,11 @@
     "sheetVariants": {
       "kind": "function",
       "source": "src/primitives/sheet.tsx",
+      "props": []
+    },
+    "shiftRange": {
+      "kind": "function",
+      "source": "src/cn/range-scrubber-model.ts",
       "props": []
     },
     "shiftTradingDay": {
@@ -66228,6 +66886,16 @@
     "themeCounts": {
       "kind": "function",
       "source": "src/cn/timeline-model.ts",
+      "props": []
+    },
+    "thresholdGap": {
+      "kind": "function",
+      "source": "src/cn/threshold-gap-model.ts",
+      "props": []
+    },
+    "thresholdState": {
+      "kind": "function",
+      "source": "src/cn/threshold-gap-model.ts",
       "props": []
     },
     "toggleGroupVariants": {

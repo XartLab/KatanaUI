@@ -331,6 +331,7 @@ import {
   SeatTableDemo,
   TradingDatePickerDemo,
 } from './pages/cn-batch2.tsx'
+import { AuctionBarCellDemo, RangeScrubberDemo, ThresholdGapDemo } from './pages/cn-batch3.tsx'
 import {
   CalendarDemo,
   CardDemo,
@@ -460,6 +461,9 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'auction-step': AuctionStepDemo,
   'trading-date-picker': TradingDatePickerDemo,
   'flow-race': FlowRaceDemo,
+  'range-scrubber': RangeScrubberDemo,
+  'auction-bar-cell': AuctionBarCellDemo,
+  'threshold-gap': ThresholdGapDemo,
   'mini-k-card-grid': MiniKCardGridDemo,
   'move-feed': MoveFeedDemo,
   'decimal-field': DecimalFieldDemo,
