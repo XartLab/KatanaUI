@@ -2,5 +2,5 @@
 import { StatusIcon } from '../../src/index'
 
 export function StatusIconUsage() {
-  return <StatusIcon status="pending" label="Syncing" />
+  return <StatusIcon tone="pending" label="Syncing" />
 }

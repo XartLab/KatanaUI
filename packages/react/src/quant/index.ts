@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: MIT
 // @katana-ui/react/quant 的出口：量化领域的展示件与格式化函数（#1862）。只依赖包里下层（lib、primitives、patterns），不依赖行情、图表包与应用；
 // 品种、价格精度、小数位、单位由调用方传最小的普通类型。纯函数另有 `@katana-ui/react/quant/format` 出口（不带 React，画布与 Worker 里用）。
-export { ChangeText } from './change-text.tsx'
-export { DecimalField, type DecimalFieldProps } from './decimal-field.tsx'
-export { PnlText } from './pnl-text.tsx'
+// ChangeText、PnlText、RatingText、TechnicalRating、MetricCard、SparkTile、业绩条、同业卡、关键数据、自选列表 2026-11-18 搬到 src/quotes/（出口 @katana-ui/react/quotes），这里照旧再导出。
+export { ChangeText } from '../quotes/change-text.tsx'
+export { DecimalField, type DecimalFieldLabels, type DecimalFieldProps } from './decimal-field.tsx'
+export { PnlText } from '../quotes/pnl-text.tsx'
 export {
   EventCalendar,
   type CalendarItem,
@@ -29,6 +30,15 @@ export {
   type LimitLadderLabels,
   type LimitLadderProps,
 } from './limit-ladder.tsx'
+// 题材热度矩阵（#11，开盘啦对照）：分档与 CalendarHeatmap 的换手视图同一条，颜色是中性浓度（不用品牌橙）。
+export {
+  ThemeHeatMatrix,
+  type ThemeHeatCell,
+  type ThemeHeatMatrixLabels,
+  type ThemeHeatMatrixProps,
+  type ThemeHeatPos,
+  type ThemeHeatRow,
+} from './theme-heat-matrix.tsx'
 export {
   MarketHeatmap,
   type HeatmapColorBy,
@@ -41,7 +51,7 @@ export {
   type MarketHeatmapLabels,
   type MarketHeatmapProps,
 } from './market-heatmap.tsx'
-export { RatingText, type RatingLevel, type RatingTextProps } from './rating-text.tsx'
+export { RatingText, type RatingLevel, type RatingTextProps } from '../quotes/rating-text.tsx'
 export {
   TechnicalRating,
   type PivotRow,
@@ -52,12 +62,12 @@ export {
   type TechnicalRatingLabels,
   type TechnicalRatingProps,
   type TechnicalRatingTimeframe,
-} from './technical-rating.tsx'
-export * from './format/index.ts'
+} from '../quotes/technical-rating.tsx'
+export * from '../lib/chart/format/index.ts'
 
 // 时间序列与盈亏的件（#1917）。功能参照 Arc（uiarc.dev，2026-11-14 读），只取功能，实现原创。
 export { BrushChart, BrushStrip, type BrushChartProps, type BrushLabels, type BrushStripProps } from './brush-chart.tsx'
-export type { BrushWindow } from './brush-model.ts'
+export type { BrushWindow } from '../lib/chart/brush-model.ts'
 export { EquityCurve, type EquityCurveLabels, type EquityCurvePoint, type EquityCurveProps } from './equity-curve.tsx'
 export {
   CalendarHeatmap,
@@ -80,7 +90,7 @@ export {
 export { SlopeChart, type SlopeChartProps } from './slope-chart.tsx'
 export { ranks, slopeLayout, spreadLabels, type SlopeItem, type SlopeMode, type SlopeRow } from './slope-model.ts'
 export { ConnectedScatter, type ConnectedScatterProps } from './connected-scatter.tsx'
-export { scatterLayout, type ScatterPoint, type ScatterSeries } from './scatter-model.ts'
+export { scatterLayout, type ScatterPoint, type ScatterSeries } from '../lib/chart/scatter-model.ts'
 export {
   QuantileLayers,
   type QuantileLayersLabels,
@@ -89,8 +99,11 @@ export {
 } from './quantile-layers.tsx'
 export { isMonotonic, lastFinite, layerLevel, quantileRange, sortLayers, type QuantileLayer } from './quantile-model.ts'
 // 第二批（#1929）：KPI 瓦片、仪表、订单流仪表行、状态带、必要条件块。
-export { SparkTile, type SparkTileProps, type SparkTileState } from './spark-tile.tsx'
-export { Meter, type MeterDisplay, type MeterProps, type MeterTone } from './meter.tsx'
+export { SparkTile, type SparkTileProps, type SparkTileState } from '../quotes/spark-tile.tsx'
+// Meter、FlowGauges、RegimeStrip、ConsensusBlock 不是量化专有，G6 挪到 blocks（体检 §2）；这里转出留一个版本，新代码从 blocks 引。
+/** @deprecated Moved to `@katana-ui/react/blocks`; kept here for one version. */
+export { Meter, type MeterDisplay, type MeterProps, type MeterTone } from '../blocks/meter/meter.tsx'
+/** @deprecated Moved to `@katana-ui/react/blocks`; kept here for one version. */
 export {
   FlowGauges,
   type FlowCellState,
@@ -99,7 +112,8 @@ export {
   type FlowGaugeData,
   type FlowGaugesProps,
   type FlowSignedGauge,
-} from './flow-gauges.tsx'
+} from '../blocks/flow-gauges/flow-gauges.tsx'
+/** @deprecated Moved to `@katana-ui/react/blocks`; kept here for one version. */
 export {
   RegimeBand,
   RegimeStrip,
@@ -108,7 +122,8 @@ export {
   type RegimeSegment,
   type RegimeState,
   type RegimeStripProps,
-} from './regime-strip.tsx'
+} from '../blocks/regime-strip/regime-strip.tsx'
+/** @deprecated Moved to `@katana-ui/react/blocks`; kept here for one version. */
 export {
   ConsensusBlock,
   countConsensus,
@@ -116,7 +131,7 @@ export {
   type ConsensusParty,
   type ConsensusState,
   type ConsensusVerdict,
-} from './consensus-block.tsx'
+} from '../blocks/consensus-block/consensus-block.tsx'
 export {
   MetricCard,
   MetricCardGrid,
@@ -128,7 +143,16 @@ export {
   type MetricRange,
   type MetricStage,
   type MetricTrendTone,
-} from './metric-card.tsx'
+} from '../quotes/metric-card.tsx'
+export {
+  DistributionBars,
+  distributionBarHeight,
+  distributionTotals,
+  type DistributionBarsProps,
+  type DistributionBin,
+  type DistributionTone,
+  type DistributionTotals,
+} from './distribution-bars.tsx'
 export { ParamScatter, type ParamScatterProps } from './param-scatter.tsx'
 export {
   bestIndex,
@@ -140,6 +164,72 @@ export {
   type ParamPoint,
   type ParamRamp,
 } from './param-scatter-model.ts'
+
+// 研究报告件与优化结果件（#120，参照 MultiCharts 的策略报告、步进优化与优化报告）：件只画，数据由调用方给。
+export { MaeMfeScatter, type MaeMfeScatterLabels, type MaeMfeScatterProps } from './mae-mfe-scatter.tsx'
+export {
+  excursionPoints,
+  summarizeExcursions,
+  outwardDomain,
+  type ExcursionAxis,
+  type ExcursionKind,
+  type ExcursionPoint,
+  type ExcursionSummary,
+  type ExcursionTrade,
+  type ExcursionUnit,
+} from './mae-mfe-model.ts'
+export { UnderwaterChart, type UnderwaterChartLabels, type UnderwaterChartProps } from './underwater-chart.tsx'
+export { maxDrawdownSegment, underwaterShare, type DrawdownSegment, type UnderwaterPoint } from './underwater-model.ts'
+export { PeriodReturnsTable, type PeriodReturnsLabels, type PeriodReturnsTableProps } from './period-returns-table.tsx'
+export {
+  aggregateReturns,
+  compound,
+  isoWeek,
+  type PeriodCell,
+  type PeriodRow,
+  type PeriodUnit,
+  type ReturnSample,
+} from './period-returns-model.ts'
+export {
+  ParamSurfaceHeatmap,
+  type ParamSurfaceHeatmapProps,
+  type ParamSurfaceLabels,
+  type SurfaceMetric,
+  type SurfaceParam,
+} from './param-surface-heatmap.tsx'
+export {
+  bestCell,
+  isSpike,
+  resolveSlice,
+  sliceGrid,
+  surfaceNeighborhood,
+  type SurfaceGoal,
+  type SurfaceGrid,
+  type SurfaceNeighborhood,
+  type SurfacePoint,
+} from './param-surface-model.ts'
+export { WalkForwardMatrix, type WalkForwardMatrixLabels, type WalkForwardMatrixProps } from './walk-forward-matrix.tsx'
+export {
+  annualize,
+  summarizeWindows,
+  type WalkForwardMode,
+  type WalkForwardSummary,
+  type WalkForwardWindow,
+} from './walk-forward-model.ts'
+export {
+  RobustnessGate,
+  type RobustnessCheck,
+  type RobustnessGateLabels,
+  type RobustnessGateProps,
+} from './robustness-gate.tsx'
+export {
+  evaluateCheck,
+  summarizeGate,
+  type GateCheck,
+  type GateOp,
+  type GateState,
+  type GateSummary,
+} from './robustness-gate-model.ts'
 
 // 资金流向桑基图与按发布时间画的宏观序列（#45）。
 export { FlowSankey, type FlowSankeyLabels, type FlowSankeyProps } from './flow-sankey.tsx'
@@ -181,8 +271,26 @@ export {
   formatPerformance,
   type PerformanceItem,
   type PerformanceStripProps,
-} from './performance-strip.tsx'
-export { PeerCards, type PeerCardsLabels, type PeerCardsProps, type PeerItem } from './peer-cards.tsx'
-export { KeyStats, type KeyStatItem, type KeyStatsProps } from './key-stats.tsx'
-export { Watchlist, type WatchlistLabels, type WatchlistProps, type WatchlistRow } from './watchlist.tsx'
-export { changedTail, nextSort, sortRows, type WatchlistSort, type WatchlistSortKey } from './watchlist-model.ts'
+} from '../quotes/performance-strip.tsx'
+export {
+  PeerCards,
+  type LegacyPeerItem,
+  type PeerCardsLabels,
+  type PeerCardsProps,
+  type PeerItem,
+} from '../quotes/peer-cards.tsx'
+export { KeyStats, type KeyStatItem, type KeyStatsProps } from '../quotes/key-stats.tsx'
+export {
+  Watchlist,
+  type LegacyWatchlistRow,
+  type WatchlistLabels,
+  type WatchlistProps,
+  type WatchlistRow,
+} from '../quotes/watchlist.tsx'
+export {
+  changedTail,
+  nextSort,
+  sortRows,
+  type WatchlistSort,
+  type WatchlistSortKey,
+} from '../quotes/watchlist-model.ts'

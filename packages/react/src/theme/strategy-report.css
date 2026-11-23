@@ -1,4 +1,5 @@
 /* SPDX-License-Identifier: MIT */
+/* G6 token 迁移：ink-400 的实心条没有对应的 characteristics（tertiary 只给字色），先留着。 */
 /* StrategyReport（策略报告）：页签行、关键读数、三列指标表、直方图、连续盈亏条、属性。
    涨跌色（--pnl-up / --pnl-down）给字；面（柱、连续条）用中档 --div-pos-200 / --div-neg-200，灰色是持平。橙色留给数据线，这里不用。 */
 .k-sr {
@@ -7,7 +8,7 @@
   min-width: 0;
   min-height: 0;
   height: 100%;
-  color: var(--ink-200);
+  color: var(--k-content-body-foreground);
   font: var(--text-data) var(--font-sans);
 }
 .k-sr-tabs {
@@ -29,10 +30,10 @@
 }
 .k-sr-badge {
   padding: 2px 8px;
-  border: 1px solid var(--line-200);
+  border: 1px solid var(--k-separable-bold-borderColor);
   border-radius: var(--radius-pill);
-  color: var(--ink-300);
-  font: var(--text-caption) var(--font-sans);
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
 }
 .k-sr-body {
   flex: 1 1 auto;
@@ -40,6 +41,12 @@
   overflow: auto;
 }
 .k-sr-pane {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+.k-sr-overview {
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -60,7 +67,7 @@
 .k-sr-empty {
   margin: auto;
   padding: var(--space-6);
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   text-align: center;
 }
 
@@ -69,8 +76,8 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(84px, 1fr));
   gap: 1px;
-  background: var(--line-100);
-  border: 1px solid var(--line-100);
+  background: var(--k-separable-tertiary-borderColor);
+  border: 1px solid var(--k-separable-tertiary-borderColor);
   border-radius: var(--radius-control);
   overflow: hidden;
 }
@@ -80,21 +87,21 @@
   gap: 2px;
   min-width: 0;
   padding: 8px 10px;
-  background: var(--bg-200);
+  background: var(--k-container-secondary-background);
 }
 .k-sr-kpi-label {
-  color: var(--ink-300);
-  font: var(--text-caption) var(--font-sans);
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
 }
 .k-sr-kpi-value {
-  color: var(--ink-100);
-  font: 600 16px/20px var(--font-mono);
+  color: var(--k-content-primary-foreground);
+  font: 600 16px/20px var(--font-num);
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
 .k-sr-kpi-sub {
-  color: var(--ink-300);
-  font: var(--text-caption) var(--font-mono);
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-num-small);
   font-variant-numeric: tabular-nums;
 }
 
@@ -107,27 +114,27 @@
 .k-sr-table th,
 .k-sr-table td {
   padding: 5px 10px;
-  border-bottom: 1px solid var(--line-100);
+  border-bottom: 1px solid var(--k-separable-tertiary-borderColor);
   text-align: right;
   white-space: nowrap;
 }
 .k-sr-table thead th {
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   font-weight: 500;
 }
 .k-sr-table tbody th {
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   font-weight: 400;
   text-align: left;
 }
 .k-sr-table td {
-  font-family: var(--font-mono);
+  font-family: var(--font-num);
 }
 .k-sr-table [data-active] {
   background: var(--group-bg);
 }
 .k-sr-table thead th[data-active] {
-  color: var(--ink-100);
+  color: var(--k-content-primary-foreground);
 }
 
 /* 分布 */
@@ -144,7 +151,7 @@
   margin: 0;
 }
 .k-sr-figure figcaption {
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-data) var(--font-sans);
 }
 .k-sr-bars {
@@ -157,11 +164,11 @@
 }
 .k-sr-gridline text,
 .k-sr-edge {
-  fill: var(--ink-300);
-  font: var(--text-caption) var(--font-mono);
+  fill: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-num-small);
 }
 .k-sr-bar {
-  fill: var(--ink-400);
+  fill: var(--k-content-tertiary-foreground);
 }
 .k-sr-bar[data-tone='up'] {
   fill: var(--div-pos-200);
@@ -170,7 +177,7 @@
   fill: var(--div-neg-200);
 }
 .k-sr-bar:hover {
-  stroke: var(--ink-100);
+  stroke: var(--k-content-primary-foreground);
   stroke-width: 1;
 }
 .k-sr-streaks {
@@ -198,8 +205,8 @@
   display: flex;
   gap: 12px;
   margin: 0;
-  color: var(--ink-300);
-  font: var(--text-caption) var(--font-sans);
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
 }
 .k-sr-legend span::before {
   display: inline-block;
@@ -234,18 +241,18 @@
   justify-content: space-between;
   gap: 12px;
   padding: 4px 0;
-  border-bottom: 1px solid var(--line-100);
+  border-bottom: 1px solid var(--k-separable-tertiary-borderColor);
 }
 .k-sr-facts dt,
 .k-sr-prop-group dt,
 .k-sr-detail dt {
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
 }
 .k-sr-facts dd,
 .k-sr-prop-group dd,
 .k-sr-detail dd {
   margin: 0;
-  font-family: var(--font-mono);
+  font-family: var(--font-num);
   font-variant-numeric: tabular-nums;
   text-align: right;
 }
@@ -256,7 +263,7 @@
 }
 .k-sr-prop-group h4 {
   margin: 0 0 4px;
-  color: var(--ink-100);
+  color: var(--k-content-primary-foreground);
   font: 600 12px/16px var(--font-sans);
 }
 .k-sr-detail {

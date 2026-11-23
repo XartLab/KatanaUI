@@ -1,18 +1,18 @@
 // SPDX-License-Identifier: MIT
-// 因子分层累计收益（卡 QuantileLayers，2026-11-14 读）：Q1…Q5 是序数，线色取 seq-200..600（暗到亮，最高层最亮），不用类别色也不用涨跌色。
+// 因子分层累计收益（卡 QuantileLayers，2026-11-14 读）：Q1…Q5 是序数，线色取 --k-heat-1..5（中性灰浓度，暗到亮，最高层最亮），不用类别色也不用涨跌色。
 // 每层一条 2px 线，多空差（最高层 − 最低层）是点阵纹理面垫在下面加一条 ink-100 细线，不单独上色；0 线 line-200；线尾直接标最高层与最低层的名字，最高层末点橙。
 // 悬停一层其余变 40%，点击锁定（下面一排按钮也能键盘操作）；图上扫读出 LCD 提示列各层的值；底部一行结论：单调性（灯加词）、各项统计、来源。
 // 图右上三件（表格视图必有）。分层多于 10 不画线，只给表格（卡写改热力图，热力图待做）。文字全由 props 传。
 import { useState, type ReactNode } from 'react'
 import { cn } from '../lib/cn.ts'
 import { useScrubber } from '../lib/use-scrubber.ts'
-import { ChartActions, type ChartActionsLabels } from './chart-kit/chart-actions.tsx'
-import { ChartValue, type ChartValueText } from './chart-kit/chart-value.tsx'
-import { DotFill, useDotId } from './chart-kit/dot-fill.tsx'
-import { EndMarker } from './chart-kit/end-marker.tsx'
-import { LcdTooltip } from './chart-kit/lcd-tooltip.tsx'
-import { PlotGrid, PlotYAxis } from './chart-kit/plot-axes.tsx'
-import { seqColor } from './chart-kit/series-colors.ts'
+import { ChartActions, type ChartActionsLabels } from '../lib/chart/chart-kit/chart-actions.tsx'
+import { ChartValue, type ChartValueText } from '../lib/chart/chart-kit/chart-value.tsx'
+import { DotFill, useDotId } from '../lib/chart/chart-kit/dot-fill.tsx'
+import { EndMarker } from '../lib/chart/chart-kit/end-marker.tsx'
+import { LcdTooltip } from '../lib/chart/chart-kit/lcd-tooltip.tsx'
+import { PlotGrid, PlotYAxis } from '../lib/chart/chart-kit/plot-axes.tsx'
+import { seqColor } from '../lib/chart/chart-kit/series-colors.ts'
 import {
   isMonotonic,
   layerLevel,
@@ -22,7 +22,7 @@ import {
   sortLayers,
   type QuantileLayer,
 } from './quantile-model.ts'
-import { areaPath, linePath, makePlot, pct, PLOT_W } from './series-geometry.ts'
+import { areaPath, linePath, makePlot, pct, PLOT_W } from '../lib/chart/series-geometry.ts'
 
 export type QuantileStat = { key: string; label: string; value: string }
 
@@ -141,7 +141,7 @@ export function QuantileLayers({
         <div className="k-ql-plot" style={{ height }} role="group" aria-label={labels.chart} {...scrub.props}>
           <svg viewBox={`0 0 ${PLOT_W} ${height}`} preserveAspectRatio="none" aria-hidden="true">
             <defs>
-              <DotFill id={fillId} color="var(--ink-400)" />
+              <DotFill id={fillId} color="var(--k-content-tertiary-foreground)" />
             </defs>
             <PlotGrid plot={plot} />
             <path className="k-ql-fill" d={areaPath(longShort, plot, 0)} style={{ fill: `url(#${fillId})` }} />
@@ -192,7 +192,8 @@ export function QuantileLayers({
               side={at > count * 0.6 ? 'left' : 'right'}
               style={{ left: pct(plot.xAt(at)), top: 8 }}
               rows={[
-                ...[...sorted].reverse().map((layer) => ({
+                // js/copying-array-methods：toReversed 替代「展开复制再 reverse」。
+                ...sorted.toReversed().map((layer) => ({
                   key: String(layer.rank),
                   label: layer.label,
                   value: Number.isFinite(layer.points[at]) ? <ChartValue text={formatValue(layer.points[at]!)} /> : '—',

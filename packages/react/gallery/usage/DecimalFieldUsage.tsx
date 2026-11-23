@@ -12,7 +12,7 @@ export function DecimalFieldUsage() {
   return (
     <>
       <div className="gal-wide">
-        <DecimalField label="价格" value={price} onValue={setPrice} step="0.5" buttons={BUTTONS} />
+        <DecimalField label="价格" value={price} onValueChange={setPrice} step="0.5" buttons={BUTTONS} />
       </div>
       <output data-testid="decimal-price-out">{price}</output>
 
@@ -20,7 +20,7 @@ export function DecimalFieldUsage() {
         <DecimalField
           label="数量"
           value={qty}
-          onValue={setQty}
+          onValueChange={setQty}
           step="0.001"
           base="1"
           unit="BTC"
@@ -30,13 +30,13 @@ export function DecimalFieldUsage() {
       </div>
       <output data-testid="decimal-qty-out">{qty}</output>
 
-      <DecimalField label="只读价格" value={locked} onValue={setLocked} step="0.5" readOnly buttons={BUTTONS} />
+      <DecimalField label="只读价格" value={locked} onValueChange={setLocked} step="0.5" readOnly buttons={BUTTONS} />
 
-      <DecimalField label="禁用价格" value={locked} onValue={setLocked} step="0.5" disabled buttons={BUTTONS} />
+      <DecimalField label="禁用价格" value={locked} onValueChange={setLocked} step="0.5" disabled buttons={BUTTONS} />
 
-      <DecimalField label="错误价格" value="abc" onValue={() => {}} step="0.5" status="error" />
+      <DecimalField label="错误价格" value="abc" onValueChange={() => {}} step="0.5" status="error" />
 
-      <DecimalField label="警告价格" value="100.3" onValue={() => {}} step="0.5" status="warning" />
+      <DecimalField label="警告价格" value="100.3" onValueChange={() => {}} step="0.5" status="warning" />
     </>
   )
 }

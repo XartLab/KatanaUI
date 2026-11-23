@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: MIT */
-/* 品种徽标（SymbolMark）：圆形；字母版底 bg-400、字 ink-200、点阵字（中性，不按代码上色）；图片版圆形裁切。 */
+/* 品种徽标（SymbolMark）：圆形；字母版底 surface-overlay（bg-400）、字 content-body（ink-200），中性，不按代码上色；图片版圆形裁切。
+   字号：直径 28 以上 16（--text-lcd-size），其余 12（--text-data-size）；组件只写 data-size，不内联字号（2026-11-18）。 */
 .k-symbol-mark {
   display: inline-flex;
   flex: none;
@@ -7,16 +8,18 @@
   justify-content: center;
   overflow: hidden;
   border-radius: 50%;
-  background: var(--bg-400);
-  color: var(--ink-200);
-  font-family: var(--font-dot);
+  background: var(--k-surface-overlay-background);
+  color: var(--k-content-body-foreground);
+  font-family: var(--font-num);
   font-style: normal;
+  font-size: var(--text-data-size);
   line-height: 1;
   letter-spacing: 0;
-  -webkit-font-smoothing: none;
-  font-smooth: never;
   vertical-align: middle;
   user-select: none;
+}
+.k-symbol-mark[data-size='md'] {
+  font-size: var(--text-lcd-size);
 }
 .k-symbol-mark[data-kind='image'] img {
   display: block;

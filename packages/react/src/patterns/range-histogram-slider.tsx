@@ -4,10 +4,19 @@
 // 键盘与角色照 WAI-ARIA APG 的 Multi-Thumb Slider：两个 role=slider，各自带 aria-valuemin / max / now / valuetext，
 // 方向键一步、PageUp / PageDown 十步、Home / End 去端点，两个把手不交叉。文字全由 props 传。
 import { useRef, useState, type KeyboardEvent, type PointerEvent, type ReactNode } from 'react'
+import { seqColor } from '../lib/chart/chart-kit/series-colors.ts'
 import { moveThumb, nearestThumb, ratioOf, snapValue, stepValue, valueAt, type Thumb } from './range-histogram-model.ts'
 
-// 箱的高度越高颜色越亮（顺序色阶 seq-200..600，dataviz §2）。patterns 层在 quant 之下，不能取 quant/chart-kit 的 seqColor，这里只列 token 名。
-const SEQ = ['var(--seq-200)', 'var(--seq-300)', 'var(--seq-400)', 'var(--seq-500)', 'var(--seq-600)'] as const
+// 箱的高度越高颜色越亮（数据浓度档 --k-heat-1..5，dataviz §2；seq 橙不给数据用，#50）：取 lib/chart 的 seqColor（0..4 档）。
+const SEQ_TOP = 4
+
+/** Texts of RangeHistogramSlider (the package ships no text). */
+export type RangeHistogramSliderLabels = {
+  /** Accessible name of the lower thumb (a full phrase, such as "Market cap minimum"). 下限把手的读屏名。 */
+  low: string
+  /** Accessible name of the upper thumb. 上限把手的读屏名。 */
+  high: string
+}
 
 export type RangeHistogramSliderProps = {
   /** 每一箱的个数，等宽分箱铺满 [min, max]；用 histogramBins 算。 */
@@ -21,8 +30,8 @@ export type RangeHistogramSliderProps = {
   onValueChange?: (value: [number, number]) => void
   /** 数值怎么写（读数行、读屏的 aria-valuetext 都用它）。 */
   formatValue?: (value: number) => string
-  /** 两个把手的读屏名（整句，如「市值下限」「市值上限」）。 */
-  labels: { low: string; high: string }
+  /** Thumb names: low and high (required). 两个把手的读屏名。 */
+  labels: RangeHistogramSliderLabels
   /** 整条的读屏名。 */
   label: string
   /** 读数行：给了就写它的结果，不给写「下限 – 上限」。 */
@@ -30,6 +39,7 @@ export type RangeHistogramSliderProps = {
   className?: string
 }
 
+/** Range filter drawn over the distribution histogram: two APG multi-thumb sliders; bars inside the range light up. */
 export function RangeHistogramSlider({
   counts,
   min,
@@ -123,7 +133,7 @@ export function RangeHistogramSlider({
                 data-in={center >= lowRatio && center <= highRatio ? 'true' : 'false'}
                 style={{
                   height: `${(count / peak) * 100}%`,
-                  background: SEQ[Math.round((count / peak) * (SEQ.length - 1))],
+                  background: seqColor((count / peak) * SEQ_TOP),
                 }}
               />
             )

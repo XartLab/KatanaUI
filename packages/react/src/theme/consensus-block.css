@@ -1,0 +1,179 @@
+/* SPDX-License-Identifier: MIT */
+/* G6 token 迁移：灯的内阴影 rgba(0,0,0,.6) 没有对应的 --shadow-*，先留着。 */
+/* ConsensusBlock（#1929；G6 从 theme/quant.css 拆出，每件一个 css）：必要条件块。
+   尺寸与层次照 design/katana-console/project/components/ConsensusBlock/preview.html；颜色只读 characteristics（--k-*）与语义 token；动效只用弹簧的 CSS 形式（--dur-* / --ease-*）。 */
+
+.k-consensus {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  font-family: var(--font-num-small);
+  font-size: var(--text-caption-size);
+}
+.k-consensus-intent {
+  color: var(--k-content-secondary-foreground);
+  font-size: var(--text-micro-size);
+  letter-spacing: 0.06em;
+}
+.k-consensus-shell {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  gap: 2px;
+  padding: 2px;
+  background: var(--k-surface-sunken-background);
+  clip-path: var(--chamfer-8);
+}
+.k-consensus-party {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  margin: 0;
+  padding: 8px 6px;
+  border: 0;
+  background: var(--k-surface-raised-background);
+  color: inherit;
+  font: inherit;
+  text-align: center;
+}
+button.k-consensus-party {
+  cursor: pointer;
+}
+button.k-consensus-party:hover {
+  background: var(--k-surface-overlay-background);
+}
+button.k-consensus-party:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: -2px;
+}
+.k-consensus-tag {
+  font-family: var(--font-num-small);
+  font-size: var(--text-tag-size);
+  letter-spacing: 0.08em;
+  color: var(--k-content-secondary-foreground);
+}
+.k-consensus-state {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: var(--text-micro-size);
+  color: var(--k-content-body-foreground);
+}
+.k-consensus-lamp {
+  width: 8px;
+  height: 8px;
+  flex: none;
+  border-radius: var(--radius-pill);
+  background: var(--led-off);
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.6);
+}
+.k-consensus-msg {
+  font-family: var(--font-sans-small);
+  font-size: var(--text-micro-size);
+  color: var(--k-content-body-foreground);
+}
+.k-consensus-party[data-state='pass'] .k-consensus-lamp {
+  background: var(--k-status-ok-foreground);
+  box-shadow: 0 0 6px var(--k-status-ok-foreground);
+}
+.k-consensus-party[data-state='warn'] .k-consensus-lamp {
+  background: var(--k-status-warn-foreground);
+  box-shadow: 0 0 6px var(--k-status-warn-foreground);
+}
+.k-consensus-party[data-state='warn'] .k-consensus-msg,
+.k-consensus-party[data-state='timeout'] .k-consensus-msg,
+.k-consensus-party[data-state='stale'] .k-consensus-msg {
+  color: var(--k-status-warn-foreground);
+}
+/* 未过：红菱形（形状不同于圆） */
+.k-consensus-party[data-state='blocked'] .k-consensus-lamp {
+  border-radius: 0;
+  rotate: 45deg;
+  background: var(--k-status-danger-foreground);
+  box-shadow: none;
+}
+.k-consensus-party[data-state='blocked'] .k-consensus-msg {
+  color: var(--k-status-danger-foreground);
+}
+/* 未返回：暗灯；超时：琥珀实心带暗圈，闪一次；失效：琥珀空心环；评估中：橙环 */
+.k-consensus-party[data-state='unknown'] .k-consensus-msg {
+  color: var(--k-content-secondary-foreground);
+}
+.k-consensus-party[data-state='timeout'] .k-consensus-lamp {
+  background: var(--k-status-warn-foreground);
+  box-shadow: 0 0 0 2px var(--k-surface-raised-background);
+  animation: k-consensus-blink var(--dur-gentle) var(--ease-gentle) 1;
+}
+.k-consensus-party[data-state='stale'] .k-consensus-lamp {
+  background: transparent;
+  box-shadow: inset 0 0 0 2px var(--k-status-warn-foreground);
+}
+.k-consensus-party[data-state='pending'] .k-consensus-lamp {
+  background: transparent;
+  box-shadow: inset 0 0 0 2px var(--accent);
+}
+.k-consensus-party[data-state='blocked'] {
+  animation: k-consensus-shake var(--dur-snappy) var(--ease-snappy) 1;
+}
+@keyframes k-consensus-blink {
+  0%,
+  50% {
+    opacity: 0.2;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+@keyframes k-consensus-shake {
+  0%,
+  100% {
+    translate: 0;
+  }
+  25% {
+    translate: -2px;
+  }
+  75% {
+    translate: 2px;
+  }
+}
+.k-consensus-detail {
+  padding: 6px 8px;
+  background: var(--k-surface-sunken-background);
+  color: var(--k-content-body-foreground);
+  font-size: var(--text-micro-size);
+}
+.k-consensus-verdict-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  color: var(--k-content-secondary-foreground);
+  font-size: var(--text-micro-size);
+}
+.k-consensus-verdict {
+  font-weight: 400;
+  color: var(--k-content-primary-foreground);
+}
+.k-consensus-verdict[data-verdict='blocked'] {
+  color: var(--k-status-danger-foreground);
+}
+.k-consensus-verdict[data-verdict='warn'] {
+  color: var(--k-status-warn-foreground);
+}
+.k-consensus-hash {
+  padding: 0;
+  border: 0;
+  background: none;
+  font-family: var(--font-num);
+  letter-spacing: 0.06em;
+  color: var(--accent);
+}
+button.k-consensus-hash {
+  cursor: pointer;
+}
+button.k-consensus-hash:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}

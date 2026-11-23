@@ -10,7 +10,8 @@
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `items` | `PeerItem[]` | — | { key, code, name, price（写好的）, unit?, change（百分数）, logoSrc? }。 |
+| `items` | `PeerItem[]` | — | 统一行情行的字段：{ id, symbol, name, last（数）, changePct（百分数）, unit?, logoSrc? }；旧的 { key, code, price 字符串, change } 照认一个版本。 |
+| `formatPrice` | `(n: number) => string` | `toFixed(2)` | 价格怎么写（品种精度由调用方定）。 |
 | `labels` | `PeerCardsLabels` | — | { list, prev, next, compare, add(item) }：读屏名与按钮字。 |
 | `onSelect / onAdd / onCompare` | `callbacks` | — | 点卡、点「+」、点「Select to compare」。 |
 
@@ -18,13 +19,14 @@
 
 ```tsx
 // SPDX-License-Identifier: MIT
-import { PeerCards, type PeerItem } from '@katana-ui/react/quant'
+import { formatPrice } from '@katana-ui/react/quant'
+import { PeerCards, type PeerItem } from '@katana-ui/react/quotes'
 
 const PEERS: readonly PeerItem[] = [
-  { key: 'AAA', code: 'AAA', name: 'Alpha Devices Incorporated', price: '212.40', unit: 'USD', change: 0.84 },
-  { key: 'BRV', code: 'BRV', name: 'Bravo Semiconductor Holdings', price: '1,044.10', unit: 'USD', change: -2.31 },
-  { key: 'CHL', code: 'CHL', name: 'Charlie Software', price: '418.77', unit: 'USD', change: 1.12 },
-  { key: 'DLT', code: 'DLT', name: 'Delta Cloud Systems Ltd', price: '96.05', unit: 'USD', change: -0.2 },
+  { id: 'AAA', symbol: 'AAA', name: 'Alpha Devices Incorporated', last: 212.4, unit: 'USD', changePct: 0.84 },
+  { id: 'BRV', symbol: 'BRV', name: 'Bravo Semiconductor Holdings', last: 1044.1, unit: 'USD', changePct: -2.31 },
+  { id: 'CHL', symbol: 'CHL', name: 'Charlie Software', last: 418.77, unit: 'USD', changePct: 1.12 },
+  { id: 'DLT', symbol: 'DLT', name: 'Delta Cloud Systems Ltd', last: 96.05, unit: 'USD', changePct: -0.2 },
 ]
 
 export function PeerCardsUsage() {
@@ -32,12 +34,13 @@ export function PeerCardsUsage() {
     <div style={{ width: '100%', maxWidth: 560 }}>
       <PeerCards
         items={PEERS}
+        formatPrice={(value) => formatPrice(value, { precision: 2 })}
         labels={{
           list: 'Peers',
           prev: 'Previous',
           next: 'Next',
           compare: 'Select to compare',
-          add: (item) => `Add ${item.code} to compare`,
+          add: (item) => `Add ${item.symbol} to compare`,
         }}
         onSelect={() => undefined}
         onAdd={() => undefined}

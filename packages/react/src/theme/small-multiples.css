@@ -1,0 +1,86 @@
+/* SPDX-License-Identifier: MIT */
+/* SmallMultiples（#1917）：同步十字线的小图阵列。颜色只用语义 token。 */
+
+.k-sm {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  min-width: 0;
+  color: var(--k-content-body-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+  font-variant-numeric: tabular-nums;
+}
+.k-sm-grid {
+  display: grid;
+  gap: 8px;
+  outline-offset: 2px;
+}
+.k-sm-grid:focus-visible {
+  outline: 1px solid var(--focus-ring);
+}
+.k-sm-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  padding: 6px 8px;
+  border: 1px solid var(--k-separable-tertiary-borderColor);
+  border-radius: 4px;
+  background: var(--k-container-secondary-background);
+}
+.k-sm-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+}
+button.k-sm-head {
+  cursor: pointer;
+}
+button.k-sm-head:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+.k-sm-label {
+  overflow: hidden;
+  color: var(--k-content-body-foreground);
+  font: var(--text-data) var(--font-sans);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.k-sm-value {
+  color: var(--k-content-primary-foreground);
+  font: var(--text-data) var(--font-num);
+}
+.k-sm-value[data-tone='up'] {
+  color: var(--pnl-up);
+}
+.k-sm-value[data-tone='down'] {
+  color: var(--pnl-down);
+}
+.k-sm-plot {
+  position: relative;
+  touch-action: pan-y;
+}
+.k-sm-plot > svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.k-sm-line {
+  fill: none;
+  stroke: var(--series-1);
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+  filter: var(--chart-line-glow, none);
+  vector-effect: non-scaling-stroke;
+}

@@ -1,0 +1,108 @@
+// SPDX-License-Identifier: MIT
+import { expect, test, type Page } from '@playwright/test'
+
+// DataGrid 的挪行与分节、FlagMark 旗标（#77 G7）：在文档站 data-grid 页的自选表演示（grid-order）与 flag-mark 页上真拖真按。
+
+test.use({ viewport: { width: 1100, height: 1500 } })
+
+const open = async (page: Page, id = 'data-grid') => {
+  await page.goto(`/?theme=graphite#/${id}`)
+  await page.locator(`[data-gallery="${id}"]`).waitFor()
+}
+const demo = (page: Page) => page.getByTestId('grid-order')
+const value = (page: Page) => page.getByTestId('grid-order-value')
+const row = (page: Page, id: string) => demo(page).locator(`[data-row="${id}"]`)
+const START = 'BTCUSDT ETHUSDT SOLUSDT NVDA QQQ XAUUSD'
+
+test('data-grid 挪行：Alt+↓ 挪一格并播报，右键「Move to top」', async ({ page }) => {
+  await open(page)
+  await expect(value(page)).toHaveText(START)
+  await row(page, 'BTCUSDT').getByText('BTCUSDT').click()
+  await page.keyboard.press('Alt+ArrowDown')
+  await expect(value(page)).toHaveText('ETHUSDT BTCUSDT SOLUSDT NVDA QQQ XAUUSD')
+  await expect(demo(page).locator('[data-slot="data-grid-order-status"]')).toHaveText(/position 3 of 8/)
+  await row(page, 'SOLUSDT').getByText('SOLUSDT').click({ button: 'right' })
+  await page.getByRole('menuitem', { name: 'Move to top' }).click()
+  // 移到顶：越过第一个分节标题，成了没分节的第一行
+  await expect(value(page)).toHaveText('SOLUSDT ETHUSDT BTCUSDT NVDA QQQ XAUUSD')
+  await expect(demo(page).locator('.k-grid-row').first()).toHaveAttribute('data-row', 'SOLUSDT')
+})
+
+test('data-grid 挪行：鼠标拖一行到另一行前，拖到一半 Esc 取消', async ({ page }) => {
+  await open(page)
+  const from = await row(page, 'QQQ').boundingBox()
+  const to = await row(page, 'BTCUSDT').boundingBox()
+  if (!from || !to) throw new Error('rows not laid out')
+  await page.mouse.move(from.x + 60, from.y + from.height / 2)
+  await page.mouse.down()
+  await page.mouse.move(from.x + 60, from.y - 10, { steps: 4 })
+  await page.mouse.move(to.x + 60, to.y + 4, { steps: 8 })
+  await expect(demo(page).locator('.k-grid-drop')).toBeVisible()
+  await expect(row(page, 'QQQ')).toHaveClass(/is-dragged/)
+  await page.mouse.up()
+  await expect(value(page)).toHaveText('QQQ BTCUSDT ETHUSDT SOLUSDT NVDA XAUUSD')
+  await expect(demo(page).locator('.k-grid-drop')).toHaveCount(0)
+
+  // 再拖一次，Esc 取消：次序不变
+  const again = await row(page, 'XAUUSD').boundingBox()
+  if (!again) throw new Error('row not laid out')
+  await page.mouse.move(again.x + 60, again.y + again.height / 2)
+  await page.mouse.down()
+  await page.mouse.move(again.x + 60, to.y + 4, { steps: 8 })
+  await page.keyboard.press('Escape')
+  await page.mouse.up()
+  await expect(value(page)).toHaveText('QQQ BTCUSDT ETHUSDT SOLUSDT NVDA XAUUSD')
+})
+
+test('data-grid 分节：Alt+↑ 让整节跨过上一节；按列排序后不能挪并读出原因', async ({ page }) => {
+  await open(page)
+  const section = row(page, 'sec-stocks')
+  await expect(section).toHaveClass(/is-section/)
+  await section.click()
+  await page.keyboard.press('Alt+ArrowUp')
+  await expect(value(page)).toHaveText('NVDA QQQ XAUUSD BTCUSDT ETHUSDT SOLUSDT')
+  await expect(demo(page).locator('.k-grid-row').first()).toHaveAttribute('data-row', 'sec-stocks')
+
+  await demo(page).locator('[role="columnheader"]').filter({ hasText: 'Last' }).getByRole('button').click()
+  await row(page, 'BTCUSDT').getByText('BTCUSDT').click()
+  const before = await value(page).textContent()
+  await page.keyboard.press('Alt+ArrowDown')
+  await expect(value(page)).toHaveText(before!)
+  await expect(demo(page).locator('[data-slot="data-grid-order-status"]')).toHaveText(
+    'Clear the column sort to reorder rows',
+  )
+})
+
+test('data-grid 旗标：点旗插上、右键换色、按旗过滤', async ({ page }) => {
+  await open(page)
+  const flag = row(page, 'SOLUSDT').locator('.k-flag-mark')
+  await expect(flag).toHaveAttribute('aria-pressed', 'false')
+  await row(page, 'SOLUSDT').hover()
+  await flag.click()
+  await expect(flag).toHaveAttribute('aria-pressed', 'true')
+  await expect(flag).toHaveAttribute('data-flag', 'red')
+  // 点旗不算点行：没有选中
+  await expect(row(page, 'SOLUSDT')).not.toHaveClass(/is-selected/)
+  await row(page, 'SOLUSDT').getByText('SOLUSDT').click({ button: 'right' })
+  await page.getByRole('menuitem', { name: 'Setup' }).click()
+  await expect(flag).toHaveAttribute('data-flag', 'amber')
+
+  const filter = demo(page).getByRole('group', { name: 'Filter by flag' })
+  await filter.getByRole('button', { name: 'Watch (1)' }).click()
+  await expect(demo(page).locator('.k-grid-row')).toHaveCount(1)
+  await expect(demo(page).locator('.k-grid-row').first()).toHaveAttribute('data-row', 'ETHUSDT')
+  await filter.getByRole('button', { name: 'Watch (1)' }).click()
+  await expect(demo(page).locator('.k-grid-row')).toHaveCount(8)
+})
+
+test('flag-mark 页：空心旗点了插上第一面，再点拔掉', async ({ page }) => {
+  await open(page, 'flag-mark')
+  const area = page.locator('[data-gallery="flag-mark"]')
+  const sol = area.getByRole('button', { name: 'Flag SOLUSDT' }).first()
+  await expect(sol).toHaveAttribute('aria-pressed', 'false')
+  await sol.click()
+  await expect(sol).toHaveAttribute('aria-pressed', 'true')
+  await expect(area.getByRole('group', { name: 'Filter by flag' }).first()).toContainText('2')
+  await sol.click()
+  await expect(sol).toHaveAttribute('aria-pressed', 'false')
+})

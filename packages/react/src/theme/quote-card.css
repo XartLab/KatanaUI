@@ -1,0 +1,105 @@
+/* SPDX-License-Identifier: MIT */
+/* 报价卡 QuoteCard 与一排 QuoteStrip。2026-11-18 从 quote.css 拆出。 颜色只用 token（--pnl-up / --pnl-down 跟涨跌配色走）；数字一律等宽（tabular-nums）；动效只用三条弹簧的 CSS 形式（--dur-* / --ease-*）。 */
+
+/* —— 报价卡与一排 —— */
+.k-quote-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  padding: 10px 12px;
+  border: 1px solid var(--k-separable-tertiary-borderColor);
+  border-radius: var(--radius-control);
+  background: var(--k-surface-base-background);
+  color: var(--k-content-primary-foreground);
+  font: var(--text-data) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+  text-align: left;
+}
+button.k-quote-card.is-link {
+  cursor: pointer;
+  transition:
+    background-color var(--dur-snappy) var(--ease-snappy),
+    transform var(--dur-snappy) var(--ease-snappy);
+}
+button.k-quote-card.is-link:hover {
+  background: var(--k-container-secondary-background);
+}
+button.k-quote-card.is-link:active {
+  transform: scale(0.98);
+}
+button.k-quote-card.is-link:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 1px;
+}
+.k-quote-head {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  min-width: 0;
+}
+.k-quote-name {
+  overflow: hidden;
+  color: var(--k-content-body-foreground);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.k-quote-symbol {
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-quote-price {
+  font: var(--text-title) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+}
+.k-quote-change {
+  display: flex;
+  gap: 8px;
+}
+.k-quote-spark {
+  height: 28px;
+}
+.k-quote-footer {
+  display: block;
+  margin-top: 2px;
+}
+.k-quote-card.is-sm {
+  flex: 0 0 auto;
+  width: 148px;
+}
+.k-quote-card.is-sm .k-quote-price {
+  font: var(--text-body) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+}
+.k-quote-strip {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+}
+.k-quote-strip-item {
+  display: flex;
+  flex: 0 0 auto;
+}
+
+/* —— 分量（#115，layout/emphasis.tsx）：只改字号档与显示多少，不改颜色、不改密度 —— */
+/* hero：价格 display 档（每个面板最多一处），迷你图加高。 */
+.k-quote-card[data-emphasis='hero'] .k-quote-price {
+  font: var(--text-display) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: var(--text-display-tracking);
+}
+.k-quote-card[data-emphasis='hero'] .k-quote-spark {
+  height: 44px;
+}
+/* compact：名字、价格、涨跌并排成一行（迷你图与下面一行 JSX 里就不画）。 */
+.k-quote-card[data-emphasis='compact'] {
+  flex-direction: row;
+  align-items: baseline;
+  gap: 8px;
+  padding: 4px 8px;
+}
+.k-quote-card[data-emphasis='compact'] .k-quote-price {
+  font: var(--text-data) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+}

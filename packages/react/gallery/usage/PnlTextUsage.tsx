@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-import { PnlText } from '../../src/quant'
+import { PnlText } from '../../src/quotes'
 
 export function PnlTextUsage() {
   return (

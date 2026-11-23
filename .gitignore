@@ -1,6 +1,24 @@
 node_modules/
 dist/
 /packages/react/lib/
+/packages/logos/lib/
 r/
 test-results/
 playwright-report/
+# pixelgate：基线要提交，这次运行的截图、差异图与报告不提交
+/packages/react/.pixelgate/current/
+/packages/react/.pixelgate/diff/
+/packages/react/.pixelgate/report/
+/packages/react/.pixelgate/hidpi/current/
+/packages/react/.pixelgate/hidpi/diff/
+/packages/react/.pixelgate/hidpi/report/
+/packages/react/.pixelgate-unit/current/
+/packages/react/.pixelgate-unit/diff/
+/packages/react/.pixelgate-unit/report/
+/packages/react/.vitest/
+
+# Vite+ 的 hook 分发器由 vp hooks enable 生成，不提交；.vite-hooks/pre-commit 要提交
+/.vite-hooks/_/
+
+# 验证技能 verify-katanaui 的运行状态与证据（.tmp/verify-katanaui/），本机草稿也放 .tmp/
+/.tmp/

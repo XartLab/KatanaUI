@@ -46,6 +46,8 @@
 | `rowTree` | `(row: Row) => { level: number; expanded?: boolean }` | — | Tree rows: the table reads as an ARIA treegrid and rows carry aria-level and aria-expanded. |
 | `timeZone` | `string` | — | Time zone of time columns: 'local' (default), 'utc' or an IANA name. |
 | `sortLocale` | `string` | — | Locale for sorting text columns (Intl.Collator); follows the runtime when omitted. |
+| `collapseColumns` | `boolean` | `true` | Priority columns (default true): at standard and hero emphasis, when the visible columns do not fit the container, the lowest-priority columns (GridColumn.priority; undeclared ones count up in declaration order) are collapsed and a "+N cols" capsule appears at the right end of the header; clicking it switches to horizontal scrolling with every column. |
+| `containerWidth` | `number` | — | Container width in px for the priority columns; measured with a ResizeObserver when omitted. |
 | `density` | `GridDensity` | `'default'` | Row height tier. |
 | `hideHeader` | `boolean` | — | Do not draw the header (a two-column metrics table, say). |
 | `headExtra` | `(columnId: string) => ReactNode` | — | Extra content after the sort button in each column head (a search icon on the Symbol head, say): given per column id, null for none. |
@@ -57,21 +59,26 @@
 | `stretch` | `boolean` | — | Treat column widths as proportions: when the container is wider than the sum, the extra space is shared by width ratio; by default widths are fixed pixels. |
 | `fit` | `boolean` | — | Height follows the content (a small table in a dialog): no scrollbar up to maxHeight px. |
 | `maxHeight` | `number` | — | Largest height in px when fit is set. |
+| `live` | `boolean` | `false` | Live data mode (default false): numeric cells (number, price, quantity, pnl, change) flash the up or down color when their value changes, rows glide to their new place when the sort order changes, and newly added rows are highlighted briefly. |
+| `rowOrder` | `readonly string[]` | — | Manual row order (controlled): row ids in display order; ids not in it go last. |
+| `onRowOrderChange` | `(next: string[]) => void` | — | Called with the whole new order after a drag, Alt+Up / Alt+Down or a move item in the row menu. |
+| `rowSection` | `(row: Row) => ReactNode` | — | Section header rows (watchlist sections): return the heading for a row that is a section header, null / undefined for a normal row. |
 | `classNames` | `Partial<Record<GridSlot, string>>` | `{}` | Extra class names per part. |
 
 ### 列类型 ColumnType
 
-数字类默认靠右，用等宽数字；pnl、change、side 用 ToneText 跟 data-updown 着色（红涨绿跌时互换）。
+数字类默认靠右，用等宽数字；pnl、change、side 用 ToneText 跟 data-updown 着色（红涨绿跌时互换）。bar 是以 0 为中线的居中条（正在右用涨色、负在左用跌色，长度按本列绝对值最大者归一，数字写在条旁；format 的 digits 与 suffix 同 pnl）。pill 是一格多枚短标签（值是字符串或 { label, tone } 的数组，tone 只有 up / down / muted / accent 四种，不传色值），一行放不下的按格子宽度收成「+n」、悬停的 title 写全部，format.maxPills 可再限个数。progress 是分子 / 分母加一条 3px 细条（值是 { done, total } 或 [done, total]，分母不是正数不画条，排序按比例）。任何列都可以再声明 heat: { domain, rank? }：格子底色按值深浅（跨 0 的 domain 里正数用涨色、负数用跌色，不跨 0 的按单边从最小到最大），rank 给了就在格子右上角写名次小字，不占行高行宽；颜色只由 token 给，不传色值。
 
 ### DataGridHost（经 DataGridHostProvider 提供）
 
-应用才有的能力；包里不带语言，文案都是宿主传的。
+应用才有的能力；包里不带语言，文案都是宿主经 labels（DataGridLabels）传的；旧名 texts / DataGridTexts 留一个版本（G6）。
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
 | `matchKey` | `(event: KeyboardEvent<HTMLElement>) => GridAction \| null` | — | Which table action a key press stands for; null if none. |
 | `keysOf` | `(action: GridAction) => string \| undefined` | — | How an action's shortcut is written (shown at the right of menu items and in the table name). |
-| `texts` | `Partial<DataGridTexts>` | — | Texts of the menu items and accessible names; the standard menu items appear only when copy, save and resetColumns are all given. |
+| `labels` | `Partial<DataGridLabels>` | — | Texts of the menu items and accessible names; the standard menu items appear only when copy, save and resetColumns are all given. |
+| `texts` | `Partial<DataGridLabels>` | — | Old name of labels. |
 | `renderMenu` | `(entries: readonly GridMenuEntry[]) => ReactNode` | — | What to draw in the menu: use it when the host's items go beyond GridMenuEntry; by default the package draws item, submenu and separator. |
 | `askAgent` | `(text: string \| null) => void` | — | Ask the agent: when given together with askText, rows get a context menu item and the key works while the table is focused. |
 
@@ -103,6 +110,14 @@
 ### reorderColumn / moveColumn / setColumnVisible / setColumnFixed / applyColumnSet / activeColumnSet
 
 列摆法（layout）的纯函数，列头菜单、拖动重排与 ColumnPicker 用的同一份，都返回新数组。reorderColumn(layout, from, to) 拖到目标位置；moveColumn(layout, id, ±1) 跳过藏起来的列移一格；setColumnVisible 不许藏最后一列；setColumnFixed 固定的列挨着排在最前；applyColumnSet(layout, columns) 套列集；activeColumnSet(layout, sets) 返回看得见的列恰好等于的那个列集 id。
+
+### useRowOrder({ ids, value?, defaultValue?, onValueChange?, isSection? })
+
+手动行序（#77 G7，照 TradingView 自选表拖放排序）：返回 order、move(ids, before)、moveBy(ids, ±1)、reset 与 gridProps（rowOrder、onRowOrderChange，直接摊到 DataGrid 上）。要存盘把 value 接 usePersistedState。DataGrid 上配 rowSection 就有分节标题行：拖标题带整节走。
+
+### moveRows / moveRowsBy / normalizeOrder / expandMoving / applyRowOrder / mergeVisibleOrder
+
+行序的纯函数：moveRows(order, ids, before | null, isSection?) 挪到某行之前或最后、多选保持相对次序、拖整节时落点吸到节边界；moveRowsBy 上下一格（普通行跨过标题就换节，整节跨过相邻一节）；normalizeOrder 去掉不在的行、新行接最后；mergeVisibleOrder 过滤中挪完填回整份次序，藏起来的行不动（DataGrid 给了 rowOrder 时自己做）。
 
 ### tableCsv(header, rows)
 
@@ -154,10 +169,12 @@ export function DataGridUsage() {
 - 只读（interactive=false）：table 语义，表头不是按钮。
 - 子行：有子行的行带 aria-expanded（true 摊开、false 收起）；没有子行的行没有这个属性，按 → 没反应。
 - custom 列没有 text 时复制与导出是空字；有按钮的格子别指望整行点击。
+- 列优先级（standard 与 hero 分量，有表头）：可见列放不下容器时按 GridColumn.priority 从低到高收起（没写的按声明顺序，第一列 1、第二列 2……），至少留两列，固定在左边的列不收；表头右端出「+N 列」胶囊（文案 texts.moreColumns，默认英文 +N cols），点了切成横向滚动、显示全部列，胶囊变 texts.collapseColumns，再点收起。出胶囊时表头与数据行在右端让出它的宽度，不盖住最后一列（stretch 的表，保留的列撑满的是容器宽减胶囊宽）。状态只在组件里，不存；容器变宽放得下了胶囊就消失。只影响显示：复制与导出仍是全部可见列。compact 分量与不画表头的表不走这一套；collapseColumns={false} 关掉，一直横向滚动。
 
 ## Don't
 
 - 不要把例子里的数据当真实行情；调用方要传真实行。
+- 不要为了放进窄容器自己去藏列或截断：给列写 priority，放不下的由表收起并写出收了几列。
 - 不要给数值列自己写 text-align；列类型决定对齐。
 - 不要靠颜色以外没有符号的方式表达涨跌。
 - 不要在 custom 列里重画 price、pnl 这类有类型的格子；有类型的用类型，custom 留给类型表达不了的。
@@ -183,5 +200,7 @@ DataGrid
 - `Esc`：清掉选择（右键菜单开着时归菜单）
 - `列头右键`：列头菜单：排序、固定、隐藏、左右移、重置列
 - `拖动列头`：重排列（放在目标列的位置）
+- `拖动行`：挪行（给了 onRowOrderChange、没按列排序时；选中的几行一起走；拖到一半 Esc 取消）
+- `Alt+↑ / Alt+↓`：把选中的行（没选就是键盘所在的行）上下挪一格；按列排序时读出原因
 - `菜单键 / Shift+F10`：开右键菜单（宿主的 matchKey 提供）
 - `Ctrl+C / Ctrl+S / Ctrl+R`：复制所选行 / 导出 CSV / 重置列（宿主的键位表）

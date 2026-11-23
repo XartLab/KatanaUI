@@ -22,7 +22,7 @@ export function ShortcutRecorderUsage() {
       <ShortcutRecorder
         label="全部平仓快捷键"
         value={flatten}
-        onValue={setFlatten}
+        onValueChange={setFlatten}
         labels={RECORDER_LABELS}
         conflicts={TAKEN}
       />
@@ -31,13 +31,13 @@ export function ShortcutRecorderUsage() {
       <ShortcutRecorder
         label="切换品种快捷键"
         value={bare}
-        onValue={setBare}
+        onValueChange={setBare}
         labels={RECORDER_LABELS}
         requireModifier
       />
       <output data-gallery-recorder-mod>{bare ?? '未设置'}</output>
 
-      <ShortcutRecorder label="只读快捷键" value="F5" onValue={() => {}} labels={RECORDER_LABELS} disabled />
+      <ShortcutRecorder label="只读快捷键" value="F5" onValueChange={() => {}} labels={RECORDER_LABELS} disabled />
     </>
   )
 }

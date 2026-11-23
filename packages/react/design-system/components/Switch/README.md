@@ -25,11 +25,16 @@ export function SwitchUsage() {
 
 ## States
 
-- 关、开、禁用关、禁用开。
+- 关：10% 白轨道 + 9% 白内描边，圆钮 ink-300（--k-selectable-track-* / -thumb-background）。
+- 开：轨道换实心亮中性（--k-selectable-bold-background-selected），圆钮换深色并滑 16px（snappy）。
+- 悬停：关时轨道提到 18% 白，开时实心降到 ink-200。
+- 禁用关、禁用开：45% 不透明度，不响应指针。
 
 ## Don't
 
 - 不要用开关做「提交」这类一次性动作。
+- 不要把开关放进要点「保存」才生效的表单里，那用 Checkbox。
+- 标签写开着时的意思（「显示成交量」），不要写成问句或「开 / 关」。
 
 ## Composition
 

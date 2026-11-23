@@ -1,0 +1,155 @@
+/* SPDX-License-Identifier: MIT */
+/* 改自 SmoothUI 表单类件的手感（https://github.com/educlopez/smoothui ，MIT，© 2024 Eduardo Calvo）：勾选的描边、单选点的弹出、OTP 的格子、
+   按钮的三种悬停效果。曲线与时长全用 token（--dur-snappy / --ease-snappy）；产品不跟系统的「减少动态效果」，所以这里不写 prefers-reduced-motion（见 motion.css 头部）。 */
+
+/* 勾选与单选点：从小弹到位，走 snappy 弹簧。 */
+@keyframes kc-mark-pop {
+  from {
+    opacity: 0;
+    scale: 0.4;
+  }
+}
+/* 勾的描边：路径长度归一成 1，虚线偏移从 1 走到 0 就是「一笔写出来」。 */
+@keyframes kc-mark-draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+[data-slot='checkbox-indicator'][data-state='checked'],
+[data-slot='checkbox-indicator'][data-state='indeterminate'],
+[data-slot='radio-group-indicator'] {
+  animation: kc-mark-pop var(--dur-snappy) var(--ease-snappy) both;
+}
+[data-slot='checkbox-mark'] path {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
+}
+[data-slot='checkbox-indicator'] [data-slot='checkbox-mark'] path {
+  animation: kc-mark-draw var(--dur-snappy) var(--ease-snappy) 40ms both;
+}
+/* 勾选框的两种符号：已选画勾，半选画横杠，两条路径都在 DOM 里，按状态显示一条。 */
+[data-slot='checkbox-indicator'][data-state='checked'] [data-mark='dash'],
+[data-slot='checkbox-indicator'][data-state='indeterminate'] [data-mark='tick'] {
+  display: none;
+}
+
+/* 滑块：按住时把手放大一点（原件 whileTap 的 1.12）；松手后的 settle 过渡里一并带上 scale，放大不能一下弹回去。 */
+[data-slot='slider-thumb'] {
+  transition: scale 160ms var(--ease-snappy);
+}
+[data-slot='slider-thumb']:active,
+[data-slot='slider'][data-dragging] [data-slot='slider-thumb'] {
+  scale: 1.12;
+}
+
+/* 浮动标签：静止时盖在框里像占位字，聚焦或有内容时缩小、升到框上面那一条留白里。判断「有内容」靠 placeholder=" " 加 :placeholder-shown，不用 JS 状态，受控非受控都对。 */
+[data-slot='input-float'] > label {
+  transition:
+    translate var(--dur-snappy) var(--ease-snappy),
+    scale var(--dur-snappy) var(--ease-snappy),
+    color 120ms linear;
+}
+
+/* OTP：当前格的框是一块跟着滑的外框；输入的字翻进来；空的当前格里一根闪的光标。 */
+@keyframes kc-otp-char {
+  from {
+    opacity: 0;
+    transform: rotateY(-90deg) scale(0.5);
+  }
+}
+@keyframes kc-otp-caret {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+[data-slot='otp-frame'] {
+  transition: translate var(--dur-snappy) var(--ease-snappy);
+}
+[data-slot='otp-char'] {
+  animation: kc-otp-char var(--dur-snappy) var(--ease-snappy) both;
+}
+[data-slot='otp-caret'] {
+  animation: kc-otp-caret 1s steps(1, end) infinite;
+}
+
+/* 校验失败时整块左右抖一下（原件 form 的 shake）。幅度压到 3px，交易表单里不能晃得吓人。 */
+@keyframes kc-shake {
+  0%,
+  100% {
+    translate: 0;
+  }
+  20% {
+    translate: -3px;
+  }
+  40% {
+    translate: 2.5px;
+  }
+  60% {
+    translate: -2px;
+  }
+  80% {
+    translate: 1px;
+  }
+}
+[data-slot='field'][data-shake] {
+  animation: kc-shake 360ms ease-out;
+}
+
+/* 按钮效果（Button 的 effect 属性）。 */
+/* dot-morph：前面一颗点，悬停时拉成竖条。 */
+[data-slot='button-dot'] {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--signal-orange);
+  transition:
+    width var(--dur-snappy) var(--ease-snappy),
+    height var(--dur-snappy) var(--ease-snappy);
+}
+@media (hover: hover) and (pointer: fine) {
+  [data-effect='dot-morph']:not(:disabled):hover [data-slot='button-dot'] {
+    width: 6px;
+    height: 16px;
+  }
+}
+/* clip-corners：四个角切掉，悬停时切口变大。--k-cut 注册成长度才能被 transition 补间。 */
+@property --k-cut {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 4px;
+}
+[data-effect='clip-corners'] {
+  --k-cut: 4px;
+  border-radius: 0;
+  clip-path: polygon(
+    var(--k-cut) 0,
+    calc(100% - var(--k-cut)) 0,
+    100% var(--k-cut),
+    100% calc(100% - var(--k-cut)),
+    calc(100% - var(--k-cut)) 100%,
+    var(--k-cut) 100%,
+    0 calc(100% - var(--k-cut)),
+    0 var(--k-cut)
+  );
+  transition:
+    --k-cut var(--dur-snappy) var(--ease-snappy),
+    color 150ms ease-out,
+    background-color 150ms ease-out,
+    border-color 150ms ease-out,
+    scale 150ms ease-out;
+  /* clip-path 会把外移的焦点环裁掉，环改画在里面。 */
+  outline-offset: -2px;
+}
+@media (hover: hover) and (pointer: fine) {
+  [data-effect='clip-corners']:not(:disabled):hover {
+    --k-cut: 9px;
+  }
+}

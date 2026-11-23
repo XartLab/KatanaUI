@@ -8,6 +8,8 @@
 
 ### RatingGauge
 
+score 是 −1 到 +1 的数，五个档位名由调用方传（zones）；children 放在档位词下面（常是卖出 / 中性 / 买入的个数）。
+
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
 | `score` * | `number` | — | From -1 (strong sell) to +1 (strong buy), split into five equal zones; out of range is clamped and a non-finite number counts as 0. |

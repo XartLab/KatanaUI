@@ -2,6 +2,7 @@
 import { Bell, Camera, Maximize2, Settings, X } from 'lucide-react'
 import { useState } from 'react'
 import {
+  ConsensusBlock,
   ColumnPicker,
   DataGrid,
   DataGridHostProvider,
@@ -26,6 +27,7 @@ import {
   type DecisionItem,
   type DecisionQueueLabels,
   type GridColumn,
+  type PillValue,
   type GridColumnLayout,
   type Hypothesis,
   type HypothesisLedgerLabels,
@@ -43,9 +45,20 @@ import {
   type StatusItem,
   type WorkspaceTab,
 } from '../../src/blocks/index.ts'
-import { ConsensusBlock } from '../../src/quant/index.ts'
-import { Button, Splitter, ToggleGroup, ToggleGroupItem, symbolMenu, usePersistedState } from '../../src/index.ts'
+import {
+  Button,
+  Splitter,
+  Switch,
+  ToggleGroup,
+  ToggleGroupItem,
+  symbolMenu,
+  usePersistedState,
+} from '../../src/index.ts'
+import { LiveToggle } from '../LiveToggle.tsx'
+import { chance, pick, randomWalk, useLiveTicker, type Rng } from '../live-sim.ts'
+import { LiveStatusBarDemo } from './live-readouts.tsx'
 import { ActionLog, Row, SAMPLE_MARK_SRC, demoSymbolActions } from './parts.tsx'
+import { WatchlistOrderDemo } from './watchlist-order.tsx'
 
 // 积木层（@katana-ui/react/blocks，#1869）的演示。表里的数据都是写死的示例数据，不是行情。
 
@@ -130,6 +143,21 @@ const LAYOUT: readonly GridColumnLayout[] = [
   { id: 'note', label: 'Note', width: 80, visible: true },
 ]
 
+// 列优先级（#122）：窄容器里的八列表。pnl 写了 priority: 2，比声明在它前面的价格（没写，按声明顺序是 3）更晚收；没写的列按声明顺序。
+const NARROW_COLUMNS: readonly GridColumn<Example>[] = COLUMNS.slice(0, 8).map((column) =>
+  column.id === 'pnl' ? { ...column, priority: 2, format: { digits: 2 } } : column,
+)
+const NARROW_LAYOUT: readonly GridColumnLayout[] = [
+  { id: 'symbol', label: 'Symbol', width: 112, visible: true },
+  { id: 'side', label: 'Side', width: 44, visible: true },
+  { id: 'price', label: 'Price', width: 72, visible: true },
+  { id: 'qty', label: 'Qty', width: 60, visible: true },
+  { id: 'pnl', label: 'PnL', width: 72, visible: true },
+  { id: 'change', label: 'Chg %', width: 64, visible: true },
+  { id: 'at', label: 'Time (UTC)', width: 160, visible: true },
+  { id: 'fills', label: 'Fills', width: 48, visible: true },
+]
+
 // 自定义列与子行：fills 列画任意内容（标签加成交笔数、按钮），点不到整行；有成交的行按 → 展开成交明细（示例数据）。
 const DETAIL_COLUMNS: readonly GridColumn<Example>[] = [
   { id: 'symbol', type: 'symbol', value: (row) => row.symbol },
@@ -157,7 +185,7 @@ const DETAIL_LAYOUT: readonly GridColumnLayout[] = [
 ]
 
 const HOST: DataGridHost = {
-  texts: { copy: 'Copy', save: 'Export CSV…', resetColumns: 'Reset columns' },
+  labels: { copy: 'Copy', save: 'Export CSV…', resetColumns: 'Reset columns' },
 }
 
 const COLUMN_SETS: readonly ColumnSet[] = [
@@ -197,9 +225,11 @@ function ColumnsDemo() {
               columns={COLUMNS}
               layout={layout}
               onLayoutChange={setLayout}
+              onResize={(id, width) => setLayout((current) => current.map((c) => (c.id === id ? { ...c, width } : c)))}
               rows={EXAMPLES}
               rowId={(row) => row.id}
               label="Example columns"
+              collapseColumns={false}
               sort={sort}
               onSortChange={setSort}
               onResetColumns={() => {
@@ -210,6 +240,170 @@ function ColumnsDemo() {
             />
           </DataGridHostProvider>
         </div>
+      </div>
+    </>
+  )
+}
+
+// 实时行情表：价格随机游走，按涨跌幅从高到低排，所以每个节拍行会换位；偶尔新增一行。live 开着数值格才闪，新行蓝线高亮（示例数据，不是行情）。
+type LiveRow = { id: string; code: string; prev: number; price: number; qty: number }
+const LIVE_COLUMNS: readonly GridColumn<LiveRow>[] = [
+  { id: 'code', type: 'text', value: (row) => row.code },
+  { id: 'price', type: 'price', value: (row) => row.price, format: { precision: 2 } },
+  { id: 'change', type: 'change', value: (row) => ((row.price - row.prev) / row.prev) * 100 },
+  { id: 'qty', type: 'quantity', value: (row) => row.qty },
+  { id: 'pnl', type: 'pnl', value: (row) => (row.price - row.prev) * row.qty, format: { suffix: 'CNY' } },
+]
+const LIVE_LAYOUT: readonly GridColumnLayout[] = [
+  { id: 'code', label: '代码', width: 110, visible: true },
+  { id: 'price', label: '最新价', width: 100, visible: true },
+  { id: 'change', label: '涨跌幅', width: 90, visible: true },
+  { id: 'qty', label: '持仓', width: 90, visible: true },
+  { id: 'pnl', label: '浮动盈亏', width: 130, visible: true },
+]
+const LIVE_ROWS: LiveRow[] = [
+  { id: 'l1', code: '600101', prev: 12.4, price: 12.52, qty: 1200 },
+  { id: 'l2', code: '600202', prev: 8.9, price: 8.86, qty: 3000 },
+  { id: 'l3', code: '600303', prev: 21.3, price: 21.58, qty: 500 },
+  { id: 'l4', code: '600404', prev: 33.8, price: 33.49, qty: 800 },
+  { id: 'l5', code: '600505', prev: 5.6, price: 5.63, qty: 6000 },
+  { id: 'l6', code: '600606', prev: 17.2, price: 17.31, qty: 900 },
+]
+const LIVE_MAX = 10
+function liveGridStep(rows: LiveRow[], rng: Rng, tick: number): LiveRow[] {
+  const next = rows.map((row) => {
+    const moved = randomWalk(row.price, rng, 0.006)
+    return {
+      ...row,
+      price: moved === row.price ? Math.round((row.price + (rng() < 0.5 ? -0.01 : 0.01)) * 100) / 100 : moved,
+    }
+  })
+  if (chance(rng, 0.2) && next.length < LIVE_MAX) {
+    const prev = Math.round((4 + rng() * 40) * 100) / 100
+    next.push({ id: `n${tick}`, code: String(600700 + tick), prev, price: prev, qty: Math.round(1 + rng() * 40) * 100 })
+  }
+  return next
+}
+
+function LiveGridDemo() {
+  const [sort, setSort] = useState<SortSpec | null>({ id: 'change', desc: true })
+  const { state: rows } = useLiveTicker(LIVE_ROWS, liveGridStep, { intervalMs: 1600 })
+  return (
+    <>
+      <p className="gal-note">
+        live：数值类的格子（价格、涨跌幅、持仓、盈亏）值变了闪涨跌色，文本列不闪；按涨跌幅排序时行会平滑换位；新增的行蓝线高亮。
+      </p>
+      <div style={{ paddingBottom: 6 }}>
+        <LiveToggle labels={{ group: '数据刷新', live: '实时', paused: '暂停' }} />
+      </div>
+      <div data-testid="grid-live" style={{ display: 'flex', height: 260, width: '100%', maxWidth: 560 }}>
+        <DataGrid
+          columns={LIVE_COLUMNS}
+          layout={LIVE_LAYOUT}
+          rows={rows}
+          rowId={(row) => row.id}
+          label="Live rows"
+          sort={sort}
+          onSortChange={setSort}
+          sortRemovable={false}
+          live
+        />
+      </div>
+    </>
+  )
+}
+
+// A 股看板用的列类型（#109）：板块排行的净买居中条。示例数据写死，不是行情。
+type Sector = { id: string; name: string; net: number; tags: PillValue[]; promoted: [number, number] }
+const SECTORS: readonly Sector[] = [
+  {
+    id: 's1',
+    name: '示例板块甲',
+    promoted: [3, 12],
+    tags: ['题材一', { label: '龙头', tone: 'up' }, '题材二', '题材三'],
+    net: 12.4,
+  },
+  { id: 's2', name: '示例板块乙', promoted: [5, 8], tags: [{ label: '连板', tone: 'accent' }, '题材二'], net: 5.1 },
+  { id: 's3', name: '示例板块丙', promoted: [0, 4], tags: [{ label: '炸板', tone: 'down' }], net: -3.2 },
+  { id: 's4', name: '示例板块丁', promoted: [2, 2], tags: ['题材一'], net: -9.8 },
+  { id: 's5', name: '示例板块戊', promoted: [0, 0], tags: [], net: 0 },
+]
+const SECTOR_COLUMNS: readonly GridColumn<Sector>[] = [
+  { id: 'name', type: 'text', value: (row) => row.name },
+  { id: 'tags', type: 'pill', value: (row) => row.tags },
+  { id: 'promoted', type: 'progress', value: (row) => row.promoted },
+  { id: 'net', type: 'bar', value: (row) => row.net, format: { digits: 1, suffix: '亿' } },
+]
+const SECTOR_LAYOUT: readonly GridColumnLayout[] = [
+  { id: 'name', label: '板块', width: 120, visible: true },
+  { id: 'tags', label: '题材与状态', width: 190, visible: true },
+  { id: 'promoted', label: '晋级', width: 110, visible: true },
+  { id: 'net', label: '主力净买', width: 220, visible: true },
+]
+
+// 题材 × 交易日热力格表（#109 heat）：格子按涨幅深浅铺底色，右上角是当日名次。示例数据，不是行情。
+type ThemeRow = { id: string; name: string; days: readonly number[] }
+const THEME_DAYS = ['D1', 'D2', 'D3', 'D4', 'D5']
+const THEMES: readonly ThemeRow[] = [
+  { id: 't1', name: '示例题材甲', days: [4.2, 6.8, 9.1, 2.3, -1.2] },
+  { id: 't2', name: '示例题材乙', days: [-2.1, 1.4, 3.3, 5.6, 7.4] },
+  { id: 't3', name: '示例题材丙', days: [0.6, -3.8, -6.2, -1.5, 0] },
+  { id: 't4', name: '示例题材丁', days: [1.9, 0.4, -0.8, 3.1, 2.2] },
+]
+const dayRank = (index: number, row: ThemeRow) =>
+  1 + THEMES.filter((other) => (other.days[index] ?? 0) > (row.days[index] ?? 0)).length
+const THEME_COLUMNS: readonly GridColumn<ThemeRow>[] = [
+  { id: 'name', type: 'text', value: (row) => row.name },
+  ...THEME_DAYS.map((day, index): GridColumn<ThemeRow> => ({
+    id: day,
+    type: 'change',
+    value: (row) => row.days[index],
+    format: { digits: 1 },
+    heat: { domain: [-10, 10], rank: (row) => dayRank(index, row) },
+  })),
+]
+const THEME_LAYOUT: readonly GridColumnLayout[] = [
+  { id: 'name', label: '题材', width: 120, visible: true },
+  ...THEME_DAYS.map((day) => ({ id: day, label: day, width: 82, visible: true })),
+]
+
+function AShareColumnsDemo() {
+  return (
+    <>
+      <p className="gal-note">
+        bar 列：以 0 为中线，正在右（涨色）、负在左（跌色），长度按本列绝对值最大者归一，数字写在条旁。pill
+        列：一格多枚短标签，色调只有涨 / 跌 / 弱 / 强调四种，一行放不下的收成「+n」，悬停看全部。progress 列：分子 /
+        分母加一条细条（晋级率 3/12）。示例数据，不是行情。
+      </p>
+      <div data-testid="grid-ashare" style={{ display: 'flex', width: '100%', maxWidth: 640 }}>
+        <DataGrid
+          columns={SECTOR_COLUMNS}
+          layout={SECTOR_LAYOUT}
+          rows={SECTORS}
+          rowId={(row) => row.id}
+          label="Example sector ranking"
+          sort={null}
+          onSortChange={() => {}}
+          interactive={false}
+          fit
+        />
+      </div>
+      <p className="gal-note">
+        heat：列声明 heat: {'{'} domain, rank? {'}'}，格子底色按值深浅（跨 0
+        时正数涨色、负数跌色），右上角放名次小字，不占行高行宽。
+      </p>
+      <div data-testid="grid-heat" style={{ display: 'flex', width: '100%', maxWidth: 640 }}>
+        <DataGrid
+          columns={THEME_COLUMNS}
+          layout={THEME_LAYOUT}
+          rows={THEMES}
+          rowId={(row) => row.id}
+          label="Example theme heat table"
+          sort={null}
+          onSortChange={() => {}}
+          interactive={false}
+          fit
+        />
       </div>
     </>
   )
@@ -232,6 +426,7 @@ export function DataGridDemo() {
             rows={EXAMPLES}
             rowId={(row) => row.id}
             label="Example rows"
+            collapseColumns={false}
             sort={sort}
             onSortChange={setSort}
             onResetColumns={() => setSort(null)}
@@ -244,6 +439,9 @@ export function DataGridDemo() {
       </div>
       <ActionLog text={log} />
       <ColumnsDemo />
+      <LiveGridDemo />
+      <AShareColumnsDemo />
+      <WatchlistOrderDemo />
       <p className="gal-note">无表头、只读、紧凑行高的变体：</p>
       <div style={{ width: 300 }}>
         <DataGrid
@@ -257,6 +455,26 @@ export function DataGridDemo() {
           density="compact"
           hideHeader
           interactive={false}
+          fit
+        />
+      </div>
+      <p className="gal-note">
+        列优先级（#122）：下面这张八列的表放在 300px 宽的容器里，放不下就按优先级从低到高收起，表头右端出「+N
+        cols」；点它切成横向滚动、显示全部列，再点收起。PnL 写了 priority: 2，比声明在它前面的 Price
+        更晚收；没写的列按声明顺序。 只影响显示，复制与导出仍是全部列。这张表加了
+        stretch：保留的列撑满容器，但右端给胶囊让出它的宽度（#128）， 不盖住最后一列的表头。
+      </p>
+      <div data-testid="grid-priority" style={{ width: 300 }}>
+        <DataGrid
+          columns={NARROW_COLUMNS}
+          layout={NARROW_LAYOUT}
+          rows={EXAMPLES}
+          rowId={(row) => row.id}
+          label="Example narrow table"
+          sort={null}
+          onSortChange={() => {}}
+          timeZone="utc"
+          stretch
           fit
         />
       </div>
@@ -348,7 +566,7 @@ export function PanelFrameDemo() {
               heading="Chart"
               object="· BTCUSDT · 1h"
               linkGroup="A"
-              linkLabel="Link group A"
+              labels={{ link: 'Link group A' }}
               actions={
                 <>
                   <Button variant="icon" aria-label="Maximize">
@@ -373,11 +591,9 @@ export function PanelFrameDemo() {
               heading="Watchlist"
               object="· Core · 24"
               linkGroup="B"
-              linkLabel="Link group B, pinned"
+              labels={{ link: 'Link group B, pinned', collapse: 'Collapse', expand: 'Expand' }}
               pinned
               collapsible
-              collapseLabel="Collapse"
-              expandLabel="Expand"
             />
             <PanelFrameBody>
               <p className="gal-note" style={{ padding: 8 }}>
@@ -388,9 +604,9 @@ export function PanelFrameDemo() {
         </div>
         <div style={{ width: 270, height: 150 }}>
           <PanelFrame aria-label="Orders panel">
-            <PanelFrameHeader heading="Orders" linkGroup={null} linkLabel="No link group" />
+            <PanelFrameHeader heading="Orders" linkGroup={null} labels={{ link: 'No link group' }} />
             <PanelFrameBody
-              state="disconnected"
+              status="disconnected"
               view={{ tag: 'OFFLINE', title: 'Not connected', description: 'Connect an account to see orders.' }}
             />
           </PanelFrame>
@@ -398,7 +614,7 @@ export function PanelFrameDemo() {
         <div style={{ width: 270, height: 150 }}>
           <PanelFrame aria-label="Trades panel">
             <PanelFrameHeader heading="Trades" />
-            <PanelFrameBody state="loading" loadingLabel="Loading" />
+            <PanelFrameBody status="loading" labels={{ loading: 'Loading' }} />
           </PanelFrame>
         </div>
       </div>
@@ -407,9 +623,9 @@ export function PanelFrameDemo() {
 }
 
 const STATUS_ITEMS: readonly StatusItem[] = [
-  { id: 'quote', label: 'QUOTE', value: '42 ms', led: 'ok', ledLabel: 'OK', priority: 3, onClick: () => {} },
-  { id: 'exec', label: 'EXEC', value: '118 ms', led: 'warn', ledLabel: 'Slow', priority: 3, onClick: () => {} },
-  { id: 'live', label: 'LIVE', value: 'IBKR U123', live: true, led: 'on', ledLabel: 'Live account' },
+  { id: 'quote', label: 'QUOTE', value: '42 ms', tone: 'ok', ledLabel: 'OK', priority: 3, onClick: () => {} },
+  { id: 'exec', label: 'EXEC', value: '118 ms', tone: 'warn', ledLabel: 'Slow', priority: 3, onClick: () => {} },
+  { id: 'live', label: 'LIVE', value: 'IBKR U123', live: true, tone: 'accent', ledLabel: 'Live account' },
   { id: 'link', label: 'LINK', value: 'A · BTCUSDT', priority: 1, onClick: () => {} },
   { id: 'mode', label: 'MODE', value: 'QUIET', priority: 0 },
   { id: 'clock', value: '09:30:12', priority: 4 },
@@ -424,7 +640,7 @@ export function StatusBarDemo() {
       <div style={{ width }} data-testid="status-demo">
         <StatusBar
           label="Status bar"
-          moreLabel="More status items"
+          labels={{ more: 'More status items' }}
           left={items.slice(0, 3)}
           center={items.slice(3, 5)}
           right={items.slice(5)}
@@ -435,6 +651,7 @@ export function StatusBarDemo() {
         <Button onClick={() => setWidth(420)}>420</Button>
         <Button onClick={() => setWidth(260)}>260</Button>
       </Row>
+      <LiveStatusBarDemo />
     </div>
   )
 }
@@ -502,8 +719,7 @@ export function WorkspaceTabsDemo() {
           workspaces={tabs}
           activeId={active}
           label="Workspaces"
-          createLabel="New workspace"
-          moreLabel="More workspaces"
+          labels={{ create: 'New workspace', more: 'More workspaces' }}
           onSelect={setActive}
           onRename={setRenamed}
           onCreate={() => setTabs((prev) => [...prev, { id: `ws${prev.length}`, name: `Workspace ${prev.length}` }])}
@@ -527,18 +743,18 @@ export function WorkspaceTabsDemo() {
 }
 
 // 新闻流的演示数据是虚构的（标题、来源都不是真实机构），时间固定在 NEWS_NOW，不随真实时钟走。
-const NEWS_NOW = Date.UTC(2026, 10, 15, 9, 30, 0)
+export const NEWS_NOW = Date.UTC(2026, 10, 15, 9, 30, 0)
 const MIN = 60_000
-const NEWS_SOURCES = [
+export const NEWS_SOURCES = [
   { value: 'wire', label: '演示通讯社' },
   { value: 'desk', label: '演示研究台' },
   { value: 'exch', label: '演示交易所公告' },
 ]
-const NEWS_CHANNELS = [
+export const NEWS_CHANNELS = [
   { value: 'flash', label: '快讯' },
   { value: 'top', label: '要闻' },
 ]
-const NEWS_ITEMS: NewsItem[] = [
+export const NEWS_ITEMS: NewsItem[] = [
   {
     id: 'n1',
     time: NEWS_NOW - 3 * MIN,
@@ -598,7 +814,8 @@ const NEWS_ITEMS: NewsItem[] = [
     summary: '新版日历自下月起适用，不影响已挂出的合约。',
   },
 ]
-const NEWS_LABELS: NewsFeedLabels = {
+export const NEWS_LABELS: NewsFeedLabels = {
+  itemActions: '新闻操作',
   all: '全部',
   feed: '新闻流',
   channels: '频道',
@@ -655,15 +872,77 @@ const NEWS_VIEWS = [
   { key: 'stocks', label: '只看股票' },
 ]
 
+// 实时模拟（演示）：新闻流隔 2 秒一个节拍、约六成概率来一条（偶尔一次来三条），平均 3 秒左右；时间排在固定的演示时间之后，所以总在最前。
+const LIVE_HEADLINES = [
+  '云端科技发布新一代数据中心方案',
+  '蓝海能源与电网公司签订长期供电协议',
+  '启明半导体披露先进封装产线进度',
+  '远山医药三期临床达到主要终点',
+  '北辰新材获得海外大额订单',
+  '听雨软件推出面向券商的研究助手',
+]
+type LiveNews = { items: NewsItem[] }
+function newsStep(state: LiveNews, rng: Rng, tick: number): LiveNews {
+  // 第一拍必来一条：手动步进（e2e）有确定的结果；之后按概率来。
+  if (tick > 0 && !chance(rng, 0.6)) return state
+  const count = tick > 0 && chance(rng, 0.15) ? 3 : 1
+  const made: NewsItem[] = Array.from({ length: count }, (_, k) => {
+    const n = state.items.length + k
+    return {
+      id: `live-${n}`,
+      time: NEWS_NOW + 100_000 + n * 1000,
+      channel: pick(rng, ['flash', 'top']),
+      source: pick(rng, ['wire', 'desk', 'exch']),
+      title: `${pick(rng, LIVE_HEADLINES)}（演示 ${n + 1}）`,
+      symbols: [{ code: '600001', name: '星河锂业' }],
+    }
+  })
+  return { items: [...made.reverse(), ...state.items] }
+}
+
+/** 阅读窗里的实时模拟：这一条偶尔被改（标题加「更新 n」、多一段更正）。换一条会重新挂载（NewsFeed 给阅读窗加了 key），所以是「这一条」被改。 */
+function LiveReader({ item, close }: { item: NewsItem; close: () => void }) {
+  const { state } = useLiveTicker(
+    { rev: 0 },
+    (s, rng, tick) => (tick === 0 || chance(rng, 0.35) ? { rev: s.rev + 1 } : s),
+    {
+      intervalMs: 4000,
+    },
+  )
+  return (
+    <NewsReader
+      title={state.rev > 0 ? `${item.title}（更新 ${state.rev}）` : item.title}
+      version={state.rev}
+      source="演示通讯社"
+      meta={`${NEWS_LABELS.ago(Math.floor((NEWS_NOW - item.time) / 1000))} · 演示通讯社 · ${NEWS_LABELS.read!(item.readMinutes ?? 2)}`}
+      symbols={(item.symbols ?? []).map((s, i) => ({ ...s, change: i === 0 ? 1.24 : -0.59 }))}
+      keyPoints={item.summary ? [item.summary] : []}
+      labels={{
+        reader: '新闻阅读',
+        keyPoints: '要点',
+        close: '关闭',
+        report: '举报',
+        copyLink: '复制链接',
+        updated: '已更新',
+      }}
+      onClose={close}
+    >
+      <p>以上内容是演示文字，公司、数字与来源都是虚构的。</p>
+      {state.rev > 0 && <p>更正：第 {state.rev} 次修订，数字与表述已更新（演示）。</p>}
+    </NewsReader>
+  )
+}
+
 /** 并排阅读窗（宽度够时左列表右阅读窗，不够时盖在列表上）：已保存视图下拉、收起过滤、阅读分钟数、重叠的品种徽标。 */
 function NewsFeedSplit() {
   const [saved, setSaved] = useState(NEWS_VIEWS)
   const [view, setView] = useState('full')
   const [wide, setWide] = useState(true)
   return (
-    <div style={{ display: 'grid', gap: 8 }}>
+    // 列宽钉成 minmax(0, 1fr)：不然轨道按内容撑到 640，窄档的 max-width: 100% 量的是它自己，预览区窄时还是横向溢出（#126）。宽档 1000 照样溢出、由外层滚。
+    <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr)', gap: 8 }}>
       <ToggleGroup
-        variant="sm"
+        size="sm"
         aria-label="宽度"
         value={wide ? 'wide' : 'narrow'}
         onValueChange={(v) => setWide(v === 'wide')}
@@ -671,7 +950,7 @@ function NewsFeedSplit() {
         <ToggleGroupItem value="wide">宽 1000px</ToggleGroupItem>
         <ToggleGroupItem value="narrow">窄 640px</ToggleGroupItem>
       </ToggleGroup>
-      <div style={{ height: 460, width: wide ? 1000 : 640 }}>
+      <div style={{ height: 460, width: wide ? 1000 : 640, maxWidth: wide ? undefined : '100%' }}>
         <NewsFeed
           key={view}
           items={NEWS_ITEMS.map((item, index) => ({ ...item, readMinutes: 1 + (index % 4) }))}
@@ -688,28 +967,71 @@ function NewsFeedSplit() {
             setSaved([...saved, { key, label: `未命名过滤 ${saved.length - 1}` }])
             setView(key)
           }}
-          reader={(item, { close }) => (
-            <NewsReader
-              title={item.title}
-              source="演示通讯社"
-              meta={`${NEWS_LABELS.ago(Math.floor((NEWS_NOW - item.time) / 1000))} · 演示通讯社 · ${NEWS_LABELS.read!(item.readMinutes ?? 2)}`}
-              symbols={(item.symbols ?? []).map((s, i) => ({ ...s, change: i === 0 ? 1.24 : -0.59 }))}
-              keyPoints={item.summary ? [item.summary] : []}
-              labels={{ reader: '新闻阅读', keyPoints: '要点', close: '关闭', report: '举报', copyLink: '复制链接' }}
-              onClose={close}
-            >
-              <p>以上内容是演示文字，公司、数字与来源都是虚构的。</p>
-            </NewsReader>
-          )}
+          reader={(item, { close }) => <LiveReader item={item} close={close} />}
         />
       </div>
     </div>
   )
 }
 
+/** 1000 条演示数据：标题长短不一（从一句到三句），用来演示虚拟滚动按文字折行预先算行高。 */
+const NEWS_MANY: NewsItem[] = Array.from({ length: 1000 }, (_, i) => {
+  const base = NEWS_ITEMS[i % NEWS_ITEMS.length]!
+  const tail = '，演示用的补充说明文字用来拉长标题'.repeat(i % 4 === 3 ? 3 : i % 4 === 1 ? 1 : 0)
+  return {
+    ...base,
+    id: `big-${i}`,
+    time: NEWS_NOW - (i + 1) * 20_000,
+    title: `${i + 1}. ${base.title}${tail}`,
+  }
+})
+// 公告类别筛选（#109）：条目带 category，头部多一行类别芯片（多选）。演示数据，公司与公告都是虚构的。
+const NEWS_CATEGORIES = [
+  { value: 'buy', label: '增持' },
+  { value: 'sell', label: '减持' },
+  { value: 'report', label: '定期报告' },
+]
+const NEWS_CATEGORY_ITEMS: NewsItem[] = [
+  {
+    id: 'c1',
+    time: NEWS_NOW - 60_000,
+    channel: 'top',
+    source: 'exch',
+    category: 'buy',
+    title: '星河锂业：控股股东拟增持不超过 2%',
+  },
+  {
+    id: 'c2',
+    time: NEWS_NOW - 5 * 60_000,
+    channel: 'top',
+    source: 'exch',
+    category: 'sell',
+    title: '远山科技：董事拟减持不超过 0.5%',
+  },
+  {
+    id: 'c3',
+    time: NEWS_NOW - 9 * 60_000,
+    channel: 'top',
+    source: 'exch',
+    category: 'report',
+    title: '北辰能源：披露三季度报告',
+  },
+  {
+    id: 'c4',
+    time: NEWS_NOW - 14 * 60_000,
+    channel: 'top',
+    source: 'exch',
+    category: 'buy',
+    title: '青禾农业：高管合计增持 30 万股',
+  },
+  { id: 'c5', time: NEWS_NOW - 20 * 60_000, channel: 'top', source: 'exch', title: '海岚传媒：召开临时股东大会' },
+]
+
 export function NewsFeedDemo() {
   const [items, setItems] = useState(NEWS_ITEMS)
+  const [many, setMany] = useState(false)
   const [picked, setPicked] = useState('—')
+  const live = useLiveTicker<LiveNews>({ items: [] }, newsStep, { intervalMs: 2000 }).state.items
   const push = () =>
     setItems((prev) => [
       {
@@ -727,23 +1049,29 @@ export function NewsFeedDemo() {
       <p className="gal-note">
         演示数据（标题与来源都是虚构的，时间固定）。点「模拟新消息」看新到条目；点品种胶囊：{picked}。
       </p>
-      <Button data-testid="news-push" onClick={push}>
-        模拟新消息
-      </Button>
+      <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+        <LiveToggle labels={{ group: '数据刷新', live: '实时', paused: '暂停' }} />
+        <Button data-testid="news-push" onClick={push} disabled={many}>
+          模拟新消息
+        </Button>
+      </div>
+      <label className="gal-note" style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+        <Switch aria-label="1000 条" checked={many} onCheckedChange={setMany} data-testid="news-many" />
+        1000 条（超过 50 条列表自动虚拟滚动，行高按标题折行预先算出）
+      </label>
       <div style={{ height: 420 }} data-testid="news-frame">
         <PanelFrame aria-label="News panel">
           <PanelFrameHeader heading="News" object="· 演示数据" />
           <PanelFrameBody>
             <div style={{ height: '100%', padding: 8 }}>
               <NewsFeed
-                items={items}
+                items={[...live, ...(many ? NEWS_MANY : items)]}
                 channels={NEWS_CHANNELS}
                 sources={NEWS_SOURCES}
                 now={NEWS_NOW}
                 labels={NEWS_LABELS}
                 facets={NEWS_FACETS}
-                onSymbolPick={(s) => setPicked(s.code)}
-                itemActionsLabel="新闻操作"
+                onSymbolSelect={(s) => setPicked(s.code)}
                 itemActions={(item) =>
                   item.symbols?.length
                     ? symbolMenu({
@@ -762,12 +1090,25 @@ export function NewsFeedDemo() {
       </div>
       <div style={{ height: 420 }} data-testid="news-cards">
         <NewsFeed
-          items={NEWS_ITEMS}
+          items={[...live, ...NEWS_ITEMS]}
           channels={NEWS_CHANNELS}
           sources={NEWS_SOURCES}
           now={NEWS_NOW}
           labels={NEWS_LABELS}
           defaultLayout="card"
+        />
+      </div>
+      <p className="gal-note">
+        类别筛选：条目带 category，头部多一行类别芯片（多选，不选是全部）；不传 categories 就没有这一行。
+      </p>
+      <div style={{ height: 340 }} data-testid="news-categories">
+        <NewsFeed
+          items={NEWS_CATEGORY_ITEMS}
+          channels={NEWS_CHANNELS}
+          sources={NEWS_SOURCES}
+          categories={NEWS_CATEGORIES}
+          now={NEWS_NOW}
+          labels={{ ...NEWS_LABELS, categories: '公告类别', clearCategories: '清除类别筛选' }}
         />
       </div>
     </div>
@@ -925,10 +1266,10 @@ export function DecisionQueueDemo() {
                   i.id === 'd1' ? (
                     <ConsensusBlock
                       label="执行前检查"
-                      intent="买入 · 600001 × 2,000"
+                      subject="买入 · 600001 × 2,000"
                       parties={[
-                        { key: 'gw', label: 'GATEWAY', state: 'pass', message: '整手 ✓' },
-                        { key: 'risk', label: 'RISK', state: 'warn', message: '集中度 58 / 60' },
+                        { id: 'gw', label: 'GATEWAY', state: 'pass', message: '整手 ✓' },
+                        { id: 'risk', label: 'RISK', state: 'warn', message: '集中度 58 / 60' },
                       ]}
                       verdict="warn"
                       verdictText="可提交"

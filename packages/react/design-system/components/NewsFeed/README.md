@@ -19,14 +19,15 @@
 | `labels` | `NewsFeedLabels` | — | 全部文字：all、feed、channels、sources、clearSources、search、layout、layoutList、layoutCard、pause、resume、important、empty，以及 newItems(n)、ago(秒)、absolute(时间)。包里没有语言。 |
 | `defaultLayout` | `'list' \| 'card'` | — | 起始排法，默认 list。 |
 | `facets` | `NewsFacet[]` | — | 组合过滤（照 TradingView News Flow，主会话 2026-11-15 实测）：{ key, label, options, single?, shown? }；条目用 NewsItem.facets 带取值。每个分面一个胶囊，浮层里复选、可重置、可移除，「+ 添加过滤」再加；取值之间「或」，分面之间「且」。需要 labels.facets 的文字。 |
+| `categories / onCategoriesChange / NewsItem.category / labels.categories` | `{ value, label }[] / (values) => void / string / string` | — | 类别筛选：条目带 category，来源行下面多一行类别芯片（多选，复用 ChipGroup，不选是全部，选了之后没带类别的条目被筛掉）；不传 categories 或没写 labels.categories（读屏名，labels.clearCategories 是清除钮）就没有这一行。 |
 | `selected` | `string \| null` | — | 阅读窗开着的那条：行底色加深。 |
-| `onSymbolPick` | `(symbol, item) => void` | — | 点品种胶囊。 |
+| `onSymbolSelect` | `(symbol, item) => void` | — | 点品种胶囊（旧名 onSymbolPick 留一个版本）。 |
 | `reader` | `(item, { close }) => ReactNode` | — | 给了就是左列表右阅读窗的并排排法（照 TradingView News Flow，主会话 2026-11-15 实测）：点标题打开这一条，返回的节点（一般是 NewsReader）画在右边，选中行底色加深；件的宽度不到 900px 时阅读窗改成盖在列表上的浮层。 |
 | `views / view / onViewChange / onSaveView` | `ViewOption[] / string / (key) => void / () => void` | — | 标题行的已保存过滤视图下拉（Full feed 那样）；需要 labels.views。切换与另存由调用方处理，一般换 key 让件里的过滤状态重置。 |
 | `symbolStyle` | `'stack' \| 'chips'` | `'stack'` | 相关品种：stack = 重叠的一排徽标（悬停出代码与名称），chips = 带代码的胶囊。 |
 | `NewsItem.readMinutes / labels.read / labels.collapse` | `number / (n) => string / string` | — | 条目写「n 分钟阅读」（labels.read 与 readMinutes 都有才写）；labels.collapse 给了，标题行右边有收起 / 展开过滤区的按钮。 |
-| `itemActions` | `(item) => RowAction[]` | — | 每条的快捷操作：悬停出前几颗图标按钮，右键出同一份菜单；配 itemActionsLabel（读屏名）。 |
-| `onOpen` | `(item) => void` | — | 给了，标题是按钮；没给而条目有 href，标题是新窗口链接。 |
+| `itemActions` | `(item) => RowAction[]` | — | 每条的快捷操作：悬停出前几颗图标按钮，右键出同一份菜单；读屏名在 labels.itemActions（旧名 itemActionsLabel）。 |
+| `onSelect` | `(item) => void` | — | 选中一条：给了，标题是按钮；没给而条目有 href，标题是新窗口链接（旧名 onOpen 留一个版本）。 |
 | `onChannelChange / onSourcesChange / onPausedChange` | `callback` | — | 筛选或暂停变了通知调用方（可选）。 |
 
 ## Usage
@@ -120,6 +121,7 @@ const NEWS_ITEMS: NewsItem[] = [
 ]
 
 const NEWS_LABELS: NewsFeedLabels = {
+  itemActions: '新闻操作',
   all: '全部',
   feed: '新闻流',
   channels: '频道',
@@ -169,8 +171,7 @@ export function NewsFeedUsage() {
                 sources={NEWS_SOURCES}
                 now={NEWS_NOW}
                 labels={NEWS_LABELS}
-                onSymbolPick={(s) => setPicked(s.code)}
-                itemActionsLabel="新闻操作"
+                onSymbolSelect={(s) => setPicked(s.code)}
                 itemActions={(item) =>
                   item.symbols?.length
                     ? symbolMenu({

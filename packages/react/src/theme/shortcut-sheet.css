@@ -1,0 +1,73 @@
+/* SPDX-License-Identifier: MIT */
+/* 快捷键总览（patterns/shortcut-sheet，#77 G9）：照 TradingView 的 Keyboard shortcuts 面板——顶上搜索框，下面按作用域分节，
+   每行左名右键、行高 30、几种按法之间一个次级色「or」。分节标题是三级色小号大写字（同 Command 的分组标题）。
+   冲突的行名字后面跟一行 warn 色小字（不用品牌橙）；关掉的作用域整行 45% 透明。 */
+.k-shortcut-sheet {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+.k-shortcut-search {
+  margin-bottom: 6px;
+}
+.k-shortcut-group + .k-shortcut-group {
+  margin-top: 6px;
+}
+.k-shortcut-heading {
+  margin: 0;
+  padding: 6px 0 4px;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-micro) var(--font-sans-small);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.k-shortcut-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.k-shortcut-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 30px;
+  border-bottom: 1px solid var(--k-separable-tertiary-borderColor);
+  color: var(--k-content-primary-foreground);
+  font: var(--text-data) var(--font-sans);
+}
+.k-shortcut-row[data-disabled] {
+  opacity: 0.45;
+}
+.k-shortcut-name {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.k-shortcut-conflict {
+  color: var(--k-status-warn-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-shortcut-keys {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 6px;
+}
+.k-shortcut-combo {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.k-shortcut-or {
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-shortcut-empty {
+  margin: 0;
+  padding: 16px 0;
+  color: var(--k-content-secondary-foreground);
+  text-align: center;
+  font: var(--text-data) var(--font-sans);
+}

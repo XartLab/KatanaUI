@@ -1,4 +1,5 @@
-/* SPDX-License-Identifier: MIT */
+/* SPDX-License-Identifier: MIT 
+   G2（2026-11-18）：颜色改读 characteristics（--k-editable-bold-*、--k-content-*、--k-status-danger-*），值与改前相等；清除钮悬停底统一成 subtle（5% → 4% 白）。 */
 /* ShortcutRecorder：字段照数字框的皮肤（30 高 · 圆角 control · 3% 白底 12% 白边），里面是 Kbd 方块；
    录键态边框用强调色，冲突态用红；清除钮在框外右侧，提示字在框下。 */
 .k-rec {
@@ -15,17 +16,17 @@
   min-width: 140px;
   height: 30px;
   padding: 0 10px;
-  background: var(--alpha-white-2);
-  border: 1px solid var(--alpha-white-10);
+  background: var(--k-editable-bold-background);
+  border: 1px solid var(--k-editable-bold-borderColor);
   border-radius: var(--radius-control);
-  color: var(--ink-100);
+  color: var(--k-content-primary-foreground);
   cursor: pointer;
   transition:
     border-color 0.12s,
     background-color 0.12s;
 }
 .k-rec-field:hover:not(:disabled) {
-  background: var(--alpha-white-4);
+  background: var(--k-editable-bold-background-hover);
 }
 .k-rec-field:focus-visible {
   outline: 2px solid var(--focus-ring);
@@ -36,15 +37,15 @@
   cursor: not-allowed;
 }
 .k-rec[data-state='recording'] .k-rec-field {
-  border-color: var(--ink-200);
-  background: var(--alpha-white-4);
+  border-color: var(--k-content-body-foreground);
+  background: var(--k-editable-bold-background-hover);
 }
 .k-rec[data-state='conflict'] .k-rec-field {
-  border-color: var(--signal-red);
+  border-color: var(--k-status-danger-foreground);
 }
 .k-rec-hint {
-  color: var(--ink-300);
-  font: var(--text-caption) var(--font-sans);
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
 }
 .k-rec-clear {
   display: inline-flex;
@@ -56,12 +57,12 @@
   background: transparent;
   border: 0;
   border-radius: 6px;
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   cursor: pointer;
 }
 .k-rec-clear:hover {
-  background: var(--alpha-white-5);
-  color: var(--ink-100);
+  background: var(--k-actionable-subtle-background-hover);
+  color: var(--k-content-primary-foreground);
 }
 .k-rec-clear:focus-visible {
   outline: 2px solid var(--focus-ring);
@@ -70,8 +71,8 @@
 .k-rec-msg {
   flex-basis: 100%;
   min-height: 0;
-  color: var(--signal-red);
-  font: var(--text-caption) var(--font-sans);
+  color: var(--k-status-danger-foreground);
+  font: var(--text-caption) var(--font-sans-small);
 }
 .k-rec-msg:empty {
   display: none;

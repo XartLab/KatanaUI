@@ -15,12 +15,13 @@
 | `value` * | `number` | — | A percentage already (1.5 means 1.5%). |
 | `digits` | `number` | `2` | Number of decimal places. |
 | `arrow` | `boolean` | — | Put an up or down triangle before the text (none for flat) so direction does not rely on color alone. |
+| `flash` | `boolean` | `false` | Flash up or down color when value changes (for numbers that update live; off by default so static tables stay still). |
 
 ## Usage
 
 ```tsx
 // SPDX-License-Identifier: MIT
-import { ChangeText } from '@katana-ui/react/quant'
+import { ChangeText } from '@katana-ui/react/quotes'
 
 export function ChangeTextUsage() {
   return (

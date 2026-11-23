@@ -1,0 +1,102 @@
+/* SPDX-License-Identifier: MIT */
+/* MaeMfeScatter（#120）：赢是圆、亏是方（不只靠颜色），面色用发散色中档 --div-pos-200 / --div-neg-200；涨跌色（--pnl-*）只给文字。轴与网格沿用 .k-scatter-tick。 */
+.k-mm {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  min-width: 0;
+}
+.k-mm-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px var(--space-4);
+  color: var(--k-content-body-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-mm-key {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-variant-numeric: tabular-nums;
+}
+.k-mm-actions {
+  margin-left: auto;
+}
+.k-mm-mark {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background: var(--k-mark, var(--div-mid));
+}
+.k-mm-mark[data-kind='win'] {
+  --k-mark: var(--div-pos-200);
+  border-radius: 50%;
+}
+.k-mm-mark[data-kind='loss'] {
+  --k-mark: var(--div-neg-200);
+}
+.k-mm-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+  outline: none;
+}
+.k-mm-svg:focus-visible {
+  outline: 1px solid var(--focus-ring);
+  outline-offset: 4px;
+}
+.k-mm-zero {
+  stroke: var(--k-separable-bold-borderColor);
+  stroke-width: 1;
+}
+.k-mm-dot {
+  fill: color-mix(in srgb, var(--k-dot, var(--div-mid)) 75%, transparent);
+  stroke: var(--k-dot, var(--div-mid));
+  stroke-width: 1;
+}
+.k-mm-dot[data-kind='win'] {
+  --k-dot: var(--div-pos-200);
+}
+.k-mm-dot[data-kind='loss'] {
+  --k-dot: var(--div-neg-200);
+}
+.k-mm-dot[data-kind='flat'] {
+  fill: none;
+}
+.k-mm-dot[data-active] {
+  fill: var(--k-dot);
+  stroke: var(--k-content-primary-foreground);
+  stroke-width: 2;
+}
+.k-mm-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px var(--space-4);
+  color: var(--k-content-body-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+  font-variant-numeric: tabular-nums;
+}
+.k-mm-foot[hidden] {
+  display: none;
+}
+.k-mm-readout {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 4px var(--space-4);
+  min-height: 20px;
+}
+.k-mm-readout b {
+  color: var(--k-content-primary-foreground);
+  font-weight: 400;
+}
+.k-mm-means {
+  display: inline-flex;
+  gap: var(--space-4);
+  margin: 0;
+  color: var(--k-content-secondary-foreground);
+}

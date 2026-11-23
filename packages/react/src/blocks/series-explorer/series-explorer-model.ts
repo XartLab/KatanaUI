@@ -163,3 +163,23 @@ export function reconcileWindow(
   const cashflow = keys.cashflow === undefined ? 0 : (reduceWindow(points, window, keys.cashflow, 'sum') ?? 0)
   return { open, close, net, cashflow, diff: close - open - net - cashflow }
 }
+
+/**
+ * 状态带与时间轴对齐用的比例尺：时间 t 落在窗口里「第几格的左缘」（0 到 1）。
+ * 状态段是左闭右开 [from, to)：from 取第一个 at ≥ from 的格子左缘，to 取最后一个 at < to 的格子右缘，所以相邻的段严丝合缝、不重叠，
+ * 并且跟图里一格一点（band）的横轴同一份刻度。at 要从小到大排。纯函数。
+ */
+export function regimeScale(ats: readonly number[]): (time: number) => number {
+  const count = ats.length
+  return (time) => {
+    if (count === 0) return 0
+    let before = 0
+    while (before < count && ats[before]! < time) before += 1
+    return before / count
+  }
+}
+
+/** 时间 at 落在哪一段（[from, to)）里：返回那一段的状态 id，不在任何段里是 null。纯函数。 */
+export function regimeAt(segments: readonly { from: number; to: number; state: string }[], at: number): string | null {
+  return segments.find((segment) => at >= segment.from && at < segment.to)?.state ?? null
+}

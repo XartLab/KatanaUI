@@ -1,4 +1,8 @@
 // SPDX-License-Identifier: MIT
+/**
+ * Data-driven tree on react-aria's Tree: expand, collapse, single or multiple selection.
+ * 选中照统一约定是 value / defaultValue / onValueChange（G6，旧名 selectedKeys / defaultSelectedKeys / onSelectionChange 留一个版本）。
+ */
 import { ChevronRight } from 'lucide-react'
 import type { CSSProperties, ReactNode } from 'react'
 import {
@@ -33,8 +37,17 @@ export type TreeViewProps = {
   label: string
   /** 选择方式，默认单选；none 只展开收起，点行不选。 */
   selectionMode?: 'none' | 'single' | 'multiple'
+  /** 选中的 id（受控）。 */
+  value?: readonly string[]
+  /** 选中的 id 初值（不受控）。 */
+  defaultValue?: readonly string[]
+  /** 选中变了：给出整份 id。 */
+  onValueChange?: (value: string[]) => void
+  /** @deprecated Use `value`; kept for one version. */
   selectedKeys?: readonly string[]
+  /** @deprecated Use `defaultValue`; kept for one version. */
   defaultSelectedKeys?: readonly string[]
+  /** @deprecated Use `onValueChange`; kept for one version. */
   onSelectionChange?: (keys: string[]) => void
   expandedKeys?: readonly string[]
   defaultExpandedKeys?: readonly string[]
@@ -89,6 +102,9 @@ export function TreeView({
   selectedKeys,
   defaultSelectedKeys,
   onSelectionChange,
+  value = selectedKeys,
+  defaultValue = defaultSelectedKeys,
+  onValueChange = onSelectionChange,
   expandedKeys,
   defaultExpandedKeys,
   onExpandedChange,
@@ -103,9 +119,9 @@ export function TreeView({
       dependencies={[onAction]}
       selectionMode={selectionMode}
       selectionBehavior={onAction ? 'replace' : 'toggle'}
-      selectedKeys={selectedKeys ? new Set(selectedKeys) : undefined}
-      defaultSelectedKeys={defaultSelectedKeys ? new Set(defaultSelectedKeys) : undefined}
-      onSelectionChange={onSelectionChange ? (keys) => onSelectionChange(toKeys(keys)) : undefined}
+      selectedKeys={value ? new Set(value) : undefined}
+      defaultSelectedKeys={defaultValue ? new Set(defaultValue) : undefined}
+      onSelectionChange={onValueChange ? (keys) => onValueChange(toKeys(keys)) : undefined}
       expandedKeys={expandedKeys ? new Set(expandedKeys) : undefined}
       defaultExpandedKeys={defaultExpandedKeys ? new Set(defaultExpandedKeys) : undefined}
       onExpandedChange={onExpandedChange ? (keys) => onExpandedChange(toKeys(keys)) : undefined}

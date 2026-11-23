@@ -1,15 +1,15 @@
 // SPDX-License-Identifier: MIT
 // 山脊图：每组一条核密度曲线，上下叠着排，一眼比各组分布的位置、宽窄与形状（分位层、因子分组的收益分布）。
-// 每条画密度曲线与中位数的竖标；给了 baseline（如 0）就画一条贯穿的虚线。分层是序数：线与点阵面的颜色取 seq-200..600（暗到亮，按条的次序），
+// 每条画密度曲线与中位数的竖标；给了 baseline（如 0）就画一条贯穿的虚线。分层是序数：线与点阵面的颜色取 --k-heat-1..5（中性灰浓度，暗到亮，按条的次序），
 // 不用涨跌色，涨跌色也不上面积（dataviz §2、卡 QuantileLayers）；面的纹理与强调色都读 chart-kit 的变量。
 // 悬停或聚焦一条，其余变暗，读数行写这一条的整句；上下键在条间走。带宽默认 Silverman 经验规则（见 ridgeline-model.ts）。
 // 功能参照 Arc Ridgeline（uiarc.dev，2026-11-14 读，页面只写了这个名字），实现原创。文字全由 props 传。
 import { useRef, useState, type KeyboardEvent, type ReactNode } from 'react'
-import { linearScale, niceTicks } from './chart-scale.ts'
-import { ChartActions } from './chart-kit/chart-actions.tsx'
-import { ChartTable, type ChartViewProps } from './chart-kit/chart-table.tsx'
-import { DotFill, useDotId } from './chart-kit/dot-fill.tsx'
-import { seqColor } from './chart-kit/series-colors.ts'
+import { linearScale, niceTicks } from '../lib/chart/chart-scale.ts'
+import { ChartActions } from '../lib/chart/chart-kit/chart-actions.tsx'
+import { ChartTable, type ChartViewProps } from '../lib/chart/chart-kit/chart-table.tsx'
+import { DotFill, useDotId } from '../lib/chart/chart-kit/dot-fill.tsx'
+import { seqColor } from '../lib/chart/chart-kit/series-colors.ts'
 import { layerLevel } from './quantile-model.ts'
 import { gaussianKde, ridgelines, type RidgeGroup, type RidgeStats } from './ridgeline-model.ts'
 

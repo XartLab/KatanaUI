@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 // 列摆法的纯函数（#27）：列头菜单、拖动重排、ColumnPicker 共用。layout 的次序就是显示次序，不在 visible 里的列只是藏起来、仍占着次序。
-import type { GridColumnLayout } from './data-grid.tsx'
+import type { GridColumnLayout } from './data-grid-props.ts'
 
 type Layout = readonly GridColumnLayout[]
 

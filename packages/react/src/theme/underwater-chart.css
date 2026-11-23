@@ -1,0 +1,113 @@
+/* SPDX-License-Identifier: MIT */
+/* UnderwaterChart（#120）：回撤面是点阵纹理（跌色混 60%），最大回撤段是一块淡底色；涨跌色不上面。
+   左侧留白 --k-plot-gutter 与 EquityCurve（.k-eq-body）同值，两张图叠放时横轴对齐。 */
+.k-uw {
+  position: relative;
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  min-width: 0;
+}
+.k-uw-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-4);
+  color: var(--k-content-body-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-uw-title {
+  margin: 0 var(--space-2) 0 0;
+  color: var(--k-content-primary-foreground);
+  font: var(--text-data) var(--font-sans);
+}
+.k-uw-key {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.k-uw-key-dd {
+  display: inline-block;
+  width: 12px;
+  height: 6px;
+  background-image: var(
+    --chart-fill-image,
+    radial-gradient(circle, color-mix(in srgb, var(--pnl-down) 60%, transparent) 0 1.2px, transparent 1.6px)
+  );
+  background-size: 3px 3px;
+}
+.k-uw-facts {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 4px var(--space-4);
+  margin-left: auto;
+  color: var(--k-content-secondary-foreground);
+  font-variant-numeric: tabular-nums;
+}
+.k-uw-facts [data-fact='depth'] {
+  color: var(--pnl-down);
+}
+.k-uw-facts [data-fact='recovery'][data-open] {
+  color: var(--k-status-warn-foreground);
+}
+.k-uw-body {
+  --k-plot-gutter: 56px;
+}
+.k-uw-main {
+  position: relative;
+  margin-left: var(--k-plot-gutter, 56px);
+  outline-offset: 2px;
+  touch-action: pan-y;
+  cursor: crosshair;
+}
+.k-uw-main:focus-visible {
+  outline: 1px solid var(--focus-ring);
+}
+.k-uw-main > svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.k-uw-zero {
+  stroke: var(--k-separable-bold-borderColor);
+}
+.k-uw-line {
+  fill: none;
+  stroke: color-mix(in srgb, var(--pnl-down) 80%, transparent);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+.k-uw-seg {
+  fill: color-mix(in srgb, var(--k-content-primary-foreground) 7%, transparent);
+}
+.k-uw-seg[data-open] {
+  fill: color-mix(in srgb, var(--k-status-warn-foreground) 9%, transparent);
+}
+.k-uw-trough {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  pointer-events: none;
+}
+.k-uw-trough i {
+  width: 7px;
+  height: 7px;
+  margin: -3.5px 0 0 -3.5px;
+  border-radius: 50%;
+  background: var(--k-content-primary-foreground);
+}
+.k-uw-trough b {
+  position: absolute;
+  top: 4px;
+  left: 0;
+  translate: -50% 0;
+  color: var(--k-content-primary-foreground);
+  font: var(--text-num-sm) var(--font-num-small);
+  font-weight: 400;
+  white-space: nowrap;
+}
+.k-uw-xaxis {
+  margin-left: var(--k-plot-gutter, 56px);
+  margin-top: 4px;
+}

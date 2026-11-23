@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: MIT */
-/* 原样搬自 src/ui/ui.css（#1860，2026-11-14）：类名与规则都没改，应用里的件（src/ui/*.tsx）是这里的件外面包的一层。 */
+/* 搬自 src/ui/ui.css（#1860，2026-11-14）。G3 起状态色读 --k-status-*、亮灯读 --accent，熄灭的凹陷用 --recess（改前写死 inset 0 1px 2px rgba(0,0,0,.8)，换成 token 的 1px 3px .7）。 */
 
 /* StatusLED */
 .k-led {
@@ -9,29 +9,39 @@
   flex: none;
   border-radius: var(--radius-pill);
   background: var(--led-off);
-  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.8);
+  box-shadow: var(--recess);
   transition:
     background-color 60ms linear,
     box-shadow 60ms linear;
 }
+/* 状态变了的那一圈光晕（k-led 里的子元素）：闪色由共用层 live.css 给，灯自己的底色就是状态色，闪在底色上看不见。 */
+.k-led {
+  position: relative;
+}
+.k-led-halo {
+  position: absolute;
+  inset: -4px;
+  border-radius: var(--radius-pill);
+  pointer-events: none;
+}
 .k-led.bare {
-  box-shadow: inset 0 0 0 1px var(--ink-300);
+  box-shadow: inset 0 0 0 1px var(--k-content-secondary-foreground);
 }
 .k-led.on {
-  background: var(--signal-orange);
+  background: var(--accent);
   box-shadow: var(--glow-orange);
 }
 .k-led.ok {
-  background: var(--signal-green);
-  box-shadow: 0 0 6px var(--signal-green);
+  background: var(--k-status-ok-foreground);
+  box-shadow: 0 0 6px var(--k-status-ok-foreground);
 }
 .k-led.warn {
-  background: var(--signal-amber);
-  box-shadow: 0 0 6px var(--signal-amber);
+  background: var(--k-status-warn-foreground);
+  box-shadow: 0 0 6px var(--k-status-warn-foreground);
 }
 .k-led.danger {
-  background: var(--signal-red);
-  box-shadow: 0 0 6px var(--signal-red);
+  background: var(--k-status-danger-foreground);
+  box-shadow: 0 0 6px var(--k-status-danger-foreground);
 }
 .k-led.link-a {
   background: var(--link-a);
@@ -55,6 +65,6 @@
 }
 .k-led.hollow {
   background: transparent;
-  border: 1px solid var(--line-200);
+  border: 1px solid var(--k-separable-bold-borderColor);
   box-shadow: none;
 }

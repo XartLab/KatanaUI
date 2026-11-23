@@ -14,11 +14,10 @@
 | --- | --- | --- | --- |
 | `children` | `ReactNode` | — | 按钮上的字。 |
 | `onConfirm` | `() => void` | — | 填满时回调，一次按住只一次；松手再按才能再触发。 |
-| `hint` | `string` | — | 读屏与悬停提示，如「按住 2 秒，全部平仓」。必填：没有它读屏用户不知道要按住。 |
+| `labels` | `HoldToConfirmLabels` | — | { hint, confirmed? }。hint 是读屏与悬停提示，如「按住 2 秒，全部平仓」，必填：没有它读屏用户不知道要按住；confirmed 是填满后的字，原地换掉 children，直到松手退完。旧名 hint、confirmedLabel 留一个版本（@deprecated）。 |
 | `holdMs` | `number` | `2000` | 按住多久填满。2000 取自 Emil Kowalski 的 hold-to-delete 写法（2026-11-14 读），对交易动作是否合适没有实测，默认值待定；越不可撤越长。 |
 | `releaseMs` | `number` | `200` | 松手后从满格退回空格要多久（同一出处）。 |
-| `confirmedLabel` | `ReactNode` | — | 填满后的字，原地换掉 children，直到松手退完。 |
-| `tone` | `'danger' \| 'default'` | `'danger'` | 填充色：红，或中性。 |
+| `tone` | `Severity` | `'danger'` | 填充色：danger 红、warn 琥珀、ok 绿（38% 语气色），neutral 中性（9% 白）。旧值 default 等于 neutral，留一个版本。 |
 | `disabled` | `boolean` | — | 灰掉，按不动。 |
 
 ## Usage
@@ -33,17 +32,25 @@ export function HoldToConfirmUsage() {
   const [stopped, setStopped] = useState(0)
   return (
     <>
-      <HoldToConfirm hint="按住 2 秒，全部平仓" confirmedLabel="已平仓" onConfirm={() => setFlattened((n) => n + 1)}>
+      <HoldToConfirm
+        labels={{ hint: '按住 2 秒，全部平仓', confirmed: '已平仓' }}
+        onConfirm={() => setFlattened((n) => n + 1)}
+      >
         全部平仓
       </HoldToConfirm>
       <output data-gallery-hold>已触发 {flattened} 次</output>
 
-      <HoldToConfirm tone="default" holdMs={1000} hint="按住 1 秒，停止策略" onConfirm={() => setStopped((n) => n + 1)}>
+      <HoldToConfirm
+        tone="neutral"
+        holdMs={1000}
+        labels={{ hint: '按住 1 秒，停止策略' }}
+        onConfirm={() => setStopped((n) => n + 1)}
+      >
         停止策略
       </HoldToConfirm>
       <output data-gallery-hold-fast>已触发 {stopped} 次</output>
 
-      <HoldToConfirm disabled hint="按住 2 秒，全部撤单" onConfirm={() => {}}>
+      <HoldToConfirm disabled labels={{ hint: '按住 2 秒，全部撤单' }} onConfirm={() => {}}>
         全部撤单
       </HoldToConfirm>
     </>
@@ -54,7 +61,7 @@ export function HoldToConfirmUsage() {
 ## States
 
 - 空闲：和普通按钮一样。
-- 按住：填充从左往右走；到 holdMs 填满并触发，字换成 confirmedLabel。
+- 按住：填充从左往右走；到 holdMs 填满并触发，字换成 labels.confirmed。
 - 松手：填充在 releaseMs 内退回；填满后手还按着，填充停在满格，松手才退。
 - 焦点移走或指针被抢走：按松手处理，退回。
 
@@ -62,7 +69,7 @@ export function HoldToConfirmUsage() {
 
 - 不要拿它做可撤销的动作：那些直接用 Button，确认框和按住都是摩擦。
 - 不要缩短 holdMs 到几百毫秒：那和单击没有区别。
-- hint 要写清按多久、做什么，读屏用户靠它。
+- labels.hint 要写清按多久、做什么，读屏用户靠它。
 
 ## Composition
 

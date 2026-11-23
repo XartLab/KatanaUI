@@ -55,10 +55,10 @@ describe('QuantileLayers', () => {
         stats={[{ key: 'n', label: '样本', value: '3' }]}
       />,
     )
-  it('线色按序数取 seq，最低层最暗、最高层最亮；不出现涨跌色；多空差是点阵面', () => {
+  it('线色按序数取 heat 档，最低层最暗、最高层最亮；不出现涨跌色；多空差是点阵面', () => {
     const html = render(ascending)
-    expect(html).toContain('stroke:var(--seq-200)')
-    expect(html).toContain('stroke:var(--seq-600)')
+    expect(html).toContain('stroke:var(--k-heat-1)')
+    expect(html).toContain('stroke:var(--k-heat-5)')
     expect(html).not.toContain('pnl-')
     expect(html).toContain('url(#ql-fill-')
     expect(html).toContain('data-monotonic="true"')

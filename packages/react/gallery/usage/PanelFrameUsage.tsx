@@ -15,7 +15,7 @@ export function PanelFrameUsage() {
               heading="Chart"
               object="· BTCUSDT · 1h"
               linkGroup="A"
-              linkLabel="Link group A"
+              labels={{ link: 'Link group A' }}
               actions={
                 <>
                   <Button variant="icon" aria-label="Maximize">
@@ -40,11 +40,9 @@ export function PanelFrameUsage() {
               heading="Watchlist"
               object="· Core · 24"
               linkGroup="B"
-              linkLabel="Link group B, pinned"
+              labels={{ link: 'Link group B, pinned', collapse: 'Collapse', expand: 'Expand' }}
               pinned
               collapsible
-              collapseLabel="Collapse"
-              expandLabel="Expand"
             />
             <PanelFrameBody>
               <p className="gal-note" style={{ padding: 8 }}>
@@ -55,9 +53,9 @@ export function PanelFrameUsage() {
         </div>
         <div style={{ width: 270, height: 150 }}>
           <PanelFrame aria-label="Orders panel">
-            <PanelFrameHeader heading="Orders" linkGroup={null} linkLabel="No link group" />
+            <PanelFrameHeader heading="Orders" linkGroup={null} labels={{ link: 'No link group' }} />
             <PanelFrameBody
-              state="disconnected"
+              status="disconnected"
               view={{ tag: 'OFFLINE', title: 'Not connected', description: 'Connect an account to see orders.' }}
             />
           </PanelFrame>
@@ -65,7 +63,7 @@ export function PanelFrameUsage() {
         <div style={{ width: 270, height: 150 }}>
           <PanelFrame aria-label="Trades panel">
             <PanelFrameHeader heading="Trades" />
-            <PanelFrameBody state="loading" loadingLabel="Loading" />
+            <PanelFrameBody status="loading" labels={{ loading: 'Loading' }} />
           </PanelFrame>
         </div>
       </div>

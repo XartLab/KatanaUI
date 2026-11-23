@@ -1,4 +1,5 @@
 /* SPDX-License-Identifier: MIT */
+/* G6 token 迁移：alpha-white-2_5 / -5 / -6_5 / -10 的底色与边线没有对应的 characteristics，先留着。 */
 /* 连板天梯（LimitLadder，#12）v2。表格手感取 TradingView 的列表（无衬线加 tabular-nums、右对齐、紧凑行、极淡分隔线、悬停整行提亮），
    汇总读数与分组头取 Arc UI（大号读数、粗体分组头加细进度条、层间留白）。精密仪器语言只留：选中行左侧 2px 强调条（面板编号与来源行在外壳上）。
    状态色走语义 token（封住 pnl-up、炸板琥珀、跌停 pnl-down）；橙色只给选中条。淡显只作用在文字，状态胶囊保持全亮。 */
@@ -13,7 +14,7 @@
   overflow: auto;
   padding: var(--space-3) 0;
   font: var(--text-data) var(--font-sans);
-  color: var(--ink-100);
+  color: var(--k-content-primary-foreground);
 }
 .k-ladder-summary {
   display: flex;
@@ -27,7 +28,7 @@
   gap: 2px;
 }
 .k-ladder-read dt {
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   font: 500 11px/14px var(--font-sans);
 }
 .k-ladder-read dd {
@@ -52,7 +53,7 @@
 .k-ladder-columns {
   height: 20px;
   margin: var(--space-1) 0 calc(var(--space-2) * -1);
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   font: 500 11px/14px var(--font-sans);
 }
 .k-ladder-columns .is-num {
@@ -74,7 +75,7 @@
   font: 700 14px/18px var(--font-sans);
 }
 .k-ladder-count {
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   font: 500 12px/16px var(--font-sans);
 }
 .k-ladder-promote {
@@ -82,7 +83,7 @@
   align-items: center;
   gap: 8px;
   margin-left: auto;
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   font: 500 12px/16px var(--font-sans);
   font-variant-numeric: tabular-nums;
 }
@@ -97,7 +98,7 @@
   position: absolute;
   inset: 0 auto 0 0;
   border-radius: 1px;
-  background: var(--ink-100);
+  background: var(--k-actionable-bold-background);
 }
 .k-ladder-row {
   position: relative;
@@ -111,15 +112,15 @@
 }
 .k-ladder-row.is-selected {
   background: var(--alpha-white-6_5);
-  box-shadow: inset 2px 0 0 var(--ink-100);
+  box-shadow: inset 2px 0 0 var(--k-content-primary-foreground);
 }
 .k-ladder-row:focus-visible {
-  outline: 1px solid var(--line-200);
+  outline: 1px solid var(--k-separable-bold-borderColor);
   outline-offset: -1px;
 }
 /* 没接上的（炸板、跌停、没涨停）只淡代码与图标（代码换 ink-300，不用透明度：透明度压低对比度，实测过不了 4.5:1）；状态胶囊是它们为什么淡的说明，保持全亮。 */
 .k-ladder-row:not([data-status='sealed']) .k-ladder-symbol {
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
 }
 .k-ladder-row:not([data-status='sealed']) .k-symbol-mark {
   opacity: 0.55;
@@ -141,7 +142,7 @@
 .k-ladder-sub {
   overflow: hidden;
   min-width: 0;
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   font: 400 11px/14px var(--font-sans);
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -153,7 +154,7 @@
 }
 .k-ladder-industry {
   overflow: hidden;
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -163,7 +164,7 @@
   border-radius: 9999px;
   font: 500 11px/16px var(--font-sans);
   white-space: nowrap;
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
   background: var(--alpha-white-5);
 }
 .k-ladder-status[data-status='sealed'] {
@@ -171,8 +172,8 @@
   background: color-mix(in srgb, var(--pnl-up) 12%, transparent);
 }
 .k-ladder-status[data-status='broken'] {
-  color: var(--signal-amber);
-  background: color-mix(in srgb, var(--signal-amber) 12%, transparent);
+  color: var(--k-status-warn-foreground);
+  background: color-mix(in srgb, var(--k-status-warn-foreground) 12%, transparent);
 }
 .k-ladder-status[data-status='down'] {
   color: var(--pnl-down);
@@ -181,12 +182,12 @@
 .k-ladder-empty {
   margin: auto;
   padding: var(--space-6);
-  color: var(--ink-300);
+  color: var(--k-content-secondary-foreground);
 }
 
 /* 选中行与「没涨停」胶囊的底比 ink-300 亮，console 主题下 ink-300 字压不过 4.5:1，这两处字取 ink-200。 */
 .k-ladder-row.is-selected :is(.k-ladder-sub, .k-ladder-industry),
 .k-ladder-status:not([data-status]),
 .k-ladder-status[data-status='none'] {
-  color: var(--ink-200);
+  color: var(--k-content-body-foreground);
 }

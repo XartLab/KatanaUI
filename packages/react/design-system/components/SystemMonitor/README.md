@@ -21,7 +21,7 @@
 | `onStrategyAction` | `(strategy, action: start \| pause \| stop) => void` | — | 行尾启停按钮的回调：运行中给暂停与停止，暂停给继续与停止，停止与出错给启动；不给就没有按钮。件不改状态。 |
 | `onEmergencyStop` | `() => void` | — | 面板头的急停：按住 HoldToConfirm 填满才回调；不给就没有急停按钮。 |
 | `quotaWarnAt` | `number` | — | 额度条转琥珀的占用比；不给不预警，≥ 1 总是红。预警线属于账户风控，由调用方给。 |
-| `onLinkPick` | `(link) => void` | — | 给了，连接条上每个连接是按钮。 |
+| `onSelect` | `(link) => void` | — | 选中一个连接：给了，连接条上每个连接是按钮（旧名 onLinkPick 留一个版本）。 |
 
 ## Usage
 
@@ -252,6 +252,7 @@ export function SystemMonitorUsage() {
 - 策略出错：整行左侧红边，名字下写出错说明；排在最前。
 - 额度 ≥ 1：条贴边变红；达到 quotaWarnAt：琥珀。
 - 事件筛选没有命中：写 labels.noEvents。
+- 灯的语气（linkSeverity / strategySeverity / eventSeverity → ledOf，G6）：连接 ok / degraded warn / error danger / offline off；策略 running ok / paused warn / error danger / stopped off；事件 info neutral（不亮）/ warn / error danger。
 
 ## Don't
 

@@ -1,6 +1,9 @@
 // SPDX-License-Identifier: MIT
 import { describe, expect, it } from 'vite-plus/test'
 import {
+  eventSeverity,
+  linkSeverity,
+  strategySeverity,
   filterEvents,
   quotaTone,
   sortEvents,
@@ -69,5 +72,25 @@ describe('system-monitor-model', () => {
       strategyErrors: 1,
       active: 1,
     })
+  })
+})
+
+describe('linkSeverity / strategySeverity / eventSeverity', () => {
+  it('连接、策略、事件的语气（灯由 ledOf 取，G6）：断开与停止不亮，info 没有判断', async () => {
+    const { ledOf } = await import('../../lib/severity.ts')
+    expect(['ok', 'degraded', 'error', 'offline'].map((s) => ledOf(linkSeverity(s as never)))).toEqual([
+      'ok',
+      'warn',
+      'danger',
+      'off',
+    ])
+    expect(['running', 'paused', 'stopped', 'error'].map((s) => ledOf(strategySeverity(s as never)))).toEqual([
+      'ok',
+      'warn',
+      'off',
+      'danger',
+    ])
+    expect(eventSeverity('info')).toBe('neutral')
+    expect(ledOf(eventSeverity('error'))).toBe('danger')
   })
 })

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 import { useState } from 'react'
-import { SparkTile } from '../../src/quant'
+import { MetricCard } from '../../src/quotes'
 
 const asset = [18, 16, 17, 12, 13, 9, 10, 6, 4]
 
@@ -15,45 +15,64 @@ export function SparkTileUsage() {
   return (
     <>
       <div className="gal-grid-5" data-testid="spark-row">
-        <SparkTile
+        <MetricCard
+          variant="tile"
           label="NET ASSET"
           value="2.42M"
           series={asset.map((v) => 20 - v)}
-          sparkLabel="近 9 期净值走势"
-          delta={1.31}
+          labels={{ spark: '近 9 期净值走势' }}
+          changePct={1.31}
           note="今日"
         />
-        <SparkTile
+        <MetricCard
+          variant="tile"
           label="DRAWDOWN"
           value="-3.1%"
           series={drawdown}
-          sparkLabel="近 9 期回撤走势"
+          labels={{ spark: '近 9 期回撤走势' }}
           trendTone="neutral"
           note="峰值 -6.8% · 02-14"
         />
-        <SparkTile label="TURNOVER" value="0.62" unit="/月" series={stable} sparkLabel="近 9 期换手" note="稳定" />
-        <SparkTile
+        <MetricCard
+          variant="tile"
+          label="TURNOVER"
+          value="0.62"
+          unit="/月"
+          series={stable}
+          labels={{ spark: '近 9 期换手' }}
+          note="稳定"
+        />
+        <MetricCard
+          variant="tile"
           label="EXPOSURE"
           value="131"
           unit="/ 150%"
           series={exposure.map((v) => 20 - v)}
-          sparkLabel="近 9 期敞口，虚线是上限"
+          labels={{ spark: '近 9 期敞口，虚线是上限' }}
           threshold={19}
-          state="near"
+          status="near"
           note="接近上限"
         />
-        <SparkTile label="SHARPE 60D" value={null} series={[]} sparkLabel="夏普：没有数据" note="等待数据" />
+        <MetricCard
+          variant="tile"
+          label="SHARPE 60D"
+          value={null}
+          series={[]}
+          labels={{ spark: '夏普：没有数据' }}
+          note="等待数据"
+        />
       </div>
 
       <div className="gal-grid-5">
-        <SparkTile
+        <MetricCard
+          variant="tile"
           label="FILLS"
           value={String(clicks)}
           series={stable}
-          sparkLabel="近 9 期成交"
-          delta={-0.8}
+          labels={{ spark: '近 9 期成交' }}
+          changePct={-0.8}
           note="点我 +1"
-          onClick={() => setClicks((n) => n + 1)}
+          onSelect={() => setClicks((n) => n + 1)}
         />
       </div>
     </>

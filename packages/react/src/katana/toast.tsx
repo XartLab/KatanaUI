@@ -2,6 +2,7 @@
 import { BellRing, XIcon } from 'lucide-react'
 import type { ComponentProps } from 'react'
 import { cn } from '../lib/cn.ts'
+import type { Severity } from '../lib/severity.ts'
 import { Button } from '../primitives/button.tsx'
 
 // 弹出提示（toast）的画法：只管样子与读屏语义，不管条目表、定时、暂停——这些在调用方（应用里 AlertToasts 自己管条目表，toast-queue.ts 算去留，#1797、#747）。
@@ -12,6 +13,16 @@ import { Button } from '../primitives/button.tsx'
 //     皮肤跟弹出菜单同一层（surface-4、7% 白边、同一组阴影），左边一道 2px 强调色条；过渡走 snappy 弹簧（theme/motion.css 的 token）。
 //   ToastIcon、ToastTitle、ToastDescription、ToastClose（label 读屏名由调用方传）、ToastClear（「全部关掉」，文字由调用方传）。
 // 出处：样子是原来应用里 shell.css 的 .kc-toast（2026-11-14 搬进包），数值没改。
+// G3：加 tone（lib/severity.ts 的 Severity）：neutral 是原来的样子（色条取主文字色、图标取 --accent），ok / warn / danger 色条与图标都取 --k-status-*-foreground，
+//   跟 Alert、Progress 同一套语气；说明文字从 ink-3 提到 ink-2（console 主题下 ink-3 压在 surface-4 上只有 4.45:1，a11y 已知违规里那条）。
+//   色条与图标的颜色经 --toast-tone 传：Toast 按 tone 设它，ToastIcon 读它（不在 Toast 里用时退回 --accent）。
+
+const TONE: Record<Severity, string> = {
+  neutral: 'border-l-(color:--k-content-primary-foreground) [--toast-tone:var(--accent)]',
+  ok: 'border-l-(color:--k-status-ok-foreground) [--toast-tone:var(--k-status-ok-foreground)]',
+  warn: 'border-l-(color:--k-status-warn-foreground) [--toast-tone:var(--k-status-warn-foreground)]',
+  danger: 'border-l-(color:--k-status-danger-foreground) [--toast-tone:var(--k-status-danger-foreground)]',
+}
 
 export type ToastPosition = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'
 export type ToastPhase = 'entering' | 'open' | 'closing'
@@ -49,8 +60,11 @@ function ToastViewport({
 function Toast({
   className,
   phase = 'open',
+  tone = 'neutral',
   ...props
 }: ComponentProps<'div'> & {
+  /** Tone of the color bar and the icon: neutral (default), ok, warn or danger. Say it in the title too, not only in color. */
+  tone?: Severity
   /** entering is just inserted (draw one frame, then switch to open so the transition has a start); closing is leaving, and the caller removes the node after TOAST_EXIT_MS. */
   phase?: ToastPhase
 }) {
@@ -58,11 +72,14 @@ function Toast({
     <div
       data-slot="toast"
       data-phase={phase}
+      data-tone={tone}
       {...(phase === 'entering' ? { 'data-starting-style': '' } : {})}
       {...(phase === 'closing' ? { 'data-ending-style': '' } : {})}
       className={cn(
-        'k-toast k-text-body rounded-[var(--radius-overlay)] border border-l-2 border-alpha-white-6 border-l-brand bg-surface-4 p-3 text-ink-2',
-        'shadow-[0_16px_48px_rgba(0,0,0,0.55),0_2px_8px_rgba(0,0,0,0.3)]',
+        // 7% 白的边：characteristics 里没有同值的用途变量（separable-secondary 是 8%），先留调色层刻度。
+        'k-toast k-text-body rounded-[var(--radius-overlay)] border border-l-2 border-alpha-white-6 bg-surface-4 p-3 text-ink-2',
+        TONE[tone],
+        'shadow-[var(--shadow-overlay)]',
         'data-[starting-style]:translate-y-2 data-[starting-style]:opacity-0 data-[ending-style]:translate-y-2 data-[ending-style]:opacity-0',
         'group-data-[position^=top]/toasts:data-[starting-style]:-translate-y-2 group-data-[position^=top]/toasts:data-[ending-style]:-translate-y-2',
         className,
@@ -77,14 +94,14 @@ function ToastContent({ className, ...props }: ComponentProps<'div'>) {
   return <div data-slot="toast-content" className={cn('flex items-start gap-3', className)} {...props} />
 }
 
-/** 左边的图标：16px 强调色。不传 children 画铃铛。 */
+/** 左边的图标：16px，颜色跟 Toast 的 tone（neutral 是强调色）。不传 children 画铃铛。 */
 function ToastIcon({ className, children, ...props }: ComponentProps<'span'>) {
   return (
     <span
       data-slot="toast-icon"
       aria-hidden="true"
       className={cn(
-        'mt-0.5 flex size-4 flex-none items-center justify-center text-(--signal-orange) [&>svg]:size-4',
+        'mt-0.5 flex size-4 flex-none items-center justify-center text-[color:var(--toast-tone,var(--accent))] [&>svg]:size-4',
         className,
       )}
       {...props}
@@ -112,7 +129,7 @@ function ToastDescription({ className, ...props }: ComponentProps<'p'>) {
   return (
     <p
       data-slot="toast-description"
-      className={cn('k-text-caption m-0 leading-[15px] [overflow-wrap:anywhere] text-ink-3 tabular-nums', className)}
+      className={cn('k-text-caption m-0 leading-[15px] [overflow-wrap:anywhere] text-ink-2 tabular-nums', className)}
       {...props}
     />
   )

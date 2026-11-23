@@ -1,0 +1,176 @@
+/* SPDX-License-Identifier: MIT */
+/* G6 token 迁移：刻度字 8px、大百分比 24px 不在字号刻度上，先留着。 */
+/* Meter（#1929；G6 从 theme/quant.css 拆出，每件一个 css）：条、刻度、同步率三种仪表。
+   尺寸与层次照 design/katana-console/project/components/Meter/preview.html；颜色只读 characteristics（--k-*）与语义 token；动效只用弹簧的 CSS 形式（--dur-* / --ease-*）。 */
+
+.k-meter {
+  --meter-color: var(--k-content-primary-foreground);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  font-family: var(--font-num-small);
+  font-size: var(--text-caption-size);
+}
+.k-meter[data-tone='ok'] {
+  --meter-color: var(--k-status-ok-foreground);
+}
+.k-meter[data-tone='warn'] {
+  --meter-color: var(--k-status-warn-foreground);
+}
+.k-meter[data-tone='danger'] {
+  --meter-color: var(--k-status-danger-foreground);
+}
+.k-meter[data-tone='off'] {
+  --meter-color: var(--k-separable-bold-borderColor);
+}
+.k-meter-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+.k-meter-label {
+  color: var(--k-content-secondary-foreground);
+  font-size: var(--text-micro-size);
+  line-height: 14px;
+}
+.k-meter-value {
+  color: var(--meter-color);
+  font-variant-numeric: tabular-nums;
+}
+.k-meter[data-tone='ok'] .k-meter-value {
+  color: var(--k-content-primary-foreground);
+}
+.k-meter[data-tone='off'] .k-meter-label,
+.k-meter[data-tone='off'] .k-meter-value {
+  color: var(--k-content-secondary-foreground);
+}
+.k-meter-track {
+  position: relative;
+  display: block;
+  height: 10px;
+  background: var(--k-surface-sunken-background);
+  border: var(--hairline);
+  box-shadow: var(--recess);
+}
+.k-meter-fill {
+  display: block;
+  height: 100%;
+  /* 点阵纹理：4px 实、2px 空；长度编码量，不用实色（卡：长度比颜色准） */
+  background: repeating-linear-gradient(90deg, var(--meter-color) 0 4px, transparent 4px 6px);
+  transition: width var(--dur-gentle) var(--ease-gentle);
+}
+.k-meter-mark {
+  position: absolute;
+  top: -2px;
+  bottom: -2px;
+  width: 2px;
+  margin-left: -1px;
+  background: var(--k-status-warn-foreground);
+}
+.k-meter[data-tone='warn'] .k-meter-track {
+  animation: k-meter-pulse var(--dur-gentle) var(--ease-gentle) 1;
+}
+/* 限额（#149）：照 RiskBoard 卡，预警线 amber 1px 半透明（取 warn 的描边色）、硬限 red 2px。
+   越硬限条体红色脉冲一次：动画名跟 warn 那条不同，从 warn 走到 breach 才会再播。 */
+.k-meter-limit {
+  position: absolute;
+  top: -2px;
+  bottom: -2px;
+}
+.k-meter-limit.is-warn {
+  width: 1px;
+  background: var(--k-status-warn-borderColor);
+}
+.k-meter-limit.is-hard {
+  width: 2px;
+  margin-left: -1px;
+  background: var(--k-status-danger-foreground);
+}
+.k-meter[data-state='breach'] .k-meter-track {
+  animation: k-meter-pulse-breach var(--dur-gentle) var(--ease-gentle) 1;
+}
+/* 刻度形态 */
+.k-meter.is-gauge .k-meter-track {
+  height: 34px;
+}
+.k-meter-base {
+  position: absolute;
+  left: 6px;
+  right: 6px;
+  top: 50%;
+  height: 1px;
+  background: var(--k-separable-tertiary-borderColor);
+}
+.k-meter-pin {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  width: 2px;
+  margin-left: -1px;
+  background: var(--meter-color);
+  box-shadow: 0 0 6px var(--meter-color);
+  transition: left var(--dur-gentle) var(--ease-gentle);
+}
+.k-meter-ticks {
+  position: absolute;
+  left: 6px;
+  right: 6px;
+  bottom: 4px;
+  display: flex;
+  justify-content: space-between;
+  color: var(--k-content-secondary-foreground);
+  font-size: 8px;
+  line-height: 10px;
+}
+/* 同步率条 */
+.k-meter-sync-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.k-meter.is-sync .k-meter-track {
+  flex: 1;
+  min-width: 0;
+  height: 14px;
+}
+.k-meter.is-sync .k-meter-fill {
+  /* 带齿的分段：每 6px 一格，格间 2px 缝 */
+  background: repeating-linear-gradient(90deg, var(--meter-color) 0 4px, transparent 4px 6px);
+}
+.k-meter-big {
+  min-width: 3.4em;
+  text-align: right;
+  font: var(--text-display-dense) var(--font-num);
+  font-size: 24px;
+  line-height: 24px;
+  letter-spacing: var(--text-display-dense-tracking);
+  color: var(--meter-color);
+  font-variant-numeric: tabular-nums;
+}
+.k-meter[data-tone='ok'] .k-meter-big {
+  color: var(--k-content-primary-foreground);
+}
+
+@keyframes k-meter-pulse {
+  0% {
+    box-shadow: 0 0 0 0 var(--k-status-warn-foreground);
+  }
+  40% {
+    box-shadow: 0 0 0 2px var(--k-status-warn-foreground);
+  }
+  100% {
+    box-shadow: 0 0 0 0 transparent;
+  }
+}
+@keyframes k-meter-pulse-breach {
+  0% {
+    box-shadow: 0 0 0 0 var(--k-status-danger-foreground);
+  }
+  40% {
+    box-shadow: 0 0 0 2px var(--k-status-danger-foreground);
+  }
+  100% {
+    box-shadow: 0 0 0 0 transparent;
+  }
+}

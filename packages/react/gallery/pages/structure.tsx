@@ -88,7 +88,7 @@ export function FieldDemo() {
     <>
       <Row name="纵向">
         <div className="gal-wide">
-          <Field invalid={invalid} data-testid="field">
+          <Field invalid={invalid} shakeOnInvalid data-testid="field">
             <FieldLabel>止损距离</FieldLabel>
             <Control invalid={invalid} />
             <FieldDescription>单位是价格的最小变动价位。</FieldDescription>

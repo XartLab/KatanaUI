@@ -8,7 +8,7 @@
 
 ### Treemap
 
-排布由调用方先用 layoutTreemap 算好再传 blocks；工具条（下拉、返回钮）从 toolbar 传。
+排布由调用方先用 layoutTreemap 算好再传 blocks；工具条（下拉、返回钮）从 toolbar 传。点格子 onSelect（旧名 onItem）。
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
@@ -18,8 +18,10 @@
 | `limit` | `number` | `0.03` | Where the color scale ends (as a decimal); changes are cut at plus or minus limit into seven steps from -3 to +3. |
 | `legendText` * | `(step: number) => string` | — | Text for each step of the color scale (-3 to +3). |
 | `toolbar` | `ReactNode` | — | A row above the cells. |
+| `cellKey` | `(data: T) => string` | — | A stable key per cell (a symbol code, say), so a cell that moves or resizes keeps its identity and glides to the new place; the index is used when omitted. |
 | `onGroup` | `(name: string) => void` | — | Called when a group header is clicked. |
-| `onItem` | `(data: T) => void` | — | Called when a cell is clicked; when given, cells are focusable buttons that trigger on Enter. |
+| `onSelect` | `(data: T) => void` | — | Called when a cell is clicked; when given, cells are focusable buttons that trigger on Enter. |
+| `onItem` | `(data: T) => void` | — | Deprecated: use onSelect. |
 | `classes` | `TreemapClasses` | `{}` | Extra class names per part. |
 
 ### layoutTreemap(items, grouped)
@@ -63,10 +65,12 @@ export function TreemapUsage() {
 - 分组下钻：点组头只剩那一组，工具条里自己放返回钮。
 - 格子太小时只留色块，不写字。
 - 没有涨跌数的格子用中性色。
+- 格子上的字按底色明暗选黑或白（oklch 亮度 0.565 为界，relative color 从底色算）：七档在八个主题与两种涨跌配色下都 ≥ 4.5:1（2026-11-18 修，原来一律白字压在亮绿亮红上只有 1.5 到 4.4:1）；色例同理。
 
 ## Don't
 
 - 不要用于项目数很多又没法下钻的场景，小格会糊成一片。
+- 不要用 classes 把格子的字色写死成白色：底色最亮的几档会掉到 4.5:1 以下。
 - 不要把排布放进渲染里重算：先用 layoutTreemap 排好再传 blocks。
 
 ## Composition

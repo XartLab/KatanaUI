@@ -1,18 +1,12 @@
 /* SPDX-License-Identifier: MIT */
 /* 原样搬自 src/ui/ui.css（#1860，2026-11-14）；#1861 起位上的动效改成里程表式转轮（见 katana/rolling-text.tsx 的文件头），类名没改。 */
 
-/* 数字逐位滚动（RollingText）：整串数字同时闪 150ms 涨色 / 跌色（照 OpenMarket）；每一位像里程表那样转。 */
+/* 数字逐位滚动（RollingText）：整串数字同时闪涨色 / 跌色（共用层 live.css 的 .k-live-flash，时长 --dur-flash）；每一位像里程表那样转。 */
 .k-roll {
   /* inline-block 而不是 inline-flex：flex 容器里每一位是一个块，innerText 与复制会在每位之间插换行 */
   display: inline-block;
   white-space: nowrap;
   font-variant-numeric: tabular-nums;
-}
-.k-roll[data-direction='up'] {
-  animation: k-flash-up 0.15s linear;
-}
-.k-roll[data-direction='down'] {
-  animation: k-flash-down 0.15s linear;
 }
 .k-roll-slot {
   position: relative;
@@ -41,6 +35,8 @@
   animation-duration: calc(120ms + 20ms * var(--roll-steps, 1));
   animation-timing-function: var(--ease-snappy);
   animation-fill-mode: both;
+  /* stagger：变了的位错开起转（个位先动）；没给 stagger 就是 0。 */
+  animation-delay: var(--roll-delay, 0ms);
 }
 .k-roll[data-direction='up'] .k-roll-in {
   animation-name: k-roll-in-up;
@@ -53,18 +49,6 @@
 }
 .k-roll[data-direction='down'] .k-roll-slot[data-from]::before {
   animation-name: k-roll-out-down;
-}
-@keyframes k-flash-up {
-  0%,
-  100% {
-    color: var(--pnl-up);
-  }
-}
-@keyframes k-flash-down {
-  0%,
-  100% {
-    color: var(--pnl-down);
-  }
 }
 @keyframes k-roll-in-up {
   from {
@@ -97,4 +81,52 @@
   to {
     transform: translateY(100%);
   }
+}
+
+/* resize：位数变了，变了的位淡入并从涨跌的方向滑一小段（digit-roll 的做法），没有转轮。 */
+.k-roll-fade {
+  display: inline-block;
+  animation: k-roll-fade-up var(--dur-snappy) var(--ease-snappy) both;
+  animation-delay: var(--roll-delay, 0ms);
+}
+.k-roll[data-direction='down'] .k-roll-fade {
+  animation-name: k-roll-fade-down;
+}
+@keyframes k-roll-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(40%);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes k-roll-fade-down {
+  from {
+    opacity: 0;
+    transform: translateY(-40%);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* boxed：每一位一格带边的小窗（number-flow 的样子）。仍是 inline-block（flex 会让复制在每位之间插换行）；
+   竖向不加内边距，转轮的旧字从格顶起画，和新字对得上，格高靠行高撑。 */
+.k-roll[data-boxed] {
+  line-height: 1.5;
+}
+.k-roll[data-boxed] .k-roll-slot {
+  min-width: 1.4em;
+  padding-inline: var(--space-1);
+  margin-inline-end: var(--space-1);
+  border: 1px solid var(--k-separable-tertiary-borderColor);
+  border-radius: var(--radius-sm);
+  background: var(--k-surface-base-background);
+  text-align: center;
+}
+.k-roll[data-boxed] .k-roll-slot:last-child {
+  margin-inline-end: 0;
 }

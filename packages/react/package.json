@@ -1,6 +1,6 @@
 {
   "name": "@katana-ui/react",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
   "description": "Katana UI 的 React 组件：设计 token、Tailwind 主题、动效，以及 Radix 底座的基础件（起步代码取自 shadcn/ui）。不依赖任何应用。",
   "license": "MIT",
@@ -19,7 +19,8 @@
   "type": "module",
   "sideEffects": [
     "*.css",
-    "./gallery/main.tsx"
+    "./gallery/main.tsx",
+    "./gallery/web-fonts.ts"
   ],
   "exports": {
     ".": {
@@ -35,15 +36,25 @@
       "source": "./src/lib/motion.ts",
       "default": "./lib/lib/motion.js"
     },
+    "./quotes": {
+      "types": "./lib/quotes/index.d.ts",
+      "source": "./src/quotes/index.ts",
+      "default": "./lib/quotes/index.js"
+    },
     "./quant": {
       "types": "./lib/quant/index.d.ts",
       "source": "./src/quant/index.ts",
       "default": "./lib/quant/index.js"
     },
     "./quant/format": {
-      "types": "./lib/quant/format/index.d.ts",
-      "source": "./src/quant/format/index.ts",
-      "default": "./lib/quant/format/index.js"
+      "types": "./lib/lib/chart/format/index.d.ts",
+      "source": "./src/lib/chart/format/index.ts",
+      "default": "./lib/lib/chart/format/index.js"
+    },
+    "./cn": {
+      "types": "./lib/cn/index.d.ts",
+      "source": "./src/cn/index.ts",
+      "default": "./lib/cn/index.js"
     },
     "./blocks": {
       "types": "./lib/blocks/index.d.ts",
@@ -54,13 +65,19 @@
       "types": "./lib/tokens-json.d.ts",
       "source": "./src/tokens-json.ts",
       "default": "./lib/tokens-json.js"
-    }
+    },
+    "./a2ui": {
+      "types": "./lib/a2ui/index.d.ts",
+      "source": "./src/a2ui/index.ts",
+      "default": "./lib/a2ui/index.js"
+    },
+    "./a2ui.css": "./src/a2ui/a2ui.css"
   },
   "scripts": {
     "dev": "pnpm --filter @katana-ui/tokens run tokens:sync && vp dev",
     "build:site": "node scripts/build-site.mjs",
-    "test": "node scripts/ui-coverage.mjs --check && node scripts/docs-props.mjs --check && node scripts/ds-build.mjs --check && vp test run",
-    "typecheck": "tsc -p tsconfig.json",
+    "test": "vp run docs-check && vp run unit",
+    "typecheck": "vp run tsc",
     "check": "vp check",
     "docs:props": "node scripts/docs-props.mjs",
     "ds:build": "pnpm --filter @katana-ui/tokens run tokens:sync && node scripts/ds-build.mjs",
@@ -68,29 +85,63 @@
     "registry:build": "node scripts/registry-json.mjs && shadcn build -o r",
     "test:e2e": "playwright test",
     "test:happo": "E2E_HAPPO=1 happo -- playwright test",
+    "vr": "node scripts/vr.mjs run",
+    "vr:fast": "node scripts/vr-fast.mjs",
+    "vr:update": "node scripts/vr.mjs update",
+    "vr:approve": "node scripts/vr.mjs approve",
+    "vr:summary": "node scripts/vr.mjs summary",
     "build": "tsc -p tsconfig.build.json",
-    "prepare": "pnpm run build"
+    "prepare": "pnpm run build",
+    "a2ui:catalog": "node scripts/a2ui-catalog.mjs",
+    "fast": "node scripts/fast.mjs",
+    "full": "pnpm test && vp test run -c vitest.browser.config.ts && pnpm vr && playwright test --workers=2"
   },
   "dependencies": {
+    "@chenglou/pretext": "1.0.0",
     "@dagrejs/dagre": "3.1.3",
     "@internationalized/date": "3.12.4",
     "@tanstack/react-table": "9.3.1",
     "@tanstack/react-virtual": "3.14.25",
+    "@xyflow/react": "13.0.2",
     "bignumber.js": "11.1.5",
     "class-variance-authority": "0.7.1",
     "cmdk": "1.1.1",
     "cn": "0.5.1",
     "d3-hierarchy": "3.1.3",
     "d3-sankey": "0.12.3",
+    "github-slugger": "2.0.0",
     "lucide-react": "1.67.0",
+    "markdown-it": "15.0.3",
     "motion": "14.9.0",
     "radix-ui": "1.8.1",
     "react-aria-components": "1.22.1",
+    "skullet": "0.0.3",
     "tailwindcss": "4.3.5"
   },
   "devDependencies": {
+    "@a2ui/react": "0.15.0",
+    "@a2ui/web_core": "0.15.0",
     "@axe-core/playwright": "4.13.0",
-    "@katana-ui/tokens": "0.2.0",
+    "@chinese-fonts/dyh": "3.0.0",
+    "@chinese-fonts/maple-mono-cn": "2.0.0",
+    "@fontsource-variable/fira-code": "5.3.0",
+    "@fontsource-variable/geist": "5.3.0",
+    "@fontsource-variable/geist-mono": "5.3.0",
+    "@fontsource-variable/inter": "5.3.0",
+    "@fontsource-variable/jetbrains-mono": "5.3.0",
+    "@fontsource-variable/noto-sans-sc": "5.3.1",
+    "@fontsource-variable/public-sans": "5.3.0",
+    "@fontsource-variable/roboto-flex": "5.3.0",
+    "@fontsource-variable/roboto-mono": "5.3.0",
+    "@fontsource-variable/source-sans-3": "5.3.1",
+    "@fontsource-variable/space-grotesk": "5.3.0",
+    "@fontsource/barlow-condensed": "5.3.0",
+    "@fontsource/chivo-mono": "5.3.0",
+    "@fontsource/ibm-plex-mono": "5.3.0",
+    "@fontsource/ibm-plex-sans": "5.3.0",
+    "@fontsource/iosevka": "5.3.0",
+    "@katana-ui/logos": "0.2.0",
+    "@katana-ui/tokens": "0.3.0",
     "@playwright/test": "1.56.1",
     "@tailwindcss/vite": "4.3.5",
     "@types/d3-hierarchy": "3.1.7",
@@ -98,19 +149,40 @@
     "@types/node": "22.20.5",
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
+    "@vitest/browser-playwright": "5.0.5",
+    "ajv": "8.20.0",
+    "fast-check": "4.10.2",
     "happo": "7.2.3",
+    "pixelgate-cli": "0.2.0",
+    "playwright": "1.56.1",
     "react": "19.3.1",
     "react-dom": "19.3.1",
     "shadcn": "4.22.2",
     "typescript": "7.0.2",
     "typescript-classic": "npm:typescript@6.0.3",
     "vite": "npm:@voidzero-dev/vite-plus-core@1.4.0",
-    "vite-plus": "1.4.0"
+    "vite-plus": "1.4.0",
+    "zod": "3.25.76"
   },
   "peerDependencies": {
-    "@katana-ui/tokens": "0.2.0",
+    "@a2ui/react": "0.15.0",
+    "@a2ui/web_core": "0.15.0",
+    "@katana-ui/logos": "0.2.0",
+    "@katana-ui/tokens": "0.3.0",
     "react": "^19.3.1",
-    "react-dom": "^19.3.1"
+    "react-dom": "^19.3.1",
+    "zod": "3.25.76"
+  },
+  "peerDependenciesMeta": {
+    "@a2ui/react": {
+      "optional": true
+    },
+    "@a2ui/web_core": {
+      "optional": true
+    },
+    "zod": {
+      "optional": true
+    }
   },
   "engines": {
     "node": ">=22.13"

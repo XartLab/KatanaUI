@@ -1,0 +1,46 @@
+/* SPDX-License-Identifier: MIT */
+/* 行内价格标签 PriceTag。2026-11-18 从 quote.css 拆出；涨跌三角 .k-price-tag-glyph 报价卡与行情表也用。 颜色只用 token（--pnl-up / --pnl-down 跟涨跌配色走）；数字一律等宽（tabular-nums）；动效只用三条弹簧的 CSS 形式（--dur-* / --ease-*）。 */
+
+/* —— 行内价格标签 —— */
+.k-price-tag {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  color: var(--k-content-primary-foreground);
+  font: var(--text-data) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.k-price-tag-name {
+  color: var(--k-content-secondary-foreground);
+}
+.k-price-tag-glyph {
+  margin-right: 2px;
+  font-size: 0.7em;
+}
+.k-price-tag.is-up .k-price-tag-change,
+.k-quote-card.is-up .k-quote-change,
+.k-quote-rows tr.is-up .k-quote-rows-change {
+  color: var(--pnl-up);
+}
+.k-price-tag.is-down .k-price-tag-change,
+.k-quote-card.is-down .k-quote-change,
+.k-quote-rows tr.is-down .k-quote-rows-change {
+  color: var(--pnl-down);
+}
+.k-price-tag.is-flat .k-price-tag-change,
+.k-quote-card.is-flat .k-quote-change,
+.k-quote-rows tr.is-flat .k-quote-rows-change {
+  color: var(--k-content-secondary-foreground);
+}
+
+/* —— 分量（#115，layout/emphasis.tsx）—— */
+.k-price-tag[data-emphasis='hero'] .k-price-tag-price {
+  font: var(--text-display) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: var(--text-display-tracking);
+}
+.k-price-tag[data-emphasis='compact'] {
+  font: var(--text-caption) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+}

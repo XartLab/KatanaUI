@@ -11,15 +11,15 @@
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
 | `title` | `string` | — | 标题。 |
-| `items` | `KeyStatItem[]` | — | { key, label, value?, unit?, badge? }；没有值画「—」。 |
-| `onTitle / onItem` | `callbacks` | — | 给了标题与标签就变成按钮，带「›」。 |
+| `items` | `KeyStatItem[]` | — | { id（旧名 key）, label, value?, unit?, badge? }；没有值画「—」。 |
+| `onTitle / onSelect` | `callbacks` | — | 给了标题与标签就变成按钮，带「›」（onSelect 旧名 onItem）。 |
 | `columns` | `number` | `3` | 列数。 |
 
 ## Usage
 
 ```tsx
 // SPDX-License-Identifier: MIT
-import { KeyStats } from '@katana-ui/react/quant'
+import { KeyStats } from '@katana-ui/react/quotes'
 
 export function KeyStatsUsage() {
   return (
@@ -27,12 +27,12 @@ export function KeyStatsUsage() {
       <KeyStats
         title="Key stats"
         onTitle={() => undefined}
-        onItem={() => undefined}
+        onSelect={() => undefined}
         items={[
-          { key: 'cap', label: 'Market cap', value: '3.41T', unit: 'USD', badge: 'Mega cap' },
-          { key: 'pe', label: 'Price to earnings (P/E TTM)', value: '31.20' },
-          { key: 'eps', label: 'Basic EPS (TTM)', value: '6.57', unit: 'USD' },
-          { key: 'beta', label: 'Beta (1Y)', value: '—' },
+          { id: 'cap', label: 'Market cap', value: '3.41T', unit: 'USD', badge: 'Mega cap' },
+          { id: 'pe', label: 'Price to earnings (P/E TTM)', value: '31.20' },
+          { id: 'eps', label: 'Basic EPS (TTM)', value: '6.57', unit: 'USD' },
+          { id: 'beta', label: 'Beta (1Y)', value: '—' },
         ]}
       />
     </div>
@@ -42,8 +42,9 @@ export function KeyStatsUsage() {
 
 ## States
 
-- 没给 onItem：标签是普通文字，没有「›」。
+- 没给 onSelect：标签是普通文字，没有「›」。
 - 没有值：数值位写「—」。
+- 数值变了：闪一次涨跌色。
 
 ## Don't
 

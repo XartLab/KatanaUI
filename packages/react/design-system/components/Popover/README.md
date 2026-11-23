@@ -10,6 +10,10 @@
 
 其余属性透传给 Radix Popover.Root。
 
+| 属性 | 类型 | 默认 | 说明 |
+| --- | --- | --- | --- |
+| `closeOnScroll` | `boolean` | `true` | Closes the popover when the page or a container holding its trigger scrolls, so it never floats away open. |
+
 ### PopoverContent
 
 其余属性透传给 Radix Popover.Content。
@@ -61,6 +65,8 @@ export function PopoverUsage() {
 ## Don't
 
 - 不要在弹层里再开弹层。
+- 只读的说明用 Tooltip 或 HoverCard，不要用 Popover。
+- 要打断用户、必须裁决的事用 Dialog。
 
 ## Composition
 

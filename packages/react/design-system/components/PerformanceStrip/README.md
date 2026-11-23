@@ -10,8 +10,8 @@
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `items` | `PerformanceItem[]` | — | { key, label, change（百分数；没有写 null，画「—」）}。 |
-| `value / defaultValue / onValueChange` | `string / string / (key) => void` | — | 选中的格子；不给 value 就自己记。 |
+| `items` | `PerformanceItem[]` | — | { id（旧名 key）, label, change（百分数；没有写 null，画「—」）}。 |
+| `value / defaultValue / onValueChange` | `string / string / (id) => void` | — | 选中的格子；不给 value 就自己记。 |
 | `label` | `string` | — | 读屏名（role=group），必填。 |
 | `digits` | `number` | `2` | 涨跌幅位数。 |
 
@@ -24,14 +24,14 @@
 ```tsx
 // SPDX-License-Identifier: MIT
 import { useState } from 'react'
-import { PerformanceStrip } from '@katana-ui/react/quant'
+import { PerformanceStrip } from '@katana-ui/react/quotes'
 
 const ITEMS = [
-  { key: '1d', label: '1 day', change: 0.62 },
-  { key: '1m', label: '1 month', change: 3.18 },
-  { key: '6m', label: '6 months', change: -4.07 },
-  { key: '1y', label: '1 year', change: 27.5 },
-  { key: '5y', label: '5 years', change: 312.9 },
+  { id: '1d', label: '1 day', change: 0.62 },
+  { id: '1m', label: '1 month', change: 3.18 },
+  { id: '6m', label: '6 months', change: -4.07 },
+  { id: '1y', label: '1 year', change: 27.5 },
+  { id: '5y', label: '5 years', change: 312.9 },
 ]
 
 export function PerformanceStripUsage() {

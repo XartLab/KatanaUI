@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// QuantileLayers 的纯逻辑：分层的颜色档（序数，seq-200..600）、单调性（期末累计收益是否随分层序号单调上升）、纵轴范围。
+// QuantileLayers 的纯逻辑：分层的颜色档（序数，--k-heat-1..5）、单调性（期末累计收益是否随分层序号单调上升）、纵轴范围。
 // 卡：design/katana-console/project/components/QuantileLayers/README.md（2026-11-14 读）。
 
 export type QuantileLayer = {
@@ -18,7 +18,8 @@ export function lastFinite(values: readonly number[]): number {
 
 /** 分层按层号排好（不改入参）。 */
 export const sortLayers = (layers: readonly QuantileLayer[]): QuantileLayer[] =>
-  [...layers].sort((a, b) => a.rank - b.rank)
+  // js/copying-array-methods：toSorted 替代「展开复制再 sort」。
+  layers.toSorted((a, b) => a.rank - b.rank)
 
 /** 单调：按层号排好后，期末累计收益严格递增（不是「基本递增」，卡写的是「一眼看出是否单调」）。少于两层、有缺值的不算单调。 */
 export function isMonotonic(layers: readonly QuantileLayer[]): boolean {
@@ -27,7 +28,7 @@ export function isMonotonic(layers: readonly QuantileLayer[]): boolean {
   return finals.every((value, i) => i === 0 || value > finals[i - 1]!)
 }
 
-/** 第 index 层（按层号排好后的序号）在 seq 色阶 0..4 上的档：最低层 0、最高层 4，中间等分取整；只有一层取最亮。 */
+/** 第 index 层（按层号排好后的序号）在 heat 档 0..4（--k-heat-1..5）上的档：最低层 0、最高层 4，中间等分取整；只有一层取最亮。 */
 export function layerLevel(index: number, count: number): number {
   return count <= 1 ? 4 : Math.round((index / (count - 1)) * 4)
 }

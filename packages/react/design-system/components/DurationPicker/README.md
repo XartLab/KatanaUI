@@ -8,11 +8,14 @@
 
 ### DurationPicker
 
+可受控（value）也可不受控（defaultValue）；打字时立刻回调夹好的值，确认另走 onConfirm。data-editing 表示在编辑。
+
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
 | `value` | `DurationValue` | — | The current duration; typing calls back immediately, already clamped. |
 | `defaultValue` | `DurationValue` | — | Initial duration when uncontrolled. |
-| `onChange` | `(value: DurationValue) => void` | — | Called with the new duration. |
+| `onValueChange` | `(value: DurationValue) => void` | — | Called with the new duration (already clamped) while typing, stepping or cancelling. |
+| `onChange` | `(value: DurationValue) => void` | — | Old name of onValueChange, kept for one release. |
 | `onConfirm` | `(value: DurationValue) => void` | — | Called with the confirmed value when the check mark is clicked or Enter is pressed. |
 | `onEditingChange` | `(editing: boolean) => void` | — | Called when the editing state changes. |
 | `defaultEditing` | `boolean` | `false` | Start in the editing state. |
@@ -55,6 +58,8 @@ export function DurationPickerUsage() {
 ## Don't
 
 - 上限 maxHours、maxMinutes 由调用方定，不要省略。
+- 不要拿它输入时刻（几点几分）：那是 DateTimeInput 的时间段。
+- 要秒或天时别硬塞：它只有时、分两段。
 
 ## Composition
 

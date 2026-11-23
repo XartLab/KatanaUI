@@ -14,7 +14,7 @@ import { mkdirSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync }
 import { dirname, join, relative, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import tailwindcss from '@tailwindcss/vite'
-import { build, createServer } from 'vite-plus'
+import { build, createServer, defaultClientConditions, defaultServerConditions } from 'vite-plus'
 import { renderCover } from './ds-cover.mjs'
 import { declaredVars, hoistRawColours, referencedVars, runtimeVarsBlock } from './ds-css.mjs'
 import { buildDesignSystemTokens } from './ds-tokens.mjs'
@@ -55,6 +55,11 @@ async function loadRender() {
     logLevel: 'silent',
     appType: 'custom',
     server: { middlewareMode: true },
+    // 同仓库的 @katana-ui/logos 读 TS 源码（katana-source 条件，见 vite.config.ts），不靠它先构建。
+    resolve: { conditions: ['katana-source', ...defaultClientConditions] },
+    ssr: {
+      resolve: { conditions: ['katana-source', ...defaultServerConditions], externalConditions: ['katana-source'] },
+    },
   })
   try {
     return await server.ssrLoadModule('/ds/render.tsx')

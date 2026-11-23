@@ -1,0 +1,105 @@
+/* SPDX-License-Identifier: MIT */
+/* UptimeBars（#1918）：数据源 / 连接健康的逐格可用条。颜色只用语义 token。 */
+
+.k-uptime {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+.k-uptime-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 28px;
+}
+.k-uptime-cell {
+  flex: 1 1 0;
+  min-width: 2px;
+  height: 100%;
+  border-radius: var(--radius-sm);
+  /* 格子自己的底色放进 --k-live-base：新格子的高亮（.k-live-enter）才是混在格子色上、不是盖成透明。 */
+  --k-live-base: var(--signal-green);
+  background: var(--k-live-base);
+  outline: none;
+}
+.k-uptime-cell[data-status='degraded'] {
+  height: 60%;
+  --k-live-base: var(--signal-amber);
+}
+.k-uptime-cell[data-status='down'] {
+  --k-live-base: var(--signal-red);
+}
+.k-uptime-cell[data-status='none'] {
+  height: 3px;
+  --k-live-base: var(--ink-400);
+}
+.k-uptime-cell.is-link {
+  cursor: pointer;
+}
+.k-uptime-cell:hover,
+.k-uptime-cell:focus-visible {
+  box-shadow: 0 0 0 1px var(--ink-100);
+}
+.k-uptime-cell:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 1px;
+}
+.k-uptime-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.k-uptime-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--ink-200);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-uptime-legend li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+/* 状态灯：颜色只用 signal-*，并且总带词（图例）；格子再用高度区分降级与无数据，不单靠颜色。 */
+.k-uptime-lamp {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--signal-green);
+}
+.k-uptime-legend [data-legend='degraded'] .k-uptime-lamp {
+  background: var(--signal-amber);
+}
+.k-uptime-legend [data-legend='down'] .k-uptime-lamp {
+  background: var(--signal-red);
+}
+.k-uptime-legend [data-legend='none'] .k-uptime-lamp {
+  background: var(--ink-400);
+}
+.k-uptime-count,
+.k-uptime-avail {
+  color: var(--ink-100);
+  font: var(--text-num-sm) var(--chart-font-num, var(--font-num-small));
+  font-variant-numeric: tabular-nums;
+}
+.k-uptime-avail {
+  font: var(--text-lcd) var(--chart-font-num, var(--font-num));
+}
+.k-uptime-range {
+  display: flex;
+  justify-content: space-between;
+  color: var(--chart-axis);
+  font: var(--text-num-sm) var(--chart-font-axis, var(--font-num-small));
+}
+.k-uptime-readout {
+  min-height: 16px;
+  color: var(--ink-200);
+  font: var(--text-caption) var(--font-sans-small);
+  font-variant-numeric: tabular-nums;
+}

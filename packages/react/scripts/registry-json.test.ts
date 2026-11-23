@@ -86,7 +86,7 @@ describe('shadcn 注册表清单', () => {
     }
   })
 
-  it('katana/ 的件都进注册表：带 JSX 的是 component，纯函数是 lib；样式入口带齐它们的 css', () => {
+  it('katana/ 与 patterns/ 的件都进注册表：带 JSX 的是 component，纯函数是 lib；样式入口带齐它们的 css', () => {
     const typeOf = (name: string) => registry.items.find((i) => i.name === name)?.type
     expect(typeOf('led')).toBe('registry:component')
     expect(typeOf('number-field-model')).toBe('registry:lib')
@@ -96,6 +96,8 @@ describe('shadcn 注册表清单', () => {
 
   it('说明读文档站的页数据：每页的说明就是它声明第一个出口的那个 item 的说明', () => {
     const descriptions = new Set(registry.items.map((i) => i.description))
-    for (const page of PAGES) expect(descriptions.has(page.summary), `${page.id} 的说明没进注册表`).toBe(true)
+    // 没有出口的页（#115：排版规则、这一块用哪档分量）是写给人看的选法，不对应注册表里的 item。
+    for (const page of PAGES.filter((item) => item.exports.length > 0))
+      expect(descriptions.has(page.summary), `${page.id} 的说明没进注册表`).toBe(true)
   })
 })

@@ -19,6 +19,8 @@ export type NewsItem = {
   readMinutes?: number
   /** 有链接就把标题渲染成链接（新窗口打开）。 */
   href?: string
+  /** 类别的 value（对应 NewsFeedProps.categories，如公告类别、增减持）；不带就不在任何类别里，选了类别时会被筛掉。 */
+  category?: string
   /** 组合过滤用的分面取值：键是 NewsFacet.key，值是这条新闻在这个分面上的取值（可多个）。 */
   facets?: Readonly<Record<string, readonly string[]>>
 }
@@ -40,6 +42,8 @@ export type NewsFilter = {
   /** 空数组：全部来源。 */
   sources: readonly string[]
   query: string
+  /** 选中的类别 value：空数组或不给是全部类别；多选是「或」。 */
+  categories?: readonly string[]
   /** 分面选中的取值：键是分面 key；没有这个键或空数组 = 这个分面不筛；多个取值是「或」，分面之间是「且」。 */
   facets?: Readonly<Record<string, readonly string[]>>
 }
@@ -50,6 +54,8 @@ export function filterNews(items: readonly NewsItem[], filter: NewsFilter): News
   return items.filter((item) => {
     if (filter.channel !== '' && item.channel !== filter.channel) return false
     if (filter.sources.length > 0 && !filter.sources.includes(item.source)) return false
+    if (filter.categories && filter.categories.length > 0 && !filter.categories.includes(item.category ?? ''))
+      return false
     for (const [key, picked] of Object.entries(filter.facets ?? {})) {
       if (picked.length === 0) continue
       const has = item.facets?.[key] ?? []
@@ -65,5 +71,6 @@ export function filterNews(items: readonly NewsItem[], filter: NewsFilter): News
 
 /** 新的在前；同一时间按 id 定序，列表不跳。 */
 export function sortNews(items: readonly NewsItem[]): NewsItem[] {
-  return [...items].sort((a, b) => b.time - a.time || (a.id < b.id ? -1 : 1))
+  // js/copying-array-methods：toSorted 直接返回新数组，少一次展开复制。
+  return items.toSorted((a, b) => b.time - a.time || (a.id < b.id ? -1 : 1))
 }

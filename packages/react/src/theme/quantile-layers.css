@@ -1,0 +1,163 @@
+/* SPDX-License-Identifier: MIT */
+/* QuantileLayers（#1918）：因子分层，线色 seq 序数色阶，多空差是点阵面。颜色只用语义 token。 */
+
+/* 因子分层（QuantileLayers）：线色 seq 序数色阶，多空差是点阵面；涨跌色不出现。 */
+.k-ql {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  min-width: 0;
+}
+.k-ql-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+.k-ql-title {
+  margin-right: auto;
+  color: var(--k-content-primary-foreground);
+  font: var(--text-data) var(--font-sans);
+  font-weight: 600;
+}
+.k-ql-xaxis {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  left: 0;
+  display: flex;
+  justify-content: space-between;
+  padding-top: 4px;
+  color: var(--chart-axis);
+  font: var(--text-num-sm) var(--chart-font-axis, var(--font-num-small));
+}
+.k-ql-note {
+  margin: 0;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-ql-plot {
+  position: relative;
+  margin: 0 104px 24px 60px;
+  outline: none;
+}
+.k-ql-plot:focus-visible {
+  outline: 1px solid var(--focus-ring);
+}
+.k-ql-plot > svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.k-ql-fill {
+  fill-opacity: 0.4;
+}
+.k-ql-zero {
+  stroke: var(--k-separable-bold-borderColor);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+.k-ql-ls {
+  fill: none;
+  stroke: var(--k-content-primary-foreground);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+.k-ql-line {
+  fill: none;
+  stroke-width: 2;
+  vector-effect: non-scaling-stroke;
+  transition: opacity var(--dur-snappy) var(--ease-snappy);
+}
+.k-ql-line[data-dim='true'] {
+  opacity: 0.4;
+}
+.k-ql-cursor {
+  stroke: var(--k-content-secondary-foreground);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+.k-ql-tail {
+  position: absolute;
+  transform: translate(8px, -50%);
+  color: var(--k-content-body-foreground);
+  font: var(--text-num-sm) var(--chart-font-axis, var(--font-num-small));
+  pointer-events: none;
+  white-space: nowrap;
+}
+.k-ql-tail-value {
+  color: var(--k-content-primary-foreground);
+  font-family: var(--chart-font-num, var(--font-num));
+}
+.k-ql-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.k-ql-layer {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 22px;
+  padding: 0 8px;
+  border: var(--hairline);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--k-content-body-foreground);
+  font: var(--text-num-sm) var(--chart-font-axis, var(--font-num-small));
+  cursor: pointer;
+}
+.k-ql-layer[aria-pressed='true'] {
+  border-color: var(--chart-accent, var(--k-content-primary-foreground));
+  color: var(--k-content-primary-foreground);
+}
+.k-ql-layer:focus-visible {
+  outline: 1px solid var(--focus-ring);
+}
+.k-ql-swatch {
+  width: 12px;
+  height: 2px;
+}
+.k-ql-summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 16px;
+  margin: 0;
+  padding-top: 6px;
+  border-top: var(--hairline);
+  color: var(--k-content-body-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-ql-verdict {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--k-content-primary-foreground);
+}
+/* 状态灯：灯加词，不单靠颜色（precision-instrument §2.2、§2.5）；通过用 ok 绿，不通过用 amber。 */
+.k-ql-lamp {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--k-status-warn-foreground);
+}
+.k-ql-verdict[data-ok='true'] .k-ql-lamp {
+  background: var(--k-status-ok-foreground);
+}
+.k-ql-stat-label {
+  color: var(--k-content-secondary-foreground);
+}
+.k-ql-stat-value {
+  color: var(--k-content-primary-foreground);
+  font: var(--text-num-sm) var(--chart-font-num, var(--font-num-small));
+  font-variant-numeric: tabular-nums;
+}
+.k-ql-source {
+  margin: 0;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}

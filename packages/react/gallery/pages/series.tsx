@@ -19,6 +19,7 @@ import {
   type CalendarEvent,
   type HorizonRow,
 } from '../../src/quant/index.ts'
+import { LiveEquityCurveDemo } from './live-readouts.tsx'
 import { Row, SAMPLE_MARK_SRC } from './parts.tsx'
 
 // #1917：时间序列与盈亏的件的演示。下面所有数据都是演示用的合成数据（在这个展示页里按固定种子生成，不是行情、不是账户），每页也写明了；应用里没有样本数据。
@@ -86,7 +87,7 @@ export function BrushChartDemo() {
           formatX={dayAt}
           formatValue={(v) => v.toFixed(0)}
           labels={{ start: '窗口起点', end: '窗口终点', window: '窗口位置' }}
-          defaultWindow={[60, 120]}
+          defaultValue={[60, 120]}
         />
       </div>
       <p className="gal-note">{DEMO_NOTE}</p>
@@ -160,7 +161,7 @@ export function AttributionBarsDemo() {
           dimensions={{
             label: '维度',
             value: dim,
-            onChange: (key) => key && setDim(key),
+            onValueChange: (key) => key && setDim(key),
             options: [
               { key: 'symbol', label: '品种' },
               { key: 'account', label: '账户' },
@@ -171,7 +172,7 @@ export function AttributionBarsDemo() {
           ranges={{
             label: '区间',
             value: range,
-            onChange: (key) => key && setRange(key),
+            onValueChange: (key) => key && setRange(key),
             options: [
               { key: 'today', label: '今日' },
               { key: 'week', label: '本周' },
@@ -179,9 +180,8 @@ export function AttributionBarsDemo() {
             ],
           }}
           formatValue={money}
-          otherLabel={(n) => `其他 ×${n}`}
+          labels={{ other: (n) => `其他 ×${n}`, share: '占比' }}
           formatShare={(x) => `${(x * 100).toFixed(1)}%`}
-          shareLabel="占比"
           readouts={[
             { key: 'sum', label: '今日合计', text: money(pos + neg), value: pos + neg },
             { key: 'pos', label: '正贡献', text: money(pos), value: pos },
@@ -265,13 +265,21 @@ const CAL_PROPS = {
 export function CalendarHeatmapDemo() {
   const [view, setView] = useState<'pnl' | 'turnover' | 'events'>('pnl')
   const [picked, setPicked] = useState('')
+  const [replay, setReplay] = useState(0)
   const month = CAL_DAYS.filter((day) => day.date.startsWith('2026-10'))
   const sum = month.reduce((t, day) => t + (day.date <= '2026-10-19' ? (day.value ?? 0) : 0), 0)
   return (
     <>
-      <div className="gal-wide" data-gallery-calendar="month" style={{ maxWidth: 620 }}>
+      <Row name="进场">
+        <button type="button" data-gallery-calendar-replay onClick={() => setReplay((n) => n + 1)}>
+          重播进场
+        </button>
+        <span className="gal-note">reveal：格子依次淡入长大；已播 {replay} 次</span>
+      </Row>
+      <div className="gal-wide" data-gallery-calendar="month" key={replay} style={{ maxWidth: 620 }}>
         <CalendarHeatmap
           {...CAL_PROPS}
+          reveal={replay > 0}
           days={CAL_DAYS}
           month="2026-10"
           today="2026-10-19"
@@ -486,6 +494,25 @@ const SX_PROPS = {
   },
 } as const
 
+// 情绪状态带（#109 regimes）：三种状态按月切 24 个点，最后一段是估的。演示数据。
+const SX_REGIMES = {
+  label: '情绪周期状态',
+  current: 'warm',
+  currentText: '当前',
+  estimateText: '估算',
+  states: [
+    { id: 'cold', name: '冰点', color: 1 },
+    { id: 'warm', name: '升温', color: 2 },
+    { id: 'peak', name: '高潮', color: 4 },
+  ],
+  segments: [
+    { from: Date.UTC(2025, 0, 1), to: Date.UTC(2025, 7, 1), state: 'cold' },
+    { from: Date.UTC(2025, 7, 1), to: Date.UTC(2026, 2, 1), state: 'warm' },
+    { from: Date.UTC(2026, 2, 1), to: Date.UTC(2026, 8, 1), state: 'peak' },
+    { from: Date.UTC(2026, 8, 1), to: Date.UTC(2027, 0, 1), state: 'warm', estimated: true },
+  ],
+} as const
+
 export function SeriesExplorerDemo() {
   return (
     <>
@@ -495,6 +522,11 @@ export function SeriesExplorerDemo() {
       <Row name="对账对不上">
         <div className="gal-wide" data-gallery-explorer="mismatch" style={{ maxWidth: 760 }}>
           <SeriesExplorer {...SX_PROPS} points={SX_POINTS_UNRECORDED} defaultMetric={null} />
+        </div>
+      </Row>
+      <Row name="叠状态带（regimes）">
+        <div className="gal-wide" data-gallery-explorer="regimes" style={{ maxWidth: 760 }}>
+          <SeriesExplorer {...SX_PROPS} points={SX_POINTS} defaultMetric="net" regimes={SX_REGIMES} />
         </div>
       </Row>
       <p className="gal-note">
@@ -557,6 +589,7 @@ export function EquityCurveDemo() {
         {DEMO_NOTE}90
         笔平仓，间隔不等，点按各自的时刻摆；基准是一条均匀上行的虚线。拖底下的概览条只看一段，对数轴按需切换。
       </p>
+      <LiveEquityCurveDemo />
     </>
   )
 }

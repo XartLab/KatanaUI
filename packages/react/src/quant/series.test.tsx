@@ -2,21 +2,12 @@
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vite-plus/test'
 import { CalendarHeatmap } from './calendar-heatmap.tsx'
-import {
-  addDays,
-  calendarGrid,
-  calendarKey,
-  calendarTone,
-  formatDate,
-  isoWeek,
-  monthGrid,
-  parseDate,
-} from './calendar-model.ts'
+import { addDays, calendarGrid, calendarKey, calendarTone, isoWeek, monthGrid } from './calendar-model.ts'
 import { BrushChart } from './brush-chart.tsx'
-import { centerWindow, clampWindow, moveWindow, resizeWindow } from './brush-model.ts'
+import { centerWindow, clampWindow, moveWindow, resizeWindow } from '../lib/chart/brush-model.ts'
 import { HorizonChart } from './horizon-chart.tsx'
 import { horizonBands, horizonMax } from './horizon-model.ts'
-import { areaPath, extent, linePath, makePlot, niceTicks, PLOT_W } from './series-geometry.ts'
+import { areaPath, extent, linePath, makePlot, niceTicks, PLOT_W } from '../lib/chart/series-geometry.ts'
 
 // #1917：时间序列与盈亏的件的几何与结构（纯函数）。拖拽、悬停、键盘与画出来的像素在 e2e/ui-gallery.spec.ts 里用真浏览器验。
 
@@ -104,7 +95,7 @@ describe('BrushChart', () => {
       formatX={(i) => `d${i}`}
       formatValue={String}
       labels={labels}
-      defaultWindow={[10, 20]}
+      defaultValue={[10, 20]}
     />,
   )
 
@@ -133,12 +124,15 @@ describe('BrushChart', () => {
 })
 
 describe('日历热力图', () => {
-  it('日期按 UTC 日历日算：往返不变，写错的日期是 NaN', () => {
-    expect(formatDate(parseDate('2026-02-28'))).toBe('2026-02-28')
+  it('日期按日历日算（CalendarDate）：跨月、闰年对；写错或不存在的日期排不出格子', () => {
     expect(addDays('2026-02-28', 1)).toBe('2026-03-01')
     expect(addDays('2024-02-28', 1)).toBe('2024-02-29')
-    expect(parseDate('2026-02-30')).toBeNaN()
-    expect(parseDate('abc')).toBeNaN()
+    expect(addDays('2026-01-01', -1)).toBe('2025-12-31')
+    expect(calendarGrid('2026-02-30', '2026-03-05').cells).toEqual([])
+    expect(calendarGrid('abc', '2026-03-05').cells).toEqual([])
+    expect(monthGrid('2026-13')).toEqual([])
+    expect(isoWeek('2021-01-03')).toBe(53)
+    expect(isoWeek('2026-12-31')).toBe(53)
   })
 
   it('排布：一周一列、一天一格；周一起头时周一在第 0 行；第一列开头的空位不画', () => {

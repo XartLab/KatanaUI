@@ -1,0 +1,191 @@
+/* SPDX-License-Identifier: MIT */
+/* 市场全景条（MarketPulse，#110）：一行三块——半圆表盘、五个大数加两行小字、涨跌分布柱。读数共 3 行高（大数一行、小字两行），不加行高行宽；够宽（约 1200px 以上）时小字各占一行，共三行；窄了小字折行，不裁掉信息。
+   颜色只读语义 token：涨 / 跌读 --pnl-up / --pnl-down（根上 data-updown 互换，红涨绿跌），平盘读 ink；表盘填充用涨色。 */
+.k-pulse {
+  container-type: inline-size;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-4);
+  min-width: 0;
+  padding: var(--space-3);
+  background: var(--bg-200);
+  border: var(--hairline);
+  color: var(--ink-200);
+  font: var(--text-caption) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+}
+.k-pulse-dial {
+  position: relative;
+  flex: none;
+  width: 96px;
+  height: 68px;
+}
+.k-pulse-dial svg {
+  display: block;
+  width: 96px;
+  height: 52px;
+  overflow: visible;
+}
+.k-pulse-dial-track,
+.k-pulse-dial-fill {
+  fill: none;
+  stroke-linecap: butt;
+  stroke-width: 7;
+}
+.k-pulse-dial-track {
+  stroke: var(--alpha-white-8);
+}
+.k-pulse-dial-fill {
+  stroke: var(--pnl-up);
+}
+.k-pulse-share {
+  position: absolute;
+  inset: 22px 0 auto;
+  color: var(--ink-100);
+  font: 600 17px/20px var(--font-sans);
+  text-align: center;
+}
+.k-pulse-dial-caption {
+  position: absolute;
+  inset: auto 0 0;
+  color: var(--ink-300);
+  text-align: center;
+}
+.k-pulse-main {
+  display: flex;
+  flex: 1 1 360px;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.k-pulse-counts {
+  display: flex;
+  gap: var(--space-5);
+  margin: 0;
+}
+.k-pulse-count {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.k-pulse-count dt {
+  color: var(--ink-300);
+}
+.k-pulse-count dd {
+  margin: 0;
+  color: var(--ink-100);
+  font: 600 26px/30px var(--font-sans);
+  white-space: nowrap;
+}
+.k-pulse-count dd small {
+  margin-left: 2px;
+  color: var(--ink-300);
+  font: var(--text-caption) var(--font-sans);
+}
+.k-pulse-count[data-tone='up'] dd {
+  color: var(--pnl-up);
+}
+.k-pulse-count[data-tone='down'] dd {
+  color: var(--pnl-down);
+}
+.k-pulse-readings {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 var(--space-3);
+  min-width: 0;
+  max-height: 36px;
+  overflow: hidden;
+  line-height: 18px;
+}
+.k-pulse-readings [hidden] {
+  display: none;
+}
+.k-pulse-more {
+  height: 16px;
+  margin-top: 1px;
+  padding: 0 6px;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: var(--alpha-white-6);
+  color: var(--ink-200);
+  cursor: pointer;
+  font: var(--text-caption) var(--font-sans);
+}
+.k-pulse-more:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 1px;
+}
+.k-pulse-more-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: auto;
+  font: var(--text-caption) var(--font-sans);
+}
+.k-pulse-read {
+  display: inline-flex;
+  gap: 4px;
+  white-space: nowrap;
+}
+.k-pulse-read-name {
+  color: var(--ink-300);
+}
+.k-pulse-read b {
+  color: var(--ink-100);
+  font-weight: 600;
+}
+.k-pulse-read[data-unavailable] b,
+.k-pulse-read b [data-unavailable] {
+  color: var(--ink-300);
+  font-weight: 400;
+}
+.k-pulse-read[data-tone='up'] b {
+  color: var(--pnl-up);
+}
+.k-pulse-read[data-tone='down'] b {
+  color: var(--pnl-down);
+}
+.k-pulse-basis {
+  color: var(--ink-300);
+}
+.k-pulse-dist {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  gap: 2px;
+  width: 300px;
+  min-width: 0;
+}
+.k-pulse-dist-title {
+  margin: 0;
+  color: var(--ink-300);
+}
+/* 容器窄于 900px：分布柱掉到第二行最右，不再挤压大数；窄于 520px：表盘收起，五个大数占满一行。 */
+@container (max-width: 899px) {
+  .k-pulse-main {
+    flex-basis: calc(100% - 112px);
+  }
+  .k-pulse-dist {
+    margin-left: auto;
+  }
+}
+@container (max-width: 519px) {
+  .k-pulse-dial {
+    display: none;
+  }
+  .k-pulse-counts {
+    gap: var(--space-3);
+  }
+  .k-pulse-count dd {
+    font-size: 20px;
+    line-height: 24px;
+  }
+  .k-pulse-main {
+    flex-basis: 100%;
+  }
+  .k-pulse-dist {
+    width: 100%;
+  }
+}

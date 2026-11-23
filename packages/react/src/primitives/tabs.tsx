@@ -28,8 +28,8 @@ const tabsListVariants = cva('group/tabs-list relative', {
     /** Skin: line, default, or bare (no skin, the caller's class names style it). */
     variant: {
       default:
-        'inline-flex h-8 w-fit items-center justify-center gap-0.5 rounded-[var(--radius-control)] bg-alpha-white-3 p-0.5',
-      line: 'inline-flex h-8 w-fit items-center justify-center gap-1 border-b border-alpha-white-6',
+        'inline-flex h-8 w-fit items-center justify-center gap-0.5 rounded-[var(--radius-control)] bg-(--k-selectable-subtle-groupBackground) p-0.5',
+      line: 'inline-flex h-8 w-fit items-center justify-center gap-1 border-b border-(color:--k-container-subtle-borderColor)',
       // 不带皮肤，样子由调用方的类名给。
       bare: '',
     },
@@ -103,14 +103,14 @@ function TabsTrigger({
       data-slot="tabs-trigger"
       className={cn(
         !bare && [
-          'k-text-data relative inline-flex h-7 cursor-pointer items-center justify-center gap-1.5 rounded-[6px] px-2 leading-none whitespace-nowrap text-ink-2',
-          'transition-[color,scale] duration-200 enabled:active:scale-[0.96] enabled:hover:text-ink',
+          'k-text-data relative inline-flex h-7 cursor-pointer items-center justify-center gap-1.5 rounded-[6px] px-2 leading-none whitespace-nowrap text-(color:--k-content-body-foreground)',
+          'transition-[color,scale] duration-200 enabled:active:scale-[0.96] enabled:hover:text-(color:--k-content-primary-foreground)',
           'data-[state=active]:font-medium data-[state=active]:text-(--seg-on-ink)',
-          'group-data-[variant=line]/tabs-list:data-[state=active]:text-ink',
+          'group-data-[variant=line]/tabs-list:data-[state=active]:text-(color:--k-content-primary-foreground)',
           'disabled:cursor-not-allowed disabled:opacity-30',
           '[&_svg]:pointer-events-none [&_svg]:size-[13px] [&_svg]:shrink-0',
           // 线型的底线画在列表那道线上，向下压 1px 盖住它。
-          'after:absolute after:inset-x-0 after:-bottom-px after:h-0.5 after:bg-ink after:opacity-0 after:transition-opacity group-data-[variant=line]/tabs-list:data-[state=active]:after:opacity-100',
+          'after:absolute after:inset-x-0 after:-bottom-px after:h-0.5 after:bg-(--k-selectable-bold-background-selected) after:opacity-0 after:transition-opacity group-data-[variant=line]/tabs-list:data-[state=active]:after:opacity-100',
           focusRingInset,
         ],
         className,

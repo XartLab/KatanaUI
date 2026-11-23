@@ -25,27 +25,36 @@ export const SUBMENU_ALIGN_OFFSET = -7
 
 /** 可用高度取 Radix Popper 给的 --radix-popper-available-height（菜单、弹层内容都继承得到）。 */
 export const menuContainerClass =
-  'k-pop k-text-body z-50 max-h-[min(var(--radix-popper-available-height),calc(100dvh-16px))] min-w-[180px] overflow-x-hidden overflow-y-auto rounded-[var(--radius-overlay)] border border-alpha-white-6 bg-surface-4 p-1.5 leading-none text-ink-2 outline-0 shadow-[0_16px_48px_rgba(0,0,0,0.55),0_2px_8px_rgba(0,0,0,0.3)]'
+  'k-pop k-text-body z-50 max-h-[min(var(--radix-popper-available-height),calc(100dvh-16px))] min-w-[180px] overflow-x-hidden overflow-y-auto rounded-[var(--radius-overlay)] border border-(color:--k-overlay-borderColor) bg-(--k-surface-overlay-background) p-1.5 leading-none text-(color:--k-content-body-foreground) outline-0 shadow-(--k-overlay-shadow)'
 
-export const menuRowClass = cn(
-  'k-pop-item relative flex h-[30px] cursor-pointer items-center justify-between gap-3 rounded-[6px] px-2 whitespace-nowrap text-ink-2 select-none',
-  'transition-[background-color,color] duration-100 data-[highlighted]:bg-alpha-white-3 data-[highlighted]:text-ink',
-  // 禁用的行仍收指针事件（它的 title 要能悬停出来），只是不高亮、不可选：Radix 自己不让禁用项取焦点。
-  'data-[disabled]:cursor-default data-[disabled]:bg-transparent data-[disabled]:text-ink-3 data-[disabled]:opacity-60',
+/**
+ * Menu row skin without the disabled state; rows whose library writes data-disabled="false" on enabled rows (cmdk) add their own.
+ * 行的皮肤（不含禁用态）：cmdk 在可用的行上也写 data-disabled="false"，`data-[disabled]` 会把每一行都画成禁用（命令面板的行因此只有 2.67:1，G1 修），所以禁用态分开写。
+ */
+export const menuRowBaseClass = cn(
+  'k-pop-item relative flex h-[30px] cursor-pointer items-center justify-between gap-3 rounded-[6px] px-2 whitespace-nowrap text-(color:--k-content-body-foreground) select-none',
+  'transition-[background-color,color] duration-100 data-[highlighted]:bg-(--k-selectable-subtle-background-hover) data-[highlighted]:text-(color:--k-content-primary-foreground)',
   '[&_svg]:shrink-0',
   focusRingInset,
+)
+
+export const menuRowClass = cn(
+  menuRowBaseClass,
+  // 禁用的行仍收指针事件（它的 title 要能悬停出来），只是不高亮、不可选：Radix 自己不让禁用项取焦点；Radix 只在禁用时写 data-disabled。
+  'data-[disabled]:cursor-default data-[disabled]:bg-transparent data-[disabled]:text-(color:--k-content-secondary-foreground) data-[disabled]:opacity-60',
 )
 
 /** 单选 / 勾选行：勾选列在左，文字靠左（快捷键与提示由里面的 ml-auto 推到右端）。 */
 export const menuCheckRowClass = cn(
   menuRowClass,
-  'justify-start data-[state=checked]:font-medium data-[state=checked]:text-ink',
+  'justify-start data-[state=checked]:font-medium data-[state=checked]:text-(color:--k-content-primary-foreground)',
 )
 
 /** 分组小标题：是文字，用 ink-200（10px 的 ink-300 落在弹层底 bg-400 上是 4.45:1，过不了 axe 的 4.5，#1832）。 */
-export const menuGroupLabelClass = 'k-pop-group k-text-micro px-2 pt-2 pb-1 leading-normal text-ink-2 uppercase'
+export const menuGroupLabelClass =
+  'k-pop-group k-text-micro px-2 pt-2 pb-1 leading-normal text-(color:--k-content-body-foreground) uppercase'
 
-export const menuSeparatorClass = 'k-pop-sep -mx-1.5 my-1 h-px bg-alpha-white-6'
+export const menuSeparatorClass = 'k-pop-sep -mx-1.5 my-1 h-px bg-(--k-overlay-borderColor)'
 
 /** 行里的文字（带图标时图标在它前面）：占满剩下的宽，把快捷键、提示推到右端。 */
 export function MenuItemLabel({ className, ...props }: ComponentProps<'span'>) {
@@ -67,7 +76,13 @@ export function MenuItemIcon({ className, ...props }: ComponentProps<'span'>) {
 
 /** 行尾的小字提示（「未实装」之类）。 */
 export function MenuItemHint({ className, ...props }: ComponentProps<'span'>) {
-  return <span data-slot="menu-hint" className={cn('k-pop-hint inline-flex gap-1 text-ink-2', className)} {...props} />
+  return (
+    <span
+      data-slot="menu-hint"
+      className={cn('k-pop-hint inline-flex gap-1 text-(color:--k-content-body-foreground)', className)}
+      {...props}
+    />
+  )
 }
 
 /** 勾选列：固定 10px 宽，勾是强调色；没有勾的行不占这一列（theme/menu.css 把它们的文字对齐过来）。 */
@@ -76,7 +91,7 @@ export function MenuCheckColumn({ children }: { children: ReactNode }) {
     <span
       data-slot="menu-check"
       aria-hidden="true"
-      className="k-pop-check flex w-[10px] flex-none items-center justify-center text-ink [font-size:var(--text-caption-size)]"
+      className="k-pop-check flex w-[10px] flex-none items-center justify-center text-(color:--k-content-primary-foreground) [font-size:var(--text-caption-size)]"
     >
       {children}
     </span>
@@ -89,7 +104,7 @@ export function MenuShortcut({ className, ...props }: ComponentProps<'kbd'>) {
     <kbd
       data-slot="menu-shortcut"
       className={cn(
-        'k-kbd k-text-caption ml-auto inline-flex h-5 min-w-5 items-center justify-center rounded-[4px] border border-alpha-white-10 bg-alpha-white-5 px-1 leading-none font-medium text-ink-2',
+        'k-kbd k-text-caption ml-auto inline-flex h-5 min-w-5 items-center justify-center rounded-[4px] border border-(color:--k-content-kbd-borderColor) bg-(--k-content-kbd-background) px-1 leading-none font-medium text-(color:--k-content-body-foreground)',
         className,
       )}
       {...props}
@@ -100,7 +115,11 @@ export function MenuShortcut({ className, ...props }: ComponentProps<'kbd'>) {
 /** 二级触发器行尾的箭头：全应用统一用它（ChevronRight 13px，ink-300）。 */
 export function SubmenuArrow() {
   return (
-    <span aria-hidden="true" data-slot="menu-more" className="k-pop-more ml-auto inline-flex text-ink-3">
+    <span
+      aria-hidden="true"
+      data-slot="menu-more"
+      className="k-pop-more ml-auto inline-flex text-(color:--k-content-secondary-foreground)"
+    >
       <ChevronRightIcon className="size-[13px]" />
     </span>
   )

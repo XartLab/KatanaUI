@@ -1,6 +1,10 @@
 // SPDX-License-Identifier: MIT
-import { Check, CircleDashed, Contrast, ExternalLink, Maximize, Minus, Plus, X } from 'lucide-react'
-import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type PointerEvent, type ReactNode } from 'react'
+/**
+ * Directed transmission-chain graph with edge verification status, evidence counts, zoom and pan.
+ * 传导链图；右侧详情在 transmission-chain-detail.tsx（体检 §7 拆分）。
+ */
+import { Maximize, Minus, Plus } from 'lucide-react'
+import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type PointerEvent } from 'react'
 import { cn } from '../../lib/cn.ts'
 import { Button } from '../../primitives/button.tsx'
 import {
@@ -11,7 +15,6 @@ import {
   layoutChain,
   smoothPath,
   statusTotals,
-  textWidth,
   validEdges,
   zoomAt,
   type ChainDirection,
@@ -21,6 +24,8 @@ import {
   type View,
 } from './transmission-chain-model.ts'
 import type { EvidenceKind, HypothesisEvidence } from '../hypothesis-ledger/hypothesis-ledger-model.ts'
+import { fontFor, measureText, truncateText } from '../../lib/text-measure.ts'
+import { EdgeDetail, NodeDetail, STATUS_ICON } from './transmission-chain-detail.tsx'
 
 // 传导链图（#44）：有向图，节点是传导环节，边是传导关系；每条边有验证状态（未检验 / 有证据支持 / 证据反对 / 部分）和证据计数，
 // 点边在右侧出证据列表与失败条件，点节点列出它的上下游边；支持沿链回到上游的反馈边。布局用 dagre（MIT），可缩放平移。
@@ -73,12 +78,6 @@ export type TransmissionChainProps = {
   className?: string
 }
 
-const STATUS_ICON: Record<ChainStatus, typeof Check> = {
-  supported: Check,
-  contradicted: X,
-  partial: Contrast,
-  untested: CircleDashed,
-}
 const STATUS_ORDER: readonly ChainStatus[] = ['supported', 'partial', 'contradicted', 'untested']
 const ICON_SIZE = 14
 const CHIP_PAD = 10
@@ -87,18 +86,14 @@ const chipText = (edge: ChainEdge, labels: TransmissionChainLabels) => {
   const c = evidenceCounts(edge)
   return [edge.label, edge.evidence?.length ? labels.counts(c.support, c.oppose) : ''].filter(Boolean).join(' ')
 }
+/** 边上标签胶囊的字（11px 说明档）与节点名（12px 半粗体）的字体：用 pretext 量真实字宽（2026-11-17），不再按全角 12、半角 7 估。 */
+const CHIP_FONT = () => fontFor(400, 11, '--font-sans-small')
+const NODE_FONT = () => fontFor(600, 12, '--font-sans')
 const chipWidth = (edge: ChainEdge, labels: TransmissionChainLabels) =>
-  CHIP_PAD * 2 + ICON_SIZE + 4 + textWidth(chipText(edge, labels))
+  CHIP_PAD * 2 + ICON_SIZE + 4 + Math.ceil(measureText(chipText(edge, labels), CHIP_FONT()))
 
-function clip(text: string, max: number) {
-  if (textWidth(text) <= max) return text
-  let out = ''
-  for (const char of text) {
-    if (textWidth(out + char + '…') > max) break
-    out += char
-  }
-  return `${out}…`
-}
+/** 节点名放不下就截尾加省略号（SVG 里没有 text-overflow）。 */
+const clip = (text: string, max: number) => truncateText(text, NODE_FONT(), max)
 
 export function TransmissionChain({
   nodes,
@@ -341,146 +336,12 @@ export function TransmissionChain({
             edges={kept}
             nodeLabel={nodeLabel}
             labels={labels}
-            onPick={(id) => select({ kind: 'edge', id })}
+            onSelectEdge={(id) => select({ kind: 'edge', id })}
           />
         ) : (
           <p className="k-tc-hint">{labels.pickHint}</p>
         )}
       </aside>
     </div>
-  )
-}
-
-function StatusBadge({ status, labels }: { status: ChainStatus; labels: TransmissionChainLabels }) {
-  const Icon = STATUS_ICON[status]
-  return (
-    <span className="k-tc-badge" data-status={status}>
-      <Icon aria-hidden width={12} height={12} />
-      {labels.status[status]}
-    </span>
-  )
-}
-
-function EdgeDetail({
-  edge,
-  nodeLabel,
-  labels,
-}: {
-  edge: ChainEdge
-  nodeLabel: (id: string) => string
-  labels: TransmissionChainLabels
-}) {
-  const c = evidenceCounts(edge)
-  return (
-    <div className="k-tc-edge-detail" data-testid="tc-edge-detail">
-      <h4 className="k-tc-title">
-        {nodeLabel(edge.from)} → {nodeLabel(edge.to)}
-      </h4>
-      <div className="k-tc-meta">
-        <StatusBadge status={edge.status} labels={labels} />
-        {edge.feedback ? <span className="k-tc-tag">{labels.feedback}</span> : null}
-        {edge.label ? <span className="k-tc-tag">{edge.label}</span> : null}
-        <span className="k-tc-count">{labels.counts(c.support, c.oppose)}</span>
-      </div>
-      <Section title={labels.failureCondition}>
-        {edge.failureCondition ? (
-          <p className="k-tc-failure">{edge.failureCondition}</p>
-        ) : (
-          <p className="k-tc-missing">{labels.noFailureCondition}</p>
-        )}
-      </Section>
-      <Section title={labels.evidence}>
-        {edge.evidence?.length ? (
-          <ul className="k-hl-evidence" aria-label={labels.evidence}>
-            {edge.evidence.map((item) => (
-              <EvidenceRow key={item.id} item={item} labels={labels} />
-            ))}
-          </ul>
-        ) : (
-          <p className="k-tc-missing">{labels.noEvidence}</p>
-        )}
-      </Section>
-    </div>
-  )
-}
-
-function EvidenceRow({ item, labels }: { item: HypothesisEvidence; labels: TransmissionChainLabels }) {
-  // 标记与类名同假说账的证据行（k-hl-ev），样式不另写一份。
-  return (
-    <li className="k-hl-ev" data-stance={item.stance}>
-      <span className="k-hl-kind" data-kind={item.kind}>
-        {labels.kind[item.kind]}
-      </span>
-      <span className="k-hl-stance">
-        <i aria-hidden="true" />
-        {labels.stance[item.stance]}
-      </span>
-      <time className="k-hl-time" dateTime={new Date(item.publishedAt).toISOString()}>
-        {labels.date(item.publishedAt)}
-      </time>
-      <a className="k-hl-source" href={item.href} target="_blank" rel="noreferrer">
-        <ExternalLink size={11} aria-hidden />
-        {item.source}
-      </a>
-      <span className="k-hl-summary">{item.summary}</span>
-    </li>
-  )
-}
-
-function NodeDetail({
-  node,
-  edges,
-  nodeLabel,
-  labels,
-  onPick,
-}: {
-  node: ChainNode
-  edges: readonly ChainEdge[]
-  nodeLabel: (id: string) => string
-  labels: TransmissionChainLabels
-  onPick: (edgeId: string) => void
-}) {
-  const list = (title: string, items: readonly ChainEdge[], other: (e: ChainEdge) => string) => (
-    <Section title={title}>
-      {items.length ? (
-        <ul className="k-tc-links">
-          {items.map((e) => (
-            <li key={e.id}>
-              <button type="button" className="k-tc-link" data-status={e.status} onClick={() => onPick(e.id)}>
-                <StatusBadge status={e.status} labels={labels} />
-                <span>{nodeLabel(other(e))}</span>
-              </button>
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p className="k-tc-missing">{labels.none}</p>
-      )}
-    </Section>
-  )
-  return (
-    <div className="k-tc-node-detail" data-testid="tc-node-detail">
-      <h4 className="k-tc-title">{node.label}</h4>
-      {node.note ? <p className="k-tc-note">{node.note}</p> : null}
-      {list(
-        labels.upstream,
-        edges.filter((e) => e.to === node.id),
-        (e) => e.from,
-      )}
-      {list(
-        labels.downstream,
-        edges.filter((e) => e.from === node.id),
-        (e) => e.to,
-      )}
-    </div>
-  )
-}
-
-function Section({ title, children }: { title: string; children: ReactNode }) {
-  return (
-    <section className="k-tc-section">
-      <h5>{title}</h5>
-      {children}
-    </section>
   )
 }
