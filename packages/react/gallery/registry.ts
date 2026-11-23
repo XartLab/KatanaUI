@@ -5712,6 +5712,132 @@ export const PAGES: readonly DocPage[] = [
     keys: [['Tab / Enter', '给了回调时到标题、标签上、触发']],
   },
   {
+    id: 'symbol-info',
+    group: 'quotes',
+    cardHeight: 230,
+    title: 'SymbolInfo 品种报价头',
+    summary:
+      '一只品种的报价头（对 TradingView 的 Symbol Info 小组件，KatanaUI #147）：徽标、代码、名称与交易所、市场状态灯；大号最新价加单位、带符号的涨跌额与涨跌幅；下面一排区间条（常是当日与 52 周，标记指着最新价，TradingView 右栏的三角画法）。值是数，价格文字由 formatPrice 写，交易所、状态、区间标题都由调用方传。TradingView 页面没写这个小组件有哪些栏，排布照它的品种页页头，待核对。',
+    exports: ['SymbolInfo'],
+    propParts: [
+      {
+        part: 'SymbolInfo',
+        note: 'ranges 是 { id, title, low, high }，标记都指着 last；status 是 { tone, label }（开市 ok、盘前盘后 warn、休市 off）。',
+      },
+    ],
+    states: [
+      '涨 / 跌 / 平：涨跌额与涨跌幅上涨跌色并带三角，方向由 change 定（没有 change 看 changePct）。',
+      'live：价格变了用 RollingText 滚动，涨跌幅闪一次涨跌色。',
+      '给了 status：右上角一盏状态灯加文字。',
+      '给了 ranges：每个区间一条 RangeBar（role=meter），最新价在区间外时标记贴边。',
+      '名称或交易所过长：省略号截断。',
+    ],
+    donts: [
+      '不要传写好的价格字符串：传数与 formatPrice，品种精度由调用方定。',
+      '不要只靠颜色表达涨跌：涨跌额带符号与三角。',
+      '不要在包里写交易所名与状态词：由调用方按界面语言传。',
+    ],
+    composition:
+      'SymbolInfo section[aria-label]\n  div（SymbolMark · 代码 / 名称 · 交易所 · Led 状态）\n  div（价 RollingText · 单位 · ToneText 涨跌额 · ChangeText 涨跌幅）\n  div（RangeBar × n）\n  p（footer）',
+    keys: [],
+  },
+  {
+    id: 'symbol-overview',
+    group: 'quotes',
+    cardHeight: 380,
+    title: 'SymbolOverview 多品种走势卡',
+    summary:
+      '对 TradingView 的 Symbol Overview 小组件（KatanaUI #147）：上面一排品种页签（代码、名称、最新价、涨跌幅），中间一张走势，底下一排区间按钮（1D、1M、3M、1Y、5Y、All，字由调用方给）。price 口径只画选中的那只（面积或折线）；percent 口径（它的 scaleMode Percentage）把所有品种按相对各自起点的涨跌幅叠在一张图上比，选中的那条加粗，页签上的色块兼作图例。悬停或键盘走出 LCD 读数，列出这一刻每只的值。换区间只回调，数据由调用方按区间换。',
+    exports: ['SymbolOverview'],
+    propParts: [
+      {
+        part: 'SymbolOverview',
+        note: 'items 是 { id, symbol, name?, last, changePct, values, times }：values 与 times 一一对应，横轴按时刻摆，几只品种的时刻可以不同。页签是 Radix Tabs，区间是 ToggleGroup。',
+      },
+    ],
+    states: [
+      'price：选中那只一条 2px 线，chartType=area 时线下一层很淡的同色渐变；末端一个实心点。',
+      'percent：每只一条线（颜色按 items 的次序取 series-*，切页签不换色），选中的 2px、其余 1.25px 淡显；纵轴是百分数，跨过 0 时画零线。',
+      '悬停或聚焦后按方向键：竖线 + LCD 读数（时刻、每只的值）；离开或失焦清掉。',
+      '选中那只有效值少于两个：走势的位置写 labels.empty。',
+      '区间：选中的按钮灰底（aria-pressed），不用蓝色。',
+    ],
+    donts: [
+      '不要指望件按区间切数据：onRangeChange 回调后由调用方换 values 与 times。',
+      '不要在 price 口径叠几只不同价位的品种：比涨跌用 percent。',
+      '品种多于七只时第八只起都是「其他」色，看不清：拆成几张卡。',
+    ],
+    composition:
+      'SymbolOverview（Tabs）\n  TabsList（TabsTrigger × n：色块 · 代码 · 名称 · 价 · ChangeText）\n  TabsContent\n    div[role=slider]（svg：网格 · 零线 · 面积 · 线 × n；纵轴刻度 · 末点 · 十字线 · LcdTooltip）\n    div（横轴刻度）\n  ToggleGroup（区间）',
+    keys: [
+      ['← / →（页签上）', '换到前一只 / 后一只品种（Radix Tabs）'],
+      ['← / →（图上）', '走到前一个 / 后一个点，出读数'],
+      ['Shift + ← / →', '一次走三个点'],
+      ['Home / End', '走到第一个 / 最后一个点'],
+      ['Esc', '清掉读数'],
+      ['Tab / Enter', '到区间按钮、选中'],
+    ],
+  },
+  {
+    id: 'cross-rates',
+    group: 'quotes',
+    cardHeight: 300,
+    title: 'CrossRates 交叉汇率矩阵',
+    summary:
+      '对 TradingView 的 Forex Cross Rates 与 Forex Heatmap 小组件（KatanaUI #147）：行是基准货币、列是计价货币，每格一对。rates 模式写汇率与下面一行涨跌幅；heatmap 模式按涨跌幅七档上色（与 Treemap 同一套色阶，跟涨跌配色走）、只写涨跌幅，一眼看哪种货币强、哪种弱。对角线画斜线底不写数，缺报价的对写「—」。悬停或聚焦一格，它的行头与列头加亮；方向键在格子间走，Enter 或点击回调这一对。',
+    exports: ['CrossRates'],
+    propParts: [
+      {
+        part: 'CrossRates',
+        note: 'quotes 是 { base, quote, rate, changePct }（changePct 是百分数）；同一对给了几次取最后一次。汇率默认不小于 100 写两位、否则四位，别的位数给 formatRate。',
+      },
+    ],
+    states: [
+      'rates：汇率等宽右对齐，涨跌幅上涨跌色。',
+      'heatmap：底色按 colorStep(changePct, limit) 七档，字按底色明暗选黑或白；没有报价的格用中性底。',
+      '悬停或聚焦：这一格描一圈，行头与列头灰底加亮。',
+      '没有货币：画 labels.empty。',
+    ],
+    donts: [
+      '不要在件里算交叉汇率：每一对的 rate 与 changePct 由调用方给（各家报价口径不同）。',
+      '不要只靠颜色读热力：格子里写着涨跌幅。',
+      '货币多于十种左右时格子会挤，放进能横向滚动的容器（件本身 overflow-x: auto）。',
+    ],
+    composition:
+      'CrossRates\n  table[role=grid]\n    thead：角 · th（计价货币）× n\n    tbody tr × n：th（基准货币）· td[role=gridcell] × n（汇率 · ChangeText | 涨跌幅）',
+    keys: [
+      ['← → ↑ ↓', '在格子间走一格（到边停住）'],
+      ['Home / End', '到本行的头 / 尾'],
+      ['Ctrl + Home / Ctrl + End', '到整张的第一格 / 最后一格'],
+      ['Enter', '回调这一对（对角线与缺报价的格不回调）'],
+    ],
+  },
+  {
+    id: 'company-profile',
+    group: 'quotes',
+    cardHeight: 300,
+    title: 'CompanyProfile 公司简介卡',
+    summary:
+      '对 TradingView 的 Company Profile 小组件（KatanaUI #147；它的页面写「公司简介加 sector 与 industry」）：公司名，下面几项事实（行业、细分行业、员工数、总部、网站…，标签与值由调用方写），再下面是简介正文，超过 collapsedLines 行时截断并出「展开」按钮。没有事实也没有正文时画空态（未连接 / 未实装），不画假数据。',
+    exports: ['CompanyProfile'],
+    propParts: [
+      {
+        part: 'CompanyProfile',
+        note: 'facts 是 { id, label, value? }，value 可以是任何节点（链接也行）；没给 value 画「—」。按钮与空态的字在 labels。',
+      },
+    ],
+    states: [
+      '折叠：正文只留 collapsedLines 行（line-clamp），真被截断时才出「展开」按钮（量 scrollHeight，宽度变了重量）。',
+      '展开：正文全显，按钮换成「收起」，aria-expanded 跟着变。',
+      '没有数据：只有公司名与 labels.empty。',
+      '事实的值过长：省略号截断。',
+    ],
+    donts: ['不要拿它放长篇报告：正文是纯文字，长文用 Markdown 件。', '不要在没接数据源时塞样本文字：给空态。'],
+    composition:
+      'CompanyProfile section[aria-label]\n  h3（公司名）\n  dl（div × n：dt 标签 · dd 值）\n  div（p 正文 · button 展开 / 收起）\n  p（来源）',
+    keys: [['Tab / Enter / Space', '到「展开 / 收起」按钮、切换']],
+  },
+  {
     id: 'watchlist',
     group: 'quotes',
     cardHeight: 380,
@@ -6744,6 +6870,45 @@ export const PAGES: readonly DocPage[] = [
       ['Home / End', '第一个 / 最后一个节点'],
       ['Enter / 空格', '钉住或取消钉住这个节点的上下游'],
       ['Esc', '取消钉住'],
+    ],
+  },
+  {
+    id: 'seasonal-chart',
+    group: 'quant',
+    cardHeight: 330,
+    title: 'SeasonalChart 季节性图',
+    summary:
+      '对 TradingView 的 Seasonal Chart 小组件（KatanaUI #147；它的页面写「把各年的价格表现叠在一起的多年季节性图」）：横轴 1 月 1 日到 12 月 31 日，纵轴是相对各年第一个价的涨跌幅，几年叠在一张图上看某段时间是不是年年涨或年年跌。最新的一年（或 highlight）2px，其余淡显；上面一排年份开关（aria-pressed）隐去 / 显出一年，至少留一年；悬停或键盘走出 LCD 读数，列出这一天各年的涨跌幅。数据先用 seasonalSeries 按年切好再传，件不取数据。',
+    exports: ['SeasonalChart', 'seasonalSeries'],
+    propParts: [
+      {
+        part: 'SeasonalChart',
+        note: 'years 是 { year, points: { day, pct }[] }（day 是一年里的第几天，0 是 1 月 1 日）；月份的字在 labels.months（12 个）。',
+      },
+      {
+        part: 'seasonalSeries(points, offsetMs)',
+        symbol: 'seasonalSeries',
+        note: 'points 是从旧到新的 { time, value }；按 UTC 加 offsetMs（交易所时区，东八区给 8 × 3600000）切年；同一天取最后一个；一年的第一个价是 0 时不要这一年。口径是相对这一年第一个价，TradingView 用年初开盘还是上年收盘待核对。',
+      },
+    ],
+    states: [
+      '默认：每年一条线，颜色按年份次序取 series-*，关掉一年不让其余换色；月初画淡虚线，跨过 0 画零线。',
+      '关掉的年：开关淡显、色块变空心，线不画；最后一条线不让关。',
+      '悬停或聚焦后按方向键：竖线 + 读数（「月 日」与每年的涨跌幅）；今年还没走到的日子不列今年。',
+      '没有至少两个点的年：画 labels.empty。',
+    ],
+    donts: [
+      '不要把不同口径的数（价格、收益率）混进同一张图：先换成同一口径再切年。',
+      '年份多于七个时第八个起都是「其他」色：只留最近几年。',
+    ],
+    composition:
+      'SeasonalChart figure\n  div[role=group]（button[aria-pressed] × 年：色块 · 年份）\n  div[role=slider]（svg：网格 · 月初虚线 · 零线 · 线 × 年；纵轴刻度 · 十字线 · LcdTooltip）\n  div（月份刻度）\n  figcaption（来源）',
+    keys: [
+      ['← / →（图上）', '前一天 / 后一天，出读数'],
+      ['Shift + ← / →', '一次走三天'],
+      ['Home / End', '到 1 月 1 日 / 12 月 31 日'],
+      ['Esc', '清掉读数'],
+      ['Tab / Enter / Space', '到年份开关、切换'],
     ],
   },
   {
