@@ -19,6 +19,16 @@ export { Switcher, type SwitcherProps } from './layout/switcher.tsx'
 export { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from './primitives/accordion.tsx'
 export { Alert, AlertDescription, AlertTitle, alertVariants } from './primitives/alert.tsx'
 export { Button, buttonVariants, type ButtonSize } from './primitives/button.tsx'
+export {
+  Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+  cardVariants,
+} from './primitives/card.tsx'
 export { Checkbox } from './primitives/checkbox.tsx'
 export {
   Command,
@@ -213,6 +223,9 @@ export {
 export { DateRangePicker, type DateRangeLabels, type DateRangePickerProps } from './patterns/date-range-picker.tsx'
 export type { DateRange, RangePreset, WeekStart } from './patterns/date-range-model.ts'
 export { TreeView, type TreeNode, type TreeViewProps } from './patterns/tree-view.tsx'
+// #104 对照 Salt 补的两件：常驻页面的选项列表、单独摆放的月历。
+export { ListBox, type ListBoxGroup, type ListBoxOption, type ListBoxProps } from './patterns/list-box.tsx'
+export { Calendar, type CalendarLabels, type CalendarProps } from './patterns/calendar.tsx'
 export {
   RowActionMenuItems,
   RowActions,
@@ -254,6 +267,11 @@ export { Led, LINK_GROUPS, type LedState, type LinkGroup } from './katana/led.ts
 // 状态语气（G0 定义在 lib/severity.ts，G3 起 Led、StatusIcon、Toast、Tag、Lcd 的 tone 用它）：只导出类型。
 export type { Severity, SeverityExt } from './lib/severity.ts'
 export { Tag, type TagProps, type TagSize } from './katana/tag.tsx'
+// #104 对照 Salt 补的四件：可关的单个胶囊、全站系统消息条、行内文字链接、纯容器面板。
+export { Pill, type PillProps, type PillSize } from './katana/pill.tsx'
+export { SystemStatus, type SystemStatusProps, type SystemStatusTone } from './katana/system-status.tsx'
+export { Link, type LinkProps } from './katana/link.tsx'
+export { Panel, type PanelProps } from './katana/panel.tsx'
 export { Kbd } from './katana/kbd.tsx'
 export {
   countFlags,

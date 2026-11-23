@@ -41,6 +41,7 @@
 | [OrderTicket 下单面板](order-ticket.md) | `drive order-ticket` | 两栏算数、改杠杆、超可用报错、止盈止损模板、按风险算张数、开仓与平仓 |
 | [弹出层](overlays.md) | `drive overlays` | Popover 与 Dialog 的点开、Esc 关、点外面关、焦点回到触发处 |
 | [Tabs 页签](tabs.md) | `drive tabs` | 点页签换内容、底块跟随、方向键切换、禁用页签 |
+| [对照 Salt 补的七件](salt-gaps.md) | 还没有流程（手走） | Pill 改与删、SystemStatus 关闭、Calendar 选日与不可选日、ListBox 单选与多选、Link / Card / Panel 的样子 |
 
 ## 待补
 
@@ -51,6 +52,7 @@
 | 订单簿、深度图、成交明细 | XartLab/KatanaUI#140（`feat/104-orderbook`） | 新建 `orderbook.md` 与 `flows/orderbook.mjs`：合并档位、买卖两侧、占比 |
 | Markdown 安全正文 | XartLab/KatanaUI#133（`feat/132-markdown`） | 新建 `markdown.md` 与流程：渲染、危险内容被拦下 |
 | 弹出层滚动即关 | XartLab/KatanaUI#135（`fix/125-popover-scroll`） | 在 [弹出层](overlays.md) 加子功能 `popover-scroll-close`：页面或装着锚点的容器一滚就关；用 `el.click()` 开（见那份的 Gotchas） |
+| 对照 Salt 补的七件 | XartLab/KatanaUI#104 的补件 PR | 写 `flows/salt-gaps.mjs`，把 [salt-gaps.md](salt-gaps.md) 里手走的几步变成 `drive salt-gaps` |
 
 ## 已走过的记录
 
