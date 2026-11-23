@@ -553,3 +553,49 @@ export {
   type CostStepStatus,
   type CostTotals,
 } from './cost-waterfall/cost-model.ts'
+// 参照 affectUI 补的第三批（KATANAview #1908）：流程编排、Agent 树、Agent 总览、多角色小组。
+export { FlowBuilder, type FlowBuilderLabels, type FlowBuilderProps } from './flow-builder/flow-builder.tsx'
+export {
+  flowElapsed,
+  flowOrder,
+  insertStep,
+  moveStep,
+  removeStep,
+  type FlowPath,
+  type FlowRun,
+  type FlowSlot,
+  type FlowStep,
+  type FlowStepKind,
+  type FlowStepStatus,
+  type FlowTemplate,
+} from './flow-builder/flow-model.ts'
+export {
+  AgentTree,
+  type AgentBarLabels,
+  type AgentRunLabels,
+  type AgentTreeLabels,
+  type AgentTreeProps,
+} from './agent-tree/agent-tree.tsx'
+export {
+  agentElapsed,
+  agentTotals,
+  branchCost,
+  visibleAgents,
+  type AgentResolution,
+  type AgentRow,
+  type AgentRunStatus,
+  type AgentRunStep,
+  type AgentTotals,
+  type RunAgent,
+} from './agent-tree/agent-tree-model.ts'
+export { AgentFleet, type AgentFleetLabels, type AgentFleetProps } from './agent-fleet/agent-fleet.tsx'
+export { AgentCrew, type AgentCrewLabels, type AgentCrewProps } from './agent-crew/agent-crew.tsx'
+export {
+  crewContextLevel,
+  steerActions,
+  type CrewAgent,
+  type CrewHandoff,
+  type CrewProject,
+  type CrewStatus,
+  type CrewSteer,
+} from './agent-crew/crew-model.ts'

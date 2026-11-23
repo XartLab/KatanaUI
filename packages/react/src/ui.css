@@ -99,6 +99,9 @@
 @import './theme/agent-lanes.css';
 @import './theme/fan-out-grid.css';
 @import './theme/decision-tree.css';
+@import './theme/flow-builder.css';
+@import './theme/agent-org.css';
+@import './theme/agent-crew.css';
 @import './theme/uptime-bars.css';
 @import './theme/range-histogram-slider.css';
 @import './theme/ridgeline.css';

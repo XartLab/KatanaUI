@@ -327,6 +327,10 @@ function collectItems() {
       'scheduled-runs',
       'agent-queue',
       'cost-waterfall',
+      'flow-builder',
+      'agent-tree',
+      'agent-fleet',
+      'agent-crew',
     ])
       add(
         dir,

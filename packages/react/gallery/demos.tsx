@@ -316,6 +316,7 @@ import {
   ScheduledRunsDemo,
   SmartRecommendationDemo,
 } from './pages/affect-agent.tsx'
+import { AgentCrewDemo, AgentFleetDemo, AgentTreeDemo, FlowBuilderDemo } from './pages/affect-flow.tsx'
 import {
   AccountEquityDemo,
   FundingRateDemo,
@@ -519,6 +520,10 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'fan-out-grid': FanOutGridDemo,
   'smart-recommendation': SmartRecommendationDemo,
   'decision-tree': DecisionTreeDemo,
+  'flow-builder': FlowBuilderDemo,
+  'agent-tree': AgentTreeDemo,
+  'agent-fleet': AgentFleetDemo,
+  'agent-crew': AgentCrewDemo,
   'flow-sankey': FlowSankeyDemo,
   'vintage-series': VintageSeriesDemo,
   'system-monitor': SystemMonitorDemo,
