@@ -274,13 +274,18 @@ const forms: GuidanceMap = {
   },
   combobox: {
     aliases: ['Autocomplete', 'Combobox (Salt / Radix)', 'Searchable select', '可搜索下拉', '代码搜索框'],
-    use: ['选标的、账户、策略这类上十项并需要搜索的列表。', '多选并想边搜边勾。'],
-    avoid: ['少量固定选项用 Select。', '纯文本自由输入用 Input。'],
+    use: [
+      '选标的、账户、策略这类上十项并需要搜索的列表。',
+      '多选并想边搜边勾。',
+      '行要带头像、图标或一句说明时传 prefix 与 description（都可选，不传行还是 30 高的一行）。',
+    ],
+    avoid: ['少量固定选项用 Select。', '纯文本自由输入用 Input。', '要在输入框里看到已选的标签用 TagCombobox。'],
     a11y: [
       '触发器 role=combobox，带 aria-expanded。',
       '搜索框与列表必须各传 label，否则读屏读不出名字。',
       '行的 aria-selected 只表示高亮；已选状态用 selected，画勾并写 data-checked。',
       '无匹配时 ComboboxEmpty 的文字会被读出。',
+      'prefix 对读屏隐藏（纯装饰），名字要写在行的文字里；description 是行文字的一部分，会跟着读出。',
     ],
   },
   field: {

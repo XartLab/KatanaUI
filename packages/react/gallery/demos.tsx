@@ -140,6 +140,7 @@ import {
 } from './pages/blocks.tsx'
 import { AlertDemo, ProgressDemo, ToastDemo } from './pages/feedback.tsx'
 import { ComboboxDemo, CommandDemo } from './pages/pickers.tsx'
+import { TagComboboxDemo } from './pages/tag-combobox.tsx'
 import { EventTimelineDemo, JsonViewerDemo } from './pages/arc-controls.tsx'
 import {
   ChipGroupDemo,
@@ -416,6 +417,7 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'hover-card': HoverCardDemo,
   command: CommandDemo,
   combobox: ComboboxDemo,
+  'tag-combobox': TagComboboxDemo,
   separator: SeparatorDemo,
   'scroll-area': ScrollAreaDemo,
   field: FieldDemo,

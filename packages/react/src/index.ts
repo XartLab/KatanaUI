@@ -388,6 +388,12 @@ export {
   type SplitButtonProps,
 } from './patterns/split-button.tsx'
 export { TagInput, type TagInputLabels, type TagInputProps } from './patterns/tag-input.tsx'
+export {
+  TagCombobox,
+  type TagComboboxLabels,
+  type TagComboboxOption,
+  type TagComboboxProps,
+} from './patterns/tag-combobox.tsx'
 export { InlineEdit, type InlineEditLabels, type InlineEditProps } from './patterns/inline-edit.tsx'
 export { NotificationBell, type NotificationBellProps } from './katana/notification-bell.tsx'
 export { StatusIcon, type StatusIconStatus, type StatusIconTone } from './katana/status-icon.tsx'

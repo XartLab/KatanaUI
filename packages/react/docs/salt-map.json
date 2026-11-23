@@ -98,7 +98,8 @@
       "slug": "combo-box",
       "name": "Combo box",
       "status": "有",
-      "pages": ["combobox"]
+      "pages": ["combobox", "tag-combobox"],
+      "note": "Combobox 是单选与 Popover 加 cmdk 的老搭法；多选且要在框里看到已选的标签用 TagCombobox（#193）。"
     },
     {
       "slug": "country-symbol",

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-import type { ComponentProps } from 'react'
+import type { ComponentProps, ReactNode } from 'react'
 import { cn } from '../lib/cn.ts'
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '../primitives/command.tsx'
 import { Popover, PopoverContent, PopoverTrigger } from '../primitives/popover.tsx'
@@ -11,6 +11,8 @@ import { SelectArrow, selectTriggerVariants } from '../primitives/select.tsx'
 // 单选还是多选由调用方定：选中后收起（单选）用受控的 open，多选就不收；每一行用 selected 画勾（勾在左，没选的也占位，文字才对得齐）。
 // 读屏与测试按 ARIA 的 combobox 认它：触发器 role=combobox（aria-expanded），弹层里 listbox，行 option；option 的 aria-selected 是 cmdk 的「当前高亮」，不是「已选」，
 // 已选看 data-checked（调用方要读屏知道已选，就在行的文字里写上）。过滤用行的 value 与 keywords 模糊匹配；自己排名的传 commandProps={{ shouldFilter: false }}。
+// 行可选带两个槽（#193）：prefix（文字前的头像、图标，纯装饰）与 description（文字下的第二行说明）；都不传就跟以前一样。
+// 要在输入框里带标签的多选，用 TagCombobox（patterns/tag-combobox.tsx）。
 // 文案（占位、没有结果）都由调用方传，包里不写字。
 function Combobox({ ...props }: ComponentProps<typeof Popover>) {
   return <Popover {...props} />
@@ -72,24 +74,59 @@ const ComboboxGroup = CommandGroup
 
 function ComboboxItem({
   selected = false,
+  prefix,
+  description,
   className,
   children,
   ...props
-}: ComponentProps<typeof CommandItem> & {
+}: Omit<ComponentProps<typeof CommandItem>, 'prefix'> & {
   /** Selected: draws a check mark on the left and sets data-checked. */
   selected?: boolean
+  /**
+   * Node before the text (avatar, icon, flag). Decorative: hidden from screen readers, so the row text must carry the name.
+   * 文字前面的节点（头像、图标、旗）；纯装饰，读屏不读，名字要写在行的文字里。
+   */
+  prefix?: ReactNode
+  /**
+   * Second line under the text (a role, an exchange). Searched by the row's value only if you put it in keywords.
+   * 文字下面的第二行说明（角色、交易所）。要按它搜，把它也放进 keywords。
+   */
+  description?: ReactNode
 }) {
   return (
     <CommandItem
       data-slot="combobox-item"
       data-checked={selected ? '' : undefined}
-      className={cn('data-[checked]:font-medium data-[checked]:text-(color:--k-content-primary-foreground)', className)}
+      className={cn(
+        'data-[checked]:font-medium data-[checked]:text-(color:--k-content-primary-foreground)',
+        // 带第二行说明时行自己长高（不然 30 高放不下两行）；不带就还是 30 高，跟以前一样。
+        // Graphite 的 .k-pop-item 规则（theme/graphite.css）把高写死 32、竖向内距 0，选择器比工具类重，所以这里用 ! 压过它。
+        description ? 'h-auto! min-h-[30px] py-1.5!' : undefined,
+        className,
+      )}
       {...props}
     >
       <span aria-hidden="true" className="w-[10px] flex-none text-(color:--k-content-primary-foreground)">
         {selected ? '✓' : ''}
       </span>
-      {children}
+      {prefix ? (
+        <span aria-hidden="true" data-slot="combobox-item-prefix" className="inline-flex flex-none items-center">
+          {prefix}
+        </span>
+      ) : null}
+      {description ? (
+        <span className="flex min-w-0 flex-col gap-px">
+          <span>{children}</span>
+          <span
+            data-slot="combobox-item-description"
+            className="k-text-caption font-normal text-(color:--k-content-secondary-foreground)"
+          >
+            {description}
+          </span>
+        </span>
+      ) : (
+        children
+      )}
     </CommandItem>
   )
 }
