@@ -191,7 +191,8 @@ const HL_LABELS: HypothesisLedgerLabels = {
   watchConfusion: '最容易混淆的地方',
 }
 
-export function HypothesisLedgerUsage() {
+/** defaultView：组件截图截观察表用（#92）；文档站不传，开在假说列表。 */
+export function HypothesisLedgerUsage({ defaultView }: { defaultView?: 'ledger' | 'watch' } = {}) {
   const [now, setNow] = useState(HL_NOW)
   return (
     <div className="gal-stack" style={{ width: '100%' }}>
@@ -208,7 +209,13 @@ export function HypothesisLedgerUsage() {
           <PanelFrameHeader heading="Hypotheses" object="· 演示数据" />
           <PanelFrameBody>
             <div style={{ height: '100%', padding: 8 }}>
-              <HypothesisLedger items={HL_ITEMS} watch={HL_WATCH} now={now} labels={HL_LABELS} />
+              <HypothesisLedger
+                items={HL_ITEMS}
+                watch={HL_WATCH}
+                now={now}
+                labels={HL_LABELS}
+                defaultView={defaultView}
+              />
             </div>
           </PanelFrameBody>
         </PanelFrame>

@@ -4,10 +4,12 @@
 // 布局与交互参照 TradingView 右侧自选栏（主会话 2026-11-15 在真实浏览器里实测，只取布局与行为，不抄代码）：升序 → 降序 → 原顺序循环、
 // 价格尾数闪色。颜色走涨跌语义色。数、列名与读屏名都由调用方传；价格怎么写（位数）由 formatPrice 定，不给就两位小数。
 // 行是统一的行情行 QuoteRow（quote-row.ts，2026-11-18）：{ id, symbol, name, last, change, changePct }；旧的 key / code 照旧认一个版本。
+// 格内排版跟 DataGrid 的 comfortable 档同一份（#92，共用件 cell-type.tsx）：代码画成芯片；可选的成交量列按 locale 缩写（K/M/B ↔ 万/亿）、单位小字。行高照旧 32。
 import { useRef, useState } from 'react'
 import { cn } from '../lib/cn.ts'
 import { useEnterMarks, useFlipList } from '../lib/live.ts'
 import { signed } from '../lib/num.ts'
+import { CodeChip, CompactValue } from './cell-type.tsx'
 import { ChangeText } from './change-text.tsx'
 import { FlashPrice } from './flash-price.tsx'
 import { plainPrice, rowTone, type FormatPrice, type QuoteRow } from './quote-row.ts'
@@ -20,6 +22,8 @@ export type WatchlistRow = QuoteRow & {
   flagged?: boolean
   /** Logo image of the symbol mark; letters are drawn when omitted. */
   logoSrc?: string
+  /** Volume, abbreviated by locale (K/M/B or 万/亿); the column shows when labels.columns.vol is given. */
+  volume?: number
 }
 
 /**
@@ -40,8 +44,8 @@ export function toWatchlistRow(row: WatchlistRow | LegacyWatchlistRow): Watchlis
 }
 
 export type WatchlistLabels = {
-  /** Header text of the four columns. */
-  columns: Record<WatchlistSortKey, string>
+  /** Header text of the four columns, plus an optional volume column (vol). */
+  columns: Record<Exclude<WatchlistSortKey, 'vol'>, string> & { vol?: string }
   /** Accessible name of the whole table. */
   list: string
   /** Text shown when there are no rows. */
@@ -57,6 +61,10 @@ export type WatchlistProps = {
   labels: WatchlistLabels
   /** Writes a price or change amount; two decimals when omitted. */
   formatPrice?: FormatPrice
+  /** Locale of the volume abbreviations (en-US K/M/B/T, zh-CN 万/亿); defaults to en-US. */
+  locale?: string
+  /** Unit written small after the volume. */
+  volumeUnit?: string
   /** Sort (controlled); null is the original order. */
   sort?: WatchlistSort | null
   /** Called with the next sort when a column header is clicked. */
@@ -72,11 +80,14 @@ export type WatchlistProps = {
 }
 
 const KEYS: WatchlistSortKey[] = ['symbol', 'last', 'chg', 'chgPct']
+const WITH_VOLUME: WatchlistSortKey[] = [...KEYS, 'vol']
 
 export function Watchlist({
   rows,
   labels,
   formatPrice = plainPrice,
+  locale,
+  volumeUnit,
   sort,
   onSortChange,
   onSelect,
@@ -85,6 +96,7 @@ export function Watchlist({
   className,
 }: WatchlistProps) {
   const select = onSelect ?? onRow
+  const keys = labels.columns.vol === undefined ? KEYS : WITH_VOLUME
   const [innerSort, setInnerSort] = useState<WatchlistSort | null>(null)
   const active = sort === undefined ? innerSort : sort
   const shown = sortRows(rows.map(toWatchlistRow), active)
@@ -107,7 +119,7 @@ export function Watchlist({
     <table ref={table} className={cn('k-watch', className)} data-slot="watchlist" aria-label={labels.list}>
       <thead>
         <tr>
-          {KEYS.map((key) => (
+          {keys.map((key) => (
             <th
               key={key}
               scope="col"
@@ -155,7 +167,7 @@ export function Watchlist({
                     </svg>
                   </button>
                   <SymbolMark symbol={row.symbol} name={row.name} src={row.logoSrc} size="sm" />
-                  <span className="k-watch-code">{row.symbol}</span>
+                  <CodeChip className="k-watch-code">{row.symbol}</CodeChip>
                 </span>
               </th>
               <td className="is-num">
@@ -167,6 +179,11 @@ export function Watchlist({
               <td className="is-num">
                 <ChangeText value={row.changePct} flash />
               </td>
+              {keys.length > KEYS.length && (
+                <td className="is-num k-watch-vol">
+                  <CompactValue value={row.volume} locale={locale} unit={volumeUnit} />
+                </td>
+              )}
             </tr>
           )
         })}

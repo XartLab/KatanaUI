@@ -74,6 +74,11 @@
           "target": "~/src/katana/ui/theme/calendar-heatmap.css"
         },
         {
+          "path": "src/theme/cell-type.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/cell-type.css"
+        },
+        {
           "path": "src/theme/chart-kit.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/chart-kit.css"
@@ -1208,6 +1213,11 @@
           "path": "src/lib/chart/format/change.ts",
           "type": "registry:lib",
           "target": "~/src/katana/ui/lib/chart/format/change.ts"
+        },
+        {
+          "path": "src/lib/chart/format/compact.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/lib/chart/format/compact.ts"
         },
         {
           "path": "src/lib/chart/format/decimal-step.ts",
@@ -4022,6 +4032,23 @@
       ]
     },
     {
+      "name": "cell-type",
+      "type": "registry:component",
+      "title": "Cell Type",
+      "description": "上面一排页签（指数、自选、热门……），下面是当前这组的行情表：名称与代码、迷你图、最新价、涨跌幅。由 Tabs 与 Sparkline 组出来；行就是 Watchlist 的行（统一行情行加 spark），值是数，价格文字由 formatPrice 写。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/quant-format"
+      ],
+      "files": [
+        {
+          "path": "src/quotes/cell-type.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quotes/cell-type.tsx"
+        }
+      ]
+    },
+    {
       "name": "change-text",
       "type": "registry:component",
       "title": "Change Text",
@@ -4322,6 +4349,7 @@
       "title": "Quote Table",
       "description": "上面一排页签（指数、自选、热门……），下面是当前这组的行情表：名称与代码、迷你图、最新价、涨跌幅。由 Tabs 与 Sparkline 组出来；行就是 Watchlist 的行（统一行情行加 spark），值是数，价格文字由 formatPrice 写。",
       "registryDependencies": [
+        "@katana/cell-type",
         "@katana/cn",
         "@katana/flash-price",
         "@katana/live",
@@ -4753,6 +4781,7 @@
       "title": "Watchlist",
       "description": "照 TradingView 右侧自选栏（2026-11-15 实测）：列 Symbol / Last / Chg / Chg%，行首小旗标与字母圆徽标；最新价变动时只有变了的尾数闪涨跌色、约 1 秒落回；点列头排序（升序、降序、回原顺序）。价格怎么写由 formatPrice 定，数与文字由调用方传。",
       "registryDependencies": [
+        "@katana/cell-type",
         "@katana/change-text",
         "@katana/cn",
         "@katana/flash-price",
@@ -6202,6 +6231,7 @@
         "lucide-react@1.67.0"
       ],
       "registryDependencies": [
+        "@katana/cell-type",
         "@katana/cn",
         "@katana/event-calendar-model",
         "@katana/event-calendar-types",
@@ -6376,10 +6406,10 @@
       "title": "Limit Ladder",
       "description": "A 股专有件（连板、涨停、炸板是 A 股的概念）。按板位从高到低分层的涨停梯队：顶上一行汇总读数（涨停只数、最高板、整体晋级率），下面按层：层头是粗体板位、只数与晋级率（加 2px 细进度条），层间留白；层里列个股：徽标、代码（主）、名称（次）。炸板、跌停、没涨停的文字淡显，状态胶囊保持全亮。数据与文字都由调用方传，件不认数据集。",
       "registryDependencies": [
+        "@katana/cell-type",
         "@katana/change-text",
         "@katana/cn",
         "@katana/live",
-        "@katana/quant-format",
         "@katana/rolling-text",
         "@katana/row-actions",
         "@katana/symbol-mark"
@@ -7449,6 +7479,7 @@
       ],
       "registryDependencies": [
         "@katana/button",
+        "@katana/cell-type",
         "@katana/checkbox",
         "@katana/chip-group",
         "@katana/cn",
@@ -7468,9 +7499,14 @@
         "@katana/num",
         "@katana/popover",
         "@katana/quant-format",
+        "@katana/range-bar",
+        "@katana/rating-gauge-model",
+        "@katana/rating-text",
         "@katana/row-actions",
+        "@katana/sparkline",
         "@katana/symbol-mark",
         "@katana/text-measure",
+        "@katana/tone",
         "@katana/tone-text"
       ],
       "files": [

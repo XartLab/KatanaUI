@@ -6,7 +6,7 @@ import { RollingText } from '../katana/rolling-text.tsx'
 import { RowActions, RowContextMenu, type RowAction } from '../quotes/row-actions.tsx'
 import { SymbolMark } from '../quotes/symbol-mark.tsx'
 import { ChangeText } from '../quotes/change-text.tsx'
-import { formatVolume } from '../lib/chart/format/index.ts'
+import { CompactValue } from '../quotes/cell-type.tsx'
 
 // 连板天梯（#12）：顶上一行汇总读数，下面按板位从高到低分层，层头写板位、只数与晋级率，层里列个股；炸板、跌停、没涨停的票文字淡显、状态胶囊保持全亮。
 // 画法参照 KATANAview 的「涨停梯队」（分组列表 + 晋级条 + 状态标签，用户在看板截图里看过），只取结构与版式，实现在这里重写。
@@ -15,6 +15,8 @@ import { formatVolume } from '../lib/chart/format/index.ts'
 // 包里不带语言、不认任何数据集：层号单位、晋级率文字、状态名、列名都由调用方传；数字、涨跌幅的格式在件里。
 // 刷新动效全走共用层 lib/live.ts（皮肤在 theme/live.css）：涨幅、封单额变了闪涨跌色，汇总读数滚动；封板→炸板整行警示琥珀闪，炸板→回封闪涨色；
 // 升板时整行 FLIP 移到新层并闪涨色；新晋的票用蓝色强调线高亮。数据不变就一动不动，首次渲染也不闪。
+// 封单额（#92）：按 locale 缩写（zh-CN 是 万 / 亿，en-US 是 K / M / B）；中文缩写自带量级，不再挂币种（用户 2026-11-18 定），
+// 只有非中文时才把 labels.sealUnit 写成次要色小字（跟 DataGrid 的单位同一份，quotes/cell-type.tsx）；行高照旧 30。
 
 export type LadderStatus = 'sealed' | 'broken' | 'down' | 'none'
 
@@ -52,6 +54,8 @@ export type LimitLadderLabels = {
   count: (n: number) => string
   status: Record<LadderStatus, string>
   columns: { name: string; change: string; firstSeal: string; sealAmount: string; opens: string; industry: string }
+  /** 封单额后的单位小字（「CNY」）；locale 是中文（万 / 亿）时不写，中文缩写自带量级。省略不写单位。 */
+  sealUnit?: string
   /** 顶部汇总读数的名字：涨停只数、最高板、整体晋级率。 */
   summary: { sealed: string; highest: string; promoteRate: string }
   /** 整张天梯的读屏名。 */
@@ -68,12 +72,15 @@ export type LimitLadderProps = {
   /** 选中的个股代码。 */
   selected?: string | null
   onSelect?: (item: LadderItem) => void
+  /** 封单额缩写用哪种语言（zh-CN 是 万 / 亿，en-US 是 K / M / B）；省略是 en-US。 */
+  locale?: string
   /** 行快捷操作（#23，一般传 symbolMenu(...)）：悬停或键盘落到这一行时右端浮出前几颗带图标的按钮，右键（菜单键、Shift+F10）出整份菜单；不传就没有。 */
   rowActions?: (item: LadderItem) => readonly RowAction[]
   className?: string
 }
 
 const DASH = '—'
+const zhLocale = (locale: string | undefined) => locale?.toLowerCase().startsWith('zh') ?? false
 
 /** 一行个股：数值、状态的刷新动效挂在这里；换层时这一行会在新的层容器里重新挂载，所以「刚升板」由外面按 代码@板位 判断后传进来（moved）。 */
 function LadderRow({
@@ -85,9 +92,11 @@ function LadderRow({
   rowActions,
   entering,
   moved,
+  locale,
 }: {
   item: LadderItem
   labels: LimitLadderLabels
+  locale?: string
   selected: boolean
   tabbable: boolean
   onSelect?: (item: LadderItem) => void
@@ -139,7 +148,11 @@ function LadderRow({
         data-flash={seal.flash ?? undefined}
         data-slot="ladder-seal"
       >
-        {!item.sealAmount ? DASH : formatVolume(item.sealAmount)}
+        {!item.sealAmount ? (
+          DASH
+        ) : (
+          <CompactValue value={item.sealAmount} locale={locale} unit={zhLocale(locale) ? undefined : labels.sealUnit} />
+        )}
       </span>
       <span className="k-ladder-num">{item.opens ?? DASH}</span>
       <span className="k-ladder-industry">{item.industry ?? DASH}</span>
@@ -170,7 +183,15 @@ function PromoteText({ done, total, labels }: { done: number; total: number; lab
   )
 }
 
-export function LimitLadder({ levels, labels, selected = null, onSelect, rowActions, className }: LimitLadderProps) {
+export function LimitLadder({
+  levels,
+  labels,
+  selected = null,
+  onSelect,
+  rowActions,
+  locale,
+  className,
+}: LimitLadderProps) {
   const uid = useId()
   const root = useRef<HTMLDivElement>(null)
   // js/copying-array-methods：toSorted 替代「展开复制再 sort」。
@@ -275,6 +296,7 @@ export function LimitLadder({ levels, labels, selected = null, onSelect, rowActi
                     rowActions={rowActions}
                     entering={entering.has(item.code)}
                     moved={!entering.has(item.code) && tiered.has(`${item.code}@${level.board}`)}
+                    locale={locale}
                   />
                 ))}
               </div>
