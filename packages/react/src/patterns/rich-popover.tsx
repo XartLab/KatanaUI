@@ -63,10 +63,7 @@ export function RichPopover({
           side={side}
           align={align}
           sideOffset={8}
-          className={cn(
-            'k-text-body z-50 w-72 rounded-[var(--radius-overlay)] border border-alpha-white-6 bg-surface-4 p-3 text-ink-2 outline-0 shadow-[var(--shadow-overlay)]',
-            className,
-          )}
+          className={cn('k-mat-overlay k-text-body z-50 w-72 p-3 text-ink-2 outline-0', className)}
         >
           <div className="k-text-data flex items-center gap-2 text-ink">
             {icon}

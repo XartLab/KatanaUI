@@ -8,9 +8,6 @@
   gap: 4px;
   min-width: 0;
   padding: 10px 12px;
-  border: 1px solid var(--k-separable-tertiary-borderColor);
-  border-radius: var(--radius-control);
-  background: var(--k-surface-base-background);
   color: var(--k-content-primary-foreground);
   font: var(--text-data) var(--font-sans);
   font-variant-numeric: tabular-nums;
