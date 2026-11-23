@@ -408,6 +408,7 @@
   --ink-200: #3f3b33;
   --ink-300: #6a655a;
   --ink-400: #a9a497;
+  --status-neutral: #59544a;
   --signal-orange: #d14e0a;
   --signal-orange-dim: #f1c9b2;
   --signal-amber: #9a6e00;
@@ -518,6 +519,7 @@
   --ink-200: #b9c3ce;
   --ink-300: #98a3b0;
   --ink-400: #6c7684;
+  --status-neutral: #aab5c1;
   --signal-orange: #d4804f;
   --signal-amber: #c99a3e;
   --signal-green: #62b375;
