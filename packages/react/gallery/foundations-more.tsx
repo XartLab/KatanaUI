@@ -773,56 +773,92 @@ function ThemingPage() {
   )
 }
 
+// 圆角写 Graphite / Console 两个主题的值（tokens.json：Graphite 浮层 8 · 控件 6，Console 10 · 7，面板两边都是 0）。
 const MATERIALS = [
   [
     'k-mat-card',
     '卡片',
     '--radius-control',
-    'surface-base',
-    'separable-tertiary',
+    '6 / 7',
+    'surface-base（bg-100）',
+    'separable-tertiary（line-100）',
     '—',
-    '页面里的一张独立小卡：SwapPanel、SwitchboardCard、HoverExpand',
+    '页面里的一张独立小卡：QuoteCard、MiniChart、SymbolInfo、SymbolOverview、CompanyProfile、SwapPanel、SwitchboardCard、HoverExpand、AnimatedTags 的框、WebSearch 的占位卡',
   ],
   [
     'k-mat-block',
     '内容块',
     '--radius-overlay',
-    'surface-base',
-    'separable-tertiary',
+    '8 / 10',
+    'surface-base（bg-100）',
+    'separable-tertiary（line-100）',
     '—',
-    '对话流与文档里的一整块：AiDiff、AiToolCall、AiArtifact、CodeBlock',
+    '对话流与文档里的一整块：AiPromptInput、AiDiff、AiToolCall、AiArtifact、AiApproval、AiTaskList、CodeBlock',
   ],
   [
     'k-mat-inset',
     '内嵌区',
     '--radius-control',
-    'container-secondary',
-    'separable-tertiary',
+    '6 / 7',
+    'container-secondary（bg-200）',
+    'separable-tertiary（line-100）',
     '—',
-    '卡片里再圈出的一块、输入区：AiPromptInput、TaskList',
+    '卡片里再圈出的一块：AiPromptInput 的附件、TaskList 的行、WebSearch 的来源格',
   ],
   [
     'k-mat-overlay',
     '浮层',
     '--radius-overlay',
-    'surface-overlay',
-    'overlay',
+    '8 / 10',
+    'surface-overlay（bg-400）',
+    'overlay（7% 白）',
     '--k-overlay-shadow',
-    '浮在页面上面的：Popover、菜单、HoverCard',
+    '浮在页面上面的：Popover、菜单（DropdownMenu、ContextMenu、Menubar 都经 menuContainerClass）、HoverCard、NavigationMenu 的面板、RichPopover、Toast、AiContextMeter 的明细、WebSearch 的预览',
   ],
-  ['k-panel', '面板', '--radius-panel', 'surface-raised', '--hairline', '--plate', '工作台里的一个面板：PanelFrame'],
+  [
+    'k-panel',
+    '面板',
+    '--radius-panel',
+    '0 / 0',
+    'surface-raised（bg-300）',
+    '--hairline',
+    '--plate',
+    '工作台里的一个面板：PanelFrame',
+  ],
 ] as const
+
+// 写成字符串而不是 JSX 文字：JSX 里换行会变成一个空格，中文中间会多出空格。
+const MATERIAL_THEME_RULES = [
+  '状态色盖在材质上：调用处加一个描边色的工具类就行（AiPromptInput 聚焦时 border-ink-4，Toast 左边 2px 色条是 border-l-2 加 TONE 色），不另起一套材质。',
+  'Graphite（默认主题）下，Popover、下拉与右键菜单、Menubar、Select、HoverCard、对话框另由 graphite.css 按 data-slot 与 k-pop 换成玻璃：底 --glass-bg（72% 不透明的 #202020）、边 --glass-edge（10% 白）、模糊 --glass-blur（24px、饱和 1.7），阴影是顶部 1px 内高光加 --glass-shadow（#131）。',
+  'k-mat-overlay 自己是实色：用它但不在那份选择器里的 RichPopover、Toast、AiContextMeter 明细、WebSearch 预览、NavigationMenu 面板，在 Graphite 下仍是实色。',
+  'Graphite 下 --hairline 换成 line-100 的 70%（#131），面板的描边比 Console 淡。',
+]
+
+const MATERIAL_SOURCES = [
+  '2026-11-19 清点 src/ 里手拼「圆角 + 描边 + 底色」的容器共 19 处、8 种组合；前三种占 14 处，原样收成上面三个类，换上后像素不变（#73）。',
+  '2026-11-23 在 main（81228813，#131 之后）上重清，口径是同一个元素上同时写了圆角、非 0 的描边、不透明的底色（TSX 的 className / cn() 与 CSS 的同一条规则，不含材质类自己）：共 106 处。其中 49 处是控件与小件（按钮、输入框、下拉触发、芯片、标签、键帽、勾选、滑块把手、状态点），各有自己的件，不归材质；容器 57 处。',
+  '这次换上材质类 14 处，值逐项相等、像素不变：k-mat-overlay 8 处（Popover、menuContainerClass、HoverCard、NavigationMenu 面板、RichPopover、Toast、AiContextMeter 明细、WebSearch 预览；后四处原来写 alpha-white-6、surface-4、--shadow-overlay，跟 overlay 特征是同一组值）；k-mat-card 5 处（QuoteCard、MiniChart、SymbolInfo、SymbolOverview、CompanyProfile，各自 CSS 里同值的三行删掉）；k-mat-block 1 处（AiPromptInput 外框）。现在 28 处容器用材质类。',
+  '值已经等于配方、留到下一批再换的 3 处：OrderTicket 外框（= k-mat-card）、Calendar 的卡与 ListBox 带框（= k-mat-inset：container 边与 separable-tertiary 都是 line-100）。这几件 #103、#104 刚改过，避开并行的改动。',
+  '还有 40 处容器不在配方里，没动，待用户定并进配方还是保留。重复两次以上的组合：surface-raised 底 + 7% 白边 + overlay 圆角（GlowHoverCard、TiltCard、ExpandableCards）；对话框（14px 圆角、raised 底、dialog 边与阴影：Dialog、SymbolSearch）；8% 白边 + 4% 白底（SwapPanel 两格）；8px 圆角 + 9% 白边 + container-tertiary 底（DecisionQueue、HypothesisLedger 的卡）。',
+  '离配方只差一项的：Card（container-subtle 边，底按 variant）、a2ui 的 Command（overlay 圆角配 container-secondary 底）、.k-render（8px 写死，Console 下不等于 overlay 的 10）、.k-sm-cell（4px 写死，接近 inset）、TimeMachineStack（边是 separable-secondary 8%，浮层是 7%）、Select 的下拉（7px、compact 边与阴影）、Alert 与 Menubar 的条（container-subtle 边）。',
+  '其余是单件自己的样子：MacTerminal、HolographicFoil、FolderReveal、FloatingNavbar、ExpandableNavbar、Dock 的条与提示、AnimatedFileUpload 的文件行、PixelBrushCanvas、ComponentCatalog 的缩略图、AiMessage 气泡、EventTimeline 两处、BrushStrip、Loading 两条、MarketHeatmap 悬停卡、NewsFeed 卡片版、PeerCards 主卡、Sparkline 提示、StrategyReport 读数格、Whiteboard 节点与分组。',
+  '待用户定：Graphite 下 k-mat-overlay 要不要也上玻璃（把它加进 graphite.css 的玻璃选择器）。加了，上面「仍是实色」的五处跟着变玻璃，像素会变。',
+  '待用户定：间距在中密度是 3 / 6 / 9 / 12 / 18，高密度是 2 / 4 / 6 / 8 / 12，要不要统一成 4px 体系。',
+]
 
 function MaterialsPage() {
   return (
     <>
       <Lede>材质 = 底色 + 描边 + 圆角（+ 阴影）的固定组合。做容器时挑一个材质类，不再手拼这四样。</Lede>
       <Table
-        head={['类', '名字', '圆角', '底色', '描边', '阴影', '用在']}
-        rows={MATERIALS.map(([cls, name, radius, bg, border, shadow, use]) => [
+        head={['类', '名字', '圆角（Graphite / Console）', '底色', '描边', '阴影', '用在']}
+        rows={MATERIALS.map(([cls, name, radius, px, bg, border, shadow, use]) => [
           <code key="c">{cls}</code>,
           name,
-          <code key="r">{radius}</code>,
+          <span key="r">
+            <code>{radius}</code> {px}
+          </span>,
           bg,
           border,
           shadow,
@@ -847,19 +883,15 @@ function MaterialsPage() {
         <li>材质类只定这四样；内边距、宽高、排布照旧用工具类写在调用处。</li>
         <li>类都包在 :where() 里（优先级 0），调用处的工具类能压过；要改整套样子去改 token，不在各件里另调。</li>
         <li>输入框的材质在 Input（editable 特征），不在这张表里；读数窗在 Lcd。</li>
+        {MATERIAL_THEME_RULES.map((rule) => (
+          <li key={rule}>{rule}</li>
+        ))}
       </ul>
       <h2>出处与没收进来的</h2>
       <ul className="gal-list">
-        <li>
-          2026-11-19 清点 src/ 里手拼「圆角 + 描边 + 底色」的容器共 19 处、8 种组合；前三种占 14
-          处，原样收成上面三个类，换上后像素不变。
-        </li>
-        <li>
-          还有 5 处不在配方里，没动，待用户定是并进配方还是保留：WebSearch 结果卡（--radius-md、surface-overlay）、 a2ui
-          的 Command（overlay 圆角、container-secondary）、PixelBrushCanvas、HolographicFoil 两处。
-        </li>
-        <li>浮层材质现在各浮层件里还是各写一遍同样的四样（Popover、菜单、HoverCard 等），下一步换成 k-mat-overlay。</li>
-        <li>待用户定：间距在中密度是 3 / 6 / 9 / 12 / 18，高密度是 2 / 4 / 6 / 8 / 12，要不要统一成 4px 体系。</li>
+        {MATERIAL_SOURCES.map((line) => (
+          <li key={line}>{line}</li>
+        ))}
       </ul>
     </>
   )

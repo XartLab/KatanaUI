@@ -208,7 +208,7 @@ import {
   TextareaDemo,
   ToggleDemo,
 } from './pages/smoothui-forms.tsx'
-import { OrderTicketUsage } from './usage/OrderTicketUsage.tsx'
+import { OrderTicketDemo } from './pages/order-ticket.tsx'
 import { PositionCalculatorUsage } from './usage/PositionCalculatorUsage.tsx'
 import { ComponentCatalogUsage } from './usage/ComponentCatalogUsage.tsx'
 import { PanelTabsUsage } from './usage/PanelTabsUsage.tsx'
@@ -628,7 +628,7 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'morph-toggle': MorphToggleDemo,
   'morph-icon': MorphIconDemo,
   'swap-panel': SwapPanelDemo,
-  'order-ticket': OrderTicketUsage,
+  'order-ticket': OrderTicketDemo,
   'position-calculator': PositionCalculatorUsage,
   'panel-tabs': PanelTabsUsage,
   'component-catalog': ComponentCatalogUsage,
