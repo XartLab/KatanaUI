@@ -34,6 +34,61 @@ function Stage({ children, top = false }: { children: React.ReactNode; top?: boo
   )
 }
 
+/** 受控的另一种用法：调用方不让关（onItemsChange 里拒绝变短的表），叠放层不会自己把被拒绝的变更带进去。 */
+function RejectingStack() {
+  const [items, setItems] = useState<ToastStackItem[]>(
+    ['A', 'B', 'C'].map((name) => ({
+      id: `r${name}`,
+      title: `条目 ${name}（调用方不让关）`,
+      description: '关闭钮点了没反应，条目表不变（示例）',
+      duration: Infinity,
+      // 最前面的 C 带动作钮：被拒绝的关闭不能让它的结果态换不成。
+      ...(name === 'C'
+        ? { action: { label: '撤销', result: { title: '已恢复', description: '换成结果态不算变短，调用方接受' } } }
+        : {}),
+    })),
+  )
+  const [rejected, setRejected] = useState(0)
+  return (
+    <>
+      <Stage>
+        <ToastStack
+          inline
+          labels={{ region: '拒绝关闭的叠放提示演示', close: '关掉这条提示' }}
+          items={items}
+          onItemsChange={(next) => {
+            if (next.length < items.length) {
+              setRejected((n) => n + 1)
+              return
+            }
+            setItems(next)
+          }}
+        />
+      </Stage>
+      <div style={{ display: 'grid', gap: 8, alignContent: 'start' }}>
+        <Button
+          onClick={() =>
+            setItems((list) => [
+              ...list,
+              {
+                id: `r${list.length}`,
+                title: `条目 ${list.length + 1}`,
+                description: '调用方压的（示例）',
+                duration: Infinity,
+              },
+            ])
+          }
+        >
+          压一条
+        </Button>
+        <p className="gal-note" data-testid="rejecting-count">
+          条目表 {items.length} 条，拒绝了 {rejected} 次关闭
+        </p>
+      </div>
+    </>
+  )
+}
+
 export function ToastStackDemo() {
   const stack = useRef<ToastStackHandle>(null)
   const count = useRef(0)
@@ -93,6 +148,9 @@ export function ToastStackDemo() {
             调用方的条目表里有 {controlled.length} 条
           </p>
         </div>
+      </Row>
+      <Row name="受控（调用方拒绝关闭）">
+        <RejectingStack />
       </Row>
     </>
   )

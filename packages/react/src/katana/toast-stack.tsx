@@ -6,6 +6,7 @@ import {
   motion,
   useMotionValue,
   useReducedMotion,
+  useIsPresent,
   useTransform,
   type PanInfo,
 } from 'motion/react'
@@ -16,6 +17,7 @@ import {
   useLayoutEffect,
   useRef,
   useState,
+  useSyncExternalStore,
   type ComponentProps,
   type ReactNode,
   type Ref,
@@ -46,7 +48,11 @@ import {
 // 条目表受控（items + onItemsChange）或不受控（defaultItems，加上 ref 的 push）都行；定时、暂停、最多条数由这一层管。
 // 读屏与键盘（modern-web-guidance 的 persistent-toast-notifications）：区域是 role=region、aria-live=assertive，名字由调用方传；
 //   关闭钮与动作钮都是普通 button，Tab 进叠层就展开；焦点在某一条上时那条的计时暂停；关掉有焦点的一条，焦点移到相邻的一条；
-//   点动作钮后焦点落到同一条的关闭钮，不丢到 body 上。
+//   点动作钮后焦点落到同一条的关闭钮，不丢到 body 上；关掉最后一条（或被 max 裁掉）有焦点的条时，焦点还给进叠层前拿着焦点的元素（照 lib/opener-focus 的思路）。
+//   结果态换内容时标题只是文本节点的改动，所以区域是 aria-relevant="additions text"（不靠换 key 重挂，那会丢焦点）。
+//   看不见的层（第 4 层以后、减弱动效下收拢的后面几层）与正在退场的条用 inert，不用 aria-hidden：里面的钮 Tab 不到，也没有「焦点在 aria-hidden 里」的违规。
+// 页面不可见（切走标签页）时自动暂停计时，回来接着走：后台的定时器照跑会让「撤销」的窗口在没人看见时过完。
+// 触屏：点一下收拢的叠层（不是点在钮上）展开，点叠层外收回；没有悬停可借。
 // prefers-reduced-motion：不缩放、不滑、不弹：收拢只留最前面一条，别的淡出；展开瞬间摆好，只淡入淡出；不接滑动手势。
 
 /** 一条结果态：点了动作钮以后，这一条原地换成它。 */
@@ -115,7 +121,7 @@ export type ToastStackProps = {
   resultDuration?: number
   /** Force expanded or collapsed; leave it out to follow the pointer and keyboard focus (true also pauses the timers). */
   expanded?: boolean
-  /** Pause every timer from outside, for example while the page is hidden; expanded, hovered and keyboard-focused stacks already pause. */
+  /** Pause every timer from outside; expanded, hovered, keyboard-focused, touch-opened stacks and a hidden page (tab switched away) already pause by themselves. */
   paused?: boolean
   /** Render in the document flow instead of fixed to a window corner (docs and screenshots). */
   inline?: boolean
@@ -138,6 +144,19 @@ const FALLBACK_HEIGHT = 60
 const ENTER_OFFSET = 24
 /** 退场时淡出的时长（秒）；滑走的那一条在这段时间里滑出去。 */
 const EXIT_SECONDS = 0.28
+
+const subscribeVisibility = (notify: () => void) => {
+  document.addEventListener('visibilitychange', notify)
+  return () => document.removeEventListener('visibilitychange', notify)
+}
+
+/** 页面不可见（切走了标签页、窗口被最小化）。服务端渲染时当作可见。 */
+const usePageHidden = () =>
+  useSyncExternalStore(
+    subscribeVisibility,
+    () => document.hidden,
+    () => false,
+  )
 
 /** 动作钮：Toast 里的小按钮（sm 档），读屏名就是钮上的字。 */
 function ToastAction({ className, ...props }: ComponentProps<typeof Button>) {
@@ -168,6 +187,7 @@ type EntryProps = {
 
 function ToastStackEntry({ item, index, slot, toward, reduced, labels, onHeight, onAction, onDismiss }: EntryProps) {
   const tone = item.tone ?? 'neutral'
+  const present = useIsPresent()
   const inner = useRef<HTMLDivElement>(null)
   const dragged = useRef(false)
   const x = useMotionValue(0)
@@ -204,6 +224,8 @@ function ToastStackEntry({ item, index, slot, toward, reduced, labels, onHeight,
 
   // 减弱动效：收拢时后面的条不挪不缩，原地淡掉；展开时才按列表摆开。
   const still = reduced && slot.clamped
+  // 实际画出来是不是看不见：看不见的层、正在退场的条都不让聚焦（inert 同时挡指针、焦点与读屏）。
+  const drawnOpacity = still ? 0 : slot.opacity
   const transition = reduced
     ? { default: { duration: 0 }, opacity: { duration: 0.12 } }
     : {
@@ -223,13 +245,13 @@ function ToastStackEntry({ item, index, slot, toward, reduced, labels, onHeight,
         y: still ? 0 : slot.y,
         scale: reduced ? 1 : slot.scale,
         // 减弱动效：收拢时后面的不缩不挪，直接淡掉，只留最前面一条。
-        opacity: reduced && slot.clamped ? 0 : slot.opacity,
+        opacity: drawnOpacity,
         height: slot.height,
       }}
       exit={{ opacity: 0, scale: reduced ? 1 : 0.96, transition: { duration: reduced ? 0.12 : EXIT_SECONDS } }}
       transition={transition}
       style={{ zIndex: index + 1, transformOrigin: toward < 0 ? 'bottom center' : 'top center' }}
-      aria-hidden={slot.opacity === 0 ? true : undefined}
+      inert={!present || drawnOpacity === 0 ? true : undefined}
       className={cn(
         'absolute inset-x-0 m-0 list-none p-0 data-[clamped]:overflow-hidden',
         toward < 0 ? 'bottom-0' : 'top-0',
@@ -293,50 +315,69 @@ export function ToastStack({
   useEffect(() => {
     listRef.current = list
   }, [list])
+  // 受控时 commit 不改 listRef（改了的话，调用方在 onItemsChange 里拒绝这次变更、items 没变，listRef 就停在没被接受的表上，
+  // 下一次 push 或到点的计时器会把被拒的变更悄悄带上）：只记一份「同一个 tick 里连着几次操作」要用的待确认表，微任务后作废。
+  const pending = useRef<ToastStackItem[] | null>(null)
+  const current = useCallback(() => pending.current ?? listRef.current, [])
   const region = useRef<HTMLDivElement>(null)
   const counter = useRef(0)
+  // 焦点是从哪儿进叠层的：叠层里最后一条被关掉时还给它。
+  const returnTo = useRef<HTMLElement | null>(null)
+
+  // 有焦点的条要被摘掉（关闭、清空、被 max 裁掉）：焦点先挪到相邻的一条的关闭钮；没有相邻的就还给进叠层前的元素；都不行再失焦。
+  // 摘掉的元素不一定发 blur，所以主动挪走，让 onBlur 放掉键盘焦点状态。
+  const rescueFocus = useCallback((before: ToastStackItem[], after: ToastStackItem[]) => {
+    const root = region.current
+    const active = document.activeElement
+    if (!root || !(active instanceof HTMLElement) || !root.contains(active)) return
+    const owner = active.closest<HTMLElement>('[data-toast-id]')?.dataset.toastId
+    const keep = new Set(after.map((item) => item.id))
+    if (owner === undefined || keep.has(owner)) return
+    const at = before.findIndex((item) => item.id === owner)
+    // 先试更新的一条，再试更旧的：看不见（inert）的层聚焦不上，就试下一个。
+    const near = [...before.slice(at + 1), ...before.slice(0, Math.max(at, 0)).reverse()].filter((item) =>
+      keep.has(item.id),
+    )
+    for (const item of near) {
+      root
+        .querySelector<HTMLElement>(`[data-toast-id="${CSS.escape(item.id)}"] [data-slot="toast-close"]`)
+        ?.focus({ preventScroll: true })
+      const now = document.activeElement?.closest<HTMLElement>('[data-toast-id]')?.dataset.toastId
+      if (now !== undefined && now !== owner && root.contains(document.activeElement)) return
+    }
+    const back = returnTo.current
+    if (back?.isConnected) back.focus({ preventScroll: true })
+    else active.blur()
+  }, [])
 
   const commit = useCallback(
     (next: ToastStackItem[]) => {
       const kept = next.slice(-Math.max(1, max))
-      listRef.current = kept
-      if (!controlled) setOwn(kept)
+      rescueFocus(current(), kept)
+      if (controlled) {
+        pending.current = kept
+        queueMicrotask(() => (pending.current = null))
+      } else {
+        listRef.current = kept
+        setOwn(kept)
+      }
       onItemsChange?.(kept)
     },
-    [controlled, max, onItemsChange],
+    [controlled, current, max, onItemsChange, rescueFocus],
   )
-
-  // 关掉有焦点的一条：焦点先挪到相邻一条的关闭钮，不丢到 body 上。
-  const moveFocusFrom = useCallback((id: string) => {
-    const root = region.current
-    const current = listRef.current
-    const at = current.findIndex((item) => item.id === id)
-    const li = root?.querySelector(`[data-toast-id="${CSS.escape(id)}"]`)
-    if (!root || at < 0 || !li?.contains(document.activeElement)) return
-    const next = current[at + 1] ?? current[at - 1]
-    if (!next) {
-      // 没有相邻的了：主动失焦，让 onBlur 放掉键盘焦点状态（元素被摘掉时浏览器不一定发 blur）。
-      if (document.activeElement instanceof HTMLElement) document.activeElement.blur()
-      return
-    }
-    root
-      .querySelector<HTMLElement>(`[data-toast-id="${CSS.escape(next.id)}"] [data-slot="toast-close"]`)
-      ?.focus({ preventScroll: true })
-  }, [])
 
   const dismiss = useCallback(
     (id: string) => {
-      const current = listRef.current
-      if (!current.some((item) => item.id === id)) return
-      moveFocusFrom(id)
-      commit(current.filter((item) => item.id !== id))
+      const now = current()
+      if (!now.some((item) => item.id === id)) return
+      commit(now.filter((item) => item.id !== id))
     },
-    [commit, moveFocusFrom],
+    [commit, current],
   )
 
   const act = useCallback(
     (id: string) => {
-      const item = listRef.current.find((entry) => entry.id === id)
+      const item = current().find((entry) => entry.id === id)
       const action = item?.action
       if (!item || !action) return
       action.onAction?.(item)
@@ -350,7 +391,7 @@ export function ToastStack({
       if (li?.contains(document.activeElement))
         li.querySelector<HTMLElement>('[data-slot="toast-close"]')?.focus({ preventScroll: true })
       commit(
-        listRef.current.map((entry) =>
+        current().map((entry) =>
           entry.id === id
             ? {
                 id,
@@ -364,7 +405,7 @@ export function ToastStack({
         ),
       )
     },
-    [commit, dismiss, resultDuration],
+    [commit, current, dismiss, resultDuration],
   )
 
   useImperativeHandle(
@@ -372,18 +413,18 @@ export function ToastStack({
     () => ({
       push: (item) => {
         const id = item.id ?? `toast-stack-${++counter.current}`
-        const current = listRef.current
+        const now = current()
         commit(
-          current.some((entry) => entry.id === id)
-            ? current.map((entry) => (entry.id === id ? { ...entry, ...item, id } : entry))
-            : [...current, { ...item, id }],
+          now.some((entry) => entry.id === id)
+            ? now.map((entry) => (entry.id === id ? { ...entry, ...item, id } : entry))
+            : [...now, { ...item, id }],
         )
         return id
       },
       dismiss,
       clear: () => commit([]),
     }),
-    [commit, dismiss],
+    [commit, current, dismiss],
   )
 
   // 展开与暂停：指针（不含触屏，触屏的 pointerenter 只是按下）、键盘焦点（:focus-visible）进来就展开；
@@ -391,8 +432,30 @@ export function ToastStack({
   // 鼠标点按钮留下的焦点不算：不然点完「撤销」、指针走开了，结果态因为焦点还在关闭钮上永远不收。
   const [hover, setHover] = useState(false)
   const [keyboardFocus, setKeyboardFocus] = useState(false)
-  const expanded = expandedProp ?? (hover || keyboardFocus)
-  const paused = pausedProp || hover || keyboardFocus || expandedProp === true
+  // 触屏没有悬停：点一下收拢的叠层（点在钮上不算，那是要按钮）展开，点叠层外收回。
+  const [touchOpen, setTouchOpen] = useState(false)
+  const hidden = usePageHidden()
+  const expanded = expandedProp ?? (hover || keyboardFocus || touchOpen)
+  const paused = pausedProp || hidden || hover || keyboardFocus || touchOpen || expandedProp === true
+
+  // 条目清空时把指针与触屏的展开状态放掉：最后一条被鼠标点掉后区域高度成 0，指针不动就不会发 pointerleave，
+  // 悬停状态会一直留着，下一条新提示一进来就处在展开与暂停里。（渲染期调整状态，不用 effect。）
+  const [hadItems, setHadItems] = useState(list.length > 0)
+  if (hadItems !== list.length > 0) {
+    setHadItems(list.length > 0)
+    if (list.length === 0) {
+      setHover(false)
+      setTouchOpen(false)
+    }
+  }
+  useEffect(() => {
+    if (!touchOpen) return
+    const away = (event: PointerEvent) => {
+      if (!region.current?.contains(event.target as Node)) setTouchOpen(false)
+    }
+    document.addEventListener('pointerdown', away)
+    return () => document.removeEventListener('pointerdown', away)
+  }, [touchOpen])
 
   const clocks = useRef(new Map<string, Clock>())
   const dismissRef = useRef(dismiss)
@@ -475,13 +538,20 @@ export function ToastStack({
       ref={region}
       position={position}
       aria-label={labels.region}
+      aria-relevant="additions text"
       data-expanded={expanded ? '' : undefined}
       className={cn(inline && 'relative inset-auto', className)}
       onPointerEnter={(event) => {
         if (event.pointerType !== 'touch') setHover(true)
       }}
       onPointerLeave={() => setHover(false)}
+      onPointerDown={(event) => {
+        if (event.pointerType === 'touch' && !(event.target as Element).closest('button')) setTouchOpen(true)
+      }}
       onFocus={(event) => {
+        // 焦点是从叠层外进来的：记下来处，最后一条被关掉时还给它。
+        if (!event.currentTarget.contains(event.relatedTarget as Node | null))
+          returnTo.current = event.relatedTarget instanceof HTMLElement ? event.relatedTarget : null
         let visible = false
         try {
           visible = event.target.matches(':focus-visible')

@@ -9,15 +9,19 @@
 - `stack-swipe` 往右拖最前面那条：不过 40% 松手弹回；过 40% 它滑走并关，其余补位。
 - `stack-undo` 点带动作钮的那条的「撤销」：那一条原地换成 ok 语气的「已恢复」，条数不变，焦点落在同一条的关闭钮，2.4 秒后自己收。
 - `stack-keyboard` Tab 进叠层：展开，每条的动作钮与关闭钮依次走到；Enter 点「撤销」同样原地变状态；Esc 关掉焦点所在的一条。
-- `stack-pause` 展开（指针在上面或键盘焦点在条里）时计时暂停，走开后接着剩下的时间。
+- `stack-pause` 展开（指针在上面或键盘焦点在条里）、页面不可见（切走标签页）时计时暂停，走开后接着剩下的时间。
 - `stack-max` 超过 5 条，最旧的先收。
+- `stack-focus-return` 键盘 Tab 进叠层后关掉最后一条（Esc 或回车点关闭钮）：焦点回到进叠层前的元素；被 `max` 裁掉的有焦点的条同理，先去相邻一条。
+- `stack-touch` 触屏：点一下收拢的叠层（不是点在钮上）展开，点叠层外收回。
+- `stack-inert` 收拢时第 4 层起、与退场中的条是 `inert`（没有 `aria-hidden`）。
+- `stack-controlled-reject` 受控时调用方拒绝的变更（`items` 没变）不会被内部表悄悄带上。
 - `stack-reduced-motion` 系统开了减弱动效：不缩放、不滑、不接拖动手势，收拢只留最前面一条。
 - `stack-controlled` 条目表受控：调用方的列表与画出来的条数一致，压一条、关一条都经 `onItemsChange`。
 
 ## How to get to it (user POV)
 
 - 文档站左侧目录「反馈」一组：`ToastStack 叠放提示`，地址 `#/toast-stack`。
-- 页上两个叠放层：第一个（区域名「叠放提示演示」）是不受控的，用「弹出」一行的钮压条目；第二个（区域名「受控的叠放提示演示」）在上角，往下叠，条目表在调用方手里，旁边有「调用方压一条」。
+- 页上三个叠放层：第一个（区域名「叠放提示演示」）是不受控的，用「弹出」一行的钮压条目；第二个（区域名「受控的叠放提示演示」）在上角，往下叠，条目表在调用方手里，旁边有「调用方压一条」；第三个（区域名「拒绝关闭的叠放提示演示」）调用方拒绝一切变短的表，旁边有「压一条」和拒绝次数。
 - 键盘：Tab 到「清空」钮再按一次 Tab 就进到第一个叠放层。
 
 ## Driving it with kui.mjs
@@ -29,14 +33,17 @@
 - **拖动。** 先展开。在最前面一条标题处按下，往右分 8 步拖条宽的 20%，停 150ms 再松手：条数仍是 3、位置回到原处；再拖 60% 松手：条数变 2，「告警 3」不在页上，「告警 2」落到原来最前面一条的位置。停 150ms 是为了让速度归零，测的是「拖过多远」。
 - **撤销。** 点 `getByRole('button', { name: '推一条带撤销的' })`，鼠标移开；点那条的 `getByRole('button', { name: '撤销' })`。条数仍是 1，标题变「已恢复」，`[data-slot="toast"]` 的 `data-tone` 从 `neutral` 变 `ok`，「撤销」钮不在了，「关掉这条提示」钮有焦点；6 秒内条数归 0。
 - **键盘。** 推三条带撤销的，焦点放在「清空」钮上按 Tab：区域带 `data-expanded`；继续按 Tab，依次是每条的「撤销」与「关掉这条提示」，共 6 个钮、涉及 3 个不同的 `data-toast-id`；走出叠层后 `data-expanded` 消失。焦点放到某条的「撤销」按 Enter：那条标题变「已恢复」，条数不变。
-- **暂停。** 点「推一条（2 秒后收）」，立刻把鼠标放到条上等 3 秒：还在；挪开后 4 秒内消失。
-- **证据。** `$KUI drive toast-stack`：每步一张截图，`toast-stack-expanded.aria.yml` 是展开时区域的 ARIA 快照。拖动、减弱动效、受控这几条没进流程，由 `e2e/toast-stack.spec.ts`（`pnpm exec playwright test e2e/toast-stack.spec.ts`）走；单测在 `src/katana/toast-stack-model.test.ts`。
+- **暂停。** 点「推一条（2 秒后收）」，立刻把鼠标放到条上等 3 秒：还在；挪开后 4 秒内消失。页面不可见：同样推一条 2 秒的，用 `Object.defineProperty(document, 'hidden', { configurable: true, get: () => true })` 再派发 `visibilitychange`，等 3 秒还在，改回 false 再派发后 4 秒内消失。
+- **焦点回去。** 推一条，焦点放在「清空」钮上按 Tab 进叠层，按 Esc：条数 0，「清空」钮重新有焦点。
+- **证据。** `$KUI drive toast-stack`：每步一张截图，`toast-stack-expanded.aria.yml` 是展开时区域的 ARIA 快照。拖动、减弱动效、受控、焦点回去、触屏、inert 这几条没进流程，由 `e2e/toast-stack.spec.ts`（`pnpm exec playwright test e2e/toast-stack.spec.ts`）走；单测在 `src/katana/toast-stack-model.test.ts`。
 
 ## Gotchas
 
+- 收拢时第 4 层起是 `inert`：Tab 从叠层外进来落在第 3 层（第一个能聚焦的），叠层随即展开、`inert` 撤掉，更旧的几条用 Shift+Tab 回去。
 - 条的位置由弹簧动画推到位：读盒子要等它停下（连续两次读到一样），不要推完立刻量。
 - 鼠标停在条上就会展开并暂停计时：每次推完先把鼠标挪到页面角落（`page.mouse.move(2, 2)`）。
-- 页上有两个叠放层，`[data-slot="toast-stack-item"]` 不收到具体的区域会连受控那个一起数。
+- 页上有三个叠放层，`[data-slot="toast-stack-item"]` 不收到具体的区域会连另外两个一起数。
 - 受控那个在上角，DOM 次序是视觉次序（最新的在最上、排第一），不是「最后一个」。
 - 鼠标点按钮留下的焦点不暂停计时（只有键盘焦点才暂停），所以点「撤销」后挪开鼠标，结果态会照常 2.4 秒后收；用键盘点的话焦点还在条里，不会收，Tab 走开后才接着走。
+- 触屏那条要 `test.use({ hasTouch: true })`，用 `page.touchscreen.tap`。
 - 拖动要在条的空白处按下（标题所在位置），按在钮上拖也行，但拖完那一下不会当成点击。
