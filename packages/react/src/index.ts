@@ -719,6 +719,7 @@ export {
 } from './katana/switchboard-card.tsx'
 export { AnimatedTags, type AnimatedTagsLabels, type AnimatedTagsProps } from './katana/animated-tags.tsx'
 export { ExposureSlider, type ExposureSliderProps } from './katana/exposure-slider.tsx'
+export { RulerSlider, type RulerSliderProps } from './katana/ruler-slider.tsx'
 export { PowerOffSlide, type PowerOffSlideProps } from './katana/power-off-slide.tsx'
 export {
   AnimatedStepper,

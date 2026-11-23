@@ -1091,6 +1091,10 @@
   margin-top: -4px;
 }
 
+.mt-\(--space-1\) {
+  margin-top: var(--space-1);
+}
+
 .mt-0\.5 {
   margin-top: 2px;
 }
