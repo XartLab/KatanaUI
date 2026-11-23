@@ -5237,6 +5237,183 @@ for (const theme of THEMES) {
     await expect(chart.locator('[data-slot="param-scatter-table"]')).toContainText('f8-s40')
   })
 
+  test(`参数曲面热力图（${theme}）：孤峰要靠邻域稳定度才看得出，切到平台切片后消失`, async ({ page }) => {
+    await open(page, theme, 'param-surface-heatmap')
+    const map = section(page, 'param-surface-heatmap').locator('[data-gallery-surface="main"]')
+    const cells = map.locator('[data-slot="param-surface-cell"]')
+    await expect(cells).toHaveCount(80)
+    // 止损 = 1 的切片里最优格是 f13/s80：只有一格带最优标记，它周围一圈有邻域框。
+    const best = map.locator('[data-slot="param-surface-cell"][data-best]')
+    await expect(best).toHaveCount(1)
+    await expect(best).toHaveAttribute('data-id', 'f13-s80-k1')
+    await expect(map.locator('[data-slot="param-surface-cell"][data-near]')).not.toHaveCount(0)
+    // 邻域稳定度：最优值 1.95，邻域均值约 0.2，保留率约 10%，标「孤峰」。删掉稳定度计算这几条断言会变红。
+    const stability = map.locator('[data-slot="param-surface-stability"]')
+    await expect(stability).toHaveAttribute('data-spike', '')
+    await expect(stability).toContainText('孤峰')
+    await expect(map.locator('[data-slot="param-surface-best"]')).toHaveText('1.95')
+    await expect(map.locator('[data-slot="param-surface-count"]')).toHaveText('8')
+    const mean = parseFloat((await map.locator('[data-slot="param-surface-mean"]').textContent()) ?? '')
+    expect(mean).toBeGreaterThan(0.1)
+    expect(mean).toBeLessThan(0.4)
+    const retention = parseFloat((await map.locator('[data-slot="param-surface-retention"]').textContent()) ?? '')
+    expect(retention).toBeGreaterThanOrEqual(5)
+    expect(retention).toBeLessThanOrEqual(15)
+    // 悬停一格：读数区列这一格全部参数与全部指标。
+    await best.hover()
+    // 纵轴名在网格上方（纵轴旁），不和横轴名并排在底部。
+    const yname = await map.locator('.k-ps-yname').boundingBox()
+    const xname = await map.locator('.k-ps-xname').boundingBox()
+    const gridBox = await map.locator('[role="grid"]').boundingBox()
+    expect(yname!.y + yname!.height).toBeLessThanOrEqual(gridBox!.y + 1)
+    expect(xname!.y).toBeGreaterThanOrEqual(gridBox!.y + gridBox!.height - 1)
+    const readout = map.locator('[data-slot="param-surface-readout"]')
+    for (const name of ['快线周期', '慢线周期', '止损', '夏普比率', '净利润', '最大回撤'])
+      await expect(readout).toContainText(name)
+    // 键盘：聚焦后方向键走格，Enter 钉住。
+    await best.focus()
+    await page.keyboard.press('ArrowLeft')
+    const moved = map.locator('[data-slot="param-surface-cell"]:focus')
+    await expect(moved).toHaveCount(1)
+    await expect(moved).not.toHaveAttribute('data-best', '')
+    await page.keyboard.press('Enter')
+    await expect(moved).toHaveAttribute('data-pinned', '')
+    await page.keyboard.press('Escape')
+    // 目标值切到净利润：色阶重算，最优格仍只有一个。
+    await map.getByRole('button', { name: '净利润' }).click()
+    await expect(map.locator('[data-slot="param-surface-cell"][data-best]')).toHaveCount(1)
+    await map.getByRole('button', { name: '夏普比率' }).click()
+    // 止损切到 2：最优落在平台上，保留率回到 70% 以上，不再标孤峰。
+    await heatPick(page, map, '固定 止损 %', '2')
+    await expect(stability).not.toHaveAttribute('data-spike', '')
+    const plateau = parseFloat((await map.locator('[data-slot="param-surface-retention"]').textContent()) ?? '')
+    expect(plateau).toBeGreaterThan(70)
+  })
+
+  test(`MAE / MFE 散点（${theme}）：赢圆亏方、切横轴与单位、点选读数、表格视图`, async ({ page }) => {
+    await open(page, theme, 'mae-mfe-scatter')
+    const chart = section(page, 'mae-mfe-scatter').locator('[data-gallery-maemfe="main"]')
+    const dots = chart.locator('[data-slot="mae-mfe-dot"]')
+    await expect(dots).toHaveCount(140)
+    // 赢是圆、亏是方：形状不同，不只靠颜色。
+    await expect(chart.locator('circle[data-slot="mae-mfe-dot"]').first()).toBeVisible()
+    await expect(chart.locator('rect[data-slot="mae-mfe-dot"]').first()).toBeVisible()
+    const fig = chart.locator('[data-slot="mae-mfe-scatter"]')
+    await expect(fig).toHaveAttribute('data-axis', 'mae')
+    await expect(fig).toHaveAttribute('data-unit', 'percent')
+    await expect(chart.locator('[data-slot="mae-mfe-means"]')).not.toBeEmpty()
+    // 最高与最低的点都在绘图区内，不压到纵轴标题上。
+    const frame = await chart.locator('svg.k-mm-svg').boundingBox()
+    const title = await chart.locator('svg.k-mm-svg text.k-scatter-axis').nth(1).boundingBox()
+    for (const d of await dots.all()) {
+      const b = (await d.boundingBox())!
+      expect(b.y).toBeGreaterThanOrEqual(title!.y + title!.height - 0.5)
+      expect(b.y + b.height).toBeLessThanOrEqual(frame!.y + frame!.height)
+    }
+    // 切横轴与单位。
+    await chart.getByRole('button', { name: '最大浮盈' }).click()
+    await expect(fig).toHaveAttribute('data-axis', 'mfe')
+    await chart.getByRole('button', { name: '金额' }).click()
+    await expect(fig).toHaveAttribute('data-unit', 'amount')
+    // 悬停一个点：读数区写这一笔，只有一个点带活动标记。
+    await dots.nth(3).hover()
+    await expect(chart.locator('[data-slot="mae-mfe-readout"]')).toContainText('T')
+    await expect(chart.locator('[data-slot="mae-mfe-dot"][data-active]')).toHaveCount(1)
+    // 表格视图。
+    await chart.getByRole('button', { name: '表格视图' }).click()
+    await expect(chart.locator('[data-slot="mae-mfe-table"]')).toBeVisible()
+  })
+
+  test(`水下回撤图（${theme}）：最大回撤段与恢复读数、与权益曲线共用时间轴`, async ({ page }) => {
+    await open(page, theme, 'underwater-chart')
+    const sec = section(page, 'underwater-chart')
+    const chart = sec.locator('[data-gallery-underwater="main"]')
+    await expect(chart.locator('[data-slot="underwater-segment"]')).toHaveCount(1)
+    await expect(chart.locator('[data-slot="underwater-trough"]')).toHaveCount(1)
+    await expect(chart.locator('[data-slot="underwater-area"]')).toHaveCount(1)
+    // 回撤面是点阵纹理，不是实色。
+    expect(await chart.locator('[data-slot="underwater-area"]').evaluate((e) => getComputedStyle(e).fill)).toMatch(
+      /^url\(/,
+    )
+    await expect(chart.locator('[data-slot="underwater-facts"]')).toContainText('16.7%')
+    await expect(chart.locator('[data-slot="underwater-segment"]')).not.toHaveAttribute('data-open', '')
+    // 与权益曲线叠放：两张图绘图区左缘与宽度一致（共用 xDomain 与左侧留白）。
+    const stack = sec.locator('[data-gallery-underwater="stack"]')
+    const eq = await stack.locator('.k-eq-main').first().boundingBox()
+    const uw = await stack.locator('[data-slot="underwater-main"]').boundingBox()
+    expect(Math.abs(eq!.x - uw!.x)).toBeLessThan(2)
+    expect(Math.abs(eq!.width - uw!.width)).toBeLessThan(2)
+  })
+
+  test(`周期收益表（${theme}）：年 × 月、行尾合计、切季与周、读数`, async ({ page }) => {
+    await open(page, theme, 'period-returns-table')
+    const chart = section(page, 'period-returns-table').locator('[data-gallery-period="main"]')
+    const fig = chart.locator('[data-slot="period-returns-table"]')
+    await expect(fig).toHaveAttribute('data-unit', 'month')
+    await expect(chart.locator('[data-slot="period-returns-colhead"]')).toHaveCount(12)
+    expect(await chart.locator('[data-slot="period-returns-total"]').count()).toBeGreaterThanOrEqual(2)
+    // 色阶：涨跌两端加中间，底色种类不止一两种，没有彩虹。
+    const cells = chart.locator('[data-slot="period-returns-cell"]')
+    const bg = await cells.evaluateAll((els) => new Set(els.map((e) => getComputedStyle(e).backgroundColor)).size)
+    expect(bg).toBeGreaterThan(3)
+    await cells.nth(2).hover()
+    await expect(chart.locator('[data-slot="period-returns-readout"]')).not.toBeEmpty()
+    await chart.getByRole('button', { name: '季' }).click()
+    await expect(fig).toHaveAttribute('data-unit', 'quarter')
+    await expect(chart.locator('[data-slot="period-returns-colhead"]')).toHaveCount(4)
+    await chart.getByRole('button', { name: '周' }).click()
+    await expect(fig).toHaveAttribute('data-unit', 'week')
+    expect(await chart.locator('[data-slot="period-returns-colhead"]').count()).toBeGreaterThanOrEqual(52)
+  })
+
+  test(`步进窗口矩阵（${theme}）：每窗口一行、通过与否带文字、汇总步进效率、锚定与滚动可切`, async ({ page }) => {
+    await open(page, theme, 'walk-forward-matrix')
+    const chart = section(page, 'walk-forward-matrix').locator('[data-gallery-walkforward="main"]')
+    const fig = chart.locator('[data-slot="walk-forward-matrix"]')
+    const rows = chart.locator('[data-slot="walk-forward-row"]')
+    await expect(rows).toHaveCount(8)
+    await expect(chart.locator('[data-slot="walk-forward-result"][data-state="pass"]')).toHaveCount(6)
+    await expect(chart.locator('[data-slot="walk-forward-result"][data-state="fail"]').first()).toContainText('未通过')
+    // 两套窗口都给时先显示锚定。步进效率 = 各窗口样本外年化的均值 ÷ 各窗口样本内年化的均值（年化 = (1+收益)^(1年/区间)-1）。
+    // 演示数据按这条定义算出：滚动 0.380（样本内年化均值 17.6%、样本外 6.7%），锚定 0.37。
+    await expect(fig).toHaveAttribute('data-mode', 'anchored')
+    await expect(chart.locator('[data-slot="walk-forward-efficiency"]')).toHaveText('37%')
+    await chart.getByRole('button', { name: '滚动' }).click()
+    await expect(fig).toHaveAttribute('data-mode', 'rolling')
+    await expect(rows).toHaveCount(8)
+    await expect(chart.locator('[data-slot="walk-forward-efficiency"]')).toHaveText('38%')
+    // 表不横向溢出、最右的结果列不被裁（视口 1200，面板宽度 ≥ 720）。
+    const scroll = chart.locator('.k-wf-scroll')
+    expect(await scroll.evaluate((e) => e.scrollWidth <= e.clientWidth)).toBe(true)
+    const resultBox = await chart.locator('[data-slot="walk-forward-result"]').first().boundingBox()
+    const scrollBox = await scroll.boundingBox()
+    expect(resultBox!.x + resultBox!.width).toBeLessThanOrEqual(scrollBox!.x + scrollBox!.width + 1)
+  })
+
+  test(`稳健性门（${theme}）：阈值与实测值都写出来、未测出不当通过、整组不过门`, async ({ page }) => {
+    await open(page, theme, 'robustness-gate')
+    const gate = section(page, 'robustness-gate').locator('[data-gallery-gate="main"]')
+    const checks = gate.locator('[data-slot="robustness-check"]')
+    await expect(checks).toHaveCount(5)
+    await expect(gate.locator('[data-slot="robustness-verdict"]')).toHaveAttribute('data-state', 'fail')
+    await expect(gate.locator('[data-slot="robustness-verdict"]')).toContainText('未过门')
+    // 邻域保留率约 10%、阈值 60%：不通过；没测出的那条写「未测出」，不当通过。
+    await expect(gate.locator('[data-slot="robustness-check"][data-id="retention"]')).toHaveAttribute(
+      'data-state',
+      'fail',
+    )
+    await expect(gate.locator('[data-slot="robustness-check"][data-id="trades"]')).toHaveAttribute(
+      'data-state',
+      'unknown',
+    )
+    await expect(gate.locator('[data-slot="robustness-check"][data-id="trades"]')).toContainText('未测出')
+    await expect(gate.locator('[data-slot="robustness-check"][data-id="drawdown"]')).toHaveAttribute(
+      'data-state',
+      'pass',
+    )
+    for (let i = 0; i < 5; i++) await expect(checks.nth(i)).toContainText(/通过|未测出/)
+  })
+
   test(`资金流向桑基图（${theme}）：节点与链路、斜纹重估、悬停读数、点节点钉住上下游、键盘走、开关、表格视图、有环`, async ({
     page,
   }) => {
