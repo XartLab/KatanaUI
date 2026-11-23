@@ -4,10 +4,10 @@
 # 云会话沙箱的 /opt/pw-browsers 只有更新的 1243，没有 1194：过去的做法是把 1243 软链成 1194 凑上（/tmp/pwb），
 # 但那样截图用的不是 runner 上的同一版 Chromium（runner 的镜像 playwright:v1.56.1 就是 1194，Chromium 141），像素会有微小差别，所以直接装真的。
 # 用法（在仓库任意目录）：
-#   eval "$(bash .claude/skills/verify-katanaui/scripts/pw-setup.sh)"   # 装好并 export 到当前 shell
+#   out="$(bash .claude/skills/verify-katanaui/scripts/pw-setup.sh)" && eval "$out"   # 装好并 export 到当前 shell
 #   KUI_PW_BROWSERS=/some/dir bash …/pw-setup.sh                         # 换安装目录，默认 ~/.cache/pw-browsers-katanaui
 # 已经装过会秒过（playwright install 自己判断）；下载约 330 MB，走代理的沙箱里也能下（cdn.playwright.dev）。
-# 进度写 stderr，stdout 只有最后一行 export，所以可以放心 eval。
+# 进度写 stderr，stdout 只有最后一行 export。别写成 eval "$(…)"：脚本失败时 eval 收到空串返回 0，会吞掉失败；用 out="$(…)" && eval "$out"，失败就停在 && 前面。
 set -euo pipefail
 root="$(git rev-parse --show-toplevel)"
 dir="${KUI_PW_BROWSERS:-$HOME/.cache/pw-browsers-katanaui}"

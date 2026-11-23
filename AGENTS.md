@@ -42,7 +42,7 @@ Vite+ 用足（2026-11-18）：根目录直接 `pnpm fast` / `pnpm vr` / `pnpm v
 
 **视觉回归（pixelgate，自研）**：改了视觉相关的件，交付前在 `packages/react` 跑 `pnpm vr:fast`（只截受影响的页，约半分钟），在汇报里附 changed 列表与 report 路径（`.pixelgate/report/index.html`）；合并前、或改了令牌 / theme 样式 / lib / primitives 这类共用层，跑全量 `pnpm vr`。预期的变化用 `pnpm vr:approve` 收为新基线并随代码提交，规则写在文档站「开发接入 → 视觉回归」。
 
-**截图环境的字体与浏览器（2026-11-24，#202）**：截图里的中文只用仓库自带的 Noto Sans SC（`packages/react/shot/fonts-plugin.ts` 把字体栈里的 PingFang SC / Microsoft YaHei UI / Noto Sans SC 三个名字用 @font-face 指到开发依赖 `@fontsource-variable/noto-sans-sc`），不看机器上装了什么 CJK 字体；组件截图在 `browser/render.tsx` 引 `shot/fonts.css`，整页回归在 `pixelgate.vite.config.ts` 里装同一个插件。新增会出中文的字体栈，里面至少留这三个名字之一（`shot/fonts.test.ts` 守着）。云会话沙箱的 Playwright 浏览器目录缺 1.56.1 要的 chromium-1194，先 `eval "$(bash .claude/skills/verify-katanaui/scripts/pw-setup.sh)"`（装 headless shell，约 330 MB，export `PLAYWRIGHT_BROWSERS_PATH`），别再软链凑。
+**截图环境的字体与浏览器（2026-11-24，#202）**：截图里的中文只用仓库自带的 Noto Sans SC（`packages/react/shot/fonts-plugin.ts` 把字体栈里的 PingFang SC / Microsoft YaHei UI / Noto Sans SC 三个名字用 @font-face 指到开发依赖 `@fontsource-variable/noto-sans-sc`），不看机器上装了什么 CJK 字体；组件截图在 `browser/render.tsx` 引 `shot/fonts.css`，整页回归在 `pixelgate.vite.config.ts` 里装同一个插件。新增会出中文的字体栈，里面至少留这三个名字之一（`shot/fonts.test.ts` 守着）。云会话沙箱的 Playwright 浏览器目录缺 1.56.1 要的 chromium-1194，先 `out="$(bash .claude/skills/verify-katanaui/scripts/pw-setup.sh)" && eval "$out"`（装 headless shell，约 330 MB，export `PLAYWRIGHT_BROWSERS_PATH`），别再软链凑。
 
 读 token：新代码只读 characteristics（`--k-*`）与语义 token（`--pnl-up`、`--chart-grid`、`--shadow-overlay` 这类），不直接读色阶（`--bg-*`、`--ink-*`、`--signal-*`、`--alpha-white-*`）；阴影不写 rgba，用 `--shadow-*`；状态与涨跌的类型用 `src/lib/severity.ts`、`src/lib/tone.ts`（2026-11-18，G0）。
 

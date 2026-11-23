@@ -12,6 +12,9 @@ import type { ReactNode } from 'react'
 import { createRoot, type Root } from 'react-dom/client'
 import { flushSync } from 'react-dom'
 
+// 与文档站 index.html 的 <html lang="zh-CN"> 一致：字体里的 locl 会按语言换几个标点的字形（· — … 引号），截图页与文档站要同一套（#202）。
+document.documentElement.lang = 'zh-CN'
+
 let root: Root | undefined
 
 // 应用的 base.css 有这条全局重置，浏览器测试页没有；放在 head 里，body 换内容时不丢。

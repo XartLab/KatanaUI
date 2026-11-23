@@ -112,7 +112,7 @@ $KUI stop
 - **锁定的浏览器没装**：`@playwright/test` 1.56.1 要 chromium-1194，云会话沙箱的 `/opt/pw-browsers` 只有更新的 1243，组件截图（Vitest 浏览器模式）、整页回归（pixelgate）、`pnpm test:e2e` 直接跑会报找不到 headless shell。不要把 1243 软链成 1194 凑（`/tmp/pwb` 那种做法）：基线是 runner 镜像（playwright:v1.56.1，Chromium 141 即 1194）渲染的，换一版 Chromium 像素会有微小差别。一步装真的：
 
   ```bash
-  eval "$(bash .claude/skills/verify-katanaui/scripts/pw-setup.sh)"   # 装 headless shell 到 ~/.cache/pw-browsers-katanaui（约 330 MB，首次约 15 秒），export PLAYWRIGHT_BROWSERS_PATH
+  out="$(bash .claude/skills/verify-katanaui/scripts/pw-setup.sh)" && eval "$out"   # 装 headless shell 到 ~/.cache/pw-browsers-katanaui（约 330 MB，首次约 15 秒），export PLAYWRIGHT_BROWSERS_PATH
   ```
 
   装好以后同一个 shell 里直接 `pnpm fast`、`pnpm vr:fast`、`pnpm test:e2e`。想换目录设 `KUI_PW_BROWSERS=<目录>`；要手动装就是 `PLAYWRIGHT_BROWSERS_PATH=<目录> npx playwright install chromium-headless-shell`（沙箱里还要清掉 `PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD`）。`kui.mjs` 自己借系统 Chrome（`KUI_CHROME`），不吃这一条。
