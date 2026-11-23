@@ -88,10 +88,9 @@ jobs:
         with:
           node-version: 26
       - run: pnpm install --frozen-lockfile
-      - run: pnpm exec playwright test --shard=${{ matrix.shard }}/4
+      # 表达式里不能做加法（原来 env 里写 5330 + matrix.shard，整个文件解析失败、每次 0 个 job，#190），端口在 shell 里算。
+      - run: E2E_PORT=$((5330 + ${{ matrix.shard }})) pnpm exec playwright test --shard=${{ matrix.shard }}/4
         working-directory: packages/react
-        env:
-          E2E_PORT: ${{ 5330 + matrix.shard }}
       - if: always()
         run: chmod -R a+rwX "$GITHUB_WORKSPACE"
 
