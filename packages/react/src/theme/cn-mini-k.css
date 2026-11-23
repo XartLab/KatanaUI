@@ -1,0 +1,110 @@
+/* SPDX-License-Identifier: MIT */
+/* 选股结果卡片网格（MiniKCardGrid，#110）：一行 2 / 3 / 4 张（--mink-cols），容器窄时按每张最少 140px 自动少排几列（min() 取小的那个）。
+   蜡烛涨读 --pnl-up、跌读 --pnl-down（根上 data-updown 互换），平盘中性灰；实体与影线同色；不写色值。 */
+.k-mink {
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fill,
+    minmax(max(140px, calc((100% - (var(--mink-cols) - 1) * var(--space-2)) / var(--mink-cols))), 1fr)
+  );
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.k-mink-item {
+  min-width: 0;
+}
+.k-mink-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  box-sizing: border-box;
+  width: 100%;
+  padding: var(--space-2);
+  background: var(--bg-200);
+  border: var(--hairline);
+  color: var(--ink-200);
+  font: var(--text-caption) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+  text-align: left;
+}
+button.k-mink-card {
+  cursor: pointer;
+}
+button.k-mink-card:hover {
+  background: var(--bg-300);
+}
+button.k-mink-card:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: -2px;
+}
+.k-mink-head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-1);
+  min-width: 0;
+}
+.k-mink-name {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--ink-100);
+  font: var(--text-data) var(--font-sans);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.k-mink-code {
+  color: var(--ink-300);
+}
+.k-mink-chart {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.k-mink-candle line {
+  stroke: var(--ink-300);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+.k-mink-candle rect {
+  fill: var(--ink-300);
+}
+.k-mink-candle[data-tone='up'] line {
+  stroke: var(--pnl-up);
+}
+.k-mink-candle[data-tone='up'] rect {
+  fill: var(--pnl-up);
+}
+.k-mink-candle[data-tone='down'] line {
+  stroke: var(--pnl-down);
+}
+.k-mink-candle[data-tone='down'] rect {
+  fill: var(--pnl-down);
+}
+.k-mink-none {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 120 / 56;
+  margin: 0;
+  color: var(--ink-300);
+}
+.k-mink-foot {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+.k-mink-price {
+  color: var(--ink-100);
+}
+.k-mink-card[data-tone='up'] .k-mink-change {
+  color: var(--pnl-up);
+}
+.k-mink-card[data-tone='down'] .k-mink-change {
+  color: var(--pnl-down);
+}
+.k-mink-empty {
+  margin: 0;
+  color: var(--ink-300);
+  font: var(--text-caption) var(--font-sans);
+}

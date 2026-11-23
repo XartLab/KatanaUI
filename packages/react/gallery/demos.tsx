@@ -10,6 +10,7 @@ import {
   ThemeHeatMatrixDemo,
 } from './pages/cn-pack.tsx'
 import { FlagMarkDemo } from './pages/watchlist-order.tsx'
+import { DepthChartDemo, OrderBookDemo, TradeTapeDemo } from './pages/market-depth.tsx'
 import {
   AgentAvatarDemo,
   AiApprovalDemo,
@@ -25,6 +26,7 @@ import {
   AiSuggestionsDemo,
   AiTaskListDemo,
   AiToolCallDemo,
+  MarkdownDemo,
 } from './pages/ai.tsx'
 import {
   ApertureBlurTransitionDemo,
@@ -107,7 +109,16 @@ import {
   SymbolOverviewDemo,
 } from './pages/tv-widgets.tsx'
 import { ParamScatterDemo, StrategyReportDemo } from './pages/strategy.tsx'
+import { PortfolioRunGridDemo, ReplayTransportDemo, RunModeBadgeDemo } from './pages/forward-replay.tsx'
 import { TransmissionChainDemo } from './pages/research.tsx'
+import {
+  MaeMfeScatterDemo,
+  ParamSurfaceHeatmapDemo,
+  PeriodReturnsTableDemo,
+  RobustnessGateDemo,
+  UnderwaterChartDemo,
+  WalkForwardMatrixDemo,
+} from './pages/research-report.tsx'
 import { WhiteboardDemo } from './pages/whiteboard.tsx'
 import {
   DataGridDemo,
@@ -281,6 +292,14 @@ import {
 } from './pages/smoothui-trading.tsx'
 import { ScrubberDemo } from './pages/smoothui-scrub.tsx'
 import { SymbolSearchDemo } from './pages/symbol-search.tsx'
+import {
+  AuctionStepDemo,
+  FlowRaceDemo,
+  MiniKCardGridDemo,
+  MoveFeedDemo,
+  SeatTableDemo,
+  TradingDatePickerDemo,
+} from './pages/cn-batch2.tsx'
 
 /** 每一页的实时预览，键是 registry.ts 里的页 id（registry.test.ts 核对两边一一对应）。 */
 export const DEMOS: Readonly<Record<string, ComponentType>> = {
@@ -363,6 +382,9 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'reason-group-list': ReasonGroupListDemo,
   'board-strength-rank': BoardStrengthRankDemo,
   'net-buy-bar': NetBuyBarDemo,
+  'order-book': OrderBookDemo,
+  'depth-chart': DepthChartDemo,
+  'trade-tape': TradeTapeDemo,
   'market-heatmap': MarketHeatmapDemo,
   'rating-text': RatingTextDemo,
   'technical-rating': TechnicalRatingDemo,
@@ -385,6 +407,12 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'market-pulse': MarketPulseDemo,
   'limit-up-timeline': LimitUpTimelineDemo,
   'sentiment-gauge': SentimentGaugeDemo,
+  'seat-table': SeatTableDemo,
+  'auction-step': AuctionStepDemo,
+  'trading-date-picker': TradingDatePickerDemo,
+  'flow-race': FlowRaceDemo,
+  'mini-k-card-grid': MiniKCardGridDemo,
+  'move-feed': MoveFeedDemo,
   'decimal-field': DecimalFieldDemo,
   'quant-format': QuantFormatDemo,
   'spark-tile': SparkTileDemo,
@@ -407,9 +435,18 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'column-set-tabs': ScreenerDemo,
   'news-reader': NewsReaderDemo,
   'strategy-report': StrategyReportDemo,
+  'portfolio-run-grid': PortfolioRunGridDemo,
+  'replay-transport': ReplayTransportDemo,
+  'run-mode-badge': RunModeBadgeDemo,
   'transmission-chain': TransmissionChainDemo,
   whiteboard: WhiteboardDemo,
   'param-scatter': ParamScatterDemo,
+  'mae-mfe-scatter': MaeMfeScatterDemo,
+  'underwater-chart': UnderwaterChartDemo,
+  'period-returns-table': PeriodReturnsTableDemo,
+  'param-surface-heatmap': ParamSurfaceHeatmapDemo,
+  'walk-forward-matrix': WalkForwardMatrixDemo,
+  'robustness-gate': RobustnessGateDemo,
   'flow-sankey': FlowSankeyDemo,
   'vintage-series': VintageSeriesDemo,
   'system-monitor': SystemMonitorDemo,
@@ -455,6 +492,7 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'ai-conversation': AiConversationDemo,
   'ai-message': AiMessageDemo,
   'ai-response': AiResponseDemo,
+  markdown: MarkdownDemo,
   'ai-reasoning': AiReasoningDemo,
   'ai-tool-call': AiToolCallDemo,
   'ai-diff': AiDiffDemo,

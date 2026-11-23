@@ -155,6 +155,51 @@ const blocks: GuidanceMap = {
       '待定：对话框用的是包里 Radix 的 Dialog（与其它浮层共用一套焦点归还与动效），没有换成原生 <dialog> + showModal()；要不要整套浮层迁到原生 dialog 等用户定。',
     ],
   },
+  'order-book': {
+    aliases: ['Order book', 'DOM', 'Depth of market', 'Level 2', 'Ladder', '盘口', '买卖盘'],
+    use: [
+      '看买卖挂单的分布与价差，点一档把价格交给下单面板（onPriceSelect 回填，件不耦合下单面板）。',
+      '价位密的品种合并档位看大格局（0.1 / 0.5 / 1 / 10 由调用方给）；合并在整数上做，买盘向下、卖盘向上取整。',
+      '底部买卖占比条看一眼多空倾向；只数并列模式能看到的前几行，单侧模式放大行数时这个数不变。',
+      '调用方把快照与增量合并成整簿再传；量变了的档位会闪一下。',
+    ],
+    avoid: [
+      '要看整条曲线的形状与大单墙，用 depth-chart。',
+      '逐笔成交流水用 trade-tape，不是订单簿。',
+      '要排序、改列、几千行的表格用 data-grid。',
+    ],
+    a11y: [
+      '整个件是 role=group，卖盘与买盘各是一个 list；可点的行是 button，不可点时是普通行。',
+      '模式与合并档位是两组 aria-pressed 的按钮，组名取 labels.modes.group 与 labels.tick。',
+      '占比条是 role=img，读屏文字取 labels.share；买卖色之外价格列还按侧分列（卖在上、买在下），不只靠颜色。',
+    ],
+  },
+  'depth-chart': {
+    aliases: ['Depth chart', 'Market depth', 'Cumulative depth', 'Depth map', '深度图'],
+    use: [
+      '看买卖累计量的形状：哪边有大单墙、两边是否对称。',
+      '横轴用 rangePct 限制在中间价上下几个点，免得极远处的挂单把图压扁。',
+      '悬停读某个价位吃到多少量、离中间价多远。',
+    ],
+    avoid: ['要逐档点选价格用 order-book。', '看资金随时间的变化不是它：深度图只有当下一个快照。'],
+    a11y: [
+      '绘图区是可聚焦的 group，左右方向键读数、Esc 清掉；读数同时写进 role=status（视觉隐藏）。',
+      '买卖用曲线形状（左右分居中间价）与读数里的「买盘 / 卖盘」文字区分，不只靠颜色。',
+    ],
+  },
+  'trade-tape': {
+    aliases: ['Time and sales', 'Trade tape', 'Tape', 'Recent trades', '成交明细', '逐笔成交'],
+    use: [
+      '看最近的逐笔成交与主动方向：主动买走涨色、主动卖走跌色。',
+      '大单阈值由调用方传（largeSize），超过的行整行高亮。',
+      '成交密时开 aggregate，把紧挨着的同价同方向成交并成一行，右边写笔数。',
+    ],
+    avoid: ['要看某一时刻的挂单分布用 order-book。', '要保存与回看长历史走调用方的历史查询，这里只留最近 maxRows 行。'],
+    a11y: [
+      '每行是 listitem，方向与大单写成读屏用的文字（视觉隐藏），不只靠颜色与加粗。',
+      '新成交只有视觉高亮，不朗读；要播报大单由调用方放 aria-live 区。',
+    ],
+  },
   toolbar: {
     aliases: ['Action bar', 'Command bar', 'Button group', 'Icon toolbar'],
     use: ['面板头里放一排图标按钮，整条只占一个 Tab 停靠点。', '空间不够时把次要按钮折叠进溢出菜单。'],
@@ -262,6 +307,44 @@ const blocks: GuidanceMap = {
       '直方图的每根柱是 role=img，读屏名写出区间与笔数。',
       '指标用表格与 dl，读屏能逐项念。',
       '算不出的读数写「—」，不是 0。',
+    ],
+  },
+  'portfolio-run-grid': {
+    aliases: ['Portfolio trader', 'Forward test window', 'Strategy run table', 'Position monitor'],
+    use: [
+      '前向测试时一眼看每个品种的持仓、盈亏、风险占用与运行状态。',
+      '要暂停某个品种或平掉它，又不想进每个品种各自的页面。',
+    ],
+    avoid: ['回测完看绩效，用 strategy-report。', '要下单，用 order-ticket；这里的按钮只发回调。'],
+    a11y: [
+      '外层是带名字的只读表（role=table），品种是行标题；汇总是 role=group。',
+      '按钮的读屏名带品种（「暂停 DEMO-A」），读屏分得清是哪一行。',
+      '状态是灯加文字，不只靠颜色；暂停行的底色与左条是额外提示。',
+      '按钮是原生 button，Tab 依次到达，Enter 与 Space 触发。',
+    ],
+  },
+  'replay-transport': {
+    aliases: ['Data replay', 'Playback controls', 'Replay bar', 'Time machine'],
+    use: ['历史回放时控制播放、倍速与跳转，一条控制多个同步的图。', '把用户的回放意图发给引擎，当前时刻由引擎回传。'],
+    avoid: ['只想拖一个数值，用 scrubber。', '要在件里推进时间：时钟只在调用方。'],
+    a11y: [
+      '外层是 role=group，读屏名取自 labels.group。',
+      '进度条是 role=slider，带 aria-valuetext（当前时刻文字），方向键、Home、End、PageUp、PageDown 可用。',
+      '倍速是一组带 aria-pressed 的按钮；输入框都有读屏名，读不出时 aria-invalid 并出 role=alert 提示。',
+      '快捷键 k . [ ] 在焦点不在输入框与进度条时生效。',
+    ],
+  },
+  'run-mode-badge': {
+    aliases: ['Mode badge', 'Environment tag', 'Paper or live indicator', 'Trading mode pill'],
+    use: ['在界面角落写清现在是模拟、回放、前向测试还是实盘。', '放在会下单或会误导用户的页面头部。'],
+    avoid: [
+      '表达数据源是否连通，用 led 或 status-bar。',
+      '给 fixture 或样例数据用「模拟」徽标：那是另一回事，要单独标明。',
+    ],
+    a11y: [
+      '文字就是读屏读到的内容，图形对读屏隐藏。',
+      '四种模式靠图形、边框样式与颜色一起区分，不只靠颜色。',
+      '实盘点的呼吸动效在减弱动效偏好下关闭。',
     ],
   },
   'hypothesis-ledger': {

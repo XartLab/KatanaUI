@@ -220,6 +220,22 @@ export {
 export { UptimeBars, type UptimeBarsProps } from './uptime-bars/uptime-bars.tsx'
 export { uptimeShare, type UptimeCell, type UptimeStatus } from './uptime-bars/uptime-bars-model.ts'
 
+// 前向测试与回放的件（#121）：组合运行表、回放控制条、运行模式徽标。功能参照 MultiCharts（2026-11-21 读官方页面），实现原创。
+export {
+  PortfolioRunGrid,
+  type PortfolioRunFormat,
+  type PortfolioRunGridProps,
+  type PortfolioRunLabels,
+  type PortfolioRunSummary,
+} from './portfolio-run-grid/portfolio-run-grid.tsx'
+export { type PortfolioRunRow, type RunStatus } from './portfolio-run-grid/portfolio-run-model.ts'
+export {
+  ReplayTransport,
+  type ReplayTransportLabels,
+  type ReplayTransportProps,
+} from './replay-transport/replay-transport.tsx'
+export { RunModeBadge, type RunMode, type RunModeBadgeProps } from './run-mode-badge/run-mode-badge.tsx'
+
 // 白板（#51）：底座 React Flow（@xyflow/react，MIT）。
 export { Whiteboard, type WhiteboardLabels, type WhiteboardProps } from './whiteboard/whiteboard.tsx'
 export {
@@ -342,3 +358,20 @@ export {
   type NetBuyBarLabels,
   type NetBuyBarProps,
 } from './net-buy-bar/net-buy-bar.tsx'
+export {
+  OrderBook,
+  type BookLevel,
+  type BookRow,
+  type BookSide,
+  type OrderBookLabels,
+  type OrderBookMode,
+  type OrderBookProps,
+} from './order-book/order-book.tsx'
+export { DepthChart, type DepthChartLabels, type DepthChartProps } from './depth-chart/depth-chart.tsx'
+export {
+  TradeTape,
+  type Trade,
+  type TradeSide,
+  type TradeTapeLabels,
+  type TradeTapeProps,
+} from './trade-tape/trade-tape.tsx'

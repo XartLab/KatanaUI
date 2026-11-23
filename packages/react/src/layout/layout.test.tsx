@@ -130,7 +130,9 @@ describe('Reel', () => {
     const outsideSupports = layoutCss
       .replaceAll(/\/\*[\s\S]*?\*\//g, '')
       .replace(/@supports not selector\(::-webkit-scrollbar\) \{[\s\S]*?\n\}\n/, '')
-    expect(outsideSupports).not.toMatch(/scrollbar-(?:width|color)/)
+    // 例外是退回 auto（#126）：rendering.css 在 :root 上的 scrollbar-color 会继承下来，继承来的也让 Chrome 不认 ::-webkit-scrollbar，所以 .k-reel 要显式写 auto。
+    expect(outsideSupports).not.toMatch(/scrollbar-(?:width|color):(?!\s*auto;)/)
+    expect(outsideSupports).toMatch(/\.k-reel \{[^}]*scrollbar-color: auto;/)
   })
 })
 

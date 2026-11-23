@@ -46,6 +46,16 @@ Vite+ 用足（2026-11-18）：根目录直接 `pnpm fast` / `pnpm vr` / `pnpm v
 
 改 token：改 `packages/tokens/src/tokens.json`（弹簧改 `motion.tokens.json`），跑 `pnpm tokens:sync`；改了文档站的页数据或件，跑 `pnpm ds:build`。生成文件不手改。
 
+## 验收（2026-11-23 用户定，#143）
+
+词的意思见 [GLOSSARY.md](GLOSSARY.md)：回执、审查、验收、功能地图、判据。做法照 pstack（Lauren Tan）的 `create-verification-skill` 与 `create-formal-verification-skill`。
+
+- **回执不算数**：执行者（人或 agent）交回的 PASS / ISSUES 只是自述，不能代替审查或验收。
+- **审查与验收分开**：审查是另一个会话读 diff 找缺陷，管代码好不好；验收是另一个会话照功能地图亲手驱动、按票里的判据逐条给证据（过 / 不过 / 没法验），管功能到没到。
+- **验收不拦合并，只拦关票**：门禁过了照旧可以合（2026-11-14 那条不变）；票要等验收过了才关，验收没过就另开修复 PR。
+- **验证技能 `.claude/skills/verify-katanaui/`**：在真实浏览器里驱动文档站、留证据；新件或改了行为的件，同一个 PR 里补它在功能地图（`features/`）里的那一份。
+- **形式化验证只挑最贵的承诺**：违背了会伤用户、测试又难覆盖的才做（第一个是订单簿合并档位，`.claude/skills/formal-tick-merge/`）。验证要能失败：故意改坏被保护的代码要变红。代码动了按技能里记的覆盖范围重跑，重新对齐后再推进同步提交。
+
 ## 发版
 
 还没有 npm（仓库私有，见 #2「发布与消费」）。发版就是在 main 上打标签 `vX.Y.Z`，同时改 `packages/*/package.json` 的 version；

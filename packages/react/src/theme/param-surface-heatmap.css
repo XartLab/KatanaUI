@@ -1,0 +1,187 @@
+/* SPDX-License-Identifier: MIT */
+/* ParamSurfaceHeatmap（#120）：格底色走 research-color（涨跌发散或暗灰到亮灰，行内 style 给）；最优格琥珀环，最优格的邻域用虚线框，钉住的格白环。 */
+.k-ps {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  min-width: 0;
+}
+.k-ps-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px var(--space-4);
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-ps-field {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.k-ps-select {
+  min-width: 88px;
+}
+.k-ps-body {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  align-items: flex-start;
+}
+.k-ps-plot {
+  flex: 1 1 360px;
+  min-width: 0;
+}
+.k-ps-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  --k-ps-cols: 1;
+}
+.k-ps-row {
+  display: grid;
+  grid-template-columns: 44px repeat(var(--k-ps-cols), minmax(0, 1fr));
+  gap: 2px;
+}
+.k-ps-ytick,
+.k-ps-xtick {
+  align-self: center;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+  font-variant-numeric: tabular-nums;
+}
+.k-ps-ytick {
+  padding-right: 6px;
+  text-align: right;
+}
+.k-ps-xtick {
+  text-align: center;
+}
+.k-ps-cell {
+  display: grid;
+  place-items: center;
+  min-width: 0;
+  height: 30px;
+  border-radius: 2px;
+  background: var(--k-container-secondary-background);
+  color: var(--k-content-primary-foreground);
+  font: var(--text-caption) var(--font-num-small);
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  outline: none;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.k-ps-cell[data-empty] {
+  background: transparent;
+  box-shadow: inset 0 0 0 1px var(--k-separable-tertiary-borderColor);
+  cursor: default;
+}
+.k-ps-cell[data-near] {
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--k-status-warn-foreground) 60%, transparent);
+}
+.k-ps-cell[data-best] {
+  box-shadow: inset 0 0 0 2px var(--k-status-warn-foreground);
+}
+.k-ps-cell:hover,
+.k-ps-cell:focus-visible,
+.k-ps-cell[data-pinned] {
+  box-shadow: inset 0 0 0 2px var(--k-content-primary-foreground);
+}
+/* 纵轴名在纵轴旁（左上、网格之上），横轴名在横轴刻度下居中。 */
+.k-ps-yname,
+.k-ps-xname {
+  margin: 0;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-ps-yname {
+  margin-bottom: 4px;
+}
+.k-ps-yname::before {
+  content: '↑ ';
+}
+.k-ps-xname {
+  margin-top: 4px;
+  padding-left: 44px;
+  text-align: center;
+}
+.k-ps-legend {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+  font-variant-numeric: tabular-nums;
+}
+.k-ps-legend i {
+  display: inline-block;
+  width: 140px;
+  height: 8px;
+  border-radius: 2px;
+}
+.k-ps-panel {
+  display: flex;
+  flex: 0 1 240px;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 200px;
+  color: var(--k-content-body-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-ps-panel h5 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 4px;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+  font-weight: 400;
+}
+.k-ps-panel p {
+  margin: 0;
+}
+.k-ps-panel dl {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+}
+.k-ps-panel dl > div {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+.k-ps-panel dt {
+  color: var(--k-content-secondary-foreground);
+}
+.k-ps-panel dd {
+  margin: 0;
+  color: var(--k-content-primary-foreground);
+  font-variant-numeric: tabular-nums;
+}
+.k-ps-panel dl > div[data-kind='metric'][data-active] dt,
+.k-ps-panel dl > div[data-kind='metric'][data-active] dd {
+  color: var(--k-content-primary-foreground);
+  font-weight: 600;
+}
+.k-ps-cellinfo {
+  display: block;
+}
+.k-ps-stable {
+  padding-top: 8px;
+  border-top: var(--hairline);
+}
+.k-ps-badge {
+  padding: 0 6px;
+  border: 1px solid var(--k-status-warn-foreground);
+  border-radius: var(--radius-pill);
+  color: var(--k-status-warn-foreground);
+}
+.k-ps-empty {
+  margin: 0;
+  padding: var(--space-6);
+  color: var(--k-content-secondary-foreground);
+  text-align: center;
+}
