@@ -23793,7 +23793,7 @@
           "type": "number",
           "required": false,
           "default": "100",
-          "description": "满量程，默认 100。"
+          "description": "满量程；给了 warnAt / hardAt 时默认取已用与两条线里最大的（越限的部分看得见）。"
         },
         {
           "name": "valueText",
@@ -23828,6 +23828,24 @@
           "description": "读屏用：刻度那根线是什么（如「评估点」「上限」）；有 mark 时要给。"
         },
         {
+          "name": "warnAt",
+          "type": "number",
+          "required": false,
+          "description": "预警线（软限，跟 value 同一个单位）：bar 与 sync 画一根半透明琥珀细线，gauge 不用；读数达到它 tone 换成 warn。"
+        },
+        {
+          "name": "hardAt",
+          "type": "number",
+          "required": false,
+          "description": "硬限（跟 value 同一个单位）：一根 2px 红线，gauge 不用；读数达到它 tone 换成 danger。"
+        },
+        {
+          "name": "limitLabels",
+          "type": "{ warn?: string; hard?: string }",
+          "required": false,
+          "description": "读屏用：两条线的说法，数与单位由调用方写（如「预警线 80%」「硬限 100%」），接在读数后面；有线时要给。"
+        },
+        {
           "name": "className",
           "type": "string",
           "required": false,
@@ -23860,7 +23878,8 @@
           "name": "max",
           "type": "number",
           "required": false,
-          "description": "满量程，默认 100。"
+          "default": "100",
+          "description": "满量程；给了 warnAt / hardAt 时默认取已用与两条线里最大的（越限的部分看得见）。"
         },
         {
           "name": "valueText",
@@ -23891,6 +23910,24 @@
           "type": "string",
           "required": false,
           "description": "读屏用：刻度那根线是什么（如「评估点」「上限」）；有 mark 时要给。"
+        },
+        {
+          "name": "warnAt",
+          "type": "number",
+          "required": false,
+          "description": "预警线（软限，跟 value 同一个单位）：bar 与 sync 画一根半透明琥珀细线，gauge 不用；读数达到它 tone 换成 warn。"
+        },
+        {
+          "name": "hardAt",
+          "type": "number",
+          "required": false,
+          "description": "硬限（跟 value 同一个单位）：一根 2px 红线，gauge 不用；读数达到它 tone 换成 danger。"
+        },
+        {
+          "name": "limitLabels",
+          "type": "{ warn?: string; hard?: string }",
+          "required": false,
+          "description": "读屏用：两条线的说法，数与单位由调用方写（如「预警线 80%」「硬限 100%」），接在读数后面；有线时要给。"
         },
         {
           "name": "className",

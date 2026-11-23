@@ -7771,7 +7771,7 @@
       "name": "meter",
       "type": "registry:component",
       "title": "Meter",
-      "description": "横向仪表，三种形态：条（进度、负载、敞口）、刻度（0 到 100 的读数带指针）、同步率条（带齿分段加琥珀评估刻度与右侧大百分比）；颜色只传 tone。",
+      "description": "横向仪表，三种形态：条（进度、负载、敞口）、刻度（0 到 100 的读数带指针）、同步率条（带齿分段加琥珀评估刻度与右侧大百分比）；限额板传预警线与硬限，越线自己换色；颜色只传 tone。",
       "registryDependencies": [
         "@katana/severity"
       ],

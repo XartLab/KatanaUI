@@ -3060,10 +3060,10 @@ export const PAGES: readonly DocPage[] = [
   {
     id: 'meter',
     group: 'quant',
-    cardHeight: 477,
+    cardHeight: 607,
     title: 'Meter 仪表',
     summary:
-      '横向仪表，三种形态：条（进度、负载、敞口）、刻度（0 到 100 的读数带指针）、同步率条（带齿分段加琥珀评估刻度与右侧大百分比）；颜色只传 tone。',
+      '横向仪表，三种形态：条（进度、负载、敞口）、刻度（0 到 100 的读数带指针）、同步率条（带齿分段加琥珀评估刻度与右侧大百分比）；限额板传预警线与硬限，越线自己换色；颜色只传 tone。',
     exports: ['Meter'],
     props: [
       {
@@ -3072,7 +3072,12 @@ export const PAGES: readonly DocPage[] = [
         rows: [
           { name: 'label', type: 'ReactNode', desc: '名字（左上，ink-300）。' },
           { name: 'value', type: 'number', desc: '当前值；越界贴边。' },
-          { name: 'max', type: 'number', default: '100', desc: '满量程。' },
+          {
+            name: 'max',
+            type: 'number',
+            default: '100',
+            desc: '满量程；给了 warnAt / hardAt 而没给它时取已用与两条线里最大的，越限的部分看得见。',
+          },
           { name: 'valueText', type: 'string', desc: '右边的数怎么写；不给就是四舍五入的百分数。' },
           {
             name: 'tone',
@@ -3088,6 +3093,17 @@ export const PAGES: readonly DocPage[] = [
           },
           { name: 'mark', type: 'number', desc: '刻度（跟 value 同单位）：琥珀竖线，sync 里是评估点；gauge 不画。' },
           { name: 'markLabel', type: 'string', desc: '读屏用：刻度是什么（评估点、上限）；有 mark 时要给。' },
+          {
+            name: 'warnAt',
+            type: 'number',
+            desc: '预警线（软限，跟 value 同单位）：半透明琥珀 1px；达到它 tone 换成 warn。gauge 不画。',
+          },
+          { name: 'hardAt', type: 'number', desc: '硬限：红色 2px；达到它 tone 换成 danger。gauge 不画。' },
+          {
+            name: 'limitLabels',
+            type: '{ warn?: string; hard?: string }',
+            desc: '读屏用：两条线的说法，数与单位由调用方写（预警线 80%、硬限 100%），接在读数后面。',
+          },
         ],
       },
     ],
@@ -3097,9 +3113,11 @@ export const PAGES: readonly DocPage[] = [
       'sync：14px 带齿条，右侧大百分比（display-dense 字），琥珀刻度是评估点。',
       'warn：条与数转琥珀，条体脉冲一次；off：全部转灰。',
       'tone 是 SeverityExt（G6）：neutral 画法同 off（没有判断就不着色）。',
+      '限额：线下照传入的 tone；达到预警线（等于也算）转琥珀并脉冲一次，达到硬限转红再脉冲一次；根上 data-state 是 normal / warn / breach。',
     ],
     donts: [
       '不要传颜色，只传 tone。',
+      '限额板不要自己按线算 tone，传 warnAt / hardAt；状态词（接近、越限）写进 valueText。',
       '越界、受限要在名字或数里写字，不只靠琥珀色。',
       '不要用 sync 做普通进度条。',
       '高频（> 2Hz）更新的量不要用它，用读数。',

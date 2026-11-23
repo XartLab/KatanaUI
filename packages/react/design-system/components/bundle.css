@@ -23804,6 +23804,27 @@ button.k-spark-tile:focus-visible {
   animation: k-meter-pulse var(--dur-gentle) var(--ease-gentle) 1;
 }
 
+.k-meter-limit {
+  position: absolute;
+  top: -2px;
+  bottom: -2px;
+}
+
+.k-meter-limit.is-warn {
+  background: var(--k-status-warn-borderColor);
+  width: 1px;
+}
+
+.k-meter-limit.is-hard {
+  background: var(--k-status-danger-foreground);
+  width: 2px;
+  margin-left: -1px;
+}
+
+.k-meter[data-state="breach"] .k-meter-track {
+  animation: k-meter-pulse-breach var(--dur-gentle) var(--ease-gentle) 1;
+}
+
 .k-meter.is-gauge .k-meter-track {
   height: 34px;
 }
@@ -23878,6 +23899,20 @@ button.k-spark-tile:focus-visible {
 
   40% {
     box-shadow: 0 0 0 2px var(--k-status-warn-foreground);
+  }
+
+  100% {
+    box-shadow: 0 0 var(--ds-c-2xn4aw);
+  }
+}
+
+@keyframes k-meter-pulse-breach {
+  0% {
+    box-shadow: 0 0 0 0 var(--k-status-danger-foreground);
+  }
+
+  40% {
+    box-shadow: 0 0 0 2px var(--k-status-danger-foreground);
   }
 
   100% {
