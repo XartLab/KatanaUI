@@ -22,7 +22,8 @@ const registry = (await buildRegistry()) as { items: Item[] }
 describe('shadcn 注册表清单', () => {
   it('已提交的 registry.json 与源码一致（加了件没重新生成就红）', async () => {
     expect(readFileSync(`${pkgDir}registry.json`, 'utf8')).toBe(await registryText())
-  })
+    // registryText 把 468 项又建一遍，单跑约 7 秒，机器上有别的 worker 时更慢：默认的 5 秒超时会误红，放宽到 30 秒。
+  }, 30_000)
 
   it('item 名唯一，文件都在，落点不撞', () => {
     expect(new Set(registry.items.map((i) => i.name)).size).toBe(registry.items.length)
