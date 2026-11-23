@@ -42,6 +42,7 @@
 | [弹出层](overlays.md) | `drive overlays` | Popover 与 Dialog 的点开、Esc 关、点外面关、焦点回到触发处 |
 | [Tabs 页签](tabs.md) | `drive tabs` | 点页签换内容、底块跟随、方向键切换、禁用页签 |
 | [对照 Salt 补的七件](salt-gaps.md) | 还没有流程（手走） | Pill 改与删、SystemStatus 关闭、Calendar 选日与不可选日、ListBox 单选与多选、Link / Card / Panel 的样子 |
+| [SeasonalChart 季节性图](seasonal-chart.md) | `drive seasonal-chart` | 键盘读数（← / PageUp / End / Esc）、图例开关、表格视图、受控隐藏与最后一年关不掉、窄于 520px 的布局 |
 
 ## 待补
 
@@ -59,3 +60,4 @@
 | 日期 | 提交 | 走了哪些 | 结果 | 记录 |
 | --- | --- | --- | --- | --- |
 | 2026-11-23 | `c9634db` | 四条全走 | 全部 PASS | XartLab/KatanaUI#143 |
+| 2026-11-23 | `b0928449`（`feat/147-seasonal-port` 合入 main 后） | seasonal-chart | PASS；做了一次改坏，变红后还原 | XartLab/KatanaUI#169 |
