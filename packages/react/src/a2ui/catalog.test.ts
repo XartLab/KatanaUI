@@ -317,6 +317,9 @@ const EXAMPLES: Record<string, Record<string, unknown>> = {
     label: 'Prices of two instruments',
     xLabels: ['Mon', 'Tue', 'Wed'],
     onSelect: { event: { name: 'chart.select' } },
+    actionLabels: CHART_ACTIONS,
+    tableLabel: 'Prices table',
+    tableXHead: 'Day',
   },
   KatanaAttributionBars: {
     items: [
@@ -350,6 +353,9 @@ const EXAMPLES: Record<string, Record<string, unknown>> = {
   KatanaHorizonChart: {
     rows: [{ key: 'a', label: 'ACME', values: [1, -2, 3, -1] }],
     label: 'Excess return of one instrument',
+    actionLabels: CHART_ACTIONS,
+    tableLabel: 'Excess return table',
+    tableXHead: 'Point',
   },
   KatanaBrushChart: {
     values: [1, 2, 3, 4, 5],
@@ -357,6 +363,9 @@ const EXAMPLES: Record<string, Record<string, unknown>> = {
     label: 'Price with an overview window',
     labels: { start: 'Window start', end: 'Window end', window: 'Window' },
     onValueChange: { event: { name: 'chart.window' } },
+    actionLabels: CHART_ACTIONS,
+    tableLabel: 'Price table',
+    tableHead: ['Day', 'Price'],
   },
   KatanaTreemap: {
     items: [{ id: 'a', name: 'ACME', group: 'Tech', size: 10, change: 0.01, text: '+1.00%' }],

@@ -236,6 +236,9 @@
 }
 /* 表格视图打开时，图与读数用 hidden 收起：作者样式里的 display 会盖过 hidden，这里压回去。 */
 .k-ridge [hidden],
+.k-hz [hidden],
+.k-sm [hidden],
+.k-brush [hidden],
 .k-scatter [hidden],
 .k-slope [hidden],
 .k-uptime [hidden],

@@ -20,6 +20,7 @@
 | `minWidth` | `number` | `160` | 每张的最小宽（px）。 |
 | `height` | `number` | `56` | 折线区高（px）。 |
 | `onSelect` | `(key: string) => void` | — | 给了标题就是按钮（可聚焦），点了拿到这一张的 key。 |
+| `actionLabels / tableLabel / tableXHead / source / onExport / onFullscreen` | `Partial<SeriesTableViewProps>` | — | 给齐前三个才有右上三件与表格视图（一行一个横轴位置、一列一张）；单独用时要给，嵌在自带工具条的积木里（SentimentCycle）可以不给。 |
 
 ## Usage
 
@@ -41,6 +42,9 @@ export const SMALL_MULTIPLES_DEMO: readonly SmallMultiple[] = [
   { key: 'FFF', label: 'FFF', values: sm((i) => 120 - 15 * Math.sin(i / 8)) },
 ]
 
+/** 图右上三件的文字：单独用时要给（表格视图是无障碍兜底，dataviz §4）。 */
+const ACTIONS = { group: '图工具', table: '表格视图', exportCsv: '导出 CSV', fullscreen: '全屏' }
+
 export function SmallMultiplesUsage() {
   const [picked, setPicked] = useState<string | null>(null)
   return (
@@ -52,6 +56,9 @@ export function SmallMultiplesUsage() {
           formatValue={(v) => v.toFixed(2)}
           formatX={(i) => `第 ${i + 1} 点`}
           onSelect={setPicked}
+          actionLabels={ACTIONS}
+          tableLabel="六个品种的走势（表格视图）"
+          tableXHead="时点"
         />
       </div>
       <p className="gal-note" data-gallery-multiples-picked>
@@ -63,6 +70,9 @@ export function SmallMultiplesUsage() {
           label="示例：六个品种的走势（共用范围）"
           formatValue={(v) => v.toFixed(2)}
           yScale="shared"
+          actionLabels={ACTIONS}
+          tableLabel="六个品种的走势（共用范围，表格视图）"
+          tableXHead="序号"
         />
       </div>
     </>
@@ -74,7 +84,7 @@ export function SmallMultiplesUsage() {
 
 ## States
 
-- 默认：每张画一条线，线色按头尾比（涨跌色跟涨跌配色走，持平中性色），标题写最新值。
+- 默认：每张画一条线（series-1，不按涨跌着色），标题的值按头尾比上涨跌色，标题写最新值。
 - 扫读：所有张同一格画竖线与点，标题的值换成那一格。
 - 某张没数据：线不画，值写「—」。
 
@@ -88,7 +98,8 @@ export function SmallMultiplesUsage() {
 
 ```
 SmallMultiples
-  div[role=group]（网格）
+  右上三件（给了 actionLabels 才有）
+  div[role=group]（网格；表格视图时换成表）
     每张：标题（名字 · 值；可点时是 button）· 折线区（svg 折线 · 竖线与点）
   读数行（aria-live）
 ```

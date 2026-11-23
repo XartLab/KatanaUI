@@ -5,7 +5,16 @@ import type { ComponentApi } from '@a2ui/web_core'
 import { useMemo } from 'react'
 import { z } from 'zod'
 import { HorizonChart } from '../../quant/index.ts'
-import { formatSchema, listSchema, makeFormat, numbersCapped, parseCapped, text } from '../chart-support.ts'
+import {
+  formatSchema,
+  listSchema,
+  makeFormat,
+  numbersCapped,
+  parseCapped,
+  seriesViewProps,
+  seriesViewShape,
+  text,
+} from '../chart-support.ts'
 import { Cell, weightSchema } from '../support.tsx'
 
 const MAX_ROWS = 100
@@ -46,6 +55,7 @@ export const KatanaHorizonChartApi = {
         .min(1e-9)
         .describe('A fixed full scale, same unit as the values. Omit to derive it from the data.')
         .optional(),
+      ...seriesViewShape,
       weight: weightSchema,
     })
     .strict(),
@@ -63,16 +73,20 @@ export const KatanaHorizonChart = createComponentImplementation(KatanaHorizonCha
   )
   const format = useMemo(() => makeFormat(props.valueFormat), [props.valueFormat])
   const xLabels = props.xLabels
+  const label = props.label ?? ''
+  const { actionLabels, tableLabel, tableXHead } = props
+  if (!actionLabels || !tableLabel || !tableXHead) return null
   return (
     <Cell weight={props.weight}>
       <HorizonChart
         rows={rows}
-        label={props.label ?? ''}
+        label={label}
         formatValue={format}
         formatX={xLabels ? (index) => xLabels[index] ?? '' : undefined}
         bands={props.bands}
         scale={props.scale}
         max={props.max}
+        {...seriesViewProps({ ...props, actionLabels, tableLabel, tableXHead }, label)}
       />
     </Cell>
   )
