@@ -20,6 +20,8 @@ const TARGET_ROOT = '~/src/katana/ui'
  * 有页的件，说明读页数据（gallery/registry.ts 的 PAGES.summary），这里不写第二份。
  */
 const INTERNAL = {
+  'research-color':
+    '研究报告件共用的色阶：涨跌发散色（零附近中性灰）与顺序色，周期收益表与参数曲面热力图用，只引用 token。',
   'order-ticket-parts':
     'OrderTicket 与 PositionCalculator 共用的小件：买卖切换、带标签与单位的数字框、读数行、数字格式。',
   'arcade-pixel-sprites': 'ArcadePixel 的数据：5x7 点阵字形、现成精灵与把文字排成格子的纯函数。',

@@ -187,6 +187,66 @@ const quant: GuidanceMap = {
       '每个点有整句读数，图例与读数里都有轨迹名。',
     ],
   },
+  'mae-mfe-scatter': {
+    aliases: ['MAE MFE chart', 'Excursion scatter', 'Trade excursion', 'Strategy Performance Report excursions'],
+    use: ['判断止损放得对不对：看亏单的最大浮亏（MAE）分布。', '判断止盈放得对不对：看亏单曾经有多大浮盈（MFE）。'],
+    avoid: ['看盈亏分布用 distribution-bars。', '没有逐笔 MAE / MFE（要逐笔行情）时别传，件不会替你算。'],
+    a11y: [
+      '图头有「表格视图」，同一份数据写成表。',
+      '赢是圆、亏是方，不只靠颜色；读数区写数字。',
+      '图可聚焦，← → 沿横轴走点，Esc 取消。',
+    ],
+  },
+  'underwater-chart': {
+    aliases: ['Underwater plot', 'Drawdown chart', 'Underwater equity', 'Drawdown periods'],
+    use: ['看回撤多深、持续多久、恢复了没有。', '与 equity-curve 叠放，两张图共用横轴。'],
+    avoid: ['只要一条曲线加镜像回撤用 equity-curve。', '没有时间的序列（逐笔）也要给每笔的时刻。'],
+    a11y: [
+      '图头有「表格视图」。',
+      '图是 slider，← → 扫读，读屏名里有时刻与回撤。',
+      '最大回撤的深度、前高到谷底、恢复用时都写成文字（头里一行），未恢复写「尚未恢复」。',
+    ],
+  },
+  'period-returns-table': {
+    aliases: ['Monthly returns table', 'Returns heatmap', 'Calendar returns', 'Period analysis'],
+    use: ['看策略各年各月的收益分布与季节性。', '切季、切周看收益是否集中在个别周期。'],
+    avoid: ['按日看收益的月历格用 calendar-heatmap。', '收益样本要给小数收益与毫秒时刻，别传已经按月汇总的数。'],
+    a11y: [
+      '用 table 语义，列头与行头可被读屏关联；每格仍写数字。',
+      '周视图格子窄只留颜色，数字在读数区与 title 里；格可聚焦，方向键走。',
+      '颜色是辅助：涨跌也写正负号（由 formatPercent 定）。',
+    ],
+  },
+  'param-surface-heatmap': {
+    aliases: ['Optimization heatmap', 'Parameter surface', '2D parameter sweep', 'Strategy optimization report'],
+    use: ['看两个参数下目标值的形状：平台还是孤峰。', '参数多于两个时选两轴、固定其余。'],
+    avoid: ['点不在规则网格上、或没有邻接关系用 param-scatter。', '格子超过几百个先聚合再画。'],
+    a11y: [
+      '网格是 role=grid，每格读屏名写两个参数、目标值与「最优」。',
+      '方向键走格，Enter 钉住；最优格琥珀环加「最优」字，孤峰有文字标记。',
+      '读数区列出该格全部指标，不只靠颜色。',
+    ],
+  },
+  'walk-forward-matrix': {
+    aliases: ['Walk-Forward Optimizer', 'WFO table', 'Rolling windows', 'Anchored windows'],
+    use: ['看步进优化每个窗口选了什么参数、样本外表现如何。', '用步进效率判断样本内的好成绩有多少带到了样本外。'],
+    avoid: ['单次样本内外切分用普通回测报告。', '步进效率单独不够，配稳健性门一起看。'],
+    a11y: [
+      '用 table 语义；通过与否有对勾、叉加文字。',
+      '时间轴小条是辅助（aria-hidden），区间日期写在文字里。',
+      '汇总用 dl 列出每一项。',
+    ],
+  },
+  'robustness-gate': {
+    aliases: ['Robustness checks', 'Go-live gate', 'Acceptance gate', 'Pass/fail checklist'],
+    use: ['上线前把一组稳健性判据摆在一起：实测值、阈值、通过与否。', '阈值由策略负责人定，调用方传进来。'],
+    avoid: ['只有一个数时用 metric-card。', '没测出的项传 null，不要拿 0 顶替。'],
+    a11y: [
+      '状态用对勾、叉、短横加文字，不只靠颜色。',
+      '每行实测值、比较符号、阈值都是文字；条只是辅助（aria-hidden）。',
+      '整组有读屏名，头里写过门与否和计数。',
+    ],
+  },
   'param-scatter': {
     aliases: ['Parameter sweep', 'Optimization heatmap', 'Strategy Tester optimizer', 'Grid search plot'],
     use: ['回测参数扫描后找最优一组参数。', '看目标值在参数平面上是尖峰还是平台，判断是否过拟合。'],

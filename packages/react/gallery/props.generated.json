@@ -11369,6 +11369,54 @@
         }
       ]
     },
+    "DrawdownSegment": {
+      "kind": "type",
+      "source": "src/quant/underwater-model.ts",
+      "props": [
+        {
+          "name": "peakIndex",
+          "type": "number",
+          "required": true,
+          "description": "回撤开始前的高点（最后一个回撤为 0 的点；序列一上来就在水下则是第 0 点）。"
+        },
+        {
+          "name": "troughIndex",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "recoveryIndex",
+          "type": "number | null",
+          "required": true,
+          "description": "回到前高的第一个点；到序列结束还没回来是 null。"
+        },
+        {
+          "name": "depth",
+          "type": "number",
+          "required": true,
+          "description": "谷底的回撤（负数）。"
+        },
+        {
+          "name": "fallMs",
+          "type": "number",
+          "required": true,
+          "description": "前高到谷底的毫秒数。"
+        },
+        {
+          "name": "recoveryMs",
+          "type": "number | null",
+          "required": true,
+          "description": "谷底到恢复的毫秒数；没恢复是 null。"
+        },
+        {
+          "name": "endIndex",
+          "type": "number",
+          "required": true,
+          "description": "画图用：这一段在横轴上覆盖到哪一点（恢复点，没恢复就到末点）。"
+        }
+      ]
+    },
     "DrawingCursor": {
       "kind": "component",
       "source": "src/motion/effect/drawing-cursor.tsx",
@@ -13286,6 +13334,147 @@
     "EvidenceKind": {
       "kind": "type",
       "source": "src/blocks/hypothesis-ledger/hypothesis-ledger-model.ts",
+      "props": []
+    },
+    "ExcursionAxis": {
+      "kind": "type",
+      "source": "src/quant/mae-mfe-model.ts",
+      "props": []
+    },
+    "ExcursionKind": {
+      "kind": "type",
+      "source": "src/quant/mae-mfe-model.ts",
+      "props": []
+    },
+    "ExcursionPoint": {
+      "kind": "type",
+      "source": "src/quant/mae-mfe-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "index",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "x",
+          "type": "number",
+          "required": true,
+          "description": "横轴：偏移的大小（绝对值）。"
+        },
+        {
+          "name": "y",
+          "type": "number",
+          "required": true,
+          "description": "纵轴：最终盈亏（带符号）。"
+        },
+        {
+          "name": "kind",
+          "type": "ExcursionKind",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "ExcursionSummary": {
+      "kind": "type",
+      "source": "src/quant/mae-mfe-model.ts",
+      "props": [
+        {
+          "name": "count",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "wins",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "losses",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "flats",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "meanWinX",
+          "type": "number | null",
+          "required": true,
+          "description": "赢单、亏单的平均偏移（横轴值）；那一侧没有单是 null。看 MAE 时亏单的均值远大于赢单，说明止损放得比赢单能承受的更宽。"
+        },
+        {
+          "name": "meanLossX",
+          "type": "number | null",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "ExcursionTrade": {
+      "kind": "type",
+      "source": "src/quant/mae-mfe-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "pnl",
+          "type": "number",
+          "required": true,
+          "description": "最终盈亏：金额与百分比（小数，0.03 即 3%）。"
+        },
+        {
+          "name": "pnlPct",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "mae",
+          "type": "number",
+          "required": true,
+          "description": "持仓期间的最大浮亏（≤ 0）：金额与百分比。画图取绝对值，横轴向右是「亏得更深」。"
+        },
+        {
+          "name": "maePct",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "mfe",
+          "type": "number",
+          "required": true,
+          "description": "持仓期间的最大浮盈（≥ 0）：金额与百分比。"
+        },
+        {
+          "name": "mfePct",
+          "type": "number",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "ExcursionUnit": {
+      "kind": "type",
+      "source": "src/quant/mae-mfe-model.ts",
       "props": []
     },
     "ExitEstimate": {
@@ -16249,6 +16438,88 @@
           "type": "string",
           "required": true,
           "description": ""
+        }
+      ]
+    },
+    "GateCheck": {
+      "kind": "type",
+      "source": "src/quant/robustness-gate-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "value",
+          "type": "number | null",
+          "required": true,
+          "description": "实测值；还没有（没跑到、没数据）是 null，判为「未知」，不算通过也不算失败。"
+        },
+        {
+          "name": "threshold",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "op",
+          "type": "GateOp",
+          "required": true,
+          "description": "怎样算过：gte 实测 ≥ 阈值，lte 实测 ≤ 阈值，gt / lt 不含等号。"
+        }
+      ]
+    },
+    "GateOp": {
+      "kind": "type",
+      "source": "src/quant/robustness-gate-model.ts",
+      "props": []
+    },
+    "GateState": {
+      "kind": "type",
+      "source": "src/quant/robustness-gate-model.ts",
+      "props": []
+    },
+    "GateSummary": {
+      "kind": "type",
+      "source": "src/quant/robustness-gate-model.ts",
+      "props": [
+        {
+          "name": "total",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "passed",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "failed",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "unknown",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "open",
+          "type": "boolean",
+          "required": true,
+          "description": "全部通过才算过；只要有一条失败或未知就不过（未知不能当通过放行）。没有判定条时不过。"
         }
       ]
     },
@@ -21310,6 +21581,288 @@
           "type": "string",
           "required": false,
           "description": "Extra classes for the root element."
+        }
+      ]
+    },
+    "MaeMfeScatter": {
+      "kind": "component",
+      "source": "src/quant/mae-mfe-scatter.tsx",
+      "props": [
+        {
+          "name": "actionLabels",
+          "type": "ChartActionsLabels",
+          "required": true,
+          "description": "图右上三个按钮的名字。"
+        },
+        {
+          "name": "tableLabel",
+          "type": "string",
+          "required": true,
+          "description": "表格视图的读屏名。"
+        },
+        {
+          "name": "tableHead",
+          "type": "readonly string[]",
+          "required": true,
+          "description": "表头（第一项是行头那一列）。"
+        },
+        {
+          "name": "source",
+          "type": "ReactNode",
+          "required": false,
+          "description": "来源一行：每个数字能回答从哪来、什么时候（§2.2）。"
+        },
+        {
+          "name": "onExport",
+          "type": "() => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "onFullscreen",
+          "type": "() => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "trades",
+          "type": "readonly ExcursionTrade[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "整张图的读屏名。"
+        },
+        {
+          "name": "axis",
+          "type": "ExcursionAxis",
+          "required": false,
+          "description": "横轴看 MAE 还是 MFE；不给用内部状态（默认 mae）。"
+        },
+        {
+          "name": "onAxisChange",
+          "type": "(axis: ExcursionAxis) => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "unit",
+          "type": "ExcursionUnit",
+          "required": false,
+          "description": "金额还是百分比；不给用内部状态（默认 percent）。"
+        },
+        {
+          "name": "onUnitChange",
+          "type": "(unit: ExcursionUnit) => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "formatAmount",
+          "type": "(value: number) => string",
+          "required": true,
+          "description": "金额与百分比的写法（带币种、带正负号由调用方定）。参数是带符号的值；横轴传的是绝对值。"
+        },
+        {
+          "name": "formatPercent",
+          "type": "(value: number) => string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "labels",
+          "type": "MaeMfeScatterLabels",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "MaeMfeScatterLabels": {
+      "kind": "type",
+      "source": "src/quant/mae-mfe-scatter.tsx",
+      "props": [
+        {
+          "name": "axisGroup",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "mae",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "mfe",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "unitGroup",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "amount",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "percent",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "pnl",
+          "type": "string",
+          "required": true,
+          "description": "纵轴名：最终盈亏。"
+        },
+        {
+          "name": "win",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "loss",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "meanWin",
+          "type": "string",
+          "required": true,
+          "description": "汇总行：赢单 / 亏单的平均偏移，如「赢单平均」「亏单平均」。"
+        },
+        {
+          "name": "meanLoss",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "idle",
+          "type": "string",
+          "required": true,
+          "description": "没选点时读数区写什么。"
+        }
+      ]
+    },
+    "MaeMfeScatterProps": {
+      "kind": "type",
+      "source": "src/quant/mae-mfe-scatter.tsx",
+      "props": [
+        {
+          "name": "actionLabels",
+          "type": "ChartActionsLabels",
+          "required": true,
+          "description": "图右上三个按钮的名字。"
+        },
+        {
+          "name": "tableLabel",
+          "type": "string",
+          "required": true,
+          "description": "表格视图的读屏名。"
+        },
+        {
+          "name": "tableHead",
+          "type": "readonly string[]",
+          "required": true,
+          "description": "表头（第一项是行头那一列）。"
+        },
+        {
+          "name": "source",
+          "type": "ReactNode",
+          "required": false,
+          "description": "来源一行：每个数字能回答从哪来、什么时候（§2.2）。"
+        },
+        {
+          "name": "onExport",
+          "type": "() => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "onFullscreen",
+          "type": "() => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "trades",
+          "type": "readonly ExcursionTrade[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "整张图的读屏名。"
+        },
+        {
+          "name": "axis",
+          "type": "ExcursionAxis",
+          "required": false,
+          "description": "横轴看 MAE 还是 MFE；不给用内部状态（默认 mae）。"
+        },
+        {
+          "name": "onAxisChange",
+          "type": "(axis: ExcursionAxis) => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "unit",
+          "type": "ExcursionUnit",
+          "required": false,
+          "description": "金额还是百分比；不给用内部状态（默认 percent）。"
+        },
+        {
+          "name": "onUnitChange",
+          "type": "(unit: ExcursionUnit) => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "formatAmount",
+          "type": "(value: number) => string",
+          "required": true,
+          "description": "金额与百分比的写法（带币种、带正负号由调用方定）。参数是带符号的值；横轴传的是绝对值。"
+        },
+        {
+          "name": "formatPercent",
+          "type": "(value: number) => string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "labels",
+          "type": "MaeMfeScatterLabels",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": ""
         }
       ]
     },
@@ -28210,6 +28763,313 @@
         }
       ]
     },
+    "ParamSurfaceHeatmap": {
+      "kind": "component",
+      "source": "src/quant/param-surface-heatmap.tsx",
+      "props": [
+        {
+          "name": "points",
+          "type": "readonly SurfacePoint[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "params",
+          "type": "readonly SurfaceParam[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "metrics",
+          "type": "readonly SurfaceMetric[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "整张图的读屏名。"
+        },
+        {
+          "name": "axes",
+          "type": "readonly [string, string]",
+          "required": false,
+          "description": "横纵轴的参数 key；不给用内部状态（默认前两个）。"
+        },
+        {
+          "name": "onAxesChange",
+          "type": "(axes: [string, string]) => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "metric",
+          "type": "string",
+          "required": false,
+          "description": "目标值的指标 key；不给用内部状态（默认第一个）。"
+        },
+        {
+          "name": "onMetricChange",
+          "type": "(metric: string) => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "slice",
+          "type": "Readonly<Record<string, number>>",
+          "required": false,
+          "description": "其余参数固定在哪；不给用内部状态（默认各取第一个值）。"
+        },
+        {
+          "name": "onSliceChange",
+          "type": "(slice: Record<string, number>) => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "radius",
+          "type": "number",
+          "required": false,
+          "default": "1",
+          "description": "邻域半径（格），默认 1（八邻）。"
+        },
+        {
+          "name": "spikeBelow",
+          "type": "number",
+          "required": false,
+          "description": "保留率低于它就标「孤峰」；不给就不判，只显示数。"
+        },
+        {
+          "name": "formatRatio",
+          "type": "(value: number) => string",
+          "required": true,
+          "description": "保留率的写法（0.25 → 「25%」）。"
+        },
+        {
+          "name": "labels",
+          "type": "ParamSurfaceLabels",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "source",
+          "type": "ReactNode",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "ParamSurfaceHeatmapProps": {
+      "kind": "type",
+      "source": "src/quant/param-surface-heatmap.tsx",
+      "props": [
+        {
+          "name": "points",
+          "type": "readonly SurfacePoint[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "params",
+          "type": "readonly SurfaceParam[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "metrics",
+          "type": "readonly SurfaceMetric[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "整张图的读屏名。"
+        },
+        {
+          "name": "axes",
+          "type": "readonly [string, string]",
+          "required": false,
+          "description": "横纵轴的参数 key；不给用内部状态（默认前两个）。"
+        },
+        {
+          "name": "onAxesChange",
+          "type": "(axes: [string, string]) => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "metric",
+          "type": "string",
+          "required": false,
+          "description": "目标值的指标 key；不给用内部状态（默认第一个）。"
+        },
+        {
+          "name": "onMetricChange",
+          "type": "(metric: string) => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "slice",
+          "type": "Readonly<Record<string, number>>",
+          "required": false,
+          "description": "其余参数固定在哪；不给用内部状态（默认各取第一个值）。"
+        },
+        {
+          "name": "onSliceChange",
+          "type": "(slice: Record<string, number>) => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "radius",
+          "type": "number",
+          "required": false,
+          "description": "邻域半径（格），默认 1（八邻）。"
+        },
+        {
+          "name": "spikeBelow",
+          "type": "number",
+          "required": false,
+          "description": "保留率低于它就标「孤峰」；不给就不判，只显示数。"
+        },
+        {
+          "name": "formatRatio",
+          "type": "(value: number) => string",
+          "required": true,
+          "description": "保留率的写法（0.25 → 「25%」）。"
+        },
+        {
+          "name": "labels",
+          "type": "ParamSurfaceLabels",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "source",
+          "type": "ReactNode",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "ParamSurfaceLabels": {
+      "kind": "type",
+      "source": "src/quant/param-surface-heatmap.tsx",
+      "props": [
+        {
+          "name": "xAxis",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "yAxis",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "metric",
+          "type": "string",
+          "required": true,
+          "description": "目标值（色）那一组开关的读屏名。"
+        },
+        {
+          "name": "slice",
+          "type": "string",
+          "required": true,
+          "description": "切片下拉的读屏名前缀，后面接参数名。"
+        },
+        {
+          "name": "best",
+          "type": "string",
+          "required": true,
+          "description": "「最优」。"
+        },
+        {
+          "name": "spike",
+          "type": "string",
+          "required": true,
+          "description": "「孤峰」。"
+        },
+        {
+          "name": "cell",
+          "type": "string",
+          "required": true,
+          "description": "读数区两块的标题：当前格、最优格的邻域。"
+        },
+        {
+          "name": "neighborhood",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "neighbors",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "mean",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "variance",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "retention",
+          "type": "string",
+          "required": true,
+          "description": "保留率：邻均值相对最优值。"
+        },
+        {
+          "name": "noValue",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "missing",
+          "type": "string",
+          "required": true,
+          "description": "没有这组参数（网格里的空洞）。"
+        },
+        {
+          "name": "idle",
+          "type": "string",
+          "required": true,
+          "description": "没有格子可看时读数区写什么。"
+        },
+        {
+          "name": "empty",
+          "type": "string",
+          "required": true,
+          "description": "没有数据时写什么。"
+        }
+      ]
+    },
     "PasswordInput": {
       "kind": "component",
       "source": "src/patterns/password-input.tsx",
@@ -28602,6 +29462,270 @@
           "description": ""
         }
       ]
+    },
+    "PeriodCell": {
+      "kind": "type",
+      "source": "src/quant/period-returns-model.ts",
+      "props": [
+        {
+          "name": "value",
+          "type": "number",
+          "required": true,
+          "description": "复利后的收益；这个周期没有样本时整格是 null（不是 0）。"
+        },
+        {
+          "name": "count",
+          "type": "number",
+          "required": true,
+          "description": "落在这格里的样本数。"
+        }
+      ]
+    },
+    "PeriodReturnsLabels": {
+      "kind": "type",
+      "source": "src/quant/period-returns-table.tsx",
+      "props": [
+        {
+          "name": "unitGroup",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "month",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "quarter",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "week",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "year",
+          "type": "string",
+          "required": true,
+          "description": "行头那一列的表头，如「年」。"
+        },
+        {
+          "name": "total",
+          "type": "string",
+          "required": true,
+          "description": "行尾那一列的表头，如「全年」。"
+        },
+        {
+          "name": "monthNames",
+          "type": "readonly string[]",
+          "required": true,
+          "description": "月、季的列头（12 个、4 个），周的列头是第几周（从 1 起）。"
+        },
+        {
+          "name": "quarterNames",
+          "type": "readonly string[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "weekName",
+          "type": "(week: number) => string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "idle",
+          "type": "string",
+          "required": true,
+          "description": "没选格时读数区写什么。"
+        },
+        {
+          "name": "empty",
+          "type": "string",
+          "required": true,
+          "description": "没有样本时写什么。"
+        }
+      ]
+    },
+    "PeriodReturnsTable": {
+      "kind": "component",
+      "source": "src/quant/period-returns-table.tsx",
+      "props": [
+        {
+          "name": "samples",
+          "type": "readonly ReturnSample[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "表的读屏名。"
+        },
+        {
+          "name": "unit",
+          "type": "PeriodUnit",
+          "required": false,
+          "description": "周期；不给用内部状态（默认 month）。"
+        },
+        {
+          "name": "onUnitChange",
+          "type": "(unit: PeriodUnit) => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "utcOffsetMinutes",
+          "type": "number",
+          "required": false,
+          "default": "0",
+          "description": "样本时刻所在时区相对 UTC 的分钟数（东八区 480）；默认 0。"
+        },
+        {
+          "name": "formatPercent",
+          "type": "(value: number) => string",
+          "required": true,
+          "description": "小数收益的写法（0.0123 → 「+1.23%」）；调用方定位数与符号。"
+        },
+        {
+          "name": "formatPeriod",
+          "type": "(year: number, unit: PeriodUnit, column: number) => string",
+          "required": true,
+          "description": "读数里一格的名字，如「2026 · 3 月」。"
+        },
+        {
+          "name": "scaleLimit",
+          "type": "number",
+          "required": false,
+          "description": "着色的上限（绝对值，小数）；不给取表里最大的格。固定它可以让几张表用同一把尺。"
+        },
+        {
+          "name": "labels",
+          "type": "PeriodReturnsLabels",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "source",
+          "type": "string",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "PeriodReturnsTableProps": {
+      "kind": "type",
+      "source": "src/quant/period-returns-table.tsx",
+      "props": [
+        {
+          "name": "samples",
+          "type": "readonly ReturnSample[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "表的读屏名。"
+        },
+        {
+          "name": "unit",
+          "type": "PeriodUnit",
+          "required": false,
+          "description": "周期；不给用内部状态（默认 month）。"
+        },
+        {
+          "name": "onUnitChange",
+          "type": "(unit: PeriodUnit) => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "utcOffsetMinutes",
+          "type": "number",
+          "required": false,
+          "description": "样本时刻所在时区相对 UTC 的分钟数（东八区 480）；默认 0。"
+        },
+        {
+          "name": "formatPercent",
+          "type": "(value: number) => string",
+          "required": true,
+          "description": "小数收益的写法（0.0123 → 「+1.23%」）；调用方定位数与符号。"
+        },
+        {
+          "name": "formatPeriod",
+          "type": "(year: number, unit: PeriodUnit, column: number) => string",
+          "required": true,
+          "description": "读数里一格的名字，如「2026 · 3 月」。"
+        },
+        {
+          "name": "scaleLimit",
+          "type": "number",
+          "required": false,
+          "description": "着色的上限（绝对值，小数）；不给取表里最大的格。固定它可以让几张表用同一把尺。"
+        },
+        {
+          "name": "labels",
+          "type": "PeriodReturnsLabels",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "source",
+          "type": "string",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "PeriodRow": {
+      "kind": "type",
+      "source": "src/quant/period-returns-model.ts",
+      "props": [
+        {
+          "name": "year",
+          "type": "number",
+          "required": true,
+          "description": "月、季按日历年；周按 ISO 周所属的年（1 月初可能属于上一年的第 52、53 周）。"
+        },
+        {
+          "name": "cells",
+          "type": "(PeriodCell | null)[]",
+          "required": true,
+          "description": "下标是列：月 0..11、季 0..3、周 0..(列数-1)；没有样本是 null。"
+        },
+        {
+          "name": "total",
+          "type": "number",
+          "required": true,
+          "description": "这一年所有样本复利后的合计；整年没有样本不会有这一行。"
+        }
+      ]
+    },
+    "PeriodUnit": {
+      "kind": "type",
+      "source": "src/quant/period-returns-model.ts",
+      "props": []
     },
     "PersistedStateOptions": {
       "kind": "type",
@@ -33794,6 +34918,24 @@
         }
       ]
     },
+    "ReturnSample": {
+      "kind": "type",
+      "source": "src/quant/period-returns-model.ts",
+      "props": [
+        {
+          "name": "time",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "value",
+          "type": "number",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
     "RevisionStats": {
       "kind": "type",
       "source": "src/quant/vintage-series-model.ts",
@@ -34264,6 +35406,204 @@
           "type": "ReactNode",
           "required": false,
           "description": "没有悬停也没有聚焦时读数行写什么。"
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "RobustnessCheck": {
+      "kind": "type",
+      "source": "src/quant/robustness-gate.tsx",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "value",
+          "type": "number | null",
+          "required": true,
+          "description": "实测值；还没有（没跑到、没数据）是 null，判为「未知」，不算通过也不算失败。"
+        },
+        {
+          "name": "threshold",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "op",
+          "type": "GateOp",
+          "required": true,
+          "description": "怎样算过：gte 实测 ≥ 阈值，lte 实测 ≤ 阈值，gt / lt 不含等号。"
+        },
+        {
+          "name": "format",
+          "type": "(value: number) => string",
+          "required": false,
+          "description": "实测值与阈值的写法；不给用 String。"
+        },
+        {
+          "name": "hint",
+          "type": "string",
+          "required": false,
+          "description": "一句口径说明（悬停提示与读屏），如「样本外年化 ÷ 样本内年化」。"
+        }
+      ]
+    },
+    "RobustnessGate": {
+      "kind": "component",
+      "source": "src/quant/robustness-gate.tsx",
+      "props": [
+        {
+          "name": "checks",
+          "type": "readonly RobustnessCheck[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "整组的读屏名。"
+        },
+        {
+          "name": "labels",
+          "type": "RobustnessGateLabels",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "title",
+          "type": "ReactNode",
+          "required": false,
+          "description": "标题；不给不画。"
+        },
+        {
+          "name": "source",
+          "type": "string",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "RobustnessGateLabels": {
+      "kind": "type",
+      "source": "src/quant/robustness-gate.tsx",
+      "props": [
+        {
+          "name": "measured",
+          "type": "string",
+          "required": true,
+          "description": "每行三列的小标题。"
+        },
+        {
+          "name": "threshold",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "result",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "pass",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "fail",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "unknown",
+          "type": "string",
+          "required": true,
+          "description": "没测出来。"
+        },
+        {
+          "name": "open",
+          "type": "string",
+          "required": true,
+          "description": "整体结论：全过 / 没过。"
+        },
+        {
+          "name": "closed",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "summary",
+          "type": "(passed: number, total: number) => string",
+          "required": true,
+          "description": "汇总的写法，如「3 / 4 通过」：由调用方按计数拼，件不拼句子。"
+        },
+        {
+          "name": "empty",
+          "type": "string",
+          "required": true,
+          "description": "一条判定都没有时写什么。"
+        }
+      ]
+    },
+    "RobustnessGateProps": {
+      "kind": "type",
+      "source": "src/quant/robustness-gate.tsx",
+      "props": [
+        {
+          "name": "checks",
+          "type": "readonly RobustnessCheck[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "整组的读屏名。"
+        },
+        {
+          "name": "labels",
+          "type": "RobustnessGateLabels",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "title",
+          "type": "ReactNode",
+          "required": false,
+          "description": "标题；不给不画。"
+        },
+        {
+          "name": "source",
+          "type": "string",
+          "required": false,
+          "description": ""
         },
         {
           "name": "className",
@@ -40091,6 +41431,155 @@
         }
       ]
     },
+    "SurfaceGoal": {
+      "kind": "type",
+      "source": "src/quant/param-surface-model.ts",
+      "props": []
+    },
+    "SurfaceGrid": {
+      "kind": "type",
+      "source": "src/quant/param-surface-model.ts",
+      "props": [
+        {
+          "name": "xs",
+          "type": "number[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "ys",
+          "type": "number[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "cells",
+          "type": "(SurfacePoint | null)[][]",
+          "required": true,
+          "description": "cells[yi][xi]：这个坐标上的点；没有这组参数是 null。同一坐标有几个点（切片没固定死）取第一个。"
+        }
+      ]
+    },
+    "SurfaceMetric": {
+      "kind": "type",
+      "source": "src/quant/param-surface-heatmap.tsx",
+      "props": [
+        {
+          "name": "key",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "format",
+          "type": "(value: number) => string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "goal",
+          "type": "SurfaceGoal",
+          "required": true,
+          "description": "越大越好还是越小越好：决定最优格与色阶方向。"
+        },
+        {
+          "name": "formatSpread",
+          "type": "(value: number) => string",
+          "required": false,
+          "description": "方差的写法（量纲是指标的平方）；不给取三位有效数字。"
+        }
+      ]
+    },
+    "SurfaceNeighborhood": {
+      "kind": "type",
+      "source": "src/quant/param-surface-model.ts",
+      "props": [
+        {
+          "name": "count",
+          "type": "number",
+          "required": true,
+          "description": "有有效值的邻格数（不含中心格）。"
+        },
+        {
+          "name": "mean",
+          "type": "number | null",
+          "required": true,
+          "description": "邻格的均值与（总体）方差；没有邻格是 null。"
+        },
+        {
+          "name": "variance",
+          "type": "number | null",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "center",
+          "type": "number | null",
+          "required": true,
+          "description": "中心格自己的值。"
+        },
+        {
+          "name": "retention",
+          "type": "number | null",
+          "required": true,
+          "description": "保留率：邻格均值相对中心格的比例，1 是「周围和我一样好」，越小越是孤峰。"
+        }
+      ]
+    },
+    "SurfaceParam": {
+      "kind": "type",
+      "source": "src/quant/param-surface-heatmap.tsx",
+      "props": [
+        {
+          "name": "key",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "format",
+          "type": "(value: number) => string",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "SurfacePoint": {
+      "kind": "type",
+      "source": "src/quant/param-surface-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "params",
+          "type": "Readonly<Record<string, number>>",
+          "required": true,
+          "description": "各参数的取值，键是参数 key。"
+        },
+        {
+          "name": "metrics",
+          "type": "Readonly<Record<string, number | null>>",
+          "required": true,
+          "description": "各项指标；没跑出结果或不适用是 null。键是指标 key。"
+        }
+      ]
+    },
     "SvgClipMask": {
       "kind": "component",
       "source": "src/motion/effect/svg-clip-mask.tsx",
@@ -45796,6 +47285,270 @@
         }
       ]
     },
+    "UnderwaterChart": {
+      "kind": "component",
+      "source": "src/quant/underwater-chart.tsx",
+      "props": [
+        {
+          "name": "actionLabels",
+          "type": "ChartActionsLabels",
+          "required": true,
+          "description": "图右上三个按钮的名字。"
+        },
+        {
+          "name": "tableLabel",
+          "type": "string",
+          "required": true,
+          "description": "表格视图的读屏名。"
+        },
+        {
+          "name": "tableHead",
+          "type": "readonly string[]",
+          "required": true,
+          "description": "表头（第一项是行头那一列）。"
+        },
+        {
+          "name": "source",
+          "type": "ReactNode",
+          "required": false,
+          "description": "来源一行：每个数字能回答从哪来、什么时候（§2.2）。"
+        },
+        {
+          "name": "onExport",
+          "type": "() => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "onFullscreen",
+          "type": "() => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "points",
+          "type": "readonly UnderwaterPoint[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "title",
+          "type": "string",
+          "required": true,
+          "description": "标题：一行只写名字。"
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "整张图的读屏名。"
+        },
+        {
+          "name": "xDomain",
+          "type": "readonly [number, number]",
+          "required": false,
+          "description": "横轴定义域 [起, 止]（毫秒）；与 EquityCurve 画同一段时间时两边用同一对值（或同一组点的首末时刻）。不给就取 points 的首末点。"
+        },
+        {
+          "name": "xTicks",
+          "type": "(start: number, end: number) => readonly { time: number; label: string }[]",
+          "required": false,
+          "description": "横轴刻度：写法同 EquityCurve；不给就在定义域里均分 5 个，用 formatTime 写。"
+        },
+        {
+          "name": "formatTime",
+          "type": "(time: number) => string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "formatPercent",
+          "type": "(value: number) => string",
+          "required": true,
+          "description": "回撤的写法：参数是小数（-0.12），如「-12.0%」。纵轴刻度、读数、提示窗都用它。"
+        },
+        {
+          "name": "formatDuration",
+          "type": "(ms: number) => string",
+          "required": true,
+          "description": "时长的写法：参数是毫秒，如「12 天」。"
+        },
+        {
+          "name": "labels",
+          "type": "UnderwaterChartLabels",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "UnderwaterChartLabels": {
+      "kind": "type",
+      "source": "src/quant/underwater-chart.tsx",
+      "props": [
+        {
+          "name": "drawdown",
+          "type": "string",
+          "required": true,
+          "description": "回撤的名字（图例、提示窗）。"
+        },
+        {
+          "name": "maxDrawdown",
+          "type": "string",
+          "required": true,
+          "description": "「最大回撤」。"
+        },
+        {
+          "name": "fall",
+          "type": "string",
+          "required": true,
+          "description": "「前高到谷底」。"
+        },
+        {
+          "name": "recovery",
+          "type": "string",
+          "required": true,
+          "description": "「恢复」（谷底回到前高用了多久）。"
+        },
+        {
+          "name": "notRecovered",
+          "type": "string",
+          "required": true,
+          "description": "到末点还没回到前高时恢复一栏写什么，如「尚未恢复」。"
+        },
+        {
+          "name": "noDrawdown",
+          "type": "string",
+          "required": true,
+          "description": "整段都没有回撤时写什么，如「没有回撤」。"
+        }
+      ]
+    },
+    "UnderwaterChartProps": {
+      "kind": "type",
+      "source": "src/quant/underwater-chart.tsx",
+      "props": [
+        {
+          "name": "actionLabels",
+          "type": "ChartActionsLabels",
+          "required": true,
+          "description": "图右上三个按钮的名字。"
+        },
+        {
+          "name": "tableLabel",
+          "type": "string",
+          "required": true,
+          "description": "表格视图的读屏名。"
+        },
+        {
+          "name": "tableHead",
+          "type": "readonly string[]",
+          "required": true,
+          "description": "表头（第一项是行头那一列）。"
+        },
+        {
+          "name": "source",
+          "type": "ReactNode",
+          "required": false,
+          "description": "来源一行：每个数字能回答从哪来、什么时候（§2.2）。"
+        },
+        {
+          "name": "onExport",
+          "type": "() => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "onFullscreen",
+          "type": "() => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "points",
+          "type": "readonly UnderwaterPoint[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "title",
+          "type": "string",
+          "required": true,
+          "description": "标题：一行只写名字。"
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "整张图的读屏名。"
+        },
+        {
+          "name": "xDomain",
+          "type": "readonly [number, number]",
+          "required": false,
+          "description": "横轴定义域 [起, 止]（毫秒）；与 EquityCurve 画同一段时间时两边用同一对值（或同一组点的首末时刻）。不给就取 points 的首末点。"
+        },
+        {
+          "name": "xTicks",
+          "type": "(start: number, end: number) => readonly { time: number; label: string }[]",
+          "required": false,
+          "description": "横轴刻度：写法同 EquityCurve；不给就在定义域里均分 5 个，用 formatTime 写。"
+        },
+        {
+          "name": "formatTime",
+          "type": "(time: number) => string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "formatPercent",
+          "type": "(value: number) => string",
+          "required": true,
+          "description": "回撤的写法：参数是小数（-0.12），如「-12.0%」。纵轴刻度、读数、提示窗都用它。"
+        },
+        {
+          "name": "formatDuration",
+          "type": "(ms: number) => string",
+          "required": true,
+          "description": "时长的写法：参数是毫秒，如「12 天」。"
+        },
+        {
+          "name": "labels",
+          "type": "UnderwaterChartLabels",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "UnderwaterPoint": {
+      "kind": "type",
+      "source": "src/quant/underwater-model.ts",
+      "props": [
+        {
+          "name": "time",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "drawdown",
+          "type": "number",
+          "required": true,
+          "description": "离此前高点的回撤，≤ 0，用小数（-0.12 即 -12%）；创新高时是 0。"
+        }
+      ]
+    },
     "UndoEntry": {
       "kind": "type",
       "source": "src/lib/use-undo-stack.ts",
@@ -46885,6 +48638,371 @@
           "type": "number",
           "required": true,
           "description": ""
+        }
+      ]
+    },
+    "WalkForwardMatrix": {
+      "kind": "component",
+      "source": "src/quant/walk-forward-matrix.tsx",
+      "props": [
+        {
+          "name": "modes",
+          "type": "Partial<Record<WalkForwardMode, readonly WalkForwardWindow[]>>",
+          "required": true,
+          "description": "两种模式的窗口集；只给一种就不显示切换。"
+        },
+        {
+          "name": "mode",
+          "type": "WalkForwardMode",
+          "required": false,
+          "description": "当前模式；不给用内部状态（默认有的第一个，锚定优先）。"
+        },
+        {
+          "name": "onModeChange",
+          "type": "(mode: WalkForwardMode) => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "表的读屏名。"
+        },
+        {
+          "name": "formatDate",
+          "type": "(time: number) => string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "formatPercent",
+          "type": "(value: number) => string",
+          "required": true,
+          "description": "小数收益的写法（0.0123 → 「+1.23%」）：样本外绩效与汇总里的年化。"
+        },
+        {
+          "name": "formatRatio",
+          "type": "(value: number) => string",
+          "required": true,
+          "description": "占比与效率的写法（0.62 → 「62%」）。"
+        },
+        {
+          "name": "labels",
+          "type": "WalkForwardMatrixLabels",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "source",
+          "type": "string",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "WalkForwardMatrixLabels": {
+      "kind": "type",
+      "source": "src/quant/walk-forward-matrix.tsx",
+      "props": [
+        {
+          "name": "modeGroup",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "rolling",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "anchored",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "window",
+          "type": "string",
+          "required": true,
+          "description": "表头。"
+        },
+        {
+          "name": "timeline",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "inSample",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "outSample",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "params",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "outPerformance",
+          "type": "string",
+          "required": true,
+          "description": "样本外绩效那一列的表头，如「样本外收益」。"
+        },
+        {
+          "name": "result",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "pass",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "fail",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "windows",
+          "type": "string",
+          "required": true,
+          "description": "汇总各项的名字。"
+        },
+        {
+          "name": "passed",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "profitable",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "inAnnualized",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "outAnnualized",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "efficiency",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "noValue",
+          "type": "string",
+          "required": true,
+          "description": "汇总里算不出的项（如样本内年化不为正时的效率）写什么。"
+        },
+        {
+          "name": "empty",
+          "type": "string",
+          "required": true,
+          "description": "图例里「样本内 / 样本外」条的说明由 inSample / outSample 复用；没有窗口时写什么。"
+        }
+      ]
+    },
+    "WalkForwardMatrixProps": {
+      "kind": "type",
+      "source": "src/quant/walk-forward-matrix.tsx",
+      "props": [
+        {
+          "name": "modes",
+          "type": "Partial<Record<WalkForwardMode, readonly WalkForwardWindow[]>>",
+          "required": true,
+          "description": "两种模式的窗口集；只给一种就不显示切换。"
+        },
+        {
+          "name": "mode",
+          "type": "WalkForwardMode",
+          "required": false,
+          "description": "当前模式；不给用内部状态（默认有的第一个，锚定优先）。"
+        },
+        {
+          "name": "onModeChange",
+          "type": "(mode: WalkForwardMode) => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "表的读屏名。"
+        },
+        {
+          "name": "formatDate",
+          "type": "(time: number) => string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "formatPercent",
+          "type": "(value: number) => string",
+          "required": true,
+          "description": "小数收益的写法（0.0123 → 「+1.23%」）：样本外绩效与汇总里的年化。"
+        },
+        {
+          "name": "formatRatio",
+          "type": "(value: number) => string",
+          "required": true,
+          "description": "占比与效率的写法（0.62 → 「62%」）。"
+        },
+        {
+          "name": "labels",
+          "type": "WalkForwardMatrixLabels",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "source",
+          "type": "string",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "WalkForwardMode": {
+      "kind": "type",
+      "source": "src/quant/walk-forward-model.ts",
+      "props": []
+    },
+    "WalkForwardSummary": {
+      "kind": "type",
+      "source": "src/quant/walk-forward-model.ts",
+      "props": [
+        {
+          "name": "windows",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "passed",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "profitableShare",
+          "type": "number | null",
+          "required": true,
+          "description": "样本外收益为正的窗口占比（0..1）；没有窗口是 null。"
+        },
+        {
+          "name": "inAnnualized",
+          "type": "number | null",
+          "required": true,
+          "description": "各窗口样本内、样本外年化收益的平均。"
+        },
+        {
+          "name": "outAnnualized",
+          "type": "number | null",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "efficiency",
+          "type": "number | null",
+          "required": true,
+          "description": "步进效率 = 样本外年化 / 样本内年化。样本内年化 ≤ 0 时没有意义，是 null。"
+        }
+      ]
+    },
+    "WalkForwardWindow": {
+      "kind": "type",
+      "source": "src/quant/walk-forward-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "inStart",
+          "type": "number",
+          "required": true,
+          "description": "样本内区间 [start, end]（毫秒）。锚定模式里每个窗口的 start 相同，滚动模式里 start 随窗口后移。"
+        },
+        {
+          "name": "inEnd",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "outStart",
+          "type": "number",
+          "required": true,
+          "description": "样本外区间 [start, end]（毫秒）。"
+        },
+        {
+          "name": "outEnd",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "params",
+          "type": "Readonly<Record<string, string>>",
+          "required": true,
+          "description": "这个窗口样本内选出的参数（已格式化的文字，键是参数名）。"
+        },
+        {
+          "name": "inReturn",
+          "type": "number",
+          "required": true,
+          "description": "区间总收益（小数，0.08 即 8%）。"
+        },
+        {
+          "name": "outReturn",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "passed",
+          "type": "boolean",
+          "required": true,
+          "description": "这个窗口算不算通过：判据（如样本外盈利、回撤不超限）是调用方的策略，件不判。"
         }
       ]
     },
@@ -48318,6 +50436,11 @@
       "source": "src/blocks/data-grid/layout-model.ts",
       "props": []
     },
+    "aggregateReturns": {
+      "kind": "function",
+      "source": "src/quant/period-returns-model.ts",
+      "props": []
+    },
     "alertVariants": {
       "kind": "function",
       "source": "src/primitives/alert.tsx",
@@ -48326,6 +50449,11 @@
     "amountTone": {
       "kind": "function",
       "source": "src/cn/seat-model.ts",
+      "props": []
+    },
+    "annualize": {
+      "kind": "function",
+      "source": "src/quant/walk-forward-model.ts",
       "props": []
     },
     "applyColumnSet": {
@@ -48405,6 +50533,30 @@
       "kind": "function",
       "source": "src/cn/auction-model.ts",
       "props": []
+    },
+    "bestCell": {
+      "kind": "function",
+      "source": "src/quant/param-surface-model.ts",
+      "props": [
+        {
+          "name": "xs",
+          "type": "number[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "ys",
+          "type": "number[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "cells",
+          "type": "(SurfacePoint | null)[][]",
+          "required": true,
+          "description": "cells[yi][xi]：这个坐标上的点；没有这组参数是 null。同一坐标有几个点（切片没固定死）取第一个。"
+        }
+      ]
     },
     "bestIndex": {
       "kind": "function",
@@ -48558,6 +50710,11 @@
     "compactParts": {
       "kind": "function",
       "source": "src/lib/chart/format/quantity.ts",
+      "props": []
+    },
+    "compound": {
+      "kind": "function",
+      "source": "src/quant/period-returns-model.ts",
       "props": []
     },
     "computeReport": {
@@ -48959,6 +51116,35 @@
         }
       ]
     },
+    "evaluateCheck": {
+      "kind": "function",
+      "source": "src/quant/robustness-gate-model.ts",
+      "props": [
+        {
+          "name": "value",
+          "type": "number | null",
+          "required": true,
+          "description": "实测值；还没有（没跑到、没数据）是 null，判为「未知」，不算通过也不算失败。"
+        },
+        {
+          "name": "op",
+          "type": "GateOp",
+          "required": true,
+          "description": "怎样算过：gte 实测 ≥ 阈值，lte 实测 ≤ 阈值，gt / lt 不含等号。"
+        },
+        {
+          "name": "threshold",
+          "type": "number",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "excursionPoints": {
+      "kind": "function",
+      "source": "src/quant/mae-mfe-model.ts",
+      "props": []
+    },
     "exitPnl": {
       "kind": "function",
       "source": "src/blocks/sizing-model.ts",
@@ -49315,6 +51501,47 @@
       "source": "src/quant/quantile-model.ts",
       "props": []
     },
+    "isSpike": {
+      "kind": "function",
+      "source": "src/quant/param-surface-model.ts",
+      "props": [
+        {
+          "name": "count",
+          "type": "number",
+          "required": true,
+          "description": "有有效值的邻格数（不含中心格）。"
+        },
+        {
+          "name": "mean",
+          "type": "number | null",
+          "required": true,
+          "description": "邻格的均值与（总体）方差；没有邻格是 null。"
+        },
+        {
+          "name": "variance",
+          "type": "number | null",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "center",
+          "type": "number | null",
+          "required": true,
+          "description": "中心格自己的值。"
+        },
+        {
+          "name": "retention",
+          "type": "number | null",
+          "required": true,
+          "description": "保留率：邻格均值相对中心格的比例，1 是「周围和我一样好」，越小越是孤峰。"
+        }
+      ]
+    },
+    "isoWeek": {
+      "kind": "function",
+      "source": "src/quant/period-returns-model.ts",
+      "props": []
+    },
     "knownAt": {
       "kind": "function",
       "source": "src/quant/vintage-series-model.ts",
@@ -49638,6 +51865,11 @@
         }
       ]
     },
+    "maxDrawdownSegment": {
+      "kind": "function",
+      "source": "src/quant/underwater-model.ts",
+      "props": []
+    },
     "measureText": {
       "kind": "function",
       "source": "src/lib/text-measure.ts",
@@ -49764,6 +51996,11 @@
     "normalizeVintages": {
       "kind": "function",
       "source": "src/quant/vintage-series-model.ts",
+      "props": []
+    },
+    "outwardDomain": {
+      "kind": "function",
+      "source": "src/quant/mae-mfe-model.ts",
       "props": []
     },
     "parseClock": {
@@ -50041,6 +52278,11 @@
       "source": "src/quant/param-scatter-model.ts",
       "props": []
     },
+    "resolveSlice": {
+      "kind": "function",
+      "source": "src/quant/param-surface-model.ts",
+      "props": []
+    },
     "revisionStats": {
       "kind": "function",
       "source": "src/quant/vintage-series-model.ts",
@@ -50271,6 +52513,11 @@
       "source": "src/quant/ridgeline-model.ts",
       "props": []
     },
+    "sliceGrid": {
+      "kind": "function",
+      "source": "src/quant/param-surface-model.ts",
+      "props": []
+    },
     "slopeLayout": {
       "kind": "function",
       "source": "src/quant/slope-model.ts",
@@ -50495,6 +52742,57 @@
         }
       ]
     },
+    "summarizeExcursions": {
+      "kind": "function",
+      "source": "src/quant/mae-mfe-model.ts",
+      "props": []
+    },
+    "summarizeGate": {
+      "kind": "function",
+      "source": "src/quant/robustness-gate-model.ts",
+      "props": []
+    },
+    "summarizeWindows": {
+      "kind": "function",
+      "source": "src/quant/walk-forward-model.ts",
+      "props": []
+    },
+    "surfaceNeighborhood": {
+      "kind": "function",
+      "source": "src/quant/param-surface-model.ts",
+      "props": [
+        {
+          "name": "xs",
+          "type": "number[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "ys",
+          "type": "number[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "cells",
+          "type": "(SurfacePoint | null)[][]",
+          "required": true,
+          "description": "cells[yi][xi]：这个坐标上的点；没有这组参数是 null。同一坐标有几个点（切片没固定死）取第一个。"
+        },
+        {
+          "name": "xi",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "yi",
+          "type": "number",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
     "symbolMarkLetters": {
       "kind": "function",
       "source": "src/quotes/symbol-mark.tsx",
@@ -50647,6 +52945,11 @@
     "typeToSearchKey": {
       "kind": "function",
       "source": "src/lib/use-type-to-search.ts",
+      "props": []
+    },
+    "underwaterShare": {
+      "kind": "function",
+      "source": "src/quant/underwater-model.ts",
       "props": []
     },
     "undoBack": {
