@@ -7890,6 +7890,8 @@ export const PAGES: readonly DocPage[] = [
       '市价：价格框灰掉写 labels.marketPrice，按对手价（买看卖一、卖看买一）算。',
       '没给 maxLeverage（现货、A 股）：杠杆与保证金模式不显示，保证金与强平价两行不显示，等于「按金额买」。',
       'stopCustody=local：止盈止损栏右上写「本机触发」并用警示色；venue 写「交易所托管」。',
+      '受控价格（price / onPriceChange，#176）：两栏的价格框显示 price 里各自那一份，打字或点最优价回调 onPriceChange(字, 方向)；没给的一栏照旧自己管，defaultPrice 是不受控时一开始的字。订单簿点一档时调用方把两栏都写成这档价。',
+      'locked（#176）：两个下单钮都灰掉（disabled），lockedReason 写在钮下、警示色加锁形图标，钮经 aria-describedby 读到它；面板照样算数，填的数都留着。',
     ],
     donts: [
       '不要在面板里取账户或下单：数据由调用方传，onSubmit 里走自己的执行网关。',
@@ -7898,7 +7900,7 @@ export const PAGES: readonly DocPage[] = [
       '账户级风控（日亏线、连亏次数）不放进这里。',
     ],
     composition:
-      'OrderTicket\n  ToggleGroup（开仓 / 平仓）\n  Select（保证金模式）· 杠杆框\n  Tabs · TabsList line（限价 / 市价）\n  买栏 · 卖栏（各一份）\n    价格框 · Button（最优价）\n    Select（填法）· 仓位框 · Slider（0–100%）\n    可用 · 可开\n    Checkbox（止盈止损）· Select（出场模板）· 止盈框 · 止损框\n    下单钮\n    读数（dl）\n  费率 · Button（计算器）',
+      'OrderTicket\n  ToggleGroup（开仓 / 平仓）\n  Select（保证金模式）· 杠杆框\n  Tabs · TabsList line（限价 / 市价）\n  买栏 · 卖栏（各一份）\n    价格框 · Button（最优价）\n    Select（填法）· 仓位框 · Slider（0–100%）\n    可用 · 可开\n    Checkbox（止盈止损）· Select（出场模板）· 止盈框 · 止损框\n    下单钮 · 锁住原因（locked 时）\n    读数（dl）\n  费率 · Button（计算器）',
     keys: [
       ['Tab', '开平、保证金模式、杠杆、委托类型，然后买栏从上到下、再卖栏从上到下'],
       ['← →', '在滑杆上按 1% 调仓位'],

@@ -2,7 +2,7 @@
 import { useState } from 'react'
 import { OrderTicket, type OrderDraft, type OrderTicketLabels } from '../../src/blocks'
 
-const LABELS: OrderTicketLabels = {
+export const ORDER_TICKET_LABELS: OrderTicketLabels = {
   action: 'Open or close',
   actions: { open: 'Open', close: 'Close' },
   side: 'Side',
@@ -77,7 +77,7 @@ export function OrderTicketUsage() {
           { id: 'scalp', name: 'Scalp · TP 1% / SL 0.5%', takeProfit: 0.01, stopLoss: 0.005 },
           { id: 'swing', name: 'Swing · TP 6% / SL 2%', takeProfit: 0.06, stopLoss: 0.02 },
         ]}
-        labels={LABELS}
+        labels={ORDER_TICKET_LABELS}
         locale="en-US"
         onSubmit={setLast}
         onOpenCalculator={() => undefined}

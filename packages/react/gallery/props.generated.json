@@ -31500,6 +31500,37 @@
           "description": "Where stops live: held by the venue, or triggered locally."
         },
         {
+          "name": "price",
+          "type": "Partial<Record<OrderSide, string>>",
+          "required": false,
+          "description": "Limit price text per column (controlled), such as a level clicked in an order book; a column left out keeps its own."
+        },
+        {
+          "name": "defaultPrice",
+          "type": "Partial<Record<OrderSide, string>>",
+          "required": false,
+          "description": "Uncontrolled: starting limit price text per column; defaults to the last price on the tick."
+        },
+        {
+          "name": "onPriceChange",
+          "type": "(price: string, side: OrderSide) => void",
+          "required": false,
+          "description": "Called with the new text when a column's price box is typed in or its best-price button is pressed."
+        },
+        {
+          "name": "locked",
+          "type": "boolean",
+          "required": false,
+          "default": "false",
+          "description": "Trading is locked: both submit buttons are disabled, the panel still computes and keeps what was typed."
+        },
+        {
+          "name": "lockedReason",
+          "type": "string",
+          "required": false,
+          "description": "Why trading is locked, written under each submit button and read as its description; shown only while locked."
+        },
+        {
           "name": "labels",
           "type": "OrderTicketLabels",
           "required": true,
