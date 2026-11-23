@@ -211,14 +211,16 @@ export function InlineEdit({
   }
 
   function onKeyDown(event: KeyboardEvent<HTMLInputElement>) {
+    // 输入法组字中的按键先让给输入法：Enter 是选字（不是保存），Esc 是取消候选词（不是放弃整次编辑，已经打的字不能丢）。
+    // Safari 上屏的那一下 Enter 已经不是 isComposing，但 keyCode 还是 229，两个都要判。
+    if (event.nativeEvent.isComposing || event.keyCode === 229) return
     if (event.key === 'Escape') {
       event.preventDefault()
       event.stopPropagation()
       cancel()
       return
     }
-    // 输入法组字时的 Enter 是选字，不是保存。Safari 上屏的那一下 Enter 已经不是 isComposing，但 keyCode 还是 229，两个都要判。
-    if (event.key === 'Enter' && !event.nativeEvent.isComposing && event.keyCode !== 229) {
+    if (event.key === 'Enter') {
       event.preventDefault()
       submit('key')
     }

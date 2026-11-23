@@ -60,3 +60,22 @@ test('DecisionTree「其他…」：上屏的 Enter（keyCode 229）不发出，
   await field.press('Enter')
   await expect(area.locator('[data-slot="decision-reply"]').first()).toContainText('先减半仓')
 })
+
+test('InlineEdit：组字中的 Esc（取消候选词）不放弃整次编辑，没在组字时的 Esc 才放弃', async ({ page }) => {
+  const area = await open(page, 'inline-edit')
+  await area.getByRole('button', { name: /自选分组名/ }).click()
+  const field = area.getByRole('textbox', { name: '自选分组名' })
+  await field.fill('新分组')
+  // 组字中的 Esc：keydown 带 isComposing: true（macOS 拼音取消候选词）。
+  const composingEsc = await field.evaluate((el) => {
+    const event = new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true, isComposing: true })
+    el.dispatchEvent(event)
+    return event.defaultPrevented
+  })
+  expect(composingEsc).toBe(false)
+  await expect(field).toBeVisible()
+  await expect(field).toHaveValue('新分组')
+  await field.press('Escape')
+  await expect(field).toHaveCount(0)
+  await expect(area.locator('[data-gallery-inline]')).toHaveText('已存：核心持仓')
+})
