@@ -88,6 +88,8 @@
   display: flex;
   gap: var(--k-gap);
   overflow-x: auto;
+  /* rendering.css 在 :root 上写了 scrollbar-color，它会继承下来；Chrome 见到（继承来的也算）就不认 ::-webkit-scrollbar，4px 变回 15px（#126 量出来的）。这里退回 auto。 */
+  scrollbar-color: auto;
 }
 .k-reel::-webkit-scrollbar {
   height: 4px;

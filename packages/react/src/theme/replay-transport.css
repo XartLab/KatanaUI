@@ -1,0 +1,42 @@
+/* SPDX-License-Identifier: MIT */
+/* 回放控制条：三行——按钮、倍速、时刻读数与同步提示；可拖进度条；跳到时刻与跳过 tick 的输入。颜色只用 token。 */
+
+.k-replay {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+.k-replay-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+}
+.k-replay-buttons {
+  display: inline-flex;
+  gap: 6px;
+}
+.k-replay-sync {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--k-content-secondary-foreground);
+  font-size: var(--text-data-size);
+  white-space: nowrap;
+}
+.k-replay-field {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.k-replay-field input {
+  width: 190px;
+}
+.k-replay-field input.k-replay-ticks {
+  width: 80px;
+}
+.k-replay-bad {
+  color: var(--k-status-danger-foreground);
+  font-size: var(--text-data-size);
+}

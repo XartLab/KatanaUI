@@ -120,10 +120,16 @@
   color: var(--k-content-secondary-foreground);
 }
 
-/* 滚动条（用户 2026-11-17：「滑条要小」）：全站细滚动条，滑块用半透明白，轨道透明；系统叠加滚动条（macOS）不受影响。 */
+/* 滚动条（用户 2026-11-17：「滑条要小」）：全站细滚动条，滑块用半透明白，轨道透明；系统叠加滚动条（macOS）不受影响。
+   scrollbar-color 会继承，scrollbar-width 不会：只写在 :root 上时，页面里的滚动容器（新闻列表、表格、面板）还是原生 15px 宽条，
+   只是滑块染成了半透明白——#126 看到的「白色宽条」就是它。所以宽度给每个元素都写一遍（:where 零优先级，件自己写的 none 照样赢）。
+   .k-reel 除外：它用 ::-webkit-scrollbar 定 4px，Chrome 121 起写了 scrollbar-width 就不再认 ::-webkit-scrollbar（见 layout.css）。 */
 :root {
-  scrollbar-width: thin;
   scrollbar-color: var(--alpha-white-13) transparent;
+}
+:root,
+:where(:not(.k-reel)) {
+  scrollbar-width: thin;
 }
 
 /* 原生控件（滚动条、日期框、复选框）的明暗跟主题走：Paper 是亮色，其余是暗色。 */

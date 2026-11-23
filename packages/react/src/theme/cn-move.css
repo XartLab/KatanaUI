@@ -1,0 +1,170 @@
+/* SPDX-License-Identifier: MIT */
+/* 异动时间流（MoveFeed，#110）：一行 24px（时间 · 名称 · 类型胶囊 · 数值），列表超高滚动。类型胶囊 16px 高，跟 .k-cn-chip 同一套：
+   涨 / 跌读 --pnl-up / --pnl-down（根上 data-updown 互换），量是中性强调（--ink-100 在浅底上），板读 --signal-amber；底色上限 12%。
+   新来的行淡入加一点下滑（只动 opacity 与 transform；prefers-reduced-motion 时不动）。不写色值。 */
+.k-move {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+  padding: var(--space-3);
+  background: var(--bg-200);
+  border: var(--hairline);
+  color: var(--ink-200);
+  font: var(--text-caption) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+}
+.k-move-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+.k-move-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+.k-move-chip {
+  height: 20px;
+  padding: 0 8px;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: var(--alpha-white-5);
+  color: var(--ink-200);
+  cursor: pointer;
+  font: var(--text-caption) var(--font-sans);
+  white-space: nowrap;
+}
+.k-move-chip:hover {
+  background: var(--alpha-white-8);
+}
+.k-move-chip[aria-pressed='true'] {
+  background: var(--seg-on-bg);
+  color: var(--seg-on-ink);
+}
+.k-move-chip:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 1px;
+}
+.k-move-summary {
+  flex: none;
+  color: var(--ink-300);
+  line-height: 20px;
+}
+.k-move-list {
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  list-style: none;
+}
+.k-move-item {
+  border-bottom: var(--hairline);
+}
+.k-move-row {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr) auto 64px;
+  align-items: center;
+  column-gap: var(--space-2);
+  box-sizing: border-box;
+  width: 100%;
+  height: 24px;
+  padding: 0 var(--space-1);
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+}
+button.k-move-row {
+  cursor: pointer;
+}
+button.k-move-row:hover,
+.k-move-item[data-selected] .k-move-row {
+  background: var(--alpha-white-8);
+}
+button.k-move-row:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: -2px;
+}
+.k-move-time {
+  color: var(--ink-300);
+}
+.k-move-name {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--ink-100);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.k-move-code {
+  margin-left: var(--space-1);
+  color: var(--ink-300);
+}
+.k-move-type {
+  display: inline-flex;
+  align-items: center;
+  height: 16px;
+  padding: 0 6px;
+  border-radius: var(--radius-pill);
+  background: var(--alpha-white-6);
+  color: var(--ink-100);
+  line-height: 1;
+  white-space: nowrap;
+}
+.k-move-type[data-tone='up'] {
+  background: color-mix(in srgb, var(--pnl-up) 12%, transparent);
+  color: var(--pnl-up);
+}
+.k-move-type[data-tone='down'] {
+  background: color-mix(in srgb, var(--pnl-down) 12%, transparent);
+  color: var(--pnl-down);
+}
+.k-move-type[data-tone='board'] {
+  background: color-mix(in srgb, var(--signal-amber) 12%, transparent);
+  color: var(--signal-amber);
+}
+.k-move-value {
+  text-align: right;
+}
+.k-move-value[data-direction='up'] {
+  color: var(--pnl-up);
+}
+.k-move-value[data-direction='down'] {
+  color: var(--pnl-down);
+}
+.k-move-chip[data-tone='up'][aria-pressed='false']::before,
+.k-move-chip[data-tone='down'][aria-pressed='false']::before,
+.k-move-chip[data-tone='board'][aria-pressed='false']::before {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  margin-right: 4px;
+  border-radius: 50%;
+  background: var(--ink-300);
+  content: '';
+}
+.k-move-chip[data-tone='up'][aria-pressed='false']::before {
+  background: var(--pnl-up);
+}
+.k-move-chip[data-tone='down'][aria-pressed='false']::before {
+  background: var(--pnl-down);
+}
+.k-move-chip[data-tone='board'][aria-pressed='false']::before {
+  background: var(--signal-amber);
+}
+.k-move-empty {
+  margin: 0;
+  color: var(--ink-300);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .k-move-item[data-fresh] {
+    animation: k-move-in var(--dur-snappy) var(--ease-snappy);
+  }
+}
+@keyframes k-move-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+}

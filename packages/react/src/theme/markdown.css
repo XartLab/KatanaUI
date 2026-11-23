@@ -1,0 +1,97 @@
+/* SPDX-License-Identifier: MIT */
+/* Markdown（#132，src/ai/markdown.tsx）：模型写的话与帮助文档的正文。从 KATANAview src/styles/chat.css 的 .k-md 搬来，值不变；
+   行内代码底改用 --alpha-white-5（深色下同为白 6%，浅色主题自动翻成黑），别的颜色本来就走 token。
+   段距 8、列表缩进 20、标题回到正文字号只加粗：回话里的标题是分段用的，不是文档的大标题；文档要更大的标题由调用方在外面加类覆盖。 */
+.k-md {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.k-md > :first-child {
+  margin-top: 0;
+}
+.k-md > :last-child {
+  margin-bottom: 0;
+}
+.k-md p,
+.k-md ul,
+.k-md ol,
+.k-md pre,
+.k-md table,
+.k-md blockquote {
+  margin: 0 0 8px;
+}
+.k-md ul,
+.k-md ol {
+  padding-left: 20px;
+}
+.k-md ul {
+  list-style: disc;
+}
+.k-md ol {
+  list-style: decimal;
+}
+.k-md li + li {
+  margin-top: 2px;
+}
+.k-md strong {
+  color: var(--ink-100);
+  font-weight: 600;
+}
+.k-md h1,
+.k-md h2,
+.k-md h3,
+.k-md h4 {
+  margin: 12px 0 6px;
+  color: var(--ink-100);
+  font: var(--text-body) var(--font-sans);
+  font-weight: 600;
+  line-height: 1.4;
+}
+.k-md a {
+  color: var(--signal-blue);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.k-md code {
+  padding: 2px 4px;
+  border-radius: var(--radius-inner);
+  background: var(--alpha-white-5);
+  font: var(--text-data) var(--font-mono);
+  font-weight: 400;
+}
+.k-md pre {
+  padding: 8px 12px;
+  overflow-x: auto;
+  border-radius: var(--radius-overlay);
+  background: rgba(0, 0, 0, 0.25);
+}
+.k-md pre code {
+  padding: 0;
+  background: none;
+}
+.k-md blockquote {
+  padding-left: 12px;
+  border-left: 2px solid var(--line-200);
+  color: var(--ink-300);
+}
+.k-md table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+.k-md th,
+.k-md td {
+  padding: 4px 8px;
+  border-bottom: 1px solid var(--line-100);
+  text-align: left;
+  white-space: nowrap;
+}
+.k-md th {
+  color: var(--ink-300);
+  font-weight: 500;
+}
+.k-md-image {
+  color: var(--ink-300);
+}

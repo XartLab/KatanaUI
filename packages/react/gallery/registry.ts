@@ -117,7 +117,10 @@ export const PAGES: readonly DocPage[] = [
       '单行文本框：30 高（sm 26 高），4% 白底 8% 白边；聚焦边变亮，禁用降到 45%。可选 floatingLabel：标签从框里升到框上。',
     exports: ['Input', 'inputVariants'],
     propParts: [
-      { part: 'Input', note: '其余属性透传给原生 input；type 默认 text。' },
+      {
+        part: 'Input',
+        note: '其余属性透传给原生 input；type 默认 text。caption / unit / align / wrapperClassName 见属性表与状态。',
+      },
       { part: 'inputVariants', note: '返回类名的函数，给 textarea 等非 input 元素用。' },
     ],
     states: [
@@ -125,6 +128,7 @@ export const PAGES: readonly DocPage[] = [
       '尺寸：md（默认，30 高）、sm（26 高，字 12）；旧名 size="default" 等于 md。',
       'aria-invalid 时边框变危险色。',
       '焦点：边框提亮（focus-ring）。',
+      'caption / unit / align：框内左边的标签、右边的单位、值靠右（下单面板的数字框，#104）。外面一个有边有底的框，里面的 input 去掉自己的边与底；焦点、无效、禁用都画在外框上。caption 传字串就是这个输入框的 label，传节点（如填法下拉）原样画、读屏名自己给；wrapperClassName 调外框（如高度）。',
       'floatingLabel：标签静止时盖在框里，聚焦或有内容时缩小升到框上面一条 14px 的留白里（改自 SmoothUI float-input，MIT）。',
     ],
     donts: [
@@ -269,8 +273,11 @@ export const PAGES: readonly DocPage[] = [
     summary: '一组互斥的按钮，选中块是一块跟着滑的底（弹簧）。default 是设置页样式，sm 是工具条样式。',
     exports: ['ToggleGroup', 'ToggleGroupItem', 'toggleGroupVariants', 'toggleItemVariants'],
     propParts: [
-      { part: 'ToggleGroup', note: '其余属性透传给 Radix ToggleGroup.Root。单选语义：点已选中的项不会取消。' },
-      { part: 'ToggleGroupItem', note: '其余属性透传给 Radix ToggleGroup.Item。' },
+      {
+        part: 'ToggleGroup',
+        note: '其余属性透传给 Radix ToggleGroup.Root。单选语义：点已选中的项不会取消。fullWidth、split 见状态。',
+      },
+      { part: 'ToggleGroupItem', note: '其余属性透传给 Radix ToggleGroup.Item。split 组里用 tone 给选中项涨跌色。' },
       {
         part: 'toggleGroupVariants / toggleItemVariants',
         symbol: 'toggleGroupVariants',
@@ -280,6 +287,8 @@ export const PAGES: readonly DocPage[] = [
     states: [
       '选中、未选、禁用项。',
       'size：md（默认，有边框、按钮 24 高、选中 700）与 sm（工具条：无边框、选中块随选中项滑动）；旧名 variant 留一个版本。',
+      'fullWidth：撑满整行，各项等分宽度（开仓 / 平仓这类两三项的整宽分段，#104）。',
+      'split：各项分开成钮、自带边、项间 4px；选中整格填色，没有滑块。配合 ToggleGroupItem 的 tone（up 取 --pnl-up、down 取 --pnl-down，随主题红涨绿跌）做买卖开关。',
       '键盘 Tab 到每个按钮，Space 或 Enter 选中。',
     ],
     donts: [
@@ -630,7 +639,10 @@ export const PAGES: readonly DocPage[] = [
       { part: 'TabsTrigger', note: '其余属性透传给 Radix Tabs.Trigger。' },
       { part: 'TabsContent', note: '其余属性透传给 Radix Tabs.Content。' },
     ],
-    states: ['选中、未选、禁用页签。', '默认与 line 两种样式。'],
+    states: [
+      '选中、未选、禁用页签。',
+      '默认（药丸底）与 line（文字页签、当前项下划线，下单面板的委托类型就用它；只有文字，不带底块）两种样式。',
+    ],
     donts: [
       '页签名保持短，一行放得下。',
       '只切换一个值、不换内容时用 ToggleGroup。',
@@ -5008,6 +5020,103 @@ export const PAGES: readonly DocPage[] = [
     ],
   },
   {
+    id: 'portfolio-run-grid',
+    group: 'blocks',
+    cardHeight: 420,
+    title: 'PortfolioRunGrid 组合运行表',
+    summary:
+      '前向测试的主表：一个策略跑在一组品种上，每个品种一行——持仓、浮动盈亏、已实现盈亏、占用风险资金、权益贡献、状态（灯加文字：运行 / 暂停 / 停新开 / 断流），行内「暂停 / 恢复」与「平掉这个品种」；顶上一行组合汇总（权益、可用资金、购买力、回撤，LCD 读数）。暂停的行整行变琥珀色、按钮换成「恢复」，「平掉」仍可点；空仓的行「平掉」灰掉。底座是 DataGrid 的只读表。动作只把被点的那一行交给调用方，件不下单、不认识任何引擎或交易所。功能参照 MultiCharts Portfolio Trader 的 Forward Testing 窗口（2026-11-21 读官方页面，界面细节未实看，待核对）。演示数据是编的。',
+    exports: ['PortfolioRunGrid'],
+    propParts: [
+      {
+        part: 'PortfolioRunGrid',
+        note: '数据、数字格式与全部文字由调用方传，包里没有语言与币种。onPause / onResume / onClose 收到被点的那一行（PortfolioRunRow）；没给对应回调，那个按钮灰掉。format 与 labels 要稳定的引用，换了就重建列。',
+      },
+    ],
+    states: [
+      '运行：绿灯加「运行」，行是普通底色。',
+      '暂停：琥珀灯、行底与左条变琥珀，按钮由「暂停」换成「恢复」；「平掉」照常可点。',
+      '停新开：强调色灯，行左一道强调色条；不再开新仓、已有仓位照常管理。',
+      '断流：红灯，行底与左条变红；暂停与平掉仍可点。',
+      '空仓：持仓为 0 的行「平掉」灰掉。',
+      '汇总项为 null：读数写「—」；回撤为负数时走跌色。',
+      '没有品种：表下面写 labels.empty。',
+    ],
+    donts: [
+      '不要指望件去下单或平仓：它只发回调，下单与确认在调用方。',
+      '不要只靠灯色表达状态：状态格永远带文字。',
+      '要看回测结果用 StrategyReport；这里是正在运行的品种。',
+      '不要把品种之外的东西（账户、策略）塞进行里；一行就是一个品种。',
+    ],
+    composition:
+      'PortfolioRunGrid\n  div（汇总，role=group）\n    Lcd × 4\n  DataGrid（只读表）\n    Led + 状态文字\n    Button × 2（暂停 / 恢复、平掉）',
+    keys: [
+      ['Tab', '在各行的按钮间依次移动'],
+      ['Enter / Space', '触发聚焦的按钮'],
+    ],
+  },
+  {
+    id: 'replay-transport',
+    group: 'blocks',
+    cardHeight: 300,
+    title: 'ReplayTransport 回放控制条',
+    summary:
+      '历史回放的操作条：播放 / 暂停、逐根、倍速选择（倍数列表由调用方传，件不写死）、可拖的进度条（Scrubber）、当前回放时刻读数（LCD）、「跳到时刻」输入、「按 N 个 tick 跳过」；多图共用一个时钟时写「同步中 · N 个面板」。件不走时钟：当前时刻与是否在播由 props 回来，用户的意图（播放、跳到哪、几倍速、跳几个 tick）经回调发出，时钟与数据在调用方的引擎里。时刻默认按 UTC 写 YYYY-MM-DD HH:MM:SS，formatTime / parseTime 可换。功能参照 MultiCharts Data Replay（2026-11-21 读官方功能页，控制条细节未实看，待核对）。演示的时钟与时间都是编的。',
+    exports: ['ReplayTransport'],
+    propParts: [
+      {
+        part: 'ReplayTransport',
+        note: 'time / start / end 是毫秒时间戳。onSeek 在拖动时连续触发，调用方按需节流。syncedPanels 大于 1 才显示「同步中」。全部文字经 labels 传。',
+      },
+    ],
+    states: [
+      '暂停：主按钮写「播放」。',
+      '播放中：主按钮写「暂停」，根上带 data-playing。',
+      '倍速：当前档按下；speed 不在 speeds 里时一档都不按下。',
+      '多图同步：syncedPanels > 1 时出灯加「同步中 · N 个面板」。',
+      '跳到时刻读不出：输入框标红并出提示（role=alert），不发 onSeek。',
+      '跳过 tick 数不是正整数：输入框标红，「跳过」灰掉。',
+      '禁用：整条按钮、输入与进度条不可操作，键位不响应。',
+    ],
+    donts: [
+      '不要在件里加定时器推进时间：时钟只有调用方一个，免得和引擎各算一份。',
+      '不要把倍速写死 1 2 5 10：能跑几倍是引擎的事，从 speeds 传。',
+      '要看一个品种当下的运行状态用 PortfolioRunGrid，不用它。',
+    ],
+    composition:
+      'ReplayTransport\n  Button × 2（播放 / 暂停、逐根）\n  ToggleGroup（倍速）\n  Lcd（时刻）\n  Led + 文字（同步中）\n  Scrubber（进度）\n  Input + Button × 2（跳到时刻、跳过 tick）',
+    keys: [
+      ['k', '播放 / 暂停（焦点不在输入框与进度条上时）'],
+      ['.', '逐根前进'],
+      ['[ / ]', '减速 / 加速一档'],
+      ['← →（在进度条上）', '走一小步；Shift 走十步'],
+      ['Home / End（在进度条上）', '到起点 / 终点'],
+      ['Enter（在输入框里）', '提交「跳到时刻」或「跳过 tick」'],
+    ],
+  },
+  {
+    id: 'run-mode-badge',
+    group: 'blocks',
+    cardHeight: 200,
+    title: 'RunModeBadge 运行模式徽标',
+    summary:
+      '一块小牌写清现在是哪种模式：模拟、回放、前向测试、实盘。四种样子分明、不混：模拟是虚线灰框，回放是蓝色细框加倒带图形，前向测试是绿色框加淡底与前进箭头，实盘是强调色实心底、粗字与外圈（最醒目，点缓缓呼吸，减弱动效偏好下不动）。每种带自己的图形，灰度或色盲下也分得出。可在词后带一小段补充文字（回放日期、账户名）。文字由调用方传。',
+    exports: ['RunModeBadge'],
+    propParts: [{ part: 'RunModeBadge', note: 'labels 给四种模式各一个词；同一个徽标只有一种模式。' }],
+    states: [
+      '模拟（paper）：灰、虚线框。',
+      '回放（replay）：蓝、倒带图形。',
+      '前向测试（forward）：绿、前进箭头、淡底。',
+      '实盘（live）：强调色实心底、粗字、外圈与呼吸的点。',
+    ],
+    donts: [
+      '不要让 fixture、模拟、回放、实盘共用一块牌或一种样子：用户必须一眼分出现在动的是真钱还是假的。',
+      '不要用它表达连接是否正常：那是状态灯的事。',
+    ],
+    composition: 'RunModeBadge\n  svg（图形，对读屏隐藏）\n  span（词）\n  span（补充文字，可省）',
+    keys: [],
+  },
+  {
     id: 'hypothesis-ledger',
     group: 'blocks',
     cardHeight: 640,
@@ -7440,6 +7549,33 @@ export const PAGES: readonly DocPage[] = [
     keys: [['Tab', '聚焦行内引用，立即弹出预览']],
   },
   {
+    id: 'markdown',
+    group: 'ai',
+    cardHeight: 320,
+    title: 'Markdown 安全正文',
+    summary:
+      '模型写的话与帮助文档的正文：不渲染 HTML、不画图片（只写「[图片：说明]」）、外链只认 http(s) 并在新标签页打开，挡掉把数据带出去的路。占位符 markdownSlot(n) 的位置画调用方给的节点（引用小标）。传 resolveLink 进文档模式：标题带锚点，相对链接交给调用方。从 KATANAview 搬来。',
+    exports: ['Markdown', 'renderMarkdown', 'renderDoc', 'docHeadings', 'markdownSlot'],
+    propParts: [
+      {
+        part: 'Markdown',
+        note: 'slots 按序号对应 markdownSlot(n)；超出的占位符当没有。resolveLink 与 labels 要稳定的引用，换了就重画。',
+      },
+    ],
+    states: [
+      '回话：粗体、列表、表格、代码照常画；HTML 当字、图片写说明。',
+      '角标槽：占位符的位置画 slots 里的节点。',
+      '文档：标题带 data-anchor；认得的相对链接点了交给 onOpenLink，不跳页；不认得的只留文字。',
+    ],
+    donts: [
+      '用户自己打的字不要走它：原样写、保留换行就好。',
+      '流式逐词进场的回答用 AiResponse；整段到齐了再用 Markdown。',
+      '不要为了画图片放开限制：要图就由调用方自己渲染一个可信的件放进 slots。',
+    ],
+    composition: 'Markdown\n  div.k-md（innerHTML）\n    span.k-md-slot × n（portal 进 slots[n]）',
+    keys: [],
+  },
+  {
     id: 'ai-reasoning',
     group: 'ai',
     cardHeight: 230,
@@ -9364,6 +9500,296 @@ export const PAGES: readonly DocPage[] = [
     donts: ['不要在包里算评分：口径与校准由调用方负责，basis 里写明。', '不要传色值：档的颜色是语义 token。'],
     composition: 'SentimentGauge\n  读数 · 档名\n  五档色带（含标记）\n  口径说明\n  今昨对比表',
     keys: [],
+  },
+  {
+    id: 'seat-table',
+    group: 'cn',
+    cardHeight: 420,
+    title: 'SeatTable 龙虎榜席位',
+    summary:
+      '一只票上榜当日的买入前五与卖出前五席位，左右并排（容器窄于 560px 上下排）：每行名次、席位名、游资标签（调用方给）、买入额、卖出额、净额（万 / 亿写法，净额正涨负跌跟 data-updown），每侧一行合计，表下一行写买入合计与卖出合计之差。席位清单与金额由调用方给，件只按买入额 / 卖出额取前几名（默认 5）、算净额与合计；取不到写「—」，不写 0。多只票上榜的横向总览用 NetBuyBar。',
+    exports: ['SeatTable', 'rankSeats', 'seatNet', 'seatTotal', 'amountTone'],
+    propParts: [
+      { part: 'SeatTable', note: '渲染一个 section，每侧一张 table；不透传别的属性。' },
+      { part: 'Seat', note: '一个席位：name、可选 tag（游资标签）、buy 与 sell（元，取不到是 null）。' },
+      {
+        part: 'rankSeats(seats, side, limit)',
+        note: '纯函数：按一侧金额取前 limit 个，取不到的排最后，同额保持传入次序。',
+      },
+      { part: 'seatNet(seat)', note: '纯函数：买入 − 卖出；任一方取不到是 null。' },
+      { part: 'seatTotal(seats, field)', note: '纯函数：一列的合计，只加有的，全取不到是 null。' },
+      { part: 'amountTone(value)', note: '纯函数：正 up、负 down、零或取不到 flat。' },
+    ],
+    states: [
+      '默认：买入前五、卖出前五各一张表，买入侧突出买入列，卖出侧突出卖出列；净额正涨负跌。',
+      '席位多于 limit：只留金额最大的前几个；少于就有几个画几个。',
+      '金额取不到：写「—」，净额也写「—」（不拿 0 凑）。',
+      '没有任何席位：写一行空态文字，不画表。',
+    ],
+    donts: [
+      '不要在包里维护游资名单或席位别名：标签由调用方给。',
+      '不要传色值：净额的涨跌只靠语义色调。',
+      '不要用它做多只票的总览：用 NetBuyBar。',
+    ],
+    composition:
+      'SeatTable\n  买入侧 section\n    h4 · table（名次 | 席位名 + 标签 | 买入 | 卖出 | 净额）· 合计行\n  卖出侧 section（同上）\n  买入合计与卖出合计之差',
+    keys: [],
+  },
+  {
+    id: 'auction-step',
+    group: 'cn',
+    cardHeight: 360,
+    title: 'AuctionStep 集合竞价台阶',
+    summary:
+      '09:15–09:25 集合竞价的撮合价画成台阶（价格在两个时刻之间不变，到下一个时刻才跳），台阶下是匹配量柱；09:20 起不可撤单画一条竖的虚分界，昨收给了就画横的虚参考线，台阶按最新撮合价对昨收着涨跌色（跟 data-updown，没有昨收不着色）；上方读数是最新撮合价、相对昨收的涨跌幅与匹配量。横轴只有这十分钟。同一套台阶还有迷你版 AuctionStepSpark，DataGrid 的 auctionStep 列类型用它（可按相对昨收的涨跌幅排序）。点由调用方给，不带行情。',
+    exports: [
+      'AuctionStep',
+      'AuctionStepSpark',
+      'auctionSteps',
+      'auctionSummary',
+      'auctionX',
+      'priceDomain',
+      'stepPath',
+      'volumeBars',
+      'AUCTION_FROM',
+      'AUCTION_TO',
+      'AUCTION_CANCEL_CUTOFF',
+    ],
+    propParts: [
+      { part: 'AuctionStep', note: '渲染一个 figure（role=img），不透传别的属性。' },
+      { part: 'AuctionStepSpark', note: '迷你台阶：一个 16px 高的 svg，只画线；画不出时写「—」。' },
+      { part: 'AuctionPoint', note: '一个竞价点：time、price、可选 volume；价取不到的点丢掉。' },
+      { part: 'auctionSteps(points)', note: '纯函数：丢掉不在 09:15–09:25、价取不到的点，按时刻排序。' },
+      {
+        part: 'auctionSummary(steps, prevClose)',
+        note: '纯函数：最新价、相对昨收的涨跌幅、匹配量与方向；没有昨收方向是 flat。',
+      },
+      { part: 'stepPath(steps, domain, width, height)', note: '纯函数：台阶折线路径（先横后竖，没有斜线）。' },
+      { part: 'volumeBars(steps)', note: '纯函数：量柱的位置、宽度与按最大量归一的高度。' },
+      { part: 'priceDomain(steps, prevClose)', note: '纯函数：价格区间，含昨收，上下各留一成。' },
+      { part: 'auctionX(minutes)', note: '纯函数：时刻在这十分钟里的位置，0 到 1。' },
+      {
+        part: 'AUCTION_FROM / AUCTION_TO / AUCTION_CANCEL_CUTOFF',
+        note: '常量：09:15、09:25、09:20（自 0 点起的分钟数）。',
+      },
+    ],
+    states: [
+      '有昨收：画参考线，读数带涨跌幅，台阶与读数按涨跌着色。',
+      '没有昨收：不画参考线，涨跌幅写「—」，线用中性灰。',
+      '只有一个点：画一小段横线，免得整条线消失。',
+      '一个点都没有：写一行空态文字。',
+      '匹配量取不到：对应的量柱不画，读数写「—」。',
+    ],
+    donts: [
+      '不要把盘中分时点塞进来：不在 09:15–09:25 的点会被丢掉。',
+      '不要在包里取行情：点由调用方给。',
+      '不要传色值：线色只看最新价对昨收的方向。',
+    ],
+    composition:
+      'AuctionStep\n  figure[role=img]\n    读数（撮合价 · 涨跌幅 · 匹配量）\n    svg（昨收线 · 09:20 分界 · 量柱 · 台阶线）\n    横轴两端 09:15 · 09:25',
+    keys: [],
+  },
+  {
+    id: 'trading-date-picker',
+    group: 'cn',
+    cardHeight: 420,
+    title: 'TradingDatePicker 交易日选择',
+    summary:
+      '只能选交易日的日期选择：日期按钮点开日历（沿用 DateTimeInput 的日历皮肤，行为底座是 react-aria 的 Calendar），休市的日子灰着点不了；两侧的按钮直接跳到上一个 / 下一个交易日（跳过周末与长假）。交易日历由调用方传，可以是一组 YYYY-MM-DD（数组或 Set），也可以是判定函数；包里不带日历数据，也不读时钟。min / max 圈出能选的范围，前后按钮到边界禁用。',
+    exports: ['TradingDatePicker', 'tradingDayTest', 'shiftTradingDay', 'latestTradingDayOnOrBefore'],
+    propParts: [
+      { part: 'TradingDatePicker', note: '渲染一个 span；值是 YYYY-MM-DD 字符串，onValueChange 只会收到交易日。' },
+      {
+        part: 'tradingDayTest(calendar)',
+        note: '纯函数：交易日历（数组、Set 或函数）转成判定函数；写不对的日期不是交易日。',
+      },
+      {
+        part: 'shiftTradingDay(date, calendar, step, range)',
+        note: '纯函数：沿一个方向找下一个交易日（不含起点），超出 min / max 或扫了 40 天没找到返回 null。',
+      },
+      {
+        part: 'latestTradingDayOnOrBefore(date, calendar, range)',
+        note: '纯函数：不晚于 date 的最近交易日（自己是交易日就是它）。',
+      },
+    ],
+    states: [
+      '默认：中间按钮写选中的日期，点开日历；前后按钮跳交易日。',
+      '休市的日子：日历里灰色加删除线，点不了，键盘也走不到选中。',
+      '选中的日子本身休市（调用方传了休市日）：日期文字灰色加删除线，data-closed 标出。',
+      'value 为 null：按钮写占位字；前后按钮禁用。',
+      '到 min / max 或再往前往后没有交易日：对应方向的按钮禁用。',
+    ],
+    donts: [
+      '不要在包里放交易日历数据：日历由调用方按交易所与年份传。',
+      '不要用它选任意日期或区间：用 DateTimeInput、DateRangePicker。',
+      '不要在 onValueChange 里再校验是不是交易日：休市的日子到不了回调。',
+    ],
+    composition:
+      'TradingDatePicker\n  上一个交易日按钮\n  日期按钮 → Popover\n    Calendar（react-aria，休市日 unavailable）\n  下一个交易日按钮',
+    keys: [
+      ['← → ↑ ↓', '在日历里移动日子'],
+      ['PageUp / PageDown', '上 / 下一个月'],
+      ['Enter / Space', '选中；休市的日子选不中'],
+      ['Esc', '关闭日历'],
+    ],
+  },
+  {
+    id: 'flow-race',
+    group: 'cn',
+    cardHeight: 420,
+    title: 'FlowRace 板块资金多线图',
+    summary:
+      '每个板块一条分钟累计净流入线，横轴是 09:30–15:00 的时段轴（午休不占宽度，中间一条竖虚线标 11:30/13:00），0 轴一条虚线；右端按最新值从大到小排成一列标签（名次、名字、带正负号的万 / 亿），标签错开不重叠。线只用语义色调：最新值为正取涨色、为负取跌色（跟 data-updown），第一名的线粗一点；悬停或聚焦某一行标签，对应的线加粗、其余变淡。默认画前 8 名。序列由调用方给，取不到的点断线，不当 0。',
+    exports: [
+      'FlowRace',
+      'flowX',
+      'flowLines',
+      'rankLines',
+      'flowDomain',
+      'flowPath',
+      'flowY',
+      'spreadFlowLabels',
+      'FLOW_START',
+      'FLOW_MINUTES',
+    ],
+    propParts: [
+      { part: 'FlowRace', note: '渲染一个 section；右端排行是一个 ol，每行可聚焦。' },
+      { part: 'FlowSeries', note: '一个板块：key、name 与分钟点 points（时刻与累计净流入，元）。' },
+      {
+        part: 'flowX(minutes)',
+        note: '纯函数：时刻在 09:30–15:00 时段轴上的位置，0 到 1，午休不占宽度；09:30 前返回 null。',
+      },
+      { part: 'flowLines(series)', note: '纯函数：整理序列（丢掉写不对或早于 09:30 的点、排序、取最新值）。' },
+      { part: 'rankLines(lines)', note: '纯函数：按最新值从大到小排名，取不到的排最后。' },
+      { part: 'flowDomain(lines)', note: '纯函数：纵轴区间，含 0，上下各留一成。' },
+      { part: 'flowPath(line, domain, width, height)', note: '纯函数：折线路径，取不到的点断开。' },
+      { part: 'flowY(value, domain, height)', note: '纯函数：值落到纵轴的 y（上小下大）。' },
+      {
+        part: 'spreadFlowLabels(targets, gap, min, max)',
+        note: '纯函数：把挤在一起的标签推开到至少 gap，次序不变，不出界。',
+      },
+      { part: 'FLOW_START / FLOW_MINUTES', note: '常量：09:30 与一天的 240 个交易分钟。' },
+    ],
+    states: [
+      '默认：前 8 名各一条线，右端按最新值排名，标签自动错开。',
+      '悬停或聚焦一行标签：对应的线加粗，其余退到 25%。',
+      '最新值为负：线与数值取跌色；零或取不到取中性灰。',
+      '某个点取不到：线在这里断开，不连过去也不当 0。',
+      '没有序列：写一行空态文字。',
+    ],
+    donts: [
+      '不要按时间比例拉开午休：横轴是 240 个交易分钟。',
+      '不要传色值或给每条线单独上色：区分靠右端排行与粗细。',
+      '不要在包里取数：累计净流入由调用方算好传。',
+    ],
+    composition:
+      'FlowRace\n  线图 svg（0 轴 · 午休分界 · 每板块一条线）· 纵轴两端读数\n  右端排行 ol（名次 · 名字 · 最新值）\n  横轴 09:30 · 11:30/13:00 · 15:00',
+    keys: [['Tab', '在右端排行的行之间移动，聚焦的那一行对应的线加粗']],
+  },
+  {
+    id: 'mini-k-card-grid',
+    group: 'cn',
+    cardHeight: 460,
+    title: 'MiniKCardGrid 选股卡片网格',
+    summary:
+      '选股结果的卡片网格：一行 2 / 3 / 4 只（columns，默认 3；容器放不下时每张最少 140px，自动少排几列），每张卡是名称与代码、一个小 K 线（包里自带的轻量 SVG 蜡烛，实体加影线、涨红跌绿只用语义色调跟 data-updown）、最新价与涨跌幅。蜡烛、最新价、涨跌幅都由调用方给（涨跌幅不给就用最后两根收盘算，最新价不给取最后一根收盘），取不到写「—」；没有蜡烛写「暂无 K 线」。给了 onSelect 卡片是按钮。',
+    exports: [
+      'MiniKCardGrid',
+      'candleShapes',
+      'candleDomain',
+      'candleTone',
+      'validCandles',
+      'lastChange',
+      'changeText',
+      'gridColumns',
+    ],
+    propParts: [
+      { part: 'MiniKCardGrid', note: '渲染一个 ul；每张卡一个 li。' },
+      { part: 'MiniKItem', note: '一只票：code、name、candles（从旧到新），可选 price 与 change（百分数）。' },
+      { part: 'Candle', note: '一根蜡烛：open、high、low、close，可选 time。' },
+      {
+        part: 'candleShapes(candles, width, height, gap)',
+        note: '纯函数：蜡烛排进框里的几何（影线、实体、方向）；一根不画返回 null。',
+      },
+      { part: 'candleDomain(candles)', note: '纯函数：价格区间，上下各留 6%。' },
+      { part: 'candleTone(candle)', note: '纯函数：收高于开 up、低于开 down、相等 flat。' },
+      { part: 'validCandles(candles)', note: '纯函数：丢掉有取不到的数、或最高价低于最低价的蜡烛。' },
+      { part: 'lastChange(candles)', note: '纯函数：最后一根相对前一根收盘的涨跌幅（百分数）；不够两根是 null。' },
+      { part: 'changeText(change)', note: '纯函数：「+3.21%」「-1.05%」；取不到写「—」。' },
+      { part: 'gridColumns(columns)', note: '纯函数：只认 2、3、4，别的取最近的合法值。' },
+    ],
+    states: [
+      '默认：一行 3 只；columns 取 2 或 4 改一行几只，窄容器自动少排几列。',
+      '涨跌幅为正取涨色、为负取跌色（跟 data-updown），零或取不到是中性灰。',
+      '没有蜡烛：卡里写「暂无 K 线」，价格与涨跌幅写「—」。',
+      '给了 onSelect：卡片是按钮，可 Tab、Enter。',
+      '没有票：写一行空态文字。',
+    ],
+    donts: [
+      '不要在卡里加指标线或成交量：这是缩略图，细看交给完整图表。',
+      '不要传色值：蜡烛的涨跌只靠语义色调。',
+      '不要在包里取行情：蜡烛由调用方给。',
+    ],
+    composition: 'MiniKCardGrid\n  ul\n    li · 卡（名称 · 代码 | 小 K 线 svg | 最新价 · 涨跌幅）',
+    keys: [
+      ['Tab', '到下一张卡（给了 onSelect 时）'],
+      ['Enter / Space', '选中这张卡'],
+    ],
+  },
+  {
+    id: 'move-feed',
+    group: 'cn',
+    cardHeight: 520,
+    title: 'MoveFeed 异动时间流',
+    summary:
+      '盘口异动的流：一行一条，时间 · 名称（带代码）· 类型胶囊 · 数值；按时间从新到旧排，新来的从顶上进（淡入一下，reduced-motion 时不播）。类型胶囊按涨 / 跌 / 量 / 板着色（涨跌读 --pnl-up / --pnl-down 跟 data-updown，量是中性强调，板是警示色），顶上一排类型多选筛（点一个只看它、再点取消，一个都没选是全部，带条数）。点行触发 onSelect 联动个股页，selectedId 标出联动的那一行。随包认识十一种类型（火箭发射、封涨停板、大笔卖出…），也可以传自己的类型表。条目由调用方给。与 NewsFeed（新闻阅读器）、EventTimeline（公司事件）不同。',
+    exports: [
+      'MoveFeed',
+      'MOVE_TYPE_TONES',
+      'moveTone',
+      'sortFeed',
+      'filterMoves',
+      'typeCounts',
+      'toggleType',
+      'moveValue',
+      'clockText',
+      'freshIds',
+    ],
+    propParts: [
+      { part: 'MoveFeed', note: '渲染一个 section；类型筛选可受控也可不受控。' },
+      {
+        part: 'MoveItem',
+        note: '一条异动：id、time、name、type，可选 code、value 与 unit（percent / amount / price）。',
+      },
+      { part: 'MoveTypeDef', note: '自定义类型：key、label、tone（up / down / volume / board）。' },
+      { part: 'moveTone(type, defs)', note: '纯函数：类型的色调；自定义表优先，不认识的按 volume。' },
+      { part: 'sortFeed(items)', note: '纯函数：按时间从新到旧排，同一时刻后传入的在上，写不对的时刻沉底。' },
+      { part: 'filterMoves(items, selected)', note: '纯函数：按选中的类型筛，一个都没选是全部。' },
+      { part: 'typeCounts(items, defs)', note: '纯函数：各类型的条数，没出现的不列。' },
+      { part: 'toggleType(selected, type)', note: '纯函数：切换一个类型的选中状态。' },
+      { part: 'moveValue(item)', note: '纯函数：数值的字与方向；取不到写「—」。' },
+      { part: 'clockText(time)', note: '纯函数：时刻写成 HH:MM:SS。' },
+      { part: 'freshIds(previous, items)', note: '纯函数：这一轮新出现的 id；首次渲染没有。' },
+      { part: 'MOVE_TYPE_TONES', note: '随包类型的色调表。' },
+    ],
+    states: [
+      '默认：全部类型，按时间从新到旧排；顶上写总条数。',
+      '选了类型：只列选中的（可多选），按钮标按下，条数是筛后的。',
+      '新条目进来：排到该在的位置，新出现的那一行淡入；首次渲染不播。',
+      '数值：百分数带正负号与涨跌色，金额写万 / 亿，取不到写「—」。',
+      '给了 onSelect 行是按钮；selectedId 那一行高亮并标 aria-pressed。',
+      '没有条目：写一行空态文字。',
+    ],
+    donts: [
+      '不要拿它读新闻或公告：用 NewsFeed；公司事件用 EventTimeline。',
+      '不要传色值：类型胶囊只靠 tone。',
+      '不要在包里取数或轮询：条目由调用方推进来。',
+    ],
+    composition: 'MoveFeed\n  顶栏（类型多选筛 · 总条数）\n  ul\n    li（时间 · 名称 + 代码 · 类型胶囊 · 数值）',
+    keys: [
+      ['Tab', '到类型筛选按钮与行（给了 onSelect 时）'],
+      ['Enter / Space', '切换类型，或选中一行'],
+    ],
   },
   {
     id: 'layout-rules',
