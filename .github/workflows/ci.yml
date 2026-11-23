@@ -77,7 +77,7 @@ jobs:
       - run: pnpm exec playwright test --shard=${{ matrix.shard }}/4
         working-directory: packages/react
         env:
-          E2E_PORT: ${{ 5330 + matrix.shard }}
+          E2E_PORT: 533${{ matrix.shard }}
 
   # 视觉回归（pixelgate，自研）：只在 PR 上跑——main 上的内容已经过 PR 这一关，不重复占 runner（本文件其余 job 两边都跑，这条是有意的例外）。
   # CI 不写基线、缺基线算失败（--ci）；基线是 Linux 渲染的，提交在 packages/react/.pixelgate/baseline/。
