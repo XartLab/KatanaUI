@@ -1,0 +1,147 @@
+/* SPDX-License-Identifier: MIT */
+/* 多品种走势卡 SymbolOverview（#147，KATANAview #1884：对 TradingView 的 Symbol Overview 小组件）。颜色只用 token：线色取 series-*（由 assignSeries 分配，写在行内），
+   网格、轴、十字线、零线、读数复用 chart-kit.css；页签选中用中性灰底，不用 TradingView 蓝。动效只用三条弹簧的 CSS 形式（--dur-* / --ease-*）。 */
+
+.k-symov {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+  padding: 10px 12px 12px;
+  color: var(--k-content-primary-foreground);
+  font: var(--text-data) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+}
+.k-symov-tabs {
+  display: flex;
+  gap: 2px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.k-symov-tab {
+  display: flex;
+  flex: 1 0 auto;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 108px;
+  padding: 6px 10px;
+  border-radius: var(--radius-inner);
+  color: var(--k-content-body-foreground);
+  text-align: left;
+  cursor: pointer;
+  transition: background-color var(--dur-snappy) var(--ease-snappy);
+}
+.k-symov-tab:hover {
+  background: var(--k-selectable-background-hover);
+}
+.k-symov-tab[data-state='active'] {
+  background: var(--k-selectable-background-selected);
+  color: var(--k-content-primary-foreground);
+}
+.k-symov-tab:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: -2px;
+}
+.k-symov-tab-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.k-symov-swatch {
+  flex: 0 0 auto;
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+}
+.k-symov-tab-symbol {
+  font-weight: 600;
+}
+.k-symov-tab-name {
+  overflow: hidden;
+  max-width: 160px;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.k-symov-tab-quote {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+.k-symov-tab-pct {
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-symov-panel {
+  min-width: 0;
+}
+.k-symov-plotwrap {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-right: 56px;
+  font: var(--text-num-sm) var(--font-num-small);
+}
+.k-symov-plot {
+  position: relative;
+  outline: 0;
+  touch-action: pan-y;
+}
+.k-symov-plot:focus-visible {
+  outline: 1px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+.k-symov-plot > svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.k-symov-line {
+  fill: none;
+  stroke-width: 1.25;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+  opacity: 0.7;
+}
+.k-symov-line.is-selected {
+  stroke-width: 2;
+  opacity: 1;
+}
+.k-symov-area {
+  stroke: none;
+}
+.k-symov-ytick {
+  position: absolute;
+  left: 100%;
+  padding-left: 8px;
+  translate: 0 round(nearest, -50%, 1px);
+  color: var(--chart-axis);
+  font: var(--text-num-sm) var(--chart-font-axis, var(--font-num-small));
+  pointer-events: none;
+  white-space: nowrap;
+}
+.k-symov-dot {
+  position: absolute;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+.k-symov-dot > i {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  margin: -4px 0 0 -4px;
+  border: 2px solid var(--k-surface-base-background);
+  border-radius: 50%;
+}
+.k-symov-empty {
+  display: grid;
+  place-items: center;
+  color: var(--k-content-tertiary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-symov-ranges {
+  align-self: flex-start;
+}

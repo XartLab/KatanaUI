@@ -1,163 +1,129 @@
 // SPDX-License-Identifier: MIT
 /**
- * Link groups (TradingView symbol linking): panels in the same color group share one value, so changing it in one moves the rest.
- * 联动组（#150 G8）：几张件按颜色分组，同组里换一个品种，组里其余件跟着换；「不联动」（null）的件只管自己。
- * 出处：TradingView 的符号联动（帮助中心 Symbol syncing between tabs，2026-11-23 读：几个标签页设同一个颜色标签，就跟着其中任一个换代码；
- * 选股器也能联到图表）。只学交互，实现原创。
- * 包里不带数据源：哪些件进组、联动传什么值（品种代码，或 { symbol, interval } 这类，T 由调用方定）都由调用方决定；组色是 token link-a…d。
- * 进组与离组（帮助中心没写，我们定的）：进一个已有值的组，件改显示组的值；进一个还没值的组，组取这件当前的值；离开组（换组或不联动），件留着最后显示的值。
+ * Link groups: widgets in the same group share the symbol, interval, crosshair time and visible range.
+ * 联动组（#22 G8）：同一组的件共用品种、周期、十字线时刻、可见区间。照 TradingView：多图布局同步品种、周期、十字线、时间与日期区间
+ * （对齐表 L802–L808），自选点一行、联动的图换品种（L843）；对齐表的行号见 #22，TradingView 帮助中心没有逐项写，待核对。
+ * 组 id 一般是 Led 的 LinkGroup（面板头上的色点 A–D）；null 是不联动，件自己记自己的。
+ * 各件只订阅要的字段：十字线随指针一直在变，只订阅品种的件不跟着重画。纯 context，不带宿主、不存盘；没有 LinkGroupProvider 时用模块里的默认联动表。
  */
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-  type ReactNode,
-} from 'react'
+import { createContext, useCallback, useContext, useState, useSyncExternalStore, type ReactNode } from 'react'
 
-/** Link group name: panels in the same group follow the same value. */
-export type LinkGroup = 'A' | 'B' | 'C' | 'D'
-/** All link groups, in menu order. */
-export const LINK_GROUPS: readonly LinkGroup[] = ['A', 'B', 'C', 'D']
-
-// 变量名写全（不拼字符串）：theming.test 逐个核对引用的变量都在 tokens.css 里。
-const LINK_COLOR: Record<LinkGroup, string> = {
-  A: 'var(--link-a)',
-  B: 'var(--link-b)',
-  C: 'var(--link-c)',
-  D: 'var(--link-d)',
+/** 一组共用的状态；没设过的字段是 undefined。 */
+export type LinkGroupState = {
+  symbol?: string
+  /** 周期（调用方的写法：1、5、60、1D……）。 */
+  interval?: string
+  /** 十字线所在的时刻（毫秒）；null 是指针不在任何一张图上。 */
+  crosshairTime?: number | null
+  /** 可见的时间区间（毫秒）。 */
+  range?: { from: number; to: number } | null
 }
 
-/** CSS color of a link group, as a token variable (`var(--link-a)`). */
-export const linkGroupColor = (group: LinkGroup): string => LINK_COLOR[group]
+export type LinkField = keyof LinkGroupState
 
-/** Current value of each group; a group nobody has set yet is absent. */
-export type LinkGroupValues<T> = Readonly<Partial<Record<LinkGroup, T>>>
+/** 全部字段（订阅的默认值）。 */
+export const LINK_FIELDS: readonly LinkField[] = ['symbol', 'interval', 'crosshairTime', 'range']
 
-type Store = {
-  values: LinkGroupValues<unknown>
-  /** 设一组的值：组里的件都跟着换。 */
-  set: (group: LinkGroup, value: unknown) => void
-  /** 组还没有值时才设（件进空组时用）。 */
-  seed: (group: LinkGroup, value: unknown) => void
+const sameValue = (field: LinkField, a: LinkGroupState[LinkField], b: LinkGroupState[LinkField]): boolean => {
+  if (field !== 'range' || !a || !b || typeof a !== 'object' || typeof b !== 'object') return Object.is(a, b)
+  return a.from === b.from && a.to === b.to
 }
 
-const LinkStore = createContext<Store | null>(null)
-
-export type LinkGroupProviderProps<T> = {
-  /**
-   * Controlled values of the groups (group to value).
-   * 受控：每组当前的值；要存盘就接 usePersistedState。
-   */
-  value?: LinkGroupValues<T>
-  /** Initial values of the groups when uncontrolled. */
-  defaultValue?: LinkGroupValues<T>
-  /** Called with every group's value after any group changes. */
-  onValueChange?: (next: LinkGroupValues<T>) => void
-  /** Panels that read their group through useLinkGroup. */
-  children?: ReactNode
+export type LinkHub = {
+  /** 一组现在的状态（没人设过是空对象）。 */
+  get: (group: string) => LinkGroupState
+  /** 改一组的几个字段；值没变的字段不算改，什么都没变不通知。 */
+  set: (group: string, patch: Partial<LinkGroupState>) => void
+  /** 只取几个字段：这几个字段没变时返回同一个对象（给 useSyncExternalStore）。 */
+  select: (group: string, fields: readonly LinkField[]) => LinkGroupState
+  /** 订阅一组；回调拿到这次改了哪些字段。 */
+  subscribe: (group: string, listener: (changed: readonly LinkField[]) => void) => () => void
 }
 
-/** Holds the value of each link group for the panels below it; without a provider, useLinkGroup keeps each panel on its own. */
-export function LinkGroupProvider<T>({ value, defaultValue, onValueChange, children }: LinkGroupProviderProps<T>) {
-  const [own, setOwn] = useState<LinkGroupValues<T>>(defaultValue ?? {})
-  const values = value ?? own
-  const controlled = value !== undefined
-  // 同一轮里连着几次写（两件同时进同一个空组）要读到上一次写的结果，所以写经 ref；每次提交后（子件的 effect 之前）对回 props 与 state。
-  const latest = useRef<LinkGroupValues<T>>(values)
-  const handlers = useRef({ controlled, onValueChange })
-  useLayoutEffect(() => {
-    latest.current = values
-    handlers.current = { controlled, onValueChange }
-  })
-  const write = useCallback((group: LinkGroup, next: T, onlyIfEmpty: boolean) => {
-    const current = latest.current
-    if (onlyIfEmpty ? current[group] !== undefined : Object.is(current[group], next)) return
-    const updated = { ...current, [group]: next }
-    latest.current = updated
-    if (!handlers.current.controlled) setOwn(updated)
-    handlers.current.onValueChange?.(updated)
-  }, [])
-  const set = useCallback((group: LinkGroup, next: unknown) => write(group, next as T, false), [write])
-  const seed = useCallback((group: LinkGroup, next: unknown) => write(group, next as T, true), [write])
-  const store = useMemo<Store>(() => ({ values, set, seed }), [values, set, seed])
-  return <LinkStore value={store}>{children}</LinkStore>
-}
-
-export type UseLinkGroupOptions<T> = {
-  /**
-   * This panel's own value: shown while unlinked, and taken by an empty group the panel joins.
-   * 这件自己的值：不联动时显示它；进一个还没值的组时，组取它。
-   */
-  defaultValue: T
-  /**
-   * Controlled group of this panel; null is unlinked.
-   * 受控：这件在哪一组，null 是不联动；一般接 LinkGroupPicker。
-   */
-  group?: LinkGroup | null
-  /** Initial group when uncontrolled; defaults to null (unlinked). */
-  defaultGroup?: LinkGroup | null
-  /** Called when setGroup moves the panel to another group or unlinks it. */
-  onGroupChange?: (group: LinkGroup | null) => void
-}
-
-export type LinkGroupMember<T> = {
-  /** 这件现在该显示的值：在组里且组有值时是组的值，否则是自己的。 */
-  value: T
-  /** 换值：在组里就改整组（组里其余件跟着换），不联动只改自己。 */
-  setValue: (next: T) => void
-  /** 这件在哪一组；null 是不联动。 */
-  group: LinkGroup | null
-  /** 换组或不联动（接 LinkGroupPicker 的 onValueChange）。 */
-  setGroup: (group: LinkGroup | null) => void
-  /** 组色（`var(--link-a)` 这类）；不联动是 undefined。 */
-  color: string | undefined
-}
-
-/** One panel's place in the link groups: the value to show, a setter that moves the whole group, and the group itself. */
-export function useLinkGroup<T>({
-  defaultValue,
-  group: controlledGroup,
-  defaultGroup = null,
-  onGroupChange,
-}: UseLinkGroupOptions<T>): LinkGroupMember<T> {
-  const store = useContext(LinkStore)
-  const [ownGroup, setOwnGroup] = useState<LinkGroup | null>(defaultGroup)
-  const group = controlledGroup === undefined ? ownGroup : controlledGroup
-  const [own, setOwn] = useState<T>(defaultValue)
-  // 换组的那次渲染里，件留下离开的那组的值（React 的「渲染中按上一次的值调 state」写法，不等 effect，不闪一帧旧值）。
-  const [previous, setPrevious] = useState(group)
-  if (previous !== group) {
-    setPrevious(group)
-    const left = previous && store ? (store.values[previous] as T | undefined) : undefined
-    if (left !== undefined) setOwn(left)
+/** 建一张联动表（测试、多窗口、要隔开两套联动时用）。 */
+export function createLinkHub(initial: Readonly<Record<string, LinkGroupState>> = {}): LinkHub {
+  const states = new Map<string, LinkGroupState>(Object.entries(initial))
+  const listeners = new Map<string, Set<(changed: readonly LinkField[]) => void>>()
+  const picks = new Map<string, LinkGroupState>()
+  const EMPTY: LinkGroupState = {}
+  return {
+    get: (group) => states.get(group) ?? EMPTY,
+    set: (group, patch) => {
+      const current = states.get(group) ?? EMPTY
+      const changed = (Object.keys(patch) as LinkField[]).filter(
+        (field) => LINK_FIELDS.includes(field) && !sameValue(field, current[field], patch[field]),
+      )
+      if (changed.length === 0) return
+      states.set(group, { ...current, ...Object.fromEntries(changed.map((field) => [field, patch[field]])) })
+      // 边走边删 Map 的键是安全的（删掉的不会再走到）。
+      for (const key of picks.keys())
+        if (
+          key.startsWith(`${group}\u0000`) &&
+          changed.some((field) => key.split('\u0000')[1]!.split(',').includes(field))
+        )
+          picks.delete(key)
+      for (const listener of listeners.get(group) ?? []) listener(changed)
+    },
+    select: (group, fields) => {
+      const key = `${group}\u0000${fields.join(',')}`
+      let picked = picks.get(key)
+      if (!picked) {
+        const state = states.get(group) ?? EMPTY
+        picked = Object.fromEntries(fields.filter((field) => field in state).map((field) => [field, state[field]]))
+        picks.set(key, picked)
+      }
+      return picked
+    },
+    subscribe: (group, listener) => {
+      const set = listeners.get(group) ?? new Set()
+      set.add(listener)
+      listeners.set(group, set)
+      return () => {
+        set.delete(listener)
+      }
+    },
   }
-  const shared = group && store ? (store.values[group] as T | undefined) : undefined
-  const value = shared === undefined ? own : shared
+}
 
-  const seed = store?.seed
-  useEffect(() => {
-    if (group && seed) seed(group, own)
-  }, [group, seed, own])
+let fallback: LinkHub | null = null
+const defaultHub = () => (fallback ??= createLinkHub())
 
-  const set = store?.set
-  const setValue = useCallback(
-    (next: T) => {
-      setOwn(next)
-      if (group && set) set(group, next)
-    },
-    [group, set],
+const Context = createContext<LinkHub | null>(null)
+
+/** 给子树一张联动表；不包也行，用默认的（整个应用一张）。 */
+export function LinkGroupProvider({ hub, children }: { hub: LinkHub; children?: ReactNode }) {
+  return <Context.Provider value={hub}>{children}</Context.Provider>
+}
+
+/** 当前的联动表（没有 Provider 时是默认的那张）。 */
+export const useLinkHub = (): LinkHub => useContext(Context) ?? defaultHub()
+
+/**
+ * 读写一个联动组：返回 [状态, 改]。group 为 null 时不联动，状态只在这个件里（initial 起头）。
+ * 联动时组里没设过的字段取 initial（件自己的默认品种、周期）；fields 只订阅这几个字段，别的字段变了不重画。
+ */
+export function useLinkGroup(
+  group: string | null,
+  { fields = LINK_FIELDS, initial = {} }: { fields?: readonly LinkField[]; initial?: LinkGroupState } = {},
+): [LinkGroupState, (patch: Partial<LinkGroupState>) => void] {
+  const hub = useLinkHub()
+  const [own, setOwn] = useState<LinkGroupState>(initial)
+  const key = fields.join(',')
+  const watch = useCallback(
+    (notify: () => void) =>
+      group === null
+        ? () => {}
+        : hub.subscribe(group, (changed) => {
+            if (changed.some((field) => key.split(',').includes(field))) notify()
+          }),
+    [hub, group, key],
   )
-  const setGroup = useCallback(
-    (next: LinkGroup | null) => {
-      if (controlledGroup === undefined) setOwnGroup(next)
-      onGroupChange?.(next)
-    },
-    [controlledGroup, onGroupChange],
+  const shared = useSyncExternalStore(
+    watch,
+    () => (group === null ? null : hub.select(group, fields)),
+    () => (group === null ? null : hub.select(group, fields)),
   )
-  return { value, setValue, group, setGroup, color: group ? linkGroupColor(group) : undefined }
+  if (group === null || shared === null) return [own, (patch) => setOwn((state) => ({ ...state, ...patch }))]
+  const merged: LinkGroupState = { ...initial, ...shared }
+  return [merged, (patch) => hub.set(group, patch)]
 }

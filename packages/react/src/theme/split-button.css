@@ -1,0 +1,44 @@
+/* SPDX-License-Identifier: MIT */
+/* SplitButton（patterns/split-button.tsx）：两只我们的 Button 拼成一个，颜色与尺寸全随 Button（--k-actionable-*）。
+   拼法照 Arc split-button（MIT，2026-11-23 读）：按主动作时整组一起缩到 0.97（Button 自己的按下缩放），箭头那半只变色不缩（Radix 在按下时量它的位置放菜单）；
+   菜单开着时箭头转 180°。带边的两种（default、danger）中缝共用一条边（右半左移 1px）；实心的 primary 没有边，中缝画一条 18% 字色的细线（Arc 取 18%）。 */
+.k-split {
+  display: inline-flex;
+  align-items: stretch;
+  transition: scale 0.15s ease-out;
+}
+.k-split:has(> [data-split-main]:active:not(:disabled)) {
+  scale: 0.97;
+}
+.k-split > [data-split-menu] {
+  /* 宽 24px（26 高的 sm 是 22px）：13px 的箭头左右各留约 5px；没有实测依据，待定。 */
+  width: 24px;
+  margin-inline-start: -1px;
+}
+.k-split[data-size='sm'] > [data-split-menu] {
+  width: 22px;
+}
+.k-split[data-variant='primary'] > [data-split-menu] {
+  margin-inline-start: 0;
+  box-shadow: inset 1px 0 0 color-mix(in srgb, var(--k-actionable-bold-foreground) 18%, transparent);
+}
+.k-split > [data-split-menu] svg {
+  transition: rotate var(--dur-snappy) var(--ease-snappy);
+}
+.k-split > [data-split-menu][data-state='open'] {
+  background: var(--k-actionable-background-active);
+}
+.k-split[data-variant='primary'] > [data-split-menu][data-state='open'] {
+  background: var(--k-actionable-bold-background-active);
+}
+.k-split[data-variant='danger'] > [data-split-menu][data-state='open'] {
+  background: var(--k-actionable-negative-background-active);
+}
+.k-split > [data-split-menu][data-state='open'] svg {
+  rotate: 180deg;
+}
+/* 焦点环压在相邻那半上面，不被它的底盖住。 */
+.k-split > [data-slot='button']:focus-visible {
+  position: relative;
+  z-index: 1;
+}

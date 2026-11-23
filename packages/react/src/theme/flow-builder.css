@@ -1,0 +1,299 @@
+/* SPDX-License-Identifier: MIT */
+/* FlowBuilder（KATANAview #1908）：画布定高、两向滚动、拖空白处平移；步骤卡 220 × 52 固定大小（跑起来不跳）；
+   线是 1px 的分隔色：每个「+」在一段 36px 的竖线正中；条件步下面一道短竖线，分出的路并排，顶上一道横线、底下一道横线汇回，短的路用尾线拉到底。
+   在跑的步换强调色边并写 note；通过的图标 ok 色、失败的边 danger；跳过的步与整条跳过的路变淡。窄于 480px 卡缩到 168px，两条路仍能并排。 */
+.k-fb {
+  --k-fb-line: var(--k-separable-primary-borderColor);
+  --k-fb-step-w: 220px;
+  container-type: inline-size;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  color: var(--k-content-body-foreground);
+  font: var(--text-data) var(--font-sans);
+}
+.k-fb-head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-width: 0;
+}
+.k-fb-title {
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  color: var(--k-content-primary-foreground);
+  font: var(--text-data) var(--font-sans);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.k-fb-tools {
+  display: flex;
+  gap: 6px;
+  margin-left: auto;
+}
+.k-fb-tools svg {
+  width: 14px;
+  height: 14px;
+}
+.k-fb-canvas {
+  position: relative;
+  overflow: auto;
+  border: var(--hairline);
+  border-radius: 6px;
+  cursor: grab;
+}
+.k-fb-canvas[data-panning] {
+  cursor: grabbing;
+  user-select: none;
+}
+.k-fb-flow {
+  display: flex;
+  justify-content: center;
+  min-width: max-content;
+  padding: 24px 32px;
+}
+.k-fb-list {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.k-fb-step {
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  width: var(--k-fb-step-w);
+  height: 52px;
+  padding: 0 10px;
+  border: 1px solid var(--k-separable-secondary-borderColor);
+  border-radius: 8px;
+  background: var(--k-container-secondary-background);
+  color: var(--k-content-primary-foreground);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color var(--dur-snappy) var(--ease-snappy),
+    opacity var(--dur-snappy) var(--ease-snappy);
+}
+.k-fb-step:hover {
+  border-color: var(--k-separable-bold-borderColor);
+}
+.k-fb-step:focus-visible {
+  outline: 1px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+.k-fb-step[aria-pressed='true'] {
+  border-color: var(--focus-ring);
+  background: var(--k-selectable-background-selected);
+}
+.k-fb-icon {
+  display: grid;
+  place-items: center;
+  color: var(--k-content-secondary-foreground);
+}
+.k-fb-icon svg,
+.k-fb-menu-item svg {
+  width: 15px;
+  height: 15px;
+}
+.k-fb-step[data-kind='trigger'] .k-fb-icon {
+  color: var(--accent);
+}
+.k-fb-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.k-fb-name,
+.k-fb-text small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.k-fb-text small {
+  color: var(--k-content-tertiary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-fb-time {
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-num-small);
+}
+.k-fb-step[data-status='running'] {
+  border-color: var(--accent);
+}
+.k-fb-step[data-status='running'] [data-part='note'] {
+  color: var(--accent);
+}
+.k-fb-step[data-status='done'] .k-fb-icon {
+  color: var(--k-status-ok-foreground);
+}
+.k-fb-step[data-status='failed'] {
+  border-color: var(--k-status-danger-foreground);
+}
+.k-fb-step[data-status='failed'] .k-fb-icon {
+  color: var(--k-status-danger-foreground);
+}
+.k-fb-step[data-status='skipped'] {
+  opacity: 0.45;
+}
+.k-fb-add {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 36px;
+}
+.k-fb-add::before {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  border-left: 1px solid var(--k-fb-line);
+  content: '';
+}
+.k-fb-add[data-wide]::before {
+  display: none;
+}
+.k-fb-plus {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: 1px solid var(--k-fb-line);
+  border-radius: 50%;
+  background: var(--k-container-primary-background);
+  color: var(--k-content-tertiary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+  cursor: pointer;
+  transition:
+    color var(--dur-snappy) var(--ease-snappy),
+    border-color var(--dur-snappy) var(--ease-snappy);
+}
+.k-fb-plus svg {
+  width: 12px;
+  height: 12px;
+}
+.k-fb-plus:hover,
+.k-fb-plus[data-state='open'] {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.k-fb-plus:focus-visible {
+  outline: 1px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+.k-fb-add[data-wide] .k-fb-plus {
+  width: auto;
+  height: 32px;
+  padding: 0 14px;
+  border-style: dashed;
+  border-radius: 8px;
+}
+.k-fb-menu-item {
+  align-items: flex-start;
+  gap: 8px;
+}
+.k-fb-menu-item > span {
+  display: flex;
+  flex-direction: column;
+}
+.k-fb-menu-item small {
+  color: var(--k-content-tertiary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-fb-stub {
+  display: block;
+  flex: none;
+  width: 0;
+  height: 16px;
+  border-left: 1px solid var(--k-fb-line);
+}
+.k-fb-paths {
+  display: flex;
+  align-items: stretch;
+}
+.k-fb-path {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 12px;
+}
+/* 顶上的分叉线与底下的汇合线：第一条路从中线画到右边，最后一条从左边画到中线，只有一条路时两头都缩没了。 */
+.k-fb-path::before,
+.k-fb-path::after {
+  position: absolute;
+  right: 0;
+  left: 0;
+  border-top: 1px solid var(--k-fb-line);
+  content: '';
+}
+.k-fb-path::before {
+  top: 0;
+}
+.k-fb-path::after {
+  bottom: 0;
+}
+.k-fb-path:first-child::before,
+.k-fb-path:first-child::after {
+  left: 50%;
+}
+.k-fb-path:last-child::before,
+.k-fb-path:last-child::after {
+  right: 50%;
+}
+.k-fb-path-label {
+  max-width: var(--k-fb-step-w);
+  padding: 1px 8px;
+  overflow: hidden;
+  border: 1px solid var(--k-fb-line);
+  border-radius: 10px;
+  background: var(--k-container-primary-background);
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.k-fb-tail {
+  display: block;
+  flex: 1 0 16px;
+  width: 0;
+  border-left: 1px solid var(--k-fb-line);
+}
+.k-fb-path[data-skipped] > .k-fb-path-label,
+.k-fb-path[data-skipped] > .k-fb-list {
+  opacity: 0.4;
+}
+.k-fb-live {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+@container (max-width: 480px) {
+  .k-fb {
+    --k-fb-step-w: 168px;
+  }
+  .k-fb-path {
+    padding: 0 6px;
+  }
+  .k-fb-time {
+    display: none;
+  }
+}
+@media (pointer: coarse) {
+  .k-fb-plus {
+    width: 28px;
+    height: 28px;
+  }
+}

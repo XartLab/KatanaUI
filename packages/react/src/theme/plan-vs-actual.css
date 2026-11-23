@@ -1,0 +1,142 @@
+/* SPDX-License-Identifier: MIT */
+/* PlanVsActual（KATANAview #1908）：计划是空心框，实际是中性实心条，超过计划时长的那一截 warn，没开始的步按推算位置画虚框；now 是一道亮竖线。 */
+.k-pva {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  color: var(--k-content-body-foreground);
+  font: var(--text-data) var(--font-sans);
+}
+.k-pva-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px var(--space-4);
+}
+.k-pva-title {
+  margin: 0;
+  color: var(--k-content-primary-foreground);
+  font: var(--text-data) var(--font-sans);
+}
+.k-pva-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px var(--space-4);
+  margin: 0 0 0 auto;
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-pva-facts > div {
+  display: inline-flex;
+  gap: 6px;
+}
+.k-pva-facts dt {
+  color: var(--k-content-tertiary-foreground);
+}
+.k-pva-facts dd {
+  margin: 0;
+  color: var(--k-content-primary-foreground);
+  font-family: var(--font-num-small);
+  font-variant-numeric: tabular-nums;
+}
+.k-pva-shift {
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-pva-shift[data-shift='late'] {
+  color: var(--k-status-warn-foreground);
+}
+.k-pva-shift[data-shift='early'] {
+  color: var(--k-status-ok-foreground);
+}
+.k-pva-list {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border: var(--hairline);
+}
+.k-pva-row {
+  display: grid;
+  grid-template-columns: minmax(110px, 1fr) 64px minmax(160px, 2fr) minmax(140px, auto);
+  align-items: center;
+  gap: var(--space-3);
+  min-height: var(--k-size-row);
+  padding: 2px 10px;
+  border-bottom: var(--hairline);
+}
+.k-pva-row:last-child {
+  border-bottom: 0;
+}
+.k-pva-name {
+  min-width: 0;
+  color: var(--k-content-primary-foreground);
+}
+.k-pva-row[data-state='pending'] .k-pva-name {
+  color: var(--k-content-secondary-foreground);
+}
+.k-pva-state {
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-pva-row[data-state='late'] .k-pva-state,
+.k-pva-row[data-state='overrun'] .k-pva-state {
+  color: var(--k-status-warn-foreground);
+}
+.k-pva-row[data-state='done'] .k-pva-state {
+  color: var(--k-status-ok-foreground);
+}
+.k-pva-track {
+  position: relative;
+  height: 14px;
+}
+.k-pva-track > * {
+  position: absolute;
+  top: 2px;
+  bottom: 2px;
+}
+.k-pva-track [data-part='plan'] {
+  top: 0;
+  bottom: 0;
+  border: 1px solid var(--k-content-tertiary-foreground);
+  border-radius: 2px;
+}
+.k-pva-track [data-part='actual'] {
+  background: var(--k-content-secondary-foreground);
+}
+.k-pva-row[data-state='done'] .k-pva-track [data-part='actual'] {
+  background: var(--k-content-primary-foreground);
+}
+.k-pva-track [data-part='overrun'] {
+  background: var(--k-status-warn-foreground);
+}
+.k-pva-track [data-part='projected'] {
+  border: 1px dashed var(--k-content-secondary-foreground);
+}
+.k-pva-track [data-part='now'] {
+  top: -3px;
+  bottom: -3px;
+  width: 1px;
+  background: var(--accent);
+}
+.k-pva-durations {
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-num-small);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+.k-pva-empty {
+  margin: 0;
+  padding: var(--space-6);
+  color: var(--k-content-secondary-foreground);
+  text-align: center;
+}
+@media (max-width: 560px) {
+  .k-pva-row {
+    grid-template-columns: 1fr auto;
+  }
+  .k-pva-track {
+    grid-column: 1 / -1;
+  }
+}

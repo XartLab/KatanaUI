@@ -10,9 +10,10 @@
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `rows` | `WatchlistRow[]` | — | 统一行情行 QuoteRow { id, symbol, name?, last, change, changePct }（都是数）加 { flagged?, logoSrc? }；旧的 key / code 照认一个版本。 |
-| `labels` | `WatchlistLabels` | — | { columns: { symbol, last, chg, chgPct }, list, empty, flag(row) }。 |
+| `rows` | `WatchlistRow[]` | — | 统一行情行 QuoteRow { id, symbol, name?, last, change, changePct }（都是数）加 { flagged?, logoSrc?, volume? }；旧的 key / code 照认一个版本。 |
+| `labels` | `WatchlistLabels` | — | { columns: { symbol, last, chg, chgPct, vol? }, list, empty, flag(row) }；给了 columns.vol 才画成交量列（可排序）。 |
 | `formatPrice` | `(n: number) => string` | `toFixed(2)` | 最新价与涨跌额怎么写；闪色按它写出来的文字比尾数。 |
+| `locale / volumeUnit` | `string` | `'en-US' / 无` | 成交量列（#92）：按 locale 缩写（en-US 是 K / M / B，zh-CN 是 万 / 亿），volumeUnit 写成 10px 次要色小字。 |
 | `sort / onSortChange` | `WatchlistSort \| null` | — | 排序（受控）；不给就自己记。 |
 | `onSelect / onFlag` | `callbacks` | — | 点行（旧名 onRow）；点旗标（行 + 新状态）。 |
 
@@ -28,6 +29,10 @@
 
 列头点击的循环与排序，纯函数。
 
+### parseSymbolList(text) / formatSymbolList(entries)
+
+自选表的 .txt 导入导出（#22，照 TradingView 自选「上传 .txt：带交易所前缀、逗号分隔」，帮助中心 2026-11-23 读）：项是 EXCHANGE:SYMBOL（转大写，重复的只收一次），###节名 是分节（TradingView 导出文件的写法，页面没写，待核对）；逗号与换行都能分。认不出的项（没前缀、有空格）原样进 unknown，由调用方列给用户，不静默丢。
+
 ## Usage
 
 ```tsx
@@ -36,19 +41,28 @@ import { useState } from 'react'
 import { Watchlist, type WatchlistRow } from '@katana-ui/react/quotes'
 
 const ROWS: readonly WatchlistRow[] = [
-  { id: 'a', symbol: 'AAA', name: 'Alpha Devices', last: 212.4, change: 1.77, changePct: 0.84, flagged: true },
-  { id: 'b', symbol: 'BRV', name: 'Bravo Semi', last: 1044.1, change: -24.7, changePct: -2.31 },
-  { id: 'c', symbol: 'CHL', name: 'Charlie Software', last: 418.77, change: 4.64, changePct: 1.12 },
+  {
+    id: 'a',
+    symbol: 'AAA',
+    name: 'Alpha Devices',
+    last: 212.4,
+    change: 1.77,
+    changePct: 0.84,
+    flagged: true,
+    volume: 42_800_000,
+  },
+  { id: 'b', symbol: 'BRV', name: 'Bravo Semi', last: 1044.1, change: -24.7, changePct: -2.31, volume: 2_950_000 },
+  { id: 'c', symbol: 'CHL', name: 'Charlie Software', last: 418.77, change: 4.64, changePct: 1.12, volume: 835_490 },
 ]
 
 export function WatchlistUsage() {
   const [rows, setRows] = useState(ROWS)
   return (
-    <div style={{ width: '100%', maxWidth: 440 }}>
+    <div style={{ width: '100%', maxWidth: 520 }}>
       <Watchlist
         rows={rows}
         labels={{
-          columns: { symbol: 'Symbol', last: 'Last', chg: 'Chg', chgPct: 'Chg%' },
+          columns: { symbol: 'Symbol', last: 'Last', chg: 'Chg', chgPct: 'Chg%', vol: 'Vol' },
           list: 'Watchlist',
           empty: 'No symbols',
           flag: (row) => `Flag ${row.symbol}`,

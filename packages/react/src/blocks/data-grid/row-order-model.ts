@@ -103,3 +103,46 @@ export function mergeVisibleOrder(full: readonly string[], visibleNext: readonly
   const merged = full.map((id) => (visible.has(id) ? visibleNext[at++] : id))
   return [...merged, ...visibleNext.filter((id) => !known.has(id))]
 }
+
+/** 每一节有哪些行（按 order 的先后）：标题之后、下一个标题之前的行属于这一节；第一个标题之前的行不在任何节里。 */
+export function sectionMembers(order: readonly string[], isSection: IsSection): Map<string, string[]> {
+  const out = new Map<string, string[]>()
+  let current: string[] | null = null
+  for (const id of order) {
+    if (isSection(id)) out.set(id, (current = []))
+    else current?.push(id)
+  }
+  return out
+}
+
+/**
+ * 按列排序时分节不动（#87 第 1 条）：标题行留在手动次序里的位置，每节里的行（与第一个标题之前没分节的行）按 sorted 的先后。
+ * 表格按列排序时标题行也被当成数据排了进去；这里按 order 认出每行属于哪一节，再在节内按 sorted 排。
+ */
+export function sortWithinSections(
+  order: readonly string[],
+  sorted: readonly string[],
+  isSection: IsSection,
+): string[] {
+  const rank = new Map(sorted.map((id, i) => [id, i]))
+  const byRank = (a: string, b: string) => (rank.get(a) ?? Infinity) - (rank.get(b) ?? Infinity)
+  const firstSection = order.findIndex((id) => isSection(id))
+  const lead = (firstSection < 0 ? order : order.slice(0, firstSection)).toSorted(byRank)
+  const members = sectionMembers(order, isSection)
+  return [...lead, ...[...members].flatMap(([section, ids]) => [section, ...ids.toSorted(byRank)])]
+}
+
+/**
+ * 收起的节挪完后放回藏着的行（#87 第 1 条）：visibleNext 是只含看得见的行的新次序，收起的节在里面只有标题；
+ * 把它们的行（取自挪动前的 full）接在标题后面，跟着标题走，不落进别的节。挪进收起节的行接在这一节已有的行后面。
+ */
+export function restoreCollapsed(
+  visibleNext: readonly string[],
+  full: readonly string[],
+  collapsed: ReadonlySet<string>,
+  isSection: IsSection,
+): string[] {
+  if (collapsed.size === 0) return [...visibleNext]
+  const members = sectionMembers(full, isSection)
+  return visibleNext.flatMap((id) => (isSection(id) && collapsed.has(id) ? [id, ...(members.get(id) ?? [])] : [id]))
+}

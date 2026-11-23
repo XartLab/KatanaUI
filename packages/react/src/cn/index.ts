@@ -23,6 +23,15 @@ export type {
   LimitStatusLabels,
   PulseLabels,
   SentimentLabels,
+  SeatTableLabels,
+  AuctionStepLabels,
+  TradingDatePickerLabels,
+  FlowRaceLabels,
+  MiniKCardLabels,
+  MoveFeedLabels,
+  RangeScrubberLabels,
+  AuctionBarLabels,
+  ThresholdGapLabels,
   SessionLabels,
   StreakLabels,
   ThemeCardLabels,
@@ -77,3 +86,90 @@ export {
   type TimelineStation,
 } from './timeline-model.ts'
 export { SentimentGauge, sentimentLevel, type SentimentGaugeProps, type SentimentStats } from './sentiment-gauge.tsx'
+export {
+  AUCTION_CANCEL_CUTOFF,
+  AUCTION_FROM,
+  AUCTION_TO,
+  auctionSteps,
+  auctionSummary,
+  auctionX,
+  priceDomain,
+  stepPath,
+  volumeBars,
+  type AuctionPoint,
+  type AuctionStepPoint,
+  type AuctionSummary,
+  type VolumeBar,
+} from './auction-model.ts'
+export { AuctionStep, AuctionStepSpark, type AuctionStepProps, type AuctionStepSparkProps } from './auction-step.tsx'
+export { amountTone, rankSeats, seatNet, seatTotal, type Seat, type SeatSide } from './seat-model.ts'
+export { SeatTable, type SeatTableProps } from './seat-table.tsx'
+export {
+  latestTradingDayOnOrBefore,
+  shiftTradingDay,
+  tradingDayTest,
+  type TradingCalendar,
+  type TradingRange,
+} from './trading-date-model.ts'
+export { TradingDatePicker, type TradingDatePickerProps } from './trading-date-picker.tsx'
+export {
+  FLOW_MINUTES,
+  FLOW_START,
+  flowDomain,
+  flowLines,
+  flowPath,
+  flowX,
+  flowY,
+  rankLines,
+  spreadFlowLabels,
+  type FlowLine,
+  type FlowPoint,
+  type FlowSeries,
+} from './flow-race-model.ts'
+export { FlowRace, type FlowRaceProps } from './flow-race.tsx'
+export {
+  candleDomain,
+  candleShapes,
+  candleTone,
+  changeText,
+  gridColumns,
+  lastChange,
+  validCandles,
+  type Candle,
+  type CandleShape,
+} from './mini-k-model.ts'
+export { MiniKCardGrid, type MiniKCardGridProps, type MiniKItem } from './mini-k-card-grid.tsx'
+export {
+  MOVE_TYPE_TONES,
+  clockText,
+  filterMoves,
+  freshIds,
+  moveTone,
+  moveValue,
+  sortFeed,
+  toggleType,
+  typeCounts,
+  type MoveItem,
+  type MoveTone,
+  type MoveTypeDef,
+} from './move-feed-model.ts'
+export { MoveFeed, type MoveFeedProps } from './move-feed.tsx'
+export {
+  SCRUB_LUNCH,
+  SCRUB_TICKS,
+  presetRange,
+  scrubBars,
+  scrubClock,
+  scrubIndex,
+  scrubNow,
+  scrubRange,
+  scrubRangeOf,
+  shiftRange,
+  type ScrubBar,
+  type ScrubPoint,
+} from './range-scrubber-model.ts'
+export { RangeScrubber, type RangeScrubberProps } from './range-scrubber.tsx'
+export { auctionBarShares, auctionPending, auctionRatio, type AuctionBarShares } from './auction-bar-model.ts'
+export { AuctionBarCell, type AuctionBarCellProps } from './auction-bar-cell.tsx'
+export { thresholdGap, thresholdState, type ThresholdGapState } from './threshold-gap-model.ts'
+export { ThresholdGap, type ThresholdGapProps } from './threshold-gap.tsx'

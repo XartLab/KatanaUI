@@ -2,6 +2,7 @@
 // 第 0 层（#110）：cn 件的文案。包里的件不写死任何语言：文字都走这份结构，由调用方传。
 // `cnLabelsZh` 是随包的简体中文默认；调用方可以整份换（别的语言、别的措辞），也可以只换其中一段（每个件只读自己那一段）。
 import type { CnPhase } from './session.ts'
+import type { ThresholdGapState } from './threshold-gap-model.ts'
 
 export type StreakLabels = {
   /** 首板。 */
@@ -119,6 +120,133 @@ export type SentimentLabels = {
   scoreAria: (score: string, level: string) => string
 }
 
+export type SeatTableLabels = {
+  region: string
+  buyTitle: string
+  sellTitle: string
+  /** 列头：席位、买入额、卖出额、净额。 */
+  columns: { seat: string; buy: string; sell: string; net: string }
+  /** 合计行的字。 */
+  total: string
+  /** 两侧合计下面的一行，例「买入前五合计净额」。 */
+  netTotal: string
+  empty: string
+  unavailable: string
+  /** 一张表的读屏名，例「买入前五席位」。 */
+  tableAria: (title: string) => string
+}
+
+export type AuctionStepLabels = {
+  region: string
+  /** 横轴两端与 09:20 分界的字。 */
+  axis: { from: string; cancelCutoff: string; to: string }
+  /** 底部读数：撮合价、累计量。 */
+  price: string
+  volume: string
+  /** 昨收参考线的字。 */
+  prevClose: string
+  empty: string
+  unavailable: string
+  /** 图的读屏名，例「竞价台阶 09:15–09:25，撮合价 12.34」。 */
+  aria: (last: string) => string
+}
+
+export type TradingDatePickerLabels = {
+  /** 触发按钮的读屏名与日历弹层的名字。 */
+  pick: string
+  calendar: string
+  previousMonth: string
+  nextMonth: string
+  previousDay: string
+  nextDay: string
+  /** 没有选日期时按钮上的字。 */
+  placeholder: string
+  /** 非交易日日期格的读屏补充，例「休市」。 */
+  closed: string
+}
+
+export type FlowRaceLabels = {
+  region: string
+  /** 右端排行的读屏名。 */
+  ranking: string
+  /** 横轴两端的字。 */
+  axis: { from: string; mid: string; to: string }
+  empty: string
+  unavailable: string
+  /** 排行的一行，例「第 1 名 机器人 +3.2亿」。 */
+  rankAria: (rank: number, name: string, value: string) => string
+}
+
+export type MiniKCardLabels = {
+  region: string
+  /** 一张卡的读屏名，例「机器人 600000，涨 3.21%」。 */
+  card: (name: string, code: string, change: string) => string
+  /** K 线图的读屏名，例「最近 30 根日 K」。 */
+  chart: (count: number) => string
+  noCandles: string
+  empty: string
+  unavailable: string
+}
+
+export type MoveFeedLabels = {
+  region: string
+  /** 类型多选筛的读屏名与「全部」。 */
+  filter: string
+  all: string
+  /** 一类异动的名字，key 是 MOVE_TYPE_KEYS 里的。 */
+  types: Record<string, string>
+  /** 筛选 chip 上的计数文字。 */
+  typeChip: (name: string, count: number) => string
+  /** 顶上的汇总，例「共 120 条」。 */
+  summary: (count: number) => string
+  empty: string
+  /** 一行的读屏名，例「09:31:05 机器人 火箭发射 +3.2%」。 */
+  row: (time: string, name: string, type: string, value: string) => string
+  unavailable: string
+}
+
+export type RangeScrubberLabels = {
+  region: string
+  /** 起点、终点把手的读屏名。 */
+  low: string
+  high: string
+  /** 读数行，例「09:45–10:30 · 45 分钟」；minutes 是交易分钟（午休不算）。 */
+  span: (from: string, to: string, minutes: number) => string
+  /** 快捷钮组的读屏名与一个钮上的字，例「近 15 分」。 */
+  presetGroup: string
+  preset: (minutes: number) => string
+  /** 口径切换的读屏名与各口径的名字（键是调用方给的 metrics）。 */
+  metricGroup: string
+  metrics: Record<string, string>
+  /** 「现在」之后那段斜纹的悬停提示。 */
+  future: string
+}
+
+export type AuctionBarLabels = {
+  /** 09:25 之前格里写的字。 */
+  pending: string
+  /** 整格的读屏名（也是悬停提示）；金额已写成万 / 亿，取不到是「—」，没有涨停委买是 null。 */
+  aria: (parts: {
+    amount: string
+    previous: string
+    ratio: string
+    limitBid: string | null
+    pending: boolean
+  }) => string
+}
+
+export type ThresholdGapLabels = {
+  state: Record<ThresholdGapState, string>
+  /** 离阈值还差多少，例「差 0.04%」。 */
+  gap: (percent: string) => string
+  /** 越过阈值多少，例「超出 1.20%」。 */
+  over: (percent: string) => string
+  /** 读屏里阈值与预警线的说法，例「阈值 20.00%」。 */
+  threshold: (percent: string) => string
+  warn: (percent: string) => string
+  unavailable: string
+}
+
 export type CnLabels = {
   streak: StreakLabels
   limitStatus: LimitStatusLabels
@@ -127,6 +255,15 @@ export type CnLabels = {
   themeCard: ThemeCardLabels
   timeline: TimelineLabels
   sentiment: SentimentLabels
+  seatTable: SeatTableLabels
+  auctionStep: AuctionStepLabels
+  tradingDate: TradingDatePickerLabels
+  flowRace: FlowRaceLabels
+  miniK: MiniKCardLabels
+  moveFeed: MoveFeedLabels
+  rangeScrubber: RangeScrubberLabels
+  auctionBar: AuctionBarLabels
+  thresholdGap: ThresholdGapLabels
 }
 
 const NUMERALS = ['零', '一', '二', '三', '四', '五', '六', '七', '八', '九', '十']
@@ -221,5 +358,99 @@ export const cnLabelsZh: CnLabels = {
     scoreCaption: '情绪分',
     unavailable: '暂无数据',
     scoreAria: (score, level) => `情绪温度 ${score}，${level}`,
+  },
+  seatTable: {
+    region: '龙虎榜席位',
+    buyTitle: '买入前五',
+    sellTitle: '卖出前五',
+    columns: { seat: '席位', buy: '买入', sell: '卖出', net: '净额' },
+    total: '合计',
+    netTotal: '净额合计',
+    empty: '暂无席位',
+    unavailable: '暂无数据',
+    tableAria: (title) => `${title}席位`,
+  },
+  auctionStep: {
+    region: '集合竞价台阶',
+    axis: { from: '09:15', cancelCutoff: '09:20 起不可撤单', to: '09:25' },
+    price: '撮合价',
+    volume: '匹配量',
+    prevClose: '昨收',
+    empty: '暂无竞价数据',
+    unavailable: '暂无数据',
+    aria: (last) => `集合竞价台阶 09:15–09:25，最新撮合价 ${last}`,
+  },
+  tradingDate: {
+    pick: '选交易日',
+    calendar: '交易日历',
+    previousMonth: '上个月',
+    nextMonth: '下个月',
+    previousDay: '上一个交易日',
+    nextDay: '下一个交易日',
+    placeholder: '选择交易日',
+    closed: '休市',
+  },
+  flowRace: {
+    region: '板块资金流向',
+    ranking: '资金排行',
+    axis: { from: '09:30', mid: '11:30/13:00', to: '15:00' },
+    empty: '暂无资金数据',
+    unavailable: '暂无数据',
+    rankAria: (rank, name, value) => `第 ${rank} 名 ${name} ${value}`,
+  },
+  miniK: {
+    region: '选股结果',
+    card: (name, code, change) => `${name} ${code}，${change}`,
+    chart: (count) => `最近 ${count} 根 K 线`,
+    noCandles: '暂无 K 线',
+    empty: '暂无选股结果',
+    unavailable: '暂无数据',
+  },
+  moveFeed: {
+    region: '盘口异动',
+    filter: '按异动类型筛选',
+    all: '全部',
+    types: {
+      rocket: '火箭发射',
+      rebound: '快速反弹',
+      dive: '高台跳水',
+      plunge: '加速下跌',
+      bigBuy: '大笔买入',
+      bigSell: '大笔卖出',
+      volumeSurge: '放量异动',
+      sealUp: '封涨停板',
+      sealDown: '封跌停板',
+      openUp: '打开涨停板',
+      openDown: '打开跌停板',
+    },
+    typeChip: (name, count) => `${name} ${count}`,
+    summary: (count) => `共 ${count} 条`,
+    empty: '暂无异动',
+    row: (time, name, type, value) => `${time} ${name} ${type} ${value}`,
+    unavailable: '暂无数据',
+  },
+  rangeScrubber: {
+    region: '区间时间轴',
+    low: '区间起点',
+    high: '区间终点',
+    span: (from, to, minutes) => `${from}–${to} · ${minutes} 分钟`,
+    presetGroup: '快捷区间',
+    preset: (minutes) => (minutes >= 60 && minutes % 60 === 0 ? `近 ${minutes / 60} 小时` : `近 ${minutes} 分`),
+    metricGroup: '统计口径',
+    metrics: { change: '涨幅', net: '净额', strength: '强度' },
+    future: '还没到的时段',
+  },
+  auctionBar: {
+    pending: '未出结果',
+    aria: ({ amount, previous, ratio, limitBid, pending }) =>
+      `${pending ? '竞价未出结果，' : ''}竞价额 ${amount}，昨日同期 ${previous}，量比 ${ratio}${limitBid === null ? '' : `，涨停委买 ${limitBid}`}`,
+  },
+  thresholdGap: {
+    state: { watch: '监控中', near: '临近', triggered: '已触发', ended: '监管期结束' },
+    gap: (percent) => `差 ${percent}`,
+    over: (percent) => `超出 ${percent}`,
+    threshold: (percent) => `阈值 ${percent}`,
+    warn: (percent) => `预警线 ${percent}`,
+    unavailable: '暂无数据',
   },
 }

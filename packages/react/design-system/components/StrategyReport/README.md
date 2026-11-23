@@ -32,7 +32,7 @@
 
 ```tsx
 // SPDX-License-Identifier: MIT
-import { StrategyReport, type ReportTrade, type StrategyReportLabels } from '@katana-ui/react/blocks'
+import { StrategyReport, type ReportTrade, type StrategyReportLabels, type StrategyReportTab } from '@katana-ui/react/blocks'
 
 function seeded(seed: number): () => number {
   let a = seed >>> 0
@@ -246,7 +246,8 @@ const benchmark = {
   },
 }
 
-export function StrategyReportUsage() {
+/** defaultTab：组件截图截绩效表与交易列表用（#92）；文档站不传，开在概览。 */
+export function StrategyReportUsage({ defaultTab }: { defaultTab?: StrategyReportTab } = {}) {
   return (
     <div className="gal-stack" style={{ width: '100%' }}>
       <div style={{ height: 620 }} data-testid="report-frame">
@@ -258,6 +259,7 @@ export function StrategyReportUsage() {
           format={FORMAT}
           labels={LABELS}
           badge="演示数据"
+          defaultTab={defaultTab}
         />
       </div>
       <div style={{ height: 160 }} data-testid="report-empty">

@@ -166,8 +166,8 @@ export function AiPromptInput({
       data-state={state}
       transition={unit(snappy)}
       className={cn(
-        'relative w-full rounded-[var(--radius-overlay)] border bg-surface-1 transition-colors duration-[120ms]',
-        focused ? 'border-ink-4' : 'border-line',
+        'relative w-full k-mat-block transition-colors duration-[120ms]',
+        focused && 'border-ink-4',
         disabled && 'opacity-60',
         className,
       )}

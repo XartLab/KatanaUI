@@ -1,0 +1,75 @@
+/* SPDX-License-Identifier: MIT */
+/* ChangeSummary（KATANAview #1908）：灰底托盘（container-secondary），行间细线；好坏色只给变化那一格的字与箭头。 */
+.k-chs {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  background: var(--k-container-secondary-background);
+  color: var(--k-content-body-foreground);
+  font: var(--text-data) var(--font-sans);
+}
+.k-chs-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.k-chs-icon {
+  display: inline-flex;
+  color: var(--k-content-secondary-foreground);
+}
+.k-chs-icon svg {
+  width: 13px;
+  height: 13px;
+}
+.k-chs-title {
+  margin: 0;
+  color: var(--k-content-primary-foreground);
+  font: var(--text-data) var(--font-sans);
+}
+.k-chs-period {
+  margin-left: auto;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-num-small);
+}
+.k-chs-list {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+}
+.k-chs-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: 5px 0;
+  border-top: var(--hairline);
+}
+.k-chs-row dt {
+  color: var(--k-content-secondary-foreground);
+}
+.k-chs-row dd {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin: 0;
+  color: var(--k-content-primary-foreground);
+  font: var(--text-data) var(--font-num);
+  font-variant-numeric: tabular-nums;
+}
+.k-chs-row dd svg {
+  width: 12px;
+  height: 12px;
+}
+.k-chs-row[data-tone='good'] dd {
+  color: var(--k-status-ok-foreground);
+}
+.k-chs-row[data-tone='bad'] dd {
+  color: var(--k-status-danger-foreground);
+}
+.k-chs-empty {
+  margin: 0;
+  color: var(--k-content-secondary-foreground);
+}

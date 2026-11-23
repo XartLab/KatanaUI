@@ -2,10 +2,14 @@
 // 小图阵列（small multiples）：自选、组合里多个品种并排各一张小折线（series-1，不按涨跌着色；涨跌色只给标题行的数字），末点强调色，悬停出 LCD 窗，同一个十字线：指针在任一张上移动，所有张的竖线与读数一起走。
 // 功能参照 Arc 的 Small multiples（同步十字线的小图阵列，uiarc.dev/components/charts，2026-11-14 读，只取功能），实现原创。
 // 扫读用 useScrubber（受控，位置存在这里，所有张共用）；比例尺与路径用 quant 的 series-geometry。
+// 右上三件（dataviz §4，KatanaUI #165）：给了 actionLabels、tableLabel、tableXHead 才画；表格一行一个横轴位置、一列一张小图，同 QuantileLayers 的表。
+//   单独用时要给（表格视图是无障碍兜底）；不给是留给嵌在别的积木里的用法（SentimentCycle 底下那排指标），由外层管工具条。
 import { useState } from 'react'
 import { cn } from '../lib/cn.ts'
 import { useScrubber } from '../lib/use-scrubber.ts'
 import { quoteTone } from '../quotes/quote-tone.ts'
+import { ChartActions } from '../lib/chart/chart-kit/chart-actions.tsx'
+import { SeriesChartTable, type SeriesTableViewProps } from '../lib/chart/chart-kit/chart-table.tsx'
 import { EndMarker } from '../lib/chart/chart-kit/end-marker.tsx'
 import { LcdTooltip } from '../lib/chart/chart-kit/lcd-tooltip.tsx'
 import { extent, linePath, makePlot, pct, PLOT_W } from '../lib/chart/series-geometry.ts'
@@ -18,7 +22,7 @@ export type SmallMultiple = {
   format?: (value: number) => string
 }
 
-export type SmallMultiplesProps = {
+export type SmallMultiplesProps = Partial<SeriesTableViewProps> & {
   items: readonly SmallMultiple[]
   /** 整个阵列的读屏名。 */
   label: string
@@ -46,20 +50,55 @@ export function SmallMultiples({
   minWidth = 160,
   height = 56,
   onSelect,
+  actionLabels,
+  tableLabel,
+  tableXHead,
+  source,
+  onExport,
+  onFullscreen,
   className,
 }: SmallMultiplesProps) {
   const count = items.reduce((n, item) => Math.max(n, item.values.length), 0)
   const [index, setIndex] = useState<number | null>(null)
+  const [tableView, setTableView] = useState(false)
   const scrub = useScrubber({ count, index, onIndexChange: setIndex })
   const active = scrub.index
   const sharedRange = extent(items.flatMap((item) => item.values))
+  const view = actionLabels && tableLabel !== undefined && tableXHead !== undefined
+  const table = view && tableView
 
   return (
     <figure className={cn('k-sm', className)} data-slot="small-multiples" aria-label={label}>
+      {view && (
+        <div className="k-dist-bar">
+          <ChartActions
+            labels={actionLabels}
+            tableView={tableView}
+            onTableView={setTableView}
+            onExport={onExport}
+            onFullscreen={onFullscreen}
+          />
+        </div>
+      )}
+      {table && (
+        <SeriesChartTable
+          slot="small-multiples-table"
+          label={tableLabel}
+          xHead={tableXHead}
+          formatX={formatX}
+          columns={items.map((item) => ({
+            key: item.key,
+            label: item.label,
+            values: item.values,
+            format: item.format ?? formatValue,
+          }))}
+        />
+      )}
       <div
         className="k-sm-grid"
         role="group"
         aria-label={label}
+        hidden={table}
         style={{ gridTemplateColumns: `repeat(auto-fill, minmax(${minWidth}px, 1fr))` }}
         {...scrub.keys}
       >
@@ -120,10 +159,11 @@ export function SmallMultiples({
         })}
       </div>
       {formatX && (
-        <div className="k-plot-readout" data-slot="small-multiples-readout" aria-live="polite">
+        <div className="k-plot-readout" data-slot="small-multiples-readout" aria-live="polite" hidden={table}>
           {active !== null ? formatX(active) : null}
         </div>
       )}
+      {source === undefined ? null : <p className="k-dist-source">{source}</p>}
     </figure>
   )
 }

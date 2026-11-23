@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: MIT
-// 联动组（#150 G8）的演示：三张小件（报价卡、迷你图、文字）分两组联动，标题栏里是 LinkGroupPicker；下面是选择件的五种样子。
-// 下面所有数据都是演示用的示例（在这个展示页里构造，不是行情），页上也写明了。
+// 联动组（#22 G8）的演示：自选与两张「图」同在 A 组，点品种一起换、十字线一起走；换到别的组或不联动就各走各的。数据是示例，不是行情。
+// 下面一节是标题栏的选组件 LinkGroupPicker（#150）：三张小件分两组，各接自己的一张联动表（不和上面的演示串组）；再下面是选组件的五种样子。
 import { useState, type ReactNode } from 'react'
+import { PanelFrame, PanelFrameBody, PanelFrameHeader } from '../../src/blocks/index.ts'
 import {
   LINK_GROUPS,
   LinkGroupPicker,
@@ -10,13 +11,13 @@ import {
   QuoteCard,
   ToggleGroup,
   ToggleGroupItem,
+  createLinkHub,
   useLinkGroup,
   type LinkGroup,
   type LinkGroupPickerLabels,
-  type LinkGroupValues,
 } from '../../src/index'
-import { PanelFrame, PanelFrameBody, PanelFrameHeader } from '../../src/blocks/index.ts'
-import { Row } from './parts'
+import { LinkGroupUsage } from '../usage/LinkGroupUsage.tsx'
+import { Row } from './parts.tsx'
 
 const SAMPLE = '示例数据，不是行情'
 
@@ -69,7 +70,7 @@ const DEMO: readonly DemoSymbol[] = [
   },
 ]
 
-const bySymbol = (symbol: string): DemoSymbol => DEMO.find((item) => item.symbol === symbol) ?? DEMO[0]!
+const bySymbol = (symbol: string | undefined): DemoSymbol => DEMO.find((item) => item.symbol === symbol) ?? DEMO[0]!
 
 export const LINK_LABELS: LinkGroupPickerLabels = {
   trigger: '联动组',
@@ -77,31 +78,37 @@ export const LINK_LABELS: LinkGroupPickerLabels = {
   groups: { A: '组 A', B: '组 B', C: '组 C', D: '组 D' },
 }
 
-/** 一张联动的小件：标题栏最左是选择件，内容区顶上一排品种按钮（点了就改整组），下面画调用方给的内容。 */
+/** 一张联动的小件：标题栏最左是选组件，内容区顶上一排品种按钮（点了就改整组），下面画调用方给的内容。组由这张件自己存。 */
 function LinkedPanel({
   title,
-  defaultValue,
+  symbol,
   defaultGroup,
   children,
 }: {
   title: string
-  defaultValue: string
+  symbol: string
   defaultGroup: LinkGroup | null
   children: (item: DemoSymbol) => ReactNode
 }) {
-  const link = useLinkGroup({ defaultValue, defaultGroup })
-  const item = bySymbol(link.value)
+  const [group, setGroup] = useState(defaultGroup)
+  const [link, set] = useLinkGroup(group, { fields: ['symbol'], initial: { symbol } })
+  const item = bySymbol(link.symbol)
   return (
     <div style={{ width: 236, height: 248 }} data-gallery-link-panel={title} data-symbol={item.symbol}>
       <PanelFrame aria-label={title}>
         <PanelFrameHeader>
-          <LinkGroupPicker value={link.group} onValueChange={link.setGroup} labels={LINK_LABELS} />
+          <LinkGroupPicker value={group} onValueChange={setGroup} carry={link} labels={LINK_LABELS} />
           <h2>{title}</h2>
           <span className="k-panel-object">· {item.symbol}</span>
         </PanelFrameHeader>
         <PanelFrameBody>
           <div style={{ display: 'grid', gap: 8, padding: 8 }}>
-            <ToggleGroup size="sm" value={link.value} onValueChange={link.setValue} aria-label={`${title}：换品种`}>
+            <ToggleGroup
+              size="sm"
+              value={item.symbol}
+              onValueChange={(next) => next && set({ symbol: next })}
+              aria-label={`${title}：换品种`}
+            >
               {DEMO.map((option) => (
                 <ToggleGroupItem key={option.symbol} value={option.symbol}>
                   {option.symbol}
@@ -116,19 +123,13 @@ function LinkedPanel({
   )
 }
 
-const groupText = (values: LinkGroupValues<string>) =>
-  LINK_GROUPS.filter((group) => values[group] !== undefined)
-    .map((group) => `${LINK_LABELS.groups?.[group] ?? group}：${values[group]}`)
-    .join(' · ')
-
-/** 三张小件分两组：报价卡与迷你图在组 A，文字在组 B。 */
+/** 三张小件分两组：报价卡与迷你图在组 A，文字在组 B；接自己的一张联动表，组 A 起头是 AAA、组 B 是 CCC。 */
 export function LinkGroupPanels() {
-  const initial: LinkGroupValues<string> = { A: 'AAA', B: 'CCC' }
-  const [values, setValues] = useState(initial)
+  const [hub] = useState(() => createLinkHub({ A: { symbol: 'AAA' }, B: { symbol: 'CCC' } }))
   return (
-    <LinkGroupProvider defaultValue={initial} onValueChange={setValues}>
+    <LinkGroupProvider hub={hub}>
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-        <LinkedPanel title="报价" defaultValue="AAA" defaultGroup="A">
+        <LinkedPanel title="报价" symbol="AAA" defaultGroup="A">
           {(item) => (
             <QuoteCard
               name={item.name}
@@ -142,7 +143,7 @@ export function LinkGroupPanels() {
             />
           )}
         </LinkedPanel>
-        <LinkedPanel title="迷你图" defaultValue="AAA" defaultGroup="A">
+        <LinkedPanel title="迷你图" symbol="AAA" defaultGroup="A">
           {(item) => (
             <MiniChart
               symbol={item.symbol}
@@ -155,7 +156,7 @@ export function LinkGroupPanels() {
             />
           )}
         </LinkedPanel>
-        <LinkedPanel title="说明" defaultValue="CCC" defaultGroup="B">
+        <LinkedPanel title="说明" symbol="CCC" defaultGroup="B">
           {(item) => (
             <p className="gal-note" style={{ margin: 0 }}>
               {item.note}
@@ -163,12 +164,11 @@ export function LinkGroupPanels() {
           )}
         </LinkedPanel>
       </div>
-      <output data-gallery-link-values>{groupText(values)}</output>
     </LinkGroupProvider>
   )
 }
 
-/** 选择件的五种样子：A–D 四组与不联动。 */
+/** 选组件的五种样子：A–D 四组与不联动。 */
 export function LinkGroupPickerStates() {
   return (
     <>
@@ -183,14 +183,17 @@ export function LinkGroupPickerStates() {
 export function LinkGroupDemo() {
   return (
     <>
-      <Row name="三张小件 · 两组">
+      <Row name="自选 → 图 1、图 2（A 组）；在图的灰条上移动指针，同组的图同时画十字线">
+        <LinkGroupUsage />
+      </Row>
+      <Row name="选组件 · 三张小件 · 两组">
         <LinkGroupPanels />
       </Row>
       <p className="gal-note">
         {SAMPLE}
-        。点哪张件顶上的品种，同组的件跟着换；点标题栏最左的灯换组或不联动：进有值的组就改看组的品种，进空组时组取这件的品种，离组时留着最后的品种。
+        。点哪张件顶上的品种，同组的件跟着换；点标题栏最左的灯换组或不联动，菜单每组行尾是这组现在的品种：进有品种的组就改看组的，进空组时组取这件的品种，不联动时件回到自己起头的品种。
       </p>
-      <Row name="选择件的五种样子">
+      <Row name="选组件的五种样子">
         <LinkGroupPickerStates />
       </Row>
     </>

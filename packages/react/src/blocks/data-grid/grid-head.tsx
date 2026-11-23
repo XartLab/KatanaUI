@@ -79,12 +79,14 @@ export function GridHead({
     setDragFrom(null)
     setDropOn(null)
   }
+  // 两行表头（#92）：有列带 sub 时，各列头名字顶到同一条线上（单行的列头与两行的第一行基线对齐），第二行在下；上边距由 CSS 按表头高算。
+  const twoLine = layout.some((column) => column.visible && column.sub)
   return (
     <div
       role="row"
       aria-rowindex={1}
-      className={cn('k-grid-head', className)}
-      style={{ gridTemplateColumns: template, height }}
+      className={cn('k-grid-head', twoLine && 'has-sub', className)}
+      style={{ gridTemplateColumns: template, height, '--k-grid-head-h': `${height}px` } as CSSProperties}
     >
       {columns.map((column) => {
         const state = column.sorted

@@ -8,7 +8,7 @@
 
 ### DataGrid
 
-示例数据写死在页里，不是行情。行高档：compact 20、default 24、relaxed 32。没有 DataGridHost 时能点、能排序、能键盘选行，只是没有快捷键与标准右键项。
+示例数据写死在页里，不是行情。行高档：compact 20、default 24、relaxed 32（面板密表）、comfortable 40（整页表，表头 48、正文 14px、默认行间线，#90）。没有 DataGridHost 时能点、能排序、能键盘选行，只是没有快捷键与标准右键项。
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
@@ -42,18 +42,20 @@
 | `exportName` | `string` | `'table'` | File name for the export, without extension. |
 | `onExport` | `(csv: string, fileName: string) => void` | — | Called with the CSV text and file name; without it there is no export item. |
 | `foot` | `ReactNode` | — | A line of text under the table. |
+| `summary` | `readonly GridSummary<Row>[]` | — | Summary rows at the foot (totals, averages): per-column aggregates over all rows, on the same column template and pinned columns; they stick to the bottom while scrolling. |
 | `presorted` | `boolean` | — | Rows are already sorted by the caller (group rows with children): the header still shows the sort marker but the table does not sort. |
 | `rowTree` | `(row: Row) => { level: number; expanded?: boolean }` | — | Tree rows: the table reads as an ARIA treegrid and rows carry aria-level and aria-expanded. |
 | `timeZone` | `string` | — | Time zone of time columns: 'local' (default), 'utc' or an IANA name. |
 | `sortLocale` | `string` | — | Locale for sorting text columns (Intl.Collator); follows the runtime when omitted. |
 | `collapseColumns` | `boolean` | `true` | Priority columns (default true): at standard and hero emphasis, when the visible columns do not fit the container, the lowest-priority columns (GridColumn.priority; undeclared ones count up in declaration order) are collapsed and a "+N cols" capsule appears at the right end of the header; clicking it switches to horizontal scrolling with every column. |
 | `containerWidth` | `number` | — | Container width in px for the priority columns; measured with a ResizeObserver when omitted. |
-| `density` | `GridDensity` | `'default'` | Row height tier. |
+| `density` | `GridDensity` | `'default'` | Row height tier: compact, default, relaxed for dense panel tables; comfortable (40px rows, 14px text, ruled) for full-page tables. |
+| `locale` | `string` | — | Locale of compact numbers (K/M/B/T for en-US, CJK myriad units for zh-CN) and date columns; a column's format.locale wins. |
 | `hideHeader` | `boolean` | — | Do not draw the header (a two-column metrics table, say). |
 | `headExtra` | `(columnId: string) => ReactNode` | — | Extra content after the sort button in each column head (a search icon on the Symbol head, say): given per column id, null for none. |
 | `headEnd` | `ReactNode` | — | Content at the far right of the header (the "+ add column" button, wired to ColumnPicker); floats over the header end and takes no column. |
 | `autoRowHeight` | `boolean` | — | Row height follows the content (multi-line cells, buttons in rows): the density height is a minimum and the measured height wins; cell text may wrap. |
-| `ruled` | `boolean` | — | Draw a thin rule between rows. |
+| `ruled` | `boolean` | `density === 'comfortable'` | Draw a thin rule between rows; on by default for density comfortable. |
 | `selectable` | `boolean` | `true` | When false, clicking a row neither selects nor opens it and there is no hover tint; only keyboard movement and expanding remain (for tables of mostly buttons). |
 | `interactive` | `boolean` | `true` | Interactive (default true): rows can be clicked, selected and moved with the keyboard, with a context menu. |
 | `stretch` | `boolean` | — | Treat column widths as proportions: when the container is wider than the sum, the extra space is shared by width ratio; by default widths are fixed pixels. |
@@ -63,11 +65,17 @@
 | `rowOrder` | `readonly string[]` | — | Manual row order (controlled): row ids in display order; ids not in it go last. |
 | `onRowOrderChange` | `(next: string[]) => void` | — | Called with the whole new order after a drag, Alt+Up / Alt+Down or a move item in the row menu. |
 | `rowSection` | `(row: Row) => ReactNode` | — | Section header rows (watchlist sections): return the heading for a row that is a section header, null / undefined for a normal row. |
+| `collapsedSections` | `ReadonlySet<string>` | — | Collapsed section ids (controlled); a collapsed section shows only its header row. |
+| `defaultCollapsedSections` | `readonly string[]` | — | Uncontrolled: section ids collapsed at first. |
+| `onSectionCollapsedChange` | `(id: string, collapsed: boolean) => void` | — | Called when a section is collapsed or expanded (the triangle, or ArrowLeft / ArrowRight / Enter on its header row). |
+| `sectionSummary` | `(rows: readonly Row[], section: Row) => ReactNode` | — | Summary at the right end of a section header (e.g. |
+| `sectionAggregates` | `GridSummary<Row>['columns']` | — | Per-section aggregates in each section header row, under their columns (same aggregates as summary: sum, avg, min, max, median, count or a function); the first visible column keeps the heading. |
+| `onCursorChange` | `(id: string \| null) => void` | — | Called when the keyboard cursor moves to another row (click, arrow keys) or leaves the rows; lets host hotkeys act on the current row (Alt+Enter flags it). |
 | `classNames` | `Partial<Record<GridSlot, string>>` | `{}` | Extra class names per part. |
 
 ### 列类型 ColumnType
 
-数字类默认靠右，用等宽数字；pnl、change、side 用 ToneText 跟 data-updown 着色（红涨绿跌时互换）。bar 是以 0 为中线的居中条（正在右用涨色、负在左用跌色，长度按本列绝对值最大者归一，数字写在条旁；format 的 digits 与 suffix 同 pnl）。pill 是一格多枚短标签（值是字符串或 { label, tone } 的数组，tone 只有 up / down / muted / accent 四种，不传色值），一行放不下的按格子宽度收成「+n」、悬停的 title 写全部，format.maxPills 可再限个数。progress 是分子 / 分母加一条 3px 细条（值是 { done, total } 或 [done, total]，分母不是正数不画条，排序按比例）。任何列都可以再声明 heat: { domain, rank? }：格子底色按值深浅（跨 0 的 domain 里正数用涨色、负数用跌色，不跨 0 的按单边从最小到最大），rank 给了就在格子右上角写名次小字，不占行高行宽；颜色只由 token 给，不传色值。
+数字类默认靠右，用等宽数字；pnl、change、side 用 ToneText 跟 data-updown 着色（红涨绿跌时互换）。bar 是以 0 为中线的居中条（正在右用涨色、负在左用跌色，长度按本列绝对值最大者归一，数字写在条旁；format 的 digits 与 suffix 同 pnl）。pill 是一格多枚短标签（值是字符串或 { label, tone } 的数组，tone 只有 up / down / muted / accent 四种，不传色值），一行放不下的按格子宽度收成「+n」、悬停的 title 写全部，format.maxPills 可再限个数。progress 是分子 / 分母加一条 3px 细条（值是 { done, total } 或 [done, total]，分母不是正数不画条，排序按比例）。任何列都可以再声明 heat: { domain, rank? }：格子底色按值深浅（跨 0 的 domain 里正数用涨色、负数用跌色，不跨 0 的按单边从最小到最大），rank 给了就在格子右上角写名次小字，不占行高行宽；颜色只由 token 给，不传色值。#90 新增 percent、compact（K/M/B/T 或 万/亿）、rating、spark、range、date，复用 RatingText、Sparkline、RangeBar；bar 给了 format.barMax 改画单边中性横条（满格 = barMax，给相对成交量这类有大小没正负的量）；分类标签用 pill；format.unit 写小字单位。
 
 ### DataGridHost（经 DataGridHostProvider 提供）
 
@@ -168,6 +176,7 @@ export function DataGridUsage() {
 - 键盘所在行：焦点环；排序列：表头带升降箭头。
 - 只读（interactive=false）：table 语义，表头不是按钮。
 - 子行：有子行的行带 aria-expanded（true 摊开、false 收起）；没有子行的行没有这个属性，按 → 没反应。
+- 分节（rowSection）：标题行跨满整行，左端三角收起 / 展开（collapsedSections 受控或 defaultCollapsedSections 不受控），写这一节的行数，sectionAggregates 按列写组内汇总（对齐到列下，聚合同表尾 summary），sectionSummary 是靠右的自由槽；表尾 summary 只算数据行；收起的节只留标题行，挪它时藏着的行跟着走。按列排序时标题行不参与排序，各节里的行在节内排（照 TradingView 自选表）。
 - custom 列没有 text 时复制与导出是空字；有按钮的格子别指望整行点击。
 - 列优先级（standard 与 hero 分量，有表头）：可见列放不下容器时按 GridColumn.priority 从低到高收起（没写的按声明顺序，第一列 1、第二列 2……），至少留两列，固定在左边的列不收；表头右端出「+N 列」胶囊（文案 texts.moreColumns，默认英文 +N cols），点了切成横向滚动、显示全部列，胶囊变 texts.collapseColumns，再点收起。出胶囊时表头与数据行在右端让出它的宽度，不盖住最后一列（stretch 的表，保留的列撑满的是容器宽减胶囊宽）。状态只在组件里，不存；容器变宽放得下了胶囊就消失。只影响显示：复制与导出仍是全部可见列。compact 分量与不画表头的表不走这一套；collapseColumns={false} 关掉，一直横向滚动。
 
@@ -195,7 +204,8 @@ DataGrid
 
 - `↑ / ↓`：移一行；Home / End 到头尾
 - `Enter`：打开键盘所在的行（onOpen）
-- `→ / ←`：展开 / 收起键盘所在行的子行（renderSubRow）
+- `→ / ←`：展开 / 收起键盘所在行的子行（renderSubRow）；在分节标题行上展开 / 收起这一节
+- `Enter（分节标题行）`：收起 / 展开这一节
 - `Shift / Ctrl 点击`：选一段 / 点选加减
 - `Esc`：清掉选择（右键菜单开着时归菜单）
 - `列头右键`：列头菜单：排序、固定、隐藏、左右移、重置列

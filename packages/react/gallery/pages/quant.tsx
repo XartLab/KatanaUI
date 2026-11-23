@@ -59,6 +59,7 @@ import { LiveToggle } from '../LiveToggle.tsx'
 import { ladderFrom, ladderLevels, ladderStep } from '../ladder-sim.ts'
 import { useLiveTicker } from '../live-sim.ts'
 import { LiveMetricCardDemo, LivePnlTextDemo, LiveSparkTileDemo } from './live-readouts.tsx'
+import { demoCopyImage } from './demo-copy.tsx'
 import { ActionLog, Cell, Row, SAMPLE_MARK_SRC, demoSymbolActions } from './parts.tsx'
 
 // 量化层（@katana-ui/react/quant，#1862、#1929）的演示。数值都是示例，不是行情，页上也写明。根元素设 data-updown="cn" 时涨跌色互换（红涨绿跌）。
@@ -319,6 +320,7 @@ export function LimitLadderDemo() {
             <LimitLadder
               levels={ladderLevels(sim)}
               labels={LADDER_LABELS}
+              locale="zh-CN"
               selected={selected}
               onSelect={(item) => setSelected(item.code)}
               rowActions={(item) => demoSymbolActions(item.code, setLog)}
@@ -463,6 +465,7 @@ const HEAT_LABELS: MarketHeatmapLabels = {
   list: '市场热力图',
   empty: '没有数据',
   fullscreen: '全屏',
+  copyImage: '复制图片',
   dataset: '数据集',
   openInScreener: '在选股器打开',
   display: {
@@ -549,6 +552,7 @@ export function MarketHeatmapDemo() {
                 selected={selected}
                 onSelect={setSelected}
                 cellActions={(item) => demoSymbolActions(item.symbol, setLog)}
+                onCopyImage={demoCopyImage}
               />
             </PanelFrameBody>
           </PanelFrame>
@@ -849,6 +853,9 @@ export function SparkTileDemo() {
   )
 }
 
+// 线照 LossLimits 卡：80% 起接近、100% 越限。
+const LIMIT_LABELS = { warn: '预警线 80%', hard: '硬限 100%' }
+
 export function MeterDemo() {
   return (
     <>
@@ -858,7 +865,29 @@ export function MeterDemo() {
           <Meter label="LOAD · 敞口" value={72} tone="ok" />
           <Meter label="LOAD · 受锁（超过 60% 上限）" value={38} tone="warn" mark={60} markLabel="上限" />
           <Meter label="回测进度" value={61} />
+          <Meter label="相对强弱 · 中性" value={48} tone="neutral" />
           <Meter label="OFF" value={0} tone="off" />
+        </div>
+      </Row>
+      <Row name="限额（warnAt / hardAt）">
+        <div className="gal-stack" data-testid="meter-limits">
+          <Meter label="总敞口 / 净值" value={54} warnAt={80} hardAt={100} valueText="54%" limitLabels={LIMIT_LABELS} />
+          <Meter
+            label="保证金占用"
+            value={86}
+            warnAt={80}
+            hardAt={100}
+            valueText="86% · 接近"
+            limitLabels={LIMIT_LABELS}
+          />
+          <Meter
+            label="日内回撤"
+            value={112}
+            warnAt={80}
+            hardAt={100}
+            valueText="112% · 越限"
+            limitLabels={LIMIT_LABELS}
+          />
         </div>
       </Row>
       <Row name="刻度（gauge）">

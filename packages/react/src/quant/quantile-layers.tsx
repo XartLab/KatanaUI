@@ -67,6 +67,8 @@ export type QuantileLayersProps = {
   height?: number
   onExport?: () => void
   onFullscreen?: () => void
+  /** Copy-image handler (camera button; also give labels.actions.copyImage); receives this chart's figure for copyImage. */
+  onCopyImage?: (chart: HTMLElement) => void
   className?: string
 }
 
@@ -84,6 +86,7 @@ export function QuantileLayers({
   height = 240,
   onExport,
   onFullscreen,
+  onCopyImage,
   className,
 }: QuantileLayersProps) {
   const sorted = sortLayers(layers)
@@ -134,6 +137,7 @@ export function QuantileLayers({
           onTableView={setTableView}
           onExport={onExport}
           onFullscreen={onFullscreen}
+          onCopyImage={onCopyImage}
         />
       </div>
       {!drawn && <p className="k-ql-note">{labels.tooMany}</p>}

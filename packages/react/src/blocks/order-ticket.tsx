@@ -6,8 +6,12 @@
 // OKX 没有、我们加的：仓位框可按成本 / 数量 / 风险三种填法（按风险取自 ATAS Beta 8.0.16，https://feedback.atas.net/de/changelog ），
 // 出场模板（ATAS Exit Strategy，https://start.atas.net/step-3.-start-trading-with-atas/exit-strategies ），钮下多列手续费、总占用、预估强平价、保本价、盈亏比。
 // 只取「给用户看什么、怎么交互」，实现原创。TradingView 的下单面板不参照（用户定）。
+// 受控价格（#176）：price / onPriceChange 让订单簿点一档回填限价。交互照 TradingView 的 DOM：点一档就是按这档价下限价单、默认先弹确认
+// （帮助中心「Depth of market (DOM)」，2026-11-23 读）；这里点档只回填两栏的限价，下单仍走下单钮与调用方的确认。
+// 点档时是否顺带切回限价页签，TradingView 页面没写，待核对；这里不切。
+// 锁住态（#176）：locked 时两个下单钮都灰掉，lockedReason 写在钮下（警示色加锁形图标），钮经 aria-describedby 读到它；面板照样算数。
 // 面板只算和显示：账户、费率、合约规格由调用方传，下单是 onSubmit 回调；文字全走 labels。
-import { Calculator } from 'lucide-react'
+import { Calculator, Lock } from 'lucide-react'
 import { useId, useState } from 'react'
 import { cn } from '../lib/cn.ts'
 import { focusRing } from '../lib/focus.ts'
@@ -141,9 +145,12 @@ type SharedProps = {
   exitTemplates?: readonly ExitTemplate[]
   stopCustody: StopCustody
   defaultSizingMode: SizingMode
+  locked: boolean
+  lockedReason?: string
   labels: OrderTicketLabels
   locale?: string
   onSubmit: (order: OrderDraft) => void
+  onPriceChange?: (price: string, side: OrderSide) => void
 }
 
 /** 一栏：这个方向的价格、数量、滑杆、止盈止损、下单钮与钮下的读数。两栏各管各的输入（OKX 两栏也是各填各的）。 */
@@ -164,16 +171,29 @@ function TicketSide({
   exitTemplates,
   stopCustody,
   defaultSizingMode,
+  locked,
+  lockedReason,
   labels,
   locale,
   onSubmit,
+  onPriceChange,
+  price: priceProp,
+  defaultPrice,
 }: SharedProps & {
   side: OrderSide
   hidden: boolean
   defaultAmount: string
   defaultExits?: { takeProfit?: string; stopLoss?: string }
+  price?: string
+  defaultPrice?: string
 }) {
-  const [priceText, setPriceText] = useState(() => toTick(market.last, instrument.tickSize))
+  // 受控与不受控照 OrderBook 的 tick：给了 price 就显示它，自己的那份只在不受控时用。
+  const [innerPriceText, setInnerPriceText] = useState(() => defaultPrice ?? toTick(market.last, instrument.tickSize))
+  const priceText = priceProp ?? innerPriceText
+  const setPriceText = (text: string) => {
+    setInnerPriceText(text)
+    onPriceChange?.(text, side)
+  }
   const [mode, setMode] = useState<SizingMode>(defaultSizingMode)
   const [amountText, setAmountText] = useState(defaultAmount)
   const [exitsOpen, setExitsOpen] = useState(Boolean(defaultExits?.takeProfit || defaultExits?.stopLoss))
@@ -181,6 +201,7 @@ function TicketSide({
   const [stopLossText, setStopLossText] = useState(defaultExits?.stopLoss ?? '')
   const [templateId, setTemplateId] = useState('')
   const exitsId = useId()
+  const lockedId = useId()
   const format = ticketFormat(locale, instrument.tickSize, instrument.lotSize)
   const closing = action === 'close'
 
@@ -414,7 +435,9 @@ function TicketSide({
       <button
         type="button"
         data-slot="ticket-submit"
-        disabled={!canSubmit}
+        data-locked={locked || undefined}
+        disabled={!canSubmit || locked}
+        aria-describedby={locked && lockedReason ? lockedId : undefined}
         onClick={() =>
           onSubmit({
             side,
@@ -438,6 +461,16 @@ function TicketSide({
       >
         {closing ? labels.submitClose[side] : labels.submit[side]}
       </button>
+      {locked && lockedReason ? (
+        <p
+          id={lockedId}
+          data-slot="ticket-locked"
+          className="k-text-caption m-0 flex items-center gap-1 text-(color:--k-status-warn-foreground)"
+        >
+          <Lock aria-hidden="true" className="size-3 shrink-0" />
+          {lockedReason}
+        </p>
+      ) : null}
 
       <dl data-slot="ticket-summary" aria-live="polite" className="k-text-caption m-0 flex flex-col gap-1">
         <ReadoutRow
@@ -530,6 +563,11 @@ export function OrderTicket({
   includeCloseFee = true,
   exitTemplates,
   stopCustody = 'venue',
+  price,
+  defaultPrice,
+  onPriceChange,
+  locked = false,
+  lockedReason,
   labels,
   locale,
   onSubmit,
@@ -566,6 +604,16 @@ export function OrderTicket({
   exitTemplates?: readonly ExitTemplate[]
   /** Where stops live: held by the venue, or triggered locally. */
   stopCustody?: StopCustody
+  /** Limit price text per column (controlled), such as a level clicked in an order book; a column left out keeps its own. */
+  price?: Partial<Record<OrderSide, string>>
+  /** Uncontrolled: starting limit price text per column; defaults to the last price on the tick. */
+  defaultPrice?: Partial<Record<OrderSide, string>>
+  /** Called with the new text when a column's price box is typed in or its best-price button is pressed. */
+  onPriceChange?: (price: string, side: OrderSide) => void
+  /** Trading is locked: both submit buttons are disabled, the panel still computes and keeps what was typed. */
+  locked?: boolean
+  /** Why trading is locked, written under each submit button and read as its description; shown only while locked. */
+  lockedReason?: string
   /** All visible text and accessible names. */
   labels: OrderTicketLabels
   /** BCP 47 tag for number formatting, defaults to the browser language. */
@@ -601,9 +649,12 @@ export function OrderTicket({
     exitTemplates,
     stopCustody,
     defaultSizingMode,
+    locked,
+    lockedReason,
     labels,
     locale,
     onSubmit,
+    onPriceChange,
   }
 
   return (
@@ -618,12 +669,12 @@ export function OrderTicket({
         <ToggleGroup
           data-slot="ticket-action"
           aria-label={labels.action}
-          className="flex w-full"
+          fullWidth
           value={action}
           onValueChange={(value) => setAction(value as OrderAction)}
         >
           {(['open', 'close'] as const).map((value) => (
-            <ToggleGroupItem key={value} value={value} className="flex-1 justify-center">
+            <ToggleGroupItem key={value} value={value}>
               {labels.actions[value]}
             </ToggleGroupItem>
           ))}
@@ -690,6 +741,8 @@ export function OrderTicket({
                 hidden={side !== value}
                 defaultAmount={defaultAmount}
                 defaultExits={defaultExits?.[value]}
+                price={price?.[value]}
+                defaultPrice={defaultPrice?.[value]}
                 {...shared}
               />
             ))}

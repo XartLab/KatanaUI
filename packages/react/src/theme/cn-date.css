@@ -1,0 +1,52 @@
+/* SPDX-License-Identifier: MIT */
+/* 交易日选择（TradingDatePicker，#110）：前一个交易日按钮、日期按钮（点开日历）、后一个交易日按钮连成一条 26px 高的分段。
+   日历皮肤复用 theme/date-time.css 的 .k-cal；休市的日子是 [data-unavailable]，那边已经画成灰色不可点，这里只补删除线，免得只靠灰度区分。 */
+.k-tdp {
+  display: inline-flex;
+  align-items: center;
+  gap: 1px;
+  height: 26px;
+  border: var(--hairline);
+  background: var(--bg-200);
+  color: var(--ink-100);
+  font: var(--text-data) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+}
+.k-tdp-step,
+.k-tdp-pick {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  height: 100%;
+  padding: 0 var(--space-2);
+  border: 0;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+}
+.k-tdp-step {
+  padding: 0 var(--space-1);
+  color: var(--ink-200);
+}
+.k-tdp-step:hover:not(:disabled),
+.k-tdp-pick:hover,
+.k-tdp-pick[aria-expanded='true'] {
+  background: var(--alpha-white-8);
+}
+.k-tdp-step:disabled {
+  color: var(--ink-400);
+  cursor: default;
+}
+.k-tdp-step:focus-visible,
+.k-tdp-pick:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: -2px;
+}
+.k-tdp[data-closed] .k-tdp-value {
+  color: var(--ink-300);
+  text-decoration: line-through;
+}
+.k-tdp-pop .k-cal-cell[data-unavailable] {
+  text-decoration: line-through;
+}

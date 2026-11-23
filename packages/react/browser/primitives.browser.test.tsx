@@ -116,6 +116,7 @@ import {
   TooltipTrigger,
   useFieldControl,
 } from '../src/index.ts'
+import { CardUsage } from '../gallery/usage/CardUsage.tsx'
 import { OpenFrame } from './open-frame.tsx'
 import { mount } from './render.tsx'
 
@@ -208,6 +209,7 @@ for (const theme of ['graphite', 'console'] as const) {
           </div>
         </div>,
       ))
+    test('card', () => shot('card', <CardUsage />))
     test('checkbox', () =>
       shot(
         'checkbox',

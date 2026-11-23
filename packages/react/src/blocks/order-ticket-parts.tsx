@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 // 下单面板与仓位计算器共用的小件（#96）：买卖切换、带标签与单位的数字框、读数行、数字格式。
-import { useId, type ReactNode } from 'react'
+import type { ReactNode } from 'react'
 import { cn } from '../lib/cn.ts'
-import { focusRing } from '../lib/focus.ts'
-import { inputVariants } from '../primitives/input.tsx'
+import { Input } from '../primitives/input.tsx'
+import { ToggleGroup, ToggleGroupItem } from '../primitives/toggle-group.tsx'
 import type { OrderSide } from './sizing-model.ts'
 
 const decimalsOf = (step: number): number => {
@@ -67,28 +67,22 @@ export function SideSwitch({
   sell: string
   label: string
 }) {
+  // 分段的 split 变体（#104）：各项分开成钮、整宽等分，选中项按 tone 填涨跌色。
   return (
-    <div role="group" aria-label={label} data-slot="ticket-side" className="grid grid-cols-2 gap-1">
+    <ToggleGroup
+      split
+      fullWidth
+      data-slot="ticket-side"
+      aria-label={label}
+      value={side}
+      onValueChange={(value) => onSideChange(value as OrderSide)}
+    >
       {(['buy', 'sell'] as const).map((value) => (
-        <button
-          key={value}
-          type="button"
-          aria-pressed={side === value}
-          data-side={value}
-          onClick={() => onSideChange(value)}
-          className={cn(
-            'k-text-body h-(--k-size-base) cursor-pointer rounded-[6px] border font-semibold transition-[background-color,color] duration-[120ms]',
-            side !== value &&
-              'border-line bg-transparent text-ink-3 hover:bg-(--k-actionable-background-hover) hover:text-ink',
-            side === value && 'border-transparent text-(color:--k-surface-sunken-background)',
-            side === value && (value === 'buy' ? 'bg-(--pnl-up)' : 'bg-(--pnl-down)'),
-            focusRing,
-          )}
-        >
+        <ToggleGroupItem key={value} value={value} data-side={value} tone={value === 'buy' ? 'up' : 'down'}>
           {value === 'buy' ? buy : sell}
-        </button>
+        </ToggleGroupItem>
       ))}
-    </div>
+    </ToggleGroup>
   )
 }
 
@@ -116,40 +110,24 @@ export function TicketField({
   trailing?: ReactNode
   slot?: string
 }) {
-  const id = useId()
   return (
     <div className="flex items-center gap-1">
-      <div
-        className={cn(
-          'flex h-(--k-size-base) min-w-0 flex-1 items-center gap-2 rounded-[6px] border border-(color:--k-editable-borderColor) bg-(--k-editable-background) px-2',
-          'focus-within:border-(color:--k-editable-borderColor-active)',
-          invalid && 'border-(color:--k-status-danger-foreground)',
-          disabled && 'opacity-45',
-        )}
-      >
-        {labelNode ?? (
-          <label htmlFor={id} className="k-text-caption shrink-0 text-ink-3">
-            {label}
-          </label>
-        )}
-        <input
-          id={id}
-          data-slot={slot}
-          aria-label={labelNode ? label : undefined}
-          aria-invalid={invalid || undefined}
-          inputMode="decimal"
-          autoComplete="off"
-          disabled={disabled}
-          placeholder={placeholder}
-          value={value}
-          onChange={(event) => onValueChange(event.target.value)}
-          className={cn(
-            inputVariants(),
-            'h-full min-w-0 flex-1 border-0 bg-transparent px-0 text-right outline-none focus-visible:outline-none',
-          )}
-        />
-        {unit ? <span className="k-text-caption shrink-0 text-ink-3">{unit}</span> : null}
-      </div>
+      {/* 框、标签、单位都是 Input 的变体（caption / unit / align，#104）；这里只管下单面板的尺寸与框外的 trailing。 */}
+      <Input
+        caption={labelNode ?? label}
+        unit={unit}
+        align="end"
+        wrapperClassName="h-(--k-size-base) flex-1"
+        data-slot={slot}
+        aria-label={labelNode ? label : undefined}
+        aria-invalid={invalid || undefined}
+        inputMode="decimal"
+        autoComplete="off"
+        disabled={disabled}
+        placeholder={placeholder}
+        value={value}
+        onChange={(event) => onValueChange(event.target.value)}
+      />
       {trailing}
     </div>
   )

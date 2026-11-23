@@ -122,6 +122,20 @@ export function InputDemo() {
           <Input floatingLabel="止损价" aria-invalid defaultValue="abc" />
         </div>
       </Row>
+      <Row name="caption / unit">
+        <div data-gallery-boxed style={{ width: 220 }}>
+          <Input caption="委托价" unit="USDT" align="end" aria-label="委托价" defaultValue="60000.0" />
+        </div>
+        <div style={{ width: 180 }}>
+          <Input caption="杠杆倍数" unit="×" align="end" size="sm" aria-label="杠杆倍数" defaultValue="10" />
+        </div>
+        <div style={{ width: 220 }}>
+          <Input caption="止损触发价" unit="USDT" align="end" aria-label="止损触发价" aria-invalid defaultValue="abc" />
+        </div>
+        <div style={{ width: 220 }}>
+          <Input caption="委托量" unit="张" align="end" aria-label="委托量" disabled defaultValue="1.5" />
+        </div>
+      </Row>
     </>
   )
 }
@@ -249,26 +263,50 @@ export function SwitchDemo() {
 export function ToggleGroupDemo() {
   const [timeframe, setTimeframe] = useState<string | null>('d')
   const [toolbar, setToolbar] = useState<string | null>('w')
+  const [action, setAction] = useState<string | null>('open')
+  const [side, setSide] = useState<string | null>('buy')
   return (
-    <Row>
-      <ToggleGroup value={timeframe} onValueChange={setTimeframe} aria-label="周期（设置页样式）">
-        {TIMEFRAMES.map(([id, text]) => (
-          <ToggleGroupItem key={id} value={id}>
-            {text}
+    <>
+      <Row>
+        <ToggleGroup value={timeframe} onValueChange={setTimeframe} aria-label="周期（设置页样式）">
+          {TIMEFRAMES.map(([id, text]) => (
+            <ToggleGroupItem key={id} value={id}>
+              {text}
+            </ToggleGroupItem>
+          ))}
+          <ToggleGroupItem value="off" disabled>
+            禁用
           </ToggleGroupItem>
-        ))}
-        <ToggleGroupItem value="off" disabled>
-          禁用
-        </ToggleGroupItem>
-      </ToggleGroup>
-      <ToggleGroup size="sm" value={toolbar} onValueChange={setToolbar} aria-label="周期（工具条样式）">
-        {TIMEFRAMES.map(([id, text]) => (
-          <ToggleGroupItem key={id} value={id}>
-            {text}
-          </ToggleGroupItem>
-        ))}
-      </ToggleGroup>
-    </Row>
+        </ToggleGroup>
+        <ToggleGroup size="sm" value={toolbar} onValueChange={setToolbar} aria-label="周期（工具条样式）">
+          {TIMEFRAMES.map(([id, text]) => (
+            <ToggleGroupItem key={id} value={id}>
+              {text}
+            </ToggleGroupItem>
+          ))}
+        </ToggleGroup>
+      </Row>
+      <Row name="fullWidth">
+        <div data-gallery-full style={{ width: 320 }}>
+          <ToggleGroup fullWidth value={action} onValueChange={setAction} aria-label="开仓或平仓（整宽）">
+            <ToggleGroupItem value="open">开仓</ToggleGroupItem>
+            <ToggleGroupItem value="close">平仓</ToggleGroupItem>
+          </ToggleGroup>
+        </div>
+      </Row>
+      <Row name="split + tone">
+        <div data-gallery-split style={{ width: 320 }}>
+          <ToggleGroup split fullWidth value={side} onValueChange={setSide} aria-label="买卖方向">
+            <ToggleGroupItem value="buy" tone="up">
+              买入
+            </ToggleGroupItem>
+            <ToggleGroupItem value="sell" tone="down">
+              卖出
+            </ToggleGroupItem>
+          </ToggleGroup>
+        </div>
+      </Row>
+    </>
   )
 }
 

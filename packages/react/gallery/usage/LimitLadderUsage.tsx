@@ -133,6 +133,7 @@ export function LimitLadderUsage() {
           <LimitLadder
             levels={LADDER_LEVELS}
             labels={LADDER_LABELS}
+            locale="zh-CN"
             selected={selected}
             onSelect={(item) => setSelected(item.code)}
           />
