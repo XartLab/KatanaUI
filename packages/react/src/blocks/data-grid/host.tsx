@@ -68,6 +68,11 @@ export type DataGridLabels = {
     /** 拖到一半按 Esc。 */
     cancelled?: string
   }
+  /** 分节标题行上收起 / 展开钮的读屏名（#87）；可省，省略用英文默认。 */
+  sections?: {
+    collapse?: string
+    expand?: string
+  }
   /** 列头右键菜单的项（#27）。 */
   columnMenu: {
     sortAsc: string
@@ -129,9 +134,13 @@ export const DataGridHostProvider = Context.Provider
 export const useDataGridHost = (): DataGridHost | undefined => useContext(Context)
 
 /** 没有宿主文案时的英文（表头提示这类不能空）。 */
-export const DEFAULT_LABELS: Omit<DataGridLabels, 'copy' | 'save' | 'resetColumns' | 'columnMenu' | 'rowOrder'> & {
+export const DEFAULT_LABELS: Omit<
+  DataGridLabels,
+  'copy' | 'save' | 'resetColumns' | 'columnMenu' | 'rowOrder' | 'sections'
+> & {
   columnMenu: Required<DataGridLabels['columnMenu']>
   rowOrder: Required<NonNullable<DataGridLabels['rowOrder']>>
+  sections: Required<NonNullable<DataGridLabels['sections']>>
 } = {
   gridLabel: (label) => label,
   menuLabel: (label) => `${label} menu`,
@@ -152,6 +161,7 @@ export const DEFAULT_LABELS: Omit<DataGridLabels, 'copy' | 'save' | 'resetColumn
       `${count > 1 ? `${count} rows moved` : 'Moved'} to position ${position} of ${total}`,
     cancelled: 'Move cancelled',
   },
+  sections: { collapse: 'Collapse section', expand: 'Expand section' },
   columnMenu: {
     sortAsc: 'Sort ascending',
     sortDesc: 'Sort descending',
@@ -175,6 +185,7 @@ export function resolveLabels(host: DataGridHost | undefined) {
     ...given,
     columnMenu: { ...DEFAULT_LABELS.columnMenu, ...given?.columnMenu },
     rowOrder: { ...DEFAULT_LABELS.rowOrder, ...given?.rowOrder },
+    sections: { ...DEFAULT_LABELS.sections, ...given?.sections },
   }
 }
 

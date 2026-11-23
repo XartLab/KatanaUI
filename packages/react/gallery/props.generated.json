@@ -5114,6 +5114,12 @@
           "description": ""
         },
         {
+          "name": "onCopyImage",
+          "type": "(chart: HTMLElement) => void",
+          "required": false,
+          "description": "Copy-image handler (camera button; also give actionLabels.copyImage); receives this chart's figure for copyImage."
+        },
+        {
           "name": "values",
           "type": "readonly number[]",
           "required": true,
@@ -5247,6 +5253,12 @@
           "type": "() => void",
           "required": false,
           "description": ""
+        },
+        {
+          "name": "onCopyImage",
+          "type": "(chart: HTMLElement) => void",
+          "required": false,
+          "description": "Copy-image handler (camera button; also give actionLabels.copyImage); receives this chart's figure for copyImage."
         },
         {
           "name": "values",
@@ -8701,6 +8713,12 @@
           "description": ""
         },
         {
+          "name": "onCopyImage",
+          "type": "(chart: HTMLElement) => void",
+          "required": false,
+          "description": "Copy-image handler (camera button; also give actionLabels.copyImage); receives this chart's figure for copyImage."
+        },
+        {
           "name": "series",
           "type": "readonly ScatterSeries[]",
           "required": true,
@@ -8797,6 +8815,12 @@
           "type": "() => void",
           "required": false,
           "description": ""
+        },
+        {
+          "name": "onCopyImage",
+          "type": "(chart: HTMLElement) => void",
+          "required": false,
+          "description": "Copy-image handler (camera button; also give actionLabels.copyImage); receives this chart's figure for copyImage."
         },
         {
           "name": "series",
@@ -9141,6 +9165,12 @@
           "type": "boolean",
           "required": false,
           "description": "剪贴板拿不到时不下载，直接返回 failed。默认 false（退回下载）。"
+        },
+        {
+          "name": "embedFonts",
+          "type": "boolean",
+          "required": false,
+          "description": "把图里用到的网页字体内嵌进图片（不嵌就退回系统字体）。默认 true。"
         }
       ]
     },
@@ -10163,6 +10193,42 @@
           "description": "Section header rows (watchlist sections): return the heading for a row that is a section header, null / undefined for a normal row."
         },
         {
+          "name": "collapsedSections",
+          "type": "ReadonlySet<string>",
+          "required": false,
+          "description": "Collapsed section ids (controlled); a collapsed section shows only its header row."
+        },
+        {
+          "name": "defaultCollapsedSections",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Uncontrolled: section ids collapsed at first."
+        },
+        {
+          "name": "onSectionCollapsedChange",
+          "type": "(id: string, collapsed: boolean) => void",
+          "required": false,
+          "description": "Called when a section is collapsed or expanded (the triangle, or ArrowLeft / ArrowRight / Enter on its header row)."
+        },
+        {
+          "name": "sectionSummary",
+          "type": "(rows: readonly Row[], section: Row) => ReactNode",
+          "required": false,
+          "description": "Summary at the right end of a section header (e.g."
+        },
+        {
+          "name": "sectionAggregates",
+          "type": "GridSummary<Row>['columns']",
+          "required": false,
+          "description": "Per-section aggregates in each section header row, under their columns (same aggregates as summary: sum, avg, min, max, median, count or a function); the first visible column keeps the heading."
+        },
+        {
+          "name": "onCursorChange",
+          "type": "(id: string | null) => void",
+          "required": false,
+          "description": "Called when the keyboard cursor moves to another row (click, arrow keys) or leaves the rows; lets host hotkeys act on the current row (Alt+Enter flags it)."
+        },
+        {
           "name": "classNames",
           "type": "Partial<Record<GridSlot, string>>",
           "required": false,
@@ -10305,6 +10371,12 @@
           "type": "{ moveUp?: string moveDown?: string moveTop?: string moveBottom?: string /** 按列排序时为什么不能挪（Alt+↑/↓ 读出、菜单项的提示）。 */ sorted?: string /** 挪完读出新位置。 */ moved?: (info: { count: number; position: number; total: number }) => string /** 拖到一半按 Esc。 */ cancelled?: string }",
           "required": false,
           "description": "挪行（#77 G7）：右键菜单的四项与读屏播报；可省，省略用英文默认。"
+        },
+        {
+          "name": "sections",
+          "type": "{ collapse?: string expand?: string }",
+          "required": false,
+          "description": "分节标题行上收起 / 展开钮的读屏名（#87）；可省，省略用英文默认。"
         },
         {
           "name": "columnMenu",
@@ -10637,6 +10709,42 @@
           "description": "Section header rows (watchlist sections): return the heading for a row that is a section header, null / undefined for a normal row."
         },
         {
+          "name": "collapsedSections",
+          "type": "ReadonlySet<string>",
+          "required": false,
+          "description": "Collapsed section ids (controlled); a collapsed section shows only its header row."
+        },
+        {
+          "name": "defaultCollapsedSections",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Uncontrolled: section ids collapsed at first."
+        },
+        {
+          "name": "onSectionCollapsedChange",
+          "type": "(id: string, collapsed: boolean) => void",
+          "required": false,
+          "description": "Called when a section is collapsed or expanded (the triangle, or ArrowLeft / ArrowRight / Enter on its header row)."
+        },
+        {
+          "name": "sectionSummary",
+          "type": "(rows: readonly Row[], section: Row) => ReactNode",
+          "required": false,
+          "description": "Summary at the right end of a section header (e.g."
+        },
+        {
+          "name": "sectionAggregates",
+          "type": "GridSummary<Row>['columns']",
+          "required": false,
+          "description": "Per-section aggregates in each section header row, under their columns (same aggregates as summary: sum, avg, min, max, median, count or a function); the first visible column keeps the heading."
+        },
+        {
+          "name": "onCursorChange",
+          "type": "(id: string | null) => void",
+          "required": false,
+          "description": "Called when the keyboard cursor moves to another row (click, arrow keys) or leaves the rows; lets host hotkeys act on the current row (Alt+Enter flags it)."
+        },
+        {
           "name": "classNames",
           "type": "Partial<Record<GridSlot, string>>",
           "required": false,
@@ -10731,6 +10839,12 @@
           "type": "{ moveUp?: string moveDown?: string moveTop?: string moveBottom?: string /** 按列排序时为什么不能挪（Alt+↑/↓ 读出、菜单项的提示）。 */ sorted?: string /** 挪完读出新位置。 */ moved?: (info: { count: number; position: number; total: number }) => string /** 拖到一半按 Esc。 */ cancelled?: string }",
           "required": false,
           "description": "挪行（#77 G7）：右键菜单的四项与读屏播报；可省，省略用英文默认。"
+        },
+        {
+          "name": "sections",
+          "type": "{ collapse?: string expand?: string }",
+          "required": false,
+          "description": "分节标题行上收起 / 展开钮的读屏名（#87）；可省，省略用英文默认。"
         },
         {
           "name": "columnMenu",
@@ -18013,6 +18127,12 @@
           "description": ""
         },
         {
+          "name": "onCopyImage",
+          "type": "(chart: HTMLElement) => void",
+          "required": false,
+          "description": "Copy-image handler (camera button; also give actionLabels.copyImage); receives this chart's figure for copyImage."
+        },
+        {
           "name": "nodes",
           "type": "readonly FlowNode[]",
           "required": true,
@@ -18194,6 +18314,12 @@
           "type": "() => void",
           "required": false,
           "description": ""
+        },
+        {
+          "name": "onCopyImage",
+          "type": "(chart: HTMLElement) => void",
+          "required": false,
+          "description": "Copy-image handler (camera button; also give actionLabels.copyImage); receives this chart's figure for copyImage."
         },
         {
           "name": "nodes",
@@ -20923,6 +21049,12 @@
           "description": ""
         },
         {
+          "name": "onCopyImage",
+          "type": "(chart: HTMLElement) => void",
+          "required": false,
+          "description": "Copy-image handler (camera button; also give actionLabels.copyImage); receives this chart's figure for copyImage."
+        },
+        {
           "name": "tableXHead",
           "type": "string",
           "required": true,
@@ -21020,6 +21152,12 @@
           "type": "() => void",
           "required": false,
           "description": ""
+        },
+        {
+          "name": "onCopyImage",
+          "type": "(chart: HTMLElement) => void",
+          "required": false,
+          "description": "Copy-image handler (camera button; also give actionLabels.copyImage); receives this chart's figure for copyImage."
         },
         {
           "name": "tableXHead",
@@ -23075,6 +23213,11 @@
       "source": "src/cn/badge-model.ts",
       "props": []
     },
+    "LINK_FIELDS": {
+      "kind": "value",
+      "source": "src/lib/link-group.tsx",
+      "props": []
+    },
     "LINK_GROUPS": {
       "kind": "value",
       "source": "src/katana/led.tsx",
@@ -24062,10 +24205,93 @@
         }
       ]
     },
+    "LinkField": {
+      "kind": "type",
+      "source": "src/lib/link-group.tsx",
+      "props": []
+    },
     "LinkGroup": {
       "kind": "type",
       "source": "src/katana/led.tsx",
       "props": []
+    },
+    "LinkGroupProvider": {
+      "kind": "component",
+      "source": "src/lib/link-group.tsx",
+      "props": [
+        {
+          "name": "hub",
+          "type": "LinkHub",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "children",
+          "type": "ReactNode",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "LinkGroupState": {
+      "kind": "type",
+      "source": "src/lib/link-group.tsx",
+      "props": [
+        {
+          "name": "symbol",
+          "type": "string",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "interval",
+          "type": "string",
+          "required": false,
+          "description": "周期（调用方的写法：1、5、60、1D……）。"
+        },
+        {
+          "name": "crosshairTime",
+          "type": "number | null",
+          "required": false,
+          "description": "十字线所在的时刻（毫秒）；null 是指针不在任何一张图上。"
+        },
+        {
+          "name": "range",
+          "type": "{ from: number; to: number } | null",
+          "required": false,
+          "description": "可见的时间区间（毫秒）。"
+        }
+      ]
+    },
+    "LinkHub": {
+      "kind": "type",
+      "source": "src/lib/link-group.tsx",
+      "props": [
+        {
+          "name": "get",
+          "type": "(group: string) => LinkGroupState",
+          "required": true,
+          "description": "一组现在的状态（没人设过是空对象）。"
+        },
+        {
+          "name": "set",
+          "type": "(group: string, patch: Partial<LinkGroupState>) => void",
+          "required": true,
+          "description": "改一组的几个字段；值没变的字段不算改，什么都没变不通知。"
+        },
+        {
+          "name": "select",
+          "type": "(group: string, fields: readonly LinkField[]) => LinkGroupState",
+          "required": true,
+          "description": "只取几个字段：这几个字段没变时返回同一个对象（给 useSyncExternalStore）。"
+        },
+        {
+          "name": "subscribe",
+          "type": "(group: string, listener: (changed: readonly LinkField[]) => void) => () => void",
+          "required": true,
+          "description": "订阅一组；回调拿到这次改了哪些字段。"
+        }
+      ]
     },
     "LinkProps": {
       "kind": "type",
@@ -25099,6 +25325,12 @@
           "description": ""
         },
         {
+          "name": "onCopyImage",
+          "type": "(chart: HTMLElement) => void",
+          "required": false,
+          "description": "Copy-image handler (camera button; also give actionLabels.copyImage); receives this chart's figure for copyImage."
+        },
+        {
           "name": "trades",
           "type": "readonly ExcursionTrade[]",
           "required": true,
@@ -25277,6 +25509,12 @@
           "type": "() => void",
           "required": false,
           "description": ""
+        },
+        {
+          "name": "onCopyImage",
+          "type": "(chart: HTMLElement) => void",
+          "required": false,
+          "description": "Copy-image handler (camera button; also give actionLabels.copyImage); receives this chart's figure for copyImage."
         },
         {
           "name": "trades",
@@ -25768,6 +26006,12 @@
           "description": "工具条最右的「在选股器打开」按钮；调用方决定怎么打开。"
         },
         {
+          "name": "onCopyImage",
+          "type": "(chart: HTMLElement) => void",
+          "required": false,
+          "description": "Copy-image handler (camera button in the toolbar; also give labels.copyImage); receives the heatmap's figure for copyImage."
+        },
+        {
           "name": "className",
           "type": "string",
           "required": false,
@@ -25874,6 +26118,12 @@
           "type": "string",
           "required": false,
           "description": "全屏按钮的读屏名与提示（容器 requestFullscreen，TradingView 热图有全屏）；不传就没有这个按钮。"
+        },
+        {
+          "name": "copyImage",
+          "type": "string",
+          "required": false,
+          "description": "复制图按钮的读屏名与提示（相机钮，#87；照 TradingView 热图的相机按钮「复制图」）；连同 onCopyImage 都给了才有这个按钮。"
         },
         {
           "name": "dataset",
@@ -25994,6 +26244,12 @@
           "type": "() => void",
           "required": false,
           "description": "工具条最右的「在选股器打开」按钮；调用方决定怎么打开。"
+        },
+        {
+          "name": "onCopyImage",
+          "type": "(chart: HTMLElement) => void",
+          "required": false,
+          "description": "Copy-image handler (camera button in the toolbar; also give labels.copyImage); receives the heatmap's figure for copyImage."
         },
         {
           "name": "className",
@@ -33166,6 +33422,12 @@
           "description": ""
         },
         {
+          "name": "onCopyImage",
+          "type": "(chart: HTMLElement) => void",
+          "required": false,
+          "description": "Copy-image handler (camera button; also give actionLabels.copyImage); receives this chart's figure for copyImage."
+        },
+        {
           "name": "points",
           "type": "readonly ParamPoint[]",
           "required": true,
@@ -33313,6 +33575,12 @@
           "type": "() => void",
           "required": false,
           "description": ""
+        },
+        {
+          "name": "onCopyImage",
+          "type": "(chart: HTMLElement) => void",
+          "required": false,
+          "description": "Copy-image handler (camera button; also give actionLabels.copyImage); receives this chart's figure for copyImage."
         },
         {
           "name": "points",
@@ -33722,6 +33990,24 @@
           "type": "string",
           "required": true,
           "description": "没有数据时写什么。"
+        }
+      ]
+    },
+    "ParsedSymbolList": {
+      "kind": "type",
+      "source": "src/quotes/symbol-list.ts",
+      "props": [
+        {
+          "name": "entries",
+          "type": "SymbolListEntry[]",
+          "required": true,
+          "description": "认出来的项，按文件里的先后（同一个品种第二次出现不再收）。"
+        },
+        {
+          "name": "unknown",
+          "type": "string[]",
+          "required": true,
+          "description": "认不出的项（原样、去掉首尾空白），给调用方列出来。"
         }
       ]
     },
@@ -37310,6 +37596,12 @@
           "description": ""
         },
         {
+          "name": "onCopyImage",
+          "type": "(chart: HTMLElement) => void",
+          "required": false,
+          "description": "Copy-image handler (camera button; also give labels.actions.copyImage); receives this chart's figure for copyImage."
+        },
+        {
           "name": "className",
           "type": "string",
           "required": false,
@@ -37458,6 +37750,12 @@
           "type": "() => void",
           "required": false,
           "description": ""
+        },
+        {
+          "name": "onCopyImage",
+          "type": "(chart: HTMLElement) => void",
+          "required": false,
+          "description": "Copy-image handler (camera button; also give labels.actions.copyImage); receives this chart's figure for copyImage."
         },
         {
           "name": "className",
@@ -41145,6 +41443,12 @@
           "description": ""
         },
         {
+          "name": "onCopyImage",
+          "type": "(chart: HTMLElement) => void",
+          "required": false,
+          "description": "Copy-image handler (camera button; also give actionLabels.copyImage); receives this chart's figure for copyImage."
+        },
+        {
           "name": "groups",
           "type": "readonly RidgeGroup[]",
           "required": true,
@@ -41254,6 +41558,12 @@
           "type": "() => void",
           "required": false,
           "description": ""
+        },
+        {
+          "name": "onCopyImage",
+          "type": "(chart: HTMLElement) => void",
+          "required": false,
+          "description": "Copy-image handler (camera button; also give actionLabels.copyImage); receives this chart's figure for copyImage."
         },
         {
           "name": "groups",
@@ -44749,6 +45059,13 @@
           "description": "Scope order of the sections; scopes not listed follow in first-registered order."
         },
         {
+          "name": "defaultOpenScopes",
+          "type": "readonly string[]",
+          "required": false,
+          "default": "[]",
+          "description": "Sections open at first; the rest start collapsed (as in TradingView)."
+        },
+        {
           "name": "registry",
           "type": "HotkeyRegistry",
           "required": false,
@@ -44833,6 +45150,12 @@
           "description": "Scope order of the sections; scopes not listed follow in first-registered order."
         },
         {
+          "name": "defaultOpenScopes",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Sections open at first; the rest start collapsed (as in TradingView)."
+        },
+        {
           "name": "registry",
           "type": "HotkeyRegistry",
           "required": false,
@@ -44904,6 +45227,13 @@
           "required": false,
           "default": "labels?.empty",
           "description": ""
+        },
+        {
+          "name": "searchHotkey",
+          "type": "string | null",
+          "required": false,
+          "default": "'Mod+K'",
+          "description": "Shortcut that focuses the search box, registered with useHotkeys (Mod is ⌘ on Mac, Ctrl elsewhere); null for none."
         },
         {
           "name": "aria-label",
@@ -45048,6 +45378,12 @@
           "type": "string",
           "required": false,
           "description": ""
+        },
+        {
+          "name": "searchHotkey",
+          "type": "string | null",
+          "required": false,
+          "description": "Shortcut that focuses the search box, registered with useHotkeys (Mod is ⌘ on Mac, Ctrl elsewhere); null for none."
         },
         {
           "name": "aria-label",
@@ -45420,6 +45756,12 @@
           "description": ""
         },
         {
+          "name": "onCopyImage",
+          "type": "(chart: HTMLElement) => void",
+          "required": false,
+          "description": "Copy-image handler (camera button; also give actionLabels.copyImage); receives this chart's figure for copyImage."
+        },
+        {
           "name": "items",
           "type": "readonly SlopeItem[]",
           "required": true,
@@ -45522,6 +45864,12 @@
           "type": "() => void",
           "required": false,
           "description": ""
+        },
+        {
+          "name": "onCopyImage",
+          "type": "(chart: HTMLElement) => void",
+          "required": false,
+          "description": "Copy-image handler (camera button; also give actionLabels.copyImage); receives this chart's figure for copyImage."
         },
         {
           "name": "items",
@@ -45733,6 +46081,12 @@
           "description": ""
         },
         {
+          "name": "onCopyImage",
+          "type": "(chart: HTMLElement) => void",
+          "required": false,
+          "description": "Copy-image handler (camera button; also give actionLabels.copyImage); receives this chart's figure for copyImage."
+        },
+        {
           "name": "tableXHead",
           "type": "string",
           "required": false,
@@ -45830,6 +46184,12 @@
           "type": "() => void",
           "required": false,
           "description": ""
+        },
+        {
+          "name": "onCopyImage",
+          "type": "(chart: HTMLElement) => void",
+          "required": false,
+          "description": "Copy-image handler (camera button; also give actionLabels.copyImage); receives this chart's figure for copyImage."
         },
         {
           "name": "tableXHead",
@@ -49100,6 +49460,12 @@
           "description": ""
         },
         {
+          "name": "onCopyImage",
+          "type": "(chart: HTMLElement) => void",
+          "required": false,
+          "description": "Copy-image handler (camera button; also give actionLabels.copyImage); receives this chart's figure for copyImage."
+        },
+        {
           "name": "nodes",
           "type": "readonly GalaxyNode[]",
           "required": true,
@@ -49238,6 +49604,12 @@
           "type": "() => void",
           "required": false,
           "description": ""
+        },
+        {
+          "name": "onCopyImage",
+          "type": "(chart: HTMLElement) => void",
+          "required": false,
+          "description": "Copy-image handler (camera button; also give actionLabels.copyImage); receives this chart's figure for copyImage."
         },
         {
           "name": "nodes",
@@ -49578,6 +49950,11 @@
           "description": "Text beside the light (\"Market open\"), written by the caller."
         }
       ]
+    },
+    "SymbolListEntry": {
+      "kind": "type",
+      "source": "src/quotes/symbol-list.ts",
+      "props": []
     },
     "SymbolMark": {
       "kind": "component",
@@ -55721,6 +56098,12 @@
           "description": ""
         },
         {
+          "name": "onCopyImage",
+          "type": "(chart: HTMLElement) => void",
+          "required": false,
+          "description": "Copy-image handler (camera button; also give actionLabels.copyImage); receives this chart's figure for copyImage."
+        },
+        {
           "name": "points",
           "type": "readonly UnderwaterPoint[]",
           "required": true,
@@ -55865,6 +56248,12 @@
           "description": ""
         },
         {
+          "name": "onCopyImage",
+          "type": "(chart: HTMLElement) => void",
+          "required": false,
+          "description": "Copy-image handler (camera button; also give actionLabels.copyImage); receives this chart's figure for copyImage."
+        },
+        {
           "name": "points",
           "type": "readonly UnderwaterPoint[]",
           "required": true,
@@ -55971,6 +56360,36 @@
           "type": "boolean",
           "required": false,
           "description": ""
+        }
+      ]
+    },
+    "UndoHotkeysOptions": {
+      "kind": "type",
+      "source": "src/patterns/use-undo-hotkeys.ts",
+      "props": [
+        {
+          "name": "labels",
+          "type": "{ undo: string; redo: string }",
+          "required": true,
+          "description": "Names in the shortcuts overview (written by the caller)."
+        },
+        {
+          "name": "scope",
+          "type": "string",
+          "required": false,
+          "description": "Scope of both bindings; defaults to global."
+        },
+        {
+          "name": "enabled",
+          "type": "boolean",
+          "required": false,
+          "description": "False turns both off (e.g."
+        },
+        {
+          "name": "id",
+          "type": "string",
+          "required": false,
+          "description": "Id prefix, so two stacks on one page do not replace each other; defaults to \"undo-stack\"."
         }
       ]
     },
@@ -56177,6 +56596,12 @@
           "description": ""
         },
         {
+          "name": "onCopyImage",
+          "type": "(chart: HTMLElement) => void",
+          "required": false,
+          "description": "Copy-image handler (camera button; also give actionLabels.copyImage); receives this chart's figure for copyImage."
+        },
+        {
           "name": "cells",
           "type": "readonly UptimeCell[]",
           "required": true,
@@ -56265,6 +56690,12 @@
           "type": "() => void",
           "required": false,
           "description": ""
+        },
+        {
+          "name": "onCopyImage",
+          "type": "(chart: HTMLElement) => void",
+          "required": false,
+          "description": "Copy-image handler (camera button; also give actionLabels.copyImage); receives this chart's figure for copyImage."
         },
         {
           "name": "cells",
@@ -56799,6 +57230,12 @@
           "description": ""
         },
         {
+          "name": "onCopyImage",
+          "type": "(chart: HTMLElement) => void",
+          "required": false,
+          "description": "Copy-image handler (camera button; also give actionLabels.copyImage); receives this chart's figure for copyImage."
+        },
+        {
           "name": "observations",
           "type": "readonly VintageObservation[]",
           "required": true,
@@ -56973,6 +57410,12 @@
           "type": "() => void",
           "required": false,
           "description": ""
+        },
+        {
+          "name": "onCopyImage",
+          "type": "(chart: HTMLElement) => void",
+          "required": false,
+          "description": "Copy-image handler (camera button; also give actionLabels.copyImage); receives this chart's figure for copyImage."
         },
         {
           "name": "observations",
@@ -59626,6 +60069,12 @@
           "type": "boolean",
           "required": false,
           "description": "剪贴板拿不到时不下载，直接返回 failed。默认 false（退回下载）。"
+        },
+        {
+          "name": "embedFonts",
+          "type": "boolean",
+          "required": false,
+          "description": "把图里用到的网页字体内嵌进图片（不嵌就退回系统字体）。默认 true。"
         }
       ]
     },
@@ -59697,6 +60146,11 @@
         }
       ]
     },
+    "createLinkHub": {
+      "kind": "function",
+      "source": "src/lib/link-group.tsx",
+      "props": []
+    },
     "createSeededRandom": {
       "kind": "function",
       "source": "src/motion/text/ransom-note.tsx",
@@ -59747,6 +60201,12 @@
           "type": "number",
           "required": false,
           "description": "像素倍数；默认 devicePixelRatio（至少 1，最多 3）。"
+        },
+        {
+          "name": "embedFonts",
+          "type": "boolean",
+          "required": false,
+          "description": "把图里用到的网页字体内嵌进图片（不嵌就退回系统字体）。默认 true。"
         }
       ]
     },
@@ -60146,6 +60606,11 @@
     "formatRemaining": {
       "kind": "function",
       "source": "src/patterns/refresh-control.tsx",
+      "props": []
+    },
+    "formatSymbolList": {
+      "kind": "function",
+      "source": "src/quotes/symbol-list.ts",
       "props": []
     },
     "formatVolume": {
@@ -60953,6 +61418,11 @@
     "parseClock": {
       "kind": "function",
       "source": "src/cn/session.ts",
+      "props": []
+    },
+    "parseSymbolList": {
+      "kind": "function",
+      "source": "src/quotes/symbol-list.ts",
       "props": []
     },
     "partLabelFor": {
@@ -62336,6 +62806,48 @@
         }
       ]
     },
+    "undoHotkeyBindings": {
+      "kind": "function",
+      "source": "src/patterns/use-undo-hotkeys.ts",
+      "props": [
+        {
+          "name": "undo",
+          "type": "() => void",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "redo",
+          "type": "() => void",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "labels",
+          "type": "{ undo: string; redo: string }",
+          "required": true,
+          "description": "Names in the shortcuts overview (written by the caller)."
+        },
+        {
+          "name": "scope",
+          "type": "string",
+          "required": false,
+          "description": "Scope of both bindings; defaults to global."
+        },
+        {
+          "name": "enabled",
+          "type": "boolean",
+          "required": false,
+          "description": "False turns both off (e.g."
+        },
+        {
+          "name": "id",
+          "type": "string",
+          "required": false,
+          "description": "Id prefix, so two stacks on one page do not replace each other; defaults to \"undo-stack\"."
+        }
+      ]
+    },
     "undoInit": {
       "kind": "function",
       "source": "src/lib/use-undo-stack.ts",
@@ -62593,6 +63105,29 @@
         }
       ]
     },
+    "useLinkGroup": {
+      "kind": "function",
+      "source": "src/lib/link-group.tsx",
+      "props": [
+        {
+          "name": "fields",
+          "type": "readonly LinkField[]",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "initial",
+          "type": "LinkGroupState",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "useLinkHub": {
+      "kind": "function",
+      "source": "src/lib/link-group.tsx",
+      "props": []
+    },
     "useMenuParts": {
       "kind": "function",
       "source": "src/primitives/menu-any.tsx",
@@ -62751,6 +63286,48 @@
           "type": "(key: string, event: KeyboardEvent) => boolean",
           "required": false,
           "description": "Extra filter after the built-in checks: return false to leave a key alone (digits that open an interval box, say)."
+        }
+      ]
+    },
+    "useUndoHotkeys": {
+      "kind": "function",
+      "source": "src/patterns/use-undo-hotkeys.ts",
+      "props": [
+        {
+          "name": "undo",
+          "type": "() => void",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "redo",
+          "type": "() => void",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "labels",
+          "type": "{ undo: string; redo: string }",
+          "required": true,
+          "description": "Names in the shortcuts overview (written by the caller)."
+        },
+        {
+          "name": "scope",
+          "type": "string",
+          "required": false,
+          "description": "Scope of both bindings; defaults to global."
+        },
+        {
+          "name": "enabled",
+          "type": "boolean",
+          "required": false,
+          "description": "False turns both off (e.g."
+        },
+        {
+          "name": "id",
+          "type": "string",
+          "required": false,
+          "description": "Id prefix, so two stacks on one page do not replace each other; defaults to \"undo-stack\"."
         }
       ]
     },

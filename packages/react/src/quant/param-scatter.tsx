@@ -75,6 +75,7 @@ export function ParamScatter({
   tableHead,
   onExport,
   onFullscreen,
+  onCopyImage,
   source,
 }: ParamScatterProps) {
   const [tableView, setTableView] = useState(false)
@@ -124,6 +125,7 @@ export function ParamScatter({
           onTableView={setTableView}
           onExport={onExport}
           onFullscreen={onFullscreen}
+          onCopyImage={onCopyImage}
         />
       </div>
       {tableView && (

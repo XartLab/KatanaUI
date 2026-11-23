@@ -18,6 +18,8 @@ export type ChartViewProps = {
   source?: ReactNode
   onExport?: () => void
   onFullscreen?: () => void
+  /** Copy-image handler (camera button; also give actionLabels.copyImage); receives this chart's figure for copyImage. */
+  onCopyImage?: (chart: HTMLElement) => void
 }
 
 /**

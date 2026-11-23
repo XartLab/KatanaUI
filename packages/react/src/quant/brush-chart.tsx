@@ -240,6 +240,7 @@ export function BrushChart({
   source,
   onExport,
   onFullscreen,
+  onCopyImage,
   className,
 }: BrushChartProps) {
   const count = values.length
@@ -271,6 +272,7 @@ export function BrushChart({
           onTableView={setTableView}
           onExport={onExport}
           onFullscreen={onFullscreen}
+          onCopyImage={onCopyImage}
         />
       </div>
       {tableView && (

@@ -74,6 +74,7 @@ export function SymbolGalaxy({
   tableHead,
   onExport,
   onFullscreen,
+  onCopyImage,
   source,
 }: SymbolGalaxyProps) {
   const [tableView, setTableView] = useState(false)
@@ -252,6 +253,7 @@ export function SymbolGalaxy({
           onTableView={setTableView}
           onExport={onExport}
           onFullscreen={onFullscreen}
+          onCopyImage={onCopyImage}
         />
       </div>
       {tableView && (

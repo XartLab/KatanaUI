@@ -893,6 +893,10 @@ export const PAGES: readonly DocPage[] = [
     composition: 'FlagMark（button | span）\n  FlagGlyph（svg 燕尾旗）\nFlagFilter（group）\n  按钮 × n（旗 + 个数）',
     keys: [
       ['Enter / Space', '在旗上：插上 / 拔掉（DataGrid 里旗不进 Tab 顺序，键盘走行菜单）'],
+      [
+        'Alt+Enter',
+        '（DataGrid 演示）给键盘所在的行插旗 / 拔旗：照 TradingView 自选表，调用方用 useHotkeys 登记、作用在 onCursorChange 给的行上',
+      ],
       ['Tab', '在过滤按钮间移动；Enter 切换过滤'],
     ],
   },
@@ -1004,7 +1008,10 @@ export const PAGES: readonly DocPage[] = [
     composition: 'HotkeysProvider（可省）\n  组件 × n（useHotkeys 登记）\n注册表（window keydown → 匹配 → handler）',
     keys: [
       ['Mod+/', '（演示）打开快捷键总览'],
-      ['Mod+Shift+P', '（演示）打开命令面板；文档站目录的搜索占着 Mod+K（连带 Mod+Shift+K）'],
+      [
+        'Mod+K',
+        '（演示）打开命令面板（照 TradingView）；演示的注册表挂在 document 上，先于文档站目录搜索（window 上的默认注册表）接到这一下',
+      ],
       ['Alt+R', '（演示）图表作用域：重置图表；在输入框里不触发'],
     ],
   },
@@ -1014,24 +1021,26 @@ export const PAGES: readonly DocPage[] = [
     cardHeight: 420,
     title: 'ShortcutSheet 快捷键总览',
     summary:
-      '按作用域分组列出注册表里现在的快捷键，可搜索，冲突标出来，可接 ShortcutRecorder 改键。照 TradingView 的 Keyboard shortcuts 面板（Ctrl/Cmd+/）。件只是内容，放进 Dialog 或侧栏由调用方定。',
+      '按作用域分组列出注册表里现在的快捷键，可搜索，冲突标出来，可接 ShortcutRecorder 改键。照 TradingView 的 Keyboard shortcuts 面板（Ctrl/Cmd+/）：分节默认收起，点节名展开；搜索时命中的节自动展开。件只是内容，放进 Dialog 或侧栏由调用方定。',
     exports: ['ShortcutSheet'],
     propParts: [
       {
         part: 'ShortcutSheet',
-        note: '读 useHotkeyEntries；文案（搜索、空态、或、冲突、作用域名、改键用的录键文案）全由调用方传。',
+        note: '读 useHotkeyEntries；文案（搜索、空态、或、冲突、作用域名、改键用的录键文案）全由调用方传。defaultOpenScopes 给一开始就展开的节，其余收起。',
       },
     ],
     states: [
-      '搜索：按名字、作用域、按键过滤；没有匹配显示空态。',
+      '收起（默认）：只有节名，三角朝右；点了展开，三角转下。',
+      '搜索：按名字、作用域、按键过滤，命中的节都展开（节名钮这时不可点），没命中的节不出；清空回到用户展开过的样子；没有匹配显示空态。',
       '冲突：名字下一行 warn 色小字。',
       '改键：每行是 ShortcutRecorder。',
     ],
     donts: ['不要自己另写一份快捷键清单：总览读注册表，跟实际生效的一致。'],
     composition:
-      'ShortcutSheet\n  搜索框\n  section × 作用域\n    h3\n    ul\n      li（名字 | Kbd 或 ShortcutRecorder）',
+      'ShortcutSheet\n  搜索框\n  section × 作用域\n    h3 > button（aria-expanded，展开 / 收起）\n    ul（展开时）\n      li（名字 | Kbd 或 ShortcutRecorder）',
     keys: [
-      ['打字', '在搜索框里过滤'],
+      ['打字', '在搜索框里过滤（命中的节自动展开）'],
+      ['Enter / Space', '在节名上：展开 / 收起这一节'],
       ['Tab', '（改键时）在各行的录键框之间移动'],
     ],
   },
@@ -2109,8 +2118,8 @@ export const PAGES: readonly DocPage[] = [
         note: '返回 { toast, report, dismiss, pause, resume }：report(结果或 Promise) 插一条新的（新 key，读屏会再读），默认 2400ms 后收；pause / resume 接到 CopyToast 的 onPause / onResume，指针或焦点在上面时不收。',
       },
       {
-        part: 'copyImage(node, { filename?, background?, scale?, noDownload? })',
-        note: '拍 node（ChartActions 交来的是图的 figure）：逐元素抄计算样式、canvas 换成图片，放进 SVG foreignObject 画到 canvas 上，转 PNG；data-copy-image="skip" 的元素（工具条）不进图。默认倍数 devicePixelRatio（1–3），底色取最近一个不透明的祖先背景。',
+        part: 'copyImage(node, { filename?, background?, scale?, noDownload?, embedFonts? })',
+        note: '拍 node（ChartActions 交来的是图的 figure）：逐元素抄计算样式、canvas 换成图片，放进 SVG foreignObject 画到 canvas 上，转 PNG；data-copy-image="skip" 的元素（工具条）不进图。默认倍数 devicePixelRatio（1–3），底色取最近一个不透明的祖先背景。图里用到的同源网页字体内嵌成 data URL（#87，embedFonts 默认 true），拍出来字形跟页面一致。',
       },
       {
         part: 'copyText(text) / canCopyImage() / elementToPng(node)',
@@ -4091,6 +4100,7 @@ export const PAGES: readonly DocPage[] = [
       '键盘所在行：焦点环；排序列：表头带升降箭头。',
       '只读（interactive=false）：table 语义，表头不是按钮。',
       '子行：有子行的行带 aria-expanded（true 摊开、false 收起）；没有子行的行没有这个属性，按 → 没反应。',
+      '分节（rowSection）：标题行跨满整行，左端三角收起 / 展开（collapsedSections 受控或 defaultCollapsedSections 不受控），写这一节的行数，sectionAggregates 按列写组内汇总（对齐到列下，聚合同表尾 summary），sectionSummary 是靠右的自由槽；表尾 summary 只算数据行；收起的节只留标题行，挪它时藏着的行跟着走。按列排序时标题行不参与排序，各节里的行在节内排（照 TradingView 自选表）。',
       'custom 列没有 text 时复制与导出是空字；有按钮的格子别指望整行点击。',
       '列优先级（standard 与 hero 分量，有表头）：可见列放不下容器时按 GridColumn.priority 从低到高收起（没写的按声明顺序，第一列 1、第二列 2……），至少留两列，固定在左边的列不收；表头右端出「+N 列」胶囊（文案 texts.moreColumns，默认英文 +N cols），点了切成横向滚动、显示全部列，胶囊变 texts.collapseColumns，再点收起。出胶囊时表头与数据行在右端让出它的宽度，不盖住最后一列（stretch 的表，保留的列撑满的是容器宽减胶囊宽）。状态只在组件里，不存；容器变宽放得下了胶囊就消失。只影响显示：复制与导出仍是全部可见列。compact 分量与不画表头的表不走这一套；collapseColumns={false} 关掉，一直横向滚动。',
     ],
@@ -4107,7 +4117,8 @@ export const PAGES: readonly DocPage[] = [
     keys: [
       ['↑ / ↓', '移一行；Home / End 到头尾'],
       ['Enter', '打开键盘所在的行（onOpen）'],
-      ['→ / ←', '展开 / 收起键盘所在行的子行（renderSubRow）'],
+      ['→ / ←', '展开 / 收起键盘所在行的子行（renderSubRow）；在分节标题行上展开 / 收起这一节'],
+      ['Enter（分节标题行）', '收起 / 展开这一节'],
       ['Shift / Ctrl 点击', '选一段 / 点选加减'],
       ['Esc', '清掉选择（右键菜单开着时归菜单）'],
       ['列头右键', '列头菜单：排序、固定、隐藏、左右移、重置列'],
@@ -4166,7 +4177,16 @@ export const PAGES: readonly DocPage[] = [
     title: 'useUndoStack 撤销与重做',
     summary:
       '通用的撤销 / 重做栈：存整份快照，值由调用方定。push 带 kind，同种操作在 800ms 内合并成一步（拖一次滑块只撤一次）；最多 100 步；可选绑定 Mod+Z 撤销、Mod+Shift+Z 与 Ctrl+Y 重做。用于列布局、行序、分组这类「拖错了」的恢复，不进存档。',
-    exports: ['useUndoStack', 'undoInit', 'undoPush', 'undoBack', 'undoForward', 'undoKeyOf'],
+    exports: [
+      'useUndoStack',
+      'undoInit',
+      'undoPush',
+      'undoBack',
+      'undoForward',
+      'undoKeyOf',
+      'useUndoHotkeys',
+      'undoHotkeyBindings',
+    ],
     propParts: [
       {
         part: 'useUndoStack(initial, { limit?, mergeMs?, hotkeys? })',
@@ -4180,6 +4200,10 @@ export const PAGES: readonly DocPage[] = [
         part: 'undoKeyOf(event, isMac)',
         note: '一次按键是 undo、redo 还是 null：Mac 上 ⌘Z / ⇧⌘Z，别处 Ctrl+Z / Ctrl+Shift+Z / Ctrl+Y；带 Alt 的不算。',
       },
+      {
+        part: 'useUndoHotkeys(stack, { labels, scope?, enabled?, id? })',
+        note: '用了 useHotkeys 注册表的面板用它（#87）：把同一套组合（Mod+Z；Mod+Shift+Z，非 Mac 加 Ctrl+Y）登记成两条，快捷键总览里列得出、能改键、一起查冲突；这时不开 useUndoStack 的 hotkeys。enabled 接面板的焦点，面板没焦点时键留给别处。undoHotkeyBindings(stack, options, platform) 是它的纯函数版。',
+      },
     ],
     states: [
       '没有可撤：canUndo=false，撤销钮 disabled。',
@@ -4189,7 +4213,7 @@ export const PAGES: readonly DocPage[] = [
     donts: [
       '不要把它存进 localStorage：历史只活在这一次打开里（存档用 usePersistedState 存当前值）。',
       '不要每次按键都 push 不带 kind：连续输入要给 kind 合并，否则撤一次只退一个字。',
-      '不要在两个地方同时绑 Mod+Z：用了 useHotkeys 注册表就关掉这里的 hotkeys。',
+      '不要在两个地方同时绑 Mod+Z：用了 useHotkeys 注册表就关掉这里的 hotkeys，改用 useUndoHotkeys。',
     ],
     composition: 'useUndoStack\n  { past[], present, future[] }\n  键盘：Mod+Z · Mod+Shift+Z · Ctrl+Y（可选）',
     keys: [
@@ -4197,6 +4221,38 @@ export const PAGES: readonly DocPage[] = [
       ['Mod+Shift+Z', '重做'],
       ['Ctrl+Y', '重做（非 Mac）'],
     ],
+  },
+  {
+    id: 'link-group',
+    group: 'blocks',
+    cardHeight: 260,
+    title: 'useLinkGroup 联动组',
+    summary:
+      '同一联动组的件共用品种、周期、十字线时刻、可见区间（#22 G8）：自选点一行，同组的图换品种；一张图上移动十字线，同组的图跟着画。照 TradingView 多图布局的同步（品种、周期、十字线、时间、日期区间）与自选联动。组 id 一般是面板头色点的 LinkGroup（A–D），null 不联动。纯 context，不带宿主、不存盘。',
+    exports: ['useLinkGroup', 'LinkGroupProvider', 'createLinkHub', 'useLinkHub', 'LINK_FIELDS'],
+    propParts: [
+      {
+        part: 'useLinkGroup(group, { fields?, initial? })',
+        note: '返回 [状态, 改]：状态是 { symbol?, interval?, crosshairTime?, range? }，改是合并几个字段。group 为 null 时不联动，状态只在这个件里（initial 起头）；联动时组里没设过的字段取 initial（件自己的默认品种、周期）。fields 只订阅这几个字段：十字线一直在变，只订阅 symbol 的自选不跟着重画。',
+      },
+      {
+        part: 'createLinkHub(initial?) / LinkGroupProvider / useLinkHub',
+        note: '联动表：get、set（值没变的字段不算改，什么都没变不通知；range 按 from / to 比）、select（订阅的字段没变时返回同一个对象）、subscribe（回调拿到改了哪些字段）。没有 Provider 时整个应用一张默认表；测试、多窗口、要隔开两套联动时自己建一张包上。',
+      },
+    ],
+    states: [
+      '联动：同组的件读写同一份状态，一边改另一边马上跟。',
+      '不联动（group 为 null）：件自己记，跟谁都不同步；面板头的色点画熄灭的环。',
+      '换组：读到新组的状态；新组没设过的字段用 initial。',
+    ],
+    donts: [
+      '不要把十字线时刻存进存档：它只活在指针移动的这一会儿（离开图写 null）。',
+      '不要让只关心品种的件订阅全部字段：十字线每帧都在变，会跟着重画。',
+      '不要拿它传下单参数：联动只管看什么，不管交易（下单走执行网关）。',
+    ],
+    composition:
+      'LinkGroupProvider（可省）\n  件 × n（useLinkGroup(组, 字段)）\n联动表：组 → { symbol, interval, crosshairTime, range }',
+    keys: [],
   },
   {
     id: 'empty-state',
@@ -4546,7 +4602,7 @@ export const PAGES: readonly DocPage[] = [
     cardHeight: 520,
     title: 'SideNav 侧栏导航',
     summary:
-      '分组的侧栏导航：组名小号大写；没选中的字淡，悬停变亮，当前项最亮。每组左边一条 1px 虚线从组顶走到当前项、用 6px 弯钩拐进去，悬停另一项时以淡色画一条到悬停项，切换时 200ms 滑过去。顶上过滤框（⌘K / Ctrl+K 聚焦，Enter 打开第一项，Esc 清空），底部淡出。照 rareui.com 组件站左栏（2026-11-17 实测），实现原创。件不管路由：链接给 href，当前项由调用方传。轨迹颜色走 --k-sidenav-trail，默认品牌橙。',
+      '分组的侧栏导航：组名小号大写；没选中的字淡，悬停变亮，当前项最亮。每组左边一条 1px 虚线从组顶走到当前项、用 6px 弯钩拐进去，悬停另一项时以淡色画一条到悬停项，切换时 200ms 滑过去。顶上过滤框（Mod+K 聚焦：经 useHotkeys 登记在快捷键注册表里，只认这一个组合、Ctrl+Shift+K 不拦，页上别处登记了 Mod+K 就让给它；searchHotkey 改键或给 null 关掉；Enter 打开第一项，Esc 清空），底部淡出。照 rareui.com 组件站左栏（2026-11-17 实测），实现原创。件不管路由：链接给 href，当前项由调用方传。轨迹颜色走 --k-sidenav-trail，默认品牌橙。',
     exports: ['SideNav'],
     props: [
       {
@@ -4576,7 +4632,7 @@ export const PAGES: readonly DocPage[] = [
     donts: ['不要一组放太多项：超过二十来项拆组', '不要把轨迹颜色设成跟正文一样亮：它是指引，不是内容'],
     composition: 'SideNav\n  头部（header）\n  过滤框\n  分组 × n（组名、轨迹、链接）\n  底部（footer）',
     keys: [
-      ['⌘K / Ctrl+K', '聚焦过滤框'],
+      ['Mod+K（Mac 是 ⌘K，别处 Ctrl+K）', '聚焦过滤框（经快捷键注册表；searchHotkey 可改）'],
       ['Enter', '在过滤框里：打开第一项'],
       ['Esc', '在过滤框里：清空'],
     ],
@@ -6245,7 +6301,16 @@ export const PAGES: readonly DocPage[] = [
     title: 'Watchlist 自选列表',
     summary:
       '照 TradingView 右侧自选栏（2026-11-15 实测）：列 Symbol / Last / Chg / Chg%，行首小旗标与字母圆徽标；最新价变动时只有变了的尾数闪涨跌色、约 1 秒落回；点列头排序（升序、降序、回原顺序）。价格怎么写由 formatPrice 定，数与文字由调用方传。',
-    exports: ['Watchlist', 'changedTail', 'nextSort', 'sortRows', 'plainPrice', 'rowTone'],
+    exports: [
+      'Watchlist',
+      'changedTail',
+      'nextSort',
+      'sortRows',
+      'plainPrice',
+      'rowTone',
+      'parseSymbolList',
+      'formatSymbolList',
+    ],
     props: [
       {
         part: 'Watchlist',
@@ -6283,6 +6348,11 @@ export const PAGES: readonly DocPage[] = [
       },
       { part: 'changedTail(prev, next)', note: '新旧价格文字从哪一位开始不同：返回 { head, tail }。', rows: [] },
       { part: 'nextSort / sortRows', note: '列头点击的循环与排序，纯函数。', rows: [] },
+      {
+        part: 'parseSymbolList(text) / formatSymbolList(entries)',
+        note: '自选表的 .txt 导入导出（#22，照 TradingView 自选「上传 .txt：带交易所前缀、逗号分隔」，帮助中心 2026-11-23 读）：项是 EXCHANGE:SYMBOL（转大写，重复的只收一次），###节名 是分节（TradingView 导出文件的写法，页面没写，待核对）；逗号与换行都能分。认不出的项（没前缀、有空格）原样进 unknown，由调用方列给用户，不静默丢。',
+        rows: [],
+      },
     ],
     states: [
       '最新价变大：变了的尾数起闪涨色；变小闪跌色；约 1 秒落回原色。',
