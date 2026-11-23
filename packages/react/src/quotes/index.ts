@@ -60,6 +60,15 @@ export {
 } from './range-bar.tsx'
 export { RatingGauge, type RatingGaugeProps } from './rating-gauge.tsx'
 export { ratingAngle, ratingZone } from './rating-gauge-model.ts'
+export {
+  RatingPanel,
+  type RatingPanelGauge,
+  type RatingPanelLabels,
+  type RatingPanelProps,
+  type RatingPanelTimeframe,
+  type RatingPanelVerdict,
+} from './rating-panel.tsx'
+export { SymbolNote, type SymbolNoteLabels, type SymbolNoteProps } from './symbol-note.tsx'
 export { quoteTone, type QuoteTone } from './quote-tone.ts'
 export { ChangeText } from './change-text.tsx'
 export { PnlText } from './pnl-text.tsx'

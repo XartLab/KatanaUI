@@ -472,6 +472,15 @@ export {
 } from './quotes/range-bar.tsx'
 export { RatingGauge, type RatingGaugeProps } from './quotes/rating-gauge.tsx'
 export { ratingAngle, ratingZone } from './quotes/rating-gauge-model.ts'
+export {
+  RatingPanel,
+  type RatingPanelGauge,
+  type RatingPanelLabels,
+  type RatingPanelProps,
+  type RatingPanelTimeframe,
+  type RatingPanelVerdict,
+} from './quotes/rating-panel.tsx'
+export { SymbolNote, type SymbolNoteLabels, type SymbolNoteProps } from './quotes/symbol-note.tsx'
 export { quoteTone, type QuoteTone } from './quotes/quote-tone.ts'
 
 // 分布与关系类的件（#1918）：功能参照 Arc（uiarc.dev，2026-11-14 读），实现原创。

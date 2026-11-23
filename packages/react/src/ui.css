@@ -58,6 +58,8 @@
 @import './theme/quote-card.css';
 @import './theme/range-bar.css';
 @import './theme/rating-gauge.css';
+@import './theme/rating-panel.css';
+@import './theme/symbol-note.css';
 @import './theme/quote-table.css';
 @import './theme/fonts.css';
 @import './theme/rendering.css';
