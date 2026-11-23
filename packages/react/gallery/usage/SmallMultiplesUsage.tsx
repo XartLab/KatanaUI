@@ -15,6 +15,9 @@ export const SMALL_MULTIPLES_DEMO: readonly SmallMultiple[] = [
   { key: 'FFF', label: 'FFF', values: sm((i) => 120 - 15 * Math.sin(i / 8)) },
 ]
 
+/** 图右上三件的文字：单独用时要给（表格视图是无障碍兜底，dataviz §4）。 */
+const ACTIONS = { group: '图工具', table: '表格视图', exportCsv: '导出 CSV', fullscreen: '全屏' }
+
 export function SmallMultiplesUsage() {
   const [picked, setPicked] = useState<string | null>(null)
   return (
@@ -26,6 +29,9 @@ export function SmallMultiplesUsage() {
           formatValue={(v) => v.toFixed(2)}
           formatX={(i) => `第 ${i + 1} 点`}
           onSelect={setPicked}
+          actionLabels={ACTIONS}
+          tableLabel="六个品种的走势（表格视图）"
+          tableXHead="时点"
         />
       </div>
       <p className="gal-note" data-gallery-multiples-picked>
@@ -37,6 +43,9 @@ export function SmallMultiplesUsage() {
           label="示例：六个品种的走势（共用范围）"
           formatValue={(v) => v.toFixed(2)}
           yScale="shared"
+          actionLabels={ACTIONS}
+          tableLabel="六个品种的走势（共用范围，表格视图）"
+          tableXHead="序号"
         />
       </div>
     </>
