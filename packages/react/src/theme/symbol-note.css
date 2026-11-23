@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: MIT */
 /* 品种备注 SymbolNote（#150）：行内 18px 的便签图标，浮层是原生 popover（顶层，不被表格的滚动与 overflow 裁掉），外观用 k-mat-overlay 材质。
-   位置用 CSS 锚点定位：贴在图标下方、左边对齐，放不下就翻到上方或左侧；不支持锚点定位时件按图标位置写一次 top / left。
+   位置用 CSS 锚点定位：贴在图标右侧、顶边对齐（图标排成一列时不盖住下面几行的图标），放不下就翻到左侧或往上；
+   不支持锚点定位时件按图标位置写一次 top / left。
    进出场只淡入淡出（--dur-snappy），不做位移；减少动态时也只是淡入淡出。只读 characteristics。 */
 .k-snote {
   display: inline-flex;
@@ -72,11 +73,11 @@
 @supports (position-area: block-end) {
   .k-snote-pop {
     inset: auto;
-    margin: 4px 0;
-    position-area: block-end span-inline-end;
+    margin: 0 6px;
+    position-area: inline-end span-block-end;
     position-try-fallbacks:
-      flip-block,
       flip-inline,
+      flip-block,
       flip-block flip-inline;
   }
 }

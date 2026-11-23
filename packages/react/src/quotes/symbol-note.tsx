@@ -52,7 +52,7 @@ export type SymbolNoteProps = {
 
 type Mode = 'closed' | 'preview' | 'pinned'
 
-/** 悬停多久出预览、移开多久收起（ms）：指针从图标挪进浮层要跨 4px 的缝，收起留 150ms。 */
+/** 悬停多久出预览、移开多久收起（ms）：指针从图标挪进浮层要跨 6px 的缝，收起留 150ms。 */
 export const SYMBOL_NOTE_OPEN_DELAY = 200
 export const SYMBOL_NOTE_CLOSE_DELAY = 150
 
@@ -82,6 +82,8 @@ export function SymbolNote({ value, onValueChange, labels, title, maxLength, cla
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined)
   // 状态落定后焦点去哪：编辑框、「编辑」钮，或回到图标（关上时焦点在浮层里才回）。
   const focusNext = useRef<'field' | 'edit' | 'trigger' | null>(null)
+  // 关上后把焦点还给图标时不算「键盘聚焦」，不再开预览。
+  const returning = useRef(false)
   const id = useId()
   const popId = `${id}-pop`
   const anchor = `--k-snote-${id.replace(/[^\w-]/g, '')}`
@@ -111,7 +113,7 @@ export function SymbolNote({ value, onValueChange, labels, title, maxLength, cla
     focusNext.current = 'edit'
   }
 
-  // 浮层开合跟着 mode 走；不支持锚点定位时按图标的位置摆一次（贴在图标下方，不出视口）。
+  // 浮层开合跟着 mode 走；不支持锚点定位时按图标的位置摆一次（贴在图标右侧、顶边对齐，不出视口）。
   useLayoutEffect(() => {
     const pop = popRef.current
     const trigger = triggerRef.current
@@ -128,16 +130,19 @@ export function SymbolNote({ value, onValueChange, labels, title, maxLength, cla
     Object.assign(pop.style, {
       inset: 'auto',
       margin: '0',
-      top: `${Math.max(8, Math.min(box.bottom + 4, view.clientHeight - pop.offsetHeight - 8))}px`,
-      left: `${Math.max(8, Math.min(box.left, view.clientWidth - pop.offsetWidth - 8))}px`,
+      top: `${Math.max(8, Math.min(box.top, view.clientHeight - pop.offsetHeight - 8))}px`,
+      left: `${Math.max(8, Math.min(box.right + 6, view.clientWidth - pop.offsetWidth - 8))}px`,
     })
   }, [mode, editing])
 
   useEffect(() => {
     const target = focusNext.current
     focusNext.current = null
-    if (target === 'trigger') triggerRef.current?.focus()
-    else if (target === 'edit') editRef.current?.focus()
+    if (target === 'trigger') {
+      returning.current = true
+      triggerRef.current?.focus()
+      returning.current = false
+    } else if (target === 'edit') editRef.current?.focus()
     else if (target === 'field' && fieldRef.current) {
       const field = fieldRef.current
       field.focus()
@@ -224,7 +229,8 @@ export function SymbolNote({ value, onValueChange, labels, title, maxLength, cla
           if (!hasNote) startEdit()
         }}
         onFocus={(event) => {
-          if (mode === 'closed' && hasNote && event.currentTarget.matches(':focus-visible')) setMode('preview')
+          if (returning.current || mode !== 'closed' || !hasNote) return
+          if (event.currentTarget.matches(':focus-visible')) setMode('preview')
         }}
       >
         {hasNote ? <StickyNoteIcon aria-hidden="true" /> : <StickyNotePlusIcon aria-hidden="true" />}
