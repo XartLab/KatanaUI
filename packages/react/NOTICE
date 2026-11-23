@@ -108,3 +108,27 @@ This package is licensed under the MIT License (see LICENSE).
    官网的撤销重做、复制粘贴、辅助线、Auto Layout 是 Pro 示例（xyflow Pro License，不是开源许可），没有用，那几项是自己写的。
    画布右下角的 React Flow 署名用 proOptions.hideAttribution 关掉了（MIT 允许），出处记在这里与文档站的白板页。
    React Flow is the runtime base of the whiteboard (MIT, installed from npm, not redistributed); its Pro examples were not used.
+
+12. Arc（https://github.com/kuratlielia/arc-library ，https://uiarc.dev ，免费部分 MIT，Copyright (c) 2026 Elia Kuratli；2026-11-23 读仓库 LICENSE 与 registry/components，提交 8302b52）
+   `src/patterns/split-button.tsx`、`tag-input.tsx`（与 `tag-input-model.ts`）、`inline-edit.tsx` 改自它免费仓库里的 split-button、tag-input、inline-edit：
+   行为与键位照它，样式、文案、动效按我们的 token 与 Precision Instrument §2.4 重写，文件头写 MIT 与出处。Arc 的 Pro 件（付费授权）没有用。
+   别处文件头写着「功能参照 Arc」的件（#1917、#1918、#1919）只学了它公开页面上的功能，没有取代码。许可证全文如下 / Full licence text:
+
+   MIT License
+
+   Copyright (c) 2026 Elia Kuratli
+
+   Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
+   associated documentation files (the "Software"), to deal in the Software without restriction, including
+   without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+   copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the
+   following conditions:
+
+   The above copyright notice and this permission notice shall be included in all copies or substantial
+   portions of the Software.
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
+   LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO
+   EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+   IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+   USE OR OTHER DEALINGS IN THE SOFTWARE.

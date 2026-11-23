@@ -116,9 +116,7 @@ describe('InlineEdit', () => {
   })
 
   it('disabled：按钮禁用，不画铅笔', () => {
-    const html = renderToStaticMarkup(
-      <InlineEdit value="v" label="x" disabled onSave={() => {}} labels={labels} />,
-    )
+    const html = renderToStaticMarkup(<InlineEdit value="v" label="x" disabled onSave={() => {}} labels={labels} />)
     expect(html).toContain('disabled=""')
     expect(html).not.toContain('k-inedit-pencil')
   })

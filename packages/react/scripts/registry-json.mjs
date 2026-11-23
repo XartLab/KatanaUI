@@ -20,6 +20,8 @@ const TARGET_ROOT = '~/src/katana/ui'
  * 有页的件，说明读页数据（gallery/registry.ts 的 PAGES.summary），这里不写第二份。
  */
 const INTERNAL = {
+  'tag-input-model':
+    'TagInput 的纯逻辑：草稿与粘贴的拆分（逗号、分号、换行、制表符）、判重（不分大小写）、校验与上限，以及键盘在标签之间怎么走。',
   'research-color':
     '研究报告件共用的色阶：涨跌发散色（零附近中性灰）与顺序色，周期收益表与参数曲面热力图用，只引用 token。',
   'order-ticket-parts':
