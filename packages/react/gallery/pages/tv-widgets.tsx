@@ -233,9 +233,10 @@ const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', '
 
 function seasonalDemoYears() {
   const points: { time: number; value: number }[] = []
+  // 价格跨年接着走：年初基准是上一年最后一个收盘，接不上会在 1 月 2 日凭空跳一截。
+  let price = 100
   for (const [index, year] of [2022, 2023, 2024, 2025, 2026].entries()) {
     const rng = makeRng(101 + index)
-    let price = 100
     // 今年只走到 11 月 20 日（演示「今年还没走完」）。
     const end = year === 2026 ? Date.UTC(2026, 10, 20) : Date.UTC(year, 11, 31)
     for (let time = Date.UTC(year, 0, 2); time <= end; time += DAY) {
@@ -249,17 +250,52 @@ function seasonalDemoYears() {
 }
 
 const SEASONAL = seasonalDemoYears()
+const SEASONAL_LABELS = { chart: 'Seasonals', legend: 'Years', months: MONTHS, empty: 'No data', month: 'Month' }
+const SEASONAL_ACTIONS = {
+  group: 'Chart actions',
+  table: 'Table view',
+  exportCsv: 'Export CSV',
+  fullscreen: 'Fullscreen',
+}
+const SEASONAL_SOURCE = "Change from the previous year's last close (2022: its first close)"
 
 export function SeasonalChartDemo() {
+  const [hidden, setHidden] = useState<readonly number[]>([2022, 2023])
   return (
     <>
-      <Row name="五年叠画">
+      <Row name="五年叠画：右上「表格视图」">
         <div className="gal-wide" style={{ maxWidth: 720 }}>
           <SeasonalChart
             years={SEASONAL}
             defaultHidden={[2022]}
-            labels={{ chart: 'Seasonals', legend: 'Years', months: MONTHS, empty: 'No data' }}
-            source="Change from each year's first close"
+            labels={SEASONAL_LABELS}
+            actionLabels={SEASONAL_ACTIONS}
+            tableLabel="Month-end change by year"
+            source={SEASONAL_SOURCE}
+          />
+        </div>
+      </Row>
+      <Row name="受控 hidden：图例状态在调用方">
+        <div className="gal-wide" style={{ maxWidth: 720 }}>
+          <SeasonalChart
+            years={SEASONAL}
+            hidden={hidden}
+            onHiddenChange={setHidden}
+            labels={SEASONAL_LABELS}
+            source={SEASONAL_SOURCE}
+          />
+          <output data-gallery-hidden>隐去的年：{hidden.length ? hidden.join('、') : '无'}</output>
+        </div>
+      </Row>
+      <Row name="窄于 520px：图例单独一行，横轴只留单数月">
+        <div className="gal-wide" style={{ maxWidth: 400 }}>
+          <SeasonalChart
+            years={SEASONAL}
+            defaultHidden={[2022, 2023]}
+            height={160}
+            labels={SEASONAL_LABELS}
+            actionLabels={SEASONAL_ACTIONS}
+            tableLabel="Month-end change by year"
           />
         </div>
       </Row>
@@ -272,7 +308,11 @@ export function SeasonalChartDemo() {
           />
         </div>
       </Row>
-      <p className="gal-note">{SAMPLE}。点年份开关隐去 / 显出一年；悬停或聚焦图后按方向键出读数。</p>
+      <p className="gal-note">
+        {SAMPLE}。点年份开关隐去 / 显出一年（最后一年关不掉）；悬停或聚焦图后按方向键出读数，PageUp / PageDown
+        跳月初，第一下落在今年最后一个点；
+        往年最后一个点之后沿用到年底，今年还没到的日子写「—」。右上「表格视图」每月一行、每年一列，写月末涨跌幅。
+      </p>
     </>
   )
 }
