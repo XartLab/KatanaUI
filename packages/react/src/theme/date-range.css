@@ -52,6 +52,11 @@
 .k-dr-preset[data-custom] {
   cursor: default;
 }
+.k-dr-preset:disabled {
+  color: var(--k-content-tertiary-foreground);
+  cursor: not-allowed;
+  background: transparent;
+}
 .k-dr-preset:focus-visible {
   outline: 2px solid var(--focus-ring);
   outline-offset: -2px;

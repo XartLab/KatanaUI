@@ -76,7 +76,23 @@ export function canApplyRange(draft: DateRange | null, pick: RangePick): boolean
   return !pick.anchor && rangeDays(draft) > 0
 }
 
-/** 状态字的写法：字符串里的 {days} 换成天数；函数形式把天数交给调用方（要处理复数就用它）。 */
-export function formatDays(text: string | ((days: number) => string), days: number): string {
-  return typeof text === 'function' ? text(days) : text.replaceAll('{days}', String(days))
+/** 两个区间是不是同一个（都是 null 也算同一个）。 */
+export function sameRange(a: DateRange | null, b: DateRange | null): boolean {
+  return a === b || (a !== null && b !== null && a.start === b.start && a.end === b.end)
+}
+
+/** 预设在 min / max（YYYY-MM-DD，都可不传）限定的范围里吗：整段都在才算；today 不合法、有一头越界都是否。
+ *  越界的预设在界面上禁用，不裁剪：裁剪后「本月」就不是本月了，状态字与高亮都会对不上。 */
+export function presetAvailable(
+  preset: RangePreset,
+  today: string,
+  weekStart: WeekStart = 'mon',
+  min?: string,
+  max?: string,
+): boolean {
+  const range = presetRange(preset, today, weekStart)
+  if (!range) return false
+  if (min && toDay(min) && range.start < min) return false
+  if (max && toDay(max) && range.end > max) return false
+  return true
 }

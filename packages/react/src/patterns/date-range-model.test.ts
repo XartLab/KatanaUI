@@ -2,7 +2,8 @@
 import { describe, expect, it } from 'vite-plus/test'
 import {
   canApplyRange,
-  formatDays,
+  presetAvailable,
+  sameRange,
   matchPreset,
   NO_PICK,
   presetRange,
@@ -84,10 +85,31 @@ describe('rangeStatus 与 canApplyRange', () => {
   })
 })
 
-describe('formatDays', () => {
-  it('字符串换 {days}，函数形式交给调用方处理复数', () => {
-    expect(formatDays('{days} days selected', 12)).toBe('12 days selected')
-    expect(formatDays((n) => (n === 1 ? '1 day selected' : `${n} days selected`), 1)).toBe('1 day selected')
-    expect(formatDays((n) => (n === 1 ? '1 day selected' : `${n} days selected`), 3)).toBe('3 days selected')
+describe('sameRange', () => {
+  it('起止都相同才算同一个，null 与 null 相同、与区间不同', () => {
+    expect(sameRange(null, null)).toBe(true)
+    expect(sameRange({ start: '2026-11-09', end: '2026-11-14' }, { start: '2026-11-09', end: '2026-11-14' })).toBe(true)
+    expect(sameRange({ start: '2026-11-09', end: '2026-11-14' }, { start: '2026-11-09', end: '2026-11-15' })).toBe(
+      false,
+    )
+    expect(sameRange(null, { start: '2026-11-09', end: '2026-11-14' })).toBe(false)
+  })
+})
+
+describe('presetAvailable', () => {
+  const today = '2026-11-14'
+  it('没给范围都可用；max 是今天时都可用（预设都截至今天）', () => {
+    expect(presetAvailable('ytd', today)).toBe(true)
+    expect(presetAvailable('week', today, 'mon', undefined, '2026-11-14')).toBe(true)
+  })
+  it('起点早于 min 的预设不可用，其余照常', () => {
+    expect(presetAvailable('ytd', today, 'mon', '2026-06-01')).toBe(false)
+    expect(presetAvailable('month', today, 'mon', '2026-06-01')).toBe(true)
+    expect(presetAvailable('week', today, 'mon', '2026-11-10')).toBe(false)
+    expect(presetAvailable('today', today, 'mon', '2026-11-14')).toBe(true)
+  })
+  it('今天晚于 max 时全部不可用；today 不合法也不可用', () => {
+    expect(presetAvailable('today', today, 'mon', undefined, '2026-11-13')).toBe(false)
+    expect(presetAvailable('today', '', 'mon')).toBe(false)
   })
 })

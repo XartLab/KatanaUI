@@ -19,10 +19,10 @@
 
 ## Driving it with kui.mjs
 
-前置：`$KUI doctor` 全 OK。只看第三行 `section.locator('.k-dr').nth(2)`；弹层渲染在页面根部的 portal 里，脚是 `page.locator('.k-dr-foot')`，状态字是脚里的 `role=status`。日期格的名字形如「2026年12月7日星期一」，用 `getByRole('button', { name: /12月7日/ }).first()` 找。
+前置：`$KUI doctor` 全 OK。只看第三行 `section.locator('.k-dr').nth(2)`；弹层渲染在页面根部的 portal 里，脚是 `page.locator('.k-dr-foot')`，看得见的状态字是脚里的 `[data-slot="date-range-status"]`（跟着悬停走），读屏播报的那份是脚里的 `role=status`（只在点选后更新，悬停不变）。日期格的名字形如「2026年12月7日星期一」，用 `getByRole('button', { name: /12月7日/ }).first()` 找。
 
 - **开。** 点「选择区间」。脚上状态字「选第一天」，「应用」disabled，页上恰有 1 个 `.k-cal-cell[data-k-today]`。
-- **点起点、悬停终点。** 点 12 月 7 日：状态字「已选 1 天」，起点框日段「07」，终点框年段 `data-placeholder="true"`。悬停 12 月 18 日：「已选 12 天」，日历上 `.k-rcal .k-cal-cell[data-selected]` 共 12 个，「应用」仍 disabled。
+- **点起点、悬停终点。** 点 12 月 7 日：状态字「已选 1 天」，起点框日段「07」，终点框年段 `data-placeholder="true"`。悬停 12 月 18 日：看得见的「已选 12 天」，`role=status` 那份仍是「已选 1 天」（悬停不播报），日历上 `.k-rcal .k-cal-cell[data-selected]` 共 12 个，「应用」仍 disabled。
 - **点终点、Esc。** 点 12 月 18 日：「应用」enabled。按 Esc：脚消失，`<output>` 仍是「未选」，焦点回「选择区间」钮。再开：状态字又是「选第一天」。点外面（`page.mouse.click(5, 5)`）同样收起、值没变。
 - **应用。** 再开，点 7 日、18 日，点「应用」：`<output>` 写「2026-12-07 ~ 2026-12-18」，脚消失，焦点回「选择区间」钮。
 - **清除。** 再开：状态字「已选 12 天」。点「清除」：「选第一天」，「应用」disabled，脚还在，`<output>` 不变。
@@ -32,6 +32,7 @@
 ## Gotchas
 
 - 页上有三个 DateRangePicker，一定先收到第三行（`.nth(2)`），否则「选择区间」匹配到三个。
-- 点格子、翻月之后 Radix 自己的「点外面收起」会漏掉第一次点外面（react-aria 的按压截住了 pointerdown），件里已在 document 捕获阶段补了一道；如果以后这条回归，表现是点外面没反应、要点两次。
+- 点格子、翻月之后 Radix 自己的「点外面收起」会漏掉第一次点外面（react-aria 的按压截住了 pointerdown），件里已在 document 捕获阶段按实例补了一道（immediate 也走它；根上的修法是 #207，修了就删这段）；如果以后这条回归，表现是点外面没反应、要点两次。
+- 弹层开着时外部改 value 不能用鼠标点外部的钮（点它会先触发点外面收起）：用 `el.click()` 触发，草稿没动过会跟着变，动过会保留（e2e 里有，这份流程没走）。
 - 鼠标点起点是「已选 1 天」，键盘 Enter 选起点是「已选 2 天」（焦点被 react-aria 挪到下一天）；两条别混着断言。
 - 弹层有入场动画：断言用会等待的 `expect(...).toBeVisible()`。

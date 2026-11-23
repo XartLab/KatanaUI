@@ -20,12 +20,13 @@ import { Button } from '../primitives/button.tsx'
 import { Popover, PopoverContent, PopoverTrigger } from '../primitives/popover.tsx'
 import {
   canApplyRange,
-  formatDays,
   matchPreset,
   NO_PICK,
+  presetAvailable,
   presetRange,
   RANGE_PRESETS,
   rangeStatus,
+  sameRange,
   toDay,
   type DateRange,
   type RangePick,
@@ -40,7 +41,7 @@ import {
 // 两种提交方式（commit）：immediate（默认，原来的行为）是点完终点、点预设就上报并收起；apply（#192）是「先挑、再应用」——
 // 日历里的改动先放在草稿里，弹层脚上写状态（选第一天 / 已选 N 天）、有「清除」「应用」两颗钮，点「应用」才上报并收起，Esc 或点外面收起就丢掉草稿。
 // 交互借自 Jamie Merrill 的 Date range picker（x.com/Jamie_Merrill/status/2120075066092462477，2026-11-24 逐帧看），只借交互，样子沿用本件原有的。
-// 默认不改成 apply：apply 要三条新文案（没有后备语言，包里不写字），改默认等于让所有现有调用点编译不过、行为也变；调用方按需显式传 commit="apply"。
+// 默认不改成 apply：apply 要四条新文案（没有后备语言，包里不写字），改默认等于让所有现有调用点编译不过、行为也变；调用方按需显式传 commit="apply"。
 
 export type DateRangeLabels = {
   /** 起点、终点日期框的读屏名。 */
@@ -61,8 +62,8 @@ export type DateRangeLabels = {
 export type DateRangeApplyLabels = {
   /** 状态字：还没点第一天。 */
   pickFirst: string
-  /** 状态字：已选 days 天（含首尾；只点了起点是 1，悬停时是到悬停那天）。字符串里的 {days} 换成天数；要处理复数（1 day / 3 days）就传函数。 */
-  selected: string | ((days: number) => string)
+  /** 状态字：已选 days 天（含首尾，数的是日历上高亮的格数）。带数字的文案一律传函数，英文要在里面处理单复数（1 day / 3 days）。 */
+  selected: (days: number) => string
   /** 脚上两颗钮的字。 */
   apply: string
   clear: string
@@ -155,8 +156,11 @@ export function DateRangePicker({
   const [draft, setDraft] = useState<DateRange | null>(null)
   const [pick, setPick] = useState<RangePick>(NO_PICK)
   const [focus, setFocus] = useState<CalendarDate>(FALLBACK_DAY)
+  // 打开那一刻（以及草稿最后一次跟着外部值走时）的 value：草稿还等于它，就说明用户没动过。
+  const [seed, setSeed] = useState<DateRange | null>(null)
   const live = apply && open
   const root = useRef<HTMLSpanElement>(null)
+  const content = useRef<HTMLDivElement>(null)
   // 稳定的回调：PickBridge 的 effect 才不会随每次重画重跑；值没变就保持原对象，悬停挪一格不会白重画整件。
   const reportPick = useCallback((next: RangePick) => setPick((prev) => (samePick(prev, next) ? prev : next)), [])
   const minValue = toDay(min ?? '')
@@ -174,16 +178,30 @@ export function DateRangePicker({
   const active = matchPreset(shownRange, today, weekStart)
   const complete = start && end ? { start, end } : null
 
+  // 弹层开着时外部改了 value（URL、别的面板、「回到今天」）：草稿没动过（还等于 seed）就跟着变，动过就保留用户的草稿。
+  // 在渲染里调整状态（React 文档里「根据 props 调整 state」的写法），不用 effect，免得框与状态字闪一帧旧值。
+  if (live && !sameRange(seed, value)) {
+    setSeed(value)
+    if (sameRange(draft, seed)) {
+      setDraft(value)
+      setPick(NO_PICK)
+      setFocus((value && toDay(value.start)) || toDay(today) || FALLBACK_DAY)
+    }
+  }
+
   // 点日历里的格子、翻月钮之后，Radix 的「点外面收起」会吃掉第一次点外面：react-aria 的按压把 pointerdown 在 React 根上截住，
-  // Radix 里「指针在弹层内」的标记没人复位，下一次点外面被当成内部点击。apply 下点外面要丢草稿，不能漏，所以在 document 捕获阶段自己收一道
-  // （点弹层里面、点触发钮不算；触发钮自己会开关）。重复收起无害。
+  // Radix 里「指针在弹层内」的标记没人复位，下一次点外面被当成内部点击（根上的修法是 #207：primitives/popover.tsx，修了就删这段）。
+  // apply 下点外面要丢草稿，不能漏，所以在 document 捕获阶段自己收一道；immediate 也走它，所以 immediate 现在点外面一次就收（以前翻月后要点两次）。
+  // 「里面」按实例判断：这一份弹层的节点（content ref）、自己的触发钮，以及从弹层里再 portal 出去的子浮层（Tooltip、Select 这类，
+  // 都带 Radix 的 popper 外壳或 portal 标记）；点它们不收。以后往弹层里加子浮层不用改这里，但子浮层必须是 Radix 的（别的体系的浮层要自己登记）。
   useEffect(() => {
     if (!open) return
     const dismiss = (event: PointerEvent) => {
       const target = event.target
       if (!(target instanceof Element)) return
-      if (target.closest('.k-dr-pop') || root.current?.querySelector('[data-slot="popover-trigger"]')?.contains(target))
-        return
+      if (content.current?.contains(target)) return
+      if (root.current?.querySelector('[data-slot="popover-trigger"]')?.contains(target)) return
+      if (target.closest('[data-radix-popper-content-wrapper], [data-radix-portal]')) return
       setOpen(false)
     }
     document.addEventListener('pointerdown', dismiss, true)
@@ -211,6 +229,7 @@ export function DateRangePicker({
   const onOpenChange = (next: boolean) => {
     if (next && apply) {
       setDraft(value)
+      setSeed(value)
       setPick(NO_PICK)
       setFocus((value && toDay(value.start)) || toDay(today) || FALLBACK_DAY)
     }
@@ -228,7 +247,11 @@ export function DateRangePicker({
     if (!draft || !canApplyRange(draft, pick)) return
     choose(draft)
   }
+  // 脚上看得见的状态字跟着悬停走；读屏播报的那份只在点选后更新（点起点、点终点、预设、清除），悬停不播报——
+  // 否则鼠标每挪一格就读一次。键盘移动日期时 react-aria 自己会播报日期，不需要再叠一句。
   const status = rangeStatus(draft, pick)
+  const spoken = rangeStatus(draft, pick.anchor ? { anchor: pick.anchor, preview: null } : NO_PICK)
+  const say = (s: typeof status) => (s.kind === 'first' ? text.pickFirst : text.selected(s.days))
 
   return (
     <I18nProvider locale={locale}>
@@ -271,6 +294,7 @@ export function DateRangePicker({
             sideOffset={4}
             className="k-dr-pop"
             aria-label={labels.calendar}
+            ref={content}
           >
             <div className="k-dr-presets" role="group" aria-label={labels.presets}>
               {RANGE_PRESETS.map((preset) => (
@@ -279,6 +303,8 @@ export function DateRangePicker({
                   type="button"
                   className="k-dr-preset"
                   aria-pressed={active === preset}
+                  // 越界的预设禁用（不裁剪）：整段在 min / max 里才能点。
+                  disabled={!presetAvailable(preset, today, weekStart, min, max)}
                   onClick={() => pickPreset(preset)}
                 >
                   {labels.preset[preset]}
@@ -335,8 +361,11 @@ export function DateRangePicker({
               </RangeCalendar>
               {apply && (
                 <footer className="k-dr-foot">
-                  <span className="k-dr-status" role="status" aria-live="polite" aria-atomic="true">
-                    {status.kind === 'first' ? text.pickFirst : formatDays(text.selected, status.days)}
+                  <span className="k-dr-status" data-slot="date-range-status" aria-hidden="true">
+                    {say(status)}
+                  </span>
+                  <span className="sr-only" role="status" aria-live="polite" aria-atomic="true">
+                    {say(spoken)}
                   </span>
                   <Button type="button" size="sm" onClick={() => setDraft(null)}>
                     {text.clear}

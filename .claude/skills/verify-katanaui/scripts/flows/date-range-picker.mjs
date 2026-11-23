@@ -8,7 +8,9 @@ export default {
     const trigger = row.getByRole('button', { name: '选择区间' })
     const out = section.locator('[data-gallery-range-apply]')
     const foot = page.locator('.k-dr-foot')
-    const status = foot.getByRole('status')
+    // 看得见的状态字（跟着悬停走）；role=status 那份是读屏播报的，只在点选后更新。
+    const status = foot.locator('[data-slot="date-range-status"]')
+    const spoken = foot.getByRole('status')
     const applyBtn = foot.getByRole('button', { name: '应用' })
     const day = (n) => page.getByRole('button', { name: new RegExp(`12月${n}日`) }).first()
     const focused = () => page.evaluate(() => document.activeElement?.getAttribute('aria-label') ?? document.activeElement?.tagName)
@@ -34,9 +36,10 @@ export default {
     await step('悬停 18 号：预览 12 天，脚「已选 12 天」，「应用」仍禁用', async () => {
       await day(18).hover()
       await expect(status).toHaveText('已选 12 天')
+      await expect(spoken).toHaveText('已选 1 天') // 悬停不播报
       await expect(page.locator('.k-rcal .k-cal-cell[data-selected]')).toHaveCount(12)
       await expect(applyBtn).toBeDisabled()
-      return { status: await status.innerText(), previewCells: await page.locator('.k-rcal .k-cal-cell[data-selected]').count() }
+      return { status: await status.innerText(), spoken: await spoken.innerText(), previewCells: await page.locator('.k-rcal .k-cal-cell[data-selected]').count() }
     })
     await step('点 18 号、Esc：「应用」曾可点；Esc 后值没变，焦点回触发钮', async () => {
       await day(18).click()
