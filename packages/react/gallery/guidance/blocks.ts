@@ -498,6 +498,8 @@ const blocks: GuidanceMap = {
       '止盈止损标明放在哪：交易所托管（面板关了也生效）或本机触发（进程不在就不生效；bit.com、QMT 属于这种）。',
       '出场模板（ATAS 的 Exit Strategy）存的是离入场价的百分比，选了按当前方向与价格填进两个框。',
       '现货、A 股不传 maxLeverage：没有杠杆与强平价，就是按金额买。',
+      '订单簿点价回填（#176）：OrderBook 的 onPriceSelect 里把两栏的 price 都写成这档价（按 tick 的小数位写字），面板不直接下单，仍要点下单钮；点档的交互照 TradingView 的 DOM（帮助中心「Depth of market (DOM)」，2026-11-23 读），版式仍不参照它。点档是否切回限价页签待核对，现在不切：停在市价页签时价格换了也看不见。',
+      '交易锁开着就传 locked 与 lockedReason（#176）：钮当场灰掉、钮下写原因，不等点了下单被网关挡下再报；网关仍判锁，是唯一权威。',
     ],
     avoid: [
       '不参照 TradingView 的下单面板（用户 2026-11-19 定：它不算保证金与手续费，容易下错）。',
@@ -507,6 +509,7 @@ const blocks: GuidanceMap = {
     a11y: [
       '开平是 ToggleGroup，委托类型是 Tabs 的 line 变体（两栏表单是它的页签面板），窄版的买卖切换是 aria-pressed 的按钮组；两个下单钮除了颜色还有文字，不只靠红绿。',
       '读数区 aria-live=polite，数量变了会读；报错行 role=alert，对应的框带 aria-invalid。',
+      '锁住时下单钮是 disabled，原因不只靠灰色：钮下一行字，钮的 aria-describedby 指向它，读屏读钮时连原因一起读。',
       '滑杆下的 0 / 25 / 50 / 75 / 100% 是鼠标快捷点，不进 Tab 序（键盘用滑杆本身）。',
       '所有文字与读屏名由 labels 传，包里没有写死的语言。',
     ],

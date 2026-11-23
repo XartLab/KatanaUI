@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 import { useRef, useState } from 'react'
 import {
+  OrderBook,
   OrdersTable,
   OrderTicket,
   PanelFrame,
@@ -8,6 +9,8 @@ import {
   PanelFrameHeader,
   type Order,
   type OrderDraft,
+  type OrderSide,
+  type OrderBookLabels,
   type OrderTicketLabels,
   type StopCustody,
 } from '../../src/blocks'
@@ -53,6 +56,22 @@ const INSTRUMENT = {
 }
 const ACCOUNT = { available: 250, fees: { open: 0.0005, close: 0.0005 }, maintenanceMarginRate: 0.004 }
 const MARKET = { last: 60000, bid: 59999.9, ask: 60000.1 }
+// 演示盘口：写死的几档，不跳动；点一档回填下单面板两栏的限价。
+const BOOK_BIDS = [
+  { price: 59999.9, size: 1.2 },
+  { price: 59999.5, size: 0.8 },
+  { price: 59998, size: 2.4 },
+  { price: 59995, size: 3.1 },
+  { price: 59990, size: 4.6 },
+]
+const BOOK_ASKS = [
+  { price: 60000.1, size: 0.9 },
+  { price: 60000.5, size: 1.6 },
+  { price: 60002, size: 2 },
+  { price: 60005, size: 2.7 },
+  { price: 60010, size: 3.8 },
+]
+const LOCKED_REASON = '交易锁开着，不能下单'
 const REJECT_REASON = '交易所回：保证金不足（演示）'
 
 const TICKET_LABELS: OrderTicketLabels = {
@@ -100,6 +119,18 @@ const TICKET_LABELS: OrderTicketLabels = {
   submitClose: { buy: '平空', sell: '平多' },
   feeRate: '费率',
   calculator: '计算器',
+}
+
+const BOOK_LABELS: OrderBookLabels = {
+  list: '订单簿',
+  modes: { group: '显示模式', both: '买卖', bids: '只看买', asks: '只看卖' },
+  tick: '合并档位',
+  columns: { price: '价格', size: '数量', total: '累计' },
+  bid: '买',
+  ask: '卖',
+  spread: '价差',
+  share: (bid, ask) => `买盘占 ${bid}，卖盘占 ${ask}`,
+  empty: '没有档位',
 }
 
 const number = new Intl.NumberFormat('zh-CN', { maximumFractionDigits: 2 })
@@ -174,6 +205,7 @@ function Demo() {
   const [pending, setPending] = useState<OrderDraft | null>(null)
   const [notices, setNotices] = useState<readonly Notice[]>([])
   const [orders, setOrders] = useState<readonly Order[]>([])
+  const [price, setPrice] = useState<Partial<Record<OrderSide, string>>>({})
   const seq = useRef(1)
 
   const send = (draft: OrderDraft) => {
@@ -191,7 +223,8 @@ function Demo() {
   return (
     <div className="gal-stack" style={{ width: '100%', maxWidth: 1000 }}>
       <p className="gal-note">
-        演示数据：假网关，不连交易所。下面几个开关只在演示里有，用来摆出各种回答；把成本填到 250 以上看「超过可用」。
+        演示数据：假网关，不连交易所。下面几个开关只在演示里有，用来摆出各种回答；把成本填到 250
+        以上看「超过可用」；点订单簿一档，下单面板的限价跟着换。
       </p>
       <div style={row} role="group" aria-label="演示开关">
         <label style={row}>
@@ -224,10 +257,31 @@ function Demo() {
       {locked ? (
         <Alert tone="warn" data-testid="lock-banner">
           <AlertTitle>交易锁开着</AlertTitle>
-          <AlertDescription>面板照样算数；点下单不会发出，网关当场挡下。解锁在状态栏的交易锁上。</AlertDescription>
+          <AlertDescription>
+            面板照样算数、填的数都留着；两个下单钮灰掉，原因写在钮下。解锁在状态栏的交易锁上。
+          </AlertDescription>
         </Alert>
       ) : null}
       <div style={{ display: 'grid', gap: 12, gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))' }}>
+        <PanelFrame aria-label="订单簿">
+          <PanelFrameHeader heading="订单簿" object={`· ${SYMBOL} · 演示数据`} />
+          <PanelFrameBody>
+            <OrderBook
+              bids={BOOK_BIDS}
+              asks={BOOK_ASKS}
+              priceDecimals={1}
+              sizeDecimals={2}
+              depth={5}
+              last={MARKET.last}
+              lastTone="up"
+              onPriceSelect={(level) => {
+                const text = level.toFixed(1)
+                setPrice({ buy: text, sell: text })
+              }}
+              labels={BOOK_LABELS}
+            />
+          </PanelFrameBody>
+        </PanelFrame>
         <PanelFrame aria-label="下单">
           <PanelFrameHeader heading="下单" object={`· ${SYMBOL} · 演示数据`} />
           <PanelFrameBody>
@@ -239,6 +293,10 @@ function Demo() {
               defaultLeverage={100}
               marginModes={['isolated', 'cross']}
               defaultAmount="10"
+              price={price}
+              onPriceChange={(text, side) => setPrice((current) => ({ ...current, [side]: text }))}
+              locked={locked}
+              lockedReason={LOCKED_REASON}
               stopCustody={custody}
               labels={TICKET_LABELS}
               locale="zh-CN"
@@ -311,24 +369,26 @@ const pattern: Pattern = {
   parts: [
     {
       page: 'order-ticket',
-      role: '填单与下单前的数：张数、保证金、总占用、预估强平价、保本价、止盈止损盈亏；超过可用时那一栏报错、下单钮变灰',
+      role: '填单与下单前的数：张数、保证金、总占用、预估强平价、保本价、止盈止损盈亏；超过可用时那一栏报错、下单钮变灰；price / onPriceChange 接订单簿点价，locked / lockedReason 接交易锁',
     },
     { page: 'dialog', role: '确认窗：把决定这笔单的几个数再摆一次，「发出」才交给网关' },
     { page: 'toast', role: '网关的回答：已挂出、已成交、被拒（写原因）、交易锁挡下' },
     { page: 'orders-table', role: '挂出的限价单出现在这里，行内撤单与改价' },
-    { page: 'alert', role: '交易锁开着时，面板上方一条常驻说明' },
+    { page: 'alert', role: '交易锁开着时，面板上方一条常驻说明（去哪解锁）' },
     { page: 'switch', role: '一键下单（跳过确认）是用户自己打开的设置，默认关' },
     {
       page: 'order-book',
-      role: '点一档回调 onPriceSelect 回填价格；OrderTicket 现在没有受控价格，这一步还接不上（缺件，见下）',
+      role: '点一档回调 onPriceSelect，回填下单面板两栏的限价（OrderTicket 的受控 price）',
     },
   ],
   rules: [
     '次序固定：填单 → 读数区看数 → 下单钮 → 确认窗 → 网关 → 弹出提示 → 委托表；每一步只有一个去处，不在面板里另画一份结果',
+    '点订单簿一档：两栏的限价都换成这档价（OrderTicket 受控 price，onPriceSelect 里写回），不直接下单，仍走下单钮与确认窗；照 TradingView 的 DOM，点档按这档价下限价单、默认先确认（帮助中心「Depth of market (DOM)」，2026-11-23 读）。点档是否顺带切回限价页签，页面没写，待核对；这里不切',
     '确认窗默认弹（照 TradingView：一键下单默认关，下单与平仓都先给预览，2026-11-23 读其帮助中心「How to place an order」）；一键下单是用户在设置里自己打开的，打开后点下单直接发出',
     '确认窗只摆读数区里已有的数（方向、价格、张数与杠杆、总占用、预估强平价、止盈止损与托管方式），不另算一遍；数与面板对不上就是 bug',
     '超过可用、不足最小下单量、止损在盈利一侧：面板那一栏当场报错、下单钮变灰，不等网关来拒',
-    '交易锁在网关里判：锁开着时单不出网关，弹 warn 语气的提示「没有发出：交易锁开着」，面板里填的数都留着；面板上方挂一条常驻的 Alert，不只靠一个灰掉的钮',
+    '交易锁开着：OrderTicket 的 locked 让两个下单钮灰掉，lockedReason 写在钮下（警示色加锁形图标，钮经 aria-describedby 读到），面板照样算数、填的数都留着；面板上方挂一条常驻的 Alert 说去哪解锁。不靠点了下单再被网关挡下来报错',
+    '网关仍是交易锁的唯一权威：绕过面板发来的单，锁开着时不出网关，弹 warn 语气的提示「没有发出：交易锁开着」',
     '止盈止损写明放在哪：交易所托管（面板关了也生效）或本机触发（本机进程不在就不生效）；本机触发用警示色，确认窗里也写一遍',
     '弹出提示的标题写结果（「委托已挂出」「市价单已成交」「下单被拒」），说明写品种、方向、张数与原因；被拒用 danger，挡下用 warn，成功用 ok',
     '限价单挂出后进委托表的第一行；市价单当场成交，不进委托表，去持仓表看；撤单发出后那一行先变「撤单中」，等回报再消失',
