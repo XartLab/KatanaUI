@@ -413,12 +413,26 @@ const forms: GuidanceMap = {
     a11y: ['每个标签是按钮，读屏名由 labels.add / labels.remove 给（带标签名）。', '焦点环取自全局 focus-ring。'],
   },
   'exposure-slider': {
-    aliases: ['Dial', 'Ruler slider', 'Bipolar slider', 'Tape measure'],
+    aliases: ['Dial', 'Bipolar slider', 'Tape measure'],
     use: ['调净敞口、仓位偏移、杠杆这类有正有负的量。', '手感想要拨盘。'],
-    avoid: ['单向数值用 slider。', '要输入精确数字用 number-input。'],
+    avoid: ['只有一侧的量（仓位比例、杠杆、数量占可用）用 ruler-slider。', '要输入精确数字用 number-input。'],
     a11y: [
       'role=slider，aria-valuemin / max / now 与 aria-valuetext 齐全。',
       '键盘 ← → 一格、PageUp / PageDown 十格、Home / End 到两端。',
+    ],
+  },
+  'ruler-slider': {
+    aliases: ['Ruler slider', 'Quantity slider', 'Tape measure', '单向刻度尺', '数量滑块'],
+    use: ['下单面板里调数量占可用的百分比、仓位比例。', '调杠杆这类从 min 往上走的量，手感想要拨盘。'],
+    avoid: [
+      '有正有负、中点是 0 的量用 exposure-slider。',
+      '表单里普通的单值与区间用 slider。',
+      '要输入精确数字用 number-input。',
+    ],
+    a11y: [
+      'role=slider，名字取 label，aria-valuemin / max / now 与 aria-valuetext（format 的结果）齐全。',
+      '键盘 ← → 一格、Shift + ← → 或 PageUp / PageDown 一大格、Home / End 到两端。',
+      '环形读数 aria-hidden，大刻度的数字在 role=slider 里面，读屏只读当前值。',
     ],
   },
   scrubber: {
