@@ -849,6 +849,9 @@ export function SparkTileDemo() {
   )
 }
 
+// 线照 LossLimits 卡：80% 起接近、100% 越限。
+const LIMIT_LABELS = { warn: '预警线 80%', hard: '硬限 100%' }
+
 export function MeterDemo() {
   return (
     <>
@@ -859,6 +862,27 @@ export function MeterDemo() {
           <Meter label="LOAD · 受锁（超过 60% 上限）" value={38} tone="warn" mark={60} markLabel="上限" />
           <Meter label="回测进度" value={61} />
           <Meter label="OFF" value={0} tone="off" />
+        </div>
+      </Row>
+      <Row name="限额（warnAt / hardAt）">
+        <div className="gal-stack" data-testid="meter-limits">
+          <Meter label="总敞口 / 净值" value={54} warnAt={80} hardAt={100} valueText="54%" limitLabels={LIMIT_LABELS} />
+          <Meter
+            label="保证金占用"
+            value={86}
+            warnAt={80}
+            hardAt={100}
+            valueText="86% · 接近"
+            limitLabels={LIMIT_LABELS}
+          />
+          <Meter
+            label="日内回撤"
+            value={112}
+            warnAt={80}
+            hardAt={100}
+            valueText="112% · 越限"
+            limitLabels={LIMIT_LABELS}
+          />
         </div>
       </Row>
       <Row name="刻度（gauge）">

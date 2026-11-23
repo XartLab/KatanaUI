@@ -71,6 +71,25 @@
 .k-meter[data-tone='warn'] .k-meter-track {
   animation: k-meter-pulse var(--dur-gentle) var(--ease-gentle) 1;
 }
+/* 限额（#149）：照 RiskBoard 卡，预警线 amber 1px 半透明（取 warn 的描边色）、硬限 red 2px。
+   越硬限条体红色脉冲一次：动画名跟 warn 那条不同，从 warn 走到 breach 才会再播。 */
+.k-meter-limit {
+  position: absolute;
+  top: -2px;
+  bottom: -2px;
+}
+.k-meter-limit.is-warn {
+  width: 1px;
+  background: var(--k-status-warn-borderColor);
+}
+.k-meter-limit.is-hard {
+  width: 2px;
+  margin-left: -1px;
+  background: var(--k-status-danger-foreground);
+}
+.k-meter[data-state='breach'] .k-meter-track {
+  animation: k-meter-pulse-breach var(--dur-gentle) var(--ease-gentle) 1;
+}
 /* 刻度形态 */
 .k-meter.is-gauge .k-meter-track {
   height: 34px;
@@ -139,6 +158,17 @@
   }
   40% {
     box-shadow: 0 0 0 2px var(--k-status-warn-foreground);
+  }
+  100% {
+    box-shadow: 0 0 0 0 transparent;
+  }
+}
+@keyframes k-meter-pulse-breach {
+  0% {
+    box-shadow: 0 0 0 0 var(--k-status-danger-foreground);
+  }
+  40% {
+    box-shadow: 0 0 0 2px var(--k-status-danger-foreground);
   }
   100% {
     box-shadow: 0 0 0 0 transparent;
