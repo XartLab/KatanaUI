@@ -46,7 +46,7 @@ export function ExposureSliderUsage() {
 ## Don't
 
 - 不要用来输入精确数字：刻度尺适合粗调，精确值用 NumberInput。
-- 不要用于只有正数的量：用 Slider。
+- 不要用于只有正数的量：用 RulerSlider。
 
 ## Composition
 

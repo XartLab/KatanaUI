@@ -79,6 +79,11 @@
           "target": "~/src/katana/ui/theme/calendar.css"
         },
         {
+          "path": "src/theme/cell-type.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/cell-type.css"
+        },
+        {
           "path": "src/theme/chart-kit.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/chart-kit.css"
@@ -144,6 +149,11 @@
           "target": "~/src/katana/ui/theme/cn.css"
         },
         {
+          "path": "src/theme/company-profile.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/company-profile.css"
+        },
+        {
           "path": "src/theme/connected-scatter.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/connected-scatter.css"
@@ -152,6 +162,11 @@
           "path": "src/theme/consensus-block.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/consensus-block.css"
+        },
+        {
+          "path": "src/theme/cross-rates.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/cross-rates.css"
         },
         {
           "path": "src/theme/data-grid.css",
@@ -267,6 +282,11 @@
           "path": "src/theme/hypothesis-ledger.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/hypothesis-ledger.css"
+        },
+        {
+          "path": "src/theme/inline-edit.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/inline-edit.css"
         },
         {
           "path": "src/theme/json-viewer.css",
@@ -494,6 +514,11 @@
           "target": "~/src/katana/ui/theme/reason-group-list.css"
         },
         {
+          "path": "src/theme/refresh-control.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/refresh-control.css"
+        },
+        {
           "path": "src/theme/regime-strip.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/regime-strip.css"
@@ -537,6 +562,11 @@
           "path": "src/theme/scrubber.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/scrubber.css"
+        },
+        {
+          "path": "src/theme/seasonal-chart.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/seasonal-chart.css"
         },
         {
           "path": "src/theme/sentiment-cycle.css",
@@ -584,6 +614,11 @@
           "target": "~/src/katana/ui/theme/sparkline.css"
         },
         {
+          "path": "src/theme/split-button.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/split-button.css"
+        },
+        {
           "path": "src/theme/splitter.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/splitter.css"
@@ -609,9 +644,19 @@
           "target": "~/src/katana/ui/theme/symbol-galaxy.css"
         },
         {
+          "path": "src/theme/symbol-info.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/symbol-info.css"
+        },
+        {
           "path": "src/theme/symbol-mark.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/symbol-mark.css"
+        },
+        {
+          "path": "src/theme/symbol-overview.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/symbol-overview.css"
         },
         {
           "path": "src/theme/system-monitor.css",
@@ -622,6 +667,11 @@
           "path": "src/theme/system-status.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/system-status.css"
+        },
+        {
+          "path": "src/theme/tag-input.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/tag-input.css"
         },
         {
           "path": "src/theme/tag.css",
@@ -637,6 +687,11 @@
           "path": "src/theme/theme-heat-matrix.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/theme-heat-matrix.css"
+        },
+        {
+          "path": "src/theme/ticker-tape.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/ticker-tape.css"
         },
         {
           "path": "src/theme/toolbar.css",
@@ -1193,6 +1248,11 @@
           "path": "src/lib/chart/format/change.ts",
           "type": "registry:lib",
           "target": "~/src/katana/ui/lib/chart/format/change.ts"
+        },
+        {
+          "path": "src/lib/chart/format/compact.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/lib/chart/format/compact.ts"
         },
         {
           "path": "src/lib/chart/format/decimal-step.ts",
@@ -2973,6 +3033,26 @@
       ]
     },
     {
+      "name": "ruler-slider",
+      "type": "registry:component",
+      "title": "Ruler Slider",
+      "description": "只有一侧的量用的刻度尺：中间一根定位线，左右拖动刻度尺，从 min 到当前值的刻度都亮，上方的环从 12 点顺时针画到当前值占全程的比例。拿来调仓位比例、杠杆、数量占可用的百分比；手感照 ExposureSlider，点一下刻度就滑到那一格（交互照 TradingView 下单面板的数量滑块）。",
+      "dependencies": [
+        "motion@14.9.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/focus"
+      ],
+      "files": [
+        {
+          "path": "src/katana/ruler-slider.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/katana/ruler-slider.tsx"
+        }
+      ]
+    },
+    {
       "name": "scroll-progress",
       "type": "registry:component",
       "title": "Scroll Progress",
@@ -3651,6 +3731,25 @@
       ]
     },
     {
+      "name": "inline-edit",
+      "type": "registry:component",
+      "title": "Inline Edit",
+      "description": "读得多、改得少的短字段（自选分组名、布局名、策略名、预警名）原地改：点一下字变成同样大小的输入框，光标落在点的那个字上（键盘激活是全选）；Enter 保存、Esc 放弃、点到外面也保存。保存是乐观的：字先换成新值，onSave 的 Promise 落定后打一个勾；reject 就退回上次存下的值，框下说为什么并给「重试」。字体字号都继承外面，as 让标题仍是标题。改自 Arc inline-edit（MIT），只做单行。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn"
+      ],
+      "files": [
+        {
+          "path": "src/patterns/inline-edit.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/patterns/inline-edit.tsx"
+        }
+      ]
+    },
+    {
       "name": "list-box",
       "type": "registry:component",
       "title": "List Box",
@@ -3811,6 +3910,27 @@
       ]
     },
     {
+      "name": "refresh-control",
+      "type": "registry:component",
+      "title": "Refresh Control",
+      "description": "自动刷新的间隔分段（TradingView 筛选器是 10 秒 / 1 分钟 / 不刷新）+ 立即刷新钮 + 上次刷新时刻 + 下次倒计时。受控：间隔、上次时刻、在不在刷都由调用方给，到点调 onRefresh；标签页隐藏时停，回来过了点马上刷。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/focus",
+        "@katana/toggle-group"
+      ],
+      "files": [
+        {
+          "path": "src/patterns/refresh-control.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/patterns/refresh-control.tsx"
+        }
+      ]
+    },
+    {
       "name": "rendering-settings",
       "type": "registry:component",
       "title": "Rendering Settings",
@@ -3917,6 +4037,60 @@
           "path": "src/patterns/side-nav.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/patterns/side-nav.tsx"
+        }
+      ]
+    },
+    {
+      "name": "split-button",
+      "type": "registry:component",
+      "title": "Split Button",
+      "description": "一个按钮两个动作：左半执行主动作，右半的箭头开一份同类动作的菜单。下单「买入 · 限价」加菜单（市价、条件单），持仓「平仓」加菜单（平一半、反手），顶栏「保存」加菜单（另存为、重命名）。菜单里选了谁、主按钮就换成谁（TradingView 画图工具条的分组按钮那样）由调用方在 onSelect 里改 children 与 onClick。按主动作时整组一起缩，箭头开着时转 180°。改自 Arc split-button（MIT）。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/button",
+        "@katana/cn",
+        "@katana/dropdown-menu"
+      ],
+      "files": [
+        {
+          "path": "src/patterns/split-button.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/patterns/split-button.tsx"
+        }
+      ]
+    },
+    {
+      "name": "tag-input-model",
+      "type": "registry:lib",
+      "title": "Tag Input Model",
+      "description": "TagInput 的纯逻辑：草稿与粘贴的拆分（逗号、分号、换行、制表符）、判重（不分大小写）、校验与上限，以及键盘在标签之间怎么走。",
+      "files": [
+        {
+          "path": "src/patterns/tag-input-model.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/patterns/tag-input-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "tag-input",
+      "type": "registry:component",
+      "title": "Tag Input",
+      "description": "在一个输入框里打字成标签：品种代码清单、策略标签、日志检索的关键词。Enter 或逗号收下，重复的（不分大小写）不收、已有的那个跳一下；光标在框头时退格先选中最后一个、再按才删；粘贴「600519, 000001」这类一串一次拆开。normalize 先整理（如转大写），validate 不过的不收、框下写原因，max 封顶。与 AnimatedTags 的分工：那个是在给定的一组里挑，这个是自由输入。改自 Arc tag-input（MIT）。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/tag-input-model"
+      ],
+      "files": [
+        {
+          "path": "src/patterns/tag-input.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/patterns/tag-input.tsx"
         }
       ]
     },
@@ -4052,6 +4226,23 @@
       ]
     },
     {
+      "name": "cell-type",
+      "type": "registry:component",
+      "title": "Cell Type",
+      "description": "上面一排页签（指数、自选、热门……），下面是当前这组的行情表：名称与代码、迷你图、最新价、涨跌幅。由 Tabs 与 Sparkline 组出来；行就是 Watchlist 的行（统一行情行加 spark），值是数，价格文字由 formatPrice 写。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/quant-format"
+      ],
+      "files": [
+        {
+          "path": "src/quotes/cell-type.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quotes/cell-type.tsx"
+        }
+      ]
+    },
+    {
       "name": "change-text",
       "type": "registry:component",
       "title": "Change Text",
@@ -4067,6 +4258,55 @@
           "path": "src/quotes/change-text.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/quotes/change-text.tsx"
+        }
+      ]
+    },
+    {
+      "name": "company-profile",
+      "type": "registry:component",
+      "title": "Company Profile",
+      "description": "对 TradingView 的 Company Profile 小组件（KatanaUI #147；它的页面写「公司简介加 sector 与 industry」）：公司名，下面几项事实（行业、细分行业、员工数、总部、网站…，标签与值由调用方写），再下面是简介正文，超过 collapsedLines 行时截断并出「展开」按钮。没有事实也没有正文时画空态（未连接 / 未实装），不画假数据。",
+      "registryDependencies": [
+        "@katana/cn"
+      ],
+      "files": [
+        {
+          "path": "src/quotes/company-profile.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quotes/company-profile.tsx"
+        }
+      ]
+    },
+    {
+      "name": "cross-rates-model",
+      "type": "registry:lib",
+      "title": "Cross Rates Model",
+      "description": "CrossRates 的纯逻辑：报价摆成货币矩阵、汇率的默认位数、方向键在格子间怎么走（照 APG grid）。",
+      "files": [
+        {
+          "path": "src/quotes/cross-rates-model.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/quotes/cross-rates-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "cross-rates",
+      "type": "registry:component",
+      "title": "Cross Rates",
+      "description": "对 TradingView 的 Forex Cross Rates 与 Forex Heatmap 小组件（KatanaUI #147）：行是基准货币、列是计价货币，每格一对。rates 模式写汇率与下面一行涨跌幅；heatmap 模式按涨跌幅七档上色（与 Treemap 同一套色阶，跟涨跌配色走）、只写涨跌幅，一眼看哪种货币强、哪种弱。对角线画斜线底不写数，缺报价的对写「—」。悬停或聚焦一格，它的行头与列头加亮；方向键在格子间走，Enter 或点击回调这一对。",
+      "registryDependencies": [
+        "@katana/change-text",
+        "@katana/cn",
+        "@katana/cross-rates-model",
+        "@katana/quant-format",
+        "@katana/treemap-model"
+      ],
+      "files": [
+        {
+          "path": "src/quotes/cross-rates.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quotes/cross-rates.tsx"
         }
       ]
     },
@@ -4303,6 +4543,7 @@
       "title": "Quote Table",
       "description": "上面一排页签（指数、自选、热门……），下面是当前这组的行情表：名称与代码、迷你图、最新价、涨跌幅。由 Tabs 与 Sparkline 组出来；行就是 Watchlist 的行（统一行情行加 spark），值是数，价格文字由 formatPrice 写。",
       "registryDependencies": [
+        "@katana/cell-type",
         "@katana/cn",
         "@katana/flash-price",
         "@katana/live",
@@ -4559,6 +4800,30 @@
       ]
     },
     {
+      "name": "symbol-info",
+      "type": "registry:component",
+      "title": "Symbol Info",
+      "description": "一只品种的报价头（对 TradingView 的 Symbol Info 小组件，KatanaUI #147）：徽标、代码、名称与交易所、市场状态灯；大号最新价加单位、带符号的涨跌额与涨跌幅；下面一排区间条（常是当日与 52 周，标记指着最新价，TradingView 右栏的三角画法）。值是数，价格文字由 formatPrice 写，交易所、状态、区间标题都由调用方传。TradingView 页面没写这个小组件有哪些栏，排布照它的品种页页头，待核对。",
+      "registryDependencies": [
+        "@katana/change-text",
+        "@katana/cn",
+        "@katana/led",
+        "@katana/quote-row",
+        "@katana/range-bar",
+        "@katana/rolling-text",
+        "@katana/severity",
+        "@katana/symbol-mark",
+        "@katana/tone-text"
+      ],
+      "files": [
+        {
+          "path": "src/quotes/symbol-info.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quotes/symbol-info.tsx"
+        }
+      ]
+    },
+    {
       "name": "symbol-mark",
       "type": "registry:component",
       "title": "Symbol Mark",
@@ -4578,6 +4843,47 @@
       ]
     },
     {
+      "name": "symbol-overview-model",
+      "type": "registry:lib",
+      "title": "Symbol Overview Model",
+      "description": "SymbolOverview 的纯逻辑：相对起点的百分比口径、按时刻摆的横坐标、二分找最近的点、几条序列合起来的时间范围。",
+      "registryDependencies": [
+        "@katana/series-geometry"
+      ],
+      "files": [
+        {
+          "path": "src/quotes/symbol-overview-model.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/quotes/symbol-overview-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "symbol-overview",
+      "type": "registry:component",
+      "title": "Symbol Overview",
+      "description": "对 TradingView 的 Symbol Overview 小组件（KatanaUI #147）：上面一排品种页签（代码、名称、最新价、涨跌幅），中间一张走势，底下一排区间按钮（1D、1M、3M、1Y、5Y、All，字由调用方给）。price 口径只画选中的那只（面积或折线）；percent 口径（它的 scaleMode Percentage）把所有品种按相对各自起点的涨跌幅叠在一张图上比，选中的那条加粗，页签上的色块兼作图例。悬停或键盘走出 LCD 读数，列出这一刻每只的值。换区间只回调，数据由调用方按区间换。",
+      "registryDependencies": [
+        "@katana/change-text",
+        "@katana/chart-kit",
+        "@katana/cn",
+        "@katana/quant-format",
+        "@katana/quote-row",
+        "@katana/series-geometry",
+        "@katana/symbol-overview-model",
+        "@katana/tabs",
+        "@katana/toggle-group",
+        "@katana/use-scrubber"
+      ],
+      "files": [
+        {
+          "path": "src/quotes/symbol-overview.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quotes/symbol-overview.tsx"
+        }
+      ]
+    },
+    {
       "name": "technical-rating",
       "type": "registry:component",
       "title": "Technical Rating",
@@ -4593,6 +4899,30 @@
           "path": "src/quotes/technical-rating.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/quotes/technical-rating.tsx"
+        }
+      ]
+    },
+    {
+      "name": "ticker-tape",
+      "type": "registry:component",
+      "title": "Ticker Tape",
+      "description": "一排品种（徽标 + 代码 + 最新价 + 涨跌幅，可带走势）横向无缝循环滚动：同一排画两遍、CSS 动画平移 -50%，速度按每秒像素算（默认 40）。悬停、聚焦或按右端暂停钮停住；点一项联动。系统「减少动态效果」或 mode=\"static\" 时不动、可横向滚动。布局照 TradingView Ticker Tape 小组件。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/change-text",
+        "@katana/cn",
+        "@katana/flash-price",
+        "@katana/quote-row",
+        "@katana/sparkline",
+        "@katana/symbol-mark"
+      ],
+      "files": [
+        {
+          "path": "src/quotes/ticker-tape.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quotes/ticker-tape.tsx"
         }
       ]
     },
@@ -4669,6 +4999,7 @@
       "title": "Watchlist",
       "description": "照 TradingView 右侧自选栏（2026-11-15 实测）：列 Symbol / Last / Chg / Chg%，行首小旗标与字母圆徽标；最新价变动时只有变了的尾数闪涨跌色、约 1 秒落回；点列头排序（升序、降序、回原顺序）。价格怎么写由 formatPrice 定，数与文字由调用方传。",
       "registryDependencies": [
+        "@katana/cell-type",
         "@katana/change-text",
         "@katana/cn",
         "@katana/flash-price",
@@ -6118,6 +6449,7 @@
         "lucide-react@1.67.0"
       ],
       "registryDependencies": [
+        "@katana/cell-type",
         "@katana/cn",
         "@katana/event-calendar-model",
         "@katana/event-calendar-types",
@@ -6292,10 +6624,10 @@
       "title": "Limit Ladder",
       "description": "A 股专有件（连板、涨停、炸板是 A 股的概念）。按板位从高到低分层的涨停梯队：顶上一行汇总读数（涨停只数、最高板、整体晋级率），下面按层：层头是粗体板位、只数与晋级率（加 2px 细进度条），层间留白；层里列个股：徽标、代码（主）、名称（次）。炸板、跌停、没涨停的文字淡显，状态胶囊保持全亮。数据与文字都由调用方传，件不认数据集。",
       "registryDependencies": [
+        "@katana/cell-type",
         "@katana/change-text",
         "@katana/cn",
         "@katana/live",
-        "@katana/quant-format",
         "@katana/rolling-text",
         "@katana/row-actions",
         "@katana/symbol-mark"
@@ -6713,6 +7045,40 @@
           "path": "src/quant/robustness-gate.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/quant/robustness-gate.tsx"
+        }
+      ]
+    },
+    {
+      "name": "seasonal-chart",
+      "type": "registry:component",
+      "title": "Seasonal Chart",
+      "description": "对 TradingView 的 Seasonal Chart 小组件（KatanaUI #147；它的页面写「把各年的价格表现叠在一起的多年季节性图」）：横轴 1 月 1 日到 12 月 31 日，纵轴是相对各年第一个价的涨跌幅，几年叠在一张图上看某段时间是不是年年涨或年年跌。最新的一年（或 highlight）2px，其余淡显；上面一排年份开关（aria-pressed）隐去 / 显出一年，至少留一年；悬停或键盘走出 LCD 读数，列出这一天各年的涨跌幅。数据先用 seasonalSeries 按年切好再传，件不取数据。",
+      "registryDependencies": [
+        "@katana/chart-kit",
+        "@katana/cn",
+        "@katana/quant-format",
+        "@katana/seasonal-model",
+        "@katana/series-geometry",
+        "@katana/use-scrubber"
+      ],
+      "files": [
+        {
+          "path": "src/quant/seasonal-chart.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/seasonal-chart.tsx"
+        }
+      ]
+    },
+    {
+      "name": "seasonal-model",
+      "type": "registry:component",
+      "title": "Seasonal Model",
+      "description": "对 TradingView 的 Seasonal Chart 小组件（KatanaUI #147；它的页面写「把各年的价格表现叠在一起的多年季节性图」）：横轴 1 月 1 日到 12 月 31 日，纵轴是相对各年第一个价的涨跌幅，几年叠在一张图上看某段时间是不是年年涨或年年跌。最新的一年（或 highlight）2px，其余淡显；上面一排年份开关（aria-pressed）隐去 / 显出一年，至少留一年；悬停或键盘走出 LCD 读数，列出这一天各年的涨跌幅。数据先用 seasonalSeries 按年切好再传，件不取数据。",
+      "files": [
+        {
+          "path": "src/quant/seasonal-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/seasonal-model.ts"
         }
       ]
     },
@@ -7331,6 +7697,7 @@
       ],
       "registryDependencies": [
         "@katana/button",
+        "@katana/cell-type",
         "@katana/checkbox",
         "@katana/chip-group",
         "@katana/cn",
@@ -7344,15 +7711,21 @@
         "@katana/cn-streak-badge",
         "@katana/context-menu",
         "@katana/emphasis",
+        "@katana/grid-summary-row",
         "@katana/live",
         "@katana/menu-any",
         "@katana/menu-parts",
         "@katana/num",
         "@katana/popover",
         "@katana/quant-format",
+        "@katana/range-bar",
+        "@katana/rating-gauge-model",
+        "@katana/rating-text",
         "@katana/row-actions",
+        "@katana/sparkline",
         "@katana/symbol-mark",
         "@katana/text-measure",
+        "@katana/tone",
         "@katana/tone-text"
       ],
       "files": [
@@ -7452,6 +7825,24 @@
           "path": "src/blocks/data-grid/column-set-tabs.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/blocks/data-grid/column-set-tabs.tsx"
+        }
+      ]
+    },
+    {
+      "name": "grid-summary-row",
+      "type": "registry:component",
+      "title": "Grid Summary Row",
+      "description": "DataGrid 的 summary 属性：表尾一到几行合计 / 均值 / 中位数，按列配聚合（sum、avg、min、max、median、count 或自己的函数），对全部行算；跟表同一份列宽与固定列，横向滚动跟着走、纵向粘在底边。字照列类型写，跟上面的行对得齐。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/data-grid",
+        "@katana/tone-text"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/data-grid/grid-summary-row.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/data-grid/grid-summary-row.tsx"
         }
       ]
     },

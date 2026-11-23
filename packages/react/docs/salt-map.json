@@ -478,9 +478,9 @@
     {
       "slug": "tokenized-input-next",
       "name": "Tokenized input",
-      "status": "没有",
-      "pages": [],
-      "note": "AnimatedTags 是从候选里挑；没有边打字边把输入变成标记的输入框。"
+      "status": "有",
+      "pages": ["tag-input"],
+      "note": "TagInput（#156，改自 Arc）：输入框里打字成标签，Enter 或逗号收下，粘贴一串拆成几个；AnimatedTags 是从候选里挑。"
     },
     {
       "slug": "toolbar",

@@ -10,6 +10,8 @@ import {
   ThemeHeatMatrixDemo,
 } from './pages/cn-pack.tsx'
 import { FlagMarkDemo } from './pages/watchlist-order.tsx'
+import { InlineEditDemo, SplitButtonDemo, TagInputDemo } from './pages/arc-inputs.tsx'
+import { RulerSliderDemo } from './pages/ruler-slider.tsx'
 import { DepthChartDemo, OrderBookDemo, TradeTapeDemo } from './pages/market-depth.tsx'
 import {
   AgentAvatarDemo,
@@ -54,6 +56,7 @@ import {
   SvgDrawOnScrollDemo,
 } from './pages/motion-effects.tsx'
 import { RenderingSettingsDemo } from './rendering.tsx'
+import { GridSummaryRowDemo, RefreshControlDemo, TickerTapeDemo } from './pages/ticker-refresh.tsx'
 import { CopyToastDemo, UseUndoStackDemo } from './pages/undo-copy.tsx'
 import { SideNavUsage } from './usage/SideNavUsage.tsx'
 import { LiveUsage } from './usage/LiveUsage.tsx'
@@ -101,6 +104,13 @@ import {
 } from './pages/quant.tsx'
 import { FlowSankeyDemo, VintageSeriesDemo } from './pages/flows.tsx'
 import { KeyStatsDemo, PeerCardsDemo, PerformanceStripDemo, RangeBarTvDemo, WatchlistDemo } from './pages/overview.tsx'
+import {
+  CompanyProfileDemo,
+  CrossRatesDemo,
+  SeasonalChartDemo,
+  SymbolInfoDemo,
+  SymbolOverviewDemo,
+} from './pages/tv-widgets.tsx'
 import { ParamScatterDemo, StrategyReportDemo } from './pages/strategy.tsx'
 import { PortfolioRunGridDemo, ReplayTransportDemo, RunModeBadgeDemo } from './pages/forward-replay.tsx'
 import { TransmissionChainDemo } from './pages/research.tsx'
@@ -371,6 +381,9 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   loading: LoadingDemo,
   'measured-skeleton': MeasuredSkeletonUsage,
   toast: ToastDemo,
+  'ticker-tape': TickerTapeDemo,
+  'refresh-control': RefreshControlDemo,
+  'grid-summary-row': GridSummaryRowDemo,
   'copy-toast': CopyToastDemo,
   'use-undo-stack': UseUndoStackDemo,
   alert: AlertDemo,
@@ -405,6 +418,11 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'performance-strip': PerformanceStripDemo,
   'peer-cards': PeerCardsDemo,
   'key-stats': KeyStatsDemo,
+  'symbol-info': SymbolInfoDemo,
+  'symbol-overview': SymbolOverviewDemo,
+  'cross-rates': CrossRatesDemo,
+  'company-profile': CompanyProfileDemo,
+  'seasonal-chart': SeasonalChartDemo,
   watchlist: WatchlistDemo,
   'metric-card': MetricCardDemo,
   'distribution-bars': DistributionBarsDemo,
@@ -463,6 +481,9 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'hypothesis-ledger': HypothesisLedgerDemo,
   'password-input': PasswordInputDemo,
   'hold-to-confirm': HoldToConfirmDemo,
+  'split-button': SplitButtonDemo,
+  'tag-input': TagInputDemo,
+  'inline-edit': InlineEditDemo,
   'delete-button': DeleteButtonDemo,
   'notification-bell': NotificationBellDemo,
   'status-icon': StatusIconDemo,
@@ -593,6 +614,7 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'switchboard-card': SwitchboardCardDemo,
   'animated-tags': AnimatedTagsDemo,
   'exposure-slider': ExposureSliderDemo,
+  'ruler-slider': RulerSliderDemo,
   scrubber: ScrubberDemo,
   'power-off-slide': PowerOffSlideDemo,
   'animated-stepper': AnimatedStepperDemo,

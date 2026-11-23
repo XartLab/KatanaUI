@@ -1,0 +1,97 @@
+/* SPDX-License-Identifier: MIT */
+/* 交叉汇率矩阵 CrossRates（#147，KATANAview #1884：对 TradingView 的 Forex Cross Rates / Forex Heatmap 小组件）。颜色只用 token；
+   热力七档的配方与 Treemap 相同（涨跌色混进凹陷底，--pnl-up / --pnl-down 跟根上的 data-updown 互换红绿），字色按底色明暗选黑或白（oklch 亮度 0.565 为界，同 Treemap）。
+   数字一律等宽（tabular-nums）；动效只用三条弹簧的 CSS 形式。 */
+
+.k-xrates {
+  min-width: 0;
+  overflow-x: auto;
+  color: var(--k-content-primary-foreground);
+  font: var(--text-data) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+}
+.k-xrates.is-empty {
+  padding: 24px;
+  color: var(--k-content-tertiary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+  text-align: center;
+}
+.k-xrates table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 2px;
+}
+.k-xrates-head {
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+  font-weight: 600;
+  text-align: center;
+  white-space: nowrap;
+  transition: background-color var(--dur-snappy) var(--ease-snappy);
+}
+th.k-xrates-head[scope='row'] {
+  text-align: left;
+}
+.k-xrates-head.is-hot {
+  background: var(--k-selectable-background-hover);
+  color: var(--k-content-primary-foreground);
+}
+.k-xrates-cell {
+  --xrates-cell: var(--k-container-subtle-background);
+  height: 40px;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  background: var(--xrates-cell);
+  text-align: right;
+  white-space: nowrap;
+  outline: 0;
+  transition: background-color var(--dur-flash) linear;
+}
+.k-xrates-cell.is-diagonal {
+  background: transparent;
+  background-image: var(--hatch);
+}
+.k-xrates-cell.is-link {
+  cursor: pointer;
+}
+.k-xrates-cell.is-hot {
+  box-shadow: inset 0 0 0 1px var(--k-content-secondary-foreground);
+}
+.k-xrates-cell:focus-visible {
+  box-shadow: inset 0 0 0 2px var(--focus-ring);
+}
+.k-xrates-rate {
+  display: block;
+}
+.k-xrates-change {
+  display: block;
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-xrates[data-mode='heatmap'] .k-xrates-cell {
+  color: oklch(from var(--xrates-cell) clamp(0, (0.565 - l) * 1000, 1) 0 0);
+  text-align: center;
+}
+.k-xrates .is-step-3 {
+  --xrates-cell: color-mix(in srgb, var(--pnl-down) 100%, var(--k-surface-sunken-background));
+}
+.k-xrates .is-step-2 {
+  --xrates-cell: color-mix(in srgb, var(--pnl-down) 70%, var(--k-surface-sunken-background));
+}
+.k-xrates .is-step-1 {
+  --xrates-cell: color-mix(in srgb, var(--pnl-down) 42%, var(--k-surface-sunken-background));
+}
+.k-xrates .is-step0,
+.k-xrates .is-stepna {
+  --xrates-cell: color-mix(in srgb, var(--k-content-secondary-foreground) 30%, var(--k-surface-sunken-background));
+}
+.k-xrates .is-step1 {
+  --xrates-cell: color-mix(in srgb, var(--pnl-up) 42%, var(--k-surface-sunken-background));
+}
+.k-xrates .is-step2 {
+  --xrates-cell: color-mix(in srgb, var(--pnl-up) 70%, var(--k-surface-sunken-background));
+}
+.k-xrates .is-step3 {
+  --xrates-cell: color-mix(in srgb, var(--pnl-up) 100%, var(--k-surface-sunken-background));
+}

@@ -14,7 +14,7 @@ const saltGaps: GuidanceMap = {
       '一组互相关联的开关筛选用 chip-group。',
       '只展示、不可点的标记用 tag。',
       '切换视图用 toggle-group，立刻生效的二元设置用 switch。',
-      '自由输入一串标签用标签输入件（输入框里打字成标签），不要自己拼 Pill 加 Input。',
+      '自由输入一串标签（品种代码清单）用 tag-input，不要自己拼 Pill 加 Input。',
     ],
     a11y: [
       '本体与 × 是两个原生 button，各自在 Tab 次序里；× 的读屏名由 dismissLabel 给，要说清去掉的是哪一条。',

@@ -6,6 +6,7 @@
 import type { ReactNode } from 'react'
 import motion from '@katana-ui/tokens/motion.tokens.json'
 import tokens from '../src/tokens-json'
+import { HEAD_HEIGHTS, HEAD_SUB_EXTRA, ROW_HEIGHTS, type GridDensity } from '../src/blocks/data-grid/data-grid-props'
 import { CodeBlock, SymbolMark } from '../src/index'
 import { GROUP_ICONS, KatanaMark } from './nav-icons'
 
@@ -320,6 +321,14 @@ function ModesPage() {
   )
 }
 
+/** DataGrid 各档的格内边距、正文与用处（行高与表头高读组件里的常量，不手抄）。 */
+const GRID_DENSITY: readonly [GridDensity, string, string, string][] = [
+  ['compact', '8px', '12px w500（数据字）', '面板密表：自选栏、盘口'],
+  ['default', '8px', '12px w500（数据字）', '面板里的一般表'],
+  ['relaxed', '8px', '12px w500（数据字）', '带子行、按钮的表'],
+  ['comfortable', '12px，首列左 20px', '14px w400；表头 13px 次要色', '整页的表：选股器、持仓、报告'],
+]
+
 function SizePage() {
   const value = (name: string, level: string) => {
     const token = T.density.tokens.find((t) => t.name === name)
@@ -349,7 +358,37 @@ function SizePage() {
         <li>容器（表格行）= 控件高 + 上下各一档小间距。</li>
         <li>字号不随密度变（数据字固定）。</li>
       </ul>
+      <h2>数据表的行高档（DataGrid density）</h2>
+      <Table
+        head={['档', '行高', '表头（有 sub 时）', '格内左右', '正文', '用在']}
+        rows={GRID_DENSITY.map(([level, pad, text, use]) => [
+          code(level),
+          `${ROW_HEIGHTS[level]}px`,
+          `${HEAD_HEIGHTS[level]}px（${HEAD_HEIGHTS[level] + HEAD_SUB_EXTRA[level]}px）`,
+          pad,
+          text,
+          use,
+        ])}
+      />
+      <ul className="gal-list">
+        <li>整页的表（选股器、持仓、报告）用 comfortable，面板里的密表用 compact / default；三档旧值不改（#90）。</li>
+        <li>comfortable 默认画行间 1px 横线（--k-separable-tertiary-borderColor），不画竖线；悬停整行提亮一档。</li>
+        <li>单位 10px w500 次要色、跟在数后空一格；代码芯片 12px w600、高 24、圆角 radius-control。</li>
+        <li>
+          这两样是共用的 .k-code-chip /
+          .k-num-unit（theme/cell-type.css，#92）：QuoteTable、Watchlist、LimitLadder、EventCalendar 与 DataGrid
+          同一份；面板密表只换格内排版，行高不变。
+        </li>
+        <li>
+          报告类的原生表（SeriesExplorer、HypothesisLedger、StrategyReport、图的表格视图）给 table 加
+          .k-table-comfortable，读同一组 --k-table-* 变量，数值与 comfortable 一致（#92）。
+        </li>
+        <li>两行表头：有一列带 sub 时所有列头名字顶到同一条线，单行列头与两行的第一行同一基线（#92）。</li>
+      </ul>
       <Src href="https://www.saltdesignsystem.com/salt/foundations/size">Salt Design System · Size</Src>
+      <Src href="https://www.tradingview.com/screener/">
+        TradingView 选股器（comfortable 的数值，#90 记录的 2026-11-18 实测）
+      </Src>
     </>
   )
 }

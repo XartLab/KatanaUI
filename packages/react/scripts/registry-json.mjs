@@ -20,6 +20,8 @@ const TARGET_ROOT = '~/src/katana/ui'
  * 有页的件，说明读页数据（gallery/registry.ts 的 PAGES.summary），这里不写第二份。
  */
 const INTERNAL = {
+  'tag-input-model':
+    'TagInput 的纯逻辑：草稿与粘贴的拆分（逗号、分号、换行、制表符）、判重（不分大小写）、校验与上限，以及键盘在标签之间怎么走。',
   'scaled-decimal':
     '盘口三件（订单簿、深度图、成交明细）共用的十进制整数运算：价格与数量按小数位乘成整数再加减比，不经浮点累加。',
   'research-color':
@@ -32,6 +34,8 @@ const INTERNAL = {
   'sparkline-instrument': 'Sparkline 的 instrument 画风：点阵、对位角标、投影谱、极值十字与批注、档案编号与 SOURCES。',
   'sparkline-shared': 'Sparkline 各画风共用的钩子：量容器、设备像素比、文字测量重置。',
   'flash-price': '最新价只闪变了的尾数（照 TradingView 自选栏）：Watchlist 与 QuoteTable 的价格格共用。',
+  'cell-type':
+    '表格的格内排版（#92）：代码芯片 CodeChip、全称 CodeName、单位小字 UnitValue、按 locale 缩写的 CompactValue；DataGrid、QuoteTable、Watchlist、LimitLadder、EventCalendar 共用，样式在 theme/cell-type.css。',
   'readout-value': '读数壳里的数值一格：没有数据写「—」，变了闪涨跌色或滚轮，单位小字；MetricCard 的卡与瓦片共用。',
   'metric-tile': 'MetricCard variant="tile" 的瓦片本体（原 SparkTile 的画法）与它的几何 sparkTileShape。',
   'gravity-model':
@@ -71,6 +75,9 @@ const INTERNAL = {
   'event-calendar-model': 'EventCalendar 的纯函数：按显示时区分天、今天 / 本周 / 下周区间、筛选、倒计时分钟。',
   'attribution-model':
     'AttributionBars 的排序与折叠（纯函数）：正负分组降序、超 7 项折「其他 ×n」、费用·税放底、对称刻度。',
+  'symbol-overview-model':
+    'SymbolOverview 的纯逻辑：相对起点的百分比口径、按时刻摆的横坐标、二分找最近的点、几条序列合起来的时间范围。',
+  'cross-rates-model': 'CrossRates 的纯逻辑：报价摆成货币矩阵、汇率的默认位数、方向键在格子间怎么走（照 APG grid）。',
   'equity-curve-model': 'EquityCurve 的纯逻辑：按时刻摆的横轴、线性 / 对数纵轴、镜像回撤的纵轴、默认横轴刻度。',
   'chart-kit':
     '图表共用底座：配色分配（series / seq / div）、点阵纹理、LCD tooltip、末点、轴与网格、图右上三件（表格视图、导出、全屏）。',
@@ -239,11 +246,13 @@ function collectItems() {
       'data-grid',
       'registry:component',
       codeIn('src/blocks/data-grid')
-        .filter((f) => f !== 'column-set-tabs.tsx')
+        .filter((f) => f !== 'column-set-tabs.tsx' && f !== 'grid-summary-row.tsx')
         .map((f) => `src/blocks/data-grid/${f}`),
     )
     // 列集标签行有自己的文档页，页的说明要有归属：单独一项，依赖 data-grid（引它的模型）。
     add('column-set-tabs', 'registry:component', ['src/blocks/data-grid/column-set-tabs.tsx'])
+    // 表尾合计行也有自己的页（#77），同样单独一项。
+    add('grid-summary-row', 'registry:component', ['src/blocks/data-grid/grid-summary-row.tsx'])
     add(
       'toolbar',
       'registry:component',

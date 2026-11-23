@@ -13,6 +13,8 @@ export type {
   GridTone,
   PillValue,
   ProgressValue,
+  RangeValue,
+  SymbolPart,
   SymbolValue,
 } from './data-grid/columns.ts'
 export {
@@ -24,6 +26,16 @@ export {
   type GridMenuEntry,
 } from './data-grid/host.tsx'
 export { tableCsv, type SortSpec } from './data-grid/model.ts'
+// 表尾合计 / 均值行（#77 第 5 条）：DataGrid 的 summary 属性；纯函数可单用。
+export {
+  GridSummaryRow,
+  aggregateValues,
+  summaryCells,
+  type GridSummary,
+  type GridSummaryRowProps,
+  type SummaryAggregate,
+  type SummaryColumn,
+} from './data-grid/grid-summary-row.tsx'
 export {
   ColumnPicker,
   type ColumnPickerLabels,
