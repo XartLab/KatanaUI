@@ -105,6 +105,31 @@ const blocks: GuidanceMap = {
       '焦点四角括号是装饰，对读屏隐藏。',
     ],
   },
+  'link-group': {
+    aliases: ['Symbol linking', 'Symbol sync', 'Link color', 'Window linking', 'Color group'],
+    use: [
+      '几张件要跟着同一个品种走（图表、报价、盘口、新闻）时按颜色分组联动；照 TradingView 的符号联动（帮助中心 Symbol syncing between tabs，2026-11-23 读）。',
+      '四组 A–D，颜色是 token link-a…d：A 赭（signal-orange）、B 玫瑰茜红、C 铬绿、D 土黄，取自 Graphite 信号色（2026-11-15 用户定），不用 TradingView 蓝，也不为更多组造新色。',
+      '「不联动」是 null：件只管自己的值，选择件里画一圈 3:1 的空环（同 PanelFrameHeader 无联动的色点）。',
+      '进有值的组，件改显示组的值；进空组，组取这件当前的值；离组（换组或不联动），件留着最后显示的值。帮助中心没写这三条，是我们定的，待在 TradingView 里实看核对。',
+      '两件同时进同一个空组（如同时挂上），组取树里靠前那件的值。',
+      '联动传什么值由调用方定（品种代码，或 { symbol, interval } 这类）；同一组里的件传同一种值。',
+      '选择件放在标题栏最左，即 PanelFrameHeader 静态色点的位置：22×22 透明按钮、8px 联动灯、圆角 4；悬停与菜单开着各深一档底色（--k-actionable-subtle-*）。',
+      '菜单最窄 140px：A–D 四项在上，分隔线下是「不联动」；当前那项打勾。',
+      '要刷新后联动还在：Provider 受控，接 usePersistedState；每件在哪一组由调用方存（useLinkGroup 的 group / onGroupChange）。',
+    ],
+    avoid: [
+      '只是几张图同步十字线或时间范围，用 SmallMultiples、BrushChart 自己的同步，不用联动组。',
+      '一张件里的主从联动（列表点一行、详情跟着换）直接传 props，不用 Provider。',
+    ],
+    a11y: [
+      '选择件是 button（aria-haspopup=menu、aria-expanded），读屏名是「labels.trigger: 当前组名」；按钮里的灯对读屏隐藏，不读两遍。',
+      '菜单是单选菜单（menuitemradio + aria-checked，Radix），菜单名是 labels.trigger；组名由调用方给，没给的组读字母 A–D。',
+      '组色不单独传意：菜单每项写组名，按钮名里带当前组名。',
+      '组里换值时其余件直接换内容，不抢焦点；包里不加 aria-live，免得一换几张件同时念，要读出变化由件自己加。',
+      '焦点环画在按钮里面（outline-offset -2px），贴着标题栏边也不被裁掉。',
+    ],
+  },
   'status-bar': {
     aliases: ['Footer bar', 'Status line', 'Info bar', 'Bottom bar'],
     use: [

@@ -10,6 +10,7 @@ import {
   ThemeHeatMatrixDemo,
 } from './pages/cn-pack.tsx'
 import { FlagMarkDemo } from './pages/watchlist-order.tsx'
+import { LinkGroupDemo } from './pages/link-group.tsx'
 import {
   AgentAvatarDemo,
   AiApprovalDemo,
@@ -383,6 +384,7 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'data-grid': DataGridDemo,
   'empty-state': EmptyStateDemo,
   'panel-frame': PanelFrameDemo,
+  'link-group': LinkGroupDemo,
   toolbar: ToolbarDemo,
   'estimate-badge': EstimateBadgeDemo,
   'event-timeline': EventTimelineDemo,

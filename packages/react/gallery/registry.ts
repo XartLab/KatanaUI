@@ -4068,6 +4068,48 @@ export const PAGES: readonly DocPage[] = [
     keys: [['Enter / Space', '折叠按钮：折叠或展开（Tab 进到按钮上）']],
   },
   {
+    id: 'link-group',
+    group: 'blocks',
+    cardHeight: 300,
+    title: 'LinkGroupProvider 联动组',
+    summary:
+      '几张件按颜色分组，同组里换一个品种，组里其余件跟着换（照 TradingView 的符号联动）。四组 A–D 用联动色（token link-a…d，取自 Graphite 信号色，不用 TradingView 蓝），另有「不联动」。哪些件进组、联动传什么值由调用方定，包里不带数据源；标题栏里放 LinkGroupPicker 选组。',
+    exports: ['LinkGroupProvider', 'useLinkGroup', 'LinkGroupPicker'],
+    propParts: [
+      {
+        part: 'LinkGroupProvider',
+        note: '放在这些件外面，存每组当前的值（组 → 值，T 由调用方定）。不受控用 defaultValue；要存盘就受控，接 usePersistedState。没有 Provider 时 useLinkGroup 照常能用，每件只管自己。',
+      },
+      {
+        part: 'useLinkGroup({ defaultValue, group?, defaultGroup?, onGroupChange? })',
+        note: '一件在联动组里的位置：返回 value（在组里且组有值时是组的值，否则是自己的）、setValue（在组里就改整组）、group / setGroup（接 LinkGroupPicker）、color（组色变量，不联动是 undefined）。组受控传 group，不受控传 defaultGroup（默认 null，不联动）。',
+      },
+      {
+        part: 'LinkGroupPicker',
+        note: '标题栏里 22×22 的小按钮，中间是联动灯；点开是 A–D 四组加「不联动」的单选菜单。不存组，value / onValueChange 由调用方接；文字经 labels 传，组没给名字时写字母。',
+      },
+    ],
+    states: [
+      '在组里：按钮里的灯是组色（8px，带同色光晕）；同组的件显示同一个值。',
+      '不联动：按钮里是一圈 3:1 的空环，同 PanelFrameHeader 无联动的色点；件只管自己的值。',
+      '菜单开着：按钮底色深一档；当前那组打勾。',
+      '进有值的组：件改显示组的值。进空组：组取这件当前的值。离开组：件留着最后显示的值。',
+    ],
+    donts: [
+      '不要把行情、请求写进联动组：它只传调用方给的值，拿数据是各件自己的事。',
+      '不要自己造组色：只有 link-a…d 四色；要第五组先问用户。',
+      '不要在同一个标题栏里既放 LinkGroupPicker 又给 PanelFrameHeader 传 linkGroup：两个灯会重复。',
+    ],
+    composition:
+      'LinkGroupProvider（每组的值）\n  件 × n：useLinkGroup → { value, setValue, group, setGroup }\n    LinkGroupPicker（button · Led）\n      DropdownMenu（单选：A · B · C · D ｜ 不联动）',
+    keys: [
+      ['Enter / Space / ↓', '在选择件上：打开组菜单'],
+      ['↑ / ↓', '菜单里换项；Home / End 到头尾'],
+      ['Enter / Space', '选中这一组（或不联动），菜单收起，焦点回到按钮'],
+      ['Esc', '收起菜单，不换组'],
+    ],
+  },
+  {
     id: 'status-bar',
     group: 'blocks',
     cardHeight: 280,
