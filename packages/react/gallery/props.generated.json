@@ -6853,6 +6853,42 @@
         }
       ]
     },
+    "CodeChip": {
+      "kind": "component",
+      "source": "src/quotes/cell-type.tsx",
+      "props": [
+        {
+          "name": "children",
+          "type": "ReactNode",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "CodeName": {
+      "kind": "component",
+      "source": "src/quotes/cell-type.tsx",
+      "props": [
+        {
+          "name": "children",
+          "type": "ReactNode",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
     "Collapsible": {
       "kind": "component",
       "source": "src/primitives/collapsible.tsx",
@@ -6912,7 +6948,43 @@
           "name": "suffix",
           "type": "string",
           "required": false,
-          "description": "pnl：写在数字后面的单位（USDT）。"
+          "description": "pnl、bar：写在数字后面的单位（USDT）；同 unit，留着向后兼容。"
+        },
+        {
+          "name": "unit",
+          "type": "string",
+          "required": false,
+          "description": "数字后面的单位（USD、USDT、倍）：单独渲染成小一号的次要色字（10px w500，照 TradingView 选股器），复制与导出时跟数字之间空一格。"
+        },
+        {
+          "name": "locale",
+          "type": "string",
+          "required": false,
+          "description": "compact、date：缩写与日期用哪种语言（en-US 是 K/M/B/T，zh-CN 是 万/亿）；省略时用 DataGrid 的 locale，再没有是 en-US。"
+        },
+        {
+          "name": "ratingLabels",
+          "type": "Readonly<Record<RatingLevel, string>>",
+          "required": false,
+          "description": "rating：五档的名字（文案由调用方传）；默认 Strong sell / Sell / Neutral / Buy / Strong buy。"
+        },
+        {
+          "name": "barMax",
+          "type": "number",
+          "required": false,
+          "description": "bar：给了就改画单边横条，满格对应这个值（相对成交量写 3 就是 3 倍满格），中性色、不分涨跌，给有大小没正负的量（#90）； 不给是带正负的居中条，长度按本列绝对值最大者归一（#109）。"
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": false,
+          "description": "spark、range：读屏名（「ALFA 30 日走势」）；省略时用格子的字。"
+        },
+        {
+          "name": "symbolParts",
+          "type": "readonly SymbolPart[]",
+          "required": false,
+          "description": "symbol：画哪几段，见 SymbolPart。"
         },
         {
           "name": "labels",
@@ -7500,6 +7572,78 @@
       "kind": "component",
       "source": "src/primitives/command.tsx",
       "props": []
+    },
+    "CompactFormat": {
+      "kind": "type",
+      "source": "src/lib/chart/format/compact.ts",
+      "props": [
+        {
+          "name": "locale",
+          "type": "string",
+          "required": false,
+          "description": "BCP 47 locale that picks the abbreviations (en-US: K/M/B/T, zh-CN: CJK myriad units); defaults to en-US."
+        },
+        {
+          "name": "digits",
+          "type": "number",
+          "required": false,
+          "description": "Decimal places of an abbreviated number; defaults to 2."
+        }
+      ]
+    },
+    "CompactNumber": {
+      "kind": "type",
+      "source": "src/lib/chart/format/compact.ts",
+      "props": [
+        {
+          "name": "number",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "suffix",
+          "type": "string",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "CompactValue": {
+      "kind": "component",
+      "source": "src/quotes/cell-type.tsx",
+      "props": [
+        {
+          "name": "locale",
+          "type": "string",
+          "required": false,
+          "description": "BCP 47 locale that picks the abbreviations (en-US: K/M/B/T, zh-CN: CJK myriad units); defaults to en-US."
+        },
+        {
+          "name": "digits",
+          "type": "number",
+          "required": false,
+          "description": "Decimal places of an abbreviated number; defaults to 2."
+        },
+        {
+          "name": "value",
+          "type": "number | null | undefined",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "unit",
+          "type": "string",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": ""
+        }
+      ]
     },
     "CompanyProfile": {
       "kind": "component",
@@ -9258,7 +9402,13 @@
           "type": "GridDensity",
           "required": false,
           "default": "'default'",
-          "description": "Row height tier."
+          "description": "Row height tier: compact, default, relaxed for dense panel tables; comfortable (40px rows, 14px text, ruled) for full-page tables."
+        },
+        {
+          "name": "locale",
+          "type": "string",
+          "required": false,
+          "description": "Locale of compact numbers (K/M/B/T for en-US, CJK myriad units for zh-CN) and date columns; a column's format.locale wins."
         },
         {
           "name": "hideHeader",
@@ -9288,7 +9438,8 @@
           "name": "ruled",
           "type": "boolean",
           "required": false,
-          "description": "Draw a thin rule between rows."
+          "default": "density === 'comfortable'",
+          "description": "Draw a thin rule between rows; on by default for density comfortable."
         },
         {
           "name": "selectable",
@@ -9729,7 +9880,13 @@
           "name": "density",
           "type": "GridDensity",
           "required": false,
-          "description": "Row height tier."
+          "description": "Row height tier: compact, default, relaxed for dense panel tables; comfortable (40px rows, 14px text, ruled) for full-page tables."
+        },
+        {
+          "name": "locale",
+          "type": "string",
+          "required": false,
+          "description": "Locale of compact numbers (K/M/B/T for en-US, CJK myriad units for zh-CN) and date columns; a column's format.locale wins."
         },
         {
           "name": "hideHeader",
@@ -9759,7 +9916,7 @@
           "name": "ruled",
           "type": "boolean",
           "required": false,
-          "description": "Draw a thin rule between rows."
+          "description": "Draw a thin rule between rows; on by default for density comfortable."
         },
         {
           "name": "selectable",
@@ -21831,6 +21988,12 @@
           "description": "Logo image of the symbol mark; letters are drawn when omitted."
         },
         {
+          "name": "volume",
+          "type": "number",
+          "required": false,
+          "description": "Volume, abbreviated by locale (K/M/B or 万/亿); the column shows when labels.columns.vol is given."
+        },
+        {
           "name": "key",
           "type": "string",
           "required": true,
@@ -21872,6 +22035,12 @@
           "type": "(item: LadderItem) => void",
           "required": false,
           "description": ""
+        },
+        {
+          "name": "locale",
+          "type": "string",
+          "required": false,
+          "description": "封单额缩写用哪种语言（zh-CN 是 万 / 亿，en-US 是 K / M / B）；省略是 en-US。"
         },
         {
           "name": "rowActions",
@@ -21920,6 +22089,12 @@
           "type": "{ name: string; change: string; firstSeal: string; sealAmount: string; opens: string; industry: string }",
           "required": true,
           "description": ""
+        },
+        {
+          "name": "sealUnit",
+          "type": "string",
+          "required": false,
+          "description": "封单额后的单位小字（「CNY」）；locale 是中文（万 / 亿）时不写，中文缩写自带量级。省略不写单位。"
         },
         {
           "name": "summary",
@@ -21980,6 +22155,12 @@
           "type": "(item: LadderItem) => void",
           "required": false,
           "description": ""
+        },
+        {
+          "name": "locale",
+          "type": "string",
+          "required": false,
+          "description": "封单额缩写用哪种语言（zh-CN 是 万 / 亿，en-US 是 K / M / B）；省略是 en-US。"
         },
         {
           "name": "rowActions",
@@ -35249,6 +35430,18 @@
           "description": "Writes the last price; two decimals when omitted."
         },
         {
+          "name": "locale",
+          "type": "string",
+          "required": false,
+          "description": "Locale of the volume abbreviations (en-US K/M/B/T, zh-CN CJK myriad units); defaults to en-US."
+        },
+        {
+          "name": "volumeUnit",
+          "type": "string",
+          "required": false,
+          "description": "Unit written small after the volume (shares, USD)."
+        },
+        {
           "name": "value",
           "type": "string",
           "required": false,
@@ -35292,9 +35485,9 @@
       "props": [
         {
           "name": "columns",
-          "type": "{ name: string; trend: string; price: string; change: string }",
+          "type": "{ name: string; trend: string; price: string; change: string; volume?: string }",
           "required": true,
-          "description": "Text of the four header columns (name, trend, price, change)."
+          "description": "Text of the header columns (name, trend, price, change, and an optional volume column)."
         },
         {
           "name": "empty",
@@ -35349,6 +35542,18 @@
           "type": "FormatPrice",
           "required": false,
           "description": "Writes the last price; two decimals when omitted."
+        },
+        {
+          "name": "locale",
+          "type": "string",
+          "required": false,
+          "description": "Locale of the volume abbreviations (en-US K/M/B/T, zh-CN CJK myriad units); defaults to en-US."
+        },
+        {
+          "name": "volumeUnit",
+          "type": "string",
+          "required": false,
+          "description": "Unit written small after the volume (shares, USD)."
         },
         {
           "name": "value",
@@ -35433,6 +35638,12 @@
           "type": "string",
           "required": false,
           "description": "Logo image of the symbol mark; letters are drawn when omitted."
+        },
+        {
+          "name": "volume",
+          "type": "number",
+          "required": false,
+          "description": "Volume, abbreviated by locale (K/M/B or 万/亿); the column shows when labels.columns.vol is given."
         },
         {
           "name": "spark",
@@ -35805,6 +36016,30 @@
       "kind": "type",
       "source": "src/patterns/date-range-model.ts",
       "props": []
+    },
+    "RangeValue": {
+      "kind": "type",
+      "source": "src/blocks/data-grid/columns.ts",
+      "props": [
+        {
+          "name": "low",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "high",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "value",
+          "type": "number",
+          "required": true,
+          "description": ""
+        }
+      ]
     },
     "RankedBoard": {
       "kind": "type",
@@ -46605,6 +46840,11 @@
         }
       ]
     },
+    "SymbolPart": {
+      "kind": "type",
+      "source": "src/blocks/data-grid/columns.ts",
+      "props": []
+    },
     "SymbolSearch": {
       "kind": "component",
       "source": "src/blocks/symbol-search/symbol-search.tsx",
@@ -52279,6 +52519,30 @@
         }
       ]
     },
+    "UnitValue": {
+      "kind": "component",
+      "source": "src/quotes/cell-type.tsx",
+      "props": [
+        {
+          "name": "children",
+          "type": "ReactNode",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "unit",
+          "type": "string",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
     "UptimeBars": {
       "kind": "component",
       "source": "src/blocks/uptime-bars/uptime-bars.tsx",
@@ -53652,6 +53916,18 @@
           "description": "Writes a price or change amount; two decimals when omitted."
         },
         {
+          "name": "locale",
+          "type": "string",
+          "required": false,
+          "description": "Locale of the volume abbreviations (en-US K/M/B/T, zh-CN 万/亿); defaults to en-US."
+        },
+        {
+          "name": "volumeUnit",
+          "type": "string",
+          "required": false,
+          "description": "Unit written small after the volume."
+        },
+        {
           "name": "sort",
           "type": "WatchlistSort | null",
           "required": false,
@@ -53695,9 +53971,9 @@
       "props": [
         {
           "name": "columns",
-          "type": "Record<WatchlistSortKey, string>",
+          "type": "Record<Exclude<WatchlistSortKey, 'vol'>, string> & { vol?: string }",
           "required": true,
-          "description": "Header text of the four columns."
+          "description": "Header text of the four columns, plus an optional volume column (vol)."
         },
         {
           "name": "list",
@@ -53740,6 +54016,18 @@
           "type": "FormatPrice",
           "required": false,
           "description": "Writes a price or change amount; two decimals when omitted."
+        },
+        {
+          "name": "locale",
+          "type": "string",
+          "required": false,
+          "description": "Locale of the volume abbreviations (en-US K/M/B/T, zh-CN 万/亿); defaults to en-US."
+        },
+        {
+          "name": "volumeUnit",
+          "type": "string",
+          "required": false,
+          "description": "Unit written small after the volume."
         },
         {
           "name": "sort",
@@ -53830,6 +54118,12 @@
           "type": "string",
           "required": false,
           "description": "Logo image of the symbol mark; letters are drawn when omitted."
+        },
+        {
+          "name": "volume",
+          "type": "number",
+          "required": false,
+          "description": "Volume, abbreviated by locale (K/M/B or 万/亿); the column shows when labels.columns.vol is given."
         }
       ]
     },
@@ -55368,6 +55662,24 @@
         }
       ]
     },
+    "compactNumber": {
+      "kind": "function",
+      "source": "src/lib/chart/format/compact.ts",
+      "props": [
+        {
+          "name": "locale",
+          "type": "string",
+          "required": false,
+          "description": "BCP 47 locale that picks the abbreviations (en-US: K/M/B/T, zh-CN: CJK myriad units); defaults to en-US."
+        },
+        {
+          "name": "digits",
+          "type": "number",
+          "required": false,
+          "description": "Decimal places of an abbreviated number; defaults to 2."
+        }
+      ]
+    },
     "compactParts": {
       "kind": "function",
       "source": "src/lib/chart/format/quantity.ts",
@@ -56029,6 +56341,11 @@
     "formatCompact": {
       "kind": "function",
       "source": "src/lib/chart/format/quantity.ts",
+      "props": []
+    },
+    "formatCompactNumber": {
+      "kind": "function",
+      "source": "src/lib/chart/format/compact.ts",
       "props": []
     },
     "formatCount": {
@@ -57627,6 +57944,12 @@
           "type": "string",
           "required": false,
           "description": "time 列用的时区：'local'（默认，跟电脑一致）、'utc'，或 IANA 时区名。"
+        },
+        {
+          "name": "locale",
+          "type": "string",
+          "required": false,
+          "description": "compact、date 列的默认语言（列的 format.locale 优先）。"
         }
       ]
     },

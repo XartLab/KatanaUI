@@ -20,6 +20,7 @@ export {
   type QuoteTableRow,
 } from './quote-table.tsx'
 export { plainPrice, rowTone, type FormatPrice, type QuoteRow } from './quote-row.ts'
+export { CodeChip, CodeName, CompactValue, UnitValue } from './cell-type.tsx'
 export { SymbolMark, symbolMarkLetters, type SymbolMarkProps } from './symbol-mark.tsx'
 export {
   Sparkline,

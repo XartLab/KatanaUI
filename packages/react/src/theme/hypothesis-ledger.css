@@ -193,21 +193,11 @@
   color: var(--k-content-primary-foreground);
 }
 
-/* 观察表：传导层 × 核心证据 × 最容易混淆的地方。 */
-.k-hl-watch {
-  width: 100%;
-  border-collapse: collapse;
-}
-.k-hl-watch th,
-.k-hl-watch td {
-  padding: 8px;
-  border-bottom: 1px solid var(--alpha-white-6);
+/* 观察表：传导层 × 核心证据 × 最容易混淆的地方。行高、内距、字号是整页表的一套数（.k-table-comfortable，theme/cell-type.css，#92）；
+   这里只留它自己的：文字多、会折行，所以顶对齐、靠左；行头（传导层）主前景色 w600 不折行。 */
+.k-hl-watch.k-table-comfortable :is(th, td) {
   text-align: left;
   vertical-align: top;
-}
-.k-hl-watch thead th {
-  color: var(--k-content-body-foreground);
-  font-weight: 600;
 }
 .k-hl-watch tbody th {
   width: 88px;

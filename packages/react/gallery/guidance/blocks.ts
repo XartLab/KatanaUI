@@ -35,7 +35,7 @@ const blocks: GuidanceMap = {
     a11y: [
       '图上是 role=slider，aria-valuetext 念「日期 值」，读屏名取自 labels.chart。',
       '指标瓦片是按钮，展开状态用 aria-expanded。',
-      '明细表是 role=region 且可聚焦，读屏名取自 labels.table。',
+      '明细表是 role=region 且可聚焦，读屏名取自 labels.table；表是整页表的一套数（.k-table-comfortable：行 40、表头 48、正文 14px，#92），可视高 328（表头加 7 行）。',
       '右上角第一个按钮切到明细表，图里的数在表里都有。',
     ],
   },
@@ -91,11 +91,26 @@ const blocks: GuidanceMap = {
       '按列排序时不能挪行：拖不起来，Alt+↑↓ 读出 labels.rowOrder.sorted，菜单四项灰掉并写原因。',
       '分节标题行：rowSection(row) 返回标题就是标题行，跨满整行、次级色大写小字、上面一道分隔线；拖标题整节走，落点吸到节边界不拆别的节；把行拖到标题下面就进了那一节。折叠、个数、组内汇总还没做（待定，G7 的 GridSectionRow 建议）。',
       '触屏不起拖（整行拖会抢走滚动）：触屏用右键菜单的上移下移。',
-      '实时刷新：live 为 true 时数值类列（price、quantity、pnl、change、number）值变了闪涨跌色，文本列不闪；排序顺序变了已渲染的行平滑换位，新增的行蓝线高亮 1.2 秒；默认 false，静态表不闪。',
+      '实时刷新：live 为 true 时数值类列（price、quantity、pnl、change、number、percent、compact、cnAmount）值变了闪涨跌色，文本列不闪；排序顺序变了已渲染的行平滑换位，新增的行蓝线高亮 1.2 秒；默认 false，静态表不闪。',
+      '整页的表（选股器、持仓、报告）用 density="comfortable"：行 40、表头 48、格内左右 12、首列左 20、正文 14px w400、表头 13px 次要色，默认画行间 1px 横线、不画竖线（照 TradingView 选股器，#90）。',
+      '面板里的密表（自选栏、盘口）留在 compact（行 20）或 default（行 24）；这两档与 relaxed（32）的值不变。',
+      '单位与数分开写：format.unit（USD、USDT）渲染成 10px w500 次要色小字，跟在数后空一格；复制与导出仍是「4.53 T USD」。pnl 的 suffix 同 unit。',
+      '大数用 compact 列：缩写字由 locale 定，en-US 是 K / M / B / T 两位小数（对齐 TradingView）；zh-CN ≥1 亿写「x.xx 亿」（万亿同理），1 万–1 亿写千分位整数「8,800 万」，去掉无意义的 .00（#92）。列的 format.locale 优先于 DataGrid 的 locale，组件不带语言。',
+      '品种格用 format.symbolParts 选段：logo（18px 圆标，没图画字母）、chip（代码芯片 12px w600、面底 container-subtle、圆角 radius-control、高 24、左右 6）、name（全称）、code、venue；整页表用 [logo, chip, name]。',
+      '评级用 rating 列：值是五档名或 −1…1 分数（与 TechnicalRating 同一把尺子 ±0.1 / ±0.5），画 RatingText（图标加档名，买涨色卖跌色，中性不着色）；档名经 format.ratingLabels 传。',
+      '有大小没正负的量（相对成交量）用 bar 列：数字左边一条 4px 高、最长 48px 的中性灰横条（次要前景 75% 混透明），满格值是 format.barMax（不给 barMax 是以 0 为中线、带涨跌色的居中条）；不用涨跌色，不用品牌橙。',
+      '行内走势用 spark 列（Sparkline 只画线、高 24、不画末端环，颜色按头尾涨跌）；分类用 pill 列（一格一到几枚短标签）；相对成交量这类有大小没正负的量用 bar 列加 format.barMax（单边中性横条）；区间用 range 列（RangeBar，两端写数）；日期用 date 列（YYYY-MM-DD）；比例用 percent 列（不带符号、不着色）。',
+      '排序的列头亮一档（主前景色）、字重 500，名字前画 ▲ / ▼；表头第二行（sub）写口径（TTM、30 日）或总数，comfortable 下两行都是 13px / 16px。',
+      '两行表头（#92）：只要有一列带 sub，所有列头的名字都顶到同一条线——上边距 =（表头高 − 两行块高）/ 2，两行块高默认 14 + 12 = 26、comfortable 16 + 2 + 16 = 34；单行列头与两行的第一行同一基线，第二行在下，排序箭头与列头图标跟第一行走。',
+      '代码芯片、全称与单位小字是共用的 .k-code-chip / .k-code-name / .k-num-unit（theme/cell-type.css，#92）：QuoteTable、Watchlist、LimitLadder、EventCalendar 用的是同一份，改样子只改那一处。',
+      '报告类的原生表（SeriesExplorer 表格视图、HypothesisLedger 观察表、StrategyReport 指标表、图的表格视图）给 <table> 加 .k-table-comfortable，跟 comfortable 档同一套数（--k-table-*：行 40、表头 48、格内 12、首列左 20、正文 14px、表头 13px 次要色、行间 1px 横线）；字折行时行跟着长。',
+      '整页表的数字用 sans 加 tabular-nums，不用 --font-num 的等宽字（TradingView 选股器同样做法，用户 2026-11-18 定）；报告类原生表随 #92 从 --font-num 换成 sans。',
     ],
     avoid: [
       '几行静态数据，用 interactive=false 的只读表或 strategy-report 里的表。',
       '需要拖动编辑单元格的电子表格，这里不做。',
+      '整页表别用 default 档加竖线：格子挤、没有层次，就是「电子表格感」（用户 2026-11-18）；用 comfortable。',
+      '别把单位拼进数字字符串（text 里写「1.2 B USD」）：单位不能变小变淡，用 format.unit。',
     ],
     a11y: [
       '可交互时是 grid，有子行时是 treegrid，只读是 table；行列号用 aria-rowindex / aria-rowcount。',
@@ -103,6 +118,8 @@ const blocks: GuidanceMap = {
       '排序列带 aria-sort；列宽拖柄是带名字的 separator。',
       '读屏名取自 label。',
       '挪完一个隐藏的 role=status 读「挪到第 n 位，共 m 行」（labels.rowOrder.moved），拖到一半 Esc 读「已取消」；只在位置真变了才读。',
+      '迷你图、区间条的读屏名取 format.label（「ALFA 30 日走势」）；横条只是装饰（aria-hidden），值读格子里的数字。',
+      '评级不只靠颜色：图标（双箭头、单箭头、等号）与档名都带档位。',
     ],
   },
   'empty-state': {
@@ -320,7 +337,11 @@ const blocks: GuidanceMap = {
   },
   'strategy-report': {
     aliases: ['Backtest report', 'Performance summary', 'Tear sheet', 'Strategy tester report'],
-    use: ['回测完看概览、绩效、交易分析与逐笔列表。', '多空分开看，指标由逐笔平仓现算。'],
+    use: [
+      '回测完看概览、绩效、交易分析与逐笔列表。',
+      '多空分开看，指标由逐笔平仓现算。',
+      '报告里的表都是整页表的一套数（#92）：交易列表是 DataGrid comfortable（行 40、正文 14px、行间线，列宽随 14px 加宽一档：时间 172、价格 100、盈亏 112），绩效与风险比率表是 .k-table-comfortable（行 40、表头 48）。',
+    ],
     avoid: ['只看净值曲线，用 equity-curve。', '实盘的运行监控，用 system-monitor。'],
     a11y: [
       '外层是 section，读屏名取自 labels.report；页签用 line 样式的 Tabs，多空切换是带名字的 toggle-group。',
@@ -369,7 +390,11 @@ const blocks: GuidanceMap = {
   },
   'hypothesis-ledger': {
     aliases: ['Hypothesis tracker', 'Idea log', 'Research log', 'Claim register'],
-    use: ['记下每条研究假说、它的检验期限与证据，一眼看哪些快到期。', '人下结论后由调用方写回状态。'],
+    use: [
+      '记下每条研究假说、它的检验期限与证据，一眼看哪些快到期。',
+      '人下结论后由调用方写回状态。',
+      '观察表是整页表的一套数（.k-table-comfortable，#92：行至少 40、表头 48、正文 14px、表头 13px 次要色）；文字会折行，所以格子顶对齐、靠左，行头（传导层）主前景色 w600。',
+    ],
     avoid: ['要看传导关系，用 transmission-chain。', '给交易建议排队处理，用 decision-queue。'],
     a11y: [
       '外层是 section，读屏名取自 labels.ledger；列表是带名字的 ol。',
