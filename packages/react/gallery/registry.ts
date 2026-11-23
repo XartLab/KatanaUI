@@ -9249,9 +9249,10 @@ export const PAGES: readonly DocPage[] = [
       { part: 'currentRunStep', note: '纯函数：第一个在跑或阻塞的步骤。' },
     ],
     states: [
-      '进度条：约 40 根竖短刻度（ticks 可调），亮的是走过的整根（向下取整）、着状态色，暗的是同色 16%；刻度全部对读屏隐藏，条本身是 progressbar。',
+      '进度条：默认 40 根竖短刻度（ticks 可调，取整后夹在 1 到 120，不是有限数取 40），亮的是走过的整根（向下取整）、着状态色，暗的是同色 16%；刻度全部对读屏隐藏，条本身是 progressbar。',
+      '百分比同样向下取整、跟刻度一致：没跑完（在跑、阻塞）最多显示 99%，只有 done 才是 100%。',
       '在跑：强调色刻度，第一根暗刻度是「当前刻度」，亮正文主色加一圈同色外框；时间行左写已用、右写约剩；右上「暂停」。',
-      '阻塞：warn 色刻度、没有当前刻度；时间行只写阻塞了多久；进度条下出一张 warn 语气的问题卡（标题、一句说明、一颗「确认」），阻塞的那步名字 warn 色；右上「取消」。',
+      '阻塞：warn 色刻度、没有当前刻度；时间行只写阻塞了多久；进度条下出一张 warn 语气的问题卡（标题、一句说明、一颗「确认」），阻塞的那步名字 warn 色；右上「取消」是 danger 样式（离问题卡的「确认」很近，要分得开）；要不要二次确认由调用方在 onAction 收到 cancel 时定，件不加。',
       '完成：100%、刻度全亮 ok 色，写总用时；出「接着跑」，每个建议是一颗钮分两段（图标加名字 | 预估时长）；右上「再跑一次」。',
       '暂停：中性灰刻度、不画当前刻度；右上「继续」。失败：danger 色刻度；右上「再跑一次」。',
       '状态永不单靠颜色：百分比右边一盏灯加状态词（role=status）；步骤图标形状各不同（勾、转圈、空圈、警示、叉），右边写耗时或状态字。',
@@ -9261,6 +9262,7 @@ export const PAGES: readonly DocPage[] = [
     donts: [
       '不要拿它看很多个运行的总览：用 AgentRunList（一行一个）、AgentFleet、AgentQueue。',
       '不要拿它看一次编排的子 Agent 树：用 AgentTree。',
+      '不要把它的状态跟 AgentTree 的混着传：这件的 RunDetailStatus 是 running / blocked / done / paused / failed，AgentTree 的 AgentRunStatus 是 queued / running / waiting / done / failed / stopped；同样是「要你回答」，这边叫 blocked、那边叫 waiting（一一对应）；queued 在这边没有对应（不传，或当 paused）；stopped 对应 paused 还是 failed，待用户定，统一叫法另开票。RunDetailStep 也不是 AgentTree 的 AgentRunStep（多了 blocked，少了 tool），别拿错。',
       '不要让件自己走钟：已用时、约剩、阻塞多久都由调用方按自己的节奏给。',
       '不要把状态色换成别的：在跑强调色、阻塞 warn、完成 ok、失败 danger 是全库统一的语气。',
     ],

@@ -67,6 +67,9 @@ test('进度条是 progressbar，带 aria-valuenow；刻度只是装饰', async 
   await expect(bar).toHaveAttribute('aria-valuemin', '0')
   await expect(bar).toHaveAttribute('aria-valuemax', '100')
   await expect(bar).toHaveAttribute('aria-valuenow', '62')
+  // 进度条的读法是百分比加状态词，由 labels 拼（件里不写连接的字）。
+  await expect(bar).toHaveAttribute('aria-valuetext', '62%，在跑')
+  await expect(demo(area, 'main').getByRole('progressbar')).toHaveAttribute('aria-valuetext', '76%，要你确认')
   await expect(bar.locator('i')).toHaveCount(40)
   await expect(bar.locator('i:not([aria-hidden="true"])')).toHaveCount(0)
   // 读屏树里进度条没有 40 个子节点（装饰刻度不进树）。
@@ -77,6 +80,11 @@ test('进度条是 progressbar，带 aria-valuenow；刻度只是装饰', async 
 test('阻塞问题卡的确认钮：点了回调被调用（运行放行、问题卡消失、动作钮变暂停）', async ({ page }) => {
   const area = await open(page, 'agent-run-detail')
   const main = demo(area, 'main')
+  // 阻塞时右上「取消」是 danger 样式；「确认」用 aria-describedby 指向问题（标题与说明）。
+  await expect(main.getByRole('button', { name: '取消' })).toHaveAttribute('data-variant', 'danger')
+  await expect(main.getByRole('button', { name: '确认' })).toHaveAccessibleDescription(
+    /示例源 B 缺少访问密钥.*要继续，需要我用保险库里的备用密钥吗？/,
+  )
   await main.getByRole('button', { name: '确认' }).click()
   await expect(main.locator('[data-slot="run-state"]')).toHaveText('在跑')
   await expect(main.locator('[data-slot="run-question"]')).toHaveCount(0)
@@ -150,6 +158,11 @@ test('步骤：状态图标形状不同、右边写耗时或状态字，在跑�
   const steps = demo(area, 'running').locator('[data-slot="run-steps"] li')
   await expect(steps).toHaveCount(5)
   await expect(steps.nth(0).locator('.k-ard-step-meta')).toHaveText('46 秒')
+  // 完成步骤的耗时读屏读得到；在跑那步右边的状态词对读屏隐藏（跟读屏词重复）。
+  await expect(steps.nth(0).locator('.k-ard-step-meta')).not.toHaveAttribute('aria-hidden')
+  await expect(steps.nth(2).locator('.k-ard-step-meta')).toHaveAttribute('aria-hidden', 'true')
+  expect(await steps.nth(0).ariaSnapshot()).toMatch(/连接数据源 完成[\s\S]*46 秒/)
+  expect(await steps.nth(2).ariaSnapshot()).not.toContain('在跑 在跑')
   await expect(steps.nth(2).locator('.k-ard-step-meta')).toHaveText('在跑')
   await expect(steps.nth(2)).toHaveAttribute('aria-current', 'step')
   await expect(steps.nth(3).locator('.k-ard-step-meta')).toHaveText('')
@@ -171,6 +184,9 @@ test('在 Console 主题下三种状态的刻度也各是不同的颜色', async
 
 test('AgentRunList：行带名字、状态字、时间；点行或键盘 Enter 打开，选中的行 aria-current', async ({ page }) => {
   const area = await open(page, 'agent-run-list')
+  // 分组标题是真标题（读屏按 H 键能跳），分组用 aria-labelledby 指向它。
+  await expect(area.getByRole('heading', { name: '进行中' })).toBeVisible()
+  await expect(area.getByRole('group', { name: '本周' })).toBeVisible()
   const rows = area.locator('[data-slot="run-row"]')
   await expect(rows).toHaveCount(5)
   const blocked = area.locator('[data-slot="run-row"][data-id="source-b"]')

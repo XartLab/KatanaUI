@@ -27,6 +27,7 @@ const LABELS: AgentRunDetailLabels = {
   status: { running: '在跑', blocked: '要你确认', done: '完成', paused: '已暂停', failed: '失败' },
   actions: { pause: '暂停', resume: '继续', cancel: '取消', rerun: '再跑一次' },
   progress: '运行进度',
+  progressValue: (percent, status) => `${percent}%，${status}`,
   elapsed: (time) => `已用 ${time}`,
   remaining: (time) => `约剩 ${time}`,
   blocked: (time) => `阻塞于 ${time}前`,

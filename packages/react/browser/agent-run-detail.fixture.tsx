@@ -21,6 +21,7 @@ const LABELS: AgentRunDetailLabels = {
   status: { running: 'Running', blocked: 'Action required', done: 'Completed', paused: 'Paused', failed: 'Failed' },
   actions: { pause: 'Pause', resume: 'Resume', cancel: 'Cancel', rerun: 'Run again' },
   progress: 'Run progress',
+  progressValue: (percent, status) => `${percent}%, ${status}`,
   elapsed: (time) => `${time} elapsed`,
   remaining: (time) => `~${time} remaining`,
   blocked: (time) => `Blocked ${time} ago`,

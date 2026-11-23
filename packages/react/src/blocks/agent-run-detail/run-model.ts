@@ -62,8 +62,18 @@ export const runHeaderAction = (status: RunDetailStatus): RunDetailAction => ACT
 export const clampRunProgress = (progress: number): number =>
   Number.isFinite(progress) ? Math.min(1, Math.max(0, progress)) : 0
 
-/** Progress as a whole percent, 0 to 100. */
-export const runPercent = (progress: number): number => Math.round(clampRunProgress(progress) * 100)
+// 浮点乘法会差一点（0.29 × 100 = 28.999999999999996）：向下取整前加一个小量，免得 29% 显示成 28%。
+const EPSILON = 1e-9
+
+/** Progress as a whole percent, 0 to 100, rounded down (never shows 100% before the run is done; matches the ticks). */
+export const runPercent = (progress: number): number => Math.floor(clampRunProgress(progress) * 100 + EPSILON)
+
+/** Most ticks the bar draws. */
+export const MAX_RUN_TICKS = 120
+
+/** Number of ticks in the bar: a finite number rounded down and kept between 1 and 120; anything else (NaN, Infinity, undefined) is 40. */
+export const runTickCount = (ticks: number | undefined): number =>
+  ticks === undefined || !Number.isFinite(ticks) ? 40 : Math.min(MAX_RUN_TICKS, Math.max(1, Math.floor(ticks)))
 
 /** How many ticks are lit, and which one is the current tick (-1 when none). */
 export type RunSegments = { filled: number; current: number }
@@ -73,8 +83,8 @@ export type RunSegments = { filled: number; current: number }
  * The current tick is the first dark one, only while running; a finished run lights all ticks.
  */
 export function runSegments(progress: number, ticks: number, status: RunDetailStatus): RunSegments {
-  const total = Math.max(1, Math.floor(ticks))
-  const filled = status === 'done' ? total : Math.min(total, Math.floor(clampRunProgress(progress) * total))
+  const total = runTickCount(ticks)
+  const filled = status === 'done' ? total : Math.min(total, Math.floor(clampRunProgress(progress) * total + EPSILON))
   return { filled, current: status === 'running' && filled < total ? filled : -1 }
 }
 

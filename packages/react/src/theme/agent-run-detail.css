@@ -230,7 +230,7 @@
   color: var(--k-actionable-foreground);
   font: var(--text-data) var(--font-sans);
   cursor: pointer;
-  transition: background-color 150ms ease-out;
+  transition: background-color var(--dur-snappy) var(--ease-snappy);
 }
 .k-ard-next-button:hover {
   background: var(--k-actionable-background-hover);

@@ -21,7 +21,16 @@ import {
   RotateCcwIcon,
   XIcon,
 } from 'lucide-react'
-import { useEffect, useId, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
+import {
+  useEffect,
+  useEffectEvent,
+  useId,
+  useLayoutEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+  type ReactNode,
+} from 'react'
 import { cn } from '../../lib/cn.ts'
 import { Button } from '../../primitives/button.tsx'
 import {
@@ -29,6 +38,7 @@ import {
   runPercent,
   runTone,
   runSegments,
+  runTickCount,
   runStepTone,
   runTimeLine,
   type RunDetailAction,
@@ -80,6 +90,8 @@ export type AgentRunDetailLabels = {
   actions: Record<RunDetailAction, string>
   /** Accessible name of the progress bar. */
   progress: string
+  /** Spoken value of the progress bar, built from the whole percent and the state word (「76%，阻塞」); the caller writes the joining text. */
+  progressValue: (percent: number, status: string) => string
   /** Time line texts, each built from a duration already written by `formatDuration`. */
   elapsed: (time: string) => string
   remaining: (time: string) => string
@@ -114,7 +126,7 @@ export type AgentRunDetailProps = {
   took?: number
   /** How a duration in milliseconds is written (「6m 12s」). */
   formatDuration: (ms: number) => string
-  /** Number of ticks in the bar. @default 40 */
+  /** Number of ticks in the bar, rounded down and kept between 1 and 120; not a finite number is 40. @default 40 */
   ticks?: number
   /** The question card of a blocked run. */
   question?: RunQuestion
@@ -178,13 +190,15 @@ function Section({
   useLayoutEffect(() => {
     if (!open) panel.current?.setAttribute('hidden', 'until-found')
   }, [open])
+  // 监听只挂一次：onToggle 每次渲染都是新函数，用 useEffectEvent 读它的最新值，不让监听跟着解绑重绑。
+  const reveal = useEffectEvent(() => onToggle(true))
   useEffect(() => {
     const node = panel.current
     if (!node) return
-    const found = () => onToggle(true)
+    const found = () => reveal()
     node.addEventListener('beforematch', found)
     return () => node.removeEventListener('beforematch', found)
-  }, [onToggle])
+  }, [])
   return (
     <section className="k-ard-section" data-section={id} data-open={open ? '' : undefined}>
       <h4 className="k-ard-section-title">
@@ -209,7 +223,7 @@ export function AgentRunDetail({
   blockedFor,
   took,
   formatDuration,
-  ticks = 40,
+  ticks,
   question,
   onConfirm,
   next,
@@ -226,8 +240,10 @@ export function AgentRunDetail({
   const [folded, setFolded] = useState<ReadonlySet<RunDetailSection>>(() => new Set(defaultCollapsed))
   const titleId = useId()
   const questionId = useId()
+  const questionTextId = useId()
   const percent = status === 'done' ? 100 : runPercent(progress)
-  const { filled, current } = runSegments(progress, ticks, status)
+  const tickCount = runTickCount(ticks)
+  const { filled, current } = runSegments(progress, tickCount, status)
   const line = runTimeLine(status)
   const action = runHeaderAction(status)
   const tone = runTone(status)
@@ -274,7 +290,14 @@ export function AgentRunDetail({
           {name}
         </h3>
         {onAction !== undefined && (
-          <Button size="sm" onClick={() => onAction(action)} data-slot="run-action" data-action={action}>
+          // 阻塞时的「取消」是 danger 样式（离问题卡的「确认」很近，要分得开）；要不要二次确认由调用方定，件不加。
+          <Button
+            size="sm"
+            variant={action === 'cancel' ? 'danger' : 'default'}
+            onClick={() => onAction(action)}
+            data-slot="run-action"
+            data-action={action}
+          >
             {ACTION_ICON[action]}
             {labels.actions[action]}
           </Button>
@@ -298,11 +321,11 @@ export function AgentRunDetail({
           aria-valuemin={0}
           aria-valuemax={100}
           aria-valuenow={percent}
-          aria-valuetext={`${percent}%`}
-          style={{ '--ard-ticks': Math.max(1, Math.floor(ticks)) } as CSSProperties}
+          aria-valuetext={labels.progressValue(percent, labels.status[status])}
+          style={{ '--ard-ticks': tickCount } as CSSProperties}
           data-slot="run-progress"
         >
-          {Array.from({ length: Math.max(1, Math.floor(ticks)) }, (_, n) => (
+          {Array.from({ length: tickCount }, (_, n) => (
             <i key={n} aria-hidden="true" data-tick={n < filled ? 'lit' : n === current ? 'current' : 'dark'} />
           ))}
         </div>
@@ -319,9 +342,19 @@ export function AgentRunDetail({
             <h4 id={questionId} className="k-ard-question-title">
               {question.title}
             </h4>
-            {question.description !== undefined && <p className="k-ard-question-text">{question.description}</p>}
+            {question.description !== undefined && (
+              <p id={questionTextId} className="k-ard-question-text">
+                {question.description}
+              </p>
+            )}
             {onConfirm !== undefined && (
-              <Button variant="primary" size="sm" onClick={onConfirm} data-slot="run-confirm">
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={onConfirm}
+                aria-describedby={question.description !== undefined ? `${questionId} ${questionTextId}` : questionId}
+                data-slot="run-confirm"
+              >
                 {labels.confirm}
               </Button>
             )}
@@ -382,7 +415,8 @@ export function AgentRunDetail({
                   {step.name}
                   <span className="k-ard-sr">{labels.step[step.status]}</span>
                 </span>
-                <span className="k-ard-step-meta" aria-hidden="true">
+                {/* 完成步骤的耗时读屏要读到；在跑、阻塞、失败写的是状态词，跟上面的读屏词重复，才隐藏。 */}
+                <span className="k-ard-step-meta" aria-hidden={step.status === 'done' ? undefined : true}>
                   {step.status === 'done'
                     ? duration(step.duration)
                     : step.status === 'pending'

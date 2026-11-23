@@ -21,8 +21,8 @@
 
 前置：`$KUI doctor` 全 OK。每份演示收到 `section.locator('[data-gallery-ard="<名>"]')`；页上不止一份，别用整页的角色查询。
 
-- **在跑。** `running`：进度条 `getByRole('progressbar', { name: '运行进度' })` 的 `aria-valuenow="62"`，`[data-tick="lit"]` 24 根、`[data-tick="current"]` 1 根；`[data-slot="run-time"]` 写「已用 6 分 12 秒」「约剩 4 分钟」；右上按钮名「暂停」；没有 `[data-slot="run-question"]`。
-- **阻塞。** `main` 的初始状态：`aria-valuenow="76"`，没有当前刻度；时间行只写「阻塞于 58 分钟前」；状态词「要你确认」；问题卡含「示例源 B 缺少访问密钥」；右上「取消」。
+- **在跑。** `running`：进度条 `getByRole('progressbar', { name: '运行进度' })` 的 `aria-valuenow="62"`、`aria-valuetext="62%，在跑"`（百分比向下取整，没跑完最多 99%），`[data-tick="lit"]` 24 根、`[data-tick="current"]` 1 根；`[data-slot="run-time"]` 写「已用 6 分 12 秒」「约剩 4 分钟」；右上按钮名「暂停」；没有 `[data-slot="run-question"]`。
+- **阻塞。** `main` 的初始状态：`aria-valuenow="76"`，没有当前刻度；时间行只写「阻塞于 58 分钟前」；状态词「要你确认」；问题卡含「示例源 B 缺少访问密钥」；右上「取消」是 danger 样式（`data-variant="danger"`），「确认」的无障碍描述是问题的标题加说明。
 - **完成。** `done`：`aria-valuenow="100"`，40 根全亮；时间行「用时 3 分 17 秒」；右上「再跑一次」；`[data-slot="run-next"] button` 两个，名字「发送报告给研究组」「30 天后再回补一次」，右侧写「约 2 分钟」「约 1 分钟」。
 - **确认。** `main.getByRole('button', { name: '确认' }).click()`。状态词变「在跑」，问题卡消失，当前刻度出现，右上变「暂停」；再点「暂停」变「已暂停」、右上「继续」，再点「继续」回到「在跑」。
 - **接着跑。** `done` 里点 `button[data-id="send"]`：`picked` 写「选了：发送报告给研究组」；点 `data-id="schedule"` 写「选了：30 天后再回补一次」。点右上「再跑一次」写「选了：再跑一次」。
