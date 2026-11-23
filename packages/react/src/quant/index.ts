@@ -294,3 +294,27 @@ export {
   type WatchlistSort,
   type WatchlistSortKey,
 } from '../quotes/watchlist-model.ts'
+// 对照 TradingView 小组件补缺的第二批（KatanaUI #147，KATANAview #1884）：报价类四件在 src/quotes/，这里照旧再导出；季节性图是量化层自己的。
+export {
+  SymbolInfo,
+  type SymbolInfoProps,
+  type SymbolInfoRange,
+  type SymbolInfoStatus,
+} from '../quotes/symbol-info.tsx'
+export {
+  SymbolOverview,
+  type SymbolOverviewItem,
+  type SymbolOverviewLabels,
+  type SymbolOverviewProps,
+  type SymbolOverviewRange,
+} from '../quotes/symbol-overview.tsx'
+export { CrossRates, type CrossRatesLabels, type CrossRatesProps } from '../quotes/cross-rates.tsx'
+export type { CrossRateQuote } from '../quotes/cross-rates-model.ts'
+export {
+  CompanyProfile,
+  type CompanyProfileFact,
+  type CompanyProfileLabels,
+  type CompanyProfileProps,
+} from '../quotes/company-profile.tsx'
+export { SeasonalChart, type SeasonalChartLabels, type SeasonalChartProps } from './seasonal-chart.tsx'
+export { seasonalSeries, type SeasonalPoint, type SeasonalYear } from './seasonal-model.ts'

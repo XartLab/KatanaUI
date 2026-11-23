@@ -2563,6 +2563,112 @@ export const PAGES: readonly DocPage[] = [
     ],
   },
   {
+    id: 'split-button',
+    group: 'forms',
+    cardHeight: 220,
+    title: 'SplitButton 拆分按钮',
+    summary:
+      '一个按钮两个动作：左半执行主动作，右半的箭头开一份同类动作的菜单。下单「买入 · 限价」加菜单（市价、条件单），持仓「平仓」加菜单（平一半、反手），顶栏「保存」加菜单（另存为、重命名）。菜单里选了谁、主按钮就换成谁（TradingView 画图工具条的分组按钮那样）由调用方在 onSelect 里改 children 与 onClick。按主动作时整组一起缩，箭头开着时转 180°。改自 Arc split-button（MIT）。',
+    exports: ['SplitButton'],
+    propParts: [
+      {
+        part: 'SplitButton',
+        note: '两半都是我们的 Button，variant 与 size 同一份；菜单是 DropdownMenu（align=end），项的 danger、disabled、shortcut 照它的行。labels.menu 必填：箭头那半没有字，读屏靠它。',
+      },
+    ],
+    states: [
+      '静止：两半拼成一个，中缝一条边（primary 是一条 18% 字色的细线）。',
+      '按主动作：整组缩到 0.97；箭头那半按下只变色。',
+      '菜单开着：箭头转 180°，那半停在按下底。',
+      '没有菜单项：箭头那半灰掉，主按钮照常。',
+      '禁用：两半都灰。',
+    ],
+    donts: [
+      '菜单里不要放跟主动作无关的东西：那是 DropdownMenu 或工具条的事。',
+      '不要拿它做不可撤的主动作（全平、全撤）：那些用 HoldToConfirm；拆分按钮按一下就执行。',
+      '只有一个动作时用 Button。',
+    ],
+    composition:
+      'SplitButton\n  DropdownMenu\n    div.k-split\n      Button（主动作）\n      DropdownMenuTrigger → Button（箭头）\n    DropdownMenuContent\n      DropdownMenuItem × n（图标、字、DropdownMenuShortcut）',
+    keys: [
+      ['Enter / Space', '主按钮上：执行主动作；箭头上：开菜单'],
+      ['Alt + ↓', '主按钮上也开菜单（原生拆分按钮的键位）'],
+      ['↑ ↓ / Enter / Esc', '菜单里走、选、关（关上后焦点回箭头）'],
+    ],
+  },
+  {
+    id: 'tag-input',
+    group: 'forms',
+    cardHeight: 240,
+    title: 'TagInput 标签输入',
+    summary:
+      '在一个输入框里打字成标签：品种代码清单、策略标签、日志检索的关键词。Enter 或逗号收下，重复的（不分大小写）不收、已有的那个跳一下；光标在框头时退格先选中最后一个、再按才删；粘贴「600519, 000001」这类一串一次拆开。normalize 先整理（如转大写），validate 不过的不收、框下写原因，max 封顶。与 AnimatedTags 的分工：那个是在给定的一组里挑，这个是自由输入。改自 Arc tag-input（MIT）。',
+    exports: ['TagInput'],
+    propParts: [
+      {
+        part: 'TagInput',
+        note: 'value 受控或 defaultValue 非受控；label 是输入框的读屏名（要可见标签就配 Field 与 id）。labels.remove、labels.duplicate 必填，其余播报可选；播报走一个 aria-live=polite 的屏外区。',
+      },
+    ],
+    states: [
+      '空：显示占位。',
+      '有标签：标签在框里换行排，输入框跟在最后。',
+      '选中：退格或方向键选中的标签画一圈焦点色的环，再按退格删掉。',
+      '被拒：validate 或 max 拦下时框变红边、框下写原因，被拒的字留在框里好改。',
+      '禁用：整框半透明，标签的 × 也不能点。',
+    ],
+    donts: [
+      '选项是固定一组时不要用它：用 MultiSelect、ChipGroup 或 AnimatedTags。',
+      '标签不是自由文字（要从品种库里选）时，用 Combobox 的多选，或者给 validate 查库。',
+    ],
+    composition:
+      'TagInput\n  div.k-tagin-box\n    span.k-tagin-tag × n\n      span（字）\n      button（×，不进 Tab 序列）\n    input\n  p.k-tagin-error（被拒时）\n  span.sr-only（aria-live 播报）',
+    keys: [
+      ['Enter / ,', '收下草稿（逗号不进框；Enter 草稿空时交给表单）'],
+      ['Backspace', '光标在框头：先选中最后一个标签，再按删除'],
+      ['← →', '在标签间移选中；过了最后一个回到输入框'],
+      ['Delete', '删除选中的标签'],
+      ['Esc', '取消选中'],
+    ],
+  },
+  {
+    id: 'inline-edit',
+    group: 'forms',
+    cardHeight: 260,
+    title: 'InlineEdit 原地改名',
+    summary:
+      '读得多、改得少的短字段（自选分组名、布局名、策略名、预警名）原地改：点一下字变成同样大小的输入框，光标落在点的那个字上（键盘激活是全选）；Enter 保存、Esc 放弃、点到外面也保存。保存是乐观的：字先换成新值，onSave 的 Promise 落定后打一个勾；reject 就退回上次存下的值，框下说为什么并给「重试」。字体字号都继承外面，as 让标题仍是标题。改自 Arc inline-edit（MIT），只做单行。',
+    exports: ['InlineEdit'],
+    propParts: [
+      {
+        part: 'InlineEdit',
+        note: '静止时是一个 button（读屏名「label: 值」，描述是 labels.editHint），编辑时是 input（读屏名 label）。保存结果在 role=status 的屏外区播报。value 是存下的值：外面改了它，没在编辑或保存时直接换上。',
+      },
+    ],
+    states: [
+      '静止：透明边，悬停给按钮的悬停底，右边淡出一支铅笔。',
+      '编辑：输入框的皮，宽度跟着字长；右边是保存与取消两个图标钮。',
+      '校验不过：红边，框下写原因，留在编辑态。',
+      '保存中：字已是新值，右边转圈（只有加载才转）。',
+      '已保存：右边一个绿勾，1.8 秒后收起（Arc 的时长）。',
+      '保存失败：退回上次的值，右边红色叹号，框下说明并给「重试」。',
+      '禁用：只显示字，没有铅笔。',
+    ],
+    donts: [
+      '几个字段要一起存时不要用它：用表单和一个提交按钮。',
+      '不要拿它改价格、数量这类下单参数：那些用 NumberInput，改完要经下单确认。',
+      '长段描述不要用它：现在只做单行。',
+    ],
+    composition:
+      'InlineEdit\n  div.k-inedit\n    as（span / h1–h4）\n      button（静止）或 span.k-inedit-field（编辑：镜像字 + input）\n      span.k-inedit-slot（铅笔 / 保存与取消 / 转圈 / 勾 / 叹号）\n    p.k-inedit-message（校验或失败，失败带「重试」）\n    span.sr-only × 2（编辑提示、role=status 播报）',
+    keys: [
+      ['Enter / Space', '静止时：进编辑并全选'],
+      ['Enter', '编辑时：保存（输入法组字时不算）'],
+      ['Esc', '放弃，字回到原样，焦点回到字上'],
+      ['Tab', '焦点离开件就保存'],
+    ],
+  },
+  {
     id: 'password-input',
     group: 'forms',
     cardHeight: 171,
@@ -5725,6 +5831,132 @@ export const PAGES: readonly DocPage[] = [
     keys: [['Tab / Enter', '给了回调时到标题、标签上、触发']],
   },
   {
+    id: 'symbol-info',
+    group: 'quotes',
+    cardHeight: 230,
+    title: 'SymbolInfo 品种报价头',
+    summary:
+      '一只品种的报价头（对 TradingView 的 Symbol Info 小组件，KatanaUI #147）：徽标、代码、名称与交易所、市场状态灯；大号最新价加单位、带符号的涨跌额与涨跌幅；下面一排区间条（常是当日与 52 周，标记指着最新价，TradingView 右栏的三角画法）。值是数，价格文字由 formatPrice 写，交易所、状态、区间标题都由调用方传。TradingView 页面没写这个小组件有哪些栏，排布照它的品种页页头，待核对。',
+    exports: ['SymbolInfo'],
+    propParts: [
+      {
+        part: 'SymbolInfo',
+        note: 'ranges 是 { id, title, low, high }，标记都指着 last；status 是 { tone, label }（开市 ok、盘前盘后 warn、休市 off）。',
+      },
+    ],
+    states: [
+      '涨 / 跌 / 平：涨跌额与涨跌幅上涨跌色并带三角，方向由 change 定（没有 change 看 changePct）。',
+      'live：价格变了用 RollingText 滚动，涨跌幅闪一次涨跌色。',
+      '给了 status：右上角一盏状态灯加文字。',
+      '给了 ranges：每个区间一条 RangeBar（role=meter），最新价在区间外时标记贴边。',
+      '名称或交易所过长：省略号截断。',
+    ],
+    donts: [
+      '不要传写好的价格字符串：传数与 formatPrice，品种精度由调用方定。',
+      '不要只靠颜色表达涨跌：涨跌额带符号与三角。',
+      '不要在包里写交易所名与状态词：由调用方按界面语言传。',
+    ],
+    composition:
+      'SymbolInfo section[aria-label]\n  div（SymbolMark · 代码 / 名称 · 交易所 · Led 状态）\n  div（价 RollingText · 单位 · ToneText 涨跌额 · ChangeText 涨跌幅）\n  div（RangeBar × n）\n  p（footer）',
+    keys: [],
+  },
+  {
+    id: 'symbol-overview',
+    group: 'quotes',
+    cardHeight: 380,
+    title: 'SymbolOverview 多品种走势卡',
+    summary:
+      '对 TradingView 的 Symbol Overview 小组件（KatanaUI #147）：上面一排品种页签（代码、名称、最新价、涨跌幅），中间一张走势，底下一排区间按钮（1D、1M、3M、1Y、5Y、All，字由调用方给）。price 口径只画选中的那只（面积或折线）；percent 口径（它的 scaleMode Percentage）把所有品种按相对各自起点的涨跌幅叠在一张图上比，选中的那条加粗，页签上的色块兼作图例。悬停或键盘走出 LCD 读数，列出这一刻每只的值。换区间只回调，数据由调用方按区间换。',
+    exports: ['SymbolOverview'],
+    propParts: [
+      {
+        part: 'SymbolOverview',
+        note: 'items 是 { id, symbol, name?, last, changePct, values, times }：values 与 times 一一对应，横轴按时刻摆，几只品种的时刻可以不同。页签是 Radix Tabs，区间是 ToggleGroup。',
+      },
+    ],
+    states: [
+      'price：选中那只一条 2px 线，chartType=area 时线下一层很淡的同色渐变；末端一个实心点。',
+      'percent：每只一条线（颜色按 items 的次序取 series-*，切页签不换色），选中的 2px、其余 1.25px 淡显；纵轴是百分数，跨过 0 时画零线。',
+      '悬停或聚焦后按方向键：竖线 + LCD 读数（时刻、每只的值）；离开或失焦清掉。',
+      '选中那只有效值少于两个：走势的位置写 labels.empty。',
+      '区间：选中的按钮灰底（aria-pressed），不用蓝色。',
+    ],
+    donts: [
+      '不要指望件按区间切数据：onRangeChange 回调后由调用方换 values 与 times。',
+      '不要在 price 口径叠几只不同价位的品种：比涨跌用 percent。',
+      '品种多于七只时第八只起都是「其他」色，看不清：拆成几张卡。',
+    ],
+    composition:
+      'SymbolOverview（Tabs）\n  TabsList（TabsTrigger × n：色块 · 代码 · 名称 · 价 · ChangeText）\n  TabsContent\n    div[role=slider]（svg：网格 · 零线 · 面积 · 线 × n；纵轴刻度 · 末点 · 十字线 · LcdTooltip）\n    div（横轴刻度）\n  ToggleGroup（区间）',
+    keys: [
+      ['← / →（页签上）', '换到前一只 / 后一只品种（Radix Tabs）'],
+      ['← / →（图上）', '走到前一个 / 后一个点，出读数'],
+      ['Shift + ← / →', '一次走三个点'],
+      ['Home / End', '走到第一个 / 最后一个点'],
+      ['Esc', '清掉读数'],
+      ['Tab / Enter', '到区间按钮、选中'],
+    ],
+  },
+  {
+    id: 'cross-rates',
+    group: 'quotes',
+    cardHeight: 300,
+    title: 'CrossRates 交叉汇率矩阵',
+    summary:
+      '对 TradingView 的 Forex Cross Rates 与 Forex Heatmap 小组件（KatanaUI #147）：行是基准货币、列是计价货币，每格一对。rates 模式写汇率与下面一行涨跌幅；heatmap 模式按涨跌幅七档上色（与 Treemap 同一套色阶，跟涨跌配色走）、只写涨跌幅，一眼看哪种货币强、哪种弱。对角线画斜线底不写数，缺报价的对写「—」。悬停或聚焦一格，它的行头与列头加亮；方向键在格子间走，Enter 或点击回调这一对。',
+    exports: ['CrossRates'],
+    propParts: [
+      {
+        part: 'CrossRates',
+        note: 'quotes 是 { base, quote, rate, changePct }（changePct 是百分数）；同一对给了几次取最后一次。汇率默认不小于 100 写两位、否则四位，别的位数给 formatRate。',
+      },
+    ],
+    states: [
+      'rates：汇率等宽右对齐，涨跌幅上涨跌色。',
+      'heatmap：底色按 colorStep(changePct, limit) 七档，字按底色明暗选黑或白；没有报价的格用中性底。',
+      '悬停或聚焦：这一格描一圈，行头与列头灰底加亮。',
+      '没有货币：画 labels.empty。',
+    ],
+    donts: [
+      '不要在件里算交叉汇率：每一对的 rate 与 changePct 由调用方给（各家报价口径不同）。',
+      '不要只靠颜色读热力：格子里写着涨跌幅。',
+      '货币多于十种左右时格子会挤，放进能横向滚动的容器（件本身 overflow-x: auto）。',
+    ],
+    composition:
+      'CrossRates\n  table[role=grid]\n    thead：角 · th（计价货币）× n\n    tbody tr × n：th（基准货币）· td[role=gridcell] × n（汇率 · ChangeText | 涨跌幅）',
+    keys: [
+      ['← → ↑ ↓', '在格子间走一格（到边停住）'],
+      ['Home / End', '到本行的头 / 尾'],
+      ['Ctrl + Home / Ctrl + End', '到整张的第一格 / 最后一格'],
+      ['Enter', '回调这一对（对角线与缺报价的格不回调）'],
+    ],
+  },
+  {
+    id: 'company-profile',
+    group: 'quotes',
+    cardHeight: 300,
+    title: 'CompanyProfile 公司简介卡',
+    summary:
+      '对 TradingView 的 Company Profile 小组件（KatanaUI #147；它的页面写「公司简介加 sector 与 industry」）：公司名，下面几项事实（行业、细分行业、员工数、总部、网站…，标签与值由调用方写），再下面是简介正文，超过 collapsedLines 行时截断并出「展开」按钮。没有事实也没有正文时画空态（未连接 / 未实装），不画假数据。',
+    exports: ['CompanyProfile'],
+    propParts: [
+      {
+        part: 'CompanyProfile',
+        note: 'facts 是 { id, label, value? }，value 可以是任何节点（链接也行）；没给 value 画「—」。按钮与空态的字在 labels。',
+      },
+    ],
+    states: [
+      '折叠：正文只留 collapsedLines 行（line-clamp），真被截断时才出「展开」按钮（量 scrollHeight，宽度变了重量）。',
+      '展开：正文全显，按钮换成「收起」，aria-expanded 跟着变。',
+      '没有数据：只有公司名与 labels.empty。',
+      '事实的值过长：省略号截断。',
+    ],
+    donts: ['不要拿它放长篇报告：正文是纯文字，长文用 Markdown 件。', '不要在没接数据源时塞样本文字：给空态。'],
+    composition:
+      'CompanyProfile section[aria-label]\n  h3（公司名）\n  dl（div × n：dt 标签 · dd 值）\n  div（p 正文 · button 展开 / 收起）\n  p（来源）',
+    keys: [['Tab / Enter / Space', '到「展开 / 收起」按钮、切换']],
+  },
+  {
     id: 'watchlist',
     group: 'quotes',
     cardHeight: 380,
@@ -6767,6 +6999,45 @@ export const PAGES: readonly DocPage[] = [
       ['Home / End', '第一个 / 最后一个节点'],
       ['Enter / 空格', '钉住或取消钉住这个节点的上下游'],
       ['Esc', '取消钉住'],
+    ],
+  },
+  {
+    id: 'seasonal-chart',
+    group: 'quant',
+    cardHeight: 330,
+    title: 'SeasonalChart 季节性图',
+    summary:
+      '对 TradingView 的 Seasonal Chart 小组件（KatanaUI #147；它的页面写「把各年的价格表现叠在一起的多年季节性图」）：横轴 1 月 1 日到 12 月 31 日，纵轴是相对各年第一个价的涨跌幅，几年叠在一张图上看某段时间是不是年年涨或年年跌。最新的一年（或 highlight）2px，其余淡显；上面一排年份开关（aria-pressed）隐去 / 显出一年，至少留一年；悬停或键盘走出 LCD 读数，列出这一天各年的涨跌幅。数据先用 seasonalSeries 按年切好再传，件不取数据。',
+    exports: ['SeasonalChart', 'seasonalSeries'],
+    propParts: [
+      {
+        part: 'SeasonalChart',
+        note: 'years 是 { year, points: { day, pct }[] }（day 是一年里的第几天，0 是 1 月 1 日）；月份的字在 labels.months（12 个）。',
+      },
+      {
+        part: 'seasonalSeries(points, offsetMs)',
+        symbol: 'seasonalSeries',
+        note: 'points 是从旧到新的 { time, value }；按 UTC 加 offsetMs（交易所时区，东八区给 8 × 3600000）切年；同一天取最后一个；一年的第一个价是 0 时不要这一年。口径是相对这一年第一个价，TradingView 用年初开盘还是上年收盘待核对。',
+      },
+    ],
+    states: [
+      '默认：每年一条线，颜色按年份次序取 series-*，关掉一年不让其余换色；月初画淡虚线，跨过 0 画零线。',
+      '关掉的年：开关淡显、色块变空心，线不画；最后一条线不让关。',
+      '悬停或聚焦后按方向键：竖线 + 读数（「月 日」与每年的涨跌幅）；今年还没走到的日子不列今年。',
+      '没有至少两个点的年：画 labels.empty。',
+    ],
+    donts: [
+      '不要把不同口径的数（价格、收益率）混进同一张图：先换成同一口径再切年。',
+      '年份多于七个时第八个起都是「其他」色：只留最近几年。',
+    ],
+    composition:
+      'SeasonalChart figure\n  div[role=group]（button[aria-pressed] × 年：色块 · 年份）\n  div[role=slider]（svg：网格 · 月初虚线 · 零线 · 线 × 年；纵轴刻度 · 十字线 · LcdTooltip）\n  div（月份刻度）\n  figcaption（来源）',
+    keys: [
+      ['← / →（图上）', '前一天 / 后一天，出读数'],
+      ['Shift + ← / →', '一次走三天'],
+      ['Home / End', '到 1 月 1 日 / 12 月 31 日'],
+      ['Esc', '清掉读数'],
+      ['Tab / Enter / Space', '到年份开关、切换'],
     ],
   },
   {
