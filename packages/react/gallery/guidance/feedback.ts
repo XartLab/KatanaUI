@@ -66,7 +66,7 @@ const feedback: GuidanceMap = {
       '剪贴板不支持（非 https、浏览器不认 image/png）或被拒：自动改成下载 <图名>.png，提示写「已改为下载」和原因；拍不出图才算失败。',
       '提示：一条 Toast，2400ms 后自己收，指针或焦点在上面时不收；再点一次是新的一条。语气 ok / warn / danger 对应已复制 / 已改为下载 / 失败。',
       '复制文字（代码、直链）用 copyText，提示同一条 CopyToast（copiedText）。',
-      '接了相机钮的图（#87）：EquityCurve、QuantileLayers 与用 ChartViewProps 的几张（Ridgeline、FlowSankey、VintageSeries、UptimeBars、SymbolGalaxy、ConnectedScatter、SlopeChart、ParamScatter、MaeMfeScatter、UnderwaterChart）都收 onCopyImage，再给 actions 文案的 copyImage 就出钮；MarketHeatmap 的相机钮在工具条上、全屏钮前（照 TradingView 热力图的相机钮），它与全屏钮不进图。',
+      '接了相机钮的图（#87）：EquityCurve、QuantileLayers 与用 ChartViewProps 的几张（Ridgeline、FlowSankey、VintageSeries、UptimeBars、SymbolGalaxy、ConnectedScatter、SlopeChart、ParamScatter、MaeMfeScatter、UnderwaterChart、BrushChart）都收 onCopyImage，再给 actions 文案的 copyImage 就出钮；MarketHeatmap 的相机钮在工具条上、全屏钮前（照 TradingView 热力图的相机钮），它与全屏钮不进图。',
       '字体（#87）：图里用到的网页字体内嵌进图片（只嵌用到的族、unicode-range 碰到图里文字的那几片，取过的按地址缓存），拍出来跟页面一致；跨源样式表里的字体（读不到规则）与取失败的照旧退回系统字体。embedFonts: false 关掉。',
     ],
     avoid: [

@@ -5114,6 +5114,12 @@
           "description": ""
         },
         {
+          "name": "onCopyImage",
+          "type": "(chart: HTMLElement) => void",
+          "required": false,
+          "description": "Copy-image handler (camera button; also give actionLabels.copyImage); receives this chart's figure for copyImage."
+        },
+        {
           "name": "values",
           "type": "readonly number[]",
           "required": true,
@@ -5247,6 +5253,12 @@
           "type": "() => void",
           "required": false,
           "description": ""
+        },
+        {
+          "name": "onCopyImage",
+          "type": "(chart: HTMLElement) => void",
+          "required": false,
+          "description": "Copy-image handler (camera button; also give actionLabels.copyImage); receives this chart's figure for copyImage."
         },
         {
           "name": "values",
@@ -21037,6 +21049,12 @@
           "description": ""
         },
         {
+          "name": "onCopyImage",
+          "type": "(chart: HTMLElement) => void",
+          "required": false,
+          "description": "Copy-image handler (camera button; also give actionLabels.copyImage); receives this chart's figure for copyImage."
+        },
+        {
           "name": "tableXHead",
           "type": "string",
           "required": true,
@@ -21134,6 +21152,12 @@
           "type": "() => void",
           "required": false,
           "description": ""
+        },
+        {
+          "name": "onCopyImage",
+          "type": "(chart: HTMLElement) => void",
+          "required": false,
+          "description": "Copy-image handler (camera button; also give actionLabels.copyImage); receives this chart's figure for copyImage."
         },
         {
           "name": "tableXHead",
@@ -46057,6 +46081,12 @@
           "description": ""
         },
         {
+          "name": "onCopyImage",
+          "type": "(chart: HTMLElement) => void",
+          "required": false,
+          "description": "Copy-image handler (camera button; also give actionLabels.copyImage); receives this chart's figure for copyImage."
+        },
+        {
           "name": "tableXHead",
           "type": "string",
           "required": false,
@@ -46154,6 +46184,12 @@
           "type": "() => void",
           "required": false,
           "description": ""
+        },
+        {
+          "name": "onCopyImage",
+          "type": "(chart: HTMLElement) => void",
+          "required": false,
+          "description": "Copy-image handler (camera button; also give actionLabels.copyImage); receives this chart's figure for copyImage."
         },
         {
           "name": "tableXHead",
