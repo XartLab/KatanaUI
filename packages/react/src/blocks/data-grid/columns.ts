@@ -20,6 +20,7 @@ import {
   type LimitStatusValue,
   type StreakValue,
 } from '../../cn/badge-model.ts'
+import { auctionSteps, auctionSummary, type AuctionPoint } from '../../cn/auction-model.ts'
 import { cnLabelsZh, type LimitStatusLabels, type StreakLabels } from '../../cn/labels.ts'
 import { compareDecimal } from './model.ts'
 
@@ -42,6 +43,7 @@ export type ColumnType =
   | 'progress'
   | 'streak'
   | 'limitStatus'
+  | 'auctionStep'
   | 'custom'
 
 /** 字的颜色：涨 / 跌（跟 data-updown，红涨绿跌时互换）、次要灰。 */
@@ -95,7 +97,7 @@ export type GridColumn<Row> = {
   type?: ColumnType
   /**
    * 原始值，由类型决定怎么读：price / quantity / pnl / change / number / bar 是数字或十进制字符串（空、不是数写 —）；
-   * pill 是 PillValue 或 PillValue[]；progress 是 ProgressValue；streak 是板数或 StreakValue（A 股连板，#110）；limitStatus 是状态名或 { status, sealAmount, reason }；
+   * pill 是 PillValue 或 PillValue[]；progress 是 ProgressValue；streak 是板数或 StreakValue（A 股连板，#110）；auctionStep 是竞价点数组或 { points, prevClose }（A 股集合竞价台阶，#110）；limitStatus 是状态名或 { status, sealAmount, reason }；
    * time 是毫秒时间戳；side 是 'buy' | 'sell'；symbol 是 SymbolValue；text 是字符串；custom 不读（内容全由 `cell` 画，要排序、复制就给 `text` 与 `sort`）。
    */
   value?: (row: Row) => unknown
@@ -167,6 +169,8 @@ export type ResolvedCell = {
   streak: { value: StreakValue; form: 'boards' | 'promotion' | undefined; labels: StreakLabels } | undefined
   /** limitStatus 列：原样的值与文案，DataGrid 用 LimitStatus 画；别的类型是 undefined。 */
   limitStatus: { value: LimitStatusValue | undefined; labels: LimitStatusLabels } | undefined
+  /** auctionStep 列：整理过的竞价点与昨收，DataGrid 用 AuctionStepSpark 画迷你台阶；别的类型是 undefined。 */
+  auctionStep: { points: readonly AuctionPoint[]; prevClose: number | null } | undefined
   /** symbol 列拆好的两段。 */
   symbol:
     | { code: string; venue: string | undefined; name: string | undefined; icon: { src?: string } | undefined }
@@ -237,6 +241,7 @@ export function resolveCell<Row>(column: GridColumn<Row>, row: Row, env: CellEnv
   let progress: ResolvedCell['progress']
   let streak: ResolvedCell['streak']
   let limitStatus: ResolvedCell['limitStatus']
+  let auctionStep: ResolvedCell['auctionStep']
   switch (type) {
     case 'price': {
       const number = toNumber(raw)
@@ -336,6 +341,25 @@ export function resolveCell<Row>(column: GridColumn<Row>, row: Row, env: CellEnv
       sort = status === null ? undefined : LIMIT_STATUS_ORDER.indexOf(status)
       break
     }
+    case 'auctionStep': {
+      // 值是竞价点数组，或 { points, prevClose }（有昨收才着涨跌色、才按涨跌幅排）。
+      const input = raw as
+        | readonly AuctionPoint[]
+        | { points: readonly AuctionPoint[]; prevClose?: number | null }
+        | null
+        | undefined
+      const points =
+        (Array.isArray(input) ? input : (input as { points?: readonly AuctionPoint[] } | null | undefined)?.points) ??
+        []
+      const prevClose = Array.isArray(input)
+        ? null
+        : ((input as { prevClose?: number | null } | null | undefined)?.prevClose ?? null)
+      const summary = auctionSummary(auctionSteps(points), prevClose)
+      auctionStep = { points, prevClose }
+      text = summary.last === null ? DASH : summary.last.toFixed(format.digits ?? 2)
+      sort = summary.change ?? summary.last ?? undefined
+      break
+    }
     case 'symbol': {
       const value = raw as SymbolValue | null | undefined
       const code = typeof value === 'string' ? value : (value?.code ?? '')
@@ -364,6 +388,7 @@ export function resolveCell<Row>(column: GridColumn<Row>, row: Row, env: CellEnv
     progress,
     streak,
     limitStatus,
+    auctionStep,
     symbol,
   }
 }
@@ -446,7 +471,8 @@ function signed(value: number, digits: number): string {
 /** 一列的排序比较：数字类按数（十进制字符串按十进制），time 按毫秒，别的按字（numeric 的自然序，locale 由调用方给）。 */
 export function sortComparator(type: ColumnType | undefined, locale: string | undefined) {
   const numeric =
-    type !== undefined && (NUMERIC.has(type) || type === 'time' || type === 'streak' || type === 'limitStatus')
+    type !== undefined &&
+    (NUMERIC.has(type) || type === 'time' || type === 'streak' || type === 'limitStatus' || type === 'auctionStep')
   const collator = new Intl.Collator(locale, { numeric: true })
   return (a: unknown, b: unknown): number => {
     if (numeric) {

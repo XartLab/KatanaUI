@@ -482,6 +482,22 @@ export { RatingGauge, type RatingGaugeProps } from './quotes/rating-gauge.tsx'
 export { ratingAngle, ratingZone } from './quotes/rating-gauge-model.ts'
 export { quoteTone, type QuoteTone } from './quotes/quote-tone.ts'
 
+// 前向测试与回放的件（#121）。
+export {
+  PortfolioRunGrid,
+  type PortfolioRunFormat,
+  type PortfolioRunGridProps,
+  type PortfolioRunLabels,
+  type PortfolioRunSummary,
+} from './blocks/portfolio-run-grid/portfolio-run-grid.tsx'
+export { type PortfolioRunRow, type RunStatus } from './blocks/portfolio-run-grid/portfolio-run-model.ts'
+export {
+  ReplayTransport,
+  type ReplayTransportLabels,
+  type ReplayTransportProps,
+} from './blocks/replay-transport/replay-transport.tsx'
+export { RunModeBadge, type RunMode, type RunModeBadgeProps } from './blocks/run-mode-badge/run-mode-badge.tsx'
+
 // 分布与关系类的件（#1918）：功能参照 Arc（uiarc.dev，2026-11-14 读），实现原创。
 export { UptimeBars, type UptimeBarsProps } from './blocks/uptime-bars/uptime-bars.tsx'
 export { uptimeShare, type UptimeCell, type UptimeStatus } from './blocks/uptime-bars/uptime-bars-model.ts'
@@ -565,6 +581,16 @@ export { AiApproval, type AiApprovalFact, type AiApprovalOption, type AiApproval
 export { AiContextMeter, type AiContextBreakdownItem, type AiContextMeterProps } from './ai/ai-context-meter.tsx'
 export { AiMessage, type AiMessageAuthor, type AiMessageLabels, type AiMessageProps } from './ai/ai-message.tsx'
 export { AiResponse, type AiResponseCitation, type AiResponseProps } from './ai/ai-response.tsx'
+export {
+  Markdown,
+  docHeadings,
+  markdownSlot,
+  renderDoc,
+  renderMarkdown,
+  type MarkdownHeading,
+  type MarkdownLabels,
+  type MarkdownProps,
+} from './ai/markdown.tsx'
 export { AiConversation, type AiConversationProps } from './ai/ai-conversation.tsx'
 export {
   AiPromptInput,
