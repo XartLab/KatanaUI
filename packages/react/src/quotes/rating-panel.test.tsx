@@ -28,6 +28,21 @@ const html = (extra: Partial<Parameters<typeof RatingPanel>[0]> = {}) =>
 const text = (markup: string) => markup.replace(/<[^>]+>/g, '')
 
 describe('RatingPanel', () => {
+  it('周期一排只有一个 Tab 停靠点（方向键在周期之间走）', () => {
+    const out = html({
+      timeframes: [
+        { value: '1m', label: '1m' },
+        { value: '5m', label: '5m' },
+        { value: '1h', label: '1h' },
+      ],
+      value: '5m',
+    })
+    const stops = [...out.matchAll(/<button[^>]*tabindex="(-?\d+)"/g)].map((m) => m[1])
+    // 开着 rovingFocus 时各钮带 tabindex="-1"，由整组管 Tab（关着时钮上没有 tabindex，每钮一个停靠点）。
+    // 进组后焦点落到哪一钮、方向键怎么走，在 verify-katanaui 的 rating-panel 流程里实测。
+    expect(stops).toEqual(['-1', '-1', '-1'])
+  })
+
   it('三个仪表按传入的次序排，默认中间那个放大；primary 指定别的', () => {
     const out = html()
     expect([...out.matchAll(/data-gauge="([^"]+)"/g)].map((m) => m[1])).toEqual(['osc', 'sum', 'ma'])
