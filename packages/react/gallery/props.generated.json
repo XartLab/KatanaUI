@@ -26997,7 +26997,7 @@
           "type": "SeverityExt",
           "required": false,
           "default": "'accent'",
-          "description": "accent 进行中（橙）、ok 健康（绿）、warn 受限或越界（琥珀）、danger 弱势（红）、off / neutral 停用。默认 accent。"
+          "description": "accent 进行中（橙）、ok 健康（绿）、warn 受限或越界（琥珀）、danger 弱势（红）、neutral 中性（有数、不表态，中性墨色）、off 停用。默认 accent。"
         },
         {
           "name": "display",
@@ -27082,7 +27082,7 @@
           "name": "tone",
           "type": "SeverityExt",
           "required": false,
-          "description": "accent 进行中（橙）、ok 健康（绿）、warn 受限或越界（琥珀）、danger 弱势（红）、off / neutral 停用。默认 accent。"
+          "description": "accent 进行中（橙）、ok 健康（绿）、warn 受限或越界（琥珀）、danger 弱势（红）、neutral 中性（有数、不表态，中性墨色）、off 停用。默认 accent。"
         },
         {
           "name": "display",

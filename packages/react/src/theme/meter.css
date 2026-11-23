@@ -24,6 +24,11 @@
 .k-meter[data-tone='off'] {
   --meter-color: var(--k-separable-bold-borderColor);
 }
+/* neutral（#178）：有数、不表态。填充、指针与大百分比用中性墨色（Graphite 的 ink-300 中性灰，跟 Tag / StatusIcon 的 neutral 同一个），
+   右边的数用正文主色读得清；跟 off 不同，名字与数不转灰。 */
+.k-meter[data-tone='neutral'] {
+  --meter-color: var(--k-status-neutral-foreground);
+}
 .k-meter-head {
   display: flex;
   justify-content: space-between;
@@ -38,7 +43,8 @@
   color: var(--meter-color);
   font-variant-numeric: tabular-nums;
 }
-.k-meter[data-tone='ok'] .k-meter-value {
+.k-meter[data-tone='ok'] .k-meter-value,
+.k-meter[data-tone='neutral'] .k-meter-value {
   color: var(--k-content-primary-foreground);
 }
 .k-meter[data-tone='off'] .k-meter-label,
