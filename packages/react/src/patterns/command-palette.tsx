@@ -13,7 +13,7 @@
  * 向后兼容：不带 description / meta / steps 的命令画得跟以前一样，onSelect 仍是同一个用法。
  * 交互参照 Jamie Merrill 的 Command menu 系列（2026-11-24 看）：只借交互，样子是我们的。
  */
-import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { usePersistedState } from '../lib/use-persisted-state.ts'
 import { Tag } from '../katana/tag.tsx'
 import {
@@ -223,12 +223,7 @@ export function CommandPalette({
               {command.description}
             </span>
           )}
-          {meta !== undefined && (
-            // 徽标的中性字色（--k-status-neutral-foreground）在 Console 下对自己的底只有 4.28:1，行里的徽标改用正文色。
-            <Tag data-slot="command-meta" style={{ '--k-tag-fg': 'var(--k-content-body-foreground)' } as CSSProperties}>
-              {meta}
-            </Tag>
-          )}
+          {meta !== undefined && <Tag data-slot="command-meta">{meta}</Tag>}
         </span>
         {command.shortcut !== undefined && <CommandShortcut>{command.shortcut}</CommandShortcut>}
       </CommandItem>

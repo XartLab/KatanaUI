@@ -4,7 +4,7 @@ import {
   checkState,
   filterOptions,
   moveActive,
-  selectedLabels,
+  selectedTags,
   sentenceTags,
   stepBack,
   toggleAll,
@@ -59,9 +59,20 @@ describe('toggleId / checkState / toggleAll', () => {
   })
 })
 
-describe('selectedLabels / sentenceTags', () => {
+describe('selectedTags / sentenceTags', () => {
   test('标签次序照选项表，不照点的先后', () => {
-    expect(selectedLabels(OPTIONS, ['sales', 'eng', 'ghost'])).toEqual(['Engineering', 'Sales'])
+    expect(selectedTags(OPTIONS, ['sales', 'eng', 'ghost'])).toEqual([
+      { id: 'eng', label: 'Engineering' },
+      { id: 'sales', label: 'Sales' },
+    ])
+  })
+  test('两个选项同名时 id 仍不同（头部标签用 id 当 key）', () => {
+    const twins: PaletteOption[] = [
+      { id: 'a1', label: 'Main account' },
+      { id: 'a2', label: 'Main account' },
+    ]
+    const ids = selectedTags(twins, ['a1', 'a2']).map((tag) => tag.id)
+    expect(new Set(ids).size).toBe(2)
   })
   test('超过上限的折成个数', () => {
     expect(sentenceTags(['a', 'b'])).toEqual({ shown: ['a', 'b'], hidden: 0 })

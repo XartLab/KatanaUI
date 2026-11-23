@@ -4,13 +4,15 @@
  * 命令面板多步命令的步骤页（#194），CommandPalette 在选中带 steps 的命令后换上它，面板不关。
  * - 头部是一句话：命令名 + 每一步已做的选择以小标签串起来（「跑工资 在 [美国] 给 [研发][产品]」），随勾选实时更新，每步最多 3 个、其余折成 +N。
  * - 内置一种步：多选清单。cmdk 的行总是 role=option、aria-selected 说的是「高亮」，表达不了「已选」，所以这一页不用 cmdk 的行：
- *   行是 role=checkbox（aria-checked），全选行是三态（aria-checked=mixed），焦点留在筛选框里，高亮的那一行经 aria-activedescendant 指出（跟 cmdk 同一个手感）。
+ *   筛选框是 combobox（aria-controls 指 listbox、aria-activedescendant 指高亮行），清单是 aria-multiselectable 的 listbox，行是 option、aria-selected 就是「已选」，
+ *   全选行是三态（aria-checked=mixed）；焦点一直留在筛选框里。为什么选这种而不是 checkbox 加 roving tabindex，见文档站 command-palette 页的「无障碍」。
  * - 其余内容由调用方给（kind: 'custom' 的 render）；筛选框里的字也传给它。
  * - 键盘：↑ ↓ Home End 移动高亮，Enter 勾选高亮的行，Mod+Enter 主操作，输入为空时 Backspace 退回上一步，Esc 由对话框直接关面板。
+ *   步骤页内这些键不冒到 cmdk（见 keepFromCmdk），否则脚栏按钮按 Enter 不点击、custom 步里的输入框 Home / End 与多行框 Enter 失效。
  * 交互参照 Jamie Merrill 的 Command menu running a workflow（2026-11-24 看）：只借头部句子、全选三态、脚栏「已选 N · 返回 · 主操作」，皮肤是我们的（Graphite 的中性勾选框与 Tag，不用他的紫色勾与蓝色徽标）。
  */
 import { SearchIcon } from 'lucide-react'
-import { useEffect, useId, useRef, useState, type CSSProperties, type KeyboardEvent, type ReactNode } from 'react'
+import { useEffect, useId, useRef, useState, type KeyboardEvent, type ReactNode } from 'react'
 import { cn } from '../lib/cn.ts'
 import { Tag } from '../katana/tag.tsx'
 import { Button } from '../primitives/button.tsx'
@@ -19,12 +21,13 @@ import {
   checkState,
   filterOptions,
   moveActive,
-  selectedLabels,
+  selectedTags,
   sentenceTags,
   toggleAll,
   toggleId,
   type CheckState,
   type PaletteOption,
+  type SentenceTag,
   type StepSelections,
 } from './command-steps-model.ts'
 
@@ -72,6 +75,8 @@ export type CommandStepsLabels = {
   steps: (count: number) => string
   /** Left of the footer: "2 selected". */
   selected: (count: number) => string
+  /** Read out when the step changes: "Step 2 of 3: Select fields". */
+  stepOf: (step: number, total: number, heading?: string) => string
   back: string
   next: string
   /** Primary button on the last step. */
@@ -82,17 +87,24 @@ export type CommandStepsLabels = {
 export const DEFAULT_STEP_LABELS: CommandStepsLabels = {
   steps: (count) => `${count} steps`,
   selected: (count) => `${count} selected`,
+  stepOf: (step, total, heading) => `Step ${step} of ${total}${heading ? `: ${heading}` : ''}`,
   back: 'Back',
   next: 'Next',
   run: 'Run',
   selectAll: 'Select all',
 }
 
-/** 头部标签的字色：中性 Tag 的前景在 Console 下对自己的底只有 4.28:1（axe 要 4.5），这里取正文色。 */
-const TAG_STYLE = { '--k-tag-fg': 'var(--k-content-body-foreground)' } as CSSProperties
+// cmdk 的根节点对 Enter、Home、End、↑↓（及 Ctrl+N/J/P）一律 preventDefault：步骤页里的按钮按 Enter 就不会点击、custom 步里的输入框 Home/End 移不了光标、
+// textarea 的 Enter 不换行。这些键在步骤页内（事件已过了筛选框与调用方控件自己的处理）就地截住，不再冒到 cmdk。
+// 不整段拦：Ctrl+K（也是 cmdk 的「上一项」）要冒到 document，登记在那里的 Mod+K 才收得到；cmdk 对它 preventDefault 无害（步骤页里没有它的行）。Esc 由 Radix 在 document 的捕获阶段接，不受影响。
+const CMDK_KEYS = new Set(['Enter', 'Home', 'End', 'ArrowUp', 'ArrowDown'])
+const keepFromCmdk = (event: KeyboardEvent<HTMLElement>) => {
+  const vim = event.ctrlKey && !event.metaKey && !event.altKey && ['n', 'j', 'p'].includes(event.key.toLowerCase())
+  if (CMDK_KEYS.has(event.key) || vim) event.stopPropagation()
+}
 const SELECT_ALL = '\u0000all'
 
-/** 勾选框的样子：与 Checkbox 一个皮肤（14 方、凹陷、选中亮底），但只是画出来的（行本身才是 role=checkbox）。 */
+/** 勾选框的样子：与 Checkbox 一个皮肤（14 方、凹陷、选中亮底），但只是画出来的（行本身才是 role=option）。 */
 function Box({ state }: { state: CheckState }) {
   const name = state === 'mixed' ? 'indeterminate' : state ? 'checked' : 'unchecked'
   return (
@@ -134,11 +146,14 @@ function Row({
   disabled,
   label,
   description,
+  isAll,
   onToggle,
   onActivate,
 }: {
   id: string
   state: CheckState
+  /** The select-all row (tri-state). */
+  isAll?: boolean
   active: boolean
   disabled?: boolean
   label: string
@@ -149,8 +164,11 @@ function Row({
   return (
     <div
       id={id}
-      role="checkbox"
-      aria-checked={state}
+      role="option"
+      // 多选 listbox：aria-selected 说的是「已选」（不是 cmdk 那种高亮，高亮由输入框的 aria-activedescendant 指）；
+      // 全选行是三态，aria-checked 补 mixed（ARIA 1.2 允许 option 带 aria-checked）。
+      aria-selected={state === true}
+      aria-checked={isAll ? state : undefined}
       aria-disabled={disabled || undefined}
       data-slot="command-step-row"
       data-active={active || undefined}
@@ -233,8 +251,10 @@ export function CommandSteps({
   // 头部句子：到当前步为止，每步有选择才画。
   const sentence = steps.slice(0, index + 1).flatMap((past) => {
     const chosen = selections[past.id] ?? []
-    const tags =
-      past.kind === 'checklist' ? selectedLabels(past.options, chosen) : (past.tags?.(chosen) ?? chosen.map(String))
+    const tags: SentenceTag[] =
+      past.kind === 'checklist'
+        ? selectedTags(past.options, chosen)
+        : (past.tags?.(chosen) ?? chosen.map(String)).map((label, i) => ({ id: `${i}-${label}`, label }))
     return tags.length > 0 ? [{ step: past, ...sentenceTags(tags) }] : []
   })
 
@@ -293,9 +313,13 @@ export function CommandSteps({
 
   const headingId = `${baseId}-heading`
   const listId = `${baseId}-list`
+  const headerId = `${baseId}-header`
+  const isChecklist = step.kind === 'checklist'
+  const hasList = isChecklist && options.length > 0
   return (
-    <div data-slot="command-steps" data-step={step.id} className="flex flex-col">
+    <div data-slot="command-steps" data-step={step.id} className="flex flex-col" onKeyDown={keepFromCmdk}>
       <div
+        id={headerId}
         data-slot="command-steps-header"
         className="k-text-body flex min-h-11 flex-wrap items-center gap-x-1.5 gap-y-1 border-b border-(color:--k-separable-subtle-borderColor) px-3 py-2"
       >
@@ -314,12 +338,12 @@ export function CommandSteps({
               <span className="text-(color:--k-content-secondary-foreground)">{past.joiner}</span>
             )}
             {shown.map((tag) => (
-              <Tag key={tag} data-slot="command-steps-tag" className="max-w-40 truncate" style={TAG_STYLE}>
-                {tag}
+              <Tag key={tag.id} data-slot="command-steps-tag" className="max-w-40 truncate">
+                {tag.label}
               </Tag>
             ))}
             {hidden > 0 && (
-              <Tag data-slot="command-steps-tag" data-more="" style={TAG_STYLE}>
+              <Tag data-slot="command-steps-tag" data-more="">
                 +{hidden}
               </Tag>
             )}
@@ -337,9 +361,15 @@ export function CommandSteps({
           type="text"
           autoComplete="off"
           spellCheck={false}
+          // 清单步：输入框是 combobox，控制下面的多选 listbox（APG 的 listbox 加输入框写法，读屏对它的 aria-activedescendant 才靠得住）；
+          // custom 步没有清单，就是普通文本框。头部句子（命令名加已选标签）与本步标题当说明。
+          role={hasList ? 'combobox' : undefined}
+          aria-expanded={hasList ? true : undefined}
+          aria-autocomplete={hasList ? 'list' : undefined}
           aria-label={step.placeholder ?? placeholder}
-          aria-controls={listId}
-          aria-activedescendant={step.kind === 'checklist' && current !== '' ? rowId(current) : undefined}
+          aria-controls={hasList ? listId : undefined}
+          aria-activedescendant={hasList && current !== '' ? rowId(current) : undefined}
+          aria-describedby={step.heading !== undefined ? `${headerId} ${headingId}` : headerId}
           placeholder={step.placeholder ?? placeholder}
           value={search}
           onChange={(event) => onSearchChange(event.target.value)}
@@ -347,14 +377,7 @@ export function CommandSteps({
           className="k-text-body h-full w-full border-0 bg-transparent text-(color:--k-content-primary-foreground) outline-0 placeholder:text-(color:--k-content-secondary-foreground)"
         />
       </div>
-      <div
-        id={listId}
-        role="group"
-        aria-labelledby={step.heading !== undefined ? headingId : undefined}
-        aria-label={step.heading === undefined ? (step.placeholder ?? placeholder) : undefined}
-        data-slot="command-steps-list"
-        className="max-h-[300px] overflow-x-hidden overflow-y-auto p-1.5"
-      >
+      <div data-slot="command-steps-list" className="max-h-[300px] overflow-x-hidden overflow-y-auto p-1.5">
         {step.heading !== undefined && (
           <div
             id={headingId}
@@ -367,11 +390,20 @@ export function CommandSteps({
           options.length === 0 ? (
             <div className="k-text-data py-6 text-center text-(color:--k-content-secondary-foreground)">{empty}</div>
           ) : (
-            <>
+            // 标题放在 listbox 外面（listbox 里只许 option 与 group），listbox 用它当名字。
+            <div
+              id={listId}
+              role="listbox"
+              aria-multiselectable="true"
+              aria-labelledby={step.heading !== undefined ? headingId : undefined}
+              aria-label={step.heading === undefined ? (step.placeholder ?? placeholder) : undefined}
+              data-slot="command-steps-list-box"
+            >
               {enabledIds.length > 0 && (
                 <Row
                   id={rowId(SELECT_ALL)}
                   state={allState}
+                  isAll
                   active={current === SELECT_ALL}
                   label={step.selectAllLabel ?? labels.selectAll}
                   onToggle={() => toggle(SELECT_ALL)}
@@ -391,7 +423,7 @@ export function CommandSteps({
                   onActivate={() => activate(option.id)}
                 />
               ))}
-            </>
+            </div>
           )
         ) : (
           step.render({ selected, onSelectedChange: setSelected, search })
@@ -401,6 +433,11 @@ export function CommandSteps({
         data-slot="command-steps-footer"
         className="flex items-center gap-2 border-t border-(color:--k-separable-subtle-borderColor) px-3 py-2"
       >
+        {steps.length > 1 && (
+          <span role="status" data-slot="command-steps-position" className="sr-only">
+            {labels.stepOf(index + 1, steps.length, step.heading)}
+          </span>
+        )}
         <span
           role="status"
           data-slot="command-steps-count"

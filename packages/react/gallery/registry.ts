@@ -2260,7 +2260,7 @@ export const PAGES: readonly DocPage[] = [
     propParts: [
       {
         part: 'CommandPalette',
-        note: '命令 PaletteCommand：id、label、group、keywords、shortcut、icon、description（灰色说明）、meta（徽标，带 steps 时默认 labels.steps(n)）、steps、runLabel、disabled、onSelect。onRun(commandId, selections) 在最后一步主操作后调用（selections 是 { 步 id: id 串 }），随后面板关闭。labels.steps 放徽标、已选数、返回 / 下一步 / 执行、全选的字，没传的退回英文。',
+        note: '命令 PaletteCommand：id、label、group、keywords、shortcut、icon、description（灰色说明）、meta（徽标，带 steps 时默认 labels.steps(n)）、steps、runLabel、disabled、onSelect。onRun(commandId, selections) 在最后一步主操作后调用（selections 是 { 步 id: id 串 }），随后面板关闭。labels.steps 放徽标、已选数、换步时读屏念的「第几步，共几步」（stepOf）、返回 / 下一步 / 执行、全选的字，没传的退回英文。',
       },
       {
         part: 'PaletteStep',
@@ -2278,11 +2278,11 @@ export const PAGES: readonly DocPage[] = [
     donts: [
       '不要把最近的命令再塞进别的分组：最近只在没输入时出。',
       '不要在包里写占位与标题文字。',
-      '不要拿 cmdk 的行（aria-selected 是高亮）当勾选行：步骤页的清单行用 role=checkbox。',
+      '不要拿 cmdk 的行（aria-selected 是高亮）当勾选行：步骤页的清单是多选 listbox，option 的 aria-selected 才是「已选」。',
       '步骤别超过三步；超过就该是一个页面或表单。',
     ],
     composition:
-      'CommandPalette\n  CommandDialog\n    CommandInput\n    CommandList\n      CommandEmpty\n      CommandGroup（最近）\n      CommandGroup × 分组\n        CommandItem（图标、名字、灰色说明、Tag 徽标、CommandShortcut）\n    CommandSteps（选了带 steps 的命令后换上）\n      头部句子（命令名、joiner、Tag）\n      筛选框\n      清单（全选行、选项行，role=checkbox）或调用方的内容\n      脚栏（已选 N 项、返回、主操作）',
+      'CommandPalette\n  CommandDialog\n    CommandInput\n    CommandList\n      CommandEmpty\n      CommandGroup（最近）\n      CommandGroup × 分组\n        CommandItem（图标、名字、灰色说明、Tag 徽标、CommandShortcut）\n    CommandSteps（选了带 steps 的命令后换上）\n      头部句子（命令名、joiner、Tag）\n      筛选框\n      清单（多选 listbox：全选行、选项行 role=option）或调用方的内容\n      脚栏（已选 N 项、返回、主操作）',
     keys: [
       ['Mod+K', '（调用方用 useHotkeys 登记）打开'],
       ['↑ ↓ / Enter', '移动高亮 / 执行并记进最近'],
@@ -2290,6 +2290,10 @@ export const PAGES: readonly DocPage[] = [
       ['步骤页 ↑ ↓ / Home / End', '移动高亮（全选行在最前，首尾相接）'],
       ['步骤页 Enter', '勾选或取消高亮的行'],
       ['步骤页 Mod+Enter', '主操作（下一步或执行；没有选择时无效）'],
+      [
+        '步骤页 Tab / Enter',
+        'Tab 到「返回」「下一步」按 Enter 即点击；custom 步里的控件（输入框、多行框）自己管 Home / End / Enter',
+      ],
       ['步骤页 Backspace（输入为空）', '退回上一步；第一步退回命令列表，选择清空'],
     ],
   },

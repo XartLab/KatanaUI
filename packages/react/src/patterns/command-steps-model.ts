@@ -52,17 +52,20 @@ export function toggleAll(selected: readonly string[], selectableIds: readonly s
   return [...selected, ...selectableIds.filter((id) => !selected.includes(id))]
 }
 
+/** 头部句子里的一个小标签：id 给 React 当 key（label 可能重名），label 是字。 */
+export type SentenceTag = { id: string; label: string }
+
 /** 已选项的标签，次序照选项表（不照点的先后），不在表里的 id 丢掉。 */
-export function selectedLabels(options: readonly PaletteOption[], selected: readonly string[]): string[] {
-  return options.filter((option) => selected.includes(option.id)).map((option) => option.label)
+export function selectedTags(options: readonly PaletteOption[], selected: readonly string[]): SentenceTag[] {
+  return options.filter((option) => selected.includes(option.id)).map(({ id, label }) => ({ id, label }))
 }
 
 /** 头部句子里最多画几个标签，其余折成「+N」。 */
 export const MAX_SENTENCE_TAGS = 3
 
 /** 一步的标签与折掉的个数。 */
-export function sentenceTags(labels: readonly string[], max = MAX_SENTENCE_TAGS): { shown: string[]; hidden: number } {
-  return { shown: labels.slice(0, max), hidden: Math.max(0, labels.length - max) }
+export function sentenceTags<T>(tags: readonly T[], max = MAX_SENTENCE_TAGS): { shown: T[]; hidden: number } {
+  return { shown: tags.slice(0, max), hidden: Math.max(0, tags.length - max) }
 }
 
 /** 在 0..length-1 里循环移动高亮（length 为 0 返回 0）。 */

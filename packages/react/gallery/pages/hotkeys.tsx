@@ -17,6 +17,7 @@ import {
   Kbd,
   ShortcutSheet,
   Switch,
+  Textarea,
   comboKeys,
   createHotkeyRegistry,
   normalizeCombo,
@@ -54,6 +55,7 @@ export const PALETTE_LABELS: CommandPaletteLabels = {
   steps: {
     steps: (count) => `${count} 步`,
     selected: (count) => `已选 ${count} 项`,
+    stepOf: (step, total, heading) => `第 ${step} 步，共 ${total} 步${heading ? `：${heading}` : ''}`,
     back: '返回',
     next: '下一步',
     run: '执行',
@@ -155,6 +157,35 @@ function commandsFor(registry: HotkeyRegistry, setLog: (text: string) => void): 
     },
     { id: 'snapshot', label: '截图', group: '图表', shortcut: shortcut('Mod+Alt+S'), onSelect: () => setLog('截图') },
     { id: 'alert', label: '新建告警', group: '图表', keywords: ['alert'], onSelect: () => setLog('新建告警') },
+    {
+      id: 'price-alert',
+      label: '设置价格告警',
+      group: '图表',
+      description: '触发价与备注',
+      keywords: ['alert'],
+      runLabel: '创建',
+      steps: [
+        {
+          // 调用方自己画的一步：一个输入框、一个多行框；它们的键盘（Home / End 移光标、Enter 换行）归控件自己管。
+          kind: 'custom',
+          id: 'alert',
+          joiner: '触发价',
+          heading: '填写告警',
+          required: false,
+          tags: (selected) => selected.filter(Boolean),
+          render: ({ selected, onSelectedChange }) => (
+            <div style={{ display: 'grid', gap: 8, padding: 8 }}>
+              <Input
+                aria-label="触发价"
+                value={selected[0] ?? ''}
+                onChange={(event) => onSelectedChange([event.target.value])}
+              />
+              <Textarea aria-label="备注" rows={3} />
+            </div>
+          ),
+        },
+      ],
+    },
     { id: 'theme', label: '切换主题', group: '设置', keywords: ['theme', 'dark'], onSelect: () => setLog('切换主题') },
     { id: 'density', label: '紧凑行高', group: '设置', onSelect: () => setLog('紧凑行高') },
     { id: 'export', label: '导出 CSV', group: '数据', keywords: ['csv'], onSelect: () => setLog('导出 CSV') },
