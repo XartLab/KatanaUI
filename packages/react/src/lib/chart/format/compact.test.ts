@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: MIT
 import { describe, expect, it } from 'vite-plus/test'
+import { formatCnAmount } from './cn-amount.ts'
 import { compactNumber, formatCompactNumber } from './compact.ts'
 
-// 数字缩写（#90）：缩写字跟 locale 走，两位小数，数字与缩写字之间空一格。
+// 数字缩写（#90）：缩写字跟 locale 走，两位小数，数字与缩写字之间空一格；zh 用 formatCnAmount 的写法（#158）。
 describe('compactNumber', () => {
   it('en-US 是 K / M / B / T，两位小数', () => {
     expect(compactNumber(835_490)).toEqual({ number: '835.49', suffix: 'K' })
@@ -10,18 +11,17 @@ describe('compactNumber', () => {
     expect(formatCompactNumber(2.95e6)).toBe('2.95 M')
     expect(formatCompactNumber(-7.29e9)).toBe('-7.29 B')
   })
-  it('zh-CN 是 万 / 亿 / 万亿，由调用方的 locale 给', () => {
-    expect(formatCompactNumber(123_456_789, { locale: 'zh-CN' })).toBe('1.23 亿')
-    expect(formatCompactNumber(4.53e12, { locale: 'zh-CN' })).toBe('4.53 万亿')
-  })
-  it('zh 的 万 档写千分位整数，亿 档两位小数，去掉无意义的 .00（#92）', () => {
-    expect(formatCompactNumber(88_000_000, { locale: 'zh-CN' })).toBe('8,800 万')
-    expect(formatCompactNumber(45_600, { locale: 'zh-CN' })).toBe('5 万')
-    expect(formatCompactNumber(-12_345_678, { locale: 'zh-CN' })).toBe('-1,235 万')
-    expect(formatCompactNumber(99_999_999, { locale: 'zh-CN' })).toBe('1 亿')
-    expect(formatCompactNumber(5.2e8, { locale: 'zh-CN' })).toBe('5.20 亿')
-    expect(formatCompactNumber(5e8, { locale: 'zh-CN' })).toBe('5 亿')
-    expect(formatCompactNumber(9_999, { locale: 'zh-CN' })).toBe('9,999')
+  it('zh-CN 是 万 / 亿，写法就是 formatCnAmount（#158）', () => {
+    for (const value of [9_999, 45_600, 88_000_000, -12_345_678, 99_999_999, 123_456_789, 5e8, 5.2e8, 4.53e12]) {
+      expect(formatCompactNumber(value, { locale: 'zh-CN' })).toBe(formatCnAmount(value))
+    }
+    expect(formatCompactNumber(123_456_789, { locale: 'zh-CN' })).toBe('1.23亿')
+    expect(formatCompactNumber(88_000_000, { locale: 'zh-CN' })).toBe('8,800万')
+    expect(formatCompactNumber(45_600, { locale: 'zh-CN' })).toBe('4.6万')
+    expect(formatCompactNumber(3.2e8, { locale: 'zh-CN', digits: 1 })).toBe('3.2亿')
+    expect(compactNumber(5.2e8, { locale: 'zh-CN' })).toEqual({ number: '5.20', suffix: '亿' })
+    expect(compactNumber(9_999, { locale: 'zh-CN' })).toEqual({ number: '9,999', suffix: '' })
+    expect(formatCompactNumber(Number.NaN, { locale: 'zh-CN' })).toBe('—')
     expect(formatCompactNumber(2e6)).toBe('2.00 M')
   })
   it('不到第一档照写（不补零），小数位可换，不是有限数写 —', () => {

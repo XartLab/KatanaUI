@@ -296,6 +296,14 @@ import {
 import { ScrubberDemo } from './pages/smoothui-scrub.tsx'
 import { SymbolSearchDemo } from './pages/symbol-search.tsx'
 import {
+  ChangeSummaryDemo,
+  ExperimentCardDemo,
+  KpiChartDemo,
+  ParallelAttemptsDemo,
+  RootCauseTreeDemo,
+} from './pages/affect-quant.tsx'
+import { FallbackChainDemo, PlanVsActualDemo, RateLimitPlannerDemo, TraceWaterfallDemo } from './pages/affect-data.tsx'
+import {
   AccountEquityDemo,
   FundingRateDemo,
   OptionsChainDemo,
@@ -310,6 +318,15 @@ import {
   SeatTableDemo,
   TradingDatePickerDemo,
 } from './pages/cn-batch2.tsx'
+import {
+  CalendarDemo,
+  CardDemo,
+  LinkDemo,
+  ListBoxDemo,
+  PanelDemo,
+  PillDemo,
+  SystemStatusDemo,
+} from './pages/salt-gaps.tsx'
 
 /** 每一页的实时预览，键是 registry.ts 里的页 id（registry.test.ts 核对两边一一对应）。 */
 export const DEMOS: Readonly<Record<string, ComponentType>> = {
@@ -465,6 +482,15 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'param-surface-heatmap': ParamSurfaceHeatmapDemo,
   'walk-forward-matrix': WalkForwardMatrixDemo,
   'robustness-gate': RobustnessGateDemo,
+  'experiment-card': ExperimentCardDemo,
+  'parallel-attempts': ParallelAttemptsDemo,
+  'change-summary': ChangeSummaryDemo,
+  'kpi-chart': KpiChartDemo,
+  'root-cause-tree': RootCauseTreeDemo,
+  'trace-waterfall': TraceWaterfallDemo,
+  'fallback-chain': FallbackChainDemo,
+  'rate-limit-planner': RateLimitPlannerDemo,
+  'plan-vs-actual': PlanVsActualDemo,
   'flow-sankey': FlowSankeyDemo,
   'vintage-series': VintageSeriesDemo,
   'system-monitor': SystemMonitorDemo,
@@ -614,6 +640,14 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'motion-loader': MotionLoaderDemo,
   'page-preloader': PagePreloaderDemo,
   'scroll-progress': ScrollProgressDemo,
+  // #104 对照 Salt 补的七件。
+  pill: PillDemo,
+  'system-status': SystemStatusDemo,
+  calendar: CalendarDemo,
+  'list-box': ListBoxDemo,
+  link: LinkDemo,
+  card: CardDemo,
+  panel: PanelDemo,
 }
 
 /**

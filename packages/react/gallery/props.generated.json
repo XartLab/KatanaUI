@@ -3371,6 +3371,71 @@
         }
       ]
     },
+    "Attempt": {
+      "kind": "type",
+      "source": "src/quant/parallel-attempts-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "Stable key."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": "Attempt name, such as the parameter set."
+        },
+        {
+          "name": "approach",
+          "type": "string",
+          "required": false,
+          "description": "One line on how this attempt differs (the parameters)."
+        },
+        {
+          "name": "status",
+          "type": "AttemptStatus",
+          "required": false,
+          "description": "Queued, running, done or failed; defaults to queued."
+        },
+        {
+          "name": "progress",
+          "type": "number",
+          "required": false,
+          "description": "Progress 0..1 while running (or where a failed attempt stopped)."
+        },
+        {
+          "name": "step",
+          "type": "string",
+          "required": false,
+          "description": "Current step while running (「第 3 / 8 年」)."
+        },
+        {
+          "name": "score",
+          "type": "number | null",
+          "required": false,
+          "description": "Score of a finished attempt."
+        },
+        {
+          "name": "note",
+          "type": "string",
+          "required": false,
+          "description": "Outcome or error note."
+        },
+        {
+          "name": "took",
+          "type": "number",
+          "required": false,
+          "description": "Wall time in milliseconds."
+        }
+      ]
+    },
+    "AttemptStatus": {
+      "kind": "type",
+      "source": "src/quant/parallel-attempts-model.ts",
+      "props": []
+    },
     "AttributionBars": {
       "kind": "component",
       "source": "src/blocks/attribution-bars/attribution-bars.tsx",
@@ -5509,6 +5574,91 @@
       "source": "src/cn/session.ts",
       "props": []
     },
+    "Calendar": {
+      "kind": "component",
+      "source": "src/patterns/calendar.tsx",
+      "props": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": false,
+          "description": "Selected day, YYYY-MM-DD (controlled); '' for none."
+        },
+        {
+          "name": "defaultValue",
+          "type": "string",
+          "required": false,
+          "description": "Selected day at first (uncontrolled)."
+        },
+        {
+          "name": "onValueChange",
+          "type": "(day: string) => void",
+          "required": false,
+          "description": "Called with the picked day, YYYY-MM-DD."
+        },
+        {
+          "name": "min",
+          "type": "string",
+          "required": false,
+          "description": "Earliest day that can be picked (YYYY-MM-DD); earlier days are disabled and the previous button stops there."
+        },
+        {
+          "name": "max",
+          "type": "string",
+          "required": false,
+          "description": "Latest day that can be picked (YYYY-MM-DD)."
+        },
+        {
+          "name": "unavailable",
+          "type": "(day: string) => boolean",
+          "required": false,
+          "description": "Days that are shown but cannot be picked (non-trading days, holidays): return true for YYYY-MM-DD to grey it out."
+        },
+        {
+          "name": "defaultFocusedValue",
+          "type": "string",
+          "required": false,
+          "description": "Which month opens when nothing is selected (YYYY-MM-DD of any day in it); defaults to today's month."
+        },
+        {
+          "name": "weekStart",
+          "type": "WeekStart",
+          "required": false,
+          "default": "'mon'",
+          "description": "First column of the week: mon (default) or sun."
+        },
+        {
+          "name": "locale",
+          "type": "string",
+          "required": true,
+          "description": "BCP 47 locale for month and weekday names, for example 'zh-CN'."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the calendar."
+        },
+        {
+          "name": "labels",
+          "type": "CalendarLabels",
+          "required": true,
+          "description": "Accessible names of the two month buttons."
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "required": false,
+          "description": "Disable the whole calendar."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class names on the calendar's outer element."
+        }
+      ]
+    },
     "CalendarCategory": {
       "kind": "type",
       "source": "src/quant/event-calendar-model.ts",
@@ -5889,6 +6039,108 @@
       "source": "src/quant/event-calendar-types.ts",
       "props": []
     },
+    "CalendarLabels": {
+      "kind": "type",
+      "source": "src/patterns/calendar.tsx",
+      "props": [
+        {
+          "name": "previousMonth",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the previous-month button."
+        },
+        {
+          "name": "nextMonth",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the next-month button."
+        }
+      ]
+    },
+    "CalendarProps": {
+      "kind": "type",
+      "source": "src/patterns/calendar.tsx",
+      "props": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": false,
+          "description": "Selected day, YYYY-MM-DD (controlled); '' for none."
+        },
+        {
+          "name": "defaultValue",
+          "type": "string",
+          "required": false,
+          "description": "Selected day at first (uncontrolled)."
+        },
+        {
+          "name": "onValueChange",
+          "type": "(day: string) => void",
+          "required": false,
+          "description": "Called with the picked day, YYYY-MM-DD."
+        },
+        {
+          "name": "min",
+          "type": "string",
+          "required": false,
+          "description": "Earliest day that can be picked (YYYY-MM-DD); earlier days are disabled and the previous button stops there."
+        },
+        {
+          "name": "max",
+          "type": "string",
+          "required": false,
+          "description": "Latest day that can be picked (YYYY-MM-DD)."
+        },
+        {
+          "name": "unavailable",
+          "type": "(day: string) => boolean",
+          "required": false,
+          "description": "Days that are shown but cannot be picked (non-trading days, holidays): return true for YYYY-MM-DD to grey it out."
+        },
+        {
+          "name": "defaultFocusedValue",
+          "type": "string",
+          "required": false,
+          "description": "Which month opens when nothing is selected (YYYY-MM-DD of any day in it); defaults to today's month."
+        },
+        {
+          "name": "weekStart",
+          "type": "WeekStart",
+          "required": false,
+          "description": "First column of the week: mon (default) or sun."
+        },
+        {
+          "name": "locale",
+          "type": "string",
+          "required": true,
+          "description": "BCP 47 locale for month and weekday names, for example 'zh-CN'."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the calendar."
+        },
+        {
+          "name": "labels",
+          "type": "CalendarLabels",
+          "required": true,
+          "description": "Accessible names of the two month buttons."
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "required": false,
+          "description": "Disable the whole calendar."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class names on the calendar's outer element."
+        }
+      ]
+    },
     "Candle": {
       "kind": "type",
       "source": "src/cn/mini-k-model.ts",
@@ -5978,6 +6230,61 @@
           "description": ""
         }
       ]
+    },
+    "Card": {
+      "kind": "component",
+      "source": "src/primitives/card.tsx",
+      "props": [
+        {
+          "name": "variant",
+          "type": "\"primary\" | \"ghost\" | \"secondary\" | \"tertiary\"",
+          "required": false,
+          "description": "Fill of the card: secondary (default), primary, tertiary, or ghost (no fill, no edge)."
+        },
+        {
+          "name": "interactive",
+          "type": "false | true",
+          "required": false,
+          "description": "Hover and press feedback for a card that is itself a link or a button (use with asChild)."
+        },
+        {
+          "name": "asChild",
+          "type": "boolean",
+          "required": false,
+          "default": "false",
+          "description": "Render the single child (an a or a button, so the whole card is one target) with the card skin."
+        }
+      ]
+    },
+    "CardAction": {
+      "kind": "component",
+      "source": "src/primitives/card.tsx",
+      "props": []
+    },
+    "CardContent": {
+      "kind": "component",
+      "source": "src/primitives/card.tsx",
+      "props": []
+    },
+    "CardDescription": {
+      "kind": "component",
+      "source": "src/primitives/card.tsx",
+      "props": []
+    },
+    "CardFooter": {
+      "kind": "component",
+      "source": "src/primitives/card.tsx",
+      "props": []
+    },
+    "CardHeader": {
+      "kind": "component",
+      "source": "src/primitives/card.tsx",
+      "props": []
+    },
+    "CardTitle": {
+      "kind": "component",
+      "source": "src/primitives/card.tsx",
+      "props": []
     },
     "CatalogCategory": {
       "kind": "type",
@@ -6086,6 +6393,166 @@
       "source": "src/blocks/component-catalog/component-catalog-model.ts",
       "props": []
     },
+    "Cause": {
+      "kind": "type",
+      "source": "src/blocks/root-cause-tree/root-cause-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "Stable key."
+        },
+        {
+          "name": "title",
+          "type": "string",
+          "required": true,
+          "description": "Hypothesis in one line."
+        },
+        {
+          "name": "status",
+          "type": "CauseStatus",
+          "required": false,
+          "description": "Check state; defaults to open."
+        },
+        {
+          "name": "gate",
+          "type": "CauseGate",
+          "required": false,
+          "description": "How the children cause this one; defaults to or."
+        },
+        {
+          "name": "verdict",
+          "type": "string",
+          "required": false,
+          "description": "Verdict sentence once checked."
+        },
+        {
+          "name": "evidence",
+          "type": "CauseEvidence",
+          "required": false,
+          "description": "Proof once checked."
+        },
+        {
+          "name": "files",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Files or sources involved."
+        },
+        {
+          "name": "at",
+          "type": "number",
+          "required": false,
+          "description": "When it was checked, in milliseconds."
+        },
+        {
+          "name": "children",
+          "type": "readonly Cause[]",
+          "required": false,
+          "description": "Narrower hypotheses."
+        }
+      ]
+    },
+    "CauseEvidence": {
+      "kind": "type",
+      "source": "src/blocks/root-cause-tree/root-cause-model.ts",
+      "props": [
+        {
+          "name": "kind",
+          "type": "string",
+          "required": true,
+          "description": "Kind of proof, such as Log, Diff or Query."
+        },
+        {
+          "name": "content",
+          "type": "string",
+          "required": true,
+          "description": "The proof itself, shown as code."
+        }
+      ]
+    },
+    "CauseFailure": {
+      "kind": "type",
+      "source": "src/blocks/root-cause-tree/root-cause-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "Stable key."
+        },
+        {
+          "name": "title",
+          "type": "string",
+          "required": true,
+          "description": "What failed."
+        },
+        {
+          "name": "detail",
+          "type": "string",
+          "required": false,
+          "description": "One short detail line, such as how many bars are missing."
+        },
+        {
+          "name": "gate",
+          "type": "CauseGate",
+          "required": false,
+          "description": "How the top hypotheses cause the failure; defaults to or."
+        },
+        {
+          "name": "children",
+          "type": "readonly Cause[]",
+          "required": true,
+          "description": "Top hypotheses."
+        }
+      ]
+    },
+    "CauseGate": {
+      "kind": "type",
+      "source": "src/blocks/root-cause-tree/root-cause-model.ts",
+      "props": []
+    },
+    "CauseRow": {
+      "kind": "type",
+      "source": "src/blocks/root-cause-tree/root-cause-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "depth",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "parentId",
+          "type": "string | null",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "cause",
+          "type": "Cause | null",
+          "required": true,
+          "description": "The failure row has no cause."
+        },
+        {
+          "name": "hasChildren",
+          "type": "boolean",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "CauseStatus": {
+      "kind": "type",
+      "source": "src/blocks/root-cause-tree/root-cause-model.ts",
+      "props": []
+    },
     "ChainDirection": {
       "kind": "type",
       "source": "src/blocks/transmission-chain/transmission-chain-model.ts",
@@ -6179,6 +6646,126 @@
       "source": "src/blocks/transmission-chain/transmission-chain-model.ts",
       "props": []
     },
+    "ChangeItem": {
+      "kind": "type",
+      "source": "src/quant/change-summary.tsx",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "Stable key."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "Metric name."
+        },
+        {
+          "name": "change",
+          "type": "string",
+          "required": true,
+          "description": "The change as text, written by the caller (「1.12 → 1.38」)."
+        },
+        {
+          "name": "tone",
+          "type": "'good' | 'bad' | 'neutral'",
+          "required": true,
+          "description": "Whether the change is good, bad or neither; this picks the color, not the arrow."
+        },
+        {
+          "name": "direction",
+          "type": "'up' | 'down'",
+          "required": false,
+          "description": "Arrow direction of the value; omit for a flat arrow."
+        }
+      ]
+    },
+    "ChangeSummary": {
+      "kind": "component",
+      "source": "src/quant/change-summary.tsx",
+      "props": [
+        {
+          "name": "changes",
+          "type": "readonly ChangeItem[]",
+          "required": true,
+          "description": "Rows, at most about six."
+        },
+        {
+          "name": "title",
+          "type": "ReactNode",
+          "required": true,
+          "description": "Heading."
+        },
+        {
+          "name": "period",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Small period text on the right of the heading (「11-16 → 11-22」)."
+        },
+        {
+          "name": "icon",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Icon in front of the heading; omit for none."
+        },
+        {
+          "name": "empty",
+          "type": "string",
+          "required": false,
+          "description": "Text when there are no changes."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "ChangeSummaryProps": {
+      "kind": "type",
+      "source": "src/quant/change-summary.tsx",
+      "props": [
+        {
+          "name": "changes",
+          "type": "readonly ChangeItem[]",
+          "required": true,
+          "description": "Rows, at most about six."
+        },
+        {
+          "name": "title",
+          "type": "ReactNode",
+          "required": true,
+          "description": "Heading."
+        },
+        {
+          "name": "period",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Small period text on the right of the heading (「11-16 → 11-22」)."
+        },
+        {
+          "name": "icon",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Icon in front of the heading; omit for none."
+        },
+        {
+          "name": "empty",
+          "type": "string",
+          "required": false,
+          "description": "Text when there are no changes."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
     "ChangeText": {
       "kind": "component",
       "source": "src/quotes/change-text.tsx",
@@ -6210,6 +6797,11 @@
           "description": "Flash up or down color when value changes (for numbers that update live; off by default so static tables stay still)."
         }
       ]
+    },
+    "ChangeVerdict": {
+      "kind": "type",
+      "source": "src/quant/experiment-model.ts",
+      "props": []
     },
     "Checkbox": {
       "kind": "component",
@@ -6607,7 +7199,7 @@
     },
     "CnAmountSize": {
       "kind": "type",
-      "source": "src/cn/format.ts",
+      "source": "src/lib/chart/format/cn-amount.ts",
       "props": [
         {
           "name": "abbreviate",
@@ -6631,7 +7223,7 @@
     },
     "CnAmountUnits": {
       "kind": "type",
-      "source": "src/cn/format.ts",
+      "source": "src/lib/chart/format/cn-amount.ts",
       "props": [
         {
           "name": "wan",
@@ -14860,6 +15452,380 @@
         }
       ]
     },
+    "ExperimentCard": {
+      "kind": "component",
+      "source": "src/quant/experiment-card.tsx",
+      "props": [
+        {
+          "name": "title",
+          "type": "ReactNode",
+          "required": true,
+          "description": "Card title."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the card."
+        },
+        {
+          "name": "variants",
+          "type": "readonly ExperimentVariant[]",
+          "required": true,
+          "description": "Variants in display order; the one marked control (or the first) is the baseline."
+        },
+        {
+          "name": "metrics",
+          "type": "readonly ExperimentMetric[]",
+          "required": true,
+          "description": "Metrics the variants were measured on."
+        },
+        {
+          "name": "metric",
+          "type": "string",
+          "required": false,
+          "description": "Controlled metric id."
+        },
+        {
+          "name": "defaultMetric",
+          "type": "string",
+          "required": false,
+          "description": "Metric id shown first when uncontrolled; defaults to the first metric."
+        },
+        {
+          "name": "onMetricChange",
+          "type": "(metricId: string) => void",
+          "required": false,
+          "description": "Called when the metric switch changes."
+        },
+        {
+          "name": "winner",
+          "type": "string | null",
+          "required": false,
+          "description": "Controlled winner id; null when nothing is picked."
+        },
+        {
+          "name": "defaultWinner",
+          "type": "string | null",
+          "required": false,
+          "default": "null",
+          "description": "Winner id picked first when uncontrolled."
+        },
+        {
+          "name": "onWinnerChange",
+          "type": "(winnerId: string | null) => void",
+          "required": false,
+          "description": "Called with the new winner id, or null when the pick is withdrawn."
+        },
+        {
+          "name": "onAction",
+          "type": "(variant: ExperimentVariant) => void",
+          "required": false,
+          "description": "Called when the action button of the picked winner is pressed; omit to show no button."
+        },
+        {
+          "name": "status",
+          "type": "{ label: string; tone: Severity }",
+          "required": false,
+          "description": "Status tag next to the title, such as running or finished."
+        },
+        {
+          "name": "note",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Short note next to the status, such as the sample period."
+        },
+        {
+          "name": "formatChange",
+          "type": "(change: number) => string",
+          "required": false,
+          "default": "defaultChange",
+          "description": "How the change against the baseline is written; defaults to a signed percent with one decimal."
+        },
+        {
+          "name": "labels",
+          "type": "ExperimentCardLabels",
+          "required": true,
+          "description": "Texts."
+        },
+        {
+          "name": "source",
+          "type": "string",
+          "required": false,
+          "description": "Source line under the card."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "ExperimentCardLabels": {
+      "kind": "type",
+      "source": "src/quant/experiment-card.tsx",
+      "props": [
+        {
+          "name": "metric",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the metric switch."
+        },
+        {
+          "name": "variants",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the variant list."
+        },
+        {
+          "name": "baseline",
+          "type": "string",
+          "required": true,
+          "description": "Small tag on the baseline row (「基准」)."
+        },
+        {
+          "name": "leader",
+          "type": "string",
+          "required": true,
+          "description": "Small tag on the row ahead on the current metric (「领先」)."
+        },
+        {
+          "name": "hint",
+          "type": "string",
+          "required": true,
+          "description": "Tray text before anything is picked (「选一个胜者」)."
+        },
+        {
+          "name": "preview",
+          "type": "(variant: ExperimentVariant, value: string) => string",
+          "required": true,
+          "description": "Tray text while a row is hovered (「预览 B：夏普 1.42」)."
+        },
+        {
+          "name": "picked",
+          "type": "(variant: ExperimentVariant) => string",
+          "required": true,
+          "description": "Tray text once a winner is picked (「已选 B」)."
+        },
+        {
+          "name": "action",
+          "type": "(variant: ExperimentVariant) => string",
+          "required": true,
+          "description": "Label of the action button (「采用参数 B」)."
+        },
+        {
+          "name": "samples",
+          "type": "(count: number) => string",
+          "required": true,
+          "description": "Sample size text (「312 笔」)."
+        },
+        {
+          "name": "confidence",
+          "type": "(confidence: number) => string",
+          "required": true,
+          "description": "Confidence text (「置信 95%」)."
+        },
+        {
+          "name": "missing",
+          "type": "string",
+          "required": true,
+          "description": "Value text when a metric was not measured."
+        },
+        {
+          "name": "empty",
+          "type": "string",
+          "required": true,
+          "description": "Text when there are no variants."
+        }
+      ]
+    },
+    "ExperimentCardProps": {
+      "kind": "type",
+      "source": "src/quant/experiment-card.tsx",
+      "props": [
+        {
+          "name": "title",
+          "type": "ReactNode",
+          "required": true,
+          "description": "Card title."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the card."
+        },
+        {
+          "name": "variants",
+          "type": "readonly ExperimentVariant[]",
+          "required": true,
+          "description": "Variants in display order; the one marked control (or the first) is the baseline."
+        },
+        {
+          "name": "metrics",
+          "type": "readonly ExperimentMetric[]",
+          "required": true,
+          "description": "Metrics the variants were measured on."
+        },
+        {
+          "name": "metric",
+          "type": "string",
+          "required": false,
+          "description": "Controlled metric id."
+        },
+        {
+          "name": "defaultMetric",
+          "type": "string",
+          "required": false,
+          "description": "Metric id shown first when uncontrolled; defaults to the first metric."
+        },
+        {
+          "name": "onMetricChange",
+          "type": "(metricId: string) => void",
+          "required": false,
+          "description": "Called when the metric switch changes."
+        },
+        {
+          "name": "winner",
+          "type": "string | null",
+          "required": false,
+          "description": "Controlled winner id; null when nothing is picked."
+        },
+        {
+          "name": "defaultWinner",
+          "type": "string | null",
+          "required": false,
+          "description": "Winner id picked first when uncontrolled."
+        },
+        {
+          "name": "onWinnerChange",
+          "type": "(winnerId: string | null) => void",
+          "required": false,
+          "description": "Called with the new winner id, or null when the pick is withdrawn."
+        },
+        {
+          "name": "onAction",
+          "type": "(variant: ExperimentVariant) => void",
+          "required": false,
+          "description": "Called when the action button of the picked winner is pressed; omit to show no button."
+        },
+        {
+          "name": "status",
+          "type": "{ label: string; tone: Severity }",
+          "required": false,
+          "description": "Status tag next to the title, such as running or finished."
+        },
+        {
+          "name": "note",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Short note next to the status, such as the sample period."
+        },
+        {
+          "name": "formatChange",
+          "type": "(change: number) => string",
+          "required": false,
+          "description": "How the change against the baseline is written; defaults to a signed percent with one decimal."
+        },
+        {
+          "name": "labels",
+          "type": "ExperimentCardLabels",
+          "required": true,
+          "description": "Texts."
+        },
+        {
+          "name": "source",
+          "type": "string",
+          "required": false,
+          "description": "Source line under the card."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "ExperimentMetric": {
+      "kind": "type",
+      "source": "src/quant/experiment-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "Stable key, also the key into each variant's values."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "Metric name shown in the switch."
+        },
+        {
+          "name": "format",
+          "type": "(value: number) => string",
+          "required": false,
+          "description": "How a value is written; defaults to String."
+        },
+        {
+          "name": "lowerIsBetter",
+          "type": "boolean",
+          "required": false,
+          "description": "Smaller values win (drawdown, slippage)."
+        }
+      ]
+    },
+    "ExperimentVariant": {
+      "kind": "type",
+      "source": "src/quant/experiment-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "Stable key."
+        },
+        {
+          "name": "badge",
+          "type": "string",
+          "required": true,
+          "description": "Short badge such as A, B, C."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": "Variant name."
+        },
+        {
+          "name": "values",
+          "type": "Readonly<Record<string, number | null>>",
+          "required": true,
+          "description": "One value per metric id; null when the metric was not measured."
+        },
+        {
+          "name": "control",
+          "type": "boolean",
+          "required": false,
+          "description": "This variant is the baseline the others are compared with."
+        },
+        {
+          "name": "samples",
+          "type": "number",
+          "required": false,
+          "description": "Sample size behind the values (trades, days); omit when unknown."
+        },
+        {
+          "name": "confidence",
+          "type": "number",
+          "required": false,
+          "description": "Confidence that the difference to the baseline is real, 0..1; omit when not computed."
+        }
+      ]
+    },
     "ExposureSlider": {
       "kind": "component",
       "source": "src/katana/exposure-slider.tsx",
@@ -15024,6 +15990,257 @@
     "FONT_CATALOG": {
       "kind": "value",
       "source": "src/patterns/font-catalog.ts",
+      "props": []
+    },
+    "FallbackAttempt": {
+      "kind": "type",
+      "source": "src/blocks/fallback-chain/fallback-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "Stable key."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": "Source name."
+        },
+        {
+          "name": "provider",
+          "type": "string",
+          "required": false,
+          "description": "Provider or entry point (「腾讯 · qt 入口」)."
+        },
+        {
+          "name": "status",
+          "type": "FallbackStatus",
+          "required": true,
+          "description": "Waiting, trying, failed, answered or skipped (not needed)."
+        },
+        {
+          "name": "took",
+          "type": "number",
+          "required": false,
+          "description": "Time spent on this source in milliseconds."
+        },
+        {
+          "name": "reason",
+          "type": "string",
+          "required": false,
+          "description": "Why it failed (「限流 · 456」), written by the caller."
+        },
+        {
+          "name": "note",
+          "type": "string",
+          "required": false,
+          "description": "Any other short note."
+        }
+      ]
+    },
+    "FallbackChain": {
+      "kind": "component",
+      "source": "src/blocks/fallback-chain/fallback-chain.tsx",
+      "props": [
+        {
+          "name": "attempts",
+          "type": "readonly FallbackAttempt[]",
+          "required": true,
+          "description": "Sources in try order."
+        },
+        {
+          "name": "title",
+          "type": "ReactNode",
+          "required": true,
+          "description": "Heading."
+        },
+        {
+          "name": "request",
+          "type": "ReactNode",
+          "required": true,
+          "description": "The request node: what is being fetched, such as a symbol and period."
+        },
+        {
+          "name": "route",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Route or policy name next to the request."
+        },
+        {
+          "name": "formatMs",
+          "type": "(ms: number) => string",
+          "required": true,
+          "description": "How milliseconds are written."
+        },
+        {
+          "name": "onRetry",
+          "type": "() => void",
+          "required": false,
+          "description": "Called by the retry button after every source failed; omit to show no button."
+        },
+        {
+          "name": "labels",
+          "type": "FallbackChainLabels",
+          "required": true,
+          "description": "Texts."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "FallbackChainLabels": {
+      "kind": "type",
+      "source": "src/blocks/fallback-chain/fallback-chain.tsx",
+      "props": [
+        {
+          "name": "status",
+          "type": "Record<FallbackStatus, string>",
+          "required": true,
+          "description": "Status words."
+        },
+        {
+          "name": "sources",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the source list."
+        },
+        {
+          "name": "pending",
+          "type": "string",
+          "required": true,
+          "description": "Response node text while waiting, after an answer and after every source failed."
+        },
+        {
+          "name": "answered",
+          "type": "(attempt: FallbackAttempt, level: number) => string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "exhausted",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "summary",
+          "type": "(outcome: FallbackOutcome) => string",
+          "required": true,
+          "description": "Summary in the header, built by the caller (levels tried, failures, time)."
+        },
+        {
+          "name": "retry",
+          "type": "string",
+          "required": true,
+          "description": "Retry button label."
+        }
+      ]
+    },
+    "FallbackChainProps": {
+      "kind": "type",
+      "source": "src/blocks/fallback-chain/fallback-chain.tsx",
+      "props": [
+        {
+          "name": "attempts",
+          "type": "readonly FallbackAttempt[]",
+          "required": true,
+          "description": "Sources in try order."
+        },
+        {
+          "name": "title",
+          "type": "ReactNode",
+          "required": true,
+          "description": "Heading."
+        },
+        {
+          "name": "request",
+          "type": "ReactNode",
+          "required": true,
+          "description": "The request node: what is being fetched, such as a symbol and period."
+        },
+        {
+          "name": "route",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Route or policy name next to the request."
+        },
+        {
+          "name": "formatMs",
+          "type": "(ms: number) => string",
+          "required": true,
+          "description": "How milliseconds are written."
+        },
+        {
+          "name": "onRetry",
+          "type": "() => void",
+          "required": false,
+          "description": "Called by the retry button after every source failed; omit to show no button."
+        },
+        {
+          "name": "labels",
+          "type": "FallbackChainLabels",
+          "required": true,
+          "description": "Texts."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "FallbackOutcome": {
+      "kind": "type",
+      "source": "src/blocks/fallback-chain/fallback-model.ts",
+      "props": [
+        {
+          "name": "answeredId",
+          "type": "string | null",
+          "required": true,
+          "description": "Source that answered, or null."
+        },
+        {
+          "name": "failed",
+          "type": "number",
+          "required": true,
+          "description": "Sources that failed."
+        },
+        {
+          "name": "tried",
+          "type": "number",
+          "required": true,
+          "description": "Sources tried so far (failed, trying or answered)."
+        },
+        {
+          "name": "running",
+          "type": "boolean",
+          "required": true,
+          "description": "One source is still being tried."
+        },
+        {
+          "name": "exhausted",
+          "type": "boolean",
+          "required": true,
+          "description": "Every source failed and none is left to try."
+        },
+        {
+          "name": "elapsed",
+          "type": "number",
+          "required": true,
+          "description": "Time spent across tried sources, in milliseconds."
+        }
+      ]
+    },
+    "FallbackStatus": {
+      "kind": "type",
+      "source": "src/blocks/fallback-chain/fallback-model.ts",
       "props": []
     },
     "FeeRates": {
@@ -21544,6 +22761,226 @@
         }
       ]
     },
+    "KpiChart": {
+      "kind": "component",
+      "source": "src/quant/kpi-chart.tsx",
+      "props": [
+        {
+          "name": "title",
+          "type": "string",
+          "required": true,
+          "description": "Card title."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the chart."
+        },
+        {
+          "name": "value",
+          "type": "string",
+          "required": false,
+          "description": "Headline value, already formatted."
+        },
+        {
+          "name": "delta",
+          "type": "number | null",
+          "required": false,
+          "description": "Change against the previous period as a fraction (0.12 is +12%); omit to hide."
+        },
+        {
+          "name": "formatDelta",
+          "type": "(delta: number) => string",
+          "required": false,
+          "default": "defaultDelta",
+          "description": "How the change is written; defaults to a signed percent with one decimal."
+        },
+        {
+          "name": "labels",
+          "type": "readonly string[]",
+          "required": true,
+          "description": "One label per point (dates); the axis writes the first, middle and last."
+        },
+        {
+          "name": "tooltipLabels",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Longer per-point headers for the tooltip; falls back to labels."
+        },
+        {
+          "name": "series",
+          "type": "readonly KpiSeries[]",
+          "required": true,
+          "description": "Lines, about six at most."
+        },
+        {
+          "name": "scale",
+          "type": "KpiScale",
+          "required": false,
+          "default": "'shared'",
+          "description": "shared (default): one y axis; normalized: each line scaled to its own range, no y ticks."
+        },
+        {
+          "name": "format",
+          "type": "(value: number) => string",
+          "required": false,
+          "default": "String",
+          "description": "How values are written on the axis and in the tooltip; a line's own format wins in the tooltip."
+        },
+        {
+          "name": "index",
+          "type": "number | null",
+          "required": false,
+          "description": "Controlled point index; null when nothing is marked."
+        },
+        {
+          "name": "onIndexChange",
+          "type": "(index: number | null) => void",
+          "required": false,
+          "description": "Called when the marked point changes (pointer, arrows, Esc)."
+        },
+        {
+          "name": "defaultIndex",
+          "type": "number",
+          "required": false,
+          "description": "Point marked while nobody scrubs; defaults to the last point."
+        },
+        {
+          "name": "emptyText",
+          "type": "string",
+          "required": true,
+          "description": "Text in the plot when there is nothing to draw."
+        },
+        {
+          "name": "footer",
+          "type": "string",
+          "required": false,
+          "description": "Footer line, such as the source."
+        },
+        {
+          "name": "height",
+          "type": "number",
+          "required": false,
+          "default": "DEFAULT_HEIGHT",
+          "description": "Plot height in pixels."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "KpiChartProps": {
+      "kind": "type",
+      "source": "src/quant/kpi-chart.tsx",
+      "props": [
+        {
+          "name": "title",
+          "type": "string",
+          "required": true,
+          "description": "Card title."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the chart."
+        },
+        {
+          "name": "value",
+          "type": "string",
+          "required": false,
+          "description": "Headline value, already formatted."
+        },
+        {
+          "name": "delta",
+          "type": "number | null",
+          "required": false,
+          "description": "Change against the previous period as a fraction (0.12 is +12%); omit to hide."
+        },
+        {
+          "name": "formatDelta",
+          "type": "(delta: number) => string",
+          "required": false,
+          "description": "How the change is written; defaults to a signed percent with one decimal."
+        },
+        {
+          "name": "labels",
+          "type": "readonly string[]",
+          "required": true,
+          "description": "One label per point (dates); the axis writes the first, middle and last."
+        },
+        {
+          "name": "tooltipLabels",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Longer per-point headers for the tooltip; falls back to labels."
+        },
+        {
+          "name": "series",
+          "type": "readonly KpiSeries[]",
+          "required": true,
+          "description": "Lines, about six at most."
+        },
+        {
+          "name": "scale",
+          "type": "KpiScale",
+          "required": false,
+          "description": "shared (default): one y axis; normalized: each line scaled to its own range, no y ticks."
+        },
+        {
+          "name": "format",
+          "type": "(value: number) => string",
+          "required": false,
+          "description": "How values are written on the axis and in the tooltip; a line's own format wins in the tooltip."
+        },
+        {
+          "name": "index",
+          "type": "number | null",
+          "required": false,
+          "description": "Controlled point index; null when nothing is marked."
+        },
+        {
+          "name": "onIndexChange",
+          "type": "(index: number | null) => void",
+          "required": false,
+          "description": "Called when the marked point changes (pointer, arrows, Esc)."
+        },
+        {
+          "name": "defaultIndex",
+          "type": "number",
+          "required": false,
+          "description": "Point marked while nobody scrubs; defaults to the last point."
+        },
+        {
+          "name": "emptyText",
+          "type": "string",
+          "required": true,
+          "description": "Text in the plot when there is nothing to draw."
+        },
+        {
+          "name": "footer",
+          "type": "string",
+          "required": false,
+          "description": "Footer line, such as the source."
+        },
+        {
+          "name": "height",
+          "type": "number",
+          "required": false,
+          "description": "Plot height in pixels."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
     "KpiDef": {
       "kind": "type",
       "source": "src/blocks/series-explorer/series-explorer-model.ts",
@@ -21589,6 +23026,47 @@
           "type": "number",
           "required": false,
           "description": "限额线（数值）：图上画 signal-red 虚线，迷你线画琥珀虚线，纵轴把它包进来。"
+        }
+      ]
+    },
+    "KpiScale": {
+      "kind": "type",
+      "source": "src/quant/kpi-chart-model.ts",
+      "props": []
+    },
+    "KpiSeries": {
+      "kind": "type",
+      "source": "src/quant/kpi-chart-model.ts",
+      "props": [
+        {
+          "name": "key",
+          "type": "string",
+          "required": true,
+          "description": "Stable key."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "Line name in the legend and tooltip."
+        },
+        {
+          "name": "values",
+          "type": "readonly (number | null)[]",
+          "required": true,
+          "description": "One value per point; null where the value is missing (the line breaks there)."
+        },
+        {
+          "name": "color",
+          "type": "string",
+          "required": false,
+          "description": "CSS color; defaults to the series palette in order."
+        },
+        {
+          "name": "format",
+          "type": "(value: number) => string",
+          "required": false,
+          "description": "How this line's values are written in the tooltip; defaults to the chart's format."
         }
       ]
     },
@@ -22551,10 +24029,73 @@
         }
       ]
     },
+    "Link": {
+      "kind": "component",
+      "source": "src/katana/link.tsx",
+      "props": [
+        {
+          "name": "tone",
+          "type": "'primary' | 'secondary'",
+          "required": false,
+          "default": "'primary'",
+          "description": "primary (default): the primary text color; secondary: the secondary text color (footnotes, captions)."
+        },
+        {
+          "name": "external",
+          "type": "boolean",
+          "required": false,
+          "default": "false",
+          "description": "Opens in a new tab (target=_blank, rel=noopener noreferrer) and ends with an external-link icon."
+        },
+        {
+          "name": "externalLabel",
+          "type": "string",
+          "required": false,
+          "description": "Read after the text when external, for example \"(opens in a new tab)\"; the package ships no text."
+        },
+        {
+          "name": "asChild",
+          "type": "boolean",
+          "required": false,
+          "default": "false",
+          "description": "Render the single child (a router's Link) with this skin instead of an a."
+        }
+      ]
+    },
     "LinkGroup": {
       "kind": "type",
       "source": "src/katana/led.tsx",
       "props": []
+    },
+    "LinkProps": {
+      "kind": "type",
+      "source": "src/katana/link.tsx",
+      "props": [
+        {
+          "name": "tone",
+          "type": "'primary' | 'secondary'",
+          "required": false,
+          "description": "primary (default): the primary text color; secondary: the secondary text color (footnotes, captions)."
+        },
+        {
+          "name": "external",
+          "type": "boolean",
+          "required": false,
+          "description": "Opens in a new tab (target=_blank, rel=noopener noreferrer) and ends with an external-link icon."
+        },
+        {
+          "name": "externalLabel",
+          "type": "string",
+          "required": false,
+          "description": "Read after the text when external, for example \"(opens in a new tab)\"; the package ships no text."
+        },
+        {
+          "name": "asChild",
+          "type": "boolean",
+          "required": false,
+          "description": "Render the single child (a router's Link) with this skin instead of an a."
+        }
+      ]
     },
     "LinkState": {
       "kind": "type",
@@ -22684,6 +24225,218 @@
       "kind": "type",
       "source": "src/blocks/positions-table/positions-model.ts",
       "props": []
+    },
+    "ListBox": {
+      "kind": "component",
+      "source": "src/patterns/list-box.tsx",
+      "props": [
+        {
+          "name": "items",
+          "type": "readonly (ListBoxOption | ListBoxGroup)[]",
+          "required": true,
+          "description": "Options, or titled groups of options; the two can be mixed."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the list."
+        },
+        {
+          "name": "selectionMode",
+          "type": "'single' | 'multiple'",
+          "required": false,
+          "default": "'single'",
+          "description": "single (default): exactly one stays selected once picked; multiple: each click toggles."
+        },
+        {
+          "name": "value",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Selected option ids (controlled)."
+        },
+        {
+          "name": "defaultValue",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Selected option ids at first (uncontrolled)."
+        },
+        {
+          "name": "onValueChange",
+          "type": "(value: string[]) => void",
+          "required": false,
+          "description": "Called with the whole list of selected ids."
+        },
+        {
+          "name": "onAction",
+          "type": "(id: string) => void",
+          "required": false,
+          "description": "Called when an option is activated with Enter or a double click (open the layout, switch the account)."
+        },
+        {
+          "name": "bordered",
+          "type": "boolean",
+          "required": false,
+          "default": "false",
+          "description": "Draw an edge and a fill around the list (a standalone list); without it the list blends into its container."
+        },
+        {
+          "name": "maxHeight",
+          "type": "number | string",
+          "required": false,
+          "description": "Height after which the list scrolls inside itself (px or any CSS length)."
+        },
+        {
+          "name": "emptyLabel",
+          "type": "string",
+          "required": false,
+          "description": "Shown in place of the options when items is empty."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class names on the list."
+        }
+      ]
+    },
+    "ListBoxGroup": {
+      "kind": "type",
+      "source": "src/patterns/list-box.tsx",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "title",
+          "type": "string",
+          "required": true,
+          "description": "Heading of the group (announced as the group's name)."
+        },
+        {
+          "name": "options",
+          "type": "readonly ListBoxOption[]",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "ListBoxOption": {
+      "kind": "type",
+      "source": "src/patterns/list-box.tsx",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "The option's text; also what type-ahead matches."
+        },
+        {
+          "name": "description",
+          "type": "string",
+          "required": false,
+          "description": "A second line under the label, in the secondary color."
+        },
+        {
+          "name": "icon",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Icon before the label (decorative)."
+        },
+        {
+          "name": "trailing",
+          "type": "ReactNode",
+          "required": false,
+          "description": "A value at the right end, before the check (a count, a balance); tabular figures."
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "ListBoxProps": {
+      "kind": "type",
+      "source": "src/patterns/list-box.tsx",
+      "props": [
+        {
+          "name": "items",
+          "type": "readonly (ListBoxOption | ListBoxGroup)[]",
+          "required": true,
+          "description": "Options, or titled groups of options; the two can be mixed."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the list."
+        },
+        {
+          "name": "selectionMode",
+          "type": "'single' | 'multiple'",
+          "required": false,
+          "description": "single (default): exactly one stays selected once picked; multiple: each click toggles."
+        },
+        {
+          "name": "value",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Selected option ids (controlled)."
+        },
+        {
+          "name": "defaultValue",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Selected option ids at first (uncontrolled)."
+        },
+        {
+          "name": "onValueChange",
+          "type": "(value: string[]) => void",
+          "required": false,
+          "description": "Called with the whole list of selected ids."
+        },
+        {
+          "name": "onAction",
+          "type": "(id: string) => void",
+          "required": false,
+          "description": "Called when an option is activated with Enter or a double click (open the layout, switch the account)."
+        },
+        {
+          "name": "bordered",
+          "type": "boolean",
+          "required": false,
+          "description": "Draw an edge and a fill around the list (a standalone list); without it the list blends into its container."
+        },
+        {
+          "name": "maxHeight",
+          "type": "number | string",
+          "required": false,
+          "description": "Height after which the list scrolls inside itself (px or any CSS length)."
+        },
+        {
+          "name": "emptyLabel",
+          "type": "string",
+          "required": false,
+          "description": "Shown in place of the options when items is empty."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class names on the list."
+        }
+      ]
     },
     "Loading": {
       "kind": "component",
@@ -30373,6 +32126,19 @@
         }
       ]
     },
+    "Panel": {
+      "kind": "component",
+      "source": "src/katana/panel.tsx",
+      "props": [
+        {
+          "name": "variant",
+          "type": "'primary' | 'secondary' | 'tertiary'",
+          "required": false,
+          "default": "'primary'",
+          "description": "Fill: primary (default, the brightest container fill), secondary or tertiary."
+        }
+      ]
+    },
     "PanelFrame": {
       "kind": "component",
       "source": "src/blocks/panel-frame/panel-frame.tsx",
@@ -30756,6 +32522,18 @@
       "source": "src/blocks/panel-frame/panel-frame.tsx",
       "props": []
     },
+    "PanelProps": {
+      "kind": "type",
+      "source": "src/katana/panel.tsx",
+      "props": [
+        {
+          "name": "variant",
+          "type": "'primary' | 'secondary' | 'tertiary'",
+          "required": false,
+          "description": "Fill: primary (default, the brightest container fill), secondary or tertiary."
+        }
+      ]
+    },
     "PanelTab": {
       "kind": "type",
       "source": "src/blocks/panel-tabs/panel-tabs.tsx",
@@ -31109,6 +32887,206 @@
           "type": "number",
           "required": false,
           "description": "Maximum travel, in pixels, at depth 1."
+        }
+      ]
+    },
+    "ParallelAttempts": {
+      "kind": "component",
+      "source": "src/quant/parallel-attempts.tsx",
+      "props": [
+        {
+          "name": "attempts",
+          "type": "readonly Attempt[]",
+          "required": true,
+          "description": "Attempts in display order."
+        },
+        {
+          "name": "title",
+          "type": "ReactNode",
+          "required": true,
+          "description": "Heading."
+        },
+        {
+          "name": "task",
+          "type": "ReactNode",
+          "required": false,
+          "description": "The shared task, such as the strategy and sample period."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the attempt group."
+        },
+        {
+          "name": "picked",
+          "type": "string | null",
+          "required": false,
+          "description": "Controlled pick; omit to pick the best finished attempt until the user picks another one."
+        },
+        {
+          "name": "onPick",
+          "type": "(attempt: Attempt) => void",
+          "required": false,
+          "description": "Called with the attempt the user picks."
+        },
+        {
+          "name": "lowerIsBetter",
+          "type": "boolean",
+          "required": false,
+          "default": "false",
+          "description": "Smaller scores win."
+        },
+        {
+          "name": "formatScore",
+          "type": "(score: number) => string",
+          "required": false,
+          "default": "String",
+          "description": "How a score is written; defaults to String."
+        },
+        {
+          "name": "formatTook",
+          "type": "(ms: number) => string",
+          "required": false,
+          "description": "How a wall time in milliseconds is written; omit to hide times."
+        },
+        {
+          "name": "labels",
+          "type": "ParallelAttemptsLabels",
+          "required": true,
+          "description": "Texts."
+        },
+        {
+          "name": "source",
+          "type": "string",
+          "required": false,
+          "description": "Source line under the list."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "ParallelAttemptsLabels": {
+      "kind": "type",
+      "source": "src/quant/parallel-attempts.tsx",
+      "props": [
+        {
+          "name": "status",
+          "type": "Record<AttemptStatus, string>",
+          "required": true,
+          "description": "Status words."
+        },
+        {
+          "name": "best",
+          "type": "string",
+          "required": true,
+          "description": "Tag on the best finished attempt (「最优」)."
+        },
+        {
+          "name": "use",
+          "type": "string",
+          "required": true,
+          "description": "Label of the pick button (「用这组」); the accessible name also gets the attempt name and score."
+        },
+        {
+          "name": "picked",
+          "type": "string",
+          "required": true,
+          "description": "Tag on the picked attempt (「已选」)."
+        },
+        {
+          "name": "counts",
+          "type": "(counts: Record<AttemptStatus, number>) => string",
+          "required": true,
+          "description": "Header counts (「3 跑完 · 1 运行」), built by the caller."
+        },
+        {
+          "name": "empty",
+          "type": "string",
+          "required": true,
+          "description": "Text when there are no attempts."
+        }
+      ]
+    },
+    "ParallelAttemptsProps": {
+      "kind": "type",
+      "source": "src/quant/parallel-attempts.tsx",
+      "props": [
+        {
+          "name": "attempts",
+          "type": "readonly Attempt[]",
+          "required": true,
+          "description": "Attempts in display order."
+        },
+        {
+          "name": "title",
+          "type": "ReactNode",
+          "required": true,
+          "description": "Heading."
+        },
+        {
+          "name": "task",
+          "type": "ReactNode",
+          "required": false,
+          "description": "The shared task, such as the strategy and sample period."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the attempt group."
+        },
+        {
+          "name": "picked",
+          "type": "string | null",
+          "required": false,
+          "description": "Controlled pick; omit to pick the best finished attempt until the user picks another one."
+        },
+        {
+          "name": "onPick",
+          "type": "(attempt: Attempt) => void",
+          "required": false,
+          "description": "Called with the attempt the user picks."
+        },
+        {
+          "name": "lowerIsBetter",
+          "type": "boolean",
+          "required": false,
+          "description": "Smaller scores win."
+        },
+        {
+          "name": "formatScore",
+          "type": "(score: number) => string",
+          "required": false,
+          "description": "How a score is written; defaults to String."
+        },
+        {
+          "name": "formatTook",
+          "type": "(ms: number) => string",
+          "required": false,
+          "description": "How a wall time in milliseconds is written; omit to hide times."
+        },
+        {
+          "name": "labels",
+          "type": "ParallelAttemptsLabels",
+          "required": true,
+          "description": "Texts."
+        },
+        {
+          "name": "source",
+          "type": "string",
+          "required": false,
+          "description": "Source line under the list."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
         }
       ]
     },
@@ -32576,6 +34554,96 @@
       "source": "src/motion/text/perspective-text-3d.tsx",
       "props": []
     },
+    "Pill": {
+      "kind": "component",
+      "source": "src/katana/pill.tsx",
+      "props": [
+        {
+          "name": "children",
+          "type": "ReactNode",
+          "required": true,
+          "description": "Text of the pill: one or two words."
+        },
+        {
+          "name": "icon",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Leading icon (13px); decorative, so give it aria-hidden."
+        },
+        {
+          "name": "selected",
+          "type": "boolean",
+          "required": false,
+          "description": "Pressed state (aria-pressed): the pill becomes a toggle drawn in the selected look."
+        },
+        {
+          "name": "onDismiss",
+          "type": "() => void",
+          "required": false,
+          "description": "Given: an × button at the end removes the pill; Backspace or Delete on the pill does the same."
+        },
+        {
+          "name": "dismissLabel",
+          "type": "string",
+          "required": false,
+          "description": "Accessible name of the × button, for example \"Remove P/E < 20\"; required with onDismiss (the package ships no text)."
+        },
+        {
+          "name": "size",
+          "type": "PillSize",
+          "required": false,
+          "default": "'md'",
+          "description": "md (24px, default) or sm (20px)."
+        }
+      ]
+    },
+    "PillProps": {
+      "kind": "type",
+      "source": "src/katana/pill.tsx",
+      "props": [
+        {
+          "name": "children",
+          "type": "ReactNode",
+          "required": true,
+          "description": "Text of the pill: one or two words."
+        },
+        {
+          "name": "icon",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Leading icon (13px); decorative, so give it aria-hidden."
+        },
+        {
+          "name": "selected",
+          "type": "boolean",
+          "required": false,
+          "description": "Pressed state (aria-pressed): the pill becomes a toggle drawn in the selected look."
+        },
+        {
+          "name": "onDismiss",
+          "type": "() => void",
+          "required": false,
+          "description": "Given: an × button at the end removes the pill; Backspace or Delete on the pill does the same."
+        },
+        {
+          "name": "dismissLabel",
+          "type": "string",
+          "required": false,
+          "description": "Accessible name of the × button, for example \"Remove P/E < 20\"; required with onDismiss (the package ships no text)."
+        },
+        {
+          "name": "size",
+          "type": "PillSize",
+          "required": false,
+          "description": "md (24px, default) or sm (20px)."
+        }
+      ]
+    },
+    "PillSize": {
+      "kind": "type",
+      "source": "src/katana/pill.tsx",
+      "props": []
+    },
     "PillValue": {
       "kind": "type",
       "source": "src/blocks/data-grid/columns.ts",
@@ -33280,6 +35348,233 @@
       "kind": "type",
       "source": "src/motion/background/pixel-flow-field.tsx",
       "props": []
+    },
+    "PlanStatus": {
+      "kind": "type",
+      "source": "src/blocks/rate-limit-planner/rate-limit-model.ts",
+      "props": []
+    },
+    "PlanStep": {
+      "kind": "type",
+      "source": "src/ai/plan-actual-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "Stable key."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": "Step name."
+        },
+        {
+          "name": "plannedStart",
+          "type": "number",
+          "required": true,
+          "description": "Planned start."
+        },
+        {
+          "name": "plannedEnd",
+          "type": "number",
+          "required": true,
+          "description": "Planned end."
+        },
+        {
+          "name": "actualStart",
+          "type": "number",
+          "required": false,
+          "description": "Actual start; omit while not started."
+        },
+        {
+          "name": "actualEnd",
+          "type": "number | null",
+          "required": false,
+          "description": "Actual end; omit or null while running."
+        }
+      ]
+    },
+    "PlanVsActual": {
+      "kind": "component",
+      "source": "src/ai/plan-vs-actual.tsx",
+      "props": [
+        {
+          "name": "steps",
+          "type": "readonly PlanStep[]",
+          "required": true,
+          "description": "Steps in plan order."
+        },
+        {
+          "name": "now",
+          "type": "number",
+          "required": true,
+          "description": "Current time, in the same unit as the steps."
+        },
+        {
+          "name": "title",
+          "type": "ReactNode",
+          "required": true,
+          "description": "Heading."
+        },
+        {
+          "name": "formatTime",
+          "type": "(time: number) => string",
+          "required": true,
+          "description": "How a time is written."
+        },
+        {
+          "name": "formatDuration",
+          "type": "(duration: number) => string",
+          "required": true,
+          "description": "How a duration is written."
+        },
+        {
+          "name": "labels",
+          "type": "PlanVsActualLabels",
+          "required": true,
+          "description": "Texts."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "PlanVsActualLabels": {
+      "kind": "type",
+      "source": "src/ai/plan-vs-actual.tsx",
+      "props": [
+        {
+          "name": "state",
+          "type": "Record<StepState, string>",
+          "required": true,
+          "description": "State words."
+        },
+        {
+          "name": "planned",
+          "type": "string",
+          "required": true,
+          "description": "Header field names."
+        },
+        {
+          "name": "projected",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "shift",
+          "type": "(shift: number) => string",
+          "required": true,
+          "description": "Shift text (「晚 12 分」「早 3 分」「按时」), built by the caller from the signed shift."
+        },
+        {
+          "name": "steps",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the step list."
+        },
+        {
+          "name": "durations",
+          "type": "(planned: string, actual: string | null) => string",
+          "required": true,
+          "description": "Duration pair in a row (「计划 10 分 · 实际 14 分」)."
+        },
+        {
+          "name": "empty",
+          "type": "string",
+          "required": true,
+          "description": "Text when there are no steps."
+        }
+      ]
+    },
+    "PlanVsActualProps": {
+      "kind": "type",
+      "source": "src/ai/plan-vs-actual.tsx",
+      "props": [
+        {
+          "name": "steps",
+          "type": "readonly PlanStep[]",
+          "required": true,
+          "description": "Steps in plan order."
+        },
+        {
+          "name": "now",
+          "type": "number",
+          "required": true,
+          "description": "Current time, in the same unit as the steps."
+        },
+        {
+          "name": "title",
+          "type": "ReactNode",
+          "required": true,
+          "description": "Heading."
+        },
+        {
+          "name": "formatTime",
+          "type": "(time: number) => string",
+          "required": true,
+          "description": "How a time is written."
+        },
+        {
+          "name": "formatDuration",
+          "type": "(duration: number) => string",
+          "required": true,
+          "description": "How a duration is written."
+        },
+        {
+          "name": "labels",
+          "type": "PlanVsActualLabels",
+          "required": true,
+          "description": "Texts."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "PlannedRun": {
+      "kind": "type",
+      "source": "src/blocks/rate-limit-planner/rate-limit-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "Stable key."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": "Job name."
+        },
+        {
+          "name": "start",
+          "type": "number",
+          "required": true,
+          "description": "Start in minutes from the start of the window."
+        },
+        {
+          "name": "duration",
+          "type": "number",
+          "required": true,
+          "description": "How long it runs, in minutes."
+        },
+        {
+          "name": "rate",
+          "type": "number",
+          "required": true,
+          "description": "Load while running, in the limit's unit per minute (requests, weight)."
+        }
+      ]
     },
     "PnlText": {
       "kind": "component",
@@ -36377,6 +38672,236 @@
         }
       ]
     },
+    "RateLimitPlanner": {
+      "kind": "component",
+      "source": "src/blocks/rate-limit-planner/rate-limit-planner.tsx",
+      "props": [
+        {
+          "name": "runs",
+          "type": "readonly PlannedRun[]",
+          "required": false,
+          "description": "Controlled jobs."
+        },
+        {
+          "name": "defaultRuns",
+          "type": "readonly PlannedRun[]",
+          "required": false,
+          "default": "[]",
+          "description": "Jobs when uncontrolled."
+        },
+        {
+          "name": "onRunsChange",
+          "type": "(runs: readonly PlannedRun[]) => void",
+          "required": false,
+          "description": "Called with the new jobs after every drag, key move, spread or removal; controlled jobs without it are read-only."
+        },
+        {
+          "name": "limit",
+          "type": "number",
+          "required": true,
+          "description": "The source's limit, in its unit per minute."
+        },
+        {
+          "name": "buffer",
+          "type": "number",
+          "required": true,
+          "description": "Share of the limit to stay under, 0..1; above it the status is near."
+        },
+        {
+          "name": "span",
+          "type": "number",
+          "required": false,
+          "default": "DAY_MINUTES",
+          "description": "Window length in minutes; defaults to a day."
+        },
+        {
+          "name": "now",
+          "type": "number",
+          "required": false,
+          "description": "Current time in minutes from the window start; jobs that started before it cannot move."
+        },
+        {
+          "name": "formatTime",
+          "type": "(minutes: number) => string",
+          "required": true,
+          "description": "How minutes from the window start are written (「15:05」)."
+        },
+        {
+          "name": "formatRate",
+          "type": "(rate: number) => string",
+          "required": true,
+          "description": "How a load per minute is written, such as 1,200 / min."
+        },
+        {
+          "name": "title",
+          "type": "ReactNode",
+          "required": true,
+          "description": "Heading."
+        },
+        {
+          "name": "labels",
+          "type": "RateLimitPlannerLabels",
+          "required": true,
+          "description": "Texts."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "RateLimitPlannerLabels": {
+      "kind": "type",
+      "source": "src/blocks/rate-limit-planner/rate-limit-planner.tsx",
+      "props": [
+        {
+          "name": "status",
+          "type": "Record<PlanStatus, string>",
+          "required": true,
+          "description": "Status words."
+        },
+        {
+          "name": "peak",
+          "type": "(peak: string, at: string) => string",
+          "required": true,
+          "description": "Peak readout (「峰值 1,200 / 分 · 15:05」)."
+        },
+        {
+          "name": "limit",
+          "type": "string",
+          "required": true,
+          "description": "Legend names of the two lines."
+        },
+        {
+          "name": "buffer",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "runs",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the job list."
+        },
+        {
+          "name": "run",
+          "type": "(run: PlannedRun, start: string, end: string, rate: string) => string",
+          "required": true,
+          "description": "Slider text of a job (「回补 · 15:00 → 16:30 · 600 / 分」)."
+        },
+        {
+          "name": "locked",
+          "type": "string",
+          "required": true,
+          "description": "Tag on a job that has started."
+        },
+        {
+          "name": "remove",
+          "type": "string",
+          "required": true,
+          "description": "Remove button label; the accessible name also gets the job name."
+        },
+        {
+          "name": "spread",
+          "type": "string",
+          "required": true,
+          "description": "Spread button label."
+        },
+        {
+          "name": "moved",
+          "type": "(run: PlannedRun, start: string, peak: string) => string",
+          "required": true,
+          "description": "Announcement after a move (「回补 挪到 15:30，峰值 900 / 分」)."
+        },
+        {
+          "name": "empty",
+          "type": "string",
+          "required": true,
+          "description": "Text when there are no jobs."
+        }
+      ]
+    },
+    "RateLimitPlannerProps": {
+      "kind": "type",
+      "source": "src/blocks/rate-limit-planner/rate-limit-planner.tsx",
+      "props": [
+        {
+          "name": "runs",
+          "type": "readonly PlannedRun[]",
+          "required": false,
+          "description": "Controlled jobs."
+        },
+        {
+          "name": "defaultRuns",
+          "type": "readonly PlannedRun[]",
+          "required": false,
+          "description": "Jobs when uncontrolled."
+        },
+        {
+          "name": "onRunsChange",
+          "type": "(runs: readonly PlannedRun[]) => void",
+          "required": false,
+          "description": "Called with the new jobs after every drag, key move, spread or removal; controlled jobs without it are read-only."
+        },
+        {
+          "name": "limit",
+          "type": "number",
+          "required": true,
+          "description": "The source's limit, in its unit per minute."
+        },
+        {
+          "name": "buffer",
+          "type": "number",
+          "required": true,
+          "description": "Share of the limit to stay under, 0..1; above it the status is near."
+        },
+        {
+          "name": "span",
+          "type": "number",
+          "required": false,
+          "description": "Window length in minutes; defaults to a day."
+        },
+        {
+          "name": "now",
+          "type": "number",
+          "required": false,
+          "description": "Current time in minutes from the window start; jobs that started before it cannot move."
+        },
+        {
+          "name": "formatTime",
+          "type": "(minutes: number) => string",
+          "required": true,
+          "description": "How minutes from the window start are written (「15:05」)."
+        },
+        {
+          "name": "formatRate",
+          "type": "(rate: number) => string",
+          "required": true,
+          "description": "How a load per minute is written, such as 1,200 / min."
+        },
+        {
+          "name": "title",
+          "type": "ReactNode",
+          "required": true,
+          "description": "Heading."
+        },
+        {
+          "name": "labels",
+          "type": "RateLimitPlannerLabels",
+          "required": true,
+          "description": "Texts."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
     "RatingGauge": {
       "kind": "component",
       "source": "src/quotes/rating-gauge.tsx",
@@ -39045,6 +41570,204 @@
           "required": false,
           "default": "false",
           "description": "When the number of characters changes (999 to 1,000) fade the changed characters in instead of swapping them."
+        }
+      ]
+    },
+    "RootCauseAction": {
+      "kind": "type",
+      "source": "src/blocks/root-cause-tree/root-cause-tree.tsx",
+      "props": []
+    },
+    "RootCauseTree": {
+      "kind": "component",
+      "source": "src/blocks/root-cause-tree/root-cause-tree.tsx",
+      "props": [
+        {
+          "name": "failure",
+          "type": "CauseFailure",
+          "required": true,
+          "description": "The failure and its hypotheses."
+        },
+        {
+          "name": "title",
+          "type": "ReactNode",
+          "required": true,
+          "description": "Heading."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the tree."
+        },
+        {
+          "name": "openId",
+          "type": "string | null",
+          "required": false,
+          "description": "Controlled open row id; null when no evidence is open."
+        },
+        {
+          "name": "defaultOpenId",
+          "type": "string | null",
+          "required": false,
+          "default": "null",
+          "description": "Row opened first when uncontrolled."
+        },
+        {
+          "name": "onOpenChange",
+          "type": "(id: string | null) => void",
+          "required": false,
+          "description": "Called when the open row changes."
+        },
+        {
+          "name": "onAction",
+          "type": "(cause: Cause, action: RootCauseAction) => void",
+          "required": false,
+          "description": "Called with a root cause and the chosen action; omit to keep the evidence read-only."
+        },
+        {
+          "name": "formatTime",
+          "type": "(at: number) => string",
+          "required": false,
+          "description": "How a check time in milliseconds is written; omit to hide times."
+        },
+        {
+          "name": "labels",
+          "type": "RootCauseTreeLabels",
+          "required": true,
+          "description": "Texts."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "RootCauseTreeLabels": {
+      "kind": "type",
+      "source": "src/blocks/root-cause-tree/root-cause-tree.tsx",
+      "props": [
+        {
+          "name": "status",
+          "type": "Record<CauseStatus, string>",
+          "required": true,
+          "description": "Status words."
+        },
+        {
+          "name": "gate",
+          "type": "Record<CauseGate, string>",
+          "required": true,
+          "description": "Gate words on a parent row (「任一」「同时」)."
+        },
+        {
+          "name": "rootCause",
+          "type": "string",
+          "required": true,
+          "description": "Tag on a root cause (「根因」)."
+        },
+        {
+          "name": "counts",
+          "type": "(counts: Record<CauseStatus, number>) => string",
+          "required": true,
+          "description": "Header counts, built by the caller."
+        },
+        {
+          "name": "evidence",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the evidence panel."
+        },
+        {
+          "name": "pick",
+          "type": "string",
+          "required": true,
+          "description": "Evidence panel text when nothing is open (「选一行看证据」)."
+        },
+        {
+          "name": "noEvidence",
+          "type": "string",
+          "required": true,
+          "description": "Evidence panel text when the open row has no evidence yet."
+        },
+        {
+          "name": "fix",
+          "type": "string",
+          "required": true,
+          "description": "Action button labels."
+        },
+        {
+          "name": "retry",
+          "type": "string",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "RootCauseTreeProps": {
+      "kind": "type",
+      "source": "src/blocks/root-cause-tree/root-cause-tree.tsx",
+      "props": [
+        {
+          "name": "failure",
+          "type": "CauseFailure",
+          "required": true,
+          "description": "The failure and its hypotheses."
+        },
+        {
+          "name": "title",
+          "type": "ReactNode",
+          "required": true,
+          "description": "Heading."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the tree."
+        },
+        {
+          "name": "openId",
+          "type": "string | null",
+          "required": false,
+          "description": "Controlled open row id; null when no evidence is open."
+        },
+        {
+          "name": "defaultOpenId",
+          "type": "string | null",
+          "required": false,
+          "description": "Row opened first when uncontrolled."
+        },
+        {
+          "name": "onOpenChange",
+          "type": "(id: string | null) => void",
+          "required": false,
+          "description": "Called when the open row changes."
+        },
+        {
+          "name": "onAction",
+          "type": "(cause: Cause, action: RootCauseAction) => void",
+          "required": false,
+          "description": "Called with a root cause and the chosen action; omit to keep the evidence read-only."
+        },
+        {
+          "name": "formatTime",
+          "type": "(at: number) => string",
+          "required": false,
+          "description": "How a check time in milliseconds is written; omit to hide times."
+        },
+        {
+          "name": "labels",
+          "type": "RootCauseTreeLabels",
+          "required": true,
+          "description": "Texts."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
         }
       ]
     },
@@ -43223,6 +45946,52 @@
       "source": "src/layout/space.ts",
       "props": []
     },
+    "SpanMove": {
+      "kind": "type",
+      "source": "src/blocks/trace-waterfall/trace-model.ts",
+      "props": []
+    },
+    "SpanRow": {
+      "kind": "type",
+      "source": "src/blocks/trace-waterfall/trace-model.ts",
+      "props": [
+        {
+          "name": "span",
+          "type": "TraceSpan",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "depth",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "parentId",
+          "type": "string | null",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "hasChildren",
+          "type": "boolean",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "expanded",
+          "type": "boolean",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "SpanStatus": {
+      "kind": "type",
+      "source": "src/blocks/trace-waterfall/trace-model.ts",
+      "props": []
+    },
     "SparkAxis": {
       "kind": "type",
       "source": "src/quotes/sparkline.tsx",
@@ -44867,6 +47636,47 @@
           "description": "可跳时这一步圆点的读屏名；不写用 labels.step。"
         }
       ]
+    },
+    "StepProjection": {
+      "kind": "type",
+      "source": "src/ai/plan-actual-model.ts",
+      "props": [
+        {
+          "name": "step",
+          "type": "PlanStep",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "state",
+          "type": "StepState",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "start",
+          "type": "number",
+          "required": true,
+          "description": "Projected start and end (actual where known)."
+        },
+        {
+          "name": "end",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "overrun",
+          "type": "number",
+          "required": true,
+          "description": "Time past the planned duration (0 when on time or early)."
+        }
+      ]
+    },
+    "StepState": {
+      "kind": "type",
+      "source": "src/ai/plan-actual-model.ts",
+      "props": []
     },
     "StopCustody": {
       "kind": "type",
@@ -48193,6 +51003,96 @@
         }
       ]
     },
+    "SystemStatus": {
+      "kind": "component",
+      "source": "src/katana/system-status.tsx",
+      "props": [
+        {
+          "name": "tone",
+          "type": "SystemStatusTone",
+          "required": false,
+          "default": "'info'",
+          "description": "info (default), neutral, ok, warn or danger: the color of the bar and the shape of its icon."
+        },
+        {
+          "name": "title",
+          "type": "ReactNode",
+          "required": false,
+          "description": "A short bold lead before the message, for example \"Scheduled maintenance\"."
+        },
+        {
+          "name": "actions",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Buttons or links at the end of the bar (a small Button, a Link)."
+        },
+        {
+          "name": "icon",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Replace the tone's icon; pass null for no icon."
+        },
+        {
+          "name": "onDismiss",
+          "type": "() => void",
+          "required": false,
+          "description": "Given: a close button at the right end calls it."
+        },
+        {
+          "name": "dismissLabel",
+          "type": "string",
+          "required": false,
+          "description": "Accessible name of the close button; required with onDismiss (the package ships no text)."
+        }
+      ]
+    },
+    "SystemStatusProps": {
+      "kind": "type",
+      "source": "src/katana/system-status.tsx",
+      "props": [
+        {
+          "name": "tone",
+          "type": "SystemStatusTone",
+          "required": false,
+          "description": "info (default), neutral, ok, warn or danger: the color of the bar and the shape of its icon."
+        },
+        {
+          "name": "title",
+          "type": "ReactNode",
+          "required": false,
+          "description": "A short bold lead before the message, for example \"Scheduled maintenance\"."
+        },
+        {
+          "name": "actions",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Buttons or links at the end of the bar (a small Button, a Link)."
+        },
+        {
+          "name": "icon",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Replace the tone's icon; pass null for no icon."
+        },
+        {
+          "name": "onDismiss",
+          "type": "() => void",
+          "required": false,
+          "description": "Given: a close button at the right end calls it."
+        },
+        {
+          "name": "dismissLabel",
+          "type": "string",
+          "required": false,
+          "description": "Accessible name of the close button; required with onDismiss (the package ships no text)."
+        }
+      ]
+    },
+    "SystemStatusTone": {
+      "kind": "type",
+      "source": "src/katana/system-status.tsx",
+      "props": []
+    },
     "TEXT_REVEAL_EASES": {
       "kind": "value",
       "source": "src/motion/text/text-reveal.tsx",
@@ -51190,6 +54090,333 @@
       "kind": "component",
       "source": "src/primitives/tooltip.tsx",
       "props": []
+    },
+    "TraceSpan": {
+      "kind": "type",
+      "source": "src/blocks/trace-waterfall/trace-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "Stable key."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": "Step name."
+        },
+        {
+          "name": "kind",
+          "type": "string",
+          "required": true,
+          "description": "Kind of step, such as fetch, retry, parse or cache; picks the bar tint."
+        },
+        {
+          "name": "status",
+          "type": "SpanStatus",
+          "required": false,
+          "description": "Running, done or failed; defaults to done."
+        },
+        {
+          "name": "start",
+          "type": "number",
+          "required": true,
+          "description": "Start in milliseconds from the start of the request."
+        },
+        {
+          "name": "end",
+          "type": "number",
+          "required": false,
+          "description": "End in milliseconds from the start of the request; omit while running."
+        },
+        {
+          "name": "detail",
+          "type": "string",
+          "required": false,
+          "description": "Muted text after the name (the URL, the symbol)."
+        },
+        {
+          "name": "metric",
+          "type": "string",
+          "required": false,
+          "description": "One short figure written by the caller, such as rows, bytes or the HTTP status."
+        },
+        {
+          "name": "error",
+          "type": "string",
+          "required": false,
+          "description": "Error text of a failed span."
+        },
+        {
+          "name": "children",
+          "type": "readonly TraceSpan[]",
+          "required": false,
+          "description": "Child steps."
+        }
+      ]
+    },
+    "TraceWaterfall": {
+      "kind": "component",
+      "source": "src/blocks/trace-waterfall/trace-waterfall.tsx",
+      "props": [
+        {
+          "name": "root",
+          "type": "TraceSpan",
+          "required": true,
+          "description": "The request as a span tree."
+        },
+        {
+          "name": "title",
+          "type": "ReactNode",
+          "required": true,
+          "description": "Heading."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the tree."
+        },
+        {
+          "name": "now",
+          "type": "number",
+          "required": false,
+          "description": "Clock in milliseconds from the start of the request; running spans grow to it."
+        },
+        {
+          "name": "minRange",
+          "type": "number",
+          "required": false,
+          "description": "Smallest axis range in milliseconds; defaults to the extent of the trace."
+        },
+        {
+          "name": "formatMs",
+          "type": "(ms: number) => string",
+          "required": true,
+          "description": "How milliseconds are written (durations and axis ticks)."
+        },
+        {
+          "name": "markSlowest",
+          "type": "boolean",
+          "required": false,
+          "default": "true",
+          "description": "Mark the slowest finished leaf."
+        },
+        {
+          "name": "collapsed",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Controlled folded span ids."
+        },
+        {
+          "name": "defaultCollapsed",
+          "type": "readonly string[]",
+          "required": false,
+          "default": "[]",
+          "description": "Folded span ids when uncontrolled."
+        },
+        {
+          "name": "onCollapsedChange",
+          "type": "(collapsed: readonly string[]) => void",
+          "required": false,
+          "description": "Called with the folded span ids after a fold or unfold."
+        },
+        {
+          "name": "openId",
+          "type": "string | null",
+          "required": false,
+          "description": "Controlled span id whose details are open; null when closed."
+        },
+        {
+          "name": "defaultOpenId",
+          "type": "string | null",
+          "required": false,
+          "default": "null",
+          "description": "Span id open first when uncontrolled."
+        },
+        {
+          "name": "onOpenChange",
+          "type": "(id: string | null) => void",
+          "required": false,
+          "description": "Called when the open span changes."
+        },
+        {
+          "name": "labels",
+          "type": "TraceWaterfallLabels",
+          "required": true,
+          "description": "Texts."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "TraceWaterfallLabels": {
+      "kind": "type",
+      "source": "src/blocks/trace-waterfall/trace-waterfall.tsx",
+      "props": [
+        {
+          "name": "status",
+          "type": "Record<SpanStatus, string>",
+          "required": true,
+          "description": "Status words, for spans and for the whole request."
+        },
+        {
+          "name": "slowest",
+          "type": "string",
+          "required": true,
+          "description": "Tag on the slowest step (「最慢」)."
+        },
+        {
+          "name": "kind",
+          "type": "(kind: string) => string",
+          "required": false,
+          "description": "Name of a span kind (「抓取」「重试」); defaults to the kind itself."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": "Column heads."
+        },
+        {
+          "name": "duration",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "metric",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "start",
+          "type": "string",
+          "required": true,
+          "description": "Field names in the details area."
+        },
+        {
+          "name": "detail",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "error",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "details",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the details area."
+        }
+      ]
+    },
+    "TraceWaterfallProps": {
+      "kind": "type",
+      "source": "src/blocks/trace-waterfall/trace-waterfall.tsx",
+      "props": [
+        {
+          "name": "root",
+          "type": "TraceSpan",
+          "required": true,
+          "description": "The request as a span tree."
+        },
+        {
+          "name": "title",
+          "type": "ReactNode",
+          "required": true,
+          "description": "Heading."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the tree."
+        },
+        {
+          "name": "now",
+          "type": "number",
+          "required": false,
+          "description": "Clock in milliseconds from the start of the request; running spans grow to it."
+        },
+        {
+          "name": "minRange",
+          "type": "number",
+          "required": false,
+          "description": "Smallest axis range in milliseconds; defaults to the extent of the trace."
+        },
+        {
+          "name": "formatMs",
+          "type": "(ms: number) => string",
+          "required": true,
+          "description": "How milliseconds are written (durations and axis ticks)."
+        },
+        {
+          "name": "markSlowest",
+          "type": "boolean",
+          "required": false,
+          "description": "Mark the slowest finished leaf."
+        },
+        {
+          "name": "collapsed",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Controlled folded span ids."
+        },
+        {
+          "name": "defaultCollapsed",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Folded span ids when uncontrolled."
+        },
+        {
+          "name": "onCollapsedChange",
+          "type": "(collapsed: readonly string[]) => void",
+          "required": false,
+          "description": "Called with the folded span ids after a fold or unfold."
+        },
+        {
+          "name": "openId",
+          "type": "string | null",
+          "required": false,
+          "description": "Controlled span id whose details are open; null when closed."
+        },
+        {
+          "name": "defaultOpenId",
+          "type": "string | null",
+          "required": false,
+          "description": "Span id open first when uncontrolled."
+        },
+        {
+          "name": "onOpenChange",
+          "type": "(id: string | null) => void",
+          "required": false,
+          "description": "Called when the open span changes."
+        },
+        {
+          "name": "labels",
+          "type": "TraceWaterfallLabels",
+          "required": true,
+          "description": "Texts."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
     },
     "Trade": {
       "kind": "type",
@@ -55731,6 +58958,11 @@
       "source": "src/quant/walk-forward-model.ts",
       "props": []
     },
+    "answeredLevel": {
+      "kind": "function",
+      "source": "src/blocks/fallback-chain/fallback-model.ts",
+      "props": []
+    },
     "applyColumnSet": {
       "kind": "function",
       "source": "src/blocks/data-grid/layout-model.ts",
@@ -55799,6 +59031,24 @@
       "source": "src/blocks/options-chain/options-model.ts",
       "props": []
     },
+    "attemptFill": {
+      "kind": "function",
+      "source": "src/quant/parallel-attempts-model.ts",
+      "props": [
+        {
+          "name": "progress",
+          "type": "number",
+          "required": false,
+          "description": "Progress 0..1 while running (or where a failed attempt stopped)."
+        },
+        {
+          "name": "status",
+          "type": "AttemptStatus",
+          "required": false,
+          "description": "Queued, running, done or failed; defaults to queued."
+        }
+      ]
+    },
     "auctionSteps": {
       "kind": "function",
       "source": "src/cn/auction-model.ts",
@@ -55812,6 +59062,21 @@
     "auctionX": {
       "kind": "function",
       "source": "src/cn/auction-model.ts",
+      "props": []
+    },
+    "axisIndexes": {
+      "kind": "function",
+      "source": "src/quant/kpi-chart-model.ts",
+      "props": []
+    },
+    "baselineOf": {
+      "kind": "function",
+      "source": "src/quant/experiment-model.ts",
+      "props": []
+    },
+    "bestAttempt": {
+      "kind": "function",
+      "source": "src/quant/parallel-attempts-model.ts",
       "props": []
     },
     "bestCell": {
@@ -55950,9 +59215,24 @@
         }
       ]
     },
+    "cardVariants": {
+      "kind": "function",
+      "source": "src/primitives/card.tsx",
+      "props": []
+    },
+    "chainOutcome": {
+      "kind": "function",
+      "source": "src/blocks/fallback-chain/fallback-model.ts",
+      "props": []
+    },
     "changeText": {
       "kind": "function",
       "source": "src/cn/mini-k-model.ts",
+      "props": []
+    },
+    "changeVerdict": {
+      "kind": "function",
+      "source": "src/quant/experiment-model.ts",
       "props": []
     },
     "changedTail": {
@@ -55963,6 +59243,11 @@
     "clampSplitRatio": {
       "kind": "function",
       "source": "src/primitives/splitter-model.ts",
+      "props": []
+    },
+    "clampStart": {
+      "kind": "function",
+      "source": "src/blocks/rate-limit-planner/rate-limit-model.ts",
       "props": []
     },
     "clockText": {
@@ -56373,6 +59658,11 @@
       "source": "src/lib/copy-image.ts",
       "props": []
     },
+    "countAttempts": {
+      "kind": "function",
+      "source": "src/quant/parallel-attempts-model.ts",
+      "props": []
+    },
     "countConsensus": {
       "kind": "function",
       "source": "src/blocks/consensus-block/consensus-block.tsx",
@@ -56578,6 +59868,42 @@
       "source": "src/lib/text-measure.ts",
       "props": []
     },
+    "flattenCauses": {
+      "kind": "function",
+      "source": "src/blocks/root-cause-tree/root-cause-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "Stable key."
+        },
+        {
+          "name": "title",
+          "type": "string",
+          "required": true,
+          "description": "What failed."
+        },
+        {
+          "name": "detail",
+          "type": "string",
+          "required": false,
+          "description": "One short detail line, such as how many bars are missing."
+        },
+        {
+          "name": "gate",
+          "type": "CauseGate",
+          "required": false,
+          "description": "How the top hypotheses cause the failure; defaults to or."
+        },
+        {
+          "name": "children",
+          "type": "readonly Cause[]",
+          "required": true,
+          "description": "Top hypotheses."
+        }
+      ]
+    },
     "floorToStep": {
       "kind": "function",
       "source": "src/blocks/sizing-model.ts",
@@ -56670,7 +59996,7 @@
     },
     "formatCnAmount": {
       "kind": "function",
-      "source": "src/cn/format.ts",
+      "source": "src/lib/chart/format/cn-amount.ts",
       "props": [
         {
           "name": "abbreviate",
@@ -56929,6 +60255,66 @@
       "source": "src/quant/quantile-model.ts",
       "props": []
     },
+    "isRootCause": {
+      "kind": "function",
+      "source": "src/blocks/root-cause-tree/root-cause-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "Stable key."
+        },
+        {
+          "name": "title",
+          "type": "string",
+          "required": true,
+          "description": "Hypothesis in one line."
+        },
+        {
+          "name": "status",
+          "type": "CauseStatus",
+          "required": false,
+          "description": "Check state; defaults to open."
+        },
+        {
+          "name": "gate",
+          "type": "CauseGate",
+          "required": false,
+          "description": "How the children cause this one; defaults to or."
+        },
+        {
+          "name": "verdict",
+          "type": "string",
+          "required": false,
+          "description": "Verdict sentence once checked."
+        },
+        {
+          "name": "evidence",
+          "type": "CauseEvidence",
+          "required": false,
+          "description": "Proof once checked."
+        },
+        {
+          "name": "files",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Files or sources involved."
+        },
+        {
+          "name": "at",
+          "type": "number",
+          "required": false,
+          "description": "When it was checked, in milliseconds."
+        },
+        {
+          "name": "children",
+          "type": "readonly Cause[]",
+          "required": false,
+          "description": "Narrower hypotheses."
+        }
+      ]
+    },
     "isSpike": {
       "kind": "function",
       "source": "src/quant/param-surface-model.ts",
@@ -56968,6 +60354,11 @@
     "isoWeek": {
       "kind": "function",
       "source": "src/quant/period-returns-model.ts",
+      "props": []
+    },
+    "keyMove": {
+      "kind": "function",
+      "source": "src/blocks/rate-limit-planner/rate-limit-model.ts",
       "props": []
     },
     "knownAt": {
@@ -57041,6 +60432,11 @@
           "description": "最新 − 首次；只有一次发布是 null（没修订过，不写成 0）。"
         }
       ]
+    },
+    "kpiRange": {
+      "kind": "function",
+      "source": "src/quant/kpi-chart-model.ts",
+      "props": []
     },
     "lastChange": {
       "kind": "function",
@@ -57207,6 +60603,24 @@
         }
       ]
     },
+    "leaderOf": {
+      "kind": "function",
+      "source": "src/quant/experiment-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "Stable key, also the key into each variant's values."
+        },
+        {
+          "name": "lowerIsBetter",
+          "type": "boolean",
+          "required": false,
+          "description": "Smaller values win (drawdown, slippage)."
+        }
+      ]
+    },
     "limitStatusText": {
       "kind": "function",
       "source": "src/cn/badge-model.ts",
@@ -57283,6 +60697,47 @@
     "litIndexes": {
       "kind": "function",
       "source": "src/katana/switchboard-card.tsx",
+      "props": []
+    },
+    "litPath": {
+      "kind": "function",
+      "source": "src/blocks/root-cause-tree/root-cause-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "Stable key."
+        },
+        {
+          "name": "title",
+          "type": "string",
+          "required": true,
+          "description": "What failed."
+        },
+        {
+          "name": "detail",
+          "type": "string",
+          "required": false,
+          "description": "One short detail line, such as how many bars are missing."
+        },
+        {
+          "name": "gate",
+          "type": "CauseGate",
+          "required": false,
+          "description": "How the top hypotheses cause the failure; defaults to or."
+        },
+        {
+          "name": "children",
+          "type": "readonly Cause[]",
+          "required": true,
+          "description": "Top hypotheses."
+        }
+      ]
+    },
+    "loadCurve": {
+      "kind": "function",
+      "source": "src/blocks/rate-limit-planner/rate-limit-model.ts",
       "props": []
     },
     "marginLevel": {
@@ -57382,6 +60837,11 @@
       "source": "src/motion/text/text-morph.tsx",
       "props": []
     },
+    "moveCause": {
+      "kind": "function",
+      "source": "src/blocks/root-cause-tree/root-cause-model.ts",
+      "props": []
+    },
     "moveColumn": {
       "kind": "function",
       "source": "src/blocks/data-grid/layout-model.ts",
@@ -57405,6 +60865,11 @@
     "moveRowsBy": {
       "kind": "function",
       "source": "src/blocks/data-grid/row-order-model.ts",
+      "props": []
+    },
+    "moveSpan": {
+      "kind": "function",
+      "source": "src/blocks/trace-waterfall/trace-model.ts",
       "props": []
     },
     "moveTone": {
@@ -57463,6 +60928,11 @@
     "normalizeStreak": {
       "kind": "function",
       "source": "src/cn/badge-model.ts",
+      "props": []
+    },
+    "normalizeValues": {
+      "kind": "function",
+      "source": "src/quant/kpi-chart-model.ts",
       "props": []
     },
     "normalizeVintages": {
@@ -57538,6 +61008,11 @@
         }
       ]
     },
+    "peakOf": {
+      "kind": "function",
+      "source": "src/blocks/rate-limit-planner/rate-limit-model.ts",
+      "props": []
+    },
     "phaseSummary": {
       "kind": "function",
       "source": "src/cn/timeline-model.ts",
@@ -57546,6 +61021,21 @@
     "plainPrice": {
       "kind": "function",
       "source": "src/quotes/quote-row.ts",
+      "props": []
+    },
+    "planDomain": {
+      "kind": "function",
+      "source": "src/ai/plan-actual-model.ts",
+      "props": []
+    },
+    "planShift": {
+      "kind": "function",
+      "source": "src/ai/plan-actual-model.ts",
+      "props": []
+    },
+    "planStatus": {
+      "kind": "function",
+      "source": "src/blocks/rate-limit-planner/rate-limit-model.ts",
       "props": []
     },
     "positionTotals": {
@@ -57561,6 +61051,11 @@
     "priceDomain": {
       "kind": "function",
       "source": "src/cn/auction-model.ts",
+      "props": []
+    },
+    "projectPlan": {
+      "kind": "function",
+      "source": "src/ai/plan-actual-model.ts",
       "props": []
     },
     "pulseShare": {
@@ -57714,6 +61209,11 @@
     "recentCommands": {
       "kind": "function",
       "source": "src/patterns/command-palette.tsx",
+      "props": []
+    },
+    "relativeChange": {
+      "kind": "function",
+      "source": "src/quant/experiment-model.ts",
       "props": []
     },
     "removeItems": {
@@ -58069,6 +61569,72 @@
         }
       ]
     },
+    "slowestSpan": {
+      "kind": "function",
+      "source": "src/blocks/trace-waterfall/trace-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "Stable key."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": "Step name."
+        },
+        {
+          "name": "kind",
+          "type": "string",
+          "required": true,
+          "description": "Kind of step, such as fetch, retry, parse or cache; picks the bar tint."
+        },
+        {
+          "name": "status",
+          "type": "SpanStatus",
+          "required": false,
+          "description": "Running, done or failed; defaults to done."
+        },
+        {
+          "name": "start",
+          "type": "number",
+          "required": true,
+          "description": "Start in milliseconds from the start of the request."
+        },
+        {
+          "name": "end",
+          "type": "number",
+          "required": false,
+          "description": "End in milliseconds from the start of the request; omit while running."
+        },
+        {
+          "name": "detail",
+          "type": "string",
+          "required": false,
+          "description": "Muted text after the name (the URL, the symbol)."
+        },
+        {
+          "name": "metric",
+          "type": "string",
+          "required": false,
+          "description": "One short figure written by the caller, such as rows, bytes or the HTTP status."
+        },
+        {
+          "name": "error",
+          "type": "string",
+          "required": false,
+          "description": "Error text of a failed span."
+        },
+        {
+          "name": "children",
+          "type": "readonly TraceSpan[]",
+          "required": false,
+          "description": "Child steps."
+        }
+      ]
+    },
     "snakeRows": {
       "kind": "function",
       "source": "src/cn/timeline-model.ts",
@@ -58128,6 +61694,72 @@
       "kind": "function",
       "source": "src/blocks/options-chain/options-model.ts",
       "props": []
+    },
+    "spanEnd": {
+      "kind": "function",
+      "source": "src/blocks/trace-waterfall/trace-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "Stable key."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": "Step name."
+        },
+        {
+          "name": "kind",
+          "type": "string",
+          "required": true,
+          "description": "Kind of step, such as fetch, retry, parse or cache; picks the bar tint."
+        },
+        {
+          "name": "status",
+          "type": "SpanStatus",
+          "required": false,
+          "description": "Running, done or failed; defaults to done."
+        },
+        {
+          "name": "start",
+          "type": "number",
+          "required": true,
+          "description": "Start in milliseconds from the start of the request."
+        },
+        {
+          "name": "end",
+          "type": "number",
+          "required": false,
+          "description": "End in milliseconds from the start of the request; omit while running."
+        },
+        {
+          "name": "detail",
+          "type": "string",
+          "required": false,
+          "description": "Muted text after the name (the URL, the symbol)."
+        },
+        {
+          "name": "metric",
+          "type": "string",
+          "required": false,
+          "description": "One short figure written by the caller, such as rows, bytes or the HTTP status."
+        },
+        {
+          "name": "error",
+          "type": "string",
+          "required": false,
+          "description": "Error text of a failed span."
+        },
+        {
+          "name": "children",
+          "type": "readonly TraceSpan[]",
+          "required": false,
+          "description": "Child steps."
+        }
+      ]
     },
     "sparkPoints": {
       "kind": "function",
@@ -58200,6 +61832,11 @@
     "spreadLabels": {
       "kind": "function",
       "source": "src/quant/slope-model.ts",
+      "props": []
+    },
+    "spreadRuns": {
+      "kind": "function",
+      "source": "src/blocks/rate-limit-planner/rate-limit-model.ts",
       "props": []
     },
     "squirclePath": {
@@ -58488,6 +62125,143 @@
       "kind": "value",
       "source": "src/primitives/tooltip.tsx",
       "props": []
+    },
+    "traceAxis": {
+      "kind": "function",
+      "source": "src/blocks/trace-waterfall/trace-model.ts",
+      "props": []
+    },
+    "traceExtent": {
+      "kind": "function",
+      "source": "src/blocks/trace-waterfall/trace-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "Stable key."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": "Step name."
+        },
+        {
+          "name": "kind",
+          "type": "string",
+          "required": true,
+          "description": "Kind of step, such as fetch, retry, parse or cache; picks the bar tint."
+        },
+        {
+          "name": "status",
+          "type": "SpanStatus",
+          "required": false,
+          "description": "Running, done or failed; defaults to done."
+        },
+        {
+          "name": "start",
+          "type": "number",
+          "required": true,
+          "description": "Start in milliseconds from the start of the request."
+        },
+        {
+          "name": "end",
+          "type": "number",
+          "required": false,
+          "description": "End in milliseconds from the start of the request; omit while running."
+        },
+        {
+          "name": "detail",
+          "type": "string",
+          "required": false,
+          "description": "Muted text after the name (the URL, the symbol)."
+        },
+        {
+          "name": "metric",
+          "type": "string",
+          "required": false,
+          "description": "One short figure written by the caller, such as rows, bytes or the HTTP status."
+        },
+        {
+          "name": "error",
+          "type": "string",
+          "required": false,
+          "description": "Error text of a failed span."
+        },
+        {
+          "name": "children",
+          "type": "readonly TraceSpan[]",
+          "required": false,
+          "description": "Child steps."
+        }
+      ]
+    },
+    "traceStatus": {
+      "kind": "function",
+      "source": "src/blocks/trace-waterfall/trace-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "Stable key."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": "Step name."
+        },
+        {
+          "name": "kind",
+          "type": "string",
+          "required": true,
+          "description": "Kind of step, such as fetch, retry, parse or cache; picks the bar tint."
+        },
+        {
+          "name": "status",
+          "type": "SpanStatus",
+          "required": false,
+          "description": "Running, done or failed; defaults to done."
+        },
+        {
+          "name": "start",
+          "type": "number",
+          "required": true,
+          "description": "Start in milliseconds from the start of the request."
+        },
+        {
+          "name": "end",
+          "type": "number",
+          "required": false,
+          "description": "End in milliseconds from the start of the request; omit while running."
+        },
+        {
+          "name": "detail",
+          "type": "string",
+          "required": false,
+          "description": "Muted text after the name (the URL, the symbol)."
+        },
+        {
+          "name": "metric",
+          "type": "string",
+          "required": false,
+          "description": "One short figure written by the caller, such as rows, bytes or the HTTP status."
+        },
+        {
+          "name": "error",
+          "type": "string",
+          "required": false,
+          "description": "Error text of a failed span."
+        },
+        {
+          "name": "children",
+          "type": "readonly TraceSpan[]",
+          "required": false,
+          "description": "Child steps."
+        }
+      ]
     },
     "tradingDayTest": {
       "kind": "function",
@@ -59036,6 +62810,72 @@
       "kind": "function",
       "source": "src/quant/vintage-series-model.ts",
       "props": []
+    },
+    "visibleSpans": {
+      "kind": "function",
+      "source": "src/blocks/trace-waterfall/trace-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "Stable key."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": "Step name."
+        },
+        {
+          "name": "kind",
+          "type": "string",
+          "required": true,
+          "description": "Kind of step, such as fetch, retry, parse or cache; picks the bar tint."
+        },
+        {
+          "name": "status",
+          "type": "SpanStatus",
+          "required": false,
+          "description": "Running, done or failed; defaults to done."
+        },
+        {
+          "name": "start",
+          "type": "number",
+          "required": true,
+          "description": "Start in milliseconds from the start of the request."
+        },
+        {
+          "name": "end",
+          "type": "number",
+          "required": false,
+          "description": "End in milliseconds from the start of the request; omit while running."
+        },
+        {
+          "name": "detail",
+          "type": "string",
+          "required": false,
+          "description": "Muted text after the name (the URL, the symbol)."
+        },
+        {
+          "name": "metric",
+          "type": "string",
+          "required": false,
+          "description": "One short figure written by the caller, such as rows, bytes or the HTTP status."
+        },
+        {
+          "name": "error",
+          "type": "string",
+          "required": false,
+          "description": "Error text of a failed span."
+        },
+        {
+          "name": "children",
+          "type": "readonly TraceSpan[]",
+          "required": false,
+          "description": "Child steps."
+        }
+      ]
     },
     "volumeBars": {
       "kind": "function",

@@ -1,0 +1,122 @@
+/* SPDX-License-Identifier: MIT */
+/* ListBox（patterns/list-box.tsx）：常驻页面的选项列表。项高 28（两行的项按内容长高）、内距 4 / 8、圆角 --radius-inner；
+   悬停 selectable 的 hover 底，选中 selectable 的 selected 底、字提到 primary、右端出一个对勾（不只靠底色说选中）；
+   键盘焦点在项内画 2px 焦点环（同 TreeView 的行）。bordered 时外面一圈 container 的边与 secondary 底、圆角 --radius-control。
+   RAC 在项上写 data-hovered / data-selected / data-focus-visible / data-disabled。 */
+.k-lb {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  box-sizing: border-box;
+  overflow: auto;
+  outline: 0;
+  color: var(--k-content-body-foreground);
+  font: var(--text-data) var(--font-sans);
+}
+.k-lb[data-bordered] {
+  padding: 4px;
+  border: 1px solid var(--k-container-borderColor);
+  border-radius: var(--radius-control);
+  background: var(--k-container-secondary-background);
+}
+.k-lb[data-focus-visible] {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+.k-lb-group {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.k-lb-group + .k-lb-group,
+.k-lb-item + .k-lb-group {
+  margin-top: 4px;
+  padding-top: 4px;
+  border-top: 1px solid var(--k-separable-secondary-borderColor);
+}
+/* 分组后面跟着不分组的项：线画在分组底下，不画在项上（项有自己的圆角与底）。 */
+.k-lb-group:has(+ .k-lb-item) {
+  margin-bottom: 4px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--k-separable-secondary-borderColor);
+}
+.k-lb-header {
+  padding: 4px 8px 2px;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+  font-weight: 600;
+}
+.k-lb-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 28px;
+  box-sizing: border-box;
+  padding: 4px 8px;
+  border-radius: var(--radius-inner);
+  outline: 0;
+  cursor: pointer;
+  user-select: none;
+}
+.k-lb-item[data-hovered] {
+  background: var(--k-selectable-background-hover);
+  color: var(--k-content-primary-foreground);
+}
+.k-lb-item[data-selected] {
+  background: var(--k-selectable-background-selected);
+  color: var(--k-content-primary-foreground);
+}
+.k-lb-item[data-focus-visible] {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: -2px;
+}
+.k-lb-item[data-disabled] {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.k-lb-icon {
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  color: var(--k-content-secondary-foreground);
+}
+.k-lb-icon svg {
+  width: 14px;
+  height: 14px;
+}
+.k-lb-text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.k-lb-label,
+.k-lb-desc {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.k-lb-desc {
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-lb-trailing {
+  flex: none;
+  color: var(--k-content-secondary-foreground);
+  font-family: var(--font-num);
+  font-variant-numeric: tabular-nums;
+}
+.k-lb-check {
+  flex: none;
+  opacity: 0;
+}
+.k-lb-item[data-selected] .k-lb-check {
+  opacity: 1;
+}
+.k-lb-empty {
+  padding: 12px 8px;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+  text-align: center;
+}
