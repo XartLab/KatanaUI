@@ -79,6 +79,11 @@
           "target": "~/src/katana/ui/theme/cell-type.css"
         },
         {
+          "path": "src/theme/change-summary.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/change-summary.css"
+        },
+        {
           "path": "src/theme/chart-kit.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/chart-kit.css"
@@ -219,6 +224,16 @@
           "target": "~/src/katana/ui/theme/event-timeline.css"
         },
         {
+          "path": "src/theme/experiment-card.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/experiment-card.css"
+        },
+        {
+          "path": "src/theme/fallback-chain.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/fallback-chain.css"
+        },
+        {
           "path": "src/theme/filter-bar.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/filter-bar.css"
@@ -297,6 +312,11 @@
           "path": "src/theme/key-stats.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/key-stats.css"
+        },
+        {
+          "path": "src/theme/kpi-chart.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/kpi-chart.css"
         },
         {
           "path": "src/theme/layout.css",
@@ -419,6 +439,11 @@
           "target": "~/src/katana/ui/theme/panel-frame.css"
         },
         {
+          "path": "src/theme/parallel-attempts.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/parallel-attempts.css"
+        },
+        {
           "path": "src/theme/param-scatter.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/param-scatter.css"
@@ -442,6 +467,11 @@
           "path": "src/theme/period-returns-table.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/period-returns-table.css"
+        },
+        {
+          "path": "src/theme/plan-vs-actual.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/plan-vs-actual.css"
         },
         {
           "path": "src/theme/portfolio-run-grid.css",
@@ -482,6 +512,11 @@
           "path": "src/theme/range-histogram-slider.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/range-histogram-slider.css"
+        },
+        {
+          "path": "src/theme/rate-limit-planner.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/rate-limit-planner.css"
         },
         {
           "path": "src/theme/rating-gauge.css",
@@ -527,6 +562,11 @@
           "path": "src/theme/rolling-text.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/rolling-text.css"
+        },
+        {
+          "path": "src/theme/root-cause-tree.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/root-cause-tree.css"
         },
         {
           "path": "src/theme/row-actions.css",
@@ -672,6 +712,11 @@
           "path": "src/theme/toolbar.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/toolbar.css"
+        },
+        {
+          "path": "src/theme/trace-waterfall.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/trace-waterfall.css"
         },
         {
           "path": "src/theme/trade-tape.css",
@@ -5289,6 +5334,36 @@
       ]
     },
     {
+      "name": "plan-actual-model",
+      "type": "registry:lib",
+      "title": "Plan Actual Model",
+      "description": "Agent 动手前的计划与做的过程放在同一根时间轴上：头一行计划完成、推算完成与推移（晚了 warn 色）；每步一行写名字、状态（排队 / 进行中 / 超时 / 完成 / 超时完成）、轨道（计划是空心框，实际是实心条，超过计划时长的那一截 warn 色，没开始的步与进行中的步 now 之后的部分按推算位置画虚框）、计划对实际的时长；一道竖线是 now。推算：做完的用实际结束，正在做的按计划时长与 now 取晚的，没开始的接在上一步后面按计划时长排。时间单位与写法由调用方给。功能参照 affectUI 的 Plan vs Actual（affectui.com/components 目录页的说明，2026-11-23 读；Pro 件，页上没写许可证：只读说明、实现原创）。演示数据是示例。",
+      "files": [
+        {
+          "path": "src/ai/plan-actual-model.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/ai/plan-actual-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "plan-vs-actual",
+      "type": "registry:component",
+      "title": "Plan Vs Actual",
+      "description": "Agent 动手前的计划与做的过程放在同一根时间轴上：头一行计划完成、推算完成与推移（晚了 warn 色）；每步一行写名字、状态（排队 / 进行中 / 超时 / 完成 / 超时完成）、轨道（计划是空心框，实际是实心条，超过计划时长的那一截 warn 色，没开始的步与进行中的步 now 之后的部分按推算位置画虚框）、计划对实际的时长；一道竖线是 now。推算：做完的用实际结束，正在做的按计划时长与 now 取晚的，没开始的接在上一步后面按计划时长排。时间单位与写法由调用方给。功能参照 affectUI 的 Plan vs Actual（affectui.com/components 目录页的说明，2026-11-23 读；Pro 件，页上没写许可证：只读说明、实现原创）。演示数据是示例。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/plan-actual-model"
+      ],
+      "files": [
+        {
+          "path": "src/ai/plan-vs-actual.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/ai/plan-vs-actual.tsx"
+        }
+      ]
+    },
+    {
       "name": "gravity-letters",
       "type": "registry:component",
       "title": "Gravity Letters",
@@ -6185,6 +6260,25 @@
       ]
     },
     {
+      "name": "change-summary",
+      "type": "registry:component",
+      "title": "Change Summary",
+      "description": "周报、日报、看板顶上的「这段时间变了什么」：灰底托盘，头一行图标、标题、区间；每个指标一行写名字与变化的文字（调用方写好，如「1.12 → 1.38」）和方向箭头。好坏与涨跌分开：回撤变大是 bad，箭头照样朝上，颜色走状态色（ok / danger），不用涨跌色。用 dl，读屏把变化和指标名一起读，箭头是装饰。功能参照 affectUI 的 Change Summary（affectui.com/components/change-summary，2026-11-23 读；页上标 MIT，这里也只学功能，代码原创）。演示数据是示例。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn"
+      ],
+      "files": [
+        {
+          "path": "src/quant/change-summary.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/change-summary.tsx"
+        }
+      ]
+    },
+    {
       "name": "connected-scatter",
       "type": "registry:component",
       "title": "Connected Scatter",
@@ -6392,6 +6486,42 @@
       ]
     },
     {
+      "name": "experiment-card",
+      "type": "registry:component",
+      "title": "Experiment Card",
+      "description": "两到五组参数或两个策略的回测对比：头一行标题、状态、小注；指标切换（只有一个指标不画）；每组一行写徽标字母、名字（基准、领先各一个小标）、当前指标的值、值条、相对基准的变化（好坏色加箭头，越小越好的指标变小才是好）、样本数与置信度。点一行或 Space 选为胜者，再点撤回；选了胜者底栏出动作按钮。卡一直展开，不做悬停才展开。指标方向与数值写法由调用方给。功能参照 affectUI 的 Experiment Card（affectui.com/components/experiment-card，2026-11-23 读；Pro 件，页上没写许可证：只读说明、实现原创，不装它的 registry）。演示数据是示例。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/button",
+        "@katana/cn",
+        "@katana/experiment-model",
+        "@katana/severity",
+        "@katana/toggle-group"
+      ],
+      "files": [
+        {
+          "path": "src/quant/experiment-card.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/experiment-card.tsx"
+        }
+      ]
+    },
+    {
+      "name": "experiment-model",
+      "type": "registry:component",
+      "title": "Experiment Model",
+      "description": "两到五组参数或两个策略的回测对比：头一行标题、状态、小注；指标切换（只有一个指标不画）；每组一行写徽标字母、名字（基准、领先各一个小标）、当前指标的值、值条、相对基准的变化（好坏色加箭头，越小越好的指标变小才是好）、样本数与置信度。点一行或 Space 选为胜者，再点撤回；选了胜者底栏出动作按钮。卡一直展开，不做悬停才展开。指标方向与数值写法由调用方给。功能参照 affectUI 的 Experiment Card（affectui.com/components/experiment-card，2026-11-23 读；Pro 件，页上没写许可证：只读说明、实现原创，不装它的 registry）。演示数据是示例。",
+      "files": [
+        {
+          "path": "src/quant/experiment-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/experiment-model.ts"
+        }
+      ]
+    },
+    {
       "name": "flow-sankey-model",
       "type": "registry:component",
       "title": "Flow Sankey Model",
@@ -6457,6 +6587,43 @@
           "path": "src/quant/horizon-model.ts",
           "type": "registry:component",
           "target": "~/src/katana/ui/quant/horizon-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "kpi-chart-model",
+      "type": "registry:component",
+      "title": "Kpi Chart Model",
+      "description": "大号当前值、较上期的变化（涨跌色），下面几条线并看（权益、回撤、夏普）：图例、首中末三处横轴字、提示窗跟着指针或方向键走，写这一点每条线的真值。两种纵轴：shared 同一单位共用一根轴（有刻度）；normalized 各自按最低到最高压到同一高度（单位不同的线并看，不画刻度）。扫读用 useScrubber，比例尺用 series-geometry，提示窗是 LcdTooltip，不另写一套（#1917 的分工）。线 2px 不填面、不用涨跌色。没有数据时写 emptyText。功能参照 affectUI 的 KPI Chart（affectui.com/components/kpi-chart，2026-11-23 读；Pro 件，页上没写许可证：只读说明、实现原创，不装它的 registry）；normalized 纵轴是我们加的。演示数据是固定种子合成的。",
+      "registryDependencies": [
+        "@katana/series-geometry"
+      ],
+      "files": [
+        {
+          "path": "src/quant/kpi-chart-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/kpi-chart-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "kpi-chart",
+      "type": "registry:component",
+      "title": "Kpi Chart",
+      "description": "大号当前值、较上期的变化（涨跌色），下面几条线并看（权益、回撤、夏普）：图例、首中末三处横轴字、提示窗跟着指针或方向键走，写这一点每条线的真值。两种纵轴：shared 同一单位共用一根轴（有刻度）；normalized 各自按最低到最高压到同一高度（单位不同的线并看，不画刻度）。扫读用 useScrubber，比例尺用 series-geometry，提示窗是 LcdTooltip，不另写一套（#1917 的分工）。线 2px 不填面、不用涨跌色。没有数据时写 emptyText。功能参照 affectUI 的 KPI Chart（affectui.com/components/kpi-chart，2026-11-23 读；Pro 件，页上没写许可证：只读说明、实现原创，不装它的 registry）；normalized 纵轴是我们加的。演示数据是固定种子合成的。",
+      "registryDependencies": [
+        "@katana/chart-kit",
+        "@katana/cn",
+        "@katana/kpi-chart-model",
+        "@katana/series-geometry",
+        "@katana/tone",
+        "@katana/use-scrubber"
+      ],
+      "files": [
+        {
+          "path": "src/quant/kpi-chart.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/kpi-chart.tsx"
         }
       ]
     },
@@ -6674,6 +6841,39 @@
           "path": "src/quant/market-heatmap.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/quant/market-heatmap.tsx"
+        }
+      ]
+    },
+    {
+      "name": "parallel-attempts-model",
+      "type": "registry:component",
+      "title": "Parallel Attempts Model",
+      "description": "一次参数扫描的几组同时跑：每组一行写名字、参数说明、进度条、状态（运行中写当前步，跑完写分数、小注与耗时，失败写原因），跑完且分最好的标「最优」。每个跑完的行有一个「用这组」单选，默认选中最优，点别的就改选。分数方向可配（lowerIsBetter），不写花费。进度条只是装饰，信息都在字里。功能参照 affectUI 的 Parallel Attempts（affectui.com/components/parallel-attempts，2026-11-23 读；Pro 件，页上没写许可证：只读说明、实现原创，不装它的 registry）。演示数据是示例。",
+      "files": [
+        {
+          "path": "src/quant/parallel-attempts-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/parallel-attempts-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "parallel-attempts",
+      "type": "registry:component",
+      "title": "Parallel Attempts",
+      "description": "一次参数扫描的几组同时跑：每组一行写名字、参数说明、进度条、状态（运行中写当前步，跑完写分数、小注与耗时，失败写原因），跑完且分最好的标「最优」。每个跑完的行有一个「用这组」单选，默认选中最优，点别的就改选。分数方向可配（lowerIsBetter），不写花费。进度条只是装饰，信息都在字里。功能参照 affectUI 的 Parallel Attempts（affectui.com/components/parallel-attempts，2026-11-23 读；Pro 件，页上没写许可证：只读说明、实现原创，不装它的 registry）。演示数据是示例。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/parallel-attempts-model"
+      ],
+      "files": [
+        {
+          "path": "src/quant/parallel-attempts.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/parallel-attempts.tsx"
         }
       ]
     },
@@ -8762,6 +8962,103 @@
           "path": "src/blocks/run-mode-badge/run-mode-badge.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/blocks/run-mode-badge/run-mode-badge.tsx"
+        }
+      ]
+    },
+    {
+      "name": "root-cause-tree",
+      "type": "registry:component",
+      "title": "Root Cause Tree",
+      "description": "数据异常（缺 K、断流、对不上账）的排查：故障在最上一行，下面一层层假设，每行写门（任一 / 同时，父行才有）、状态（待查 / 在查 / 已排除 / 已确认）、标题与涉及的文件或数据源。已排除的行变淡、竖线变虚；已确认且没有子假设的是根因，从它到故障的一条线点亮。Enter 打开这一行的证据（结论、证据种类与原文、文件、检查时间），有 onAction 时根因下面有「修复」「从这里重跑」。只画缩进树，不画分叉图。状态是字加线型，不只靠颜色。功能参照 affectUI 的 Root Cause Tree（affectui.com/components/root-cause-tree，2026-11-23 读；Pro 件，页上没写许可证：只读说明、实现原创，不装它的 registry）。演示数据是示例。",
+      "registryDependencies": [
+        "@katana/button",
+        "@katana/cn"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/root-cause-tree/root-cause-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/root-cause-tree/root-cause-model.ts"
+        },
+        {
+          "path": "src/blocks/root-cause-tree/root-cause-tree.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/root-cause-tree/root-cause-tree.tsx"
+        }
+      ]
+    },
+    {
+      "name": "trace-waterfall",
+      "type": "registry:component",
+      "title": "Trace Waterfall",
+      "description": "一次数据请求的链路：哪个源慢、哪次重试、解析花了多久。左边是可折叠的 span 树，中间是时间轴上的条（按种类取 series 色，失败 danger，运行中斜纹并长到 now），右边是耗时与调用方写的一个小数（行数、字节、HTTP 状态）；跑完的叶子里最慢的标「最慢」。Enter 打开这一步的详情（种类、状态、开始、耗时、说明、错误），是表下的内嵌区，不弹对话框。不写 token 与花费。功能参照 affectUI 的 Trace Waterfall（affectui.com/components/trace-waterfall，2026-11-23 读；Pro 件，页上没写许可证：只读说明、实现原创，不装它的 registry）。演示数据是示例。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/chart-kit",
+        "@katana/cn",
+        "@katana/series-geometry"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/trace-waterfall/trace-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/trace-waterfall/trace-model.ts"
+        },
+        {
+          "path": "src/blocks/trace-waterfall/trace-waterfall.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/trace-waterfall/trace-waterfall.tsx"
+        }
+      ]
+    },
+    {
+      "name": "fallback-chain",
+      "type": "registry:component",
+      "title": "Fallback Chain",
+      "description": "一次取数按顺序试一串数据源（腾讯三个入口 → 新浪 → 东财 …）：请求节点在上，每个源一行（第几级、状态灯、源名与入口、状态字与原因、耗时），响应节点在下。失败的行写原因、竖线变 danger 虚线；正在试的灯亮强调色；答上的那一级之前的竖线点亮到响应；没用上的写「不需要」并变淡。全部失败时响应写「全部失败」，有 onRetry 就出「重试」。竖排有序列表，不画分叉图，不写花费。功能参照 affectUI 的 Fallback Chain（affectui.com/components/fallback-chain，2026-11-23 读；Pro 件，页上没写许可证：只读说明、实现原创，不装它的 registry）。演示数据是示例。",
+      "registryDependencies": [
+        "@katana/button",
+        "@katana/cn",
+        "@katana/led"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/fallback-chain/fallback-chain.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/fallback-chain/fallback-chain.tsx"
+        },
+        {
+          "path": "src/blocks/fallback-chain/fallback-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/fallback-chain/fallback-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "rate-limit-planner",
+      "type": "registry:component",
+      "title": "Rate Limit Planner",
+      "description": "一个数据源一天里的抓取任务（仓库回补、新闻轮询……）摆在时间轴上，叠起来的负载曲线跟它的限额比：头一行状态（在限额内 / 接近上限 / 超过限额）与峰值时刻；负载面积上一道限额实线、一道预警虚线（限额 × buffer），超过限额的部分涂 danger。每个任务一行，条可以拖（15 分对齐），聚焦后方向键挪 15 分、Shift 或 PageUp / PageDown 挪一小时、Home / End 到最早 / 最晚、Delete 删掉；已开始的任务（早于 now）不能挪。「错开」按负载大小一个个重摆压低峰值；每次挪动底栏播报结果。负载是矩形（匀速打请求），不是爬升再衰减；没有设置对话框与加任务。功能参照 affectUI 的 Rate Limit Planner（affectui.com/components/rate-limit-planner，2026-11-23 读；Pro 件，页上没写许可证：只读说明、实现原创，不装它的 registry），键位也照它。演示数据是示例，不是任何数据源的真实限额。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/button",
+        "@katana/cn",
+        "@katana/series-geometry"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/rate-limit-planner/rate-limit-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/rate-limit-planner/rate-limit-model.ts"
+        },
+        {
+          "path": "src/blocks/rate-limit-planner/rate-limit-planner.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/rate-limit-planner/rate-limit-planner.tsx"
         }
       ]
     },
