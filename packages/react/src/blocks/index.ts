@@ -358,3 +358,88 @@ export {
   type NetBuyBarLabels,
   type NetBuyBarProps,
 } from './net-buy-bar/net-buy-bar.tsx'
+
+// #104 账户四件：持仓表、委托表（共页签外壳）、账户权益概览、资金费率、期权 T 型报价。
+export {
+  PositionsTable,
+  type LiquidationRisk,
+  type Position,
+  type PositionSide,
+  type PositionTotals,
+  type PositionsTableLabels,
+  type PositionsTableProps,
+} from './positions-table/positions-table.tsx'
+export {
+  liquidationDistance,
+  liquidationFill,
+  liquidationRisk,
+  positionTotals,
+  unrealizedPercent,
+} from './positions-table/positions-model.ts'
+export {
+  PositionsOrdersTabs,
+  type PositionsOrdersTab,
+  type PositionsOrdersTabsLabels,
+  type PositionsOrdersTabsProps,
+} from './positions-table/positions-orders-tabs.tsx'
+export {
+  OrdersTable,
+  type Order,
+  type OrderSide as OpenOrderSide,
+  type OrderStatus,
+  type OrderType as OpenOrderType,
+  type OrdersTableLabels,
+  type OrdersTableProps,
+} from './orders-table/orders-table.tsx'
+export {
+  amendDecision,
+  canAmend,
+  canCancel,
+  cancellable,
+  fillRatio,
+  parseAmendPrice,
+} from './orders-table/orders-model.ts'
+export {
+  AccountEquity,
+  type AccountEquityLabels,
+  type AccountEquityProps,
+  type MarginLevel,
+  type MarginThresholds,
+} from './account-equity/account-equity.tsx'
+export { marginLevel, marginRatioOf, riskBands, riskPosition } from './account-equity/account-equity-model.ts'
+export {
+  FundingRate,
+  type FundingBar,
+  type FundingPoint,
+  type FundingRateLabels,
+  type FundingRateProps,
+} from './funding-rate/funding-rate.tsx'
+export { countdownTo, formatCountdown, formatRate, fundingBars, rateTone } from './funding-rate/funding-model.ts'
+export {
+  OptionsChain,
+  type OptionExpiry,
+  type OptionField,
+  type OptionQuote,
+  type OptionRow,
+  type OptionSide,
+  type OptionsChainLabels,
+  type OptionsChainProps,
+} from './options-chain/options-chain.tsx'
+export { atmStrike, isItm, sortedRows, wingFields } from './options-chain/options-model.ts'
+export {
+  OrderBook,
+  type BookLevel,
+  type BookRow,
+  type BookSide,
+  type OrderBookLabels,
+  type OrderBookMode,
+  type OrderBookProps,
+} from './order-book/order-book.tsx'
+export { DepthChart, type DepthChartLabels, type DepthChartProps } from './depth-chart/depth-chart.tsx'
+export {
+  TradeTape,
+  type Trade,
+  type TradeSide,
+  type TradeTapeLabels,
+  type TradeTapeProps,
+} from './trade-tape/trade-tape.tsx'
