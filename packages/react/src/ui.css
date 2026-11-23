@@ -79,6 +79,15 @@
 @import './theme/param-surface-heatmap.css';
 @import './theme/walk-forward-matrix.css';
 @import './theme/robustness-gate.css';
+@import './theme/experiment-card.css';
+@import './theme/parallel-attempts.css';
+@import './theme/change-summary.css';
+@import './theme/kpi-chart.css';
+@import './theme/root-cause-tree.css';
+@import './theme/trace-waterfall.css';
+@import './theme/fallback-chain.css';
+@import './theme/rate-limit-planner.css';
+@import './theme/plan-vs-actual.css';
 @import './theme/uptime-bars.css';
 @import './theme/range-histogram-slider.css';
 @import './theme/ridgeline.css';

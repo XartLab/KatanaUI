@@ -308,6 +308,11 @@ function collectItems() {
       'portfolio-run-grid',
       'replay-transport',
       'run-mode-badge',
+      // KATANAview #1908：参照 affectUI 补的数据处理件，各一个子目录（组件与它的纯函数一起装）。
+      'root-cause-tree',
+      'trace-waterfall',
+      'fallback-chain',
+      'rate-limit-planner',
     ])
       add(
         dir,
