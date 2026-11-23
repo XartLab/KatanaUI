@@ -10,6 +10,7 @@ import {
   ThemeHeatMatrixDemo,
 } from './pages/cn-pack.tsx'
 import { FlagMarkDemo } from './pages/watchlist-order.tsx'
+import { DepthChartDemo, OrderBookDemo, TradeTapeDemo } from './pages/market-depth.tsx'
 import {
   AgentAvatarDemo,
   AiApprovalDemo,
@@ -374,6 +375,9 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'reason-group-list': ReasonGroupListDemo,
   'board-strength-rank': BoardStrengthRankDemo,
   'net-buy-bar': NetBuyBarDemo,
+  'order-book': OrderBookDemo,
+  'depth-chart': DepthChartDemo,
+  'trade-tape': TradeTapeDemo,
   'market-heatmap': MarketHeatmapDemo,
   'rating-text': RatingTextDemo,
   'technical-rating': TechnicalRatingDemo,

@@ -358,3 +358,20 @@ export {
   type NetBuyBarLabels,
   type NetBuyBarProps,
 } from './net-buy-bar/net-buy-bar.tsx'
+export {
+  OrderBook,
+  type BookLevel,
+  type BookRow,
+  type BookSide,
+  type OrderBookLabels,
+  type OrderBookMode,
+  type OrderBookProps,
+} from './order-book/order-book.tsx'
+export { DepthChart, type DepthChartLabels, type DepthChartProps } from './depth-chart/depth-chart.tsx'
+export {
+  TradeTape,
+  type Trade,
+  type TradeSide,
+  type TradeTapeLabels,
+  type TradeTapeProps,
+} from './trade-tape/trade-tape.tsx'
