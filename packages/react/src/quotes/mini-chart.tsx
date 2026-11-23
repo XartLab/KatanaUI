@@ -157,7 +157,7 @@ export function MiniChart({
       </span>
     </>
   )
-  const classes = cn('k-mini-chart', `is-${tone}`, onSelect && 'is-link', className)
+  const classes = cn('k-mat-card k-mini-chart', `is-${tone}`, onSelect && 'is-link', className)
   return onSelect ? (
     <button type="button" className={classes} data-slot="mini-chart" aria-label={labels.card} onClick={onSelect}>
       {body}

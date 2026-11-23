@@ -94,7 +94,7 @@ export function SymbolInfo({
   const priceText = formatPrice(last)
   const changeText = Number.isFinite(change) ? `${change > 0 ? '+' : ''}${formatPrice(change)}` : '—'
   return (
-    <section className={cn('k-syminfo', `is-${tone}`, className)} data-slot="symbol-info" aria-label={label}>
+    <section className={cn('k-mat-card k-syminfo', `is-${tone}`, className)} data-slot="symbol-info" aria-label={label}>
       <div className="k-syminfo-head">
         <SymbolMark symbol={symbol} name={name} src={logoSrc} size={32} />
         <div className="k-syminfo-id">

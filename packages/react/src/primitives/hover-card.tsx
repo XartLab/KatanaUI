@@ -30,7 +30,7 @@ function HoverCardContent({
         align={align}
         sideOffset={sideOffset}
         className={cn(
-          'k-text-body z-50 w-64 rounded-[var(--radius-overlay)] border border-(color:--k-overlay-borderColor) bg-(--k-surface-overlay-background) p-3 text-(color:--k-content-body-foreground) outline-0 shadow-(--k-overlay-shadow)',
+          'k-mat-overlay k-text-body z-50 w-64 p-3 text-(color:--k-content-body-foreground) outline-0',
           className,
         )}
         {...props}
