@@ -1215,6 +1215,11 @@
           "target": "~/src/katana/ui/lib/chart/format/change.ts"
         },
         {
+          "path": "src/lib/chart/format/cn-amount.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/lib/chart/format/cn-amount.ts"
+        },
+        {
           "path": "src/lib/chart/format/compact.ts",
           "type": "registry:lib",
           "target": "~/src/katana/ui/lib/chart/format/compact.ts"
@@ -7119,7 +7124,10 @@
       "name": "cn-format",
       "type": "registry:lib",
       "title": "Cn Format",
-      "description": "A 股件包的第 0 层（纯函数，不带 React）：formatCnAmount 把金额写成万 / 亿；时段轴认 09:15–09:25 竞价、09:30–11:30、13:00–15:00，午休与 09:25–09:30 不占宽度；cnLabelsZh 是随包的简体中文默认文案，可以整份换；取不到的数写「—」并可带原因（readCnValue）。不带数据源与交易日历数据。DataGrid 的列类型 cnAmount 用 formatCnAmount 写金额（靠右、按数排序；format.cnAmount.signed 为真时正数涨色、负数跌色，用于净流入）。",
+      "description": "A 股件包的金额写法 formatCnAmount（万 / 亿），从 quant-format 再导出（#158：compact 在中文下也用它，源码挪到下层）。",
+      "registryDependencies": [
+        "@katana/quant-format"
+      ],
       "files": [
         {
           "path": "src/cn/format.ts",

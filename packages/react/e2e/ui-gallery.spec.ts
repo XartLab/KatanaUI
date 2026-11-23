@@ -2493,10 +2493,10 @@ for (const theme of THEMES) {
       expect(boards).toEqual(['5', '4', '3', '1'])
       await expect(ladder.locator('[data-board="4"] [data-slot="ladder-promote"]')).toContainText('晋级 1/2')
       await expect(ladder.locator('[data-board="1"] [data-slot="ladder-promote"]')).toContainText('晋级 6/31')
-      // 封单额按 zh-CN 缩写（#92）：≥1 亿写「5.20 亿」，1 万–1 亿写千分位整数「8,800 万」；中文缩写自带量级，不挂单位小字。
+      // 封单额按 zh-CN 缩写，写法同 cnAmount（#158）：≥1 亿写「5.20亿」，1 万–1 亿写「8,800万」；中文缩写自带量级，不挂单位小字。
       const seal = ladder.locator('[data-code="600001"] [data-slot="ladder-seal"]')
       await expect(seal.locator('.k-num-unit')).toHaveCount(0)
-      await expect(ladder.locator('[data-code="002005"] [data-slot="ladder-seal"]')).toHaveText('8,800 万')
+      await expect(ladder.locator('[data-code="002005"] [data-slot="ladder-seal"]')).toHaveText('8,800万')
       // 晋级条的填充宽度按比例：1/2 约一半。
       const fill = ladder.locator('[data-board="4"] .k-ladder-promote-bar i')
       const [bar, filled] = await Promise.all([
@@ -2523,14 +2523,14 @@ for (const theme of THEMES) {
       expect(await colorOf('000003', '.k-ladder-symbol')).toBe(await ink('--ink-300'))
       expect(await colorOf('603007', '.k-ladder-symbol')).toBe(await ink('--ink-300'))
       // 数值列是界面无衬线加等宽数字，不是等宽字体族。
-      // 品种格：代码是主、名称是次（名称更淡更小）；封单额按 zh-CN 缩写写成「5.20 亿」、不挂单位（#92，原来是「520.00 M」），缺数据写「—」。
+      // 品种格：代码是主、名称是次（名称更淡更小）；封单额按 zh-CN 缩写写成「5.20亿」（#158 同 cnAmount）、不挂单位（#92，原来是「520.00 M」），缺数据写「—」。
       const sym = ladder.locator('[data-code="600002"]')
       await expect(sym.locator('.k-ladder-symbol')).toHaveText('600002')
       await expect(sym.locator('.k-ladder-sub')).toHaveText('示例电力')
       expect(
         await sym.locator('.k-ladder-sub').evaluate((el) => parseFloat(getComputedStyle(el).fontSize)),
       ).toBeLessThan(await sym.locator('.k-ladder-symbol').evaluate((el) => parseFloat(getComputedStyle(el).fontSize)))
-      await expect(ladder.locator('[data-code="600001"] .k-ladder-num').nth(2)).toHaveText('5.20 亿')
+      await expect(ladder.locator('[data-code="600001"] .k-ladder-num').nth(2)).toHaveText('5.20亿')
       await expect(ladder.locator('[data-code="603007"] .k-ladder-num').nth(2)).toHaveText('—')
       await expect(ladder.locator('[data-code="600001"] .k-ladder-num').first()).toHaveText('+10.00%')
       const numStyle = await ladder
@@ -4741,14 +4741,14 @@ for (const theme of THEMES) {
         .evaluateAll((nodes) => nodes.map((node) => Math.round(node.getBoundingClientRect().right)))
       expect(rights, '每行都有价格格').toHaveLength(3)
       expect(new Set(rights).size, '价格列右缘对齐').toBe(1)
-      // 格内排版跟 DataGrid 同一份（#92）：代码芯片高 24、12px w600；成交量按 zh-CN 缩写（万 / 亿），单位「股」是 10px 次要色小字。
+      // 格内排版跟 DataGrid 同一份（#92）：代码芯片高 24、12px w600；成交量按 zh-CN 缩写（万 / 亿，写法同 cnAmount，#158），单位「股」是 10px 次要色小字。
       const chip = rows.nth(0).locator('.k-code-chip')
       await expect(chip).toBeVisible()
       expect((await chip.boundingBox())!.height).toBe(24)
       await expect(chip).toHaveCSS('font-size', '12px')
       await expect(chip).toHaveCSS('font-weight', '600')
       const volume = rows.nth(0).locator('.k-quote-rows-volume')
-      await expect(volume).toHaveText(/^\d+(\.\d\d)? (万|亿) 股$/)
+      await expect(volume).toHaveText(/^\d[\d,]*(\.\d{1,2})?(万|亿) 股$/)
       await expect(volume.locator('.k-num-unit')).toHaveCSS('font-size', '10px')
       await expect(volume.locator('.k-num-unit')).toHaveCSS(
         'color',
