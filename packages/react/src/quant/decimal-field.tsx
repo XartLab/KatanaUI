@@ -129,6 +129,8 @@ export function DecimalField({
   }
   const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
     onKeyDown?.(event)
+    // 组字时的上下键是在候选词里选，不是改价；Safari 上屏那一下 keyCode 仍是 229。
+    if (event.nativeEvent.isComposing || event.keyCode === 229) return
     if (event.defaultPrevented || (event.key !== 'ArrowUp' && event.key !== 'ArrowDown')) return
     // 只读与禁用时方向键什么也不做；输入框自己的光标移动（Home / End 的效果）也不要。
     event.preventDefault()

@@ -198,8 +198,9 @@ export function ReplayTransport({
   const skip = () => {
     if (ticks !== null) onSkipTicks(ticks)
   }
-  // 输入框里按回车即提交；别的键不拦。
+  // 输入框里按回车即提交；别的键不拦。输入法组字（含 Safari 上屏那一下，keyCode 229）的 Enter 是选字，不提交。
   const submitOnEnter = (action: () => void) => (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.nativeEvent.isComposing || event.keyCode === 229) return
     if (event.key !== 'Enter') return
     event.preventDefault()
     action()

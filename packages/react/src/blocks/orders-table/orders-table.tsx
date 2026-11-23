@@ -117,7 +117,7 @@ const STATUS_TONE: Record<OrderStatus, 'neutral' | 'ok' | 'warn'> = {
   canceling: 'warn',
 }
 
-/** 行内改价框：打开时全选，回车提交、Esc 与失焦取消；价格没变只关框，非法留在框里标红。 */
+/** 行内改价框：打开时全选，回车提交、Esc 与失焦取消；价格没变只关框，非法留在框里标红。输入法组字中的 Enter / Esc 不算（#208）。 */
 function AmendField({ order, ctx }: { order: Order; ctx: Context }) {
   const [draft, setDraft] = useState(() => (order.price === null ? '' : ctx.price(order.price, order)))
   const [invalid, setInvalid] = useState(false)
@@ -142,6 +142,8 @@ function AmendField({ order, ctx }: { order: Order; ctx: Context }) {
         }}
         onBlur={() => ctx.stopAmend()}
         onKeyDown={(event) => {
+          // 输入法组字时的 Enter 是选字、Esc 是取消候选词，都不是改单的提交与取消；Safari 上屏那一下 isComposing 已是 false、keyCode 仍是 229，两个都要判。
+          if (event.nativeEvent.isComposing || event.keyCode === 229) return
           if (event.key === 'Escape') {
             event.preventDefault()
             event.stopPropagation()
