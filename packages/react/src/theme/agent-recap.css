@@ -1,0 +1,263 @@
+/* SPDX-License-Identifier: MIT */
+/* AgentRecap 与 AwaySummary（KATANAview #1908）：状态写成字，颜色只是辅助（要你 warn、失败 danger、做完 ok）；卡与行等高，动作前后不挤动。
+   AgentRecap 窄于 640px 三列竖排；AwaySummary 窄于 420px 计数换到标题下、长标题截断（title 里有全文）。 */
+.k-rc {
+  container-type: inline-size;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  color: var(--k-content-body-foreground);
+  font: var(--text-data) var(--font-sans);
+}
+.k-rc-title,
+.k-away-title {
+  margin: 0;
+  color: var(--k-content-primary-foreground);
+  font: var(--text-data) var(--font-sans);
+}
+.k-rc-strip {
+  width: 100%;
+  height: 36px;
+}
+.k-rc-strip [data-part='bucket'] {
+  fill: color-mix(in srgb, var(--k-content-secondary-foreground) 30%, transparent);
+}
+.k-rc-strip circle {
+  fill: var(--k-content-secondary-foreground);
+  transition: r var(--dur-snappy) var(--ease-snappy);
+}
+.k-rc-strip circle[data-kind='needs'] {
+  fill: var(--k-status-warn-foreground);
+}
+.k-rc-strip circle[data-kind='failed'] {
+  fill: var(--k-status-danger-foreground);
+}
+.k-rc-strip circle[data-hot] {
+  fill: var(--accent);
+}
+.k-rc-strip-axis {
+  display: flex;
+  justify-content: space-between;
+  color: var(--k-content-tertiary-foreground);
+  font: var(--text-caption) var(--font-num-small);
+}
+.k-rc-lanes {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+.k-rc-lane {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+.k-rc-lane-head {
+  display: flex;
+  justify-content: space-between;
+  margin: 0;
+  padding-bottom: 4px;
+  border-bottom: var(--hairline);
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-rc-lane-head span {
+  font-family: var(--font-num-small);
+}
+.k-rc-lane ul {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.k-rc-card {
+  display: grid;
+  grid-template-rows: auto auto 1lh auto;
+  gap: 2px;
+  height: 116px;
+  padding: 6px 8px;
+  border: var(--hairline);
+  border-radius: 4px;
+  background: var(--k-container-secondary-background);
+}
+.k-rc-card-top {
+  display: flex;
+  justify-content: space-between;
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-rc-card-top time {
+  color: var(--k-content-tertiary-foreground);
+  font-family: var(--font-num-small);
+}
+.k-rc-tag {
+  color: var(--k-content-secondary-foreground);
+}
+.k-rc-card[data-kind='needs'][data-state='idle'] .k-rc-tag {
+  color: var(--k-status-warn-foreground);
+}
+.k-rc-card[data-kind='failed'][data-state='idle'] .k-rc-tag {
+  color: var(--k-status-danger-foreground);
+}
+.k-rc-card[data-state='acted'] .k-rc-tag,
+.k-rc-card[data-kind='done'][data-state='idle'] .k-rc-tag {
+  color: var(--k-status-ok-foreground);
+}
+.k-rc-card-title {
+  overflow: hidden;
+  color: var(--k-content-primary-foreground);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.k-rc-card-detail {
+  display: flex;
+  gap: 6px;
+  overflow: hidden;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+  white-space: nowrap;
+}
+.k-rc-card-detail b {
+  margin-left: auto;
+  font-family: var(--font-num-small);
+  font-weight: inherit;
+}
+.k-rc-actions {
+  display: flex;
+  align-self: end;
+  gap: 6px;
+}
+.k-rc-empty,
+.k-rc-more {
+  margin: 0;
+  color: var(--k-content-tertiary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-rc-live {
+  min-height: 1lh;
+  margin: 0;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+@container (max-width: 640px) {
+  .k-rc-lanes {
+    grid-template-columns: 1fr;
+  }
+}
+
+.k-away {
+  container-type: inline-size;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  padding: 8px 10px;
+  border: var(--hairline);
+  border-radius: 6px;
+  background: var(--k-container-secondary-background);
+  color: var(--k-content-body-foreground);
+  font: var(--text-data) var(--font-sans);
+}
+.k-away[data-collapsed] {
+  padding: 0;
+  border: 0;
+  background: none;
+}
+.k-away-divider {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  padding: 4px 0;
+  border: 0;
+  background: none;
+  color: var(--k-content-tertiary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+  cursor: pointer;
+}
+.k-away-divider::before,
+.k-away-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--k-separable-primary-borderColor);
+}
+.k-away-divider:hover {
+  color: var(--k-content-secondary-foreground);
+}
+.k-away-divider:focus-visible {
+  outline: 1px solid var(--focus-ring);
+}
+.k-away-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px var(--space-3);
+}
+.k-away-counts {
+  margin-left: auto;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-away-list {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.k-away-row {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--space-3);
+  height: 40px;
+  border-top: var(--hairline);
+}
+.k-away-row button {
+  max-width: 40cqw;
+}
+.k-away-mark {
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-away-row[data-kind='needs'] .k-away-mark {
+  color: var(--k-status-warn-foreground);
+}
+.k-away-row[data-kind='failed'] .k-away-mark {
+  color: var(--k-status-danger-foreground);
+}
+.k-away-row[data-kind='done'] .k-away-mark {
+  color: var(--k-status-ok-foreground);
+}
+.k-away-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.k-away-row-title,
+.k-away-detail {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.k-away-row-title {
+  color: var(--k-content-primary-foreground);
+}
+.k-away-detail {
+  color: var(--k-content-tertiary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-away-foot {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+}
+@container (max-width: 420px) {
+  .k-away-counts {
+    width: 100%;
+    margin-left: 0;
+  }
+}

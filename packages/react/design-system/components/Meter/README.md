@@ -16,7 +16,7 @@
 | `value` | `number` | — | 当前值；越界贴边。 |
 | `max` | `number` | `100` | 满量程；给了 warnAt / hardAt 而没给它时取已用与两条线里最大的，越限的部分看得见。 |
 | `valueText` | `string` | — | 右边的数怎么写；不给就是四舍五入的百分数。 |
-| `tone` | `SeverityExt` | `'accent'` | 进行中 accent（橙）、健康 ok（绿）、受限或越界 warn（琥珀）、弱势 danger（红）、停用 off / neutral。 |
+| `tone` | `SeverityExt` | `'accent'` | 进行中 accent（橙）、健康 ok（绿）、受限或越界 warn（琥珀）、弱势 danger（红）、中性 neutral（有数、不表态，中性墨色填充）、停用 off。 |
 | `display` | `'bar' \| 'gauge' \| 'sync'` | `'bar'` | sync 只给 paper 进度、容量使用、偏离门距离、回放进度。 |
 | `mark` | `number` | — | 刻度（跟 value 同单位）：琥珀竖线，sync 里是评估点；gauge 不画。 |
 | `markLabel` | `string` | — | 读屏用：刻度是什么（评估点、上限）；有 mark 时要给。 |
@@ -71,7 +71,7 @@ export function MeterUsage() {
 - gauge：34px 凹槽、中线、底部 0/25/50/75/100 刻度，指针带光；弱势用 danger（红）。
 - sync：14px 带齿条，右侧大百分比（display-dense 字），琥珀刻度是评估点。
 - warn：条与数转琥珀，条体脉冲一次；off：全部转灰。
-- tone 是 SeverityExt（G6）：neutral 画法同 off（没有判断就不着色）。
+- tone 是 SeverityExt（G6）：neutral 是中性档（#178），填充与指针用中性墨色 --k-status-neutral-foreground，名字与数照常，不像 off 那样全部转灰。
 - 限额：线下照传入的 tone；达到预警线（等于也算）转琥珀并脉冲一次，达到硬限转红再脉冲一次；根上 data-state 是 normal / warn / breach。
 
 ## Don't

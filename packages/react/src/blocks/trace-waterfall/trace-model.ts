@@ -97,10 +97,13 @@ export function traceStatus(root: TraceSpan): SpanStatus {
 /** Result of a key in the waterfall: move focus, or fold / unfold a span. */
 export type SpanMove = { focus: string } | { toggle: string }
 
+/** What moveSpan reads from a row; CostWaterfall's rows pass through it too. */
+export type SpanMoveRow = Pick<SpanRow, 'parentId' | 'hasChildren' | 'expanded'> & { span: { id: string } }
+
 /**
  * 键盘：↑↓ 上下一行；→ 收着的先展开、展开的到第一个子；← 展开的先收起、否则回父；Home / End 头尾。别的键返回 undefined。
  */
-export function moveSpan(rows: readonly SpanRow[], id: string, key: string): SpanMove | undefined {
+export function moveSpan(rows: readonly SpanMoveRow[], id: string, key: string): SpanMove | undefined {
   const index = rows.findIndex((row) => row.span.id === id)
   if (index < 0) return undefined
   const row = rows[index]!
