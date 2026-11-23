@@ -1,0 +1,152 @@
+/* SPDX-License-Identifier: MIT */
+/* AgentCrew（KATANAview #1908）：卡片树的排法与 AgentTree 同一套（agent-org.css）；卡 64px 高（名字行、在做什么、上下文条），第三层起小一号 52px（只留名字行与在做什么）。
+   上下文条 3px 高，ok 用中性灰、到 80% warn、到 95% danger。卡下面一行写工具与最近交接。
+   新交接到达：接手的卡从进来的那一边升起一层强调色的底再淡掉（affectUI 页上没写时长，900ms 待定）。换项目时卡片轻升进场。 */
+.k-crew {
+  --k-org-card: 64px;
+}
+.k-crew .k-org-item[data-depth='2'] {
+  --k-org-card: 52px;
+}
+.k-crew .k-org-item[data-depth='2'] .k-crew-ctx {
+  display: none;
+}
+.k-crew-activity {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.k-crew-ctx {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.k-crew-ctx-bar {
+  flex: 1;
+  height: 3px;
+  overflow: hidden;
+  border-radius: 2px;
+  background: var(--k-container-track-background);
+}
+.k-crew-ctx-bar b {
+  display: block;
+  height: 100%;
+  background: var(--k-content-tertiary-foreground);
+  transition: width var(--dur-snappy) var(--ease-snappy);
+}
+.k-crew-ctx[data-level='warn'] b {
+  background: var(--k-status-warn-foreground);
+}
+.k-crew-ctx[data-level='danger'] b {
+  background: var(--k-status-danger-foreground);
+}
+.k-crew-ctx small {
+  flex: none;
+  color: var(--k-content-tertiary-foreground);
+  font: var(--text-caption) var(--font-num-small);
+}
+.k-crew-ctx[data-level='warn'] small {
+  color: var(--k-status-warn-foreground);
+}
+.k-crew-ctx[data-level='danger'] small {
+  color: var(--k-status-danger-foreground);
+}
+.k-crew-tray {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  height: 22px;
+  padding: 0 4px;
+  color: var(--k-content-tertiary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-crew-last {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.k-crew-floor {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, color-mix(in srgb, var(--accent) 22%, transparent), transparent 70%);
+  pointer-events: none;
+  animation: k-crew-floor 900ms var(--ease-snappy) both;
+}
+@keyframes k-crew-floor {
+  0% {
+    opacity: 0;
+    clip-path: inset(100% 0 0 0);
+  }
+  35% {
+    opacity: 1;
+    clip-path: inset(0);
+  }
+  100% {
+    opacity: 0;
+    clip-path: inset(0);
+  }
+}
+.k-crew-floor[data-edge='top'] {
+  background: linear-gradient(to bottom, color-mix(in srgb, var(--accent) 22%, transparent), transparent 70%);
+  animation-name: k-crew-floor-top;
+}
+@keyframes k-crew-floor-top {
+  0% {
+    opacity: 0;
+    clip-path: inset(0 0 100% 0);
+  }
+  35% {
+    opacity: 1;
+    clip-path: inset(0);
+  }
+  100% {
+    opacity: 0;
+    clip-path: inset(0);
+  }
+}
+.k-crew .k-org-tree > .k-org-item {
+  animation: k-crew-rise var(--dur-snappy) var(--ease-snappy) both;
+}
+@keyframes k-crew-rise {
+  from {
+    opacity: 0;
+    translate: 0 6px;
+  }
+}
+.k-crew-project {
+  min-width: 180px;
+}
+.k-crew-facts {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: 4px 12px;
+  margin: 0;
+  font: var(--text-data) var(--font-sans);
+}
+.k-crew-facts dt {
+  color: var(--k-content-tertiary-foreground);
+}
+.k-crew-facts dd {
+  margin: 0;
+  color: var(--k-content-primary-foreground);
+}
+.k-crew-steer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+}
+.k-crew-message {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+.k-crew-message textarea {
+  width: 100%;
+}
