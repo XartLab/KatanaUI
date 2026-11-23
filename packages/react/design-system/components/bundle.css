@@ -3352,6 +3352,10 @@
   color: var(--pnl-up);
 }
 
+.text-\(--pnl-…\) {
+  color: var(--pnl-…);
+}
+
 .text-\(--signal-red\) {
   color: var(--signal-red);
 }
@@ -3426,6 +3430,10 @@
 
 .text-\(color\:--pnl-up\) {
   color: var(--pnl-up);
+}
+
+.text-\(color\:--pnl-…\) {
+  color: var(--pnl-…);
 }
 
 .text-\(color\:--signal-green\) {
@@ -14580,7 +14588,7 @@ button.k-quote-card.is-link:focus-visible {
   margin: 0;
 }
 
-.k-ridge [hidden], .k-scatter [hidden], .k-slope [hidden], .k-uptime [hidden], .k-galaxy [hidden] {
+.k-ridge [hidden], .k-hz [hidden], .k-sm [hidden], .k-brush [hidden], .k-scatter [hidden], .k-slope [hidden], .k-uptime [hidden], .k-galaxy [hidden] {
   display: none !important;
 }
 
@@ -15366,10 +15374,10 @@ button.k-heat-cell[data-active="true"] {
   touch-action: pan-y;
   border-radius: 2px;
   position: relative;
-  overflow: hidden;
 }
 
 .k-hz-plot > svg {
+  clip-path: inset(0 round 2px);
   width: 100%;
   height: 100%;
   display: block;
@@ -15971,20 +15979,11 @@ button.k-sm-head:focus-visible {
 }
 
 .k-eq-key-dd {
-  background-image: var(--chart-fill-image, radial-gradient(circle, var(--pnl-down) 0 1.2px, transparent 1.6px));
+  background-image: var(--chart-fill-image, radial-gradient(circle, var(--k-heat-3) 0 1.2px, transparent 1.6px));
+  background-size: 3px 3px;
   width: 12px;
   height: 6px;
   display: inline-block;
-}
-
-@supports (color: color-mix(in lab, red, red)) {
-  .k-eq-key-dd {
-    background-image: var(--chart-fill-image, radial-gradient(circle, var(--ds-c-3roitp) 0 1.2px, transparent 1.6px));
-  }
-}
-
-.k-eq-key-dd {
-  background-size: 3px 3px;
 }
 
 .k-eq-scale {
@@ -29674,6 +29673,7 @@ button.k-pill-main {
   --mheat-ink-5: initial;
   --mheat-ink-6: initial;
   --mink-cols: initial;
+  --pnl-: initial;
   --radix-accordion-content-height: initial;
   --radix-collapsible-content-height: initial;
   --radix-collapsible-content-width: initial;

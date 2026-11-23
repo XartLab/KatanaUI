@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: MIT */
-/* 权益曲线（#1931）：颜色全走 token；涨跌色不用在面上（回撤面是纹理，色是跌色混 60%）。 */
+/* 权益曲线（#1931）：颜色全走 token；涨跌色不用在面上（回撤面是纹理，色是中性灰浓度 --k-heat-3，KatanaUI #165）。 */
 /* 橙色只给状态灯与焦点角括号：权益线与末点用 ink-100，末点不发光。 */
 .k-eq {
   --chart-accent: var(--k-content-primary-foreground);
@@ -42,10 +42,7 @@
   display: inline-block;
   width: 12px;
   height: 6px;
-  background-image: var(
-    --chart-fill-image,
-    radial-gradient(circle, color-mix(in srgb, var(--pnl-down) 60%, transparent) 0 1.2px, transparent 1.6px)
-  );
+  background-image: var(--chart-fill-image, radial-gradient(circle, var(--k-heat-3) 0 1.2px, transparent 1.6px));
   background-size: 3px 3px;
 }
 .k-eq-scale {

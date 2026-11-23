@@ -5219,6 +5219,42 @@
       "source": "src/quant/brush-chart.tsx",
       "props": [
         {
+          "name": "actionLabels",
+          "type": "ChartActionsLabels",
+          "required": true,
+          "description": "图右上三个按钮的名字。"
+        },
+        {
+          "name": "tableLabel",
+          "type": "string",
+          "required": true,
+          "description": "表格视图的读屏名。"
+        },
+        {
+          "name": "tableHead",
+          "type": "readonly string[]",
+          "required": true,
+          "description": "表头（第一项是行头那一列）。"
+        },
+        {
+          "name": "source",
+          "type": "ReactNode",
+          "required": false,
+          "description": "来源一行：每个数字能回答从哪来、什么时候（§2.2）。"
+        },
+        {
+          "name": "onExport",
+          "type": "() => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "onFullscreen",
+          "type": "() => void",
+          "required": false,
+          "description": ""
+        },
+        {
           "name": "values",
           "type": "readonly number[]",
           "required": true,
@@ -5317,6 +5353,42 @@
       "kind": "type",
       "source": "src/quant/brush-chart.tsx",
       "props": [
+        {
+          "name": "actionLabels",
+          "type": "ChartActionsLabels",
+          "required": true,
+          "description": "图右上三个按钮的名字。"
+        },
+        {
+          "name": "tableLabel",
+          "type": "string",
+          "required": true,
+          "description": "表格视图的读屏名。"
+        },
+        {
+          "name": "tableHead",
+          "type": "readonly string[]",
+          "required": true,
+          "description": "表头（第一项是行头那一列）。"
+        },
+        {
+          "name": "source",
+          "type": "ReactNode",
+          "required": false,
+          "description": "来源一行：每个数字能回答从哪来、什么时候（§2.2）。"
+        },
+        {
+          "name": "onExport",
+          "type": "() => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "onFullscreen",
+          "type": "() => void",
+          "required": false,
+          "description": ""
+        },
         {
           "name": "values",
           "type": "readonly number[]",
@@ -20980,6 +21052,42 @@
       "source": "src/quant/horizon-chart.tsx",
       "props": [
         {
+          "name": "source",
+          "type": "ReactNode",
+          "required": false,
+          "description": "来源一行：每个数字能回答从哪来、什么时候（§2.2）。"
+        },
+        {
+          "name": "actionLabels",
+          "type": "ChartActionsLabels",
+          "required": true,
+          "description": "图右上三个按钮的名字。"
+        },
+        {
+          "name": "tableLabel",
+          "type": "string",
+          "required": true,
+          "description": "表格视图的读屏名。"
+        },
+        {
+          "name": "onExport",
+          "type": "() => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "onFullscreen",
+          "type": "() => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "tableXHead",
+          "type": "string",
+          "required": true,
+          "description": "表格视图第一列（横轴位置）的列头；其余列头是各序列的名字。"
+        },
+        {
           "name": "rows",
           "type": "readonly HorizonRow[]",
           "required": true,
@@ -21042,6 +21150,42 @@
       "kind": "type",
       "source": "src/quant/horizon-chart.tsx",
       "props": [
+        {
+          "name": "source",
+          "type": "ReactNode",
+          "required": false,
+          "description": "来源一行：每个数字能回答从哪来、什么时候（§2.2）。"
+        },
+        {
+          "name": "actionLabels",
+          "type": "ChartActionsLabels",
+          "required": true,
+          "description": "图右上三个按钮的名字。"
+        },
+        {
+          "name": "tableLabel",
+          "type": "string",
+          "required": true,
+          "description": "表格视图的读屏名。"
+        },
+        {
+          "name": "onExport",
+          "type": "() => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "onFullscreen",
+          "type": "() => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "tableXHead",
+          "type": "string",
+          "required": true,
+          "description": "表格视图第一列（横轴位置）的列头；其余列头是各序列的名字。"
+        },
         {
           "name": "rows",
           "type": "readonly HorizonRow[]",
@@ -45993,6 +46137,42 @@
       "source": "src/blocks/small-multiples.tsx",
       "props": [
         {
+          "name": "source",
+          "type": "ReactNode",
+          "required": false,
+          "description": "来源一行：每个数字能回答从哪来、什么时候（§2.2）。"
+        },
+        {
+          "name": "actionLabels",
+          "type": "ChartActionsLabels",
+          "required": false,
+          "description": "图右上三个按钮的名字。"
+        },
+        {
+          "name": "tableLabel",
+          "type": "string",
+          "required": false,
+          "description": "表格视图的读屏名。"
+        },
+        {
+          "name": "onExport",
+          "type": "() => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "onFullscreen",
+          "type": "() => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "tableXHead",
+          "type": "string",
+          "required": false,
+          "description": "表格视图第一列（横轴位置）的列头；其余列头是各序列的名字。"
+        },
+        {
           "name": "items",
           "type": "readonly SmallMultiple[]",
           "required": true,
@@ -46055,6 +46235,42 @@
       "kind": "type",
       "source": "src/blocks/small-multiples.tsx",
       "props": [
+        {
+          "name": "source",
+          "type": "ReactNode",
+          "required": false,
+          "description": "来源一行：每个数字能回答从哪来、什么时候（§2.2）。"
+        },
+        {
+          "name": "actionLabels",
+          "type": "ChartActionsLabels",
+          "required": false,
+          "description": "图右上三个按钮的名字。"
+        },
+        {
+          "name": "tableLabel",
+          "type": "string",
+          "required": false,
+          "description": "表格视图的读屏名。"
+        },
+        {
+          "name": "onExport",
+          "type": "() => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "onFullscreen",
+          "type": "() => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "tableXHead",
+          "type": "string",
+          "required": false,
+          "description": "表格视图第一列（横轴位置）的列头；其余列头是各序列的名字。"
+        },
         {
           "name": "items",
           "type": "readonly SmallMultiple[]",

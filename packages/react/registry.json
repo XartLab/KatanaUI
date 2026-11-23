@@ -6740,8 +6740,9 @@
       "name": "horizon-chart",
       "type": "registry:component",
       "title": "Horizon Chart",
-      "description": "十几个品种的日内收益叠成窄带，一屏看完：每行把正负值折成几条叠起来的带，颜色越深值越大，涨跌色跟涨跌配色走。所有行共用一个扫读位置。功能参照 Arc 的 Horizon chart。",
+      "description": "十几个品种的日内收益叠成窄带，一屏看完：每行把正负值折成几条叠起来的带，颜色越深值越大，正负用发散色（涨跌色只给右边的数）。所有行共用一个扫读位置，指针所在的那一行出 LCD 窗；右上有表格视图。功能参照 Arc 的 Horizon chart。",
       "registryDependencies": [
+        "@katana/chart-kit",
         "@katana/cn",
         "@katana/horizon-model",
         "@katana/series-geometry",
