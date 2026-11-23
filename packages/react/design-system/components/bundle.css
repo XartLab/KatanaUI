@@ -21974,6 +21974,177 @@ button.k-consensus-hash:focus-visible {
   outline-offset: 1px;
 }
 
+.k-prg {
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  display: flex;
+}
+
+.k-prg-summary {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  display: grid;
+}
+
+.k-prg-status {
+  white-space: nowrap;
+  align-items: center;
+  gap: 6px;
+  display: inline-flex;
+}
+
+.k-prg-actions {
+  align-items: center;
+  gap: 6px;
+  display: inline-flex;
+}
+
+.k-prg-row.is-paused {
+  background: var(--k-status-warn-background);
+  box-shadow: inset 2px 0 0 var(--k-status-warn-foreground);
+  color: var(--k-content-secondary-foreground);
+}
+
+.k-prg-row.is-noNewEntries {
+  box-shadow: inset 2px 0 0 var(--accent);
+}
+
+.k-prg-row.is-disconnected {
+  background: var(--k-status-danger-background);
+  box-shadow: inset 2px 0 0 var(--k-status-danger-foreground);
+}
+
+@media (max-width: 560px) {
+  .k-prg-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.k-replay {
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  display: flex;
+}
+
+.k-replay-row {
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  display: flex;
+}
+
+.k-replay-buttons {
+  gap: 6px;
+  display: inline-flex;
+}
+
+.k-replay-sync {
+  color: var(--k-content-secondary-foreground);
+  font-size: var(--text-data-size);
+  white-space: nowrap;
+  align-items: center;
+  gap: 6px;
+  display: inline-flex;
+}
+
+.k-replay-field {
+  align-items: center;
+  gap: 6px;
+  display: inline-flex;
+}
+
+.k-replay-field input {
+  width: 190px;
+}
+
+.k-replay-field input.k-replay-ticks {
+  width: 80px;
+}
+
+.k-replay-bad {
+  color: var(--k-status-danger-foreground);
+  font-size: var(--text-data-size);
+}
+
+.k-run-mode {
+  box-sizing: border-box;
+  border-radius: var(--radius-control);
+  height: 22px;
+  font-size: var(--text-data-size);
+  white-space: nowrap;
+  border: 1px solid var(--ds-c-2xn4aw);
+  align-items: center;
+  gap: 6px;
+  padding: 0 8px;
+  line-height: 1;
+  display: inline-flex;
+}
+
+.k-run-mode-glyph {
+  flex: none;
+}
+
+.k-run-mode-detail {
+  opacity: .75;
+  font-variant-numeric: tabular-nums;
+}
+
+.k-run-mode[data-mode="paper"] {
+  border-style: dashed;
+  border-color: var(--k-status-neutral-borderColor);
+  color: var(--k-content-secondary-foreground);
+  background: none;
+}
+
+.k-run-mode[data-mode="replay"] {
+  border-color: var(--signal-blue);
+}
+
+@supports (color: color-mix(in lab, red, red)) {
+  .k-run-mode[data-mode="replay"] {
+    border-color: var(--ds-c-ii0ges);
+  }
+}
+
+.k-run-mode[data-mode="replay"] {
+  color: var(--signal-blue);
+  background: none;
+}
+
+.k-run-mode[data-mode="forward"] {
+  border-color: var(--k-status-ok-borderColor);
+  background: var(--k-status-ok-background);
+  color: var(--k-status-ok-foreground);
+}
+
+.k-run-mode[data-mode="live"] {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--bg-000);
+  box-shadow: 0 0 0 2px var(--accent);
+  font-weight: 700;
+}
+
+@supports (color: color-mix(in lab, red, red)) {
+  .k-run-mode[data-mode="live"] {
+    box-shadow: 0 0 0 2px var(--ds-c-mjaq6h);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .k-run-mode[data-mode="live"] .k-run-mode-glyph {
+    animation: 2s ease-in-out infinite k-run-mode-pulse;
+  }
+}
+
+@keyframes k-run-mode-pulse {
+  50% {
+    opacity: .45;
+  }
+}
+
 @property --tw-translate-x {
   syntax: "*";
   inherits: false;
@@ -22698,6 +22869,8 @@ button.k-consensus-hash:focus-visible {
   --ds-c-14h5ztb: color-mix(in srgb, var(--signal-amber) 50%, transparent);
   --ds-c-2xn4b5: #0009;
   --ds-c-87ch24: color-mix(in oklab, var(--glow-color) var(--glow-strength), transparent);
+  --ds-c-ii0ges: color-mix(in srgb, var(--signal-blue) 45%, transparent);
+  --ds-c-mjaq6h: color-mix(in srgb, var(--accent) 30%, transparent);
 }
 
 /* 运行时才有值的变量：声明成 initial 等于没声明，带 fallback 的 var() 照常走 fallback；声明它们只是让设计系统的检查认得。 */

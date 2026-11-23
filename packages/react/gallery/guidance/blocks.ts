@@ -264,6 +264,44 @@ const blocks: GuidanceMap = {
       '算不出的读数写「—」，不是 0。',
     ],
   },
+  'portfolio-run-grid': {
+    aliases: ['Portfolio trader', 'Forward test window', 'Strategy run table', 'Position monitor'],
+    use: [
+      '前向测试时一眼看每个品种的持仓、盈亏、风险占用与运行状态。',
+      '要暂停某个品种或平掉它，又不想进每个品种各自的页面。',
+    ],
+    avoid: ['回测完看绩效，用 strategy-report。', '要下单，用 order-ticket；这里的按钮只发回调。'],
+    a11y: [
+      '外层是带名字的只读表（role=table），品种是行标题；汇总是 role=group。',
+      '按钮的读屏名带品种（「暂停 DEMO-A」），读屏分得清是哪一行。',
+      '状态是灯加文字，不只靠颜色；暂停行的底色与左条是额外提示。',
+      '按钮是原生 button，Tab 依次到达，Enter 与 Space 触发。',
+    ],
+  },
+  'replay-transport': {
+    aliases: ['Data replay', 'Playback controls', 'Replay bar', 'Time machine'],
+    use: ['历史回放时控制播放、倍速与跳转，一条控制多个同步的图。', '把用户的回放意图发给引擎，当前时刻由引擎回传。'],
+    avoid: ['只想拖一个数值，用 scrubber。', '要在件里推进时间：时钟只在调用方。'],
+    a11y: [
+      '外层是 role=group，读屏名取自 labels.group。',
+      '进度条是 role=slider，带 aria-valuetext（当前时刻文字），方向键、Home、End、PageUp、PageDown 可用。',
+      '倍速是一组带 aria-pressed 的按钮；输入框都有读屏名，读不出时 aria-invalid 并出 role=alert 提示。',
+      '快捷键 k . [ ] 在焦点不在输入框与进度条时生效。',
+    ],
+  },
+  'run-mode-badge': {
+    aliases: ['Mode badge', 'Environment tag', 'Paper or live indicator', 'Trading mode pill'],
+    use: ['在界面角落写清现在是模拟、回放、前向测试还是实盘。', '放在会下单或会误导用户的页面头部。'],
+    avoid: [
+      '表达数据源是否连通，用 led 或 status-bar。',
+      '给 fixture 或样例数据用「模拟」徽标：那是另一回事，要单独标明。',
+    ],
+    a11y: [
+      '文字就是读屏读到的内容，图形对读屏隐藏。',
+      '四种模式靠图形、边框样式与颜色一起区分，不只靠颜色。',
+      '实盘点的呼吸动效在减弱动效偏好下关闭。',
+    ],
+  },
   'hypothesis-ledger': {
     aliases: ['Hypothesis tracker', 'Idea log', 'Research log', 'Claim register'],
     use: ['记下每条研究假说、它的检验期限与证据，一眼看哪些快到期。', '人下结论后由调用方写回状态。'],

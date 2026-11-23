@@ -28445,6 +28445,306 @@
       "source": "src/primitives/popover.tsx",
       "props": []
     },
+    "PortfolioRunFormat": {
+      "kind": "type",
+      "source": "src/blocks/portfolio-run-grid/portfolio-run-grid.tsx",
+      "props": [
+        {
+          "name": "amount",
+          "type": "(value: number) => string",
+          "required": true,
+          "description": "金额（权益、盈亏、风险资金）；盈亏带不带正号由它定。"
+        },
+        {
+          "name": "quantity",
+          "type": "(value: number) => string",
+          "required": true,
+          "description": "持仓数量，带符号的原始数，正多负空。"
+        },
+        {
+          "name": "percent",
+          "type": "(value: number) => string",
+          "required": true,
+          "description": "比例，小数（-0.034）。"
+        }
+      ]
+    },
+    "PortfolioRunGrid": {
+      "kind": "component",
+      "source": "src/blocks/portfolio-run-grid/portfolio-run-grid.tsx",
+      "props": [
+        {
+          "name": "rows",
+          "type": "readonly PortfolioRunRow[]",
+          "required": true,
+          "description": "One row per symbol."
+        },
+        {
+          "name": "summary",
+          "type": "PortfolioRunSummary",
+          "required": true,
+          "description": "Portfolio totals shown above the table; a null item shows a dash."
+        },
+        {
+          "name": "format",
+          "type": "PortfolioRunFormat",
+          "required": true,
+          "description": "How numbers are written as text (amount, quantity, percent)."
+        },
+        {
+          "name": "labels",
+          "type": "PortfolioRunLabels",
+          "required": true,
+          "description": "All text; the package has no language of its own."
+        },
+        {
+          "name": "onPause",
+          "type": "(row: PortfolioRunRow) => void",
+          "required": false,
+          "description": "Called with the clicked row when its Pause button is clicked; without it the button is disabled."
+        },
+        {
+          "name": "onResume",
+          "type": "(row: PortfolioRunRow) => void",
+          "required": false,
+          "description": "Called with the clicked row when its Resume button is clicked."
+        },
+        {
+          "name": "onClose",
+          "type": "(row: PortfolioRunRow) => void",
+          "required": false,
+          "description": "Called with the clicked row when its Close button is clicked; confirming the close is the caller's job."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "PortfolioRunGridProps": {
+      "kind": "type",
+      "source": "src/blocks/portfolio-run-grid/portfolio-run-grid.tsx",
+      "props": [
+        {
+          "name": "rows",
+          "type": "readonly PortfolioRunRow[]",
+          "required": true,
+          "description": "One row per symbol."
+        },
+        {
+          "name": "summary",
+          "type": "PortfolioRunSummary",
+          "required": true,
+          "description": "Portfolio totals shown above the table; a null item shows a dash."
+        },
+        {
+          "name": "format",
+          "type": "PortfolioRunFormat",
+          "required": true,
+          "description": "How numbers are written as text (amount, quantity, percent)."
+        },
+        {
+          "name": "labels",
+          "type": "PortfolioRunLabels",
+          "required": true,
+          "description": "All text; the package has no language of its own."
+        },
+        {
+          "name": "onPause",
+          "type": "(row: PortfolioRunRow) => void",
+          "required": false,
+          "description": "Called with the clicked row when its Pause button is clicked; without it the button is disabled."
+        },
+        {
+          "name": "onResume",
+          "type": "(row: PortfolioRunRow) => void",
+          "required": false,
+          "description": "Called with the clicked row when its Resume button is clicked."
+        },
+        {
+          "name": "onClose",
+          "type": "(row: PortfolioRunRow) => void",
+          "required": false,
+          "description": "Called with the clicked row when its Close button is clicked; confirming the close is the caller's job."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "PortfolioRunLabels": {
+      "kind": "type",
+      "source": "src/blocks/portfolio-run-grid/portfolio-run-grid.tsx",
+      "props": [
+        {
+          "name": "grid",
+          "type": "string",
+          "required": true,
+          "description": "整张表的读屏名。"
+        },
+        {
+          "name": "summary",
+          "type": "string",
+          "required": true,
+          "description": "汇总一行的读屏名。"
+        },
+        {
+          "name": "equity",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "availableFunds",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "buyingPower",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "drawdown",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "columns",
+          "type": "{ symbol: string position: string unrealizedPnl: string realizedPnl: string riskAmount: string equityContribution: string status: string actions: string }",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "status",
+          "type": "Readonly<Record<RunStatus, string>>",
+          "required": true,
+          "description": "四个状态各一个词。"
+        },
+        {
+          "name": "pause",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "resume",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "closePosition",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "actionLabel",
+          "type": "(action: 'pause' | 'resume' | 'close', symbol: string) => string",
+          "required": false,
+          "description": "行内按钮的读屏名（要带上品种，读屏才分得清是哪一行）；省略时是「按钮文字 品种」。"
+        },
+        {
+          "name": "empty",
+          "type": "string",
+          "required": false,
+          "description": "没有任何行时写什么。"
+        }
+      ]
+    },
+    "PortfolioRunRow": {
+      "kind": "type",
+      "source": "src/blocks/portfolio-run-grid/portfolio-run-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "稳定 id（常是品种代码加策略实例）。"
+        },
+        {
+          "name": "symbol",
+          "type": "string",
+          "required": true,
+          "description": "品种代码，演示与读屏用；按钮的回调把整行交回来，调用方据此找品种。"
+        },
+        {
+          "name": "position",
+          "type": "number",
+          "required": true,
+          "description": "持仓数量，带符号：正多负空，0 空仓。"
+        },
+        {
+          "name": "unrealizedPnl",
+          "type": "number",
+          "required": true,
+          "description": "浮动盈亏。"
+        },
+        {
+          "name": "realizedPnl",
+          "type": "number",
+          "required": true,
+          "description": "已实现盈亏。"
+        },
+        {
+          "name": "riskAmount",
+          "type": "number",
+          "required": true,
+          "description": "占用风险资金。"
+        },
+        {
+          "name": "equityContribution",
+          "type": "number",
+          "required": true,
+          "description": "对组合权益的贡献（浮动加已实现，口径由调用方定）。"
+        },
+        {
+          "name": "status",
+          "type": "RunStatus",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "PortfolioRunSummary": {
+      "kind": "type",
+      "source": "src/blocks/portfolio-run-grid/portfolio-run-grid.tsx",
+      "props": [
+        {
+          "name": "equity",
+          "type": "number | null",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "availableFunds",
+          "type": "number | null",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "buyingPower",
+          "type": "number | null",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "drawdown",
+          "type": "number | null",
+          "required": true,
+          "description": "当前回撤，小数，≤ 0（-0.034 是回撤 3.4%）。"
+        }
+      ]
+    },
     "PositionCalculator": {
       "kind": "component",
       "source": "src/blocks/position-calculator.tsx",
@@ -31703,6 +32003,346 @@
         }
       ]
     },
+    "ReplayTransport": {
+      "kind": "component",
+      "source": "src/blocks/replay-transport/replay-transport.tsx",
+      "props": [
+        {
+          "name": "time",
+          "type": "number",
+          "required": true,
+          "description": "Current replay time as a millisecond timestamp, supplied by the caller's clock."
+        },
+        {
+          "name": "start",
+          "type": "number",
+          "required": true,
+          "description": "Start of the replay range as a millisecond timestamp (left end of the progress bar)."
+        },
+        {
+          "name": "end",
+          "type": "number",
+          "required": true,
+          "description": "End of the replay range as a millisecond timestamp (right end of the progress bar)."
+        },
+        {
+          "name": "playing",
+          "type": "boolean",
+          "required": true,
+          "description": "Whether the replay clock is running; the main button shows Pause while it is."
+        },
+        {
+          "name": "speed",
+          "type": "number",
+          "required": true,
+          "description": "Current speed multiplier."
+        },
+        {
+          "name": "speeds",
+          "type": "readonly number[]",
+          "required": true,
+          "description": "Speed multipliers to offer, in the order shown; the caller decides them, nothing is hard-coded."
+        },
+        {
+          "name": "onPlay",
+          "type": "() => void",
+          "required": true,
+          "description": "Called when Play is clicked."
+        },
+        {
+          "name": "onPause",
+          "type": "() => void",
+          "required": true,
+          "description": "Called when Pause is clicked."
+        },
+        {
+          "name": "onStep",
+          "type": "() => void",
+          "required": true,
+          "description": "Called when Step is clicked: advance by one bar."
+        },
+        {
+          "name": "onSpeedChange",
+          "type": "(speed: number) => void",
+          "required": true,
+          "description": "Called with the chosen multiplier when a speed is picked."
+        },
+        {
+          "name": "onSeek",
+          "type": "(time: number) => void",
+          "required": true,
+          "description": "Called with the target time in ms when the bar is dragged, moved by keyboard, or a time is jumped to; fires continuously while dragging, so throttle if needed."
+        },
+        {
+          "name": "onSkipTicks",
+          "type": "(ticks: number) => void",
+          "required": true,
+          "description": "Called with N when Skip is clicked: jump forward by N ticks."
+        },
+        {
+          "name": "defaultSkipTicks",
+          "type": "number",
+          "required": false,
+          "default": "100",
+          "description": "Initial value of the skip-ticks input; defaults to 100."
+        },
+        {
+          "name": "syncedPanels",
+          "type": "number",
+          "required": false,
+          "description": "Number of chart panels sharing this clock; the synced hint shows only when it is greater than 1."
+        },
+        {
+          "name": "formatTime",
+          "type": "(time: number) => string | null",
+          "required": false,
+          "default": "formatReplayTime",
+          "description": "Writes a time as text; defaults to UTC `YYYY-MM-DD HH:MM:SS`."
+        },
+        {
+          "name": "parseTime",
+          "type": "(text: string) => number | null",
+          "required": false,
+          "default": "parseReplayTime",
+          "description": "Reads the jump-to-time input into milliseconds, null when unreadable; defaults to `YYYY-MM-DD[ HH:MM[:SS]]` in UTC."
+        },
+        {
+          "name": "formatSpeed",
+          "type": "(speed: number) => string",
+          "required": false,
+          "default": "defaultFormatSpeed",
+          "description": "Writes a speed multiplier as text; defaults to `2×`."
+        },
+        {
+          "name": "labels",
+          "type": "ReplayTransportLabels",
+          "required": true,
+          "description": "All text; the package has no language of its own."
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "required": false,
+          "description": "Disable every control and the key shortcuts."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "ReplayTransportLabels": {
+      "kind": "type",
+      "source": "src/blocks/replay-transport/replay-transport.tsx",
+      "props": [
+        {
+          "name": "group",
+          "type": "string",
+          "required": true,
+          "description": "整条的读屏名。"
+        },
+        {
+          "name": "play",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "pause",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "step",
+          "type": "string",
+          "required": true,
+          "description": "逐根：前进一根 K 线。"
+        },
+        {
+          "name": "speed",
+          "type": "string",
+          "required": true,
+          "description": "倍速组的读屏名。"
+        },
+        {
+          "name": "progress",
+          "type": "string",
+          "required": true,
+          "description": "进度条的名字（写在条里，也是读屏名）。"
+        },
+        {
+          "name": "time",
+          "type": "string",
+          "required": true,
+          "description": "时刻读数的小标。"
+        },
+        {
+          "name": "jumpTo",
+          "type": "string",
+          "required": true,
+          "description": "「跳到时刻」输入框的读屏名。"
+        },
+        {
+          "name": "jump",
+          "type": "string",
+          "required": true,
+          "description": "「跳到时刻」按钮。"
+        },
+        {
+          "name": "invalidTime",
+          "type": "string",
+          "required": true,
+          "description": "时刻读不出时的提示（也进读屏）。"
+        },
+        {
+          "name": "skipTicks",
+          "type": "string",
+          "required": true,
+          "description": "「跳过 tick」输入框的读屏名。"
+        },
+        {
+          "name": "skip",
+          "type": "string",
+          "required": true,
+          "description": "「跳过 tick」按钮。"
+        },
+        {
+          "name": "synced",
+          "type": "(panels: number) => string",
+          "required": true,
+          "description": "多图共用一个时钟时的整句，如「同步中 · 3 个面板」。"
+        }
+      ]
+    },
+    "ReplayTransportProps": {
+      "kind": "type",
+      "source": "src/blocks/replay-transport/replay-transport.tsx",
+      "props": [
+        {
+          "name": "time",
+          "type": "number",
+          "required": true,
+          "description": "Current replay time as a millisecond timestamp, supplied by the caller's clock."
+        },
+        {
+          "name": "start",
+          "type": "number",
+          "required": true,
+          "description": "Start of the replay range as a millisecond timestamp (left end of the progress bar)."
+        },
+        {
+          "name": "end",
+          "type": "number",
+          "required": true,
+          "description": "End of the replay range as a millisecond timestamp (right end of the progress bar)."
+        },
+        {
+          "name": "playing",
+          "type": "boolean",
+          "required": true,
+          "description": "Whether the replay clock is running; the main button shows Pause while it is."
+        },
+        {
+          "name": "speed",
+          "type": "number",
+          "required": true,
+          "description": "Current speed multiplier."
+        },
+        {
+          "name": "speeds",
+          "type": "readonly number[]",
+          "required": true,
+          "description": "Speed multipliers to offer, in the order shown; the caller decides them, nothing is hard-coded."
+        },
+        {
+          "name": "onPlay",
+          "type": "() => void",
+          "required": true,
+          "description": "Called when Play is clicked."
+        },
+        {
+          "name": "onPause",
+          "type": "() => void",
+          "required": true,
+          "description": "Called when Pause is clicked."
+        },
+        {
+          "name": "onStep",
+          "type": "() => void",
+          "required": true,
+          "description": "Called when Step is clicked: advance by one bar."
+        },
+        {
+          "name": "onSpeedChange",
+          "type": "(speed: number) => void",
+          "required": true,
+          "description": "Called with the chosen multiplier when a speed is picked."
+        },
+        {
+          "name": "onSeek",
+          "type": "(time: number) => void",
+          "required": true,
+          "description": "Called with the target time in ms when the bar is dragged, moved by keyboard, or a time is jumped to; fires continuously while dragging, so throttle if needed."
+        },
+        {
+          "name": "onSkipTicks",
+          "type": "(ticks: number) => void",
+          "required": true,
+          "description": "Called with N when Skip is clicked: jump forward by N ticks."
+        },
+        {
+          "name": "defaultSkipTicks",
+          "type": "number",
+          "required": false,
+          "description": "Initial value of the skip-ticks input; defaults to 100."
+        },
+        {
+          "name": "syncedPanels",
+          "type": "number",
+          "required": false,
+          "description": "Number of chart panels sharing this clock; the synced hint shows only when it is greater than 1."
+        },
+        {
+          "name": "formatTime",
+          "type": "(time: number) => string | null",
+          "required": false,
+          "description": "Writes a time as text; defaults to UTC `YYYY-MM-DD HH:MM:SS`."
+        },
+        {
+          "name": "parseTime",
+          "type": "(text: string) => number | null",
+          "required": false,
+          "description": "Reads the jump-to-time input into milliseconds, null when unreadable; defaults to `YYYY-MM-DD[ HH:MM[:SS]]` in UTC."
+        },
+        {
+          "name": "formatSpeed",
+          "type": "(speed: number) => string",
+          "required": false,
+          "description": "Writes a speed multiplier as text; defaults to `2×`."
+        },
+        {
+          "name": "labels",
+          "type": "ReplayTransportLabels",
+          "required": true,
+          "description": "All text; the package has no language of its own."
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "required": false,
+          "description": "Disable every control and the key shortcuts."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
     "ReportOptions": {
       "kind": "type",
       "source": "src/blocks/strategy-report/strategy-report-model.ts",
@@ -32804,6 +33444,76 @@
           "description": "摊到 DataGrid 上的两个 prop。"
         }
       ]
+    },
+    "RunMode": {
+      "kind": "type",
+      "source": "src/blocks/run-mode-badge/run-mode-badge.tsx",
+      "props": []
+    },
+    "RunModeBadge": {
+      "kind": "component",
+      "source": "src/blocks/run-mode-badge/run-mode-badge.tsx",
+      "props": [
+        {
+          "name": "mode",
+          "type": "RunMode",
+          "required": true,
+          "description": "Which mode to show: paper, replay, forward or live."
+        },
+        {
+          "name": "labels",
+          "type": "Readonly<Record<RunMode, string>>",
+          "required": true,
+          "description": "One word per mode, written by the caller (for example Paper, Replay, Forward, Live)."
+        },
+        {
+          "name": "detail",
+          "type": "string",
+          "required": false,
+          "description": "A short extra text after the word, such as the replay date."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "RunModeBadgeProps": {
+      "kind": "type",
+      "source": "src/blocks/run-mode-badge/run-mode-badge.tsx",
+      "props": [
+        {
+          "name": "mode",
+          "type": "RunMode",
+          "required": true,
+          "description": "Which mode to show: paper, replay, forward or live."
+        },
+        {
+          "name": "labels",
+          "type": "Readonly<Record<RunMode, string>>",
+          "required": true,
+          "description": "One word per mode, written by the caller (for example Paper, Replay, Forward, Live)."
+        },
+        {
+          "name": "detail",
+          "type": "string",
+          "required": false,
+          "description": "A short extra text after the word, such as the replay date."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "RunStatus": {
+      "kind": "type",
+      "source": "src/blocks/portfolio-run-grid/portfolio-run-model.ts",
+      "props": []
     },
     "SavedView": {
       "kind": "type",

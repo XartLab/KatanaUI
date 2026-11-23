@@ -289,6 +289,10 @@ function collectItems() {
       'net-buy-bar',
       // 白板（#51）：组件、节点与边、纯函数合成一项。
       'whiteboard',
+      // #121：前向测试与回放的件，各一个子目录。
+      'portfolio-run-grid',
+      'replay-transport',
+      'run-mode-badge',
     ])
       add(
         dir,

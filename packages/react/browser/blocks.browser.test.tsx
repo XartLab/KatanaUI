@@ -31,6 +31,9 @@ import { SystemMonitorUsage } from '../gallery/usage/SystemMonitorUsage.tsx'
 import { ToolbarUsage } from '../gallery/usage/ToolbarUsage.tsx'
 import { TransmissionChainUsage } from '../gallery/usage/TransmissionChainUsage.tsx'
 import { UptimeBarsUsage } from '../gallery/usage/UptimeBarsUsage.tsx'
+import { PortfolioRunGridUsage } from '../gallery/usage/PortfolioRunGridUsage.tsx'
+import { ReplayTransportUsage } from '../gallery/usage/ReplayTransportUsage.tsx'
+import { RunModeBadgeUsage } from '../gallery/usage/RunModeBadgeUsage.tsx'
 import { WhiteboardUsage } from '../gallery/usage/WhiteboardUsage.tsx'
 import { WorkspaceTabsUsage } from '../gallery/usage/WorkspaceTabsUsage.tsx'
 import { UseUndoStackUsage } from '../gallery/usage/UseUndoStackUsage.tsx'
@@ -60,6 +63,9 @@ const items: Record<string, React.ReactNode> = {
   'small-multiples': <SmallMultiplesUsage />,
   'status-bar': <StatusBarUsage />,
   'strategy-report': <StrategyReportUsage />,
+  'portfolio-run-grid': <PortfolioRunGridUsage />,
+  'replay-transport': <ReplayTransportUsage />,
+  'run-mode-badge': <RunModeBadgeUsage />,
   'swap-panel': <SwapPanelUsage />,
   'symbol-galaxy': <SymbolGalaxyUsage />,
   'system-monitor': <SystemMonitorUsage />,
