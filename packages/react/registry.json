@@ -404,6 +404,11 @@
           "target": "~/src/katana/ui/theme/limit-ladder.css"
         },
         {
+          "path": "src/theme/link-group-picker.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/link-group-picker.css"
+        },
+        {
           "path": "src/theme/link.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/link.css"
@@ -604,6 +609,11 @@
           "target": "~/src/katana/ui/theme/rating-gauge.css"
         },
         {
+          "path": "src/theme/rating-panel.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/rating-panel.css"
+        },
+        {
           "path": "src/theme/reason-group-list.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/reason-group-list.css"
@@ -762,6 +772,11 @@
           "path": "src/theme/symbol-mark.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/symbol-mark.css"
+        },
+        {
+          "path": "src/theme/symbol-note.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/symbol-note.css"
         },
         {
           "path": "src/theme/symbol-overview.css",
@@ -976,7 +991,7 @@
       "name": "link-group",
       "type": "registry:lib",
       "title": "Link Group",
-      "description": "同一联动组的件共用品种、周期、十字线时刻、可见区间（#22 G8）：自选点一行，同组的图换品种；一张图上移动十字线，同组的图跟着画。照 TradingView 多图布局的同步（品种、周期、十字线、时间、日期区间）与自选联动。组 id 一般是面板头色点的 LinkGroup（A–D），null 不联动。纯 context，不带宿主、不存盘。",
+      "description": "同一联动组的件共用品种、周期、十字线时刻、可见区间（#22 G8）：自选点一行，同组的图换品种；一张图上移动十字线，同组的图跟着画。照 TradingView 多图布局的同步（品种、周期、十字线、时间、日期区间）与自选联动。组 id 一般是面板头色点的 LinkGroup（A–D），null 不联动。纯 context，不带宿主、不存盘。标题栏里放 LinkGroupPicker 选组（A–D 或不联动，#150）。",
       "files": [
         {
           "path": "src/lib/link-group.tsx",
@@ -2853,6 +2868,26 @@
           "path": "src/katana/led.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/katana/led.tsx"
+        }
+      ]
+    },
+    {
+      "name": "link-group-picker",
+      "type": "registry:component",
+      "title": "Link Group Picker",
+      "description": "同一联动组的件共用品种、周期、十字线时刻、可见区间（#22 G8）：自选点一行，同组的图换品种；一张图上移动十字线，同组的图跟着画。照 TradingView 多图布局的同步（品种、周期、十字线、时间、日期区间）与自选联动。组 id 一般是面板头色点的 LinkGroup（A–D），null 不联动。纯 context，不带宿主、不存盘。标题栏里放 LinkGroupPicker 选组（A–D 或不联动，#150）。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/dropdown-menu",
+        "@katana/led",
+        "@katana/link-group",
+        "@katana/menu-parts"
+      ],
+      "files": [
+        {
+          "path": "src/katana/link-group-picker.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/katana/link-group-picker.tsx"
         }
       ]
     },
@@ -4782,6 +4817,26 @@
       ]
     },
     {
+      "name": "rating-panel",
+      "type": "registry:component",
+      "title": "Rating Panel",
+      "description": "摆动指标、汇总、均线三个评级仪表并排（每个就是一个 RatingGauge，分界与指针照 rating-gauge-model），汇总居中放大；上方是调用方给的周期切换（如 1m、5m、15m、1h、4h、1D、1W、1M），每个仪表下写卖出 / 中性 / 买入的个数；悬停或 Tab 到一个仪表，名字那一行换成读数（带正负号两位小数的分数与档位词）。版式照 TradingView 品种页 Technicals 顶部的三个仪表，只取布局与交互；颜色走 Graphite 涨跌色与中性灰，不用 TradingView 蓝。只画不算：分数、个数、档位名都由调用方传。要明细表与枢轴点用 TechnicalRating。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/num",
+        "@katana/rating-gauge",
+        "@katana/rating-gauge-model",
+        "@katana/toggle-group"
+      ],
+      "files": [
+        {
+          "path": "src/quotes/rating-panel.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quotes/rating-panel.tsx"
+        }
+      ]
+    },
+    {
       "name": "rating-text",
       "type": "registry:component",
       "title": "Rating Text",
@@ -5010,6 +5065,27 @@
           "path": "src/quotes/symbol-mark.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/quotes/symbol-mark.tsx"
+        }
+      ]
+    },
+    {
+      "name": "symbol-note",
+      "type": "registry:component",
+      "title": "Symbol Note",
+      "description": "挂在品种行或报价头上的便签：有备注时显示一个 18px 的便签图标，悬停 200ms 或 Tab 到图标先看全文，点一下钉住，钉住后点「编辑」改；没有备注而能编辑时是加号图标，点开直接进编辑。编辑是受控的：件只管草稿，点「保存」或 Ctrl / ⌘ + Enter 时把去掉首尾空白的文字交给 onValueChange，存哪由调用方定，存空字符串就是删掉。浮层是平台原生 popover（顶层，不被表格的滚动与 overflow 裁掉），外观是 k-mat-overlay 材质，位置用 CSS 锚点定位。功能参照 TradingView 自选与品种页的备注，只取交互。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/button",
+        "@katana/cn",
+        "@katana/textarea"
+      ],
+      "files": [
+        {
+          "path": "src/quotes/symbol-note.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quotes/symbol-note.tsx"
         }
       ]
     },
@@ -7550,7 +7626,7 @@
       "name": "seasonal-chart",
       "type": "registry:component",
       "title": "Seasonal Chart",
-      "description": "对 TradingView 的 Seasonal Chart 小组件（KatanaUI #147；它的页面写「把各年的价格表现叠在一起的多年季节性图」）：横轴 1 月 1 日到 12 月 31 日，纵轴是相对各年第一个价的涨跌幅，几年叠在一张图上看某段时间是不是年年涨或年年跌。最新的一年（或 highlight）2px，其余淡显；上面一排年份开关（aria-pressed）隐去 / 显出一年，至少留一年；悬停或键盘走出 LCD 读数，列出这一天各年的涨跌幅。数据先用 seasonalSeries 按年切好再传，件不取数据。",
+      "description": "对 TradingView 的 Seasonal Chart 小组件（KatanaUI #147；它的页面写「把各年的价格表现叠在一起的多年季节性图」）：横轴是 366 格日历（1 月 1 日到 12 月 31 日，同一个日期每年同一格），纵轴是相对年初基准（上一年最后一个收盘价）的涨跌幅，几年叠在一张图上看某段时间是不是年年涨或年年跌。最新的一年（或 highlight）2px，其余淡显；上面一排年份开关（aria-pressed，各带这一年的涨跌幅）隐去 / 显出一年，至少留一年，可受控（hidden / onHiddenChange）；悬停或键盘走出 LCD 读数，列出这一天各年的涨跌幅；给了 actionLabels 右上有表格视图。数据先用 seasonalSeries 按年切好再传，件不取数据。",
       "registryDependencies": [
         "@katana/chart-kit",
         "@katana/cn",
@@ -7571,7 +7647,10 @@
       "name": "seasonal-model",
       "type": "registry:component",
       "title": "Seasonal Model",
-      "description": "对 TradingView 的 Seasonal Chart 小组件（KatanaUI #147；它的页面写「把各年的价格表现叠在一起的多年季节性图」）：横轴 1 月 1 日到 12 月 31 日，纵轴是相对各年第一个价的涨跌幅，几年叠在一张图上看某段时间是不是年年涨或年年跌。最新的一年（或 highlight）2px，其余淡显；上面一排年份开关（aria-pressed）隐去 / 显出一年，至少留一年；悬停或键盘走出 LCD 读数，列出这一天各年的涨跌幅。数据先用 seasonalSeries 按年切好再传，件不取数据。",
+      "description": "对 TradingView 的 Seasonal Chart 小组件（KatanaUI #147；它的页面写「把各年的价格表现叠在一起的多年季节性图」）：横轴是 366 格日历（1 月 1 日到 12 月 31 日，同一个日期每年同一格），纵轴是相对年初基准（上一年最后一个收盘价）的涨跌幅，几年叠在一张图上看某段时间是不是年年涨或年年跌。最新的一年（或 highlight）2px，其余淡显；上面一排年份开关（aria-pressed，各带这一年的涨跌幅）隐去 / 显出一年，至少留一年，可受控（hidden / onHiddenChange）；悬停或键盘走出 LCD 读数，列出这一天各年的涨跌幅；给了 actionLabels 右上有表格视图。数据先用 seasonalSeries 按年切好再传，件不取数据。",
+      "registryDependencies": [
+        "@katana/use-scrubber"
+      ],
       "files": [
         {
           "path": "src/quant/seasonal-model.ts",
