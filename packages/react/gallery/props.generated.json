@@ -6945,6 +6945,30 @@
           "description": "limitStatus：文案（默认简体中文，可整份换，#110）。"
         },
         {
+          "name": "boardDisplay",
+          "type": "'cm' | 'name' | 'both'",
+          "required": false,
+          "description": "board：BoardMark 的写法（cm 写 20cm / 30cm、主板空，name 写板块名，both 都写；默认 cm）与文案（默认简体中文，#148）。"
+        },
+        {
+          "name": "boardLabels",
+          "type": "BoardMarkLabels",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "cnAmount",
+          "type": "CnAmountSize",
+          "required": false,
+          "description": "cnAmount：同 `formatCnAmount` 的缩写、小数位与正数带 +（signed 为真时按正负着涨跌色），万、亿两个字可换（#148）。"
+        },
+        {
+          "name": "cnUnits",
+          "type": "CnAmountUnits",
+          "required": false,
+          "description": ""
+        },
+        {
           "name": "maxPills",
           "type": "number",
           "required": false,
@@ -18048,7 +18072,7 @@
           "name": "value",
           "type": "(row: Row) => unknown",
           "required": false,
-          "description": "原始值，由类型决定怎么读：price / quantity / pnl / change / number / bar 是数字或十进制字符串（空、不是数写 —）； pill 是 PillValue 或 PillValue[]；progress 是 ProgressValue；streak 是板数或 StreakValue（A 股连板，#110）；auctionStep 是竞价点数组或 { points, prevClose }（A 股集合竞价台阶，#110）；limitStatus 是状态名或 { status, sealAmount, reason }； time 是毫秒时间戳；side 是 'buy' | 'sell'；symbol 是 SymbolValue；text 是字符串；custom 不读（内容全由 `cell` 画，要排序、复制就给 `text` 与 `sort`）。"
+          "description": "原始值，由类型决定怎么读：price / quantity / pnl / change / number / bar 是数字或十进制字符串（空、不是数写 —）； pill 是 PillValue 或 PillValue[]；progress 是 ProgressValue；streak 是板数或 StreakValue（A 股连板，#110）；auctionStep 是竞价点数组或 { points, prevClose }（A 股集合竞价台阶，#110）；limitStatus 是状态名或 { status, sealAmount, reason }； board 是板块名、六位代码或 { code, name }（由代码判断板块，名称带 ST 的算 ST）；cnAmount 是元（数或十进制字符串，写成万 / 亿）； time 是毫秒时间戳；side 是 'buy' | 'sell'；symbol 是 SymbolValue；text 是字符串；custom 不读（内容全由 `cell` 画，要排序、复制就给 `text` 与 `sort`）。"
         },
         {
           "name": "format",

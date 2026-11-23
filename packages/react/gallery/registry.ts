@@ -9287,10 +9287,10 @@ export const PAGES: readonly DocPage[] = [
   {
     id: 'cn-basics',
     group: 'cn',
-    cardHeight: 340,
+    cardHeight: 520,
     title: 'cn 基础：金额、时段、文案',
     summary:
-      'A 股件包的第 0 层（纯函数，不带 React）：formatCnAmount 把金额写成万 / 亿；时段轴认 09:15–09:25 竞价、09:30–11:30、13:00–15:00，午休与 09:25–09:30 不占宽度；cnLabelsZh 是随包的简体中文默认文案，可以整份换；取不到的数写「—」并可带原因（readCnValue）。不带数据源与交易日历数据。',
+      'A 股件包的第 0 层（纯函数，不带 React）：formatCnAmount 把金额写成万 / 亿；时段轴认 09:15–09:25 竞价、09:30–11:30、13:00–15:00，午休与 09:25–09:30 不占宽度；cnLabelsZh 是随包的简体中文默认文案，可以整份换；取不到的数写「—」并可带原因（readCnValue）。不带数据源与交易日历数据。DataGrid 的列类型 cnAmount 用 formatCnAmount 写金额（靠右、按数排序；format.cnAmount.signed 为真时正数涨色、负数跌色，用于净流入）。',
     exports: [
       'formatCnAmount',
       'CN_SESSIONS',
@@ -9343,6 +9343,7 @@ export const PAGES: readonly DocPage[] = [
     ],
     states: [
       '金额：≥1 亿「1.23亿」，≥1 万「12.5万」，否则原样；负数带 -，signed 给正数带 +。',
+      'cnAmount 列：成交额、封单额、市值写万 / 亿不着色；净流入给 format.cnAmount.signed，正数涨色、负数跌色；取不到写「—」。',
       '时间轴：竞价 10 分钟、上午 120、下午 120，共 250 分钟；落在 09:25–09:30 或午休里的时刻贴到前一段末尾。',
       '取不到：null 写「—」，原因放悬停，不写 0。',
     ],
@@ -9423,10 +9424,10 @@ export const PAGES: readonly DocPage[] = [
   {
     id: 'board-mark',
     group: 'cn',
-    cardHeight: 330,
+    cardHeight: 480,
     title: 'BoardMark 板块标记',
     summary:
-      '主板 / 创业板（20cm）/ 科创板（20cm）/ 北交所（30cm）/ ST。默认只标有特殊涨跌幅限制的写「20cm」「30cm」「ST」，主板不画；display 选写板块名或都写。boardKindOf 从代码（与名称）判断板块。取不到写「—」。',
+      '主板 / 创业板（20cm）/ 科创板（20cm）/ 北交所（30cm）/ ST。默认只标有特殊涨跌幅限制的写「20cm」「30cm」「ST」，主板不画；display 选写板块名或都写。boardKindOf 从代码（与名称）判断板块。取不到写「—」。也是 DataGrid 的列类型 board：值给板块名、六位代码或 { code, name }，format.boardDisplay 选写法，按涨跌幅限制排序。',
     exports: ['BoardMark', 'BOARD_LIMIT_PERCENT', 'boardKindOf'],
     propParts: [
       { part: 'BoardMark', note: '渲染一个 span，不透传别的属性。' },
@@ -9445,6 +9446,7 @@ export const PAGES: readonly DocPage[] = [
       'cm（默认）：创业板、科创板写「20cm」，北交所「30cm」，ST 写「ST」；主板什么都不画。',
       'name：写板块名；both：「创业板 20cm」。',
       '取不到：写「—」。',
+      'board 列：默认 cm，主板格子空着；复制、导出的字跟格子上一致。',
     ],
     donts: ['不要把主板也标上：卡片上的标记是为了提醒涨跌幅限制不同。'],
     composition: 'BoardMark',
