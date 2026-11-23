@@ -5,7 +5,7 @@
 // 数值照 TradingView 选股器（#90 记录的 2026-11-18 实测：芯片 12px w600、面底、圆角 6、高 24；单位 10px w500 次要色，跟在数后空一格），只取版式，颜色是我们的语义 token。
 import type { ReactNode } from 'react'
 import { cn } from '../lib/cn.ts'
-import { compactNumber, type CompactFormat } from '../lib/chart/format/index.ts'
+import { formatCompactNumber, type CompactFormat } from '../lib/chart/format/index.ts'
 
 /** Symbol code drawn as a chip (12px w600 on a subtle fill, radius 6, 24px high). */
 export function CodeChip({ children, className }: { children: ReactNode; className?: string }) {
@@ -30,7 +30,7 @@ export function UnitValue({ children, unit, className }: { children: ReactNode; 
   )
 }
 
-/** A number abbreviated by locale (en-US K/M/B/T, zh-CN 万/亿), with an optional small unit; not finite is an em dash. */
+/** A number abbreviated by locale (en-US K/M/B/T; zh-CN 万/亿 written like `formatCnAmount`), with an optional small unit; not finite is an em dash. */
 export function CompactValue({
   value,
   locale,
@@ -39,8 +39,7 @@ export function CompactValue({
   className,
 }: CompactFormat & { value: number | null | undefined; unit?: string; className?: string }) {
   if (value === null || value === undefined || !Number.isFinite(value)) return '—'
-  const parts = compactNumber(value, { locale, digits })
-  const text = parts.suffix ? `${parts.number} ${parts.suffix}` : parts.number
+  const text = formatCompactNumber(value, { locale, digits })
   return (
     <UnitValue unit={unit} className={className}>
       {text}

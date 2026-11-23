@@ -1418,7 +1418,7 @@ export const PAGES: readonly DocPage[] = [
             name: 'locale',
             type: 'string',
             default: "'en-US'",
-            desc: '封单额缩写的语言（#92）：zh-CN 是 万 / 亿，en-US 是 K / M / B；跟 DataGrid compact 列同一个 compactNumber。',
+            desc: '封单额缩写的语言（#92）：zh-CN 是 万 / 亿（formatCnAmount 的写法，#158），en-US 是 K / M / B；跟 DataGrid compact 列同一个 formatCompactNumber。',
           },
           { name: 'selected', type: 'string | null', desc: '选中个股的代码；选中行左侧画 2px 强调条。' },
           {
@@ -2026,7 +2026,7 @@ export const PAGES: readonly DocPage[] = [
       {
         part: 'compactNumber(value, { locale, digits }) / formatCompactNumber',
         symbol: 'compactNumber',
-        note: '跟 locale 走的缩写（#90，DataGrid 的 compact 列用它）：Intl.NumberFormat 的 compact 记数法，en-US 是 K / M / B / T，zh-CN 是 万 / 亿 / 万亿；两位小数，数字与缩写字之间空一格；不到第一档照写、不补零。',
+        note: '跟 locale 走的缩写（#90，DataGrid 的 compact 列用它）：en-US 是 Intl.NumberFormat 的 compact 记数法 K / M / B / T，两位小数，数字与缩写字之间空一格，不到第一档照写、不补零；zh-CN 就是 formatCnAmount 的写法（「1.23亿」「4.6万」，#158），中文金额直接用 cnAmount 列。',
       },
     ],
     states: [
