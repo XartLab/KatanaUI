@@ -10,12 +10,25 @@ import { AuctionStepSpark } from '../../cn/auction-step.tsx'
 import { BoardMark } from '../../cn/board-mark.tsx'
 import { LimitStatus } from '../../cn/limit-status.tsx'
 import { StreakBadge } from '../../cn/streak-badge.tsx'
+import { CodeChip, CodeName, UnitValue } from '../../quotes/cell-type.tsx'
+import { RangeBar } from '../../quotes/range-bar.tsx'
+import { RatingText } from '../../quotes/rating-text.tsx'
+import { Sparkline } from '../../quotes/sparkline.tsx'
 import { SymbolMark } from '../../quotes/symbol-mark.tsx'
 import { ToneText } from '../../quotes/tone-text.tsx'
 import { barRatio, type ResolvedCell } from './columns.ts'
 
-/** 数值类的列才闪：文本、时间、买卖、品种变了不闪（闪色只表达涨跌）。 */
-export const FLASH_TYPES: ReadonlySet<string> = new Set(['number', 'price', 'quantity', 'pnl', 'change', 'cnAmount'])
+/** 数值类的列才闪：文本、时间、买卖、品种、评级、图形列变了不闪（闪色只表达涨跌）。 */
+export const FLASH_TYPES: ReadonlySet<string> = new Set([
+  'number',
+  'price',
+  'quantity',
+  'pnl',
+  'change',
+  'percent',
+  'compact',
+  'cnAmount',
+])
 
 /** 一个数值格：值变了闪涨跌色（共用层 useValueFlash，1 秒节流）；格子是定位与滚动的最小单元，key 换掉让 CSS 动画重放。 */
 export function FlashCell({
@@ -42,7 +55,60 @@ export function FlashCell({
   )
 }
 
-/** 一格里的内容：品种拆成代码加场所，有方向的类型（盈亏、涨跌幅、买卖）用 ToneText 跟 data-updown，别的直接写字。 */
+/** 品种格（#90）：按 parts 依次画徽标、代码（纯字或芯片）、全称、场所小字；芯片与全称是共用件 quotes/cell-type.tsx（#92），样式在 theme/cell-type.css。 */
+function SymbolCell({ symbol }: { symbol: NonNullable<ResolvedCell['symbol']> }) {
+  const chip = symbol.parts.includes('chip')
+  return symbol.parts.map((part) => {
+    switch (part) {
+      case 'logo':
+        return (
+          <SymbolMark
+            key={part}
+            symbol={symbol.code}
+            name={symbol.name}
+            src={symbol.icon?.src}
+            size={chip ? 'sm' : 16}
+          />
+        )
+      case 'code':
+        return (
+          <span key={part} className="k-grid-name">
+            {symbol.code}
+          </span>
+        )
+      case 'chip':
+        return <CodeChip key={part}>{symbol.code}</CodeChip>
+      case 'name':
+        return symbol.name ? <CodeName key={part}>{symbol.name}</CodeName> : null
+      case 'venue':
+        return symbol.venue ? (
+          <span key={part} className="k-grid-tag">
+            {symbol.venue}
+          </span>
+        ) : null
+      default:
+        return null
+    }
+  })
+}
+
+/** 数字与单位：单位另起一段小字（次要色），中间留一个空格，复制出来仍是「4.53 T USD」。 */
+function Value({ resolved, ellipsis }: { resolved: ResolvedCell; ellipsis?: boolean }) {
+  const main =
+    resolved.direction !== undefined ? (
+      <ToneText tone={resolved.direction}>{resolved.main}</ToneText>
+    ) : ellipsis && !resolved.unit ? (
+      <span className="k-grid-name">{resolved.main}</span>
+    ) : (
+      resolved.main
+    )
+  return <UnitValue unit={resolved.unit}>{main}</UnitValue>
+}
+
+/**
+ * 一格里的内容：品种拆成徽标、代码、名称；评级、迷你图、区间复用 RatingText、Sparkline、RangeBar；pill、streak、limitStatus、progress、bar 各有画法；
+ * 有方向的类型（盈亏、涨跌幅、买卖）用 ToneText 跟 data-updown；数字后的单位小一号。
+ */
 export function CellBody({
   resolved,
   extent,
@@ -83,6 +149,19 @@ export function CellBody({
       </>
     )
   }
+  if (resolved.barShare !== undefined) {
+    // 给了 barMax：单边中性横条（相对成交量这类有大小没正负的量，#90）。
+    return (
+      <>
+        <span className="k-grid-bar is-share" data-slot="grid-bar" aria-hidden="true">
+          <i style={{ width: `${resolved.barShare * 100}%` }} />
+        </span>
+        <span className="k-grid-bar-text">
+          <Value resolved={resolved} />
+        </span>
+      </>
+    )
+  }
   if (resolved.bar !== undefined) {
     const ratio = barRatio(resolved.bar, extent)
     return (
@@ -90,28 +169,42 @@ export function CellBody({
         <span className="k-grid-bar" data-slot="grid-bar" data-dir={ratio > 0 ? 'up' : ratio < 0 ? 'down' : 'flat'}>
           <i style={{ width: `${Math.abs(ratio) * 50}%`, [ratio < 0 ? 'right' : 'left']: '50%' }} />
         </span>
-        <span className="k-grid-bar-text">{resolved.text}</span>
+        <span className="k-grid-bar-text">
+          <Value resolved={resolved} />
+        </span>
       </>
     )
   }
-  if (resolved.symbol) {
-    return (
-      <>
-        {resolved.symbol.icon && (
-          <SymbolMark
-            symbol={resolved.symbol.code}
-            name={resolved.symbol.name}
-            src={resolved.symbol.icon.src}
-            size={16}
-          />
-        )}
-        <span className="k-grid-name">{resolved.symbol.code}</span>
-        {resolved.symbol.venue && <span className="k-grid-tag">{resolved.symbol.venue}</span>}
-      </>
-    )
+  if (resolved.symbol) return <SymbolCell symbol={resolved.symbol} />
+  const visual = resolved.visual
+  switch (visual?.kind) {
+    case 'rating':
+      return <RatingText level={visual.level}>{resolved.text}</RatingText>
+    case 'spark':
+      return (
+        <span className="k-grid-spark">
+          <Sparkline values={visual.values} label={visual.label} variant="line" showLast={false} height={24} />
+        </span>
+      )
+    case 'range':
+      return (
+        <RangeBar
+          className="k-grid-range"
+          low={visual.low}
+          high={visual.high}
+          value={visual.value}
+          label={visual.label}
+          format={(value) =>
+            value.toLocaleString('en-US', {
+              minimumFractionDigits: visual.digits,
+              maximumFractionDigits: visual.digits,
+            })
+          }
+        />
+      )
+    default:
+      return <Value resolved={resolved} ellipsis={ellipsis} />
   }
-  if (resolved.direction !== undefined) return <ToneText tone={resolved.direction}>{resolved.text}</ToneText>
-  return ellipsis ? <span className="k-grid-name">{resolved.text}</span> : resolved.text
 }
 
 /** 胶囊的「+n」预留的宽度（px）与胶囊之间的间距，跟 data-grid.css 的 .k-grid-pill 一致。 */

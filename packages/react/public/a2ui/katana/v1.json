@@ -2520,9 +2520,17 @@
                   "change",
                   "side",
                   "time",
-                  "symbol"
+                  "symbol",
+                  "percent",
+                  "compact",
+                  "rating",
+                  "bar",
+                  "spark",
+                  "pill",
+                  "range",
+                  "date"
                 ],
-                "description": "How the raw value is read and written: 'text' string; 'number' number or decimal string; 'price' number (fixed digits via precision); 'quantity' number; 'pnl' signed number, colored by direction; 'change' percent already (1.5 is +1.50%), colored; 'side' 'buy' or 'sell'; 'time' ISO 8601 string or epoch milliseconds; 'symbol' a code string or {code, venue, name}."
+                "description": "How the raw value is read and written: 'text' string; 'number' number or decimal string; 'price' number (fixed digits via precision); 'quantity' number; 'pnl' signed number, colored by direction; 'change' percent already (1.5 is +1.50%), colored; 'side' 'buy' or 'sell'; 'time' ISO 8601 string or epoch milliseconds; 'symbol' a code string or {code, venue, name}; 'percent' a percent without sign or color (12.3 is 12.30%); 'compact' a number abbreviated by locale (K/M/B/T for en-US, CJK myriad units such as 1.2 yi for zh-CN); 'rating' one of strong-sell, sell, neutral, buy, strong-buy or a score from -1 to 1; 'bar' a number drawn as a bar: with barMax a one-sided neutral bar full at barMax, without it a bar centered on 0 (up color right, down color left) scaled to the largest magnitude in the column; 'spark' an array of numbers, oldest first, drawn as a mini line; 'pill' one or more short labels: a string, {label, tone} or an array of them, tone up, down, muted or accent; 'range' {low, high, value}; 'date' ISO 8601 string or epoch milliseconds, date only."
               },
               "align": {
                 "type": "string",
@@ -2556,7 +2564,74 @@
               },
               "suffix": {
                 "type": "string",
-                "description": "Unit written after a 'pnl' value, for example USDT."
+                "description": "Unit written after a 'pnl' value, for example USDT. Same as unit."
+              },
+              "unit": {
+                "type": "string",
+                "description": "Unit written small after a number, for example USD; read by 'number', 'price', 'quantity', 'pnl', 'compact' and 'bar'."
+              },
+              "locale": {
+                "type": "string",
+                "description": "Locale of 'compact' abbreviations and 'date' values for this column; defaults to the table locale."
+              },
+              "barMax": {
+                "type": "number",
+                "minimum": 0.000001,
+                "description": "Value at which a 'bar' is full; given, the bar is one-sided and neutral. Omit for a bar centered on 0."
+              },
+              "label": {
+                "type": "string",
+                "description": "Accessible name of the 'spark' or 'range' graphic. Defaults to the cell text."
+              },
+              "ratingLabels": {
+                "type": "object",
+                "properties": {
+                  "strong-sell": {
+                    "type": "string",
+                    "description": "Text for strong sell."
+                  },
+                  "sell": {
+                    "type": "string",
+                    "description": "Text for sell."
+                  },
+                  "neutral": {
+                    "type": "string",
+                    "description": "Text for neutral."
+                  },
+                  "buy": {
+                    "type": "string",
+                    "description": "Text for buy."
+                  },
+                  "strong-buy": {
+                    "type": "string",
+                    "description": "Text for strong buy."
+                  }
+                },
+                "required": [
+                  "strong-sell",
+                  "sell",
+                  "neutral",
+                  "buy",
+                  "strong-buy"
+                ],
+                "additionalProperties": false,
+                "description": "The five words of a 'rating' column. Defaults to English."
+              },
+              "symbolParts": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "logo",
+                    "code",
+                    "chip",
+                    "name",
+                    "venue"
+                  ]
+                },
+                "minItems": 1,
+                "maxItems": 5,
+                "description": "Which parts of a 'symbol' cell are drawn, in order: logo (round mark), code (plain text), chip (code on a chip), name (full name), venue (small text). Full-page tables usually take [\"logo\", \"chip\", \"name\"]."
               },
               "timeStyle": {
                 "type": "string",
@@ -2629,10 +2704,15 @@
           "enum": [
             "compact",
             "default",
-            "relaxed"
+            "relaxed",
+            "comfortable"
           ],
           "default": "default",
-          "description": "Row height."
+          "description": "Row height: compact 20, default 24, relaxed 32 for dense panel tables; comfortable 40 (14px text, 48px header, ruled) for full-page tables such as screeners and reports."
+        },
+        "locale": {
+          "type": "string",
+          "description": "Locale of 'compact' abbreviations and 'date' values (en-US: K/M/B/T, zh-CN: CJK myriad units). Defaults to en-US."
         },
         "maxHeight": {
           "type": "number",

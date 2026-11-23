@@ -130,6 +130,8 @@ const quotes: GuidanceMap = {
       '要点列头排序、标旗。',
       '价格变了只有变了的尾数闪涨跌色，涨跌幅也闪；排序下价格变了行平滑换位，新加的行蓝线高亮 1.2 秒。',
       '行是统一行情行 { id, symbol, name, last, change, changePct }，跟 QuoteTable、PeerCards、QuoteCard 同一份数据。',
+      '格内排版跟 DataGrid comfortable 同一份（#92）：代码是代码芯片（12px w600、面底、圆角 6、高 24）；行高照旧 32，面板密表不换行高。',
+      '要看成交量就给 labels.columns.vol 与行的 volume：按 locale 缩写（en-US 是 K / M / B，zh-CN 是 万 / 亿），volumeUnit 写成 10px w500 次要色小字，列可排序。',
     ],
     avoid: ['需要几十列与大量行时用 data-grid。', '只要一屏概览用 quote-table。'],
     a11y: [
@@ -170,6 +172,8 @@ const quotes: GuidanceMap = {
       '首页总览：指数、自选、热门分组一屏看。',
       '行可点进入品种。',
       '行与 Watchlist 同一个模型（数 + formatPrice）：最新价变了只闪变了的尾数，涨跌幅变了整格闪，调用方重排行时行平滑换位，新加的行蓝线高亮 1.2 秒。',
+      '行有 symbol 与 name 时，名称格是代码芯片加全称（#92，跟 DataGrid 的 [chip, name] 同一份）；只有一个名字时照写纯字。行高照旧（迷你图 22 加上下 6）。',
+      '成交量列可选：给 labels.columns.volume 才画，行的 volume 按 locale 缩写（K / M / B ↔ 万 / 亿），volumeUnit 是单位小字。',
     ],
     avoid: ['要排序、筛选、很多行用 data-grid 或 watchlist。', '只有一组时不用页签，直接用 quote-card 的一排。'],
     a11y: [

@@ -34,6 +34,8 @@ const INTERNAL = {
   'sparkline-instrument': 'Sparkline 的 instrument 画风：点阵、对位角标、投影谱、极值十字与批注、档案编号与 SOURCES。',
   'sparkline-shared': 'Sparkline 各画风共用的钩子：量容器、设备像素比、文字测量重置。',
   'flash-price': '最新价只闪变了的尾数（照 TradingView 自选栏）：Watchlist 与 QuoteTable 的价格格共用。',
+  'cell-type':
+    '表格的格内排版（#92）：代码芯片 CodeChip、全称 CodeName、单位小字 UnitValue、按 locale 缩写的 CompactValue；DataGrid、QuoteTable、Watchlist、LimitLadder、EventCalendar 共用，样式在 theme/cell-type.css。',
   'readout-value': '读数壳里的数值一格：没有数据写「—」，变了闪涨跌色或滚轮，单位小字；MetricCard 的卡与瓦片共用。',
   'metric-tile': 'MetricCard variant="tile" 的瓦片本体（原 SparkTile 的画法）与它的几何 sparkTileShape。',
   'gravity-model':
