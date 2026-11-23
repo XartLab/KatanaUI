@@ -7118,6 +7118,33 @@ export const PAGES: readonly DocPage[] = [
     keys: [['Tab', '聚焦行内引用，立即弹出预览']],
   },
   {
+    id: 'markdown',
+    group: 'ai',
+    cardHeight: 320,
+    title: 'Markdown 安全正文',
+    summary:
+      '模型写的话与帮助文档的正文：不渲染 HTML、不画图片（只写「[图片：说明]」）、外链只认 http(s) 并在新标签页打开，挡掉把数据带出去的路。占位符 markdownSlot(n) 的位置画调用方给的节点（引用小标）。传 resolveLink 进文档模式：标题带锚点，相对链接交给调用方。从 KATANAview 搬来。',
+    exports: ['Markdown', 'renderMarkdown', 'renderDoc', 'docHeadings', 'markdownSlot'],
+    propParts: [
+      {
+        part: 'Markdown',
+        note: 'slots 按序号对应 markdownSlot(n)；超出的占位符当没有。resolveLink 与 labels 要稳定的引用，换了就重画。',
+      },
+    ],
+    states: [
+      '回话：粗体、列表、表格、代码照常画；HTML 当字、图片写说明。',
+      '角标槽：占位符的位置画 slots 里的节点。',
+      '文档：标题带 data-anchor；认得的相对链接点了交给 onOpenLink，不跳页；不认得的只留文字。',
+    ],
+    donts: [
+      '用户自己打的字不要走它：原样写、保留换行就好。',
+      '流式逐词进场的回答用 AiResponse；整段到齐了再用 Markdown。',
+      '不要为了画图片放开限制：要图就由调用方自己渲染一个可信的件放进 slots。',
+    ],
+    composition: 'Markdown\n  div.k-md（innerHTML）\n    span.k-md-slot × n（portal 进 slots[n]）',
+    keys: [],
+  },
+  {
     id: 'ai-reasoning',
     group: 'ai',
     cardHeight: 230,
