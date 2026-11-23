@@ -38777,6 +38777,156 @@
         }
       ]
     },
+    "RulerSlider": {
+      "kind": "component",
+      "source": "src/katana/ruler-slider.tsx",
+      "props": [
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the ruler, for example \"Position size\"."
+        },
+        {
+          "name": "min",
+          "type": "number",
+          "required": false,
+          "default": "0",
+          "description": "Lowest value, at the left end of the ruler; the lit notches start here."
+        },
+        {
+          "name": "max",
+          "type": "number",
+          "required": false,
+          "default": "100",
+          "description": "Highest value, at the right end of the ruler."
+        },
+        {
+          "name": "step",
+          "type": "number",
+          "required": false,
+          "default": "1",
+          "description": "Distance between two notches."
+        },
+        {
+          "name": "majorEvery",
+          "type": "number",
+          "required": false,
+          "default": "10",
+          "description": "Notches in one large step: values on a multiple of it get a number, and PageUp / PageDown or Shift with an arrow move this far."
+        },
+        {
+          "name": "value",
+          "type": "number",
+          "required": false,
+          "description": "Value (controlled)."
+        },
+        {
+          "name": "defaultValue",
+          "type": "number",
+          "required": false,
+          "description": "Value at first render when uncontrolled; defaults to min."
+        },
+        {
+          "name": "onValueChange",
+          "type": "(value: number) => void",
+          "required": false,
+          "description": "Called with the new value whenever the notch under the line changes."
+        },
+        {
+          "name": "format",
+          "type": "(value: number) => string",
+          "required": false,
+          "default": "String",
+          "description": "Turn the number into text for the readout, the numbered notches and the spoken value."
+        },
+        {
+          "name": "showIndicator",
+          "type": "boolean",
+          "required": false,
+          "default": "true",
+          "description": "Draw the ring and the number above the ruler."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "RulerSliderProps": {
+      "kind": "type",
+      "source": "src/katana/ruler-slider.tsx",
+      "props": [
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the ruler, for example \"Position size\"."
+        },
+        {
+          "name": "min",
+          "type": "number",
+          "required": false,
+          "description": "Lowest value, at the left end of the ruler; the lit notches start here."
+        },
+        {
+          "name": "max",
+          "type": "number",
+          "required": false,
+          "description": "Highest value, at the right end of the ruler."
+        },
+        {
+          "name": "step",
+          "type": "number",
+          "required": false,
+          "description": "Distance between two notches."
+        },
+        {
+          "name": "majorEvery",
+          "type": "number",
+          "required": false,
+          "description": "Notches in one large step: values on a multiple of it get a number, and PageUp / PageDown or Shift with an arrow move this far."
+        },
+        {
+          "name": "value",
+          "type": "number",
+          "required": false,
+          "description": "Value (controlled)."
+        },
+        {
+          "name": "defaultValue",
+          "type": "number",
+          "required": false,
+          "description": "Value at first render when uncontrolled; defaults to min."
+        },
+        {
+          "name": "onValueChange",
+          "type": "(value: number) => void",
+          "required": false,
+          "description": "Called with the new value whenever the notch under the line changes."
+        },
+        {
+          "name": "format",
+          "type": "(value: number) => string",
+          "required": false,
+          "description": "Turn the number into text for the readout, the numbered notches and the spoken value."
+        },
+        {
+          "name": "showIndicator",
+          "type": "boolean",
+          "required": false,
+          "description": "Draw the ring and the number above the ruler."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
     "RunMode": {
       "kind": "type",
       "source": "src/blocks/run-mode-badge/run-mode-badge.tsx",
