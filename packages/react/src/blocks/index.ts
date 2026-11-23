@@ -220,6 +220,22 @@ export {
 export { UptimeBars, type UptimeBarsProps } from './uptime-bars/uptime-bars.tsx'
 export { uptimeShare, type UptimeCell, type UptimeStatus } from './uptime-bars/uptime-bars-model.ts'
 
+// 前向测试与回放的件（#121）：组合运行表、回放控制条、运行模式徽标。功能参照 MultiCharts（2026-11-21 读官方页面），实现原创。
+export {
+  PortfolioRunGrid,
+  type PortfolioRunFormat,
+  type PortfolioRunGridProps,
+  type PortfolioRunLabels,
+  type PortfolioRunSummary,
+} from './portfolio-run-grid/portfolio-run-grid.tsx'
+export { type PortfolioRunRow, type RunStatus } from './portfolio-run-grid/portfolio-run-model.ts'
+export {
+  ReplayTransport,
+  type ReplayTransportLabels,
+  type ReplayTransportProps,
+} from './replay-transport/replay-transport.tsx'
+export { RunModeBadge, type RunMode, type RunModeBadgeProps } from './run-mode-badge/run-mode-badge.tsx'
+
 // 白板（#51）：底座 React Flow（@xyflow/react，MIT）。
 export { Whiteboard, type WhiteboardLabels, type WhiteboardProps } from './whiteboard/whiteboard.tsx'
 export {
@@ -342,6 +358,74 @@ export {
   type NetBuyBarLabels,
   type NetBuyBarProps,
 } from './net-buy-bar/net-buy-bar.tsx'
+
+// #104 账户四件：持仓表、委托表（共页签外壳）、账户权益概览、资金费率、期权 T 型报价。
+export {
+  PositionsTable,
+  type LiquidationRisk,
+  type Position,
+  type PositionSide,
+  type PositionTotals,
+  type PositionsTableLabels,
+  type PositionsTableProps,
+} from './positions-table/positions-table.tsx'
+export {
+  liquidationDistance,
+  liquidationFill,
+  liquidationRisk,
+  positionTotals,
+  unrealizedPercent,
+} from './positions-table/positions-model.ts'
+export {
+  PositionsOrdersTabs,
+  type PositionsOrdersTab,
+  type PositionsOrdersTabsLabels,
+  type PositionsOrdersTabsProps,
+} from './positions-table/positions-orders-tabs.tsx'
+export {
+  OrdersTable,
+  type Order,
+  type OrderSide as OpenOrderSide,
+  type OrderStatus,
+  type OrderType as OpenOrderType,
+  type OrdersTableLabels,
+  type OrdersTableProps,
+} from './orders-table/orders-table.tsx'
+export {
+  amendDecision,
+  canAmend,
+  canCancel,
+  cancellable,
+  fillRatio,
+  parseAmendPrice,
+} from './orders-table/orders-model.ts'
+export {
+  AccountEquity,
+  type AccountEquityLabels,
+  type AccountEquityProps,
+  type MarginLevel,
+  type MarginThresholds,
+} from './account-equity/account-equity.tsx'
+export { marginLevel, marginRatioOf, riskBands, riskPosition } from './account-equity/account-equity-model.ts'
+export {
+  FundingRate,
+  type FundingBar,
+  type FundingPoint,
+  type FundingRateLabels,
+  type FundingRateProps,
+} from './funding-rate/funding-rate.tsx'
+export { countdownTo, formatCountdown, formatRate, fundingBars, rateTone } from './funding-rate/funding-model.ts'
+export {
+  OptionsChain,
+  type OptionExpiry,
+  type OptionField,
+  type OptionQuote,
+  type OptionRow,
+  type OptionSide,
+  type OptionsChainLabels,
+  type OptionsChainProps,
+} from './options-chain/options-chain.tsx'
+export { atmStrike, isItm, sortedRows, wingFields } from './options-chain/options-model.ts'
 export {
   OrderBook,
   type BookLevel,

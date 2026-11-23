@@ -1,0 +1,131 @@
+/* SPDX-License-Identifier: MIT */
+/* 板块资金多线图（FlowRace，#110）：左边是线图，右边一列按最新值排名的标签（绝对定位，高度由代码错开）。线与值的颜色只用语义色调：
+   为正读 --pnl-up、为负读 --pnl-down（根上 data-updown 互换），零或取不到是中性灰；第一名的线 2px，其余 1.25px；
+   有一行被悬停 / 聚焦时（data-active）其余的线退到 25%。不写色值。 */
+.k-fr {
+  min-width: 0;
+  padding: var(--space-3);
+  background: var(--bg-200);
+  border: var(--hairline);
+  color: var(--ink-300);
+  font: var(--text-caption) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+}
+.k-fr-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 168px);
+  column-gap: var(--space-3);
+}
+.k-fr-plot {
+  position: relative;
+  min-width: 0;
+}
+.k-fr-plot svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.k-fr-zero,
+.k-fr-lunch {
+  stroke: var(--ink-400);
+  stroke-dasharray: 3 3;
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+.k-fr-lunch {
+  opacity: 0.6;
+}
+.k-fr-line {
+  fill: none;
+  stroke: var(--ink-300);
+  stroke-linejoin: round;
+  stroke-width: 1.25;
+  vector-effect: non-scaling-stroke;
+}
+.k-fr-line[data-rank='1'] {
+  stroke-width: 2;
+}
+.k-fr-line[data-tone='up'] {
+  stroke: var(--pnl-up);
+}
+.k-fr-line[data-tone='down'] {
+  stroke: var(--pnl-down);
+}
+.k-fr-line[data-current] {
+  stroke-width: 2.5;
+}
+.k-fr[data-active] .k-fr-line:not([data-current]) {
+  opacity: 0.25;
+}
+.k-fr-scale {
+  position: absolute;
+  white-space: nowrap;
+  left: 0;
+  padding-left: 2px;
+  background: var(--bg-200);
+  color: var(--ink-300);
+}
+.k-fr-scale-hi {
+  top: 0;
+}
+.k-fr-scale-lo {
+  bottom: 0;
+}
+.k-fr-rank {
+  position: relative;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.k-fr-label {
+  position: absolute;
+  right: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 0 var(--space-1);
+  color: var(--ink-200);
+  cursor: default;
+  white-space: nowrap;
+}
+.k-fr-label[data-current],
+.k-fr-label:hover {
+  background: var(--alpha-white-8);
+  color: var(--ink-100);
+}
+.k-fr-label:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: -2px;
+}
+.k-fr-no {
+  flex: none;
+  width: 1.2em;
+  color: var(--ink-300);
+}
+.k-fr-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.k-fr-value {
+  flex: none;
+}
+.k-fr-label[data-tone='up'] .k-fr-value {
+  color: var(--pnl-up);
+}
+.k-fr-label[data-tone='down'] .k-fr-value {
+  color: var(--pnl-down);
+}
+.k-fr-axis {
+  display: flex;
+  white-space: nowrap;
+  grid-column: 1;
+  justify-content: space-between;
+  margin-top: var(--space-1);
+}
+.k-fr-empty {
+  margin: 0;
+}

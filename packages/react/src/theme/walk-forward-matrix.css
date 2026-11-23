@@ -1,0 +1,163 @@
+/* SPDX-License-Identifier: MIT */
+/* WalkForwardMatrix（#120）：时间轴小条灰是样本内、亮是样本外（不靠颜色：样本外条更高）；通过用状态色文字加图标；涨跌色只给样本外绩效的字。 */
+.k-wf {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  min-width: 0;
+}
+.k-wf-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px var(--space-4);
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-wf-key {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.k-wf-key i {
+  display: inline-block;
+  width: 14px;
+  height: 4px;
+  background: var(--k-content-tertiary-foreground);
+}
+.k-wf-key i[data-part='out'] {
+  height: 8px;
+  background: var(--k-content-primary-foreground);
+}
+.k-wf-scroll {
+  overflow-x: auto;
+}
+.k-wf-table {
+  width: 100%;
+  border-collapse: collapse;
+  color: var(--k-content-body-foreground);
+  font: var(--text-data) var(--font-sans);
+}
+.k-wf-table th,
+.k-wf-table td {
+  padding: 5px 6px;
+  border-bottom: var(--hairline);
+  text-align: left;
+  white-space: nowrap;
+}
+.k-wf-table thead th {
+  position: sticky;
+  top: 0;
+  background: var(--k-surface-raised-background);
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+  font-weight: 400;
+}
+.k-wf-table tbody th {
+  color: var(--k-content-secondary-foreground);
+  font-variant-numeric: tabular-nums;
+  font-weight: 400;
+}
+.k-wf-table [data-num] {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.k-wf-table .k-wf-range {
+  /* 区间两端在破折号后可换行：常见面板宽度（720px 起）内表不横向溢出，结果列不被裁。 */
+  white-space: normal;
+  font: var(--text-data) var(--font-num);
+  font-variant-numeric: tabular-nums;
+}
+.k-wf-table .k-wf-params {
+  display: flex;
+  flex-wrap: wrap;
+  white-space: normal;
+  gap: 4px var(--space-3);
+  font: var(--text-caption) var(--font-num-small);
+  font-variant-numeric: tabular-nums;
+}
+.k-wf-params em {
+  color: var(--k-content-secondary-foreground);
+  font-style: normal;
+}
+td[data-tone='up'] {
+  color: var(--pnl-up);
+}
+td[data-tone='down'] {
+  color: var(--pnl-down);
+}
+.k-wf-bar {
+  position: relative;
+  display: block;
+  width: 96px;
+  height: 10px;
+}
+.k-wf-bar i {
+  position: absolute;
+  top: 3px;
+  height: 4px;
+  background: var(--k-content-tertiary-foreground);
+}
+.k-wf-bar i[data-part='out'] {
+  top: 1px;
+  height: 8px;
+  background: var(--k-content-primary-foreground);
+}
+.k-wf-result {
+  display: table-cell;
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-wf-result svg {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  margin-right: 4px;
+  vertical-align: -2px;
+}
+.k-wf-result[data-state='pass'] {
+  color: var(--k-status-ok-foreground);
+}
+.k-wf-result[data-state='fail'] {
+  color: var(--k-status-danger-foreground);
+}
+.k-wf-table tfoot th {
+  padding: 8px;
+  border-bottom: 0;
+  background: var(--k-surface-raised-background);
+}
+.k-wf-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px var(--space-6);
+  margin: 0;
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-wf-summary > div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.k-wf-summary dt {
+  color: var(--k-content-secondary-foreground);
+  font-weight: 400;
+}
+.k-wf-summary dd {
+  margin: 0;
+  color: var(--k-content-primary-foreground);
+  font: var(--text-data) var(--font-num);
+  font-variant-numeric: tabular-nums;
+}
+.k-wf-summary > div[data-key] dd {
+  font-weight: 600;
+}
+.k-wf-empty {
+  margin: 0;
+  padding: var(--space-6);
+  color: var(--k-content-secondary-foreground);
+  text-align: center;
+}
+
+.k-wf-range span {
+  white-space: nowrap;
+}

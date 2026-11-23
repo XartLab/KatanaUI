@@ -1,0 +1,93 @@
+/* SPDX-License-Identifier: MIT */
+/* 集合竞价台阶（AuctionStep，#110）：台阶线、昨收虚参考线、09:20 起不可撤单的竖虚线、匹配量柱。线色按最新撮合价对昨收：
+   涨读 --pnl-up、跌读 --pnl-down（根上 data-updown 互换），没有昨收是中性灰；量柱是中性灰。不写色值。 */
+.k-auction {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+  margin: 0;
+  padding: var(--space-3);
+  background: var(--bg-200);
+  border: var(--hairline);
+  color: var(--ink-300);
+  font: var(--text-caption) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+  --auction-line: var(--ink-200);
+}
+.k-auction[data-tone='up'] {
+  --auction-line: var(--pnl-up);
+}
+.k-auction[data-tone='down'] {
+  --auction-line: var(--pnl-down);
+}
+.k-auction-read {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+}
+.k-auction-price {
+  color: var(--auction-line);
+  font: 600 18px/22px var(--font-sans);
+}
+.k-auction-change {
+  color: var(--auction-line);
+}
+.k-auction-vol {
+  color: var(--ink-100);
+}
+.k-auction-plot {
+  position: relative;
+  min-width: 0;
+}
+.k-auction-plot svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.k-auction-line,
+.k-auction-spark .k-auction-line {
+  fill: none;
+  stroke: var(--auction-line);
+  stroke-width: 1.5;
+  vector-effect: non-scaling-stroke;
+}
+.k-auction-ref,
+.k-auction-cut {
+  stroke: var(--ink-400);
+  stroke-dasharray: 3 3;
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+.k-auction-bar {
+  fill: var(--alpha-white-12);
+}
+.k-auction-cut-label {
+  position: absolute;
+  top: 0;
+  padding-left: 4px;
+  color: var(--ink-300);
+  white-space: nowrap;
+}
+.k-auction-axis {
+  display: flex;
+  justify-content: space-between;
+}
+.k-auction-empty {
+  margin: 0;
+}
+.k-auction-spark {
+  display: inline-block;
+  vertical-align: middle;
+  --auction-line: var(--ink-200);
+}
+.k-auction-spark[data-tone='up'] {
+  --auction-line: var(--pnl-up);
+}
+.k-auction-spark[data-tone='down'] {
+  --auction-line: var(--pnl-down);
+}
+.k-auction-spark[data-empty] {
+  color: var(--ink-300);
+}

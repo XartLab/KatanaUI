@@ -618,12 +618,12 @@ export function OrderTicket({
         <ToggleGroup
           data-slot="ticket-action"
           aria-label={labels.action}
-          className="flex w-full"
+          fullWidth
           value={action}
           onValueChange={(value) => setAction(value as OrderAction)}
         >
           {(['open', 'close'] as const).map((value) => (
-            <ToggleGroupItem key={value} value={value} className="flex-1 justify-center">
+            <ToggleGroupItem key={value} value={value}>
               {labels.actions[value]}
             </ToggleGroupItem>
           ))}

@@ -29,6 +29,11 @@
           "target": "~/src/katana/ui/theme/theme.css"
         },
         {
+          "path": "src/theme/account-equity.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/account-equity.css"
+        },
+        {
           "path": "src/theme/ai-status.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/ai-status.css"
@@ -79,9 +84,39 @@
           "target": "~/src/katana/ui/theme/chip-group.css"
         },
         {
+          "path": "src/theme/cn-auction.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/cn-auction.css"
+        },
+        {
+          "path": "src/theme/cn-date.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/cn-date.css"
+        },
+        {
+          "path": "src/theme/cn-flow.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/cn-flow.css"
+        },
+        {
+          "path": "src/theme/cn-mini-k.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/cn-mini-k.css"
+        },
+        {
+          "path": "src/theme/cn-move.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/cn-move.css"
+        },
+        {
           "path": "src/theme/cn-pulse.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/cn-pulse.css"
+        },
+        {
+          "path": "src/theme/cn-seat.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/cn-seat.css"
         },
         {
           "path": "src/theme/cn-sentiment.css",
@@ -199,9 +234,19 @@
           "target": "~/src/katana/ui/theme/form-motion.css"
         },
         {
+          "path": "src/theme/funding-rate.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/funding-rate.css"
+        },
+        {
           "path": "src/theme/gauge-bar.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/gauge-bar.css"
+        },
+        {
+          "path": "src/theme/graphite.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/graphite.css"
         },
         {
           "path": "src/theme/hold-to-confirm.css",
@@ -264,6 +309,16 @@
           "target": "~/src/katana/ui/theme/loading.css"
         },
         {
+          "path": "src/theme/mae-mfe-scatter.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/mae-mfe-scatter.css"
+        },
+        {
+          "path": "src/theme/markdown.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/markdown.css"
+        },
+        {
           "path": "src/theme/market-heatmap.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/market-heatmap.css"
@@ -324,9 +379,19 @@
           "target": "~/src/katana/ui/theme/number-input.css"
         },
         {
+          "path": "src/theme/options-chain.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/options-chain.css"
+        },
+        {
           "path": "src/theme/order-book.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/order-book.css"
+        },
+        {
+          "path": "src/theme/orders-table.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/orders-table.css"
         },
         {
           "path": "src/theme/panel-frame.css",
@@ -339,6 +404,11 @@
           "target": "~/src/katana/ui/theme/param-scatter.css"
         },
         {
+          "path": "src/theme/param-surface-heatmap.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/param-surface-heatmap.css"
+        },
+        {
           "path": "src/theme/peer-cards.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/peer-cards.css"
@@ -347,6 +417,21 @@
           "path": "src/theme/performance-strip.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/performance-strip.css"
+        },
+        {
+          "path": "src/theme/period-returns-table.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/period-returns-table.css"
+        },
+        {
+          "path": "src/theme/portfolio-run-grid.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/portfolio-run-grid.css"
+        },
+        {
+          "path": "src/theme/positions-table.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/positions-table.css"
         },
         {
           "path": "src/theme/price-tag.css",
@@ -399,9 +484,19 @@
           "target": "~/src/katana/ui/theme/rendering.css"
         },
         {
+          "path": "src/theme/replay-transport.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/replay-transport.css"
+        },
+        {
           "path": "src/theme/ridgeline.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/ridgeline.css"
+        },
+        {
+          "path": "src/theme/robustness-gate.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/robustness-gate.css"
         },
         {
           "path": "src/theme/rolling-text.css",
@@ -412,6 +507,11 @@
           "path": "src/theme/row-actions.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/row-actions.css"
+        },
+        {
+          "path": "src/theme/run-mode-badge.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/run-mode-badge.css"
         },
         {
           "path": "src/theme/scrubber.css",
@@ -539,6 +639,11 @@
           "target": "~/src/katana/ui/theme/treemap.css"
         },
         {
+          "path": "src/theme/underwater-chart.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/underwater-chart.css"
+        },
+        {
           "path": "src/theme/uptime-bars.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/uptime-bars.css"
@@ -552,6 +657,11 @@
           "path": "src/theme/vintage-series.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/vintage-series.css"
+        },
+        {
+          "path": "src/theme/walk-forward-matrix.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/walk-forward-matrix.css"
         },
         {
           "path": "src/theme/watchlist.css",
@@ -781,6 +891,19 @@
           "path": "src/lib/scaled-decimal.ts",
           "type": "registry:lib",
           "target": "~/src/katana/ui/lib/scaled-decimal.ts"
+        }
+      ]
+    },
+    {
+      "name": "scroll-dismiss",
+      "type": "registry:lib",
+      "title": "Scroll Dismiss",
+      "description": "非模态浮层的滚动即关：页面或装着锚点的容器把锚点滚走了就关（Popover 用）。",
+      "files": [
+        {
+          "path": "src/lib/scroll-dismiss.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/lib/scroll-dismiss.ts"
         }
       ]
     },
@@ -1581,7 +1704,8 @@
       "registryDependencies": [
         "@katana/cn",
         "@katana/menu-parts",
-        "@katana/overlay"
+        "@katana/overlay",
+        "@katana/scroll-dismiss"
       ],
       "files": [
         {
@@ -4809,6 +4933,26 @@
       ]
     },
     {
+      "name": "markdown",
+      "type": "registry:component",
+      "title": "Markdown",
+      "description": "模型写的话与帮助文档的正文：不渲染 HTML、不画图片（只写「[图片：说明]」）、外链只认 http(s) 并在新标签页打开，挡掉把数据带出去的路。占位符 markdownSlot(n) 的位置画调用方给的节点（引用小标）。传 resolveLink 进文档模式：标题带锚点，相对链接交给调用方。从 KATANAview 搬来。",
+      "dependencies": [
+        "github-slugger@2.0.0",
+        "markdown-it@15.0.3"
+      ],
+      "registryDependencies": [
+        "@katana/cn"
+      ],
+      "files": [
+        {
+          "path": "src/ai/markdown.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/ai/markdown.tsx"
+        }
+      ]
+    },
+    {
       "name": "gravity-letters",
       "type": "registry:component",
       "title": "Gravity Letters",
@@ -5692,7 +5836,7 @@
       "name": "calendar-model",
       "type": "registry:component",
       "title": "Calendar Model",
-      "description": "CalendarHeatmap 的格子排布、档位与键盘（纯函数）：日历日按 UTC 算，一周一列。",
+      "description": "年 × 月的收益热力表，可切季与周，行尾是年度合计。调用方给细粒度的收益样本（日收益或逐笔），件按周期复利聚合（时区由调用方给，周按 ISO 周）。色阶是涨跌发散色，两端是发散色 token、零附近中性灰，没有彩虹色阶；涨跌色只给年度合计与读数的字。周视图格子窄，数字收进读数区与 title。日历热力图（CalendarHeatmap）是按日的月历格，没有年度合计也不聚合，所以这里新做一件，色用同一套发散 token。",
       "dependencies": [
         "@internationalized/date@3.12.4"
       ],
@@ -6002,6 +6146,43 @@
       ]
     },
     {
+      "name": "mae-mfe-model",
+      "type": "registry:component",
+      "title": "Mae Mfe Model",
+      "description": "每笔交易一个点：横轴是持仓期间的最大浮亏（MAE）或最大浮盈（MFE）的大小，纵轴是这笔最终盈亏，赢是圆、亏是方（不只靠颜色），可切百分比与金额。看 MAE：赢单从没亏多深、亏单一路亏穿，止损就能收紧；看 MFE：亏单曾浮盈很多，止盈放得太远。每笔的 MAE、MFE 两套单位由调用方给（件不算，要逐笔行情）；移到点上或方向键走点，读数区写这一笔，底下是赢亏两侧的平均偏移。新做；参照 MultiCharts 的 Strategy Performance Report，演示数据是固定种子合成的。",
+      "registryDependencies": [
+        "@katana/chart-scale"
+      ],
+      "files": [
+        {
+          "path": "src/quant/mae-mfe-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/mae-mfe-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "mae-mfe-scatter",
+      "type": "registry:component",
+      "title": "Mae Mfe Scatter",
+      "description": "每笔交易一个点：横轴是持仓期间的最大浮亏（MAE）或最大浮盈（MFE）的大小，纵轴是这笔最终盈亏，赢是圆、亏是方（不只靠颜色），可切百分比与金额。看 MAE：赢单从没亏多深、亏单一路亏穿，止损就能收紧；看 MFE：亏单曾浮盈很多，止盈放得太远。每笔的 MAE、MFE 两套单位由调用方给（件不算，要逐笔行情）；移到点上或方向键走点，读数区写这一笔，底下是赢亏两侧的平均偏移。新做；参照 MultiCharts 的 Strategy Performance Report，演示数据是固定种子合成的。",
+      "registryDependencies": [
+        "@katana/chart-kit",
+        "@katana/chart-scale",
+        "@katana/cn",
+        "@katana/mae-mfe-model",
+        "@katana/num",
+        "@katana/toggle-group"
+      ],
+      "files": [
+        {
+          "path": "src/quant/mae-mfe-scatter.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/mae-mfe-scatter.tsx"
+        }
+      ]
+    },
+    {
       "name": "market-heatmap-card",
       "type": "registry:component",
       "title": "Market Heatmap Card",
@@ -6194,6 +6375,71 @@
       ]
     },
     {
+      "name": "param-surface-heatmap",
+      "type": "registry:component",
+      "title": "Param Surface Heatmap",
+      "description": "优化结果的参数平面：两个参数为横纵轴、目标值（可切）为色，悬停或聚焦一格，右侧读数区列出这一格全部参数与全部指标；最优格加琥珀环，周围一圈用细框标出，并算最优格邻域的均值、方差与保留率（邻均值 ÷ 最优值）——孤峰过拟合一眼能看出来（调用方给 spikeBelow 就标「孤峰」）。参数多于两个时选两轴，其余固定为切片，每个一个下拉。ParamScatter 是自由散点（点没有网格邻接关系、没有切片与邻域），这里要的是格子邻接，所以新做一件；最优与色阶的做法与它一致（暗灰到亮灰、跨 0 用涨跌发散色）。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/param-surface-model",
+        "@katana/research-color",
+        "@katana/select",
+        "@katana/toggle-group"
+      ],
+      "files": [
+        {
+          "path": "src/quant/param-surface-heatmap.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/param-surface-heatmap.tsx"
+        }
+      ]
+    },
+    {
+      "name": "param-surface-model",
+      "type": "registry:component",
+      "title": "Param Surface Model",
+      "description": "优化结果的参数平面：两个参数为横纵轴、目标值（可切）为色，悬停或聚焦一格，右侧读数区列出这一格全部参数与全部指标；最优格加琥珀环，周围一圈用细框标出，并算最优格邻域的均值、方差与保留率（邻均值 ÷ 最优值）——孤峰过拟合一眼能看出来（调用方给 spikeBelow 就标「孤峰」）。参数多于两个时选两轴，其余固定为切片，每个一个下拉。ParamScatter 是自由散点（点没有网格邻接关系、没有切片与邻域），这里要的是格子邻接，所以新做一件；最优与色阶的做法与它一致（暗灰到亮灰、跨 0 用涨跌发散色）。",
+      "files": [
+        {
+          "path": "src/quant/param-surface-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/param-surface-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "period-returns-model",
+      "type": "registry:component",
+      "title": "Period Returns Model",
+      "description": "年 × 月的收益热力表，可切季与周，行尾是年度合计。调用方给细粒度的收益样本（日收益或逐笔），件按周期复利聚合（时区由调用方给，周按 ISO 周）。色阶是涨跌发散色，两端是发散色 token、零附近中性灰，没有彩虹色阶；涨跌色只给年度合计与读数的字。周视图格子窄，数字收进读数区与 title。日历热力图（CalendarHeatmap）是按日的月历格，没有年度合计也不聚合，所以这里新做一件，色用同一套发散 token。",
+      "files": [
+        {
+          "path": "src/quant/period-returns-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/period-returns-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "period-returns-table",
+      "type": "registry:component",
+      "title": "Period Returns Table",
+      "description": "年 × 月的收益热力表，可切季与周，行尾是年度合计。调用方给细粒度的收益样本（日收益或逐笔），件按周期复利聚合（时区由调用方给，周按 ISO 周）。色阶是涨跌发散色，两端是发散色 token、零附近中性灰，没有彩虹色阶；涨跌色只给年度合计与读数的字。周视图格子窄，数字收进读数区与 title。日历热力图（CalendarHeatmap）是按日的月历格，没有年度合计也不聚合，所以这里新做一件，色用同一套发散 token。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/period-returns-model",
+        "@katana/research-color",
+        "@katana/toggle-group"
+      ],
+      "files": [
+        {
+          "path": "src/quant/period-returns-table.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/period-returns-table.tsx"
+        }
+      ]
+    },
+    {
       "name": "quantile-layers",
       "type": "registry:component",
       "title": "Quantile Layers",
@@ -6223,6 +6469,19 @@
           "path": "src/quant/quantile-model.ts",
           "type": "registry:component",
           "target": "~/src/katana/ui/quant/quantile-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "research-color",
+      "type": "registry:component",
+      "title": "Research Color",
+      "description": "研究报告件共用的色阶：涨跌发散色（零附近中性灰）与顺序色，周期收益表与参数曲面热力图用，只引用 token。",
+      "files": [
+        {
+          "path": "src/quant/research-color.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/research-color.ts"
         }
       ]
     },
@@ -6258,6 +6517,39 @@
           "path": "src/quant/ridgeline.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/quant/ridgeline.tsx"
+        }
+      ]
+    },
+    {
+      "name": "robustness-gate-model",
+      "type": "registry:component",
+      "title": "Robustness Gate Model",
+      "description": "一组判定条：每条一行写名字、实测值、比较符号与阈值、一根小条（条长是实测值、一道刻线是阈值）与通过状态；全部通过才过门，有一条失败或没测出来就不过（未知不当通过放行）。阈值、比较方向（≥ ≤ > <）与数值写法全由调用方传，件里没有任何写死的数字。状态用文字加图标，不只靠颜色。新做；设计卡在 KATANAview 的 RobustnessGate。",
+      "files": [
+        {
+          "path": "src/quant/robustness-gate-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/robustness-gate-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "robustness-gate",
+      "type": "registry:component",
+      "title": "Robustness Gate",
+      "description": "一组判定条：每条一行写名字、实测值、比较符号与阈值、一根小条（条长是实测值、一道刻线是阈值）与通过状态；全部通过才过门，有一条失败或没测出来就不过（未知不当通过放行）。阈值、比较方向（≥ ≤ > <）与数值写法全由调用方传，件里没有任何写死的数字。状态用文字加图标，不只靠颜色。新做；设计卡在 KATANAview 的 RobustnessGate。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/robustness-gate-model"
+      ],
+      "files": [
+        {
+          "path": "src/quant/robustness-gate.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/robustness-gate.tsx"
         }
       ]
     },
@@ -6323,6 +6615,40 @@
       ]
     },
     {
+      "name": "underwater-chart",
+      "type": "registry:component",
+      "title": "Underwater Chart",
+      "description": "权益距历史最高的回撤百分比随时间的面积图（点阵纹理，不用实色），标出最大回撤段（前高到恢复的一块底色）、谷底读数，顶上写深度、前高到谷底与恢复用时；到末点还没回到前高时写「尚未恢复」，这一段改琥珀底。横轴复用 EquityCurve 的 timeX 与默认刻度、同样的 xDomain / xTicks / formatTime 写法，左侧留白一致，叠着放时同一时刻落在同一列。EquityCurve 里已有镜像回撤，但没有最大回撤段与恢复时长，所以这里新做一件，不改它。数据由调用方给（drawdown 小数 ≤ 0）。",
+      "registryDependencies": [
+        "@katana/chart-kit",
+        "@katana/cn",
+        "@katana/equity-curve-model",
+        "@katana/series-geometry",
+        "@katana/underwater-model",
+        "@katana/use-scrubber"
+      ],
+      "files": [
+        {
+          "path": "src/quant/underwater-chart.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/underwater-chart.tsx"
+        }
+      ]
+    },
+    {
+      "name": "underwater-model",
+      "type": "registry:component",
+      "title": "Underwater Model",
+      "description": "权益距历史最高的回撤百分比随时间的面积图（点阵纹理，不用实色），标出最大回撤段（前高到恢复的一块底色）、谷底读数，顶上写深度、前高到谷底与恢复用时；到末点还没回到前高时写「尚未恢复」，这一段改琥珀底。横轴复用 EquityCurve 的 timeX 与默认刻度、同样的 xDomain / xTicks / formatTime 写法，左侧留白一致，叠着放时同一时刻落在同一列。EquityCurve 里已有镜像回撤，但没有最大回撤段与恢复时长，所以这里新做一件，不改它。数据由调用方给（drawdown 小数 ≤ 0）。",
+      "files": [
+        {
+          "path": "src/quant/underwater-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/underwater-model.ts"
+        }
+      ]
+    },
+    {
       "name": "vintage-series-model",
       "type": "registry:component",
       "title": "Vintage Series Model",
@@ -6353,6 +6679,76 @@
           "path": "src/quant/vintage-series.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/quant/vintage-series.tsx"
+        }
+      ]
+    },
+    {
+      "name": "walk-forward-matrix",
+      "type": "registry:component",
+      "title": "Walk Forward Matrix",
+      "description": "步进（Walk-Forward）优化的窗口表：每个窗口一行——样本内与样本外区间、这个窗口里选中的参数、样本外收益、通过与否，行首一条共用时间轴的小条（灰是样本内、亮而高是样本外），锚定模式样本内条都从同一处起，滚动模式整条后移。底部汇总通过窗口、样本外盈利占比、样本内与样本外年化与步进效率（样本外年化 ÷ 样本内年化；年化取各窗口的平均，不把重叠的样本内区间复利）。锚定与滚动各一套窗口由调用方给，件里切换；「通过」的判据是调用方的策略。新做。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/toggle-group",
+        "@katana/walk-forward-model"
+      ],
+      "files": [
+        {
+          "path": "src/quant/walk-forward-matrix.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/walk-forward-matrix.tsx"
+        }
+      ]
+    },
+    {
+      "name": "walk-forward-model",
+      "type": "registry:component",
+      "title": "Walk Forward Model",
+      "description": "步进（Walk-Forward）优化的窗口表：每个窗口一行——样本内与样本外区间、这个窗口里选中的参数、样本外收益、通过与否，行首一条共用时间轴的小条（灰是样本内、亮而高是样本外），锚定模式样本内条都从同一处起，滚动模式整条后移。底部汇总通过窗口、样本外盈利占比、样本内与样本外年化与步进效率（样本外年化 ÷ 样本内年化；年化取各窗口的平均，不把重叠的样本内区间复利）。锚定与滚动各一套窗口由调用方给，件里切换；「通过」的判据是调用方的策略。新做。",
+      "files": [
+        {
+          "path": "src/quant/walk-forward-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/quant/walk-forward-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "cn-auction-model",
+      "type": "registry:lib",
+      "title": "Cn Auction Model",
+      "description": "09:15–09:25 集合竞价的撮合价画成台阶（价格在两个时刻之间不变，到下一个时刻才跳），台阶下是匹配量柱；09:20 起不可撤单画一条竖的虚分界，昨收给了就画横的虚参考线，台阶按最新撮合价对昨收着涨跌色（跟 data-updown，没有昨收不着色）；上方读数是最新撮合价、相对昨收的涨跌幅与匹配量。横轴只有这十分钟。同一套台阶还有迷你版 AuctionStepSpark，DataGrid 的 auctionStep 列类型用它（可按相对昨收的涨跌幅排序）。点由调用方给，不带行情。",
+      "registryDependencies": [
+        "@katana/cn-session"
+      ],
+      "files": [
+        {
+          "path": "src/cn/auction-model.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/cn/auction-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "cn-auction-step",
+      "type": "registry:component",
+      "title": "Cn Auction Step",
+      "description": "09:15–09:25 集合竞价的撮合价画成台阶（价格在两个时刻之间不变，到下一个时刻才跳），台阶下是匹配量柱；09:20 起不可撤单画一条竖的虚分界，昨收给了就画横的虚参考线，台阶按最新撮合价对昨收着涨跌色（跟 data-updown，没有昨收不着色）；上方读数是最新撮合价、相对昨收的涨跌幅与匹配量。横轴只有这十分钟。同一套台阶还有迷你版 AuctionStepSpark，DataGrid 的 auctionStep 列类型用它（可按相对昨收的涨跌幅排序）。点由调用方给，不带行情。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/cn-auction-model",
+        "@katana/cn-format",
+        "@katana/cn-labels",
+        "@katana/cn-value"
+      ],
+      "files": [
+        {
+          "path": "src/cn/auction-step.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/cn/auction-step.tsx"
         }
       ]
     },
@@ -6389,6 +6785,42 @@
           "path": "src/cn/board-mark.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/cn/board-mark.tsx"
+        }
+      ]
+    },
+    {
+      "name": "cn-flow-race-model",
+      "type": "registry:lib",
+      "title": "Cn Flow Race Model",
+      "description": "每个板块一条分钟累计净流入线，横轴是 09:30–15:00 的时段轴（午休不占宽度，中间一条竖虚线标 11:30/13:00），0 轴一条虚线；右端按最新值从大到小排成一列标签（名次、名字、带正负号的万 / 亿），标签错开不重叠。线只用语义色调：最新值为正取涨色、为负取跌色（跟 data-updown），第一名的线粗一点；悬停或聚焦某一行标签，对应的线加粗、其余变淡。默认画前 8 名。序列由调用方给，取不到的点断线，不当 0。",
+      "registryDependencies": [
+        "@katana/cn-session"
+      ],
+      "files": [
+        {
+          "path": "src/cn/flow-race-model.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/cn/flow-race-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "cn-flow-race",
+      "type": "registry:component",
+      "title": "Cn Flow Race",
+      "description": "每个板块一条分钟累计净流入线，横轴是 09:30–15:00 的时段轴（午休不占宽度，中间一条竖虚线标 11:30/13:00），0 轴一条虚线；右端按最新值从大到小排成一列标签（名次、名字、带正负号的万 / 亿），标签错开不重叠。线只用语义色调：最新值为正取涨色、为负取跌色（跟 data-updown），第一名的线粗一点；悬停或聚焦某一行标签，对应的线加粗、其余变淡。默认画前 8 名。序列由调用方给，取不到的点断线，不当 0。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/cn-flow-race-model",
+        "@katana/cn-format",
+        "@katana/cn-labels",
+        "@katana/cn-seat-model"
+      ],
+      "files": [
+        {
+          "path": "src/cn/flow-race.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/cn/flow-race.tsx"
         }
       ]
     },
@@ -6486,6 +6918,107 @@
       ]
     },
     {
+      "name": "cn-mini-k-card-grid",
+      "type": "registry:component",
+      "title": "Cn Mini K Card Grid",
+      "description": "选股结果的卡片网格：一行 2 / 3 / 4 只（columns，默认 3；容器放不下时每张最少 140px，自动少排几列），每张卡是名称与代码、一个小 K 线（包里自带的轻量 SVG 蜡烛，实体加影线、涨红跌绿只用语义色调跟 data-updown）、最新价与涨跌幅。蜡烛、最新价、涨跌幅都由调用方给（涨跌幅不给就用最后两根收盘算，最新价不给取最后一根收盘），取不到写「—」；没有蜡烛写「暂无 K 线」。给了 onSelect 卡片是按钮。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/cn-labels",
+        "@katana/cn-mini-k-model",
+        "@katana/cn-value"
+      ],
+      "files": [
+        {
+          "path": "src/cn/mini-k-card-grid.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/cn/mini-k-card-grid.tsx"
+        }
+      ]
+    },
+    {
+      "name": "cn-mini-k-model",
+      "type": "registry:lib",
+      "title": "Cn Mini K Model",
+      "description": "选股结果的卡片网格：一行 2 / 3 / 4 只（columns，默认 3；容器放不下时每张最少 140px，自动少排几列），每张卡是名称与代码、一个小 K 线（包里自带的轻量 SVG 蜡烛，实体加影线、涨红跌绿只用语义色调跟 data-updown）、最新价与涨跌幅。蜡烛、最新价、涨跌幅都由调用方给（涨跌幅不给就用最后两根收盘算，最新价不给取最后一根收盘），取不到写「—」；没有蜡烛写「暂无 K 线」。给了 onSelect 卡片是按钮。",
+      "files": [
+        {
+          "path": "src/cn/mini-k-model.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/cn/mini-k-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "cn-move-feed-model",
+      "type": "registry:lib",
+      "title": "Cn Move Feed Model",
+      "description": "盘口异动的流：一行一条，时间 · 名称（带代码）· 类型胶囊 · 数值；按时间从新到旧排，新来的从顶上进（淡入一下，reduced-motion 时不播）。类型胶囊按涨 / 跌 / 量 / 板着色（涨跌读 --pnl-up / --pnl-down 跟 data-updown，量是中性强调，板是警示色），顶上一排类型多选筛（点一个只看它、再点取消，一个都没选是全部，带条数）。点行触发 onSelect 联动个股页，selectedId 标出联动的那一行。随包认识十一种类型（火箭发射、封涨停板、大笔卖出…），也可以传自己的类型表。条目由调用方给。与 NewsFeed（新闻阅读器）、EventTimeline（公司事件）不同。",
+      "registryDependencies": [
+        "@katana/cn-format",
+        "@katana/cn-session",
+        "@katana/cn-value"
+      ],
+      "files": [
+        {
+          "path": "src/cn/move-feed-model.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/cn/move-feed-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "cn-move-feed",
+      "type": "registry:component",
+      "title": "Cn Move Feed",
+      "description": "盘口异动的流：一行一条，时间 · 名称（带代码）· 类型胶囊 · 数值；按时间从新到旧排，新来的从顶上进（淡入一下，reduced-motion 时不播）。类型胶囊按涨 / 跌 / 量 / 板着色（涨跌读 --pnl-up / --pnl-down 跟 data-updown，量是中性强调，板是警示色），顶上一排类型多选筛（点一个只看它、再点取消，一个都没选是全部，带条数）。点行触发 onSelect 联动个股页，selectedId 标出联动的那一行。随包认识十一种类型（火箭发射、封涨停板、大笔卖出…），也可以传自己的类型表。条目由调用方给。与 NewsFeed（新闻阅读器）、EventTimeline（公司事件）不同。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/cn-labels",
+        "@katana/cn-move-feed-model"
+      ],
+      "files": [
+        {
+          "path": "src/cn/move-feed.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/cn/move-feed.tsx"
+        }
+      ]
+    },
+    {
+      "name": "cn-seat-model",
+      "type": "registry:lib",
+      "title": "Cn Seat Model",
+      "description": "一只票上榜当日的买入前五与卖出前五席位，左右并排（容器窄于 560px 上下排）：每行名次、席位名、游资标签（调用方给）、买入额、卖出额、净额（万 / 亿写法，净额正涨负跌跟 data-updown），每侧一行合计，表下一行写买入合计与卖出合计之差。席位清单与金额由调用方给，件只按买入额 / 卖出额取前几名（默认 5）、算净额与合计；取不到写「—」，不写 0。多只票上榜的横向总览用 NetBuyBar。",
+      "files": [
+        {
+          "path": "src/cn/seat-model.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/cn/seat-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "cn-seat-table",
+      "type": "registry:component",
+      "title": "Cn Seat Table",
+      "description": "一只票上榜当日的买入前五与卖出前五席位，左右并排（容器窄于 560px 上下排）：每行名次、席位名、游资标签（调用方给）、买入额、卖出额、净额（万 / 亿写法，净额正涨负跌跟 data-updown），每侧一行合计，表下一行写买入合计与卖出合计之差。席位清单与金额由调用方给，件只按买入额 / 卖出额取前几名（默认 5）、算净额与合计；取不到写「—」，不写 0。多只票上榜的横向总览用 NetBuyBar。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/cn-format",
+        "@katana/cn-labels",
+        "@katana/cn-seat-model",
+        "@katana/cn-value"
+      ],
+      "files": [
+        {
+          "path": "src/cn/seat-table.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/cn/seat-table.tsx"
+        }
+      ]
+    },
+    {
       "name": "cn-sentiment-gauge",
       "type": "registry:component",
       "title": "Cn Sentiment Gauge",
@@ -6574,6 +7107,43 @@
       ]
     },
     {
+      "name": "cn-trading-date-model",
+      "type": "registry:lib",
+      "title": "Cn Trading Date Model",
+      "description": "只能选交易日的日期选择：日期按钮点开日历（沿用 DateTimeInput 的日历皮肤，行为底座是 react-aria 的 Calendar），休市的日子灰着点不了；两侧的按钮直接跳到上一个 / 下一个交易日（跳过周末与长假）。交易日历由调用方传，可以是一组 YYYY-MM-DD（数组或 Set），也可以是判定函数；包里不带日历数据，也不读时钟。min / max 圈出能选的范围，前后按钮到边界禁用。",
+      "files": [
+        {
+          "path": "src/cn/trading-date-model.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/cn/trading-date-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "cn-trading-date-picker",
+      "type": "registry:component",
+      "title": "Cn Trading Date Picker",
+      "description": "只能选交易日的日期选择：日期按钮点开日历（沿用 DateTimeInput 的日历皮肤，行为底座是 react-aria 的 Calendar），休市的日子灰着点不了；两侧的按钮直接跳到上一个 / 下一个交易日（跳过周末与长假）。交易日历由调用方传，可以是一组 YYYY-MM-DD（数组或 Set），也可以是判定函数；包里不带日历数据，也不读时钟。min / max 圈出能选的范围，前后按钮到边界禁用。",
+      "dependencies": [
+        "lucide-react@1.67.0",
+        "react-aria-components@1.22.1"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/cn-labels",
+        "@katana/cn-trading-date-model",
+        "@katana/date-range-model",
+        "@katana/popover"
+      ],
+      "files": [
+        {
+          "path": "src/cn/trading-date-picker.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/cn/trading-date-picker.tsx"
+        }
+      ]
+    },
+    {
       "name": "cn-value",
       "type": "registry:lib",
       "title": "Cn Value",
@@ -6601,6 +7171,8 @@
         "@katana/checkbox",
         "@katana/chip-group",
         "@katana/cn",
+        "@katana/cn-auction-model",
+        "@katana/cn-auction-step",
         "@katana/cn-badge-model",
         "@katana/cn-labels",
         "@katana/cn-limit-status",
@@ -7475,6 +8047,143 @@
       ]
     },
     {
+      "name": "positions-table",
+      "type": "registry:component",
+      "title": "Positions Table",
+      "description": "账户四件之一（#104，#103 持仓监控的表）：一行一个持仓，列出品种、方向（多 / 空，文字）、数量、开仓均价、标记价、强平价、强平距离（% 加进度条）、未实现盈亏（金额与 %）、保证金与杠杆；行内「平仓」「止盈止损」只发回调；表尾合计。强平距离近于调用方给的阈值（liquidationWarnPct）时整格换警示色并带图标，再近一半是危险档。同页的 PositionsOrdersTabs 把持仓表与委托表摆进同一个页签外壳。件不认识交易所，不下单。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/button",
+        "@katana/cn",
+        "@katana/data-grid",
+        "@katana/num",
+        "@katana/orders-table",
+        "@katana/pnl-text",
+        "@katana/quant-format",
+        "@katana/tabs"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/positions-table/positions-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/positions-table/positions-model.ts"
+        },
+        {
+          "path": "src/blocks/positions-table/positions-orders-tabs.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/positions-table/positions-orders-tabs.tsx"
+        },
+        {
+          "path": "src/blocks/positions-table/positions-table.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/positions-table/positions-table.tsx"
+        }
+      ]
+    },
+    {
+      "name": "orders-table",
+      "type": "registry:component",
+      "title": "Orders Table",
+      "description": "账户四件之一（#104）：一行一张在途委托：品种、方向（买 / 卖，文字）、类型（限价 / 市价 / 条件）、价格、数量、已成交（数量加进度条）、状态、时间；行内「撤单」；价格旁铅笔进入行内改价：回车提交 onAmend(order, price)，Esc 或失焦取消；表上方「全部撤单」发 onCancelAll(还能撤的单)。市价单与撤单中的单不能改价。件不下单，只发回调。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/button",
+        "@katana/cn",
+        "@katana/data-grid",
+        "@katana/input",
+        "@katana/num",
+        "@katana/tag"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/orders-table/orders-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/orders-table/orders-model.ts"
+        },
+        {
+          "path": "src/blocks/orders-table/orders-table.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/orders-table/orders-table.tsx"
+        }
+      ]
+    },
+    {
+      "name": "account-equity",
+      "type": "registry:component",
+      "title": "Account Equity",
+      "description": "账户四件之一（#104）：总权益、可用、已用保证金、未实现盈亏四个读数，下面是保证金率风险条：安全、警告、危险三段按调用方给的阈值切开（direction 默认越高越危险，维持保证金率那种越低越危险写 lower），指针标当前位置，档位同时写成文字；保证金率不传就按已用保证金 / 总权益算。可选 curve 画迷你权益曲线。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/lcd",
+        "@katana/num",
+        "@katana/quant-format",
+        "@katana/sparkline",
+        "@katana/tag"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/account-equity/account-equity-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/account-equity/account-equity-model.ts"
+        },
+        {
+          "path": "src/blocks/account-equity/account-equity.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/account-equity/account-equity.tsx"
+        }
+      ]
+    },
+    {
+      "name": "funding-rate",
+      "type": "registry:component",
+      "title": "Funding Rate",
+      "description": "账户四件之一（#104）：当前费率（带符号、正负着色，旁边写谁付谁）、预测费率、下次结算倒计时（HH:MM:SS，到点写 labels.due）、历史费率小柱状图（零线居中，按历史最大绝对值归一，悬停出时间与费率）。结算时间由调用方传，件里只算倒计时；now 可注入，不传就每秒读一次系统时钟。费率是百分数。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/lcd",
+        "@katana/num",
+        "@katana/quant-format"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/funding-rate/funding-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/funding-rate/funding-model.ts"
+        },
+        {
+          "path": "src/blocks/funding-rate/funding-rate.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/funding-rate/funding-rate.tsx"
+        }
+      ]
+    },
+    {
+      "name": "options-chain",
+      "type": "registry:component",
+      "title": "Options Chain",
+      "description": "账户四件之一（#104）：行权价居中，左认购右认沽；每翼的列可配（买价、卖价、最新、IV、Delta、持仓量），认购翼镜像排，第一个字段两翼都贴着行权价；离标的价最近的行权价是平值行，整行加亮并标「平值」，认购在平值之下、认沽在平值之上是实值区，铺淡底；上方是到期日切换（选项由调用方传，rows 由调用方换）；点任一格回调 onQuoteSelect(strike, side, field)。认购认沽靠位置区分，不用涨跌色。",
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/toggle-group"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/options-chain/options-chain.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/options-chain/options-chain.tsx"
+        },
+        {
+          "path": "src/blocks/options-chain/options-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/options-chain/options-model.ts"
+        }
+      ]
+    },
+    {
       "name": "order-book",
       "type": "registry:component",
       "title": "Order Book",
@@ -7586,6 +8295,76 @@
       ]
     },
     {
+      "name": "portfolio-run-grid",
+      "type": "registry:component",
+      "title": "Portfolio Run Grid",
+      "description": "前向测试的主表：一个策略跑在一组品种上，每个品种一行——持仓、浮动盈亏、已实现盈亏、占用风险资金、权益贡献、状态（灯加文字：运行 / 暂停 / 停新开 / 断流），行内「暂停 / 恢复」与「平掉这个品种」；顶上一行组合汇总（权益、可用资金、购买力、回撤，LCD 读数）。暂停的行整行变琥珀色、按钮换成「恢复」，「平掉」仍可点；空仓的行「平掉」灰掉。底座是 DataGrid 的只读表。动作只把被点的那一行交给调用方，件不下单、不认识任何引擎或交易所。功能参照 MultiCharts Portfolio Trader 的 Forward Testing 窗口（2026-11-21 读官方页面，界面细节未实看，待核对）。演示数据是编的。",
+      "registryDependencies": [
+        "@katana/button",
+        "@katana/cn",
+        "@katana/data-grid",
+        "@katana/lcd",
+        "@katana/led",
+        "@katana/severity"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/portfolio-run-grid/portfolio-run-grid.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/portfolio-run-grid/portfolio-run-grid.tsx"
+        },
+        {
+          "path": "src/blocks/portfolio-run-grid/portfolio-run-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/portfolio-run-grid/portfolio-run-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "replay-transport",
+      "type": "registry:component",
+      "title": "Replay Transport",
+      "description": "历史回放的操作条：播放 / 暂停、逐根、倍速选择（倍数列表由调用方传，件不写死）、可拖的进度条（Scrubber）、当前回放时刻读数（LCD）、「跳到时刻」输入、「按 N 个 tick 跳过」；多图共用一个时钟时写「同步中 · N 个面板」。件不走时钟：当前时刻与是否在播由 props 回来，用户的意图（播放、跳到哪、几倍速、跳几个 tick）经回调发出，时钟与数据在调用方的引擎里。时刻默认按 UTC 写 YYYY-MM-DD HH:MM:SS，formatTime / parseTime 可换。功能参照 MultiCharts Data Replay（2026-11-21 读官方功能页，控制条细节未实看，待核对）。演示的时钟与时间都是编的。",
+      "registryDependencies": [
+        "@katana/button",
+        "@katana/cn",
+        "@katana/input",
+        "@katana/lcd",
+        "@katana/led",
+        "@katana/num",
+        "@katana/scrubber",
+        "@katana/toggle-group"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/replay-transport/replay-transport-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/replay-transport/replay-transport-model.ts"
+        },
+        {
+          "path": "src/blocks/replay-transport/replay-transport.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/replay-transport/replay-transport.tsx"
+        }
+      ]
+    },
+    {
+      "name": "run-mode-badge",
+      "type": "registry:component",
+      "title": "Run Mode Badge",
+      "description": "一块小牌写清现在是哪种模式：模拟、回放、前向测试、实盘。四种样子分明、不混：模拟是虚线灰框，回放是蓝色细框加倒带图形，前向测试是绿色框加淡底与前进箭头，实盘是强调色实心底、粗字与外圈（最醒目，点缓缓呼吸，减弱动效偏好下不动）。每种带自己的图形，灰度或色盲下也分得出。可在词后带一小段补充文字（回放日期、账户名）。文字由调用方传。",
+      "registryDependencies": [
+        "@katana/cn"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/run-mode-badge/run-mode-badge.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/run-mode-badge/run-mode-badge.tsx"
+        }
+      ]
+    },
+    {
       "name": "news-reader",
       "type": "registry:component",
       "title": "News Reader",
@@ -7650,9 +8429,9 @@
       "description": "OrderTicket 与 PositionCalculator 共用的小件：买卖切换、带标签与单位的数字框、读数行、数字格式。",
       "registryDependencies": [
         "@katana/cn",
-        "@katana/focus",
         "@katana/input",
-        "@katana/sizing-model"
+        "@katana/sizing-model",
+        "@katana/toggle-group"
       ],
       "files": [
         {
