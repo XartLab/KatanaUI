@@ -24,9 +24,9 @@ toast 来自 useCopyFeedback；viewport=false 只画这一条（文档与截图�
 
 返回 { toast, report, dismiss, pause, resume }：report(结果或 Promise) 插一条新的（新 key，读屏会再读），默认 2400ms 后收；pause / resume 接到 CopyToast 的 onPause / onResume，指针或焦点在上面时不收。
 
-### copyImage(node, { filename?, background?, scale?, noDownload? })
+### copyImage(node, { filename?, background?, scale?, noDownload?, embedFonts? })
 
-拍 node（ChartActions 交来的是图的 figure）：逐元素抄计算样式、canvas 换成图片，放进 SVG foreignObject 画到 canvas 上，转 PNG；data-copy-image="skip" 的元素（工具条）不进图。默认倍数 devicePixelRatio（1–3），底色取最近一个不透明的祖先背景。
+拍 node（ChartActions 交来的是图的 figure）：逐元素抄计算样式、canvas 换成图片，放进 SVG foreignObject 画到 canvas 上，转 PNG；data-copy-image="skip" 的元素（工具条）不进图。默认倍数 devicePixelRatio（1–3），底色取最近一个不透明的祖先背景。图里用到的同源网页字体内嵌成 data URL（#87，embedFonts 默认 true），拍出来字形跟页面一致。
 
 ### copyText(text) / canCopyImage() / elementToPng(node)
 

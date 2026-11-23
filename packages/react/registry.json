@@ -918,6 +918,19 @@
       ]
     },
     {
+      "name": "link-group",
+      "type": "registry:lib",
+      "title": "Link Group",
+      "description": "同一联动组的件共用品种、周期、十字线时刻、可见区间（#22 G8）：自选点一行，同组的图换品种；一张图上移动十字线，同组的图跟着画。照 TradingView 多图布局的同步（品种、周期、十字线、时间、日期区间）与自选联动。组 id 一般是面板头色点的 LinkGroup（A–D），null 不联动。纯 context，不带宿主、不存盘。",
+      "files": [
+        {
+          "path": "src/lib/link-group.tsx",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/lib/link-group.tsx"
+        }
+      ]
+    },
+    {
       "name": "live-line",
       "type": "registry:lib",
       "title": "Live Line",
@@ -4075,7 +4088,10 @@
       "name": "shortcut-sheet",
       "type": "registry:component",
       "title": "Shortcut Sheet",
-      "description": "按作用域分组列出注册表里现在的快捷键，可搜索，冲突标出来，可接 ShortcutRecorder 改键。照 TradingView 的 Keyboard shortcuts 面板（Ctrl/Cmd+/）。件只是内容，放进 Dialog 或侧栏由调用方定。",
+      "description": "按作用域分组列出注册表里现在的快捷键，可搜索，冲突标出来，可接 ShortcutRecorder 改键。照 TradingView 的 Keyboard shortcuts 面板（Ctrl/Cmd+/）：分节默认收起，点节名展开；搜索时命中的节自动展开。件只是内容，放进 Dialog 或侧栏由调用方定。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
       "registryDependencies": [
         "@katana/cn",
         "@katana/hotkeys",
@@ -4096,7 +4112,11 @@
       "name": "side-nav",
       "type": "registry:component",
       "title": "Side Nav",
-      "description": "分组的侧栏导航：组名小号大写；没选中的字淡，悬停变亮，当前项最亮。每组左边一条 1px 虚线从组顶走到当前项、用 6px 弯钩拐进去，悬停另一项时以淡色画一条到悬停项，切换时 200ms 滑过去。顶上过滤框（⌘K / Ctrl+K 聚焦，Enter 打开第一项，Esc 清空），底部淡出。照 rareui.com 组件站左栏（2026-11-17 实测），实现原创。件不管路由：链接给 href，当前项由调用方传。轨迹颜色走 --k-sidenav-trail，默认品牌橙。",
+      "description": "分组的侧栏导航：组名小号大写；没选中的字淡，悬停变亮，当前项最亮。每组左边一条 1px 虚线从组顶走到当前项、用 6px 弯钩拐进去，悬停另一项时以淡色画一条到悬停项，切换时 200ms 滑过去。顶上过滤框（Mod+K 聚焦：经 useHotkeys 登记在快捷键注册表里，只认这一个组合、Ctrl+Shift+K 不拦，页上别处登记了 Mod+K 就让给它；searchHotkey 改键或给 null 关掉；Enter 打开第一项，Esc 清空），底部淡出。照 rareui.com 组件站左栏（2026-11-17 实测），实现原创。件不管路由：链接给 href，当前项由调用方传。轨迹颜色走 --k-sidenav-trail，默认品牌橙。",
+      "registryDependencies": [
+        "@katana/hotkeys",
+        "@katana/hotkeys-model"
+      ],
       "files": [
         {
           "path": "src/patterns/side-nav.tsx",
@@ -4267,6 +4287,24 @@
           "path": "src/patterns/tree-view.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/patterns/tree-view.tsx"
+        }
+      ]
+    },
+    {
+      "name": "use-undo-hotkeys",
+      "type": "registry:lib",
+      "title": "Use Undo Hotkeys",
+      "description": "通用的撤销 / 重做栈：存整份快照，值由调用方定。push 带 kind，同种操作在 800ms 内合并成一步（拖一次滑块只撤一次）；最多 100 步；可选绑定 Mod+Z 撤销、Mod+Shift+Z 与 Ctrl+Y 重做。用于列布局、行序、分组这类「拖错了」的恢复，不进存档。",
+      "registryDependencies": [
+        "@katana/hotkeys",
+        "@katana/hotkeys-model",
+        "@katana/use-undo-stack"
+      ],
+      "files": [
+        {
+          "path": "src/patterns/use-undo-hotkeys.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/patterns/use-undo-hotkeys.ts"
         }
       ]
     },
@@ -4885,6 +4923,19 @@
           "path": "src/quotes/symbol-info.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/quotes/symbol-info.tsx"
+        }
+      ]
+    },
+    {
+      "name": "symbol-list",
+      "type": "registry:lib",
+      "title": "Symbol List",
+      "description": "照 TradingView 右侧自选栏（2026-11-15 实测）：列 Symbol / Last / Chg / Chg%，行首小旗标与字母圆徽标；最新价变动时只有变了的尾数闪涨跌色、约 1 秒落回；点列头排序（升序、降序、回原顺序）。价格怎么写由 formatPrice 定，数与文字由调用方传。",
+      "files": [
+        {
+          "path": "src/quotes/symbol-list.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/quotes/symbol-list.ts"
         }
       ]
     },
@@ -8102,6 +8153,11 @@
           "path": "src/blocks/data-grid/grid-menu.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/blocks/data-grid/grid-menu.tsx"
+        },
+        {
+          "path": "src/blocks/data-grid/grid-section-row.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/data-grid/grid-section-row.tsx"
         },
         {
           "path": "src/blocks/data-grid/host.tsx",

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // MarketHeatmap 的工具条：数据集、大小、颜色、分组（下拉或分段两种写法），全屏，显示开关（徽标、标题、格内数值），「在选股器打开」。
 // 从 market-heatmap.tsx 拆出（G5），行为不变；状态都在主件里，这里只画与回调。
-import { MaximizeIcon } from 'lucide-react'
+import { CameraIcon, MaximizeIcon } from 'lucide-react'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../primitives/select.tsx'
 import { Switch } from '../primitives/switch.tsx'
 import { ToggleGroup, ToggleGroupItem } from '../primitives/toggle-group.tsx'
@@ -27,6 +27,8 @@ export type HeatmapToolbarProps = Pick<
   grouped: boolean
   onGrouped: (grouped: boolean) => void
   onFullscreen: () => void
+  /** 相机钮：给了（且有 labels.copyImage）才画。 */
+  onCopyImage?: () => void
   showLogo: boolean
   setShowLogo: (show: boolean) => void
   titleMode: HeatmapTitleMode
@@ -47,6 +49,7 @@ export function HeatmapToolbar({
   grouped,
   onGrouped,
   onFullscreen,
+  onCopyImage,
   showLogo,
   setShowLogo,
   titleMode,
@@ -152,9 +155,23 @@ export function HeatmapToolbar({
           ) : null}
         </>
       )}
+      {labels.copyImage && onCopyImage ? (
+        <button
+          type="button"
+          className="k-mheat-fullscreen k-mheat-copy"
+          data-slot="heatmap-copy-image"
+          data-copy-image="skip"
+          aria-label={labels.copyImage}
+          title={labels.copyImage}
+          onClick={onCopyImage}
+        >
+          <CameraIcon size={14} aria-hidden="true" />
+        </button>
+      ) : null}
       {labels.fullscreen ? (
         <button
           type="button"
+          data-copy-image="skip"
           className="k-mheat-fullscreen"
           data-slot="heatmap-fullscreen"
           aria-label={labels.fullscreen}
