@@ -13545,8 +13545,14 @@ button.k-quote-card.is-link:focus-visible {
 }
 
 :root {
-  scrollbar-width: thin;
   scrollbar-color: var(--alpha-white-13) transparent;
+}
+
+:root, :where(:not(.k-reel)) {
+  scrollbar-width: thin;
+}
+
+:root {
   color-scheme: dark;
 }
 
@@ -21933,6 +21939,7 @@ button.k-consensus-hash:focus-visible {
 
 .k-reel {
   gap: var(--k-gap);
+  scrollbar-color: auto;
   display: flex;
   overflow-x: auto;
 }
