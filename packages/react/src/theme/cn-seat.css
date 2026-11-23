@@ -1,0 +1,107 @@
+/* SPDX-License-Identifier: MIT */
+/* 龙虎榜席位（SeatTable，#110）：买入前五与卖出前五左右并排（容器窄于 560px 上下排），每侧一张表。数字等宽右对齐；
+   净额正涨负跌读 --pnl-up / --pnl-down（根上 data-updown 互换）；买入列在买入侧、卖出列在卖出侧稍亮（主列），另一列退成次要灰。不写色值。 */
+.k-seat {
+  container-type: inline-size;
+  min-width: 0;
+  padding: var(--space-3);
+  background: var(--bg-200);
+  border: var(--hairline);
+  color: var(--ink-200);
+  font: var(--text-caption) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+}
+.k-seat-sides {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-4);
+}
+@container (max-width: 560px) {
+  .k-seat-sides {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+.k-seat-title {
+  margin: 0 0 var(--space-1);
+  color: var(--ink-100);
+  font: var(--text-data) var(--font-sans);
+}
+.k-seat-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+.k-seat-table th,
+.k-seat-table td {
+  height: 24px;
+  padding: 0 var(--space-1);
+  border-bottom: var(--hairline);
+  font-weight: 400;
+  text-align: left;
+  white-space: nowrap;
+}
+.k-seat-table thead th {
+  color: var(--ink-300);
+}
+.k-seat-table .k-seat-rank {
+  width: 20px;
+  color: var(--ink-300);
+}
+.k-seat-name-text {
+  display: inline-block;
+  max-width: calc(100% - 4em);
+  overflow: hidden;
+  vertical-align: middle;
+  text-overflow: ellipsis;
+}
+.k-seat-name .k-cn-chip {
+  margin-left: var(--space-1);
+  vertical-align: middle;
+}
+.k-seat-table .k-seat-num {
+  width: 72px;
+  text-align: right;
+}
+.k-seat-table td.k-seat-num {
+  color: var(--ink-300);
+}
+.k-seat-table td.k-seat-num[data-main] {
+  color: var(--ink-100);
+}
+.k-seat-table .k-seat-net[data-tone='up'] {
+  color: var(--pnl-up);
+}
+.k-seat-table .k-seat-net[data-tone='down'] {
+  color: var(--pnl-down);
+}
+.k-seat-table tfoot th,
+.k-seat-table tfoot td {
+  border-bottom: 0;
+  color: var(--ink-100);
+}
+.k-seat-table tfoot td.k-seat-net[data-tone='up'] {
+  color: var(--pnl-up);
+}
+.k-seat-table tfoot td.k-seat-net[data-tone='down'] {
+  color: var(--pnl-down);
+}
+.k-seat-spread {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  margin: var(--space-2) 0 0;
+  color: var(--ink-300);
+}
+.k-seat-spread strong {
+  font-weight: 500;
+}
+.k-seat-spread[data-tone='up'] strong {
+  color: var(--pnl-up);
+}
+.k-seat-spread[data-tone='down'] strong {
+  color: var(--pnl-down);
+}
+.k-seat-empty {
+  margin: 0;
+  color: var(--ink-300);
+}

@@ -1,0 +1,133 @@
+/* SPDX-License-Identifier: MIT */
+/* DepthChart 深度图（#104）。买盘走涨色、卖盘走跌色（--k-tone-up / --k-tone-down，根上 data-updown 互换时跟着换，不写死色值）。
+   svg 只画图形：面积、描边、中间价虚线、网格；文字（纵轴刻度、中间价、横轴价格）与十字线、读数框是叠在上面的 HTML，所以拉伸不变形。
+   右边留一条纵轴刻度的位置（--depth-axis-w），刻度写在绘图区外面，不压到数据上。 */
+.k-depth {
+  --depth-axis-w: 56px;
+  position: relative;
+  min-width: 0;
+  padding: var(--space-3) var(--inset-x) var(--space-2);
+  color: var(--k-content-primary-foreground);
+  font: var(--text-data) var(--font-sans);
+}
+.k-depth-plot {
+  position: relative;
+  margin-right: var(--depth-axis-w);
+  outline: none;
+  touch-action: pan-y;
+}
+.k-depth-plot:focus-visible {
+  outline: 1px solid var(--k-separable-bold-borderColor);
+  outline-offset: 2px;
+}
+.k-depth-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.k-depth-area[data-side='bid'] {
+  fill: color-mix(in srgb, var(--k-tone-up-foreground) 22%, transparent);
+}
+.k-depth-area[data-side='ask'] {
+  fill: color-mix(in srgb, var(--k-tone-down-foreground) 22%, transparent);
+}
+.k-depth-line {
+  fill: none;
+  stroke-width: 1.5px;
+  vector-effect: non-scaling-stroke;
+}
+.k-depth-line[data-side='bid'] {
+  stroke: var(--k-tone-up-foreground);
+}
+.k-depth-line[data-side='ask'] {
+  stroke: var(--k-tone-down-foreground);
+}
+.k-depth-mid {
+  stroke: var(--k-content-secondary-foreground);
+  stroke-width: 1px;
+  stroke-dasharray: 3 3;
+  vector-effect: non-scaling-stroke;
+}
+.k-depth-ytick {
+  position: absolute;
+  left: calc(100% + 6px);
+  transform: translateY(-50%);
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  pointer-events: none;
+}
+.k-depth-midlabel {
+  position: absolute;
+  top: 2px;
+  transform: translateX(-50%);
+  padding: 0 4px;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  pointer-events: none;
+}
+.k-depth-cross {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--k-separable-bold-borderColor);
+  pointer-events: none;
+}
+.k-depth-dot {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  margin: -4px 0 0 -4px;
+  border-radius: 50%;
+  border: 2px solid var(--k-content-primary-foreground);
+  pointer-events: none;
+}
+.k-depth-dot[data-side='bid'] {
+  background: var(--k-tone-up-foreground);
+}
+.k-depth-dot[data-side='ask'] {
+  background: var(--k-tone-down-foreground);
+}
+/* 横轴价格：五个刻度均分，头尾两个贴边对齐，免得伸出图外。 */
+.k-depth-xaxis {
+  position: relative;
+  height: 18px;
+  margin: 4px var(--depth-axis-w) 0 0;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+}
+.k-depth-xtick {
+  position: absolute;
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+.k-depth-xtick:first-child {
+  transform: none;
+}
+.k-depth-xtick:last-child {
+  transform: translateX(-100%);
+}
+/* 读屏用的读数：视觉上藏起来（视觉读数是悬停框），文字留在 DOM 里给读屏与测试。 */
+.k-depth-status {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.k-depth-empty {
+  margin: 0;
+  padding: var(--space-4) 0;
+  color: var(--k-content-secondary-foreground);
+  text-align: center;
+}

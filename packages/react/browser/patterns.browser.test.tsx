@@ -11,6 +11,7 @@ import {
   ComboboxItem,
   ComboboxList,
   ComboboxTrigger,
+  CommandPalette,
   FilterBar,
   ViewSwitcher,
   type FilterBarLabels,
@@ -36,6 +37,8 @@ import { RangeHistogramSliderUsage } from '../gallery/usage/RangeHistogramSlider
 import { RenderingSettingsUsage } from '../gallery/usage/RenderingSettingsUsage.tsx'
 import { RichPopoverUsage } from '../gallery/usage/RichPopoverUsage.tsx'
 import { ShortcutRecorderUsage } from '../gallery/usage/ShortcutRecorderUsage.tsx'
+import { HotkeysUsage } from '../gallery/usage/HotkeysUsage.tsx'
+import { ShortcutSheetUsage } from '../gallery/usage/ShortcutSheetUsage.tsx'
 import { SideNavUsage } from '../gallery/usage/SideNavUsage.tsx'
 import { TaskListUsage } from '../gallery/usage/TaskListUsage.tsx'
 import { ThemeSelectorUsage } from '../gallery/usage/ThemeSelectorUsage.tsx'
@@ -160,6 +163,31 @@ for (const theme of ['graphite', 'console'] as const) {
         },
       ))
     test('shortcut-recorder', () => shot('shortcut-recorder', <ShortcutRecorderUsage />))
+    test('hotkeys', () => shot('hotkeys', <HotkeysUsage />))
+    test('shortcut-sheet', () => shot('shortcut-sheet', <ShortcutSheetUsage />))
+    test('command-palette', () =>
+      shot(
+        'command-palette',
+        <OpenFrame width={560} height={360}>
+          <CommandPalette
+            open
+            onOpenChange={() => {}}
+            recent={['snapshot']}
+            commands={[
+              { id: 'reset', label: 'Reset chart', group: 'Chart', shortcut: 'Alt+R', onSelect: () => {} },
+              { id: 'snapshot', label: 'Take snapshot', group: 'Chart', onSelect: () => {} },
+              { id: 'theme', label: 'Switch theme', group: 'Settings', onSelect: () => {} },
+            ]}
+            labels={{
+              title: 'Command palette',
+              description: 'Search commands',
+              placeholder: 'Search…',
+              empty: 'No command matches',
+              recent: 'Recent',
+            }}
+          />
+        </OpenFrame>,
+      ))
     test('side-nav', () => shot('side-nav', <SideNavUsage />))
     test('task-list', () => shot('task-list', <TaskListUsage />))
     test('theme-selector', () => shot('theme-selector', <ThemeSelectorUsage />))

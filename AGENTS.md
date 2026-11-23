@@ -8,7 +8,7 @@ KatanaUI 是设计系统的**源头仓库**（2026-11-14 用户定，#2）：tok
 以前它是 KATANAview `packages/ui` 的只读镜像，现在反过来，KATANAview 按 git 标签依赖这里发布的版本，不再带组件库源码。
 
 - 结构照 salt-ds：仓库根是 pnpm workspace，包在 `packages/`。现在有 `packages/react`（`@katana-ui/react`）；
-  `packages/tokens`（`@katana-ui/tokens`：三层 token 与密度、弹簧，生成 `tokens.css`）。`@katana-ui/react` 依赖它，在 package.json 里写确切版本、不写 `workspace:`，放 `peerDependencies` 并同版本写进 `devDependencies`。
+  `packages/tokens`（`@katana-ui/tokens`：三层 token 与密度、弹簧，生成 `tokens.css`）；`packages/logos`（`@katana-ui/logos`：徽标解析、来源、缓存、`LogoProvider`、命令行 `katana-logos`，#94）。`@katana-ui/react` 依赖这两个，在 package.json 里写确切版本、不写 `workspace:`，放 `peerDependencies` 并同版本写进 `devDependencies`。
 - 包内的分层、件的归属、文档站与设计系统产物的规矩见 [packages/react/docs/zh-CN.md](packages/react/docs/zh-CN.md)。
 - 许可证 MIT。每个源文件头写 `SPDX-License-Identifier: MIT`。不许引进 AGPL 的代码；取自别处的写明出处与许可证，记进包的 `NOTICE`。
 - 包不依赖任何应用。应用相关的事（行情、面板、文案语言）由调用方传。
@@ -45,6 +45,16 @@ Vite+ 用足（2026-11-18）：根目录直接 `pnpm fast` / `pnpm vr` / `pnpm v
 读 token：新代码只读 characteristics（`--k-*`）与语义 token（`--pnl-up`、`--chart-grid`、`--shadow-overlay` 这类），不直接读色阶（`--bg-*`、`--ink-*`、`--signal-*`、`--alpha-white-*`）；阴影不写 rgba，用 `--shadow-*`；状态与涨跌的类型用 `src/lib/severity.ts`、`src/lib/tone.ts`（2026-11-18，G0）。
 
 改 token：改 `packages/tokens/src/tokens.json`（弹簧改 `motion.tokens.json`），跑 `pnpm tokens:sync`；改了文档站的页数据或件，跑 `pnpm ds:build`。生成文件不手改。
+
+## 验收（2026-11-23 用户定，#143）
+
+词的意思见 [GLOSSARY.md](GLOSSARY.md)：回执、审查、验收、功能地图、判据。做法照 pstack（Lauren Tan）的 `create-verification-skill` 与 `create-formal-verification-skill`。
+
+- **回执不算数**：执行者（人或 agent）交回的 PASS / ISSUES 只是自述，不能代替审查或验收。
+- **审查与验收分开**：审查是另一个会话读 diff 找缺陷，管代码好不好；验收是另一个会话照功能地图亲手驱动、按票里的判据逐条给证据（过 / 不过 / 没法验），管功能到没到。
+- **验收不拦合并，只拦关票**：门禁过了照旧可以合（2026-11-14 那条不变）；票要等验收过了才关，验收没过就另开修复 PR。
+- **验证技能 `.claude/skills/verify-katanaui/`**：在真实浏览器里驱动文档站、留证据；新件或改了行为的件，同一个 PR 里补它在功能地图（`features/`）里的那一份。
+- **形式化验证只挑最贵的承诺**：违背了会伤用户、测试又难覆盖的才做（第一个是订单簿合并档位，`.claude/skills/formal-tick-merge/`）。验证要能失败：故意改坏被保护的代码要变红。代码动了按技能里记的覆盖范围重跑，重新对齐后再推进同步提交。
 
 ## 发版
 

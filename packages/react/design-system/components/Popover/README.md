@@ -10,6 +10,10 @@
 
 其余属性透传给 Radix Popover.Root。
 
+| 属性 | 类型 | 默认 | 说明 |
+| --- | --- | --- | --- |
+| `closeOnScroll` | `boolean` | `true` | Closes the popover when the page or a container holding its trigger scrolls, so it never floats away open. |
+
 ### PopoverContent
 
 其余属性透传给 Radix Popover.Content。

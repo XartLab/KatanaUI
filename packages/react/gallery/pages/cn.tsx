@@ -63,7 +63,48 @@ export function CnBasicsDemo() {
           <span>{cnLabelsZh.streak.first}</span>
         </Cell>
       </Row>
+      <p className="gal-note">DataGrid 的列类型 cnAmount（万 / 亿、靠右、按数排序；净流入 signed，按正负着涨跌色）：</p>
+      <AmountGrid />
     </>
+  )
+}
+
+// cnAmount 列（#148）的示例行：名称与金额都是虚构的，不是行情。
+type AmountRow = { id: string; name: string; turnover: number | null; seal: number | null; net: number | null }
+const AMOUNT_ROWS: readonly AmountRow[] = [
+  { id: 'a1', name: '示例甲', turnover: 4.91e9, seal: 3.2e8, net: 5.4e7 },
+  { id: 'a2', name: '示例乙', turnover: 8.6e8, seal: 4.6e7, net: -1.25e8 },
+  { id: 'a3', name: '示例丙', turnover: 2.35e7, seal: 6.8e5, net: 3.1e6 },
+  { id: 'a4', name: '示例丁', turnover: 1.02e11, seal: null, net: -8.8e8 },
+]
+const AMOUNT_COLUMNS: readonly GridColumn<AmountRow>[] = [
+  { id: 'name', type: 'text', value: (row) => row.name },
+  { id: 'turnover', type: 'cnAmount', value: (row) => row.turnover },
+  { id: 'seal', type: 'cnAmount', value: (row) => row.seal },
+  { id: 'net', type: 'cnAmount', value: (row) => row.net, format: { cnAmount: { signed: true } } },
+]
+const AMOUNT_LAYOUT: readonly GridColumnLayout[] = [
+  { id: 'name', label: '名称', width: 90, visible: true },
+  { id: 'turnover', label: '成交额', width: 110, visible: true },
+  { id: 'seal', label: '封单额', width: 100, visible: true },
+  { id: 'net', label: '主力净流入', width: 120, visible: true },
+]
+
+function AmountGrid() {
+  return (
+    <div data-testid="cn-grid-amount" style={{ display: 'flex', width: '100%', maxWidth: 440, height: 140 }}>
+      <DataGrid
+        columns={AMOUNT_COLUMNS}
+        layout={AMOUNT_LAYOUT}
+        rows={AMOUNT_ROWS}
+        rowId={(row) => row.id}
+        label="Example amount table"
+        sort={null}
+        onSortChange={() => {}}
+        interactive={false}
+        fit
+      />
+    </div>
   )
 }
 
@@ -197,7 +238,56 @@ export function BoardMarkDemo() {
           </Cell>
         ))}
       </Row>
+      <p className="gal-note">
+        DataGrid 的列类型 board（值给代码或 {'{ code, name }'}，由代码判断板块；按涨跌幅限制排序）：
+      </p>
+      <BoardGrid />
     </>
+  )
+}
+
+// board 列（#148）的示例行：代码与名称都是虚构的，不是行情。
+type BoardRow = { id: string; code: string; name: string }
+const BOARD_ROWS: readonly BoardRow[] = [
+  { id: 'b1', code: '300001', name: '示例甲' },
+  { id: 'b2', code: '688001', name: '示例乙' },
+  { id: 'b3', code: '830001', name: '示例丙' },
+  { id: 'b4', code: '600001', name: '示例丁' },
+  { id: 'b5', code: '000001', name: '*ST 示例戊' },
+]
+const BOARD_COLUMNS: readonly GridColumn<BoardRow>[] = [
+  { id: 'name', type: 'text', value: (row) => row.name },
+  { id: 'code', type: 'text', value: (row) => row.code },
+  { id: 'board', type: 'board', value: (row) => ({ code: row.code, name: row.name }) },
+  {
+    id: 'boardName',
+    type: 'board',
+    value: (row) => ({ code: row.code, name: row.name }),
+    format: { boardDisplay: 'both' },
+  },
+]
+const BOARD_LAYOUT: readonly GridColumnLayout[] = [
+  { id: 'name', label: '名称', width: 100, visible: true },
+  { id: 'code', label: '代码', width: 80, visible: true },
+  { id: 'board', label: '涨跌幅', width: 80, visible: true },
+  { id: 'boardName', label: '板块', width: 120, visible: true },
+]
+
+function BoardGrid() {
+  return (
+    <div data-testid="cn-grid-board" style={{ display: 'flex', width: '100%', maxWidth: 400, height: 160 }}>
+      <DataGrid
+        columns={BOARD_COLUMNS}
+        layout={BOARD_LAYOUT}
+        rows={BOARD_ROWS}
+        rowId={(row) => row.id}
+        label="Example board table"
+        sort={null}
+        onSortChange={() => {}}
+        interactive={false}
+        fit
+      />
+    </div>
   )
 }
 

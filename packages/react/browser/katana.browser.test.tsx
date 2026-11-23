@@ -44,6 +44,7 @@ import {
   MotionLoader,
   Squircle,
 } from '../src/index'
+import { CopyToastStates } from '../gallery/pages/undo-copy.tsx'
 import { mount } from './render.tsx'
 
 const items: Record<string, React.ReactNode> = {
@@ -52,6 +53,7 @@ const items: Record<string, React.ReactNode> = {
   'animated-list': <AnimatedListUsage />,
   'animated-stepper': <AnimatedStepperUsage />,
   'animated-tags': <AnimatedTagsUsage />,
+  'copy-toast': <CopyToastStates />,
   // Animated parts (type/wipe/blink/marquee) are left out of the shot: they never settle.
   'arcade-pixel': (
     <>

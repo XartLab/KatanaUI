@@ -1,6 +1,16 @@
 // SPDX-License-Identifier: MIT
 import type { ComponentType } from 'react'
 import { NewsReaderDemo, ScreenerDemo } from './pages/screener.tsx'
+import { CommandPaletteDemo, HotkeysDemo, ShortcutSheetDemo } from './pages/hotkeys.tsx'
+import {
+  BoardStrengthRankDemo,
+  NetBuyBarDemo,
+  ReasonGroupListDemo,
+  SentimentCycleDemo,
+  ThemeHeatMatrixDemo,
+} from './pages/cn-pack.tsx'
+import { FlagMarkDemo } from './pages/watchlist-order.tsx'
+import { DepthChartDemo, OrderBookDemo, TradeTapeDemo } from './pages/market-depth.tsx'
 import {
   AgentAvatarDemo,
   AiApprovalDemo,
@@ -16,6 +26,7 @@ import {
   AiSuggestionsDemo,
   AiTaskListDemo,
   AiToolCallDemo,
+  MarkdownDemo,
 } from './pages/ai.tsx'
 import {
   ApertureBlurTransitionDemo,
@@ -43,6 +54,7 @@ import {
   SvgDrawOnScrollDemo,
 } from './pages/motion-effects.tsx'
 import { RenderingSettingsDemo } from './rendering.tsx'
+import { CopyToastDemo, UseUndoStackDemo } from './pages/undo-copy.tsx'
 import { SideNavUsage } from './usage/SideNavUsage.tsx'
 import { LiveUsage } from './usage/LiveUsage.tsx'
 import { TextMeasureUsage } from './usage/TextMeasureUsage.tsx'
@@ -90,7 +102,17 @@ import {
 import { FlowSankeyDemo, VintageSeriesDemo } from './pages/flows.tsx'
 import { KeyStatsDemo, PeerCardsDemo, PerformanceStripDemo, RangeBarTvDemo, WatchlistDemo } from './pages/overview.tsx'
 import { ParamScatterDemo, StrategyReportDemo } from './pages/strategy.tsx'
+import { PortfolioRunGridDemo, ReplayTransportDemo, RunModeBadgeDemo } from './pages/forward-replay.tsx'
 import { TransmissionChainDemo } from './pages/research.tsx'
+import {
+  MaeMfeScatterDemo,
+  ParamSurfaceHeatmapDemo,
+  PeriodReturnsTableDemo,
+  RobustnessGateDemo,
+  UnderwaterChartDemo,
+  WalkForwardMatrixDemo,
+} from './pages/research-report.tsx'
+import { WhiteboardDemo } from './pages/whiteboard.tsx'
 import {
   DataGridDemo,
   DecisionQueueDemo,
@@ -175,6 +197,10 @@ import {
   TextareaDemo,
   ToggleDemo,
 } from './pages/smoothui-forms.tsx'
+import { OrderTicketUsage } from './usage/OrderTicketUsage.tsx'
+import { PositionCalculatorUsage } from './usage/PositionCalculatorUsage.tsx'
+import { ComponentCatalogUsage } from './usage/ComponentCatalogUsage.tsx'
+import { PanelTabsUsage } from './usage/PanelTabsUsage.tsx'
 import { AccordionDemo, TabsDemo } from './pages/layout.tsx'
 import {
   GravityLettersDemo,
@@ -258,6 +284,22 @@ import {
   SwitchboardCardDemo,
 } from './pages/smoothui-trading.tsx'
 import { ScrubberDemo } from './pages/smoothui-scrub.tsx'
+import { SymbolSearchDemo } from './pages/symbol-search.tsx'
+import {
+  AccountEquityDemo,
+  FundingRateDemo,
+  OptionsChainDemo,
+  OrdersTableDemo,
+  PositionsTableDemo,
+} from './pages/account.tsx'
+import {
+  AuctionStepDemo,
+  FlowRaceDemo,
+  MiniKCardGridDemo,
+  MoveFeedDemo,
+  SeatTableDemo,
+  TradingDatePickerDemo,
+} from './pages/cn-batch2.tsx'
 
 /** 每一页的实时预览，键是 registry.ts 里的页 id（registry.test.ts 核对两边一一对应）。 */
 export const DEMOS: Readonly<Record<string, ComponentType>> = {
@@ -307,7 +349,11 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   badge: BadgeDemo,
   tag: TagDemo,
   kbd: KbdDemo,
+  'flag-mark': FlagMarkDemo,
   'shortcut-recorder': ShortcutRecorderDemo,
+  hotkeys: HotkeysDemo,
+  'shortcut-sheet': ShortcutSheetDemo,
+  'command-palette': CommandPaletteDemo,
   'symbol-mark': SymbolMarkDemo,
   'number-input': NumberInputDemo,
   'date-time-input': DateTimeInputDemo,
@@ -316,6 +362,8 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   loading: LoadingDemo,
   'measured-skeleton': MeasuredSkeletonUsage,
   toast: ToastDemo,
+  'copy-toast': CopyToastDemo,
+  'use-undo-stack': UseUndoStackDemo,
   alert: AlertDemo,
   progress: ProgressDemo,
   sheet: SheetDemo,
@@ -329,6 +377,19 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'pnl-text': PnlTextDemo,
   'event-calendar': EventCalendarDemo,
   'limit-ladder': LimitLadderDemo,
+  'theme-heat-matrix': ThemeHeatMatrixDemo,
+  'sentiment-cycle': SentimentCycleDemo,
+  'reason-group-list': ReasonGroupListDemo,
+  'board-strength-rank': BoardStrengthRankDemo,
+  'net-buy-bar': NetBuyBarDemo,
+  'positions-table': PositionsTableDemo,
+  'orders-table': OrdersTableDemo,
+  'account-equity': AccountEquityDemo,
+  'funding-rate': FundingRateDemo,
+  'options-chain': OptionsChainDemo,
+  'order-book': OrderBookDemo,
+  'depth-chart': DepthChartDemo,
+  'trade-tape': TradeTapeDemo,
   'market-heatmap': MarketHeatmapDemo,
   'rating-text': RatingTextDemo,
   'technical-rating': TechnicalRatingDemo,
@@ -346,6 +407,12 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'market-pulse': MarketPulseDemo,
   'limit-up-timeline': LimitUpTimelineDemo,
   'sentiment-gauge': SentimentGaugeDemo,
+  'seat-table': SeatTableDemo,
+  'auction-step': AuctionStepDemo,
+  'trading-date-picker': TradingDatePickerDemo,
+  'flow-race': FlowRaceDemo,
+  'mini-k-card-grid': MiniKCardGridDemo,
+  'move-feed': MoveFeedDemo,
   'decimal-field': DecimalFieldDemo,
   'quant-format': QuantFormatDemo,
   'spark-tile': SparkTileDemo,
@@ -368,8 +435,18 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'column-set-tabs': ScreenerDemo,
   'news-reader': NewsReaderDemo,
   'strategy-report': StrategyReportDemo,
+  'portfolio-run-grid': PortfolioRunGridDemo,
+  'replay-transport': ReplayTransportDemo,
+  'run-mode-badge': RunModeBadgeDemo,
   'transmission-chain': TransmissionChainDemo,
+  whiteboard: WhiteboardDemo,
   'param-scatter': ParamScatterDemo,
+  'mae-mfe-scatter': MaeMfeScatterDemo,
+  'underwater-chart': UnderwaterChartDemo,
+  'period-returns-table': PeriodReturnsTableDemo,
+  'param-surface-heatmap': ParamSurfaceHeatmapDemo,
+  'walk-forward-matrix': WalkForwardMatrixDemo,
+  'robustness-gate': RobustnessGateDemo,
   'flow-sankey': FlowSankeyDemo,
   'vintage-series': VintageSeriesDemo,
   'system-monitor': SystemMonitorDemo,
@@ -415,6 +492,7 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'ai-conversation': AiConversationDemo,
   'ai-message': AiMessageDemo,
   'ai-response': AiResponseDemo,
+  markdown: MarkdownDemo,
   'ai-reasoning': AiReasoningDemo,
   'ai-tool-call': AiToolCallDemo,
   'ai-diff': AiDiffDemo,
@@ -460,6 +538,7 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'status-bar': StatusBarDemo,
   splitter: SplitterDemo,
   'workspace-tabs': WorkspaceTabsDemo,
+  'symbol-search': SymbolSearchDemo,
   textarea: TextareaDemo,
   'radio-group': RadioGroupDemo,
   toggle: ToggleDemo,
@@ -469,6 +548,10 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'morph-toggle': MorphToggleDemo,
   'morph-icon': MorphIconDemo,
   'swap-panel': SwapPanelDemo,
+  'order-ticket': OrderTicketUsage,
+  'position-calculator': PositionCalculatorUsage,
+  'panel-tabs': PanelTabsUsage,
+  'component-catalog': ComponentCatalogUsage,
   avatar: AvatarDemo,
   breadcrumb: BreadcrumbDemo,
   pagination: PaginationDemo,

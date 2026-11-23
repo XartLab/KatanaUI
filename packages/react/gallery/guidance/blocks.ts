@@ -39,6 +39,25 @@ const blocks: GuidanceMap = {
       '右上角第一个按钮切到明细表，图里的数在表里都有。',
     ],
   },
+  'use-undo-stack': {
+    aliases: ['Undo / Redo', 'History', 'useHistory', 'Ctrl+Z', '撤销'],
+    use: [
+      '「拖错了」的恢复：列宽、列序、行序、分组、旗标这类布局改动；TradingView 顶栏的撤销 / 重做（Ctrl+Z / Ctrl+Y）同一件事。',
+      '每次改动 push 一份完整的新值；连续同种的（拖列宽、拖滑块）给同一个 kind，800ms 内合并成一步。',
+      '最多留 100 步，再多丢最旧的；新 push 清掉重做。',
+      '撤销钮的提示写「撤销 <kind>」，kind 用给人看的词（列宽、列序）；数字写可撤的步数。',
+      '快捷键：Mac 上 ⌘Z / ⇧⌘Z，别处 Ctrl+Z / Ctrl+Shift+Z / Ctrl+Y；给 hotkeys 一个 ref 就只在那块面板有焦点时接，不抢别的面板的撤销。',
+    ],
+    avoid: [
+      '文字输入框自己的撤销交给浏览器：焦点在输入框、文本域、contenteditable 里时钩子不接 Mod+Z。',
+      '历史不进存档；要记住当前布局用 usePersistedState 存当前值。',
+      '用了 useHotkeys 注册表的面板，关掉这里的 hotkeys，改由注册表调 undo / redo，免得一次按键撤两步。',
+    ],
+    a11y: [
+      '撤销、重做钮没得撤时 disabled；改动后的结果要在界面上看得见（列宽、列序真的变回去），不另发读屏通知。',
+      '快捷键跳过输入法组字中的按键（isComposing）。',
+    ],
+  },
   'data-grid': {
     aliases: ['Table', 'Data table', 'Grid', 'Spreadsheet'],
     use: [
@@ -47,7 +66,12 @@ const blocks: GuidanceMap = {
       '一行下面要挂一小段说明或表单（子行）。',
       '双击列头右缘或右键「适应内容」：列宽取列头与前 1000 行最宽格子，24–480px；自画列（cell、render、custom）不改宽。',
       '「全部列适应内容」优先走 onLayoutChange；只给 onResize 时 setter 要用函数式更新。',
-      '实时刷新：live 为 true 时数值类列（price、quantity、pnl、change、number、percent、compact）值变了闪涨跌色，文本列不闪；排序顺序变了已渲染的行平滑换位，新增的行蓝线高亮 1.2 秒；默认 false，静态表不闪。',
+      '挪行（#77 G7，照 TradingView 自选表拖放排序）：给 rowOrder / onRowOrderChange（一般摊 useRowOrder(...).gridProps）；整行可拖，按下挪过 4px 才算拖，行里的按钮上按下不起拖；拖的时候别的行不动，落点画一道 2px 主文字色的线，被拖的行留原处淡到 45%，靠近上下边自动滚；拖回原处不算。做法照 modern-web-guidance drag-and-drop，跟它不同的是没有把手（照 TradingView）。',
+      '键盘挪行：Alt+↑ / Alt+↓ 把选中的行（没选就是键盘所在行）挪一格；右键菜单另有上移、下移、移到顶、移到底。TradingView 快捷键表里没有挪行的键（2026-11-18 看过），Alt+↑↓ 沿用应用自选表的写法。',
+      '按列排序时不能挪行：拖不起来，Alt+↑↓ 读出 labels.rowOrder.sorted，菜单四项灰掉并写原因。',
+      '分节标题行：rowSection(row) 返回标题就是标题行，跨满整行、次级色大写小字、上面一道分隔线；拖标题整节走，落点吸到节边界不拆别的节；把行拖到标题下面就进了那一节。折叠、个数、组内汇总还没做（待定，G7 的 GridSectionRow 建议）。',
+      '触屏不起拖（整行拖会抢走滚动）：触屏用右键菜单的上移下移。',
+      '实时刷新：live 为 true 时数值类列（price、quantity、pnl、change、number、percent、compact、cnAmount）值变了闪涨跌色，文本列不闪；排序顺序变了已渲染的行平滑换位，新增的行蓝线高亮 1.2 秒；默认 false，静态表不闪。',
       '整页的表（选股器、持仓、报告）用 density="comfortable"：行 40、表头 48、格内左右 12、首列左 20、正文 14px w400、表头 13px 次要色，默认画行间 1px 横线、不画竖线（照 TradingView 选股器，#90）。',
       '面板里的密表（自选栏、盘口）留在 compact（行 20）或 default（行 24）；这两档与 relaxed（32）的值不变。',
       '单位与数分开写：format.unit（USD、USDT）渲染成 10px w500 次要色小字，跟在数后空一格；复制与导出仍是「4.53 T USD」。pnl 的 suffix 同 unit。',
@@ -73,6 +97,7 @@ const blocks: GuidanceMap = {
       '键盘所在行用 aria-activedescendant，整张表只占一个 Tab 停靠点。',
       '排序列带 aria-sort；列宽拖柄是带名字的 separator。',
       '读屏名取自 label。',
+      '挪完一个隐藏的 role=status 读「挪到第 n 位，共 m 行」（labels.rowOrder.moved），拖到一半 Esc 读「已取消」；只在位置真变了才读。',
       '迷你图、区间条的读屏名取 format.label（「ALFA 30 日走势」）；横条只是装饰（aria-hidden），值读格子里的数字。',
       '评级不只靠颜色：图标（双箭头、单箭头、等号）与档名都带档位。',
     ],
@@ -121,6 +146,75 @@ const blocks: GuidanceMap = {
     a11y: [
       'role=tablist，每个标签是 role=tab，选中项带 aria-selected。',
       '读屏名取自标签文字；新建与「…」按钮的名字取自 createLabel、moreLabel。',
+    ],
+  },
+  'symbol-search': {
+    aliases: ['Symbol search', 'Ticker search', 'Instrument picker', 'Quick symbol lookup', 'Type to search'],
+    use: [
+      '在图表、行情表上换品种：容器挂 useTypeToSearch，敲字直接弹出，不用先点搜索按钮（照 TradingView 图表，2026-11-18 实测）。',
+      '分段由调用方给，第一项是「全部」；最近搜索按当前分段过滤，选中的挪到最前，最多 8 条（recentLimit）。',
+      '行高 44：徽标 SymbolMark md（28）、代码 k-text-data 中等字重、下面一行名称 caption + 类型 Tag sm 描边、右侧交易所 caption。',
+      'onQuery 默认停 80ms 再调（debounceMs），换词时上一次的 signal abort，晚回来的结果不认。',
+      '对话框在视口顶部 12dvh 处、宽 640，列表最高 min(420px, 60dvh)，overscroll-behavior: contain，滚到底不带动后面的页（modern-web-guidance dialog）。',
+      '跟 TradingView 不同的地方：它按 ↑↓ 时把行的「交易所:代码」写回输入框，我们不写回（写回会重新触发搜索、打乱结果）；它的命中段是蓝字，我们只用字重与亮度。',
+    ],
+    avoid: [
+      '命令、页面的跳转，用 CommandDialog。',
+      '表单里从固定的几项挑一个品种，用 combobox。',
+      '数字键已经被「打数字开周期框」占用时，给 useTypeToSearch 传 accept 把数字排除掉。',
+    ],
+    a11y: [
+      '输入框是 combobox，列表是 listbox，行是 option（cmdk）；高亮行用 aria-selected，焦点不离开输入框。',
+      '对话框的名字取 labels.title（DialogTitle，只给读屏），说明取 placeholder。',
+      '市场分段是一组 aria-pressed 按钮，组名取 labels.segments；点了分段焦点回到输入框。',
+      '结果稳定 400ms 后在 role=status 里报一次个数（labels.resultCount），打字过程中不刷屏；加载中列表带 aria-busy。',
+      '徽标是 role=img，名字取品种名称；命中段是 mark 元素。',
+      '待定：对话框用的是包里 Radix 的 Dialog（与其它浮层共用一套焦点归还与动效），没有换成原生 <dialog> + showModal()；要不要整套浮层迁到原生 dialog 等用户定。',
+    ],
+  },
+  'order-book': {
+    aliases: ['Order book', 'DOM', 'Depth of market', 'Level 2', 'Ladder', '盘口', '买卖盘'],
+    use: [
+      '看买卖挂单的分布与价差，点一档把价格交给下单面板（onPriceSelect 回填，件不耦合下单面板）。',
+      '价位密的品种合并档位看大格局（0.1 / 0.5 / 1 / 10 由调用方给）；合并在整数上做，买盘向下、卖盘向上取整。',
+      '底部买卖占比条看一眼多空倾向；只数并列模式能看到的前几行，单侧模式放大行数时这个数不变。',
+      '调用方把快照与增量合并成整簿再传；量变了的档位会闪一下。',
+    ],
+    avoid: [
+      '要看整条曲线的形状与大单墙，用 depth-chart。',
+      '逐笔成交流水用 trade-tape，不是订单簿。',
+      '要排序、改列、几千行的表格用 data-grid。',
+    ],
+    a11y: [
+      '整个件是 role=group，卖盘与买盘各是一个 list；可点的行是 button，不可点时是普通行。',
+      '模式与合并档位是两组 aria-pressed 的按钮，组名取 labels.modes.group 与 labels.tick。',
+      '占比条是 role=img，读屏文字取 labels.share；买卖色之外价格列还按侧分列（卖在上、买在下），不只靠颜色。',
+    ],
+  },
+  'depth-chart': {
+    aliases: ['Depth chart', 'Market depth', 'Cumulative depth', 'Depth map', '深度图'],
+    use: [
+      '看买卖累计量的形状：哪边有大单墙、两边是否对称。',
+      '横轴用 rangePct 限制在中间价上下几个点，免得极远处的挂单把图压扁。',
+      '悬停读某个价位吃到多少量、离中间价多远。',
+    ],
+    avoid: ['要逐档点选价格用 order-book。', '看资金随时间的变化不是它：深度图只有当下一个快照。'],
+    a11y: [
+      '绘图区是可聚焦的 group，左右方向键读数、Esc 清掉；读数同时写进 role=status（视觉隐藏）。',
+      '买卖用曲线形状（左右分居中间价）与读数里的「买盘 / 卖盘」文字区分，不只靠颜色。',
+    ],
+  },
+  'trade-tape': {
+    aliases: ['Time and sales', 'Trade tape', 'Tape', 'Recent trades', '成交明细', '逐笔成交'],
+    use: [
+      '看最近的逐笔成交与主动方向：主动买走涨色、主动卖走跌色。',
+      '大单阈值由调用方传（largeSize），超过的行整行高亮。',
+      '成交密时开 aggregate，把紧挨着的同价同方向成交并成一行，右边写笔数。',
+    ],
+    avoid: ['要看某一时刻的挂单分布用 order-book。', '要保存与回看长历史走调用方的历史查询，这里只留最近 maxRows 行。'],
+    a11y: [
+      '每行是 listitem，方向与大单写成读屏用的文字（视觉隐藏），不只靠颜色与加粗。',
+      '新成交只有视觉高亮，不朗读；要播报大单由调用方放 aria-live 区。',
     ],
   },
   toolbar: {
@@ -196,6 +290,31 @@ const blocks: GuidanceMap = {
       '状态用颜色加图标与文字，不只靠颜色。',
     ],
   },
+  whiteboard: {
+    aliases: ['Canvas', 'Node editor', 'Flow editor', 'Mind map', 'Dependency graph'],
+    use: [
+      '推演：把指标、假说、便签摆在一块画布上连起来，选一个节点看它的下游。',
+      '指标依赖图：改一个指标只重算下游，名单用 getDownstream 取，计算在调用方。',
+      '底座是 React Flow（@xyflow/react，MIT）；它自带的 style.css 不引，只引 base.css，颜色变量 --xy-* 全在 .k-wb 上改成 --k-* 与语义 token。',
+      '边的状态色与线型同 TransmissionChain：支持 --pnl-up 实线、反对 --pnl-down 实线、部分琥珀点划线 9 3 2 3、未检验灰虚线 5 4；反馈边点线 2 4，标签带回环图标。',
+      '节点：圆角 6px、1px 边、内距 8px 10px、宽 140–260px；便签是虚线边；分组框是虚线框、圆角 8px、左上角 11px 粗体标题。',
+      '橙色只给键盘焦点的四角括号（10px 长、2px 粗，外扩 4px，--k-focused-outlineColor）；选中是 --k-content-primary-foreground 的亮边。',
+      '对齐吸附阈值 6px（画布坐标），辅助线 1px --k-content-secondary-foreground；粘贴每次错开 32px。',
+      '撤销历史最多 100 步，存整份文档快照；拖动与改大小松手才记一步。',
+      '连接点朝向存在文档的 layout 字段（TB 缺省 / LR）：点自动布局时随 onChange 回来，调用方存下并作为 layout 传回，打开时按它还原（2026-11-18 定）。',
+    ],
+    avoid: [
+      '只读的传导链（带证据详情），用 transmission-chain。',
+      '只画资金或量的流向，用 flow-sankey。',
+      '自由手绘：这次不做（Excalidraw 留作以后）。',
+    ],
+    a11y: [
+      '外层是 role=group，读屏名取自 labels.board；工具条是 role=toolbar（← → 在按钮间移动）。',
+      '节点与边都能 Tab 到；节点的读屏名是标题或便签的字，方向键挪动选中的节点（React Flow 自带）。',
+      '右键菜单也能用菜单键或 Shift+F10 在聚焦的节点上打开。',
+      '状态用颜色加图标与文字，不只靠颜色；下游高亮另有加粗的边。',
+    ],
+  },
   'strategy-report': {
     aliases: ['Backtest report', 'Performance summary', 'Tear sheet', 'Strategy tester report'],
     use: [
@@ -209,6 +328,44 @@ const blocks: GuidanceMap = {
       '直方图的每根柱是 role=img，读屏名写出区间与笔数。',
       '指标用表格与 dl，读屏能逐项念。',
       '算不出的读数写「—」，不是 0。',
+    ],
+  },
+  'portfolio-run-grid': {
+    aliases: ['Portfolio trader', 'Forward test window', 'Strategy run table', 'Position monitor'],
+    use: [
+      '前向测试时一眼看每个品种的持仓、盈亏、风险占用与运行状态。',
+      '要暂停某个品种或平掉它，又不想进每个品种各自的页面。',
+    ],
+    avoid: ['回测完看绩效，用 strategy-report。', '要下单，用 order-ticket；这里的按钮只发回调。'],
+    a11y: [
+      '外层是带名字的只读表（role=table），品种是行标题；汇总是 role=group。',
+      '按钮的读屏名带品种（「暂停 DEMO-A」），读屏分得清是哪一行。',
+      '状态是灯加文字，不只靠颜色；暂停行的底色与左条是额外提示。',
+      '按钮是原生 button，Tab 依次到达，Enter 与 Space 触发。',
+    ],
+  },
+  'replay-transport': {
+    aliases: ['Data replay', 'Playback controls', 'Replay bar', 'Time machine'],
+    use: ['历史回放时控制播放、倍速与跳转，一条控制多个同步的图。', '把用户的回放意图发给引擎，当前时刻由引擎回传。'],
+    avoid: ['只想拖一个数值，用 scrubber。', '要在件里推进时间：时钟只在调用方。'],
+    a11y: [
+      '外层是 role=group，读屏名取自 labels.group。',
+      '进度条是 role=slider，带 aria-valuetext（当前时刻文字），方向键、Home、End、PageUp、PageDown 可用。',
+      '倍速是一组带 aria-pressed 的按钮；输入框都有读屏名，读不出时 aria-invalid 并出 role=alert 提示。',
+      '快捷键 k . [ ] 在焦点不在输入框与进度条时生效。',
+    ],
+  },
+  'run-mode-badge': {
+    aliases: ['Mode badge', 'Environment tag', 'Paper or live indicator', 'Trading mode pill'],
+    use: ['在界面角落写清现在是模拟、回放、前向测试还是实盘。', '放在会下单或会误导用户的页面头部。'],
+    avoid: [
+      '表达数据源是否连通，用 led 或 status-bar。',
+      '给 fixture 或样例数据用「模拟」徽标：那是另一回事，要单独标明。',
+    ],
+    a11y: [
+      '文字就是读屏读到的内容，图形对读屏隐藏。',
+      '四种模式靠图形、边框样式与颜色一起区分，不只靠颜色。',
+      '实盘点的呼吸动效在减弱动效偏好下关闭。',
     ],
   },
   'hypothesis-ledger': {
@@ -282,6 +439,81 @@ const blocks: GuidanceMap = {
       '收到的数额 aria-live=polite，报价变了会读；倒计时圆环是 role=img，名字取 labels.expires。',
       '资产钮与翻转钮的读屏名取 labels（含 {side}、{symbol} 模板），文案全由调用方传。',
       '错误条 role=alert；quoting 时提交钮禁用，读屏读作「不可用」。',
+    ],
+  },
+  'order-ticket': {
+    aliases: ['Order entry', 'Order form', 'Trade ticket', 'Chart Trader', 'Trading Panel', '下单面板', '交易面板'],
+    use: [
+      '版式照 OKX（2026-11-19 两次实际打开看）：开仓 / 平仓 → 保证金模式与杠杆 → 限价 / 市价文字页签 → 买、卖两栏并排各一个下单钮 → 钮下读数 → 底部费率与计算器；不做顶上的买卖切换加单个提交钮那种排法（用户 2026-11-19：「OKX 的面板不长这样」）。',
+      '两栏并排要 560px 宽（容器查询）；再窄就一次一栏，顶上出买 / 卖切换。',
+      '下单钮买用 --pnl-up、卖用 --pnl-down（Graphite 下绿买红卖，红涨绿跌的主题下跟着反过来），不用 --side-buy 的蓝。',
+      '默认按成本填：填「放进去多少钱」，面板反推张数。名义价值 = 成本 ÷（1/杠杆 + 开仓费率 + 平仓费率）；例：10 USDT、100 倍、开平各 0.05% → 909.09 USDT，一张 600 USDT 时取 1.51 张，实际占用 9.966 USDT。',
+      '成本默认含开仓费与预估平仓费（includeCloseFee 默认 true，2026-11-19 定：这样填的数就是这笔交易的最大占用，平仓时不会再多扣一笔）；只含开仓费时同例是 952.38 USDT、1.58 张。',
+      '数量一律向下取整到最小步长，所以显示的总占用不会超过用户填的数。',
+      '改杠杆时成本不变、仓位跟着变；买、卖两栏各填各的价格、数量与止盈止损，互不影响。',
+      '按风险填（ATAS Beta 8.0.16 的做法）：填最多亏多少与止损价，张数 = 风险 ÷ 每张在止损价出场的亏损（价差加开平两笔费）。',
+      '止盈止损标明放在哪：交易所托管（面板关了也生效）或本机触发（进程不在就不生效；bit.com、QMT 属于这种）。',
+      '出场模板（ATAS 的 Exit Strategy）存的是离入场价的百分比，选了按当前方向与价格填进两个框。',
+      '现货、A 股不传 maxLeverage：没有杠杆与强平价，就是按金额买。',
+    ],
+    avoid: [
+      '不参照 TradingView 的下单面板（用户 2026-11-19 定：它不算保证金与手续费，容易下错）。',
+      '多级分批止盈、移动止损、保本上移还没做，需要时另开票，不要在调用方硬拼。',
+      '币本位合约、全仓的精确强平价不在这个件的范围里。',
+    ],
+    a11y: [
+      '开平是 ToggleGroup，委托类型是 Tabs 的 line 变体（两栏表单是它的页签面板），窄版的买卖切换是 aria-pressed 的按钮组；两个下单钮除了颜色还有文字，不只靠红绿。',
+      '读数区 aria-live=polite，数量变了会读；报错行 role=alert，对应的框带 aria-invalid。',
+      '滑杆下的 0 / 25 / 50 / 75 / 100% 是鼠标快捷点，不进 Tab 序（键盘用滑杆本身）。',
+      '所有文字与读屏名由 labels 传，包里没有写死的语言。',
+    ],
+  },
+  'position-calculator': {
+    aliases: ['PnL calculator', 'Futures calculator', '计算器', '合约计算器'],
+    use: [
+      '只答三件事：赚或亏多少、强平价在哪、保本价多少；比 OKX 的计算器少，输入由调用方带入当前值。',
+      '保本价含开平两笔费：多头 P(1+开)/(1−平)，空头 P(1−开)/(1+平)。',
+      '强平价是逐仓近似：多头 P(1−1/L)/(1−m−f)，空头 P(1+1/L)/(1+m+f)，m 是维持保证金率、f 是平仓费率。',
+    ],
+    avoid: ['要在下单时看这些数，直接看 OrderTicket 的读数区，不必开弹窗。'],
+    a11y: ['读数区 aria-live=polite；弹窗关上时焦点回到打开它的按钮（Dialog 的行为）。'],
+  },
+  'panel-tabs': {
+    aliases: ['Panel tab bar', 'Tab group', 'Dock tabs', '面板页签', '页签栏', '工具栏'],
+    use: [
+      '两种面板头都支持（2026-11-19 定）：PanelFrame 是一个面板一个固定标题；PanelTabs 是一个格子叠几个组件、用户自己加减（OKX 的做法）。',
+      '什么时候用 PanelTabs：同一块位置上的几样东西用户只会轮流看（图表 / 信息 / 交易数据；当前委托 / 历史委托 / 持仓），或者要让用户自己往这个格子里加组件。',
+      '什么时候用 PanelFrame：这个面板的内容固定、要一直看着（下单面板、盘口），标题栏上还要放联动色点与工具条。',
+      '工具跟着页签走（2026-11-19 定）：每种组件带自己的工具，栏上只显示当前页签的。K 线：品种、周期、指标、画线；表（委托、持仓、成交）：筛选、列、导出；列表（新闻、动态）：来源筛选；表单（下单）：账户切换；读数与仪表：周期；纯文字：没有工具。',
+      '工具最多五六个，按用得多少从左到右排；一行放不下自动落到第二行，不要为了挤进一行把文字钮都换成图标。',
+      '当前对象（品种 · 周期）写在页签名后面，只在选中时显示；数据状态用名字前的小点，过期与出错才需要用户注意。',
+      '「+」打开 ComponentCatalog 并带上当前页签的 kind，目录据此推荐搭配的组件；加进来的组件成为这个格子的新页签并选中。',
+      '栏右端只放这个面板自己的动作：设置在左、浮窗在右，最多两三个图标。',
+      '页签 12px、500；当前页签底下 2px 线，用主文字色，不用强调色（强调色留给数据）。',
+    ],
+    avoid: [
+      '不要在页签栏里再放筛选、周期这类内容的工具条；那是面板内容的事。',
+      '不要让必须常驻的组件可关：给它 closable=false。',
+    ],
+    a11y: [
+      'role=tablist，整条只占一个 Tab 站；页签是 role=tab，aria-selected 标当前。',
+      '「×」不在页签按钮里面（不嵌套可操作元素），读屏名取 labels.close 的 {name}；键盘用 Delete 移除，不必够到「×」。',
+      '当前页签的工具是 role=group，名字取 labels.tools 的 {name}（「Chart tools」）；状态点是 role=img，名字取 labels.status。',
+      '「…」「+」与右端的动作各有读屏名，由 labels 与宿主给。',
+    ],
+  },
+  'component-catalog': {
+    aliases: ['Add widget', 'Widget gallery', 'Component picker', '添加组件', '组件库', '小组件目录'],
+    use: [
+      '「推荐」有两个来源：宿主按当前品种的市场（永续才有资金费率、股票才有公司资料）与装了的市场包标 recommended；组件自己声明 pairsWith（订单表、成交明细适合放在 K 线旁边），传入 context 后自动推荐。已经在工作区里的不再推荐。',
+      '用不了的组件留在目录里、置灰、写原因（「仅股票」「需要连接账户」），不藏。',
+      '已在工作区的打勾；再点一次是移除，所以目录同时是这个工作区的组件清单。',
+      '类别不超过五个；组件多了靠搜索，别名（英文名、行话）放进 keywords。',
+    ],
+    avoid: ['不要在目录里放组件的设置；加进去以后在面板自己的设置里改。'],
+    a11y: [
+      '卡片是 aria-pressed 的按钮，读屏名是组件名，已在工作区的加上 labels.inUse；置灰的是 aria-disabled 并带原因。',
+      '缩略图对读屏隐藏。',
     ],
   },
 }

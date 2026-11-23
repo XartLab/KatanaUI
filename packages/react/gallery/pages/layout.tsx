@@ -29,8 +29,8 @@ export function TabsDemo() {
         <TabsContent value="amount">成交额榜的内容</TabsContent>
         <TabsContent value="turnover">换手榜的内容</TabsContent>
       </Tabs>
-      <Tabs defaultValue="a">
-        <TabsList variant="line">
+      <Tabs defaultValue="a" data-gallery-line>
+        <TabsList variant="line" aria-label="周期（下划线）">
           <TabsTrigger value="a">日线</TabsTrigger>
           <TabsTrigger value="b">周线</TabsTrigger>
         </TabsList>

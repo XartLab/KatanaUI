@@ -194,7 +194,7 @@
     "ExitStrategy": {
       "kind": "面板",
       "status": "部分",
-      "at": ["src/panels/order-ticket"],
+      "at": ["src/panels/order-ticket", "OrderTicket"],
       "note": "下单面板里有止盈止损，自动退出两种模式没有"
     },
     "ExposureTimeline": {

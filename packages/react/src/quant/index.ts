@@ -30,6 +30,15 @@ export {
   type LimitLadderLabels,
   type LimitLadderProps,
 } from './limit-ladder.tsx'
+// 题材热度矩阵（#11，开盘啦对照）：分档与 CalendarHeatmap 的换手视图同一条，颜色是中性浓度（不用品牌橙）。
+export {
+  ThemeHeatMatrix,
+  type ThemeHeatCell,
+  type ThemeHeatMatrixLabels,
+  type ThemeHeatMatrixProps,
+  type ThemeHeatPos,
+  type ThemeHeatRow,
+} from './theme-heat-matrix.tsx'
 export {
   MarketHeatmap,
   type HeatmapColorBy,
@@ -155,6 +164,72 @@ export {
   type ParamPoint,
   type ParamRamp,
 } from './param-scatter-model.ts'
+
+// 研究报告件与优化结果件（#120，参照 MultiCharts 的策略报告、步进优化与优化报告）：件只画，数据由调用方给。
+export { MaeMfeScatter, type MaeMfeScatterLabels, type MaeMfeScatterProps } from './mae-mfe-scatter.tsx'
+export {
+  excursionPoints,
+  summarizeExcursions,
+  outwardDomain,
+  type ExcursionAxis,
+  type ExcursionKind,
+  type ExcursionPoint,
+  type ExcursionSummary,
+  type ExcursionTrade,
+  type ExcursionUnit,
+} from './mae-mfe-model.ts'
+export { UnderwaterChart, type UnderwaterChartLabels, type UnderwaterChartProps } from './underwater-chart.tsx'
+export { maxDrawdownSegment, underwaterShare, type DrawdownSegment, type UnderwaterPoint } from './underwater-model.ts'
+export { PeriodReturnsTable, type PeriodReturnsLabels, type PeriodReturnsTableProps } from './period-returns-table.tsx'
+export {
+  aggregateReturns,
+  compound,
+  isoWeek,
+  type PeriodCell,
+  type PeriodRow,
+  type PeriodUnit,
+  type ReturnSample,
+} from './period-returns-model.ts'
+export {
+  ParamSurfaceHeatmap,
+  type ParamSurfaceHeatmapProps,
+  type ParamSurfaceLabels,
+  type SurfaceMetric,
+  type SurfaceParam,
+} from './param-surface-heatmap.tsx'
+export {
+  bestCell,
+  isSpike,
+  resolveSlice,
+  sliceGrid,
+  surfaceNeighborhood,
+  type SurfaceGoal,
+  type SurfaceGrid,
+  type SurfaceNeighborhood,
+  type SurfacePoint,
+} from './param-surface-model.ts'
+export { WalkForwardMatrix, type WalkForwardMatrixLabels, type WalkForwardMatrixProps } from './walk-forward-matrix.tsx'
+export {
+  annualize,
+  summarizeWindows,
+  type WalkForwardMode,
+  type WalkForwardSummary,
+  type WalkForwardWindow,
+} from './walk-forward-model.ts'
+export {
+  RobustnessGate,
+  type RobustnessCheck,
+  type RobustnessGateLabels,
+  type RobustnessGateProps,
+} from './robustness-gate.tsx'
+export {
+  evaluateCheck,
+  summarizeGate,
+  type GateCheck,
+  type GateOp,
+  type GateState,
+  type GateSummary,
+} from './robustness-gate-model.ts'
 
 // 资金流向桑基图与按发布时间画的宏观序列（#45）。
 export { FlowSankey, type FlowSankeyLabels, type FlowSankeyProps } from './flow-sankey.tsx'

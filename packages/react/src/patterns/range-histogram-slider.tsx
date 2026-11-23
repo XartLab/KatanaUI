@@ -7,7 +7,7 @@ import { useRef, useState, type KeyboardEvent, type PointerEvent, type ReactNode
 import { seqColor } from '../lib/chart/chart-kit/series-colors.ts'
 import { moveThumb, nearestThumb, ratioOf, snapValue, stepValue, valueAt, type Thumb } from './range-histogram-model.ts'
 
-// 箱的高度越高颜色越亮（顺序色阶 seq-200..600，dataviz §2）：取 lib/chart 的 seqColor（0..4 档）。
+// 箱的高度越高颜色越亮（数据浓度档 --k-heat-1..5，dataviz §2；seq 橙不给数据用，#50）：取 lib/chart 的 seqColor（0..4 档）。
 const SEQ_TOP = 4
 
 /** Texts of RangeHistogramSlider (the package ships no text). */

@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 import { describe, expect, test } from 'vite-plus/test'
 import { page } from 'vite-plus/test/browser'
+import { FlagMarkDemo } from '../gallery/pages/watchlist-order.tsx'
 import { Button } from '../src/primitives/button.tsx'
 import { Kbd } from '../src/katana/kbd.tsx'
 import { Led } from '../src/katana/led.tsx'
@@ -12,6 +13,10 @@ for (const theme of ['graphite', 'console'] as const) {
     test('kbd', async () => {
       await mount(<Kbd parts={['⌘', 'Shift', 'K']} label="Command Shift K" />, theme)
       await expect(page.getByTestId('frame')).toMatchScreenshot(`${theme}-kbd`)
+    })
+    test('flag-mark', async () => {
+      await mount(<FlagMarkDemo />, theme)
+      await expect(page.getByTestId('frame')).toMatchScreenshot(`${theme}-flag-mark`)
     })
     test('tag', async () => {
       await mount(

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// 图表配色的分配（dataviz.md §2，纯函数）：类别用 series-1..7 固定顺序、第 8 个起折进「其他」、筛选后不重新上色；大小用 seq；正负用 div。
+// 图表配色的分配（dataviz.md §2，纯函数）：类别用 series-1..7 固定顺序、第 8 个起折进「其他」、筛选后不重新上色；大小用 --k-heat-*（中性灰浓度，#50 后不用 seq 橙）；正负用 div。
 // 颜色只在这里写成 token 名，件里不用模板字符串拼：主题检查要求 token 以字面量出现。
 
 const SERIES = [
@@ -23,9 +23,9 @@ export function assignSeries(keys: readonly string[]): Record<string, string> {
   return Object.fromEntries(keys.map((key, index) => [key, SERIES[index] ?? SERIES_OTHER]))
 }
 
-const SEQ = ['var(--seq-200)', 'var(--seq-300)', 'var(--seq-400)', 'var(--seq-500)', 'var(--seq-600)'] as const
+const SEQ = ['var(--k-heat-1)', 'var(--k-heat-2)', 'var(--k-heat-3)', 'var(--k-heat-4)', 'var(--k-heat-5)'] as const
 
-/** 大小的顺序色阶（暗到亮）：level 0..4 对应 seq-200..600，越界取两端。 */
+/** 大小的顺序档（暗到亮，中性灰浓度）：level 0..4 对应 --k-heat-1..5，越界取两端。品牌橙的 seq-* 不给数据用（#50）。 */
 export const seqColor = (level: number): string => SEQ[Math.max(0, Math.min(SEQ.length - 1, Math.round(level)))]!
 
 /** 一列数的第 q 分位（0..1，线性插值）；忽略非有限数，没有数返回 0。 */

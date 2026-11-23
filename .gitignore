@@ -1,6 +1,7 @@
 node_modules/
 dist/
 /packages/react/lib/
+/packages/logos/lib/
 r/
 test-results/
 playwright-report/
@@ -18,3 +19,6 @@ playwright-report/
 
 # Vite+ 的 hook 分发器由 vp hooks enable 生成，不提交；.vite-hooks/pre-commit 要提交
 /.vite-hooks/_/
+
+# 验证技能 verify-katanaui 的运行状态与证据（.tmp/verify-katanaui/），本机草稿也放 .tmp/
+/.tmp/
