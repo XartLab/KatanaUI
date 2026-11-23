@@ -217,8 +217,8 @@ export function InlineEdit({
       cancel()
       return
     }
-    // 输入法组字时的 Enter 是选字，不是保存。
-    if (event.key === 'Enter' && !event.nativeEvent.isComposing) {
+    // 输入法组字时的 Enter 是选字，不是保存。Safari 上屏的那一下 Enter 已经不是 isComposing，但 keyCode 还是 229，两个都要判。
+    if (event.key === 'Enter' && !event.nativeEvent.isComposing && event.keyCode !== 229) {
       event.preventDefault()
       submit('key')
     }

@@ -134,8 +134,8 @@ export function TagInput({
   }
 
   const onKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
-    // 输入法组字时的 Enter 是选字，不是收标签。
-    if (event.nativeEvent.isComposing) return
+    // 输入法组字时的 Enter 是选字，不是收标签。Safari 上屏的那一下 isComposing 已是 false、keyCode 仍是 229，两个都要判。
+    if (event.nativeEvent.isComposing || event.keyCode === 229) return
     const input = event.currentTarget
     const action = tagKeyAction(event.key, {
       count: tags.length,
