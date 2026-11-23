@@ -5,7 +5,17 @@ import type { ComponentApi } from '@a2ui/web_core'
 import { useMemo } from 'react'
 import { z } from 'zod'
 import { SmallMultiples } from '../../blocks/index.ts'
-import { dispatch, formatSchema, listSchema, makeFormat, numbersCapped, parseCapped, text } from '../chart-support.ts'
+import {
+  dispatch,
+  formatSchema,
+  listSchema,
+  makeFormat,
+  numbersCapped,
+  parseCapped,
+  seriesViewProps,
+  seriesViewShape,
+  text,
+} from '../chart-support.ts'
 import { Cell, actionSchema, weightSchema } from '../support.tsx'
 
 const MAX_TILES = 60
@@ -44,6 +54,7 @@ export const KatanaSmallMultiplesApi = {
       onSelect: actionSchema(
         'Dispatched when the user chooses a tile title. metadata.extensions.katanaChartPoint carries {key}. Without it titles are not interactive.',
       ).optional(),
+      ...seriesViewShape,
       weight: weightSchema,
     })
     .strict(),
@@ -65,15 +76,19 @@ export const KatanaSmallMultiples = createComponentImplementation(KatanaSmallMul
   )
   const format = useMemo(() => makeFormat(props.valueFormat), [props.valueFormat])
   const xLabels = props.xLabels
+  const label = props.label ?? ''
+  const { actionLabels, tableLabel, tableXHead } = props
+  if (!actionLabels || !tableLabel || !tableXHead) return null
   return (
     <Cell weight={props.weight}>
       <SmallMultiples
         items={items}
-        label={props.label ?? ''}
+        label={label}
         formatValue={format}
         formatX={xLabels ? (index) => xLabels[index] ?? '' : undefined}
         yScale={props.yScale}
         onSelect={props.onSelect ? (key) => dispatch(props.onSelect, 'katanaChartPoint', { key }) : undefined}
+        {...seriesViewProps({ ...props, actionLabels, tableLabel, tableXHead }, label)}
       />
     </Cell>
   )

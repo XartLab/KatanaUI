@@ -2971,6 +2971,11 @@ export const PAGES: readonly DocPage[] = [
           },
           { name: 'minSpan', type: 'number', default: '2', desc: '窗口最少几个点：折线至少两个点才画得出来。' },
           { name: 'height / brushHeight', type: 'number', default: '160 / 40', desc: '主图与概览条的高（px）。' },
+          {
+            name: 'actionLabels / tableLabel / tableHead / source / onExport / onFullscreen',
+            type: 'ChartViewProps',
+            desc: '同其他图：三个图工具的名字、表格视图（窗口里的那一段，一行一个点：横轴、值）、来源一行、导出与全屏的回调。',
+          },
         ],
       },
       {
@@ -2984,6 +2989,7 @@ export const PAGES: readonly DocPage[] = [
       '拖动中：窗口换成抓取手形，主图同步变。',
       '扫读：主图上出现竖线与点，下面一行写时间与值。',
       '窗口到了最小（minSpan）：继续缩小被夹住，不再变。',
+      '表格视图：主图换成窗口里那一段的表，概览条照旧能拖。',
     ],
     donts: [
       '不要用它画多条序列：它是单条权益线这类的概览加细看，多条走 SeriesExplorer 或 SmallMultiples。',
@@ -2991,7 +2997,7 @@ export const PAGES: readonly DocPage[] = [
       'values 里不要夹 NaN 想表示断点：窗口与概览条按下标走，断开会让下标对不上；先补好再传。',
     ],
     composition:
-      'BrushChart\n  div[role=group]（主图：svg 折线与面积 · 纵轴刻度 · 十字线与点）\n  横轴刻度 · 读数行（aria-live）\n  BrushStrip\n    svg 概览线\n    窗口（slider）· 起点手柄（slider）· 终点手柄（slider）',
+      'BrushChart\n  右上三件（表格视图 · 导出 · 全屏）\n  div[role=group]（主图：svg 折线与面积 · 纵轴刻度 · 十字线与点；表格视图时换成表）\n  横轴刻度 · 读数行（aria-live）\n  BrushStrip\n    svg 概览线\n    窗口（slider）· 起点手柄（slider）· 终点手柄（slider）',
     keys: [
       ['← →', '主图上：扫读前后一格；手柄上：窗口或该端移一点'],
       ['Shift + ← →', '一次三点'],
@@ -3540,7 +3546,7 @@ export const PAGES: readonly DocPage[] = [
     cardHeight: 360,
     title: 'HorizonChart 地平线图',
     summary:
-      '十几个品种的日内收益叠成窄带，一屏看完：每行把正负值折成几条叠起来的带，颜色越深值越大，涨跌色跟涨跌配色走。所有行共用一个扫读位置。功能参照 Arc 的 Horizon chart。',
+      '十几个品种的日内收益叠成窄带，一屏看完：每行把正负值折成几条叠起来的带，颜色越深值越大，正负用发散色（涨跌色只给右边的数）。所有行共用一个扫读位置，指针所在的那一行出 LCD 窗；右上有表格视图。功能参照 Arc 的 Horizon chart。',
     exports: ['HorizonChart'],
     props: [
       {
@@ -3569,12 +3575,18 @@ export const PAGES: readonly DocPage[] = [
           },
           { name: 'max', type: 'number', desc: '固定满刻度；不给按数据算。' },
           { name: 'rowHeight', type: 'number', default: '24', desc: '一行高（px）。' },
+          {
+            name: 'actionLabels / tableLabel / tableXHead / source / onExport / onFullscreen',
+            type: 'SeriesTableViewProps',
+            desc: '三个图工具的名字、表格视图的读屏名与第一列（横轴位置）的列头（其余列头是各行的名字）、来源一行、导出与全屏的回调。',
+          },
         ],
       },
     ],
     states: [
-      '默认：每行涨色带在基线上方叠起、跌色带同一基线叠起，右边写最新值。',
-      '扫读：每行同一根竖线，右边一列写那一格的值，读数行写时间。',
+      '默认：每行正值的带在基线上方叠起、负值的带同一基线叠起（发散色），右边写最新值。',
+      '扫读：每行同一根竖线，右边一列写那一格的值，读数行写时间；指针所在的那一行出 LCD 窗。',
+      '表格视图：一行一个横轴位置、一列一行序列。',
       '共用刻度：小行只有浅带；各自刻度：每行都填满。',
       '一行全是 0 或没数据：画成空行，值写「—」或 0。',
     ],
@@ -3584,7 +3596,7 @@ export const PAGES: readonly DocPage[] = [
       '不要超过十来行：行高 24px，几十行用 SmallMultiples 或表。',
     ],
     composition:
-      'HorizonChart\n  div[role=group]\n    每行：名字 · 窄带 svg（正、负各 bands 条 path）· 值\n  读数行（aria-live）',
+      'HorizonChart\n  右上三件（表格视图 · 导出 · 全屏）\n  div[role=group]\n    每行：名字 · 窄带 svg（正、负各 bands 条 path）· 十字线 · LCD 窗（指针所在行）· 值\n  读数行（aria-live）· 来源行',
     keys: [
       ['← →', '选中前后一格；没选中时先落到最新一格'],
       ['Shift + ← →', '一次三格'],
@@ -3626,11 +3638,16 @@ export const PAGES: readonly DocPage[] = [
             type: '(key: string) => void',
             desc: '给了标题就是按钮（可聚焦），点了拿到这一张的 key。',
           },
+          {
+            name: 'actionLabels / tableLabel / tableXHead / source / onExport / onFullscreen',
+            type: 'Partial<SeriesTableViewProps>',
+            desc: '给齐前三个才有右上三件与表格视图（一行一个横轴位置、一列一张）；单独用时要给，嵌在自带工具条的积木里（SentimentCycle）可以不给。',
+          },
         ],
       },
     ],
     states: [
-      '默认：每张画一条线，线色按头尾比（涨跌色跟涨跌配色走，持平中性色），标题写最新值。',
+      '默认：每张画一条线（series-1，不按涨跌着色），标题的值按头尾比上涨跌色，标题写最新值。',
       '扫读：所有张同一格画竖线与点，标题的值换成那一格。',
       '某张没数据：线不画，值写「—」。',
     ],
@@ -3640,7 +3657,7 @@ export const PAGES: readonly DocPage[] = [
       '不要在包里写品种名或单位：名字与值的写法都由调用方传。',
     ],
     composition:
-      'SmallMultiples\n  div[role=group]（网格）\n    每张：标题（名字 · 值；可点时是 button）· 折线区（svg 折线 · 竖线与点）\n  读数行（aria-live）',
+      'SmallMultiples\n  右上三件（给了 actionLabels 才有）\n  div[role=group]（网格；表格视图时换成表）\n    每张：标题（名字 · 值；可点时是 button）· 折线区（svg 折线 · 竖线与点）\n  读数行（aria-live）',
     keys: [
       ['← →', '选中前后一格；没选中时先落到最新一格'],
       ['Shift + ← →', '一次三格'],

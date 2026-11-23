@@ -98,6 +98,16 @@ export const viewShape = {
   ).optional(),
 }
 
+/** 一行一个横轴位置、一列一条序列的表格视图（SeriesTableViewProps）：列头是横轴那一列的名字加各序列的名字，只给第一列的头。 */
+export const seriesViewShape = {
+  actionLabels: viewShape.actionLabels,
+  tableLabel: viewShape.tableLabel,
+  tableXHead: text('Column head of the x position in the table view; the other column heads are the series names.'),
+  source: viewShape.source,
+  onExport: viewShape.onExport,
+  onFullscreen: viewShape.onFullscreen,
+}
+
 type ActionCall = (event: { metadata: { extensions: Record<string, unknown> } }) => unknown
 
 /** 发一个 Action，把被点的项放进 metadata.extensions（宿主靠它知道是哪一项）。 */
@@ -121,6 +131,21 @@ export function viewProps(props: ViewIn, label: string) {
     actionLabels: props.actionLabels,
     tableLabel: props.tableLabel,
     tableHead: props.tableHead,
+    ...(props.source === undefined ? {} : { source: props.source }),
+    ...(onExport === undefined ? {} : { onExport: () => dispatch(onExport, 'katanaChart', { label }) }),
+    ...(onFullscreen === undefined ? {} : { onFullscreen: () => dispatch(onFullscreen, 'katanaChart', { label }) }),
+  }
+}
+
+type SeriesViewIn = Omit<ViewIn, 'tableHead'> & { tableXHead: string }
+
+/** 把 seriesViewShape 的属性接成库里 SeriesTableViewProps：回调只在给了 Action 时才有。 */
+export function seriesViewProps(props: SeriesViewIn, label: string) {
+  const { onExport, onFullscreen } = props
+  return {
+    actionLabels: props.actionLabels,
+    tableLabel: props.tableLabel,
+    tableXHead: props.tableXHead,
     ...(props.source === undefined ? {} : { source: props.source }),
     ...(onExport === undefined ? {} : { onExport: () => dispatch(onExport, 'katanaChart', { label }) }),
     ...(onFullscreen === undefined ? {} : { onFullscreen: () => dispatch(onFullscreen, 'katanaChart', { label }) }),
