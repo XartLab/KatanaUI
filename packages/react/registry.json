@@ -779,6 +779,19 @@
       ]
     },
     {
+      "name": "scroll-dismiss",
+      "type": "registry:lib",
+      "title": "Scroll Dismiss",
+      "description": "非模态浮层的滚动即关：页面或装着锚点的容器把锚点滚走了就关（Popover 用）。",
+      "files": [
+        {
+          "path": "src/lib/scroll-dismiss.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/lib/scroll-dismiss.ts"
+        }
+      ]
+    },
+    {
       "name": "severity",
       "type": "registry:lib",
       "title": "Severity",
@@ -1575,7 +1588,8 @@
       "registryDependencies": [
         "@katana/cn",
         "@katana/menu-parts",
-        "@katana/overlay"
+        "@katana/overlay",
+        "@katana/scroll-dismiss"
       ],
       "files": [
         {

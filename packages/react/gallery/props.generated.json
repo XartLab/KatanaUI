@@ -6460,7 +6460,14 @@
     "Combobox": {
       "kind": "component",
       "source": "src/patterns/combobox.tsx",
-      "props": []
+      "props": [
+        {
+          "name": "closeOnScroll",
+          "type": "boolean",
+          "required": false,
+          "description": "Closes the popover when the page or a container holding its trigger scrolls, so it never floats away open."
+        }
+      ]
     },
     "ComboboxContent": {
       "kind": "component",
@@ -28400,7 +28407,15 @@
     "Popover": {
       "kind": "component",
       "source": "src/primitives/popover.tsx",
-      "props": []
+      "props": [
+        {
+          "name": "closeOnScroll",
+          "type": "boolean",
+          "required": false,
+          "default": "true",
+          "description": "Closes the popover when the page or a container holding its trigger scrolls, so it never floats away open."
+        }
+      ]
     },
     "PopoverAnchor": {
       "kind": "component",

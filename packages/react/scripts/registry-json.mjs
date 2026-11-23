@@ -93,6 +93,7 @@ const INTERNAL = {
     '走势线新点追加时的延伸过场（钩子加纯函数）：旧线各点平滑走到新位置，新点从末端长出来，Sparkline、SparkTile、EquityCurve 用。',
   'live-readout':
     '读数变了闪涨跌色的外壳与取数：从已格式化的文字里取开头的数，走 live 的 useValueFlash。MetricCard、QuoteCard、PriceTag、KeyStats、Lcd、StatusBar 用。',
+  'scroll-dismiss': '非模态浮层的滚动即关：页面或装着锚点的容器把锚点滚走了就关（Popover 用）。',
   'hover-intent': '悬停意图：停一会儿才开、离开等一会儿再收、键盘聚焦立即开的钩子。',
   'code-highlight': 'CodeBlock 用的小型词法切分：注释、字符串、数字、关键字、函数、标点（纯函数，不加依赖）。',
   'matrix-orb-model': 'MatrixOrb 的纯数学：某状态下圆盘上一点在某一时刻的亮度。',
