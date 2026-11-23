@@ -23,8 +23,11 @@ import {
   AiTaskList,
   AiToolCall,
   Button,
+  Markdown,
   MatrixOrb,
   Slider,
+  WebSearchCitation,
+  markdownSlot,
   type AiApprovalOption,
   type AiDiffLabels,
   type AiDiffLine,
@@ -713,6 +716,66 @@ export function AiConversationDemo() {
       <p className="gal-note">
         问「600519 今天为什么跌」→ 推理 → 调工具查新闻与资金 → 带来源的回答 →
         一条减仓建议进审批（按住确认）。演示数据写死：发送任何问题都重播这一段。
+      </p>
+    </>
+  )
+}
+
+const MD_REPLY = `**结论**：更像板块与资金面共振，不是公司自身的新利空。
+
+- 批价继续回落${markdownSlot(0)}
+- 融资净卖出、北向小幅流出${markdownSlot(1)}
+
+| 指标 | 今日 | 5 日 |
+|---|---|---|
+| 涨跌幅 | -2.3% | -4.1% |
+| 融资净额 | -3.2 亿 | -7.8 亿 |
+
+要看原始数据可以用 \`katana quote 600519\`，或打开 [上交所披露](https://www.sse.com.cn)。
+
+![日线截图](https://example.com/chart.png)
+
+<script>alert('模型写的 HTML 只当字')</script>`
+
+const MD_DOC = `# 快速上手
+
+先在[设置](./settings.md)里选好行情源，再看[开发者文档](../dev/api.md)（没打包，只留文字）。
+
+## 下单 \`F9\`
+
+> 下单前确认账户与数量；按住确认钮才会发出。
+
+1. 选中标的
+2. 按 \`F9\` 打开下单框`
+
+const resolveDocLink = (href: string) => (href.startsWith('./') ? href.slice(2) : null)
+
+export function MarkdownDemo() {
+  const [opened, setOpened] = useState('（还没点）')
+  return (
+    <>
+      <Row name="回话 + 角标槽">
+        <div style={stage} data-gallery-markdown="reply">
+          <Markdown
+            text={MD_REPLY}
+            slots={[
+              <WebSearchCitation key="0" index={1} source={SOURCES[0]!} />,
+              <WebSearchCitation key="1" index={2} source={SOURCES[1]!} />,
+            ]}
+          />
+        </div>
+      </Row>
+      <Row name="帮助文档">
+        <div style={stage} data-gallery-markdown="doc">
+          <Markdown text={MD_DOC} resolveLink={resolveDocLink} onOpenLink={setOpened} />
+          <p className="gal-note" data-gallery-markdown-opened>
+            点了：{opened}
+          </p>
+        </div>
+      </Row>
+      <p className="gal-note">
+        模型写的 HTML 原样当字、图片只写说明、外链只认 http(s) 并在新标签页打开。占位符 markdownSlot(n) 的位置画
+        slots[n]（这里是引用小标）。 文档模式标题带锚点，认得的相对链接交给 onOpenLink，不认得的只留文字。
       </p>
     </>
   )

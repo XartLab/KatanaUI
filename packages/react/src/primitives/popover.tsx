@@ -2,21 +2,54 @@
 // 起步代码取自 shadcn/ui（https://ui.shadcn.com ，MIT，Copyright (c) 2023 shadcn），2026-11-11 用 `shadcn add` 生成（#1777），行为底座是 Radix；
 // 拷进来以后归我们改：样子（尺寸、颜色、动效）按 OpenMarket 实测样式与我们的 token 重写（决策记录 0049）。
 import { Popover as PopoverPrimitive } from 'radix-ui'
-import type { ComponentProps } from 'react'
+import { createContext, useContext, useState, type ComponentProps, type Ref, type RefObject } from 'react'
 import { cn } from '../lib/cn.ts'
 import { OverlayPortal } from '../lib/overlay.tsx'
+import { assignRef, useScrollDismiss } from '../lib/scroll-dismiss.ts'
 import { menuContainerClass } from './menu-parts.tsx'
 
 // 弹层：跟菜单同一块材质（OpenMarket tb-interval-dropdown：圆角 overlay · 7% 白边 · 0 16 48 + 0 2 8 阴影）。三种皮肤，variant 选：
 //   panel（默认）：宽 288 · 内边 12，放一小段说明、一组控件。
 //   menu：就是菜单的容器（最小宽 180 · 内边 6 · 超高自己滚），应用里「弹出一列东西」的弹层用它，跟菜单一个样。
 //   bare：不带皮肤，只有位置、层级与入场动效；外观全由调用方的类名给（快速换品种那种自带整套样式的浮层）。
-function Popover({ ...props }: ComponentProps<typeof PopoverPrimitive.Root>) {
-  return <PopoverPrimitive.Root data-slot="popover" {...props} />
+// 锚点（触发钮或 PopoverAnchor）登记在这里，滚动即关（#125）看的是装着它的滚动容器。
+const AnchorContext = createContext<RefObject<Element | null> | null>(null)
+
+/** 把锚点节点同时交给调用方的 ref 与滚动即关的 ref。 */
+function useAnchorRef<T extends Element>(ref: Ref<T> | undefined) {
+  const anchor = useContext(AnchorContext)
+  return (node: T | null) => {
+    if (anchor) assignRef(anchor, node)
+    return assignRef(ref, node)
+  }
 }
 
-function PopoverTrigger({ ...props }: ComponentProps<typeof PopoverPrimitive.Trigger>) {
-  return <PopoverPrimitive.Trigger data-slot="popover-trigger" {...props} />
+function Popover({
+  open: openProp,
+  defaultOpen = false,
+  onOpenChange,
+  closeOnScroll = true,
+  ...props
+}: ComponentProps<typeof PopoverPrimitive.Root> & {
+  /** Closes the popover when the page or a container holding its trigger scrolls, so it never floats away open. */
+  closeOnScroll?: boolean
+}) {
+  const [uncontrolled, setUncontrolled] = useState(defaultOpen)
+  const open = openProp ?? uncontrolled
+  const setOpen = (next: boolean) => {
+    if (openProp === undefined) setUncontrolled(next)
+    onOpenChange?.(next)
+  }
+  const anchor = useScrollDismiss<Element>(open, () => setOpen(false), closeOnScroll)
+  return (
+    <AnchorContext value={anchor}>
+      <PopoverPrimitive.Root data-slot="popover" open={open} onOpenChange={setOpen} {...props} />
+    </AnchorContext>
+  )
+}
+
+function PopoverTrigger({ ref, ...props }: ComponentProps<typeof PopoverPrimitive.Trigger>) {
+  return <PopoverPrimitive.Trigger ref={useAnchorRef(ref)} data-slot="popover-trigger" {...props} />
 }
 
 function PopoverClose({ ...props }: ComponentProps<typeof PopoverPrimitive.Close>) {
@@ -54,8 +87,8 @@ function PopoverContent({
   )
 }
 
-function PopoverAnchor({ ...props }: ComponentProps<typeof PopoverPrimitive.Anchor>) {
-  return <PopoverPrimitive.Anchor data-slot="popover-anchor" {...props} />
+function PopoverAnchor({ ref, ...props }: ComponentProps<typeof PopoverPrimitive.Anchor>) {
+  return <PopoverPrimitive.Anchor ref={useAnchorRef(ref)} data-slot="popover-anchor" {...props} />
 }
 
 function PopoverHeader({ className, ...props }: ComponentProps<'div'>) {

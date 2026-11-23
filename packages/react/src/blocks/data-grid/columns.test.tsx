@@ -426,6 +426,45 @@ describe('列类型 streak 与 limitStatus', () => {
   })
 })
 
+// A 股件包（#110 第 2 批）：auctionStep 列类型。
+describe('列类型 auctionStep', () => {
+  const points = [
+    { time: '09:15', price: 10.0 },
+    { time: '09:20', price: 10.3 },
+    { time: '09:25', price: 10.5 },
+  ]
+  it('字是最新撮合价，排序按相对昨收的涨跌幅（没有昨收就按价）；没有点写 —', () => {
+    expect(cell(col('auctionStep'), points).text).toBe('10.50')
+    expect(cell(col('auctionStep'), { points, prevClose: 10 }).sort).toBeCloseTo(5)
+    expect(cell(col('auctionStep'), points).sort).toBe(10.5)
+    expect(cell(col('auctionStep'), []).text).toBe('—')
+    expect(cell(col('auctionStep'), null).sort).toBeUndefined()
+    const compare = sortComparator('auctionStep', undefined)
+    expect(
+      compare(
+        cell(col('auctionStep'), { points, prevClose: 10 }).sort,
+        cell(col('auctionStep'), { points, prevClose: 10.4 }).sort,
+      ),
+    ).toBeGreaterThan(0)
+  })
+
+  it('DataGrid 把这一列画成迷你台阶', () => {
+    const html = renderToStaticMarkup(
+      <DataGrid
+        columns={[{ id: 'a', type: 'auctionStep', value: () => ({ points, prevClose: 10 }) }]}
+        layout={[{ id: 'a', label: 'A', width: 100, visible: true }]}
+        rows={[{ id: 'r' }]}
+        rowId={(row) => row.id}
+        label="t"
+        sort={null}
+        onSortChange={() => {}}
+      />,
+    )
+    expect(html).toContain('data-slot="auction-spark"')
+    expect(html).toContain('data-tone="up"')
+  })
+})
+
 // A 股件包（KATANAview #2194，KatanaUI #148）：board 与 cnAmount 两种列类型。
 describe('列类型 board 与 cnAmount', () => {
   it('board：板块名、六位代码或 { code, name } 都认，默认写 cm，主板空、取不到写 —', () => {

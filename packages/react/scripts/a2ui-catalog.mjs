@@ -6,7 +6,7 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { createServer } from 'vite-plus'
+import { createServer, defaultClientConditions, defaultServerConditions } from 'vite-plus'
 
 const pkgDir = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 export const CATALOG_PATH = join(pkgDir, 'public', 'a2ui', 'katana', 'v1.json')
@@ -20,6 +20,11 @@ export async function buildCatalogJson() {
     logLevel: 'silent',
     appType: 'custom',
     server: { middlewareMode: true },
+    // 同仓库的 @katana-ui/logos 读 TS 源码（katana-source 条件，见 vite.config.ts），不靠它先构建（#95 之后 symbol-mark 引它）。
+    resolve: { conditions: ['katana-source', ...defaultClientConditions] },
+    ssr: {
+      resolve: { conditions: ['katana-source', ...defaultServerConditions], externalConditions: ['katana-source'] },
+    },
   })
   try {
     const { katanaCatalog } = await server.ssrLoadModule('/src/a2ui/catalog.ts')
