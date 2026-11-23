@@ -7,7 +7,14 @@ import { spawnSync } from 'node:child_process'
 import { readFileSync, readdirSync } from 'node:fs'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { browserTestPlan, gitDiffOf, shotPlan } from './shot-coverage.mjs'
+import {
+  GRAPHITE_ALL,
+  browserTestPlan,
+  gitDiffOf,
+  ranAnyShot,
+  shotExternalChanged,
+  shotPlan,
+} from './shot-coverage.mjs'
 
 const pkgDir = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const args = process.argv.slice(2)
@@ -62,7 +69,14 @@ run('受影响的单测', 'pnpm', ['exec', 'vp', 'test', 'run', '--changed', bas
 // 不用 vitest --changed：演示文件从 src/index 这类桶引件，桶一动所有截图都算「相关」。按件名挑：改动的件与（传递）引用它的件。
 const plan = shotPlan(pkgDir, changed)
 // 改了截图测试本身：只跑改动落到的那几个 test（落在 test 之外就是那个文件的全部）；底座（render、open-frame、浏览器配置）改了才退回代表件。#201：原来一改就整套，约 6 分钟。
-const bt = browserTestPlan(pkgDir, changed, gitDiffOf(pkgDir, base))
+// 本包之外会改像素的东西（tokens 包、pixelgate-cli / playwright 的版本）变了，也算共用底座。
+const allChanged = [
+  ...capture('git', ['diff', '--name-only', base]).split('\n'),
+  ...capture('git', ['ls-files', '--others', '--exclude-standard'])
+    .split('\n')
+    .map((f) => prefix + f),
+].filter(Boolean)
+const bt = browserTestPlan(pkgDir, changed, gitDiffOf(pkgDir, base), shotExternalChanged(root, base, allChanged))
 const browserTests = readdirSync(join(pkgDir, 'browser')).filter((f) => f.endsWith('.browser.test.tsx'))
 const shotArgs = ['exec', 'vp', 'test', 'run', '-c', 'vitest.browser.config.ts']
 const REPRESENTATIVE = [
@@ -97,14 +111,33 @@ const hasTest = (text, n) => new RegExp(`['"\`]${n}['"\`]|^\\s*${n}\\s*:`, 'm').
 const testTexts = new Map(browserTests.map((f) => [f, readFileSync(join(pkgDir, 'browser', f), 'utf8')]))
 const wanted = new Set([...plan.names, ...bt.names])
 if (bt.shared) for (const n of REPRESENTATIVE) if ([...testTexts.values()].some((t) => hasTest(t, n))) wanted.add(n)
-// 认不出测试名的截图测试文件改了：整个文件的 Graphite 都跑（少见，名字都认不出时只能这样）。
-if (bt.unnamed.size)
-  run('组件截图（改了认不出测试名的截图测试：整个文件 · Graphite）', 'pnpm', [
+// 组件截图一步：写一份 JSON 报告，一张都没跑到算失败（非 0 退出并点名），免得名字对不上时假通过。
+const shotReport = join(pkgDir, 'node_modules', '.cache', 'fast-shots.json')
+const runShots = (label, shotFiles, pattern, what) => {
+  run(label, 'pnpm', [
     ...shotArgs,
-    ...bt.unnamed,
+    ...shotFiles,
     '-t',
-    '^graphite',
+    pattern,
+    '--reporter=default',
+    '--reporter=json',
+    `--outputFile.json=${shotReport}`,
   ])
+  if (!ranAnyShot(JSON.parse(readFileSync(shotReport, 'utf8')))) {
+    process.stdout.write(`✗ ${label}：一张都没跑到（${what}）\n`)
+    process.exit(1)
+  }
+}
+// 认不出的写法（test.each、多行声明、模板名……）、diff 取不到：这个截图测试文件整个跑（Graphite）。外层包 describe 也能匹配。
+if (bt.whole.size)
+  runShots(
+    `组件截图（${[...bt.whole].join('、')} 解析不确定：整个文件 · Graphite）`,
+    [...bt.whole],
+    GRAPHITE_ALL,
+    `这些文件里没有 graphite 的测试：${[...bt.whole].join(', ')}`,
+  )
+// 改动只落在 skip / todo 的截图测试上：没有可截的，跳过这一步。
+for (const f of bt.skippedOnly) process.stdout.write(`\n（${f}：只改了跳过的截图测试，不截）\n`)
 if (wanted.size) {
   // 预算：一张约 0.6–1.2 秒，最多截 MAX_SHOTS 个件。波及更多（改了 lib、原语这类底层）就截代表件（与波及的取交集，不够再从波及的里补），
   // 其余留给合并前的整套。改动正好落到的 test 排最前，不会被代表件挤掉。
@@ -130,22 +163,13 @@ if (wanted.size) {
     ),
   )
   // 快速模式只截 Graphite；改了主题或令牌才两个主题都截（Console 留给合并前的整套）。
-  // Vitest 拼全名用 ' > '（「graphite > lcd」）。另写一份 JSON 报告：一张都没跑到算失败，免得名字对不上时假通过。
-  const report = join(pkgDir, 'node_modules', '.cache', 'fast-shots.json')
-  run(`组件截图（${names.length} 个件 · ${themes.replace('|', ' + ')}）`, 'pnpm', [
-    ...shotArgs,
-    ...files.map((f) => `browser/${f}`),
-    '-t',
+  // Vitest 拼全名用 ' > '（「graphite > lcd」）。
+  runShots(
+    `组件截图（${names.length} 个件 · ${themes.replace('|', ' + ')}）`,
+    files.map((f) => `browser/${f}`),
     `(${themes}) > (${names.join('|')})$`,
-    '--reporter=default',
-    '--reporter=json',
-    `--outputFile.json=${report}`,
-  ])
-  const ran = JSON.parse(readFileSync(report, 'utf8')).numPassedTests
-  if (!ran) {
-    process.stdout.write(`✗ 组件截图一张都没跑到（测试名对不上：${names.join(', ')}）\n`)
-    process.exit(1)
-  }
+    `测试名对不上：${names.join(', ')}`,
+  )
 }
 
 // 受影响的页：复用 vr-fast 的映射（--dry 只打印页名，不截图）。

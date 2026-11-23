@@ -138,7 +138,15 @@ import { EquityCurve } from '@katana-ui/react/quant'`}
             <>
               {code('pnpm fast')} 只截改动落到的那几个测试（改动在 test 之外就截该文件的全部，最多 30
               个）；改了共用底座（{code('browser/render.tsx')}、{code('browser/open-frame.tsx')}、
-              {code('vitest.browser.config.ts')}）才退回代表件，不跑整套（整套约 6 分钟）
+              {code('vitest.browser.config.ts')}、{code('vite.config.ts')}、字体与 {code('ui.css')}、{code('shot/')}
+              、tokens 包、pixelgate-cli 与 playwright 的版本）才退回代表件，不跑整套（整套约 6 分钟）
+            </>,
+          ],
+          [
+            '认不出时',
+            <>
+              漏截比多截危险：{code('test.each')}、多行声明、模板名这类认不出的写法，diff
+              取不到或解析不出行号，都整个文件跑（Graphite）；跳过的测试不算，只改了它们就不截；一张都没跑到算失败
             </>,
           ],
           [

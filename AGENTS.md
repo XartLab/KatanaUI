@@ -36,7 +36,7 @@ Vite+ 用足（2026-11-18）：根目录直接 `pnpm fast` / `pnpm vr` / `pnpm v
 
 全量门禁在 CI 上并行跑（单测、组件截图、整页回归、e2e 切 4 片，runner 由仓库变量 KATANAUI_RUNNER 指到自建机）；本地全量是 `pnpm full`，约 20 分钟，只在必要时跑。整页回归不再截有组件截图的页（423 → 30 张）。
 
-快速模式的预算是 60 秒（2026-11-18）：`pnpm fast` 超过一分钟就算 bug，它会以非 0 退出并点名最慢的一步——去修那一步，不要调大预算。现在的做法：单测不隔离（isolate: false）；组件截图（browser/*.browser.test.tsx，Vitest 浏览器模式 + pixelgate）只截 Graphite、最多 30 个件，波及更多时截代表件；e2e 只跑改动的件自己那页、最多 15 条；改动全有组件截图时跳过整页 vr:fast。新组件要配组件截图，测试名等于文件名（lcd.tsx → 'lcd'），否则快速模式认不出、只能退回整页。改了截图测试本身时只截改动落到的那几个测试（落在 test 之外就是该文件的全部，最多 30 个），改了共用底座（browser/render.tsx、browser/open-frame.tsx、vitest.browser.config.ts）才退回代表件，不再整套（2026-11-24，#201：整套约 6 分钟）。
+快速模式的预算是 60 秒（2026-11-18）：`pnpm fast` 超过一分钟就算 bug，它会以非 0 退出并点名最慢的一步——去修那一步，不要调大预算。现在的做法：单测不隔离（isolate: false）；组件截图（browser/*.browser.test.tsx，Vitest 浏览器模式 + pixelgate）只截 Graphite、最多 30 个件，波及更多时截代表件；e2e 只跑改动的件自己那页、最多 15 条；改动全有组件截图时跳过整页 vr:fast。新组件要配组件截图，测试名等于文件名（lcd.tsx → 'lcd'），否则快速模式认不出、只能退回整页。改了截图测试本身时只截改动落到的那几个测试（落在 test 之外就是该文件的全部，最多 30 个），改了共用底座（browser/ 里的非测试文件、vitest.browser.config.ts、vite.config.ts、src/fonts.css、src/fonts/、src/ui.css、shot/、tokens 包、pixelgate-cli / playwright 的版本）才退回代表件，不再整套（2026-11-24，#201：整套约 6 分钟）。原则是漏截比多截危险：认不出的写法（test.each、多行声明、模板名）、diff 取不到或解析不出行号，都整个文件跑；跳过（skip / todo）的测试不算。
 
 并行派发的规矩（2026-11-18，G1–G6 一轮用了约 7 小时的教训）：这台机器 2 核 7G，同时最多 2 个 worker；worker 只跑 `pnpm fast`，不跑全量 e2e / vr（全量只在合并后跑一次）；worker 不提交生成物（registry.json、props.generated.json、design-system/**、a2ui v1.json、tokens.css），合并后统一重新生成；按文件边界切批（共享的 tokens.json、ui.css、registry.ts、index.ts 由我在合并时一次改），批次间先约定好新 token 名，免得各造一份。
 

@@ -384,6 +384,9 @@ const declaredNames = (file) => {
 const IMPORT = /(?:from|import)\s+['"]([^'"]+)['"]/g
 
 export async function buildRegistry() {
+  // 缓存只管这一次生成（一次里每个文件读一次、扫一次）；进程常驻时（vitest watch、isolate: false）下一次要重新读源码。
+  fileCache.clear()
+  declaredCache.clear()
   const items = collectItems()
   const pages = await loadPages()
   const owner = new Map() // 文件 → item 名
