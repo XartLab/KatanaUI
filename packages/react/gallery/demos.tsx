@@ -11,6 +11,7 @@ import {
 } from './pages/cn-pack.tsx'
 import { FlagMarkDemo } from './pages/watchlist-order.tsx'
 import { InlineEditDemo, SplitButtonDemo, TagInputDemo } from './pages/arc-inputs.tsx'
+import { RulerSliderDemo } from './pages/ruler-slider.tsx'
 import { DepthChartDemo, OrderBookDemo, TradeTapeDemo } from './pages/market-depth.tsx'
 import {
   AgentAvatarDemo,
@@ -600,6 +601,7 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'switchboard-card': SwitchboardCardDemo,
   'animated-tags': AnimatedTagsDemo,
   'exposure-slider': ExposureSliderDemo,
+  'ruler-slider': RulerSliderDemo,
   scrubber: ScrubberDemo,
   'power-off-slide': PowerOffSlideDemo,
   'animated-stepper': AnimatedStepperDemo,

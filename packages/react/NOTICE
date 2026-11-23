@@ -112,6 +112,8 @@ This package is licensed under the MIT License (see LICENSE).
 12. Arc（https://github.com/kuratlielia/arc-library ，https://uiarc.dev ，免费部分 MIT，Copyright (c) 2026 Elia Kuratli；2026-11-23 读仓库 LICENSE 与 registry/components，提交 8302b52）
    `src/patterns/split-button.tsx`、`tag-input.tsx`（与 `tag-input-model.ts`）、`inline-edit.tsx` 改自它免费仓库里的 split-button、tag-input、inline-edit：
    行为与键位照它，样式、文案、动效按我们的 token 与 Precision Instrument §2.4 重写，文件头写 MIT 与出处。Arc 的 Pro 件（付费授权）没有用。
+   `src/katana/ruler-slider.tsx`（#157）的带数字大刻度、点按滑到那一格、Shift + 方向键走一大格与点按 4px 的分界改自同一仓库的 ruler-slider；
+   刻度、弹簧、拖动的手感取自本包的 ExposureSlider（改自 SmoothUI，见第 9 项），样式用我们的 token 重写。
    别处文件头写着「功能参照 Arc」的件（#1917、#1918、#1919）只学了它公开页面上的功能，没有取代码。许可证全文如下 / Full licence text:
 
    MIT License

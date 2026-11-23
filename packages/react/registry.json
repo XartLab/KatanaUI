@@ -2922,6 +2922,26 @@
       ]
     },
     {
+      "name": "ruler-slider",
+      "type": "registry:component",
+      "title": "Ruler Slider",
+      "description": "只有一侧的量用的刻度尺：中间一根定位线，左右拖动刻度尺，从 min 到当前值的刻度都亮，上方的环从 12 点顺时针画到当前值占全程的比例。拿来调仓位比例、杠杆、数量占可用的百分比；手感照 ExposureSlider，点一下刻度就滑到那一格（交互照 TradingView 下单面板的数量滑块）。",
+      "dependencies": [
+        "motion@14.9.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/focus"
+      ],
+      "files": [
+        {
+          "path": "src/katana/ruler-slider.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/katana/ruler-slider.tsx"
+        }
+      ]
+    },
+    {
       "name": "scroll-progress",
       "type": "registry:component",
       "title": "Scroll Progress",
