@@ -134,6 +134,14 @@ import { EquityCurve } from '@katana-ui/react/quant'`}
             </>,
           ],
           [
+            '改了截图测试',
+            <>
+              {code('pnpm fast')} 只截改动落到的那几个测试（改动在 test 之外就截该文件的全部，最多 30
+              个）；改了共用底座（{code('browser/render.tsx')}、{code('browser/open-frame.tsx')}、
+              {code('vitest.browser.config.ts')}）才退回代表件，不跑整套（整套约 6 分钟）
+            </>,
+          ],
+          [
             '组件截图',
             <>
               {code('browser/*.browser.test.tsx')}，测试名等于件的文件名（lcd.tsx → lcd）；基线在

@@ -2,6 +2,7 @@
 // 组件截图够不够：快速模式用它决定能不能跳过整页 vr:fast。
 // 规则：改动的每个源文件，连同 src 里所有（传递地）引用它的组件，都得被 browser/*.browser.test.tsx 直接截过；
 // 每件一个的 theme/<件名>.css 跟它的件走。共用层（lib 被没截过的件用到、theme.css、tokens、gallery）就不够，照跑 vr:fast。
+import { spawnSync } from 'node:child_process'
 import { existsSync, readFileSync, readdirSync } from 'node:fs'
 import { basename, dirname, join, relative, resolve } from 'node:path'
 
@@ -99,10 +100,8 @@ export function shotPlan(pkgDir, changed) {
   let covered = true
   for (const file of changed) {
     if (/\.test\.tsx?$/.test(file) || file.startsWith('.pixelgate-unit/')) continue
-    if (file.startsWith('browser/')) {
-      covered = false // 改了截图测试本身：整套跑，见 fast.mjs
-      continue
-    }
+    // 改了截图测试本身（或它的底座）：只影响组件截图，不碰页；跑哪些见 browserTestPlan。
+    if (isBrowserShotFile(file)) continue
     const css = /^src\/theme\/(.+)\.css$/.exec(file)
     if (css) {
       if ([...targets].some((t) => basename(t, '.tsx') === css[1])) names.add(css[1])
@@ -129,8 +128,96 @@ export function shotPlan(pkgDir, changed) {
       else if (targets.has(f)) names.add(basename(f, '.tsx'))
       else if (!(dependents.get(f) ?? []).length) covered = false
   }
-  return { covered, names, browserTestsChanged: changed.some((f) => f.startsWith('browser/')) }
+  return { covered, names }
 }
+
+/** 截图测试本身的文件：browser/ 下的测试与底座（render.tsx、open-frame.tsx），加 Vitest 浏览器模式的配置。 */
+const isBrowserShotFile = (file) => file.startsWith('browser/') || file === 'vitest.browser.config.ts'
+/** 单个截图测试文件（*.browser.test.tsx）；其余 browser/ 下的文件与 vitest.browser.config.ts 是几个文件共用的底座。 */
+const isBrowserTestFile = (file) => /^browser\/[^/]+\.browser\.test\.tsx$/.test(file)
+
+const TEST_START = /^\s*test(?:\.\w+)?\(\s*(['"`])([^'"`]+)\1/
+
+/**
+ * 一个截图测试文件里的「条目」，按行序：每个 test('名') 的起始行，加 `const items = { 名: <件>, … }` 这种表里的每个键
+ * （表里的键由下面的 for 循环变成 test(name)，测试名就是键）。表的条目带 limit：表结束行，之后的行不算它的。
+ */
+export function testsOf(text) {
+  const lines = text.split('\n')
+  const out = []
+  lines.forEach((line, i) => {
+    const m = TEST_START.exec(line)
+    if (m) out.push({ line: i + 1, name: m[2] })
+  })
+  // 表：`const items… = {` 到第一行顶格的 `}`；键在两格缩进。
+  const open = lines.findIndex((l) => /^const items\b.*=\s*\{\s*$/.test(l))
+  if (open >= 0) {
+    const close = lines.findIndex((l, i) => i > open && l.startsWith('}'))
+    const limit = close < 0 ? lines.length : close + 1
+    for (let i = open + 1; i < limit - 1; i++) {
+      const k = /^ {2}(?:'([^']+)'|"([^"]+)"|([A-Za-z_$][\w$]*))\s*:/.exec(lines[i])
+      if (k) out.push({ line: i + 1, name: k[1] ?? k[2] ?? k[3], limit })
+    }
+  }
+  // 条目上方紧挨着的注释行跟着它走（「// skipped: …」写在 test 前面，改注释就是改这个测试）。
+  for (const t of out) while (t.line > 1 && /^\s*\/\//.test(lines[t.line - 2])) t.line--
+  return out.toSorted((a, b) => a.line - b.line)
+}
+
+/** `git diff -U0` 的输出 → 新文件里改动涉及的行号（纯删除记在删除处的下一行）。 */
+export function changedLines(diff) {
+  const lines = new Set()
+  for (const m of diff.matchAll(/^@@ -\d+(?:,\d+)? \+(\d+)(?:,(\d+))? @@/gm)) {
+    const start = Number(m[1])
+    const count = m[2] === undefined ? 1 : Number(m[2])
+    if (count === 0) lines.add(start + 1)
+    else for (let i = 0; i < count; i++) lines.add(start + i)
+  }
+  return lines
+}
+
+/**
+ * 改了截图测试时跑哪些（#201：原来一改就整套，两核机器上约 6 分钟）。
+ * - 改动落在某几个 test('名') 里：只跑这几个名字；
+ * - 落在 test 之外（import、辅助函数、循环头）：这个文件的全部测试名；
+ * - 底座（render.tsx、open-frame.tsx、vitest.browser.config.ts）改了：不跑整套，退回代表件（shared: true）。
+ * diffOf(file)：该文件相对 base 的 -U0 差异；未跟踪的新文件没有差异，按「全文件」算。
+ */
+export function browserTestPlan(pkgDir, changed, diffOf = () => '') {
+  const files = changed.filter(isBrowserShotFile)
+  const shared = files.some((f) => !isBrowserTestFile(f))
+  const names = new Set()
+  const precise = new Set() // 改动正好落在这几个 test 里（优先截）
+  const unnamed = new Set() // 认不出任何测试名的文件：整个文件跑
+  const fileWide = new Set() // 落在 test 之外、只能按整个文件跑的测试文件
+  for (const file of files.filter(isBrowserTestFile)) {
+    const path = join(pkgDir, file)
+    if (!existsSync(path)) continue
+    const tests = testsOf(readFileSync(path, 'utf8'))
+    const diff = diffOf(file)
+    const lines = diff ? changedLines(diff) : null
+    let wide = lines === null
+    if (lines)
+      for (const line of lines) {
+        const owner = tests.findLast((t) => t.line <= line)
+        // 表的条目只管到表结束；表之后（循环体、辅助函数）的改动属于整个文件。
+        if (owner && !(owner.limit && line > owner.limit)) {
+          names.add(owner.name)
+          precise.add(owner.name)
+        } else wide = true
+      }
+    if (wide) {
+      fileWide.add(file)
+      if (!tests.length) unnamed.add(file)
+      for (const t of tests) names.add(t.name)
+    }
+  }
+  return { shared, names, precise, fileWide, unnamed, files: files.filter(isBrowserTestFile) }
+}
+
+/** 相对 base 的 -U0 差异，给 browserTestPlan 用。 */
+export const gitDiffOf = (pkgDir, base) => (file) =>
+  spawnSync('git', ['diff', '-U0', base, '--', file], { cwd: pkgDir, encoding: 'utf8' }).stdout ?? ''
 
 /** True when the component screenshots alone cover every changed file. */
 export const coveredByShots = (pkgDir, changed) => shotPlan(pkgDir, changed).covered

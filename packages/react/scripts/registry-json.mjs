@@ -139,7 +139,16 @@ const INTERNAL = {
   space: '排版原语共用：间距刻度名（对应 tokens 的 space-*）、它们的 CSS 值，与原语可以渲染成的元素。',
 }
 
-const read = (rel) => readFileSync(join(pkgDir, rel), 'utf8')
+// 每个源文件只读一次：buildRegistry 里「页 × 出口 × item × 文件」的嵌套查找原来每次都重读，一次生成约 7 秒（#199）。
+const fileCache = new Map()
+const read = (rel) => {
+  let text = fileCache.get(rel)
+  if (text === undefined) {
+    text = readFileSync(join(pkgDir, rel), 'utf8')
+    fileCache.set(rel, text)
+  }
+  return text
+}
 const listDir = (rel) => (existsSync(join(pkgDir, rel)) ? readdirSync(join(pkgDir, rel)).sort(compare) : [])
 function compare(a, b) {
   return a < b ? -1 : a > b ? 1 : 0
@@ -352,11 +361,25 @@ async function loadPages() {
   return PAGES
 }
 
-/** 某个源文件里声明了（或转出了）这个名字吗。 */
-const declares = (source, name) =>
-  new RegExp(`export\\s+(?:default\\s+)?(?:async\\s+)?(?:function|const|class|type|interface|let)\\s+${name}\\b`).test(
-    source,
-  ) || new RegExp(`export\\s*(?:type\\s*)?\\{[^}]*\\b${name}\\b[^}]*\\}`).test(source)
+/**
+ * 某个源文件声明了（或转出了）哪些名字：`export function/const/class/type/interface/let X`，与 `export { A, B as C }` 里出现的每个词。
+ * 每个文件只扫一次（#199：原来对「页 × 出口 × item × 文件」每一组都重新拼正则、重扫全文，一次生成约 7 秒）。
+ */
+const DECLARED_NAME =
+  /export\s+(?:default\s+)?(?:async\s+)?(?:function|const|class|type|interface|let)\s+([A-Za-z_$][\w$]*)/g
+const EXPORT_LIST = /export\s*(?:type\s*)?\{([^}]*)\}/g
+const declaredCache = new Map()
+const declaredNames = (file) => {
+  let names = declaredCache.get(file)
+  if (!names) {
+    const source = read(file)
+    names = new Set([...source.matchAll(DECLARED_NAME)].map((m) => m[1]))
+    for (const list of source.matchAll(EXPORT_LIST))
+      for (const w of list[1].match(/[A-Za-z_$][\w$]*/g) ?? []) names.add(w)
+    declaredCache.set(file, names)
+  }
+  return names
+}
 
 const IMPORT = /(?:from|import)\s+['"]([^'"]+)['"]/g
 
@@ -374,7 +397,7 @@ export async function buildRegistry() {
   for (const page of pages) {
     for (const name of page.exports) {
       const hit = items.find((item) =>
-        item.files.some((f) => /\.tsx?$/.test(f) && !f.endsWith('/index.ts') && declares(read(f), name)),
+        item.files.some((f) => /\.tsx?$/.test(f) && !f.endsWith('/index.ts') && declaredNames(f).has(name)),
       )
       if (!hit) throw new Error(`registry：文档页 ${page.id} 的出口 ${name} 在源码里找不到声明`)
       if (!pageOf.has(hit.name)) pageOf.set(hit.name, page)
