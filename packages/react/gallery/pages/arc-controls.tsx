@@ -11,6 +11,7 @@ import {
   TreeView,
   type ChipItem,
   type DateRange,
+  type DateRangeApplyLabels,
   type DateRangeLabels,
   type JsonViewerLabels,
   type ShortcutRecorderLabels,
@@ -158,9 +159,18 @@ const RANGE_LABELS: DateRangeLabels = {
   custom: '自定义',
 }
 
+// commit="apply" 要的三条文案；已选天数用函数形式处理「1 天」与「N 天」（中文不分单复数，英文要分）。
+const APPLY_LABELS: DateRangeApplyLabels = {
+  pickFirst: '选第一天',
+  selected: (days) => `已选 ${days} 天`,
+  apply: '应用',
+  clear: '清除',
+}
+
 // 演示固定「今天」是 2026-11-14（周六），预设与截图才不随真实日期变；应用里由显示时区算出来传进去。
 export function DateRangePickerDemo() {
   const [range, setRange] = useState<DateRange | null>({ start: '2026-11-09', end: '2026-11-14' })
+  const [applied, setApplied] = useState<DateRange | null>(null)
   return (
     <>
       <Row name="区间 + 预设">
@@ -184,7 +194,21 @@ export function DateRangePickerDemo() {
           locale="zh-CN"
         />
       </Row>
-      <p className="gal-note">演示：「今天」固定为 2026-11-14（周六）。预设都是截至今天；日历是双月，点两下选起止。</p>
+      <Row name="先挑再应用（commit=apply）">
+        <DateRangePicker
+          commit="apply"
+          value={applied}
+          onValueChange={setApplied}
+          today="2026-11-14"
+          labels={{ ...RANGE_LABELS, ...APPLY_LABELS }}
+          locale="zh-CN"
+        />
+        <output data-gallery-range-apply>{applied ? `${applied.start} ~ ${applied.end}` : '未选'}</output>
+      </Row>
+      <p className="gal-note">
+        演示：「今天」固定为 2026-11-14（周六）。预设都是截至今天；日历是双月，点两下选起止。第三行是
+        commit=apply：挑完点「应用」才生效，Esc 或点外面丢掉；前两行是默认的 immediate，点完终点就生效。
+      </p>
     </>
   )
 }

@@ -263,9 +263,22 @@ const forms: GuidanceMap = {
   },
   'date-range-picker': {
     aliases: ['Date range', 'DateRangePicker (Salt / MUI)', 'Range calendar', '日期区间'],
-    use: ['回放、台账、绩效报告选起止日期。', '常用区间（本周、本月、年初至今）要一键选。'],
-    avoid: ['选单个日期用 DateTimeInput。', '要选未来区间（事件日历）时预设不适用。'],
+    use: [
+      '回放、台账、绩效报告选起止日期。',
+      '常用区间（本周、本月、年初至今）要一键选。',
+      '两种提交方式：commit="immediate"（默认）点完终点就生效并收起，适合选错了代价小、随手改的筛选；commit="apply" 先挑再应用，挑的过程里不触发上报，点「应用」才生效，适合每次上报都会重拉数据或重算的报表与回放，也推荐新接入的调用方用它。',
+      'apply 要多传四条文案（pickFirst、selected、apply、clear）：selected 写 {days} 占位，或传函数处理单复数；包里没有后备语言。',
+      '改默认不动现有调用：旧代码不传 commit 就还是 immediate，也不用补文案。',
+    ],
+    avoid: [
+      '选单个日期用 DateTimeInput。',
+      '要选未来区间（事件日历）时预设不适用。',
+      'apply 里别再另放「确认」钮：脚上的「应用」就是确认；也别在 onValueChange 里等第二步。',
+    ],
     a11y: [
+      'apply 的状态字是 role=status（polite、整句读）：点了起点、键盘移动到别的日子或悬停时，读屏读出「已选 N 天」。',
+      '「应用」在区间不完整时是 disabled，Tab 到「清除」「应用」只在日历之后；挑到一半 Tab 走会放弃这次挑选，不替用户补终点。',
+      'Esc 或点外面收起丢草稿，焦点回触发钮；点「应用」收起同样回触发钮。',
       '起点、终点各是一个 react-aria 的分段日期框，读屏名分别取 labels.start、labels.end。',
       '预设列是 role=group，每项 aria-pressed；「自定义」带 aria-current。',
       '日历是 react-aria 的 RangeCalendar，翻月按钮有读屏名。',

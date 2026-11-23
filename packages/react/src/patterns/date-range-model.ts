@@ -46,3 +46,37 @@ export function matchPreset(range: DateRange | null, today: string, weekStart: W
     }) ?? null
   )
 }
+
+/** 区间含首尾共几天（YYYY-MM-DD 一对，起不晚于止）；不合法是 0。按日历日算，与时区无关。 */
+export function rangeDays(range: DateRange | null): number {
+  if (!range) return 0
+  const start = toDay(range.start)
+  const end = toDay(range.end)
+  if (!start || !end) return 0
+  const span = Date.UTC(end.year, end.month - 1, end.day) - Date.UTC(start.year, start.month - 1, start.day)
+  return span < 0 ? 0 : Math.round(span / 86_400_000) + 1
+}
+
+/** 日历里正在挑的状态：anchor 是点下的起点（还没点终点时有值），preview 是起点到悬停 / 焦点那天的区间。 */
+export type RangePick = { anchor: string | null; preview: DateRange | null }
+export const NO_PICK: RangePick = { anchor: null, preview: null }
+
+/** 脚上状态字对应的状态：还没点（first），或「已选 days 天」（含首尾；只点了起点时是 1，悬停时是到悬停那天）。 */
+export type RangeStatus = { kind: 'first' } | { kind: 'days'; days: number }
+
+/** 草稿加挑选状态 → 状态字。正在挑（有 anchor）以挑选为准，旧草稿不算；没在挑看草稿。 */
+export function rangeStatus(draft: DateRange | null, pick: RangePick): RangeStatus {
+  if (pick.anchor) return { kind: 'days', days: Math.max(1, rangeDays(pick.preview)) }
+  const days = rangeDays(draft)
+  return days > 0 ? { kind: 'days', days } : { kind: 'first' }
+}
+
+/** 「应用」能不能点：草稿是完整区间（起不晚于止），而且没在半途挑新的。 */
+export function canApplyRange(draft: DateRange | null, pick: RangePick): boolean {
+  return !pick.anchor && rangeDays(draft) > 0
+}
+
+/** 状态字的写法：字符串里的 {days} 换成天数；函数形式把天数交给调用方（要处理复数就用它）。 */
+export function formatDays(text: string | ((days: number) => string), days: number): string {
+  return typeof text === 'function' ? text(days) : text.replaceAll('{days}', String(days))
+}

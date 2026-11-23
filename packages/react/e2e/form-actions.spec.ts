@@ -82,6 +82,115 @@ test('DateRangePicker：预设一键选区间、高亮当前预设，打字凑�
   await expect(area.locator('.k-dt-input[data-invalid]').first()).toBeVisible()
 })
 
+test('DateRangePicker commit=apply：先挑再应用——状态字、悬停预览、Esc 丢草稿、应用才上报、键盘走全程', async ({
+  page,
+}) => {
+  const area = await open(page, 'date-range-picker')
+  const out = area.locator('[data-gallery-range-apply]')
+  const row = area.locator('.k-dr').nth(2)
+  const trigger = row.getByRole('button', { name: '选择区间' })
+  const foot = page.locator('.k-dr-foot')
+  const status = foot.getByRole('status')
+  const applyBtn = foot.getByRole('button', { name: '应用' })
+  const day = (n: number, month = '12月') => page.getByRole('button', { name: new RegExp(`${month}${n}日`) }).first()
+  await expect(out).toHaveText('未选')
+
+  // 判据 1：打开，脚上「选第一天」，「应用」禁用。
+  await trigger.click()
+  await expect(status).toHaveText('选第一天')
+  await expect(applyBtn).toBeDisabled()
+  // 今天（演示固定 2026-11-14）的格子有标记。
+  await expect(page.locator('.k-cal-cell[data-k-today]')).toHaveCount(1)
+
+  // 判据 2：点 7 号，起点段落填好、终点仍是占位，脚上「已选 1 天」；悬停 18 号，预览区间、「已选 12 天」。
+  await day(7).click()
+  await expect(status).toHaveText('已选 1 天')
+  const start = row.getByRole('group', { name: '起点' })
+  const end = row.getByRole('group', { name: '终点' })
+  await expect(start.getByRole('spinbutton', { name: /日/ })).toHaveText('07')
+  await expect(end.getByRole('spinbutton', { name: /年/ })).toHaveAttribute('data-placeholder', 'true')
+  await day(18).hover()
+  await expect(status).toHaveText('已选 12 天')
+  await expect(page.locator('.k-rcal .k-cal-cell[data-selected]')).toHaveCount(12)
+  await expect(applyBtn).toBeDisabled()
+
+  // 判据 3：点 18 号，「应用」可点；Esc 收起，值没变（草稿丢掉）。
+  await day(18).click()
+  await expect(status).toHaveText('已选 12 天')
+  await expect(applyBtn).toBeEnabled()
+  await page.keyboard.press('Escape')
+  await expect(foot).toHaveCount(0)
+  await expect(out).toHaveText('未选')
+  await expect(trigger).toBeFocused()
+
+  // 再开：草稿是重新来的（没有上次丢掉的 7–18），脚上又是「选第一天」。点外面收起同样丢草稿。
+  await trigger.click()
+  await expect(status).toHaveText('选第一天')
+  await day(7).click()
+  await day(18).click()
+  await page.mouse.click(5, 5)
+  await expect(foot).toHaveCount(0)
+  await expect(out).toHaveText('未选')
+
+  // 判据 4：再开、挑好、点「应用」——onChange 收到区间、弹层收起、焦点回触发器。
+  await trigger.click()
+  await day(7).click()
+  await day(18).click()
+  await applyBtn.click()
+  await expect(out).toHaveText('2026-12-07 ~ 2026-12-18')
+  await expect(foot).toHaveCount(0)
+  await expect(trigger).toBeFocused()
+
+  // 有值时再开：草稿从当前值起，状态字是 12 天；「清除」清空草稿但不收起，应用禁用。
+  await trigger.click()
+  await expect(status).toHaveText('已选 12 天')
+  await foot.getByRole('button', { name: '清除' }).click()
+  await expect(status).toHaveText('选第一天')
+  await expect(applyBtn).toBeDisabled()
+  await expect(foot).toBeVisible()
+  await expect(out).toHaveText('2026-12-07 ~ 2026-12-18')
+  await page.keyboard.press('Escape')
+
+  // 预设在 apply 里也只改草稿：点「本周」不上报，点「应用」才上报。
+  await trigger.click()
+  await page.getByRole('group', { name: '常用区间' }).getByRole('button', { name: '本周' }).click()
+  await expect(out).toHaveText('2026-12-07 ~ 2026-12-18')
+  await expect(status).toHaveText('已选 6 天')
+  await applyBtn.click()
+  await expect(out).toHaveText('2026-11-09 ~ 2026-11-14')
+})
+
+test('DateRangePicker commit=apply：键盘全程可走（方向键挑日、Enter 选、Tab 到脚上钮、Enter 应用）', async ({
+  page,
+}) => {
+  const area = await open(page, 'date-range-picker')
+  const out = area.locator('[data-gallery-range-apply]')
+  const row = area.locator('.k-dr').nth(2)
+  const trigger = row.getByRole('button', { name: '选择区间' })
+  const foot = page.locator('.k-dr-foot')
+  await trigger.focus()
+  await page.keyboard.press('Enter')
+  // 打开后焦点在日历里的聚焦日（没有值时是演示的今天 11 月 14 日）。
+  await expect(page.locator('.k-cal-cell[data-focused]')).toHaveCount(1)
+  // Enter 选起点；react-aria 键盘选完起点会把焦点挪到下一天，所以此时是 14–15 两天（鼠标点才是 1 天）。方向键再走两格到 17。
+  await page.keyboard.press('Enter')
+  await expect(foot.getByRole('status')).toHaveText('已选 2 天')
+  await page.keyboard.press('ArrowRight')
+  await page.keyboard.press('ArrowRight')
+  await expect(foot.getByRole('status')).toHaveText('已选 4 天')
+  await page.keyboard.press('Enter')
+  await expect(foot.getByRole('button', { name: '应用' })).toBeEnabled()
+  // Tab 出日历：翻月钮之后才是日历格，所以从格子往后 Tab 先到「清除」再到「应用」。
+  await page.keyboard.press('Tab')
+  await expect(foot.getByRole('button', { name: '清除' })).toBeFocused()
+  await page.keyboard.press('Tab')
+  await expect(foot.getByRole('button', { name: '应用' })).toBeFocused()
+  await page.keyboard.press('Enter')
+  await expect(out).toHaveText('2026-11-14 ~ 2026-11-17')
+  await expect(foot).toHaveCount(0)
+  await expect(trigger).toBeFocused()
+})
+
 test('HoldToConfirm：单击不触发，按住填满才触发一次；键盘按住空格同样', async ({ page }) => {
   const area = await open(page, 'hold-to-confirm')
   const flatten = area.getByRole('button', { name: '全部平仓' })

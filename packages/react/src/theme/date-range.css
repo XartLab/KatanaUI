@@ -1,4 +1,5 @@
 /* SPDX-License-Identifier: MIT 
+   #192（2026-11-24）：commit="apply" 的脚（状态字 + 清除 / 应用）、今天的格子标记；交互借自 Jamie Merrill 的 Date range picker，样子沿用本件。
    G2（2026-11-18）：颜色改读 characteristics（--k-selectable-*、--k-actionable-*、--k-content-*），值与改前相等；预设悬停底 5% → 4% 白（subtle）。 */
 /* DateRangePicker：两个日期框用 DateTimeInput 的皮肤（.k-dt-*），弹层里左边一列预设、右边双月日历（.k-cal* 同单月日历）。
    区间内的日子用 12% 强调色底，起止两头用实心强调色（同单月日历的选中色）。 */
@@ -80,4 +81,48 @@
 }
 .k-rcal .k-cal-cell[data-selection-start][data-selection-end] {
   border-radius: 6px;
+}
+
+/* 日历这一列（日历 + apply 的脚）；预设列在它左边。 */
+.k-dr-main {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+/* 脚：左边状态字、右边两颗钮，上面一条分隔线。状态字用 tabular-nums，悬停时天数变化不抖。 */
+.k-dr-foot {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--k-separable-secondary-borderColor);
+}
+.k-dr-status {
+  flex: 1;
+  min-width: 0;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+}
+/* 今天的格子：数字下面一个小点（用调用方传的 today 标，不读时钟）。选中的格子上点跟着前景色走。 */
+.k-rcal .k-cal-cell {
+  position: relative;
+}
+.k-rcal .k-cal-cell[data-k-today]::after {
+  content: '';
+  position: absolute;
+  bottom: 3px;
+  left: 50%;
+  width: 3px;
+  height: 3px;
+  margin-left: -1.5px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.7;
+}
+/* 悬停在起止两头上时保持实心（不被普通格子的悬停底盖掉：挑到一半悬停在终点上，深色字会落在深底上）。 */
+.k-rcal .k-cal-cell[data-selection-start][data-hovered]:not([data-disabled]),
+.k-rcal .k-cal-cell[data-selection-end][data-hovered]:not([data-disabled]) {
+  background: var(--k-selectable-bold-background-selected);
 }
