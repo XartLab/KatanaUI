@@ -4008,6 +4008,38 @@ export const PAGES: readonly DocPage[] = [
     ],
   },
   {
+    id: 'link-group',
+    group: 'blocks',
+    cardHeight: 260,
+    title: 'useLinkGroup 联动组',
+    summary:
+      '同一联动组的件共用品种、周期、十字线时刻、可见区间（#22 G8）：自选点一行，同组的图换品种；一张图上移动十字线，同组的图跟着画。照 TradingView 多图布局的同步（品种、周期、十字线、时间、日期区间）与自选联动。组 id 一般是面板头色点的 LinkGroup（A–D），null 不联动。纯 context，不带宿主、不存盘。',
+    exports: ['useLinkGroup', 'LinkGroupProvider', 'createLinkHub', 'useLinkHub', 'LINK_FIELDS'],
+    propParts: [
+      {
+        part: 'useLinkGroup(group, { fields?, initial? })',
+        note: '返回 [状态, 改]：状态是 { symbol?, interval?, crosshairTime?, range? }，改是合并几个字段。group 为 null 时不联动，状态只在这个件里（initial 起头）；联动时组里没设过的字段取 initial（件自己的默认品种、周期）。fields 只订阅这几个字段：十字线一直在变，只订阅 symbol 的自选不跟着重画。',
+      },
+      {
+        part: 'createLinkHub(initial?) / LinkGroupProvider / useLinkHub',
+        note: '联动表：get、set（值没变的字段不算改，什么都没变不通知；range 按 from / to 比）、select（订阅的字段没变时返回同一个对象）、subscribe（回调拿到改了哪些字段）。没有 Provider 时整个应用一张默认表；测试、多窗口、要隔开两套联动时自己建一张包上。',
+      },
+    ],
+    states: [
+      '联动：同组的件读写同一份状态，一边改另一边马上跟。',
+      '不联动（group 为 null）：件自己记，跟谁都不同步；面板头的色点画熄灭的环。',
+      '换组：读到新组的状态；新组没设过的字段用 initial。',
+    ],
+    donts: [
+      '不要把十字线时刻存进存档：它只活在指针移动的这一会儿（离开图写 null）。',
+      '不要让只关心品种的件订阅全部字段：十字线每帧都在变，会跟着重画。',
+      '不要拿它传下单参数：联动只管看什么，不管交易（下单走执行网关）。',
+    ],
+    composition:
+      'LinkGroupProvider（可省）\n  件 × n（useLinkGroup(组, 字段)）\n联动表：组 → { symbol, interval, crosshairTime, range }',
+    keys: [],
+  },
+  {
     id: 'empty-state',
     group: 'blocks',
     cardHeight: 260,
@@ -5742,7 +5774,16 @@ export const PAGES: readonly DocPage[] = [
     title: 'Watchlist 自选列表',
     summary:
       '照 TradingView 右侧自选栏（2026-11-15 实测）：列 Symbol / Last / Chg / Chg%，行首小旗标与字母圆徽标；最新价变动时只有变了的尾数闪涨跌色、约 1 秒落回；点列头排序（升序、降序、回原顺序）。价格怎么写由 formatPrice 定，数与文字由调用方传。',
-    exports: ['Watchlist', 'changedTail', 'nextSort', 'sortRows', 'plainPrice', 'rowTone'],
+    exports: [
+      'Watchlist',
+      'changedTail',
+      'nextSort',
+      'sortRows',
+      'plainPrice',
+      'rowTone',
+      'parseSymbolList',
+      'formatSymbolList',
+    ],
     props: [
       {
         part: 'Watchlist',
@@ -5774,6 +5815,11 @@ export const PAGES: readonly DocPage[] = [
       },
       { part: 'changedTail(prev, next)', note: '新旧价格文字从哪一位开始不同：返回 { head, tail }。', rows: [] },
       { part: 'nextSort / sortRows', note: '列头点击的循环与排序，纯函数。', rows: [] },
+      {
+        part: 'parseSymbolList(text) / formatSymbolList(entries)',
+        note: '自选表的 .txt 导入导出（#22，照 TradingView 自选「上传 .txt：带交易所前缀、逗号分隔」，帮助中心 2026-11-23 读）：项是 EXCHANGE:SYMBOL（转大写，重复的只收一次），###节名 是分节（TradingView 导出文件的写法，页面没写，待核对）；逗号与换行都能分。认不出的项（没前缀、有空格）原样进 unknown，由调用方列给用户，不静默丢。',
+        rows: [],
+      },
     ],
     states: [
       '最新价变大：变了的尾数起闪涨色；变小闪跌色；约 1 秒落回原色。',

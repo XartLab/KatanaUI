@@ -58,6 +58,23 @@ const blocks: GuidanceMap = {
       '快捷键跳过输入法组字中的按键（isComposing）。',
     ],
   },
+  'link-group': {
+    aliases: ['Symbol link', 'Chart sync', 'Linked panels', 'Link color', '联动'],
+    use: [
+      '自选、图、盘口、新闻这些面板跟着同一个品种走：照 TradingView 自选点一行联动的图换品种、多图布局同步品种 / 周期 / 十字线 / 时间 / 日期区间（#22 对齐表 L802–L808、L843；帮助中心没逐项写，待核对）。',
+      '组 id 用面板头色点的 LinkGroup（A–D），面板头的 Led 画同一个颜色，用户一眼看出谁跟谁一组；null 是不联动（面板头画熄灭的环）。',
+      '写的一方只写自己改了的字段：自选写 symbol，图的周期分段写 interval，十字线 pointermove 写 crosshairTime、离开写 null，拖动可见区间写 range。',
+      '读的一方 fields 只订阅要的：自选只要 symbol，图要全部。DataGrid 的 onCursorChange 接 set({ symbol })，就是「上下键在自选里走，联动的图跟着换」（TradingView 自选的空格 / 上下键，对齐表 L836）。',
+    ],
+    avoid: [
+      '跨窗口、跨设备的同步：这里只在一个页面里，要存盘或广播由宿主自己接。',
+      '下单相关的值（价格、数量）不走联动：联动只管看什么。',
+    ],
+    a11y: [
+      '联动的变化要看得见：面板头的 object 写当前品种，色点有读屏名（「联动组 A」）。',
+      '十字线同步只是视觉辅助，不发读屏通知；读数另有文字（图自己的读数行）。',
+    ],
+  },
   'data-grid': {
     aliases: ['Table', 'Data table', 'Grid', 'Spreadsheet'],
     use: [

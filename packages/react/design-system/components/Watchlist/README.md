@@ -28,6 +28,10 @@
 
 列头点击的循环与排序，纯函数。
 
+### parseSymbolList(text) / formatSymbolList(entries)
+
+自选表的 .txt 导入导出（#22，照 TradingView 自选「上传 .txt：带交易所前缀、逗号分隔」，帮助中心 2026-11-23 读）：项是 EXCHANGE:SYMBOL（转大写，重复的只收一次），###节名 是分节（TradingView 导出文件的写法，页面没写，待核对）；逗号与换行都能分。认不出的项（没前缀、有空格）原样进 unknown，由调用方列给用户，不静默丢。
+
 ## Usage
 
 ```tsx

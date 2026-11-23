@@ -55,6 +55,7 @@ import {
 } from './pages/motion-effects.tsx'
 import { RenderingSettingsDemo } from './rendering.tsx'
 import { CopyToastDemo, UseUndoStackDemo } from './pages/undo-copy.tsx'
+import { LinkGroupDemo } from './pages/link-group.tsx'
 import { SideNavUsage } from './usage/SideNavUsage.tsx'
 import { LiveUsage } from './usage/LiveUsage.tsx'
 import { TextMeasureUsage } from './usage/TextMeasureUsage.tsx'
@@ -364,6 +365,7 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   toast: ToastDemo,
   'copy-toast': CopyToastDemo,
   'use-undo-stack': UseUndoStackDemo,
+  'link-group': LinkGroupDemo,
   alert: AlertDemo,
   progress: ProgressDemo,
   sheet: SheetDemo,

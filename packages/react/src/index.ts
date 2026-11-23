@@ -223,6 +223,8 @@ export {
   type RowContextMenuProps,
   type SymbolMenuInput,
 } from './quotes/row-actions.tsx'
+// 自选表的文本导入导出（#22）：逗号分隔、带交易所前缀，###节名是分节。
+export { formatSymbolList, parseSymbolList, type ParsedSymbolList, type SymbolListEntry } from './quotes/symbol-list.ts'
 export {
   QuoteTable,
   type LegacyQuoteRow,
@@ -421,6 +423,18 @@ export {
   type UndoStackOptions,
   type UndoState,
 } from './lib/use-undo-stack.ts'
+
+// 联动组（#22 G8）：同组的件共用品种、周期、十字线、可见区间。
+export {
+  LINK_FIELDS,
+  LinkGroupProvider,
+  createLinkHub,
+  useLinkGroup,
+  useLinkHub,
+  type LinkField,
+  type LinkGroupState,
+  type LinkHub,
+} from './lib/link-group.tsx'
 
 // 分割线（#1901）：一条 role=separator 的线，键盘、拖动、吸附、双击复位；工作区的格子分割线用它。
 export { Splitter, type SplitterProps } from './primitives/splitter.tsx'

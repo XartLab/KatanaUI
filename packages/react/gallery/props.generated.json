@@ -20700,6 +20700,11 @@
       "source": "src/cn/badge-model.ts",
       "props": []
     },
+    "LINK_FIELDS": {
+      "kind": "value",
+      "source": "src/lib/link-group.tsx",
+      "props": []
+    },
     "LINK_GROUPS": {
       "kind": "value",
       "source": "src/katana/led.tsx",
@@ -21630,10 +21635,93 @@
         }
       ]
     },
+    "LinkField": {
+      "kind": "type",
+      "source": "src/lib/link-group.tsx",
+      "props": []
+    },
     "LinkGroup": {
       "kind": "type",
       "source": "src/katana/led.tsx",
       "props": []
+    },
+    "LinkGroupProvider": {
+      "kind": "component",
+      "source": "src/lib/link-group.tsx",
+      "props": [
+        {
+          "name": "hub",
+          "type": "LinkHub",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "children",
+          "type": "ReactNode",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "LinkGroupState": {
+      "kind": "type",
+      "source": "src/lib/link-group.tsx",
+      "props": [
+        {
+          "name": "symbol",
+          "type": "string",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "interval",
+          "type": "string",
+          "required": false,
+          "description": "周期（调用方的写法：1、5、60、1D……）。"
+        },
+        {
+          "name": "crosshairTime",
+          "type": "number | null",
+          "required": false,
+          "description": "十字线所在的时刻（毫秒）；null 是指针不在任何一张图上。"
+        },
+        {
+          "name": "range",
+          "type": "{ from: number; to: number } | null",
+          "required": false,
+          "description": "可见的时间区间（毫秒）。"
+        }
+      ]
+    },
+    "LinkHub": {
+      "kind": "type",
+      "source": "src/lib/link-group.tsx",
+      "props": [
+        {
+          "name": "get",
+          "type": "(group: string) => LinkGroupState",
+          "required": true,
+          "description": "一组现在的状态（没人设过是空对象）。"
+        },
+        {
+          "name": "set",
+          "type": "(group: string, patch: Partial<LinkGroupState>) => void",
+          "required": true,
+          "description": "改一组的几个字段；值没变的字段不算改，什么都没变不通知。"
+        },
+        {
+          "name": "select",
+          "type": "(group: string, fields: readonly LinkField[]) => LinkGroupState",
+          "required": true,
+          "description": "只取几个字段：这几个字段没变时返回同一个对象（给 useSyncExternalStore）。"
+        },
+        {
+          "name": "subscribe",
+          "type": "(group: string, listener: (changed: readonly LinkField[]) => void) => () => void",
+          "required": true,
+          "description": "订阅一组；回调拿到这次改了哪些字段。"
+        }
+      ]
     },
     "LinkState": {
       "kind": "type",
@@ -30865,6 +30953,24 @@
           "type": "string",
           "required": true,
           "description": "没有数据时写什么。"
+        }
+      ]
+    },
+    "ParsedSymbolList": {
+      "kind": "type",
+      "source": "src/quotes/symbol-list.ts",
+      "props": [
+        {
+          "name": "entries",
+          "type": "SymbolListEntry[]",
+          "required": true,
+          "description": "认出来的项，按文件里的先后（同一个品种第二次出现不再收）。"
+        },
+        {
+          "name": "unknown",
+          "type": "string[]",
+          "required": true,
+          "description": "认不出的项（原样、去掉首尾空白），给调用方列出来。"
         }
       ]
     },
@@ -44900,6 +45006,11 @@
         }
       ]
     },
+    "SymbolListEntry": {
+      "kind": "type",
+      "source": "src/quotes/symbol-list.ts",
+      "props": []
+    },
     "SymbolMark": {
       "kind": "component",
       "source": "src/quotes/symbol-mark.tsx",
@@ -53763,6 +53874,11 @@
         }
       ]
     },
+    "createLinkHub": {
+      "kind": "function",
+      "source": "src/lib/link-group.tsx",
+      "props": []
+    },
     "createSeededRandom": {
       "kind": "function",
       "source": "src/motion/text/ransom-note.tsx",
@@ -54167,6 +54283,11 @@
     "formatRate": {
       "kind": "function",
       "source": "src/blocks/funding-rate/funding-model.ts",
+      "props": []
+    },
+    "formatSymbolList": {
+      "kind": "function",
+      "source": "src/quotes/symbol-list.ts",
       "props": []
     },
     "formatVolume": {
@@ -54830,6 +54951,11 @@
     "parseClock": {
       "kind": "function",
       "source": "src/cn/session.ts",
+      "props": []
+    },
+    "parseSymbolList": {
+      "kind": "function",
+      "source": "src/quotes/symbol-list.ts",
       "props": []
     },
     "partLabelFor": {
@@ -56128,6 +56254,29 @@
           "description": "Milliseconds after the pointer leaves the trigger and content before it closes."
         }
       ]
+    },
+    "useLinkGroup": {
+      "kind": "function",
+      "source": "src/lib/link-group.tsx",
+      "props": [
+        {
+          "name": "fields",
+          "type": "readonly LinkField[]",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "initial",
+          "type": "LinkGroupState",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "useLinkHub": {
+      "kind": "function",
+      "source": "src/lib/link-group.tsx",
+      "props": []
     },
     "useMenuParts": {
       "kind": "function",

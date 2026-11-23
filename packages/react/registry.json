@@ -778,6 +778,19 @@
       ]
     },
     {
+      "name": "link-group",
+      "type": "registry:lib",
+      "title": "Link Group",
+      "description": "同一联动组的件共用品种、周期、十字线时刻、可见区间（#22 G8）：自选点一行，同组的图换品种；一张图上移动十字线，同组的图跟着画。照 TradingView 多图布局的同步（品种、周期、十字线、时间、日期区间）与自选联动。组 id 一般是面板头色点的 LinkGroup（A–D），null 不联动。纯 context，不带宿主、不存盘。",
+      "files": [
+        {
+          "path": "src/lib/link-group.tsx",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/lib/link-group.tsx"
+        }
+      ]
+    },
+    {
       "name": "live-line",
       "type": "registry:lib",
       "title": "Live Line",
@@ -4417,6 +4430,19 @@
           "path": "src/quotes/sparkline.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/quotes/sparkline.tsx"
+        }
+      ]
+    },
+    {
+      "name": "symbol-list",
+      "type": "registry:lib",
+      "title": "Symbol List",
+      "description": "照 TradingView 右侧自选栏（2026-11-15 实测）：列 Symbol / Last / Chg / Chg%，行首小旗标与字母圆徽标；最新价变动时只有变了的尾数闪涨跌色、约 1 秒落回；点列头排序（升序、降序、回原顺序）。价格怎么写由 formatPrice 定，数与文字由调用方传。",
+      "files": [
+        {
+          "path": "src/quotes/symbol-list.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/quotes/symbol-list.ts"
         }
       ]
     },
