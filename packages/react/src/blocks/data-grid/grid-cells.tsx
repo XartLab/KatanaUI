@@ -6,6 +6,7 @@
 import { useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
 import { cn } from '../../lib/cn.ts'
 import { useValueFlash } from '../../lib/live.ts'
+import { AuctionStepSpark } from '../../cn/auction-step.tsx'
 import { LimitStatus } from '../../cn/limit-status.tsx'
 import { StreakBadge } from '../../cn/streak-badge.tsx'
 import { SymbolMark } from '../../quotes/symbol-mark.tsx'
@@ -60,6 +61,9 @@ export function CellBody({
   }
   if (resolved.limitStatus) {
     return <LimitStatus status={resolved.limitStatus.value} labels={resolved.limitStatus.labels} />
+  }
+  if (resolved.auctionStep) {
+    return <AuctionStepSpark points={resolved.auctionStep.points} prevClose={resolved.auctionStep.prevClose} />
   }
   if (resolved.progress) {
     const { done, total, ratio } = resolved.progress

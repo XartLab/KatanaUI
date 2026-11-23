@@ -276,6 +276,14 @@ import {
 } from './pages/smoothui-trading.tsx'
 import { ScrubberDemo } from './pages/smoothui-scrub.tsx'
 import { SymbolSearchDemo } from './pages/symbol-search.tsx'
+import {
+  AuctionStepDemo,
+  FlowRaceDemo,
+  MiniKCardGridDemo,
+  MoveFeedDemo,
+  SeatTableDemo,
+  TradingDatePickerDemo,
+} from './pages/cn-batch2.tsx'
 
 /** 每一页的实时预览，键是 registry.ts 里的页 id（registry.test.ts 核对两边一一对应）。 */
 export const DEMOS: Readonly<Record<string, ComponentType>> = {
@@ -375,6 +383,12 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'market-pulse': MarketPulseDemo,
   'limit-up-timeline': LimitUpTimelineDemo,
   'sentiment-gauge': SentimentGaugeDemo,
+  'seat-table': SeatTableDemo,
+  'auction-step': AuctionStepDemo,
+  'trading-date-picker': TradingDatePickerDemo,
+  'flow-race': FlowRaceDemo,
+  'mini-k-card-grid': MiniKCardGridDemo,
+  'move-feed': MoveFeedDemo,
   'decimal-field': DecimalFieldDemo,
   'quant-format': QuantFormatDemo,
   'spark-tile': SparkTileDemo,
