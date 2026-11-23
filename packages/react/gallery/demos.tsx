@@ -99,6 +99,13 @@ import {
 } from './pages/quant.tsx'
 import { FlowSankeyDemo, VintageSeriesDemo } from './pages/flows.tsx'
 import { KeyStatsDemo, PeerCardsDemo, PerformanceStripDemo, RangeBarTvDemo, WatchlistDemo } from './pages/overview.tsx'
+import {
+  CompanyProfileDemo,
+  CrossRatesDemo,
+  SeasonalChartDemo,
+  SymbolInfoDemo,
+  SymbolOverviewDemo,
+} from './pages/tv-widgets.tsx'
 import { ParamScatterDemo, StrategyReportDemo } from './pages/strategy.tsx'
 import { TransmissionChainDemo } from './pages/research.tsx'
 import { WhiteboardDemo } from './pages/whiteboard.tsx'
@@ -362,6 +369,11 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'performance-strip': PerformanceStripDemo,
   'peer-cards': PeerCardsDemo,
   'key-stats': KeyStatsDemo,
+  'symbol-info': SymbolInfoDemo,
+  'symbol-overview': SymbolOverviewDemo,
+  'cross-rates': CrossRatesDemo,
+  'company-profile': CompanyProfileDemo,
+  'seasonal-chart': SeasonalChartDemo,
   watchlist: WatchlistDemo,
   'metric-card': MetricCardDemo,
   'distribution-bars': DistributionBarsDemo,

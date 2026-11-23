@@ -46,6 +46,20 @@ tokens → theme → lib → layout → primitives → katana → patterns → q
 
 这几件都有纯函数的模型文件（`*-model.ts`）与单测；文档站页上的演示数据用固定种子生成并在页上写明。应用里接真实数据另开票。
 
+### 对照 TradingView 小组件补缺的第二批（#147，KATANAview #1884）
+
+功能参照 TradingView 小组件（tradingview.com/widget-docs，2026-11-23 读：各页只有一两句说明，演示页的配置给了参数名；具体排布页面没写的标「待核对」），只取给用户看什么、怎么交互，不嵌、不抄代码；皮肤用 Graphite token，不用 TradingView 蓝。数与文字都由调用方传，包里不带语言与数据源。
+
+| 件 | 层 | 对 TV | 用途 |
+| --- | --- | --- | --- |
+| `SymbolInfo` | quotes | Symbol Info | 品种报价头：徽标、代码、名称、交易所、状态灯，大号价与涨跌，一排区间条 |
+| `SymbolOverview` | quotes | Symbol Overview | 多品种走势卡：品种页签、走势（price 只画选中的；percent 叠画比涨跌）、区间按钮 |
+| `CrossRates` | quotes | Forex Cross Rates / Heatmap | 交叉汇率矩阵：汇率模式与热力模式（七档同 Treemap），方向键走格 |
+| `CompanyProfile` | quotes | Company Profile | 公司简介卡：几项事实、可折叠正文、没数据时空态 |
+| `SeasonalChart` | quant | Seasonal Chart | 季节性图：各年按一年里的第几天叠画，年份开关，`seasonalSeries` 按年切数据 |
+
+没做：经济地图（世界地图着色要地理数据与投影库，加依赖、定数据源后另开票）。基本面、新闻、Market Data 的分组网格已有 `KeyStats` / `MetricCard`、`NewsFeed`、`DataGrid` 分节。
+
 ### 设计稿覆盖（#1870）
 
 `docs/coverage-map.json` 是手写的：设计稿存档的每张组件卡（`design/katana-console/project/components/`）落在哪一类（基础件、自有件、量化、积木、面板）、落点、做没做。

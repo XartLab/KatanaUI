@@ -6753,6 +6753,165 @@
       "source": "src/primitives/command.tsx",
       "props": []
     },
+    "CompanyProfile": {
+      "kind": "component",
+      "source": "src/quotes/company-profile.tsx",
+      "props": [
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": "Company name; the heading and the accessible name of the card."
+        },
+        {
+          "name": "facts",
+          "type": "readonly CompanyProfileFact[]",
+          "required": false,
+          "default": "[]",
+          "description": "Facts under the name, in reading order (sector and industry first, as in TradingView)."
+        },
+        {
+          "name": "description",
+          "type": "string",
+          "required": false,
+          "description": "Plain-text company description."
+        },
+        {
+          "name": "collapsedLines",
+          "type": "number",
+          "required": false,
+          "default": "4",
+          "description": "Lines of the description shown before it is expanded; 4 by default."
+        },
+        {
+          "name": "defaultExpanded",
+          "type": "boolean",
+          "required": false,
+          "default": "false",
+          "description": "Expanded at first render (uncontrolled)."
+        },
+        {
+          "name": "source",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Small line at the bottom (source, as-of date), written by the caller."
+        },
+        {
+          "name": "labels",
+          "type": "CompanyProfileLabels",
+          "required": true,
+          "description": "Button and empty-state texts, written by the caller (required)."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "CompanyProfileFact": {
+      "kind": "type",
+      "source": "src/quotes/company-profile.tsx",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "Stable id of the fact (sector, industry, employees)."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "Small grey label (\"Sector\"), written by the caller."
+        },
+        {
+          "name": "value",
+          "type": "ReactNode",
+          "required": false,
+          "description": "The value, already written by the caller; an em dash is drawn when omitted."
+        }
+      ]
+    },
+    "CompanyProfileLabels": {
+      "kind": "type",
+      "source": "src/quotes/company-profile.tsx",
+      "props": [
+        {
+          "name": "more",
+          "type": "string",
+          "required": true,
+          "description": "Text of the button that expands a clamped description (\"Show more\")."
+        },
+        {
+          "name": "less",
+          "type": "string",
+          "required": true,
+          "description": "Text of the button that collapses it again (\"Show less\")."
+        },
+        {
+          "name": "empty",
+          "type": "string",
+          "required": true,
+          "description": "Text of the empty state when there are no facts and no description."
+        }
+      ]
+    },
+    "CompanyProfileProps": {
+      "kind": "type",
+      "source": "src/quotes/company-profile.tsx",
+      "props": [
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": "Company name; the heading and the accessible name of the card."
+        },
+        {
+          "name": "facts",
+          "type": "readonly CompanyProfileFact[]",
+          "required": false,
+          "description": "Facts under the name, in reading order (sector and industry first, as in TradingView)."
+        },
+        {
+          "name": "description",
+          "type": "string",
+          "required": false,
+          "description": "Plain-text company description."
+        },
+        {
+          "name": "collapsedLines",
+          "type": "number",
+          "required": false,
+          "description": "Lines of the description shown before it is expanded; 4 by default."
+        },
+        {
+          "name": "defaultExpanded",
+          "type": "boolean",
+          "required": false,
+          "description": "Expanded at first render (uncontrolled)."
+        },
+        {
+          "name": "source",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Small line at the bottom (source, as-of date), written by the caller."
+        },
+        {
+          "name": "labels",
+          "type": "CompanyProfileLabels",
+          "required": true,
+          "description": "Button and empty-state texts, written by the caller (required)."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
     "CompareBar": {
       "kind": "component",
       "source": "src/quotes/range-bar.tsx",
@@ -7764,6 +7923,183 @@
       "kind": "type",
       "source": "src/katana/count-badge.tsx",
       "props": []
+    },
+    "CrossRateQuote": {
+      "kind": "type",
+      "source": "src/quotes/cross-rates-model.ts",
+      "props": [
+        {
+          "name": "base",
+          "type": "string",
+          "required": true,
+          "description": "Base currency code, the row (EUR in EUR/USD)."
+        },
+        {
+          "name": "quote",
+          "type": "string",
+          "required": true,
+          "description": "Quote currency code, the column (USD in EUR/USD)."
+        },
+        {
+          "name": "rate",
+          "type": "number",
+          "required": true,
+          "description": "How many units of quote one unit of base buys."
+        },
+        {
+          "name": "changePct",
+          "type": "number",
+          "required": true,
+          "description": "Change of the rate as a percentage (0.2 means +0.2%)."
+        }
+      ]
+    },
+    "CrossRates": {
+      "kind": "component",
+      "source": "src/quotes/cross-rates.tsx",
+      "props": [
+        {
+          "name": "currencies",
+          "type": "readonly string[]",
+          "required": true,
+          "description": "Currency codes in row and column order (USD, EUR, JPY …)."
+        },
+        {
+          "name": "quotes",
+          "type": "readonly CrossRateQuote[]",
+          "required": true,
+          "description": "One quote per pair; pairs without a quote draw an em dash."
+        },
+        {
+          "name": "mode",
+          "type": "'rates' | 'heatmap'",
+          "required": false,
+          "default": "'rates'",
+          "description": "Rates writes the rate with the change under it; heatmap colors each cell by the change and writes the change."
+        },
+        {
+          "name": "formatRate",
+          "type": "(rate: number, base: string, quote: string) => string",
+          "required": false,
+          "default": "plainRate",
+          "description": "Writes a rate as text; two decimals from 100 up, else four."
+        },
+        {
+          "name": "limit",
+          "type": "number",
+          "required": false,
+          "default": "1",
+          "description": "Change in percent where the heatmap color scale ends; changes are cut at plus or minus this into seven steps."
+        },
+        {
+          "name": "names",
+          "type": "Readonly<Record<string, string>>",
+          "required": false,
+          "description": "Full names of the currencies, shown as the header tooltip."
+        },
+        {
+          "name": "onSelect",
+          "type": "(quote: CrossRateQuote) => void",
+          "required": false,
+          "description": "Called when a cell is clicked or Enter is pressed on it; never for the diagonal."
+        },
+        {
+          "name": "labels",
+          "type": "CrossRatesLabels",
+          "required": true,
+          "description": "Texts for screen readers and the empty state, written by the caller (required)."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "CrossRatesLabels": {
+      "kind": "type",
+      "source": "src/quotes/cross-rates.tsx",
+      "props": [
+        {
+          "name": "table",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the grid."
+        },
+        {
+          "name": "empty",
+          "type": "string",
+          "required": true,
+          "description": "Text in the empty state when no currencies are given."
+        },
+        {
+          "name": "pair",
+          "type": "(base: string, quote: string) => string",
+          "required": false,
+          "description": "Accessible name of one cell, for example \"EUR/USD\"; base/quote by default."
+        }
+      ]
+    },
+    "CrossRatesProps": {
+      "kind": "type",
+      "source": "src/quotes/cross-rates.tsx",
+      "props": [
+        {
+          "name": "currencies",
+          "type": "readonly string[]",
+          "required": true,
+          "description": "Currency codes in row and column order (USD, EUR, JPY …)."
+        },
+        {
+          "name": "quotes",
+          "type": "readonly CrossRateQuote[]",
+          "required": true,
+          "description": "One quote per pair; pairs without a quote draw an em dash."
+        },
+        {
+          "name": "mode",
+          "type": "'rates' | 'heatmap'",
+          "required": false,
+          "description": "Rates writes the rate with the change under it; heatmap colors each cell by the change and writes the change."
+        },
+        {
+          "name": "formatRate",
+          "type": "(rate: number, base: string, quote: string) => string",
+          "required": false,
+          "description": "Writes a rate as text; two decimals from 100 up, else four."
+        },
+        {
+          "name": "limit",
+          "type": "number",
+          "required": false,
+          "description": "Change in percent where the heatmap color scale ends; changes are cut at plus or minus this into seven steps."
+        },
+        {
+          "name": "names",
+          "type": "Readonly<Record<string, string>>",
+          "required": false,
+          "description": "Full names of the currencies, shown as the header tooltip."
+        },
+        {
+          "name": "onSelect",
+          "type": "(quote: CrossRateQuote) => void",
+          "required": false,
+          "description": "Called when a cell is clicked or Enter is pressed on it; never for the diagonal."
+        },
+        {
+          "name": "labels",
+          "type": "CrossRatesLabels",
+          "required": true,
+          "description": "Texts for screen readers and the empty state, written by the caller (required)."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
     },
     "CursorImageTrail": {
       "kind": "component",
@@ -33490,6 +33826,183 @@
       "source": "src/motion/transition/sdf-blob-transition.tsx",
       "props": []
     },
+    "SeasonalChart": {
+      "kind": "component",
+      "source": "src/quant/seasonal-chart.tsx",
+      "props": [
+        {
+          "name": "years",
+          "type": "readonly SeasonalYear[]",
+          "required": true,
+          "description": "Years to overlay, each with its points by day of year (build them with seasonalSeries)."
+        },
+        {
+          "name": "highlight",
+          "type": "number",
+          "required": false,
+          "description": "Year drawn bold; the latest year by default."
+        },
+        {
+          "name": "defaultHidden",
+          "type": "readonly number[]",
+          "required": false,
+          "default": "[]",
+          "description": "Years hidden at first render (uncontrolled); the legend toggles them."
+        },
+        {
+          "name": "height",
+          "type": "number",
+          "required": false,
+          "default": "220",
+          "description": "Height of the plot in pixels, 220 by default."
+        },
+        {
+          "name": "digits",
+          "type": "number",
+          "required": false,
+          "default": "2",
+          "description": "Number of decimals of the percentages in the readout, 2 by default."
+        },
+        {
+          "name": "labels",
+          "type": "SeasonalChartLabels",
+          "required": true,
+          "description": "Texts for screen readers, month names and the empty state, written by the caller (required)."
+        },
+        {
+          "name": "source",
+          "type": "string",
+          "required": false,
+          "description": "Small line under the chart (source, how the change is measured), written by the caller."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "SeasonalChartLabels": {
+      "kind": "type",
+      "source": "src/quant/seasonal-chart.tsx",
+      "props": [
+        {
+          "name": "chart",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the chart (it is a slider over the days when focused)."
+        },
+        {
+          "name": "legend",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the row of year toggles."
+        },
+        {
+          "name": "months",
+          "type": "readonly string[]",
+          "required": true,
+          "description": "Twelve month names for the axis and the readout title, written by the caller."
+        },
+        {
+          "name": "empty",
+          "type": "string",
+          "required": true,
+          "description": "Text in place of the chart when there is no year with at least two points."
+        }
+      ]
+    },
+    "SeasonalChartProps": {
+      "kind": "type",
+      "source": "src/quant/seasonal-chart.tsx",
+      "props": [
+        {
+          "name": "years",
+          "type": "readonly SeasonalYear[]",
+          "required": true,
+          "description": "Years to overlay, each with its points by day of year (build them with seasonalSeries)."
+        },
+        {
+          "name": "highlight",
+          "type": "number",
+          "required": false,
+          "description": "Year drawn bold; the latest year by default."
+        },
+        {
+          "name": "defaultHidden",
+          "type": "readonly number[]",
+          "required": false,
+          "description": "Years hidden at first render (uncontrolled); the legend toggles them."
+        },
+        {
+          "name": "height",
+          "type": "number",
+          "required": false,
+          "description": "Height of the plot in pixels, 220 by default."
+        },
+        {
+          "name": "digits",
+          "type": "number",
+          "required": false,
+          "description": "Number of decimals of the percentages in the readout, 2 by default."
+        },
+        {
+          "name": "labels",
+          "type": "SeasonalChartLabels",
+          "required": true,
+          "description": "Texts for screen readers, month names and the empty state, written by the caller (required)."
+        },
+        {
+          "name": "source",
+          "type": "string",
+          "required": false,
+          "description": "Small line under the chart (source, how the change is measured), written by the caller."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "SeasonalPoint": {
+      "kind": "type",
+      "source": "src/quant/seasonal-model.ts",
+      "props": [
+        {
+          "name": "day",
+          "type": "number",
+          "required": true,
+          "description": "Day of the year, 0 for January 1."
+        },
+        {
+          "name": "pct",
+          "type": "number",
+          "required": true,
+          "description": "Change from the year's first value, in percent (1.5 means +1.5%)."
+        }
+      ]
+    },
+    "SeasonalYear": {
+      "kind": "type",
+      "source": "src/quant/seasonal-model.ts",
+      "props": [
+        {
+          "name": "year",
+          "type": "number",
+          "required": true,
+          "description": "Calendar year."
+        },
+        {
+          "name": "points",
+          "type": "readonly SeasonalPoint[]",
+          "required": true,
+          "description": "Points of the year by day, ascending."
+        }
+      ]
+    },
     "Select": {
       "kind": "component",
       "source": "src/primitives/select.tsx",
@@ -38943,6 +39456,248 @@
         }
       ]
     },
+    "SymbolInfo": {
+      "kind": "component",
+      "source": "src/quotes/symbol-info.tsx",
+      "props": [
+        {
+          "name": "symbol",
+          "type": "string",
+          "required": true,
+          "description": "Symbol code (AAPL, BTCUSDT, 600519)."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "description": "Full name of the instrument; the code is shown alone when omitted."
+        },
+        {
+          "name": "exchange",
+          "type": "string",
+          "required": false,
+          "description": "Venue or exchange text after the name (NASDAQ, SSE), written by the caller."
+        },
+        {
+          "name": "logoSrc",
+          "type": "string",
+          "required": false,
+          "description": "Image address of the logo; letters are drawn when omitted or when it fails to load."
+        },
+        {
+          "name": "last",
+          "type": "number",
+          "required": true,
+          "description": "Latest price."
+        },
+        {
+          "name": "change",
+          "type": "number",
+          "required": true,
+          "description": "Change amount since the previous close, signed; decides the up, down or flat color."
+        },
+        {
+          "name": "changePct",
+          "type": "number",
+          "required": true,
+          "description": "Change as a percentage (1.5 means +1.5%)."
+        },
+        {
+          "name": "unit",
+          "type": "string",
+          "required": false,
+          "description": "Currency or unit after the price (USD, CNY), written by the caller."
+        },
+        {
+          "name": "formatPrice",
+          "type": "FormatPrice",
+          "required": false,
+          "default": "plainPrice",
+          "description": "Writes a price as text; the caller knows the precision."
+        },
+        {
+          "name": "status",
+          "type": "SymbolInfoStatus",
+          "required": false,
+          "description": "Market status light and text; nothing is drawn when omitted."
+        },
+        {
+          "name": "ranges",
+          "type": "readonly SymbolInfoRange[]",
+          "required": false,
+          "description": "Ranges drawn below the quote, in order (usually the day range and the 52-week range); the marker points at last."
+        },
+        {
+          "name": "footer",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Small line under the ranges (data time, delay note), written by the caller."
+        },
+        {
+          "name": "live",
+          "type": "boolean",
+          "required": false,
+          "default": "false",
+          "description": "Live data: the price rolls when it changes and the change flashes the up or down color."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the whole header, written by the caller."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "SymbolInfoProps": {
+      "kind": "type",
+      "source": "src/quotes/symbol-info.tsx",
+      "props": [
+        {
+          "name": "symbol",
+          "type": "string",
+          "required": true,
+          "description": "Symbol code (AAPL, BTCUSDT, 600519)."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "description": "Full name of the instrument; the code is shown alone when omitted."
+        },
+        {
+          "name": "exchange",
+          "type": "string",
+          "required": false,
+          "description": "Venue or exchange text after the name (NASDAQ, SSE), written by the caller."
+        },
+        {
+          "name": "logoSrc",
+          "type": "string",
+          "required": false,
+          "description": "Image address of the logo; letters are drawn when omitted or when it fails to load."
+        },
+        {
+          "name": "last",
+          "type": "number",
+          "required": true,
+          "description": "Latest price."
+        },
+        {
+          "name": "change",
+          "type": "number",
+          "required": true,
+          "description": "Change amount since the previous close, signed; decides the up, down or flat color."
+        },
+        {
+          "name": "changePct",
+          "type": "number",
+          "required": true,
+          "description": "Change as a percentage (1.5 means +1.5%)."
+        },
+        {
+          "name": "unit",
+          "type": "string",
+          "required": false,
+          "description": "Currency or unit after the price (USD, CNY), written by the caller."
+        },
+        {
+          "name": "formatPrice",
+          "type": "FormatPrice",
+          "required": false,
+          "description": "Writes a price as text; the caller knows the precision."
+        },
+        {
+          "name": "status",
+          "type": "SymbolInfoStatus",
+          "required": false,
+          "description": "Market status light and text; nothing is drawn when omitted."
+        },
+        {
+          "name": "ranges",
+          "type": "readonly SymbolInfoRange[]",
+          "required": false,
+          "description": "Ranges drawn below the quote, in order (usually the day range and the 52-week range); the marker points at last."
+        },
+        {
+          "name": "footer",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Small line under the ranges (data time, delay note), written by the caller."
+        },
+        {
+          "name": "live",
+          "type": "boolean",
+          "required": false,
+          "description": "Live data: the price rolls when it changes and the change flashes the up or down color."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the whole header, written by the caller."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "SymbolInfoRange": {
+      "kind": "type",
+      "source": "src/quotes/symbol-info.tsx",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "Stable id of the range (day, 52w)."
+        },
+        {
+          "name": "title",
+          "type": "string",
+          "required": true,
+          "description": "Visible title above the track, such as \"Day's range\"; also the accessible name of the meter."
+        },
+        {
+          "name": "low",
+          "type": "number",
+          "required": true,
+          "description": "Lowest value of the range."
+        },
+        {
+          "name": "high",
+          "type": "number",
+          "required": true,
+          "description": "Highest value of the range."
+        }
+      ]
+    },
+    "SymbolInfoStatus": {
+      "kind": "type",
+      "source": "src/quotes/symbol-info.tsx",
+      "props": [
+        {
+          "name": "tone",
+          "type": "SeverityExt",
+          "required": true,
+          "description": "Light of the market status: ok for open, warn for pre or post market, off for closed."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "Text beside the light (\"Market open\"), written by the caller."
+        }
+      ]
+    },
     "SymbolMark": {
       "kind": "component",
       "source": "src/quotes/symbol-mark.tsx",
@@ -39085,6 +39840,298 @@
           "type": "readonly RowAction[]",
           "required": false,
           "description": "调用方自己的项，排在标准四项后面。"
+        }
+      ]
+    },
+    "SymbolOverview": {
+      "kind": "component",
+      "source": "src/quotes/symbol-overview.tsx",
+      "props": [
+        {
+          "name": "items",
+          "type": "readonly SymbolOverviewItem[]",
+          "required": true,
+          "description": "The symbols, in tab order."
+        },
+        {
+          "name": "value",
+          "type": "string",
+          "required": false,
+          "description": "Selected symbol id (controlled)."
+        },
+        {
+          "name": "defaultValue",
+          "type": "string",
+          "required": false,
+          "description": "Selected symbol id at first render when uncontrolled; the first item by default."
+        },
+        {
+          "name": "onValueChange",
+          "type": "(id: string) => void",
+          "required": false,
+          "description": "Called with the id of the newly selected symbol."
+        },
+        {
+          "name": "ranges",
+          "type": "readonly SymbolOverviewRange[]",
+          "required": false,
+          "description": "Range buttons under the chart; none are drawn when omitted."
+        },
+        {
+          "name": "range",
+          "type": "string",
+          "required": false,
+          "description": "Selected range id (controlled)."
+        },
+        {
+          "name": "defaultRange",
+          "type": "string",
+          "required": false,
+          "description": "Selected range id at first render when uncontrolled; the first range by default."
+        },
+        {
+          "name": "onRangeChange",
+          "type": "(id: string) => void",
+          "required": false,
+          "description": "Called with the newly selected range id; the caller loads that period's values."
+        },
+        {
+          "name": "scale",
+          "type": "'price' | 'percent'",
+          "required": false,
+          "default": "'price'",
+          "description": "Price draws only the selected symbol; percent overlays every symbol as the change from its own first value."
+        },
+        {
+          "name": "chartType",
+          "type": "'area' | 'line'",
+          "required": false,
+          "default": "'area'",
+          "description": "Area (line with a faint fill below) or plain line; area by default."
+        },
+        {
+          "name": "formatPrice",
+          "type": "FormatPrice",
+          "required": false,
+          "default": "plainPrice",
+          "description": "Writes a price as text (tabs, axis and readout in price scale)."
+        },
+        {
+          "name": "formatTime",
+          "type": "(time: number) => string",
+          "required": true,
+          "description": "Writes a timestamp for the readout title and the time axis."
+        },
+        {
+          "name": "chartHeight",
+          "type": "number",
+          "required": false,
+          "default": "200",
+          "description": "Height of the plot in pixels, 200 by default."
+        },
+        {
+          "name": "labels",
+          "type": "SymbolOverviewLabels",
+          "required": true,
+          "description": "Texts for screen readers and the empty state, written by the caller (required)."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "SymbolOverviewItem": {
+      "kind": "type",
+      "source": "src/quotes/symbol-overview.tsx",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "Stable id of the symbol; the tab value."
+        },
+        {
+          "name": "symbol",
+          "type": "string",
+          "required": true,
+          "description": "Symbol code shown on the tab."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "description": "Display name, shown under the code on the tab."
+        },
+        {
+          "name": "last",
+          "type": "number",
+          "required": true,
+          "description": "Latest price."
+        },
+        {
+          "name": "changePct",
+          "type": "number",
+          "required": true,
+          "description": "Change as a percentage (1.5 means +1.5%)."
+        },
+        {
+          "name": "values",
+          "type": "readonly number[]",
+          "required": true,
+          "description": "Price values from oldest to newest, one per entry of times."
+        },
+        {
+          "name": "times",
+          "type": "readonly number[]",
+          "required": true,
+          "description": "Millisecond timestamp of each value, ascending; the line is laid out by time."
+        }
+      ]
+    },
+    "SymbolOverviewLabels": {
+      "kind": "type",
+      "source": "src/quotes/symbol-overview.tsx",
+      "props": [
+        {
+          "name": "tabs",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the row of symbol tabs."
+        },
+        {
+          "name": "ranges",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the row of range buttons."
+        },
+        {
+          "name": "chart",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the chart (it is a slider over the points when focused)."
+        },
+        {
+          "name": "empty",
+          "type": "string",
+          "required": true,
+          "description": "Text in place of the chart when the selected symbol has fewer than two values."
+        }
+      ]
+    },
+    "SymbolOverviewProps": {
+      "kind": "type",
+      "source": "src/quotes/symbol-overview.tsx",
+      "props": [
+        {
+          "name": "items",
+          "type": "readonly SymbolOverviewItem[]",
+          "required": true,
+          "description": "The symbols, in tab order."
+        },
+        {
+          "name": "value",
+          "type": "string",
+          "required": false,
+          "description": "Selected symbol id (controlled)."
+        },
+        {
+          "name": "defaultValue",
+          "type": "string",
+          "required": false,
+          "description": "Selected symbol id at first render when uncontrolled; the first item by default."
+        },
+        {
+          "name": "onValueChange",
+          "type": "(id: string) => void",
+          "required": false,
+          "description": "Called with the id of the newly selected symbol."
+        },
+        {
+          "name": "ranges",
+          "type": "readonly SymbolOverviewRange[]",
+          "required": false,
+          "description": "Range buttons under the chart; none are drawn when omitted."
+        },
+        {
+          "name": "range",
+          "type": "string",
+          "required": false,
+          "description": "Selected range id (controlled)."
+        },
+        {
+          "name": "defaultRange",
+          "type": "string",
+          "required": false,
+          "description": "Selected range id at first render when uncontrolled; the first range by default."
+        },
+        {
+          "name": "onRangeChange",
+          "type": "(id: string) => void",
+          "required": false,
+          "description": "Called with the newly selected range id; the caller loads that period's values."
+        },
+        {
+          "name": "scale",
+          "type": "'price' | 'percent'",
+          "required": false,
+          "description": "Price draws only the selected symbol; percent overlays every symbol as the change from its own first value."
+        },
+        {
+          "name": "chartType",
+          "type": "'area' | 'line'",
+          "required": false,
+          "description": "Area (line with a faint fill below) or plain line; area by default."
+        },
+        {
+          "name": "formatPrice",
+          "type": "FormatPrice",
+          "required": false,
+          "description": "Writes a price as text (tabs, axis and readout in price scale)."
+        },
+        {
+          "name": "formatTime",
+          "type": "(time: number) => string",
+          "required": true,
+          "description": "Writes a timestamp for the readout title and the time axis."
+        },
+        {
+          "name": "chartHeight",
+          "type": "number",
+          "required": false,
+          "description": "Height of the plot in pixels, 200 by default."
+        },
+        {
+          "name": "labels",
+          "type": "SymbolOverviewLabels",
+          "required": true,
+          "description": "Texts for screen readers and the empty state, written by the caller (required)."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "SymbolOverviewRange": {
+      "kind": "type",
+      "source": "src/quotes/symbol-overview.tsx",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "Stable id of the range (1d, 1m, 12m, all)."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "Button text (\"1D\", \"1M\"), written by the caller."
         }
       ]
     },
@@ -47609,6 +48656,11 @@
     "scrubValueAt": {
       "kind": "function",
       "source": "src/katana/scrubber.tsx",
+      "props": []
+    },
+    "seasonalSeries": {
+      "kind": "function",
+      "source": "src/quant/seasonal-model.ts",
       "props": []
     },
     "selectItemClass": {

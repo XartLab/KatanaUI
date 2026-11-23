@@ -93,6 +93,11 @@
 @import './theme/key-stats.css';
 @import './theme/watchlist.css';
 @import './theme/metric-card.css';
+@import './theme/symbol-info.css';
+@import './theme/symbol-overview.css';
+@import './theme/cross-rates.css';
+@import './theme/company-profile.css';
+@import './theme/seasonal-chart.css';
 @import './theme/distribution-bars.css';
 @import './theme/cn.css';
 @import './theme/cn-theme-card.css';
