@@ -1,0 +1,144 @@
+/* SPDX-License-Identifier: MIT */
+/* OrderBook 订单簿（#104）。买盘走涨色、卖盘走跌色（--k-tone-up / --k-tone-down，根上 data-updown 互换时跟着换，这里不写死色值）。
+   深度条是整行底下的一条半透明色带，从右往左长，宽度 = 这一行累计量占显示行里最大累计量的比例；数字一律 tabular-nums、右对齐。 */
+.k-book {
+  --book-row-h: 20px;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  color: var(--k-content-primary-foreground);
+  font: var(--text-data) var(--font-sans);
+}
+.k-book-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--inset-x);
+}
+.k-book-cols,
+.k-book-row {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr 1fr;
+  align-items: center;
+  column-gap: 8px;
+  padding: 0 var(--inset-x);
+}
+.k-book-cols {
+  height: 22px;
+  color: var(--k-content-secondary-foreground);
+  font: 500 11px/14px var(--font-sans);
+}
+.k-book-cols span:not(:first-child) {
+  text-align: right;
+}
+.k-book-side {
+  display: flex;
+  flex-direction: column;
+}
+.k-book-row {
+  position: relative;
+  width: 100%;
+  height: var(--book-row-h);
+  margin: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-variant-numeric: tabular-nums;
+  text-align: left;
+}
+button.k-book-row {
+  cursor: pointer;
+}
+button.k-book-row:hover {
+  background: var(--k-selectable-background-hover);
+}
+button.k-book-row:focus-visible {
+  outline: 1px solid var(--k-separable-bold-borderColor);
+  outline-offset: -1px;
+}
+.k-book-bar {
+  position: absolute;
+  inset: 1px 0 1px auto;
+  background: color-mix(in srgb, var(--k-bar-tone) 18%, transparent);
+  pointer-events: none;
+  transition: width var(--dur-snappy) var(--ease-snappy);
+}
+.k-book-side[data-side='bid'] {
+  --k-bar-tone: var(--k-tone-up-foreground);
+}
+.k-book-side[data-side='ask'] {
+  --k-bar-tone: var(--k-tone-down-foreground);
+}
+.k-book-price {
+  position: relative;
+  color: var(--k-bar-tone);
+}
+.k-book-size,
+.k-book-total {
+  position: relative;
+  text-align: right;
+}
+.k-book-total {
+  color: var(--k-content-secondary-foreground);
+}
+/* 中间一行：最新价（涨跌色）与价差。夹在两侧之间，上下各一条细线。 */
+.k-book-mid {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+  min-height: 26px;
+  padding: 3px var(--inset-x);
+  border-block: 1px solid var(--k-separable-subtle-borderColor);
+  font-variant-numeric: tabular-nums;
+}
+.k-book-last {
+  font: var(--text-title) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+}
+.k-book-lastwrap[data-tone='up'] {
+  color: var(--k-tone-up-foreground);
+}
+.k-book-lastwrap[data-tone='down'] {
+  color: var(--k-tone-down-foreground);
+}
+.k-book-spread {
+  display: inline-flex;
+  gap: 6px;
+  margin-left: auto;
+  color: var(--k-content-secondary-foreground);
+}
+.k-book-empty {
+  margin: 0;
+  padding: var(--space-4) var(--inset-x);
+  color: var(--k-content-secondary-foreground);
+  text-align: center;
+}
+/* 买卖占比条：左买右卖，宽度各占百分比；字写在条里，条再窄也不挤出去（溢出裁掉，读屏有 aria-label）。 */
+.k-book-share {
+  display: flex;
+  height: 20px;
+  margin: var(--space-2) var(--inset-x) var(--space-3);
+  overflow: hidden;
+  border-radius: 2px;
+  font: 500 11px/20px var(--font-sans);
+  font-variant-numeric: tabular-nums;
+}
+.k-book-share > span {
+  min-width: 0;
+  overflow: hidden;
+  padding: 0 6px;
+  white-space: nowrap;
+  transition: width var(--dur-snappy) var(--ease-snappy);
+}
+.k-book-share-bid {
+  background: color-mix(in srgb, var(--k-tone-up-foreground) 28%, transparent);
+  color: var(--k-tone-up-foreground);
+}
+.k-book-share-ask {
+  background: color-mix(in srgb, var(--k-tone-down-foreground) 28%, transparent);
+  color: var(--k-tone-down-foreground);
+  text-align: right;
+}

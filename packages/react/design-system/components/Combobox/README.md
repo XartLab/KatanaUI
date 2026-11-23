@@ -10,6 +10,10 @@ Popover 加 Command 拼出来：触发器跟单选下拉一个样，打开后焦
 
 其余属性透传给 Radix Popover.Root。open、onOpenChange 受控。
 
+| 属性 | 类型 | 默认 | 说明 |
+| --- | --- | --- | --- |
+| `closeOnScroll` | `boolean` | — | Closes the popover when the page or a container holding its trigger scrolls, so it never floats away open. |
+
 ### ComboboxContent
 
 其余属性透传给 Radix Popover.Content。宽跟触发器一样（最窄 220）。

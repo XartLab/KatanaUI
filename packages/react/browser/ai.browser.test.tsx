@@ -15,6 +15,7 @@ import { AiResponseUsage } from '../gallery/usage/AiResponseUsage.tsx'
 import { AiSuggestionsUsage } from '../gallery/usage/AiSuggestionsUsage.tsx'
 import { AiTaskListUsage } from '../gallery/usage/AiTaskListUsage.tsx'
 import { AiToolCallUsage } from '../gallery/usage/AiToolCallUsage.tsx'
+import { MarkdownUsage } from '../gallery/usage/MarkdownUsage.tsx'
 import { mount } from './render.tsx'
 
 const settle = () => new Promise((r) => setTimeout(r, 700))
@@ -65,6 +66,7 @@ for (const theme of ['graphite', 'console'] as const) {
         () => document.querySelector<HTMLElement>('[aria-expanded="false"]')?.click(),
       ))
     test('ai-response', () => shot('ai-response', <AiResponseUsage />))
+    test('markdown', () => shot('markdown', <MarkdownUsage />))
     test('ai-suggestions', () => shot('ai-suggestions', <AiSuggestionsUsage />))
     test('ai-task-list', () => shot('ai-task-list', <AiTaskListUsage />))
     test('ai-tool-call', () =>

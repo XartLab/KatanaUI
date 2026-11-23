@@ -1,0 +1,123 @@
+/* SPDX-License-Identifier: MIT */
+/* RobustnessGate（#120）：状态色只给文字与图标（状态 token），条本身是中性墨色；阈值是一道亮刻线。 */
+.k-rg {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  color: var(--k-content-body-foreground);
+  font: var(--text-data) var(--font-sans);
+}
+.k-rg-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px var(--space-4);
+}
+.k-rg-title {
+  margin: 0;
+  color: var(--k-content-primary-foreground);
+  font: var(--text-data) var(--font-sans);
+}
+.k-rg-verdict,
+.k-rg-state {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-rg-verdict svg,
+.k-rg-state svg {
+  width: 12px;
+  height: 12px;
+}
+.k-rg-verdict[data-state='pass'],
+.k-rg-state[data-state='pass'] {
+  color: var(--k-status-ok-foreground);
+}
+.k-rg-verdict[data-state='fail'],
+.k-rg-state[data-state='fail'] {
+  color: var(--k-status-danger-foreground);
+}
+.k-rg-state[data-state='unknown'] {
+  color: var(--k-content-secondary-foreground);
+}
+.k-rg-count {
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+  font-variant-numeric: tabular-nums;
+}
+.k-rg-list {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border: var(--hairline);
+}
+.k-rg-row {
+  display: grid;
+  grid-template-columns: minmax(120px, 1.4fr) minmax(120px, 1fr) minmax(80px, 1fr) 72px;
+  align-items: center;
+  gap: 4px var(--space-4);
+  padding: 6px 10px;
+  border-bottom: var(--hairline);
+}
+.k-rg-row:last-child {
+  border-bottom: 0;
+}
+.k-rg-name {
+  color: var(--k-content-primary-foreground);
+}
+.k-rg-values {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  font: var(--text-data) var(--font-num);
+  font-variant-numeric: tabular-nums;
+}
+.k-rg-values > span:first-child {
+  color: var(--k-content-primary-foreground);
+}
+.k-rg-op,
+.k-rg-values > span:last-child {
+  color: var(--k-content-secondary-foreground);
+}
+.k-rg-bar {
+  position: relative;
+  display: block;
+  height: 8px;
+  background: var(--k-container-secondary-background);
+}
+.k-rg-bar i {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  background: var(--k-content-tertiary-foreground);
+}
+.k-rg-row[data-state='pass'] .k-rg-bar i {
+  background: var(--k-content-secondary-foreground);
+}
+.k-rg-bar b {
+  position: absolute;
+  top: -3px;
+  bottom: -3px;
+  width: 2px;
+  margin-left: -1px;
+  background: var(--k-content-primary-foreground);
+}
+.k-rg-empty {
+  margin: 0;
+  padding: var(--space-6);
+  color: var(--k-content-secondary-foreground);
+  text-align: center;
+}
+@media (max-width: 560px) {
+  .k-rg-row {
+    grid-template-columns: 1fr auto;
+  }
+  .k-rg-bar {
+    grid-column: 1 / -1;
+  }
+}

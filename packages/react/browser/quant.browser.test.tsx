@@ -17,6 +17,12 @@ import { QuantileLayersUsage } from '../gallery/usage/QuantileLayersUsage.tsx'
 import { RidgelineUsage } from '../gallery/usage/RidgelineUsage.tsx'
 import { SlopeChartUsage } from '../gallery/usage/SlopeChartUsage.tsx'
 import { VintageSeriesUsage } from '../gallery/usage/VintageSeriesUsage.tsx'
+import { MaeMfeScatterUsage } from '../gallery/usage/MaeMfeScatterUsage.tsx'
+import { ParamSurfaceHeatmapUsage } from '../gallery/usage/ParamSurfaceHeatmapUsage.tsx'
+import { PeriodReturnsTableUsage } from '../gallery/usage/PeriodReturnsTableUsage.tsx'
+import { RobustnessGateUsage } from '../gallery/usage/RobustnessGateUsage.tsx'
+import { UnderwaterChartUsage } from '../gallery/usage/UnderwaterChartUsage.tsx'
+import { WalkForwardMatrixUsage } from '../gallery/usage/WalkForwardMatrixUsage.tsx'
 import { mount } from './render.tsx'
 
 const items: Record<string, React.ReactNode> = {
@@ -31,6 +37,12 @@ const items: Record<string, React.ReactNode> = {
   'limit-ladder': <LimitLadderUsage />,
   'market-heatmap': <MarketHeatmapUsage />,
   'param-scatter': <ParamScatterUsage />,
+  'mae-mfe-scatter': <MaeMfeScatterUsage />,
+  'underwater-chart': <UnderwaterChartUsage />,
+  'period-returns-table': <PeriodReturnsTableUsage />,
+  'param-surface-heatmap': <ParamSurfaceHeatmapUsage />,
+  'walk-forward-matrix': <WalkForwardMatrixUsage />,
+  'robustness-gate': <RobustnessGateUsage />,
   'quantile-layers': <QuantileLayersUsage />,
   ridgeline: <RidgelineUsage />,
   'slope-chart': <SlopeChartUsage />,

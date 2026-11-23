@@ -7,6 +7,12 @@ import { BoardStrengthRankUsage } from '../gallery/usage/BoardStrengthRankUsage.
 import { NetBuyBarUsage } from '../gallery/usage/NetBuyBarUsage.tsx'
 import { ReasonGroupListUsage } from '../gallery/usage/ReasonGroupListUsage.tsx'
 import { SentimentCycleUsage } from '../gallery/usage/SentimentCycleUsage.tsx'
+import { AuctionStepUsage } from '../gallery/usage/AuctionStepUsage.tsx'
+import { FlowRaceUsage } from '../gallery/usage/FlowRaceUsage.tsx'
+import { MiniKCardGridUsage } from '../gallery/usage/MiniKCardGridUsage.tsx'
+import { MoveFeedUsage } from '../gallery/usage/MoveFeedUsage.tsx'
+import { SeatTableUsage } from '../gallery/usage/SeatTableUsage.tsx'
+import { TradingDatePickerUsage } from '../gallery/usage/TradingDatePickerUsage.tsx'
 import { ThemeHeatMatrixUsage } from '../gallery/usage/ThemeHeatMatrixUsage.tsx'
 import { mount } from './render.tsx'
 
@@ -16,6 +22,12 @@ const items: Record<string, React.ReactNode> = {
   'reason-group-list': <ReasonGroupListUsage />,
   'board-strength-rank': <BoardStrengthRankUsage />,
   'net-buy-bar': <NetBuyBarUsage />,
+  'auction-step': <AuctionStepUsage />,
+  'flow-race': <FlowRaceUsage />,
+  'mini-k-card-grid': <MiniKCardGridUsage />,
+  'move-feed': <MoveFeedUsage />,
+  'seat-table': <SeatTableUsage />,
+  'trading-date-picker': <TradingDatePickerUsage />,
 }
 
 beforeAll(() => {
