@@ -31,7 +31,7 @@
 - **只看卖，再回买卖。** 点「只看卖」：买盘 0 行、卖盘 16 行；点「买卖」：回到 8 + 8。
 - **合并到 0.5。** `ticks.getByRole('button', { name: '0.5', exact: true }).click()`。它按下；屏上每个价按分算都是 50 的倍数；卖盘最优 `100.50`（100.01 向上并进去），买盘最优 `100.00`；价差仍写 `0.01`。
 - **点价。** 点买盘第一行：`[data-gallery-picked]` 写 `点价：100.00 · 买盘…`；点卖盘最后一行：写 `点价：100.50 · 卖盘…`。
-- **深度图键盘。** 点目录 `a.k-sidenav-link[href="#/depth-chart"]`；`plot.focus()` 后按 `ArrowRight`：`[data-slot="depth-readout"]` 写 `卖盘 100.01 · 累计量 <订单簿默认时卖盘最后一行的累计> · 距中间价 +0.00%`，`[data-slot="lcd-tooltip"]` 出现；按 `ArrowLeft`：读到 `买盘 100.00`；按 `Escape`：读数清空、读数框消失。
+- **深度图键盘。** 点目录 `a.k-sidenav-link[href="#/depth-chart"]`；`plot.focus()` 后按 `ArrowRight`：`[data-slot="depth-readout"]` 写 `卖盘 100.01 · 累计量 <订单簿默认时卖盘最后一行的累计> · 距中间价 0.00%`（舍入成零不带正负号，#187），`[data-slot="lcd-tooltip"]` 出现；按 `ArrowLeft`：读到 `买盘 100.00`；按 `Escape`：读数清空、读数框消失。
 - **深度图鼠标。** `plot.hover({ position: { x: 宽 × 0.25, y: 高 / 2 } })`：读数写买盘、`距中间价 -N.NN%`；鼠标移到页标题上：读数清空。
 - **成交明细逐笔。** 点目录 `#/trade-tape`。`[data-slot="tape-row"]` 18 行，没有 `×n`；`data-side` 里 `buy`、`sell` 都有，两侧 `.k-tape-price` 的计算颜色不同；时间从新到旧。
 - **聚合。** `getByRole('group', { name: '聚合' }).getByRole('button', { name: '聚合', exact: true }).click()`。出现 `×n` 徽标，相邻两行不再是同价同向。
