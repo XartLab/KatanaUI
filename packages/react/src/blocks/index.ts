@@ -515,3 +515,41 @@ export {
   type PlanStatus,
   type PlannedRun,
 } from './rate-limit-planner/rate-limit-model.ts'
+// 参照 affectUI 补的第二批（KATANAview #1908）：定时运行、任务队列、花费瀑布。
+export {
+  ScheduledRuns,
+  type ScheduleMove,
+  type ScheduledRunsLabels,
+  type ScheduledRunsProps,
+} from './scheduled-runs/scheduled-runs.tsx'
+export {
+  buildSchedule,
+  canDrop,
+  moveSlot,
+  type PieceKind,
+  type SchedulePiece,
+  type SchedulePin,
+  type ScheduledTask,
+  type Slot as ScheduleSlot,
+} from './scheduled-runs/schedule-model.ts'
+export { AgentQueue, type AgentQueueLabels, type AgentQueueProps } from './agent-queue/agent-queue.tsx'
+export {
+  depthSummary,
+  queueDepth,
+  queueOrder,
+  workerSlots,
+  type QueueJob,
+  type QueueJobStatus,
+} from './agent-queue/queue-model.ts'
+export { CostWaterfall, type CostWaterfallLabels, type CostWaterfallProps } from './cost-waterfall/cost-waterfall.tsx'
+export {
+  costRows,
+  priciestStep,
+  stepTotals,
+  type CostMode,
+  type CostRow,
+  type CostStep,
+  type CostStepKind,
+  type CostStepStatus,
+  type CostTotals,
+} from './cost-waterfall/cost-model.ts'

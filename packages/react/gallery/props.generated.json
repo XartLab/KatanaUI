@@ -350,6 +350,854 @@
         }
       ]
     },
+    "AgentLanes": {
+      "kind": "component",
+      "source": "src/ai/agent-lanes.tsx",
+      "props": [
+        {
+          "name": "agents",
+          "type": "readonly LaneAgent[]",
+          "required": true,
+          "description": "Lanes, top to bottom."
+        },
+        {
+          "name": "tasks",
+          "type": "readonly LaneTask[]",
+          "required": true,
+          "description": "Task blocks on all lanes."
+        },
+        {
+          "name": "now",
+          "type": "number",
+          "required": true,
+          "description": "Clock in milliseconds; the component does not tick on its own."
+        },
+        {
+          "name": "span",
+          "type": "number",
+          "required": false,
+          "default": "30 * 60_000",
+          "description": "Visible window in milliseconds, ending at now."
+        },
+        {
+          "name": "onApprove",
+          "type": "(task: LaneTask) => void",
+          "required": false,
+          "description": "Approves a waiting block; without it the block goes on running."
+        },
+        {
+          "name": "onReject",
+          "type": "(task: LaneTask) => void",
+          "required": false,
+          "description": "Rejects a waiting block; without it the block fails."
+        },
+        {
+          "name": "onOpen",
+          "type": "(task: LaneTask) => void",
+          "required": false,
+          "description": "Shows Open on non-waiting blocks."
+        },
+        {
+          "name": "title",
+          "type": "ReactNode",
+          "required": true,
+          "description": "Heading."
+        },
+        {
+          "name": "formatTime",
+          "type": "(time: number) => string",
+          "required": true,
+          "description": "How a time is written (axis and block names)."
+        },
+        {
+          "name": "labels",
+          "type": "AgentLanesLabels",
+          "required": true,
+          "description": "Texts."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "AgentLanesLabels": {
+      "kind": "type",
+      "source": "src/ai/agent-lanes.tsx",
+      "props": [
+        {
+          "name": "status",
+          "type": "Record<LaneTaskStatus, string>",
+          "required": true,
+          "description": "Block status words."
+        },
+        {
+          "name": "tag",
+          "type": "Record<'needs' | 'busy' | 'idle', string>",
+          "required": true,
+          "description": "Lane tags."
+        },
+        {
+          "name": "attention",
+          "type": "(count: number) => string",
+          "required": true,
+          "description": "Live attention line (「2 个块等你」); empty string when none."
+        },
+        {
+          "name": "approve",
+          "type": "string",
+          "required": true,
+          "description": "Decision buttons and the open link."
+        },
+        {
+          "name": "reject",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "open",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "tools",
+          "type": "string",
+          "required": true,
+          "description": "Field name of the tools list."
+        },
+        {
+          "name": "handoff",
+          "type": "(agent: string) => string",
+          "required": true,
+          "description": "Hand-off text in a block's details (「交给 审查员」)."
+        }
+      ]
+    },
+    "AgentLanesProps": {
+      "kind": "type",
+      "source": "src/ai/agent-lanes.tsx",
+      "props": [
+        {
+          "name": "agents",
+          "type": "readonly LaneAgent[]",
+          "required": true,
+          "description": "Lanes, top to bottom."
+        },
+        {
+          "name": "tasks",
+          "type": "readonly LaneTask[]",
+          "required": true,
+          "description": "Task blocks on all lanes."
+        },
+        {
+          "name": "now",
+          "type": "number",
+          "required": true,
+          "description": "Clock in milliseconds; the component does not tick on its own."
+        },
+        {
+          "name": "span",
+          "type": "number",
+          "required": false,
+          "description": "Visible window in milliseconds, ending at now."
+        },
+        {
+          "name": "onApprove",
+          "type": "(task: LaneTask) => void",
+          "required": false,
+          "description": "Approves a waiting block; without it the block goes on running."
+        },
+        {
+          "name": "onReject",
+          "type": "(task: LaneTask) => void",
+          "required": false,
+          "description": "Rejects a waiting block; without it the block fails."
+        },
+        {
+          "name": "onOpen",
+          "type": "(task: LaneTask) => void",
+          "required": false,
+          "description": "Shows Open on non-waiting blocks."
+        },
+        {
+          "name": "title",
+          "type": "ReactNode",
+          "required": true,
+          "description": "Heading."
+        },
+        {
+          "name": "formatTime",
+          "type": "(time: number) => string",
+          "required": true,
+          "description": "How a time is written (axis and block names)."
+        },
+        {
+          "name": "labels",
+          "type": "AgentLanesLabels",
+          "required": true,
+          "description": "Texts."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "AgentQueue": {
+      "kind": "component",
+      "source": "src/blocks/agent-queue/agent-queue.tsx",
+      "props": [
+        {
+          "name": "jobs",
+          "type": "readonly QueueJob[]",
+          "required": true,
+          "description": "Every job, in any order."
+        },
+        {
+          "name": "workers",
+          "type": "number",
+          "required": true,
+          "description": "Concurrency: number of worker slots."
+        },
+        {
+          "name": "now",
+          "type": "number",
+          "required": true,
+          "description": "Clock in milliseconds; the component does not tick on its own."
+        },
+        {
+          "name": "title",
+          "type": "ReactNode",
+          "required": true,
+          "description": "Heading."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "description": "Muted queue name after the heading."
+        },
+        {
+          "name": "backpressure",
+          "type": "number",
+          "required": false,
+          "description": "Waiting count above which the queue is under backpressure."
+        },
+        {
+          "name": "window",
+          "type": "number",
+          "required": false,
+          "default": "120_000",
+          "description": "Span of the depth chart in milliseconds."
+        },
+        {
+          "name": "paused",
+          "type": "boolean",
+          "required": false,
+          "default": "false",
+          "description": "Whether the queue is paused."
+        },
+        {
+          "name": "onPausedChange",
+          "type": "(paused: boolean) => void",
+          "required": false,
+          "description": "Shows Pause / Resume; called with the new paused state."
+        },
+        {
+          "name": "onConcurrencyChange",
+          "type": "(workers: number) => void",
+          "required": false,
+          "description": "Shows the concurrency stepper; called with the new worker count."
+        },
+        {
+          "name": "minConcurrency",
+          "type": "number",
+          "required": false,
+          "default": "1",
+          "description": "Fewest workers the stepper allows."
+        },
+        {
+          "name": "maxConcurrency",
+          "type": "number",
+          "required": false,
+          "default": "8",
+          "description": "Most workers the stepper allows."
+        },
+        {
+          "name": "openId",
+          "type": "string | null",
+          "required": false,
+          "description": "Controlled pinned job id; null when none."
+        },
+        {
+          "name": "defaultOpenId",
+          "type": "string | null",
+          "required": false,
+          "default": "null",
+          "description": "Pinned job when uncontrolled."
+        },
+        {
+          "name": "onOpenChange",
+          "type": "(id: string | null) => void",
+          "required": false,
+          "description": "Called when the pinned job changes."
+        },
+        {
+          "name": "onPromote",
+          "type": "(job: QueueJob) => void",
+          "required": false,
+          "description": "Shows Move to front on queued jobs."
+        },
+        {
+          "name": "onCancel",
+          "type": "(job: QueueJob) => void",
+          "required": false,
+          "description": "Shows Cancel on queued and running jobs."
+        },
+        {
+          "name": "finishedLimit",
+          "type": "number",
+          "required": false,
+          "default": "5",
+          "description": "Finished and failed jobs shown per column, newest first."
+        },
+        {
+          "name": "formatDuration",
+          "type": "(ms: number) => string",
+          "required": true,
+          "description": "How a duration in milliseconds is written."
+        },
+        {
+          "name": "labels",
+          "type": "AgentQueueLabels",
+          "required": true,
+          "description": "Texts."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "AgentQueueLabels": {
+      "kind": "type",
+      "source": "src/blocks/agent-queue/agent-queue.tsx",
+      "props": [
+        {
+          "name": "status",
+          "type": "Record<QueueJobStatus, string>",
+          "required": true,
+          "description": "Status words; also the four counts and the column heads of queued, done and failed."
+        },
+        {
+          "name": "workers",
+          "type": "string",
+          "required": true,
+          "description": "Column head of the worker slots, and the text of an empty slot."
+        },
+        {
+          "name": "idle",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "kind",
+          "type": "(kind: string) => string",
+          "required": false,
+          "description": "Name of a job kind; defaults to the kind itself."
+        },
+        {
+          "name": "high",
+          "type": "string",
+          "required": true,
+          "description": "Tag on a high-priority job."
+        },
+        {
+          "name": "place",
+          "type": "(place: number) => string",
+          "required": true,
+          "description": "Place in line (「第 3 位」)."
+        },
+        {
+          "name": "attempt",
+          "type": "(attempt: number, max: number | undefined) => string",
+          "required": true,
+          "description": "Attempt text (「第 2 / 3 次」)."
+        },
+        {
+          "name": "limited",
+          "type": "(left: string) => string",
+          "required": true,
+          "description": "Rate-limit countdown on a running job."
+        },
+        {
+          "name": "pause",
+          "type": "string",
+          "required": true,
+          "description": "Pause and resume button, the stepper group and its two buttons."
+        },
+        {
+          "name": "resume",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "concurrency",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "fewer",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "more",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "depth",
+          "type": "string",
+          "required": true,
+          "description": "Depth chart: its name, the backpressure line, and the text summary."
+        },
+        {
+          "name": "backpressure",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "depthSummary",
+          "type": "(summary: { now: number; peak: number; average: number }) => string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "live",
+          "type": "(limited: number, overBackpressure: boolean) => string",
+          "required": true,
+          "description": "Live status line: how many jobs are rate limited, whether backpressure is crossed."
+        },
+        {
+          "name": "details",
+          "type": "string",
+          "required": true,
+          "description": "Details area: its name, field names and actions."
+        },
+        {
+          "name": "waited",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "ran",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "error",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "promote",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "cancel",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "moreItems",
+          "type": "(count: number) => string",
+          "required": true,
+          "description": "More finished jobs than shown (「还有 12 个」)."
+        }
+      ]
+    },
+    "AgentQueueProps": {
+      "kind": "type",
+      "source": "src/blocks/agent-queue/agent-queue.tsx",
+      "props": [
+        {
+          "name": "jobs",
+          "type": "readonly QueueJob[]",
+          "required": true,
+          "description": "Every job, in any order."
+        },
+        {
+          "name": "workers",
+          "type": "number",
+          "required": true,
+          "description": "Concurrency: number of worker slots."
+        },
+        {
+          "name": "now",
+          "type": "number",
+          "required": true,
+          "description": "Clock in milliseconds; the component does not tick on its own."
+        },
+        {
+          "name": "title",
+          "type": "ReactNode",
+          "required": true,
+          "description": "Heading."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "description": "Muted queue name after the heading."
+        },
+        {
+          "name": "backpressure",
+          "type": "number",
+          "required": false,
+          "description": "Waiting count above which the queue is under backpressure."
+        },
+        {
+          "name": "window",
+          "type": "number",
+          "required": false,
+          "description": "Span of the depth chart in milliseconds."
+        },
+        {
+          "name": "paused",
+          "type": "boolean",
+          "required": false,
+          "description": "Whether the queue is paused."
+        },
+        {
+          "name": "onPausedChange",
+          "type": "(paused: boolean) => void",
+          "required": false,
+          "description": "Shows Pause / Resume; called with the new paused state."
+        },
+        {
+          "name": "onConcurrencyChange",
+          "type": "(workers: number) => void",
+          "required": false,
+          "description": "Shows the concurrency stepper; called with the new worker count."
+        },
+        {
+          "name": "minConcurrency",
+          "type": "number",
+          "required": false,
+          "description": "Fewest workers the stepper allows."
+        },
+        {
+          "name": "maxConcurrency",
+          "type": "number",
+          "required": false,
+          "description": "Most workers the stepper allows."
+        },
+        {
+          "name": "openId",
+          "type": "string | null",
+          "required": false,
+          "description": "Controlled pinned job id; null when none."
+        },
+        {
+          "name": "defaultOpenId",
+          "type": "string | null",
+          "required": false,
+          "description": "Pinned job when uncontrolled."
+        },
+        {
+          "name": "onOpenChange",
+          "type": "(id: string | null) => void",
+          "required": false,
+          "description": "Called when the pinned job changes."
+        },
+        {
+          "name": "onPromote",
+          "type": "(job: QueueJob) => void",
+          "required": false,
+          "description": "Shows Move to front on queued jobs."
+        },
+        {
+          "name": "onCancel",
+          "type": "(job: QueueJob) => void",
+          "required": false,
+          "description": "Shows Cancel on queued and running jobs."
+        },
+        {
+          "name": "finishedLimit",
+          "type": "number",
+          "required": false,
+          "description": "Finished and failed jobs shown per column, newest first."
+        },
+        {
+          "name": "formatDuration",
+          "type": "(ms: number) => string",
+          "required": true,
+          "description": "How a duration in milliseconds is written."
+        },
+        {
+          "name": "labels",
+          "type": "AgentQueueLabels",
+          "required": true,
+          "description": "Texts."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "AgentRecap": {
+      "kind": "component",
+      "source": "src/ai/agent-recap.tsx",
+      "props": [
+        {
+          "name": "events",
+          "type": "readonly RecapEvent[]",
+          "required": true,
+          "description": "Everything that happened, in any order."
+        },
+        {
+          "name": "since",
+          "type": "number",
+          "required": true,
+          "description": "When the person left, in milliseconds."
+        },
+        {
+          "name": "until",
+          "type": "number",
+          "required": true,
+          "description": "End of the strip (usually now), in milliseconds."
+        },
+        {
+          "name": "onAction",
+          "type": "(event: RecapEvent, action: RecapAction) => unknown",
+          "required": false,
+          "description": "Runs the main action or Review; may return a promise."
+        },
+        {
+          "name": "onUndo",
+          "type": "(event: RecapEvent) => unknown",
+          "required": false,
+          "description": "Shows Undo on acted-on and done cards; may return a promise."
+        },
+        {
+          "name": "onRedo",
+          "type": "(event: RecapEvent) => unknown",
+          "required": false,
+          "description": "Shows Redo after an undo; may return a promise."
+        },
+        {
+          "name": "limit",
+          "type": "number",
+          "required": false,
+          "default": "3",
+          "description": "Most cards per lane."
+        },
+        {
+          "name": "title",
+          "type": "ReactNode",
+          "required": true,
+          "description": "Heading."
+        },
+        {
+          "name": "formatTime",
+          "type": "(time: number) => string",
+          "required": true,
+          "description": "How a time is written on a card."
+        },
+        {
+          "name": "labels",
+          "type": "AgentRecapLabels",
+          "required": true,
+          "description": "Texts."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "AgentRecapLabels": {
+      "kind": "type",
+      "source": "src/ai/agent-recap.tsx",
+      "props": [
+        {
+          "name": "lanes",
+          "type": "Record<RecapKind, string>",
+          "required": true,
+          "description": "Lane heads."
+        },
+        {
+          "name": "empty",
+          "type": "Record<RecapKind, string>",
+          "required": true,
+          "description": "Text of an empty lane."
+        },
+        {
+          "name": "tag",
+          "type": "Record<RecapKind, string>",
+          "required": true,
+          "description": "State tag on each card."
+        },
+        {
+          "name": "action",
+          "type": "Record<'needs' | 'failed', string>",
+          "required": true,
+          "description": "Default main action of a needs-you card and of a failed card."
+        },
+        {
+          "name": "review",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "undo",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "redo",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "working",
+          "type": "string",
+          "required": true,
+          "description": "Text on a button while its promise is pending."
+        },
+        {
+          "name": "acted",
+          "type": "string",
+          "required": true,
+          "description": "Tag after the main action, unless the event has its own; and after an undo."
+        },
+        {
+          "name": "undone",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "more",
+          "type": "(count: number) => string",
+          "required": true,
+          "description": "Lane footer when items are hidden (「还有 4 件」)."
+        },
+        {
+          "name": "named",
+          "type": "(verb: string, title: string) => string",
+          "required": true,
+          "description": "Accessible name of an action button, built from the verb and the item title."
+        },
+        {
+          "name": "announce",
+          "type": "(verb: string, title: string) => string",
+          "required": true,
+          "description": "Live announcement after an action is done."
+        }
+      ]
+    },
+    "AgentRecapProps": {
+      "kind": "type",
+      "source": "src/ai/agent-recap.tsx",
+      "props": [
+        {
+          "name": "events",
+          "type": "readonly RecapEvent[]",
+          "required": true,
+          "description": "Everything that happened, in any order."
+        },
+        {
+          "name": "since",
+          "type": "number",
+          "required": true,
+          "description": "When the person left, in milliseconds."
+        },
+        {
+          "name": "until",
+          "type": "number",
+          "required": true,
+          "description": "End of the strip (usually now), in milliseconds."
+        },
+        {
+          "name": "onAction",
+          "type": "(event: RecapEvent, action: RecapAction) => unknown",
+          "required": false,
+          "description": "Runs the main action or Review; may return a promise."
+        },
+        {
+          "name": "onUndo",
+          "type": "(event: RecapEvent) => unknown",
+          "required": false,
+          "description": "Shows Undo on acted-on and done cards; may return a promise."
+        },
+        {
+          "name": "onRedo",
+          "type": "(event: RecapEvent) => unknown",
+          "required": false,
+          "description": "Shows Redo after an undo; may return a promise."
+        },
+        {
+          "name": "limit",
+          "type": "number",
+          "required": false,
+          "description": "Most cards per lane."
+        },
+        {
+          "name": "title",
+          "type": "ReactNode",
+          "required": true,
+          "description": "Heading."
+        },
+        {
+          "name": "formatTime",
+          "type": "(time: number) => string",
+          "required": true,
+          "description": "How a time is written on a card."
+        },
+        {
+          "name": "labels",
+          "type": "AgentRecapLabels",
+          "required": true,
+          "description": "Texts."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
     "AiApproval": {
       "kind": "component",
       "source": "src/ai/ai-approval.tsx",
@@ -4443,6 +5291,218 @@
       "kind": "type",
       "source": "src/primitives/avatar.tsx",
       "props": []
+    },
+    "AwaySummary": {
+      "kind": "component",
+      "source": "src/ai/away-summary.tsx",
+      "props": [
+        {
+          "name": "since",
+          "type": "number",
+          "required": true,
+          "description": "When the person left, in milliseconds."
+        },
+        {
+          "name": "now",
+          "type": "number",
+          "required": true,
+          "description": "Current time, in milliseconds; the component does not tick on its own."
+        },
+        {
+          "name": "items",
+          "type": "readonly RecapEvent[]",
+          "required": true,
+          "description": "What happened, in any order."
+        },
+        {
+          "name": "onAction",
+          "type": "(item: RecapEvent) => unknown",
+          "required": false,
+          "description": "Runs a row's action; may return a promise."
+        },
+        {
+          "name": "onDismiss",
+          "type": "() => void",
+          "required": false,
+          "description": "Called by Got it, so the caller can record that the card was seen."
+        },
+        {
+          "name": "collapsed",
+          "type": "boolean",
+          "required": false,
+          "description": "Controlled folded state."
+        },
+        {
+          "name": "defaultCollapsed",
+          "type": "boolean",
+          "required": false,
+          "default": "false",
+          "description": "Folded state when uncontrolled."
+        },
+        {
+          "name": "onCollapsedChange",
+          "type": "(collapsed: boolean) => void",
+          "required": false,
+          "description": "Called when the card folds or opens."
+        },
+        {
+          "name": "limit",
+          "type": "number",
+          "required": false,
+          "default": "5",
+          "description": "Rows shown before Show more."
+        },
+        {
+          "name": "labels",
+          "type": "AwaySummaryLabels",
+          "required": true,
+          "description": "Texts."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "AwaySummaryLabels": {
+      "kind": "type",
+      "source": "src/ai/away-summary.tsx",
+      "props": [
+        {
+          "name": "heading",
+          "type": "(since: number, now: number) => string",
+          "required": true,
+          "description": "Heading from the time the person left and now (「你离开了 2 小时 14 分」「9:40 以来」)."
+        },
+        {
+          "name": "counts",
+          "type": "(counts: Record<RecapKind, number>) => string",
+          "required": true,
+          "description": "Count line (「2 件要你 · 1 件失败 · 5 件做完」)."
+        },
+        {
+          "name": "mark",
+          "type": "Record<RecapKind, string>",
+          "required": true,
+          "description": "Status word per kind, written on each row."
+        },
+        {
+          "name": "action",
+          "type": "Record<RecapKind, string>",
+          "required": true,
+          "description": "Default action per kind."
+        },
+        {
+          "name": "working",
+          "type": "string",
+          "required": true,
+          "description": "Text on a button while its promise is pending."
+        },
+        {
+          "name": "named",
+          "type": "(verb: string, title: string) => string",
+          "required": true,
+          "description": "Accessible name of an action button, from the verb and the item title."
+        },
+        {
+          "name": "more",
+          "type": "(count: number) => string",
+          "required": true,
+          "description": "Show more and show less."
+        },
+        {
+          "name": "less",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "gotIt",
+          "type": "string",
+          "required": true,
+          "description": "Dismiss button, and the text of the folded divider."
+        },
+        {
+          "name": "divider",
+          "type": "(since: number, now: number) => string",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "AwaySummaryProps": {
+      "kind": "type",
+      "source": "src/ai/away-summary.tsx",
+      "props": [
+        {
+          "name": "since",
+          "type": "number",
+          "required": true,
+          "description": "When the person left, in milliseconds."
+        },
+        {
+          "name": "now",
+          "type": "number",
+          "required": true,
+          "description": "Current time, in milliseconds; the component does not tick on its own."
+        },
+        {
+          "name": "items",
+          "type": "readonly RecapEvent[]",
+          "required": true,
+          "description": "What happened, in any order."
+        },
+        {
+          "name": "onAction",
+          "type": "(item: RecapEvent) => unknown",
+          "required": false,
+          "description": "Runs a row's action; may return a promise."
+        },
+        {
+          "name": "onDismiss",
+          "type": "() => void",
+          "required": false,
+          "description": "Called by Got it, so the caller can record that the card was seen."
+        },
+        {
+          "name": "collapsed",
+          "type": "boolean",
+          "required": false,
+          "description": "Controlled folded state."
+        },
+        {
+          "name": "defaultCollapsed",
+          "type": "boolean",
+          "required": false,
+          "description": "Folded state when uncontrolled."
+        },
+        {
+          "name": "onCollapsedChange",
+          "type": "(collapsed: boolean) => void",
+          "required": false,
+          "description": "Called when the card folds or opens."
+        },
+        {
+          "name": "limit",
+          "type": "number",
+          "required": false,
+          "description": "Rows shown before Show more."
+        },
+        {
+          "name": "labels",
+          "type": "AwaySummaryLabels",
+          "required": true,
+          "description": "Texts."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
     },
     "BOARD_LIMIT_PERCENT": {
       "kind": "value",
@@ -9017,6 +10077,534 @@
         }
       ]
     },
+    "CostMode": {
+      "kind": "type",
+      "source": "src/blocks/cost-waterfall/cost-model.ts",
+      "props": []
+    },
+    "CostRow": {
+      "kind": "type",
+      "source": "src/blocks/cost-waterfall/cost-model.ts",
+      "props": [
+        {
+          "name": "step",
+          "type": "CostStep",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "depth",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "parentId",
+          "type": "string | null",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "hasChildren",
+          "type": "boolean",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "expanded",
+          "type": "boolean",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "totals",
+          "type": "CostTotals",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "from",
+          "type": "number",
+          "required": true,
+          "description": "Bar from and to on the axis (from > to for a credit)."
+        },
+        {
+          "name": "to",
+          "type": "number",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "CostStep": {
+      "kind": "type",
+      "source": "src/blocks/cost-waterfall/cost-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "Stable key."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": "Step name."
+        },
+        {
+          "name": "kind",
+          "type": "CostStepKind",
+          "required": true,
+          "description": "Sub-agent, model call or tool call."
+        },
+        {
+          "name": "status",
+          "type": "CostStepStatus",
+          "required": false,
+          "description": "Running, done or failed; defaults to done."
+        },
+        {
+          "name": "model",
+          "type": "string",
+          "required": false,
+          "description": "Model name of a model call, or any muted text."
+        },
+        {
+          "name": "cost",
+          "type": "number",
+          "required": false,
+          "description": "Cost of the step itself; sub-agents add their children on top."
+        },
+        {
+          "name": "tokensIn",
+          "type": "number",
+          "required": false,
+          "description": "Prompt (input) tokens."
+        },
+        {
+          "name": "tokensOut",
+          "type": "number",
+          "required": false,
+          "description": "Completion (output) tokens."
+        },
+        {
+          "name": "duration",
+          "type": "number",
+          "required": false,
+          "description": "Duration in milliseconds; a sub-agent without one sums its children."
+        },
+        {
+          "name": "input",
+          "type": "string",
+          "required": false,
+          "description": "Prompt, task or tool input shown in the details."
+        },
+        {
+          "name": "output",
+          "type": "string",
+          "required": false,
+          "description": "Response, result or tool output shown in the details."
+        },
+        {
+          "name": "error",
+          "type": "string",
+          "required": false,
+          "description": "Error text of a failed step."
+        },
+        {
+          "name": "children",
+          "type": "readonly CostStep[]",
+          "required": false,
+          "description": "Steps of a sub-agent."
+        }
+      ]
+    },
+    "CostStepKind": {
+      "kind": "type",
+      "source": "src/blocks/cost-waterfall/cost-model.ts",
+      "props": []
+    },
+    "CostStepStatus": {
+      "kind": "type",
+      "source": "src/blocks/cost-waterfall/cost-model.ts",
+      "props": []
+    },
+    "CostTotals": {
+      "kind": "type",
+      "source": "src/blocks/cost-waterfall/cost-model.ts",
+      "props": [
+        {
+          "name": "cost",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "tokensIn",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "tokensOut",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "duration",
+          "type": "number",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "CostWaterfall": {
+      "kind": "component",
+      "source": "src/blocks/cost-waterfall/cost-waterfall.tsx",
+      "props": [
+        {
+          "name": "steps",
+          "type": "readonly CostStep[]",
+          "required": true,
+          "description": "Top-level steps in call order."
+        },
+        {
+          "name": "title",
+          "type": "ReactNode",
+          "required": true,
+          "description": "Heading."
+        },
+        {
+          "name": "task",
+          "type": "string",
+          "required": false,
+          "description": "Muted task text after the heading."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the step tree."
+        },
+        {
+          "name": "status",
+          "type": "'live' | 'done' | 'failed'",
+          "required": false,
+          "description": "Run status; defaults to live while any step runs."
+        },
+        {
+          "name": "mode",
+          "type": "CostMode",
+          "required": false,
+          "description": "Controlled mode."
+        },
+        {
+          "name": "defaultMode",
+          "type": "CostMode",
+          "required": false,
+          "default": "'cost'",
+          "description": "Mode when uncontrolled."
+        },
+        {
+          "name": "onModeChange",
+          "type": "(mode: CostMode) => void",
+          "required": false,
+          "description": "Called when the mode switch changes."
+        },
+        {
+          "name": "collapsed",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Controlled folded sub-agent ids."
+        },
+        {
+          "name": "defaultCollapsed",
+          "type": "readonly string[]",
+          "required": false,
+          "default": "[]",
+          "description": "Folded sub-agent ids when uncontrolled."
+        },
+        {
+          "name": "onCollapsedChange",
+          "type": "(collapsed: readonly string[]) => void",
+          "required": false,
+          "description": "Called with the folded ids after a fold or unfold."
+        },
+        {
+          "name": "openId",
+          "type": "string | null",
+          "required": false,
+          "description": "Controlled step id whose details are open; null when closed."
+        },
+        {
+          "name": "defaultOpenId",
+          "type": "string | null",
+          "required": false,
+          "default": "null",
+          "description": "Step open first when uncontrolled."
+        },
+        {
+          "name": "onOpenChange",
+          "type": "(id: string | null) => void",
+          "required": false,
+          "description": "Called when the open step changes."
+        },
+        {
+          "name": "maxHeight",
+          "type": "number",
+          "required": false,
+          "description": "Height cap of the step list in pixels; it scrolls past it."
+        },
+        {
+          "name": "formatCost",
+          "type": "(cost: number) => string",
+          "required": true,
+          "description": "How a cost is written (「¥0.42」)."
+        },
+        {
+          "name": "formatTokens",
+          "type": "(tokens: number) => string",
+          "required": true,
+          "description": "How a token count is written (「12.3k」)."
+        },
+        {
+          "name": "formatDuration",
+          "type": "(ms: number) => string",
+          "required": true,
+          "description": "How a duration in milliseconds is written."
+        },
+        {
+          "name": "labels",
+          "type": "CostWaterfallLabels",
+          "required": true,
+          "description": "Texts."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "CostWaterfallLabels": {
+      "kind": "type",
+      "source": "src/blocks/cost-waterfall/cost-waterfall.tsx",
+      "props": [
+        {
+          "name": "mode",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the mode switch, and the two modes."
+        },
+        {
+          "name": "cost",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "tokens",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "kind",
+          "type": "Record<CostStepKind, string>",
+          "required": true,
+          "description": "Kind words."
+        },
+        {
+          "name": "status",
+          "type": "Record<CostStepStatus, string>",
+          "required": true,
+          "description": "Step status words."
+        },
+        {
+          "name": "run",
+          "type": "Record<'live' | 'done' | 'failed', string>",
+          "required": true,
+          "description": "Run status words."
+        },
+        {
+          "name": "priciest",
+          "type": "string",
+          "required": true,
+          "description": "Button that jumps to the most expensive step."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": "Column heads."
+        },
+        {
+          "name": "time",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "tokensIn",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "tokensOut",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "io",
+          "type": "Record<CostStepKind, readonly [string, string]>",
+          "required": true,
+          "description": "Input and output field names in the details, per kind (task / result, prompt / response, input / output)."
+        },
+        {
+          "name": "details",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the details area, and the error field."
+        },
+        {
+          "name": "error",
+          "type": "string",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "CostWaterfallProps": {
+      "kind": "type",
+      "source": "src/blocks/cost-waterfall/cost-waterfall.tsx",
+      "props": [
+        {
+          "name": "steps",
+          "type": "readonly CostStep[]",
+          "required": true,
+          "description": "Top-level steps in call order."
+        },
+        {
+          "name": "title",
+          "type": "ReactNode",
+          "required": true,
+          "description": "Heading."
+        },
+        {
+          "name": "task",
+          "type": "string",
+          "required": false,
+          "description": "Muted task text after the heading."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the step tree."
+        },
+        {
+          "name": "status",
+          "type": "'live' | 'done' | 'failed'",
+          "required": false,
+          "description": "Run status; defaults to live while any step runs."
+        },
+        {
+          "name": "mode",
+          "type": "CostMode",
+          "required": false,
+          "description": "Controlled mode."
+        },
+        {
+          "name": "defaultMode",
+          "type": "CostMode",
+          "required": false,
+          "description": "Mode when uncontrolled."
+        },
+        {
+          "name": "onModeChange",
+          "type": "(mode: CostMode) => void",
+          "required": false,
+          "description": "Called when the mode switch changes."
+        },
+        {
+          "name": "collapsed",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Controlled folded sub-agent ids."
+        },
+        {
+          "name": "defaultCollapsed",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Folded sub-agent ids when uncontrolled."
+        },
+        {
+          "name": "onCollapsedChange",
+          "type": "(collapsed: readonly string[]) => void",
+          "required": false,
+          "description": "Called with the folded ids after a fold or unfold."
+        },
+        {
+          "name": "openId",
+          "type": "string | null",
+          "required": false,
+          "description": "Controlled step id whose details are open; null when closed."
+        },
+        {
+          "name": "defaultOpenId",
+          "type": "string | null",
+          "required": false,
+          "description": "Step open first when uncontrolled."
+        },
+        {
+          "name": "onOpenChange",
+          "type": "(id: string | null) => void",
+          "required": false,
+          "description": "Called when the open step changes."
+        },
+        {
+          "name": "maxHeight",
+          "type": "number",
+          "required": false,
+          "description": "Height cap of the step list in pixels; it scrolls past it."
+        },
+        {
+          "name": "formatCost",
+          "type": "(cost: number) => string",
+          "required": true,
+          "description": "How a cost is written (「¥0.42」)."
+        },
+        {
+          "name": "formatTokens",
+          "type": "(tokens: number) => string",
+          "required": true,
+          "description": "How a token count is written (「12.3k」)."
+        },
+        {
+          "name": "formatDuration",
+          "type": "(ms: number) => string",
+          "required": true,
+          "description": "How a duration in milliseconds is written."
+        },
+        {
+          "name": "labels",
+          "type": "CostWaterfallLabels",
+          "required": true,
+          "description": "Texts."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
     "CountBadge": {
       "kind": "component",
       "source": "src/katana/count-badge.tsx",
@@ -11047,6 +12635,64 @@
         }
       ]
     },
+    "Decision": {
+      "kind": "type",
+      "source": "src/ai/decision-tree.tsx",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "Stable key."
+        },
+        {
+          "name": "question",
+          "type": "string",
+          "required": true,
+          "description": "The question."
+        },
+        {
+          "name": "context",
+          "type": "string",
+          "required": false,
+          "description": "Background under the question."
+        },
+        {
+          "name": "agent",
+          "type": "string",
+          "required": true,
+          "description": "Agent that asks."
+        },
+        {
+          "name": "model",
+          "type": "string",
+          "required": false,
+          "description": "Model label after the agent name."
+        },
+        {
+          "name": "risk",
+          "type": "'high' | 'medium' | 'low'",
+          "required": false,
+          "description": "Risk tag shown for high and medium."
+        },
+        {
+          "name": "options",
+          "type": "readonly DecisionOption[]",
+          "required": true,
+          "description": "Two to four branches."
+        }
+      ]
+    },
+    "DecisionChoice": {
+      "kind": "type",
+      "source": "src/ai/decision-tree.tsx",
+      "props": []
+    },
+    "DecisionEffect": {
+      "kind": "type",
+      "source": "src/ai/decision-tree.tsx",
+      "props": []
+    },
     "DecisionFilter": {
       "kind": "type",
       "source": "src/blocks/decision-queue/decision-queue-model.ts",
@@ -11133,6 +12779,36 @@
           "type": "number",
           "required": false,
           "description": ""
+        }
+      ]
+    },
+    "DecisionOption": {
+      "kind": "type",
+      "source": "src/ai/decision-tree.tsx",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "Stable key."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "What the branch does."
+        },
+        {
+          "name": "effects",
+          "type": "readonly DecisionEffect[]",
+          "required": false,
+          "description": "Consequences, one line each."
+        },
+        {
+          "name": "pick",
+          "type": "boolean",
+          "required": false,
+          "description": "The agent's preferred branch."
         }
       ]
     },
@@ -11477,6 +13153,163 @@
       "kind": "type",
       "source": "src/blocks/decision-queue/decision-queue-model.ts",
       "props": []
+    },
+    "DecisionTree": {
+      "kind": "component",
+      "source": "src/ai/decision-tree.tsx",
+      "props": [
+        {
+          "name": "decisions",
+          "type": "readonly Decision[]",
+          "required": true,
+          "description": "Pending decisions; new ones go at the end."
+        },
+        {
+          "name": "onChoose",
+          "type": "(decision: Decision, choice: DecisionChoice) => unknown",
+          "required": false,
+          "description": "Called with a branch pick or a written instruction; for an instruction it may return (a promise of) the agent's short reply."
+        },
+        {
+          "name": "allowOther",
+          "type": "boolean",
+          "required": false,
+          "default": "true",
+          "description": "Shows the Other branch."
+        },
+        {
+          "name": "title",
+          "type": "ReactNode",
+          "required": true,
+          "description": "Heading."
+        },
+        {
+          "name": "labels",
+          "type": "DecisionTreeLabels",
+          "required": true,
+          "description": "Texts."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "DecisionTreeLabels": {
+      "kind": "type",
+      "source": "src/ai/decision-tree.tsx",
+      "props": [
+        {
+          "name": "agentPick",
+          "type": "string",
+          "required": true,
+          "description": "Tag on the agent's pick."
+        },
+        {
+          "name": "risk",
+          "type": "Record<'high' | 'medium', string>",
+          "required": true,
+          "description": "Risk tags."
+        },
+        {
+          "name": "other",
+          "type": "string",
+          "required": true,
+          "description": "The Other branch, its field name, and the send button."
+        },
+        {
+          "name": "otherField",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "send",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "position",
+          "type": "(index: number, count: number) => string",
+          "required": true,
+          "description": "Position among pending decisions (「1 / 3」), and the two step buttons."
+        },
+        {
+          "name": "previous",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "next",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "chose",
+          "type": "(question: string, choice: string) => string",
+          "required": true,
+          "description": "Live announcements."
+        },
+        {
+          "name": "sent",
+          "type": "(question: string) => string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "empty",
+          "type": "string",
+          "required": true,
+          "description": "Text when nothing is pending."
+        }
+      ]
+    },
+    "DecisionTreeProps": {
+      "kind": "type",
+      "source": "src/ai/decision-tree.tsx",
+      "props": [
+        {
+          "name": "decisions",
+          "type": "readonly Decision[]",
+          "required": true,
+          "description": "Pending decisions; new ones go at the end."
+        },
+        {
+          "name": "onChoose",
+          "type": "(decision: Decision, choice: DecisionChoice) => unknown",
+          "required": false,
+          "description": "Called with a branch pick or a written instruction; for an instruction it may return (a promise of) the agent's short reply."
+        },
+        {
+          "name": "allowOther",
+          "type": "boolean",
+          "required": false,
+          "description": "Shows the Other branch."
+        },
+        {
+          "name": "title",
+          "type": "ReactNode",
+          "required": true,
+          "description": "Heading."
+        },
+        {
+          "name": "labels",
+          "type": "DecisionTreeLabels",
+          "required": true,
+          "description": "Texts."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
     },
     "DeleteButton": {
       "kind": "component",
@@ -15927,6 +17760,299 @@
     "FallbackStatus": {
       "kind": "type",
       "source": "src/blocks/fallback-chain/fallback-model.ts",
+      "props": []
+    },
+    "FanOutGrid": {
+      "kind": "component",
+      "source": "src/ai/fan-out-grid.tsx",
+      "props": [
+        {
+          "name": "tasks",
+          "type": "readonly FanTask[]",
+          "required": true,
+          "description": "Sub-tasks in the order to show them."
+        },
+        {
+          "name": "title",
+          "type": "ReactNode",
+          "required": true,
+          "description": "Heading."
+        },
+        {
+          "name": "job",
+          "type": "string",
+          "required": false,
+          "description": "What the whole job is, such as the number of symbols to fill."
+        },
+        {
+          "name": "workers",
+          "type": "number",
+          "required": false,
+          "description": "Concurrent workers, for the time-left estimate."
+        },
+        {
+          "name": "onRetry",
+          "type": "(ids: readonly string[]) => void",
+          "required": false,
+          "description": "Called with the failed ids by Retry failed."
+        },
+        {
+          "name": "onSelect",
+          "type": "(task: FanTask | null) => void",
+          "required": false,
+          "description": "Called when a cell is pinned, or with null when released."
+        },
+        {
+          "name": "formatCost",
+          "type": "(cost: number) => string",
+          "required": true,
+          "description": "How a cost is written."
+        },
+        {
+          "name": "formatDuration",
+          "type": "(ms: number) => string",
+          "required": true,
+          "description": "How a duration in milliseconds is written."
+        },
+        {
+          "name": "labels",
+          "type": "FanOutGridLabels",
+          "required": true,
+          "description": "Texts."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "FanOutGridLabels": {
+      "kind": "type",
+      "source": "src/ai/fan-out-grid.tsx",
+      "props": [
+        {
+          "name": "status",
+          "type": "Record<FanTaskStatus, string>",
+          "required": true,
+          "description": "Status words."
+        },
+        {
+          "name": "grid",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the grid."
+        },
+        {
+          "name": "progress",
+          "type": "(finished: number, total: number) => string",
+          "required": true,
+          "description": "Progress line (「已完成 120 / 240」), and the live line every tenth (「完成 50%」)."
+        },
+        {
+          "name": "live",
+          "type": "(percent: number) => string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "eta",
+          "type": "(text: string | null) => string",
+          "required": true,
+          "description": "Time left; null when it cannot be estimated yet."
+        },
+        {
+          "name": "cost",
+          "type": "(text: string) => string",
+          "required": true,
+          "description": "Cost total."
+        },
+        {
+          "name": "worker",
+          "type": "string",
+          "required": true,
+          "description": "Detail field names."
+        },
+        {
+          "name": "took",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "attempts",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "result",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "error",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "filter",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the status filter group, and the retry button."
+        },
+        {
+          "name": "retry",
+          "type": "(count: number) => string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "hint",
+          "type": "string",
+          "required": true,
+          "description": "Text of the details line when no cell is focused."
+        }
+      ]
+    },
+    "FanOutGridProps": {
+      "kind": "type",
+      "source": "src/ai/fan-out-grid.tsx",
+      "props": [
+        {
+          "name": "tasks",
+          "type": "readonly FanTask[]",
+          "required": true,
+          "description": "Sub-tasks in the order to show them."
+        },
+        {
+          "name": "title",
+          "type": "ReactNode",
+          "required": true,
+          "description": "Heading."
+        },
+        {
+          "name": "job",
+          "type": "string",
+          "required": false,
+          "description": "What the whole job is, such as the number of symbols to fill."
+        },
+        {
+          "name": "workers",
+          "type": "number",
+          "required": false,
+          "description": "Concurrent workers, for the time-left estimate."
+        },
+        {
+          "name": "onRetry",
+          "type": "(ids: readonly string[]) => void",
+          "required": false,
+          "description": "Called with the failed ids by Retry failed."
+        },
+        {
+          "name": "onSelect",
+          "type": "(task: FanTask | null) => void",
+          "required": false,
+          "description": "Called when a cell is pinned, or with null when released."
+        },
+        {
+          "name": "formatCost",
+          "type": "(cost: number) => string",
+          "required": true,
+          "description": "How a cost is written."
+        },
+        {
+          "name": "formatDuration",
+          "type": "(ms: number) => string",
+          "required": true,
+          "description": "How a duration in milliseconds is written."
+        },
+        {
+          "name": "labels",
+          "type": "FanOutGridLabels",
+          "required": true,
+          "description": "Texts."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "FanTask": {
+      "kind": "type",
+      "source": "src/ai/fan-out-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "Stable key."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "Short name (the symbol, the file)."
+        },
+        {
+          "name": "status",
+          "type": "FanTaskStatus",
+          "required": true,
+          "description": "Queued, running, retrying, done or failed."
+        },
+        {
+          "name": "worker",
+          "type": "string",
+          "required": false,
+          "description": "Worker that ran it."
+        },
+        {
+          "name": "start",
+          "type": "number",
+          "required": false,
+          "description": "Start in milliseconds."
+        },
+        {
+          "name": "end",
+          "type": "number",
+          "required": false,
+          "description": "End in milliseconds."
+        },
+        {
+          "name": "cost",
+          "type": "number",
+          "required": false,
+          "description": "Cost of the sub-task."
+        },
+        {
+          "name": "attempts",
+          "type": "number",
+          "required": false,
+          "description": "Attempts so far."
+        },
+        {
+          "name": "result",
+          "type": "string",
+          "required": false,
+          "description": "Result text."
+        },
+        {
+          "name": "error",
+          "type": "string",
+          "required": false,
+          "description": "Error text."
+        }
+      ]
+    },
+    "FanTaskStatus": {
+      "kind": "type",
+      "source": "src/ai/fan-out-model.ts",
       "props": []
     },
     "FeeRates": {
@@ -22968,6 +25094,107 @@
           "description": "占总量的比例（交易流量，取流入流出较大者）；总量为 0 是 null。"
         }
       ]
+    },
+    "LaneAgent": {
+      "kind": "type",
+      "source": "src/ai/lanes-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "Stable key, referenced by tasks."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": "Agent name."
+        },
+        {
+          "name": "model",
+          "type": "string",
+          "required": false,
+          "description": "Model or role, muted under the name."
+        },
+        {
+          "name": "initials",
+          "type": "string",
+          "required": false,
+          "description": "Initials on the avatar; defaults to the first character of the name."
+        }
+      ]
+    },
+    "LaneTask": {
+      "kind": "type",
+      "source": "src/ai/lanes-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "Stable key."
+        },
+        {
+          "name": "agent",
+          "type": "string",
+          "required": true,
+          "description": "Lane (agent id)."
+        },
+        {
+          "name": "title",
+          "type": "string",
+          "required": true,
+          "description": "Task name."
+        },
+        {
+          "name": "status",
+          "type": "LaneTaskStatus",
+          "required": true,
+          "description": "Done, running, waiting on a person, or failed."
+        },
+        {
+          "name": "start",
+          "type": "number",
+          "required": true,
+          "description": "Start, in milliseconds."
+        },
+        {
+          "name": "end",
+          "type": "number",
+          "required": false,
+          "description": "End, in milliseconds; omit while it runs or waits."
+        },
+        {
+          "name": "handoff",
+          "type": "string",
+          "required": false,
+          "description": "Agent id that takes over when this task ends."
+        },
+        {
+          "name": "ask",
+          "type": "string",
+          "required": false,
+          "description": "Question for the person on a waiting task."
+        },
+        {
+          "name": "summary",
+          "type": "string",
+          "required": false,
+          "description": "What the task did, shown on open."
+        },
+        {
+          "name": "tools",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Tools it used."
+        }
+      ]
+    },
+    "LaneTaskStatus": {
+      "kind": "type",
+      "source": "src/ai/lanes-model.ts",
+      "props": []
     },
     "LayoutTag": {
       "kind": "type",
@@ -33868,6 +36095,11 @@
       "source": "src/motion/text/perspective-text-3d.tsx",
       "props": []
     },
+    "PieceKind": {
+      "kind": "type",
+      "source": "src/blocks/scheduled-runs/schedule-model.ts",
+      "props": []
+    },
     "PillValue": {
       "kind": "type",
       "source": "src/blocks/data-grid/columns.ts",
@@ -36720,6 +38952,101 @@
       "source": "src/lib/chart/format/quantity.ts",
       "props": []
     },
+    "QueueJob": {
+      "kind": "type",
+      "source": "src/blocks/agent-queue/queue-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "Stable key."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": "Job name."
+        },
+        {
+          "name": "kind",
+          "type": "string",
+          "required": true,
+          "description": "Kind of work, such as backfill, news or factor; picks the tint."
+        },
+        {
+          "name": "status",
+          "type": "QueueJobStatus",
+          "required": true,
+          "description": "Where the job is now."
+        },
+        {
+          "name": "priority",
+          "type": "'high' | 'normal'",
+          "required": false,
+          "description": "High-priority jobs go to the front of the queue."
+        },
+        {
+          "name": "enqueued",
+          "type": "number",
+          "required": true,
+          "description": "When it was put in the queue."
+        },
+        {
+          "name": "started",
+          "type": "number",
+          "required": false,
+          "description": "When its current attempt started."
+        },
+        {
+          "name": "ended",
+          "type": "number",
+          "required": false,
+          "description": "When it finished or failed."
+        },
+        {
+          "name": "progress",
+          "type": "number",
+          "required": false,
+          "description": "Progress of a running job, 0 to 1."
+        },
+        {
+          "name": "attempt",
+          "type": "number",
+          "required": false,
+          "description": "Attempt number, from 1."
+        },
+        {
+          "name": "maxAttempts",
+          "type": "number",
+          "required": false,
+          "description": "Most attempts allowed."
+        },
+        {
+          "name": "limitedUntil",
+          "type": "number",
+          "required": false,
+          "description": "A running job held by a rate limit until this time."
+        },
+        {
+          "name": "detail",
+          "type": "string",
+          "required": false,
+          "description": "Muted text (the symbol range, the source)."
+        },
+        {
+          "name": "error",
+          "type": "string",
+          "required": false,
+          "description": "Error text of a failed job."
+        }
+      ]
+    },
+    "QueueJobStatus": {
+      "kind": "type",
+      "source": "src/blocks/agent-queue/queue-model.ts",
+      "props": []
+    },
     "QuoteCard": {
       "kind": "component",
       "source": "src/quotes/quote-card.tsx",
@@ -38555,6 +40882,106 @@
           "type": "string",
           "required": false,
           "description": "Logo image URL; letters without it."
+        }
+      ]
+    },
+    "RecapAction": {
+      "kind": "type",
+      "source": "src/ai/agent-recap.tsx",
+      "props": []
+    },
+    "RecapEvent": {
+      "kind": "type",
+      "source": "src/ai/recap-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "Stable key."
+        },
+        {
+          "name": "time",
+          "type": "number",
+          "required": true,
+          "description": "When it happened, in milliseconds."
+        },
+        {
+          "name": "kind",
+          "type": "RecapKind",
+          "required": true,
+          "description": "Needs you, failed or done."
+        },
+        {
+          "name": "title",
+          "type": "string",
+          "required": true,
+          "description": "What happened."
+        },
+        {
+          "name": "detail",
+          "type": "string",
+          "required": false,
+          "description": "Muted second line."
+        },
+        {
+          "name": "count",
+          "type": "string",
+          "required": false,
+          "description": "A count shown on the card (「12 个品种」), written by the caller."
+        },
+        {
+          "name": "action",
+          "type": "string | null",
+          "required": false,
+          "description": "Label of the main action; null hides it; omit for the kind's default."
+        },
+        {
+          "name": "doneLabel",
+          "type": "string",
+          "required": false,
+          "description": "Tag shown after the main action is done (「已批准」)."
+        }
+      ]
+    },
+    "RecapKind": {
+      "kind": "type",
+      "source": "src/ai/recap-model.ts",
+      "props": []
+    },
+    "RecommendationOption": {
+      "kind": "type",
+      "source": "src/ai/smart-recommendation.tsx",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "Stable key."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "What to do."
+        },
+        {
+          "name": "reason",
+          "type": "string",
+          "required": false,
+          "description": "Why."
+        },
+        {
+          "name": "signal",
+          "type": "0 | 1 | 2 | 3",
+          "required": true,
+          "description": "Confidence from 0 to 3."
+        },
+        {
+          "name": "source",
+          "type": "string",
+          "required": false,
+          "description": "Where the suggestion came from (the model, the rule, the data)."
         }
       ]
     },
@@ -41469,6 +43896,265 @@
       "source": "src/blocks/portfolio-run-grid/portfolio-run-model.ts",
       "props": []
     },
+    "RunningNow": {
+      "kind": "component",
+      "source": "src/ai/running-now.tsx",
+      "props": [
+        {
+          "name": "tasks",
+          "type": "readonly RunningTask[]",
+          "required": true,
+          "description": "Live tasks, in a stable order."
+        },
+        {
+          "name": "onPause",
+          "type": "(task: RunningTask) => void",
+          "required": false,
+          "description": "Pauses a running task."
+        },
+        {
+          "name": "onResume",
+          "type": "(task: RunningTask) => void",
+          "required": false,
+          "description": "Resumes a paused task."
+        },
+        {
+          "name": "onOpen",
+          "type": "(task: RunningTask) => void",
+          "required": false,
+          "description": "Opens a task (row click, or the button of a task that needs you)."
+        },
+        {
+          "name": "onOpenAll",
+          "type": "() => void",
+          "required": false,
+          "description": "Shows the footer link."
+        },
+        {
+          "name": "defaultOpen",
+          "type": "boolean",
+          "required": false,
+          "default": "false",
+          "description": "Whether the list starts open when uncontrolled."
+        },
+        {
+          "name": "open",
+          "type": "boolean",
+          "required": false,
+          "description": "Controlled open state."
+        },
+        {
+          "name": "onOpenChange",
+          "type": "(open: boolean) => void",
+          "required": false,
+          "description": "Called when the list opens or closes."
+        },
+        {
+          "name": "align",
+          "type": "'start' | 'end'",
+          "required": false,
+          "default": "'end'",
+          "description": "Which edge of the pill the list lines up with."
+        },
+        {
+          "name": "labels",
+          "type": "RunningNowLabels",
+          "required": true,
+          "description": "Texts."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "RunningNowLabels": {
+      "kind": "type",
+      "source": "src/ai/running-now.tsx",
+      "props": [
+        {
+          "name": "summary",
+          "type": "(counts: Record<RunningTaskState, number>) => string",
+          "required": true,
+          "description": "Full summary on the pill and its accessible name (「3 个在跑 · 2 个要你」); the caller handles plurals."
+        },
+        {
+          "name": "short",
+          "type": "(counts: Record<RunningTaskState, number>) => string",
+          "required": true,
+          "description": "Numbers-only summary for very narrow pills."
+        },
+        {
+          "name": "list",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the list."
+        },
+        {
+          "name": "state",
+          "type": "Record<RunningTaskState, string>",
+          "required": true,
+          "description": "State words read on each row."
+        },
+        {
+          "name": "steps",
+          "type": "(done: number, total: number) => string",
+          "required": true,
+          "description": "Step count (「4 / 9」)."
+        },
+        {
+          "name": "pause",
+          "type": "(title: string) => string",
+          "required": true,
+          "description": "Icon button names, built with the task title."
+        },
+        {
+          "name": "resume",
+          "type": "(title: string) => string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "open",
+          "type": "(title: string) => string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "openAll",
+          "type": "string",
+          "required": true,
+          "description": "Footer link."
+        },
+        {
+          "name": "live",
+          "type": "(counts: Record<RunningTaskState, number>) => string",
+          "required": true,
+          "description": "Live announcement of tasks that need you or finished."
+        }
+      ]
+    },
+    "RunningNowProps": {
+      "kind": "type",
+      "source": "src/ai/running-now.tsx",
+      "props": [
+        {
+          "name": "tasks",
+          "type": "readonly RunningTask[]",
+          "required": true,
+          "description": "Live tasks, in a stable order."
+        },
+        {
+          "name": "onPause",
+          "type": "(task: RunningTask) => void",
+          "required": false,
+          "description": "Pauses a running task."
+        },
+        {
+          "name": "onResume",
+          "type": "(task: RunningTask) => void",
+          "required": false,
+          "description": "Resumes a paused task."
+        },
+        {
+          "name": "onOpen",
+          "type": "(task: RunningTask) => void",
+          "required": false,
+          "description": "Opens a task (row click, or the button of a task that needs you)."
+        },
+        {
+          "name": "onOpenAll",
+          "type": "() => void",
+          "required": false,
+          "description": "Shows the footer link."
+        },
+        {
+          "name": "defaultOpen",
+          "type": "boolean",
+          "required": false,
+          "description": "Whether the list starts open when uncontrolled."
+        },
+        {
+          "name": "open",
+          "type": "boolean",
+          "required": false,
+          "description": "Controlled open state."
+        },
+        {
+          "name": "onOpenChange",
+          "type": "(open: boolean) => void",
+          "required": false,
+          "description": "Called when the list opens or closes."
+        },
+        {
+          "name": "align",
+          "type": "'start' | 'end'",
+          "required": false,
+          "description": "Which edge of the pill the list lines up with."
+        },
+        {
+          "name": "labels",
+          "type": "RunningNowLabels",
+          "required": true,
+          "description": "Texts."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "RunningTask": {
+      "kind": "type",
+      "source": "src/ai/running-now.tsx",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "Stable key."
+        },
+        {
+          "name": "title",
+          "type": "string",
+          "required": true,
+          "description": "Task name."
+        },
+        {
+          "name": "step",
+          "type": "string",
+          "required": false,
+          "description": "Current step text."
+        },
+        {
+          "name": "done",
+          "type": "number",
+          "required": true,
+          "description": "Steps done."
+        },
+        {
+          "name": "total",
+          "type": "number",
+          "required": true,
+          "description": "Steps in all."
+        },
+        {
+          "name": "state",
+          "type": "RunningTaskState",
+          "required": true,
+          "description": "Running, paused, waiting on a person, or done."
+        }
+      ]
+    },
+    "RunningTaskState": {
+      "kind": "type",
+      "source": "src/ai/running-now.tsx",
+      "props": []
+    },
     "SavedView": {
       "kind": "type",
       "source": "src/lib/use-saved-views.ts",
@@ -41538,6 +44224,454 @@
           "type": "readonly ScatterPoint[]",
           "required": true,
           "description": ""
+        }
+      ]
+    },
+    "ScheduleMove": {
+      "kind": "type",
+      "source": "src/blocks/scheduled-runs/scheduled-runs.tsx",
+      "props": [
+        {
+          "name": "taskId",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "usage",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "from",
+          "type": "Slot | null",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "to",
+          "type": "Slot",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "SchedulePiece": {
+      "kind": "type",
+      "source": "src/blocks/scheduled-runs/schedule-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "Stable key of the card."
+        },
+        {
+          "name": "taskId",
+          "type": "string",
+          "required": true,
+          "description": "Task it belongs to."
+        },
+        {
+          "name": "usage",
+          "type": "number",
+          "required": true,
+          "description": "Quota the card uses."
+        },
+        {
+          "name": "slot",
+          "type": "Slot | null",
+          "required": true,
+          "description": "Where it sits; null while it waits in the stack."
+        },
+        {
+          "name": "kind",
+          "type": "PieceKind",
+          "required": true,
+          "description": "Booked, moved by hand, sorted in by auto mode, or waiting in the stack."
+        }
+      ]
+    },
+    "SchedulePin": {
+      "kind": "type",
+      "source": "src/blocks/scheduled-runs/schedule-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "Stable key of the piece."
+        },
+        {
+          "name": "taskId",
+          "type": "string",
+          "required": true,
+          "description": "Task it belongs to."
+        },
+        {
+          "name": "usage",
+          "type": "number",
+          "required": true,
+          "description": "Quota the piece uses."
+        },
+        {
+          "name": "slot",
+          "type": "Slot",
+          "required": true,
+          "description": "Where it was put."
+        }
+      ]
+    },
+    "ScheduleSlot": {
+      "kind": "type",
+      "source": "src/blocks/scheduled-runs/schedule-model.ts",
+      "props": [
+        {
+          "name": "day",
+          "type": "number",
+          "required": true,
+          "description": "Day column, from 0."
+        },
+        {
+          "name": "session",
+          "type": "number",
+          "required": true,
+          "description": "Session row, from 0."
+        }
+      ]
+    },
+    "ScheduledRuns": {
+      "kind": "component",
+      "source": "src/blocks/scheduled-runs/scheduled-runs.tsx",
+      "props": [
+        {
+          "name": "tasks",
+          "type": "readonly ScheduledTask[]",
+          "required": true,
+          "description": "Tasks in stack order; booked ones carry `at`."
+        },
+        {
+          "name": "days",
+          "type": "readonly string[]",
+          "required": true,
+          "description": "Day column names, left to right."
+        },
+        {
+          "name": "sessions",
+          "type": "readonly string[]",
+          "required": true,
+          "description": "Session row names, top to bottom (start times)."
+        },
+        {
+          "name": "now",
+          "type": "Slot",
+          "required": false,
+          "description": "Current session; earlier ones are past."
+        },
+        {
+          "name": "limit",
+          "type": "number",
+          "required": false,
+          "default": "100",
+          "description": "Quota per session, in the unit of task usage."
+        },
+        {
+          "name": "minPiece",
+          "type": "number",
+          "required": false,
+          "default": "15",
+          "description": "Smallest piece when auto mode splits a task."
+        },
+        {
+          "name": "maxPerSession",
+          "type": "number",
+          "required": false,
+          "default": "2",
+          "description": "Most cards in one session."
+        },
+        {
+          "name": "mode",
+          "type": "'auto' | 'manual'",
+          "required": false,
+          "description": "Controlled mode."
+        },
+        {
+          "name": "defaultMode",
+          "type": "'auto' | 'manual'",
+          "required": false,
+          "default": "'auto'",
+          "description": "Mode when uncontrolled."
+        },
+        {
+          "name": "onModeChange",
+          "type": "(mode: 'auto' | 'manual') => void",
+          "required": false,
+          "description": "Called when the mode switch changes."
+        },
+        {
+          "name": "onMove",
+          "type": "(move: ScheduleMove) => void",
+          "required": false,
+          "description": "Called after a card is dropped somewhere new; use it to save."
+        },
+        {
+          "name": "title",
+          "type": "string",
+          "required": true,
+          "description": "Heading."
+        },
+        {
+          "name": "note",
+          "type": "string",
+          "required": false,
+          "description": "Quiet note after the heading, such as the session length."
+        },
+        {
+          "name": "formatUsage",
+          "type": "(usage: number) => string",
+          "required": true,
+          "description": "How a usage is written (「35%」)."
+        },
+        {
+          "name": "labels",
+          "type": "ScheduledRunsLabels",
+          "required": true,
+          "description": "Texts."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "ScheduledRunsLabels": {
+      "kind": "type",
+      "source": "src/blocks/scheduled-runs/scheduled-runs.tsx",
+      "props": [
+        {
+          "name": "mode",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the mode switch, and its two options."
+        },
+        {
+          "name": "auto",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "manual",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "stack",
+          "type": "string",
+          "required": true,
+          "description": "Heading of the stack, and its text when empty."
+        },
+        {
+          "name": "stackEmpty",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "week",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the week."
+        },
+        {
+          "name": "hint",
+          "type": "string",
+          "required": true,
+          "description": "Card hint read after its name (「Enter 看详情，Space 拿起」)."
+        },
+        {
+          "name": "locked",
+          "type": "string",
+          "required": true,
+          "description": "Word on cards in past sessions."
+        },
+        {
+          "name": "piece",
+          "type": "(index: number, count: number) => string",
+          "required": true,
+          "description": "Piece mark on a split task (「1/2」)."
+        },
+        {
+          "name": "aimed",
+          "type": "(task: string, cell: string, room: boolean) => string",
+          "required": true,
+          "description": "Announcements while moving a card by keyboard or pointer."
+        },
+        {
+          "name": "dropped",
+          "type": "(task: string, cell: string) => string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "noRoom",
+          "type": "(task: string, cell: string) => string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "cancelled",
+          "type": "(task: string) => string",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "ScheduledRunsProps": {
+      "kind": "type",
+      "source": "src/blocks/scheduled-runs/scheduled-runs.tsx",
+      "props": [
+        {
+          "name": "tasks",
+          "type": "readonly ScheduledTask[]",
+          "required": true,
+          "description": "Tasks in stack order; booked ones carry `at`."
+        },
+        {
+          "name": "days",
+          "type": "readonly string[]",
+          "required": true,
+          "description": "Day column names, left to right."
+        },
+        {
+          "name": "sessions",
+          "type": "readonly string[]",
+          "required": true,
+          "description": "Session row names, top to bottom (start times)."
+        },
+        {
+          "name": "now",
+          "type": "Slot",
+          "required": false,
+          "description": "Current session; earlier ones are past."
+        },
+        {
+          "name": "limit",
+          "type": "number",
+          "required": false,
+          "description": "Quota per session, in the unit of task usage."
+        },
+        {
+          "name": "minPiece",
+          "type": "number",
+          "required": false,
+          "description": "Smallest piece when auto mode splits a task."
+        },
+        {
+          "name": "maxPerSession",
+          "type": "number",
+          "required": false,
+          "description": "Most cards in one session."
+        },
+        {
+          "name": "mode",
+          "type": "'auto' | 'manual'",
+          "required": false,
+          "description": "Controlled mode."
+        },
+        {
+          "name": "defaultMode",
+          "type": "'auto' | 'manual'",
+          "required": false,
+          "description": "Mode when uncontrolled."
+        },
+        {
+          "name": "onModeChange",
+          "type": "(mode: 'auto' | 'manual') => void",
+          "required": false,
+          "description": "Called when the mode switch changes."
+        },
+        {
+          "name": "onMove",
+          "type": "(move: ScheduleMove) => void",
+          "required": false,
+          "description": "Called after a card is dropped somewhere new; use it to save."
+        },
+        {
+          "name": "title",
+          "type": "string",
+          "required": true,
+          "description": "Heading."
+        },
+        {
+          "name": "note",
+          "type": "string",
+          "required": false,
+          "description": "Quiet note after the heading, such as the session length."
+        },
+        {
+          "name": "formatUsage",
+          "type": "(usage: number) => string",
+          "required": true,
+          "description": "How a usage is written (「35%」)."
+        },
+        {
+          "name": "labels",
+          "type": "ScheduledRunsLabels",
+          "required": true,
+          "description": "Texts."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "ScheduledTask": {
+      "kind": "type",
+      "source": "src/blocks/scheduled-runs/schedule-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "Stable key."
+        },
+        {
+          "name": "title",
+          "type": "string",
+          "required": true,
+          "description": "Task name."
+        },
+        {
+          "name": "usage",
+          "type": "number",
+          "required": true,
+          "description": "Quota the task uses, in the unit of the limit."
+        },
+        {
+          "name": "owner",
+          "type": "string",
+          "required": false,
+          "description": "Who runs it (an agent, a service); muted text on the card."
+        },
+        {
+          "name": "detail",
+          "type": "string",
+          "required": false,
+          "description": "Text shown when the card's details are open."
+        },
+        {
+          "name": "at",
+          "type": "Slot",
+          "required": false,
+          "description": "Booked place; omit to leave the task in the stack."
         }
       ]
     },
@@ -45042,6 +48176,145 @@
           "type": "string",
           "required": false,
           "description": ""
+        }
+      ]
+    },
+    "SmartRecommendation": {
+      "kind": "component",
+      "source": "src/ai/smart-recommendation.tsx",
+      "props": [
+        {
+          "name": "options",
+          "type": "readonly RecommendationOption[]",
+          "required": true,
+          "description": "Options; the first one is recommended."
+        },
+        {
+          "name": "onAccept",
+          "type": "(option: RecommendationOption) => void",
+          "required": false,
+          "description": "Called when the person accepts an option."
+        },
+        {
+          "name": "onUndo",
+          "type": "(option: RecommendationOption) => void",
+          "required": false,
+          "description": "Called when an accept is undone."
+        },
+        {
+          "name": "defaultOpen",
+          "type": "boolean",
+          "required": false,
+          "default": "true",
+          "description": "Whether the card starts open."
+        },
+        {
+          "name": "title",
+          "type": "ReactNode",
+          "required": true,
+          "description": "Heading (also the fold button)."
+        },
+        {
+          "name": "labels",
+          "type": "SmartRecommendationLabels",
+          "required": true,
+          "description": "Texts."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "SmartRecommendationLabels": {
+      "kind": "type",
+      "source": "src/ai/smart-recommendation.tsx",
+      "props": [
+        {
+          "name": "signal",
+          "type": "(signal: 0 | 1 | 2 | 3) => string",
+          "required": true,
+          "description": "Confidence in words, per level (「把握不大」…「很有把握」)."
+        },
+        {
+          "name": "recommended",
+          "type": "string",
+          "required": true,
+          "description": "Tag on the recommended option."
+        },
+        {
+          "name": "alternatives",
+          "type": "string",
+          "required": true,
+          "description": "Alternatives menu button."
+        },
+        {
+          "name": "accept",
+          "type": "string",
+          "required": true,
+          "description": "Accept and undo buttons, and the accepted line."
+        },
+        {
+          "name": "undo",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "accepted",
+          "type": "(label: string) => string",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "SmartRecommendationProps": {
+      "kind": "type",
+      "source": "src/ai/smart-recommendation.tsx",
+      "props": [
+        {
+          "name": "options",
+          "type": "readonly RecommendationOption[]",
+          "required": true,
+          "description": "Options; the first one is recommended."
+        },
+        {
+          "name": "onAccept",
+          "type": "(option: RecommendationOption) => void",
+          "required": false,
+          "description": "Called when the person accepts an option."
+        },
+        {
+          "name": "onUndo",
+          "type": "(option: RecommendationOption) => void",
+          "required": false,
+          "description": "Called when an accept is undone."
+        },
+        {
+          "name": "defaultOpen",
+          "type": "boolean",
+          "required": false,
+          "description": "Whether the card starts open."
+        },
+        {
+          "name": "title",
+          "type": "ReactNode",
+          "required": true,
+          "description": "Heading (also the fold button)."
+        },
+        {
+          "name": "labels",
+          "type": "SmartRecommendationLabels",
+          "required": true,
+          "description": "Texts."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
         }
       ]
     },
@@ -57983,6 +61256,11 @@
       "source": "src/blocks/data-grid/layout-model.ts",
       "props": []
     },
+    "agentTag": {
+      "kind": "function",
+      "source": "src/ai/lanes-model.ts",
+      "props": []
+    },
     "aggregateReturns": {
       "kind": "function",
       "source": "src/quant/period-returns-model.ts",
@@ -58170,6 +61448,72 @@
       "source": "src/quant/param-scatter-model.ts",
       "props": []
     },
+    "blockSpan": {
+      "kind": "function",
+      "source": "src/ai/lanes-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "Stable key."
+        },
+        {
+          "name": "agent",
+          "type": "string",
+          "required": true,
+          "description": "Lane (agent id)."
+        },
+        {
+          "name": "title",
+          "type": "string",
+          "required": true,
+          "description": "Task name."
+        },
+        {
+          "name": "status",
+          "type": "LaneTaskStatus",
+          "required": true,
+          "description": "Done, running, waiting on a person, or failed."
+        },
+        {
+          "name": "start",
+          "type": "number",
+          "required": true,
+          "description": "Start, in milliseconds."
+        },
+        {
+          "name": "end",
+          "type": "number",
+          "required": false,
+          "description": "End, in milliseconds; omit while it runs or waits."
+        },
+        {
+          "name": "handoff",
+          "type": "string",
+          "required": false,
+          "description": "Agent id that takes over when this task ends."
+        },
+        {
+          "name": "ask",
+          "type": "string",
+          "required": false,
+          "description": "Question for the person on a waiting task."
+        },
+        {
+          "name": "summary",
+          "type": "string",
+          "required": false,
+          "description": "What the task did, shown on open."
+        },
+        {
+          "name": "tools",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Tools it used."
+        }
+      ]
+    },
     "boardKindOf": {
       "kind": "function",
       "source": "src/cn/badge-model.ts",
@@ -58197,6 +61541,72 @@
       "kind": "function",
       "source": "src/primitives/pagination.tsx",
       "props": []
+    },
+    "buildSchedule": {
+      "kind": "function",
+      "source": "src/blocks/scheduled-runs/schedule-model.ts",
+      "props": [
+        {
+          "name": "tasks",
+          "type": "readonly ScheduledTask[]",
+          "required": true,
+          "description": "Tasks in stack order."
+        },
+        {
+          "name": "pins",
+          "type": "readonly SchedulePin[]",
+          "required": true,
+          "description": "Pieces moved by hand."
+        },
+        {
+          "name": "moved",
+          "type": "Readonly<Record<string, Slot>>",
+          "required": true,
+          "description": "Booked tasks moved by hand: task id → new place."
+        },
+        {
+          "name": "mode",
+          "type": "'auto' | 'manual'",
+          "required": true,
+          "description": "Auto sorts the stack into the week; manual leaves it."
+        },
+        {
+          "name": "days",
+          "type": "number",
+          "required": true,
+          "description": "Number of day columns."
+        },
+        {
+          "name": "sessions",
+          "type": "number",
+          "required": true,
+          "description": "Number of session rows."
+        },
+        {
+          "name": "limit",
+          "type": "number",
+          "required": true,
+          "description": "Quota per session."
+        },
+        {
+          "name": "minPiece",
+          "type": "number",
+          "required": true,
+          "description": "Smallest piece when a task is split."
+        },
+        {
+          "name": "maxPerSession",
+          "type": "number",
+          "required": true,
+          "description": "Most cards in one session."
+        },
+        {
+          "name": "now",
+          "type": "Slot",
+          "required": false,
+          "description": "Current session; sessions before it are past."
+        }
+      ]
     },
     "buttonVariants": {
       "kind": "function",
@@ -58243,6 +61653,78 @@
       "kind": "function",
       "source": "src/lib/copy-image.ts",
       "props": []
+    },
+    "canDrop": {
+      "kind": "function",
+      "source": "src/blocks/scheduled-runs/schedule-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "Stable key of the card."
+        },
+        {
+          "name": "taskId",
+          "type": "string",
+          "required": true,
+          "description": "Task it belongs to."
+        },
+        {
+          "name": "usage",
+          "type": "number",
+          "required": true,
+          "description": "Quota the card uses."
+        },
+        {
+          "name": "slot",
+          "type": "Slot | null",
+          "required": true,
+          "description": "Where it sits; null while it waits in the stack."
+        },
+        {
+          "name": "kind",
+          "type": "PieceKind",
+          "required": true,
+          "description": "Booked, moved by hand, sorted in by auto mode, or waiting in the stack."
+        },
+        {
+          "name": "day",
+          "type": "number",
+          "required": true,
+          "description": "Day column, from 0."
+        },
+        {
+          "name": "session",
+          "type": "number",
+          "required": true,
+          "description": "Session row, from 0."
+        },
+        {
+          "name": "limit",
+          "type": "number",
+          "required": true,
+          "description": "Quota per session."
+        },
+        {
+          "name": "maxPerSession",
+          "type": "number",
+          "required": true,
+          "description": "Most cards in one session."
+        },
+        {
+          "name": "sessions",
+          "type": "number",
+          "required": true,
+          "description": "Number of session rows."
+        },
+        {
+          "name": "now",
+          "type": "Slot",
+          "required": false,
+          "description": "Current session; sessions before it are past."
+        }
+      ]
     },
     "cancellable": {
       "kind": "function",
@@ -58295,6 +61777,11 @@
     "changedTail": {
       "kind": "function",
       "source": "src/quotes/watchlist-model.ts",
+      "props": []
+    },
+    "clampSignal": {
+      "kind": "function",
+      "source": "src/ai/smart-recommendation.tsx",
       "props": []
     },
     "clampSplitRatio": {
@@ -58715,6 +62202,11 @@
       "source": "src/lib/copy-image.ts",
       "props": []
     },
+    "costRows": {
+      "kind": "function",
+      "source": "src/blocks/cost-waterfall/cost-model.ts",
+      "props": []
+    },
     "countAttempts": {
       "kind": "function",
       "source": "src/quant/parallel-attempts-model.ts",
@@ -58762,6 +62254,11 @@
     "decimalsOfTick": {
       "kind": "function",
       "source": "src/lib/chart/format/price.ts",
+      "props": []
+    },
+    "depthSummary": {
+      "kind": "function",
+      "source": "src/blocks/agent-queue/queue-model.ts",
       "props": []
     },
     "detectPlatform": {
@@ -58880,6 +62377,21 @@
     "falloff": {
       "kind": "function",
       "source": "src/patterns/dock.tsx",
+      "props": []
+    },
+    "fanCounts": {
+      "kind": "function",
+      "source": "src/ai/fan-out-model.ts",
+      "props": []
+    },
+    "fanEta": {
+      "kind": "function",
+      "source": "src/ai/fan-out-model.ts",
+      "props": []
+    },
+    "fanProgress": {
+      "kind": "function",
+      "source": "src/ai/fan-out-model.ts",
       "props": []
     },
     "fillRatio": {
@@ -59275,6 +62787,11 @@
     "groupStations": {
       "kind": "function",
       "source": "src/cn/timeline-model.ts",
+      "props": []
+    },
+    "handoffLinks": {
+      "kind": "function",
+      "source": "src/ai/lanes-model.ts",
       "props": []
     },
     "histogram": {
@@ -59924,6 +63441,24 @@
       "source": "src/blocks/data-grid/row-order-model.ts",
       "props": []
     },
+    "moveSlot": {
+      "kind": "function",
+      "source": "src/blocks/scheduled-runs/schedule-model.ts",
+      "props": [
+        {
+          "name": "day",
+          "type": "number",
+          "required": true,
+          "description": "Day column, from 0."
+        },
+        {
+          "name": "session",
+          "type": "number",
+          "required": true,
+          "description": "Session row, from 0."
+        }
+      ]
+    },
     "moveSpan": {
       "kind": "function",
       "source": "src/blocks/trace-waterfall/trace-model.ts",
@@ -60110,6 +63645,11 @@
       "source": "src/cn/auction-model.ts",
       "props": []
     },
+    "priciestStep": {
+      "kind": "function",
+      "source": "src/blocks/cost-waterfall/cost-model.ts",
+      "props": []
+    },
     "projectPlan": {
       "kind": "function",
       "source": "src/ai/plan-actual-model.ts",
@@ -60159,6 +63699,16 @@
     "quantileRange": {
       "kind": "function",
       "source": "src/quant/quantile-model.ts",
+      "props": []
+    },
+    "queueDepth": {
+      "kind": "function",
+      "source": "src/blocks/agent-queue/queue-model.ts",
+      "props": []
+    },
+    "queueOrder": {
+      "kind": "function",
+      "source": "src/blocks/agent-queue/queue-model.ts",
       "props": []
     },
     "quoteTone": {
@@ -60261,6 +63811,26 @@
     "readRendering": {
       "kind": "function",
       "source": "src/patterns/rendering-settings.tsx",
+      "props": []
+    },
+    "recapBuckets": {
+      "kind": "function",
+      "source": "src/ai/recap-model.ts",
+      "props": []
+    },
+    "recapCounts": {
+      "kind": "function",
+      "source": "src/ai/recap-model.ts",
+      "props": []
+    },
+    "recapLanes": {
+      "kind": "function",
+      "source": "src/ai/recap-model.ts",
+      "props": []
+    },
+    "recapOrder": {
+      "kind": "function",
+      "source": "src/ai/recap-model.ts",
       "props": []
     },
     "recentCommands": {
@@ -60417,6 +63987,11 @@
           "description": "Change as a percentage (1.5 means 1.5%)."
         }
       ]
+    },
+    "runningCounts": {
+      "kind": "function",
+      "source": "src/ai/running-now.tsx",
+      "props": []
     },
     "scatterLayout": {
       "kind": "function",
@@ -60915,6 +64490,90 @@
       "kind": "function",
       "source": "src/cn/auction-model.ts",
       "props": []
+    },
+    "stepTotals": {
+      "kind": "function",
+      "source": "src/blocks/cost-waterfall/cost-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "Stable key."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": "Step name."
+        },
+        {
+          "name": "kind",
+          "type": "CostStepKind",
+          "required": true,
+          "description": "Sub-agent, model call or tool call."
+        },
+        {
+          "name": "status",
+          "type": "CostStepStatus",
+          "required": false,
+          "description": "Running, done or failed; defaults to done."
+        },
+        {
+          "name": "model",
+          "type": "string",
+          "required": false,
+          "description": "Model name of a model call, or any muted text."
+        },
+        {
+          "name": "cost",
+          "type": "number",
+          "required": false,
+          "description": "Cost of the step itself; sub-agents add their children on top."
+        },
+        {
+          "name": "tokensIn",
+          "type": "number",
+          "required": false,
+          "description": "Prompt (input) tokens."
+        },
+        {
+          "name": "tokensOut",
+          "type": "number",
+          "required": false,
+          "description": "Completion (output) tokens."
+        },
+        {
+          "name": "duration",
+          "type": "number",
+          "required": false,
+          "description": "Duration in milliseconds; a sub-agent without one sums its children."
+        },
+        {
+          "name": "input",
+          "type": "string",
+          "required": false,
+          "description": "Prompt, task or tool input shown in the details."
+        },
+        {
+          "name": "output",
+          "type": "string",
+          "required": false,
+          "description": "Response, result or tool output shown in the details."
+        },
+        {
+          "name": "error",
+          "type": "string",
+          "required": false,
+          "description": "Error text of a failed step."
+        },
+        {
+          "name": "children",
+          "type": "readonly CostStep[]",
+          "required": false,
+          "description": "Steps of a sub-agent."
+        }
+      ]
     },
     "streakLevel": {
       "kind": "function",
@@ -61942,6 +65601,11 @@
     "wingFields": {
       "kind": "function",
       "source": "src/blocks/options-chain/options-model.ts",
+      "props": []
+    },
+    "workerSlots": {
+      "kind": "function",
+      "source": "src/blocks/agent-queue/queue-model.ts",
       "props": []
     },
     "wrapText": {

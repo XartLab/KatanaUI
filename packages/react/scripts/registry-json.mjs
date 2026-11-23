@@ -324,6 +324,9 @@ function collectItems() {
       'trace-waterfall',
       'fallback-chain',
       'rate-limit-planner',
+      'scheduled-runs',
+      'agent-queue',
+      'cost-waterfall',
     ])
       add(
         dir,

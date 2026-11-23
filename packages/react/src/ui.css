@@ -91,6 +91,14 @@
 @import './theme/fallback-chain.css';
 @import './theme/rate-limit-planner.css';
 @import './theme/plan-vs-actual.css';
+@import './theme/scheduled-runs.css';
+@import './theme/agent-queue.css';
+@import './theme/cost-waterfall.css';
+@import './theme/agent-recap.css';
+@import './theme/running-now.css';
+@import './theme/agent-lanes.css';
+@import './theme/fan-out-grid.css';
+@import './theme/decision-tree.css';
 @import './theme/uptime-bars.css';
 @import './theme/range-histogram-slider.css';
 @import './theme/ridgeline.css';

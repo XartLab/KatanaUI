@@ -304,6 +304,18 @@ import {
 } from './pages/affect-quant.tsx'
 import { FallbackChainDemo, PlanVsActualDemo, RateLimitPlannerDemo, TraceWaterfallDemo } from './pages/affect-data.tsx'
 import {
+  AgentLanesDemo,
+  AgentQueueDemo,
+  AgentRecapDemo,
+  AwaySummaryDemo,
+  CostWaterfallDemo,
+  DecisionTreeDemo,
+  FanOutGridDemo,
+  RunningNowDemo,
+  ScheduledRunsDemo,
+  SmartRecommendationDemo,
+} from './pages/affect-agent.tsx'
+import {
   AccountEquityDemo,
   FundingRateDemo,
   OptionsChainDemo,
@@ -482,6 +494,16 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   'fallback-chain': FallbackChainDemo,
   'rate-limit-planner': RateLimitPlannerDemo,
   'plan-vs-actual': PlanVsActualDemo,
+  'scheduled-runs': ScheduledRunsDemo,
+  'agent-queue': AgentQueueDemo,
+  'cost-waterfall': CostWaterfallDemo,
+  'agent-recap': AgentRecapDemo,
+  'away-summary': AwaySummaryDemo,
+  'running-now': RunningNowDemo,
+  'agent-lanes': AgentLanesDemo,
+  'fan-out-grid': FanOutGridDemo,
+  'smart-recommendation': SmartRecommendationDemo,
+  'decision-tree': DecisionTreeDemo,
   'flow-sankey': FlowSankeyDemo,
   'vintage-series': VintageSeriesDemo,
   'system-monitor': SystemMonitorDemo,

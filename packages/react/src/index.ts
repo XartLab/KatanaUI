@@ -605,6 +605,45 @@ export {
   type StepProjection,
   type StepState,
 } from './ai/plan-actual-model.ts'
+// 参照 affectUI 补的第二批 Agent 件（KATANAview #1908，实现原创）：离开期间回顾与摘要、正在跑、多 Agent 泳道、分发网格、建议卡、决策树。
+export { AgentRecap, type AgentRecapLabels, type AgentRecapProps, type RecapAction } from './ai/agent-recap.tsx'
+export { AwaySummary, type AwaySummaryLabels, type AwaySummaryProps } from './ai/away-summary.tsx'
+export { recapBuckets, recapCounts, recapLanes, recapOrder, type RecapEvent, type RecapKind } from './ai/recap-model.ts'
+export {
+  RunningNow,
+  runningCounts,
+  type RunningNowLabels,
+  type RunningNowProps,
+  type RunningTask,
+  type RunningTaskState,
+} from './ai/running-now.tsx'
+export { AgentLanes, type AgentLanesLabels, type AgentLanesProps } from './ai/agent-lanes.tsx'
+export {
+  agentTag,
+  blockSpan,
+  handoffLinks,
+  type LaneAgent,
+  type LaneTask,
+  type LaneTaskStatus,
+} from './ai/lanes-model.ts'
+export { FanOutGrid, type FanOutGridLabels, type FanOutGridProps } from './ai/fan-out-grid.tsx'
+export { fanCounts, fanEta, fanProgress, type FanTask, type FanTaskStatus } from './ai/fan-out-model.ts'
+export {
+  SmartRecommendation,
+  clampSignal,
+  type RecommendationOption,
+  type SmartRecommendationLabels,
+  type SmartRecommendationProps,
+} from './ai/smart-recommendation.tsx'
+export {
+  DecisionTree,
+  type Decision,
+  type DecisionChoice,
+  type DecisionEffect,
+  type DecisionOption,
+  type DecisionTreeLabels,
+  type DecisionTreeProps,
+} from './ai/decision-tree.tsx'
 export {
   Markdown,
   docHeadings,
