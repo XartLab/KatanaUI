@@ -18978,6 +18978,30 @@
           "type": "string",
           "required": false,
           "description": "Label that rests inside the box like a placeholder and floats into a 14px band above it on focus or when there is a value; the placeholder prop is ignored."
+        },
+        {
+          "name": "caption",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Label inside the box on the left (a string becomes a real label for the input; a node, such as a select, is rendered as is and needs its own accessible name)."
+        },
+        {
+          "name": "unit",
+          "type": "string",
+          "required": false,
+          "description": "Unit inside the box on the right, such as USDT or ×."
+        },
+        {
+          "name": "align",
+          "type": "'start' | 'end'",
+          "required": false,
+          "description": "Text alignment of the value; with caption or unit the value is usually `end`, right next to the unit."
+        },
+        {
+          "name": "wrapperClassName",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the outer box when caption or unit is given (the box height, for example); `className` always goes to the input."
         }
       ]
     },
@@ -44540,6 +44564,19 @@
           "description": "Old name of size: 'default' is md, 'sm' is sm."
         },
         {
+          "name": "fullWidth",
+          "type": "boolean",
+          "required": false,
+          "description": "Stretch the group to the full width and give every item an equal share."
+        },
+        {
+          "name": "split",
+          "type": "boolean",
+          "required": false,
+          "default": "false",
+          "description": "Separate buttons, each with its own border and a small gap, instead of one shared container; the selected one is filled (no sliding pill)."
+        },
+        {
           "name": "pillClassName",
           "type": "string",
           "required": false,
@@ -44574,6 +44611,12 @@
           "type": "string",
           "required": true,
           "description": "The value of this item."
+        },
+        {
+          "name": "tone",
+          "type": "'up' | 'down'",
+          "required": false,
+          "description": "Fill colour of the selected item in a `split` group: up (--pnl-up) or down (--pnl-down); follows the theme's red-up / green-down setting."
         }
       ]
     },

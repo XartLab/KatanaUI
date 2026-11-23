@@ -7915,9 +7915,9 @@
       "description": "OrderTicket 与 PositionCalculator 共用的小件：买卖切换、带标签与单位的数字框、读数行、数字格式。",
       "registryDependencies": [
         "@katana/cn",
-        "@katana/focus",
         "@katana/input",
-        "@katana/sizing-model"
+        "@katana/sizing-model",
+        "@katana/toggle-group"
       ],
       "files": [
         {
