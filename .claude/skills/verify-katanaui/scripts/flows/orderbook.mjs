@@ -127,7 +127,7 @@ export default {
       await expect(tip).toHaveCount(0)
       await plot.focus()
       await page.keyboard.press('ArrowRight')
-      await expect(readout).toHaveText(`卖盘 100.01 · 累计量 ${bestAskTotal} · 距中间价 +0.00%`)
+      await expect(readout).toHaveText(`卖盘 100.01 · 累计量 ${bestAskTotal} · 距中间价 0.00%`)
       await expect(tip).toBeVisible()
       const right = await readout.innerText()
       await page.keyboard.press('ArrowLeft')
