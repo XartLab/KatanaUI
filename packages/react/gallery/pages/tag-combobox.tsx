@@ -70,6 +70,8 @@ const STRATEGIES: readonly TagComboboxOption[] = [
 
 export function TagComboboxDemo() {
   const [reviewers, setReviewers] = useState<string[]>(['aisha-khan', 'elena-petrova'])
+  const [submits, setSubmits] = useState(0)
+  const [openCalls, setOpenCalls] = useState<string[]>([])
   return (
     <>
       <Row name="头像与角色">
@@ -97,6 +99,27 @@ export function TagComboboxDemo() {
             labels={{ remove: (name) => `移除 ${name}`, empty: '没有匹配的类型' }}
           />
         </div>
+      </Row>
+      <Row name="放在表单里">
+        {/* 列表开着时 Enter 不提交外面的表单（没有行可选、正选着标签也一样）；列表关着 Enter 照常提交。onOpenChange 每次开关只收到一次。 */}
+        <form
+          style={{ width: 280 }}
+          onSubmit={(event) => {
+            event.preventDefault()
+            setSubmits((count) => count + 1)
+          }}
+        >
+          <TagCombobox
+            label="表单里的策略"
+            options={STRATEGIES}
+            defaultValue={['momentum']}
+            placeholder="选策略类型"
+            labels={{ remove: (name) => `移除 ${name}`, empty: '没有匹配的类型' }}
+            onOpenChange={(open) => setOpenCalls((calls) => [...calls, open ? '开' : '关'])}
+          />
+        </form>
+        <output data-testid="tag-combobox-submits">提交 {submits} 次</output>
+        <output data-testid="tag-combobox-open-calls">{openCalls.join('') || '无'}</output>
       </Row>
       <Row name="禁用">
         <div style={{ width: 280 }}>

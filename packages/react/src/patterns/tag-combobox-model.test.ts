@@ -112,11 +112,11 @@ describe('tagComboboxKeyAction', () => {
     expect(act('ArrowDown', { hasRows: false })).toBeNull()
   })
 
-  it('Enter：开着且有行才切换；选中着标签时不切换', () => {
+  it('Enter：开着且有行才切换；选中着标签或没有行时不切换，但开着就吞掉（不提交表单）；关着交给浏览器', () => {
     expect(act('Enter')).toEqual({ type: 'toggle' })
     expect(act('Enter', { open: false })).toBeNull()
-    expect(act('Enter', { hasRows: false })).toBeNull()
-    expect(act('Enter', { picked: 1 })).toBeNull()
+    expect(act('Enter', { hasRows: false })).toEqual({ type: 'swallow' })
+    expect(act('Enter', { picked: 1 })).toEqual({ type: 'swallow' })
   })
 
   it('Esc：先收列表，再取消标签选中', () => {

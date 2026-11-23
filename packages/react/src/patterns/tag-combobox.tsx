@@ -140,6 +140,7 @@ export function TagCombobox({
   const listRef = useRef<HTMLDivElement>(null)
   // 只有键盘移高亮才把行滚进视野；鼠标划过的行已经在眼前，再滚会抖。
   const scrollToActive = useRef(false)
+  const openRef = useRef(defaultOpen)
 
   const ids = value ?? internal
   const byId = useMemo(() => new Map(options.map((option) => [option.id, option])), [options])
@@ -159,8 +160,10 @@ export function TagCombobox({
   const say = (message: string | undefined) => {
     if (message) setNotice((previous) => (previous === message ? `${message} ` : message))
   }
+  // 去重比较 ref，不比较闭包里的 open：同一次事件里调两次 setOpen(false) 时闭包里的 open 都还是 true，onOpenChange 会收到两次。
   const setOpen = (next: boolean) => {
-    if (next === open) return
+    if (next === openRef.current) return
+    openRef.current = next
     setOpenState(next)
     onOpenChange?.(next)
   }
@@ -174,7 +177,8 @@ export function TagCombobox({
     if (!option) return
     const next = toggleId(ids, optionId)
     update(next)
-    // 选或取消后输入清空、列表不收；高亮留在这一行。
+    // 选或取消后输入清空、列表不收；高亮留在这一行，并滚进视野（过滤后的列表恢复成全量，这一行可能在可见区外）。
+    scrollToActive.current = true
     setDraft('')
     setPickedId(null)
     setActiveState(optionId)
@@ -195,8 +199,9 @@ export function TagCombobox({
   }
 
   const onKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
-    // 输入法组字时的 Enter、方向键是选字，不是我们的。
-    if (event.nativeEvent.isComposing) return
+    // 输入法组字时的 Enter、方向键是选字，不是我们的。Safari 先发 compositionend 再发 keydown，那时 isComposing 已是 false，
+    // 要再判 keyCode 229（仓库里别的件、cmdk 都这么判），不然拼音上屏的那下 Enter 会顺带切换一行、Backspace 会选中标签。
+    if (event.nativeEvent.isComposing || event.keyCode === 229) return
     const action = tagComboboxKeyAction(event.key, {
       open,
       hasRows: rows.length > 0,
@@ -227,6 +232,8 @@ export function TagCombobox({
       case 'unpick':
         setPickedId(null)
         break
+      case 'swallow':
+        break
       case 'remove':
         removeTag(action.index)
         break
@@ -243,7 +250,8 @@ export function TagCombobox({
     if (row.offsetTop < list.scrollTop) list.scrollTop = row.offsetTop
     else if (row.offsetTop + row.offsetHeight > list.scrollTop + list.clientHeight)
       list.scrollTop = row.offsetTop + row.offsetHeight - list.clientHeight
-  }, [open, activeId])
+    // rows 在依赖里：过滤词清空、列表变全时高亮 id 没变，但这一行的位置变了，要重新滚。
+  }, [open, activeId, rows])
 
   // 点字段里除输入框与按钮以外的地方：焦点给输入框并开列表（按下时就接管，免得焦点掉到 body 上）。
   const onFieldMouseDown = (event: MouseEvent<HTMLElement>) => {
@@ -353,13 +361,18 @@ export function TagCombobox({
         </PopoverAnchor>
         <PopoverContent
           // Radix 默认给内容 role=dialog，但没有名字（axe aria-dialog-name）；这里它只是 listbox 的容器，不是对话框。
-          role="presentation"
+          // 不用 presentation：Radix 的 FocusScope 给内容加了 tabIndex=-1，能聚焦的元素不认 presentation（axe presentation-role-conflict）；group 不要求名字。
+          role="group"
           align="start"
           sideOffset={4}
           collisionPadding={8}
           // 焦点一直在输入框：打开不抢、关上不还给别处；点到字段本身不算「点外面」。
           onOpenAutoFocus={(event) => event.preventDefault()}
           onCloseAutoFocus={(event) => event.preventDefault()}
+          // Esc 只走输入框自己的逻辑（先收列表、再取消标签选中）：Radix 在 document 捕获阶段先接到 Esc，不拦的话 onOpenChange(false) 会被调两次。
+          onEscapeKeyDown={(event) => event.preventDefault()}
+          // 整块弹层按下都不抢焦点（行之间、列表内边距、没有匹配的提示都点得到 Content，它有 tabIndex=-1）；行的点击照常。
+          onMouseDown={(event) => event.preventDefault()}
           onInteractOutside={(event) => {
             if (fieldRef.current?.contains(event.target as Node)) event.preventDefault()
           }}
@@ -389,9 +402,11 @@ export function TagCombobox({
                     data-active={option.id === activeId ? '' : undefined}
                     data-checked={selected ? '' : undefined}
                     className="k-tagcb-option"
-                    // 按下不抢焦点；点一下切换这一项。划过的行成为高亮（用 mousemove 不用 mouseenter：列表滚动时指针没动，不该跟着变）。
-                    onMouseDown={(event) => event.preventDefault()}
-                    onMouseMove={() => option.id !== activeId && setActiveState(option.id)}
+                    // 点一下切换这一项（按下不抢焦点由整块弹层的 onMouseDown 管）。划过的行成为高亮（用 mousemove 不用 mouseenter：列表滚动时指针没动，不该跟着变）。
+                    onMouseMove={() => {
+                      scrollToActive.current = false
+                      if (option.id !== activeId) setActiveState(option.id)
+                    }}
                     onClick={() => toggle(option.id)}
                   >
                     {option.prefix ? (

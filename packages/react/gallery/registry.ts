@@ -2343,7 +2343,7 @@ export const PAGES: readonly DocPage[] = [
       { part: 'ComboboxContent', note: '其余属性透传给 Radix Popover.Content。宽跟触发器一样（最窄 220）。' },
       {
         part: 'ComboboxItem',
-        note: '同 CommandItem，另加三个可选属性：selected 画勾；prefix 是文字前的节点（头像、图标，纯装饰，读屏不读）；description 是文字下的第二行说明（带它时行自己长高，不带还是 30 高）。要按说明搜，把它也放进 keywords。',
+        note: '同 CommandItem，另加三个可选属性：selected 画勾；prefix 是文字前的节点（头像、图标，纯装饰，读屏不读）；description 是文字下的第二行说明（带它时行自己长高，不带还是 30 高）。带 prefix 或 description 时 value 默认取主文字（children 是字符串时），说明不进搜索、onSelect 收到的也是主文字；要按说明搜就把它放进 keywords，children 不是字符串时一定要自己传 value。',
       },
       {
         part: 'ComboboxTrigger / ComboboxInput / ComboboxList / ComboboxEmpty / ComboboxGroup',

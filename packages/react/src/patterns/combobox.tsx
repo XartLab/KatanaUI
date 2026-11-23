@@ -12,6 +12,7 @@ import { SelectArrow, selectTriggerVariants } from '../primitives/select.tsx'
 // 读屏与测试按 ARIA 的 combobox 认它：触发器 role=combobox（aria-expanded），弹层里 listbox，行 option；option 的 aria-selected 是 cmdk 的「当前高亮」，不是「已选」，
 // 已选看 data-checked（调用方要读屏知道已选，就在行的文字里写上）。过滤用行的 value 与 keywords 模糊匹配；自己排名的传 commandProps={{ shouldFilter: false }}。
 // 行可选带两个槽（#193）：prefix（文字前的头像、图标，纯装饰）与 description（文字下的第二行说明）；都不传就跟以前一样。
+// 带槽时 value 默认取主文字（字符串时），说明不进搜索，要搜就放 keywords；主文字不是字符串时自己传 value。
 // 要在输入框里带标签的多选，用 TagCombobox（patterns/tag-combobox.tsx）。
 // 文案（占位、没有结果）都由调用方传，包里不写字。
 function Combobox({ ...props }: ComponentProps<typeof Popover>) {
@@ -78,6 +79,7 @@ function ComboboxItem({
   description,
   className,
   children,
+  value,
   ...props
 }: Omit<ComponentProps<typeof CommandItem>, 'prefix'> & {
   /** Selected: draws a check mark on the left and sets data-checked. */
@@ -93,15 +95,19 @@ function ComboboxItem({
    */
   description?: ReactNode
 }) {
+  // cmdk 在没传 value 时用行的 textContent 当 value：带了说明或前缀，value 就成了「主文字 + 说明（+ 前缀里的字）」的拼接串，
+  // 说明会被搜到、onSelect 也收到拼接串（#198 审查）。所以带槽、没传 value、主文字是字符串时，用主文字当 value；主文字不是字符串时调用方要自己传 value。
+  const rowValue = value ?? ((prefix || description) && typeof children === 'string' ? children : undefined)
   return (
     <CommandItem
       data-slot="combobox-item"
+      value={rowValue}
       data-checked={selected ? '' : undefined}
       className={cn(
         'data-[checked]:font-medium data-[checked]:text-(color:--k-content-primary-foreground)',
         // 带第二行说明时行自己长高（不然 30 高放不下两行）；不带就还是 30 高，跟以前一样。
-        // Graphite 的 .k-pop-item 规则（theme/graphite.css）把高写死 32、竖向内距 0，选择器比工具类重，所以这里用 ! 压过它。
-        description ? 'h-auto! min-h-[30px] py-1.5!' : undefined,
+        // Graphite 的 .k-pop-item 规则（theme/graphite.css）把高写死 32、竖向内距 0；带说明的行在那个文件里用 :has() 放开，这里不用 ! 去压。
+        description ? 'h-auto min-h-[30px] py-1.5' : undefined,
         className,
       )}
       {...props}

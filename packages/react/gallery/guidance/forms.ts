@@ -286,6 +286,7 @@ const forms: GuidanceMap = {
       '行的 aria-selected 只表示高亮；已选状态用 selected，画勾并写 data-checked。',
       '无匹配时 ComboboxEmpty 的文字会被读出。',
       'prefix 对读屏隐藏（纯装饰），名字要写在行的文字里；description 是行文字的一部分，会跟着读出。',
+      '带 prefix 或 description 时 value 默认取主文字（children 是字符串），说明不被搜到；要搜说明放 keywords；children 不是字符串时一定要传 value。',
     ],
   },
   field: {

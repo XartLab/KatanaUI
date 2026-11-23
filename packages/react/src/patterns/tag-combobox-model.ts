@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // TagCombobox 的纯逻辑：过滤与命中位置（大小写、重音不分，空格分开的几个词都要命中）、高亮项怎么走、键盘在「标签 + 输入框 + 列表」之间怎么走。
 // 键盘规矩（交互参照 Jamie Merrill 的 Multi select combobox，2026-11-24 逐帧看，只借交互）：
-//   ↑ ↓ 在列表里移高亮（首尾相接），列表关着时开；Enter 切换高亮行；Esc 先收列表、再取消标签选中；
+//   ↑ ↓ 在列表里移高亮（首尾相接），列表关着时开；Enter 切换高亮行（列表开着时 Enter 不会落空去提交表单）；Esc 先收列表、再取消标签选中；
 //   输入为空时 Backspace：第一次选中最后一个标签，第二次删掉它；← → 在标签间移，→ 过了最后一个回到输入框；Delete 与 Backspace 删选中的标签。
 
 /** 命中区间：半开 [start, end)，下标按原文（不是折叠后的文字）。 */
@@ -132,6 +132,8 @@ export type TagComboboxKeyAction =
   | { type: 'pick'; index: number }
   | { type: 'unpick' }
   | { type: 'remove'; index: number }
+  /** Do nothing, but keep the browser from acting on the key (Enter must not submit the form around the field while the list is open). */
+  | { type: 'swallow' }
 
 /** 一个按键该做什么；返回 null 表示不管（交给浏览器：打字、移光标、Tab、表单的 Enter）。 */
 export function tagComboboxKeyAction(key: string, context: TagComboboxKeyContext): TagComboboxKeyAction | null {
@@ -142,7 +144,9 @@ export function tagComboboxKeyAction(key: string, context: TagComboboxKeyContext
       if (!open) return { type: 'open' }
       return hasRows ? { type: 'move', delta: key === 'ArrowDown' ? 1 : -1 } : null
     case 'Enter':
-      return open && hasRows && picked === null ? { type: 'toggle' } : null
+      // 列表开着，Enter 一律归这个件：没有行可切、或正选着标签时也不让它提交外面的表单；列表关着才交给浏览器。
+      if (!open) return null
+      return hasRows && picked === null ? { type: 'toggle' } : { type: 'swallow' }
     case 'Escape':
       if (open) return { type: 'close' }
       return picked !== null ? { type: 'unpick' } : null

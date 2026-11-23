@@ -171,8 +171,102 @@ test('TagCombobox（#/tag-combobox）：键盘 ↓ Enter 选、Esc 收，高亮�
   await expect(field).toBeFocused()
 })
 
+test('TagCombobox（#/tag-combobox）：输入法上屏的 Enter 与 Backspace（keyCode 229，isComposing 已为 false）不切换行、不选标签', async ({
+  page,
+}) => {
+  const { field, tags } = await open(page)
+  await field.click()
+  await expect(tags).toHaveCount(2)
+  // Safari：compositionend 先于 keydown，keydown 里 isComposing 是 false，只剩 keyCode 229。
+  await field.evaluate((input) => {
+    for (const key of ['Enter', 'Backspace'])
+      input.dispatchEvent(new KeyboardEvent('keydown', { key, keyCode: 229, bubbles: true, cancelable: true }))
+  })
+  await expect(tags).toHaveCount(2)
+  await expect(tags.last()).not.toHaveAttribute('data-picked', '')
+  await expect(option(page, 'Aisha Khan')).toHaveAttribute('aria-selected', 'true')
+})
+
+test('TagCombobox（#/tag-combobox）：点列表的空白处（内边距、没有匹配的提示）焦点不离开输入框，键盘照常管用', async ({
+  page,
+}) => {
+  const { field, tags } = await open(page)
+  await field.click()
+  const b = (await listbox(page).boundingBox())!
+  await page.mouse.click(b.x + 2, b.y + 2)
+  await expect(field).toBeFocused()
+  await expect(field).toHaveAttribute('aria-expanded', 'true')
+  await page.keyboard.press('ArrowDown')
+  await page.keyboard.press('Enter')
+  await expect(tags).toHaveCount(3)
+  // 没有匹配时点那句提示。
+  await field.fill('zzzz')
+  await page.getByRole('status').filter({ hasText: '没有匹配的人' }).click()
+  await expect(field).toBeFocused()
+  await page.keyboard.press('Escape')
+  await expect(field).toHaveAttribute('aria-expanded', 'false')
+})
+
+test('TagCombobox（#/tag-combobox）：过滤后按 Enter 选中靠后的一项，输入清空、列表变全，高亮行滚进视野', async ({
+  page,
+}) => {
+  const { field } = await open(page)
+  await field.click()
+  await field.pressSequentially('Jonas')
+  await page.keyboard.press('Enter')
+  await expect(field).toHaveValue('')
+  await expect(option(page, 'Jonas Weber')).toHaveAttribute('aria-selected', 'true')
+  await expect(option(page, 'Jonas Weber')).toHaveAttribute('data-active', '')
+  await expect
+    .poll(() =>
+      page.evaluate(() => {
+        const list = document.querySelector('[role="listbox"]')!
+        const row = list.querySelector('[data-active]')!.getBoundingClientRect()
+        const box = list.getBoundingClientRect()
+        return row.top >= box.top - 1 && row.bottom <= box.bottom + 1
+      }),
+    )
+    .toBe(true)
+})
+
+test('TagCombobox（#/tag-combobox）：放在 form 里，列表开着 Enter 不提交（没有匹配、正选着标签也一样），关着照常提交；Esc 只回调一次', async ({
+  page,
+}) => {
+  const { area } = await open(page)
+  const field = area.getByRole('combobox', { name: '表单里的策略', exact: true })
+  const submits = area.getByTestId('tag-combobox-submits')
+  const calls = area.getByTestId('tag-combobox-open-calls')
+  await expect(submits).toHaveText('提交 0 次')
+  await field.click()
+  await expect(field).toHaveAttribute('aria-expanded', 'true')
+  // 没有匹配：Enter 不提交。
+  await field.pressSequentially('zzzz')
+  await page.keyboard.press('Enter')
+  await expect(submits).toHaveText('提交 0 次')
+  await field.fill('')
+  // 正选着标签：Enter 不提交，标签也不删。
+  await page.keyboard.press('Backspace')
+  await expect(area.locator('form [data-tag="momentum"]')).toHaveAttribute('data-picked', '')
+  await page.keyboard.press('Enter')
+  await expect(submits).toHaveText('提交 0 次')
+  await expect(area.locator('form [data-tag="momentum"]')).toHaveCount(1)
+  // 有行可选：Enter 切换，也不提交。
+  await page.keyboard.press('ArrowRight')
+  await page.keyboard.press('Enter')
+  await expect(submits).toHaveText('提交 0 次')
+  // Esc 收列表：onOpenChange 只收到一次 false（前面只开过一次）。
+  await page.keyboard.press('Escape')
+  await expect(field).toHaveAttribute('aria-expanded', 'false')
+  await expect(calls).toHaveText('开关')
+  // 列表关着：Enter 交给浏览器，表单提交。
+  await page.keyboard.press('Enter')
+  await expect(submits).toHaveText('提交 1 次')
+})
+
 for (const theme of ['graphite', 'console'] as const) {
-  test(`TagCombobox（#/tag-combobox）6：列表打开、有高亮行与已选行时 axe 无违规（${theme}）`, async ({ browser }) => {
+  test(`TagCombobox（#/tag-combobox）6：列表打开、有高亮行与已选行时 axe（含 best-practice）无违规（${theme}）`, async ({
+    browser,
+  }) => {
     const context = await browser.newContext({ viewport: { width: 1100, height: 1500 } })
     const page = await context.newPage()
     const { field } = await open(page, theme)
@@ -189,7 +283,7 @@ for (const theme of ['graphite', 'console'] as const) {
       ),
     )
     const result = await new AxeBuilder({ page })
-      .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
+      .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'best-practice'])
       .include('[data-gallery="tag-combobox"]')
       .include('[data-slot="popover-content"]')
       .analyze()
