@@ -143,7 +143,11 @@ function AmendField({ order, ctx }: { order: Order; ctx: Context }) {
         onBlur={() => ctx.stopAmend()}
         onKeyDown={(event) => {
           // 输入法组字时的 Enter 是选字、Esc 是取消候选词，都不是改单的提交与取消；Safari 上屏那一下 isComposing 已是 false、keyCode 仍是 229，两个都要判。
-          if (event.nativeEvent.isComposing || event.keyCode === 229) return
+          if (event.nativeEvent.isComposing || event.keyCode === 229) {
+            // 组字时的 Esc 也不外传（与白板便签一致）：别让外层的「Esc 关浮层」把候选词与整张表一起收了。
+            if (event.key === 'Escape') event.stopPropagation()
+            return
+          }
           if (event.key === 'Escape') {
             event.preventDefault()
             event.stopPropagation()

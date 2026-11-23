@@ -395,6 +395,7 @@ const forms: GuidanceMap = {
       'error 状态设 aria-invalid；warning 只换边色，读屏不报无效。',
       '− / + 按钮的读屏名由调用方传 labels（decrease、increase）。',
       '只读、禁用时方向键与按钮都不改值。',
+      '输入法组字时（isComposing 或 keyCode 229）↑ ↓ 不改价，这些键也不传给调用方的 onKeyDown，调用方接 Enter 下单不会被选字误触。',
     ],
   },
   'range-histogram-slider': {

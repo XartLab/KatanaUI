@@ -1116,6 +1116,9 @@ const BUTTONS = { decrease: '减一格', increase: '加一格' }
 
 export function DecimalFieldDemo() {
   const [price, setPrice] = useState('67000.3')
+  // 调用方在价格框上自己接 Enter 下单：输入法组字中的 Enter 不该传到这里。
+  const [placed, setPlaced] = useState(0)
+  const [entry, setEntry] = useState('67000')
   const [qty, setQty] = useState('')
   // 只读与禁用也接真的 onValue：要是件在这两种状态下还会改值，演示页上就看得见。
   const [locked, setLocked] = useState('100.5')
@@ -1126,6 +1129,20 @@ export function DecimalFieldDemo() {
           <DecimalField label="价格" value={price} onValueChange={setPrice} step="0.5" buttons={BUTTONS} />
         </div>
         <output data-testid="decimal-price-out">{price}</output>
+      </Row>
+      <Row name="调用方接 Enter 下单">
+        <div className="gal-wide">
+          <DecimalField
+            label="回车下单价"
+            value={entry}
+            onValueChange={setEntry}
+            step="0.5"
+            onKeyDown={(event) => {
+              if (event.key === 'Enter') setPlaced((n) => n + 1)
+            }}
+          />
+        </div>
+        <output data-testid="decimal-placed-out">{placed}</output>
       </Row>
       <Row name="数量（空框从 1 起，带单位）">
         <div className="gal-wide">

@@ -25,6 +25,7 @@ const account: GuidanceMap = {
       '改价输入框的读屏名带品种；非法输入有文字提示。',
       '买卖、状态都是文字。',
       '撤单中的单按钮置灰（aria-disabled）。',
+      '改价框在输入法组字时（isComposing 或 keyCode 229）Enter 不提交、Esc 不取消，选字上屏不会误改单。',
     ],
   },
   'account-equity': {
