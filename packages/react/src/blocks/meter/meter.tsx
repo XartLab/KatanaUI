@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: MIT
 /**
  * Horizontal meter in three shapes: bar, gauge and sync bar.
- * 体检 §2：不是量化专有，从 src/quant 挪到 blocks（G6）；tone 改用 lib/severity 的 SeverityExt（neutral 画法同 off）。
+ * 体检 §2：不是量化专有，从 src/quant 挪到 blocks（G6）；tone 改用 lib/severity 的 SeverityExt。
+ * neutral 自成一档（#178）：有数、没有判断，填充用中性墨色；off 才是停用（全部转灰）。
  */
 // 组件卡 Meter（design/katana-console/project/components/Meter，#1929）：横向仪表，三种形态。
 //   bar   条：10px 凹槽里一条点阵纹理的填充（量用长度编码，不用实色），上面一行名字与数；进度、负载、敞口。
@@ -17,7 +18,7 @@ import { useId, type ReactNode } from 'react'
 import type { SeverityExt } from '../../lib/severity.ts'
 
 /** @deprecated Use `SeverityExt` from the severity helpers; kept for one version. */
-export type MeterTone = 'accent' | 'ok' | 'warn' | 'danger' | 'off'
+export type MeterTone = 'accent' | 'ok' | 'warn' | 'danger' | 'off' | 'neutral'
 export type MeterDisplay = 'bar' | 'sync' | 'gauge'
 /** 限额状态：normal 线下、warn 达到预警线、breach 达到硬限。 */
 export type MeterLimitState = 'normal' | 'warn' | 'breach'
@@ -33,7 +34,7 @@ export type MeterProps = {
   max?: number
   /** 右边的数怎么写；不给就是四舍五入的百分数。 */
   valueText?: string
-  /** accent 进行中（橙）、ok 健康（绿）、warn 受限或越界（琥珀）、danger 弱势（红）、off / neutral 停用。默认 accent。 */
+  /** accent 进行中（橙）、ok 健康（绿）、warn 受限或越界（琥珀）、danger 弱势（红）、neutral 中性（有数、不表态，中性墨色）、off 停用。默认 accent。 */
   tone?: SeverityExt
   /** 形态，默认 bar。 */
   display?: MeterDisplay
@@ -99,8 +100,6 @@ export function Meter({
   const hardShare = limited && finite(hardAt) ? meterShare(hardAt, max) : null
   const limitState = limited ? meterLimitState(value, warnAt, hardAt) : undefined
   const shownTone: SeverityExt = limitState === 'breach' ? 'danger' : limitState === 'warn' ? 'warn' : tone
-  // neutral 没有判断，画法跟停用一样（CSS 只认 off）。
-  const toneAttr = shownTone === 'neutral' ? 'off' : shownTone
   const notes = [
     markShare !== null && markLabel ? `${markLabel} ${Math.round(markShare * 100)}%` : null,
     warnShare !== null ? limitLabels?.warn : null,
@@ -145,7 +144,7 @@ export function Meter({
   )
   if (display === 'sync')
     return (
-      <div className={cls} data-tone={toneAttr} data-state={limitState}>
+      <div className={cls} data-tone={shownTone} data-state={limitState}>
         <span className="k-meter-label" id={`${id}-l`}>
           {label}
         </span>
@@ -156,7 +155,7 @@ export function Meter({
       </div>
     )
   return (
-    <div className={cls} data-tone={toneAttr} data-state={limitState}>
+    <div className={cls} data-tone={shownTone} data-state={limitState}>
       <span className="k-meter-head">
         <span className="k-meter-label" id={`${id}-l`}>
           {label}

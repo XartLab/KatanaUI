@@ -29262,6 +29262,10 @@ button.k-spark-tile:focus-visible {
   --meter-color: var(--k-separable-bold-borderColor);
 }
 
+.k-meter[data-tone="neutral"] {
+  --meter-color: var(--k-status-neutral-foreground);
+}
+
 .k-meter-head {
   justify-content: space-between;
   gap: 8px;
@@ -29279,7 +29283,7 @@ button.k-spark-tile:focus-visible {
   font-variant-numeric: tabular-nums;
 }
 
-.k-meter[data-tone="ok"] .k-meter-value {
+.k-meter[data-tone="ok"] .k-meter-value, .k-meter[data-tone="neutral"] .k-meter-value {
   color: var(--k-content-primary-foreground);
 }
 

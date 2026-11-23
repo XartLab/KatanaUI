@@ -3194,7 +3194,7 @@ export const PAGES: readonly DocPage[] = [
   {
     id: 'meter',
     group: 'quant',
-    cardHeight: 607,
+    cardHeight: 645,
     title: 'Meter 仪表',
     summary:
       '横向仪表，三种形态：条（进度、负载、敞口）、刻度（0 到 100 的读数带指针）、同步率条（带齿分段加琥珀评估刻度与右侧大百分比）；限额板传预警线与硬限，越线自己换色；颜色只传 tone。',
@@ -3217,7 +3217,7 @@ export const PAGES: readonly DocPage[] = [
             name: 'tone',
             type: 'SeverityExt',
             default: "'accent'",
-            desc: '进行中 accent（橙）、健康 ok（绿）、受限或越界 warn（琥珀）、弱势 danger（红）、停用 off / neutral。',
+            desc: '进行中 accent（橙）、健康 ok（绿）、受限或越界 warn（琥珀）、弱势 danger（红）、中性 neutral（有数、不表态，中性墨色填充）、停用 off。',
           },
           {
             name: 'display',
@@ -3246,7 +3246,7 @@ export const PAGES: readonly DocPage[] = [
       'gauge：34px 凹槽、中线、底部 0/25/50/75/100 刻度，指针带光；弱势用 danger（红）。',
       'sync：14px 带齿条，右侧大百分比（display-dense 字），琥珀刻度是评估点。',
       'warn：条与数转琥珀，条体脉冲一次；off：全部转灰。',
-      'tone 是 SeverityExt（G6）：neutral 画法同 off（没有判断就不着色）。',
+      'tone 是 SeverityExt（G6）：neutral 是中性档（#178），填充与指针用中性墨色 --k-status-neutral-foreground，名字与数照常，不像 off 那样全部转灰。',
       '限额：线下照传入的 tone；达到预警线（等于也算）转琥珀并脉冲一次，达到硬限转红再脉冲一次；根上 data-state 是 normal / warn / breach。',
     ],
     donts: [

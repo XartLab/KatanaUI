@@ -865,6 +865,7 @@ export function MeterDemo() {
           <Meter label="LOAD · 敞口" value={72} tone="ok" />
           <Meter label="LOAD · 受锁（超过 60% 上限）" value={38} tone="warn" mark={60} markLabel="上限" />
           <Meter label="回测进度" value={61} />
+          <Meter label="相对强弱 · 中性" value={48} tone="neutral" />
           <Meter label="OFF" value={0} tone="off" />
         </div>
       </Row>
