@@ -203,6 +203,38 @@ const forms: GuidanceMap = {
       'Tab 在录键态也会移走焦点，不会把键盘用户困住。',
     ],
   },
+  hotkeys: {
+    aliases: ['Keyboard shortcuts', 'Hotkey manager', 'Keybindings', '快捷键注册表'],
+    use: [
+      '组件里用 useHotkeys 声明自己的快捷键（id、组合、名字、作用域、处理函数），挂上登记、卸下注销，ShortcutSheet 与冲突检测都读同一张表。',
+      '组合写 Mod 跨平台：Mac 是 ⌘，别处 Ctrl；规范串同 ShortcutRecorder（Ctrl、Alt、Shift、Meta 的次序加主键），录出来的直接能用。',
+      '同一个组合多条都开着：非 global 作用域的先得，同类里后登记的先得（打开的面板盖过底下的）；setActiveScopes 整组关掉某个作用域。',
+      '焦点在文本框、textarea、select、contenteditable 里不触发，Esc、Mod+K 这类写 allowInInput；输入法组字中（isComposing、keyCode 229）一律不触发（照 modern-web-guidance ime-safe-enter-submit）。',
+      '同作用域或碰上 global 的同组合算冲突，ShortcutSheet 在两行上都标出来；不同作用域的同键不算（自选表与图表都用 ↑↓ 很正常）。',
+    ],
+    avoid: ['只在一个输入框里处理 Enter 这类键，直接写 onKeyDown。', '展示固定的快捷键用 Kbd。'],
+    a11y: [
+      '不抢方向键、Tab、Enter 这类读屏与表单要用的键：用 global 作用域登记单个无修饰键前先想清楚，最好放进有焦点的组件的作用域里。',
+      '每条快捷键都要有可点的入口（按钮、菜单项），快捷键只是加速，不是唯一的路（WCAG 2.1.1）。',
+      '单字符快捷键（没有修饰键）要能关或改（WCAG 2.1.4）：配 ShortcutSheet 的改键。',
+    ],
+  },
+  'shortcut-sheet': {
+    aliases: ['Keyboard shortcuts dialog', 'Shortcut cheat sheet', 'Hotkey list', '快捷键总览'],
+    use: [
+      '照 TradingView 的 Keyboard shortcuts 面板（Ctrl/Cmd+/，2026-11-18 实看）：顶上「查找快捷键」搜索框，下面按作用域分节，行左名右键，几种按法之间写「或」；TradingView 的分节默认折叠，我们直接摊开。',
+      '行高 30、分节标题三级色小号大写；冲突的行名字下一行 warn 色小字写跟谁冲突；关掉的作用域整行 45% 透明。',
+      '搜索认动作名、作用域名与按键（⌘K、Ctrl+K 都能搜到）。',
+      '给 onComboChange 与 labels.recorder 时每行变成 ShortcutRecorder 改键，占用表是同作用域与 global 的别的动作；键位存哪由调用方定。',
+      '件只是内容：放进 Dialog（文档站的做法，宽 460）、Sheet 或侧栏由调用方定；打开它的键一般是 Mod+/。',
+    ],
+    avoid: ['设置页里只改一两个键，直接用 shortcut-recorder。'],
+    a11y: [
+      '搜索框有屏外 label；每节是带标题的 section（aria-labelledby），行是列表项。',
+      '按键用 Kbd，读屏念整串（「⌘+K」），不逐块念。',
+      '没有匹配时 role=status 念空态文字。',
+    ],
+  },
   'number-input': {
     aliases: ['Number field', 'NumberInput (Salt / MUI)', 'Spinbutton', '价格 / 数量输入'],
     use: [

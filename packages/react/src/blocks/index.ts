@@ -41,6 +41,17 @@ export {
   type ColumnSet,
 } from './data-grid/column-picker.tsx'
 export { ColumnSetTabs, type ColumnSetTabsProps } from './data-grid/column-set-tabs.tsx'
+export { useRowOrder, type RowOrder, type UseRowOrderOptions } from './data-grid/use-row-order.ts'
+export {
+  applyRowOrder,
+  expandMoving,
+  mergeVisibleOrder,
+  moveRows,
+  moveRowsBy,
+  normalizeOrder,
+  type IsSection,
+} from './data-grid/row-order-model.ts'
+export type { RowMoveTo } from './data-grid/grid-menu.tsx'
 export {
   activeColumnSet,
   applyColumnSet,
@@ -219,5 +230,226 @@ export {
 export { UptimeBars, type UptimeBarsProps } from './uptime-bars/uptime-bars.tsx'
 export { uptimeShare, type UptimeCell, type UptimeStatus } from './uptime-bars/uptime-bars-model.ts'
 
+// 前向测试与回放的件（#121）：组合运行表、回放控制条、运行模式徽标。功能参照 MultiCharts（2026-11-21 读官方页面），实现原创。
+export {
+  PortfolioRunGrid,
+  type PortfolioRunFormat,
+  type PortfolioRunGridProps,
+  type PortfolioRunLabels,
+  type PortfolioRunSummary,
+} from './portfolio-run-grid/portfolio-run-grid.tsx'
+export { type PortfolioRunRow, type RunStatus } from './portfolio-run-grid/portfolio-run-model.ts'
+export {
+  ReplayTransport,
+  type ReplayTransportLabels,
+  type ReplayTransportProps,
+} from './replay-transport/replay-transport.tsx'
+export { RunModeBadge, type RunMode, type RunModeBadgeProps } from './run-mode-badge/run-mode-badge.tsx'
+
+// 白板（#51）：底座 React Flow（@xyflow/react，MIT）。
+export { Whiteboard, type WhiteboardLabels, type WhiteboardProps } from './whiteboard/whiteboard.tsx'
+export {
+  copySelection,
+  getDownstream,
+  layoutWhiteboard,
+  pasteClip,
+  removeItems,
+  snapToGuides,
+  type WhiteboardCardNode,
+  type WhiteboardDirection,
+  type WhiteboardDoc,
+  type WhiteboardEdge,
+  type WhiteboardGroupNode,
+  type WhiteboardHypothesisNode,
+  type WhiteboardMetricNode,
+  type WhiteboardNode,
+  type WhiteboardNodeType,
+  type WhiteboardNoteNode,
+} from './whiteboard/whiteboard-model.ts'
+
 // 兑换面板（改自 SmoothUI swap-panel，MIT）。
 export { SwapPanel, type SwapAsset, type SwapPanelLabels, type SwapQuote, type SwapStatus } from './swap-panel.tsx'
+
+// 品种搜索（#77 第 1 条，参照 TradingView）：Command 底座、市场分段、最近搜索、匹配高亮；数据与搜索由调用方传。
+export {
+  SymbolSearch,
+  SymbolSearchDialog,
+  type SymbolSearchDialogProps,
+  type SymbolSearchLabels,
+  type SymbolSearchProps,
+  type SymbolSearchQuery,
+} from './symbol-search/symbol-search.tsx'
+export type { SymbolSearchItem, SymbolSearchSegment } from './symbol-search/symbol-search-model.ts'
+// 下单面板、仓位计算器与仓位计算的纯函数（#96）。
+export {
+  OrderTicket,
+  type ExitTemplate,
+  type MarginMode,
+  type OrderAction,
+  type OrderDraft,
+  type OrderTicketAccount,
+  type OrderTicketInstrument,
+  type OrderTicketLabels,
+  type OrderTicketMarket,
+  type OrderType,
+  type StopCustody,
+} from './order-ticket.tsx'
+export {
+  PositionCalculator,
+  PositionCalculatorPanel,
+  type PositionCalculatorLabels,
+  type PositionCalculatorProps,
+} from './position-calculator.tsx'
+export {
+  breakevenPrice,
+  computeSizing,
+  contractsForCost,
+  contractsForRisk,
+  exitPnl,
+  floorToStep,
+  liquidationPrice,
+  type ExitEstimate,
+  type FeeRates,
+  type HeldPosition,
+  type InstrumentSpec,
+  type OrderSide,
+  type SizingInput,
+  type SizingIssue,
+  type SizingMode,
+  type SizingResult,
+} from './sizing-model.ts'
+// 面板页签组与添加组件的目录（照 OKX 面板的页签栏做法，2026-11-19）。
+export {
+  PANEL_TAB_MIME,
+  PanelTabs,
+  type PanelTab,
+  type PanelTabsLabels,
+  type PanelTabsProps,
+} from './panel-tabs/panel-tabs.tsx'
+export {
+  CATALOG_ITEM_MIME,
+  ComponentCatalog,
+  type ComponentCatalogLabels,
+} from './component-catalog/component-catalog.tsx'
+export {
+  groupCatalog,
+  type CatalogCategory,
+  type CatalogGroup,
+  type CatalogItem,
+  type CatalogKind,
+} from './component-catalog/component-catalog-model.ts'
+// A 股面板（#11，开盘啦对照）：口径（情绪分、强度、阶段）由调用方传，件只画；涨跌色走 --k-tone-*（data-updown="cn" 红涨绿跌）。
+export {
+  SentimentCycle,
+  type SentimentDay,
+  type SentimentCycleLabels,
+  type SentimentCycleProps,
+  type SentimentMetric,
+  type SentimentStage,
+} from './sentiment-cycle/sentiment-cycle.tsx'
+export {
+  ReasonGroupList,
+  type ReasonGroup,
+  type ReasonGroupListLabels,
+  type ReasonGroupListProps,
+  type ReasonStock,
+} from './reason-group-list/reason-group-list.tsx'
+export {
+  BoardStrengthRank,
+  type BoardStrength,
+  type BoardStrengthRankLabels,
+  type BoardStrengthRankProps,
+  type RankedBoard,
+} from './board-strength-rank/board-strength-rank.tsx'
+export {
+  NetBuyBar,
+  type DragonSeat,
+  type DragonTigerItem,
+  type NetBuyBarLabels,
+  type NetBuyBarProps,
+} from './net-buy-bar/net-buy-bar.tsx'
+
+// #104 账户四件：持仓表、委托表（共页签外壳）、账户权益概览、资金费率、期权 T 型报价。
+export {
+  PositionsTable,
+  type LiquidationRisk,
+  type Position,
+  type PositionSide,
+  type PositionTotals,
+  type PositionsTableLabels,
+  type PositionsTableProps,
+} from './positions-table/positions-table.tsx'
+export {
+  liquidationDistance,
+  liquidationFill,
+  liquidationRisk,
+  positionTotals,
+  unrealizedPercent,
+} from './positions-table/positions-model.ts'
+export {
+  PositionsOrdersTabs,
+  type PositionsOrdersTab,
+  type PositionsOrdersTabsLabels,
+  type PositionsOrdersTabsProps,
+} from './positions-table/positions-orders-tabs.tsx'
+export {
+  OrdersTable,
+  type Order,
+  type OrderSide as OpenOrderSide,
+  type OrderStatus,
+  type OrderType as OpenOrderType,
+  type OrdersTableLabels,
+  type OrdersTableProps,
+} from './orders-table/orders-table.tsx'
+export {
+  amendDecision,
+  canAmend,
+  canCancel,
+  cancellable,
+  fillRatio,
+  parseAmendPrice,
+} from './orders-table/orders-model.ts'
+export {
+  AccountEquity,
+  type AccountEquityLabels,
+  type AccountEquityProps,
+  type MarginLevel,
+  type MarginThresholds,
+} from './account-equity/account-equity.tsx'
+export { marginLevel, marginRatioOf, riskBands, riskPosition } from './account-equity/account-equity-model.ts'
+export {
+  FundingRate,
+  type FundingBar,
+  type FundingPoint,
+  type FundingRateLabels,
+  type FundingRateProps,
+} from './funding-rate/funding-rate.tsx'
+export { countdownTo, formatCountdown, formatRate, fundingBars, rateTone } from './funding-rate/funding-model.ts'
+export {
+  OptionsChain,
+  type OptionExpiry,
+  type OptionField,
+  type OptionQuote,
+  type OptionRow,
+  type OptionSide,
+  type OptionsChainLabels,
+  type OptionsChainProps,
+} from './options-chain/options-chain.tsx'
+export { atmStrike, isItm, sortedRows, wingFields } from './options-chain/options-model.ts'
+export {
+  OrderBook,
+  type BookLevel,
+  type BookRow,
+  type BookSide,
+  type OrderBookLabels,
+  type OrderBookMode,
+  type OrderBookProps,
+} from './order-book/order-book.tsx'
+export { DepthChart, type DepthChartLabels, type DepthChartProps } from './depth-chart/depth-chart.tsx'
+export {
+  TradeTape,
+  type Trade,
+  type TradeSide,
+  type TradeTapeLabels,
+  type TradeTapeProps,
+} from './trade-tape/trade-tape.tsx'

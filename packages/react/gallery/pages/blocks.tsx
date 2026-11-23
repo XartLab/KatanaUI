@@ -58,6 +58,7 @@ import { LiveToggle } from '../LiveToggle.tsx'
 import { chance, pick, randomWalk, useLiveTicker, type Rng } from '../live-sim.ts'
 import { LiveStatusBarDemo } from './live-readouts.tsx'
 import { ActionLog, Row, SAMPLE_MARK_SRC, demoSymbolActions } from './parts.tsx'
+import { WatchlistOrderDemo } from './watchlist-order.tsx'
 
 // 积木层（@katana-ui/react/blocks，#1869）的演示。表里的数据都是写死的示例数据，不是行情。
 
@@ -440,6 +441,7 @@ export function DataGridDemo() {
       <ColumnsDemo />
       <LiveGridDemo />
       <AShareColumnsDemo />
+      <WatchlistOrderDemo />
       <p className="gal-note">无表头、只读、紧凑行高的变体：</p>
       <div style={{ width: 300 }}>
         <DataGrid
@@ -937,7 +939,8 @@ function NewsFeedSplit() {
   const [view, setView] = useState('full')
   const [wide, setWide] = useState(true)
   return (
-    <div style={{ display: 'grid', gap: 8 }}>
+    // 列宽钉成 minmax(0, 1fr)：不然轨道按内容撑到 640，窄档的 max-width: 100% 量的是它自己，预览区窄时还是横向溢出（#126）。宽档 1000 照样溢出、由外层滚。
+    <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr)', gap: 8 }}>
       <ToggleGroup
         size="sm"
         aria-label="宽度"
@@ -947,7 +950,7 @@ function NewsFeedSplit() {
         <ToggleGroupItem value="wide">宽 1000px</ToggleGroupItem>
         <ToggleGroupItem value="narrow">窄 640px</ToggleGroupItem>
       </ToggleGroup>
-      <div style={{ height: 460, width: wide ? 1000 : 640 }}>
+      <div style={{ height: 460, width: wide ? 1000 : 640, maxWidth: wide ? undefined : '100%' }}>
         <NewsFeed
           key={view}
           items={NEWS_ITEMS.map((item, index) => ({ ...item, readMinutes: 1 + (index % 4) }))}

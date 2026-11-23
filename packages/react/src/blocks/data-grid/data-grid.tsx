@@ -39,11 +39,13 @@ import { HEAD_HEIGHTS, ROW_HEIGHTS, type DataGridProps } from './data-grid-props
 import { CellBody, FLASH_TYPES, FlashCell, keepActionsInView } from './grid-cells.tsx'
 import { GridHead } from './grid-head.tsx'
 import { GridSummaryRow } from './grid-summary-row.tsx'
-import { DefaultMenu, gridMenuEntries, type GridMenuOn } from './grid-menu.tsx'
+import { DefaultMenu, gridMenuEntries, type GridMenuOn, type RowMoveTo } from './grid-menu.tsx'
 import { resolveLabels, useDataGridHost } from './host.tsx'
 import { EMPTY_SELECTION, clickSelection, moveCursor, tableCsv, tableTsv, type Selection } from './model.ts'
 import { COLUMNS_TOGGLE_RESERVE, fitPriorityColumns, priorityOf, type PriorityColumn } from './priority-columns.ts'
+import { applyRowOrder, expandMoving, isSameOrder, mergeVisibleOrder, moveRows, moveRowsBy } from './row-order-model.ts'
 import { useColumnSizing } from './use-column-sizing.ts'
+import { useRowDrag } from './use-row-drag.ts'
 
 export type { DataGridProps, GridColumnLayout, GridDensity, GridRowProps, GridSlot } from './data-grid-props.ts'
 
@@ -124,6 +126,9 @@ export function DataGrid<Row extends object>({
   stretch,
   maxHeight,
   live = false,
+  rowOrder,
+  onRowOrderChange,
+  rowSection,
   classNames = {},
 }: DataGridProps<Row>) {
   const host = useDataGridHost()
@@ -170,6 +175,11 @@ export function DataGrid<Row extends object>({
   }, [columns, sortLocale, timeZone])
 
   const sorting: SortingState = sort ? [{ id: sort.id, desc: sort.desc }] : []
+  // 手动行序（#77 G7）：按 rowOrder 排好再交给表；按列排序时表照样按列排（挪行这时关掉）。
+  const orderedRows = useMemo(
+    () => (rowOrder ? applyRowOrder(rows, rowId, rowOrder) : (rows as Row[])),
+    [rows, rowId, rowOrder],
+  )
   // compact 分量（#117）只画名称与主数：有列标了 compact: true 就只留那几列，一列都没标就留前两个可见列（都是显隐之上再收一道，layout 本身不动）。
   const compactKept = useMemo(() => {
     const shown = layout.filter((column) => column.visible).map((column) => column.id)
@@ -230,7 +240,7 @@ export function DataGrid<Row extends object>({
   const table = useTable({
     features,
     columns: defs,
-    data: rows as Row[],
+    data: orderedRows,
     getRowId: rowId,
     state: { sorting, columnVisibility: visibility, columnSizing: sizing, columnOrder: layout.map((c) => c.id) },
     enableSortingRemoval: sortRemovable,
@@ -252,6 +262,22 @@ export function DataGrid<Row extends object>({
       modelRows.map((row) => row.original),
     )
   const order = modelRows.map((row) => row.id)
+  const sectionOf = (original: Row): ReactNode => rowSection?.(original)
+  const sectionIds = new Set(
+    rowSection ? modelRows.filter((row) => hasContent(sectionOf(row.original))).map((row) => row.id) : [],
+  )
+  const isSection = (rowKey: string) => sectionIds.has(rowKey)
+  // compact 只画前几行（#117），挪行只在 standard / hero 里开。
+  const reorderable = interactive && onRowOrderChange !== undefined && !compact
+  const canMove = reorderable && sort === null
+  const [announce, setAnnounce] = useState('')
+  const commitOrder = (next: string[], moving: readonly string[]) => {
+    if (isSameOrder(next, order)) return
+    // 过滤中只看得见一部分行：挪完填回整份次序，藏起来的行不动。
+    onRowOrderChange?.(rowOrder ? mergeVisibleOrder(rowOrder, next) : next)
+    const position = next.indexOf(moving[0]) + 1
+    setAnnounce(texts.rowOrder.moved({ count: moving.length, position, total: next.length }))
+  }
   // 展开：受控时听调用方，不然自己记「用户展开或收起过的行」，没动过的行看 defaultExpanded。
   const [toggled, setToggled] = useState<ReadonlyMap<string, boolean>>(new Map())
   const isExpanded = (rowKey: string, original: Row): boolean =>
@@ -337,6 +363,24 @@ export function DataGrid<Row extends object>({
     const at = cursor !== null ? modelRows.find((row) => row.id === cursor) : undefined
     return at ? [at.original] : []
   }
+  /** 要挪的行：选中的行（按显示次序），没选就是键盘所在的那一行。 */
+  const targetIds = (): string[] => {
+    const picked = order.filter((key) => selection.selected.has(key))
+    return picked.length ? picked : cursor !== null ? [cursor] : []
+  }
+  const moveTarget = (to: RowMoveTo) => {
+    if (!canMove) {
+      setAnnounce(texts.rowOrder.sorted)
+      return
+    }
+    const moving = targetIds()
+    if (moving.length === 0) return
+    const next =
+      to === 'up' || to === 'down'
+        ? moveRowsBy(order, moving, to === 'up' ? -1 : 1, isSection)
+        : moveRows(order, moving, to === 'top' ? (order[0] ?? null) : null, isSection)
+    commitOrder(next, moving)
+  }
   // 分量只管显示，不管数据（#117）：复制与导出照 standard，带全部可见列；导出带全部行（排好序的），不受 compact 的列筛选与前几行影响。
   const dataColumnIds = layout.filter((column) => column.visible && byId.has(column.id)).map((column) => column.id)
 
@@ -380,6 +424,19 @@ export function DataGrid<Row extends object>({
     else if (action === 'resetColumns') resetColumns()
     if (action === 'copy' || action === 'save' || action === 'resetColumns') {
       event.preventDefault()
+      return
+    }
+    // 挪行（#77 G7）：Alt+↑ / Alt+↓ 把选中的行（没选就是键盘所在的行）上下挪一格；按列排序时读出原因。
+    if (
+      reorderable &&
+      event.altKey &&
+      !event.ctrlKey &&
+      !event.metaKey &&
+      !event.shiftKey &&
+      (event.key === 'ArrowUp' || event.key === 'ArrowDown')
+    ) {
+      event.preventDefault()
+      moveTarget(event.key === 'ArrowUp' ? 'up' : 'down')
       return
     }
     // 其余的键是选行与导航：带 Alt、Ctrl、⌘ 的不是。
@@ -433,7 +490,35 @@ export function DataGrid<Row extends object>({
       setSelection({ ...selection, selected: new Set() })
     }
   }
+  const rowsBox = useRef<HTMLDivElement>(null)
+  const {
+    drag: rowDrag,
+    onPointerDown,
+    swallowClick,
+  } = useRowDrag({
+    enabled: canMove,
+    scroller,
+    rowsBox,
+    edge: rowHeight * 1.5,
+    spotAt: (y) => {
+      const shown = virtualizer.getVirtualItems()
+      for (const entry of shown) {
+        if (items[entry.index].sub) continue
+        if (entry.start + entry.size / 2 > y) return { before: items[entry.index].row.id, y: entry.start }
+      }
+      const last = shown.at(-1)
+      const next = last ? items.slice(last.index + 1).find((item) => !item.sub) : undefined
+      return { before: next ? next.row.id : null, y: last ? last.end : 0 }
+    },
+    pickMoving: (rowKey) =>
+      selection.selected.has(rowKey) ? order.filter((key) => selection.selected.has(key)) : [rowKey],
+    isNoop: (moving, before) => isSameOrder(moveRows(order, moving, before, isSection), order),
+    onDrop: (moving, before) => commitOrder(moveRows(order, moving, before, isSection), moving),
+    onCancel: () => setAnnounce(texts.rowOrder.cancelled),
+  })
+  const dragging = rowDrag ? new Set(expandMoving(order, rowDrag.moving, isSection)) : null
   const onRowClick = (event: MouseEvent, row: { id: string; original: Row }) => {
+    if (swallowClick()) return
     if (!interactive || !selectable) return
     const range = event.shiftKey
     const toggle = event.ctrlKey || event.metaKey
@@ -532,6 +617,7 @@ export function DataGrid<Row extends object>({
         menuTail,
         panelMenu,
         rowInfo,
+        rowOrder: reorderable ? { canMove, move: moveTarget } : undefined,
       })
     : []
   const withMenu =
@@ -553,7 +639,7 @@ export function DataGrid<Row extends object>({
       aria-label={interactive ? texts.gridLabel(label) : label}
       aria-activedescendant={cursor !== null ? rowDomId(cursor) : undefined}
       data-slot="data-grid-body"
-      className={cn('k-grid-body', classNames.grid)}
+      className={cn('k-grid-body', rowDrag !== null && 'is-row-dragging', classNames.grid)}
       onKeyDown={onKeyDown}
       onContextMenu={withMenu ? onMenu : undefined}
     >
@@ -601,10 +687,12 @@ export function DataGrid<Row extends object>({
             />
           )}
           <div
+            ref={rowsBox}
             className={cn('k-grid-rows', classNames.rows)}
             role="rowgroup"
             style={{ height: virtualizer.getTotalSize() }}
           >
+            {rowDrag?.spot && <div className="k-grid-drop" aria-hidden="true" style={{ top: rowDrag.spot.y }} />}
             {virtualizer.getVirtualItems().map((item) => {
               const { row, sub } = items[item.index]
               const tree = rowTree?.(row.original)
@@ -633,6 +721,7 @@ export function DataGrid<Row extends object>({
               const extra = rowProps?.(row.original)
               const { className: extraClass, ...attributes } = extra ?? {}
               const expandable = renderSubRow !== undefined && hasSubRow(row.original)
+              const section = isSection(row.id) ? sectionOf(row.original) : null
               return (
                 <div
                   {...attributes}
@@ -653,6 +742,9 @@ export function DataGrid<Row extends object>({
                     autoRowHeight && 'is-auto',
                     selected && 'is-selected',
                     row.id === cursor && 'is-cursor',
+                    section !== null && 'is-section',
+                    canMove && 'is-movable',
+                    dragging?.has(row.id) && 'is-dragged',
                     live && enterMarks.has(row.id) && 'k-live-enter',
                     isOpened?.(row.original) && 'is-opened',
                     rowClass?.(row.original),
@@ -665,72 +757,79 @@ export function DataGrid<Row extends object>({
                     gridTemplateColumns: template,
                   }}
                   onClick={interactive ? (event) => onRowClick(event, row) : undefined}
+                  onPointerDown={canMove ? (event) => onPointerDown(event, row.id) : undefined}
                 >
-                  {row.getVisibleCells().map((cell) => {
-                    const column = byId.get(cell.column.id)!
-                    const resolved = resolveCell(column, row.original, env)
-                    const fill = column.fill?.(row.original)
-                    const heat = resolveHeat(column, row.original)
-                    const body = (
-                      <>
-                        {column.cell ? (
-                          column.cell(row.original)
-                        ) : column.render ? (
-                          column.render(row.original)
-                        ) : (
-                          <CellBody
-                            resolved={resolved}
-                            extent={extents.get(column.id) ?? 0}
-                            ellipsis={column.id === flexColumn}
-                            maxPills={
-                              (typeof column.format === 'function' ? column.format(row.original) : column.format)
-                                ?.maxPills
-                            }
-                          />
-                        )}
-                        {heat?.rank !== undefined && (
-                          <span className="k-grid-rank" data-slot="grid-rank">
-                            {heat.rank}
-                          </span>
-                        )}
-                      </>
-                    )
-                    const box = {
-                      role: column.rowHeader ? 'rowheader' : cellRole,
-                      'data-col': column.id,
-                      'data-type': column.type ?? 'text',
-                      'data-heat': heat?.tone,
-                      className: cn(
-                        'k-grid-cell',
-                        alignOf(column.id) === 'end' && 'is-end',
-                        resolved.tone && `is-${resolved.tone}`,
-                        fill && `fill-${fill}`,
-                        heat?.rank !== undefined && 'has-rank',
-                        stickClass(column.id),
-                        classNames.cell,
-                      ),
-                      style: {
-                        ...stickStyle(column.id),
-                        ...(heat ? ({ '--heat': heat.level } as CSSProperties) : undefined),
-                        ...(autoRowHeight ? undefined : { lineHeight: `${rowHeight}px` }),
-                      },
-                      title: column.title?.(row.original) ?? (column.id === flexColumn ? resolved.text : undefined),
-                    }
-                    if (live && FLASH_TYPES.has(column.type ?? 'text')) {
-                      const number = resolved.sort === undefined ? null : Number(resolved.sort)
-                      return (
-                        <FlashCell key={cell.id} value={number} {...box}>
-                          {body}
-                        </FlashCell>
+                  {section !== null && (
+                    <div role={cellRole} aria-colspan={visibleColumns.length} className="k-grid-section-cell">
+                      {section}
+                    </div>
+                  )}
+                  {section === null &&
+                    row.getVisibleCells().map((cell) => {
+                      const column = byId.get(cell.column.id)!
+                      const resolved = resolveCell(column, row.original, env)
+                      const fill = column.fill?.(row.original)
+                      const heat = resolveHeat(column, row.original)
+                      const body = (
+                        <>
+                          {column.cell ? (
+                            column.cell(row.original)
+                          ) : column.render ? (
+                            column.render(row.original)
+                          ) : (
+                            <CellBody
+                              resolved={resolved}
+                              extent={extents.get(column.id) ?? 0}
+                              ellipsis={column.id === flexColumn}
+                              maxPills={
+                                (typeof column.format === 'function' ? column.format(row.original) : column.format)
+                                  ?.maxPills
+                              }
+                            />
+                          )}
+                          {heat?.rank !== undefined && (
+                            <span className="k-grid-rank" data-slot="grid-rank">
+                              {heat.rank}
+                            </span>
+                          )}
+                        </>
                       )
-                    }
-                    return (
-                      <div key={cell.id} {...box}>
-                        {body}
-                      </div>
-                    )
-                  })}
-                  {rowActions && interactive && (
+                      const box = {
+                        role: column.rowHeader ? 'rowheader' : cellRole,
+                        'data-col': column.id,
+                        'data-type': column.type ?? 'text',
+                        'data-heat': heat?.tone,
+                        className: cn(
+                          'k-grid-cell',
+                          alignOf(column.id) === 'end' && 'is-end',
+                          resolved.tone && `is-${resolved.tone}`,
+                          fill && `fill-${fill}`,
+                          heat?.rank !== undefined && 'has-rank',
+                          stickClass(column.id),
+                          classNames.cell,
+                        ),
+                        style: {
+                          ...stickStyle(column.id),
+                          ...(heat ? ({ '--heat': heat.level } as CSSProperties) : undefined),
+                          ...(autoRowHeight ? undefined : { lineHeight: `${rowHeight}px` }),
+                        },
+                        title: column.title?.(row.original) ?? (column.id === flexColumn ? resolved.text : undefined),
+                      }
+                      if (live && FLASH_TYPES.has(column.type ?? 'text')) {
+                        const number = resolved.sort === undefined ? null : Number(resolved.sort)
+                        return (
+                          <FlashCell key={cell.id} value={number} {...box}>
+                            {body}
+                          </FlashCell>
+                        )
+                      }
+                      return (
+                        <div key={cell.id} {...box}>
+                          {body}
+                        </div>
+                      )
+                    })}
+                  {rowActions && interactive && section === null && (
                     <RowActions
                       items={rowActions(row.original)}
                       label={texts.rowActions}
@@ -819,6 +918,11 @@ export function DataGrid<Row extends object>({
       <span className="sr-only" role="status">
         {selection.selected.size > 1 ? texts.selectedRows(selection.selected) : ''}
       </span>
+      {reorderable && (
+        <span className="sr-only" role="status" data-slot="data-grid-order-status">
+          {announce}
+        </span>
+      )}
     </ContextMenu>
   )
 }

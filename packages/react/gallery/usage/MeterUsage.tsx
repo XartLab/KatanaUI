@@ -11,6 +11,17 @@ export function MeterUsage() {
         <Meter label="OFF" value={0} tone="off" />
       </div>
 
+      <div className="gal-stack" data-testid="meter-limits">
+        <Meter
+          label="日内回撤"
+          value={112}
+          warnAt={80}
+          hardAt={100}
+          valueText="112% · 越限"
+          limitLabels={{ warn: '预警线 80%', hard: '硬限 100%' }}
+        />
+      </div>
+
       <div className="gal-stack" data-testid="meter-gauges">
         <Meter label="RS-20 · 电子" value={94} display="gauge" />
         <Meter label="RS-20 · 军工（弱势）" value={27} display="gauge" tone="danger" />

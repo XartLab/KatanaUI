@@ -264,9 +264,22 @@ const quotes: GuidanceMap = {
   },
   'symbol-mark': {
     aliases: ['Avatar', 'Logo chip', 'Ticker icon', 'Symbol icon'],
-    use: ['自选、行情行里品种名前的小圆标。', '没有图时用代码字母占位。'],
-    avoid: ['用户头像用 Avatar 类件，这里不是。', '要按数据着色时不要用它的底色。'],
-    a11y: ['role=img，读屏名取 name，没有就取 symbol。', '退回字母时字母对读屏隐藏，不会重复读。'],
+    use: [
+      '自选、行情行里品种名前的小圆标。',
+      '没有图时用代码字母占位。',
+      '真图在应用根上包一次 LogoProvider：加密币 web3icons()，股票 selfHosted({ baseUrl })，件里不传 src。',
+      '代码不带场所时传 venue（601318 + XSHG），币标只配 assetClass crypto。',
+    ],
+    avoid: [
+      '用户头像用 Avatar 类件，这里不是。',
+      '要按数据着色时不要用它的底色。',
+      '不要把企业徽标放进本仓库或包里：应用自托管或用徽标服务，key 由应用给。',
+    ],
+    a11y: [
+      'role=img，读屏名取 name，没有就取 symbol。',
+      '退回字母时字母对读屏隐藏，不会重复读。',
+      '图是 alt=""，读屏名始终在外层，换图、退回字母读法不变。',
+    ],
   },
   'infinite-slider': {
     aliases: ['Ticker tape', 'Marquee', 'News ticker', 'Carousel'],

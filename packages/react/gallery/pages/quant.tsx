@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useState } from 'react'
 import {
   ConsensusBlock,
   countConsensus,
@@ -285,7 +285,21 @@ const LADDER_LABELS: LimitLadderLabels = {
   empty: '这一天没有涨停',
 }
 
+/** A 股件的演示挂着时根上是 data-updown="cn"（红涨绿跌，照 #78 的 cn-pack 页），离开这一页还原成原来的值。 */
+function useCnUpdown() {
+  useLayoutEffect(() => {
+    const root = document.documentElement
+    const before = root.dataset.updown
+    root.dataset.updown = 'cn'
+    return () => {
+      if (before === undefined) delete root.dataset.updown
+      else root.dataset.updown = before
+    }
+  }, [])
+}
+
 export function LimitLadderDemo() {
+  useCnUpdown()
   const [selected, setSelected] = useState<string | null>('300004')
   const [log, setLog] = useState('')
   // 实时：每 2 秒随机让某只封单量变、炸板、回封，偶尔升板换层、来一只新首板；自动化浏览器里默认暂停，用 window.__liveStep 步进。
@@ -294,7 +308,9 @@ export function LimitLadderDemo() {
     <div style={{ width: '100%', maxWidth: 640 }}>
       <div style={{ display: 'flex', gap: 8, alignItems: 'center', paddingBottom: 8 }}>
         <LiveToggle labels={{ group: '数据刷新', live: '实时', paused: '暂停' }} />
-        <span className="gal-note">封单量变化闪、炸板琥珀警示、回封与升板闪涨色、新首板蓝线高亮</span>
+        <span className="gal-note">
+          封单量变化闪、炸板琥珀警示、回封与升板闪涨色、新首板蓝线高亮；本页根上设了 data-updown="cn"（红涨绿跌）
+        </span>
       </div>
       <div style={{ height: 660 }}>
         <PanelFrame focused aria-label="连板天梯">
@@ -833,6 +849,9 @@ export function SparkTileDemo() {
   )
 }
 
+// 线照 LossLimits 卡：80% 起接近、100% 越限。
+const LIMIT_LABELS = { warn: '预警线 80%', hard: '硬限 100%' }
+
 export function MeterDemo() {
   return (
     <>
@@ -843,6 +862,27 @@ export function MeterDemo() {
           <Meter label="LOAD · 受锁（超过 60% 上限）" value={38} tone="warn" mark={60} markLabel="上限" />
           <Meter label="回测进度" value={61} />
           <Meter label="OFF" value={0} tone="off" />
+        </div>
+      </Row>
+      <Row name="限额（warnAt / hardAt）">
+        <div className="gal-stack" data-testid="meter-limits">
+          <Meter label="总敞口 / 净值" value={54} warnAt={80} hardAt={100} valueText="54%" limitLabels={LIMIT_LABELS} />
+          <Meter
+            label="保证金占用"
+            value={86}
+            warnAt={80}
+            hardAt={100}
+            valueText="86% · 接近"
+            limitLabels={LIMIT_LABELS}
+          />
+          <Meter
+            label="日内回撤"
+            value={112}
+            warnAt={80}
+            hardAt={100}
+            valueText="112% · 越限"
+            limitLabels={LIMIT_LABELS}
+          />
         </div>
       </Row>
       <Row name="刻度（gauge）">

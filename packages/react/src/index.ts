@@ -253,10 +253,57 @@ export type { Severity, SeverityExt } from './lib/severity.ts'
 export { Tag, type TagProps, type TagSize } from './katana/tag.tsx'
 export { Kbd } from './katana/kbd.tsx'
 export {
+  countFlags,
+  FlagFilter,
+  FlagGlyph,
+  FlagMark,
+  setFlagIn,
+  useFlags,
+  type FlagDef,
+  type FlagFilterProps,
+  type FlagGlyphProps,
+  type FlagMap,
+  type FlagMarkProps,
+  type FlagMenuItem,
+  type Flags,
+  type UseFlagsOptions,
+} from './katana/flag-mark.tsx'
+export {
   ShortcutRecorder,
   type ShortcutRecorderLabels,
   type ShortcutRecorderProps,
 } from './patterns/shortcut-recorder.tsx'
+export {
+  createHotkeyRegistry,
+  HotkeysProvider,
+  useHotkeyEntries,
+  useHotkeyRegistry,
+  useHotkeys,
+  type HotkeyBinding,
+  type HotkeyRegistry,
+} from './patterns/hotkeys.tsx'
+export {
+  comboKeys,
+  comboOfEvent,
+  detectPlatform,
+  findConflicts,
+  GLOBAL_SCOPE,
+  isEditableTarget,
+  normalizeCombo,
+  partLabelFor,
+  type HotkeyConflict,
+  type HotkeyEntry,
+  type HotkeyPlatform,
+} from './patterns/hotkeys-model.ts'
+export { ShortcutSheet, type ShortcutSheetLabels, type ShortcutSheetProps } from './patterns/shortcut-sheet.tsx'
+export {
+  CommandPalette,
+  pushRecent,
+  recentCommands,
+  type CommandPaletteLabels,
+  type CommandPaletteProps,
+  type PaletteCommand,
+} from './patterns/command-palette.tsx'
 export { SymbolMark, symbolMarkLetters, type SymbolMarkProps } from './quotes/symbol-mark.tsx'
 // 跑马灯（#77 第 5 条）。
 export { TickerTape, type TickerItem, type TickerTapeLabels, type TickerTapeProps } from './quotes/ticker-tape.tsx'
@@ -286,6 +333,23 @@ export {
   type ToastPhase,
   type ToastPosition,
 } from './katana/toast.tsx'
+// 复制图 / 复制文字与结果提示（#77 第 4 条，#22 G11）。
+export {
+  CopyToast,
+  useCopyFeedback,
+  type CopyToastItem,
+  type CopyToastLabels,
+  type CopyToastProps,
+} from './katana/copy-toast.tsx'
+export {
+  canCopyImage,
+  copyImage,
+  copyText,
+  elementToPng,
+  type CopyFailReason,
+  type CopyImageOptions,
+  type CopyResult,
+} from './lib/copy-image.ts'
 // 加载态的唯一入口是 Loading（G3）：LoadingBoundary（= 不给 pending）与 LoadingView（= 给 phase）留一个版本作兼容。
 export { Loading, LoadingBoundary, type LoadingProps } from './katana/loading.tsx'
 export { LoadingView, type LoadingLabels, type LoadingTexts } from './katana/loading-view.tsx'
@@ -295,6 +359,14 @@ export { LOADING_TIMEOUT_MS, type LoadingPhase } from './katana/loading-gate.ts'
 export { PasswordInput, type PasswordInputLabels, type PasswordInputProps } from './patterns/password-input.tsx'
 export { DeleteButton, type DeleteButtonLabels, type DeleteButtonProps } from './patterns/delete-button.tsx'
 export { HoldToConfirm, type HoldToConfirmLabels, type HoldToConfirmProps } from './patterns/hold-to-confirm.tsx'
+export {
+  SplitButton,
+  type SplitButtonAction,
+  type SplitButtonLabels,
+  type SplitButtonProps,
+} from './patterns/split-button.tsx'
+export { TagInput, type TagInputLabels, type TagInputProps } from './patterns/tag-input.tsx'
+export { InlineEdit, type InlineEditLabels, type InlineEditProps } from './patterns/inline-edit.tsx'
 export { NotificationBell, type NotificationBellProps } from './katana/notification-bell.tsx'
 export { StatusIcon, type StatusIconStatus, type StatusIconTone } from './katana/status-icon.tsx'
 export { AiStatus, type AiStatusProps, type AiStatusState, type AiStatusValue } from './katana/ai-status.tsx'
@@ -353,6 +425,22 @@ export {
   type StorageLike,
 } from './lib/use-persisted-state.ts'
 export { useSavedViews, type SavedView, type UseSavedViewsOptions } from './lib/use-saved-views.ts'
+// 打字即搜（#77 第 1 条）：焦点在容器里敲字就打开搜索并带上这个字；SymbolSearch 的伴件。
+export { useTypeToSearch, typeToSearchKey, type TypeToSearchOptions } from './lib/use-type-to-search.ts'
+// 撤销 / 重做栈（#77 第 4 条，#22 G10）。
+export {
+  useUndoStack,
+  undoInit,
+  undoPush,
+  undoBack,
+  undoForward,
+  undoKeyOf,
+  type UndoEntry,
+  type UndoPushOptions,
+  type UndoStack,
+  type UndoStackOptions,
+  type UndoState,
+} from './lib/use-undo-stack.ts'
 
 // 分割线（#1901）：一条 role=separator 的线，键盘、拖动、吸附、双击复位；工作区的格子分割线用它。
 export { Splitter, type SplitterProps } from './primitives/splitter.tsx'
@@ -406,6 +494,22 @@ export {
 export { RatingGauge, type RatingGaugeProps } from './quotes/rating-gauge.tsx'
 export { ratingAngle, ratingZone } from './quotes/rating-gauge-model.ts'
 export { quoteTone, type QuoteTone } from './quotes/quote-tone.ts'
+
+// 前向测试与回放的件（#121）。
+export {
+  PortfolioRunGrid,
+  type PortfolioRunFormat,
+  type PortfolioRunGridProps,
+  type PortfolioRunLabels,
+  type PortfolioRunSummary,
+} from './blocks/portfolio-run-grid/portfolio-run-grid.tsx'
+export { type PortfolioRunRow, type RunStatus } from './blocks/portfolio-run-grid/portfolio-run-model.ts'
+export {
+  ReplayTransport,
+  type ReplayTransportLabels,
+  type ReplayTransportProps,
+} from './blocks/replay-transport/replay-transport.tsx'
+export { RunModeBadge, type RunMode, type RunModeBadgeProps } from './blocks/run-mode-badge/run-mode-badge.tsx'
 
 // 分布与关系类的件（#1918）：功能参照 Arc（uiarc.dev，2026-11-14 读），实现原创。
 export { UptimeBars, type UptimeBarsProps } from './blocks/uptime-bars/uptime-bars.tsx'
@@ -490,6 +594,16 @@ export { AiApproval, type AiApprovalFact, type AiApprovalOption, type AiApproval
 export { AiContextMeter, type AiContextBreakdownItem, type AiContextMeterProps } from './ai/ai-context-meter.tsx'
 export { AiMessage, type AiMessageAuthor, type AiMessageLabels, type AiMessageProps } from './ai/ai-message.tsx'
 export { AiResponse, type AiResponseCitation, type AiResponseProps } from './ai/ai-response.tsx'
+export {
+  Markdown,
+  docHeadings,
+  markdownSlot,
+  renderDoc,
+  renderMarkdown,
+  type MarkdownHeading,
+  type MarkdownLabels,
+  type MarkdownProps,
+} from './ai/markdown.tsx'
 export { AiConversation, type AiConversationProps } from './ai/ai-conversation.tsx'
 export {
   AiPromptInput,

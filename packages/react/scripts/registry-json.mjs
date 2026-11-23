@@ -20,6 +20,14 @@ const TARGET_ROOT = '~/src/katana/ui'
  * 有页的件，说明读页数据（gallery/registry.ts 的 PAGES.summary），这里不写第二份。
  */
 const INTERNAL = {
+  'tag-input-model':
+    'TagInput 的纯逻辑：草稿与粘贴的拆分（逗号、分号、换行、制表符）、判重（不分大小写）、校验与上限，以及键盘在标签之间怎么走。',
+  'scaled-decimal':
+    '盘口三件（订单簿、深度图、成交明细）共用的十进制整数运算：价格与数量按小数位乘成整数再加减比，不经浮点累加。',
+  'research-color':
+    '研究报告件共用的色阶：涨跌发散色（零附近中性灰）与顺序色，周期收益表与参数曲面热力图用，只引用 token。',
+  'order-ticket-parts':
+    'OrderTicket 与 PositionCalculator 共用的小件：买卖切换、带标签与单位的数字框、读数行、数字格式。',
   'arcade-pixel-sprites': 'ArcadePixel 的数据：5x7 点阵字形、现成精灵与把文字排成格子的纯函数。',
   'arcade-pixel-paint': 'ArcadePixel 的画法：把调色板里的 var(--token) 读成颜色、画一帧（亮点、荧光、熄灭的点阵）。',
   'sparkline-ascii': 'Sparkline 的 ascii 画风：方块或盲文字形画走势，一个 pre，新列乱码落定。',
@@ -65,6 +73,9 @@ const INTERNAL = {
   'event-calendar-model': 'EventCalendar 的纯函数：按显示时区分天、今天 / 本周 / 下周区间、筛选、倒计时分钟。',
   'attribution-model':
     'AttributionBars 的排序与折叠（纯函数）：正负分组降序、超 7 项折「其他 ×n」、费用·税放底、对称刻度。',
+  'symbol-overview-model':
+    'SymbolOverview 的纯逻辑：相对起点的百分比口径、按时刻摆的横坐标、二分找最近的点、几条序列合起来的时间范围。',
+  'cross-rates-model': 'CrossRates 的纯逻辑：报价摆成货币矩阵、汇率的默认位数、方向键在格子间怎么走（照 APG grid）。',
   'equity-curve-model': 'EquityCurve 的纯逻辑：按时刻摆的横轴、线性 / 对数纵轴、镜像回撤的纵轴、默认横轴刻度。',
   'chart-kit':
     '图表共用底座：配色分配（series / seq / div）、点阵纹理、LCD tooltip、末点、轴与网格、图右上三件（表格视图、导出、全屏）。',
@@ -83,12 +94,15 @@ const INTERNAL = {
     'EventCalendar 的国家选择：触发按钮加模态框（搜索、两个预设、按地区分组复选、取消 / 应用）。',
   'market-heatmap-model':
     'MarketHeatmap 的纯函数：色阶七档的档宽取好数、值落在哪一档、图例的值边界、方向键找邻居的格子。',
+  'theme-heat-model':
+    'ThemeHeatMatrix 的数据形状、五档档位（与 CalendarHeatmap 换手视图同一条规则）与键盘走格（纯函数）。',
   'calendar-model': 'CalendarHeatmap 的格子排布、档位与键盘（纯函数）：日历日按 UTC 算，一周一列。',
   'horizon-model': 'HorizonChart 的分带（纯函数）：把带正负的一列数折成几条叠起来的窄带。',
   'live-line':
     '走势线新点追加时的延伸过场（钩子加纯函数）：旧线各点平滑走到新位置，新点从末端长出来，Sparkline、SparkTile、EquityCurve 用。',
   'live-readout':
     '读数变了闪涨跌色的外壳与取数：从已格式化的文字里取开头的数，走 live 的 useValueFlash。MetricCard、QuoteCard、PriceTag、KeyStats、Lcd、StatusBar 用。',
+  'scroll-dismiss': '非模态浮层的滚动即关：页面或装着锚点的容器把锚点滚走了就关（Popover 用）。',
   'hover-intent': '悬停意图：停一会儿才开、离开等一会儿再收、键盘聚焦立即开的钩子。',
   'code-highlight': 'CodeBlock 用的小型词法切分：注释、字符串、数字、关键字、函数、标点（纯函数，不加依赖）。',
   'matrix-orb-model': 'MatrixOrb 的纯数学：某状态下圆盘上一点在某一时刻的亮度。',
@@ -275,6 +289,32 @@ function collectItems() {
       'regime-strip',
       'flow-gauges',
       'uptime-bars',
+      // #77：品种搜索（组件与纯函数一起装）。
+      'symbol-search',
+      // 面板页签组与添加组件的目录（2026-11-19）。
+      'panel-tabs',
+      'component-catalog',
+      // #11 A 股面板：情绪周期、涨停原因分组、板块强度、龙虎榜净买，各一个子目录（组件与它的纯函数一起装）。
+      'sentiment-cycle',
+      'reason-group-list',
+      'board-strength-rank',
+      'net-buy-bar',
+      // #104 账户四件：各一个子目录（组件与它的纯函数一起装）。
+      'positions-table',
+      'orders-table',
+      'account-equity',
+      'funding-rate',
+      'options-chain',
+      // #104 盘口三件：订单簿、深度图、成交明细，各一个子目录（组件与它的纯函数一起装；深度图用订单簿的档位合并）。
+      'order-book',
+      'depth-chart',
+      'trade-tape',
+      // 白板（#51）：组件、节点与边、纯函数合成一项。
+      'whiteboard',
+      // #121：前向测试与回放的件，各一个子目录。
+      'portfolio-run-grid',
+      'replay-transport',
+      'run-mode-badge',
     ])
       add(
         dir,
@@ -343,7 +383,7 @@ export async function buildRegistry() {
           const bare = spec.startsWith('@') ? spec.split('/').slice(0, 2).join('/') : spec.split('/')[0]
           if (bare === 'react' || bare === 'react-dom') continue
           const version =
-            pkg.dependencies[bare] ?? (bare === '@katana-ui/tokens' ? pkg.peerDependencies[bare] : undefined)
+            pkg.dependencies[bare] ?? (bare.startsWith('@katana-ui/') ? pkg.peerDependencies[bare] : undefined)
           if (!version) throw new Error(`registry：${file} 引入 ${bare}，但 package.json 的 dependencies 里没有`)
           npm.add(`${bare}@${version}`)
           // 类型包（DefinitelyTyped：@scope/name → @types/scope__name）在 devDependencies 里就跟着写进 item，

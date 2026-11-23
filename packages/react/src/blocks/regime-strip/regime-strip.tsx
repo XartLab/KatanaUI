@@ -10,6 +10,7 @@
 // 样本外的识别有滞后，最后一段常是估的：segment.estimated 画斜纹（不是颜色的另一种标记），图例旁写 estimateText。
 // 分状态收益表不在本件里（那是调用方的表格）；这里只有带 + 图例。文案一律由调用方传。
 import type { ReactNode } from 'react'
+import type { Severity } from '../../lib/severity.ts'
 import { regimeSpans, type RegimeColor, type RegimeSegment, type RegimeState } from './regime-strip-model.ts'
 
 export type { RegimeColor, RegimeSegment, RegimeState } from './regime-strip-model.ts'
@@ -61,7 +62,14 @@ const COLOR_VAR: Record<RegimeColor, string> = {
   6: 'var(--series-6)',
   7: 'var(--series-7)',
 }
-const colorVar = (color: RegimeColor) => COLOR_VAR[color]
+// 有好坏之分的状态读状态语气色（#11 第二批评审：情绪阶段不用艳的类别色）；字面量写 token，主题检查按字面量认。
+const TONE_VAR: Record<Severity, string> = {
+  neutral: 'var(--k-status-neutral-foreground)',
+  ok: 'var(--k-status-ok-foreground)',
+  warn: 'var(--k-status-warn-foreground)',
+  danger: 'var(--k-status-danger-foreground)',
+}
+const fillOf = (state: RegimeState) => (state.tone ? TONE_VAR[state.tone] : COLOR_VAR[state.color])
 
 /** 只画带，不画图例：给时间轴组件叠在自己下面用。 */
 export function RegimeBand({ segments, states, scale, activeState, label, describe, className }: RegimeBandProps) {
@@ -83,7 +91,7 @@ export function RegimeBand({ segments, states, scale, activeState, label, descri
             style={{
               left: `${span.left * 100}%`,
               width: `${span.width * 100}%`,
-              backgroundColor: colorVar(state.color),
+              backgroundColor: fillOf(state),
             }}
           />
         )
@@ -120,7 +128,7 @@ export function RegimeStrip({
         {states.map((state) => {
           const item = (
             <>
-              <i className="k-regime-swatch" style={{ background: colorVar(state.color) }} aria-hidden="true" />
+              <i className="k-regime-swatch" style={{ background: fillOf(state) }} aria-hidden="true" />
               <span className="k-regime-name">{state.name}</span>
               {state.detail ? <span className="k-regime-detail">{state.detail}</span> : null}
               {current === state.id && currentText ? <b className="k-regime-current">{currentText}</b> : null}

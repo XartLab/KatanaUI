@@ -1443,8 +1443,8 @@ for (const theme of THEMES) {
       await expect(area.locator('#gal-dots-default')).toHaveAttribute('width', '6')
       await expect(area.locator('#gal-dots-default')).toHaveAttribute('height', '6')
       await expect(area.locator('#gal-dots-default .k-dot-tile')).toHaveAttribute('width', '4')
-      await expect(area.locator('#gal-dots-default .k-dot-tile')).toHaveCSS('fill', await token(page, '--seq-300'))
-      await expect(area.locator('#gal-dots-orange .k-dot-tile')).toHaveCSS('fill', await token(page, '--signal-orange'))
+      await expect(area.locator('#gal-dots-default .k-dot-tile')).toHaveCSS('fill', await token(page, '--k-heat-3'))
+      await expect(area.locator('#gal-dots-deep .k-dot-tile')).toHaveCSS('fill', await token(page, '--k-heat-5'))
     })
 
     test('滚动数字（里程表式）：涨一下转轮上依次经过中间的数字、整串闪涨色，文本里只有新的整串数字；中途取样转轮与新字同步在动', async ({
@@ -2502,8 +2502,12 @@ for (const theme of THEMES) {
           probe.remove()
           return color
         }, name)
+      // A 股件：本页根上是 data-updown="cn"（红涨绿跌，评审 #78），封住是红、跌停是绿。
+      await expect(page.locator('html')).toHaveAttribute('data-updown', 'cn')
       expect(await labelColor('600002')).toBe(await tokenColor('--pnl-up'))
+      expect(await labelColor('600002')).toBe(await tokenColor('--signal-red'))
       expect(await labelColor('603007')).toBe(await tokenColor('--pnl-down'))
+      expect(await labelColor('603007')).toBe(await tokenColor('--signal-green'))
       expect(await labelColor('000003')).toBe(await tokenColor('--signal-amber'))
       // 选中行左侧 2px 强调条；点另一行，条跟着走。
       const shadow = (code: string) =>
@@ -2521,6 +2525,10 @@ for (const theme of THEMES) {
       await page.keyboard.press('ArrowDown')
       await page.keyboard.press('Enter')
       await expect(ladder.locator('[data-code="601006"]')).toHaveAttribute('aria-selected', 'true')
+      // 离开这一页，根上的 data-updown 还原（文档站默认绿涨红跌）。
+      await navLink(page, 'market-heatmap').click()
+      await page.locator('[data-gallery="market-heatmap"]').waitFor()
+      await expect(page.locator('html')).not.toHaveAttribute('data-updown', /.+/)
     })
 
     test('量化：市场热力图——显示开关：logo、标题（无 / 代码 / 全名）、格内数值（价格 / 成交额 / 涨跌幅 / 无）与全屏', async ({
@@ -5229,6 +5237,183 @@ for (const theme of THEMES) {
     await expect(chart.locator('[data-slot="param-scatter-table"]')).toContainText('f8-s40')
   })
 
+  test(`参数曲面热力图（${theme}）：孤峰要靠邻域稳定度才看得出，切到平台切片后消失`, async ({ page }) => {
+    await open(page, theme, 'param-surface-heatmap')
+    const map = section(page, 'param-surface-heatmap').locator('[data-gallery-surface="main"]')
+    const cells = map.locator('[data-slot="param-surface-cell"]')
+    await expect(cells).toHaveCount(80)
+    // 止损 = 1 的切片里最优格是 f13/s80：只有一格带最优标记，它周围一圈有邻域框。
+    const best = map.locator('[data-slot="param-surface-cell"][data-best]')
+    await expect(best).toHaveCount(1)
+    await expect(best).toHaveAttribute('data-id', 'f13-s80-k1')
+    await expect(map.locator('[data-slot="param-surface-cell"][data-near]')).not.toHaveCount(0)
+    // 邻域稳定度：最优值 1.95，邻域均值约 0.2，保留率约 10%，标「孤峰」。删掉稳定度计算这几条断言会变红。
+    const stability = map.locator('[data-slot="param-surface-stability"]')
+    await expect(stability).toHaveAttribute('data-spike', '')
+    await expect(stability).toContainText('孤峰')
+    await expect(map.locator('[data-slot="param-surface-best"]')).toHaveText('1.95')
+    await expect(map.locator('[data-slot="param-surface-count"]')).toHaveText('8')
+    const mean = parseFloat((await map.locator('[data-slot="param-surface-mean"]').textContent()) ?? '')
+    expect(mean).toBeGreaterThan(0.1)
+    expect(mean).toBeLessThan(0.4)
+    const retention = parseFloat((await map.locator('[data-slot="param-surface-retention"]').textContent()) ?? '')
+    expect(retention).toBeGreaterThanOrEqual(5)
+    expect(retention).toBeLessThanOrEqual(15)
+    // 悬停一格：读数区列这一格全部参数与全部指标。
+    await best.hover()
+    // 纵轴名在网格上方（纵轴旁），不和横轴名并排在底部。
+    const yname = await map.locator('.k-ps-yname').boundingBox()
+    const xname = await map.locator('.k-ps-xname').boundingBox()
+    const gridBox = await map.locator('[role="grid"]').boundingBox()
+    expect(yname!.y + yname!.height).toBeLessThanOrEqual(gridBox!.y + 1)
+    expect(xname!.y).toBeGreaterThanOrEqual(gridBox!.y + gridBox!.height - 1)
+    const readout = map.locator('[data-slot="param-surface-readout"]')
+    for (const name of ['快线周期', '慢线周期', '止损', '夏普比率', '净利润', '最大回撤'])
+      await expect(readout).toContainText(name)
+    // 键盘：聚焦后方向键走格，Enter 钉住。
+    await best.focus()
+    await page.keyboard.press('ArrowLeft')
+    const moved = map.locator('[data-slot="param-surface-cell"]:focus')
+    await expect(moved).toHaveCount(1)
+    await expect(moved).not.toHaveAttribute('data-best', '')
+    await page.keyboard.press('Enter')
+    await expect(moved).toHaveAttribute('data-pinned', '')
+    await page.keyboard.press('Escape')
+    // 目标值切到净利润：色阶重算，最优格仍只有一个。
+    await map.getByRole('button', { name: '净利润' }).click()
+    await expect(map.locator('[data-slot="param-surface-cell"][data-best]')).toHaveCount(1)
+    await map.getByRole('button', { name: '夏普比率' }).click()
+    // 止损切到 2：最优落在平台上，保留率回到 70% 以上，不再标孤峰。
+    await heatPick(page, map, '固定 止损 %', '2')
+    await expect(stability).not.toHaveAttribute('data-spike', '')
+    const plateau = parseFloat((await map.locator('[data-slot="param-surface-retention"]').textContent()) ?? '')
+    expect(plateau).toBeGreaterThan(70)
+  })
+
+  test(`MAE / MFE 散点（${theme}）：赢圆亏方、切横轴与单位、点选读数、表格视图`, async ({ page }) => {
+    await open(page, theme, 'mae-mfe-scatter')
+    const chart = section(page, 'mae-mfe-scatter').locator('[data-gallery-maemfe="main"]')
+    const dots = chart.locator('[data-slot="mae-mfe-dot"]')
+    await expect(dots).toHaveCount(140)
+    // 赢是圆、亏是方：形状不同，不只靠颜色。
+    await expect(chart.locator('circle[data-slot="mae-mfe-dot"]').first()).toBeVisible()
+    await expect(chart.locator('rect[data-slot="mae-mfe-dot"]').first()).toBeVisible()
+    const fig = chart.locator('[data-slot="mae-mfe-scatter"]')
+    await expect(fig).toHaveAttribute('data-axis', 'mae')
+    await expect(fig).toHaveAttribute('data-unit', 'percent')
+    await expect(chart.locator('[data-slot="mae-mfe-means"]')).not.toBeEmpty()
+    // 最高与最低的点都在绘图区内，不压到纵轴标题上。
+    const frame = await chart.locator('svg.k-mm-svg').boundingBox()
+    const title = await chart.locator('svg.k-mm-svg text.k-scatter-axis').nth(1).boundingBox()
+    for (const d of await dots.all()) {
+      const b = (await d.boundingBox())!
+      expect(b.y).toBeGreaterThanOrEqual(title!.y + title!.height - 0.5)
+      expect(b.y + b.height).toBeLessThanOrEqual(frame!.y + frame!.height)
+    }
+    // 切横轴与单位。
+    await chart.getByRole('button', { name: '最大浮盈' }).click()
+    await expect(fig).toHaveAttribute('data-axis', 'mfe')
+    await chart.getByRole('button', { name: '金额' }).click()
+    await expect(fig).toHaveAttribute('data-unit', 'amount')
+    // 悬停一个点：读数区写这一笔，只有一个点带活动标记。
+    await dots.nth(3).hover()
+    await expect(chart.locator('[data-slot="mae-mfe-readout"]')).toContainText('T')
+    await expect(chart.locator('[data-slot="mae-mfe-dot"][data-active]')).toHaveCount(1)
+    // 表格视图。
+    await chart.getByRole('button', { name: '表格视图' }).click()
+    await expect(chart.locator('[data-slot="mae-mfe-table"]')).toBeVisible()
+  })
+
+  test(`水下回撤图（${theme}）：最大回撤段与恢复读数、与权益曲线共用时间轴`, async ({ page }) => {
+    await open(page, theme, 'underwater-chart')
+    const sec = section(page, 'underwater-chart')
+    const chart = sec.locator('[data-gallery-underwater="main"]')
+    await expect(chart.locator('[data-slot="underwater-segment"]')).toHaveCount(1)
+    await expect(chart.locator('[data-slot="underwater-trough"]')).toHaveCount(1)
+    await expect(chart.locator('[data-slot="underwater-area"]')).toHaveCount(1)
+    // 回撤面是点阵纹理，不是实色。
+    expect(await chart.locator('[data-slot="underwater-area"]').evaluate((e) => getComputedStyle(e).fill)).toMatch(
+      /^url\(/,
+    )
+    await expect(chart.locator('[data-slot="underwater-facts"]')).toContainText('16.7%')
+    await expect(chart.locator('[data-slot="underwater-segment"]')).not.toHaveAttribute('data-open', '')
+    // 与权益曲线叠放：两张图绘图区左缘与宽度一致（共用 xDomain 与左侧留白）。
+    const stack = sec.locator('[data-gallery-underwater="stack"]')
+    const eq = await stack.locator('.k-eq-main').first().boundingBox()
+    const uw = await stack.locator('[data-slot="underwater-main"]').boundingBox()
+    expect(Math.abs(eq!.x - uw!.x)).toBeLessThan(2)
+    expect(Math.abs(eq!.width - uw!.width)).toBeLessThan(2)
+  })
+
+  test(`周期收益表（${theme}）：年 × 月、行尾合计、切季与周、读数`, async ({ page }) => {
+    await open(page, theme, 'period-returns-table')
+    const chart = section(page, 'period-returns-table').locator('[data-gallery-period="main"]')
+    const fig = chart.locator('[data-slot="period-returns-table"]')
+    await expect(fig).toHaveAttribute('data-unit', 'month')
+    await expect(chart.locator('[data-slot="period-returns-colhead"]')).toHaveCount(12)
+    expect(await chart.locator('[data-slot="period-returns-total"]').count()).toBeGreaterThanOrEqual(2)
+    // 色阶：涨跌两端加中间，底色种类不止一两种，没有彩虹。
+    const cells = chart.locator('[data-slot="period-returns-cell"]')
+    const bg = await cells.evaluateAll((els) => new Set(els.map((e) => getComputedStyle(e).backgroundColor)).size)
+    expect(bg).toBeGreaterThan(3)
+    await cells.nth(2).hover()
+    await expect(chart.locator('[data-slot="period-returns-readout"]')).not.toBeEmpty()
+    await chart.getByRole('button', { name: '季' }).click()
+    await expect(fig).toHaveAttribute('data-unit', 'quarter')
+    await expect(chart.locator('[data-slot="period-returns-colhead"]')).toHaveCount(4)
+    await chart.getByRole('button', { name: '周' }).click()
+    await expect(fig).toHaveAttribute('data-unit', 'week')
+    expect(await chart.locator('[data-slot="period-returns-colhead"]').count()).toBeGreaterThanOrEqual(52)
+  })
+
+  test(`步进窗口矩阵（${theme}）：每窗口一行、通过与否带文字、汇总步进效率、锚定与滚动可切`, async ({ page }) => {
+    await open(page, theme, 'walk-forward-matrix')
+    const chart = section(page, 'walk-forward-matrix').locator('[data-gallery-walkforward="main"]')
+    const fig = chart.locator('[data-slot="walk-forward-matrix"]')
+    const rows = chart.locator('[data-slot="walk-forward-row"]')
+    await expect(rows).toHaveCount(8)
+    await expect(chart.locator('[data-slot="walk-forward-result"][data-state="pass"]')).toHaveCount(6)
+    await expect(chart.locator('[data-slot="walk-forward-result"][data-state="fail"]').first()).toContainText('未通过')
+    // 两套窗口都给时先显示锚定。步进效率 = 各窗口样本外年化的均值 ÷ 各窗口样本内年化的均值（年化 = (1+收益)^(1年/区间)-1）。
+    // 演示数据按这条定义算出：滚动 0.380（样本内年化均值 17.6%、样本外 6.7%），锚定 0.37。
+    await expect(fig).toHaveAttribute('data-mode', 'anchored')
+    await expect(chart.locator('[data-slot="walk-forward-efficiency"]')).toHaveText('37%')
+    await chart.getByRole('button', { name: '滚动' }).click()
+    await expect(fig).toHaveAttribute('data-mode', 'rolling')
+    await expect(rows).toHaveCount(8)
+    await expect(chart.locator('[data-slot="walk-forward-efficiency"]')).toHaveText('38%')
+    // 表不横向溢出、最右的结果列不被裁（视口 1200，面板宽度 ≥ 720）。
+    const scroll = chart.locator('.k-wf-scroll')
+    expect(await scroll.evaluate((e) => e.scrollWidth <= e.clientWidth)).toBe(true)
+    const resultBox = await chart.locator('[data-slot="walk-forward-result"]').first().boundingBox()
+    const scrollBox = await scroll.boundingBox()
+    expect(resultBox!.x + resultBox!.width).toBeLessThanOrEqual(scrollBox!.x + scrollBox!.width + 1)
+  })
+
+  test(`稳健性门（${theme}）：阈值与实测值都写出来、未测出不当通过、整组不过门`, async ({ page }) => {
+    await open(page, theme, 'robustness-gate')
+    const gate = section(page, 'robustness-gate').locator('[data-gallery-gate="main"]')
+    const checks = gate.locator('[data-slot="robustness-check"]')
+    await expect(checks).toHaveCount(5)
+    await expect(gate.locator('[data-slot="robustness-verdict"]')).toHaveAttribute('data-state', 'fail')
+    await expect(gate.locator('[data-slot="robustness-verdict"]')).toContainText('未过门')
+    // 邻域保留率约 10%、阈值 60%：不通过；没测出的那条写「未测出」，不当通过。
+    await expect(gate.locator('[data-slot="robustness-check"][data-id="retention"]')).toHaveAttribute(
+      'data-state',
+      'fail',
+    )
+    await expect(gate.locator('[data-slot="robustness-check"][data-id="trades"]')).toHaveAttribute(
+      'data-state',
+      'unknown',
+    )
+    await expect(gate.locator('[data-slot="robustness-check"][data-id="trades"]')).toContainText('未测出')
+    await expect(gate.locator('[data-slot="robustness-check"][data-id="drawdown"]')).toHaveAttribute(
+      'data-state',
+      'pass',
+    )
+    for (let i = 0; i < 5; i++) await expect(checks.nth(i)).toContainText(/通过|未测出/)
+  })
+
   test(`资金流向桑基图（${theme}）：节点与链路、斜纹重估、悬停读数、点节点钉住上下游、键盘走、开关、表格视图、有环`, async ({
     page,
   }) => {
@@ -7450,6 +7635,174 @@ for (const theme of THEMES) {
       // Max：把余额填进输入框。
       await panel.getByRole('button', { name: '全部' }).click()
       await expect(panel.getByRole('textbox', { name: '卖出' })).toHaveValue('25000')
+    })
+
+    test('OrderTicket：买卖两栏并排，按成本算张数，改杠杆成本不变，超可用报错，模板按方向填，按风险要止损，平仓只减仓', async ({
+      page,
+    }) => {
+      await open(page, theme, 'order-ticket')
+      const ticket = section(page, 'order-ticket').locator('[data-slot="order-ticket"]').first()
+      const buy = ticket.locator('[data-slot="ticket-form"][data-side="buy"]')
+      const sell = ticket.locator('[data-slot="ticket-form"][data-side="sell"]')
+      const slot = (form: typeof buy, name: string) => form.locator(`[data-slot="${name}"]`)
+      // 版式照 OKX：两栏并排（买在左、卖在右），各有自己的下单钮。
+      await expect(buy).toBeVisible()
+      await expect(sell).toBeVisible()
+      const [left, right] = [await buy.boundingBox(), await sell.boundingBox()]
+      expect(left!.x + left!.width).toBeLessThanOrEqual(right!.x)
+      expect(Math.abs(left!.y - right!.y)).toBeLessThan(2)
+      // 10 USDT、100 倍、开平各 0.05%：10 / 0.011 = 909.09 → 1.51 张，占用 9.97。
+      await expect(slot(buy, 'ticket-size')).toContainText('1.51 Cont')
+      await expect(slot(buy, 'ticket-cost')).toContainText('9.97 USDT')
+      await expect(slot(buy, 'ticket-rr')).toContainText('3.17 : 1')
+      // 可开：250 / 0.011 / 600 = 37.87 张。
+      await expect(slot(buy, 'ticket-max')).toContainText('37.87 Cont')
+      // 改杠杆到 10：成本框还是 10，张数变成 0.16（10 / 0.101 = 99.01 → 0.165 → 0.16），两栏都变。
+      await ticket.locator('[data-slot="ticket-leverage"]').fill('10')
+      await expect(slot(buy, 'ticket-amount')).toHaveValue('10')
+      await expect(slot(buy, 'ticket-size')).toContainText('0.16 Cont')
+      await expect(slot(sell, 'ticket-size')).toContainText('0.16 Cont')
+      await ticket.locator('[data-slot="ticket-leverage"]').fill('100')
+      // 超过可用 250：这一栏报错、下单钮禁用，另一栏不受影响。
+      await slot(buy, 'ticket-amount').fill('300')
+      await expect(slot(buy, 'ticket-issue')).toContainText('available balance')
+      await expect(slot(buy, 'ticket-submit')).toBeDisabled()
+      await expect(slot(sell, 'ticket-submit')).toBeEnabled()
+      await slot(buy, 'ticket-amount').fill('10')
+      await expect(slot(buy, 'ticket-submit')).toBeEnabled()
+      // 卖栏：勾止盈止损，出场模板按空头方向填（止盈在下、止损在上，1% / 0.5%）。
+      await sell.getByRole('checkbox').click()
+      await sell.getByRole('combobox', { name: 'Exit template' }).click()
+      await page.getByRole('option', { name: /Scalp/ }).click()
+      await expect(slot(sell, 'ticket-take-profit')).toHaveValue('59400.0')
+      await expect(slot(sell, 'ticket-stop-loss')).toHaveValue('60300.0')
+      // 按风险：止损填在盈利一侧报错；填对了按风险算张数（50 / (3 + 0.3 + 0.3015) = 13.88）。
+      await sell.getByRole('combobox', { name: 'Size by' }).click()
+      await page.getByRole('option', { name: 'Risk' }).click()
+      await slot(sell, 'ticket-amount').fill('50')
+      await slot(sell, 'ticket-stop-loss').fill('59000')
+      await expect(slot(sell, 'ticket-issue')).toContainText('profit side')
+      await slot(sell, 'ticket-stop-loss').fill('60300')
+      await expect(slot(sell, 'ticket-size')).toContainText('13.88 Cont')
+      await slot(sell, 'ticket-submit').click()
+      const out = section(page, 'order-ticket').locator('output').first()
+      await expect(out).toContainText('open sell 13.88')
+      // 平仓页：钮上的字换成平空 / 平多，下的是只减仓的单，不显示保证金。
+      await ticket.getByRole('button', { name: 'Close', exact: true }).click()
+      await expect(slot(buy, 'ticket-submit')).toHaveText('Close short')
+      await expect(slot(buy, 'ticket-margin')).toHaveCount(0)
+      await slot(buy, 'ticket-amount').fill('2')
+      await slot(buy, 'ticket-submit').click()
+      await expect(out).toContainText('close buy 2')
+    })
+
+    test('PanelTabs：工具跟着当前页签换，「+」带上当前页签的种类，移除与键盘，窄了工具落到第二行、页签收进「…」', async ({
+      page,
+    }) => {
+      await open(page, theme, 'panel-tabs')
+      const area = section(page, 'panel-tabs')
+      const bar = area.locator('[data-slot="panel-tabs"]').first()
+      const tab = (name: string | RegExp) => bar.getByRole('tab', { name })
+      const tools = bar.locator('[data-slot="panel-tab-tools"]')
+      await bar.evaluate((el) => ((el.parentElement as HTMLElement).style.width = '720px'))
+      await expect(bar.getByRole('tab')).toHaveCount(3)
+      // 当前是 K 线：栏上是 K 线的工具（周期、指标、画线），页签带状态点与当前对象。
+      await expect(tab(/^Live Chart/)).toHaveAttribute('aria-selected', 'true')
+      await expect(bar).toHaveAttribute('data-kind', 'chart')
+      await expect(tools.getByRole('button', { name: 'Indicators' })).toBeVisible()
+      await expect(bar.locator('[data-slot="panel-tab-context"]')).toHaveText('BTCUSDT · 15m')
+      await tools.getByRole('button', { name: '1H', exact: true }).click()
+      await expect(bar.locator('[data-slot="panel-tab-context"]')).toHaveText('BTCUSDT · 1H')
+      // 宽度够：工具与页签同一行。
+      await expect(bar).not.toHaveAttribute('data-stacked', '')
+      // 切到委托表：工具换成表的那一套，K 线的没了。
+      await tab(/Open orders/).click()
+      await expect(bar).toHaveAttribute('data-kind', 'table')
+      await expect(tools.getByRole('button', { name: 'Columns' })).toBeVisible()
+      await expect(bar.getByRole('button', { name: 'Indicators' })).toHaveCount(0)
+      // 没有工具的页签：不留空的工具区。
+      await tab('Info').click()
+      await expect(tools).toHaveCount(0)
+      // 「+」把当前页签的种类带给宿主。
+      await tab(/Open orders/).click()
+      await bar.getByRole('button', { name: 'Add component' }).click()
+      await expect(area.locator('output').first()).toHaveText('catalog asked next to: table')
+      await expect(tab(/Feed/)).toHaveAttribute('aria-selected', 'true')
+      // 悬停才出「×」；固定的页签没有「×」，Delete 也关不掉。
+      const close = bar.getByRole('button', { name: 'Remove Feed' })
+      await page.mouse.move(0, 0) // 新页签正好长在指针底下，先挪开
+      await expect(close).toHaveCSS('opacity', '0')
+      await tab(/Feed/).hover()
+      await expect(close).toHaveCSS('opacity', '1')
+      await close.click()
+      await expect(tab(/Feed/)).toHaveCount(0)
+      await expect(bar.getByRole('button', { name: 'Remove Chart' })).toHaveCount(0)
+      await tab(/Chart/).focus()
+      await page.keyboard.press('Delete')
+      await expect(tab(/Chart/)).toHaveCount(1)
+      // 键盘：→ 移焦点不切换，Enter 切换，Delete 移除并把焦点给相邻的页签。
+      await page.keyboard.press('ArrowRight')
+      await expect(tab(/Open orders/)).toBeFocused()
+      await expect(tab(/Chart/)).toHaveAttribute('aria-selected', 'true')
+      await page.keyboard.press('Enter')
+      await expect(tab(/Open orders/)).toHaveAttribute('aria-selected', 'true')
+      await page.keyboard.press('Delete')
+      await expect(tab(/Open orders/)).toHaveCount(0)
+      await expect(tab('Info')).toBeFocused()
+      // 变窄：K 线的工具一行放不下，落到第二行，页签留在第一行。
+      await tab(/Chart/).click()
+      await bar.evaluate((el) => ((el.parentElement as HTMLElement).style.width = '380px'))
+      await expect(bar).toHaveAttribute('data-stacked', '')
+      const [tabBox, toolBox] = [await tab(/Chart/).boundingBox(), await tools.boundingBox()]
+      expect(toolBox!.y).toBeGreaterThan(tabBox!.y + tabBox!.height - 2)
+      // 再窄：放不下的页签收进「…」，当前页签留在栏上。
+      await bar.evaluate((el) => ((el.parentElement as HTMLElement).style.width = '260px'))
+      const more = bar.getByRole('button', { name: 'More tabs' })
+      await expect(more).toBeVisible()
+      await expect(bar.getByRole('tab', { selected: true })).toBeVisible()
+      await more.click()
+      await expect(page.getByRole('menuitem').first()).toBeVisible()
+      await page.keyboard.press('Escape')
+    })
+
+    test('ComponentCatalog：推荐在最前，点卡片加进或移出，用不了的点不动，按类别与搜索筛', async ({ page }) => {
+      await open(page, theme, 'component-catalog')
+      const catalog = section(page, 'component-catalog').locator('[data-slot="component-catalog"]').first()
+      const card = (id: string) => catalog.locator(`[data-slot="catalog-item"][data-id="${id}"]`)
+      const groups = catalog.locator('[data-slot="catalog-group"]')
+      await expect(groups.first()).toHaveAttribute('data-group', 'recommended')
+      await expect(card('chart')).toHaveAttribute('aria-pressed', 'true')
+      await expect(card('book')).toHaveAttribute('aria-pressed', 'false')
+      await card('book').click()
+      await expect(card('book')).toHaveAttribute('aria-pressed', 'true')
+      await card('book').click()
+      await expect(card('book')).toHaveAttribute('aria-pressed', 'false')
+      // 用不了的：置灰、带原因、点了不变。
+      await expect(card('company')).toHaveAttribute('aria-disabled', 'true')
+      await expect(card('company')).toContainText('Stocks only')
+      await card('company').click({ force: true })
+      await expect(card('company')).toHaveAttribute('aria-pressed', 'false')
+      // 选类别：只剩这一类，没有推荐组。
+      await catalog.getByRole('tab', { name: 'Trading' }).click()
+      await expect(groups).toHaveCount(1)
+      await expect(card('ticket')).toBeVisible()
+      await catalog.getByRole('tab', { name: 'All' }).click()
+      // 搜索按别名找，搜不到写空态。
+      await catalog.getByRole('searchbox').fill('depth')
+      await expect(catalog.locator('[data-slot="catalog-item"]')).toHaveCount(1)
+      await expect(card('book')).toBeVisible()
+      await catalog.getByRole('searchbox').fill('zzz')
+      await expect(catalog.locator('[data-slot="catalog-empty"]')).toBeVisible()
+      // 搭配推荐：订单表声明适合放在 K 线旁边，所以在推荐组；加进工作区后就不再推荐，回到自己的类别。
+      await catalog.getByRole('searchbox').fill('')
+      await expect(groups.first().locator('[data-id="book"]')).toHaveCount(1)
+      await card('book').click()
+      await expect(groups.first().locator('[data-id="book"]')).toHaveCount(0)
+      await expect(card('book')).toHaveAttribute('aria-pressed', 'true')
+      // 重置：回到起始的三个。
+      await catalog.getByRole('button', { name: 'Reset layout' }).click()
+      await expect(card('book')).toHaveAttribute('aria-pressed', 'false')
+      await expect(groups.first().locator('[data-id="book"]')).toHaveCount(1)
     })
 
     test('Button effect：dot-morph 悬停点拉成竖条，clip-corners 悬停切口变大，magnetic 靠近时偏向指针、离开回位', async ({

@@ -6,6 +6,8 @@
 import { useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
 import { cn } from '../../lib/cn.ts'
 import { useValueFlash } from '../../lib/live.ts'
+import { AuctionStepSpark } from '../../cn/auction-step.tsx'
+import { BoardMark } from '../../cn/board-mark.tsx'
 import { LimitStatus } from '../../cn/limit-status.tsx'
 import { StreakBadge } from '../../cn/streak-badge.tsx'
 import { SymbolMark } from '../../quotes/symbol-mark.tsx'
@@ -13,7 +15,7 @@ import { ToneText } from '../../quotes/tone-text.tsx'
 import { barRatio, type ResolvedCell } from './columns.ts'
 
 /** 数值类的列才闪：文本、时间、买卖、品种变了不闪（闪色只表达涨跌）。 */
-export const FLASH_TYPES: ReadonlySet<string> = new Set(['number', 'price', 'quantity', 'pnl', 'change'])
+export const FLASH_TYPES: ReadonlySet<string> = new Set(['number', 'price', 'quantity', 'pnl', 'change', 'cnAmount'])
 
 /** 一个数值格：值变了闪涨跌色（共用层 useValueFlash，1 秒节流）；格子是定位与滚动的最小单元，key 换掉让 CSS 动画重放。 */
 export function FlashCell({
@@ -60,6 +62,13 @@ export function CellBody({
   }
   if (resolved.limitStatus) {
     return <LimitStatus status={resolved.limitStatus.value} labels={resolved.limitStatus.labels} />
+  }
+  if (resolved.board) {
+    const { kind, display, labels } = resolved.board
+    return <BoardMark kind={kind} display={display} labels={labels} />
+  }
+  if (resolved.auctionStep) {
+    return <AuctionStepSpark points={resolved.auctionStep.points} prevClose={resolved.auctionStep.prevClose} />
   }
   if (resolved.progress) {
     const { done, total, ratio } = resolved.progress

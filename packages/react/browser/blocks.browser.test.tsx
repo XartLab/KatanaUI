@@ -4,8 +4,10 @@ import { beforeAll, afterAll, describe, expect, test, vi } from 'vite-plus/test'
 import { page } from 'vite-plus/test/browser'
 import { AttributionBarsUsage } from '../gallery/usage/AttributionBarsUsage.tsx'
 import { ColumnSetTabsUsage } from '../gallery/usage/ColumnSetTabsUsage.tsx'
+import { ComponentCatalogUsage } from '../gallery/usage/ComponentCatalogUsage.tsx'
 import { ConsensusBlockUsage } from '../gallery/usage/ConsensusBlockUsage.tsx'
 import { DataGridUsage } from '../gallery/usage/DataGridUsage.tsx'
+import { DepthChartUsage } from '../gallery/usage/DepthChartUsage.tsx'
 import { DecisionQueueUsage } from '../gallery/usage/DecisionQueueUsage.tsx'
 import { EmptyStateUsage } from '../gallery/usage/EmptyStateUsage.tsx'
 import { EstimateBadgeUsage } from '../gallery/usage/EstimateBadgeUsage.tsx'
@@ -15,7 +17,11 @@ import { HypothesisLedgerUsage } from '../gallery/usage/HypothesisLedgerUsage.ts
 import { MeterUsage } from '../gallery/usage/MeterUsage.tsx'
 import { NewsFeedUsage } from '../gallery/usage/NewsFeedUsage.tsx'
 import { NewsReaderUsage } from '../gallery/usage/NewsReaderUsage.tsx'
+import { OrderBookUsage } from '../gallery/usage/OrderBookUsage.tsx'
+import { OrderTicketUsage } from '../gallery/usage/OrderTicketUsage.tsx'
 import { PanelFrameUsage } from '../gallery/usage/PanelFrameUsage.tsx'
+import { PositionCalculatorUsage } from '../gallery/usage/PositionCalculatorUsage.tsx'
+import { PanelTabsUsage } from '../gallery/usage/PanelTabsUsage.tsx'
 import { RegimeStripUsage } from '../gallery/usage/RegimeStripUsage.tsx'
 import { SeriesExplorerUsage } from '../gallery/usage/SeriesExplorerUsage.tsx'
 import { SmallMultiplesUsage } from '../gallery/usage/SmallMultiplesUsage.tsx'
@@ -25,10 +31,16 @@ import { SwapPanelUsage } from '../gallery/usage/SwapPanelUsage.tsx'
 import { SymbolGalaxyUsage } from '../gallery/usage/SymbolGalaxyUsage.tsx'
 import { SystemMonitorUsage } from '../gallery/usage/SystemMonitorUsage.tsx'
 import { ToolbarUsage } from '../gallery/usage/ToolbarUsage.tsx'
+import { TradeTapeUsage } from '../gallery/usage/TradeTapeUsage.tsx'
 import { TransmissionChainUsage } from '../gallery/usage/TransmissionChainUsage.tsx'
 import { UptimeBarsUsage } from '../gallery/usage/UptimeBarsUsage.tsx'
+import { PortfolioRunGridUsage } from '../gallery/usage/PortfolioRunGridUsage.tsx'
+import { ReplayTransportUsage } from '../gallery/usage/ReplayTransportUsage.tsx'
+import { RunModeBadgeUsage } from '../gallery/usage/RunModeBadgeUsage.tsx'
+import { WhiteboardUsage } from '../gallery/usage/WhiteboardUsage.tsx'
 import { WorkspaceTabsUsage } from '../gallery/usage/WorkspaceTabsUsage.tsx'
 import { GridSummaryRowUsage } from '../gallery/usage/GridSummaryRowUsage.tsx'
+import { UseUndoStackUsage } from '../gallery/usage/UseUndoStackUsage.tsx'
 import { mount } from './render.tsx'
 
 const items: Record<string, React.ReactNode> = {
@@ -37,6 +49,7 @@ const items: Record<string, React.ReactNode> = {
   'consensus-block': <ConsensusBlockUsage />,
   'data-grid': <DataGridUsage />,
   'decision-queue': <DecisionQueueUsage />,
+  'depth-chart': <DepthChartUsage />,
   'empty-state': <EmptyStateUsage />,
   'estimate-badge': <EstimateBadgeUsage />,
   'event-timeline': <EventTimelineUsage />,
@@ -45,23 +58,34 @@ const items: Record<string, React.ReactNode> = {
   meter: <MeterUsage />,
   'news-feed': <NewsFeedUsage />,
   'news-reader': <NewsReaderUsage />,
+  'order-book': <OrderBookUsage />,
+  'order-ticket': <OrderTicketUsage />,
   'panel-frame': <PanelFrameUsage />,
+  'position-calculator': <PositionCalculatorUsage />,
+  'panel-tabs': <PanelTabsUsage />,
+  'component-catalog': <ComponentCatalogUsage />,
   'regime-strip': <RegimeStripUsage />,
   'series-explorer': <SeriesExplorerUsage />,
   'small-multiples': <SmallMultiplesUsage />,
   'status-bar': <StatusBarUsage />,
   'strategy-report': <StrategyReportUsage />,
+  'portfolio-run-grid': <PortfolioRunGridUsage />,
+  'replay-transport': <ReplayTransportUsage />,
+  'run-mode-badge': <RunModeBadgeUsage />,
   'swap-panel': <SwapPanelUsage />,
   'symbol-galaxy': <SymbolGalaxyUsage />,
   'system-monitor': <SystemMonitorUsage />,
   toolbar: <ToolbarUsage />,
+  'trade-tape': <TradeTapeUsage />,
   'transmission-chain': <TransmissionChainUsage />,
   'uptime-bars': <UptimeBarsUsage />,
   'grid-summary-row': <GridSummaryRowUsage />,
+  'use-undo-stack': <UseUndoStackUsage />,
+  whiteboard: <WhiteboardUsage />,
   'workspace-tabs': <WorkspaceTabsUsage />,
 }
 
-const settle: Record<string, number> = { 'page-preloader': 1500 }
+const settle: Record<string, number> = { 'page-preloader': 1500, whiteboard: 600 }
 
 // Freeze the clock (Date only, so timers still run): today/relative-time cells must not drift between days.
 beforeAll(() => {

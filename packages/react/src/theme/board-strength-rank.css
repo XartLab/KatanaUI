@@ -1,0 +1,42 @@
+/* SPDX-License-Identifier: MIT */
+/* BoardStrengthRank 板块强度排名（#11）。表格是 DataGrid 的皮肤；这里只加名次格（名次粗体 + 变化小字）与行内强度线的尺寸。
+   名次变化：升取 --k-tone-up-foreground、降取 --k-tone-down-foreground（跟 data-updown 换红绿），持平与新上榜次要灰；文字带 ▲ / ▼，不只靠颜色。 */
+.k-bsr {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: var(--space-3) 0;
+  color: var(--k-content-primary-foreground);
+  font: var(--text-data) var(--font-sans);
+}
+.k-bsr-rank {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  font-variant-numeric: tabular-nums;
+}
+.k-bsr-no {
+  min-width: 1.5em;
+  font-weight: 700;
+  text-align: right;
+}
+.k-bsr-move {
+  color: var(--k-content-secondary-foreground);
+  font: 500 11px/14px var(--font-sans);
+}
+.k-bsr-move[data-tone='up'] {
+  color: var(--k-tone-up-foreground);
+}
+.k-bsr-move[data-tone='down'] {
+  color: var(--k-tone-down-foreground);
+}
+.k-bsr-spark {
+  display: block;
+  width: 96px;
+  height: 20px;
+}
+.k-bsr-empty {
+  margin: auto;
+  padding: var(--space-6);
+  color: var(--k-content-secondary-foreground);
+}

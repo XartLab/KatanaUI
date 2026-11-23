@@ -67,6 +67,8 @@ export type EquityCurveProps = {
   onWindowChange?: (window: BrushWindow) => void
   onExport?: () => void
   onFullscreen?: () => void
+  /** Copy-image handler (camera button; also give labels.actions.copyImage); receives this chart's figure for copyImage. 参数交给 copyImage。 */
+  onCopyImage?: (chart: HTMLElement) => void
   /** 来源与口径行（读自哪里、几点的数）。 */
   source?: string
   className?: string
@@ -114,6 +116,7 @@ export function EquityCurve({
   onWindowChange,
   onExport,
   onFullscreen,
+  onCopyImage,
   source,
   className,
 }: EquityCurveProps) {
@@ -212,6 +215,7 @@ export function EquityCurve({
           onTableView={setTable}
           onExport={onExport}
           onFullscreen={onFullscreen}
+          onCopyImage={onCopyImage}
         />
       </div>
 

@@ -61,6 +61,9 @@
 | `fit` | `boolean` | — | Height follows the content (a small table in a dialog): no scrollbar up to maxHeight px. |
 | `maxHeight` | `number` | — | Largest height in px when fit is set. |
 | `live` | `boolean` | `false` | Live data mode (default false): numeric cells (number, price, quantity, pnl, change) flash the up or down color when their value changes, rows glide to their new place when the sort order changes, and newly added rows are highlighted briefly. |
+| `rowOrder` | `readonly string[]` | — | Manual row order (controlled): row ids in display order; ids not in it go last. |
+| `onRowOrderChange` | `(next: string[]) => void` | — | Called with the whole new order after a drag, Alt+Up / Alt+Down or a move item in the row menu. |
+| `rowSection` | `(row: Row) => ReactNode` | — | Section header rows (watchlist sections): return the heading for a row that is a section header, null / undefined for a normal row. |
 | `classNames` | `Partial<Record<GridSlot, string>>` | `{}` | Extra class names per part. |
 
 ### 列类型 ColumnType
@@ -108,6 +111,14 @@
 ### reorderColumn / moveColumn / setColumnVisible / setColumnFixed / applyColumnSet / activeColumnSet
 
 列摆法（layout）的纯函数，列头菜单、拖动重排与 ColumnPicker 用的同一份，都返回新数组。reorderColumn(layout, from, to) 拖到目标位置；moveColumn(layout, id, ±1) 跳过藏起来的列移一格；setColumnVisible 不许藏最后一列；setColumnFixed 固定的列挨着排在最前；applyColumnSet(layout, columns) 套列集；activeColumnSet(layout, sets) 返回看得见的列恰好等于的那个列集 id。
+
+### useRowOrder({ ids, value?, defaultValue?, onValueChange?, isSection? })
+
+手动行序（#77 G7，照 TradingView 自选表拖放排序）：返回 order、move(ids, before)、moveBy(ids, ±1)、reset 与 gridProps（rowOrder、onRowOrderChange，直接摊到 DataGrid 上）。要存盘把 value 接 usePersistedState。DataGrid 上配 rowSection 就有分节标题行：拖标题带整节走。
+
+### moveRows / moveRowsBy / normalizeOrder / expandMoving / applyRowOrder / mergeVisibleOrder
+
+行序的纯函数：moveRows(order, ids, before | null, isSection?) 挪到某行之前或最后、多选保持相对次序、拖整节时落点吸到节边界；moveRowsBy 上下一格（普通行跨过标题就换节，整节跨过相邻一节）；normalizeOrder 去掉不在的行、新行接最后；mergeVisibleOrder 过滤中挪完填回整份次序，藏起来的行不动（DataGrid 给了 rowOrder 时自己做）。
 
 ### tableCsv(header, rows)
 
@@ -190,5 +201,7 @@ DataGrid
 - `Esc`：清掉选择（右键菜单开着时归菜单）
 - `列头右键`：列头菜单：排序、固定、隐藏、左右移、重置列
 - `拖动列头`：重排列（放在目标列的位置）
+- `拖动行`：挪行（给了 onRowOrderChange、没按列排序时；选中的几行一起走；拖到一半 Esc 取消）
+- `Alt+↑ / Alt+↓`：把选中的行（没选就是键盘所在的行）上下挪一格；按列排序时读出原因
 - `菜单键 / Shift+F10`：开右键菜单（宿主的 matchKey 提供）
 - `Ctrl+C / Ctrl+S / Ctrl+R`：复制所选行 / 导出 CSV / 重置列（宿主的键位表）

@@ -16,7 +16,10 @@ const T = tokens as unknown as {
   motion: { tokens: Token[] }
 }
 
-const Lede = ({ children }: { children: ReactNode }) => <p className="gal-lede">{children}</p>
+/** 数据浓度档（tokens.json 的 characteristics k-heat-*），数据可视化页与语义特征页都画这一排。 */
+export const HEAT = ['k-heat-0', 'k-heat-1', 'k-heat-2', 'k-heat-3', 'k-heat-4', 'k-heat-5'] as const
+
+export const Lede = ({ children }: { children: ReactNode }) => <p className="gal-lede">{children}</p>
 const Src = ({ href, children }: { href: string; children: ReactNode }) => (
   <p className="gal-fd-source">
     出处：
@@ -26,7 +29,7 @@ const Src = ({ href, children }: { href: string; children: ReactNode }) => (
   </p>
 )
 
-function Table({ head, rows }: { head: readonly string[]; rows: readonly (readonly ReactNode[])[] }) {
+export function Table({ head, rows }: { head: readonly string[]; rows: readonly (readonly ReactNode[])[] }) {
   return (
     <table className="gal-fd-table">
       <thead>
@@ -402,7 +405,7 @@ function CursorPage() {
 function AssetsPage() {
   return (
     <>
-      <Lede>图标、品牌标与品种徽标。</Lede>
+      <Lede>图标、品牌标、品种徽标与徽标来源。</Lede>
       <h2>图标</h2>
       <ul className="gal-list">
         <li>只用 lucide-react（ISC）；控制台专用的少数图标自己画，同样 24 栅格、1.75 线宽。</li>
@@ -438,6 +441,86 @@ function AssetsPage() {
         </span>
       </div>
       <p>没有授权的公司标一律用字母圆标（SymbolMark），不抓别人的 logo。</p>
+      <h2>徽标</h2>
+      <p>
+        品种、公司、币种、交易所的图由 <code>@katana-ui/logos</code> 解析（#94，2026-11-19）：应用根上包一次
+        LogoProvider，SymbolMark 没给 src 时按来源顺序逐个试，都失败退回字母。
+      </p>
+      <ul className="gal-list">
+        <li>
+          加密币用许可清楚的开源包：内置 <code>web3icons()</code> 取 @web3icons/core（MIT，1790 个币、30
+          个交易所），每个 SVG 按需载入（1–3 KB 一个）；cryptocurrency-icons（CC0）用命令行下载补缺。
+        </li>
+        <li>
+          币标只配 assetClass crypto：BTCUSDT、BTC-PERP、BINANCE:BTC 这类写法自动认出，裸代码 META
+          不配币标（可能是股票）。
+        </li>
+        <li>
+          企业徽标是商标，不进本仓库也不进包：应用自托管（selfHosted），或用徽标服务（urlTemplate，如 Logo.dev），key
+          由应用给。
+        </li>
+        <li>
+          自托管按「代码.场所」命名，场所用 ISO MIC：<code>600519.XSHG.svg</code>、<code>00700.XHKG.svg</code>、
+          <code>AAPL.XNAS.svg</code>，再退到 <code>AAPL.svg</code>；币在 <code>crypto/BTC.svg</code>，交易所在{' '}
+          <code>venues/binance.svg</code>。
+        </li>
+        <li>
+          A 股、港股没有开源合集，三条路，都按「代码.场所」存进应用自己的目录，失败的不中断、写 manifest.json：
+          <ul>
+            <li>
+              付费包下载后自托管：<code>companiesLogo({'{ token }'})</code>（companieslogo.com，沪{' '}
+              <code>600519.SS</code>、深 <code>000001.SZ</code>、港股 <code>0700.HK</code>
+              ，条款允许下载后自托管；北交所暂不支持），
+              <code>katana-logos fetch --provider companieslogo --token …</code>；EODHD 也有 60 多个交易所的徽标包。
+            </li>
+            <li>
+              按官网域名取：<code>logoDev({'{ token }'})</code>（Logo.dev 按代码的接口只收 NYSE /
+              NASDAQ，按域名的接口全球通用）或 <code>byDomain(模板)</code>；域名由应用的 <code>domainMap</code>
+              （「代码.场所」→ 官网域名，如数据层从公司资料里拿）给， 命令行用 <code>--domains map.json</code>。
+            </li>
+            <li>
+              只能热链：<code>logoKit({'{ token }'})</code>（LogoKit，
+              <code>img.logokit.com/ticker/…&amp;fallback=404</code>，没标回 404 由我们退回字母）；免费档
+              64px、要放署名链接、条款不许下载自托管（命令行拒绝它），每个应用 / 用户用自己的 publishable key。A
+              股后缀默认 <code>.SZ</code> / <code>.SS</code>（它的文档没写，待拿 key 实测后再定，可用{' '}
+              <code>suffix</code> 改），北交所不映射。
+            </li>
+            <li>
+              自己整理：按 <code>600519.XSHG.svg</code> 命名放进自托管目录，用 <code>selfHosted</code> 读。
+            </li>
+          </ul>
+        </li>
+        <li>
+          全市场一次铺满用 <code>katana-logos sync --list market.csv --out public/logos</code>（清单列
+          symbol、venue（ISO MIC）、name、domain，A 股、美股、港股、加密币放一份）。推荐：免费源为主（2026-11-19
+          定，不付费）——官网图标（清单的 domain，其次 Wikidata 的官网；SVG → apple-touch-icon → 最大的 icon →
+          /apple-touch-icon.png → /favicon.ico → Google） → Wikidata 徽标（P154，按交易所 + 代码批量查，每批 200）→
+          web3icons → 都没有画字母；companieslogo（沪深 .SS / .SZ，许下载自托管）、
+          付费包、LogoKit（只登记热链）写进配置才用。
+        </li>
+        <li>
+          质量过滤：小于 32px、Google 的 16px 地球占位、宽高比大于 2.2
+          的横向字标、全透明或一整块单色都丢，记原因，接着试下一个来源； coverage.md
+          按市场列命中率、来源占比、被丢原因与缺失清单。
+        </li>
+        <li>增量：来源没变、没过 --refresh 天的跳过；并发默认 6，失败重试 2 次，一个品种出错不影响别的。</li>
+        <li>不抓任何平台（TradingView、东方财富、雪球、富途等）的徽标 CDN：那是平台自有资产，条款不允许转用。</li>
+        <li>
+          不用 TradingView 等平台自己的 CDN 上的图（如它的 moutai.svg）：那是它的私有资源，没有授权；key
+          一律由应用给，包里不写死。
+        </li>
+        <li>
+          代码规范化：BTCUSDT / BTC-USDT / BTC/USDT / BTCUSDT.P → BTC；600519.SH、sh600519 → 600519.XSHG；0700.HK →
+          00700.XHKG。
+        </li>
+        <li>没有图就画字母圆标；同一个地址失败一次就不再请求（失败缓存），成功的下次先用。</li>
+        <li>文档站的股票图是自绘示意图（public/logos-demo/），不是这些公司的标志。</li>
+      </ul>
+      <p className="gal-note">
+        与上面「不抓别人的
+        logo」的关系：仍不抓、不收进仓库；应用自己有授权（自托管或徽标服务的条款）时由它配来源。Logo.dev
+        不默认接（2026-11-19 定），要用时应用自己给 key。
+      </p>
     </>
   )
 }
@@ -460,9 +543,37 @@ function DataVizPage() {
       <h2>分类色（series）</h2>
       {swatches(pick('series-'))}
       <p>不同的东西（策略、品种）。最多 7 个，再多合进「其他」。</p>
-      <h2>顺序色阶（seq）</h2>
+      <h2>数据浓度（heat）</h2>
+      <div className="gal-fd-ramp">
+        {HEAT.map((name) => (
+          <span key={name}>
+            <i style={{ background: `var(--${name})` }} />
+            <small>{name}</small>
+          </span>
+        ))}
+      </div>
+      <ul className="gal-list">
+        <li>
+          有大小、没有正负的数据（热力格、直方柱、分层次序、成交量、密度、点阵面）一律用
+          --k-heat-1…5，越大越亮；--k-heat-0 是空档（没数据或零值的格）。
+        </li>
+        <li>数值：主文字色混透明 6 / 16 / 30 / 46 / 64 / 84%（heat-0…5），换主题跟着主文字色走，不另写色值。</li>
+        <li>
+          Graphite 压在 bg-100 上约 #161616 / #2f2f2f / #515151 / #797979 / #a6a6a6 / #d7d7d7；Console 约 #21201d /
+          #373531 / #55524c / #78746c / #9f9a8f / #cac4b6。
+        </li>
+        <li>
+          格上的字：heat-0…2 用 --k-heat-fg-low（主文字色，Graphite 在 heat-2 上 7.9:1），heat-3…5 用
+          --k-heat-fg-high（最底层底色，Graphite 在 heat-3 上 4.8:1、Console 4.2:1）。
+        </li>
+        <li>
+          品牌橙只给焦点角括号（#50）：顺序色阶 seq-100…600 是橙系，不再给数据用，token
+          留着只为别的项目兼容（2026-11-18，评审 #78 定）。
+        </li>
+      </ul>
+      <h2>顺序色阶（seq，不用于数据）</h2>
       {swatches(pick('seq-'))}
-      <p>有大小、没有正负（成交量、密度）。</p>
+      <p>旧的橙系顺序色阶，数据浓度改用上面的 heat；新代码不读。</p>
       <h2>发散色阶（div）</h2>
       {swatches(pick('div-'))}
       <p>有正负、有中点（涨跌幅、偏离）；跟 data-updown 走。</p>
