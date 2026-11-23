@@ -5842,6 +5842,42 @@
         }
       ]
     },
+    "CodeChip": {
+      "kind": "component",
+      "source": "src/quotes/cell-type.tsx",
+      "props": [
+        {
+          "name": "children",
+          "type": "ReactNode",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "CodeName": {
+      "kind": "component",
+      "source": "src/quotes/cell-type.tsx",
+      "props": [
+        {
+          "name": "children",
+          "type": "ReactNode",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
     "Collapsible": {
       "kind": "component",
       "source": "src/primitives/collapsible.tsx",
@@ -6376,6 +6412,42 @@
           "name": "suffix",
           "type": "string",
           "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "CompactValue": {
+      "kind": "component",
+      "source": "src/quotes/cell-type.tsx",
+      "props": [
+        {
+          "name": "locale",
+          "type": "string",
+          "required": false,
+          "description": "BCP 47 locale that picks the abbreviations (en-US: K/M/B/T, zh-CN: CJK myriad units); defaults to en-US."
+        },
+        {
+          "name": "digits",
+          "type": "number",
+          "required": false,
+          "description": "Decimal places of an abbreviated number; defaults to 2."
+        },
+        {
+          "name": "value",
+          "type": "number | null | undefined",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "unit",
+          "type": "string",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
           "description": ""
         }
       ]
@@ -18032,6 +18104,12 @@
           "description": "Logo image of the symbol mark; letters are drawn when omitted."
         },
         {
+          "name": "volume",
+          "type": "number",
+          "required": false,
+          "description": "Volume, abbreviated by locale (K/M/B or 万/亿); the column shows when labels.columns.vol is given."
+        },
+        {
           "name": "key",
           "type": "string",
           "required": true,
@@ -18073,6 +18151,12 @@
           "type": "(item: LadderItem) => void",
           "required": false,
           "description": ""
+        },
+        {
+          "name": "locale",
+          "type": "string",
+          "required": false,
+          "description": "封单额缩写用哪种语言（zh-CN 是 万 / 亿，en-US 是 K / M / B）；省略是 en-US。"
         },
         {
           "name": "rowActions",
@@ -18121,6 +18205,12 @@
           "type": "{ name: string; change: string; firstSeal: string; sealAmount: string; opens: string; industry: string }",
           "required": true,
           "description": ""
+        },
+        {
+          "name": "sealUnit",
+          "type": "string",
+          "required": false,
+          "description": "封单额后的单位小字（「CNY」）；locale 是中文（万 / 亿）时不写，中文缩写自带量级。省略不写单位。"
         },
         {
           "name": "summary",
@@ -18181,6 +18271,12 @@
           "type": "(item: LadderItem) => void",
           "required": false,
           "description": ""
+        },
+        {
+          "name": "locale",
+          "type": "string",
+          "required": false,
+          "description": "封单额缩写用哪种语言（zh-CN 是 万 / 亿，en-US 是 K / M / B）；省略是 en-US。"
         },
         {
           "name": "rowActions",
@@ -26968,6 +27064,18 @@
           "description": "Writes the last price; two decimals when omitted."
         },
         {
+          "name": "locale",
+          "type": "string",
+          "required": false,
+          "description": "Locale of the volume abbreviations (en-US K/M/B/T, zh-CN CJK myriad units); defaults to en-US."
+        },
+        {
+          "name": "volumeUnit",
+          "type": "string",
+          "required": false,
+          "description": "Unit written small after the volume (shares, USD)."
+        },
+        {
           "name": "value",
           "type": "string",
           "required": false,
@@ -27011,9 +27119,9 @@
       "props": [
         {
           "name": "columns",
-          "type": "{ name: string; trend: string; price: string; change: string }",
+          "type": "{ name: string; trend: string; price: string; change: string; volume?: string }",
           "required": true,
-          "description": "Text of the four header columns (name, trend, price, change)."
+          "description": "Text of the header columns (name, trend, price, change, and an optional volume column)."
         },
         {
           "name": "empty",
@@ -27068,6 +27176,18 @@
           "type": "FormatPrice",
           "required": false,
           "description": "Writes the last price; two decimals when omitted."
+        },
+        {
+          "name": "locale",
+          "type": "string",
+          "required": false,
+          "description": "Locale of the volume abbreviations (en-US K/M/B/T, zh-CN CJK myriad units); defaults to en-US."
+        },
+        {
+          "name": "volumeUnit",
+          "type": "string",
+          "required": false,
+          "description": "Unit written small after the volume (shares, USD)."
         },
         {
           "name": "value",
@@ -27152,6 +27272,12 @@
           "type": "string",
           "required": false,
           "description": "Logo image of the symbol mark; letters are drawn when omitted."
+        },
+        {
+          "name": "volume",
+          "type": "number",
+          "required": false,
+          "description": "Volume, abbreviated by locale (K/M/B or 万/亿); the column shows when labels.columns.vol is given."
         },
         {
           "name": "spark",
@@ -38963,6 +39089,30 @@
         }
       ]
     },
+    "UnitValue": {
+      "kind": "component",
+      "source": "src/quotes/cell-type.tsx",
+      "props": [
+        {
+          "name": "children",
+          "type": "ReactNode",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "unit",
+          "type": "string",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
     "UptimeBars": {
       "kind": "component",
       "source": "src/blocks/uptime-bars/uptime-bars.tsx",
@@ -39827,6 +39977,18 @@
           "description": "Writes a price or change amount; two decimals when omitted."
         },
         {
+          "name": "locale",
+          "type": "string",
+          "required": false,
+          "description": "Locale of the volume abbreviations (en-US K/M/B/T, zh-CN 万/亿); defaults to en-US."
+        },
+        {
+          "name": "volumeUnit",
+          "type": "string",
+          "required": false,
+          "description": "Unit written small after the volume."
+        },
+        {
           "name": "sort",
           "type": "WatchlistSort | null",
           "required": false,
@@ -39870,9 +40032,9 @@
       "props": [
         {
           "name": "columns",
-          "type": "Record<WatchlistSortKey, string>",
+          "type": "Record<Exclude<WatchlistSortKey, 'vol'>, string> & { vol?: string }",
           "required": true,
-          "description": "Header text of the four columns."
+          "description": "Header text of the four columns, plus an optional volume column (vol)."
         },
         {
           "name": "list",
@@ -39915,6 +40077,18 @@
           "type": "FormatPrice",
           "required": false,
           "description": "Writes a price or change amount; two decimals when omitted."
+        },
+        {
+          "name": "locale",
+          "type": "string",
+          "required": false,
+          "description": "Locale of the volume abbreviations (en-US K/M/B/T, zh-CN 万/亿); defaults to en-US."
+        },
+        {
+          "name": "volumeUnit",
+          "type": "string",
+          "required": false,
+          "description": "Unit written small after the volume."
         },
         {
           "name": "sort",
@@ -40005,6 +40179,12 @@
           "type": "string",
           "required": false,
           "description": "Logo image of the symbol mark; letters are drawn when omitted."
+        },
+        {
+          "name": "volume",
+          "type": "number",
+          "required": false,
+          "description": "Volume, abbreviated by locale (K/M/B or 万/亿); the column shows when labels.columns.vol is given."
         }
       ]
     },

@@ -4,7 +4,8 @@
    汇总读数与分组头取 Arc UI（大号读数、粗体分组头加细进度条、层间留白）。精密仪器语言只留：选中行左侧 2px 强调条（面板编号与来源行在外壳上）。
    状态色走语义 token（封住 pnl-up、炸板琥珀、跌停 pnl-down）；橙色只给选中条。淡显只作用在文字，状态胶囊保持全亮。 */
 .k-ladder {
-  --ladder-cols: minmax(120px, 1.7fr) 68px 52px 68px 36px minmax(56px, 1fr) 52px;
+  /* 封单额列 92：放得下「8800.00 万 CNY」（缩写 + 单位小字，#92；原来 68 只放数字）。 */
+  --ladder-cols: minmax(120px, 1.7fr) 68px 52px 92px 36px minmax(56px, 1fr) 52px;
   display: flex;
   flex: 1 1 auto;
   flex-direction: column;
@@ -185,8 +186,8 @@
   color: var(--k-content-secondary-foreground);
 }
 
-/* 选中行与「没涨停」胶囊的底比 ink-300 亮，console 主题下 ink-300 字压不过 4.5:1，这两处字取 ink-200。 */
-.k-ladder-row.is-selected :is(.k-ladder-sub, .k-ladder-industry),
+/* 选中行与「没涨停」胶囊的底比 ink-300 亮，console 主题下 ink-300 字压不过 4.5:1，这两处字取 ink-200（封单额的单位小字同理，#92）。 */
+.k-ladder-row.is-selected :is(.k-ladder-sub, .k-ladder-industry, .k-num-unit),
 .k-ladder-status:not([data-status]),
 .k-ladder-status[data-status='none'] {
   color: var(--k-content-body-foreground);
