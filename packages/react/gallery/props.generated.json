@@ -6,6 +6,21 @@
       "source": "src/katana/arcade-pixel-sprites.ts",
       "props": []
     },
+    "AUCTION_CANCEL_CUTOFF": {
+      "kind": "value",
+      "source": "src/cn/auction-model.ts",
+      "props": []
+    },
+    "AUCTION_FROM": {
+      "kind": "value",
+      "source": "src/cn/auction-model.ts",
+      "props": []
+    },
+    "AUCTION_TO": {
+      "kind": "value",
+      "source": "src/cn/auction-model.ts",
+      "props": []
+    },
     "AUTO_SIZE": {
       "kind": "value",
       "source": "src/lib/chart/format/quantity.ts",
@@ -3511,6 +3526,305 @@
         }
       ]
     },
+    "AuctionPoint": {
+      "kind": "type",
+      "source": "src/cn/auction-model.ts",
+      "props": [
+        {
+          "name": "time",
+          "type": "string",
+          "required": true,
+          "description": "Clock time such as \"09:15\" or \"09:21:30\"."
+        },
+        {
+          "name": "price",
+          "type": "number | null",
+          "required": true,
+          "description": "Matched price; null drops the point."
+        },
+        {
+          "name": "volume",
+          "type": "number | null",
+          "required": false,
+          "description": "Matched volume (the unit is the caller's); null draws no bar."
+        }
+      ]
+    },
+    "AuctionStep": {
+      "kind": "component",
+      "source": "src/cn/auction-step.tsx",
+      "props": [
+        {
+          "name": "points",
+          "type": "readonly AuctionPoint[]",
+          "required": true,
+          "description": "Auction points between 09:15 and 09:25 (matched price and optionally matched volume); order does not matter, points outside the window are dropped."
+        },
+        {
+          "name": "prevClose",
+          "type": "number | null",
+          "required": false,
+          "description": "Previous close for the dashed reference line, the change readout and the up / down tone; omit to draw none of them."
+        },
+        {
+          "name": "digits",
+          "type": "number",
+          "required": false,
+          "default": "2",
+          "description": "Digits of the price readout; 2 by default."
+        },
+        {
+          "name": "height",
+          "type": "number",
+          "required": false,
+          "default": "96",
+          "description": "Chart height in px; 96 by default."
+        },
+        {
+          "name": "labels",
+          "type": "AuctionStepLabels",
+          "required": false,
+          "default": "cnLabelsZh.auctionStep",
+          "description": "Text pack; the Simplified Chinese default is used when omitted."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class names."
+        }
+      ]
+    },
+    "AuctionStepLabels": {
+      "kind": "type",
+      "source": "src/cn/labels.ts",
+      "props": [
+        {
+          "name": "region",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "axis",
+          "type": "{ from: string; cancelCutoff: string; to: string }",
+          "required": true,
+          "description": "横轴两端与 09:20 分界的字。"
+        },
+        {
+          "name": "price",
+          "type": "string",
+          "required": true,
+          "description": "底部读数：撮合价、累计量。"
+        },
+        {
+          "name": "volume",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "prevClose",
+          "type": "string",
+          "required": true,
+          "description": "昨收参考线的字。"
+        },
+        {
+          "name": "empty",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "unavailable",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "aria",
+          "type": "(last: string) => string",
+          "required": true,
+          "description": "图的读屏名，例「竞价台阶 09:15–09:25，撮合价 12.34」。"
+        }
+      ]
+    },
+    "AuctionStepPoint": {
+      "kind": "type",
+      "source": "src/cn/auction-model.ts",
+      "props": [
+        {
+          "name": "minutes",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "x",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "price",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "volume",
+          "type": "number | null",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "AuctionStepProps": {
+      "kind": "type",
+      "source": "src/cn/auction-step.tsx",
+      "props": [
+        {
+          "name": "points",
+          "type": "readonly AuctionPoint[]",
+          "required": true,
+          "description": "Auction points between 09:15 and 09:25 (matched price and optionally matched volume); order does not matter, points outside the window are dropped."
+        },
+        {
+          "name": "prevClose",
+          "type": "number | null",
+          "required": false,
+          "description": "Previous close for the dashed reference line, the change readout and the up / down tone; omit to draw none of them."
+        },
+        {
+          "name": "digits",
+          "type": "number",
+          "required": false,
+          "description": "Digits of the price readout; 2 by default."
+        },
+        {
+          "name": "height",
+          "type": "number",
+          "required": false,
+          "description": "Chart height in px; 96 by default."
+        },
+        {
+          "name": "labels",
+          "type": "AuctionStepLabels",
+          "required": false,
+          "description": "Text pack; the Simplified Chinese default is used when omitted."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class names."
+        }
+      ]
+    },
+    "AuctionStepSpark": {
+      "kind": "component",
+      "source": "src/cn/auction-step.tsx",
+      "props": [
+        {
+          "name": "points",
+          "type": "readonly AuctionPoint[] | null | undefined",
+          "required": true,
+          "description": "Auction points; same as AuctionStep."
+        },
+        {
+          "name": "prevClose",
+          "type": "number | null",
+          "required": false,
+          "description": "Previous close for the tone; omit for a neutral line."
+        },
+        {
+          "name": "width",
+          "type": "number",
+          "required": false,
+          "default": "64",
+          "description": "Width in px; 64 by default."
+        },
+        {
+          "name": "height",
+          "type": "number",
+          "required": false,
+          "default": "16",
+          "description": "Height in px; 16 by default."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class names."
+        }
+      ]
+    },
+    "AuctionStepSparkProps": {
+      "kind": "type",
+      "source": "src/cn/auction-step.tsx",
+      "props": [
+        {
+          "name": "points",
+          "type": "readonly AuctionPoint[] | null | undefined",
+          "required": true,
+          "description": "Auction points; same as AuctionStep."
+        },
+        {
+          "name": "prevClose",
+          "type": "number | null",
+          "required": false,
+          "description": "Previous close for the tone; omit for a neutral line."
+        },
+        {
+          "name": "width",
+          "type": "number",
+          "required": false,
+          "description": "Width in px; 64 by default."
+        },
+        {
+          "name": "height",
+          "type": "number",
+          "required": false,
+          "description": "Height in px; 16 by default."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class names."
+        }
+      ]
+    },
+    "AuctionSummary": {
+      "kind": "type",
+      "source": "src/cn/auction-model.ts",
+      "props": [
+        {
+          "name": "last",
+          "type": "number | null",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "change",
+          "type": "number | null",
+          "required": true,
+          "description": "相对昨收的涨跌幅（百分数）；没有昨收或昨收为 0 是 null。"
+        },
+        {
+          "name": "volume",
+          "type": "number | null",
+          "required": true,
+          "description": "最后一个点的匹配量；取不到是 null。"
+        },
+        {
+          "name": "tone",
+          "type": "'up' | 'down' | 'flat'",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
     "AuroraCurtain": {
       "kind": "component",
       "source": "src/motion/background/aurora-curtain.tsx",
@@ -5226,6 +5540,96 @@
       "source": "src/quant/event-calendar-types.ts",
       "props": []
     },
+    "Candle": {
+      "kind": "type",
+      "source": "src/cn/mini-k-model.ts",
+      "props": [
+        {
+          "name": "open",
+          "type": "number",
+          "required": true,
+          "description": "Opening price."
+        },
+        {
+          "name": "high",
+          "type": "number",
+          "required": true,
+          "description": "Highest price."
+        },
+        {
+          "name": "low",
+          "type": "number",
+          "required": true,
+          "description": "Lowest price."
+        },
+        {
+          "name": "close",
+          "type": "number",
+          "required": true,
+          "description": "Closing price."
+        },
+        {
+          "name": "time",
+          "type": "string",
+          "required": false,
+          "description": "Date or time of the candle, for readers only."
+        }
+      ]
+    },
+    "CandleShape": {
+      "kind": "type",
+      "source": "src/cn/mini-k-model.ts",
+      "props": [
+        {
+          "name": "tone",
+          "type": "'up' | 'down' | 'flat'",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "wickX",
+          "type": "number",
+          "required": true,
+          "description": "影线的横坐标与上下端（y 向下）。"
+        },
+        {
+          "name": "wickTop",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "wickBottom",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "bodyX",
+          "type": "number",
+          "required": true,
+          "description": "实体的左边、宽、上边、高（高至少 1，平盘也看得见）。"
+        },
+        {
+          "name": "bodyWidth",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "bodyTop",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "bodyHeight",
+          "type": "number",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
     "CatalogCategory": {
       "kind": "type",
       "source": "src/blocks/component-catalog/component-catalog-model.ts",
@@ -5939,6 +6343,42 @@
           "type": "SentimentLabels",
           "required": true,
           "description": ""
+        },
+        {
+          "name": "seatTable",
+          "type": "SeatTableLabels",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "auctionStep",
+          "type": "AuctionStepLabels",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "tradingDate",
+          "type": "TradingDatePickerLabels",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "flowRace",
+          "type": "FlowRaceLabels",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "miniK",
+          "type": "MiniKCardLabels",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "moveFeed",
+          "type": "MoveFeedLabels",
+          "required": true,
+          "description": ""
         }
       ]
     },
@@ -6460,7 +6900,14 @@
     "Combobox": {
       "kind": "component",
       "source": "src/patterns/combobox.tsx",
-      "props": []
+      "props": [
+        {
+          "name": "closeOnScroll",
+          "type": "boolean",
+          "required": false,
+          "description": "Closes the popover when the page or a container holding its trigger scrolls, so it never floats away open."
+        }
+      ]
     },
     "ComboboxContent": {
       "kind": "component",
@@ -10922,6 +11369,54 @@
         }
       ]
     },
+    "DrawdownSegment": {
+      "kind": "type",
+      "source": "src/quant/underwater-model.ts",
+      "props": [
+        {
+          "name": "peakIndex",
+          "type": "number",
+          "required": true,
+          "description": "回撤开始前的高点（最后一个回撤为 0 的点；序列一上来就在水下则是第 0 点）。"
+        },
+        {
+          "name": "troughIndex",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "recoveryIndex",
+          "type": "number | null",
+          "required": true,
+          "description": "回到前高的第一个点；到序列结束还没回来是 null。"
+        },
+        {
+          "name": "depth",
+          "type": "number",
+          "required": true,
+          "description": "谷底的回撤（负数）。"
+        },
+        {
+          "name": "fallMs",
+          "type": "number",
+          "required": true,
+          "description": "前高到谷底的毫秒数。"
+        },
+        {
+          "name": "recoveryMs",
+          "type": "number | null",
+          "required": true,
+          "description": "谷底到恢复的毫秒数；没恢复是 null。"
+        },
+        {
+          "name": "endIndex",
+          "type": "number",
+          "required": true,
+          "description": "画图用：这一段在横轴上覆盖到哪一点（恢复点，没恢复就到末点）。"
+        }
+      ]
+    },
     "DrawingCursor": {
       "kind": "component",
       "source": "src/motion/effect/drawing-cursor.tsx",
@@ -12841,6 +13336,147 @@
       "source": "src/blocks/hypothesis-ledger/hypothesis-ledger-model.ts",
       "props": []
     },
+    "ExcursionAxis": {
+      "kind": "type",
+      "source": "src/quant/mae-mfe-model.ts",
+      "props": []
+    },
+    "ExcursionKind": {
+      "kind": "type",
+      "source": "src/quant/mae-mfe-model.ts",
+      "props": []
+    },
+    "ExcursionPoint": {
+      "kind": "type",
+      "source": "src/quant/mae-mfe-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "index",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "x",
+          "type": "number",
+          "required": true,
+          "description": "横轴：偏移的大小（绝对值）。"
+        },
+        {
+          "name": "y",
+          "type": "number",
+          "required": true,
+          "description": "纵轴：最终盈亏（带符号）。"
+        },
+        {
+          "name": "kind",
+          "type": "ExcursionKind",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "ExcursionSummary": {
+      "kind": "type",
+      "source": "src/quant/mae-mfe-model.ts",
+      "props": [
+        {
+          "name": "count",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "wins",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "losses",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "flats",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "meanWinX",
+          "type": "number | null",
+          "required": true,
+          "description": "赢单、亏单的平均偏移（横轴值）；那一侧没有单是 null。看 MAE 时亏单的均值远大于赢单，说明止损放得比赢单能承受的更宽。"
+        },
+        {
+          "name": "meanLossX",
+          "type": "number | null",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "ExcursionTrade": {
+      "kind": "type",
+      "source": "src/quant/mae-mfe-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "pnl",
+          "type": "number",
+          "required": true,
+          "description": "最终盈亏：金额与百分比（小数，0.03 即 3%）。"
+        },
+        {
+          "name": "pnlPct",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "mae",
+          "type": "number",
+          "required": true,
+          "description": "持仓期间的最大浮亏（≤ 0）：金额与百分比。画图取绝对值，横轴向右是「亏得更深」。"
+        },
+        {
+          "name": "maePct",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "mfe",
+          "type": "number",
+          "required": true,
+          "description": "持仓期间的最大浮盈（≥ 0）：金额与百分比。"
+        },
+        {
+          "name": "mfePct",
+          "type": "number",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "ExcursionUnit": {
+      "kind": "type",
+      "source": "src/quant/mae-mfe-model.ts",
+      "props": []
+    },
     "ExitEstimate": {
       "kind": "type",
       "source": "src/blocks/sizing-model.ts",
@@ -13315,6 +13951,16 @@
           "description": "Extra class name on the root."
         }
       ]
+    },
+    "FLOW_MINUTES": {
+      "kind": "value",
+      "source": "src/cn/flow-race-model.ts",
+      "props": []
+    },
+    "FLOW_START": {
+      "kind": "value",
+      "source": "src/cn/flow-race-model.ts",
+      "props": []
     },
     "FONT_CATALOG": {
       "kind": "value",
@@ -14813,6 +15459,36 @@
         }
       ]
     },
+    "FlowLine": {
+      "kind": "type",
+      "source": "src/cn/flow-race-model.ts",
+      "props": [
+        {
+          "name": "key",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "points",
+          "type": "{ x: number; value: number | null }[]",
+          "required": true,
+          "description": "横坐标 0 到 1 与累计值；取不到的点是 value = null（线在这里断）。"
+        },
+        {
+          "name": "last",
+          "type": "number | null",
+          "required": true,
+          "description": "最新一个有值的点的值；一个都没有是 null。"
+        }
+      ]
+    },
     "FlowLink": {
       "kind": "type",
       "source": "src/quant/flow-sankey-model.ts",
@@ -14882,6 +15558,141 @@
           "type": "string",
           "required": false,
           "description": "节点色（CSS 颜色）；不给用中性灰。"
+        }
+      ]
+    },
+    "FlowPoint": {
+      "kind": "type",
+      "source": "src/cn/flow-race-model.ts",
+      "props": [
+        {
+          "name": "time",
+          "type": "string",
+          "required": true,
+          "description": "Clock time such as \"09:31\"."
+        },
+        {
+          "name": "value",
+          "type": "number | null",
+          "required": true,
+          "description": "Cumulative net inflow in yuan; null breaks the line."
+        }
+      ]
+    },
+    "FlowRace": {
+      "kind": "component",
+      "source": "src/cn/flow-race.tsx",
+      "props": [
+        {
+          "name": "series",
+          "type": "readonly FlowSeries[]",
+          "required": true,
+          "description": "One cumulative net-inflow series per sector: minute points with a clock time and a value in yuan."
+        },
+        {
+          "name": "limit",
+          "type": "number",
+          "required": false,
+          "default": "8",
+          "description": "How many lines to draw, from the top of the ranking; 8 by default."
+        },
+        {
+          "name": "height",
+          "type": "number",
+          "required": false,
+          "default": "240",
+          "description": "Chart height in px; 240 by default."
+        },
+        {
+          "name": "labels",
+          "type": "FlowRaceLabels",
+          "required": false,
+          "default": "cnLabelsZh.flowRace",
+          "description": "Text pack; the Simplified Chinese default is used when omitted."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class names."
+        }
+      ]
+    },
+    "FlowRaceLabels": {
+      "kind": "type",
+      "source": "src/cn/labels.ts",
+      "props": [
+        {
+          "name": "region",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "ranking",
+          "type": "string",
+          "required": true,
+          "description": "右端排行的读屏名。"
+        },
+        {
+          "name": "axis",
+          "type": "{ from: string; mid: string; to: string }",
+          "required": true,
+          "description": "横轴两端的字。"
+        },
+        {
+          "name": "empty",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "unavailable",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "rankAria",
+          "type": "(rank: number, name: string, value: string) => string",
+          "required": true,
+          "description": "排行的一行，例「第 1 名 机器人 +3.2亿」。"
+        }
+      ]
+    },
+    "FlowRaceProps": {
+      "kind": "type",
+      "source": "src/cn/flow-race.tsx",
+      "props": [
+        {
+          "name": "series",
+          "type": "readonly FlowSeries[]",
+          "required": true,
+          "description": "One cumulative net-inflow series per sector: minute points with a clock time and a value in yuan."
+        },
+        {
+          "name": "limit",
+          "type": "number",
+          "required": false,
+          "description": "How many lines to draw, from the top of the ranking; 8 by default."
+        },
+        {
+          "name": "height",
+          "type": "number",
+          "required": false,
+          "description": "Chart height in px; 240 by default."
+        },
+        {
+          "name": "labels",
+          "type": "FlowRaceLabels",
+          "required": false,
+          "description": "Text pack; the Simplified Chinese default is used when omitted."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class names."
         }
       ]
     },
@@ -15161,6 +15972,30 @@
           "type": "ReactNode",
           "required": false,
           "description": "页脚小字，例「演示数据」。"
+        }
+      ]
+    },
+    "FlowSeries": {
+      "kind": "type",
+      "source": "src/cn/flow-race-model.ts",
+      "props": [
+        {
+          "name": "key",
+          "type": "string",
+          "required": true,
+          "description": "Stable key of the sector."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": "Sector name shown on the label."
+        },
+        {
+          "name": "points",
+          "type": "readonly FlowPoint[]",
+          "required": true,
+          "description": "Minute points of the cumulative net inflow."
         }
       ]
     },
@@ -15603,6 +16438,88 @@
           "type": "string",
           "required": true,
           "description": ""
+        }
+      ]
+    },
+    "GateCheck": {
+      "kind": "type",
+      "source": "src/quant/robustness-gate-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "value",
+          "type": "number | null",
+          "required": true,
+          "description": "实测值；还没有（没跑到、没数据）是 null，判为「未知」，不算通过也不算失败。"
+        },
+        {
+          "name": "threshold",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "op",
+          "type": "GateOp",
+          "required": true,
+          "description": "怎样算过：gte 实测 ≥ 阈值，lte 实测 ≤ 阈值，gt / lt 不含等号。"
+        }
+      ]
+    },
+    "GateOp": {
+      "kind": "type",
+      "source": "src/quant/robustness-gate-model.ts",
+      "props": []
+    },
+    "GateState": {
+      "kind": "type",
+      "source": "src/quant/robustness-gate-model.ts",
+      "props": []
+    },
+    "GateSummary": {
+      "kind": "type",
+      "source": "src/quant/robustness-gate-model.ts",
+      "props": [
+        {
+          "name": "total",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "passed",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "failed",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "unknown",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "open",
+          "type": "boolean",
+          "required": true,
+          "description": "全部通过才算过；只要有一条失败或未知就不过（未知不能当通过放行）。没有判定条时不过。"
         }
       ]
     },
@@ -16462,7 +17379,7 @@
           "name": "value",
           "type": "(row: Row) => unknown",
           "required": false,
-          "description": "原始值，由类型决定怎么读：price / quantity / pnl / change / number / bar 是数字或十进制字符串（空、不是数写 —）； pill 是 PillValue 或 PillValue[]；progress 是 ProgressValue；streak 是板数或 StreakValue（A 股连板，#110）；limitStatus 是状态名或 { status, sealAmount, reason }； time 是毫秒时间戳；side 是 'buy' | 'sell'；symbol 是 SymbolValue；text 是字符串；custom 不读（内容全由 `cell` 画，要排序、复制就给 `text` 与 `sort`）。"
+          "description": "原始值，由类型决定怎么读：price / quantity / pnl / change / number / bar 是数字或十进制字符串（空、不是数写 —）； pill 是 PillValue 或 PillValue[]；progress 是 ProgressValue；streak 是板数或 StreakValue（A 股连板，#110）；auctionStep 是竞价点数组或 { points, prevClose }（A 股集合竞价台阶，#110）；limitStatus 是状态名或 { status, sealAmount, reason }； time 是毫秒时间戳；side 是 'buy' | 'sell'；symbol 是 SymbolValue；text 是字符串；custom 不读（内容全由 `cell` 画，要排序、复制就给 `text` 与 `sort`）。"
         },
         {
           "name": "format",
@@ -18332,6 +19249,30 @@
           "type": "string",
           "required": false,
           "description": "Label that rests inside the box like a placeholder and floats into a 14px band above it on focus or when there is a value; the placeholder prop is ignored."
+        },
+        {
+          "name": "caption",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Label inside the box on the left (a string becomes a real label for the input; a node, such as a select, is rendered as is and needs its own accessible name)."
+        },
+        {
+          "name": "unit",
+          "type": "string",
+          "required": false,
+          "description": "Unit inside the box on the right, such as USDT or ×."
+        },
+        {
+          "name": "align",
+          "type": "'start' | 'end'",
+          "required": false,
+          "description": "Text alignment of the value; with caption or unit the value is usually `end`, right next to the unit."
+        },
+        {
+          "name": "wrapperClassName",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the outer box when caption or unit is given (the box height, for example); `className` always goes to the input."
         }
       ]
     },
@@ -20434,6 +21375,11 @@
       "source": "src/katana/motion-loader.tsx",
       "props": []
     },
+    "MOVE_TYPE_TONES": {
+      "kind": "value",
+      "source": "src/cn/move-feed-model.ts",
+      "props": []
+    },
     "MacTerminal": {
       "kind": "component",
       "source": "src/katana/mac-terminal.tsx",
@@ -20638,6 +21584,288 @@
         }
       ]
     },
+    "MaeMfeScatter": {
+      "kind": "component",
+      "source": "src/quant/mae-mfe-scatter.tsx",
+      "props": [
+        {
+          "name": "actionLabels",
+          "type": "ChartActionsLabels",
+          "required": true,
+          "description": "图右上三个按钮的名字。"
+        },
+        {
+          "name": "tableLabel",
+          "type": "string",
+          "required": true,
+          "description": "表格视图的读屏名。"
+        },
+        {
+          "name": "tableHead",
+          "type": "readonly string[]",
+          "required": true,
+          "description": "表头（第一项是行头那一列）。"
+        },
+        {
+          "name": "source",
+          "type": "ReactNode",
+          "required": false,
+          "description": "来源一行：每个数字能回答从哪来、什么时候（§2.2）。"
+        },
+        {
+          "name": "onExport",
+          "type": "() => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "onFullscreen",
+          "type": "() => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "trades",
+          "type": "readonly ExcursionTrade[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "整张图的读屏名。"
+        },
+        {
+          "name": "axis",
+          "type": "ExcursionAxis",
+          "required": false,
+          "description": "横轴看 MAE 还是 MFE；不给用内部状态（默认 mae）。"
+        },
+        {
+          "name": "onAxisChange",
+          "type": "(axis: ExcursionAxis) => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "unit",
+          "type": "ExcursionUnit",
+          "required": false,
+          "description": "金额还是百分比；不给用内部状态（默认 percent）。"
+        },
+        {
+          "name": "onUnitChange",
+          "type": "(unit: ExcursionUnit) => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "formatAmount",
+          "type": "(value: number) => string",
+          "required": true,
+          "description": "金额与百分比的写法（带币种、带正负号由调用方定）。参数是带符号的值；横轴传的是绝对值。"
+        },
+        {
+          "name": "formatPercent",
+          "type": "(value: number) => string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "labels",
+          "type": "MaeMfeScatterLabels",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "MaeMfeScatterLabels": {
+      "kind": "type",
+      "source": "src/quant/mae-mfe-scatter.tsx",
+      "props": [
+        {
+          "name": "axisGroup",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "mae",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "mfe",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "unitGroup",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "amount",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "percent",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "pnl",
+          "type": "string",
+          "required": true,
+          "description": "纵轴名：最终盈亏。"
+        },
+        {
+          "name": "win",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "loss",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "meanWin",
+          "type": "string",
+          "required": true,
+          "description": "汇总行：赢单 / 亏单的平均偏移，如「赢单平均」「亏单平均」。"
+        },
+        {
+          "name": "meanLoss",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "idle",
+          "type": "string",
+          "required": true,
+          "description": "没选点时读数区写什么。"
+        }
+      ]
+    },
+    "MaeMfeScatterProps": {
+      "kind": "type",
+      "source": "src/quant/mae-mfe-scatter.tsx",
+      "props": [
+        {
+          "name": "actionLabels",
+          "type": "ChartActionsLabels",
+          "required": true,
+          "description": "图右上三个按钮的名字。"
+        },
+        {
+          "name": "tableLabel",
+          "type": "string",
+          "required": true,
+          "description": "表格视图的读屏名。"
+        },
+        {
+          "name": "tableHead",
+          "type": "readonly string[]",
+          "required": true,
+          "description": "表头（第一项是行头那一列）。"
+        },
+        {
+          "name": "source",
+          "type": "ReactNode",
+          "required": false,
+          "description": "来源一行：每个数字能回答从哪来、什么时候（§2.2）。"
+        },
+        {
+          "name": "onExport",
+          "type": "() => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "onFullscreen",
+          "type": "() => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "trades",
+          "type": "readonly ExcursionTrade[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "整张图的读屏名。"
+        },
+        {
+          "name": "axis",
+          "type": "ExcursionAxis",
+          "required": false,
+          "description": "横轴看 MAE 还是 MFE；不给用内部状态（默认 mae）。"
+        },
+        {
+          "name": "onAxisChange",
+          "type": "(axis: ExcursionAxis) => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "unit",
+          "type": "ExcursionUnit",
+          "required": false,
+          "description": "金额还是百分比；不给用内部状态（默认 percent）。"
+        },
+        {
+          "name": "onUnitChange",
+          "type": "(unit: ExcursionUnit) => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "formatAmount",
+          "type": "(value: number) => string",
+          "required": true,
+          "description": "金额与百分比的写法（带币种、带正负号由调用方定）。参数是带符号的值；横轴传的是绝对值。"
+        },
+        {
+          "name": "formatPercent",
+          "type": "(value: number) => string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "labels",
+          "type": "MaeMfeScatterLabels",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
     "MagneticField": {
       "kind": "component",
       "source": "src/motion/effect/magnetic-field.tsx",
@@ -20804,6 +22032,126 @@
       "kind": "type",
       "source": "src/blocks/order-ticket.tsx",
       "props": []
+    },
+    "Markdown": {
+      "kind": "component",
+      "source": "src/ai/markdown.tsx",
+      "props": [
+        {
+          "name": "text",
+          "type": "string",
+          "required": true,
+          "description": "The Markdown source."
+        },
+        {
+          "name": "slots",
+          "type": "readonly ReactNode[]",
+          "required": false,
+          "description": "Nodes drawn where the text has `markdownSlot(i)` placeholders (by index), such as citation marks."
+        },
+        {
+          "name": "resolveLink",
+          "type": "(href: string) => string | null",
+          "required": false,
+          "description": "Turns on document mode: headings get anchors and relative links go through this (see `renderDoc`)."
+        },
+        {
+          "name": "onOpenLink",
+          "type": "(target: string) => void",
+          "required": false,
+          "description": "Called with the target `resolveLink` returned when the reader clicks such a link (the page does not navigate)."
+        },
+        {
+          "name": "labels",
+          "type": "MarkdownLabels",
+          "required": false,
+          "description": "Text for the image placeholder; defaults to Chinese."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "MarkdownHeading": {
+      "kind": "type",
+      "source": "src/ai/markdown.tsx",
+      "props": [
+        {
+          "name": "level",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "text",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "anchor",
+          "type": "string",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "MarkdownLabels": {
+      "kind": "type",
+      "source": "src/ai/markdown.tsx",
+      "props": [
+        {
+          "name": "image",
+          "type": "(alt: string) => string",
+          "required": true,
+          "description": "Placeholder text written in place of an image; `alt` is empty when the image has none."
+        }
+      ]
+    },
+    "MarkdownProps": {
+      "kind": "type",
+      "source": "src/ai/markdown.tsx",
+      "props": [
+        {
+          "name": "text",
+          "type": "string",
+          "required": true,
+          "description": "The Markdown source."
+        },
+        {
+          "name": "slots",
+          "type": "readonly ReactNode[]",
+          "required": false,
+          "description": "Nodes drawn where the text has `markdownSlot(i)` placeholders (by index), such as citation marks."
+        },
+        {
+          "name": "resolveLink",
+          "type": "(href: string) => string | null",
+          "required": false,
+          "description": "Turns on document mode: headings get anchors and relative links go through this (see `renderDoc`)."
+        },
+        {
+          "name": "onOpenLink",
+          "type": "(target: string) => void",
+          "required": false,
+          "description": "Called with the target `resolveLink` returned when the reader clicks such a link (the page does not navigate)."
+        },
+        {
+          "name": "labels",
+          "type": "MarkdownLabels",
+          "required": false,
+          "description": "Text for the image placeholder; defaults to Chinese."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
     },
     "MarketHeatmap": {
       "kind": "component",
@@ -22688,6 +24036,171 @@
         }
       ]
     },
+    "MiniKCardGrid": {
+      "kind": "component",
+      "source": "src/cn/mini-k-card-grid.tsx",
+      "props": [
+        {
+          "name": "items",
+          "type": "readonly MiniKItem[]",
+          "required": true,
+          "description": "The picked stocks, in display order."
+        },
+        {
+          "name": "columns",
+          "type": "2 | 3 | 4",
+          "required": false,
+          "default": "3",
+          "description": "Cards per row: 2, 3 or 4; 3 by default."
+        },
+        {
+          "name": "onSelect",
+          "type": "(item: MiniKItem) => void",
+          "required": false,
+          "description": "Called when a card is picked; without it the cards are plain."
+        },
+        {
+          "name": "digits",
+          "type": "number",
+          "required": false,
+          "default": "2",
+          "description": "Price digits; 2 by default."
+        },
+        {
+          "name": "labels",
+          "type": "MiniKCardLabels",
+          "required": false,
+          "default": "cnLabelsZh.miniK",
+          "description": "Text pack; the Simplified Chinese default is used when omitted."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class names."
+        }
+      ]
+    },
+    "MiniKCardGridProps": {
+      "kind": "type",
+      "source": "src/cn/mini-k-card-grid.tsx",
+      "props": [
+        {
+          "name": "items",
+          "type": "readonly MiniKItem[]",
+          "required": true,
+          "description": "The picked stocks, in display order."
+        },
+        {
+          "name": "columns",
+          "type": "2 | 3 | 4",
+          "required": false,
+          "description": "Cards per row: 2, 3 or 4; 3 by default."
+        },
+        {
+          "name": "onSelect",
+          "type": "(item: MiniKItem) => void",
+          "required": false,
+          "description": "Called when a card is picked; without it the cards are plain."
+        },
+        {
+          "name": "digits",
+          "type": "number",
+          "required": false,
+          "description": "Price digits; 2 by default."
+        },
+        {
+          "name": "labels",
+          "type": "MiniKCardLabels",
+          "required": false,
+          "description": "Text pack; the Simplified Chinese default is used when omitted."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class names."
+        }
+      ]
+    },
+    "MiniKCardLabels": {
+      "kind": "type",
+      "source": "src/cn/labels.ts",
+      "props": [
+        {
+          "name": "region",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "card",
+          "type": "(name: string, code: string, change: string) => string",
+          "required": true,
+          "description": "一张卡的读屏名，例「机器人 600000，涨 3.21%」。"
+        },
+        {
+          "name": "chart",
+          "type": "(count: number) => string",
+          "required": true,
+          "description": "K 线图的读屏名，例「最近 30 根日 K」。"
+        },
+        {
+          "name": "noCandles",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "empty",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "unavailable",
+          "type": "string",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "MiniKItem": {
+      "kind": "type",
+      "source": "src/cn/mini-k-card-grid.tsx",
+      "props": [
+        {
+          "name": "code",
+          "type": "string",
+          "required": true,
+          "description": "Stock code, unique within the grid."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": "Stock name."
+        },
+        {
+          "name": "candles",
+          "type": "readonly Candle[]",
+          "required": true,
+          "description": "Recent candles from oldest to newest; none writes a no-candles line."
+        },
+        {
+          "name": "price",
+          "type": "number | null",
+          "required": false,
+          "description": "Latest price; the last close when omitted."
+        },
+        {
+          "name": "change",
+          "type": "number | null",
+          "required": false,
+          "description": "Change in percent; computed from the last two closes when omitted."
+        }
+      ]
+    },
     "MonitorEvent": {
       "kind": "type",
       "source": "src/blocks/system-monitor/system-monitor-model.ts",
@@ -23147,6 +24660,292 @@
       "kind": "type",
       "source": "src/katana/motion-loader.tsx",
       "props": []
+    },
+    "MoveFeed": {
+      "kind": "component",
+      "source": "src/cn/move-feed.tsx",
+      "props": [
+        {
+          "name": "items",
+          "type": "readonly MoveItem[]",
+          "required": true,
+          "description": "The moves, in any order; the feed sorts them newest first and animates rows that were not there on the last render."
+        },
+        {
+          "name": "types",
+          "type": "readonly MoveTypeDef[]",
+          "required": false,
+          "description": "Own move types (key, label, tone) on top of the built-in ones; a type with the same key overrides the built-in one."
+        },
+        {
+          "name": "selectedTypes",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Selected type keys (controlled); empty means all types."
+        },
+        {
+          "name": "defaultSelectedTypes",
+          "type": "readonly string[]",
+          "required": false,
+          "default": "[]",
+          "description": "Initial selected types when uncontrolled; none by default."
+        },
+        {
+          "name": "onSelectedTypesChange",
+          "type": "(types: string[]) => void",
+          "required": false,
+          "description": "Called with the new selected types."
+        },
+        {
+          "name": "onSelect",
+          "type": "(item: MoveItem) => void",
+          "required": false,
+          "description": "Called when a row is picked; without it the rows are plain."
+        },
+        {
+          "name": "selectedId",
+          "type": "string | null",
+          "required": false,
+          "default": "null",
+          "description": "The id of the row currently linked elsewhere (highlighted)."
+        },
+        {
+          "name": "limit",
+          "type": "number",
+          "required": false,
+          "default": "200",
+          "description": "The most rows drawn; 200 by default."
+        },
+        {
+          "name": "height",
+          "type": "number",
+          "required": false,
+          "default": "320",
+          "description": "Height of the scrolling list in px; 320 by default."
+        },
+        {
+          "name": "labels",
+          "type": "MoveFeedLabels",
+          "required": false,
+          "default": "cnLabelsZh.moveFeed",
+          "description": "Text pack; the Simplified Chinese default is used when omitted."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class names."
+        }
+      ]
+    },
+    "MoveFeedLabels": {
+      "kind": "type",
+      "source": "src/cn/labels.ts",
+      "props": [
+        {
+          "name": "region",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "filter",
+          "type": "string",
+          "required": true,
+          "description": "类型多选筛的读屏名与「全部」。"
+        },
+        {
+          "name": "all",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "types",
+          "type": "Record<string, string>",
+          "required": true,
+          "description": "一类异动的名字，key 是 MOVE_TYPE_KEYS 里的。"
+        },
+        {
+          "name": "typeChip",
+          "type": "(name: string, count: number) => string",
+          "required": true,
+          "description": "筛选 chip 上的计数文字。"
+        },
+        {
+          "name": "summary",
+          "type": "(count: number) => string",
+          "required": true,
+          "description": "顶上的汇总，例「共 120 条」。"
+        },
+        {
+          "name": "empty",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "row",
+          "type": "(time: string, name: string, type: string, value: string) => string",
+          "required": true,
+          "description": "一行的读屏名，例「09:31:05 机器人 火箭发射 +3.2%」。"
+        },
+        {
+          "name": "unavailable",
+          "type": "string",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "MoveFeedProps": {
+      "kind": "type",
+      "source": "src/cn/move-feed.tsx",
+      "props": [
+        {
+          "name": "items",
+          "type": "readonly MoveItem[]",
+          "required": true,
+          "description": "The moves, in any order; the feed sorts them newest first and animates rows that were not there on the last render."
+        },
+        {
+          "name": "types",
+          "type": "readonly MoveTypeDef[]",
+          "required": false,
+          "description": "Own move types (key, label, tone) on top of the built-in ones; a type with the same key overrides the built-in one."
+        },
+        {
+          "name": "selectedTypes",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Selected type keys (controlled); empty means all types."
+        },
+        {
+          "name": "defaultSelectedTypes",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Initial selected types when uncontrolled; none by default."
+        },
+        {
+          "name": "onSelectedTypesChange",
+          "type": "(types: string[]) => void",
+          "required": false,
+          "description": "Called with the new selected types."
+        },
+        {
+          "name": "onSelect",
+          "type": "(item: MoveItem) => void",
+          "required": false,
+          "description": "Called when a row is picked; without it the rows are plain."
+        },
+        {
+          "name": "selectedId",
+          "type": "string | null",
+          "required": false,
+          "description": "The id of the row currently linked elsewhere (highlighted)."
+        },
+        {
+          "name": "limit",
+          "type": "number",
+          "required": false,
+          "description": "The most rows drawn; 200 by default."
+        },
+        {
+          "name": "height",
+          "type": "number",
+          "required": false,
+          "description": "Height of the scrolling list in px; 320 by default."
+        },
+        {
+          "name": "labels",
+          "type": "MoveFeedLabels",
+          "required": false,
+          "description": "Text pack; the Simplified Chinese default is used when omitted."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class names."
+        }
+      ]
+    },
+    "MoveItem": {
+      "kind": "type",
+      "source": "src/cn/move-feed-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "Stable id; new rows are told from old ones by it."
+        },
+        {
+          "name": "time",
+          "type": "string",
+          "required": true,
+          "description": "Time of the move (\"09:31\" or \"09:31:05\"); one that cannot be read sinks to the bottom."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": "Stock name."
+        },
+        {
+          "name": "code",
+          "type": "string",
+          "required": false,
+          "description": "Stock code."
+        },
+        {
+          "name": "type",
+          "type": "string",
+          "required": true,
+          "description": "Key of the move type."
+        },
+        {
+          "name": "value",
+          "type": "number | null",
+          "required": false,
+          "description": "The figure; a dash when missing."
+        },
+        {
+          "name": "unit",
+          "type": "'percent' | 'amount' | 'price'",
+          "required": false,
+          "description": "How the figure is written: percent (signed, with direction colour), amount (wan / yi) or price; percent by default."
+        }
+      ]
+    },
+    "MoveTone": {
+      "kind": "type",
+      "source": "src/cn/move-feed-model.ts",
+      "props": []
+    },
+    "MoveTypeDef": {
+      "kind": "type",
+      "source": "src/cn/move-feed-model.ts",
+      "props": [
+        {
+          "name": "key",
+          "type": "string",
+          "required": true,
+          "description": "Stable key of the move type."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "Text written on the capsule."
+        },
+        {
+          "name": "tone",
+          "type": "MoveTone",
+          "required": true,
+          "description": "Up, down, volume or board."
+        }
+      ]
     },
     "MultiSelect": {
       "kind": "component",
@@ -27001,6 +28800,313 @@
         }
       ]
     },
+    "ParamSurfaceHeatmap": {
+      "kind": "component",
+      "source": "src/quant/param-surface-heatmap.tsx",
+      "props": [
+        {
+          "name": "points",
+          "type": "readonly SurfacePoint[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "params",
+          "type": "readonly SurfaceParam[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "metrics",
+          "type": "readonly SurfaceMetric[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "整张图的读屏名。"
+        },
+        {
+          "name": "axes",
+          "type": "readonly [string, string]",
+          "required": false,
+          "description": "横纵轴的参数 key；不给用内部状态（默认前两个）。"
+        },
+        {
+          "name": "onAxesChange",
+          "type": "(axes: [string, string]) => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "metric",
+          "type": "string",
+          "required": false,
+          "description": "目标值的指标 key；不给用内部状态（默认第一个）。"
+        },
+        {
+          "name": "onMetricChange",
+          "type": "(metric: string) => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "slice",
+          "type": "Readonly<Record<string, number>>",
+          "required": false,
+          "description": "其余参数固定在哪；不给用内部状态（默认各取第一个值）。"
+        },
+        {
+          "name": "onSliceChange",
+          "type": "(slice: Record<string, number>) => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "radius",
+          "type": "number",
+          "required": false,
+          "default": "1",
+          "description": "邻域半径（格），默认 1（八邻）。"
+        },
+        {
+          "name": "spikeBelow",
+          "type": "number",
+          "required": false,
+          "description": "保留率低于它就标「孤峰」；不给就不判，只显示数。"
+        },
+        {
+          "name": "formatRatio",
+          "type": "(value: number) => string",
+          "required": true,
+          "description": "保留率的写法（0.25 → 「25%」）。"
+        },
+        {
+          "name": "labels",
+          "type": "ParamSurfaceLabels",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "source",
+          "type": "ReactNode",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "ParamSurfaceHeatmapProps": {
+      "kind": "type",
+      "source": "src/quant/param-surface-heatmap.tsx",
+      "props": [
+        {
+          "name": "points",
+          "type": "readonly SurfacePoint[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "params",
+          "type": "readonly SurfaceParam[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "metrics",
+          "type": "readonly SurfaceMetric[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "整张图的读屏名。"
+        },
+        {
+          "name": "axes",
+          "type": "readonly [string, string]",
+          "required": false,
+          "description": "横纵轴的参数 key；不给用内部状态（默认前两个）。"
+        },
+        {
+          "name": "onAxesChange",
+          "type": "(axes: [string, string]) => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "metric",
+          "type": "string",
+          "required": false,
+          "description": "目标值的指标 key；不给用内部状态（默认第一个）。"
+        },
+        {
+          "name": "onMetricChange",
+          "type": "(metric: string) => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "slice",
+          "type": "Readonly<Record<string, number>>",
+          "required": false,
+          "description": "其余参数固定在哪；不给用内部状态（默认各取第一个值）。"
+        },
+        {
+          "name": "onSliceChange",
+          "type": "(slice: Record<string, number>) => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "radius",
+          "type": "number",
+          "required": false,
+          "description": "邻域半径（格），默认 1（八邻）。"
+        },
+        {
+          "name": "spikeBelow",
+          "type": "number",
+          "required": false,
+          "description": "保留率低于它就标「孤峰」；不给就不判，只显示数。"
+        },
+        {
+          "name": "formatRatio",
+          "type": "(value: number) => string",
+          "required": true,
+          "description": "保留率的写法（0.25 → 「25%」）。"
+        },
+        {
+          "name": "labels",
+          "type": "ParamSurfaceLabels",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "source",
+          "type": "ReactNode",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "ParamSurfaceLabels": {
+      "kind": "type",
+      "source": "src/quant/param-surface-heatmap.tsx",
+      "props": [
+        {
+          "name": "xAxis",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "yAxis",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "metric",
+          "type": "string",
+          "required": true,
+          "description": "目标值（色）那一组开关的读屏名。"
+        },
+        {
+          "name": "slice",
+          "type": "string",
+          "required": true,
+          "description": "切片下拉的读屏名前缀，后面接参数名。"
+        },
+        {
+          "name": "best",
+          "type": "string",
+          "required": true,
+          "description": "「最优」。"
+        },
+        {
+          "name": "spike",
+          "type": "string",
+          "required": true,
+          "description": "「孤峰」。"
+        },
+        {
+          "name": "cell",
+          "type": "string",
+          "required": true,
+          "description": "读数区两块的标题：当前格、最优格的邻域。"
+        },
+        {
+          "name": "neighborhood",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "neighbors",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "mean",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "variance",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "retention",
+          "type": "string",
+          "required": true,
+          "description": "保留率：邻均值相对最优值。"
+        },
+        {
+          "name": "noValue",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "missing",
+          "type": "string",
+          "required": true,
+          "description": "没有这组参数（网格里的空洞）。"
+        },
+        {
+          "name": "idle",
+          "type": "string",
+          "required": true,
+          "description": "没有格子可看时读数区写什么。"
+        },
+        {
+          "name": "empty",
+          "type": "string",
+          "required": true,
+          "description": "没有数据时写什么。"
+        }
+      ]
+    },
     "PasswordInput": {
       "kind": "component",
       "source": "src/patterns/password-input.tsx",
@@ -27393,6 +29499,270 @@
           "description": ""
         }
       ]
+    },
+    "PeriodCell": {
+      "kind": "type",
+      "source": "src/quant/period-returns-model.ts",
+      "props": [
+        {
+          "name": "value",
+          "type": "number",
+          "required": true,
+          "description": "复利后的收益；这个周期没有样本时整格是 null（不是 0）。"
+        },
+        {
+          "name": "count",
+          "type": "number",
+          "required": true,
+          "description": "落在这格里的样本数。"
+        }
+      ]
+    },
+    "PeriodReturnsLabels": {
+      "kind": "type",
+      "source": "src/quant/period-returns-table.tsx",
+      "props": [
+        {
+          "name": "unitGroup",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "month",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "quarter",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "week",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "year",
+          "type": "string",
+          "required": true,
+          "description": "行头那一列的表头，如「年」。"
+        },
+        {
+          "name": "total",
+          "type": "string",
+          "required": true,
+          "description": "行尾那一列的表头，如「全年」。"
+        },
+        {
+          "name": "monthNames",
+          "type": "readonly string[]",
+          "required": true,
+          "description": "月、季的列头（12 个、4 个），周的列头是第几周（从 1 起）。"
+        },
+        {
+          "name": "quarterNames",
+          "type": "readonly string[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "weekName",
+          "type": "(week: number) => string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "idle",
+          "type": "string",
+          "required": true,
+          "description": "没选格时读数区写什么。"
+        },
+        {
+          "name": "empty",
+          "type": "string",
+          "required": true,
+          "description": "没有样本时写什么。"
+        }
+      ]
+    },
+    "PeriodReturnsTable": {
+      "kind": "component",
+      "source": "src/quant/period-returns-table.tsx",
+      "props": [
+        {
+          "name": "samples",
+          "type": "readonly ReturnSample[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "表的读屏名。"
+        },
+        {
+          "name": "unit",
+          "type": "PeriodUnit",
+          "required": false,
+          "description": "周期；不给用内部状态（默认 month）。"
+        },
+        {
+          "name": "onUnitChange",
+          "type": "(unit: PeriodUnit) => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "utcOffsetMinutes",
+          "type": "number",
+          "required": false,
+          "default": "0",
+          "description": "样本时刻所在时区相对 UTC 的分钟数（东八区 480）；默认 0。"
+        },
+        {
+          "name": "formatPercent",
+          "type": "(value: number) => string",
+          "required": true,
+          "description": "小数收益的写法（0.0123 → 「+1.23%」）；调用方定位数与符号。"
+        },
+        {
+          "name": "formatPeriod",
+          "type": "(year: number, unit: PeriodUnit, column: number) => string",
+          "required": true,
+          "description": "读数里一格的名字，如「2026 · 3 月」。"
+        },
+        {
+          "name": "scaleLimit",
+          "type": "number",
+          "required": false,
+          "description": "着色的上限（绝对值，小数）；不给取表里最大的格。固定它可以让几张表用同一把尺。"
+        },
+        {
+          "name": "labels",
+          "type": "PeriodReturnsLabels",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "source",
+          "type": "string",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "PeriodReturnsTableProps": {
+      "kind": "type",
+      "source": "src/quant/period-returns-table.tsx",
+      "props": [
+        {
+          "name": "samples",
+          "type": "readonly ReturnSample[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "表的读屏名。"
+        },
+        {
+          "name": "unit",
+          "type": "PeriodUnit",
+          "required": false,
+          "description": "周期；不给用内部状态（默认 month）。"
+        },
+        {
+          "name": "onUnitChange",
+          "type": "(unit: PeriodUnit) => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "utcOffsetMinutes",
+          "type": "number",
+          "required": false,
+          "description": "样本时刻所在时区相对 UTC 的分钟数（东八区 480）；默认 0。"
+        },
+        {
+          "name": "formatPercent",
+          "type": "(value: number) => string",
+          "required": true,
+          "description": "小数收益的写法（0.0123 → 「+1.23%」）；调用方定位数与符号。"
+        },
+        {
+          "name": "formatPeriod",
+          "type": "(year: number, unit: PeriodUnit, column: number) => string",
+          "required": true,
+          "description": "读数里一格的名字，如「2026 · 3 月」。"
+        },
+        {
+          "name": "scaleLimit",
+          "type": "number",
+          "required": false,
+          "description": "着色的上限（绝对值，小数）；不给取表里最大的格。固定它可以让几张表用同一把尺。"
+        },
+        {
+          "name": "labels",
+          "type": "PeriodReturnsLabels",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "source",
+          "type": "string",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "PeriodRow": {
+      "kind": "type",
+      "source": "src/quant/period-returns-model.ts",
+      "props": [
+        {
+          "name": "year",
+          "type": "number",
+          "required": true,
+          "description": "月、季按日历年；周按 ISO 周所属的年（1 月初可能属于上一年的第 52、53 周）。"
+        },
+        {
+          "name": "cells",
+          "type": "(PeriodCell | null)[]",
+          "required": true,
+          "description": "下标是列：月 0..11、季 0..3、周 0..(列数-1)；没有样本是 null。"
+        },
+        {
+          "name": "total",
+          "type": "number",
+          "required": true,
+          "description": "这一年所有样本复利后的合计；整年没有样本不会有这一行。"
+        }
+      ]
+    },
+    "PeriodUnit": {
+      "kind": "type",
+      "source": "src/quant/period-returns-model.ts",
+      "props": []
     },
     "PersistedStateOptions": {
       "kind": "type",
@@ -28317,7 +30687,15 @@
     "Popover": {
       "kind": "component",
       "source": "src/primitives/popover.tsx",
-      "props": []
+      "props": [
+        {
+          "name": "closeOnScroll",
+          "type": "boolean",
+          "required": false,
+          "default": "true",
+          "description": "Closes the popover when the page or a container holding its trigger scrolls, so it never floats away open."
+        }
+      ]
     },
     "PopoverAnchor": {
       "kind": "component",
@@ -28361,6 +30739,306 @@
       "kind": "component",
       "source": "src/primitives/popover.tsx",
       "props": []
+    },
+    "PortfolioRunFormat": {
+      "kind": "type",
+      "source": "src/blocks/portfolio-run-grid/portfolio-run-grid.tsx",
+      "props": [
+        {
+          "name": "amount",
+          "type": "(value: number) => string",
+          "required": true,
+          "description": "金额（权益、盈亏、风险资金）；盈亏带不带正号由它定。"
+        },
+        {
+          "name": "quantity",
+          "type": "(value: number) => string",
+          "required": true,
+          "description": "持仓数量，带符号的原始数，正多负空。"
+        },
+        {
+          "name": "percent",
+          "type": "(value: number) => string",
+          "required": true,
+          "description": "比例，小数（-0.034）。"
+        }
+      ]
+    },
+    "PortfolioRunGrid": {
+      "kind": "component",
+      "source": "src/blocks/portfolio-run-grid/portfolio-run-grid.tsx",
+      "props": [
+        {
+          "name": "rows",
+          "type": "readonly PortfolioRunRow[]",
+          "required": true,
+          "description": "One row per symbol."
+        },
+        {
+          "name": "summary",
+          "type": "PortfolioRunSummary",
+          "required": true,
+          "description": "Portfolio totals shown above the table; a null item shows a dash."
+        },
+        {
+          "name": "format",
+          "type": "PortfolioRunFormat",
+          "required": true,
+          "description": "How numbers are written as text (amount, quantity, percent)."
+        },
+        {
+          "name": "labels",
+          "type": "PortfolioRunLabels",
+          "required": true,
+          "description": "All text; the package has no language of its own."
+        },
+        {
+          "name": "onPause",
+          "type": "(row: PortfolioRunRow) => void",
+          "required": false,
+          "description": "Called with the clicked row when its Pause button is clicked; without it the button is disabled."
+        },
+        {
+          "name": "onResume",
+          "type": "(row: PortfolioRunRow) => void",
+          "required": false,
+          "description": "Called with the clicked row when its Resume button is clicked."
+        },
+        {
+          "name": "onClose",
+          "type": "(row: PortfolioRunRow) => void",
+          "required": false,
+          "description": "Called with the clicked row when its Close button is clicked; confirming the close is the caller's job."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "PortfolioRunGridProps": {
+      "kind": "type",
+      "source": "src/blocks/portfolio-run-grid/portfolio-run-grid.tsx",
+      "props": [
+        {
+          "name": "rows",
+          "type": "readonly PortfolioRunRow[]",
+          "required": true,
+          "description": "One row per symbol."
+        },
+        {
+          "name": "summary",
+          "type": "PortfolioRunSummary",
+          "required": true,
+          "description": "Portfolio totals shown above the table; a null item shows a dash."
+        },
+        {
+          "name": "format",
+          "type": "PortfolioRunFormat",
+          "required": true,
+          "description": "How numbers are written as text (amount, quantity, percent)."
+        },
+        {
+          "name": "labels",
+          "type": "PortfolioRunLabels",
+          "required": true,
+          "description": "All text; the package has no language of its own."
+        },
+        {
+          "name": "onPause",
+          "type": "(row: PortfolioRunRow) => void",
+          "required": false,
+          "description": "Called with the clicked row when its Pause button is clicked; without it the button is disabled."
+        },
+        {
+          "name": "onResume",
+          "type": "(row: PortfolioRunRow) => void",
+          "required": false,
+          "description": "Called with the clicked row when its Resume button is clicked."
+        },
+        {
+          "name": "onClose",
+          "type": "(row: PortfolioRunRow) => void",
+          "required": false,
+          "description": "Called with the clicked row when its Close button is clicked; confirming the close is the caller's job."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "PortfolioRunLabels": {
+      "kind": "type",
+      "source": "src/blocks/portfolio-run-grid/portfolio-run-grid.tsx",
+      "props": [
+        {
+          "name": "grid",
+          "type": "string",
+          "required": true,
+          "description": "整张表的读屏名。"
+        },
+        {
+          "name": "summary",
+          "type": "string",
+          "required": true,
+          "description": "汇总一行的读屏名。"
+        },
+        {
+          "name": "equity",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "availableFunds",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "buyingPower",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "drawdown",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "columns",
+          "type": "{ symbol: string position: string unrealizedPnl: string realizedPnl: string riskAmount: string equityContribution: string status: string actions: string }",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "status",
+          "type": "Readonly<Record<RunStatus, string>>",
+          "required": true,
+          "description": "四个状态各一个词。"
+        },
+        {
+          "name": "pause",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "resume",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "closePosition",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "actionLabel",
+          "type": "(action: 'pause' | 'resume' | 'close', symbol: string) => string",
+          "required": false,
+          "description": "行内按钮的读屏名（要带上品种，读屏才分得清是哪一行）；省略时是「按钮文字 品种」。"
+        },
+        {
+          "name": "empty",
+          "type": "string",
+          "required": false,
+          "description": "没有任何行时写什么。"
+        }
+      ]
+    },
+    "PortfolioRunRow": {
+      "kind": "type",
+      "source": "src/blocks/portfolio-run-grid/portfolio-run-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "稳定 id（常是品种代码加策略实例）。"
+        },
+        {
+          "name": "symbol",
+          "type": "string",
+          "required": true,
+          "description": "品种代码，演示与读屏用；按钮的回调把整行交回来，调用方据此找品种。"
+        },
+        {
+          "name": "position",
+          "type": "number",
+          "required": true,
+          "description": "持仓数量，带符号：正多负空，0 空仓。"
+        },
+        {
+          "name": "unrealizedPnl",
+          "type": "number",
+          "required": true,
+          "description": "浮动盈亏。"
+        },
+        {
+          "name": "realizedPnl",
+          "type": "number",
+          "required": true,
+          "description": "已实现盈亏。"
+        },
+        {
+          "name": "riskAmount",
+          "type": "number",
+          "required": true,
+          "description": "占用风险资金。"
+        },
+        {
+          "name": "equityContribution",
+          "type": "number",
+          "required": true,
+          "description": "对组合权益的贡献（浮动加已实现，口径由调用方定）。"
+        },
+        {
+          "name": "status",
+          "type": "RunStatus",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "PortfolioRunSummary": {
+      "kind": "type",
+      "source": "src/blocks/portfolio-run-grid/portfolio-run-grid.tsx",
+      "props": [
+        {
+          "name": "equity",
+          "type": "number | null",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "availableFunds",
+          "type": "number | null",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "buyingPower",
+          "type": "number | null",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "drawdown",
+          "type": "number | null",
+          "required": true,
+          "description": "当前回撤，小数，≤ 0（-0.034 是回撤 3.4%）。"
+        }
+      ]
     },
     "PositionCalculator": {
       "kind": "component",
@@ -31620,6 +34298,346 @@
         }
       ]
     },
+    "ReplayTransport": {
+      "kind": "component",
+      "source": "src/blocks/replay-transport/replay-transport.tsx",
+      "props": [
+        {
+          "name": "time",
+          "type": "number",
+          "required": true,
+          "description": "Current replay time as a millisecond timestamp, supplied by the caller's clock."
+        },
+        {
+          "name": "start",
+          "type": "number",
+          "required": true,
+          "description": "Start of the replay range as a millisecond timestamp (left end of the progress bar)."
+        },
+        {
+          "name": "end",
+          "type": "number",
+          "required": true,
+          "description": "End of the replay range as a millisecond timestamp (right end of the progress bar)."
+        },
+        {
+          "name": "playing",
+          "type": "boolean",
+          "required": true,
+          "description": "Whether the replay clock is running; the main button shows Pause while it is."
+        },
+        {
+          "name": "speed",
+          "type": "number",
+          "required": true,
+          "description": "Current speed multiplier."
+        },
+        {
+          "name": "speeds",
+          "type": "readonly number[]",
+          "required": true,
+          "description": "Speed multipliers to offer, in the order shown; the caller decides them, nothing is hard-coded."
+        },
+        {
+          "name": "onPlay",
+          "type": "() => void",
+          "required": true,
+          "description": "Called when Play is clicked."
+        },
+        {
+          "name": "onPause",
+          "type": "() => void",
+          "required": true,
+          "description": "Called when Pause is clicked."
+        },
+        {
+          "name": "onStep",
+          "type": "() => void",
+          "required": true,
+          "description": "Called when Step is clicked: advance by one bar."
+        },
+        {
+          "name": "onSpeedChange",
+          "type": "(speed: number) => void",
+          "required": true,
+          "description": "Called with the chosen multiplier when a speed is picked."
+        },
+        {
+          "name": "onSeek",
+          "type": "(time: number) => void",
+          "required": true,
+          "description": "Called with the target time in ms when the bar is dragged, moved by keyboard, or a time is jumped to; fires continuously while dragging, so throttle if needed."
+        },
+        {
+          "name": "onSkipTicks",
+          "type": "(ticks: number) => void",
+          "required": true,
+          "description": "Called with N when Skip is clicked: jump forward by N ticks."
+        },
+        {
+          "name": "defaultSkipTicks",
+          "type": "number",
+          "required": false,
+          "default": "100",
+          "description": "Initial value of the skip-ticks input; defaults to 100."
+        },
+        {
+          "name": "syncedPanels",
+          "type": "number",
+          "required": false,
+          "description": "Number of chart panels sharing this clock; the synced hint shows only when it is greater than 1."
+        },
+        {
+          "name": "formatTime",
+          "type": "(time: number) => string | null",
+          "required": false,
+          "default": "formatReplayTime",
+          "description": "Writes a time as text; defaults to UTC `YYYY-MM-DD HH:MM:SS`."
+        },
+        {
+          "name": "parseTime",
+          "type": "(text: string) => number | null",
+          "required": false,
+          "default": "parseReplayTime",
+          "description": "Reads the jump-to-time input into milliseconds, null when unreadable; defaults to `YYYY-MM-DD[ HH:MM[:SS]]` in UTC."
+        },
+        {
+          "name": "formatSpeed",
+          "type": "(speed: number) => string",
+          "required": false,
+          "default": "defaultFormatSpeed",
+          "description": "Writes a speed multiplier as text; defaults to `2×`."
+        },
+        {
+          "name": "labels",
+          "type": "ReplayTransportLabels",
+          "required": true,
+          "description": "All text; the package has no language of its own."
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "required": false,
+          "description": "Disable every control and the key shortcuts."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "ReplayTransportLabels": {
+      "kind": "type",
+      "source": "src/blocks/replay-transport/replay-transport.tsx",
+      "props": [
+        {
+          "name": "group",
+          "type": "string",
+          "required": true,
+          "description": "整条的读屏名。"
+        },
+        {
+          "name": "play",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "pause",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "step",
+          "type": "string",
+          "required": true,
+          "description": "逐根：前进一根 K 线。"
+        },
+        {
+          "name": "speed",
+          "type": "string",
+          "required": true,
+          "description": "倍速组的读屏名。"
+        },
+        {
+          "name": "progress",
+          "type": "string",
+          "required": true,
+          "description": "进度条的名字（写在条里，也是读屏名）。"
+        },
+        {
+          "name": "time",
+          "type": "string",
+          "required": true,
+          "description": "时刻读数的小标。"
+        },
+        {
+          "name": "jumpTo",
+          "type": "string",
+          "required": true,
+          "description": "「跳到时刻」输入框的读屏名。"
+        },
+        {
+          "name": "jump",
+          "type": "string",
+          "required": true,
+          "description": "「跳到时刻」按钮。"
+        },
+        {
+          "name": "invalidTime",
+          "type": "string",
+          "required": true,
+          "description": "时刻读不出时的提示（也进读屏）。"
+        },
+        {
+          "name": "skipTicks",
+          "type": "string",
+          "required": true,
+          "description": "「跳过 tick」输入框的读屏名。"
+        },
+        {
+          "name": "skip",
+          "type": "string",
+          "required": true,
+          "description": "「跳过 tick」按钮。"
+        },
+        {
+          "name": "synced",
+          "type": "(panels: number) => string",
+          "required": true,
+          "description": "多图共用一个时钟时的整句，如「同步中 · 3 个面板」。"
+        }
+      ]
+    },
+    "ReplayTransportProps": {
+      "kind": "type",
+      "source": "src/blocks/replay-transport/replay-transport.tsx",
+      "props": [
+        {
+          "name": "time",
+          "type": "number",
+          "required": true,
+          "description": "Current replay time as a millisecond timestamp, supplied by the caller's clock."
+        },
+        {
+          "name": "start",
+          "type": "number",
+          "required": true,
+          "description": "Start of the replay range as a millisecond timestamp (left end of the progress bar)."
+        },
+        {
+          "name": "end",
+          "type": "number",
+          "required": true,
+          "description": "End of the replay range as a millisecond timestamp (right end of the progress bar)."
+        },
+        {
+          "name": "playing",
+          "type": "boolean",
+          "required": true,
+          "description": "Whether the replay clock is running; the main button shows Pause while it is."
+        },
+        {
+          "name": "speed",
+          "type": "number",
+          "required": true,
+          "description": "Current speed multiplier."
+        },
+        {
+          "name": "speeds",
+          "type": "readonly number[]",
+          "required": true,
+          "description": "Speed multipliers to offer, in the order shown; the caller decides them, nothing is hard-coded."
+        },
+        {
+          "name": "onPlay",
+          "type": "() => void",
+          "required": true,
+          "description": "Called when Play is clicked."
+        },
+        {
+          "name": "onPause",
+          "type": "() => void",
+          "required": true,
+          "description": "Called when Pause is clicked."
+        },
+        {
+          "name": "onStep",
+          "type": "() => void",
+          "required": true,
+          "description": "Called when Step is clicked: advance by one bar."
+        },
+        {
+          "name": "onSpeedChange",
+          "type": "(speed: number) => void",
+          "required": true,
+          "description": "Called with the chosen multiplier when a speed is picked."
+        },
+        {
+          "name": "onSeek",
+          "type": "(time: number) => void",
+          "required": true,
+          "description": "Called with the target time in ms when the bar is dragged, moved by keyboard, or a time is jumped to; fires continuously while dragging, so throttle if needed."
+        },
+        {
+          "name": "onSkipTicks",
+          "type": "(ticks: number) => void",
+          "required": true,
+          "description": "Called with N when Skip is clicked: jump forward by N ticks."
+        },
+        {
+          "name": "defaultSkipTicks",
+          "type": "number",
+          "required": false,
+          "description": "Initial value of the skip-ticks input; defaults to 100."
+        },
+        {
+          "name": "syncedPanels",
+          "type": "number",
+          "required": false,
+          "description": "Number of chart panels sharing this clock; the synced hint shows only when it is greater than 1."
+        },
+        {
+          "name": "formatTime",
+          "type": "(time: number) => string | null",
+          "required": false,
+          "description": "Writes a time as text; defaults to UTC `YYYY-MM-DD HH:MM:SS`."
+        },
+        {
+          "name": "parseTime",
+          "type": "(text: string) => number | null",
+          "required": false,
+          "description": "Reads the jump-to-time input into milliseconds, null when unreadable; defaults to `YYYY-MM-DD[ HH:MM[:SS]]` in UTC."
+        },
+        {
+          "name": "formatSpeed",
+          "type": "(speed: number) => string",
+          "required": false,
+          "description": "Writes a speed multiplier as text; defaults to `2×`."
+        },
+        {
+          "name": "labels",
+          "type": "ReplayTransportLabels",
+          "required": true,
+          "description": "All text; the package has no language of its own."
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "required": false,
+          "description": "Disable every control and the key shortcuts."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
     "ReportOptions": {
       "kind": "type",
       "source": "src/blocks/strategy-report/strategy-report-model.ts",
@@ -31933,6 +34951,24 @@
           "name": "exitSignal",
           "type": "string",
           "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "ReturnSample": {
+      "kind": "type",
+      "source": "src/quant/period-returns-model.ts",
+      "props": [
+        {
+          "name": "time",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "value",
+          "type": "number",
+          "required": true,
           "description": ""
         }
       ]
@@ -32416,6 +35452,204 @@
         }
       ]
     },
+    "RobustnessCheck": {
+      "kind": "type",
+      "source": "src/quant/robustness-gate.tsx",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "value",
+          "type": "number | null",
+          "required": true,
+          "description": "实测值；还没有（没跑到、没数据）是 null，判为「未知」，不算通过也不算失败。"
+        },
+        {
+          "name": "threshold",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "op",
+          "type": "GateOp",
+          "required": true,
+          "description": "怎样算过：gte 实测 ≥ 阈值，lte 实测 ≤ 阈值，gt / lt 不含等号。"
+        },
+        {
+          "name": "format",
+          "type": "(value: number) => string",
+          "required": false,
+          "description": "实测值与阈值的写法；不给用 String。"
+        },
+        {
+          "name": "hint",
+          "type": "string",
+          "required": false,
+          "description": "一句口径说明（悬停提示与读屏），如「样本外年化 ÷ 样本内年化」。"
+        }
+      ]
+    },
+    "RobustnessGate": {
+      "kind": "component",
+      "source": "src/quant/robustness-gate.tsx",
+      "props": [
+        {
+          "name": "checks",
+          "type": "readonly RobustnessCheck[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "整组的读屏名。"
+        },
+        {
+          "name": "labels",
+          "type": "RobustnessGateLabels",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "title",
+          "type": "ReactNode",
+          "required": false,
+          "description": "标题；不给不画。"
+        },
+        {
+          "name": "source",
+          "type": "string",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "RobustnessGateLabels": {
+      "kind": "type",
+      "source": "src/quant/robustness-gate.tsx",
+      "props": [
+        {
+          "name": "measured",
+          "type": "string",
+          "required": true,
+          "description": "每行三列的小标题。"
+        },
+        {
+          "name": "threshold",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "result",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "pass",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "fail",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "unknown",
+          "type": "string",
+          "required": true,
+          "description": "没测出来。"
+        },
+        {
+          "name": "open",
+          "type": "string",
+          "required": true,
+          "description": "整体结论：全过 / 没过。"
+        },
+        {
+          "name": "closed",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "summary",
+          "type": "(passed: number, total: number) => string",
+          "required": true,
+          "description": "汇总的写法，如「3 / 4 通过」：由调用方按计数拼，件不拼句子。"
+        },
+        {
+          "name": "empty",
+          "type": "string",
+          "required": true,
+          "description": "一条判定都没有时写什么。"
+        }
+      ]
+    },
+    "RobustnessGateProps": {
+      "kind": "type",
+      "source": "src/quant/robustness-gate.tsx",
+      "props": [
+        {
+          "name": "checks",
+          "type": "readonly RobustnessCheck[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "整组的读屏名。"
+        },
+        {
+          "name": "labels",
+          "type": "RobustnessGateLabels",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "title",
+          "type": "ReactNode",
+          "required": false,
+          "description": "标题；不给不画。"
+        },
+        {
+          "name": "source",
+          "type": "string",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
     "RollingText": {
       "kind": "component",
       "source": "src/katana/rolling-text.tsx",
@@ -32721,6 +35955,76 @@
           "description": "摊到 DataGrid 上的两个 prop。"
         }
       ]
+    },
+    "RunMode": {
+      "kind": "type",
+      "source": "src/blocks/run-mode-badge/run-mode-badge.tsx",
+      "props": []
+    },
+    "RunModeBadge": {
+      "kind": "component",
+      "source": "src/blocks/run-mode-badge/run-mode-badge.tsx",
+      "props": [
+        {
+          "name": "mode",
+          "type": "RunMode",
+          "required": true,
+          "description": "Which mode to show: paper, replay, forward or live."
+        },
+        {
+          "name": "labels",
+          "type": "Readonly<Record<RunMode, string>>",
+          "required": true,
+          "description": "One word per mode, written by the caller (for example Paper, Replay, Forward, Live)."
+        },
+        {
+          "name": "detail",
+          "type": "string",
+          "required": false,
+          "description": "A short extra text after the word, such as the replay date."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "RunModeBadgeProps": {
+      "kind": "type",
+      "source": "src/blocks/run-mode-badge/run-mode-badge.tsx",
+      "props": [
+        {
+          "name": "mode",
+          "type": "RunMode",
+          "required": true,
+          "description": "Which mode to show: paper, replay, forward or live."
+        },
+        {
+          "name": "labels",
+          "type": "Readonly<Record<RunMode, string>>",
+          "required": true,
+          "description": "One word per mode, written by the caller (for example Paper, Replay, Forward, Live)."
+        },
+        {
+          "name": "detail",
+          "type": "string",
+          "required": false,
+          "description": "A short extra text after the word, such as the replay date."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "RunStatus": {
+      "kind": "type",
+      "source": "src/blocks/portfolio-run-grid/portfolio-run-model.ts",
+      "props": []
     },
     "SavedView": {
       "kind": "type",
@@ -33526,6 +36830,175 @@
       "kind": "type",
       "source": "src/motion/transition/sdf-blob-transition.tsx",
       "props": []
+    },
+    "Seat": {
+      "kind": "type",
+      "source": "src/cn/seat-model.ts",
+      "props": [
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": "Seat name (a brokerage branch or the institutional seat)."
+        },
+        {
+          "name": "tag",
+          "type": "string",
+          "required": false,
+          "description": "Hot-money tag of the seat, written by the caller; leave it out for unknown seats."
+        },
+        {
+          "name": "buy",
+          "type": "number | null",
+          "required": false,
+          "description": "Amount bought in yuan; null when unavailable."
+        },
+        {
+          "name": "sell",
+          "type": "number | null",
+          "required": false,
+          "description": "Amount sold in yuan; null when unavailable."
+        }
+      ]
+    },
+    "SeatSide": {
+      "kind": "type",
+      "source": "src/cn/seat-model.ts",
+      "props": []
+    },
+    "SeatTable": {
+      "kind": "component",
+      "source": "src/cn/seat-table.tsx",
+      "props": [
+        {
+          "name": "buy",
+          "type": "readonly Seat[]",
+          "required": true,
+          "description": "Seats that bought, in any order; the table keeps the top `limit` by buy amount."
+        },
+        {
+          "name": "sell",
+          "type": "readonly Seat[]",
+          "required": true,
+          "description": "Seats that sold, in any order; the table keeps the top `limit` by sell amount."
+        },
+        {
+          "name": "limit",
+          "type": "number",
+          "required": false,
+          "default": "5",
+          "description": "How many seats each side shows; 5 by default."
+        },
+        {
+          "name": "labels",
+          "type": "SeatTableLabels",
+          "required": false,
+          "default": "cnLabelsZh.seatTable",
+          "description": "Text pack; the Simplified Chinese default is used when omitted."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class names."
+        }
+      ]
+    },
+    "SeatTableLabels": {
+      "kind": "type",
+      "source": "src/cn/labels.ts",
+      "props": [
+        {
+          "name": "region",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "buyTitle",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "sellTitle",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "columns",
+          "type": "{ seat: string; buy: string; sell: string; net: string }",
+          "required": true,
+          "description": "列头：席位、买入额、卖出额、净额。"
+        },
+        {
+          "name": "total",
+          "type": "string",
+          "required": true,
+          "description": "合计行的字。"
+        },
+        {
+          "name": "netTotal",
+          "type": "string",
+          "required": true,
+          "description": "两侧合计下面的一行，例「买入前五合计净额」。"
+        },
+        {
+          "name": "empty",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "unavailable",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "tableAria",
+          "type": "(title: string) => string",
+          "required": true,
+          "description": "一张表的读屏名，例「买入前五席位」。"
+        }
+      ]
+    },
+    "SeatTableProps": {
+      "kind": "type",
+      "source": "src/cn/seat-table.tsx",
+      "props": [
+        {
+          "name": "buy",
+          "type": "readonly Seat[]",
+          "required": true,
+          "description": "Seats that bought, in any order; the table keeps the top `limit` by buy amount."
+        },
+        {
+          "name": "sell",
+          "type": "readonly Seat[]",
+          "required": true,
+          "description": "Seats that sold, in any order; the table keeps the top `limit` by sell amount."
+        },
+        {
+          "name": "limit",
+          "type": "number",
+          "required": false,
+          "description": "How many seats each side shows; 5 by default."
+        },
+        {
+          "name": "labels",
+          "type": "SeatTableLabels",
+          "required": false,
+          "description": "Text pack; the Simplified Chinese default is used when omitted."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class names."
+        }
+      ]
     },
     "Select": {
       "kind": "component",
@@ -37992,6 +41465,155 @@
           "type": "string",
           "required": false,
           "description": "Why the number is unavailable (shown on hover)."
+        }
+      ]
+    },
+    "SurfaceGoal": {
+      "kind": "type",
+      "source": "src/quant/param-surface-model.ts",
+      "props": []
+    },
+    "SurfaceGrid": {
+      "kind": "type",
+      "source": "src/quant/param-surface-model.ts",
+      "props": [
+        {
+          "name": "xs",
+          "type": "number[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "ys",
+          "type": "number[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "cells",
+          "type": "(SurfacePoint | null)[][]",
+          "required": true,
+          "description": "cells[yi][xi]：这个坐标上的点；没有这组参数是 null。同一坐标有几个点（切片没固定死）取第一个。"
+        }
+      ]
+    },
+    "SurfaceMetric": {
+      "kind": "type",
+      "source": "src/quant/param-surface-heatmap.tsx",
+      "props": [
+        {
+          "name": "key",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "format",
+          "type": "(value: number) => string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "goal",
+          "type": "SurfaceGoal",
+          "required": true,
+          "description": "越大越好还是越小越好：决定最优格与色阶方向。"
+        },
+        {
+          "name": "formatSpread",
+          "type": "(value: number) => string",
+          "required": false,
+          "description": "方差的写法（量纲是指标的平方）；不给取三位有效数字。"
+        }
+      ]
+    },
+    "SurfaceNeighborhood": {
+      "kind": "type",
+      "source": "src/quant/param-surface-model.ts",
+      "props": [
+        {
+          "name": "count",
+          "type": "number",
+          "required": true,
+          "description": "有有效值的邻格数（不含中心格）。"
+        },
+        {
+          "name": "mean",
+          "type": "number | null",
+          "required": true,
+          "description": "邻格的均值与（总体）方差；没有邻格是 null。"
+        },
+        {
+          "name": "variance",
+          "type": "number | null",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "center",
+          "type": "number | null",
+          "required": true,
+          "description": "中心格自己的值。"
+        },
+        {
+          "name": "retention",
+          "type": "number | null",
+          "required": true,
+          "description": "保留率：邻格均值相对中心格的比例，1 是「周围和我一样好」，越小越是孤峰。"
+        }
+      ]
+    },
+    "SurfaceParam": {
+      "kind": "type",
+      "source": "src/quant/param-surface-heatmap.tsx",
+      "props": [
+        {
+          "name": "key",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "format",
+          "type": "(value: number) => string",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "SurfacePoint": {
+      "kind": "type",
+      "source": "src/quant/param-surface-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "params",
+          "type": "Readonly<Record<string, number>>",
+          "required": true,
+          "description": "各参数的取值，键是参数 key。"
+        },
+        {
+          "name": "metrics",
+          "type": "Readonly<Record<string, number | null>>",
+          "required": true,
+          "description": "各项指标；没跑出结果或不适用是 null。键是指标 key。"
         }
       ]
     },
@@ -42468,6 +46090,19 @@
           "description": "Old name of size: 'default' is md, 'sm' is sm."
         },
         {
+          "name": "fullWidth",
+          "type": "boolean",
+          "required": false,
+          "description": "Stretch the group to the full width and give every item an equal share."
+        },
+        {
+          "name": "split",
+          "type": "boolean",
+          "required": false,
+          "default": "false",
+          "description": "Separate buttons, each with its own border and a small gap, instead of one shared container; the selected one is filled (no sliding pill)."
+        },
+        {
           "name": "pillClassName",
           "type": "string",
           "required": false,
@@ -42502,6 +46137,12 @@
           "type": "string",
           "required": true,
           "description": "The value of this item."
+        },
+        {
+          "name": "tone",
+          "type": "'up' | 'down'",
+          "required": false,
+          "description": "Fill colour of the selected item in a `split` group: up (--pnl-up) or down (--pnl-down); follows the theme's red-up / green-down setting."
         }
       ]
     },
@@ -42648,6 +46289,193 @@
       "kind": "component",
       "source": "src/primitives/tooltip.tsx",
       "props": []
+    },
+    "TradingCalendar": {
+      "kind": "type",
+      "source": "src/cn/trading-date-model.ts",
+      "props": []
+    },
+    "TradingDatePicker": {
+      "kind": "component",
+      "source": "src/cn/trading-date-picker.tsx",
+      "props": [
+        {
+          "name": "value",
+          "type": "string | null",
+          "required": true,
+          "description": "The selected trading day as YYYY-MM-DD; null means nothing picked."
+        },
+        {
+          "name": "onValueChange",
+          "type": "(date: string) => void",
+          "required": true,
+          "description": "Called with a trading day only; closed days are never reported."
+        },
+        {
+          "name": "calendar",
+          "type": "TradingCalendar",
+          "required": true,
+          "description": "The trading calendar: a set or array of open days (YYYY-MM-DD), or a function that says whether a day is open."
+        },
+        {
+          "name": "min",
+          "type": "string",
+          "required": false,
+          "description": "Earliest selectable day (YYYY-MM-DD); earlier days are disabled and the previous button stops there."
+        },
+        {
+          "name": "max",
+          "type": "string",
+          "required": false,
+          "description": "Latest selectable day (YYYY-MM-DD); later days are disabled and the next button stops there."
+        },
+        {
+          "name": "labels",
+          "type": "TradingDatePickerLabels",
+          "required": false,
+          "default": "cnLabelsZh.tradingDate",
+          "description": "Text pack; the Simplified Chinese default is used when omitted."
+        },
+        {
+          "name": "locale",
+          "type": "string",
+          "required": false,
+          "default": "'zh-CN'",
+          "description": "Locale for react-aria (month names, week start): zh-CN by default."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class names."
+        }
+      ]
+    },
+    "TradingDatePickerLabels": {
+      "kind": "type",
+      "source": "src/cn/labels.ts",
+      "props": [
+        {
+          "name": "pick",
+          "type": "string",
+          "required": true,
+          "description": "触发按钮的读屏名与日历弹层的名字。"
+        },
+        {
+          "name": "calendar",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "previousMonth",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "nextMonth",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "previousDay",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "nextDay",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "placeholder",
+          "type": "string",
+          "required": true,
+          "description": "没有选日期时按钮上的字。"
+        },
+        {
+          "name": "closed",
+          "type": "string",
+          "required": true,
+          "description": "非交易日日期格的读屏补充，例「休市」。"
+        }
+      ]
+    },
+    "TradingDatePickerProps": {
+      "kind": "type",
+      "source": "src/cn/trading-date-picker.tsx",
+      "props": [
+        {
+          "name": "value",
+          "type": "string | null",
+          "required": true,
+          "description": "The selected trading day as YYYY-MM-DD; null means nothing picked."
+        },
+        {
+          "name": "onValueChange",
+          "type": "(date: string) => void",
+          "required": true,
+          "description": "Called with a trading day only; closed days are never reported."
+        },
+        {
+          "name": "calendar",
+          "type": "TradingCalendar",
+          "required": true,
+          "description": "The trading calendar: a set or array of open days (YYYY-MM-DD), or a function that says whether a day is open."
+        },
+        {
+          "name": "min",
+          "type": "string",
+          "required": false,
+          "description": "Earliest selectable day (YYYY-MM-DD); earlier days are disabled and the previous button stops there."
+        },
+        {
+          "name": "max",
+          "type": "string",
+          "required": false,
+          "description": "Latest selectable day (YYYY-MM-DD); later days are disabled and the next button stops there."
+        },
+        {
+          "name": "labels",
+          "type": "TradingDatePickerLabels",
+          "required": false,
+          "description": "Text pack; the Simplified Chinese default is used when omitted."
+        },
+        {
+          "name": "locale",
+          "type": "string",
+          "required": false,
+          "description": "Locale for react-aria (month names, week start): zh-CN by default."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class names."
+        }
+      ]
+    },
+    "TradingRange": {
+      "kind": "type",
+      "source": "src/cn/trading-date-model.ts",
+      "props": [
+        {
+          "name": "min",
+          "type": "string",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "max",
+          "type": "string",
+          "required": false,
+          "description": ""
+        }
+      ]
     },
     "TransmissionChain": {
       "kind": "component",
@@ -43491,6 +47319,270 @@
           "type": "number",
           "required": false,
           "description": "Milliseconds per character."
+        }
+      ]
+    },
+    "UnderwaterChart": {
+      "kind": "component",
+      "source": "src/quant/underwater-chart.tsx",
+      "props": [
+        {
+          "name": "actionLabels",
+          "type": "ChartActionsLabels",
+          "required": true,
+          "description": "图右上三个按钮的名字。"
+        },
+        {
+          "name": "tableLabel",
+          "type": "string",
+          "required": true,
+          "description": "表格视图的读屏名。"
+        },
+        {
+          "name": "tableHead",
+          "type": "readonly string[]",
+          "required": true,
+          "description": "表头（第一项是行头那一列）。"
+        },
+        {
+          "name": "source",
+          "type": "ReactNode",
+          "required": false,
+          "description": "来源一行：每个数字能回答从哪来、什么时候（§2.2）。"
+        },
+        {
+          "name": "onExport",
+          "type": "() => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "onFullscreen",
+          "type": "() => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "points",
+          "type": "readonly UnderwaterPoint[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "title",
+          "type": "string",
+          "required": true,
+          "description": "标题：一行只写名字。"
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "整张图的读屏名。"
+        },
+        {
+          "name": "xDomain",
+          "type": "readonly [number, number]",
+          "required": false,
+          "description": "横轴定义域 [起, 止]（毫秒）；与 EquityCurve 画同一段时间时两边用同一对值（或同一组点的首末时刻）。不给就取 points 的首末点。"
+        },
+        {
+          "name": "xTicks",
+          "type": "(start: number, end: number) => readonly { time: number; label: string }[]",
+          "required": false,
+          "description": "横轴刻度：写法同 EquityCurve；不给就在定义域里均分 5 个，用 formatTime 写。"
+        },
+        {
+          "name": "formatTime",
+          "type": "(time: number) => string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "formatPercent",
+          "type": "(value: number) => string",
+          "required": true,
+          "description": "回撤的写法：参数是小数（-0.12），如「-12.0%」。纵轴刻度、读数、提示窗都用它。"
+        },
+        {
+          "name": "formatDuration",
+          "type": "(ms: number) => string",
+          "required": true,
+          "description": "时长的写法：参数是毫秒，如「12 天」。"
+        },
+        {
+          "name": "labels",
+          "type": "UnderwaterChartLabels",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "UnderwaterChartLabels": {
+      "kind": "type",
+      "source": "src/quant/underwater-chart.tsx",
+      "props": [
+        {
+          "name": "drawdown",
+          "type": "string",
+          "required": true,
+          "description": "回撤的名字（图例、提示窗）。"
+        },
+        {
+          "name": "maxDrawdown",
+          "type": "string",
+          "required": true,
+          "description": "「最大回撤」。"
+        },
+        {
+          "name": "fall",
+          "type": "string",
+          "required": true,
+          "description": "「前高到谷底」。"
+        },
+        {
+          "name": "recovery",
+          "type": "string",
+          "required": true,
+          "description": "「恢复」（谷底回到前高用了多久）。"
+        },
+        {
+          "name": "notRecovered",
+          "type": "string",
+          "required": true,
+          "description": "到末点还没回到前高时恢复一栏写什么，如「尚未恢复」。"
+        },
+        {
+          "name": "noDrawdown",
+          "type": "string",
+          "required": true,
+          "description": "整段都没有回撤时写什么，如「没有回撤」。"
+        }
+      ]
+    },
+    "UnderwaterChartProps": {
+      "kind": "type",
+      "source": "src/quant/underwater-chart.tsx",
+      "props": [
+        {
+          "name": "actionLabels",
+          "type": "ChartActionsLabels",
+          "required": true,
+          "description": "图右上三个按钮的名字。"
+        },
+        {
+          "name": "tableLabel",
+          "type": "string",
+          "required": true,
+          "description": "表格视图的读屏名。"
+        },
+        {
+          "name": "tableHead",
+          "type": "readonly string[]",
+          "required": true,
+          "description": "表头（第一项是行头那一列）。"
+        },
+        {
+          "name": "source",
+          "type": "ReactNode",
+          "required": false,
+          "description": "来源一行：每个数字能回答从哪来、什么时候（§2.2）。"
+        },
+        {
+          "name": "onExport",
+          "type": "() => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "onFullscreen",
+          "type": "() => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "points",
+          "type": "readonly UnderwaterPoint[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "title",
+          "type": "string",
+          "required": true,
+          "description": "标题：一行只写名字。"
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "整张图的读屏名。"
+        },
+        {
+          "name": "xDomain",
+          "type": "readonly [number, number]",
+          "required": false,
+          "description": "横轴定义域 [起, 止]（毫秒）；与 EquityCurve 画同一段时间时两边用同一对值（或同一组点的首末时刻）。不给就取 points 的首末点。"
+        },
+        {
+          "name": "xTicks",
+          "type": "(start: number, end: number) => readonly { time: number; label: string }[]",
+          "required": false,
+          "description": "横轴刻度：写法同 EquityCurve；不给就在定义域里均分 5 个，用 formatTime 写。"
+        },
+        {
+          "name": "formatTime",
+          "type": "(time: number) => string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "formatPercent",
+          "type": "(value: number) => string",
+          "required": true,
+          "description": "回撤的写法：参数是小数（-0.12），如「-12.0%」。纵轴刻度、读数、提示窗都用它。"
+        },
+        {
+          "name": "formatDuration",
+          "type": "(ms: number) => string",
+          "required": true,
+          "description": "时长的写法：参数是毫秒，如「12 天」。"
+        },
+        {
+          "name": "labels",
+          "type": "UnderwaterChartLabels",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "UnderwaterPoint": {
+      "kind": "type",
+      "source": "src/quant/underwater-model.ts",
+      "props": [
+        {
+          "name": "time",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "drawdown",
+          "type": "number",
+          "required": true,
+          "description": "离此前高点的回撤，≤ 0，用小数（-0.12 即 -12%）；创新高时是 0。"
         }
       ]
     },
@@ -44559,6 +48651,395 @@
           "type": "number | null",
           "required": true,
           "description": "相对上一次发布的变化；首次发布是 null。"
+        }
+      ]
+    },
+    "VolumeBar": {
+      "kind": "type",
+      "source": "src/cn/auction-model.ts",
+      "props": [
+        {
+          "name": "x",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "width",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "ratio",
+          "type": "number",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "WalkForwardMatrix": {
+      "kind": "component",
+      "source": "src/quant/walk-forward-matrix.tsx",
+      "props": [
+        {
+          "name": "modes",
+          "type": "Partial<Record<WalkForwardMode, readonly WalkForwardWindow[]>>",
+          "required": true,
+          "description": "两种模式的窗口集；只给一种就不显示切换。"
+        },
+        {
+          "name": "mode",
+          "type": "WalkForwardMode",
+          "required": false,
+          "description": "当前模式；不给用内部状态（默认有的第一个，锚定优先）。"
+        },
+        {
+          "name": "onModeChange",
+          "type": "(mode: WalkForwardMode) => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "表的读屏名。"
+        },
+        {
+          "name": "formatDate",
+          "type": "(time: number) => string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "formatPercent",
+          "type": "(value: number) => string",
+          "required": true,
+          "description": "小数收益的写法（0.0123 → 「+1.23%」）：样本外绩效与汇总里的年化。"
+        },
+        {
+          "name": "formatRatio",
+          "type": "(value: number) => string",
+          "required": true,
+          "description": "占比与效率的写法（0.62 → 「62%」）。"
+        },
+        {
+          "name": "labels",
+          "type": "WalkForwardMatrixLabels",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "source",
+          "type": "string",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "WalkForwardMatrixLabels": {
+      "kind": "type",
+      "source": "src/quant/walk-forward-matrix.tsx",
+      "props": [
+        {
+          "name": "modeGroup",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "rolling",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "anchored",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "window",
+          "type": "string",
+          "required": true,
+          "description": "表头。"
+        },
+        {
+          "name": "timeline",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "inSample",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "outSample",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "params",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "outPerformance",
+          "type": "string",
+          "required": true,
+          "description": "样本外绩效那一列的表头，如「样本外收益」。"
+        },
+        {
+          "name": "result",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "pass",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "fail",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "windows",
+          "type": "string",
+          "required": true,
+          "description": "汇总各项的名字。"
+        },
+        {
+          "name": "passed",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "profitable",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "inAnnualized",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "outAnnualized",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "efficiency",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "noValue",
+          "type": "string",
+          "required": true,
+          "description": "汇总里算不出的项（如样本内年化不为正时的效率）写什么。"
+        },
+        {
+          "name": "empty",
+          "type": "string",
+          "required": true,
+          "description": "图例里「样本内 / 样本外」条的说明由 inSample / outSample 复用；没有窗口时写什么。"
+        }
+      ]
+    },
+    "WalkForwardMatrixProps": {
+      "kind": "type",
+      "source": "src/quant/walk-forward-matrix.tsx",
+      "props": [
+        {
+          "name": "modes",
+          "type": "Partial<Record<WalkForwardMode, readonly WalkForwardWindow[]>>",
+          "required": true,
+          "description": "两种模式的窗口集；只给一种就不显示切换。"
+        },
+        {
+          "name": "mode",
+          "type": "WalkForwardMode",
+          "required": false,
+          "description": "当前模式；不给用内部状态（默认有的第一个，锚定优先）。"
+        },
+        {
+          "name": "onModeChange",
+          "type": "(mode: WalkForwardMode) => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "表的读屏名。"
+        },
+        {
+          "name": "formatDate",
+          "type": "(time: number) => string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "formatPercent",
+          "type": "(value: number) => string",
+          "required": true,
+          "description": "小数收益的写法（0.0123 → 「+1.23%」）：样本外绩效与汇总里的年化。"
+        },
+        {
+          "name": "formatRatio",
+          "type": "(value: number) => string",
+          "required": true,
+          "description": "占比与效率的写法（0.62 → 「62%」）。"
+        },
+        {
+          "name": "labels",
+          "type": "WalkForwardMatrixLabels",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "source",
+          "type": "string",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "WalkForwardMode": {
+      "kind": "type",
+      "source": "src/quant/walk-forward-model.ts",
+      "props": []
+    },
+    "WalkForwardSummary": {
+      "kind": "type",
+      "source": "src/quant/walk-forward-model.ts",
+      "props": [
+        {
+          "name": "windows",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "passed",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "profitableShare",
+          "type": "number | null",
+          "required": true,
+          "description": "样本外收益为正的窗口占比（0..1）；没有窗口是 null。"
+        },
+        {
+          "name": "inAnnualized",
+          "type": "number | null",
+          "required": true,
+          "description": "各窗口样本内、样本外年化收益的平均。"
+        },
+        {
+          "name": "outAnnualized",
+          "type": "number | null",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "efficiency",
+          "type": "number | null",
+          "required": true,
+          "description": "步进效率 = 样本外年化 / 样本内年化。样本内年化 ≤ 0 时没有意义，是 null。"
+        }
+      ]
+    },
+    "WalkForwardWindow": {
+      "kind": "type",
+      "source": "src/quant/walk-forward-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "inStart",
+          "type": "number",
+          "required": true,
+          "description": "样本内区间 [start, end]（毫秒）。锚定模式里每个窗口的 start 相同，滚动模式里 start 随窗口后移。"
+        },
+        {
+          "name": "inEnd",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "outStart",
+          "type": "number",
+          "required": true,
+          "description": "样本外区间 [start, end]（毫秒）。"
+        },
+        {
+          "name": "outEnd",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "params",
+          "type": "Readonly<Record<string, string>>",
+          "required": true,
+          "description": "这个窗口样本内选出的参数（已格式化的文字，键是参数名）。"
+        },
+        {
+          "name": "inReturn",
+          "type": "number",
+          "required": true,
+          "description": "区间总收益（小数，0.08 即 8%）。"
+        },
+        {
+          "name": "outReturn",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "passed",
+          "type": "boolean",
+          "required": true,
+          "description": "这个窗口算不算通过：判据（如样本外盈利、回撤不超限）是调用方的策略，件不判。"
         }
       ]
     },
@@ -45992,9 +50473,24 @@
       "source": "src/blocks/data-grid/layout-model.ts",
       "props": []
     },
+    "aggregateReturns": {
+      "kind": "function",
+      "source": "src/quant/period-returns-model.ts",
+      "props": []
+    },
     "alertVariants": {
       "kind": "function",
       "source": "src/primitives/alert.tsx",
+      "props": []
+    },
+    "amountTone": {
+      "kind": "function",
+      "source": "src/cn/seat-model.ts",
+      "props": []
+    },
+    "annualize": {
+      "kind": "function",
+      "source": "src/quant/walk-forward-model.ts",
       "props": []
     },
     "applyColumnSet": {
@@ -46060,6 +50556,45 @@
       "source": "src/blocks/data-grid/row-order-model.ts",
       "props": []
     },
+    "auctionSteps": {
+      "kind": "function",
+      "source": "src/cn/auction-model.ts",
+      "props": []
+    },
+    "auctionSummary": {
+      "kind": "function",
+      "source": "src/cn/auction-model.ts",
+      "props": []
+    },
+    "auctionX": {
+      "kind": "function",
+      "source": "src/cn/auction-model.ts",
+      "props": []
+    },
+    "bestCell": {
+      "kind": "function",
+      "source": "src/quant/param-surface-model.ts",
+      "props": [
+        {
+          "name": "xs",
+          "type": "number[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "ys",
+          "type": "number[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "cells",
+          "type": "(SurfacePoint | null)[][]",
+          "required": true,
+          "description": "cells[yi][xi]：这个坐标上的点；没有这组参数是 null。同一坐标有几个点（切片没固定死）取第一个。"
+        }
+      ]
+    },
     "bestIndex": {
       "kind": "function",
       "source": "src/quant/param-scatter-model.ts",
@@ -46103,6 +50638,39 @@
       "source": "src/lib/copy-image.ts",
       "props": []
     },
+    "candleDomain": {
+      "kind": "function",
+      "source": "src/cn/mini-k-model.ts",
+      "props": []
+    },
+    "candleShapes": {
+      "kind": "function",
+      "source": "src/cn/mini-k-model.ts",
+      "props": []
+    },
+    "candleTone": {
+      "kind": "function",
+      "source": "src/cn/mini-k-model.ts",
+      "props": [
+        {
+          "name": "open",
+          "type": "number",
+          "required": true,
+          "description": "Opening price."
+        },
+        {
+          "name": "close",
+          "type": "number",
+          "required": true,
+          "description": "Closing price."
+        }
+      ]
+    },
+    "changeText": {
+      "kind": "function",
+      "source": "src/cn/mini-k-model.ts",
+      "props": []
+    },
     "changedTail": {
       "kind": "function",
       "source": "src/quotes/watchlist-model.ts",
@@ -46111,6 +50679,11 @@
     "clampSplitRatio": {
       "kind": "function",
       "source": "src/primitives/splitter-model.ts",
+      "props": []
+    },
+    "clockText": {
+      "kind": "function",
+      "source": "src/cn/move-feed-model.ts",
       "props": []
     },
     "cn": {
@@ -46174,6 +50747,11 @@
     "compactParts": {
       "kind": "function",
       "source": "src/lib/chart/format/quantity.ts",
+      "props": []
+    },
+    "compound": {
+      "kind": "function",
+      "source": "src/quant/period-returns-model.ts",
       "props": []
     },
     "computeReport": {
@@ -46552,6 +51130,11 @@
       "source": "src/quant/distribution-bars.tsx",
       "props": []
     },
+    "docHeadings": {
+      "kind": "function",
+      "source": "src/ai/markdown.tsx",
+      "props": []
+    },
     "elementToPng": {
       "kind": "function",
       "source": "src/lib/copy-image.ts",
@@ -46569,6 +51152,35 @@
           "description": "像素倍数；默认 devicePixelRatio（至少 1，最多 3）。"
         }
       ]
+    },
+    "evaluateCheck": {
+      "kind": "function",
+      "source": "src/quant/robustness-gate-model.ts",
+      "props": [
+        {
+          "name": "value",
+          "type": "number | null",
+          "required": true,
+          "description": "实测值；还没有（没跑到、没数据）是 null，判为「未知」，不算通过也不算失败。"
+        },
+        {
+          "name": "op",
+          "type": "GateOp",
+          "required": true,
+          "description": "怎样算过：gte 实测 ≥ 阈值，lte 实测 ≤ 阈值，gt / lt 不含等号。"
+        },
+        {
+          "name": "threshold",
+          "type": "number",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "excursionPoints": {
+      "kind": "function",
+      "source": "src/quant/mae-mfe-model.ts",
+      "props": []
     },
     "exitPnl": {
       "kind": "function",
@@ -46621,6 +51233,11 @@
       "source": "src/cn/timeline-model.ts",
       "props": []
     },
+    "filterMoves": {
+      "kind": "function",
+      "source": "src/cn/move-feed-model.ts",
+      "props": []
+    },
     "filterTrades": {
       "kind": "function",
       "source": "src/blocks/strategy-report/strategy-report-model.ts",
@@ -46639,6 +51256,56 @@
     "floorToStep": {
       "kind": "function",
       "source": "src/blocks/sizing-model.ts",
+      "props": []
+    },
+    "flowDomain": {
+      "kind": "function",
+      "source": "src/cn/flow-race-model.ts",
+      "props": []
+    },
+    "flowLines": {
+      "kind": "function",
+      "source": "src/cn/flow-race-model.ts",
+      "props": []
+    },
+    "flowPath": {
+      "kind": "function",
+      "source": "src/cn/flow-race-model.ts",
+      "props": [
+        {
+          "name": "key",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "points",
+          "type": "{ x: number; value: number | null }[]",
+          "required": true,
+          "description": "横坐标 0 到 1 与累计值；取不到的点是 value = null（线在这里断）。"
+        },
+        {
+          "name": "last",
+          "type": "number | null",
+          "required": true,
+          "description": "最新一个有值的点的值；一个都没有是 null。"
+        }
+      ]
+    },
+    "flowX": {
+      "kind": "function",
+      "source": "src/cn/flow-race-model.ts",
+      "props": []
+    },
+    "flowY": {
+      "kind": "function",
+      "source": "src/cn/flow-race-model.ts",
       "props": []
     },
     "focusRing": {
@@ -46779,6 +51446,11 @@
       "source": "src/lib/chart/format/quantity.ts",
       "props": []
     },
+    "freshIds": {
+      "kind": "function",
+      "source": "src/cn/move-feed-model.ts",
+      "props": []
+    },
     "gaussianKde": {
       "kind": "function",
       "source": "src/quant/ridgeline-model.ts",
@@ -46795,6 +51467,11 @@
           "description": ""
         }
       ]
+    },
+    "gridColumns": {
+      "kind": "function",
+      "source": "src/cn/mini-k-model.ts",
+      "props": []
     },
     "groupCatalog": {
       "kind": "function",
@@ -46859,6 +51536,47 @@
     "isMonotonic": {
       "kind": "function",
       "source": "src/quant/quantile-model.ts",
+      "props": []
+    },
+    "isSpike": {
+      "kind": "function",
+      "source": "src/quant/param-surface-model.ts",
+      "props": [
+        {
+          "name": "count",
+          "type": "number",
+          "required": true,
+          "description": "有有效值的邻格数（不含中心格）。"
+        },
+        {
+          "name": "mean",
+          "type": "number | null",
+          "required": true,
+          "description": "邻格的均值与（总体）方差；没有邻格是 null。"
+        },
+        {
+          "name": "variance",
+          "type": "number | null",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "center",
+          "type": "number | null",
+          "required": true,
+          "description": "中心格自己的值。"
+        },
+        {
+          "name": "retention",
+          "type": "number | null",
+          "required": true,
+          "description": "保留率：邻格均值相对中心格的比例，1 是「周围和我一样好」，越小越是孤峰。"
+        }
+      ]
+    },
+    "isoWeek": {
+      "kind": "function",
+      "source": "src/quant/period-returns-model.ts",
       "props": []
     },
     "knownAt": {
@@ -46933,10 +51651,33 @@
         }
       ]
     },
+    "lastChange": {
+      "kind": "function",
+      "source": "src/cn/mini-k-model.ts",
+      "props": []
+    },
     "lastFinite": {
       "kind": "function",
       "source": "src/quant/quantile-model.ts",
       "props": []
+    },
+    "latestTradingDayOnOrBefore": {
+      "kind": "function",
+      "source": "src/cn/trading-date-model.ts",
+      "props": [
+        {
+          "name": "min",
+          "type": "string",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "max",
+          "type": "string",
+          "required": false,
+          "description": ""
+        }
+      ]
     },
     "layerLevel": {
       "kind": "function",
@@ -47138,6 +51879,11 @@
       "source": "src/katana/switchboard-card.tsx",
       "props": []
     },
+    "markdownSlot": {
+      "kind": "function",
+      "source": "src/ai/markdown.tsx",
+      "props": []
+    },
     "matchCondition": {
       "kind": "function",
       "source": "src/patterns/filter-bar-model.ts",
@@ -47155,6 +51901,11 @@
           "description": ""
         }
       ]
+    },
+    "maxDrawdownSegment": {
+      "kind": "function",
+      "source": "src/quant/underwater-model.ts",
+      "props": []
     },
     "measureText": {
       "kind": "function",
@@ -47221,6 +51972,29 @@
       "source": "src/blocks/data-grid/row-order-model.ts",
       "props": []
     },
+    "moveTone": {
+      "kind": "function",
+      "source": "src/cn/move-feed-model.ts",
+      "props": []
+    },
+    "moveValue": {
+      "kind": "function",
+      "source": "src/cn/move-feed-model.ts",
+      "props": [
+        {
+          "name": "value",
+          "type": "number | null",
+          "required": false,
+          "description": "The figure; a dash when missing."
+        },
+        {
+          "name": "unit",
+          "type": "'percent' | 'amount' | 'price'",
+          "required": false,
+          "description": "How the figure is written: percent (signed, with direction colour), amount (wan / yi) or price; percent by default."
+        }
+      ]
+    },
     "navigationMenuTriggerClass": {
       "kind": "value",
       "source": "src/primitives/navigation-menu.tsx",
@@ -47259,6 +52033,11 @@
     "normalizeVintages": {
       "kind": "function",
       "source": "src/quant/vintage-series-model.ts",
+      "props": []
+    },
+    "outwardDomain": {
+      "kind": "function",
+      "source": "src/quant/mae-mfe-model.ts",
       "props": []
     },
     "parseClock": {
@@ -47332,6 +52111,11 @@
     "preloaderExitMs": {
       "kind": "function",
       "source": "src/katana/page-preloader.tsx",
+      "props": []
+    },
+    "priceDomain": {
+      "kind": "function",
+      "source": "src/cn/auction-model.ts",
       "props": []
     },
     "pulseShare": {
@@ -47411,6 +52195,16 @@
     "rangeShare": {
       "kind": "function",
       "source": "src/quotes/range-bar.tsx",
+      "props": []
+    },
+    "rankLines": {
+      "kind": "function",
+      "source": "src/cn/flow-race-model.ts",
+      "props": []
+    },
+    "rankSeats": {
+      "kind": "function",
+      "source": "src/cn/seat-model.ts",
       "props": []
     },
     "ranks": {
@@ -47496,6 +52290,16 @@
         }
       ]
     },
+    "renderDoc": {
+      "kind": "function",
+      "source": "src/ai/markdown.tsx",
+      "props": []
+    },
+    "renderMarkdown": {
+      "kind": "function",
+      "source": "src/ai/markdown.tsx",
+      "props": []
+    },
     "reorderColumn": {
       "kind": "function",
       "source": "src/blocks/data-grid/layout-model.ts",
@@ -47509,6 +52313,11 @@
     "resolveRamp": {
       "kind": "function",
       "source": "src/quant/param-scatter-model.ts",
+      "props": []
+    },
+    "resolveSlice": {
+      "kind": "function",
+      "source": "src/quant/param-surface-model.ts",
       "props": []
     },
     "revisionStats": {
@@ -47648,6 +52457,41 @@
       "source": "src/katana/scrubber.tsx",
       "props": []
     },
+    "seatNet": {
+      "kind": "function",
+      "source": "src/cn/seat-model.ts",
+      "props": [
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": "Seat name (a brokerage branch or the institutional seat)."
+        },
+        {
+          "name": "tag",
+          "type": "string",
+          "required": false,
+          "description": "Hot-money tag of the seat, written by the caller; leave it out for unknown seats."
+        },
+        {
+          "name": "buy",
+          "type": "number | null",
+          "required": false,
+          "description": "Amount bought in yuan; null when unavailable."
+        },
+        {
+          "name": "sell",
+          "type": "number | null",
+          "required": false,
+          "description": "Amount sold in yuan; null when unavailable."
+        }
+      ]
+    },
+    "seatTotal": {
+      "kind": "function",
+      "source": "src/cn/seat-model.ts",
+      "props": []
+    },
     "selectItemClass": {
       "kind": "value",
       "source": "src/primitives/select.tsx",
@@ -47683,9 +52527,32 @@
       "source": "src/primitives/sheet.tsx",
       "props": []
     },
+    "shiftTradingDay": {
+      "kind": "function",
+      "source": "src/cn/trading-date-model.ts",
+      "props": [
+        {
+          "name": "min",
+          "type": "string",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "max",
+          "type": "string",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
     "silvermanBandwidth": {
       "kind": "function",
       "source": "src/quant/ridgeline-model.ts",
+      "props": []
+    },
+    "sliceGrid": {
+      "kind": "function",
+      "source": "src/quant/param-surface-model.ts",
       "props": []
     },
     "slopeLayout": {
@@ -47757,6 +52624,11 @@
           "description": ""
         }
       ]
+    },
+    "sortFeed": {
+      "kind": "function",
+      "source": "src/cn/move-feed-model.ts",
+      "props": []
     },
     "sortLayers": {
       "kind": "function",
@@ -47831,6 +52703,11 @@
         }
       ]
     },
+    "spreadFlowLabels": {
+      "kind": "function",
+      "source": "src/cn/flow-race-model.ts",
+      "props": []
+    },
     "spreadLabels": {
       "kind": "function",
       "source": "src/quant/slope-model.ts",
@@ -47849,6 +52726,11 @@
     "stepNode": {
       "kind": "function",
       "source": "src/blocks/symbol-galaxy/galaxy-model.ts",
+      "props": []
+    },
+    "stepPath": {
+      "kind": "function",
+      "source": "src/cn/auction-model.ts",
       "props": []
     },
     "streakLevel": {
@@ -47894,6 +52776,57 @@
           "type": "string",
           "required": true,
           "description": "取不到连板数时悬停写的原因（缺省不写）。"
+        }
+      ]
+    },
+    "summarizeExcursions": {
+      "kind": "function",
+      "source": "src/quant/mae-mfe-model.ts",
+      "props": []
+    },
+    "summarizeGate": {
+      "kind": "function",
+      "source": "src/quant/robustness-gate-model.ts",
+      "props": []
+    },
+    "summarizeWindows": {
+      "kind": "function",
+      "source": "src/quant/walk-forward-model.ts",
+      "props": []
+    },
+    "surfaceNeighborhood": {
+      "kind": "function",
+      "source": "src/quant/param-surface-model.ts",
+      "props": [
+        {
+          "name": "xs",
+          "type": "number[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "ys",
+          "type": "number[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "cells",
+          "type": "(SurfacePoint | null)[][]",
+          "required": true,
+          "description": "cells[yi][xi]：这个坐标上的点；没有这组参数是 null。同一坐标有几个点（切片没固定死）取第一个。"
+        },
+        {
+          "name": "xi",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "yi",
+          "type": "number",
+          "required": true,
+          "description": ""
         }
       ]
     },
@@ -48016,6 +52949,11 @@
       "source": "src/primitives/toggle-group.tsx",
       "props": []
     },
+    "toggleType": {
+      "kind": "function",
+      "source": "src/cn/move-feed-model.ts",
+      "props": []
+    },
     "toneOf": {
       "kind": "function",
       "source": "src/lib/chart/format/change.ts",
@@ -48026,14 +52964,29 @@
       "source": "src/primitives/tooltip.tsx",
       "props": []
     },
+    "tradingDayTest": {
+      "kind": "function",
+      "source": "src/cn/trading-date-model.ts",
+      "props": []
+    },
     "truncateText": {
       "kind": "function",
       "source": "src/lib/text-measure.ts",
       "props": []
     },
+    "typeCounts": {
+      "kind": "function",
+      "source": "src/cn/move-feed-model.ts",
+      "props": []
+    },
     "typeToSearchKey": {
       "kind": "function",
       "source": "src/lib/use-type-to-search.ts",
+      "props": []
+    },
+    "underwaterShare": {
+      "kind": "function",
+      "source": "src/quant/underwater-model.ts",
       "props": []
     },
     "undoBack": {
@@ -48476,6 +53429,11 @@
         }
       ]
     },
+    "validCandles": {
+      "kind": "function",
+      "source": "src/cn/mini-k-model.ts",
+      "props": []
+    },
     "valueRange": {
       "kind": "function",
       "source": "src/quant/param-scatter-model.ts",
@@ -48484,6 +53442,11 @@
     "vintageExtent": {
       "kind": "function",
       "source": "src/quant/vintage-series-model.ts",
+      "props": []
+    },
+    "volumeBars": {
+      "kind": "function",
+      "source": "src/cn/auction-model.ts",
       "props": []
     },
     "wrapText": {

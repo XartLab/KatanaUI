@@ -24,6 +24,15 @@ const ai: GuidanceMap = {
     avoid: ['整段已经完整的文字不需要它。', '引用来源列表用 web-search，别在正文里堆。'],
     a11y: ['是普通段落，读屏读到的是当前全文；光标 aria-hidden。', '引用小标可聚焦，聚焦立即弹出预览。'],
   },
+  markdown: {
+    aliases: ['Rich text', 'Safe markdown', 'Prose', 'Help doc'],
+    use: ['画模型写的整段话：标题、列表、表格、代码。', '帮助文档的正文，要锚点与站内链接。'],
+    avoid: ['逐词到达的流式回答用 ai-response。', '用户自己的话原样写，不要当 Markdown 解析。'],
+    a11y: [
+      '是普通的标题、段落、列表与表格，读屏照结构读；外链在新标签页打开。',
+      '图片换成文字说明，读屏读到的是说明。',
+    ],
+  },
   'ai-reasoning': {
     aliases: ['Thinking', 'Chain of thought', 'Thought process', 'Reasoning trace'],
     use: ['模型推理期间展开给人看，结束后自动收起。', '只想让人在需要时才看过程。'],
