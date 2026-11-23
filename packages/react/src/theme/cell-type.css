@@ -1,0 +1,86 @@
+/* SPDX-License-Identifier: MIT */
+/* 表格的格内排版与整页表的数值（#92，接 #90）：一份给 DataGrid、QuoteTable、Watchlist、LimitLadder、EventCalendar 与报告类的原生表共用。
+   数值照 TradingView 选股器（#90 记录的 2026-11-18 实测），只取版式；颜色只读语义 token。件在 quotes/cell-type.tsx。 */
+
+/* —— 格内排版 —— */
+/* 代码芯片：12px w600、面底、圆角 6（--radius-control）、高 24、左右 6。面板密表的行比 24 矮时由表自己把 --k-code-chip-h 调小。 */
+.k-code-chip {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  block-size: var(--k-code-chip-h, 24px);
+  padding: 0 6px;
+  border-radius: var(--radius-control);
+  background: var(--k-container-subtle-background);
+  color: var(--k-content-primary-foreground);
+  font: var(--text-data) var(--font-sans);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  white-space: nowrap;
+}
+/* 芯片后的全称：正文色，放不下省略。 */
+.k-code-name {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--k-content-body-foreground);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+/* 数字与单位：单位 10px w500 次要色，跟在数后空一格（复制出来是「4.53 T USD」）。 */
+.k-num-value {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.k-num-unit {
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-micro) var(--font-sans);
+  font-weight: 500;
+  letter-spacing: 0;
+}
+
+/* —— 整页表的一套数值（DataGrid comfortable 与报告类原生表共用）：行 40、表头 48、格内左右 12、首列左 20、正文 14px w400、表头 13px 次要色、行间 1px 横线 ——
+   14px、13px 没有对应的文字档，照文字档的写法跟 --k-text-scale 缩放。DataGrid 的行高与表头高另在 data-grid-props.ts（ROW_HEIGHTS / HEAD_HEIGHTS），两边要一致。 */
+.k-grid[data-density='comfortable'],
+.k-table-comfortable {
+  --k-table-row: 40px;
+  --k-table-head: 48px;
+  --k-table-cell-x: 12px;
+  --k-table-first-x: 20px;
+  --k-table-line: 20px;
+  --k-table-body-size: round(nearest, calc(14px * var(--k-text-scale, 1)), 1px);
+  --k-table-head-size: round(nearest, calc(13px * var(--k-text-scale, 1)), 1px);
+  --k-table-weight: calc(400 + var(--k-weight-adjust, 0));
+}
+
+/* 报告类的原生 <table>（SeriesExplorer 表格视图、HypothesisLedger 观察表、StrategyReport 指标表、chart-kit 的表格视图）：
+   类加在 <table> 上。上下内距按行高减一行字算，字折行时行跟着长，一行字时正好 40 / 48。ui.css 里排在各件样式之后，同权重时以这里为准。 */
+.k-table-comfortable {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+.k-table-comfortable :is(th, td) {
+  padding: calc((var(--k-table-row) - var(--k-table-line) - 1px) / 2) var(--k-table-cell-x);
+  border-bottom: 1px solid var(--k-separable-tertiary-borderColor);
+  font-family: var(--font-sans);
+  font-size: var(--k-table-body-size);
+  font-weight: var(--k-table-weight);
+  line-height: var(--k-table-line);
+  vertical-align: middle;
+}
+/* 表头把字体整组写全：宿主页常有 thead th { font: … } 这类同权重的规则（文档站的 .gal-doc 就有），只写字号会被它的行高与字距带偏。 */
+.k-table-comfortable thead th {
+  padding-block: calc((var(--k-table-head) - var(--k-table-line) - 1px) / 2);
+  color: var(--k-content-secondary-foreground);
+  font-family: var(--font-sans);
+  font-size: var(--k-table-head-size);
+  font-weight: var(--k-table-weight);
+  line-height: var(--k-table-line);
+  letter-spacing: 0;
+}
+.k-table-comfortable tr > :first-child {
+  padding-inline-start: var(--k-table-first-x);
+}

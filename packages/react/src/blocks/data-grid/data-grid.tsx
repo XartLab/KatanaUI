@@ -35,9 +35,10 @@ import { useEnterMarks, useFlipList } from '../../lib/live.ts'
 import { ContextMenu, ContextMenuContent, ContextMenuTrigger } from '../../primitives/context-menu.tsx'
 import { RowActions } from '../../quotes/row-actions.tsx'
 import { barExtent, defaultAlign, exportTable, resolveCell, resolveHeat, sortComparator } from './columns.ts'
-import { HEAD_HEIGHTS, ROW_HEIGHTS, type DataGridProps } from './data-grid-props.ts'
+import { HEAD_HEIGHTS, HEAD_SUB_EXTRA, ROW_HEIGHTS, type DataGridProps } from './data-grid-props.ts'
 import { CellBody, FLASH_TYPES, FlashCell, keepActionsInView } from './grid-cells.tsx'
 import { GridHead } from './grid-head.tsx'
+import { GridSummaryRow } from './grid-summary-row.tsx'
 import { DefaultMenu, gridMenuEntries, type GridMenuOn, type RowMoveTo } from './grid-menu.tsx'
 import { resolveLabels, useDataGridHost } from './host.tsx'
 import { EMPTY_SELECTION, clickSelection, moveCursor, tableCsv, tableTsv, type Selection } from './model.ts'
@@ -106,6 +107,7 @@ export function DataGrid<Row extends object>({
   exportName = 'table',
   onExport,
   foot,
+  summary,
   presorted,
   rowTree,
   timeZone,
@@ -113,11 +115,12 @@ export function DataGrid<Row extends object>({
   collapseColumns = true,
   containerWidth,
   density = 'default',
+  locale,
   hideHeader,
   headExtra,
   headEnd,
   autoRowHeight,
-  ruled,
+  ruled = density === 'comfortable',
   selectable = true,
   interactive = true,
   fit,
@@ -138,22 +141,22 @@ export function DataGrid<Row extends object>({
   const id = useId()
   const rowHeight = ROW_HEIGHTS[density]
   const headHeight = layout.some((column) => column.visible && column.sub)
-    ? HEAD_HEIGHTS[density] + 14
+    ? HEAD_HEIGHTS[density] + HEAD_SUB_EXTRA[density]
     : HEAD_HEIGHTS[density]
   const byId = useMemo(() => new Map(columns.map((column) => [column.id, column])), [columns])
   const layoutOf = useMemo(() => new Map(layout.map((entry) => [entry.id, entry])), [layout])
   const labelOf = (column: string) => layoutOf.get(column)?.label ?? column
   const alignOf = (column: string) => layoutOf.get(column)?.align ?? defaultAlign(byId.get(column)?.type)
-  const env = { timeZone }
+  const env = { timeZone, locale }
   // bar 列的条按整列归一：本列所有行里绝对值最大者当满格（虚拟滚动只画看得见的行，但基准看全部行）。
   const extents = useMemo(
     () =>
       new Map(
         columns
           .filter((column) => column.type === 'bar')
-          .map((column) => [column.id, barExtent(column, rows, { timeZone })] as const),
+          .map((column) => [column.id, barExtent(column, rows, { timeZone, locale })] as const),
       ),
-    [columns, rows, timeZone],
+    [columns, rows, timeZone, locale],
   )
 
   const defs = useMemo(() => {
@@ -161,7 +164,7 @@ export function DataGrid<Row extends object>({
     return helper.columns(
       columns.map((column) => {
         const compare = sortComparator(column.type, sortLocale)
-        return helper.accessor((row) => resolveCell(column, row, { timeZone }).sort, {
+        return helper.accessor((row) => resolveCell(column, row, { timeZone, locale }).sort, {
           id: column.id,
           header: column.id,
           sortUndefined: 'last',
@@ -170,7 +173,7 @@ export function DataGrid<Row extends object>({
         })
       }),
     )
-  }, [columns, sortLocale, timeZone])
+  }, [columns, sortLocale, timeZone, locale])
 
   const sorting: SortingState = sort ? [{ id: sort.id, desc: sort.desc }] : []
   // 手动行序（#77 G7）：按 rowOrder 排好再交给表；按列排序时表照样按列排（挪行这时关掉）。
@@ -213,14 +216,16 @@ export function DataGrid<Row extends object>({
   // 出胶囊时表头与数据行的右端都让出胶囊的宽度（#128）：胶囊不透明、贴在可视区右端，不让位就盖住最后一列的表头。
   // 用 toggleBox 量到的真实宽度，没量到的第一帧用预留值（与上面收列用的同一个数，所以让位后不会多出半列）。
   const toggleReserve = hiddenColumns > 0 ? toggleWidth || COLUMNS_TOGGLE_RESERVE : 0
-  const visibility: ColumnVisibilityState = Object.fromEntries(
-    layout.map((column) => [
+  // 没写进 layout 的列不画（layout 管顺序与显隐；TanStack 对不在显隐表里的列默认显示，并排到最后）。
+  const visibility: ColumnVisibilityState = Object.fromEntries([
+    ...columns.filter((column) => !layoutOf.has(column.id)).map((column) => [column.id, false] as const),
+    ...layout.map((column) => [
       column.id,
       column.visible &&
         (!compact || compactKept.has(column.id)) &&
         (!collapsed || priorityFit?.kept.has(column.id) === true),
     ]),
-  )
+  ])
   const scroller = useRef<HTMLDivElement>(null)
   const { drag, resizing, canFit, fitRows, startResize } = useColumnSizing<Row>({
     scroller,
@@ -344,6 +349,10 @@ export function DataGrid<Row extends object>({
     stuck.set(column.id, left)
     left += column.getSize()
   }
+  // 汇总行：一个看得见的列都没配聚合的整行不画（只剩行名的空行没有信息）；compact 只留前几行，不画汇总。
+  const shownSummary = (compact ? [] : (summary ?? [])).filter((entry) =>
+    visibleColumns.some((column) => entry.columns[column.id] !== undefined),
+  )
   const stuckIds = visibleColumns.filter((column) => stuck.has(column.id)).map((column) => column.id)
   const stickClass = (columnId: string) =>
     stuck.has(columnId)
@@ -629,7 +638,7 @@ export function DataGrid<Row extends object>({
       tabIndex={interactive ? 0 : undefined}
       role={tabular}
       aria-multiselectable={interactive && selectable ? 'true' : undefined}
-      aria-rowcount={items.length + 1}
+      aria-rowcount={items.length + 1 + shownSummary.length}
       aria-label={interactive ? texts.gridLabel(label) : label}
       aria-activedescendant={cursor !== null ? rowDomId(cursor) : undefined}
       data-slot="data-grid-body"
@@ -835,6 +844,26 @@ export function DataGrid<Row extends object>({
               )
             })}
           </div>
+          {shownSummary.length > 0 && (
+            <div className="k-grid-summary" role="rowgroup" data-slot="grid-summary">
+              {shownSummary.map((entry, index) => (
+                <GridSummaryRow
+                  key={entry.id}
+                  summary={entry}
+                  columns={visibleColumns.map((column) => byId.get(column.id)!)}
+                  rows={sortedRows.map((row) => row.original)}
+                  env={env}
+                  template={template}
+                  height={rowHeight}
+                  cellRole={cellRole}
+                  ariaRowIndex={items.length + 2 - (noHeader ? 1 : 0) + index}
+                  alignOf={alignOf}
+                  stickClass={stickClass}
+                  stickStyle={stickStyle}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

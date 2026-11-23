@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 // SeriesExplorer 的表格视图：图换成明细表（最新的在最上面），扫读中的那一行高亮；盈亏列按正负着涨跌色。从 series-explorer.tsx 拆出（G5），行为不变。
+// 版式是整页表的一套数（#92，跟 DataGrid comfortable 同一份 theme/cell-type.css 的 .k-table-comfortable）：行 40、表头 48、正文 14px。
 import type { SeriesPoint } from './series-explorer-model.ts'
 import type { SeriesExplorerColumn, SeriesExplorerLabels } from './series-explorer-types.ts'
 
@@ -18,7 +19,7 @@ export type SeriesTableProps = {
 export function SeriesTable({ rows, columns, labels, formatAt, active }: SeriesTableProps) {
   return (
     <div className="k-sx-table" tabIndex={0} role="region" aria-label={labels.table} data-slot="series-table">
-      <table>
+      <table className="k-table-comfortable">
         <thead>
           <tr>
             <th scope="col">{labels.time}</th>

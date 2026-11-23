@@ -446,10 +446,7 @@
 .k-ecal-num[data-tone='down'] {
   color: var(--pnl-down);
 }
-.k-ecal-unit {
-  color: var(--k-content-secondary-foreground);
-  font-size: var(--text-micro-size);
-}
+/* 币种单位是共用的单位小字 .k-num-unit（theme/cell-type.css，#92）。 */
 .k-ecal-session {
   display: inline-flex;
   color: var(--k-content-secondary-foreground);

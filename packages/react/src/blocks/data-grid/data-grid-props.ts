@@ -6,6 +6,7 @@
 import type { ReactNode } from 'react'
 import type { RowAction } from '../../quotes/row-actions.tsx'
 import type { GridColumn } from './columns.ts'
+import type { GridSummary } from './grid-summary-row.tsx'
 import type { GridMenuEntry } from './host.tsx'
 import type { SortSpec } from './model.ts'
 
@@ -24,12 +25,33 @@ export type GridColumnLayout = {
   sub?: string
 }
 
-/** 行高档：compact 20、default 24、relaxed 32（像素）。 */
-export type GridDensity = 'compact' | 'default' | 'relaxed'
+/**
+ * 行高档：compact 20、default 24、relaxed 32、comfortable 40（像素）。
+ * comfortable（#90，照 TradingView 选股器）给整页的表（选股器、持仓、报告）：格内左右 12、首列左 20、正文 14px、表头 13px、行间横线；
+ * compact / default 留给面板里的密表（自选栏、盘口），三档原值不变（KATANAview 在用）。
+ */
+export type GridDensity = 'compact' | 'default' | 'relaxed' | 'comfortable'
 /** 各档行高（像素）。 */
-export const ROW_HEIGHTS: Readonly<Record<GridDensity, number>> = { compact: 20, default: 24, relaxed: 32 }
-/** 各档表头高（像素）；有列带 sub 时再加 14。 */
-export const HEAD_HEIGHTS: Readonly<Record<GridDensity, number>> = { compact: 22, default: 26, relaxed: 30 }
+export const ROW_HEIGHTS: Readonly<Record<GridDensity, number>> = {
+  compact: 20,
+  default: 24,
+  relaxed: 32,
+  comfortable: 40,
+}
+/** 各档表头高（像素）；有列带 sub 时再加 HEAD_SUB_EXTRA。 */
+export const HEAD_HEIGHTS: Readonly<Record<GridDensity, number>> = {
+  compact: 22,
+  default: 26,
+  relaxed: 30,
+  comfortable: 48,
+}
+/** 有列带 sub（表头第二行）时表头加高多少；comfortable 的 48 本来就放得下两行 13px。 */
+export const HEAD_SUB_EXTRA: Readonly<Record<GridDensity, number>> = {
+  compact: 14,
+  default: 14,
+  relaxed: 14,
+  comfortable: 0,
+}
 /** 拖宽与适应内容的最小列宽（像素）。 */
 export const MIN_WIDTH = 24
 
@@ -198,6 +220,11 @@ export type DataGridProps<Row extends object> = {
    */
   foot?: ReactNode
   /**
+   * Summary rows at the foot (totals, averages): per-column aggregates over all rows, on the same column template and pinned columns; they stick to the bottom while scrolling.
+   * 表尾合计 / 均值行（#77）：按列配聚合，对全部行算，跟表同一份列宽与固定列，滚动时粘在底边。
+   */
+  summary?: readonly GridSummary<Row>[]
+  /**
    * Rows are already sorted by the caller (group rows with children): the header still shows the sort marker but the table does not sort.
    * 行已经由调用方排好（分组行带子行）：表照样画表头的标记，但不再自己排。
    */
@@ -234,8 +261,16 @@ export type DataGridProps<Row extends object> = {
    * 列优先级用的容器宽度（像素）；省略时自己用 ResizeObserver 量。服务端渲染这类量不了、宽度又已知的地方给。
    */
   containerWidth?: number
-  /** Row height tier. */
+  /**
+   * Row height tier: compact, default, relaxed for dense panel tables; comfortable (40px rows, 14px text, ruled) for full-page tables.
+   * 行高档：compact / default / relaxed 是面板里的密表；comfortable 是整页的表（行 40、正文 14px、默认画行间线）。
+   */
   density?: GridDensity
+  /**
+   * Locale of compact numbers (K/M/B/T for en-US, CJK myriad units for zh-CN) and date columns; a column's format.locale wins. Defaults to en-US.
+   * compact 缩写与 date 列用哪种语言（en-US 是 K/M/B/T，zh-CN 是 万/亿）；列的 format.locale 优先。省略是 en-US。
+   */
+  locale?: string
   /**
    * Do not draw the header (a two-column metrics table, say).
    * 不画表头（两列的指标表之类）。
@@ -257,8 +292,8 @@ export type DataGridProps<Row extends object> = {
    */
   autoRowHeight?: boolean
   /**
-   * Draw a thin rule between rows.
-   * 行与行之间画一道细线。
+   * Draw a thin rule between rows; on by default for density comfortable.
+   * 行与行之间画一道细线；comfortable 默认画。
    */
   ruled?: boolean
   /**
