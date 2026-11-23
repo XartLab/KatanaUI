@@ -74,6 +74,11 @@
           "target": "~/src/katana/ui/theme/calendar-heatmap.css"
         },
         {
+          "path": "src/theme/calendar.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/calendar.css"
+        },
+        {
           "path": "src/theme/cell-type.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/cell-type.css"
@@ -339,6 +344,16 @@
           "target": "~/src/katana/ui/theme/limit-ladder.css"
         },
         {
+          "path": "src/theme/link.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/link.css"
+        },
+        {
+          "path": "src/theme/list-box.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/list-box.css"
+        },
+        {
           "path": "src/theme/live.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/live.css"
@@ -467,6 +482,11 @@
           "path": "src/theme/period-returns-table.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/period-returns-table.css"
+        },
+        {
+          "path": "src/theme/pill.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/pill.css"
         },
         {
           "path": "src/theme/plan-vs-actual.css",
@@ -682,6 +702,11 @@
           "path": "src/theme/system-monitor.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/system-monitor.css"
+        },
+        {
+          "path": "src/theme/system-status.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/system-status.css"
         },
         {
           "path": "src/theme/tag-input.css",
@@ -1402,6 +1427,27 @@
           "path": "src/primitives/button.tsx",
           "type": "registry:ui",
           "target": "~/src/katana/ui/primitives/button.tsx"
+        }
+      ]
+    },
+    {
+      "name": "card",
+      "type": "registry:ui",
+      "title": "Card",
+      "description": "通用卡片容器：圆角 --radius-control、1px container-subtle 边、内距 12；头部（标题、说明、右上角动作）、内容、底部几个部件。四档底：secondary（默认）、primary、tertiary、ghost（无底无边）。interactive 配 asChild 让整张卡就是一个链接或按钮。部件划分取自 shadcn/ui（MIT），变体照 Salt Card（Apache-2.0）。",
+      "dependencies": [
+        "class-variance-authority@0.7.1",
+        "radix-ui@1.8.1"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/focus"
+      ],
+      "files": [
+        {
+          "path": "src/primitives/card.tsx",
+          "type": "registry:ui",
+          "target": "~/src/katana/ui/primitives/card.tsx"
         }
       ]
     },
@@ -2728,6 +2774,26 @@
       ]
     },
     {
+      "name": "link",
+      "type": "registry:component",
+      "title": "Link",
+      "description": "行内文字链接：下划线一直在（颜色 separable-primary、偏移 3px），悬停字提亮、下划线换成字色；external 时新窗口打开、末尾一个 12px 外链图标并让读屏另读 externalLabel。数值与 Button 的 link 变体一样。照 Salt Link（Apache-2.0，只取结构）。",
+      "dependencies": [
+        "lucide-react@1.67.0",
+        "radix-ui@1.8.1"
+      ],
+      "registryDependencies": [
+        "@katana/cn"
+      ],
+      "files": [
+        {
+          "path": "src/katana/link.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/katana/link.tsx"
+        }
+      ]
+    },
+    {
       "name": "loading-gate",
       "type": "registry:lib",
       "title": "Loading Gate",
@@ -2921,6 +2987,41 @@
           "path": "src/katana/page-preloader.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/katana/page-preloader.tsx"
+        }
+      ]
+    },
+    {
+      "name": "panel",
+      "type": "registry:component",
+      "title": "Panel",
+      "description": "不带标题栏、不画边的纯容器：一块 container 的底色占满格子的高度，内容超出自己滚，内距 12。用在分栏的一栏、对话框里的一块滚动区。三档底：primary（默认）、secondary、tertiary。照 Salt Panel（Apache-2.0，只取结构）。",
+      "registryDependencies": [
+        "@katana/cn"
+      ],
+      "files": [
+        {
+          "path": "src/katana/panel.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/katana/panel.tsx"
+        }
+      ]
+    },
+    {
+      "name": "pill",
+      "type": "registry:component",
+      "title": "Pill",
+      "description": "单个可点、可关的小胶囊：本体是一个按钮（主动作，如点开改条件），给了 onDismiss 末尾多一个 × 钮只做「去掉」；24 高（sm 20）、圆角 pill、actionable 的底与边，与 ChipGroup 的芯片同一套数值。selected 时是开关，选中画法同分段切换。照 Salt Pill（Apache-2.0，只取结构）。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn"
+      ],
+      "files": [
+        {
+          "path": "src/katana/pill.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/katana/pill.tsx"
         }
       ]
     },
@@ -3148,6 +3249,26 @@
       ]
     },
     {
+      "name": "system-status",
+      "type": "registry:component",
+      "title": "System Status",
+      "description": "贴在应用顶上、占满宽的系统消息：维护、断线重连、数据延迟、新功能。最低 36 高，语气色 10% 叠在实底上、底下 1px 语气色的边；图标、可选的粗体标题、一两行字、末尾动作、可选的关闭钮。照 Salt SystemStatus（Apache-2.0，只取结构）。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/severity"
+      ],
+      "files": [
+        {
+          "path": "src/katana/system-status.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/katana/system-status.tsx"
+        }
+      ]
+    },
+    {
       "name": "tag",
       "type": "registry:component",
       "title": "Tag",
@@ -3229,6 +3350,28 @@
           "path": "src/patterns/animated-file-upload.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/patterns/animated-file-upload.tsx"
+        }
+      ]
+    },
+    {
+      "name": "calendar",
+      "type": "registry:component",
+      "title": "Calendar",
+      "description": "单独摆在页上的月历：选一天、翻月，非交易日用 unavailable 灰掉并加删除线。样子与 DateTimeInput 弹层里的日历同一套（.k-cal*），外面多一圈 container 的边与底；今天字提亮加下划线。行为底座是 react-aria 的 Calendar，日期一律 YYYY-MM-DD 字符串。",
+      "dependencies": [
+        "lucide-react@1.67.0",
+        "react-aria-components@1.22.1"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/date-range-model",
+        "@katana/date-time-model"
+      ],
+      "files": [
+        {
+          "path": "src/patterns/calendar.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/patterns/calendar.tsx"
         }
       ]
     },
@@ -3653,6 +3796,26 @@
           "path": "src/patterns/inline-edit.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/patterns/inline-edit.tsx"
+        }
+      ]
+    },
+    {
+      "name": "list-box",
+      "type": "registry:component",
+      "title": "List Box",
+      "description": "常驻页面的选项列表（listbox 角色）：单选或多选、可分组、每项可带图标、第二行说明与右端数值，选中的项右端出对勾。项高 28、圆角 --radius-inner，bordered 时外面一圈 container 的边与底；maxHeight 之后自己滚。行为底座是 react-aria 的 ListBox。",
+      "dependencies": [
+        "lucide-react@1.67.0",
+        "react-aria-components@1.22.1"
+      ],
+      "registryDependencies": [
+        "@katana/cn"
+      ],
+      "files": [
+        {
+          "path": "src/patterns/list-box.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/patterns/list-box.tsx"
         }
       ]
     },
