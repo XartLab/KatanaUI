@@ -48,6 +48,7 @@
 | [对照 Salt 补的七件](salt-gaps.md) | 还没有流程（手走） | Pill 改与删、SystemStatus 关闭、Calendar 选日与不可选日、ListBox 单选与多选、Link / Card / Panel 的样子 |
 | [RatingPanel 技术评级三联](rating-panel.md) | `drive rating-panel` | 点周期与 Tab + Enter 切周期、悬停与 Tab 聚焦出读数 |
 | [SymbolNote 品种备注](symbol-note.md) | `drive symbol-note` | 悬停预览、点击与 Enter 钉住、编辑后保存、存空就是删除、Esc 收起与放弃草稿 |
+| [SeasonalChart 季节性图](seasonal-chart.md) | `drive seasonal-chart` | 键盘读数（← / PageUp / End / Esc）、图例开关、表格视图、受控隐藏与最后一年关不掉、窄于 520px 的布局 |
 
 ## 待补
 
@@ -65,3 +66,4 @@
 | 2026-11-23 | `3ecfbf6` | 新补的 `orderbook`、`markdown`、`tv-widgets`，加了 `popover-scroll-close` 的 `overlays` | 四条全部 PASS（10 / 5 / 11 / 11 步）；每条各改坏一处组件代码都在对应那步变红，已还原 | XartLab/KatanaUI#143 |
 | 2026-11-23 | `3281e887`（`feat/150-rating-panel` 合入 main 后） | rating-panel、symbol-note | 两条 PASS；各做一次改坏，变红后还原 | XartLab/KatanaUI#159 |
 | 2026-11-23 | `c3eb2c28` | `link-group`（Graphite，十一步；合并前的工作树另走过一次 Console） | PASS；把选组件进组时的 joinLinkGroup 注释掉，第 06 步 FAIL（迷你图进空的组 C 后不再是 DDD） | XartLab/KatanaUI#162 |
+| 2026-11-23 | `b0928449`（`feat/147-seasonal-port` 合入 main 后） | seasonal-chart | PASS；做了一次改坏，变红后还原 | XartLab/KatanaUI#169 |
