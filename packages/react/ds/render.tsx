@@ -98,20 +98,38 @@ function OpenSection({ open: { Demo, height } }: { open: { Demo: ComponentType; 
   )
 }
 
+/**
+ * 静态预览渲染时把 `Date.now()` 钉在这一刻：有的演示跟系统时钟走（资金费率倒计时、刷新控件的「上次刷新」），
+ * 不钉的话每次生成的 preview.html 都不一样，`ds-build --check` 永远对不上。取演示数据常用的 2026-11-15（UTC）。
+ */
+const PREVIEW_NOW = Date.UTC(2026, 10, 15, 8)
+
+function withFixedNow<T>(render: () => T): T {
+  const realNow = Date.now
+  Date.now = () => PREVIEW_NOW
+  try {
+    return render()
+  } finally {
+    Date.now = realNow
+  }
+}
+
 /** 一个件的预览页（不含第 1、2 行的标记与许可证头，由 ds-build.mjs 加）。 */
 export function renderPreviewBody(page: DocPage): string {
   const Demo = DEMOS[page.id]
   const open = OPEN_DEMOS[page.id]
   if (!Demo) throw new Error(`${page.id} 没有预览（gallery/demos.tsx）`)
-  return [
-    '<!doctype html>',
-    '<html lang="zh-CN">',
-    `<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>${folderName(page.id)}</title></head>`,
-    `<body style="${bodyStyle}">`,
-    renderToStaticMarkup(<Demo />),
-    open ? renderToStaticMarkup(<OpenSection open={open} />) : '',
-    '</body>',
-    '</html>',
-    '',
-  ].join('\n')
+  return withFixedNow(() =>
+    [
+      '<!doctype html>',
+      '<html lang="zh-CN">',
+      `<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>${folderName(page.id)}</title></head>`,
+      `<body style="${bodyStyle}">`,
+      renderToStaticMarkup(<Demo />),
+      open ? renderToStaticMarkup(<OpenSection open={open} />) : '',
+      '</body>',
+      '</html>',
+      '',
+    ].join('\n'),
+  )
 }

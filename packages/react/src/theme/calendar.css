@@ -1,0 +1,26 @@
+/* SPDX-License-Identifier: MIT */
+/* Calendar（patterns/calendar.tsx）：单独摆在页上的月历。日格、头部、选中的样子都沿用 date-time.css 的 .k-cal*（与 DateTimeInput 弹层里的日历一样），
+   这里只加三样，且只加在 .k-cal-card 上，不改弹层里的日历：
+   1. 外框：8px 内距、container 的 1px 边与 secondary 底、圆角 --radius-control（同 Alert、ListBox 的 bordered）；
+   2. 今天：字提到 primary、600 粗、下划线（不只靠颜色）；选中的今天照选中画；
+   3. 不可选（unavailable：休市、周末）：在 date-time.css 的降色之外再加删除线，形状上也看得出点不了。 */
+.k-cal-card {
+  display: inline-block;
+  box-sizing: border-box;
+  padding: 8px;
+  border: 1px solid var(--k-container-borderColor);
+  border-radius: var(--radius-control);
+  background: var(--k-container-secondary-background);
+}
+.k-cal-card[data-disabled] {
+  opacity: 0.45;
+}
+.k-cal-card .k-cal-cell[data-today]:not([data-selected]) {
+  color: var(--k-content-primary-foreground);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.k-cal-card .k-cal-cell[data-unavailable] {
+  text-decoration: line-through;
+}

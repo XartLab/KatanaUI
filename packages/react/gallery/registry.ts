@@ -1418,7 +1418,7 @@ export const PAGES: readonly DocPage[] = [
             name: 'locale',
             type: 'string',
             default: "'en-US'",
-            desc: '封单额缩写的语言（#92）：zh-CN 是 万 / 亿，en-US 是 K / M / B；跟 DataGrid compact 列同一个 compactNumber。',
+            desc: '封单额缩写的语言（#92）：zh-CN 是 万 / 亿（formatCnAmount 的写法，#158），en-US 是 K / M / B；跟 DataGrid compact 列同一个 formatCompactNumber。',
           },
           { name: 'selected', type: 'string | null', desc: '选中个股的代码；选中行左侧画 2px 强调条。' },
           {
@@ -2026,7 +2026,7 @@ export const PAGES: readonly DocPage[] = [
       {
         part: 'compactNumber(value, { locale, digits }) / formatCompactNumber',
         symbol: 'compactNumber',
-        note: '跟 locale 走的缩写（#90，DataGrid 的 compact 列用它）：Intl.NumberFormat 的 compact 记数法，en-US 是 K / M / B / T，zh-CN 是 万 / 亿 / 万亿；两位小数，数字与缩写字之间空一格；不到第一档照写、不补零。',
+        note: '跟 locale 走的缩写（#90，DataGrid 的 compact 列用它）：en-US 是 Intl.NumberFormat 的 compact 记数法 K / M / B / T，两位小数，数字与缩写字之间空一格，不到第一档照写、不补零；zh-CN 就是 formatCnAmount 的写法（「1.23亿」「4.6万」，#158），中文金额直接用 cnAmount 列。',
       },
     ],
     states: [
@@ -5333,6 +5333,159 @@ export const PAGES: readonly DocPage[] = [
     keys: [],
   },
   {
+    id: 'root-cause-tree',
+    group: 'blocks',
+    cardHeight: 420,
+    title: 'RootCauseTree 排查树',
+    summary:
+      '数据异常（缺 K、断流、对不上账）的排查：故障在最上一行，下面一层层假设，每行写门（任一 / 同时，父行才有）、状态（待查 / 在查 / 已排除 / 已确认）、标题与涉及的文件或数据源。已排除的行变淡、竖线变虚；已确认且没有子假设的是根因，从它到故障的一条线点亮。Enter 打开这一行的证据（结论、证据种类与原文、文件、检查时间），有 onAction 时根因下面有「修复」「从这里重跑」。只画缩进树，不画分叉图。状态是字加线型，不只靠颜色。功能参照 affectUI 的 Root Cause Tree（affectui.com/components/root-cause-tree，2026-11-23 读；Pro 件，页上没写许可证：只读说明、实现原创，不装它的 registry）。演示数据是示例。',
+    exports: ['RootCauseTree', 'flattenCauses', 'isRootCause', 'litPath', 'moveCause'],
+    propParts: [
+      { part: 'RootCauseTree', note: '证据面板受控或不受控（openId / defaultOpenId）；不给 onAction 证据只读。' },
+      { part: 'flattenCauses', note: '纯函数：前序展开成行，故障一行在最前。' },
+      { part: 'isRootCause', note: '纯函数：已确认且没有子假设。' },
+      { part: 'litPath', note: '纯函数：每个根因与它到故障的祖先。' },
+      { part: 'moveCause', note: '纯函数：树的键盘移动。' },
+    ],
+    states: [
+      '待查：灰字。在查：warn 色字。',
+      '已排除：整行变淡、删除线、竖线变虚线。',
+      '已确认：danger 色字；没有子假设的是根因，整行淡 danger 底，到故障的竖线点亮。',
+      '打开一行：行底变选中色，右侧（窄时下方）是证据；还没有证据写 noEvidence。',
+    ],
+    donts: [
+      '不要拿它画谁调用了谁：用 TraceWaterfall。',
+      '不要在件里判定根因：状态由排查的人或 Agent 写回。',
+      '不要让「修复」直接改数据：onAction 交给调用方，走它自己的确认。',
+    ],
+    composition:
+      'RootCauseTree\n  头（标题 · 计数）\n  tree（每行 treeitem：门 · 状态 · 标题 · 文件）\n  region（证据：结论 · 种类 · pre 原文 · 文件 · 时间 · Button × 2）',
+    keys: [
+      ['Tab', '进树（一个停点），再到证据原文与按钮'],
+      ['↑ ↓', '上一行 / 下一行'],
+      ['← / →', '回父行 / 到第一个子'],
+      ['Home / End', '故障行 / 最后一行'],
+      ['Enter / Space', '打开或收起这一行的证据'],
+      ['Esc', '收起证据，焦点回到树上'],
+    ],
+  },
+  {
+    id: 'trace-waterfall',
+    group: 'blocks',
+    cardHeight: 340,
+    title: 'TraceWaterfall 链路瀑布',
+    summary:
+      '一次数据请求的链路：哪个源慢、哪次重试、解析花了多久。左边是可折叠的 span 树，中间是时间轴上的条（按种类取 series 色，失败 danger，运行中斜纹并长到 now），右边是耗时与调用方写的一个小数（行数、字节、HTTP 状态）；跑完的叶子里最慢的标「最慢」。Enter 打开这一步的详情（种类、状态、开始、耗时、说明、错误），是表下的内嵌区，不弹对话框。不写 token 与花费。功能参照 affectUI 的 Trace Waterfall（affectui.com/components/trace-waterfall，2026-11-23 读；Pro 件，页上没写许可证：只读说明、实现原创，不装它的 registry）。演示数据是示例。',
+    exports: [
+      'TraceWaterfall',
+      'moveSpan',
+      'slowestSpan',
+      'spanEnd',
+      'traceAxis',
+      'traceExtent',
+      'traceStatus',
+      'visibleSpans',
+    ],
+    propParts: [
+      { part: 'TraceWaterfall', note: '时间都是从请求开始算的毫秒；折叠（collapsed）与详情（openId）都可受控。' },
+      { part: 'moveSpan', note: '纯函数：树的键盘移动，带展开收起。' },
+      { part: 'slowestSpan', note: '纯函数：跑完的叶子里耗时最长的。' },
+      { part: 'spanEnd', note: '纯函数：span 的结束，运行中长到 now。' },
+      { part: 'traceAxis', note: '纯函数：时间轴范围与整齐刻度。' },
+      { part: 'traceExtent', note: '纯函数：整棵树最晚的结束。' },
+      { part: 'traceStatus', note: '纯函数：整次请求的状态。' },
+      { part: 'visibleSpans', note: '纯函数：按折叠展开成可见行。' },
+    ],
+    states: [
+      '完成：条是种类色；头里写「完成 · 总耗时」（ok 色）。',
+      '运行中：条带斜纹并长到 now，每行一道 now 竖线；头里 warn 色。',
+      '失败：条与结果是 danger 色；根失败时头里 danger 色。',
+      '最慢：名字后 warn 色小标，条加一圈 warn 描边。',
+      '折叠：箭头朝右，子行不渲染。',
+    ],
+    donts: ['不要拿它看几个任务一天里的排程：用 RateLimitPlanner。', '不要把父 span 当成最慢：它的耗时含子。'],
+    composition:
+      'TraceWaterfall\n  头（标题 · 请求名 · 状态与总耗时）\n  列头（步骤 · 时间轴刻度 · 耗时 · 结果）\n  tree（每行 treeitem：折叠箭头 · 名字 · 说明 · 最慢 · 条 · 耗时 · 结果）\n  region（详情 dl）',
+    keys: [
+      ['Tab', '进树（一个停点）'],
+      ['↑ ↓', '上一行 / 下一行'],
+      ['→', '收着的先展开，展开的到第一个子'],
+      ['←', '展开的先收起，否则回父'],
+      ['Home / End', '第一行 / 最后一行'],
+      ['Enter / Space', '打开或收起详情'],
+      ['Esc', '收起详情'],
+    ],
+  },
+  {
+    id: 'fallback-chain',
+    group: 'blocks',
+    cardHeight: 330,
+    title: 'FallbackChain 回落链',
+    summary:
+      '一次取数按顺序试一串数据源（腾讯三个入口 → 新浪 → 东财 …）：请求节点在上，每个源一行（第几级、状态灯、源名与入口、状态字与原因、耗时），响应节点在下。失败的行写原因、竖线变 danger 虚线；正在试的灯亮强调色；答上的那一级之前的竖线点亮到响应；没用上的写「不需要」并变淡。全部失败时响应写「全部失败」，有 onRetry 就出「重试」。竖排有序列表，不画分叉图，不写花费。功能参照 affectUI 的 Fallback Chain（affectui.com/components/fallback-chain，2026-11-23 读；Pro 件，页上没写许可证：只读说明、实现原创，不装它的 registry）。演示数据是示例。',
+    exports: ['FallbackChain', 'answeredLevel', 'chainOutcome'],
+    propParts: [
+      { part: 'FallbackChain', note: '源按回落顺序给；状态由调用方随请求推进改写。' },
+      { part: 'answeredLevel', note: '纯函数：第几级答上（从 1 数）。' },
+      { part: 'chainOutcome', note: '纯函数：答上的源、失败数、试了几级、是否用完、耗时。' },
+    ],
+    states: [
+      '等待：灯熄灭、字变淡。',
+      '在试：灯亮强调色，字 warn 色；头里的摘要是 status 区，读屏会播。',
+      '失败：灯与字 danger，竖线虚线，后面跟原因。',
+      '答上：灯与字 ok，响应节点 ok 色边框。',
+      '不需要：变淡。',
+      '全部失败：响应节点 danger 色边框；有 onRetry 出「重试」。',
+    ],
+    donts: ['不要拿它看耗时细节：用 TraceWaterfall。', '不要只靠灯色：状态与原因都写成字。'],
+    composition:
+      'FallbackChain\n  头（标题 · 摘要 status）\n  请求节点（请求 · 路由）\n  ol（每级一行：级号 · Led · 源名与入口 · 状态与原因 · 耗时）\n  响应节点（结果 · Button）',
+    keys: [['Tab', '全部失败时聚焦「重试」']],
+  },
+  {
+    id: 'rate-limit-planner',
+    group: 'blocks',
+    cardHeight: 430,
+    title: 'RateLimitPlanner 限额排程',
+    summary:
+      '一个数据源一天里的抓取任务（仓库回补、新闻轮询……）摆在时间轴上，叠起来的负载曲线跟它的限额比：头一行状态（在限额内 / 接近上限 / 超过限额）与峰值时刻；负载面积上一道限额实线、一道预警虚线（限额 × buffer），超过限额的部分涂 danger。每个任务一行，条可以拖（15 分对齐），聚焦后方向键挪 15 分、Shift 或 PageUp / PageDown 挪一小时、Home / End 到最早 / 最晚、Delete 删掉；已开始的任务（早于 now）不能挪。「错开」按负载大小一个个重摆压低峰值；每次挪动底栏播报结果。负载是矩形（匀速打请求），不是爬升再衰减；没有设置对话框与加任务。功能参照 affectUI 的 Rate Limit Planner（affectui.com/components/rate-limit-planner，2026-11-23 读；Pro 件，页上没写许可证：只读说明、实现原创，不装它的 registry），键位也照它。演示数据是示例，不是任何数据源的真实限额。',
+    exports: ['RateLimitPlanner', 'clampStart', 'keyMove', 'loadCurve', 'peakOf', 'planStatus', 'spreadRuns'],
+    propParts: [
+      {
+        part: 'RateLimitPlanner',
+        note: '时间是从窗口开始算的分钟，钟点写法由 formatTime 给；受控且不给 onRunsChange 时只读。',
+      },
+      { part: 'clampStart', note: '纯函数：开始时间夹进窗口。' },
+      { part: 'keyMove', note: '纯函数：键盘挪一个任务。' },
+      { part: 'loadCurve', note: '纯函数：5 分一格的负载曲线。' },
+      { part: 'peakOf', note: '纯函数：峰值与所在格。' },
+      { part: 'planStatus', note: '纯函数：ok / near / over。' },
+      { part: 'spreadRuns', note: '纯函数：贪心错开，峰值不升，已开始的不动。' },
+    ],
+    states: [
+      '在限额内：ok 色状态牌。',
+      '接近上限：峰值超过 限额 × buffer，warn 色。',
+      '超过限额：danger 色，面积超出限额的部分涂 danger。',
+      '已开始：条是斜纹灰，aria-disabled，没有删除钮，不能拖。',
+      '只读：受控且不给 onRunsChange，没有删除钮与「错开」。',
+      '没有任务：写 empty。',
+    ],
+    donts: [
+      '不要拿它盯实时请求：它是排程，不是监控。',
+      '不要一张图放几个限额：一个限额一张。',
+      '不要在件里写死限额：各数据源的限额由调用方从适配器读。',
+    ],
+    composition:
+      'RateLimitPlanner\n  头（标题 · 状态 · 峰值）\n  负载图（svg 面积 · 超限 · 预警线 · 限额线 · now）· 图例 · 横轴\n  ul（每个任务：名字 · 轨道与 slider 条 · 起止与速率 · 删除）\n  底栏（Button 错开 · 播报）',
+    keys: [
+      ['Tab', '依次聚焦每个任务的条、删除钮、错开'],
+      ['← → / ↓ ↑', '早 / 晚 15 分'],
+      ['Shift + 方向 / PageDown PageUp', '早 / 晚一小时'],
+      ['Home / End', '最早（now 或窗口开始）/ 最晚'],
+      ['Delete', '删掉这个任务，焦点到下一个'],
+    ],
+  },
+  {
     id: 'hypothesis-ledger',
     group: 'blocks',
     cardHeight: 640,
@@ -6969,6 +7122,136 @@ export const PAGES: readonly DocPage[] = [
     keys: [],
   },
   {
+    id: 'experiment-card',
+    group: 'quant',
+    cardHeight: 300,
+    title: 'ExperimentCard 实验卡',
+    summary:
+      '两到五组参数或两个策略的回测对比：头一行标题、状态、小注；指标切换（只有一个指标不画）；每组一行写徽标字母、名字（基准、领先各一个小标）、当前指标的值、值条、相对基准的变化（好坏色加箭头，越小越好的指标变小才是好）、样本数与置信度。点一行或 Space 选为胜者，再点撤回；选了胜者底栏出动作按钮。卡一直展开，不做悬停才展开。指标方向与数值写法由调用方给。功能参照 affectUI 的 Experiment Card（affectui.com/components/experiment-card，2026-11-23 读；Pro 件，页上没写许可证：只读说明、实现原创，不装它的 registry）。演示数据是示例。',
+    exports: ['ExperimentCard', 'baselineOf', 'changeVerdict', 'leaderOf', 'relativeChange'],
+    propParts: [
+      {
+        part: 'ExperimentCard',
+        note: '指标切换受控或不受控（metric / defaultMetric），胜者同（winner / defaultWinner，null 是没选）。',
+      },
+      { part: 'baselineOf', note: '纯函数：基准是标了 control 的第一个，都没标取第一个。' },
+      { part: 'changeVerdict', note: '纯函数：变化是好是坏，越小越好的指标反过来。' },
+      { part: 'leaderOf', note: '纯函数：在一个指标上领先的变体，跳过没测出的。' },
+      { part: 'relativeChange', note: '纯函数：(值 − 基准) ÷ |基准|，基准为 0 或没测出时 null。' },
+    ],
+    states: [
+      '默认：领先的一行标「领先」，基准行标「基准」，基准行不写变化。',
+      '悬停或聚焦一行：底栏预览这一行的值。',
+      '选了胜者：这一行左边一道强调线、徽标变强调色，底栏写「已选」并出动作按钮（给了 onAction 才有）。',
+      '没测出的指标写 missing，值条为空，不参与领先。',
+      '没有变体：写 empty。',
+    ],
+    donts: [
+      '不要拿它比五组以上：用 ParallelAttempts 或参数散点图。',
+      '不要看一段时间的走势：用 KpiChart 或权益曲线。',
+      '不要在件里定「好坏」：指标方向由调用方给 lowerIsBetter。',
+    ],
+    composition:
+      'ExperimentCard\n  头（标题 · 状态 · 小注）\n  ToggleGroup（指标切换）\n  radiogroup（每组一行：徽标 · 名字与小标 · 值 · 值条 · 变化 · 样本与置信）\n  底栏（提示或已选 · Button）',
+    keys: [
+      ['Tab', '指标切换、每一组、动作按钮依次聚焦'],
+      ['← →', '在指标切换里换指标'],
+      ['Space / Enter', '在一组上：选为胜者；再按撤回'],
+    ],
+  },
+  {
+    id: 'parallel-attempts',
+    group: 'quant',
+    cardHeight: 330,
+    title: 'ParallelAttempts 并行尝试',
+    summary:
+      '一次参数扫描的几组同时跑：每组一行写名字、参数说明、进度条、状态（运行中写当前步，跑完写分数、小注与耗时，失败写原因），跑完且分最好的标「最优」。每个跑完的行有一个「用这组」单选，默认选中最优，点别的就改选。分数方向可配（lowerIsBetter），不写花费。进度条只是装饰，信息都在字里。功能参照 affectUI 的 Parallel Attempts（affectui.com/components/parallel-attempts，2026-11-23 读；Pro 件，页上没写许可证：只读说明、实现原创，不装它的 registry）。演示数据是示例。',
+    exports: ['ParallelAttempts', 'attemptFill', 'bestAttempt', 'countAttempts'],
+    propParts: [
+      { part: 'ParallelAttempts', note: 'picked 不给时跟着最优走，用户点过就以用户的为准。' },
+      { part: 'attemptFill', note: '纯函数：进度条长度，跑完满格、排队空、失败停在 progress。' },
+      { part: 'bestAttempt', note: '纯函数：跑完且有分的里分最好的，并列取靠前的。' },
+      { part: 'countAttempts', note: '纯函数：各状态的个数。' },
+    ],
+    states: [
+      '排队：空条，写「排队」。',
+      '运行中：中性墨色条到当前进度，右边写当前步。',
+      '跑完：ok 色满条，写分数；最优的名字后标「最优」。',
+      '失败：danger 色条停在失败处，写失败与原因。',
+      '选中：左边一道强调线，按钮写「已选」。',
+      '没有尝试：写 empty。',
+    ],
+    donts: ['不要拿它看一组参数的细节：用 ExperimentCard 或策略报告。', '不要把失败的组当成 0 分：它不参与最优。'],
+    composition:
+      'ParallelAttempts\n  头（标题 · 任务 · 计数）\n  radiogroup（每组一行：名字与最优 · 参数 · 进度条 · 状态 · 小注 · 用这组）',
+    keys: [
+      ['Tab', '依次聚焦跑完的组的「用这组」'],
+      ['Space / Enter', '用这组'],
+    ],
+  },
+  {
+    id: 'change-summary',
+    group: 'quant',
+    cardHeight: 220,
+    title: 'ChangeSummary 变化摘要',
+    summary:
+      '周报、日报、看板顶上的「这段时间变了什么」：灰底托盘，头一行图标、标题、区间；每个指标一行写名字与变化的文字（调用方写好，如「1.12 → 1.38」）和方向箭头。好坏与涨跌分开：回撤变大是 bad，箭头照样朝上，颜色走状态色（ok / danger），不用涨跌色。用 dl，读屏把变化和指标名一起读，箭头是装饰。功能参照 affectUI 的 Change Summary（affectui.com/components/change-summary，2026-11-23 读；页上标 MIT，这里也只学功能，代码原创）。演示数据是示例。',
+    exports: ['ChangeSummary'],
+    propParts: [
+      {
+        part: 'ChangeSummary',
+        note: '每行的 tone 定颜色（good / bad / neutral），direction 定箭头（up / down，不给是平的）。',
+      },
+    ],
+    states: [
+      'good：ok 色字与箭头。',
+      'bad：danger 色。',
+      'neutral：正文色。',
+      '没有变化：给了 empty 就写它，不给不画列表。',
+    ],
+    donts: ['不要超过六行：长了用表。', '不要拿它比精确数值的走势：用 KpiChart 或表。'],
+    composition: 'ChangeSummary\n  头（图标 · 标题 · 区间）\n  dl（每行：dt 指标名 · dd 变化文字与箭头）',
+    keys: [],
+  },
+  {
+    id: 'kpi-chart',
+    group: 'quant',
+    cardHeight: 380,
+    title: 'KpiChart KPI 图',
+    summary:
+      '大号当前值、较上期的变化（涨跌色），下面几条线并看（权益、回撤、夏普）：图例、首中末三处横轴字、提示窗跟着指针或方向键走，写这一点每条线的真值。两种纵轴：shared 同一单位共用一根轴（有刻度）；normalized 各自按最低到最高压到同一高度（单位不同的线并看，不画刻度）。扫读用 useScrubber，比例尺用 series-geometry，提示窗是 LcdTooltip，不另写一套（#1917 的分工）。线 2px 不填面、不用涨跌色。没有数据时写 emptyText。功能参照 affectUI 的 KPI Chart（affectui.com/components/kpi-chart，2026-11-23 读；Pro 件，页上没写许可证：只读说明、实现原创，不装它的 registry）；normalized 纵轴是我们加的。演示数据是固定种子合成的。',
+    exports: ['KpiChart', 'axisIndexes', 'kpiRange', 'normalizeValues'],
+    propParts: [
+      {
+        part: 'KpiChart',
+        note: '图是 role=slider，aria-valuetext 写这一点每条线的值；index 可受控（几张图共用一个扫读点）。',
+      },
+      { part: 'axisIndexes', note: '纯函数：横轴写字的点（首、中、末）。' },
+      { part: 'kpiRange', note: '纯函数：纵轴区间，normalized 固定 0..1。' },
+      { part: 'normalizeValues', note: '纯函数：一条线压到 0..1，平线放中间，缺的点是 NaN。' },
+    ],
+    states: [
+      '静止：标记点在 defaultIndex（不给是最后一点）。',
+      '扫读：十字线加 LCD 提示窗；靠右半边时提示窗翻到左边。',
+      'shared：有网格与纵轴刻度；normalized：没有刻度，左侧留白收窄。',
+      '缺的点：线断开，提示窗写「–」。',
+      '没有数据：虚线框里写 emptyText，不画轴。',
+    ],
+    donts: [
+      '不要超过六条线：拆成小多图（SmallMultiples）。',
+      '不要拿 normalized 比两条线谁高：高低只是各自的相对位置，看提示窗里的真值。',
+      '不要画几百个点的长序列：用 BrushChart 或权益曲线（带刷选）。',
+    ],
+    composition:
+      'KpiChart\n  头（标题 · 当前值 · 变化）\n  图例\n  slider（svg 网格与线 · 纵轴刻度 · 标记点 · 十字线 · LcdTooltip）\n  横轴（首中末）\n  页脚',
+    keys: [
+      ['← →', '上一点 / 下一点'],
+      ['Shift + ← →', '一次三点'],
+      ['Home / End', '第一点 / 最后一点'],
+      ['Esc', '清掉扫读点'],
+    ],
+  },
+  {
     id: 'param-scatter',
     group: 'quant',
     cardHeight: 800,
@@ -8314,6 +8597,33 @@ export const PAGES: readonly DocPage[] = [
     states: ['动画：四种环境动效叠加。', 'animated=false：画静止的一帧。'],
     donts: ['不要拿它当用户头像。', '同一个 Agent 的种子要稳定，别用随机数或时间。'],
     composition: 'AgentAvatar\n  canvas（requestAnimationFrame）',
+    keys: [],
+  },
+  {
+    id: 'plan-vs-actual',
+    group: 'ai',
+    cardHeight: 230,
+    title: 'PlanVsActual 计划对实际',
+    summary:
+      'Agent 动手前的计划与做的过程放在同一根时间轴上：头一行计划完成、推算完成与推移（晚了 warn 色）；每步一行写名字、状态（排队 / 进行中 / 超时 / 完成 / 超时完成）、轨道（计划是空心框，实际是实心条，超过计划时长的那一截 warn 色，没开始的步与进行中的步 now 之后的部分按推算位置画虚框）、计划对实际的时长；一道竖线是 now。推算：做完的用实际结束，正在做的按计划时长与 now 取晚的，没开始的接在上一步后面按计划时长排。时间单位与写法由调用方给。功能参照 affectUI 的 Plan vs Actual（affectui.com/components 目录页的说明，2026-11-23 读；Pro 件，页上没写许可证：只读说明、实现原创）。演示数据是示例。',
+    exports: ['PlanVsActual', 'planDomain', 'planShift', 'projectPlan'],
+    propParts: [
+      { part: 'PlanVsActual', note: '步按计划次序给；now 与各时间同一单位。' },
+      { part: 'planDomain', note: '纯函数：时间轴范围。' },
+      { part: 'planShift', note: '纯函数：计划完成、推算完成与推移。' },
+      { part: 'projectPlan', note: '纯函数：逐步推算状态、起止与超时。' },
+    ],
+    states: [
+      '排队：名字变淡，轨道上是推算位置的虚框。',
+      '进行中：实心条到 now，后面到推算结束是虚框。',
+      '超时：进行中且超过计划时长，超出的一截 warn 色，状态字 warn。',
+      '完成：实心亮条，状态字 ok。超时完成：超出的一截 warn 色。',
+      '推移：晚了 warn 色，早了 ok 色，按时正文色。',
+      '没有步：写 empty。',
+    ],
+    donts: ['不要拿它当待办清单：Agent 报进度用 AiTaskList。', '不要拿它比多个 Agent 并行：它只有一条顺序计划。'],
+    composition:
+      'PlanVsActual\n  头（标题 · dl 计划完成与推算完成 · 推移）\n  ol（每步一行：名字 · 状态 · 轨道（计划框 · 实际条 · 超时段 · 推算框 · now）· 时长）',
     keys: [],
   },
   {
@@ -10672,6 +10982,239 @@ export const PAGES: readonly DocPage[] = [
       ['↑ ↓ ← →', '在格子间移动'],
       ['Enter / Space', '选中当前格'],
     ],
+  },
+  // #104 对照 Salt 补的七件（docs/salt-map.json 里原来是「没有」或「部分」的几项）。
+  {
+    id: 'pill',
+    group: 'forms',
+    cardHeight: 200,
+    title: 'Pill 胶囊',
+    summary:
+      '单个可点、可关的小胶囊：本体是一个按钮（主动作，如点开改条件），给了 onDismiss 末尾多一个 × 钮只做「去掉」；24 高（sm 20）、圆角 pill、actionable 的底与边，与 ChipGroup 的芯片同一套数值。selected 时是开关，选中画法同分段切换。照 Salt Pill（Apache-2.0，只取结构）。',
+    exports: ['Pill'],
+    propParts: [
+      {
+        part: 'Pill',
+        note: 'className 给外层 span；其余属性透传给本体 button（本体只在有 onClick 或 selected 时是 button，否则是纯文字）。给了 onDismiss 必须给 dismissLabel。',
+      },
+    ],
+    states: [
+      '默认：actionable 底与 7% 白边，悬停提亮，按下整颗缩到 0.96。',
+      'selected：aria-pressed，底换 --seg-on-bg、字 --seg-on-ink、700 粗（同 ChipGroup 选中的芯片）。',
+      '可关：本体右内距收到 2px，后面一个 20 见方的 ×（点按区外扩到 24 见方），悬停换 subtle 底；焦点在本体上按 Backspace / Delete 也关。',
+      'sm：20 高、caption 字号，× 16 见方；md（默认）24 高。',
+      '禁用：整颗 35% 不透明度，两个按钮都不响应。',
+      '焦点：本体聚焦时焦点环套住整颗，× 聚焦时只套 ×。',
+    ],
+    donts: [
+      '不要拿它做不可交互的标记：只展示用 Tag。',
+      '一组互相关联的开关筛选用 ChipGroup，不要摆一排 selected 的 Pill。',
+      '不要整颗点了就删（Salt 例子的写法）：改和删分开，× 只做删。',
+      '× 的读屏名要说清删的是哪一条（「去掉条件 P/E < 20」），不要只写「关闭」。',
+    ],
+    composition: 'Pill（span）\n  本体（button | span）\n    图标（可选）\n    文字\n  ×（button，有 onDismiss 时）',
+    keys: [
+      ['Tab', '先到本体，再到 ×'],
+      ['Enter / Space', '本体：主动作；×：去掉'],
+      ['Backspace / Delete', '焦点在本体上时去掉这颗（有 onDismiss 时）'],
+    ],
+  },
+  {
+    id: 'system-status',
+    group: 'feedback',
+    cardHeight: 300,
+    title: 'SystemStatus 全站消息条',
+    summary:
+      '贴在应用顶上、占满宽的系统消息：维护、断线重连、数据延迟、新功能。最低 36 高，语气色 10% 叠在实底上、底下 1px 语气色的边；图标、可选的粗体标题、一两行字、末尾动作、可选的关闭钮。照 Salt SystemStatus（Apache-2.0，只取结构）。',
+    exports: ['SystemStatus'],
+    propParts: [
+      {
+        part: 'SystemStatus',
+        note: '其余属性透传给 div；children 是消息正文。给了 onDismiss 必须给 dismissLabel。',
+      },
+    ],
+    states: [
+      'tone：info（默认，蓝）、ok、warn、danger、neutral；图标形状各不同（信息 i、对勾、三角感叹、八角感叹，neutral 同 info），不只靠颜色。',
+      'role 默认按语气：warn、danger 是 alert，其余是 status；页面一打开就在的传 role="note"。',
+      '底是语气色叠在 container-primary 的实底上：吸顶时下面的内容不会透上来。',
+      '有动作时动作靠右；容器窄到放不下时动作换到下一行仍靠右，关闭钮固定在右上。',
+      'icon={null} 不画图标；传别的节点换掉默认图标。',
+    ],
+    donts: [
+      '只管全站的事：跟当前任务有关的提示用 Alert，要打断操作的用 Dialog，一次性的结果用 Toast。',
+      '一屏只放一条：多条同时来时由调用方挑最要紧的一条，其余收进通知中心。',
+      '不要放长段落：一两行字，详情放进动作里的链接。',
+      '关掉以后要不要再出现，是调用方记、调用方定；件不记。',
+    ],
+    composition:
+      'SystemStatus（div）\n  图标（span，aria-hidden）\n  内容\n    标题（strong，可选）\n    正文\n  动作（div，可选）\n  关闭（button，有 onDismiss 时）',
+    keys: [['Tab', '走到动作与关闭钮']],
+  },
+  {
+    id: 'calendar',
+    group: 'forms',
+    cardHeight: 300,
+    title: 'Calendar 月历',
+    summary:
+      '单独摆在页上的月历：选一天、翻月，非交易日用 unavailable 灰掉并加删除线。样子与 DateTimeInput 弹层里的日历同一套（.k-cal*），外面多一圈 container 的边与底；今天字提亮加下划线。行为底座是 react-aria 的 Calendar，日期一律 YYYY-MM-DD 字符串。',
+    exports: ['Calendar'],
+    propParts: [
+      {
+        part: 'Calendar',
+        note: '月份名、星期名按 locale 由 react-aria 写；两个翻页钮的读屏名由 labels 给。value 传空字符串表示没选。',
+      },
+    ],
+    states: [
+      '选中：selectable bold 的底、字 600 粗。',
+      '今天（没选中时）：字提到 primary、600 粗、下划线。',
+      'min / max 之外：降色、点不了，翻页钮到头变禁用。',
+      'unavailable 返回 true 的日子：降色加删除线、点不了（休市、周末）。',
+      'weekStart：mon（默认）或 sun 开头。',
+      '禁用：整张 45% 不透明度。',
+    ],
+    donts: [
+      '要输入框加弹层的用 DateTimeInput，选区间的用 DateRangePicker；这一件只给页面上常驻的日历。',
+      '不要在件里写交易日历：哪天休市由调用方给 unavailable。',
+      '不要只靠降色说不可选：删除线是件自带的，别用 className 去掉。',
+    ],
+    composition: 'Calendar（I18nProvider + react-aria Calendar）\n  头部：上个月 | 月份标题 | 下个月\n  日格表（grid）',
+    keys: [
+      ['← → ↑ ↓', '按天、按周移动焦点'],
+      ['PageUp / PageDown', '上一月 / 下一月'],
+      ['Shift + PageUp / PageDown', '上一年 / 下一年'],
+      ['Home / End', '到这一周的头 / 尾'],
+      ['Enter / Space', '选中焦点所在的那天'],
+    ],
+  },
+  {
+    id: 'list-box',
+    group: 'forms',
+    cardHeight: 330,
+    title: 'ListBox 选项列表',
+    summary:
+      '常驻页面的选项列表（listbox 角色）：单选或多选、可分组、每项可带图标、第二行说明与右端数值，选中的项右端出对勾。项高 28、圆角 --radius-inner，bordered 时外面一圈 container 的边与底；maxHeight 之后自己滚。行为底座是 react-aria 的 ListBox。',
+    exports: ['ListBox'],
+    propParts: [
+      {
+        part: 'ListBox',
+        note: '数据驱动：items 里有 options 的是分组。选中照统一约定 value / defaultValue / onValueChange，给出整份 id。',
+      },
+    ],
+    states: [
+      '悬停：selectable 的 hover 底、字提到 primary。',
+      '选中：selectable 的 selected 底、字 primary、右端对勾（不只靠底色）。',
+      '单选不许选空：点已选的项不取消；多选点一项切换。',
+      '给了 onAction：点一下只选这一项（多选按 Ctrl / Shift 扩），Enter 或双击触发 onAction（打开布局、切账户）。',
+      '分组：组名是 caption 600、secondary 色，组与组之间一道 secondary 的分隔线。',
+      '空：items 为空且给了 emptyLabel 时居中显示这句话。',
+      '禁用的项：40% 不透明度、跳过不选。',
+    ],
+    donts: [
+      '五个以内的单选用 RadioGroup；不需要一直摆着的用 Select；选项多又要搜的用 Combobox。',
+      '不要拿它做导航：侧栏导航用 SideNav。',
+      '项里不要再放可聚焦的东西（按钮、链接）：listbox 的项里不许有可交互的子项。',
+    ],
+    composition:
+      'ListBox（listbox）\n  分组（section，可选）\n    组名（header）\n  项（option）× n\n    图标 | 文字 + 说明 | 右端数值 | 对勾',
+    keys: [
+      ['↑ ↓', '在项之间移动'],
+      ['Home / End', '到第一项 / 最后一项'],
+      ['字母', '跳到以它开头的项'],
+      ['Space / Enter', '选中（给了 onAction 时 Enter 是激活）'],
+      ['Shift + ↑ ↓', '多选时连选'],
+      ['Ctrl + A', '多选时全选'],
+    ],
+  },
+  {
+    id: 'link',
+    group: 'layout',
+    cardHeight: 110,
+    title: 'Link 文字链接',
+    summary:
+      '行内文字链接：下划线一直在（颜色 separable-primary、偏移 3px），悬停字提亮、下划线换成字色；external 时新窗口打开、末尾一个 12px 外链图标并让读屏另读 externalLabel。数值与 Button 的 link 变体一样。照 Salt Link（Apache-2.0，只取结构）。',
+    exports: ['Link'],
+    propParts: [
+      {
+        part: 'Link',
+        note: '其余属性透传给 a；external 时 target 默认 _blank、rel 默认 noopener noreferrer。asChild 把样子交给唯一的子元素（路由库的 Link），不加外链图标。',
+      },
+    ],
+    states: [
+      'primary（默认）：primary 字色；secondary：secondary 字色（脚注、说明）。',
+      '悬停：字 primary、下划线换成字色。',
+      'external：末尾外链图标，读屏多读一句 externalLabel。',
+      '焦点：2px 焦点环贴着字。',
+    ],
+    donts: [
+      '不要拿它做动作（提交、删除）：动作用 Button，链接只做跳转。',
+      '不要去掉下划线：正文里只靠颜色认不出链接（WCAG 1.4.1）。',
+      '外链要给 externalLabel，告诉读屏会开新窗口。',
+    ],
+    composition: 'Link（a | 子元素）\n  文字\n  外链图标（external 时）',
+    keys: [
+      ['Tab', '聚焦'],
+      ['Enter', '跳转'],
+    ],
+  },
+  {
+    id: 'card',
+    group: 'layout',
+    cardHeight: 330,
+    title: 'Card 卡片',
+    summary:
+      '通用卡片容器：圆角 --radius-control、1px container-subtle 边、内距 12；头部（标题、说明、右上角动作）、内容、底部几个部件。四档底：secondary（默认）、primary、tertiary、ghost（无底无边）。interactive 配 asChild 让整张卡就是一个链接或按钮。部件划分取自 shadcn/ui（MIT），变体照 Salt Card（Apache-2.0）。',
+    exports: [
+      'Card',
+      'CardHeader',
+      'CardTitle',
+      'CardDescription',
+      'CardAction',
+      'CardContent',
+      'CardFooter',
+      'cardVariants',
+    ],
+    propParts: [
+      { part: 'Card', note: '其余属性透传给 div（asChild 时给子元素）。' },
+      {
+        part: 'CardHeader / CardTitle / CardDescription / CardAction / CardContent / CardFooter',
+        symbol: 'CardHeader',
+        note: '都是 div。CardHeader 里有 CardAction 时自动排成两栏，动作在右上角。',
+      },
+      { part: 'cardVariants', note: '返回类名的函数，给不是 Card 的元素画成卡。' },
+    ],
+    states: [
+      'variant：secondary（默认）、primary（最亮）、tertiary、ghost（透明、无边，只用来排版）。',
+      'interactive：悬停换 actionable 的 hover 底、边提到 container-bold，按下缩到 0.99，键盘焦点画焦点环。',
+      '标题 600 粗 primary 色，说明 caption、secondary 色。',
+    ],
+    donts: [
+      '指标与读数用 MetricCard，工作台面板用 PanelFrame；这一件只是通用的框。',
+      '可点的卡用 asChild 包一个 a 或 button：不要在 div 上挂 onClick。',
+      '可点的卡里不要再放按钮或链接：整张卡已经是一个目标。',
+    ],
+    composition:
+      'Card\n  CardHeader\n    CardTitle\n    CardDescription\n    CardAction（可选）\n  CardContent\n  CardFooter',
+    keys: [],
+  },
+  {
+    id: 'panel',
+    group: 'layout',
+    cardHeight: 150,
+    title: 'Panel 纯容器',
+    summary:
+      '不带标题栏、不画边的纯容器：一块 container 的底色占满格子的高度，内容超出自己滚，内距 12。用在分栏的一栏、对话框里的一块滚动区。三档底：primary（默认）、secondary、tertiary。照 Salt Panel（Apache-2.0，只取结构）。',
+    exports: ['Panel'],
+    propParts: [{ part: 'Panel', note: '其余属性透传给 div；高度跟着父元素，父元素要有确定的高度。' }],
+    states: [
+      'primary（默认）、secondary、tertiary 三档底色，同 Card 的三档。',
+      '内容超出：自己出滚动条（overflow: auto）。',
+    ],
+    donts: [
+      '要标题栏、折叠、工具条的用 PanelFrame；要边框和圆角的用 Card。',
+      '内容会超出时让里面有可聚焦的东西，或给 Panel 加 tabIndex={0} 与读屏名，键盘才滚得动。',
+    ],
+    composition: 'Panel（div）',
+    keys: [],
   },
 ]
 

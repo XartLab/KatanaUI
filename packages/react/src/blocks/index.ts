@@ -455,3 +455,63 @@ export {
   type TradeTapeLabels,
   type TradeTapeProps,
 } from './trade-tape/trade-tape.tsx'
+// 参照 affectUI 补的数据处理件（KATANAview #1908）：排查树、链路瀑布、回落链、限额排程。
+export {
+  RootCauseTree,
+  type RootCauseAction,
+  type RootCauseTreeLabels,
+  type RootCauseTreeProps,
+} from './root-cause-tree/root-cause-tree.tsx'
+export {
+  flattenCauses,
+  isRootCause,
+  litPath,
+  moveCause,
+  type Cause,
+  type CauseEvidence,
+  type CauseFailure,
+  type CauseGate,
+  type CauseRow,
+  type CauseStatus,
+} from './root-cause-tree/root-cause-model.ts'
+export {
+  TraceWaterfall,
+  type TraceWaterfallLabels,
+  type TraceWaterfallProps,
+} from './trace-waterfall/trace-waterfall.tsx'
+export {
+  moveSpan,
+  slowestSpan,
+  spanEnd,
+  traceAxis,
+  traceExtent,
+  traceStatus,
+  visibleSpans,
+  type SpanMove,
+  type SpanRow,
+  type SpanStatus,
+  type TraceSpan,
+} from './trace-waterfall/trace-model.ts'
+export { FallbackChain, type FallbackChainLabels, type FallbackChainProps } from './fallback-chain/fallback-chain.tsx'
+export {
+  answeredLevel,
+  chainOutcome,
+  type FallbackAttempt,
+  type FallbackOutcome,
+  type FallbackStatus,
+} from './fallback-chain/fallback-model.ts'
+export {
+  RateLimitPlanner,
+  type RateLimitPlannerLabels,
+  type RateLimitPlannerProps,
+} from './rate-limit-planner/rate-limit-planner.tsx'
+export {
+  clampStart,
+  keyMove,
+  loadCurve,
+  peakOf,
+  planStatus,
+  spreadRuns,
+  type PlanStatus,
+  type PlannedRun,
+} from './rate-limit-planner/rate-limit-model.ts'

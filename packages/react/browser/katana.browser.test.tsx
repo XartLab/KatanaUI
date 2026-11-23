@@ -33,6 +33,10 @@ import { StatusIconUsage } from '../gallery/usage/StatusIconUsage.tsx'
 import { StepPlayerUsage } from '../gallery/usage/StepPlayerUsage.tsx'
 import { SwitchboardCardUsage } from '../gallery/usage/SwitchboardCardUsage.tsx'
 import { BadgeUsage } from '../gallery/usage/BadgeUsage.tsx'
+import { LinkUsage } from '../gallery/usage/LinkUsage.tsx'
+import { PanelUsage } from '../gallery/usage/PanelUsage.tsx'
+import { PillUsage } from '../gallery/usage/PillUsage.tsx'
+import { SystemStatusUsage } from '../gallery/usage/SystemStatusUsage.tsx'
 import { WebSearchUsage } from '../gallery/usage/WebSearchUsage.tsx'
 import { MotionConfig } from 'motion/react'
 import {
@@ -142,6 +146,10 @@ const items: Record<string, React.ReactNode> = {
   'switchboard-card': <SwitchboardCardUsage />,
   badge: <BadgeUsage />,
   'web-search': <WebSearchUsage />,
+  link: <LinkUsage />,
+  panel: <PanelUsage />,
+  pill: <PillUsage />,
+  'system-status': <SystemStatusUsage />,
   'web-search-citation': (
     <p style={{ margin: 0 }}>
       Central bank cuts reserve ratio
