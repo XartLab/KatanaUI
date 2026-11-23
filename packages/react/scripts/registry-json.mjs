@@ -20,6 +20,10 @@ const TARGET_ROOT = '~/src/katana/ui'
  * 有页的件，说明读页数据（gallery/registry.ts 的 PAGES.summary），这里不写第二份。
  */
 const INTERNAL = {
+  'command-steps':
+    'CommandPalette 的步骤页：头部句子（命令名加已选标签）、筛选框、多选清单（role=checkbox，全选三态）或调用方的内容、脚栏（已选数、返回、主操作）。',
+  'command-steps-model':
+    'CommandPalette 多步命令的纯逻辑：按输入筛选选项、勾选与全选三态、头部标签折叠、步骤退一步时选择怎么清。',
   'tag-input-model':
     'TagInput 的纯逻辑：草稿与粘贴的拆分（逗号、分号、换行、制表符）、判重（不分大小写）、校验与上限，以及键盘在标签之间怎么走。',
   'scaled-decimal':

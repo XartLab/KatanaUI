@@ -26,6 +26,7 @@ import {
   type HotkeyRegistry,
   type PaletteCommand,
   type ShortcutSheetLabels,
+  type StepSelections,
 } from '../../src/index.ts'
 import { Row } from './parts.tsx'
 
@@ -50,6 +51,14 @@ export const PALETTE_LABELS: CommandPaletteLabels = {
   placeholder: '搜索命令…',
   empty: '没有匹配的命令',
   recent: '最近',
+  steps: {
+    steps: (count) => `${count} 步`,
+    selected: (count) => `已选 ${count} 项`,
+    back: '返回',
+    next: '下一步',
+    run: '执行',
+    selectAll: '全选',
+  },
 }
 
 /** 演示用的默认键位（动作 id → 组合串）。 */
@@ -136,14 +145,62 @@ function Keys({ registry, combo }: { registry: HotkeyRegistry; combo: string }) 
 function commandsFor(registry: HotkeyRegistry, setLog: (text: string) => void): PaletteCommand[] {
   const shortcut = (combo: string) => <Keys registry={registry} combo={combo} />
   return [
-    { id: 'reset', label: '重置图表', group: '图表', shortcut: shortcut('Alt+R'), onSelect: () => setLog('重置图表') },
+    {
+      id: 'reset',
+      label: '重置图表',
+      group: '图表',
+      description: '回到默认缩放与指标',
+      shortcut: shortcut('Alt+R'),
+      onSelect: () => setLog('重置图表'),
+    },
     { id: 'snapshot', label: '截图', group: '图表', shortcut: shortcut('Mod+Alt+S'), onSelect: () => setLog('截图') },
     { id: 'alert', label: '新建告警', group: '图表', keywords: ['alert'], onSelect: () => setLog('新建告警') },
     { id: 'theme', label: '切换主题', group: '设置', keywords: ['theme', 'dark'], onSelect: () => setLog('切换主题') },
     { id: 'density', label: '紧凑行高', group: '设置', onSelect: () => setLog('紧凑行高') },
     { id: 'export', label: '导出 CSV', group: '数据', keywords: ['csv'], onSelect: () => setLog('导出 CSV') },
+    {
+      id: 'batch-export',
+      label: '批量导出',
+      group: '数据',
+      description: '按市场与字段导出',
+      keywords: ['export', 'csv'],
+      runLabel: '导出',
+      steps: [
+        {
+          kind: 'checklist',
+          id: 'market',
+          joiner: '从',
+          heading: '选择市场',
+          options: [
+            { id: 'us', label: '美股', description: '312 个品种' },
+            { id: 'hk', label: '港股', description: '148 个品种' },
+            { id: 'cn', label: 'A 股', description: '96 个品种' },
+            { id: 'crypto', label: '加密', description: '40 个品种' },
+          ],
+        },
+        {
+          kind: 'checklist',
+          id: 'fields',
+          joiner: '含',
+          heading: '选择字段',
+          placeholder: '筛选字段…',
+          options: [
+            { id: 'ohlc', label: '开高低收', description: '日线' },
+            { id: 'volume', label: '成交量' },
+            { id: 'pe', label: '市盈率', description: '滚动 12 个月' },
+            { id: 'rating', label: '技术评级' },
+          ],
+        },
+      ],
+    },
   ]
 }
+
+/** 多步命令跑完的回执：「批量导出：market=us,hk · fields=ohlc」。 */
+const describeRun = (id: string, selections: StepSelections) =>
+  `${id}：${Object.entries(selections)
+    .map(([step, ids]) => `${step}=${ids.join(',')}`)
+    .join(' · ')}`
 
 function Workbench({ registry }: { registry: HotkeyRegistry }) {
   const demo = useDemoKeys()
@@ -185,6 +242,7 @@ function Workbench({ registry }: { registry: HotkeyRegistry }) {
         open={demo.paletteOpen}
         onOpenChange={demo.setPaletteOpen}
         commands={commandsFor(registry, demo.setLog)}
+        onRun={(id, selections) => demo.setLog(describeRun(id, selections))}
         labels={PALETTE_LABELS}
         recentKey="katana-ui-gallery:command-recent"
       />
@@ -263,12 +321,14 @@ function PaletteOnly({ registry }: { registry: HotkeyRegistry }) {
         </Button>
       </Row>
       <p className="gal-note" data-testid="palette-log">
-        {log ? `执行了：${log}` : '执行了：无'}；选过的命令下次打开排在「最近」（最多 5 条，存在 localStorage）。
+        {log ? `执行了：${log}` : '执行了：无'}；选过的命令下次打开排在「最近」（最多 5 条，存在
+        localStorage）。「批量导出」带「2 步」徽标：选中后面板不关，进市场、字段两个步骤页。
       </p>
       <CommandPalette
         open={open}
         onOpenChange={setOpen}
         commands={commandsFor(registry, setLog)}
+        onRun={(id, selections) => setLog(describeRun(id, selections))}
         labels={PALETTE_LABELS}
         recentKey="katana-ui-gallery:command-recent"
       />

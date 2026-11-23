@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MIT
+import AxeBuilder from '@axe-core/playwright'
 import { expect, test, type Page } from '@playwright/test'
 
 // 快捷键注册表、快捷键总览、命令面板「最近」（#77 G9）：在文档站 hotkeys、shortcut-sheet、command-palette 三页上真按键。
@@ -114,3 +115,166 @@ test('shortcut-sheet：打开改键后录一个新组合，占用的组合提示
   await page.locator('body').click({ position: { x: 5, y: 5 } })
   await expect(sheet.locator('[data-shortcut="chart-reset"] .k-rec-field')).not.toContainText('R')
 })
+
+// 命令面板的多步命令与行内说明（#194）：「批量导出」带「2 步」徽标，选中后面板不关、进步骤页。
+const openStepsPalette = async (page: Page) => {
+  const area = await open(page, 'command-palette')
+  await page.evaluate(() => localStorage.removeItem('katana-ui-gallery:command-recent'))
+  const trigger = area.getByRole('button', { name: /命令面板/ })
+  await trigger.click()
+  const palette = page.getByRole('dialog', { name: '命令面板' })
+  await expect(palette).toBeVisible()
+  return { area, trigger, palette }
+}
+const enterBatchExport = async (page: Page, palette: ReturnType<Page['getByRole']>) => {
+  const row = palette.getByRole('option', { name: /批量导出/ })
+  for (let i = 0; i < 20 && (await row.getAttribute('aria-selected')) !== 'true'; i += 1) {
+    await page.keyboard.press('ArrowDown')
+  }
+  await expect(row).toHaveAttribute('aria-selected', 'true')
+  await page.keyboard.press('Enter')
+}
+
+test('command-palette：行带说明与「2 步」徽标，↑↓ Enter 选它进步骤页，面板不关', async ({ page }) => {
+  const { palette } = await openStepsPalette(page)
+  const row = palette.getByRole('option', { name: /批量导出/ })
+  await expect(row).toContainText('按市场与字段导出')
+  await expect(row.locator('[data-slot="command-meta"]')).toHaveText('2 步')
+  await expect(palette.getByRole('option', { name: /重置图表/ })).toContainText('回到默认缩放与指标')
+  await enterBatchExport(page, palette)
+  await expect(palette).toBeVisible()
+  await expect(palette.locator('[data-slot="command-steps"]')).toHaveAttribute('data-step', 'market')
+  await expect(palette.getByRole('group', { name: '选择市场' })).toBeVisible()
+  await expect(page.getByRole('textbox', { name: '搜索命令…' })).toBeFocused()
+})
+
+test('command-palette：勾选写进头部句子与脚栏，全选三态，Backspace 退回命令列表并清空选择', async ({ page }) => {
+  const { palette } = await openStepsPalette(page)
+  await enterBatchExport(page, palette)
+  const tags = palette.locator('[data-slot="command-steps-tag"]')
+  const count = palette.locator('[data-slot="command-steps-count"]')
+  const all = palette.getByRole('checkbox', { name: '全选' })
+  const primary = palette.getByRole('button', { name: '下一步' })
+  await expect(count).toHaveText('已选 0 项')
+  await expect(all).toHaveAttribute('aria-checked', 'false')
+  await expect(primary).toBeDisabled()
+
+  await palette.getByRole('checkbox', { name: /^美股/ }).click()
+  await palette.getByRole('checkbox', { name: /^港股/ }).click()
+  await expect(tags).toHaveText(['美股', '港股'])
+  await expect(count).toHaveText('已选 2 项')
+  await expect(all).toHaveAttribute('aria-checked', 'mixed')
+  await expect(primary).toBeEnabled()
+  // cmdk 的 aria-selected 是高亮，这一页的「已选」只用 aria-checked
+  await expect(palette.getByRole('checkbox', { name: /^美股/ })).toHaveAttribute('aria-checked', 'true')
+
+  await all.click()
+  await expect(all).toHaveAttribute('aria-checked', 'true')
+  await expect(palette.locator('[role="checkbox"][aria-checked="true"]')).toHaveCount(5)
+  await expect(count).toHaveText('已选 4 项')
+  await all.click()
+  await expect(all).toHaveAttribute('aria-checked', 'false')
+  await expect(count).toHaveText('已选 0 项')
+  await expect(primary).toBeDisabled()
+
+  await palette.getByRole('checkbox', { name: /^美股/ }).click()
+  // 输入框为空时 Backspace 退回命令列表，选择清空
+  await page.keyboard.press('Backspace')
+  await expect(palette.locator('[data-slot="command-steps"]')).toHaveCount(0)
+  await expect(palette.getByRole('option', { name: /批量导出/ })).toBeVisible()
+  await expect(page.getByRole('combobox', { name: '命令面板' })).toBeFocused()
+  await enterBatchExport(page, palette)
+  await expect(count).toHaveText('已选 0 项')
+  await expect(tags).toHaveCount(0)
+})
+
+test('command-palette：筛选框过滤当前步，键盘 ↑↓ 与 Enter 勾选，Mod+Enter 走主操作', async ({ page }) => {
+  const { palette } = await openStepsPalette(page)
+  await enterBatchExport(page, palette)
+  await page.keyboard.type('港')
+  await expect(palette.getByRole('checkbox')).toHaveCount(2) // 全选 + 港股
+  await page.keyboard.press('ArrowDown')
+  await page.keyboard.press('Enter')
+  await expect(palette.getByRole('checkbox', { name: /^港股/ })).toHaveAttribute('aria-checked', 'true')
+  await page.keyboard.type('zzz')
+  await expect(palette.getByText('没有匹配的命令')).toBeVisible()
+  // 有字时 Backspace 只删字，不退步
+  await page.keyboard.press('Backspace')
+  await expect(palette.locator('[data-slot="command-steps"]')).toHaveCount(1)
+  await page.keyboard.press('Control+Enter')
+  await expect(palette.locator('[data-slot="command-steps"]')).toHaveAttribute('data-step', 'fields')
+})
+
+test('command-palette：走完两步，onRun 收到各步的选择，面板关、焦点回触发处；Esc 直接关面板', async ({ page }) => {
+  const { area, trigger, palette } = await openStepsPalette(page)
+  await enterBatchExport(page, palette)
+  await palette.getByRole('checkbox', { name: /^美股/ }).click()
+  await palette.getByRole('checkbox', { name: /^港股/ }).click()
+  await palette.getByRole('button', { name: '下一步' }).click()
+  const step = palette.locator('[data-slot="command-steps"]')
+  await expect(step).toHaveAttribute('data-step', 'fields')
+  // 头部句子带着上一步的选择，当前步的写在后面
+  const header = palette.locator('[data-slot="command-steps-header"]')
+  await expect(header).toContainText('批量导出')
+  await expect(header).toContainText('从')
+  await expect(header.locator('[data-slot="command-steps-tag"]')).toHaveText(['美股', '港股'])
+  await palette.getByRole('checkbox', { name: /^开高低收/ }).click()
+  await expect(header.locator('[data-slot="command-steps-tag"]')).toHaveText(['美股', '港股', '开高低收'])
+  // 返回：回第一步，第一步的选择还在，第二步的清掉
+  await palette.getByRole('button', { name: '返回' }).click()
+  await expect(step).toHaveAttribute('data-step', 'market')
+  await expect(palette.getByRole('checkbox', { name: /^美股/ })).toHaveAttribute('aria-checked', 'true')
+  await palette.getByRole('button', { name: '下一步' }).click()
+  await expect(palette.getByRole('checkbox', { name: /^开高低收/ })).toHaveAttribute('aria-checked', 'false')
+  await palette.getByRole('checkbox', { name: /^开高低收/ }).click()
+  await palette.getByRole('checkbox', { name: /^成交量/ }).click()
+  await palette.getByRole('button', { name: '导出' }).click()
+  await expect(palette).toBeHidden()
+  await expect(area.getByTestId('palette-log')).toContainText('执行了：batch-export：market=us,hk · fields=ohlc,volume')
+  await expect(trigger).toBeFocused()
+
+  // 再开：从命令列表开始，「批量导出」进了最近；Esc 在步骤页里直接关面板
+  await trigger.click()
+  await expect(palette.getByRole('group', { name: '最近' }).getByRole('option')).toContainText(['批量导出'])
+  await palette
+    .getByRole('option', { name: /批量导出/ })
+    .first()
+    .click()
+  await expect(step).toBeVisible()
+  await page.keyboard.press('Escape')
+  await expect(palette).toBeHidden()
+  await expect(trigger).toBeFocused()
+})
+
+for (const theme of ['graphite', 'console'] as const)
+  test(`command-palette：命令列表与步骤页在 ${theme} 下 axe 无违规（半选、已选、禁用都在页上）`, async ({
+    browser,
+  }) => {
+    // axe 要求页面来自 browser.newContext()。
+    const context = await browser.newContext({ viewport: { width: 1100, height: 1500 } })
+    const page = await context.newPage()
+    await page.goto(`/?theme=${theme}#/command-palette`)
+    await page.locator('[data-gallery="command-palette"]').waitFor()
+    await page.getByRole('button', { name: /命令面板/ }).click()
+    const palette = page.getByRole('dialog', { name: '命令面板' })
+    await expect(palette).toBeVisible()
+    const scan = async () => {
+      await page.evaluate(() =>
+        Promise.all(document.getAnimations().map((animation) => animation.finished.catch(() => undefined))),
+      )
+      const result = await new AxeBuilder({ page })
+        .include('[role="dialog"]')
+        .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
+        .analyze()
+      return result.violations.flatMap((violation) =>
+        violation.nodes.map((node) => `${violation.id} ${node.target.join(' >> ')}`),
+      )
+    }
+    expect(await scan()).toEqual([])
+    await page.keyboard.type('批量')
+    await page.keyboard.press('Enter')
+    await palette.getByRole('checkbox', { name: /^美股/ }).click()
+    await expect(palette.getByRole('checkbox', { name: '全选' })).toHaveAttribute('aria-checked', 'mixed')
+    expect(await scan()).toEqual([])
+    await context.close()
+  })
