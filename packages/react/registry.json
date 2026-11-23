@@ -34,9 +34,19 @@
           "target": "~/src/katana/ui/theme/account-equity.css"
         },
         {
+          "path": "src/theme/agent-crew.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/agent-crew.css"
+        },
+        {
           "path": "src/theme/agent-lanes.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/agent-lanes.css"
+        },
+        {
+          "path": "src/theme/agent-org.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/agent-org.css"
         },
         {
           "path": "src/theme/agent-queue.css",
@@ -292,6 +302,11 @@
           "path": "src/theme/flag-mark.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/flag-mark.css"
+        },
+        {
+          "path": "src/theme/flow-builder.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/flow-builder.css"
         },
         {
           "path": "src/theme/flow-gauges.css",
@@ -9692,6 +9707,102 @@
           "path": "src/blocks/cost-waterfall/cost-waterfall.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/blocks/cost-waterfall/cost-waterfall.tsx"
+        }
+      ]
+    },
+    {
+      "name": "flow-builder",
+      "type": "registry:component",
+      "title": "Flow Builder",
+      "description": "一条自动化（收盘后拉数据 → 条件 → 发提醒 / 交给 Agent）自上而下摆在一块定高、两向滚动、拖空白处平移的画布上，打开时居中。第一步总是触发；每条线上一个「+」，点开是调用方给的模板菜单（流程为空时是「加触发」与触发模板）；条件步分出几条有名字的路并排画、最后汇回主线。步骤可在自己那一列里上下挪（Alt+↑↓）、删（Backspace；删条件步时第一条路的步骤留在原处）、撤销（Ctrl/⌘+Z）；选中一步回调 onSelect，检查器由调用方开。给了 onRun 且至少两步时出「测试运行」，跑的时候换成「停止」；每步的状态与开始、结束时间由调用方的 run 给，在跑的步写它的 note，整条路都跳过的变淡。件不取时间：耗时量到调用方给的 now。底座没用 Whiteboard：这里是有结构的流程（一个触发、分出的路汇回），结构由数据保证，键盘按读的次序走；自由连线的图用 Whiteboard。功能参照 affectUI 的 Flow Builder（affectui.com/components/flow-builder，2026-11-23 读；Pro 件，页上没写许可证：只读说明、实现原创，不装它的 registry）。演示数据是示例。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/button",
+        "@katana/cn",
+        "@katana/dropdown-menu"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/flow-builder/flow-builder.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/flow-builder/flow-builder.tsx"
+        },
+        {
+          "path": "src/blocks/flow-builder/flow-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/flow-builder/flow-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "agent-tree",
+      "type": "registry:component",
+      "title": "Agent Tree",
+      "description": "一次多 Agent 运行里，编排 Agent 派生子 Agent、子 Agent 再派生，画成一棵卡片树：每张卡写名字、模型、状态、任务（前面一排工具小方块，多于 4 个摆 3 个加 +N）、花费（有子的写整个分支的花费）与耗时；排队与停下的卡和通向它的线变淡。头一行合计几个 Agent、在跑、要你、失败与总花费（读屏会播）。宽于 560px 时第一层子 Agent 在根下面并排，再往下挂在各自的父下面；窄了每层往里缩。要你、失败与带步骤的卡 Enter 或点开小窗：步骤清单、问题或失败原因、「批准 / 拒绝」「重试 / 不管了」（给了 onResolve）。件不取时间（在跑的耗时量到调用方给的 now）；回答只回调人的决定，状态由调用方的数据改。树的键盘复用 TraceWaterfall 的 moveSpan。功能参照 affectUI 的 Agent Tree（affectui.com/components/agent-tree，2026-11-23 读；Pro 件，页上没写许可证：只读说明、实现原创，不装它的 registry）。演示数据是示例。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/button",
+        "@katana/cn",
+        "@katana/popover",
+        "@katana/trace-waterfall"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/agent-tree/agent-tree-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/agent-tree/agent-tree-model.ts"
+        },
+        {
+          "path": "src/blocks/agent-tree/agent-tree.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/agent-tree/agent-tree.tsx"
+        }
+      ]
+    },
+    {
+      "name": "agent-fleet",
+      "type": "registry:component",
+      "title": "Agent Fleet",
+      "description": "几个主 Agent 同时跑（盘后研究、风控巡检、回补数据），左边一列主卡：状态环（子 Agent 做完的占比）、一句说明（调用方由合计写）、任务、整个分支的花费与耗时。点主卡在右边打开它的子 Agent 树，再点收起（open 受控或 defaultOpen，缺省打开第一个）；窄于 640px 树落到那张卡下面、把下面的卡往下推。头一行合计整个 Agent 群（读屏会播）。打开的树就是 AgentTree 的树：卡、键盘、要你与失败的小窗都一样。件不取时间；回答只回调人的决定。主卡本身是展开钮，钮里不再放「回答」快捷钮，回答在树里。功能参照 affectUI 的 Agent Fleet（affectui.com/components/agent-fleet，2026-11-23 读；Pro 件，页上没写许可证：只读说明、实现原创，不装它的 registry）。演示数据是示例。",
+      "registryDependencies": [
+        "@katana/agent-tree",
+        "@katana/cn"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/agent-fleet/agent-fleet.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/agent-fleet/agent-fleet.tsx"
+        }
+      ]
+    },
+    {
+      "name": "agent-crew",
+      "type": "registry:component",
+      "title": "Agent Crew",
+      "description": "一个主 Agent 带一组常驻的子 Agent（研究员、风控、撰稿……），所有成员一直摆着：每张卡写名字、模型、状态（在忙 / 空闲 / 暂停 / 要你 / 做完 / 失败）、正在做什么与上下文条（到 80% 变 warn、95% 变 danger；给了上限写「136k / 200k」），卡下一行写工具与最近交接。宽于 560px 子 Agent 在主 Agent 下面并排，第三层起小一号。新交接（handoffs 里新出现的 id）到达时，接手的卡从进来的那一边升起一层底色再淡掉，读屏播报谁交给谁；打开时已有的不亮。点卡或 Enter 打开详情：任务、模型、用时、花费、token、工具、最近交接与引导动作（留言总在；在忙可暂停、停止；暂停可继续；要你可批准、拒绝；失败可重试），只回调 onSteer。给了 projects 时标题换成项目切换。件不取时间。功能参照 affectUI 的 Agent Crew（affectui.com/components/agent-crew，2026-11-23 读；Pro 件，页上没写许可证：只读说明、实现原创，不装它的 registry）；交接灯不沿连线走，详情用居中的 Dialog。演示数据是示例。",
+      "registryDependencies": [
+        "@katana/agent-tree",
+        "@katana/button",
+        "@katana/cn",
+        "@katana/dialog",
+        "@katana/select",
+        "@katana/textarea"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/agent-crew/agent-crew.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/agent-crew/agent-crew.tsx"
+        },
+        {
+          "path": "src/blocks/agent-crew/crew-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/agent-crew/crew-model.ts"
         }
       ]
     },

@@ -350,6 +350,571 @@
         }
       ]
     },
+    "AgentBarLabels": {
+      "kind": "type",
+      "source": "src/blocks/agent-tree/agent-tree.tsx",
+      "props": [
+        {
+          "name": "agents",
+          "type": "(count: number) => string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "running",
+          "type": "(count: number) => string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "waiting",
+          "type": "(count: number) => string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "failed",
+          "type": "(count: number) => string",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "AgentCrew": {
+      "kind": "component",
+      "source": "src/blocks/agent-crew/agent-crew.tsx",
+      "props": [
+        {
+          "name": "root",
+          "type": "CrewAgent",
+          "required": true,
+          "description": "The lead agent with its members."
+        },
+        {
+          "name": "handoffs",
+          "type": "readonly CrewHandoff[]",
+          "required": false,
+          "default": "EMPTY",
+          "description": "Hand-offs so far; a new id lights the receiving card, the ones present at first do not."
+        },
+        {
+          "name": "title",
+          "type": "ReactNode",
+          "required": true,
+          "description": "Heading when there is no project switcher."
+        },
+        {
+          "name": "projects",
+          "type": "readonly CrewProject[]",
+          "required": false,
+          "description": "Projects of the switcher, which replaces the heading."
+        },
+        {
+          "name": "project",
+          "type": "string",
+          "required": false,
+          "description": "Selected project id."
+        },
+        {
+          "name": "onProjectChange",
+          "type": "(id: string) => void",
+          "required": false,
+          "description": "Called with the chosen project id; swap root and handoffs for that project's crew."
+        },
+        {
+          "name": "onSteer",
+          "type": "(agent: CrewAgent, action: CrewSteer, message?: string) => void",
+          "required": false,
+          "description": "Shows the steering actions; called with the person's choice and the message text."
+        },
+        {
+          "name": "onSelect",
+          "type": "(agent: CrewAgent) => void",
+          "required": false,
+          "description": "Called when a card is clicked or gets Enter."
+        },
+        {
+          "name": "now",
+          "type": "number",
+          "required": false,
+          "description": "Clock in milliseconds for the time in the details; the component does not tick on its own."
+        },
+        {
+          "name": "formatCost",
+          "type": "(cost: number) => string",
+          "required": true,
+          "description": "How a cost is written."
+        },
+        {
+          "name": "formatDuration",
+          "type": "(ms: number) => string",
+          "required": true,
+          "description": "How a duration in milliseconds is written."
+        },
+        {
+          "name": "formatTokens",
+          "type": "(tokens: number) => string",
+          "required": true,
+          "description": "How a token count is written (「136k」)."
+        },
+        {
+          "name": "labels",
+          "type": "AgentCrewLabels",
+          "required": true,
+          "description": "Texts."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "AgentCrewLabels": {
+      "kind": "type",
+      "source": "src/blocks/agent-crew/agent-crew.tsx",
+      "props": [
+        {
+          "name": "status",
+          "type": "Record<CrewStatus, string>",
+          "required": true,
+          "description": "Status words; waiting is usually 「要你」."
+        },
+        {
+          "name": "steer",
+          "type": "Record<CrewSteer, string>",
+          "required": true,
+          "description": "Steering buttons."
+        },
+        {
+          "name": "tree",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the crew tree."
+        },
+        {
+          "name": "counts",
+          "type": "(counts: { total: number; working: number; waiting: number }) => string",
+          "required": true,
+          "description": "Header counts."
+        },
+        {
+          "name": "project",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the project switcher, and the counts of one project."
+        },
+        {
+          "name": "projectCounts",
+          "type": "(project: CrewProject) => string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "context",
+          "type": "(percent: number) => string",
+          "required": true,
+          "description": "Context share read with a card."
+        },
+        {
+          "name": "hint",
+          "type": "string",
+          "required": true,
+          "description": "Hint read with each card."
+        },
+        {
+          "name": "details",
+          "type": "{ task: string; model: string; time: string; cost: string; tokens: string; tools: string; last: string }",
+          "required": true,
+          "description": "Field names in the details."
+        },
+        {
+          "name": "close",
+          "type": "string",
+          "required": true,
+          "description": "Close button of the details."
+        },
+        {
+          "name": "message",
+          "type": "string",
+          "required": true,
+          "description": "Label of the message field and its send button."
+        },
+        {
+          "name": "send",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "handed",
+          "type": "(from: string, to: string, label?: string) => string",
+          "required": true,
+          "description": "Live line for a new hand-off."
+        },
+        {
+          "name": "steered",
+          "type": "(name: string, action: string) => string",
+          "required": true,
+          "description": "Live line after a steering action."
+        },
+        {
+          "name": "more",
+          "type": "(count: number) => string",
+          "required": true,
+          "description": "Tile for tools past the third."
+        }
+      ]
+    },
+    "AgentCrewProps": {
+      "kind": "type",
+      "source": "src/blocks/agent-crew/agent-crew.tsx",
+      "props": [
+        {
+          "name": "root",
+          "type": "CrewAgent",
+          "required": true,
+          "description": "The lead agent with its members."
+        },
+        {
+          "name": "handoffs",
+          "type": "readonly CrewHandoff[]",
+          "required": false,
+          "description": "Hand-offs so far; a new id lights the receiving card, the ones present at first do not."
+        },
+        {
+          "name": "title",
+          "type": "ReactNode",
+          "required": true,
+          "description": "Heading when there is no project switcher."
+        },
+        {
+          "name": "projects",
+          "type": "readonly CrewProject[]",
+          "required": false,
+          "description": "Projects of the switcher, which replaces the heading."
+        },
+        {
+          "name": "project",
+          "type": "string",
+          "required": false,
+          "description": "Selected project id."
+        },
+        {
+          "name": "onProjectChange",
+          "type": "(id: string) => void",
+          "required": false,
+          "description": "Called with the chosen project id; swap root and handoffs for that project's crew."
+        },
+        {
+          "name": "onSteer",
+          "type": "(agent: CrewAgent, action: CrewSteer, message?: string) => void",
+          "required": false,
+          "description": "Shows the steering actions; called with the person's choice and the message text."
+        },
+        {
+          "name": "onSelect",
+          "type": "(agent: CrewAgent) => void",
+          "required": false,
+          "description": "Called when a card is clicked or gets Enter."
+        },
+        {
+          "name": "now",
+          "type": "number",
+          "required": false,
+          "description": "Clock in milliseconds for the time in the details; the component does not tick on its own."
+        },
+        {
+          "name": "formatCost",
+          "type": "(cost: number) => string",
+          "required": true,
+          "description": "How a cost is written."
+        },
+        {
+          "name": "formatDuration",
+          "type": "(ms: number) => string",
+          "required": true,
+          "description": "How a duration in milliseconds is written."
+        },
+        {
+          "name": "formatTokens",
+          "type": "(tokens: number) => string",
+          "required": true,
+          "description": "How a token count is written (「136k」)."
+        },
+        {
+          "name": "labels",
+          "type": "AgentCrewLabels",
+          "required": true,
+          "description": "Texts."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "AgentFleet": {
+      "kind": "component",
+      "source": "src/blocks/agent-fleet/agent-fleet.tsx",
+      "props": [
+        {
+          "name": "agents",
+          "type": "readonly RunAgent[]",
+          "required": true,
+          "description": "Main agents, each with its sub-agents."
+        },
+        {
+          "name": "open",
+          "type": "string | null",
+          "required": false,
+          "description": "Id of the main agent whose tree is open, or null; controlled."
+        },
+        {
+          "name": "defaultOpen",
+          "type": "string | null",
+          "required": false,
+          "description": "Open main agent at first, uncontrolled; defaults to the first agent."
+        },
+        {
+          "name": "onOpenChange",
+          "type": "(id: string | null) => void",
+          "required": false,
+          "description": "Called with the main agent id that opens, or null when its tree folds."
+        },
+        {
+          "name": "onSelect",
+          "type": "(agent: RunAgent) => void",
+          "required": false,
+          "description": "Called when a sub-agent card is clicked or gets Enter."
+        },
+        {
+          "name": "onResolve",
+          "type": "(agent: RunAgent, action: AgentResolution) => void",
+          "required": false,
+          "description": "Called with the person's answer to a sub-agent that needs you or failed."
+        },
+        {
+          "name": "now",
+          "type": "number",
+          "required": false,
+          "description": "Clock in milliseconds for running times; the component does not tick on its own."
+        },
+        {
+          "name": "title",
+          "type": "ReactNode",
+          "required": true,
+          "description": "Heading."
+        },
+        {
+          "name": "formatCost",
+          "type": "(cost: number) => string",
+          "required": true,
+          "description": "How a cost is written."
+        },
+        {
+          "name": "formatDuration",
+          "type": "(ms: number) => string",
+          "required": true,
+          "description": "How a duration in milliseconds is written."
+        },
+        {
+          "name": "labels",
+          "type": "AgentFleetLabels",
+          "required": true,
+          "description": "Texts."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "AgentFleetLabels": {
+      "kind": "type",
+      "source": "src/blocks/agent-fleet/agent-fleet.tsx",
+      "props": [
+        {
+          "name": "status",
+          "type": "Record<AgentRunStatus, string>",
+          "required": true,
+          "description": "Status words; waiting is usually 「要你」."
+        },
+        {
+          "name": "children",
+          "type": "(count: number) => string",
+          "required": true,
+          "description": "Sub-agent count read with a branch."
+        },
+        {
+          "name": "branch",
+          "type": "string",
+          "required": true,
+          "description": "Word before a branch's summed cost."
+        },
+        {
+          "name": "approve",
+          "type": "string",
+          "required": true,
+          "description": "Answer buttons."
+        },
+        {
+          "name": "reject",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "retry",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "dismiss",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "answerOf",
+          "type": "(name: string) => string",
+          "required": true,
+          "description": "Accessible names of the answer window and of the tasks window."
+        },
+        {
+          "name": "stepsOf",
+          "type": "(name: string) => string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "more",
+          "type": "(count: number) => string",
+          "required": true,
+          "description": "Tile for tools past the third."
+        },
+        {
+          "name": "hint",
+          "type": "string",
+          "required": true,
+          "description": "Hint read with each card: the keys that fold, open and select."
+        },
+        {
+          "name": "bar",
+          "type": "AgentBarLabels",
+          "required": true,
+          "description": "Totals bar."
+        },
+        {
+          "name": "fleet",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the column of main agents."
+        },
+        {
+          "name": "ring",
+          "type": "(totals: AgentTotals) => string",
+          "required": true,
+          "description": "Phrase explaining the status ring of a main agent from its sub-agent totals."
+        },
+        {
+          "name": "subAgentsOf",
+          "type": "(name: string) => string",
+          "required": true,
+          "description": "Name of the open tree."
+        },
+        {
+          "name": "noSubAgents",
+          "type": "string",
+          "required": true,
+          "description": "Line in the open pane of a main agent without sub-agents."
+        }
+      ]
+    },
+    "AgentFleetProps": {
+      "kind": "type",
+      "source": "src/blocks/agent-fleet/agent-fleet.tsx",
+      "props": [
+        {
+          "name": "agents",
+          "type": "readonly RunAgent[]",
+          "required": true,
+          "description": "Main agents, each with its sub-agents."
+        },
+        {
+          "name": "open",
+          "type": "string | null",
+          "required": false,
+          "description": "Id of the main agent whose tree is open, or null; controlled."
+        },
+        {
+          "name": "defaultOpen",
+          "type": "string | null",
+          "required": false,
+          "description": "Open main agent at first, uncontrolled; defaults to the first agent."
+        },
+        {
+          "name": "onOpenChange",
+          "type": "(id: string | null) => void",
+          "required": false,
+          "description": "Called with the main agent id that opens, or null when its tree folds."
+        },
+        {
+          "name": "onSelect",
+          "type": "(agent: RunAgent) => void",
+          "required": false,
+          "description": "Called when a sub-agent card is clicked or gets Enter."
+        },
+        {
+          "name": "onResolve",
+          "type": "(agent: RunAgent, action: AgentResolution) => void",
+          "required": false,
+          "description": "Called with the person's answer to a sub-agent that needs you or failed."
+        },
+        {
+          "name": "now",
+          "type": "number",
+          "required": false,
+          "description": "Clock in milliseconds for running times; the component does not tick on its own."
+        },
+        {
+          "name": "title",
+          "type": "ReactNode",
+          "required": true,
+          "description": "Heading."
+        },
+        {
+          "name": "formatCost",
+          "type": "(cost: number) => string",
+          "required": true,
+          "description": "How a cost is written."
+        },
+        {
+          "name": "formatDuration",
+          "type": "(ms: number) => string",
+          "required": true,
+          "description": "How a duration in milliseconds is written."
+        },
+        {
+          "name": "labels",
+          "type": "AgentFleetLabels",
+          "required": true,
+          "description": "Texts."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
     "AgentLanes": {
       "kind": "component",
       "source": "src/ai/agent-lanes.tsx",
@@ -1187,6 +1752,437 @@
         {
           "name": "labels",
           "type": "AgentRecapLabels",
+          "required": true,
+          "description": "Texts."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "AgentResolution": {
+      "kind": "type",
+      "source": "src/blocks/agent-tree/agent-tree-model.ts",
+      "props": []
+    },
+    "AgentRow": {
+      "kind": "type",
+      "source": "src/blocks/agent-tree/agent-tree-model.ts",
+      "props": [
+        {
+          "name": "agent",
+          "type": "RunAgent",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "depth",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "parentId",
+          "type": "string | null",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "hasChildren",
+          "type": "boolean",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "expanded",
+          "type": "boolean",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "AgentRunLabels": {
+      "kind": "type",
+      "source": "src/blocks/agent-tree/agent-tree.tsx",
+      "props": [
+        {
+          "name": "status",
+          "type": "Record<AgentRunStatus, string>",
+          "required": true,
+          "description": "Status words; waiting is usually 「要你」."
+        },
+        {
+          "name": "children",
+          "type": "(count: number) => string",
+          "required": true,
+          "description": "Sub-agent count read with a branch."
+        },
+        {
+          "name": "branch",
+          "type": "string",
+          "required": true,
+          "description": "Word before a branch's summed cost."
+        },
+        {
+          "name": "approve",
+          "type": "string",
+          "required": true,
+          "description": "Answer buttons."
+        },
+        {
+          "name": "reject",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "retry",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "dismiss",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "answerOf",
+          "type": "(name: string) => string",
+          "required": true,
+          "description": "Accessible names of the answer window and of the tasks window."
+        },
+        {
+          "name": "stepsOf",
+          "type": "(name: string) => string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "more",
+          "type": "(count: number) => string",
+          "required": true,
+          "description": "Tile for tools past the third."
+        },
+        {
+          "name": "hint",
+          "type": "string",
+          "required": true,
+          "description": "Hint read with each card: the keys that fold, open and select."
+        }
+      ]
+    },
+    "AgentRunStatus": {
+      "kind": "type",
+      "source": "src/blocks/agent-tree/agent-tree-model.ts",
+      "props": []
+    },
+    "AgentRunStep": {
+      "kind": "type",
+      "source": "src/blocks/agent-tree/agent-tree-model.ts",
+      "props": [
+        {
+          "name": "title",
+          "type": "string",
+          "required": true,
+          "description": "Step name."
+        },
+        {
+          "name": "status",
+          "type": "AgentRunStatus",
+          "required": true,
+          "description": "State of the step."
+        },
+        {
+          "name": "tool",
+          "type": "string",
+          "required": false,
+          "description": "Tool the step used."
+        },
+        {
+          "name": "duration",
+          "type": "number",
+          "required": false,
+          "description": "Duration in milliseconds."
+        }
+      ]
+    },
+    "AgentTotals": {
+      "kind": "type",
+      "source": "src/blocks/agent-tree/agent-tree-model.ts",
+      "props": [
+        {
+          "name": "agents",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "running",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "waiting",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "failed",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "done",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "cost",
+          "type": "number | undefined",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "AgentTree": {
+      "kind": "component",
+      "source": "src/blocks/agent-tree/agent-tree.tsx",
+      "props": [
+        {
+          "name": "root",
+          "type": "RunAgent",
+          "required": true,
+          "description": "The orchestrator with its sub-agents; rebuild it as the run goes on."
+        },
+        {
+          "name": "collapsed",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Folded branch ids, controlled."
+        },
+        {
+          "name": "defaultCollapsed",
+          "type": "readonly string[]",
+          "required": false,
+          "default": "[]",
+          "description": "Folded branch ids at first, uncontrolled."
+        },
+        {
+          "name": "onCollapsedChange",
+          "type": "(collapsed: readonly string[]) => void",
+          "required": false,
+          "description": "Called with the folded ids after a fold or unfold."
+        },
+        {
+          "name": "onSelect",
+          "type": "(agent: RunAgent) => void",
+          "required": false,
+          "description": "Called when a card is clicked or gets Enter."
+        },
+        {
+          "name": "onResolve",
+          "type": "(agent: RunAgent, action: AgentResolution) => void",
+          "required": false,
+          "description": "Called with the person's answer to an agent that needs you or failed; update its status in your data."
+        },
+        {
+          "name": "now",
+          "type": "number",
+          "required": false,
+          "description": "Clock in milliseconds for running times; the component does not tick on its own."
+        },
+        {
+          "name": "title",
+          "type": "ReactNode",
+          "required": true,
+          "description": "Heading."
+        },
+        {
+          "name": "formatCost",
+          "type": "(cost: number) => string",
+          "required": true,
+          "description": "How a cost is written."
+        },
+        {
+          "name": "formatDuration",
+          "type": "(ms: number) => string",
+          "required": true,
+          "description": "How a duration in milliseconds is written."
+        },
+        {
+          "name": "labels",
+          "type": "AgentTreeLabels",
+          "required": true,
+          "description": "Texts."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "AgentTreeLabels": {
+      "kind": "type",
+      "source": "src/blocks/agent-tree/agent-tree.tsx",
+      "props": [
+        {
+          "name": "status",
+          "type": "Record<AgentRunStatus, string>",
+          "required": true,
+          "description": "Status words; waiting is usually 「要你」."
+        },
+        {
+          "name": "children",
+          "type": "(count: number) => string",
+          "required": true,
+          "description": "Sub-agent count read with a branch."
+        },
+        {
+          "name": "branch",
+          "type": "string",
+          "required": true,
+          "description": "Word before a branch's summed cost."
+        },
+        {
+          "name": "approve",
+          "type": "string",
+          "required": true,
+          "description": "Answer buttons."
+        },
+        {
+          "name": "reject",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "retry",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "dismiss",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "answerOf",
+          "type": "(name: string) => string",
+          "required": true,
+          "description": "Accessible names of the answer window and of the tasks window."
+        },
+        {
+          "name": "stepsOf",
+          "type": "(name: string) => string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "more",
+          "type": "(count: number) => string",
+          "required": true,
+          "description": "Tile for tools past the third."
+        },
+        {
+          "name": "hint",
+          "type": "string",
+          "required": true,
+          "description": "Hint read with each card: the keys that fold, open and select."
+        },
+        {
+          "name": "bar",
+          "type": "AgentBarLabels",
+          "required": true,
+          "description": "Totals bar."
+        },
+        {
+          "name": "tree",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the tree."
+        }
+      ]
+    },
+    "AgentTreeProps": {
+      "kind": "type",
+      "source": "src/blocks/agent-tree/agent-tree.tsx",
+      "props": [
+        {
+          "name": "root",
+          "type": "RunAgent",
+          "required": true,
+          "description": "The orchestrator with its sub-agents; rebuild it as the run goes on."
+        },
+        {
+          "name": "collapsed",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Folded branch ids, controlled."
+        },
+        {
+          "name": "defaultCollapsed",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Folded branch ids at first, uncontrolled."
+        },
+        {
+          "name": "onCollapsedChange",
+          "type": "(collapsed: readonly string[]) => void",
+          "required": false,
+          "description": "Called with the folded ids after a fold or unfold."
+        },
+        {
+          "name": "onSelect",
+          "type": "(agent: RunAgent) => void",
+          "required": false,
+          "description": "Called when a card is clicked or gets Enter."
+        },
+        {
+          "name": "onResolve",
+          "type": "(agent: RunAgent, action: AgentResolution) => void",
+          "required": false,
+          "description": "Called with the person's answer to an agent that needs you or failed; update its status in your data."
+        },
+        {
+          "name": "now",
+          "type": "number",
+          "required": false,
+          "description": "Clock in milliseconds for running times; the component does not tick on its own."
+        },
+        {
+          "name": "title",
+          "type": "ReactNode",
+          "required": true,
+          "description": "Heading."
+        },
+        {
+          "name": "formatCost",
+          "type": "(cost: number) => string",
+          "required": true,
+          "description": "How a cost is written."
+        },
+        {
+          "name": "formatDuration",
+          "type": "(ms: number) => string",
+          "required": true,
+          "description": "How a duration in milliseconds is written."
+        },
+        {
+          "name": "labels",
+          "type": "AgentTreeLabels",
           "required": true,
           "description": "Texts."
         },
@@ -11257,6 +12253,172 @@
       "source": "src/katana/count-badge.tsx",
       "props": []
     },
+    "CrewAgent": {
+      "kind": "type",
+      "source": "src/blocks/agent-crew/crew-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "Stable key."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": "Agent name or role."
+        },
+        {
+          "name": "status",
+          "type": "CrewStatus",
+          "required": true,
+          "description": "Working, idle, paused, waiting (needs you), done or failed."
+        },
+        {
+          "name": "activity",
+          "type": "string",
+          "required": false,
+          "description": "What it is doing right now, in one line."
+        },
+        {
+          "name": "context",
+          "type": "number",
+          "required": false,
+          "description": "Share of the context window in use, 0 to 1."
+        },
+        {
+          "name": "contextLimit",
+          "type": "number",
+          "required": false,
+          "description": "Context window size in tokens; shows 「136k / 200k」 next to the bar."
+        },
+        {
+          "name": "model",
+          "type": "string",
+          "required": false,
+          "description": "Model name."
+        },
+        {
+          "name": "tools",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Tool names."
+        },
+        {
+          "name": "last",
+          "type": "{ from: string; text: string }",
+          "required": false,
+          "description": "Last hand-off it received."
+        },
+        {
+          "name": "task",
+          "type": "string",
+          "required": false,
+          "description": "Its task, in the details."
+        },
+        {
+          "name": "started",
+          "type": "number",
+          "required": false,
+          "description": "Start in milliseconds."
+        },
+        {
+          "name": "ended",
+          "type": "number",
+          "required": false,
+          "description": "End in milliseconds."
+        },
+        {
+          "name": "cost",
+          "type": "number",
+          "required": false,
+          "description": "Cost so far."
+        },
+        {
+          "name": "tokens",
+          "type": "number",
+          "required": false,
+          "description": "Tokens used so far."
+        },
+        {
+          "name": "children",
+          "type": "readonly CrewAgent[]",
+          "required": false,
+          "description": "Members it leads."
+        }
+      ]
+    },
+    "CrewHandoff": {
+      "kind": "type",
+      "source": "src/blocks/agent-crew/crew-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "from",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "to",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "CrewProject": {
+      "kind": "type",
+      "source": "src/blocks/agent-crew/crew-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "working",
+          "type": "number",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "needsYou",
+          "type": "number",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "CrewStatus": {
+      "kind": "type",
+      "source": "src/blocks/agent-crew/crew-model.ts",
+      "props": []
+    },
+    "CrewSteer": {
+      "kind": "type",
+      "source": "src/blocks/agent-crew/crew-model.ts",
+      "props": []
+    },
     "CrossRateQuote": {
       "kind": "type",
       "source": "src/quotes/cross-rates-model.ts",
@@ -19823,6 +20985,362 @@
         }
       ]
     },
+    "FlowBuilder": {
+      "kind": "component",
+      "source": "src/blocks/flow-builder/flow-builder.tsx",
+      "props": [
+        {
+          "name": "name",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Workflow name in the header."
+        },
+        {
+          "name": "steps",
+          "type": "readonly FlowStep[]",
+          "required": false,
+          "description": "Steps, controlled."
+        },
+        {
+          "name": "defaultSteps",
+          "type": "readonly FlowStep[]",
+          "required": false,
+          "description": "Steps at first, uncontrolled."
+        },
+        {
+          "name": "onStepsChange",
+          "type": "(steps: readonly FlowStep[]) => void",
+          "required": false,
+          "description": "Called with the whole new list after every add, move, remove and undo."
+        },
+        {
+          "name": "run",
+          "type": "Readonly<Record<string, FlowRun>>",
+          "required": false,
+          "description": "Test-run state per step id."
+        },
+        {
+          "name": "now",
+          "type": "number",
+          "required": false,
+          "description": "Clock in milliseconds for the elapsed time of running steps; the component does not tick on its own."
+        },
+        {
+          "name": "running",
+          "type": "boolean",
+          "required": false,
+          "description": "Whether a test run is going; defaults to whether any step is running."
+        },
+        {
+          "name": "selected",
+          "type": "string | null",
+          "required": false,
+          "description": "Selected step id, controlled."
+        },
+        {
+          "name": "defaultSelected",
+          "type": "string | null",
+          "required": false,
+          "default": "null",
+          "description": "Selected step id at first, uncontrolled."
+        },
+        {
+          "name": "onSelect",
+          "type": "(id: string | null) => void",
+          "required": false,
+          "description": "Called with the selected step id, or null when cleared; open your inspector here."
+        },
+        {
+          "name": "onRun",
+          "type": "() => void",
+          "required": false,
+          "description": "Shows Test run once the flow has two steps."
+        },
+        {
+          "name": "onStop",
+          "type": "() => void",
+          "required": false,
+          "description": "Shows Stop while a test run is going."
+        },
+        {
+          "name": "templates",
+          "type": "readonly FlowTemplate[]",
+          "required": true,
+          "description": "Entries of the add menu below the trigger."
+        },
+        {
+          "name": "triggers",
+          "type": "readonly FlowTemplate[]",
+          "required": true,
+          "description": "Entries of the add menu of an empty flow."
+        },
+        {
+          "name": "height",
+          "type": "number",
+          "required": false,
+          "default": "420",
+          "description": "Canvas height in px."
+        },
+        {
+          "name": "formatDuration",
+          "type": "(ms: number) => string",
+          "required": true,
+          "description": "How a duration in milliseconds is written."
+        },
+        {
+          "name": "renderIcon",
+          "type": "(step: FlowStep) => ReactNode",
+          "required": false,
+          "description": "Icon of a step; defaults to one per kind."
+        },
+        {
+          "name": "labels",
+          "type": "FlowBuilderLabels",
+          "required": true,
+          "description": "Texts."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "FlowBuilderLabels": {
+      "kind": "type",
+      "source": "src/blocks/flow-builder/flow-builder.tsx",
+      "props": [
+        {
+          "name": "untitled",
+          "type": "string",
+          "required": true,
+          "description": "Heading when no name is given."
+        },
+        {
+          "name": "canvas",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the scrolling canvas."
+        },
+        {
+          "name": "kind",
+          "type": "Record<FlowStepKind, string>",
+          "required": true,
+          "description": "Kind words, read with each step."
+        },
+        {
+          "name": "status",
+          "type": "Record<FlowStepStatus, string>",
+          "required": true,
+          "description": "Status words read with each step; idle is usually empty."
+        },
+        {
+          "name": "addAfter",
+          "type": "(title: string) => string",
+          "required": true,
+          "description": "Name of the add button below a step."
+        },
+        {
+          "name": "addInPath",
+          "type": "(path: string) => string",
+          "required": true,
+          "description": "Name of the add button at the top of a path."
+        },
+        {
+          "name": "addTrigger",
+          "type": "string",
+          "required": true,
+          "description": "Text of the add button of an empty flow."
+        },
+        {
+          "name": "menu",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the add menu."
+        },
+        {
+          "name": "run",
+          "type": "string",
+          "required": true,
+          "description": "Test-run, stop and undo buttons."
+        },
+        {
+          "name": "stop",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "undo",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "hint",
+          "type": "string",
+          "required": true,
+          "description": "Hint read with each step: the keys that move and remove it."
+        },
+        {
+          "name": "added",
+          "type": "(title: string) => string",
+          "required": true,
+          "description": "Live lines after adding, removing, moving and undoing."
+        },
+        {
+          "name": "removed",
+          "type": "(title: string) => string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "moved",
+          "type": "(title: string) => string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "undone",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "finished",
+          "type": "(counts: Record<FlowStepStatus, number>) => string",
+          "required": true,
+          "description": "Live line when a test run ends."
+        },
+        {
+          "name": "defaultPaths",
+          "type": "readonly string[]",
+          "required": true,
+          "description": "Path names of a new branch whose template names none."
+        }
+      ]
+    },
+    "FlowBuilderProps": {
+      "kind": "type",
+      "source": "src/blocks/flow-builder/flow-builder.tsx",
+      "props": [
+        {
+          "name": "name",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Workflow name in the header."
+        },
+        {
+          "name": "steps",
+          "type": "readonly FlowStep[]",
+          "required": false,
+          "description": "Steps, controlled."
+        },
+        {
+          "name": "defaultSteps",
+          "type": "readonly FlowStep[]",
+          "required": false,
+          "description": "Steps at first, uncontrolled."
+        },
+        {
+          "name": "onStepsChange",
+          "type": "(steps: readonly FlowStep[]) => void",
+          "required": false,
+          "description": "Called with the whole new list after every add, move, remove and undo."
+        },
+        {
+          "name": "run",
+          "type": "Readonly<Record<string, FlowRun>>",
+          "required": false,
+          "description": "Test-run state per step id."
+        },
+        {
+          "name": "now",
+          "type": "number",
+          "required": false,
+          "description": "Clock in milliseconds for the elapsed time of running steps; the component does not tick on its own."
+        },
+        {
+          "name": "running",
+          "type": "boolean",
+          "required": false,
+          "description": "Whether a test run is going; defaults to whether any step is running."
+        },
+        {
+          "name": "selected",
+          "type": "string | null",
+          "required": false,
+          "description": "Selected step id, controlled."
+        },
+        {
+          "name": "defaultSelected",
+          "type": "string | null",
+          "required": false,
+          "description": "Selected step id at first, uncontrolled."
+        },
+        {
+          "name": "onSelect",
+          "type": "(id: string | null) => void",
+          "required": false,
+          "description": "Called with the selected step id, or null when cleared; open your inspector here."
+        },
+        {
+          "name": "onRun",
+          "type": "() => void",
+          "required": false,
+          "description": "Shows Test run once the flow has two steps."
+        },
+        {
+          "name": "onStop",
+          "type": "() => void",
+          "required": false,
+          "description": "Shows Stop while a test run is going."
+        },
+        {
+          "name": "templates",
+          "type": "readonly FlowTemplate[]",
+          "required": true,
+          "description": "Entries of the add menu below the trigger."
+        },
+        {
+          "name": "triggers",
+          "type": "readonly FlowTemplate[]",
+          "required": true,
+          "description": "Entries of the add menu of an empty flow."
+        },
+        {
+          "name": "height",
+          "type": "number",
+          "required": false,
+          "description": "Canvas height in px."
+        },
+        {
+          "name": "formatDuration",
+          "type": "(ms: number) => string",
+          "required": true,
+          "description": "How a duration in milliseconds is written."
+        },
+        {
+          "name": "renderIcon",
+          "type": "(step: FlowStep) => ReactNode",
+          "required": false,
+          "description": "Icon of a step; defaults to one per kind."
+        },
+        {
+          "name": "labels",
+          "type": "FlowBuilderLabels",
+          "required": true,
+          "description": "Texts."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
     "FlowCellState": {
       "kind": "type",
       "source": "src/blocks/flow-gauges/flow-gauges.tsx",
@@ -20236,6 +21754,30 @@
         }
       ]
     },
+    "FlowPath": {
+      "kind": "type",
+      "source": "src/blocks/flow-builder/flow-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "Stable key."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "Path name, such as Yes, No or Above the limit."
+        },
+        {
+          "name": "steps",
+          "type": "readonly FlowStep[]",
+          "required": true,
+          "description": "Steps on this path, top to bottom."
+        }
+      ]
+    },
     "FlowPoint": {
       "kind": "type",
       "source": "src/cn/flow-race-model.ts",
@@ -20368,6 +21910,30 @@
           "type": "string",
           "required": false,
           "description": "Extra class names."
+        }
+      ]
+    },
+    "FlowRun": {
+      "kind": "type",
+      "source": "src/blocks/flow-builder/flow-model.ts",
+      "props": [
+        {
+          "name": "status",
+          "type": "FlowStepStatus",
+          "required": true,
+          "description": "Idle, running, done, failed or skipped."
+        },
+        {
+          "name": "started",
+          "type": "number",
+          "required": false,
+          "description": "When the step started."
+        },
+        {
+          "name": "ended",
+          "type": "number",
+          "required": false,
+          "description": "When the step ended."
         }
       ]
     },
@@ -20731,6 +22297,118 @@
           "type": "boolean",
           "required": false,
           "description": "无逐笔方向、数是估出来的：灰显并标估算。"
+        }
+      ]
+    },
+    "FlowSlot": {
+      "kind": "type",
+      "source": "src/blocks/flow-builder/flow-model.ts",
+      "props": [
+        {
+          "name": "path",
+          "type": "string | null",
+          "required": true,
+          "description": "Path id, or null for the top level."
+        },
+        {
+          "name": "index",
+          "type": "number",
+          "required": true,
+          "description": "Position in that list."
+        }
+      ]
+    },
+    "FlowStep": {
+      "kind": "type",
+      "source": "src/blocks/flow-builder/flow-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "Stable key."
+        },
+        {
+          "name": "kind",
+          "type": "FlowStepKind",
+          "required": true,
+          "description": "Trigger, action, agent, branch or wait."
+        },
+        {
+          "name": "title",
+          "type": "string",
+          "required": true,
+          "description": "Step name."
+        },
+        {
+          "name": "detail",
+          "type": "string",
+          "required": false,
+          "description": "Muted second line, such as the source or the condition."
+        },
+        {
+          "name": "note",
+          "type": "string",
+          "required": false,
+          "description": "Line shown while the step runs."
+        },
+        {
+          "name": "paths",
+          "type": "readonly FlowPath[]",
+          "required": false,
+          "description": "Paths of a branch step."
+        }
+      ]
+    },
+    "FlowStepKind": {
+      "kind": "type",
+      "source": "src/blocks/flow-builder/flow-model.ts",
+      "props": []
+    },
+    "FlowStepStatus": {
+      "kind": "type",
+      "source": "src/blocks/flow-builder/flow-model.ts",
+      "props": []
+    },
+    "FlowTemplate": {
+      "kind": "type",
+      "source": "src/blocks/flow-builder/flow-model.ts",
+      "props": [
+        {
+          "name": "key",
+          "type": "string",
+          "required": true,
+          "description": "Stable key; new step ids start with it."
+        },
+        {
+          "name": "kind",
+          "type": "FlowStepKind",
+          "required": true,
+          "description": "Kind of the new step."
+        },
+        {
+          "name": "title",
+          "type": "string",
+          "required": true,
+          "description": "Name of the new step."
+        },
+        {
+          "name": "detail",
+          "type": "string",
+          "required": false,
+          "description": "Second line of the new step and of the menu entry."
+        },
+        {
+          "name": "note",
+          "type": "string",
+          "required": false,
+          "description": "Note of the new step."
+        },
+        {
+          "name": "paths",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Path names of a new branch step."
         }
       ]
     },
@@ -45288,6 +46966,90 @@
         }
       ]
     },
+    "RunAgent": {
+      "kind": "type",
+      "source": "src/blocks/agent-tree/agent-tree-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "Stable key."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": "Agent name."
+        },
+        {
+          "name": "task",
+          "type": "string",
+          "required": true,
+          "description": "What it is doing, in one line."
+        },
+        {
+          "name": "status",
+          "type": "AgentRunStatus",
+          "required": true,
+          "description": "Queued, running, waiting (needs you), done, failed or stopped."
+        },
+        {
+          "name": "model",
+          "type": "string",
+          "required": false,
+          "description": "Model name."
+        },
+        {
+          "name": "tools",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Tool names, shown as small tiles before the task."
+        },
+        {
+          "name": "ask",
+          "type": "string",
+          "required": false,
+          "description": "The decision it waits for."
+        },
+        {
+          "name": "error",
+          "type": "string",
+          "required": false,
+          "description": "Why it failed."
+        },
+        {
+          "name": "cost",
+          "type": "number",
+          "required": false,
+          "description": "Its own cost; branch cards add up the children."
+        },
+        {
+          "name": "started",
+          "type": "number",
+          "required": false,
+          "description": "Start in milliseconds."
+        },
+        {
+          "name": "ended",
+          "type": "number",
+          "required": false,
+          "description": "End in milliseconds."
+        },
+        {
+          "name": "steps",
+          "type": "readonly AgentRunStep[]",
+          "required": false,
+          "description": "Its steps, opened in a tasks window."
+        },
+        {
+          "name": "children",
+          "type": "readonly RunAgent[]",
+          "required": false,
+          "description": "Sub-agents it started."
+        }
+      ]
+    },
     "RunMode": {
       "kind": "type",
       "source": "src/blocks/run-mode-badge/run-mode-badge.tsx",
@@ -63240,9 +65002,32 @@
       "source": "src/blocks/data-grid/layout-model.ts",
       "props": []
     },
+    "agentElapsed": {
+      "kind": "function",
+      "source": "src/blocks/agent-tree/agent-tree-model.ts",
+      "props": [
+        {
+          "name": "ended",
+          "type": "number",
+          "required": false,
+          "description": "End in milliseconds."
+        },
+        {
+          "name": "started",
+          "type": "number",
+          "required": false,
+          "description": "Start in milliseconds."
+        }
+      ]
+    },
     "agentTag": {
       "kind": "function",
       "source": "src/ai/lanes-model.ts",
+      "props": []
+    },
+    "agentTotals": {
+      "kind": "function",
+      "source": "src/blocks/agent-tree/agent-tree-model.ts",
       "props": []
     },
     "aggregateReturns": {
@@ -63517,6 +65302,90 @@
       "kind": "function",
       "source": "src/cn/badge-model.ts",
       "props": []
+    },
+    "branchCost": {
+      "kind": "function",
+      "source": "src/blocks/agent-tree/agent-tree-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "Stable key."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": "Agent name."
+        },
+        {
+          "name": "task",
+          "type": "string",
+          "required": true,
+          "description": "What it is doing, in one line."
+        },
+        {
+          "name": "status",
+          "type": "AgentRunStatus",
+          "required": true,
+          "description": "Queued, running, waiting (needs you), done, failed or stopped."
+        },
+        {
+          "name": "model",
+          "type": "string",
+          "required": false,
+          "description": "Model name."
+        },
+        {
+          "name": "tools",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Tool names, shown as small tiles before the task."
+        },
+        {
+          "name": "ask",
+          "type": "string",
+          "required": false,
+          "description": "The decision it waits for."
+        },
+        {
+          "name": "error",
+          "type": "string",
+          "required": false,
+          "description": "Why it failed."
+        },
+        {
+          "name": "cost",
+          "type": "number",
+          "required": false,
+          "description": "Its own cost; branch cards add up the children."
+        },
+        {
+          "name": "started",
+          "type": "number",
+          "required": false,
+          "description": "Start in milliseconds."
+        },
+        {
+          "name": "ended",
+          "type": "number",
+          "required": false,
+          "description": "End in milliseconds."
+        },
+        {
+          "name": "steps",
+          "type": "readonly AgentRunStep[]",
+          "required": false,
+          "description": "Its steps, opened in a tasks window."
+        },
+        {
+          "name": "children",
+          "type": "readonly RunAgent[]",
+          "required": false,
+          "description": "Sub-agents it started."
+        }
+      ]
     },
     "breakevenPrice": {
       "kind": "function",
@@ -64266,6 +66135,11 @@
       "source": "src/motion/text/ransom-note.tsx",
       "props": []
     },
+    "crewContextLevel": {
+      "kind": "function",
+      "source": "src/blocks/agent-crew/crew-model.ts",
+      "props": []
+    },
     "decimalsOfTick": {
       "kind": "function",
       "source": "src/lib/chart/format/price.ts",
@@ -64504,9 +66378,19 @@
       "source": "src/cn/flow-race-model.ts",
       "props": []
     },
+    "flowElapsed": {
+      "kind": "function",
+      "source": "src/blocks/flow-builder/flow-model.ts",
+      "props": []
+    },
     "flowLines": {
       "kind": "function",
       "source": "src/cn/flow-race-model.ts",
+      "props": []
+    },
+    "flowOrder": {
+      "kind": "function",
+      "source": "src/blocks/flow-builder/flow-model.ts",
       "props": []
     },
     "flowPath": {
@@ -64839,6 +66723,60 @@
       "kind": "function",
       "source": "src/primitives/input.tsx",
       "props": []
+    },
+    "insertStep": {
+      "kind": "function",
+      "source": "src/blocks/flow-builder/flow-model.ts",
+      "props": [
+        {
+          "name": "path",
+          "type": "string | null",
+          "required": true,
+          "description": "Path id, or null for the top level."
+        },
+        {
+          "name": "index",
+          "type": "number",
+          "required": true,
+          "description": "Position in that list."
+        },
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "Stable key."
+        },
+        {
+          "name": "kind",
+          "type": "FlowStepKind",
+          "required": true,
+          "description": "Trigger, action, agent, branch or wait."
+        },
+        {
+          "name": "title",
+          "type": "string",
+          "required": true,
+          "description": "Step name."
+        },
+        {
+          "name": "detail",
+          "type": "string",
+          "required": false,
+          "description": "Muted second line, such as the source or the condition."
+        },
+        {
+          "name": "note",
+          "type": "string",
+          "required": false,
+          "description": "Line shown while the step runs."
+        },
+        {
+          "name": "paths",
+          "type": "readonly FlowPath[]",
+          "required": false,
+          "description": "Paths of a branch step."
+        }
+      ]
     },
     "isEditableTarget": {
       "kind": "function",
@@ -65490,6 +67428,11 @@
       "source": "src/blocks/trace-waterfall/trace-model.ts",
       "props": []
     },
+    "moveStep": {
+      "kind": "function",
+      "source": "src/blocks/flow-builder/flow-model.ts",
+      "props": []
+    },
     "moveTone": {
       "kind": "function",
       "source": "src/cn/move-feed-model.ts",
@@ -65902,6 +67845,11 @@
           "description": "连接点朝向与上一次自动布局的方向：TB 从上到下（缺省）、LR 从左到右。随文档存，打开时按它还原。"
         }
       ]
+    },
+    "removeStep": {
+      "kind": "function",
+      "source": "src/blocks/flow-builder/flow-model.ts",
+      "props": []
     },
     "renderDoc": {
       "kind": "function",
@@ -66545,6 +68493,11 @@
     "squirclePath": {
       "kind": "function",
       "source": "src/katana/squircle.tsx",
+      "props": []
+    },
+    "steerActions": {
+      "kind": "function",
+      "source": "src/blocks/agent-crew/crew-model.ts",
       "props": []
     },
     "stepDecimal": {
@@ -67713,6 +69666,11 @@
     "vintageExtent": {
       "kind": "function",
       "source": "src/quant/vintage-series-model.ts",
+      "props": []
+    },
+    "visibleAgents": {
+      "kind": "function",
+      "source": "src/blocks/agent-tree/agent-tree-model.ts",
       "props": []
     },
     "visibleSpans": {
