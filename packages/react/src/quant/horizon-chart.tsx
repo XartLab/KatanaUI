@@ -1,16 +1,22 @@
 // SPDX-License-Identifier: MIT
 // 地平线图：十几个品种的日内收益各叠成一条窄带，一屏看完。每一行把正负值折成几条叠起来的带（颜色越深值越大），正负用发散色 div-*（最外一档 -200，其余 -100；涨跌色只给右边的数字，不上面）。
 // 功能参照 Arc 的 Horizon chart（uiarc.dev/components/charts，2026-11-14 读，只取功能），实现原创。
-// 交互：所有行共用一个扫读位置（指针在任一行上移动，或键盘 ←→），每行画同一根竖线，右边一列写这一格各行的值（不选中时写最新值）。
+// 交互：所有行共用一个扫读位置（指针在任一行上移动，或键盘 ←→），每行画同一根竖线，右边一列写这一格各行的值（不选中时写最新值）；
+//   指针所在的那一行另出 LCD 窗（dataviz §4，KatanaUI #165）：只给这一行，十几行各出一个会叠在一起；键盘扫读时右边一列与读数行就是读数，不出窗。
+// 右上三件（dataviz §4：表格视图是无障碍兜底，必须有）：表格一行一个横轴位置、一列一行序列，同 QuantileLayers 的表。
+// 不画末点：带是把值折成几层叠的，一个值没有单独的纵坐标可点；最新值写在右边一列。
 import { useState } from 'react'
 import { cn } from '../lib/cn.ts'
 import { useScrubber } from '../lib/use-scrubber.ts'
 import { horizonBands, horizonMax, HORIZON_BANDS } from './horizon-model.ts'
+import { ChartActions } from '../lib/chart/chart-kit/chart-actions.tsx'
+import { SeriesChartTable, type SeriesTableViewProps } from '../lib/chart/chart-kit/chart-table.tsx'
+import { LcdTooltip } from '../lib/chart/chart-kit/lcd-tooltip.tsx'
 import { makePlot, pct, PLOT_W } from '../lib/chart/series-geometry.ts'
 
 export type HorizonRow = { key: string; label: string; values: readonly number[] }
 
-export type HorizonChartProps = {
+export type HorizonChartProps = SeriesTableViewProps & {
   rows: readonly HorizonRow[]
   /** 整张图的读屏名。 */
   label: string
@@ -47,17 +53,44 @@ export function HorizonChart({
   scale = 'shared',
   max,
   rowHeight = 24,
+  actionLabels,
+  tableLabel,
+  tableXHead,
+  source,
+  onExport,
+  onFullscreen,
   className,
 }: HorizonChartProps) {
   const count = rows.reduce((n, row) => Math.max(n, row.values.length), 0)
   const [index, setIndex] = useState<number | null>(null)
+  const [hoverRow, setHoverRow] = useState<string | null>(null)
+  const [tableView, setTableView] = useState(false)
   const scrub = useScrubber({ count, index, onIndexChange: setIndex })
   const shared = max ?? horizonMax(rows.map((row) => row.values))
   const active = scrub.index
+  const crossX = active === null ? 0 : makePlot(count, [0, 1], { height: 1, exact: true }).xAt(active)
 
   return (
     <figure className={cn('k-hz', className)} data-slot="horizon-chart" aria-label={label}>
-      <div className="k-hz-rows" role="group" aria-label={label} {...scrub.keys}>
+      <div className="k-dist-bar">
+        <ChartActions
+          labels={actionLabels}
+          tableView={tableView}
+          onTableView={setTableView}
+          onExport={onExport}
+          onFullscreen={onFullscreen}
+        />
+      </div>
+      {tableView && (
+        <SeriesChartTable
+          slot="horizon-table"
+          label={tableLabel}
+          xHead={tableXHead}
+          formatX={formatX}
+          columns={rows.map((row) => ({ key: row.key, label: row.label, values: row.values, format: formatValue }))}
+        />
+      )}
+      <div className="k-hz-rows" role="group" aria-label={label} hidden={tableView} {...scrub.keys}>
         {rows.map((row) => {
           const ceiling = scale === 'row' ? (max ?? horizonMax([row.values])) : shared
           const heights = horizonBands(row.values, ceiling, bands)
@@ -66,7 +99,16 @@ export function HorizonChart({
           return (
             <div key={row.key} className="k-hz-row" data-slot="horizon-row" data-row={row.key}>
               <span className="k-hz-label">{row.label}</span>
-              <div className="k-hz-plot" style={{ height: rowHeight }} {...scrub.pointer}>
+              <div
+                className="k-hz-plot"
+                style={{ height: rowHeight }}
+                {...scrub.pointer}
+                onPointerEnter={() => setHoverRow(row.key)}
+                onPointerLeave={() => {
+                  scrub.pointer.onPointerLeave()
+                  setHoverRow(null)
+                }}
+              >
                 <svg viewBox={`0 0 ${PLOT_W} ${rowHeight}`} preserveAspectRatio="none" aria-hidden="true">
                   {heights.positive.map((band, k) => (
                     <path
@@ -94,10 +136,14 @@ export function HorizonChart({
                   ))}
                 </svg>
                 {active !== null && count > 1 && (
-                  <span
-                    className="k-plot-cross"
-                    data-slot="horizon-cross"
-                    style={{ left: pct(makePlot(count, [0, 1], { height: 1, exact: true }).xAt(active)) }}
+                  <span className="k-plot-cross" data-slot="horizon-cross" style={{ left: pct(crossX) }} />
+                )}
+                {active !== null && hoverRow === row.key && value !== undefined && Number.isFinite(value) && (
+                  <LcdTooltip
+                    style={{ left: pct(crossX), top: 0 }}
+                    side={active > (count - 1) / 2 ? 'left' : 'right'}
+                    title={formatX?.(active)}
+                    rows={[{ key: row.key, label: row.label, value: formatValue(value) }]}
                   />
                 )}
               </div>
@@ -115,10 +161,11 @@ export function HorizonChart({
         })}
       </div>
       {formatX && (
-        <div className="k-plot-readout" data-slot="horizon-readout" aria-live="polite">
+        <div className="k-plot-readout" data-slot="horizon-readout" aria-live="polite" hidden={tableView}>
           {active !== null ? formatX(active) : null}
         </div>
       )}
+      {source === undefined ? null : <p className="k-dist-source">{source}</p>}
     </figure>
   )
 }

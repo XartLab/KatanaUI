@@ -76,6 +76,10 @@ export function UseScrubberDemo() {
   )
 }
 
+/** 图右上三件的演示 props（KatanaUI #165）；导出与全屏的回调留空（演示页没有可导出的东西）。 */
+const CHART_ACTIONS = { group: '图工具', table: '表格视图', exportCsv: '导出 CSV', fullscreen: '全屏' }
+const CHART_SOURCE = '来源 / 演示数据 · 固定种子合成 · 非行情'
+
 export function BrushChartDemo() {
   const values = walk(11, 120, 1000, 18)
   return (
@@ -88,6 +92,12 @@ export function BrushChartDemo() {
           formatValue={(v) => v.toFixed(0)}
           labels={{ start: '窗口起点', end: '窗口终点', window: '窗口位置' }}
           defaultValue={[60, 120]}
+          actionLabels={CHART_ACTIONS}
+          tableLabel="示例权益曲线的表格视图（窗口里的那一段）"
+          tableHead={['日期', '权益']}
+          onExport={() => {}}
+          onFullscreen={() => {}}
+          source={CHART_SOURCE}
         />
       </div>
       <p className="gal-note">{DEMO_NOTE}</p>
@@ -340,6 +350,12 @@ export function HorizonChartDemo() {
           label="示例：四个品种的日内收益（共用刻度）"
           formatValue={pctText}
           formatX={(i) => `第 ${i + 1} 点`}
+          actionLabels={CHART_ACTIONS}
+          tableLabel="四个品种的日内收益（表格视图）"
+          tableXHead="时点"
+          onExport={() => {}}
+          onFullscreen={() => {}}
+          source={CHART_SOURCE}
         />
       </div>
       <Row name="各行各自的刻度">
@@ -349,11 +365,16 @@ export function HorizonChartDemo() {
             label="示例：四个品种的日内收益（各自刻度）"
             formatValue={pctText}
             scale="row"
+            actionLabels={CHART_ACTIONS}
+            tableLabel="四个品种的日内收益（各自刻度，表格视图）"
+            tableXHead="序号"
           />
         </div>
       </Row>
       <p className="gal-note">
-        {DEMO_NOTE}三条带：颜色越深值越大，涨跌色跟涨跌配色走；共用刻度时行与行可比，各自刻度只看形状。
+        {DEMO_NOTE}
+        三条带：颜色越深值越大，正负用发散色（涨跌色只给右边的数）；共用刻度时行与行可比，各自刻度只看形状。指针所在的那一行出
+        LCD 窗。
       </p>
     </>
   )
@@ -382,6 +403,12 @@ export function SmallMultiplesDemo() {
           formatValue={(v) => v.toFixed(2)}
           formatX={(i) => `第 ${i + 1} 点`}
           onSelect={setPicked}
+          actionLabels={CHART_ACTIONS}
+          tableLabel="六个品种的走势（表格视图）"
+          tableXHead="时点"
+          onExport={() => {}}
+          onFullscreen={() => {}}
+          source={CHART_SOURCE}
         />
       </div>
       <p className="gal-note" data-gallery-multiples-picked>
@@ -394,10 +421,15 @@ export function SmallMultiplesDemo() {
             label="示例：六个品种的走势（共用范围）"
             formatValue={(v) => v.toFixed(2)}
             yScale="shared"
+            actionLabels={CHART_ACTIONS}
+            tableLabel="六个品种的走势（共用范围，表格视图）"
+            tableXHead="序号"
           />
         </div>
       </Row>
-      <p className="gal-note">{DEMO_NOTE}线色按头尾比，涨跌色跟涨跌配色走；each 看形状，shared 看高低。</p>
+      <p className="gal-note">
+        {DEMO_NOTE}线是 series-1，不按涨跌着色，标题行的数按头尾比上涨跌色；each 看形状，shared 看高低。
+      </p>
     </>
   )
 }

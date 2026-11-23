@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 import type { ReactNode } from 'react'
 import {
-  compactNumber,
+  formatCompactNumber,
   formatPercentChange,
   formatPrice,
   formatQuantity,
@@ -494,11 +494,8 @@ export function resolveCell<Row>(column: GridColumn<Row>, row: Row, env: CellEnv
     }
     case 'compact': {
       const number = toNumber(raw)
-      if (number === null) text = DASH
-      else {
-        const parts = compactNumber(number, { locale, digits: format.digits })
-        text = parts.suffix ? `${parts.number} ${parts.suffix}` : parts.number
-      }
+      // zh 下跟 cnAmount 列同一写法（#158）：中文金额本该用 cnAmount，compact 只管 K/M/B/T。
+      text = number === null ? DASH : formatCompactNumber(number, { locale, digits: format.digits })
       sort = number ?? undefined
       break
     }

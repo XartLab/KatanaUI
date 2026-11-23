@@ -64,6 +64,17 @@ describe('图右上三件', () => {
       'data-action="export"',
     )
   })
+  it('复制图（#87）：给了 onCopyImage 与 actionLabels.copyImage 才出相机钮', () => {
+    expect(renderToStaticMarkup(<UptimeBars {...view} cells={cells} label="x" onCopyImage={() => {}} />)).not.toContain(
+      'data-action="copy-image"',
+    )
+    const labels = { ...view.actionLabels, copyImage: '复制图片' }
+    expect(
+      renderToStaticMarkup(
+        <UptimeBars {...view} actionLabels={labels} cells={cells} label="x" onCopyImage={() => {}} />,
+      ),
+    ).toContain('data-action="copy-image"')
+  })
 })
 
 describe('状态灯加词', () => {

@@ -82,6 +82,15 @@
 @import './theme/param-surface-heatmap.css';
 @import './theme/walk-forward-matrix.css';
 @import './theme/robustness-gate.css';
+@import './theme/experiment-card.css';
+@import './theme/parallel-attempts.css';
+@import './theme/change-summary.css';
+@import './theme/kpi-chart.css';
+@import './theme/root-cause-tree.css';
+@import './theme/trace-waterfall.css';
+@import './theme/fallback-chain.css';
+@import './theme/rate-limit-planner.css';
+@import './theme/plan-vs-actual.css';
 @import './theme/uptime-bars.css';
 @import './theme/range-histogram-slider.css';
 @import './theme/ridgeline.css';
@@ -132,6 +141,9 @@
 @import './theme/cn-flow.css';
 @import './theme/cn-mini-k.css';
 @import './theme/cn-move.css';
+@import './theme/cn-range-scrubber.css';
+@import './theme/cn-auction-bar.css';
+@import './theme/cn-threshold-gap.css';
 @import './theme/row-actions.css';
 @import './theme/flag-mark.css';
 @import './theme/spark-tile.css';
@@ -146,5 +158,11 @@
 @import './theme/portfolio-run-grid.css';
 @import './theme/replay-transport.css';
 @import './theme/run-mode-badge.css';
+/* #104 对照 Salt 补的件：可关的胶囊、常驻选项列表、单独的月历（排在 date-time.css 之后）、全站系统消息条、行内链接。 */
+@import './theme/pill.css';
+@import './theme/list-box.css';
+@import './theme/calendar.css';
+@import './theme/system-status.css';
+@import './theme/link.css';
 /* 表格格内排版与整页表的数值（#92）：排在各件样式之后，报告类原生表同权重时以它为准。 */
 @import './theme/cell-type.css';
