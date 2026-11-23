@@ -10337,6 +10337,128 @@ export const PAGES: readonly DocPage[] = [
     ],
   },
   {
+    id: 'range-scrubber',
+    group: 'cn',
+    cardHeight: 260,
+    title: 'RangeScrubber 区间时间轴',
+    summary:
+      '一条 09:30–15:00 的交易时段轴（午休不占宽度，中间一条竖虚线是 11:30/13:00，每半小时一根刻度），在上面拖出一个时段，调用方拿它去算板块与个股的区间涨幅、净额、强度并排序（功能参照开盘啦「区间统计」，交互照 TradingView 图表底部的区间选择）。按住选区中间整段平移，按两端改起止，按在选区外近的那个把手跳过去；「近 N 分钟」快捷钮从现在往回数交易分钟；口径切换（涨幅 / 净额 / 强度，键名由调用方给）。「现在」之后的时段盖一层斜纹、选不进去。背景柱（每分钟成交额之类）可不给，选区里的亮、外面的暗。回调给的是时刻：起点正好在午休那一点写 13:00，终点写 11:30。',
+    exports: [
+      'RangeScrubber',
+      'scrubIndex',
+      'scrubClock',
+      'scrubNow',
+      'scrubRange',
+      'scrubRangeOf',
+      'shiftRange',
+      'presetRange',
+      'scrubBars',
+      'SCRUB_TICKS',
+      'SCRUB_LUNCH',
+    ],
+    propParts: [
+      {
+        part: 'RangeScrubber',
+        note: '渲染一个 section：读数行（时段 · 快捷钮 · 口径）、轴、刻度。时段可受控也可不受控。',
+      },
+      { part: 'ScrubPoint', note: '一根背景柱：time（这一段的起点时刻）与 value（取不到是 null）。' },
+      {
+        part: 'scrubIndex(clock)',
+        note: '纯函数：时刻 → 轴上第几个交易分钟（0 到 240），午休贴到 11:30，竞价与盘后返回 null。',
+      },
+      { part: 'scrubClock(index, side)', note: '纯函数：交易分钟 → HH:MM；午休那一点起点写 13:00、终点写 11:30。' },
+      { part: 'scrubNow(now)', note: '纯函数：「现在」在轴上的位置；不给是全天。' },
+      {
+        part: 'scrubRange(range, now) / scrubRangeOf(value, now)',
+        note: '纯函数：两端排好、夹在 0 到 now 之间；后者从时刻读。',
+      },
+      { part: 'shiftRange(range, delta, now)', note: '纯函数：整段平移，宽度不变，撞边就停。' },
+      { part: 'presetRange(minutes, now)', note: '纯函数：从 now 往回数 N 个交易分钟，不早于 09:30。' },
+      { part: 'scrubBars(points)', note: '纯函数：背景柱的位置与相对高度，每根画到下一个点。' },
+      {
+        part: 'SCRUB_TICKS / SCRUB_LUNCH',
+        note: '常量：每半小时一根的刻度（整点与午休是大刻度）与午休那一点（120）。',
+      },
+    ],
+    states: [
+      '默认：开盘到现在整段选中；读数写起止时刻与交易分钟数。',
+      '拖把手：改起点或终点，两把手不交叉；拖选区中间：整段平移。',
+      '按在选区外：近的那个把手跳到这里，接着拖。',
+      '给了 now：之后的时段盖斜纹，把手与选区都过不去。',
+      '选区正好等于某个「近 N 分钟」：那个快捷钮标按下。',
+      '没给 presets / metrics：读数行只有时段。',
+    ],
+    donts: [
+      '不要按钟表时间拉开午休：轴是 240 个交易分钟。',
+      '不要在包里算区间涨幅、净额或强度：口径与排序由调用方做，件只给时段与口径键。',
+      '不要拿它选日期：跨日用 TradingDatePicker 或 DateRangePicker。',
+    ],
+    composition:
+      'RangeScrubber\n  读数行（起止 · 分钟数）· 快捷钮 ToggleGroup · 口径 ToggleGroup\n  轴（背景柱 · 午休虚线 · 未到斜纹 · 选区 · 两个 role=slider 把手）\n  刻度（每半小时，整点写字）',
+    keys: [
+      ['← →', '把手移一分钟'],
+      ['PageUp / PageDown', '把手移十分钟'],
+      ['Home / End', '把手去 09:30 / 现在'],
+      ['Tab', '在把手、快捷钮、口径之间移动'],
+    ],
+  },
+  {
+    id: 'auction-bar-cell',
+    group: 'cn',
+    cardHeight: 300,
+    title: 'AuctionBarCell 竞价量比条',
+    summary:
+      '表格里的一格（放进 DataGrid 列的 cell）：一条细轨，实心段是今日竞价额，一根竖刻度是昨日同期竞价额（量比的分母，实心过了刻度就是比昨天多），轨下一条涨色细线是涨停委买额；右边写量比（两位小数，≥ 1 加亮）。09:25 撮合之前（09:15–09:25 是虚拟匹配）整格变淡、字写「未出结果」。满刻度 max 给一列共用的一把，行与行就能比长短；不给按这一格里最大的。功能参照开盘啦「竞价」与「竞价涨停委买」，条的画法是我们定的。',
+    exports: ['AuctionBarCell', 'auctionRatio', 'auctionPending', 'auctionBarShares'],
+    propParts: [
+      { part: 'AuctionBarCell', note: '渲染一个 span（role=img，读屏名写全竞价额、昨日同期、量比与涨停委买）。' },
+      { part: 'auctionRatio(amount, previous)', note: '纯函数：量比；昨日取不到或不是正数返回 null。排序用它。' },
+      { part: 'auctionPending(time)', note: '纯函数：时刻早于 09:25 返回 true。' },
+      {
+        part: 'auctionBarShares(amount, previous, limitBid, max)',
+        note: '纯函数：三段长度（0 到 1），取不到的是 null。',
+      },
+    ],
+    states: [
+      '结果出了：量比两位小数；≥ 1（比昨日同期多）加亮加粗。',
+      '09:25 之前：整格变淡，字写「未出结果」，读屏名前面补一句。',
+      '给了 limitBid：轨下画一条涨色细线（跟 data-updown）。',
+      '昨日取不到：量比写「—」，不画刻度。',
+    ],
+    donts: [
+      '不要一行一把满刻度去比行与行：一列传同一个 max。',
+      '不要拿它画竞价价格：价格怎么走用 AuctionStep 或 DataGrid 的 auctionStep 列。',
+      '不要在包里取竞价数据：金额由调用方给。',
+    ],
+    composition: 'AuctionBarCell\n  轨（今日竞价额实心段 · 昨日同期刻度 · 涨停委买细线）\n  量比读数 / 未出结果',
+    keys: [],
+  },
+  {
+    id: 'threshold-gap',
+    group: 'cn',
+    cardHeight: 300,
+    title: 'ThresholdGap 异动阈值差读数',
+    summary:
+      '一只票一行：上面是 Meter 的条（累计偏离值的绝对值对阈值，阈值是硬限红线、预警线是琥珀细线，越线条跟着变色），名字后面跟偏离口径的小字；下面是档位标签（监控中 / 临近 / 已触发 / 监管期结束）与「差 0.04%」「超出 1.20%」，末尾可放一句备注（监管期到哪天）。功能参照开盘啦「异动提醒」：列表显示离阈值差多少、已触发、监管期结束分开标。阈值与预警线是交易所规则与调用方的口径，包里不带；偏离值由调用方算好（百分点，可正可负，按绝对值比）。',
+    exports: ['ThresholdGap', 'thresholdGap', 'thresholdState'],
+    propParts: [
+      { part: 'ThresholdGap', note: '渲染一个 div：Meter（role=meter）加底行。' },
+      { part: 'thresholdGap(value, threshold)', note: '纯函数：阈值 − |偏离值|；正数是还差，负数是超出。排序用它。' },
+      { part: 'thresholdState(value, threshold, warnAt, ended)', note: '纯函数：档位；偏离值取不到返回 null。' },
+    ],
+    states: [
+      '监控中：条是中性灰，写「差 x%」。',
+      '临近（达到预警线）：条与「差 x%」转琥珀，标签「临近」。',
+      '已触发（达到阈值）：条转红，写「超出 x%」。',
+      '监管期结束（ended）：不再按线变色，阈值只留一根刻度，标签描边。',
+      '偏离值取不到：写「暂无数据」，不出档位标签。',
+    ],
+    donts: ['不要在包里写死阈值：各板块规则不同，由调用方传。', '不要用它显示涨跌幅本身：它只说离规则阈值还差多少。'],
+    composition:
+      'ThresholdGap\n  Meter（名字 · 偏离口径 · 偏离值，阈值红线 · 预警线）\n  底行（档位 Tag · 差 x% / 超出 x% · 备注）',
+    keys: [],
+  },
+  {
     id: 'layout-rules',
     group: 'layout-primitives',
     cardHeight: 560,

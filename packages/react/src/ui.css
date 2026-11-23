@@ -132,6 +132,9 @@
 @import './theme/cn-flow.css';
 @import './theme/cn-mini-k.css';
 @import './theme/cn-move.css';
+@import './theme/cn-range-scrubber.css';
+@import './theme/cn-auction-bar.css';
+@import './theme/cn-threshold-gap.css';
 @import './theme/row-actions.css';
 @import './theme/flag-mark.css';
 @import './theme/spark-tile.css';
