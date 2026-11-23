@@ -254,7 +254,10 @@ export function AiPromptInput({
               <motion.span
                 key="counter"
                 data-slot="ai-prompt-counter"
-                className={cn('k-text-caption tabular-nums', overLimit ? 'text-(color:--signal-red)' : 'text-ink-3')}
+                className={cn(
+                  'k-text-caption tabular-nums',
+                  overLimit ? 'text-(color:--k-status-danger-foreground)' : 'text-ink-3',
+                )}
                 initial={{ opacity: 0, y: 4 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 4 }}

@@ -261,6 +261,17 @@ function CharacteristicsPage() {
         <li>格上的字：heat-0…2 用 --k-heat-fg-low（主文字色），heat-3…5 用 --k-heat-fg-high（bg-000）。</li>
         <li>各档在两个主题里的约值与对比度见下表的用途列与「数据可视化」页。</li>
       </ul>
+      <h2>中性状态字（2026-11-24，#205）</h2>
+      <ul className="gal-list">
+        <li>
+          --k-status-neutral-foreground 读调色层的 status-neutral：除 Console 外同 ink-300；Console 是 #9f9889（ink-300
+          的 #8f887a 落在中性 Tag 的 5% 白底上，bg-300 面板 4.27:1、bg-400 浮层 3.84:1，不到 4.5）。
+        </li>
+        <li>
+          新值在 bg-100 / bg-300 / bg-400 上带 5% 白底的对比度是 5.77 / 5.24 / 4.72:1，仍比 ink-200 暗，层次不变。
+        </li>
+        <li>同一变量的别的件（Alert 图标、Meter、状态图标、系统状态条）在 Console 下一起亮一点，没有改别的主题。</li>
+      </ul>
       <TokenTable
         rows={T.characteristics.tokens}
         preview={(token) => (colorish(token.name) ? swatch(token.name) : <code>{token.name.split('-').at(-1)}</code>)}

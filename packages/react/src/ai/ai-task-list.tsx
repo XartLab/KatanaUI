@@ -3,11 +3,12 @@
 // Agent 要走完的一份计划，只读：每一步是 排队 / 进行中 / 完成 / 失败，可带一层子步骤与右侧小注。
 // 和我们已有的 TaskList（人来点的清单）是两回事，所以新建不并入：那个是读者勾，这个是 Agent 报进度，读者不能改。
 // 要点：完成的行下沉 1px、淡一点，安静下来，让正在跑的那一行是唯一要注意的东西；进行中的行有一条流光下划线，一次只有一处在动（带子步骤的父行不画，它的活跃由正在跑的子步骤表达）。
-// 相对原件：标题与各状态读屏词由调用方传；对勾 / 叉用 CSS 一次性画出（原件注明 motion 的 pathLength 在这里不可靠，同样改走关键帧）；颜色走 token；去掉 reduced-motion 分支。
+// 相对原件：标题与各状态读屏词由调用方传；对勾 / 叉用 CSS 一次性画出（原件注明 motion 的 pathLength 在这里不可靠，同样改走关键帧）；颜色走 lib/severity.ts 的状态色与 --k-content-*；去掉 reduced-motion 分支。
 import { motion } from 'motion/react'
 import { Fragment } from 'react'
 import { cn } from '../lib/cn.ts'
 import { snappy } from '../lib/motion.ts'
+import { statusColor } from '../lib/severity.ts'
 import { unit } from '../lib/spring.ts'
 import { taskProgress, type AiTask, type AiTaskStatus } from './ai-task-model.ts'
 
@@ -18,10 +19,10 @@ const CHECK_PATH = 'M 3.5 7.5 L 6 10 L 10.5 4.5'
 const CROSS_PATH = 'M 5 5 L 9 9 M 9 5 L 5 9'
 
 const BOX_STROKE: Readonly<Record<AiTaskStatus, string>> = {
-  pending: 'var(--ink-400)',
-  running: 'var(--ink-200)',
-  done: 'var(--signal-green)',
-  failed: 'var(--signal-red)',
+  pending: 'var(--k-content-tertiary-foreground)',
+  running: 'var(--k-content-body-foreground)',
+  done: statusColor('ok'),
+  failed: statusColor('danger'),
 }
 
 function TaskBox({ status }: { status: AiTaskStatus }) {
@@ -38,7 +39,7 @@ function TaskBox({ status }: { status: AiTaskStatus }) {
           height={12}
           rx={3.5}
           strokeWidth={1.4}
-          fill={failed ? 'var(--signal-red)' : 'var(--signal-green)'}
+          fill={failed ? statusColor('danger') : statusColor('ok')}
           className="transition-[stroke,fill-opacity] duration-[var(--dur-snappy)] ease-[var(--ease-snappy)]"
           style={{ fillOpacity: done ? 0.14 : 0, stroke: BOX_STROKE[status] }}
         />
@@ -49,7 +50,7 @@ function TaskBox({ status }: { status: AiTaskStatus }) {
             d={CHECK_PATH}
             fill="none"
             pathLength={1}
-            stroke="var(--signal-green)"
+            stroke={statusColor('ok')}
             strokeLinecap="round"
             strokeLinejoin="round"
             strokeWidth={1.8}
@@ -61,7 +62,7 @@ function TaskBox({ status }: { status: AiTaskStatus }) {
             d={CROSS_PATH}
             fill="none"
             pathLength={1}
-            stroke="var(--signal-red)"
+            stroke={statusColor('danger')}
             strokeLinecap="round"
             strokeWidth={1.8}
           />
