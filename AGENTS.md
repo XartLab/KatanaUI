@@ -38,7 +38,7 @@ Vite+ 用足（2026-11-18）：根目录直接 `pnpm fast` / `pnpm vr` / `pnpm v
 
 快速模式的预算是 60 秒（2026-11-18）：`pnpm fast` 超过一分钟就算 bug，它会以非 0 退出并点名最慢的一步——去修那一步，不要调大预算。现在的做法：单测不隔离（isolate: false）；组件截图（browser/*.browser.test.tsx，Vitest 浏览器模式 + pixelgate）只截 Graphite、最多 30 个件，波及更多时截代表件；e2e 只跑改动的件自己那页、最多 15 条；改动全有组件截图时跳过整页 vr:fast。新组件要配组件截图，测试名等于文件名（lcd.tsx → 'lcd'），否则快速模式认不出、只能退回整页。
 
-并行派发的规矩（2026-11-18，G1–G6 一轮用了约 7 小时的教训）：这台机器 2 核 7G，同时最多 2 个 worker；worker 只跑 `pnpm fast`，不跑全量 e2e / vr（全量只在合并后跑一次）；worker 不提交生成物（registry.json、props.generated.json、design-system/**、a2ui v1.json、tokens.css），合并后统一重新生成；按文件边界切批（共享的 tokens.json、ui.css、registry.ts、index.ts 由我在合并时一次改），批次间先约定好新 token 名，免得各造一份。
+并行派发的规矩（2026-11-18，G1–G6 一轮用了约 7 小时的教训）：这台机器 2 核 7G，同时最多 2 个 worker；worker 只跑 `pnpm fast`，不跑全量 e2e / vr（全量只在合并后跑一次）；worker 不提交生成物（registry.json、props.generated.json、design-system/**、a2ui v1.json、tokens.css），合并后统一重新生成（并行批次里不提交、合并后统一生成；单独一张、不与别的 PR 并行改同一批生成物的 PR 照常提交，一致性检查要求）；按文件边界切批（共享的 tokens.json、ui.css、registry.ts、index.ts 由我在合并时一次改），批次间先约定好新 token 名，免得各造一份。
 
 **视觉回归（pixelgate，自研）**：改了视觉相关的件，交付前在 `packages/react` 跑 `pnpm vr:fast`（只截受影响的页，约半分钟），在汇报里附 changed 列表与 report 路径（`.pixelgate/report/index.html`）；合并前、或改了令牌 / theme 样式 / lib / primitives 这类共用层，跑全量 `pnpm vr`。预期的变化用 `pnpm vr:approve` 收为新基线并随代码提交，规则写在文档站「开发接入 → 视觉回归」。
 
