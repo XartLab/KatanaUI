@@ -124,6 +124,8 @@ import {
   WalkForwardMatrixDemo,
 } from './pages/research-report.tsx'
 import { WhiteboardDemo } from './pages/whiteboard.tsx'
+import { RatingPanelDemo } from './pages/rating-panel.tsx'
+import { SymbolNoteDemo } from './pages/symbol-note.tsx'
 import {
   DataGridDemo,
   DecisionQueueDemo,
@@ -606,6 +608,8 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
     </>
   ),
   'rating-gauge': RatingGaugeDemo,
+  'rating-panel': RatingPanelDemo,
+  'symbol-note': SymbolNoteDemo,
   'quote-table': QuoteTableDemo,
   'row-actions': RowActionsDemo,
   'uptime-bars': UptimeBarsDemo,

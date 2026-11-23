@@ -15,11 +15,13 @@ import { QuoteCardUsage } from '../gallery/usage/QuoteCardUsage.tsx'
 import { QuoteTableUsage } from '../gallery/usage/QuoteTableUsage.tsx'
 import { RangeBarUsage } from '../gallery/usage/RangeBarUsage.tsx'
 import { RatingGaugeUsage } from '../gallery/usage/RatingGaugeUsage.tsx'
+import { RatingPanelUsage } from '../gallery/usage/RatingPanelUsage.tsx'
 import { RatingTextUsage } from '../gallery/usage/RatingTextUsage.tsx'
 import { RowActionsUsage } from '../gallery/usage/RowActionsUsage.tsx'
 import { SparkTileUsage } from '../gallery/usage/SparkTileUsage.tsx'
 import { SparklineUsage } from '../gallery/usage/SparklineUsage.tsx'
 import { SymbolMarkUsage } from '../gallery/usage/SymbolMarkUsage.tsx'
+import { SymbolNoteUsage } from '../gallery/usage/SymbolNoteUsage.tsx'
 import { TechnicalRatingUsage } from '../gallery/usage/TechnicalRatingUsage.tsx'
 import { TreemapUsage } from '../gallery/usage/TreemapUsage.tsx'
 import { WatchlistUsage } from '../gallery/usage/WatchlistUsage.tsx'
@@ -43,11 +45,13 @@ const items: Record<string, React.ReactNode> = {
   'quote-table': <QuoteTableUsage />,
   'range-bar': <RangeBarUsage />,
   'rating-gauge': <RatingGaugeUsage />,
+  'rating-panel': <RatingPanelUsage />,
   'rating-text': <RatingTextUsage />,
   'row-actions': <RowActionsUsage />,
   'spark-tile': <SparkTileUsage />,
   sparkline: <SparklineUsage />,
   'symbol-mark': <SymbolMarkUsage />,
+  'symbol-note': <SymbolNoteUsage />,
   'technical-rating': <TechnicalRatingUsage />,
   treemap: <TreemapUsage />,
   watchlist: <WatchlistUsage />,
