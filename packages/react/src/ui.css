@@ -91,6 +91,11 @@
 @import './theme/sentiment-cycle.css';
 @import './theme/reason-group-list.css';
 @import './theme/board-strength-rank.css';
+@import './theme/positions-table.css';
+@import './theme/orders-table.css';
+@import './theme/account-equity.css';
+@import './theme/funding-rate.css';
+@import './theme/options-chain.css';
 @import './theme/net-buy-bar.css';
 @import './theme/order-book.css';
 @import './theme/depth-chart.css';

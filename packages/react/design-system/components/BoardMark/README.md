@@ -1,6 +1,6 @@
 # BoardMark
 
-主板 / 创业板（20cm）/ 科创板（20cm）/ 北交所（30cm）/ ST。默认只标有特殊涨跌幅限制的写「20cm」「30cm」「ST」，主板不画；display 选写板块名或都写。boardKindOf 从代码（与名称）判断板块。取不到写「—」。
+主板 / 创业板（20cm）/ 科创板（20cm）/ 北交所（30cm）/ ST。默认只标有特殊涨跌幅限制的写「20cm」「30cm」「ST」，主板不画；display 选写板块名或都写。boardKindOf 从代码（与名称）判断板块。取不到写「—」。也是 DataGrid 的列类型 board：值给板块名、六位代码或 { code, name }，format.boardDisplay 选写法，按涨跌幅限制排序。
 
 ## Provide
 
@@ -41,6 +41,7 @@ export function BoardMarkUsage() {
 - cm（默认）：创业板、科创板写「20cm」，北交所「30cm」，ST 写「ST」；主板什么都不画。
 - name：写板块名；both：「创业板 20cm」。
 - 取不到：写「—」。
+- board 列：默认 cm，主板格子空着；复制、导出的字跟格子上一致。
 
 ## Don't
 

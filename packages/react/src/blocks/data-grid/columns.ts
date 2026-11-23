@@ -12,16 +12,27 @@ import {
 import { pad, signed as signedText } from '../../lib/num.ts'
 import {
   LIMIT_STATUS_ORDER,
+  boardSortKey,
+  boardText,
   limitStatusText,
   normalizeLimitStatus,
   normalizeStreak,
   streakSortKey,
   streakText,
+  toBoardKind,
+  type BoardInput,
   type LimitStatusValue,
   type StreakValue,
 } from '../../cn/badge-model.ts'
 import { auctionSteps, auctionSummary, type AuctionPoint } from '../../cn/auction-model.ts'
-import { cnLabelsZh, type LimitStatusLabels, type StreakLabels } from '../../cn/labels.ts'
+import { formatCnAmount, type CnAmountSize, type CnAmountUnits } from '../../cn/format.ts'
+import {
+  cnLabelsZh,
+  type BoardKind,
+  type BoardMarkLabels,
+  type LimitStatusLabels,
+  type StreakLabels,
+} from '../../cn/labels.ts'
 import { compareDecimal } from './model.ts'
 
 // 列类型（#1869）：列声明一个类型，格式化、对齐、着色、排序由类型给，不每列手写。
@@ -43,6 +54,8 @@ export type ColumnType =
   | 'progress'
   | 'streak'
   | 'limitStatus'
+  | 'board'
+  | 'cnAmount'
   | 'auctionStep'
   | 'custom'
 
@@ -87,6 +100,12 @@ export type ColumnFormat = {
   streakLabels?: StreakLabels
   /** limitStatus：文案（默认简体中文，可整份换，#110）。 */
   limitStatusLabels?: LimitStatusLabels
+  /** board：BoardMark 的写法（cm 写 20cm / 30cm、主板空，name 写板块名，both 都写；默认 cm）与文案（默认简体中文，#148）。 */
+  boardDisplay?: 'cm' | 'name' | 'both'
+  boardLabels?: BoardMarkLabels
+  /** cnAmount：同 `formatCnAmount` 的缩写、小数位与正数带 +（signed 为真时按正负着涨跌色），万、亿两个字可换（#148）。 */
+  cnAmount?: CnAmountSize
+  cnUnits?: CnAmountUnits
   /** pill：最多画几枚，多出的收成「+n」；没给就只按格子宽度收。 */
   maxPills?: number
 }
@@ -98,6 +117,7 @@ export type GridColumn<Row> = {
   /**
    * 原始值，由类型决定怎么读：price / quantity / pnl / change / number / bar 是数字或十进制字符串（空、不是数写 —）；
    * pill 是 PillValue 或 PillValue[]；progress 是 ProgressValue；streak 是板数或 StreakValue（A 股连板，#110）；auctionStep 是竞价点数组或 { points, prevClose }（A 股集合竞价台阶，#110）；limitStatus 是状态名或 { status, sealAmount, reason }；
+   * board 是板块名、六位代码或 { code, name }（由代码判断板块，名称带 ST 的算 ST）；cnAmount 是元（数或十进制字符串，写成万 / 亿）；
    * time 是毫秒时间戳；side 是 'buy' | 'sell'；symbol 是 SymbolValue；text 是字符串；custom 不读（内容全由 `cell` 画，要排序、复制就给 `text` 与 `sort`）。
    */
   value?: (row: Row) => unknown
@@ -169,6 +189,8 @@ export type ResolvedCell = {
   streak: { value: StreakValue; form: 'boards' | 'promotion' | undefined; labels: StreakLabels } | undefined
   /** limitStatus 列：原样的值与文案，DataGrid 用 LimitStatus 画；别的类型是 undefined。 */
   limitStatus: { value: LimitStatusValue | undefined; labels: LimitStatusLabels } | undefined
+  /** board 列：判断好的板块（取不到是 null）、写法与文案，DataGrid 用 BoardMark 画；别的类型是 undefined。 */
+  board: { kind: BoardKind | null; display: 'cm' | 'name' | 'both'; labels: BoardMarkLabels } | undefined
   /** auctionStep 列：整理过的竞价点与昨收，DataGrid 用 AuctionStepSpark 画迷你台阶；别的类型是 undefined。 */
   auctionStep: { points: readonly AuctionPoint[]; prevClose: number | null } | undefined
   /** symbol 列拆好的两段。 */
@@ -177,7 +199,16 @@ export type ResolvedCell = {
     | undefined
 }
 
-const NUMERIC: ReadonlySet<ColumnType> = new Set(['number', 'price', 'quantity', 'pnl', 'change', 'bar', 'progress'])
+const NUMERIC: ReadonlySet<ColumnType> = new Set([
+  'number',
+  'price',
+  'quantity',
+  'pnl',
+  'change',
+  'bar',
+  'progress',
+  'cnAmount',
+])
 
 /** 数字类的列默认靠右（等宽数字对得齐小数点）。列布局里写了 align 就听它的。 */
 export const defaultAlign = (type: ColumnType | undefined): 'start' | 'end' =>
@@ -241,6 +272,7 @@ export function resolveCell<Row>(column: GridColumn<Row>, row: Row, env: CellEnv
   let progress: ResolvedCell['progress']
   let streak: ResolvedCell['streak']
   let limitStatus: ResolvedCell['limitStatus']
+  let board: ResolvedCell['board']
   let auctionStep: ResolvedCell['auctionStep']
   switch (type) {
     case 'price': {
@@ -341,6 +373,24 @@ export function resolveCell<Row>(column: GridColumn<Row>, row: Row, env: CellEnv
       sort = status === null ? undefined : LIMIT_STATUS_ORDER.indexOf(status)
       break
     }
+    case 'board': {
+      const kind = toBoardKind(raw as BoardInput)
+      const labels = format.boardLabels ?? cnLabelsZh.board
+      const display = format.boardDisplay ?? 'cm'
+      board = { kind, display, labels }
+      text = boardText(kind, labels, display)
+      sort = boardSortKey(kind)
+      break
+    }
+    case 'cnAmount': {
+      const number = toNumber(raw)
+      const size = format.cnAmount ?? {}
+      text = number === null ? DASH : formatCnAmount(number, size, format.cnUnits)
+      // 只有 signed（净流入这类有方向的金额）才着涨跌色；成交额、市值不着色。
+      direction = number === null || !size.signed ? undefined : number > 0 ? 'up' : number < 0 ? 'down' : 'flat'
+      sort = number ?? undefined
+      break
+    }
     case 'auctionStep': {
       // 值是竞价点数组，或 { points, prevClose }（有昨收才着涨跌色、才按涨跌幅排）。
       const input = raw as
@@ -388,6 +438,7 @@ export function resolveCell<Row>(column: GridColumn<Row>, row: Row, env: CellEnv
     progress,
     streak,
     limitStatus,
+    board,
     auctionStep,
     symbol,
   }
@@ -472,7 +523,12 @@ function signed(value: number, digits: number): string {
 export function sortComparator(type: ColumnType | undefined, locale: string | undefined) {
   const numeric =
     type !== undefined &&
-    (NUMERIC.has(type) || type === 'time' || type === 'streak' || type === 'limitStatus' || type === 'auctionStep')
+    (NUMERIC.has(type) ||
+      type === 'time' ||
+      type === 'streak' ||
+      type === 'limitStatus' ||
+      type === 'auctionStep' ||
+      type === 'board')
   const collator = new Intl.Collator(locale, { numeric: true })
   return (a: unknown, b: unknown): number => {
     if (numeric) {

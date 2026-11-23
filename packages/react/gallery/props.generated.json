@@ -46,6 +46,236 @@
       "source": "src/primitives/accordion.tsx",
       "props": []
     },
+    "AccountEquity": {
+      "kind": "component",
+      "source": "src/blocks/account-equity/account-equity.tsx",
+      "props": [
+        {
+          "name": "equity",
+          "type": "number",
+          "required": true,
+          "description": "Total equity."
+        },
+        {
+          "name": "available",
+          "type": "number",
+          "required": true,
+          "description": "Balance that can open new positions."
+        },
+        {
+          "name": "usedMargin",
+          "type": "number",
+          "required": true,
+          "description": "Margin held by open positions and orders."
+        },
+        {
+          "name": "unrealizedPnl",
+          "type": "number",
+          "required": true,
+          "description": "Unrealized PnL of all positions."
+        },
+        {
+          "name": "marginRatio",
+          "type": "number | null",
+          "required": false,
+          "description": "Margin ratio in percent; defaults to usedMargin over equity."
+        },
+        {
+          "name": "thresholds",
+          "type": "MarginThresholds",
+          "required": true,
+          "description": "Risk thresholds of the margin ratio, in percent: { warn, danger, direction }."
+        },
+        {
+          "name": "scaleMax",
+          "type": "number",
+          "required": false,
+          "description": "Top of the risk bar in percent; defaults to 1.5 times the outer threshold."
+        },
+        {
+          "name": "curve",
+          "type": "readonly number[]",
+          "required": false,
+          "description": "Equity samples from old to new for the mini curve; omit for no curve."
+        },
+        {
+          "name": "currency",
+          "type": "string",
+          "required": false,
+          "description": "Settlement currency shown under the readings (USDT)."
+        },
+        {
+          "name": "formatAmount",
+          "type": "(value: number) => string",
+          "required": false,
+          "default": "defaultAmount",
+          "description": "How a money amount is written; defaults to two decimals with grouping."
+        },
+        {
+          "name": "formatRatio",
+          "type": "(value: number) => string",
+          "required": false,
+          "default": "defaultRatio",
+          "description": "How the margin ratio is written; defaults to two decimals and a percent sign."
+        },
+        {
+          "name": "labels",
+          "type": "AccountEquityLabels",
+          "required": true,
+          "description": "Texts."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "AccountEquityLabels": {
+      "kind": "type",
+      "source": "src/blocks/account-equity/account-equity.tsx",
+      "props": [
+        {
+          "name": "region",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the whole overview."
+        },
+        {
+          "name": "equity",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "available",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "usedMargin",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "unrealizedPnl",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "marginRatio",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "level",
+          "type": "Record<MarginLevel, string>",
+          "required": true,
+          "description": "Level words next to the margin ratio."
+        },
+        {
+          "name": "threshold",
+          "type": "(level: 'warn' | 'danger', value: number, direction: 'higher' | 'lower') => string",
+          "required": true,
+          "description": "Text under the bar at a threshold (「警告 ≥ 50%」)."
+        },
+        {
+          "name": "curve",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the equity curve."
+        }
+      ]
+    },
+    "AccountEquityProps": {
+      "kind": "type",
+      "source": "src/blocks/account-equity/account-equity.tsx",
+      "props": [
+        {
+          "name": "equity",
+          "type": "number",
+          "required": true,
+          "description": "Total equity."
+        },
+        {
+          "name": "available",
+          "type": "number",
+          "required": true,
+          "description": "Balance that can open new positions."
+        },
+        {
+          "name": "usedMargin",
+          "type": "number",
+          "required": true,
+          "description": "Margin held by open positions and orders."
+        },
+        {
+          "name": "unrealizedPnl",
+          "type": "number",
+          "required": true,
+          "description": "Unrealized PnL of all positions."
+        },
+        {
+          "name": "marginRatio",
+          "type": "number | null",
+          "required": false,
+          "description": "Margin ratio in percent; defaults to usedMargin over equity."
+        },
+        {
+          "name": "thresholds",
+          "type": "MarginThresholds",
+          "required": true,
+          "description": "Risk thresholds of the margin ratio, in percent: { warn, danger, direction }."
+        },
+        {
+          "name": "scaleMax",
+          "type": "number",
+          "required": false,
+          "description": "Top of the risk bar in percent; defaults to 1.5 times the outer threshold."
+        },
+        {
+          "name": "curve",
+          "type": "readonly number[]",
+          "required": false,
+          "description": "Equity samples from old to new for the mini curve; omit for no curve."
+        },
+        {
+          "name": "currency",
+          "type": "string",
+          "required": false,
+          "description": "Settlement currency shown under the readings (USDT)."
+        },
+        {
+          "name": "formatAmount",
+          "type": "(value: number) => string",
+          "required": false,
+          "description": "How a money amount is written; defaults to two decimals with grouping."
+        },
+        {
+          "name": "formatRatio",
+          "type": "(value: number) => string",
+          "required": false,
+          "description": "How the margin ratio is written; defaults to two decimals and a percent sign."
+        },
+        {
+          "name": "labels",
+          "type": "AccountEquityLabels",
+          "required": true,
+          "description": "Texts."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
     "AgentAvatar": {
       "kind": "component",
       "source": "src/ai/agent-avatar.tsx",
@@ -6713,6 +6943,30 @@
           "type": "LimitStatusLabels",
           "required": false,
           "description": "limitStatus：文案（默认简体中文，可整份换，#110）。"
+        },
+        {
+          "name": "boardDisplay",
+          "type": "'cm' | 'name' | 'both'",
+          "required": false,
+          "description": "board：BoardMark 的写法（cm 写 20cm / 30cm、主板空，name 写板块名，both 都写；默认 cm）与文案（默认简体中文，#148）。"
+        },
+        {
+          "name": "boardLabels",
+          "type": "BoardMarkLabels",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "cnAmount",
+          "type": "CnAmountSize",
+          "required": false,
+          "description": "cnAmount：同 `formatCnAmount` 的缩写、小数位与正数带 +（signed 为真时按正负着涨跌色），万、亿两个字可换（#148）。"
+        },
+        {
+          "name": "cnUnits",
+          "type": "CnAmountUnits",
+          "required": false,
+          "description": ""
         },
         {
           "name": "maxPills",
@@ -16845,6 +17099,217 @@
       "source": "src/quotes/quote-row.ts",
       "props": []
     },
+    "FundingBar": {
+      "kind": "type",
+      "source": "src/blocks/funding-rate/funding-model.ts",
+      "props": [
+        {
+          "name": "time",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "rate",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "ratio",
+          "type": "number",
+          "required": true,
+          "description": "Signed height, -1 to 1, of the largest absolute rate in the history."
+        },
+        {
+          "name": "tone",
+          "type": "Tone",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "FundingPoint": {
+      "kind": "type",
+      "source": "src/blocks/funding-rate/funding-rate.tsx",
+      "props": [
+        {
+          "name": "time",
+          "type": "number",
+          "required": true,
+          "description": "Settlement time in milliseconds."
+        },
+        {
+          "name": "rate",
+          "type": "number",
+          "required": true,
+          "description": "Rate in percent."
+        }
+      ]
+    },
+    "FundingRate": {
+      "kind": "component",
+      "source": "src/blocks/funding-rate/funding-rate.tsx",
+      "props": [
+        {
+          "name": "rate",
+          "type": "number",
+          "required": true,
+          "description": "Current rate in percent (0.01 means 0.01%)."
+        },
+        {
+          "name": "predictedRate",
+          "type": "number | null",
+          "required": false,
+          "description": "Predicted rate of the next settlement, in percent; omit when unknown."
+        },
+        {
+          "name": "nextSettlement",
+          "type": "number",
+          "required": true,
+          "description": "Next settlement time in milliseconds."
+        },
+        {
+          "name": "now",
+          "type": "number",
+          "required": false,
+          "description": "Clock in milliseconds; omit to follow the system clock once a second."
+        },
+        {
+          "name": "history",
+          "type": "readonly FundingPoint[]",
+          "required": false,
+          "description": "Past rates from old to new."
+        },
+        {
+          "name": "formatRate",
+          "type": "(rate: number) => string",
+          "required": false,
+          "default": "defaultFormatRate",
+          "description": "How a rate is written; defaults to a sign and four decimals (`+0.0100%`)."
+        },
+        {
+          "name": "labels",
+          "type": "FundingRateLabels",
+          "required": true,
+          "description": "Texts."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "FundingRateLabels": {
+      "kind": "type",
+      "source": "src/blocks/funding-rate/funding-rate.tsx",
+      "props": [
+        {
+          "name": "region",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the whole card."
+        },
+        {
+          "name": "current",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "predicted",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "nextSettlement",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "history",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "payer",
+          "type": "{ up: string; down: string; flat: string }",
+          "required": true,
+          "description": "Who pays whom at the current rate (「多头付空头」), so direction does not rely on color."
+        },
+        {
+          "name": "due",
+          "type": "string",
+          "required": true,
+          "description": "Text of the countdown when the settlement time has passed."
+        },
+        {
+          "name": "bar",
+          "type": "(point: FundingPoint, rate: string) => string",
+          "required": true,
+          "description": "Title of one history bar (「11-22 00:00 +0.0100%」)."
+        }
+      ]
+    },
+    "FundingRateProps": {
+      "kind": "type",
+      "source": "src/blocks/funding-rate/funding-rate.tsx",
+      "props": [
+        {
+          "name": "rate",
+          "type": "number",
+          "required": true,
+          "description": "Current rate in percent (0.01 means 0.01%)."
+        },
+        {
+          "name": "predictedRate",
+          "type": "number | null",
+          "required": false,
+          "description": "Predicted rate of the next settlement, in percent; omit when unknown."
+        },
+        {
+          "name": "nextSettlement",
+          "type": "number",
+          "required": true,
+          "description": "Next settlement time in milliseconds."
+        },
+        {
+          "name": "now",
+          "type": "number",
+          "required": false,
+          "description": "Clock in milliseconds; omit to follow the system clock once a second."
+        },
+        {
+          "name": "history",
+          "type": "readonly FundingPoint[]",
+          "required": false,
+          "description": "Past rates from old to new."
+        },
+        {
+          "name": "formatRate",
+          "type": "(rate: number) => string",
+          "required": false,
+          "description": "How a rate is written; defaults to a sign and four decimals (`+0.0100%`)."
+        },
+        {
+          "name": "labels",
+          "type": "FundingRateLabels",
+          "required": true,
+          "description": "Texts."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
     "GLOBAL_SCOPE": {
       "kind": "value",
       "source": "src/patterns/hotkeys-model.ts",
@@ -17943,7 +18408,7 @@
           "name": "value",
           "type": "(row: Row) => unknown",
           "required": false,
-          "description": "原始值，由类型决定怎么读：price / quantity / pnl / change / number / bar 是数字或十进制字符串（空、不是数写 —）； pill 是 PillValue 或 PillValue[]；progress 是 ProgressValue；streak 是板数或 StreakValue（A 股连板，#110）；auctionStep 是竞价点数组或 { points, prevClose }（A 股集合竞价台阶，#110）；limitStatus 是状态名或 { status, sealAmount, reason }； time 是毫秒时间戳；side 是 'buy' | 'sell'；symbol 是 SymbolValue；text 是字符串；custom 不读（内容全由 `cell` 画，要排序、复制就给 `text` 与 `sort`）。"
+          "description": "原始值，由类型决定怎么读：price / quantity / pnl / change / number / bar 是数字或十进制字符串（空、不是数写 —）； pill 是 PillValue 或 PillValue[]；progress 是 ProgressValue；streak 是板数或 StreakValue（A 股连板，#110）；auctionStep 是竞价点数组或 { points, prevClose }（A 股集合竞价台阶，#110）；limitStatus 是状态名或 { status, sealAmount, reason }； board 是板块名、六位代码或 { code, name }（由代码判断板块，名称带 ST 的算 ST）；cnAmount 是元（数或十进制字符串，写成万 / 亿）； time 是毫秒时间戳；side 是 'buy' | 'sell'；symbol 是 SymbolValue；text 是字符串；custom 不读（内容全由 `cell` 画，要排序、复制就给 `text` 与 `sort`）。"
         },
         {
           "name": "format",
@@ -21528,6 +21993,11 @@
       "source": "src/motion/background/liquid-metal.tsx",
       "props": []
     },
+    "LiquidationRisk": {
+      "kind": "type",
+      "source": "src/blocks/positions-table/positions-model.ts",
+      "props": []
+    },
     "Loading": {
       "kind": "component",
       "source": "src/katana/loading.tsx",
@@ -22592,10 +23062,39 @@
         }
       ]
     },
+    "MarginLevel": {
+      "kind": "type",
+      "source": "src/blocks/account-equity/account-equity-model.ts",
+      "props": []
+    },
     "MarginMode": {
       "kind": "type",
       "source": "src/blocks/order-ticket.tsx",
       "props": []
+    },
+    "MarginThresholds": {
+      "kind": "type",
+      "source": "src/blocks/account-equity/account-equity-model.ts",
+      "props": [
+        {
+          "name": "warn",
+          "type": "number",
+          "required": true,
+          "description": "Ratio, in percent, at which the warn level starts."
+        },
+        {
+          "name": "danger",
+          "type": "number",
+          "required": true,
+          "description": "Ratio, in percent, at which the danger level starts."
+        },
+        {
+          "name": "direction",
+          "type": "'higher' | 'lower'",
+          "required": false,
+          "description": "Which way is riskier: `higher` (default) or `lower`."
+        }
+      ]
     },
     "Markdown": {
       "kind": "component",
@@ -23630,7 +24129,7 @@
           "type": "number",
           "required": false,
           "default": "100",
-          "description": "满量程，默认 100。"
+          "description": "满量程；给了 warnAt / hardAt 时默认取已用与两条线里最大的（越限的部分看得见）。"
         },
         {
           "name": "valueText",
@@ -23665,6 +24164,24 @@
           "description": "读屏用：刻度那根线是什么（如「评估点」「上限」）；有 mark 时要给。"
         },
         {
+          "name": "warnAt",
+          "type": "number",
+          "required": false,
+          "description": "预警线（软限，跟 value 同一个单位）：bar 与 sync 画一根半透明琥珀细线，gauge 不用；读数达到它 tone 换成 warn。"
+        },
+        {
+          "name": "hardAt",
+          "type": "number",
+          "required": false,
+          "description": "硬限（跟 value 同一个单位）：一根 2px 红线，gauge 不用；读数达到它 tone 换成 danger。"
+        },
+        {
+          "name": "limitLabels",
+          "type": "{ warn?: string; hard?: string }",
+          "required": false,
+          "description": "读屏用：两条线的说法，数与单位由调用方写（如「预警线 80%」「硬限 100%」），接在读数后面；有线时要给。"
+        },
+        {
           "name": "className",
           "type": "string",
           "required": false,
@@ -23697,7 +24214,8 @@
           "name": "max",
           "type": "number",
           "required": false,
-          "description": "满量程，默认 100。"
+          "default": "100",
+          "description": "满量程；给了 warnAt / hardAt 时默认取已用与两条线里最大的（越限的部分看得见）。"
         },
         {
           "name": "valueText",
@@ -23728,6 +24246,24 @@
           "type": "string",
           "required": false,
           "description": "读屏用：刻度那根线是什么（如「评估点」「上限」）；有 mark 时要给。"
+        },
+        {
+          "name": "warnAt",
+          "type": "number",
+          "required": false,
+          "description": "预警线（软限，跟 value 同一个单位）：bar 与 sync 画一根半透明琥珀细线，gauge 不用；读数达到它 tone 换成 warn。"
+        },
+        {
+          "name": "hardAt",
+          "type": "number",
+          "required": false,
+          "description": "硬限（跟 value 同一个单位）：一根 2px 红线，gauge 不用；读数达到它 tone 换成 danger。"
+        },
+        {
+          "name": "limitLabels",
+          "type": "{ warn?: string; hard?: string }",
+          "required": false,
+          "description": "读屏用：两条线的说法，数与单位由调用方写（如「预警线 80%」「硬限 100%」），接在读数后面；有线时要给。"
         },
         {
           "name": "className",
@@ -26948,6 +27484,292 @@
         }
       ]
     },
+    "OpenOrderSide": {
+      "kind": "type",
+      "source": "src/blocks/orders-table/orders-model.ts",
+      "props": []
+    },
+    "OpenOrderType": {
+      "kind": "type",
+      "source": "src/blocks/orders-table/orders-model.ts",
+      "props": []
+    },
+    "OptionExpiry": {
+      "kind": "type",
+      "source": "src/blocks/options-chain/options-chain.tsx",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "Text on the switch button (「11-29」)."
+        },
+        {
+          "name": "note",
+          "type": "string",
+          "required": false,
+          "description": "Small text after the label (「7 天」)."
+        }
+      ]
+    },
+    "OptionField": {
+      "kind": "type",
+      "source": "src/blocks/options-chain/options-model.ts",
+      "props": []
+    },
+    "OptionQuote": {
+      "kind": "type",
+      "source": "src/blocks/options-chain/options-model.ts",
+      "props": []
+    },
+    "OptionRow": {
+      "kind": "type",
+      "source": "src/blocks/options-chain/options-model.ts",
+      "props": [
+        {
+          "name": "strike",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "call",
+          "type": "OptionQuote",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "put",
+          "type": "OptionQuote",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "OptionSide": {
+      "kind": "type",
+      "source": "src/blocks/options-chain/options-model.ts",
+      "props": []
+    },
+    "OptionsChain": {
+      "kind": "component",
+      "source": "src/blocks/options-chain/options-chain.tsx",
+      "props": [
+        {
+          "name": "rows",
+          "type": "readonly OptionRow[]",
+          "required": true,
+          "description": "Rows of the selected expiry, any order (sorted by strike here)."
+        },
+        {
+          "name": "underlyingPrice",
+          "type": "number",
+          "required": true,
+          "description": "Underlying price: decides the at-the-money row and the in-the-money zone."
+        },
+        {
+          "name": "expiries",
+          "type": "readonly OptionExpiry[]",
+          "required": true,
+          "description": "Expiries to switch between."
+        },
+        {
+          "name": "expiry",
+          "type": "string",
+          "required": true,
+          "description": "The selected expiry id."
+        },
+        {
+          "name": "onExpiryChange",
+          "type": "(id: string) => void",
+          "required": false,
+          "description": "Called with the id of the expiry the user picked; the caller swaps `rows`."
+        },
+        {
+          "name": "fields",
+          "type": "readonly OptionField[]",
+          "required": false,
+          "default": "DEFAULT_FIELDS",
+          "description": "Columns of each wing, in the order they are listed from the strike outward on the put side; defaults to bid, ask, last, IV, delta, open interest."
+        },
+        {
+          "name": "onQuoteSelect",
+          "type": "(strike: number, side: OptionSide, field: OptionField) => void",
+          "required": false,
+          "description": "Called when a quote cell is pressed (click, Enter or Space)."
+        },
+        {
+          "name": "formatValue",
+          "type": "(value: number | null | undefined, field: OptionField) => string",
+          "required": false,
+          "default": "(value, field) => formatOptionField(field, value)",
+          "description": "How a cell value is written; defaults to prices with two decimals, IV with one and a percent sign, delta with two."
+        },
+        {
+          "name": "formatStrike",
+          "type": "(value: number) => string",
+          "required": false,
+          "default": "plain",
+          "description": "How the underlying price and strikes are written; defaults to the plain number."
+        },
+        {
+          "name": "labels",
+          "type": "OptionsChainLabels",
+          "required": true,
+          "description": "Texts."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "OptionsChainLabels": {
+      "kind": "type",
+      "source": "src/blocks/options-chain/options-chain.tsx",
+      "props": [
+        {
+          "name": "region",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the chain."
+        },
+        {
+          "name": "expiry",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the expiry switch."
+        },
+        {
+          "name": "underlying",
+          "type": "string",
+          "required": true,
+          "description": "Name before the underlying price (「标的」)."
+        },
+        {
+          "name": "call",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "put",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "strike",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "fields",
+          "type": "Record<OptionField, string>",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "atm",
+          "type": "string",
+          "required": true,
+          "description": "Text of the at-the-money marker on the strike (「平值」)."
+        },
+        {
+          "name": "cell",
+          "type": "(strike: number, side: OptionSide, field: OptionField, text: string) => string",
+          "required": true,
+          "description": "Accessible name of a quote cell (「64000 认购 买价 1,250.00」)."
+        },
+        {
+          "name": "empty",
+          "type": "string",
+          "required": true,
+          "description": "Text when there are no rows."
+        }
+      ]
+    },
+    "OptionsChainProps": {
+      "kind": "type",
+      "source": "src/blocks/options-chain/options-chain.tsx",
+      "props": [
+        {
+          "name": "rows",
+          "type": "readonly OptionRow[]",
+          "required": true,
+          "description": "Rows of the selected expiry, any order (sorted by strike here)."
+        },
+        {
+          "name": "underlyingPrice",
+          "type": "number",
+          "required": true,
+          "description": "Underlying price: decides the at-the-money row and the in-the-money zone."
+        },
+        {
+          "name": "expiries",
+          "type": "readonly OptionExpiry[]",
+          "required": true,
+          "description": "Expiries to switch between."
+        },
+        {
+          "name": "expiry",
+          "type": "string",
+          "required": true,
+          "description": "The selected expiry id."
+        },
+        {
+          "name": "onExpiryChange",
+          "type": "(id: string) => void",
+          "required": false,
+          "description": "Called with the id of the expiry the user picked; the caller swaps `rows`."
+        },
+        {
+          "name": "fields",
+          "type": "readonly OptionField[]",
+          "required": false,
+          "description": "Columns of each wing, in the order they are listed from the strike outward on the put side; defaults to bid, ask, last, IV, delta, open interest."
+        },
+        {
+          "name": "onQuoteSelect",
+          "type": "(strike: number, side: OptionSide, field: OptionField) => void",
+          "required": false,
+          "description": "Called when a quote cell is pressed (click, Enter or Space)."
+        },
+        {
+          "name": "formatValue",
+          "type": "(value: number | null | undefined, field: OptionField) => string",
+          "required": false,
+          "description": "How a cell value is written; defaults to prices with two decimals, IV with one and a percent sign, delta with two."
+        },
+        {
+          "name": "formatStrike",
+          "type": "(value: number) => string",
+          "required": false,
+          "description": "How the underlying price and strikes are written; defaults to the plain number."
+        },
+        {
+          "name": "labels",
+          "type": "OptionsChainLabels",
+          "required": true,
+          "description": "Texts."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
     "Orb": {
       "kind": "component",
       "source": "src/motion/background/orb.tsx",
@@ -27265,6 +28087,78 @@
       "kind": "type",
       "source": "src/katana/matrix-orb-model.ts",
       "props": []
+    },
+    "Order": {
+      "kind": "type",
+      "source": "src/blocks/orders-table/orders-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "Stable id of the row (the exchange order id)."
+        },
+        {
+          "name": "symbol",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "side",
+          "type": "OrderSide",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "type",
+          "type": "OrderType",
+          "required": true,
+          "description": "Order type: limit, market or conditional."
+        },
+        {
+          "name": "price",
+          "type": "number | null",
+          "required": true,
+          "description": "Order price; null for a market order (or a conditional order that becomes a market order)."
+        },
+        {
+          "name": "triggerPrice",
+          "type": "number | null",
+          "required": false,
+          "description": "Trigger price of a conditional order."
+        },
+        {
+          "name": "quantity",
+          "type": "number",
+          "required": true,
+          "description": "Ordered quantity."
+        },
+        {
+          "name": "filled",
+          "type": "number",
+          "required": true,
+          "description": "Filled quantity so far."
+        },
+        {
+          "name": "status",
+          "type": "OrderStatus",
+          "required": true,
+          "description": "Lifecycle status, already normalised by the caller."
+        },
+        {
+          "name": "time",
+          "type": "number",
+          "required": true,
+          "description": "Created time in milliseconds."
+        },
+        {
+          "name": "pricePrecision",
+          "type": "number",
+          "required": false,
+          "description": "Decimal places of this instrument's prices."
+        }
+      ]
     },
     "OrderAction": {
       "kind": "type",
@@ -27648,6 +28542,11 @@
     "OrderSide": {
       "kind": "type",
       "source": "src/blocks/sizing-model.ts",
+      "props": []
+    },
+    "OrderStatus": {
+      "kind": "type",
+      "source": "src/blocks/orders-table/orders-model.ts",
       "props": []
     },
     "OrderTicket": {
@@ -28141,6 +29040,225 @@
       "kind": "type",
       "source": "src/blocks/order-ticket.tsx",
       "props": []
+    },
+    "OrdersTable": {
+      "kind": "component",
+      "source": "src/blocks/orders-table/orders-table.tsx",
+      "props": [
+        {
+          "name": "orders",
+          "type": "readonly Order[]",
+          "required": true,
+          "description": "Working orders."
+        },
+        {
+          "name": "labels",
+          "type": "OrdersTableLabels",
+          "required": true,
+          "description": "Texts."
+        },
+        {
+          "name": "onCancel",
+          "type": "(order: Order) => void",
+          "required": false,
+          "description": "Called when the cancel button of a row is pressed."
+        },
+        {
+          "name": "onCancelAll",
+          "type": "(orders: Order[]) => void",
+          "required": false,
+          "description": "Called with every order that can still be cancelled when \"cancel all\" is pressed; the caller confirms with the user."
+        },
+        {
+          "name": "onAmend",
+          "type": "(order: Order, price: number) => void",
+          "required": false,
+          "description": "Called when Enter is pressed on a changed, valid price; the caller sends the amend and updates the order."
+        },
+        {
+          "name": "formatPrice",
+          "type": "(value: number, order: Order) => string",
+          "required": false,
+          "default": "defaultPrice",
+          "description": "How a price is written; defaults to the order's pricePrecision."
+        },
+        {
+          "name": "formatQuantity",
+          "type": "(value: number, order: Order) => string",
+          "required": false,
+          "default": "(value) => defaultQuantity(value)",
+          "description": "How a quantity is written; defaults to up to 8 decimals without trailing zeros."
+        },
+        {
+          "name": "formatTime",
+          "type": "(time: number) => string",
+          "required": false,
+          "default": "defaultTime",
+          "description": "How the created time is written; defaults to HH:MM:SS in UTC."
+        },
+        {
+          "name": "hideBar",
+          "type": "boolean",
+          "required": false,
+          "description": "Hide the bar above the table (summary and cancel all)."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "OrdersTableLabels": {
+      "kind": "type",
+      "source": "src/blocks/orders-table/orders-table.tsx",
+      "props": [
+        {
+          "name": "list",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the table."
+        },
+        {
+          "name": "columns",
+          "type": "{ symbol: string side: string type: string price: string quantity: string filled: string status: string time: string actions: string }",
+          "required": true,
+          "description": "Column headers."
+        },
+        {
+          "name": "side",
+          "type": "{ buy: string; sell: string }",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "type",
+          "type": "{ limit: string; market: string; conditional: string }",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "status",
+          "type": "Record<OrderStatus, string>",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "cancel",
+          "type": "string",
+          "required": true,
+          "description": "Text of the cancel button."
+        },
+        {
+          "name": "cancelFor",
+          "type": "(order: Order) => string",
+          "required": true,
+          "description": "Accessible name of the cancel button of one row."
+        },
+        {
+          "name": "amendFor",
+          "type": "(order: Order) => string",
+          "required": true,
+          "description": "Accessible name of the pencil button that starts an amend (「改价 BTCUSDT」)."
+        },
+        {
+          "name": "amendInput",
+          "type": "(order: Order) => string",
+          "required": true,
+          "description": "Accessible name of the price box while amending."
+        },
+        {
+          "name": "amendInvalid",
+          "type": "string",
+          "required": true,
+          "description": "Text under the price box when the typed price is invalid."
+        },
+        {
+          "name": "cancelAll",
+          "type": "string",
+          "required": true,
+          "description": "Text of the cancel-all button."
+        },
+        {
+          "name": "summary",
+          "type": "(count: number) => string",
+          "required": true,
+          "description": "The line above the table (「3 张委托」)."
+        },
+        {
+          "name": "empty",
+          "type": "string",
+          "required": true,
+          "description": "Text when there are no orders."
+        }
+      ]
+    },
+    "OrdersTableProps": {
+      "kind": "type",
+      "source": "src/blocks/orders-table/orders-table.tsx",
+      "props": [
+        {
+          "name": "orders",
+          "type": "readonly Order[]",
+          "required": true,
+          "description": "Working orders."
+        },
+        {
+          "name": "labels",
+          "type": "OrdersTableLabels",
+          "required": true,
+          "description": "Texts."
+        },
+        {
+          "name": "onCancel",
+          "type": "(order: Order) => void",
+          "required": false,
+          "description": "Called when the cancel button of a row is pressed."
+        },
+        {
+          "name": "onCancelAll",
+          "type": "(orders: Order[]) => void",
+          "required": false,
+          "description": "Called with every order that can still be cancelled when \"cancel all\" is pressed; the caller confirms with the user."
+        },
+        {
+          "name": "onAmend",
+          "type": "(order: Order, price: number) => void",
+          "required": false,
+          "description": "Called when Enter is pressed on a changed, valid price; the caller sends the amend and updates the order."
+        },
+        {
+          "name": "formatPrice",
+          "type": "(value: number, order: Order) => string",
+          "required": false,
+          "description": "How a price is written; defaults to the order's pricePrecision."
+        },
+        {
+          "name": "formatQuantity",
+          "type": "(value: number, order: Order) => string",
+          "required": false,
+          "description": "How a quantity is written; defaults to up to 8 decimals without trailing zeros."
+        },
+        {
+          "name": "formatTime",
+          "type": "(time: number) => string",
+          "required": false,
+          "description": "How the created time is written; defaults to HH:MM:SS in UTC."
+        },
+        {
+          "name": "hideBar",
+          "type": "boolean",
+          "required": false,
+          "description": "Hide the bar above the table (summary and cancel all)."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
     },
     "OtpField": {
       "kind": "component",
@@ -31875,6 +32993,78 @@
         }
       ]
     },
+    "Position": {
+      "kind": "type",
+      "source": "src/blocks/positions-table/positions-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "Stable id of the row (an exchange position id or symbol + side)."
+        },
+        {
+          "name": "symbol",
+          "type": "string",
+          "required": true,
+          "description": "Instrument code shown in the first column."
+        },
+        {
+          "name": "side",
+          "type": "PositionSide",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "quantity",
+          "type": "number",
+          "required": true,
+          "description": "Absolute position size."
+        },
+        {
+          "name": "entryPrice",
+          "type": "number",
+          "required": true,
+          "description": "Average entry price."
+        },
+        {
+          "name": "markPrice",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "liquidationPrice",
+          "type": "number | null",
+          "required": true,
+          "description": "Liquidation price; null when the position cannot be liquidated (cash account, fully hedged)."
+        },
+        {
+          "name": "unrealizedPnl",
+          "type": "number",
+          "required": true,
+          "description": "Unrealized PnL in the settlement currency."
+        },
+        {
+          "name": "margin",
+          "type": "number | null",
+          "required": true,
+          "description": "Margin held for this position; null for unmargined positions."
+        },
+        {
+          "name": "leverage",
+          "type": "number | null",
+          "required": true,
+          "description": "Leverage multiple; null when not applicable."
+        },
+        {
+          "name": "pricePrecision",
+          "type": "number",
+          "required": false,
+          "description": "Decimal places of this instrument's prices."
+        }
+      ]
+    },
     "PositionCalculator": {
       "kind": "component",
       "source": "src/blocks/position-calculator.tsx",
@@ -32193,6 +33383,397 @@
           "type": "string",
           "required": false,
           "description": "Extra class name on the panel."
+        }
+      ]
+    },
+    "PositionSide": {
+      "kind": "type",
+      "source": "src/blocks/positions-table/positions-model.ts",
+      "props": []
+    },
+    "PositionTotals": {
+      "kind": "type",
+      "source": "src/blocks/positions-table/positions-model.ts",
+      "props": [
+        {
+          "name": "count",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "unrealizedPnl",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "margin",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "percent",
+          "type": "number | null",
+          "required": true,
+          "description": "Total unrealized PnL over total margin, in percent; null when there is no margin."
+        },
+        {
+          "name": "atRisk",
+          "type": "number",
+          "required": true,
+          "description": "How many positions are at the warn or danger level."
+        }
+      ]
+    },
+    "PositionsOrdersTab": {
+      "kind": "type",
+      "source": "src/blocks/positions-table/positions-orders-tabs.tsx",
+      "props": []
+    },
+    "PositionsOrdersTabs": {
+      "kind": "component",
+      "source": "src/blocks/positions-table/positions-orders-tabs.tsx",
+      "props": [
+        {
+          "name": "positions",
+          "type": "PositionsTableProps",
+          "required": true,
+          "description": "Props of the positions tab, passed on to PositionsTable."
+        },
+        {
+          "name": "orders",
+          "type": "OrdersTableProps",
+          "required": true,
+          "description": "Props of the orders tab, passed on to OrdersTable."
+        },
+        {
+          "name": "labels",
+          "type": "PositionsOrdersTabsLabels",
+          "required": true,
+          "description": "Texts of the shell."
+        },
+        {
+          "name": "tab",
+          "type": "PositionsOrdersTab",
+          "required": false,
+          "description": "Controlled tab; omit for uncontrolled."
+        },
+        {
+          "name": "defaultTab",
+          "type": "PositionsOrdersTab",
+          "required": false,
+          "default": "'positions'",
+          "description": "Tab shown first when uncontrolled."
+        },
+        {
+          "name": "onTabChange",
+          "type": "(tab: PositionsOrdersTab) => void",
+          "required": false,
+          "description": "Called when the tab changes."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "PositionsOrdersTabsLabels": {
+      "kind": "type",
+      "source": "src/blocks/positions-table/positions-orders-tabs.tsx",
+      "props": [
+        {
+          "name": "tabs",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the tab list."
+        },
+        {
+          "name": "positions",
+          "type": "(count: number) => string",
+          "required": true,
+          "description": "Tab names with the count (「持仓 3」)."
+        },
+        {
+          "name": "orders",
+          "type": "(count: number) => string",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "PositionsOrdersTabsProps": {
+      "kind": "type",
+      "source": "src/blocks/positions-table/positions-orders-tabs.tsx",
+      "props": [
+        {
+          "name": "positions",
+          "type": "PositionsTableProps",
+          "required": true,
+          "description": "Props of the positions tab, passed on to PositionsTable."
+        },
+        {
+          "name": "orders",
+          "type": "OrdersTableProps",
+          "required": true,
+          "description": "Props of the orders tab, passed on to OrdersTable."
+        },
+        {
+          "name": "labels",
+          "type": "PositionsOrdersTabsLabels",
+          "required": true,
+          "description": "Texts of the shell."
+        },
+        {
+          "name": "tab",
+          "type": "PositionsOrdersTab",
+          "required": false,
+          "description": "Controlled tab; omit for uncontrolled."
+        },
+        {
+          "name": "defaultTab",
+          "type": "PositionsOrdersTab",
+          "required": false,
+          "description": "Tab shown first when uncontrolled."
+        },
+        {
+          "name": "onTabChange",
+          "type": "(tab: PositionsOrdersTab) => void",
+          "required": false,
+          "description": "Called when the tab changes."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "PositionsTable": {
+      "kind": "component",
+      "source": "src/blocks/positions-table/positions-table.tsx",
+      "props": [
+        {
+          "name": "positions",
+          "type": "readonly Position[]",
+          "required": true,
+          "description": "Open positions."
+        },
+        {
+          "name": "labels",
+          "type": "PositionsTableLabels",
+          "required": true,
+          "description": "Texts."
+        },
+        {
+          "name": "liquidationWarnPct",
+          "type": "number",
+          "required": false,
+          "default": "10",
+          "description": "Distance in percent at or below which a row shows the warning color and icon; defaults to 10."
+        },
+        {
+          "name": "liquidationDangerPct",
+          "type": "number",
+          "required": false,
+          "description": "Distance in percent at or below which the warning turns to danger; defaults to half of the warn distance."
+        },
+        {
+          "name": "liquidationScalePct",
+          "type": "number",
+          "required": false,
+          "description": "Distance in percent that fills the whole bar; defaults to three times the warn distance."
+        },
+        {
+          "name": "onClose",
+          "type": "(position: Position) => void",
+          "required": false,
+          "description": "Called when the close button of a row is pressed; the caller decides full or partial and confirms with the user."
+        },
+        {
+          "name": "onSetTpsl",
+          "type": "(position: Position) => void",
+          "required": false,
+          "description": "Called when the take-profit / stop-loss button of a row is pressed."
+        },
+        {
+          "name": "formatPrice",
+          "type": "(value: number, position: Position) => string",
+          "required": false,
+          "description": "How a price is written; defaults to the position's pricePrecision."
+        },
+        {
+          "name": "formatQuantity",
+          "type": "(value: number, position: Position) => string",
+          "required": false,
+          "description": "How a quantity is written; defaults to up to 8 decimals without trailing zeros."
+        },
+        {
+          "name": "formatAmount",
+          "type": "(value: number) => string",
+          "required": false,
+          "default": "defaultAmount",
+          "description": "How a money amount (PnL, margin) is written; defaults to two decimals with grouping."
+        },
+        {
+          "name": "hideTotals",
+          "type": "boolean",
+          "required": false,
+          "description": "Hide the footer totals."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "PositionsTableLabels": {
+      "kind": "type",
+      "source": "src/blocks/positions-table/positions-table.tsx",
+      "props": [
+        {
+          "name": "list",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the table."
+        },
+        {
+          "name": "columns",
+          "type": "{ symbol: string side: string quantity: string entry: string mark: string liquidation: string distance: string pnl: string margin: string actions: string }",
+          "required": true,
+          "description": "Column headers."
+        },
+        {
+          "name": "side",
+          "type": "{ long: string; short: string }",
+          "required": true,
+          "description": "Side words."
+        },
+        {
+          "name": "close",
+          "type": "string",
+          "required": true,
+          "description": "Text of the close button."
+        },
+        {
+          "name": "tpsl",
+          "type": "string",
+          "required": true,
+          "description": "Text of the take-profit / stop-loss button."
+        },
+        {
+          "name": "closeFor",
+          "type": "(position: Position) => string",
+          "required": true,
+          "description": "Accessible name of the close button of one row (「平仓 BTCUSDT 多」)."
+        },
+        {
+          "name": "tpslFor",
+          "type": "(position: Position) => string",
+          "required": true,
+          "description": "Accessible name of the TP/SL button of one row."
+        },
+        {
+          "name": "risk",
+          "type": "{ warn: string; danger: string }",
+          "required": true,
+          "description": "Names of the warning icon in the distance cell."
+        },
+        {
+          "name": "totals",
+          "type": "{ label: string count: (count: number) => string pnl: string margin: string atRisk: (count: number) => string }",
+          "required": true,
+          "description": "Footer texts."
+        },
+        {
+          "name": "empty",
+          "type": "string",
+          "required": true,
+          "description": "Text when there are no positions."
+        }
+      ]
+    },
+    "PositionsTableProps": {
+      "kind": "type",
+      "source": "src/blocks/positions-table/positions-table.tsx",
+      "props": [
+        {
+          "name": "positions",
+          "type": "readonly Position[]",
+          "required": true,
+          "description": "Open positions."
+        },
+        {
+          "name": "labels",
+          "type": "PositionsTableLabels",
+          "required": true,
+          "description": "Texts."
+        },
+        {
+          "name": "liquidationWarnPct",
+          "type": "number",
+          "required": false,
+          "description": "Distance in percent at or below which a row shows the warning color and icon; defaults to 10."
+        },
+        {
+          "name": "liquidationDangerPct",
+          "type": "number",
+          "required": false,
+          "description": "Distance in percent at or below which the warning turns to danger; defaults to half of the warn distance."
+        },
+        {
+          "name": "liquidationScalePct",
+          "type": "number",
+          "required": false,
+          "description": "Distance in percent that fills the whole bar; defaults to three times the warn distance."
+        },
+        {
+          "name": "onClose",
+          "type": "(position: Position) => void",
+          "required": false,
+          "description": "Called when the close button of a row is pressed; the caller decides full or partial and confirms with the user."
+        },
+        {
+          "name": "onSetTpsl",
+          "type": "(position: Position) => void",
+          "required": false,
+          "description": "Called when the take-profit / stop-loss button of a row is pressed."
+        },
+        {
+          "name": "formatPrice",
+          "type": "(value: number, position: Position) => string",
+          "required": false,
+          "description": "How a price is written; defaults to the position's pricePrecision."
+        },
+        {
+          "name": "formatQuantity",
+          "type": "(value: number, position: Position) => string",
+          "required": false,
+          "description": "How a quantity is written; defaults to up to 8 decimals without trailing zeros."
+        },
+        {
+          "name": "formatAmount",
+          "type": "(value: number) => string",
+          "required": false,
+          "description": "How a money amount (PnL, margin) is written; defaults to two decimals with grouping."
+        },
+        {
+          "name": "hideTotals",
+          "type": "boolean",
+          "required": false,
+          "description": "Hide the footer totals."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
         }
       ]
     },
@@ -52259,6 +53840,18 @@
       "source": "src/primitives/alert.tsx",
       "props": []
     },
+    "amendDecision": {
+      "kind": "function",
+      "source": "src/blocks/orders-table/orders-model.ts",
+      "props": [
+        {
+          "name": "price",
+          "type": "number | null",
+          "required": true,
+          "description": "Order price; null for a market order (or a conditional order that becomes a market order)."
+        }
+      ]
+    },
     "amountTone": {
       "kind": "function",
       "source": "src/cn/seat-model.ts",
@@ -52330,6 +53923,11 @@
     "applyRowOrder": {
       "kind": "function",
       "source": "src/blocks/data-grid/row-order-model.ts",
+      "props": []
+    },
+    "atmStrike": {
+      "kind": "function",
+      "source": "src/blocks/options-chain/options-model.ts",
       "props": []
     },
     "auctionSteps": {
@@ -52409,9 +54007,50 @@
       "source": "src/primitives/button.tsx",
       "props": []
     },
+    "canAmend": {
+      "kind": "function",
+      "source": "src/blocks/orders-table/orders-model.ts",
+      "props": [
+        {
+          "name": "status",
+          "type": "OrderStatus",
+          "required": true,
+          "description": "Lifecycle status, already normalised by the caller."
+        },
+        {
+          "name": "type",
+          "type": "OrderType",
+          "required": true,
+          "description": "Order type: limit, market or conditional."
+        },
+        {
+          "name": "price",
+          "type": "number | null",
+          "required": true,
+          "description": "Order price; null for a market order (or a conditional order that becomes a market order)."
+        }
+      ]
+    },
+    "canCancel": {
+      "kind": "function",
+      "source": "src/blocks/orders-table/orders-model.ts",
+      "props": [
+        {
+          "name": "status",
+          "type": "OrderStatus",
+          "required": true,
+          "description": "Lifecycle status, already normalised by the caller."
+        }
+      ]
+    },
     "canCopyImage": {
       "kind": "function",
       "source": "src/lib/copy-image.ts",
+      "props": []
+    },
+    "cancellable": {
+      "kind": "function",
+      "source": "src/blocks/orders-table/orders-model.ts",
       "props": []
     },
     "candleDomain": {
@@ -52857,6 +54496,11 @@
       "source": "src/katana/flag-mark.tsx",
       "props": []
     },
+    "countdownTo": {
+      "kind": "function",
+      "source": "src/blocks/funding-rate/funding-model.ts",
+      "props": []
+    },
     "createHotkeyRegistry": {
       "kind": "function",
       "source": "src/patterns/hotkeys.tsx",
@@ -53003,6 +54647,24 @@
       "kind": "function",
       "source": "src/patterns/dock.tsx",
       "props": []
+    },
+    "fillRatio": {
+      "kind": "function",
+      "source": "src/blocks/orders-table/orders-model.ts",
+      "props": [
+        {
+          "name": "quantity",
+          "type": "number",
+          "required": true,
+          "description": "Ordered quantity."
+        },
+        {
+          "name": "filled",
+          "type": "number",
+          "required": true,
+          "description": "Filled quantity so far."
+        }
+      ]
     },
     "filterByTheme": {
       "kind": "function",
@@ -53165,6 +54827,42 @@
       "source": "src/lib/chart/format/quantity.ts",
       "props": []
     },
+    "formatCountdown": {
+      "kind": "function",
+      "source": "src/blocks/funding-rate/funding-model.ts",
+      "props": [
+        {
+          "name": "remaining",
+          "type": "number",
+          "required": true,
+          "description": "Milliseconds left, never negative."
+        },
+        {
+          "name": "hours",
+          "type": "number",
+          "required": true,
+          "description": "Whole hours left, not wrapped at 24."
+        },
+        {
+          "name": "minutes",
+          "type": "number",
+          "required": true,
+          "description": "Minutes left within the hour."
+        },
+        {
+          "name": "seconds",
+          "type": "number",
+          "required": true,
+          "description": "Seconds left within the minute."
+        },
+        {
+          "name": "due",
+          "type": "boolean",
+          "required": true,
+          "description": "The settlement time has been reached."
+        }
+      ]
+    },
     "formatPercentChange": {
       "kind": "function",
       "source": "src/lib/chart/format/change.ts",
@@ -53217,6 +54915,11 @@
         }
       ]
     },
+    "formatRate": {
+      "kind": "function",
+      "source": "src/blocks/funding-rate/funding-model.ts",
+      "props": []
+    },
     "formatVolume": {
       "kind": "function",
       "source": "src/lib/chart/format/quantity.ts",
@@ -53225,6 +54928,11 @@
     "freshIds": {
       "kind": "function",
       "source": "src/cn/move-feed-model.ts",
+      "props": []
+    },
+    "fundingBars": {
+      "kind": "function",
+      "source": "src/blocks/funding-rate/funding-model.ts",
       "props": []
     },
     "gaussianKde": {
@@ -53307,6 +55015,11 @@
     "isEditableTarget": {
       "kind": "function",
       "source": "src/patterns/hotkeys-model.ts",
+      "props": []
+    },
+    "isItm": {
+      "kind": "function",
+      "source": "src/blocks/options-chain/options-model.ts",
       "props": []
     },
     "isMonotonic": {
@@ -53645,14 +55358,58 @@
         }
       ]
     },
+    "liquidationDistance": {
+      "kind": "function",
+      "source": "src/blocks/positions-table/positions-model.ts",
+      "props": []
+    },
+    "liquidationFill": {
+      "kind": "function",
+      "source": "src/blocks/positions-table/positions-model.ts",
+      "props": []
+    },
     "liquidationPrice": {
       "kind": "function",
       "source": "src/blocks/sizing-model.ts",
       "props": []
     },
+    "liquidationRisk": {
+      "kind": "function",
+      "source": "src/blocks/positions-table/positions-model.ts",
+      "props": []
+    },
     "litIndexes": {
       "kind": "function",
       "source": "src/katana/switchboard-card.tsx",
+      "props": []
+    },
+    "marginLevel": {
+      "kind": "function",
+      "source": "src/blocks/account-equity/account-equity-model.ts",
+      "props": [
+        {
+          "name": "warn",
+          "type": "number",
+          "required": true,
+          "description": "Ratio, in percent, at which the warn level starts."
+        },
+        {
+          "name": "danger",
+          "type": "number",
+          "required": true,
+          "description": "Ratio, in percent, at which the danger level starts."
+        },
+        {
+          "name": "direction",
+          "type": "'higher' | 'lower'",
+          "required": false,
+          "description": "Which way is riskier: `higher` (default) or `lower`."
+        }
+      ]
+    },
+    "marginRatioOf": {
+      "kind": "function",
+      "source": "src/blocks/account-equity/account-equity-model.ts",
       "props": []
     },
     "markdownSlot": {
@@ -53816,6 +55573,11 @@
       "source": "src/quant/mae-mfe-model.ts",
       "props": []
     },
+    "parseAmendPrice": {
+      "kind": "function",
+      "source": "src/blocks/orders-table/orders-model.ts",
+      "props": []
+    },
     "parseClock": {
       "kind": "function",
       "source": "src/cn/session.ts",
@@ -53882,6 +55644,11 @@
     "plainPrice": {
       "kind": "function",
       "source": "src/quotes/quote-row.ts",
+      "props": []
+    },
+    "positionTotals": {
+      "kind": "function",
+      "source": "src/blocks/positions-table/positions-model.ts",
       "props": []
     },
     "preloaderExitMs": {
@@ -53991,6 +55758,11 @@
     "ransomScraps": {
       "kind": "function",
       "source": "src/motion/text/ransom-note.tsx",
+      "props": []
+    },
+    "rateTone": {
+      "kind": "function",
+      "source": "src/blocks/funding-rate/funding-model.ts",
       "props": []
     },
     "ratingAngle": {
@@ -54129,6 +55901,35 @@
           "description": ""
         }
       ]
+    },
+    "riskBands": {
+      "kind": "function",
+      "source": "src/blocks/account-equity/account-equity-model.ts",
+      "props": [
+        {
+          "name": "warn",
+          "type": "number",
+          "required": true,
+          "description": "Ratio, in percent, at which the warn level starts."
+        },
+        {
+          "name": "danger",
+          "type": "number",
+          "required": true,
+          "description": "Ratio, in percent, at which the danger level starts."
+        },
+        {
+          "name": "direction",
+          "type": "'higher' | 'lower'",
+          "required": false,
+          "description": "Which way is riskier: `higher` (default) or `lower`."
+        }
+      ]
+    },
+    "riskPosition": {
+      "kind": "function",
+      "source": "src/blocks/account-equity/account-equity-model.ts",
+      "props": []
     },
     "rollSlots": {
       "kind": "function",
@@ -54419,6 +56220,11 @@
     "sortRows": {
       "kind": "function",
       "source": "src/quotes/watchlist-model.ts",
+      "props": []
+    },
+    "sortedRows": {
+      "kind": "function",
+      "source": "src/blocks/options-chain/options-model.ts",
       "props": []
     },
     "sparkPoints": {
@@ -54876,6 +56682,36 @@
         }
       ]
     },
+    "unrealizedPercent": {
+      "kind": "function",
+      "source": "src/blocks/positions-table/positions-model.ts",
+      "props": [
+        {
+          "name": "quantity",
+          "type": "number",
+          "required": true,
+          "description": "Absolute position size."
+        },
+        {
+          "name": "unrealizedPnl",
+          "type": "number",
+          "required": true,
+          "description": "Unrealized PnL in the settlement currency."
+        },
+        {
+          "name": "margin",
+          "type": "number | null",
+          "required": true,
+          "description": "Margin held for this position; null for unmargined positions."
+        },
+        {
+          "name": "entryPrice",
+          "type": "number",
+          "required": true,
+          "description": "Average entry price."
+        }
+      ]
+    },
     "uptimeShare": {
       "kind": "function",
       "source": "src/blocks/uptime-bars/uptime-bars-model.ts",
@@ -55228,6 +57064,11 @@
     "volumeBars": {
       "kind": "function",
       "source": "src/cn/auction-model.ts",
+      "props": []
+    },
+    "wingFields": {
+      "kind": "function",
+      "source": "src/blocks/options-chain/options-model.ts",
       "props": []
     },
     "wrapText": {
