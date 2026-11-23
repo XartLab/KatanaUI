@@ -136,7 +136,7 @@ export function SymbolOverview({
   return (
     <Tabs
       bare
-      className={cn('k-symov', className)}
+      className={cn('k-mat-card k-symov', className)}
       data-slot="symbol-overview"
       data-scale={scale}
       value={selected}

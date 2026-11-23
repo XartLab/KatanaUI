@@ -74,7 +74,7 @@ export function CompanyProfile({
 
   const empty = facts.length === 0 && !description
   return (
-    <section className={cn('k-profile', className)} data-slot="company-profile" aria-label={name}>
+    <section className={cn('k-mat-card k-profile', className)} data-slot="company-profile" aria-label={name}>
       <h3 className="k-profile-name">{name}</h3>
       {empty ? (
         <p className="k-profile-empty" data-slot="company-profile-empty">

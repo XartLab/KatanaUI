@@ -139,7 +139,7 @@ export function QuoteCard({
       {!compact && footer && <span className="k-quote-footer">{footer}</span>}
     </>
   )
-  const classes = `k-quote-card is-${tone} is-${size}${onSelect ? ' is-link' : ''}${className ? ` ${className}` : ''}`
+  const classes = `k-mat-card k-quote-card is-${tone} is-${size}${onSelect ? ' is-link' : ''}${className ? ` ${className}` : ''}`
   return onSelect ? (
     <button type="button" className={classes} data-emphasis={emphasis} onClick={onSelect}>
       {body}

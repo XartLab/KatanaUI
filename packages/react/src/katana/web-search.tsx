@@ -440,7 +440,7 @@ export function WebSearchCitation({ source, index, className }: WebSearchCitatio
             exit={{ opacity: 0, y: 4, scale: 0.98 }}
             transition={unit(snappy)}
           >
-            <span className="block rounded-[var(--radius-overlay)] border border-alpha-white-6 bg-surface-4 p-3 text-left shadow-[var(--shadow-overlay)]">
+            <span className="k-mat-overlay block p-3 text-left">
               <span className="flex items-center gap-1.5">
                 <SiteTile site={source.site} size={18} />
                 <span className="k-text-caption truncate text-ink-3">{source.site}</span>

@@ -76,10 +76,9 @@ function Toast({
       {...(phase === 'entering' ? { 'data-starting-style': '' } : {})}
       {...(phase === 'closing' ? { 'data-ending-style': '' } : {})}
       className={cn(
-        // 7% 白的边：characteristics 里没有同值的用途变量（separable-secondary 是 8%），先留调色层刻度。
-        'k-toast k-text-body rounded-[var(--radius-overlay)] border border-l-2 border-alpha-white-6 bg-surface-4 p-3 text-ink-2',
+        // 底、边、圆角、阴影用浮层材质（k-mat-overlay：7% 白的边就是 --k-overlay-borderColor）；左边 2px 的色条由 TONE 盖。
+        'k-toast k-mat-overlay k-text-body border-l-2 p-3 text-ink-2',
         TONE[tone],
-        'shadow-[var(--shadow-overlay)]',
         'data-[starting-style]:translate-y-2 data-[starting-style]:opacity-0 data-[ending-style]:translate-y-2 data-[ending-style]:opacity-0',
         'group-data-[position^=top]/toasts:data-[starting-style]:-translate-y-2 group-data-[position^=top]/toasts:data-[ending-style]:-translate-y-2',
         className,
