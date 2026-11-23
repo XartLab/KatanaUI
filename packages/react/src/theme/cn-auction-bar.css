@@ -1,0 +1,54 @@
+/* SPDX-License-Identifier: MIT */
+/* 竞价量比条（AuctionBarCell，KatanaUI #11）：表格一格里的一行，左边 6px 高的轨（实心段中性灰是今日竞价额、1px 竖刻度是昨日同期、轨下 2px 涨色细线是涨停委买额），右边量比读数。
+   量比 ≥ 1 读数加亮；09:25 之前（data-pending）整格 45% 不透明度、读数写「未出结果」。涨停委买读 --pnl-up（根上 data-updown 互换），不写色值。 */
+.k-abc {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  width: 100%;
+  min-width: 0;
+  font: var(--text-caption) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+}
+.k-abc-track {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 32px;
+  height: 6px;
+  margin-bottom: 3px;
+  background: var(--alpha-white-8);
+}
+.k-abc-fill {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  background: var(--ink-300);
+}
+.k-abc-mark {
+  position: absolute;
+  top: -2px;
+  bottom: -2px;
+  width: 0;
+  border-left: 1px solid var(--k-content-primary-foreground);
+}
+.k-abc-bid {
+  position: absolute;
+  bottom: -3px;
+  left: 0;
+  height: 2px;
+  background: var(--pnl-up);
+}
+.k-abc-text {
+  flex: none;
+  min-width: 4.5em;
+  color: var(--ink-300);
+  text-align: right;
+}
+.k-abc-text[data-above] {
+  color: var(--k-content-primary-foreground);
+  font-weight: 600;
+}
+.k-abc[data-pending] .k-abc-track {
+  opacity: 0.45;
+}
