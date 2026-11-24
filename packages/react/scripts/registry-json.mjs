@@ -20,6 +20,8 @@ const TARGET_ROOT = '~/src/katana/ui'
  * 有页的件，说明读页数据（gallery/registry.ts 的 PAGES.summary），这里不写第二份。
  */
 const INTERNAL = {
+  'reduced-motion':
+    'usePrefersReducedMotion：系统是否要求减少动效（媒体查询，服务端渲染时为 false）；万能框的占位轮播读它。',
   'tag-input-model':
     'TagInput 的纯逻辑：草稿与粘贴的拆分（逗号、分号、换行、制表符）、判重（不分大小写）、校验与上限，以及键盘在标签之间怎么走。',
   'scaled-decimal':
@@ -209,6 +211,14 @@ function collectItems() {
   for (const f of listDir('src/patterns').filter(isCode)) {
     add(f.replace(/\.[^.]+$/, ''), f.endsWith('.tsx') ? 'registry:component' : 'registry:lib', [`src/patterns/${f}`])
   }
+  // #224 万能框：patterns/ 下的子目录，组件与它的纯函数合成一项一起装。
+  add(
+    'omnibox',
+    'registry:component',
+    listDir('src/patterns/omnibox')
+      .filter((f) => /\.tsx?$/.test(f) && !/\.test\./.test(f))
+      .map((f) => `src/patterns/omnibox/${f}`),
+  )
   // quotes/：行情套件（G4 从 katana、quant、patterns 收拢）：带 JSX 的是 component，纯函数（模型、涨跌三态）是 lib。
   for (const f of listDir('src/quotes').filter((f) => isCode(f) && f !== 'index.ts'))
     add(f.replace(/\.[^.]+$/, ''), f.endsWith('.tsx') ? 'registry:component' : 'registry:lib', [`src/quotes/${f}`])
