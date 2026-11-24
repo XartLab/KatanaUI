@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// 功能地图 features/rule-builder.md：条件树的样子与回读、切 And / Or、同组换序（Alt+↑↓ 与拖动，跨组不落）、校验、动作与撤销。
+// 功能地图 features/rule-builder.md：条件树的样子与回读、切 And / Or、同组换序（Alt+↑↓ 与拖动，跨组不落）、校验、动作与撤销、动作多参数、点状态栏跳到第一个问题、含锁定条件的组删不掉、换一份规则。
 export default {
   title: 'RuleBuilder 规则构建器：建树、切组合、同组换序、校验、动作与撤销',
   page: 'rule-builder',
@@ -7,6 +7,7 @@ export default {
     // 页上有两份：「选股告警」那份（预览与用法各渲一次，取预览里第一份）与「校验」那份。
     const main = section.locator('[data-gallery-rule="main"]').first()
     const broken = section.locator('[data-gallery-rule="broken"]')
+    const swap = section.locator('[data-gallery-rule="switch"]')
     const json = async () => JSON.parse(await main.locator('[data-gallery-rule-json]').textContent())
     const order = (id) => main.locator(`[data-list="${id}"]`).evaluate((ul) => [...ul.children].map((li) => li.querySelector('[data-id]')?.getAttribute('data-id')))
     const handle = (id) => main.locator(`[data-id="${id}"] [data-part="handle"]`)
@@ -79,10 +80,61 @@ export default {
       await expect(main.locator('[data-slot="rule-status"]')).toHaveText('Ready')
       return { reason }
     })
-    await step('「校验」那份：顶行 5 issues，每个出错的行下面写原因', async () => {
-      await expect(broken.locator('[data-slot="rule-status"]')).toHaveText('5 issues')
+    await step('「校验」那份：顶行 6 issues（按钮），每个出错的行下面写原因；点它，焦点到第一个出错的格子', async () => {
+      await expect(broken.locator('[data-slot="rule-status"]')).toHaveText('6 issues')
       await aria(broken, 'rule-builder-broken.aria.yml')
-      return await broken.locator('[data-slot="rule-issue"]').allInnerTexts()
+      const lines = await broken.locator('[data-slot="rule-issue"]').allInnerTexts()
+      await broken.getByRole('button', { name: /6 issues: show all/ }).click()
+      await expect(broken.locator('[data-id="rate"] input[data-part="value"]')).toBeFocused()
+      return lines
+    })
+    await step('下单草稿的三个参数：数量填 500 只有数量红；改成 Sell、25 后 JSON 与回读都对', async () => {
+      const draft = main.locator('[data-id="draft"]')
+      const box = (key) => draft.locator(`[data-part="param"][data-key="${key}"]`)
+      await box('quantity').fill('500')
+      await expect(box('quantity')).toHaveAttribute('aria-invalid', 'true')
+      await expect(box('side')).not.toHaveAttribute('aria-invalid')
+      await box('side').click()
+      await page.getByRole('option', { name: 'Sell' }).click()
+      await box('quantity').fill('25')
+      const rule = await json()
+      expect(rule.ifTrue[1].params).toEqual({ side: 'sell', quantity: 25, price: 'limit' })
+      expect(await readback()).toContain('Draft order Sell 25 lots at Limit')
+      return rule.ifTrue[1]
+    })
+    await step('Alt+↓ 落在「Sector」的字段下拉上：整行下挪，下拉不打开', async () => {
+      await main.locator('[data-id="sector"] [data-part="field"]').focus()
+      await page.keyboard.press('Alt+ArrowDown')
+      expect(await order('root')).toEqual(['market', 'cross', 'sector', 'liquidity'])
+      await expect(page.getByRole('listbox')).toHaveCount(0)
+      await page.keyboard.press('Alt+ArrowUp')
+      expect(await order('root')).toEqual(['market', 'sector', 'cross', 'liquidity'])
+      return { root: await order('root') }
+    })
+    await step('「换一份规则」那份：含锁定条件的组删不掉（按钮禁用、Delete 不动并播报）；加一个新组可以删', async () => {
+      const head = swap.locator('.k-rb-grouphead[data-id="guard"]')
+      await expect(head.locator('[data-slot="rule-remove"]')).toHaveAttribute('aria-disabled', 'true')
+      await head.locator('[data-slot="rule-remove"]').click({ force: true })
+      await head.locator('[data-part="handle"]').focus()
+      await page.keyboard.press('Delete')
+      await expect(swap.locator('[data-list="guard"]')).toHaveCount(1)
+      const said = await swap.locator('[data-slot="rule-live"]').textContent()
+      await swap.locator('[data-add="root"]').getByRole('button', { name: 'Add group' }).click()
+      await swap.locator('.k-rb-grouphead').last().locator('[data-slot="rule-remove"]').click()
+      await expect(swap.locator('.k-rb-grouphead')).toHaveCount(1)
+      return said
+    })
+    await step('在规则 A 里改 rate、撤销一步，点 Load rule B：rate 的 130 不红，撤销与重做都禁用', async () => {
+      const input = swap.locator('[data-id="rate"] input[data-part="value"]')
+      await input.fill('7')
+      await swap.locator('[data-id="rate"] [data-part="handle"]').focus()
+      await page.keyboard.press('Control+z')
+      await swap.locator('[data-switch="b"]').click()
+      await expect(input).toHaveValue('130')
+      await expect(swap.locator('[data-id="rate"]')).not.toHaveAttribute('data-invalid', '')
+      await expect(swap.locator('[data-slot="rule-undo"]')).toBeDisabled()
+      await expect(swap.locator('[data-slot="rule-redo"]')).toBeDisabled()
+      return { status: await swap.locator('[data-slot="rule-status"]').textContent() }
     })
     await step('若为真、若为假各加一个动作：JSON 里 ifTrue 与 ifFalse 各多一个；撤销两次回到加动作之前', async () => {
       const initial = await json()

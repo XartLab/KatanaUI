@@ -44,6 +44,7 @@ export function RuleSelect({
   invalid,
   describedBy,
   className,
+  dataKey,
 }: {
   value: string
   onValueChange: (value: string) => void
@@ -51,6 +52,8 @@ export function RuleSelect({
   label: string
   placeholder?: string
   part: string
+  /** 动作参数的键，写在 data-key 上给脚本与测试认。 */
+  dataKey?: string
   invalid?: boolean
   describedBy?: string
   className?: string
@@ -62,7 +65,12 @@ export function RuleSelect({
         aria-invalid={invalid ? true : undefined}
         aria-describedby={invalid ? describedBy : undefined}
         data-part={part}
+        data-key={dataKey}
         className={cn('k-rb-select min-w-0', className)}
+        // Radix 的触发器会把 Alt+↑↓ 当成「打开下拉」；在这里先拦掉：下拉不开，事件照常冒到行上去挪行。
+        onKeyDown={(event) => {
+          if (event.altKey && (event.key === 'ArrowUp' || event.key === 'ArrowDown')) event.preventDefault()
+        }}
       >
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
@@ -118,6 +126,7 @@ export function NumberField({
   invalid,
   describedBy,
   width = 104,
+  dataKey,
 }: {
   value: number | null
   onValueChange: (value: number | null) => void
@@ -128,6 +137,7 @@ export function NumberField({
   invalid?: boolean
   describedBy?: string
   width?: number
+  dataKey?: string
 }) {
   const [text, setText] = useState(formatNumber(value))
   const [seen, setSeen] = useState(value)
@@ -155,6 +165,7 @@ export function NumberField({
         aria-invalid={invalid ? true : undefined}
         aria-describedby={invalid ? describedBy : undefined}
         data-part={part}
+        data-key={dataKey}
         onChange={(event) => {
           setText(event.target.value)
           onValueChange(parseNumber(event.target.value))

@@ -33,7 +33,7 @@ test('树：锁定条件、一条、一组；连线与 And / Or 标签；自然�
   await expect(locked.locator('[data-part="field-text"]')).toHaveText('Market')
   // 回读。
   expect(await text(main)).toBe(
-    'When Market is A-shares and Sector is any of Semiconductors / Software and Close crosses above MA20 and (Turnover > 500 M or Turnover rate > 3%), then Send alert to Push and Draft order from Starter position, otherwise Add to watchlist to To review',
+    'When Market is A-shares and Sector is any of Semiconductors / Software and Close crosses above MA20 and (Turnover > 500 M or Turnover rate > 3%), then Send alert to Push and Draft order Buy 10 lots at Limit, otherwise Add to watchlist to To review',
   )
   // And / Or 标签：根组 And、嵌套组 Or，各坐在自己列表的竖线上、垂直居中在第一与最后一条横线之间。
   await expect(main.locator('[data-slot="rule-mode"]')).toHaveCount(2)
@@ -231,9 +231,9 @@ test('校验：越界与必填缺失标红，读屏读到原因；顶行状态�
   await expect(rate).not.toHaveAttribute('data-invalid', '')
   await expect(status).toHaveText('Ready')
 
-  // 全显的那一份：五个问题，各自的行红、原因写在行下。
+  // 全显的那一份：六个问题（下单草稿缺两个参数，合成一行一句），各自的行红、原因写在行下。
   const broken = page.locator('[data-gallery-rule="broken"]')
-  await expect(broken.locator('[data-slot="rule-status"]')).toHaveText('5 issues')
+  await expect(broken.locator('[data-slot="rule-status"]')).toHaveText('6 issues')
   await expect(broken.locator('[data-slot="rule-issue"]')).toHaveText([
     'Must be between 0 and 100',
     'Fill in a value',
@@ -267,7 +267,7 @@ test('动作：若为真 / 若为假各加一个，JSON 往返一致，撤销重
   await newAction.locator('[data-part="param"]').click()
   await page.getByRole('option', { name: 'Researcher' }).click()
   await expect(newAction).not.toHaveAttribute('data-invalid', '')
-  expect((await json(main)).ifTrue.at(-1)).toEqual({ id: 'a-1', kind: 'agent', param: 'research' })
+  expect((await json(main)).ifTrue.at(-1)).toEqual({ id: 'a-1', kind: 'agent', params: { agent: 'research' } })
   expect(await text(main)).toContain('Hand to Agent to Researcher')
 
   // 往返：整份 JSON 序列化再解析与自己一致。
@@ -339,4 +339,215 @@ test('值：多选标签、引用另一个字段、区间、锁定条件只改�
     field: 'market',
     value: { kind: 'text', value: 'us' },
   })
+})
+
+const paramBox = (row: Locator, key: string) => row.locator(`[data-part="param"][data-key="${key}"]`)
+
+test('动作带多个参数：方向、数量、价格类型各有各的类型与校验，回读按次序写（改动 a）', async ({ page }) => {
+  const main = await open(page)
+  const draft = main.locator('[data-id="draft"]')
+  await expect(draft.locator('[data-part="param"]')).toHaveCount(3)
+  await expect(paramBox(draft, 'side')).toHaveText('Buy')
+  await expect(paramBox(draft, 'quantity')).toHaveValue('10')
+  await expect(paramBox(draft, 'price')).toHaveText('Limit')
+  // 数量越界：只有数量红，方向与价格类型不红；原因接到数量框。
+  await paramBox(draft, 'quantity').fill('500')
+  await expect(paramBox(draft, 'quantity')).toHaveAttribute('aria-invalid', 'true')
+  await expect(paramBox(draft, 'side')).not.toHaveAttribute('aria-invalid')
+  await expect(paramBox(draft, 'price')).not.toHaveAttribute('aria-invalid')
+  const reason = (await paramBox(draft, 'quantity').getAttribute('aria-describedby'))!
+  await expect(page.locator(`[id="${reason}"]`)).toHaveText('Must be between 1 and 100')
+  await expect(main.locator('[data-slot="rule-status"]')).toHaveText('1 issue')
+  // 改方向与数量：JSON 里是 params 对象，回读按定义的次序写。
+  await paramBox(draft, 'side').click()
+  await page.getByRole('option', { name: 'Sell' }).click()
+  await paramBox(draft, 'quantity').fill('25')
+  expect((await json(main)).ifTrue[1]).toEqual({
+    id: 'draft',
+    kind: 'draft',
+    params: { side: 'sell', quantity: 25, price: 'limit' },
+  })
+  expect(await text(main)).toContain('Draft order Sell 25 lots at Limit')
+  await expect(main.locator('[data-slot="rule-status"]')).toHaveText('Ready')
+})
+
+test('Alt+↑↓ 落在下拉触发器上：整行挪动，下拉不打开（评审 2）', async ({ page }) => {
+  const main = await open(page)
+  const root = main.locator('[data-list="root"]')
+  const field = main.locator('[data-id="sector"] [data-part="field"]')
+  await field.focus()
+  await page.keyboard.press('Alt+ArrowDown')
+  expect(await order(root)).toEqual(['market', 'cross', 'sector', 'liquidity'])
+  await expect(page.getByRole('listbox')).toHaveCount(0)
+  // 焦点回到挪动的那一行的把手上，再按 Alt+↑ 挪回去，同样不开下拉。
+  await page.keyboard.press('Alt+ArrowUp')
+  expect(await order(root)).toEqual(['market', 'sector', 'cross', 'liquidity'])
+  await expect(page.getByRole('listbox')).toHaveCount(0)
+  // 不带 Alt 的 ↓ 还是照常打开下拉。
+  await field.focus()
+  await page.keyboard.press('ArrowDown')
+  await expect(page.getByRole('listbox')).toBeVisible()
+  await page.keyboard.press('Escape')
+  // 动作行的下拉一样。
+  const kind = main.locator('[data-id="alert"] [data-part="kind"]')
+  await kind.focus()
+  await page.keyboard.press('Alt+ArrowDown')
+  expect((await json(main)).ifTrue.map((a: any) => a.id)).toEqual(['draft', 'alert'])
+  await expect(page.getByRole('listbox')).toHaveCount(0)
+})
+
+test('点状态栏的「N 个问题」：全部标红，焦点到第一个出错的格子（改动 b）', async ({ page }) => {
+  const main = await open(page)
+  await main.locator('[data-add="ifTrue"]').getByRole('button', { name: 'Add action' }).click()
+  const added = main.locator('[data-id="a-1"]')
+  // 新加的行还没动过：不红，但状态已经数着 1 个问题，并且是个按钮。
+  await expect(added).not.toHaveAttribute('data-invalid', '')
+  const status = main.getByRole('button', { name: /1 issue: show all/ })
+  await expect(status).toHaveText('1 issue')
+  await status.click()
+  await expect(added).toHaveAttribute('data-invalid', '')
+  await expect(paramBox(added, 'channel')).toBeFocused()
+  await expect(paramBox(added, 'channel')).toHaveAttribute('aria-invalid', 'true')
+  // 没有问题时状态只是文字。
+  await paramBox(added, 'channel').click()
+  await page.getByRole('option', { name: 'Push' }).click()
+  await expect(main.locator('[data-slot="rule-status"]')).toHaveText('Ready')
+  await expect(main.getByRole('button', { name: /show all/ })).toHaveCount(0)
+
+  // 多个问题时去第一个（按阅读次序）：那份故意写坏的，第一个是换手率越界。
+  const broken = page.locator('[data-gallery-rule="broken"]')
+  await broken.getByRole('button', { name: /6 issues: show all/ }).click()
+  await expect(broken.locator('[data-id="rate"] input[data-part="value"]')).toBeFocused()
+})
+
+test('含锁定条件的组删不掉：按钮禁用并说明，Delete 不动；没有锁定条件的组照删（评审 1）', async ({ page }) => {
+  await page.goto('/?theme=graphite#/rule-builder')
+  const demo = page.locator('[data-gallery-rule="switch"]')
+  await demo.waitFor()
+  const guard = demo.locator('[data-list="guard"]')
+  await expect(guard).toHaveCount(1)
+  const head = demo.locator('.k-rb-grouphead[data-id="guard"]')
+  const remove = head.locator('[data-slot="rule-remove"]')
+  await expect(remove).toHaveAttribute('aria-disabled', 'true')
+  await expect(remove).toHaveAccessibleName('Cannot remove Group · 1 condition · And: it holds a locked condition')
+  // aria-disabled 的按钮 Playwright 当成「不可用」，强制点：真人点它也什么都不该发生。
+  await remove.click({ force: true })
+  await expect(guard).toHaveCount(1)
+  await expect(demo.locator('[data-id="market"]')).toHaveCount(1)
+  // 键盘：把手上按 Delete 也不动，并播报原因。
+  await head.locator('[data-part="handle"]').focus()
+  await page.keyboard.press('Delete')
+  await expect(guard).toHaveCount(1)
+  await expect(demo.locator('[data-slot="rule-live"]')).toHaveText(
+    'Cannot remove Group · 1 condition · And: it holds a locked condition',
+  )
+  await expect(demo.locator('[data-slot="rule-undo"]')).toBeDisabled()
+  // 别的组照常能删：加一个组再删掉。
+  await demo.locator('[data-add="root"]').getByRole('button', { name: 'Add group' }).click()
+  await expect(demo.locator('.k-rb-grouphead')).toHaveCount(2)
+  const fresh = demo.locator('.k-rb-grouphead').last()
+  await expect(fresh.locator('[data-slot="rule-remove"]')).not.toHaveAttribute('aria-disabled', 'true')
+  await fresh.locator('[data-slot="rule-remove"]').click()
+  await expect(demo.locator('.k-rb-grouphead')).toHaveCount(1)
+})
+
+test('换一份规则（受控 value）：撤销栈与「改过的行」清掉（评审 4）', async ({ page }) => {
+  await page.goto('/?theme=graphite#/rule-builder')
+  const demo = page.locator('[data-gallery-rule="switch"]')
+  await demo.waitFor()
+  const undo = demo.locator('[data-slot="rule-undo"]')
+  const redo = demo.locator('[data-slot="rule-redo"]')
+  const rate = demo.locator('[data-id="rate"]')
+  const input = rate.locator('input[data-part="value"]')
+  // 在 A 里改过换手率：撤销可用，这一行进了「改过的行」；撤销一步后重做也可用。
+  await input.fill('7')
+  await expect(undo).toBeEnabled()
+  await demo.locator('[data-id="rate"] [data-part="handle"]').focus()
+  await page.keyboard.press('Control+z')
+  await expect(redo).toBeEnabled()
+  // 换成 B：B 的换手率 130 越界，但这一行没被动过，不该红；撤销与重做都是空的。
+  await demo.locator('[data-switch="b"]').click()
+  await expect(input).toHaveValue('130')
+  await expect(rate).not.toHaveAttribute('data-invalid', '')
+  await expect(demo.locator('[data-slot="rule-status"]')).toHaveText('1 issue')
+  await expect(undo).toBeDisabled()
+  await expect(redo).toBeDisabled()
+  // 在新文档里照常编辑，撤销只回到 B 的状态，不会跳回 A。
+  await input.fill('50')
+  await expect(undo).toBeEnabled()
+  await undo.click()
+  await expect(input).toHaveValue('130')
+  await expect(undo).toBeDisabled()
+  // 自己写出去的不算换文档：在 B 里改一下，撤销栈留着。
+  await input.fill('60')
+  await expect(undo).toBeEnabled()
+})
+
+test('删了再加：复用的 id 不继承旧的「改过」标记，新行不一上来就红（评审 8）', async ({ page }) => {
+  const main = await open(page)
+  const root = main.locator('[data-list="root"]')
+  const add = main.locator('[data-add="root"]').getByRole('button', { name: 'Add condition' })
+  await add.click()
+  const first = (await order(root)).at(-1)!
+  const row = main.locator(`[data-id="${first}"]`)
+  await expect(row).not.toHaveAttribute('data-invalid', '')
+  // 改一下（进「改过的行」），再删掉。
+  await row.locator('[data-part="value"]').click()
+  await page.getByRole('option', { name: 'US' }).click()
+  await row.locator('[data-slot="rule-remove"]').click()
+  await expect(main.locator(`[data-id="${first}"]`)).toHaveCount(0)
+  await add.click()
+  const again = (await order(root)).at(-1)!
+  expect(again).toBe(first) // id 被复用了
+  await expect(main.locator(`[data-id="${again}"]`)).not.toHaveAttribute('data-invalid', '')
+  await expect(main.locator('[data-slot="rule-issue"]')).toHaveCount(0)
+})
+
+test('换字段：同类同单位留值，口径不同清空要求重填，引用清掉（评审 3）', async ({ page }) => {
+  const main = await open(page)
+  const pick = async (id: string, label: string) => {
+    await main.locator(`[data-id="${id}"] [data-part="field"]`).click()
+    await page.getByRole('option', { name: label, exact: true }).click()
+  }
+  // 成交额 500 M → 换手率（%）：单位不同，清空。
+  await pick('turnover', 'Turnover rate')
+  expect((await json(main)).when.children[3].children[0]).toMatchObject({
+    field: 'turnover-rate',
+    value: { kind: 'number', value: null },
+  })
+  await expect(main.locator('[data-slot="rule-live"]')).toHaveText(/^Value cleared/)
+  await expect(main.locator('[data-id="turnover"] input[data-part="value"]')).toHaveValue('')
+  // 所属板块（任一，选项是板块）→ 市场（选项不同）：清空成空列表。
+  await pick('sector', 'Market')
+  expect((await json(main)).when.children[1]).toMatchObject({
+    field: 'market',
+    op: 'in',
+    value: { kind: 'list', values: [] },
+  })
+  // 引用：Close crosses above MA20 → 换成 RSI(14)，引用清掉（比的对象变了；RSI 也不同口径）。
+  await pick('cross', 'RSI(14)')
+  expect((await json(main)).when.children[2].value).toEqual({ kind: 'number', value: null })
+  // 同类同单位（都没单位）：RSI 的单位也是空，填 12.5 后换成 Close，值留着。
+  await main.locator('[data-id="cross"] input[data-part="value"]').fill('12.5')
+  await pick('cross', 'Close')
+  expect((await json(main)).when.children[2]).toMatchObject({ field: 'close', value: { kind: 'number', value: 12.5 } })
+})
+
+test('无障碍名字：组带 And / Or，根组有名字，回读行是有名字的组（评审 5、7）', async ({ page }) => {
+  const main = await open(page)
+  await expect(main.getByRole('group', { name: 'Conditions · 5 · And', exact: true })).toBeVisible()
+  await expect(main.getByRole('group', { name: 'Group · 2 conditions · Or', exact: true })).toBeVisible()
+  await expect(main.getByRole('group', { name: 'Rule in words', exact: true })).toContainText('When Market is A-shares')
+  // 切成 Or：名字跟着变。
+  await main.locator('[data-list="root"] + [data-slot="rule-mode"]').click()
+  await expect(main.getByRole('group', { name: 'Conditions · 5 · Or', exact: true })).toBeVisible()
+  // 回读那个 <p> 自己不带 aria-label。
+  await expect(main.locator('[data-slot="rule-text"]')).not.toHaveAttribute('aria-label')
+})
+
+test('空组留在回读里，缺的参数写占位（评审 6）', async ({ page }) => {
+  await page.goto('/?theme=graphite#/rule-builder')
+  const broken = page.locator('[data-gallery-rule="broken"]')
+  await broken.waitFor()
+  await expect(broken.locator('[data-slot="rule-text"]')).toContainText('and …, then Draft order Buy … at …')
 })

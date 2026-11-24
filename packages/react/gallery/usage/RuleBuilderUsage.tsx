@@ -62,56 +62,80 @@ export const RULE_SCHEMA: RuleSchema = {
     {
       kind: 'alert',
       label: 'Send alert',
-      param: {
-        label: 'Channel',
-        input: 'option',
-        connector: 'to',
-        options: [
-          { value: 'app', label: 'In-app' },
-          { value: 'push', label: 'Push' },
-          { value: 'mail', label: 'Email' },
-        ],
-      },
+      params: [
+        {
+          key: 'channel',
+          label: 'Channel',
+          input: 'option',
+          connector: 'to',
+          options: [
+            { value: 'app', label: 'In-app' },
+            { value: 'push', label: 'Push' },
+            { value: 'mail', label: 'Email' },
+          ],
+        },
+      ],
     },
     {
       kind: 'watch',
       label: 'Add to watchlist',
-      param: {
-        label: 'Watchlist',
-        input: 'option',
-        connector: 'to',
-        options: [
-          { value: 'breakouts', label: 'Breakouts' },
-          { value: 'review', label: 'To review' },
-        ],
-      },
+      params: [
+        {
+          key: 'list',
+          label: 'Watchlist',
+          input: 'option',
+          connector: 'to',
+          options: [
+            { value: 'breakouts', label: 'Breakouts' },
+            { value: 'review', label: 'To review' },
+          ],
+        },
+      ],
     },
     {
       kind: 'agent',
       label: 'Hand to Agent',
-      param: {
-        label: 'Agent',
-        input: 'option',
-        connector: 'to',
-        options: [
-          { value: 'research', label: 'Researcher' },
-          { value: 'risk', label: 'Risk reviewer' },
-        ],
-      },
+      params: [
+        {
+          key: 'agent',
+          label: 'Agent',
+          input: 'option',
+          connector: 'to',
+          options: [
+            { value: 'research', label: 'Researcher' },
+            { value: 'risk', label: 'Risk reviewer' },
+          ],
+        },
+      ],
     },
     {
       kind: 'draft',
       label: 'Draft order',
       draft: true,
-      param: {
-        label: 'Template',
-        input: 'option',
-        connector: 'from',
-        options: [
-          { value: 'starter', label: 'Starter position' },
-          { value: 'add', label: 'Add 50%' },
-        ],
-      },
+      // 一个动作带多个参数，各有各的类型与校验：方向（选项）、数量（数字，1 到 100 手）、价格类型（选项，前面带连接词）。
+      params: [
+        {
+          key: 'side',
+          label: 'Side',
+          input: 'option',
+          options: [
+            { value: 'buy', label: 'Buy' },
+            { value: 'sell', label: 'Sell' },
+          ],
+        },
+        { key: 'quantity', label: 'Quantity', input: 'number', unit: 'lots', min: 1, max: 100 },
+        {
+          key: 'price',
+          label: 'Price type',
+          input: 'option',
+          connector: 'at',
+          options: [
+            { value: 'market', label: 'Market' },
+            { value: 'limit', label: 'Limit' },
+            { value: 'bid', label: 'Best bid' },
+          ],
+        },
+      ],
     },
   ],
 }
@@ -162,10 +186,10 @@ export const RULE_DEMO: Rule = {
     ],
   },
   ifTrue: [
-    { id: 'alert', kind: 'alert', param: 'push' },
-    { id: 'draft', kind: 'draft', param: 'starter' },
+    { id: 'alert', kind: 'alert', params: { channel: 'push' } },
+    { id: 'draft', kind: 'draft', params: { side: 'buy', quantity: 10, price: 'limit' } },
   ],
-  ifFalse: [{ id: 'watch', kind: 'watch', param: 'review' }],
+  ifFalse: [{ id: 'watch', kind: 'watch', params: { list: 'review' } }],
 }
 
 export const RULE_TEMPLATES: RuleTextTemplates = {
@@ -181,8 +205,11 @@ export const RULE_TEMPLATES: RuleTextTemplates = {
   empty: 'always',
   ifTrue: (actions) => `then ${actions}`,
   ifFalse: (actions) => `otherwise ${actions}`,
-  action: (label, param, connector) =>
-    param === undefined ? label : `${label}${connector === undefined ? '' : ` ${connector}`} ${param}`,
+  action: (label, params) =>
+    [
+      label,
+      ...params.map((param) => (param.connector === undefined ? param.text : `${param.connector} ${param.text}`)),
+    ].join(' '),
   actionJoin: ' and ',
   join: ', ',
 }
@@ -195,7 +222,8 @@ export const RULE_LABELS: RuleBuilderLabels = {
   readback: 'Rule in words',
   mode: { and: 'And', or: 'Or' },
   switchMode: (current, next) => `Combine with ${current}; switch to ${next}`,
-  group: (n) => `Group · ${n} ${n === 1 ? 'condition' : 'conditions'}`,
+  group: (n, mode) => `Group · ${n} ${n === 1 ? 'condition' : 'conditions'} · ${mode}`,
+  rootGroup: (n, mode) => `Conditions · ${n} · ${mode}`,
   addCondition: 'Add condition',
   addGroup: 'Add group',
   addAction: 'Add action',
@@ -215,13 +243,16 @@ export const RULE_LABELS: RuleBuilderLabels = {
   noValue: 'No match',
   removeValue: (label) => `Remove ${label}`,
   locked: 'Locked',
+  valueCleared: 'Value cleared: the new field has another type or unit',
   draft: 'Draft only',
   handle: (summary) => `Move: ${summary}`,
   remove: (summary) => `Remove: ${summary}`,
+  removeBlocked: (summary) => `Cannot remove ${summary}: it holds a locked condition`,
   hint: 'Drag the handle, or press Alt+Up and Alt+Down to move within the group. Delete removes the row.',
   undo: 'Undo',
   redo: 'Redo',
   issueCount: (n) => `${n} ${n === 1 ? 'issue' : 'issues'}`,
+  issueAction: (n) => `${n} ${n === 1 ? 'issue' : 'issues'}: show all and go to the first`,
   valid: 'Ready',
   issue: (issue) => {
     switch (issue.code) {

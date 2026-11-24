@@ -4,9 +4,9 @@
  * 规则构建器（KatanaUI #223）：告警、风控、选股条件、自动化触发共用的「条件树 + 动作」编辑器。
  * WHEN：每条条件 = 字段（分组下拉）· 运算符（随字段类型变）· 值（数字带单位、区间、选项、多选标签、可引用另一个字段）；条件可组成组（组内 And / Or 点一下切），组可嵌套（默认最多 3 层）；
  * 左侧画树形连线，And / Or 小标签坐在线上；调用方可给锁定的起始条件（锁图标，不能删、不能拖，只改值）。
- * THEN：分「若为真 / 若为假」两段的动作列表；动作 = 类型 · 一个参数；「只出草稿」的动作（下单草稿）行上带草稿标。
- * 编辑：拖把手换序（只在自己那一组或那一段里，拖出去不落）；键盘 Tab 走各格，Alt+↑↓ 在组内挪行，在把手上按 Delete 删行，Ctrl/⌘+Z 撤销、Ctrl/⌘+Shift+Z（或 Ctrl+Y）重做。
- * 校验：必填、数值范围、区间次序、选项存在、引用；错的行红框，原因写在行下并用 aria-describedby 接到出错的格子；默认改过的行才显示（showIssues="all" 全显）。
+ * THEN：分「若为真 / 若为假」两段的动作列表；动作 = 类型 · 若干参数（每个有自己的类型与校验）；「只出草稿」的动作（下单草稿）行上带草稿标。
+ * 编辑：拖把手换序（只在自己那一组或那一段里，拖出去不落）；键盘 Tab 走各格，Alt+↑↓ 在组内挪行，在把手上按 Delete 删行（含锁定条件的组删不掉，按钮与按键都不动并说明原因），Ctrl/⌘+Z 撤销、Ctrl/⌘+Shift+Z（或 Ctrl+Y）重做。
+ * 校验：必填、数值范围、区间次序、选项存在、引用；错的行红框，原因写在行下并用 aria-describedby 接到出错的格子；默认改过的行才显示（showIssues="all" 全显）；点状态栏的「N 个问题」全部显示并把焦点移到第一个出错的格子。
  * 顶部一行用调用方给的文案模板把整棵规则回读成一句话。值是纯 JSON，纯函数 ruleToText、validateRule 在 rule-model.ts，组件读的就是它们的结果。
  * 交互与信息结构借自 Jamie Merrill 的「规则构建器」「高级规则构建器」（x.com/Jamie_Merrill，2026-11-24 读两张图；只借交互，皮肤是 Graphite，实现原创）；
  * 评估过 react-querybuilder（MIT）：模型形状借了它的「组 = 组合方式 + 子节点」，代码没引（核心带 redux，没有锁定 / 引用字段 / 动作段 / 组内换序），见 PR。
@@ -14,6 +14,7 @@
  */
 import { Check, FolderPlus, GripVertical, ListPlus, Lock, Plus, Redo2, Trash2, Undo2, X } from 'lucide-react'
 import {
+  Fragment,
   useEffect,
   useId,
   useRef,
@@ -29,15 +30,19 @@ import type { RuleBuilderLabels } from './rule-labels.ts'
 import {
   actionDefOf,
   actionText,
+  carryFieldValue,
   carryValue,
   conditionCount,
   conditionText,
   emptyValue,
   fieldOf,
   freshId,
+  hasLocked,
   insertAction,
   insertNode,
+  isSameDocument,
   issuesById,
+  liveIds,
   locate,
   locateAction,
   maxDepthOf,
@@ -48,6 +53,7 @@ import {
   removeAction,
   removeNode,
   ruleToText,
+  sameDomain,
   setMode,
   slotToIndex,
   stepNode,
@@ -56,6 +62,7 @@ import {
   validateRule,
   type Rule,
   type RuleAction,
+  type RuleActionParam,
   type RuleBranch,
   type RuleCondition,
   type RuleGroup,
@@ -121,6 +128,10 @@ export function RuleBuilder({
   const [past, setPast] = useState<readonly Rule[]>([])
   const [future, setFuture] = useState<readonly Rule[]>([])
   const [touched, setTouched] = useState<ReadonlySet<string>>(new Set())
+  const [reveal, setReveal] = useState(false)
+  // 受控时，value 换成另一份规则（不是自己刚写出去的那份）就是「换了文档」：撤销栈与「改过的行」属于旧文档，一并清掉。
+  const [written, setWritten] = useState<Rule | null>(null)
+  const [seen, setSeen] = useState(value)
   const [live, setLive] = useState('')
   const [drag, setDragState] = useState<Drag | null>(null)
   const dragRef = useRef<Drag | null>(null)
@@ -132,6 +143,19 @@ export function RuleBuilder({
   const hintId = `${uid}-hint`
   const maxDepth = maxDepthOf(schema)
   const hasActions = (schema.actions?.length ?? 0) > 0
+
+  if (value !== seen) {
+    setSeen(value)
+    if (value !== undefined && !isSameDocument(value, written)) {
+      setPast([])
+      setFuture([])
+      setTouched(new Set())
+      setReveal(false)
+    }
+  }
+  useEffect(() => {
+    lastKey.current = null
+  }, [seen])
 
   const issues = validateRule(rule, schema)
   const byId = issuesById(issues)
@@ -149,6 +173,10 @@ export function RuleBuilder({
   }
   const write = (next: Rule) => {
     if (value === undefined) setInner(next)
+    setWritten(next)
+    // 「改过的行」只留还在这份规则里的：删了的行 id 会被新加的行复用，留着就一上来标红。
+    const alive = liveIds(next)
+    setTouched((previous) => new Set([...previous].filter((id) => alive.has(id))))
     onValueChange?.(next)
   }
   const touch = (...ids: string[]) => setTouched((previous) => new Set([...previous, ...ids]))
@@ -218,7 +246,7 @@ export function RuleBuilder({
     const next = insertNode(rule, groupId, group, schema)
     if (next === null) return
     focusNext.current = `[data-id="${CSS.escape(child.id)}"] [data-part="field"]`
-    commit(next, { say: labels.added(labels.group(1)) })
+    commit(next, { say: labels.added(labels.group(1, labels.mode.and)) })
   }
   const addAction = (branch: RuleBranch) => {
     const def = schema.actions?.[0]
@@ -230,8 +258,14 @@ export function RuleBuilder({
   const removeRow = (kind: 'node' | 'action', id: string, listId: string, summary: string) => {
     if (kind === 'node') {
       const found = locate(rule.when, id)
+      if (found === null) return
+      // 子树里有锁定条件的组删不掉（不会连风控前提一起删）；按键走到这里时说一声为什么没动。
+      if (hasLocked(found.node)) {
+        setLive(labels.removeBlocked(summary))
+        return
+      }
       const result = removeNode(rule, id)
-      if (result === null || found === null) return
+      if (result === null) return
       focusNext.current = result.focus === null ? addSel(found.parent.id) : firstSel(result.focus)
       commit(result.rule, { say: labels.removed(summary), touch: [found.parent.id] })
     } else {
@@ -315,12 +349,12 @@ export function RuleBuilder({
     node === undefined
       ? ''
       : node.type === 'group'
-        ? labels.group(conditionCount(node))
+        ? labels.group(conditionCount(node), labels.mode[node.mode])
         : conditionText(node, schema, templates)
   const actionSummary = (action: RuleAction | undefined): string =>
     action === undefined ? '' : actionText(action, schema, templates)
   const shownIssues = (id: string): RuleIssue[] =>
-    showIssues === 'all' || touched.has(id) ? (byId.get(id) ?? []) : []
+    showIssues === 'all' || reveal || touched.has(id) ? (byId.get(id) ?? []) : []
   const issueLine = (id: string, shown: readonly RuleIssue[]) => {
     const messages = [...new Set(shown.map((issue) => labels.issue(issue)))]
     return messages.length === 0 ? null : (
@@ -330,10 +364,32 @@ export function RuleBuilder({
     )
   }
 
+  /** 点状态栏：全部问题显示出来，焦点移到第一个出错的格子（问题按阅读次序排，第一条就是最上面的）。 */
+  const focusIssue = () => {
+    setReveal(true)
+    const first = issues[0]
+    if (first === undefined) return
+    const id = CSS.escape(first.id)
+    const selectors =
+      first.part === 'param'
+        ? [`[data-id="${id}"] [data-part="param"][data-key="${CSS.escape(first.key ?? '')}"]`]
+        : first.part === 'row'
+          ? [`[data-id="${id}"] [data-part="kind"]`, addSel(first.id)]
+          : [`[data-id="${id}"] [data-part="${first.part}"]`]
+    for (const selector of [...selectors, firstSel(first.id), addSel(first.id)]) {
+      const target = root.current?.querySelector<HTMLElement>(selector)
+      if (target) {
+        target.focus()
+        return
+      }
+    }
+  }
+
   // ------------------------------------------------------------ 键盘
   const onRowKey = (event: KeyboardEvent<HTMLElement>, kind: 'node' | 'action', id: string, listId: string) => {
     if (dragRef.current !== null) return
-    const summary = kind === 'node' ? nodeSummary(locate(rule.when, id)?.node) : actionSummary(locateAction(rule, id)?.action)
+    const summary =
+      kind === 'node' ? nodeSummary(locate(rule.when, id)?.node) : actionSummary(locateAction(rule, id)?.action)
     if (event.altKey && (event.key === 'ArrowUp' || event.key === 'ArrowDown')) {
       event.preventDefault()
       const delta = event.key === 'ArrowUp' ? -1 : 1
@@ -398,12 +454,16 @@ export function RuleBuilder({
       <GripVertical aria-hidden="true" />
     </button>
   )
-  const removeButton = (kind: 'node' | 'action', id: string, listId: string, summary: string) => (
+  // blocked：组里有锁定条件，删不掉。用 aria-disabled 而不是 disabled，焦点还能到，读屏能读到为什么删不了。
+  const removeButton = (kind: 'node' | 'action', id: string, listId: string, summary: string, blocked = false) => (
     <Button
       variant="icon"
       className="k-rb-remove"
       data-slot="rule-remove"
-      aria-label={labels.remove(summary)}
+      data-blocked={blocked ? '' : undefined}
+      aria-disabled={blocked ? true : undefined}
+      aria-label={blocked ? labels.removeBlocked(summary) : labels.remove(summary)}
+      title={blocked ? labels.removeBlocked(summary) : undefined}
       onClick={() => removeRow(kind, id, listId, summary)}
     >
       <Trash2 aria-hidden="true" />
@@ -411,10 +471,25 @@ export function RuleBuilder({
   )
 
   /** 列表里一行外面的 li：连线、落点标记、拖动中的淡化。 */
-  const listItem = (listId: string, index: number, count: number, id: string, type: string, locked: boolean, body: ReactNode) => {
+  const listItem = (
+    listId: string,
+    index: number,
+    count: number,
+    id: string,
+    type: string,
+    locked: boolean,
+    body: ReactNode,
+  ) => {
     const dragging = drag !== null && drag.id === id
-    const here = drag !== null && drag.list === listId && drag.slot !== null && slotToIndex(drag.from, drag.slot) !== drag.from
-    const mark = !here ? undefined : drag.slot === index ? 'before' : drag.slot === count && index === count - 1 ? 'after' : undefined
+    const here =
+      drag !== null && drag.list === listId && drag.slot !== null && slotToIndex(drag.from, drag.slot) !== drag.from
+    const mark = !here
+      ? undefined
+      : drag.slot === index
+        ? 'before'
+        : drag.slot === count && index === count - 1
+          ? 'after'
+          : undefined
     return (
       <li
         key={id}
@@ -444,14 +519,19 @@ export function RuleBuilder({
       const nextField = fieldOf(schema, key)
       const ops = operatorsOf(schema, nextField)
       const nextOp = ops.find((item) => item.value === condition.op) ?? ops[0]
+      // 换字段：同类型、同单位（选项也相同）才留值；口径不同的清空要求重填（亿 → % 不能悄悄带过去）；引用一律清掉。
+      const nextValue = carryFieldValue(condition.value, field, nextField, nextOp)
+      const cleared =
+        (condition.value.kind === 'ref' || !sameDomain(field, nextField)) &&
+        JSON.stringify(nextValue) !== JSON.stringify(condition.value)
       commit(
         updateNode(rule, condition.id, (node) => ({
           ...(node as RuleCondition),
           field: key,
           op: nextOp?.value ?? '',
-          value: carryValue((node as RuleCondition).value, nextOp, nextField),
+          value: nextValue,
         })),
-        { touch: [condition.id] },
+        { touch: [condition.id], say: cleared ? labels.valueCleared : undefined },
       )
     }
     const setOp = (op: string) => {
@@ -466,10 +546,13 @@ export function RuleBuilder({
       )
     }
     const setValue = (next: RuleValue) =>
-      commit(updateNode(rule, condition.id, (node) => ({ ...(node as RuleCondition), value: next })), {
-        key: `value:${condition.id}`,
-        touch: [condition.id],
-      })
+      commit(
+        updateNode(rule, condition.id, (node) => ({ ...(node as RuleCondition), value: next })),
+        {
+          key: `value:${condition.id}`,
+          touch: [condition.id],
+        },
+      )
     return (
       <>
         <div
@@ -537,18 +620,75 @@ export function RuleBuilder({
     )
   }
 
+  const renderParam = (
+    action: RuleAction,
+    param: RuleActionParam,
+    describedBy: string,
+    shown: readonly RuleIssue[],
+  ) => {
+    const invalid = shown.some((issue) => issue.part === 'param' && issue.key === param.key)
+    const current = action.params?.[param.key]
+    const setParam = (next: string | number | undefined) =>
+      commit(
+        updateAction(rule, action.id, (item) => {
+          const params = { ...item.params }
+          if (next === undefined) delete params[param.key]
+          else params[param.key] = next
+          return { id: item.id, kind: item.kind, ...(Object.keys(params).length > 0 ? { params } : {}) }
+        }),
+        { key: `param:${action.id}:${param.key}`, touch: [action.id] },
+      )
+    return (
+      <Fragment key={param.key}>
+        {param.connector !== undefined && <span className="k-rb-connector">{param.connector}</span>}
+        {param.input === 'option' && (
+          <RuleSelect
+            value={typeof current === 'string' ? current : ''}
+            onValueChange={setParam}
+            groups={[{ group: '', items: param.options ?? [] }]}
+            label={param.label}
+            placeholder={labels.valuePlaceholder}
+            part="param"
+            dataKey={param.key}
+            invalid={invalid}
+            describedBy={describedBy}
+          />
+        )}
+        {param.input === 'number' && (
+          <NumberField
+            value={typeof current === 'number' ? current : null}
+            onValueChange={(next) => setParam(next ?? undefined)}
+            unit={param.unit}
+            label={param.label}
+            part="param"
+            dataKey={param.key}
+            invalid={invalid}
+            describedBy={describedBy}
+          />
+        )}
+        {param.input === 'text' && (
+          <Input
+            autoComplete="off"
+            value={typeof current === 'string' ? current : ''}
+            aria-label={param.label}
+            aria-invalid={invalid ? true : undefined}
+            aria-describedby={invalid ? describedBy : undefined}
+            data-part="param"
+            data-key={param.key}
+            className="k-rb-text-input"
+            onChange={(event) => setParam(event.target.value === '' ? undefined : event.target.value)}
+          />
+        )}
+      </Fragment>
+    )
+  }
+
   const renderAction = (action: RuleAction, listId: string) => {
     const def = actionDefOf(schema, action.kind)
-    const param = def?.param
     const shown = shownIssues(action.id)
     const bad = (part: string) => shown.some((issue) => issue.part === part)
     const summary = actionSummary(action)
     const describedBy = `${uid}-issue-${action.id}`
-    const setParam = (next: string | number | undefined) =>
-      commit(updateAction(rule, action.id, (item) => ({ id: item.id, kind: item.kind, param: next })), {
-        key: `param:${action.id}`,
-        touch: [action.id],
-      })
     return (
       <>
         <div
@@ -562,51 +702,22 @@ export function RuleBuilder({
           {handleButton('action', action.id, summary)}
           <RuleSelect
             value={action.kind}
+            // 换种类：参数各种类不同，清掉重填。
             onValueChange={(kind) =>
-              commit(updateAction(rule, action.id, (item) => ({ id: item.id, kind })), { touch: [action.id] })
+              commit(
+                updateAction(rule, action.id, (item) => ({ id: item.id, kind })),
+                { touch: [action.id] },
+              )
             }
-            groups={[{ group: '', items: (schema.actions ?? []).map((item) => ({ value: item.kind, label: item.label })) }]}
+            groups={[
+              { group: '', items: (schema.actions ?? []).map((item) => ({ value: item.kind, label: item.label })) },
+            ]}
             label={labels.action}
             part="kind"
             invalid={bad('row')}
             describedBy={describedBy}
           />
-          {param?.connector !== undefined && <span className="k-rb-connector">{param.connector}</span>}
-          {param?.input === 'option' && (
-            <RuleSelect
-              value={typeof action.param === 'string' ? action.param : ''}
-              onValueChange={setParam}
-              groups={[{ group: '', items: param.options ?? [] }]}
-              label={param.label}
-              placeholder={labels.valuePlaceholder}
-              part="param"
-              invalid={bad('param')}
-              describedBy={describedBy}
-            />
-          )}
-          {param?.input === 'number' && (
-            <NumberField
-              value={typeof action.param === 'number' ? action.param : null}
-              onValueChange={(next) => setParam(next ?? undefined)}
-              unit={param.unit}
-              label={param.label}
-              part="param"
-              invalid={bad('param')}
-              describedBy={describedBy}
-            />
-          )}
-          {param?.input === 'text' && (
-            <Input
-              autoComplete="off"
-              value={typeof action.param === 'string' ? action.param : ''}
-              aria-label={param.label}
-              aria-invalid={bad('param') ? true : undefined}
-              aria-describedby={bad('param') ? describedBy : undefined}
-              data-part="param"
-              className="k-rb-text-input"
-              onChange={(event) => setParam(event.target.value === '' ? undefined : event.target.value)}
-            />
-          )}
+          {(def?.params ?? []).map((param) => renderParam(action, param, describedBy, shown))}
           {def?.draft === true && (
             <span className="k-rb-draft" data-slot="rule-draft">
               {labels.draft}
@@ -626,6 +737,8 @@ export function RuleBuilder({
     const children = group.children
     const parent = isRoot ? null : locate(rule.when, group.id)?.parent.id
     const nextMode = group.mode === 'and' ? 'or' : 'and'
+    const title = labels.group(count, labels.mode[group.mode])
+    const blocked = hasLocked(group)
     return (
       <div
         className="k-rb-group"
@@ -635,8 +748,8 @@ export function RuleBuilder({
         data-mode={group.mode}
         data-root={isRoot ? '' : undefined}
         data-invalid={shown.length > 0 ? '' : undefined}
-        role={isRoot ? undefined : 'group'}
-        aria-label={isRoot ? undefined : labels.group(count)}
+        role="group"
+        aria-label={isRoot ? labels.rootGroup(count, labels.mode[group.mode]) : title}
       >
         {!isRoot && (
           <div
@@ -644,9 +757,9 @@ export function RuleBuilder({
             data-id={group.id}
             onKeyDown={(event) => onRowKey(event, 'node', group.id, parent ?? '')}
           >
-            {handleButton('node', group.id, labels.group(count))}
-            <span className="k-rb-title">{labels.group(count)}</span>
-            {removeButton('node', group.id, parent ?? '', labels.group(count))}
+            {handleButton('node', group.id, title)}
+            <span className="k-rb-title">{title}</span>
+            {removeButton('node', group.id, parent ?? '', title, blocked)}
           </div>
         )}
         <div className="k-rb-tree">
@@ -738,13 +851,32 @@ export function RuleBuilder({
       }}
     >
       <header className="k-rb-head">
-        <p className="k-rb-readback" data-slot="rule-text" aria-label={labels.readback}>
-          {sentence}
-        </p>
-        <span className="k-rb-tools">
-          <span className="k-rb-status" data-slot="rule-status" data-tone={issues.length === 0 ? 'ok' : 'warn'}>
-            {status}
+        {/* <p> 不能带名字（aria-label 在它身上读屏不认）：用一个有名字的组，名字是不显示的文字。 */}
+        <div className="k-rb-readback-wrap" role="group" aria-labelledby={`${uid}-readback`}>
+          <span id={`${uid}-readback`} className="k-rb-sr">
+            {labels.readback}
           </span>
+          <p className="k-rb-readback" data-slot="rule-text">
+            {sentence}
+          </p>
+        </div>
+        <span className="k-rb-tools">
+          {issues.length === 0 ? (
+            <span className="k-rb-status" data-slot="rule-status" data-tone="ok">
+              {status}
+            </span>
+          ) : (
+            <button
+              type="button"
+              className="k-rb-status"
+              data-slot="rule-status"
+              data-tone="warn"
+              aria-label={labels.issueAction(issues.length)}
+              onClick={focusIssue}
+            >
+              {status}
+            </button>
+          )}
           <Button size="sm" variant="ghost" disabled={past.length === 0} onClick={undo} data-slot="rule-undo">
             <Undo2 aria-hidden="true" />
             {labels.undo}

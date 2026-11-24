@@ -12,14 +12,16 @@ export type RuleBuilderLabels = {
   ifTrue: string
   /** Chip over the actions that run when they do not. */
   ifFalse: string
-  /** Accessible name of the one-line readback of the rule. */
+  /** Accessible name of the one-line readback of the rule (the name of the group that holds the sentence). */
   readback: string
   /** Visible word of each combine mode, such as And and Or. */
   mode: Record<RuleMode, string>
   /** Accessible name of the combine button, such as (current, next) => `Combine with ${current}; switch to ${next}`. */
   switchMode: (current: string, next: string) => string
-  /** Title of a nested group, such as (n) => `Group · ${n} conditions`. */
-  group: (conditions: number) => string
+  /** Title and accessible name of a nested group, such as (n, mode) => `Group · ${n} conditions · ${mode}`; mode is the visible word of its combine mode (And or Or). */
+  group: (conditions: number, mode: string) => string
+  /** Accessible name of the top group of conditions, such as (n, mode) => `Conditions · ${n} · ${mode}`. */
+  rootGroup: (conditions: number, mode: string) => string
   addCondition: string
   addGroup: string
   addAction: string
@@ -48,6 +50,8 @@ export type RuleBuilderLabels = {
   noValue: string
   /** Name of the remove button of a chip, such as (label) => `Remove ${label}`. */
   removeValue: (label: string) => string
+  /** Live line after changing the field cleared the value because the new field has another type or unit, such as "Value cleared: the new field has another unit". */
+  valueCleared: string
   /** Name of the lock icon of a locked condition. */
   locked: string
   /** Mark on an action that only produces a draft. */
@@ -56,12 +60,16 @@ export type RuleBuilderLabels = {
   handle: (summary: string) => string
   /** Name of the delete button of a row. */
   remove: (summary: string) => string
+  /** Name of the delete button of a group that holds a locked condition (it cannot be deleted); say why, such as (summary) => `Cannot delete ${summary}: it holds a locked condition`. */
+  removeBlocked: (summary: string) => string
   /** Read with the handle: the keys that move and remove a row. */
   hint: string
   undo: string
   redo: string
   /** Status line when the rule has problems, such as (n) => `${n} issues`. */
   issueCount: (count: number) => string
+  /** Name of the status button when the rule has problems: it shows every problem and moves focus to the first, such as (n) => `${n} issues: show all and go to the first`. */
+  issueAction: (count: number) => string
   /** Status line when it has none. */
   valid: string
   /** Why a row is wrong, in words. */

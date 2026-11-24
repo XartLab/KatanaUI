@@ -53,8 +53,10 @@ export type RuleField = {
   options?: readonly RuleOption[]
 }
 
-/** The one parameter of an action, such as the channel of an alert. */
+/** One parameter of an action, such as the channel of an alert or the side of an order draft. */
 export type RuleActionParam = {
+  /** Stable key of the parameter in RuleAction.params. */
+  key: string
   /** Accessible name of the parameter control. */
   label: string
   /** option: pick one of options; text: free text; number: a number. */
@@ -69,6 +71,8 @@ export type RuleActionParam = {
   min?: number
   /** Largest number of a number parameter. */
   max?: number
+  /** The parameter may stay empty. */
+  optional?: boolean
 }
 
 /** One kind of action the THEN part can hold. */
@@ -77,8 +81,8 @@ export type RuleActionDef = {
   kind: string
   /** Text shown on the action select and in the readback. */
   label: string
-  /** The one parameter, if the action has any; it is required. */
-  param?: RuleActionParam
+  /** The parameters in the order they are shown; each is required unless it says optional. */
+  params?: readonly RuleActionParam[]
   /** The action only produces a draft for a person to confirm (an order draft); the row carries a draft mark. */
   draft?: boolean
 }
@@ -91,6 +95,8 @@ export type RuleSchema = {
   operators: Readonly<Record<RuleFieldType, readonly RuleOperator[]>>
   /** Action kinds; without them the builder has no THEN part. */
   actions?: readonly RuleActionDef[]
+  /** The if-true list must hold at least one action; default false (a screening rule may have only WHEN). */
+  requireActions?: boolean
   /** Deepest nesting of groups, the root counts as 1; default 3. */
   maxDepth?: number
 }
@@ -123,18 +129,18 @@ export type RuleGroup = {
 
 export type RuleNode = RuleCondition | RuleGroup
 
-/** One action of the THEN part; param is the value of the action's parameter. */
+/** One action of the THEN part; params holds the value of each parameter by its key. */
 export type RuleAction = {
   id: string
   kind: string
-  param?: string | number
+  params?: Readonly<Record<string, string | number>>
 }
 
 /** The whole rule, the controlled value of RuleBuilder. */
 export type Rule = {
   /** The condition tree; its root group is always there. */
   when: RuleGroup
-  /** Actions when the conditions hold. */
+  /** Actions when the conditions hold; may be empty unless schema.requireActions says so. */
   ifTrue: readonly RuleAction[]
   /** Actions when they do not. */
   ifFalse: readonly RuleAction[]
@@ -197,12 +203,39 @@ export function carryValue(
 ): RuleValue {
   const blank = emptyValue(operator)
   if (operator === undefined) return blank
-  const known = (value: string) => field?.options === undefined || field.options.some((option) => option.value === value)
+  const known = (value: string) =>
+    field?.options === undefined || field.options.some((option) => option.value === value)
   if (previous.kind === 'ref') return operator.allowRef === true && operator.input === 'number' ? previous : blank
   if (previous.kind !== blank.kind) return blank
   if (previous.kind === 'text' && operator.input === 'option') return known(previous.value) ? previous : blank
   if (previous.kind === 'list') return { kind: 'list', values: previous.values.filter(known) }
   return previous
+}
+
+/** 两个字段的值是不是同一个口径：类型、单位相同，枚举的选项也相同。口径不同的值换过去会悄悄变意思（亿 → %）。 */
+export function sameDomain(a: RuleField | undefined, b: RuleField | undefined): boolean {
+  if (a === undefined || b === undefined || a.type !== b.type || a.unit !== b.unit) return false
+  const keys = (field: RuleField) => (field.options ?? []).map((option) => option.value).toSorted()
+  return JSON.stringify(keys(a)) === JSON.stringify(keys(b))
+}
+
+/**
+ * 换字段后值怎么办：类型或单位不同、选项不同的清空要求重填；同类同单位才保留；引用另一个字段的值一律清空（换了被比的一方，意思就变了）。
+ * 只换运算符时用 carryValue。
+ */
+export function carryFieldValue(
+  previous: RuleValue,
+  from: RuleField | undefined,
+  to: RuleField | undefined,
+  operator: RuleOperator | undefined,
+): RuleValue {
+  if (previous.kind === 'ref' || !sameDomain(from, to)) return emptyValue(operator)
+  return carryValue(previous, operator, to)
+}
+
+/** 受控的 value 换了不算「换了一份规则」的情形：还是自己上一次写出去的那份（引用相同或内容相同，调用方存盘再读回来、拷贝一份都不算换）。 */
+export function isSameDocument(next: Rule, written: Rule | null): boolean {
+  return written !== null && (next === written || JSON.stringify(next) === JSON.stringify(written))
 }
 
 // ---------------------------------------------------------------- 树的查找与改
@@ -244,6 +277,11 @@ export function allIds(rule: Rule): Set<string> {
   walk(rule.when)
   for (const action of [...rule.ifTrue, ...rule.ifFalse]) ids.add(action.id)
   return ids
+}
+
+/** 现存的 id 再加上两段动作列表的名字（组件拿它给「改过的行」去掉已经不存在的，免得删了再加、新行顶着旧 id 一上来就红）。 */
+export function liveIds(rule: Rule): Set<string> {
+  return new Set([...allIds(rule), 'ifTrue', 'ifFalse'])
 }
 
 /** 新 id：前缀 + 序号，跳过已有的；同样的规则每次造出同样的 id（测试与快照稳定）。 */
@@ -313,11 +351,16 @@ export function insertNode(
   return { ...rule, when }
 }
 
-/** 删一个节点；锁定的条件删不掉（返回 null）。返回新规则与删后该聚焦的节点 id（前一个，没有就后一个，都没有 null）。 */
+/** 节点自己是锁定条件，或它的子树里有锁定条件。 */
+export function hasLocked(node: RuleNode): boolean {
+  return node.type === 'condition' ? node.locked === true : node.children.some(hasLocked)
+}
+
+/** 删一个节点；锁定的条件删不掉，子树里含锁定条件的组也删不掉（返回 null：不会连带删掉风控前提）。返回新规则与删后该聚焦的节点 id（前一个，没有就后一个，都没有 null）。 */
 export function removeNode(rule: Rule, id: string): { rule: Rule; focus: string | null } | null {
   const found = locate(rule.when, id)
   if (found === null) return null
-  if (found.node.type === 'condition' && found.node.locked === true) return null
+  if (hasLocked(found.node)) return null
   const siblings = found.parent.children
   const focus = (siblings[found.index - 1] ?? siblings[found.index + 1])?.id ?? null
   const when = mapOwner(rule.when, found.parent.id, (group) => ({
@@ -436,6 +479,8 @@ export type RuleIssue = {
   id: string
   code: RuleIssueCode
   part: RuleIssuePart
+  /** Key of the action parameter, for part param. */
+  key?: string
   /** The field's smallest number, for out-of-range. */
   min?: number
   /** The field's largest number, for out-of-range. */
@@ -475,7 +520,11 @@ export function validateCondition(condition: RuleCondition, schema: RuleSchema):
   }
   switch (operator.input) {
     case 'number':
-      issues.push(value.kind === 'number' ? checkNumber(value.value, bounds, id, 'value') : { id, code: 'required', part: 'value' })
+      issues.push(
+        value.kind === 'number'
+          ? checkNumber(value.value, bounds, id, 'value')
+          : { id, code: 'required', part: 'value' },
+      )
       break
     case 'range': {
       if (value.kind !== 'range') {
@@ -500,7 +549,10 @@ export function validateCondition(condition: RuleCondition, schema: RuleSchema):
     case 'list': {
       const values = value.kind === 'list' ? value.values : []
       if (values.length === 0) issues.push({ id, code: 'required', part: 'value' })
-      else if (field.options !== undefined && values.some((item) => !field.options!.some((option) => option.value === item))) {
+      else if (
+        field.options !== undefined &&
+        values.some((item) => !field.options!.some((option) => option.value === item))
+      ) {
         issues.push({ id, code: 'unknown-option', part: 'value' })
       }
       break
@@ -509,32 +561,35 @@ export function validateCondition(condition: RuleCondition, schema: RuleSchema):
   return issues.filter((issue): issue is RuleIssue => issue !== null)
 }
 
-/** 校验一个动作：种类要在定义里，有参数的动作参数必填、数字参数在范围内。 */
+/** 校验一个动作：种类要在定义里，每个参数（没标 optional 的）必填、数字参数在范围内、选项要存在。 */
 export function validateAction(action: RuleAction, schema: RuleSchema): RuleIssue[] {
   const { id } = action
   const def = actionDefOf(schema, action.kind)
   if (def === undefined) return [{ id, code: 'unknown-action', part: 'row' }]
-  const param = def.param
-  if (param === undefined) return []
-  const value = action.param
-  if (param.input === 'number') {
-    if (typeof value !== 'number' || !Number.isFinite(value)) return [{ id, code: 'required', part: 'param' }]
-    if ((param.min !== undefined && value < param.min) || (param.max !== undefined && value > param.max)) {
-      return [{ id, code: 'out-of-range', part: 'param', min: param.min, max: param.max }]
+  const issues: RuleIssue[] = []
+  for (const param of def.params ?? []) {
+    const value = action.params?.[param.key]
+    const empty = value === undefined || value === '' || (typeof value === 'string' && value.trim() === '')
+    if (empty) {
+      if (param.optional !== true) issues.push({ id, code: 'required', part: 'param', key: param.key })
+      continue
     }
-    return []
+    if (param.input === 'number') {
+      if (typeof value !== 'number' || !Number.isFinite(value)) {
+        issues.push({ id, code: 'required', part: 'param', key: param.key })
+      } else if ((param.min !== undefined && value < param.min) || (param.max !== undefined && value > param.max)) {
+        issues.push({ id, code: 'out-of-range', part: 'param', key: param.key, min: param.min, max: param.max })
+      }
+    } else if (param.input === 'option' && param.options?.some((option) => option.value === value) === false) {
+      issues.push({ id, code: 'unknown-option', part: 'param', key: param.key })
+    }
   }
-  const text = typeof value === 'string' ? value : ''
-  if (text.trim() === '') return [{ id, code: 'required', part: 'param' }]
-  if (param.input === 'option' && param.options?.some((option) => option.value === text) === false) {
-    return [{ id, code: 'unknown-option', part: 'param' }]
-  }
-  return []
+  return issues
 }
 
 /**
  * Checks the whole rule and returns every problem in reading order (empty when it is valid).
- * 整棵校验：条件的值（必填、数值范围、区间次序、选项存在、引用）、空组、超出层数、动作种类与参数、有动作定义时 THEN 至少一个动作。
+ * 整棵校验：条件的值（必填、数值范围、区间次序、选项存在、引用）、空组、超出层数、动作种类与各个参数、schema.requireActions 为真时若为真至少一个动作。
  * 组件的红框与读屏说明读的就是这份结果，所以它和件里看到的错误一定一致。
  */
 export function validateRule(rule: Rule, schema: RuleSchema): RuleIssue[] {
@@ -550,7 +605,9 @@ export function validateRule(rule: Rule, schema: RuleSchema): RuleIssue[] {
   }
   walk(rule.when, 1)
   if (schema.actions !== undefined && schema.actions.length > 0) {
-    if (rule.ifTrue.length === 0) issues.push({ id: 'ifTrue', code: 'no-action', part: 'row' })
+    if (schema.requireActions === true && rule.ifTrue.length === 0) {
+      issues.push({ id: 'ifTrue', code: 'no-action', part: 'row' })
+    }
     for (const action of [...rule.ifTrue, ...rule.ifFalse]) issues.push(...validateAction(action, schema))
   }
   return issues
@@ -564,6 +621,9 @@ export function issuesById(issues: readonly RuleIssue[]): Map<string, RuleIssue[
 }
 
 // ---------------------------------------------------------------- 自然语言回读
+
+/** One action parameter in the readback: its text (blank when not filled in) and the connector word before it, if any. */
+export type RuleTextParam = { text: string; connector: string | undefined }
 
 /** Texts that turn a rule into a sentence; the caller supplies all of them (the package ships no language). */
 export type RuleTextTemplates = {
@@ -591,8 +651,8 @@ export type RuleTextTemplates = {
   ifTrue: (actions: string) => string
   /** Wraps the actions that run when they do not, such as (actions) => `otherwise ${actions}`. */
   ifFalse: (actions: string) => string
-  /** One action from its label, the parameter text and the parameter's connector word, if any. */
-  action: (label: string, param: string | undefined, connector: string | undefined) => string
+  /** One action from its label and its parameters (text and connector word each, in the order they are shown). */
+  action: (label: string, params: readonly RuleTextParam[]) => string
   /** Between two actions. */
   actionJoin: string
   /** Between the condition part and the action parts. */
@@ -621,31 +681,45 @@ export function conditionText(condition: RuleCondition, schema: RuleSchema, temp
   } else if (value.kind === 'list') {
     text = value.values.length === 0 ? templates.blank : templates.list(value.values.map(optionLabel))
   } else {
-    text = value.value.trim() === '' ? templates.blank : operator?.input === 'option' ? optionLabel(value.value) : value.value
+    text =
+      value.value.trim() === ''
+        ? templates.blank
+        : operator?.input === 'option'
+          ? optionLabel(value.value)
+          : value.value
   }
   return templates.condition(field.label, operator?.label ?? templates.blank, text)
 }
 
-/** 一个动作的回读文字。 */
+/** 一个动作的回读文字：每个参数一段（没填的写 blank，没标 optional 但没填的也写 blank，optional 没填的不写）。 */
 export function actionText(action: RuleAction, schema: RuleSchema, templates: RuleTextTemplates): string {
   const def = actionDefOf(schema, action.kind)
   if (def === undefined) return templates.blank
-  const param = def.param
-  let text: string | undefined
-  if (param !== undefined) {
-    if (action.param === undefined || action.param === '') text = templates.blank
-    else if (param.input === 'option') {
-      text = param.options?.find((option) => option.value === action.param)?.label ?? String(action.param)
-    } else if (param.input === 'number' && typeof action.param === 'number') text = templates.number(action.param, param.unit)
-    else text = String(action.param)
+  const params: RuleTextParam[] = []
+  for (const param of def.params ?? []) {
+    const value = action.params?.[param.key]
+    if (value === undefined || value === '') {
+      if (param.optional !== true) params.push({ text: templates.blank, connector: param.connector })
+      continue
+    }
+    let text: string
+    if (param.input === 'option') text = param.options?.find((option) => option.value === value)?.label ?? String(value)
+    else if (param.input === 'number' && typeof value === 'number') text = templates.number(value, param.unit)
+    else text = String(value)
+    params.push({ text, connector: param.connector })
   }
-  return templates.action(def.label, text, param?.connector)
+  return templates.action(def.label, params)
 }
 
 function groupText(group: RuleGroup, schema: RuleSchema, templates: RuleTextTemplates, nested: boolean): string {
-  const parts = group.children
-    .map((node) => (isGroup(node) ? groupText(node, schema, templates, true) : conditionText(node, schema, templates)))
-    .filter((part) => part !== '')
+  // 嵌套的空组不能悄悄消失：占位写 blank，读的人才知道这里还缺东西。
+  const parts = group.children.map((node) =>
+    isGroup(node)
+      ? node.children.length === 0
+        ? templates.blank
+        : groupText(node, schema, templates, true)
+      : conditionText(node, schema, templates),
+  )
   const joined = parts.join(group.mode === 'and' ? templates.and : templates.or)
   return nested && parts.length > 1 ? templates.group(joined) : joined
 }

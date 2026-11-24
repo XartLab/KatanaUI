@@ -29,9 +29,11 @@
   align-items: flex-start;
   gap: var(--space-3);
 }
-.k-rb-readback {
+.k-rb-readback-wrap {
   flex: 1 1 280px;
   min-width: 0;
+}
+.k-rb-readback {
   margin: 0;
   padding: 8px 10px;
   border: var(--hairline);
@@ -53,7 +55,33 @@
   height: 14px;
 }
 .k-rb-status {
+  padding: 2px 4px;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
   font: var(--text-caption) var(--font-sans-small);
+  white-space: nowrap;
+}
+/* 有问题时状态是按钮（点了全显并跳到第一个出错的格子）：下划线提示可点。 */
+button.k-rb-status {
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+button.k-rb-status:hover {
+  background: var(--k-container-secondary-background);
+}
+button.k-rb-status:focus-visible {
+  outline: 1px solid var(--focus-ring);
+  outline-offset: 1px;
+}
+/* 只给读屏看的字：回读那一行的组名。 */
+.k-rb-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
   white-space: nowrap;
 }
 .k-rb-status[data-tone='ok'] {
@@ -212,6 +240,11 @@
 }
 .k-rb-row .k-rb-remove {
   margin-left: auto;
+}
+/* 组里有锁定条件，删不掉：灰着，焦点还能到（读屏读得到原因），不显示成可点。 */
+.k-rb-remove[data-blocked] {
+  opacity: 0.4;
+  cursor: not-allowed;
 }
 .k-rb-handle,
 .k-rb-lock {
