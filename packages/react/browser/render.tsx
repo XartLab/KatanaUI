@@ -8,6 +8,7 @@ import '../src/fonts.css'
 import '../src/ui.css'
 import type { ReactNode } from 'react'
 import { createRoot, type Root } from 'react-dom/client'
+import { userEvent } from 'vite-plus/test/browser'
 import { flushSync } from 'react-dom'
 
 let root: Root | undefined
@@ -36,6 +37,9 @@ export async function mount(node: ReactNode, theme: 'graphite' | 'console' = 'gr
   document.body.append(frame)
   root = createRoot(frame)
   flushSync(() => root!.render(node))
+  // 鼠标指针在同一个页面里跨测试、跨文件留在原处（maxWorkers 限并发后，几个文件轮流用同一页）：上一个测试停过的位置若正好压在这次的按钮上，
+  // 按钮就是悬停态（Cancel 的字从 205 变 255，#234 的 CI）。每次挂载把指针挪到 body 的左上角（框有 12px 内边距，那里没有件）。
+  await userEvent.unhover(document.body)
   await document.fonts.ready
   return frame
 }
