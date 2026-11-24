@@ -267,6 +267,18 @@ describe('RuleBuilder 的结构', () => {
     expect(html(withEmpty)).toContain('当 市场 是 A 股 且 …，那么')
   })
 
+  it('WHEN / THEN 是 role=group 不是 region：一页几份同名也不重名 landmark；标题层级可调', () => {
+    expect(markup).not.toContain('<section class="k-rb-part"')
+    expect(markup.match(/class="k-rb-part"[^>]*role="group" aria-labelledby/g)).toHaveLength(2)
+    expect(markup).toContain('>当</h4>')
+    expect(markup).toContain('>若为真</h5>')
+    const level2 = html(RULE, { headingLevel: 2 })
+    expect(level2).toContain('>当</h2>')
+    expect(level2).toContain('>那么</h2>')
+    expect(level2).toContain('>若为真</h3>')
+    expect(level2).not.toContain('</h4>')
+  })
+
   it('JSON → 件：从 JSON 来回一趟再画，画出同样的结构', () => {
     const copy = JSON.parse(JSON.stringify(RULE)) as Rule
     expect(html(copy)).toBe(markup)

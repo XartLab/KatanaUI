@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MIT
+import AxeBuilder from '@axe-core/playwright'
 import { expect, test, type Locator, type Page } from '@playwright/test'
 
 // 规则构建器（KatanaUI #223）页的行为，对着票里的判据：建树与连线、切 And / Or、同组换序（拖动与 Alt+↑↓，跨组不落）、
@@ -550,4 +551,17 @@ test('空组留在回读里，缺的参数写占位（评审 6）', async ({ pag
   const broken = page.locator('[data-gallery-rule="broken"]')
   await broken.waitFor()
   await expect(broken.locator('[data-slot="rule-text"]')).toContainText('and …, then Draft order Buy … at …')
+})
+
+test('一页三份构建器：WHEN / THEN 不成重名 landmark，标题层级不跳（axe best-practice）', async ({ page }) => {
+  await open(page)
+  // 页上有预览、「用法」页签、校验、换一份规则，共好几份构建器，WHEN / THEN 各有同名的段。
+  expect(await page.locator('[data-slot="rule-builder"]').count()).toBeGreaterThanOrEqual(3)
+  await expect(page.getByRole('region', { name: 'WHEN' })).toHaveCount(0)
+  await expect(page.getByRole('region', { name: 'THEN' })).toHaveCount(0)
+  const result = await new AxeBuilder({ page })
+    .include('[data-gallery="rule-builder"]')
+    .withRules(['landmark-unique', 'heading-order', 'landmark-no-duplicate-banner', 'region'])
+    .analyze()
+  expect(result.violations.map((v) => `${v.id}: ${v.nodes.map((n) => n.target.join(' ')).join(' | ')}`)).toEqual([])
 })

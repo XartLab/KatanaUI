@@ -298,6 +298,7 @@ export function RuleBuilderUsage() {
         onValueChange={setRule}
         templates={RULE_TEMPLATES}
         labels={RULE_LABELS}
+        headingLevel={2}
       />
       <details style={{ marginTop: 8 }}>
         <summary>Rule JSON</summary>

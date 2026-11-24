@@ -31,6 +31,8 @@ const ruleBuilder: GuidanceMap = {
       '拖动只是指针的快捷方式：键盘用 Alt+↑↓，两者走同一个模型函数，同样不跨组。Alt+↑↓ 落在下拉触发器上时只挪整行、不打开下拉（触发器自己拦掉，Radix 默认会当成「打开」）；不带 Alt 的 ↑↓ 照常开下拉。',
       'And / Or 是按钮，读屏名写「用 And 组合；切到 Or」，切完播报；每个组（含根组）是带名字的 role=group，名字写条件数与当前的 And / Or（labels.group、labels.rootGroup），切了组合方式名字跟着变。',
       '顶行回读那一句不能把名字挂在 <p> 上（aria-label 在段落上读屏不认）：外面包一个 role=group，用不显示的文字（labels.readback）做名字，aria-labelledby 指过去。',
+      'WHEN 与 THEN 两段是带名字的 role=group，不是 region：一页放几份构建器时同名的「WHEN」「THEN」不会成为重名的 landmark（axe landmark-unique）。',
+      '两段标题的层级用 headingLevel 设（默认 4，若为真 / 若为假低一级）：放在 h1 页标题下用 2，放在 h2 小节下用 3，别让层级跳着走（axe heading-order）。',
       '空组在回读里占位（labels 模板里的 blank），不会悄悄消失；删掉行再加，新行不继承旧行的「改过」标记，不会一上来就红。',
       '标签式多选：每个标签有「移除 xx」按钮，「加」开可搜索的勾选列表（焦点圈在里面，Esc 回到「加」）。',
       '全部文案（含错误原因、播报）由 labels 给；颜色之外，错误还有文字，红边不是唯一线索。',
