@@ -723,7 +723,8 @@ export function DataGrid<Row extends object>({
       panelMenu !== undefined ||
       rowActions !== undefined ||
       onLayoutChange !== undefined)
-  const tabular = rowTree || (renderSubRow && interactive) ? 'treegrid' : interactive ? 'grid' : 'table'
+  // 分节（rowSection）的标题行带 aria-expanded，只有 treegrid 的行支持它（axe aria-conditional-attr），所以有分节也按 treegrid。
+  const tabular = rowTree || ((rowSection || renderSubRow) && interactive) ? 'treegrid' : interactive ? 'grid' : 'table'
   const cellRole = interactive ? 'gridcell' : 'cell'
 
   const body = (
