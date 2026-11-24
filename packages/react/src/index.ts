@@ -220,7 +220,12 @@ export {
   type FilterOperator,
   type FilterPreset,
 } from './patterns/filter-bar-model.ts'
-export { DateRangePicker, type DateRangeLabels, type DateRangePickerProps } from './patterns/date-range-picker.tsx'
+export {
+  DateRangePicker,
+  type DateRangeApplyLabels,
+  type DateRangeLabels,
+  type DateRangePickerProps,
+} from './patterns/date-range-picker.tsx'
 export type { DateRange, RangePreset, WeekStart } from './patterns/date-range-model.ts'
 export { TreeView, type TreeNode, type TreeViewProps } from './patterns/tree-view.tsx'
 // #104 对照 Salt 补的两件：常驻页面的选项列表、单独摆放的月历。

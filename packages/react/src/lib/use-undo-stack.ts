@@ -140,7 +140,7 @@ export function useUndoStack<T>(initial: T, options: UndoStackOptions = {}): Und
     const isMac = macLike()
     const onKey = (event: Event) => {
       const key = event as KeyboardEvent
-      if (key.defaultPrevented || key.isComposing || editable(key.target)) return
+      if (key.defaultPrevented || key.isComposing || key.keyCode === 229 || editable(key.target)) return
       const action = undoKeyOf(key, isMac)
       if (!action) return
       key.preventDefault()
