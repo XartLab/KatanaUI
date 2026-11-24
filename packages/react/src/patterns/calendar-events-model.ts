@@ -42,9 +42,13 @@ export function eventsOn(source: CalendarEventSource | undefined, day: string): 
   return found ?? NONE
 }
 
-/** 格子上画的点：最多 DOT_LIMIT 个，次序是调用方给的次序；tone 缺省 neutral。 */
+/** 超过 DOT_LIMIT 件事：格子上最后一个位置换成「+」，表示还有更多（见 moreOf）。 */
+export const moreOf = (events: readonly CalendarDayEvent[]): boolean => events.length > DOT_LIMIT
+
+/** 格子上画的点：最多 DOT_LIMIT 个，次序是调用方给的次序；tone 缺省 neutral。事多于 DOT_LIMIT 时只画前 DOT_LIMIT - 1 个，第 DOT_LIMIT 个位置给「+」。 */
 export function dotsOf(events: readonly CalendarDayEvent[]): Severity[] {
-  return events.slice(0, DOT_LIMIT).map((event) => event.tone ?? 'neutral')
+  const room = moreOf(events) ? DOT_LIMIT - 1 : DOT_LIMIT
+  return events.slice(0, room).map((event) => event.tone ?? 'neutral')
 }
 
 /** 一天的事件读成一句话（读屏描述与读数行共用）：按语言的列表写法连起来，「财报、CPI 和 FOMC」。 */

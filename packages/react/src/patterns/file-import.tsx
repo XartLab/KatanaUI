@@ -4,6 +4,7 @@
  * 资料导入（#226）：顶部「上传 / 粘贴 / 链接」三个来源页签，下面是多文件清单，每行类型图标、名字、大小、上传进度、完成或失败，失败行有「重试 / 移除」。
  * 研究资料用：研报 PDF、因子 CSV、回测结果 parquet。交互借自 Jamie Merrill 的「文档上传」与「Document card actions」
  * （x.com/Jamie_Merrill/status/2109202814350291096、2110082995998937591，2026-11-24 逐帧看：三个来源页签、行内百分比与完成、失败行出现重试与删除），只借交互，样子是我们的。
+ * 粘贴页签收文字；在文字框里粘贴文件或截图时转给 onFiles（用户主动粘贴，件不去读剪贴板）。
  * 上传本身由调用方做：件只显示 items 给的状态（排队、上传中带百分比、完成、失败带原因），选了文件、粘了文字、给了链接都只是回调（onFiles、onPaste、onLink），
  * 重试与移除也只回调 id（onRetry、onRemove）；件里没有网络、没有定时器、不读时钟。
  * 上传区是现有的 AnimatedFileUpload（list={false}，列表由本件画）：拖进来的放大、图标上浮、超限提示都沿用，没有另起一份落点。
@@ -22,7 +23,7 @@ import {
   Trash2,
   Upload,
 } from 'lucide-react'
-import { useEffect, useId, useRef, useState, type KeyboardEvent } from 'react'
+import { useEffect, useId, useRef, useState, type ClipboardEvent, type KeyboardEvent } from 'react'
 import { cn } from '../lib/cn.ts'
 import { statusColor } from '../lib/severity.ts'
 import { Button } from '../primitives/button.tsx'
@@ -231,14 +232,17 @@ export function FileImport({
   const [text, setText] = useState('')
   const [url, setUrl] = useState('')
   const [linkError, setLinkError] = useState(false)
+  const [pasteError, setPasteError] = useState<string | null>(null)
   const root = useRef<HTMLDivElement>(null)
   // 移除之后焦点接给相邻的一行：先记下邻居，行真的消失（调用方改了 items）后再去聚焦。
   const handoff = useRef<{ removed: string; neighbor: string | null } | null>(null)
 
   useEffect(() => {
     const pending = handoff.current
-    if (!pending || items.some((item) => item.id === pending.removed)) return
+    if (!pending) return
+    // 只在「本次移除之后的第一次 items 变化」里生效：调用方不同意移除（行还在）就作废，免得以后这一行因别的原因消失时突然抢走焦点。
     handoff.current = null
+    if (items.some((item) => item.id === pending.removed)) return
     const scope = root.current
     const next = pending.neighbor
       ? scope?.querySelector<HTMLElement>(`[data-item-id="${CSS.escape(pending.neighbor)}"] [data-action="remove"]`)
@@ -277,6 +281,19 @@ export function FileImport({
       event.preventDefault()
       submitPaste()
     }
+  }
+  // 在文字框里粘贴的是文件或截图（clipboardData.files 不为空）：转给 onFiles，同上传区一样过一遍大小限制。这是用户主动粘贴，件不去读剪贴板。
+  const onPasteFiles = (event: ClipboardEvent<HTMLTextAreaElement>) => {
+    const files = Array.from(event.clipboardData.files)
+    if (files.length === 0) return
+    event.preventDefault()
+    const fits = maxSize ? files.filter((file) => file.size <= maxSize) : files
+    setPasteError(
+      fits.length < files.length && maxSize
+        ? labels.upload.tooLarge(files.length - fits.length, formatBytes(maxSize))
+        : null,
+    )
+    if (fits.length > 0) onFiles(fits)
   }
   const onLinkKey = (event: KeyboardEvent<HTMLInputElement>) => {
     if (event.nativeEvent.isComposing || event.keyCode === 229) return
@@ -325,7 +342,13 @@ export function FileImport({
                 disabled={disabled}
                 onChange={(event) => setText(event.currentTarget.value)}
                 onKeyDown={onPasteKey}
+                onPaste={onPasteFiles}
               />
+              {pasteError ? (
+                <p className="k-imp-error" role="alert">
+                  {pasteError}
+                </p>
+              ) : null}
               <Button variant="primary" disabled={disabled || !text.trim()} onClick={submitPaste}>
                 {labels.paste.submit}
               </Button>

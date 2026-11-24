@@ -6,6 +6,7 @@ import {
   describeEvents,
   dotsOf,
   eventsOn,
+  moreOf,
   type CalendarDayEvent,
 } from './calendar-events-model.ts'
 
@@ -31,9 +32,14 @@ describe('dotsOf', () => {
   it('一件事一个点，缺省 neutral，次序照给', () => {
     expect(dotsOf([earn, cpi])).toEqual(['neutral', 'warn'])
   })
-  it(`最多 ${DOT_LIMIT} 个点`, () => {
-    expect(dotsOf([cpi, fomc, earn, cpi, fomc])).toHaveLength(DOT_LIMIT)
+  it(`正好 ${DOT_LIMIT} 件事画满，没有「+」`, () => {
+    expect(dotsOf([cpi, fomc, earn])).toHaveLength(DOT_LIMIT)
+    expect(moreOf([cpi, fomc, earn])).toBe(false)
     expect(dotsOf([])).toEqual([])
+  })
+  it(`多于 ${DOT_LIMIT} 件：只画 ${DOT_LIMIT - 1} 个点，第 ${DOT_LIMIT} 个位置换成「+」`, () => {
+    expect(dotsOf([cpi, fomc, earn, cpi, fomc])).toEqual(['warn', 'danger'])
+    expect(moreOf([cpi, fomc, earn, cpi])).toBe(true)
   })
 })
 

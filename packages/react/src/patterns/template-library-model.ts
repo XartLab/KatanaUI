@@ -113,3 +113,10 @@ export function expandAllIds(groups: readonly FilteredGroup[]): string[] {
     ...group.templates.filter((template) => (template.children?.length ?? 0) > 0).map((template) => template.id),
   ])
 }
+
+/** 一个模板往上的祖先 id：所在分组，加上它的父模板（它自己是变体时）；清空搜索后用它把选中项露出来。找不到是空数组。 */
+export function ancestorIds(groups: readonly TemplateGroup[], id: string | null | undefined): string[] {
+  const found = findTemplate(groups, id)
+  if (!found) return []
+  return found.parent ? [found.group.id, found.parent.id] : [found.group.id]
+}

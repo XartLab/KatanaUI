@@ -93,7 +93,7 @@ export function DateRangePicker({
   events,
   insight,
 }: DateRangePickerProps) {
-  const view = useCalendarEvents({ events, insight, locale })
+  const view = useCalendarEvents({ events, insight, locale, selected: value?.start })
   const onValue = (range: DateRange) => (onValueChange ?? legacyOnValue)?.(range)
   const [open, setOpen] = useState(false)
   // 两个框是分开打字的：只填了一头、或起点晚于终点时，先存在这里，凑成合法区间才上报。

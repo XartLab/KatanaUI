@@ -26,6 +26,7 @@ const LABELS: TemplateLibraryLabels = {
   meta: 'Template details',
   copy: 'Copy',
   copied: 'Copied',
+  copyFailed: 'Copy failed',
   duplicate: 'Duplicate to mine',
   use: 'Use template',
   readOnly: 'Built-in template, read only',

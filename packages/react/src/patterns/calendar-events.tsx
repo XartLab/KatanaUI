@@ -11,13 +11,23 @@
  */
 import type { CalendarDate } from '@internationalized/date'
 import { Sparkles } from 'lucide-react'
-import { useEffect, useId, useRef, useState, type CSSProperties, type ReactElement, type ReactNode } from 'react'
+import {
+  useEffect,
+  useId,
+  useLayoutEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+  type ReactElement,
+  type ReactNode,
+} from 'react'
 import { CalendarCell } from 'react-aria-components'
 import { statusColor } from '../lib/severity.ts'
 import {
   dayLabel,
   describeEvents,
   dotsOf,
+  moreOf,
   eventsOn,
   type CalendarDayEvent,
   type CalendarEventSource,
@@ -72,12 +82,25 @@ function EventCellBody({
   onHover: (day: string | null) => void
   onFocus: (day: string | null) => void
 }) {
-  // CalendarCell 不把 aria-describedby 交给里面可聚焦的那个 div（只转发 data-*），所以在这里挂上去；卸载时摘掉。
+  // CalendarCell 不把 aria-describedby 交给里面可聚焦的那个 div（只转发 data-*），所以在这里挂上去。
+  // react-aria 自己也往这个属性写（区间日历里聚焦着的格子写「开始 / 结束选择区间」的提示 id，单月日历里不合法时写错误 id），
+  // React 改它时会把我们的 id 冲掉，所以每次渲染后都合并一次：读出现有的 id、没有自己的就补上；卸载时只摘自己的那个。
   const anchor = useRef<HTMLSpanElement>(null)
+  useLayoutEffect(() => {
+    const target = anchor.current?.closest('[role="button"]')
+    if (!target) return
+    const ids = (target.getAttribute('aria-describedby') ?? '').split(/\s+/).filter(Boolean)
+    if (!ids.includes(describedBy)) target.setAttribute('aria-describedby', [...ids, describedBy].join(' '))
+  })
   useEffect(() => {
     const target = anchor.current?.closest('[role="button"]')
-    target?.setAttribute('aria-describedby', describedBy)
-    return () => target?.removeAttribute('aria-describedby')
+    return () => {
+      const rest = (target?.getAttribute('aria-describedby') ?? '')
+        .split(/\s+/)
+        .filter((id) => id && id !== describedBy)
+      if (rest.length > 0) target?.setAttribute('aria-describedby', rest.join(' '))
+      else target?.removeAttribute('aria-describedby')
+    }
   }, [describedBy])
   // 离开时只清自己：别的格子已经接上就不动。
   useEffect(() => {
@@ -97,6 +120,11 @@ function EventCellBody({
         {dotsOf(events).map((tone, index) => (
           <span key={index} className="k-cal-dot" data-tone={tone} style={toneStyle(tone)} />
         ))}
+        {moreOf(events) ? (
+          <span className="k-cal-more" data-slot="calendar-more">
+            +
+          </span>
+        ) : null}
       </span>
     </>
   )
@@ -115,23 +143,28 @@ export function useCalendarEvents({ events, insight, locale, selected }: Options
     const describedBy = `${id}-${day}`
     return (
       <CalendarCell date={date} className="k-cal-cell" data-has-events="" {...extra}>
-        {({ formattedDate, isHovered, isFocused }) => (
-          <>
-            <EventCellBody
-              day={day}
-              number={formattedDate}
-              events={found}
-              describedBy={describedBy}
-              hovered={isHovered}
-              focused={isFocused}
-              onHover={setHover}
-              onFocus={setFocus}
-            />
-            <span id={describedBy} className="sr-only">
-              {describeEvents(found, locale)}
-            </span>
-          </>
-        )}
+        {({ formattedDate, isHovered, isFocused, isOutsideMonth }) =>
+          // 月外的格子（双月日历里两个月各画一份、被 display:none 藏起来）不画点、不挂描述，免得同一天出现两个同 id 的节点。
+          isOutsideMonth ? (
+            formattedDate
+          ) : (
+            <>
+              <EventCellBody
+                day={day}
+                number={formattedDate}
+                events={found}
+                describedBy={describedBy}
+                hovered={isHovered}
+                focused={isFocused}
+                onHover={setHover}
+                onFocus={setFocus}
+              />
+              <span id={describedBy} className="sr-only">
+                {describeEvents(found, locale)}
+              </span>
+            </>
+          )
+        }
       </CalendarCell>
     )
   }
@@ -143,7 +176,12 @@ export function useCalendarEvents({ events, insight, locale, selected }: Options
   const foot = (
     <div className="k-cal-foot" data-slot="calendar-foot">
       {events ? (
-        <p className="k-cal-readout" data-slot="calendar-readout" aria-hidden="true">
+        <p
+          className="k-cal-readout"
+          data-slot="calendar-readout"
+          aria-hidden="true"
+          title={shownDay && shown.length > 0 ? describeEvents(shown, locale) : undefined}
+        >
           {shownDay && shown.length > 0 ? (
             <>
               <span className="k-cal-readout-day">{dayLabel(shownDay, locale)}</span>

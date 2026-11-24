@@ -9,8 +9,8 @@
  * Enter、Esc、⌘↵ 一律先判输入法组字（isComposing 或 keyCode 229），组字时的回车是选字，不是保存。
  * 保存是调用方的事（onSave 返回 Promise 时，reject 会退回旧值并提示）；内置分组 readOnly，不能改，只能复制或使用。文字全由 labels 给；件里不读时钟。
  */
-import { Check, ChevronRight, Copy, CopyPlus, Search } from 'lucide-react'
-import { useEffect, useId, useRef, useState, type CSSProperties, type KeyboardEvent } from 'react'
+import { Check, ChevronRight, CircleAlert, Copy, CopyPlus, Search } from 'lucide-react'
+import { useEffect, useId, useLayoutEffect, useRef, useState, type CSSProperties, type KeyboardEvent } from 'react'
 import {
   Button as AriaButton,
   Collection,
@@ -24,6 +24,7 @@ import { Button } from '../primitives/button.tsx'
 import { Input } from '../primitives/input.tsx'
 import { InlineEdit, type InlineEditLabels } from './inline-edit.tsx'
 import {
+  ancestorIds,
   expandAllIds,
   filterTemplates,
   findTemplate,
@@ -69,6 +70,8 @@ export type TemplateLibraryLabels = {
   /** Copy-text button, and the text it shows for a moment after copying. */
   copy: string
   copied: string
+  /** The text the copy button shows for a moment when the clipboard refused (permission, insecure page); announced politely. */
+  copyFailed: string
   /** Duplicate button (shown when onDuplicate is given). */
   duplicate: string
   /** The primary button, "Use template". */
@@ -92,6 +95,13 @@ export type TemplateLibraryProps = {
   onUse: (id: string) => void
   /** Called with the id after the text was copied to the clipboard. */
   onCopy?: (id: string) => void
+  /** Called with the id and the error when the clipboard refused; the button also says labels.copyFailed. */
+  onCopyError?: (id: string, error: unknown) => void
+  /**
+   * Called when onSave threw or its promise rejected (the field has already rolled back to the last saved text).
+   * Also called when the template was switched away before the save settled, when the field is gone and cannot show anything: tell the user here (toast).
+   */
+  onSaveError?: (id: string, patch: { title: string } | { body: string }, error: unknown) => void
   /** Called with the id to make an editable copy (give it to show the duplicate button). */
   onDuplicate?: (id: string) => void
   /** Texts. */
@@ -165,12 +175,14 @@ function BodyEdit({
   label,
   labels,
   onSave,
+  onError,
 }: {
   value: string
   readOnly: boolean
   label: string
   labels: TemplateLibraryLabels
   onSave?: (next: string) => void | Promise<unknown>
+  onError?: (attempted: string, error: unknown) => void
 }) {
   const [shown, setShown] = useState(value)
   const [seen, setSeen] = useState(value)
@@ -184,6 +196,22 @@ function BodyEdit({
   const run = useRef(0)
   const hintId = useId()
   const editable = !readOnly && onSave !== undefined
+  // 编辑中被卸载（在树里点了另一份模板：点树的行不一定先让文字框失焦）时，没存的草稿不能悄悄丢掉：卸载那一刻补存一次，
+  // 失败也走 onError。用 ref 读最新的值（清理函数里拿不到新的 state 与 props）。
+  const latest = useRef({ editing, draft, shown, onSave, onError })
+  useLayoutEffect(() => {
+    latest.current = { editing, draft, shown, onSave, onError }
+  })
+  useEffect(
+    () => () => {
+      const { editing: open, draft: text, shown: saved, onSave: save, onError: fail } = latest.current
+      if (!open || text === saved || !save) return
+      void Promise.resolve()
+        .then(() => save(text))
+        .catch((error: unknown) => fail?.(text, error))
+    },
+    [],
+  )
 
   // 外面换了值（换了模板、保存后重新给）：没在编辑就直接换上。
   if (value !== seen) {
@@ -212,6 +240,8 @@ function BodyEdit({
     setEditing(true)
   }
   const commit = (source: 'key' | 'blur') => {
+    // 先把 ref 里的「在编辑」翻过来：随后的卸载不再补存第二次。
+    latest.current.editing = false
     setEditing(false)
     if (source === 'key') refocus.current = true
     if (draft === shown) return
@@ -220,13 +250,16 @@ function BodyEdit({
     setShown(draft)
     void Promise.resolve()
       .then(() => onSave?.(draft))
-      .catch(() => {
+      .catch((error: unknown) => {
+        // 切走模板时这个编辑器已经卸载，提示与回滚都没处显示：交给调用方（onSaveError）去提示。
+        onError?.(draft, error)
         if (mine !== run.current) return
         setShown(previous)
         setFailed(true)
       })
   }
   const cancel = () => {
+    latest.current.editing = false
     setEditing(false)
     refocus.current = true
   }
@@ -326,6 +359,8 @@ export function TemplateLibrary({
   onSave,
   onUse,
   onCopy,
+  onCopyError,
+  onSaveError,
   onDuplicate,
   labels,
   className,
@@ -334,7 +369,9 @@ export function TemplateLibrary({
   const [inner, setInner] = useState<string | null>(defaultValue)
   const selected = value === undefined ? inner : value
   const [expanded, setExpanded] = useState<string[]>(() => groups.map((group) => group.id))
-  const [copied, setCopied] = useState(false)
+  const [copied, setCopied] = useState<'copied' | 'failed' | null>(null)
+  // 搜索时的展开集合：每次改搜索词都回到「全部展开」，之后用户可以在搜索结果里收起、再展开。
+  const [searchOpen, setSearchOpen] = useState<string[] | null>(null)
   const copyTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
   useEffect(() => () => clearTimeout(copyTimer.current), [])
 
@@ -351,22 +388,43 @@ export function TemplateLibrary({
   }
   const copy = async () => {
     if (!found) return
+    let outcome: 'copied' | 'failed' = 'copied'
     try {
+      // 没有 navigator.clipboard（不是安全上下文）时 undefined.writeText 也会抛，一并算失败；不降级到 execCommand。
       await navigator.clipboard.writeText(`${found.template.title}\n\n${found.template.body}`)
-    } catch {
-      return
+      onCopy?.(found.template.id)
+    } catch (error) {
+      outcome = 'failed'
+      onCopyError?.(found.template.id, error)
     }
-    onCopy?.(found.template.id)
-    setCopied(true)
+    setCopied(outcome)
     clearTimeout(copyTimer.current)
-    copyTimer.current = setTimeout(() => setCopied(false), 1500)
+    copyTimer.current = setTimeout(() => setCopied(null), 1500)
+  }
+  // 标题的保存：失败要先告诉调用方（切走模板时 InlineEdit 已卸载，它的失败提示看不到），再把拒绝交回 InlineEdit 去回滚。
+  const saveTitle = async (id: string, next: string) => {
+    try {
+      await onSave?.(id, { title: next })
+    } catch (error) {
+      onSaveError?.(id, { title: next }, error)
+      throw error
+    }
+  }
+  // 改搜索词：清空时把选中项的祖先并进展开集合（原来收起的父模板会把选中项藏起来）；搜索中的展开集合每次重来。
+  const changeQuery = (next: string) => {
+    if (next.trim() === '' && query.trim() !== '') {
+      const open = ancestorIds(groups, selected)
+      setExpanded((current) => [...new Set([...current, ...open])])
+    }
+    setSearchOpen(null)
+    setQuery(next)
   }
   const onSearchKey = (event: KeyboardEvent<HTMLInputElement>) => {
     if (event.nativeEvent.isComposing || event.keyCode === 229) return
     if (event.key === 'Escape' && query) {
       event.preventDefault()
       event.stopPropagation()
-      setQuery('')
+      changeQuery('')
     }
   }
 
@@ -382,7 +440,7 @@ export function TemplateLibrary({
             autoComplete="off"
             spellCheck={false}
             value={query}
-            onChange={(event) => setQuery(event.currentTarget.value)}
+            onChange={(event) => changeQuery(event.currentTarget.value)}
             onKeyDown={onSearchKey}
             className="k-tpl-search-input"
           />
@@ -405,9 +463,10 @@ export function TemplateLibrary({
             disabledBehavior="selection"
             selectedKeys={selected ? new Set([selected]) : new Set()}
             onSelectionChange={pick}
-            expandedKeys={new Set(searching ? expandAllIds(shown) : expanded)}
+            expandedKeys={new Set(searching ? (searchOpen ?? expandAllIds(shown)) : expanded)}
             onExpandedChange={(keys) => {
-              if (!searching) setExpanded(toKeys(keys))
+              if (searching) setSearchOpen(toKeys(keys))
+              else setExpanded(toKeys(keys))
             }}
           >
             {(group) => renderRow(group, query, true)}
@@ -426,7 +485,7 @@ export function TemplateLibrary({
               labels={labels.title}
               disabled={found.group.readOnly || !onSave}
               validate={(next) => (next ? null : labels.titleEmpty)}
-              onSave={(next) => onSave?.(found.template.id, { title: next })}
+              onSave={(next) => saveTitle(found.template.id, next)}
             />
             {found.template.meta?.length ? (
               <dl className="k-tpl-meta" aria-label={labels.meta}>
@@ -445,11 +504,14 @@ export function TemplateLibrary({
               label={labels.bodyField}
               labels={labels}
               onSave={onSave ? (next) => onSave(found.template.id, { body: next }) : undefined}
+              onError={(attempted, error) => onSaveError?.(found.template.id, { body: attempted }, error)}
             />
             <div className="k-tpl-footer">
               <Button onClick={copy} data-action="copy">
-                {copied ? <Check /> : <Copy />}
-                <span aria-live="polite">{copied ? labels.copied : labels.copy}</span>
+                {copied === 'copied' ? <Check /> : copied === 'failed' ? <CircleAlert /> : <Copy />}
+                <span aria-live="polite">
+                  {copied === 'copied' ? labels.copied : copied === 'failed' ? labels.copyFailed : labels.copy}
+                </span>
               </Button>
               {onDuplicate ? (
                 <Button onClick={() => onDuplicate(found.template.id)} data-action="duplicate">

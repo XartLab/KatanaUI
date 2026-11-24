@@ -36,7 +36,7 @@ const researchCalendar: GuidanceMap = {
       '命中的字加粗加下划线，不只靠颜色。',
       '标题的读屏与键盘同 InlineEdit；正文静止时是 button（读屏名「正文: 内容」，描述是 labels.editHint），编辑时是 textarea。',
       'Enter、Esc、⌘↵ 先判输入法组字（isComposing 或 keyCode 229），组字时是选字，不保存也不放弃。',
-      '保存被拒绝时正文下的提示是 role=alert。',
+      '保存被拒绝时正文下的提示是 role=alert；切走模板后看不到的失败经 onSaveError 交给调用方。复制被拒时按钮字换成 labels.copyFailed，同一个 aria-live 播报。',
     ],
   },
 }

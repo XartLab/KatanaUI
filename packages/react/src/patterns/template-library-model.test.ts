@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 import { describe, expect, it } from 'vite-plus/test'
 import {
+  ancestorIds,
   expandAllIds,
   filterTemplates,
   findTemplate,
@@ -103,5 +104,14 @@ describe('findTemplate', () => {
 describe('expandAllIds', () => {
   it('分组与带变体的模板', () => {
     expect(expandAllIds(filterTemplates(GROUPS, '').groups as never)).toEqual(['mine', 'm1', 'builtin'])
+  })
+})
+
+describe('ancestorIds', () => {
+  it('模板是它的分组；变体再加父模板；找不到是空', () => {
+    expect(ancestorIds(GROUPS, 'm2')).toEqual(['mine'])
+    expect(ancestorIds(GROUPS, 'm1b')).toEqual(['mine', 'm1'])
+    expect(ancestorIds(GROUPS, 'nope')).toEqual([])
+    expect(ancestorIds(GROUPS, null)).toEqual([])
   })
 })

@@ -6,13 +6,21 @@ import type { TemplateGroup } from '../src/patterns/template-library.tsx'
 
 export const EXAMPLE_EVENTS: Readonly<Record<string, readonly CalendarDayEvent[]>> = {
   '2026-11-12': [{ label: '美国 CPI', tone: 'warn' }],
-  '2026-11-19': [{ label: 'NVDA 财报', tone: 'neutral' }],
+  // 一天四件事：格子上第三个位置换成「+」，读数行放不下的截断、悬停给全文。
+  '2026-11-19': [
+    { label: 'NVDA 财报', tone: 'neutral' },
+    { label: 'WMT 财报', tone: 'neutral' },
+    { label: '美国初请失业金', tone: 'warn' },
+    { label: '美联储官员讲话', tone: 'warn' },
+  ],
   '2026-11-20': [
     { label: '期权到期', tone: 'warn' },
     { label: '600519 除权', tone: 'neutral' },
   ],
   '2026-11-25': [{ label: '000001 除权', tone: 'neutral' }],
   '2026-11-27': [{ label: '美股半日市', tone: 'danger' }],
+  // 12-01 同时是 11 月格子表尾部的月外格与 12 月格子表里的一格（双月日历里两处都画）：给 axe 抓重复 id 用。
+  '2026-12-01': [{ label: '美国 ISM 制造业', tone: 'warn' }],
   '2026-12-09': [
     { label: 'FOMC 利率决议', tone: 'danger' },
     { label: '美国 CPI', tone: 'warn' },

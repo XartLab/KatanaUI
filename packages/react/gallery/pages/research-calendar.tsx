@@ -166,6 +166,8 @@ export function FileImportDemo() {
           patch(id, { status: 'uploading', progress: 0, error: undefined })
         }}
         onRemove={(id) => {
+          // 演示调用方不同意：r1（62% 的那份上传）不让删，只记日志；别的照删。
+          if (id === 'r1') return setLog(`拒绝移除 ${id}`)
           setLog(`移除 ${id}`)
           setItems((list) => list.filter((item) => item.id !== id))
         }}
@@ -174,6 +176,9 @@ export function FileImportDemo() {
         最近一次回调：{log}
       </p>
       <Row name="演示：推进进度（上传由调用方做，件只显示状态）">
+        <Button size="sm" onClick={() => setItems((list) => list.filter((item) => item.id !== 'r1'))}>
+          调用方撤掉第一行
+        </Button>
         <Button
           size="sm"
           onClick={() =>
@@ -241,6 +246,7 @@ const TEMPLATE_LABELS: TemplateLibraryLabels = {
   meta: '模板信息',
   copy: '复制',
   copied: '已复制',
+  copyFailed: '复制失败',
   duplicate: '复制为我的模板',
   use: '使用模板',
   readOnly: '内置模板，不能修改',
@@ -265,10 +271,14 @@ export function TemplateLibraryDemo() {
         groups={groups}
         defaultValue="my-momentum"
         labels={TEMPLATE_LABELS}
+        // 正文里写「拒绝保存」会被拒绝，演示保存失败：件退回旧文字，失败由调用方（这里是日志）提示。
         onSave={(id, change) => {
+          if ('body' in change && change.body.includes('拒绝保存')) return Promise.reject(new Error('演示：拒绝保存'))
           setLog(`保存 ${id}：${'title' in change ? '标题' : '正文'}`)
           setGroups((current) => patchGroups(current, id, change))
         }}
+        onSaveError={(id) => setLog(`保存失败 ${id}`)}
+        onCopyError={(id) => setLog(`复制失败 ${id}`)}
         onUse={(id) => setLog(`使用模板 ${id}`)}
         onCopy={(id) => setLog(`复制了 ${id} 的文字`)}
         onDuplicate={(id) => setLog(`复制为我的模板 ${id}`)}
