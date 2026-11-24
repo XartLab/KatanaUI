@@ -79,3 +79,38 @@ test('InlineEdit：组字中的 Esc（取消候选词）不放弃整次编辑，
   await expect(field).toHaveCount(0)
   await expect(area.locator('[data-gallery-inline]')).toHaveText('已存：核心持仓')
 })
+
+// 编辑中被卸载与失焦一致：补存一次。点「卸载」会先让输入框失焦（走失焦保存，测不到卸载路径），所以用 el.click() 触发点击、不动焦点。
+const unmount = (area: Locator) =>
+  area.locator('[data-gallery-inline-unmount]').evaluate((el) => (el as HTMLElement).click())
+
+test('InlineEdit：编辑中被卸载，草稿补存一次；没改过不存；组字中用组字前确认的文字', async ({ page }) => {
+  const area = await open(page, 'inline-edit')
+  const out = area.locator('[data-gallery-inline-unmounted]')
+  const edit = async () => {
+    await area.getByRole('button', { name: /可卸载名/ }).click()
+    return area.getByRole('textbox', { name: '可卸载名' })
+  }
+  // 改过草稿就卸载：补存。
+  let field = await edit()
+  await field.fill('模板乙')
+  await unmount(area)
+  await expect(out).toHaveText('已存：模板乙')
+  await area.locator('[data-gallery-inline-unmount]').click()
+  // 打开编辑但没改就卸载：不存（值不变）。
+  field = await edit()
+  await unmount(area)
+  await expect(out).toHaveText('已存：模板乙')
+  await area.locator('[data-gallery-inline-unmount]').click()
+  // 组字中卸载：用组字前已确认的「模板丙」，不带组字中的拼音。
+  field = await edit()
+  await field.fill('模板丙')
+  await field.evaluate((el: HTMLInputElement) => {
+    const set = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')!.set!
+    set.call(el, '模板丙ni')
+    el.dispatchEvent(new InputEvent('input', { bubbles: true, isComposing: true }))
+  })
+  await expect(field).toHaveValue('模板丙ni')
+  await unmount(area)
+  await expect(out).toHaveText('已存：模板丙')
+})
