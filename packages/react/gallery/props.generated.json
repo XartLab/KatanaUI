@@ -4952,8 +4952,21 @@
         {
           "name": "onFilesSelected",
           "type": "(files: File[]) => void",
-          "required": true,
-          "description": "Called with the whole list of chosen files after each change."
+          "required": false,
+          "description": "Called with the whole list of chosen files after each change (not called when `list` is false: there is no list to report)."
+        },
+        {
+          "name": "onFilesAdded",
+          "type": "(files: File[]) => void",
+          "required": false,
+          "description": "Called with only the files that were just added (after the size check), once per pick or drop."
+        },
+        {
+          "name": "list",
+          "type": "boolean",
+          "required": false,
+          "default": "true",
+          "description": "Show the component's own list of chosen files (default true); false when the caller keeps the list, as FileImport does."
         },
         {
           "name": "labels",
@@ -5002,8 +5015,20 @@
         {
           "name": "onFilesSelected",
           "type": "(files: File[]) => void",
-          "required": true,
-          "description": "Called with the whole list of chosen files after each change."
+          "required": false,
+          "description": "Called with the whole list of chosen files after each change (not called when `list` is false: there is no list to report)."
+        },
+        {
+          "name": "onFilesAdded",
+          "type": "(files: File[]) => void",
+          "required": false,
+          "description": "Called with only the files that were just added (after the size check), once per pick or drop."
+        },
+        {
+          "name": "list",
+          "type": "boolean",
+          "required": false,
+          "description": "Show the component's own list of chosen files (default true); false when the caller keeps the list, as FileImport does."
         },
         {
           "name": "labels",
@@ -8521,6 +8546,18 @@
       "source": "src/patterns/calendar.tsx",
       "props": [
         {
+          "name": "events",
+          "type": "CalendarEventSource",
+          "required": false,
+          "description": "Events by day (a YYYY-MM-DD table or a lookup function): days with events get dots, hover or focus reads them out."
+        },
+        {
+          "name": "insight",
+          "type": "CalendarInsight",
+          "required": false,
+          "description": "One line under the calendar: an icon and a sentence, for example \"Avoided the 11-27 half day\"."
+        },
+        {
           "name": "value",
           "type": "string",
           "required": false,
@@ -8636,6 +8673,30 @@
         }
       ]
     },
+    "CalendarDayEvent": {
+      "kind": "type",
+      "source": "src/patterns/calendar-events-model.ts",
+      "props": [
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "读出来的话，例如「AAPL 财报」「美国 CPI」。"
+        },
+        {
+          "name": "tone",
+          "type": "Severity",
+          "required": false,
+          "description": "点的语气：neutral 灰、ok 绿、warn 黄、danger 红。"
+        },
+        {
+          "name": "id",
+          "type": "string",
+          "required": false,
+          "description": "稳定的键；不给就用 label。"
+        }
+      ]
+    },
     "CalendarEvent": {
       "kind": "type",
       "source": "src/quant/calendar-heatmap.tsx",
@@ -8659,6 +8720,29 @@
           "description": "事件类别（events 视图按它分组写字）；由调用方给文字。"
         }
       ]
+    },
+    "CalendarEventProps": {
+      "kind": "type",
+      "source": "src/patterns/calendar-events.tsx",
+      "props": [
+        {
+          "name": "events",
+          "type": "CalendarEventSource",
+          "required": false,
+          "description": "Events by day (a YYYY-MM-DD table or a lookup function): days with events get dots, hover or focus reads them out."
+        },
+        {
+          "name": "insight",
+          "type": "CalendarInsight",
+          "required": false,
+          "description": "One line under the calendar: an icon and a sentence, for example \"Avoided the 11-27 half day\"."
+        }
+      ]
+    },
+    "CalendarEventSource": {
+      "kind": "type",
+      "source": "src/patterns/calendar-events-model.ts",
+      "props": []
     },
     "CalendarHeatmap": {
       "kind": "component",
@@ -8976,6 +9060,30 @@
         }
       ]
     },
+    "CalendarInsight": {
+      "kind": "type",
+      "source": "src/patterns/calendar-events-model.ts",
+      "props": [
+        {
+          "name": "text",
+          "type": "string",
+          "required": true,
+          "description": "那一句话。"
+        },
+        {
+          "name": "icon",
+          "type": "ReactNode",
+          "required": false,
+          "description": "字前的图标；不给用星花。"
+        },
+        {
+          "name": "tone",
+          "type": "Severity",
+          "required": false,
+          "description": "语气（neutral 默认）：只改图标颜色。"
+        }
+      ]
+    },
     "CalendarItem": {
       "kind": "type",
       "source": "src/quant/event-calendar-types.ts",
@@ -9003,6 +9111,18 @@
       "kind": "type",
       "source": "src/patterns/calendar.tsx",
       "props": [
+        {
+          "name": "events",
+          "type": "CalendarEventSource",
+          "required": false,
+          "description": "Events by day (a YYYY-MM-DD table or a lookup function): days with events get dots, hover or focus reads them out."
+        },
+        {
+          "name": "insight",
+          "type": "CalendarInsight",
+          "required": false,
+          "description": "One line under the calendar: an icon and a sentence, for example \"Avoided the 11-27 half day\"."
+        },
         {
           "name": "value",
           "type": "string",
@@ -14579,6 +14699,18 @@
       "source": "src/patterns/date-range-picker.tsx",
       "props": [
         {
+          "name": "events",
+          "type": "CalendarEventSource",
+          "required": false,
+          "description": "Events by day (a YYYY-MM-DD table or a lookup function): days with events get dots, hover or focus reads them out."
+        },
+        {
+          "name": "insight",
+          "type": "CalendarInsight",
+          "required": false,
+          "description": "One line under the calendar: an icon and a sentence, for example \"Avoided the 11-27 half day\"."
+        },
+        {
           "name": "value",
           "type": "DateRange | null",
           "required": true,
@@ -14646,6 +14778,18 @@
       "source": "src/patterns/date-range-picker.tsx",
       "props": [
         {
+          "name": "events",
+          "type": "CalendarEventSource",
+          "required": false,
+          "description": "Events by day (a YYYY-MM-DD table or a lookup function): days with events get dots, hover or focus reads them out."
+        },
+        {
+          "name": "insight",
+          "type": "CalendarInsight",
+          "required": false,
+          "description": "One line under the calendar: an icon and a sentence, for example \"Avoided the 11-27 half day\"."
+        },
+        {
           "name": "value",
           "type": "DateRange | null",
           "required": true,
@@ -14711,6 +14855,18 @@
       "kind": "component",
       "source": "src/patterns/date-time-input.tsx",
       "props": [
+        {
+          "name": "events",
+          "type": "CalendarEventSource",
+          "required": false,
+          "description": "Events by day (a YYYY-MM-DD table or a lookup function): days with events get dots, hover or focus reads them out."
+        },
+        {
+          "name": "insight",
+          "type": "CalendarInsight",
+          "required": false,
+          "description": "One line under the calendar: an icon and a sentence, for example \"Avoided the 11-27 half day\"."
+        },
         {
           "name": "label",
           "type": "string",
@@ -14796,6 +14952,18 @@
       "kind": "type",
       "source": "src/patterns/date-time-input.tsx",
       "props": [
+        {
+          "name": "events",
+          "type": "CalendarEventSource",
+          "required": false,
+          "description": "Events by day (a YYYY-MM-DD table or a lookup function): days with events get dots, hover or focus reads them out."
+        },
+        {
+          "name": "insight",
+          "type": "CalendarInsight",
+          "required": false,
+          "description": "One line under the calendar: an icon and a sentence, for example \"Avoided the 11-27 half day\"."
+        },
         {
           "name": "label",
           "type": "string",
@@ -20627,6 +20795,217 @@
       "kind": "component",
       "source": "src/primitives/field.tsx",
       "props": []
+    },
+    "FileImport": {
+      "kind": "component",
+      "source": "src/patterns/file-import.tsx",
+      "props": [
+        {
+          "name": "items",
+          "type": "readonly ImportItem[]",
+          "required": true,
+          "description": "The list as the caller tracks it: one row per file, link or pasted text."
+        },
+        {
+          "name": "onFiles",
+          "type": "(files: File[]) => void",
+          "required": true,
+          "description": "Called with the files just picked or dropped (after the size check); the caller starts the uploads and adds the rows."
+        },
+        {
+          "name": "onRetry",
+          "type": "(id: string) => void",
+          "required": true,
+          "description": "Called with the row id when the retry button of a failed row is pressed."
+        },
+        {
+          "name": "onRemove",
+          "type": "(id: string) => void",
+          "required": true,
+          "description": "Called with the row id when its remove button is pressed (it also cancels an upload in progress)."
+        },
+        {
+          "name": "onPaste",
+          "type": "(text: string) => void",
+          "required": false,
+          "description": "Called with the pasted text (trimmed); give it to show the paste tab."
+        },
+        {
+          "name": "onLink",
+          "type": "(url: string) => void",
+          "required": false,
+          "description": "Called with a valid http(s) link; give it to show the link tab."
+        },
+        {
+          "name": "labels",
+          "type": "FileImportLabels",
+          "required": true,
+          "description": "Texts."
+        },
+        {
+          "name": "accept",
+          "type": "string",
+          "required": false,
+          "description": "Comma-separated types for the picker, for example \".pdf,.csv,.parquet\"."
+        },
+        {
+          "name": "maxSize",
+          "type": "number",
+          "required": false,
+          "description": "Largest allowed file in bytes."
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "required": false,
+          "default": "false",
+          "description": "Ignore all input."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class names on the root."
+        }
+      ]
+    },
+    "FileImportLabels": {
+      "kind": "type",
+      "source": "src/patterns/file-import.tsx",
+      "props": [
+        {
+          "name": "sources",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the source tabs."
+        },
+        {
+          "name": "source",
+          "type": "Readonly<Record<ImportSource, string>>",
+          "required": true,
+          "description": "Tab text of each source."
+        },
+        {
+          "name": "upload",
+          "type": "Pick<FileUploadLabels, 'zone' | 'idle' | 'dragging' | 'tooLarge'>",
+          "required": true,
+          "description": "Drop zone texts (zone, idle, dragging, tooLarge)."
+        },
+        {
+          "name": "list",
+          "type": "string",
+          "required": true,
+          "description": "Name of the list of material."
+        },
+        {
+          "name": "count",
+          "type": "(total: number) => string",
+          "required": true,
+          "description": "Heading over the list, for example \"3 documents added\" (put the plural rule in the function)."
+        },
+        {
+          "name": "status",
+          "type": "{ queued: string uploading: (percent: number | null) => string done: string failed: string }",
+          "required": true,
+          "description": "Status text of a row; uploading gets the percent, or null while the caller does not know it."
+        },
+        {
+          "name": "retry",
+          "type": "(name: string) => string",
+          "required": true,
+          "description": "Accessible name of a row's retry button."
+        },
+        {
+          "name": "remove",
+          "type": "(name: string) => string",
+          "required": true,
+          "description": "Accessible name of a row's remove button."
+        },
+        {
+          "name": "paste",
+          "type": "{ label: string; placeholder: string; submit: string }",
+          "required": true,
+          "description": "The paste tab."
+        },
+        {
+          "name": "link",
+          "type": "{ label: string; placeholder: string; submit: string; invalid: string }",
+          "required": true,
+          "description": "The link tab; invalid is the message under the field for a text that is not an http(s) link."
+        }
+      ]
+    },
+    "FileImportProps": {
+      "kind": "type",
+      "source": "src/patterns/file-import.tsx",
+      "props": [
+        {
+          "name": "items",
+          "type": "readonly ImportItem[]",
+          "required": true,
+          "description": "The list as the caller tracks it: one row per file, link or pasted text."
+        },
+        {
+          "name": "onFiles",
+          "type": "(files: File[]) => void",
+          "required": true,
+          "description": "Called with the files just picked or dropped (after the size check); the caller starts the uploads and adds the rows."
+        },
+        {
+          "name": "onRetry",
+          "type": "(id: string) => void",
+          "required": true,
+          "description": "Called with the row id when the retry button of a failed row is pressed."
+        },
+        {
+          "name": "onRemove",
+          "type": "(id: string) => void",
+          "required": true,
+          "description": "Called with the row id when its remove button is pressed (it also cancels an upload in progress)."
+        },
+        {
+          "name": "onPaste",
+          "type": "(text: string) => void",
+          "required": false,
+          "description": "Called with the pasted text (trimmed); give it to show the paste tab."
+        },
+        {
+          "name": "onLink",
+          "type": "(url: string) => void",
+          "required": false,
+          "description": "Called with a valid http(s) link; give it to show the link tab."
+        },
+        {
+          "name": "labels",
+          "type": "FileImportLabels",
+          "required": true,
+          "description": "Texts."
+        },
+        {
+          "name": "accept",
+          "type": "string",
+          "required": false,
+          "description": "Comma-separated types for the picker, for example \".pdf,.csv,.parquet\"."
+        },
+        {
+          "name": "maxSize",
+          "type": "number",
+          "required": false,
+          "description": "Largest allowed file in bytes."
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "required": false,
+          "description": "Ignore all input."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class names on the root."
+        }
+      ]
     },
     "FileTree": {
       "kind": "component",
@@ -26681,6 +27060,58 @@
     "HypothesisStatus": {
       "kind": "type",
       "source": "src/blocks/hypothesis-ledger/hypothesis-ledger-model.ts",
+      "props": []
+    },
+    "ImportItem": {
+      "kind": "type",
+      "source": "src/patterns/file-import-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "稳定的键，回调（重试、移除）带它回来。"
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": "显示的名字，粘贴的文字或链接也给个名字。"
+        },
+        {
+          "name": "size",
+          "type": "number",
+          "required": false,
+          "description": "字节数；不知道（链接、粘贴）就不给。"
+        },
+        {
+          "name": "status",
+          "type": "ImportStatus",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "progress",
+          "type": "number",
+          "required": false,
+          "description": "上传进度 0–100，只在 uploading 时看；不给是「不知道多少」，进度条走不确定态。"
+        },
+        {
+          "name": "error",
+          "type": "string",
+          "required": false,
+          "description": "失败的原因（一句话），写在名字下面。"
+        }
+      ]
+    },
+    "ImportSource": {
+      "kind": "type",
+      "source": "src/patterns/file-import.tsx",
+      "props": []
+    },
+    "ImportStatus": {
+      "kind": "type",
+      "source": "src/patterns/file-import-model.ts",
       "props": []
     },
     "InfiniteSlider": {
@@ -48733,6 +49164,13 @@
           "description": "When problems show on rows: touched (the default) shows a row's problems once it was edited; all shows every problem."
         },
         {
+          "name": "headingLevel",
+          "type": "2 | 3 | 4 | 5",
+          "required": false,
+          "default": "4",
+          "description": "Level of the WHEN and THEN headings (the if-true and if-false chips are one level lower); default 4."
+        },
+        {
           "name": "className",
           "type": "string",
           "required": false,
@@ -49073,6 +49511,12 @@
           "type": "'touched' | 'all'",
           "required": false,
           "description": "When problems show on rows: touched (the default) shows a row's problems once it was edited; all shows every problem."
+        },
+        {
+          "name": "headingLevel",
+          "type": "2 | 3 | 4 | 5",
+          "required": false,
+          "description": "Level of the WHEN and THEN headings (the if-true and if-false chips are one level lower); default 4."
         },
         {
           "name": "className",
@@ -60314,6 +60758,367 @@
         }
       ]
     },
+    "TemplateEntry": {
+      "kind": "type",
+      "source": "src/patterns/template-library-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "全树唯一（分组 id 也算在内）。"
+        },
+        {
+          "name": "title",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "body",
+          "type": "string",
+          "required": true,
+          "description": "正文，纯文本，多行。"
+        },
+        {
+          "name": "meta",
+          "type": "readonly { label: string; value: string }[]",
+          "required": false,
+          "description": "详情里的元信息，一行一项，例如 { label: '创建人', value: 'Wang · 2026-10-09 06:05' }；文字与时间格式由调用方给。"
+        },
+        {
+          "name": "badge",
+          "type": "string",
+          "required": false,
+          "description": "行尾的小字，例如「使用中」。"
+        },
+        {
+          "name": "children",
+          "type": "readonly TemplateEntry[]",
+          "required": false,
+          "description": "变体：挂在这个模板下面的几份。"
+        }
+      ]
+    },
+    "TemplateGroup": {
+      "kind": "type",
+      "source": "src/patterns/template-library-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "title",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "templates",
+          "type": "readonly TemplateEntry[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "readOnly",
+          "type": "boolean",
+          "required": false,
+          "description": "内置模板这类：标题与正文不能就地改，只能复制或使用。"
+        }
+      ]
+    },
+    "TemplateLibrary": {
+      "kind": "component",
+      "source": "src/patterns/template-library.tsx",
+      "props": [
+        {
+          "name": "groups",
+          "type": "readonly TemplateGroup[]",
+          "required": true,
+          "description": "Groups of templates, for example mine and built-in."
+        },
+        {
+          "name": "value",
+          "type": "string | null",
+          "required": false,
+          "description": "The selected template id (controlled); null for none."
+        },
+        {
+          "name": "defaultValue",
+          "type": "string | null",
+          "required": false,
+          "default": "null",
+          "description": "The selected template id at first (uncontrolled)."
+        },
+        {
+          "name": "onValueChange",
+          "type": "(id: string) => void",
+          "required": false,
+          "description": "Called with the id of the template that was picked in the tree."
+        },
+        {
+          "name": "onSave",
+          "type": "(id: string, patch: { title: string } | { body: string }) => void | Promise<unknown>",
+          "required": false,
+          "description": "Persist an edit: the field and the new text (title is trimmed)."
+        },
+        {
+          "name": "onUse",
+          "type": "(id: string) => void",
+          "required": true,
+          "description": "Called with the id when \"Use template\" is pressed."
+        },
+        {
+          "name": "onCopy",
+          "type": "(id: string) => void",
+          "required": false,
+          "description": "Called with the id after the text was copied to the clipboard."
+        },
+        {
+          "name": "onCopyError",
+          "type": "(id: string, error: unknown) => void",
+          "required": false,
+          "description": "Called with the id and the error when the clipboard refused; the button also says labels.copyFailed."
+        },
+        {
+          "name": "onSaveError",
+          "type": "(id: string, patch: { title: string } | { body: string }, error: unknown) => void",
+          "required": false,
+          "description": "Called when onSave threw or its promise rejected (the field has already rolled back to the last saved text)."
+        },
+        {
+          "name": "onDuplicate",
+          "type": "(id: string) => void",
+          "required": false,
+          "description": "Called with the id to make an editable copy (give it to show the duplicate button)."
+        },
+        {
+          "name": "labels",
+          "type": "TemplateLibraryLabels",
+          "required": true,
+          "description": "Texts."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class names on the root."
+        }
+      ]
+    },
+    "TemplateLibraryLabels": {
+      "kind": "type",
+      "source": "src/patterns/template-library.tsx",
+      "props": [
+        {
+          "name": "library",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the whole library."
+        },
+        {
+          "name": "search",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name and placeholder of the search field."
+        },
+        {
+          "name": "tree",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the tree."
+        },
+        {
+          "name": "results",
+          "type": "(count: number) => string",
+          "required": true,
+          "description": "Read out under the search while a query is typed, for example \"3 templates match\"."
+        },
+        {
+          "name": "noMatch",
+          "type": "string",
+          "required": true,
+          "description": "Shown in the tree when the query matches nothing."
+        },
+        {
+          "name": "empty",
+          "type": "string",
+          "required": true,
+          "description": "Shown in the detail pane while nothing is selected."
+        },
+        {
+          "name": "titleField",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the title field (the template's name)."
+        },
+        {
+          "name": "bodyField",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the body field."
+        },
+        {
+          "name": "titleEmpty",
+          "type": "string",
+          "required": true,
+          "description": "Message under the title field when it is emptied."
+        },
+        {
+          "name": "editHint",
+          "type": "string",
+          "required": true,
+          "description": "Read after the body text, for example \"Activate to edit\"."
+        },
+        {
+          "name": "title",
+          "type": "InlineEditLabels",
+          "required": true,
+          "description": "Texts for the title's inline editor."
+        },
+        {
+          "name": "save",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the body editor's save and cancel buttons."
+        },
+        {
+          "name": "cancel",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "bodyFailed",
+          "type": "string",
+          "required": true,
+          "description": "Message under the body after a save was rejected; the body is back to the last saved text."
+        },
+        {
+          "name": "meta",
+          "type": "string",
+          "required": true,
+          "description": "Meta list heading (accessible name of the list of created by, updated at)."
+        },
+        {
+          "name": "copy",
+          "type": "string",
+          "required": true,
+          "description": "Copy-text button, and the text it shows for a moment after copying."
+        },
+        {
+          "name": "copied",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "copyFailed",
+          "type": "string",
+          "required": true,
+          "description": "The text the copy button shows for a moment when the clipboard refused (permission, insecure page); announced politely."
+        },
+        {
+          "name": "duplicate",
+          "type": "string",
+          "required": true,
+          "description": "Duplicate button (shown when onDuplicate is given)."
+        },
+        {
+          "name": "use",
+          "type": "string",
+          "required": true,
+          "description": "The primary button, \"Use template\"."
+        },
+        {
+          "name": "readOnly",
+          "type": "string",
+          "required": true,
+          "description": "Shown in place of the body when a read-only template has no text."
+        }
+      ]
+    },
+    "TemplateLibraryProps": {
+      "kind": "type",
+      "source": "src/patterns/template-library.tsx",
+      "props": [
+        {
+          "name": "groups",
+          "type": "readonly TemplateGroup[]",
+          "required": true,
+          "description": "Groups of templates, for example mine and built-in."
+        },
+        {
+          "name": "value",
+          "type": "string | null",
+          "required": false,
+          "description": "The selected template id (controlled); null for none."
+        },
+        {
+          "name": "defaultValue",
+          "type": "string | null",
+          "required": false,
+          "description": "The selected template id at first (uncontrolled)."
+        },
+        {
+          "name": "onValueChange",
+          "type": "(id: string) => void",
+          "required": false,
+          "description": "Called with the id of the template that was picked in the tree."
+        },
+        {
+          "name": "onSave",
+          "type": "(id: string, patch: { title: string } | { body: string }) => void | Promise<unknown>",
+          "required": false,
+          "description": "Persist an edit: the field and the new text (title is trimmed)."
+        },
+        {
+          "name": "onUse",
+          "type": "(id: string) => void",
+          "required": true,
+          "description": "Called with the id when \"Use template\" is pressed."
+        },
+        {
+          "name": "onCopy",
+          "type": "(id: string) => void",
+          "required": false,
+          "description": "Called with the id after the text was copied to the clipboard."
+        },
+        {
+          "name": "onCopyError",
+          "type": "(id: string, error: unknown) => void",
+          "required": false,
+          "description": "Called with the id and the error when the clipboard refused; the button also says labels.copyFailed."
+        },
+        {
+          "name": "onSaveError",
+          "type": "(id: string, patch: { title: string } | { body: string }, error: unknown) => void",
+          "required": false,
+          "description": "Called when onSave threw or its promise rejected (the field has already rolled back to the last saved text)."
+        },
+        {
+          "name": "onDuplicate",
+          "type": "(id: string) => void",
+          "required": false,
+          "description": "Called with the id to make an editable copy (give it to show the duplicate button)."
+        },
+        {
+          "name": "labels",
+          "type": "TemplateLibraryLabels",
+          "required": true,
+          "description": "Texts."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class names on the root."
+        }
+      ]
+    },
     "TerminalLine": {
       "kind": "type",
       "source": "src/katana/mac-terminal.tsx",
@@ -63328,6 +64133,18 @@
       "source": "src/cn/trading-date-picker.tsx",
       "props": [
         {
+          "name": "events",
+          "type": "CalendarEventSource",
+          "required": false,
+          "description": "Events by day (a YYYY-MM-DD table or a lookup function): days with events get dots, hover or focus reads them out."
+        },
+        {
+          "name": "insight",
+          "type": "CalendarInsight",
+          "required": false,
+          "description": "One line under the calendar: an icon and a sentence, for example \"Avoided the 11-27 half day\"."
+        },
+        {
           "name": "value",
           "type": "string | null",
           "required": true,
@@ -63437,6 +64254,18 @@
       "kind": "type",
       "source": "src/cn/trading-date-picker.tsx",
       "props": [
+        {
+          "name": "events",
+          "type": "CalendarEventSource",
+          "required": false,
+          "description": "Events by day (a YYYY-MM-DD table or a lookup function): days with events get dots, hover or focus reads them out."
+        },
+        {
+          "name": "insight",
+          "type": "CalendarInsight",
+          "required": false,
+          "description": "One line under the calendar: an icon and a sentence, for example \"Avoided the 11-27 half day\"."
+        },
         {
           "name": "value",
           "type": "string | null",

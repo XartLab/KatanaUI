@@ -99,6 +99,11 @@
           "target": "~/src/katana/ui/theme/brush-chart.css"
         },
         {
+          "path": "src/theme/calendar-events.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/calendar-events.css"
+        },
+        {
           "path": "src/theme/calendar-heatmap.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/calendar-heatmap.css"
@@ -297,6 +302,11 @@
           "path": "src/theme/fan-out-grid.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/fan-out-grid.css"
+        },
+        {
+          "path": "src/theme/file-import.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/file-import.css"
         },
         {
           "path": "src/theme/filter-bar.css",
@@ -812,6 +822,11 @@
           "path": "src/theme/technical-rating.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/technical-rating.css"
+        },
+        {
+          "path": "src/theme/template-library.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/template-library.css"
         },
         {
           "path": "src/theme/theme-heat-matrix.css",
@@ -3470,6 +3485,44 @@
       ]
     },
     {
+      "name": "calendar-events-model",
+      "type": "registry:lib",
+      "title": "Calendar Events Model",
+      "description": "日历事件点与洞察的纯函数：取某天的事件、格子上的点、把一天的事件读成一句话、日期标签。",
+      "registryDependencies": [
+        "@katana/severity"
+      ],
+      "files": [
+        {
+          "path": "src/patterns/calendar-events-model.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/patterns/calendar-events-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "calendar-events",
+      "type": "registry:component",
+      "title": "Calendar Events",
+      "description": "四个日历（Calendar、DateTimeInput、DateRangePicker、TradingDatePicker）共用的可选能力：有事件的格子下画点、悬停与聚焦读出当天的事、日历脚的一行洞察。",
+      "dependencies": [
+        "@internationalized/date@3.12.4",
+        "lucide-react@1.67.0",
+        "react-aria-components@1.22.1"
+      ],
+      "registryDependencies": [
+        "@katana/calendar-events-model",
+        "@katana/severity"
+      ],
+      "files": [
+        {
+          "path": "src/patterns/calendar-events.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/patterns/calendar-events.tsx"
+        }
+      ]
+    },
+    {
       "name": "calendar",
       "type": "registry:component",
       "title": "Calendar",
@@ -3479,6 +3532,7 @@
         "react-aria-components@1.22.1"
       ],
       "registryDependencies": [
+        "@katana/calendar-events",
         "@katana/cn",
         "@katana/date-range-model",
         "@katana/date-time-model"
@@ -3574,6 +3628,7 @@
         "react-aria-components@1.22.1"
       ],
       "registryDependencies": [
+        "@katana/calendar-events",
         "@katana/cn",
         "@katana/date-range-model",
         "@katana/popover"
@@ -3596,6 +3651,7 @@
         "react-aria-components@1.22.1"
       ],
       "registryDependencies": [
+        "@katana/calendar-events",
         "@katana/date-time-model",
         "@katana/popover"
       ],
@@ -3738,6 +3794,49 @@
           "path": "src/patterns/expandable-navbar.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/patterns/expandable-navbar.tsx"
+        }
+      ]
+    },
+    {
+      "name": "file-import-model",
+      "type": "registry:lib",
+      "title": "File Import Model",
+      "description": "FileImport 的纯逻辑：文件类型、状态语气、清单计数、粘贴的链接是否合法。",
+      "registryDependencies": [
+        "@katana/severity"
+      ],
+      "files": [
+        {
+          "path": "src/patterns/file-import-model.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/patterns/file-import-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "file-import",
+      "type": "registry:component",
+      "title": "File Import",
+      "description": "研究资料的导入面板：顶部「上传 / 粘贴 / 链接」三个来源页签，下面是多文件清单，每行类型图标、名字、大小、上传百分比、完成或失败，失败行有「重试 / 移除」。上传本身由调用方做：件只显示 items 给的状态，选了文件、粘了文字、给了链接、按了重试与移除都只回调。上传区是现有的 AnimatedFileUpload（list={false}）。研报 PDF、因子 CSV、回测结果 parquet 用。交互借自 Jamie Merrill 的「文档上传」，样子是我们的。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/animated-file-upload",
+        "@katana/button",
+        "@katana/cn",
+        "@katana/file-import-model",
+        "@katana/input",
+        "@katana/progress",
+        "@katana/severity",
+        "@katana/tabs",
+        "@katana/textarea"
+      ],
+      "files": [
+        {
+          "path": "src/patterns/file-import.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/patterns/file-import.tsx"
         }
       ]
     },
@@ -4300,6 +4399,43 @@
           "path": "src/patterns/task-list.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/patterns/task-list.tsx"
+        }
+      ]
+    },
+    {
+      "name": "template-library-model",
+      "type": "registry:lib",
+      "title": "Template Library Model",
+      "description": "TemplateLibrary 的纯逻辑：按标题过滤整棵树、命中字的切分、按 id 找模板。",
+      "files": [
+        {
+          "path": "src/patterns/template-library-model.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/patterns/template-library-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "template-library",
+      "type": "registry:component",
+      "title": "Template Library",
+      "description": "左边可搜索、分组（我的 / 内置）的模板树，右边详情：标题与正文就地编辑（点即编辑，Esc 取消，⌘↵ 保存）、元信息、复制、「使用模板」。量化里放策略模板、提示词模板、回测配置模板。树是 react-aria 的 Tree：↑↓ 走、→ 展开、← 收起、Enter 选中；搜索按标题过滤，命中的字高亮，命中的分支自动展开。内置分组只读，只能复制或使用。交互借自 Jamie Merrill 的「保存模板」「Inline editing」。",
+      "dependencies": [
+        "lucide-react@1.67.0",
+        "react-aria-components@1.22.1"
+      ],
+      "registryDependencies": [
+        "@katana/button",
+        "@katana/cn",
+        "@katana/inline-edit",
+        "@katana/input",
+        "@katana/template-library-model"
+      ],
+      "files": [
+        {
+          "path": "src/patterns/template-library.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/patterns/template-library.tsx"
         }
       ]
     },
@@ -8332,6 +8468,7 @@
         "react-aria-components@1.22.1"
       ],
       "registryDependencies": [
+        "@katana/calendar-events",
         "@katana/cn",
         "@katana/cn-labels",
         "@katana/cn-trading-date-model",

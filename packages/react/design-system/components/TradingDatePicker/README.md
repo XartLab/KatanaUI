@@ -12,6 +12,8 @@
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
+| `events` | `CalendarEventSource` | — | Events by day (a YYYY-MM-DD table or a lookup function): days with events get dots, hover or focus reads them out. |
+| `insight` | `CalendarInsight` | — | One line under the calendar: an icon and a sentence, for example "Avoided the 11-27 half day". |
 | `value` * | `string \| null` | — | The selected trading day as YYYY-MM-DD; null means nothing picked. |
 | `onValueChange` * | `(date: string) => void` | — | Called with a trading day only; closed days are never reported. |
 | `calendar` * | `TradingCalendar` | — | The trading calendar: a set or array of open days (YYYY-MM-DD), or a function that says whether a day is open. |
@@ -76,6 +78,7 @@ export function TradingDatePickerUsage() {
 - 选中的日子本身休市（调用方传了休市日）：日期文字灰色加删除线，data-closed 标出。
 - value 为 null：按钮写占位字；前后按钮禁用。
 - 到 min / max 或再往前往后没有交易日：对应方向的按钮禁用。
+- 事件点与洞察（可选，#226）：传 events（按 YYYY-MM-DD 的表或查询函数）后，有事件的格子下画 4px 的小点（最多 3 个，按语气着色，选中格上改成选中前景）；一天超过 3 件事时只画 2 个点，第 3 个位置换成「+」；悬停或键盘聚焦在这格上，日历脚的读数行（固定一行高，放不下的截断，悬停的 title 给全文）写出当天的事，没有悬停时读选中日（区间日历读起点）；实心底的格子（单月选中格、区间起止两头）上点换成选中前景，区间中段保留语气色。传 insight 后脚上多一行「图标加一句话」。两样都不传，DOM 与样子与原来一致。
 
 ## Don't
 

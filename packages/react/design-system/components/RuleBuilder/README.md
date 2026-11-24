@@ -8,7 +8,7 @@
 
 ### RuleBuilder
 
-value 受控或 defaultValue 不受控，每次改动 onValueChange 回整份新规则；showIssues 默认只显示改过的行的问题，"all" 全显。
+value 受控或 defaultValue 不受控，每次改动 onValueChange 回整份新规则；showIssues 默认只显示改过的行的问题，"all" 全显；headingLevel 设 WHEN / THEN 标题层级（默认 4）。
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
@@ -19,6 +19,7 @@ value 受控或 defaultValue 不受控，每次改动 onValueChange 回整份新
 | `templates` * | `RuleTextTemplates` | — | Templates of the one-line readback. |
 | `labels` * | `RuleBuilderLabels` | — | Texts. |
 | `showIssues` | `'touched' \| 'all'` | `'touched'` | When problems show on rows: touched (the default) shows a row's problems once it was edited; all shows every problem. |
+| `headingLevel` | `2 \| 3 \| 4 \| 5` | `4` | Level of the WHEN and THEN headings (the if-true and if-false chips are one level lower); default 4. |
 | `className` | `string` | — | Extra class name on the root. |
 
 ### ruleToText
@@ -369,6 +370,7 @@ export function RuleBuilderUsage() {
         onValueChange={setRule}
         templates={RULE_TEMPLATES}
         labels={RULE_LABELS}
+        headingLevel={2}
       />
       <details style={{ marginTop: 8 }}>
         <summary>Rule JSON</summary>
@@ -403,10 +405,10 @@ export function RuleBuilderUsage() {
 ```
 RuleBuilder
   头（回读一句话（有名字的 group） · 状态（有问题时是按钮） · Button 撤销 · Button 重做）
-  WHEN section
+  WHEN（role=group，标题 headingLevel）
     组：（嵌套组头：把手 · 标题 · 删除）· 树（ul 行 li：把手 / 锁 · 字段 Select · 运算符 Select · 值 · 删除；行下写错误）· And / Or 按钮 · Button 加条件 · Button 加组
     值：数字框（单位）/ 区间两个数字框 / 选项 Select / 标签 + 勾选列表 / 文字框 / 引用字段 Select 与链接钮
-  THEN section（有动作定义才出现）
+  THEN（role=group，有动作定义才出现）
     若为真 / 若为假：标签 · 动作行（把手 · 类型 Select · 各个参数（连接词 + Select / 数字框 / 文字框）· 草稿标 · 删除）· Button 加动作
   键位说明（aria-describedby）· 播报
 ```
