@@ -144,8 +144,9 @@ import { EquityCurve } from '@katana-ui/react/quant'`}
             '截图停在哪一帧：能等的等终态',
             <>
               不赌「等 N 毫秒够不够」。截图前统一过 {code('settled()')}（browser/settle.ts）：连着 3
-              帧都没有在跑的有限动画或过渡才放行，Radix 浮层要先定好位（定位前外壳是 translate(0,
-              -200%)，只看动画会误判已静）
+              帧都没有在跑的有限动画或过渡、字体与图片都载完才放行，Radix 浮层要先定好位（定位前外壳是 translate(0,
+              -200%)，只看动画会误判已静）。整体 8s 截止，到点抛错并点名没完的动画、「radix popper not
+              positioned」或图片，绝不对着半成品截图
             </>,
           ],
           [
@@ -159,13 +160,16 @@ import { EquityCurve } from '@katana-ui/react/quant'`}
             '截图停在哪一帧：一直在动的件',
             <>
               先看件有没有静态参数：{code('animate={false}')}（DitherChart）、{code('paused')}
-              （Orb、InfiniteSlider）。没有就钉时间：画布靠 rAF 与 performance.now 画的，挂载前装 {code(
-                'frameClock()',
-              )}{' '}
-              走固定 60 帧；靠 setInterval 变的（SwitchboardCard，种子固定），挂载前假掉 setInterval、走固定 8
-              跳，再换回只假 Date。无限循环的 CSS 动画（打字光标）用 {code('settled({ freezeInfinite: true })')} 停在第
-              0 刻
+              （Orb、InfiniteSlider）。没有就钉时间：画布靠 rAF 与 performance.now 画的，用 {code('withFrameClock()')}
+              走固定帧数（MatrixOrb 60 帧；DitherChart 的有限画入走到没有帧为止，所以截的就是演示件本身）；靠
+              setInterval 变的（SwitchboardCard，种子固定），用 {code('withFakeIntervals()')} 走固定 8 跳。两个包装都在
+              finally 里换回真的，一个测试失败不会拖累同文件后面的。无限循环的 CSS 动画（打字光标）用
+              {code('settled({ freezeInfinite: true })')} 停在第 0 刻，它会停住页面里所有无限动画，只给打字光标用
             </>,
+          ],
+          [
+            '截图与演示分开维护的一处',
+            'WordBuild：演示件有两句、会循环退场，永远没有静止的时刻，截图只放第一句（单句不退场）；第二句走同一条代码路径，没有单独的截图',
           ],
           [
             '截图停在哪一帧：不要靠 prefers-reduced-motion',

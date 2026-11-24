@@ -10,6 +10,7 @@ import { AnimatedStepperUsage } from '../gallery/usage/AnimatedStepperUsage.tsx'
 import { AnimatedTagsUsage } from '../gallery/usage/AnimatedTagsUsage.tsx'
 import { CodeBlockUsage } from '../gallery/usage/CodeBlockUsage.tsx'
 import { CountBadgeUsage } from '../gallery/usage/CountBadgeUsage.tsx'
+import { DitherChartUsage } from '../gallery/usage/DitherChartUsage.tsx'
 import { DotMatrixUsage } from '../gallery/usage/DotMatrixUsage.tsx'
 import { DynamicIslandUsage } from '../gallery/usage/DynamicIslandUsage.tsx'
 import { ExposureSliderUsage } from '../gallery/usage/ExposureSliderUsage.tsx'
@@ -41,7 +42,6 @@ import { MotionConfig } from 'motion/react'
 import {
   ARCADE_SPRITES,
   ArcadePixel,
-  DitherChart,
   InfiniteSlider,
   MeasuredSkeleton,
   WebSearchCitation,
@@ -50,7 +50,7 @@ import {
 } from '../src/index'
 import { CopyToastStates } from '../gallery/pages/undo-copy.tsx'
 import { mount } from './render.tsx'
-import { frameClock, settled, waitUntil } from './settle.ts'
+import { settled, waitUntil, withFakeIntervals, withFrameClock, type FrameClock } from './settle.ts'
 
 const items: Record<string, React.ReactNode> = {
   'ai-status': <AiStatusUsage />,
@@ -77,15 +77,7 @@ const items: Record<string, React.ReactNode> = {
   ),
   'code-block': <CodeBlockUsage />,
   'count-badge': <CountBadgeUsage />,
-  // animate={false}: draws the finished picture at once; the demo's 900ms draw-in is frame-driven, so a shot could land anywhere in it (#219).
-  'dither-chart': (
-    <DitherChart
-      variant="line"
-      description="Equity curve rising from 3 to 14"
-      data={[{ points: [3, 5, 4, 7, 9, 8, 12, 14].map((value) => ({ value })) }]}
-      animate={false}
-    />
-  ),
+  'dither-chart': <DitherChartUsage />,
   'dot-matrix': <DotMatrixUsage />,
   'dynamic-island': <DynamicIslandUsage />,
   'exposure-slider': <ExposureSliderUsage />,
@@ -194,9 +186,16 @@ const ready: Record<string, () => boolean> = {
   'mac-terminal': () =>
     document.querySelector('[data-slot="mac-terminal"] pre')?.textContent?.includes('sharpe 1.42') ?? false,
 }
-// 画布按 requestAnimationFrame 与 performance.now 画的：虚拟时钟走 60 帧（1 秒）后不再有帧。
-const framed = new Set(['matrix-orb'])
-// 灯随 setInterval 变（SwitchboardCard，每 200ms 一跳，种子固定）：假的 setInterval 走 8 跳（1.6s），之后不再跳。
+// 画布按 requestAnimationFrame 与 performance.now 画的：虚拟时钟走固定的帧数后不再有帧（withFrameClock，出错也会恢复真时钟）。
+// matrix-orb 永远在动，走 60 帧（1 秒）；dither-chart 的 900ms 画入是有限的，等第一帧排上（IntersectionObserver 触发）后走到没有帧为止，即演示件的终态。
+const framed: Record<string, (clock: FrameClock) => Promise<void> | void> = {
+  'matrix-orb': (clock) => clock.step(60),
+  'dither-chart': async (clock) => {
+    await waitUntil(() => clock.pending() > 0, 'dither-chart first frame')
+    clock.runToIdle()
+  },
+}
+// 灯随 setInterval 变（SwitchboardCard，每 200ms 一跳，种子固定）：假的 setInterval 走 8 跳（1.6s），之后不再跳（withFakeIntervals，出错也会换回只假 Date）。
 const SWITCHBOARD_TICKS = 8
 
 for (const theme of ['graphite', 'console'] as const) {
@@ -204,37 +203,34 @@ for (const theme of ['graphite', 'console'] as const) {
     for (const [name, node] of Object.entries(items)) {
       test(name, async () => {
         await page.viewport(960, 1800)
-        const clock = framed.has(name) ? frameClock() : undefined
-        const ticking = name === 'switchboard-card'
-        if (ticking) {
-          vi.useFakeTimers({ toFake: ['Date', 'setInterval', 'clearInterval'] })
-          vi.setSystemTime(NOW)
+        const render = async () => {
+          await mount(
+            <div
+              style={{
+                width: 720,
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 8,
+              }}
+            >
+              {node}
+            </div>,
+            theme,
+          )
+          await new Promise((r) => setTimeout(r, settle[name] ?? 250)) // let measuring / enter transitions finish
         }
-        await mount(
-          <div
-            style={{
-              width: 720,
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 8,
-            }}
-          >
-            {node}
-          </div>,
-          theme,
-        )
-        await new Promise((r) => setTimeout(r, settle[name] ?? 250)) // let measuring / enter transitions finish
-        if (clock) {
-          clock.step(60)
-          clock.restore()
-        }
-        if (ticking) {
-          vi.advanceTimersByTime(200 * SWITCHBOARD_TICKS)
-          // 回到只假 Date：之前登记的假 setInterval 随之作废，灯停在第 8 跳。
-          vi.useFakeTimers({ toFake: ['Date'] })
-          vi.setSystemTime(NOW)
-          await new Promise((r) => setTimeout(r, 50))
-        }
+        const drive = framed[name]
+        if (drive)
+          await withFrameClock(async (clock) => {
+            await render()
+            await drive(clock)
+          })
+        else if (name === 'switchboard-card')
+          await withFakeIntervals(NOW, async (advance) => {
+            await render()
+            advance(200 * SWITCHBOARD_TICKS)
+          })
+        else await render()
         const done = ready[name]
         if (done) await waitUntil(done, name)
         await settled()

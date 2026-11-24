@@ -64,8 +64,18 @@ const settle = () => new Promise((r) => setTimeout(r, 800))
 const ready: Record<string, () => boolean> = {
   // 一个字一个字打：打完 data-typing 才消失。
   'typewriter-text': () => !document.querySelector('[data-slot="typewriter-text"][data-typing]'),
-  // 一个词一个词搭：四个词都到了。演示件有两句、搭完会退场换下一句，所以截图只放第一句（单句不退场），停在搭完的样子。
-  'word-build': () => document.querySelector('[data-slot="word-build"]')?.getAttribute('data-words') === '4',
+  // 一个词一个词搭：四个词都到了，且每个词都落定（前面的词会被 layout 动画推开，所以看全部）。motion 的 JS 补间写 inline style，
+  // 落定后 opacity 为 1、transform 为 none；它不在 Web Animations 里，settled() 看不到，也不靠固定睡眠。
+  // 演示件有两句、搭完会退场换下一句，永远没有静止的时刻，所以截图只放第一句（单句不退场）；第二句走同一条代码路径，这里不单独守。
+  'word-build': () => {
+    const root = document.querySelector('[data-slot="word-build"]')
+    const words = [...(root?.children ?? [])] as HTMLElement[]
+    return (
+      root?.getAttribute('data-words') === '4' &&
+      words.length === 4 &&
+      words.every((word) => word.style.opacity === '1' && word.style.transform === 'none')
+    )
+  },
 }
 // 光标每秒明灭、永远循环（CSS，不跟 reduced-motion）：停在第 0 刻（亮）。
 const frozen = new Set(['typewriter-text'])
@@ -78,11 +88,7 @@ for (const theme of ['graphite', 'console'] as const) {
     if (open) document.querySelector<HTMLElement>('[data-testid="frame"] button')?.click()
     await settle()
     const done = ready[name]
-    if (done) {
-      await waitUntil(done, name)
-      // 最后一个词的入场用 motion 的 JS 弹簧画，不在 Web Animations 里，等它落定。
-      if (name === 'word-build') await new Promise((r) => setTimeout(r, 700))
-    }
+    if (done) await waitUntil(done, name)
     await settled({ freezeInfinite: frozen.has(name) })
     await expect(page.getByTestId('frame')).toMatchScreenshot(`${theme}-${name}`)
   }
