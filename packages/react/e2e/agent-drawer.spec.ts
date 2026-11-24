@@ -166,6 +166,8 @@ test('Agent 列表（DataGrid）点一行，右边 Sheet 里打开抽屉；Esc �
   await expect(dialog).toBeVisible()
   await expect(dialog.locator('[data-slot="agent-drawer-status"]')).toHaveText('暂停')
   await expect(dialog.locator('[data-slot="agent-drawer-trigger"]')).toContainText('事件')
+  // 抽屉真的有宽度（gallery 不在 Tailwind 的 @source 里，任意值类不会生成，曾经只有 1px 宽）。
+  expect((await dialog.boundingBox())!.width).toBeGreaterThanOrEqual(320)
   // 30 周放不下：格子不压到 10px 以下，整张图横向滚动并停在最新一端。
   const scroller = dialog.locator('[data-slot="agent-activity-scroller"]')
   const sizes = await scroller.evaluate((el) => ({

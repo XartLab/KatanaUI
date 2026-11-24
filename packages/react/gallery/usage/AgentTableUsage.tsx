@@ -153,7 +153,7 @@ export function AgentTableUsage() {
         />
       </div>
       <Sheet open={agent !== undefined} onOpenChange={(open) => !open && setOpenId(null)}>
-        <SheetContent side="right" closeLabel="关闭" className="w-[min(400px,calc(100vw-24px))]">
+        <SheetContent side="right" closeLabel="关闭" style={{ width: 'min(400px, calc(100vw - 24px))' }}>
           {agent ? (
             <AgentDrawer
               name={agent.name}

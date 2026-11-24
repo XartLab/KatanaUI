@@ -111,6 +111,9 @@ export default {
       const dialog = page.getByRole('dialog', { name: '回补日线' })
       await expect(dialog).toBeVisible()
       await expect(dialog.locator('[data-slot="agent-drawer-status"]')).toHaveText('暂停')
+      // 抽屉真的有宽度：不是 1px（scrollWidth > clientWidth 在 1px 宽上也成立，抓不住）。
+      const width = Math.round((await dialog.boundingBox()).width)
+      expect(width).toBeGreaterThanOrEqual(320)
       // 30 周放不下：格子不小于 10px，整张图横向滚动并停在最新一端。
       const sizes = await dialog.locator('[data-slot="agent-activity-scroller"]').evaluate((el) => ({
         scrollable: el.scrollWidth - el.clientWidth,
@@ -123,7 +126,7 @@ export default {
       await aria(dialog, 'agent-drawer-sheet.aria.yml')
       await page.keyboard.press('Escape')
       await expect(dialog).toHaveCount(0)
-      return { closed: true, ...sizes }
+      return { closed: true, width, ...sizes }
     })
   },
 }
