@@ -345,7 +345,7 @@
   color: var(--accent);
 }
 .k-spark-ascii-pre .is-dim {
-  color: var(--k-content-tertiary-foreground);
+  color: var(--k-content-secondary-foreground);
 }
 .k-spark-ascii-cursor {
   position: absolute;

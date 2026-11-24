@@ -308,7 +308,7 @@ export function PanelTabs({
                     </span>
                   ) : null}
                   {tab.badge ? (
-                    <span className="font-(family-name:--font-num) text-[11px] text-ink-4">{tab.badge}</span>
+                    <span className="font-(family-name:--font-num) text-[11px] text-ink-3">{tab.badge}</span>
                   ) : null}
                 </button>
                 {closable ? (

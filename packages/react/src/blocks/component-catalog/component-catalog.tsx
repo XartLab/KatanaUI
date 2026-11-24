@@ -210,7 +210,7 @@ export function ComponentCatalog({
                     {item.name}
                   </span>
                   {item.unavailable ? (
-                    <span className="k-text-caption -mt-1 text-ink-4">{item.unavailable}</span>
+                    <span className="k-text-caption -mt-1 text-ink-3">{item.unavailable}</span>
                   ) : null}
                 </button>
               )

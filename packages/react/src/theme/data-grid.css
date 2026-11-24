@@ -696,7 +696,7 @@
 }
 .k-grid-section-count {
   flex: none;
-  color: var(--k-content-tertiary-foreground);
+  color: var(--k-content-secondary-foreground);
   font-variant-numeric: tabular-nums;
   letter-spacing: 0;
 }

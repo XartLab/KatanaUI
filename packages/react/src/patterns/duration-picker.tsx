@@ -108,7 +108,7 @@ function Field({
       style={{ width: `${Math.max(1, shown.length || 1) + (editing ? 2 : 0.4)}ch` }}
       className={cn(
         'k-text-body h-full min-w-0 border-0 bg-transparent p-0 text-center text-ink tabular-nums',
-        'placeholder:text-ink-4',
+        'placeholder:text-ink-3',
         editing
           ? 'cursor-text rounded-[5px] bg-surface-1 outline-0 focus-visible:outline-2 focus-visible:outline-(--k-focused-outlineColor)'
           : 'cursor-default outline-0',

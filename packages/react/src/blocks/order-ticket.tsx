@@ -332,7 +332,7 @@ function TicketSide({
             thumbLabels={[labels.percent]}
             onValueChange={([value]) => applyPercent(value ?? 0)}
           />
-          <div className="k-text-caption mt-1 flex justify-between text-ink-4 tabular-nums">
+          <div className="k-text-caption mt-1 flex justify-between text-ink-3 tabular-nums">
             {PERCENT_STOPS.map((stop) => (
               <button
                 key={stop}

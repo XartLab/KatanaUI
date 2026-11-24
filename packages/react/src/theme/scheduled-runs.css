@@ -23,7 +23,7 @@
   font: var(--text-data) var(--font-sans);
 }
 .k-sr-note {
-  color: var(--k-content-tertiary-foreground);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-sans-small);
 }
 .k-sr-mode {
@@ -56,7 +56,7 @@
 }
 .k-sr-empty {
   margin: 0;
-  color: var(--k-content-tertiary-foreground);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-sans-small);
 }
 .k-sr-week {
@@ -76,7 +76,7 @@
   display: flex;
   align-items: center;
   padding: 0 8px;
-  color: var(--k-content-tertiary-foreground);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-num-small);
 }
 .k-sr-day {
@@ -172,7 +172,7 @@
 }
 .k-sr-hint {
   margin: 0;
-  color: var(--k-content-tertiary-foreground);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-sans-small);
 }
 .k-sr-live {

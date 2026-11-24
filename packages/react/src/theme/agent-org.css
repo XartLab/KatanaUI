@@ -143,7 +143,7 @@
 }
 .k-at-model {
   flex: none;
-  color: var(--k-content-tertiary-foreground);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-mono);
 }
 .k-at-status {
@@ -171,7 +171,7 @@
   place-items: center;
   width: 14px;
   height: 14px;
-  color: var(--k-content-tertiary-foreground);
+  color: var(--k-content-secondary-foreground);
   cursor: pointer;
 }
 .k-at-fold svg {
@@ -212,7 +212,7 @@
 }
 .k-at-nums {
   gap: var(--space-3);
-  color: var(--k-content-tertiary-foreground);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-num-small);
 }
 .k-at-pop {
@@ -249,7 +249,7 @@
   white-space: nowrap;
 }
 .k-at-steps small {
-  color: var(--k-content-tertiary-foreground);
+  color: var(--k-content-secondary-foreground);
 }
 .k-at-steps [data-part='status'] {
   margin-left: auto;
@@ -431,7 +431,7 @@
 .k-fleet-panel-title,
 .k-fleet-empty {
   margin: 0;
-  color: var(--k-content-tertiary-foreground);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-sans-small);
 }
 @container (max-width: 640px) {

@@ -116,7 +116,7 @@
 }
 .k-pa-note {
   grid-area: note;
-  color: var(--k-content-tertiary-foreground);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-sans-small);
 }
 .k-pa-use {

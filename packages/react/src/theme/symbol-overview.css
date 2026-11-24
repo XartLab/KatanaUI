@@ -139,7 +139,7 @@
 .k-symov-empty {
   display: grid;
   place-items: center;
-  color: var(--k-content-tertiary-foreground);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-sans-small);
 }
 .k-symov-ranges {

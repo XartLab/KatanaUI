@@ -22,7 +22,7 @@
   font: var(--text-data) var(--font-sans);
 }
 .k-aq-name {
-  color: var(--k-content-tertiary-foreground);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-mono);
 }
 .k-aq-counts {
@@ -36,7 +36,7 @@
   gap: 4px;
 }
 .k-aq-counts dt {
-  color: var(--k-content-tertiary-foreground);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-sans-small);
 }
 .k-aq-counts dd {
@@ -179,12 +179,12 @@
   padding: 0 6px;
   border: 1px dashed var(--k-separable-primary-borderColor);
   border-radius: 4px;
-  color: var(--k-content-tertiary-foreground);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-sans-small);
 }
 .k-aq-more {
   margin: 0;
-  color: var(--k-content-tertiary-foreground);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-sans-small);
 }
 .k-aq-details:empty {
@@ -211,7 +211,7 @@
   gap: 6px;
 }
 .k-aq-details dt {
-  color: var(--k-content-tertiary-foreground);
+  color: var(--k-content-secondary-foreground);
 }
 .k-aq-details dd {
   margin: 0;
