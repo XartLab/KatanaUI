@@ -44,6 +44,8 @@
 
 ## Gotchas
 
+- WHEN / THEN 是 `role=group`（不是 region），标题层级由 `headingLevel` 定（文档站三份都设 2）；一页多份同名也不报 axe 的 landmark-unique，axe 的 heading-order 也过。
+
 - 页上有两份主演示（预览与「用法」页签各渲一次）：`[data-gallery-rule="main"]` 要 `.first()`，不然 Playwright 严格模式报两个元素。
 - 「默认只显示改过的行的问题」：没动过的行即使不合法也不红；要看全部用「校验」那份（showIssues="all"）。顶行状态不受这个影响，一直数全部问题。
 - 把手拖动用指针事件：流程里要先 `mouse.move` 到把手、`down`、小幅移动几步再移向目标（一步跳过去时落点来不及算）；松手后再读 JSON。

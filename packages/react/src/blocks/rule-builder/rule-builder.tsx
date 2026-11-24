@@ -91,6 +91,8 @@ export type RuleBuilderProps = {
   labels: RuleBuilderLabels
   /** When problems show on rows: touched (the default) shows a row's problems once it was edited; all shows every problem. */
   showIssues?: 'touched' | 'all'
+  /** Level of the WHEN and THEN headings (the if-true and if-false chips are one level lower); default 4. Pick the level that follows the heading above the builder so heading-order holds. */
+  headingLevel?: 2 | 3 | 4 | 5
   /** Extra class name on the root. */
   className?: string
 }
@@ -121,8 +123,11 @@ export function RuleBuilder({
   templates,
   labels,
   showIssues = 'touched',
+  headingLevel = 4,
   className,
 }: RuleBuilderProps) {
+  const Heading = `h${headingLevel}` as const
+  const SubHeading = `h${headingLevel + 1}` as 'h3' | 'h4' | 'h5' | 'h6'
   const [inner, setInner] = useState<Rule>(defaultValue ?? EMPTY)
   const rule = value ?? inner
   const [past, setPast] = useState<readonly Rule[]>([])
@@ -816,10 +821,10 @@ export function RuleBuilder({
     const shown = branch === 'ifTrue' ? shownIssues('ifTrue') : []
     return (
       <div className="k-rb-branch-block" data-slot="rule-branch" data-branch={branch}>
-        <h5 className="k-rb-branch" data-tone={branch === 'ifTrue' ? 'ok' : 'danger'}>
+        <SubHeading className="k-rb-branch" data-tone={branch === 'ifTrue' ? 'ok' : 'danger'}>
           {branch === 'ifTrue' ? <Check aria-hidden="true" /> : <X aria-hidden="true" />}
           {branch === 'ifTrue' ? labels.ifTrue : labels.ifFalse}
-        </h5>
+        </SubHeading>
         <div className="k-rb-tree" data-static="">
           <ul className="k-rb-list" data-list={branch}>
             {list.map((action, index) =>
@@ -887,20 +892,21 @@ export function RuleBuilder({
           </Button>
         </span>
       </header>
-      <section className="k-rb-part" data-part-name="when" aria-labelledby={`${uid}-when`}>
-        <h4 id={`${uid}-when`} className="k-rb-heading">
+      {/* 用 role=group 不用 region：一页放几份构建器时，同名的 WHEN / THEN 不会成为重名的 landmark（axe landmark-unique）。 */}
+      <div className="k-rb-part" data-part-name="when" role="group" aria-labelledby={`${uid}-when`}>
+        <Heading id={`${uid}-when`} className="k-rb-heading">
           {labels.when}
-        </h4>
+        </Heading>
         {renderGroup(rule.when, 1)}
-      </section>
+      </div>
       {hasActions && (
-        <section className="k-rb-part" data-part-name="actions" aria-labelledby={`${uid}-actions`}>
-          <h4 id={`${uid}-actions`} className="k-rb-heading">
+        <div className="k-rb-part" data-part-name="actions" role="group" aria-labelledby={`${uid}-actions`}>
+          <Heading id={`${uid}-actions`} className="k-rb-heading">
             {labels.actions}
-          </h4>
+          </Heading>
           {renderBranch('ifTrue')}
           {renderBranch('ifFalse')}
-        </section>
+        </div>
       )}
       <span id={hintId} hidden>
         {labels.hint}

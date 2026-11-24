@@ -12029,7 +12029,7 @@ export const PAGES: readonly DocPage[] = [
     propParts: [
       {
         part: 'RuleBuilder',
-        note: 'value 受控或 defaultValue 不受控，每次改动 onValueChange 回整份新规则；showIssues 默认只显示改过的行的问题，"all" 全显。',
+        note: 'value 受控或 defaultValue 不受控，每次改动 onValueChange 回整份新规则；showIssues 默认只显示改过的行的问题，"all" 全显；headingLevel 设 WHEN / THEN 标题层级（默认 4）。',
       },
       { part: 'ruleToText', note: '纯函数：按调用方的模板把整棵规则回读成一句话；没填的值写 blank。' },
       {
@@ -12053,7 +12053,7 @@ export const PAGES: readonly DocPage[] = [
       '不要指望它下单：「下单草稿」只是一种动作类型，真下单要调用方在确认后走 OrderTicket。',
     ],
     composition:
-      'RuleBuilder\n  头（回读一句话（有名字的 group） · 状态（有问题时是按钮） · Button 撤销 · Button 重做）\n  WHEN section\n    组：（嵌套组头：把手 · 标题 · 删除）· 树（ul 行 li：把手 / 锁 · 字段 Select · 运算符 Select · 值 · 删除；行下写错误）· And / Or 按钮 · Button 加条件 · Button 加组\n    值：数字框（单位）/ 区间两个数字框 / 选项 Select / 标签 + 勾选列表 / 文字框 / 引用字段 Select 与链接钮\n  THEN section（有动作定义才出现）\n    若为真 / 若为假：标签 · 动作行（把手 · 类型 Select · 各个参数（连接词 + Select / 数字框 / 文字框）· 草稿标 · 删除）· Button 加动作\n  键位说明（aria-describedby）· 播报',
+      'RuleBuilder\n  头（回读一句话（有名字的 group） · 状态（有问题时是按钮） · Button 撤销 · Button 重做）\n  WHEN（role=group，标题 headingLevel）\n    组：（嵌套组头：把手 · 标题 · 删除）· 树（ul 行 li：把手 / 锁 · 字段 Select · 运算符 Select · 值 · 删除；行下写错误）· And / Or 按钮 · Button 加条件 · Button 加组\n    值：数字框（单位）/ 区间两个数字框 / 选项 Select / 标签 + 勾选列表 / 文字框 / 引用字段 Select 与链接钮\n  THEN（role=group，有动作定义才出现）\n    若为真 / 若为假：标签 · 动作行（把手 · 类型 Select · 各个参数（连接词 + Select / 数字框 / 文字框）· 草稿标 · 删除）· Button 加动作\n  键位说明（aria-describedby）· 播报',
     keys: [
       ['Tab', '依次走把手、字段、运算符、值、删除，再到每组的「加条件」「加组」'],
       [

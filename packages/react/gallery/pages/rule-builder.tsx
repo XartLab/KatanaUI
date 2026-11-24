@@ -84,6 +84,7 @@ function SwitchDemo() {
         onValueChange={setRule}
         templates={RULE_TEMPLATES}
         labels={RULE_LABELS}
+        headingLevel={2}
       />
     </div>
   )
@@ -114,6 +115,7 @@ export function RuleBuilderDemo() {
             defaultValue={BROKEN}
             templates={RULE_TEMPLATES}
             labels={RULE_LABELS}
+            headingLevel={2}
             showIssues="all"
           />
         </div>
