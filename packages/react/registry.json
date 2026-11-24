@@ -39,6 +39,11 @@
           "target": "~/src/katana/ui/theme/agent-crew.css"
         },
         {
+          "path": "src/theme/agent-drawer.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/agent-drawer.css"
+        },
+        {
           "path": "src/theme/agent-lanes.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/agent-lanes.css"
@@ -494,6 +499,11 @@
           "target": "~/src/katana/ui/theme/number-input.css"
         },
         {
+          "path": "src/theme/omnibox.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/omnibox.css"
+        },
+        {
           "path": "src/theme/options-chain.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/options-chain.css"
@@ -567,6 +577,11 @@
           "path": "src/theme/price-tag.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/price-tag.css"
+        },
+        {
+          "path": "src/theme/proximity-highlight.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/proximity-highlight.css"
         },
         {
           "path": "src/theme/quantile-layers.css",
@@ -652,6 +667,11 @@
           "path": "src/theme/row-actions.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/row-actions.css"
+        },
+        {
+          "path": "src/theme/rule-builder.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/rule-builder.css"
         },
         {
           "path": "src/theme/run-mode-badge.css",
@@ -1083,6 +1103,19 @@
           "path": "src/lib/overlay.tsx",
           "type": "registry:lib",
           "target": "~/src/katana/ui/lib/overlay.tsx"
+        }
+      ]
+    },
+    {
+      "name": "proximity-highlight",
+      "type": "registry:lib",
+      "title": "Proximity Highlight",
+      "description": "一块高亮底色在列表或菜单的行间平滑滑动，而不是逐行亮灭；指针划过行间的缝与容器内边时底色不灭，快速划过不抖（取最近的行，带 2px 迟滞）。没有指针时跟当前行（键盘高亮）。位置写在元素 style 上，不走 React 状态。万能框用它，菜单与列表也能用。",
+      "files": [
+        {
+          "path": "src/lib/proximity-highlight.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/lib/proximity-highlight.ts"
         }
       ]
     },
@@ -4380,6 +4413,36 @@
           "path": "src/patterns/view-switcher.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/patterns/view-switcher.tsx"
+        }
+      ]
+    },
+    {
+      "name": "omnibox",
+      "type": "registry:component",
+      "title": "Omnibox",
+      "description": "品种、命令、页面、插件、问 AI 的统一入口，IDE 式工作台的主入口：分类页签带计数；空查询列「最近」（可清除）与各类前几条，占位轮播示例查询；选中对象（品种、策略）不直接打开、变成输入框里的标签，结果换成对它的操作，空输入退格删标签回全局；输入像问句时结果收起、右侧提示换成「问 ↵」；高亮行行尾显示回车动作，⌘/Ctrl+↵ 新标签打开；高亮的对象行浮出预览卡；高亮底色在行间滑动。结果异步（AbortSignal）。交互借 Jamie Merrill 的搜索系列（2026-11-24 看的录屏帧），样子是我们的。",
+      "dependencies": [
+        "cmdk@1.1.1",
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/command",
+        "@katana/dialog",
+        "@katana/focus",
+        "@katana/hotkeys-model",
+        "@katana/proximity-highlight"
+      ],
+      "files": [
+        {
+          "path": "src/patterns/omnibox/omnibox-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/patterns/omnibox/omnibox-model.ts"
+        },
+        {
+          "path": "src/patterns/omnibox/omnibox.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/patterns/omnibox/omnibox.tsx"
         }
       ]
     },
@@ -9803,6 +9866,81 @@
           "path": "src/blocks/agent-crew/crew-model.ts",
           "type": "registry:component",
           "target": "~/src/katana/ui/blocks/agent-crew/crew-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "rule-builder",
+      "type": "registry:component",
+      "title": "Rule Builder",
+      "description": "告警、风控、选股条件、自动化触发共用的「条件树 + 动作」编辑器。WHEN：每条条件是字段（分组下拉）、运算符（随字段类型变：数值有 > ≥ < 区间 上穿 下穿，枚举有 是 / 任一 / 都不是，文本有 包含）、值（数字带单位、区间、选项、多选成标签；数值运算符可用链接钮换成另一个字段，如「收盘价 上穿 MA20」）；条件可组成组，组内 And / Or 点连线上的小标签切，最多嵌套 3 层（schema.maxDepth 改）；调用方可给锁定的起始条件（锁图标，不能删、不能拖，只改值），含锁定条件的组整组也删不掉（删除钮灰着并说明原因）；换字段时口径（类型 / 单位 / 选项）不同的值清空重填。THEN：动作分「若为真 / 若为假」两段，动作是类型加若干参数（每个参数有自己的类型与校验，如下单草稿 = 方向 + 数量 + 价格类型），是否必填看 schema.requireActions（默认不必填，选股规则可以只有 WHEN）；「只出草稿」的动作（下单草稿）行上带草稿标，件本身不下任何单。拖把手换序只在自己那一组或那一段里（拖到别处松手不动），Alt+↑↓ 同样；撤销重做存整份快照。值校验：必填、数值范围、区间次序、选项存在、引用、空组、动作缺参数，错的行红框、原因写在行下并接 aria-describedby。顶行把整棵规则回读成一句话，模板由调用方给；有问题时顶行状态是按钮，点了全部标红并把焦点移到第一个出错的格子。受控 value 换成另一份规则时撤销栈与「改过的行」清零。整份规则是纯 JSON `{ when, ifTrue, ifFalse }`（受控 value / onValueChange；键不叫 then / else，带 then 方法的对象会被当成 thenable），纯函数 ruleToText、validateRule 与件共用同一套逻辑。字段、运算符、动作全由 schema 传，件里不带行情与语言。交互与信息结构借自 Jamie Merrill 的「规则构建器」「高级规则构建器」（x.com/Jamie_Merrill，2026-11-24 读两张图，只借交互，皮肤是 Graphite）。评估过 react-querybuilder（MIT）：借了它「组 = 组合方式 + 子节点」的模型形状，代码没引（核心带 redux，缺锁定、引用字段、动作段、组内换序）。演示数据是示例。",
+      "dependencies": [
+        "lucide-react@1.67.0",
+        "radix-ui@1.8.1"
+      ],
+      "registryDependencies": [
+        "@katana/button",
+        "@katana/cn",
+        "@katana/combobox",
+        "@katana/input",
+        "@katana/popover",
+        "@katana/select"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/rule-builder/rule-builder.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/rule-builder/rule-builder.tsx"
+        },
+        {
+          "path": "src/blocks/rule-builder/rule-labels.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/rule-builder/rule-labels.ts"
+        },
+        {
+          "path": "src/blocks/rule-builder/rule-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/rule-builder/rule-model.ts"
+        },
+        {
+          "path": "src/blocks/rule-builder/rule-value.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/rule-builder/rule-value.tsx"
+        }
+      ]
+    },
+    {
+      "name": "agent-drawer",
+      "type": "registry:component",
+      "title": "Agent Drawer",
+      "description": "一个 Agent 本身的档案，侧抽屉（放进 Sheet）或停靠面板都能放：头是名字与一句说明；属性区是状态（在跑 / 暂停 / 停用，图标加词）、标签（多个）、触发（定时 / 事件 / 上传 / 手动，带图标，可附「交易日 08:30」这类细节）、负责人（头像加名字）、创建时间；下面三个页签「用量 / 配置 / 历史」，配置与历史的内容是调用方给的槽（没给的页签不出现）。用量页内置三块：顶上两张指标卡（节省时间、本月花费，数值与环比徽章由调用方写好）、活动热力格（最近 N 周每天跑了几次，带月份与星期标签）、最近运行列表（触发源或人、结果、时长、相对时间，点一行只回调运行 id，可接 AgentRunDetail）。底部 footer 槽放「通知我」「暂停」，件自己不做动作。Agent 列表不新建件：用 DataGrid 的 custom 列加 onOpen，点一行打开抽屉，演示见页上。「在跑」不用强调色（Graphite 下是橙，色弱下与失败红分不出，#211），用中性亮色加转圈图标与状态词。件不取时间，时间与时长由调用方格式化。信息结构与交互借自 Jamie Merrill 公开的 Agent 抽屉与 Agent tracker 截图（2026-11-24 读，只取结构与交互），样子是 KatanaUI 的，热力格是中性灰不是蓝；实现原创。演示数据是示例。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/avatar",
+        "@katana/calendar-model",
+        "@katana/chart-scale",
+        "@katana/cn",
+        "@katana/severity",
+        "@katana/tabs",
+        "@katana/tag"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/agent-drawer/agent-activity.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/agent-drawer/agent-activity.tsx"
+        },
+        {
+          "path": "src/blocks/agent-drawer/agent-drawer-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/agent-drawer/agent-drawer-model.ts"
+        },
+        {
+          "path": "src/blocks/agent-drawer/agent-drawer.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/agent-drawer/agent-drawer.tsx"
         }
       ]
     },

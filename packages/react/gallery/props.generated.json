@@ -1,6 +1,16 @@
 {
   "$comment": "生成文件（pnpm docs:props）：各导出的自有 props，取自 TS 类型与 JSDoc，不手改。继承来的 DOM / Radix 属性不列。",
   "exports": {
+    "ACTIVITY_LEVELS": {
+      "kind": "value",
+      "source": "src/blocks/agent-drawer/agent-drawer-model.ts",
+      "props": []
+    },
+    "ACTIVITY_PAGE_WEEKS": {
+      "kind": "value",
+      "source": "src/blocks/agent-drawer/agent-drawer-model.ts",
+      "props": []
+    },
     "ARCADE_SPRITES": {
       "kind": "value",
       "source": "src/katana/arcade-pixel-sprites.ts",
@@ -267,6 +277,259 @@
           "type": "AccountEquityLabels",
           "required": true,
           "description": "Texts."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "ActivityCell": {
+      "kind": "type",
+      "source": "src/blocks/agent-drawer/agent-drawer-model.ts",
+      "props": [
+        {
+          "name": "date",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "count",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "level",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "col",
+          "type": "number",
+          "required": true,
+          "description": "在第几周（列）、星期几（行），都从 0 起。"
+        },
+        {
+          "name": "row",
+          "type": "number",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "ActivityGridModel": {
+      "kind": "type",
+      "source": "src/blocks/agent-drawer/agent-drawer-model.ts",
+      "props": [
+        {
+          "name": "cols",
+          "type": "number",
+          "required": true,
+          "description": "几周（列）。"
+        },
+        {
+          "name": "rows",
+          "type": "readonly (readonly ActivityCell[])[]",
+          "required": true,
+          "description": "先按行（星期）再按列（周）排好，跟 role=grid 的读序一致。"
+        },
+        {
+          "name": "cells",
+          "type": "readonly ActivityCell[]",
+          "required": true,
+          "description": "按日期从旧到新。"
+        },
+        {
+          "name": "months",
+          "type": "readonly { col: number; month: number }[]",
+          "required": true,
+          "description": "每个月第一天所在的列（含区间起点那一列），月份从 0 起（一月是 0）。"
+        },
+        {
+          "name": "max",
+          "type": "number",
+          "required": true,
+          "description": "区间里单日最大的次数（固定上限时是那个上限）。"
+        },
+        {
+          "name": "cuts",
+          "type": "readonly number[]",
+          "required": true,
+          "description": "分位数模式的切点；给了固定 max 走线性档位时是空数组。"
+        }
+      ]
+    },
+    "AgentActivity": {
+      "kind": "component",
+      "source": "src/blocks/agent-drawer/agent-activity.tsx",
+      "props": [
+        {
+          "name": "days",
+          "type": "readonly AgentActivityDay[]",
+          "required": true,
+          "description": "Runs per day; days that are missing count as no runs."
+        },
+        {
+          "name": "from",
+          "type": "string",
+          "required": false,
+          "description": "First day shown (YYYY-MM-DD); defaults to the earliest day in days."
+        },
+        {
+          "name": "to",
+          "type": "string",
+          "required": false,
+          "description": "Last day shown (YYYY-MM-DD); defaults to the latest day in days."
+        },
+        {
+          "name": "weekStart",
+          "type": "0 | 1",
+          "required": false,
+          "default": "1",
+          "description": "Which weekday a column starts on (0 Sunday, 1 Monday)."
+        },
+        {
+          "name": "max",
+          "type": "number",
+          "required": false,
+          "description": "Count that fills the top shade."
+        },
+        {
+          "name": "monthLabels",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Twelve month names, January first; written above the first column of each month."
+        },
+        {
+          "name": "weekdayLabels",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Seven weekday names indexed like JavaScript (0 is Sunday); written for Monday, Wednesday and Friday, and used as each row's accessible name."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the grid."
+        },
+        {
+          "name": "describe",
+          "type": "(cell: { date: string; count: number }) => string",
+          "required": true,
+          "description": "The whole sentence for one day, read by screen readers and written in the readout line (\"11-03 ran 12 times\")."
+        },
+        {
+          "name": "legend",
+          "type": "{ less: string; more: string }",
+          "required": false,
+          "description": "Legend ends; without it no legend is drawn."
+        },
+        {
+          "name": "idle",
+          "type": "ReactNode",
+          "required": false,
+          "description": "What the readout line says when no cell is hovered or focused (a total, say)."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "AgentActivityDay": {
+      "kind": "type",
+      "source": "src/blocks/agent-drawer/agent-drawer-model.ts",
+      "props": [
+        {
+          "name": "date",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "count",
+          "type": "number",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "AgentActivityProps": {
+      "kind": "type",
+      "source": "src/blocks/agent-drawer/agent-activity.tsx",
+      "props": [
+        {
+          "name": "days",
+          "type": "readonly AgentActivityDay[]",
+          "required": true,
+          "description": "Runs per day; days that are missing count as no runs."
+        },
+        {
+          "name": "from",
+          "type": "string",
+          "required": false,
+          "description": "First day shown (YYYY-MM-DD); defaults to the earliest day in days."
+        },
+        {
+          "name": "to",
+          "type": "string",
+          "required": false,
+          "description": "Last day shown (YYYY-MM-DD); defaults to the latest day in days."
+        },
+        {
+          "name": "weekStart",
+          "type": "0 | 1",
+          "required": false,
+          "description": "Which weekday a column starts on (0 Sunday, 1 Monday)."
+        },
+        {
+          "name": "max",
+          "type": "number",
+          "required": false,
+          "description": "Count that fills the top shade."
+        },
+        {
+          "name": "monthLabels",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Twelve month names, January first; written above the first column of each month."
+        },
+        {
+          "name": "weekdayLabels",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Seven weekday names indexed like JavaScript (0 is Sunday); written for Monday, Wednesday and Friday, and used as each row's accessible name."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the grid."
+        },
+        {
+          "name": "describe",
+          "type": "(cell: { date: string; count: number }) => string",
+          "required": true,
+          "description": "The whole sentence for one day, read by screen readers and written in the readout line (\"11-03 ran 12 times\")."
+        },
+        {
+          "name": "legend",
+          "type": "{ less: string; more: string }",
+          "required": false,
+          "description": "Legend ends; without it no legend is drawn."
+        },
+        {
+          "name": "idle",
+          "type": "ReactNode",
+          "required": false,
+          "description": "What the readout line says when no cell is hovered or focused (a total, say)."
         },
         {
           "name": "className",
@@ -656,6 +919,372 @@
           "description": "Extra class name on the root."
         }
       ]
+    },
+    "AgentDrawer": {
+      "kind": "component",
+      "source": "src/blocks/agent-drawer/agent-drawer.tsx",
+      "props": [
+        {
+          "name": "name",
+          "type": "ReactNode",
+          "required": true,
+          "description": "Agent name."
+        },
+        {
+          "name": "description",
+          "type": "ReactNode",
+          "required": false,
+          "description": "One line about it."
+        },
+        {
+          "name": "status",
+          "type": "AgentStatus",
+          "required": true,
+          "description": "Whether the agent is running, paused or disabled."
+        },
+        {
+          "name": "tags",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Tags, as text."
+        },
+        {
+          "name": "trigger",
+          "type": "{ kind: AgentTrigger; detail?: string }",
+          "required": true,
+          "description": "How it starts; detail is the schedule or the rule (\"weekdays 08:30\")."
+        },
+        {
+          "name": "owner",
+          "type": "{ name: string; avatar?: string; initials?: string }",
+          "required": true,
+          "description": "Who is responsible."
+        },
+        {
+          "name": "created",
+          "type": "ReactNode",
+          "required": true,
+          "description": "Creation date, formatted by the caller."
+        },
+        {
+          "name": "metrics",
+          "type": "readonly AgentMetric[]",
+          "required": false,
+          "description": "Metric cards at the top of the usage page."
+        },
+        {
+          "name": "activity",
+          "type": "Pick< AgentActivityProps, 'days' | 'from' | 'to' | 'weekStart' | 'max' | 'monthLabels' | 'weekdayLabels' | 'describe' | 'idle' >",
+          "required": true,
+          "description": "Activity grid data and sentence writer; see AgentActivity."
+        },
+        {
+          "name": "runs",
+          "type": "readonly AgentRecentRun[]",
+          "required": true,
+          "description": "Recent runs, newest first."
+        },
+        {
+          "name": "onOpenRun",
+          "type": "(id: string) => void",
+          "required": false,
+          "description": "Called with the run id when a row is clicked or gets Enter; without it the rows are plain text."
+        },
+        {
+          "name": "formatTime",
+          "type": "(at: number) => string",
+          "required": true,
+          "description": "How a run's start is written (\"6m ago\"); the component does not read the clock."
+        },
+        {
+          "name": "formatDuration",
+          "type": "(ms: number) => string",
+          "required": true,
+          "description": "How a duration in milliseconds is written."
+        },
+        {
+          "name": "configure",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Content of the Configure tab; without it there is no such tab."
+        },
+        {
+          "name": "history",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Content of the History tab; without it there is no such tab."
+        },
+        {
+          "name": "tab",
+          "type": "AgentDrawerTab",
+          "required": false,
+          "description": "Current tab (controlled)."
+        },
+        {
+          "name": "defaultTab",
+          "type": "AgentDrawerTab",
+          "required": false,
+          "default": "'usage'",
+          "description": "Tab at first (uncontrolled); defaults to usage."
+        },
+        {
+          "name": "onTabChange",
+          "type": "(tab: AgentDrawerTab) => void",
+          "required": false,
+          "description": "Called when the tab changes."
+        },
+        {
+          "name": "footer",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Actions pinned at the bottom (notify me, pause agent); the component runs none of them."
+        },
+        {
+          "name": "renderTitle",
+          "type": "(props: { className: string; children: ReactNode }) => ReactNode",
+          "required": false,
+          "description": "Writes the title element; inside a Sheet pass `(props) => <SheetTitle {...props} />` so the dialog is named by it."
+        },
+        {
+          "name": "renderDescription",
+          "type": "(props: { className: string; children: ReactNode }) => ReactNode",
+          "required": false,
+          "description": "Writes the description element; inside a Sheet pass `(props) => <SheetDescription {...props} />`."
+        },
+        {
+          "name": "labels",
+          "type": "AgentDrawerLabels",
+          "required": true,
+          "description": "Texts."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "AgentDrawerLabels": {
+      "kind": "type",
+      "source": "src/blocks/agent-drawer/agent-drawer.tsx",
+      "props": [
+        {
+          "name": "properties",
+          "type": "{ status: string; tags: string; trigger: string; owner: string; created: string }",
+          "required": true,
+          "description": "Names of the properties."
+        },
+        {
+          "name": "statuses",
+          "type": "Record<AgentStatus, string>",
+          "required": true,
+          "description": "The three statuses as words."
+        },
+        {
+          "name": "triggers",
+          "type": "Record<AgentTrigger, string>",
+          "required": true,
+          "description": "The four triggers as words."
+        },
+        {
+          "name": "results",
+          "type": "Record<AgentRunResult, string>",
+          "required": true,
+          "description": "The four run results as words."
+        },
+        {
+          "name": "tabs",
+          "type": "{ list: string; usage: string; configure: string; history: string }",
+          "required": true,
+          "description": "Tab names and the accessible name of the tab list."
+        },
+        {
+          "name": "activity",
+          "type": "string",
+          "required": true,
+          "description": "Heading above the activity grid."
+        },
+        {
+          "name": "activityGrid",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the activity grid."
+        },
+        {
+          "name": "legend",
+          "type": "{ less: string; more: string }",
+          "required": true,
+          "description": "Ends of the activity legend."
+        },
+        {
+          "name": "recentRuns",
+          "type": "string",
+          "required": true,
+          "description": "Heading above the recent runs."
+        },
+        {
+          "name": "noRuns",
+          "type": "string",
+          "required": true,
+          "description": "Line when there are no runs."
+        },
+        {
+          "name": "metrics",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the metric cards."
+        }
+      ]
+    },
+    "AgentDrawerProps": {
+      "kind": "type",
+      "source": "src/blocks/agent-drawer/agent-drawer.tsx",
+      "props": [
+        {
+          "name": "name",
+          "type": "ReactNode",
+          "required": true,
+          "description": "Agent name."
+        },
+        {
+          "name": "description",
+          "type": "ReactNode",
+          "required": false,
+          "description": "One line about it."
+        },
+        {
+          "name": "status",
+          "type": "AgentStatus",
+          "required": true,
+          "description": "Whether the agent is running, paused or disabled."
+        },
+        {
+          "name": "tags",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Tags, as text."
+        },
+        {
+          "name": "trigger",
+          "type": "{ kind: AgentTrigger; detail?: string }",
+          "required": true,
+          "description": "How it starts; detail is the schedule or the rule (\"weekdays 08:30\")."
+        },
+        {
+          "name": "owner",
+          "type": "{ name: string; avatar?: string; initials?: string }",
+          "required": true,
+          "description": "Who is responsible."
+        },
+        {
+          "name": "created",
+          "type": "ReactNode",
+          "required": true,
+          "description": "Creation date, formatted by the caller."
+        },
+        {
+          "name": "metrics",
+          "type": "readonly AgentMetric[]",
+          "required": false,
+          "description": "Metric cards at the top of the usage page."
+        },
+        {
+          "name": "activity",
+          "type": "Pick< AgentActivityProps, 'days' | 'from' | 'to' | 'weekStart' | 'max' | 'monthLabels' | 'weekdayLabels' | 'describe' | 'idle' >",
+          "required": true,
+          "description": "Activity grid data and sentence writer; see AgentActivity."
+        },
+        {
+          "name": "runs",
+          "type": "readonly AgentRecentRun[]",
+          "required": true,
+          "description": "Recent runs, newest first."
+        },
+        {
+          "name": "onOpenRun",
+          "type": "(id: string) => void",
+          "required": false,
+          "description": "Called with the run id when a row is clicked or gets Enter; without it the rows are plain text."
+        },
+        {
+          "name": "formatTime",
+          "type": "(at: number) => string",
+          "required": true,
+          "description": "How a run's start is written (\"6m ago\"); the component does not read the clock."
+        },
+        {
+          "name": "formatDuration",
+          "type": "(ms: number) => string",
+          "required": true,
+          "description": "How a duration in milliseconds is written."
+        },
+        {
+          "name": "configure",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Content of the Configure tab; without it there is no such tab."
+        },
+        {
+          "name": "history",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Content of the History tab; without it there is no such tab."
+        },
+        {
+          "name": "tab",
+          "type": "AgentDrawerTab",
+          "required": false,
+          "description": "Current tab (controlled)."
+        },
+        {
+          "name": "defaultTab",
+          "type": "AgentDrawerTab",
+          "required": false,
+          "description": "Tab at first (uncontrolled); defaults to usage."
+        },
+        {
+          "name": "onTabChange",
+          "type": "(tab: AgentDrawerTab) => void",
+          "required": false,
+          "description": "Called when the tab changes."
+        },
+        {
+          "name": "footer",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Actions pinned at the bottom (notify me, pause agent); the component runs none of them."
+        },
+        {
+          "name": "renderTitle",
+          "type": "(props: { className: string; children: ReactNode }) => ReactNode",
+          "required": false,
+          "description": "Writes the title element; inside a Sheet pass `(props) => <SheetTitle {...props} />` so the dialog is named by it."
+        },
+        {
+          "name": "renderDescription",
+          "type": "(props: { className: string; children: ReactNode }) => ReactNode",
+          "required": false,
+          "description": "Writes the description element; inside a Sheet pass `(props) => <SheetDescription {...props} />`."
+        },
+        {
+          "name": "labels",
+          "type": "AgentDrawerLabels",
+          "required": true,
+          "description": "Texts."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "AgentDrawerTab": {
+      "kind": "type",
+      "source": "src/blocks/agent-drawer/agent-drawer.tsx",
+      "props": []
     },
     "AgentFleet": {
       "kind": "component",
@@ -1111,6 +1740,48 @@
           "type": "string",
           "required": false,
           "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "AgentMetric": {
+      "kind": "type",
+      "source": "src/blocks/agent-drawer/agent-drawer.tsx",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "value",
+          "type": "string",
+          "required": true,
+          "description": "Value as text, formatted by the caller (\"155\")."
+        },
+        {
+          "name": "unit",
+          "type": "string",
+          "required": false,
+          "description": "Small text after the value (\"hours\")."
+        },
+        {
+          "name": "icon",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Icon before the label; decorative."
+        },
+        {
+          "name": "delta",
+          "type": "{ text: string; tone: Severity }",
+          "required": false,
+          "description": "Change versus the last period, written by the caller (\"+8%\"), with the tone it should wear (more time saved is ok, more cost is warn)."
         }
       ]
     },
@@ -1763,6 +2434,48 @@
         }
       ]
     },
+    "AgentRecentRun": {
+      "kind": "type",
+      "source": "src/blocks/agent-drawer/agent-drawer.tsx",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "actor",
+          "type": "string",
+          "required": true,
+          "description": "Who or what started it: a person's name, or the source (\"price breakout\")."
+        },
+        {
+          "name": "trigger",
+          "type": "AgentTrigger",
+          "required": false,
+          "description": "How it started; shows the trigger's icon before the name."
+        },
+        {
+          "name": "result",
+          "type": "AgentRunResult",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "startedAt",
+          "type": "number",
+          "required": true,
+          "description": "Start time in milliseconds; written by formatTime."
+        },
+        {
+          "name": "durationMs",
+          "type": "number",
+          "required": false,
+          "description": "How long it took in milliseconds; a run still going has none."
+        }
+      ]
+    },
     "AgentResolution": {
       "kind": "type",
       "source": "src/blocks/agent-tree/agent-tree-model.ts",
@@ -1876,6 +2589,11 @@
         }
       ]
     },
+    "AgentRunResult": {
+      "kind": "type",
+      "source": "src/blocks/agent-drawer/agent-drawer-model.ts",
+      "props": []
+    },
     "AgentRunStatus": {
       "kind": "type",
       "source": "src/blocks/agent-tree/agent-tree-model.ts",
@@ -1910,6 +2628,16 @@
           "description": "Duration in milliseconds."
         }
       ]
+    },
+    "AgentStatus": {
+      "kind": "type",
+      "source": "src/blocks/agent-drawer/agent-drawer-model.ts",
+      "props": []
+    },
+    "AgentTone": {
+      "kind": "type",
+      "source": "src/blocks/agent-drawer/agent-drawer-model.ts",
+      "props": []
     },
     "AgentTotals": {
       "kind": "type",
@@ -2193,6 +2921,11 @@
           "description": "Extra class name on the root."
         }
       ]
+    },
+    "AgentTrigger": {
+      "kind": "type",
+      "source": "src/blocks/agent-drawer/agent-drawer-model.ts",
+      "props": []
     },
     "AiApproval": {
       "kind": "component",
@@ -26338,6 +27071,24 @@
         }
       ]
     },
+    "IntentOptions": {
+      "kind": "type",
+      "source": "src/patterns/omnibox/omnibox-model.ts",
+      "props": [
+        {
+          "name": "minLength",
+          "type": "number",
+          "required": false,
+          "description": "Text at least this long (characters) reads as a question."
+        },
+        {
+          "name": "minWords",
+          "type": "number",
+          "required": false,
+          "description": "Text with at least this many space-separated words reads as a question."
+        }
+      ]
+    },
     "IpoEvent": {
       "kind": "type",
       "source": "src/quant/event-calendar-model.ts",
@@ -32860,6 +33611,30 @@
       "source": "src/primitives/navigation-menu.tsx",
       "props": []
     },
+    "NearestRowOptions": {
+      "kind": "type",
+      "source": "src/lib/proximity-highlight.ts",
+      "props": [
+        {
+          "name": "current",
+          "type": "number | null",
+          "required": false,
+          "description": "Index of the row picked last time; kept while the pointer stays within `hysteresis` of its edges."
+        },
+        {
+          "name": "hysteresis",
+          "type": "number",
+          "required": false,
+          "description": "Pixels past the current row's edges in which it is kept."
+        },
+        {
+          "name": "reach",
+          "type": "number",
+          "required": false,
+          "description": "Farthest distance in pixels from a row at which it is still picked."
+        }
+      ]
+    },
     "NetBuyBar": {
       "kind": "component",
       "source": "src/blocks/net-buy-bar/net-buy-bar.tsx",
@@ -34241,6 +35016,877 @@
           "type": "string",
           "required": false,
           "description": "Text label inside the box on the left (dragging it changes the value like dragging the box); the accessible name still comes from label."
+        }
+      ]
+    },
+    "Omnibox": {
+      "kind": "component",
+      "source": "src/patterns/omnibox/omnibox.tsx",
+      "props": [
+        {
+          "name": "onQuery",
+          "type": "OmniboxQuery",
+          "required": true,
+          "description": "Search: return the matching items of every category (or, with a scope, that object's actions); may be async."
+        },
+        {
+          "name": "onSelect",
+          "type": "(item: OmniboxItem, info: OmniboxSelectInfo) => void",
+          "required": true,
+          "description": "Called when a command or page is chosen (Enter or click), or any row with Ctrl or Command held."
+        },
+        {
+          "name": "onAsk",
+          "type": "(text: string, scope: OmniboxItem | null) => void",
+          "required": false,
+          "description": "Called with the text and the scope when the text reads as a question and Enter is pressed."
+        },
+        {
+          "name": "categories",
+          "type": "readonly OmniboxCategory[]",
+          "required": true,
+          "description": "Categories in order; the first is the \"all\" tab."
+        },
+        {
+          "name": "category",
+          "type": "string",
+          "required": false,
+          "description": "Controlled category id."
+        },
+        {
+          "name": "defaultCategory",
+          "type": "string",
+          "required": false,
+          "description": "Initial category id when uncontrolled."
+        },
+        {
+          "name": "onCategoryChange",
+          "type": "(category: string) => void",
+          "required": false,
+          "description": "Called when the category changes."
+        },
+        {
+          "name": "scope",
+          "type": "OmniboxItem | null",
+          "required": false,
+          "description": "Controlled scope (the object turned into a tag), or null for none."
+        },
+        {
+          "name": "defaultScope",
+          "type": "OmniboxItem | null",
+          "required": false,
+          "default": "null",
+          "description": "Initial scope when uncontrolled."
+        },
+        {
+          "name": "onScopeChange",
+          "type": "(scope: OmniboxItem | null) => void",
+          "required": false,
+          "description": "Called when a scope tag is set or removed."
+        },
+        {
+          "name": "recent",
+          "type": "readonly OmniboxItem[]",
+          "required": false,
+          "description": "Controlled recent items, newest first."
+        },
+        {
+          "name": "onRecentChange",
+          "type": "(recent: OmniboxItem[]) => void",
+          "required": false,
+          "description": "Called with the new recent list after a choice or after clearing."
+        },
+        {
+          "name": "recentLimit",
+          "type": "number",
+          "required": false,
+          "default": "5",
+          "description": "Most recent items kept."
+        },
+        {
+          "name": "perCategory",
+          "type": "number",
+          "required": false,
+          "default": "4",
+          "description": "Rows per category in the all tab before the \"show all\" row."
+        },
+        {
+          "name": "placeholders",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Example queries that rotate as the placeholder while the box is empty."
+        },
+        {
+          "name": "placeholderInterval",
+          "type": "number",
+          "required": false,
+          "default": "2800",
+          "description": "Milliseconds each example stays."
+        },
+        {
+          "name": "placeholderCycles",
+          "type": "number",
+          "required": false,
+          "default": "1",
+          "description": "How many rounds through the examples before it settles on `labels.placeholder`."
+        },
+        {
+          "name": "detectIntent",
+          "type": "(text: string) => boolean | 'weak'",
+          "required": false,
+          "default": "defaultIntent",
+          "description": "Decides whether the text reads as a question: true always asks, `'weak'` asks only when the search found nothing (long product names reach the length threshold), false never."
+        },
+        {
+          "name": "defaultQuery",
+          "type": "string",
+          "required": false,
+          "default": "''",
+          "description": "Initial text in the input."
+        },
+        {
+          "name": "debounceMs",
+          "type": "number",
+          "required": false,
+          "default": "80",
+          "description": "Delay before onQuery runs after typing, in ms."
+        },
+        {
+          "name": "labels",
+          "type": "OmniboxLabels",
+          "required": true,
+          "description": "Text."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "OmniboxCategory": {
+      "kind": "type",
+      "source": "src/patterns/omnibox/omnibox-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "OmniboxDialog": {
+      "kind": "component",
+      "source": "src/patterns/omnibox/omnibox.tsx",
+      "props": [
+        {
+          "name": "onQuery",
+          "type": "OmniboxQuery",
+          "required": true,
+          "description": "Search: return the matching items of every category (or, with a scope, that object's actions); may be async."
+        },
+        {
+          "name": "onSelect",
+          "type": "(item: OmniboxItem, info: OmniboxSelectInfo) => void",
+          "required": true,
+          "description": "Called when a command or page is chosen (Enter or click), or any row with Ctrl or Command held."
+        },
+        {
+          "name": "onAsk",
+          "type": "(text: string, scope: OmniboxItem | null) => void",
+          "required": false,
+          "description": "Called with the text and the scope when the text reads as a question and Enter is pressed."
+        },
+        {
+          "name": "categories",
+          "type": "readonly OmniboxCategory[]",
+          "required": true,
+          "description": "Categories in order; the first is the \"all\" tab."
+        },
+        {
+          "name": "category",
+          "type": "string",
+          "required": false,
+          "description": "Controlled category id."
+        },
+        {
+          "name": "defaultCategory",
+          "type": "string",
+          "required": false,
+          "description": "Initial category id when uncontrolled."
+        },
+        {
+          "name": "onCategoryChange",
+          "type": "(category: string) => void",
+          "required": false,
+          "description": "Called when the category changes."
+        },
+        {
+          "name": "scope",
+          "type": "OmniboxItem | null",
+          "required": false,
+          "description": "Controlled scope (the object turned into a tag), or null for none."
+        },
+        {
+          "name": "defaultScope",
+          "type": "OmniboxItem | null",
+          "required": false,
+          "description": "Initial scope when uncontrolled."
+        },
+        {
+          "name": "onScopeChange",
+          "type": "(scope: OmniboxItem | null) => void",
+          "required": false,
+          "description": "Called when a scope tag is set or removed."
+        },
+        {
+          "name": "recent",
+          "type": "readonly OmniboxItem[]",
+          "required": false,
+          "description": "Controlled recent items, newest first."
+        },
+        {
+          "name": "onRecentChange",
+          "type": "(recent: OmniboxItem[]) => void",
+          "required": false,
+          "description": "Called with the new recent list after a choice or after clearing."
+        },
+        {
+          "name": "recentLimit",
+          "type": "number",
+          "required": false,
+          "description": "Most recent items kept."
+        },
+        {
+          "name": "perCategory",
+          "type": "number",
+          "required": false,
+          "description": "Rows per category in the all tab before the \"show all\" row."
+        },
+        {
+          "name": "placeholders",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Example queries that rotate as the placeholder while the box is empty."
+        },
+        {
+          "name": "placeholderInterval",
+          "type": "number",
+          "required": false,
+          "description": "Milliseconds each example stays."
+        },
+        {
+          "name": "placeholderCycles",
+          "type": "number",
+          "required": false,
+          "description": "How many rounds through the examples before it settles on `labels.placeholder`."
+        },
+        {
+          "name": "detectIntent",
+          "type": "(text: string) => boolean | 'weak'",
+          "required": false,
+          "description": "Decides whether the text reads as a question: true always asks, `'weak'` asks only when the search found nothing (long product names reach the length threshold), false never."
+        },
+        {
+          "name": "defaultQuery",
+          "type": "string",
+          "required": false,
+          "description": "Initial text in the input."
+        },
+        {
+          "name": "debounceMs",
+          "type": "number",
+          "required": false,
+          "description": "Delay before onQuery runs after typing, in ms."
+        },
+        {
+          "name": "labels",
+          "type": "OmniboxLabels",
+          "required": true,
+          "description": "Text."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        },
+        {
+          "name": "open",
+          "type": "boolean",
+          "required": true,
+          "description": "Whether the dialog is open."
+        },
+        {
+          "name": "onOpenChange",
+          "type": "(open: boolean) => void",
+          "required": true,
+          "description": "Called to open or close (Esc, click outside, after a choice or a question)."
+        },
+        {
+          "name": "keepOpen",
+          "type": "boolean",
+          "required": false,
+          "default": "false",
+          "description": "Keep the dialog open after a choice."
+        }
+      ]
+    },
+    "OmniboxDialogProps": {
+      "kind": "type",
+      "source": "src/patterns/omnibox/omnibox.tsx",
+      "props": [
+        {
+          "name": "onQuery",
+          "type": "OmniboxQuery",
+          "required": true,
+          "description": "Search: return the matching items of every category (or, with a scope, that object's actions); may be async."
+        },
+        {
+          "name": "onSelect",
+          "type": "(item: OmniboxItem, info: OmniboxSelectInfo) => void",
+          "required": true,
+          "description": "Called when a command or page is chosen (Enter or click), or any row with Ctrl or Command held."
+        },
+        {
+          "name": "onAsk",
+          "type": "(text: string, scope: OmniboxItem | null) => void",
+          "required": false,
+          "description": "Called with the text and the scope when the text reads as a question and Enter is pressed."
+        },
+        {
+          "name": "categories",
+          "type": "readonly OmniboxCategory[]",
+          "required": true,
+          "description": "Categories in order; the first is the \"all\" tab."
+        },
+        {
+          "name": "category",
+          "type": "string",
+          "required": false,
+          "description": "Controlled category id."
+        },
+        {
+          "name": "defaultCategory",
+          "type": "string",
+          "required": false,
+          "description": "Initial category id when uncontrolled."
+        },
+        {
+          "name": "onCategoryChange",
+          "type": "(category: string) => void",
+          "required": false,
+          "description": "Called when the category changes."
+        },
+        {
+          "name": "scope",
+          "type": "OmniboxItem | null",
+          "required": false,
+          "description": "Controlled scope (the object turned into a tag), or null for none."
+        },
+        {
+          "name": "defaultScope",
+          "type": "OmniboxItem | null",
+          "required": false,
+          "description": "Initial scope when uncontrolled."
+        },
+        {
+          "name": "onScopeChange",
+          "type": "(scope: OmniboxItem | null) => void",
+          "required": false,
+          "description": "Called when a scope tag is set or removed."
+        },
+        {
+          "name": "recent",
+          "type": "readonly OmniboxItem[]",
+          "required": false,
+          "description": "Controlled recent items, newest first."
+        },
+        {
+          "name": "onRecentChange",
+          "type": "(recent: OmniboxItem[]) => void",
+          "required": false,
+          "description": "Called with the new recent list after a choice or after clearing."
+        },
+        {
+          "name": "recentLimit",
+          "type": "number",
+          "required": false,
+          "description": "Most recent items kept."
+        },
+        {
+          "name": "perCategory",
+          "type": "number",
+          "required": false,
+          "description": "Rows per category in the all tab before the \"show all\" row."
+        },
+        {
+          "name": "placeholders",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Example queries that rotate as the placeholder while the box is empty."
+        },
+        {
+          "name": "placeholderInterval",
+          "type": "number",
+          "required": false,
+          "description": "Milliseconds each example stays."
+        },
+        {
+          "name": "placeholderCycles",
+          "type": "number",
+          "required": false,
+          "description": "How many rounds through the examples before it settles on `labels.placeholder`."
+        },
+        {
+          "name": "detectIntent",
+          "type": "(text: string) => boolean | 'weak'",
+          "required": false,
+          "description": "Decides whether the text reads as a question: true always asks, `'weak'` asks only when the search found nothing (long product names reach the length threshold), false never."
+        },
+        {
+          "name": "defaultQuery",
+          "type": "string",
+          "required": false,
+          "description": "Initial text in the input."
+        },
+        {
+          "name": "debounceMs",
+          "type": "number",
+          "required": false,
+          "description": "Delay before onQuery runs after typing, in ms."
+        },
+        {
+          "name": "labels",
+          "type": "OmniboxLabels",
+          "required": true,
+          "description": "Text."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        },
+        {
+          "name": "open",
+          "type": "boolean",
+          "required": true,
+          "description": "Whether the dialog is open."
+        },
+        {
+          "name": "onOpenChange",
+          "type": "(open: boolean) => void",
+          "required": true,
+          "description": "Called to open or close (Esc, click outside, after a choice or a question)."
+        },
+        {
+          "name": "keepOpen",
+          "type": "boolean",
+          "required": false,
+          "description": "Keep the dialog open after a choice."
+        }
+      ]
+    },
+    "OmniboxItem": {
+      "kind": "type",
+      "source": "src/patterns/omnibox/omnibox-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "Stable id (recent list and highlight key on it)."
+        },
+        {
+          "name": "category",
+          "type": "string",
+          "required": false,
+          "description": "Category id (a tab); items of scope actions need none."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "Main text of the row."
+        },
+        {
+          "name": "description",
+          "type": "string",
+          "required": false,
+          "description": "Second, quieter text on the same row (exchange, path, type)."
+        },
+        {
+          "name": "kind",
+          "type": "OmniboxKind",
+          "required": false,
+          "description": "What Enter does: `object` becomes a scope tag, `command` runs, `page` opens."
+        },
+        {
+          "name": "icon",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Leading icon or mark."
+        },
+        {
+          "name": "meta",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Quiet text at the end of the row; replaced by the Enter hint while the row is highlighted."
+        },
+        {
+          "name": "preview",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Preview card shown beside the panel while the row is highlighted (render the node yourself; screen readers do not read it)."
+        },
+        {
+          "name": "hint",
+          "type": "string",
+          "required": false,
+          "description": "Overrides the Enter hint text of the row."
+        },
+        {
+          "name": "scope",
+          "type": "boolean",
+          "required": false,
+          "description": "For `object` rows: set to false to act directly instead of becoming a scope tag."
+        },
+        {
+          "name": "type",
+          "type": "string",
+          "required": false,
+          "description": "Caller's own type tag (`symbol`, `strategy`) for choosing which actions a scope offers."
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "OmniboxKind": {
+      "kind": "type",
+      "source": "src/patterns/omnibox/omnibox-model.ts",
+      "props": []
+    },
+    "OmniboxLabels": {
+      "kind": "type",
+      "source": "src/patterns/omnibox/omnibox.tsx",
+      "props": [
+        {
+          "name": "title",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the omnibox (and the dialog title, read by screen readers only)."
+        },
+        {
+          "name": "placeholder",
+          "type": "string",
+          "required": false,
+          "description": "Input placeholder; also what shows after the example carousel has run."
+        },
+        {
+          "name": "scopedPlaceholder",
+          "type": "string",
+          "required": false,
+          "description": "Input placeholder while a scope tag is set."
+        },
+        {
+          "name": "categories",
+          "type": "string",
+          "required": false,
+          "description": "Accessible name of the category tabs."
+        },
+        {
+          "name": "recent",
+          "type": "string",
+          "required": false,
+          "description": "Heading of the recent group."
+        },
+        {
+          "name": "clearRecent",
+          "type": "string",
+          "required": false,
+          "description": "Button at the end of the recent heading that clears the list; drawn only when this is given."
+        },
+        {
+          "name": "empty",
+          "type": "string",
+          "required": false,
+          "description": "Shown when nothing matches."
+        },
+        {
+          "name": "loading",
+          "type": "string",
+          "required": false,
+          "description": "Shown while onQuery is pending and no older rows can stay."
+        },
+        {
+          "name": "error",
+          "type": "string",
+          "required": false,
+          "description": "Shown when onQuery threw or rejected."
+        },
+        {
+          "name": "showAll",
+          "type": "(count: number, categoryLabel: string) => string",
+          "required": false,
+          "description": "Text of the \"show all\" row at the end of a category in the all tab."
+        },
+        {
+          "name": "scopeHeading",
+          "type": "(scopeLabel: string) => string",
+          "required": false,
+          "description": "Heading above the scope's actions (for example `name => \\`${name}: actions\\``)."
+        },
+        {
+          "name": "removeScope",
+          "type": "(scopeLabel: string) => string",
+          "required": false,
+          "description": "Accessible name of the button that removes the scope tag."
+        },
+        {
+          "name": "hintRun",
+          "type": "string",
+          "required": false,
+          "description": "Enter hint at the end of the highlighted command row."
+        },
+        {
+          "name": "hintOpen",
+          "type": "string",
+          "required": false,
+          "description": "Enter hint at the end of the highlighted page row."
+        },
+        {
+          "name": "hintViewOptions",
+          "type": "string",
+          "required": false,
+          "description": "Enter hint at the end of the highlighted object row (Enter makes it a scope tag)."
+        },
+        {
+          "name": "hintNewTab",
+          "type": "string",
+          "required": false,
+          "description": "Enter hint while Ctrl or Command is held (the row opens in a new tab)."
+        },
+        {
+          "name": "ask",
+          "type": "string",
+          "required": false,
+          "description": "Text next to the Enter key on the right of the input when the text reads as a question."
+        },
+        {
+          "name": "footer",
+          "type": "{ navigate: string; select: string; newTab: string; close: string }",
+          "required": false,
+          "description": "Footer key hints; the footer is drawn only when this is given."
+        },
+        {
+          "name": "searchInstead",
+          "type": "string",
+          "required": false,
+          "description": "Text of the button (next to the \"ask\" hint) that turns a question back into a search when it also found results; ↓ does the same."
+        },
+        {
+          "name": "askInstead",
+          "type": "(text: string) => string",
+          "required": false,
+          "description": "Line under the empty text that says Enter will ask the typed text (when `onAsk` is given and nothing matched)."
+        },
+        {
+          "name": "categorySet",
+          "type": "(categoryLabel: string, count: number) => string",
+          "required": false,
+          "description": "Announcement when the category changes (tabs are switched with the keyboard from the input, so the focus never moves)."
+        },
+        {
+          "name": "resultCount",
+          "type": "(count: number) => string",
+          "required": false,
+          "description": "Announcement for screen readers after results settle (the count is the rows drawn)."
+        },
+        {
+          "name": "scopeSet",
+          "type": "(scopeLabel: string) => string",
+          "required": false,
+          "description": "Announcement when a scope tag is set."
+        },
+        {
+          "name": "scopeCleared",
+          "type": "string",
+          "required": false,
+          "description": "Announcement when the scope tag is removed."
+        }
+      ]
+    },
+    "OmniboxProps": {
+      "kind": "type",
+      "source": "src/patterns/omnibox/omnibox.tsx",
+      "props": [
+        {
+          "name": "onQuery",
+          "type": "OmniboxQuery",
+          "required": true,
+          "description": "Search: return the matching items of every category (or, with a scope, that object's actions); may be async."
+        },
+        {
+          "name": "onSelect",
+          "type": "(item: OmniboxItem, info: OmniboxSelectInfo) => void",
+          "required": true,
+          "description": "Called when a command or page is chosen (Enter or click), or any row with Ctrl or Command held."
+        },
+        {
+          "name": "onAsk",
+          "type": "(text: string, scope: OmniboxItem | null) => void",
+          "required": false,
+          "description": "Called with the text and the scope when the text reads as a question and Enter is pressed."
+        },
+        {
+          "name": "categories",
+          "type": "readonly OmniboxCategory[]",
+          "required": true,
+          "description": "Categories in order; the first is the \"all\" tab."
+        },
+        {
+          "name": "category",
+          "type": "string",
+          "required": false,
+          "description": "Controlled category id."
+        },
+        {
+          "name": "defaultCategory",
+          "type": "string",
+          "required": false,
+          "description": "Initial category id when uncontrolled."
+        },
+        {
+          "name": "onCategoryChange",
+          "type": "(category: string) => void",
+          "required": false,
+          "description": "Called when the category changes."
+        },
+        {
+          "name": "scope",
+          "type": "OmniboxItem | null",
+          "required": false,
+          "description": "Controlled scope (the object turned into a tag), or null for none."
+        },
+        {
+          "name": "defaultScope",
+          "type": "OmniboxItem | null",
+          "required": false,
+          "description": "Initial scope when uncontrolled."
+        },
+        {
+          "name": "onScopeChange",
+          "type": "(scope: OmniboxItem | null) => void",
+          "required": false,
+          "description": "Called when a scope tag is set or removed."
+        },
+        {
+          "name": "recent",
+          "type": "readonly OmniboxItem[]",
+          "required": false,
+          "description": "Controlled recent items, newest first."
+        },
+        {
+          "name": "onRecentChange",
+          "type": "(recent: OmniboxItem[]) => void",
+          "required": false,
+          "description": "Called with the new recent list after a choice or after clearing."
+        },
+        {
+          "name": "recentLimit",
+          "type": "number",
+          "required": false,
+          "description": "Most recent items kept."
+        },
+        {
+          "name": "perCategory",
+          "type": "number",
+          "required": false,
+          "description": "Rows per category in the all tab before the \"show all\" row."
+        },
+        {
+          "name": "placeholders",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Example queries that rotate as the placeholder while the box is empty."
+        },
+        {
+          "name": "placeholderInterval",
+          "type": "number",
+          "required": false,
+          "description": "Milliseconds each example stays."
+        },
+        {
+          "name": "placeholderCycles",
+          "type": "number",
+          "required": false,
+          "description": "How many rounds through the examples before it settles on `labels.placeholder`."
+        },
+        {
+          "name": "detectIntent",
+          "type": "(text: string) => boolean | 'weak'",
+          "required": false,
+          "description": "Decides whether the text reads as a question: true always asks, `'weak'` asks only when the search found nothing (long product names reach the length threshold), false never."
+        },
+        {
+          "name": "defaultQuery",
+          "type": "string",
+          "required": false,
+          "description": "Initial text in the input."
+        },
+        {
+          "name": "debounceMs",
+          "type": "number",
+          "required": false,
+          "description": "Delay before onQuery runs after typing, in ms."
+        },
+        {
+          "name": "labels",
+          "type": "OmniboxLabels",
+          "required": true,
+          "description": "Text."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "OmniboxQuery": {
+      "kind": "type",
+      "source": "src/patterns/omnibox/omnibox.tsx",
+      "props": []
+    },
+    "OmniboxSelectInfo": {
+      "kind": "type",
+      "source": "src/patterns/omnibox/omnibox.tsx",
+      "props": [
+        {
+          "name": "newTab",
+          "type": "boolean",
+          "required": true,
+          "description": "True when chosen with Ctrl or Command held (open in a new tab; the caller does it)."
+        },
+        {
+          "name": "scope",
+          "type": "OmniboxItem | null",
+          "required": true,
+          "description": "The scope tag that was set when the row was chosen (an action of that object), or null."
         }
       ]
     },
@@ -41522,6 +43168,60 @@
         }
       ]
     },
+    "ProximityHighlightOptions": {
+      "kind": "type",
+      "source": "src/lib/proximity-highlight.ts",
+      "props": [
+        {
+          "name": "itemSelector",
+          "type": "string",
+          "required": true,
+          "description": "CSS selector of the rows inside the container (for example `[cmdk-item]`)."
+        },
+        {
+          "name": "activeSelector",
+          "type": "string",
+          "required": false,
+          "description": "CSS selector of the current row when the pointer is away (keyboard highlight), for example `[cmdk-item][aria-selected=\"true\"]`."
+        },
+        {
+          "name": "enabled",
+          "type": "boolean",
+          "required": false,
+          "description": "Turn the highlight off (rows keep their own background)."
+        },
+        {
+          "name": "hysteresis",
+          "type": "number",
+          "required": false,
+          "description": "Pixels past a row's edge in which the pointer still counts as on it, so the highlight does not flip back and forth at the seam."
+        },
+        {
+          "name": "reach",
+          "type": "number",
+          "required": false,
+          "description": "Farthest distance in pixels from a row at which the pointer still picks it (the gap and padding around rows)."
+        }
+      ]
+    },
+    "ProximityRect": {
+      "kind": "type",
+      "source": "src/lib/proximity-highlight.ts",
+      "props": [
+        {
+          "name": "top",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "bottom",
+          "type": "number",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
     "PulseLabels": {
       "kind": "type",
       "source": "src/cn/labels.ts",
@@ -46846,6 +48546,930 @@
           "description": "摊到 DataGrid 上的两个 prop。"
         }
       ]
+    },
+    "Rule": {
+      "kind": "type",
+      "source": "src/blocks/rule-builder/rule-model.ts",
+      "props": [
+        {
+          "name": "when",
+          "type": "RuleGroup",
+          "required": true,
+          "description": "The condition tree; its root group is always there."
+        },
+        {
+          "name": "ifTrue",
+          "type": "readonly RuleAction[]",
+          "required": true,
+          "description": "Actions when the conditions hold; may be empty unless schema.requireActions says so."
+        },
+        {
+          "name": "ifFalse",
+          "type": "readonly RuleAction[]",
+          "required": true,
+          "description": "Actions when they do not."
+        }
+      ]
+    },
+    "RuleAction": {
+      "kind": "type",
+      "source": "src/blocks/rule-builder/rule-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "kind",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "params",
+          "type": "Readonly<Record<string, string | number>>",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "RuleActionDef": {
+      "kind": "type",
+      "source": "src/blocks/rule-builder/rule-model.ts",
+      "props": [
+        {
+          "name": "kind",
+          "type": "string",
+          "required": true,
+          "description": "Stable key stored in the JSON."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "Text shown on the action select and in the readback."
+        },
+        {
+          "name": "params",
+          "type": "readonly RuleActionParam[]",
+          "required": false,
+          "description": "The parameters in the order they are shown; each is required unless it says optional."
+        },
+        {
+          "name": "draft",
+          "type": "boolean",
+          "required": false,
+          "description": "The action only produces a draft for a person to confirm (an order draft); the row carries a draft mark."
+        }
+      ]
+    },
+    "RuleActionParam": {
+      "kind": "type",
+      "source": "src/blocks/rule-builder/rule-model.ts",
+      "props": [
+        {
+          "name": "key",
+          "type": "string",
+          "required": true,
+          "description": "Stable key of the parameter in RuleAction.params."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the parameter control."
+        },
+        {
+          "name": "input",
+          "type": "'option' | 'text' | 'number'",
+          "required": true,
+          "description": "option: pick one of options; text: free text; number: a number."
+        },
+        {
+          "name": "options",
+          "type": "readonly RuleOption[]",
+          "required": false,
+          "description": "Choices when input is option."
+        },
+        {
+          "name": "connector",
+          "type": "string",
+          "required": false,
+          "description": "Word shown between the action and the parameter, such as \"to\"."
+        },
+        {
+          "name": "unit",
+          "type": "string",
+          "required": false,
+          "description": "Unit of a number parameter."
+        },
+        {
+          "name": "min",
+          "type": "number",
+          "required": false,
+          "description": "Smallest number of a number parameter."
+        },
+        {
+          "name": "max",
+          "type": "number",
+          "required": false,
+          "description": "Largest number of a number parameter."
+        },
+        {
+          "name": "optional",
+          "type": "boolean",
+          "required": false,
+          "description": "The parameter may stay empty."
+        }
+      ]
+    },
+    "RuleBuilder": {
+      "kind": "component",
+      "source": "src/blocks/rule-builder/rule-builder.tsx",
+      "props": [
+        {
+          "name": "schema",
+          "type": "RuleSchema",
+          "required": true,
+          "description": "Fields, operators per field type and actions."
+        },
+        {
+          "name": "value",
+          "type": "Rule",
+          "required": false,
+          "description": "The rule, controlled."
+        },
+        {
+          "name": "defaultValue",
+          "type": "Rule",
+          "required": false,
+          "description": "The rule at first, uncontrolled."
+        },
+        {
+          "name": "onValueChange",
+          "type": "(rule: Rule) => void",
+          "required": false,
+          "description": "Called with the whole new rule after every edit, move, add, remove, undo and redo."
+        },
+        {
+          "name": "templates",
+          "type": "RuleTextTemplates",
+          "required": true,
+          "description": "Templates of the one-line readback."
+        },
+        {
+          "name": "labels",
+          "type": "RuleBuilderLabels",
+          "required": true,
+          "description": "Texts."
+        },
+        {
+          "name": "showIssues",
+          "type": "'touched' | 'all'",
+          "required": false,
+          "default": "'touched'",
+          "description": "When problems show on rows: touched (the default) shows a row's problems once it was edited; all shows every problem."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "RuleBuilderLabels": {
+      "kind": "type",
+      "source": "src/blocks/rule-builder/rule-labels.ts",
+      "props": [
+        {
+          "name": "when",
+          "type": "string",
+          "required": true,
+          "description": "Heading of the conditions part, such as WHEN."
+        },
+        {
+          "name": "actions",
+          "type": "string",
+          "required": true,
+          "description": "Heading of the actions part, such as THEN."
+        },
+        {
+          "name": "ifTrue",
+          "type": "string",
+          "required": true,
+          "description": "Chip over the actions that run when the conditions hold, such as \"If true\"."
+        },
+        {
+          "name": "ifFalse",
+          "type": "string",
+          "required": true,
+          "description": "Chip over the actions that run when they do not."
+        },
+        {
+          "name": "readback",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the one-line readback of the rule (the name of the group that holds the sentence)."
+        },
+        {
+          "name": "mode",
+          "type": "Record<RuleMode, string>",
+          "required": true,
+          "description": "Visible word of each combine mode, such as And and Or."
+        },
+        {
+          "name": "switchMode",
+          "type": "(current: string, next: string) => string",
+          "required": true,
+          "description": "Accessible name of the combine button, such as (current, next) => `Combine with ${current}; switch to ${next}`."
+        },
+        {
+          "name": "group",
+          "type": "(conditions: number, mode: string) => string",
+          "required": true,
+          "description": "Title and accessible name of a nested group, such as (n, mode) => `Group · ${n} conditions · ${mode}`; mode is the visible word of its combine mode (And or Or)."
+        },
+        {
+          "name": "rootGroup",
+          "type": "(conditions: number, mode: string) => string",
+          "required": true,
+          "description": "Accessible name of the top group of conditions, such as (n, mode) => `Conditions · ${n} · ${mode}`."
+        },
+        {
+          "name": "addCondition",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "addGroup",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "addAction",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "field",
+          "type": "string",
+          "required": true,
+          "description": "Accessible names of the controls of a row."
+        },
+        {
+          "name": "operator",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "value",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "min",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "max",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "action",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "rangeTo",
+          "type": "string",
+          "required": true,
+          "description": "Visible word between the two bounds of a range, such as \"to\"."
+        },
+        {
+          "name": "refToggle",
+          "type": "string",
+          "required": true,
+          "description": "Name of the button that swaps a number for another field (pressed when it is a field)."
+        },
+        {
+          "name": "refField",
+          "type": "string",
+          "required": true,
+          "description": "Name of the select of the other field."
+        },
+        {
+          "name": "refPlaceholder",
+          "type": "string",
+          "required": true,
+          "description": "Placeholder of the select of the other field."
+        },
+        {
+          "name": "valuePlaceholder",
+          "type": "string",
+          "required": true,
+          "description": "Placeholder of an enum value select."
+        },
+        {
+          "name": "addValue",
+          "type": "string",
+          "required": true,
+          "description": "Text and name of the add button of a multi-value."
+        },
+        {
+          "name": "searchValue",
+          "type": "string",
+          "required": true,
+          "description": "Placeholder and name of the search box of the multi-value list."
+        },
+        {
+          "name": "noValue",
+          "type": "string",
+          "required": true,
+          "description": "Shown when the search finds nothing."
+        },
+        {
+          "name": "removeValue",
+          "type": "(label: string) => string",
+          "required": true,
+          "description": "Name of the remove button of a chip, such as (label) => `Remove ${label}`."
+        },
+        {
+          "name": "valueCleared",
+          "type": "string",
+          "required": true,
+          "description": "Live line after changing the field cleared the value because the new field has another type or unit, such as \"Value cleared: the new field has another unit\"."
+        },
+        {
+          "name": "locked",
+          "type": "string",
+          "required": true,
+          "description": "Name of the lock icon of a locked condition."
+        },
+        {
+          "name": "draft",
+          "type": "string",
+          "required": true,
+          "description": "Mark on an action that only produces a draft."
+        },
+        {
+          "name": "handle",
+          "type": "(summary: string) => string",
+          "required": true,
+          "description": "Name of the drag handle, such as (summary) => `Move: ${summary}`; the hint is read with it."
+        },
+        {
+          "name": "remove",
+          "type": "(summary: string) => string",
+          "required": true,
+          "description": "Name of the delete button of a row."
+        },
+        {
+          "name": "removeBlocked",
+          "type": "(summary: string) => string",
+          "required": true,
+          "description": "Name of the delete button of a group that holds a locked condition (it cannot be deleted); say why, such as (summary) => `Cannot delete ${summary}: it holds a locked condition`."
+        },
+        {
+          "name": "hint",
+          "type": "string",
+          "required": true,
+          "description": "Read with the handle: the keys that move and remove a row."
+        },
+        {
+          "name": "undo",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "redo",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "issueCount",
+          "type": "(count: number) => string",
+          "required": true,
+          "description": "Status line when the rule has problems, such as (n) => `${n} issues`."
+        },
+        {
+          "name": "issueAction",
+          "type": "(count: number) => string",
+          "required": true,
+          "description": "Name of the status button when the rule has problems: it shows every problem and moves focus to the first, such as (n) => `${n} issues: show all and go to the first`."
+        },
+        {
+          "name": "valid",
+          "type": "string",
+          "required": true,
+          "description": "Status line when it has none."
+        },
+        {
+          "name": "issue",
+          "type": "(issue: RuleIssue) => string",
+          "required": true,
+          "description": "Why a row is wrong, in words."
+        },
+        {
+          "name": "added",
+          "type": "(summary: string) => string",
+          "required": true,
+          "description": "Live lines."
+        },
+        {
+          "name": "removed",
+          "type": "(summary: string) => string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "moved",
+          "type": "(summary: string, position: number, total: number) => string",
+          "required": true,
+          "description": "After a move: the row, its new position (from 1) and how many rows the list has."
+        },
+        {
+          "name": "modeChanged",
+          "type": "(mode: string) => string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "undone",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "redone",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "dragCancelled",
+          "type": "string",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "RuleBuilderProps": {
+      "kind": "type",
+      "source": "src/blocks/rule-builder/rule-builder.tsx",
+      "props": [
+        {
+          "name": "schema",
+          "type": "RuleSchema",
+          "required": true,
+          "description": "Fields, operators per field type and actions."
+        },
+        {
+          "name": "value",
+          "type": "Rule",
+          "required": false,
+          "description": "The rule, controlled."
+        },
+        {
+          "name": "defaultValue",
+          "type": "Rule",
+          "required": false,
+          "description": "The rule at first, uncontrolled."
+        },
+        {
+          "name": "onValueChange",
+          "type": "(rule: Rule) => void",
+          "required": false,
+          "description": "Called with the whole new rule after every edit, move, add, remove, undo and redo."
+        },
+        {
+          "name": "templates",
+          "type": "RuleTextTemplates",
+          "required": true,
+          "description": "Templates of the one-line readback."
+        },
+        {
+          "name": "labels",
+          "type": "RuleBuilderLabels",
+          "required": true,
+          "description": "Texts."
+        },
+        {
+          "name": "showIssues",
+          "type": "'touched' | 'all'",
+          "required": false,
+          "description": "When problems show on rows: touched (the default) shows a row's problems once it was edited; all shows every problem."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "RuleCondition": {
+      "kind": "type",
+      "source": "src/blocks/rule-builder/rule-model.ts",
+      "props": [
+        {
+          "name": "type",
+          "type": "'condition'",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "field",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "op",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "value",
+          "type": "RuleValue",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "locked",
+          "type": "boolean",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "RuleField": {
+      "kind": "type",
+      "source": "src/blocks/rule-builder/rule-model.ts",
+      "props": [
+        {
+          "name": "key",
+          "type": "string",
+          "required": true,
+          "description": "Stable key stored in the JSON."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "Text shown on the field select."
+        },
+        {
+          "name": "group",
+          "type": "string",
+          "required": false,
+          "description": "Group heading in the field select."
+        },
+        {
+          "name": "type",
+          "type": "RuleFieldType",
+          "required": true,
+          "description": "number, enum or text; decides the operators."
+        },
+        {
+          "name": "unit",
+          "type": "string",
+          "required": false,
+          "description": "Unit written after a number, such as % or 100M."
+        },
+        {
+          "name": "min",
+          "type": "number",
+          "required": false,
+          "description": "Smallest number allowed."
+        },
+        {
+          "name": "max",
+          "type": "number",
+          "required": false,
+          "description": "Largest number allowed."
+        },
+        {
+          "name": "step",
+          "type": "number",
+          "required": false,
+          "description": "Step of the number box's arrow keys."
+        },
+        {
+          "name": "options",
+          "type": "readonly RuleOption[]",
+          "required": false,
+          "description": "Choices of an enum field."
+        }
+      ]
+    },
+    "RuleFieldType": {
+      "kind": "type",
+      "source": "src/blocks/rule-builder/rule-model.ts",
+      "props": []
+    },
+    "RuleGroup": {
+      "kind": "type",
+      "source": "src/blocks/rule-builder/rule-model.ts",
+      "props": [
+        {
+          "name": "type",
+          "type": "'group'",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "mode",
+          "type": "RuleMode",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "children",
+          "type": "readonly RuleNode[]",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "RuleInput": {
+      "kind": "type",
+      "source": "src/blocks/rule-builder/rule-model.ts",
+      "props": []
+    },
+    "RuleIssue": {
+      "kind": "type",
+      "source": "src/blocks/rule-builder/rule-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "code",
+          "type": "RuleIssueCode",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "part",
+          "type": "RuleIssuePart",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "key",
+          "type": "string",
+          "required": false,
+          "description": "Key of the action parameter, for part param."
+        },
+        {
+          "name": "min",
+          "type": "number",
+          "required": false,
+          "description": "The field's smallest number, for out-of-range."
+        },
+        {
+          "name": "max",
+          "type": "number",
+          "required": false,
+          "description": "The field's largest number, for out-of-range."
+        }
+      ]
+    },
+    "RuleIssueCode": {
+      "kind": "type",
+      "source": "src/blocks/rule-builder/rule-model.ts",
+      "props": []
+    },
+    "RuleIssuePart": {
+      "kind": "type",
+      "source": "src/blocks/rule-builder/rule-model.ts",
+      "props": []
+    },
+    "RuleMode": {
+      "kind": "type",
+      "source": "src/blocks/rule-builder/rule-model.ts",
+      "props": []
+    },
+    "RuleNode": {
+      "kind": "type",
+      "source": "src/blocks/rule-builder/rule-model.ts",
+      "props": []
+    },
+    "RuleOperator": {
+      "kind": "type",
+      "source": "src/blocks/rule-builder/rule-model.ts",
+      "props": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": true,
+          "description": "Stable key stored in the JSON."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "Text shown on the operator select and in the readback."
+        },
+        {
+          "name": "input",
+          "type": "RuleInput",
+          "required": true,
+          "description": "number: one number; range: min and max; option: one choice; list: several choices; text: free text."
+        },
+        {
+          "name": "allowRef",
+          "type": "boolean",
+          "required": false,
+          "description": "A number input may switch to another number field (close crosses above MA20)."
+        }
+      ]
+    },
+    "RuleOption": {
+      "kind": "type",
+      "source": "src/blocks/rule-builder/rule-model.ts",
+      "props": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "RuleSchema": {
+      "kind": "type",
+      "source": "src/blocks/rule-builder/rule-model.ts",
+      "props": [
+        {
+          "name": "fields",
+          "type": "readonly RuleField[]",
+          "required": true,
+          "description": "The fields a condition can test."
+        },
+        {
+          "name": "operators",
+          "type": "Readonly<Record<RuleFieldType, readonly RuleOperator[]>>",
+          "required": true,
+          "description": "Operators offered for each field type."
+        },
+        {
+          "name": "actions",
+          "type": "readonly RuleActionDef[]",
+          "required": false,
+          "description": "Action kinds; without them the builder has no THEN part."
+        },
+        {
+          "name": "requireActions",
+          "type": "boolean",
+          "required": false,
+          "description": "The if-true list must hold at least one action; default false (a screening rule may have only WHEN)."
+        },
+        {
+          "name": "maxDepth",
+          "type": "number",
+          "required": false,
+          "description": "Deepest nesting of groups, the root counts as 1; default 3."
+        }
+      ]
+    },
+    "RuleTextTemplates": {
+      "kind": "type",
+      "source": "src/blocks/rule-builder/rule-model.ts",
+      "props": [
+        {
+          "name": "when",
+          "type": "(body: string) => string",
+          "required": true,
+          "description": "Wraps the whole condition text, such as (body) => `When ${body}`."
+        },
+        {
+          "name": "and",
+          "type": "string",
+          "required": true,
+          "description": "Between two conditions of an and group."
+        },
+        {
+          "name": "or",
+          "type": "string",
+          "required": true,
+          "description": "Between two conditions of an or group."
+        },
+        {
+          "name": "group",
+          "type": "(inner: string) => string",
+          "required": true,
+          "description": "Wraps a nested group with more than one member, such as (inner) => `(${inner})`."
+        },
+        {
+          "name": "condition",
+          "type": "(field: string, operator: string, value: string) => string",
+          "required": true,
+          "description": "One condition from its field, operator and value text."
+        },
+        {
+          "name": "number",
+          "type": "(value: number, unit: string | undefined) => string",
+          "required": true,
+          "description": "A number with its unit."
+        },
+        {
+          "name": "range",
+          "type": "(min: string, max: string) => string",
+          "required": true,
+          "description": "A range from its two number texts."
+        },
+        {
+          "name": "list",
+          "type": "(labels: readonly string[]) => string",
+          "required": true,
+          "description": "A list of choices, such as (labels) => labels.join(' / ')."
+        },
+        {
+          "name": "blank",
+          "type": "string",
+          "required": true,
+          "description": "Stands for a value that is not filled in yet."
+        },
+        {
+          "name": "empty",
+          "type": "string",
+          "required": true,
+          "description": "Stands for a rule with no conditions."
+        },
+        {
+          "name": "ifTrue",
+          "type": "(actions: string) => string",
+          "required": true,
+          "description": "Wraps the actions that run when the conditions hold, such as (actions) => `then ${actions}`."
+        },
+        {
+          "name": "ifFalse",
+          "type": "(actions: string) => string",
+          "required": true,
+          "description": "Wraps the actions that run when they do not, such as (actions) => `otherwise ${actions}`."
+        },
+        {
+          "name": "action",
+          "type": "(label: string, params: readonly RuleTextParam[]) => string",
+          "required": true,
+          "description": "One action from its label and its parameters (text and connector word each, in the order they are shown)."
+        },
+        {
+          "name": "actionJoin",
+          "type": "string",
+          "required": true,
+          "description": "Between two actions."
+        },
+        {
+          "name": "join",
+          "type": "string",
+          "required": true,
+          "description": "Between the condition part and the action parts."
+        }
+      ]
+    },
+    "RuleValue": {
+      "kind": "type",
+      "source": "src/blocks/rule-builder/rule-model.ts",
+      "props": []
     },
     "RulerSlider": {
       "kind": "component",
@@ -65033,6 +67657,61 @@
       "source": "src/blocks/data-grid/layout-model.ts",
       "props": []
     },
+    "activityCuts": {
+      "kind": "function",
+      "source": "src/blocks/agent-drawer/agent-drawer-model.ts",
+      "props": []
+    },
+    "activityGrid": {
+      "kind": "function",
+      "source": "src/blocks/agent-drawer/agent-drawer-model.ts",
+      "props": [
+        {
+          "name": "from",
+          "type": "string",
+          "required": false,
+          "description": "First day (YYYY-MM-DD); defaults to the earliest day in days."
+        },
+        {
+          "name": "to",
+          "type": "string",
+          "required": false,
+          "description": "Last day (YYYY-MM-DD); defaults to the latest day in days."
+        },
+        {
+          "name": "weekStart",
+          "type": "0 | 1",
+          "required": false,
+          "description": "Which weekday a column starts on (0 Sunday, 1 Monday)."
+        },
+        {
+          "name": "max",
+          "type": "number",
+          "required": false,
+          "description": "Count that fills the top shade; defaults to the largest day in range."
+        }
+      ]
+    },
+    "activityLevel": {
+      "kind": "function",
+      "source": "src/blocks/agent-drawer/agent-drawer-model.ts",
+      "props": []
+    },
+    "activityLevelByCuts": {
+      "kind": "function",
+      "source": "src/blocks/agent-drawer/agent-drawer-model.ts",
+      "props": []
+    },
+    "activityMax": {
+      "kind": "function",
+      "source": "src/blocks/agent-drawer/agent-drawer-model.ts",
+      "props": []
+    },
+    "activityTotal": {
+      "kind": "function",
+      "source": "src/blocks/agent-drawer/agent-drawer-model.ts",
+      "props": []
+    },
     "agentElapsed": {
       "kind": "function",
       "source": "src/blocks/agent-tree/agent-tree-model.ts",
@@ -65050,6 +67729,11 @@
           "description": "Start in milliseconds."
         }
       ]
+    },
+    "agentStatusTone": {
+      "kind": "function",
+      "source": "src/blocks/agent-drawer/agent-drawer-model.ts",
+      "props": []
     },
     "agentTag": {
       "kind": "function",
@@ -66156,6 +68840,24 @@
         }
       ]
     },
+    "createIntentDetector": {
+      "kind": "function",
+      "source": "src/patterns/omnibox/omnibox-model.ts",
+      "props": [
+        {
+          "name": "minLength",
+          "type": "number",
+          "required": false,
+          "description": "Text at least this long (characters) reads as a question."
+        },
+        {
+          "name": "minWords",
+          "type": "number",
+          "required": false,
+          "description": "Text with at least this many space-separated words reads as a question."
+        }
+      ]
+    },
     "createLinkHub": {
       "kind": "function",
       "source": "src/lib/link-group.tsx",
@@ -66180,6 +68882,24 @@
       "kind": "function",
       "source": "src/blocks/agent-queue/queue-model.ts",
       "props": []
+    },
+    "detectIntent": {
+      "kind": "function",
+      "source": "src/patterns/omnibox/omnibox-model.ts",
+      "props": [
+        {
+          "name": "minLength",
+          "type": "number",
+          "required": false,
+          "description": "Text at least this long (characters) reads as a question."
+        },
+        {
+          "name": "minWords",
+          "type": "number",
+          "required": false,
+          "description": "Text with at least this many space-separated words reads as a question."
+        }
+      ]
     },
     "detectPlatform": {
       "kind": "function",
@@ -66748,6 +69468,11 @@
     "hitNode": {
       "kind": "function",
       "source": "src/blocks/symbol-galaxy/galaxy-model.ts",
+      "props": []
+    },
+    "initialsOf": {
+      "kind": "function",
+      "source": "src/blocks/agent-drawer/agent-drawer.tsx",
       "props": []
     },
     "inputVariants": {
@@ -67406,6 +70131,11 @@
       "source": "src/motion/text/text-morph.tsx",
       "props": []
     },
+    "moveActivity": {
+      "kind": "function",
+      "source": "src/blocks/agent-drawer/agent-drawer-model.ts",
+      "props": []
+    },
     "moveCause": {
       "kind": "function",
       "source": "src/blocks/root-cause-tree/root-cause-model.ts",
@@ -67491,6 +70221,30 @@
       "kind": "value",
       "source": "src/primitives/navigation-menu.tsx",
       "props": []
+    },
+    "nearestRow": {
+      "kind": "function",
+      "source": "src/lib/proximity-highlight.ts",
+      "props": [
+        {
+          "name": "current",
+          "type": "number | null",
+          "required": false,
+          "description": "Index of the row picked last time; kept while the pointer stays within `hysteresis` of its edges."
+        },
+        {
+          "name": "hysteresis",
+          "type": "number",
+          "required": false,
+          "description": "Pixels past the current row's edges in which it is kept."
+        },
+        {
+          "name": "reach",
+          "type": "number",
+          "required": false,
+          "description": "Farthest distance in pixels from a row at which it is still picked."
+        }
+      ]
     },
     "neighborhood": {
       "kind": "function",
@@ -67848,6 +70602,11 @@
       "source": "src/patterns/command-palette.tsx",
       "props": []
     },
+    "recentFrom": {
+      "kind": "function",
+      "source": "src/blocks/agent-drawer/agent-drawer-model.ts",
+      "props": []
+    },
     "relativeChange": {
       "kind": "function",
       "source": "src/quant/experiment-model.ts",
@@ -68002,6 +70761,155 @@
           "description": "Change as a percentage (1.5 means 1.5%)."
         }
       ]
+    },
+    "ruleToText": {
+      "kind": "function",
+      "source": "src/blocks/rule-builder/rule-model.ts",
+      "props": [
+        {
+          "name": "when",
+          "type": "RuleGroup",
+          "required": true,
+          "description": "The condition tree; its root group is always there."
+        },
+        {
+          "name": "ifTrue",
+          "type": "readonly RuleAction[]",
+          "required": true,
+          "description": "Actions when the conditions hold; may be empty unless schema.requireActions says so."
+        },
+        {
+          "name": "ifFalse",
+          "type": "readonly RuleAction[]",
+          "required": true,
+          "description": "Actions when they do not."
+        },
+        {
+          "name": "fields",
+          "type": "readonly RuleField[]",
+          "required": true,
+          "description": "The fields a condition can test."
+        },
+        {
+          "name": "operators",
+          "type": "Readonly<Record<RuleFieldType, readonly RuleOperator[]>>",
+          "required": true,
+          "description": "Operators offered for each field type."
+        },
+        {
+          "name": "actions",
+          "type": "readonly RuleActionDef[]",
+          "required": false,
+          "description": "Action kinds; without them the builder has no THEN part."
+        },
+        {
+          "name": "requireActions",
+          "type": "boolean",
+          "required": false,
+          "description": "The if-true list must hold at least one action; default false (a screening rule may have only WHEN)."
+        },
+        {
+          "name": "maxDepth",
+          "type": "number",
+          "required": false,
+          "description": "Deepest nesting of groups, the root counts as 1; default 3."
+        },
+        {
+          "name": "when",
+          "type": "(body: string) => string",
+          "required": true,
+          "description": "Wraps the whole condition text, such as (body) => `When ${body}`."
+        },
+        {
+          "name": "and",
+          "type": "string",
+          "required": true,
+          "description": "Between two conditions of an and group."
+        },
+        {
+          "name": "or",
+          "type": "string",
+          "required": true,
+          "description": "Between two conditions of an or group."
+        },
+        {
+          "name": "group",
+          "type": "(inner: string) => string",
+          "required": true,
+          "description": "Wraps a nested group with more than one member, such as (inner) => `(${inner})`."
+        },
+        {
+          "name": "condition",
+          "type": "(field: string, operator: string, value: string) => string",
+          "required": true,
+          "description": "One condition from its field, operator and value text."
+        },
+        {
+          "name": "number",
+          "type": "(value: number, unit: string | undefined) => string",
+          "required": true,
+          "description": "A number with its unit."
+        },
+        {
+          "name": "range",
+          "type": "(min: string, max: string) => string",
+          "required": true,
+          "description": "A range from its two number texts."
+        },
+        {
+          "name": "list",
+          "type": "(labels: readonly string[]) => string",
+          "required": true,
+          "description": "A list of choices, such as (labels) => labels.join(' / ')."
+        },
+        {
+          "name": "blank",
+          "type": "string",
+          "required": true,
+          "description": "Stands for a value that is not filled in yet."
+        },
+        {
+          "name": "empty",
+          "type": "string",
+          "required": true,
+          "description": "Stands for a rule with no conditions."
+        },
+        {
+          "name": "ifTrue",
+          "type": "(actions: string) => string",
+          "required": true,
+          "description": "Wraps the actions that run when the conditions hold, such as (actions) => `then ${actions}`."
+        },
+        {
+          "name": "ifFalse",
+          "type": "(actions: string) => string",
+          "required": true,
+          "description": "Wraps the actions that run when they do not, such as (actions) => `otherwise ${actions}`."
+        },
+        {
+          "name": "action",
+          "type": "(label: string, params: readonly RuleTextParam[]) => string",
+          "required": true,
+          "description": "One action from its label and its parameters (text and connector word each, in the order they are shown)."
+        },
+        {
+          "name": "actionJoin",
+          "type": "string",
+          "required": true,
+          "description": "Between two actions."
+        },
+        {
+          "name": "join",
+          "type": "string",
+          "required": true,
+          "description": "Between the condition part and the action parts."
+        }
+      ]
+    },
+    "runResultTone": {
+      "kind": "function",
+      "source": "src/blocks/agent-drawer/agent-drawer-model.ts",
+      "props": []
     },
     "runningCounts": {
       "kind": "function",
@@ -69468,6 +72376,42 @@
         }
       ]
     },
+    "useProximityHighlight": {
+      "kind": "function",
+      "source": "src/lib/proximity-highlight.ts",
+      "props": [
+        {
+          "name": "itemSelector",
+          "type": "string",
+          "required": true,
+          "description": "CSS selector of the rows inside the container (for example `[cmdk-item]`)."
+        },
+        {
+          "name": "activeSelector",
+          "type": "string",
+          "required": false,
+          "description": "CSS selector of the current row when the pointer is away (keyboard highlight), for example `[cmdk-item][aria-selected=\"true\"]`."
+        },
+        {
+          "name": "enabled",
+          "type": "boolean",
+          "required": false,
+          "description": "Turn the highlight off (rows keep their own background)."
+        },
+        {
+          "name": "hysteresis",
+          "type": "number",
+          "required": false,
+          "description": "Pixels past a row's edge in which the pointer still counts as on it, so the highlight does not flip back and forth at the seam."
+        },
+        {
+          "name": "reach",
+          "type": "number",
+          "required": false,
+          "description": "Farthest distance in pixels from a row at which the pointer still picks it (the gap and padding around rows)."
+        }
+      ]
+    },
     "useRovingToolbar": {
       "kind": "function",
       "source": "src/blocks/toolbar/use-roving-toolbar.ts",
@@ -69688,6 +72632,60 @@
       "kind": "function",
       "source": "src/cn/mini-k-model.ts",
       "props": []
+    },
+    "validateRule": {
+      "kind": "function",
+      "source": "src/blocks/rule-builder/rule-model.ts",
+      "props": [
+        {
+          "name": "when",
+          "type": "RuleGroup",
+          "required": true,
+          "description": "The condition tree; its root group is always there."
+        },
+        {
+          "name": "ifTrue",
+          "type": "readonly RuleAction[]",
+          "required": true,
+          "description": "Actions when the conditions hold; may be empty unless schema.requireActions says so."
+        },
+        {
+          "name": "ifFalse",
+          "type": "readonly RuleAction[]",
+          "required": true,
+          "description": "Actions when they do not."
+        },
+        {
+          "name": "fields",
+          "type": "readonly RuleField[]",
+          "required": true,
+          "description": "The fields a condition can test."
+        },
+        {
+          "name": "operators",
+          "type": "Readonly<Record<RuleFieldType, readonly RuleOperator[]>>",
+          "required": true,
+          "description": "Operators offered for each field type."
+        },
+        {
+          "name": "actions",
+          "type": "readonly RuleActionDef[]",
+          "required": false,
+          "description": "Action kinds; without them the builder has no THEN part."
+        },
+        {
+          "name": "requireActions",
+          "type": "boolean",
+          "required": false,
+          "description": "The if-true list must hold at least one action; default false (a screening rule may have only WHEN)."
+        },
+        {
+          "name": "maxDepth",
+          "type": "number",
+          "required": false,
+          "description": "Deepest nesting of groups, the root counts as 1; default 3."
+        }
+      ]
     },
     "valueRange": {
       "kind": "function",
