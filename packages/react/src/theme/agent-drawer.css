@@ -236,7 +236,8 @@
   font: var(--text-caption) var(--font-sans-small);
 }
 
-/* 活动热力格：一行一个星期，每行一列一周；格子是方的，最宽 28px。 */
+/* 活动热力格：一行一个星期，每行一列一周；格子是方的，最小 10px、最宽 28px。
+   周数多放不下时整张图（月份、星期标签、格子）在 .k-ad-scroller 里横向滚动，不把格子压到 10px 以下；星期标签粘在左边。 */
 .k-ad-activity {
   display: flex;
   flex-direction: column;
@@ -247,16 +248,45 @@
   border-radius: 8px;
   background: var(--k-container-secondary-background);
 }
+.k-ad-scroller {
+  overflow-x: auto;
+  padding: 1px 1px var(--space-1);
+}
+.k-ad-chart {
+  --k-ad-label: 28px;
+  --k-ad-cell-min: 10px;
+  --k-ad-gap: 3px;
+  min-width: calc(var(--k-ad-label) + var(--k-ad-cols, 1) * (var(--k-ad-cell-min) + var(--k-ad-gap)));
+  max-width: calc(var(--k-ad-label) + var(--k-ad-cols, 1) * (28px + var(--k-ad-gap)));
+}
+.k-ad-months,
+.k-ad-row {
+  display: grid;
+  grid-template-columns: var(--k-ad-label) repeat(var(--k-ad-cols, 1), minmax(var(--k-ad-cell-min), 1fr));
+  column-gap: var(--k-ad-gap);
+}
+.k-ad-months {
+  height: 14px;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-ad-months span {
+  white-space: nowrap;
+}
 .k-ad-grid {
   display: flex;
   flex-direction: column;
-  gap: 3px;
-  max-width: calc(var(--k-ad-cols, 1) * 31px);
+  gap: var(--k-ad-gap);
 }
-.k-ad-row {
-  display: grid;
-  grid-template-columns: repeat(var(--k-ad-cols, 1), minmax(0, 1fr));
-  gap: 3px;
+.k-ad-weekday {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  align-self: center;
+  background: var(--k-container-secondary-background);
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+  white-space: nowrap;
 }
 .k-ad-cell,
 .k-ad-swatch {
@@ -341,6 +371,7 @@
   border-top: 1px solid var(--k-separable-subtle-borderColor);
 }
 .k-ad-run-body {
+  position: relative;
   display: flex;
   align-items: center;
   gap: var(--space-2);
@@ -372,6 +403,15 @@
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
+}
+/* 只给读屏的字。 */
+.k-ad-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
   white-space: nowrap;
 }
 .k-ad-run-meta {

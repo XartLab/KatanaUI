@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 import { renderToStaticMarkup } from 'react-dom/server'
-import { describe, expect, it } from 'vite-plus/test'
+import { describe, expect, it, vi } from 'vite-plus/test'
 import { AgentActivity } from './agent-activity.tsx'
 import { AgentDrawer, initialsOf, type AgentDrawerLabels } from './agent-drawer.tsx'
 
@@ -112,6 +112,32 @@ describe('AgentDrawer', () => {
     expect(out).not.toContain('k-ad-tags')
     expect(out).not.toContain('agent-drawer-metrics')
   })
+  it('defaultTab 或 tab 指向没给槽的页签：落到用量，面板不空白', () => {
+    for (const props of [{ defaultTab: 'configure' as const }, { tab: 'history' as const }]) {
+      const out = renderToStaticMarkup(<AgentDrawer {...base} {...props} />)
+      expect(out).toMatch(/role="tab"[^>]*aria-selected="true"[^>]*>用量/)
+      expect(out).toContain('data-slot="agent-drawer-metric"')
+    }
+    // 给了槽就听它的。
+    const out = renderToStaticMarkup(<AgentDrawer {...base} configure={<p>配置槽</p>} defaultTab="configure" />)
+    expect(out).toContain('配置槽')
+    expect(out).not.toContain('data-slot="agent-drawer-metric"')
+  })
+  it('标签重复只画一枚（也就不会有重复 key）', () => {
+    const spy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const out = renderToStaticMarkup(<AgentDrawer {...base} tags={['行情', '行情', '盘前']} />)
+    expect(out.match(/<li><span[^>]*data-slot="tag"/g)).toHaveLength(2)
+    expect(spy).not.toHaveBeenCalled()
+    spy.mockRestore()
+  })
+  it('最近运行的触发方式有读屏文字（图标是装饰），没有触发方式的行不写', () => {
+    const out = renderToStaticMarkup(
+      <AgentDrawer {...base} runs={[...base.runs, { id: 'c', actor: '新研报', result: 'ok', startedAt: 3 }]} />,
+    )
+    expect(out).toContain('<span class="k-ad-sr">定时</span>')
+    expect(out).toContain('<span class="k-ad-sr">手动</span>')
+    expect(out.match(/class="k-ad-sr"/g)).toHaveLength(2)
+  })
   it('renderTitle 与 renderDescription 能换掉标题与说明元素', () => {
     const out = renderToStaticMarkup(
       <AgentDrawer
@@ -143,10 +169,10 @@ describe('AgentActivity', () => {
     expect(html.match(/role="gridcell"/g)).toHaveLength(3)
     expect(html).toContain('aria-label="11-03 跑了 12 次"')
   })
-  it('档位写在 data-level：0 次 0 档，最多的 5 档；色例是 6 个色块（0 加 5 档）', () => {
+  it('档位写在 data-level：0 次 0 档，跑过的按分位数分档（最多的 5 档、最少的 1 档）；色例是 6 个色块（0 加 5 档）', () => {
     expect(html).toMatch(/data-date="2026-11-02"[^>]*data-level="0"/)
     expect(html).toMatch(/data-date="2026-11-03"[^>]*data-level="5"/)
-    expect(html).toMatch(/data-date="2026-11-04"[^>]*data-level="2"/)
+    expect(html).toMatch(/data-date="2026-11-04"[^>]*data-level="1"/)
     expect(html.match(/class="k-ad-swatch"/g)).toHaveLength(6)
   })
   it('只有最新一天在 Tab 序里，读数行默认写 idle', () => {
@@ -154,6 +180,38 @@ describe('AgentActivity', () => {
     expect(html).toMatch(/data-date="2026-11-04"[^>]*tabindex="0"/)
     expect(html.match(/tabindex="-1"/g)).toHaveLength(2)
     expect(html).toContain('共 15 次')
+  })
+  it('月份标签画在每月第一周的列上方，星期标签只写周一三五，每一行有名字，格子有列序号', () => {
+    const months = Array.from({ length: 12 }, (_, i) => `M${i + 1}`)
+    const weekdays = ['日', '一', '二', '三', '四', '五', '六']
+    const out = renderToStaticMarkup(
+      <AgentActivity
+        days={[
+          { date: '2026-10-20', count: 1 },
+          { date: '2026-12-10', count: 2 },
+        ]}
+        monthLabels={months}
+        weekdayLabels={weekdays}
+        label="x"
+        describe={describe_}
+      />,
+    )
+    // 10 月在第 0 列、11 月第 1 列（10 月只剩一列，离 11 月不到 3 列，不画）、12 月第 6 列（网格列号 +2，因为左边还有星期标签那一列）。
+    expect(out).toContain('data-slot="agent-activity-months"')
+    expect(out).not.toContain('>M10<')
+    expect(out).toContain('grid-column:3">M11<')
+    expect(out).toContain('grid-column:8">M12<')
+    expect(out.match(/role="row"[^>]*aria-label="[^"]+"/g)).toHaveLength(7)
+    expect(out).toContain('aria-label="一"')
+    expect(out.match(/data-slot="agent-activity-weekday"[^>]*>(一|三|五)</g)).toHaveLength(3)
+    expect(out).toMatch(/data-date="2026-10-20"[^>]*aria-colindex="1"/)
+    expect(out).toMatch(/data-date="2026-12-10"[^>]*aria-colindex="8"/)
+    expect(out).toContain('aria-colcount="8"')
+    expect(out).toContain('aria-rowcount="7"')
+  })
+  it('不给 monthLabels 就没有月份行，不给 weekdayLabels 行没有名字', () => {
+    expect(html).not.toContain('agent-activity-months')
+    expect(html).not.toMatch(/role="row"[^>]*aria-label/)
   })
   it('没有数据不画格子', () => {
     const empty = renderToStaticMarkup(<AgentActivity days={[]} label="x" describe={describe_} />)

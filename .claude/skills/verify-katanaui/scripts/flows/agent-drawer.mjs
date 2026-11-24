@@ -62,6 +62,37 @@ export default {
       await expect(readout).toHaveText((await page.locator(':focus').getAttribute('aria-label')))
       return { start, week, day, readout: (await readout.innerText()).trim() }
     })
+    await step('热力格标签：月份 9 月 / 10 月 / 11 月，星期只写 一 三 五，每一行有名字', async () => {
+      const months = first.locator('[data-slot="agent-activity-months"] span')
+      await expect(months).toHaveText(['9 月', '10 月', '11 月'])
+      const weekdays = first.locator('[data-slot="agent-activity-weekday"]:not(:empty)')
+      await expect(weekdays).toHaveText(['一', '三', '五'])
+      const rowNames = await first.getByRole('grid').getByRole('row').evaluateAll((rows) => rows.map((row) => row.getAttribute('aria-label')))
+      expect(rowNames).toEqual(['一', '二', '三', '四', '五', '六', '日'])
+      return { months: await months.allInnerTexts(), weekdays: await weekdays.allInnerTexts(), rowNames }
+    })
+    await step('热力格长距离键：PageDown 跳 4 周、Home / End 行首行尾、Ctrl+End / Ctrl+Home 全图首尾；残缺的首末周 ← → 取最近的行', async () => {
+      const grid = first.getByRole('grid')
+      const cell = (date) => grid.locator(`[data-date="${date}"]`)
+      const at = async (key, date) => {
+        await page.keyboard.press(key)
+        await expect(page.locator(':focus')).toHaveAttribute('data-date', date)
+        return `${key}→${date}`
+      }
+      const trail = []
+      await cell('2026-09-16').focus()
+      trail.push(await at('PageDown', '2026-10-14'))
+      trail.push(await at('PageUp', '2026-09-16'))
+      trail.push(await at('Home', '2026-09-02'))
+      trail.push(await at('End', '2026-11-18'))
+      trail.push(await at('Control+End', '2026-11-23'))
+      trail.push(await at('Control+Home', '2026-09-01'))
+      await cell('2026-09-07').focus()
+      trail.push(await at('ArrowLeft', '2026-09-01'))
+      await cell('2026-11-22').focus()
+      trail.push(await at('ArrowRight', '2026-11-23'))
+      return { trail }
+    })
     await step('最近运行：点「价格突破」那一行，页下面写 onOpenRun：r4；Enter 打开第四行，写 r2', async () => {
       const rows = first.locator('[data-slot="agent-drawer-run"]')
       const opened = section.getByTestId('agent-drawer-opened').first()
@@ -73,17 +104,26 @@ export default {
       await expect(opened).toHaveText('onOpenRun：r2')
       return { opened: await opened.innerText(), results: await rows.locator('.k-ad-run-result').allInnerTexts() }
     })
-    await step('Agent 列表：点「回补日线」那一行，右边的抽屉打开，状态「暂停」；Esc 关闭', async () => {
+    await step('Agent 列表：点「回补日线」那一行，右边的抽屉打开，状态「暂停」，30 周热力格横向滚动；Esc 关闭', async () => {
       const table = section.getByTestId('agent-table')
       await table.scrollIntoViewIfNeeded()
       await table.getByRole('rowheader', { name: '回补日线' }).click()
       const dialog = page.getByRole('dialog', { name: '回补日线' })
       await expect(dialog).toBeVisible()
       await expect(dialog.locator('[data-slot="agent-drawer-status"]')).toHaveText('暂停')
+      // 30 周放不下：格子不小于 10px，整张图横向滚动并停在最新一端。
+      const sizes = await dialog.locator('[data-slot="agent-activity-scroller"]').evaluate((el) => ({
+        scrollable: el.scrollWidth - el.clientWidth,
+        atEnd: Math.abs(el.scrollLeft - (el.scrollWidth - el.clientWidth)),
+        cell: el.querySelector('[data-slot="agent-activity-cell"]').getBoundingClientRect().width,
+      }))
+      expect(sizes.scrollable).toBeGreaterThan(0)
+      expect(sizes.atEnd).toBeLessThan(2)
+      expect(sizes.cell).toBeGreaterThanOrEqual(10)
       await aria(dialog, 'agent-drawer-sheet.aria.yml')
       await page.keyboard.press('Escape')
       await expect(dialog).toHaveCount(0)
-      return { closed: true }
+      return { closed: true, ...sizes }
     })
   },
 }

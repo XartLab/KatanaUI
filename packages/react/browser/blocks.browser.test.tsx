@@ -118,6 +118,8 @@ const chartTable = (
   />
 )
 
+const MONTHS_EN = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+const WEEKDAYS_EN = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 // Agent 档案抽屉的热力格（#225）：两周 14 天，覆盖 0 次与 5 档。
 const ACTIVITY_DAYS = [0, 0, 2, 5, 9, 12, 0, 1, 3, 6, 8, 10, 4, 0].map((count, index) => ({
   date: new Date(Date.UTC(2026, 10, 2 + index)).toISOString().slice(0, 10),
@@ -127,6 +129,8 @@ const agentActivity = (
   <div style={{ width: 360 }}>
     <AgentActivity
       days={ACTIVITY_DAYS}
+      monthLabels={MONTHS_EN}
+      weekdayLabels={WEEKDAYS_EN}
       label="Runs per day"
       describe={({ date, count }) => `${date.slice(5)} ran ${count} times`}
       legend={{ less: 'Less', more: 'More' }}
@@ -156,6 +160,8 @@ const agentDrawer = (
       ]}
       activity={{
         days: DRAWER_DAYS,
+        monthLabels: MONTHS_EN,
+        weekdayLabels: WEEKDAYS_EN,
         describe: ({ date, count }) => `${date.slice(5)} ran ${count} times`,
         idle: '8 weeks',
       }}

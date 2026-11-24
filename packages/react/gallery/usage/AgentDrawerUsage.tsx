@@ -20,6 +20,9 @@ const DAYS: readonly AgentActivityDay[] = Array.from({ length: 84 }, (_, index) 
   return { date, count: weekday === 0 || weekday === 6 ? 0 : (index * 7 + (index % 5) * 3) % 13 }
 })
 
+const MONTHS = ['1 月', '2 月', '3 月', '4 月', '5 月', '6 月', '7 月', '8 月', '9 月', '10 月', '11 月', '12 月']
+const WEEKDAYS = ['日', '一', '二', '三', '四', '五', '六']
+
 const RUNS: readonly AgentRecentRun[] = [
   { id: 'r5', actor: '交易日 08:30', trigger: 'schedule', result: 'running', startedAt: NOW - 6 * 60_000 },
   {
@@ -100,6 +103,8 @@ export function AgentDrawerUsage({ status = 'running' }: { status?: AgentStatus 
             days: DAYS,
             from: FROM,
             to: TO,
+            monthLabels: MONTHS,
+            weekdayLabels: WEEKDAYS,
             describe: ({ date, count }) =>
               count === 0 ? `${date.slice(5)} 没跑` : `${date.slice(5)} 跑了 ${count} 次`,
             idle: '共 12 周，悬停或用方向键看某一天',

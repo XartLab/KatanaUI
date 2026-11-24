@@ -113,10 +113,13 @@ const LAYOUT: readonly GridColumnLayout[] = [
   { id: 'total', label: '总次数', width: 100, visible: true },
 ]
 
-const DAYS: readonly AgentActivityDay[] = Array.from({ length: 56 }, (_, index) => ({
-  date: new Date(Date.parse('2026-09-28T00:00:00Z') + index * 86_400_000).toISOString().slice(0, 10),
+// 30 周：抽屉里放不下（格子最小 10px），热力格整张横向滚动并停在最新一端。
+const DAYS: readonly AgentActivityDay[] = Array.from({ length: 210 }, (_, index) => ({
+  date: new Date(Date.parse('2026-05-04T00:00:00Z') + index * 86_400_000).toISOString().slice(0, 10),
   count: (index * 5) % 9,
 }))
+const MONTHS = ['1 月', '2 月', '3 月', '4 月', '5 月', '6 月', '7 月', '8 月', '9 月', '10 月', '11 月', '12 月']
+const WEEKDAYS = ['日', '一', '二', '三', '四', '五', '六']
 
 const LABELS: AgentDrawerLabels = {
   properties: { status: '状态', tags: '标签', trigger: '触发', owner: '负责人', created: '创建时间' },
@@ -125,7 +128,7 @@ const LABELS: AgentDrawerLabels = {
   results: { ok: '成功', failed: '失败', running: '在跑', cancelled: '已取消' },
   tabs: { list: 'Agent 档案', usage: '用量', configure: '配置', history: '历史' },
   activity: '活动',
-  activityGrid: '最近 8 周每天跑的次数',
+  activityGrid: '最近 30 周每天跑的次数',
   legend: { less: '少', more: '多' },
   recentRuns: '最近运行',
   noRuns: '还没有运行',
@@ -161,6 +164,8 @@ export function AgentTableUsage() {
               created="2026-05-09"
               activity={{
                 days: DAYS,
+                monthLabels: MONTHS,
+                weekdayLabels: WEEKDAYS,
                 describe: ({ date, count }) => `${date.slice(5)} 跑了 ${count} 次`,
               }}
               runs={[

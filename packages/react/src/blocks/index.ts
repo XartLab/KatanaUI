@@ -611,8 +611,11 @@ export {
 export { AgentActivity, type AgentActivityProps } from './agent-drawer/agent-activity.tsx'
 export {
   ACTIVITY_LEVELS,
+  ACTIVITY_PAGE_WEEKS,
+  activityCuts,
   activityGrid,
   activityLevel,
+  activityLevelByCuts,
   activityMax,
   activityTotal,
   agentStatusTone,

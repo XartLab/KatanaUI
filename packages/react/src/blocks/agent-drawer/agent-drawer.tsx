@@ -26,7 +26,7 @@ import {
   CircleDot,
   CircleMinus,
 } from 'lucide-react'
-import { useId, type ReactNode } from 'react'
+import { useId, useState, type ReactNode } from 'react'
 import { cn } from '../../lib/cn.ts'
 import type { Severity } from '../../lib/severity.ts'
 import { Avatar } from '../../primitives/avatar.tsx'
@@ -117,7 +117,10 @@ export type AgentDrawerProps = {
   /** Metric cards at the top of the usage page. */
   metrics?: readonly AgentMetric[]
   /** Activity grid data and sentence writer; see AgentActivity. */
-  activity: Pick<AgentActivityProps, 'days' | 'from' | 'to' | 'weekStart' | 'max' | 'describe' | 'idle'>
+  activity: Pick<
+    AgentActivityProps,
+    'days' | 'from' | 'to' | 'weekStart' | 'max' | 'monthLabels' | 'weekdayLabels' | 'describe' | 'idle'
+  >
   /** Recent runs, newest first. */
   runs: readonly AgentRecentRun[]
   /** Called with the run id when a row is clicked or gets Enter; without it the rows are plain text. */
@@ -130,9 +133,9 @@ export type AgentDrawerProps = {
   configure?: ReactNode
   /** Content of the History tab; without it there is no such tab. */
   history?: ReactNode
-  /** Current tab (controlled). */
+  /** Current tab (controlled). A tab without content falls back to usage. */
   tab?: AgentDrawerTab
-  /** Tab at first (uncontrolled); defaults to usage. */
+  /** Tab at first (uncontrolled); defaults to usage. A tab without content falls back to usage. */
   defaultTab?: AgentDrawerTab
   /** Called when the tab changes. */
   onTabChange?: (tab: AgentDrawerTab) => void
@@ -220,13 +223,21 @@ export function AgentDrawer({
   className,
 }: AgentDrawerProps) {
   const titleId = useId()
+  // 重复的标签只画一枚（调用方拼出来的标签难免重复，重复的标签没有信息）。
+  const uniqueTags = tags ? [...new Set(tags)] : []
   const tone = agentStatusTone(status)
   const TriggerIcon = TRIGGER_ICON[trigger.kind]
   const title = (props: { className: string; children: ReactNode }) =>
     renderTitle ? renderTitle(props) : <h2 id={titleId} {...props} />
   const about = (props: { className: string; children: ReactNode }) =>
     renderDescription ? renderDescription(props) : <p {...props} />
-  const tabProps = tab === undefined ? { defaultValue: defaultTab } : { value: tab }
+  // 受控与不受控固定成一种：件自己记页签，tab 给了就听它的；指向没给槽的页签时落到用量。
+  const [innerTab, setInnerTab] = useState<AgentDrawerTab>(defaultTab)
+  const wanted = tab ?? innerTab
+  const current: AgentDrawerTab =
+    (wanted === 'configure' && configure !== undefined) || (wanted === 'history' && history !== undefined)
+      ? wanted
+      : 'usage'
 
   return (
     <section
@@ -247,11 +258,11 @@ export function AgentDrawer({
               {labels.statuses[status]}
             </span>
           </Property>
-          {tags && tags.length > 0 ? (
+          {uniqueTags.length > 0 ? (
             <Property icon={<TagIcon />} label={labels.properties.tags}>
               <ul className="k-ad-tags">
-                {tags.map((text) => (
-                  <li key={text}>
+                {uniqueTags.map((text, index) => (
+                  <li key={`${index}-${text}`}>
                     <Tag>{text}</Tag>
                   </li>
                 ))}
@@ -283,7 +294,14 @@ export function AgentDrawer({
           </Property>
         </dl>
 
-        <Tabs {...tabProps} onValueChange={(value) => onTabChange?.(value as AgentDrawerTab)} className="k-ad-tabs">
+        <Tabs
+          value={current}
+          onValueChange={(value) => {
+            if (tab === undefined) setInnerTab(value as AgentDrawerTab)
+            onTabChange?.(value as AgentDrawerTab)
+          }}
+          className="k-ad-tabs"
+        >
           <TabsList variant="line" aria-label={labels.tabs.list} className="k-ad-tablist">
             <TabsTrigger value="usage">{labels.tabs.usage}</TabsTrigger>
             {configure !== undefined ? <TabsTrigger value="configure">{labels.tabs.configure}</TabsTrigger> : null}
@@ -336,6 +354,7 @@ export function AgentDrawer({
                     const body = (
                       <>
                         {TriggerOfRun ? <TriggerOfRun aria-hidden="true" className="k-ad-mark" /> : null}
+                        {run.trigger ? <span className="k-ad-sr">{labels.triggers[run.trigger]}</span> : null}
                         <span className="k-ad-run-actor">{run.actor}</span>
                         <span className="k-ad-run-meta">
                           {run.durationMs === undefined ? null : <span>{formatDuration(run.durationMs)}</span>}

@@ -7,9 +7,21 @@
  * 方向键在格间走。选 grid 而不选「一张 img 加说明」的理由：每一天都是一个可以逐个读到的数据点，读屏用户要能问「周三那天跑了几次」，
  * 一张图加长说明只能把全部数字念一遍；角色与键位照 WAI-ARIA APG 的 Grid（日历式格子，格子不可编辑）。
  * 到头的方向键不 preventDefault，页面照常滚（modern-web-guidance 的 spatial-navigation）。
+ * 键位：← → 前后一周（残列取最近的行）、↑ ↓ 前后一天、PageUp / PageDown 前后 4 周、Home / End 行首行尾、Ctrl+Home / Ctrl+End 全图首尾。
+ * 档位：默认按跑过的日子的次数分位数分 5 档（一个离群值不会把别的日子压成一档），给了固定 max 才是线性（见 agent-drawer-model.ts）。
+ * 标签：格子上方是月份（monthLabels，由调用方按语言给），左边是星期（weekdayLabels，周一三五画字，每一行都有 aria-label）；
+ * 格子最小 10px：周数多放不下时整张图横向滚动，并滚到最新的一端，不把格子压小。
  * 件不取时间；区间由调用方给（from / to），没给取数据里最早与最晚的一天。纯逻辑在 agent-drawer-model.ts。
  */
-import { useMemo, useRef, useState, type CSSProperties, type KeyboardEvent, type ReactNode } from 'react'
+import {
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+  type CSSProperties,
+  type KeyboardEvent,
+  type ReactNode,
+} from 'react'
 import { cn } from '../../lib/cn.ts'
 import {
   ACTIVITY_LEVELS,
@@ -28,8 +40,15 @@ export type AgentActivityProps = {
   to?: string
   /** Which weekday a column starts on (0 Sunday, 1 Monday). Defaults to 1. */
   weekStart?: 0 | 1
-  /** Count that fills the top shade; defaults to the largest day. Give a fixed value to compare agents. */
+  /**
+   * Count that fills the top shade. Without it the five shades follow the quantiles of the days that ran (an outlier day does not flatten the rest);
+   * with it the shades are linear against this count, so several agents can be compared.
+   */
   max?: number
+  /** Twelve month names, January first; written above the first column of each month. Without it no month row is drawn. */
+  monthLabels?: readonly string[]
+  /** Seven weekday names indexed like JavaScript (0 is Sunday); written for Monday, Wednesday and Friday, and used as each row's accessible name. */
+  weekdayLabels?: readonly string[]
   /** Accessible name of the grid. */
   label: string
   /** The whole sentence for one day, read by screen readers and written in the readout line ("11-03 ran 12 times"). */
@@ -48,6 +67,8 @@ export function AgentActivity({
   to,
   weekStart = 1,
   max,
+  monthLabels,
+  weekdayLabels,
   label,
   describe,
   legend,
@@ -64,10 +85,21 @@ export function AgentActivity({
   const stopIndex = Math.min(stop ?? cells.length - 1, cells.length - 1)
   const shown = hover ?? focus
   const indexOf = new Map(cells.map((cell, index) => [cell.date, index]))
+  const scroller = useRef<HTMLDivElement>(null)
+  // 周数多、放不下时横向滚动：先滚到最新的一端（最近几周最要紧）。
+  useLayoutEffect(() => {
+    const node = scroller.current
+    if (node) node.scrollLeft = node.scrollWidth
+  }, [model.cols])
+  // 月份标签：下一个月的列离得不到 3 列（首月残缺）或自己贴着最后一列的不画，免得叠在一起。
+  const monthMarks = (monthLabels ? model.months : []).filter(
+    (mark, i, all) =>
+      (all[i + 1] ? all[i + 1]!.col - mark.col >= 3 : model.cols - mark.col >= 2) && monthLabels![mark.month],
+  )
 
   const onKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
-    if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return
-    const next = moveActivity(cells, stopIndex, event.key)
+    if (event.altKey || event.metaKey || event.shiftKey) return
+    const next = moveActivity(cells, stopIndex, event.key, event.ctrlKey)
     if (next === null) return
     event.preventDefault()
     setStop(next)
@@ -91,7 +123,8 @@ export function AgentActivity({
         data-level={cell.level}
         aria-label={describe(cell)}
         tabIndex={index === stopIndex ? 0 : -1}
-        style={{ gridColumn: cell.col + 1 } as CSSProperties}
+        aria-colindex={cell.col + 1}
+        style={{ gridColumn: cell.col + 2 } as CSSProperties}
         onMouseEnter={() => setHover(index)}
         onFocus={() => {
           setFocus(index)
@@ -106,19 +139,40 @@ export function AgentActivity({
   return (
     <div className={cn('k-ad-activity', className)} data-slot="agent-activity">
       {cells.length === 0 ? null : (
-        <div
-          role="grid"
-          aria-label={label}
-          className="k-ad-grid"
-          style={{ '--k-ad-cols': model.cols } as CSSProperties}
-          onKeyDown={onKeyDown}
-          onMouseLeave={() => setHover(null)}
-        >
-          {model.rows.map((row, r) => (
-            <div key={r} role="row" className="k-ad-row">
-              {row.map(cellNode)}
+        <div ref={scroller} className="k-ad-scroller" data-slot="agent-activity-scroller">
+          <div className="k-ad-chart" style={{ '--k-ad-cols': model.cols } as CSSProperties}>
+            {monthMarks.length > 0 ? (
+              <div className="k-ad-months" data-slot="agent-activity-months" aria-hidden="true">
+                {monthMarks.map((mark) => (
+                  <span key={`${mark.col}-${mark.month}`} style={{ gridColumn: mark.col + 2 } as CSSProperties}>
+                    {monthLabels![mark.month]}
+                  </span>
+                ))}
+              </div>
+            ) : null}
+            <div
+              role="grid"
+              aria-label={label}
+              aria-colcount={model.cols}
+              aria-rowcount={7}
+              className="k-ad-grid"
+              onKeyDown={onKeyDown}
+              onMouseLeave={() => setHover(null)}
+            >
+              {model.rows.map((row, r) => {
+                const weekday = (r + weekStart) % 7
+                const name = weekdayLabels?.[weekday]
+                return (
+                  <div key={r} role="row" aria-rowindex={r + 1} aria-label={name} className="k-ad-row">
+                    <span className="k-ad-weekday" data-slot="agent-activity-weekday" aria-hidden="true">
+                      {name && [1, 3, 5].includes(weekday) ? name : null}
+                    </span>
+                    {row.map(cellNode)}
+                  </div>
+                )
+              })}
             </div>
-          ))}
+          </div>
         </div>
       )}
       <div className="k-ad-foot">

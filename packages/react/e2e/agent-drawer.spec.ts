@@ -98,19 +98,45 @@ test('热力格：role=grid，0 次空格加 5 档都出现，悬停与键盘聚
   await expect(readout).toHaveText((await hovered.getAttribute('aria-label'))!)
   await page.mouse.move(0, 0)
   await expect(readout).toHaveText(/共 12 周/)
-  // 只有一个 Tab 停点；键盘聚焦读出，方向键 → 前进一周（日期 +7 天），↓ 前进一天。
+  // 月份与星期标签：9、10、11 月各一枚，星期只写一三五，每一行都有名字。
+  await expect(drawer.locator('[data-slot="agent-activity-months"] span')).toHaveText(['9 月', '10 月', '11 月'])
+  await expect(drawer.locator('[data-slot="agent-activity-weekday"]:not(:empty)')).toHaveText(['一', '三', '五'])
+  await expect(grid.getByRole('row')).toHaveCount(7)
+  await expect(grid.getByRole('row').first()).toHaveAttribute('aria-label', '一')
+  // 只有一个 Tab 停点；键盘聚焦读出。
   expect(await cells.evaluateAll((els) => els.filter((el) => el.getAttribute('tabindex') === '0').length)).toBe(1)
-  await cells.nth(30).focus()
-  const date = (await cells.nth(30).getAttribute('data-date'))!
-  const plus = (days: number) =>
-    new Date(Date.parse(`${date}T00:00:00Z`) + days * 86_400_000).toISOString().slice(0, 10)
+  const cell = (date: string) => grid.locator(`[data-date="${date}"]`)
+  const focused = () => page.locator(':focus')
+  await cell('2026-09-09').focus()
+  await expect(readout).toHaveText((await cell('2026-09-09').getAttribute('aria-label'))!)
+  // ← → 前后一周（日期 ±7 天），↑ ↓ 前后一天。
   await page.keyboard.press('ArrowRight')
-  await expect(page.locator(':focus')).toHaveAttribute('data-date', plus(7))
-  await expect(readout).toHaveText((await page.locator(':focus').getAttribute('aria-label'))!)
+  await expect(focused()).toHaveAttribute('data-date', '2026-09-16')
+  await expect(readout).toHaveText((await focused().getAttribute('aria-label'))!)
   await page.keyboard.press('ArrowDown')
-  await expect(page.locator(':focus')).toHaveAttribute('data-date', plus(8))
+  await expect(focused()).toHaveAttribute('data-date', '2026-09-17')
+  await page.keyboard.press('ArrowUp')
+  // PageDown 跳 4 周，PageUp 跳回；Home / End 是这一行（周三）的第一周与最后一周；Ctrl+Home / Ctrl+End 是第一天与最后一天。
+  await page.keyboard.press('PageDown')
+  await expect(focused()).toHaveAttribute('data-date', '2026-10-14')
+  await page.keyboard.press('PageUp')
+  await expect(focused()).toHaveAttribute('data-date', '2026-09-16')
   await page.keyboard.press('Home')
-  await expect(page.locator(':focus')).toHaveAttribute('data-date', '2026-09-01')
+  await expect(focused()).toHaveAttribute('data-date', '2026-09-02')
+  await page.keyboard.press('End')
+  await expect(focused()).toHaveAttribute('data-date', '2026-11-18')
+  await page.keyboard.press('Control+End')
+  await expect(focused()).toHaveAttribute('data-date', '2026-11-23')
+  await page.keyboard.press('Control+Home')
+  await expect(focused()).toHaveAttribute('data-date', '2026-09-01')
+  // 残缺的首周没有周一：第二周的周一按 ← 取最近的一行（周二），不是死路。
+  await cell('2026-09-07').focus()
+  await page.keyboard.press('ArrowLeft')
+  await expect(focused()).toHaveAttribute('data-date', '2026-09-01')
+  // 残缺的末周只有周一：上一周的周日按 → 取最近的一行（周一）。
+  await cell('2026-11-22').focus()
+  await page.keyboard.press('ArrowRight')
+  await expect(focused()).toHaveAttribute('data-date', '2026-11-23')
 })
 
 test('最近运行：点一行回调带运行 id，键盘 Enter 也行', async ({ page }) => {
@@ -140,6 +166,16 @@ test('Agent 列表（DataGrid）点一行，右边 Sheet 里打开抽屉；Esc �
   await expect(dialog).toBeVisible()
   await expect(dialog.locator('[data-slot="agent-drawer-status"]')).toHaveText('暂停')
   await expect(dialog.locator('[data-slot="agent-drawer-trigger"]')).toContainText('事件')
+  // 30 周放不下：格子不压到 10px 以下，整张图横向滚动并停在最新一端。
+  const scroller = dialog.locator('[data-slot="agent-activity-scroller"]')
+  const sizes = await scroller.evaluate((el) => ({
+    scrollable: el.scrollWidth - el.clientWidth,
+    atEnd: Math.abs(el.scrollLeft - (el.scrollWidth - el.clientWidth)),
+    cell: el.querySelector('[data-slot="agent-activity-cell"]')!.getBoundingClientRect().width,
+  }))
+  expect(sizes.scrollable).toBeGreaterThan(0)
+  expect(sizes.atEnd).toBeLessThan(2)
+  expect(sizes.cell).toBeGreaterThanOrEqual(10)
   // 抽屉打开着也没有 axe 违规（Sheet 里的标题与说明是 SheetTitle、SheetDescription）。
   const axe = await new AxeBuilder({ page })
     .include('[role="dialog"]')
