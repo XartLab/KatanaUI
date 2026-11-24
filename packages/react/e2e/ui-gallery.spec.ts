@@ -8374,9 +8374,10 @@ test('SUI-B Collapsible：点标题展开收起，内容高度从 0 长出来', 
   await expect(content).toBeHidden()
   await trigger.click()
   await expect(content).toBeVisible()
-  expect((await content.boundingBox())!.height).toBeGreaterThan(20)
   // 入场用的是 height 动画（kc-collapsible-down）。
   expect(await content.evaluate((el) => getComputedStyle(el).animationName)).toBe('kc-collapsible-down')
+  // 高度在动画里从 0 长出来，CI 忙时刚点完可能才长到一半：等它长够。
+  await expect.poll(async () => (await content.boundingBox())?.height ?? 0).toBeGreaterThan(20)
 })
 
 test('SUI-B Menubar：点开面板，方向键换到旁边的菜单，Esc 关闭', async ({ page }) => {
