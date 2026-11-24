@@ -29,6 +29,7 @@ import {
   useRef,
   useState,
   type CSSProperties,
+  type ElementType,
   type ReactNode,
 } from 'react'
 import { cn } from '../../lib/cn.ts'
@@ -38,9 +39,12 @@ import {
   runPercent,
   runTone,
   runSegments,
+  runHeadingLevel,
+  runSubHeadingLevel,
   runTickCount,
   runStepTone,
   runTimeLine,
+  type RunHeadingLevel,
   type RunDetailAction,
   type RunDetailSection,
   type RunDetailStatus,
@@ -148,6 +152,8 @@ export type AgentRunDetailProps = {
   defaultCollapsed?: readonly RunDetailSection[]
   /** Called when a section is folded or unfolded. */
   onSectionToggle?: (section: RunDetailSection, open: boolean) => void
+  /** Heading level of the run name, 2 to 6 (default 2); the section titles and the question title are one level below. Pass the level that fits the outline of the page. */
+  headingLevel?: RunHeadingLevel
   /** Texts. */
   labels: AgentRunDetailLabels
   /** Extra class name on the root. */
@@ -173,17 +179,20 @@ const STEP_ICON: Record<RunDetailStepStatus, ReactNode> = {
 function Section({
   id,
   title,
+  level,
   open,
   onToggle,
   children,
 }: {
   id: RunDetailSection
   title: string
+  level: RunHeadingLevel
   open: boolean
   onToggle: (open: boolean) => void
   children: ReactNode
 }) {
   const panelId = useId()
+  const Title = `h${level}` as ElementType
   const panel = useRef<HTMLDivElement>(null)
   // 浏览器内查找命中折起的内容时，浏览器先把 hidden 去掉，这里同步按钮的状态（modern-web-guidance: search-hidden-content）。
   // React 19.3 的 hidden 属性只写 hidden=""（不认 'until-found'，类型也只收 boolean）：渲染时先用 hidden，挂上后改成 until-found。
@@ -201,12 +210,12 @@ function Section({
   }, [])
   return (
     <section className="k-ard-section" data-section={id} data-open={open ? '' : undefined}>
-      <h4 className="k-ard-section-title">
+      <Title className="k-ard-section-title">
         <button type="button" aria-expanded={open} aria-controls={panelId} onClick={() => onToggle(!open)}>
           <span>{title}</span>
           <ChevronUpIcon aria-hidden="true" />
         </button>
-      </h4>
+      </Title>
       <div id={panelId} ref={panel} className="k-ard-panel" hidden={!open}>
         {children}
       </div>
@@ -234,12 +243,16 @@ export function AgentRunDetail({
   onAction,
   defaultCollapsed = [],
   onSectionToggle,
+  headingLevel,
   labels,
   className,
 }: AgentRunDetailProps) {
   const [folded, setFolded] = useState<ReadonlySet<RunDetailSection>>(() => new Set(defaultCollapsed))
   const titleId = useId()
   const questionId = useId()
+  const Name = `h${runHeadingLevel(headingLevel)}` as ElementType
+  const Sub = `h${runSubHeadingLevel(headingLevel)}` as ElementType
+  const subLevel = runSubHeadingLevel(headingLevel)
   const questionTextId = useId()
   const percent = status === 'done' ? 100 : runPercent(progress)
   const tickCount = runTickCount(ticks)
@@ -286,9 +299,9 @@ export function AgentRunDetail({
             <ArrowLeftIcon aria-hidden="true" />
           </Button>
         )}
-        <h3 id={titleId} className="k-ard-name">
+        <Name id={titleId} className="k-ard-name">
           {name}
-        </h3>
+        </Name>
         {onAction !== undefined && (
           // 阻塞时的「取消」是 danger 样式（离问题卡的「确认」很近，要分得开）；要不要二次确认由调用方定，件不加。
           <Button
@@ -339,9 +352,9 @@ export function AgentRunDetail({
         <section className="k-ard-question" aria-labelledby={questionId} data-slot="run-question">
           <CircleAlertIcon className="k-ard-question-icon" aria-hidden="true" />
           <div className="k-ard-question-body">
-            <h4 id={questionId} className="k-ard-question-title">
+            <Sub id={questionId} className="k-ard-question-title">
               {question.title}
-            </h4>
+            </Sub>
             {question.description !== undefined && (
               <p id={questionTextId} className="k-ard-question-text">
                 {question.description}
@@ -363,7 +376,7 @@ export function AgentRunDetail({
       )}
 
       {showNext && (
-        <Section id="next" title={labels.next} open={open('next')} onToggle={setOpen('next')}>
+        <Section level={subLevel} id="next" title={labels.next} open={open('next')} onToggle={setOpen('next')}>
           <ul className="k-ard-next" data-slot="run-next">
             {next.map((item) => (
               <li key={item.id}>
@@ -383,7 +396,13 @@ export function AgentRunDetail({
       )}
 
       {showDetails && (
-        <Section id="details" title={labels.details} open={open('details')} onToggle={setOpen('details')}>
+        <Section
+          level={subLevel}
+          id="details"
+          title={labels.details}
+          open={open('details')}
+          onToggle={setOpen('details')}
+        >
           <dl className="k-ard-details" data-slot="run-details">
             {details.map((row) => (
               <div key={row.id}>
@@ -399,7 +418,7 @@ export function AgentRunDetail({
       )}
 
       {showSteps && (
-        <Section id="steps" title={labels.steps} open={open('steps')} onToggle={setOpen('steps')}>
+        <Section level={subLevel} id="steps" title={labels.steps} open={open('steps')} onToggle={setOpen('steps')}>
           <ol className="k-ard-steps" data-slot="run-steps">
             {steps.map((step) => (
               <li

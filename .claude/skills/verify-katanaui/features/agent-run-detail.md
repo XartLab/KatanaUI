@@ -27,6 +27,7 @@
 - **确认。** `main.getByRole('button', { name: '确认' }).click()`。状态词变「在跑」，问题卡消失，当前刻度出现，右上变「暂停」；再点「暂停」变「已暂停」、右上「继续」，再点「继续」回到「在跑」。
 - **接着跑。** `done` 里点 `button[data-id="send"]`：`picked` 写「选了：发送报告给研究组」；点 `data-id="schedule"` 写「选了：30 天后再回补一次」。点右上「再跑一次」写「选了：再跑一次」。
 - **键盘收起。** `running` 的 `getByRole('button', { name: '详情', exact: true })` 先 `focus()`，按 Enter：`aria-expanded="false"`，`.k-ard-panel` 的 `hidden` 是 `until-found`；按 Space：`aria-expanded="true"`，没有 `hidden`。「步骤」同样。
+- **标题层级。** 默认运行名是 `h2`（`getByRole('heading', { level: 2 })`），分组标题与问题标题是 `h3`；列表标题 `h2`、分组标题 `h3`。调用方传 `headingLevel` 改。
 - **一开始收起。** `paused`、`failed` 两份的「详情」`aria-expanded="false"`。
 - **步骤。** `running` 的五步：第一步右边「46 秒」，第三步 `aria-current="step"`、右边「在跑」、图标有 `.k-status-spin`，第四步右边空、没有图标。`failed` 里 `li[data-status="failed"]` 右边「失败」。
 - **列表。** `#/agent-run-list`：`[data-slot="run-row"]` 五个；`data-id="source-b"` 的 `aria-current="true"`，读屏名「接入新数据源, 示例源 B · 日线, 要你确认, 1 小时前阻塞」；点 `data-id="review"`，它选中、`opened` 写「已打开：复核回补结果」；`Tab` 到下一行按 Enter 打开它（「已打开：重算动量因子」）。

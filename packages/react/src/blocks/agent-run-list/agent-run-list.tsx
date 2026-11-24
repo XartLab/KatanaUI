@@ -8,9 +8,15 @@
  * 时间文字（「Started 6m ago」「Yesterday」）由调用方写好传进来，件不读钟。包里不带语言。
  */
 import { ChevronRightIcon } from 'lucide-react'
-import { useId, type ReactNode } from 'react'
+import { useId, type ElementType, type ReactNode } from 'react'
 import { cn } from '../../lib/cn.ts'
-import { runTone, type RunDetailStatus } from '../agent-run-detail/run-model.ts'
+import {
+  runHeadingLevel,
+  runSubHeadingLevel,
+  runTone,
+  type RunDetailStatus,
+  type RunHeadingLevel,
+} from '../agent-run-detail/run-model.ts'
 
 /** One run of the list. */
 export type RunListItem = {
@@ -53,6 +59,8 @@ export type AgentRunListProps = {
   selectedId?: string | null
   /** Called with the id of the run to open. */
   onOpen?: (id: string) => void
+  /** Heading level of the list title, 2 to 6 (default 2); the group titles are one level below. Pass the level that fits the outline of the page. */
+  headingLevel?: RunHeadingLevel
   /** Texts. */
   labels: AgentRunListLabels
   /** Extra class name on the root. */
@@ -65,10 +73,13 @@ export function AgentRunList({
   groups,
   selectedId = null,
   onOpen,
+  headingLevel,
   labels,
   className,
 }: AgentRunListProps) {
   const titleId = useId()
+  const Title = `h${runHeadingLevel(headingLevel)}` as ElementType
+  const GroupTitle = `h${runSubHeadingLevel(headingLevel)}` as ElementType
   return (
     <section
       className={cn('k-arl', className)}
@@ -78,9 +89,9 @@ export function AgentRunList({
       {(title !== undefined || actions !== undefined) && (
         <header className="k-arl-head">
           {title !== undefined && (
-            <h3 id={titleId} className="k-arl-title">
+            <Title id={titleId} className="k-arl-title">
               {title}
-            </h3>
+            </Title>
           )}
           {actions !== undefined && <div className="k-arl-actions">{actions}</div>}
         </header>
@@ -93,9 +104,9 @@ export function AgentRunList({
           aria-labelledby={`${titleId}-${group.id}`}
           data-group={group.id}
         >
-          <h4 id={`${titleId}-${group.id}`} className="k-arl-group-title">
+          <GroupTitle id={`${titleId}-${group.id}`} className="k-arl-group-title">
             {group.title}
-          </h4>
+          </GroupTitle>
           <ul className="k-arl-list">
             {group.items.map((item) => (
               <li key={item.id}>

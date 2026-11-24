@@ -9,6 +9,7 @@ const agentRun: GuidanceMap = {
       '点开列表里的一个 Agent 运行，看它走到哪一步、卡在哪里、还要多久；放页面里或抽屉里都行。',
       '运行阻塞要人拍板时给 question 与 onConfirm；回调只告诉你人点了确认，改状态由你。',
       '运行完成后有顺手的下一步，给 next 与 onNext，每个带预估时长。',
+      '标题层级按所在页面的大纲传 headingLevel（2 到 6，默认 2）：运行名用它，分组标题与问题标题自动低一级；放在抽屉或已有 h2 的区块里就传 3、4。',
       '已用、约剩、阻塞多久、用时都按毫秒传，用 formatDuration 写成字：件不读钟，进度跟着你的节奏刷新。',
     ],
     avoid: ['看很多个运行用 AgentRunList、AgentFleet 或 AgentQueue。', '看子 Agent 的树用 AgentTree。'],
@@ -27,6 +28,7 @@ const agentRun: GuidanceMap = {
     use: [
       '要列出一个 Agent 的最近几次运行或几个 Agent 的当前状态，一行一个，点开看详情。',
       '分组按「进行中」「本周」这类写，组名由调用方给。',
+      '标题层级按所在页面的大纲传 headingLevel（2 到 6，默认 2）：列表标题用它，分组标题低一级。',
       '相对时间文字由调用方写好，件不读钟。',
     ],
     avoid: ['看一个运行的步骤用 AgentRunDetail。', '标题栏里的小胶囊用 RunningNow。'],

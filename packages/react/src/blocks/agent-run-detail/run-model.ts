@@ -108,3 +108,14 @@ export type RunDetailSection = 'next' | 'details' | 'steps'
 /** The step to point at: the first step that is running or blocked (undefined when none). */
 export const currentRunStep = (steps: readonly RunDetailStep[]): RunDetailStep | undefined =>
   steps.find((step) => step.status === 'running' || step.status === 'blocked')
+
+/** Heading level of a title: 2 to 6 (h1 belongs to the page). */
+export type RunHeadingLevel = 2 | 3 | 4 | 5 | 6
+
+/** The level to draw: whole numbers 2 to 6 as given; anything else (undefined, NaN, 1, 7) is 2. */
+export const runHeadingLevel = (level: number | undefined): RunHeadingLevel =>
+  level !== undefined && Number.isInteger(level) && level >= 2 && level <= 6 ? (level as RunHeadingLevel) : 2
+
+/** The level of the titles one step below `level` (section titles, group titles, the question title); stays at 6. */
+export const runSubHeadingLevel = (level: number | undefined): RunHeadingLevel =>
+  Math.min(6, runHeadingLevel(level) + 1) as RunHeadingLevel

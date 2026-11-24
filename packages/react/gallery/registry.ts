@@ -9228,9 +9228,11 @@ export const PAGES: readonly DocPage[] = [
       'clampRunProgress',
       'currentRunStep',
       'runHeaderAction',
+      'runHeadingLevel',
       'runPercent',
       'runSegments',
       'runStepTone',
+      'runSubHeadingLevel',
       'runTimeLine',
       'runTone',
     ],
@@ -9244,6 +9246,8 @@ export const PAGES: readonly DocPage[] = [
       { part: 'runHeaderAction', note: '纯函数：右上动作钮是哪一个。' },
       { part: 'runSegments', note: '纯函数：几根刻度亮、当前刻度是哪根。' },
       { part: 'runTimeLine', note: '纯函数：这个状态的时间行写什么。' },
+      { part: 'runHeadingLevel', note: '纯函数：标题层级取 2 到 6，其余当 2。' },
+      { part: 'runSubHeadingLevel', note: '纯函数：下一级标题（分组标题、问题标题），到 6 为止。' },
       { part: 'runPercent', note: '纯函数：进度写成整数百分数。' },
       { part: 'clampRunProgress', note: '纯函数：进度夹在 0 到 1，坏值当 0。' },
       { part: 'currentRunStep', note: '纯函数：第一个在跑或阻塞的步骤。' },
@@ -9258,6 +9262,7 @@ export const PAGES: readonly DocPage[] = [
       '状态永不单靠颜色：百分比右边一盏灯加状态词（role=status）；步骤图标形状各不同（勾、转圈、空圈、警示、叉），右边写耗时或状态字。',
       '分组标题（接着跑、详情、步骤）是按钮，箭头朝上是展开、朝下是收起；收起的内容用 hidden="until-found"，浏览器内查找命中会自动展开。',
       '没有给 onBack、onAction、onConfirm 的钮就不画；没有 details、steps、next 的分组就不画。',
+      '标题层级：运行名是 headingLevel（2 到 6，默认 2），分组标题与问题标题低一级（到 6 为止）；按所在页面的大纲传，免得 axe 报标题跳级。',
     ],
     donts: [
       '不要拿它看很多个运行的总览：用 AgentRunList（一行一个）、AgentFleet、AgentQueue。',
@@ -9290,6 +9295,7 @@ export const PAGES: readonly DocPage[] = [
     states: [
       '行：名字与副标题在左，状态字与相对时间在右，行尾一个箭头；名字与副标题过长截断成省略号。',
       '状态字着状态色（在跑强调色、阻塞 warn、完成 ok、失败 danger、暂停中性），前面一盏灯，不单靠颜色。',
+      '标题层级：列表标题是 headingLevel（2 到 6，默认 2），分组标题低一级；按所在页面的大纲传。',
       '悬停：行底变浅；选中（selectedId）：选中底色加 aria-current；键盘焦点：焦点环。',
     ],
     donts: [

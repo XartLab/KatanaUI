@@ -60,6 +60,20 @@ test('三种状态：进度条、时间行、动作钮按状态变', async ({ pa
   expect(await bg(running.locator('[data-tick="current"]'))).not.toBe(await lit(running))
 })
 
+test('标题层级：运行名 h2，分组标题与问题标题 h3；列表标题 h2、分组标题 h3（默认，按页面大纲可传）', async ({
+  page,
+}) => {
+  const area = await open(page, 'agent-run-detail')
+  const main = demo(area, 'main')
+  await expect(main.getByRole('heading', { level: 2, name: '接入新数据源' })).toBeVisible()
+  await expect(main.getByRole('heading', { level: 3, name: '详情' })).toBeVisible()
+  await expect(main.getByRole('heading', { level: 3, name: '示例源 B 缺少访问密钥' })).toBeVisible()
+  await expect(main.getByRole('heading', { level: 4 })).toHaveCount(0)
+  const list = await open(page, 'agent-run-list')
+  await expect(list.getByRole('heading', { level: 2, name: '运行' })).toBeVisible()
+  await expect(list.getByRole('heading', { level: 3, name: '进行中' })).toBeVisible()
+})
+
 test('进度条是 progressbar，带 aria-valuenow；刻度只是装饰', async ({ page }) => {
   const area = await open(page, 'agent-run-detail')
   const running = demo(area, 'running')

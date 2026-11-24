@@ -7,6 +7,8 @@ import {
   clampRunProgress,
   currentRunStep,
   runHeaderAction,
+  runHeadingLevel,
+  runSubHeadingLevel,
   runPercent,
   runSegments,
   runStepTone,
@@ -125,6 +127,12 @@ describe('运行详情的纯逻辑', () => {
     expect(runTimeLine('running')).toEqual({ left: 'elapsed', remaining: true })
     expect(runTimeLine('blocked')).toEqual({ left: 'blocked', remaining: false })
     expect(runTimeLine('done')).toEqual({ left: 'completed', remaining: false })
+  })
+
+  it('标题层级：2 到 6，其余取 2；下一级最多到 6', () => {
+    expect([2, 3, 4, 5, 6].map(runHeadingLevel)).toEqual([2, 3, 4, 5, 6])
+    for (const bad of [undefined, 1, 7, 0, 2.5, Number.NaN, Infinity]) expect(runHeadingLevel(bad)).toBe(2)
+    expect([2, 5, 6, undefined, 9].map(runSubHeadingLevel)).toEqual([3, 6, 6, 3, 3])
   })
 
   it('当前步是第一个在跑或阻塞的', () => {
@@ -303,6 +311,37 @@ describe('AgentRunDetail', () => {
   })
 })
 
+describe('标题层级由调用方定', () => {
+  const blocked = { status: 'blocked', question: { title: 'Missing' }, onConfirm: () => {} } as const
+  const heads = (html: string) =>
+    [...html.matchAll(/<h([1-6])[^>]*class="(k-ard-[a-z-]+)"/g)].map((m) => `${m[2]}:${m[1]}`)
+
+  it('默认运行名是 h2，分组标题与问题标题是 h3', () => {
+    expect(heads(render(blocked))).toEqual([
+      'k-ard-name:2',
+      'k-ard-question-title:3',
+      'k-ard-section-title:3',
+      'k-ard-section-title:3',
+    ])
+  })
+
+  it('headingLevel 往下传：运行名 h4，其余 h5；到 6 为止；坏值当 2', () => {
+    expect(heads(render({ ...blocked, headingLevel: 4 }))).toEqual([
+      'k-ard-name:4',
+      'k-ard-question-title:5',
+      'k-ard-section-title:5',
+      'k-ard-section-title:5',
+    ])
+    expect(heads(render({ headingLevel: 6 }))).toEqual([
+      'k-ard-name:6',
+      'k-ard-section-title:6',
+      'k-ard-section-title:6',
+    ])
+    expect(heads(render({ headingLevel: 1 as 2 }))[0]).toBe('k-ard-name:2')
+    expect(render({ headingLevel: 4 })).not.toMatch(/<h[1236]/)
+  })
+})
+
 describe('AgentRunList', () => {
   const LIST_LABELS: AgentRunListLabels = {
     status: { running: 'Running', blocked: 'Action required', done: 'Completed', paused: 'Paused', failed: 'Failed' },
@@ -331,8 +370,8 @@ describe('AgentRunList', () => {
   it('分组有名字，一行一个运行，读屏名依次写名字、副标题、状态、时间', () => {
     // 分组标题是真标题（不隐藏），分组用 aria-labelledby 指向它。
     const labelledby = html.match(/class="k-arl-group" role="group" aria-labelledby="([^"]+)"/)![1]!
-    expect(html).toContain(`<h4 id="${labelledby}" class="k-arl-group-title">Active now</h4>`)
-    expect(html).not.toMatch(/<h4[^>]*aria-hidden/)
+    expect(html).toContain(`<h3 id="${labelledby}" class="k-arl-group-title">Active now</h3>`)
+    expect(html).not.toMatch(/<h[1-6][^>]*aria-hidden/)
     expect(html.match(/data-slot="run-row"/g)).toHaveLength(3)
     expect(html).toContain('aria-label="Run payroll, 48 contractors, Running, Started 6m ago"')
     expect(html).toContain('aria-label="Create EOR contract, Action required, Blocked 1h ago"')
@@ -345,8 +384,21 @@ describe('AgentRunList', () => {
     expect(html).toMatch(/data-id="b"[^>]*aria-current="true"/)
   })
 
+  it('headingLevel：标题 h4，分组标题 h5', () => {
+    const level = renderToStaticMarkup(
+      <AgentRunList
+        title="Agents"
+        headingLevel={4}
+        groups={[{ id: 'g', title: 'G', items: [] }]}
+        labels={LIST_LABELS}
+      />,
+    )
+    expect(level).toContain('>Agents</h4>')
+    expect(level).toMatch(/<h5 id="[^"]+" class="k-arl-group-title">G<\/h5>/)
+  })
+
   it('头上有标题与右侧动作', () => {
-    expect(html).toContain('>Agents</h3>')
+    expect(html).toContain('>Agents</h2>')
     expect(html).toContain('New agent')
   })
 })
