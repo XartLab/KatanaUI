@@ -97,6 +97,8 @@ for (const theme of THEMES) {
 for (const theme of THEMES)
   for (const id of ['input', 'color', 'data-grid'])
     base(`文档站外壳 ${id}（${theme}）：整页 axe 无违规`, async ({ page }) => {
+      // 整页扫 data-grid 这种大页，自建机四个并行时 axe.analyze 一次就 30 秒上下，默认 30 秒的用例超时会卡在线上（run 45399485013，重跑也超）。
+      base.setTimeout(120_000)
       await page.goto(`/?theme=${theme}#/${id}`)
       await page.locator('.gal-page-body').waitFor()
       await settle(page)
