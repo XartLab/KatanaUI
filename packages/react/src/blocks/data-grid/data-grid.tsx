@@ -681,6 +681,21 @@ export function DataGrid<Row extends object>({
     // oxlint-disable-next-line react/exhaustive-deps
   }, [])
 
+  // 只读的表没有能聚焦的格；真的放不下、能滚的时候，键盘得能停在滚动区上（axe scrollable-region-focusable），放得下就不进 Tab 序列。
+  useEffect(() => {
+    const node = scroller.current
+    if (interactive || !node || typeof ResizeObserver === 'undefined') return
+    const sync = () => {
+      const scrolls = node.scrollWidth > node.clientWidth || node.scrollHeight > node.clientHeight
+      if (scrolls) node.tabIndex = 0
+      else node.removeAttribute('tabindex')
+    }
+    const observer = new ResizeObserver(sync)
+    observer.observe(node)
+    if (node.firstElementChild) observer.observe(node.firstElementChild)
+    return () => observer.disconnect()
+  }, [interactive])
+
   // 第一次有行时不用滚；之后只在键盘所在的行变了才跟着，行情每秒重画不能把用户滚开的表拉回来。
   useEffect(() => {
     if (cursor !== null) virtualizer.scrollToIndex(itemIndexOf(cursor), { align: 'auto' })
