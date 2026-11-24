@@ -1804,6 +1804,369 @@
         }
       ]
     },
+    "AgentRunDetail": {
+      "kind": "component",
+      "source": "src/blocks/agent-run-detail/agent-run-detail.tsx",
+      "props": [
+        {
+          "name": "name",
+          "type": "ReactNode",
+          "required": true,
+          "description": "Run name (the title)."
+        },
+        {
+          "name": "status",
+          "type": "RunDetailStatus",
+          "required": true,
+          "description": "State of the run."
+        },
+        {
+          "name": "progress",
+          "type": "number",
+          "required": true,
+          "description": "Progress, 0 to 1."
+        },
+        {
+          "name": "elapsed",
+          "type": "number",
+          "required": false,
+          "description": "Time used so far, in milliseconds (running, paused, failed)."
+        },
+        {
+          "name": "remaining",
+          "type": "number",
+          "required": false,
+          "description": "Time left, in milliseconds (running)."
+        },
+        {
+          "name": "blockedFor",
+          "type": "number",
+          "required": false,
+          "description": "How long it has been blocked, in milliseconds (blocked)."
+        },
+        {
+          "name": "took",
+          "type": "number",
+          "required": false,
+          "description": "Total time it took, in milliseconds (done)."
+        },
+        {
+          "name": "formatDuration",
+          "type": "(ms: number) => string",
+          "required": true,
+          "description": "How a duration in milliseconds is written (「6m 12s」)."
+        },
+        {
+          "name": "ticks",
+          "type": "number",
+          "required": false,
+          "default": "40",
+          "description": "Number of ticks in the bar, rounded down and kept between 1 and 120; not a finite number is 40."
+        },
+        {
+          "name": "question",
+          "type": "RunQuestion",
+          "required": false,
+          "description": "The question card of a blocked run."
+        },
+        {
+          "name": "onConfirm",
+          "type": "() => void",
+          "required": false,
+          "description": "Called by the confirm button on the question card."
+        },
+        {
+          "name": "next",
+          "type": "readonly RunNextAction[]",
+          "required": false,
+          "description": "Suggested next actions of a finished run."
+        },
+        {
+          "name": "onNext",
+          "type": "(id: string) => void",
+          "required": false,
+          "description": "Called with the id of the chosen suggestion."
+        },
+        {
+          "name": "details",
+          "type": "readonly RunDetailRow[]",
+          "required": false,
+          "description": "Key-value rows of the details."
+        },
+        {
+          "name": "steps",
+          "type": "readonly RunDetailStep[]",
+          "required": false,
+          "description": "Steps, in order."
+        },
+        {
+          "name": "onBack",
+          "type": "() => void",
+          "required": false,
+          "description": "Shows the back button."
+        },
+        {
+          "name": "onAction",
+          "type": "(action: RunDetailAction) => void",
+          "required": false,
+          "description": "Shows the header action (pause, resume, cancel or run again by state); called with which one."
+        },
+        {
+          "name": "defaultCollapsed",
+          "type": "readonly RunDetailSection[]",
+          "required": false,
+          "default": "[]",
+          "description": "Sections folded when first drawn."
+        },
+        {
+          "name": "onSectionToggle",
+          "type": "(section: RunDetailSection, open: boolean) => void",
+          "required": false,
+          "description": "Called when a section is folded or unfolded."
+        },
+        {
+          "name": "labels",
+          "type": "AgentRunDetailLabels",
+          "required": true,
+          "description": "Texts."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "AgentRunDetailLabels": {
+      "kind": "type",
+      "source": "src/blocks/agent-run-detail/agent-run-detail.tsx",
+      "props": [
+        {
+          "name": "back",
+          "type": "string",
+          "required": true,
+          "description": "Back button."
+        },
+        {
+          "name": "status",
+          "type": "Record<RunDetailStatus, string>",
+          "required": true,
+          "description": "State words; shown beside the percent."
+        },
+        {
+          "name": "actions",
+          "type": "Record<RunDetailAction, string>",
+          "required": true,
+          "description": "Names of the header action."
+        },
+        {
+          "name": "progress",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the progress bar."
+        },
+        {
+          "name": "progressValue",
+          "type": "(percent: number, status: string) => string",
+          "required": true,
+          "description": "Spoken value of the progress bar, built from the whole percent and the state word (「76%，阻塞」); the caller writes the joining text."
+        },
+        {
+          "name": "elapsed",
+          "type": "(time: string) => string",
+          "required": true,
+          "description": "Time line texts, each built from a duration already written by `formatDuration`."
+        },
+        {
+          "name": "remaining",
+          "type": "(time: string) => string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "blocked",
+          "type": "(time: string) => string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "completed",
+          "type": "(time: string) => string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "confirm",
+          "type": "string",
+          "required": true,
+          "description": "Confirm button on the question card."
+        },
+        {
+          "name": "next",
+          "type": "string",
+          "required": true,
+          "description": "Section titles."
+        },
+        {
+          "name": "details",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "steps",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "estimate",
+          "type": "(time: string) => string",
+          "required": true,
+          "description": "Estimate on a \"run next\" button (「~2 分钟」), built from a written duration."
+        },
+        {
+          "name": "step",
+          "type": "Record<RunDetailStepStatus, string>",
+          "required": true,
+          "description": "Step state words: read by screen readers on every step, written on the right for running, blocked and failed."
+        }
+      ]
+    },
+    "AgentRunDetailProps": {
+      "kind": "type",
+      "source": "src/blocks/agent-run-detail/agent-run-detail.tsx",
+      "props": [
+        {
+          "name": "name",
+          "type": "ReactNode",
+          "required": true,
+          "description": "Run name (the title)."
+        },
+        {
+          "name": "status",
+          "type": "RunDetailStatus",
+          "required": true,
+          "description": "State of the run."
+        },
+        {
+          "name": "progress",
+          "type": "number",
+          "required": true,
+          "description": "Progress, 0 to 1."
+        },
+        {
+          "name": "elapsed",
+          "type": "number",
+          "required": false,
+          "description": "Time used so far, in milliseconds (running, paused, failed)."
+        },
+        {
+          "name": "remaining",
+          "type": "number",
+          "required": false,
+          "description": "Time left, in milliseconds (running)."
+        },
+        {
+          "name": "blockedFor",
+          "type": "number",
+          "required": false,
+          "description": "How long it has been blocked, in milliseconds (blocked)."
+        },
+        {
+          "name": "took",
+          "type": "number",
+          "required": false,
+          "description": "Total time it took, in milliseconds (done)."
+        },
+        {
+          "name": "formatDuration",
+          "type": "(ms: number) => string",
+          "required": true,
+          "description": "How a duration in milliseconds is written (「6m 12s」)."
+        },
+        {
+          "name": "ticks",
+          "type": "number",
+          "required": false,
+          "default": "40",
+          "description": "Number of ticks in the bar, rounded down and kept between 1 and 120; not a finite number is 40."
+        },
+        {
+          "name": "question",
+          "type": "RunQuestion",
+          "required": false,
+          "description": "The question card of a blocked run."
+        },
+        {
+          "name": "onConfirm",
+          "type": "() => void",
+          "required": false,
+          "description": "Called by the confirm button on the question card."
+        },
+        {
+          "name": "next",
+          "type": "readonly RunNextAction[]",
+          "required": false,
+          "description": "Suggested next actions of a finished run."
+        },
+        {
+          "name": "onNext",
+          "type": "(id: string) => void",
+          "required": false,
+          "description": "Called with the id of the chosen suggestion."
+        },
+        {
+          "name": "details",
+          "type": "readonly RunDetailRow[]",
+          "required": false,
+          "description": "Key-value rows of the details."
+        },
+        {
+          "name": "steps",
+          "type": "readonly RunDetailStep[]",
+          "required": false,
+          "description": "Steps, in order."
+        },
+        {
+          "name": "onBack",
+          "type": "() => void",
+          "required": false,
+          "description": "Shows the back button."
+        },
+        {
+          "name": "onAction",
+          "type": "(action: RunDetailAction) => void",
+          "required": false,
+          "description": "Shows the header action (pause, resume, cancel or run again by state); called with which one."
+        },
+        {
+          "name": "defaultCollapsed",
+          "type": "readonly RunDetailSection[]",
+          "required": false,
+          "description": "Sections folded when first drawn."
+        },
+        {
+          "name": "onSectionToggle",
+          "type": "(section: RunDetailSection, open: boolean) => void",
+          "required": false,
+          "description": "Called when a section is folded or unfolded."
+        },
+        {
+          "name": "labels",
+          "type": "AgentRunDetailLabels",
+          "required": true,
+          "description": "Texts."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
     "AgentRunLabels": {
       "kind": "type",
       "source": "src/blocks/agent-tree/agent-tree.tsx",
@@ -1873,6 +2236,115 @@
           "type": "string",
           "required": true,
           "description": "Hint read with each card: the keys that fold, open and select."
+        }
+      ]
+    },
+    "AgentRunList": {
+      "kind": "component",
+      "source": "src/blocks/agent-run-list/agent-run-list.tsx",
+      "props": [
+        {
+          "name": "title",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Heading of the list."
+        },
+        {
+          "name": "actions",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Right side of the heading, usually a button such as \"New agent\"."
+        },
+        {
+          "name": "groups",
+          "type": "readonly RunListGroup[]",
+          "required": true,
+          "description": "Groups of runs."
+        },
+        {
+          "name": "selectedId",
+          "type": "string | null",
+          "required": false,
+          "default": "null",
+          "description": "The run whose detail is open."
+        },
+        {
+          "name": "onOpen",
+          "type": "(id: string) => void",
+          "required": false,
+          "description": "Called with the id of the run to open."
+        },
+        {
+          "name": "labels",
+          "type": "AgentRunListLabels",
+          "required": true,
+          "description": "Texts."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
+        }
+      ]
+    },
+    "AgentRunListLabels": {
+      "kind": "type",
+      "source": "src/blocks/agent-run-list/agent-run-list.tsx",
+      "props": [
+        {
+          "name": "status",
+          "type": "Record<RunDetailStatus, string>",
+          "required": true,
+          "description": "State words."
+        }
+      ]
+    },
+    "AgentRunListProps": {
+      "kind": "type",
+      "source": "src/blocks/agent-run-list/agent-run-list.tsx",
+      "props": [
+        {
+          "name": "title",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Heading of the list."
+        },
+        {
+          "name": "actions",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Right side of the heading, usually a button such as \"New agent\"."
+        },
+        {
+          "name": "groups",
+          "type": "readonly RunListGroup[]",
+          "required": true,
+          "description": "Groups of runs."
+        },
+        {
+          "name": "selectedId",
+          "type": "string | null",
+          "required": false,
+          "description": "The run whose detail is open."
+        },
+        {
+          "name": "onOpen",
+          "type": "(id: string) => void",
+          "required": false,
+          "description": "Called with the id of the run to open."
+        },
+        {
+          "name": "labels",
+          "type": "AgentRunListLabels",
+          "required": true,
+          "description": "Texts."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the root."
         }
       ]
     },
@@ -10222,6 +10694,18 @@
           "required": false,
           "default": "false",
           "description": "Selected: draws a check mark on the left and sets data-checked."
+        },
+        {
+          "name": "prefix",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Node before the text (avatar, icon, flag)."
+        },
+        {
+          "name": "description",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Second line under the text (a role, an exchange)."
         }
       ]
     },
@@ -10347,6 +10831,12 @@
           "required": false,
           "default": "5",
           "description": "How many recent commands to keep and show."
+        },
+        {
+          "name": "onRun",
+          "type": "(commandId: string, selections: StepSelections) => void",
+          "required": false,
+          "description": "Called when the primary button of the last step is pressed, with the command id and the chosen ids per step id; the palette closes after it."
         }
       ]
     },
@@ -10389,6 +10879,12 @@
           "type": "string",
           "required": false,
           "description": "Heading of commands without a group; defaults to none."
+        },
+        {
+          "name": "steps",
+          "type": "Partial<CommandStepsLabels>",
+          "required": false,
+          "description": "Texts of the step pages (badge, count, buttons); English fallbacks for any left out."
         }
       ]
     },
@@ -10443,6 +10939,12 @@
           "type": "number",
           "required": false,
           "description": "How many recent commands to keep and show."
+        },
+        {
+          "name": "onRun",
+          "type": "(commandId: string, selections: StepSelections) => void",
+          "required": false,
+          "description": "Called when the primary button of the last step is pressed, with the command id and the chosen ids per step id; the palette closes after it."
         }
       ]
     },
@@ -10463,6 +10965,54 @@
       "kind": "component",
       "source": "src/primitives/command.tsx",
       "props": []
+    },
+    "CommandStepsLabels": {
+      "kind": "type",
+      "source": "src/patterns/command-steps.tsx",
+      "props": [
+        {
+          "name": "steps",
+          "type": "(count: number) => string",
+          "required": true,
+          "description": "Badge on a command row: \"2 steps\"."
+        },
+        {
+          "name": "selected",
+          "type": "(count: number) => string",
+          "required": true,
+          "description": "Left of the footer: \"2 selected\"."
+        },
+        {
+          "name": "stepOf",
+          "type": "(step: number, total: number, heading?: string) => string",
+          "required": true,
+          "description": "Read out when the step changes: \"Step 2 of 3: Select fields\"."
+        },
+        {
+          "name": "back",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "next",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "run",
+          "type": "string",
+          "required": true,
+          "description": "Primary button on the last step."
+        },
+        {
+          "name": "selectAll",
+          "type": "string",
+          "required": true,
+          "description": ""
+        }
+      ]
     },
     "CompactFormat": {
       "kind": "type",
@@ -13781,6 +14331,36 @@
         }
       ]
     },
+    "DateRangeApplyLabels": {
+      "kind": "type",
+      "source": "src/patterns/date-range-picker.tsx",
+      "props": [
+        {
+          "name": "pickFirst",
+          "type": "string",
+          "required": true,
+          "description": "状态字：还没点第一天。"
+        },
+        {
+          "name": "selected",
+          "type": "(days: number) => string",
+          "required": true,
+          "description": "状态字：已选 days 天（含首尾，数的是日历上高亮的格数）。带数字的文案一律传函数，英文要在里面处理单复数（1 day / 3 days）。"
+        },
+        {
+          "name": "apply",
+          "type": "string",
+          "required": true,
+          "description": "脚上两颗钮的字。"
+        },
+        {
+          "name": "clear",
+          "type": "string",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
     "DateRangeLabels": {
       "kind": "type",
       "source": "src/patterns/date-range-picker.tsx",
@@ -13889,12 +14469,6 @@
           "description": ""
         },
         {
-          "name": "labels",
-          "type": "DateRangeLabels",
-          "required": true,
-          "description": ""
-        },
-        {
           "name": "locale",
           "type": "string",
           "required": true,
@@ -13904,6 +14478,19 @@
           "name": "className",
           "type": "string",
           "required": false,
+          "description": ""
+        },
+        {
+          "name": "commit",
+          "type": "'immediate'",
+          "required": false,
+          "default": "'immediate'",
+          "description": "immediate（默认）：点完终点、点预设就上报并收起。apply：改动先放草稿，点「应用」才上报并收起，Esc 或点外面丢掉草稿。"
+        },
+        {
+          "name": "labels",
+          "type": "DateRangeLabels & Partial<DateRangeApplyLabels>",
+          "required": true,
           "description": ""
         }
       ]
@@ -13911,68 +14498,7 @@
     "DateRangePickerProps": {
       "kind": "type",
       "source": "src/patterns/date-range-picker.tsx",
-      "props": [
-        {
-          "name": "value",
-          "type": "DateRange | null",
-          "required": true,
-          "description": "The current range (inclusive YYYY-MM-DD pair); null means nothing picked."
-        },
-        {
-          "name": "onValueChange",
-          "type": "(range: DateRange) => void",
-          "required": false,
-          "description": "Called with a valid range once both ends are filled and start ≤ end (typing, calendar or a preset)."
-        },
-        {
-          "name": "onValue",
-          "type": "(range: DateRange) => void",
-          "required": false,
-          "description": "Old name of onValueChange, kept for one release."
-        },
-        {
-          "name": "today",
-          "type": "string",
-          "required": true,
-          "description": "今天（YYYY-MM-DD，按应用的显示时区算好）：预设从它算。"
-        },
-        {
-          "name": "weekStart",
-          "type": "WeekStart",
-          "required": false,
-          "description": "一周从哪天起，默认周一。"
-        },
-        {
-          "name": "min",
-          "type": "string",
-          "required": false,
-          "description": "能选的最早、最晚日期（YYYY-MM-DD）。"
-        },
-        {
-          "name": "max",
-          "type": "string",
-          "required": false,
-          "description": ""
-        },
-        {
-          "name": "labels",
-          "type": "DateRangeLabels",
-          "required": true,
-          "description": ""
-        },
-        {
-          "name": "locale",
-          "type": "string",
-          "required": true,
-          "description": "给 react-aria 的语言（日期各段的顺序）：中文界面 zh-CN，英文界面 en-CA。"
-        },
-        {
-          "name": "className",
-          "type": "string",
-          "required": false,
-          "description": ""
-        }
-      ]
+      "props": []
     },
     "DateTimeInput": {
       "kind": "component",
@@ -36423,6 +36949,66 @@
         }
       ]
     },
+    "PaletteChecklistStep": {
+      "kind": "type",
+      "source": "src/patterns/command-steps.tsx",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "Key of this step in the selections passed to onRun."
+        },
+        {
+          "name": "joiner",
+          "type": "string",
+          "required": false,
+          "description": "Word before this step's tags in the header sentence (for example \"in\", \"for\"); written by the caller."
+        },
+        {
+          "name": "heading",
+          "type": "string",
+          "required": false,
+          "description": "Heading above the list of this step."
+        },
+        {
+          "name": "placeholder",
+          "type": "string",
+          "required": false,
+          "description": "Placeholder of the filter box on this step; defaults to the palette's."
+        },
+        {
+          "name": "actionLabel",
+          "type": "string",
+          "required": false,
+          "description": "Text of the primary button on this step; defaults to \"Next\" (or the run text on the last step)."
+        },
+        {
+          "name": "required",
+          "type": "boolean",
+          "required": false,
+          "description": "Whether the primary button needs at least one selection."
+        },
+        {
+          "name": "kind",
+          "type": "'checklist'",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "options",
+          "type": "readonly PaletteOption[]",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "selectAllLabel",
+          "type": "string",
+          "required": false,
+          "description": "Text of the select-all row; defaults to the palette's labels."
+        }
+      ]
+    },
     "PaletteCommand": {
       "kind": "type",
       "source": "src/patterns/command-palette.tsx",
@@ -36464,6 +37050,30 @@
           "description": ""
         },
         {
+          "name": "description",
+          "type": "string",
+          "required": false,
+          "description": "Gray text after the label (plain text is also searched)."
+        },
+        {
+          "name": "meta",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Small badge after the label, for example \"2 steps\"; commands with steps get labels.steps(count) when this is not given."
+        },
+        {
+          "name": "steps",
+          "type": "readonly PaletteStep[]",
+          "required": false,
+          "description": "Steps to walk through before running: selecting the command opens the first step instead of closing the palette."
+        },
+        {
+          "name": "runLabel",
+          "type": "string",
+          "required": false,
+          "description": "Text of the primary button on the last step; defaults to labels.steps.run."
+        },
+        {
           "name": "disabled",
           "type": "boolean",
           "required": false,
@@ -36472,10 +37082,111 @@
         {
           "name": "onSelect",
           "type": "() => void",
+          "required": false,
+          "description": "Called when the command is selected; not used for commands with steps (see onRun on the palette)."
+        }
+      ]
+    },
+    "PaletteCustomStep": {
+      "kind": "type",
+      "source": "src/patterns/command-steps.tsx",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "Key of this step in the selections passed to onRun."
+        },
+        {
+          "name": "joiner",
+          "type": "string",
+          "required": false,
+          "description": "Word before this step's tags in the header sentence (for example \"in\", \"for\"); written by the caller."
+        },
+        {
+          "name": "heading",
+          "type": "string",
+          "required": false,
+          "description": "Heading above the list of this step."
+        },
+        {
+          "name": "placeholder",
+          "type": "string",
+          "required": false,
+          "description": "Placeholder of the filter box on this step; defaults to the palette's."
+        },
+        {
+          "name": "actionLabel",
+          "type": "string",
+          "required": false,
+          "description": "Text of the primary button on this step; defaults to \"Next\" (or the run text on the last step)."
+        },
+        {
+          "name": "required",
+          "type": "boolean",
+          "required": false,
+          "description": "Whether the primary button needs at least one selection."
+        },
+        {
+          "name": "kind",
+          "type": "'custom'",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "tags",
+          "type": "(selected: readonly string[]) => string[]",
+          "required": false,
+          "description": "Header tags for the chosen ids; defaults to the ids themselves."
+        },
+        {
+          "name": "render",
+          "type": "(context: { selected: readonly string[] onSelectedChange: (next: readonly string[]) => void /** What is typed in the filter box. */ search: string }) => ReactNode",
           "required": true,
           "description": ""
         }
       ]
+    },
+    "PaletteOption": {
+      "kind": "type",
+      "source": "src/patterns/command-steps-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "description",
+          "type": "string",
+          "required": false,
+          "description": "Gray text after the label (plain text is also searched)."
+        },
+        {
+          "name": "keywords",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Extra words the filter also matches."
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "PaletteStep": {
+      "kind": "type",
+      "source": "src/patterns/command-steps.tsx",
+      "props": []
     },
     "Panel": {
       "kind": "component",
@@ -47081,6 +47792,146 @@
         }
       ]
     },
+    "RunDetailAction": {
+      "kind": "type",
+      "source": "src/blocks/agent-run-detail/run-model.ts",
+      "props": []
+    },
+    "RunDetailRow": {
+      "kind": "type",
+      "source": "src/blocks/agent-run-detail/agent-run-detail.tsx",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "Stable key."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "Key (left)."
+        },
+        {
+          "name": "icon",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Icon before the value."
+        },
+        {
+          "name": "value",
+          "type": "ReactNode",
+          "required": true,
+          "description": "Value (right)."
+        }
+      ]
+    },
+    "RunDetailSection": {
+      "kind": "type",
+      "source": "src/blocks/agent-run-detail/run-model.ts",
+      "props": []
+    },
+    "RunDetailStatus": {
+      "kind": "type",
+      "source": "src/blocks/agent-run-detail/run-model.ts",
+      "props": []
+    },
+    "RunDetailStep": {
+      "kind": "type",
+      "source": "src/blocks/agent-run-detail/run-model.ts",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "Stable key."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": "Step name."
+        },
+        {
+          "name": "status",
+          "type": "RunDetailStepStatus",
+          "required": true,
+          "description": "State of the step."
+        },
+        {
+          "name": "duration",
+          "type": "number",
+          "required": false,
+          "description": "How long the step took, in milliseconds; shown on a finished step."
+        }
+      ]
+    },
+    "RunDetailStepStatus": {
+      "kind": "type",
+      "source": "src/blocks/agent-run-detail/run-model.ts",
+      "props": []
+    },
+    "RunListGroup": {
+      "kind": "type",
+      "source": "src/blocks/agent-run-list/agent-run-list.tsx",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "Stable key."
+        },
+        {
+          "name": "title",
+          "type": "string",
+          "required": true,
+          "description": "Group heading."
+        },
+        {
+          "name": "items",
+          "type": "readonly RunListItem[]",
+          "required": true,
+          "description": "Runs of the group, in order."
+        }
+      ]
+    },
+    "RunListItem": {
+      "kind": "type",
+      "source": "src/blocks/agent-run-list/agent-run-list.tsx",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "Stable key; the callback gets it back."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": "Run name."
+        },
+        {
+          "name": "subtitle",
+          "type": "string",
+          "required": false,
+          "description": "Muted line under the name (「48 contractors · United States」)."
+        },
+        {
+          "name": "status",
+          "type": "RunDetailStatus",
+          "required": true,
+          "description": "State of the run."
+        },
+        {
+          "name": "when",
+          "type": "string",
+          "required": false,
+          "description": "Relative time already written by the caller (「Started 6m ago」)."
+        }
+      ]
+    },
     "RunMode": {
       "kind": "type",
       "source": "src/blocks/run-mode-badge/run-mode-badge.tsx",
@@ -47146,10 +47997,94 @@
         }
       ]
     },
+    "RunNextAction": {
+      "kind": "type",
+      "source": "src/blocks/agent-run-detail/agent-run-detail.tsx",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "Stable key; the callback gets it back."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "Action name."
+        },
+        {
+          "name": "icon",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Icon before the name."
+        },
+        {
+          "name": "estimate",
+          "type": "number",
+          "required": false,
+          "description": "Estimated duration in milliseconds, written on the right of the button."
+        }
+      ]
+    },
+    "RunQuestion": {
+      "kind": "type",
+      "source": "src/blocks/agent-run-detail/agent-run-detail.tsx",
+      "props": [
+        {
+          "name": "title",
+          "type": "ReactNode",
+          "required": true,
+          "description": "What is missing or unclear (the card title)."
+        },
+        {
+          "name": "description",
+          "type": "ReactNode",
+          "required": false,
+          "description": "One line of explanation."
+        }
+      ]
+    },
+    "RunSegments": {
+      "kind": "type",
+      "source": "src/blocks/agent-run-detail/run-model.ts",
+      "props": [
+        {
+          "name": "filled",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "current",
+          "type": "number",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
     "RunStatus": {
       "kind": "type",
       "source": "src/blocks/portfolio-run-grid/portfolio-run-model.ts",
       "props": []
+    },
+    "RunTimeLine": {
+      "kind": "type",
+      "source": "src/blocks/agent-run-detail/run-model.ts",
+      "props": [
+        {
+          "name": "left",
+          "type": "'elapsed' | 'blocked' | 'completed'",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "remaining",
+          "type": "boolean",
+          "required": true,
+          "description": ""
+        }
+      ]
     },
     "RunningNow": {
       "kind": "component",
@@ -53533,6 +54468,11 @@
         }
       ]
     },
+    "StepSelections": {
+      "kind": "type",
+      "source": "src/patterns/command-steps-model.ts",
+      "props": []
+    },
     "StepState": {
       "kind": "type",
       "source": "src/ai/plan-actual-model.ts",
@@ -57064,6 +58004,272 @@
         }
       ]
     },
+    "TagCombobox": {
+      "kind": "component",
+      "source": "src/patterns/tag-combobox.tsx",
+      "props": [
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the field."
+        },
+        {
+          "name": "options",
+          "type": "readonly TagComboboxOption[]",
+          "required": true,
+          "description": "Rows, in the order shown."
+        },
+        {
+          "name": "value",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Ids of the selected options (controlled)."
+        },
+        {
+          "name": "defaultValue",
+          "type": "readonly string[]",
+          "required": false,
+          "default": "[]",
+          "description": "Starting ids (uncontrolled)."
+        },
+        {
+          "name": "onValueChange",
+          "type": "(value: string[]) => void",
+          "required": false,
+          "description": "Called with the new list of ids after one option is picked or removed."
+        },
+        {
+          "name": "placeholder",
+          "type": "string",
+          "required": false,
+          "description": "Hint shown while there are no tags and nothing is typed."
+        },
+        {
+          "name": "labels",
+          "type": "TagComboboxLabels",
+          "required": true,
+          "description": "Texts: remove and empty are required."
+        },
+        {
+          "name": "defaultOpen",
+          "type": "boolean",
+          "required": false,
+          "default": "false",
+          "description": "The list starts open (uncontrolled)."
+        },
+        {
+          "name": "onOpenChange",
+          "type": "(open: boolean) => void",
+          "required": false,
+          "description": "Called when the list opens or closes."
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "required": false,
+          "description": "Grey out the field and its tags."
+        },
+        {
+          "name": "id",
+          "type": "string",
+          "required": false,
+          "description": "Id of the text box, for a visible label's htmlFor."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the field."
+        },
+        {
+          "name": "contentClassName",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the popup list."
+        },
+        {
+          "name": "ref",
+          "type": "Ref<HTMLInputElement>",
+          "required": false,
+          "description": "Ref to the text input, for focusing it from outside."
+        }
+      ]
+    },
+    "TagComboboxLabels": {
+      "kind": "type",
+      "source": "src/patterns/tag-combobox.tsx",
+      "props": [
+        {
+          "name": "remove",
+          "type": "(label: string) => string",
+          "required": true,
+          "description": "Accessible name of the remove button on a tag, for example (label) => `Remove ${label}`."
+        },
+        {
+          "name": "empty",
+          "type": "string",
+          "required": true,
+          "description": "Shown (and announced) when nothing matches what is typed."
+        },
+        {
+          "name": "list",
+          "type": "string",
+          "required": false,
+          "description": "Accessible name of the list."
+        },
+        {
+          "name": "toggle",
+          "type": "string",
+          "required": false,
+          "description": "Accessible name of the arrow button at the right end; leave it out to draw no button."
+        },
+        {
+          "name": "added",
+          "type": "(label: string) => string",
+          "required": false,
+          "description": "Announced after an option is picked."
+        },
+        {
+          "name": "removed",
+          "type": "(label: string) => string",
+          "required": false,
+          "description": "Announced after a tag is removed."
+        },
+        {
+          "name": "picked",
+          "type": "(label: string) => string",
+          "required": false,
+          "description": "Announced when Backspace or an arrow key selects a tag, for example \"Aisha selected, Backspace removes it\"."
+        }
+      ]
+    },
+    "TagComboboxOption": {
+      "kind": "type",
+      "source": "src/patterns/tag-combobox.tsx",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "Stable id reported in value."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "Main text of the row and the tag."
+        },
+        {
+          "name": "description",
+          "type": "string",
+          "required": false,
+          "description": "Second line of the row, for example a role."
+        },
+        {
+          "name": "prefix",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Node before the text in the row and in the tag (avatar, icon)."
+        },
+        {
+          "name": "keywords",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Extra words that match without showing."
+        }
+      ]
+    },
+    "TagComboboxProps": {
+      "kind": "type",
+      "source": "src/patterns/tag-combobox.tsx",
+      "props": [
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "Accessible name of the field."
+        },
+        {
+          "name": "options",
+          "type": "readonly TagComboboxOption[]",
+          "required": true,
+          "description": "Rows, in the order shown."
+        },
+        {
+          "name": "value",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Ids of the selected options (controlled)."
+        },
+        {
+          "name": "defaultValue",
+          "type": "readonly string[]",
+          "required": false,
+          "description": "Starting ids (uncontrolled)."
+        },
+        {
+          "name": "onValueChange",
+          "type": "(value: string[]) => void",
+          "required": false,
+          "description": "Called with the new list of ids after one option is picked or removed."
+        },
+        {
+          "name": "placeholder",
+          "type": "string",
+          "required": false,
+          "description": "Hint shown while there are no tags and nothing is typed."
+        },
+        {
+          "name": "labels",
+          "type": "TagComboboxLabels",
+          "required": true,
+          "description": "Texts: remove and empty are required."
+        },
+        {
+          "name": "defaultOpen",
+          "type": "boolean",
+          "required": false,
+          "description": "The list starts open (uncontrolled)."
+        },
+        {
+          "name": "onOpenChange",
+          "type": "(open: boolean) => void",
+          "required": false,
+          "description": "Called when the list opens or closes."
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "required": false,
+          "description": "Grey out the field and its tags."
+        },
+        {
+          "name": "id",
+          "type": "string",
+          "required": false,
+          "description": "Id of the text box, for a visible label's htmlFor."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the field."
+        },
+        {
+          "name": "contentClassName",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the popup list."
+        },
+        {
+          "name": "ref",
+          "type": "Ref<HTMLInputElement>",
+          "required": false,
+          "description": "Ref to the text input, for focusing it from outside."
+        }
+      ]
+    },
     "TagInput": {
       "kind": "component",
       "source": "src/patterns/tag-input.tsx",
@@ -59807,6 +61013,48 @@
         }
       ]
     },
+    "ToastAction": {
+      "kind": "component",
+      "source": "src/katana/toast-stack.tsx",
+      "props": [
+        {
+          "name": "variant",
+          "type": "\"link\" | \"danger\" | \"default\" | \"primary\" | \"ghost\" | \"icon\"",
+          "required": false,
+          "description": "Visual style: primary is the solid light button, danger uses the danger text color, icon is a borderless 28px icon button."
+        },
+        {
+          "name": "size",
+          "type": "ButtonSize | 'default' | null",
+          "required": false,
+          "description": "Height: sm is 26px, md (default) is 30px, icon is a 28px square."
+        },
+        {
+          "name": "asChild",
+          "type": "boolean",
+          "required": false,
+          "description": "Render the child element itself (a link, a menu trigger) instead of wrapping it in a button."
+        },
+        {
+          "name": "effect",
+          "type": "ButtonEffect",
+          "required": false,
+          "description": "Optional hover effect from SmoothUI: magnetic leans toward the pointer, dot-morph stretches a leading dot into a bar, clip-corners cuts the corners wider."
+        },
+        {
+          "name": "magnetStrength",
+          "type": "number",
+          "required": false,
+          "description": "How far a magnetic button leans: the fraction of the pointer offset it follows (0 to 1)."
+        },
+        {
+          "name": "magnetRadius",
+          "type": "number",
+          "required": false,
+          "description": "Distance in px from the button center within which a magnetic button reacts."
+        }
+      ]
+    },
     "ToastClear": {
       "kind": "component",
       "source": "src/katana/toast.tsx",
@@ -59884,6 +61132,330 @@
       "kind": "type",
       "source": "src/katana/toast.tsx",
       "props": []
+    },
+    "ToastStack": {
+      "kind": "component",
+      "source": "src/katana/toast-stack.tsx",
+      "props": [
+        {
+          "name": "items",
+          "type": "ToastStackItem[]",
+          "required": false,
+          "description": "Controlled list of toasts, oldest first: the last one is the front."
+        },
+        {
+          "name": "defaultItems",
+          "type": "ToastStackItem[]",
+          "required": false,
+          "description": "Initial list when uncontrolled; push through the ref afterwards."
+        },
+        {
+          "name": "onItemsChange",
+          "type": "(items: ToastStackItem[]) => void",
+          "required": false,
+          "description": "Called with the next list whenever a toast is pushed, dismissed, expires, settles into its result or is trimmed by max."
+        },
+        {
+          "name": "labels",
+          "type": "ToastStackLabels",
+          "required": true,
+          "description": "Accessible names (required; the package ships no text): region is the live region's aria-label, close names every close button."
+        },
+        {
+          "name": "position",
+          "type": "ToastPosition",
+          "required": false,
+          "default": "'bottom-right'",
+          "description": "Which corner (default bottom-right): at the bottom corners the newest sits on the window edge and older ones peek upward; at the top corners the reverse."
+        },
+        {
+          "name": "max",
+          "type": "number",
+          "required": false,
+          "default": "5",
+          "description": "Most toasts kept (default 5); the oldest goes first."
+        },
+        {
+          "name": "duration",
+          "type": "number",
+          "required": false,
+          "default": "5000",
+          "description": "Default time on screen in ms (default 5000, Infinity never expires); an item's own duration wins."
+        },
+        {
+          "name": "resultDuration",
+          "type": "number",
+          "required": false,
+          "default": "2400",
+          "description": "How long a result state stays after its action button was clicked, in ms (default 2400)."
+        },
+        {
+          "name": "expanded",
+          "type": "boolean",
+          "required": false,
+          "description": "Force expanded or collapsed; leave it out to follow the pointer and keyboard focus (true also pauses the timers)."
+        },
+        {
+          "name": "paused",
+          "type": "boolean",
+          "required": false,
+          "default": "false",
+          "description": "Pause every timer from outside; expanded, hovered, keyboard-focused, touch-opened stacks and a hidden page (tab switched away) already pause by themselves."
+        },
+        {
+          "name": "inline",
+          "type": "boolean",
+          "required": false,
+          "default": "false",
+          "description": "Render in the document flow instead of fixed to a window corner (docs and screenshots)."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra classes for the viewport region."
+        },
+        {
+          "name": "ref",
+          "type": "Ref<ToastStackHandle>",
+          "required": false,
+          "description": "Handle with push, dismiss and clear; works when controlled too, the result goes out through onItemsChange."
+        }
+      ]
+    },
+    "ToastStackAction": {
+      "kind": "type",
+      "source": "src/katana/toast-stack.tsx",
+      "props": [
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "钮上的字（包里不带文案，调用方传）。"
+        },
+        {
+          "name": "onAction",
+          "type": "(item: ToastStackItem) => void",
+          "required": false,
+          "description": "点了以后先调这个（真正去撤销）。"
+        },
+        {
+          "name": "result",
+          "type": "ToastStackResult",
+          "required": false,
+          "description": "有：这一条原地换成它；没有：点了就关掉这一条。"
+        }
+      ]
+    },
+    "ToastStackHandle": {
+      "kind": "type",
+      "source": "src/katana/toast-stack.tsx",
+      "props": [
+        {
+          "name": "push",
+          "type": "(item: Omit<ToastStackItem, 'id'> & { id?: string }) => string",
+          "required": true,
+          "description": "压进一条（成为最前面的）；id 已存在就原地更新；返回 id。超过 max 时最旧的先收。"
+        },
+        {
+          "name": "dismiss",
+          "type": "(id: string) => void",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "clear",
+          "type": "() => void",
+          "required": true,
+          "description": ""
+        }
+      ]
+    },
+    "ToastStackItem": {
+      "kind": "type",
+      "source": "src/katana/toast-stack.tsx",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "tone",
+          "type": "Severity",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "icon",
+          "type": "ReactNode",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "title",
+          "type": "ReactNode",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "description",
+          "type": "ReactNode",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "duration",
+          "type": "number",
+          "required": false,
+          "description": "停多久（毫秒）后自己关；不写取叠放层的 duration，Infinity 不自动消失。"
+        },
+        {
+          "name": "action",
+          "type": "ToastStackAction",
+          "required": false,
+          "description": ""
+        }
+      ]
+    },
+    "ToastStackLabels": {
+      "kind": "type",
+      "source": "src/katana/toast-stack.tsx",
+      "props": [
+        {
+          "name": "region",
+          "type": "string",
+          "required": true,
+          "description": "区域的读屏名（role=region 的 aria-label）。"
+        },
+        {
+          "name": "close",
+          "type": "string",
+          "required": true,
+          "description": "每一条关闭钮的读屏名。"
+        }
+      ]
+    },
+    "ToastStackProps": {
+      "kind": "type",
+      "source": "src/katana/toast-stack.tsx",
+      "props": [
+        {
+          "name": "items",
+          "type": "ToastStackItem[]",
+          "required": false,
+          "description": "Controlled list of toasts, oldest first: the last one is the front."
+        },
+        {
+          "name": "defaultItems",
+          "type": "ToastStackItem[]",
+          "required": false,
+          "description": "Initial list when uncontrolled; push through the ref afterwards."
+        },
+        {
+          "name": "onItemsChange",
+          "type": "(items: ToastStackItem[]) => void",
+          "required": false,
+          "description": "Called with the next list whenever a toast is pushed, dismissed, expires, settles into its result or is trimmed by max."
+        },
+        {
+          "name": "labels",
+          "type": "ToastStackLabels",
+          "required": true,
+          "description": "Accessible names (required; the package ships no text): region is the live region's aria-label, close names every close button."
+        },
+        {
+          "name": "position",
+          "type": "ToastPosition",
+          "required": false,
+          "description": "Which corner (default bottom-right): at the bottom corners the newest sits on the window edge and older ones peek upward; at the top corners the reverse."
+        },
+        {
+          "name": "max",
+          "type": "number",
+          "required": false,
+          "description": "Most toasts kept (default 5); the oldest goes first."
+        },
+        {
+          "name": "duration",
+          "type": "number",
+          "required": false,
+          "description": "Default time on screen in ms (default 5000, Infinity never expires); an item's own duration wins."
+        },
+        {
+          "name": "resultDuration",
+          "type": "number",
+          "required": false,
+          "description": "How long a result state stays after its action button was clicked, in ms (default 2400)."
+        },
+        {
+          "name": "expanded",
+          "type": "boolean",
+          "required": false,
+          "description": "Force expanded or collapsed; leave it out to follow the pointer and keyboard focus (true also pauses the timers)."
+        },
+        {
+          "name": "paused",
+          "type": "boolean",
+          "required": false,
+          "description": "Pause every timer from outside; expanded, hovered, keyboard-focused, touch-opened stacks and a hidden page (tab switched away) already pause by themselves."
+        },
+        {
+          "name": "inline",
+          "type": "boolean",
+          "required": false,
+          "description": "Render in the document flow instead of fixed to a window corner (docs and screenshots)."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "description": "Extra classes for the viewport region."
+        },
+        {
+          "name": "ref",
+          "type": "Ref<ToastStackHandle>",
+          "required": false,
+          "description": "Handle with push, dismiss and clear; works when controlled too, the result goes out through onItemsChange."
+        }
+      ]
+    },
+    "ToastStackResult": {
+      "kind": "type",
+      "source": "src/katana/toast-stack.tsx",
+      "props": [
+        {
+          "name": "tone",
+          "type": "Severity",
+          "required": false,
+          "description": "默认 ok（成功态，绿色语气）。"
+        },
+        {
+          "name": "icon",
+          "type": "ReactNode",
+          "required": false,
+          "description": "默认按语气取图标。"
+        },
+        {
+          "name": "title",
+          "type": "ReactNode",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "description",
+          "type": "ReactNode",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "duration",
+          "type": "number",
+          "required": false,
+          "description": "结果态停多久（毫秒）；不写取叠放层的 resultDuration，Infinity 不自动消失。"
+        }
+      ]
     },
     "ToastText": {
       "kind": "component",
@@ -65683,6 +67255,11 @@
       "source": "src/quotes/watchlist-model.ts",
       "props": []
     },
+    "clampRunProgress": {
+      "kind": "function",
+      "source": "src/blocks/agent-run-detail/run-model.ts",
+      "props": []
+    },
     "clampSignal": {
       "kind": "function",
       "source": "src/ai/smart-recommendation.tsx",
@@ -66169,6 +67746,11 @@
     "crewContextLevel": {
       "kind": "function",
       "source": "src/blocks/agent-crew/crew-model.ts",
+      "props": []
+    },
+    "currentRunStep": {
+      "kind": "function",
+      "source": "src/blocks/agent-run-detail/run-model.ts",
       "props": []
     },
     "decimalsOfTick": {
@@ -68003,6 +69585,36 @@
         }
       ]
     },
+    "runHeaderAction": {
+      "kind": "function",
+      "source": "src/blocks/agent-run-detail/run-model.ts",
+      "props": []
+    },
+    "runPercent": {
+      "kind": "function",
+      "source": "src/blocks/agent-run-detail/run-model.ts",
+      "props": []
+    },
+    "runSegments": {
+      "kind": "function",
+      "source": "src/blocks/agent-run-detail/run-model.ts",
+      "props": []
+    },
+    "runStepTone": {
+      "kind": "function",
+      "source": "src/blocks/agent-run-detail/run-model.ts",
+      "props": []
+    },
+    "runTimeLine": {
+      "kind": "function",
+      "source": "src/blocks/agent-run-detail/run-model.ts",
+      "props": []
+    },
+    "runTone": {
+      "kind": "function",
+      "source": "src/blocks/agent-run-detail/run-model.ts",
+      "props": []
+    },
     "runningCounts": {
       "kind": "function",
       "source": "src/ai/running-now.tsx",
@@ -69062,7 +70674,14 @@
     "typeToSearchKey": {
       "kind": "function",
       "source": "src/lib/use-type-to-search.ts",
-      "props": []
+      "props": [
+        {
+          "name": "keyCode",
+          "type": "number",
+          "required": false,
+          "description": ""
+        }
+      ]
     },
     "underwaterShare": {
       "kind": "function",

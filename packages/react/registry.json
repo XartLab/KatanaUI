@@ -59,6 +59,11 @@
           "target": "~/src/katana/ui/theme/agent-recap.css"
         },
         {
+          "path": "src/theme/agent-run-detail.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/agent-run-detail.css"
+        },
+        {
           "path": "src/theme/ai-status.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/ai-status.css"
@@ -777,6 +782,11 @@
           "path": "src/theme/system-status.css",
           "type": "registry:file",
           "target": "~/src/katana/ui/theme/system-status.css"
+        },
+        {
+          "path": "src/theme/tag-combobox.css",
+          "type": "registry:file",
+          "target": "~/src/katana/ui/theme/tag-combobox.css"
         },
         {
           "path": "src/theme/tag-input.css",
@@ -3369,6 +3379,45 @@
       ]
     },
     {
+      "name": "toast-stack-model",
+      "type": "registry:lib",
+      "title": "Toast Stack Model",
+      "description": "ToastStack 的几何与手势判定（纯函数）：收拢与展开时每条的位置、缩放、不透明度，滑动关的距离与速度判定。",
+      "files": [
+        {
+          "path": "src/katana/toast-stack-model.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/katana/toast-stack-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "toast-stack",
+      "type": "registry:component",
+      "title": "Toast Stack",
+      "description": "可选的叠放层，套在 Toast 零件外面：多条时只露最新一条、后面的缩小上移变淡（最多 3 层），指针移进或 Tab 进去展开成列表，横向拖过约 40% 或甩出去就关，带动作钮的条点了原地变成结果态（如「已恢复」）。定时、暂停、最多条数由它管；条目表受控或不受控都行。旧的 Toast 零件不变。",
+      "dependencies": [
+        "lucide-react@1.67.0",
+        "motion@14.9.0"
+      ],
+      "registryDependencies": [
+        "@katana/button",
+        "@katana/cn",
+        "@katana/motion",
+        "@katana/severity",
+        "@katana/spring",
+        "@katana/toast",
+        "@katana/toast-stack-model"
+      ],
+      "files": [
+        {
+          "path": "src/katana/toast-stack.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/katana/toast-stack.tsx"
+        }
+      ]
+    },
+    {
       "name": "toast",
       "type": "registry:component",
       "title": "Toast",
@@ -3501,9 +3550,12 @@
       "name": "command-palette",
       "type": "registry:component",
       "title": "Command Palette",
-      "description": "CommandDialog 加「最近」分组：选过的命令放最前（去重、最多 5 条），没输入时显示；记录可受控、存 localStorage 或只在页内存。照 TradingView 的 Ctrl/Cmd+K 快速搜索。",
+      "description": "CommandDialog 加「最近」分组：选过的命令放最前（去重、最多 5 条），没输入时显示；记录可受控、存 localStorage 或只在页内存。照 TradingView 的 Ctrl/Cmd+K 快速搜索。行可带灰色说明与「2 步」这类徽标；命令声明 steps 后，选中它面板不关、进步骤页（头部句子、多选清单、脚栏），交互借 Jamie Merrill 的 Command menu。",
       "registryDependencies": [
         "@katana/command",
+        "@katana/command-steps",
+        "@katana/command-steps-model",
+        "@katana/tag",
         "@katana/use-persisted-state"
       ],
       "files": [
@@ -3511,6 +3563,42 @@
           "path": "src/patterns/command-palette.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/patterns/command-palette.tsx"
+        }
+      ]
+    },
+    {
+      "name": "command-steps-model",
+      "type": "registry:lib",
+      "title": "Command Steps Model",
+      "description": "CommandPalette 多步命令的纯逻辑：按输入筛选选项、勾选与全选三态、头部标签折叠、步骤退一步时选择怎么清。",
+      "files": [
+        {
+          "path": "src/patterns/command-steps-model.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/patterns/command-steps-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "command-steps",
+      "type": "registry:component",
+      "title": "Command Steps",
+      "description": "CommandPalette 的步骤页：头部句子（命令名加已选标签）、筛选框、多选清单（role=checkbox，全选三态）或调用方的内容、脚栏（已选数、返回、主操作）。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/button",
+        "@katana/cn",
+        "@katana/command-steps-model",
+        "@katana/menu-parts",
+        "@katana/tag"
+      ],
+      "files": [
+        {
+          "path": "src/patterns/command-steps.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/patterns/command-steps.tsx"
         }
       ]
     },
@@ -3534,13 +3622,14 @@
       "name": "date-range-picker",
       "type": "registry:component",
       "title": "Date Range Picker",
-      "description": "起点—终点两个可逐段打字的日期框，右边的日历按钮打开双月日历，左边一列预设：今天、本周、本月、年初至今，不在预设里的显示「自定义」。回放、台账、报告的区间用它。功能参照 Arc，实现原创。",
+      "description": "起点—终点两个可逐段打字的日期框，右边的日历按钮打开双月日历，左边一列预设：今天、本周、本月、年初至今，不在预设里的显示「自定义」。回放、台账、报告的区间用它。有两种提交方式：immediate 点完终点就生效，apply 先挑再应用（脚上有状态字与「清除 / 应用」）。功能参照 Arc，实现原创；先挑再应用的交互借自 Jamie Merrill 的 Date range picker。",
       "dependencies": [
         "@internationalized/date@3.12.4",
         "lucide-react@1.67.0",
         "react-aria-components@1.22.1"
       ],
       "registryDependencies": [
+        "@katana/button",
         "@katana/cn",
         "@katana/date-range-model",
         "@katana/popover"
@@ -4198,6 +4287,40 @@
           "path": "src/patterns/split-button.tsx",
           "type": "registry:component",
           "target": "~/src/katana/ui/patterns/split-button.tsx"
+        }
+      ]
+    },
+    {
+      "name": "tag-combobox-model",
+      "type": "registry:lib",
+      "title": "Tag Combobox Model",
+      "description": "TagCombobox 的纯逻辑：过滤与命中位置（大小写、重音不分，几个词都要命中）、高亮项怎么走、键盘在标签、输入框与列表之间怎么走。",
+      "files": [
+        {
+          "path": "src/patterns/tag-combobox-model.ts",
+          "type": "registry:lib",
+          "target": "~/src/katana/ui/patterns/tag-combobox-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "tag-combobox",
+      "type": "registry:component",
+      "title": "Tag Combobox",
+      "description": "字段本身是输入框：已选项以小标签排在框里（可换行、可带头像或图标、每个有 ×），光标跟在最后一个标签后面，打字就过滤，命中的字加强。列表每行主文字加可选第二行说明与前缀节点，已选行尾画勾；选或取消后列表不收、输入清空。输入框空着时退格第一次选中最后一个标签、第二次删掉；← → 在标签间移。弹层锚在整个字段上，标签多到换行字段长高时弹层跟着下移。交互参照 Jamie Merrill 的 Multi select combobox，只借交互，样子是我们的。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/cn",
+        "@katana/popover",
+        "@katana/tag-combobox-model"
+      ],
+      "files": [
+        {
+          "path": "src/patterns/tag-combobox.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/patterns/tag-combobox.tsx"
         }
       ]
     },
@@ -9803,6 +9926,52 @@
           "path": "src/blocks/agent-crew/crew-model.ts",
           "type": "registry:component",
           "target": "~/src/katana/ui/blocks/agent-crew/crew-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "agent-run-detail",
+      "type": "registry:component",
+      "title": "Agent Run Detail",
+      "description": "一次 Agent 运行的详情页或抽屉：头（返回钮、运行名、右上一颗随状态变的动作钮）→ 大号百分比加分段刻度进度条加一行时间 → 阻塞时的问题卡 → 完成时的「接着跑」→ 可收起的「详情」键值对与「步骤」。状态五种：在跑、阻塞、完成、暂停、失败。时间（已用、约剩、阻塞多久、总用时、预估）都是毫秒、由调用方给，件不读钟；包里不带语言。交互与信息结构借自 Jamie Merrill 的 Agent workflow（in progress / blocked / complete）与 Agent drawer（x.com/jamiemerrill，2026-11-24 看截图）：只借信息结构与交互，样子是我们的 Graphite 风格，没有他的蓝橙绿原色，没抄任何素材。列表侧见 AgentRunList。演示数据是示例。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/button",
+        "@katana/cn",
+        "@katana/severity"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/agent-run-detail/agent-run-detail.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/agent-run-detail/agent-run-detail.tsx"
+        },
+        {
+          "path": "src/blocks/agent-run-detail/run-model.ts",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/agent-run-detail/run-model.ts"
+        }
+      ]
+    },
+    {
+      "name": "agent-run-list",
+      "type": "registry:component",
+      "title": "Agent Run List",
+      "description": "AgentRunDetail 的列表侧：分组的运行清单，一行一个运行：左上名字、左下副标题、右上状态字（灯加词，着状态色）、右下相对时间、行尾箭头；点一行回调 id，选中的行 aria-current。相对时间的文字（「6 分钟前开始」「昨天」）由调用方写好传进来，件不读钟。现有的 RunningNow 是标题栏胶囊加弹层、AgentFleet 是带状态环与子树的主卡，都不是平列表，所以补这一件。信息结构借自 Jamie Merrill 的 Agent tracker（x.com/jamiemerrill，2026-11-24 看截图）。演示数据是示例。",
+      "dependencies": [
+        "lucide-react@1.67.0"
+      ],
+      "registryDependencies": [
+        "@katana/agent-run-detail",
+        "@katana/cn"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/agent-run-list/agent-run-list.tsx",
+          "type": "registry:component",
+          "target": "~/src/katana/ui/blocks/agent-run-list/agent-run-list.tsx"
         }
       ]
     },
