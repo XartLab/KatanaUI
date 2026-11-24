@@ -4,8 +4,17 @@ import { readFileSync } from 'node:fs'
 import { summarize, type CoverageMap } from '../docs/coverage-core'
 import coverageMap from '../docs/coverage-map.json' with { type: 'json' }
 import propsGenerated from '../gallery/props.generated.json' with { type: 'json' }
+import accountGuidance from '../gallery/guidance/account'
+import affectGuidance from '../gallery/guidance/affect'
+import affectAgentGuidance from '../gallery/guidance/affect-agent'
+import affectFlowGuidance from '../gallery/guidance/affect-flow'
 import aiGuidance from '../gallery/guidance/ai'
+import arcInputsGuidance from '../gallery/guidance/arc-inputs'
 import blocksGuidance from '../gallery/guidance/blocks'
+import cnBatch2Guidance from '../gallery/guidance/cn-batch2'
+import cnBatch3Guidance from '../gallery/guidance/cn-batch3'
+import cnPackGuidance from '../gallery/guidance/cn-pack'
+import saltGapsGuidance from '../gallery/guidance/salt-gaps'
 import feedbackGuidance from '../gallery/guidance/feedback'
 import formsGuidance from '../gallery/guidance/forms'
 import layoutGuidance from '../gallery/guidance/layout'
@@ -19,10 +28,20 @@ import smoothuiBGuidance from '../gallery/guidance/smoothui-b'
 import { GROUPS, PAGES } from '../gallery/registry'
 
 // 指南按组分文件；gallery/guidance/index.ts 用 import.meta.glob 合并（Vite 才有），Playwright 的 Node 里没有，这里逐个引进来合并。
+// guidance/ 下新加一个组文件，这里要跟着加一行，不然那些页的「什么时候用 / 别用」条数对不上。
 const GUIDANCE: Record<string, { use?: readonly string[]; avoid?: readonly string[] }> = Object.assign(
   {},
+  accountGuidance,
+  affectGuidance,
+  affectAgentGuidance,
+  affectFlowGuidance,
   aiGuidance,
+  arcInputsGuidance,
   blocksGuidance,
+  cnBatch2Guidance,
+  cnBatch3Guidance,
+  cnPackGuidance,
+  saltGapsGuidance,
   feedbackGuidance,
   formsGuidance,
   layoutGuidance,
@@ -197,6 +216,18 @@ function sample(page: Page, spec: SampleSpec, ms: number): Promise<(string | num
 
 for (const theme of THEMES) {
   test.describe(`组件文档站 · ${theme}`, () => {
+    // Graphite 的样式层（src/theme/graphite.css，#130 / #131）有意改了浮层、菜单与对话框的皮肤，下面的皮肤断言按主题分两套：
+    // 浮层是玻璃（--glass-bg / --glass-edge / --glass-highlight / --glass-shadow）；圆角 overlay 8、control 6、inner 4（packages/tokens/src/tokens.json 的 radius，graphite 值）；
+    // 菜单内边 8、行 32 高左右 12、分组标题 caption 600 不全大写不拉字距、分隔线上下 8 左右 12 且用细线色；对话框头 56 左 24、脚 16 24，头脚分隔线也是细线色。
+    // Console 一行不动，仍断言旧皮肤（ca7ef061 的 src/ui/ui.css）的值。
+    const graphite = theme === 'graphite'
+    /** graphite.css 给浮层的影子：顶部内高光 + 玻璃影子。 */
+    const glassShadow = (page: Page) =>
+      resolved(page, 'box-shadow', 'inset 0 1px 0 var(--glass-highlight), var(--glass-shadow)')
+    /** graphite.css 的细线色 --g-hairline-color：line-100 的 70%，画到像素上读成 [r, g, b, a]。 */
+    const hairline = async (page: Page) =>
+      rgba(page, await resolved(page, 'background-color', 'color-mix(in srgb, var(--line-100) 70%, transparent)'))
+
     test('每一页的预览都看得见、有尺寸，每个能点的件都有尺寸，页上没有报错', async ({ page }) => {
       // 要逐页点目录、量尺寸，页数过百，默认 30 秒不够。
       test.setTimeout(300_000) // 页数已过 230，逐页走一遍约 1.7 分钟
@@ -218,6 +249,13 @@ for (const theme of THEMES) {
         count += here
         for (let index = 0; index < here; index++) {
           const controlBox = await controls.nth(index).boundingBox()
+          // 下单面板（order-ticket，#96）按自己的容器宽排版：窄于 560 只出当前方向那一栏、另一栏 display: none；
+          // 宽了两栏并排、方向切换（SideSwitch）藏起来。藏着的那半是设计如此，不量；别的件里量不到尺寸照样算错。
+          if (
+            controlBox === null &&
+            (await controls.nth(index).evaluate((element) => element.closest('[data-slot="order-ticket"]') !== null))
+          )
+            continue
           expect(controlBox && controlBox.width > 0 && controlBox.height > 0, `${id} 第 ${index} 个控件有尺寸`).toBe(
             true,
           )
@@ -375,13 +413,13 @@ for (const theme of THEMES) {
       await page.keyboard.press('Enter')
       const menu = page.getByRole('menu')
       await expect(menu).toBeVisible()
-      // 顶层菜单：触发器下方 2px，行 30 高。
+      // 顶层菜单：触发器下方 2px，行 30 高（Graphite 32）。
       await settled(page)
       const menuBox = (await menu.boundingBox())!
       expect(Math.round(menuBox.y - (triggerBox.y + triggerBox.height))).toBe(2)
       const first = menu.getByRole('menuitem', { name: '添加组件' })
       await expect(first).toBeFocused()
-      expect(Math.round((await first.boundingBox())!.height)).toBe(30)
+      expect(Math.round((await first.boundingBox())!.height)).toBe(graphite ? 32 : 30)
       // ↓ ↓ 走过已禁用的一项落到「显示网格」，Enter 选中：菜单收起、焦点回触发器、再开时它的勾没了。
       await page.keyboard.press('ArrowDown')
       await expect(menu.getByRole('menuitem', { name: '编辑布局' })).toBeFocused()
@@ -440,7 +478,8 @@ for (const theme of THEMES) {
       ]
       expect(Math.round(subMenuBox.x - (parentBox.x + parentBox.width))).toBe(2)
       // 实测差 1.25px（alignOffset -7 是 #1832 的值，边框与内边距合起来不是整 7），容差 1.5。
-      expect(Math.abs(subBox.y - parentBox.y)).toBeLessThanOrEqual(1.5)
+      // Graphite 的菜单内边是 8（console 6），alignOffset 仍按 6 + 1 取 -7，二级第一项比父项低 2px，扣掉这 2px 再比。
+      expect(Math.abs(subBox.y - parentBox.y - (graphite ? 2 : 0))).toBeLessThanOrEqual(1.5)
       // ← 关子菜单，焦点回到父项。
       await page.keyboard.press('ArrowLeft')
       await expect(sub).toHaveCount(0)
@@ -478,14 +517,20 @@ for (const theme of THEMES) {
         'line-height',
       ])
       expect(pop['min-width']).toBe('180px')
-      expect([pop['padding-top'], pop['padding-left']]).toEqual(['6px', '6px'])
+      // Graphite：内边 8；底、边、影子是玻璃。
+      expect([pop['padding-top'], pop['padding-left']]).toEqual(graphite ? ['8px', '8px'] : ['6px', '6px'])
       expect(pop['border-top-left-radius']).toBe(await radius(page, '--radius-overlay'))
-      expect(pop['background-color']).toBe(await token(page, '--bg-400'))
+      expect(pop['background-color']).toBe(await token(page, graphite ? '--glass-bg' : '--bg-400'))
       expect(pop.color).toBe(await token(page, '--ink-200'))
       expect(pop['border-top-width']).toBe('1px')
-      expect(await rgba(page, pop['border-top-color']!)).toEqual(await rgba(page, 'rgba(255, 255, 255, 0.07)'))
-      expect(pop['box-shadow']).toContain('rgba(0, 0, 0, 0.55) 0px 16px 48px 0px')
-      expect(pop['box-shadow']).toContain('rgba(0, 0, 0, 0.3) 0px 2px 8px 0px')
+      expect(await rgba(page, pop['border-top-color']!)).toEqual(
+        await rgba(page, graphite ? await token(page, '--glass-edge') : 'rgba(255, 255, 255, 0.07)'),
+      )
+      if (graphite) expect(pop['box-shadow']).toBe(await glassShadow(page))
+      else {
+        expect(pop['box-shadow']).toContain('rgba(0, 0, 0, 0.55) 0px 16px 48px 0px')
+        expect(pop['box-shadow']).toContain('rgba(0, 0, 0, 0.3) 0px 2px 8px 0px')
+      }
       expect(pop['font-size']).toBe('13px')
       expect(pop['line-height']).toBe('13px')
 
@@ -505,9 +550,10 @@ for (const theme of THEMES) {
         'transition-duration',
         'color',
       ])
-      expect(item.height).toBe('30px')
-      expect([item['padding-left'], item['padding-top']]).toEqual(['8px', '0px'])
-      expect(item['border-top-left-radius']).toBe('6px')
+      // Graphite：行 32 高、左右 12、圆角 inner（4）。
+      expect(item.height).toBe(graphite ? '32px' : '30px')
+      expect([item['padding-left'], item['padding-top']]).toEqual([graphite ? '12px' : '8px', '0px'])
+      expect(item['border-top-left-radius']).toBe(graphite ? '4px' : '6px')
       expect(item['column-gap']).toBe('12px')
       expect([item['white-space'], item.cursor, item.display, item['justify-content']]).toEqual([
         'nowrap',
@@ -546,11 +592,12 @@ for (const theme of THEMES) {
         'margin-left',
         'background-color',
       ])
+      // Graphite：上下 8、左右内缩 12（不通到边），细线色。
       expect({ ...sep, 'background-color': await rgba(page, sep['background-color']!) }).toEqual({
         height: '1px',
-        'margin-top': '4px',
-        'margin-left': '-6px',
-        'background-color': await rgba(page, 'rgba(255, 255, 255, 0.07)'),
+        'margin-top': graphite ? '8px' : '4px',
+        'margin-left': graphite ? '12px' : '-6px',
+        'background-color': graphite ? await hairline(page) : await rgba(page, 'rgba(255, 255, 255, 0.07)'),
       })
 
       // 分组小标题：.k-pop-group（:574）padding 8 8 4（:575）· --ink-200（:576）· micro 10 · sans 字族（:577）· line-height 1.5（:578）· 字距 --text-micro-tracking（:579）· 大写（:580）。
@@ -565,17 +612,32 @@ for (const theme of THEMES) {
         'line-height',
         'font-family',
       ])
-      expect(group).toEqual({
-        'padding-top': '8px',
-        'padding-left': '8px',
-        'padding-bottom': '4px',
-        color: await token(page, '--ink-200'),
-        'font-size': '10px',
-        'text-transform': 'uppercase',
-        'letter-spacing': await resolved(page, 'letter-spacing', 'var(--text-micro-tracking)', '10px'),
-        'line-height': '15px',
-        'font-family': await resolved(page, 'font-family', 'var(--font-sans)'),
-      })
+      // Graphite：标题式写法——padding 12 12 4、caption（11 / 16）、不全大写、不拉字距。
+      expect(group).toEqual(
+        graphite
+          ? {
+              'padding-top': '12px',
+              'padding-left': '12px',
+              'padding-bottom': '4px',
+              color: await token(page, '--ink-200'),
+              'font-size': '11px',
+              'text-transform': 'none',
+              'letter-spacing': await resolved(page, 'letter-spacing', '0'),
+              'line-height': '16px',
+              'font-family': await resolved(page, 'font-family', 'var(--font-sans)'),
+            }
+          : {
+              'padding-top': '8px',
+              'padding-left': '8px',
+              'padding-bottom': '4px',
+              color: await token(page, '--ink-200'),
+              'font-size': '10px',
+              'text-transform': 'uppercase',
+              'letter-spacing': await resolved(page, 'letter-spacing', 'var(--text-micro-tracking)', '10px'),
+              'line-height': '15px',
+              'font-family': await resolved(page, 'font-family', 'var(--font-sans)'),
+            },
+      )
 
       // 快捷键方块：.k-kbd（:586）min 宽 20 · 高 20 · padding 0 4 · 圆角 4 · 6% 白底 · 12% 白边 · 500。
       const kbd = await css(menu.locator('.k-kbd'), [
@@ -635,11 +697,13 @@ for (const theme of THEMES) {
       const menu = page.getByRole('menu', { name: '面板菜单' })
       await expect(menu).toBeVisible()
       await settled(page)
-      // 行 30 高，皮肤与下拉菜单一样（取同一份样式）。
+      // 行 30 高，皮肤与下拉菜单一样（取同一份样式）；Graphite 行 32、内边 8、玻璃影子。
       const row = menu.getByRole('menuitem', { name: '克隆面板' })
-      expect(Math.round((await row.boundingBox())!.height)).toBe(30)
-      await expect(menu).toHaveCSS('padding-top', '6px')
-      expect(await menu.evaluate((el) => getComputedStyle(el).boxShadow)).toContain('rgba(0, 0, 0, 0.55) 0px 16px 48px')
+      expect(Math.round((await row.boundingBox())!.height)).toBe(graphite ? 32 : 30)
+      await expect(menu).toHaveCSS('padding-top', graphite ? '8px' : '6px')
+      const menuShadow = await menu.evaluate((el) => getComputedStyle(el).boxShadow)
+      if (graphite) expect(menuShadow).toBe(await glassShadow(page))
+      else expect(menuShadow).toContain('rgba(0, 0, 0, 0.55) 0px 16px 48px')
       // 键盘：↓ 走到「更多」，→ 开二级（开在右边 2px），Esc 只关二级、焦点回到「更多」。
       await page.keyboard.press('ArrowDown')
       await expect(row).toBeFocused()
@@ -655,7 +719,8 @@ for (const theme of THEMES) {
       const parentBox = (await parent.boundingBox())!
       const subMenu = page.getByRole('menu', { name: '更多' })
       expect(Math.round((await subMenu.boundingBox())!.x - (parentBox.x + parentBox.width))).toBe(2)
-      expect(Math.abs((await sub.boundingBox())!.y - parentBox.y)).toBeLessThanOrEqual(1.5)
+      // Graphite 二级第一项低 2px（内边 8，alignOffset 仍是 -7），同下拉菜单那条。
+      expect(Math.abs((await sub.boundingBox())!.y - parentBox.y - (graphite ? 2 : 0))).toBeLessThanOrEqual(1.5)
       await page.keyboard.press('Escape')
       await expect(subMenu).toHaveCount(0)
       await expect(menu).toBeVisible()
@@ -754,8 +819,10 @@ for (const theme of THEMES) {
       const box = (await dialog.boundingBox())!
       expect(Math.abs(box.x + box.width / 2 - 550)).toBeLessThan(2)
       expect(box.width).toBe(560)
-      // 标题栏 50 高，关闭钮有名字。
-      expect(Math.round((await dialog.locator('[data-slot="dialog-header"]').boundingBox())!.height)).toBe(50)
+      // 标题栏 50 高（Graphite 56），关闭钮有名字。
+      expect(Math.round((await dialog.locator('[data-slot="dialog-header"]').boundingBox())!.height)).toBe(
+        graphite ? 56 : 50,
+      )
       await expect(dialog.getByRole('button', { name: '关闭' })).toBeVisible()
       await page.keyboard.press('Escape')
       await expect(dialog).toHaveCount(0)
@@ -791,12 +858,18 @@ for (const theme of THEMES) {
         'overflow',
       ])
       expect(box.width).toBe('560px')
-      expect(box['border-top-left-radius']).toBe('14px')
-      expect(box['background-color']).toBe(await token(page, '--bg-300'))
-      expect(await rgba(page, box['border-top-color']!)).toEqual(await rgba(page, 'rgba(255, 255, 255, 0.09)'))
+      // Graphite：圆角 overlay（8），底、边、影子是玻璃。
+      expect(box['border-top-left-radius']).toBe(graphite ? '8px' : '14px')
+      expect(box['background-color']).toBe(await token(page, graphite ? '--glass-bg' : '--bg-300'))
+      expect(await rgba(page, box['border-top-color']!)).toEqual(
+        await rgba(page, graphite ? await token(page, '--glass-edge') : 'rgba(255, 255, 255, 0.09)'),
+      )
       expect(box['border-top-width']).toBe('1px')
-      expect(box['box-shadow']).toContain('rgba(0, 0, 0, 0.5) 0px 2px 4px 0px')
-      expect(box['box-shadow']).toContain('rgba(0, 0, 0, 0.45) 0px 24px 70px 0px')
+      if (graphite) expect(box['box-shadow']).toBe(await glassShadow(page))
+      else {
+        expect(box['box-shadow']).toContain('rgba(0, 0, 0, 0.5) 0px 2px 4px 0px')
+        expect(box['box-shadow']).toContain('rgba(0, 0, 0, 0.45) 0px 24px 70px 0px')
+      }
       expect(box.color).toBe(await token(page, '--ink-100'))
       expect(box['z-index']).toBe('41')
       expect(box.overflow).toBe('hidden')
@@ -811,8 +884,13 @@ for (const theme of THEMES) {
         'column-gap',
         'border-bottom-color',
       ])
-      expect([head.height, head['padding-left'], head['column-gap']]).toEqual(['50px', '16px', '12px'])
-      expect(await rgba(page, head['border-bottom-color']!)).toEqual(await rgba(page, 'rgba(255, 255, 255, 0.06)'))
+      // Graphite：头 56、左 24，下边线是细线色。
+      expect([head.height, head['padding-left'], head['column-gap']]).toEqual(
+        graphite ? ['56px', '24px', '12px'] : ['50px', '16px', '12px'],
+      )
+      expect(await rgba(page, head['border-bottom-color']!)).toEqual(
+        graphite ? await hairline(page) : await rgba(page, 'rgba(255, 255, 255, 0.06)'),
+      )
       // 正文 .k-dlg-body（:672）padding 16 24 24（:676）· gap 8（:679）；脚 .k-dlg-foot（:681）padding 12 16（:687）· gap 8（:684）· 右对齐（:685）· 上边线 6% 白（:688）。
       const body = await css(dialog.locator('[data-slot="dialog-body"]'), [
         'padding-top',
@@ -833,12 +911,13 @@ for (const theme of THEMES) {
         'justify-content',
         'border-top-color',
       ])
+      // Graphite：脚 16 24，上边线是细线色。
       expect({ ...foot, 'border-top-color': await rgba(page, foot['border-top-color']!) }).toEqual({
-        'padding-top': '12px',
-        'padding-left': '16px',
+        'padding-top': graphite ? '16px' : '12px',
+        'padding-left': graphite ? '24px' : '16px',
         'column-gap': '8px',
         'justify-content': 'flex-end',
-        'border-top-color': await rgba(page, 'rgba(255, 255, 255, 0.06)'),
+        'border-top-color': graphite ? await hairline(page) : await rgba(page, 'rgba(255, 255, 255, 0.06)'),
       })
     })
 
@@ -901,7 +980,8 @@ for (const theme of THEMES) {
       const trigger = section(page, 'dropdown-menu').getByRole('button', { name: '菜单', exact: true })
       await trigger.click()
       expect(await font(page.getByRole('menuitem', { name: '编辑布局' }))).toEqual(['13px', '400'])
-      expect(await font(page.locator('[data-slot="dropdown-menu-label"]'))).toEqual(['10px', '600'])
+      // 分组标题：Console 是 micro（10 / 600），Graphite 是 caption 加 600（graphite.css 的 .k-pop-group）。
+      expect(await font(page.locator('[data-slot="dropdown-menu-label"]'))).toEqual([graphite ? '11px' : '10px', '600'])
       expect(await font(page.locator('[data-slot="dropdown-menu-shortcut"]'))).toEqual(['11px', '500'])
       await page.keyboard.press('Escape')
       await show(page, 'dialog')
@@ -1067,13 +1147,13 @@ for (const theme of THEMES) {
       const list = page.locator('[data-slot="select-content"]')
       await expect(list).toBeVisible()
       await settled(page)
-      // .k-sel-pop（ui.css 287-300）：4 内边 · 圆角 7 · 9% 白边 · 底 bg-400（surface-4）。
+      // .k-sel-pop（ui.css 287-300）：4 内边 · 圆角 7 · 9% 白边 · 底 bg-400（surface-4）。Graphite：圆角 overlay（8）、玻璃底。
       expect(await css(list, ['padding-left', 'border-top-left-radius', 'border-top-width'])).toEqual([
         '4px',
-        '7px',
+        graphite ? '8px' : '7px',
         '1px',
       ])
-      expect(await bg(list)).toBe(await token(page, '--bg-400'))
+      expect(await bg(list)).toBe(await token(page, graphite ? '--glass-bg' : '--bg-400'))
       // .k-sel-opt（ui.css 310-324）：6px 8px · 圆角 inner · 11px/16px→行高 1.4 · 字色 ink-300；当前项（:328-332）9% 白底 · ink-100 · 600。
       const other = page.getByRole('option', { name: 'K 线' })
       expect(await css(other, ['padding-top', 'padding-left', 'font-size', 'font-weight'])).toEqual([
@@ -1101,15 +1181,21 @@ for (const theme of THEMES) {
       await settled(page)
       const pop = page.locator('[data-slot="popover-content"]')
       // .k-sel-pop（ui.css 287-300）：4 内边 · 圆角 7 · 9% 白边 · 阴影 0 8 24 · overflow auto · max-height min(可用高, 100dvh-16)。
+      // Graphite：圆角 overlay（8），边、影子、底是玻璃。
       expect(await css(pop, ['padding-left', 'border-top-left-radius', 'border-top-width', 'overflow-y'])).toEqual([
         '4px',
-        '7px',
+        graphite ? '8px' : '7px',
         '1px',
         'auto',
       ])
-      await expect(pop).toHaveCSS('border-top-color', /0\.09\)$/)
-      expect((await css(pop, ['box-shadow']))[0]).toContain('24px')
-      expect(await bg(pop)).toBe(await token(page, '--bg-400'))
+      if (graphite) {
+        await expect(pop).toHaveCSS('border-top-color', await token(page, '--glass-edge'))
+        expect((await css(pop, ['box-shadow']))[0]).toBe(await glassShadow(page))
+      } else {
+        await expect(pop).toHaveCSS('border-top-color', /0\.09\)$/)
+        expect((await css(pop, ['box-shadow']))[0]).toContain('24px')
+      }
+      expect(await bg(pop)).toBe(await token(page, graphite ? '--glass-bg' : '--bg-400'))
       const maxHeight = parseFloat((await css(pop, ['max-height']))[0])
       expect(maxHeight).toBeGreaterThan(0)
       expect(maxHeight).toBeLessThanOrEqual(1500 - 16)
@@ -1156,11 +1242,11 @@ for (const theme of THEMES) {
       expect(Math.round((await link.boundingBox())!.height)).toBeLessThan(26)
       // .k-btn:disabled（ui.css 67-70）：不透明度 0.45。
       await expect(by('default 禁用')).toHaveCSS('opacity', '0.45')
-      // .k-btn.sm（ui.css 71-77）：26 高 · 内边 8 · 圆角 8 · 11px 600。
+      // .k-btn.sm（ui.css 71-77）：26 高 · 内边 8 · 圆角 8 · 11px 600。Graphite：sm 按钮圆角 inner（4）。
       const small = by('default sm')
       expect(
         await css(small, ['height', 'padding-left', 'border-top-left-radius', 'font-size', 'font-weight']),
-      ).toEqual(['26px', '8px', '8px', '11px', '600'])
+      ).toEqual(['26px', '8px', graphite ? '4px' : '8px', '11px', '600'])
       // .k-btn svg.lucide（ui.css 78-82）：13px；带图标的按钮里图标与字隔 6px（:6-25 gap）。
       const withIcon = by('带图标')
       expect((await css(withIcon.locator('svg'), ['width']))[0]).toBe('13px')
@@ -1249,9 +1335,9 @@ for (const theme of THEMES) {
       await settled(page)
       const pop = (await list.boundingBox())!
       expect(Math.abs(pop.y - (trigger.y + trigger.height + 2))).toBeLessThan(2)
-      // .k-sel-pop（ui.css 287-300）：4 内边 · 圆角 7；当前项 600（:328）。
+      // .k-sel-pop（ui.css 287-300）：4 内边 · 圆角 7（Graphite overlay 8）；当前项 600（:328）。
       expect(await list.evaluate((n) => getComputedStyle(n).paddingLeft)).toBe('4px')
-      expect(await list.evaluate((n) => getComputedStyle(n).borderTopLeftRadius)).toBe('7px')
+      expect(await list.evaluate((n) => getComputedStyle(n).borderTopLeftRadius)).toBe(graphite ? '8px' : '7px')
       await expect(page.getByRole('option', { name: '折线' })).toHaveCSS('font-weight', '600')
       await page.getByRole('option', { name: 'K 线' }).click()
       await expect(list).toHaveCount(0)
@@ -7062,7 +7148,49 @@ const watchAttr = (locator: Locator, name: string) =>
       if (el.hasAttribute(attr)) host.__saw = true
     }).observe(el, { attributes: true, attributeFilter: [attr] })
   }, name)
+/** 同 watchAttr，但属性要等于 value 才算看见（平时就带着这个属性、只是值不同的，用它）。 */
+const watchAttrValue = (locator: Locator, name: string, value: string) =>
+  locator.evaluate(
+    (el, [attr, want]) => {
+      const host = el as Element & { __saw?: boolean }
+      host.__saw = false
+      new MutationObserver(() => {
+        if (el.getAttribute(attr!) === want) host.__saw = true
+      }).observe(el, { attributes: true, attributeFilter: [attr!] })
+    },
+    [name, value],
+  )
 const sawAttr = (locator: Locator) => locator.evaluate((el) => (el as Element & { __saw?: boolean }).__saw === true)
+/**
+ * 推进前挂上：记下 root 子树里出现过的 data-flash 值与那一刻的动画名（「up k-live-flash」这样一条）。
+ * 闪烁只有 600ms（--dur-flash），机器忙时等到断言时标记可能已经摘掉（#190 的 CI 上三条读数刷新就这样红过）；
+ * 读数闪的时候 span 换 key 重挂，所以看整棵子树，不盯某一个元素。
+ */
+const watchFlash = (locator: Locator) =>
+  locator.evaluate((root) => {
+    const seen: string[] = []
+    ;(root as Element & { __flashes?: string[] }).__flashes = seen
+    const note = (node: Node) => {
+      if (!(node instanceof Element)) return
+      for (const el of [node, ...node.querySelectorAll('[data-flash]')]) {
+        const value = el.getAttribute('data-flash')
+        if (value) seen.push(`${value} ${getComputedStyle(el).animationName}`)
+      }
+    }
+    new MutationObserver((records) => {
+      for (const record of records) {
+        if (record.type === 'attributes') note(record.target)
+        else record.addedNodes.forEach(note)
+      }
+    }).observe(root, { subtree: true, childList: true, attributes: true, attributeFilter: ['data-flash'] })
+  })
+/** watchFlash 挂上以后出现过的闪烁里有没有一条匹配 pattern。 */
+const flashed = (locator: Locator, pattern: RegExp) =>
+  locator.evaluate(
+    (root, source) =>
+      ((root as Element & { __flashes?: string[] }).__flashes ?? []).some((entry) => new RegExp(source).test(entry)),
+    pattern.source,
+  )
 const liveStep = (page: Page, count = 1) =>
   page.evaluate(async (n) => {
     window.__liveStep!(n)
@@ -7195,9 +7323,10 @@ test('通知铃刷新（NotificationBell）：新通知来时铃的底色闪、�
   const live = section(page, 'notification-bell').getByTestId('bell-live')
   const bell = live.locator('[data-slot="notification-bell"]')
   await expect(bell).toHaveAccessibleName('实时提醒，0 条未读')
+  await watchFlash(bell)
   await liveStep(page)
   await expect(bell).toHaveAccessibleName('实时提醒，1 条未读')
-  await expect(bell.locator('[data-slot="notification-bell-flash"]')).toHaveAttribute('data-flash', 'up')
+  await expect.poll(() => flashed(bell, /^up /)).toBe(true)
   const items = live.locator('[data-slot="live-notices"] li')
   await expect(items).toHaveCount(1)
   await expect(items.first()).toHaveClass(/k-live-enter/)
@@ -7221,9 +7350,11 @@ test('读数刷新（MetricCard）：大号数值变了闪涨跌色，走势线�
   const line = card.locator('.k-spark .k-spark-line')
   await expect(line).not.toHaveAttribute('data-extending', /.*/)
   await watchAttr(line, 'data-extending')
+  const valueBox = value.locator('xpath=..')
+  await watchFlash(valueBox)
   await liveStep(page)
-  await expect(value).toHaveAttribute('data-flash', /^(up|down)$/)
-  expect(await value.evaluate((el) => getComputedStyle(el).animationName)).toBe('k-live-flash')
+  // 闪的那一刻：方向是 up / down，动画是 k-live-flash。
+  await expect.poll(() => flashed(valueBox, /^(up|down) k-live-flash$/)).toBe(true)
   await expect.poll(() => sawAttr(line)).toBe(true)
   await expect(line).not.toHaveAttribute('data-extending', /.*/, { timeout: 2000 })
 })
@@ -7236,9 +7367,13 @@ test('读数刷新（QuoteCard、PriceTag）：价格变了闪涨跌色，迷你
   const before = await pointCount(line)
   await expect(price).not.toHaveAttribute('data-flash', /.+/)
   await watchAttr(line, 'data-extending')
+  const priceBox = price.locator('xpath=..')
+  const tagBox = demo.locator('.k-price-tag-price .k-live-flash').locator('xpath=..')
+  await watchFlash(priceBox)
+  await watchFlash(tagBox)
   await liveStep(page)
-  await expect(price).toHaveAttribute('data-flash', /^(up|down)$/)
-  await expect(demo.locator('.k-price-tag-price .k-live-flash')).toHaveAttribute('data-flash', /^(up|down)$/)
+  await expect.poll(() => flashed(priceBox, /^(up|down) /)).toBe(true)
+  await expect.poll(() => flashed(tagBox, /^(up|down) /)).toBe(true)
   expect(await pointCount(line)).toBe(before + 1)
   await expect.poll(() => sawAttr(line)).toBe(true)
   await expect(line).not.toHaveAttribute('data-extending', /.*/, { timeout: 2000 })
@@ -9277,10 +9412,12 @@ test('SmoothUI 动效 过场：点切换后标记 data-transitioning 亮起并�
     const demo = section(page, id).locator(`[data-gallery-motion="${id}"]`)
     const stage = demo.locator('[data-slot="shader-transition"]').first()
     const before = await demo.locator('strong').first().textContent()
+    // data-transitioning 平时就是 'false'，/.+/ 一点下去就过、不等它亮；点之前挂上观察器，记下它亮过（'true'）。
+    await watchAttrValue(stage, 'data-transitioning', 'true')
     await demo.getByRole('button', { name: '切换视图' }).click()
-    await expect(stage).toHaveAttribute('data-transitioning', /.+/)
-    await expect(stage).not.toHaveAttribute('data-transitioning', /true/, { timeout: 4000 })
-    expect(await demo.locator('strong').first().textContent()).not.toBe(before)
+    await expect.poll(() => sawAttr(stage)).toBe(true)
+    await expect(stage).toHaveAttribute('data-transitioning', 'false', { timeout: 4000 })
+    await expect.poll(() => demo.locator('strong').first().textContent()).not.toBe(before)
   }
 })
 

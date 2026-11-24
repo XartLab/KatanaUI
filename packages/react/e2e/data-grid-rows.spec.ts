@@ -30,6 +30,9 @@ test('data-grid 挪行：Alt+↓ 挪一格并播报，右键「Move to top」', 
 
 test('data-grid 挪行：鼠标拖一行到另一行前，拖到一半 Esc 取消', async ({ page }) => {
   await open(page)
+  // 自选表排在这页第五个演示（前面有 380 高的 grid-demo、列操作、实时刷新、A 股列两张表），落在 1500 高的视口下面；
+  // page.mouse 按坐标发事件、不会自己滚，视口外的坐标点不到行上，先把这张表滚进来再量。
+  await demo(page).scrollIntoViewIfNeeded()
   const from = await row(page, 'QQQ').boundingBox()
   const to = await row(page, 'BTCUSDT').boundingBox()
   if (!from || !to) throw new Error('rows not laid out')
