@@ -30,7 +30,7 @@
 - **方向键。** 第 31 格 `focus()`，按 `ArrowRight`：焦点格的 `data-date` 加 7 天；再按 `ArrowDown`：再加 1 天；读数行跟着换成焦点格的整句。
 - **长距离键。** 焦点放在 `2026-09-16`：`PageDown` → `2026-10-14`，`PageUp` → 回 `2026-09-16`，`Home` → `2026-09-02`（这一行是周三），`End` → `2026-11-18`，`Control+End` → `2026-11-23`，`Control+Home` → `2026-09-01`。残缺的首周：焦点放 `2026-09-07`（周一）按 `ArrowLeft` → `2026-09-01`（首周没有周一，取最近的周二）；残缺的末周：焦点放 `2026-11-22` 按 `ArrowRight` → `2026-11-23`。
 - **最近运行。** 第 2 行（价格突破）的按钮 `click()`，页底写 `onOpenRun：r4`；第 4 行的按钮 `focus()` 再按 `Enter`，写 `onOpenRun：r2`；第 1 行结果是 `在跑`，第 2 行是 `失败`。
-- **列表点开。** `getByTestId('agent-table')` 里 `getByRole('rowheader', { name: '回补日线' }).click()`：`getByRole('dialog', { name: '回补日线' })` 出现，状态 `暂停`、触发含 `事件`；里面的热力格有 30 周，`[data-slot="agent-activity-scroller"]` 的 `scrollWidth` 大于 `clientWidth` 且 `scrollLeft` 停在最右，格子宽不小于 10px；`Escape` 后对话框消失。
+- **列表点开。** `getByTestId('agent-table')` 里 `getByRole('rowheader', { name: '回补日线' }).click()`：`getByRole('dialog', { name: '回补日线' })` 出现，状态 `暂停`、触发含 `事件`；抽屉宽度不小于 320px（曾因样式类没生成只有 1px）；里面的热力格有 30 周，`[data-slot="agent-activity-scroller"]` 的 `scrollWidth` 大于 `clientWidth` 且 `scrollLeft` 停在最右，格子宽不小于 10px；`Escape` 后对话框消失。
 - **证据。** `$KUI drive agent-drawer`：九步九张截图，`agent-drawer-running.aria.yml` 是在跑抽屉的 ARIA 快照，`agent-drawer-sheet.aria.yml` 是列表点开的抽屉。
 
 ## Gotchas
