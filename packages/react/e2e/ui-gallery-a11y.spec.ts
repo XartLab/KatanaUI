@@ -50,6 +50,8 @@ const settle = (page: Page) =>
 for (const theme of THEMES) {
   for (const doc of PAGES) {
     test(`文档站 ${doc.id}（${theme}）：axe 无违规、控制台无错误`, async ({ shared }, testInfo) => {
+      // 大页（data-grid 一页摆了全部列类型，沙箱单跑 8–9 秒，自建机四个并行时 33 秒）的 axe 扫描会撞默认 30 秒；超时给 3 倍（90 秒）。run 45416880323：这条才是 54 行，不是外壳用例。
+      test.slow()
       const { page } = shared
       const errors: string[] = []
       const onError = (error: Error) => errors.push(`pageerror: ${error.message}`)
