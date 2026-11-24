@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: MIT */
 /* Omnibox 万能框（#224）：交互借 Jamie Merrill 的搜索系列（2026-11-24 看的录屏帧），样子是我们的：Graphite token，只读 --k-* 与间距、字体、动效 token。
    覆盖 Tailwind 工具类（行高、选中底色）一律用 .k-omnibox-panel 前缀抬高权重，不靠引入次序。
-   动效（高亮滑动、占位轮播、收起、预览卡入场）只写在 prefers-reduced-motion: no-preference 里：减少动效时高亮直接切到目标行、占位不轮播、收起直接切。 */
+   动效（高亮滑动、占位轮播、收起、预览卡入场）无条件写：产品不跟系统的「减少动态效果」（theme/motion.css 头部，AGENTS.md 产品底线）。 */
 
 .k-omnibox {
   position: relative;
@@ -68,9 +68,7 @@
   font: var(--text-body) var(--font-sans);
   white-space: nowrap;
   pointer-events: none;
-  @media (prefers-reduced-motion: no-preference) {
-    animation: k-omnibox-example-in var(--dur-snappy) var(--ease-snappy);
-  }
+  animation: k-omnibox-example-in var(--dur-snappy) var(--ease-snappy);
 }
 @keyframes k-omnibox-example-in {
   from {
@@ -138,13 +136,31 @@
   font: var(--text-data) var(--font-sans);
 }
 
+.k-omnibox-ask-alt {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 6px;
+  border-radius: 6px;
+  color: var(--k-content-secondary-foreground);
+  cursor: pointer;
+}
+.k-omnibox-ask-alt:hover {
+  background: var(--k-selectable-subtle-background-hover, transparent);
+  color: var(--k-content-primary-foreground);
+}
+
+.k-omnibox-ask-instead {
+  display: block;
+  margin-top: 4px;
+  color: var(--k-content-secondary-foreground);
+}
+
 /* 结果区：问句模式整块收起（grid 0fr，里面 inert）。 */
 .k-omnibox-body {
   display: grid;
   grid-template-rows: 1fr;
-  @media (prefers-reduced-motion: no-preference) {
-    transition: grid-template-rows var(--dur-snappy) var(--ease-snappy);
-  }
+  transition: grid-template-rows var(--dur-snappy) var(--ease-snappy);
 }
 .k-omnibox-body[data-collapsed] {
   grid-template-rows: 0fr;
@@ -333,10 +349,8 @@
   &[data-side='left'] {
     right: calc(100% + 12px);
   }
-  @media (prefers-reduced-motion: no-preference) {
-    transition: translate var(--dur-snappy) var(--ease-snappy);
-    animation: k-omnibox-preview-in var(--dur-snappy) var(--ease-snappy);
-  }
+  transition: translate var(--dur-snappy) var(--ease-snappy);
+  animation: k-omnibox-preview-in var(--dur-snappy) var(--ease-snappy);
 }
 @keyframes k-omnibox-preview-in {
   from {

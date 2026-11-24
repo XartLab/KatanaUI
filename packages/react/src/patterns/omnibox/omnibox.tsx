@@ -7,35 +7,25 @@
 // 输入法：回车、Esc、退格先判 isImeEvent（isComposing 或 keyCode 229）；组字中不触发回车、不切意图、不搜索，组字结束后才认最终的字。
 import { CornerDownLeftIcon, SearchIcon, XIcon } from 'lucide-react'
 import { Command as CommandPrimitive } from 'cmdk'
-import {
-  useCallback,
-  useEffect,
-  useEffectEvent,
-  useId,
-  useMemo,
-  useRef,
-  useState,
-  type KeyboardEvent,
-  type ReactNode,
-} from 'react'
+import { useEffect, useEffectEvent, useId, useMemo, useRef, useState, type KeyboardEvent, type ReactNode } from 'react'
 import { cn } from '../../lib/cn.ts'
 import { detectPlatform } from '../hotkeys-model.ts'
 import { focusRing } from '../../lib/focus.ts'
 import { useProximityHighlight } from '../../lib/proximity-highlight.ts'
-import { usePrefersReducedMotion } from '../../lib/reduced-motion.ts'
 import { Command, CommandEmpty, CommandGroup, CommandItem, CommandList } from '../../primitives/command.tsx'
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '../../primitives/dialog.tsx'
 import {
   buildSections,
   countByCategory,
   cycleCategory,
-  detectIntent as defaultDetectIntent,
   flattenRows,
   isImeEvent,
+  intentStrength,
   isScopable,
   pushRecentItem,
   rowHint,
   splitMatch,
+  stepCategory,
   type OmniboxCategory,
   type OmniboxItem,
   type OmniboxRow,
@@ -79,7 +69,13 @@ export type OmniboxLabels = {
   ask?: string
   /** Footer key hints; the footer is drawn only when this is given. */
   footer?: { navigate: string; select: string; newTab: string; close: string }
-  /** Announcement for screen readers after results settle. */
+  /** Text of the button (next to the "ask" hint) that turns a question back into a search when it also found results; ↓ does the same. Drawn only when given. */
+  searchInstead?: string
+  /** Line under the empty text that says Enter will ask the typed text (when `onAsk` is given and nothing matched). */
+  askInstead?: (text: string) => string
+  /** Announcement when the category changes (tabs are switched with the keyboard from the input, so the focus never moves). */
+  categorySet?: (categoryLabel: string, count: number) => string
+  /** Announcement for screen readers after results settle (the count is the rows drawn). */
   resultCount?: (count: number) => string
   /** Announcement when a scope tag is set. */
   scopeSet?: (scopeLabel: string) => string
@@ -129,14 +125,14 @@ export type OmniboxProps = {
   recentLimit?: number
   /** Rows per category in the all tab before the "show all" row. Defaults to 4. */
   perCategory?: number
-  /** Example queries that rotate as the placeholder while the box is empty. They stop for reduced motion, on hover, and after `placeholderCycles` rounds. */
+  /** Example queries that rotate as the placeholder while the box is empty. They stop on hover and after `placeholderCycles` rounds. */
   placeholders?: readonly string[]
   /** Milliseconds each example stays. Defaults to 2800. */
   placeholderInterval?: number
   /** How many rounds through the examples before it settles on `labels.placeholder`. Defaults to 1. */
   placeholderCycles?: number
-  /** Decides whether the text reads as a question. Defaults to `detectIntent` of the model (question mark, question word, long text). */
-  detectIntent?: (text: string) => boolean
+  /** Decides whether the text reads as a question: true always asks, `'weak'` asks only when the search found nothing (long product names reach the length threshold), false never. Defaults to a function built on `intentStrength` (question mark, question word, long text). */
+  detectIntent?: (text: string) => boolean | 'weak'
   /** Initial text in the input. */
   defaultQuery?: string
   /** Delay before onQuery runs after typing, in ms. Defaults to 80. */
@@ -148,6 +144,11 @@ export type OmniboxProps = {
 }
 
 const NO_ITEMS: readonly OmniboxItem[] = []
+
+const defaultIntent = (text: string): boolean | 'weak' => {
+  const strength = intentStrength(text)
+  return strength === 'weak' ? 'weak' : strength === 'strong'
+}
 
 type Result = { status: 'idle' | 'done' | 'error'; items: readonly OmniboxItem[]; for: string; scope: string }
 
@@ -181,7 +182,7 @@ export function Omnibox({
   placeholders,
   placeholderInterval = 2800,
   placeholderCycles = 1,
-  detectIntent = defaultDetectIntent,
+  detectIntent = defaultIntent,
   defaultQuery = '',
   debounceMs = 80,
   labels,
@@ -207,19 +208,18 @@ export function Omnibox({
   const listRef = useRef<HTMLDivElement>(null)
   const rootRef = useRef<HTMLDivElement>(null)
   const clickNewTab = useRef(false)
-  // 结果还没回来时按的回车：先记着，这次的结果一到就对第一行生效（不对着上一次的旧行动手）。
-  const pendingEnter = useRef<{ newTab: boolean } | null>(null)
+  // 结果还没回来时按的回车：先记着（连同当时的作用域、查询、页签），这次的结果一到、上下文还对得上才对第一行生效（不对着上一次的旧行动手）。
+  const pendingEnter = useRef<{ newTab: boolean; context: string } | null>(null)
   const askId = useId()
-  const reducedMotion = usePrefersReducedMotion()
-  const modLabel = useMemo(() => (detectPlatform() === 'mac' ? '⌘' : 'Ctrl'), [])
+  const altId = useId()
+  const scopeTagId = useId()
+  const modLabel = useMemo(() => (detectPlatform() === 'mac' ? '\u2318' : 'Ctrl'), [])
 
-  const asking = onAsk !== undefined && labels.ask !== undefined && detectIntent(settled)
   const scopeId = scope?.id ?? ''
   const runQuery = useEffectEvent((text: string, signal: AbortSignal) => onQuery(text, scope, signal))
 
-  // 换词或换作用域：等 debounceMs 再问；上一次没回来的 abort 掉，回来晚了也不认。问句模式（要收起结果）不查。
+  // 换词或换作用域：等 debounceMs 再问；上一次没回来的 abort 掉，回来晚了也不认。问句模式下也照查：搜出结果时给「改为搜索」的出口，长的品种名也不会被收起。
   useEffect(() => {
-    if (asking) return
     const controller = new AbortController()
     const key = `${scopeId}\u0000${settled}`
     const timer = setTimeout(() => {
@@ -238,7 +238,7 @@ export function Omnibox({
       clearTimeout(timer)
       controller.abort()
     }
-  }, [settled, scopeId, asking, debounceMs])
+  }, [settled, scopeId, debounceMs])
 
   // 作用域换了以后，上一个作用域的行不能再显示：只留同作用域的旧行（换词时先留着旧行，不闪空）。
   const items = useMemo(() => (result.scope === scopeId ? result.items : NO_ITEMS), [result, scopeId])
@@ -246,23 +246,35 @@ export function Omnibox({
   const emptyQuery = settled.trim() === ''
   const counts = useMemo(() => countByCategory(items), [items])
 
+  // 问句模式：强意图（问号、疑问词）一律收起结果；弱意图（只是够长）要等搜索回来、确实没有结果才收起。
+  // 用户按 ↓ 或点「搜索」改回搜索后，记下当时的文字（forcedFor），文字再变就重新判定。
+  const [forcedFor, setForcedFor] = useState<string | null>(null)
+  const intent = onAsk !== undefined && labels.ask !== undefined ? detectIntent(settled) : false
+  const settledEmpty = !loading && result.status === 'done' && items.length === 0
+  const asking = intent !== false && forcedFor !== settled && (intent === true || settledEmpty)
+  const hasResults = !loading && items.length > 0
+  const contextKey = `${scopeId}\u0000${settled}\u0000${category}`
+
+  // 问句模式下不画行：结果区是收起的，cmdk 也就没有高亮行，输入框的 aria-activedescendant 不会指到读不到的 option。
   const sections = useMemo(
     () =>
-      buildSections({
-        items,
-        categories,
-        category,
-        scoped: scope !== null,
-        recent,
-        empty: emptyQuery,
-        perCategory,
-        recentHeading: labels.recent,
-      }),
-    [items, categories, category, scope, recent, emptyQuery, perCategory, labels.recent],
+      asking
+        ? []
+        : buildSections({
+            items,
+            categories,
+            category,
+            scoped: scope !== null,
+            recent,
+            empty: emptyQuery,
+            perCategory,
+            recentHeading: labels.recent,
+          }),
+    [asking, items, categories, category, scope, recent, emptyQuery, perCategory, labels.recent],
   )
   const rowsByKey = useMemo(() => flattenRows(sections), [sections])
   // 新结果到了、换了页签或作用域：高亮回到第一行可选的行（cmdk 对已在列表里的行不会自己挪）。渲染期里调整，不用 effect。
-  const highlightKey = `${result.for}\u0000${category}\u0000${scopeId}`
+  const highlightKey = `${result.for}\u0000${category}\u0000${scopeId}\u0000${asking}`
   const [highlightFor, setHighlightFor] = useState('')
   if (highlightFor !== highlightKey) {
     setHighlightFor(highlightKey)
@@ -271,19 +283,23 @@ export function Omnibox({
   }
   const highlightedRow = rowsByKey.get(highlighted)
 
-  const changeCategory = useCallback(
-    (next: string) => {
-      if (categoryProp === undefined) setCategoryState(next)
-      onCategoryChange?.(next)
-    },
-    [categoryProp, onCategoryChange],
-  )
+  const changeCategory = (next: string) => {
+    pendingEnter.current = null
+    if (categoryProp === undefined) setCategoryState(next)
+    onCategoryChange?.(next)
+    // 页签是在输入框里用键盘切的，焦点不动，读屏要靠播报才知道换了。
+    const count = next === allId ? items.length : (counts[next] ?? 0)
+    const label = categories.find((entry) => entry.id === next)?.label ?? ''
+    setAnnounce(labels.categorySet?.(label, count) ?? '')
+  }
   const changeScope = (next: OmniboxItem | null) => {
+    pendingEnter.current = null
     if (scopeProp === undefined) setScopeState(next)
     onScopeChange?.(next)
     setQuery('')
     setSettled('')
-    setCategoryState(allId)
+    // 回到「全部」：受控时也要通知（不然删了标签页签还停在原来那类，跟不受控不一致）。
+    if (category !== allId) changeCategory(allId)
     setAnnounce(next ? (labels.scopeSet?.(next.label) ?? '') : (labels.scopeCleared ?? ''))
     inputRef.current?.focus()
   }
@@ -310,6 +326,7 @@ export function Omnibox({
     onSelect(item, { newTab, scope })
   }
 
+  const categoryIds = categories.map((entry) => entry.id)
   const onKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
     setModifierHeld(event.metaKey || event.ctrlKey)
     if (isImeEvent(event)) return
@@ -317,14 +334,11 @@ export function Omnibox({
     switch (event.key) {
       case 'Tab': {
         if (!plain || scope !== null || asking || categories.length < 2) return
+        // 停在最后一个页签再按 Tab（或停在第一个再按 Shift+Tab）把焦点放出去：摆在页里的面板没有 Esc，不能把键盘用户锁在输入框里（WCAG 2.1.2）。
+        const next = stepCategory(categoryIds, category, event.shiftKey ? -1 : 1)
+        if (next === null) return
         event.preventDefault()
-        changeCategory(
-          cycleCategory(
-            categories.map((entry) => entry.id),
-            category,
-            event.shiftKey ? -1 : 1,
-          ),
-        )
+        changeCategory(next)
         return
       }
       case 'ArrowLeft':
@@ -332,13 +346,7 @@ export function Omnibox({
         // 输入框里有字时左右键是移光标；空的时候才换页签。
         if (!plain || event.shiftKey || query !== '' || scope !== null || asking || categories.length < 2) return
         event.preventDefault()
-        changeCategory(
-          cycleCategory(
-            categories.map((entry) => entry.id),
-            category,
-            event.key === 'ArrowRight' ? 1 : -1,
-          ),
-        )
+        changeCategory(cycleCategory(categoryIds, category, event.key === 'ArrowRight' ? 1 : -1))
         return
       }
       case 'Backspace': {
@@ -350,8 +358,13 @@ export function Omnibox({
       }
       case 'ArrowUp':
       case 'ArrowDown': {
-        // 结果收起时不让 cmdk 在看不见的行里移高亮。
-        if (asking) event.preventDefault()
+        // 用户用方向键选了行：记着的回车作废，不再覆盖他的选择。
+        pendingEnter.current = null
+        // 问句模式：↓ 在搜出了结果时改回搜索；没有行可走，别让 cmdk 处理。
+        if (asking) {
+          event.preventDefault()
+          if (event.key === 'ArrowDown' && hasResults) setForcedFor(settled)
+        }
         return
       }
       case 'Enter': {
@@ -361,10 +374,18 @@ export function Omnibox({
           if (text) onAsk?.(text, scope)
           return
         }
-        if (loading) {
-          // 这次的结果还没到：显示的是上一次的旧行，不拿它们动手；有字时记下，结果一到再选第一行。
+        // 刚打开时「最近」是本地数据，高亮在它上面就照常选，不等第一次搜索回来。
+        const onRecent = emptyQuery && highlightedRow?.type === 'item' && highlightedRow.recent
+        if (loading && !onRecent) {
+          // 这次的结果还没到：显示的是上一次的旧行，不拿它们动手；有字时记下，结果一到（上下文还对得上）再选第一行。
           event.preventDefault()
-          pendingEnter.current = settled.trim() ? { newTab: event.metaKey || event.ctrlKey } : null
+          pendingEnter.current = settled.trim() ? { newTab: event.metaKey || event.ctrlKey, context: contextKey } : null
+          return
+        }
+        // 没有任何结果又给了 onAsk：回车把打的字拿去问，不白按。
+        if (settledEmpty && rowsByKey.size === 0 && onAsk !== undefined && labels.ask !== undefined && settled.trim()) {
+          event.preventDefault()
+          onAsk(settled.trim(), scope)
           return
         }
         if (event.metaKey || event.ctrlKey) {
@@ -377,13 +398,12 @@ export function Omnibox({
     }
   }
 
-  // 占位轮播：空框、没有标签、不在组字、没有按减少动效、没被悬停时每 placeholderInterval 换一条；转完 placeholderCycles 轮停下，回到静态占位。
+  // 占位轮播：空框、没有标签、不在组字、没被悬停时每 placeholderInterval 换一条；转完 placeholderCycles 轮停下，回到静态占位。
   const [carouselIndex, setCarouselIndex] = useState(0)
   const [carouselDone, setCarouselDone] = useState(false)
   const pausedRef = useRef(false)
   const exampleCount = placeholders?.length ?? 0
-  const carouselRuns =
-    exampleCount > 1 && !reducedMotion && query === '' && scope === null && !composing && !carouselDone
+  const carouselRuns = exampleCount > 1 && query === '' && scope === null && !composing && !carouselDone
   useEffect(() => {
     if (!carouselRuns) return
     let ticks = 0
@@ -400,10 +420,10 @@ export function Omnibox({
   }, [carouselRuns, exampleCount, placeholderCycles, placeholderInterval])
   const example =
     exampleCount > 0 && query === '' && scope === null && !composing && !carouselDone
-      ? placeholders![reducedMotion ? 0 : Math.min(carouselIndex, exampleCount - 1)]
+      ? placeholders![Math.min(carouselIndex, exampleCount - 1)]
       : undefined
 
-  // 接近度高亮：一块底色在行间滑动（theme/omnibox.css 给过渡，减少动效时直接切）。
+  // 接近度高亮：一块底色在行间滑动（theme/proximity-highlight.css 给过渡）；跟 cmdk 的高亮行走，鼠标只负责让它早一点动身。
   const { highlightRef } = useProximityHighlight(listRef, {
     itemSelector: '[cmdk-item]',
     activeSelector: '[cmdk-item][aria-selected="true"]',
@@ -432,18 +452,21 @@ export function Omnibox({
   // 只认高亮还停在同一行的预览：换行或收起时立刻不显示（不在 effect 里清状态）。
   const shownPreview = preview && preview.key === highlighted && previewNode != null && !asking ? preview : null
 
-  // 读屏：结果稳定后报一次个数（停 400ms 再报，打字时不刷屏）。
+  // 读屏：结果稳定后报一次个数（停 400ms 再报，打字时不刷屏）。报的是画出来的条数（被每类前几条截过、不含「显示全部」与清除），不是搜到的总数。
+  const drawnCount = useMemo(() => [...rowsByKey.values()].filter((row) => row.type === 'item').length, [rowsByKey])
+  const announceCount = useEffectEvent(() => setAnnounce(labels.resultCount?.(drawnCount) ?? ''))
   useEffect(() => {
-    if (result.status !== 'done' || !labels.resultCount || asking) return
-    const timer = setTimeout(() => setAnnounce(labels.resultCount!(result.items.length)), 400)
+    if (result.status !== 'done' || asking) return
+    const timer = setTimeout(announceCount, 400)
     return () => clearTimeout(timer)
-  }, [result, labels, asking])
+  }, [result, asking])
 
   // 记着的回车：这次的结果到了就对高亮（刚重置到第一行）的行生效；之后清掉。
   const settleEnter = useEffectEvent(() => {
     const pending = pendingEnter.current
     pendingEnter.current = null
-    if (pending && highlightedRow) commit(highlightedRow, pending.newTab)
+    // 上下文（作用域、查询、页签）换了就作废：不拿别处的第一行动手。
+    if (pending && pending.context === contextKey && !asking && highlightedRow) commit(highlightedRow, pending.newTab)
   })
   useEffect(() => {
     if (!loading) settleEnter()
@@ -454,6 +477,20 @@ export function Omnibox({
     setQuery(value)
     if (!composingRef.current) setSettled(value)
   }
+
+  // 没有任何结果又能问：空态下告诉用户回车会拿去问。
+  const askFallback =
+    settledEmpty &&
+    onAsk !== undefined &&
+    labels.ask !== undefined &&
+    labels.askInstead !== undefined &&
+    settled.trim() !== ''
+
+  // cmdk 的输入框把 aria-expanded 写死成 true（它的属性排在传进去的 props 后面，盖不掉）：问句模式列表收起了，直接改 DOM 属性；
+  // aria-activedescendant 不用管：问句模式不画行，cmdk 没有高亮行时它自己是空的。
+  useEffect(() => {
+    inputRef.current?.setAttribute('aria-expanded', asking ? 'false' : 'true')
+  }, [asking])
 
   let body: ReactNode
   if (result.status === 'error' && !loading) {
@@ -549,7 +586,14 @@ export function Omnibox({
               {labels.loading}
             </div>
           ) : (
-            <CommandEmpty>{labels.empty}</CommandEmpty>
+            <CommandEmpty>
+              {labels.empty}
+              {askFallback ? (
+                <span data-slot="omnibox-ask-instead" className="k-omnibox-ask-instead">
+                  {labels.askInstead?.(settled.trim())}
+                </span>
+              ) : null}
+            </CommandEmpty>
           )
         ) : null}
       </>
@@ -557,6 +601,10 @@ export function Omnibox({
   }
 
   const showTabs = scope === null && categories.length > 1
+  const showAlt = asking && hasResults && labels.searchInstead !== undefined
+  const describedBy = [scope ? scopeTagId : null, asking ? askId : null, showAlt ? altId : null]
+    .filter(Boolean)
+    .join(' ')
   const platformKeys = labels.footer
   return (
     <div ref={rootRef} data-slot="omnibox" data-asking={asking ? '' : undefined} className={cn('k-omnibox', className)}>
@@ -580,12 +628,18 @@ export function Omnibox({
           {scope ? (
             <span data-slot="omnibox-scope" className="k-omnibox-scope">
               {scope.icon != null ? <span className="k-omnibox-scope-icon">{scope.icon}</span> : null}
-              <span className="k-omnibox-scope-label">{scope.label}</span>
+              <span id={scopeTagId} className="k-omnibox-scope-label">
+                {scope.label}
+              </span>
               <button
                 type="button"
                 aria-label={labels.removeScope?.(scope.label)}
                 // 点 × 不让输入框丢焦点。
                 onMouseDown={(event) => event.preventDefault()}
+                // Enter、空格在 × 上是按这个按钮：不让它冒泡到根（cmdk 会 preventDefault 并去选高亮行，按钮的 click 就没有了）。
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter' || event.key === ' ') event.stopPropagation()
+                }}
                 onClick={() => changeScope(null)}
                 className={cn('k-omnibox-scope-remove', focusRing)}
               >
@@ -609,7 +663,7 @@ export function Omnibox({
               }}
               placeholder={scope ? (labels.scopedPlaceholder ?? labels.placeholder) : labels.placeholder}
               aria-keyshortcuts="Control+Enter Meta+Enter"
-              aria-describedby={asking ? askId : undefined}
+              aria-describedby={describedBy || undefined}
               data-slot="omnibox-input"
               className="k-omnibox-input"
             />
@@ -621,6 +675,22 @@ export function Omnibox({
           </div>
           {asking ? (
             <span data-slot="omnibox-ask" className="k-omnibox-ask">
+              {showAlt ? (
+                <button
+                  type="button"
+                  // ↓ 键做同一件事；按钮只给鼠标，不进 Tab 次序，点它不让输入框丢焦点。
+                  tabIndex={-1}
+                  data-slot="omnibox-search-instead"
+                  onMouseDown={(event) => event.preventDefault()}
+                  onClick={() => setForcedFor(settled)}
+                  className="k-omnibox-ask-alt"
+                >
+                  <span id={altId}>{labels.searchInstead}</span>
+                  <kbd className="k-kbd" aria-hidden="true">
+                    {'\u2193'}
+                  </kbd>
+                </button>
+              ) : null}
               <span id={askId}>{labels.ask}</span>
               <kbd className="k-kbd" aria-hidden="true">
                 {'↵'}

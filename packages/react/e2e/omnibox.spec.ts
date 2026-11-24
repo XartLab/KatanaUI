@@ -27,10 +27,10 @@ for (const theme of ['graphite', 'console']) {
     // 各类的前几条：每类一个分组标题；多出的给「显示全部」。
     for (const name of ['品种', '策略', '命令', '页面', '插件'])
       await expect(dialog.locator('[data-slot="omnibox-section"]').filter({ hasText: name }).first()).toBeVisible()
-    await expect(dialog.locator('[data-slot="omnibox-more"]')).toHaveText('显示全部 6 个品种')
+    await expect(dialog.locator('[data-slot="omnibox-more"]')).toHaveText('显示全部 7 个品种')
     // 页签带每类条数。
     const tabs = dialog.getByRole('tab')
-    await expect(tabs).toHaveText(['全部17', '品种6', '策略2', '命令4', '页面3', '插件2'])
+    await expect(tabs).toHaveText(['全部19', '品种7', '策略2', '命令4', '页面3', '插件3'])
     await expect(tabs.first()).toHaveAttribute('aria-selected', 'true')
     // 占位轮播：盖在输入框上的示例每 2.8s 换一条，读屏读的静态占位不变。
     const example = dialog.locator('[data-slot="omnibox-example"]')
@@ -42,7 +42,7 @@ for (const theme of ['graphite', 'console']) {
     await page.keyboard.press('Tab')
     await expect(tabs.nth(1)).toHaveAttribute('aria-selected', 'true')
     await expect(input).toBeFocused()
-    await expect(dialog.getByRole('option')).toHaveCount(6)
+    await expect(dialog.getByRole('option')).toHaveCount(7)
     await page.keyboard.press('Shift+Tab')
     await expect(tabs.first()).toHaveAttribute('aria-selected', 'true')
     // 输入框为空时 ← → 切页签；有字时是移光标。
@@ -149,14 +149,14 @@ test('判据 3：打问句，结果收起、提示变「问 ↵」，回车 onAs
   await expect(page.getByTestId('omnibox-asked')).toHaveText('提问：AAPL · what is the next earnings date')
   // 改回非问句：结果回来、提示消失。
   await page.getByTestId('omnibox-open').click()
-  await page.keyboard.type('今天怎么样？')
+  await page.keyboard.type('今天的持仓？')
   await expect(dialog.locator('[data-slot="omnibox-ask"]')).toBeVisible()
   await page.keyboard.press('Backspace')
   await expect(dialog.locator('[data-slot="omnibox-ask"]')).toHaveCount(0)
   await expect(body).not.toHaveAttribute('inert', '')
 })
 
-test('判据 4：鼠标快速划过列表，高亮平滑滑动且不回头；减少动效下不滑', async ({ page }) => {
+test('判据 4：鼠标快速划过列表，高亮平滑滑动且不回头', async ({ page }) => {
   const sample = async (dialog: Locator, move: () => Promise<void>) => {
     await dialog.locator('.k-proximity-highlight').evaluate((el) => {
       const w = window as unknown as { __ys: number[] }
@@ -198,29 +198,6 @@ test('判据 4：鼠标快速划过列表，高亮平滑滑动且不回头；减
   await page.mouse.move(to.x, hb.y + hb.height / 2)
   await page.waitForTimeout(100)
   expect(await dialog.locator('.k-proximity-highlight').getAttribute('data-visible')).toBe('true')
-})
-
-test('判据 4（减少动效）：高亮直接切到目标行，不滑；占位不轮播', async ({ page }) => {
-  await page.emulateMedia({ reducedMotion: 'reduce' })
-  const { dialog } = await open(page)
-  const rows = dialog.getByRole('option')
-  const a = (await rows.nth(0).boundingBox())!
-  const b = (await rows.nth(7).boundingBox())!
-  await page.mouse.move(a.x + 40, a.y + a.height / 2)
-  await expect(rows.nth(0)).toHaveAttribute('aria-selected', 'true')
-  await page.waitForTimeout(300)
-  await page.mouse.move(b.x + 40, b.y + b.height / 2)
-  await expect(rows.nth(7)).toHaveAttribute('aria-selected', 'true')
-  const moved = await dialog.locator('.k-proximity-highlight').evaluate((el) => {
-    const style = getComputedStyle(el)
-    return { duration: style.transitionDuration, y: parseFloat(style.translate.split(' ')[1] ?? '0') }
-  })
-  expect(moved.duration).toBe('0s')
-  // 占位：静态显示第一条，过了一个间隔也不变。
-  const example = dialog.locator('[data-slot="omnibox-example"]')
-  await expect(example).toHaveText('AAPL 期权链')
-  await page.waitForTimeout(3200)
-  await expect(example).toHaveText('AAPL 期权链')
 })
 
 test('判据 5：高亮品种行出预览卡，换到命令行就收；⌘/Ctrl+↵ 回调带「新标签」', async ({ page }) => {
@@ -314,8 +291,190 @@ test('判据 6：读屏语义与 axe', async ({ page }) => {
   await page.keyboard.type('下周哪些持仓有财报？')
   await expect(dialog.locator('[data-slot="omnibox-ask"]')).toBeVisible()
   await check()
+  // 问句但搜出了结果：多一个「改为搜索」。
+  await page.keyboard.press('Control+a')
+  await page.keyboard.type('AAPL？')
+  await expect(dialog.locator('[data-slot="omnibox-search-instead"]')).toBeVisible()
+  await check()
   // Esc 关闭，焦点回到打开的按钮。
   await page.keyboard.press('Escape')
   await expect(dialog).toBeHidden()
   await expect(page.getByTestId('omnibox-open')).toBeFocused()
+})
+
+// ---- PR #229 审查后的修复：每条一个测试 ----
+
+const rectTop = (locator: Locator) => locator.evaluate((el) => el.getBoundingClientRect().top)
+
+test('审查 1：键盘换了高亮行，底色跟着走，不停在鼠标那一行；禁用行不亮', async ({ page }) => {
+  const { dialog } = await open(page)
+  const rows = dialog.getByRole('option')
+  const highlight = dialog.locator('.k-proximity-highlight')
+  const a = (await rows.nth(0).boundingBox())!
+  await page.mouse.move(a.x + 40, a.y + a.height / 2)
+  await expect(rows.nth(0)).toHaveAttribute('aria-selected', 'true')
+  await page.keyboard.press('ArrowDown')
+  await expect(rows.nth(1)).toHaveAttribute('aria-selected', 'true')
+  // 底色落在被选中的那一行上（鼠标没动，还在第一行里）。
+  await expect.poll(async () => Math.abs((await rectTop(highlight)) - (await rectTop(rows.nth(1))))).toBeLessThan(1.5)
+  // 指针在两行之间的缝里：底色回到被选中的行，回车选的也是它。
+  // 贴着组标题的上沿：离上一组最后一行只有几像素，「取最近行」会把底色拉到那一行上。
+  const heading = dialog.locator('[cmdk-group-heading]').nth(1)
+  const hb = (await heading.boundingBox())!
+  await page.mouse.move(a.x + 40, hb.y + 2)
+  await page.waitForTimeout(500)
+  const selected = dialog.locator('[cmdk-item][aria-selected="true"]')
+  await expect(selected).toHaveCount(1)
+  expect(Math.abs((await rectTop(highlight)) - (await rectTop(selected)))).toBeLessThan(1.5)
+
+  // 禁用行（插件页签里的「风控台」）：指针停在上面也不亮，底色留在被选中的行。
+  await dialog.getByRole('tab', { name: /插件/ }).click()
+  const disabled = dialog.getByRole('option', { name: /风控台/ })
+  await expect(disabled).toHaveAttribute('aria-disabled', 'true')
+  const db = (await disabled.boundingBox())!
+  await page.mouse.move(db.x + 60, db.y + db.height / 2)
+  await page.waitForTimeout(500)
+  const current = dialog.locator('[cmdk-item][aria-selected="true"]')
+  await expect(current).not.toContainText('风控台')
+  expect(Math.abs((await rectTop(highlight)) - (await rectTop(current)))).toBeLessThan(1.5)
+  expect(Math.abs((await rectTop(highlight)) - (await rectTop(disabled)))).toBeGreaterThan(10)
+})
+
+test('审查 2：焦点在 × 上按 Enter 或空格是删标签，不去选高亮的动作', async ({ page }) => {
+  const { dialog, input } = await open(page)
+  const scope = dialog.locator('[data-slot="omnibox-scope"]')
+  const remove = dialog.getByRole('button', { name: '移除 AAPL' })
+  for (const key of ['Enter', 'Space']) {
+    await page.keyboard.type('AAPL')
+    await page.keyboard.press('Enter')
+    await expect(scope).toBeVisible()
+    await remove.focus()
+    await page.keyboard.press(key)
+    await expect(scope).toHaveCount(0)
+    await expect(dialog).toBeVisible()
+    await expect(page.getByTestId('omnibox-log')).toHaveText('选择：还没有选择')
+    await expect(input).toBeFocused()
+  }
+})
+
+test('审查 3：记着的回车被方向键、换页签打断就作废，不在结果到了以后自己动手', async ({ page }) => {
+  const { dialog } = await open(page)
+  const scope = dialog.locator('[data-slot="omnibox-scope"]')
+  // 回车后马上按 ↓：用户在自己选，旧的回车不再生效。
+  await page.keyboard.type('AAPL')
+  await page.keyboard.press('Enter')
+  await page.keyboard.press('ArrowDown')
+  await page.waitForTimeout(700)
+  await expect(scope).toHaveCount(0)
+  await expect(dialog).toBeVisible()
+  // 回车后马上 Tab 换页签：同样作废。
+  await page.keyboard.press('Control+a')
+  await page.keyboard.type('AMD')
+  await page.keyboard.press('Enter')
+  await page.keyboard.press('Tab')
+  await page.waitForTimeout(700)
+  await expect(scope).toHaveCount(0)
+  // 对照：不打断，结果一到就对第一行生效。
+  await page.keyboard.press('Shift+Tab')
+  await page.keyboard.press('Control+a')
+  await page.keyboard.type('AAPL')
+  await page.keyboard.press('Enter')
+  await expect(scope).toContainText('AAPL')
+})
+
+test('审查 4：长名字不判成问句；问句有结果时能改回搜索；没结果时回车去问', async ({ page }) => {
+  const { dialog, input } = await open(page)
+  const ask = dialog.locator('[data-slot="omnibox-ask"]')
+  const body = dialog.locator('.k-omnibox-body-inner')
+  // 长的品种名（≥24 字）搜到了结果：不收起。
+  await page.keyboard.type('Taiwan Semiconductor Manufacturing')
+  await expect(dialog.getByRole('option').first()).toHaveAttribute('data-omnibox-id', 'sym:TSM')
+  await expect(ask).toHaveCount(0)
+  await expect(body).not.toHaveAttribute('inert', '')
+  // 同样长、什么都搜不到：收起成问句。
+  await page.keyboard.press('Control+a')
+  await page.keyboard.type('zzzz qqqq wwww xxxx vvvv bbbb')
+  await expect(ask).toBeVisible()
+  await page.keyboard.press('Control+a')
+  // 中文疑问词在句中也认。
+  await page.keyboard.type('我的持仓有哪些风险')
+  await expect(ask).toBeVisible()
+  await expect(dialog.getByRole('option')).toHaveCount(0)
+  // 问句模式下输入框的 aria：列表收起，没有指向某一行。
+  await expect(input).toHaveAttribute('aria-expanded', 'false')
+  await expect(input).not.toHaveAttribute('aria-activedescendant', /.+/)
+  // 问号结尾但搜到了结果：右侧多一个「改为搜索」，↓ 或点它回到结果。
+  await page.keyboard.press('Control+a')
+  await page.keyboard.type('AAPL？')
+  const alt = dialog.locator('[data-slot="omnibox-search-instead"]')
+  await expect(alt).toBeVisible()
+  await expect(input).toHaveAccessibleDescription(/改为搜索/)
+  await page.keyboard.press('ArrowDown')
+  await expect(ask).toHaveCount(0)
+  await expect(dialog.getByRole('option').first()).toHaveAttribute('data-omnibox-id', 'sym:AAPL')
+  await expect(input).toHaveAttribute('aria-expanded', 'true')
+  // 再改字，重新判定。
+  await page.keyboard.type('？')
+  await expect(ask).toBeVisible()
+  await alt.click()
+  await expect(ask).toHaveCount(0)
+  await expect(input).toBeFocused()
+})
+
+test('审查 4：什么都没搜到时空态写明回车会去问，回车把字交给 onAsk', async ({ page }) => {
+  const { dialog } = await open(page)
+  await page.keyboard.type('zzzz')
+  const empty = dialog.locator('[data-slot="command-empty"]')
+  await expect(empty).toContainText('没有匹配项')
+  await expect(empty.locator('[data-slot="omnibox-ask-instead"]')).toHaveText('回车把「zzzz」拿去问')
+  await page.keyboard.press('Enter')
+  await expect(page.getByTestId('omnibox-asked')).toHaveText('提问：zzzz')
+  await expect(dialog).toBeHidden()
+})
+
+test('审查 5：嵌在页里的面板，Tab 到头能离开输入框；作用域标签进输入框的描述', async ({ page }) => {
+  await page.goto('/#/omnibox')
+  await page.locator('[data-gallery="omnibox"]').waitFor()
+  const input = page.locator('[data-slot="omnibox"] [cmdk-input]').first()
+  await input.focus()
+  const tabs = page.locator('[data-slot="omnibox-tabs"]').first().getByRole('tab')
+  await page.keyboard.press('Shift+Tab') // 已经在「全部」：焦点直接走出去
+  await expect(input).not.toBeFocused()
+  await input.focus()
+  const count = await tabs.count()
+  for (let i = 1; i < count; i++) await page.keyboard.press('Tab')
+  await expect(tabs.last()).toHaveAttribute('aria-selected', 'true')
+  await expect(input).toBeFocused()
+  await page.keyboard.press('Tab') // 最后一个页签再按 Tab：走出去
+  await expect(input).not.toBeFocused()
+  // 标签文字挂在输入框的描述上（重新载入：上面已经停在最后一个页签里了）。
+  await page.reload()
+  await page.locator('[data-gallery="omnibox"]').waitFor()
+  await input.focus()
+  await page.keyboard.type('AAPL')
+  await page.keyboard.press('Enter')
+  await expect(input).toHaveAccessibleDescription(/AAPL/)
+})
+
+test('审查 6：换页签与结果个数都在 role=status 里播报，个数是画出来的行', async ({ page }) => {
+  const { dialog } = await open(page)
+  const status = dialog.getByRole('status')
+  const drawn = () => dialog.locator('[data-slot="omnibox-row"]').count()
+  await expect(status).toHaveText(`${await drawn()} 个结果`, { timeout: 3000 })
+  await page.keyboard.press('Tab')
+  await expect(status).toHaveText('品种，7 个结果')
+  await page.keyboard.press('Tab')
+  await expect(status).toHaveText('策略，2 个结果')
+})
+
+test('审查 6：刚打开时高亮在「最近」上，回车直接选它，不等第一次搜索', async ({ page }) => {
+  const { dialog } = await open(page)
+  await dialog.getByRole('tab', { name: /命令/ }).click()
+  await dialog.getByRole('option', { name: /切换布局/ }).click()
+  await expect(page.getByTestId('omnibox-log')).toHaveText('选择：切换布局')
+  await page.getByTestId('omnibox-open').click()
+  await page.keyboard.press('Enter') // 搜索还在路上（演示延迟 120ms），最近是本地数据
+  await expect(dialog).toBeHidden()
+  await expect(page.getByTestId('omnibox-log')).toHaveText('选择：切换布局')
+  await expect(page.getByTestId('omnibox-asked')).toHaveText('提问：还没有提问')
 })

@@ -9,11 +9,13 @@ import {
   detectIntent,
   flattenRows,
   isImeEvent,
+  intentStrength,
   isScopable,
   matchRange,
   pushRecentItem,
   rowHint,
   splitMatch,
+  stepCategory,
   type OmniboxItem,
 } from './omnibox-model.ts'
 
@@ -96,6 +98,16 @@ describe('页签轮转与最近', () => {
   })
 })
 
+describe('stepCategory（Tab 到头把焦点放出去）', () => {
+  const ids = ['all', 'a', 'b']
+  it('向前向后走一格，到头是 null', () => {
+    expect(stepCategory(ids, 'all', 1)).toBe('a')
+    expect(stepCategory(ids, 'b', -1)).toBe('a')
+    expect(stepCategory(ids, 'b', 1)).toBeNull()
+    expect(stepCategory(ids, 'all', -1)).toBeNull()
+  })
+})
+
 describe('命中段', () => {
   it('不分大小写取第一段，空词与没命中不切', () => {
     expect(matchRange('AAPL', 'ap')).toEqual([1, 3])
@@ -121,8 +133,25 @@ describe('detectIntent', () => {
   it('够长或词多算问句，阈值可调', () => {
     expect(detectIntent('open order book for aapl perpetual futures now')).toBe(true)
     expect(detectIntent('open order book')).toBe(false)
-    expect(createIntentDetector({ minWords: 3 })('open order book')).toBe(true)
-    expect(createIntentDetector({ minLength: 5 })('abcdef')).toBe(true)
+    expect(createIntentDetector({ minWords: 3 })('open order book')).toBe('weak')
+    expect(createIntentDetector({ minLength: 5 })('abcdef')).toBe('weak')
+  })
+  it('长名字只算弱意图（搜到结果就不该当问句），问号与疑问词是强意图', () => {
+    expect(intentStrength('Taiwan Semiconductor Manufacturing')).toBe('weak')
+    expect(intentStrength('Berkshire Hathaway Inc Class B common stock')).toBe('weak')
+    expect(intentStrength('下周哪些持仓有财报？')).toBe('strong')
+    expect(intentStrength('what is my exposure')).toBe('strong')
+    expect(intentStrength('AAPL')).toBeNull()
+    expect(createIntentDetector()('Taiwan Semiconductor Manufacturing')).toBe('weak')
+    expect(createIntentDetector()('怎么看回撤')).toBe(true)
+    expect(createIntentDetector()('AAPL')).toBe(false)
+  })
+  it('中文疑问词在句中任意位置都认，不止开头', () => {
+    expect(intentStrength('我的持仓有哪些风险')).toBe('strong')
+    expect(intentStrength('茅台现在多少钱')).toBe('strong')
+    expect(intentStrength('AAPL 是否值得买')).toBe('strong')
+    expect(intentStrength('帮我看下有没有异常')).toBe('strong')
+    expect(intentStrength('贵州茅台')).toBeNull()
   })
   it('空与全空白不是', () => {
     expect(detectIntent('')).toBe(false)
@@ -173,6 +202,11 @@ describe('nearestRow（接近度悬停）', () => {
     expect(nearestRow(rows, -5)).toBe(0)
     expect(nearestRow(rows, -50)).toBeNull()
     expect(nearestRow([], 10)).toBeNull()
+  })
+  it('reach 0：只认指针底下那一行，缝里没有', () => {
+    expect(nearestRow(rows, 10, { reach: 0 })).toBe(0)
+    expect(nearestRow(rows, 32, { reach: 0 })).toBeNull()
+    expect(nearestRow(rows, 80, { reach: 0 })).toBe(2)
   })
   it('迟滞：离开当前行的上下沿不超过 hysteresis 不换', () => {
     expect(nearestRow(rows, 35, { current: 0, hysteresis: 6 })).toBe(0)

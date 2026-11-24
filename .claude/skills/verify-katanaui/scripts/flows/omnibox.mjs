@@ -31,7 +31,7 @@ export default {
       await page.keyboard.press('Tab')
       await expect(tab('品种')).toHaveAttribute('aria-selected', 'true')
       await expect(input).toBeFocused()
-      await expect(options).toHaveCount(6)
+      await expect(options).toHaveCount(7)
       return { selected: await texts(dialog.getByRole('tab', { selected: true })), rows: await options.count() }
     })
     await step('打「AAPL」：第一行是 AAPL，行尾提示「查看选项」，右侧出预览卡', async () => {

@@ -133,6 +133,17 @@ export const OMNIBOX_ITEMS: readonly OmniboxItem[] = [
     preview: quote('NVDA', 'NVIDIA Corp.', '478.60', '+0.90%', true),
   },
   {
+    id: 'sym:TSM',
+    category: 'symbol',
+    kind: 'object',
+    type: 'symbol',
+    label: 'TSM',
+    description: 'Taiwan Semiconductor Manufacturing',
+    icon: mark('TSM', 'Taiwan Semiconductor Manufacturing'),
+    meta: 'NYSE',
+    preview: quote('TSM', 'Taiwan Semiconductor Manufacturing', '104.30', '+0.37%', true),
+  },
+  {
     id: 'str:momo',
     category: 'strategy',
     kind: 'object',
@@ -187,6 +198,15 @@ export const OMNIBOX_ITEMS: readonly OmniboxItem[] = [
     description: '示例插件',
     icon: <PlugIcon size={16} />,
   },
+  {
+    id: 'plug:risk',
+    category: 'plugin',
+    kind: 'page',
+    label: '风控台',
+    description: '未安装，不能打开',
+    icon: <PlugIcon size={16} />,
+    disabled: true,
+  },
 ]
 
 /** 按对象类型给动作（调用方的事，不在组件里）。 */
@@ -220,10 +240,13 @@ const delay = (ms: number, signal: AbortSignal) =>
 const matches = (item: OmniboxItem, needle: string) =>
   needle === '' || `${item.label} ${item.description ?? ''}`.toLowerCase().includes(needle)
 
-/** 演示用的搜索：作用域下给该对象的动作（按词过滤）；全局按名称与说明包含，品种代码前缀排前面；故意延迟 120ms。 */
+/** 演示用的搜索：作用域下给该对象的动作（按词过滤）；全局按名称与说明包含（结尾的问号不算），品种代码前缀排前面；故意延迟 120ms。 */
 export async function demoQuery(query: string, scope: OmniboxItem | null, signal: AbortSignal) {
   await delay(120, signal)
-  const needle = query.trim().toLowerCase()
+  const needle = query
+    .trim()
+    .toLowerCase()
+    .replace(/[?？]+$/, '')
   if (scope) return scopeActions(scope).filter((item) => matches(item, needle))
   const hit = OMNIBOX_ITEMS.filter((item) => matches(item, needle))
   return [
@@ -250,6 +273,9 @@ export const OMNIBOX_LABELS: OmniboxLabels = {
   hintViewOptions: '查看选项',
   hintNewTab: '新标签打开',
   ask: '问',
+  searchInstead: '改为搜索',
+  askInstead: (text) => `回车把「${text}」拿去问`,
+  categorySet: (label, count) => `${label}，${count} 个结果`,
   footer: { navigate: '导航', select: '选择', newTab: '新标签', close: '关闭' },
   resultCount: (count) => `${count} 个结果`,
   scopeSet: (name) => `已选中 ${name}，下面是可做的操作`,

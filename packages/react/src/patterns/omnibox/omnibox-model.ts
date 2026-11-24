@@ -131,6 +131,13 @@ export function cycleCategory(ids: readonly string[], current: string, delta: nu
   return ids[(index + delta + ids.length * Math.abs(delta)) % ids.length]!
 }
 
+/** 往前或往后挪一格，不相接：已在头或尾再往外挪是 null（Tab 在头尾把焦点放出去用）。 */
+export function stepCategory(ids: readonly string[], current: string, delta: 1 | -1): string | null {
+  const index = ids.indexOf(current)
+  const next = ids[(index < 0 ? 0 : index) + delta]
+  return next ?? null
+}
+
 /** 最近列表：放到最前、按 id 去重、限长。 */
 export function pushRecentItem(recent: readonly OmniboxItem[], item: OmniboxItem, limit: number): OmniboxItem[] {
   return [item, ...recent.filter((other) => other.id !== item.id)].slice(0, Math.max(0, limit))
@@ -161,29 +168,44 @@ export type IntentOptions = {
 
 // 疑问词：不是界面文案，是判定用的数据；中英各一份，调用方要别的语言就整个换掉 detectIntent。
 const EN_QUESTION = /^(what|how|why|who|whom|whose|when|where|which)\b/i
-const ZH_QUESTION_HEAD = /^(什么|怎么|怎样|如何|为什么|为何|哪些|哪个|哪里|哪家|谁|多少|是否|有没有|能不能|可不可以)/
+// 中文疑问词句中任意位置都认（「茅台为什么跌」「AAPL 什么时候发财报」），至少 4 个字才认，免得命令名里的单个词误判。
+const ZH_QUESTION_ANY = /(哪些|哪个|哪里|哪家|什么|为什么|为何|怎么|怎样|如何|多少|是否|有没有|能不能|可不可以)/
+const ZH_QUESTION_HEAD = /^谁/
 const ZH_QUESTION_TAIL = /(吗|呢|么)$/
 
+/** 意图的强弱：strong 一看就是问句（问号、疑问词、「吗 / 呢」），weak 只是够长（字数或词数超阈值，长的品种名、命令也会撞上），null 不是。 */
+export type IntentStrength = 'strong' | 'weak'
+
 /**
- * 默认的意图判定：输入像自然语言问题就返回 true（问号结尾；以疑问词开头且不止一个词；以「吗 / 呢」收尾；字数或词数超阈值）。
- * 调用方可以传自己的判定函数换掉它。纯函数。
+ * 默认的意图判定，分强弱：问号结尾、疑问词（英文在开头且不止一个词、中文在句中任意位置且≥4 个字）、以「吗 / 呢」收尾是强；
+ * 字数或词数超阈值只是弱——组件对弱意图要等搜索没有结果才收起结果区，长的品种名、命令照样能选。纯函数。
  */
-export function detectIntent(text: string, { minLength = 24, minWords = 6 }: IntentOptions = {}): boolean {
+export function intentStrength(
+  text: string,
+  { minLength = 24, minWords = 6 }: IntentOptions = {},
+): IntentStrength | null {
   const value = text.trim()
-  if (!value) return false
-  if (/[?？]$/.test(value)) return true
+  if (!value) return null
+  if (/[?？]$/.test(value)) return 'strong'
   const words = value.split(/\s+/)
-  if (EN_QUESTION.test(value) && words.length > 1) return true
-  if (ZH_QUESTION_HEAD.test(value) && value.length > 3) return true
-  if (ZH_QUESTION_TAIL.test(value) && value.length > 2) return true
-  return value.length >= minLength || words.length >= minWords
+  if (EN_QUESTION.test(value) && words.length > 1) return 'strong'
+  if (value.length >= 4 && ZH_QUESTION_ANY.test(value)) return 'strong'
+  if (ZH_QUESTION_HEAD.test(value) && value.length > 3) return 'strong'
+  if (ZH_QUESTION_TAIL.test(value) && value.length > 2) return 'strong'
+  return value.length >= minLength || words.length >= minWords ? 'weak' : null
 }
 
-/** 做一个带阈值的判定函数。 */
+/** 像问句吗（强弱都算）。纯函数。 */
+export const detectIntent = (text: string, options: IntentOptions = {}): boolean =>
+  intentStrength(text, options) !== null
+
+/** 做一个带阈值的判定函数，返回 true（强）、'weak'（弱，搜索没有结果才算问句）或 false。传给组件的 detectIntent 属性。 */
 export const createIntentDetector =
   (options: IntentOptions = {}) =>
-  (text: string): boolean =>
-    detectIntent(text, options)
+  (text: string): boolean | 'weak' => {
+    const strength = intentStrength(text, options)
+    return strength === 'weak' ? 'weak' : strength === 'strong'
+  }
 
 // ---- 输入法 ----
 

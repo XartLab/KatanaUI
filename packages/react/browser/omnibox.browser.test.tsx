@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 // src/patterns/omnibox + src/lib/proximity-highlight: component screenshots. Text is English on purpose (the sandbox has no CJK glyphs, #202).
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import { describe, expect, test } from 'vite-plus/test'
-import { page } from 'vite-plus/test/browser'
+import { page, userEvent } from 'vite-plus/test/browser'
 import { Omnibox, useProximityHighlight, type OmniboxItem, type OmniboxLabels } from '../src/index.ts'
 import { mount } from './render.tsx'
 
@@ -128,3 +128,85 @@ for (const theme of ['graphite', 'console'] as const) {
     })
   })
 }
+
+// 行为：受控页签与「记着的回车」的上下文校验（e2e 里没有办法从外面改 props）。
+describe('omnibox behaviour', () => {
+  function Controlled({
+    onCategoryChange,
+    onSelect,
+    deferred,
+    initialCategory = 'all',
+    scoped = false,
+  }: {
+    onCategoryChange: (id: string) => void
+    onSelect: () => void
+    deferred?: Array<() => void>
+    initialCategory?: string
+    scoped?: boolean
+  }) {
+    const [category, setCategory] = useState(initialCategory)
+    return (
+      <div style={{ width: 560 }}>
+        <button type="button" onClick={() => setCategory('all')}>
+          switch
+        </button>
+        <Omnibox
+          categories={categories}
+          debounceMs={0}
+          labels={labels}
+          category={category}
+          onCategoryChange={(id) => {
+            onCategoryChange(id)
+            setCategory(id)
+          }}
+          defaultScope={scoped ? aapl : null}
+          onQuery={(query) =>
+            deferred
+              ? new Promise((resolve) =>
+                  deferred.push(() => resolve(items.filter((item) => item.label.startsWith(query)))),
+                )
+              : items.filter((item) => item.label.startsWith(query))
+          }
+          onSelect={onSelect}
+        />
+      </div>
+    )
+  }
+
+  test('受控页签：删掉作用域标签回「全部」并通知调用方', async () => {
+    const changes: string[] = []
+    await mount(
+      <Controlled onCategoryChange={(id) => changes.push(id)} onSelect={() => {}} initialCategory="symbol" scoped />,
+    )
+    await page.getByRole('button', { name: 'Remove AAPL' }).click()
+    await expect.poll(() => changes).toEqual(['all'])
+    await expect.poll(() => document.querySelectorAll('[data-slot="omnibox-scope"]').length).toBe(0)
+    await expect.element(page.getByRole('tab', { name: /All/ })).toHaveAttribute('aria-selected', 'true')
+  })
+
+  test('记着的回车：结果到时页签已被调用方换掉就作废；没换就对第一行生效', async () => {
+    for (const switchCategory of [true, false]) {
+      const deferred: Array<() => void> = []
+      const selected: string[] = []
+      await mount(
+        <Controlled
+          onCategoryChange={() => {}}
+          onSelect={() => selected.push('x')}
+          deferred={deferred}
+          initialCategory="symbol"
+        />,
+      )
+      deferred.splice(0).forEach((resolve) => resolve())
+      const input = page.getByRole('combobox')
+      await userEvent.click(input)
+      await userEvent.type(input, 'AAP')
+      await expect.poll(() => deferred.length).toBeGreaterThan(0)
+      await userEvent.keyboard('{Enter}')
+      if (switchCategory) await page.getByRole('button', { name: 'switch' }).click()
+      deferred.splice(0).forEach((resolve) => resolve())
+      await new Promise((resolve) => setTimeout(resolve, 300))
+      // 对象行回车是变成作用域标签。
+      expect(document.querySelectorAll('[data-slot="omnibox-scope"]').length).toBe(switchCategory ? 0 : 1)
+    }
+  })
+})

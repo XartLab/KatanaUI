@@ -58,7 +58,7 @@ export function ProximityHighlightDemo() {
   return (
     <div className="gal-stack">
       <ProximityList label="示例列表" />
-      <p className="gal-note">指针在行间移动，底色滑过去；快速划过不抖；系统要求减少动效时直接切。数据是编的示例。</p>
+      <p className="gal-note">指针在行间移动，底色滑过去；快速划过不抖。数据是编的示例。</p>
     </div>
   )
 }
