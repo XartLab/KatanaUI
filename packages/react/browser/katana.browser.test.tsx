@@ -49,6 +49,7 @@ import {
   Squircle,
 } from '../src/index'
 import { CopyToastStates } from '../gallery/pages/undo-copy.tsx'
+import { ToastStackStates } from '../gallery/pages/toast-stack.tsx'
 import { mount } from './render.tsx'
 
 const items: Record<string, React.ReactNode> = {
@@ -58,6 +59,7 @@ const items: Record<string, React.ReactNode> = {
   'animated-stepper': <AnimatedStepperUsage />,
   'animated-tags': <AnimatedTagsUsage />,
   'copy-toast': <CopyToastStates />,
+  'toast-stack': <ToastStackStates />,
   // Animated parts (type/wipe/blink/marquee) are left out of the shot: they never settle.
   'arcade-pixel': (
     <>
@@ -168,7 +170,7 @@ const items: Record<string, React.ReactNode> = {
   ),
 }
 
-const settle: Record<string, number> = { 'page-preloader': 1500, 'measured-skeleton-loading': 900 }
+const settle: Record<string, number> = { 'page-preloader': 1500, 'measured-skeleton-loading': 900, 'toast-stack': 700 }
 
 // Freeze the clock (Date only, so timers still run): today/relative-time cells must not drift between days.
 beforeAll(() => {
