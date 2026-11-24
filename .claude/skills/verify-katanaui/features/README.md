@@ -45,6 +45,7 @@
 | [ToastStack 叠放提示](toast-stack.md) | `drive toast-stack` | 连推三条收拢、悬停展开、点「撤销」原地变状态、Tab 进叠层展开；拖动、计时暂停、最多条数、减弱动效、受控由 `e2e/toast-stack.spec.ts` 走 |
 | [命令面板：行内说明与多步命令](command-palette.md) | `drive command-palette` | 行带说明与「2 步」徽标、进步骤页、勾选与全选三态、Backspace 退回、走完 onRun、焦点回触发钮 |
 | [DateRangePicker 日期区间](date-range-picker.md) | `drive date-range-picker` | commit=apply 先挑再应用：状态字三档、悬停预览、Esc / 点外面丢草稿、应用、清除、键盘全程 |
+| [AgentRunDetail 运行详情与 AgentRunList](agent-run-detail.md) | `drive agent-run-detail`（列表手走） | 五种状态的刻度与动作钮、进度条语义、阻塞问题卡确认、完成后接着跑、详情与步骤键盘收起、运行列表点开 |
 | [对照 Salt 补的七件](salt-gaps.md) | 还没有流程（手走） | Pill 改与删、SystemStatus 关闭、Calendar 选日与不可选日、ListBox 单选与多选、Link / Card / Panel 的样子 |
 
 ## 待补
