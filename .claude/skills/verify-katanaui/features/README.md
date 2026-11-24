@@ -44,6 +44,7 @@
 | [RuleBuilder 规则构建器](rule-builder.md) | `drive rule-builder` | 条件树与回读、切 And / Or、同组换序（Alt+↑↓、拖动，跨组不落）、校验、动作与撤销 |
 | [Omnibox 万能框](omnibox.md) | `drive omnibox` | 页签与计数、AAPL 变标签与退格、问句收起与回车去问、行尾提示、预览卡、Ctrl+回车新标签 |
 | [AgentDrawer Agent 档案抽屉](agent-drawer.md) | `drive agent-drawer` | 三种状态、页签、热力格读数与方向键、最近运行点行回调 id、列表点开抽屉 |
+| [研究资料与日历](research-calendar.md) | `drive calendar-events`、`drive file-import`、`drive template-library` | 日历事件点与洞察、资料导入（进度、重试、移除、粘贴、链接）、模板库（搜索、键盘、就地编辑、复制、使用） |
 | [对照 Salt 补的七件](salt-gaps.md) | 还没有流程（手走） | Pill 改与删、SystemStatus 关闭、Calendar 选日与不可选日、ListBox 单选与多选、Link / Card / Panel 的样子 |
 
 ## 待补

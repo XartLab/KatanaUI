@@ -1,0 +1,93 @@
+/* SPDX-License-Identifier: MIT */
+/* 日历事件点与洞察（#226，patterns/calendar-events.tsx）：只有传了 events / insight 才有这些节点，不传时日历的 DOM 与样子都不变。
+   1. 格子下的小点（.k-cal-dots）：绝对定位在格子底，不改格子 30×28 的尺寸；点的颜色是调用方给的语气（statusColor 写进 --k-cal-dot），
+      实心强调色底的格子（单月日历的选中格、区间日历的起止两头）上点改成选中前景，免得红点落在强调底上看不清；区间中段是淡底，点保留语气色。点只给眼睛看，读屏读格子的 aria-describedby。
+   2. 脚（.k-cal-foot）：上面一条分隔线；读数行（.k-cal-readout）固定一行高（多了截断，悬停的 title 给全文），悬停或聚焦在别的日子上时不顶着日历跳；
+      洞察行（.k-cal-insight）图标加一句话，字用次要色，图标按语气。 */
+.k-cal-cell[data-has-events] {
+  position: relative;
+}
+.k-cal-dots {
+  position: absolute;
+  bottom: 2px;
+  left: 50%;
+  display: inline-flex;
+  gap: 2px;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+.k-cal-dot {
+  flex: none;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--k-cal-dot);
+}
+.k-cal:not(.k-rcal) .k-cal-cell[data-selected] .k-cal-dot,
+.k-rcal .k-cal-cell[data-selection-start] .k-cal-dot,
+.k-rcal .k-cal-cell[data-selection-end] .k-cal-dot {
+  background: var(--k-selectable-bold-foreground-selected);
+}
+.k-cal-foot {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  /* 宽度不参与弹层与日历的收缩包裹：长长的洞察换行，不把日历撑宽。 */
+  width: 0;
+  min-width: 100%;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--k-separable-secondary-borderColor);
+}
+.k-cal-readout {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  height: 18px;
+  margin: 0;
+  overflow: hidden;
+  color: var(--k-content-body-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-cal-readout-day {
+  color: var(--k-content-secondary-foreground);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.k-cal-readout-items {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.k-cal-readout-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.k-cal-readout-item + .k-cal-readout-item {
+  margin-left: 10px;
+}
+.k-cal-more {
+  margin-left: 1px;
+  color: var(--k-content-secondary-foreground);
+  font: 700 8px/4px var(--font-sans-small);
+}
+.k-cal-cell[data-selected] .k-cal-more {
+  color: var(--k-selectable-bold-foreground-selected);
+}
+.k-cal-insight {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 0;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-cal-insight-icon {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  height: 1lh;
+  color: var(--k-cal-dot);
+}

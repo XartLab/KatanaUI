@@ -80,7 +80,7 @@ const smoothuiB: GuidanceMap = {
     aliases: ['Dropzone', 'File picker', 'Import'],
     use: ['导入回测数据、策略文件：拖入或点击选择，有大小与类型限制。'],
     avoid: [
-      '要显示上传进度或做真实上传，由调用方在 onFilesSelected 里做。',
+      '要显示上传进度或做真实上传，由调用方在 onFilesSelected 里做；要带进度、失败重试的多文件清单用 file-import（它给本件传 list={false}、只用 onFilesAdded 拿新加的文件）。',
       '只选一个文件且已有按钮的地方，用普通按钮加隐藏 input。',
     ],
     a11y: [
