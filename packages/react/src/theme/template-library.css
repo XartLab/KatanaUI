@@ -1,0 +1,226 @@
+/* SPDX-License-Identifier: MIT */
+/* 模板库（#226，patterns/template-library.tsx）：左 240 宽的搜索加树，右边详情；只读 --k-* 语义 token。
+   树行 28 高，缩进每层 16；分组行是小字标题（不可选）；选中行 container 的 secondary 底加左 2px 前景线（不改字重，免得换行宽）；
+   搜索命中的字用 mark：不用底色盖字，改成 primary 前景 + 下划线（不只靠颜色）。
+   正文平时是一块可点的文字，点开是同样排版的 textarea（框与 Input 同皮肤）。 */
+.k-tpl {
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr);
+  min-height: 320px;
+  border: 1px solid var(--k-container-borderColor);
+  border-radius: var(--radius-control);
+  background: var(--k-container-secondary-background);
+  overflow: hidden;
+}
+.k-tpl-side {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px;
+  border-right: 1px solid var(--k-separable-secondary-borderColor);
+  min-width: 0;
+}
+.k-tpl-search {
+  position: relative;
+}
+.k-tpl-search-icon {
+  position: absolute;
+  top: 50%;
+  left: 8px;
+  translate: 0 -50%;
+  color: var(--k-content-secondary-foreground);
+  pointer-events: none;
+}
+.k-tpl-search .k-tpl-search-input {
+  padding-left: 28px;
+}
+.k-tpl-tree {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  outline: 0;
+  font: var(--text-data) var(--font-sans);
+  color: var(--k-content-body-foreground);
+}
+.k-tpl-item {
+  display: block;
+  outline: 0;
+  cursor: pointer;
+}
+.k-tpl-item[data-group] {
+  cursor: default;
+}
+.k-tpl-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 28px;
+  padding: 0 6px 0 calc(2px + var(--k-tpl-level, 0) * 16px);
+  border-radius: 6px;
+  user-select: none;
+}
+.k-tpl-item[data-group] .k-tpl-row {
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-tpl-item[data-hovered]:not([data-group]) .k-tpl-row {
+  background: var(--k-actionable-subtle-background-hover);
+  color: var(--k-content-primary-foreground);
+}
+.k-tpl-item[data-selected] .k-tpl-row {
+  background: var(--k-container-secondary-background);
+  box-shadow:
+    inset 2px 0 0 var(--k-content-primary-foreground),
+    inset 0 0 0 1px var(--k-container-borderColor);
+  color: var(--k-content-primary-foreground);
+}
+.k-tpl-item[data-focus-visible] .k-tpl-row {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: -2px;
+}
+.k-tpl-chevron {
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--k-content-secondary-foreground);
+  cursor: pointer;
+}
+.k-tpl-chevron svg {
+  transition: rotate 0.15s ease-out;
+}
+.k-tpl-row[data-expanded] .k-tpl-chevron svg {
+  rotate: 90deg;
+}
+.k-tpl-title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.k-tpl-mark {
+  background: transparent;
+  color: var(--k-content-primary-foreground);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.k-tpl-badge {
+  flex: none;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-tpl-empty {
+  margin: 0;
+  padding: 12px 8px;
+  color: var(--k-content-secondary-foreground);
+  font: var(--text-data) var(--font-sans);
+}
+.k-tpl-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+  padding: 12px 16px;
+}
+.k-tpl-heading {
+  font: var(--text-body) var(--font-sans);
+  font-weight: 600;
+}
+.k-tpl-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-tpl-meta-row {
+  display: flex;
+  gap: 12px;
+}
+.k-tpl-meta dt {
+  width: 72px;
+  flex: none;
+  color: var(--k-content-secondary-foreground);
+}
+.k-tpl-meta dd {
+  margin: 0;
+  color: var(--k-content-body-foreground);
+  font-variant-numeric: tabular-nums;
+}
+.k-tpl-body {
+  position: relative;
+  flex: 1;
+}
+.k-tpl-body-text,
+.k-tpl-textarea {
+  box-sizing: border-box;
+  display: block;
+  width: 100%;
+  min-height: 140px;
+  margin: 0;
+  padding: 8px 10px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--k-content-body-foreground);
+  font: var(--text-data) var(--font-sans);
+  line-height: 1.6;
+  text-align: left;
+  white-space: pre-wrap;
+}
+button.k-tpl-body-text {
+  cursor: text;
+}
+button.k-tpl-body-text:hover {
+  border-color: var(--k-editable-borderColor);
+}
+button.k-tpl-body-text:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: -2px;
+}
+.k-tpl-textarea {
+  resize: vertical;
+  outline: 0;
+  border-color: var(--k-editable-borderColor-active);
+  background: var(--k-editable-background);
+}
+.k-tpl-body-actions {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  display: inline-flex;
+  gap: 2px;
+}
+.k-tpl-action {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--k-content-secondary-foreground);
+  cursor: pointer;
+}
+.k-tpl-action:hover {
+  background: var(--k-actionable-subtle-background-hover);
+  color: var(--k-content-primary-foreground);
+}
+.k-tpl-failed {
+  margin: 4px 0 0;
+  color: var(--k-status-danger-foreground);
+  font: var(--text-caption) var(--font-sans-small);
+}
+.k-tpl-footer {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}

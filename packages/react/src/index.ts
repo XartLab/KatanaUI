@@ -928,3 +928,25 @@ export {
   type PixelBrushCanvasLabels,
   type PixelBrushCanvasProps,
 } from './motion/media/pixel-brush-canvas.tsx'
+// 研究资料与日历（#226）：日历的事件点与洞察（四个日历共用的可选 prop 类型）、资料导入、模板库。
+export type {
+  CalendarDayEvent,
+  CalendarEventProps,
+  CalendarEventSource,
+  CalendarInsight,
+} from './patterns/calendar-events.tsx'
+export {
+  FileImport,
+  type FileImportLabels,
+  type FileImportProps,
+  type ImportItem,
+  type ImportSource,
+  type ImportStatus,
+} from './patterns/file-import.tsx'
+export {
+  TemplateLibrary,
+  type TemplateEntry,
+  type TemplateGroup,
+  type TemplateLibraryLabels,
+  type TemplateLibraryProps,
+} from './patterns/template-library.tsx'

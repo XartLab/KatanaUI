@@ -10,6 +10,7 @@ import {
   ThemeHeatMatrixDemo,
 } from './pages/cn-pack.tsx'
 import { FlagMarkDemo } from './pages/watchlist-order.tsx'
+import { FileImportDemo, TemplateLibraryDemo } from './pages/research-calendar.tsx'
 import { InlineEditDemo, SplitButtonDemo, TagInputDemo } from './pages/arc-inputs.tsx'
 import { RulerSliderDemo } from './pages/ruler-slider.tsx'
 import { DepthChartDemo, OrderBookDemo, TradeTapeDemo } from './pages/market-depth.tsx'
@@ -642,6 +643,8 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   dock: DockDemo,
   'rich-popover': RichPopoverDemo,
   'animated-file-upload': AnimatedFileUploadDemo,
+  'file-import': FileImportDemo,
+  'template-library': TemplateLibraryDemo,
   'expandable-cards': ExpandableCardsDemo,
   'time-machine-stack': TimeMachineStackDemo,
   'floating-navbar': FloatingNavbarDemo,

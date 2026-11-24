@@ -60,6 +60,14 @@ tokens → theme → lib → layout → primitives → katana → patterns → q
 
 没做：经济地图（世界地图着色要地理数据与投影库，加依赖、定数据源后另开票）。基本面、新闻、Market Data 的分组网格已有 `KeyStats` / `MetricCard`、`NewsFeed`、`DataGrid` 分节。
 
+### 研究资料与日历（#226）
+
+交互借自 Jamie Merrill 的几条分享（2026-11-24 逐帧看），只借交互，样子是我们的；数据与文字都由调用方传，件里没有语言、不读时钟。
+
+- **日历事件点与洞察**（`patterns/calendar-events.tsx` 与 `calendar-events-model.ts`，样式 `theme/calendar-events.css`）：`Calendar`、`DateTimeInput`、`DateRangePicker`、`cn/TradingDatePicker` 四个日历各加两个可选 prop `events`（按 YYYY-MM-DD 的表或查询函数，事件 `{ label, tone? }`）与 `insight`（`{ text, icon?, tone? }`）。共用一个 `useCalendarEvents`：把 `<CalendarCell>` 换成 `view.cell(day)`、格子表后放 `view.foot`；两样都不传时返回的就是原来的 `<CalendarCell>`，DOM 不变（已对 Calendar 做过逐字对比，只差 react-aria 的自增 id）。点最多 3 个、4px、颜色走 `lib/severity` 的 `statusColor`；读屏经 `aria-describedby` 读事件，点与读数行对读屏隐藏。
+- **资料导入**（`patterns/file-import.tsx`，样式 `theme/file-import.css`）：上传区复用 `AnimatedFileUpload`，给它加了 `list`（关掉它自己的清单）、`onFilesAdded`（只给新加的文件），`onFilesSelected` 改成可选；`FileImport` 管来源页签、清单、进度、重试与移除，上传由调用方做。
+- **模板库**（`patterns/template-library.tsx`，样式 `theme/template-library.css`）：树是 react-aria 的 `Tree`，标题就地编辑直接用 `InlineEdit`，正文在件里照它的做法写（多行）；Enter、Esc、⌘↵ 先判 `isComposing` 与 `keyCode === 229`。
+
 ### 设计稿覆盖（#1870）
 
 `docs/coverage-map.json` 是手写的：设计稿存档的每张组件卡（`design/katana-console/project/components/`）落在哪一类（基础件、自有件、量化、积木、面板）、落点、做没做。

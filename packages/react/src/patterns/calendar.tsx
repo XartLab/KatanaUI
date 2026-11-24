@@ -12,13 +12,13 @@ import { ChevronLeft, ChevronRight } from 'lucide-react'
 import {
   Button as AriaButton,
   Calendar as AriaCalendar,
-  CalendarCell,
   CalendarGrid,
   Heading,
   I18nProvider,
 } from 'react-aria-components'
 import { cn } from '../lib/cn.ts'
 import type { WeekStart } from './date-range-model.ts'
+import { useCalendarEvents, type CalendarEventProps } from './calendar-events.tsx'
 import { fromCalendarDate, toCalendarDate } from './date-time-model.ts'
 
 /** Texts of Calendar (the package ships no text). */
@@ -29,7 +29,7 @@ export type CalendarLabels = {
   nextMonth: string
 }
 
-export type CalendarProps = {
+export type CalendarProps = CalendarEventProps & {
   /** Selected day, YYYY-MM-DD (controlled); '' for none. */
   value?: string
   /** Selected day at first (uncontrolled). */
@@ -73,7 +73,10 @@ export function Calendar({
   labels,
   disabled,
   className,
+  events,
+  insight,
 }: CalendarProps) {
+  const view = useCalendarEvents({ events, insight, locale, selected: value })
   return (
     <I18nProvider locale={locale}>
       <AriaCalendar
@@ -98,9 +101,8 @@ export function Calendar({
             <ChevronRight size={14} aria-hidden />
           </AriaButton>
         </header>
-        <CalendarGrid className="k-cal-grid">
-          {(day) => <CalendarCell date={day} className="k-cal-cell" />}
-        </CalendarGrid>
+        <CalendarGrid className="k-cal-grid">{(day) => view.cell(day)}</CalendarGrid>
+        {view.foot}
       </AriaCalendar>
     </I18nProvider>
   )

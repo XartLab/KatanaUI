@@ -20,6 +20,7 @@ import {
   type SystemStatusTone,
 } from '../../src/index.ts'
 import { Row } from './parts.tsx'
+import { CalendarEventsRow } from './research-calendar.tsx'
 
 // #104 对照 Salt 补的七件（Pill、SystemStatus、Calendar、ListBox、Link、Card、Panel）的演示。条件、账户、日期、消息都是示例，不是真实数据。
 
@@ -151,6 +152,7 @@ export function CalendarDemo() {
           disabled
         />
       </Row>
+      <CalendarEventsRow />
       <p className="gal-note">
         ← → ↑ ↓ 按天走，PageUp / PageDown 换月，Enter 选；不可选的日子带删除线。休市日 {HOLIDAY} 是示例。
       </p>

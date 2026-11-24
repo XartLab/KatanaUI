@@ -4,7 +4,6 @@ import { useState } from 'react'
 import {
   Button as AriaButton,
   Calendar,
-  CalendarCell,
   CalendarGrid,
   DateField,
   DateInput,
@@ -14,6 +13,7 @@ import {
   TimeField,
   type DateSegmentProps,
 } from 'react-aria-components'
+import { useCalendarEvents, type CalendarEventProps } from './calendar-events.tsx'
 import { fromCalendarDate, fromTime, toCalendarDate, toTime } from './date-time-model.ts'
 import { Popover, PopoverContent, PopoverTrigger } from '../primitives/popover.tsx'
 
@@ -51,7 +51,7 @@ function Segments({ segment }: { segment: DateSegmentProps['segment'] }) {
 }
 
 /** Date (and optional time) field typed segment by segment, with a calendar button. Values are YYYY-MM-DD and HH:mm(:ss) strings. */
-export type DateTimeInputProps = {
+export type DateTimeInputProps = CalendarEventProps & {
   /**
    * Field name used to build the accessible names: the date is read as "<label> date", the time as "<label> time".
    * 读屏用的名字：日期叫「<label>的日期」，时刻叫「<label>的时刻」。
@@ -110,8 +110,11 @@ export function DateTimeInput({
   className,
   labels,
   locale,
+  events,
+  insight,
 }: DateTimeInputProps) {
   const [open, setOpen] = useState(false)
+  const view = useCalendarEvents({ events, insight, locale, selected: date })
   const day = toCalendarDate(date)
   const minValue = toCalendarDate(min ?? '')
   const maxValue = toCalendarDate(max ?? '')
@@ -163,9 +166,8 @@ export function DateTimeInput({
                   <ChevronRight size={14} aria-hidden />
                 </AriaButton>
               </header>
-              <CalendarGrid className="k-cal-grid">
-                {(value) => <CalendarCell date={value} className="k-cal-cell" />}
-              </CalendarGrid>
+              <CalendarGrid className="k-cal-grid">{(value) => view.cell(value)}</CalendarGrid>
+              {view.foot}
             </Calendar>
           </PopoverContent>
         </Popover>
