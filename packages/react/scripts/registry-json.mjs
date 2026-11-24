@@ -341,6 +341,7 @@ function collectItems() {
       'agent-crew',
       // KatanaUI #223：规则构建器（组件、行内格子、模型与文案类型合成一项）。
       'rule-builder',
+      'agent-drawer',
     ])
       add(
         dir,
