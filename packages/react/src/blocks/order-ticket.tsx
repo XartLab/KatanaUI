@@ -370,7 +370,7 @@ function TicketSide({
           <div className="flex items-center justify-between gap-2">
             <label className="k-text-body flex cursor-pointer items-center gap-2 text-ink-2">
               <Checkbox
-                aria-controls={exitsId}
+                aria-controls={exitsShown ? exitsId : undefined}
                 checked={exitsShown}
                 disabled={mode === 'risk'}
                 onCheckedChange={(checked) => setExitsOpen(checked === true)}

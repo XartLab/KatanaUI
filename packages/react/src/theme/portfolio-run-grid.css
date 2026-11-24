@@ -25,11 +25,11 @@
   gap: 6px;
 }
 
-/* 暂停：琥珀底加左条，整行字退一档（不再开新单的提示），「平掉」仍是原样可点。 */
+/* 暂停：琥珀底加左条，整行字退一档到 body（不再开新单的提示；退到 ink-300 压在琥珀底上只有 4.4:1，console，axe #190），「平掉」仍是原样可点。 */
 .k-prg-row.is-paused {
   background: var(--k-status-warn-background);
   box-shadow: inset 2px 0 0 var(--k-status-warn-foreground);
-  color: var(--k-content-secondary-foreground);
+  color: var(--k-content-body-foreground);
 }
 .k-prg-row.is-noNewEntries {
   box-shadow: inset 2px 0 0 var(--accent);

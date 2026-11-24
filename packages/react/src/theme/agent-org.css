@@ -108,8 +108,12 @@
   outline: 1px solid var(--focus-ring);
   outline-offset: 1px;
 }
+/* 排队与停下的卡变淡不用透明度：0.55 把卡上的次要字压到 2.4:1（axe，#190）。改成边换虚线（同通向它的线）、名字降到次要色（卡底上 ≥5.1:1）。 */
 .k-org-item[data-muted] > .k-org-card {
-  opacity: 0.55;
+  border-style: dashed;
+}
+.k-org-item[data-muted] > .k-org-card .k-at-name {
+  color: var(--k-content-secondary-foreground);
 }
 .k-org-item[data-status='waiting'] > .k-org-card {
   border-color: var(--k-status-warn-foreground);
@@ -370,6 +374,10 @@
 .k-fleet-main[aria-expanded='true'] {
   border-color: var(--focus-ring);
   background: var(--k-selectable-background-selected);
+}
+/* 打开的那张卡是 selected 底，次要字（ink-300）压在上面只有 4.2:1（console，axe #190），提到 body。 */
+.k-fleet-main[aria-expanded='true'] :is(.k-at-model, .k-at-task, .k-at-nums, .k-fleet-phrase) {
+  color: var(--k-content-body-foreground);
 }
 .k-fleet-main[data-status='queued'],
 .k-fleet-main[data-status='stopped'] {

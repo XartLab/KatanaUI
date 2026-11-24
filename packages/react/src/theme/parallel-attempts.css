@@ -51,6 +51,10 @@
   border-left-color: var(--accent);
   background: var(--k-selectable-background-selected);
 }
+/* 选中行是 selected 底，ink-300 压在上面只有 4.2:1（console，axe #190），做法与说明提到 body。 */
+.k-pa-row[data-picked] :is(.k-pa-approach, .k-pa-note) {
+  color: var(--k-content-body-foreground);
+}
 .k-pa-name {
   grid-area: name;
   display: inline-flex;

@@ -94,7 +94,11 @@
   border-top: var(--hairline);
   border-left: var(--hairline);
 }
-.k-sr-cell[data-past] {
+/* 过去的格变淡不用整格透明度（0.45 把卡上的字压到 2–3.8:1，axe #190）：卡名降到次要色，额度细条照旧淡。 */
+.k-sr-cell[data-past] .k-sr-card-title {
+  color: var(--k-content-secondary-foreground);
+}
+.k-sr-cell[data-past] .k-sr-fill {
   opacity: 0.45;
 }
 .k-sr-cell[data-now]::before {

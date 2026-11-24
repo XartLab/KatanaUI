@@ -13,6 +13,10 @@
   color: var(--k-tag-fg);
   white-space: nowrap;
 }
+/* neutral 填充：自带 4% 白的底，ink-300 压在 raised / overlay 面上只有 4.3 / 3.8:1（console，axe #190），字用 body。描边是透明底，仍用 neutral 的字色。 */
+.k-tag[data-tone='neutral']:not([data-outlined]) {
+  --k-tag-fg: var(--k-content-body-foreground);
+}
 .k-tag[data-tone='ok'] {
   --k-tag-fg: var(--k-status-ok-foreground);
   --k-tag-bg: var(--k-status-ok-background);

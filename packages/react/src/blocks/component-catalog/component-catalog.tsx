@@ -10,7 +10,7 @@ import { cn } from '../../lib/cn.ts'
 import { focusRing } from '../../lib/focus.ts'
 import { Button } from '../../primitives/button.tsx'
 import { Input } from '../../primitives/input.tsx'
-import { Tabs, TabsList, TabsTrigger } from '../../primitives/tabs.tsx'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../primitives/tabs.tsx'
 import { groupCatalog, type CatalogCategory, type CatalogItem, type CatalogKind } from './component-catalog-model.ts'
 
 /** The drag payload type set on dataTransfer when a catalog card is dragged. */
@@ -143,7 +143,8 @@ export function ComponentCatalog({
         value={query}
         onChange={(event) => setQuery(event.target.value)}
       />
-      <Tabs value={category} onValueChange={setCategory}>
+      {/* 分组列表放进当前页签的 TabsContent：选中页签的 aria-controls 指向它（以前没有面板，axe 报 aria-valid-attr-value，#190）。 */}
+      <Tabs value={category} onValueChange={setCategory} className="gap-3">
         <TabsList variant="line" aria-label={labels.title}>
           <TabsTrigger value="all">{labels.all}</TabsTrigger>
           {categories.map((item) => (
@@ -152,72 +153,74 @@ export function ComponentCatalog({
             </TabsTrigger>
           ))}
         </TabsList>
-      </Tabs>
-      {groups.length === 0 ? (
-        <p data-slot="catalog-empty" className="k-text-caption m-0 py-6 text-center text-ink-3">
-          {labels.empty}
-        </p>
-      ) : null}
-      {groups.map((group) => (
-        <section key={group.id} data-slot="catalog-group" data-group={group.id} className="flex flex-col gap-2">
-          <h3 className="k-text-caption m-0 font-normal text-ink-3">{group.name}</h3>
-          <div className="grid grid-cols-[repeat(auto-fill,minmax(104px,1fr))] gap-x-2 gap-y-3">
-            {group.items.map((item) => {
-              const blocked = Boolean(item.unavailable)
-              return (
-                <button
-                  key={item.id}
-                  type="button"
-                  data-slot="catalog-item"
-                  data-id={item.id}
-                  aria-pressed={item.inUse === true}
-                  aria-disabled={blocked || undefined}
-                  aria-label={item.inUse ? `${item.name} · ${labels.inUse}` : item.name}
-                  title={item.unavailable}
-                  draggable={!blocked}
-                  onDragStart={(event) => {
-                    event.dataTransfer.effectAllowed = 'copy'
-                    event.dataTransfer.setData(CATALOG_ITEM_MIME, item.id)
-                    event.dataTransfer.setData('text/plain', item.id)
-                  }}
-                  onClick={() => {
-                    if (!blocked) onToggle(item.id, !item.inUse)
-                  }}
-                  className={cn(
-                    'group/card flex cursor-pointer flex-col items-stretch gap-1.5 border-0 bg-transparent p-0 text-center',
-                    blocked && 'cursor-not-allowed opacity-40',
-                    focusRing,
-                  )}
-                >
-                  <span
-                    className={cn(
-                      'relative block aspect-[3/2] overflow-hidden rounded-[var(--radius-control)] border border-line bg-surface-0',
-                      !blocked && 'group-hover/card:border-line-strong',
-                      item.inUse && 'border-line-strong',
-                    )}
-                  >
-                    {thumbnails?.[item.id] ?? <Glyph kind={item.kind ?? 'table'} />}
-                    {item.inUse ? (
+        <TabsContent value={category} className="flex flex-col gap-3">
+          {groups.length === 0 ? (
+            <p data-slot="catalog-empty" className="k-text-caption m-0 py-6 text-center text-ink-3">
+              {labels.empty}
+            </p>
+          ) : null}
+          {groups.map((group) => (
+            <section key={group.id} data-slot="catalog-group" data-group={group.id} className="flex flex-col gap-2">
+              <h3 className="k-text-caption m-0 font-normal text-ink-3">{group.name}</h3>
+              <div className="grid grid-cols-[repeat(auto-fill,minmax(104px,1fr))] gap-x-2 gap-y-3">
+                {group.items.map((item) => {
+                  const blocked = Boolean(item.unavailable)
+                  return (
+                    <button
+                      key={item.id}
+                      type="button"
+                      data-slot="catalog-item"
+                      data-id={item.id}
+                      aria-pressed={item.inUse === true}
+                      aria-disabled={blocked || undefined}
+                      aria-label={item.inUse ? `${item.name} · ${labels.inUse}` : item.name}
+                      title={item.unavailable}
+                      draggable={!blocked}
+                      onDragStart={(event) => {
+                        event.dataTransfer.effectAllowed = 'copy'
+                        event.dataTransfer.setData(CATALOG_ITEM_MIME, item.id)
+                        event.dataTransfer.setData('text/plain', item.id)
+                      }}
+                      onClick={() => {
+                        if (!blocked) onToggle(item.id, !item.inUse)
+                      }}
+                      className={cn(
+                        'group/card flex cursor-pointer flex-col items-stretch gap-1.5 border-0 bg-transparent p-0 text-center',
+                        blocked && 'cursor-not-allowed opacity-40',
+                        focusRing,
+                      )}
+                    >
                       <span
-                        data-slot="catalog-check"
-                        className="absolute inset-0 grid place-items-center bg-[color-mix(in_srgb,var(--k-surface-sunken-background)_55%,transparent)] text-ink [&_svg]:size-5"
+                        className={cn(
+                          'relative block aspect-[3/2] overflow-hidden rounded-[var(--radius-control)] border border-line bg-surface-0',
+                          !blocked && 'group-hover/card:border-line-strong',
+                          item.inUse && 'border-line-strong',
+                        )}
                       >
-                        <Check aria-hidden="true" />
+                        {thumbnails?.[item.id] ?? <Glyph kind={item.kind ?? 'table'} />}
+                        {item.inUse ? (
+                          <span
+                            data-slot="catalog-check"
+                            className="absolute inset-0 grid place-items-center bg-[color-mix(in_srgb,var(--k-surface-sunken-background)_55%,transparent)] text-ink [&_svg]:size-5"
+                          >
+                            <Check aria-hidden="true" />
+                          </span>
+                        ) : null}
                       </span>
-                    ) : null}
-                  </span>
-                  <span className={cn('k-text-caption', item.inUse ? 'font-semibold text-ink' : 'text-ink-2')}>
-                    {item.name}
-                  </span>
-                  {item.unavailable ? (
-                    <span className="k-text-caption -mt-1 text-ink-3">{item.unavailable}</span>
-                  ) : null}
-                </button>
-              )
-            })}
-          </div>
-        </section>
-      ))}
+                      <span className={cn('k-text-caption', item.inUse ? 'font-semibold text-ink' : 'text-ink-2')}>
+                        {item.name}
+                      </span>
+                      {item.unavailable ? (
+                        <span className="k-text-caption -mt-1 text-ink-3">{item.unavailable}</span>
+                      ) : null}
+                    </button>
+                  )
+                })}
+              </div>
+            </section>
+          ))}
+        </TabsContent>
+      </Tabs>
     </div>
   )
 }
