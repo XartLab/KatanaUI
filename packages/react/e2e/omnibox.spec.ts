@@ -478,3 +478,32 @@ test('审查 6：刚打开时高亮在「最近」上，回车直接选它，不
   await expect(page.getByTestId('omnibox-log')).toHaveText('选择：切换布局')
   await expect(page.getByTestId('omnibox-asked')).toHaveText('提问：还没有提问')
 })
+
+test('验收观察：清空输入框后页签计数不留上一次查询的旧数，空查询同步给出', async ({ page }) => {
+  const { dialog } = await open(page)
+  const tabs = dialog.getByRole('tablist')
+  await page.keyboard.type('AAPL')
+  await expect(tabs).toContainText('全部1')
+  // 记下清空之后页签文字的每一次变化。
+  await tabs.evaluate((el) => {
+    const w = window as unknown as { __tabs: string[] }
+    w.__tabs = []
+    new MutationObserver(() => w.__tabs.push(el.textContent ?? '')).observe(el, {
+      subtree: true,
+      childList: true,
+      characterData: true,
+    })
+  })
+  await page.keyboard.press('Control+a')
+  await page.keyboard.press('Backspace')
+  await expect(tabs).toContainText('全部19')
+  const seen = await page.evaluate(() => (window as unknown as { __tabs: string[] }).__tabs)
+  expect(seen.length).toBeGreaterThan(0)
+  for (const text of seen) expect(text).not.toContain('全部1品种1')
+  // 同步：清空后第一次变化就已经是完整计数。
+  expect(seen[0]).toContain('全部19')
+  // 有字的新查询：结果没到时旧数不在、不被播报（占位「…」是 aria-hidden）。
+  await page.keyboard.type('TSLA')
+  await expect(tabs).toContainText('全部1')
+  await expect(tabs.locator('[data-pending]')).toHaveCount(0)
+})
