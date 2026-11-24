@@ -331,6 +331,7 @@ function collectItems() {
       'agent-tree',
       'agent-fleet',
       'agent-crew',
+      'agent-drawer',
     ])
       add(
         dir,

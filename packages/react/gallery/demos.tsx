@@ -317,6 +317,7 @@ import {
   SmartRecommendationDemo,
 } from './pages/affect-agent.tsx'
 import { AgentCrewDemo, AgentFleetDemo, AgentTreeDemo, FlowBuilderDemo } from './pages/affect-flow.tsx'
+import { AgentDrawerDemo } from './pages/agent-drawer.tsx'
 import {
   AccountEquityDemo,
   FundingRateDemo,
@@ -681,6 +682,8 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   link: LinkDemo,
   card: CardDemo,
   panel: PanelDemo,
+  // KatanaUI #225：Agent 档案抽屉。
+  'agent-drawer': AgentDrawerDemo,
 }
 
 /**

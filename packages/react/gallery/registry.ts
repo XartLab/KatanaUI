@@ -11928,6 +11928,68 @@ export const PAGES: readonly DocPage[] = [
     composition: 'Panel（div）',
     keys: [],
   },
+  {
+    id: 'agent-drawer',
+    group: 'ai',
+    cardHeight: 700,
+    title: 'AgentDrawer Agent 档案抽屉',
+    summary:
+      '一个 Agent 本身的档案，侧抽屉（放进 Sheet）或停靠面板都能放：头是名字与一句说明；属性区是状态（在跑 / 暂停 / 停用，图标加词）、标签（多个）、触发（定时 / 事件 / 上传 / 手动，带图标，可附「交易日 08:30」这类细节）、负责人（头像加名字）、创建时间；下面三个页签「用量 / 配置 / 历史」，配置与历史的内容是调用方给的槽（没给的页签不出现）。用量页内置三块：顶上两张指标卡（节省时间、本月花费，数值与环比徽章由调用方写好）、活动热力格（最近 N 周每天跑了几次）、最近运行列表（触发源或人、结果、时长、相对时间，点一行只回调运行 id，可接 AgentRunDetail）。底部 footer 槽放「通知我」「暂停」，件自己不做动作。Agent 列表不新建件：用 DataGrid 的 custom 列加 onOpen，点一行打开抽屉，演示见页上。「在跑」不用强调色（Graphite 下是橙，色弱下与失败红分不出，#211），用中性亮色加转圈图标与状态词。件不取时间，时间与时长由调用方格式化。信息结构与交互借自 Jamie Merrill 公开的 Agent 抽屉与 Agent tracker 截图（2026-11-24 读，只取结构与交互），样子是 KatanaUI 的，热力格是中性灰不是蓝；实现原创。演示数据是示例。',
+    exports: [
+      'AgentDrawer',
+      'AgentActivity',
+      'initialsOf',
+      'ACTIVITY_LEVELS',
+      'activityGrid',
+      'activityLevel',
+      'activityMax',
+      'activityTotal',
+      'agentStatusTone',
+      'moveActivity',
+      'recentFrom',
+      'runResultTone',
+    ],
+    propParts: [
+      {
+        part: 'AgentDrawer',
+        note: '放进 Sheet 时 renderTitle、renderDescription 接 SheetTitle、SheetDescription，对话框才有名字。',
+      },
+      { part: 'AgentActivity', note: '单独用也行：给每日次数，格子与读数行自己排。' },
+      { part: 'activityLevel', note: '纯函数：次数占 max 的比例分档，0 次是 0 档，跑过的 1 到 5 档。' },
+      { part: 'activityGrid', note: '纯函数：把每日次数排成一列一周、一行一个星期。' },
+      { part: 'activityMax', note: '纯函数：单日最大次数。' },
+      { part: 'activityTotal', note: '纯函数：总次数。' },
+      { part: 'ACTIVITY_LEVELS', note: '常量：非 0 的档数（5）。' },
+      { part: 'agentStatusTone', note: '纯函数：状态的语气，在跑是 progress，暂停 warn，停用 neutral。' },
+      { part: 'runResultTone', note: '纯函数：运行结果的语气。' },
+      { part: 'moveActivity', note: '纯函数：方向键之后焦点去哪一格，没有格子返回 null。' },
+      { part: 'recentFrom', note: '纯函数：到某天为止最近 N 周的起点日期。' },
+      { part: 'initialsOf', note: '纯函数：名字缩写（两个词取首字母，中文名取前两字）。' },
+    ],
+    states: [
+      '在跑：状态字与图标中性亮色（--k-content-primary-foreground），图标转圈；不用 accent（#211：橙与失败红在色弱下只差 ΔE 0.09）。',
+      '暂停：warn 色与底，图标是暂停。停用：neutral，图标是斜线圆。',
+      '运行结果：成功 ok、失败 danger、在跑中性亮色加转圈、已取消 neutral；图标与词一起写，不单靠颜色。',
+      '热力格：0 次是空格（--k-heat-0），跑过的按次数占最大值的比例分 5 档（--k-heat-1…5，越多越亮），中性灰不用蓝；悬停格有亮边，焦点有焦点环。',
+      '没有运行：最近运行一栏写 noRuns 的虚线框。指标卡没给就不画。',
+      '窄于 280px：指标卡由两张并排改成一列。',
+    ],
+    donts: [
+      '不要拿它看一次运行的过程：用 AgentRunDetail。',
+      '不要拿它看几个并行的主 Agent：用 AgentFleet。',
+      '不要在件里读时钟或写文案：时间、时长、状态词都由调用方给。',
+      '不要新建 Agent 表格件：用 DataGrid 的 custom 列。',
+    ],
+    composition:
+      'AgentDrawer（section）\n  header（h2 名字 · 一句说明）\n  dl 属性区（状态 · 标签 · 触发 · 负责人 · 创建时间）\n  Tabs（line）\n    TabsContent 用量\n      ul 指标卡（Tag 环比）\n      AgentActivity（role=grid，一行一个星期）\n      ul 最近运行（button 行）\n    TabsContent 配置 / 历史（调用方的槽）\n  footer（调用方的动作）',
+    keys: [
+      ['Tab', '页签、热力格（一个停点）、最近运行各行、底部动作'],
+      ['← →', '页签间切换；在热力格里前一周 / 后一周（同一个星期几）'],
+      ['↑ ↓', '在热力格里前一天 / 后一天'],
+      ['Home / End', '热力格的第一天 / 最后一天'],
+      ['Enter / Space', '打开最近运行的这一行（回调运行 id）'],
+    ],
+  },
 ]
 
 export const pageById = (id: string): DocPage | undefined => PAGES.find((page) => page.id === id)
