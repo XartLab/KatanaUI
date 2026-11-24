@@ -267,37 +267,48 @@ const groupIcon = (id: string) => {
   return Icon ? <Icon aria-hidden /> : undefined
 }
 
+/** 组件页在目录里的一条：名字用页标题（英文名 + 中文名）。 */
+const pageNavItem = (item: DocPage) => {
+  const [name, ...rest] = item.title.split(' ')
+  return {
+    id: item.id,
+    label: (
+      <>
+        {name}
+        {rest.length > 0 ? <span className="gal-nav-cn"> {rest.join(' ').replace(/（[^）]*）/g, '')}</span> : null}
+      </>
+    ),
+    href: `#/${item.id}`,
+    keywords: `${item.id} ${item.title}`,
+  }
+}
+
+/** 跟基础分节同 id 的组件组（decisions：基础那三页选法 + 组件组里的 emphasis-guide）并进那一节，目录里只出一个「设计决策」，组 id 不重复。 */
+const isFoundationSection = (id: string) => FOUNDATION_SECTIONS.some((section) => section.id === id)
+
 const navGroups: readonly SideNavGroup[] = [
   ...FOUNDATION_SECTIONS.map((section) => ({
     id: section.id,
     title: section.title,
     icon: groupIcon(section.id),
-    items: FOUNDATION_PAGES.filter((item) => item.section === section.id).map((item) => ({
-      id: item.id,
-      label: item.title,
-      href: `#/${item.id}`,
-      keywords: item.id,
-    })),
-  })),
-  ...GROUPS.map((group) => ({
-    id: group.id,
-    title: group.title,
-    icon: groupIcon(group.id),
-    items: PAGES.filter((item) => item.group === group.id).map((item) => {
-      const [name, ...rest] = item.title.split(' ')
-      return {
+    items: [
+      ...FOUNDATION_PAGES.filter((item) => item.section === section.id).map((item) => ({
         id: item.id,
-        label: (
-          <>
-            {name}
-            {rest.length > 0 ? <span className="gal-nav-cn"> {rest.join(' ').replace(/（[^）]*）/g, '')}</span> : null}
-          </>
-        ),
+        label: item.title,
         href: `#/${item.id}`,
-        keywords: `${item.id} ${item.title}`,
-      }
-    }),
-  })).filter((group) => group.items.length > 0),
+        keywords: item.id,
+      })),
+      ...PAGES.filter((item) => item.group === section.id).map(pageNavItem),
+    ],
+  })),
+  ...GROUPS.filter((group) => !isFoundationSection(group.id))
+    .map((group) => ({
+      id: group.id,
+      title: group.title,
+      icon: groupIcon(group.id),
+      items: PAGES.filter((item) => item.group === group.id).map(pageNavItem),
+    }))
+    .filter((group) => group.items.length > 0),
   ...PATTERN_GROUPS,
   {
     id: 'overview',

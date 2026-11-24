@@ -12,7 +12,7 @@
 }
 .k-xrates.is-empty {
   padding: 24px;
-  color: var(--k-content-tertiary-foreground);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-sans-small);
   text-align: center;
 }

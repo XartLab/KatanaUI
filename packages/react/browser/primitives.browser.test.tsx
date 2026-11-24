@@ -134,6 +134,13 @@ beforeAll(async () => {
 for (const theme of ['graphite', 'console'] as const) {
   const shot = async (name: string, node: React.ReactNode) => {
     await mount(node, theme)
+    // 等有限时长的动画与过渡走完再截（Breadcrumb 逐项入场、链接 150ms 换色，CI 忙时截在半路，#190）。
+    await Promise.all(
+      document
+        .getAnimations()
+        .filter((animation) => animation.effect?.getComputedTiming().endTime !== Infinity)
+        .map((animation) => animation.finished.catch(() => undefined)),
+    )
     await expect(page.getByTestId('frame')).toMatchScreenshot(`${theme}-${name}`)
   }
   describe(theme, () => {

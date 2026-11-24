@@ -23,7 +23,7 @@
   font: var(--text-data) var(--font-sans);
 }
 .k-fan-job {
-  color: var(--k-content-tertiary-foreground);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-sans-small);
 }
 .k-fan-facts {

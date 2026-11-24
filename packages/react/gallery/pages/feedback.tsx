@@ -32,9 +32,14 @@ export function ToastDemo() {
     const id = next.current++
     setItems((list) => [{ id, title: `演示提示 ${id}`, phase: 'entering' as const }, ...list])
     // 先画一帧 entering 再换成 open，过渡才有起点（AlertToasts 的写法）。
+    // 只把还在 entering 的换成 open：两帧还没到就点了叉的那条已是 closing，不能被改回 open（改回去收起的定时器就摘不掉它）。
     requestAnimationFrame(() =>
       requestAnimationFrame(() =>
-        setItems((list) => list.map((item) => (item.id === id ? { ...item, phase: 'open' as const } : item))),
+        setItems((list) =>
+          list.map((item) =>
+            item.id === id && item.phase === 'entering' ? { ...item, phase: 'open' as const } : item,
+          ),
+        ),
       ),
     )
   }

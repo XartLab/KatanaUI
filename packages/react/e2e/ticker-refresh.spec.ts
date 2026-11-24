@@ -96,7 +96,13 @@ test('GridSummaryRow：合计与均值照列类型写，跟表头对齐，横向
   expect(Math.round(await x(cell))).toBe(Math.round(await x(head)))
 
   // 整张表在演示里放得下；把容器收窄到 360 再看横滚：汇总行跟表体一起滚，固定列仍粘左。
+  // DataGrid 默认按列优先级收列（#122）：360 放不下，带聚合的市值、盈亏、涨跌幅先收起，汇总行跟着不画；
+  // 点表头右端的「+N cols」切成横向滚动、显示全部列，汇总行回来。
   await area.locator('[data-gallery-summary]').evaluate((el) => ((el as HTMLElement).style.width = '360px'))
+  await expect(grid).toHaveAttribute('data-columns-hidden', /^\d+$/)
+  const toggle = grid.locator('.k-grid-cols-toggle')
+  await toggle.click()
+  await expect(toggle).toHaveAttribute('aria-expanded', 'true')
   await expect(grid.locator('[data-summary="median"] [data-col="value"]')).not.toBeEmpty()
   const scroll = grid.locator('.k-grid-scroll')
   const fixedBefore = await x(total.locator('[data-col="symbol"]'))

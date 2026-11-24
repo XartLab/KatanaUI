@@ -192,3 +192,10 @@
 .k-ladder-status[data-status='none'] {
   color: var(--k-content-body-foreground);
 }
+/* 选中行的 6.5% 白叠上胶囊 12% 的涨跌色底，涨跌色字只剩 3.9:1（console，axe #190）：选中行里胶囊的字往 primary 混 25%，仍是红 / 绿，≥4.6:1。 */
+.k-ladder-row.is-selected .k-ladder-status[data-status='sealed'] {
+  color: color-mix(in srgb, var(--pnl-up) 75%, var(--k-content-primary-foreground));
+}
+.k-ladder-row.is-selected .k-ladder-status[data-status='down'] {
+  color: color-mix(in srgb, var(--pnl-down) 75%, var(--k-content-primary-foreground));
+}

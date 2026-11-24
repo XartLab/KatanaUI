@@ -67,7 +67,7 @@
 }
 .k-dist-totals > span + span::before {
   margin-right: 6px;
-  color: var(--ink-400);
+  color: var(--ink-300);
   content: '/';
 }
 .k-dist-totals b {

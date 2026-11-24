@@ -114,7 +114,7 @@
   white-space: nowrap;
 }
 .k-fb-text small {
-  color: var(--k-content-tertiary-foreground);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-sans-small);
 }
 .k-fb-time {
@@ -170,7 +170,7 @@
   border: 1px solid var(--k-fb-line);
   border-radius: 50%;
   background: var(--k-container-primary-background);
-  color: var(--k-content-tertiary-foreground);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-sans-small);
   cursor: pointer;
   transition:
@@ -206,7 +206,7 @@
   flex-direction: column;
 }
 .k-fb-menu-item small {
-  color: var(--k-content-tertiary-foreground);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-sans-small);
 }
 .k-fb-stub {

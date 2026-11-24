@@ -70,6 +70,10 @@
   outline: none;
   white-space: nowrap;
 }
+/* 格字压在热力底上，要主文字色；写成 td.k-pr-cell 抬一档优先级，免得宿主页的 td 规则（如文档站的 .gal-doc td 用 body 色）盖掉，console 下红格上只剩 3.2:1（axe #190）。 */
+.k-pr-table td.k-pr-cell {
+  color: var(--k-content-primary-foreground);
+}
 .k-pr-cell[data-tone='none'] {
   background: var(--k-container-secondary-background);
 }

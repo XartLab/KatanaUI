@@ -81,7 +81,7 @@
 }
 .k-rct-row[data-status='ruledOut'] .k-rct-name,
 .k-rct-row[data-status='ruledOut'] .k-rct-file {
-  color: var(--k-content-tertiary-foreground);
+  color: var(--k-content-secondary-foreground);
   text-decoration: line-through;
 }
 .k-rct-name {
@@ -111,7 +111,7 @@
   color: var(--k-status-warn-foreground);
 }
 .k-rct-status[data-status='ruledOut'] {
-  color: var(--k-content-tertiary-foreground);
+  color: var(--k-content-secondary-foreground);
 }
 .k-rct-status[data-status='confirmed'] {
   color: var(--k-status-danger-foreground);
@@ -173,7 +173,7 @@
   gap: 4px;
 }
 .k-rct-at {
-  color: var(--k-content-tertiary-foreground);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-num-small);
 }
 .k-rct-actions {

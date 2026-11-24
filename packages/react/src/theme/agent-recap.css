@@ -39,7 +39,7 @@
 .k-rc-strip-axis {
   display: flex;
   justify-content: space-between;
-  color: var(--k-content-tertiary-foreground);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-num-small);
 }
 .k-rc-lanes {
@@ -89,7 +89,7 @@
   font: var(--text-caption) var(--font-sans-small);
 }
 .k-rc-card-top time {
-  color: var(--k-content-tertiary-foreground);
+  color: var(--k-content-secondary-foreground);
   font-family: var(--font-num-small);
 }
 .k-rc-tag {
@@ -132,7 +132,7 @@
 .k-rc-empty,
 .k-rc-more {
   margin: 0;
-  color: var(--k-content-tertiary-foreground);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-sans-small);
 }
 .k-rc-live {
@@ -173,7 +173,7 @@
   padding: 4px 0;
   border: 0;
   background: none;
-  color: var(--k-content-tertiary-foreground);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-sans-small);
   cursor: pointer;
 }
@@ -247,7 +247,7 @@
   color: var(--k-content-primary-foreground);
 }
 .k-away-detail {
-  color: var(--k-content-tertiary-foreground);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-sans-small);
 }
 .k-away-foot {

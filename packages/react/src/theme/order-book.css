@@ -62,7 +62,8 @@ button.k-book-row:focus-visible {
 .k-book-bar {
   position: absolute;
   inset: 1px 0 1px auto;
-  background: color-mix(in srgb, var(--k-bar-tone) 18%, transparent);
+  /* 12% 而不是 18%：最深的几行深度条铺到价格底下，18% 的同色底让卖价红字只剩 4.4:1（console，axe #190），12% 是 4.8:1（同成交明细大单行的底）。 */
+  background: color-mix(in srgb, var(--k-bar-tone) 12%, transparent);
   pointer-events: none;
   transition: width var(--dur-snappy) var(--ease-snappy);
 }
@@ -81,8 +82,9 @@ button.k-book-row:focus-visible {
   position: relative;
   text-align: right;
 }
+/* 累计列压在深度条上，ink-300 只有 3.4–4.2:1（console，axe #190），用 body。 */
 .k-book-total {
-  color: var(--k-content-secondary-foreground);
+  color: var(--k-content-body-foreground);
 }
 /* 中间一行：最新价（涨跌色）与价差。夹在两侧之间，上下各一条细线。 */
 .k-book-mid {
@@ -133,12 +135,13 @@ button.k-book-row:focus-visible {
   white-space: nowrap;
   transition: width var(--dur-snappy) var(--ease-snappy);
 }
+/* 条里的字压在 28% 的同色底上原样只有 3.9–4.4:1（axe #190），往 primary 混 35%，仍是红 / 绿（混 25% 时最深一格 4.45:1）。 */
 .k-book-share-bid {
   background: color-mix(in srgb, var(--k-tone-up-foreground) 28%, transparent);
-  color: var(--k-tone-up-foreground);
+  color: color-mix(in srgb, var(--k-tone-up-foreground) 65%, var(--k-content-primary-foreground));
 }
 .k-book-share-ask {
   background: color-mix(in srgb, var(--k-tone-down-foreground) 28%, transparent);
-  color: var(--k-tone-down-foreground);
+  color: color-mix(in srgb, var(--k-tone-down-foreground) 65%, var(--k-content-primary-foreground));
   text-align: right;
 }

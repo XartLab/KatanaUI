@@ -45,7 +45,7 @@
 }
 .k-crew-ctx small {
   flex: none;
-  color: var(--k-content-tertiary-foreground);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-num-small);
 }
 .k-crew-ctx[data-level='warn'] small {
@@ -61,7 +61,7 @@
   min-width: 0;
   height: 22px;
   padding: 0 4px;
-  color: var(--k-content-tertiary-foreground);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-sans-small);
 }
 .k-crew-last {
@@ -129,7 +129,7 @@
   font: var(--text-data) var(--font-sans);
 }
 .k-crew-facts dt {
-  color: var(--k-content-tertiary-foreground);
+  color: var(--k-content-secondary-foreground);
 }
 .k-crew-facts dd {
   margin: 0;

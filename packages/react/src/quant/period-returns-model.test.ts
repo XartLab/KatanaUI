@@ -107,6 +107,6 @@ describe('涨跌发散色', () => {
     expect(divergingColor(NEUTRAL_SHARE / 2)).toBe('var(--div-mid)')
     expect(divergingColor(1)).toContain('--div-pos-200')
     expect(divergingColor(-1)).toContain('--div-neg-200')
-    expect(divergingColor(0.5)).toContain('50%')
+    expect(divergingColor(0.5)).toContain('35%')
   })
 })

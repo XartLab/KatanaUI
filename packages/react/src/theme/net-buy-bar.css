@@ -61,6 +61,16 @@
   background: var(--k-selectable-background-selected);
   box-shadow: inset 2px 0 0 var(--k-content-primary-foreground);
 }
+/* 打开的行是 selected 底：名字小字提到 body，涨跌色字往 primary 混 35%（原样只有 3.8 / 4.3:1，console，axe #190）。 */
+.k-netbuy-item[data-open] .k-netbuy-sub {
+  color: var(--k-content-body-foreground);
+}
+.k-netbuy-item[data-open] :is(.k-netbuy-net[data-tone='up'], .k-netbuy-num [data-tone='up']) {
+  color: color-mix(in srgb, var(--k-tone-up-foreground) 65%, var(--k-content-primary-foreground));
+}
+.k-netbuy-item[data-open] :is(.k-netbuy-net[data-tone='down'], .k-netbuy-num [data-tone='down']) {
+  color: color-mix(in srgb, var(--k-tone-down-foreground) 65%, var(--k-content-primary-foreground));
+}
 .k-netbuy-name {
   display: flex;
   align-items: center;
@@ -130,9 +140,10 @@
   padding: var(--space-2) var(--inset-x) var(--space-3);
   background: var(--k-selectable-subtle-groupBackground);
 }
+/* 席位区铺着 subtle 组底，ink-300 压在上面只有 4.4:1（console，axe #190）：标题与「机构」小标的字用 body。 */
 .k-netbuy-seats-title {
   margin-bottom: 4px;
-  color: var(--k-content-secondary-foreground);
+  color: var(--k-content-body-foreground);
   font: 500 11px/14px var(--font-sans);
 }
 .k-netbuy-seats ol {
@@ -157,6 +168,9 @@
   overflow: hidden;
   min-width: 0;
   white-space: nowrap;
+}
+.k-netbuy-seat-name .k-tag {
+  --k-tag-fg: var(--k-content-body-foreground);
 }
 .k-netbuy-seat-name > span:first-child {
   overflow: hidden;

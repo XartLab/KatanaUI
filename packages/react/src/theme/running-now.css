@@ -126,7 +126,7 @@
   color: var(--k-content-primary-foreground);
 }
 .k-rn-step {
-  color: var(--k-content-tertiary-foreground);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-sans-small);
 }
 .k-rn-item[data-state='needs'] .k-rn-step {

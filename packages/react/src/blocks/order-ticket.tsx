@@ -332,7 +332,7 @@ function TicketSide({
             thumbLabels={[labels.percent]}
             onValueChange={([value]) => applyPercent(value ?? 0)}
           />
-          <div className="k-text-caption mt-1 flex justify-between text-ink-4 tabular-nums">
+          <div className="k-text-caption mt-1 flex justify-between text-ink-3 tabular-nums">
             {PERCENT_STOPS.map((stop) => (
               <button
                 key={stop}
@@ -370,7 +370,7 @@ function TicketSide({
           <div className="flex items-center justify-between gap-2">
             <label className="k-text-body flex cursor-pointer items-center gap-2 text-ink-2">
               <Checkbox
-                aria-controls={exitsId}
+                aria-controls={exitsShown ? exitsId : undefined}
                 checked={exitsShown}
                 disabled={mode === 'risk'}
                 onCheckedChange={(checked) => setExitsOpen(checked === true)}

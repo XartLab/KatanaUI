@@ -58,7 +58,7 @@
   color: var(--k-content-secondary-foreground);
 }
 .k-srec-source {
-  color: var(--k-content-tertiary-foreground);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-mono);
 }
 .k-srec-signal {
@@ -155,7 +155,7 @@
   font: var(--text-caption) var(--font-sans-small);
 }
 .k-dt-agent small {
-  color: var(--k-content-tertiary-foreground);
+  color: var(--k-content-secondary-foreground);
   font-family: var(--font-mono);
 }
 .k-dt-risk[data-risk='high'] {
@@ -196,7 +196,7 @@
   justify-content: flex-start;
 }
 .k-dt-choose kbd {
-  color: var(--k-content-tertiary-foreground);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-num-small);
 }
 .k-dt-pick {
@@ -258,7 +258,7 @@
 }
 .k-dt-other label {
   grid-column: 1 / -1;
-  color: var(--k-content-tertiary-foreground);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-sans-small);
 }
 .k-dt-other textarea {
@@ -285,7 +285,7 @@
 .k-dt-empty,
 .k-dt-live {
   margin: 0;
-  color: var(--k-content-tertiary-foreground);
+  color: var(--k-content-secondary-foreground);
   font: var(--text-caption) var(--font-sans-small);
 }
 .k-dt-live {
