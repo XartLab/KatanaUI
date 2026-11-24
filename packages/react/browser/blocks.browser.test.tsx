@@ -45,6 +45,7 @@ import { SeriesTable } from '../src/blocks/series-explorer/series-explorer-table
 import { ChartTable } from '../src/lib/chart/chart-kit/chart-table.tsx'
 import { STOCKS, STOCK_COLUMNS, STOCK_LAYOUT } from '../gallery/pages/screener-data.tsx'
 import { UseUndoStackUsage } from '../gallery/usage/UseUndoStackUsage.tsx'
+import { RuleBuilderUsage } from '../gallery/usage/RuleBuilderUsage.tsx'
 import { mount } from './render.tsx'
 
 // comfortable 档的整页选股器（#90）：16 行演示数据，列覆盖代码芯片、单位小字、缩写、横条、评级、标签、迷你图、区间。
@@ -164,6 +165,7 @@ const items: Record<string, React.ReactNode> = {
   'use-undo-stack': <UseUndoStackUsage />,
   whiteboard: <WhiteboardUsage />,
   'workspace-tabs': <WorkspaceTabsUsage />,
+  'rule-builder': <RuleBuilderUsage />,
 }
 
 const settle: Record<string, number> = { 'page-preloader': 1500, whiteboard: 600 }
