@@ -244,7 +244,23 @@ export function Omnibox({
   const items = useMemo(() => (result.scope === scopeId ? result.items : NO_ITEMS), [result, scopeId])
   const loading = result.for !== `${scopeId}\u0000${settled}` || result.status === 'idle'
   const emptyQuery = settled.trim() === ''
-  const counts = useMemo(() => countByCategory(items), [items])
+  // 页签计数：查询一变、新结果还没到时旧数不能留着（也不能被读屏播报）。空查询的结果记下来，清空输入时同步用它；没有就先写「…」。
+  const [emptyCache, setEmptyCache] = useState<{ scope: string; items: readonly OmniboxItem[] } | null>(null)
+  if (
+    result.status === 'done' &&
+    !loading &&
+    settled.trim() === '' &&
+    (emptyCache?.items !== result.items || emptyCache.scope !== scopeId)
+  ) {
+    setEmptyCache({ scope: scopeId, items: result.items })
+  }
+  const countItems =
+    !loading || result.for === `${scopeId}\u0000${settled}`
+      ? items
+      : emptyQuery && emptyCache?.scope === scopeId
+        ? emptyCache.items
+        : null
+  const counts = useMemo(() => countByCategory(countItems ?? NO_ITEMS), [countItems])
 
   // 问句模式：强意图（问号、疑问词）一律收起结果；弱意图（只是够长）要等搜索回来、确实没有结果才收起。
   // 用户按 ↓ 或点「搜索」改回搜索后，记下当时的文字（forcedFor），文字再变就重新判定。
@@ -703,7 +719,8 @@ export function Omnibox({
             {showTabs ? (
               <div role="tablist" aria-label={labels.categories} className="k-omnibox-tabs" data-slot="omnibox-tabs">
                 {categories.map((entry) => {
-                  const count = entry.id === allId ? items.length : (counts[entry.id] ?? 0)
+                  const count =
+                    countItems === null ? null : entry.id === allId ? countItems.length : (counts[entry.id] ?? 0)
                   return (
                     <button
                       key={entry.id}
@@ -721,7 +738,13 @@ export function Omnibox({
                       className="k-omnibox-tab"
                     >
                       {entry.label}
-                      {count > 0 ? <span className="k-omnibox-tab-count">{count}</span> : null}
+                      {count === null ? (
+                        <span className="k-omnibox-tab-count" data-pending="" aria-hidden="true">
+                          {'\u2026'}
+                        </span>
+                      ) : count > 0 ? (
+                        <span className="k-omnibox-tab-count">{count}</span>
+                      ) : null}
                     </button>
                   )
                 })}
