@@ -681,14 +681,17 @@ export function DataGrid<Row extends object>({
     // oxlint-disable-next-line react/exhaustive-deps
   }, [])
 
-  // 只读的表没有能聚焦的格；真的放不下、能滚的时候，键盘得能停在滚动区上（axe scrollable-region-focusable），放得下就不进 Tab 序列。
+  // 只读的表没有能聚焦的格；真的放不下、能滚的时候，键盘得能停在滚动区里（axe scrollable-region-focusable），放得下就不进 Tab 序列。
+  // 停在第一个 rowgroup 上，不在滚动区自己身上：滚动区是 table 与 rowgroup 之间的无语义 div，能聚焦就成了 table 不许有的子元素（aria-required-children）。
   useEffect(() => {
     const node = scroller.current
     if (interactive || !node || typeof ResizeObserver === 'undefined') return
     const sync = () => {
+      const stop = node.querySelector<HTMLElement>('[role="rowgroup"]')
+      if (!stop) return
       const scrolls = node.scrollWidth > node.clientWidth || node.scrollHeight > node.clientHeight
-      if (scrolls) node.tabIndex = 0
-      else node.removeAttribute('tabindex')
+      if (scrolls) stop.tabIndex = 0
+      else stop.removeAttribute('tabindex')
     }
     const observer = new ResizeObserver(sync)
     observer.observe(node)

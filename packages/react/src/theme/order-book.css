@@ -135,13 +135,13 @@ button.k-book-row:focus-visible {
   white-space: nowrap;
   transition: width var(--dur-snappy) var(--ease-snappy);
 }
-/* 条里的字压在 28% 的同色底上原样只有 3.9–4.4:1（axe #190），往 primary 混 25%，仍是红 / 绿，≥4.8:1。 */
+/* 条里的字压在 28% 的同色底上原样只有 3.9–4.4:1（axe #190），往 primary 混 35%，仍是红 / 绿（混 25% 时最深一格 4.45:1）。 */
 .k-book-share-bid {
   background: color-mix(in srgb, var(--k-tone-up-foreground) 28%, transparent);
-  color: color-mix(in srgb, var(--k-tone-up-foreground) 75%, var(--k-content-primary-foreground));
+  color: color-mix(in srgb, var(--k-tone-up-foreground) 65%, var(--k-content-primary-foreground));
 }
 .k-book-share-ask {
   background: color-mix(in srgb, var(--k-tone-down-foreground) 28%, transparent);
-  color: color-mix(in srgb, var(--k-tone-down-foreground) 75%, var(--k-content-primary-foreground));
+  color: color-mix(in srgb, var(--k-tone-down-foreground) 65%, var(--k-content-primary-foreground));
   text-align: right;
 }

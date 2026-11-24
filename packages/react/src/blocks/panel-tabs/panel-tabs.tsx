@@ -314,9 +314,11 @@ export function PanelTabs({
                   ) : null}
                 </button>
                 {closable ? (
+                  // × 只给指针用：它在 tablist 里，tablist 只许有 tab（axe aria-required-children，#190）；键盘与读屏用 Delete 移除。
                   <button
                     type="button"
                     tabIndex={-1}
+                    aria-hidden="true"
                     data-slot="panel-tab-close"
                     aria-label={(labels?.close ?? '').replace('{name}', tab.name)}
                     onClick={() => onClose?.(tab.id)}

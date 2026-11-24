@@ -69,3 +69,7 @@
   padding: var(--space-6);
   color: var(--k-content-secondary-foreground);
 }
+/* 分组行铺着 subtle 组底，中性 Tag 的 ink-300 只有 4.3:1（console，axe #190）；只在这里提到 body，Tag 原件仍是次要文字色。 */
+.k-reason-grid .k-tag[data-tone='neutral']:not([data-outlined]) {
+  --k-tag-fg: var(--k-content-body-foreground);
+}

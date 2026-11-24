@@ -61,15 +61,15 @@
   background: var(--k-selectable-background-selected);
   box-shadow: inset 2px 0 0 var(--k-content-primary-foreground);
 }
-/* 打开的行是 selected 底：名字小字提到 body，涨跌色字往 primary 混 25%（原样只有 3.8 / 4.3:1，console，axe #190）。 */
+/* 打开的行是 selected 底：名字小字提到 body，涨跌色字往 primary 混 35%（原样只有 3.8 / 4.3:1，console，axe #190）。 */
 .k-netbuy-item[data-open] .k-netbuy-sub {
   color: var(--k-content-body-foreground);
 }
 .k-netbuy-item[data-open] :is(.k-netbuy-net[data-tone='up'], .k-netbuy-num [data-tone='up']) {
-  color: color-mix(in srgb, var(--k-tone-up-foreground) 75%, var(--k-content-primary-foreground));
+  color: color-mix(in srgb, var(--k-tone-up-foreground) 65%, var(--k-content-primary-foreground));
 }
 .k-netbuy-item[data-open] :is(.k-netbuy-net[data-tone='down'], .k-netbuy-num [data-tone='down']) {
-  color: color-mix(in srgb, var(--k-tone-down-foreground) 75%, var(--k-content-primary-foreground));
+  color: color-mix(in srgb, var(--k-tone-down-foreground) 65%, var(--k-content-primary-foreground));
 }
 .k-netbuy-name {
   display: flex;

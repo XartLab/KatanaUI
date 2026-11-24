@@ -4949,7 +4949,8 @@ test('每一页写着属性表、组成，有键盘操作的写键盘', async ({
   test.setTimeout(180_000)
   for (const doc of PAGES) {
     await page.goto(`/#/${doc.id}`)
-    await expect(page.getByRole('heading', { level: 1 })).toHaveText(doc.title)
+    // 页名是页上第一个 h1；演示里也可能有 h1（如 Markdown 页的「快速上手」）。
+    await expect(page.getByRole('heading', { level: 1 }).first()).toHaveText(doc.title)
     const guide = guidanceOf(doc.id)
     // 怎么用：什么时候用 / 别用、状态、组成（别用 = 指南里的 avoid + 登记的 donts）。
     await docTab(page, '怎么用')
@@ -7955,14 +7956,14 @@ for (const theme of THEMES) {
       await expect(area.locator('output').first()).toHaveText('catalog asked next to: table')
       await expect(tab(/Feed/)).toHaveAttribute('aria-selected', 'true')
       // 悬停才出「×」；固定的页签没有「×」，Delete 也关不掉。
-      const close = bar.getByRole('button', { name: 'Remove Feed' })
+      const close = bar.getByRole('button', { name: 'Remove Feed', includeHidden: true })
       await page.mouse.move(0, 0) // 新页签正好长在指针底下，先挪开
       await expect(close).toHaveCSS('opacity', '0')
       await tab(/Feed/).hover()
       await expect(close).toHaveCSS('opacity', '1')
       await close.click()
       await expect(tab(/Feed/)).toHaveCount(0)
-      await expect(bar.getByRole('button', { name: 'Remove Chart' })).toHaveCount(0)
+      await expect(bar.getByRole('button', { name: 'Remove Chart', includeHidden: true })).toHaveCount(0)
       await tab(/Chart/).focus()
       await page.keyboard.press('Delete')
       await expect(tab(/Chart/)).toHaveCount(1)

@@ -10448,10 +10448,6 @@ button.k-sysmon-link-body:focus-visible {
   display: inline-block;
 }
 
-.k-tag[data-tone="neutral"]:not([data-outlined]) {
-  --k-tag-fg: var(--k-content-body-foreground);
-}
-
 .k-tag[data-tone="ok"] {
   --k-tag-fg: var(--k-status-ok-foreground);
   --k-tag-bg: var(--k-status-ok-background);
@@ -16521,6 +16517,10 @@ button.k-sm-head:focus-visible {
   border-radius: 2px;
   outline: none;
   padding: 0 4px;
+}
+
+.k-pr-table td.k-pr-cell {
+  color: var(--k-content-primary-foreground);
 }
 
 .k-pr-cell[data-tone="none"] {
@@ -23387,6 +23387,10 @@ button.k-sm-head:focus-visible {
   margin: auto;
 }
 
+.k-reason-grid .k-tag[data-tone="neutral"]:not([data-outlined]) {
+  --k-tag-fg: var(--k-content-body-foreground);
+}
+
 .k-bsr {
   min-width: 0;
   padding: var(--space-3) 0;
@@ -24118,7 +24122,7 @@ button.k-sm-head:focus-visible {
 
 @supports (color: color-mix(in lab, red, red)) {
   .k-netbuy-item[data-open] :is(.k-netbuy-net[data-tone="up"], .k-netbuy-num [data-tone="up"]) {
-    color: var(--ds-c-erq8xm);
+    color: var(--ds-c-9fr0e1);
   }
 }
 
@@ -24128,7 +24132,7 @@ button.k-sm-head:focus-visible {
 
 @supports (color: color-mix(in lab, red, red)) {
   .k-netbuy-item[data-open] :is(.k-netbuy-net[data-tone="down"], .k-netbuy-num [data-tone="down"]) {
-    color: var(--ds-c-1wg0c0d);
+    color: var(--ds-c-1r413gs);
   }
 }
 
@@ -24485,7 +24489,7 @@ button.k-book-row:focus-visible {
 
 @supports (color: color-mix(in lab, red, red)) {
   .k-book-share-bid {
-    color: var(--ds-c-erq8xm);
+    color: var(--ds-c-9fr0e1);
   }
 }
 
@@ -24505,7 +24509,7 @@ button.k-book-row:focus-visible {
 
 @supports (color: color-mix(in lab, red, red)) {
   .k-book-share-ask {
-    color: var(--ds-c-1wg0c0d);
+    color: var(--ds-c-1r413gs);
   }
 }
 
@@ -32919,8 +32923,8 @@ button.k-pill-main {
   --ds-c-jwmebu: color-mix(in srgb, var(--pnl-down) 12%, transparent);
   --ds-c-fh4wdq: color-mix(in srgb, var(--pnl-up) 75%, var(--k-content-primary-foreground));
   --ds-c-85cmap: color-mix(in srgb, var(--pnl-down) 75%, var(--k-content-primary-foreground));
-  --ds-c-erq8xm: color-mix(in srgb, var(--k-tone-up-foreground) 75%, var(--k-content-primary-foreground));
-  --ds-c-1wg0c0d: color-mix(in srgb, var(--k-tone-down-foreground) 75%, var(--k-content-primary-foreground));
+  --ds-c-9fr0e1: color-mix(in srgb, var(--k-tone-up-foreground) 65%, var(--k-content-primary-foreground));
+  --ds-c-1r413gs: color-mix(in srgb, var(--k-tone-down-foreground) 65%, var(--k-content-primary-foreground));
   --ds-c-1g4q2hy: color-mix(in srgb, var(--k-tone-up-foreground) 60%, transparent);
   --ds-c-skz12x: color-mix(in srgb, var(--k-tone-down-foreground) 60%, transparent);
   --ds-c-e5uoq3: color-mix(in srgb, var(--k-bar-tone) 12%, transparent);
