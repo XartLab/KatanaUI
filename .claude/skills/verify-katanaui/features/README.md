@@ -42,6 +42,7 @@
 | [弹出层](overlays.md) | `drive overlays` | Popover 与 Dialog 的点开、Esc 关、点外面关、焦点回到触发处 |
 | [Tabs 页签](tabs.md) | `drive tabs` | 点页签换内容、底块跟随、方向键切换、禁用页签 |
 | [RuleBuilder 规则构建器](rule-builder.md) | `drive rule-builder` | 条件树与回读、切 And / Or、同组换序（Alt+↑↓、拖动，跨组不落）、校验、动作与撤销 |
+| [Omnibox 万能框](omnibox.md) | `drive omnibox` | 页签与计数、AAPL 变标签与退格、问句收起与回车去问、行尾提示、预览卡、Ctrl+回车新标签 |
 | [对照 Salt 补的七件](salt-gaps.md) | 还没有流程（手走） | Pill 改与删、SystemStatus 关闭、Calendar 选日与不可选日、ListBox 单选与多选、Link / Card / Panel 的样子 |
 
 ## 待补

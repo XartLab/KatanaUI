@@ -296,6 +296,8 @@ import {
 } from './pages/smoothui-trading.tsx'
 import { ScrubberDemo } from './pages/smoothui-scrub.tsx'
 import { SymbolSearchDemo } from './pages/symbol-search.tsx'
+import { OmniboxDemo } from './pages/omnibox.tsx'
+import { ProximityHighlightDemo } from './pages/proximity-highlight.tsx'
 import {
   ChangeSummaryDemo,
   ExperimentCardDemo,
@@ -621,6 +623,8 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   splitter: SplitterDemo,
   'workspace-tabs': WorkspaceTabsDemo,
   'symbol-search': SymbolSearchDemo,
+  omnibox: OmniboxDemo,
+  'proximity-highlight': ProximityHighlightDemo,
   textarea: TextareaDemo,
   'radio-group': RadioGroupDemo,
   toggle: ToggleDemo,

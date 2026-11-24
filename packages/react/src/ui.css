@@ -178,3 +178,6 @@
 /* 表格格内排版与整页表的数值（#92）：排在各件样式之后，报告类原生表同权重时以它为准。 */
 @import './theme/cell-type.css';
 @import './theme/rule-builder.css';
+/* #224 万能框：面板、页签、作用域标签、接近度高亮、预览卡（加在最后，只追加）。 */
+@import './theme/proximity-highlight.css';
+@import './theme/omnibox.css';
