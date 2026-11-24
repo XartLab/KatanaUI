@@ -229,6 +229,25 @@ test('DateRangePicker commit=apply：弹层开着时外部改 value——没动�
   await expect(out).toHaveText('2026-11-02 ~ 2026-11-06')
   await expect(foot).toHaveCount(0)
 
+  // 先把值换回 12-07 ~ 12-18，外部再改成 11-02 ~ 11-06 才是真的变化。
+  await trigger.click()
+  await day(7).click()
+  await day(18).click()
+  await applyBtn.click()
+  await expect(out).toHaveText('2026-12-07 ~ 2026-12-18')
+  // 点了起点还没点终点时外部改值：算动过，日历不跳、焦点不挪，状态字只按草稿算（只有起点：「已选 1 天」），不会因新聚焦日出现「已选 36 天」。
+  await trigger.click()
+  await day(7).click()
+  await expect(status).toHaveText('已选 1 天')
+  await changeOutside()
+  await expect(out).toHaveText('2026-11-02 ~ 2026-11-06')
+  await expect(status).toHaveText('已选 1 天')
+  await expect(page.locator('.k-rcal .k-cal-cell[data-selected]')).toHaveCount(1)
+  await expect(start).toHaveText('07')
+  await expect(applyBtn).toBeDisabled()
+  await page.keyboard.press('Escape')
+  await expect(foot).toHaveCount(0)
+
   // 动过：打开后用户先点了「今天」预设（草稿 11-14），这时外部改值，草稿保留，点「应用」上报草稿。
   await trigger.click()
   await page.getByRole('group', { name: '常用区间' }).getByRole('button', { name: '今天' }).click()

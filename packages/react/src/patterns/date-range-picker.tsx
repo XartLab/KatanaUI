@@ -178,9 +178,11 @@ export function DateRangePicker({
   const active = matchPreset(shownRange, today, weekStart)
   const complete = start && end ? { start, end } : null
 
-  // 弹层开着时外部改了 value（URL、别的面板、「回到今天」）：草稿没动过（还等于 seed）就跟着变，动过就保留用户的草稿。
+  // 弹层开着时外部改了 value（URL、别的面板、「回到今天」）：草稿没动过（还等于 seed）就跟着变，动过就保留用户的草稿；这时日历显示月与聚焦日都不动。
   // 在渲染里调整状态（React 文档里「根据 props 调整 state」的写法），不用 effect，免得框与状态字闪一帧旧值。
-  if (live && !sameRange(seed, value)) {
+  // 正在日历里点选（点了起点还没点终点）也算动过：此时不跟、不挪聚焦与日历，否则 react-aria 会按新的聚焦日画预览，状态字（「已选 38 天」）就与框里只有起点对不上。
+  // 这时也不更新 seed：用户放弃这次挑选、草稿回到没动过时，下一次渲染再跟上外部的新值。
+  if (live && !pick.anchor && !sameRange(seed, value)) {
     setSeed(value)
     if (sameRange(draft, seed)) {
       setDraft(value)
