@@ -42,7 +42,7 @@ describe('设计系统包的件（读文档站的页数据）', () => {
 
   it('浮层类的页摆出打开的样子：触发器之外还有打开状态的内容', () => {
     expect(Object.keys(OPEN_DEMOS).toSorted()).toEqual(
-      ['context-menu', 'dialog', 'dropdown-menu', 'popover', 'select', 'tooltip'].toSorted(),
+      ['alert-dialog', 'context-menu', 'dialog', 'dropdown-menu', 'popover', 'select', 'tooltip'].toSorted(),
     )
     for (const page of pages.filter((item) => OPEN_DEMOS[item.id])) {
       const html = renderPreviewBody(page)
