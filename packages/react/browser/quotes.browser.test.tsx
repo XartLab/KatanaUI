@@ -28,6 +28,7 @@ import { CompareBar, QuoteStrip } from '../src/index'
 import { RefreshControlUsage } from '../gallery/usage/RefreshControlUsage.tsx'
 import { TickerTapeUsage } from '../gallery/usage/TickerTapeUsage.tsx'
 import { mount } from './render.tsx'
+import { settled } from './settle.ts'
 
 const items: Record<string, React.ReactNode> = {
   'change-text': <ChangeTextUsage />,
@@ -121,6 +122,7 @@ for (const theme of ['graphite', 'console'] as const) {
           theme,
         )
         await new Promise((r) => setTimeout(r, settle[name] ?? 250)) // let measuring / enter transitions finish
+        await settled()
         await expect(page.getByTestId('frame')).toMatchScreenshot(`${theme}-quotes-${name}`)
       })
     }
@@ -150,6 +152,7 @@ describe('logo-provider', () => {
           },
           { timeout: 15_000, interval: 100 },
         )
+        await settled()
         await expect(page.getByTestId('frame')).toMatchScreenshot(`${theme}-quotes-symbol-mark-logos`)
       })
     })

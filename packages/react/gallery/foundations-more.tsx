@@ -141,6 +141,54 @@ import { EquityCurve } from '@katana-ui/react/quant'`}
             </>,
           ],
           [
+            '截图停在哪一帧：能等的等终态',
+            <>
+              不赌「等 N 毫秒够不够」。截图前统一过 {code('settled()')}（browser/settle.ts）：连着 3
+              帧都没有在跑的有限动画或过渡、字体与图片都载完才放行，Radix 浮层要先定好位（定位前外壳是 translate(0,
+              -200%)，只看动画会误判已静）。整体 8s 截止，到点抛错并点名没完的动画、「radix popper not
+              positioned」或图片，绝不对着半成品截图
+            </>,
+          ],
+          [
+            '截图停在哪一帧：计时器长出来的件',
+            <>
+              {code('waitUntil()')} 等一个看得见的终态再截：打字件等 data-typing 消失，终端回放等可见区（不是
+              sr-only）出现最后一行，WordBuild 只放一句、等词数到齐（演示件两句会循环退场，永远没有静止的时刻）
+            </>,
+          ],
+          [
+            '截图停在哪一帧：一直在动的件',
+            <>
+              先看件有没有静态参数：{code('animate={false}')}（DitherChart）、{code('paused')}
+              （Orb、InfiniteSlider）。没有就钉时间：画布靠 rAF 与 performance.now 画的，用 {code('withFrameClock()')}
+              走固定帧数（MatrixOrb 60 帧；DitherChart 的有限画入走到没有帧为止，所以截的就是演示件本身）；靠
+              setInterval 变的（SwitchboardCard，种子固定），用 {code('withFakeIntervals()')} 走固定 8 跳。两个包装都在
+              finally 里换回真的，一个测试失败不会拖累同文件后面的。无限循环的 CSS 动画（打字光标）用
+              {code('settled({ freezeInfinite: true })')} 停在第 0 刻，它会停住页面里所有无限动画，只给打字光标用
+            </>,
+          ],
+          [
+            '截图与演示分开维护的一处',
+            'WordBuild：演示件有两句、会循环退场，永远没有静止的时刻，截图只放第一句（单句不退场）；第二句走同一条代码路径，没有单独的截图',
+          ],
+          [
+            '指针位置',
+            '鼠标指针会在同一页里跨测试留在原处（限并发后几个文件轮流用同一页），压在按钮上就是悬停态；mount() 每次把指针挪到 body 左上角，截图里的悬停态只能是测试自己做出来的',
+          ],
+          [
+            '截图停在哪一帧：不要靠 prefers-reduced-motion',
+            '产品不跟系统的「减少动态效果」（theme/motion.css 头部），组件里没有这条分支；motion 组的 CDP 模拟只对少数件有效，别当稳定手段',
+          ],
+          [
+            '并发与超时',
+            <>
+              组件截图同时最多 4 页（{code('maxWorkers')}，机器核数更少就取核数），测试 30s、等稳定的截图 10s。13
+              个文件一起开页时 WebGL 件的软渲染把 CPU 占满，别的页「等元素稳定」会超时（2026-11-24 main 的 run
+              45412157714 有 5 个 15s 超时）；超时是排队，不是件坏了，先看有没有一起开的重件，别先调大超时
+            </>,
+          ],
+          ['怎么验稳定', '同一环境连跑 3 次，截图逐字节一致才算稳；只红一次的像素差先当成不稳定查，不要先收基线'],
+          [
             '整页回归（pnpm vr）',
             <>
               有组件截图的页不再截预览区（2026-11-18：423 张降到 30 张，5 分半降到 35
@@ -161,6 +209,15 @@ import { EquityCurve } from '@katana-ui/react/quant'`}
           [
             '基线在哪',
             '.pixelgate/baseline/（Linux 渲染，要提交）；在别的系统上字体光栅不同，要接受 CI 的图时用 pnpm vr:approve --from <下载的 artifact 目录>',
+          ],
+          [
+            '组件截图的基线',
+            <>
+              .pixelgate-unit/baseline/，只收自建 runner 上渲染的（Playwright 1.56.1 镜像）：沙箱与别的机器的 Chromium
+              与字形不同，同样的代码也会红（primitives 七张浮层图在沙箱红、在 runner 过，#218）。CI
+              上组件截图红了，artifact pixelgate-unit 里有 runner 的实际截图，核对是预期改动后用{' '}
+              {code('pnpm exec pixelgate approve --out-dir .pixelgate-unit --from <下载的目录>')} 收
+            </>,
           ],
           [
             '比较方式',

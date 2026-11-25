@@ -9,6 +9,7 @@ import { OptionsChainUsage } from '../gallery/usage/OptionsChainUsage.tsx'
 import { OrdersTableUsage } from '../gallery/usage/OrdersTableUsage.tsx'
 import { PositionsTableUsage } from '../gallery/usage/PositionsTableUsage.tsx'
 import { mount } from './render.tsx'
+import { settled } from './settle.ts'
 
 // 资金费率截图钉住的「现在」；倒计时终点 = 它 + 2:13:07，与演示一致。
 const FIXED_NOW = Date.UTC(2026, 10, 24, 5, 46, 53)
@@ -40,6 +41,7 @@ for (const theme of ['graphite', 'console'] as const) {
         await page.viewport(1200, 1000)
         await mount(<div style={{ width: 1100 }}>{node}</div>, theme)
         await new Promise((r) => setTimeout(r, 250)) // 等测量与过渡走完
+        await settled()
         await expect(page.getByTestId('frame')).toMatchScreenshot(`${theme}-account-${name}`)
       })
     }

@@ -46,6 +46,7 @@ import { ChartTable } from '../src/lib/chart/chart-kit/chart-table.tsx'
 import { STOCKS, STOCK_COLUMNS, STOCK_LAYOUT } from '../gallery/pages/screener-data.tsx'
 import { UseUndoStackUsage } from '../gallery/usage/UseUndoStackUsage.tsx'
 import { mount } from './render.tsx'
+import { settled } from './settle.ts'
 
 // comfortable 档的整页选股器（#90）：16 行演示数据，列覆盖代码芯片、单位小字、缩写、横条、评级、标签、迷你图、区间。
 const COMFORTABLE_COLUMNS = [
@@ -196,6 +197,7 @@ for (const theme of ['graphite', 'console'] as const) {
           theme,
         )
         await new Promise((r) => setTimeout(r, settle[name] ?? 250)) // let measuring / enter transitions finish
+        await settled()
         await expect(page.getByTestId('frame')).toMatchScreenshot(`${theme}-blocks-${name}`)
       })
     }
