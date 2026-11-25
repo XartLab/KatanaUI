@@ -1434,7 +1434,7 @@
       "name": "alert-dialog",
       "type": "registry:ui",
       "title": "Alert Dialog",
-      "description": "要用户明确选一个才关的对话框：平仓、撤单、删除这类不能撤回的事。点背板不关，打开时焦点落在「取消」，Esc 等于取消；样子同 Dialog，Console 下边粗一档。",
+      "description": "要用户明确选一个才关的对话框：平仓、撤单、删除这类不能撤回的事。点背板不关，打开时焦点落在「取消」，Esc 关掉（不点任何钮）；样子同 Dialog，Console 下边粗一档。",
       "dependencies": [
         "radix-ui@1.8.1"
       ],

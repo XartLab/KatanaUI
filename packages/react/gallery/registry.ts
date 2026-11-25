@@ -508,7 +508,7 @@ export const PAGES: readonly DocPage[] = [
     cardHeight: 334,
     title: 'AlertDialog 确认对话框',
     summary:
-      '要用户明确选一个才关的对话框：平仓、撤单、删除这类不能撤回的事。点背板不关，打开时焦点落在「取消」，Esc 等于取消；样子同 Dialog，Console 下边粗一档。',
+      '要用户明确选一个才关的对话框：平仓、撤单、删除这类不能撤回的事。点背板不关，打开时焦点落在「取消」，Esc 关掉（不点任何钮）；样子同 Dialog，Console 下边粗一档。',
     exports: [
       'AlertDialog',
       'AlertDialogAction',
@@ -533,7 +533,10 @@ export const PAGES: readonly DocPage[] = [
         part: 'AlertDialogAction',
         note: 'variant：primary（默认）、danger（不能撤回的）、default。画成 Button，点了关闭。',
       },
-      { part: 'AlertDialogCancel', note: '画成 Button；打开时焦点在它上面，Esc 与它等价。' },
+      {
+        part: 'AlertDialogCancel',
+        note: '画成 Button；打开时焦点在它上面。Esc 关掉但不点它，取消要做的事写在 AlertDialog 的 onOpenChange 里。',
+      },
       {
         part: 'AlertDialogHeader / AlertDialogBody / AlertDialogFooter',
         symbol: 'AlertDialogHeader',
@@ -558,7 +561,7 @@ export const PAGES: readonly DocPage[] = [
     composition:
       'AlertDialog\n  AlertDialogTrigger\n  AlertDialogContent\n    AlertDialogHeader\n      AlertDialogTitle\n    AlertDialogBody\n      AlertDialogDescription\n    AlertDialogFooter\n      AlertDialogCancel\n      AlertDialogAction',
     keys: [
-      ['Esc', '取消并关闭，焦点回到打开前的元素'],
+      ['Esc', '关闭（不点任何钮，只触发 onOpenChange(false)），焦点回到打开前的元素'],
       ['Tab / Shift+Tab', '焦点在「取消」与「确认」之间循环，不出去'],
       ['Enter / Space', '按下拿着焦点的钮'],
     ],

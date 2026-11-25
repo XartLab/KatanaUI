@@ -9,7 +9,7 @@ import { OverlayPortal } from '../lib/overlay.tsx'
 import { Button } from './button.tsx'
 
 // 确认对话框：要用户明确选一个才关。和 Dialog 的差别都在 Radix 的行为里：role="alertdialog"、点背板不关、打开时焦点落在「取消」、
-// Esc 等于取消；所以没有右上角的关闭钮。样子和 Dialog 同一套，只是边粗一档。
+// Esc 关掉（只触发 onOpenChange(false)，不点取消钮）；所以没有右上角的关闭钮。样子和 Dialog 同一套，只是边粗一档。
 function AlertDialog({ ...props }: ComponentProps<typeof AlertDialogPrimitive.Root>) {
   return <AlertDialogPrimitive.Root data-slot="alert-dialog" {...props} />
 }
@@ -144,7 +144,7 @@ function AlertDialogAction({
   )
 }
 
-/** 取消钮：打开时焦点落在它上面，Esc 与它等价。 */
+/** 取消钮：打开时焦点落在它上面。Esc 关掉对话框但不点它：取消要做的事写在 AlertDialog 的 onOpenChange 里。 */
 function AlertDialogCancel({ ...props }: ComponentProps<typeof AlertDialogPrimitive.Cancel>) {
   return (
     <AlertDialogPrimitive.Cancel asChild>

@@ -45,13 +45,16 @@ test('取消只记取消；确认只记一次并关闭；确认钮是危险色',
 
   await trigger.click()
   const action = dialog.getByRole('button', { name: '平仓' })
-  // 危险色：字色取 --k-actionable-negative-foreground，跟取消钮不一样。
-  const color = (name: string) => dialog.getByRole('button', { name }).evaluate((el) => getComputedStyle(el).color)
-  const negative = await page.evaluate(() =>
-    getComputedStyle(document.documentElement).getPropertyValue('--k-actionable-negative-foreground').trim(),
-  )
-  expect(negative, '主题里有危险色 token').not.toBe('')
-  expect(await color('平仓'), '确认钮与取消钮颜色不同').not.toBe(await color('取消'))
+  // 危险色：字色等于 --k-actionable-negative-foreground 解析出来的颜色（variant 丢了会退回 primary，颜色对不上）。
+  const negative = await page.evaluate(() => {
+    const probe = document.createElement('div')
+    probe.style.color = 'var(--k-actionable-negative-foreground)'
+    document.body.append(probe)
+    const value = getComputedStyle(probe).color
+    probe.remove()
+    return value
+  })
+  await expect(action, '确认钮是危险色').toHaveCSS('color', negative)
   await action.click()
   await expect(dialog).toHaveCount(0)
   await expect(last).toHaveText('最后一次：平仓')
