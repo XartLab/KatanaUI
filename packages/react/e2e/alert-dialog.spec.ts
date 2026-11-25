@@ -29,6 +29,7 @@ test('打开时焦点在取消；点背板不关；Esc 关掉、不触发确认�
   await page.keyboard.press('Escape')
   await expect(dialog).toHaveCount(0)
   await expect(last, 'Esc 不按任何钮').toHaveText('最后一次：还没选')
+  await expect(area.getByTestId('alert-dialog-confirms'), 'Esc 不算确认').toHaveText('确认 0 次')
   await expect(trigger, '关后焦点回触发器').toBeFocused()
 })
 
@@ -36,12 +37,14 @@ test('取消只记取消；确认只记一次并关闭；确认钮是危险色',
   const area = await open(page)
   const trigger = area.getByRole('button', { name: '平仓', exact: true })
   const last = area.getByTestId('alert-dialog-last')
+  const confirms = area.getByTestId('alert-dialog-confirms')
   const dialog = page.getByRole('alertdialog', { name: '平掉 BTCUSDT 多单' })
 
   await trigger.click()
   await dialog.getByRole('button', { name: '取消' }).click()
   await expect(dialog).toHaveCount(0)
   await expect(last).toHaveText('最后一次：取消')
+  await expect(confirms, '取消不算确认').toHaveText('确认 0 次')
 
   await trigger.click()
   const action = dialog.getByRole('button', { name: '平仓' })
@@ -58,6 +61,7 @@ test('取消只记取消；确认只记一次并关闭；确认钮是危险色',
   await action.click()
   await expect(dialog).toHaveCount(0)
   await expect(last).toHaveText('最后一次：平仓')
+  await expect(confirms, '确认只触发一次').toHaveText('确认 1 次')
 })
 
 // Graphite 的浮层一律是玻璃边（theme/graphite.css，分组不靠边框），粗边只在 Console 下有。
