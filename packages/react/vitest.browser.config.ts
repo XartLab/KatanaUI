@@ -14,6 +14,8 @@ export default defineConfig({
     include: ['browser/**/*.browser.test.tsx'],
     // Vitest 默认不处理 CSS（换成空）；截图要真样式。
     css: true,
+    // 自建机忙时单条截图会超过默认 15 秒（#190：main 949e9867 的 dither-chart、strategy-report-panes）；CI 上放到 60 秒。
+    testTimeout: process.env.CI ? 60_000 : 15_000,
     reporters: ['default', new PixelgateReporter({ outDir: '.pixelgate-unit' })],
     browser: {
       enabled: true,
