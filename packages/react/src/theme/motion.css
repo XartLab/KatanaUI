@@ -104,10 +104,12 @@
 /* 对话框：升起（gentle），背板淡入。bare 的浮层（自带整套外观的命令搜索、指标库、品种搜索，popover 的 bare 变体）位置由调用方定，
    入场按 transform 的缩放与竖移（不碰 translate，居中靠它），起点与曲线用变量配：--k-in-scale（默认 0.97）、--k-in-y（默认 4px）、
    --k-in-dur / --k-in-ease（默认 gentle，弹层用 snappy 的调用方自己覆盖）。 */
-[data-slot='dialog-content']:not([data-bare])[data-state='open'] {
+[data-slot='dialog-content']:not([data-bare])[data-state='open'],
+[data-slot='alert-dialog-content'][data-state='open'] {
   animation: kc-dialog-in var(--dur-gentle) var(--ease-gentle) both;
 }
-[data-slot='dialog-content']:not([data-bare])[data-state='closed'] {
+[data-slot='dialog-content']:not([data-bare])[data-state='closed'],
+[data-slot='alert-dialog-content'][data-state='closed'] {
   animation: kc-dialog-out 120ms linear both;
 }
 [data-slot='dialog-content'][data-bare][data-state='open'],
@@ -118,10 +120,12 @@
 [data-slot='popover-content'][data-variant='bare'][data-state='closed'] {
   animation: kc-bare-out 120ms linear both;
 }
-[data-slot='dialog-overlay'][data-state='open'] {
+[data-slot='dialog-overlay'][data-state='open'],
+[data-slot='alert-dialog-overlay'][data-state='open'] {
   animation: kc-fade-in 120ms linear both;
 }
-[data-slot='dialog-overlay'][data-state='closed'] {
+[data-slot='dialog-overlay'][data-state='closed'],
+[data-slot='alert-dialog-overlay'][data-state='closed'] {
   animation: kc-fade-out 120ms linear both;
 }
 /* 折叠：高度从 0 长到内容高度。 */

@@ -28,6 +28,7 @@
 - **开对话框。** 点 `getByRole('button', { name: '对话框', exact: true })`。`getByRole('dialog', { name: '恢复默认布局' })` 可见，页上只有这一个 dialog，焦点在「取消」上。
 - **Esc 关对话框。** 按 Escape。dialog 数量为 0，焦点在「对话框」钮上。
 - **取消关对话框。** 再开，点框里的「取消」。dialog 数量为 0，焦点回到「对话框」钮。
+- **确认对话框（#238）。** 换到 `#/alert-dialog`，点「平仓」（`exact: true`）。`getByRole('alertdialog', { name: '平掉 BTCUSDT 多单' })` 可见，焦点在「取消」上；点页面左上角（背板）对话框还在；按 Escape 关掉，页上「最后一次：还没选」不变，焦点回「平仓」钮。再开、点框里的「平仓」：关掉，页上写「最后一次：平仓」，确认钮字色是 `--k-actionable-negative-foreground`。「删除自选列表」开的是 sm，宽 320。
 - **证据。** `$KUI drive overlays`：七步七张截图，`popover-open.aria.yml`、`dialog-open.aria.yml` 是打开时浮层与模态框的 ARIA 快照。
 
 ## Gotchas

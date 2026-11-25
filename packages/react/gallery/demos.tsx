@@ -84,7 +84,15 @@ import {
   SymbolMarkDemo,
   TagDemo,
 } from './pages/readouts.tsx'
-import { ContextMenuOpen, DialogOpen, DropdownMenuOpen, PopoverOpen, SelectOpen, TooltipOpen } from './pages/open.tsx'
+import {
+  AlertDialogOpen,
+  ContextMenuOpen,
+  DialogOpen,
+  DropdownMenuOpen,
+  PopoverOpen,
+  SelectOpen,
+  TooltipOpen,
+} from './pages/open.tsx'
 import {
   ChangeTextDemo,
   ConsensusBlockDemo,
@@ -239,7 +247,14 @@ import {
   StackDemo,
   SwitcherDemo,
 } from './pages/typesetting.tsx'
-import { ContextMenuDemo, DialogDemo, DropdownMenuDemo, PopoverDemo, TooltipDemo } from './pages/overlays.tsx'
+import {
+  AlertDialogDemo,
+  ContextMenuDemo,
+  DialogDemo,
+  DropdownMenuDemo,
+  PopoverDemo,
+  TooltipDemo,
+} from './pages/overlays.tsx'
 import {
   ButtonDemo,
   CheckboxDemo,
@@ -366,6 +381,7 @@ export const DEMOS: Readonly<Record<string, ComponentType>> = {
   tooltip: TooltipDemo,
   popover: PopoverDemo,
   dialog: DialogDemo,
+  'alert-dialog': AlertDialogDemo,
   'dropdown-menu': DropdownMenuDemo,
   'context-menu': ContextMenuDemo,
   tabs: TabsDemo,
@@ -691,6 +707,7 @@ export const OPEN_DEMOS: Readonly<Record<string, { Demo: ComponentType; height: 
   tooltip: { Demo: TooltipOpen, height: 80 },
   popover: { Demo: PopoverOpen, height: 160 },
   dialog: { Demo: DialogOpen, height: 260 },
+  'alert-dialog': { Demo: AlertDialogOpen, height: 260 },
   'dropdown-menu': { Demo: DropdownMenuOpen, height: 240 },
   'context-menu': { Demo: ContextMenuOpen, height: 220 },
   select: { Demo: SelectOpen, height: 160 },

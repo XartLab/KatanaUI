@@ -11,6 +11,15 @@ import {
   Alert,
   AlertDescription,
   AlertTitle,
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogBody,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
   Avatar,
   AvatarGroup,
   Breadcrumb,
@@ -314,6 +323,26 @@ for (const theme of ['graphite', 'console'] as const) {
               </DialogFooter>
             </DialogContent>
           </Dialog>
+        </OpenFrame>,
+      ))
+    test('alert-dialog', () =>
+      shot(
+        'alert-dialog',
+        <OpenFrame width={620} height={260}>
+          <AlertDialog open>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Close BTCUSDT long</AlertDialogTitle>
+              </AlertDialogHeader>
+              <AlertDialogBody>
+                <AlertDialogDescription>Sells 0.250 contracts at market. This cannot be undone.</AlertDialogDescription>
+              </AlertDialogBody>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction variant="danger">Close position</AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </OpenFrame>,
       ))
     test('dropdown-menu', () =>

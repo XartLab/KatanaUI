@@ -16,7 +16,11 @@ const overlays: GuidanceMap = {
   popover: {
     aliases: ['Popup', 'Dropdown panel', 'Floating panel', 'Flyout'],
     use: ['点开一小块可操作的内容（筛选项、设置）。', '菜单、选择器等需要同一块材质的浮层底座。'],
-    avoid: ['只读的补充说明用 tooltip 或 hover-card。', '要打断用户裁决用 dialog。', '一串命令用 dropdown-menu。'],
+    avoid: [
+      '只读的补充说明用 tooltip 或 hover-card。',
+      '要打断用户裁决用 dialog 或 alert-dialog。',
+      '一串命令用 dropdown-menu。',
+    ],
     a11y: [
       'Radix Popover，内容是 role=dialog，打开后焦点进入，关闭还给触发器。',
       '用 PopoverTitle 给它名字。',
@@ -24,13 +28,27 @@ const overlays: GuidanceMap = {
     ],
   },
   dialog: {
-    aliases: ['Modal', 'Alert dialog', 'Lightbox', 'Overlay'],
-    use: ['需要用户立刻裁决或填写的事（确认、改设置）。', '必须打断当前操作时。'],
-    avoid: ['不需要打断的内容用 popover 或 sheet。', '侧边详情用 sheet。', '只是通知用 toast 或 alert。'],
+    aliases: ['Modal', 'Lightbox', 'Overlay'],
+    use: ['需要用户填写或多步操作的事（改设置、填表）。', '必须打断当前操作时。'],
+    avoid: [
+      '不能撤回、只要选「做 / 不做」的确认用 alert-dialog。',
+      '不需要打断的内容用 popover 或 sheet。',
+      '只是通知用 toast 或 alert。',
+    ],
     a11y: [
       'Radix Dialog，role=dialog、aria-modal，名字取 DialogTitle，说明取 DialogDescription。',
       '焦点锁在里面，关闭后回到打开前的元素。',
       '右上角关闭钮的读屏名由 closeLabel 传。',
+    ],
+  },
+  'alert-dialog': {
+    aliases: ['Alert dialog', 'Confirm dialog', 'Confirmation', 'Destructive confirm'],
+    use: ['平仓、撤单、删除这类不能撤回的事，做之前要用户明确选一个。', '一句话说得清的用 size="sm"。'],
+    avoid: ['能撤回的直接做并给撤销。', '要填表、多步的用 dialog。', '按钮不要写「确定」「是」，写动作本身。'],
+    a11y: [
+      'Radix AlertDialog，role=alertdialog、aria-modal，名字取 AlertDialogTitle，说明取 AlertDialogDescription。',
+      '打开时焦点落在 AlertDialogCancel；点背板不关，只有取消、确认与 Esc 能关。',
+      'Esc 只触发 onOpenChange(false)，不点取消钮：取消要做的事写在 onOpenChange 里，不要只写在取消钮的 onClick 里。',
     ],
   },
   'dropdown-menu': {
@@ -56,7 +74,11 @@ const overlays: GuidanceMap = {
   sheet: {
     aliases: ['Drawer', 'Side panel', 'Slide-over', 'Offcanvas'],
     use: ['从边上滑出的详情、设置或筛选面板。', '需要看着主页面又要操作的内容。'],
-    avoid: ['要用户裁决的事用 dialog。', '一小块内容用 popover。', '常驻的侧栏用 side-nav 或 splitter。'],
+    avoid: [
+      '要用户裁决的事用 dialog 或 alert-dialog。',
+      '一小块内容用 popover。',
+      '常驻的侧栏用 side-nav 或 splitter。',
+    ],
     a11y: [
       'Radix Dialog，role=dialog，名字取 SheetTitle，说明取 SheetDescription，必须带。',
       '焦点锁在里面，关闭回到触发器。',
