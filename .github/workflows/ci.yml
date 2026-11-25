@@ -58,6 +58,8 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm exec vp test run -c vitest.browser.config.ts
         working-directory: packages/react
+      # 红了上传 runner 渲染的实际截图（current/）、差异图（diff/）与报告：基线只能收这里的图，不收沙箱的（见文档站「开发接入 → 视觉回归」）。
+      # 接受：gh run download <run> -n pixelgate-unit -D /tmp/shots，再在 packages/react 跑 pnpm exec pixelgate approve --out-dir .pixelgate-unit --from /tmp/shots。
       - if: failure()
         uses: actions/upload-artifact@v7
         with:
