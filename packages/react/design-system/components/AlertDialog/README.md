@@ -25,11 +25,25 @@ variant：primary（默认）、danger（不能撤回的）、default。画成 B
 
 | 属性 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
+| `asChild` | `boolean` | — | Render the child element itself (a link, a menu trigger) instead of wrapping it in a button. |
+| `size` | `ButtonSize \| 'default' \| null` | — | Height: sm is 26px, md (default) is 30px, icon is a 28px square. |
+| `effect` | `ButtonEffect` | — | Optional hover effect from SmoothUI: magnetic leans toward the pointer, dot-morph stretches a leading dot into a bar, clip-corners cuts the corners wider. |
+| `magnetStrength` | `number` | — | How far a magnetic button leans: the fraction of the pointer offset it follows (0 to 1). |
+| `magnetRadius` | `number` | — | Distance in px from the button center within which a magnetic button reacts. |
 | `variant` | `'primary' \| 'danger' \| 'default'` | `'primary'` | Button style: primary by default, danger for an action that cannot be undone. |
 
 ### AlertDialogCancel
 
 画成 Button；打开时焦点在它上面。Esc 关掉但不点它，取消要做的事写在 AlertDialog 的 onOpenChange 里。
+
+| 属性 | 类型 | 默认 | 说明 |
+| --- | --- | --- | --- |
+| `variant` | `"link" \| "danger" \| "default" \| "primary" \| "ghost" \| "icon"` | — | Visual style: primary is the solid light button, danger uses the danger text color, icon is a borderless 28px icon button. |
+| `size` | `ButtonSize \| 'default' \| null` | — | Height: sm is 26px, md (default) is 30px, icon is a 28px square. |
+| `asChild` | `boolean` | — | Render the child element itself (a link, a menu trigger) instead of wrapping it in a button. |
+| `effect` | `ButtonEffect` | — | Optional hover effect from SmoothUI: magnetic leans toward the pointer, dot-morph stretches a leading dot into a bar, clip-corners cuts the corners wider. |
+| `magnetStrength` | `number` | — | How far a magnetic button leans: the fraction of the pointer offset it follows (0 to 1). |
+| `magnetRadius` | `number` | — | Distance in px from the button center within which a magnetic button reacts. |
 
 ### AlertDialogHeader / AlertDialogBody / AlertDialogFooter
 
