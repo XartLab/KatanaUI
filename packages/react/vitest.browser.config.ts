@@ -16,9 +16,9 @@ export default defineConfig({
     // Vitest 默认不处理 CSS（换成空）；截图要真样式。
     css: true,
     // 自建机上整套 13 个文件一起开页，WebGL 件（SwiftShader 软渲）把 CPU 占满，别的页「等元素稳定」超时（#219，main 的 run 45412157714 有 5 个超时）：
-    // 同时最多 4 页；整个测试给 30s、等稳定的截图给 10s（默认 15s 与 5s），宁可慢一点不要红。
+    // 同时最多 4 页；CI 上整条测试给 60s（#190：main 949e9867 的 dither-chart、strategy-report-panes 超 15s），本地 30s。
     maxWorkers: Math.min(4, availableParallelism()),
-    testTimeout: 30_000,
+    testTimeout: process.env.CI ? 60_000 : 30_000,
     reporters: ['default', new PixelgateReporter({ outDir: '.pixelgate-unit' })],
     browser: {
       enabled: true,
