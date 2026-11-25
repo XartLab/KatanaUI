@@ -125,7 +125,7 @@ export function DistributionBars({
             data-tone={bin.tone}
           >
             <span className="k-dist-count">{bin.count === null ? '—' : formatCount(bin.count)}</span>
-            <i className="k-dist-bar" style={{ height: distributionBarHeight(bin.count, max, height) }} />
+            <i className="k-dist-fill" style={{ height: distributionBarHeight(bin.count, max, height) }} />
           </div>
         ))}
       </div>
