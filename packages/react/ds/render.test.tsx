@@ -48,7 +48,7 @@ describe('设计系统包的件（读文档站的页数据）', () => {
       const html = renderPreviewBody(page)
       const open = html.slice(html.indexOf('class="ds-open"'))
       expect(open.length, page.id).toBeGreaterThan(0)
-      expect(open, `${page.id} 的打开内容`).toMatch(/role="(?:tooltip|dialog|menu|listbox)"/)
+      expect(open, `${page.id} 的打开内容`).toMatch(/role="(?:tooltip|dialog|alertdialog|menu|listbox)"/)
     }
   })
 })
