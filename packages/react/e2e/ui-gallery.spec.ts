@@ -3600,7 +3600,11 @@ for (const theme of THEMES) {
       await expect(area.locator('[data-gallery-visible]')).toHaveText('显示中')
       const shapes = [...new Set(await lid)]
       expect(shapes[0], '起点是合上的一条线').toBe('M2 12C6 12 18 12 22 12C18 12 6 12 2 12Z')
-      expect(shapes.at(-1), '终点是睁开的杏仁').toBe('M2 12C6 4 18 4 22 12C18 20 6 20 2 12Z')
+      // 终点按状态等，不看 700ms 采样窗的最后一帧：自建机忙时过渡走不完（#190，2026-11-24 run 45399485013）。
+      await expect(area.locator('[data-slot="password-input-eye"] path'), '终点是睁开的杏仁').toHaveAttribute(
+        'd',
+        'M2 12C6 4 18 4 22 12C18 20 6 20 2 12Z',
+      )
       expect(shapes.length, '中间有过渡帧').toBeGreaterThan(3)
       await toggle.click()
       await expect(input).toHaveAttribute('type', 'password')
