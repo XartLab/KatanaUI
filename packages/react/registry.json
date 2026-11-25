@@ -9,7 +9,7 @@
       "title": "Style",
       "description": "设计 token（Console 与 Graphite 两个主题、红涨绿跌切换）、Tailwind v4 主题与动效 CSS。ui.css 最后引。",
       "dependencies": [
-        "@katana-ui/tokens@0.3.0",
+        "@katana-ui/tokens@0.4.0",
         "tailwindcss@4.3.5"
       ],
       "files": [
@@ -1037,7 +1037,7 @@
       "title": "Motion",
       "description": "三条弹簧参数（snappy、gentle、settle），给 motion/react 用。",
       "dependencies": [
-        "@katana-ui/tokens@0.3.0"
+        "@katana-ui/tokens@0.4.0"
       ],
       "files": [
         {
@@ -5022,7 +5022,7 @@
       "title": "Symbol Mark",
       "description": "品种名前的小圆标（学 TradingView 列表里企业 / 币种标志）：有图显示圆形裁切的图片，加载失败退回字母；没有图就是字母圆标，底 bg-400、字 ink-200，不按代码随机上色。尺寸两档：sm 18（行高 28 的一行，默认）、md 28（卡片）；热力图格子这类要别的直径的仍可传数。字号跟直径走（28 以上 16，其余 12），在 css 里按 data-size 取字号 token，不内联。",
       "dependencies": [
-        "@katana-ui/logos@0.2.0"
+        "@katana-ui/logos@0.4.0"
       ],
       "registryDependencies": [
         "@katana/cn"

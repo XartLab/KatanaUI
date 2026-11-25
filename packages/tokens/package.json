@@ -1,6 +1,6 @@
 {
   "name": "@katana-ui/tokens",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "private": true,
   "description": "Katana UI 的设计 token：三层（原值、调色、语义特征）、Console 与 Graphite 两套调色、密度三档、三条弹簧；源头是 JSON，生成 CSS 变量。不依赖任何应用与框架。",
   "license": "MIT",
