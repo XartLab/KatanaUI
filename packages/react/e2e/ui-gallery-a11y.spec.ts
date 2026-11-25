@@ -97,6 +97,8 @@ for (const theme of THEMES) {
 for (const theme of THEMES)
   for (const id of ['input', 'color', 'data-grid'])
     base(`文档站外壳 ${id}（${theme}）：整页 axe 无违规`, async ({ page }) => {
+      // 整页扫，data-grid 页在自建机忙时超过 30 秒（#190，run 45399485013）。
+      base.slow()
       await page.goto(`/?theme=${theme}#/${id}`)
       await page.locator('.gal-page-body').waitFor()
       await settle(page)

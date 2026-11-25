@@ -50,6 +50,7 @@ import {
 } from '../src/index'
 import { CopyToastStates } from '../gallery/pages/undo-copy.tsx'
 import { mount } from './render.tsx'
+import { steady } from './steady.ts'
 
 const items: Record<string, React.ReactNode> = {
   'ai-status': <AiStatusUsage />,
@@ -197,6 +198,7 @@ for (const theme of ['graphite', 'console'] as const) {
           theme,
         )
         await new Promise((r) => setTimeout(r, settle[name] ?? 250)) // let measuring / enter transitions finish
+        await steady()
         await expect(page.getByTestId('frame')).toMatchScreenshot(`${theme}-katana-${name}`)
       })
     }
