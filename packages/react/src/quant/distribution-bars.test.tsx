@@ -29,8 +29,8 @@ describe('DistributionBars', () => {
     const html = renderToStaticMarkup(<DistributionBars bins={BINS} label="dist" />)
     expect(html.match(/data-slot="distribution-bin"/g)).toHaveLength(7)
     expect(html).toContain('data-key="b2" data-tone="down"')
-    expect(html).toContain('<span class="k-dist-count">1,200</span><i class="k-dist-bar" style="height:80px"></i>')
-    expect(html).toContain('<i class="k-dist-bar" style="height:40px"></i>')
+    expect(html).toContain('<span class="k-dist-count">1,200</span><i class="k-dist-fill" style="height:80px"></i>')
+    expect(html).toContain('<i class="k-dist-fill" style="height:40px"></i>')
     expect(html).toContain('<span class="k-dist-label">-3</span>')
     expect(html).toContain('aria-label="dist"')
   })
@@ -53,7 +53,7 @@ describe('DistributionBars', () => {
     const empty = renderToStaticMarkup(<DistributionBars bins={[]} label="d" empty="没有数据" />)
     expect(empty).toContain('data-empty="true"')
     expect(empty).toContain('没有数据')
-    expect(empty).not.toContain('k-dist-bar')
+    expect(empty).not.toContain('k-dist-fill')
     const allNull = renderToStaticMarkup(
       <DistributionBars bins={[{ key: 'x', label: 'x', count: null, tone: 'up' }]} label="d" />,
     )
@@ -67,7 +67,7 @@ describe('DistributionBars', () => {
         label="d"
       />,
     )
-    expect(some).toContain('<span class="k-dist-count">—</span><i class="k-dist-bar" style="height:0"></i>')
+    expect(some).toContain('<span class="k-dist-count">—</span><i class="k-dist-fill" style="height:0"></i>')
   })
 
   it('formatCount 换家数的写法', () => {

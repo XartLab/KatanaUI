@@ -35,19 +35,19 @@
   line-height: 16px;
   white-space: nowrap;
 }
-.k-dist-bar {
+.k-dist-fill {
   display: block;
   width: 100%;
   background: var(--ink-400);
   transition: height var(--dur-snappy) var(--ease-snappy);
 }
-.k-dist-col[data-tone='up'] .k-dist-bar {
+.k-dist-col[data-tone='up'] .k-dist-fill {
   background: var(--pnl-up);
 }
-.k-dist-col[data-tone='down'] .k-dist-bar {
+.k-dist-col[data-tone='down'] .k-dist-fill {
   background: var(--pnl-down);
 }
-.k-dist-col[data-tone='accent'] .k-dist-bar {
+.k-dist-col[data-tone='accent'] .k-dist-fill {
   background: var(--ink-100);
 }
 .k-dist-label {

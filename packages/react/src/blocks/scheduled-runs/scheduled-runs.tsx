@@ -224,14 +224,14 @@ export function ScheduledRuns({
     const isLocked = locked(piece)
     const isOpen = open.includes(piece.id)
     return (
-      <li key={piece.id} className="k-sr-item">
+      <li key={piece.id} className="k-sched-item">
         <button
           type="button"
           ref={(node) => {
             if (node) cards.current.set(piece.id, node)
             else cards.current.delete(piece.id)
           }}
-          className="k-sr-card"
+          className="k-sched-card"
           data-slot="schedule-card"
           data-id={piece.id}
           data-kind={piece.kind}
@@ -250,14 +250,14 @@ export function ScheduledRuns({
           }
           onKeyDown={(event) => onCardKey(event, piece)}
         >
-          <span className="k-sr-card-title">{task.title}</span>
-          <span className="k-sr-card-meta">
+          <span className="k-sched-card-title">{task.title}</span>
+          <span className="k-sched-card-meta">
             {task.owner !== undefined && <span>{task.owner}</span>}
-            <span className="k-sr-usage">{formatUsage(piece.usage)}</span>
+            <span className="k-sched-usage">{formatUsage(piece.usage)}</span>
             {siblings.length > 1 && <span>{labels.piece(siblings.indexOf(piece) + 1, siblings.length)}</span>}
             {isLocked && <span>{labels.locked}</span>}
           </span>
-          {isOpen && task.detail !== undefined && <span className="k-sr-card-detail">{task.detail}</span>}
+          {isOpen && task.detail !== undefined && <span className="k-sched-card-detail">{task.detail}</span>}
         </button>
       </li>
     )
@@ -265,42 +265,42 @@ export function ScheduledRuns({
 
   const stack = pieces.filter((piece) => piece.slot === null)
   return (
-    <section className={cn('k-sr', className)} data-slot="scheduled-runs" data-mode={mode}>
-      <header className="k-sr-head">
-        <h4 className="k-sr-title">{title}</h4>
-        {note !== undefined && <span className="k-sr-note">{note}</span>}
+    <section className={cn('k-sched', className)} data-slot="scheduled-runs" data-mode={mode}>
+      <header className="k-sched-head">
+        <h4 className="k-sched-title">{title}</h4>
+        {note !== undefined && <span className="k-sched-note">{note}</span>}
         <ToggleGroup
           size="sm"
           aria-label={labels.mode}
           value={mode}
           onValueChange={(next) => setMode(next as 'auto' | 'manual')}
-          className="k-sr-mode"
+          className="k-sched-mode"
         >
           <ToggleGroupItem value="auto">{labels.auto}</ToggleGroupItem>
           <ToggleGroupItem value="manual">{labels.manual}</ToggleGroupItem>
         </ToggleGroup>
       </header>
-      <div className="k-sr-body">
-        <section className="k-sr-stack" aria-label={labels.stack} data-slot="schedule-stack">
-          <h5 className="k-sr-stack-title">
+      <div className="k-sched-body">
+        <section className="k-sched-stack" aria-label={labels.stack} data-slot="schedule-stack">
+          <h5 className="k-sched-stack-title">
             {labels.stack} · {stack.length}
           </h5>
-          {stack.length === 0 ? <p className="k-sr-empty">{labels.stackEmpty}</p> : <ul>{stack.map(card)}</ul>}
+          {stack.length === 0 ? <p className="k-sched-empty">{labels.stackEmpty}</p> : <ul>{stack.map(card)}</ul>}
         </section>
         <div
-          className="k-sr-week"
+          className="k-sched-week"
           role="group"
           aria-label={labels.week}
-          style={{ '--k-sr-days': days.length, '--k-sr-sessions': sessions.length } as CSSProperties}
+          style={{ '--k-sched-days': days.length, '--k-sched-sessions': sessions.length } as CSSProperties}
         >
-          <span className="k-sr-corner" aria-hidden="true" />
+          <span className="k-sched-corner" aria-hidden="true" />
           {days.map((day, d) => (
-            <span key={day} className="k-sr-day" aria-hidden="true" style={{ gridColumn: d + 2 }}>
+            <span key={day} className="k-sched-day" aria-hidden="true" style={{ gridColumn: d + 2 }}>
               {day}
             </span>
           ))}
           {sessions.map((session, s) => (
-            <span key={session} className="k-sr-session" aria-hidden="true" style={{ gridRow: s + 2 }}>
+            <span key={session} className="k-sched-session" aria-hidden="true" style={{ gridRow: s + 2 }}>
               {session}
             </span>
           ))}
@@ -316,7 +316,7 @@ export function ScheduledRuns({
                   key={`${d}:${s}`}
                   role="group"
                   aria-label={`${cellName(slot)} · ${formatUsage(used)}`}
-                  className="k-sr-cell"
+                  className="k-sched-cell"
                   data-slot="schedule-cell"
                   data-cell={`${d}:${s}`}
                   data-past={isPast(slot, sessions.length, now) ? '' : undefined}
@@ -331,7 +331,7 @@ export function ScheduledRuns({
                   onDrop={(event) => onCellDrop(event, slot)}
                 >
                   <i
-                    className="k-sr-fill"
+                    className="k-sched-fill"
                     aria-hidden="true"
                     style={{ width: `${Math.min(100, (used / limit) * 100)}%` }}
                   />
@@ -342,10 +342,10 @@ export function ScheduledRuns({
           )}
         </div>
       </div>
-      <p id={hintId} className="k-sr-hint">
+      <p id={hintId} className="k-sched-hint">
         {labels.hint}
       </p>
-      <p className="k-sr-live" aria-live="polite" data-slot="schedule-live">
+      <p className="k-sched-live" aria-live="polite" data-slot="schedule-live">
         {said}
       </p>
     </section>
