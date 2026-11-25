@@ -2,6 +2,16 @@
 import { Info } from 'lucide-react'
 import { useState } from 'react'
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogBody,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
   Button,
   ContextMenu,
   ContextMenuCheckboxItem,
@@ -112,6 +122,54 @@ export function DialogDemo() {
         </DialogContent>
       </Dialog>
       <TriggerlessDialog />
+    </Row>
+  )
+}
+
+export function AlertDialogDemo() {
+  // 最后按了哪个钮：e2e 断言「取消、Esc 不触发确认，确认只触发一次」。
+  const [last, setLast] = useState('还没选')
+  return (
+    <Row>
+      <AlertDialog>
+        <AlertDialogTrigger asChild>
+          <Button>平仓</Button>
+        </AlertDialogTrigger>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>平掉 BTCUSDT 多单</AlertDialogTitle>
+          </AlertDialogHeader>
+          <AlertDialogBody>
+            <AlertDialogDescription>按市价卖出 0.250 张，成交后不能撤回。</AlertDialogDescription>
+          </AlertDialogBody>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setLast('取消')}>取消</AlertDialogCancel>
+            <AlertDialogAction variant="danger" onClick={() => setLast('平仓')}>
+              平仓
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+      <AlertDialog>
+        <AlertDialogTrigger asChild>
+          <Button>删除自选列表</Button>
+        </AlertDialogTrigger>
+        <AlertDialogContent size="sm">
+          <AlertDialogHeader>
+            <AlertDialogTitle>删除「加密主流」</AlertDialogTitle>
+          </AlertDialogHeader>
+          <AlertDialogBody>
+            <AlertDialogDescription>列表里的 12 个品种一起删掉。</AlertDialogDescription>
+          </AlertDialogBody>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setLast('取消')}>取消</AlertDialogCancel>
+            <AlertDialogAction variant="danger" onClick={() => setLast('删除')}>
+              删除
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+      <span data-testid="alert-dialog-last">最后一次：{last}</span>
     </Row>
   )
 }

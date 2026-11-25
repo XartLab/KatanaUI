@@ -4083,6 +4083,88 @@
       "source": "src/primitives/alert.tsx",
       "props": []
     },
+    "AlertDialog": {
+      "kind": "component",
+      "source": "src/primitives/alert-dialog.tsx",
+      "props": []
+    },
+    "AlertDialogAction": {
+      "kind": "component",
+      "source": "src/primitives/alert-dialog.tsx",
+      "props": [
+        {
+          "name": "variant",
+          "type": "'primary' | 'danger' | 'default'",
+          "required": false,
+          "default": "'primary'",
+          "description": "Button style: primary by default, danger for an action that cannot be undone."
+        }
+      ]
+    },
+    "AlertDialogBody": {
+      "kind": "component",
+      "source": "src/primitives/alert-dialog.tsx",
+      "props": []
+    },
+    "AlertDialogCancel": {
+      "kind": "component",
+      "source": "src/primitives/alert-dialog.tsx",
+      "props": []
+    },
+    "AlertDialogContent": {
+      "kind": "component",
+      "source": "src/primitives/alert-dialog.tsx",
+      "props": [
+        {
+          "name": "size",
+          "type": "'default' | 'sm'",
+          "required": false,
+          "default": "'default'",
+          "description": "Width: default is 560px like Dialog, sm is 320px for a one-line confirmation."
+        },
+        {
+          "name": "overlayClassName",
+          "type": "string",
+          "required": false,
+          "description": "Extra class name on the backdrop."
+        }
+      ]
+    },
+    "AlertDialogDescription": {
+      "kind": "component",
+      "source": "src/primitives/alert-dialog.tsx",
+      "props": []
+    },
+    "AlertDialogFooter": {
+      "kind": "component",
+      "source": "src/primitives/alert-dialog.tsx",
+      "props": []
+    },
+    "AlertDialogHeader": {
+      "kind": "component",
+      "source": "src/primitives/alert-dialog.tsx",
+      "props": []
+    },
+    "AlertDialogOverlay": {
+      "kind": "component",
+      "source": "src/primitives/alert-dialog.tsx",
+      "props": []
+    },
+    "AlertDialogPortal": {
+      "kind": "component",
+      "source": "src/primitives/alert-dialog.tsx",
+      "props": []
+    },
+    "AlertDialogTitle": {
+      "kind": "component",
+      "source": "src/primitives/alert-dialog.tsx",
+      "props": []
+    },
+    "AlertDialogTrigger": {
+      "kind": "component",
+      "source": "src/primitives/alert-dialog.tsx",
+      "props": []
+    },
     "AlertTitle": {
       "kind": "component",
       "source": "src/primitives/alert.tsx",

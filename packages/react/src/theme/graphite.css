@@ -29,7 +29,8 @@
     [data-slot='menubar-content'],
     [data-slot='select-content'],
     [data-slot='hover-card-content'],
-    [data-slot='dialog-content']
+    [data-slot='dialog-content'],
+    [data-slot='alert-dialog-content']
   ) {
   border-color: var(--glass-edge);
   border-radius: var(--radius-overlay);

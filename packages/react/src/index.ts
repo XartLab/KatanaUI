@@ -18,6 +18,20 @@ export { Switcher, type SwitcherProps } from './layout/switcher.tsx'
 
 export { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from './primitives/accordion.tsx'
 export { Alert, AlertDescription, AlertTitle, alertVariants } from './primitives/alert.tsx'
+export {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogBody,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogOverlay,
+  AlertDialogPortal,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from './primitives/alert-dialog.tsx'
 export { Button, buttonVariants, type ButtonSize } from './primitives/button.tsx'
 export {
   Card,
