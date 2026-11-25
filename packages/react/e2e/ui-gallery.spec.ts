@@ -3568,6 +3568,31 @@ for (const theme of THEMES) {
     })
 
     // —— #1861：学 rare-ui 的交互、本仓库重写的六件。动效用逐帧采样验：点之前在页面里开一个 rAF 采样，点完取回每一帧读到的值，断言中途的样子（不是起点与终点）。
+    test('Tabs：选中页签悬停时字色不变（悬停提亮只给未选中的，否则对比度比静止态低），未选中的悬停才提亮', async ({
+      page,
+    }) => {
+      await open(page, theme, 'tabs')
+      const list = section(page, 'tabs').locator('[data-slot="tabs-list"]').first()
+      const active = list.locator('[data-slot="tabs-trigger"][data-state="active"]')
+      const inactive = list.locator('[data-slot="tabs-trigger"][data-state="inactive"]').first()
+      // 字色有 200ms 的过渡：悬停后先等页面上的动画全部 finished，再量，免得读到过渡起点而空过。
+      const settled = (hovered: ReturnType<typeof list.locator>) =>
+        hovered.evaluate(async () => {
+          await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)))
+          await Promise.all(document.getAnimations().map((animation) => animation.finished.catch(() => undefined)))
+        })
+      await page.mouse.move(0, 0)
+      await settled(active)
+      await expect(inactive).toHaveCSS('color', await token(page, '--k-content-body-foreground'))
+      await active.hover()
+      await settled(active)
+      await expect(active).toHaveCSS('color', await token(page, '--seg-on-ink'))
+      // 对照：未选中的悬停变成主文字色（悬停提亮没有整个失效）。
+      await inactive.hover()
+      await settled(inactive)
+      await expect(inactive).toHaveCSS('color', await token(page, '--k-content-primary-foreground'))
+    })
+
     test('密钥输入：默认遮住；点眼睛显示，输入框不丢焦点与选区，眼睑中途真的在睁开；再点遮回去；禁用时按钮不可点', async ({
       page,
     }) => {
@@ -3600,7 +3625,13 @@ for (const theme of THEMES) {
       await expect(area.locator('[data-gallery-visible]')).toHaveText('显示中')
       const shapes = [...new Set(await lid)]
       expect(shapes[0], '起点是合上的一条线').toBe('M2 12C6 12 18 12 22 12C18 12 6 12 2 12Z')
-      expect(shapes.at(-1), '终点是睁开的杏仁').toBe('M2 12C6 4 18 4 22 12C18 20 6 20 2 12Z')
+      // 终点另等：采样 700ms 一到就收，自建机忙时弹簧还差零点零几没落定（run 45399485013 读到 4.0079），不能拿采样的最后一帧当终点；轮询只给 1500ms（采样 700ms 加约 800ms 容差），慢到几秒才落定的动画仍然红。
+      await expect
+        .poll(() => area.locator('[data-slot="password-input-eye"] path').first().getAttribute('d'), {
+          message: '终点是睁开的杏仁',
+          timeout: 1500,
+        })
+        .toBe('M2 12C6 4 18 4 22 12C18 20 6 20 2 12Z')
       expect(shapes.length, '中间有过渡帧').toBeGreaterThan(3)
       await toggle.click()
       await expect(input).toHaveAttribute('type', 'password')

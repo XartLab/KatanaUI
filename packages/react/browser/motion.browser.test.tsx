@@ -13,7 +13,6 @@ import { KineticTypeScrollUsage } from '../gallery/usage/KineticTypeScrollUsage.
 import { TypewriterTextUsage } from '../gallery/usage/TypewriterTextUsage.tsx'
 import { ScrambleTextUsage } from '../gallery/usage/ScrambleTextUsage.tsx'
 import { RansomNoteUsage } from '../gallery/usage/RansomNoteUsage.tsx'
-import { WordBuildUsage } from '../gallery/usage/WordBuildUsage.tsx'
 import { TextMorphUsage } from '../gallery/usage/TextMorphUsage.tsx'
 import { SdfBlobTransitionUsage } from '../gallery/usage/SdfBlobTransitionUsage.tsx'
 import { ChromaBlurTransitionUsage } from '../gallery/usage/ChromaBlurTransitionUsage.tsx'
@@ -40,9 +39,10 @@ import { CursorImageTrailUsage } from '../gallery/usage/CursorImageTrailUsage.ts
 import { SvgClipMaskUsage } from '../gallery/usage/SvgClipMaskUsage.tsx'
 import { ProgressiveBlurUsage } from '../gallery/usage/ProgressiveBlurUsage.tsx'
 import { MorphIconUsage } from '../gallery/usage/MorphIconUsage.tsx'
-import { AsciiRender, DitherImage, GooeyPopover, Orb, ScrollImageReveal } from '../src/index.ts'
+import { AsciiRender, DitherImage, GooeyPopover, Orb, ScrollImageReveal, WordBuild } from '../src/index.ts'
 import { MessageCircle } from 'lucide-react'
 import { mount } from './render.tsx'
+import { settled, waitUntil } from './settle.ts'
 
 // A small inline picture (gradient and two discs) so image-driven pieces have something to draw; the usage demos use a 1px gif.
 const PICTURE =
@@ -60,6 +60,26 @@ beforeAll(async () => {
 
 const settle = () => new Promise((r) => setTimeout(r, 800))
 
+// 靠计时器一点点长出来的件：等到终态再截，不赌「800ms 够不够」（#219）。
+const ready: Record<string, () => boolean> = {
+  // 一个字一个字打：打完 data-typing 才消失。
+  'typewriter-text': () => !document.querySelector('[data-slot="typewriter-text"][data-typing]'),
+  // 一个词一个词搭：四个词都到了，且每个词都落定（前面的词会被 layout 动画推开，所以看全部）。motion 的 JS 补间写 inline style，
+  // 落定后 opacity 为 1、transform 为 none；它不在 Web Animations 里，settled() 看不到，也不靠固定睡眠。
+  // 演示件有两句、搭完会退场换下一句，永远没有静止的时刻，所以截图只放第一句（单句不退场）；第二句走同一条代码路径，这里不单独守。
+  'word-build': () => {
+    const root = document.querySelector('[data-slot="word-build"]')
+    const words = [...(root?.children ?? [])] as HTMLElement[]
+    return (
+      root?.getAttribute('data-words') === '4' &&
+      words.length === 4 &&
+      words.every((word) => word.style.opacity === '1' && word.style.transform === 'none')
+    )
+  },
+}
+// 光标每秒明灭、永远循环（CSS，不跟 reduced-motion）：停在第 0 刻（亮）。
+const frozen = new Set(['typewriter-text'])
+
 for (const theme of ['graphite', 'console'] as const) {
   const shot = async (name: string, node: React.ReactNode, open = false) => {
     await mount(<div style={{ display: 'flex', flexDirection: 'column', gap: 12, width: 420 }}>{node}</div>, theme)
@@ -67,6 +87,9 @@ for (const theme of ['graphite', 'console'] as const) {
       document.querySelector<HTMLElement>('[data-testid="frame"] [style*="overflow-y"]')!.scrollTop = 100
     if (open) document.querySelector<HTMLElement>('[data-testid="frame"] button')?.click()
     await settle()
+    const done = ready[name]
+    if (done) await waitUntil(done, name)
+    await settled({ freezeInfinite: frozen.has(name) })
     await expect(page.getByTestId('frame')).toMatchScreenshot(`${theme}-${name}`)
   }
   describe(theme, () => {
@@ -82,7 +105,7 @@ for (const theme of ['graphite', 'console'] as const) {
     test('typewriter-text', () => shot('typewriter-text', <TypewriterTextUsage />))
     test('scramble-text', () => shot('scramble-text', <ScrambleTextUsage />))
     test('ransom-note', () => shot('ransom-note', <RansomNoteUsage />))
-    test('word-build', () => shot('word-build', <WordBuildUsage />))
+    test('word-build', () => shot('word-build', <WordBuild phrases={['Fed holds rates steady']} />))
     test('text-morph', () => shot('text-morph', <TextMorphUsage />))
     test('sdf-blob-transition', () => shot('sdf-blob-transition', <SdfBlobTransitionUsage />))
     test('chroma-blur-transition', () => shot('chroma-blur-transition', <ChromaBlurTransitionUsage />))

@@ -17,6 +17,7 @@ import { AiTaskListUsage } from '../gallery/usage/AiTaskListUsage.tsx'
 import { AiToolCallUsage } from '../gallery/usage/AiToolCallUsage.tsx'
 import { MarkdownUsage } from '../gallery/usage/MarkdownUsage.tsx'
 import { mount } from './render.tsx'
+import { settled } from './settle.ts'
 
 const settle = () => new Promise((r) => setTimeout(r, 700))
 
@@ -57,6 +58,7 @@ for (const theme of ['graphite', 'console'] as const) {
     act?.()
     await settle()
     await steady()
+    await settled()
     await expect(page.getByTestId('frame')).toMatchScreenshot(`${theme}-${name}`)
   }
   describe(theme, () => {

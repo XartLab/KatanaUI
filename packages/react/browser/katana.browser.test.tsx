@@ -50,6 +50,7 @@ import {
 } from '../src/index'
 import { CopyToastStates } from '../gallery/pages/undo-copy.tsx'
 import { mount } from './render.tsx'
+import { settled, waitUntil, withFakeIntervals, withFrameClock, type FrameClock } from './settle.ts'
 
 const items: Record<string, React.ReactNode> = {
   'ai-status': <AiStatusUsage />,
@@ -172,31 +173,67 @@ const items: Record<string, React.ReactNode> = {
 const settle: Record<string, number> = { 'page-preloader': 1500, 'measured-skeleton-loading': 900, loading: 1000 }
 
 // Freeze the clock (Date only, so timers still run): today/relative-time cells must not drift between days.
+const NOW = new Date('2026-11-17T09:00:00')
 beforeAll(() => {
   vi.useFakeTimers({ toFake: ['Date'] })
-  vi.setSystemTime(new Date('2026-11-17T09:00:00'))
+  vi.setSystemTime(NOW)
 })
 afterAll(() => vi.useRealTimers())
+
+// 件自己一直在动、永远没有「画完」的时刻：用确定的时钟把它走到固定的一步，再截（#219）。
+// 终端回放按 40ms 一跳数跳数（不是按时间），脚本放完才是终态：等可见区（<pre>，sr-only 里一开始就有整段文字）出现最后一行。
+const ready: Record<string, () => boolean> = {
+  'mac-terminal': () =>
+    document.querySelector('[data-slot="mac-terminal"] pre')?.textContent?.includes('sharpe 1.42') ?? false,
+}
+// 画布按 requestAnimationFrame 与 performance.now 画的：虚拟时钟走固定的帧数后不再有帧（withFrameClock，出错也会恢复真时钟）。
+// matrix-orb 永远在动，走 60 帧（1 秒）；dither-chart 的 900ms 画入是有限的，等第一帧排上（IntersectionObserver 触发）后走到没有帧为止，即演示件的终态。
+const framed: Record<string, (clock: FrameClock) => Promise<void> | void> = {
+  'matrix-orb': (clock) => clock.step(60),
+  'dither-chart': async (clock) => {
+    await waitUntil(() => clock.pending() > 0, 'dither-chart first frame')
+    clock.runToIdle()
+  },
+}
+// 灯随 setInterval 变（SwitchboardCard，每 200ms 一跳，种子固定）：假的 setInterval 走 8 跳（1.6s），之后不再跳（withFakeIntervals，出错也会换回只假 Date）。
+const SWITCHBOARD_TICKS = 8
 
 for (const theme of ['graphite', 'console'] as const) {
   describe(theme, () => {
     for (const [name, node] of Object.entries(items)) {
       test(name, async () => {
         await page.viewport(960, 1800)
-        await mount(
-          <div
-            style={{
-              width: 720,
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 8,
-            }}
-          >
-            {node}
-          </div>,
-          theme,
-        )
-        await new Promise((r) => setTimeout(r, settle[name] ?? 250)) // let measuring / enter transitions finish
+        const render = async () => {
+          await mount(
+            <div
+              style={{
+                width: 720,
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 8,
+              }}
+            >
+              {node}
+            </div>,
+            theme,
+          )
+          await new Promise((r) => setTimeout(r, settle[name] ?? 250)) // let measuring / enter transitions finish
+        }
+        const drive = framed[name]
+        if (drive)
+          await withFrameClock(async (clock) => {
+            await render()
+            await drive(clock)
+          })
+        else if (name === 'switchboard-card')
+          await withFakeIntervals(NOW, async (advance) => {
+            await render()
+            advance(200 * SWITCHBOARD_TICKS)
+          })
+        else await render()
+        const done = ready[name]
+        if (done) await waitUntil(done, name)
+        await settled()
         await expect(page.getByTestId('frame')).toMatchScreenshot(`${theme}-katana-${name}`)
       })
     }

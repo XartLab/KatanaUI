@@ -4695,6 +4695,12 @@
   color: var(--k-content-primary-foreground);
 }
 
+@media (hover: hover) {
+  .enabled\:data-\[state\=inactive\]\:hover\:text-\(color\:--k-content-primary-foreground\):enabled[data-state="inactive"]:hover {
+    color: var(--k-content-primary-foreground);
+  }
+}
+
 .data-\[state\=indeterminate\]\:h-\[2px\][data-state="indeterminate"] {
   height: 2px;
 }

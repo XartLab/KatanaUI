@@ -10,6 +10,7 @@ import { focusRingInset } from '../lib/focus.ts'
 // 页签：外观照现有的小号分段（OpenMarket pill-container：2px 内边 · 圆角 8 · 4% 白底，选中块圆角 6），
 // 选中块是一块跟着当前页签滑的底（tabs-pill，位置量出来写在行内，弹簧走 --ease-snappy，见 theme/motion.css）。
 // 选中项的字用 --seg-on-ink（对容器底 ≥ 3:1，#477），未选中的用 ink-200（ink-300 压在 4–5% 白的底上只有 4.4:1，#473）。
+// 悬停提亮只给未选中的：选中项悬停时 enabled:hover 的特异性比 data-[state=active] 高，字会从 --seg-on-ink 掉成主文字色，压在选中块上对比度比静止态低（#221）。
 // line 变体没有底块，选中项底下一道强调色的线。只做横排。
 /** bare：不带间距，样子全由调用方的类名给（应用里自带皮肤的页签条，#1797 把 Base UI 的 Tabs 换过来时外观原样保留）。 */
 function Tabs({
@@ -104,7 +105,7 @@ function TabsTrigger({
       className={cn(
         !bare && [
           'k-text-data relative inline-flex h-7 cursor-pointer items-center justify-center gap-1.5 rounded-[6px] px-2 leading-none whitespace-nowrap text-(color:--k-content-body-foreground)',
-          'transition-[color,scale] duration-200 enabled:active:scale-[0.96] enabled:hover:text-(color:--k-content-primary-foreground)',
+          'transition-[color,scale] duration-200 enabled:active:scale-[0.96] enabled:data-[state=inactive]:hover:text-(color:--k-content-primary-foreground)',
           'data-[state=active]:font-medium data-[state=active]:text-(--seg-on-ink)',
           'group-data-[variant=line]/tabs-list:data-[state=active]:text-(color:--k-content-primary-foreground)',
           'disabled:cursor-not-allowed disabled:opacity-30',
