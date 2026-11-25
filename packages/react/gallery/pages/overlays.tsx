@@ -127,8 +127,13 @@ export function DialogDemo() {
 }
 
 export function AlertDialogDemo() {
-  // 最后按了哪个钮：e2e 断言「取消、Esc 不触发确认，确认只触发一次」。
+  // 最后按了哪个钮、确认跑了几次：e2e 断言「取消、Esc 不触发确认，确认只触发一次」（只看最后一次的字，跑两次也看不出来，KatanaUI #242）。
   const [last, setLast] = useState('还没选')
+  const [confirms, setConfirms] = useState(0)
+  const confirm = (what: string) => {
+    setLast(what)
+    setConfirms((n) => n + 1)
+  }
   return (
     <Row>
       <AlertDialog>
@@ -144,7 +149,7 @@ export function AlertDialogDemo() {
           </AlertDialogBody>
           <AlertDialogFooter>
             <AlertDialogCancel onClick={() => setLast('取消')}>取消</AlertDialogCancel>
-            <AlertDialogAction variant="danger" onClick={() => setLast('平仓')}>
+            <AlertDialogAction variant="danger" onClick={() => confirm('平仓')}>
               平仓
             </AlertDialogAction>
           </AlertDialogFooter>
@@ -163,13 +168,14 @@ export function AlertDialogDemo() {
           </AlertDialogBody>
           <AlertDialogFooter>
             <AlertDialogCancel onClick={() => setLast('取消')}>取消</AlertDialogCancel>
-            <AlertDialogAction variant="danger" onClick={() => setLast('删除')}>
+            <AlertDialogAction variant="danger" onClick={() => confirm('删除')}>
               删除
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
       <span data-testid="alert-dialog-last">最后一次：{last}</span>
+      <span data-testid="alert-dialog-confirms">确认 {confirms} 次</span>
     </Row>
   )
 }

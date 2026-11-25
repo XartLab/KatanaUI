@@ -4093,6 +4093,36 @@
       "source": "src/primitives/alert-dialog.tsx",
       "props": [
         {
+          "name": "asChild",
+          "type": "boolean",
+          "required": false,
+          "description": "Render the child element itself (a link, a menu trigger) instead of wrapping it in a button."
+        },
+        {
+          "name": "size",
+          "type": "ButtonSize | 'default' | null",
+          "required": false,
+          "description": "Height: sm is 26px, md (default) is 30px, icon is a 28px square."
+        },
+        {
+          "name": "effect",
+          "type": "ButtonEffect",
+          "required": false,
+          "description": "Optional hover effect from SmoothUI: magnetic leans toward the pointer, dot-morph stretches a leading dot into a bar, clip-corners cuts the corners wider."
+        },
+        {
+          "name": "magnetStrength",
+          "type": "number",
+          "required": false,
+          "description": "How far a magnetic button leans: the fraction of the pointer offset it follows (0 to 1)."
+        },
+        {
+          "name": "magnetRadius",
+          "type": "number",
+          "required": false,
+          "description": "Distance in px from the button center within which a magnetic button reacts."
+        },
+        {
           "name": "variant",
           "type": "'primary' | 'danger' | 'default'",
           "required": false,
@@ -4109,7 +4139,44 @@
     "AlertDialogCancel": {
       "kind": "component",
       "source": "src/primitives/alert-dialog.tsx",
-      "props": []
+      "props": [
+        {
+          "name": "variant",
+          "type": "\"link\" | \"danger\" | \"default\" | \"primary\" | \"ghost\" | \"icon\"",
+          "required": false,
+          "description": "Visual style: primary is the solid light button, danger uses the danger text color, icon is a borderless 28px icon button."
+        },
+        {
+          "name": "size",
+          "type": "ButtonSize | 'default' | null",
+          "required": false,
+          "description": "Height: sm is 26px, md (default) is 30px, icon is a 28px square."
+        },
+        {
+          "name": "asChild",
+          "type": "boolean",
+          "required": false,
+          "description": "Render the child element itself (a link, a menu trigger) instead of wrapping it in a button."
+        },
+        {
+          "name": "effect",
+          "type": "ButtonEffect",
+          "required": false,
+          "description": "Optional hover effect from SmoothUI: magnetic leans toward the pointer, dot-morph stretches a leading dot into a bar, clip-corners cuts the corners wider."
+        },
+        {
+          "name": "magnetStrength",
+          "type": "number",
+          "required": false,
+          "description": "How far a magnetic button leans: the fraction of the pointer offset it follows (0 to 1)."
+        },
+        {
+          "name": "magnetRadius",
+          "type": "number",
+          "required": false,
+          "description": "Distance in px from the button center within which a magnetic button reacts."
+        }
+      ]
     },
     "AlertDialogContent": {
       "kind": "component",

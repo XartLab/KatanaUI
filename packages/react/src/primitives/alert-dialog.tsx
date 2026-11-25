@@ -130,10 +130,11 @@ function AlertDialogDescription({ className, ...props }: ComponentProps<typeof A
 }
 
 /** 确认钮：画成我们的 Button。variant 默认 primary；删除、平仓、撤单这类不可撤回的用 danger。 */
+// 两个钮的属性就是 Button 的（size、effect、asChild 都照 Button）：Radix 的 Action / Cancel 只是以 asChild 包住它、点了关闭（KatanaUI #242）。
 function AlertDialogAction({
   variant = 'primary',
   ...props
-}: ComponentProps<typeof AlertDialogPrimitive.Action> & {
+}: Omit<ComponentProps<typeof Button>, 'variant'> & {
   /** Button style: primary by default, danger for an action that cannot be undone. */
   variant?: 'primary' | 'danger' | 'default'
 }) {
@@ -145,7 +146,7 @@ function AlertDialogAction({
 }
 
 /** 取消钮：打开时焦点落在它上面。Esc 关掉对话框但不点它：取消要做的事写在 AlertDialog 的 onOpenChange 里。 */
-function AlertDialogCancel({ ...props }: ComponentProps<typeof AlertDialogPrimitive.Cancel>) {
+function AlertDialogCancel({ ...props }: ComponentProps<typeof Button>) {
   return (
     <AlertDialogPrimitive.Cancel asChild>
       <Button {...props} />
