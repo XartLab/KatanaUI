@@ -24860,6 +24860,7 @@ button.k-book-row:focus-visible {
 }
 
 .k-book-share > span {
+  isolation: isolate;
   white-space: nowrap;
   min-width: 0;
   transition: clip-path var(--dur-snappy) var(--ease-snappy);
@@ -24869,18 +24870,16 @@ button.k-book-row:focus-visible {
   overflow: hidden;
 }
 
+.k-book-share-fill {
+  z-index: -1;
+  scale: var(--fill, 0) 1;
+  transition: scale var(--dur-snappy) var(--ease-snappy);
+  position: absolute;
+  inset: 0;
+}
+
 .k-book-share-bid {
   clip-path: inset(0 calc((1 - var(--fill, 0)) * 100%) 0 0);
-  background: var(--k-tone-up-foreground);
-}
-
-@supports (color: color-mix(in lab, red, red)) {
-  .k-book-share-bid {
-    background: var(--ds-c-1mb1ctm);
-  }
-}
-
-.k-book-share-bid {
   color: var(--k-tone-up-foreground);
 }
 
@@ -24890,18 +24889,19 @@ button.k-book-row:focus-visible {
   }
 }
 
-.k-book-share-ask {
-  clip-path: inset(0 0 0 calc((1 - var(--fill, 0)) * 100%));
-  background: var(--k-tone-down-foreground);
+.k-book-share-bid > .k-book-share-fill {
+  transform-origin: 0;
+  background: var(--k-tone-up-foreground);
 }
 
 @supports (color: color-mix(in lab, red, red)) {
-  .k-book-share-ask {
-    background: var(--ds-c-yrabel);
+  .k-book-share-bid > .k-book-share-fill {
+    background: var(--ds-c-1mb1ctm);
   }
 }
 
 .k-book-share-ask {
+  clip-path: inset(0 0 0 calc((1 - var(--fill, 0)) * 100%));
   color: var(--k-tone-down-foreground);
 }
 
@@ -24913,6 +24913,17 @@ button.k-book-row:focus-visible {
 
 .k-book-share-ask {
   text-align: right;
+}
+
+.k-book-share-ask > .k-book-share-fill {
+  transform-origin: 100%;
+  background: var(--k-tone-down-foreground);
+}
+
+@supports (color: color-mix(in lab, red, red)) {
+  .k-book-share-ask > .k-book-share-fill {
+    background: var(--ds-c-yrabel);
+  }
 }
 
 .k-depth {

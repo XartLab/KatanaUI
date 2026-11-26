@@ -133,25 +133,41 @@ button.k-book-row:focus-visible {
   font: 500 11px/20px var(--font-sans);
   font-variant-numeric: tabular-nums;
 }
-/* 两段各铺满整条，用 clip-path 裁出自己的占比（--fill，0 到 1）：字留在原位、条长变化不重排。 */
+/* 两段各铺满整条：clip-path 裁出自己的占比（--fill，0 到 1），字留在原位、条长变化不重排。
+   底色不画在整段上：整段铺满整条，买卖两段的底会叠在一起，axe 按盒子（不看 clip-path）算背景，把卖字的底算成「红叠绿」（3.4:1，#258）。
+   底色画在里面的 .k-book-share-fill 上，它按 --fill 用 scale 缩到自己的占比（买从左、卖从右），两块底盒子不相交，axe 量到的就是画出来的颜色。 */
 .k-book-share > span {
   position: absolute;
   inset: 0;
+  isolation: isolate;
   min-width: 0;
   overflow: hidden;
   padding: 0 6px;
   white-space: nowrap;
   transition: clip-path var(--dur-snappy) var(--ease-snappy);
 }
+.k-book-share-fill {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  scale: var(--fill, 0) 1;
+  transition: scale var(--dur-snappy) var(--ease-snappy);
+}
 /* 条里的字压在 28% 的同色底上原样只有 3.9–4.4:1（axe #190），往 primary 混 35%，仍是红 / 绿（混 25% 时最深一格 4.45:1）。 */
 .k-book-share-bid {
   clip-path: inset(0 calc((1 - var(--fill, 0)) * 100%) 0 0);
-  background: color-mix(in srgb, var(--k-tone-up-foreground) 28%, transparent);
   color: color-mix(in srgb, var(--k-tone-up-foreground) 65%, var(--k-content-primary-foreground));
+}
+.k-book-share-bid > .k-book-share-fill {
+  transform-origin: left;
+  background: color-mix(in srgb, var(--k-tone-up-foreground) 28%, transparent);
 }
 .k-book-share-ask {
   clip-path: inset(0 0 0 calc((1 - var(--fill, 0)) * 100%));
-  background: color-mix(in srgb, var(--k-tone-down-foreground) 28%, transparent);
   color: color-mix(in srgb, var(--k-tone-down-foreground) 65%, var(--k-content-primary-foreground));
   text-align: right;
+}
+.k-book-share-ask > .k-book-share-fill {
+  transform-origin: right;
+  background: color-mix(in srgb, var(--k-tone-down-foreground) 28%, transparent);
 }

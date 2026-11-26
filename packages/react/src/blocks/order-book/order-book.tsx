@@ -272,6 +272,7 @@ export function OrderBook({
             data-pct={model.bidPct}
             style={fillVar((model.bidPct ?? 0) / 100)}
           >
+            <i className="k-book-share-fill" aria-hidden="true" />
             {labels.bid} {bidText}
           </span>
           <span
@@ -280,6 +281,7 @@ export function OrderBook({
             data-pct={model.askPct}
             style={fillVar((model.askPct ?? 0) / 100)}
           >
+            <i className="k-book-share-fill" aria-hidden="true" />
             {askText} {labels.ask}
           </span>
         </div>
