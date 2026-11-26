@@ -84,3 +84,45 @@ test('MarketBrowser：星标进「自选」页签且不触发选品种；点行�
   await expect(picked).toHaveText('已选：SOL-USDT')
   expect(await symbols(area)).toEqual(['ETH-USDT'])
 })
+
+test('MarketBrowser：在「自选」页签取消星标，行消失后焦点移到相邻行的星标，列表空了移到当前页签', async ({ page }) => {
+  const area = await open(page)
+  await area.getByRole('tab', { name: '自选' }).click()
+  expect(await symbols(area)).toEqual(['BTC-USDT', 'SOL-USDT'])
+
+  // 取消最后一行（SOL）：没有下一行，焦点去上一行（BTC）的星标。
+  const sol = area.getByRole('button', { name: '自选 SOL-USDT' })
+  await sol.focus()
+  await page.keyboard.press('Enter')
+  expect(await symbols(area)).toEqual(['BTC-USDT'])
+  await expect(area.getByRole('button', { name: '自选 BTC-USDT' })).toBeFocused()
+
+  // 最后一行也取消：列表空了，焦点去当前页签，不掉回页面。
+  await page.keyboard.press('Enter')
+  await expect(area.getByRole('status')).toHaveText('还没有自选，点行首的星标添加。')
+  await expect(area.getByRole('tab', { name: '自选' })).toBeFocused()
+
+  // 取消中间一行：焦点去下一行。先把 BTC、ETH、SOL 都加回来。
+  await area.getByRole('tab', { name: '全部' }).click()
+  for (const symbol of ['BTC-USDT', 'ETH-USDT', 'SOL-USDT'])
+    await area.getByRole('button', { name: `自选 ${symbol}` }).click()
+  await area.getByRole('tab', { name: '自选' }).click()
+  expect(await symbols(area)).toEqual(['BTC-USDT', 'ETH-USDT', 'SOL-USDT'])
+  await area.getByRole('button', { name: '自选 ETH-USDT' }).focus()
+  await page.keyboard.press('Enter')
+  expect(await symbols(area)).toEqual(['BTC-USDT', 'SOL-USDT'])
+  await expect(area.getByRole('button', { name: '自选 SOL-USDT' })).toBeFocused()
+})
+
+test('MarketBrowser：搜索把行筛掉再筛回来，回来的行不算新行（不闪）', async ({ page }) => {
+  const area = await open(page)
+  await area.getByRole('tab', { name: '全部' }).click()
+  await expect(area.locator('.k-live-enter')).toHaveCount(0)
+  const search = area.getByRole('searchbox', { name: '搜索币对' })
+  await search.fill('sol')
+  expect(await symbols(area)).toEqual(['SOL-USDT'])
+  await search.fill('')
+  expect(await symbols(area)).toHaveLength(5)
+  // 不用会重试的断言：高亮 1.2 秒后自己消失，重试会把「闪过」等成「没闪」。
+  expect(await area.locator('.k-live-enter').count()).toBe(0)
+})

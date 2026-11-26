@@ -1,12 +1,15 @@
 // SPDX-License-Identifier: MIT
 // 悬浮窗：把任意子树放进一个置顶的小窗，用户可以边看别的页面边操作（OKX 下单面板右上角的「在悬浮窗中交易」：无需离开当前网页，即可下单并追踪仓位，2026-11-26 在用户的 Chrome 里看的）。实现原创。
 // 两种窗：浏览器有 Document Picture-in-Picture（Chrome / Edge 116+）时开真窗口，置顶、能拖到别的应用上方；没有时退成页内的可拖浮层（标题栏拖动、方向键移动、关闭钮）。
-// 开 PiP 失败（没有用户刚操作过、已经有一个窗）也退到页内浮层。关窗（用户关 PiP 窗口、点浮层的关闭钮、浮层里按 Esc）回调 onClose；宿主把 open 设回 false，内容回到原处。
+// 开 PiP 失败（没有用户刚操作过、浏览器不给开）也退到页内浮层。关窗（用户关 PiP 窗口、点浮层的关闭钮、浮层里按 Esc）回调 onClose；宿主把 open 设回 false，内容回到原处。
+// 用户自己关 PiP 窗时件先把内容搬回原处、再回调 onClose：宿主不接 onClose，内容也不会留在已关的窗里。
+// 浮层里 Esc 在子树里的输入框上也能关：子树经 portal 挂在 host 上，键盘事件走 React 树冒到根元素，在那里接（内容自己 preventDefault 过的 Esc 不关，比如下拉里的 Esc）。
 // 内容不重新挂载：子树始终渲染进同一个 host 元素（createPortal），换窗只是把这个元素搬到别的容器里，所以输入框里写了一半的字、选中的页签、滚动位置都在。
 // 小窗里的样式：开窗时复制当前文档的样式表、根元素的 data-theme 等属性与正文的底色字色（./pip-window.ts），主题切换时再同步属性；开窗之后新加的样式表不会跟过去。
 // 服务端渲染与首帧：host 元素在挂载后才创建，所以服务端输出里只有空位与（open 时的）占位文字，没有子树。
 // 页内浮层用 popover="manual" 进浏览器的顶层（盖得住对话框与别的浮层），不靠 z-index；位置、拖动、方向键的夹取在 floating-window-model.ts。
-// 同一页只开一个：PiP 一次只能有一个窗，第二个 FloatingWindow 要开时那次请求被拒，退到页内浮层。
+// 同一页只开一个：规范里一个顶层页面同时只有一个文档 PiP 窗，再请求新的会先关掉旧窗（WICG Document Picture-in-Picture 的 requestWindow 第 8 步与「One PiP Window」一节，2026-11-26 读）；
+// 旧窗收到 pagehide，它的 FloatingWindow 照上一条把内容搬回原处并回调 onClose，新窗那个拿到 PiP。Chrome 的实际表现待核对（没在真 Chrome 里开两个窗试过）。
 import { X } from 'lucide-react'
 import {
   useEffect,
@@ -14,6 +17,7 @@ import {
   useLayoutEffect,
   useRef,
   useState,
+  useSyncExternalStore,
   type KeyboardEvent,
   type PointerEvent,
   type ReactNode,
@@ -23,7 +27,7 @@ import { cn } from '../../lib/cn.ts'
 import { focusRingInset } from '../../lib/focus.ts'
 import { Button } from '../../primitives/button.tsx'
 import { arrowDelta, clampPosition, type FloatPosition } from './floating-window-model.ts'
-import { copyDocumentStyles, copyRootAttributes, pipApi } from './pip-window.ts'
+import { copyDocumentStyles, copyRootAttributes, pipApi, watchPipClose } from './pip-window.ts'
 
 export type FloatingWindowLabels = {
   /** Accessible name of the close button of the in-page floating layer. */
@@ -63,13 +67,18 @@ export function isFloatingWindowSupported(): boolean {
   return pipApi() !== undefined
 }
 
+// PiP 能力在页面生命周期里不会变，没有要订阅的事件。
+const subscribeNothing = () => () => {}
+
 /** State and props for a FloatingWindow: `<FloatingWindow {...floating.props} …>`, a button calling `floating.toggle`. */
 export function useFloatingWindow(initialOpen = false) {
   const [open, setOpen] = useState(initialOpen)
+  // 渲染时不读 window：服务端与水合那一遍是 false，水合完再按浏览器的实际情况重渲染，免得服务端与客户端的输出对不上。
+  const supported = useSyncExternalStore(subscribeNothing, isFloatingWindowSupported, () => false)
   return {
     open,
-    /** Whether the browser has picture-in-picture (false: the in-page layer is used). */
-    supported: isFloatingWindowSupported(),
+    /** Whether the browser has picture-in-picture (false: the in-page layer is used). False on the server and during hydration. */
+    supported,
     show: () => setOpen(true),
     hide: () => setOpen(false),
     toggle: () => setOpen((value) => !value),
@@ -109,14 +118,14 @@ export function FloatingWindow({
 
   const close = useEffectEvent(() => onClose?.())
 
-  // 开 PiP：open 变真时请求；关窗（open 变假、卸载）时关掉。用户自己关窗走 pagehide → onClose，关的时候先摘掉监听，免得程序关窗也回调。
+  // 开 PiP：open 变真时请求；关窗（open 变假、卸载）时关掉。用户自己关窗走 pagehide（搬回再 onClose），程序关窗前先摘掉监听，免得也回调。
   useEffect(() => {
     if (!open || inPageOnly) return
     const request = pipApi()?.requestWindow({ width, height })
     if (!request) return
     let cancelled = false
     let opened: Window | null = null
-    const hidden = () => close()
+    let unwatch: (() => void) | null = null
     request.then(
       (win) => {
         if (cancelled) {
@@ -126,7 +135,12 @@ export function FloatingWindow({
         opened = win
         win.document.title = title
         copyDocumentStyles(document, win.document)
-        win.addEventListener('pagehide', hidden)
+        // 用户关窗（或被另一个窗顶掉）：先把内容搬回原处（setPip(null)），再回调 onClose。
+        unwatch = watchPipClose(
+          win,
+          () => setPip(null),
+          () => close(),
+        )
         setPip(win)
       },
       () => {
@@ -136,7 +150,7 @@ export function FloatingWindow({
     return () => {
       cancelled = true
       if (opened) {
-        opened.removeEventListener('pagehide', hidden)
+        unwatch?.()
         opened.close()
       }
       setPip(null)
@@ -160,8 +174,17 @@ export function FloatingWindow({
     if (host && target && host.parentNode !== target) target.append(host)
   }, [host, target])
 
+  // 浮层里子树的 Esc：子树经 portal 挂在 host 上，React 的合成事件沿 React 树冒到这个根（不经过 FloatLayer），所以在这里接。
+  // 子树里自己处理过的 Esc（preventDefault，如下拉、对话框）不关；只认从 host 里来的，原位占位上的 Esc 不算。
+  const escape = (event: KeyboardEvent<HTMLElement>) => {
+    if (mode !== 'overlay' || event.key !== 'Escape' || event.defaultPrevented) return
+    if (!host?.contains(event.target as Node)) return
+    event.stopPropagation()
+    close()
+  }
+
   return (
-    <div data-slot="floating-window" data-mode={mode} className={cn('k-float-root', className)}>
+    <div data-slot="floating-window" data-mode={mode} className={cn('k-float-root', className)} onKeyDown={escape}>
       <div ref={setSlot} className="k-float-slot" />
       {mode === 'docked' ? null : placeholder}
       {mode === 'overlay' ? (

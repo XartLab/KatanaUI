@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 import { describe, expect, it } from 'vite-plus/test'
-import { filterMarketRows } from './market-browser-model.ts'
+import { filterMarketRows, neighborId } from './market-browser-model.ts'
 
 const rows = [
   { symbol: 'BTC-USDT-SWAP', name: 'Bitcoin', keywords: ['比特币', 'digital gold'] },
@@ -25,5 +25,15 @@ describe('filterMarketRows', () => {
   it('没有名称与别名的行只按代码找；找不到返回空数组', () => {
     expect(filterMarketRows(rows, 'aap').map((r) => r.symbol)).toEqual(['AAPL'])
     expect(filterMarketRows(rows, 'zzz')).toEqual([])
+  })
+})
+
+describe('neighborId', () => {
+  it('先下一行，没有下一行取上一行，只剩自己或找不到是 null', () => {
+    expect(neighborId(['a', 'b', 'c'], 'a')).toBe('b')
+    expect(neighborId(['a', 'b', 'c'], 'b')).toBe('c')
+    expect(neighborId(['a', 'b', 'c'], 'c')).toBe('b')
+    expect(neighborId(['a'], 'a')).toBeNull()
+    expect(neighborId(['a', 'b'], 'x')).toBeNull()
   })
 })

@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: MIT
 import { renderToStaticMarkup } from 'react-dom/server'
 import { afterEach, describe, expect, it, vi } from 'vite-plus/test'
-import { FloatingWindow, isFloatingWindowSupported } from './floating-window.tsx'
+import { FloatingWindow, isFloatingWindowSupported, useFloatingWindow } from './floating-window.tsx'
+import { watchPipClose } from './pip-window.ts'
 import { arrowDelta, clampPosition } from './floating-window-model.ts'
 
 const labels = { close: '关闭悬浮窗', move: '移动悬浮窗' }
@@ -48,6 +49,63 @@ describe('FloatingWindow 选哪种窗', () => {
 
   it('服务端没有 window：当作不支持，不报错', () => {
     expect(isFloatingWindowSupported()).toBe(false)
+  })
+})
+
+describe('useFloatingWindow().supported', () => {
+  const Probe = () => <span data-supported={String(useFloatingWindow().supported)} />
+
+  it('服务端与水合那一遍渲染时不读 window：有 PiP 也是 false，避免服务端与客户端输出对不上', () => {
+    withWindow({ requestWindow: async () => ({}) })
+    expect(isFloatingWindowSupported()).toBe(true)
+    expect(renderToStaticMarkup(<Probe />)).toContain('data-supported="false"')
+  })
+})
+
+describe('用户关 PiP 窗', () => {
+  const fakeWindow = () => {
+    const listeners = new Map<string, () => void>()
+    return {
+      listeners,
+      win: {
+        addEventListener: (type: string, fn: () => void) => listeners.set(type, fn),
+        removeEventListener: (type: string, fn: () => void) => {
+          if (listeners.get(type) === fn) listeners.delete(type)
+        },
+      },
+    }
+  }
+
+  it('pagehide：先搬回内容（release）再回调 onClose（notify）', () => {
+    const { listeners, win } = fakeWindow()
+    const order: string[] = []
+    watchPipClose(
+      win,
+      () => order.push('release'),
+      () => order.push('notify'),
+    )
+    listeners.get('pagehide')!()
+    expect(order).toEqual(['release', 'notify'])
+  })
+
+  it('宿主不接 onClose（notify 是空操作）：内容照样搬回', () => {
+    const { listeners, win } = fakeWindow()
+    const release = vi.fn()
+    watchPipClose(win, release, () => {})
+    listeners.get('pagehide')!()
+    expect(release).toHaveBeenCalledTimes(1)
+  })
+
+  it('notify 抛错也不影响已经搬回；摘掉监听后程序关窗不再回调', () => {
+    const { listeners, win } = fakeWindow()
+    const release = vi.fn()
+    const off = watchPipClose(win, release, () => {
+      throw new Error('宿主的 onClose 出错')
+    })
+    expect(() => listeners.get('pagehide')!()).toThrow('宿主的 onClose 出错')
+    expect(release).toHaveBeenCalledTimes(1)
+    off()
+    expect(listeners.has('pagehide')).toBe(false)
   })
 })
 

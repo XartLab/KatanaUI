@@ -5,10 +5,12 @@
 // 价格格是 FlashPrice、涨跌格是 ChangeText、品种前是 SymbolMark、代码是 cell-type 的芯片；排序与点列头的循环用 watchlist-model 的 nextSort / sortRows。
 // 与 QuoteTable 的分工：QuoteTable 是只读的分组概览；MarketBrowser 是「找品种」的入口：能搜、能排、能星标、点行选品种。
 // 数据全由调用方给：每个分类带着自己的行（「自选」页签就是调用方把 favorite 为真的行放进去），包里没有数据源，也没有文案。
-// 搜索只在当前分类里找；排序与搜索词在分类间保留。行点击 onSelect；星标 onToggleFavorite（不触发 onSelect）。
+// 搜索只在当前分类里找；排序与搜索词在分类间保留；只对当前分类做筛选与排序，别的分类的行不算。行点击 onSelect；星标 onToggleFavorite（不触发 onSelect）。
+// 焦点：在「自选」这类页签里取消星标，那一行会从列表里消失，焦点就移到相邻行（下一行，没有就上一行）的星标，列表空了移到当前页签，不掉回页面顶部。
+// 新行高亮：只对分类自己的行算「新」（调用方新给的行）；搜索把行筛掉又筛回来不算新行，不闪。
 import type { AssetClass } from '@katana-ui/logos'
 import { Star } from 'lucide-react'
-import { useRef, useState } from 'react'
+import { useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { cn } from '../lib/cn.ts'
 import { focusRingInset } from '../lib/focus.ts'
 import { useEnterMarks, useFlipList } from '../lib/live.ts'
@@ -17,7 +19,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '../primitives/tabs.tsx
 import { CodeChip, CodeName } from './cell-type.tsx'
 import { ChangeText } from './change-text.tsx'
 import { FlashPrice } from './flash-price.tsx'
-import { filterMarketRows } from './market-browser-model.ts'
+import { filterMarketRows, neighborId } from './market-browser-model.ts'
 import { plainPrice, rowTone, type FormatPrice, type QuoteRow } from './quote-row.ts'
 import { SymbolMark } from './symbol-mark.tsx'
 import { nextSort, sortRows, type WatchlistSort } from './watchlist-model.ts'
@@ -95,18 +97,26 @@ export type MarketBrowserProps = {
 
 const SORT_KEYS = ['last', 'chgPct'] as const
 
-type RowsProps = Pick<MarketBrowserProps, 'formatPrice' | 'onSelect' | 'onToggleFavorite'> & {
+/** 某一行的星标按钮的选择器（id 里可能有引号、冒号，要转义）。 */
+const rowStar = (id: string) => `[data-slot="market-row"][data-key="${CSS.escape(id)}"] [data-slot="market-star"]`
+
+type RowsProps = Pick<MarketBrowserProps, 'formatPrice' | 'onSelect'> & {
+  /** 筛选排序后要画的行。 */
   rows: readonly MarketRow[]
+  /** 分类自己的全部行的 id（没筛过）：新行高亮只看它，搜索筛进筛出不算新。 */
+  allIds: readonly string[]
+  /** 星标被点：neighbor 是这一行消失后焦点该去的那一行。 */
+  onStar: (row: MarketRow, favorite: boolean, neighbor: string | null, focused: boolean) => void
   labels: MarketBrowserLabels
   sort: MarketSort | null
   onSort: (key: (typeof SORT_KEYS)[number]) => void
 }
 
 /** 一个分类的表：FLIP 换位与新行高亮要 hooks，所以每个分类一个组件。 */
-function MarketRows({ rows, labels, formatPrice = plainPrice, sort, onSort, onSelect, onToggleFavorite }: RowsProps) {
+function MarketRows({ rows, allIds, labels, formatPrice = plainPrice, sort, onSort, onSelect, onStar }: RowsProps) {
   const table = useRef<HTMLTableElement>(null)
   const ids = rows.map((row) => row.id)
-  const entering = useEnterMarks(ids)
+  const entering = useEnterMarks(allIds)
   useFlipList(table, ids)
   const aria = (key: (typeof SORT_KEYS)[number]) =>
     sort?.key === key ? (sort.dir === 'asc' ? 'ascending' : 'descending') : undefined
@@ -157,7 +167,7 @@ function MarketRows({ rows, labels, formatPrice = plainPrice, sort, onSort, onSe
                   aria-pressed={!!row.favorite}
                   onClick={(event) => {
                     event.stopPropagation()
-                    onToggleFavorite?.(row, !row.favorite)
+                    onStar(row, !row.favorite, neighborId(ids, row.id), document.activeElement === event.currentTarget)
                   }}
                 >
                   <Star aria-hidden="true" />
@@ -204,6 +214,33 @@ export function MarketBrowser({
 }: MarketBrowserProps) {
   const [query, setQuery] = useState('')
   const [innerSort, setInnerSort] = useState<MarketSort | null>(null)
+  const [innerTab, setInnerTab] = useState(defaultValue ?? categories[0]?.id)
+  const tab = value ?? innerTab
+  const root = useRef<HTMLDivElement>(null)
+  // 只算当前分类：筛选、排序都只对它做，别的分类的行不碰。
+  const current = categories.find((category) => category.id === tab)
+  const found = useMemo(
+    () => sortRows(filterMarketRows(current?.rows ?? [], query), sort === undefined ? innerSort : sort),
+    [current?.rows, query, sort, innerSort],
+  )
+  // 取消星标后行会消失：焦点本来在那颗星标上，行没了焦点就掉回 body。等调用方把行拿走（提交后）再把焦点送到相邻行的星标，没有相邻行送到当前页签。
+  const refocus = useRef<{ id: string; neighbor: string | null } | null>(null)
+  useLayoutEffect(() => {
+    const pending = refocus.current
+    if (!pending || !root.current) return
+    if (found.some((row) => row.id === pending.id)) {
+      // 行还在：调用方还没处理完（异步）就接着等；焦点已经去了别处就不管了。
+      const star = root.current.querySelector(rowStar(pending.id))
+      if (!star || document.activeElement !== star) refocus.current = null
+      return
+    }
+    refocus.current = null
+    if (document.activeElement && document.activeElement !== document.body) return
+    const target =
+      (pending.neighbor ? root.current.querySelector<HTMLElement>(rowStar(pending.neighbor)) : null) ??
+      root.current.querySelector<HTMLElement>('[role="tab"][aria-selected="true"]')
+    target?.focus()
+  }, [found])
   const active = sort === undefined ? innerSort : sort
   const click = (key: (typeof SORT_KEYS)[number]) => {
     const next = nextSort(active, key) as MarketSort | null
@@ -211,7 +248,7 @@ export function MarketBrowser({
     onSortChange?.(next)
   }
   return (
-    <div className={cn('k-market', className)} data-slot="market-browser">
+    <div ref={root} className={cn('k-market', className)} data-slot="market-browser">
       <Input
         type="search"
         aria-label={labels.search}
@@ -223,9 +260,11 @@ export function MarketBrowser({
         }}
       />
       <Tabs
-        value={value}
-        defaultValue={value === undefined ? (defaultValue ?? categories[0]?.id) : undefined}
-        onValueChange={onValueChange}
+        value={tab}
+        onValueChange={(id) => {
+          setInnerTab(id)
+          onValueChange?.(id)
+        }}
         className="min-h-0 gap-1"
       >
         <TabsList variant="line" aria-label={labels.categories} className="k-market-tabs">
@@ -236,7 +275,10 @@ export function MarketBrowser({
           ))}
         </TabsList>
         {categories.map((category) => {
-          const found = sortRows(filterMarketRows(category.rows, query), active)
+          // 别的分类不画（Radix 不挂载没选中的页签内容），也就不用算它的行。
+          if (category.id !== tab) {
+            return <TabsContent key={category.id} value={category.id} className="k-market-body" />
+          }
           return (
             <TabsContent key={category.id} value={category.id} className="k-market-body">
               {found.length === 0 ? (
@@ -246,12 +288,17 @@ export function MarketBrowser({
               ) : (
                 <MarketRows
                   rows={found}
+                  allIds={category.rows.map((row) => row.id)}
                   labels={labels}
                   formatPrice={formatPrice}
                   sort={active}
                   onSort={click}
                   onSelect={onSelect}
-                  onToggleFavorite={onToggleFavorite}
+                  onStar={(row, favorite, neighbor, focused) => {
+                    // 只有焦点真在这颗星标上才管焦点（有的浏览器点按钮不聚焦）。
+                    refocus.current = focused ? { id: row.id, neighbor } : null
+                    onToggleFavorite?.(row, favorite)
+                  }}
                 />
               )}
             </TabsContent>

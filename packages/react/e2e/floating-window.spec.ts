@@ -79,6 +79,23 @@ test('FloatingWindow：没有 PiP 时是页内浮层——顶层、可拖、方�
   await expect(area.getByText('已下 1 单')).toBeVisible()
 })
 
+test('FloatingWindow：页内浮层里焦点在内容的输入框上，按 Esc 也能关窗，内容回到原处', async ({ page }) => {
+  await page.addInitScript(() => {
+    Object.defineProperty(window, 'documentPictureInPicture', { value: undefined, configurable: true })
+  })
+  const area = await open(page)
+  await area.getByRole('button', { name: '在悬浮窗中交易' }).click()
+  const layer = page.getByRole('dialog', { name: '下单' })
+  const price = layer.getByRole('textbox', { name: '价格' })
+  await price.fill('95000')
+  await price.focus() // 子树经 portal 挂在浮层里：焦点在这里，不在标题栏或关闭钮上
+  await expect(price).toBeFocused()
+  await page.keyboard.press('Escape')
+  await expect(layer).toHaveCount(0)
+  await expect(area.getByRole('textbox', { name: '价格' })).toHaveValue('95000')
+  await expect(area.getByRole('button', { name: '在悬浮窗中交易' })).toHaveAttribute('aria-pressed', 'false')
+})
+
 test('FloatingWindow：有 PiP 时开真小窗——样式与主题复制过去、窗里点击回到主页面的状态、关窗内容回到原处', async ({
   page,
 }) => {
@@ -144,7 +161,7 @@ test('FloatingWindow：有 PiP 时开真小窗——样式与主题复制过去�
   await expect(area.getByRole('button', { name: '在悬浮窗中交易' })).toHaveAttribute('aria-pressed', 'false')
 })
 
-test('FloatingWindow：PiP 请求被拒（没有刚操作过、已有一个窗）就退到页内浮层', async ({ page }) => {
+test('FloatingWindow：PiP 请求被拒（比如没有刚操作过）就退到页内浮层', async ({ page }) => {
   await page.addInitScript(() => {
     Object.defineProperty(window, 'documentPictureInPicture', {
       configurable: true,

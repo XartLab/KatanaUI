@@ -14,3 +14,13 @@ export function filterMarketRows<T extends Searchable>(rows: readonly T[], query
     [row.symbol, row.name ?? '', ...(row.keywords ?? [])].some((text) => text.toLowerCase().includes(needle)),
   )
 }
+
+/**
+ * 一行要从列表里消失时（在「自选」页签取消星标），焦点该去哪一行：下一行，没有下一行就上一行，都没有是 null（列表空了，焦点去页签）。
+ * 照 Radix / WAI-ARIA 列表删除项的通行做法：焦点留在原位附近，不掉回 body。
+ */
+export function neighborId(ids: readonly string[], id: string): string | null {
+  const at = ids.indexOf(id)
+  if (at < 0) return null
+  return ids[at + 1] ?? ids[at - 1] ?? null
+}

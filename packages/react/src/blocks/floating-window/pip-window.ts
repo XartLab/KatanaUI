@@ -14,6 +14,26 @@ export function pipApi(): PipApi | undefined {
   return (window as unknown as { documentPictureInPicture?: PipApi }).documentPictureInPicture
 }
 
+/**
+ * 小窗被关（用户点关闭、被新窗顶掉、opener 离开）时先 release（件把内容搬回原处）、再 notify（宿主的 onClose）；返回摘掉监听的函数。
+ * 事件是 pagehide（Chrome 文档：不论网站自己关还是用户手动关都会触发）。顺序固定：notify 没接、抛错，release 也已经做了。
+ */
+export function watchPipClose(
+  win: Pick<Window, 'addEventListener' | 'removeEventListener'>,
+  release: () => void,
+  notify: () => void,
+): () => void {
+  const hidden = () => {
+    try {
+      release()
+    } finally {
+      notify()
+    }
+  }
+  win.addEventListener('pagehide', hidden)
+  return () => win.removeEventListener('pagehide', hidden)
+}
+
 /** 页面根元素上要跟过去的属性：主题（data-theme）、语言、方向、类与行内变量。 */
 const ROOT_ATTRIBUTES = ['data-theme', 'data-density', 'lang', 'dir', 'class', 'style']
 
