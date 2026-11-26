@@ -55,7 +55,7 @@
   height: 28px;
   padding: 0 6px;
   border: 0;
-  border-radius: 6px;
+  border-radius: var(--radius-control);
   background: transparent;
   color: var(--k-content-body-foreground);
   font: var(--text-data) var(--font-sans);

@@ -53,7 +53,7 @@
   align-items: center;
   justify-content: center;
   height: 28px;
-  border-radius: 2px;
+  border-radius: var(--radius-sm);
   background: var(--k-cell);
   color: var(--k-content-primary-foreground);
   cursor: pointer;
@@ -117,7 +117,7 @@
 .k-theme-heat-legend i {
   width: 14px;
   height: 8px;
-  border-radius: 1px;
+  border-radius: var(--radius-sm);
   background: var(--k-cell);
 }
 .k-theme-heat-empty {

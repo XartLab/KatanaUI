@@ -41,7 +41,7 @@ const buttonVariants = cva(
       /** Height: md is 30px, sm is 26px with an 8px radius, icon is a 28px square (any variant, icon-only content). */
       size: {
         md: 'h-(--k-size-base) px-(--k-spacing-200)',
-        sm: 'k-text-caption h-[26px] rounded-[8px] px-2 font-semibold',
+        sm: 'k-text-caption h-[26px] rounded-[var(--radius-control)] px-2 font-semibold',
         icon: 'size-(--k-size-row) p-0',
       },
     },

@@ -51,7 +51,7 @@
   flex: none;
   width: 44px;
   height: 4px;
-  border-radius: 2px;
+  border-radius: var(--radius-sm);
   background: var(--alpha-white-7);
   overflow: hidden;
 }

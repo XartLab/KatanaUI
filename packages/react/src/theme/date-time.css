@@ -20,7 +20,7 @@
   padding: 0 8px;
   background: var(--k-editable-background);
   border: 1px solid var(--k-editable-borderColor);
-  border-radius: 6px;
+  border-radius: var(--radius-control);
   color: var(--k-content-primary-foreground);
   font: var(--text-body) var(--font-sans);
   font-variant-numeric: tabular-nums;
@@ -40,7 +40,7 @@
 }
 .k-dt-seg {
   padding: 0 2px;
-  border-radius: 3px;
+  border-radius: var(--radius-sm);
   outline: 0;
 }
 .k-dt-seg[data-placeholder] {
@@ -61,7 +61,7 @@
   margin-left: -4px;
   padding: 0;
   border: 0;
-  border-radius: 6px;
+  border-radius: var(--radius-control);
   background: transparent;
   color: var(--k-content-secondary-foreground);
   cursor: pointer;
@@ -95,7 +95,7 @@
   height: 24px;
   padding: 0;
   border: 0;
-  border-radius: 6px;
+  border-radius: var(--radius-control);
   background: transparent;
   color: var(--k-content-secondary-foreground);
   cursor: pointer;
@@ -117,7 +117,7 @@
   place-items: center;
   width: 30px;
   height: 28px;
-  border-radius: 6px;
+  border-radius: var(--radius-control);
   color: var(--k-content-body-foreground);
   font-variant-numeric: tabular-nums;
   cursor: pointer;

@@ -92,13 +92,13 @@
   position: relative;
   width: 44px;
   height: 2px;
-  border-radius: 1px;
+  border-radius: var(--radius-sm);
   background: var(--alpha-white-10);
 }
 .k-ladder-promote-bar i {
   position: absolute;
   inset: 0 auto 0 0;
-  border-radius: 1px;
+  border-radius: var(--radius-sm);
   background: var(--k-actionable-bold-background);
 }
 .k-ladder-row {
@@ -162,7 +162,7 @@
 .k-ladder-status {
   justify-self: end;
   padding: 1px 7px;
-  border-radius: 9999px;
+  border-radius: var(--radius-pill);
   font: 500 11px/16px var(--font-sans);
   white-space: nowrap;
   color: var(--k-content-secondary-foreground);

@@ -94,7 +94,7 @@
   max-width: 260px;
   padding: 8px 10px;
   border: 1px solid var(--k-separable-bold-borderColor);
-  border-radius: 6px;
+  border-radius: var(--radius-control);
   background: var(--k-container-secondary-background);
   transition: opacity 120ms;
 }
@@ -194,7 +194,7 @@
   width: 100%;
   height: 100%;
   border: 1px dashed var(--k-separable-primary-borderColor);
-  border-radius: 8px;
+  border-radius: var(--radius-overlay);
   background: var(--k-selectable-subtle-groupBackground);
 }
 .k-wb .react-flow__node.selected .k-wb-group {

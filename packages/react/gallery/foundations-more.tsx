@@ -56,6 +56,105 @@ export function Table({ head, rows }: { head: readonly string[]; rows: readonly 
 }
 const code = (text: string) => <code>{text}</code>
 
+/* ---------- 圆角规则（#251 批 B，kubai Vibe Design Tips 004，2026-11-27） ---------- */
+
+/** 圆角页在 token 表下面接的规则：谁用哪个、嵌套怎么算、哪些并入了、哪些待用户定。数值写 Graphite / Console，值与 tokens.json 一致。 */
+export function RadiusRules() {
+  return (
+    <>
+      <h2>谁用哪个</h2>
+      <Table
+        head={['角色', 'token', 'Graphite / Console', '用在']}
+        rows={[
+          [
+            '面板',
+            code('--radius-panel'),
+            '0 / 0',
+            '面板壳、窗格、标签页条、工具条：方角（精密仪器风，用户 2026-10-17）',
+          ],
+          [
+            '对话框、抽屉',
+            code('--radius-dialog'),
+            '14 / 14',
+            'Dialog、AlertDialog、Sheet、搜索窗；里面的控件仍用 control，不随它变大',
+          ],
+          [
+            '浮层',
+            code('--radius-overlay'),
+            '8 / 10',
+            '菜单、下拉列表、弹出层、悬停卡，以及面板里 8px 的卡与块；分段控件的外壳',
+          ],
+          [
+            '控件',
+            code('--radius-control'),
+            '6 / 7',
+            '按钮（含 sm）、输入框、OTP、下拉触发、分段、工具条上的钮、面板里的小卡与格',
+          ],
+          [
+            '浮层里的行',
+            code('--radius-inner'),
+            '4 / 5',
+            '菜单项、下拉项、命令项、导航菜单链接、分段的选中块、浮层里的筛选行',
+          ],
+          ['独立的小块', code('--radius-md'), '4 / 4', '键帽、卡的小标、折叠头、芯片：不在浮层里的 4px'],
+          ['细条与小徽记', code('--radius-sm'), '2 / 2', '进度条、条形、色块、图例点：原来写 1 到 3px 的'],
+          ['胶囊与圆', <>{code('--radius-pill')} / 50%</>, '全圆', '胶囊按钮、LED、滑块槽、头像；不参与嵌套'],
+        ]}
+      />
+      <h2>规则</h2>
+      <ul className="gal-list">
+        <li>
+          内角 = 外角 − 内边距，最低 4（kubai Vibe Design Tips 004）：两个角共用一个圆心。菜单外框 8、内边 6，8 − 6 =
+          2，低于 4 取 4，所以行是 {code('--radius-inner')}。同层的框共用一个值。
+        </li>
+        <li>
+          圆角一律从 token 来：CSS 写 {code('border-radius: var(--radius-control)')}，Tailwind 写{' '}
+          {code('rounded-[var(--radius-control)]')}，多角写 {code('var(--radius-control) 0 0 var(--radius-control)')}
+          。不写像素、不写带像素的兜底；{code('src/radius-tokens.test.ts')} 扫 {code('theme/*.css')} 与所有
+          TSX，写一处就红。
+        </li>
+        <li>切主题时一起变：Console 的输入框、下拉触发、OTP 都是 7，不再有 Input 写死 6 而 Select 取 7 的两套。</li>
+        <li>
+          零散值就近并入：1、3 → {code('--radius-sm')}；5 → {code('--radius-inner')}；10 → {code('--radius-overlay')}
+          ；13 是 26 高的胶囊 → {code('--radius-pill')}；8 的卡 → {code('--radius-overlay')}，8 的输入与按钮 →{' '}
+          {code('--radius-control')}。
+        </li>
+        <li>
+          连续曲率：≥ 8px 的面（浮层、悬停卡、对话框、抽屉、搜索窗）在支持 {code('corner-shape')} 的浏览器上取{' '}
+          {code('superellipse(1.25)')}（Chrome、Edge 139+），写在 {code('theme/materials.css')} 的 {code('@supports')}{' '}
+          里；Safari、Firefox 整块跳过，仍是圆弧。2 到 6px 的控件不加。与 {code('Squircle')} 分工： Squircle 用
+          clip-path 生成路径，给要明显超椭圆的地方；这里只是渐进增强。
+        </li>
+        <li>
+          不动：JS 动画里的圆角常量（灵动岛、MorphSurface、GlassCard、BorderBeam 的 {code('borderRadius')}{' '}
+          数）是动画起止值，不是主题圆角。
+        </li>
+      </ul>
+      <h2>并入后变了的（&gt; 1px）</h2>
+      <ul className="gal-list">
+        <li>
+          Graphite：侧栏搜索框、流程图加号钮 8 → 6（控件）；导航菜单链接、新闻筛选浮层的行 6 → 4（浮层里的行）；Peer
+          卡主块与 FolderReveal 的盒 10 → 8。
+        </li>
+        <li>Graphite：Select、Combobox、MultiSelect 的下拉面 7 → 8（+1，同浮层）。</li>
+        <li>Console：控件 6 → 7、浮层与 8 的卡 8 → 10、行 4 → 5，是「跟主题走」的预期结果。</li>
+      </ul>
+      <h2>待用户确认</h2>
+      <ul className="gal-list">
+        <li>
+          sm 按钮原来写死 8，比 md（6）还圆，已改成 {code('--radius-control')}（主会话按默认定，不同意就改回）。Graphite
+          下 sm 另由 graphite.css 取 {code('--radius-inner')}（4），这次没动。
+        </li>
+        <li>
+          Graphite 下对话框实际是 8，不是 14：graphite.css 的玻璃规则把它盖成了 {code('--radius-overlay')}。
+          {code('--radius-dialog')} 现在只在 Console、Sheet、搜索窗生效；要不要让 Graphite 的对话框也取 14，待定。
+        </li>
+      </ul>
+      <Src href="https://vibedesign.tips/004-continuous-corners/">kubai · Vibe Design Tips 004 Continuous corners</Src>
+    </>
+  )
+}
+
 /* ---------- 入门 ---------- */
 
 function DevelopingPage() {

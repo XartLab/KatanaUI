@@ -11,7 +11,7 @@ import { OverlayPortal } from '../lib/overlay.tsx'
 // 提示的外观类单独导出一份：应用里有不经过 React 的地方（图表的 Vega 悬停提示）要画同样的框。
 // 开得很快（延迟 0）：提示是给已经停在按钮上的人看的，等 700ms（Radix 默认）反而像卡了。
 const tooltipContentClass = [
-  'k-text-data z-60 inline-flex items-center gap-2 rounded-[6px] border border-(color:--k-separable-tertiary-borderColor) bg-(--k-surface-sunken-background) px-2 py-1.5 leading-[1.3] font-normal text-(color:--k-content-body-foreground)',
+  'k-text-data z-60 inline-flex items-center gap-2 rounded-[var(--radius-control)] border border-(color:--k-separable-tertiary-borderColor) bg-(--k-surface-sunken-background) px-2 py-1.5 leading-[1.3] font-normal text-(color:--k-content-body-foreground)',
   'shadow-(--k-overlay-tooltip-shadow)',
   '[&_.k-kbd]:border-transparent [&_.k-kbd]:bg-(--k-content-primary-foreground) [&_.k-kbd]:font-semibold [&_.k-kbd]:text-(color:--k-surface-sunken-background)',
 ].join(' ')

@@ -28,7 +28,7 @@
   flex: 1;
   height: 3px;
   overflow: hidden;
-  border-radius: 2px;
+  border-radius: var(--radius-sm);
   background: var(--k-container-track-background);
 }
 .k-crew-ctx-bar b {

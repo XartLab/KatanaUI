@@ -7,7 +7,7 @@ import type { ReactNode } from 'react'
 import tokens from '../src/tokens-json'
 import { Button } from '../src/index'
 import { DECISION_PAGES } from './decisions'
-import { HEAT, MORE_PAGES as BASE_PAGES } from './foundations-more'
+import { HEAT, MORE_PAGES as BASE_PAGES, RadiusRules } from './foundations-more'
 
 const MORE_PAGES = { ...BASE_PAGES, ...DECISION_PAGES }
 
@@ -346,6 +346,7 @@ export function FoundationPage({ id }: { id: FoundationId }) {
               rows={T.radius.tokens}
               preview={(t) => <span className="gal-fd-box" style={{ borderRadius: `var(--${t.name})` }} />}
             />
+            <RadiusRules />
           </>
         )
       case 'shadow':

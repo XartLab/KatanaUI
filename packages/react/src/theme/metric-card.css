@@ -100,7 +100,7 @@
 .k-metric-seg {
   --t: var(--stage-t);
   flex-basis: 0;
-  border-radius: 2px;
+  border-radius: var(--radius-sm);
   background: color-mix(
     in srgb,
     color-mix(in srgb, var(--pnl-down) calc((1 - var(--t)) * 100%), var(--pnl-up) calc(var(--t) * 100%)) 70%,

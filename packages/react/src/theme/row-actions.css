@@ -34,7 +34,7 @@
   height: 22px;
   padding: 0;
   border: 0;
-  border-radius: 5px;
+  border-radius: var(--radius-inner);
   background: transparent;
   color: var(--k-content-body-foreground);
   cursor: pointer;

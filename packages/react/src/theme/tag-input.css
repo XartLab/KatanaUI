@@ -20,7 +20,7 @@
   padding: var(--k-tagin-pad) 6px;
   background: var(--k-editable-background);
   border: 1px solid var(--k-editable-borderColor);
-  border-radius: 6px;
+  border-radius: var(--radius-control);
   cursor: text;
   transition: border-color 120ms;
 }

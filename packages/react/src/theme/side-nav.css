@@ -25,7 +25,7 @@
   /* 右边让出按键提示：Mac 的 ⌘K 窄，别处的 Ctrl+K 宽一些。 */
   padding: 0 52px 0 10px;
   border: 1px solid var(--alpha-white-8);
-  border-radius: 8px;
+  border-radius: var(--radius-control);
   background: var(--alpha-white-2);
   color: var(--k-content-primary-foreground);
   font: var(--text-data) var(--font-sans);
@@ -44,7 +44,7 @@
   right: 6px;
   translate: 0 round(nearest, -50%, 1px);
   padding: 2px 5px;
-  border-radius: 5px;
+  border-radius: var(--radius-inner);
   background: var(--k-actionable-background-hover);
   /* 次要字色压在悬停底上差一点到 4.5:1，换正文字色。 */
   color: var(--k-content-body-foreground);
@@ -107,7 +107,7 @@
   gap: 8px;
   align-items: center;
   padding: 6px 8px 6px 20px;
-  border-radius: 8px;
+  border-radius: var(--radius-overlay);
   color: color-mix(in srgb, var(--k-content-primary-foreground) 50%, transparent);
   font: calc(400 + var(--k-weight-adjust, 0)) round(nearest, calc(14px * var(--k-text-scale, 1)), 1px) /
     round(nearest, calc(20px * var(--k-text-scale, 1)), 1px) var(--font-sans);
